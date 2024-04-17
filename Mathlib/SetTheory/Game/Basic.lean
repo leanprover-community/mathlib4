@@ -3,7 +3,7 @@ Copyright (c) 2019 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Mario Carneiro, Isabel Longbottom, Scott Morrison, Apurva Nakade
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.SetTheory.Game.PGame
 import Mathlib.Tactic.Abel
 
@@ -49,7 +49,7 @@ abbrev Game :=
 
 namespace Game
 
--- Porting note: added this definition
+-- Porting note (#11445): added this definition
 /-- Negation of games. -/
 instance : Neg Game where
   neg := Quot.map Neg.neg <| fun _ _ => (neg_equiv_neg_iff).2

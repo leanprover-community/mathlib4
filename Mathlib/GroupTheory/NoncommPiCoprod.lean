@@ -152,8 +152,9 @@ def noncommPiCoprodEquiv :
       Commute.map (Pi.mulSingle_commute hij x y) f⟩
   left_inv ϕ := by
     ext
-    simp
-  right_inv f := pi_ext fun i x => by simp
+    simp only [coe_comp, Function.comp_apply, single_apply, noncommPiCoprod_mulSingle]
+  right_inv f := pi_ext fun i x => by
+    simp only [noncommPiCoprod_mulSingle, coe_comp, Function.comp_apply, single_apply]
 #align monoid_hom.noncomm_pi_coprod_equiv MonoidHom.noncommPiCoprodEquiv
 #align add_monoid_hom.noncomm_pi_coprod_equiv AddMonoidHom.noncommPiCoprodEquiv
 
@@ -213,7 +214,7 @@ theorem injective_noncommPiCoprod_of_independent
     (hinj : ∀ i, Function.Injective (ϕ i)) : Function.Injective (noncommPiCoprod ϕ hcomm) := by
   classical
     apply (MonoidHom.ker_eq_bot_iff _).mp
-    apply eq_bot_iff.mpr
+    rw [eq_bot_iff]
     intro f heq1
     have : ∀ i, i ∈ Finset.univ → ϕ i (f i) = 1 :=
       Subgroup.eq_one_of_noncommProd_eq_one_of_independent _ _ (fun _ _ _ _ h => hcomm h _ _)

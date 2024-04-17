@@ -3,7 +3,7 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Julian Kuelshammer, Heather Macbeth
 -/
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Tactic.LinearCombination
 
 #align_import ring_theory.polynomial.chebyshev from "leanprover-community/mathlib"@"d774451114d6045faeb6751c396bea1eb9058946"
@@ -133,7 +133,7 @@ theorem U_eq_X_mul_U_add_T : ∀ n : ℕ, U R (n + 1) = X * U R n + T R (n + 1)
 #align polynomial.chebyshev.U_eq_X_mul_U_add_T Polynomial.Chebyshev.U_eq_X_mul_U_add_T
 
 theorem T_eq_U_sub_X_mul_U (n : ℕ) : T R (n + 1) = U R (n + 1) - X * U R n := by
-  rw [U_eq_X_mul_U_add_T, add_comm (X * U R n), add_sub_cancel]
+  rw [U_eq_X_mul_U_add_T, add_comm (X * U R n), add_sub_cancel_right]
 #align polynomial.chebyshev.T_eq_U_sub_X_mul_U Polynomial.Chebyshev.T_eq_U_sub_X_mul_U
 
 theorem T_eq_X_mul_T_sub_pol_U : ∀ n : ℕ, T R (n + 2) = X * T R (n + 1) - (1 - X ^ 2) * U R n

@@ -111,7 +111,7 @@ namespace FDerivMeasurableAux
 
 /-- The set `A f L r ε` is the set of points `x` around which the function `f` is well approximated
 at scale `r` by the linear map `L`, up to an error `ε`. We tweak the definition to make sure that
-this is an open set.-/
+this is an open set. -/
 def A (f : E → F) (L : E →L[𝕜] F) (r ε : ℝ) : Set E :=
   { x | ∃ r' ∈ Ioc (r / 2) r, ∀ y ∈ ball x r', ∀ z ∈ ball x r', ‖f z - f y - L (z - y)‖ < ε * r }
 #align fderiv_measurable_aux.A FDerivMeasurableAux.A
@@ -189,15 +189,15 @@ theorem norm_sub_le_of_mem_A {c : 𝕜} (hc : 1 < ‖c‖) {r ε : ℝ} (hε : 0
   calc
     ‖(L₁ - L₂) y‖ = ‖f (x + y) - f x - L₂ (x + y - x) - (f (x + y) - f x - L₁ (x + y - x))‖ := by
       simp
-    _ ≤ ‖f (x + y) - f x - L₂ (x + y - x)‖ + ‖f (x + y) - f x - L₁ (x + y - x)‖ := (norm_sub_le _ _)
+    _ ≤ ‖f (x + y) - f x - L₂ (x + y - x)‖ + ‖f (x + y) - f x - L₁ (x + y - x)‖ := norm_sub_le _ _
     _ ≤ ε * r + ε * r := by
       apply add_le_add
       · apply le_of_mem_A h₂
         · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel', mem_closedBall, ylt.le]
+        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
       · apply le_of_mem_A h₁
         · simp only [le_of_lt (half_pos hr), mem_closedBall, dist_self]
-        · simp only [dist_eq_norm, add_sub_cancel', mem_closedBall, ylt.le]
+        · simp only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, ylt.le]
     _ = 2 * ε * r := by ring
     _ ≤ 2 * ε * (2 * ‖c‖ * ‖y‖) := by gcongr
     _ = 4 * ‖c‖ * ε * ‖y‖ := by ring
@@ -336,12 +336,12 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
       apply le_of_mem_A (hn e (n e) m le_rfl m_ge).2.2
       · simp only [mem_closedBall, dist_self]
         positivity
-      · simpa only [dist_eq_norm, add_sub_cancel', mem_closedBall, pow_succ', mul_one_div] using
+      · simpa only [dist_eq_norm, add_sub_cancel_left, mem_closedBall, pow_succ, mul_one_div] using
           h'k
     have J2 : ‖f (x + y) - f x - L e (n e) m y‖ ≤ 4 * (1 / 2) ^ e * ‖y‖ :=
       calc
         ‖f (x + y) - f x - L e (n e) m y‖ ≤ (1 / 2) ^ e * (1 / 2) ^ m := by
-          simpa only [add_sub_cancel'] using J1
+          simpa only [add_sub_cancel_left] using J1
         _ = 4 * (1 / 2) ^ e * (1 / 2) ^ (m + 2) := by field_simp; ring
         _ ≤ 4 * (1 / 2) ^ e * ‖y‖ := by gcongr
     -- use the previous estimates to see that `f (x + y) - f x - f' y` is small.
@@ -641,7 +641,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
-      _ < 12 * (ε / 12) := (mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num))
+      _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
       _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]; ring
 
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.

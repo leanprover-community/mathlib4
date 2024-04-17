@@ -54,7 +54,7 @@ theorem pow_strictMono : ∀ {n : ℕ}, n ≠ 0 → StrictMono fun x : ℝ≥0�
   | 0, h => absurd rfl h
   | 1, _ => by simpa only [pow_one] using strictMono_id
   | n + 2, _ => fun x y h ↦ by
-    simp_rw [pow_succ _ (n + 1)]; exact mul_lt_mul h (pow_strictMono n.succ_ne_zero h)
+    simp_rw [pow_succ _ (n + 1)]; exact mul_lt_mul (pow_strictMono n.succ_ne_zero h) h
 #align ennreal.pow_strict_mono ENNReal.pow_strictMono
 
 @[gcongr] protected theorem pow_lt_pow_left (h : a < b) {n : ℕ} (hn : n ≠ 0) :
@@ -271,7 +271,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
   · induction a using recTopCoe
-    · simp only [Ne.def, hn.ne', top_pow hn, not_false_eq_true, and_self]
+    · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
     · simp only [← coe_pow, coe_ne_top, false_and]
 #align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff
 
@@ -289,12 +289,12 @@ theorem pow_lt_top : a < ∞ → ∀ n : ℕ, a ^ n < ∞ := by
 
 @[simp, norm_cast]
 theorem coe_finset_sum {s : Finset α} {f : α → ℝ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℝ≥0∞) :=
-  ofNNRealHom.map_sum f s
+  map_sum ofNNRealHom f s
 #align ennreal.coe_finset_sum ENNReal.coe_finset_sum
 
 @[simp, norm_cast]
 theorem coe_finset_prod {s : Finset α} {f : α → ℝ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℝ≥0∞) :=
-  ofNNRealHom.map_prod f s
+  map_prod ofNNRealHom f s
 #align ennreal.coe_finset_prod ENNReal.coe_finset_prod
 
 end OperationsAndInfty
@@ -380,7 +380,7 @@ theorem sub_ne_top (ha : a ≠ ∞) : a - b ≠ ∞ := mt sub_eq_top_iff.mp <| m
 
 @[simp, norm_cast]
 theorem nat_cast_sub (m n : ℕ) : ↑(m - n) = (m - n : ℝ≥0∞) := by
-  rw [← coe_nat, Nat.cast_tsub, coe_sub, coe_nat, coe_nat]
+  rw [← coe_natCast, Nat.cast_tsub, coe_sub, coe_natCast, coe_natCast]
 #align ennreal.nat_cast_sub ENNReal.nat_cast_sub
 
 protected theorem sub_eq_of_eq_add (hb : b ≠ ∞) : a = c + b → a - b = c :=

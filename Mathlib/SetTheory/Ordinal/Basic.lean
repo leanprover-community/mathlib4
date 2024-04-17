@@ -37,10 +37,11 @@ initial segment (or, equivalently, in any way). This total order is well founded
   universe). In some cases the universe level has to be given explicitly.
 
 * `o₁ + o₂` is the order on the disjoint union of `o₁` and `o₂` obtained by declaring that
-  every element of `o₁` is smaller than every element of `o₂`. The main properties of addition
-  (and the other operations on ordinals) are stated and proved in `Ordinal/Arithmetic.lean`. Here,
-  we only introduce it and prove its basic properties to deduce the fact that the order on ordinals
-  is total (and well founded).
+  every element of `o₁` is smaller than every element of `o₂`.
+  The main properties of addition (and the other operations on ordinals) are stated and proved in
+  `Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
+  Here, we only introduce it and prove its basic properties to deduce the fact that the order on
+  ordinals is total (and well founded).
 * `succ o` is the successor of the ordinal `o`.
 * `Cardinal.ord c`: when `c` is a cardinal, `ord c` is the smallest ordinal with this cardinality.
   It is the canonical way to represent a cardinal with an ordinal.
@@ -835,7 +836,6 @@ def omega : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 #align ordinal.omega Ordinal.omega
 
--- mathport name: ordinal.omega
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
@@ -861,7 +861,7 @@ theorem lift_omega : lift ω = ω :=
 In this paragraph, we introduce the addition on ordinals, and prove just enough properties to
 deduce that the order on ordinals is total (and therefore well-founded). Further properties of
 the addition, together with properties of the other operations, are proved in
-`Ordinal/Arithmetic.lean`.
+`Mathlib/SetTheory/Ordinal/Arithmetic.lean`.
 -/
 
 

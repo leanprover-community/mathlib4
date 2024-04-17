@@ -234,7 +234,7 @@ theorem _root_.Measurable.set_lintegral_kernel {f : β → ℝ≥0∞} (hf : Mea
     (hs : MeasurableSet s) : Measurable fun a => ∫⁻ b in s, f b ∂κ a := by
   -- Porting note: was term mode proof (`Function.comp` reducibility)
   refine Measurable.set_lintegral_kernel_prod_right ?_ hs
-  convert (hf.comp measurable_snd)
+  convert hf.comp measurable_snd
 #align measurable.set_lintegral_kernel Measurable.set_lintegral_kernel
 
 end Lintegral
@@ -253,12 +253,14 @@ open ProbabilityTheory ProbabilityTheory.kernel
 
 namespace MeasureTheory
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [IsSFiniteKernel κ]
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [IsSFiniteKernel κ]
   [IsSFiniteKernel η]
 
 theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
     (hf : StronglyMeasurable (uncurry f)) : StronglyMeasurable fun x => ∫ y, f x y ∂κ x := by
   classical
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE, stronglyMeasurable_const]
   borelize E
   haveI : TopologicalSpace.SeparableSpace (range (uncurry f) ∪ {0} : Set E) :=
     hf.separableSpace_range_union_singleton
@@ -281,9 +283,9 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
   have h2f' : Tendsto f' atTop (𝓝 fun x : α => ∫ y : β, f x y ∂κ x) := by
     rw [tendsto_pi_nhds]; intro x
     by_cases hfx : Integrable (f x) (κ x)
-    · have : ∀ n, Integrable (s' n x) (κ x) := by
-        intro n; apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
-        apply eventually_of_forall; intro y
+    · have (n) : Integrable (s' n x) (κ x) := by
+        apply (hfx.norm.add hfx.norm).mono' (s' n x).aestronglyMeasurable
+        filter_upwards with y
         simp_rw [s', SimpleFunc.coe_comp]; exact SimpleFunc.norm_approxOn_zero_le _ _ (x, y) n
       simp only [f',  hfx, SimpleFunc.integral_eq_integral _ (this _), indicator_of_mem,
         mem_setOf_eq]

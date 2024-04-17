@@ -85,7 +85,7 @@ theorem Asymptotics.IsBigO.trans_tendsto_norm_atTop {α : Type*} {u v : α → �
   rcases huv.exists_pos with ⟨c, hc, hcuv⟩
   rw [IsBigOWith] at hcuv
   convert Tendsto.atTop_div_const hc (tendsto_atTop_mono' l hcuv hu)
-  rw [mul_div_cancel_left _ hc.ne.symm]
+  rw [mul_div_cancel_left₀ _ hc.ne.symm]
 set_option linter.uppercaseLean3 false in
 #align asymptotics.is_O.trans_tendsto_norm_at_top Asymptotics.IsBigO.trans_tendsto_norm_atTop
 
@@ -114,7 +114,7 @@ theorem Asymptotics.IsLittleO.sum_range {α : Type*} [NormedAddCommGroup α] {f 
   calc
     ‖∑ i in range n, f i‖ = ‖(∑ i in range N, f i) + ∑ i in Ico N n, f i‖ := by
       rw [sum_range_add_sum_Ico _ Nn]
-    _ ≤ ‖∑ i in range N, f i‖ + ‖∑ i in Ico N n, f i‖ := (norm_add_le _ _)
+    _ ≤ ‖∑ i in range N, f i‖ + ‖∑ i in Ico N n, f i‖ := norm_add_le _ _
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in Ico N n, ε / 2 * g i :=
       (add_le_add le_rfl (norm_sum_le_of_le _ fun i hi => hN _ (mem_Ico.1 hi).1))
     _ ≤ ‖∑ i in range N, f i‖ + ∑ i in range n, ε / 2 * g i := by

@@ -632,7 +632,7 @@ variable [CommSemiring R] [AddCommMonoid M] [Module R M] [CommSemiring R₁] [Ad
 
 /-- A bilinear map is called left-separating if
 the only element that is left-orthogonal to every other element is `0`; i.e.,
-for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`.-/
+for every nonzero `x` in `M₁`, there exists `y` in `M₂` with `B x y ≠ 0`. -/
 def SeparatingLeft (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ x : M₁, (∀ y : M₂, B x y = 0) → x = 0
 #align linear_map.separating_left LinearMap.SeparatingLeft
@@ -654,9 +654,8 @@ theorem SeparatingLeft.ne_zero [Nontrivial M₁] {B : M₁ →ₛₗ[I₁] M₂ 
 section Linear
 
 variable [AddCommMonoid Mₗ₁] [AddCommMonoid Mₗ₂] [AddCommMonoid Mₗ₁'] [AddCommMonoid Mₗ₂']
-  [AddCommMonoid M]
 
-variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂'] [Module R M]
+variable [Module R Mₗ₁] [Module R Mₗ₂] [Module R Mₗ₁'] [Module R Mₗ₂']
 variable {B : Mₗ₁ →ₗ[R] Mₗ₂ →ₗ[R] M} (e₁ : Mₗ₁ ≃ₗ[R] Mₗ₁') (e₂ : Mₗ₂ ≃ₗ[R] Mₗ₂')
 
 theorem SeparatingLeft.congr (h : B.SeparatingLeft) :
@@ -684,7 +683,7 @@ end Linear
 
 /-- A bilinear map is called right-separating if
 the only element that is right-orthogonal to every other element is `0`; i.e.,
-for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`.-/
+for every nonzero `y` in `M₂`, there exists `x` in `M₁` with `B x y ≠ 0`. -/
 def SeparatingRight (B : M₁ →ₛₗ[I₁] M₂ →ₛₗ[I₂] M) : Prop :=
   ∀ y : M₂, (∀ x : M₁, B x y = 0) → y = 0
 #align linear_map.separating_right LinearMap.SeparatingRight
