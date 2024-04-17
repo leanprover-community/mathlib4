@@ -178,7 +178,9 @@ variable [DecidableEq ιM] (b : Basis ι R L) (bₘ : Basis ιM R M)
 
 open Matrix
 
-/-- Let `L` and `M` be finite free modules over `R`,
+/-- (Implementation detail, see `LinearMap.polyCharpolyAux`.)
+
+Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear map.
 Let `b` be a basis of `L` and `bₘ` a basis of `M`.
 Then `LinearMap.polyCharpolyAux φ b bₘ` is the polynomial that evaluates on elements `x` of `L`
@@ -189,24 +191,6 @@ This definition does not depend on the choice of `bₘ`
 noncomputable
 def polyCharpolyAux : Polynomial (MvPolynomial ι R) :=
   (charpoly.univ R ιM).map <| MvPolynomial.bind₁ (φ.toMvPolynomial b bₘ.end)
-
-lemma polyCharpolyAux_monic : (polyCharpolyAux φ b bₘ).Monic :=
-  (charpoly.univ_monic R ιM).map _
-
-lemma polyCharpolyAux_ne_zero [Nontrivial R] : (polyCharpolyAux φ b bₘ) ≠ 0 :=
-  (polyCharpolyAux_monic _ _ _).ne_zero
-
-@[simp]
-lemma polyCharpolyAux_natDegree [Nontrivial R] :
-    (polyCharpolyAux φ b bₘ).natDegree = Fintype.card ιM := by
-  rw [polyCharpolyAux, (charpoly.univ_monic _ _).natDegree_map, charpoly.univ_natDegree]
-
-lemma polyCharpolyAux_coeff_isHomogeneous (i j : ℕ) (hij : i + j = Fintype.card ιM) :
-    ((polyCharpolyAux φ b bₘ).coeff i).IsHomogeneous j := by
-  rw [polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
-  apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ hij).eval₂
-  · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
-  · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 open Algebra.TensorProduct MvPolynomial in
 lemma polyCharpolyAux_baseChange (A : Type*) [CommRing A] [Algebra R A] :
@@ -290,6 +274,15 @@ lemma polyCharpolyAux_map_aeval
   exact DFunLike.ext _ _ fun f ↦ (MvPolynomial.eval_map (algebraMap R A) x f).symm
 
 open Algebra.TensorProduct MvPolynomial in
+/-- `LinearMap.polyCharpolyAux` is independent of the choice of basis of the target module.
+
+We prove this by rewriting `polyCharpolyAux`
+as the (honest, ordinary) characteristic polynomial of the basechange of `φ` to `R[X]`
+and then using that the characteristic polynomial of a linear map
+is independent of the choice of basis.
+
+This independence result is used transitively via
+`LinearMap.polyCharpolyAux_map_aeval` and `LinearMap.polyCharpolyAux_map_eq_charpoly`. -/
 lemma polyCharpolyAux_basisIndep {ιM' : Type*} [Fintype ιM'] [DecidableEq ιM']
     (bₘ' : Basis ιM' R M) :
     polyCharpolyAux φ b bₘ = polyCharpolyAux φ b bₘ' := by
@@ -331,16 +324,19 @@ lemma polyCharpoly_ne_zero [Nontrivial R] : (polyCharpoly φ b) ≠ 0 :=
   (polyCharpoly_monic _ _).ne_zero
 
 @[simp]
-lemma polyCharpoly_natDegree [Nontrivial R] [StrongRankCondition R] : -- remove [SRC]?
+lemma polyCharpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
     (polyCharpoly φ b).natDegree = finrank R M := by
   rw [polyCharpoly, polyCharpolyAux, (charpoly.univ_monic _ _).natDegree_map,
     charpoly.univ_natDegree, finrank_eq_card_chooseBasisIndex]
 
 lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
-    [StrongRankCondition R] : -- remove [SRC]?
+    [StrongRankCondition R] :
     ((polyCharpoly φ b).coeff i).IsHomogeneous j := by
-  apply polyCharpolyAux_coeff_isHomogeneous
-  rwa [← finrank_eq_card_chooseBasisIndex]
+  rw [finrank_eq_card_chooseBasisIndex] at hij
+  rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
+  apply (charpoly.univ_coeff_isHomogeneous _ _ _ _ hij).eval₂
+  · exact fun r ↦ MvPolynomial.isHomogeneous_C _ _
+  · exact LinearMap.toMvPolynomial_isHomogeneous _ _ _
 
 -- move to Mathlib.RingTheory.TensorProduct.Basic
 open TensorProduct in
