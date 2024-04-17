@@ -219,8 +219,8 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
       (F ⋙ Profinite.toTopCat)
     suffices Nonempty C.pt from IsEmpty.false (S.proj this.some)
     let D := Profinite.toTopCat.mapCone C
-    have hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
-    have CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv
+    let hD : IsLimit D := isLimitOfPreserves Profinite.toTopCat hC
+    let CD := (hD.conePointUniqueUpToIso (TopCat.limitConeIsLimit.{v, max u v} _)).inv
     exact cond.map CD
   · let f' : LocallyConstant C.pt S := ⟨S.proj, S.proj_isLocallyConstant⟩
     obtain ⟨j, g', hj⟩ := exists_locallyConstant_finite_nonempty _ hC f'

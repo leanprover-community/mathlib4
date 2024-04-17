@@ -544,7 +544,7 @@ set_option linter.uppercaseLean3 false in
 #align real.dimH_univ_pi_fin Real.dimH_univ_pi_fin
 
 theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finrank ℝ E := by
-  have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
+  let e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
     ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
   refine le_antisymm ?_ ?_

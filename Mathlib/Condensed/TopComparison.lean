@@ -92,15 +92,15 @@ the extensive topology.
 noncomputable instance [PreservesFiniteCoproducts G] :
     PreservesFiniteProducts (yonedaPresheaf G X) := by
   change PreservesFiniteProducts (G.op ⋙ yonedaPresheaf' X)
-  have h' : PreservesFiniteProducts (yonedaPresheaf' X) := inferInstance
-  have h : PreservesFiniteProducts G.op :=
+  let h' : PreservesFiniteProducts (yonedaPresheaf' X) := inferInstance
+  let h : PreservesFiniteProducts G.op :=
     { preserves := fun J _ => by
         apply (config := { allowSynthFailures := true }) preservesLimitsOfShapeOp
         exact preservesColimitsOfShapeOfEquiv (Discrete.opposite J).symm _ }
   constructor
   intro J _
-  have := h.1 J
-  have := h'.1 J
+  let _ := h.1 J
+  let _ := h'.1 J
   exact compPreservesLimitsOfShape _ _
 
 /--

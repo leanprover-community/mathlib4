@@ -138,10 +138,10 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
   let Eu : Type max uD uE uF uG := ULift.{max uD uF uG, uE} E
   let Fu : Type max uD uE uF uG := ULift.{max uD uE uG, uF} F
   let Gu : Type max uD uE uF uG := ULift.{max uD uE uF, uG} G
-  have isoD : Du ≃ₗᵢ[𝕜] D := LinearIsometryEquiv.ulift 𝕜 D
-  have isoE : Eu ≃ₗᵢ[𝕜] E := LinearIsometryEquiv.ulift 𝕜 E
-  have isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
-  have isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
+  let isoD : Du ≃ₗᵢ[𝕜] D := LinearIsometryEquiv.ulift 𝕜 D
+  let isoE : Eu ≃ₗᵢ[𝕜] E := LinearIsometryEquiv.ulift 𝕜 E
+  let isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
+  let isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
   -- lift `f` and `g` to versions `fu` and `gu` on the lifted spaces.
   set fu : Du → Eu := isoE.symm ∘ f ∘ isoD with hfu
   set gu : Du → Fu := isoF.symm ∘ g ∘ isoD with hgu
@@ -482,8 +482,8 @@ theorem norm_iteratedFDerivWithin_comp_le {g : F → G} {f : E → F} {n : ℕ} 
     to a common universe. These linear isometries preserve the norm of the iterated derivative. -/
   let Fu : Type max uF uG := ULift.{uG, uF} F
   let Gu : Type max uF uG := ULift.{uF, uG} G
-  have isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
-  have isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
+  let isoF : Fu ≃ₗᵢ[𝕜] F := LinearIsometryEquiv.ulift 𝕜 F
+  let isoG : Gu ≃ₗᵢ[𝕜] G := LinearIsometryEquiv.ulift 𝕜 G
   -- lift `f` and `g` to versions `fu` and `gu` on the lifted spaces.
   let fu : E → Fu := isoF.symm ∘ f
   let gu : Fu → Gu := isoG.symm ∘ g ∘ isoF

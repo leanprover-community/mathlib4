@@ -106,11 +106,11 @@ theorem eq_toGHSpace_iff {X : Type u} [MetricSpace X] [CompactSpace X] [Nonempty
   simp only [toGHSpace, Quotient.eq]
   refine' ⟨fun h => _, _⟩
   · rcases Setoid.symm h with ⟨e⟩
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
+    let f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.trans e
     use fun x => f x, isometry_subtype_coe.comp f.isometry
     erw [range_comp, f.range_eq_univ, Set.image_univ, Subtype.range_coe]
   · rintro ⟨Ψ, ⟨isomΨ, rangeΨ⟩⟩
-    have f :=
+    let f :=
       ((kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm.trans
           isomΨ.isometryEquivOnRange).symm
     have E : (range Ψ ≃ᵢ NonemptyCompacts.kuratowskiEmbedding X)
@@ -158,13 +158,13 @@ theorem toGHSpace_eq_toGHSpace_iff_isometryEquiv {X : Type u} [MetricSpace X] [C
       (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) =
         (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) := by
       dsimp only [NonemptyCompacts.kuratowskiEmbedding]; rfl
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange
-    have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange.symm
+    let f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange
+    let g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange.symm
     exact ⟨f.trans <| (cast I e).trans g⟩, by
     rintro ⟨e⟩
     simp only [toGHSpace, Quotient.eq']
-    have f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm
-    have g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange
+    let f := (kuratowskiEmbedding.isometry X).isometryEquivOnRange.symm
+    let g := (kuratowskiEmbedding.isometry Y).isometryEquivOnRange
     have I :
       (range (kuratowskiEmbedding X) ≃ᵢ range (kuratowskiEmbedding Y)) =
         (NonemptyCompacts.kuratowskiEmbedding X ≃ᵢ NonemptyCompacts.kuratowskiEmbedding Y) := by
@@ -463,8 +463,8 @@ instance : MetricSpace GHSpace where
       · exact hausdorffEdist_ne_top_of_nonempty_of_bounded (range_nonempty _) (range_nonempty _)
           hΦ.isBounded hΨ.isBounded
     have T : (range Ψ ≃ᵢ y.Rep) = (range Φ ≃ᵢ y.Rep) := by rw [this]
-    have eΨ := cast T Ψisom.isometryEquivOnRange.symm
-    have e := Φisom.isometryEquivOnRange.trans eΨ
+    let eΨ := cast T Ψisom.isometryEquivOnRange.symm
+    let e := Φisom.isometryEquivOnRange.trans eΨ
     rw [← x.toGHSpace_rep, ← y.toGHSpace_rep, toGHSpace_eq_toGHSpace_iff_isometryEquiv]
     exact ⟨e⟩
   dist_triangle x y z := by
@@ -704,7 +704,7 @@ instance : SecondCountableTopology GHSpace := by
       have : x ∈ ⋃ y ∈ s q, ball y ε := (hs q).2 (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
-      let hi := ((E q) ⟨y, ys⟩).is_lt
+      have hi := ((E q) ⟨y, ys⟩).is_lt
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
       have hiq : i < N q := hi
       have hip : i < N p := by rwa [Npq.symm] at hiq
@@ -856,7 +856,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have : x ∈ ⋃ y ∈ s q, ball y (u n) := (hs q qt) (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       let i : ℕ := E q ⟨y, ys⟩
-      let hi := ((E q) ⟨y, ys⟩).2
+      have hi := ((E q) ⟨y, ys⟩).2
       have ihi_eq : (⟨i, hi⟩ : Fin (N q)) = (E q) ⟨y, ys⟩ := by rw [Fin.ext_iff, Fin.val_mk]
       have hiq : i < N q := hi
       have hip : i < N p := by rwa [Npq.symm] at hiq

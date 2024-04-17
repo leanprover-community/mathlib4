@@ -115,7 +115,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
     (G : Subgroup Kˣ) [Fintype G] : (Fintype.card G : K) ≠ 0 := by
   let n := Fintype.card G
   intro nzero
-  have ⟨p, char_p⟩ := CharP.exists K
+  let ⟨p, char_p⟩ := CharP.exists K
   have hd : p ∣ n := (CharP.cast_eq_zero_iff K p n).mp nzero
   cases CharP.char_is_prime_or_zero K p with
   | inr pzero =>
@@ -123,7 +123,7 @@ theorem card_cast_subgroup_card_ne_zero [Ring K] [NoZeroDivisors K] [Nontrivial 
   | inl pprime =>
     have fact_pprime := Fact.mk pprime
     -- G has an element x of order p by Cauchy's theorem
-    have ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
+    let ⟨x, hx⟩ := exists_prime_orderOf_dvd_card p hd
     -- F has an element u (= ↑↑x) of order p
     let u := ((x : Kˣ) : K)
     have hu : orderOf u = p := by rwa [orderOf_units, Subgroup.orderOf_coe]
@@ -283,7 +283,7 @@ theorem sum_pow_units [DecidableEq K] (i : ℕ) :
     { toFun := fun x => x ^ i
       map_one' := by simp
       map_mul' := by intros; simp [mul_pow] }
-  have : Decidable (φ = 1) := by classical infer_instance
+  let _ : Decidable (φ = 1) := by classical infer_instance
   calc (∑ x : Kˣ, φ x) = if φ = 1 then Fintype.card Kˣ else 0 := sum_hom_units φ
       _ = if q - 1 ∣ i then -1 else 0 := by
         suffices q - 1 ∣ i ↔ φ = 1 by

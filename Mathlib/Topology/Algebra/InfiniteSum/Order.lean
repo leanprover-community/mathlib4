@@ -301,7 +301,7 @@ theorem Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpac
   obtain ⟨n, hn⟩ := Archimedean.arch (∑' _ : ι, b) hb
   have : ∀ s : Finset ι, s.card ≤ n := fun s ↦ by
     simpa [nsmul_le_nsmul_iff_left hb] using (H s).trans hn
-  have : Fintype ι := fintypeOfFinsetCardLe n this
+  let _ : Fintype ι := fintypeOfFinsetCardLe n this
   infer_instance
 
 theorem Set.Finite.of_summable_const [LinearOrderedAddCommGroup α] [TopologicalSpace α]

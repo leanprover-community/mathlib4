@@ -463,7 +463,7 @@ lemma homologyMap_eq :
     homologyMap φ = h₁.homologyIso.hom ≫ γ.φH ≫ h₂.homologyIso.inv := by
   dsimp [homologyMap, homologyMap', RightHomologyData.homologyIso,
     rightHomologyIso, RightHomologyData.rightHomologyIso]
-  have γ' : HomologyMapData φ S₁.homologyData S₂.homologyData := default
+  let γ' : HomologyMapData φ S₁.homologyData S₂.homologyData := default
   simp only [← γ.rightHomologyMap'_eq, assoc, ← rightHomologyMap'_comp_assoc,
     id_comp, comp_id, γ'.left.leftHomologyMap'_eq, γ'.right.rightHomologyMap'_eq, ← γ'.comm_assoc,
     Iso.hom_inv_id]
@@ -1028,7 +1028,7 @@ lemma homologyMap'_op : (homologyMap' φ h₁ h₂).op =
     h₂.iso.inv.op ≫ homologyMap' (opMap φ) h₂.op h₁.op ≫ h₁.iso.hom.op :=
   Quiver.Hom.unop_inj (by
     dsimp
-    have γ : HomologyMapData φ h₁ h₂ := default
+    let γ : HomologyMapData φ h₁ h₂ := default
     simp only [γ.homologyMap'_eq, γ.op.homologyMap'_eq, HomologyData.op_left,
       HomologyMapData.op_left, RightHomologyMapData.op_φH, Quiver.Hom.unop_op, assoc,
       ← γ.comm_assoc, Iso.hom_inv_id, comp_id])
@@ -1074,7 +1074,7 @@ lemma isIso_homologyMap_of_isIso_cyclesMap_of_epi {φ : S₁ ⟶ S₂}
   have h : S₂.toCycles ≫ inv (cyclesMap φ) ≫ S₁.homologyπ = 0 := by
     simp only [← cancel_epi φ.τ₁, ← toCycles_naturality_assoc,
       IsIso.hom_inv_id_assoc, toCycles_comp_homologyπ, comp_zero]
-  have ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
+  let ⟨z, hz⟩ := CokernelCofork.IsColimit.desc' S₂.homologyIsCokernel _ h
   dsimp at hz
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_epi S₁.homologyπ, homologyπ_naturality_assoc, hz,
@@ -1088,7 +1088,7 @@ lemma isIso_homologyMap_of_isIso_opcyclesMap_of_mono {φ : S₁ ⟶ S₂}
   have h : (S₂.homologyι ≫ inv (opcyclesMap φ)) ≫ S₁.fromOpcycles = 0 := by
     simp only [← cancel_mono φ.τ₃, zero_comp, assoc, ← fromOpcycles_naturality,
       IsIso.inv_hom_id_assoc, homologyι_comp_fromOpcycles]
-  have ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
+  let ⟨z, hz⟩ := KernelFork.IsLimit.lift' S₁.homologyIsKernel _ h
   dsimp at hz
   refine' ⟨⟨z, _, _⟩⟩
   · rw [← cancel_mono S₁.homologyι, id_comp, assoc, hz, homologyι_naturality_assoc,

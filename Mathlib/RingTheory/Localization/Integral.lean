@@ -395,7 +395,7 @@ theorem isAlgebraic_iff' [Field K] [IsDomain R] [IsDomain S] [Algebra R K] [Alge
           Polynomial.degree_map_eq_of_injective
             (NoZeroSMulDivisors.algebraMap_injective R (FractionRing R)),
           Polynomial.degree_eq_bot]
-      · have : Invertible (algebraMap S K b) :=
+      · let _ : Invertible (algebraMap S K b) :=
           IsUnit.invertible
             (isUnit_of_mem_nonZeroDivisors
               (mem_nonZeroDivisors_iff_ne_zero.2 fun h =>

@@ -181,8 +181,8 @@ theorem isRat_add {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
   rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * db + nb * da = k * nc) (h₂ : da * db = k * dc)
-  have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
-  have := invertibleOfMul' (α := α) h₂
+  let _ : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
+  let this := invertibleOfMul' (α := α) h₂
   use this
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (↑· * (⅟↑da * ⅟↑db : α)) h₁
@@ -364,8 +364,8 @@ theorem isRat_mul {α} [Ring α] {f : α → α → α} {a b : α} {na nb nc : �
     Nat.mul da db = Nat.mul k dc →
     IsRat (f a b) nc dc := by
   rintro rfl ⟨_, rfl⟩ ⟨_, rfl⟩ (h₁ : na * nb = k * nc) (h₂ : da * db = k * dc)
-  have : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
-  have := invertibleOfMul' (α := α) h₂
+  let _ : Invertible (↑(da * db) : α) := by simpa using invertibleMul (da:α) db
+  let this := invertibleOfMul' (α := α) h₂
   refine ⟨this, ?_⟩
   have H := (Nat.cast_commute (α := α) da db).invOf_left.invOf_right.right_comm
   have h₁ := congr_arg (Int.cast (R := α)) h₁

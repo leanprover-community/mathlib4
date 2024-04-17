@@ -120,7 +120,7 @@ theorem det_unique {n : Type*} [Unique n] [DecidableEq n] [Fintype n] (A : Matri
 
 theorem det_eq_elem_of_subsingleton [Subsingleton n] (A : Matrix n n R) (k : n) :
     det A = A k k := by
-  have := uniqueOfSubsingleton k
+  let _ := uniqueOfSubsingleton k
   convert det_unique A
 #align matrix.det_eq_elem_of_subsingleton Matrix.det_eq_elem_of_subsingleton
 

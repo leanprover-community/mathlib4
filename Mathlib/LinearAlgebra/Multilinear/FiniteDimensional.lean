@@ -57,7 +57,7 @@ private theorem free_and_finite :
   have := @free_and_finite_fin R M₂ _ _ _ _ _ (Fintype.card ι)
     (fun x => M₁ ((Fintype.equivFin ι).symm x))
   cases' this with l r
-  have e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
+  let e := domDomCongrLinearEquiv' R R M₁ M₂ (Fintype.equivFin ι)
   exact ⟨Module.Free.of_equiv e.symm, Module.Finite.equiv e.symm⟩
 
 instance _root_.Module.Finite.multilinearMap : Module.Finite R (MultilinearMap R M₁ M₂) :=

@@ -263,7 +263,7 @@ instance : Mul PGame.{u} :=
   ⟨fun x y => by
     induction' x with xl xr _ _ IHxl IHxr generalizing y
     induction' y with yl yr yL yR IHyl IHyr
-    have y := mk yl yr yL yR
+    let y := mk yl yr yL yR
     refine' ⟨Sum (xl × yl) (xr × yr), Sum (xl × yr) (xr × yl), _, _⟩ <;> rintro (⟨i, j⟩ | ⟨i, j⟩)
     · exact IHxl i y + IHyl j - IHxl i (yL j)
     · exact IHxr i y + IHyr j - IHxr i (yR j)

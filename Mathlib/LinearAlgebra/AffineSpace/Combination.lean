@@ -629,8 +629,8 @@ variable {k V}
 theorem map_affineCombination {V₂ P₂ : Type*} [AddCommGroup V₂] [Module k V₂] [AffineSpace V₂ P₂]
     (p : ι → P) (w : ι → k) (hw : s.sum w = 1) (f : P →ᵃ[k] P₂) :
     f (s.affineCombination k p w) = s.affineCombination k (f ∘ p) w := by
-  have b := Classical.choice (inferInstance : AffineSpace V P).nonempty
-  have b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).nonempty
+  let b := Classical.choice (inferInstance : AffineSpace V P).nonempty
+  let b₂ := Classical.choice (inferInstance : AffineSpace V₂ P₂).nonempty
   rw [s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w p hw b,
     s.affineCombination_eq_weightedVSubOfPoint_vadd_of_sum_eq_one w (f ∘ p) hw b₂, ←
     s.weightedVSubOfPoint_vadd_eq_of_sum_eq_one w (f ∘ p) hw (f b) b₂]

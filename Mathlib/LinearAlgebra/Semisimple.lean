@@ -80,7 +80,7 @@ lemma isSemisimple_id [IsSemisimpleModule R M] : IsSemisimple (LinearMap.id : Mo
 @[simp] lemma isSemisimple_neg : (-f).IsSemisimple ↔ f.IsSemisimple := by simp [isSemisimple_iff]
 
 lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisimple) : f = 0 := by
-  have ⟨n, h0⟩ := hn
+  let ⟨n, h0⟩ := hn
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical ⟨n, h0⟩

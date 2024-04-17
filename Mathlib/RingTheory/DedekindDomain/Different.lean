@@ -155,7 +155,7 @@ lemma isIntegral_discr_mul_of_mem_traceDual
   · rw [mul_assoc]
     rw [mem_traceDual_iff_isIntegral] at hx
     apply hx
-    have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp (hb j)
+    let ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp (hb j)
     rw [mul_comm, ← hy, ← Algebra.smul_def]
     exact I.smul_mem _ (ha)
   · exact isIntegral_trace (RingHom.IsIntegralElem.mul _ (hb j) (hb k))
@@ -202,9 +202,9 @@ def dual (I : FractionalIdeal B⁰ L) :
   if hI : I = 0 then 0 else
   ⟨Iᵛ, by
     classical
-    have ⟨s, b, hb⟩ := FiniteDimensional.exists_is_basis_integral A K L
+    let ⟨s, b, hb⟩ := FiniteDimensional.exists_is_basis_integral A K L
     obtain ⟨x, hx, hx'⟩ := exists_ne_zero_mem_isInteger hI
-    have ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp
+    let ⟨y, hy⟩ := (IsIntegralClosure.isIntegral_iff (A := B)).mp
       (IsIntegral.algebraMap (B := L) (discr_isIntegral K hb))
     refine ⟨y * x, mem_nonZeroDivisors_iff_ne_zero.mpr (mul_ne_zero ?_ hx), fun z hz ↦ ?_⟩
     · rw [← (IsIntegralClosure.algebraMap_injective B A L).ne_iff, hy, RingHom.map_zero,
@@ -276,7 +276,7 @@ lemma le_dual_inv_aux (hIJ : I * J ≤ 1) :
   apply IsIntegrallyClosed.isIntegral_iff.mp
   apply isIntegral_trace
   rw [IsIntegralClosure.isIntegral_iff (A := B)]
-  have ⟨z, _, hz⟩ := hIJ (FractionalIdeal.mul_mem_mul hy hx)
+  let ⟨z, _, hz⟩ := hIJ (FractionalIdeal.mul_mem_mul hy hx)
   rw [mul_comm] at hz
   exact ⟨z, hz⟩
 

@@ -130,7 +130,7 @@ lemma isIso_i (hg : S.g = 0) : IsIso h.i :=
     by simp only [← cancel_mono h.i, id_comp, assoc, liftK_i, comp_id], liftK_i _ _ _⟩
 
 lemma isIso_π (hf : S.f = 0) : IsIso h.π := by
-  have ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
+  let ⟨φ, hφ⟩ := CokernelCofork.IsColimit.desc' h.hπ' (𝟙 _)
     (by rw [← cancel_mono h.i, comp_id, f'_i, zero_comp, hf])
   dsimp at hφ
   exact ⟨φ, hφ, by rw [← cancel_epi h.π, reassoc_of% hφ, comp_id]⟩
@@ -805,7 +805,7 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
     [Epi φ.τ₁] [IsIso φ.τ₂] [Mono φ.τ₃] : LeftHomologyData S₂ := by
   let i : h.K ⟶ S₂.X₂ := h.i ≫ φ.τ₂
   have wi : i ≫ S₂.g = 0 := by simp only [i, assoc, φ.comm₂₃, h.wi_assoc, zero_comp]
-  have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
+  let hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ inv φ.τ₂) (by rw [assoc, ← cancel_mono φ.τ₃, assoc,
       assoc, ← φ.comm₂₃, IsIso.inv_hom_id_assoc, hx, zero_comp]))
     (fun x hx => by simp [i]) (fun x hx b hb => by
@@ -819,7 +819,7 @@ noncomputable def ofEpiOfIsIsoOfMono (φ : S₁ ⟶ S₂) (h : LeftHomologyData 
     rw [← cancel_mono h.i, ← cancel_mono φ.τ₂, assoc, assoc, eq, f'_i, φ.comm₁₂]
   have wπ : f' ≫ h.π = 0 := by
     rw [← cancel_epi φ.τ₁, comp_zero, reassoc_of% hf', h.f'_π]
-  have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
+  let hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => h.descH x (by rw [← hf', assoc, hx, comp_zero]))
     (fun x hx => by simp) (fun x hx b hb => by rw [← cancel_epi h.π, π_descH, hb])
   exact ⟨h.K, h.H, i, h.π, wi, hi, wπ, hπ⟩
@@ -840,7 +840,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
   have wi : i ≫ S₁.g = 0 := by
     rw [assoc, ← cancel_mono φ.τ₃, zero_comp, assoc, assoc, ← φ.comm₂₃,
       IsIso.inv_hom_id_assoc, h.wi]
-  have hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
+  let hi : IsLimit (KernelFork.ofι i wi) := KernelFork.IsLimit.ofι _ _
     (fun x hx => h.liftK (x ≫ φ.τ₂)
       (by rw [assoc, φ.comm₂₃, reassoc_of% hx, zero_comp]))
     (fun x hx => by simp [i])
@@ -852,7 +852,7 @@ noncomputable def ofEpiOfIsIsoOfMono' (φ : S₁ ⟶ S₂) (h : LeftHomologyData
     rw [← cancel_mono h.i, ← cancel_mono (inv φ.τ₂), assoc, assoc, assoc, hf', f'_i_assoc,
       φ.comm₁₂_assoc, IsIso.hom_inv_id, comp_id]
   have wπ : f' ≫ h.π = 0 := by simp only [hf'', assoc, f'_π, comp_zero]
-  have hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
+  let hπ : IsColimit (CokernelCofork.ofπ h.π wπ) := CokernelCofork.IsColimit.ofπ _ _
     (fun x hx => h.descH x (by rw [← cancel_epi φ.τ₁, ← reassoc_of% hf'', hx, comp_zero]))
     (fun x hx => π_descH _ _ _)
     (fun x hx b hx => by rw [← cancel_epi h.π, π_descH, hx])

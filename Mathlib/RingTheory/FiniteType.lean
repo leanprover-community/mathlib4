@@ -194,7 +194,7 @@ theorem iff_quotient_mvPolynomial'' :
   constructor
   · rw [iff_quotient_mvPolynomial']
     rintro ⟨ι, hfintype, ⟨f, hsur⟩⟩
-    have equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
+    let equiv := MvPolynomial.renameEquiv R (Fintype.equivFin ι)
     exact ⟨Fintype.card ι, AlgHom.comp f equiv.symm.toAlgHom, by simpa using hsur⟩
   · rintro ⟨n, ⟨f, hsur⟩⟩
     exact FiniteType.of_surjective (FiniteType.mvPolynomial R (Fin n)) f hsur
@@ -293,8 +293,8 @@ theorem of_comp_finiteType {f : A →+* B} {g : B →+* C} (h : (g.comp f).Finit
   let _ := f.toAlgebra
   let _ := g.toAlgebra
   let _ := (g.comp f).toAlgebra
-  let _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
-  let _ : Algebra.FiniteType A C := h
+  have _ : IsScalarTower A B C := RestrictScalars.isScalarTower A B C
+  have _ : Algebra.FiniteType A C := h
   exact Algebra.FiniteType.of_restrictScalars_finiteType A B C
 #align ring_hom.finite_type.of_comp_finite_type RingHom.FiniteType.of_comp_finiteType
 

@@ -1715,7 +1715,7 @@ theorem mul_lt_aleph0_iff {a b : Cardinal} : a * b < ℵ₀ ↔ a = 0 ∨ b = 0 
 
 /-- See also `Cardinal.aleph0_le_mul_iff`. -/
 theorem aleph0_le_mul_iff {a b : Cardinal} : ℵ₀ ≤ a * b ↔ a ≠ 0 ∧ b ≠ 0 ∧ (ℵ₀ ≤ a ∨ ℵ₀ ≤ b) := by
-  let h := (@mul_lt_aleph0_iff a b).not
+  have h := (@mul_lt_aleph0_iff a b).not
   rwa [not_lt, not_or, not_or, not_and_or, not_lt, not_lt] at h
 #align cardinal.aleph_0_le_mul_iff Cardinal.aleph0_le_mul_iff
 
@@ -1850,7 +1850,7 @@ variable {c : Cardinal}
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
   lt_of_not_ge fun ⟨F⟩ => by
-    have : Inhabited (∀ i : ι, (g i).out) := by
+    let _ : Inhabited (∀ i : ι, (g i).out) := by
       refine' ⟨fun i => Classical.choice <| mk_ne_zero_iff.1 _⟩
       rw [mk_out]
       exact (H i).ne_bot

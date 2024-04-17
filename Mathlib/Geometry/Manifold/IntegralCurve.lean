@@ -320,7 +320,7 @@ theorem exists_isIntegralCurveAt_of_contMDiffAt
     (hv.contDiffAt (range_mem_nhds_isInteriorPoint hx)).snd
   simp_rw [← Real.ball_eq_Ioo, ← Metric.eventually_nhds_iff_ball] at hf2
   -- use continuity of `f` so that `f t` remains inside `interior (extChartAt I x₀).target`
-  have ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
+  let ⟨a, ha, hf2'⟩ := Metric.eventually_nhds_iff_ball.mp hf2
   have hcont := (hf2' t₀ (Metric.mem_ball_self ha)).continuousAt
   rw [continuousAt_def, hf1] at hcont
   have hnhds : f ⁻¹' (interior (extChartAt I x₀).target) ∈ 𝓝 t₀ :=

@@ -157,7 +157,7 @@ theorem quadratic_reciprocity_one_mod_four (hp : p % 4 = 1) (hq : q ≠ 2) :
 to `3` mod `4`, then `(q / p) = -(p / q)`. -/
 theorem quadratic_reciprocity_three_mod_four (hp : p % 4 = 3) (hq : q % 4 = 3) :
     legendreSym q p = -legendreSym p q := by
-  let nop := @neg_one_pow_div_two_of_three_mod_four
+  have nop := @neg_one_pow_div_two_of_three_mod_four
   rw [quadratic_reciprocity', pow_mul, nop hp, nop hq, neg_one_mul] <;>
   rwa [← Prime.mod_two_eq_one_iff_ne_two, odd_of_mod_four_eq_three]
 #align legendre_sym.quadratic_reciprocity_three_mod_four legendreSym.quadratic_reciprocity_three_mod_four

@@ -141,9 +141,8 @@ theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
 `\smul`. -/
 noncomputable def mulHom : (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) →ₗ[R] (𝒜 ᵍ⊗[R] ℬ) := by
   letI fAB1 := auxEquiv R 𝒜 ℬ
-  have := ((gradedMul R (𝒜 ·) (ℬ ·)).compl₁₂ fAB1.toLinearMap fAB1.toLinearMap).compr₂
+  exact ((gradedMul R (𝒜 ·) (ℬ ·)).compl₁₂ fAB1.toLinearMap fAB1.toLinearMap).compr₂
     fAB1.symm.toLinearMap
-  exact this
 
 theorem mulHom_apply (x y : 𝒜 ᵍ⊗[R] ℬ) :
     mulHom 𝒜 ℬ x y

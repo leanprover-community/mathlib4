@@ -99,8 +99,8 @@ theorem Concrete.isColimit_rep_eq_of_exists {D : Cocone F} {i j : J} (x : F.obj 
     D.ι.app i x = D.ι.app j y := by
   let E := (forget C).mapCocone D
   obtain ⟨k, f, g, (hfg : (F ⋙ forget C).map f x = F.map g y)⟩ := h
-  let h1 : (F ⋙ forget C).map f ≫ E.ι.app k = E.ι.app i := E.ι.naturality f
-  let h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
+  have h1 : (F ⋙ forget C).map f ≫ E.ι.app k = E.ι.app i := E.ι.naturality f
+  have h2 : (F ⋙ forget C).map g ≫ E.ι.app k = E.ι.app j := E.ι.naturality g
   show E.ι.app i x = E.ι.app j y
   rw [← h1, types_comp_apply, hfg]
   exact congrFun h2 y

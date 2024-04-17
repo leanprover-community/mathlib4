@@ -333,7 +333,7 @@ def mapArrow (F : C ⥤ D) : Arrow C ⥤ Arrow D where
     { left := F.map f.left
       right := F.map f.right
       w := by
-        let w := f.w
+        have w := f.w
         simp only [id_map] at w
         dsimp
         simp only [← F.map_comp, w] }

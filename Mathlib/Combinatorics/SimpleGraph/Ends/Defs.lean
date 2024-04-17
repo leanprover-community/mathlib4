@@ -158,7 +158,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
     ∀ C : G.ComponentCompl K, ∃ ck : V × V, ck.1 ∈ C ∧ ck.2 ∈ K ∧ G.Adj ck.1 ck.2 := by
   refine' ComponentCompl.ind fun v vnK => _
   let C : G.ComponentCompl K := G.componentComplMk vnK
-  let dis := Set.disjoint_iff.mp C.disjoint_right
+  have dis := Set.disjoint_iff.mp C.disjoint_right
   by_contra! h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
@@ -240,7 +240,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
     · rintro h Cfin
       obtain ⟨D, e⟩ := h (K ∪ Cfin.toFinset) (Finset.subset_union_left K Cfin.toFinset)
       obtain ⟨v, vD⟩ := D.nonempty
-      let Ddis := D.disjoint_right
+      have Ddis := D.disjoint_right
       simp_rw [Finset.coe_union, Set.Finite.coe_toFinset, Set.disjoint_union_left,
         Set.disjoint_iff] at Ddis
       exact Ddis.right ⟨(ComponentCompl.hom_eq_iff_le _ _ _).mp e vD, vD⟩
