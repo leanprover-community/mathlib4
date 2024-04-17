@@ -610,6 +610,7 @@ def HomEquiv.toRestrictScalars {X Y} (g : (extendScalars f).obj X ⟶ Y) :
     erw [RestrictScalars.smul_def, ← LinearMap.map_smul, tmul_smul]
     congr
 #align category_theory.Module.extend_restrict_scalars_adj.hom_equiv.to_restrict_scalars ModuleCat.ExtendRestrictScalarsAdj.HomEquiv.toRestrictScalars
+
 -- Porting note: forced to break apart fromExtendScalars due to timeouts
 /--
 The map `S → X →ₗ[R] Y` given by `fun s x => s • (g x)`

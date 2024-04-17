@@ -241,7 +241,8 @@ theorem LieAlgebra.isEngelian_of_isNoetherian [IsNoetherian R L] : LieAlgebra.Is
     rintro K (hK₁ : LieAlgebra.IsEngelian R K) hK₂
     apply LieAlgebra.exists_engelian_lieSubalgebra_of_lt_normalizer hK₁
     apply lt_of_le_of_ne K.le_normalizer
-    rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ← LieSubmodule.nontrivial_iff_ne_bot R K]
+    rw [Ne, eq_comm, K.normalizer_eq_self_iff, ← Ne, ←
+      LieSubmodule.nontrivial_iff_ne_bot R K]
     have : Nontrivial (L' ⧸ K.toLieSubmodule) := by
       replace hK₂ : K.toLieSubmodule ≠ ⊤ := by
         rwa [Ne, ← LieSubmodule.coe_toSubmodule_eq_iff, K.coe_toLieSubmodule,
