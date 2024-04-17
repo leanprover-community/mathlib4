@@ -56,8 +56,10 @@ open scoped BigOperators TensorProduct
 
 section notation_weightSpaceOf
 
+set_option linter.haveLet false
 /-- Until we define `LieModule.weightSpaceOf`, it is useful to have some notation as follows: -/
 local notation3 "𝕎("M", " χ", " x")" => (toEndomorphism R L M x).maximalGeneralizedEigenspace χ
+set_option linter.haveLet true
 
 /-- See also `bourbaki1975b` Chapter VII §1.1, Proposition 2 (ii). -/
 protected theorem weight_vector_multiplication (M₁ M₂ M₃ : Type*)
