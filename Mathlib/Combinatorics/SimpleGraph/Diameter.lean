@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Metric
-import Mathlib.Combinatorics.SimpleGraph.Girth
+import Mathlib.Data.ENat.Lattice
 
 /-!
 # Diameter of a simple graph
