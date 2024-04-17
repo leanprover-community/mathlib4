@@ -62,11 +62,16 @@ noncomputable nonrec def lift' : (G →* H) ≃ (WithZero G →*₀ H) where
   left_inv _ := rfl
   right_inv _ := monoidWithZeroHom_ext rfl
 
+lemma lift'_zero (f : G →* H) : lift' f (0 : WithZero G) = 0 := rfl
+
 @[simp] lemma lift'_coe (f : G →* H) (x : G) : lift' f (x : WithZero G) = f x := rfl
+
+theorem lift'_unique (f : WithZero G →*₀ H) : f = lift' (f.toMonoidHom.comp coeMonoidHom) :=
+  (lift'.apply_symm_apply f).symm
 
 end lift
 
-variable [MulOneClass G] [Monoid H]
+variable [MulOneClass G] [MulOneClass H]
 
 /-- The `MonoidWithZero` homomorphism `WithZero G →* WithZero H` induced by a monoid homomorphism
   `f : G →* H`. -/
@@ -76,5 +81,19 @@ lemma map'_zero (f : G →* H) : map' f 0 = 0 := rfl
 
 @[simp]
 lemma map'_coe (f : G →* H) (x : G) : map' f (x : WithZero G) = f x := rfl
+
+@[simp]
+theorem map'_id : map' (MonoidHom.id H) = MonoidHom.id (WithZero H) := by
+  ext x
+  induction x using WithOne.cases_on <;> rfl
+
+variable {M : Type*} [MulOneClass M]
+
+theorem map'_map'  (f : G →* H) (g : H →* M) (x) : map' g (map' f x) = map' (g.comp f) x := by
+  induction x using WithOne.cases_on <;> rfl
+
+@[simp]
+theorem map'_comp (f : G →* H) (g : H →* M) : map' (g.comp f) = (map' g).comp (map' f) :=
+  MonoidWithZeroHom.ext fun x => (map'_map' f g x).symm
 
 end WithZero
