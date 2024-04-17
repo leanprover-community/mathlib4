@@ -154,7 +154,7 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
     have hi : normalizedFactors r = Multiset.replicate i (c 1) := by
       apply Multiset.eq_replicate_of_mem
       intro b hb
-      refine'
+      exact
         eq_second_of_chain_of_prime_dvd hn h₁ (@fun r' => h₂) (prime_of_normalized_factor b hb) hr
           (dvd_of_mem_normalizedFactors hb)
     have H : r = c 1 ^ i := by

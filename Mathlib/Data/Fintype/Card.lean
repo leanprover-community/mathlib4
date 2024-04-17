@@ -107,7 +107,7 @@ given `[DecidableEq α]`.
 -/
 def truncFinBijection (α) [Fintype α] : Trunc { f : Fin (card α) → α // Bijective f } := by
   unfold card Finset.card
-  refine
+  exact
     Quot.recOnSubsingleton'
       (motive := fun s : Multiset α =>
         (∀ x : α, x ∈ s) → s.Nodup → Trunc {f : Fin (Multiset.card s) → α // Bijective f})

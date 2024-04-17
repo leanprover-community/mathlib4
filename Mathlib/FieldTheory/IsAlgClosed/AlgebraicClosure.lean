@@ -446,7 +446,7 @@ instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
 
 instance : IsAlgClosure k (AlgebraicClosure k) := by
   rw [isAlgClosure_iff]
-  refine ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
+  exact ⟨inferInstance, (algEquivAlgebraicClosureAux k).symm.isAlgebraic <|
     AlgebraicClosureAux.isAlgebraic _⟩
 
 theorem isAlgebraic : Algebra.IsAlgebraic k (AlgebraicClosure k) :=

@@ -1519,7 +1519,7 @@ theorem inducedOuterMeasure_caratheodory (s : Set α) :
     refine' le_iInf _
     intro h2t
     refine' le_trans _ (le_trans (h t ht) <| le_of_eq <| inducedOuterMeasure_eq' _ msU m_mono ht)
-    refine'
+    exact
       add_le_add (mono' _ <| Set.inter_subset_inter_left _ h2t)
         (mono' _ <| diff_subset_diff_left h2t)
 #align measure_theory.induced_outer_measure_caratheodory MeasureTheory.inducedOuterMeasure_caratheodory

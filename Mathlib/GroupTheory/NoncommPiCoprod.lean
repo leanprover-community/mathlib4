@@ -77,7 +77,7 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι)
       simp only [Finset.mem_insert] at h
       rcases h with (rfl | h)
       · exact heq1i
-      · refine' ih hcomm hmem.2 heq1S _ h
+      · exact ih hcomm hmem.2 heq1S _ h
 #align subgroup.eq_one_of_noncomm_prod_eq_one_of_independent Subgroup.eq_one_of_noncommProd_eq_one_of_independent
 #align add_subgroup.eq_zero_of_noncomm_sum_eq_zero_of_independent AddSubgroup.eq_zero_of_noncommSum_eq_zero_of_independent
 

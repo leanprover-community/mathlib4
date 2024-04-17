@@ -130,7 +130,7 @@ theorem exists_subalgebra_of_fg (hAC : (⊤ : Subalgebra A C).FG) (hBC : (⊤ : 
   refine' restrictScalars_injective A (Algebra.adjoin A s) C _
   rw [restrictScalars_top, eq_top_iff, ← Algebra.top_toSubmodule, ← hx, Algebra.adjoin_eq_span,
     span_le]
-  refine' fun r hr =>
+  exact fun r hr =>
     Submonoid.closure_induction hr (fun c hc => hxy c hc) (subset_span <| mem_insert_self _ _)
       fun p q hp hq => hyy <| Submodule.mul_mem_mul hp hq
 #align exists_subalgebra_of_fg exists_subalgebra_of_fg

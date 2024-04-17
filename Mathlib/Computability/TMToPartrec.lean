@@ -1579,7 +1579,7 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
     simp
     rfl
   · obtain ⟨a, l, e, h⟩ : ∃ a l, (trPosNum m = a::l) ∧ natEnd a = false := by
-      cases m <;> refine' ⟨_, _, rfl, rfl⟩
+      cases m <;> exact ⟨_, _, rfl, rfl⟩
     refine' ⟨Γ'.bit0 :: l₁, _, some a, rfl, TransGen.single _⟩
     simp [trPosNum, PosNum.succ, e, h, show some Γ'.bit1 ≠ some Γ'.bit0 by decide,
       Option.iget, -natEnd]
@@ -1593,7 +1593,7 @@ theorem trNormal_respects (c k v s) :
           ⟨some (trNormal c (trCont k)), s, K'.elim (trList v) [] [] (trContStack k)⟩ b₂ := by
   induction c generalizing k v s with
   | zero' => refine' ⟨_, ⟨s, rfl⟩, TransGen.single _⟩; simp
-  | succ => refine' ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
+  | succ => exact ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
@@ -1937,7 +1937,7 @@ theorem ret_supports {S k} (H₁ : contSupp k ⊆ S) : TM2.SupportsStmt S (tr (�
     rw [contSupp_fix] at H₁
     have L := @Finset.mem_union_left; have R := @Finset.mem_union_right
     intro s; dsimp only; cases natEnd s.iget
-    · refine' H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
+    · exact H₁ (R _ <| L _ <| R _ <| R _ <| L _ W)
     · exact H₁ (R _ <| L _ <| R _ <| R _ <| R _ <| Finset.mem_singleton_self _)
 #align turing.partrec_to_TM2.ret_supports Turing.PartrecToTM2.ret_supports
 

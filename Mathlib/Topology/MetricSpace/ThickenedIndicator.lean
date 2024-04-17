@@ -252,7 +252,7 @@ theorem thickenedIndicator_tendsto_indicator_closure {δseq : ℕ → ℝ} (δse
   intro x
   rw [show indicator (closure E) (fun _ => (1 : ℝ≥0)) x =
         (indicator (closure E) (fun _ => (1 : ℝ≥0∞)) x).toNNReal
-      by refine' (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
+      by exact (congr_fun (comp_indicator_const 1 ENNReal.toNNReal zero_toNNReal) x).symm]
   refine' Tendsto.comp (tendsto_toNNReal _) (key x)
   by_cases x_mem : x ∈ closure E <;> simp [x_mem]
 #align thickened_indicator_tendsto_indicator_closure thickenedIndicator_tendsto_indicator_closure

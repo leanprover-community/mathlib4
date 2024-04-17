@@ -976,7 +976,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                     =O[atTop] fun x => x ^ ((p a b) - 1) * (1 - ε x) := by
                       exact IsBigO.mul (isBigO_deriv_rpow_const_atTop (p a b)) (isBigO_refl _ _)
                   _ =O[atTop] fun x => x ^ ((p a b) - 1) * 1 := by
-                      refine IsBigO.mul (isBigO_refl _ _)
+                      exact IsBigO.mul (isBigO_refl _ _)
                         isEquivalent_one_sub_smoothingFn_one.isBigO
                   _ = fun x => x ^ ((p a b) - 1) := by ext; rw [mul_one]
               case right => calc

@@ -370,7 +370,7 @@ theorem exists_continuous_zero_one_of_isCompact [RegularSpace X] [LocallyCompact
       rcases exists_compact_closed_between c_comp u_open cu with ⟨k, k_comp, k_closed, ck, ku⟩
       have A : closure (interior k) ⊆ k :=
         (IsClosed.closure_subset_iff k_closed).2 interior_subset
-      refine ⟨interior k, isOpen_interior, ck, A.trans ku,
+      exact ⟨interior k, isOpen_interior, ck, A.trans ku,
         k_comp.of_isClosed_subset isClosed_closure A⟩ }
   exact ⟨⟨c.lim, c.continuous_lim⟩, fun x hx ↦ c.lim_of_mem_C _ (sk.trans interior_subset hx),
     fun x hx => c.lim_of_nmem_U _ fun h => h hx, c.lim_mem_Icc⟩

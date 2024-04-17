@@ -230,7 +230,7 @@ namespace IndepMatroid
       refine not_lt.1 fun hlt ↦ ?_
       obtain ⟨f, hfI, hfJ, hfi⟩ := indep_aug hJ hJfin heI₀i (hI₀fin.insert e) hlt
       have hfE₀ : f ∈ E₀ := mem_of_mem_of_subset hfI (insert_subset_insert (subset_union_left _ _))
-      refine hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
+      exact hfJ (insert_eq_self.1 <| Eq.symm (hJmax _
         ⟨hB₀J.trans <| subset_insert _ _,hfi,insert_subset hfE₀ hJss⟩ (subset_insert _ _)))
 
     -- But this means `|I₀| < |J|`, and extending `I₀` into `J` gives a contradiction
@@ -440,7 +440,7 @@ theorem ofFinset_indep' [DecidableEq α] (E : Set α) Indep indep_empty indep_su
 @[simps E] protected def ofExistsMatroid (E : Set α) (Indep : Set α → Prop)
     (hM : ∃ (M : Matroid α), E = M.E ∧ ∀ I, M.Indep I ↔ Indep I) : IndepMatroid α :=
   have hex : ∃ (M : Matroid α), E = M.E ∧ M.Indep = Indep := by
-    obtain ⟨M, rfl, h⟩ := hM; refine ⟨_, rfl, funext (by simp [h])⟩
+    obtain ⟨M, rfl, h⟩ := hM; exact ⟨_, rfl, funext (by simp [h])⟩
   IndepMatroid.mk (E := E) (Indep := Indep)
   (indep_empty := by obtain ⟨M, -, rfl⟩ := hex; exact M.empty_indep)
   (indep_subset := by obtain ⟨M, -, rfl⟩ := hex; exact fun I J hJ hIJ ↦ hJ.subset hIJ)

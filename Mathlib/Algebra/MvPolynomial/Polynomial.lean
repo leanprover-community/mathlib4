@@ -37,4 +37,4 @@ theorem eval_polynomial_eval_finSuccEquiv {n : ℕ} {x : Fin n → R}
   simp only [eval₂_id]
   congr
   funext i
-  refine Fin.cases (by simp) (by simp) i
+  exact Fin.cases (by simp) (by simp) i

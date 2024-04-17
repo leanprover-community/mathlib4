@@ -510,7 +510,7 @@ theorem AnalyticSet.measurablySeparable [T2Space α] [MeasurableSpace α] [Opens
     MeasurablySeparable s t := by
   rw [AnalyticSet] at hs ht
   rcases hs with (rfl | ⟨f, f_cont, rfl⟩)
-  · refine' ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
+  · exact ⟨∅, Subset.refl _, by simp, MeasurableSet.empty⟩
   rcases ht with (rfl | ⟨g, g_cont, rfl⟩)
   · exact ⟨univ, subset_univ _, by simp, MeasurableSet.univ⟩
   exact measurablySeparable_range_of_disjoint f_cont g_cont h

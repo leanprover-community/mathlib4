@@ -401,7 +401,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
       show j₁.posPart (i ∩ S) = 0 from
         nonpos_iff_eq_zero.1 (hS₄ ▸ measure_mono (Set.inter_subset_right _ _)),
       zero_add]
-    · refine'
+    · exact
         Set.disjoint_of_subset_left (Set.inter_subset_right _ _)
           (Set.disjoint_of_subset_right (Set.inter_subset_right _ _) disjoint_compl_right)
     · exact hi.inter hS₁.compl

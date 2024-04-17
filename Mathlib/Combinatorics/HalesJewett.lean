@@ -234,7 +234,7 @@ private theorem exists_mono_in_high_dimension' :
     -- This deals with the degenerate case where `α` is empty.
     intro κ _
     by_cases h : Nonempty κ
-    · refine' ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
+    · exact ⟨Unit, inferInstance, fun C => ⟨default, Classical.arbitrary _, PEmpty.rec⟩⟩
     · exact ⟨Empty, inferInstance, fun C => (h ⟨C (Empty.rec)⟩).elim⟩)
   (by
     -- Now we have to show that the theorem holds for `Option α` if it holds for `α`.

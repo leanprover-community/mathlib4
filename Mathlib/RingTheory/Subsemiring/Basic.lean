@@ -1367,7 +1367,7 @@ def closureCommSemiringOfComm {s : Set R'} (hcomm : ∀ a ∈ s, ∀ b ∈ s, a 
     mul_comm := fun x y => by
       ext
       simp only [Subsemiring.coe_mul]
-      refine'
+      exact
         closure_induction₂ x.prop y.prop hcomm (fun x => by simp only [zero_mul, mul_zero])
           (fun x => by simp only [zero_mul, mul_zero]) (fun x => by simp only [one_mul, mul_one])
           (fun x => by simp only [one_mul, mul_one])

@@ -362,7 +362,7 @@ noncomputable def Trivialization.pullback (e : Trivialization F (π F E)) (f : K
     dsimp only
     simp_rw [(inducing_pullbackTotalSpaceEmbedding F E f).continuousOn_iff, Function.comp,
       pullbackTotalSpaceEmbedding]
-    refine'
+    exact
       continuousOn_fst.prod
         (e.continuousOn_symm.comp ((map_continuous f).prod_map continuous_id).continuousOn
           Subset.rfl)

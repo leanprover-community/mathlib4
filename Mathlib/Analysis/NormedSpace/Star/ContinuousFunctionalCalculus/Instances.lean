@@ -260,7 +260,7 @@ lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b
     · exact IsSelfAdjoint.smul (by rfl) <| ((ℜ c).prop.pow 2).add ((ℑ c).prop.pow 2)
     · exact (IsSelfAdjoint.star_mul_self c).neg
     · rw [nsmul_eq_smul_cast ℝ]
-      refine (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
+      exact (ℜ c).2.sq_spectrumRestricts.nnreal_add ((ℜ c).2.pow 2) ((ℑ c).2.pow 2)
         (ℑ c).2.sq_spectrumRestricts |>.smul_of_nonneg <| by norm_num
   have h_c_spec₂ : SpectrumRestricts (star c * c) ContinuousMap.realToNNReal := by
     rw [SpectrumRestricts.nnreal_iff] at h_c_spec₁ ⊢

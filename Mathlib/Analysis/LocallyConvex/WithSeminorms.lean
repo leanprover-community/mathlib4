@@ -736,7 +736,7 @@ protected theorem congr {p : SeminormFamily 𝕜 E ι} {q : SeminormFamily 𝕜 
   clear hp t
   refine le_antisymm ?_ ?_ <;>
   rw [← continuous_id_iff_le] <;>
-  refine continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
+  exact continuous_from_bounded (.mk (topology := _) rfl) (.mk (topology := _) rfl)
     LinearMap.id (by assumption)
 
 protected theorem finset_sups {p : SeminormFamily 𝕜 E ι} [TopologicalSpace E]

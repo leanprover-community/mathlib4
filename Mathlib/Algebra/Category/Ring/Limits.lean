@@ -272,7 +272,7 @@ instance :
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) t
       makesLimit := by
-        refine IsLimit.ofFaithful (forget₂ CommSemiRingCat.{u} SemiRingCat.{u})
+        exact IsLimit.ofFaithful (forget₂ CommSemiRingCat.{u} SemiRingCat.{u})
           (SemiRingCat.HasLimits.limitConeIsLimit.{v, u} _) (fun s => _) fun s => rfl }
 
 /-- A choice of limit cone for a functor into `CommSemiRingCat`.

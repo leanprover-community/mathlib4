@@ -621,7 +621,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
   have : hausdorffDist (range Fl) (Fl '' s) ≤ ε₁ := by
     rw [← image_univ, hausdorffDist_image Il]
     have : 0 ≤ ε₁ := le_trans dist_nonneg Dxs
-    refine' hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
+    exact hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
       ⟨x, mem_univ _, by simpa only [dist_self]⟩
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
     refine' hausdorffDist_le_of_mem_dist (by linarith) _ _

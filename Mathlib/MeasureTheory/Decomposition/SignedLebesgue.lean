@@ -109,7 +109,7 @@ instance haveLebesgueDecomposition_smul_real (s : SignedMeasure α) (μ : Measur
   · lift r to ℝ≥0 using hr
     exact s.haveLebesgueDecomposition_smul μ _
   · rw [not_le] at hr
-    refine'
+    exact
       { posPart := by
           rw [toJordanDecomposition_smul_real, JordanDecomposition.real_smul_posPart_neg _ _ hr]
           infer_instance
@@ -277,7 +277,7 @@ private theorem haveLebesgueDecomposition_mk' (μ : Measure α) {f : α → ℝ}
   rw [mutuallySingular_ennreal_iff] at htμ
   change _ ⟂ₘ VectorMeasure.equivMeasure.toFun (VectorMeasure.equivMeasure.invFun μ) at htμ
   rw [VectorMeasure.equivMeasure.right_inv, totalVariation_mutuallySingular_iff] at htμ
-  refine'
+  exact
     { posPart := by
         use ⟨t.toJordanDecomposition.posPart, fun x => ENNReal.ofReal (f x)⟩
         refine' ⟨hf.ennreal_ofReal, htμ.1, _⟩

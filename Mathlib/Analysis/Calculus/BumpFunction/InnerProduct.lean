@@ -42,7 +42,7 @@ noncomputable def ContDiffBumpBase.ofInnerProductSpace : ContDiffBumpBase E wher
           (continuousAt_fst.sub continuousAt_const) hR.ne'
       have B : ∀ᶠ p in 𝓝 (R, (0 : E)), 1 ≤ (p.1 - ‖p.2‖) / (p.1 - 1) :=
         A.eventually <| le_mem_nhds <| (one_lt_div hR).2 <| sub_lt_sub_left (by simp) _
-      refine (contDiffAt_const (c := 1)).congr_of_eventuallyEq <| B.mono fun _ ↦
+      exact (contDiffAt_const (c := 1)).congr_of_eventuallyEq <| B.mono fun _ ↦
         smoothTransition.one_of_one_le
     · refine smoothTransition.contDiffAt.comp _ (ContDiffAt.div ?_ ?_ hR.ne')
       · exact contDiffAt_fst.sub (contDiffAt_snd.norm ℝ hx)

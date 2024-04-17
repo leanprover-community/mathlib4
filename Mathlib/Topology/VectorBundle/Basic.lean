@@ -448,7 +448,7 @@ def symmL (e : Trivialization F (π F E)) [e.IsLinear R] (b : B) : F →L[R] E b
       · rw [(FiberBundle.totalSpaceMk_inducing F E b).continuous_iff]
         exact e.continuousOn_symm.comp_continuous (continuous_const.prod_mk continuous_id) fun x ↦
           mk_mem_prod hb (mem_univ x)
-      · refine' continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
+      · exact continuous_zero.congr fun x => (e.symm_apply_of_not_mem hb x).symm }
 set_option linter.uppercaseLean3 false in
 #align trivialization.symmL Trivialization.symmL
 

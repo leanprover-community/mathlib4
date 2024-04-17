@@ -184,7 +184,7 @@ theorem ascPochhammer_natDegree (n : ℕ) [NoZeroDivisors S] [Nontrivial S] :
         natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
     cases n
     · simp
-    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
+    · exact ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 end Semiring
 
@@ -322,7 +322,7 @@ theorem descPochhammer_natDegree (n : ℕ) [NoZeroDivisors R] [Nontrivial R] :
         natDegree_mul _ (ne_zero_of_natDegree_gt <| this.symm ▸ Nat.zero_lt_one), hn, this]
     cases n
     · simp
-    · refine' ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
+    · exact ne_zero_of_natDegree_gt <| hn.symm ▸ Nat.succ_pos _
 
 theorem descPochhammer_succ_eval {S : Type*} [Ring S] (n : ℕ) (k : S) :
     (descPochhammer S (n + 1)).eval k = (descPochhammer S n).eval k * (k - n) := by

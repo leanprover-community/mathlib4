@@ -108,7 +108,7 @@ theorem Ideal.IsHomogeneous.isPrime_of_homogeneous_mem_or_mem {I : Ideal A} (hI 
         have max_lt : max₁ < i ∨ max₂ < j := by
           rcases lt_trichotomy max₁ i with (h | rfl | h)
           · exact Or.inl h
-          · refine' False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
+          · exact False.elim (H₁ ⟨rfl, add_left_cancel H₄⟩)
           · apply Or.inr
             have := add_lt_add_right h j
             rw [H₄] at this

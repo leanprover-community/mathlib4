@@ -293,7 +293,7 @@ See also `Finset.exists_card_fiber_lt_of_card_lt_nsmul` for a stronger statement
 theorem exists_card_fiber_le_of_card_le_nsmul (ht : t.Nonempty) (hb : ↑s.card ≤ t.card • b) :
     ∃ y ∈ t, ↑(s.filter fun x => f x = y).card ≤ b := by
   simp_rw [cast_card] at hb ⊢
-  refine'
+  exact
     exists_sum_fiber_le_of_sum_fiber_nonneg_of_sum_le_nsmul
       (fun _ _ => sum_nonneg fun _ _ => zero_le_one) ht hb
 #align finset.exists_card_fiber_le_of_card_le_nsmul Finset.exists_card_fiber_le_of_card_le_nsmul

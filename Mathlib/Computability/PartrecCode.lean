@@ -740,7 +740,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
     rcases h with ⟨x, hx, y, hy, rfl⟩
     rcases hf hx with ⟨k₁, hk₁⟩; rcases hg hy with ⟨k₂, hk₂⟩
     refine' ⟨max k₁ k₂, _⟩
-    refine'
+    exact
       ⟨le_max_of_le_left <| Nat.le_of_lt_succ <| evaln_bound hk₁, _,
         evaln_mono (Nat.succ_le_succ <| le_max_left _ _) hk₁, _,
         evaln_mono (Nat.succ_le_succ <| le_max_right _ _) hk₂, rfl⟩

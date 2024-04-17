@@ -42,7 +42,7 @@ theorem discr_zeta_eq_discr_zeta_sub_one (hζ : IsPrimitiveRoot ζ n) :
   refine' discr_eq_discr_of_toMatrix_coeff_isIntegral _ (fun i j => toMatrix_isIntegral H₁ _ _ _ _)
     fun i j => toMatrix_isIntegral H₂ _ _ _ _
   · exact hζ.isIntegral n.pos
-  · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
+  · exact minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) (hζ.isIntegral n.pos)
   · exact (hζ.isIntegral n.pos).sub isIntegral_one
   · refine' minpoly.isIntegrallyClosed_eq_field_fractions' (K := ℚ) _
     exact (hζ.isIntegral n.pos).sub isIntegral_one
@@ -196,7 +196,7 @@ theorem discr_prime_pow_eq_unit_mul_pow [IsCyclotomicExtension {p ^ k} K L]
     ∃ (u : ℤˣ) (n : ℕ), discr K (hζ.powerBasis K).basis = u * p ^ n := by
   rw [discr_prime_pow hζ hirr]
   by_cases heven : Even ((p ^ k : ℕ).totient / 2)
-  · refine' ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
+  · exact ⟨1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by rw [heven.neg_one_pow]; norm_num⟩
   · exact ⟨-1, (p : ℕ) ^ (k - 1) * ((p - 1) * k - 1), by
       rw [(odd_iff_not_even.2 heven).neg_one_pow]; norm_num⟩
 #align is_cyclotomic_extension.discr_prime_pow_eq_unit_mul_pow IsCyclotomicExtension.discr_prime_pow_eq_unit_mul_pow

@@ -300,7 +300,7 @@ theorem tendsto_pre_nat (m : Set X → ℝ≥0∞) (s : Set X) :
 theorem eq_iSup_nat (m : Set X → ℝ≥0∞) : mkMetric' m = ⨆ n : ℕ, mkMetric'.pre m n⁻¹ := by
   ext1 s
   rw [iSup_apply]
-  refine' tendsto_nhds_unique (mkMetric'.tendsto_pre_nat m s)
+  exact tendsto_nhds_unique (mkMetric'.tendsto_pre_nat m s)
     (tendsto_atTop_iSup fun k l hkl => mkMetric'.mono_pre_nat m hkl s)
 #align measure_theory.outer_measure.mk_metric'.eq_supr_nat MeasureTheory.OuterMeasure.mkMetric'.eq_iSup_nat
 

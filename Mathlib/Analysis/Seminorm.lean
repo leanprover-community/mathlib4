@@ -482,7 +482,7 @@ noncomputable instance instInf : Inf (Seminorm 𝕜 E) where
         intro a x
         obtain rfl | ha := eq_or_ne a 0
         · rw [norm_zero, zero_mul, zero_smul]
-          refine'
+          exact
             ciInf_eq_of_forall_ge_of_forall_gt_exists_lt
               -- Porting note: the following was previously `fun i => by positivity`
               (fun i => add_nonneg (apply_nonneg _ _) (apply_nonneg _ _))

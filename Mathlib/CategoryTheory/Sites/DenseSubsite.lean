@@ -349,7 +349,7 @@ noncomputable def sheafYonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     { app := _
       naturality := _ }
   · intro U
-    refine'
+    exact
       { app := fun X => (α.app X).app U
         naturality := fun X Y f => by simpa using congr_app (α.naturality f) U }
   · intro U V i

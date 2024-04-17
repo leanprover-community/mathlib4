@@ -642,7 +642,7 @@ lemma tendsto_integral_density_of_antitone (hκν : fst κ ≤ ν) [IsFiniteKern
     (fun m ↦ MeasurableSet.univ.prod (hseq_meas m)) ?_ ?_
   rotate_left
   · intro n m hnm x; simp only [mem_prod, mem_univ, true_and]; exact fun h ↦ hseq hnm h
-  · refine ⟨0, measure_ne_top _ _⟩
+  · exact ⟨0, measure_ne_top _ _⟩
   convert h
   rw [← prod_iInter, hseq_iInter]
   simp only [ne_eq, prod_empty, OuterMeasure.empty', forall_exists_index]

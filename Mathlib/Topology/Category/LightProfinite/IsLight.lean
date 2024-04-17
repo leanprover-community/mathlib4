@@ -138,7 +138,7 @@ def lightProfiniteConeOfHom_π_app (n : ℕᵒᵖ) :
     ext U
     rw [isOpen_induced_iff]
     have := discreteTopology_bot
-    refine ⟨fun _ ↦ ⟨Subtype.val '' U, isOpen_discrete _,
+    exact ⟨fun _ ↦ ⟨Subtype.val '' U, isOpen_discrete _,
       Function.Injective.preimage_image Subtype.val_injective _⟩, fun _ ↦ isOpen_discrete U⟩
     -- This is annoying
 

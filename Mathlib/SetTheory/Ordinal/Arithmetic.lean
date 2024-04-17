@@ -381,7 +381,7 @@ theorem type_subrel_lt (o : Ordinal.{u}) :
   refine' Quotient.inductionOn o _
   rintro ⟨α, r, wo⟩; apply Quotient.sound
   -- Porting note: `symm; refine' [term]` → `refine' [term].symm`
-  constructor; refine' ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
+  constructor; exact ((RelIso.preimage Equiv.ulift r).trans (enumIso r).symm).symm
 #align ordinal.type_subrel_lt Ordinal.type_subrel_lt
 
 theorem mk_initialSeg (o : Ordinal.{u}) :

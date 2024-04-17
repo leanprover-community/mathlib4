@@ -49,8 +49,8 @@ theorem mem_sumLift₂ :
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inl ⟨a, b, c, rfl, rfl, rfl, hc⟩
-    · refine' fun h ↦ (not_mem_empty _ h).elim
-    · refine' fun h ↦ (not_mem_empty _ h).elim
+    · exact fun h ↦ (not_mem_empty _ h).elim
+    · exact fun h ↦ (not_mem_empty _ h).elim
     · rw [sumLift₂, mem_map]
       rintro ⟨c, hc, rfl⟩
       exact Or.inr ⟨a, b, c, rfl, rfl, rfl, hc⟩

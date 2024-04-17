@@ -227,7 +227,7 @@ theorem essentiallySmall_iff (C : Type u) [Category.{v} C] :
     let e' := (ShrinkHoms.equivalence C).skeletonEquiv.symm
     letI : Category S := InducedCategory.category (e'.trans e).symm
     refine' ⟨⟨S, this, ⟨_⟩⟩⟩
-    refine' (ShrinkHoms.equivalence C).trans <|
+    exact (ShrinkHoms.equivalence C).trans <|
       (skeletonEquivalence (ShrinkHoms C)).symm.trans
         ((inducedFunctor (e'.trans e).symm).asEquivalence.symm)
 #align category_theory.essentially_small_iff CategoryTheory.essentiallySmall_iff

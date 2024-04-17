@@ -291,7 +291,7 @@ lemma absolutelyContinuous_tilted (hf : Integrable (fun x ↦ exp (f x)) μ) : �
     · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
-    · refine ae_of_all _ (by simp)
+    · exact ae_of_all _ (by simp)
 
 lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν]
     (hf : Integrable (fun x ↦ exp (f x)) ν) :
@@ -305,7 +305,7 @@ lemma rnDeriv_tilted_right (μ ν : Measure α) [SigmaFinite μ] [SigmaFinite ν
     · filter_upwards
       simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
       exact fun _ ↦ div_pos (exp_pos _) (integral_exp_pos hf)
-    · refine ae_of_all _ (by simp)
+    · exact ae_of_all _ (by simp)
     · filter_upwards with x
       congr
       rw [← ENNReal.ofReal_inv_of_pos, inv_div', ← exp_neg, div_eq_mul_inv, inv_inv]

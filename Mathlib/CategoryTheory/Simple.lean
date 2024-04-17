@@ -231,7 +231,7 @@ instance {X : C} [Simple X] : IsSimpleOrder (Subobject X) where
     change mk f = ⊥ ∨ mk f = ⊤
     by_cases h : f = 0
     · exact Or.inl (mk_eq_bot_iff_zero.mpr h)
-    · refine' Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
+    · exact Or.inr ((isIso_iff_mk_eq_top _).mp ((Simple.mono_isIso_iff_nonzero f).mpr h))
 
 /-- If `X` has subobject lattice `{⊥, ⊤}`, then `X` is simple. -/
 theorem simple_of_isSimpleOrder_subobject (X : C) [IsSimpleOrder (Subobject X)] : Simple X := by

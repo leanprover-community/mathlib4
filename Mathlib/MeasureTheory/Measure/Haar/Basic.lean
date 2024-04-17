@@ -214,7 +214,7 @@ theorem index_pos (K : PositiveCompacts G) {V : Set G} (hV : (interior V).Nonemp
 theorem index_mono {K K' V : Set G} (hK' : IsCompact K') (h : K ⊆ K') (hV : (interior V).Nonempty) :
     index K V ≤ index K' V := by
   rcases index_elim hK' hV with ⟨s, h1s, h2s⟩
-  apply Nat.sInf_le; rw [mem_image]; refine' ⟨s, Subset.trans h h1s, h2s⟩
+  apply Nat.sInf_le; rw [mem_image]; exact ⟨s, Subset.trans h h1s, h2s⟩
 #align measure_theory.measure.haar.index_mono MeasureTheory.Measure.haar.index_mono
 #align measure_theory.measure.haar.add_index_mono MeasureTheory.Measure.haar.addIndex_mono
 

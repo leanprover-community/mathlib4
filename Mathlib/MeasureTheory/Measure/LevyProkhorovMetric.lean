@@ -253,7 +253,7 @@ lemma BoundedContinuousFunction.integral_eq_integral_meas_le_of_hasFiniteIntegra
     (f : α →ᵇ ℝ) (μ : Measure α) (f_nn : 0 ≤ᵐ[μ] f) (hf : HasFiniteIntegral f μ) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 ‖f‖, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [Integrable.integral_eq_integral_Ioc_meas_le (M := ‖f‖) ?_ f_nn ?_]
-  · refine ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
+  · exact ⟨f.continuous.measurable.aestronglyMeasurable, hf⟩
   · exact eventually_of_forall (fun x ↦ BoundedContinuousFunction.apply_le_norm f x)
 
 /-- A version of the layer cake formula for bounded continuous functions and finite measures:
@@ -391,7 +391,7 @@ lemma continuous_levyProkhorov_to_probabilityMeasure :
       · exact eventually_of_forall f_nn
   · simp only [IsCoboundedUnder, IsCobounded, eventually_map, eventually_atTop,
                ge_iff_le, forall_exists_index]
-    refine ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i le_rfl)⟩
+    exact ⟨0, fun a i hia ↦ le_trans (integral_nonneg f_nn) (hia i rfl.le)⟩
 
 /-- The topology of the Lévy-Prokhorov metric is finer than the topology of convergence in
 distribution. -/

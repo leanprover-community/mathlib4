@@ -170,7 +170,7 @@ lemma llr_tilted_right [SigmaFinite μ] [SigmaFinite ν]
       hμν.ae_le (Measure.rnDeriv_lt_top μ ν)] with x hx hx_pos hx_lt_top
     rw [llr, hx, log_mul, log_mul (exp_pos _).ne', log_exp, llr]
     · exact (integral_exp_pos hf).ne'
-    · refine (mul_pos (exp_pos _) (integral_exp_pos hf)).ne'
+    · exact (mul_pos (exp_pos _) (integral_exp_pos hf)).ne'
     · simp [ENNReal.toReal_eq_zero_iff, hx_lt_top.ne, hx_pos.ne']
 
 lemma integrable_llr_tilted_right [IsFiniteMeasure μ] [SigmaFinite ν]

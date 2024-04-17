@@ -709,7 +709,7 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
   dsimp [Opens.map]
   refine' Set.image_preimage_eq_inter_range.trans _
   erw [Set.inter_eq_left]
-  refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  exact Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm

@@ -469,7 +469,7 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
   have (i : Discrete WalkingPair) (Z : C) (f : Z ⟶ X ⨿ Y) :
     PreservesLimit (cospan f ((BinaryCofan.mk coprod.inl coprod.inr).ι.app i)) F := by
     rcases i with ⟨_|_⟩ <;> dsimp <;> infer_instance
-  refine (FinitaryExtensive.vanKampen _
+  exact (FinitaryExtensive.vanKampen _
     (isColimitOfPreserves F (coprodIsCoprod X Y))).of_mapCocone F
 #align category_theory.finitary_extensive_of_preserves_and_reflects CategoryTheory.finitaryExtensive_of_preserves_and_reflects
 

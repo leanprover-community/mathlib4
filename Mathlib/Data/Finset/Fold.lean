@@ -190,7 +190,7 @@ theorem fold_op_rel_iff_or {r : β → β → Prop} (hr : ∀ {x y z}, r x (op y
     · rintro (h₁ | ⟨x, hx, h₂⟩)
       · use a
         simp [h₁]
-      · refine' ⟨x, by simp [hx], h₂⟩
+      · exact ⟨x, by simp [hx], h₂⟩
     · rintro ⟨x, hx, h⟩
       exact (mem_insert.mp hx).imp (fun hx => by rwa [hx] at h) (fun hx => ⟨x, hx, h⟩)
 #align finset.fold_op_rel_iff_or Finset.fold_op_rel_iff_or

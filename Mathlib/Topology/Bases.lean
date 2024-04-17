@@ -576,7 +576,7 @@ protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → 
   let _ := ⨅ i, t i
   refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
   · rintro - ⟨U, F, hU, rfl⟩
-    refine isOpen_biInter_finset fun i hi ↦
+    exact isOpen_biInter_finset fun i hi ↦
       (h_basis i).isOpen (t := t i) (hU i hi) |>.mono (iInf_le _ _)
   · intro a u ha hu
     rcases (nhds_iInf (t := t) (a := a)).symm ▸ hasBasis_iInf'

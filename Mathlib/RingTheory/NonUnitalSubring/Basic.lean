@@ -753,7 +753,7 @@ def closureNonUnitalCommRingOfComm {R : Type u} [NonUnitalRing R] {s : Set R}
     mul_comm := fun x y => by
       ext
       simp only [NonUnitalSubring.val_mul]
-      refine'
+      exact
         closure_induction₂ x.prop y.prop hcomm
           (fun x => by simp only [mul_zero, zero_mul])
           (fun x => by simp only [mul_zero, zero_mul])

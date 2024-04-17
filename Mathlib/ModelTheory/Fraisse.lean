@@ -253,7 +253,7 @@ theorem exists_countable_is_age_of_iff [Countable (Σ l, L.Functions l)] :
       Hereditary K ∧ JointEmbedding K := by
   constructor
   · rintro ⟨M, h1, h2, rfl⟩
-    refine' ⟨age.nonempty M, age.is_equiv_invariant L M, age.countable_quotient M, fun N hN => hN.1,
+    exact ⟨age.nonempty M, age.is_equiv_invariant L M, age.countable_quotient M, fun N hN => hN.1,
       age.hereditary M, age.jointEmbedding M⟩
   · rintro ⟨Kn, eqinv, cq, hfg, hp, jep⟩
     obtain ⟨M, hM, rfl⟩ := exists_cg_is_age_of Kn eqinv cq hfg hp jep

@@ -40,8 +40,8 @@ def isLimitMapConeFanMkEquiv {P : C} (g : ∀ j, P ⟶ f j) :
     IsLimit (Functor.mapCone G (Fan.mk P g)) ≃
       IsLimit (Fan.mk _ fun j => G.map (g j) : Fan fun j => G.obj (f j)) := by
   refine' (IsLimit.postcomposeHomEquiv _ _).symm.trans (IsLimit.equivIsoLimit _)
-  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine' Cones.ext (Iso.refl _) fun j =>
+  exact Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  exact Cones.ext (Iso.refl _) fun j =>
       by dsimp; cases j; simp
 #align category_theory.limits.is_limit_map_cone_fan_mk_equiv CategoryTheory.Limits.isLimitMapConeFanMkEquiv
 
@@ -112,8 +112,8 @@ def isColimitMapCoconeCofanMkEquiv {P : C} (g : ∀ j, f j ⟶ P) :
     IsColimit (Functor.mapCocone G (Cofan.mk P g)) ≃
       IsColimit (Cofan.mk _ fun j => G.map (g j) : Cofan fun j => G.obj (f j)) := by
   refine' (IsColimit.precomposeHomEquiv _ _).symm.trans (IsColimit.equivIsoColimit _)
-  refine' Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
-  refine' Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
+  exact Discrete.natIso fun j => Iso.refl (G.obj (f j.as))
+  exact Cocones.ext (Iso.refl _) fun j => by dsimp; cases j; simp
 #align category_theory.limits.is_colimit_map_cocone_cofan_mk_equiv CategoryTheory.Limits.isColimitMapCoconeCofanMkEquiv
 
 /-- The property of preserving coproducts expressed in terms of cofans. -/

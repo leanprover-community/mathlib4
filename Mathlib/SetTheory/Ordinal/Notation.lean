@@ -927,9 +927,9 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
     · simp [opow_mul, opow_add, mul_assoc]
       rw [Ordinal.mul_lt_mul_iff_left ω00, ← Ordinal.opow_add]
       have : _ < ω ^ (repr a0 + repr a0) := (No.below_of_lt ?_).repr_lt
-      refine' mul_lt_omega_opow rr0 this (nat_lt_omega _)
+      exact mul_lt_omega_opow rr0 this (nat_lt_omega _)
       simpa using (add_lt_add_iff_left (repr a0)).2 e0
-    · refine'
+    · exact
         lt_of_lt_of_le Rl
           (opow_le_opow_right omega_pos <|
             mul_le_mul_left' (succ_le_succ_iff.2 (nat_cast_le.2 (le_of_lt k.lt_succ_self))) _)

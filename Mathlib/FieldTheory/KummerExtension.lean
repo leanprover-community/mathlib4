@@ -346,7 +346,7 @@ def autAdjoinRootXPowSubCEquiv :
     · obtain rfl := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) h
       rw [(pow_one _).symm.trans (root_X_pow_sub_C_pow 1 a), one_mul,
         ← algebraMap_eq, AlgEquiv.commutes]
-    · refine div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
+    · exact div_mul_cancel₀ _ (root_X_pow_sub_C_ne_zero' hn h)
 
 lemma autAdjoinRootXPowSubCEquiv_root (η) :
     autAdjoinRootXPowSubCEquiv hζ hn H η (root _) = ((η : Kˣ) : K) • root _ :=

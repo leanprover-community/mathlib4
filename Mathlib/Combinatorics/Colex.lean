@@ -198,7 +198,7 @@ lemma toColex_lt_singleton : toColex s < toColex {a} ↔ ∀ b ∈ s, b < a := b
   rw [lt_iff_le_and_ne, toColex_le_singleton, toColex_ne_toColex]
   refine ⟨fun h b hb ↦ (h.1 _ hb).1.lt_of_ne ?_,
     fun h ↦ ⟨fun b hb ↦ ⟨(h _ hb).le, fun ha ↦ (lt_irrefl _ <| h _ ha).elim⟩, ?_⟩⟩ <;> rintro rfl
-  · refine h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
+  · exact h.2 <| eq_singleton_iff_unique_mem.2 ⟨hb, fun c hc ↦ (h.1 _ hc).2 hb⟩
   · simp at h
 
 /-- `{a} ≤ s` in colex iff `s` contains an element greated than or equal to `a`. -/

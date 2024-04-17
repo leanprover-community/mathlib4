@@ -69,7 +69,7 @@ theorem div_le_iff (hb : 0 < b) : a / b ≤ c ↔ a ≤ c * b :=
       a / b = a * (1 / b) := div_eq_mul_one_div a b
       _ ≤ c * b * (1 / b) := mul_le_mul_of_nonneg_right h (one_div_pos.2 hb).le
       _ = c * b / b := (div_eq_mul_one_div (c * b) b).symm
-      _ = c := by refine' (div_eq_iff (ne_of_gt hb)).mpr rfl
+      _ = c := by exact (div_eq_iff (ne_of_gt hb)).mpr rfl
       ⟩
 #align div_le_iff div_le_iff
 

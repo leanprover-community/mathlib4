@@ -1664,7 +1664,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
           use ⊥
           rw [h]
           rintro b ⟨⟩
-      · refine' (WithTop.isLUB_sSup' h).2 ha
+      · exact (WithTop.isLUB_sSup' h).2 ha
     sInf_le := fun S a haS =>
       show ite _ _ _ ≤ a by
         split_ifs with h₁

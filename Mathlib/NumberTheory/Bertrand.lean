@@ -81,7 +81,7 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
       norm_num1
       rfl
     apply ConvexOn.smul
-    refine div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
+    exact div_nonneg (log_nonneg (by norm_num1)) (by norm_num1)
     exact convexOn_id (convex_Ioi (0.5 : ℝ))
   suffices ∃ x1 x2, 0.5 < x1 ∧ x1 < x2 ∧ x2 ≤ x ∧ 0 ≤ f x1 ∧ f x2 ≤ 0 by
     obtain ⟨x1, x2, h1, h2, h0, h3, h4⟩ := this

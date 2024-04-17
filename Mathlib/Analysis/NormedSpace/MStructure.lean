@@ -106,7 +106,7 @@ theorem commute [FaithfulSMul M X] {P Q : M} (h₁ : IsLprojection X P) (h₂ : 
     Commute P Q := by
   have PR_eq_RPR : ∀ R : M, IsLprojection X R → P * R = R * P * R := fun R h₃ => by
     -- Porting note: Needed to fix function, which changes indent of following lines
-    refine @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
+    exact @eq_of_smul_eq_smul _ X _ _ _ _ fun x => by
       rw [← norm_sub_eq_zero_iff]
       have e1 : ‖R • x‖ ≥ ‖R • x‖ + 2 • ‖(P * R) • x - (R * P * R) • x‖ :=
         calc

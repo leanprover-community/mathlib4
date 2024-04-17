@@ -711,7 +711,7 @@ theorem two_nsmul_toReal_eq_two_mul_add_two_pi {θ : Angle} :
     ((2 : ℕ) • θ).toReal = 2 * θ.toReal + 2 * π ↔ θ.toReal ≤ -π / 2 := by
   nth_rw 1 [← coe_toReal θ]
   rw [← coe_nsmul, two_nsmul, ← two_mul, toReal_coe_eq_self_add_two_pi_iff, Set.mem_Ioc]
-  refine'
+  exact
     ⟨fun h => by linarith, fun h =>
       ⟨by linarith [pi_pos, neg_pi_lt_toReal θ], (le_div_iff' (zero_lt_two' ℝ)).1 h⟩⟩
 #align real.angle.two_nsmul_to_real_eq_two_mul_add_two_pi Real.Angle.two_nsmul_toReal_eq_two_mul_add_two_pi

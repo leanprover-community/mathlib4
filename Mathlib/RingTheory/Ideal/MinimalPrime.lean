@@ -61,7 +61,7 @@ theorem Ideal.exists_minimalPrimes_le [J.IsPrime] (e : I ≤ J) : ∃ p ∈ I.mi
     exact ⟨p, ⟨h₁, fun a b c => le_of_eq (h₃ a b c)⟩, h₂⟩
   apply zorn_nonempty_partialOrder₀
   swap
-  · refine' ⟨show J.IsPrime by infer_instance, e⟩
+  · exact ⟨show J.IsPrime by infer_instance, e⟩
   rintro (c : Set (Ideal R)) hc hc' J' hJ'
   refine'
     ⟨OrderDual.toDual (sInf c),
@@ -157,7 +157,7 @@ theorem Ideal.exists_comap_eq_of_mem_minimalPrimes {I : Ideal S} (f : R →+* S)
         Ideal.Quotient.mk_surjective q]
     apply Ideal.map_mono
     apply H.2
-    · refine' ⟨inferInstance, (Ideal.mk_ker.trans e).symm.trans_le (Ideal.comap_mono bot_le)⟩
+    · exact ⟨inferInstance, (Ideal.mk_ker.trans e).symm.trans_le (Ideal.comap_mono bot_le)⟩
     · refine' (Ideal.comap_mono hq').trans _
       rw [Ideal.comap_map_of_surjective]
       exacts [sup_le rfl.le this, Ideal.Quotient.mk_surjective]

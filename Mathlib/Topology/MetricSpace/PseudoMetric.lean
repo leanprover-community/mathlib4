@@ -73,7 +73,7 @@ def Bornology.ofDist {α : Type*} (dist : α → α → ℝ) (dist_comm : ∀ x 
       · refine ⟨C + C, fun a ha b hb => (dist_triangle a x b).trans ?_⟩
         simpa only [dist_comm] using add_le_add (hC _ ha) (hC _ hb)
       rcases hs with ⟨Cs, hs⟩; rcases ht with ⟨Ct, ht⟩
-      refine ⟨max Cs (dist x y + Ct), fun z hz => hz.elim
+      exact ⟨max Cs (dist x y + Ct), fun z hz => hz.elim
         (fun hz => (hs hx hz).trans (le_max_left _ _))
         (fun hz => (dist_triangle x y z).trans <|
           (add_le_add le_rfl (ht hy hz)).trans (le_max_right _ _))⟩)

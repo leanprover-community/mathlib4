@@ -178,7 +178,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
     · rw [Set.infinite_coe_iff, Set.Infinite, not_not] at hbad
       obtain ⟨m, hm⟩ : ∃ m, ∀ n, m ≤ n → ¬n ∈ bad := by
         by_cases he : hbad.toFinset.Nonempty
-        · refine'
+        · exact
             ⟨(hbad.toFinset.max' he).succ, fun n hn nbad =>
               Nat.not_succ_le_self _
                 (hn.trans (hbad.toFinset.le_max' n (hbad.mem_toFinset.2 nbad)))⟩

@@ -192,7 +192,7 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine' Exists.elim _ fun (hx : x ∈ span R s) (hc : p x hx) => hc
-  refine'
+  exact
     span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
         Exists.elim hx fun hx' hx =>
@@ -229,7 +229,7 @@ theorem closure_induction' {p : ∀ x, x ∈ span R s → Prop}
     (smul_mem : ∀ (r x) (h : x ∈ s), p (r • x) (Submodule.smul_mem _ _ <| subset_span h)) {x}
     (hx : x ∈ span R s) : p x hx := by
   refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) ↦ hc
-  refine closure_induction hx ⟨zero_mem _, zero⟩
+  exact closure_induction hx ⟨zero_mem _, zero⟩
     (fun x y hx hy ↦ Exists.elim hx fun hx' hx ↦
       Exists.elim hy fun hy' hy ↦ ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
     fun r x hx ↦ ⟨Submodule.smul_mem _ _ (subset_span hx), smul_mem r x hx⟩

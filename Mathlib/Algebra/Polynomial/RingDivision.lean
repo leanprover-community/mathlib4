@@ -885,7 +885,7 @@ theorem roots_prod_X_sub_C (s : Finset R) : (s.prod fun a => X - C a).roots = s.
   apply (roots_prod (fun a => X - C a) s ?_).trans
   · simp_rw [roots_X_sub_C]
     rw [Multiset.bind_singleton, Multiset.map_id']
-  · refine prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
+  · exact prod_ne_zero_iff.mpr (fun a _ => X_sub_C_ne_zero a)
 set_option linter.uppercaseLean3 false in
 #align polynomial.roots_prod_X_sub_C Polynomial.roots_prod_X_sub_C
 

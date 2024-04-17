@@ -257,7 +257,7 @@ instance evaluationPreservesColimitsOfShape [HasColimitsOfShape J C] (k : K) :
     -- Porting note: added a let because X was not inferred
     let X : (k:K) → ColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k) :=
       fun k => getColimitCocone (Prefunctor.obj (Functor.flip F).toPrefunctor k)
-    refine preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
+    exact preservesColimitOfPreservesColimitCocone (combinedIsColimit _ _) <|
       IsColimit.ofIsoColimit (colimit.isColimit _) (evaluateCombinedCocones F X k).symm
 #align category_theory.limits.evaluation_preserves_colimits_of_shape CategoryTheory.Limits.evaluationPreservesColimitsOfShape
 

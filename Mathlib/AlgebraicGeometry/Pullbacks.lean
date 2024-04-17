@@ -471,7 +471,7 @@ def pullbackP1Iso (i : 𝒰.J) : pullback (p1 𝒰 f g) (𝒰.map i) ≅ pullbac
   exact
     pullback.lift pullback.snd (pullback.fst ≫ p2 𝒰 f g)
       (by rw [← pullback.condition_assoc, Category.assoc, p_comm])
-  refine' pullback.lift ((gluing 𝒰 f g).ι i) pullback.fst (by erw [Multicoequalizer.π_desc])
+  exact pullback.lift ((gluing 𝒰 f g).ι i) pullback.fst (by erw [Multicoequalizer.π_desc])
   · apply pullback.hom_ext
     · simpa using lift_comp_ι 𝒰 f g i
     · simp only [Category.assoc, pullback.lift_snd, pullback.lift_fst, Category.id_comp]

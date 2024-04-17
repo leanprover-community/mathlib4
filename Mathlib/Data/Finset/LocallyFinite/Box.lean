@@ -29,7 +29,7 @@ variable {α : Type*} [OrderedRing α] [LocallyFiniteOrder α] [DecidableEq α] 
 def box : ℕ → Finset α := disjointed fun n ↦ Icc (-n : α) n
 
 private lemma Icc_neg_mono : Monotone fun n : ℕ ↦ Icc (-n : α) n := by
-  refine fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
+  exact fun m n hmn ↦ by apply Icc_subset_Icc <;> simpa using Nat.mono_cast hmn
 
 @[simp] lemma box_zero : (box 0 : Finset α) = {0} := by simp [box]
 

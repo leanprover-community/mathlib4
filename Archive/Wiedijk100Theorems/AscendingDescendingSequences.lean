@@ -155,7 +155,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       constructor <;>
         · apply le_max'
           rw [mem_image]
-          refine' ⟨{i}, by solve_by_elim, card_singleton i⟩
+          exact ⟨{i}, by solve_by_elim, card_singleton i⟩
     refine' ⟨_, _⟩
     -- Need to get `a_i ≤ r`, here phrased as: there is some `a < r` with `a+1 = a_i`.
     · refine' ⟨(ab i).1 - 1, _, Nat.succ_pred_eq_of_pos z.1⟩

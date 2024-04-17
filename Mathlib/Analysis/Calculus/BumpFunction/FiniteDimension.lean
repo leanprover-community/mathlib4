@@ -512,7 +512,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
       mem_Icc := fun R x => by
         simp only [mem_Icc]
         split_ifs with h
-        · refine' ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
+        · exact ⟨y_nonneg _ _, y_le_one _ (IR R h)⟩
         · simp only [le_refl, zero_le_one, and_self]
       symmetric := fun R x => by
         simp only
