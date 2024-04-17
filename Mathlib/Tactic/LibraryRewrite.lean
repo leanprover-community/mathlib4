@@ -309,7 +309,7 @@ def printRewriteLemma (e : Expr) (explicit : Bool) : MetaM String :=
     let (stx, _) ← delabCore e (delab := delabExplicit)
     return Format.pretty (← ppTerm stx) (width := 90) (indent := 2)
   else
-    PasteString e
+    pasteString e
 where
   /-- See `delabApp` and `delabAppCore`. -/
   delabExplicit : Delab := do
