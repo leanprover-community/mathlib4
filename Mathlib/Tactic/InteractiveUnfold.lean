@@ -16,40 +16,37 @@ open Lean Meta Server Widget ProofWidgets Jsx
 
 namespace Mathlib.Tactic.InteractiveUnfold
 
-/-- same as `unfoldDefinition?`, except it handles well founded recursive definitions better. -/
+/-- Same as `unfoldDefinition?`, except it handles well founded recursive definitions better. -/
 def unfold? (e : Expr) : MetaM (Option Expr) := do
-  if let .const n lvls := e.getAppFn then
-    /- unfolding a constant defined with well founded recursion -/
-    if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
-      if info.levelParams.length == lvls.length then
-        return (info.value.instantiateLevelParams info.levelParams lvls).beta e.getAppArgs
-    /- unfolding any other constant -/
-    else if let some e ← unfoldDefinition? e then
-      return e
-  return none
+  let .const n lvls := e.getAppFn | return none
+  /- unfolding a constant defined with well founded recursion -/
+  if let some info := Elab.WF.eqnInfoExt.find? (← getEnv) n then
+    if info.levelParams.length != lvls.length then
+      return none
+    else
+      return (info.value.instantiateLevelParams info.levelParams lvls).betaRev e.getAppRevArgs
+  /- unfolding any other constant -/
+  unfoldDefinition? e
 
-/-- Unfold a class projection when the instance is tagged with `@[default_instance]`.
-similar to `Lean.Meta.unfoldProjInst?`. -/
+/-- Unfold a class projection if the instance is tagged with `@[default_instance]`.
+This is used in the `unfold?` tactic in order to not show these unfolds to the user.
+Similar to `Lean.Meta.unfoldProjInst?`. -/
 def unfoldProjDefaultInst? (e : Expr) : MetaM (Option Expr) := do
-  match e.getAppFn with
-  | .const declName .. =>
-    match ← getProjectionFnInfo? declName with
-    | some { fromClass := true, ctorName, .. } => do
-      -- get the list of default instances of the class
-      let some (ConstantInfo.ctorInfo c) := (← getEnv).find? ctorName | return none
-      let defaults ← getDefaultInstances c.induct
-      if defaults.isEmpty then return none
+  let .const declName _ := e.getAppFn | return none
+  let some { fromClass := true, ctorName, .. } ← getProjectionFnInfo? declName | return none
+  -- get the list of default instances of the class
+  let some (ConstantInfo.ctorInfo ci) := (← getEnv).find? ctorName | return none
+  let defaults ← getDefaultInstances ci.induct
+  if defaults.isEmpty then return none
 
-      let some e ← withDefault <| unfoldDefinition? e | return none
-      let .proj _ i c := e.getAppFn | return none
-      -- check that the structure `c` comes from one of the default instances
-      let .const inst _ := c.getAppFn | return none
-      unless defaults.any (·.1 == inst) do return none
+  let some e ← withDefault <| unfoldDefinition? e | return none
+  let .proj _ i c := e.getAppFn | return none
+  -- check that the structure `c` comes from one of the default instances
+  let .const inst _ := c.getAppFn | return none
+  unless defaults.any (·.1 == inst) do return none
 
-      let some r ← project? c i | return none
-      return mkAppN r e.getAppArgs |>.headBeta
-    | _ => return none
-  | _ => return none
+  let some r ← withReducibleAndInstances <| project? c i | return none
+  return mkAppN r e.getAppArgs |>.headBeta
 
 /-- Return the consecutive unfoldings of `e`. -/
 partial def unfolds (e : Expr) : MetaM (Array Expr) := do
@@ -62,6 +59,7 @@ where
     try
       withoutCatchingRuntimeEx do withIncRecDepth do
       if let some e := e.etaExpandedStrict? then
+        let e ← whnfCore e
         return ← go e (acc.push e)
       if let some e ← reduceNat? e then
         return acc.push e
@@ -101,11 +99,19 @@ def mkRewrite (occ : Option Nat) (symm : Bool) (rewrite : String)
   let symm := if symm then "← " else ""
   s! "rw{cfg} [{symm}{rewrite}]{loc}"
 
-/-- Return a string representation of the expression suitable for pasting into the editor. -/
-def PasteString (e : Expr) : MetaM String :=
+/--
+Return a string of the expression suitable for pasting into the editor.
+
+We ignore any options set by the user.
+
+We set `pp.universes` to false because new universe level metavariables are not understood
+by the elaborator.
+
+We set `pp.unicode.fun` to true as per Mathlib convention.
+-/
+def pasteString (e : Expr) : MetaM String :=
   withOptions (fun _ => Options.empty
     |>.setBool `pp.universes false
-    |>.setBool `pp.match false
     |>.setBool `pp.unicode.fun true) do
   return Format.pretty (← Meta.ppExpr e) (width := 90) (indent := 2)
 
@@ -113,7 +119,7 @@ namespace InteractiveUnfold
 
 /-- Return the tactic string that does the unfolding. -/
 def tacticString (e unfold : Expr) (occ : Option Nat) (loc : Option Name) : MetaM String := do
-  let rfl := s! "show {← PasteString (← mkEq e unfold)} from rfl"
+  let rfl := s! "show {← pasteString (← mkEq e unfold)} from rfl"
   return mkRewrite occ false rfl loc
 
 /-- Render the unfolds of `e` as given by `filteredUnfolds`, with buttons at each suggestion
@@ -177,10 +183,10 @@ def UnfoldComponent : Component SelectInsertParams :=
   mk_rpc_widget% InteractiveUnfold.rpc
 
 
-/-- Unfold the selected expression any number of times.
-- After each unfold?, we apply `whnfCore` to simplify the expression.
+/-- Replace the selected expression with a definitional unfolding.
+- After each unfolding, we apply `whnfCore` to simplify the expression.
 - Explicit natural number expressions are evaluated.
-- The results of class projections of instances marked with `@[default_instance]` are not shown.
+- Unfolds of class projections of instances marked with `@[default_instance]` are not shown.
   This is relevant for notational type classes like `+`: we don't want to suggest `Add.add a b`
   as an unfolding of `a + b`. Similarly for `OfNat n : Nat` which unfolds into `n : Nat`.
 

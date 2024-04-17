@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
 import Lean.HeadIndex
-import Qq
 import Lean.Meta.ExprLens
+import Lean.Meta.Check
 /-! # Find the positions of a pattern in an expression -/
 
 namespace Lean.Meta
