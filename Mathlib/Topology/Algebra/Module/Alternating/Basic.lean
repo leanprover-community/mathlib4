@@ -45,7 +45,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 @[inherit_doc]
-notation M "[⋀^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [⋀^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
