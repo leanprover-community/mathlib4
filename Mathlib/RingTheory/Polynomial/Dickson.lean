@@ -94,7 +94,7 @@ variable {k a}
 
 theorem map_dickson (f : R →+* S) : ∀ n : ℕ, map f (dickson k a n) = dickson k (f a) n
   | 0 => by
-    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_nat_cast, Polynomial.map_ofNat]
+    simp_rw [dickson_zero, Polynomial.map_sub, Polynomial.map_natCast, Polynomial.map_ofNat]
   | 1 => by simp only [dickson_one, map_X]
   | n + 2 => by
     simp only [dickson_add_two, Polynomial.map_sub, Polynomial.map_mul, map_X, map_C]
