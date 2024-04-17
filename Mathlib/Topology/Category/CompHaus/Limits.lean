@@ -252,7 +252,7 @@ def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
     ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
   Limits.IsTerminal.ofUnique _
 
-/-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
+/-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
 noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
   terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
 
