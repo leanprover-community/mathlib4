@@ -1772,7 +1772,7 @@ theorem count_mul [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 
 theorem count_of_coprime [DecidableEq (Associates α)] {a : Associates α} (ha : a ≠ 0)
     {b : Associates α} (hb : b ≠ 0) (hab : ∀ d, d ∣ a → d ∣ b → ¬Prime d) {p : Associates α}
     (hp : Irreducible p) : count p a.factors = 0 ∨ count p b.factors = 0 := by
-  rw [or_iff_not_imp_left, ← Ne.eq_def]
+  rw [or_iff_not_imp_left, ← Ne]
   intro hca
   contrapose! hab with hcb
   exact ⟨p, le_of_count_ne_zero ha hp hca, le_of_count_ne_zero hb hp hcb,
