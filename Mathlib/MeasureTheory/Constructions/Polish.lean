@@ -539,12 +539,11 @@ variable {X Y Z β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
   [MeasurableSpace Z]
 
 /-- If `f : X → Z` is a surjective Borel measurable map from a standard Borel space
-to a countably separated measurable space,
-then the preimage of a set `s`
+to a countably separated measurable space, then the preimage of a set `s`
 is measurable if and only if the set is measurable.
 One implication is the definition of measurability, the other one heavily relies on `X` being a
 standard Borel space. -/
-theorem measurableSet_preimage_iff_of_surjective  [HasCountableSeparatingOn Z MeasurableSet univ]
+theorem measurableSet_preimage_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
     {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
   refine ⟨fun h => ?_, fun h => hf h⟩
@@ -575,9 +574,8 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
 #align measurable.borel_space_codomain Measurable.borelSpace_codomain
 
 /-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
-countably separated measurable space
-then the preimage of a set `s` is measurable if and only if
-the set is measurable in `Set.range f`. -/
+countably separated measurable space then the preimage of a set `s` is measurable
+if and only if the set is measurable in `Set.range f`. -/
 theorem measurableSet_preimage_iff_preimage_val {f : X → Z}
     [HasCountableSeparatingOn (range f) MeasurableSet univ]
     (hf : Measurable f) {s : Set Z} :
