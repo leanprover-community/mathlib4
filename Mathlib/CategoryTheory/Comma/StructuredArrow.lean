@@ -328,6 +328,33 @@ noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full]
     (post S F G).IsEquivalence :=
   Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
+section
+
+variable {L : D} {R : C ⥤ D} {L' : B} {R' : A ⥤ B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : L' ⟶ G.obj L) (β : R ⋙ G ⟶ F ⋙ R')
+
+/-- The functor `StructuredArrow L R ⥤ StructuredArrow L' R'` that is deduced from
+a natural transformation `R ⋙ G ⟶ F ⋙ R'` and a morphism `L' ⟶ G.obj L.` -/
+@[simps!]
+def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
+  Comma.map (F₁ := 𝟭 (Discrete PUnit)) (Discrete.natTrans (fun _ => α)) β
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance fullMap₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.fullMap
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.Faithful] [G.Faithful] [F.EssSurj] [F.Full] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
+
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
   suffices (proj S T).obj ⁻¹' 𝒢 = Set.range fun f : ΣG : 𝒢, S ⟶ T.obj G => mk f.2 by
@@ -665,6 +692,33 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj whe
 noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
     (post F G S).IsEquivalence :=
   Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+
+section
+
+variable {U : A ⥤ B} {V : B} {F : C ⥤ A} {G : D ⥤ B}
+  (α : F ⋙ U ⟶ S ⋙ G) (β : G.obj T ⟶ V)
+
+/-- The functor `CostructuredArrow S T ⥤ CostructuredArrow U V` that is deduced from
+a natural transformation `F ⋙ U ⟶ S ⋙ G` and a morphism `G.obj T ⟶ V` -/
+@[simps!]
+def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
+  Comma.map (F₂ := 𝟭 (Discrete PUnit)) α (Discrete.natTrans (fun _ => β))
+
+instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
+  apply Comma.faithful_map
+
+instance fullMap₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.fullMap
+
+instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
+  apply Comma.essSurj_map
+
+noncomputable instance isEquivalenceMap₂
+    [F.Faithful] [G.Faithful] [F.EssSurj] [F.Full] [G.Full] [IsIso α] [IsIso β] :
+    (map₂ α β).IsEquivalence := by
+  apply Comma.isEquivalenceMap
+
+end
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
