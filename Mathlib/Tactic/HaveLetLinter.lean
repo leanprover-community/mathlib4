@@ -89,12 +89,18 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     let largestIdx := mvdecls.toArray.qsort (·.index > ·.index)
     -- the relevant `LocalContext`
     let lc := (largestIdx.getD 0 default).lctx
-    -- and the last declaration introduced: the one that `have` created
-    let ld := (lc.lastDecl.getD default).type
-    -- now, we get the `MetaM` state up and running to find the type of `ld`
-    match ← areProp_toFormat ctx lc #[ld] with
-      | #[(false, fmt)] => return #[(stx, fmt)]
-      | _ => return #[])
+    -- we also accumulate all `fvarId`s from all local contexts before the use of `have`
+    -- so that we can then isolate the `fvarId`s that are created by `have`
+    let mvdeclsOld := (i.goalsBefore.map (mctx.decls.find? ·)).reduceOption
+    let lctxOld := mvdeclsOld.map (·.lctx)
+    let declsOld := (lctxOld.map (·.decls.toList.reduceOption)).join
+    let fvAssOld := declsOld.map (·.fvarId)
+    let oldDecls := lc.decls.toList.reduceOption.filter (! fvAssOld.contains ·.fvarId)
+    -- now, we get the `MetaM` state up and running to find the types of each entry of `oldDecls`
+    let fmts ← areProp_toFormat ctx lc (oldDecls.map (·.type)).toArray
+    let (_propFmts, typeFmts) := (fmts.zip (oldDecls.map (·.userName)).toArray).partition (·.1.1)
+    -- everything that is a Type triggers a warning on `have`
+    return typeFmts.map fun ((_, fmt), na) => (stx, f!"{na} : {fmt}"))
 
 /-- Gets the value of the `linter.haveLet` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.haveLet o

@@ -18,13 +18,29 @@ example : True := by
 set_option linter.haveLet false in
 set_option linter.haveLet true in
 /--
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning:
+'_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+-/
+-- when `have` introduces several hypotheses, the linter flags the non-`Prop` ones.
+#guard_msgs in
+example : True := by
+  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
+  exact .intro
+
+set_option linter.haveLet false in
+set_option linter.haveLet true in
+/--
+warning: '_a : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 ---
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: '_b : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 ---
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: '_oh : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 ---
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: '_b : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 -/
 #guard_msgs in
 example : True := by
@@ -38,7 +54,8 @@ example : True := by
 set_option linter.haveLet false in
 set_option linter.haveLet true in
 /--
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: 'this : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 -/
 #guard_msgs in
 example : True := by
@@ -60,7 +77,8 @@ example (h : False) : True := by
 set_option linter.haveLet false in
 set_option linter.haveLet true in
 /--
-warning: 'Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'. [linter.haveLet]
+warning: 'this : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
 -/
 #guard_msgs in
 theorem ghi : True := by
