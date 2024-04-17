@@ -994,6 +994,10 @@ theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     fun i => ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
 
+@[deprecated]
+alias HasFiniteIntegral.tendsto_set_integral_nhds_zero :=
+  HasFiniteIntegral.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
+
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
 theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
@@ -1001,6 +1005,10 @@ theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integ
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) :=
   hf.2.tendsto_setIntegral_nhds_zero hs
 #align measure_theory.integrable.tendsto_set_integral_nhds_zero MeasureTheory.Integrable.tendsto_setIntegral_nhds_zero
+
+@[deprecated]
+alias Integrable.tendsto_set_integral_nhds_zero :=
+  Integrable.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
 
 /-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
 theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
@@ -1034,6 +1042,10 @@ lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F :
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
       (fun _ ↦ snorm_mono_measure _ Measure.restrict_le_self)
 
+@[deprecated]
+alias tendsto_set_integral_of_L1 :=
+  tendsto_setIntegral_of_L1 -- deprecated on 2024-04-17
+
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
 lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
     {l : Filter ι}
@@ -1043,6 +1055,10 @@ lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F 
   refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
   exact hF
+
+@[deprecated]
+alias tendsto_set_integral_of_L1' :=
+  tendsto_setIntegral_of_L1' -- deprecated on 2024-04-17
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
@@ -1763,6 +1779,10 @@ theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : Stron
   · exact integral_zero_measure _
 #align measure_theory.set_integral_dirac' MeasureTheory.setIntegral_dirac'
 
+@[deprecated]
+alias set_integral_dirac' :=
+  setIntegral_dirac' -- deprecated on 2024-04-17
+
 theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
     ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
@@ -1771,6 +1791,10 @@ theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f 
   · exact integral_dirac _ _
   · exact integral_zero_measure _
 #align measure_theory.set_integral_dirac MeasureTheory.setIntegral_dirac
+
+@[deprecated]
+alias set_integral_dirac :=
+  setIntegral_dirac -- deprecated on 2024-04-17
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)

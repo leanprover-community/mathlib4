@@ -208,6 +208,10 @@ lemma setIntegral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Mea
     rw [integral_undef hf']
     simp
 
+@[deprecated]
+alias set_integral_tilted' :=
+  setIntegral_tilted' -- deprecated on 2024-04-17
+
 lemma setIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
@@ -224,6 +228,10 @@ lemma setIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set �
       integral_zero_measure]
     rw [integral_undef hf']
     simp
+
+@[deprecated]
+alias set_integral_tilted :=
+  setIntegral_tilted -- deprecated on 2024-04-17
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by

@@ -441,6 +441,10 @@ theorem setIntegral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpa
   rw [kernel.deterministic_apply, setIntegral_dirac' hf _ hs]
 #align probability_theory.kernel.set_integral_deterministic' ProbabilityTheory.kernel.setIntegral_deterministic'
 
+@[deprecated]
+alias set_integral_deterministic' :=
+  setIntegral_deterministic' -- deprecated on 2024-04-17
+
 @[simp]
 theorem setIntegral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     [CompleteSpace E] {f : β → E} {g : α → β} {a : α} (hg : Measurable g)
@@ -448,6 +452,10 @@ theorem setIntegral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpac
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, setIntegral_dirac f _ s]
 #align probability_theory.kernel.set_integral_deterministic ProbabilityTheory.kernel.setIntegral_deterministic
+
+@[deprecated]
+alias set_integral_deterministic :=
+  setIntegral_deterministic -- deprecated on 2024-04-17
 
 end Deterministic
 
@@ -514,6 +522,10 @@ theorem setIntegral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     ∫ x in s, f x ∂kernel.const α μ a = ∫ x in s, f x ∂μ := by rw [kernel.const_apply]
 #align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.setIntegral_const
 
+@[deprecated]
+alias set_integral_const :=
+  setIntegral_const -- deprecated on 2024-04-17
+
 end Const
 
 /-- In a countable space with measurable singletons, every function `α → MeasureTheory.Measure β`
@@ -570,6 +582,10 @@ theorem setIntegral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     ∫ x in t, f x ∂kernel.restrict κ hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
 #align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.setIntegral_restrict
+
+@[deprecated]
+alias set_integral_restrict :=
+  setIntegral_restrict -- deprecated on 2024-04-17
 
 instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
@@ -719,6 +735,10 @@ theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace �
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
 #align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
+
+@[deprecated]
+alias set_integral_piecewise :=
+  setIntegral_piecewise -- deprecated on 2024-04-17
 
 end Piecewise
 

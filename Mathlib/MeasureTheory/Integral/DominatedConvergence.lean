@@ -184,6 +184,10 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 #align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
 
+@[deprecated]
+alias _root_.Antitone.tendsto_set_integral :=
+  _root_.Antitone.tendsto_setIntegral -- deprecated on 2024-04-17
+
 end TendstoMono
 
 /-!

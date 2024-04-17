@@ -341,6 +341,10 @@ theorem setIntegral_condexpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
     _ = (μ (t ∩ s)).toReal • x := setIntegral_condexpIndSMul hs ht hμs hμt x
 #align measure_theory.set_integral_condexp_ind MeasureTheory.setIntegral_condexpInd
 
+@[deprecated]
+alias set_integral_condexpInd :=
+  setIntegral_condexpInd -- deprecated on 2024-04-17
+
 theorem condexpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condexpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
   ext1
@@ -422,6 +426,10 @@ theorem setIntegral_condexpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
   · exact continuous_setIntegral s
 #align measure_theory.set_integral_condexp_L1_clm_of_measure_ne_top MeasureTheory.setIntegral_condexpL1CLM_of_measure_ne_top
 
+@[deprecated]
+alias set_integral_condexpL1CLM_of_measure_ne_top :=
+  setIntegral_condexpL1CLM_of_measure_ne_top -- deprecated on 2024-04-17
+
 /-- The integral of the conditional expectation `condexpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condexp`, the similar statement for
 `condexp`. -/
@@ -459,6 +467,10 @@ theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
 #align measure_theory.set_integral_condexp_L1_clm MeasureTheory.setIntegral_condexpL1CLM
+
+@[deprecated]
+alias set_integral_condexpL1CLM :=
+  setIntegral_condexpL1CLM -- deprecated on 2024-04-17
 
 theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ := by
@@ -559,6 +571,10 @@ theorem setIntegral_condexpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
   rw [setIntegral_condexpL1CLM (hf.toL1 f) hs]
   exact setIntegral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
 #align measure_theory.set_integral_condexp_L1 MeasureTheory.setIntegral_condexpL1
+
+@[deprecated]
+alias set_integral_condexpL1 :=
+  setIntegral_condexpL1 -- deprecated on 2024-04-17
 
 theorem condexpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condexpL1 hm μ (f + g) = condexpL1 hm μ f + condexpL1 hm μ g :=

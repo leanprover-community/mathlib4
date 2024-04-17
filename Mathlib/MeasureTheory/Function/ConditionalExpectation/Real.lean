@@ -138,6 +138,10 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
 #align measure_theory.set_integral_abs_condexp_le MeasureTheory.setIntegral_abs_condexp_le
 
+@[deprecated]
+alias set_integral_abs_condexp_le :=
+  setIntegral_abs_condexp_le -- deprecated on 2024-04-17
+
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/
 theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x ∂μ, |f x| ≤ R) :

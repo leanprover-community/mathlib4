@@ -127,6 +127,10 @@ lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
   rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
 
+@[deprecated]
+alias set_integral_compProd :=
+  setIntegral_compProd -- deprecated on 2024-04-17
+
 end Integral
 
 lemma dirac_compProd_apply [MeasurableSingletonClass α] {a : α} [IsSFiniteKernel κ]
