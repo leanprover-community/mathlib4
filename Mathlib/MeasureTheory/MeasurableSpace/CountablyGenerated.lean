@@ -106,9 +106,23 @@ theorem CountablyGenerated.sup {m₁ m₂ : MeasurableSpace β} (h₁ : @Countab
   rcases h₂ with ⟨⟨b₂, hb₂c, rfl⟩⟩
   exact @mk _ (_ ⊔ _) ⟨_, hb₁c.union hb₂c, generateFrom_sup_generateFrom⟩
 
-instance (priority := 100) [MeasurableSpace α] [Finite α] : CountablyGenerated α where
-  isCountablyGenerated :=
-    ⟨{s | MeasurableSet s}, Set.to_countable _, generateFrom_measurableSet.symm⟩
+/-- Any measurable space structure on a countable space is countably generated. -/
+instance (priority := 100) [MeasurableSpace α] [Countable α] : CountablyGenerated α where
+  isCountablyGenerated := by
+    refine ⟨⋃ y, {measurableAtom y}, countable_iUnion (fun i ↦ countable_singleton _), ?_⟩
+    refine le_antisymm ?_ (generateFrom_le (by simp [MeasurableSet.measurableAtom_of_countable]))
+    intro s hs
+    have : s = ⋃ y ∈ s, measurableAtom y := by
+      apply Subset.antisymm
+      · intro x hx
+        simpa using ⟨x, hx, by simp⟩
+      · simp only [iUnion_subset_iff]
+        intro x hx
+        exact measurableAtom_subset hs hx
+    rw [this]
+    apply MeasurableSet.biUnion (to_countable s) (fun x _hx ↦ ?_)
+    apply measurableSet_generateFrom
+    simp
 
 instance [MeasurableSpace α] [CountablyGenerated α] {p : α → Prop} :
     CountablyGenerated { x // p x } := .comap _
@@ -290,14 +304,10 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         exact diff_subset _ _
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
-        · rw [disjoint_iff_inter_eq_empty]
-          ext x
-          simp only [mem_inter_iff, mem_sUnion, mem_diff, Finset.mem_coe, mem_empty_iff_false,
-            iff_false, not_and, not_exists, forall_exists_index, and_imp]
-          intro u hu huS hxu v hvS
-          have huv : u ≠ v := fun h_eq ↦ absurd hvS (h_eq ▸ huS)
-          have : Disjoint u v := disjoint_memPartition t n hu (hS_subset hvS) huv
-          exact fun hxv ↦ absurd rfl (this.ne_of_mem hxu hxv)
+        · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
+          refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
+          refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
+          exact ne_of_mem_of_not_mem huS (not_mem_of_mem_diff huV) |>.symm
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]
@@ -458,5 +468,23 @@ lemma countablePartitionSet_of_mem {n : ℕ} {a : α} {s : Set α} (hs : s ∈ c
 lemma measurableSet_countablePartitionSet (n : ℕ) (a : α) :
     MeasurableSet (countablePartitionSet n a) :=
   measurableSet_countablePartition n (countablePartitionSet_mem n a)
+
+section CountableOrCountablyGenerated
+
+variable [MeasurableSpace β]
+
+/-- A class registering that either `α` is countable or `β` is a countably generated
+measurable space. -/
+class CountableOrCountablyGenerated (α β : Type*) [MeasurableSpace α] [MeasurableSpace β] : Prop :=
+  countableOrCountablyGenerated : Countable α ∨ MeasurableSpace.CountablyGenerated β
+
+instance instCountableOrCountablyGeneratedOfCountable [h1 : Countable α] :
+    CountableOrCountablyGenerated α β := ⟨Or.inl h1⟩
+
+instance instCountableOrCountablyGeneratedOfCountablyGenerated
+    [h : MeasurableSpace.CountablyGenerated β] :
+    CountableOrCountablyGenerated α β := ⟨Or.inr h⟩
+
+end CountableOrCountablyGenerated
 
 end MeasurableSpace

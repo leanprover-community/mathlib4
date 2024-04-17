@@ -145,10 +145,10 @@ theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a 
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
     lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
   · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
   · lift a to ℕ using le_of_lt h with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.coe_nat_dvd]
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
 #align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
 
 theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
@@ -455,7 +455,6 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -513,7 +512,7 @@ section
 /-- We have `2 ≠ 0` in a nontrivial ring whose characteristic is not `2`. -/
 protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (2 : R) ≠ 0 := by
-  rw [Ne.def, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
+  rw [Ne, (by norm_cast : (2 : R) = (2 : ℕ)), ringChar.spec, Nat.dvd_prime Nat.prime_two]
   exact mt (or_iff_left hR).mp CharP.ringChar_ne_one
 #align ring.two_ne_zero Ring.two_ne_zero
 
@@ -539,7 +538,6 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
@@ -621,14 +619,13 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
-  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.def, ← neZero_iff]
+  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne, ← neZero_iff]
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero

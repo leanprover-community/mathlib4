@@ -6,7 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.CharP.Two
 import Mathlib.Algebra.CharP.Reduced
 import Mathlib.Algebra.NeZero
-import Mathlib.Data.Polynomial.RingDivision
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.NumberTheory.Divisors
 import Mathlib.RingTheory.IntegralDomain
@@ -243,7 +243,7 @@ theorem card_rootsOfUnity : Fintype.card (rootsOfUnity k R) ≤ k :=
   calc
     Fintype.card (rootsOfUnity k R) = Fintype.card { x // x ∈ nthRoots k (1 : R) } :=
       Fintype.card_congr (rootsOfUnityEquivNthRoots R k)
-    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := (Multiset.card_le_card (Multiset.dedup_le _))
+    _ ≤ Multiset.card (nthRoots k (1 : R)).attach := Multiset.card_le_card (Multiset.dedup_le _)
     _ = Multiset.card (nthRoots k (1 : R)) := Multiset.card_attach
     _ ≤ k := card_nthRoots k 1
 #align card_roots_of_unity card_rootsOfUnity
@@ -255,7 +255,7 @@ theorem map_rootsOfUnity_eq_pow_self [FunLike F R R] [RingHomClass F R R] (σ : 
     ∃ m : ℕ, σ (ζ : Rˣ) = ((ζ : Rˣ) : R) ^ m := by
   obtain ⟨m, hm⟩ := MonoidHom.map_cyclic (restrictRootsOfUnity σ k)
   rw [← restrictRootsOfUnity_coe_apply, hm, ← zpow_mod_orderOf, ← Int.toNat_of_nonneg
-      (m.emod_nonneg (Int.coe_nat_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
+      (m.emod_nonneg (Int.natCast_ne_zero.mpr (pos_iff_ne_zero.mp (orderOf_pos ζ)))),
     zpow_natCast, rootsOfUnity.coe_pow]
   exact ⟨(m % orderOf ζ).toNat, rfl⟩
 #align map_root_of_unity_eq_pow_self map_rootsOfUnity_eq_pow_self
@@ -901,7 +901,7 @@ theorem card_rootsOfUnity' {n : ℕ+} (h : IsPrimitiveRoot ζ n) :
   calc
     Fintype.card (rootsOfUnity n R) = Fintype.card (Subgroup.zpowers ζ) :=
       Fintype.card_congr <| by rw [h.zpowers_eq]
-    _ = Fintype.card (ZMod n) := (Fintype.card_congr e.toEquiv.symm)
+    _ = Fintype.card (ZMod n) := Fintype.card_congr e.toEquiv.symm
     _ = n := ZMod.card n
 #align is_primitive_root.card_roots_of_unity' IsPrimitiveRoot.card_rootsOfUnity'
 
@@ -985,7 +985,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   · intro x
     simp only [nthRootsFinset, ← Multiset.toFinset_eq (nthRoots_one_nodup h), exists_prop,
       Finset.mem_biUnion, Finset.mem_filter, Finset.mem_range, mem_nthRoots, Finset.mem_mk,
-      Nat.mem_divisors, and_true_iff, Ne.def, PNat.ne_zero, PNat.pos, not_false_iff]
+      Nat.mem_divisors, and_true_iff, Ne, PNat.ne_zero, PNat.pos, not_false_iff]
     rintro ⟨a, ⟨d, hd⟩, ha⟩
     have hazero : 0 < a := by
       contrapose! hd with ha0

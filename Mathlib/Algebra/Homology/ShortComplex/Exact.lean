@@ -241,7 +241,7 @@ variable (S)
 
 lemma exact_map_iff_of_faithful [S.HasHomology]
     (F : C ⥤ D) [F.PreservesZeroMorphisms] [F.PreservesLeftHomologyOf S]
-    [F.PreservesRightHomologyOf S] [Faithful F] :
+    [F.PreservesRightHomologyOf S] [F.Faithful] :
     (S.map F).Exact ↔ S.Exact := by
   constructor
   · intro h

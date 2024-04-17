@@ -117,7 +117,7 @@ theorem condexp_of_sigmaFinite (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)]
         else aestronglyMeasurable'_condexpL1.mk (condexpL1 hm μ f)
       else 0 := by
   rw [condexp, dif_pos hm]
-  simp only [hμm, Ne.def, true_and_iff]
+  simp only [hμm, Ne, true_and_iff]
   by_cases hf : Integrable f μ
   · rw [dif_pos hf, if_pos hf]
   · rw [dif_neg hf, if_neg hf]
@@ -262,7 +262,7 @@ theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
   have h_integral : ∫ x, (μ[f|⊥]) x ∂μ = ∫ x, f x ∂μ := integral_condexp bot_le hf
   simp_rw [h_eq, integral_const] at h_integral
   rw [← h_integral, ← smul_assoc, smul_eq_mul, inv_mul_cancel, one_smul]
-  rw [Ne.def, ENNReal.toReal_eq_zero_iff, not_or]
+  rw [Ne, ENNReal.toReal_eq_zero_iff, not_or]
   exact ⟨NeZero.ne _, measure_ne_top μ Set.univ⟩
 #align measure_theory.condexp_bot' MeasureTheory.condexp_bot'
 
@@ -280,9 +280,9 @@ theorem condexp_bot [IsProbabilityMeasure μ] (f : α → F') : μ[f|⊥] = fun 
 theorem condexp_add (hf : Integrable f μ) (hg : Integrable g μ) :
     μ[f + g|m] =ᵐ[μ] μ[f|m] + μ[g|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_add hf hg]
@@ -302,9 +302,9 @@ theorem condexp_finset_sum {ι : Type*} {s : Finset ι} {f : ι → α → F'}
 
 theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • μ[f|m] := by
   by_cases hm : m ≤ m0
-  swap; · simp_rw [condexp_of_not_le hm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_le hm]; simp
   by_cases hμm : SigmaFinite (μ.trim hm)
-  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp; rfl
+  swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; simp
   haveI : SigmaFinite (μ.trim hm) := hμm
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_smul c f]
@@ -317,7 +317,7 @@ theorem condexp_neg (f : α → F') : μ[-f|m] =ᵐ[μ] -μ[f|m] := by
   letI : Module ℝ (α → F') := @Pi.module α (fun _ => F') ℝ _ _ fun _ => inferInstance
   calc
     μ[-f|m] = μ[(-1 : ℝ) • f|m] := by rw [neg_one_smul ℝ f]
-    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := (condexp_smul (-1) f)
+    _ =ᵐ[μ] (-1 : ℝ) • μ[f|m] := condexp_smul (-1) f
     _ = -μ[f|m] := neg_one_smul ℝ (μ[f|m])
 #align measure_theory.condexp_neg MeasureTheory.condexp_neg
 

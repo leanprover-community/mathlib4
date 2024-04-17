@@ -503,7 +503,7 @@ theorem rpow_eq_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y =
 #align ennreal.rpow_eq_top_iff_of_pos ENNReal.rpow_eq_top_iff_of_pos
 
 lemma rpow_lt_top_iff_of_pos {x : ℝ≥0∞} {y : ℝ} (hy : 0 < y) : x ^ y < ∞ ↔ x < ∞ := by
-  simp only [lt_top_iff_ne_top, Ne.def, rpow_eq_top_iff_of_pos hy]
+  simp only [lt_top_iff_ne_top, Ne, rpow_eq_top_iff_of_pos hy]
 
 theorem rpow_eq_top_of_nonneg (x : ℝ≥0∞) {y : ℝ} (hy0 : 0 ≤ y) : x ^ y = ⊤ → x = ⊤ := by
   rw [ENNReal.rpow_eq_top_iff]
@@ -576,7 +576,7 @@ lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
 
 @[simp, norm_cast]
 lemma rpow_int_cast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_natCast,
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_nat_cast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
@@ -772,7 +772,7 @@ theorem le_rpow_self_of_one_le {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (h_one_
 theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonneg : 0 ≤ p) : 0 < x ^ p := by
   by_cases hp_zero : p = 0
   · simp [hp_zero, zero_lt_one]
-  · rw [← Ne.def] at hp_zero
+  · rw [← Ne] at hp_zero
     have hp_pos := lt_of_le_of_ne hp_nonneg hp_zero.symm
     rw [← zero_rpow_of_pos hp_pos]
     exact rpow_lt_rpow hx_pos hp_pos
@@ -871,10 +871,10 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hx0 : x = 0
-  · rw [← Ne.def] at hp0
+  · rw [← Ne] at hp0
     have hp_pos : 0 < p := lt_of_le_of_ne hp_nonneg hp0.symm
     simp [hx0, hp_pos, hp_pos.ne.symm]
-  rw [← Ne.def] at hx0
+  rw [← Ne] at hx0
   exact ofReal_rpow_of_pos (hx_nonneg.lt_of_ne hx0.symm)
 #align ennreal.of_real_rpow_of_nonneg ENNReal.ofReal_rpow_of_nonneg
 
