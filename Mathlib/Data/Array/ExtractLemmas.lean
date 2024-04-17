@@ -13,14 +13,13 @@ set_option autoImplicit true
 
 namespace Array
 
-
 @[simp]
 theorem extract_zero_length {a : Array α} :
     a.extract i i = #[] := by
   refine extract_empty_of_stop_le_start a ?h
   exact Nat.le_refl i
 
-theorem extract_append_left {a b: Array α} {i j : Nat} (h: j ≤ a.size):
+theorem extract_append_left {a b : Array α} {i j : Nat} (h : j ≤ a.size):
     (a ++ b).extract i j = a.extract i j := by
   apply ext
   · simp only [size_extract, size_append]
@@ -28,7 +27,7 @@ theorem extract_append_left {a b: Array α} {i j : Nat} (h: j ≤ a.size):
   · intro h1 h2 h3
     rw [get_extract, get_append_left, get_extract]
 
-theorem extract_append_right {a b: Array α} {i j : Nat} (h: i ≥ a.size):
+theorem extract_append_right {a b : Array α} {i j : Nat} (h : i ≥ a.size):
     (a ++ b).extract i j = b.extract (i - a.size) (j - a.size) := by
   apply ext
   · rw [size_extract, size_extract, size_append]
