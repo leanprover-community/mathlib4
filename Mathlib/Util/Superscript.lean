@@ -203,14 +203,6 @@ def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m 
   | .text s => .text <$> f' s
   | .align _ | .line | .nil => pure f
 
-/- Apply the mapping to the string components of a `Format`.
-
-Returns the string that could not be converted on failure. -/
-def scriptParser.mapFormat (m : Mapping) (f : Format) : Except String Format :=
-  f.mapStringsM fun s => do
-    let .some s := s.toList.mapM (m.toSpecial.insert ' ' ' ').find? | .error s
-    .ok ⟨s⟩
-
 /-- Formatter for the script parser. -/
 def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
   let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
