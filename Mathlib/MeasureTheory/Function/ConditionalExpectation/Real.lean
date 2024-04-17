@@ -136,7 +136,7 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
   refine' (integral_abs_condexp_le _).trans
     (le_of_eq <| integral_congr_ae <| eventually_of_forall fun x => _)
   simp_rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
-#align measure_theory.setIntegral_abs_condexp_le MeasureTheory.setIntegral_abs_condexp_le
+#align measure_theory.set_integral_abs_condexp_le MeasureTheory.setIntegral_abs_condexp_le
 
 /-- If the real valued function `f` is bounded almost everywhere by `R`, then so is its conditional
 expectation. -/

@@ -454,7 +454,7 @@ theorem integral_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
 theorem setIntegral_setAverage (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) (s : Set α) :
     ∫ _ in s, ⨍ a in s, f a ∂μ ∂μ = ∫ x in s, f x ∂μ :=
   integral_average _ _
-#align measure_theory.setIntegral_set_average MeasureTheory.setIntegral_setAverage
+#align measure_theory.set_integral_set_average MeasureTheory.setIntegral_setAverage
 
 theorem integral_sub_average (μ : Measure α) [IsFiniteMeasure μ] (f : α → E) :
     ∫ x, f x - ⨍ a, f a ∂μ ∂μ = 0 := by
@@ -469,7 +469,7 @@ theorem setAverage_sub_setAverage (hs : μ s ≠ ∞) (f : α → E) :
     ∫ x in s, f x - ⨍ a in s, f a ∂μ ∂μ = 0 :=
   haveI : Fact (μ s < ∞) := ⟨lt_top_iff_ne_top.2 hs⟩
   integral_sub_average _ _
-#align measure_theory.setIntegral_sub_set_average MeasureTheory.setAverage_sub_setAverage
+#align measure_theory.set_integral_sub_set_average MeasureTheory.setAverage_sub_setAverage
 
 theorem integral_average_sub [IsFiniteMeasure μ] (hf : Integrable f μ) :
     ∫ x, ⨍ a, f a ∂μ - f x ∂μ = 0 := by
@@ -480,7 +480,7 @@ theorem setIntegral_setAverage_sub (hs : μ s ≠ ∞) (hf : IntegrableOn f s μ
     ∫ x in s, ⨍ a in s, f a ∂μ - f x ∂μ = 0 :=
   haveI : Fact (μ s < ∞) := ⟨lt_top_iff_ne_top.2 hs⟩
   integral_average_sub hf
-#align measure_theory.setIntegral_set_average_sub MeasureTheory.setIntegral_setAverage_sub
+#align measure_theory.set_integral_set_average_sub MeasureTheory.setIntegral_setAverage_sub
 
 end NormedAddCommGroup
 

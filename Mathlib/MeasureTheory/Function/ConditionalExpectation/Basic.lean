@@ -222,7 +222,7 @@ theorem setIntegral_condexp (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Int
     (hs : MeasurableSet[m] s) : ∫ x in s, (μ[f|m]) x ∂μ = ∫ x in s, f x ∂μ := by
   rw [setIntegral_congr_ae (hm s hs) ((condexp_ae_eq_condexpL1 hm f).mono fun x hx _ => hx)]
   exact setIntegral_condexpL1 hf hs
-#align measure_theory.setIntegral_condexp MeasureTheory.setIntegral_condexp
+#align measure_theory.set_integral_condexp MeasureTheory.setIntegral_condexp
 
 theorem integral_condexp (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     ∫ x, (μ[f|m]) x ∂μ = ∫ x, f x ∂μ := by
@@ -243,7 +243,7 @@ theorem ae_eq_condexp_of_forall_setIntegral_eq (hm : m ≤ m0) [SigmaFinite (μ.
     (fun s _ _ => integrable_condexp.integrableOn) (fun s hs hμs => _) hgm
     (StronglyMeasurable.aeStronglyMeasurable' stronglyMeasurable_condexp)
   rw [hg_eq s hs hμs, setIntegral_condexp hm hf hs]
-#align measure_theory.ae_eq_condexp_of_forall_setIntegral_eq MeasureTheory.ae_eq_condexp_of_forall_setIntegral_eq
+#align measure_theory.ae_eq_condexp_of_forall_set_integral_eq MeasureTheory.ae_eq_condexp_of_forall_setIntegral_eq
 
 theorem condexp_bot' [hμ : NeZero μ] (f : α → F') :
     μ[f|⊥] = fun _ => (μ Set.univ).toReal⁻¹ • ∫ x, f x ∂μ := by

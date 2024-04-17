@@ -439,7 +439,7 @@ theorem setIntegral_deterministic' {E : Type*} [NormedAddCommGroup E] [NormedSpa
     (hf : StronglyMeasurable f) {s : Set β} (hs : MeasurableSet s) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, setIntegral_dirac' hf _ hs]
-#align probability_theory.kernel.setIntegral_deterministic' ProbabilityTheory.kernel.setIntegral_deterministic'
+#align probability_theory.kernel.set_integral_deterministic' ProbabilityTheory.kernel.setIntegral_deterministic'
 
 @[simp]
 theorem setIntegral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
@@ -447,7 +447,7 @@ theorem setIntegral_deterministic {E : Type*} [NormedAddCommGroup E] [NormedSpac
     [MeasurableSingletonClass β] (s : Set β) [Decidable (g a ∈ s)] :
     ∫ x in s, f x ∂kernel.deterministic g hg a = if g a ∈ s then f (g a) else 0 := by
   rw [kernel.deterministic_apply, setIntegral_dirac f _ s]
-#align probability_theory.kernel.setIntegral_deterministic ProbabilityTheory.kernel.setIntegral_deterministic
+#align probability_theory.kernel.set_integral_deterministic ProbabilityTheory.kernel.setIntegral_deterministic
 
 end Deterministic
 
@@ -512,7 +512,7 @@ theorem integral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 theorem setIntegral_const {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : β → E} {μ : Measure β} {a : α} {s : Set β} :
     ∫ x in s, f x ∂kernel.const α μ a = ∫ x in s, f x ∂μ := by rw [kernel.const_apply]
-#align probability_theory.kernel.setIntegral_const ProbabilityTheory.kernel.setIntegral_const
+#align probability_theory.kernel.set_integral_const ProbabilityTheory.kernel.setIntegral_const
 
 end Const
 
@@ -569,7 +569,7 @@ theorem setIntegral_restrict {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ
     {f : β → E} {a : α} (hs : MeasurableSet s) (t : Set β) :
     ∫ x in t, f x ∂kernel.restrict κ hs a = ∫ x in t ∩ s, f x ∂κ a := by
   rw [restrict_apply, Measure.restrict_restrict' hs]
-#align probability_theory.kernel.setIntegral_restrict ProbabilityTheory.kernel.setIntegral_restrict
+#align probability_theory.kernel.set_integral_restrict ProbabilityTheory.kernel.setIntegral_restrict
 
 instance IsFiniteKernel.restrict (κ : kernel α β) [IsFiniteKernel κ] (hs : MeasurableSet s) :
     IsFiniteKernel (kernel.restrict κ hs) := by
@@ -718,7 +718,7 @@ theorem setIntegral_piecewise {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     ∫ b in t, g b ∂piecewise hs κ η a =
       if a ∈ s then ∫ b in t, g b ∂κ a else ∫ b in t, g b ∂η a :=
   by simp_rw [piecewise_apply]; split_ifs <;> rfl
-#align probability_theory.kernel.setIntegral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
+#align probability_theory.kernel.set_integral_piecewise ProbabilityTheory.kernel.setIntegral_piecewise
 
 end Piecewise
 

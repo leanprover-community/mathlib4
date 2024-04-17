@@ -65,7 +65,7 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     have hfg_restrict : f =ᵐ[μ.restrict s] g := ae_restrict_of_ae hfg
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
-#align measure_theory.Lp_meas.ae_eq_zero_of_forall_setIntegral_eq_zero MeasureTheory.lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
+#align measure_theory.Lp_meas.ae_eq_zero_of_forall_set_integral_eq_zero MeasureTheory.lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero
 
 variable (𝕜)
 
@@ -87,7 +87,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
     have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
     rw [integral_congr_ae hfg_restrict.symm]
     exact hf_zero s hs hμs
-#align measure_theory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' MeasureTheory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
+#align measure_theory.Lp.ae_eq_zero_of_forall_set_integral_eq_zero' MeasureTheory.Lp.ae_eq_zero_of_forall_setIntegral_eq_zero'
 
 /-- **Uniqueness of the conditional expectation** -/
 theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (hp_ne_zero : p ≠ 0)
@@ -112,7 +112,7 @@ theorem Lp.ae_eq_of_forall_setIntegral_eq' (hm : m ≤ m0) (f g : Lp E' p μ) (h
   exact
     Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' 𝕜 hm (f - g) hp_ne_zero hp_ne_top hfg_int hfg'
       hfg_meas
-#align measure_theory.Lp.ae_eq_of_forall_setIntegral_eq' MeasureTheory.Lp.ae_eq_of_forall_setIntegral_eq'
+#align measure_theory.Lp.ae_eq_of_forall_set_integral_eq' MeasureTheory.Lp.ae_eq_of_forall_setIntegral_eq'
 
 variable {𝕜}
 
@@ -156,7 +156,7 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
       integral_congr_ae (ae_restrict_of_ae hgm.ae_eq_mk.symm)]
     exact hfg_eq s hs hμs
   exact ae_eq_of_forall_setIntegral_eq_of_sigmaFinite hf_mk_int_finite hg_mk_int_finite hfg_mk_eq
-#align measure_theory.ae_eq_of_forall_setIntegral_eq_of_sigma_finite' MeasureTheory.ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
+#align measure_theory.ae_eq_of_forall_set_integral_eq_of_sigma_finite' MeasureTheory.ae_eq_of_forall_setIntegral_eq_of_sigmaFinite'
 
 end UniquenessOfConditionalExpectation
 

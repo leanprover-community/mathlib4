@@ -339,7 +339,7 @@ theorem setIntegral_condexpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) 
       setIntegral_congr_ae (hm s hs)
         ((condexpInd_ae_eq_condexpIndSMul hm ht hμt x).mono fun _ hx _ => hx)
     _ = (μ (t ∩ s)).toReal • x := setIntegral_condexpIndSMul hs ht hμs hμt x
-#align measure_theory.setIntegral_condexp_ind MeasureTheory.setIntegral_condexpInd
+#align measure_theory.set_integral_condexp_ind MeasureTheory.setIntegral_condexpInd
 
 theorem condexpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condexpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
@@ -420,7 +420,7 @@ theorem setIntegral_condexpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : 
       hg]
   · exact (continuous_setIntegral s).comp (condexpL1CLM F' hm μ).continuous
   · exact continuous_setIntegral s
-#align measure_theory.setIntegral_condexp_L1_clm_of_measure_ne_top MeasureTheory.setIntegral_condexpL1CLM_of_measure_ne_top
+#align measure_theory.set_integral_condexp_L1_clm_of_measure_ne_top MeasureTheory.setIntegral_condexpL1CLM_of_measure_ne_top
 
 /-- The integral of the conditional expectation `condexpL1CLM` over an `m`-measurable set is equal
 to the integral of `f` on that set. See also `setIntegral_condexp`, the similar statement for
@@ -458,7 +458,7 @@ theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s
     rwa [← hs_eq] at h
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
-#align measure_theory.setIntegral_condexp_L1_clm MeasureTheory.setIntegral_condexpL1CLM
+#align measure_theory.set_integral_condexp_L1_clm MeasureTheory.setIntegral_condexpL1CLM
 
 theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ := by
@@ -558,7 +558,7 @@ theorem setIntegral_condexpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
   simp_rw [condexpL1_eq hf]
   rw [setIntegral_condexpL1CLM (hf.toL1 f) hs]
   exact setIntegral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
-#align measure_theory.setIntegral_condexp_L1 MeasureTheory.setIntegral_condexpL1
+#align measure_theory.set_integral_condexp_L1 MeasureTheory.setIntegral_condexpL1
 
 theorem condexpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condexpL1 hm μ (f + g) = condexpL1 hm μ f + condexpL1 hm μ g :=

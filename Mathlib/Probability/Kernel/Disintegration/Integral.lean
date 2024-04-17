@@ -210,19 +210,19 @@ lemma setIntegral_condKernel {s : Set β} (hs : MeasurableSet s)
   conv_rhs => rw [← compProd_fst_condKernel ρ]
   rw [← compProd_fst_condKernel ρ] at hf
   rw [setIntegral_compProd hs ht hf]
-#align probability_theory.setIntegral_cond_kernel MeasureTheory.Measure.setIntegral_condKernel
+#align probability_theory.set_integral_cond_kernel MeasureTheory.Measure.setIntegral_condKernel
 
 lemma setIntegral_condKernel_univ_right {s : Set β} (hs : MeasurableSet s)
     (hf : IntegrableOn f (s ×ˢ Set.univ) ρ) :
     ∫ b in s, ∫ ω, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in s ×ˢ Set.univ, f x ∂ρ := by
   rw [← setIntegral_condKernel hs MeasurableSet.univ hf]; simp_rw [Measure.restrict_univ]
-#align probability_theory.setIntegral_cond_kernel_univ_right MeasureTheory.Measure.setIntegral_condKernel_univ_right
+#align probability_theory.set_integral_cond_kernel_univ_right MeasureTheory.Measure.setIntegral_condKernel_univ_right
 
 lemma setIntegral_condKernel_univ_left {t : Set Ω} (ht : MeasurableSet t)
     (hf : IntegrableOn f (Set.univ ×ˢ t) ρ) :
     ∫ b, ∫ ω in t, f (b, ω) ∂(ρ.condKernel b) ∂ρ.fst = ∫ x in Set.univ ×ˢ t, f x ∂ρ := by
   rw [← setIntegral_condKernel MeasurableSet.univ ht hf]; simp_rw [Measure.restrict_univ]
-#align probability_theory.setIntegral_cond_kernel_univ_left MeasureTheory.Measure.setIntegral_condKernel_univ_left
+#align probability_theory.set_integral_cond_kernel_univ_left MeasureTheory.Measure.setIntegral_condKernel_univ_left
 
 end Integral
 

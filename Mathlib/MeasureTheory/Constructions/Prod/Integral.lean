@@ -503,7 +503,7 @@ theorem setIntegral_prod (f : α × β → E) {s : Set α} {t : Set β}
     ∫ z in s ×ˢ t, f z ∂μ.prod ν = ∫ x in s, ∫ y in t, f (x, y) ∂ν ∂μ := by
   simp only [← Measure.prod_restrict s t, IntegrableOn] at hf ⊢
   exact integral_prod f hf
-#align measure_theory.setIntegral_prod MeasureTheory.setIntegral_prod
+#align measure_theory.set_integral_prod MeasureTheory.setIntegral_prod
 
 theorem integral_prod_smul {𝕜 : Type*} [RCLike 𝕜] [NormedSpace 𝕜 E] (f : α → 𝕜) (g : β → E) :
     ∫ z, f z.1 • g z.2 ∂μ.prod ν = (∫ x, f x ∂μ) • ∫ y, g y ∂ν := by
@@ -527,7 +527,7 @@ theorem setIntegral_prod_mul {L : Type*} [RCLike L] (f : α → L) (g : β → L
   -- Porting note: added
   rw [← Measure.prod_restrict s t]
   apply integral_prod_mul
-#align measure_theory.setIntegral_prod_mul MeasureTheory.setIntegral_prod_mul
+#align measure_theory.set_integral_prod_mul MeasureTheory.setIntegral_prod_mul
 
 theorem integral_fun_snd (f : β → E) : ∫ z, f z.2 ∂μ.prod ν = (μ univ).toReal • ∫ y, f y ∂ν := by
   simpa using integral_prod_smul (1 : α → ℝ) f
