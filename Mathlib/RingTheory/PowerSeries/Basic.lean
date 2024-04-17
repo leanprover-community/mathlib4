@@ -270,8 +270,8 @@ theorem C_injective : Function.Injective (C R) := by
   have := (ext_iff (φ := C R a) (ψ := C R b)).mp H 0
   rwa [coeff_zero_C, coeff_zero_C] at this
 
-protected theorem subsingleton_iff : Subsingleton R ↔ Subsingleton R⟦X⟧ := by
-  refine ⟨fun _ ↦ inferInstance, fun h ↦ ?_⟩
+protected theorem subsingleton_iff : Subsingleton R⟦X⟧ ↔ Subsingleton R := by
+  refine ⟨fun h ↦ ?_, fun _ ↦ inferInstance⟩
   rw [subsingleton_iff] at h ⊢
   exact fun a b ↦ C_injective (h (C R a) (C R b))
 

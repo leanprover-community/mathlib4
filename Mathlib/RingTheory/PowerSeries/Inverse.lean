@@ -353,9 +353,6 @@ theorem maximalIdeal_eq_span_X : LocalRing.maximalIdeal (k⟦X⟧) = Ideal.span 
       apply Ideal.eq_top_of_isUnit_mem I hfI0 (IsUnit.map (C k) (Ne.isUnit hfX))
   rw [LocalRing.eq_maximalIdeal hX]
 
-instance isDedekindDomain : IsDedekindDomain k⟦X⟧ :=
-  IsPrincipalIdealRing.isDedekindDomain (k⟦X⟧)
-
 instance : NormalizationMonoid k⟦X⟧ where
   normUnit f := (Unit_of_divided_by_X_pow_order f)⁻¹
   normUnit_zero := by simp only [Unit_of_divided_by_X_pow_order_zero, inv_one]
