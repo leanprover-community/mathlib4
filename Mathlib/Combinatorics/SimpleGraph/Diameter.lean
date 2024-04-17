@@ -106,7 +106,7 @@ lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
   aesop
 
 lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
-     G'.diam ≤ G.diam := by
+    G'.diam ≤ G.diam := by
   obtain ⟨u', v', huv'⟩ := G'.diam_exists
   have : G'.dist u' v' ≤ G.dist u' v' := by
     apply dist_le_subgraph_dist h
