@@ -49,7 +49,7 @@ variable (F : C → D)
 which provides a category structure so that the morphisms `X ⟶ Y` are the morphisms
 in `D` from `F X` to `F Y`.
 -/
--- Porting note: @[nolint has_nonempty_instance unused_arguments]
+-- Porting note(#5171): removed @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def InducedCategory (_F : C → D) : Type u₁ :=
   C
@@ -79,10 +79,10 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : Full (inducedFunctor F) where preimage f := f
+instance InducedCategory.full : (inducedFunctor F).Full where preimage f := f
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
-instance InducedCategory.faithful : Faithful (inducedFunctor F) where
+instance InducedCategory.faithful : (inducedFunctor F).Faithful where
 #align category_theory.induced_category.faithful CategoryTheory.InducedCategory.faithful
 
 end Induced
@@ -101,9 +101,9 @@ See <https://stacks.math.columbia.edu/tag/001D>. We do not define 'strictly full
 -/
 @[ext]
 structure FullSubcategory where
-  /--The category of which this is a full subcategory-/
+  /-- The category of which this is a full subcategory-/
   obj : C
-  /--The predicate satisfied by all objects in this subcategory-/
+  /-- The predicate satisfied by all objects in this subcategory-/
   property : Z obj
 #align category_theory.full_subcategory CategoryTheory.FullSubcategory
 #align category_theory.full_subcategory.ext CategoryTheory.FullSubcategory.ext
@@ -112,6 +112,13 @@ structure FullSubcategory where
 instance FullSubcategory.category : Category.{v} (FullSubcategory Z) :=
   InducedCategory.category FullSubcategory.obj
 #align category_theory.full_subcategory.category CategoryTheory.FullSubcategory.category
+
+-- these lemmas are not particularly well-typed, so would probably be dangerous as simp lemmas
+
+lemma FullSubcategory.id_def (X : FullSubcategory Z) : 𝟙 X = 𝟙 X.obj := rfl
+
+lemma FullSubcategory.comp_def {X Y Z : FullSubcategory Z} (f : X ⟶ Y) (g : Y ⟶ Z) :
+    f ≫ g = (f ≫ g : X.obj ⟶ Z.obj) := rfl
 
 /-- The forgetful functor from a full subcategory into the original category
 ("forgetting" the condition).
@@ -130,11 +137,11 @@ theorem fullSubcategoryInclusion.map {X Y} {f : X ⟶ Y} : (fullSubcategoryInclu
   rfl
 #align category_theory.full_subcategory_inclusion.map CategoryTheory.fullSubcategoryInclusion.map
 
-instance FullSubcategory.full : Full (fullSubcategoryInclusion Z) :=
+instance FullSubcategory.full : (fullSubcategoryInclusion Z).Full :=
   InducedCategory.full _
 #align category_theory.full_subcategory.full CategoryTheory.FullSubcategory.full
 
-instance FullSubcategory.faithful : Faithful (fullSubcategoryInclusion Z) :=
+instance FullSubcategory.faithful : (fullSubcategoryInclusion Z).Faithful :=
   InducedCategory.faithful _
 #align category_theory.full_subcategory.faithful CategoryTheory.FullSubcategory.faithful
 
@@ -150,10 +157,10 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ 
 #align category_theory.full_subcategory.map_map CategoryTheory.FullSubcategory.map_map
 
 instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  Full (FullSubcategory.map h) where preimage f := f
+  (FullSubcategory.map h).Full where preimage f := f
 
 instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  Faithful (FullSubcategory.map h) where
+  (FullSubcategory.map h).Faithful where
 
 @[simp]
 theorem FullSubcategory.map_inclusion (h : ∀ ⦃X⦄, Z X → Z' X) :
@@ -200,12 +207,12 @@ theorem fullSubcategoryInclusion_map_lift_map (F : C ⥤ D) (hF : ∀ X, P (F.ob
   rfl
 #align category_theory.full_subcategory.inclusion_map_lift_map CategoryTheory.fullSubcategoryInclusion_map_lift_map
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Faithful F] :
-    Faithful (FullSubcategory.lift P F hF) :=
-  Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
+instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [F.Faithful] :
+    (FullSubcategory.lift P F hF).Faithful :=
+  Functor.Faithful.of_comp_iso (FullSubcategory.lift_comp_inclusion P F hF)
 
-instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [Full F] : Full (FullSubcategory.lift P F hF) :=
-  Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
+instance (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) [F.Full] : (FullSubcategory.lift P F hF).Full :=
+  Functor.Full.ofCompFaithfulIso (FullSubcategory.lift_comp_inclusion P F hF)
 
 @[simp]
 theorem FullSubcategory.lift_comp_map (F : C ⥤ D) (hF : ∀ X, P (F.obj X)) (h : ∀ ⦃X⦄, P X → Q X) :

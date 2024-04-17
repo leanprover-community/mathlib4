@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Topology.Order.Basic
 import Mathlib.GroupTheory.Archimedean
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.archimedean from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -27,7 +27,7 @@ open Set
 
 /-- Rational numbers are dense in a linear ordered archimedean field. -/
 theorem Rat.denseRange_cast {𝕜} [LinearOrderedField 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜]
-  [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
+    [Archimedean 𝕜] : DenseRange ((↑) : ℚ → 𝕜) :=
   dense_of_exists_between fun _ _ h => Set.exists_range_iff.2 <| exists_rat_btwn h
 #align rat.dense_range_cast Rat.denseRange_cast
 

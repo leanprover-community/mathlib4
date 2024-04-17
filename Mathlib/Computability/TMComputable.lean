@@ -3,10 +3,10 @@ Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
 -/
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.TuringMachine
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Polynomial.Eval
 
 #align_import computability.tm_computable from "leanprover-community/mathlib"@"6f9cb03e8a39ea345796a13c6639cb330e50869b"
 
@@ -260,7 +260,7 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
   outputsFun _ :=
     { steps := 1
       evals_in_steps := rfl
-      steps_le_m := by simp only [Polynomial.eval_one] }
+      steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 #align turing.id_computable_in_poly_time Turing.idComputableInPolyTime
 
 instance inhabitedTM2ComputableInPolyTime :

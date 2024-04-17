@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
 
@@ -52,7 +52,8 @@ free commutative ring, free ring
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 universe u v
 
@@ -63,7 +64,7 @@ def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
 #align free_comm_ring FreeCommRing
 
---Porting note: two instances below couldn't be derived
+-- Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 #align free_comm_ring.comm_ring FreeCommRing.instCommRing
@@ -87,9 +88,8 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
 #align free_comm_ring.of_injective FreeCommRing.of_injective
 
 -- Porting note: added to ease a proof in `Algebra.DirectLimit`
-lemma of_cons (a : α) (m : Multiset α) :
-  (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
-  @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
+lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
+    @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
   dsimp [FreeCommRing]
   rw [← Multiset.singleton_add, ofAdd_add,
@@ -375,7 +375,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 #align free_ring.coe_surjective FreeRing.coe_surjective
 
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
-      @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
+    @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
   erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
     FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]

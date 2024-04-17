@@ -3,7 +3,6 @@ Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 
 #align_import linear_algebra.affine_space.midpoint from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -220,7 +219,7 @@ theorem midpoint_zero_add (x y : V) : midpoint R 0 (x + y) = midpoint R x y :=
 
 theorem midpoint_eq_smul_add (x y : V) : midpoint R x y = (⅟ 2 : R) • (x + y) := by
   rw [midpoint_eq_iff, pointReflection_apply, vsub_eq_sub, vadd_eq_add, sub_add_eq_add_sub, ←
-    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel']
+    two_smul R, smul_smul, mul_invOf_self, one_smul, add_sub_cancel_left]
 #align midpoint_eq_smul_add midpoint_eq_smul_add
 
 @[simp]

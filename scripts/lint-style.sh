@@ -37,9 +37,9 @@ set -exo pipefail
 
 touch scripts/style-exceptions.txt
 
-git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py
-git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py
-git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py
+git ls-files 'Mathlib/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Archive/*.lean' | xargs ./scripts/lint-style.py "$@"
+git ls-files 'Counterexamples/*.lean' | xargs ./scripts/lint-style.py "$@"
 
 # 2. Global checks on the mathlib repository
 

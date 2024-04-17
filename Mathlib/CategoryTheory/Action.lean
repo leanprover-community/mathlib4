@@ -113,12 +113,12 @@ variable {X} (x : X)
 
 /-- The stabilizer of a point is isomorphic to the endomorphism monoid at the
   corresponding point. In fact they are definitionally equivalent. -/
-def stabilizerIsoEnd : Stabilizer.submonoid M x ≃* @End (ActionCategory M X) _ x :=
+def stabilizerIsoEnd : stabilizerSubmonoid M x ≃* @End (ActionCategory M X) _ x :=
   MulEquiv.refl _
 #align category_theory.action_category.stabilizer_iso_End CategoryTheory.ActionCategory.stabilizerIsoEnd
 
 @[simp]
-theorem stabilizerIsoEnd_apply (f : Stabilizer.submonoid M x) :
+theorem stabilizerIsoEnd_apply (f : stabilizerSubmonoid M x) :
     (stabilizerIsoEnd M x) f = f :=
   rfl
 #align category_theory.action_category.stabilizer_iso_End_apply CategoryTheory.ActionCategory.stabilizerIsoEnd_apply
@@ -150,7 +150,7 @@ section Group
 
 variable {G : Type*} [Group G] [MulAction G X]
 
-noncomputable instance : Groupoid (ActionCategory G X) :=
+instance : Groupoid (ActionCategory G X) :=
   CategoryTheory.groupoidOfElements _
 
 /-- Any subgroup of `G` is a vertex group in its action groupoid. -/
@@ -160,7 +160,7 @@ def endMulEquivSubgroup (H : Subgroup G) : End (objEquiv G (G ⧸ H) ↑(1 : G))
 #align category_theory.action_category.End_mul_equiv_subgroup CategoryTheory.ActionCategory.endMulEquivSubgroup
 
 /-- A target vertex `t` and a scalar `g` determine a morphism in the action groupoid. -/
-def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t) t :=
+def homOfPair (t : X) (g : G) : @Quiver.Hom (ActionCategory G X) _ (g⁻¹ • t :) t :=
   Subtype.mk g (smul_inv_smul g t)
 #align category_theory.action_category.hom_of_pair CategoryTheory.ActionCategory.homOfPair
 
@@ -180,7 +180,7 @@ protected def cases {P : ∀ ⦃a b : ActionCategory G X⦄, (a ⟶ b) → Sort*
   rfl
 #align category_theory.action_category.cases CategoryTheory.ActionCategory.cases
 
--- porting note: added to ease the proof of `uncurry`
+-- Porting note: added to ease the proof of `uncurry`
 lemma cases' ⦃a' b' : ActionCategory G X⦄ (f : a' ⟶ b') :
     ∃ (a b : X) (g : G) (ha : a' = a) (hb : b' = b) (hg : a = g⁻¹ • b),
       f = eqToHom (by rw [ha, hg]) ≫ homOfPair b g ≫ eqToHom (by rw [hb]) := by
@@ -199,7 +199,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     rfl
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
-      congr
       dsimp
       ext1
       ext b
@@ -207,7 +206,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       rfl
     map_mul' := by
       intro g h
-      congr
       ext b
       exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }
@@ -225,7 +223,7 @@ def uncurry (F : G →* (X → H) ⋊[mulAutArrow] G) (sane : ∀ g, (F g).right
     rw [F.map_one]
     rfl
   map_comp f g := by
-    -- porting note: I was not able to use `ActionCategory.cases` here,
+    -- Porting note: I was not able to use `ActionCategory.cases` here,
     -- but `ActionCategory.cases'` seems as good; the original proof was:
     -- intro x y z f g; revert y z g
     -- refine' action_category.cases _

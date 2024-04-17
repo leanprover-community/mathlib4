@@ -38,12 +38,12 @@ theorem atImInfty_mem (S : Set ℍ) : S ∈ atImInfty ↔ ∃ A : ℝ, ∀ z : �
   simp only [atImInfty_basis.mem_iff, true_and]; rfl
 #align upper_half_plane.at_im_infty_mem UpperHalfPlane.atImInfty_mem
 
-/-- A function ` f : ℍ → α` is bounded at infinity if it is bounded along `atImInfty`. -/
+/-- A function `f : ℍ → α` is bounded at infinity if it is bounded along `atImInfty`. -/
 def IsBoundedAtImInfty {α : Type*} [Norm α] (f : ℍ → α) : Prop :=
   BoundedAtFilter atImInfty f
 #align upper_half_plane.is_bounded_at_im_infty UpperHalfPlane.IsBoundedAtImInfty
 
-/-- A function ` f : ℍ → α` is zero at infinity it is zero along `atImInfty`. -/
+/-- A function `f : ℍ → α` is zero at infinity it is zero along `atImInfty`. -/
 def IsZeroAtImInfty {α : Type*} [Zero α] [TopologicalSpace α] (f : ℍ → α) : Prop :=
   ZeroAtFilter atImInfty f
 #align upper_half_plane.is_zero_at_im_infty UpperHalfPlane.IsZeroAtImInfty
@@ -55,12 +55,12 @@ theorem zero_form_isBoundedAtImInfty {α : Type*} [NormedField α] :
 
 /-- Module of functions that are zero at infinity. -/
 def zeroAtImInftySubmodule (α : Type*) [NormedField α] : Submodule α (ℍ → α) :=
-  zeroAtFilterSubmodule atImInfty
+  zeroAtFilterSubmodule _ atImInfty
 #align upper_half_plane.zero_at_im_infty_submodule UpperHalfPlane.zeroAtImInftySubmodule
 
 /-- Subalgebra of functions that are bounded at infinity. -/
 def boundedAtImInftySubalgebra (α : Type*) [NormedField α] : Subalgebra α (ℍ → α) :=
-  boundedFilterSubalgebra atImInfty
+  boundedFilterSubalgebra _ atImInfty
 #align upper_half_plane.bounded_at_im_infty_subalgebra UpperHalfPlane.boundedAtImInftySubalgebra
 
 nonrec theorem IsBoundedAtImInfty.mul {f g : ℍ → ℂ} (hf : IsBoundedAtImInfty f)

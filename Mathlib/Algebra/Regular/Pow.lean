@@ -3,9 +3,9 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-import Mathlib.Algebra.Hom.Iterate
-import Mathlib.Algebra.Regular.Basic
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.IterateHom
+import Mathlib.Algebra.Regular.Basic
 
 #align_import algebra.regular.pow from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
@@ -46,7 +46,7 @@ theorem IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
 /-- An element `a` is left-regular if and only if a positive power of `a` is left-regular. -/
 theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔ IsLeftRegular a := by
   refine' ⟨_, IsLeftRegular.pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
   exact IsLeftRegular.of_mul
 #align is_left_regular.pow_iff IsLeftRegular.pow_iff
 
@@ -54,7 +54,7 @@ theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔
 theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) :
     IsRightRegular (a ^ n) ↔ IsRightRegular a := by
   refine' ⟨_, IsRightRegular.pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']
   exact IsRightRegular.of_mul
 #align is_right_regular.pow_iff IsRightRegular.pow_iff
 

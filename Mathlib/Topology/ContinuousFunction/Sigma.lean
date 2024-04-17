@@ -3,7 +3,6 @@ Copyright (c) 2023 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
-import Mathlib.Topology.Connected
 import Mathlib.Topology.CompactOpen
 
 /-!
@@ -51,7 +50,7 @@ theorem embedding_sigmaMk_comp [Nonempty X] :
   inj := by
     · rintro ⟨i, g⟩ ⟨i', g'⟩ h
       obtain ⟨rfl, hg⟩ : i = i' ∧ HEq (⇑g) (⇑g') :=
-        Function.eq_of_sigmaMk_comp <| congr_arg FunLike.coe h
+        Function.eq_of_sigmaMk_comp <| congr_arg DFunLike.coe h
       simpa using hg
 
 section ConnectedSpace
@@ -65,7 +64,7 @@ with unbundled functions and `ContinuousMap.sigmaCodHomeomorph` for a homeomorph
 this fact. -/
 theorem exists_lift_sigma (f : C(X, Σ i, Y i)) : ∃ i g, f = (sigmaMk i).comp g :=
   let ⟨i, g, hg, hfg⟩ := f.continuous.exists_lift_sigma
-  ⟨i, ⟨g, hg⟩, FunLike.ext' hfg⟩
+  ⟨i, ⟨g, hg⟩, DFunLike.ext' hfg⟩
 
 variable (X Y)
 

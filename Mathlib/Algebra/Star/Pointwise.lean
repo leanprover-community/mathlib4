@@ -30,7 +30,7 @@ local postfix:max "⋆" => star
 
 variable {α : Type*} {s t : Set α} {a : α}
 
-/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the locale `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩

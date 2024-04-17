@@ -5,6 +5,7 @@ Authors: Chris Hughes
 -/
 
 import Mathlib.Algebra.Ring.Defs
+import Mathlib.Algebra.Group.Basic
 import Mathlib.Algebra.Group.MinimalAxioms
 
 /-!
@@ -21,7 +22,7 @@ a minimum number of equalities.
 
 -/
 
-set_option autoImplicit true
+universe u
 
 /-- Define a `Ring` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`
@@ -66,7 +67,8 @@ def Ring.ofMinimalAxioms {R : Type u}
     mul_assoc := mul_assoc
     one_mul := one_mul
     mul_one := mul_one
-    add_left_neg := add_left_neg }
+    add_left_neg := add_left_neg
+    zsmul := (· • ·) }
 
 /-- Define a `CommRing` structure on a Type by proving a minimized set of axioms.
 Note that this uses the default definitions for `npow`, `nsmul`, `zsmul` and `sub`

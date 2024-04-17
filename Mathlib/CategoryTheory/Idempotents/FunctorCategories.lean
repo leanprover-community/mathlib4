@@ -80,7 +80,6 @@ instance functor_category_isIdempotentComplete [IsIdempotentComplete C] :
   use Y, i, e
   constructor
   · ext j
-    apply equalizer.hom_ext
     dsimp
     rw [assoc, equalizer.lift_ι, ← equalizer.condition, id_comp, comp_id]
   · ext j
@@ -106,8 +105,8 @@ def obj (P : Karoubi (J ⥤ C)) : J ⥤ Karoubi C where
 
 /-- Tautological action on maps of the functor `Karoubi (J ⥤ C) ⥤ (J ⥤ Karoubi C)`. -/
 @[simps]
-def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q
-    where app j := ⟨f.f.app j, congr_app f.comm j⟩
+def map {P Q : Karoubi (J ⥤ C)} (f : P ⟶ Q) : obj P ⟶ obj Q where
+  app j := ⟨f.f.app j, congr_app f.comm j⟩
 #align category_theory.idempotents.karoubi_functor_category_embedding.map CategoryTheory.Idempotents.KaroubiFunctorCategoryEmbedding.map
 
 end KaroubiFunctorCategoryEmbedding
@@ -119,7 +118,7 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
   map := KaroubiFunctorCategoryEmbedding.map
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
-instance : Full (karoubiFunctorCategoryEmbedding J C) where
+instance : (karoubiFunctorCategoryEmbedding J C).Full where
   preimage {P Q} f :=
     { f :=
         { app := fun j => (f.app j).f
@@ -134,7 +133,7 @@ instance : Full (karoubiFunctorCategoryEmbedding J C) where
         exact (f.app j).comm }
   witness f := rfl
 
-instance : Faithful (karoubiFunctorCategoryEmbedding J C) where
+instance : (karoubiFunctorCategoryEmbedding J C).Faithful where
   map_injective h := by
     ext j
     exact hom_ext_iff.mp (congr_app h j)

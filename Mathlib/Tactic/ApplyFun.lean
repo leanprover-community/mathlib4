@@ -27,34 +27,63 @@ def applyFunHyp (f : Term) (using? : Option Term) (h : FVarId) (g : MVarId) :
   let using? ← using?.mapM (elabTerm · none)
   let d ← h.getDecl
   let (prf, newGoals) ← match (← whnfR (← instantiateMVars d.type)).getAppFnArgs with
-  | (``Eq, #[_, lhs, rhs]) => do
-    let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
-      withoutRecover <| runTermElab <| do
-        let f ← Term.elabTerm f none
-        let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
-        let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
-        unless ← isDefEq (← inferType lhs') (← inferType rhs') do
-          let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
-          throwError "In generated equality, right-hand side {msg}"
-        let eq ← mkEq lhs'.headBeta rhs'.headBeta
-        Term.synthesizeSyntheticMVarsUsingDefault
-        instantiateMVars eq
-    let mvar ← mkFreshExprMVar eq'
-    let [] ← mvar.mvarId!.congrN! | throwError "`apply_fun` could not construct congruence"
-    pure (mvar, gs)
-  | (``LE.le, _) =>
-    let (monotone_f, newGoals) ← match using? with
-    -- Use the expression passed with `using`
-    | some r => pure (r, [])
-    -- Create a new `Monotone f` goal
-    | none => do
-      let f ← elabTermForApply f
-      let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
-      -- TODO attempt to solve this goal using `mono` when it has been ported,
-      -- via `synthesizeUsing`.
-      pure (ng, [ng.mvarId!])
-    pure (← mkAppM' monotone_f #[d.toExpr], newGoals)
-  | _ => throwError "apply_fun can only handle hypotheses of the form `a = b` or `a ≤ b`."
+    | (``Eq, #[_, lhs, rhs]) => do
+      let (eq', gs) ← withCollectingNewGoalsFrom (tagSuffix := `apply_fun) <|
+        withoutRecover <| runTermElab <| do
+          let f ← Term.elabTerm f none
+          let lhs' ← Term.elabAppArgs f #[] #[.expr lhs] none false false
+          let rhs' ← Term.elabAppArgs f #[] #[.expr rhs] none false false
+          unless ← isDefEq (← inferType lhs') (← inferType rhs') do
+            let msg ← mkHasTypeButIsExpectedMsg (← inferType rhs') (← inferType lhs')
+            throwError "In generated equality, right-hand side {msg}"
+          let eq ← mkEq lhs'.headBeta rhs'.headBeta
+          Term.synthesizeSyntheticMVarsUsingDefault
+          instantiateMVars eq
+      let mvar ← mkFreshExprMVar eq'
+      let [] ← mvar.mvarId!.congrN! | throwError "`apply_fun` could not construct congruence"
+      pure (mvar, gs)
+    | (``Not, #[P]) =>
+      match (← whnfR P).getAppFnArgs with
+      | (``Eq, _) =>
+        let (injective_f, newGoals) ← match using? with
+          -- Use the expression passed with `using`
+          | some r => pure (r, [])
+          -- Create a new `Injective f` goal
+          | none => do
+            let f ← elabTermForApply f
+            let ng ← mkFreshExprMVar (← mkAppM ``Function.Injective #[f])
+            -- TODO attempt to solve this goal using `mono` when it has been ported,
+            -- via `synthesizeUsing`.
+            pure (ng, [ng.mvarId!])
+        pure (← mkAppM' (← mkAppM ``Function.Injective.ne #[injective_f]) #[d.toExpr], newGoals)
+      | _ => throwError
+        "apply_fun can only handle negations of equality."
+    | (``LT.lt, _) =>
+      let (strict_monotone_f, newGoals) ← match using? with
+        -- Use the expression passed with `using`
+        | some r => pure (r, [])
+        -- Create a new `StrictMono f` goal
+        | none => do
+          let f ← elabTermForApply f
+          let ng ← mkFreshExprMVar (← mkAppM ``StrictMono #[f])
+          -- TODO attempt to solve this goal using `mono` when it has been ported,
+          -- via `synthesizeUsing`.
+          pure (ng, [ng.mvarId!])
+      pure (← mkAppM' strict_monotone_f #[d.toExpr], newGoals)
+    | (``LE.le, _) =>
+      let (monotone_f, newGoals) ← match using? with
+        -- Use the expression passed with `using`
+        | some r => pure (r, [])
+        -- Create a new `Monotone f` goal
+        | none => do
+          let f ← elabTermForApply f
+          let ng ← mkFreshExprMVar (← mkAppM ``Monotone #[f])
+          -- TODO attempt to solve this goal using `mono` when it has been ported,
+          -- via `synthesizeUsing`.
+          pure (ng, [ng.mvarId!])
+      pure (← mkAppM' monotone_f #[d.toExpr], newGoals)
+    | _ => throwError
+      "apply_fun can only handle hypotheses of the form `a = b`, `a ≠ b`, `a ≤ b`, `a < b`."
 
   let g ← g.clear h
   let (_, g) ← g.note d.userName prf
@@ -76,7 +105,8 @@ def maybeProveInjective (ginj : Expr) (using? : Option Expr) : MetaM Bool := do
       let err ← mkHasTypeButIsExpectedMsg (← inferType u) (← inferType ginj)
       throwError "Using clause {err}"
   -- Try an assumption
-  try ginj.mvarId!.assumption; return true catch _ => pure ()
+  if ← ginj.mvarId!.assumptionCore then
+    return true
   -- Try using that this is an equivalence
   -- Note: if `f` is itself a metavariable, this can cause it to become an equivalence;
   -- perhaps making sure `f` is an equivalence would be correct, but maybe users
@@ -147,6 +177,10 @@ Apply a function to an equality or inequality in either a local hypothesis or th
   and create a subsidiary goal `Monotone f`.
   `apply_fun` will automatically attempt to discharge this subsidiary goal using `mono`,
   or an explicit solution can be provided with `apply_fun f at h using P`, where `P : Monotone f`.
+* If we have `h : a < b`, then `apply_fun f at h` will replace this with `h : f a < f b`,
+  and create a subsidiary goal `StrictMono f` and behaves as in the previous case.
+* If we have `h : a ≠ b`, then `apply_fun f at h` will replace this with `h : f a ≠ f b`,
+  and create a subsidiary goal `Injective f` and behaves as in the previous two cases.
 * If the goal is `a ≠ b`, `apply_fun f` will replace this with `f a ≠ f b`.
 * If the goal is `a = b`, `apply_fun f` will replace this with `f a = f b`,
   and create a subsidiary goal `injective f`.

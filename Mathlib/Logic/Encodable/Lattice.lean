@@ -5,6 +5,7 @@ Authors: Floris van Doorn
 -/
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Logic.Pairwise
+import Mathlib.Data.Set.Basic
 
 #align_import logic.encodable.lattice from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
@@ -42,7 +43,7 @@ theorem iUnion_decode₂_cases {f : β → Set α} {C : Set α → Prop} (H0 : C
     C (⋃ b ∈ decode₂ β n, f b) :=
   match decode₂ β n with
   | none => by
-    simp
+    simp only [Option.mem_def, iUnion_of_empty, iUnion_empty]
     apply H0
   | some b => by
     convert H1 b

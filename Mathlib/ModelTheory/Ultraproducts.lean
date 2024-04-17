@@ -86,12 +86,9 @@ theorem term_realize_cast {β : Type*} (x : β → ∀ a, M a) (t : L.Term β) :
   convert @Term.realize_quotient_mk' L _ ((u : Filter α).productSetoid M)
       (Ultraproduct.setoidPrestructure M u) _ t x using 2
   ext a
-  induction t
-  case var =>
-    rfl
-  case func _ _ _ t_ih =>
-    simp only [Term.realize, t_ih]
-    rfl
+  induction t with
+  | var => rfl
+  | func _ _ t_ih => simp only [Term.realize, t_ih]; rfl
 #align first_order.language.ultraproduct.term_realize_cast FirstOrder.Language.Ultraproduct.term_realize_cast
 
 variable [∀ a : α, Nonempty (M a)]
@@ -123,7 +120,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       φ.Realize (fun i : β => (x i : (u : Filter α).Product M))
         (Fin.snoc (((↑) : (∀ a, M a) → (u : Filter α).Product M) ∘ v)
           (m : (u : Filter α).Product M)))
-    · exact forall_quotient_iff
+    · exact Quotient.forall
     have h' :
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
@@ -154,8 +151,8 @@ theorem realize_formula_cast {β : Type*} (φ : L.Formula β) (x : β → ∀ a,
   exact congr rfl (Subsingleton.elim _ _)
 #align first_order.language.ultraproduct.realize_formula_cast FirstOrder.Language.Ultraproduct.realize_formula_cast
 
-/-- Łoś's Theorem : A sentence is true in an ultraproduct if and only if the set of structures it is
-  true in is in the ultrafilter. -/
+/-- **Łoś's Theorem**: A sentence is true in an ultraproduct if and only if the set of structures
+it is true in is in the ultrafilter. -/
 theorem sentence_realize (φ : L.Sentence) :
     (u : Filter α).Product M ⊨ φ ↔ ∀ᶠ a : α in u, M a ⊨ φ := by
   simp_rw [Sentence.Realize]

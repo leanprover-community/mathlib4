@@ -24,7 +24,6 @@ variable {α β : Type*}
 section SeminormedAddGroup
 
 variable [SeminormedAddGroup α] [SeminormedAddGroup β] [SMulZeroClass α β]
-
 variable [BoundedSMul α β]
 
 theorem norm_smul_le (r : α) (x : β) : ‖r • x‖ ≤ ‖r‖ * ‖x‖ := by
@@ -43,7 +42,7 @@ theorem nndist_smul_le (s : α) (x y : β) : nndist (s • x) (s • y) ≤ ‖s
   dist_smul_le s x y
 #align nndist_smul_le nndist_smul_le
 
-theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ ((· • ·) s : β → β) :=
+theorem lipschitzWith_smul (s : α) : LipschitzWith ‖s‖₊ (s • · : β → β) :=
   lipschitzWith_iff_dist_le_mul.2 <| dist_smul_le _
 #align lipschitz_with_smul lipschitzWith_smul
 
@@ -78,12 +77,14 @@ theorem BoundedSMul.of_norm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖ �
     dist_pair_smul' := fun a₁ a₂ b => by simpa [sub_smul, dist_eq_norm] using h (a₁ - a₂) b }
 #align has_bounded_smul.of_norm_smul_le BoundedSMul.of_norm_smul_le
 
+theorem BoundedSMul.of_nnnorm_smul_le (h : ∀ (r : α) (x : β), ‖r • x‖₊ ≤ ‖r‖₊ * ‖x‖₊) :
+    BoundedSMul α β := .of_norm_smul_le h
+
 end SeminormedRing
 
 section NormedDivisionRing
 
 variable [NormedDivisionRing α] [SeminormedAddGroup β]
-
 variable [MulActionWithZero α β] [BoundedSMul α β]
 
 theorem norm_smul (r : α) (x : β) : ‖r • x‖ = ‖r‖ * ‖x‖ := by
@@ -105,7 +106,6 @@ end NormedDivisionRing
 section NormedDivisionRingModule
 
 variable [NormedDivisionRing α] [SeminormedAddCommGroup β]
-
 variable [Module α β] [BoundedSMul α β]
 
 theorem dist_smul₀ (s : α) (x y : β) : dist (s • x) (s • y) = ‖s‖ * dist x y := by

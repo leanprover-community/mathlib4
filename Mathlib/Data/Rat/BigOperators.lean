@@ -3,7 +3,7 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Data.Rat.Cast
+import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Algebra.BigOperators.Basic
 
 #align_import data.rat.big_operators from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
@@ -33,7 +33,7 @@ theorem cast_multiset_sum (s : Multiset ℚ) : (↑s.sum : α) = (s.map (↑)).s
 
 @[simp, norm_cast]
 theorem cast_sum (s : Finset ι) (f : ι → ℚ) : ∑ i in s, f i = ∑ i in s, (f i : α) :=
-  (map_sum (Rat.castHom α) _ s)
+  map_sum (Rat.castHom α) _ s
 #align rat.cast_sum Rat.cast_sum
 
 @[simp, norm_cast]

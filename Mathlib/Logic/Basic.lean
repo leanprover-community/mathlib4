@@ -6,12 +6,11 @@ Authors: Jeremy Avigad, Leonardo de Moura
 import Mathlib.Init.Logic
 import Mathlib.Init.Function
 import Mathlib.Init.Algebra.Classes
-import Mathlib.Tactic.Basic
-import Mathlib.Tactic.LeftRight
 import Std.Util.LibraryNote
 import Std.Tactic.Lint.Basic
 
-#align_import logic.basic from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import logic.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
+#align_import init.ite_simp from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
 
 /-!
 # Basic logic properties
@@ -40,7 +39,7 @@ section Miscellany
 --   And.decidable Or.decidable Decidable.false Xor.decidable Iff.decidable Decidable.true
 --   Implies.decidable Not.decidable Ne.decidable Bool.decidableEq Decidable.toBool
 
-attribute [simp] cast_eq cast_heq
+attribute [simp] cast_eq cast_heq imp_false
 
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
@@ -166,7 +165,7 @@ alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
 @[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id.def, eq_iff_iff]
+  funext _; simp only [true_iff, id, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
 
 #align imp_and_distrib imp_and
@@ -280,9 +279,22 @@ theorem Iff.not_left (h : a ↔ ¬b) : ¬a ↔ b := h.not.trans not_not
 theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 #align iff.not_right Iff.not_right
 
+protected lemma Iff.ne {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c = d) → (a ≠ b ↔ c ≠ d) :=
+  Iff.not
+#align iff.ne Iff.ne
+
+lemma Iff.ne_left {α β : Sort*} {a b : α} {c d : β} : (a = b ↔ c ≠ d) → (a ≠ b ↔ c = d) :=
+  Iff.not_left
+#align iff.ne_left Iff.ne_left
+
+lemma Iff.ne_right {α β : Sort*} {a b : α} {c d : β} : (a ≠ b ↔ c = d) → (a = b ↔ c ≠ d) :=
+  Iff.not_right
+#align iff.ne_right Iff.ne_right
+
 /-! ### Declarations about `Xor'` -/
 
-@[simp] theorem xor_true : Xor' True = Not := by simp [Xor']
+@[simp] theorem xor_true : Xor' True = Not := by
+  simp (config := { unfoldPartialApp := true }) [Xor']
 #align xor_true xor_true
 
 @[simp] theorem xor_false : Xor' False = id := by ext; simp [Xor']
@@ -291,7 +303,7 @@ theorem Iff.not_right (h : ¬a ↔ b) : a ↔ ¬b := not_not.symm.trans h.not
 theorem xor_comm (a b) : Xor' a b = Xor' b a := by simp [Xor', and_comm, or_comm]
 #align xor_comm xor_comm
 
-instance : IsCommutative Prop Xor' := ⟨xor_comm⟩
+instance : Std.Commutative Xor' := ⟨xor_comm⟩
 
 @[simp] theorem xor_self (a : Prop) : Xor' a a = False := by simp [Xor']
 #align xor_self xor_self
@@ -357,11 +369,9 @@ theorem Or.imp3 (had : a → d) (hbe : b → e) (hcf : c → f) : a ∨ b ∨ c 
 
 #align or_imp_distrib or_imp
 
-theorem or_iff_not_imp_left : a ∨ b ↔ ¬a → b := Decidable.or_iff_not_imp_left
-#align or_iff_not_imp_left or_iff_not_imp_left
-
-theorem or_iff_not_imp_right : a ∨ b ↔ ¬b → a := Decidable.or_iff_not_imp_right
-#align or_iff_not_imp_right or_iff_not_imp_right
+export Classical (or_iff_not_imp_left or_iff_not_imp_right)
+#align or_iff_not_imp_left Classical.or_iff_not_imp_left
+#align or_iff_not_imp_right Classical.or_iff_not_imp_right
 
 theorem not_or_of_imp : (a → b) → ¬a ∨ b := Decidable.not_or_of_imp
 #align not_or_of_imp not_or_of_imp
@@ -382,6 +392,10 @@ theorem imp_iff_or_not : b → a ↔ a ∨ ¬b := Decidable.imp_iff_or_not
 
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
+
+@[simp]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
+  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -426,7 +440,7 @@ theorem imp_or {a b c : Prop} : a → b ∨ c ↔ (a → b) ∨ (a → c) := Dec
 theorem imp_or' : a → b ∨ c ↔ (a → b) ∨ (a → c) := Decidable.imp_or'
 #align imp_or_distrib' imp_or'ₓ -- universes
 
-theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp
+theorem not_imp : ¬(a → b) ↔ a ∧ ¬b := Decidable.not_imp_iff_and_not
 #align not_imp not_imp
 
 theorem peirce (a b : Prop) : ((a → b) → a) → a := Decidable.peirce _ _
@@ -461,12 +475,12 @@ theorem not_and_not_right : ¬(a ∧ ¬b) ↔ a → b := Decidable.not_and_not_r
 
 /-! ### De Morgan's laws -/
 
-#align decidable.not_and_distrib Decidable.not_and
-#align decidable.not_and_distrib' Decidable.not_and'
+#align decidable.not_and_distrib Decidable.not_and_iff_or_not_not
+#align decidable.not_and_distrib' Decidable.not_and_iff_or_not_not'
 
-/-- One of de Morgan's laws: the negation of a conjunction is logically equivalent to the
+/-- One of **de Morgan's laws**: the negation of a conjunction is logically equivalent to the
 disjunction of the negations. -/
-theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and
+theorem not_and_or : ¬(a ∧ b) ↔ ¬a ∨ ¬b := Decidable.not_and_iff_or_not_not
 #align not_and_distrib not_and_or
 
 #align not_or_distrib not_or
@@ -503,33 +517,39 @@ alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
 section Equality
 
 -- todo: change name
-theorem ball_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
+theorem forall_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
     (∀ a, s a → ∀ b, s b → p a b) ↔ ∀ a b, s a → s b → p a b :=
   ⟨fun h a b ha hb ↦ h a ha b hb, fun h a ha b hb ↦ h a b ha hb⟩
-#align ball_cond_comm ball_cond_comm
+#align ball_cond_comm forall_cond_comm
 
-theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
+theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
     (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
-  ball_cond_comm
-#align ball_mem_comm ball_mem_comm
+  forall_cond_comm
+#align ball_mem_comm forall_mem_comm
 
-theorem ne_of_apply_ne {α β : Sort*} (f : α → β) {x y : α} (h : f x ≠ f y) : x ≠ y :=
-  fun w : x = y ↦ h (congr_arg f w)
+-- 2024-03-23
+@[deprecated] alias ball_cond_comm := forall_cond_comm
+@[deprecated] alias ball_mem_comm := forall_mem_comm
+
 #align ne_of_apply_ne ne_of_apply_ne
+
+lemma ne_of_eq_of_ne (h₁ : a = b) (h₂ : b ≠ c) : a ≠ c := h₁.symm ▸ h₂
+lemma ne_of_ne_of_eq (h₁ : a ≠ b) (h₂ : b = c) : a ≠ c := h₂ ▸ h₁
+
+alias Eq.trans_ne := ne_of_eq_of_ne
+alias Ne.trans_eq := ne_of_ne_of_eq
+#align eq.trans_ne Eq.trans_ne
+#align ne.trans_eq Ne.trans_eq
 
 theorem eq_equivalence : Equivalence (@Eq α) :=
   ⟨Eq.refl, @Eq.symm _, @Eq.trans _⟩
 #align eq_equivalence eq_equivalence
 
-@[simp] theorem eq_mp_eq_cast (h : α = β) : Eq.mp h = cast h := rfl
+-- These were migrated to Std but the `@[simp]` attributes were (mysteriously?) removed.
+attribute [simp] eq_mp_eq_cast eq_mpr_eq_cast
+
 #align eq_mp_eq_cast eq_mp_eq_cast
-
-@[simp] theorem eq_mpr_eq_cast (h : α = β) : Eq.mpr h = cast h.symm := rfl
 #align eq_mpr_eq_cast eq_mpr_eq_cast
-
-@[simp] theorem cast_cast : ∀ (ha : α = β) (hb : β = γ) (a : α),
-    cast hb (cast ha a) = cast (ha.trans hb) a
-  | rfl, rfl, _ => rfl
 #align cast_cast cast_cast
 
 -- @[simp] -- FIXME simp ignores proof rewrites
@@ -555,15 +575,13 @@ theorem congr_fun_congr_arg (f : α → β → γ) {a a' : α} (p : a = a') (b :
     congr_fun (congr_arg f p) b = congr_arg (fun a ↦ f a b) p := rfl
 #align congr_fun_congr_arg congr_fun_congr_arg
 
-theorem heq_of_cast_eq : ∀ (e : α = β) (_ : cast e a = a'), HEq a a'
-  | rfl, h => Eq.recOn h (HEq.refl _)
 #align heq_of_cast_eq heq_of_cast_eq
-
-theorem cast_eq_iff_heq : cast e a = a' ↔ HEq a a' :=
-  ⟨heq_of_cast_eq _, fun h ↦ by cases h; rfl⟩
 #align cast_eq_iff_heq cast_eq_iff_heq
 
---Porting note: new theorem. More general version of `eqRec_heq`
+theorem Eq.rec_eq_cast {α : Sort _} {P : α → Sort _} {x y : α} (h : x = y) (z : P x) :
+    h ▸ z = cast (congr_arg P h) z := by induction h; rfl
+
+-- Porting note (#10756): new theorem. More general version of `eqRec_heq`
 theorem eqRec_heq' {α : Sort u_1} {a' : α} {motive : (a : α) → a' = a → Sort u}
     (p : motive a' (rfl : a' = a')) {a : α} (t : a' = a) :
     HEq (@Eq.rec α a' motive p a t) p :=
@@ -581,36 +599,16 @@ theorem heq_rec_iff_heq {C : α → Sort*} {x : β} {y : C a} {e : a = b} :
     HEq x (e ▸ y) ↔ HEq x y := by subst e; rfl
 #align heq_rec_iff_heq heq_rec_iff_heq
 
-protected theorem Eq.congr (h₁ : x₁ = y₁) (h₂ : x₂ = y₂) : x₁ = x₂ ↔ y₁ = y₂ := by
-  subst h₁; subst h₂; rfl
 #align eq.congr Eq.congr
-
-theorem Eq.congr_left {x y z : α} (h : x = y) : x = z ↔ y = z := by rw [h]
 #align eq.congr_left Eq.congr_left
-
-theorem Eq.congr_right {x y z : α} (h : x = y) : z = x ↔ z = y := by rw [h]
 #align eq.congr_right Eq.congr_right
-
-alias congr_arg₂ := congrArg₂
 #align congr_arg2 congr_arg₂
 
 variable {β : α → Sort*} {γ : ∀ a, β a → Sort*} {δ : ∀ a b, γ a b → Sort*}
 
-theorem congr_fun₂ {f g : ∀ a b, γ a b} (h : f = g) (a : α) (b : β a) : f a b = g a b :=
-  congr_fun (congr_fun h _) _
 #align congr_fun₂ congr_fun₂
-
-theorem congr_fun₃ {f g : ∀ a b c, δ a b c} (h : f = g) (a : α) (b : β a) (c : γ a b) :
-    f a b c = g a b c :=
-  congr_fun₂ (congr_fun h _) _ _
 #align congr_fun₃ congr_fun₃
-
-theorem funext₂ {f g : ∀ a b, γ a b} (h : ∀ a b, f a b = g a b) : f = g :=
-  funext fun _ ↦ funext <| h _
 #align funext₂ funext₂
-
-theorem funext₃ {f g : ∀ a b c, δ a b c} (h : ∀ a b c, f a b c = g a b c) : f = g :=
-  funext fun _ ↦ funext₂ <| h _
 #align funext₃ funext₃
 
 end Equality
@@ -677,39 +675,31 @@ theorem exists_swap {p : α → β → Prop} : (∃ x y, p x y) ↔ ∃ y x, p x
 #align forall_exists_index forall_exists_index
 
 #align exists_imp_distrib exists_imp
-alias ⟨_, not_exists_of_forall_not⟩ := exists_imp
 #align not_exists_of_forall_not not_exists_of_forall_not
 
 #align Exists.some Exists.choose
 #align Exists.some_spec Exists.choose_spec
 
--- See Note [decidable namespace]
-protected theorem Decidable.not_forall {p : α → Prop} [Decidable (∃ x, ¬p x)]
-    [∀ x, Decidable (p x)] : (¬∀ x, p x) ↔ ∃ x, ¬p x :=
-  ⟨Not.decidable_imp_symm fun nx x ↦ nx.decidable_imp_symm fun h ↦ ⟨x, h⟩,
-   not_forall_of_exists_not⟩
 #align decidable.not_forall Decidable.not_forall
 
-@[simp]
-theorem not_forall {p : α → Prop} : (¬∀ x, p x) ↔ ∃ x, ¬p x :=
-  Decidable.not_forall
-#align not_forall not_forall
+export Classical (not_forall)
+#align not_forall Classical.not_forall
 
--- See Note [decidable namespace]
-protected theorem Decidable.not_forall_not [Decidable (∃ x, p x)] : (¬∀ x, ¬p x) ↔ ∃ x, p x :=
-  (@Decidable.not_iff_comm _ _ _ (decidable_of_iff (¬∃ x, p x) not_exists)).1 not_exists
 #align decidable.not_forall_not Decidable.not_forall_not
 
 theorem not_forall_not : (¬∀ x, ¬p x) ↔ ∃ x, p x := Decidable.not_forall_not
 #align not_forall_not not_forall_not
 
--- See Note [decidable namespace]
-protected theorem Decidable.not_exists_not [∀ x, Decidable (p x)] : (¬∃ x, ¬p x) ↔ ∀ x, p x := by
-  simp only [not_exists, Decidable.not_not]
 #align decidable.not_exists_not Decidable.not_exists_not
 
-theorem not_exists_not : (¬∃ x, ¬p x) ↔ ∀ x, p x := Decidable.not_exists_not
-#align not_exists_not not_exists_not
+export Classical (not_exists_not)
+#align not_exists_not Classical.not_exists_not
+
+lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a := by
+  rw [← not_forall]; exact em _
+
+lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
+  rw [← not_exists]; exact em _
 
 theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
@@ -743,8 +733,6 @@ theorem forall₃_true_iff {β : α → Sort*} {γ : ∀ a, β a → Sort*} :
 
 -- forall_forall_const is no longer needed
 
-@[simp] theorem exists_const (α) [i : Nonempty α] : (∃ _ : α, b) ↔ b :=
-  ⟨fun ⟨_, h⟩ ↦ h, i.elim Exists.intro⟩
 #align exists_const exists_const
 
 theorem exists_unique_const (α) [i : Nonempty α] [Subsingleton α] :
@@ -782,7 +770,7 @@ theorem Ne.ne_or_ne {x y : α} (z : α) (h : x ≠ y) : x ≠ z ∨ y ≠ z :=
 theorem exists_apply_eq_apply' (f : α → β) (a' : α) : ∃ a, f a' = f a := ⟨a', rfl⟩
 #align exists_apply_eq_apply' exists_apply_eq_apply'
 
--- porting note: an alternative workaround theorem:
+-- Porting note: an alternative workaround theorem:
 theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun _ ↦ b, rfl⟩
 
 @[simp] theorem exists_exists_and_eq_and {f : α → β} {p : α → Prop} {q : β → Prop} :
@@ -794,6 +782,18 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
     (∃ b, (∃ a, f a = b) ∧ p b) ↔ ∃ a, p (f a) :=
   ⟨fun ⟨_, ⟨a, ha⟩, hb⟩ ↦ ⟨a, ha.symm ▸ hb⟩, fun ⟨a, ha⟩ ↦ ⟨f a, ⟨a, rfl⟩, ha⟩⟩
 #align exists_exists_eq_and exists_exists_eq_and
+
+@[simp] theorem exists_exists_and_exists_and_eq_and {α β γ : Type*}
+    {f : α → β → γ} {p : α → Prop} {q : β → Prop} {r : γ → Prop} :
+    (∃ c, (∃ a, p a ∧ ∃ b, q b ∧ f a b = c) ∧ r c) ↔ ∃ a, p a ∧ ∃ b, q b ∧ r (f a b) :=
+  ⟨fun ⟨_, ⟨a, ha, b, hb, hab⟩, hc⟩ ↦ ⟨a, ha, b, hb, hab.symm ▸ hc⟩,
+    fun ⟨a, ha, b, hb, hab⟩ ↦ ⟨f a b, ⟨a, ha, b, hb, rfl⟩, hab⟩⟩
+
+@[simp] theorem exists_exists_exists_and_eq {α β γ : Type*}
+    {f : α → β → γ} {p : γ → Prop} :
+    (∃ c, (∃ a, ∃ b, f a b = c) ∧ p c) ↔ ∃ a, ∃ b, p (f a b) :=
+  ⟨fun ⟨_, ⟨a, b, hab⟩, hc⟩ ↦ ⟨a, b, hab.symm ▸ hc⟩,
+    fun ⟨a, b, hab⟩ ↦ ⟨f a b, ⟨a, b, rfl⟩, hab⟩⟩
 
 @[simp] theorem exists_or_eq_left (y : α) (p : α → Prop) : ∃ x : α, x = y ∨ p x := ⟨y, .inl rfl⟩
 #align exists_or_eq_left exists_or_eq_left
@@ -807,25 +807,17 @@ theorem exists_apply_eq (a : α) (b : β) : ∃ f : α → β, f a = b := ⟨fun
 @[simp] theorem exists_or_eq_right' (y : α) (p : α → Prop) : ∃ x : α, p x ∨ y = x := ⟨y, .inr rfl⟩
 #align exists_or_eq_right' exists_or_eq_right'
 
-theorem forall_apply_eq_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, f a = b → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff
+#align forall_apply_eq_imp_iff forall_apply_eq_imp_iff'
 
-@[simp] theorem forall_apply_eq_imp_iff' {f : α → β} {p : β → Prop} :
-    (∀ b a, f a = b → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff'
+#align forall_apply_eq_imp_iff' forall_apply_eq_imp_iff
 
-theorem forall_eq_apply_imp_iff {f : α → β} {p : β → Prop} :
+theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
     (∀ a b, b = f a → p b) ↔ ∀ a, p (f a) := by simp
-#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff
+#align forall_eq_apply_imp_iff forall_eq_apply_imp_iff'
 
-@[simp] theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
-    (∀ b a, b = f a → p b) ↔ ∀ a, p (f a) := by simp [forall_swap]
-#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff'
-
-@[simp] theorem forall_apply_eq_imp_iff₂ {f : α → β} {p : α → Prop} {q : β → Prop} :
-    (∀ b a, p a → f a = b → q b) ↔ ∀ a, p a → q (f a) :=
-  ⟨fun h a ha ↦ h (f a) a ha rfl, fun h _ a ha hb ↦ hb ▸ h a ha⟩
+#align forall_eq_apply_imp_iff' forall_eq_apply_imp_iff
 #align forall_apply_eq_imp_iff₂ forall_apply_eq_imp_iff₂
 
 @[simp] theorem exists_eq_right' {a' : α} : (∃ a, p a ∧ a' = a) ↔ p a' := by simp [@eq_comm _ a']
@@ -898,8 +890,6 @@ theorem exists_unique_prop_of_true {p : Prop} {q : p → Prop} (h : p) : (∃! h
   @exists_unique_const (q h) p ⟨h⟩ _
 #align exists_unique_prop_of_true exists_unique_prop_of_true
 
-theorem forall_prop_of_false {p : Prop} {q : p → Prop} (hn : ¬p) : (∀ h' : p, q h') ↔ True :=
-  iff_true_intro fun h ↦ hn.elim h
 #align forall_prop_of_false forall_prop_of_false
 
 theorem exists_prop_of_false {p : Prop} {q : p → Prop} : ¬p → ¬∃ h' : p, q h' :=
@@ -936,6 +926,26 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
     (∀ h, q h) = ∀ h : p', q' (hp.2 h) :=
   propext (forall_prop_congr hq hp)
 #align forall_prop_congr' forall_prop_congr'
+
+#align forall_congr_eq forall_congr
+
+lemma imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
+  propext (imp_congr h₁.to_iff h₂.to_iff)
+
+lemma imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a → b) = (c → d) :=
+  propext (imp_congr_ctx h₁.to_iff fun hc ↦ (h₂ hc).to_iff)
+
+lemma eq_true_intro (h : a) : a = True := propext (iff_true_intro h)
+lemma eq_false_intro (h : ¬a) : a = False := propext (iff_false_intro h)
+
+-- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
+@[nolint defLemma] alias Iff.eq := propext
+
+lemma iff_eq_eq : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
+
+-- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
+#noalign eq_false
+#noalign eq_true
 
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
@@ -977,7 +987,7 @@ namespace Classical
 variable {p : α → Prop}
 
 -- use shortened names to avoid conflict when classical namespace is open.
-/-- Any prop `p` is decidable classically. A shorthand for `classical.prop_decidable`. -/
+/-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 #align classical.dec Classical.dec
 
@@ -1046,17 +1056,17 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
   ⟨a, h₁, h₂⟩
 #align bex.intro BEx.intro
 
-theorem ball_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ ∀ x h, Q x h :=
-  forall_congr' fun x ↦ forall_congr' (H x)
-#align ball_congr ball_congr
+#align ball_congr forall₂_congr
+#align bex_congr exists₂_congr
 
-theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
-  exists_congr fun x ↦ exists_congr (H x)
-#align bex_congr bex_congr
-
+@[deprecated exists_eq_left] -- 2024-04-06
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 #align bex_eq_left bex_eq_left
+
+-- 2024-04-06
+@[deprecated] alias ball_congr := forall₂_congr
+@[deprecated] alias bex_congr := exists₂_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -1074,61 +1084,77 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
+@[deprecated id] -- 2024-03-23
 theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
 #align ball_of_forall ball_of_forall
 
+@[deprecated forall_imp] -- 2024-03-23
 theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
 #align forall_of_ball forall_of_ball
 
-theorem bex_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
+theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
-#align bex_of_exists bex_of_exists
+#align bex_of_exists exists_mem_of_exists
 
-theorem exists_of_bex : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
+theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
-#align exists_of_bex exists_of_bex
+#align exists_of_bex exists_of_exists_mem
 
-theorem bex_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
-#align bex_imp_distrib bex_imp
+theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
+#align bex_imp_distrib exists₂_imp
 
-theorem not_bex : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := bex_imp
-#align not_bex not_bex
+-- 2024-03-23
+@[deprecated] alias bex_of_exists := exists_mem_of_exists
+@[deprecated] alias exists_of_bex := exists_of_exists_mem
+@[deprecated] alias bex_imp := exists₂_imp
 
-theorem not_ball_of_bex_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
+theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
+#align not_bex not_exists_mem
+
+theorem not_forall₂_of_exists₂_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
   | ⟨x, h, hp⟩, al => hp <| al x h
-#align not_ball_of_bex_not not_ball_of_bex_not
+#align not_ball_of_bex_not not_forall₂_of_exists₂_not
 
 -- See Note [decidable namespace]
-protected theorem Decidable.not_ball [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
+protected theorem Decidable.not_forall₂ [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
     (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h :=
   ⟨Not.decidable_imp_symm fun nx x h ↦ nx.decidable_imp_symm
-    fun h' ↦ ⟨x, h, h'⟩, not_ball_of_bex_not⟩
-#align decidable.not_ball Decidable.not_ball
+    fun h' ↦ ⟨x, h, h'⟩, not_forall₂_of_exists₂_not⟩
+#align decidable.not_ball Decidable.not_forall₂
 
-theorem not_ball : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_ball
-#align not_ball not_ball
+theorem not_forall₂ : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall₂
+#align not_ball not_forall₂
 
-theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
-  iff_true_intro fun _ _ ↦ trivial
-#align ball_true_iff ball_true_iff
+#align ball_true_iff forall₂_true_iff
 
-theorem ball_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
+theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
-#align ball_and_distrib ball_and
+#align ball_and_distrib forall₂_and
 
-theorem bex_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
+theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
-#align bex_or_distrib bex_or
+#align bex_or_distrib exists_mem_or
 
-theorem ball_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
+theorem forall₂_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
   Iff.trans (forall_congr' fun _ ↦ or_imp) forall_and
-#align ball_or_left_distrib ball_or_left
+#align ball_or_left_distrib forall₂_or_left
 
-theorem bex_or_left :
+theorem exists_mem_or_left :
     (∃ (x : _) (_ : p x ∨ q x), r x) ↔ (∃ (x : _) (_ : p x), r x) ∨ ∃ (x : _) (_ : q x), r x := by
   simp only [exists_prop]
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
-#align bex_or_left_distrib bex_or_left
+#align bex_or_left_distrib exists_mem_or_left
+
+-- 2023-03-23
+@[deprecated] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
+@[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
+@[deprecated] alias not_ball := not_forall₂
+@[deprecated] alias ball_true_iff := forall₂_true_iff
+@[deprecated] alias ball_and := forall₂_and
+@[deprecated] alias not_bex := not_exists_mem
+@[deprecated] alias bex_or := exists_mem_or
+@[deprecated] alias ball_or_left := forall₂_or_left
+@[deprecated] alias bex_or_left := exists_mem_or_left
 
 end BoundedQuantifiers
 
@@ -1136,7 +1162,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {σ : α → Sort*} (f : α → β) {P Q : Prop} [Decidable P] [Decidable Q]
+variable {σ : α → Sort*} (f : α → β) {P Q R : Prop} [Decidable P] [Decidable Q]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
@@ -1158,27 +1184,18 @@ theorem dite_eq_iff' : dite P A B = c ↔ (∀ h, A h = c) ∧ ∀ h, B h = c :=
 theorem ite_eq_iff' : ite P a b = c ↔ (P → a = c) ∧ (¬P → b = c) := dite_eq_iff'
 #align ite_eq_iff' ite_eq_iff'
 
-@[simp] theorem dite_eq_left_iff : dite P (fun _ ↦ a) B = a ↔ ∀ h, B h = a := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_left_iff dite_eq_left_iff
-
-@[simp] theorem dite_eq_right_iff : (dite P A fun _ ↦ b) = b ↔ ∀ h, A h = b := by
-  by_cases P <;> simp [*, forall_prop_of_true, forall_prop_of_false]
 #align dite_eq_right_iff dite_eq_right_iff
-
-@[simp] theorem ite_eq_left_iff : ite P a b = a ↔ ¬P → b = a := dite_eq_left_iff
 #align ite_eq_left_iff ite_eq_left_iff
-
-@[simp] theorem ite_eq_right_iff : ite P a b = b ↔ P → a = b := dite_eq_right_iff
 #align ite_eq_right_iff ite_eq_right_iff
 
 theorem dite_ne_left_iff : dite P (fun _ ↦ a) B ≠ a ↔ ∃ h, a ≠ B h := by
-  rw [Ne.def, dite_eq_left_iff, not_forall]
+  rw [Ne, dite_eq_left_iff, not_forall]
   exact exists_congr fun h ↦ by rw [ne_comm]
 #align dite_ne_left_iff dite_ne_left_iff
 
 theorem dite_ne_right_iff : (dite P A fun _ ↦ b) ≠ b ↔ ∃ h, A h ≠ b := by
-  simp only [Ne.def, dite_eq_right_iff, not_forall]
+  simp only [Ne, dite_eq_right_iff, not_forall]
 #align dite_ne_right_iff dite_ne_right_iff
 
 theorem ite_ne_left_iff : ite P a b ≠ a ↔ ¬P ∧ a ≠ b :=
@@ -1223,8 +1240,6 @@ protected theorem Ne.ite_ne_right_iff (h : a ≠ b) : ite P a b ≠ b ↔ P :=
 
 variable (P Q a b)
 
-/-- A `dite` whose results do not actually depend on the condition may be reduced to an `ite`. -/
-@[simp] theorem dite_eq_ite : (dite P (fun _ ↦ a) fun _ ↦ b) = ite P a b := rfl
 #align dite_eq_ite dite_eq_ite
 
 theorem dite_eq_or_eq : (∃ h, dite P A B = A h) ∨ ∃ h, dite P A B = B h :=
@@ -1280,4 +1295,57 @@ theorem ite_ite_comm (h : P → ¬Q) :
   dite_dite_comm P Q h
 #align ite_ite_comm ite_ite_comm
 
+variable {P Q}
+
+theorem ite_prop_iff_or : (if P then Q else R) ↔ (P ∧ Q ∨ ¬ P ∧ R) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_or {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∃ p, Q p) ∨ (∃ p, R p) := by
+  by_cases h : P <;> simp [h, exists_prop_of_false, exists_prop_of_true]
+
+-- TODO make this a simp lemma in a future PR
+theorem ite_prop_iff_and : (if P then Q else R) ↔ ((P → Q) ∧ (¬ P → R)) := by
+  by_cases p : P <;> simp [p]
+
+theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
+    dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
+  by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
+
+@[simp] lemma if_true_right : (if P then Q else True) ↔ ¬P ∨ Q := by by_cases P <;> simp [*]
+#align if_true_right_eq_or if_true_right
+
+@[simp] lemma if_true_left : (if P then True else Q) ↔ P ∨ Q := by by_cases P <;> simp [*]
+#align if_true_left_eq_or if_true_left
+
+@[simp] lemma if_false_right : (if P then Q else False) ↔ P ∧ Q := by by_cases P <;> simp [*]
+#align if_false_right_eq_and if_false_right
+
+@[simp] lemma if_false_left : (if P then False else Q) ↔ ¬P ∧ Q := by by_cases P <;> simp [*]
+#align if_false_left_eq_and if_false_left
+
 end ite
+
+theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
+  fun h => ne (eq_of_beq h)
+
+theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
+  rw [← beq_iff_eq a b]
+  cases a == b <;> simp
+
+@[ext]
+theorem beq_ext (inst1 : BEq α) (inst2 : BEq α)
+    (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
+    inst1 = inst2 := by
+  have ⟨beq1⟩ := inst1
+  have ⟨beq2⟩ := inst2
+  congr
+  funext x y
+  exact h x y
+
+theorem lawful_beq_subsingleton (inst1 : BEq α) (inst2 : BEq α)
+    [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
+    inst1 = inst2 := by
+  apply beq_ext
+  intro x y
+  simp only [beq_eq_decide]

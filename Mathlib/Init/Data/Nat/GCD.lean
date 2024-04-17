@@ -5,8 +5,9 @@ Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 
 -/
 
-import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Meta.WellFoundedTactics
+import Std.Data.Nat.Gcd
+import Mathlib.Init.Data.Nat.Notation
+import Mathlib.Mathport.Rename
 
 #align_import init.data.nat.gcd from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -35,7 +36,7 @@ theorem gcd_def (x y : ℕ) : gcd x y = if x = 0 then y else gcd (y % x) x := by
   cases x <;> simp [Nat.gcd_succ]
 #align nat.gcd_def Nat.gcd_def
 
-#align nat.coprime Nat.coprime
+#align nat.coprime Nat.Coprime
 
 end Nat
 
@@ -88,44 +89,44 @@ end Nat
 #align nat.lcm_assoc Nat.lcm_assoc
 #align nat.lcm_ne_zero Nat.lcm_ne_zero
 #align nat.coprime_iff_gcd_eq_one Nat.coprime_iff_gcd_eq_one
-#align nat.coprime.gcd_eq_one Nat.coprime.gcd_eq_one
-#align nat.coprime.symm Nat.coprime.symm
+#align nat.coprime.gcd_eq_one Nat.Coprime.gcd_eq_one
+#align nat.coprime.symm Nat.Coprime.symm
 #align nat.coprime_comm Nat.coprime_comm
-#align nat.coprime.dvd_of_dvd_mul_right Nat.coprime.dvd_of_dvd_mul_right
-#align nat.coprime.dvd_of_dvd_mul_left Nat.coprime.dvd_of_dvd_mul_left
-#align nat.coprime.gcd_mul_left_cancel Nat.coprime.gcd_mul_left_cancel
-#align nat.coprime.gcd_mul_right_cancel Nat.coprime.gcd_mul_right_cancel
-#align nat.coprime.gcd_mul_left_cancel_right Nat.coprime.gcd_mul_left_cancel_right
-#align nat.coprime.gcd_mul_right_cancel_right Nat.coprime.gcd_mul_right_cancel_right
+#align nat.coprime.dvd_of_dvd_mul_right Nat.Coprime.dvd_of_dvd_mul_right
+#align nat.coprime.dvd_of_dvd_mul_left Nat.Coprime.dvd_of_dvd_mul_left
+#align nat.coprime.gcd_mul_left_cancel Nat.Coprime.gcd_mul_left_cancel
+#align nat.coprime.gcd_mul_right_cancel Nat.Coprime.gcd_mul_right_cancel
+#align nat.coprime.gcd_mul_left_cancel_right Nat.Coprime.gcd_mul_left_cancel_right
+#align nat.coprime.gcd_mul_right_cancel_right Nat.Coprime.gcd_mul_right_cancel_right
 #align nat.coprime_div_gcd_div_gcd Nat.coprime_div_gcd_div_gcd
 #align nat.not_coprime_of_dvd_of_dvd Nat.not_coprime_of_dvd_of_dvd
 #align nat.exists_coprime Nat.exists_coprime
 #align nat.exists_coprime' Nat.exists_coprime'
-#align nat.coprime.mul Nat.coprime.mul
-#align nat.coprime.mul_right Nat.coprime.mul_right
-#align nat.coprime.coprime_dvd_left Nat.coprime.coprime_dvd_left
-#align nat.coprime.coprime_dvd_right Nat.coprime.coprime_dvd_right
-#align nat.coprime.coprime_mul_left Nat.coprime.coprime_mul_left
-#align nat.coprime.coprime_mul_right Nat.coprime.coprime_mul_right
-#align nat.coprime.coprime_mul_left_right Nat.coprime.coprime_mul_left_right
-#align nat.coprime.coprime_mul_right_right Nat.coprime.coprime_mul_right_right
-#align nat.coprime.coprime_div_left Nat.coprime.coprime_div_left
-#align nat.coprime.coprime_div_right Nat.coprime.coprime_div_right
+#align nat.coprime.mul Nat.Coprime.mul
+#align nat.coprime.mul_right Nat.Coprime.mul_right
+#align nat.coprime.coprime_dvd_left Nat.Coprime.coprime_dvd_left
+#align nat.coprime.coprime_dvd_right Nat.Coprime.coprime_dvd_right
+#align nat.coprime.coprime_mul_left Nat.Coprime.coprime_mul_left
+#align nat.coprime.coprime_mul_right Nat.Coprime.coprime_mul_right
+#align nat.coprime.coprime_mul_left_right Nat.Coprime.coprime_mul_left_right
+#align nat.coprime.coprime_mul_right_right Nat.Coprime.coprime_mul_right_right
+#align nat.coprime.coprime_div_left Nat.Coprime.coprime_div_left
+#align nat.coprime.coprime_div_right Nat.Coprime.coprime_div_right
 #align nat.coprime_mul_iff_left Nat.coprime_mul_iff_left
 #align nat.coprime_mul_iff_right Nat.coprime_mul_iff_right
-#align nat.coprime.gcd_left Nat.coprime.gcd_left
-#align nat.coprime.gcd_right Nat.coprime.gcd_right
-#align nat.coprime.gcd_both Nat.coprime.gcd_both
-#align nat.coprime.mul_dvd_of_dvd_of_dvd Nat.coprime.mul_dvd_of_dvd_of_dvd
+#align nat.coprime.gcd_left Nat.Coprime.gcd_left
+#align nat.coprime.gcd_right Nat.Coprime.gcd_right
+#align nat.coprime.gcd_both Nat.Coprime.gcd_both
+#align nat.coprime.mul_dvd_of_dvd_of_dvd Nat.Coprime.mul_dvd_of_dvd_of_dvd
 #align nat.coprime_zero_left Nat.coprime_zero_left
 #align nat.coprime_zero_right Nat.coprime_zero_right
 #align nat.coprime_one_left Nat.coprime_one_left
 #align nat.coprime_one_right Nat.coprime_one_right
 #align nat.coprime_self Nat.coprime_self
-#align nat.coprime.pow_left Nat.coprime.pow_left
-#align nat.coprime.pow_right Nat.coprime.pow_right
-#align nat.coprime.pow Nat.coprime.pow
-#align nat.coprime.eq_one_of_dvd Nat.coprime.eq_one_of_dvd
+#align nat.coprime.pow_left Nat.Coprime.pow_left
+#align nat.coprime.pow_right Nat.Coprime.pow_right
+#align nat.coprime.pow Nat.Coprime.pow
+#align nat.coprime.eq_one_of_dvd Nat.Coprime.eq_one_of_dvd
 #align nat.gcd_mul_dvd_mul_gcd Nat.gcd_mul_dvd_mul_gcd
-#align nat.coprime.gcd_mul Nat.coprime.gcd_mul
+#align nat.coprime.gcd_mul Nat.Coprime.gcd_mul
 #align nat.gcd_mul_gcd_of_coprime_of_mul_eq_mul Nat.gcd_mul_gcd_of_coprime_of_mul_eq_mul

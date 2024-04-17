@@ -6,6 +6,8 @@ Authors: Adam Topaz
 
 import Mathlib.Topology.Category.CompHaus.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
+import Mathlib.CategoryTheory.Extensive
+import Mathlib.CategoryTheory.Limits.Preserves.Finite
 
 /-!
 
@@ -22,9 +24,9 @@ So far, we have the following:
 
 namespace CompHaus
 
-universe u
+universe u w
 
-open CategoryTheory
+open CategoryTheory Limits
 
 section Pullbacks
 
@@ -74,11 +76,11 @@ def pullback.lift {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = 
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_fst {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
+    pullback.lift f g a b w ≫ pullback.fst f g = a := rfl
 
 @[reassoc (attr := simp)]
 lemma pullback.lift_snd {Z : CompHaus.{u}} (a : Z ⟶ X) (b : Z ⟶ Y) (w : a ≫ f = b ≫ g) :
-  pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
+    pullback.lift f g a b w ≫ pullback.snd f g = b := rfl
 
 lemma pullback.hom_ext {Z : CompHaus.{u}} (a b : Z ⟶ pullback f g)
     (hfst : a ≫ pullback.fst f g = b ≫ pullback.fst f g)
@@ -136,7 +138,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type} [Fintype α] (X : α → CompHaus.{u})
+variable {α : Type w} [Finite α] (X : α → CompHausMax.{u, w})
 
 /--
 The coproduct of a finite family of objects in `CompHaus`, constructed as the disjoint
@@ -156,7 +158,7 @@ To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : CompHausMax.{u, w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a,x⟩ => e a x
   continuous_toFun := by
@@ -164,10 +166,10 @@ def finiteCoproduct.desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) :
     intro a; exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : CompHaus.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
-  finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
+lemma finiteCoproduct.ι_desc {B : CompHausMax.{u, w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+    finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : CompHaus.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : CompHausMax.{u, w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a,x⟩
   specialize h a
@@ -229,6 +231,16 @@ lemma finiteCoproduct.ι_desc_apply {B : CompHaus} {π : (a : α) → X a ⟶ B}
   change (ι X a ≫ desc X π) _ = _
   simp only [ι_desc]
 -- `elementwise` should work here, but doesn't
+
+instance : PreservesFiniteCoproducts compHausToTop := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) compHausToTop from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (CompHaus.finiteCoproduct.isColimit _)
+  exact TopCat.sigmaCofanIsColimit _
+
+instance : FinitaryExtensive CompHaus :=
+  finitaryExtensive_of_preserves_and_reflects compHausToTop
 
 end FiniteCoproducts
 

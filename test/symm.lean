@@ -1,5 +1,4 @@
-import Mathlib.Tactic.Relation.Symm
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Hom.Defs
 import Mathlib.Logic.Equiv.Basic
 
 set_option autoImplicit true
@@ -34,6 +33,10 @@ def MulHom.inverse [Mul M] [Mul N] (f : M →ₙ* N) (g : N → M) (h₁ : Funct
 
 structure MulEquiv (M N : Type u) [Mul M] [Mul N] extends M ≃ N, M →ₙ* N
 
+/--
+info: MulEquiv : (M N : Type u_1) → [inst : Mul M] → [inst : Mul N] → Type u_1
+-/
+#guard_msgs in
 #check @MulEquiv
 
 infixl:25 " ≃* " => MulEquiv

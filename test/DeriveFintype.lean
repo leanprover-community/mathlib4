@@ -12,16 +12,28 @@ Tests that the enumerable types succeed, even with universe levels.
 inductive A | x | y | z
   deriving Fintype
 
+/--
+info: tests.A.enumList : List A
+-/
+#guard_msgs in
 #check A.enumList
 
 inductive A' : Type u | x | y | z
   deriving Fintype
 
+/--
+info: tests.A'.enumList.{u} : List A'
+-/
+#guard_msgs in
 #check A'.enumList
 
 inductive A'' : Type 1 | x | y | z
   deriving Fintype
 
+/--
+info: tests.A''.enumList : List A''
+-/
+#guard_msgs in
 #check A''.enumList
 
 /-
@@ -37,6 +49,10 @@ example : (Finset.univ : Finset B) = ∅ := rfl
 inductive C (α : Type _) | c (x : α)
   deriving Fintype, DecidableEq
 
+/--
+info: instFintypeC
+-/
+#guard_msgs in
 #synth Fintype (C Bool)
 
 example : (Finset.univ : Finset (C Bool)) = Finset.univ.image .c := rfl
@@ -44,6 +60,10 @@ example : (Finset.univ : Finset (C Bool)) = Finset.univ.image .c := rfl
 inductive C' (P : Prop) | c (h : P)
   deriving Fintype
 
+/--
+info: instFintypeC'
+-/
+#guard_msgs in
 #synth Fintype (C' (1 = 2))
 
 example : Fintype.card (C' (1 = 2)) = 0 := rfl
@@ -55,6 +75,11 @@ example : Fintype.card (C'' (1 = 2)) = 0 := rfl
 
 section
 variable [Fintype α]
+
+/--
+info: instFintypeC
+-/
+#guard_msgs in
 #synth Fintype (C α)
 end
 
@@ -63,6 +88,11 @@ inductive D (p : Prop) | d (h : p)
 
 section
 variable [Decidable q]
+
+/--
+info: instFintypeD
+-/
+#guard_msgs in
 #synth Fintype (D q)
 end
 

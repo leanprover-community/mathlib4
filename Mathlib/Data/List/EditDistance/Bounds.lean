@@ -3,6 +3,7 @@ Copyright (c) 2023 Kim Liesinger. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kim Liesinger
 -/
+import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.List.EditDistance.Defs
@@ -20,7 +21,7 @@ to produce lower bounds on the final result.
 
 set_option autoImplicit true
 
-variable {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddMonoid δ]
+variable {C : Levenshtein.Cost α β δ} [CanonicallyLinearOrderedAddCommMonoid δ]
 
 theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
     (suffixLevenshtein C xs ys).1.minimum ≤ levenshtein C xs (y :: ys) := by
@@ -30,11 +31,11 @@ theorem suffixLevenshtein_minimum_le_levenshtein_cons (xs : List α) (y ys) :
         List.minimum_singleton, WithTop.coe_le_coe]
       exact le_add_of_nonneg_left (by simp)
   | cons x xs ih =>
-    suffices :
+    suffices
       (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.delete x + levenshtein C xs (y :: ys)) ∧
         (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.insert y + levenshtein C (x :: xs) ys) ∧
-        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.substitute x y + levenshtein C xs ys)
-    · simpa [suffixLevenshtein_eq_tails_map]
+        (suffixLevenshtein C (x :: xs) ys).1.minimum ≤ (C.substitute x y + levenshtein C xs ys) by
+      simpa [suffixLevenshtein_eq_tails_map]
     refine ⟨?_, ?_, ?_⟩
     · calc
         _ ≤ (suffixLevenshtein C xs ys).1.minimum := by
@@ -64,13 +65,11 @@ theorem le_suffixLevenshtein_cons_minimum (xs : List α) (y ys) :
   simp only [suffixLevenshtein_eq_tails_map]
   apply List.le_minimum_of_forall_le
   intro b m
-  replace m : ∃ a_1, a_1 <:+ a ∧ levenshtein C a_1 ys = b
-  · simpa using m
+  replace m : ∃ a_1, a_1 <:+ a ∧ levenshtein C a_1 ys = b := by simpa using m
   obtain ⟨a', suff', rfl⟩ := m
   apply List.minimum_le_of_mem'
   simp only [List.mem_map, List.mem_tails]
-  suffices : ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys
-  · simpa
+  suffices ∃ a, a <:+ xs ∧ levenshtein C a ys = levenshtein C a' ys by simpa
   exact ⟨a', suff'.trans suff, rfl⟩
 
 theorem le_suffixLevenshtein_append_minimum (xs : List α) (ys₁ ys₂) :

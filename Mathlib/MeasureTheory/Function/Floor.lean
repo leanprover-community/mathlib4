@@ -71,7 +71,7 @@ variable {α R : Type*} [MeasurableSpace α] [LinearOrderedSemiring R] [FloorSem
 
 theorem Nat.measurable_floor : Measurable (Nat.floor : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases' eq_or_ne ⌊n⌋₊ 0 with h h <;> simp_all [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
+    rcases eq_or_ne ⌊n⌋₊ 0 with h | h <;> simp [h, Nat.preimage_floor_of_ne_zero, -floor_eq_zero]
 #align nat.measurable_floor Nat.measurable_floor
 
 @[measurability]
@@ -81,7 +81,7 @@ theorem Measurable.nat_floor (hf : Measurable f) : Measurable fun x => ⌊f x⌋
 
 theorem Nat.measurable_ceil : Measurable (Nat.ceil : R → ℕ) :=
   measurable_to_countable fun n => by
-    cases' eq_or_ne ⌈n⌉₊ 0 with h h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
+    rcases eq_or_ne ⌈n⌉₊ 0 with h | h <;> simp_all [h, Nat.preimage_ceil_of_ne_zero, -ceil_eq_zero]
 #align nat.measurable_ceil Nat.measurable_ceil
 
 @[measurability]
