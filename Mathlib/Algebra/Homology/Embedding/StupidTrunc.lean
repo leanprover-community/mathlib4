@@ -93,6 +93,18 @@ lemma isIso_ιStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
 instance (i : ι) : IsIso ((K.ιStupidTrunc e).f (e.f i)) :=
   K.isIso_ιStupidTrunc_f e rfl
 
+instance (i' : ι') : Mono ((K.ιStupidTrunc e).f i') := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    infer_instance
+  · constructor
+    intros
+    apply IsZero.eq_of_tgt
+    apply HomologicalComplex.isZero_extend_X
+    simpa using hi'
+
+instance : Mono (K.ιStupidTrunc e) := mono_of_mono_f _ inferInstance
+
 variable {K L}
 
 @[reassoc (attr := simp)]
@@ -123,6 +135,12 @@ lemma πStupidTruncf_eq (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+lemma πStupidTruncf_eq' {i : ι} {i' : ι'} (h : e.f i = i'):
+    K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
+      ((K.restriction e).extendXIso e h).inv := by
+  subst h
+  simp [πStupidTruncf_eq, restrictionXIso]
+
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
   comm' i' j' hij' := by
@@ -141,6 +159,18 @@ lemma isIso_πStupidTrunc_f {i' : ι'} {i : ι} (h : e.f i = i') :
 
 instance (i : ι) : IsIso ((K.πStupidTrunc e).f (e.f i)) :=
   K.isIso_πStupidTrunc_f e rfl
+
+instance (i' : ι') : Epi ((K.πStupidTrunc e).f i') := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    infer_instance
+  · constructor
+    intros
+    apply IsZero.eq_of_src
+    apply HomologicalComplex.isZero_extend_X
+    simpa using hi'
+
+instance : Epi (K.πStupidTrunc e) := epi_of_epi_f _ inferInstance
 
 variable {K L}
 

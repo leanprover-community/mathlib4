@@ -232,6 +232,12 @@ lemma prev_f_of_not_mem_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     rw [c.prev_eq' hi] at hij
     exact hij' (by simpa only [hij] using hi)
 
+
+variable {e} in
+lemma BoundaryGE.false {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
+  obtain ⟨i, hi⟩ := e.mem_prev hj.1
+  exact hj.2 i (by simpa only [hi] using hj.1)
+
 /-- The upper boundary of an embedding `e : Embedding c c'`, as a predicate on `ι`.
 It is satisfied by `j : ι` when there exists `k' : ι'` not in the image of `e.f`
 such that `c'.Rel (e.f j) k'`. -/

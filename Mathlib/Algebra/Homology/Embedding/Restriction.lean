@@ -23,11 +23,25 @@ def restrictionXIso {i : ι} {i' : ι'} (h : e.f i = i') :
     (K.restriction e).X i ≅ K.X i' :=
   eqToIso (by subst h; rfl)
 
+@[reassoc]
+lemma restriction_d_eq {i j : ι} {i' j' : ι'} (hi : e.f i = i') (hj : e.f j = j') :
+    (K.restriction e).d i j = (K.restrictionXIso e hi).hom ≫ K.d i' j' ≫
+      (K.restrictionXIso e hj).inv := by
+  subst hi hj
+  simp [restrictionXIso]
+
 variable {K L}
 
 @[simps]
 def restrictionMap : K.restriction e ⟶ L.restriction e where
   f i := φ.f (e.f i)
+
+@[reassoc]
+lemma restrictionMap_f' {i : ι} {i' : ι'} (hi : e.f i = i') :
+    (restrictionMap φ e).f i = (K.restrictionXIso e hi).hom ≫
+      φ.f i' ≫ (L.restrictionXIso e hi).inv := by
+  subst hi
+  simp [restrictionXIso]
 
 variable (K)
 
