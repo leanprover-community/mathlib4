@@ -22,13 +22,11 @@ This file establishes the class equation for finite groups.
 
 -/
 
-set_option autoImplicit true
-
 open MulAction ConjClasses
 
 open scoped BigOperators
 
-variable (G : Type u) [Group G]
+variable (G : Type*) [Group G]
 
 /-- Conjugacy classes form a partition of G, stated in terms of cardinality. -/
 theorem sum_conjClasses_card_eq_card [Fintype <| ConjClasses G] [Fintype G]

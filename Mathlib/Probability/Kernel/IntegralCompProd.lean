@@ -56,8 +56,8 @@ theorem hasFiniteIntegral_prod_mk_left (a : α) {s : Set (β × γ)} (h2s : (κ 
       filter_upwards [ae_kernel_lt_top a h2s] with b hb
       rw [ofReal_toReal hb.ne]
       exact measure_mono (preimage_mono (subset_toMeasurable _ _))
-    _ ≤ (κ ⊗ₖ η) a t := (le_compProd_apply _ _ _ _)
-    _ = (κ ⊗ₖ η) a s := (measure_toMeasurable s)
+    _ ≤ (κ ⊗ₖ η) a t := le_compProd_apply _ _ _ _
+    _ = (κ ⊗ₖ η) a s := measure_toMeasurable s
     _ < ⊤ := h2s.lt_top
 #align probability_theory.has_finite_integral_prod_mk_left ProbabilityTheory.hasFiniteIntegral_prod_mk_left
 
@@ -69,7 +69,7 @@ theorem integrable_kernel_prod_mk_left (a : α) {s : Set (β × γ)} (hs : Measu
 #align probability_theory.integrable_kernel_prod_mk_left ProbabilityTheory.integrable_kernel_prod_mk_left
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_kernel_compProd [NormedSpace ℝ E]
-    [CompleteSpace E] ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
+    ⦃f : β × γ → E⦄ (hf : AEStronglyMeasurable f ((κ ⊗ₖ η) a)) :
     AEStronglyMeasurable (fun x => ∫ y, f (x, y) ∂η (a, x)) (κ a) :=
   ⟨fun x => ∫ y, hf.mk f (x, y) ∂η (a, x), hf.stronglyMeasurable_mk.integral_kernel_prod_right'', by
     filter_upwards [ae_ae_of_ae_compProd hf.ae_eq_mk] with _ hx using integral_congr_ae hx⟩
@@ -138,7 +138,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_compProd ⦃f : β × γ �
   ((integrable_compProd_iff hf.aestronglyMeasurable).mp hf).2
 #align measure_theory.integrable.integral_norm_comp_prod MeasureTheory.Integrable.integral_norm_compProd
 
-theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E] [CompleteSpace E]
+theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E]
     ⦃f : β × γ → E⦄ (hf : Integrable f ((κ ⊗ₖ η) a)) :
     Integrable (fun x => ∫ y, f (x, y) ∂η (a, x)) (κ a) :=
   Integrable.mono hf.integral_norm_compProd hf.aestronglyMeasurable.integral_kernel_compProd <|
@@ -152,7 +152,7 @@ theorem _root_.MeasureTheory.Integrable.integral_compProd [NormedSpace ℝ E] [C
 /-! ### Bochner integral -/
 
 
-variable [NormedSpace ℝ E] [CompleteSpace E] {E' : Type*} [NormedAddCommGroup E']
+variable [NormedSpace ℝ E] {E' : Type*} [NormedAddCommGroup E']
   [CompleteSpace E'] [NormedSpace ℝ E']
 
 theorem kernel.integral_fn_integral_add ⦃f g : β × γ → E⦄ (F : E → E')
@@ -244,6 +244,8 @@ theorem kernel.continuous_integral_integral :
 theorem integral_compProd :
     ∀ {f : β × γ → E} (_ : Integrable f ((κ ⊗ₖ η) a)),
       ∫ z, f z ∂(κ ⊗ₖ η) a = ∫ x, ∫ y, f (x, y) ∂η (a, x) ∂κ a := by
+  by_cases hE : CompleteSpace E; swap
+  · simp [integral, hE]
   apply Integrable.induction
   · intro c s hs h2s
     simp_rw [integral_indicator hs, ← indicator_comp_right, Function.comp,

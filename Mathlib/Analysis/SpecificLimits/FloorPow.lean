@@ -40,7 +40,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
   have lnonneg : 0 ≤ l := by
     rcases hlim 2 one_lt_two with ⟨c, _, ctop, clim⟩
     have : Tendsto (fun n => u 0 / c n) atTop (𝓝 0) :=
-      tendsto_const_nhds.div_atTop (tendsto_nat_cast_atTop_iff.2 ctop)
+      tendsto_const_nhds.div_atTop (tendsto_natCast_atTop_iff.2 ctop)
     apply le_of_tendsto_of_tendsto' this clim fun n => ?_
     gcongr
     exact hmono (zero_le _)
@@ -148,7 +148,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
         have B : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         simpa [B] using (ha _ aN').1
       _ = c (N - 1) * l - u (c (N - 1)) + ε * c (N - 1) * l := by ring
-      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := (add_le_add (ha _ aN').2 le_rfl)
+      _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := add_le_add (ha _ aN').2 le_rfl
       _ = ε * (1 + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + l) * n := by gcongr
   refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
@@ -198,7 +198,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
     refine' zero_lt_one.trans_le _
-    simp only [Real.rpow_nat_cast, Nat.one_le_cast, Nat.one_le_floor_iff,
+    simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff,
       one_le_pow_of_one_le (cone k).le n]
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
@@ -251,7 +251,7 @@ theorem sum_div_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c : ℝ} (hc 
     _ ≤ (c⁻¹ ^ 2) ^ (Real.log j / Real.log c - 1) / ((1 : ℝ) - c⁻¹ ^ 2) := by
       gcongr
       · exact sub_nonneg.2 C.le
-      · rw [← Real.rpow_nat_cast]
+      · rw [← Real.rpow_natCast]
         exact Real.rpow_le_rpow_of_exponent_ge A C.le (Nat.sub_one_lt_floor _).le
     _ = c ^ 2 * ((1 : ℝ) - c⁻¹ ^ 2)⁻¹ / j ^ 2 := by
       have I : (c⁻¹ ^ 2) ^ (Real.log j / Real.log c) = (1 : ℝ) / j ^ 2 := by

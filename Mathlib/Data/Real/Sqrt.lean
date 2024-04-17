@@ -450,6 +450,24 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : √(a : ℝ) ≤ Nat.sqrt a + 1 :
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- The real square root is less than the natural square root plus one -/
+theorem real_sqrt_lt_nat_sqrt_succ {a : ℕ} : √(a : ℝ) < Nat.sqrt a + 1 := by
+  rw [sqrt_lt (by simp)] <;> norm_cast
+  · exact Nat.lt_succ_sqrt' a
+  · exact Nat.le_add_left 0 (Nat.sqrt a + 1)
+
+/-- The floor of the real square root is the same as the natural square root. -/
+@[simp]
+theorem floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋ = Nat.sqrt a := by
+  rw [Int.floor_eq_iff]
+  exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
+
+/-- The natural floor of the real square root is the same as the natural square root. -/
+@[simp]
+theorem nat_floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋₊ = Nat.sqrt a := by
+  rw [Nat.floor_eq_iff (sqrt_nonneg ↑a)]
+  exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
+
 /-- Bernoulli's inequality for exponent `1 / 2`, stated using `sqrt`. -/
 theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   refine sqrt_le_iff.mpr ⟨by linarith, ?_⟩
@@ -463,7 +481,7 @@ want `StarOrderedRing ℝ` to be available globally, so we include this instance
 In addition, providing this instance here makes it available earlier in the import
 hierarchy; otherwise in order to access it we would need to import `Analysis.RCLike.Basic` -/
 instance : StarOrderedRing ℝ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
+  StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s
@@ -471,7 +489,7 @@ instance : StarOrderedRing ℝ :=
 end Real
 
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
-  refine .ofLEIff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
+  refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h
     refine ⟨sqrt d, ?_⟩
     simp only [star_trivial, mul_self_sqrt]

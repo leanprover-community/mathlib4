@@ -77,12 +77,12 @@ theorem RingHom.injective_int {α : Type*} [NonAssocRing α] (f : ℤ →+* α) 
 namespace Function
 variable [AddGroupWithOne β] [CharZero β] {n : ℤ}
 
-lemma support_int_cast (hn : n ≠ 0) : support (n : α → β) = univ :=
+lemma support_intCast (hn : n ≠ 0) : support (n : α → β) = univ :=
   support_const <| Int.cast_ne_zero.2 hn
-#align function.support_int_cast Function.support_int_cast
+#align function.support_int_cast Function.support_intCast
 
-lemma mulSupport_int_cast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
+lemma mulSupport_intCast (hn : n ≠ 1) : mulSupport (n : α → β) = univ :=
   mulSupport_const <| Int.cast_ne_one.2 hn
-#align function.mul_support_int_cast Function.mulSupport_int_cast
+#align function.mul_support_int_cast Function.mulSupport_intCast
 
 end Function

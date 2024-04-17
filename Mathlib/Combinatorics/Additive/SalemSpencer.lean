@@ -320,9 +320,7 @@ Salem-Spencer subset. -/
 Salem-Spencer subset. The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see
 `rothNumberNat`. "]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s =>
-    Nat.findGreatest (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α))
-      s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
     rintro t u htu
     refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
@@ -337,10 +335,9 @@ theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.c
 
 @[to_additive]
 theorem mulRothNumber_spec :
-    ∃ (t : _) (_ : t ⊆ s), t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
-  Nat.findGreatest_spec
-    (P := fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) (Nat.zero_le _)
-    ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
+    ∃ t ⊆ s, t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
+  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α))
+    (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
 
@@ -381,7 +378,7 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
     _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
-    _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
+    _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
@@ -472,7 +469,7 @@ theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
 #align roth_number_nat_le rothNumberNat_le
 
 theorem rothNumberNat_spec (n : ℕ) :
-    ∃ (t : _) (_ : t ⊆ range n), t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
+    ∃ t ⊆ range n, t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
   addRothNumber_spec _
 #align roth_number_nat_spec rothNumberNat_spec
 

@@ -463,7 +463,7 @@ set_option linter.uppercaseLean3 false in
 def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
   -- Porting note: inline `f` would not compile
-  letI f := (F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u})
+  letI f := F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u}
   letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
