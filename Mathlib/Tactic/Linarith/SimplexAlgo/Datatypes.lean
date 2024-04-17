@@ -14,12 +14,12 @@ namespace Linarith.SimplexAlgo
 /--
 Structure for matrices over ℚ.
 
-So far it is just a 2d-array carrying dimensions (that supposed to coincide with the actual
+So far it is just a 2d-array carrying dimensions (that are supposed to match with the actual
 dimensions of `data`), but the plan is to add some `Prop`-data and make the structure strict and
 safe.
 
 Note: we avoid using the `Matrix` from `Mathlib.Data.Matrix` because it is far more efficient to
-store matrix as its entries than function between `Fin`-s.
+store matrix as its entries than as function between `Fin`-s.
 -/
 structure Matrix (n m : Nat) where
   /-- The content of the matrix. -/
@@ -35,12 +35,12 @@ instance (n m : Nat) : GetElem (Matrix n m) Nat (Array Rat) fun _ i => i < n whe
 
 /--
 `Table` is a structure Simplex Algorithm operates on. The `i`-th row of `mat` expresses the
-variable `bound[i]` as a linear combination of variables from `free`.
+variable `basic[i]` as a linear combination of variables from `free`.
 -/
 structure Table where
   /-- Array containing the basic variables' indexes -/
   basic : Array Nat
-  /-- Array containig the free variables' indexes -/
+  /-- Array containing the free variables' indexes -/
   free : Array Nat
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : Matrix basic.size free.size

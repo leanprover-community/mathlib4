@@ -18,22 +18,23 @@ The function `findPositiveVector` solves this problem.
 
 namespace Linarith.SimplexAlgo
 
-/-- Given matrix `A` and list `strictIndexes` of strict inequalities' indexes, we want to state the
+/--
+Given matrix `A` and list `strictIndexes` of strict inequalities' indexes, we want to state the
 Linear Programming problem which solution produces solution for the initial problem (see
 `findPositiveVector`).
 
 As an objective function (that we are trying to maximize) we use sum of coordinates from
 `strictIndexes`: it suffices to find the non-negative vector that makes this function positive.
 
-We introduce two auxilary variables and one constraint:
-* The variable `y` is interpreted as "homogenized" `1`. We need it because tackling homogenized
-  problem is easier, but having some "unit" is neccessary.
+We introduce two auxiliary variables and one constraint:
+* The variable `y` is interpreted as "homogenized" `1`. We need it because dealing with a
+homogenized problem is easier, but having some "unit" is necessary.
 * To bound the problem we add the constraint `x₁ + ... + xₘ + z = y` introducing new variable `z`.
 
-The objective function also interpreted as an auxilary variable with constraint
+The objective function also interpreted as an auxiliary variable with constraint
 `f = ∑ i ∈ strictIndexes, xᵢ`.
 
-The variable `f` has to always be basic while `y` has to be free. Our Gauss method implementaion
+The variable `f` has to always be basic while `y` has to be free. Our Gauss method implementation
 greedy collects basic variables moving from left to right. So we place `f` before `x`-s and `y`
 after them. We place `z` between `f` and `x` because in this case `z` will be basic and
 `Gauss.getTable` produce table with non-negative last column, meaning that we are starting from
@@ -60,8 +61,10 @@ def exctractSolution (table : Table) : Array Rat := Id.run do
 
   return ans
 
-/-- Finds non-negative vector `v`, s.t. `A v = 0` and some of its coordinates from `strictCoords`
-are positive, in the case such `v` exists. -/
+/--
+Finds nonnegative vector `v`, such that `A v = 0` and some of its coordinates from `strictCoords`
+are positive, in the case such `v` exists.
+-/
 def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Array Rat :=
   /- State the linear programming problem. -/
   let B := stateLP A strictIndexes

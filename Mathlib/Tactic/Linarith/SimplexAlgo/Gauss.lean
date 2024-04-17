@@ -9,7 +9,7 @@ import Mathlib.Tactic.Linarith.SimplexAlgo.Datatypes
 # Gaussian Elimination algorithm
 
 The first step of `Linarith.SimplexAlgo.findPositiveVector` is finding initial feasible solution
-that is done by standard Gaussian Elimination algorithm implemented in this file.
+which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
 
 namespace Linarith.SimplexAlgo.Gauss
@@ -51,25 +51,23 @@ def findNonzeroRow {n m : Nat} : GaussM n m <| Option Nat := do
 
 /-- Swaps two rows. -/
 def swapRows {n m : Nat} (i j : Nat) : GaussM n m Unit := do
-  if i == j then
-    return
-  modify fun s =>
-    let swapped : Matrix n m := ⟨s.mat.data.swap! i j⟩
-    {s with mat := swapped}
+  if i != j then
+    modify fun s =>
+      let swapped : Matrix n m := ⟨s.mat.data.swap! i j⟩
+      {s with mat := swapped}
 
 /-- Subtracts `i`-th row * `coef` from `j`-th row. -/
 def subtractRow {n m : Nat} (i j : Nat) (coef : Rat) : GaussM n m Unit :=
   modify fun s =>
-    let new_row := s.mat[j]!.zip s.mat[i]! |>.map fun ⟨x, y⟩ => x - coef * y
-    let subtractedMat : Matrix n m := ⟨s.mat.data.set! j new_row⟩
-    {s with mat := subtractedMat}
+    let newData : Array (Array Rat) := s.mat.data.modify j fun row =>
+      row.zipWith s.mat[i]! fun x y => x - coef * y
+    {s with mat := ⟨newData⟩}
 
 /-- Divides row by `coef`. -/
 def divideRow {n m : Nat} (i : Nat) (coef : Rat) : GaussM n m Unit :=
   modify fun s =>
-    let new_row : Array Rat := s.mat[i]!.map (· / coef)
-    let subtractedMat : Matrix n m := ⟨s.mat.data.set! i new_row⟩
-    {s with mat := subtractedMat}
+    let newData : Array (Array Rat) := s.mat.data.modify i (·.map (· / coef))
+    {s with mat := ⟨newData⟩}
 
 /-- Implementation of `getTable` in `GaussM` monad. -/
 def getTableImp {n m : Nat} : GaussM n m Table := do
