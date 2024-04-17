@@ -436,7 +436,7 @@ theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
   symm
   refine' integral_union_eq_left_of_ae _
   filter_upwards [ae_restrict_mem₀ B] with x hx using hx
-#align measure_theory.setIntegral_neg_eq_set_integral_nonpos MeasureTheory.setIntegral_neg_eq_setIntegral_nonpos
+#align measure_theory.set_integral_neg_eq_set_integral_nonpos MeasureTheory.setIntegral_neg_eq_setIntegral_nonpos
 
 theorem integral_norm_eq_pos_sub_neg {f : X → ℝ} (hfi : Integrable f μ) :
     ∫ x, ‖f x‖ ∂μ = ∫ x in {x | 0 ≤ f x}, f x ∂μ - ∫ x in {x | f x ≤ 0}, f x ∂μ :=
@@ -1359,13 +1359,13 @@ theorem setIntegral_withDensity_eq_setIntegral_smul {f : X → ℝ≥0} (f_meas 
     (g : X → E) {s : Set X} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul f_meas]
-#align setIntegral_with_density_eq_set_integral_smul setIntegral_withDensity_eq_setIntegral_smul
+#align set_integral_with_density_eq_set_integral_smul setIntegral_withDensity_eq_setIntegral_smul
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀ {f : X → ℝ≥0} {s : Set X}
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E) (hs : MeasurableSet s) :
     ∫ x in s, g x ∂μ.withDensity (fun x => f x) = ∫ x in s, f x • g x ∂μ := by
   rw [restrict_withDensity hs, integral_withDensity_eq_integral_smul₀ hf]
-#align setIntegral_with_density_eq_set_integral_smul₀ setIntegral_withDensity_eq_setIntegral_smul₀
+#align set_integral_with_density_eq_set_integral_smul₀ setIntegral_withDensity_eq_setIntegral_smul₀
 
 theorem setIntegral_withDensity_eq_setIntegral_smul₀' [SFinite μ] {f : X → ℝ≥0} (s : Set X)
     (hf : AEMeasurable f (μ.restrict s)) (g : X → E)  :
