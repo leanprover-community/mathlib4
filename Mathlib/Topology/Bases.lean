@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Data.Set.Constructions
 import Mathlib.Topology.Constructions
 import Mathlib.Topology.ContinuousOn
 
@@ -118,6 +119,36 @@ theorem isTopologicalBasis_of_subbasis {s : Set (Set α)} (hs : t = generateFrom
   · rw [← sInter_singleton t]
     exact ⟨{t}, ⟨finite_singleton t, singleton_subset_iff.2 ht⟩, rfl⟩
 #align topological_space.is_topological_basis_of_subbasis TopologicalSpace.isTopologicalBasis_of_subbasis
+
+lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
+    (fun g => ⋂₀ g) '' { f : Set (Set α) | f.Finite ∧ f ⊆ s } = s := by
+  rw [image]
+  simp only [mem_setOf_eq]
+  rw [le_antisymm_iff]
+  simp
+  constructor
+  · intro F
+    simp only [mem_setOf_eq, forall_exists_index, and_imp]
+    intro G hG hGs hi
+    rw [← hi]
+    let G' := Finite.toFinset hG
+    have e1 : G = G' := by
+      aesop
+    rw [e1]
+    apply @FiniteInter.finiteInter_mem _ s hsi G' -- hGs --(Finite.toFinset hG)
+    rw [← e1]
+    exact hGs
+  · intro t hts
+    simp only [mem_setOf_eq]
+    use {t}
+    simp only [finite_singleton, singleton_subset_iff, true_and, sInter_singleton, and_true]
+    exact hts
+
+theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
+    (hsi : FiniteInter s):
+    IsTopologicalBasis s := by
+  rw [← test hsi]
+  apply isTopologicalBasis_of_subbasis hsg
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
