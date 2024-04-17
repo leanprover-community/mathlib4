@@ -29,9 +29,6 @@ https://leanprover.zulipchat.com/#narrow/near/316087838
 This was not done as part of the port in order to stay as close as possible to the mathlib3 code.
 -/
 
-set_option autoImplicit true
-
-
 variable {M N P E α β : Type*}
 
 namespace Prod
@@ -176,11 +173,11 @@ instance distribSMul {R M N : Type*} [AddZeroClass M] [AddZeroClass N] [DistribS
     [DistribSMul R N] : DistribSMul R (M × N) where
   smul_add _ _ _ := mk.inj_iff.mpr ⟨smul_add _ _ _, smul_add _ _ _⟩
 
-instance distribMulAction [Monoid R] [AddMonoid M] [AddMonoid N]
+instance distribMulAction {R : Type*} [Monoid R] [AddMonoid M] [AddMonoid N]
     [DistribMulAction R M] [DistribMulAction R N] : DistribMulAction R (M × N) :=
   { Prod.mulAction, Prod.distribSMul with }
 
-instance mulDistribMulAction [Monoid R] [Monoid M] [Monoid N]
+instance mulDistribMulAction {R : Type*} [Monoid R] [Monoid M] [Monoid N]
     [MulDistribMulAction R M] [MulDistribMulAction R N] : MulDistribMulAction R (M × N) where
   smul_mul _ _ _ := mk.inj_iff.mpr ⟨smul_mul' _ _ _, smul_mul' _ _ _⟩
   smul_one _ := mk.inj_iff.mpr ⟨smul_one _, smul_one _⟩
