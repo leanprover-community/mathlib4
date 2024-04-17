@@ -11,7 +11,8 @@ import Mathlib.MeasureTheory.Integral.SetIntegral
 
 /-! # `L^2` space
 
-If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ` (defined in `lp_space.lean`)
+If `E` is an inner product space over `𝕜` (`ℝ` or `ℂ`), then `Lp E 2 μ`
+(defined in `MeasureTheory.Function.LpSpace`)
 is also an inner product space, with inner product defined as `inner f g = ∫ a, ⟪f a, g a⟫ ∂μ`.
 
 ### Main results
@@ -20,7 +21,7 @@ is also an inner product space, with inner product defined as `inner f g = ∫ a
   belongs to `Lp 𝕜 1 μ`.
 * `integrable_inner` : for `f` and `g` in `Lp E 2 μ`, the pointwise inner product
  `fun x ↦ ⟪f x, g x⟫` is integrable.
-* `L2.inner_product_space` : `Lp E 2 μ` is an inner product space.
+* `L2.innerProductSpace` : `Lp E 2 μ` is an inner product space.
 
 -/
 
@@ -63,7 +64,6 @@ section InnerProductSpace
 variable {α : Type*} {m : MeasurableSpace α} {p : ℝ≥0∞} {μ : Measure α}
 variable {E 𝕜 : Type*} [RCLike 𝕜] [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
 
 theorem Memℒp.const_inner (c : E) {f : α → E} (hf : Memℒp f p μ) : Memℒp (fun a => ⟪c, f a⟫) p μ :=
@@ -95,7 +95,6 @@ theorem _root_.integral_inner {f : α → E} (hf : Integrable f μ) (c : E) :
 
 variable (𝕜)
 
--- mathport name: inner_with_explicit
 -- variable binder update doesn't work for lemmas which refer to `𝕜` only via the notation
 -- Porting note: removed because it causes ambiguity in the lemma below
 -- local notation "⟪" x ", " y "⟫" => @inner 𝕜 E _ x y
@@ -112,7 +111,6 @@ namespace L2
 variable {α E F 𝕜 : Type*} [RCLike 𝕜] [MeasurableSpace α] {μ : Measure α} [NormedAddCommGroup E]
   [InnerProductSpace 𝕜 E] [NormedAddCommGroup F]
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
 
 theorem snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^ (2 : ℝ)) 1 μ < ∞ := by
@@ -124,7 +122,7 @@ theorem snorm_rpow_two_norm_lt_top (f : Lp F 2 μ) : snorm (fun x => ‖f x‖ ^
 theorem snorm_inner_lt_top (f g : α →₂[μ] E) : snorm (fun x : α => ⟪f x, g x⟫) 1 μ < ∞ := by
   have h : ∀ x, ‖⟪f x, g x⟫‖ ≤ ‖‖f x‖ ^ (2 : ℝ) + ‖g x‖ ^ (2 : ℝ)‖ := by
     intro x
-    rw [← @Nat.cast_two ℝ, Real.rpow_nat_cast, Real.rpow_nat_cast]
+    rw [← @Nat.cast_two ℝ, Real.rpow_natCast, Real.rpow_natCast]
     calc
       ‖⟪f x, g x⟫‖ ≤ ‖f x‖ * ‖g x‖ := norm_inner_le_norm _ _
       _ ≤ 2 * ‖f x‖ * ‖g x‖ :=
@@ -162,7 +160,7 @@ theorem integral_inner_eq_sq_snorm (f : α →₂[μ] E) :
   congr
   ext1 x
   have h_two : (2 : ℝ) = ((2 : ℕ) : ℝ) := by simp
-  rw [← Real.rpow_nat_cast _ 2, ← h_two, ←
+  rw [← Real.rpow_natCast _ 2, ← h_two, ←
     ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) zero_le_two, ofReal_norm_eq_coe_nnnorm]
   norm_cast
 #align measure_theory.L2.integral_inner_eq_sq_snorm MeasureTheory.L2.integral_inner_eq_sq_snorm
@@ -171,7 +169,7 @@ private theorem norm_sq_eq_inner' (f : α →₂[μ] E) : ‖f‖ ^ 2 = RCLike.r
   have h_two : (2 : ℝ≥0∞).toReal = 2 := by simp
   rw [inner_def, integral_inner_eq_sq_snorm, norm_def, ← ENNReal.toReal_pow, RCLike.ofReal_re,
     ENNReal.toReal_eq_toReal (ENNReal.pow_ne_top (Lp.snorm_ne_top f)) _]
-  · rw [← ENNReal.rpow_nat_cast, snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top, snorm', ←
+  · rw [← ENNReal.rpow_natCast, snorm_eq_snorm' two_ne_zero ENNReal.two_ne_top, snorm', ←
       ENNReal.rpow_mul, one_div, h_two]
     simp
   · refine' (lintegral_rpow_nnnorm_lt_top_of_snorm'_lt_top zero_lt_two _).ne
@@ -284,7 +282,6 @@ variable (μ : Measure α) [IsFiniteMeasure μ]
 
 open scoped BoundedContinuousFunction ComplexConjugate
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 (α →₂[μ] 𝕜) _ x y
 
 -- Porting note: added `(E := 𝕜)`

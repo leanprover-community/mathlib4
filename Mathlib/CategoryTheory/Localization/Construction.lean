@@ -51,7 +51,7 @@ namespace Localization
 
 namespace Construction
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -96,7 +96,7 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -240,7 +240,7 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : Full G := Quotient.fullFunctor _
+    haveI : G.Full := Quotient.fullFunctor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
