@@ -1032,6 +1032,16 @@ theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
     toEuclideanLin M v =
     (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) := rfl
 
+@[simp]
+theorem toEuclidean_apply_eq_mulVec (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
+ WithLp.equiv 2 (m → 𝕜) (toEuclideanLin M v) = M *ᵥ WithLp.equiv 2 (n → 𝕜) v :=
+ rfl
+
+@[simp]
+theorem toEuclideanLin_apply_eq_mulVec' (M : Matrix m n 𝕜) (v : n → 𝕜) :
+ toEuclideanLin M ((WithLp.equiv 2 (n→ 𝕜)).symm v) = (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ v) :=
+ rfl
+
 -- `Matrix.toEuclideanLin` is the same as `Matrix.toLin` applied to `PiLp.basisFun`,
 theorem toEuclideanLin_eq_toLin :
     (toEuclideanLin : Matrix m n 𝕜 ≃ₗ[𝕜] _) =
