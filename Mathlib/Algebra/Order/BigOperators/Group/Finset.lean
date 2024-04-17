@@ -9,6 +9,7 @@ import Mathlib.Tactic.NormNum.Basic
 import Mathlib.Tactic.Positivity.Core
 
 #align_import algebra.big_operators.order from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
+
 /-!
 # Big operators on a finset in ordered groups
 
