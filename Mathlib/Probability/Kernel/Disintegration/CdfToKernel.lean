@@ -288,9 +288,9 @@ lemma IsRatCondKernelCDFAux.tendsto_atTop_one (hf : IsRatCondKernelCDFAux f κ �
     ∀ᵐ t ∂(ν a), Tendsto (f (a, t)) atTop (𝓝 1) := by
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) n) atTop (𝓝 1) by
     filter_upwards [this, hf.mono a] with t ht h_mono
-    rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_nat_cast_atTop_atTop]
+    rw [tendsto_iff_tendsto_subseq_of_monotone h_mono tendsto_natCast_atTop_atTop]
     exact ht
-  filter_upwards [hf.tendsto_one_of_monotone a Nat.cast Nat.mono_cast tendsto_nat_cast_atTop_atTop]
+  filter_upwards [hf.tendsto_one_of_monotone a Nat.cast Nat.mono_cast tendsto_natCast_atTop_atTop]
     with x hx using hx
 
 lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ ν) [IsFiniteKernel ν]
@@ -306,9 +306,9 @@ lemma IsRatCondKernelCDFAux.tendsto_atBot_zero (hf : IsRatCondKernelCDFAux f κ 
   suffices ∀ᵐ t ∂(ν a), Tendsto (fun (n : ℕ) ↦ f (a, t) (-n)) atTop (𝓝 0) by
     filter_upwards [this, hf.mono a] with t ht h_mono
     have h_anti : Antitone (fun q ↦ f (a, t) (-q)) := h_mono.comp_antitone monotone_id.neg
-    exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_nat_cast_atTop_atTop).mpr ht
+    exact (tendsto_iff_tendsto_subseq_of_antitone h_anti tendsto_natCast_atTop_atTop).mpr ht
   exact hf.tendsto_zero_of_antitone _ _ Nat.mono_cast.neg
-    (tendsto_neg_atBot_iff.mpr tendsto_nat_cast_atTop_atTop)
+    (tendsto_neg_atBot_iff.mpr tendsto_natCast_atTop_atTop)
 
 lemma IsRatCondKernelCDFAux.bddBelow_range (hf : IsRatCondKernelCDFAux f κ ν) (a : α) :
     ∀ᵐ t ∂(ν a), ∀ q : ℚ, BddBelow (range fun (r : Ioi q) ↦ f (a, t) r) := by
@@ -656,27 +656,6 @@ lemma compProd_toKernel [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKer
     ν ⊗ₖ hf.toKernel f = κ := by
   ext a s hs
   rw [kernel.compProd_apply _ _ _ hs, lintegral_toKernel_mem hf a hs]
-
-lemma ae_toKernel_eq_one [IsFiniteKernel κ] [IsSFiniteKernel ν] (hf : IsCondKernelCDF f κ ν) (a : α)
-    {s : Set ℝ} (hs : MeasurableSet s) (hκs : κ a {x | x.snd ∈ sᶜ} = 0) :
-    ∀ᵐ b ∂(ν a), hf.toKernel f (a, b) s = 1 := by
-  have h_eq : ν ⊗ₖ hf.toKernel f = κ := compProd_toKernel hf
-  have h : κ a {x | x.snd ∈ sᶜ} = (ν ⊗ₖ hf.toKernel f) a {x | x.snd ∈ sᶜ} := by rw [h_eq]
-  rw [hκs, kernel.compProd_apply] at h
-  swap; · exact measurable_snd hs.compl
-  rw [eq_comm, lintegral_eq_zero_iff] at h
-  swap
-  · simp only [mem_compl_iff, mem_setOf_eq]
-    change Measurable ((fun p ↦ hf.toKernel f p {c | c ∉ s}) ∘ (fun b : β ↦ (a, b)))
-    exact (kernel.measurable_coe _ hs.compl).comp measurable_prod_mk_left
-  simp only [mem_compl_iff, mem_setOf_eq, kernel.prodMkLeft_apply'] at h
-  filter_upwards [h] with b hb
-  rwa [← compl_def, Pi.zero_apply, prob_compl_eq_zero_iff hs] at hb
-
-lemma measurableSet_toKernel_eq_one (hf : IsCondKernelCDF f κ ν)
-    {s : Set ℝ} (hs : MeasurableSet s) :
-    MeasurableSet {p | hf.toKernel f p s = 1} :=
-  (kernel.measurable_coe _ hs) (measurableSet_singleton 1)
 
 end
 
