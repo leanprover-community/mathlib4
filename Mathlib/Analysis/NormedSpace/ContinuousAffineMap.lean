@@ -208,7 +208,7 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
 
 instance : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
-    simp only [SMul.smul, norm_def, (smul_contLinear), norm_smul]
+    simp only [SMul.smul, norm_def, smul_contLinear, norm_smul]
     -- Porting note: previously all these rewrites were in the `simp only`,
     -- but now they don't fire.
     -- (in fact, `norm_smul` fires, but only once rather than twice!)

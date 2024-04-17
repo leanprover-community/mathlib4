@@ -103,7 +103,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     rw [← biUnion_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff,
       mem_biUnion] at hx
     simp only [not_exists, mem_biUnion, and_imp, exists_prop, mem_filter,
-      not_and, mem_sdiff, id.def, mem_sdiff] at hx ⊢
+      not_and, mem_sdiff, id, mem_sdiff] at hx ⊢
     obtain ⟨⟨B, hB₁, hB₂⟩, hx⟩ := hx
     exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2.1⟩
   apply (card_le_card q).trans (card_biUnion_le.trans _)
@@ -138,7 +138,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
           ((2 : ℝ) * 2) ^ P.parts.card * m / U.card := by
         rw [mul_pow, ← mul_div_assoc, mul_assoc]
       _ = ↑4 ^ P.parts.card * m / U.card := by norm_num
-      _ ≤ 1 := (div_le_one_of_le (pow_mul_m_le_card_part hP hU) (cast_nonneg _))
+      _ ≤ 1 := div_le_one_of_le (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
       _ ≤ ↑2 ^ P.parts.card * ε ^ 2 / 10 := by
         refine' (one_le_sq_iff <| by positivity).1 _
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,

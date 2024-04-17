@@ -96,7 +96,7 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
   simp only [this, Finsupp.mem_span_image_iff_total, degree_lt_iff_coeff_zero, support,
     exists_iff_exists_finsupp, coeff, aeval_def, eval₂RingHom', eval₂_eq_sum, Polynomial.sum,
     Finsupp.mem_supported', Finsupp.total, Finsupp.sum, Algebra.smul_def, eval₂_zero, exists_prop,
-    LinearMap.id_coe, eval₂_one, id.def, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, eval₂_one, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
     Finset.mem_range, AlgHom.coe_mks, Finset.mem_coe]
   simp_rw [@eq_comm _ y]
   exact Iff.rfl

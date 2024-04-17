@@ -65,7 +65,7 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
     snorm f p μ ≤ snorm f q μ * μ Set.univ ^ (1 / p.toReal - 1 / q.toReal) := by
   by_cases hp0 : p = 0
   · simp [hp0, zero_le]
-  rw [← Ne.def] at hp0
+  rw [← Ne] at hp0
   have hp0_lt : 0 < p := lt_of_le_of_ne (zero_le _) hp0.symm
   have hq0_lt : 0 < q := lt_of_lt_of_le hp0_lt hpq
   by_cases hq_top : q = ∞
@@ -125,7 +125,7 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   cases' hfq with hfq_m hfq_lt_top
   by_cases hp0 : p = 0
   · rwa [hp0, memℒp_zero_iff_aestronglyMeasurable]
-  rw [← Ne.def] at hp0
+  rw [← Ne] at hp0
   refine' ⟨hfq_m, _⟩
   by_cases hp_top : p = ∞
   · have hq_top : q = ∞ := by rwa [hp_top, top_le_iff] at hpq

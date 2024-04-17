@@ -40,9 +40,6 @@ their counterparts in `Mathlib/Analysis/Complex/Basic.lean` (which causes linter
 A few lemmas requiring heavier imports are in `Mathlib/Data/RCLike/Lemmas.lean`.
 -/
 
-set_option autoImplicit true
-
-
 open BigOperators
 
 section
@@ -74,7 +71,7 @@ class RCLike (K : semiOutParam (Type*)) extends DenselyNormedField K, StarRing K
   mul_im_I_ax : ∀ z : K, im z * im I = im z
   /-- only an instance in the `ComplexOrder` locale -/
   [toPartialOrder : PartialOrder K]
-  le_iff_re_im : z ≤ w ↔ re z ≤ re w ∧ im z = im w
+  le_iff_re_im {z w : K} : z ≤ w ↔ re z ≤ re w ∧ im z = im w
   -- note we cannot put this in the `extends` clause
   [toDecidableEq : DecidableEq K]
 #align is_R_or_C RCLike
@@ -884,7 +881,7 @@ lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
 lemma toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.ofNonnegIff'
+  StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)

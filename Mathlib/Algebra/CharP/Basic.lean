@@ -140,7 +140,7 @@ theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
   ⟨fun n => by rw [← Nat.smul_one_eq_coe, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
 #align char_p.add_order_of_one CharP.addOrderOf_one
 
-theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
+theorem CharP.intCast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
     (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
@@ -149,11 +149,11 @@ theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a 
   · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
   · lift a to ℕ using le_of_lt h with b
     rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-#align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
+#align char_p.int_cast_eq_zero_iff CharP.intCast_eq_zero_iff
 
 theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
     (a : R) = b ↔ a ≡ b [ZMOD p] := by
-  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
+  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
 #align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
 
 theorem CharP.natCast_eq_natCast' [AddMonoidWithOne R] (p : ℕ) [CharP R p] {a b : ℕ}
@@ -625,7 +625,7 @@ theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
-  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.def, ← neZero_iff]
+  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne, ← neZero_iff]
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero

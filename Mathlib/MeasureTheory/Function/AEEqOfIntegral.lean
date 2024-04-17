@@ -96,7 +96,7 @@ theorem ae_eq_zero_of_forall_dual_of_isSeparable [NormedAddCommGroup E] [NormedS
     apply lt_irrefl ‖s x x‖
     calc
       ‖s x x‖ = ‖s x (x - a)‖ := by simp only [h, sub_zero, ContinuousLinearMap.map_sub]
-      _ ≤ 1 * ‖(x : E) - a‖ := (ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _)
+      _ ≤ 1 * ‖(x : E) - a‖ := ContinuousLinearMap.le_of_opNorm_le _ (hs x).1 _
       _ < ‖a‖ / 2 := by rw [one_mul]; rwa [dist_eq_norm'] at hx
       _ < ‖(x : E)‖ := I
       _ = ‖s x x‖ := by rw [(hs x).2, RCLike.norm_coe_norm]
@@ -217,7 +217,7 @@ theorem ae_le_of_forall_set_lintegral_le_of_sigmaFinite [SigmaFinite μ] {f g : 
   refine' le_antisymm _ bot_le
   calc
     μ {x : α | (fun x : α => f x ≤ g x) x}ᶜ ≤ μ (⋃ n, s n) := measure_mono B
-    _ ≤ ∑' n, μ (s n) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (s n) := measure_iUnion_le _
     _ = 0 := by simp only [μs, tsum_zero]
 #align measure_theory.ae_le_of_forall_set_lintegral_le_of_sigma_finite MeasureTheory.ae_le_of_forall_set_lintegral_le_of_sigmaFinite
 
