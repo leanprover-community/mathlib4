@@ -574,7 +574,7 @@ theorem zeta_eq_tsum_one_div_nat_add_one_cpow {s : ℂ} (hs : 1 < re s) :
   · apply Gamma_ne_zero_of_re_pos
     rw [div_eq_mul_inv, mul_comm, show (2⁻¹ : ℂ) = (2⁻¹ : ℝ) by norm_num, re_ofReal_mul]
     exact mul_pos (inv_pos_of_pos two_pos) (zero_lt_one.trans hs)
-  · rw [Ne, cpow_eq_zero_iff, not_and_or, ← Ne.eq_def, ofReal_ne_zero]
+  · rw [Ne, cpow_eq_zero_iff, not_and_or, ← Ne, ofReal_ne_zero]
     exact Or.inl pi_pos.ne'
 #align zeta_eq_tsum_one_div_nat_add_one_cpow zeta_eq_tsum_one_div_nat_add_one_cpow
 

@@ -7,9 +7,10 @@ import Mathlib.Dynamics.Ergodic.MeasurePreserving
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Matrix.Diagonal
 import Mathlib.LinearAlgebra.Matrix.Transvection
+import Mathlib.MeasureTheory.Group.LIntegral
+import Mathlib.MeasureTheory.Integral.Marginal
 import Mathlib.MeasureTheory.Measure.Stieltjes
 import Mathlib.MeasureTheory.Measure.Haar.OfBasis
-import Mathlib.MeasureTheory.Constructions.Pi
 
 #align_import measure_theory.measure.lebesgue.basic from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
@@ -272,7 +273,7 @@ theorem volume_pi_le_prod_diam (s : Set (ι → ℝ)) :
     volume s ≤ volume (pi univ fun i => closure (Function.eval i '' s)) :=
       volume.mono <|
         Subset.trans (subset_pi_eval_image univ s) <| pi_mono fun _ _ => subset_closure
-    _ = ∏ i, volume (closure <| Function.eval i '' s) := (volume_pi_pi _)
+    _ = ∏ i, volume (closure <| Function.eval i '' s) := volume_pi_pi _
     _ ≤ ∏ i : ι, EMetric.diam (Function.eval i '' s) :=
       Finset.prod_le_prod' fun _ _ => (volume_le_diam _).trans_eq (EMetric.diam_closure _)
 #align real.volume_pi_le_prod_diam Real.volume_pi_le_prod_diam
@@ -380,41 +381,20 @@ theorem volume_preserving_transvectionStruct [DecidableEq ι] (t : TransvectionS
   /- We use `lmarginal` to conveniently use Fubini's theorem.
     Along the coordinate where there is a shearing, it acts like a
     translation, and therefore preserves Lebesgue. -/
-  let p : ι → Prop := fun i => i ≠ t.i
-  let α : Type _ := { x // p x }
-  let β : Type _ := { x // ¬p x }
-  let g : (α → ℝ) → (β → ℝ) → β → ℝ := fun a b => (fun _ => t.c * a ⟨t.j, t.hij.symm⟩) + b
-  let F : (α → ℝ) × (β → ℝ) → (α → ℝ) × (β → ℝ) := fun p => (id p.1, g p.1 p.2)
-  let e : (ι → ℝ) ≃ᵐ (α → ℝ) × (β → ℝ) := MeasurableEquiv.piEquivPiSubtypeProd (fun _ : ι => ℝ) p
-  have : (toLin' t.toMatrix : (ι → ℝ) → ι → ℝ) = e.symm ∘ F ∘ e := by
-    cases t with | mk t_i t_j t_hij t_c =>
-    ext f k
-    simp only [e, g, p, LinearEquiv.map_smul, dite_eq_ite, LinearMap.id_coe, ite_not,
-      Algebra.id.smul_eq_mul, one_mul, dotProduct, stdBasisMatrix,
-      MeasurableEquiv.piEquivPiSubtypeProd_symm_apply, id, transvection, Pi.add_apply,
-      zero_mul, LinearMap.smul_apply, Function.comp_apply,
-      MeasurableEquiv.piEquivPiSubtypeProd_apply, Matrix.TransvectionStruct.toMatrix_mk,
-      Matrix.mulVec, LinearEquiv.map_add, ite_mul, Matrix.toLin'_apply, Pi.smul_apply,
-      Subtype.coe_mk, LinearMap.add_apply, Finset.sum_congr, Matrix.toLin'_one]
-    by_cases h : t_i = k
-    · simp only [h, true_and_iff, Finset.mem_univ, if_true, eq_self_iff_true, Finset.sum_ite_eq,
-        one_apply, boole_mul, add_comm]
-    · simp only [h, Ne.symm h, add_zero, if_false, Finset.sum_const_zero, false_and_iff,
-        mul_zero]
-  rw [this]
-  have A : MeasurePreserving e := by
-    convert volume_preserving_piEquivPiSubtypeProd (fun _ : ι => ℝ) p
-  have B : MeasurePreserving F :=
-    haveI g_meas : Measurable (Function.uncurry g) := by
-      have : Measurable fun c : α → ℝ => c ⟨t.j, t.hij.symm⟩ :=
-        measurable_pi_apply ⟨t.j, t.hij.symm⟩
-      refine Measurable.add ?_ measurable_snd
-      refine measurable_pi_lambda _ fun _ => Measurable.const_mul ?_ _
-      exact this.comp measurable_fst
-    (MeasurePreserving.id _).skew_product g_meas
-      (eventually_of_forall fun a => map_add_left_eq_self
-        (Measure.pi fun _ => (stdOrthonormalBasis ℝ ℝ).toBasis.addHaar) _)
-  exact ((A.symm e).comp B).comp A
+  have ht : Measurable (toLin' t.toMatrix) :=
+    (toLin' t.toMatrix).continuous_of_finiteDimensional.measurable
+  refine ⟨ht, ?_⟩
+  refine (pi_eq fun s hs ↦ ?_).symm
+  have h2s : MeasurableSet (univ.pi s) := .pi countable_univ fun i _ ↦ hs i
+  simp_rw [← pi_pi, ← lintegral_indicator_one h2s]
+  rw [lintegral_map (measurable_one.indicator h2s) ht, volume_pi]
+  refine lintegral_eq_of_lmarginal_eq {t.i} ((measurable_one.indicator h2s).comp ht)
+    (measurable_one.indicator h2s) ?_
+  simp_rw [lmarginal_singleton]
+  ext x
+  cases t with | mk t_i t_j t_hij t_c =>
+  simp [transvection, mulVec_stdBasisMatrix, t_hij.symm, ← Function.update_add,
+    lintegral_add_right_eq_self fun xᵢ ↦ indicator (univ.pi s) 1 (Function.update x t_i xᵢ)]
 #align real.volume_preserving_transvection_struct Real.volume_preserving_transvectionStruct
 
 /-- Any invertible matrix rescales Lebesgue measure through the absolute value of its

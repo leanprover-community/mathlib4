@@ -1,1 +1,0 @@
-GIT_SEQUENCE_EDITOR="sed -i '' '/add namespace Mathlib/s/pick.*/exec \/usr\/bin\/env python3 .\/scripts\/namespace_Mathlib.py \&\& git add -A \&\& git commit -am \"add namespace Mathlib\"/'" git rebase -i master
