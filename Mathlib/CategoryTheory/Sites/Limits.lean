@@ -38,13 +38,13 @@ open CategoryTheory.Limits
 
 open Opposite
 
-section Limits
-
-universe w w' v u z z'
+universe w w' v u z z' u₁ u₂
 
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable {D : Type w} [Category.{w'} D]
 variable {K : Type z} [Category.{z'} K]
+
+section Limits
 
 noncomputable section
 
@@ -168,12 +168,16 @@ instance : HasLimitsOfShape K (Sheaf J D) :=
 instance [HasFiniteProducts D] : HasFiniteProducts (Sheaf J D) :=
   ⟨inferInstance⟩
 
+instance [HasFiniteLimits D] : HasFiniteLimits (Sheaf J D) :=
+  ⟨fun _ ↦ inferInstance⟩
+
 end
 
-instance createsLimits [HasLimits D] : CreatesLimitsOfSize (sheafToPresheaf J D) :=
+instance createsLimits [HasLimitsOfSize.{u₁, u₂} D] :
+    CreatesLimitsOfSize.{u₁, u₂} (sheafToPresheaf J D) :=
   ⟨createsLimitsOfShape⟩
 
-instance hasLimitsOfSize [HasLimitsOfSize D] : HasLimitsOfSize (Sheaf J D) :=
+instance hasLimitsOfSize [HasLimitsOfSize.{u₁, u₂} D] : HasLimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   hasLimits_of_hasLimits_createsLimits (sheafToPresheaf J D)
 
 variable {D : Type w} [Category.{max v u} D]
@@ -186,19 +190,6 @@ end Limits
 
 section Colimits
 
-universe w w' v u z z'
-
-variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
-variable {D : Type w} [Category.{w'} D]
-variable {K : Type z} [Category.{z'} K]
-
--- Now we need a handful of instances to obtain sheafification...
--- variable [ConcreteCategory.{max v u} D]
--- variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
--- variable [PreservesLimits (forget D)]
--- variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
--- variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
--- variable [(forget D).ReflectsIsomorphisms]
 variable [HasWeakSheafify J D]
 
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves
@@ -248,7 +239,10 @@ instance [HasColimitsOfShape K D] : HasColimitsOfShape K (Sheaf J D) :=
 instance [HasFiniteCoproducts D] : HasFiniteCoproducts (Sheaf J D) :=
   ⟨inferInstance⟩
 
-instance [HasColimitsOfSize D] : HasColimitsOfSize (Sheaf J D) :=
+instance [HasFiniteColimits D] : HasFiniteColimits (Sheaf J D) :=
+  ⟨fun _ ↦ inferInstance⟩
+
+instance [HasColimitsOfSize.{u₁, u₂} D] : HasColimitsOfSize.{u₁, u₂} (Sheaf J D) :=
   ⟨inferInstance⟩
 
 variable {D : Type w} [Category.{max v u} D]
