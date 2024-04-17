@@ -97,9 +97,9 @@ theorem real_main_inequality {x : ℝ} (x_large : (512 : ℝ) ≤ x) :
     conv in 512 => equals 2 ^ 9 => norm_num1
     conv in 2 * 512 => equals 2 ^ 10 => norm_num1
     conv in 32 => rw [← Nat.cast_ofNat]
-    rw [rpow_nat_cast, ← pow_mul, ← pow_add]
+    rw [rpow_natCast, ← pow_mul, ← pow_add]
     conv in 4 => equals 2 ^ (2 : ℝ) => rw [rpow_two]; norm_num1
-    rw [← rpow_mul, ← rpow_nat_cast]
+    rw [← rpow_mul, ← rpow_natCast]
     apply rpow_le_rpow_of_exponent_le
     all_goals norm_num1
  #align bertrand.real_main_inequality Bertrand.real_main_inequality
@@ -117,7 +117,7 @@ open Nat
 theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
-  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_nat_cast]
+  simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_natCast]
   refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   gcongr
   · have n2_pos : 0 < 2 * n := by positivity

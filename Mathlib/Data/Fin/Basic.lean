@@ -662,7 +662,7 @@ theorem ofNat''_eq_cast (n : ℕ) [NeZero n] (a : ℕ) : (Fin.ofNat'' a : Fin n)
   rfl
 #align fin.of_nat_eq_coe Fin.ofNat''_eq_cast
 
-@[simp] lemma val_nat_cast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
+@[simp] lemma val_natCast (a n : ℕ) [NeZero n] : (a : Fin n).val = a % n := rfl
 
 -- Porting note: is this the right name for things involving `Nat.cast`?
 /-- Converting an in-range number to `Fin (n + 1)` produces a result
@@ -683,9 +683,9 @@ in the same value.  -/
 -- Porting note: this is syntactically the same as `cast_val_of_lt`
 #align fin.coe_coe_eq_self Fin.cast_val_eq_self
 
-@[simp] lemma nat_cast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
+@[simp] lemma natCast_self (n : ℕ) [NeZero n] : (n : Fin n) = 0 := by ext; simp
 
-@[simp] lemma nat_cast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
+@[simp] lemma natCast_eq_zero {a n : ℕ} [NeZero n] : (a : Fin n) = 0 ↔ n ∣ a := by
   simp [ext_iff, Nat.dvd_iff_mod_eq_zero]
 
 @[simp]
@@ -705,7 +705,7 @@ end OfNatCoe
 
 @[simp]
 theorem one_eq_zero_iff [NeZero n] : (1 : Fin n) = 0 ↔ n = 1 := by
-  rw [← Nat.cast_one, nat_cast_eq_zero, Nat.dvd_one]
+  rw [← Nat.cast_one, natCast_eq_zero, Nat.dvd_one]
 #align fin.one_eq_zero_iff Fin.one_eq_zero_iff
 
 @[simp]
@@ -1653,7 +1653,7 @@ theorem exists_eq_add_of_lt {n : ℕ} {a b : Fin (n + 1)} (h : a < b) :
 @[simp]
 theorem neg_last (n : ℕ) : -Fin.last n = 1 := by simp [neg_eq_iff_add_eq_zero]
 
-theorem neg_nat_cast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
+theorem neg_natCast_eq_one (n : ℕ) : -(n : Fin (n + 1)) = 1 := by
   simp only [cast_nat_eq_last, neg_last]
 
 lemma pos_of_ne_zero {n : ℕ} {a : Fin (n + 1)} (h : a ≠ 0) :

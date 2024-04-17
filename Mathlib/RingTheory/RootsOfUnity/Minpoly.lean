@@ -68,7 +68,7 @@ theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
   refine' Separable.of_dvd (separable_X_pow_sub_C 1 _ one_ne_zero) hdvd
   by_contra hzero
-  exact hdiv ((ZMod.nat_cast_zmod_eq_zero_iff_dvd n p).1 hzero)
+  exact hdiv ((ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 hzero)
 #align is_primitive_root.separable_minpoly_mod IsPrimitiveRoot.separable_minpoly_mod
 
 /-- The reduction modulo `p` of the minimal polynomial of a root of unity `μ` is squarefree. -/
@@ -155,7 +155,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
     lt_of_lt_of_le (PartENat.coe_lt_coe.2 one_lt_two)
       (multiplicity.le_multiplicity_of_pow_dvd (dvd_trans habs prod))
   have hfree : Squarefree (X ^ n - 1 : (ZMod p)[X]) :=
-    (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.nat_cast_zmod_eq_zero_iff_dvd n p).1 h)
+    (separable_X_pow_sub_C 1 (fun h => hdiv <| (ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 h)
         one_ne_zero).squarefree
   cases'
     (multiplicity.squarefree_iff_multiplicity_le_one (X ^ n - 1)).1 hfree

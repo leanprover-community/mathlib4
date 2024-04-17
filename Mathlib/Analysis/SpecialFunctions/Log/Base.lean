@@ -117,7 +117,7 @@ theorem logb_rpow_eq_mul_logb_of_pos (hx : 0 < x) : logb b (x ^ y) = y * logb b 
   rw [logb, log_rpow hx, logb, mul_div_assoc]
 
 theorem logb_pow {k : ℕ} (hx : 0 < x) : logb b (x ^ k) = k * logb b x := by
-  rw [← rpow_nat_cast, logb_rpow_eq_mul_logb_of_pos hx]
+  rw [← rpow_natCast, logb_rpow_eq_mul_logb_of_pos hx]
 
 section BPosAndNeOne
 
@@ -405,31 +405,31 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
 
 end BPosAndBLtOne
 
-theorem floor_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
+theorem floor_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     ⌊logb b r⌋ = Int.log b r := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [logb_zero, Int.log_zero_right, Int.floor_zero]
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
-  · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_int_cast b]
+  · rw [← Int.zpow_le_iff_le_log hb hr, ← rpow_intCast b]
     refine' le_of_le_of_eq _ (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr)
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.floor_le _)
-  · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_int_cast]
+  · rw [Int.le_floor, le_logb_iff_rpow_le hb1' hr, rpow_intCast]
     exact Int.zpow_log_le_self hb hr
-#align real.floor_logb_nat_cast Real.floor_logb_nat_cast
+#align real.floor_logb_nat_cast Real.floor_logb_natCast
 
-theorem ceil_logb_nat_cast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
+theorem ceil_logb_natCast {b : ℕ} {r : ℝ} (hb : 1 < b) (hr : 0 ≤ r) :
     ⌈logb b r⌉ = Int.clog b r := by
   obtain rfl | hr := hr.eq_or_lt
   · rw [logb_zero, Int.clog_zero_right, Int.ceil_zero]
   have hb1' : 1 < (b : ℝ) := Nat.one_lt_cast.mpr hb
   apply le_antisymm
-  · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_int_cast]
+  · rw [Int.ceil_le, logb_le_iff_le_rpow hb1' hr, rpow_intCast]
     exact Int.self_le_zpow_clog hb r
-  · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_int_cast b]
+  · rw [← Int.le_zpow_iff_clog_le hb hr, ← rpow_intCast b]
     refine' (rpow_logb (zero_lt_one.trans hb1') hb1'.ne' hr).symm.trans_le _
     exact rpow_le_rpow_of_exponent_le hb1'.le (Int.le_ceil _)
-#align real.ceil_logb_nat_cast Real.ceil_logb_nat_cast
+#align real.ceil_logb_nat_cast Real.ceil_logb_natCast
 
 @[simp]
 theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨ x = 1 ∨ x = -1 := by
@@ -465,7 +465,7 @@ lemma Real.induction_Ico_mul {P : ℝ → Prop} (x₀ r : ℝ) (hr : 1 < r) (hx�
     intro x hx
     have hx' : 0 < x / x₀ := div_pos (hx₀.trans_le hx) hx₀
     refine this ⌊logb r (x / x₀)⌋₊ x ?_
-    rw [mem_Ico, ← div_lt_iff hx₀, ← rpow_nat_cast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
+    rw [mem_Ico, ← div_lt_iff hx₀, ← rpow_natCast, ← logb_lt_iff_lt_rpow hr hx', Nat.cast_add,
       Nat.cast_one]
     exact ⟨hx, Nat.lt_floor_add_one _⟩
   intro n
