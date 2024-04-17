@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yakov Pechersky, Eric Wieser
 -/
 import Mathlib.Init.Data.List.Basic
-import Mathlib.Data.Prod.Basic
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Convert
 
@@ -100,7 +99,7 @@ theorem enum_append (xs ys : List α) : enum (xs ++ ys) = enum xs ++ enumFrom xs
 
 theorem map_fst_add_enumFrom_eq_enumFrom (l : List α) (n k : ℕ) :
     map (Prod.map (· + n) id) (enumFrom k l) = enumFrom (n + k) l := by
-  induction l generalizing n k <;> [rfl; simp_all [Nat.add_assoc, Nat.add_comm k]]
+  induction l generalizing n k <;> [rfl; simp_all [Nat.add_assoc, Nat.add_comm k, Prod.map]]
 #align list.map_fst_add_enum_from_eq_enum_from List.map_fst_add_enumFrom_eq_enumFrom
 
 theorem map_fst_add_enum_eq_enumFrom (l : List α) (n : ℕ) :
