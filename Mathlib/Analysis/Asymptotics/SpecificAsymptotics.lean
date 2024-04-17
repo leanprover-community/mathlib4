@@ -135,7 +135,7 @@ theorem Asymptotics.isLittleO_sum_range_of_tendsto_zero {α : Type*} [NormedAddC
     (fun n => ∑ i in range n, f i) =o[atTop] fun n => (n : ℝ) := by
   have := ((isLittleO_one_iff ℝ).2 h).sum_range fun i => zero_le_one
   simp only [sum_const, card_range, Nat.smul_one_eq_coe] at this
-  exact this tendsto_nat_cast_atTop_atTop
+  exact this tendsto_natCast_atTop_atTop
 #align asymptotics.is_o_sum_range_of_tendsto_zero Asymptotics.isLittleO_sum_range_of_tendsto_zero
 
 /-- The Cesaro average of a converging sequence converges to the same limit. -/
