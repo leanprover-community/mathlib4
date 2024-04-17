@@ -152,6 +152,41 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   rw [det_mul_right_comm]
   simp
 
+
+lemma star_eq_inv' (U : Matrix.unitaryGroup n 𝕜) : star (U : Matrix n n 𝕜) = U⁻¹ := by rfl
+
+@[simp]
+lemma isUnit_det_of_mem_unitaryGroup {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
+      IsUnit (det U) := isUnit_det_of_right_inverse (hU.2)
+
+lemma isUnit_of_mem_unitaryGroup {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) : IsUnit U
+       := by simp only [(Matrix.isUnit_iff_isUnit_det U).mpr, isUnit_det_of_right_inverse (hU.2)]
+
+lemma Matrix.IsUnit_inv {A : Matrix n n 𝕜} (hA : IsUnit A) : IsUnit A⁻¹ := by
+  simp only[(Matrix.isUnit_iff_isUnit_det A⁻¹).mpr,
+         Matrix.isUnit_nonsing_inv_det A ((Matrix.isUnit_iff_isUnit_det A).mp hA)]
+
+@[simp]
+lemma rank_conj_eq_of_unit (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
+      rank ((A : Matrix n n 𝕜) * B * (A : Matrix n n 𝕜)⁻¹) = rank B := by
+  have hA1 := rank_mul_eq_right_of_isUnit_det A B ((Matrix.isUnit_iff_isUnit_det (A : Matrix n n 𝕜)).mp (Units.isUnit A))
+  have hA2 := rank_mul_eq_left_of_isUnit_det (A⁻¹ : Matrix n n 𝕜) ((A : Matrix n n 𝕜) * B)
+             ((Matrix.isUnit_iff_isUnit_det (A⁻¹ : Matrix n n 𝕜)).mp (Matrix.IsUnit_inv (Units.isUnit A)))
+  rw [hA1] at hA2
+  apply hA2
+
+lemma unitary_coe_inv (U : unitaryGroup n 𝕜) : (U : unitaryGroup n 𝕜)⁻¹ = (U⁻¹ : Matrix n n 𝕜) := by
+        sorry
+
+lemma rank_eq_rank_diagonal1 : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
+  conv_lhs => rw [hA.spectral_theorem2]
+  --have h := isUnit_of_mem_unitaryGroup (hA.eigenvectorUnitary.2)
+  have h1 : (eigenvectorUnitary hA : Matrix n n 𝕜)⁻¹ = (eigenvectorUnitary hA) := by sorry
+  rw [star_eq_inv']
+  rw [unitary_coe_inv]
+  conv_lhs => rw [rank_conj_eq_of_unit (unitary.toUnits (hA.eigenvectorUnitary))
+        (diagonal (RCLike.ofReal (K := 𝕜) ∘ eigenvalues hA))]
+
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem2]
