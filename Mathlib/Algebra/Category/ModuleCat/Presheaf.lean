@@ -5,7 +5,6 @@ Authors: Scott Morrison
 -/
 import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 
 /-!
 # Presheaves of modules over a presheaf of rings.
