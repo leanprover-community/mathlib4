@@ -145,10 +145,22 @@ lemma test {s : Set (Set α)} (hsi : FiniteInter s) :
     exact hts
 
 theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : t = generateFrom s)
-    (hsi : FiniteInter s):
-    IsTopologicalBasis s := by
+    (hsi : FiniteInter s) : IsTopologicalBasis s := by
   rw [← test hsi]
   apply isTopologicalBasis_of_subbasis hsg
+
+theorem isTopologicalBasis_of_subbasis_of_inter {r : Set (Set α)} (hsg : t = generateFrom r)
+    (hsi : ∀ ⦃s⦄, s ∈ r →
+    ∀ ⦃t⦄, t ∈ r → s ∩ t ∈ r) :
+    IsTopologicalBasis (insert univ r) := by
+  have hsg' : t = generateFrom (insert univ r) := by
+    rw [hsg]
+    apply le_antisymm
+    apply le_generateFrom
+    simp
+    apply isOpen_generateFrom_of_mem
+    apply (generateFrom_anti <| subset_insert univ r)
+  apply isTopologicalBasis_of_subbasis_of_finiteInter hsg' (FiniteInter.mk₂ hsi)
 
 theorem IsTopologicalBasis.of_hasBasis_nhds {s : Set (Set α)}
     (h_nhds : ∀ a, (𝓝 a).HasBasis (fun t ↦ t ∈ s ∧ a ∈ t) id) : IsTopologicalBasis s where
