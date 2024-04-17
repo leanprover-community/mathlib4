@@ -87,14 +87,13 @@ lemma diam_eq_zero :
     · apply not_bddAbove_diam_eq_zero h
     · rw [h, diam_bot]
 
-/- this lemma is not true in general, i plan to add conditions -/
-lemma diam_lt {n : ℕ} : G.diam ≤ n ↔ ∀ u v, G.dist u v ≤ n := by
-  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · intro u v
-
-    sorry
-  ·
-    sorry
+lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
+  intro u v
+  apply le_csSup
+  rw [ne_eq, diam_eq_zero] at h
+  push_neg at h
+  exact h.1
+  aesop
 
 noncomputable def ediam (G : SimpleGraph α) : ℕ∞ :=
   sSup {d | ∃ u v : α, d = G.dist u v}
@@ -111,7 +110,7 @@ private lemma top_not_mem_of_sup_ne_top {s : Set ℕ∞} (h : sSup s ≠ ⊤) : 
 
 variable [Nonempty α]
 
-/- There exists vertices which the distance of attains the diameter. -/
+/- There exists vertices which the distance of attains the extended diameter. -/
 @[simp]
 lemma ediam_exists : G.ediam ≠ ⊤ ↔ ∃ (u v : α),  G.dist u v = G.ediam := by
   refine ⟨fun h => ?_, ?_⟩
