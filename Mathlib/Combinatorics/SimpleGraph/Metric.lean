@@ -122,7 +122,6 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
-
 /- Supergraphs have smaller or equal distances to their subgraphs. -/
 theorem dist_le_subgraph_dist {G' : SimpleGraph V} {u v : V} (h : G ≤ G') (hr : G.Reachable u v) :
     G'.dist u v ≤ G.dist u v := by
@@ -171,6 +170,5 @@ lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
     ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
   obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
   exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
-
 
 end SimpleGraph
