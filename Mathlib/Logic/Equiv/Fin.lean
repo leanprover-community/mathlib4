@@ -328,6 +328,12 @@ def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
 @[simp] lemma Equiv.embeddingFinSucc_snd {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
     ((Equiv.embeddingFinSucc n ι e).2 : ι) = e 0 := rfl
 
+@[simp] lemma Equiv.coe_embeddingFinSucc_symm {n : ℕ} {ι : Type*}
+    (f : Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :
+    ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
+  ext i
+  exact Fin.cases rfl (fun j ↦ rfl) i
+
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
 element of the tuple. -/
 @[simps! (config := .asFn)]
