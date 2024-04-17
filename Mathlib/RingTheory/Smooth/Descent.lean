@@ -13,6 +13,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
+import Mathlib.RingTheory.RingOfDefinition
 
 /-!
 
@@ -23,13 +24,18 @@ a smooth `R₀`-algebra `A₀` such that `A` is `R`-isomorphic to `R ⊗[R₀] A
 
 -/
 
-universe u
+universe u v
 
 open TensorProduct
 
 namespace Algebra
 
 variable (R : Type u) [CommRing R]
+
+lemma finiteType_of_adjoin_finite {A : Type v} [CommRing A] [Algebra R A] (T : Set A) (h : Set.Finite T) :
+    FiniteType R (Algebra.adjoin R T) :=
+  sorry
+
 variable (A : Type u) [CommRing A] [Algebra R A]
 variable [FormallySmooth R A] (hfp : FinitePresentation R A)
 
@@ -135,16 +141,62 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     · exact hS.symm
     · exact hinkersq s
   choose p hphomog hpeval using this
-  let coeffs_s : Set R := sorry
-  let coeffs_h : Set R := sorry
-  let coeffs_p : Set R := sorry
+  let coeffs_s : Set R := MvPolynomial.Set.coefficients (S : Set (MvPolynomial ι R))
+  let coeffs_h : Set R := MvPolynomial.Set.coefficients (Set.range h)
+  let coeffs_p : Set R := MvPolynomial.Set.coefficients <|
+    MvPolynomial.Set.coefficients (Set.range p)
   let coeffs : Set R := coeffs_s ∪ coeffs_h ∪ coeffs_p
   let R₀ := (Algebra.adjoin ℤ coeffs).toSubring
   use R₀
-  let I₀ : Ideal (MvPolynomial ι R₀) := sorry
-  use MvPolynomial ι R₀ ⧸ I₀
+  let S₀ : Set (MvPolynomial ι R₀) :=
+    MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S
+  have hS₀fin : Set.Finite S₀ := by
+    apply Set.Finite.preimage
+    · apply Set.injOn_of_injective
+      apply MvPolynomial.map_injective
+      simp only [SubringClass.coeSubtype]
+      exact Subtype.val_injective
+    · exact Finset.finite_toSet S
+  let I₀ : Ideal (MvPolynomial ι R₀) := Ideal.span S₀
+  let A₀ : Type _ := MvPolynomial ι R₀ ⧸ I₀
+  letI : Module R₀ A₀ := Algebra.toModule
+  use A₀
   use inferInstance
   use inferInstance
-  admit
+  let f' : (MvPolynomial ι R ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R] R ⊗[R₀] A₀ := by
+    apply RingOfDefinition.baseChangeIso (T := S) (hgen := hS.symm)
+    · rw [← hS]
+      apply Ideal.span_preimage_le_comap
+    · intro r hr
+      refine ⟨⟨r, ?_⟩, rfl⟩
+      apply Algebra.subset_adjoin
+      apply Set.mem_union_left
+      apply Set.mem_union_left
+      exact hr
+    · intro p hp
+      exact Ideal.subset_span hp
+  let is : (MvPolynomial ι R ⧸ (RingHom.ker f.toRingHom)) ≃ₐ[R] A :=
+    Ideal.quotientKerAlgEquivOfSurjective hfsurj
+  let f : A ≃ₐ[R] R ⊗[R₀] A₀ := is.symm.trans f'
+  use f
+  refine ⟨?_, ?_, ?_⟩
+  · apply finiteType_of_adjoin_finite
+    apply Set.Finite.union
+    apply Set.Finite.union
+    · apply MvPolynomial.Set.coefficients_finite_of_finite
+      exact Finset.finite_toSet S
+    · apply MvPolynomial.Set.coefficients_finite_of_finite
+      exact Set.finite_range h
+    · apply MvPolynomial.Set.coefficients_finite_of_finite
+      apply MvPolynomial.Set.coefficients_finite_of_finite
+      exact Set.finite_range p
+  · apply FinitePresentation.quotient
+    obtain ⟨S₀', hS₀'⟩ := Set.Finite.exists_finset_coe hS₀fin
+    use S₀'
+    rw [hS₀']
+    exact FinitePresentation.mvPolynomial R₀ ι
+  · fapply FormallySmooth.of_split (Ideal.Quotient.mkₐ R₀ I₀)
+    · admit
+    · admit
 
 end Smooth
