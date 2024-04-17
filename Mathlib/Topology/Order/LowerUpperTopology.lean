@@ -459,3 +459,25 @@ lemma isLower_orderDual [Preorder α] [TopologicalSpace α] : IsLower αᵒᵈ �
   isUpper_orderDual.symm
 
 end Topology
+
+
+section LinearOrder
+
+variable (α)
+
+variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
+
+lemma test1 : {s : Set α | ∃ a, (Iic a)ᶜ = s} =
+    ((fun f => ⋂₀ f) '' { f : Set (Set α) | f.Finite ∧ f ⊆ {s : Set α | ∃ a, (Iic a)ᶜ = s} }) := by
+  rw [image]
+
+lemma test : IsTopologicalBasis ({s : Set α | ∃ a, (Iic a)ᶜ = s}) := by
+  rw [test1]
+  apply isTopologicalBasis_of_subbasis
+  rw [Topology.IsLower.topology_eq α]
+
+
+
+
+
+end LinearOrder
