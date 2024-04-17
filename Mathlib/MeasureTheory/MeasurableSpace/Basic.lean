@@ -732,7 +732,7 @@ lemma MeasurableSet.measurableAtom_of_countable [Countable β] (x : β) :
       simp only [compl_iInter, mem_iUnion, mem_compl_iff, exists_prop]
       exact ⟨z, hz, (hs z hz).2.2⟩
   rw [this]
-  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).1)
+  exact MeasurableSet.biInter (to_countable (measurableAtom x)ᶜ) (fun i hi ↦ (hs i hi).2.1)
 
 end Atoms
 
