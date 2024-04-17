@@ -109,6 +109,6 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
   for t in trees.toArray do
     for (s, fmt) in ← nonPropHaves t do
       Linter.logLint linter.haveLet s m!"'{fmt}' is a Type and not a Prop. \
-        Consider using 'let' instead of 'have'"
+        Consider using 'let' instead of 'have'."
 
 initialize addLinter haveLetLinter
