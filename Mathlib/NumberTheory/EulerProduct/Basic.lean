@@ -13,7 +13,7 @@ import Mathlib.NumberTheory.SmoothNumbers
 
 The main result in this file is `EulerProduct.eulerProduct_hasProd`, which says that
 if `f : ℕ → R` is norm-summable, where `R` is a complete normed commutative ring and `f` is
-multiplicative on coprime arguments with `f 0 = 0` and `‖f ·‖` is summable, then
+multiplicative on coprime arguments with `f 0 = 0`, then
 `∏' p : Primes, ∑' e : ℕ, f (p^e)` converges to `∑' n, f n`.
 
 `ArithmeticFunction.IsMultiplicative.eulerProduct_hasProd` is a version
@@ -21,7 +21,7 @@ for multiplicative arithmetic functions in the sense of
 `ArithmeticFunction.IsMultiplicative`.
 
 There is also a version `EulerProduct.eulerProduct_completely_multiplicative_hasProd`,
-which states that `∏' p : Primes, (1 - f p)⁻¹` converges to `∑' n, f n` as `N`
+which states that `∏' p : Primes, (1 - f p)⁻¹` converges to `∑' n, f n`
 when `f` is completely multiplicative with values in a complete normed field `F`
 (implemented as `f : ℕ →*₀ F`).
 
@@ -91,10 +91,8 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
   · rw [filter_insert]
     split_ifs with hpp
     · constructor
-      · rw [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def]
-        conv =>
-          enter[1, x]
-          rw [equivProdNatFactoredNumbers_apply', factoredNumbers.map_prime_pow_mul hmul hpp hp]
+      · simp only [← (equivProdNatFactoredNumbers hpp hp).summable_iff, Function.comp_def, 
+          equivProdNatFactoredNumbers_apply', factoredNumbers.map_prime_pow_mul hmul hpp hp]
         refine Summable.of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun _ ↦ norm_mul_le ..) ?_
         apply summable_mul_of_summable_norm (f := fun x : ℕ ↦ ‖f (p ^ x)‖)
           (g := fun x : factoredNumbers s ↦ ‖f x.val‖) <;>
