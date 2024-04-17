@@ -647,7 +647,7 @@ instance : HasPushouts.{u} (Type u) :=
 variable {W X Y Z : Type u}
 variable (f : X ⟶ Z) (g : Y ⟶ Z)
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The usual explicit pullback in the category of types, as a subtype of the product.
 The full `LimitCone` data is bundled as `pullbackLimitCone f g`.
 -/

@@ -219,7 +219,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   by_cases h0 : r₁ = 0
   · refine' (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ _⟩) EventuallyEq.rfl
     simp [zero_pow (one_le_iff_ne_zero.1 hn), h0]
-  rw [← Ne.def, ← norm_pos_iff] at h0
+  rw [← Ne, ← norm_pos_iff] at h0
   have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
@@ -770,7 +770,7 @@ end
 
 /-- The series `∑' n, x ^ n / n!` is summable of any `x : ℝ`. See also `expSeries_div_summable`
 for a version that also works in `ℂ`, and `NormedSpace.expSeries_summable'` for a version
-that works inany normed algebra over `ℝ` or `ℂ`. -/
+that works in any normed algebra over `ℝ` or `ℂ`. -/
 theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / n ! : ℕ → ℝ) := by
   -- We start with trivial estimates
   have A : (0 : ℝ) < ⌊‖x‖⌋₊ + 1 := zero_lt_one.trans_le (by simp)

@@ -189,7 +189,7 @@ variable (M)
 -- is empty if the base manifold is empty
 /-- The tangent bundle to a smooth manifold, as a Sigma type. Defined in terms of
 `Bundle.TotalSpace` to be able to put a suitable topology on it. -/
-@[reducible] -- Porting note: was nolint has_nonempty_instance
+@[reducible] -- Porting note(#5171): was nolint has_nonempty_instance
 def TangentBundle :=
   Bundle.TotalSpace E (TangentSpace I : M → Type _)
 #align tangent_bundle TangentBundle
@@ -376,8 +376,8 @@ theorem tangentBundle_model_space_chartAt (p : TangentBundle I H) :
   ext x : 1
   · ext; · rfl
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
-  · -- Porting note: was ext; · rfl; apply hEq_of_eq
-    refine congr_arg (TotalSpace.mk _) ?_
+  · ext; · rfl
+    apply heq_of_eq
     exact (tangentBundleCore I H).coordChange_self (achart _ x.1) x.1 (mem_achart_source H x.1) x.2
   simp_rw [TangentBundle.chartAt, FiberBundleCore.localTriv,
     FiberBundleCore.localTrivAsPartialEquiv, VectorBundleCore.toFiberBundleCore_baseSet,
