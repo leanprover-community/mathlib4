@@ -41,18 +41,35 @@ lemma diam_exists [Nonempty α] : ∃ u v : α, G.dist u v = G.diam := by
   · rw [not_bddAbove_diam_eq_zero h]
     use u, u, dist_self
 
+lemma bddAbove_dist_le_diam (h : BddAbove {d | ∃ u v : α, d = G.dist u v}) :
+    ∀ u v, G.dist u v ≤ G.diam := by
+  rw [diam, Nat.sSup_def h]
+  aesop
+
 lemma diam_eq_zero {n : ℕ} :
     G.diam = 0 ↔ ¬BddAbove {d | ∃ u v : α, d = G.dist u v} ∨ G = ⊥ := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · by_cases h' : G = ⊥
     · apply Or.inr h'
     · apply Or.inl
-      rw [← edgeSet_eq_empty] at h'
-      have : ∃ u v : α, G.Adj u v := by sorry
-      sorry
+      have : ∃ u v : α, G.Adj u v := by
+        by_contra
+        have : G = emptyGraph α := by
+          unfold emptyGraph
+          aesop
+        rw [emptyGraph_eq_bot] at this
+        exact h' this
+      obtain ⟨u, v, huv⟩ := this
+      rw [← dist_eq_one_iff_adj] at huv
+      by_contra con
+      apply bddAbove_dist_le_diam at con
+      have := con u v
+      rw [huv, h] at this
+      omega
   ·
     sorry
 
+/- this lemma is not true in general, i plan to add conditions -/
 lemma diam_lt {n : ℕ} : G.diam ≤ n ↔ ∀ u v: α, G.dist u v ≤ n := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
   · intro u v
