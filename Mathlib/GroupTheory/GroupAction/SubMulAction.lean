@@ -448,9 +448,7 @@ lemma image_inclusion (s : SubMulAction M α) :
   exact Subtype.range_coe
 
 lemma inclusion_injective (s : SubMulAction M α) :
-    Function.Injective s.inclusion := by
-  rintro ⟨a, ha⟩ ⟨b, hb⟩ h
-  simp only [Subtype.mk.injEq]
-  exact h
+    Function.Injective s.inclusion :=
+  Subtype.val_injective
 
 end SubMulAction
