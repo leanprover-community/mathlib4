@@ -544,6 +544,13 @@ def toContinuousMultilinearMapLinear :
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
+/-- Linear map version of the map `toAlternatingMap` associating to a continuous alternating map
+the corresponding alternating map. -/
+def toAlternatingMapLinear : (M [Λ^ι]→L[A] N) →ₗ[R] (M [Λ^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
+
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]
 def piLinearEquiv {ι' : Type*} {M' : ι' → Type*} [∀ i, AddCommMonoid (M' i)]
