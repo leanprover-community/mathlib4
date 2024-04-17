@@ -16,7 +16,7 @@ lemma starOrderedRing_of_sqrt {R : Type*} [PartialOrder R] [NonUnitalRing R] [St
     [StarOrderedRing R] [TopologicalSpace R] [ContinuousStar R] [TopologicalRing R]
     (sqrt : R → R) (h_continuousOn : ContinuousOn sqrt {x : R | 0 ≤ x})
     (h_sqrt : ∀ x, 0 ≤ x → star (sqrt x) * sqrt x = x) : StarOrderedRing C(α, R) :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun f ↦ by
+  StarOrderedRing.of_nonneg_iff' add_le_add_left fun f ↦ by
     constructor
     · intro hf
       use (mk _ h_continuousOn.restrict).comp ⟨_, map_continuous f |>.codRestrict (by exact hf ·)⟩
@@ -48,7 +48,7 @@ instance instStarOrderedRingComplex : StarOrderedRing C(α, ℂ) :=
 
 open NNReal in
 instance instStarOrderedRingNNReal : StarOrderedRing C(α, ℝ≥0) :=
-  StarOrderedRing.ofLEIff fun f g ↦ by
+  StarOrderedRing.of_le_iff fun f g ↦ by
     constructor
     · intro hfg
       use .comp ⟨sqrt, by fun_prop⟩ (g - f)
