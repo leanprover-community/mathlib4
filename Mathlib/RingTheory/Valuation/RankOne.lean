@@ -12,7 +12,8 @@ import Mathlib.RingTheory.Valuation.Basic
 We define rank one valuations.
 
 ## Main Definitions
-* `IsRankOne` : A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
+* `RankOne` : A valuation `v` has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
+  Note that this class contains the data of the inclusion of the codomain of `v` into `ℝ≥0`.
 
 ## Tags
 
@@ -29,45 +30,48 @@ variable {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ
 
 namespace Valuation
 
-/-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`. -/
-class IsRankOne (v : Valuation R Γ₀) where
+/-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
+  Note that this class includes the data of an inclusion morphismo `Γ₀ → ℝ≥0`. -/
+class RankOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
   hom : Γ₀ →*₀ ℝ≥0
   strictMono' : StrictMono hom
   nontrivial' : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1
 
-namespace IsRankOne
+namespace RankOne
 
-variable (v : Valuation R Γ₀) [IsRankOne v]
+variable (v : Valuation R Γ₀) [RankOne v]
 
 lemma strictMono : StrictMono (hom v) := strictMono'
 
 lemma nontrivial : ∃ r : R, v r ≠ 0 ∧ v r ≠ 1 := nontrivial'
 
-/-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `is_rank_one.hom v`, then
+/-- If `v` is a rank one valuation and `x : Γ₀` has image `0` under `RankOne.hom v`, then
   `x = 0`. -/
-theorem zero_of_hom_zero {x : Γ₀} (hx : IsRankOne.hom v x = 0) : x = 0 := by
+theorem zero_of_hom_zero {x : Γ₀} (hx : hom v x = 0) : x = 0 := by
   have hx0 : 0 ≤ x := zero_le'
-  cases' le_iff_lt_or_eq.mp hx0 with h_lt h_eq
-  · have hs := IsRankOne.strictMono v h_lt
+  cases le_iff_lt_or_eq.mp hx0
+  next h_lt =>
+    have hs := strictMono v h_lt
     rw [_root_.map_zero, hx] at hs
     exact absurd hs not_lt_zero'
-  · exact h_eq.symm
+  next h_eq =>
+    exact h_eq.symm
 
-/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `is_rank_one.hom v` if and
+/-- If `v` is a rank one valuation, then`x : Γ₀` has image `0` under `RankOne.hom v` if and
   only if `x = 0`. -/
-theorem hom_eq_zero_iff {x : Γ₀} : IsRankOne.hom v x = 0 ↔ x = 0 :=
+theorem hom_eq_zero_iff {x : Γ₀} : RankOne.hom v x = 0 ↔ x = 0 :=
   ⟨fun h => zero_of_hom_zero v h, fun h => by rw [h, _root_.map_zero]⟩
 
-/-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : valuation R Γ₀`. -/
-def Unit : Γ₀ˣ :=
-  Units.mk0 (v ((nontrivial v).choose )) ((nontrivial v).choose_spec).1
+/-- A nontrivial unit of `Γ₀`, given that there exists a rank one `v : Valuation R Γ₀`. -/
+def unit : Γ₀ˣ :=
+  Units.mk0 (v (nontrivial v).choose) ((nontrivial v).choose_spec).1
 
-/-- A proof that `is_rank_one_unit v ≠ 1`. -/
-theorem Unit_ne_one : Unit v ≠ 1 := by
+/-- A proof that `RankOne.unit v ≠ 1`. -/
+theorem unit_ne_one : unit v ≠ 1 := by
   rw [Ne.def, ← Units.eq_iff, Units.val_one]
   exact ((nontrivial v).choose_spec ).2
 
-end IsRankOne
+end RankOne
 
 end Valuation
