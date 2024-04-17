@@ -118,11 +118,8 @@ def functor : Type (u+1) ⥤ CondensedSet.{u} where
 `topCatToCondensed` to discrete topological spaces.
 -/
 noncomputable def functorIsoTopCatToCondensed : functor ≅ TopCat.discrete ⋙ topCatToCondensed :=
-  NatIso.ofComponents (fun X ↦ {
-    hom := ⟨(functorToPresheavesIsoTopCatToCondensed X).hom⟩
-    inv := ⟨(functorToPresheavesIsoTopCatToCondensed X).inv⟩
-    hom_inv_id := Sheaf.hom_ext _ _ (functorToPresheavesIsoTopCatToCondensed X).hom_inv_id
-    inv_hom_id := Sheaf.hom_ext _ _ (functorToPresheavesIsoTopCatToCondensed X).inv_hom_id})
+  NatIso.ofComponents (fun X ↦ (sheafToPresheaf _ _).preimageIso
+    (functorToPresheavesIsoTopCatToCondensed X))
 
 section
 
