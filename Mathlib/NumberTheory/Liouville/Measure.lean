@@ -87,7 +87,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]
   set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / (b : ℝ) ^ r)
   have hB : ∀ a b, volume (B a b) = ↑((2 : ℝ≥0) / (b : ℝ≥0) ^ r) := fun a b ↦ by
-    rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_nat_cast, ← NNReal.coe_rpow,
+    rw [Real.volume_ball, mul_one_div, ← NNReal.coe_two, ← NNReal.coe_natCast, ← NNReal.coe_rpow,
       ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal]
   have : ∀ b : ℕ, volume (⋃ a ∈ Finset.Icc (0 : ℤ) b, B a b) ≤
       ↑(2 * ((b : ℝ≥0) ^ (1 - r) + (b : ℝ≥0) ^ (-r))) := fun b ↦
@@ -96,7 +96,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
         measure_biUnion_finset_le _ _
       _ = ↑((b + 1) * (2 / (b : ℝ≥0) ^ r)) := by
         simp only [hB, Int.card_Icc, Finset.sum_const, nsmul_eq_mul, sub_zero, ← Int.ofNat_succ,
-          Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_nat]
+          Int.toNat_natCast, ← Nat.cast_succ, ENNReal.coe_mul, ENNReal.coe_natCast]
       _ = _ := by
         have : 1 - r ≠ 0 := by linarith
         rw [ENNReal.coe_inj]

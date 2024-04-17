@@ -455,7 +455,7 @@ theorem predAbove_right_last {i : Fin (n + 1)} : predAbove i (last (n + 1)) = la
 @[simp]
 theorem predAbove_last_castSucc {i : Fin (n + 1)} :
     predAbove (last n) (i.castSucc) = i := by
-  rw [predAbove_of_le_castSucc _ _ ((castSucc_le_castSucc_iff).mpr (le_last _)), castPred_castSucc]
+  rw [predAbove_of_le_castSucc _ _ (castSucc_le_castSucc_iff.mpr (le_last _)), castPred_castSucc]
 @[simp]
 theorem predAbove_last_of_ne_last {i : Fin (n + 2)} (hi : i ≠ last (n + 1)):
     predAbove (last n) i = castPred i hi := by
@@ -521,7 +521,7 @@ theorem predAbove_succAbove (p : Fin n) (i : Fin n) :
 @[simp]
 theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.succ.predAbove b.succ = (a.predAbove b).succ := by
-  obtain h | h := (le_or_lt (succ a) b)
+  obtain h | h := le_or_lt (succ a) b
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_succ_of_le _ _ h, succ_pred]
   · rw [predAbove_of_lt_succ _ _ h, predAbove_succ_of_lt _ _ h, succ_castPred_eq_castPred_succ]
 #align fin.succ_pred_above_succ Fin.succ_predAbove_succ
@@ -530,7 +530,7 @@ theorem succ_predAbove_succ {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
 @[simp]
 theorem castSucc_predAbove_castSucc {n : ℕ} (a : Fin n) (b : Fin (n + 1)) :
     a.castSucc.predAbove b.castSucc = (a.predAbove b).castSucc := by
-  obtain h | h := (lt_or_le (castSucc a) b)
+  obtain h | h := lt_or_le (castSucc a) b
   · rw [predAbove_of_castSucc_lt _ _ h, predAbove_castSucc_of_lt _ _ h,
       castSucc_pred_eq_pred_castSucc]
   · rw [predAbove_of_le_castSucc _ _ h, predAbove_castSucc_of_le _ _ h, castSucc_castPred]

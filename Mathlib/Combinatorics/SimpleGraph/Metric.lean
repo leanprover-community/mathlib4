@@ -140,4 +140,25 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
     · apply Adj.reachable h
     · apply Adj.ne h
 
+theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
+    p.IsPath := by
+  classical
+  have : p.bypass = p := by
+    apply Walk.bypass_eq_self_of_length_le
+    calc p.length
+      _ = G.dist u v := hp
+      _ ≤ p.bypass.length := dist_le p.bypass
+  rw [← this]
+  apply Walk.bypass_isPath
+
+lemma Reachable.exists_path_of_dist {u v : V} (hr : G.Reachable u v) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hr.exists_walk_of_dist
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
+lemma Connected.exists_path_of_dist (hconn : G.Connected) (u v : V) :
+    ∃ (p : G.Walk u v), p.IsPath ∧ p.length = G.dist u v := by
+  obtain ⟨p, h⟩ := hconn.exists_walk_of_dist u v
+  exact ⟨p, p.isPath_of_length_eq_dist h, h⟩
+
 end SimpleGraph

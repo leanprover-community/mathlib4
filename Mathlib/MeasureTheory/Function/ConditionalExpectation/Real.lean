@@ -131,7 +131,7 @@ theorem set_integral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : 
       (condexp_indicator hfint hs).fun_comp abs
     refine' EventuallyEq.trans (eventually_of_forall fun x => _) this.symm
     rw [← Real.norm_eq_abs, norm_indicator_eq_indicator_norm]
-    rfl
+    simp only [Real.norm_eq_abs]
   rw [this, ← integral_indicator (hnm _ hs)]
   refine' (integral_abs_condexp_le _).trans
     (le_of_eq <| integral_congr_ae <| eventually_of_forall fun x => _)
@@ -166,7 +166,7 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
     exact @measurableSet_lt _ _ _ _ _ m _ _ _ _ _ measurable_const
       stronglyMeasurable_condexp.norm.measurable
   simp only [← smul_eq_mul, ← set_integral_const, NNReal.val_eq_coe, RCLike.ofReal_real_eq_id,
-    id.def]
+    _root_.id]
   refine' set_integral_mono_ae hfint.abs.integrableOn _ hbdd
   refine' ⟨aestronglyMeasurable_const, lt_of_le_of_lt _
     (integrable_condexp.integrableOn : IntegrableOn (μ[f|m]) {x | ↑R < |(μ[f|m]) x|} μ).2⟩
@@ -229,7 +229,8 @@ theorem condexp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
     intro s c f
     ext1 x
     by_cases hx : x ∈ s
-    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul]; rfl
+    · simp only [hx, Pi.mul_apply, Set.indicator_of_mem, Pi.smul_apply, Algebra.id.smul_eq_mul,
+        Function.const_apply]
     · simp only [hx, Pi.mul_apply, Set.indicator_of_not_mem, not_false_iff, zero_mul]
   apply @SimpleFunc.induction _ _ m _ (fun f => _)
     (fun c s hs => ?_) (fun g₁ g₂ _ h_eq₁ h_eq₂ => ?_) f
@@ -247,7 +248,7 @@ theorem condexp_stronglyMeasurable_simpleFunc_mul (hm : m ≤ m0) (f : @SimpleFu
         refine' condexp_congr_ae (EventuallyEq.mul _ EventuallyEq.rfl); rw [h_add]
       _ =ᵐ[μ] μ[⇑g₁ * g|m] + μ[⇑g₂ * g|m] := by
         rw [add_mul]; exact condexp_add (hg.simpleFunc_mul' hm _) (hg.simpleFunc_mul' hm _)
-      _ =ᵐ[μ] ⇑g₁ * μ[g|m] + ⇑g₂ * μ[g|m] := (EventuallyEq.add h_eq₁ h_eq₂)
+      _ =ᵐ[μ] ⇑g₁ * μ[g|m] + ⇑g₂ * μ[g|m] := EventuallyEq.add h_eq₁ h_eq₂
       _ =ᵐ[μ] ⇑(g₁ + g₂) * μ[g|m] := by rw [h_add, add_mul]
 #align measure_theory.condexp_strongly_measurable_simple_func_mul MeasureTheory.condexp_stronglyMeasurable_simpleFunc_mul
 
@@ -259,7 +260,7 @@ theorem condexp_stronglyMeasurable_mul_of_bound (hm : m ≤ m0) [IsFiniteMeasure
     hf.tendsto_approxBounded_ae hf_bound
   by_cases hμ : μ = 0
   · simp only [hμ, ae_zero]; norm_cast
-  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne.def, not_false_iff]
+  have : μ.ae.NeBot := by simp only [hμ, ae_neBot, Ne, not_false_iff]
   have hc : 0 ≤ c := by
     rcases hf_bound.exists with ⟨_x, hx⟩
     exact (norm_nonneg _).trans hx
