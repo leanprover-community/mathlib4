@@ -162,14 +162,14 @@ variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R`-algebra `A` is étale if it is formally étale and of finite presentation. -/
 class Etale : Prop where
-  formallyEtale : FormallyEtale R A
-  finitePresentation : FinitePresentation R A
+  formallyEtale : FormallyEtale R A := by infer_instance
+  finitePresentation : FinitePresentation R A := by infer_instance
 
 end
 
 namespace Etale
 
-attribute [instance] formallyEtale
+attribute [instance] formallyEtale finitePresentation
 
 variable {R : Type u} [CommRing R]
 variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
@@ -177,7 +177,7 @@ variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 /-- Being étale is transported via algebra isomorphisms. -/
 theorem of_equiv [Etale R A] (e : A ≃ₐ[R] B) : Etale R B where
   formallyEtale := FormallyEtale.of_equiv e
-  finitePresentation := FinitePresentation.equiv Etale.finitePresentation e
+  finitePresentation := FinitePresentation.equiv e
 
 section Comp
 
@@ -187,8 +187,7 @@ variable [Algebra A B] [IsScalarTower R A B]
 /-- Étale is stable under composition. -/
 theorem comp [Etale R A] [Etale A B] : Etale R B where
   formallyEtale := FormallyEtale.comp R A B
-  finitePresentation := FinitePresentation.trans (A := A) Etale.finitePresentation
-    Etale.finitePresentation
+  finitePresentation := FinitePresentation.trans R A B
 
 end Comp
 

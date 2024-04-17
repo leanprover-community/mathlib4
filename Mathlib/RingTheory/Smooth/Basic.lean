@@ -357,14 +357,14 @@ variable (A : Type u) [Semiring A] [Algebra R A]
 
 /-- An `R` algebra `A` is smooth if it is formally smooth and of finite presentation. -/
 class Smooth [CommSemiring R] (A : Type u) [Semiring A] [Algebra R A] : Prop where
-  formallySmooth : FormallySmooth R A
-  finitePresentation : FinitePresentation R A
+  formallySmooth : FormallySmooth R A := by infer_instance
+  finitePresentation : FinitePresentation R A := by infer_instance
 
 end
 
 namespace Smooth
 
-attribute [instance] formallySmooth
+attribute [instance] formallySmooth finitePresentation
 
 variable {R : Type u} [CommRing R]
 variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
@@ -372,7 +372,7 @@ variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
 /-- Being smooth is transported via algebra isomorphisms. -/
 theorem of_equiv [Smooth R A] (e : A ≃ₐ[R] B) : Smooth R B where
   formallySmooth := FormallySmooth.of_equiv e
-  finitePresentation := FinitePresentation.equiv Smooth.finitePresentation e
+  finitePresentation := FinitePresentation.equiv e
 
 /-- Localization at an element is smooth. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Smooth R A where
@@ -387,8 +387,7 @@ variable [Algebra A B] [IsScalarTower R A B]
 /-- Smooth is stable under composition. -/
 theorem comp [Smooth R A] [Smooth A B] : Smooth R B where
   formallySmooth := FormallySmooth.comp R A B
-  finitePresentation := FinitePresentation.trans (A := A) Smooth.finitePresentation
-    Smooth.finitePresentation
+  finitePresentation := FinitePresentation.trans R A B
 
 end Comp
 

@@ -240,13 +240,13 @@ variable (A : Type u) [Semiring A] [Algebra R A]
 -/
 class Unramified : Prop where
   formallyUnramified : FormallyUnramified R A := by infer_instance
-  finiteType : FiniteType R A
+  finiteType : FiniteType R A := by infer_instance
 
 end
 
 namespace Unramified
 
-attribute [instance] formallyUnramified
+attribute [instance] formallyUnramified finiteType
 
 variable {R : Type u} [CommRing R]
 variable {A B : Type u} [CommRing A] [Algebra R A] [CommRing B] [Algebra R B]
@@ -259,8 +259,9 @@ theorem of_equiv [Unramified R A] (e : A ≃ₐ[R] B) : Unramified R B where
 /-- Localization at an element is unramified. -/
 theorem of_isLocalization_Away (r : R) [IsLocalization.Away r A] : Unramified R A where
   formallyUnramified := Algebra.FormallyUnramified.of_isLocalization (Submonoid.powers r)
-  finiteType := FiniteType.of_finitePresentation (IsLocalization.Away.finitePresentation r)
-
+  finiteType :=
+    haveI : FinitePresentation R A := IsLocalization.Away.finitePresentation r
+    inferInstance
 
 section Comp
 
