@@ -27,10 +27,10 @@ local notation "GL(" n ", " R ")" "⁺" => Matrix.GLPos (Fin n) R
 local notation "SL(" n ", " R ")" => Matrix.SpecialLinearGroup (Fin n) R
 
 local notation:1024 "↑ₘ" A:1024 =>
-  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Mat[2,2][_])
+  (((A : GL(2, ℝ)⁺) : GL (Fin 2) ℝ) : Mat[2, 2][_])
 -- like `↑ₘ`, but allows the user to specify the ring `R`. Useful to help Lean elaborate.
 local notation:1024 "↑ₘ[" R "]" A:1024 =>
-  ((A : GL (Fin 2) R) : Mat[2,2][R])
+  ((A : GL (Fin 2) R) : Mat[2, 2][R])
 
 section SlashInvariantForms
 

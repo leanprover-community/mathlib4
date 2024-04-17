@@ -60,15 +60,15 @@ def mkColumnVector (elems : Array Term) : Term := Unhygienic.run `(!![$[$elems];
 
 -- Check that the `!![$[$[$rows],*];*]` case can deal with empty arrays even though it uses sepBy1
 run_cmd liftTermElabM do
-  let e ← Term.elabTerm (mkMatrix #[]) q(Mat[0,0][Nat])
+  let e ← Term.elabTerm (mkMatrix #[]) q(Mat[0, 0][Nat])
   Term.synthesizeSyntheticMVarsUsingDefault
   let e ← instantiateMVars e
-  guard <| e == q(!![] : Mat[0,0][Nat])
+  guard <| e == q(!![] : Mat[0, 0][Nat])
 
-  let e ← Term.elabTerm (mkColumnVector #[]) q(Mat[0,0][Nat])
+  let e ← Term.elabTerm (mkColumnVector #[]) q(Mat[0, 0][Nat])
   Term.synthesizeSyntheticMVarsUsingDefault
   let e ← instantiateMVars e
-  guard <| e == q(!![] : Mat[0,0][Nat])
+  guard <| e == q(!![] : Mat[0, 0][Nat])
 
 end safety
 

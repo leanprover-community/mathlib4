@@ -44,7 +44,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Aₙ : Mat[n,n][ℕ] :=
+abbrev Aₙ : Mat[n, n][ℕ] :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
@@ -61,7 +61,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o ⬝ ⬝ ⬝ ⬝ o --- o
 ```
 -/
-abbrev Bₙ : Mat[n,n][ℕ] :=
+abbrev Bₙ : Mat[n, n][ℕ] :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 2 ∨ j = n - 1 ∧ i = n - 2 then 4
@@ -81,7 +81,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o
 ```
 -/
-abbrev Dₙ : Mat[n,n][ℕ] :=
+abbrev Dₙ : Mat[n, n][ℕ] :=
   Matrix.of fun i j : Fin n =>
     if i = j then 1
       else (if i = n - 1 ∧ j = n - 3 ∨ j = n - 1 ∧ i = n - 3 then 3
@@ -98,7 +98,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-abbrev I₂ₘ (m : ℕ) : Mat[2,2][ℕ] :=
+abbrev I₂ₘ (m : ℕ) : Mat[2, 2][ℕ] :=
   Matrix.of fun i j => if i = j then 1 else m + 2
 
 theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
@@ -113,7 +113,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o
 ```
 -/
-def E₆ : Mat[6,6][ℕ] :=
+def E₆ : Mat[6, 6][ℕ] :=
   !![1, 2, 3, 2, 2, 2;
      2, 1, 2, 3, 2, 2;
      3, 2, 1, 3, 2, 2;
@@ -132,7 +132,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o
 ```
 -/
-def E₇ : Mat[7,7][ℕ] :=
+def E₇ : Mat[7, 7][ℕ] :=
   !![1, 2, 3, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2;
@@ -152,7 +152,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o --- o --- o --- o
 ```
 -/
-def E₈ : Mat[8,8][ℕ] :=
+def E₈ : Mat[8, 8][ℕ] :=
   !![1, 2, 3, 2, 2, 2, 2, 2;
      2, 1, 2, 3, 2, 2, 2, 2;
      3, 2, 1, 3, 2, 2, 2, 2;
@@ -172,7 +172,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def F₄ : Mat[4,4][ℕ] :=
+def F₄ : Mat[4, 4][ℕ] :=
   !![1, 3, 2, 2;
      3, 1, 4, 2;
      2, 4, 1, 3;
@@ -188,7 +188,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o
 ```
 -/
-def G₂ : Mat[2,2][ℕ] :=
+def G₂ : Mat[2, 2][ℕ] :=
   !![1, 6;
      6, 1]
 
@@ -202,7 +202,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o
 ```
 -/
-def H₃ : Mat[3,3][ℕ] :=
+def H₃ : Mat[3, 3][ℕ] :=
   !![1, 3, 2;
      3, 1, 5;
      2, 5, 1]
@@ -217,7 +217,7 @@ The corresponding Coxeter-Dynkin diagram is:
     o --- o --- o --- o
 ```
 -/
-def H₄ : Mat[4,4][ℕ] :=
+def H₄ : Mat[4, 4][ℕ] :=
   !![1, 3, 2, 2;
      3, 1, 3, 2;
      2, 3, 1, 5;

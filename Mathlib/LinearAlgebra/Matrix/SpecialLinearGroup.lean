@@ -402,7 +402,7 @@ theorem fin_two_induction (P : SL(2, R) → Prop)
 #align matrix.special_linear_group.fin_two_induction Matrix.SpecialLinearGroup.fin_two_induction
 
 theorem fin_two_exists_eq_mk_of_apply_zero_one_eq_zero {R : Type*} [Field R] (g : SL(2, R))
-    (hg : (g : Mat[2,2][R]) 1 0 = 0) :
+    (hg : (g : Mat[2, 2][R]) 1 0 = 0) :
     ∃ (a b : R) (h : a ≠ 0), g = (⟨!![a, b; 0, a⁻¹], by simp [h]⟩ : SL(2, R)) := by
   induction' g using Matrix.SpecialLinearGroup.fin_two_induction with a b c d h_det
   replace hg : c = 0 := by simpa using hg
@@ -481,7 +481,7 @@ open MatrixGroups
 
 open Matrix Matrix.SpecialLinearGroup
 
-local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Mat[2,2][ℤ])
+local notation:1024 "↑ₘ" A:1024 => ((A : SL(2, ℤ)) : Mat[2, 2][ℤ])
 
 set_option linter.uppercaseLean3 false
 
