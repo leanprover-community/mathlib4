@@ -36,6 +36,14 @@ section orbits
 
 variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 
+theorem orbit.pairwise_disjoint :
+    (Set.range fun x : X => orbit G x).PairwiseDisjoint id := by
+  by_contra h
+  rcases Set.exists_ne_mem_inter_of_not_pairwiseDisjoint h with ⟨s, ⟨x, rfl⟩, t, ⟨y, rfl⟩, hst, z, ⟨hzx, hzy⟩⟩
+  apply hst
+  simp only [id_eq] at hzx hzy
+  simp only [← orbit_eq_iff.mpr hzx, ← orbit_eq_iff.mpr hzy]
+
 theorem orbit.equal_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
   cases' em (Disjoint (orbit G a) (orbit G b)) with h h
@@ -415,6 +423,31 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
   rintro B' ⟨g, rfl⟩; exact hB.translate g
 
 section Normal
+
+/-- An orbit of a normal subgroup is a block -/
+theorem orbit.isBlock_of_normal' {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
+    IsBlock G (orbit N a) := by
+  unfold IsBlock
+  convert Set.Pairwise.mono _ (orbit.pairwise_disjoint (G := N))
+  rintro _ ⟨g, rfl⟩
+  suffices g • (orbit N a) = orbit N (g • a) by
+    simp only [this, Set.mem_range, exists_apply_eq_apply]
+  ext x
+  rw [Set.mem_smul_set_iff_inv_smul_mem]
+  constructor
+  · rintro ⟨k, hk⟩
+    rw [← smul_eq_iff_eq_inv_smul] at hk
+    use ⟨g * k * g⁻¹, nN.conj_mem k k.prop g⟩
+    simp only [Submonoid.mk_smul, ← smul_smul, ← hk, inv_smul_smul]
+    rfl
+  · rintro ⟨k, rfl⟩
+    simp only
+    use ⟨g⁻¹ * k * g, by
+      convert nN.conj_mem k k.prop g⁻¹
+      simp only [inv_inv]⟩
+    simp only [Submonoid.mk_smul, ← smul_smul]
+    rfl
+  exact N.toSubmonoid.mulAction
 
 /-- An orbit of a normal subgroup is a block -/
 theorem orbit.isBlock_of_normal {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
