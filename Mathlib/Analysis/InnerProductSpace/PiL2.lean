@@ -528,6 +528,66 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
     _ = (v : ι → E) := by simp
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
+/-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
+`Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
+protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
+    OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) := by
+  classical
+  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, ?_⟩
+  · exact Pi.basis (fun i : η ↦ (B i).toBasis)
+  · erw [Pi.basis_apply (fun i : η ↦ (B i).toBasis) j, OrthonormalBasis.coe_toBasis,
+      PiLp.norm_eq_sum (by exact Nat.ofNat_pos)]
+    rw [← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j.fst), LinearMap.stdBasis_same,
+      ENNReal.toReal_ofNat, Finset.sum_eq_zero, zero_add, ← Real.rpow_mul (norm_nonneg _),
+      mul_div_cancel₀ _ two_ne_zero, Real.rpow_one, (B j.fst).orthonormal.1 j.snd]
+    intro _ h
+    rw [LinearMap.stdBasis_ne, norm_zero, Real.zero_rpow two_ne_zero]
+    exact Finset.ne_of_mem_erase h
+  · intro j j' h
+    erw [PiLp.inner_apply, Pi.basis_apply (fun i : η ↦ (B i).toBasis) j,
+      Pi.basis_apply (fun i : η ↦ (B i).toBasis) j']
+    rw [OrthonormalBasis.coe_toBasis, OrthonormalBasis.coe_toBasis, ← Finset.sum_erase_add
+      Finset.univ _ (Finset.mem_univ j.fst), LinearMap.stdBasis_same, Finset.sum_eq_zero, zero_add]
+    · by_cases hj : j.fst = j'.fst
+      · rw [ne_eq, Sigma.mk.inj_iff] at h
+        -- Several convert steps are needed to avoid type check errors
+        have : j.snd ≠ hj ▸ j'.snd := by aesop
+        convert (B j.fst).orthonormal.2 this
+        convert LinearMap.stdBasis_same 𝕜 (fun i ↦ E i) j'.fst _
+        exact eqRec_heq hj.symm j'.snd
+      · rw [LinearMap.stdBasis_ne _ _ _ _ hj, inner_zero_right]
+    · intro _ h
+      rw [LinearMap.stdBasis_ne, inner_zero_left]
+      exact Finset.ne_of_mem_erase h
+
+@[simp]
+theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
+    (Pi.orthonormalBasis B).toBasis = (Pi.basis fun i : η ↦ (B i).toBasis) := by ext; rfl
+
+@[simp]
+theorem _root_.Pi.orthonormalBasis_coe_apply {η : Type*} [Fintype η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
+    (j : (i : η) × (ι i)) :
+    Pi.orthonormalBasis B j = (Pi.basis fun i : η ↦ (B i).toBasis) j := rfl
+
+theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η]  [DecidableEq η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
+    (j : (i : η) × (ι i)) :
+    Pi.orthonormalBasis B j = LinearMap.stdBasis 𝕜 _ j.fst ((B j.fst) j.snd) := by simp
+
+@[simp]
+theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η]  [DecidableEq η] {ι : η → Type*}
+    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
+    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) (x : (i : η ) → E i)
+    (j : (i : η) × (ι i)) :
+    (Pi.orthonormalBasis B).repr x j = (B j.fst).repr (x j.fst) j.snd := rfl
+
 variable {v : ι → E}
 
 /-- A finite orthonormal set that spans is an orthonormal basis -/
@@ -606,6 +666,10 @@ protected theorem reindex_apply (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι'
     rw [← b.repr_symm_single, LinearIsometryEquiv.piLpCongrLeft_symm,
       EuclideanSpace.piLpCongrLeft_single]
 #align orthonormal_basis.reindex_apply OrthonormalBasis.reindex_apply
+
+@[simp]
+theorem reindex_toBasis (b : OrthonormalBasis ι 𝕜 E)  (e : ι ≃ ι') :
+    (b.reindex e).toBasis = b.toBasis.reindex e := Basis.eq_ofRepr_eq_repr fun _ ↦ congr_fun rfl
 
 @[simp]
 protected theorem coe_reindex (b : OrthonormalBasis ι 𝕜 E) (e : ι ≃ ι') :
