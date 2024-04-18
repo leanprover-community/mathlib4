@@ -85,6 +85,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
@@ -1667,6 +1668,7 @@ import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.BitVec.Defs
@@ -2155,6 +2157,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic
@@ -2988,7 +2991,9 @@ import Mathlib.NumberTheory.FunctionField
 import Mathlib.NumberTheory.Harmonic.Bounds
 import Mathlib.NumberTheory.Harmonic.Defs
 import Mathlib.NumberTheory.Harmonic.EulerMascheroni
+import Mathlib.NumberTheory.Harmonic.GammaDeriv
 import Mathlib.NumberTheory.Harmonic.Int
+import Mathlib.NumberTheory.Harmonic.ZetaAsymp
 import Mathlib.NumberTheory.KummerDedekind
 import Mathlib.NumberTheory.LSeries.AbstractFuncEq
 import Mathlib.NumberTheory.LSeries.Basic
