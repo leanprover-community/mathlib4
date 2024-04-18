@@ -326,7 +326,7 @@ theorem norm_iteratedFDerivWithin_prod_le [DecidableEq ι] [NormOneClass A'] {u 
     refine Finset.sum_le_sum ?_
     simp only [Finset.mem_univ, forall_true_left, Subtype.forall, Finset.mem_sym_iff]
     intro p hp
-    refine le_of_eq ?_
+    apply le_of_eq
     rw [Finset.prod_insert hi]
     have hip : i ∉ p := mt (hp i) hi
     rw [Sym.count_coe_fill_self_of_not_mem hip, Sym.multinomial_coe_fill_of_not_mem hip]

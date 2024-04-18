@@ -74,7 +74,7 @@ protected theorem congr' (h_left : ∀ᶠ i in l, f i =ᵐ[μ] f' i) (h_right : 
     rw [tendsto_congr' this]
     exact h_tendsto ε hε
   filter_upwards [h_left] with i h_ae_eq
-  refine' measure_congr _
+  apply measure_congr
   filter_upwards [h_ae_eq, h_right] with x hxf hxg
   rw [eq_iff_iff]
   change ε ≤ dist (f' i x) (g' x) ↔ ε ≤ dist (f i x) (g x)

@@ -186,7 +186,7 @@ theorem IsPreconnected.biUnion_of_reflTransGen {ι : Type*} {t : Set ι} {s : ι
       refine (H k hj).union' (hjk.1.mono ?_) hp
       rw [inter_comm]
       exact inter_subset_inter_right _ (subset_biUnion_of_mem hjp)
-  refine' isPreconnected_of_forall_pair _
+  apply isPreconnected_of_forall_pair
   intro x hx y hy
   obtain ⟨i : ι, hi : i ∈ t, hxi : x ∈ s i⟩ := mem_iUnion₂.1 hx
   obtain ⟨j : ι, hj : j ∈ t, hyj : y ∈ s j⟩ := mem_iUnion₂.1 hy

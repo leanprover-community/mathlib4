@@ -395,7 +395,7 @@ lemma supSum_of_not_univ_mem (h𝒜₁ : 𝒜.Nonempty) (h𝒜₂ : univ ∉ �
   induction' m using Nat.strong_induction_on with m ih generalizing 𝒜
   replace ih := fun 𝒜 h𝒜 h𝒜₁ h𝒜₂ ↦ @ih _ h𝒜 𝒜 h𝒜₁ h𝒜₂ rfl
   obtain ⟨a, rfl⟩ | h𝒜₃ := h𝒜₁.exists_eq_singleton_or_nontrivial
-  · refine' supSum_singleton _
+  · apply supSum_singleton
     simpa [eq_comm] using h𝒜₂
   cases m
   · cases h𝒜₁.card_pos.ne hm

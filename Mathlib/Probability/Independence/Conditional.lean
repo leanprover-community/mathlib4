@@ -176,7 +176,7 @@ lemma iCondIndepSets_iff (π : ι → Set (Set Ω)) (hπ : ∀ i s (_hs : s ∈ 
     rw [← h_inter_eq, h', ENNReal.toReal_prod, Finset.prod_apply]
     exact Finset.prod_congr rfl h_eq
   · refine (ae_eq_trim_iff hm' ?_ ?_).mpr ?_
-    · refine stronglyMeasurable_condexpKernel ?_
+    · apply stronglyMeasurable_condexpKernel
       exact MeasurableSet.biInter (Finset.countable_toSet _) (fun i hi ↦ hπ i _ (hf i hi))
     · refine Measurable.stronglyMeasurable ?_
       exact Finset.measurable_prod s (fun i hi ↦ measurable_condexpKernel (hπ i _ (hf i hi)))

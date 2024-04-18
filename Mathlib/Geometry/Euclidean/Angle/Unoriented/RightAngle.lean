@@ -80,7 +80,7 @@ theorem angle_add_eq_arcsin_of_inner_eq_zero {x y : V} (h : ⟪x, y⟫ = 0) (h0 
     angle x (x + y) = Real.arcsin (‖y‖ / ‖x + y‖) := by
   have hxy : ‖x + y‖ ^ 2 ≠ 0 := by
     rw [pow_two, norm_add_sq_eq_norm_sq_add_norm_sq_real h, ne_comm]
-    refine' ne_of_lt _
+    apply ne_of_lt
     rcases h0 with (h0 | h0)
     · exact
         Left.add_pos_of_pos_of_nonneg (mul_self_pos.2 (norm_ne_zero_iff.2 h0)) (mul_self_nonneg _)

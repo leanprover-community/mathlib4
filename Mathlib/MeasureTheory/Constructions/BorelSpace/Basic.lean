@@ -125,7 +125,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
-    refine' generateFrom_le _
+    apply generateFrom_le
     rintro _ ⟨a, rfl | rfl⟩
     · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
       · rw [hb.Ioi_eq, ← compl_Iio]

@@ -660,7 +660,7 @@ lemma div_eq_self : m / n = m ↔ m = 0 ∨ n = 1 := by
     | n+2 =>
       left
       have : m / (n + 2) ≤ m / 2 := div_le_div_left (by simp) (by decide)
-      refine eq_zero_of_le_half ?_
+      apply eq_zero_of_le_half
       simp_all
   · rintro (rfl | rfl) <;> simp
 #align nat.div_eq_self Nat.div_eq_self

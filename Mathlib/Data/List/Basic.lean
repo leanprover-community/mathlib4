@@ -2083,7 +2083,7 @@ def foldrRecOn {C : β → Sort*} (l : List α) (op : α → β → β) (b : β)
   | nil => exact hb
   | cons hd tl IH =>
     refine' hl _ _ hd (mem_cons_self hd tl)
-    refine' IH _
+    apply IH
     intro y hy x hx
     exact hl y hy x (mem_cons_of_mem hd hx)
 #align list.foldr_rec_on List.foldrRecOn

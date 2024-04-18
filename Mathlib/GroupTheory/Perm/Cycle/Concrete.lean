@@ -400,7 +400,7 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
     (fun x _ l => if f x = x then l else toList f x)
     (by
       intro x y _ s
-      refine' heq_of_eq _
+      apply heq_of_eq
       split_ifs with hx hy hy <;> try rfl
       · have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
         exact Quotient.sound' hc.toList_isRotated)

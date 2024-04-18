@@ -50,7 +50,7 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
 theorem snorm'_le_snormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     snorm' f q μ ≤ snormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ≤ ∫⁻ _ : α, snormEssSup f μ ^ q ∂μ := by
-    refine' lintegral_mono_ae _
+    apply lintegral_mono_ae
     have h_nnnorm_le_snorm_ess_sup := coe_nnnorm_ae_le_snormEssSup f μ
     exact h_nnnorm_le_snorm_ess_sup.mono fun x hx => by gcongr
   rw [snorm', ← ENNReal.rpow_one (snormEssSup f μ)]
@@ -182,7 +182,7 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
         (∫⁻ x, essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^
           (1 / p.toReal) := by
       gcongr ?_ ^ _
-      refine' lintegral_mono_ae _
+      apply lintegral_mono_ae
       filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
       gcongr
     _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *

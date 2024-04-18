@@ -928,7 +928,7 @@ theorem le_of_le_graph {f g : E →ₗ.[R] F} (h : f.graph ≤ g.graph) : f ≤ 
     exact h hx
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
   rw [image_iff]
-  refine' h _
+  apply h
   simp only [Submodule.coe_mk] at hxy
   rw [hxy] at hx
   rw [← image_iff hx]

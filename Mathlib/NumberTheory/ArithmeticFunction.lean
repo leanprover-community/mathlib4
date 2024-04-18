@@ -1349,7 +1349,7 @@ theorem sum_eq_iff_sum_mul_moebius_eq_on [Ring R] {f g : ℕ → R}
         (∑ x : ℕ × ℕ in n.divisorsAntidiagonal, (μ x.fst : R) * g x.snd) = f n := by
   rw [sum_eq_iff_sum_smul_moebius_eq_on s hs]
   apply forall_congr'
-  intro a; refine' imp_congr_right _
+  intro a; apply imp_congr_right
   refine' fun _ => imp_congr_right fun _ => (sum_congr rfl fun x _hx => _).congr_left
   rw [zsmul_eq_mul]
 

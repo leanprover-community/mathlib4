@@ -549,7 +549,7 @@ theorem essSup_measure_restrict (hs : IsFundamentalDomain G s μ) {f : α → �
     (hf : ∀ γ : G, ∀ x : α, f (γ • x) = f x) : essSup f (μ.restrict s) = essSup f μ := by
   refine' le_antisymm (essSup_mono_measure' Measure.restrict_le_self) _
   rw [essSup_eq_sInf (μ.restrict s) f, essSup_eq_sInf μ f]
-  refine' sInf_le_sInf _
+  apply sInf_le_sInf
   rintro a (ha : (μ.restrict s) {x : α | a < f x} = 0)
   rw [Measure.restrict_apply₀' hs.nullMeasurableSet] at ha
   refine' measure_zero_of_invariant hs _ _ ha

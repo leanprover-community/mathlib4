@@ -239,7 +239,7 @@ theorem normalClosure_finRotate_five : normalClosure ({⟨finRotate 5,
         IsThreeCycle (Fin.cycleRange 2 * finRotate 5 * (Fin.cycleRange 2)⁻¹ * (finRotate 5)⁻¹) :=
         card_support_eq_three_iff.1 (by decide)
       rw [← h3.alternating_normalClosure (by rw [card_fin])]
-      refine' normalClosure_le_normal _
+      apply normalClosure_le_normal
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h :
         (⟨finRotate 5, finRotate_bit1_mem_alternatingGroup (n := 2)⟩ : alternatingGroup (Fin 5)) ∈
@@ -266,7 +266,7 @@ theorem normalClosure_swap_mul_swap_five :
     simp only [Fin.val_mk, Subgroup.coe_mul, Subgroup.coe_inv, Fin.val_mk]
     decide
   rw [eq_top_iff, ← normalClosure_finRotate_five]
-  refine' normalClosure_le_normal _
+  apply normalClosure_le_normal
   rw [Set.singleton_subset_iff, SetLike.mem_coe, ← h5]
   have h : g2 ∈ normalClosure {g2} :=
     SetLike.mem_coe.1 (subset_normalClosure (Set.mem_singleton _))
@@ -338,7 +338,7 @@ instance isSimpleGroup_five : IsSimpleGroup (alternatingGroup (Fin 5)) :=
     -- `g^2` is in the normal closure of `g`, so that normal closure must be $A_5$.
     · rw [eq_top_iff, ← (isThreeCycle_sq_of_three_mem_cycleType_five ng).alternating_normalClosure
         (by rw [card_fin])]
-      refine' normalClosure_le_normal _
+      apply normalClosure_le_normal
       rw [Set.singleton_subset_iff, SetLike.mem_coe]
       have h := SetLike.mem_coe.1 (subset_normalClosure
         (G := alternatingGroup (Fin 5)) (Set.mem_singleton ⟨g, gA⟩))

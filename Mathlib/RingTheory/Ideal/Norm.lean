@@ -623,7 +623,7 @@ theorem spanNorm_mul (I J : Ideal S) : spanNorm R (I * J) = spanNorm R I * spanN
   cases subsingleton_or_nontrivial S
   · have : ∀ I : Ideal S, I = ⊤ := fun I => Subsingleton.elim I ⊤
     simp [this I, this J, this (I * J)]
-  refine eq_of_localization_maximal ?_
+  apply eq_of_localization_maximal
   intro P hP
   by_cases hP0 : P = ⊥
   · subst hP0

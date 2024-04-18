@@ -397,7 +397,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
   simp only [HasFiniteIntegral]; intro hfi
   calc
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
-      refine' lintegral_mono _
+      apply lintegral_mono
       intro i
       -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
       beta_reduce

@@ -199,7 +199,7 @@ def fourierSubalgebra : StarSubalgebra ℂ C(AddCircle T, ℂ) where
   star_mem' := by
     show Algebra.adjoin ℂ (range (fourier (T := T))) ≤
       star (Algebra.adjoin ℂ (range (fourier (T := T))))
-    refine adjoin_le ?_
+    apply adjoin_le
     rintro - ⟨n, rfl⟩
     exact subset_adjoin ⟨-n, ext fun _ => fourier_neg⟩
 

@@ -456,7 +456,7 @@ theorem formPerm_pow_length_eq_one_of_nodup (hl : Nodup l) : formPerm l ^ length
     simp [formPerm_pow_apply_nthLe _ hl, Nat.mod_eq_of_lt hk]
   · have : x ∉ { x | (l.formPerm ^ l.length) x ≠ x } := by
       intro H
-      refine' hx _
+      apply hx
       replace H := set_support_zpow_subset l.formPerm l.length H
       simpa using support_formPerm_le' _ H
     simpa using this

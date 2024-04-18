@@ -489,7 +489,7 @@ lemma GrowsPolynomially.add_isLittleO {f g : ℝ → ℝ} (hf : GrowsPolynomiall
            _ ≥ f u + 1/2 * f u := by
                   rw [sub_eq_add_neg]
                   gcongr
-                  refine le_of_neg_le_neg ?_
+                  apply le_of_neg_le_neg
                   rwa [neg_neg, ← neg_mul, ← neg_div]
            _ = 3/2 * f u := by ring
            _ ≥ 3/2 * (c₁ * f x) := by gcongr; exact (hf₁ u ⟨hu_lb, hu_ub⟩).1

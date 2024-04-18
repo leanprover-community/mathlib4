@@ -58,7 +58,7 @@ to `R` really is _covering_, i.e. the union of all open sets equals `U`.
 theorem iSup_eq_of_mem_grothendieck (hR : Sieve.generate R ∈ Opens.grothendieckTopology X U) :
     iSup (coveringOfPresieve U R) = U := by
   apply le_antisymm
-  · refine' iSup_le _
+  · apply iSup_le
     intro f
     exact f.2.1.le
   intro x hxU

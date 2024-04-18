@@ -105,7 +105,7 @@ theorem ofEquiv_ofNat (α) {β} [Denumerable α] (e : β ≃ α) (n) :
     @ofNat β (ofEquiv _ e) n = e.symm (ofNat α n) := by
   -- Porting note: added `letI`
   letI := ofEquiv _ e
-  refine ofNat_of_decode ?_
+  apply ofNat_of_decode
   rw [decode_ofEquiv e]
   simp
 #align denumerable.of_equiv_of_nat Denumerable.ofEquiv_ofNat
@@ -291,7 +291,7 @@ theorem ofNat_surjective_aux : ∀ {x : ℕ} (hx : x ∈ s), ∃ n, ofNat s n = 
       rwa [← List.maximum_eq_none.1 hmax, hmt]
     cases' ofNat_surjective_aux m.2 with a ha
     refine ⟨a + 1, le_antisymm ?_ ?_⟩ <;> rw [ofNat]
-    · refine succ_le_of_lt ?_
+    · apply succ_le_of_lt
       rw [ha]
       exact wf _ hmax
     · refine le_succ_of_forall_lt_le fun z hz => ?_

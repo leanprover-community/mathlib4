@@ -281,7 +281,7 @@ end Encodable
 
 theorem pi_caratheodory :
     MeasurableSpace.pi ≤ (OuterMeasure.pi fun i => (μ i).toOuterMeasure).caratheodory := by
-  refine' iSup_le _
+  apply iSup_le
   intro i s hs
   rw [MeasurableSpace.comap] at hs
   rcases hs with ⟨s, hs, rfl⟩

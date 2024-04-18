@@ -177,7 +177,7 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra
-        refine hxy ?_
+        apply hxy
         refine Subtype.ext ?_
         exact h_dis.elim x.prop y.prop h_contra
       convert hJu_disj' (x : Set α) (h_ss x.prop) y (h_ss y.prop) hxy_disj

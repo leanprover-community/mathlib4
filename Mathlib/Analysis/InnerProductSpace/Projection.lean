@@ -253,7 +253,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         ‖u - v‖ * ‖u - v‖ ≤ ‖u - v‖ * ‖u - v‖ - 2 * inner (u - v) ((w : F) - v) := by linarith
         _ ≤ ‖u - v‖ ^ 2 - 2 * inner (u - v) ((w : F) - v) + ‖(w : F) - v‖ ^ 2 := by
           rw [sq]
-          refine' le_add_of_nonneg_right _
+          apply le_add_of_nonneg_right
           exact sq_nonneg _
         _ = ‖u - v - (w - v)‖ ^ 2 := (@norm_sub_sq ℝ _ _ _ _ _ _).symm
         _ = ‖u - w‖ * ‖u - w‖ := by
@@ -1210,7 +1210,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
       intro w hw
       apply hV
       rw [hW w hw]
-      refine' reflection_mem_subspace_eq_self _
+      apply reflection_mem_subspace_eq_self
       rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
       exact Submodule.sub_mem _ v.prop hφv _ hw
     -- `v` is also fixed by `φ.trans ρ`

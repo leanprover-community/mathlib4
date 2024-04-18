@@ -223,7 +223,7 @@ theorem Memℒp.integral_indicator_norm_ge_nonneg_le (hf : Memℒp f 1 μ) {ε :
   obtain ⟨M, hM_pos, hfM⟩ :=
     hf_mk.integral_indicator_norm_ge_nonneg_le_of_meas hf.1.stronglyMeasurable_mk hε
   refine' ⟨M, hM_pos, (le_of_eq _).trans hfM⟩
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   filter_upwards [hf.1.ae_eq_mk] with x hx
   simp only [Set.indicator_apply, coe_nnnorm, Set.mem_setOf_eq, ENNReal.coe_inj, hx.symm]
 #align measure_theory.mem_ℒp.integral_indicator_norm_ge_nonneg_le MeasureTheory.Memℒp.integral_indicator_norm_ge_nonneg_le

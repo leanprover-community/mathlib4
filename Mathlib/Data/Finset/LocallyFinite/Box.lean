@@ -77,7 +77,7 @@ lemma card_box : ∀ {n}, n ≠ 0 → (box n : Finset (ℤ × ℤ)).card = 8 * n
   | n + 1, _ => by
     simp_rw [Prod.card_box_succ, card_Icc, sub_neg_eq_add]
     norm_cast
-    refine tsub_eq_of_eq_add ?_
+    apply tsub_eq_of_eq_add
     zify
     ring
 
