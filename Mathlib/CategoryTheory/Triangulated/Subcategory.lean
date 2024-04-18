@@ -148,7 +148,7 @@ lemma isoClosure_W : S.isoClosure.W = S.W := by
     refine' ⟨Z', g ≫ e.hom, e.inv ≫ h, isomorphic_distinguished _ mem _ _, hZ'⟩
     exact Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) e.symm
   · rintro ⟨Z, g, h, mem, hZ⟩
-    exact ⟨Z, g, h, mem, subset_isoClosure _ _ hZ⟩
+    exact ⟨Z, g, h, mem, le_isoClosure _ _ hZ⟩
 
 lemma respectsIso_W : S.W.RespectsIso where
   left := by
