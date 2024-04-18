@@ -68,7 +68,7 @@ section TorsionOf
 
 variable (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
 
-/-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`.-/
+/-- The torsion ideal of `x`, containing all `a` such that `a • x = 0`. -/
 @[simps!]
 def torsionOf (x : M) : Ideal R :=
   -- Porting note (#11036): broken dot notation on LinearMap.ker Lean4#1910
@@ -129,7 +129,7 @@ section
 
 variable (R M : Type*) [Ring R] [AddCommGroup M] [Module R M]
 
-/-- The span of `x` in `M` is isomorphic to `R` quotiented by the torsion ideal of `x`.-/
+/-- The span of `x` in `M` is isomorphic to `R` quotiented by the torsion ideal of `x`. -/
 noncomputable def quotTorsionOfEquivSpanSingleton (x : M) : (R ⧸ torsionOf R M x) ≃ₗ[R] R ∙ x :=
   (LinearMap.toSpanSingleton R M x).quotKerEquivRange.trans <|
     LinearEquiv.ofEq _ _ (LinearMap.span_singleton_eq_range R M x).symm
@@ -170,13 +170,12 @@ def torsionBySet (s : Set R) : Submodule R M :=
   sInf (torsionBy R M '' s)
 #align submodule.torsion_by_set Submodule.torsionBySet
 
-set_option autoImplicit true in
 -- Porting note: torsion' had metavariables and factoring out this fixed it
 -- perhaps there is a better fix
 /-- The additive submonoid of all elements `x` of `M` such that `a • x = 0`
-for some `a` in `S`.-/
+for some `a` in `S`. -/
 @[simps!]
-def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
+def torsion'AddSubMonoid (S : Type*) [CommMonoid S] [DistribMulAction S M] :
     AddSubmonoid M where
   carrier := { x | ∃ a : S, a • x = 0 }
   add_mem' := by
@@ -185,11 +184,10 @@ def torsion'AddSubMonoid (S : Type w) [CommMonoid S] [DistribMulAction S M] :
     rw [smul_add, mul_smul, mul_comm, mul_smul, hx, hy, smul_zero, smul_zero, add_zero]
   zero_mem' := ⟨1, smul_zero 1⟩
 
-set_option autoImplicit true in
 /-- The `S`-torsion submodule, containing all elements `x` of `M` such that `a • x = 0` for some
 `a` in `S`. -/
 @[simps!]
-def torsion' (S : Type w) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
+def torsion' (S : Type*) [CommMonoid S] [DistribMulAction S M] [SMulCommClass S R M] :
     Submodule R M :=
   { torsion'AddSubMonoid M S with
     smul_mem' := fun a x ⟨b, h⟩ => ⟨b, by rw [smul_comm, h, smul_zero]⟩}
@@ -480,7 +478,7 @@ open BigOperators
 variable {ι : Type*} [DecidableEq ι] {S : Finset ι}
 
 /-- If the `p i` are pairwise coprime, a `⨅ i, p i`-torsion module is the internal direct sum of
-its `p i`-torsion submodules.-/
+its `p i`-torsion submodules. -/
 theorem torsionBySet_isInternal {p : ι → Ideal R}
     (hp : (S : Set ι).Pairwise fun i j => p i ⊔ p j = ⊤)
     (hM : Module.IsTorsionBySet R M (⨅ i ∈ S, p i : Ideal R)) :
@@ -495,7 +493,7 @@ theorem torsionBySet_isInternal {p : ι → Ideal R}
 #align submodule.torsion_by_set_is_internal Submodule.torsionBySet_isInternal
 
 /-- If the `q i` are pairwise coprime, a `∏ i, q i`-torsion module is the internal direct sum of
-its `q i`-torsion submodules.-/
+its `q i`-torsion submodules. -/
 theorem torsionBy_isInternal {q : ι → R} (hq : (S : Set ι).Pairwise <| (IsCoprime on q))
     (hM : Module.IsTorsionBy R M <| ∏ i in S, q i) :
     DirectSum.IsInternal fun i : S => torsionBy R M <| q i := by
@@ -790,7 +788,7 @@ theorem isTorsion'_powers_iff (p : R) :
 #align submodule.is_torsion'_powers_iff Submodule.isTorsion'_powers_iff
 
 /-- In a `p ^ ∞`-torsion module (that is, a module where all elements are cancelled by scalar
-multiplication by some power of `p`), the smallest `n` such that `p ^ n • x = 0`.-/
+multiplication by some power of `p`), the smallest `n` such that `p ^ n • x = 0`. -/
 def pOrder {p : R} (hM : IsTorsion' M <| Submonoid.powers p) (x : M)
     [∀ n : ℕ, Decidable (p ^ n • x = 0)] :=
   Nat.find <| (isTorsion'_powers_iff p).mp hM x
@@ -865,7 +863,7 @@ theorem isTorsion_iff_isTorsion_int [AddCommGroup M] :
   refine' ⟨fun h x => _, fun h x => _⟩
   · obtain ⟨n, h0, hn⟩ := (h x).exists_nsmul_eq_zero
     exact
-      ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.coe_nat_pos.mpr h0⟩,
+      ⟨⟨n, mem_nonZeroDivisors_of_ne_zero <| ne_of_gt <| Int.natCast_pos.mpr h0⟩,
         (natCast_zsmul _ _).trans hn⟩
   · rw [isOfFinAddOrder_iff_nsmul_eq_zero]
     obtain ⟨n, hn⟩ := @h x

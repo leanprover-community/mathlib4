@@ -321,12 +321,12 @@ instance Pi.nonUnitalSeminormedRing {π : ι → Type*} [Fintype ι]
            }
 #align pi.non_unital_semi_normed_ring Pi.nonUnitalSeminormedRing
 
-instance MulOpposite.nonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup, MulOpposite.instNonUnitalRing α with
-    norm_mul :=
-      MulOpposite.rec' fun x =>
-        MulOpposite.rec' fun y => (norm_mul_le y x).trans_eq (mul_comm _ _) }
-#align mul_opposite.non_unital_semi_normed_ring MulOpposite.nonUnitalSeminormedRing
+instance MulOpposite.instNonUnitalSeminormedRing : NonUnitalSeminormedRing αᵐᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instSeminormedAddCommGroup
+  norm_mul := MulOpposite.rec' fun x ↦ MulOpposite.rec' fun y ↦
+    (norm_mul_le y x).trans_eq (mul_comm _ _)
+#align mul_opposite.non_unital_semi_normed_ring MulOpposite.instNonUnitalSeminormedRing
 
 end NonUnitalSeminormedRing
 
@@ -411,7 +411,7 @@ theorem nnnorm_pow_le' (a : α) : ∀ {n : ℕ}, 0 < n → ‖a ^ n‖₊ ≤ �
 #align nnnorm_pow_le' nnnorm_pow_le'
 
 /-- If `α` is a seminormed ring with `‖1‖₊ = 1`, then `‖a ^ n‖₊ ≤ ‖a‖₊ ^ n`.
-See also `nnnorm_pow_le'`.-/
+See also `nnnorm_pow_le'`. -/
 theorem nnnorm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖₊ ≤ ‖a‖₊ ^ n :=
   Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, nnnorm_one, le_rfl])
     fun k _hk => nnnorm_pow_le' a k.succ_pos
@@ -422,7 +422,8 @@ theorem norm_pow_le' (a : α) {n : ℕ} (h : 0 < n) : ‖a ^ n‖ ≤ ‖a‖ ^ 
   simpa only [NNReal.coe_pow, coe_nnnorm] using NNReal.coe_mono (nnnorm_pow_le' a h)
 #align norm_pow_le' norm_pow_le'
 
-/-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`. See also `norm_pow_le'`.-/
+/-- If `α` is a seminormed ring with `‖1‖ = 1`, then `‖a ^ n‖ ≤ ‖a‖ ^ n`.
+See also `norm_pow_le'`. -/
 theorem norm_pow_le [NormOneClass α] (a : α) (n : ℕ) : ‖a ^ n‖ ≤ ‖a‖ ^ n :=
   Nat.recOn n (by simp only [Nat.zero_eq, pow_zero, norm_one, le_rfl])
     fun n _hn => norm_pow_le' a n.succ_pos
@@ -448,9 +449,10 @@ instance Pi.seminormedRing {π : ι → Type*} [Fintype ι] [∀ i, SeminormedRi
   { Pi.nonUnitalSeminormedRing, Pi.ring with }
 #align pi.semi_normed_ring Pi.seminormedRing
 
-instance MulOpposite.seminormedRing : SeminormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instRing α with }
-#align mul_opposite.semi_normed_ring MulOpposite.seminormedRing
+instance MulOpposite.instSeminormedRing : SeminormedRing αᵐᵒᵖ where
+  __ := instRing
+  __ := instNonUnitalSeminormedRing
+#align mul_opposite.semi_normed_ring MulOpposite.instSeminormedRing
 
 end SeminormedRing
 
@@ -474,9 +476,11 @@ instance Pi.nonUnitalNormedRing {π : ι → Type*} [Fintype ι] [∀ i, NonUnit
   { Pi.nonUnitalSeminormedRing, Pi.normedAddCommGroup with }
 #align pi.non_unital_normed_ring Pi.nonUnitalNormedRing
 
-instance MulOpposite.nonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.normedAddCommGroup with }
-#align mul_opposite.non_unital_normed_ring MulOpposite.nonUnitalNormedRing
+instance MulOpposite.instNonUnitalNormedRing : NonUnitalNormedRing αᵐᵒᵖ where
+  __ := instNonUnitalRing
+  __ := instNonUnitalSeminormedRing
+  __ := instNormedAddCommGroup
+#align mul_opposite.non_unital_normed_ring MulOpposite.instNonUnitalNormedRing
 
 end NonUnitalNormedRing
 
@@ -506,9 +510,11 @@ instance Pi.normedRing {π : ι → Type*} [Fintype ι] [∀ i, NormedRing (π i
   { Pi.seminormedRing, Pi.normedAddCommGroup with }
 #align pi.normed_ring Pi.normedRing
 
-instance MulOpposite.normedRing : NormedRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedRing, MulOpposite.normedAddCommGroup with }
-#align mul_opposite.normed_ring MulOpposite.normedRing
+instance MulOpposite.instNormedRing : NormedRing αᵐᵒᵖ where
+  __ := instRing
+  __ := instSeminormedRing
+  __ := instNormedAddCommGroup
+#align mul_opposite.normed_ring MulOpposite.instNormedRing
 
 end NormedRing
 
@@ -531,8 +537,9 @@ instance Pi.nonUnitalSeminormedCommRing {π : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalSeminormedCommRing (π i)] : NonUnitalSeminormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedRing, Pi.nonUnitalCommRing with }
 
-instance MulOpposite.nonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedRing, MulOpposite.instNonUnitalCommRing α with }
+instance MulOpposite.instNonUnitalSeminormedCommRing : NonUnitalSeminormedCommRing αᵐᵒᵖ where
+  __ := instNonUnitalSeminormedRing
+  __ := instNonUnitalCommRing
 
 end NonUnitalSeminormedCommRing
 
@@ -569,8 +576,9 @@ instance Pi.nonUnitalNormedCommRing {π : ι → Type*} [Fintype ι]
     [∀ i, NonUnitalNormedCommRing (π i)] : NonUnitalNormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.normedAddCommGroup with }
 
-instance MulOpposite.nonUnitalNormedCommRing : NonUnitalNormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.normedAddCommGroup with }
+instance MulOpposite.instNonUnitalNormedCommRing : NonUnitalNormedCommRing αᵐᵒᵖ where
+  __ := instNonUnitalNormedRing
+  __ := instNonUnitalSeminormedCommRing
 
 end NonUnitalNormedCommRing
 
@@ -592,8 +600,9 @@ instance Pi.seminormedCommRing {π : ι → Type*} [Fintype ι] [∀ i, Seminorm
     SeminormedCommRing (∀ i, π i) :=
   { Pi.nonUnitalSeminormedCommRing, Pi.ring with }
 
-instance MulOpposite.seminormedCommRing : SeminormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.nonUnitalSeminormedCommRing, MulOpposite.instRing α with }
+instance MulOpposite.instSeminormedCommRing : SeminormedCommRing αᵐᵒᵖ where
+  __ := instSeminormedRing
+  __ := instNonUnitalSeminormedCommRing
 
 end SeminormedCommRing
 
@@ -627,8 +636,9 @@ instance Pi.normedCommutativeRing {π : ι → Type*} [Fintype ι] [∀ i, Norme
     NormedCommRing (∀ i, π i) :=
   { Pi.seminormedCommRing, Pi.normedAddCommGroup with }
 
-instance MulOpposite.normedCommRing : NormedCommRing αᵐᵒᵖ :=
-  { MulOpposite.seminormedCommRing, MulOpposite.normedAddCommGroup with }
+instance MulOpposite.instNormedCommRing : NormedCommRing αᵐᵒᵖ where
+  __ := instNormedRing
+  __ := instSeminormedCommRing
 
 end NormedCommRing
 
@@ -1110,7 +1120,7 @@ instance Int.normOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
 instance Rat.normedField : NormedField ℚ :=
-  { Rat.normedAddCommGroup, Rat.field with
+  { Rat.normedAddCommGroup, Rat.instField with
     norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
 
 instance Rat.denselyNormedField : DenselyNormedField ℚ where

@@ -117,7 +117,7 @@ theorem IsAcyclic.path_unique {G : SimpleGraph V} (h : G.IsAcyclic) {v w : V} (p
 
 theorem isAcyclic_of_path_unique (h : ∀ (v w : V) (p q : G.Path v w), p = q) : G.IsAcyclic := by
   intro v c hc
-  simp only [Walk.isCycle_def, Ne.def] at hc
+  simp only [Walk.isCycle_def, Ne] at hc
   cases c with
   | nil => cases hc.2.1 rfl
   | cons ha c' =>

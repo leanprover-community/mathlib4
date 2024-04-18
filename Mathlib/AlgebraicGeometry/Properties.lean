@@ -323,7 +323,7 @@ theorem map_injective_of_isIntegral [IsIntegral X] {U V : Opens X.carrier} (i : 
   rw [Scheme.basicOpen_res] at hx
   revert hx
   contrapose!
-  simp_rw [Ne.def, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
+  simp_rw [Ne, ← Opens.not_nonempty_iff_eq_bot, Classical.not_not]
   apply nonempty_preirreducible_inter U.isOpen (RingedSpace.basicOpen _ _).isOpen
   simpa using H
 #align algebraic_geometry.map_injective_of_is_integral AlgebraicGeometry.map_injective_of_isIntegral
