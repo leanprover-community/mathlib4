@@ -61,6 +61,7 @@ def add : W.LeftFraction X Y where
   s := φ.s
   hs := φ.hs
 
+@[simp]
 lemma symm_add : φ.symm.add = φ.add := by
   dsimp [add, symm]
   congr 1
@@ -81,6 +82,15 @@ variable (W)
 namespace Localization
 
 namespace Preadditive
+
+section ImplementationDetails
+
+/-! The definitions in this section (like `neg'` and `add'`) should never be used
+directly. These are auxiliary definitions in order to construct the preadditive
+structure `Localization.preadditive` (which is made irreducible). The user
+should only rely on the fact that the localization functor is additive, as this
+completely determines the preadditive structure on the localized category when
+there is a calculus of left fractions. -/
 
 variable {X Y Z : C}
 variable {L}
@@ -272,7 +282,7 @@ variable (L X' Y') in
 /-- The abelian group structure on morphisms in `D`, when `L : C ⥤ D` is a localization
 functor, `C` is preadditive and there is a left calculus of fractions. -/
 noncomputable def addCommGroup : AddCommGroup (X' ⟶ Y') := by
-  have : EssSurj L := Localization.essSurj L W
+  have := Localization.essSurj L W
   letI := addCommGroup' L W (L.objPreimage X') (L.objPreimage Y')
   exact Equiv.addCommGroup (homEquiv (L.objObjPreimageIso X') (L.objObjPreimageIso Y'))
 
@@ -288,6 +298,8 @@ lemma map_add (f₁ f₂ : X ⟶ Y) :
     L.map (f₁ + f₂) = L.map f₁ + L.map f₂ := by
   rw [add_eq W (Iso.refl _) (Iso.refl _) (L.map f₁) (L.map f₂)]
   simp [add]
+
+end ImplementationDetails
 
 end Preadditive
 

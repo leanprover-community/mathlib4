@@ -127,7 +127,7 @@ theorem centralizer_centralizer (S : VonNeumannAlgebra H) :
   S.centralizer_centralizer'
 #align von_neumann_algebra.centralizer_centralizer VonNeumannAlgebra.centralizer_centralizer
 
-/-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`.-/
+/-- The centralizer of a `VonNeumannAlgebra`, as a `VonNeumannAlgebra`. -/
 def commutant (S : VonNeumannAlgebra H) : VonNeumannAlgebra H where
   toStarSubalgebra := StarSubalgebra.centralizer ℂ (S : Set (H →L[ℂ] H))
   centralizer_centralizer' := by simp

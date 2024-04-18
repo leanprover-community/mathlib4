@@ -346,8 +346,8 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
         simpa using hp₂'
     · rw [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       nth_rw 1 [← hp₂']
-      rw [Ne.def, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
-        vsub_sub_vsub_cancel_right, ← Ne.def, smul_ne_zero_iff, vsub_ne_zero,
+      rw [Ne, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
+        vsub_sub_vsub_cancel_right, ← Ne, smul_ne_zero_iff, vsub_ne_zero,
         and_iff_left (Ne.symm h), norm_ne_zero_iff, vsub_ne_zero]
       rintro rfl
       refine' h (Eq.symm _)

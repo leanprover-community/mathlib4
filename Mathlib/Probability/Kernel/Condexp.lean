@@ -45,7 +45,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id [Topologi
     (hm : m ≤ mΩ) (hf : AEStronglyMeasurable f μ) : AEStronglyMeasurable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) (m.prod mΩ) mΩ (fun ω => (id ω, id ω)) μ) := by
   rw [← aestronglyMeasurable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
-  simp_rw [id.def] at hf ⊢
+  simp_rw [id] at hf ⊢
   exact hf
 #align measure_theory.ae_strongly_measurable.comp_snd_map_prod_id MeasureTheory.AEStronglyMeasurable.comp_snd_map_prod_id
 
@@ -53,7 +53,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_id [NormedAddCommGroup
     (hf : Integrable f μ) : Integrable (fun x : Ω × Ω => f x.2)
       (@Measure.map Ω (Ω × Ω) (m.prod mΩ) mΩ (fun ω => (id ω, id ω)) μ) := by
   rw [← integrable_comp_snd_map_prod_mk_iff (measurable_id'' hm)] at hf
-  simp_rw [id.def] at hf ⊢
+  simp_rw [id] at hf ⊢
   exact hf
 #align measure_theory.integrable.comp_snd_map_prod_id MeasureTheory.Integrable.comp_snd_map_prod_id
 
@@ -97,7 +97,7 @@ theorem stronglyMeasurable_condexpKernel {s : Set Ω} (hs : MeasurableSet s) :
   Measurable.stronglyMeasurable (measurable_condexpKernel hs)
 
 theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [NormedSpace ℝ F]
-    [CompleteSpace F] (hf : AEStronglyMeasurable f μ) :
+    (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   simp_rw [condexpKernel_apply_eq_condDistrib]
   exact AEStronglyMeasurable.integral_condDistrib
@@ -105,7 +105,7 @@ theorem _root_.MeasureTheory.AEStronglyMeasurable.integral_condexpKernel [Normed
     (hf.comp_snd_map_prod_id inf_le_right)
 #align measure_theory.ae_strongly_measurable.integral_condexp_kernel MeasureTheory.AEStronglyMeasurable.integral_condexpKernel
 
-theorem aestronglyMeasurable'_integral_condexpKernel [NormedSpace ℝ F] [CompleteSpace F]
+theorem aestronglyMeasurable'_integral_condexpKernel [NormedSpace ℝ F]
     (hf : AEStronglyMeasurable f μ) :
     AEStronglyMeasurable' m (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   rw [condexpKernel]
@@ -139,7 +139,7 @@ theorem _root_.MeasureTheory.Integrable.integral_norm_condexpKernel (hf_int : In
 #align measure_theory.integrable.integral_norm_condexp_kernel MeasureTheory.Integrable.integral_norm_condexpKernel
 
 theorem _root_.MeasureTheory.Integrable.norm_integral_condexpKernel [NormedSpace ℝ F]
-    [CompleteSpace F] (hf_int : Integrable f μ) :
+    (hf_int : Integrable f μ) :
     Integrable (fun ω => ‖∫ y, f y ∂condexpKernel μ m ω‖) μ := by
   rw [condexpKernel]
   exact Integrable.norm_integral_condDistrib
@@ -147,7 +147,7 @@ theorem _root_.MeasureTheory.Integrable.norm_integral_condexpKernel [NormedSpace
     (hf_int.comp_snd_map_prod_id (inf_le_right : m ⊓ mΩ ≤ mΩ))
 #align measure_theory.integrable.norm_integral_condexp_kernel MeasureTheory.Integrable.norm_integral_condexpKernel
 
-theorem _root_.MeasureTheory.Integrable.integral_condexpKernel [NormedSpace ℝ F] [CompleteSpace F]
+theorem _root_.MeasureTheory.Integrable.integral_condexpKernel [NormedSpace ℝ F]
     (hf_int : Integrable f μ) :
     Integrable (fun ω => ∫ y, f y ∂condexpKernel μ m ω) μ := by
   rw [condexpKernel]
