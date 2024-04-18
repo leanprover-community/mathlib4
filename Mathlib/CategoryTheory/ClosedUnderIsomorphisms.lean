@@ -44,7 +44,7 @@ variable {P} in
 lemma mem_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
   ⟨X, h, ⟨(asIso e).symm⟩⟩
 
-lemma subset_isoClosure : P ≤ isoClosure P :=
+lemma le_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 
 variable {P Q} in
@@ -56,10 +56,10 @@ lemma isoClosure_eq_self [ClosedUnderIsomorphisms P] : isoClosure P = P := by
   apply le_antisymm
   · intro X ⟨Y, hY, ⟨e⟩⟩
     exact mem_of_iso P e.symm hY
-  · exact subset_isoClosure P
+  · exact le_isoClosure P
 
-lemma isoClosure_subset_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
-  ⟨(subset_isoClosure P).trans,
+lemma isoClosure_le_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
+  ⟨(le_isoClosure P).trans,
     fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
 instance : ClosedUnderIsomorphisms (isoClosure P) where

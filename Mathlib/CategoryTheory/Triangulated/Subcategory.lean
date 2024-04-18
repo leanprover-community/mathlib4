@@ -68,7 +68,7 @@ def isoClosure : Subcategory C where
     exact ⟨Y⟦n⟧, S.shift Y n hY, ⟨(shiftFunctor C n).mapIso e⟩⟩
   ext₂' := by
     rintro T hT ⟨X₁, h₁, ⟨e₁⟩⟩ ⟨X₃, h₃, ⟨e₃⟩⟩
-    exact subset_isoClosure _ _
+    exact le_isoClosure _ _
       (S.ext₂' (Triangle.mk (e₁.inv ≫ T.mor₁) (T.mor₂ ≫ e₃.hom) (e₃.inv ≫ T.mor₃ ≫ e₁.hom⟦1⟧'))
       (isomorphic_distinguished _ hT _
         (Triangle.isoMk _ _ e₁.symm (Iso.refl _) e₃.symm (by aesop_cat) (by aesop_cat) (by
@@ -91,7 +91,7 @@ def mk' : Subcategory C where
   P := P
   zero' := ⟨0, isZero_zero _, zero⟩
   shift := shift
-  ext₂' T hT h₁ h₃ := subset_isoClosure P _ (ext₂ T hT h₁ h₃)
+  ext₂' T hT h₁ h₃ := le_isoClosure P _ (ext₂ T hT h₁ h₃)
 
 instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
   mem_of_iso {X Y} e hX := by
