@@ -35,7 +35,7 @@ lemma mem_iff_of_isIso [ClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [IsIs
   mem_iff_of_iso P (asIso f)
 
 /-- The closure by isomorphisms of a predicate on objects in a category. -/
-def isoClosure (X : C) : Prop := ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
+def isoClosure : C → Prop := fun X => ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
 lemma mem_isoClosure_iff (X : C) :
     isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
