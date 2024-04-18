@@ -318,6 +318,7 @@ import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
 import Mathlib.Algebra.Lie.Derivation.AdjointAction
 import Mathlib.Algebra.Lie.Derivation.Basic
+import Mathlib.Algebra.Lie.Derivation.Semisimple
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
 import Mathlib.Algebra.Lie.EngelSubalgebra
