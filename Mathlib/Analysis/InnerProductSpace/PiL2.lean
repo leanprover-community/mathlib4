@@ -535,38 +535,29 @@ protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) := by
   classical
-  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, ?_⟩
-  · exact Pi.basis (fun i : η ↦ (B i).toBasis)
-  · erw [Pi.basis_apply (fun i : η ↦ (B i).toBasis) j, OrthonormalBasis.coe_toBasis,
-      PiLp.norm_eq_sum (by exact Nat.ofNat_pos)]
-    rw [← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j.fst), LinearMap.stdBasis_same,
-      ENNReal.toReal_ofNat, Finset.sum_eq_zero, zero_add, ← Real.rpow_mul (norm_nonneg _),
-      mul_div_cancel₀ _ two_ne_zero, Real.rpow_one, (B j.fst).orthonormal.1 j.snd]
-    intro _ h
-    rw [LinearMap.stdBasis_ne, norm_zero, Real.zero_rpow two_ne_zero]
-    exact Finset.ne_of_mem_erase h
-  · intro j j' h
-    erw [PiLp.inner_apply, Pi.basis_apply (fun i : η ↦ (B i).toBasis) j,
-      Pi.basis_apply (fun i : η ↦ (B i).toBasis) j']
-    rw [OrthonormalBasis.coe_toBasis, OrthonormalBasis.coe_toBasis, ← Finset.sum_erase_add
-      Finset.univ _ (Finset.mem_univ j.fst), LinearMap.stdBasis_same, Finset.sum_eq_zero, zero_add]
-    · by_cases hj : j.fst = j'.fst
+  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun j j' h ↦ ?_⟩
+  · exact (Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm
+  · simp [LinearMap.stdBasis, (B j.fst).orthonormal.1 j.snd]
+  · simp_rw [Basis.map_apply, Pi.basis_apply, LinearMap.stdBasis, WithLp.linearEquiv_symm_apply,
+      PiLp.inner_apply, OrthonormalBasis.coe_toBasis, LinearMap.coe_single,
+      WithLp.equiv_symm_pi_apply, ← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j.fst)]
+    rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add]
+    · rw [Pi.single_eq_same]
+      by_cases hj : j.fst = j'.fst
       · rw [ne_eq, Sigma.mk.inj_iff] at h
-        -- Several convert steps are needed to avoid type check errors
         have : j.snd ≠ hj ▸ j'.snd := by aesop
         convert (B j.fst).orthonormal.2 this
-        convert LinearMap.stdBasis_same 𝕜 (fun i ↦ E i) j'.fst _
-        exact eqRec_heq hj.symm j'.snd
-      · rw [LinearMap.stdBasis_ne _ _ _ _ hj, inner_zero_right]
-    · intro _ h
-      rw [LinearMap.stdBasis_ne, inner_zero_left]
-      exact Finset.ne_of_mem_erase h
+        convert Pi.single_eq_same j'.fst ((B j'.fst) j'.snd)
+        exact eqRec_heq _ _
+      · rw [Pi.single_eq_of_ne hj, inner_zero_right]
+    · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
-    (Pi.orthonormalBasis B).toBasis = (Pi.basis fun i : η ↦ (B i).toBasis) := by ext; rfl
+    (Pi.orthonormalBasis B).toBasis =
+      ((Pi.basis fun i : η ↦ (B i).toBasis).map (WithLp.linearEquiv 2 _ _).symm) := by ext; rfl
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_coe_apply {η : Type*} [Fintype η] {ι : η → Type*}
