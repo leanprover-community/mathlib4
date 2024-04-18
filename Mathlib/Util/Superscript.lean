@@ -204,7 +204,7 @@ def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m 
   | .align _ | .line | .nil => pure f
 
 /-- Formatter for the script parser. -/
-def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
+def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
   let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
   let st ← get
@@ -213,8 +213,8 @@ def scriptParser.formatter (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : 
     .ok ⟨s⟩)
   match transformed with
   | .error err =>
-    -- TODO: this doesn't seem to go anywhere
-    Lean.logErrorAt (← get).stxTrav.cur s!"Not a superscript: '{err}'"
+    -- TODO: this only appears if the caller explicitly calls the pretty-printer
+    Lean.logErrorAt (← get).stxTrav.cur s!"Not a {name}: '{err}'"
     set { st with stack := stack ++ st.stack }
   | .ok newStack =>
     set { st with stack := stack ++ newStack }
@@ -242,7 +242,7 @@ def superscript (p : Parser) : Parser :=
 def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
-def superscript.formatter := Superscript.scriptParser.formatter .superscript ``superscript
+def superscript.formatter := Superscript.scriptParser.formatter "super" .superscript ``superscript
 
 
 /--
@@ -267,7 +267,7 @@ def subscript (p : Parser) : Parser :=
 def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscript
 /-- Formatter for the subscript parser. -/
 @[combinator_formatter subscript]
-def subscript.formatter := Superscript.scriptParser.formatter .subscript ``subscript
+def subscript.formatter := Superscript.scriptParser.formatter "subscript" .subscript ``subscript
 
 initialize
   registerAlias `superscript ``superscript superscript

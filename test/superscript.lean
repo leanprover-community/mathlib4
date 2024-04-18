@@ -1,5 +1,6 @@
 import Mathlib.Util.Superscript
 import Mathlib.Tactic.UnsetOption
+import Lean.PrettyPrinter
 
 section
 
@@ -31,13 +32,16 @@ run_cmd do
 
 -- TODO: fix this
 /--
+error: Not a superscript: 'α'
+---
 info: aα
 -/
 #guard_msgs in
-run_cmd do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let a := Lean.mkIdent `a
   let α := Lean.mkIdent `α
-  Lean.logInfo <| ← `(term| $a$α:superscript)
+  -- note: this only raises the error if we format non-lazily
+  Lean.logInfo <| ← Lean.PrettyPrinter.ppTerm <| ← `(term| $a$α:superscript)
 
 end
 
@@ -64,12 +68,16 @@ run_cmd do
   let one_plus_one ← `(term| (1 + 1))
   Lean.logInfo <| ← `(term| ($a)$one_plus_one:subscript)
 
--- TODO: fix this
-/-- info: (a)α -/
+/--
+error: Not a superscript: 'α'
+---
+info: (a)α
+-/
 #guard_msgs in
-run_cmd do
+run_cmd Lean.Elab.Command.liftTermElabM do
   let a := Lean.mkIdent `a
   let α := Lean.mkIdent `α
-  Lean.logInfo <| ← `(term| ($a)$α:subscript)
+  -- note: this only raises the error if we format non-lazily
+  Lean.logInfo <| ← Lean.PrettyPrinter.ppTerm <| ← `(term| ($a)$α:subscript)
 
 end
