@@ -226,6 +226,14 @@ def isExplicitBinderSingular (xs : TSyntax ``explicitBinders) : Bool :=
   | _ => false
 
 open TSyntax.Compat in
+/--
+`∃! x : α, p x` means that there exists a unique `x` in `α` such that `p x`.
+This is notation for `ExistsUnique (fun (x : α) ↦ p x)`.
+
+This notation does not allow multiple binders like `∃! (x : α) (y : β), p x y`
+as a shorthand for `∃! (x : α), ∃! (y : β), p x y` since it is liable to be misunderstood.
+Often, the intended meaning is instead `∃! q : α × β, p q.1 q.2`.
+-/
 macro "∃!" xs:explicitBinders ", " b:term : term => do
   if !isExplicitBinderSingular xs then
     Macro.throwErrorAt xs "\
