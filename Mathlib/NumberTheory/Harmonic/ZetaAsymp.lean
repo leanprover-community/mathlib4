@@ -47,7 +47,7 @@ noncomputable def term_tsum (s : ℝ) : ℝ := ∑' n, term (n + 1) s
 
 lemma term_nonneg (n : ℕ) (s : ℝ) : 0 ≤ term n s := by
   rw [term, intervalIntegral.integral_of_le (by simp)]
-  refine set_integral_nonneg measurableSet_Ioc (fun x hx ↦ ?_)
+  refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ ?_)
   refine div_nonneg ?_ (rpow_nonneg ?_ _)
   all_goals linarith [hx.1]
 
@@ -73,7 +73,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
     exact (Nat.cast_pos.mpr hn).trans_le hx.1
   calc term n 1
     _ = ∫ x : ℝ in n..(n + 1), (x - n) / x ^ 2 := by
-      simp_rw [term, one_add_one_eq_two, ← Nat.cast_two (R := ℝ), rpow_nat_cast]
+      simp_rw [term, one_add_one_eq_two, ← Nat.cast_two (R := ℝ), rpow_natCast]
     _ = ∫ x : ℝ in n..(n + 1), (1 / x - n / x ^ 2) := by
       refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
       field_simp [(hv x hx).ne']
@@ -92,7 +92,7 @@ lemma term_one {n : ℕ} (hn : 0 < n) :
     _ = (log (↑n + 1) - log ↑n) - n * ∫ x : ℝ in n..(n + 1), x ^ (-2 : ℝ) := by
       congr 2
       refine intervalIntegral.integral_congr (fun x hx ↦ ?_)
-      rw [rpow_neg, one_div, ← Nat.cast_two (R := ℝ), rpow_nat_cast]
+      rw [rpow_neg, one_div, ← Nat.cast_two (R := ℝ), rpow_natCast]
       exact (hv x hx).le
     _ = log (↑n + 1) - log ↑n - n * (1 / n - 1 / (n + 1)) := by
       rw [integral_rpow]
@@ -199,7 +199,7 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
     simp_rw [mul_sub, mul_one]
     refine tendsto_const_nhds.sub (Tendsto.const_mul _ ?_)
     refine tendsto_const_nhds.div_atTop <| (tendsto_rpow_atTop (by linarith)).comp ?_
-    exact tendsto_atTop_add_const_right _ _ tendsto_nat_cast_atTop_atTop
+    exact tendsto_atTop_add_const_right _ _ tendsto_natCast_atTop_atTop
   · rw [← sub_zero (tsum _)]
     apply (((Summable.hasSum ?_).tendsto_sum_nat).sub ?_).const_mul
     · exact_mod_cast (summable_nat_add_iff 1).mpr (summable_one_div_nat_rpow.mpr hs)
@@ -267,7 +267,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
   refine continuousOn_tsum (fun i ↦ continuousOn_term _) term_tsum_one.summable (fun n s hs ↦ ?_)
   rw [term, term, norm_of_nonneg]
   · simp_rw [intervalIntegral.integral_of_le (by linarith : (↑(n + 1) : ℝ) ≤ ↑(n + 1) + 1)]
-    refine set_integral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
+    refine setIntegral_mono_on ?_ ?_ measurableSet_Ioc (fun x hx ↦ ?_)
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
     · rw [div_le_div_left] -- leave side-goals to end and kill them all together
@@ -277,7 +277,7 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
       · linarith [hx.1]
       all_goals apply rpow_pos_of_pos ((Nat.cast_nonneg _).trans_lt hx.1)
   · rw [intervalIntegral.integral_of_le (by linarith)]
-    refine set_integral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
+    refine setIntegral_nonneg measurableSet_Ioc (fun x hx ↦ div_nonneg ?_ (rpow_nonneg ?_ _))
     all_goals linarith [hx.1]
 
 /-- First version of the limit formula, with a limit over real numbers tending to 1 from above. -/
