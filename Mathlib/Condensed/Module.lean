@@ -17,7 +17,7 @@ Condensed modules form an abelian category.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 /--
 The category of condensed `R`-modules, defined as sheaves of `R`-modules over
