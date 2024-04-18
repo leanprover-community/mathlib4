@@ -21,8 +21,6 @@ open CategoryTheory Opposite
 
 namespace MonoidHom
 
--- some of these definitions could be moved to a more basic file
-
 /-- The equivalence `(β →* γ) ≃ (α →* γ)` obtained by precomposition with
 a multiplicative equivalence `e : α ≃* β`. -/
 @[simps]
