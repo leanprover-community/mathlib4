@@ -248,9 +248,8 @@ lemma ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language (g : Cont
   exact g.reverse.reverse_mem_language_of_mem_reverse_language hw
 
 /-- The class of context-free languages is closed under reversal. -/
-theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) :
-    L.reverse.IsContextFree :=
-  let ⟨g, hg⟩ := CFL
-  ⟨g.reverse, hg ▸ Set.ext g.mem_reverse_language_iff_reverse_mem_language⟩
+theorem Language.IsContextFree.reverse (L : Language T) :
+    L.IsContextFree → L.reverse.IsContextFree :=
+  fun ⟨g, hg⟩ => ⟨g.reverse, hg ▸ Set.ext g.mem_reverse_language_iff_reverse_mem_language⟩
 
 end closure_reversal
