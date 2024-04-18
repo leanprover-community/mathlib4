@@ -256,7 +256,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         have I : (i : ℝ) ≤ (i + 1 : ℕ) := by
           simp only [Nat.cast_add, Nat.cast_one, le_add_iff_nonneg_right, zero_le_one]
         simp_rw [intervalIntegral.integral_of_le I, ← integral_mul_left]
-        apply set_integral_mono_on
+        apply setIntegral_mono_on
         · exact continuous_const.integrableOn_Ioc
         · exact (continuous_id.add continuous_const).integrableOn_Ioc
         · exact measurableSet_Ioc
@@ -284,7 +284,7 @@ theorem sum_prob_mem_Ioc_le {X : Ω → ℝ} (hint : Integrable X) (hnonneg : 0 
         exact ENNReal.toReal_mono ENNReal.one_ne_top prob_le_one
   have B : ∀ a b, ℙ {ω | X ω ∈ Set.Ioc a b} = ENNReal.ofReal (∫ _ in Set.Ioc a b, (1 : ℝ) ∂ρ) := by
     intro a b
-    rw [ofReal_set_integral_one ρ _,
+    rw [ofReal_setIntegral_one ρ _,
       Measure.map_apply_of_aemeasurable hint.aemeasurable measurableSet_Ioc]
     rfl
   calc
@@ -358,7 +358,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
       have Ik : (k : ℝ) ≤ (k + 1 : ℕ) := by simp
       rw [← intervalIntegral.integral_const_mul, intervalIntegral.integral_of_le Ik,
         intervalIntegral.integral_of_le Ik]
-      refine' set_integral_mono_on _ _ measurableSet_Ioc fun x hx => _
+      refine' setIntegral_mono_on _ _ measurableSet_Ioc fun x hx => _
       · apply Continuous.integrableOn_Ioc
         exact continuous_const.mul (continuous_pow 2)
       · apply Continuous.integrableOn_Ioc
@@ -521,7 +521,7 @@ expectation. This follows from convergence and Cesàro averaging. -/
 theorem strong_law_aux3 :
     (fun n => 𝔼[∑ i in range n, truncation (X i) i] - n * 𝔼[X 0]) =o[atTop] ((↑) : ℕ → ℝ) := by
   have A : Tendsto (fun i => 𝔼[truncation (X i) i]) atTop (𝓝 𝔼[X 0]) := by
-    convert (tendsto_integral_truncation hint).comp tendsto_nat_cast_atTop_atTop using 1
+    convert (tendsto_integral_truncation hint).comp tendsto_natCast_atTop_atTop using 1
     ext i
     exact (hident i).truncation.integral_eq
   convert Asymptotics.isLittleO_sum_range_of_tendsto_zero (tendsto_sub_nhds_zero_iff.2 A) using 1

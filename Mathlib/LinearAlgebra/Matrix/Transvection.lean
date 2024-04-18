@@ -373,8 +373,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   refine' Nat.decreasingInduction' _ hk _
   · intro n hn _ IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     simpa [listTransvecCol, Matrix.mul_assoc]
   · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
@@ -402,8 +401,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
   · intro n hn hk IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     have A :
       (listTransvecCol M).get ⟨n, hn'⟩ =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
