@@ -36,7 +36,7 @@ where
   - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
   - `type` is type of the congruence theorem, after all the parameters so far have been applied.
   - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
-  - `argKings'` is the accumulated array of `CongrArgKind`s, which is the original array but
+  - `argKinds'` is the accumulated array of `CongrArgKind`s, which is the original array but
     with some kinds replaced by `.subsingletonInst`.
   - `params` is the *new* list of parameters, as fvars that need to be abstracted at the end.
   - `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
