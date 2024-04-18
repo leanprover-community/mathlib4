@@ -3,9 +3,9 @@ Copyright (c) 2023 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
-import Mathlib.Topology.Sheaves.Abelian
 import Mathlib.Algebra.Category.GroupCat.Abelian
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.Condensed.Basic
 
 /-!
