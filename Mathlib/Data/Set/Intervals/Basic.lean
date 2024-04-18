@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Patrick Massot, Yury Kudryashov, Rémy Degenne
 -/
 import Mathlib.Order.MinMax
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Tactic.Says
 
 #align_import data.set.intervals.basic from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
@@ -1816,6 +1816,20 @@ theorem Ioc_inter_Ioc : Ioc a₁ b₁ ∩ Ioc a₂ b₂ = Ioc (a₁ ⊔ a₂) (b
 theorem Ioo_inter_Ioo : Ioo a₁ b₁ ∩ Ioo a₂ b₂ = Ioo (a₁ ⊔ a₂) (b₁ ⊓ b₂) := by
   simp only [Ioi_inter_Iio.symm, Ioi_inter_Ioi.symm, Iio_inter_Iio.symm]; ac_rfl
 #align set.Ioo_inter_Ioo Set.Ioo_inter_Ioo
+
+theorem Ioo_inter_Iio : Ioo a b ∩ Iio c = Ioo a (min b c) := by
+  ext
+  simp_rw [mem_inter_iff, mem_Ioo, mem_Iio, lt_min_iff, and_assoc]
+
+theorem Iio_inter_Ioo : Iio a ∩ Ioo b c = Ioo b (min a c) := by
+  rw [Set.inter_comm, Set.Ioo_inter_Iio, min_comm]
+
+theorem Ioo_inter_Ioi : Ioo a b ∩ Ioi c = Ioo (max a c) b := by
+  ext
+  simp_rw [mem_inter_iff, mem_Ioo, mem_Ioi, max_lt_iff, and_assoc, and_comm]
+
+theorem Ioi_inter_Ioo : Set.Ioi a ∩ Set.Ioo b c = Set.Ioo (max a b) c := by
+  rw [inter_comm, Ioo_inter_Ioi, max_comm]
 
 theorem Ioc_inter_Ioo_of_left_lt (h : b₁ < b₂) : Ioc a₁ b₁ ∩ Ioo a₂ b₂ = Ioc (max a₁ a₂) b₁ :=
   ext fun x => by
