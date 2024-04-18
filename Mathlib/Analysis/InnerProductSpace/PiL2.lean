@@ -535,20 +535,16 @@ protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) := by
   classical
-  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun j j' h ↦ ?_⟩
+  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ h ↦ ?_⟩
   · exact (Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm
   · simp [LinearMap.stdBasis, (B j.fst).orthonormal.1 j.snd]
   · simp_rw [Basis.map_apply, Pi.basis_apply, LinearMap.stdBasis, WithLp.linearEquiv_symm_apply,
       PiLp.inner_apply, OrthonormalBasis.coe_toBasis, LinearMap.coe_single,
-      WithLp.equiv_symm_pi_apply, ← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j.fst)]
-    rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add]
-    · rw [Pi.single_eq_same]
-      by_cases hj : j.fst = j'.fst
-      · rw [ne_eq, Sigma.mk.inj_iff] at h
-        have : j.snd ≠ hj ▸ j'.snd := by aesop
-        convert (B j.fst).orthonormal.2 this
-        convert Pi.single_eq_same j'.fst ((B j'.fst) j'.snd)
-        exact eqRec_heq _ _
+      WithLp.equiv_symm_pi_apply, ← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j)]
+    rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add, Pi.single_eq_same]
+    · obtain rfl | hj := eq_or_ne j j'
+      · rw [Pi.single_eq_same]
+        exact (B j).orthonormal.2 (ne_of_apply_ne _ h)
       · rw [Pi.single_eq_of_ne hj, inner_zero_right]
     · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
 
