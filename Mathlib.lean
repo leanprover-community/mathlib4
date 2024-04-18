@@ -86,6 +86,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
+import Mathlib.Algebra.Category.ModuleCat.Sheaf
 import Mathlib.Algebra.Category.ModuleCat.Simple
 import Mathlib.Algebra.Category.ModuleCat.Subobject
 import Mathlib.Algebra.Category.ModuleCat.Tannaka
@@ -354,6 +355,7 @@ import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposites
@@ -374,7 +376,8 @@ import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Module.Zlattice
+import Mathlib.Algebra.Module.Zlattice.Basic
+import Mathlib.Algebra.Module.Zlattice.Covolume
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
@@ -1347,6 +1350,7 @@ import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
@@ -1446,6 +1450,7 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
+import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
@@ -1664,6 +1669,7 @@ import Mathlib.Data.Analysis.Filter
 import Mathlib.Data.Analysis.Topology
 import Mathlib.Data.Array.Basic
 import Mathlib.Data.Array.Defs
+import Mathlib.Data.Array.ExtractLemmas
 import Mathlib.Data.Array.Lemmas
 import Mathlib.Data.BinaryHeap
 import Mathlib.Data.BitVec.Defs
@@ -1863,6 +1869,7 @@ import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
+import Mathlib.Data.List.Enum
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
@@ -2151,6 +2158,7 @@ import Mathlib.Data.Set.Prod
 import Mathlib.Data.Set.Semiring
 import Mathlib.Data.Set.Sigma
 import Mathlib.Data.Set.Subset
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Data.Set.Sups
 import Mathlib.Data.Set.UnionLift
 import Mathlib.Data.SetLike.Basic

@@ -169,7 +169,7 @@ theorem eq_zero_iff_not_coprime {a : ℤ} {b : ℕ} [NeZero b] : J(a | b) = 0 �
       rw [List.mem_pmap, Int.gcd_eq_natAbs, Ne, Prime.not_coprime_iff_dvd]
       -- Porting note: Initially, `and_assoc'` and `and_comm'` were used on line 164 but they have
       -- been deprecated so we replace them with `and_assoc` and `and_comm`
-      simp_rw [legendreSym.eq_zero_iff _ _, int_cast_zmod_eq_zero_iff_dvd,
+      simp_rw [legendreSym.eq_zero_iff _ _, intCast_zmod_eq_zero_iff_dvd,
         mem_factors (NeZero.ne b), ← Int.natCast_dvd, Int.natCast_dvd_natCast, exists_prop,
         and_assoc, and_comm])
 #align jacobi_sym.eq_zero_iff_not_coprime jacobiSym.eq_zero_iff_not_coprime
@@ -297,7 +297,7 @@ open jacobiSym
 /-- If `J(a | b)` is `-1`, then `a` is not a square modulo `b`. -/
 theorem nonsquare_of_jacobiSym_eq_neg_one {a : ℤ} {b : ℕ} (h : J(a | b) = -1) :
     ¬IsSquare (a : ZMod b) := fun ⟨r, ha⟩ => by
-  rw [← r.coe_valMinAbs, ← Int.cast_mul, int_cast_eq_int_cast_iff', ← sq] at ha
+  rw [← r.coe_valMinAbs, ← Int.cast_mul, intCast_eq_intCast_iff', ← sq] at ha
   apply (by norm_num : ¬(0 : ℤ) ≤ -1)
   rw [← h, mod_left, ha, ← mod_left, pow_left]
   apply sq_nonneg
