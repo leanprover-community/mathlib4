@@ -8,6 +8,7 @@ import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 import Mathlib.Data.List.Basic
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.WithOne.Basic
 
 #align_import algebra.free from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -766,3 +767,148 @@ def FreeMagmaAssocQuotientEquiv (α : Type u) :
       (by ext; rfl)
       (by ext1; rfl)
 #align free_magma_assoc_quotient_equiv FreeMagmaAssocQuotientEquiv
+
+
+namespace List
+
+variable {α : Type u}
+
+/-- Free monoid over a given alphabet is a list with appending operation -/
+@[to_additive]
+instance : Monoid (List α) where
+  mul L1 L2 := L1.append L2
+  mul_assoc _L1 _L2 _L3 := append_assoc _ _ _
+  one := []
+  one_mul := nil_append
+  mul_one := append_nil
+
+@[to_additive (attr := simp)]
+theorem mul_def (x y : List α) : x * y = x.append y := rfl
+
+/-- The embedding `α → List α`. -/
+@[simp]
+def of (x : α) : List α := [x]
+
+@[to_additive (attr := simp)]
+theorem length_mul (x y : List α) : (x * y).length = x.length + y.length := by
+  simp [Nat.add_right_comm, List.length, List.length_append]
+
+theorem length_of (x : α) : (of x).length = 1 := rfl
+
+instance [Inhabited α] : Inhabited (List α) := ⟨of default⟩
+
+/-- Recursor for free monoid using `of` and `*`. -/
+@[to_additive (attr := elab_as_elim) "Recursor for free additive monoid using `of` and `+`."]
+protected def recOnMul {C : List α → Sort l} (x) (ih1 : C 1) (ihof : ∀ x, C (of x))
+    (ih : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
+  List.recOn x ih1 fun a as h ↦ ih a as (ihof a) h
+
+@[ext 1100]
+theorem hom_ext {β : Type v} [MulOneClass β] {f g : List α →* β} (h : f ∘ of = g ∘ of) : f = g :=
+  (DFunLike.ext _ _) fun x ↦
+    List.recOnMul x (by simp) (congr_fun h) fun x y hx hy ↦ by simp only [map_mul, *]
+
+section lift
+
+variable {β : Type v} [Monoid β] (f : α → β)
+
+theorem append_foldl_mul (b : β) (x y : List β) :
+    (x ++ y).foldl (· * ·) b = x.foldl (· * ·) b * y.foldl (· * ·) 1 := by
+  rw [← @List.foldl_assoc β (· * ·), mul_one, List.foldl_append]
+
+/-- Lifts a function `α → β` to a monoid homomorphism `List α → β` given a monoid `β`. -/
+@[simp]
+def lift : (α → β) ≃ (List α →* β) where
+  toFun f :=
+    { toFun := fun x ↦ x.foldl (· * f ·) 1
+      map_one' := by simp [List.foldl]
+      map_mul' := fun x y ↦ by
+        simp [← foldl_map]
+        rw [← foldl_append, append_foldl_mul] }
+  invFun f := f ∘ of
+  left_inv f := by ext; simp
+  right_inv f := hom_ext (by ext; simp)
+
+@[simp]
+theorem lift_of (x : α) : lift f (of x) = f x := by simp
+
+@[simp]
+theorem lift_comp_of : lift f ∘ of = f := by ext; simp
+
+@[simp]
+theorem lift_comp_of' (f : List α →* β) : lift (f ∘ of) = f := hom_ext (by ext; simp)
+
+theorem lift_of_mul (x y) : lift f (of x * y) = f x * lift f y := by rw [map_mul, lift_of]
+
+end lift
+
+section Map
+
+variable {β : Type v} (f : α → β)
+
+@[simp]
+theorem map_of (x) : map f (of x) = of (f x) := rfl
+
+end Map
+
+section Category
+
+variable {β : Type u}
+
+instance : Monad List where
+  pure := of
+  bind x f := lift f x
+
+/-- Recursor that uses `pure` instead of `of`. -/
+@[elab_as_elim]
+def recOnPure {C : List α → Sort l} (x) (ih1 : C 1) (ihpure : ∀ x, C (pure x))
+    (ih : ∀ x y, C (pure x) → C y → C (pure x * y)) : C x :=
+  List.recOnMul x ih1 ihpure ih
+
+@[simp, nolint simpNF]
+theorem map_pure (f : α → β) (x) : (f <$> pure x : List β) = pure (f x) := rfl
+
+@[simp]
+theorem map_mul' (f : α → β) (x y : List α) : f <$> (x * y) = f <$> x * f <$> y := by simp
+
+@[simp, nolint simpNF]
+theorem pure_bind (f : α → List β) (x) : pure x >>= f = f x := rfl
+
+@[simp]
+theorem mul_bind (f : α → List β) (x y : List α) :
+    x * y >>= f = (x >>= f) * (y >>= f) := map_mul (lift f) _ _
+
+@[simp]
+theorem pure_seq {f : α → β} {x : List α} : pure f <*> x = f <$> x := by simp [Seq.seq]
+
+@[simp]
+theorem mul_seq {f g : List (α → β)} {x : List α} :
+    f * g <*> x = (f <*> x) * (g <*> x) := by simp [Seq.seq]
+
+end Category
+
+end List
+
+/-- Isomorphism between `WithOne (FreeSemigroup α)` and `List α`. -/
+@[to_additive "Isomorphism between `WithOne (FreeAddSemigroup α)` and
+`FreeAddMonoid α`."]
+def FreeSemigroupWithOneEquiv (α : Type u) :
+    WithOne (FreeSemigroup α) ≃* List α where
+  toFun x :=
+    match x with
+    | 1 => 1
+    | some y => y.1 :: y.2
+  invFun x :=
+    match x with
+    | [] => 1
+    | x :: xs => some ⟨x, xs⟩
+  left_inv x := by cases x <;> rfl
+  right_inv x := by cases x <;> rfl
+  map_mul' := fun x y ↦ by
+    simp
+    match x with
+    | 1 => rw [one_mul, (by rfl : (1:List _) = List.nil), List.nil_append]
+    | some x =>
+      match y with
+      | 1 => rw [mul_one, (by rfl : (1:List _) = List.nil), List.append_nil]
+      | some y => rfl
