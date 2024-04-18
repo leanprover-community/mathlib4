@@ -231,6 +231,7 @@ noncomputable def elementalStarAlgebra.characterSpaceToSpectrum (x : A)
 
 -- Adaptation note: nightly-2024-04-01
 -- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12227
 attribute [nolint simpNF] elementalStarAlgebra.characterSpaceToSpectrum_coe
 
 theorem elementalStarAlgebra.continuous_characterSpaceToSpectrum (x : A) :

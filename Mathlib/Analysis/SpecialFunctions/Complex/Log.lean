@@ -230,6 +230,7 @@ theorem map_exp_comap_re_atBot : map exp (comap re atBot) = 𝓝[≠] 0 := by
 
 -- Adaptation note: nightly-2024-04-01
 -- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12226
 @[simp, nolint simpNF]
 theorem map_exp_comap_re_atTop : map exp (comap re atTop) = cobounded ℂ := by
   rw [← comap_exp_cobounded, map_comap, range_exp, inf_eq_left, le_principal_iff]

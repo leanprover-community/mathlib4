@@ -68,6 +68,9 @@ instance : MonoidalCategoryStruct (QuadraticModuleCat.{u} R) where
   leftUnitor X := ofIso (tensorLId X.form)
   rightUnitor X := ofIso (tensorRId X.form)
 
+@[simp] theorem toModuleCat_tensor (X Y : QuadraticModuleCat.{u} R) :
+    (X ⊗ Y).toModuleCat = X.toModuleCat ⊗ Y.toModuleCat := rfl
+
 theorem forget₂_map_associator_hom (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).hom =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).hom := rfl
@@ -76,9 +79,6 @@ theorem forget₂_map_associator_inv (X Y Z : QuadraticModuleCat.{u} R) :
     (forget₂ (QuadraticModuleCat R) (ModuleCat R)).map (α_ X Y Z).inv =
       (α_ X.toModuleCat Y.toModuleCat Z.toModuleCat).inv := rfl
 
--- Adaptation note: nightly-2024-04-01
--- This maxHeartbeats was not needed previously.
-set_option maxHeartbeats 400000 in
 noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleCat.{u} R) :=
   Monoidal.induced
     (forget₂ (QuadraticModuleCat R) (ModuleCat R))
@@ -87,19 +87,25 @@ noncomputable instance instMonoidalCategory : MonoidalCategory (QuadraticModuleC
       leftUnitor_eq := fun X => by
         simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
           Iso.refl_hom, tensorIso_hom, MonoidalCategory.tensorHom_id]
-        erw [MonoidalCategory.id_whiskerRight, Category.id_comp, Category.id_comp]
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        erw [MonoidalCategory.id_whiskerRight]
+        simp
         rfl
       rightUnitor_eq := fun X => by
         simp only [forget₂_obj, forget₂_map, Iso.refl_symm, Iso.trans_assoc, Iso.trans_hom,
           Iso.refl_hom, tensorIso_hom, MonoidalCategory.id_tensorHom]
-        erw [MonoidalCategory.whiskerLeft_id, Category.id_comp, Category.id_comp]
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        erw [MonoidalCategory.whiskerLeft_id]
+        simp
         rfl
       associator_eq := fun X Y Z => by
         dsimp only [forget₂_obj, forget₂_map_associator_hom]
         simp only [eqToIso_refl, Iso.refl_trans, Iso.refl_symm, Iso.trans_hom, tensorIso_hom,
           Iso.refl_hom, MonoidalCategory.tensor_id]
-        erw [Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id, Category.id_comp]
-        rfl }
+        dsimp only [toModuleCat_tensor, ModuleCat.of_coe]
+        rw [Category.id_comp, Category.id_comp, Category.comp_id, MonoidalCategory.tensor_id,
+          Category.id_comp] }
+
 
 variable (R) in
 /-- `forget₂ (QuadraticModuleCat R) (ModuleCat R)` as a monoidal functor. -/

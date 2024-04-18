@@ -431,8 +431,21 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   infer_instance
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
--- Adaptation note: nightly-2024-04-01
--- This maxHeartbeats was not needed previously.
+/-
+Adaptation note: nightly-2024-04-01
+This maxHeartbeats was not needed previously.
+Just elaborating the signature times out, even if we replace the proof with `sorry`.
+The left-hand-side has type:
+```
+((Scheme.Γ.rightOp.comp Scheme.Spec).obj X).presheaf.obj (op ⊤) ⟶
+  ((adjunction.unit.app X).val.base _* ((𝟭 Scheme).obj X).presheaf).obj (op ⊤)
+```
+while the right-hand-side has type:
+```
+(Spec.toLocallyRingedSpace.rightOp.comp Γ).obj (X.presheaf.obj (op ⊤)) ⟶
+  (𝟭 CommRingCat).obj (X.presheaf.obj (op ⊤))
+```
+-/
 set_option maxHeartbeats 400000 in
 theorem adjunction_unit_app_app_top (X : Scheme) :
     (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) =
