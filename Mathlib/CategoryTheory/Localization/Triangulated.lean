@@ -194,7 +194,7 @@ lemma isTriangulated_functor :
     letI : Pretriangulated D := pretriangulated L W; L.IsTriangulated :=
     letI : Pretriangulated D := pretriangulated L W; ⟨fun T hT => ⟨T, Iso.refl _, hT⟩⟩
 
-lemma essSurj_mapArrow : EssSurj L.mapArrow :=
+lemma essSurj_mapArrow : L.mapArrow.EssSurj  :=
   essSurj_mapArrow_of_hasLeftCalculusofFractions L W
 
 end Localization
