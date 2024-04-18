@@ -76,6 +76,10 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
+lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := by
+  intro x y
+  rw [RingHom.id_apply, LieModule.traceForm_comm]
+
 @[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
@@ -394,6 +398,17 @@ lemma restrict_killingForm :
   intro y
   rw [LieModule.traceForm_comm, LieModule.traceForm_apply_apply]
   exact LieSubmodule.traceForm_eq_zero_of_isTrivial I I (by simp) _ hx
+
+/-- As a submodule, the definition of the Killing complement agrees with the one procured by the
+general theory of orthogonal complements of bilinear forms. -/
+lemma killingCompl_eq_orthogonalBilin (I : LieIdeal R L) :
+    (LieIdeal.killingCompl R L I).toSubmodule =
+    Submodule.orthogonalBilin I.toSubmodule (killingForm R L) := by
+  -- NB: This looks like a hack but I could not figure another way to do it
+  have mem_cast (J : LieIdeal R L) (y : L) : y ∈ J.toSubmodule ↔ y ∈ J := Eq.to_iff rfl
+  ext x
+  simp_rw [mem_cast, LieIdeal.mem_killingCompl, Submodule.mem_orthogonalBilin_iff,
+    LinearMap.IsOrtho, mem_cast, LieModule.traceForm_comm]
 
 end LieIdeal
 
