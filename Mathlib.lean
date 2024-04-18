@@ -1461,6 +1461,7 @@ import Mathlib.CategoryTheory.Shift.ShiftSequence
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.SingleObj
+import Mathlib.CategoryTheory.Sites.Abelian
 import Mathlib.CategoryTheory.Sites.Adjunction
 import Mathlib.CategoryTheory.Sites.Canonical
 import Mathlib.CategoryTheory.Sites.Closed
@@ -4065,7 +4066,6 @@ import Mathlib.Topology.Sets.Closeds
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.Sets.Opens
 import Mathlib.Topology.Sets.Order
-import Mathlib.Topology.Sheaves.Abelian
 import Mathlib.Topology.Sheaves.Forget
 import Mathlib.Topology.Sheaves.Functors
 import Mathlib.Topology.Sheaves.Init
