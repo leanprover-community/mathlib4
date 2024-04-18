@@ -39,7 +39,7 @@ theorem extract_append_right {a b : Array α} {i j : Nat} (h : i ≥ a.size):
     omega
 
 theorem extract_eq_of_size_le_end {a : Array α} :
-    (a.size ≤ l) →  a.extract p l = a.extract p a.size := by
+    (a.size ≤ l) → a.extract p l = a.extract p a.size := by
   intro h
   simp only [extract, Nat.min_eq_right h, Nat.sub_eq, mkEmpty_eq, Nat.min_self]
 
