@@ -181,6 +181,7 @@ section IsDomain
 
 variable [IsDomain K]
 
+  --⟨algebraMap _ _⟩
 /-- `RatFunc.mk (p q : K[X])` is `p / q` as a rational function.
 
 If `q = 0`, then `mk` returns 0.
@@ -814,9 +815,11 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
         ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' c x := mul_comm _ _
 
+instance : Coe (Polynomial K) (RatFunc K) := ⟨fun P ↦ algebraMap _ _ P⟩
+
 variable {K}
 
-theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
+theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x := by
   rfl
 #align ratfunc.mk_one RatFunc.mk_one
 
@@ -1694,10 +1697,18 @@ theorem coe_apply : coeAlgHom F f = f :=
   rfl
 #align ratfunc.coe_apply RatFunc.coe_apply
 
+theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+  erw [RatFunc.coe_def, RatFunc.coeAlgHom, liftAlgHom_apply, RatFunc.num_algebraMap,
+    RatFunc.denom_algebraMap P, map_one, div_one]
+  rfl
+
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
   (coeAlgHom F).map_zero
 #align ratfunc.coe_zero RatFunc.coe_zero
+
+theorem coe_ne_zero {f : Polynomial F} : f ≠ 0 → (↑f : PowerSeries F) ≠ 0 := by
+  simp only [Ne.def, Polynomial.coe_eq_zero_iff, imp_self]
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
@@ -1760,6 +1771,28 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
   simp only [ofPowerSeries_X]  -- Porting note: added
 set_option linter.uppercaseLean3 false in
 #align ratfunc.coe_X RatFunc.coe_X
+
+theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
+    single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n h_ind
+  · simp only [Nat.zero_eq, Int.ofNat_eq_coe, zpow_zero]
+    rfl
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
+
+theorem single_inv (d : ℤ) (α : F) (hα : α ≠ 0) :
+    (single (d : ℤ) (α : F))⁻¹ = single (-d) (α⁻¹ : F) := by
+  rw [inv_eq_of_mul_eq_one_left];
+  simp only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
+  rfl
+
+theorem single_zpow (n : ℤ) :
+    single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n_pos n_neg
+  · apply single_pow
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
+      single_inv (n_neg + 1 : ℤ) (1 : F) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+      Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
 
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
   RingHom.toAlgebra (coeAlgHom F).toRingHom
