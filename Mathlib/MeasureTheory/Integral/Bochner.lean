@@ -1315,7 +1315,7 @@ lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α 
     exact ENNReal.ofReal_ne_top
   refine h_cont.tendsto.comp ?_
   -- use the result for the Lebesgue integral
-  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
+  apply lintegral_tendsto_of_tendsto_of_monotone
   · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
   · filter_upwards [h_mono] with x hx n m hnm
     refine ENNReal.ofReal_le_ofReal ?_

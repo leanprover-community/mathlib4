@@ -172,7 +172,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
     funext fun i => (integral_indicator (hsm i)).symm
   rw [h_int_eq]
   rw [← integral_indicator (MeasurableSet.iInter hsm)]
-  refine' tendsto_integral_of_dominated_convergence bound _ _ _ _
+  apply tendsto_integral_of_dominated_convergence bound
   · intro n
     rw [aestronglyMeasurable_indicator_iff (hsm n)]
     exact (IntegrableOn.mono_set hfi (h_anti (zero_le n))).1

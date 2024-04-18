@@ -288,7 +288,7 @@ theorem degrees_esymm [Nontrivial R] (n : ℕ) (hpos : 0 < n) (hn : n ≤ Fintyp
     rw [degrees_def, support_esymm, sup_image, this]
     have : ((powersetCard n univ).sup (fun (x : Finset σ) => x)).val
         = sup (powersetCard n univ) val := by
-      refine' comp_sup_eq_sup_comp _ _ _
+      apply comp_sup_eq_sup_comp
       · intros
         simp only [union_val, sup_eq_union]
         congr

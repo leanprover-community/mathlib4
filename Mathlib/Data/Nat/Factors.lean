@@ -169,7 +169,7 @@ theorem le_of_mem_factors {n p : ℕ} (h : p ∈ n.factors) : p ≤ n := by
 /-- **Fundamental theorem of arithmetic**-/
 theorem factors_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ p ∈ l, Prime p) :
     l ~ factors n := by
-  refine' perm_of_prod_eq_prod _ _ _
+  apply perm_of_prod_eq_prod
   · rw [h₁]
     refine' (prod_factors _).symm
     rintro rfl

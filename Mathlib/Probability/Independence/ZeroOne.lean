@@ -131,7 +131,7 @@ theorem condIndep_biSup_limsup [StandardBorelSpace Ω] [Nonempty Ω]
 theorem kernel.indep_iSup_directed_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) (hns : Directed (· ≤ ·) ns) (hnsp : ∀ a, p (ns a)) :
     Indep (⨆ a, ⨆ n ∈ ns a, s n) (limsup s f) κ μα := by
-  refine' indep_iSup_of_directed_le _ _ _ _
+  apply indep_iSup_of_directed_le
   · exact fun a => indep_biSup_limsup h_le h_indep hf (hnsp a)
   · exact fun a => iSup₂_le fun n _ => h_le n
   · exact limsup_le_iSup.trans (iSup_le h_le)

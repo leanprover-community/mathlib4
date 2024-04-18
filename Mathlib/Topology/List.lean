@@ -25,7 +25,7 @@ instance : TopologicalSpace (List α) :=
   TopologicalSpace.mkOfNhds (traverse nhds)
 
 theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
-  refine' nhds_mkOfNhds _ _ _ _
+  apply nhds_mkOfNhds
   · intro l
     induction l with
     | nil => exact le_rfl

@@ -469,7 +469,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     simp only [SetLike.mem_coe]
     refine' sum_mem _
     rintro i -
-    refine' smul_mem _ _ _
+    apply smul_mem
     exact subset_span ⟨i, rfl⟩
 #align hilbert_basis.dense_span HilbertBasis.dense_span
 

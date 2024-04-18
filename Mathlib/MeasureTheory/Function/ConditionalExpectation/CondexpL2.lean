@@ -259,7 +259,7 @@ theorem integral_condexpL2_eq (hm : m ≤ m0) (f : Lp E' 2 μ) (hs : MeasurableS
   rw [← sub_eq_zero, lpMeas_coe, ←
     integral_sub' (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)
       (integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs)]
-  refine' integral_eq_zero_of_forall_integral_inner_eq_zero 𝕜 _ _ _
+  apply integral_eq_zero_of_forall_integral_inner_eq_zero 𝕜
   · rw [integrable_congr (ae_restrict_of_ae (Lp.coeFn_sub (↑(condexpL2 E' 𝕜 hm f)) f).symm)]
     exact integrableOn_Lp_of_measure_ne_top _ fact_one_le_two_ennreal.elim hμs
   intro c

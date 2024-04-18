@@ -489,7 +489,7 @@ lemma measurable_density_right (κ : kernel α (γ × β)) (ν : kernel α γ)
 
 lemma density_mono_set (hκν : fst κ ≤ ν) (a : α) (x : γ) {s s' : Set β} (h : s ⊆ s') :
     density κ ν a x s ≤ density κ ν a x s' := by
-  refine limsup_le_limsup ?_ ?_ ?_
+  apply limsup_le_limsup
   · exact eventually_of_forall (fun n ↦ densityProcess_mono_set hκν n a x h)
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩

@@ -40,7 +40,7 @@ variable {α : Type*} {m m0 : MeasurableSpace α} {μ : Measure α}
 theorem rnDeriv_ae_eq_condexp {hm : m ≤ m0} [hμm : SigmaFinite (μ.trim hm)] {f : α → ℝ}
     (hf : Integrable f μ) :
     SignedMeasure.rnDeriv ((μ.withDensityᵥ f).trim hm) (μ.trim hm) =ᵐ[μ] μ[f|m] := by
-  refine' ae_eq_condexp_of_forall_setIntegral_eq hm hf _ _ _
+  apply ae_eq_condexp_of_forall_setIntegral_eq hm hf
   · exact fun _ _ _ => (integrable_of_integrable_trim hm
       (SignedMeasure.integrable_rnDeriv ((μ.withDensityᵥ f).trim hm) (μ.trim hm))).integrableOn
   · intro s hs _

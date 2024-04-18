@@ -2097,7 +2097,7 @@ def foldlRecOn {C : β → Sort*} (l : List α) (op : β → α → β) (b : β)
   induction l generalizing b with
   | nil => exact hb
   | cons hd tl IH =>
-    refine' IH _ _ _
+    apply IH
     · exact hl b hb hd (mem_cons_self hd tl)
     · intro y hy x hx
       exact hl y hy x (mem_cons_of_mem hd hx)
@@ -2537,7 +2537,7 @@ theorem splitOn_intercalate [DecidableEq α] (x : α) (hx : ∀ l ∈ ls, x ∉ 
   induction' ls with hd tl ih; · contradiction
   cases tl
   · suffices hd.splitOn x = [hd] by simpa [join]
-    refine' splitOnP_eq_single _ _ _
+    apply splitOnP_eq_single
     intro y hy H
     rw [eq_of_beq H] at hy
     refine' hx hd _ hy

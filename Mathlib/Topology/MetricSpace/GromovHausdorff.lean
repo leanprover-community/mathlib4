@@ -691,7 +691,7 @@ instance : SecondCountableTopology GHSpace := by
   -- Use the almost isometry `Φ` to show that `p.rep` and `q.rep`
   -- are within controlled Gromov-Hausdorff distance.
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
-    refine' ghDist_le_of_approx_subsets Φ _ _ _
+    apply ghDist_le_of_approx_subsets Φ
     show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
     · -- by construction, `s p` is `ε`-dense
       intro x

@@ -334,10 +334,10 @@ lemma IsRatCondKernelCDFAux.integrable_iInf_rat_gt (hf : IsRatCondKernelCDFAux f
   · filter_upwards [hf.bddBelow_range a, hf.nonneg a, hf.le_one a]
       with t hbdd_below h_nonneg h_le_one
     rw [Real.norm_eq_abs, abs_of_nonneg]
-    · refine ciInf_le_of_le ?_ ?_ ?_
+    · apply ciInf_le_of_le
       · exact hbdd_below _
-      · exact ⟨q + 1, by simp⟩
       · exact h_le_one _
+      · exact ⟨q + 1, by simp⟩
     · exact le_ciInf fun r ↦ h_nonneg _
 
 lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ)} [IsFiniteMeasure ρ]
@@ -365,7 +365,7 @@ lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux 
         ≤ (κ a (A ×ˢ Iic (r : ℝ))).toReal := by
       intro r
       rw [← hf.setIntegral a hA]
-      refine setIntegral_mono_ae ?_ ?_ ?_
+      apply setIntegral_mono_ae
       · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
       · exact (hf.integrable _ _).integrableOn
       · filter_upwards [hf.bddBelow_range a] with t ht using ciInf_le (ht _) r
@@ -375,7 +375,7 @@ lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux 
         rw [← Measure.iInf_rat_gt_prod_Iic hA q]
         exact (ENNReal.toReal_iInf (fun r ↦ measure_ne_top _ _)).symm
   · rw [← hf.setIntegral a hA]
-    refine setIntegral_mono_ae ?_ ?_ ?_
+    apply setIntegral_mono_ae
     · exact (hf.integrable _ _).integrableOn
     · exact (hf.integrable_iInf_rat_gt _ _).integrableOn
     · filter_upwards [hf.mono a] with c h_mono using le_ciInf (fun r ↦ h_mono (le_of_lt r.prop))

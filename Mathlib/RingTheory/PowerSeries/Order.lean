@@ -159,7 +159,7 @@ theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
 /-- The order of the sum of two formal power series
  is at least the minimum of their orders. -/
 theorem le_order_add (φ ψ : R⟦X⟧) : min (order φ) (order ψ) ≤ order (φ + ψ) := by
-  refine' le_order _ _ _
+  apply le_order
   simp (config := { contextual := true }) [coeff_of_lt_order]
 #align power_series.le_order_add PowerSeries.le_order_add
 
