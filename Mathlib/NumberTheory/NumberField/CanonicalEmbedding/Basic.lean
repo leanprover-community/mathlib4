@@ -77,7 +77,7 @@ theorem norm_le_iff [NumberField K] (x : K) (r : ℝ) :
     ‖canonicalEmbedding K x‖ ≤ r ↔ ∀ φ : K →+* ℂ, ‖φ x‖ ≤ r := by
   obtain hr | hr := lt_or_le r 0
   · obtain ⟨φ⟩ := (inferInstance : Nonempty (K →+* ℂ))
-    refine iff_of_false ?_ ?_
+    apply iff_of_false
     exact (hr.trans_le (norm_nonneg _)).not_le
     exact fun h => hr.not_le (le_trans (norm_nonneg _) (h φ))
   · lift r to NNReal using hr

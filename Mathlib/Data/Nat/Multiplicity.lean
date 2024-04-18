@@ -287,7 +287,7 @@ end Prime
 
 theorem multiplicity_two_factorial_lt : ∀ {n : ℕ} (_ : n ≠ 0), multiplicity 2 n ! < n := by
   have h2 := prime_two.prime
-  refine' binaryRec _ _
+  apply binaryRec
   · exact fun h => False.elim <| h rfl
   · intro b n ih h
     by_cases hn : n = 0

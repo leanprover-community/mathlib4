@@ -585,7 +585,7 @@ protected theorem measurable_of_le [TopologicalSpace ι] [MeasurableSpace ι] [B
 
 theorem measurableSpace_min (hτ : IsStoppingTime f τ) (hπ : IsStoppingTime f π) :
     (hτ.min hπ).measurableSpace = hτ.measurableSpace ⊓ hπ.measurableSpace := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · exact le_inf (measurableSpace_mono _ hτ fun _ => min_le_left _ _)
       (measurableSpace_mono _ hπ fun _ => min_le_right _ _)
   · intro s

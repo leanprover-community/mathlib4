@@ -311,7 +311,7 @@ theorem smul_cancel_of_non_zero_divisor {M R : Type*} [Monoid M] [NonUnitalNonAs
     [DistribMulAction M R] (k : M) (h : ∀ x : R, k • x = 0 → x = 0) {a b : R} (h' : k • a = k • b) :
     a = b := by
   rw [← sub_eq_zero]
-  refine' h _ _
+  apply h
   rw [smul_sub, h', sub_self]
 #align smul_cancel_of_non_zero_divisor smul_cancel_of_non_zero_divisor
 

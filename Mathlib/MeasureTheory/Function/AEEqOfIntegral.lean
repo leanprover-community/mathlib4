@@ -509,7 +509,7 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
-  refine' ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite _ _
+  apply ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite
   · intro s hs hμs
     rw [IntegrableOn, Measure.restrict_restrict hs]
     rw [Measure.restrict_apply hs] at hμs
@@ -583,7 +583,7 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this htf_zero
   refine' measure_eq_zero_of_trim_eq_zero hm _
-  refine' ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite _ _
+  apply ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite
   · intro s hs hμs
     unfold IntegrableOn
     rw [restrict_trim hm (μ.restrict t) hs, Measure.restrict_restrict (hm s hs)]

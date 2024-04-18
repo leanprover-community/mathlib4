@@ -245,7 +245,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
     -- Porting note: dot notation broken
-  refine' le_antisymm _ _
+  apply le_antisymm
   · rintro x ⟨f, rfl⟩
     refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)
     intro s

@@ -295,7 +295,7 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   show (fun x => ((forget TopCat).map _ ((forget TopCat).map _ x))) '' _ = _
   rw [← Set.image_image]
   -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
-  refine congr_arg ?_ ?_
+  apply congr_arg
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
   change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
   rw [𝖣.t_inv_assoc]

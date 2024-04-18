@@ -1136,7 +1136,7 @@ theorem sInfGen_def (m : Set (OuterMeasure α)) (t : Set α) :
 
 theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
     sInf m = OuterMeasure.boundedBy (sInfGen m) := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · refine' le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => _
     apply sInf_le hμ
   · refine' le_sInf _

@@ -688,7 +688,7 @@ theorem unifIntegrable_of' (hp : 1 ≤ p) (hp' : p ≠ ∞) {f : ι → α → �
       rwa [ENNReal.rpow_one_div_le_iff (ENNReal.toReal_pos hpzero hp'),
         ENNReal.ofReal_rpow_of_pos (div_pos hε (mul_pos two_pos (NNReal.coe_pos.2 hCpos)))]
     _ ≤ ENNReal.ofReal (ε / 2) + ENNReal.ofReal (ε / 2) := by
-      refine' add_le_add_left _ _
+      apply add_le_add_left
       rw [← ENNReal.ofReal_coe_nnreal, ← ENNReal.ofReal_mul (NNReal.coe_nonneg _), ← div_div,
         mul_div_cancel₀ _ (NNReal.coe_pos.2 hCpos).ne.symm]
     _ ≤ ENNReal.ofReal ε := by

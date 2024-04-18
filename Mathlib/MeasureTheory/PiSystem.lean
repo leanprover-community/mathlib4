@@ -511,7 +511,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
 
 theorem generateFrom_piiUnionInter_measurableSet (m : ι → MeasurableSpace α) (S : Set ι) :
     generateFrom (piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) = ⨆ i ∈ S, m i := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · rw [← @generateFrom_measurableSet α (⨆ i ∈ S, m i)]
     exact generateFrom_mono (measurableSet_iSup_of_mem_piiUnionInter m S)
   · refine' iSup₂_le fun i hi => _

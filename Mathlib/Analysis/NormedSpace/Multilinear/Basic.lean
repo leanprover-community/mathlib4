@@ -890,7 +890,7 @@ theorem norm_mkPiAlgebraFin_le_of_pos (hn : 0 < n) :
 #align continuous_multilinear_map.norm_mk_pi_algebra_fin_le_of_pos ContinuousMultilinearMap.norm_mkPiAlgebraFin_le_of_pos
 
 theorem norm_mkPiAlgebraFin_zero : ‖ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A‖ = ‖(1 : A)‖ := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · refine opNorm_le_bound _ (norm_nonneg (1 : A)) ?_
     simp
   · convert ratio_le_opNorm (ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 0 A) fun _ => (1 : A)
@@ -914,7 +914,7 @@ end
 @[simp]
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
     rw [mul_right_comm]
     gcongr

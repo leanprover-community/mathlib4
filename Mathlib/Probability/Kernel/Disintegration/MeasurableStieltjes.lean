@@ -192,7 +192,7 @@ lemma iInf_rat_gt_defaultRatCDF (t : ℚ) :
       rwa [Subtype.coe_mk]
     · split_ifs
       exacts [le_rfl, zero_le_one]
-  · refine le_antisymm ?_ ?_
+  · apply le_antisymm
     · refine (ciInf_le h_bdd ⟨t + 1, lt_add_one t⟩).trans ?_
       split_ifs
       exacts [zero_le_one, le_rfl]

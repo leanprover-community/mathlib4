@@ -153,7 +153,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
     inner_vsub_vsub_of_dist_eq_of_dist_eq (hp₁c₁.trans hpc₁.symm) (hp₁c₂.trans hpc₂.symm)
   let b : Fin 2 → V := ![c₂ -ᵥ c₁, p₂ -ᵥ p₁]
   have hb : LinearIndependent ℝ b := by
-    refine' linearIndependent_of_ne_zero_of_inner_eq_zero _ _
+    apply linearIndependent_of_ne_zero_of_inner_eq_zero
     · intro i
       fin_cases i <;> simp [b, hc.symm, hp.symm]
     · intro i j hij
@@ -162,7 +162,7 @@ theorem eq_of_dist_eq_of_dist_eq_of_mem_of_finrank_eq_two {s : AffineSubspace �
       · rw [real_inner_comm]
         exact ho
   have hbs : Submodule.span ℝ (Set.range b) = s.direction := by
-    refine' eq_of_le_of_finrank_eq _ _
+    apply eq_of_le_of_finrank_eq
     · rw [Submodule.span_le, Set.range_subset_iff]
       intro i
       fin_cases i

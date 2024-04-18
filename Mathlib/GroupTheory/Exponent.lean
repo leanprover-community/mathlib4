@@ -639,7 +639,7 @@ constituent monoids. -/
 exponents of the constituent additive monoids."]
 theorem Monoid.exponent_pi {ι : Type*} [Fintype ι] {M : ι → Type*} [∀ i, Monoid (M i)] :
     exponent ((i : ι) → M i) = lcm univ (exponent <| M ·) := by
-  refine dvd_antisymm ?_ ?_
+  apply dvd_antisymm
   · refine exponent_dvd_of_forall_pow_eq_one fun m ↦ ?_
     ext i
     rw [Pi.pow_apply, Pi.one_apply, ← orderOf_dvd_iff_pow_eq_one]

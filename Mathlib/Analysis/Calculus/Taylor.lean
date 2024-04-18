@@ -271,7 +271,7 @@ theorem taylor_mean_remainder_lagrange {f : ℝ → ℝ} {x x₀ : ℝ} {n : ℕ
     exact (continuous_const.sub continuous_id').pow _ -- Porting note: was `continuity`
   have xy_ne : ∀ y : ℝ, y ∈ Ioo x₀ x → (x - y) ^ n ≠ 0 := by
     intro y hy
-    refine' pow_ne_zero _ _
+    apply pow_ne_zero
     rw [mem_Ioo] at hy
     rw [sub_ne_zero]
     exact hy.2.ne'

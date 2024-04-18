@@ -362,7 +362,7 @@ theorem hausdorffEdist_le_ediam (hs : s.Nonempty) (ht : t.Nonempty) :
     hausdorffEdist s t ≤ diam (s ∪ t) := by
   rcases hs with ⟨x, xs⟩
   rcases ht with ⟨y, yt⟩
-  refine' hausdorffEdist_le_of_mem_edist _ _
+  apply hausdorffEdist_le_of_mem_edist
   · intro z hz
     exact ⟨y, yt, edist_le_diam_of_mem (subset_union_left _ _ hz) (subset_union_right _ _ yt)⟩
   · intro z hz
@@ -407,7 +407,7 @@ theorem hausdorffEdist_self_closure : hausdorffEdist s (closure s) = 0 := by
 /-- Replacing a set by its closure does not change the Hausdorff edistance. -/
 @[simp]
 theorem hausdorffEdist_closure₁ : hausdorffEdist (closure s) t = hausdorffEdist s t := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · calc
       _ ≤ hausdorffEdist (closure s) s + hausdorffEdist s t := hausdorffEdist_triangle
       _ = hausdorffEdist s t := by simp [hausdorffEdist_comm]

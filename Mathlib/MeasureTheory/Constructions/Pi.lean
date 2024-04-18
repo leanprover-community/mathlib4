@@ -309,7 +309,7 @@ instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, Measur
 
 theorem pi_pi_aux [∀ i, SigmaFinite (μ i)] (s : ∀ i, Set (α i)) (hs : ∀ i, MeasurableSet (s i)) :
     Measure.pi μ (pi univ s) = ∏ i, μ i (s i) := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · rw [Measure.pi, toMeasure_apply _ _ (MeasurableSet.pi countable_univ fun i _ => hs i)]
     apply OuterMeasure.pi_pi_le
   · haveI : Encodable ι := Fintype.toEncodable ι

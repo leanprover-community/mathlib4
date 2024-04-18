@@ -291,7 +291,7 @@ theorem coe_nnnorm_toLp {f : α → E} (hf : Memℒp f p μ) : (‖hf.toLp f‖�
 
 theorem dist_def (f g : Lp E p μ) : dist f g = (snorm (⇑f - ⇑g) p μ).toReal := by
   simp_rw [dist, norm_def]
-  refine congr_arg _ ?_
+  apply congr_arg
   apply snorm_congr_ae (coeFn_sub _ _)
 #align measure_theory.Lp.dist_def MeasureTheory.Lp.dist_def
 

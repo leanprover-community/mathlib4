@@ -97,7 +97,7 @@ of `∑ j, Π i, ‖mⱼ i‖`.
 -/
 noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
   refine Seminorm.ofSMulLE (fun x ↦ iInf (fun (p : lifts x) ↦ projectiveSeminormAux p.1)) ?_ ?_ ?_
-  · refine le_antisymm ?_ ?_
+  · apply le_antisymm
     · refine ciInf_le_of_le (bddBelow_projectiveSemiNormAux (0 : ⨂[𝕜] i, E i)) ⟨0, lifts_zero⟩ ?_
       simp only [projectiveSeminormAux, Function.comp_apply]
       rw [List.sum_eq_zero]

@@ -2003,7 +2003,7 @@ variable {ι' : Sort*} [CompleteLattice α]
 that works for `ι : Sort*`. -/
 theorem iSup_eq_iSup_finset (s : ι → α) : ⨆ i, s i = ⨆ t : Finset ι, ⨆ i ∈ t, s i := by
   classical
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · exact iSup_le fun b => le_iSup_of_le {b} <| le_iSup_of_le b <| le_iSup_of_le (by simp) <| le_rfl
   · exact iSup_le fun t => iSup_le fun b => iSup_le fun _ => le_iSup _ _
 #align supr_eq_supr_finset iSup_eq_iSup_finset

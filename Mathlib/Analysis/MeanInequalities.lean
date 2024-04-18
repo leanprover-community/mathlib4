@@ -337,7 +337,7 @@ private theorem inner_le_Lp_mul_Lp_of_norm_le_one (f g : ι → ℝ≥0) {p q : 
     _ = (∑ i in s, f i ^ p) / Real.toNNReal p + (∑ i in s, g i ^ q) / Real.toNNReal q := by
       rw [sum_add_distrib, sum_div, sum_div]
     _ ≤ 1 / Real.toNNReal p + 1 / Real.toNNReal q := by
-      refine' add_le_add _ _
+      apply add_le_add
       · rwa [div_le_iff hp_ne_zero, div_mul_cancel₀ _ hp_ne_zero]
       · rwa [div_le_iff hq_ne_zero, div_mul_cancel₀ _ hq_ne_zero]
     _ = 1 := by simp_rw [one_div, hpq.toNNReal.inv_add_inv_conj]
@@ -372,7 +372,7 @@ theorem inner_le_Lp_mul_Lq (f g : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExp
   suffices (∑ i in s, f' i * g' i) ≤ 1 by
     simp_rw [f', g', div_mul_div_comm, ← sum_div] at this
     rwa [div_le_iff, one_mul] at this
-    refine' mul_ne_zero _ _
+    apply mul_ne_zero
     · rw [Ne, rpow_eq_zero_iff, not_and_or]
       exact Or.inl hF_zero
     · rw [Ne, rpow_eq_zero_iff, not_and_or]

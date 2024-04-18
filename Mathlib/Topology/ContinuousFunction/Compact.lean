@@ -532,7 +532,7 @@ variable [TopologicalSpace α] [NormedRing β] [StarRing β]
 
 instance [CompactSpace α] [CstarRing β] : CstarRing C(α, β) where
   norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
+    apply le_antisymm
     · rw [← sq, ContinuousMap.norm_le _ (sq_nonneg _)]
       intro x
       simp only [ContinuousMap.coe_mul, coe_star, Pi.mul_apply, Pi.star_apply,

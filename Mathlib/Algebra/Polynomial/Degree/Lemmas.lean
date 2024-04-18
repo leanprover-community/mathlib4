@@ -233,7 +233,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
     · rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
         Nat.cast_withBot, Finset.coe_sup' hs, ←
         Finset.sup'_eq_sup hs]
-      refine' le_antisymm _ _
+      apply le_antisymm
       · rw [Finset.sup'_le_iff]
         intro b hb
         by_cases hb' : f b = 0

@@ -572,7 +572,7 @@ protected theorem IsTopologicalBasis.iInf {β : Type*} {ι : Type*} {t : ι → 
     IsTopologicalBasis (t := ⨅ i, t i)
       { S | ∃ (U : ι → Set β) (F : Finset ι), (∀ i, i ∈ F → U i ∈ T i) ∧ S = ⋂ i ∈ F, U i } := by
   let _ := ⨅ i, t i
-  refine isTopologicalBasis_of_isOpen_of_nhds ?_ ?_
+  apply isTopologicalBasis_of_isOpen_of_nhds
   · rintro - ⟨U, F, hU, rfl⟩
     refine isOpen_biInter_finset fun i hi ↦
       (h_basis i).isOpen (t := t i) (hU i hi) |>.mono (iInf_le _ _)

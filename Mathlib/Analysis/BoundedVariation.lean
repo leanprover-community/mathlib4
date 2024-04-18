@@ -477,7 +477,7 @@ theorem union (f : α → E) {s t : Set α} {x : α} (hs : IsGreatest s x) (ht :
           ∑ j in Finset.Ico N m, edist (f (v (j + 1))) (f (v j)) :=
       by rw [Finset.range_eq_Ico, Finset.sum_Ico_consecutive _ (zero_le _) hN.le]
     _ ≤ eVariationOn f s + eVariationOn f t := by
-      refine' add_le_add _ _
+      apply add_le_add
       · apply sum_le_of_monotoneOn_Icc _ (hv.monotoneOn _) fun i hi => ?_
         rcases vst i with (h | h); · exact h
         have : v i = x := by

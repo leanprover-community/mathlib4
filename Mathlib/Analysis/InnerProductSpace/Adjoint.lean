@@ -97,7 +97,7 @@ theorem adjointAux_adjointAux (A : E →L[𝕜] F) : adjointAux (adjointAux A) =
 
 @[simp]
 theorem adjointAux_norm (A : E →L[𝕜] F) : ‖adjointAux A‖ = ‖A‖ := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun x => _
     rw [adjointAux_apply, LinearIsometryEquiv.norm_map]
     exact toSesqForm_apply_norm_le
@@ -222,7 +222,7 @@ theorem isSelfAdjoint_iff' {A : E →L[𝕜] E} : IsSelfAdjoint A ↔ Continuous
 
 theorem norm_adjoint_comp_self (A : E →L[𝕜] F) :
     ‖ContinuousLinearMap.adjoint A ∘L A‖ = ‖A‖ * ‖A‖ := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · calc
       ‖A† ∘L A‖ ≤ ‖A†‖ * ‖A‖ := opNorm_comp_le _ _
       _ = ‖A‖ * ‖A‖ := by rw [LinearIsometryEquiv.norm_map]

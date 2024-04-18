@@ -834,7 +834,7 @@ structure inherited from `PiLp 2 (fun _ : ℕ ↦ ℝ)`. Let `K` be the subspace
 of all elements equal to zero. Then `Kᗮ = ⊥`, `Kᗮᗮ = ⊤`.  -/
 theorem Submodule.orthogonal_orthogonal_eq_closure [CompleteSpace E] :
     Kᗮᗮ = K.topologicalClosure := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · convert Submodule.orthogonal_orthogonal_monotone K.le_topologicalClosure using 1
     rw [K.topologicalClosure.orthogonal_orthogonal]
   · exact K.topologicalClosure_minimal K.le_orthogonal_orthogonal Kᗮ.isClosed_orthogonal

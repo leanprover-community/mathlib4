@@ -454,7 +454,7 @@ variable [MeasurableSpace G] [R1Space G] [BorelSpace G]
   on compact sets. -/
 theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
     (K : TopologicalSpace.Compacts G) : μ.measure ↑K = μ K := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · apply ENNReal.le_of_forall_pos_le_add
     intro ε εpos _
     obtain ⟨K', K'_hyp⟩ := contentRegular_exists_compact μ H K (ne_bot_of_gt εpos)

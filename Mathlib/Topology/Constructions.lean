@@ -1498,7 +1498,7 @@ theorem pi_generateFrom_eq {π : ι → Type*} {g : ∀ a, Set (Set (π a))} :
     (@Pi.topologicalSpace ι π fun a => generateFrom (g a)) =
       generateFrom
         { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι), (∀ a ∈ i, s a ∈ g a) ∧ t = pi (↑i) s } := by
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · apply le_generateFrom
     rintro _ ⟨s, i, hi, rfl⟩
     letI := fun a => generateFrom (g a)

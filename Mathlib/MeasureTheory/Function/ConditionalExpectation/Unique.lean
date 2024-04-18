@@ -197,7 +197,7 @@ theorem integral_norm_le_of_forall_fin_meas_integral_eq (hm : m ≤ m0) {f g : �
     hg.measurableSet_le (@stronglyMeasurable_const _ _ m _ _)
   have h_meas_nonpos_f : MeasurableSet {x | f x ≤ 0} :=
     hf.measurableSet_le stronglyMeasurable_const
-  refine' sub_le_sub _ _
+  apply sub_le_sub
   · rw [Measure.restrict_restrict (hm _ h_meas_nonneg_g), Measure.restrict_restrict h_meas_nonneg_f,
       hgf _ (@MeasurableSet.inter α m _ _ h_meas_nonneg_g hs)
         ((measure_mono (Set.inter_subset_right _ _)).trans_lt (lt_top_iff_ne_top.mpr hμs)),

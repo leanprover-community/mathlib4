@@ -150,7 +150,7 @@ theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
 theorem borel_eq_generateFrom_Iic :
     borel α = MeasurableSpace.generateFrom (range Iic) := by
   rw [borel_eq_generateFrom_Ioi]
-  refine' le_antisymm _ _
+  apply le_antisymm
   · refine' MeasurableSpace.generateFrom_le fun t ht => _
     obtain ⟨u, rfl⟩ := ht
     rw [← compl_Iic]
@@ -1127,7 +1127,7 @@ theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
-  refine' sup_le _ _
+  apply sup_le
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 #align prod_le_borel_prod prod_le_borel_prod

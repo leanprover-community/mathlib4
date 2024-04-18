@@ -139,7 +139,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
   | succ i IH =>
     rw [coeff_minpolyDiv, add_sub_assoc, pow_succ, ← sub_mul, Algebra.algebraMap_eq_smul_one]
-    refine add_mem ?_ ?_
+    apply add_mem
     · apply Submodule.smul_mem
       apply Submodule.subset_span
       exact ⟨0, Nat.zero_lt_succ _, pow_zero _⟩

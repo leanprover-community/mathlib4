@@ -238,7 +238,7 @@ theorem toIcoDiv_add_zsmul (a b : α) (m : ℤ) : toIcoDiv hp a (b + m • p) = 
 @[simp]
 theorem toIcoDiv_add_zsmul' (a b : α) (m : ℤ) :
     toIcoDiv hp (a + m • p) b = toIcoDiv hp a b - m := by
-  refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico _ _
+  apply toIcoDiv_eq_of_sub_zsmul_mem_Ico
   rw [sub_smul, ← sub_add, add_right_comm]
   simpa using sub_toIcoDiv_zsmul_mem_Ico hp a b
 #align to_Ico_div_add_zsmul' toIcoDiv_add_zsmul'
@@ -252,7 +252,7 @@ theorem toIocDiv_add_zsmul (a b : α) (m : ℤ) : toIocDiv hp a (b + m • p) = 
 @[simp]
 theorem toIocDiv_add_zsmul' (a b : α) (m : ℤ) :
     toIocDiv hp (a + m • p) b = toIocDiv hp a b - m := by
-  refine' toIocDiv_eq_of_sub_zsmul_mem_Ioc _ _
+  apply toIocDiv_eq_of_sub_zsmul_mem_Ioc
   rw [sub_smul, ← sub_add, add_right_comm]
   simpa using sub_toIocDiv_zsmul_mem_Ioc hp a b
 #align to_Ioc_div_add_zsmul' toIocDiv_add_zsmul'

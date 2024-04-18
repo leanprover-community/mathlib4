@@ -522,7 +522,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     exact Subtype.coe_injective.comp (Basis.injective _)
   rw [finrank_eq_card_chooseBasisIndex]
     -- We prove that `finrank ℤ L ≤ finrank K E` and `finrank K E ≤ finrank ℤ L`
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · -- To prove that `finrank ℤ L ≤ finrank K E`, we proceed by contradiction and prove that, in
     -- this case, there is a ℤ-relation between the vectors of `b`
     obtain ⟨t, ⟨ht_inc, ⟨ht_span, ht_lin⟩⟩⟩ := exists_linearIndependent K (Set.range b)
@@ -560,7 +560,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
       refine ⟨fun _ ↦ mem_closedBall_zero_iff.mpr (Zspan.norm_fract_le e _), fun _ => ?_⟩
       · change _ ∈ AddSubgroup.toIntSubmodule L
         rw [← h_spanL]
-        refine sub_mem ?_ ?_
+        apply sub_mem
         · exact zsmul_mem (subset_span (Set.diff_subset _ _ hv)) _
         · exact span_mono (by simp [e, ht_inc]) (coe_mem _)
     have h_finite : Set.Finite (Metric.closedBall 0 (∑ i, ‖e i‖) ∩ (L : Set E)) :=

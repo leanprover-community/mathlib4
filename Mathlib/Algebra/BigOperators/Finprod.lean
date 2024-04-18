@@ -614,7 +614,7 @@ theorem finprod_mul_distrib (hf : (mulSupport f).Finite) (hg : (mulSupport g).Fi
     rw [finprod_eq_prod_of_mulSupport_toFinset_subset _ hf (Finset.subset_union_left _ _),
       finprod_eq_prod_of_mulSupport_toFinset_subset _ hg (Finset.subset_union_right _ _), ←
       Finset.prod_mul_distrib]
-    refine' finprod_eq_prod_of_mulSupport_subset _ _
+    apply finprod_eq_prod_of_mulSupport_subset
     simp only [Finset.coe_union, Finite.coe_toFinset, mulSupport_subset_iff,
       mem_union, mem_mulSupport]
     intro x

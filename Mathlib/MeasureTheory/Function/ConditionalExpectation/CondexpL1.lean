@@ -507,7 +507,7 @@ theorem condexpL1CLM_lpMeas (f : lpMeas F' ℝ m 1 μ) :
     rw [LinearIsometryEquiv.map_add]
     push_cast
     rw [map_add, hf_eq, hg_eq]
-  · refine' isClosed_eq _ _
+  · apply isClosed_eq
     · refine' (condexpL1CLM F' hm μ).continuous.comp (continuous_induced_dom.comp _)
       exact LinearIsometryEquiv.continuous _
     · refine' continuous_induced_dom.comp _

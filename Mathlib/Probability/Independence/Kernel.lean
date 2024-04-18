@@ -419,7 +419,7 @@ theorem IndepSets.indep {m1 m2 m : MeasurableSpace Ω} {κ : kernel α Ω} {μ :
       Filter.eventually_true]
   · intros t ht_mem_p1
     have ht1 : MeasurableSet[m] t := by
-      refine h1 _ ?_
+      apply h1
       rw [hpm1]
       exact measurableSet_generateFrom ht_mem_p1
     exact IndepSets.indep_aux h2 hp2 hpm2 hyp ht_mem_p1 ht1 ht2

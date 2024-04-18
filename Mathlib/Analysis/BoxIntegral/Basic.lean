@@ -751,7 +751,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
   rw [← g.sum_partition_boxes le_rfl hπp, mem_closedBall, integralSum,
     ← sum_filter_add_sum_filter_not π.boxes fun J => π.tag J ∈ s,
     ← sum_filter_add_sum_filter_not π.boxes fun J => π.tag J ∈ s, ← add_halves ε]
-  refine' dist_add_add_le_of_le _ _
+  apply dist_add_add_le_of_le
   · rcases s.eq_empty_or_nonempty with (rfl | hsne); · simp [ε0'.le]
     /- For the boxes such that `π.tag J ∈ s`, we use the fact that at most `2 ^ #ι` boxes have the
         same tag. -/

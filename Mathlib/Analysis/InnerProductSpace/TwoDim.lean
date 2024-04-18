@@ -211,7 +211,7 @@ def rightAngleRotationAux₂ : E →ₗᵢ[ℝ] E :=
   { o.rightAngleRotationAux₁ with
     norm_map' := fun x => by
       dsimp
-      refine' le_antisymm _ _
+      apply le_antisymm
       · cases' eq_or_lt_of_le (norm_nonneg (o.rightAngleRotationAux₁ x)) with h h
         · rw [← h]
           positivity

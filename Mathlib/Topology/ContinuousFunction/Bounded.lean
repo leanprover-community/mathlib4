@@ -1478,7 +1478,7 @@ variable [CstarRing β]
 
 instance instCstarRing : CstarRing (α →ᵇ β) where
   norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
+    apply le_antisymm
     · rw [← sq, norm_le (sq_nonneg _)]
       dsimp [star_apply]
       intro x

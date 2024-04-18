@@ -657,7 +657,7 @@ theorem le_mul_withDensity {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht
 
 theorem withDensity_limRatioMeas_eq : μ.withDensity (v.limRatioMeas hρ) = ρ := by
   ext1 s hs
-  refine' le_antisymm _ _
+  apply le_antisymm
   · have : Tendsto (fun t : ℝ≥0 =>
         ((t : ℝ≥0∞) ^ 2 * ρ s : ℝ≥0∞)) (𝓝[>] 1) (𝓝 ((1 : ℝ≥0∞) ^ 2 * ρ s)) := by
       refine' ENNReal.Tendsto.mul _ _ tendsto_const_nhds _

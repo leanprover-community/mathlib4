@@ -466,7 +466,7 @@ theorem rootMultiplicity_eq_natTrailingDegree' {p : R[X]} :
     p.rootMultiplicity 0 = p.natTrailingDegree := by
   by_cases h : p = 0
   · simp only [h, rootMultiplicity_zero, natTrailingDegree_zero]
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · rw [rootMultiplicity_le_iff h, map_zero, sub_zero, X_pow_dvd_iff, not_forall]
     exact ⟨p.natTrailingDegree,
       fun h' ↦ trailingCoeff_nonzero_iff_nonzero.2 h <| h' <| Nat.lt.base _⟩
@@ -509,7 +509,7 @@ end nonZeroDivisors
 theorem rootMultiplicity_mul_X_sub_C_pow {p : R[X]} {a : R} {n : ℕ} (h : p ≠ 0) :
     (p * (X - C a) ^ n).rootMultiplicity a = p.rootMultiplicity a + n := by
   have h2 := monic_X_sub_C a |>.pow n |>.mul_left_ne_zero h
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · rw [rootMultiplicity_le_iff h2, add_assoc, add_comm n, ← add_assoc, pow_add,
       dvd_cancel_right_mem_nonZeroDivisors (monic_X_sub_C a |>.pow n |>.mem_nonZeroDivisors)]
     exact pow_rootMultiplicity_not_dvd h a

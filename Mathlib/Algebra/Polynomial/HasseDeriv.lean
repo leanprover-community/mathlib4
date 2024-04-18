@@ -213,7 +213,7 @@ theorem natDegree_hasseDeriv [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     natDegree (hasseDeriv n p) = natDegree p - n := by
   cases' lt_or_le p.natDegree n with hn hn
   · simpa [hasseDeriv_eq_zero_of_lt_natDegree, hn] using (tsub_eq_zero_of_le hn.le).symm
-  · refine' map_natDegree_eq_sub _ _
+  · apply map_natDegree_eq_sub
     · exact fun h => hasseDeriv_eq_zero_of_lt_natDegree _ _
     · classical
         simp only [ite_eq_right_iff, Ne, natDegree_monomial, hasseDeriv_monomial]

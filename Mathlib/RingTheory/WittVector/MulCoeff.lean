@@ -75,7 +75,7 @@ theorem wittPolyProdRemainder_vars (n : ℕ) :
   rw [biUnion_subset]
   intro x hx
   apply Subset.trans (vars_mul _ _)
-  refine' union_subset _ _
+  apply union_subset
   · apply Subset.trans (vars_pow _ _)
     have : (p : 𝕄) = C (p : ℤ) := by simp only [Int.cast_natCast, eq_intCast]
     rw [this, vars_C]
@@ -199,7 +199,7 @@ theorem mul_polyOfInterest_vars (n : ℕ) :
     ((p : 𝕄) ^ (n + 1) * polyOfInterest p n).vars ⊆ univ ×ˢ range (n + 1) := by
   rw [mul_polyOfInterest_aux5]
   apply Subset.trans (vars_sub_subset _)
-  refine' union_subset _ _
+  apply union_subset
   · apply remainder_vars
   · apply wittPolyProdRemainder_vars
 #align witt_vector.mul_poly_of_interest_vars WittVector.mul_polyOfInterest_vars

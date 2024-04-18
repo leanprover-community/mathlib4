@@ -139,7 +139,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             tendsto_pow_atTop_nhds_zero_of_lt_one (le_of_lt <| half_pos <| zero_lt_one)
               (half_lt_self zero_lt_one)
     have hd : Tendsto (fun m => d (⋂ n, f m n)) atTop (𝓝 (d (⋃ m, ⋂ n, f m n))) := by
-      refine' d_Union _ _
+      apply d_Union
       exact fun n m hnm =>
         subset_iInter fun i => Subset.trans (iInter_subset (f n) i) <| f_subset_f hnm <| le_rfl
     refine' le_of_tendsto_of_tendsto' hγ hd fun m => _

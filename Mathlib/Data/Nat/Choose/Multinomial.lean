@@ -288,7 +288,7 @@ theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {
   rw [← mem_coe] at hx
   refine congrArg₂ _ ?_ ?_
   · rw [card_coe, count_coe_fill_self_of_not_mem hx]
-  · refine congrArg _ ?_
+  · apply congrArg
     rw [coe_fill, coe_replicate, Multiset.filter_add]
     rw [Multiset.filter_eq_self.mpr]
     · rw [add_right_eq_self]

@@ -212,7 +212,7 @@ theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
   rw [coe_eval₂Hom, eval₂_sum]
   refine' Finset.sum_eq_zero fun n _ => _
   simp only [eval₂_monomial, Function.comp_apply, RingHom.coe_comp]
-  refine' mul_eq_zero_of_left _ _
+  apply mul_eq_zero_of_left
   suffices coeff n a ∈ I by
     rw [← @Ideal.mk_ker R _ I, RingHom.mem_ker] at this
     simp only [this, C_0]

@@ -268,7 +268,7 @@ theorem X_pow_order_dvd (h : (order φ).Dom) : X ^ (order φ).get h ∣ φ := by
   split_ifs with hn
   · simp [tsub_add_cancel_of_le hn]
   · simp only [Finset.sum_empty]
-    refine' coeff_of_lt_order _ _
+    apply coeff_of_lt_order
     simpa [PartENat.coe_lt_iff] using fun _ => hn
 set_option linter.uppercaseLean3 false in
 #align power_series.X_pow_order_dvd PowerSeries.X_pow_order_dvd

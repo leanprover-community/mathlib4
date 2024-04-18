@@ -143,7 +143,7 @@ theorem odd_sq_dvd_geom_sum₂_sub (hp : Odd p) :
           Nat.mul_div_assoc p (even_iff_two_dvd.mp (Nat.Odd.sub_odd hp odd_one))]
       ring_nf
       rw [mul_assoc, mul_assoc]
-      refine' mul_eq_zero_of_left _ _
+      apply mul_eq_zero_of_left
       refine' Ideal.Quotient.eq_zero_iff_mem.mpr _
       simp [mem_span_singleton]
 #align odd_sq_dvd_geom_sum₂_sub odd_sq_dvd_geom_sum₂_sub

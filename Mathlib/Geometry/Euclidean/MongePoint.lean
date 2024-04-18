@@ -416,7 +416,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
     rw [vectorSpan_eq_span_vsub_set_left_ne ℝ (Set.mem_insert _ _),
       Set.insert_diff_of_mem _ (Set.mem_singleton _),
       Set.diff_singleton_eq_self fun h => hne (Set.mem_singleton_iff.1 h), Set.image_singleton]
-    refine' eq_of_le_of_finrank_eq _ _
+    apply eq_of_le_of_finrank_eq
     · rw [Submodule.span_le]
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]

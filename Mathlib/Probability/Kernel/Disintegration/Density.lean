@@ -496,13 +496,13 @@ lemma density_mono_set (hκν : fst κ ≤ ν) (a : α) (x : γ) {s s' : Set β}
 
 lemma density_nonneg (hκν : fst κ ≤ ν) (a : α) (x : γ) (s : Set β) :
     0 ≤ density κ ν a x s := by
-  refine le_limsup_of_frequently_le ?_ ?_
+  apply le_limsup_of_frequently_le
   · exact frequently_of_forall (fun n ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact isBoundedUnder_of ⟨1, fun n ↦ densityProcess_le_one hκν _ _ _ _⟩
 
 lemma density_le_one (hκν : fst κ ≤ ν) (a : α) (x : γ) (s : Set β) :
     density κ ν a x s ≤ 1 := by
-  refine limsup_le_of_le ?_ ?_
+  apply limsup_le_of_le
   · exact isCoboundedUnder_le_of_le atTop (fun i ↦ densityProcess_nonneg _ _ _ _ _ _)
   · exact eventually_of_forall (fun n ↦ densityProcess_le_one hκν _ _ _ _)
 

@@ -229,7 +229,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
       rw [insert_erase]
       apply max'_mem
     rw [this, prod_insert (not_mem_erase _ _)]
-    refine' congr_arg _ _
+    apply congr_arg
     let b' := fun i : { a // b a ≠ k } => b ↑i
     have h' : BlockTriangular (M.toSquareBlockProp fun i => b i ≠ k) b' := hM.submatrix
     have hb' : image b' univ = (image b univ).erase k := by

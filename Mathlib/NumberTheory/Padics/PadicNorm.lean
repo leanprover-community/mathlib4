@@ -166,7 +166,7 @@ protected theorem of_int (z : ℤ) : padicNorm p z ≤ 1 :=
   else by
     unfold padicNorm
     rw [if_neg _]
-    · refine' zpow_le_one_of_nonpos _ _
+    · apply zpow_le_one_of_nonpos
       · exact mod_cast le_of_lt hp.1.one_lt
       · rw [padicValRat.of_int, neg_nonpos]
         norm_cast

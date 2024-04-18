@@ -547,7 +547,7 @@ theorem dimH_of_mem_nhds {x : E} {s : Set E} (h : s ∈ 𝓝 x) : dimH s = finra
   have e : E ≃L[ℝ] Fin (finrank ℝ E) → ℝ :=
     ContinuousLinearEquiv.ofFinrankEq (FiniteDimensional.finrank_fin_fun ℝ).symm
   rw [← e.dimH_image]
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · exact (dimH_mono (subset_univ _)).trans_eq (dimH_univ_pi_fin _)
   · have : e '' s ∈ 𝓝 (e x) := by rw [← e.map_nhds_eq]; exact image_mem_map h
     rcases Metric.nhds_basis_ball.mem_iff.1 this with ⟨r, hr0, hr⟩

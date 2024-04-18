@@ -332,7 +332,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
       calc
         _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
-          refine prod_le_prod ?_ ?_
+          apply prod_le_prod
           · exact fun _ _ => pow_nonneg (by positivity) _
           · exact fun w _ => pow_le_pow_left (by positivity) (le_of_lt (h_yle w)) (mult w)
         _ ≤ (B : ℝ) := by
@@ -442,7 +442,7 @@ theorem unitLattice_span_eq_top :
   simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
-  refine add_pos_of_nonneg_of_pos ?_ ?_
+  apply add_pos_of_nonneg_of_pos
   · rw [sub_nonneg]
     exact le_abs_self _
   · rw [sum_logEmbedding_component (exists_unit K w).choose]

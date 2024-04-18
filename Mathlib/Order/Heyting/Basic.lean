@@ -902,7 +902,7 @@ theorem compl_compl_inf_distrib (a b : α) : (a ⊓ b)ᶜᶜ = aᶜᶜ ⊓ bᶜ�
 #align compl_compl_inf_distrib compl_compl_inf_distrib
 
 theorem compl_compl_himp_distrib (a b : α) : (a ⇨ b)ᶜᶜ = aᶜᶜ ⇨ bᶜᶜ := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · rw [le_himp_iff, ← compl_compl_inf_distrib]
     exact compl_anti (compl_anti himp_inf_le)
   · refine' le_compl_comm.1 ((compl_anti compl_sup_le_himp).trans _)
@@ -1082,7 +1082,7 @@ theorem hnot_hnot_sup_distrib (a b : α) : ￢￢(a ⊔ b) = ￢￢a ⊔ ￢￢b
 #align hnot_hnot_sup_distrib hnot_hnot_sup_distrib
 
 theorem hnot_hnot_sdiff_distrib (a b : α) : ￢￢(a \ b) = ￢￢a \ ￢￢b := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · refine' hnot_le_comm.1 ((hnot_anti sdiff_le_inf_hnot).trans' _)
     rw [hnot_inf_distrib, hnot_le_iff_codisjoint_right, codisjoint_left_comm, ←
       hnot_le_iff_codisjoint_right]

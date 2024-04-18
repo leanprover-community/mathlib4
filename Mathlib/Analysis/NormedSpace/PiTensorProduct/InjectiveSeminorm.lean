@@ -206,7 +206,7 @@ theorem norm_eval_le_injectiveSeminorm (f : ContinuousMultilinearMap 𝕜 E F) (
 theorem injectiveSeminorm_le_projectiveSeminorm :
     injectiveSeminorm (𝕜 := 𝕜) (E := E) ≤ projectiveSeminorm := by
   rw [injectiveSeminorm]
-  refine csSup_le ?_ ?_
+  apply csSup_le
   · existsi 0
     simp only [Set.mem_setOf_eq]
     existsi PUnit, inferInstance, inferInstance
@@ -270,7 +270,7 @@ noncomputable def liftIsometry  : ContinuousMultilinearMap 𝕜 E F ≃ₗᵢ[�
   { liftEquiv 𝕜 E F with
     norm_map' := by
       intro f
-      refine le_antisymm ?_ ?_
+      apply le_antisymm
       · simp only [liftEquiv, lift_symm, LinearEquiv.coe_mk]
         exact LinearMap.mkContinuous_norm_le _ (norm_nonneg f) _
       · conv_lhs => rw [← (liftEquiv 𝕜 E F).left_inv f]

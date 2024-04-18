@@ -418,7 +418,7 @@ variable [CancelCommMonoid α] (s : Finset α) (a : α)
 @[to_additive (attr := simp)]
 theorem mulRothNumber_map_mul_left :
     mulRothNumber (s.map <| mulLeftEmbedding a) = mulRothNumber s := by
-  refine' le_antisymm _ _
+  apply le_antisymm
   · obtain ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s.map <| mulLeftEmbedding a)
     rw [subset_map_iff] at hus
     obtain ⟨u, hus, rfl⟩ := hus

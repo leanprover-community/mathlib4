@@ -237,7 +237,7 @@ lemma det_ne_zero_of_sum_row_pos [DecidableEq n] {S : Type*} [LinearOrderedCommR
     {A : Matrix n n S} (h1 : Pairwise fun i j => A i j < 0) (h2 : ∀ i, 0 < ∑ j, A i j) :
     A.det ≠ 0 := by
   rw [← Matrix.det_transpose]
-  refine det_ne_zero_of_sum_col_pos ?_ ?_
+  apply det_ne_zero_of_sum_col_pos
   · simp_rw [Matrix.transpose_apply]
     exact fun i j h => h1 h.symm
   · simp_rw [Matrix.transpose_apply]

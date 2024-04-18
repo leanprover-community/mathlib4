@@ -282,7 +282,7 @@ noncomputable abbrev convexBodySumFun (x : E K) : ℝ := ∑ w, ‖x.1 w‖ + 2 
 
 theorem convexBodySumFun_nonneg (x : E K) :
     0 ≤ convexBodySumFun x := by
-  refine add_nonneg ?_ ?_
+  apply add_nonneg
   · exact Finset.sum_nonneg (fun _ _ => norm_nonneg _)
   · exact mul_nonneg zero_le_two (Finset.sum_nonneg (fun _ _ => norm_nonneg _))
 
@@ -321,13 +321,13 @@ theorem convexBodySumFun_eq_zero_iff (x : E K) :
       Prod.snd_zero, mul_zero, add_zero]
 
 theorem norm_le_convexBodySumFun (x : E K) : ‖x‖ ≤ convexBodySumFun x := by
-  refine max_le ?_ ?_
+  apply max_le
   · refine (pi_norm_le_iff_of_nonneg (convexBodySumFun_nonneg x)).mpr (fun w => ?_)
-    refine le_add_of_le_of_nonneg ?_ ?_
+    apply le_add_of_le_of_nonneg
     · exact Finset.single_le_sum (fun z _ => norm_nonneg (x.1 z)) (Finset.mem_univ w)
     · exact mul_nonneg zero_le_two <| Finset.sum_nonneg (fun w _ => norm_nonneg (x.2 w))
   · refine (pi_norm_le_iff_of_nonneg (convexBodySumFun_nonneg x)).mpr (fun w => ?_)
-    refine le_add_of_nonneg_of_le ?_ ?_
+    apply le_add_of_nonneg_of_le
     · exact Finset.sum_nonneg (fun w _ => norm_nonneg (x.1 w))
     · rw [Finset.mul_sum]
       refine le_trans (by linarith [norm_nonneg (x.2 w)] : ‖x.2 w‖ ≤ 2 * ‖x.2 w‖) ?_
@@ -587,7 +587,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
       dsimp only at h_le₀
       rw [h_eq, ← norm_embedding_eq, Real.lt_sqrt (norm_nonneg _), ← Complex.re_add_im
         (embedding w₀ a), Complex.norm_eq_abs, Complex.abs_add_mul_I, Real.sq_sqrt (by positivity)]
-      refine add_lt_add ?_ ?_
+      apply add_lt_add
       · rw [← sq_abs, sq_lt_one_iff (abs_nonneg _)]
         exact h_le₀.1
       · rw [sq_lt_sq, NNReal.abs_eq, ← NNReal.sq_sqrt B]

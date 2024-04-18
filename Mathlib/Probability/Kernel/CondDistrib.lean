@@ -133,7 +133,7 @@ section Integrability
 
 theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableSet s) :
     Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ := by
-  refine' integrable_toReal_of_lintegral_ne_top _ _
+  apply integrable_toReal_of_lintegral_ne_top
   · exact Measurable.comp_aemeasurable (kernel.measurable_coe _ hs) hX
   · refine' ne_of_lt _
     calc

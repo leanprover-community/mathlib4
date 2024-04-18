@@ -507,7 +507,7 @@ theorem condexpL2_indicator_nonneg (hm : m ≤ m0) (hs : MeasurableSet s) (hμs 
     aeStronglyMeasurable'_condexpL2 _ _
   refine' EventuallyLE.trans_eq _ h.ae_eq_mk.symm
   refine' @ae_le_of_ae_le_trim _ _ _ _ _ _ hm (0 : α → ℝ) _ _
-  refine' ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite _ _
+  apply ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite
   · rintro t - -
     refine @Integrable.integrableOn _ _ m _ _ _ _ ?_
     refine' Integrable.trim hm _ _

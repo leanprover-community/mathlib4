@@ -114,7 +114,7 @@ theorem tendsto_nhds {β : Type*} {f : List α → β} {r : List α → Filter �
 
 theorem continuousAt_length : ∀ l : List α, ContinuousAt List.length l := by
   simp only [ContinuousAt, nhds_discrete]
-  refine' tendsto_nhds _ _
+  apply tendsto_nhds
   · exact tendsto_pure_pure _ _
   · intro l a ih
     dsimp only [List.length]

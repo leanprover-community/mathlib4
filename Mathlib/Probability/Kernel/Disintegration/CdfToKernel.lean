@@ -191,7 +191,7 @@ lemma integrable_stieltjesOfMeasurableRat [IsFiniteKernel κ] (hf : IsRatCondKer
     rw [ENNReal.toReal_ofReal]
     exact stieltjesOfMeasurableRat_nonneg _ _ _
   rw [this]
-  refine integrable_toReal_of_lintegral_ne_top ?_ ?_
+  apply integrable_toReal_of_lintegral_ne_top
   · refine (Measurable.ennreal_ofReal ?_).aemeasurable
     exact (measurable_stieltjesOfMeasurableRat hf.measurable x).comp measurable_prod_mk_left
   · rw [lintegral_stieltjesOfMeasurableRat hf]
@@ -360,7 +360,7 @@ lemma _root_.MeasureTheory.Measure.iInf_rat_gt_prod_Iic {ρ : Measure (α × ℝ
 lemma IsRatCondKernelCDFAux.setIntegral_iInf_rat_gt (hf : IsRatCondKernelCDFAux f κ ν)
     [IsFiniteKernel κ] [IsFiniteKernel ν] (a : α) (q : ℚ) {A : Set β} (hA : MeasurableSet A) :
     ∫ t in A, ⨅ r : Ioi q, f (a, t) r ∂(ν a) = (κ a (A ×ˢ Iic (q : ℝ))).toReal := by
-  refine le_antisymm ?_ ?_
+  apply le_antisymm
   · have h : ∀ r : Ioi q, ∫ t in A, ⨅ r' : Ioi q, f (a, t) r' ∂(ν a)
         ≤ (κ a (A ×ˢ Iic (r : ℝ))).toReal := by
       intro r

@@ -171,7 +171,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
-      refine' lt_of_le_of_ne _ _
+      apply lt_of_le_of_ne
       · rw [Function.iterate_succ']
         exact le_succ _
       · rw [hn_eq]
@@ -225,7 +225,7 @@ theorem toZ_nonneg (hi : i0 ≤ i) : 0 ≤ toZ i0 i := by
 #align to_Z_nonneg toZ_nonneg
 
 theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
-  refine' lt_of_le_of_ne _ _
+  apply lt_of_le_of_ne
   · rw [toZ_of_lt hi, neg_nonpos]
     exact Nat.cast_nonneg _
   · by_contra h
@@ -431,7 +431,7 @@ def orderIsoRangeOfLinearSuccPredArch [OrderBot ι] [OrderTop ι] :
   right_inv n := by
     ext1
     simp only [Subtype.coe_mk]
-    refine' le_antisymm _ _
+    apply le_antisymm
     · rw [Int.toNat_le]
       exact toZ_iterate_succ_le _
     by_cases hn_max : IsMax (succ^[↑n] (⊥ : ι))

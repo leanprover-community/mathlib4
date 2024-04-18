@@ -73,7 +73,7 @@ theorem isUnit_of_natDegree_eq_zero_of_isPrimitive {p q : R[X]}
     -- Porting note: stated using `IsPrimitive` which is defeq to old statement.
     (hu : IsPrimitive (p * q)) (hpm : p.natDegree = 0) : IsUnit p := by
   rw [eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm), isUnit_C]
-  refine' hu _ _
+  apply hu
   rw [← eq_C_of_degree_le_zero (natDegree_eq_zero_iff_degree_le_zero.1 hpm)]
   exact dvd_mul_right _ _
 #align polynomial.eisenstein_criterion_aux.is_unit_of_nat_degree_eq_zero_of_forall_dvd_is_unit Polynomial.EisensteinCriterionAux.isUnit_of_natDegree_eq_zero_of_isPrimitive

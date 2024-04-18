@@ -556,7 +556,7 @@ theorem right_inv_eq_left_inv (h : A * B = 1) (g : C * A = 1) : B = C := by
 theorem inv_inj (h : A⁻¹ = B⁻¹) (h' : IsUnit A.det) : A = B := by
   refine' left_inv_eq_left_inv (mul_nonsing_inv _ h') _
   rw [h]
-  refine' mul_nonsing_inv _ _
+  apply mul_nonsing_inv
   rwa [← isUnit_nonsing_inv_det_iff, ← h, isUnit_nonsing_inv_det_iff]
 #align matrix.inv_inj Matrix.inv_inj
 
@@ -574,7 +574,7 @@ theorem inv_zero : (0 : Matrix n n α)⁻¹ = 0 := by
     ext i
     exact (IsEmpty.false i).elim
   · have hn : Nonempty n := Fintype.card_pos_iff.mp hc
-    refine' nonsing_inv_apply_not_isUnit _ _
+    apply nonsing_inv_apply_not_isUnit
     simp [hn]
 #align matrix.inv_zero Matrix.inv_zero
 
