@@ -43,8 +43,7 @@ theorem extract_eq_of_size_le_end {a : Array α} :
   intro h
   simp only [extract, Nat.min_eq_right h, Nat.sub_eq, mkEmpty_eq, Nat.min_self]
 
-theorem extract_extract {a : Array α}
-    (h2 : s1 + e2 ≤ e1) :
+theorem extract_extract {a : Array α} (h : s1 + e2 ≤ e1) :
     (a.extract s1 e1).extract s2 e2 = a.extract (s1 + s2) (s1 + e2) := by
   apply ext
   · simp only [size_extract]
