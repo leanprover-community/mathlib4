@@ -65,7 +65,7 @@ theorem IsSelfAdjoint.spectralRadius_eq_nnnorm {a : A} (ha : IsSelfAdjoint a) :
     (spectrum.pow_nnnorm_pow_one_div_tendsto_nhds_spectralRadius (a : A)).comp
       (Nat.tendsto_pow_atTop_atTop_of_one_lt one_lt_two) using 1
   refine' funext fun n => _
-  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_nat_cast, ← rpow_mul]
+  rw [Function.comp_apply, ha.nnnorm_pow_two_pow, ENNReal.coe_pow, ← rpow_natCast, ← rpow_mul]
   simp
 #align is_self_adjoint.spectral_radius_eq_nnnorm IsSelfAdjoint.spectralRadius_eq_nnnorm
 
@@ -76,7 +76,7 @@ theorem IsStarNormal.spectralRadius_eq_nnnorm (a : A) [IsStarNormal a] :
     (fun n : ℕ => (‖(a⋆ * a) ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ)) =
       (fun x => x ^ 2) ∘ fun n : ℕ => (‖a ^ n‖₊ : ℝ≥0∞) ^ (1 / n : ℝ) := by
     funext n
-    rw [Function.comp_apply, ← rpow_nat_cast, ← rpow_mul, mul_comm, rpow_mul, rpow_nat_cast, ←
+    rw [Function.comp_apply, ← rpow_natCast, ← rpow_mul, mul_comm, rpow_mul, rpow_natCast, ←
       coe_pow, sq, ← nnnorm_star_mul_self, Commute.mul_pow (star_comm_self' a), star_pow]
   have h₂ :=
     ((ENNReal.continuous_pow 2).tendsto (spectralRadius ℂ a)).comp
