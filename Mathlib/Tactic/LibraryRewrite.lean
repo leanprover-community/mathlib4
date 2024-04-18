@@ -166,9 +166,13 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
   let (mvars, binderInfos, eqn) ← forallMetaTelescope (← inferType thm)
   let some (lhs, rhs) := matchEqn? eqn | return none
   let (lhs, rhs) := if symm then (rhs, lhs) else (lhs, rhs)
+  -- just like in `kabstract`, we compare the `HeadIndex` and number of arguments before unifying
+  if lhs.toHeadIndex != e.toHeadIndex || lhs.headNumArgs != e.headNumArgs then
+    return none
   let unifies ← withTraceNodeBefore `rw?? (return m! "unifying {e} =?= {lhs}")
     (withReducible (isDefEq lhs e))
-  unless unifies do return none
+  unless unifies do
+    return none
   let mut extraGoals := #[]
   for mvar in mvars, bi in binderInfos do
     -- we need to check that all instances can be synthesized
@@ -178,7 +182,8 @@ def checkRewrite (thm e : Expr) (symm : Bool) : MetaM (Option Rewrite) := do
       let unifies ← withTraceNodeBefore `rw??
         (return m! "unifying with synthesized instance {mvar} =?= {inst}")
         (isDefEq inst mvar)
-      unless unifies do return none
+      unless unifies do
+        return none
     else
       unless ← mvar.mvarId!.isAssigned do
         extraGoals := extraGoals.push (mvar.mvarId!, bi)

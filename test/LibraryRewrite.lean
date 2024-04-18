@@ -534,3 +534,86 @@ Pattern Continuous f
 -/
 #guard_msgs in
 #rw?? Continuous (Inv.inv : Rat → Rat)
+
+-- Nat.Coprime is reducible, so we would get matches with the pattern `n = 1`.
+-- But this wouldn't work with the `rw` tactic, so we make sure to avoid this.
+/--
+info: Pattern Nat.Coprime 2 n
+· Odd 3
+  Nat.coprime_two_left
+
+Pattern Nat.Coprime n m
+· Nat.Coprime 3 2
+  Nat.coprime_comm
+· Nat.gcd 2 3 = 1
+  Nat.coprime_iff_gcd_eq_one
+· IsRelPrime 2 3
+  Nat.coprime_iff_isRelPrime
+· IsUnit ↑2
+  ZMod.isUnit_iff_coprime
+· Nat.Coprime (2 + 3) 3
+  Nat.coprime_add_self_left
+· Nat.Coprime (3 + 2) 3
+  Nat.coprime_self_add_left
+· IsCoprime ↑2 ↑3
+  Nat.isCoprime_iff_coprime
+· Nat.Coprime 2 (3 + 2)
+  Nat.coprime_add_self_right
+· Nat.Coprime 2 (2 + 3)
+  Nat.coprime_self_add_right
+· ¬2 ∣ 3
+  ⊢ Nat.Prime 2
+  Nat.Prime.coprime_iff_not_dvd
+· Nat.Coprime (3 - 2) 3
+  ⊢ 2 ≤ 3
+  Nat.coprime_self_sub_left
+· Nat.Coprime (2 - 3) 3
+  ⊢ 3 ≤ 2
+  Nat.coprime_sub_self_left
+· Nat.Coprime 2 (2 - 3)
+  ⊢ 3 ≤ 2
+  Nat.coprime_self_sub_right
+· Nat.Coprime 2 (3 - 2)
+  ⊢ 2 ≤ 3
+  Nat.coprime_sub_self_right
+· Nat.Coprime (2 + 3 * ?k) 3
+  ⊢ ℕ
+  Nat.coprime_add_mul_left_left
+· Nat.Coprime (3 * ?k + 2) 3
+  ⊢ ℕ
+  Nat.coprime_mul_left_add_left
+· Nat.Coprime 2 (3 + 2 * ?k)
+  ⊢ ℕ
+  Nat.coprime_add_mul_left_right
+· Nat.Coprime (2 + ?k * 3) 3
+  ⊢ ℕ
+  Nat.coprime_add_mul_right_left
+· Nat.Coprime 2 (2 * ?k + 3)
+  ⊢ ℕ
+  Nat.coprime_mul_left_add_right
+· Nat.Coprime (?k * 3 + 2) 3
+  ⊢ ℕ
+  Nat.coprime_mul_right_add_left
+· Nat.Coprime 2 (3 + ?k * 2)
+  ⊢ ℕ
+  Nat.coprime_add_mul_right_right
+· Nat.Coprime 2 (?k * 2 + 3)
+  ⊢ ℕ
+  Nat.coprime_mul_right_add_right
+· 2 ≠ 3
+  ⊢ Nat.Prime 2
+  ⊢ Nat.Prime 3
+  Nat.coprime_primes
+· Nat.Coprime (2 ^ ?n) 3
+  ⊢ 0 < ?n
+  Nat.coprime_pow_left_iff
+· Nat.Coprime 2 (3 ^ ?n)
+  ⊢ 0 < ?n
+  Nat.coprime_pow_right_iff
+· Disjoint 2.primeFactors 3.primeFactors
+  ⊢ 2 ≠ 0
+  ⊢ 3 ≠ 0
+  Nat.disjoint_primeFactors
+-/
+#guard_msgs in
+#rw?? Nat.Coprime 2 3
