@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.Multiplication
-import Mathlib.RingTheory.Valuation.Basic
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -12,12 +11,12 @@ import Mathlib.RingTheory.Valuation.Basic
 # Hahn Series
 If `Γ` is ordered and `R` has zero, then `HahnSeries Γ R` consists of formal series over `Γ` with
 coefficients in `R`, whose supports are partially well-ordered. With further structure on `R` and
-`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce valuations and a notion of
-summability for possibly infinite families of series.
+`Γ`, we can add further structure on `HahnSeries Γ R`.  We introduce a notion of
+summability for possibly infinite families of series, and prove that a Hahn Series with invertible
+leading coefficient is invertible.  We also show that when the coefficient ring is a domain, then
+the converse holds.
 
 ## Main Definitions
-  * `HahnSeries.addVal Γ R` defines an `AddValuation` on `HahnSeries Γ R` when `Γ` is linearly
-    ordered.
   * A `HahnSeries.SummableFamily` is a family of Hahn series such that the union of their supports
   is well-founded and only finitely many are nonzero at any given coefficient. They have a formal
   sum, `HahnSeries.SummableFamily.hsum`, which can be bundled as a `LinearMap` as
@@ -46,42 +45,6 @@ noncomputable section
 variable {Γ : Type*} {R : Type*}
 
 namespace HahnSeries
-
-section Valuation
-
-variable (Γ R) [LinearOrderedCancelAddCommMonoid Γ] [Ring R] [IsDomain R]
-
-/-- The additive valuation on `HahnSeries Γ R`, returning the smallest index at which
-  a Hahn Series has a nonzero coefficient, or `⊤` for the 0 series.  -/
-def addVal : AddValuation (HahnSeries Γ R) (WithTop Γ) :=
-  AddValuation.of orderTop orderTop_zero (orderTop_one) (fun x y => min_orderTop_le_orderTop_add)
-    fun x y => by
-    by_cases hx : x = 0
-    · simp [hx]
-    by_cases hy : y = 0
-    · simp [hy]
-    rw [← order_eq_orderTop_of_ne hx, ← order_eq_orderTop_of_ne hy,
-      ← order_eq_orderTop_of_ne (mul_ne_zero hx hy), ← WithTop.coe_add, WithTop.coe_eq_coe,
-      order_mul hx hy]
-#align hahn_series.add_val HahnSeries.addVal
-
-variable {Γ} {R}
-
-theorem addVal_apply {x : HahnSeries Γ R} : addVal Γ R x = x.orderTop :=
-  AddValuation.of_apply _
-#align hahn_series.add_val_apply HahnSeries.addVal_apply
-
-@[simp]
-theorem addVal_apply_of_ne {x : HahnSeries Γ R} (hx : x ≠ 0) : addVal Γ R x = x.order :=
-  addVal_apply.trans (order_eq_orderTop_of_ne hx).symm
-#align hahn_series.add_val_apply_of_ne HahnSeries.addVal_apply_of_ne
-
-theorem addVal_le_of_coeff_ne_zero {x : HahnSeries Γ R} {g : Γ} (h : x.coeff g ≠ 0) :
-    addVal Γ R x ≤ g :=
-  orderTop_le_of_coeff_ne_zero h
-#align hahn_series.add_val_le_of_coeff_ne_zero HahnSeries.addVal_le_of_coeff_ne_zero
-
-end Valuation
 
 theorem support_pow_subset_closure [OrderedCancelAddCommMonoid Γ] [Semiring R] (x : HahnSeries Γ R)
     (n : ℕ) : support (x ^ n) ⊆ AddSubmonoid.closure (support x) := by
@@ -613,59 +576,5 @@ instance [Field R] : Field (HahnSeries Γ R) :=
     qsmul := qsmulRec _ }
 
 end Inversion
-
-section Binomial
-/-! We consider integral powers of binomials with invertible leading term. -/
-
-variable [LinearOrderedAddCommGroup Γ] [CommRing R]
-
-theorem isUnit_one_sub_single {g : Γ} (hg : 0 < g) (r : R) : IsUnit (1 - single g r) := by
-  refine isUnit_of_mul_eq_one _ _ (SummableFamily.one_sub_self_mul_hsum_powers ?_)
-  by_cases hr : r = 0; · simp_all only [map_zero, orderTop_zero, WithTop.zero_lt_top]
-  rw [orderTop_single hr, WithTop.coe_pos]
-  exact hg
-
-/-!
-theorem coeff_one_sub_single_pow {g : Γ} (hg : 0 < g) {r : R} {n : ℤ} {k : ℕ} :
-    ((IsUnit.unit (isUnit_one_sub_single hg r)) ^ n).val.coeff (k • g) =
-      (-r) ^ k • Ring.choose n k := by
--/
-
--- these 3 seem superfluous...
-theorem single_add_single_coeff {g g' : Γ} (hgg' : g < g') {a b : R} :
-    (single g a + single g' b).coeff g = a := by
-  simp_all only [ne_eq, ne_of_lt hgg', not_false_eq_true, add_coeff, single_coeff_same,
-      single_coeff_of_ne, add_zero]
-
-theorem single_add_single_coeff_ne {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
-    single g a + single g' b ≠ 0 :=
-  ne_zero_of_coeff_ne_zero (ne_of_eq_of_ne (single_add_single_coeff hgg') ha)
-
-theorem single_add_single_support {g g' : Γ} {a b : R} :
-    (single g a + single g' b).support ⊆ {g} ∪ {g'} := by
-  refine support_add_subset.trans ?_
-  simp_all only [Set.union_singleton, Set.union_subset_iff]
-  refine { left := fun _ hk => Set.mem_insert_of_mem g' (support_single_subset hk), right := ?_ }
-  rw [Set.pair_comm]
-  exact fun k hk => Equiv.Set.union.proof_1 k <| Set.mem_insert_of_mem g (support_single_subset hk)
-
-theorem orderTop_binomial {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
-    (single g a + single g' b).orderTop = g := by
-  rw [← orderTop_single ha]
-  exact orderTop_add_eq (lt_of_eq_of_lt (orderTop_single ha)
-    (lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le))
-
-theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
-    IsUnit (single g a.val + single g' b) := by
-  refine isUnit_of_isUnit_leadingCoeff ?_
-  by_cases ha : a.val = 0
-  · have aa: a.val * a.inv = 1 := Units.val_inv a
-    rw [ha, zero_mul] at aa
-    rw [← one_mul (leadingCoeff ((single g) a.val + (single g') b)), ← aa, zero_mul, aa,
-      isUnit_iff_dvd_one]
-  · rw [leadingCoeff, orderTop_binomial hgg' ha, coeffTop_eq, single_add_single_coeff hgg']
-    exact Units.isUnit a
-
-end Binomial
 
 end HahnSeries

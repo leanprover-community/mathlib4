@@ -615,6 +615,7 @@ theorem smul_comm [CommRing R] [Module R V] (r : R) (x : HahnSeries Γ R) (y : H
     r • x • y = x • r • y := by
   rw [@SMulCommClass.smul_comm]
 
+-- Use haveI...
 /-! instance [SMul R S] [IsScalarTower R S V] : IsScalarTower R S (HahnSeries Γ V) :=
   ⟨fun r s a => by
     ext
