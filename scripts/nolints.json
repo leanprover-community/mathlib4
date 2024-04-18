@@ -337,7 +337,6 @@
  ["docBlame", "PowerBasis.basis"],
  ["docBlame", "PowerBasis.dim"],
  ["docBlame", "PowerBasis.gen"],
- ["docBlame", "Pregroupoid.property"],
  ["docBlame", "PresheafOfModules.presheaf"],
  ["docBlame", "Pretrivialization.baseSet"],
  ["docBlame", "PrimeSpectrum.asIdeal"],
