@@ -24,7 +24,7 @@ namespace Int
 
 /-! ### Instances -/
 
-instance instCommMonoidInt : CommMonoid ℤ where
+instance instCommMonoid : CommMonoid ℤ where
   mul_comm := Int.mul_comm
   mul_one := Int.mul_one
   one_mul := Int.one_mul
@@ -58,15 +58,14 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
-instance : AddCommMonoid ℤ    := by infer_instance
-instance : AddMonoid ℤ        := by infer_instance
-instance : Monoid ℤ           := by infer_instance
-instance : CommSemigroup ℤ    := by infer_instance
-instance : Semigroup ℤ        := by infer_instance
-instance : AddGroup ℤ         := by infer_instance
-instance : AddCommGroup ℤ     := by infer_instance
-instance : AddCommSemigroup ℤ := by infer_instance
-instance : AddSemigroup ℤ     := by infer_instance
+instance instAddCommMonoid    : AddCommMonoid ℤ    := by infer_instance
+instance instAddMonoid        : AddMonoid ℤ        := by infer_instance
+instance instMonoid           : Monoid ℤ           := by infer_instance
+instance instCommSemigroup    : CommSemigroup ℤ    := by infer_instance
+instance instSemigroup        : Semigroup ℤ        := by infer_instance
+instance instAddGroup         : AddGroup ℤ         := by infer_instance
+instance instAddCommSemigroup : AddCommSemigroup ℤ := by infer_instance
+instance instAddSemigroup     : AddSemigroup ℤ     := by infer_instance
 
 /-! ### Miscellaneous lemmas -/
 

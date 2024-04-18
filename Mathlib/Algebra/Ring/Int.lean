@@ -20,9 +20,9 @@ See note [foundational algebra order theory].
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
+instance instCommRing : CommRing ℤ where
   __ := instAddCommGroup
-  __ := instCommSemigroupInt
+  __ := instCommSemigroup
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   left_distrib := Int.mul_add
@@ -64,7 +64,7 @@ these instances non-computably.
 
 instance instCommSemiring : CommSemiring ℤ := inferInstance
 instance instSemiring     : Semiring ℤ     := inferInstance
-instance instRingInt      : Ring ℤ         := inferInstance
+instance instRing         : Ring ℤ         := inferInstance
 instance instDistrib      : Distrib ℤ      := inferInstance
 
 instance instCharZero : CharZero ℤ where
