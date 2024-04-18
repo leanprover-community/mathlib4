@@ -2717,13 +2717,13 @@ theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H)
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
-  rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
+  rw [attach, attachWith, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
 -- @[simp] -- Porting note (#10959): lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
-  rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
+  rw [attach, attachWith, map_pmap]; exact pmap_eq_map _ _ _ _
 #align list.attach_map_coe' List.attach_map_coe'
 
 theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f i.val) = l.map f :=

@@ -69,8 +69,6 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   exact eq_of_heq (this a)
 #align function.hfunext Function.hfunext
 
-theorem funext_iff {β : α → Sort*} {f₁ f₂ : ∀ x : α, β x} : f₁ = f₂ ↔ ∀ a, f₁ a = f₂ a :=
-  Iff.intro (fun h _ ↦ h ▸ rfl) funext
 #align function.funext_iff Function.funext_iff
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
