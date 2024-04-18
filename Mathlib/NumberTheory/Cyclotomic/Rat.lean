@@ -24,7 +24,6 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
   of cyclotomic fields.
 -/
 
-
 universe u
 
 open Algebra IsCyclotomicExtension Polynomial NumberField
@@ -69,6 +68,13 @@ theorem discr_prime_pow_eq_unit_mul_pow' [IsCyclotomicExtension {p ^ k} ℚ K]
   rw [hζ.discr_zeta_eq_discr_zeta_sub_one.symm]
   exact discr_prime_pow_eq_unit_mul_pow hζ (cyclotomic.irreducible_rat (p ^ k).pos)
 #align is_cyclotomic_extension.rat.discr_prime_pow_eq_unit_mul_pow' IsCyclotomicExtension.Rat.discr_prime_pow_eq_unit_mul_pow'
+
+instance : Algebra ℤ (adjoin ℤ ({ζ} : Set K)) := Subalgebra.algebra (adjoin ℤ {ζ})
+instance : Algebra (adjoin ℤ ({ζ} : Set K)) K := Subalgebra.toAlgebra (adjoin ℤ {ζ})
+instance : Finite ({p ^ k} : Set ℕ+) := Finite.of_fintype _
+instance : IsPrincipalIdealRing ℤ := EuclideanDomain.to_principal_ideal_domain
+instance : Nontrivial K := ⟨0, 1, zero_ne_one⟩
+noncomputable instance : Module (CyclotomicRing (p ^ k) ℤ ℚ) (CyclotomicField (p ^ k) ℚ) := toModule
 
 /-- If `K` is a `p ^ k`-th cyclotomic extension of `ℚ`, then `(adjoin ℤ {ζ})` is the
 integral closure of `ℤ` in `K`. -/
@@ -157,6 +163,9 @@ section PowerBasis
 open IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
+
+instance : Algebra ℤ (𝓞 K) := Subalgebra.algebra (𝓞 K)
+instance : Algebra (𝓞 K) K := Subalgebra.toAlgebra _
 
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `p ^ k`-th root of
 unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
