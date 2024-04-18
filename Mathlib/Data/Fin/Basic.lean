@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Keeley Hoek
 -/
 import Mathlib.Algebra.NeZero
+import Mathlib.Util.Qq
 import Mathlib.Order.RelIso.Basic
 import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Order.Hom.Set
@@ -1703,14 +1704,17 @@ protected theorem zero_mul' [NeZero n] (k : Fin n) : (0 : Fin n) * k = 0 := by
 end Mul
 
 open Qq in
-instance toExpr (n : ℕ) : Lean.ToExpr (Fin n) where
-  toTypeExpr := q(Fin $n)
-  toExpr := match n with
-    | 0 => finZeroElim
-    | k + 1 => fun i => show Q(Fin $n) from
-      have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
-      have : Q(NeZero $n) := haveI : $n =Q $k + 1 := ⟨⟩; by exact q(NeZero.succ)
-      q(OfNat.ofNat $i)
-#align fin.reflect Fin.toExprₓ
+/-- Convert an element of `Fin n` to an expression containing the appropriate `Nat` literal. -/
+protected def toExprQ (i : Fin n) : Q(Fin $n) :=
+  have : Q(NeZero $n) := match n with | _ + 1 => q(NeZero.succ)
+  have i : Q(Nat) := Lean.mkRawNatLit i -- raw literal to avoid ofNat-double-wrapping
+  q(OfNat.ofNat $i)
+
+open Qq in
+instance instToExprQ (n : ℕ) : ToExprQ (Fin n) where
+  level := .zero
+  toTypeExprQ := q(Fin $n)
+  toExprQ := Fin.toExprQ
+#align fin.reflect Fin.instToExprQₓ
 
 end Fin
