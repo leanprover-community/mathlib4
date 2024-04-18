@@ -128,9 +128,12 @@ variable (M N : Submodule R S)
 
 section mulMap
 
+-- can't use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
+-- `(Algebra.TensorProduct.productMap A.val B.val).toLinearMap`
+
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
-def mulMap := LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N
+def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
 
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
