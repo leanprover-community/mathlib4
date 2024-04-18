@@ -302,7 +302,7 @@ theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
 
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι),  ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
+    ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
   f.locallyFinite.exists_finset_nhd_support_subset hso ho x
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
