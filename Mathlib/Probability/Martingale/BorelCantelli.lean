@@ -138,7 +138,7 @@ theorem Submartingale.stoppedValue_leastGE_snorm_le [IsFiniteMeasure μ] (hf : S
   refine' snorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) _
     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
   rw [← integral_univ]
-  refine' le_trans _ ((hf.stoppedValue_leastGE r).set_integral_le (zero_le _) MeasurableSet.univ)
+  refine' le_trans _ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
 #align measure_theory.submartingale.stopped_value_least_ge_snorm_le MeasureTheory.Submartingale.stoppedValue_leastGE_snorm_le
 

@@ -501,7 +501,7 @@ theorem integral_cpow_mul_exp_neg_pi_mul_sq {s : ℂ} (hs : 0 < s.re) (n : ℕ) 
     exact Nat.cast_nonneg _
   conv_rhs => rw [this, mul_comm, ← smul_eq_mul]
   rw [← mellin_comp_mul_right _ _ (show 0 < ((n : ℝ) + 1) ^ (2 : ℝ) by positivity)]
-  refine set_integral_congr measurableSet_Ioi fun t _ => ?_
+  refine setIntegral_congr measurableSet_Ioi fun t _ => ?_
   simp_rw [smul_eq_mul]
   congr 3
   conv_rhs => rw [← Nat.cast_two, rpow_natCast]
@@ -648,7 +648,7 @@ theorem riemannCompletedZeta₀_one_sub (s : ℂ) :
   simp_rw [rpow_neg_one, ← one_div, abs_neg, abs_one, div_one, one_smul, ofReal_neg, ofReal_one,
     div_neg, div_one, neg_sub] at this
   conv_lhs => rw [riemannCompletedZeta₀, sub_div, ← this]
-  refine set_integral_congr measurableSet_Ioi fun t ht => ?_
+  refine setIntegral_congr measurableSet_Ioi fun t ht => ?_
   simp_rw [zetaKernel₂_one_div (le_of_lt ht), smul_eq_mul, ← mul_assoc, sqrt_eq_rpow,
     ofReal_cpow (le_of_lt ht), ← cpow_add _ _ (ofReal_ne_zero.mpr <| ne_of_gt ht)]
   congr 2
