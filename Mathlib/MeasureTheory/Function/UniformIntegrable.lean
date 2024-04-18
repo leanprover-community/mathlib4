@@ -443,8 +443,7 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
-      -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
-      ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
+      simp [← le_antisymm hi' hi]
 #align measure_theory.unif_integrable_fin MeasureTheory.unifIntegrable_fin
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
