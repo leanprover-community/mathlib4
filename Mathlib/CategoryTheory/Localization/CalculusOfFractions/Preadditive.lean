@@ -77,6 +77,15 @@ namespace Localization
 
 namespace Preadditive
 
+section ImplementationDetails
+
+/-! The definitions in this section (like `neg'` and `add'`) should never be used
+directly. These are auxiliary definitions in order to construct the preadditive
+structure `Localization.preadditive` (which is made irreducible). The user
+should only rely on the fact that the localization functor is additive, as this
+completely determines the preadditive structure on the localized category when
+there is a calculus of left fractions. -/
+
 variable {X Y Z : C}
 variable {L}
 
@@ -283,6 +292,8 @@ lemma map_add (f₁ f₂ : X ⟶ Y) :
     L.map (f₁ + f₂) = L.map f₁ + L.map f₂ := by
   rw [add_eq W (Iso.refl _) (Iso.refl _) (L.map f₁) (L.map f₂)]
   simp [add]
+
+end ImplementationDetails
 
 end Preadditive
 
