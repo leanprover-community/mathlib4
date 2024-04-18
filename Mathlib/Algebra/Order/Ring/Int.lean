@@ -14,7 +14,7 @@ import Mathlib.Algebra.Order.Ring.Defs
 # The integers form a linear ordered ring
 
 This file contains:
-* instances on `ℤ`. The stronger one is `Int.linearOrderedCommRing`.
+* instances on `ℤ`. The stronger one is `Int.instLinearOrderedCommRing`.
 * basic lemmas about integers that involve order properties.
 
 ## Recursors
@@ -31,10 +31,12 @@ open Function Nat
 
 namespace Int
 
-instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
-  { instCommRingInt, instLinearOrderInt, instNontrivialInt with
-    add_le_add_left := @Int.add_le_add_left,
-    mul_pos := @Int.mul_pos, zero_le_one := le_of_lt Int.zero_lt_one }
+instance instLinearOrderedCommRing : LinearOrderedCommRing ℤ where
+  __ := instCommRing
+  __ := instLinearOrder
+  add_le_add_left := @Int.add_le_add_left
+  mul_pos := @Int.mul_pos
+  zero_le_one := le_of_lt Int.zero_lt_one
 
 /-!
 ### Extra instances to short-circuit type class resolution
@@ -42,11 +44,8 @@ instance linearOrderedCommRing : LinearOrderedCommRing ℤ :=
 These also prevent non-computable instances being used to construct these instances non-computably.
 -/
 
-instance orderedCommRing : OrderedCommRing ℤ :=
-  StrictOrderedCommRing.toOrderedCommRing'
-
-instance orderedRing : OrderedRing ℤ :=
-  StrictOrderedRing.toOrderedRing'
+instance instOrderedCommRing : OrderedCommRing ℤ := StrictOrderedCommRing.toOrderedCommRing'
+instance instOrderedRing : OrderedRing ℤ := StrictOrderedRing.toOrderedRing'
 
 /-! ### Miscellaneous lemmas -/
 
