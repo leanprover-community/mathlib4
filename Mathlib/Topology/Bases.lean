@@ -132,7 +132,7 @@ theorem isTopologicalBasis_of_subbasis_of_finiteInter {s : Set (Set α)} (hsg : 
       rw [← hi]
       let G' := Finite.toFinset hG
       have eG : G = G' := by
-        aesop
+         simp only [Finite.coe_toFinset, G']
       rw [eG]
       apply @FiniteInter.finiteInter_mem _ s hsi G'
       rw [← eG]
