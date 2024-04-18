@@ -44,8 +44,9 @@ lemma ad_injective : Function.Injective (ad R L) := by
   apply (LieHom.ker_eq_bot (ad R L)).mp
   rw [ad_ker_eq_center, LieAlgebra.center_eq_bot_of_semisimple]
 
-/-- A finite-dimensional Killing Lie algebra is isomorphic to its adjoint representation. -/
-lemma equiv_rangeAd : L ≃ₗ⁅R⁆ (ad R L).idealRange := by
+/-- The Lie algebra isomorphism between a finite-dimensional Killing Lie algebra and its adjoint
+representation. -/
+noncomputable def equiv_rangeAd : L ≃ₗ⁅R⁆ (ad R L).idealRange := by
   have h := LieEquiv.ofInjective (ad R L) (ad_injective R L)
   rw [← ad_isIdealMorphism] at h
   exact h
