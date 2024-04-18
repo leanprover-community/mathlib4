@@ -66,7 +66,7 @@ complement are complements. -/
 lemma isCompl_rangeAd : IsCompl 𝕀 𝕀ᗮ := by
   apply IsCompl.of_orderEmbedding (LieSubmodule.toSubmodule_orderEmbedding R 𝔻 𝔻)
   simp_rw [LieSubmodule.toSubmodule_orderEmbedding_apply]
-  rw [LieIdeal.killingCompl_eq_orthogonalBilin]
+  rw [LieIdeal.toSubmodule_killingCompl]
   exact LinearMap.BilinForm.restrict_nondegenerate_of_isCompl_orthogonal
     (LinearMap.IsSymm.isRefl (LieModule.traceForm_isSymm R 𝔻 𝔻))
     (killingForm_nondegenerate_on_rangeAd R L)
