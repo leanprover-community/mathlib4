@@ -195,9 +195,6 @@ end normalClosure
 
 variable {F K L}
 
--- Adaptation note: nightly-2024-04-01
--- This maxHeartbeats was not needed previously.
-set_option maxHeartbeats 400000 in
 open Cardinal in
 /-- An extension `L/F` in which every minimal polynomial of `K/F` splits is maximal with respect
   to `F`-embeddings of `K`, in the sense that `K →ₐ[F] L` achieves maximal cardinality.
@@ -216,11 +213,11 @@ noncomputable def Algebra.IsAlgebraic.algHomEmbeddingOfSplits (alg : IsAlgebraic
       · exact splits_of_splits_of_dvd _ (minpoly.ne_zero iy)
           (h y) (minpoly.dvd F x (mem_rootSet.mp hx).2)
       · simp [minpoly.eq_zero iy] at hx
-  { toFun := (φ.comp <| inclusion <| normalClosure_le_iSup_adjoin alg).comp ∘
-      (normalClosure.algHomEquiv F K L').symm
+  let φ' := (φ.comp <| inclusion <| normalClosure_le_iSup_adjoin alg)
+  { toFun := φ'.comp ∘ (normalClosure.algHomEquiv F K L').symm
     inj' := fun _ _ h ↦ (normalClosure.algHomEquiv F K L').symm.injective <| by
       rw [DFunLike.ext'_iff] at h ⊢
-      exact (φ.comp _).injective.comp_left h }
+      exact φ'.injective.comp_left h }
 
 namespace IntermediateField
 

@@ -114,9 +114,6 @@ private theorem exists_algHom_adjoin_of_splits'' {L : IntermediateField F E}
 variable {L : Type*} [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E]
   (f : L →ₐ[F] K) (hK : ∀ s ∈ S, IsIntegral L s ∧ (minpoly L s).Splits f.toRingHom)
 
--- Adaptation note: nightly-2024-04-01
--- This maxHeartbeats was not needed previously.
-set_option maxHeartbeats 400000 in
 theorem exists_algHom_adjoin_of_splits' :
     ∃ φ : adjoin L S →ₐ[F] K, φ.comp (IsScalarTower.toAlgHom F L _) = f := by
   let L' := (IsScalarTower.toAlgHom F L E).fieldRange
@@ -126,7 +123,9 @@ theorem exists_algHom_adjoin_of_splits' :
       inclusion (?_ : (adjoin L S).restrictScalars F ≤ (adjoin L' S).restrictScalars F), ?_⟩
     · simp_rw [← SetLike.coe_subset_coe, coe_restrictScalars, adjoin_subset_adjoin_iff]
       exact ⟨subset_adjoin_of_subset_left S (F := L'.toSubfield) le_rfl, subset_adjoin _ _⟩
-    · ext x; exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
+    · ext x
+      rw [AlgHom.comp_assoc]
+      exact congr($hφ _).trans (congr_arg f <| AlgEquiv.symm_apply_apply _ _)
   letI : Algebra L L' := (AlgEquiv.ofInjectiveField _).toRingEquiv.toRingHom.toAlgebra
   have : IsScalarTower L L' E := IsScalarTower.of_algebraMap_eq' rfl
   refine ⟨(hK s hs).1.tower_top, (hK s hs).1.minpoly_splits_tower_top' ?_⟩

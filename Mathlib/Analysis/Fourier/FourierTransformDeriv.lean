@@ -122,9 +122,6 @@ lemma norm_fourierSMulRight_le (L : V →L[ℝ] W →L[ℝ] ℝ) (f : V → E) (
   _ ≤ (2 * π) * (‖L‖ * ‖v‖) * ‖f v‖ := by gcongr; exact L.le_opNorm _
   _ = 2 * π * ‖L‖ * ‖v‖ * ‖f v‖ := by ring
 
--- Adaptation note: nightly-2024-04-01
--- This maxHeartbeats was not needed previously.
-set_option maxHeartbeats 400000 in
 lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     [SecondCountableTopologyEither V (W →L[ℝ] ℝ)] [MeasurableSpace V] [BorelSpace V]
     {L : V →L[ℝ] W →L[ℝ] ℝ} {f : V → E} {μ : Measure V}
@@ -135,7 +132,8 @@ lemma _root_.MeasureTheory.AEStronglyMeasurable.fourierSMulRight
     (ContinuousLinearMap.smulRightL ℝ W E).continuous₂
   have aux1 : AEStronglyMeasurable (fun v ↦ (L v, f v)) μ :=
     L.continuous.aestronglyMeasurable.prod_mk hf
-  exact aux0.comp_aestronglyMeasurable aux1
+  -- Elaboration without the expected type is faster here:
+  exact (aux0.comp_aestronglyMeasurable aux1 : _)
 
 variable {f}
 

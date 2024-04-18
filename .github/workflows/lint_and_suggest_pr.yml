@@ -26,15 +26,10 @@ jobs:
         run: |
           ./scripts/lint-style.sh --fix
 
-      # This is failing with
-      #   reviewdog: fail to get diff: GET https://api.github.com/repos/leanprover-community/mathlib4/pulls/11997: 406
-      #   Sorry, the diff exceeded the maximum number of files (300).
-      #   Consider using 'List pull requests files' API or locally cloning the repository instead.
-      #   [{Resource:PullRequest Field:diff Code:too_large Message:}]
-      # - name: suggester / lint-style
-      #   uses: reviewdog/action-suggester@v1
-      #   with:
-      #     tool_name: lint-style
+      - name: suggester / lint-style
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: lint-style
 
       - name: Install bibtool
         run: |
@@ -46,15 +41,10 @@ jobs:
         run: |
           ./scripts/lint-bib.sh
 
-      # This is failing with
-      #   reviewdog: fail to get diff: GET https://api.github.com/repos/leanprover-community/mathlib4/pulls/11997: 406
-      #   Sorry, the diff exceeded the maximum number of files (300).
-      #   Consider using 'List pull requests files' API or locally cloning the repository instead.
-      #   [{Resource:PullRequest Field:diff Code:too_large Message:}]
-      # - name: suggester / lint-bib
-      #   uses: reviewdog/action-suggester@v1
-      #   with:
-      #     tool_name: lint-bib
+      - name: suggester / lint-bib
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: lint-bib
 
   check_imported:
     if: github.repository == 'leanprover-community/mathlib4' && github.event.pull_request.draft == false
@@ -83,12 +73,7 @@ jobs:
         run: |
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
-      # This is failing with
-      #   reviewdog: fail to get diff: GET https://api.github.com/repos/leanprover-community/mathlib4/pulls/11997: 406
-      #   Sorry, the diff exceeded the maximum number of files (300).
-      #   Consider using 'List pull requests files' API or locally cloning the repository instead.
-      #   [{Resource:PullRequest Field:diff Code:too_large Message:}]
-      # - name: suggester / import list
-      #   uses: reviewdog/action-suggester@v1
-      #   with:
-      #     tool_name: imports
+      - name: suggester / import list
+        uses: reviewdog/action-suggester@v1
+        with:
+          tool_name: imports
