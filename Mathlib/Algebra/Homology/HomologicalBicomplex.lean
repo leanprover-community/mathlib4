@@ -63,7 +63,7 @@ def toGradedObjectFunctor : HomologicalComplex₂ C c₁ c₂ ⥤ GradedObject (
   obj K := K.toGradedObject
   map φ := toGradedObjectMap φ
 
-instance : Faithful (toGradedObjectFunctor C c₁ c₂) where
+instance : (toGradedObjectFunctor C c₁ c₂).Faithful where
   map_injective {_ _ φ₁ φ₂} h := by
     ext i₁ i₂
     exact congr_fun h ⟨i₁, i₂⟩
@@ -202,5 +202,17 @@ def flipEquivalence :
   unitIso := flipEquivalenceUnitIso C c₁ c₂
   counitIso := flipEquivalenceCounitIso C c₁ c₂
 #align homological_complex.flip_equivalence HomologicalComplex₂.flipEquivalence
+
+variable (K : HomologicalComplex₂ C c₁ c₂)
+
+/-- The obvious isomorphism `(K.X x₁).X x₂ ≅ (K.X y₁).X y₂` when `x₁ = y₁` and `x₂ = y₂`. -/
+def XXIsoOfEq {x₁ y₁ : I₁} (h₁ : x₁ = y₁) {x₂ y₂ : I₂} (h₂ : x₂ = y₂) :
+    (K.X x₁).X x₂ ≅ (K.X y₁).X y₂ :=
+  eqToIso (by subst h₁ h₂; rfl)
+
+@[simp]
+lemma XXIsoOfEq_rfl (i₁ : I₁) (i₂ : I₂) :
+    K.XXIsoOfEq (rfl : i₁ = i₁) (rfl : i₂ = i₂) = Iso.refl _ := rfl
+
 
 end HomologicalComplex₂

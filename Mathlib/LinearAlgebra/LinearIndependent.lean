@@ -10,7 +10,7 @@ import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Tactic.FinCases
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Lean.Expr.ExtraRecognizers
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import linear_algebra.linear_independent from "leanprover-community/mathlib"@"9d684a893c52e1d6692a504a118bfccbae04feeb"
 
@@ -91,7 +91,6 @@ variable {M : Type*} {M' M'' : Type*} {V : Type u} {V' : Type*}
 section Module
 
 variable {v : ι → M}
-
 variable [Semiring R] [AddCommMonoid M] [AddCommMonoid M'] [AddCommMonoid M'']
 variable [Module R M] [Module R M'] [Module R M'']
 variable {a b : R} {x y : M}
@@ -1241,9 +1240,7 @@ end Module
 section Nontrivial
 
 variable [Ring R] [Nontrivial R] [AddCommGroup M] [AddCommGroup M']
-
 variable [Module R M] [NoZeroSMulDivisors R M] [Module R M']
-
 variable {v : ι → M} {s t : Set M} {x y z : M}
 
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
@@ -1274,9 +1271,7 @@ These can be considered generalizations of properties of linear independence in 
 section Module
 
 variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V']
-
 variable [Module K V] [Module K V']
-
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
@@ -1464,8 +1459,6 @@ theorem LinearIndependent.linearIndependent_extend (hs : LinearIndependent K (fu
   let ⟨_hbt, _hsb, _htb, hli⟩ := Classical.choose_spec (exists_linearIndependent_extension hs hst)
   hli
 #align linear_independent.linear_independent_extend LinearIndependent.linearIndependent_extend
-
--- variable {K V} -- Porting note: Redundant binder annotation update.
 
 -- TODO(Mario): rewrite?
 theorem exists_of_linearIndependent_of_finite_span {t : Finset V}

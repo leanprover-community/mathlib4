@@ -37,7 +37,6 @@ namespace AffineSubspace
 section StrictOrderedCommRing
 
 variable [StrictOrderedCommRing R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 /-- The points `x` and `y` are weakly on the same side of `s`. -/
@@ -416,7 +415,6 @@ end StrictOrderedCommRing
 section LinearOrderedField
 
 variable [LinearOrderedField R] [AddCommGroup V] [Module R V] [AddTorsor V P]
-
 variable [AddCommGroup V'] [Module R V'] [AddTorsor V' P']
 
 @[simp]
@@ -447,7 +445,7 @@ theorem wSameSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p
       exact SameRay.zero_right _
     · refine' Or.inr ⟨(r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, _⟩)⟩
-      rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel' _ hr₂.ne.symm,
+      rw [vsub_vadd_eq_vsub_sub, smul_sub, ← hr, smul_smul, mul_div_cancel₀ _ hr₂.ne.symm,
         ← smul_sub, vsub_sub_vsub_cancel_right]
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wSameSide_of_left_mem y h'
@@ -486,7 +484,7 @@ theorem wOppSide_iff_exists_left {s : AffineSubspace R P} {x y p₁ : P} (h : p�
     · refine' Or.inr ⟨(-r₁ / r₂) • (p₁ -ᵥ p₁') +ᵥ p₂', s.smul_vsub_vadd_mem _ h hp₁' hp₂',
         Or.inr (Or.inr ⟨r₁, r₂, hr₁, hr₂, _⟩)⟩
       rw [vadd_vsub_assoc, smul_add, ← hr, smul_smul, neg_div, mul_neg,
-        mul_div_cancel' _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
+        mul_div_cancel₀ _ hr₂.ne.symm, neg_smul, neg_add_eq_sub, ← smul_sub,
         vsub_sub_vsub_cancel_right]
   · rintro (h' | ⟨h₁, h₂, h₃⟩)
     · exact wOppSide_of_left_mem y h'
@@ -855,7 +853,6 @@ end LinearOrderedField
 section Normed
 
 variable [SeminormedAddCommGroup V] [NormedSpace ℝ V] [PseudoMetricSpace P]
-
 variable [NormedAddTorsor V P]
 
 theorem isConnected_setOf_wSameSide {s : AffineSubspace ℝ P} (x : P) (h : (s : Set P).Nonempty) :

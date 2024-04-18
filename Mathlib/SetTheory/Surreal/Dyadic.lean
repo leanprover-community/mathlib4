@@ -142,15 +142,15 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     · simp only [powHalf_moveLeft, forall_const]
       apply lf_of_lt
       calc
-        0 ≈ 0 + 0 := (Equiv.symm (add_zero_equiv 0))
-        _ ≤ powHalf n.succ + 0 := (add_le_add_right (zero_le_powHalf _) _)
+        0 ≈ 0 + 0 := Equiv.symm (add_zero_equiv 0)
+        _ ≤ powHalf n.succ + 0 := add_le_add_right (zero_le_powHalf _) _
         _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
     · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
       · calc
-          powHalf n ≈ powHalf n + 0 := (Equiv.symm (add_zero_equiv _))
+          powHalf n ≈ powHalf n + 0 := Equiv.symm (add_zero_equiv _)
           _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
       · calc
-          powHalf n ≈ 0 + powHalf n := (Equiv.symm (zero_add_equiv _))
+          powHalf n ≈ 0 + powHalf n := Equiv.symm (zero_add_equiv _)
           _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
 #align pgame.add_pow_half_succ_self_eq_pow_half SetTheory.PGame.add_powHalf_succ_self_eq_powHalf
 
@@ -186,7 +186,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
   induction' n with n hn
   · simp only [Nat.zero_eq, pow_zero, powHalf_zero, one_smul]
   · rw [← hn, ← double_powHalf_succ_eq_powHalf n, smul_smul (2 ^ n) 2 (powHalf n.succ), mul_comm,
-      pow_succ]
+      pow_succ']
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]

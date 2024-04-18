@@ -47,9 +47,9 @@ of `Shrinkable MyType` and `SampleableExt MyType`. We can define one as follows:
 
 ```lean
 instance : Shrinkable MyType where
-  shrink := λ ⟨x,y,h⟩ =>
+  shrink := fun ⟨x,y,h⟩ ↦
     let proxy := Shrinkable.shrink (x, y - x)
-    proxy.map (λ ⟨⟨fst, snd⟩, ha⟩ => ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
+    proxy.map (fun ⟨⟨fst, snd⟩, ha⟩ ↦ ⟨⟨fst, fst + snd, sorry⟩, sorry⟩)
 
 instance : SampleableExt MyType :=
   SampleableExt.mkSelfContained do
@@ -275,11 +275,11 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
     Testable (NamedBinder var <| ∀ h, β h) where
   run := fun cfg min ↦ do
     if h : p then
-      let res := (runProp (β h) cfg min)
+      let res := runProp (β h) cfg min
       let s := printProp p
       (fun r ↦ addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| fun q _ ↦ q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (fun _ ↦ pure <| gaveUp 1)
+      let res := fun _ ↦ pure <| gaveUp 1
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else
@@ -509,8 +509,8 @@ open Lean
 quantifiers and add `NamedBinder` annotations next to them. -/
 partial def addDecorations (e : Expr) : MetaM Expr :=
   Meta.transform e fun expr => do
-    if not (← Meta.inferType e).isProp then
-      return .continue
+    if not (← Meta.inferType expr).isProp then
+      return .done expr
     else if let Expr.forallE name type body data := expr then
       let newType ← addDecorations type
       let newBody ← Meta.withLocalDecl name data type fun fvar => do

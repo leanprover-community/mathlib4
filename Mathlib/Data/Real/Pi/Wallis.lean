@@ -63,7 +63,7 @@ theorem W_eq_factorial_ratio (n : ℕ) :
     W n = 2 ^ (4 * n) * n ! ^ 4 / ((2 * n)! ^ 2 * (2 * n + 1)) := by
   induction' n with n IH
   · simp only [W, prod_range_zero, Nat.factorial_zero, mul_zero, pow_zero,
-      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne.def,
+      algebraMap.coe_one, one_pow, mul_one, algebraMap.coe_zero, zero_add, div_self, Ne,
       one_ne_zero, not_false_iff]
     norm_num
   · unfold W at IH ⊢
@@ -111,7 +111,7 @@ theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
   simp_rw [h]
   refine' (tendsto_const_nhds.div_atTop _).const_sub _
   refine' Tendsto.atTop_add _ tendsto_const_nhds
-  exact tendsto_nat_cast_atTop_atTop.const_mul_atTop two_pos
+  exact tendsto_natCast_atTop_atTop.const_mul_atTop two_pos
 #align real.wallis.tendsto_W_nhds_pi_div_two Real.Wallis.tendsto_W_nhds_pi_div_two
 
 end Wallis

@@ -119,7 +119,7 @@ theorem ClosedEmbedding.paracompactSpace [ParacompactSpace Y] {e : X → Y} (he 
     simp only [← hU] at hu ⊢
     have heU : range e ⊆ ⋃ i, U i := by
       simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using hu
-    rcases precise_refinement_set he.closed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
+    rcases precise_refinement_set he.isClosed_range U hUo heU with ⟨V, hVo, heV, hVf, hVU⟩
     refine ⟨α, fun a ↦ e ⁻¹' (V a), fun a ↦ (hVo a).preimage he.continuous, ?_,
       hVf.preimage_continuous he.continuous, fun a ↦ ⟨a, preimage_mono (hVU a)⟩⟩
     simpa only [range_subset_iff, mem_iUnion, iUnion_eq_univ_iff] using heV
@@ -287,7 +287,7 @@ instance (priority := 100) paracompact_of_locallyCompact_sigmaCompact [WeaklyLoc
   exact ⟨β, t, fun x ↦ (hto x).1.2, htc, htf, fun b ↦ ⟨i <| c b, (hto b).2⟩⟩
 #align paracompact_of_locally_compact_sigma_compact paracompact_of_locallyCompact_sigmaCompact
 
-/- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
+/-- **Dieudonné's theorem**: a paracompact Hausdorff space is normal.
 Formalization is based on the proof
 at [ncatlab](https://ncatlab.org/nlab/show/paracompact+Hausdorff+spaces+are+normal). -/
 instance (priority := 100) T4Space.of_paracompactSpace_t2Space [T2Space X] [ParacompactSpace X] :

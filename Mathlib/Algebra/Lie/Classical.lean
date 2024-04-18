@@ -76,9 +76,7 @@ open Matrix
 open scoped Matrix
 
 variable (n p q l : Type*) (R : Type u₂)
-
 variable [DecidableEq n] [DecidableEq p] [DecidableEq q] [DecidableEq l]
-
 variable [CommRing R]
 
 @[simp]

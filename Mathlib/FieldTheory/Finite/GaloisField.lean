@@ -56,7 +56,7 @@ theorem galois_poly_separable {K : Type*} [Field K] (p q : ℕ) [CharP K p] (h :
     Separable (X ^ q - X : K[X]) := by
   use 1, X ^ q - X - 1
   rw [← CharP.cast_eq_zero_iff K[X] p] at h
-  rw [derivative_sub, derivative_X_pow, derivative_X, C_eq_nat_cast, h]
+  rw [derivative_sub, derivative_X_pow, derivative_X, C_eq_natCast, h]
   ring
 #align galois_poly_separable galois_poly_separable
 

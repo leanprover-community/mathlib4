@@ -48,14 +48,12 @@ universe w v u
 namespace CategoryTheory
 
 variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category E]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology E}
 
 /-- An auxiliary structure that witnesses the fact that `f` factors through an image object of `G`.
 -/
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 structure Presieve.CoverByImageStructure (G : C ⥤ D) {V U : D} (f : V ⟶ U) where
   obj : C
   lift : V ⟶ G.obj obj
@@ -100,6 +98,17 @@ lemma Functor.is_cover_of_isCoverDense (G : C ⥤ D) (K : GrothendieckTopology D
     [G.IsCoverDense K] (U : D) : Sieve.coverByImage G U ∈ K U := by
   apply Functor.IsCoverDense.is_cover
 
+lemma Functor.isCoverDense_of_generate_singleton_functor_π_mem (G : C ⥤ D)
+    (K : GrothendieckTopology D)
+    (h : ∀ B, ∃ (X : C) (f : G.obj X ⟶ B), Sieve.generate (Presieve.singleton f) ∈ K B) :
+    G.IsCoverDense K where
+  is_cover B := by
+    obtain ⟨X, f, h⟩ := h B
+    refine K.superset_covering ?_ h
+    intro Y f ⟨Z, g, _, h, w⟩
+    cases h
+    exact ⟨⟨_, g, _, w⟩⟩
+
 attribute [nolint docBlame] CategoryTheory.Functor.IsCoverDense.is_cover
 
 open Presieve Opposite
@@ -107,7 +116,6 @@ open Presieve Opposite
 namespace Functor.IsCoverDense
 
 variable {K}
-
 variable {A : Type*} [Category A] (G : C ⥤ D) [G.IsCoverDense K]
 
 -- this is not marked with `@[ext]` because `H` can not be inferred from the type
@@ -192,12 +200,8 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
   refine' congr_fun _ x
-  -- Porting note: these next 3 tactics (simp, rw, simp) were just one big `simp only` in Lean 3
-  -- but I can't get `simp` to do the `rw` line.
-  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op]
-  rw [← ℱ.map_comp, ← ℱ.map_comp] -- `simp only [← ℱ.map_comp]` does nothing, even if I add
-  -- the relevant explicit inputs
-  simp only [← op_comp, G.image_preimage]
+  simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
+    ← ℱ.map_comp, ← op_comp, G.image_preimage]
   congr 3
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_compatible
@@ -519,13 +523,9 @@ namespace CategoryTheory.Functor.IsCoverDense
 open CategoryTheory
 
 variable {C D : Type u} [Category.{v} C] [Category.{v} D]
-
 variable (G : C ⥤ D) [Full G] [Faithful G]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {A : Type w} [Category.{max u v} A] [Limits.HasLimits A]
-
 variable [G.IsCoverDense K] [G.IsContinuous J K] [G.IsCocontinuous J K]
 
 instance (Y : Sheaf J A) : IsIso ((G.sheafAdjunctionCocontinuous A J K).counit.app Y) := by

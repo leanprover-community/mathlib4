@@ -120,7 +120,7 @@ lemma pairwiseDisjoint_insert_diffFinset (hC : IsSetSemiring C) (hs : s ∈ C) (
     PairwiseDisjoint (insert t (hC.diffFinset hs ht) : Set (Set α)) id := by
   have h := hC.pairwiseDisjoint_diffFinset hs ht
   refine PairwiseDisjoint.insert_of_not_mem h (hC.not_mem_diffFinset hs ht) fun u hu ↦ ?_
-  simp_rw [id.def]
+  simp_rw [id]
   refine Disjoint.mono_right ?_ (hC.disjoint_sUnion_diffFinset hs ht)
   simp only [Set.le_eq_subset]
   exact subset_sUnion_of_mem hu
@@ -166,14 +166,14 @@ lemma exists_disjoint_finset_diff_eq (hC : IsSetSemiring C) (hs : s ∈ C) (hI :
   have hJ'_subset : ↑J' ⊆ C := by
     intro u
     simp only [J' ,Subtype.coe_mk, univ_eq_attach, coe_biUnion, mem_coe, mem_attach, iUnion_true,
-      mem_iUnion, Finset.exists_coe, bex_imp]
+      mem_iUnion, Finset.exists_coe, exists₂_imp]
     intro v hv huvt
     exact hJu_subset v (h_ss hv) huvt
   refine ⟨J', hJ'_subset, ?_, ?_⟩
   · rw [Finset.coe_biUnion]
     refine PairwiseDisjoint.biUnion ?_ ?_
-    · simp only [univ_eq_attach, mem_coe, id.def, iSup_eq_iUnion]
-      simp_rw [PairwiseDisjoint, Set.Pairwise, Function.onFun]
+    · simp only [univ_eq_attach, mem_coe, id, iSup_eq_iUnion]
+      simp_rw [PairwiseDisjoint, Set.Pairwise]
       intro x _ y _ hxy
       have hxy_disj : Disjoint (x : Set α) y := by
         by_contra h_contra
@@ -256,7 +256,7 @@ lemma pairwiseDisjoint_union_diffFinset₀ (hC : IsSetSemiring C) (hs : s ∈ C)
     PairwiseDisjoint (I ∪ hC.diffFinset₀ hs hI : Set (Set α)) id := by
   rw [pairwiseDisjoint_union]
   refine ⟨h_dis, hC.pairwiseDisjoint_diffFinset₀ hs hI, fun u hu v hv _ ↦ ?_⟩
-  simp_rw [id.def]
+  simp_rw [id]
   exact disjoint_of_subset (subset_sUnion_of_mem hu) (subset_sUnion_of_mem hv)
     (hC.disjoint_sUnion_diffFinset₀ hs hI)
 

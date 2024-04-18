@@ -14,7 +14,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install Python
         uses: actions/setup-python@v4
@@ -55,7 +55,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update Mathlib.lean
         run: |

@@ -350,7 +350,6 @@ end
 section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 theorem middle_assoc' :
@@ -380,7 +379,6 @@ end TensorBimod
 section
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 /-- Tensor product of two bimodule objects as a bimodule object. -/
@@ -470,9 +468,7 @@ end
 namespace AssociatorBimod
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
-
 variable {R S T U : Mon_ C} (P : Bimod R S) (Q : Bimod S T) (L : Bimod T U)
 
 /-- An auxiliary morphism for the definition of the underlying morphism of the forward component of
@@ -687,7 +683,6 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.left_unitor_Bimod.inv_hom_id Bimod.LeftUnitorBimod.inv_hom_id
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 theorem hom_left_act_hom' :
@@ -754,7 +749,6 @@ set_option linter.uppercaseLean3 false in
 #align Bimod.right_unitor_Bimod.inv_hom_id Bimod.RightUnitorBimod.inv_hom_id
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 theorem hom_left_act_hom' :
@@ -784,7 +778,6 @@ set_option linter.uppercaseLean3 false in
 end RightUnitorBimod
 
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorLeft X)]
-
 variable [∀ X : C, PreservesColimitsOfSize.{0, 0} (tensorRight X)]
 
 /-- The associator as a bimodule isomorphism. -/
