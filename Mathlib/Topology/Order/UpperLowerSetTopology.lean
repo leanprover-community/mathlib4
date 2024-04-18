@@ -263,7 +263,7 @@ protected lemma monotone_iff_continuous [TopologicalSpace α] [TopologicalSpace 
     exact fun _ hs ↦ IsUpperSet.preimage hs hf
   · intro hf a b hab
     rw [← mem_Iic, ← closure_singleton] at hab ⊢
-    apply (Continuous.closure_preimage_subset hf {f b})
+    apply Continuous.closure_preimage_subset hf {f b}
     apply mem_of_mem_of_subset hab
     apply closure_mono
     rw [singleton_subset_iff, mem_preimage, mem_singleton_iff]

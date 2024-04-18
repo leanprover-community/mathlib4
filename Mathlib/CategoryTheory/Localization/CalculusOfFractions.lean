@@ -693,6 +693,21 @@ lemma map_eq_of_map_eq {X Y : C}
   apply (Localization.uniq L₂ L₁ W).functor.map_injective
   rw [map_compatibility φ₁ L₂ L₁, map_compatibility φ₂ L₂ L₁, h]
 
+lemma map_comp_map_eq_map {X Y Z : C} (z₁ : W.LeftFraction X Y) (z₂ : W.LeftFraction Y Z)
+    (z₃ : W.LeftFraction z₁.Y' z₂.Y') (h₃ : z₂.f ≫ z₃.s = z₁.s ≫ z₃.f)
+    (L : C ⥤ D) [L.IsLocalization W] :
+    z₁.map L (Localization.inverts L W) ≫ z₂.map L (Localization.inverts L W) =
+      (z₁.comp₀ z₂ z₃).map L (Localization.inverts L W) := by
+  have := Localization.inverts L W _ z₂.hs
+  have := Localization.inverts L W _ z₃.hs
+  have : IsIso (L.map (z₂.s ≫ z₃.s)) := by
+    rw [L.map_comp]
+    infer_instance
+  dsimp [LeftFraction.comp₀]
+  rw [← cancel_mono (L.map (z₂.s ≫ z₃.s)), map_comp_map_s,
+    L.map_comp, assoc, map_comp_map_s_assoc, ← L.map_comp, h₃,
+    L.map_comp, map_comp_map_s_assoc, L.map_comp]
+
 end
 
 end LeftFraction
@@ -750,7 +765,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
-    EssSurj L.mapArrow where
+    L.mapArrow.EssSurj where
   mem_essImage f := by
     have := Localization.essSurj L W
     obtain ⟨X, ⟨eX⟩⟩ : ∃ (X : C), Nonempty (L.obj X ≅ f.left) :=
@@ -958,7 +973,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 lemma Localization.essSurj_mapArrow_of_hasRightCalculusofFractions :
-    EssSurj L.mapArrow where
+    L.mapArrow.EssSurj where
   mem_essImage f := by
     have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L.op W.op
     obtain ⟨g, ⟨e⟩⟩ : ∃ (g : _), Nonempty (L.op.mapArrow.obj g ≅ Arrow.mk f.hom.op) :=

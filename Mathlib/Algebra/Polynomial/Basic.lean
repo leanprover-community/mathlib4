@@ -66,7 +66,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 #align polynomial.of_finsupp Polynomial.ofFinsupp
 #align polynomial.to_finsupp Polynomial.toFinsupp
 
--- mathport name: polynomial
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
 open AddMonoidAlgebra
@@ -141,6 +140,10 @@ instance sub {R : Type u} [Ring R] : Sub R[X] :=
 instance mul' : Mul R[X] :=
   ⟨mul⟩
 #align polynomial.has_mul Polynomial.mul'
+
+-- If the private definitions are accidentally exposed, simplify them away.
+@[simp] theorem add_eq_add : add p q = p + q := rfl
+@[simp] theorem mul_eq_mul : mul p q = p * q := rfl
 
 instance smulZeroClass {S : Type*} [SMulZeroClass S R] : SMulZeroClass S R[X] where
   smul r p := ⟨r • p.toFinsupp⟩
@@ -300,7 +303,7 @@ instance semiring : Semiring R[X] :=
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
     toOne := Polynomial.one
-    nsmul := (. • .)
+    nsmul := (· • ·)
     npow := fun n x => (x ^ n) }
 #align polynomial.semiring Polynomial.semiring
 
@@ -491,9 +494,7 @@ theorem monomial_eq_zero_iff (t : R) (n : ℕ) : monomial n t = 0 ↔ t = 0 :=
 #align polynomial.monomial_eq_zero_iff Polynomial.monomial_eq_zero_iff
 
 theorem support_add : (p + q).support ⊆ p.support ∪ q.support := by
-  rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp only [← ofFinsupp_add, support]
-  exact support_add
+  simpa [support] using Finsupp.support_add
 #align polynomial.support_add Polynomial.support_add
 
 /-- `C a` is the constant polynomial `a`.
@@ -552,9 +553,9 @@ theorem C_pow : C (a ^ n) = C a ^ n :=
 #align polynomial.C_pow Polynomial.C_pow
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem C_eq_nat_cast (n : ℕ) : C (n : R) = (n : R[X]) :=
+theorem C_eq_natCast (n : ℕ) : C (n : R) = (n : R[X]) :=
   map_natCast C n
-#align polynomial.C_eq_nat_cast Polynomial.C_eq_nat_cast
+#align polynomial.C_eq_nat_cast Polynomial.C_eq_natCast
 
 @[simp]
 theorem C_mul_monomial : C a * monomial n b = monomial n (a * b) := by
@@ -689,9 +690,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  -- porting note (#10745): was `simp [← ofFinsupp_single, coeff, LinearMap.coe_mk]`.
-  rw [← ofFinsupp_single]
-  simp only [coeff, LinearMap.coe_mk]
+  simp only [← ofFinsupp_single, coeff, LinearMap.coe_mk]
   rw [Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
@@ -758,8 +757,8 @@ theorem coeff_C_ne_zero (h : n ≠ 0) : (C a).coeff n = 0 := by rw [coeff_C, if_
 lemma coeff_C_succ {r : R} {n : ℕ} : coeff (C r) (n + 1) = 0 := by simp [coeff_C]
 
 @[simp]
-theorem coeff_nat_cast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
-  simp only [← C_eq_nat_cast, coeff_C, Nat.cast_ite, Nat.cast_zero]
+theorem coeff_natCast_ite : (Nat.cast m : R[X]).coeff n = ite (n = 0) m 0 := by
+  simp only [← C_eq_natCast, coeff_C, Nat.cast_ite, Nat.cast_zero]
 
 -- See note [no_index around OfNat.ofNat]
 @[simp]
@@ -957,8 +956,7 @@ theorem support_X (H : ¬(1 : R) = 0) : (X : R[X]).support = singleton 1 := by
 
 theorem monomial_left_inj {a : R} (ha : a ≠ 0) {i j : ℕ} :
     monomial i a = monomial j a ↔ i = j := by
-  -- porting note (#10745): was `simp [← ofFinsupp_single, Finsupp.single_left_inj ha]`
-  rw [← ofFinsupp_single, ← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
+  simp only [← ofFinsupp_single, ofFinsupp.injEq, Finsupp.single_left_inj ha]
 #align polynomial.monomial_left_inj Polynomial.monomial_left_inj
 
 theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v ≠ 0) :
@@ -968,9 +966,9 @@ theorem binomial_eq_binomial {k l m n : ℕ} {u v : R} (hu : u ≠ 0) (hv : v �
   exact Finsupp.single_add_single_eq_single_add_single hu hv
 #align polynomial.binomial_eq_binomial Polynomial.binomial_eq_binomial
 
-theorem nat_cast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
+theorem natCast_mul (n : ℕ) (p : R[X]) : (n : R[X]) * p = n • p :=
   (nsmul_eq_mul _ _).symm
-#align polynomial.nat_cast_mul Polynomial.nat_cast_mul
+#align polynomial.nat_cast_mul Polynomial.natCast_mul
 
 /-- Summing the values of a function applied to the coefficients of a polynomial -/
 def sum {S : Type*} [AddCommMonoid S] (p : R[X]) (f : ℕ → R → S) : S :=
@@ -1194,7 +1192,7 @@ instance ring : Ring R[X] :=
     toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
-    zsmul := ((. • .) : ℤ → R[X] → R[X]) }
+    zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
 #align polynomial.ring Polynomial.ring
 
 @[simp]
@@ -1228,8 +1226,8 @@ theorem support_neg {p : R[X]} : (-p).support = p.support := by
   rw [← ofFinsupp_neg, support, support]; apply Finsupp.support_neg
 #align polynomial.support_neg Polynomial.support_neg
 
-theorem C_eq_int_cast (n : ℤ) : C (n : R) = n := by simp
-#align polynomial.C_eq_int_cast Polynomial.C_eq_int_cast
+theorem C_eq_intCast (n : ℤ) : C (n : R) = n := by simp
+#align polynomial.C_eq_int_cast Polynomial.C_eq_intCast
 
 theorem C_neg : C (-a) = -C a :=
   RingHom.map_neg C a

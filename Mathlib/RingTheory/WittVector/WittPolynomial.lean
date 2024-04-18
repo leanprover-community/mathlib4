@@ -93,13 +93,11 @@ set_option linter.uppercaseLean3 false in
 This allows us to simply write `W n` or `W_ ℤ n`. -/
 
 
--- mathport name: witt_polynomial
 -- Notation with ring of coefficients explicit
 set_option quotPrecheck false in
 @[inherit_doc]
 scoped[Witt] notation "W_" => wittPolynomial p
 
--- mathport name: witt_polynomial.infer
 -- Notation with ring of coefficients implicit
 set_option quotPrecheck false in
 @[inherit_doc]
@@ -109,7 +107,7 @@ open Witt
 
 open MvPolynomial
 
-/- The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
+/-! The first observation is that the Witt polynomial doesn't really depend on the coefficient ring.
 If we map the coefficients through a ring homomorphism, we obtain the corresponding Witt polynomial
 over the target ring. -/
 section
@@ -153,8 +151,7 @@ theorem aeval_wittPolynomial {A : Type*} [CommRing A] [Algebra R A] (f : ℕ →
 #align aeval_witt_polynomial aeval_wittPolynomial
 
 /-- Over the ring `ZMod (p^(n+1))`, we produce the `n+1`st Witt polynomial
-by expanding the `n`th Witt polynomial by `p`.
--/
+by expanding the `n`th Witt polynomial by `p`. -/
 @[simp]
 theorem wittPolynomial_zmod_self (n : ℕ) :
     W_ (ZMod (p ^ (n + 1))) (n + 1) = expand p (W_ (ZMod (p ^ (n + 1))) n) := by

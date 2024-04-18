@@ -127,6 +127,16 @@ theorem adjoin_induction' {p : adjoin R s → Prop} (mem : ∀ (x) (h : x ∈ s)
           Exists.elim hy fun hy' hy => ⟨Subalgebra.mul_mem _ hx' hy', mul _ _ hx hy⟩
 #align algebra.adjoin_induction' Algebra.adjoin_induction'
 
+@[elab_as_elim]
+theorem adjoin_induction'' {x : A} (hx : x ∈ adjoin R s)
+    {p : (x : A) → x ∈ adjoin R s → Prop} (mem : ∀ x (h : x ∈ s), p x (subset_adjoin h))
+    (algebraMap : ∀ (r : R), p (algebraMap R A r) (algebraMap_mem _ r))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy)) :
+    p x hx := by
+  refine adjoin_induction' mem algebraMap ?_ ?_ ⟨x, hx⟩ (p := fun x : adjoin R s ↦ p x.1 x.2)
+  exacts [fun x y ↦ add x.1 x.2 y.1 y.2, fun x y ↦ mul x.1 x.2 y.1 y.2]
+
 @[simp]
 theorem adjoin_adjoin_coe_preimage {s : Set A} : adjoin R (((↑) : adjoin R s → A) ⁻¹' s) = ⊤ := by
   refine eq_top_iff.2 fun x ↦

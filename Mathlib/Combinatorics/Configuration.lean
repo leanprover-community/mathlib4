@@ -168,7 +168,6 @@ theorem Nondegenerate.exists_injective_of_card_le [Nondegenerate P L] [Fintype P
 #align configuration.nondegenerate.exists_injective_of_card_le Configuration.Nondegenerate.exists_injective_of_card_le
 
 -- If `s < univ`, then consequence of `hs₂`
--- Porting note: left out {P} to avoid redundant binder annotation
 variable (L)
 
 /-- Number of points on a given line. -/
@@ -183,7 +182,6 @@ noncomputable def pointCount (l : L) : ℕ :=
   Nat.card { p : P // p ∈ l }
 #align configuration.point_count Configuration.pointCount
 
--- Porting note: left out (P) to avoid redundant binder annotation
 variable (L)
 
 theorem sum_lineCount_eq_sum_pointCount [Fintype P] [Fintype L] :
@@ -194,7 +192,7 @@ theorem sum_lineCount_eq_sum_pointCount [Fintype P] [Fintype L] :
     calc
       (Σp, { l : L // p ∈ l }) ≃ { x : P × L // x.1 ∈ x.2 } :=
         (Equiv.subtypeProdEquivSigmaSubtype (· ∈ ·)).symm
-      _ ≃ { x : L × P // x.2 ∈ x.1 } := ((Equiv.prodComm P L).subtypeEquiv fun x => Iff.rfl)
+      _ ≃ { x : L × P // x.2 ∈ x.1 } := (Equiv.prodComm P L).subtypeEquiv fun x => Iff.rfl
       _ ≃ Σl, { p // p ∈ l } := Equiv.subtypeProdEquivSigmaSubtype fun (l : L) (p : P) => p ∈ l
 #align configuration.sum_line_count_eq_sum_point_count Configuration.sum_lineCount_eq_sum_pointCount
 
@@ -375,7 +373,6 @@ theorem card_points_eq_card_lines [Fintype P] [Fintype L] : Fintype.card P = Fin
   le_antisymm (HasLines.card_le P L) (HasPoints.card_le P L)
 #align configuration.projective_plane.card_points_eq_card_lines Configuration.ProjectivePlane.card_points_eq_card_lines
 
--- Porting note: left out (L) to avoid redundant binder annotation
 variable {P}
 
 theorem lineCount_eq_lineCount [Finite P] [Finite L] (p q : P) : lineCount L p = lineCount L q := by
@@ -405,7 +402,6 @@ theorem pointCount_eq_pointCount [Finite P] [Finite L] (l m : L) :
   apply lineCount_eq_lineCount (Dual P)
 #align configuration.projective_plane.point_count_eq_point_count Configuration.ProjectivePlane.pointCount_eq_pointCount
 
--- Porting note: left out {L} to avoid redundant binder annotation
 variable {P}
 
 theorem lineCount_eq_pointCount [Finite P] [Finite L] (p : P) (l : L) :
@@ -423,7 +419,6 @@ theorem Dual.order [Finite P] [Finite L] : order (Dual L) (Dual P) = order P L :
   congr_arg (fun n => n - 1) (lineCount_eq_pointCount _ _)
 #align configuration.projective_plane.dual.order Configuration.ProjectivePlane.Dual.order
 
--- Porting note: left out (L) to avoid redundant binder annotation
 variable {P}
 
 theorem lineCount_eq [Finite P] [Finite L] (p : P) : lineCount L p = order P L + 1 := by
@@ -467,7 +462,6 @@ theorem two_lt_pointCount [Finite P] [Finite L] (l : L) : 2 < pointCount P l := 
   simpa only [pointCount_eq P l, Nat.succ_lt_succ_iff] using one_lt_order P L
 #align configuration.projective_plane.two_lt_point_count Configuration.ProjectivePlane.two_lt_pointCount
 
--- Porting note: left out (P) to avoid redundant binder annotation
 variable (L)
 
 theorem card_points [Fintype P] [Finite L] : Fintype.card P = order P L ^ 2 + order P L + 1 := by

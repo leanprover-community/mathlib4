@@ -200,7 +200,7 @@ theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ
     simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, zsmul_one]
   rw [h, ascPochhammer_smeval_cast, add_comm_sub]
 
-theorem choose_nat_cast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+theorem choose_natCast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
