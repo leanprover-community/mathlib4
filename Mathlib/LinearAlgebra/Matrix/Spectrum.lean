@@ -153,30 +153,6 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   simp
 
 
-lemma star_eq_inv' (U : Matrix.unitaryGroup n 𝕜) : star (U : Matrix n n 𝕜) = U⁻¹ := by rfl
-
-@[simp]
-lemma isUnit_det_of_mem_unitaryGroup {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) :
-      IsUnit (det U) := isUnit_det_of_right_inverse (hU.2)
-
-lemma isUnit_of_mem_unitaryGroup {U : Matrix n n 𝕜} (hU : U ∈ Matrix.unitaryGroup n 𝕜) : IsUnit U
-       := by simp only [(Matrix.isUnit_iff_isUnit_det U).mpr, isUnit_det_of_right_inverse (hU.2)]
-
-lemma Matrix.IsUnit_inv {A : Matrix n n 𝕜} (hA : IsUnit A) : IsUnit A⁻¹ := by
-  simp only[(Matrix.isUnit_iff_isUnit_det A⁻¹).mpr,
-         Matrix.isUnit_nonsing_inv_det A ((Matrix.isUnit_iff_isUnit_det A).mp hA)]
-/-
-@[simp]
-lemma rank_conj_eq_of_unit (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
-      rank ((A : Matrix n n 𝕜) * B * (A : Matrix n n 𝕜)⁻¹) = rank B := by
-  have hA1 := rank_mul_eq_right_of_isUnit_det A B ((Matrix.isUnit_iff_isUnit_det (A : Matrix n n 𝕜)).mp (Units.isUnit A))
-  have hA2 := rank_mul_eq_left_of_isUnit_det (A⁻¹ : Matrix n n 𝕜) ((A : Matrix n n 𝕜) * B)
-             ((Matrix.isUnit_iff_isUnit_det (A⁻¹ : Matrix n n 𝕜)).mp (Matrix.IsUnit_inv (Units.isUnit A)))
-  rw [hA1] at hA2
-  apply hA2
--/
-
-
 @[simp]
 theorem rank_mul_units (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
     rank (B * (A : Matrix n n 𝕜)) = rank B := by
@@ -197,38 +173,10 @@ theorem rank_unitary_mul (A : unitaryGroup n 𝕜) (B : Matrix n n 𝕜) :
 theorem rank_mul_unitary (A : unitaryGroup n 𝕜)(B : Matrix n n 𝕜) :
     rank ((A : Matrix n n 𝕜) * B) = rank B := rank_units_mul (unitary.toUnits A) B
 
-
-lemma unitary_coe_inv (U : unitaryGroup n 𝕜) : (U : unitaryGroup n 𝕜)⁻¹ = (U⁻¹ : Matrix n n 𝕜) := by
-        sorry
-
---Units.inv_eq_val_inv
-
-lemma rank_eq_rank_diagonal0 : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem2, ← unitary.coe_star]
-  simp [-unitary.coe_star, rank_diagonal]
-
-
-lemma rank_eq_rank_diagonal1 : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem2]
-  have h1 : (eigenvectorUnitary hA : Matrix n n 𝕜)⁻¹ = (eigenvectorUnitary hA) := by sorry
-  rw [star_eq_inv']
-  rw [unitary_coe_inv]
-  conv_lhs => rw [rank_conj_eq_of_unit (unitary.toUnits (hA.eigenvectorUnitary))
-        (diagonal (RCLike.ofReal (K := 𝕜) ∘ eigenvalues hA))]
-
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem2]
-  have hG : (hA.eigenvectorUnitary.1) * (star (hA.eigenvectorUnitary.1)) = 1 := by
-          simp only [hA.eigenvectorUnitary.2, unitary.mul_star_self_of_mem]
-  have hE := isUnit_det_of_right_inverse hG
-  have hE1 := isUnit_det_of_left_inverse hG
-  rw [mul_assoc, rank_mul_eq_right_of_isUnit_det
-  (B := diagonal (RCLike.ofReal (K := 𝕜) ∘ eigenvalues hA) * (star (hA.eigenvectorUnitary.1)))
-  (A := (hA.eigenvectorUnitary.1)) (hA := hE)]
-  rw [rank_mul_eq_left_of_isUnit_det
-      (B := diagonal (RCLike.ofReal ∘ eigenvalues hA)) (A := star (hA.eigenvectorUnitary.1)) hE1]
-  simp only [rank_diagonal, Function.comp_apply, ne_eq, algebraMap.lift_map_eq_zero_iff]
+  conv_lhs => rw [hA.spectral_theorem2, ← unitary.coe_star]
+  simp [-unitary.coe_star, rank_diagonal]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
