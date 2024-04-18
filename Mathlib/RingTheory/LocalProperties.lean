@@ -10,7 +10,7 @@ import Mathlib.RingTheory.Localization.Integer
 import Mathlib.RingTheory.Localization.Submodule
 import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.RingHomProperties
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import ring_theory.local_properties from "leanprover-community/mathlib"@"a7c017d750512a352b623b1824d75da5998457d0"
 
@@ -472,7 +472,7 @@ theorem IsLocalization.smul_mem_finsetIntegerMultiple_span [Algebra R S] [Algebr
 #align is_localization.smul_mem_finset_integer_multiple_span IsLocalization.smul_mem_finsetIntegerMultiple_span
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ span R' s`,
-then `t • x ∈ span R s` for some `t : M`.-/
+then `t • x ∈ span R s` for some `t : M`. -/
 theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Submodule.span R' s) : ∃ t : M, t • x ∈ Submodule.span R s := by
@@ -497,7 +497,7 @@ theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
 #align multiple_mem_span_of_mem_localization_span multiple_mem_span_of_mem_localization_span
 
 /-- If `S` is an `R' = M⁻¹R` algebra, and `x ∈ adjoin R' s`,
-then `t • x ∈ adjoin R s` for some `t : M`.-/
+then `t • x ∈ adjoin R s` for some `t : M`. -/
 theorem multiple_mem_adjoin_of_mem_localization_adjoin [Algebra R' S] [Algebra R S]
     [IsScalarTower R R' S] [IsLocalization M R'] (s : Set S) (x : S)
     (hx : x ∈ Algebra.adjoin R' s) : ∃ t : M, t • x ∈ Algebra.adjoin R s := by

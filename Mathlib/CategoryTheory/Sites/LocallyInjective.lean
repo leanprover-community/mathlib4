@@ -140,7 +140,7 @@ variable {E : Type u'} [Category.{max u v} E] [ConcreteCategory E]
   [∀ (P : Cᵒᵖ ⥤ E) (X : C) (S : J.Cover X),
     HasMultiequalizer (GrothendieckTopology.Cover.index S P)]
   [∀ (X : C), HasColimitsOfShape (GrothendieckTopology.Cover J X)ᵒᵖ E]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [ReflectsIsomorphisms (forget E)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget E)] [(forget E).ReflectsIsomorphisms]
 
 variable (P : Cᵒᵖ ⥤ E)
 

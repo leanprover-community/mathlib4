@@ -39,9 +39,9 @@ summability of the norms, this implies the overall convergence.
 ## Main results
 
 * `q.comp p` is the formal composition of the formal multilinear series `q` and `p`.
-* `has_fpower_series_at.comp` states that if two functions `g` and `f` admit power series expansions
+* `HasFPowerSeriesAt.comp` states that if two functions `g` and `f` admit power series expansions
   `q` and `p`, then `g ∘ f` admits a power series expansion given by `q.comp p`.
-* `analytic_at.comp` states that the composition of analytic functions is analytic.
+* `AnalyticAt.comp` states that the composition of analytic functions is analytic.
 * `FormalMultilinearSeries.comp_assoc` states that composition is associative on formal
   multilinear series.
 
@@ -49,18 +49,18 @@ summability of the norms, this implies the overall convergence.
 
 The main technical difficulty is to write down things. In particular, we need to define precisely
 `q.comp_along_composition p c` and to show that it is indeed a continuous multilinear
-function. This requires a whole interface built on the class `composition`. Once this is set,
+function. This requires a whole interface built on the class `Composition`. Once this is set,
 the main difficulty is to reorder the sums, writing the composition of the partial sums as a sum
 over some subset of `Σ n, composition n`. We need to check that the reordering is a bijection,
 running over difficulties due to the dependent nature of the types under consideration, that are
-controlled thanks to the interface for `composition`.
+controlled thanks to the interface for `Composition`.
 
 The associativity of composition on formal multilinear series is a nontrivial result: it does not
 follow from the associativity of composition of analytic functions, as there is no uniqueness for
 the formal multilinear series representing a function (and also, it holds even when the radius of
 convergence of the series is `0`). Instead, we give a direct proof, which amounts to reordering
 double sums in a careful way. The change of variables is a canonical (combinatorial) bijection
-`composition.sigma_equiv_sigma_pi` between `(Σ (a : composition n), composition a.length)` and
+`Composition.sigmaEquivSigmaPi` between `(Σ (a : composition n), composition a.length)` and
 `(Σ (c : composition n), Π (i : fin c.length), composition (c.blocks_fun i))`, and is described
 in more details below in the paragraph on associativity.
 -/
@@ -313,7 +313,7 @@ theorem compAlongComposition_bound {n : ℕ} (p : FormalMultilinearSeries 𝕜 E
     ‖f.compAlongComposition p c v‖ ≤ (‖f‖ * ∏ i, ‖p (c.blocksFun i)‖) * ∏ i : Fin n, ‖v i‖ :=
   calc
     ‖f.compAlongComposition p c v‖ = ‖f (p.applyComposition c v)‖ := rfl
-    _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := (ContinuousMultilinearMap.le_opNorm _ _)
+    _ ≤ ‖f‖ * ∏ i, ‖p.applyComposition c v i‖ := ContinuousMultilinearMap.le_opNorm _ _
     _ ≤ ‖f‖ * ∏ i, ‖p (c.blocksFun i)‖ * ∏ j : Fin (c.blocksFun i), ‖(v ∘ c.embedding i) j‖ := by
       apply mul_le_mul_of_nonneg_left _ (norm_nonneg _)
       refine' Finset.prod_le_prod (fun i _hi => norm_nonneg _) fun i _hi => _
@@ -486,7 +486,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
     have B := calc
       (∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n = ∏ i, ‖p (c.blocksFun i)‖₊ * rp ^ c.blocksFun i := by
         simp only [Finset.prod_mul_distrib, Finset.prod_pow_eq_pow_sum, c.sum_blocksFun]
-      _ ≤ ∏ _i : Fin c.length, Cp := (Finset.prod_le_prod' fun i _ => hCp _)
+      _ ≤ ∏ _i : Fin c.length, Cp := Finset.prod_le_prod' fun i _ => hCp _
       _ = Cp ^ c.length := by simp
       _ ≤ Cp ^ n := pow_le_pow_right hCp1 c.length_le
     calc
@@ -495,7 +495,7 @@ theorem comp_summable_nnreal (q : FormalMultilinearSeries 𝕜 F G) (p : FormalM
         mul_le_mul' (q.compAlongComposition_nnnorm p c) le_rfl
       _ = ‖q c.length‖₊ * rq ^ n * ((∏ i, ‖p (c.blocksFun i)‖₊) * rp ^ n) * r0 ^ n := by
         simp only [mul_pow]; ring
-      _ ≤ Cq * Cp ^ n * r0 ^ n := (mul_le_mul' (mul_le_mul' A B) le_rfl)
+      _ ≤ Cq * Cp ^ n * r0 ^ n := mul_le_mul' (mul_le_mul' A B) le_rfl
       _ = Cq / 4 ^ n := by
         simp only [r0]
         field_simp [mul_pow, (zero_lt_one.trans_le hCp1).ne']
@@ -739,7 +739,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
   rcases q.comp_summable_nnreal p Hg.radius_pos Hf.radius_pos with ⟨r, r_pos : 0 < r, hr⟩
   /- We will consider `y` which is smaller than `r` and `rf`, and also small enough that
     `f (x + y)` is close enough to `f x` to be in the disk where `g` is well behaved. Let
-    `min (r, rf, δ)` be this new radius.-/
+    `min (r, rf, δ)` be this new radius. -/
   obtain ⟨δ, δpos, hδ⟩ :
     ∃ δ : ℝ≥0∞, 0 < δ ∧ ∀ {z : E}, z ∈ EMetric.ball x δ → f z ∈ EMetric.ball (f x) rg := by
     have : EMetric.ball (f x) rg ∈ 𝓝 (f x) := EMetric.ball_mem_nhds _ Hg.r_pos
@@ -796,7 +796,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     -- composition passes to the limit under locally uniform convergence.
     have B₁ : ContinuousAt (fun z : F => g (f x + z)) (f (x + y) - f x) := by
       refine' ContinuousAt.comp _ (continuous_const.add continuous_id).continuousAt
-      simp only [add_sub_cancel, id.def]
+      simp only [add_sub_cancel, _root_.id]
       exact Hg.continuousOn.continuousAt (IsOpen.mem_nhds EMetric.isOpen_ball fy_mem)
     have B₂ : f (x + y) - f x ∈ EMetric.ball (0 : F) rg := by
       simpa [edist_eq_coe_nnnorm, edist_eq_coe_nnnorm_sub] using fy_mem
@@ -1183,7 +1183,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
     `r`, and the same component of `q`, and the same component of `p`, to the same coordinate of
     `v`. This is true by definition, but at each step one needs to convince Lean that the types
     one considers are the same, using a suitable congruence lemma to avoid dependent type issues.
-    This dance has to be done three times, one for `r`, one for `q` and one for `p`.-/
+    This dance has to be done three times, one for `r`, one for `q` and one for `p`. -/
   apply Finset.sum_congr rfl
   rintro ⟨a, b⟩ _
   dsimp [sigmaEquivSigmaPi]
