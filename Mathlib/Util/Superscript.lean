@@ -204,7 +204,8 @@ def _root_.Std.Format.mapStringsM {m} [Monad m] (f : Format) (f' : String → m 
   | .align _ | .line | .nil => pure f
 
 /-- Formatter for the script parser. -/
-def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) : Formatter := do
+def scriptParser.formatter (name : String) (m : Mapping) (k : SyntaxNodeKind) (p : Formatter) :
+    Formatter := do
   let stack ← modifyGet fun s => (s.stack, {s with stack := #[]})
   Formatter.node.formatter k p
   let st ← get
@@ -242,7 +243,8 @@ def superscript (p : Parser) : Parser :=
 def superscript.parenthesizer := Superscript.scriptParser.parenthesizer ``superscript
 /-- Formatter for the superscript parser. -/
 @[combinator_formatter superscript]
-def superscript.formatter := Superscript.scriptParser.formatter "super" .superscript ``superscript
+def superscript.formatter :=
+  Superscript.scriptParser.formatter "superscript" .superscript ``superscript
 
 
 /--

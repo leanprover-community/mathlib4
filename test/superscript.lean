@@ -69,7 +69,7 @@ run_cmd do
   Lean.logInfo <| ← `(term| ($a)$one_plus_one:subscript)
 
 /--
-error: Not a superscript: 'α'
+error: Not a subscript: 'α'
 ---
 info: (a)α
 -/
