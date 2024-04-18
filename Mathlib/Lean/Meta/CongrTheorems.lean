@@ -63,7 +63,7 @@ where
           -- See if we can prove `eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
-          if (← observing? <| prove g params).isSome then
+          if (← observing? <| prove g args).isSome then
             let eqPf ← instantiateMVars (.mvar g)
             process cthm type' argKinds (argKinds'.push .subsingletonInst)
               (params := params ++ #[x, y]) (args := args ++ params')
