@@ -2056,7 +2056,7 @@ a T₂.₅ space.  -/
 class T3Space (X : Type u) [TopologicalSpace X] extends T0Space X, RegularSpace X : Prop
 #align t3_space T3Space
 
-instance (priority := 90) [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
+instance (priority := 90) instT3Space [T0Space X] [RegularSpace X] : T3Space X := ⟨⟩
 
 theorem RegularSpace.t3Space_iff_t0Space [RegularSpace X] : T3Space X ↔ T0Space X := by
   constructor <;> intro <;> infer_instance

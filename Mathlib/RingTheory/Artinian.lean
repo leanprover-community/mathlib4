@@ -475,7 +475,7 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
     Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by
       rw [pow_succ', ← mul_assoc]
-    _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
+    _ ≤ J * Jac ^ n := mul_le_mul (by rwa [mul_comm]) le_rfl
     _ = ⊥ := by simp [J]
   refine' hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
   refine' this (mul_mem_mul (mem_span_singleton_self x) _)
