@@ -19,7 +19,7 @@ theorem extract_zero_length {a : Array α} :
   refine extract_empty_of_stop_le_start a ?h
   exact Nat.le_refl i
 
-theorem extract_append_left {a b : Array α} {i j : Nat} (h : j ≤ a.size):
+theorem extract_append_left {a b : Array α} {i j : Nat} (h : j ≤ a.size) :
     (a ++ b).extract i j = a.extract i j := by
   apply ext
   · simp only [size_extract, size_append]
