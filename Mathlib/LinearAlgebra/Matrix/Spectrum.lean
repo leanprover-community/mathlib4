@@ -148,6 +148,19 @@ lemma spectral_theorem' :
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
     congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
 
+
+@[simp]
+theorem rank_unitary_mul {m n R : Type*} [Fintype n] [CommRing R] [DecidableEq n] [StarRing R]
+    (A : unitaryGroup n R) (B : Matrix m n R) :
+    rank (B * (A : Matrix n n R)) = rank B :=
+  rank_mul_units (unitary.toUnits A) _
+
+@[simp]
+theorem rank_mul_unitary {m n R : Type*} [Fintype n] [CommRing R] [DecidableEq n][Fintype m]
+    [StarRing R] (A : unitaryGroup n R)(B : Matrix n m R) :
+    rank ((A : Matrix n n R) * B) = rank B :=
+  rank_units_mul (unitary.toUnits A) _
+
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem']
