@@ -89,7 +89,7 @@ class FiberFunctor {C : Type u₁} [Category.{u₂, u₁} C] [PreGaloisCategory 
   preservesQuotientsByFiniteGroups (G : Type u₂) [Group G] [Finite G] :
     PreservesColimitsOfShape (SingleObj G) F := by infer_instance
   /-- `F` reflects isomorphisms (G6). -/
-  reflectsIsos : F.ReflectsIsomorphisms := by infer_instance
+  reflectsIsos : ReflectsIsomorphisms F := by infer_instance
 
 /-- An object of a category `C` is connected if it is not initial
 and has no non-trivial subobjects. Lenstra, 3.12. -/
@@ -145,7 +145,7 @@ instance : ReflectsMonomorphisms F := ReflectsMonomorphisms.mk <| by
   exact (pullback.diagonal_isKernelPair f).mono_of_isIso_fst
 
 /-- Fiber functors are faithful. -/
-instance : F.Faithful where
+instance : Faithful F where
   map_injective {X Y} f g h := by
     haveI : IsIso (equalizer.ι (F.map f) (F.map g)) := equalizer.ι_of_eq h
     haveI : IsIso (F.map (equalizer.ι f g)) := by

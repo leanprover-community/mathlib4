@@ -15,6 +15,8 @@ import Mathlib.RingTheory.Nilpotent
 
 open Finset
 
+open BigOperators
+
 section
 
 variable (R : Type*) [CommRing R] [IsReduced R] (p n : ℕ) [ExpChar R p]

@@ -34,7 +34,7 @@ variable {C : Type*} [Category C] [Preadditive C]
 
 open MorphComponents
 
-instance : (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
+instance : ReflectsIsomorphisms (N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ)) :=
   ⟨fun {X Y} f => by
     intro
     -- restating the result in a way that allows induction on the degree n
@@ -96,7 +96,7 @@ set_option linter.uppercaseLean3 false in
 /-- We deduce that `N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms from the fact that
 `N₁ : SimplicialObject (Karoubi C) ⥤ Karoubi (ChainComplex (Karoubi C) ℕ)` does. -/
-instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)).ReflectsIsomorphisms :=
+instance : ReflectsIsomorphisms (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)) :=
   ⟨fun f => by
     intro
     -- The following functor `F` reflects isomorphism because it is
@@ -110,10 +110,10 @@ instance : (N₂ : Karoubi (SimplicialObject C) ⥤ Karoubi (ChainComplex C ℕ)
     let F := F₁ ⋙ F₂ ⋙ F₃ ⋙ F₄
     -- Porting note: we have to help Lean4 find the `ReflectsIsomorphisms` instances
     -- could this be fixed by setting better instance priorities?
-    haveI : F₁.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
-    haveI : F₂.ReflectsIsomorphisms := by infer_instance
-    haveI : F₃.ReflectsIsomorphisms := reflectsIsomorphisms_of_full_and_faithful _
-    haveI : ((KaroubiKaroubi.equivalence C).inverse).ReflectsIsomorphisms :=
+    haveI : ReflectsIsomorphisms F₁ := reflectsIsomorphisms_of_full_and_faithful _
+    haveI : ReflectsIsomorphisms F₂ := by infer_instance
+    haveI : ReflectsIsomorphisms F₃ := reflectsIsomorphisms_of_full_and_faithful _
+    haveI : ReflectsIsomorphisms ((KaroubiKaroubi.equivalence C).inverse) :=
       reflectsIsomorphisms_of_full_and_faithful _
     have : IsIso (F.map f) := by
       simp only [F]

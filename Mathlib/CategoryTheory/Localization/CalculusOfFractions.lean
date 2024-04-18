@@ -765,7 +765,7 @@ lemma MorphismProperty.map_eq_iff_postcomp {X Y : C} (f₁ f₂ : X ⟶ Y) :
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 lemma Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions :
-    L.mapArrow.EssSurj where
+    EssSurj L.mapArrow where
   mem_essImage f := by
     have := Localization.essSurj L W
     obtain ⟨X, ⟨eX⟩⟩ : ∃ (X : C), Nonempty (L.obj X ≅ f.left) :=
@@ -973,7 +973,7 @@ lemma MorphismProperty.map_eq_iff_precomp {Y Z : C} (f₁ f₂ : Y ⟶ Z) :
       Localization.isoOfHom_hom, ← L.map_comp, fac]
 
 lemma Localization.essSurj_mapArrow_of_hasRightCalculusofFractions :
-    L.mapArrow.EssSurj where
+    EssSurj L.mapArrow where
   mem_essImage f := by
     have := Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions L.op W.op
     obtain ⟨g, ⟨e⟩⟩ : ∃ (g : _), Nonempty (L.op.mapArrow.obj g ≅ Arrow.mk f.hom.op) :=

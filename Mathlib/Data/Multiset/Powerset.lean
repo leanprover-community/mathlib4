@@ -12,6 +12,9 @@ import Mathlib.Data.Multiset.Bind
 # The powerset of a multiset
 -/
 
+set_option autoImplicit true
+
+
 namespace Multiset
 
 open List
@@ -137,7 +140,8 @@ theorem revzip_powersetAux' {l : List α} ⦃x⦄ (h : x ∈ revzip (powersetAux
   exact Quot.sound (revzip_sublists' _ _ _ h)
 #align multiset.revzip_powerset_aux' Multiset.revzip_powersetAux'
 
-theorem revzip_powersetAux_lemma {α : Type*} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
+-- Porting note: I don't understand why `{α : Type u}` is necessary here
+theorem revzip_powersetAux_lemma {α : Type u} [DecidableEq α] (l : List α) {l' : List (Multiset α)}
     (H : ∀ ⦃x : _ × _⦄, x ∈ revzip l' → x.1 + x.2 = ↑l) :
     revzip l' = l'.map fun x => (x, (l : Multiset α) - x) := by
   have :
@@ -294,7 +298,7 @@ theorem powersetCard_eq_empty {α : Type*} (n : ℕ) {s : Multiset α} (h : card
 @[simp]
 theorem powersetCard_card_add (s : Multiset α) {i : ℕ} (hi : 0 < i) :
     s.powersetCard (card s + i) = 0 :=
-  powersetCard_eq_empty _ (Nat.lt_add_of_pos_right hi)
+  powersetCard_eq_empty _ (lt_add_of_pos_right (card s) hi)
 #align multiset.powerset_len_card_add Multiset.powersetCard_card_add
 
 theorem powersetCard_map {β : Type*} (f : α → β) (n : ℕ) (s : Multiset α) :

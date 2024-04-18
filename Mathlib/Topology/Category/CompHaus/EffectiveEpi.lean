@@ -88,8 +88,7 @@ instance : Preregular CompHaus where
     obtain ⟨z,hz⟩ := hπ (f y)
     exact ⟨⟨(y, z), hz.symm⟩, rfl⟩
 
--- Was an `example`, but that made the linter complain about unused imports
-instance : Precoherent CompHaus.{u} := inferInstance
+example : Precoherent CompHaus.{u} := inferInstance
 
 -- TODO: prove this for `Type*`
 open List in

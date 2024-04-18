@@ -249,8 +249,7 @@ set_option linter.uppercaseLean3 false in
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
+--@[nolint has_nonempty_instance] Porting note: linter does not exist
 def Fix (F : Type u → Type u) [Functor F] [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 #align qpf.fix QPF.Fix

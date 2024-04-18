@@ -53,15 +53,13 @@ class AddTorsor (G : outParam (Type*)) (P : Type*) [outParam <| AddGroup G] exte
   vadd_vsub' : ∀ (g : G) (p : P), g +ᵥ p -ᵥ p = g
 #align add_torsor AddTorsor
 
- -- Porting note(#12096): removed `nolint instance_priority`; lint not ported yet
-attribute [instance 100] AddTorsor.nonempty
+attribute [instance 100] AddTorsor.nonempty -- Porting note: removers `nolint instance_priority`
 
--- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
+-- Porting note: removed
 --attribute [nolint dangerous_instance] AddTorsor.toVSub
 
 /-- An `AddGroup G` is a torsor for itself. -/
--- Porting note(#12096): linter not ported yet
---@[nolint instance_priority]
+--@[nolint instance_priority] Porting note: linter does not exist
 instance addGroupIsAddTorsor (G : Type*) [AddGroup G] : AddTorsor G G
     where
   vsub := Sub.sub

@@ -20,7 +20,7 @@ between the subtypes `selfAdjoint A` and `unitary A`.
   unitaries.
 -/
 
-open NormedSpace -- For `NormedSpace.exp`.
+open NormedSpace -- For `exp`.
 
 section Star
 

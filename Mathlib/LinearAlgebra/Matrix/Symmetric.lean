@@ -33,9 +33,6 @@ def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 #align matrix.is_symm Matrix.IsSymm
 
-instance (A : Matrix n n α) [Decidable (Aᵀ = A)] : Decidable (IsSymm A) :=
-  inferInstanceAs <| Decidable (_ = _)
-
 theorem IsSymm.eq {A : Matrix n n α} (h : A.IsSymm) : Aᵀ = A :=
   h
 #align matrix.is_symm.eq Matrix.IsSymm.eq

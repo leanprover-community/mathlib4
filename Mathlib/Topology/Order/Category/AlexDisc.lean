@@ -33,8 +33,8 @@ deriving instance LargeCategory for AlexDisc
 
 instance instConcreteCategory : ConcreteCategory AlexDisc := BundledHom.concreteCategory _
 instance instHasForgetToTop : HasForget₂ AlexDisc TopCat := BundledHom.forget₂ _ _
-instance ForgetToTop.instFull : (forget₂ AlexDisc TopCat).Full := BundledHom.forget₂Full _ _
-instance ForgetToTop.instFaithful : (forget₂ AlexDisc TopCat).Faithful where
+instance ForgetToTop.instFull : Full (forget₂ AlexDisc TopCat) := BundledHom.forget₂Full _ _
+instance ForgetToTop.instFaithful : Faithful (forget₂ AlexDisc TopCat) where
 
 @[simp] lemma coe_forgetToTop (X : AlexDisc) : ↥((forget₂ _ TopCat).obj X) = X := rfl
 

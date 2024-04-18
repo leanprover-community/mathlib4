@@ -5,6 +5,8 @@ Authors: Parth Shastri, Gabriel Ebner, Mario Carneiro
 -/
 import Lean.Elab.Command
 import Lean.Compiler.CSimpAttr
+import Lean.Meta.RecursorInfo
+import Lean.Meta.Tactic.Subst
 import Lean.Util.FoldConsts
 
 /-!

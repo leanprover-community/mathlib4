@@ -47,12 +47,12 @@ def associativity : (C × D) × E ≌ C × D × E :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.associativity CategoryTheory.prod.associativity
 
-instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
-  (by infer_instance : (associativity C D E).functor.IsEquivalence)
+instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
+  (by infer_instance : IsEquivalence (associativity C D E).functor)
 #align category_theory.prod.associator_is_equivalence CategoryTheory.prod.associatorIsEquivalence
 
-instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
-  (by infer_instance : (associativity C D E).inverse.IsEquivalence)
+instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
+  (by infer_instance : IsEquivalence (associativity C D E).inverse)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
 
 -- TODO unitors?

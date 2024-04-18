@@ -48,7 +48,8 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
-instance {j : ConnectedComponents J} : Category (Component j) :=
+set_option autoImplicit true in
+instance : Category (Component (j : ConnectedComponents J)) :=
   FullSubcategory.category _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
@@ -58,10 +59,12 @@ def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-instance {j : ConnectedComponents J} : Functor.Full (Component.ι j) :=
+set_option autoImplicit true in
+instance : Full (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.full _
 
-instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
+set_option autoImplicit true in
+instance : Faithful (Component.ι (j : ConnectedComponents J)) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/
@@ -127,7 +130,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : (decomposedTo J).Full
+instance : Full (decomposedTo J)
     where
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
@@ -145,15 +148,15 @@ instance : (decomposedTo J).Full
     subst this
     rfl
 
-instance : (decomposedTo J).Faithful where
+instance : Faithful (decomposedTo J) where
   map_injective := by
     rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
     rfl
 
-instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
+instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : (decomposedTo J).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : IsEquivalence (decomposedTo J) :=
+  Equivalence.ofFullyFaithfullyEssSurj _
 
 -- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/

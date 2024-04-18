@@ -165,7 +165,7 @@ alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
 @[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id, eq_iff_iff]
+  funext _; simp only [true_iff, id.def, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
 
 #align imp_and_distrib imp_and
@@ -517,19 +517,15 @@ alias Membership.mem.ne_of_not_mem' := ne_of_mem_of_not_mem'
 section Equality
 
 -- todo: change name
-theorem forall_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
+theorem ball_cond_comm {α} {s : α → Prop} {p : α → α → Prop} :
     (∀ a, s a → ∀ b, s b → p a b) ↔ ∀ a b, s a → s b → p a b :=
   ⟨fun h a b ha hb ↦ h a ha b hb, fun h a ha b hb ↦ h a b ha hb⟩
-#align ball_cond_comm forall_cond_comm
+#align ball_cond_comm ball_cond_comm
 
-theorem forall_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
+theorem ball_mem_comm {α β} [Membership α β] {s : β} {p : α → α → Prop} :
     (∀ a (_ : a ∈ s) b (_ : b ∈ s), p a b) ↔ ∀ a b, a ∈ s → b ∈ s → p a b :=
-  forall_cond_comm
-#align ball_mem_comm forall_mem_comm
-
--- 2024-03-23
-@[deprecated] alias ball_cond_comm := forall_cond_comm
-@[deprecated] alias ball_mem_comm := forall_mem_comm
+  ball_cond_comm
+#align ball_mem_comm ball_mem_comm
 
 #align ne_of_apply_ne ne_of_apply_ne
 
@@ -927,33 +923,13 @@ theorem forall_prop_congr' {p p' : Prop} {q q' : p → Prop} (hq : ∀ h, q h �
   propext (forall_prop_congr hq hp)
 #align forall_prop_congr' forall_prop_congr'
 
-#align forall_congr_eq forall_congr
-
-lemma imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = (c → d) :=
-  propext (imp_congr h₁.to_iff h₂.to_iff)
-
-lemma imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a → b) = (c → d) :=
-  propext (imp_congr_ctx h₁.to_iff fun hc ↦ (h₂ hc).to_iff)
-
-lemma eq_true_intro (h : a) : a = True := propext (iff_true_intro h)
-lemma eq_false_intro (h : ¬a) : a = False := propext (iff_false_intro h)
-
--- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
-@[nolint defLemma] alias Iff.eq := propext
-
-lemma iff_eq_eq : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
-
--- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
-#noalign eq_false
-#noalign eq_true
-
 /-- See `IsEmpty.forall_iff` for the `False` version. -/
 @[simp] theorem forall_true_left (p : True → Prop) : (∀ x, p x) ↔ p True.intro :=
   forall_prop_of_true _
 #align forall_true_left forall_true_left
 
 theorem ExistsUnique.elim₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
-    {q : ∀ (x) (_ : p x), Prop} {b : Prop} (h₂ : ∃! x, ∃! h : p x, q x h)
+    {q : ∀ (x) (_ : p x), Prop} {b : Prop} (h₂ : ∃! (x : _) (h : p x), q x h)
     (h₁ : ∀ (x) (h : p x), q x h → (∀ (y) (hy : p y), q y hy → y = x) → b) : b := by
   simp only [exists_unique_iff_exists] at h₂
   apply h₂.elim
@@ -962,18 +938,18 @@ theorem ExistsUnique.elim₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleto
 
 theorem ExistsUnique.intro₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
     {q : ∀ (x : α) (_ : p x), Prop} (w : α) (hp : p w) (hq : q w hp)
-    (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! x, ∃! hx : p x, q x hx := by
+    (H : ∀ (y) (hy : p y), q y hy → y = w) : ∃! (x : _) (hx : p x), q x hx := by
   simp only [exists_unique_iff_exists]
   exact ExistsUnique.intro w ⟨hp, hq⟩ fun y ⟨hyp, hyq⟩ ↦ H y hyp hyq
 #align exists_unique.intro2 ExistsUnique.intro₂
 
 theorem ExistsUnique.exists₂ {α : Sort*} {p : α → Sort*} {q : ∀ (x : α) (_ : p x), Prop}
-    (h : ∃! x, ∃! hx : p x, q x hx) : ∃ (x : _) (hx : p x), q x hx :=
+    (h : ∃! (x : _) (hx : p x), q x hx) : ∃ (x : _) (hx : p x), q x hx :=
   h.exists.imp fun _ hx ↦ hx.exists
 #align exists_unique.exists2 ExistsUnique.exists₂
 
 theorem ExistsUnique.unique₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingleton (p x)]
-    {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! x, ∃! hx : p x, q x hx) {y₁ y₂ : α}
+    {q : ∀ (x : α) (_ : p x), Prop} (h : ∃! (x : _) (hx : p x), q x hx) {y₁ y₂ : α}
     (hpy₁ : p y₁) (hqy₁ : q y₁ hpy₁) (hpy₂ : p y₂) (hqy₂ : q y₂ hpy₂) : y₁ = y₂ := by
   simp only [exists_unique_iff_exists] at h
   exact h.unique ⟨hpy₁, hqy₁⟩ ⟨hpy₂, hqy₂⟩
@@ -1056,17 +1032,17 @@ theorem BEx.intro (a : α) (h₁ : p a) (h₂ : P a h₁) : ∃ (x : _) (h : p x
   ⟨a, h₁, h₂⟩
 #align bex.intro BEx.intro
 
-#align ball_congr forall₂_congr
-#align bex_congr exists₂_congr
+theorem ball_congr (H : ∀ x h, P x h ↔ Q x h) : (∀ x h, P x h) ↔ ∀ x h, Q x h :=
+  forall_congr' fun x ↦ forall_congr' (H x)
+#align ball_congr ball_congr
 
-@[deprecated exists_eq_left] -- 2024-04-06
+theorem bex_congr (H : ∀ x h, P x h ↔ Q x h) : (∃ x h, P x h) ↔ ∃ x h, Q x h :=
+  exists_congr fun x ↦ exists_congr (H x)
+#align bex_congr bex_congr
+
 theorem bex_eq_left {a : α} : (∃ (x : _) (_ : x = a), p x) ↔ p a := by
   simp only [exists_prop, exists_eq_left]
 #align bex_eq_left bex_eq_left
-
--- 2024-04-06
-@[deprecated] alias ball_congr := forall₂_congr
-@[deprecated] alias bex_congr := exists₂_congr
 
 theorem BAll.imp_right (H : ∀ x h, P x h → Q x h) (h₁ : ∀ x h, P x h) (x h) : Q x h :=
   H _ _ <| h₁ _ _
@@ -1084,77 +1060,61 @@ theorem BEx.imp_left (H : ∀ x, p x → q x) : (∃ (x : _) (_ : p x), r x) →
   | ⟨x, hp, hr⟩ => ⟨x, H _ hp, hr⟩
 #align bex.imp_left BEx.imp_left
 
-@[deprecated id] -- 2024-03-23
 theorem ball_of_forall (h : ∀ x, p x) (x) : p x := h x
 #align ball_of_forall ball_of_forall
 
-@[deprecated forall_imp] -- 2024-03-23
 theorem forall_of_ball (H : ∀ x, p x) (h : ∀ x, p x → q x) (x) : q x := h x <| H x
 #align forall_of_ball forall_of_ball
 
-theorem exists_mem_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
+theorem bex_of_exists (H : ∀ x, p x) : (∃ x, q x) → ∃ (x : _) (_ : p x), q x
   | ⟨x, hq⟩ => ⟨x, H x, hq⟩
-#align bex_of_exists exists_mem_of_exists
+#align bex_of_exists bex_of_exists
 
-theorem exists_of_exists_mem : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
+theorem exists_of_bex : (∃ (x : _) (_ : p x), q x) → ∃ x, q x
   | ⟨x, _, hq⟩ => ⟨x, hq⟩
-#align exists_of_bex exists_of_exists_mem
+#align exists_of_bex exists_of_bex
 
-theorem exists₂_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
-#align bex_imp_distrib exists₂_imp
+theorem bex_imp : (∃ x h, P x h) → b ↔ ∀ x h, P x h → b := by simp
+#align bex_imp_distrib bex_imp
 
--- 2024-03-23
-@[deprecated] alias bex_of_exists := exists_mem_of_exists
-@[deprecated] alias exists_of_bex := exists_of_exists_mem
-@[deprecated] alias bex_imp := exists₂_imp
+theorem not_bex : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := bex_imp
+#align not_bex not_bex
 
-theorem not_exists_mem : (¬∃ x h, P x h) ↔ ∀ x h, ¬P x h := exists₂_imp
-#align not_bex not_exists_mem
-
-theorem not_forall₂_of_exists₂_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
+theorem not_ball_of_bex_not : (∃ x h, ¬P x h) → ¬∀ x h, P x h
   | ⟨x, h, hp⟩, al => hp <| al x h
-#align not_ball_of_bex_not not_forall₂_of_exists₂_not
+#align not_ball_of_bex_not not_ball_of_bex_not
 
 -- See Note [decidable namespace]
-protected theorem Decidable.not_forall₂ [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
+protected theorem Decidable.not_ball [Decidable (∃ x h, ¬P x h)] [∀ x h, Decidable (P x h)] :
     (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h :=
   ⟨Not.decidable_imp_symm fun nx x h ↦ nx.decidable_imp_symm
-    fun h' ↦ ⟨x, h, h'⟩, not_forall₂_of_exists₂_not⟩
-#align decidable.not_ball Decidable.not_forall₂
+    fun h' ↦ ⟨x, h, h'⟩, not_ball_of_bex_not⟩
+#align decidable.not_ball Decidable.not_ball
 
-theorem not_forall₂ : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_forall₂
-#align not_ball not_forall₂
+theorem not_ball : (¬∀ x h, P x h) ↔ ∃ x h, ¬P x h := Decidable.not_ball
+#align not_ball not_ball
 
-#align ball_true_iff forall₂_true_iff
+theorem ball_true_iff (p : α → Prop) : (∀ x, p x → True) ↔ True :=
+  iff_true_intro fun _ _ ↦ trivial
+#align ball_true_iff ball_true_iff
 
-theorem forall₂_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
+theorem ball_and : (∀ x h, P x h ∧ Q x h) ↔ (∀ x h, P x h) ∧ ∀ x h, Q x h :=
   Iff.trans (forall_congr' fun _ ↦ forall_and) forall_and
-#align ball_and_distrib forall₂_and
+#align ball_and_distrib ball_and
 
-theorem exists_mem_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
+theorem bex_or : (∃ x h, P x h ∨ Q x h) ↔ (∃ x h, P x h) ∨ ∃ x h, Q x h :=
   Iff.trans (exists_congr fun _ ↦ exists_or) exists_or
-#align bex_or_distrib exists_mem_or
+#align bex_or_distrib bex_or
 
-theorem forall₂_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
+theorem ball_or_left : (∀ x, p x ∨ q x → r x) ↔ (∀ x, p x → r x) ∧ ∀ x, q x → r x :=
   Iff.trans (forall_congr' fun _ ↦ or_imp) forall_and
-#align ball_or_left_distrib forall₂_or_left
+#align ball_or_left_distrib ball_or_left
 
-theorem exists_mem_or_left :
+theorem bex_or_left :
     (∃ (x : _) (_ : p x ∨ q x), r x) ↔ (∃ (x : _) (_ : p x), r x) ∨ ∃ (x : _) (_ : q x), r x := by
   simp only [exists_prop]
   exact Iff.trans (exists_congr fun x ↦ or_and_right) exists_or
-#align bex_or_left_distrib exists_mem_or_left
-
--- 2023-03-23
-@[deprecated] alias not_ball_of_bex_not := not_forall₂_of_exists₂_not
-@[deprecated] alias Decidable.not_ball := Decidable.not_forall₂
-@[deprecated] alias not_ball := not_forall₂
-@[deprecated] alias ball_true_iff := forall₂_true_iff
-@[deprecated] alias ball_and := forall₂_and
-@[deprecated] alias not_bex := not_exists_mem
-@[deprecated] alias bex_or := exists_mem_or
-@[deprecated] alias ball_or_left := forall₂_or_left
-@[deprecated] alias bex_or_left := exists_mem_or_left
+#align bex_or_left_distrib bex_or_left
 
 end BoundedQuantifiers
 

@@ -181,7 +181,7 @@ protected def op (F : C ⥤ D) : Cᵒᵖ ⥤ Dᵒᵖ where
 /-- Given a functor `F : Cᵒᵖ ⥤ Dᵒᵖ` we can take the "unopposite" functor `F : C ⥤ D`.
 In informal mathematics no distinction is made between these.
 -/
-@[simps, pp_dot]
+@[simps]
 protected def unop (F : Cᵒᵖ ⥤ Dᵒᵖ) : C ⥤ D where
   obj X := unop (F.obj (op X))
   map f := (F.map f.op).unop

@@ -94,7 +94,8 @@ variable [CatCommSq Φ.functor L₁ L₂ G]
 
 /-- If a localizer morphism induces an equivalence on some choice of localized categories,
 it will be so for any choice of localized categoriees. -/
-noncomputable def isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
+noncomputable def isEquivalence_imp [IsEquivalence G] :
+  IsEquivalence G' := by
     let E₁ := Localization.uniq L₁ L₁' W₁
     let E₂ := Localization.uniq L₂ L₂' W₂
     let e : L₁ ⋙ G ⋙ E₂.functor ≅ L₁ ⋙ E₁.functor ⋙ G' :=
@@ -107,11 +108,11 @@ noncomputable def isEquivalence_imp [G.IsEquivalence] : G'.IsEquivalence := by
         _ ≅ L₁' ⋙ G' := CatCommSq.iso Φ.functor L₁' L₂' G'
         _ ≅ L₁ ⋙ E₁.functor ⋙ G' :=
               isoWhiskerRight (compUniqFunctor L₁ L₁' W₁).symm G' ≪≫ Functor.associator _ _ _
-    exact Functor.IsEquivalence.cancelCompLeft E₁.functor G' inferInstance
-      (Functor.IsEquivalence.ofIso
+    exact IsEquivalence.cancelCompLeft E₁.functor G' inferInstance
+      (IsEquivalence.ofIso
         (liftNatIso L₁ W₁ _ _ (G ⋙ E₂.functor) (E₁.functor ⋙ G') e) inferInstance)
 
-lemma nonempty_isEquivalence_iff : Nonempty (G.IsEquivalence) ↔ Nonempty (G'.IsEquivalence) := by
+lemma nonempty_isEquivalence_iff : Nonempty (IsEquivalence G) ↔ Nonempty (IsEquivalence G') := by
   constructor
   · rintro ⟨e⟩
     exact ⟨Φ.isEquivalence_imp L₁ L₂ G L₁' L₂' G'⟩
@@ -123,9 +124,9 @@ end
 /-- Condition that a `LocalizerMorphism` induces an equivalence on the localized categories -/
 class IsLocalizedEquivalence : Prop :=
   /-- the induced functor on the constructed localized categories is an equivalence -/
-  nonempty_isEquivalence : Nonempty ((Φ.localizedFunctor W₁.Q W₂.Q).IsEquivalence)
+  nonempty_isEquivalence : Nonempty (IsEquivalence (Φ.localizedFunctor W₁.Q W₂.Q))
 
-lemma IsLocalizedEquivalence.mk' [CatCommSq Φ.functor L₁ L₂ G] [G.IsEquivalence] :
+lemma IsLocalizedEquivalence.mk' [CatCommSq Φ.functor L₁ L₂ G] [IsEquivalence G] :
     Φ.IsLocalizedEquivalence where
   nonempty_isEquivalence := by
     rw [Φ.nonempty_isEquivalence_iff W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q) L₁ L₂ G]
@@ -134,14 +135,14 @@ lemma IsLocalizedEquivalence.mk' [CatCommSq Φ.functor L₁ L₂ G] [G.IsEquival
 /-- If a `LocalizerMorphism` is a localized equivalence, then any compatible functor
 between the localized categories is an equivalence. -/
 noncomputable def isEquivalence [h : Φ.IsLocalizedEquivalence] [CatCommSq Φ.functor L₁ L₂ G] :
-    G.IsEquivalence := Nonempty.some (by
+    IsEquivalence G := Nonempty.some (by
   rw [Φ.nonempty_isEquivalence_iff L₁ L₂ G W₁.Q W₂.Q (Φ.localizedFunctor W₁.Q W₂.Q)]
   exact h.nonempty_isEquivalence)
 
 /-- If a `LocalizerMorphism` is a localized equivalence, then the induced functor on
 the localized categories is an equivalence -/
 noncomputable instance localizedFunctor_isEquivalence [Φ.IsLocalizedEquivalence] :
-    (Φ.localizedFunctor L₁ L₂).IsEquivalence :=
+    IsEquivalence (Φ.localizedFunctor L₁ L₂) :=
   Φ.isEquivalence L₁ L₂ _
 
 /-- When `Φ : LocalizerMorphism W₁ W₂`, if the composition `Φ.functor ⋙ L₂` is a
@@ -156,7 +157,7 @@ lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
 /-- When the underlying functor `Φ.functor` of `Φ : LocalizerMorphism W₁ W₂` is
 an equivalence of categories and that `W₁` and `W₂` essentially correspond to each
 other via this equivalence, then `Φ` is a localized equivalence. -/
-lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
+lemma IsLocalizedEquivalence.of_equivalence [IsEquivalence Φ.functor]
     (h : W₂ ⊆ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁

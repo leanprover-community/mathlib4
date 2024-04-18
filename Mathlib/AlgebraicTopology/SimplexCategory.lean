@@ -89,7 +89,7 @@ protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀
   h n.len
 #align simplex_category.rec SimplexCategory.rec
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- Morphisms in the `SimplexCategory`. -/
 protected def Hom (a b : SimplexCategory) :=
   Fin (a.len + 1) →o Fin (b.len + 1)
@@ -463,15 +463,15 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 
 namespace SkeletalFunctor
 
-instance : skeletalFunctor.Full where
+instance : Full skeletalFunctor where
   preimage f := SimplexCategory.Hom.mk f
 
-instance : skeletalFunctor.Faithful where
+instance : Faithful skeletalFunctor where
   map_injective {_ _ f g} h := by
     ext1
     exact h
 
-instance : skeletalFunctor.EssSurj where
+instance : EssSurj skeletalFunctor where
   mem_essImage X :=
     ⟨mk (Fintype.card X - 1 : ℕ),
       ⟨by
@@ -490,8 +490,8 @@ instance : skeletalFunctor.EssSurj where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj skeletalFunctor
+noncomputable instance isEquivalence : IsEquivalence skeletalFunctor :=
+  Equivalence.ofFullyFaithfullyEssSurj skeletalFunctor
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
@@ -532,8 +532,8 @@ def inclusion {n : ℕ} : SimplexCategory.Truncated n ⥤ SimplexCategory :=
   fullSubcategoryInclusion _
 #align simplex_category.truncated.inclusion SimplexCategory.Truncated.inclusion
 
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Full := FullSubcategory.full _
-instance (n : ℕ) : (inclusion : Truncated n ⥤ _).Faithful := FullSubcategory.faithful _
+instance (n : ℕ) : Full (inclusion : Truncated n ⥤ _) := FullSubcategory.full _
+instance (n : ℕ) : Faithful (inclusion : Truncated n ⥤ _) := FullSubcategory.faithful _
 
 end Truncated
 
@@ -613,7 +613,7 @@ instance {n : ℕ} {i : Fin (n + 1)} : Epi (σ i) := by
     rw [Fin.lt_iff_val_lt_val] at h ⊢
     simpa only [Fin.val_succ, Fin.coe_castSucc] using Nat.lt.step h
 
-instance : (forget SimplexCategory).ReflectsIsomorphisms :=
+instance : ReflectsIsomorphisms (forget SimplexCategory) :=
   ⟨fun f hf =>
     IsIso.of_iso
       { hom := f

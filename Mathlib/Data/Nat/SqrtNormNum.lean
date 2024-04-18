@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Tactic.NormNum
-import Mathlib.Data.Nat.Defs
+import Mathlib.Data.Nat.Sqrt
 
 #align_import data.nat.sqrt_norm_num from "leanprover-community/mathlib"@"ca80c8b003dcb3f7dbe0017d2e951bc687b9ad3f"
 

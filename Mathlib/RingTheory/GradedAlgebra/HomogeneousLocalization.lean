@@ -84,8 +84,7 @@ section
 /-- Let `x` be a submonoid of `A`, then `NumDenSameDeg 𝒜 x` is a structure with a numerator and a
 denominator with same grading such that the denominator is contained in `x`.
 -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 structure NumDenSameDeg where
   deg : ι
   (num den : 𝒜 deg)
@@ -289,8 +288,7 @@ end HomogeneousLocalization
 kernel of `embedding 𝒜 x`. This is essentially the subring of `Aₓ` where the numerator and
 denominator share the same grading.
 -/
--- Porting note(#5171): this linter isn't ported yet.
--- @[nolint has_nonempty_instance]
+-- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
 def HomogeneousLocalization : Type _ :=
   Quotient (Setoid.ker <| HomogeneousLocalization.NumDenSameDeg.embedding 𝒜 x)
 #align homogeneous_localization HomogeneousLocalization
@@ -342,7 +340,7 @@ instance : SMul α (HomogeneousLocalization 𝒜 x) where
     convert congr_arg (fun z : at x => m • z) h <;> rw [Localization.smul_mk]
 
 @[simp]
-theorem smul_val (n : α) (y : HomogeneousLocalization 𝒜 x) : (n • y).val = n • y.val := by
+theorem smul_val (y : HomogeneousLocalization 𝒜 x) (n : α) : (n • y).val = n • y.val := by
   induction y using Quotient.inductionOn
   change Localization.mk _ _ = n • Localization.mk _ _
   dsimp only

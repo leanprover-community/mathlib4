@@ -181,10 +181,7 @@ macro (name := pushNeg) tk:"#push_neg " e:term : command => `(command| #conv%$tk
 def pushNegTarget : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let tgt ← instantiateMVars (← goal.getType)
-  let newGoal ← applySimpResultToTarget goal tgt (← pushNegCore tgt)
-  if newGoal == goal then throwError "push_neg made no progress"
-  replaceMainGoal [newGoal]
-
+  replaceMainGoal [← applySimpResultToTarget goal tgt (← pushNegCore tgt)]
 
 /-- Execute main loop of `push_neg` at a local hypothesis. -/
 def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
@@ -194,7 +191,6 @@ def pushNegLocalDecl (fvarId : FVarId) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
   let myres ← pushNegCore tgt
   let some (_, newGoal) ← applySimpResultToLocalDecl goal fvarId myres False | failure
-  if newGoal == goal then throwError "push_neg made no progress"
   replaceMainGoal [newGoal]
 
 /--

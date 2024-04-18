@@ -83,7 +83,9 @@ theorem cross_anticomm' (v w : Fin 3 → R) : v ×₃ w + w ×₃ v = 0 := by
 
 @[simp]
 theorem cross_self (v : Fin 3 → R) : v ×₃ v = 0 := by
-  simp [cross_apply, mul_comm]
+  -- Porting note: Original proof was `simp [cross_apply, mul_comm]`
+  simp_rw [cross_apply, mul_comm, cons_eq_zero_iff]
+  exact ⟨sub_self _, sub_self _, sub_self _, zero_empty.symm⟩
 #align cross_self cross_self
 
 /-- The cross product of two vectors is perpendicular to the first vector. -/

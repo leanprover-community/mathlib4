@@ -417,7 +417,6 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
-set_option maxHeartbeats 400000 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit
@@ -483,18 +482,18 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
 /-- Spec is a full functor. -/
-instance : Spec.toLocallyRingedSpace.Full  :=
+instance : Full Spec.toLocallyRingedSpace :=
   rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.full : Scheme.Spec.Full  :=
+instance Spec.full : Full Scheme.Spec :=
   rFullOfCounitIsIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
-instance : Spec.toLocallyRingedSpace.Faithful :=
+instance : Faithful Spec.toLocallyRingedSpace :=
   R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.faithful : Scheme.Spec.Faithful :=
+instance Spec.faithful : Faithful Scheme.Spec :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 

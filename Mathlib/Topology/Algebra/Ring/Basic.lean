@@ -3,7 +3,6 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
-import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
@@ -90,8 +89,6 @@ instance (priority := 50) DiscreteTopology.topologicalRing [TopologicalSpace α]
 section
 
 variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
-
-instance : TopologicalSemiring (ULift α) where
 
 namespace Subsemiring
 
@@ -228,8 +225,6 @@ variable [TopologicalSpace α]
 section
 
 variable [NonUnitalNonAssocRing α] [TopologicalRing α]
-
-instance : TopologicalRing (ULift α) where
 
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=

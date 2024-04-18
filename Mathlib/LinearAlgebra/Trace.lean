@@ -227,7 +227,7 @@ variable {R M N P}
 theorem trace_prodMap' (f : M →ₗ[R] M) (g : N →ₗ[R] N) :
     trace R (M × N) (prodMap f g) = trace R M f + trace R N g := by
   have h := ext_iff.1 (trace_prodMap R M N) (f, g)
-  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id,
+  simp only [coe_comp, Function.comp_apply, prodMap_apply, coprod_apply, id_coe, id.def,
     prodMapLinear_apply] at h
   exact h
 #align linear_map.trace_prod_map' LinearMap.trace_prodMap'
@@ -254,10 +254,10 @@ theorem trace_comp_comm :
     (compl₁₂_inj (show Surjective (dualTensorHom R N M) from (dualTensorHomEquiv R N M).surjective)
         (show Surjective (dualTensorHom R M N) from (dualTensorHomEquiv R M N).surjective)).1
   ext g m f n
-  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply,
-    coe_restrictScalars, compl₁₂_apply, compr₂_apply, flip_apply, llcomp_apply',
-    comp_dualTensorHom, LinearMapClass.map_smul, trace_eq_contract_apply,
-    contractLeft_apply, smul_eq_mul, mul_comm]
+  simp only [AlgebraTensorModule.curry_apply, TensorProduct.curry_apply, coe_restrictScalars,
+    -- Note: #8386 had to change `map_smulₛₗ` into `map_smulₛₗ _`
+    compl₁₂_apply, compr₂_apply, llcomp_apply', comp_dualTensorHom, map_smulₛₗ _, RingHom.id_apply,
+    trace_eq_contract_apply, contractLeft_apply, smul_eq_mul, mul_comm, flip_apply]
 #align linear_map.trace_comp_comm LinearMap.trace_comp_comm
 
 variable {R M N P}

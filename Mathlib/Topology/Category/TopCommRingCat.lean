@@ -21,7 +21,7 @@ universe u
 
 open CategoryTheory
 
-set_option linter.uppercaseLean3 false -- `TopCommRingCat`
+set_option linter.uppercaseLean3 false -- `TopCommRing`
 
 /-- A bundled topological commutative ring. -/
 structure TopCommRingCat where
@@ -112,7 +112,7 @@ instance forgetToTopCatTopologicalRing (R : TopCommRingCat) :
 /-- The forgetful functors to `Type` do not reflect isomorphisms,
 but the forgetful functor from `TopCommRingCat` to `TopCat` does.
 -/
-instance : (forget₂ TopCommRingCat.{u} TopCat.{u}).ReflectsIsomorphisms where
+instance : ReflectsIsomorphisms (forget₂ TopCommRingCat.{u} TopCat.{u}) where
   reflects {X Y} f _ := by
     -- We have an isomorphism in `TopCat`,
     let i_Top := asIso ((forget₂ TopCommRingCat TopCat).map f)

@@ -5,7 +5,6 @@ Authors: Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
 import Mathlib.Init.Order.LinearOrder
-import Std.Data.Array.Lemmas
 
 set_option autoImplicit true
 

@@ -191,16 +191,18 @@ alias ⟨IsLittleO.bound, IsLittleO.of_bound⟩ := isLittleO_iff
 #align asymptotics.is_o.bound Asymptotics.IsLittleO.bound
 #align asymptotics.is_o.of_bound Asymptotics.IsLittleO.of_bound
 
-theorem IsLittleO.def (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
+-- Adaptation note: 2024-03-15: this was called `def`.
+-- Should lean be changed to allow that as a name again?
+theorem IsLittleO.definition (h : f =o[l] g) (hc : 0 < c) : ∀ᶠ x in l, ‖f x‖ ≤ c * ‖g x‖ :=
   isLittleO_iff.1 h hc
-#align asymptotics.is_o.def Asymptotics.IsLittleO.def
+#align asymptotics.is_o.def Asymptotics.IsLittleO.definition
 
 theorem IsLittleO.def' (h : f =o[l] g) (hc : 0 < c) : IsBigOWith c l f g :=
   isBigOWith_iff.2 <| isLittleO_iff.1 h hc
 #align asymptotics.is_o.def' Asymptotics.IsLittleO.def'
 
 theorem IsLittleO.eventuallyLE (h : f =o[l] g) : ∀ᶠ x in l, ‖f x‖ ≤ ‖g x‖ := by
-  simpa using h.def zero_lt_one
+  simpa using h.definition zero_lt_one
 
 end Defs
 
@@ -278,7 +280,7 @@ theorem isLittleO_iff_nat_mul_le_aux (h₀ : (∀ x, 0 ≤ ‖f x‖) ∨ ∀ x,
     f =o[l] g ↔ ∀ n : ℕ, ∀ᶠ x in l, ↑n * ‖f x‖ ≤ ‖g x‖ := by
   constructor
   · rintro H (_ | n)
-    · refine' (H.def one_pos).mono fun x h₀' => _
+    · refine' (H.definition one_pos).mono fun x h₀' => _
       rw [Nat.cast_zero, zero_mul]
       refine' h₀.elim (fun hf => (hf x).trans _) fun hg => hg x
       rwa [one_mul] at h₀'
@@ -2205,15 +2207,15 @@ theorem isLittleO_pi {ι : Type*} [Fintype ι] {E' : ι → Type*} [∀ i, Norme
   exact ⟨fun h i c hc => h hc i, fun h c hc i => h i hc⟩
 #align asymptotics.is_o_pi Asymptotics.isLittleO_pi
 
-theorem IsBigO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsBigO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =O[atTop] g) :
     (fun (n : ℕ) => f n) =O[atTop] (fun n => g n) :=
-  IsBigO.comp_tendsto h tendsto_natCast_atTop_atTop
+  IsBigO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
-theorem IsLittleO.natCast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
+theorem IsLittleO.nat_cast_atTop {R : Type*} [StrictOrderedSemiring R] [Archimedean R]
     {f : R → E} {g : R → F} (h : f =o[atTop] g) :
     (fun (n : ℕ) => f n) =o[atTop] (fun n => g n) :=
-  IsLittleO.comp_tendsto h tendsto_natCast_atTop_atTop
+  IsLittleO.comp_tendsto h tendsto_nat_cast_atTop_atTop
 
 theorem isBigO_atTop_iff_eventually_exists {α : Type*} [SemilatticeSup α] [Nonempty α]
     {f : α → E} {g : α → F} : f =O[atTop] g ↔ ∀ᶠ n₀ in atTop, ∃ c, ∀ n ≥ n₀, ‖f n‖ ≤ c * ‖g n‖ := by

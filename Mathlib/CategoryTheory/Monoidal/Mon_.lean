@@ -145,14 +145,14 @@ def forget : Mon_ C ⥤ C where
 
 end
 
-instance forget_faithful : (forget C).Faithful where
+instance forget_faithful : Faithful (@forget C _ _) where
 #align Mon_.forget_faithful Mon_.forget_faithful
 
 instance {A B : Mon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom :=
   e
 
 /-- The forgetful functor from monoid objects to the ambient category reflects isomorphisms. -/
-instance : (forget C).ReflectsIsomorphisms where
+instance : ReflectsIsomorphisms (forget C) where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom
         mul_hom := by

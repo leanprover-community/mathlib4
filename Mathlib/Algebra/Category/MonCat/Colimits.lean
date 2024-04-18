@@ -119,7 +119,7 @@ set_option linter.uppercaseLean3 false in
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `MonCat`.
+/-- The underlying type of the colimit of a diagram in `Mon`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)

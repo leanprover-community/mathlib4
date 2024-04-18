@@ -77,7 +77,7 @@ namespace Mat_
 
 variable {C}
 
--- porting note (#5171): removed @[nolint has_nonempty_instance]
+-- porting note (#10927): removed @[nolint has_nonempty_instance]
 /-- A morphism in `Mat_ C` is a dependently typed matrix of morphisms. -/
 def Hom (M N : Mat_ C) : Type v₁ :=
   DMatrix M.ι N.ι fun i j => M.X i ⟶ N.X j
@@ -301,7 +301,7 @@ end Functor
 namespace Mat_
 
 /-- The embedding of `C` into `Mat_ C` as one-by-one matrices.
-(We index the summands by `PUnit`.) -/
+(We index the summands by `punit`.) -/
 @[simps]
 def embedding : C ⥤ Mat_ C where
   obj X := ⟨PUnit, fun _ => X⟩
@@ -313,10 +313,10 @@ set_option linter.uppercaseLean3 false in
 
 namespace Embedding
 
-instance : (embedding C).Faithful where
+instance : Faithful (embedding C) where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : (embedding C).Full where preimage f := f PUnit.unit PUnit.unit
+instance : Full (embedding C) where preimage f := f PUnit.unit PUnit.unit
 
 instance : Functor.Additive (embedding C) where
 
@@ -637,16 +637,16 @@ def equivalenceSingleObjInverse : Mat_ (SingleObj Rᵐᵒᵖ) ⥤ Mat R where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj_inverse CategoryTheory.Mat.equivalenceSingleObjInverse
 
-instance : (equivalenceSingleObjInverse R).Faithful where
+instance : Faithful (equivalenceSingleObjInverse R) where
   map_injective w := by
     ext
     apply_fun MulOpposite.unop using MulOpposite.unop_injective
     exact congr_fun (congr_fun w _) _
 
-instance : (equivalenceSingleObjInverse R).Full where
+instance : Full (equivalenceSingleObjInverse R) where
   preimage f i j := MulOpposite.op (f i j)
 
-instance : (equivalenceSingleObjInverse R).EssSurj where
+instance : EssSurj (equivalenceSingleObjInverse R) where
   mem_essImage X :=
     ⟨{  ι := X
         X := fun _ => PUnit.unit }, ⟨eqToIso (by dsimp; cases X; congr)⟩⟩
@@ -654,7 +654,7 @@ instance : (equivalenceSingleObjInverse R).EssSurj where
 /-- The categorical equivalence between the category of matrices over a ring,
 and the category of matrices over that ring considered as a single-object category. -/
 def equivalenceSingleObj : Mat R ≌ Mat_ (SingleObj Rᵐᵒᵖ) :=
-  haveI := Functor.IsEquivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
+  haveI := Equivalence.ofFullyFaithfullyEssSurj (equivalenceSingleObjInverse R)
   (equivalenceSingleObjInverse R).asEquivalence.symm
 set_option linter.uppercaseLean3 false in
 #align category_theory.Mat.equivalence_single_obj CategoryTheory.Mat.equivalenceSingleObj

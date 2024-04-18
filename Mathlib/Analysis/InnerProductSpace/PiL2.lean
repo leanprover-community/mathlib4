@@ -113,12 +113,12 @@ theorem EuclideanSpace.nnnorm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Finty
 #align euclidean_space.nnnorm_eq EuclideanSpace.nnnorm_eq
 
 theorem EuclideanSpace.norm_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-    (x : EuclideanSpace 𝕜 n) : ‖x‖ = √(∑ i, ‖x i‖ ^ 2) := by
+    (x : EuclideanSpace 𝕜 n) : ‖x‖ = Real.sqrt (∑ i, ‖x i‖ ^ 2) := by
   simpa only [Real.coe_sqrt, NNReal.coe_sum] using congr_arg ((↑) : ℝ≥0 → ℝ) x.nnnorm_eq
 #align euclidean_space.norm_eq EuclideanSpace.norm_eq
 
 theorem EuclideanSpace.dist_eq {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-    (x y : EuclideanSpace 𝕜 n) : dist x y = √(∑ i, dist (x i) (y i) ^ 2) :=
+    (x y : EuclideanSpace 𝕜 n) : dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt :=
   PiLp.dist_eq_of_L2 x y
 #align euclidean_space.dist_eq EuclideanSpace.dist_eq
 
@@ -927,9 +927,9 @@ open FiniteDimensional
 /-- Let `S` be a subspace of a finite-dimensional complex inner product space `V`.  A linear
 isometry mapping `S` into `V` can be extended to a full isometry of `V`.
 
-TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`. -/
+TODO:  The case when `S` is a finite-dimensional subspace of an infinite-dimensional `V`.-/
 noncomputable def LinearIsometry.extend (L : S →ₗᵢ[𝕜] V) : V →ₗᵢ[𝕜] V := by
-  -- Build an isometry from Sᗮ to L(S)ᗮ through `EuclideanSpace`
+  -- Build an isometry from Sᗮ to L(S)ᗮ through euclidean_space
   let d := finrank 𝕜 Sᗮ
   let LS := LinearMap.range L.toLinearMap
   have E : Sᗮ ≃ₗᵢ[𝕜] LSᗮ := by

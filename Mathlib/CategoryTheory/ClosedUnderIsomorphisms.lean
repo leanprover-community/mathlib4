@@ -20,10 +20,10 @@ variable {C : Type*} [Category C] (P Q : C → Prop)
 /-- A predicate `C → Prop` on the objects of a category is closed under isomorphisms
 if whenever `P X`, then all the objects `Y` that are isomorphic to `X` also satisfy `P Y`. -/
 class ClosedUnderIsomorphisms : Prop where
-  of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
+  mem_of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
 
 lemma mem_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) : P Y :=
-  ClosedUnderIsomorphisms.of_iso e hX
+  ClosedUnderIsomorphisms.mem_of_iso e hX
 
 lemma mem_iff_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) : P X ↔ P Y :=
   ⟨mem_of_iso P e, mem_of_iso P e.symm⟩
@@ -35,7 +35,7 @@ lemma mem_iff_of_isIso [ClosedUnderIsomorphisms P] {X Y : C} (f : X ⟶ Y) [IsIs
   mem_iff_of_iso P (asIso f)
 
 /-- The closure by isomorphisms of a predicate on objects in a category. -/
-def isoClosure : C → Prop := fun X => ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
+def isoClosure (X : C) : Prop := ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y)
 
 lemma mem_isoClosure_iff (X : C) :
     isoClosure P X ↔ ∃ (Y : C) (_ : P Y), Nonempty (X ≅ Y) := by rfl
@@ -44,7 +44,7 @@ variable {P} in
 lemma mem_isoClosure {X Y : C} (h : P X) (e : X ⟶ Y) [IsIso e] : isoClosure P Y :=
   ⟨X, h, ⟨(asIso e).symm⟩⟩
 
-lemma le_isoClosure : P ≤ isoClosure P :=
+lemma subset_isoClosure : P ≤ isoClosure P :=
   fun X hX => ⟨X, hX, ⟨Iso.refl X⟩⟩
 
 variable {P Q} in
@@ -56,14 +56,14 @@ lemma isoClosure_eq_self [ClosedUnderIsomorphisms P] : isoClosure P = P := by
   apply le_antisymm
   · intro X ⟨Y, hY, ⟨e⟩⟩
     exact mem_of_iso P e.symm hY
-  · exact le_isoClosure P
+  · exact subset_isoClosure P
 
-lemma isoClosure_le_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
-  ⟨(le_isoClosure P).trans,
+lemma isoClosure_subset_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P ≤ Q :=
+  ⟨(subset_isoClosure P).trans,
     fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
 instance : ClosedUnderIsomorphisms (isoClosure P) where
-  of_iso := by
+  mem_of_iso := by
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 

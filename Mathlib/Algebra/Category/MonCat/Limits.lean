@@ -20,7 +20,7 @@ the underlying types are just the limits in the category of types.
 
 -/
 
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- `Mon`
 
 noncomputable section
 

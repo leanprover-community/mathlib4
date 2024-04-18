@@ -38,7 +38,7 @@ disks, convex, balanced
 
 open NormedField Set
 
-open NNReal Pointwise Topology
+open BigOperators NNReal Pointwise Topology
 
 variable {𝕜 E F G ι : Type*}
 

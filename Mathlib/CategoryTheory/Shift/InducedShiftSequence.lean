@@ -34,7 +34,7 @@ variable {C D A : Type*} [Category C] [Category D] [Category A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
   [AddMonoid M] [HasShift C M] [HasShift D M] [L.CommShift M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
-  (hL : Nonempty (((whiskeringLeft C D A).obj L).Full) ∧ ((whiskeringLeft C D A).obj L).Faithful)
+  (hL : Nonempty (Full ((whiskeringLeft C D A).obj L)) ∧ Faithful ((whiskeringLeft C D A).obj L))
 
 namespace Functor
 

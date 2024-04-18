@@ -7,7 +7,7 @@ import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Nat.Cast.NeZero
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 

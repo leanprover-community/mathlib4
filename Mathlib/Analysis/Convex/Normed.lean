@@ -26,10 +26,12 @@ We prove the following facts:
   is bounded.
 -/
 
+
 variable {ι : Type*} {E P : Type*}
 
 open Metric Set
-open scoped Convex
+
+open Pointwise Convex
 
 variable [SeminormedAddCommGroup E] [NormedSpace ℝ E] [PseudoMetricSpace P] [NormedAddTorsor E P]
 variable {s t : Set E}

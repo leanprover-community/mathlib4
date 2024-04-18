@@ -31,6 +31,7 @@ variable {α β : Type*} {m n : Type*} {A : Matrix n n α}
 
 open scoped Matrix
 
+-- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => @inner α _ _ x y
 
 section Star
@@ -41,9 +42,6 @@ variable [Star α] [Star β]
 captures symmetric matrices. -/
 def IsHermitian (A : Matrix n n α) : Prop := Aᴴ = A
 #align matrix.is_hermitian Matrix.IsHermitian
-
-instance (A : Matrix n n α) [Decidable (Aᴴ = A)] : Decidable (IsHermitian A) :=
-  inferInstanceAs <| Decidable (_ = _)
 
 theorem IsHermitian.eq {A : Matrix n n α} (h : A.IsHermitian) : Aᴴ = A := h
 #align matrix.is_hermitian.eq Matrix.IsHermitian.eq

@@ -15,9 +15,9 @@ In this file we prove various lemmas about `Set.image`s and `Set.preimage`s of i
 `some : α → WithTop α` and `some : α → WithBot α`.
 -/
 
-open Set
+set_option autoImplicit true
 
-variable {α : Type*}
+open Set
 
 /-! ### `WithTop` -/
 

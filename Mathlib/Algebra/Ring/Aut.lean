@@ -45,14 +45,19 @@ variable (R : Type*) [Mul R] [Add R]
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (RingAut R) where
-  mul g h := RingEquiv.trans h g
-  one := RingEquiv.refl R
-  inv := RingEquiv.symm
-  mul_assoc := by intros; rfl
-  one_mul := by intros; rfl
-  mul_one := by intros; rfl
-  mul_left_inv := RingEquiv.self_trans_symm
+instance : Group (RingAut R) :=
+  { mul := fun g h => RingEquiv.trans h g
+    one := RingEquiv.refl R
+    inv := RingEquiv.symm
+    div := _
+    npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
+    zpow :=
+      @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
+        ⟨RingEquiv.symm⟩
+    mul_assoc := by intros; rfl
+    one_mul := by intros; rfl
+    mul_one := by intros; rfl
+    mul_left_inv := by intros; ext; apply Equiv.left_inv }
 /- Porting note: was by
   refine_struct
     { mul := fun g h => RingEquiv.trans h g
@@ -99,7 +104,7 @@ section Semiring
 
 variable {G R : Type*} [Group G] [Semiring R]
 
-/-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
+/-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)

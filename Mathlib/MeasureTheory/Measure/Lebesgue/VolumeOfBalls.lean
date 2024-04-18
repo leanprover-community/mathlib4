@@ -29,7 +29,7 @@ Using these formulas, we compute the volume of the unit balls in several cases.
 * `Complex.volume_sum_rpow_lt_one` / `Complex.volume_sum_rpow_lt`: same as above but for complex
   finite dimensional vector space.
 
-* `EuclideanSpace.volume_ball` / `EuclideanSpace.volume_closedBall` : volume of open and closed
+* `Euclidean_space.volume_ball` / `Euclidean_space.volume_closedBall` : volume of open and closed
   balls in a finite dimensional Euclidean space.
 
 * `InnerProductSpace.volume_ball` / `InnerProductSpace.volume_closedBall`: volume of open and closed
@@ -55,7 +55,7 @@ theorem MeasureTheory.measure_unitBall_eq_integral_div_gamma {E : Type*} {p : �
   · have : (0:ℝ) < finrank ℝ E := Nat.cast_pos.mpr finrank_pos
     have : ((∫ y in Set.Ioi (0:ℝ), y ^ (finrank ℝ E - 1) • Real.exp (-y ^ p)) /
         Real.Gamma ((finrank ℝ E) / p + 1)) * (finrank ℝ E) = 1 := by
-      simp_rw [← Real.rpow_natCast _ (finrank ℝ E - 1), smul_eq_mul, Nat.cast_sub finrank_pos,
+      simp_rw [← Real.rpow_nat_cast _ (finrank ℝ E - 1), smul_eq_mul, Nat.cast_sub finrank_pos,
         Nat.cast_one]
       rw [integral_rpow_mul_exp_neg_rpow hp (by linarith), sub_add_cancel,
         Real.Gamma_add_one (ne_of_gt (by positivity))]
@@ -157,7 +157,7 @@ theorem MeasureTheory.measure_le_eq_lt [Nontrivial E] (r : ℝ) :
 
 end general_case
 
-section LpSpace
+section Lp_space
 
 open BigOperators Real Fintype ENNReal FiniteDimensional MeasureTheory MeasureTheory.Measure
 
@@ -313,15 +313,15 @@ theorem Complex.volume_sum_rpow_le [Nonempty ι] {p : ℝ} (hp : 1 ≤ p) (r : �
   rw [measure_le_eq_lt _ nm_zero (fun x ↦ nm_neg x) (fun x y ↦ nm_add x y) (eq_zero _).mp
     (fun r x => nm_smul r x), Complex.volume_sum_rpow_lt _ hp]
 
-end LpSpace
+end Lp_space
 
-section EuclideanSpace
+section Euclidean_space
 
 variable (ι : Type*) [Nonempty ι] [Fintype ι]
 
 open Fintype Real MeasureTheory MeasureTheory.Measure ENNReal
 
-theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
+theorem Euclidean_space.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.ball x r) = (.ofReal r) ^ card ι *
       .ofReal (Real.sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
   obtain hr | hr := le_total r 0
@@ -338,16 +338,12 @@ theorem EuclideanSpace.volume_ball (x : EuclideanSpace ℝ ι) (r : ℝ) :
     · rw [Gamma_add_one (by norm_num), Gamma_one_half_eq, ← mul_assoc, mul_div_cancel₀ _
         two_ne_zero, one_mul]
 
-theorem EuclideanSpace.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
+theorem Euclidean_space.volume_closedBall (x : EuclideanSpace ℝ ι) (r : ℝ) :
     volume (Metric.closedBall x r) = (.ofReal r) ^ card ι *
       .ofReal (sqrt π  ^ card ι / Gamma (card ι / 2 + 1)) := by
-  rw [addHaar_closedBall_eq_addHaar_ball, EuclideanSpace.volume_ball]
+  rw [addHaar_closedBall_eq_addHaar_ball, Euclidean_space.volume_ball]
 
--- 2024-04-06
-@[deprecated] alias Euclidean_space.volume_ball := EuclideanSpace.volume_ball
-@[deprecated] alias Euclidean_space.volume_closedBall := EuclideanSpace.volume_closedBall
-
-end EuclideanSpace
+end Euclidean_space
 
 section InnerProductSpace
 
@@ -362,7 +358,7 @@ theorem InnerProductSpace.volume_ball (x : E) (r : ℝ) :
   rw [← ((stdOrthonormalBasis ℝ E).measurePreserving_repr_symm).measure_preimage
       measurableSet_ball]
   have : Nonempty (Fin (finrank ℝ E)) := Fin.pos_iff_nonempty.mp finrank_pos
-  have := EuclideanSpace.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
+  have := Euclidean_space.volume_ball (Fin (finrank ℝ E)) ((stdOrthonormalBasis ℝ E).repr x) r
   simp_rw [Fintype.card_fin] at this
   convert this
   simp only [LinearIsometryEquiv.preimage_ball, LinearIsometryEquiv.symm_symm, _root_.map_zero]

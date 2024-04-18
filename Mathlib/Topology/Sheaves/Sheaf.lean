@@ -146,11 +146,11 @@ set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
 -- Porting note: `deriving Full` failed
-instance forgetFull : (forget C X).Full where
+instance forgetFull : Full (forget C X) where
   preimage := Sheaf.Hom.mk
 
 -- Porting note: `deriving Faithful` failed
-instance forgetFaithful : (forget C X).Faithful where
+instance forgetFaithful : Faithful (forget C X) where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.

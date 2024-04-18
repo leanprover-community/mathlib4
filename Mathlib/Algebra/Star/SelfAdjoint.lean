@@ -3,6 +3,7 @@ Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis
 -/
+import Mathlib.Init.Data.Subtype.Basic
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Star.Pi
 import Mathlib.GroupTheory.Subgroup.Basic
@@ -358,7 +359,7 @@ theorem val_one : ↑(1 : selfAdjoint R) = (1 : R) :=
 #align self_adjoint.coe_one selfAdjoint.val_one
 
 instance [Nontrivial R] : Nontrivial (selfAdjoint R) :=
-  ⟨⟨0, 1, ne_of_apply_ne Subtype.val zero_ne_one⟩⟩
+  ⟨⟨0, 1, Subtype.ne_of_val_ne zero_ne_one⟩⟩
 
 instance : NatCast (selfAdjoint R) where
   natCast n := ⟨n, isSelfAdjoint_natCast _⟩
@@ -397,7 +398,7 @@ variable [CommRing R] [StarRing R]
 instance : CommRing (selfAdjoint R) :=
   Function.Injective.commRing _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
-    (by intros; rfl) (by intros; rfl) val_pow
+    (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul val_pow
     (fun _ => rfl) fun _ => rfl
 
 end CommRing
@@ -430,24 +431,29 @@ theorem val_zpow (x : selfAdjoint R) (z : ℤ) : ↑(x ^ z) = (x : R) ^ z :=
   rfl
 #align self_adjoint.coe_zpow selfAdjoint.val_zpow
 
-instance instRatCast : RatCast (selfAdjoint R) where
-  ratCast q := ⟨q, isSelfAdjoint_ratCast q⟩
+instance : RatCast (selfAdjoint R) where
+  ratCast n := ⟨n, isSelfAdjoint_ratCast n⟩
 
-@[simp, norm_cast] lemma val_ratCast (q : ℚ) : (q : selfAdjoint R) = (q : R) := rfl
+@[simp, norm_cast]
+theorem val_ratCast (x : ℚ) : ↑(x : selfAdjoint R) = (x : R) :=
+  rfl
 #align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
-instance instSMulRat : SMul ℚ (selfAdjoint R) where
-  smul a x := ⟨a • (x : R), by rw [Rat.smul_def]; exact (isSelfAdjoint_ratCast a).mul x.prop⟩
-#align self_adjoint.has_qsmul selfAdjoint.instSMulRat
+instance instQSMul : SMul ℚ (selfAdjoint R) where
+  smul a x :=
+    ⟨a • (x : R), by rw [Rat.smul_def]; exact IsSelfAdjoint.mul (isSelfAdjoint_ratCast a) x.prop⟩
+#align self_adjoint.has_qsmul selfAdjoint.instQSMul
 
-@[simp, norm_cast] lemma val_qsmul (q : ℚ) (x : selfAdjoint R) : ↑(q • x) = q • (x : R) := rfl
-#align self_adjoint.coe_rat_smul selfAdjoint.val_qsmul
+@[simp, norm_cast]
+theorem val_rat_smul (x : selfAdjoint R) (a : ℚ) : ↑(a • x) = a • (x : R) :=
+  rfl
+#align self_adjoint.coe_rat_smul selfAdjoint.val_rat_smul
 
-instance instField : Field (selfAdjoint R) :=
-  Subtype.coe_injective.field _  (selfAdjoint R).coe_zero val_one
+instance : Field (selfAdjoint R) :=
+  Function.Injective.field _ Subtype.coe_injective (selfAdjoint R).coe_zero val_one
     (selfAdjoint R).coe_add val_mul (selfAdjoint R).coe_neg (selfAdjoint R).coe_sub
-    val_inv val_div (swap (selfAdjoint R).coe_nsmul) (by intros; rfl)
-    val_qsmul val_pow val_zpow (fun _ => rfl) (fun _ => rfl) val_ratCast
+    val_inv val_div (selfAdjoint R).coe_nsmul (selfAdjoint R).coe_zsmul
+    val_rat_smul val_pow val_zpow (fun _ => rfl) (fun _ => rfl) val_ratCast
 
 end Field
 

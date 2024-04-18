@@ -7,7 +7,7 @@ import Mathlib.Algebra.Divisibility.Basic
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.TypeTags
 import Mathlib.Algebra.Ring.Hom.Defs
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.cast.basic from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -85,10 +85,10 @@ lemma cast_pow (m : ℕ) : ∀ n : ℕ, ↑(m ^ n) = (m ^ n : α)
   | n + 1 => by rw [_root_.pow_succ', _root_.pow_succ', cast_mul, cast_pow m n]
 #align nat.cast_pow Nat.cast_pow
 
-lemma cast_dvd_cast (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
-#align nat.coe_nat_dvd Nat.cast_dvd_cast
+lemma coe_nat_dvd (h : m ∣ n) : (m : α) ∣ (n : α) := map_dvd (Nat.castRingHom α) h
+#align nat.coe_nat_dvd Nat.coe_nat_dvd
 
-alias _root_.Dvd.dvd.natCast := cast_dvd_cast
+alias _root_.Dvd.dvd.natCast := coe_nat_dvd
 
 end Semiring
 end Nat
@@ -313,18 +313,14 @@ variable {π : α → Type*} [∀ a, NatCast (π a)]
 Was `by refine_struct { .. } <;> pi_instance_derive_field` -/
 instance natCast : NatCast (∀ a, π a) := { natCast := fun n _ ↦ n }
 
-theorem natCast_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
+theorem nat_apply (n : ℕ) (a : α) : (n : ∀ a, π a) a = n :=
   rfl
-#align pi.nat_apply Pi.natCast_apply
+#align pi.nat_apply Pi.nat_apply
 
 @[simp]
-theorem natCast_def (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
+theorem coe_nat (n : ℕ) : (n : ∀ a, π a) = fun _ ↦ ↑n :=
   rfl
-#align pi.coe_nat Pi.natCast_def
-
--- 2024-04-05
-@[deprecated] alias nat_apply := natCast_apply
-@[deprecated] alias coe_nat := natCast_def
+#align pi.coe_nat Pi.coe_nat
 
 @[simp]
 theorem ofNat_apply (n : ℕ) [n.AtLeastTwo] (a : α) : (OfNat.ofNat n : ∀ a, π a) a = n := rfl

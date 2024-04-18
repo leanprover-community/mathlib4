@@ -5,6 +5,7 @@ Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
 import Mathlib.Logic.Relator
+import Mathlib.Init.Propext
 import Mathlib.Init.Data.Quot
 import Mathlib.Tactic.Cases
 import Mathlib.Tactic.Use
@@ -327,7 +328,8 @@ theorem head_induction_on {P : ∀ a : α, ReflTransGen r a b → Prop} {a : α}
   induction h with
   | refl => exact refl
   | @tail b c _ hbc ih =>
-  apply ih
+  -- Porting note: Lean 3 figured out the motive and `apply ih` worked
+  refine @ih (fun {a : α} (hab : ReflTransGen r a b) ↦ P a (ReflTransGen.tail hab hbc)) ?_ ?_
   · exact head hbc _ refl
   · exact fun h1 h2 ↦ head h1 (h2.tail hbc)
 #align relation.refl_trans_gen.head_induction_on Relation.ReflTransGen.head_induction_on
@@ -418,9 +420,10 @@ theorem head_induction_on {P : ∀ a : α, TransGen r a b → Prop} {a : α} (h 
   induction h with
   | single h => exact base h
   | @tail b c _ hbc h_ih =>
-  apply h_ih
-  · exact fun h ↦ ih h (single hbc) (base hbc)
-  · exact fun hab hbc ↦ ih hab _
+  -- Lean 3 could figure out the motive and `apply h_ih` worked
+  refine @h_ih (fun {a : α} (hab : @TransGen α r a b) ↦ P a (TransGen.tail hab hbc)) ?_ ?_;
+  exact fun h ↦ ih h (single hbc) (base hbc)
+  exact fun hab hbc ↦ ih hab _
 #align relation.trans_gen.head_induction_on Relation.TransGen.head_induction_on
 
 @[elab_as_elim]

@@ -75,9 +75,9 @@ instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.c
 @[simps!]
 def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
 
-instance : lightToProfinite.Faithful := show (inducedFunctor _).Faithful from inferInstance
+instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
 
-instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInstance
+instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
 
 instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
 
@@ -97,13 +97,6 @@ instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
 def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
-
-instance : fintypeCatToLightProfinite.Faithful where
-  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
-
-instance : fintypeCatToLightProfinite.Full where
-  preimage f := fun x ↦ f x
-  witness _ := rfl
 
 end LightProfinite
 
@@ -125,11 +118,11 @@ def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} 
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-instance : LightProfinite'.toLightFunctor.{u}.Faithful := ⟨id⟩
+instance : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
 
-instance : LightProfinite'.toLightFunctor.{u}.Full := ⟨id, fun _ ↦ rfl⟩
+instance : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
 
-instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
+instance : EssSurj LightProfinite'.toLightFunctor.{u} where
   mem_essImage Y := by
     let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
       toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
@@ -138,8 +131,7 @@ instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : LightProfinite'.toLightFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=

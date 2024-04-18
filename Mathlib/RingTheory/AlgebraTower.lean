@@ -149,7 +149,8 @@ noncomputable def Basis.smul {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R 
 @[simp]
 theorem Basis.smul_repr {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A) (x ij) :
     (b.smul c).repr x ij = b.repr (c.repr x ij.2) ij.1 := by
-  simp [Basis.smul]
+  set_option tactic.skipAssignedInstances false in
+  simp [Basis.smul]; rfl
 #align basis.smul_repr Basis.smul_repr
 
 theorem Basis.smul_repr_mk {ι : Type v₁} {ι' : Type w₁} (b : Basis ι R S) (c : Basis ι' S A)

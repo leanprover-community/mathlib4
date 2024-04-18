@@ -30,7 +30,7 @@ universe v₁ v₂ u₁ u₂
 -- morphism levels before object levels. See note [CategoryTheory universes].
 /-- The core of a category C is the groupoid whose morphisms are all the
 isomorphisms of C. -/
--- Porting note(#5171): linter not yet ported
+-- Porting note: This linter does not exist yet
 -- @[nolint has_nonempty_instance]
 
 def Core (C : Type u₁) := C
@@ -67,7 +67,7 @@ def inclusion : Core C ⥤ C where
 #align category_theory.core.inclusion CategoryTheory.Core.inclusion
 
 -- Porting note: This worked without proof before.
-instance : (inclusion C).Faithful where
+instance : Faithful (inclusion C) where
   map_injective := by
     intro _ _
     apply Iso.ext

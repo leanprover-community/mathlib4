@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Algebra.Polynomial.Monic
+import Mathlib.Data.Polynomial.Monic
 
 /-!
 # `Monic` does not necessarily imply `IsRegular` in a `Semiring` with no opposites

@@ -71,7 +71,7 @@ initialize registerTraceClass `Meta.Tactic.polyrith
 
 /--
 A datatype representing the semantics of multivariable polynomials.
-Each `Poly` can be converted into a string.
+Each `poly` can be converted into a string.
 -/
 inductive Poly
   | const : ℚ → Poly

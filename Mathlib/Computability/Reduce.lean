@@ -40,6 +40,7 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
   ∃ f, Computable f ∧ ∀ a, p a ↔ q (f a)
 #align many_one_reducible ManyOneReducible
 
+-- mathport name: «expr ≤₀ »
 @[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
@@ -77,6 +78,7 @@ def OneOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop) 
   ∃ f, Computable f ∧ Injective f ∧ ∀ a, p a ↔ q (f a)
 #align one_one_reducible OneOneReducible
 
+-- mathport name: «expr ≤₁ »
 @[inherit_doc OneOneReducible]
 infixl:1000 " ≤₁ " => OneOneReducible
 
@@ -287,6 +289,7 @@ theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (
   ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
+-- mathport name: «expr ⊕' »
 local infixl:1001 " ⊕' " => Sum.elim
 
 open Nat.Primrec

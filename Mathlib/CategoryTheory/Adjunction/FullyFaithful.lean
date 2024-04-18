@@ -45,7 +45,7 @@ See
 * https://math.stackexchange.com/a/2727177
 * https://stacks.math.columbia.edu/tag/07RB (we only prove the forward direction!)
 -/
-instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunction.unit h) :=
+instance unit_isIso_of_L_fully_faithful [Full L] [Faithful L] : IsIso (Adjunction.unit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.unit h) fun X =>
     @Yoneda.isIso _ _ _ _ ((Adjunction.unit h).app X)
       ⟨⟨{ app := fun Y f => L.preimage ((h.homEquiv (unop Y) (L.obj X)).symm f) },
@@ -56,8 +56,7 @@ instance unit_isIso_of_L_fully_faithful [L.Full] [L.Faithful] : IsIso (Adjunctio
            by
             ext x
             dsimp
-            simp only [Adjunction.homEquiv_counit, Functor.preimage_comp,
-              Functor.preimage_map, Category.assoc]
+            simp only [Adjunction.homEquiv_counit, preimage_comp, preimage_map, Category.assoc]
             rw [← h.unit_naturality]
             simp⟩⟩⟩
 set_option linter.uppercaseLean3 false in
@@ -67,7 +66,7 @@ set_option linter.uppercaseLean3 false in
 
 See <https://stacks.math.columbia.edu/tag/07RB> (we only prove the forward direction!)
 -/
-instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunction.counit h) :=
+instance counit_isIso_of_R_fully_faithful [Full R] [Faithful R] : IsIso (Adjunction.counit h) :=
   @NatIso.isIso_of_isIso_app _ _ _ _ _ _ (Adjunction.counit h) fun X =>
     @isIso_of_op _ _ _ _ _ <|
       @Coyoneda.isIso _ _ _ _ ((Adjunction.counit h).app X).op
@@ -79,7 +78,7 @@ instance counit_isIso_of_R_fully_faithful [R.Full] [R.Faithful] : IsIso (Adjunct
              by
               ext x
               dsimp
-              simp only [Adjunction.homEquiv_unit, Functor.preimage_comp, Functor.preimage_map]
+              simp only [Adjunction.homEquiv_unit, preimage_comp, preimage_map]
               rw [← h.counit_naturality]
               simp⟩⟩⟩
 set_option linter.uppercaseLean3 false in
@@ -116,13 +115,13 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
-noncomputable def lFullOfUnitIsIso [IsIso h.unit] : L.Full where
+noncomputable def lFullOfUnitIsIso [IsIso h.unit] : Full L where
   preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
 set_option linter.uppercaseLean3 false in
 #align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
 /-- If the unit is an isomorphism, then the left adjoint is faithful-/
-theorem L_faithful_of_unit_isIso [IsIso h.unit] : L.Faithful :=
+theorem L_faithful_of_unit_isIso [IsIso h.unit] : Faithful L :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv X (L.obj Y)).apply_eq_iff_eq] at H
     simpa using H =≫ inv (h.unit.app Y)⟩
@@ -130,20 +129,20 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
-noncomputable def rFullOfCounitIsIso [IsIso h.counit] : R.Full where
+noncomputable def rFullOfCounitIsIso [IsIso h.counit] : Full R where
   preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
-theorem R_faithful_of_counit_isIso [IsIso h.counit] : R.Faithful :=
+theorem R_faithful_of_counit_isIso [IsIso h.counit] : Faithful R :=
   ⟨fun {X Y f g} H => by
     rw [← (h.homEquiv (R.obj X) Y).symm.apply_eq_iff_eq] at H
     simpa using inv (h.counit.app X) ≫= H⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_faithful_of_counit_is_iso CategoryTheory.R_faithful_of_counit_isIso
 
-instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
+instance whiskerLeft_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerLeft L h.counit) := by
   have := h.left_triangle
   rw [← IsIso.eq_inv_comp] at this
@@ -152,7 +151,7 @@ instance whiskerLeft_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_counit_iso_of_L_fully_faithful CategoryTheory.whiskerLeft_counit_iso_of_L_fully_faithful
 
-instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
+instance whiskerRight_counit_iso_of_L_fully_faithful [Full L] [Faithful L] :
     IsIso (whiskerRight h.counit R) := by
   have := h.right_triangle
   rw [← IsIso.eq_inv_comp] at this
@@ -161,7 +160,7 @@ instance whiskerRight_counit_iso_of_L_fully_faithful [L.Full] [L.Faithful] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_right_counit_iso_of_L_fully_faithful CategoryTheory.whiskerRight_counit_iso_of_L_fully_faithful
 
-instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
+instance whiskerLeft_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerLeft R h.unit) := by
   have := h.right_triangle
   rw [← IsIso.eq_comp_inv] at this
@@ -170,7 +169,7 @@ instance whiskerLeft_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_unit_iso_of_R_fully_faithful CategoryTheory.whiskerLeft_unit_iso_of_R_fully_faithful
 
-instance whiskerRight_unit_iso_of_R_fully_faithful [R.Full] [R.Faithful] :
+instance whiskerRight_unit_iso_of_R_fully_faithful [Full R] [Faithful R] :
     IsIso (whiskerRight h.unit L) := by
   have := h.left_triangle
   rw [← IsIso.eq_comp_inv] at this
@@ -195,7 +194,7 @@ natural isomorphism) with the proposed restrictions.
 -/
 def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' ⥤ D'} {R' : D' ⥤ C'}
     (adj : L' ⊣ R') {L : C ⥤ D} {R : D ⥤ C} (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
-    [iC.Full] [iC.Faithful] [iD.Full] [iD.Faithful] : L ⊣ R :=
+    [Full iC] [Faithful iC] [Full iD] [Faithful iD] : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
         calc

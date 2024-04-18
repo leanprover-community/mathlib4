@@ -8,7 +8,7 @@ import Std.Data.List.Basic
 import Std.Data.List.Lemmas
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Order.Basic
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 

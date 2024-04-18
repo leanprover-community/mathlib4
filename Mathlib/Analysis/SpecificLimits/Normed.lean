@@ -61,7 +61,7 @@ theorem tendsto_norm_inverse_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜
 theorem tendsto_norm_zpow_nhdsWithin_0_atTop {𝕜 : Type*} [NormedField 𝕜] {m : ℤ} (hm : m < 0) :
     Tendsto (fun x : 𝕜 ↦ ‖x ^ m‖) (𝓝[≠] 0) atTop := by
   rcases neg_surjective m with ⟨m, rfl⟩
-  rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.natCast_pos] at hm
+  rw [neg_lt_zero] at hm; lift m to ℕ using hm.le; rw [Int.coe_nat_pos] at hm
   simp only [norm_pow, zpow_neg, zpow_natCast, ← inv_pow]
   exact (tendsto_pow_atTop hm.ne').comp NormedField.tendsto_norm_inverse_nhdsWithin_0_atTop
 #align normed_field.tendsto_norm_zpow_nhds_within_0_at_top NormedField.tendsto_norm_zpow_nhdsWithin_0_atTop
@@ -172,7 +172,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   -- Add 7 and 8 using 2 → 8 → 7 → 3
   tfae_have 2 → 8
   · rintro ⟨a, ha, H⟩
-    refine' ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ _⟩
+    refine' ⟨a, ha, (H.definition zero_lt_one).mono fun n hn ↦ _⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
   tfae_have 8 → 7
   exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
@@ -219,7 +219,7 @@ theorem isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt {R : Type*} [Norm
   by_cases h0 : r₁ = 0
   · refine' (isLittleO_zero _ _).congr' (mem_atTop_sets.2 <| ⟨1, fun n hn ↦ _⟩) EventuallyEq.rfl
     simp [zero_pow (one_le_iff_ne_zero.1 hn), h0]
-  rw [← Ne, ← norm_pos_iff] at h0
+  rw [← Ne.def, ← norm_pos_iff] at h0
   have A : (fun n ↦ (n : R) ^ k : ℕ → R) =o[atTop] fun n ↦ (r₂ / ‖r₁‖) ^ n :=
     isLittleO_pow_const_const_pow_of_one_lt k ((one_lt_div h0).2 h)
   suffices (fun n ↦ r₁ ^ n) =O[atTop] fun n ↦ ‖r₁‖ ^ n by
@@ -768,9 +768,9 @@ end
 ### Factorial
 -/
 
-/-- The series `∑' n, x ^ n / n!` is summable of any `x : ℝ`. See also `expSeries_div_summable`
-for a version that also works in `ℂ`, and `NormedSpace.expSeries_summable'` for a version
-that works in any normed algebra over `ℝ` or `ℂ`. -/
+/-- The series `∑' n, x ^ n / n!` is summable of any `x : ℝ`. See also `exp_series_div_summable`
+for a version that also works in `ℂ`, and `exp_series_summable'` for a version that works in
+any normed algebra over `ℝ` or `ℂ`. -/
 theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / n ! : ℕ → ℝ) := by
   -- We start with trivial estimates
   have A : (0 : ℝ) < ⌊‖x‖⌋₊ + 1 := zero_lt_one.trans_le (by simp)
@@ -783,7 +783,7 @@ theorem Real.summable_pow_div_factorial (x : ℝ) : Summable (fun n ↦ x ^ n / 
   calc
     ‖x ^ (n + 1) / (n + 1)!‖ = ‖x‖ / (n + 1) * ‖x ^ n / (n !)‖ := by
       rw [_root_.pow_succ', Nat.factorial_succ, Nat.cast_mul, ← _root_.div_mul_div_comm, norm_mul,
-        norm_div, Real.norm_natCast, Nat.cast_succ]
+        norm_div, Real.norm_coe_nat, Nat.cast_succ]
     _ ≤ ‖x‖ / (⌊‖x‖⌋₊ + 1) * ‖x ^ n / (n !)‖ :=
       -- Porting note: this was `by mono* with 0 ≤ ‖x ^ n / (n !)‖, 0 ≤ ‖x‖ <;> apply norm_nonneg`
       -- but we can't wait on `mono`.

@@ -66,6 +66,7 @@ from `PresentedGroup rels` to `G`.
 -/
 variable {G : Type*} [Group G] {f : α → G} {rels : Set (FreeGroup α)}
 
+-- mathport name: exprF
 local notation "F" => FreeGroup.lift f
 
 -- Porting note: `F` has been expanded, because `F r = 1` produces a sorry.

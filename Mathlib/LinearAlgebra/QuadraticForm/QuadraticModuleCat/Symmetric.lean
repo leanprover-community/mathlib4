@@ -41,7 +41,7 @@ variable (R) in
 def toModuleCatBraidedFunctor : BraidedFunctor (QuadraticModuleCat.{u} R) (ModuleCat.{u} R) where
   toMonoidalFunctor := toModuleCatMonoidalFunctor R
 
-instance : (toModuleCatBraidedFunctor R).Faithful :=
+instance : Faithful (toModuleCatBraidedFunctor R).toFunctor :=
   forget₂_faithful _ _
 
 instance instSymmetricCategory : SymmetricCategory (QuadraticModuleCat.{u} R) :=

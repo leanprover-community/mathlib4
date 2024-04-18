@@ -11,10 +11,9 @@ This file contains various definitions on `Array`. It does not contain
 proofs about these definitions, those are contained in other files in `Mathlib.Data.Array`.
 -/
 
-namespace Array
+set_option autoImplicit true
 
-universe u
-variable {α : Type u}
+namespace Array
 
 /-- Permute the array using a sequence of indices defining a cyclic permutation.
   If the list of indices `l = [i₁, i₂, ..., iₙ]` are all distinct then

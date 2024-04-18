@@ -580,7 +580,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
-    rw [Int.cast_natCast]
+    rw [Int.cast_ofNat]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
     rw [Int.cast_negSucc, diagonal_neg]
   __ := addGroup

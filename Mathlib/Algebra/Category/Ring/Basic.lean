@@ -134,16 +134,17 @@ theorem ofHom_apply {R S : Type u} [Semiring R] [Semiring S] (f : R →+* S) (x 
 set_option linter.uppercaseLean3 false in
 #align SemiRing.of_hom_apply SemiRingCat.ofHom_apply
 
+set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of semirings
 -/
 @[simps]
-def _root_.RingEquiv.toSemiRingCatIso {X Y : Type u} [Semiring X] [Semiring Y] (e : X ≃+* Y) :
+def _root_.RingEquiv.toSemiRingCatIso [Semiring X] [Semiring Y] (e : X ≃+* Y) :
     SemiRingCat.of X ≅ SemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : (forget SemiRingCat).ReflectsIsomorphisms where
+instance forgetReflectIsos : ReflectsIsomorphisms (forget SemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget SemiRingCat).map f)
     let ff : X →+* Y := f
@@ -354,16 +355,17 @@ instance hasForgetToCommMonCat : HasForget₂ CommSemiRingCat CommMonCat :=
 set_option linter.uppercaseLean3 false in
 #align CommSemiRing.has_forget_to_CommMon CommSemiRingCat.hasForgetToCommMonCat
 
+set_option autoImplicit true in
 /--
 Ring equivalence are isomorphisms in category of commutative semirings
 -/
 @[simps]
-def _root_.RingEquiv.toCommSemiRingCatIso {X Y : Type u} [CommSemiring X] [CommSemiring Y]
-    (e : X ≃+* Y) : CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
+def _root_.RingEquiv.toCommSemiRingCatIso [CommSemiring X] [CommSemiring Y] (e : X ≃+* Y) :
+    CommSemiRingCat.of X ≅ CommSemiRingCat.of Y where
   hom := e.toRingHom
   inv := e.symm.toRingHom
 
-instance forgetReflectIsos : (forget CommSemiRingCat).ReflectsIsomorphisms where
+instance forgetReflectIsos : ReflectsIsomorphisms (forget CommSemiRingCat) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommSemiRingCat).map f)
     let ff : X →+* Y := f
@@ -488,7 +490,7 @@ instance hasForgetToCommSemiRingCat : HasForget₂ CommRingCat CommSemiRingCat :
 set_option linter.uppercaseLean3 false in
 #align CommRing.has_forget_to_CommSemiRing CommRingCat.hasForgetToCommSemiRingCat
 
-instance : (forget₂ CommRingCat CommSemiRingCat).Full where preimage {X Y} f := f
+instance : Full (forget₂ CommRingCat CommSemiRingCat) where preimage {X Y} f := f
 
 end CommRingCat
 
@@ -572,7 +574,7 @@ def ringEquivIsoCommRingIso {X Y : Type u} [CommRing X] [CommRing Y] :
 set_option linter.uppercaseLean3 false in
 #align ring_equiv_iso_CommRing_iso ringEquivIsoCommRingIso
 
-instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphisms where
+instance RingCat.forget_reflects_isos : ReflectsIsomorphisms (forget RingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget RingCat).map f)
     let ff : X →+* Y := f
@@ -581,7 +583,7 @@ instance RingCat.forget_reflects_isos : (forget RingCat.{u}).ReflectsIsomorphism
 set_option linter.uppercaseLean3 false in
 #align Ring.forget_reflects_isos RingCat.forget_reflects_isos
 
-instance CommRingCat.forget_reflects_isos : (forget CommRingCat.{u}).ReflectsIsomorphisms where
+instance CommRingCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommRingCat.{u}) where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommRingCat).map f)
     let ff : X →+* Y := f
@@ -608,4 +610,4 @@ set_option linter.uppercaseLean3 false in
 -- Porting note: This was the case in mathlib3, perhaps it is different now?
 attribute [local instance] reflectsIsomorphisms_forget₂
 
-example : (forget₂ RingCat AddCommGroupCat).ReflectsIsomorphisms := by infer_instance
+example : ReflectsIsomorphisms (forget₂ RingCat AddCommGroupCat) := by infer_instance
