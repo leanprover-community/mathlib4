@@ -92,7 +92,7 @@ theorem ascPochhammer_smeval_cast (R : Type*) [Semiring R] {S : Type*} [NonAssoc
   induction' n with n hn
   · simp only [Nat.zero_eq, ascPochhammer_zero, smeval_one, one_smul]
   · simp only [ascPochhammer_succ_right, mul_add, smeval_add, smeval_mul_X, ← Nat.cast_comm]
-    simp only [← C_eq_nat_cast, smeval_C_mul, hn, ← nsmul_eq_smul_cast R n]
+    simp only [← C_eq_natCast, smeval_C_mul, hn, ← nsmul_eq_smul_cast R n]
     exact rfl
 
 variable {R S : Type*}
@@ -109,9 +109,9 @@ theorem descPochhammer_smeval_eq_ascPochhammer (r : R) (n : ℕ) :
   | zero => simp only [descPochhammer_zero, ascPochhammer_zero, smeval_one, npow_zero]
   | succ n ih =>
     rw [Nat.cast_succ, sub_add, add_sub_cancel_right, descPochhammer_succ_right, smeval_mul, ih,
-      ascPochhammer_succ_left, X_mul, smeval_mul_X, smeval_comp, smeval_sub, ← C_eq_nat_cast]
-    simp only [smeval_add, smeval_X, npow_one, smeval_one, npow_zero, one_smul, smeval_C, zsmul_one,
-      Int.cast_ofNat]
+      ascPochhammer_succ_left, X_mul, smeval_mul_X, smeval_comp, smeval_sub, ← C_eq_natCast,
+      smeval_add, smeval_one, smeval_C]
+    simp only [smeval_X, npow_one, npow_zero, zsmul_one, Int.cast_natCast, one_smul]
 
 theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
     (descPochhammer ℤ k).smeval (n : R) = n.descFactorial k := by
@@ -120,7 +120,7 @@ theorem descPochhammer_smeval_eq_descFactorial (n k : ℕ) :
     rw [descPochhammer_zero, Nat.descFactorial_zero, Nat.cast_one, smeval_one, npow_zero, one_smul]
   | succ k ih =>
     rw [descPochhammer_succ_right, Nat.descFactorial_succ, smeval_mul, ih, mul_comm, Nat.cast_mul,
-      smeval_sub, smeval_X, smeval_nat_cast, npow_one, npow_zero, nsmul_one]
+      smeval_sub, smeval_X, smeval_natCast, npow_one, npow_zero, nsmul_one]
     by_cases h : n < k
     · simp only [Nat.descFactorial_eq_zero_iff_lt.mpr h, Nat.cast_zero, zero_mul]
     · rw [Nat.cast_sub <| not_lt.mp h]
@@ -132,7 +132,7 @@ theorem ascPochhammer_smeval_neg_eq_descPochhammer (r : R) (k : ℕ) :
   | succ k ih =>
     simp only [ascPochhammer_succ_right, smeval_mul, ih, descPochhammer_succ_right, sub_eq_add_neg]
     have h : (X + (k : ℕ[X])).smeval (-r) = - (X + (-k : ℤ[X])).smeval r := by
-      simp only [smeval_add, smeval_X, npow_one, smeval_neg, smeval_nat_cast, npow_zero, nsmul_one]
+      simp only [smeval_add, smeval_X, npow_one, smeval_neg, smeval_natCast, npow_zero, nsmul_one]
       abel
     rw [h, ← neg_mul_comm, neg_mul_eq_neg_mul, ← mul_neg_one, ← neg_npow_assoc, ← Nat.add_one,
       npow_add, npow_one]
@@ -166,7 +166,7 @@ instance Int.instBinomialRing : BinomialRing ℤ where
     cases r with
     | ofNat n =>
       simp only [multichoose, nsmul_eq_mul, Int.ofNat_eq_coe, Int.ofNat_mul_out]
-      rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_nat_cast, ← eval_eq_smeval n,
+      rw [← Nat.descFactorial_eq_factorial_mul_choose, smeval_at_natCast, ← eval_eq_smeval n,
         ascPochhammer_nat_eq_descFactorial]
     | negSucc n =>
       simp only [Int.multichoose, nsmul_eq_mul]
@@ -196,11 +196,11 @@ theorem descPochhammer_eq_factorial_smul_choose [NatPowAssoc R] (r : R) (n : ℕ
   rw [choose, factorial_nsmul_multichoose_eq_ascPochhammer, descPochhammer_eq_ascPochhammer,
     smeval_comp, add_comm_sub, smeval_add, smeval_X, npow_one]
   have h : smeval (1 - n : Polynomial ℤ) r = 1 - n := by
-    rw [← C_eq_nat_cast, ← C_1, ← C_sub, smeval_C]
-    simp only [npow_zero, zsmul_eq_mul, Int.cast_sub, Int.cast_one, Int.cast_ofNat, zsmul_one]
+    rw [← C_eq_natCast, ← C_1, ← C_sub, smeval_C]
+    simp only [npow_zero, zsmul_one, Int.cast_sub, Int.cast_one, Int.cast_natCast]
   rw [h, ascPochhammer_smeval_cast, add_comm_sub]
 
-theorem choose_natCast (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
+theorem choose_natCast [NatPowAssoc R] (n k : ℕ) : choose (n : R) k = Nat.choose n k := by
   refine nsmul_right_injective (Nat.factorial k) (Nat.factorial_ne_zero k) ?_
   simp only
   rw [← descPochhammer_eq_factorial_smul_choose, nsmul_eq_mul, ← Nat.cast_mul,
