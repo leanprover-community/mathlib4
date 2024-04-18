@@ -205,15 +205,15 @@ def ContextFreeRule.reverse {N : Type uN} (r : ContextFreeRule T N) : ContextFre
 def ContextFreeGrammar.reverse (g : ContextFreeGrammar T) : ContextFreeGrammar T :=
   ⟨g.NT, g.initial, g.rules.map .reverse⟩
 
-lemma ContextFreeRule.reverse_reverse {N : Type uN} :
+lemma ContextFreeRule.reverse_involutive {N : Type uN} :
     Function.Involutive (@ContextFreeRule.reverse T N) := by
   intro x
   simp [ContextFreeRule.reverse]
 
-lemma ContextFreeGrammar.reverse_reverse :
+lemma ContextFreeGrammar.reverse_involutive :
     Function.Involutive (@ContextFreeGrammar.reverse T) := by
   intro x
-  simp [ContextFreeGrammar.reverse, ContextFreeRule.reverse_reverse]
+  simp [ContextFreeGrammar.reverse, ContextFreeRule.reverse_involutive]
 
 lemma ContextFreeGrammar.reverse_derives (g : ContextFreeGrammar T) {s : List (Symbol T g.NT)}
     (hgs : g.reverse.Derives [Symbol.nonterminal g.reverse.initial] s) :
@@ -239,16 +239,22 @@ lemma ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language (g : Conte
   convert g.reverse_derives hgw
   simp [List.map_reverse]
 
+lemma ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language (g : ContextFreeGrammar T)
+    (w : List T) :
+    w ∈ g.reverse.language ↔ w.reverse ∈ g.language := by
+  refine ⟨reverse_mem_language_of_mem_reverse_language _, fun hw => ?_⟩
+  rw [← ContextFreeGrammar.reverse_involutive g] at hw
+  rw [← List.reverse_reverse w]
+  exact g.reverse.reverse_mem_language_of_mem_reverse_language hw
+
 /-- The class of context-free languages is closed under reversal. -/
 theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) :
     L.reverse.IsContextFree := by
-  cases CFL with
-  | intro g hgL =>
-    rw [← hgL]
-    use g.reverse
-    apply Set.eq_of_subset_of_subset
-    · apply ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language
-    · intro w hwg
-      rwa [ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language, ← mem_reverse]
+  obtain ⟨g, rfl⟩ := CFL
+  use g.reverse
+  apply Set.eq_of_subset_of_subset
+  · apply ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language
+  · intro _ _
+    rwa [ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language, ← mem_reverse]
 
 end closure_reversal
