@@ -345,4 +345,26 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
   rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 
+theorem dvd_gcd_mul_of_dvd_mul {x n m : ℕ} (h : x ∣ n * m) : x ∣ gcd x n * m := by
+  rcases h with ⟨ y, hy ⟩
+  rw [← gcd_mul_right, hy, gcd_mul_left]
+  exact dvd_mul_right x (gcd m y)
+
+theorem dvd_mul_gcd_of_dvd_mul {x n m : ℕ} (h : x ∣ n * m) : x ∣ n * gcd x m := by
+  rcases h with ⟨ y, hy ⟩
+  rw [← gcd_mul_left, hy, mul_comm, gcd_mul_left]
+  exact dvd_mul_right x (gcd n y)
+
+theorem dvd_gcd_mul_gcd_of_dvd_mul {x n m : ℕ} (h : x ∣ n * m) : x ∣ gcd x n * gcd x m :=
+  dvd_gcd_mul_of_dvd_mul <| dvd_mul_gcd_of_dvd_mul h
+
+theorem gcd_mul_gcd_eq_of_dvd_mul_coprime {x n m : ℕ} (h : x ∣ n * m) (hcop : Coprime n m) :
+    gcd x n * gcd x m = x := by
+  apply dvd_antisymm
+  · refine Coprime.mul_dvd_of_dvd_of_dvd ?_ ?_ ?_
+    · exact hcop.gcd_both x x
+    · exact gcd_dvd_left x n
+    · exact gcd_dvd_left x m
+  · exact dvd_gcd_mul_gcd_of_dvd_mul h
+
 end Nat
