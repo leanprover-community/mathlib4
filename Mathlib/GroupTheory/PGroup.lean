@@ -187,7 +187,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     calc
       card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
-      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := (card_sigma _)
+      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma _
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
       _ = _ := by simp; rfl
     rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]

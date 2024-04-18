@@ -48,7 +48,7 @@ def CongrmSelectionPanel : Component SelectInsertParams :=
 
 open scoped Json in
 /-- Display a widget panel allowing to generate a `congrm` call with holes specified by selecting
-subexpressions in the goal.-/
+subexpressions in the goal. -/
 elab stx:"congrm?" : tactic => do
   let some replaceRange := (← getFileMap).rangeOfStx? stx | return
   Widget.savePanelWidgetInfo CongrmSelectionPanel.javascriptHash

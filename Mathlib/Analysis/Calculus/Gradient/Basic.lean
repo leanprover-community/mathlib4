@@ -46,12 +46,12 @@ variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F] [CompleteSpace F]
 variable {f : F → 𝕜} {f' x : F}
 
 /-- A function `f` has the gradient `f'` as derivative along the filter `L` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` when `x'` converges along the filter `L`. -/
 def HasGradientAtFilter (f : F → 𝕜) (f' x : F) (L : Filter F) :=
   HasFDerivAtFilter f (toDual 𝕜 F f') x L
 
 /-- `f` has the gradient `f'` at the point `x` within the subset `s` if
-  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`.-/
+  `f x' = f x + ⟨f', x' - x⟩ + o (x' - x)` where `x'` converges to `x` inside `s`. -/
 def HasGradientWithinAt (f : F → 𝕜) (f' : F) (s : Set F) (x : F) :=
   HasGradientAtFilter f f' x (𝓝[s] x)
 

@@ -258,7 +258,7 @@ structure LiftsToColimit (K : J ⥤ C) (F : C ⥤ D) (c : Cocone (K ⋙ F)) (t :
 then `F` creates limits.
 In particular here we don't need to assume that F reflects limits.
 -/
-def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     (h : ∀ c t, LiftsToLimit K F c t) : CreatesLimit K F
     where
   lifts c t := (h c t).toLiftableCone
@@ -281,7 +281,7 @@ def createsLimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms 
 /-- If `F` reflects isomorphisms and we can lift a single limit cone to a limit cone, then `F`
     creates limits. Note that unlike `createsLimitOfReflectsIso`, to apply this result it is
     necessary to know that `K ⋙ F` actually has a limit. -/
-def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cone (K ⋙ F)} (hc : IsLimit c) (h : LiftsToLimit K F c hc) : CreatesLimit K F :=
   createsLimitOfReflectsIso fun _ t =>
     { liftedCone := h.liftedCone
@@ -295,7 +295,7 @@ def createsLimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms
 When `F` is fully faithful, to show that `F` creates the limit for `K` it suffices to exhibit a lift
 of a limit cone for `K ⋙ F`.
 -/
-def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cone (K ⋙ F)} (hl : IsLimit l) (c : Cone K) (i : F.mapCone c ≅ l) :
     CreatesLimit K F :=
   createsLimitOfReflectsIso fun _ t =>
@@ -311,7 +311,7 @@ def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fai
 /-- When `F` is fully faithful, and `HasLimit (K ⋙ F)`, to show that `F` creates the limit for `K`
 it suffices to exhibit a lift of the chosen limit cone for `K ⋙ F`.
 -/
-def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit (K ⋙ F)] (c : Cone K) (i : F.mapCone c ≅ limit.cone (K ⋙ F)) :
     CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (limit.isLimit _) c i
@@ -324,7 +324,7 @@ def createsLimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fait
 When `F` is fully faithful, to show that `F` creates the limit for `K` it suffices to show that a
 limit point is in the essential image of `F`.
 -/
-def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cone (K ⋙ F)} (hl : IsLimit l) (X : C) (i : F.obj X ≅ l.pt) : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' hl
     { pt := X
@@ -343,13 +343,13 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fait
 /-- When `F` is fully faithful, and `HasLimit (K ⋙ F)`, to show that `F` creates the limit for `K`
 it suffices to show that the chosen limit point is in the essential image of `F`.
 -/
-def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsLimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit (K ⋙ F)] (X : C) (i : F.obj X ≅ limit (K ⋙ F)) : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfIso' (limit.isLimit _) X i
 #align category_theory.creates_limit_of_fully_faithful_of_iso CategoryTheory.createsLimitOfFullyFaithfulOfIso
 
 /-- A fully faithful functor that preserves a limit that exists also creates the limit. -/
-def createsLimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsLimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasLimit K] [PreservesLimit K F] : CreatesLimit K F :=
   createsLimitOfFullyFaithfulOfLift' (PreservesLimit.preserves <| limit.isLimit K) _ (Iso.refl _)
 
@@ -379,7 +379,7 @@ instance (priority := 100) preservesLimitsOfCreatesLimitsAndHasLimits (F : C ⥤
 then `F` creates colimits.
 In particular here we don't need to assume that F reflects colimits.
 -/
-def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     (h : ∀ c t, LiftsToColimit K F c t) : CreatesColimit K F
     where
   lifts c t := (h c t).toLiftableCocone
@@ -403,7 +403,7 @@ def createsColimitOfReflectsIso {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphism
 /-- If `F` reflects isomorphisms and we can lift a single colimit cocone to a colimit cocone, then
     `F` creates limits. Note that unlike `createsColimitOfReflectsIso`, to apply this result it is
     necessary to know that `K ⋙ F` actually has a colimit. -/
-def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphisms F]
+def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [F.ReflectsIsomorphisms]
     {c : Cocone (K ⋙ F)} (hc : IsColimit c) (h : LiftsToColimit K F c hc) : CreatesColimit K F :=
   createsColimitOfReflectsIso fun _ t =>
     { liftedCocone := h.liftedCocone
@@ -417,7 +417,7 @@ def createsColimitOfReflectsIso' {K : J ⥤ C} {F : C ⥤ D} [ReflectsIsomorphis
 When `F` is fully faithful, to show that `F` creates the colimit for `K` it suffices to exhibit a
 lift of a colimit cocone for `K ⋙ F`.
 -/
-def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cocone (K ⋙ F)} (hl : IsColimit l) (c : Cocone K) (i : F.mapCocone c ≅ l) :
     CreatesColimit K F :=
   createsColimitOfReflectsIso fun _ t =>
@@ -434,14 +434,14 @@ def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [Full F] [F
 When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
 it suffices to exhibit a lift of the chosen colimit cocone for `K ⋙ F`.
 -/
-def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsColimitOfFullyFaithfulOfLift {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasColimit (K ⋙ F)] (c : Cocone K) (i : F.mapCocone c ≅ colimit.cocone (K ⋙ F)) :
     CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (colimit.isColimit _) c i
 #align category_theory.creates_colimit_of_fully_faithful_of_lift CategoryTheory.createsColimitOfFullyFaithfulOfLift
 
 /-- A fully faithful functor that preserves a colimit that exists also creates the colimit. -/
-def createsColimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsColimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasColimit K] [PreservesColimit K F] : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' (PreservesColimit.preserves <| colimit.isColimit K) _
     (Iso.refl _)
@@ -453,7 +453,7 @@ def createsColimitOfFullyFaithfulOfPreserves {K : J ⥤ C} {F : C ⥤ D} [Full F
 When `F` is fully faithful, to show that `F` creates the colimit for `K` it suffices to show that
 a colimit point is in the essential image of `F`.
 -/
-def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     {l : Cocone (K ⋙ F)} (hl : IsColimit l) (X : C) (i : F.obj X ≅ l.pt) : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfLift' hl
     { pt := X
@@ -473,7 +473,7 @@ def createsColimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [Full F] [Fa
 When `F` is fully faithful, and `HasColimit (K ⋙ F)`, to show that `F` creates the colimit for `K`
 it suffices to show that the chosen colimit point is in the essential image of `F`.
 -/
-def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [Full F] [Faithful F]
+def createsColimitOfFullyFaithfulOfIso {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Faithful]
     [HasColimit (K ⋙ F)] (X : C) (i : F.obj X ≅ colimit (K ⋙ F)) : CreatesColimit K F :=
   createsColimitOfFullyFaithfulOfIso' (colimit.isColimit _) X i
 #align category_theory.creates_colimit_of_fully_faithful_of_iso CategoryTheory.createsColimitOfFullyFaithfulOfIso

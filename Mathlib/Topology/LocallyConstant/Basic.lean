@@ -449,74 +449,43 @@ theorem flip_unflip {X α β : Type*} [Finite α] [TopologicalSpace X]
 
 section Comap
 
-open scoped Classical
-
 variable [TopologicalSpace Y]
 
-/-- Pull back of locally constant maps under any map, by pre-composition.
-
-This definition only makes sense if `f` is continuous,
-in which case it sends locally constant functions to their precomposition with `f`.
-See also `LocallyConstant.coe_comap`.
-
-TODO: take `f : C(X, Y)` as an argument? Or we actually use it for discontinuous `f`? -/
-noncomputable def comap (f : X → Y) : LocallyConstant Y Z → LocallyConstant X Z :=
-  if hf : Continuous f then fun g => ⟨g ∘ f, g.isLocallyConstant.comp_continuous hf⟩
-  else by
-    by_cases H : Nonempty X
-    · intro g
-      exact const X (g <| f <| Classical.arbitrary X)
-    · refine fun _ => ⟨fun x => (H ⟨x⟩).elim, fun s => ?_⟩
-      rw [isOpen_iff_nhds]
-      intro x
-      exact (H ⟨x⟩).elim
+/-- Pull back of locally constant maps under a continuous map, by pre-composition. -/
+def comap (f : C(X, Y)) (g : LocallyConstant Y Z) : LocallyConstant X Z :=
+  ⟨g ∘ f, g.isLocallyConstant.comp_continuous f.continuous⟩
 #align locally_constant.comap LocallyConstant.comap
 
 @[simp]
-theorem coe_comap (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous f) :
-    (comap f g) = g ∘ f := by
-  rw [comap, dif_pos hf]
-  rfl
+theorem coe_comap (f : C(X, Y)) (g : LocallyConstant Y Z) :
+    (comap f g) = g ∘ f := rfl
 #align locally_constant.coe_comap LocallyConstant.coe_comap
 
-theorem coe_comap_apply (f : X → Y) (g : LocallyConstant Y Z) (hf : Continuous f) (x : X) :
-    comap f g x = g (f x) := by
-  simp only [hf, coe_comap, Function.comp_apply]
+theorem coe_comap_apply (f : C(X, Y)) (g : LocallyConstant Y Z) (x : X) :
+    comap f g x = g (f x) := rfl
 
 @[simp]
-theorem comap_id : comap (@id X) = @id (LocallyConstant X Z) := by
-  ext
-  simp only [continuous_id, id.def, Function.comp_id, coe_comap]
+theorem comap_id : comap (@ContinuousMap.id X _) = @id (LocallyConstant X Z) := rfl
 #align locally_constant.comap_id LocallyConstant.comap_id
 
-theorem comap_comp [TopologicalSpace Z] (f : X → Y) (g : Y → Z) (hf : Continuous f)
-    (hg : Continuous g) : @comap _ _ α _ _ f ∘ comap g = comap (g ∘ f) := by
-  ext
-  rw [Function.comp_apply]
-  simp only [hf, hg, hg.comp hf, coe_comap]; rfl
+theorem comap_comp {W : Type*} [TopologicalSpace W] (f : C(W, X)) (g : C(X, Y)) :
+    comap (Z := Z) (g.comp f) = comap f ∘ comap g := rfl
 #align locally_constant.comap_comp LocallyConstant.comap_comp
 
-theorem comap_comap [TopologicalSpace Z] (f : X → Y) (g : Y → Z)
-    (hf : Continuous f) (hg : Continuous g) (x : LocallyConstant Z α) :
-    comap f (comap g x) = comap (g ∘ f) x := by
-  rw [← comap_comp f g hf hg]; rfl
+theorem comap_comap {W : Type*} [TopologicalSpace W] (f : C(W, X)) (g : C(X, Y))
+    (x : LocallyConstant Y Z) : comap f (comap g x) = comap (g.comp f) x := rfl
 
-theorem comap_const (f : X → Y) (y : Y) (h : ∀ x, f x = y) :
+theorem comap_const (f : C(X, Y)) (y : Y) (h : ∀ x, f x = y) :
     (comap f : LocallyConstant Y Z → LocallyConstant X Z) = fun g => const X (g y) := by
-  ext; rw [coe_comap]
-  · simp only [Function.comp_apply, h, coe_const, Function.const_apply]
-  · rw [show f = fun _ => y by ext; apply h]
-    exact continuous_const
+  ext; simp [h]
 #align locally_constant.comap_const LocallyConstant.comap_const
 
-lemma comap_injective (f : X → Y) (hf: Continuous f) (hfs : f.Surjective) :
+lemma comap_injective (f : C(X, Y)) (hfs : f.1.Surjective) :
     (comap (Z := Z) f).Injective := by
   intro a b h
-  rw [LocallyConstant.ext_iff] at h
   ext y
   obtain ⟨x, hx⟩ := hfs y
-  specialize h x
-  rwa [coe_comap_apply _ _ hf, coe_comap_apply _ _ hf, hx] at h
+  simpa [← hx] using LocallyConstant.congr_fun h x
 
 end Comap
 
@@ -594,12 +563,10 @@ def congrLeft [TopologicalSpace Y] (e : X ≃ₜ Y) : LocallyConstant X Z ≃ Lo
   invFun := comap e
   left_inv := by
     intro
-    rw [comap_comap _ _ e.continuous e.symm.continuous]
-    simp
+    simp [comap_comap]
   right_inv := by
     intro
-    rw [comap_comap _ _ e.symm.continuous e.continuous]
-    simp
+    simp [comap_comap]
 
 variable (X) in
 /--
@@ -677,11 +644,10 @@ noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
     (by simpa [eq_univ_iff_forall] using h₀)
-    (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X)))
-    (f₂.comap (restrictPreimage C₂ ((↑) : C₀ → X))) <| by
+    (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
+    (f₂.comap ⟨(restrictPreimage C₂ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩) <| by
       rintro ⟨x, hx₀⟩ ⟨hx₁ : x ∈ C₁, hx₂ : x ∈ C₂⟩
-      simp_rw [coe_comap_apply _ _ continuous_subtype_val.restrictPreimage]
-      exact hf x ⟨hx₁, hx₂⟩
+      simpa using hf x ⟨hx₁, hx₂⟩
 
 @[simp]
 lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C₂) (h₁ : IsClosed C₁)
@@ -690,8 +656,9 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     (x : C₀) (hx : x.val ∈ C₁) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
-  rw [piecewise', piecewise_apply_left (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
-    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
+  rw [piecewise', piecewise_apply_left (f := (f₁.comap
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    (hx := hx)]
   rfl
 
 @[simp]
@@ -701,8 +668,9 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     (x : C₀) (hx : x.val ∈ C₂) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
   letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
-  rw [piecewise', piecewise_apply_right (f := (f₁.comap (restrictPreimage C₁ ((↑) : C₀ → X))))
-    (hx := hx), coe_comap (hf := continuous_subtype_val.restrictPreimage)]
+  rw [piecewise', piecewise_apply_right (f := (f₁.comap
+    ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
+    (hx := hx)]
   rfl
 
 end Piecewise

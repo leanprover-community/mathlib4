@@ -182,7 +182,7 @@ theorem lt_tan {x : ℝ} (h1 : 0 < x) (h2 : x < π / 2) : x < tan x := by
     have bd2 : cos y ^ 2 < 1 := by
       apply lt_of_le_of_ne y.cos_sq_le_one
       rw [cos_sq']
-      simpa only [Ne.def, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
+      simpa only [Ne, sub_eq_self, sq_eq_zero_iff] using (sin_pos hy).ne'
     rwa [lt_inv, inv_one]
     · exact zero_lt_one
     simpa only [sq, mul_self_pos] using this.ne'
@@ -199,7 +199,7 @@ theorem le_tan {x : ℝ} (h1 : 0 ≤ x) (h2 : x < π / 2) : x ≤ tan x := by
 #align real.le_tan Real.le_tan
 
 theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2)
-    (hx3 : x ≠ 0) : cos x < ↑1 / sqrt (x ^ 2 + 1) := by
+    (hx3 : x ≠ 0) : cos x < (1 / √(x ^ 2 + 1) : ℝ) := by
   suffices ∀ {y : ℝ}, 0 < y → y ≤ 3 * π / 2 → cos y < ↑1 / sqrt (y ^ 2 + 1) by
     rcases lt_or_lt_iff_ne.mpr hx3.symm with ⟨h⟩
     · exact this h hx2
@@ -223,7 +223,7 @@ theorem cos_lt_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx
 #align real.cos_lt_one_div_sqrt_sq_add_one Real.cos_lt_one_div_sqrt_sq_add_one
 
 theorem cos_le_one_div_sqrt_sq_add_one {x : ℝ} (hx1 : -(3 * π / 2) ≤ x) (hx2 : x ≤ 3 * π / 2) :
-    cos x ≤ ↑1 / sqrt (x ^ 2 + 1) := by
+    cos x ≤ (1 : ℝ) / √(x ^ 2 + 1) := by
   rcases eq_or_ne x 0 with (rfl | hx3)
   · simp
   · exact (cos_lt_one_div_sqrt_sq_add_one hx1 hx2 hx3).le
