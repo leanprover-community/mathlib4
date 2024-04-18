@@ -5,7 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Algebra.Group.Hom.Ring
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Subsemigroup.Membership
