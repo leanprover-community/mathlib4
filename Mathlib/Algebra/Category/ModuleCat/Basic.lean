@@ -181,6 +181,8 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
   i
 #align Module.of_unique ModuleCat.ofUnique
 
+@[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
+
 -- Porting note: the simpNF linter complains, but we really need this?!
 -- @[simp, nolint simpNF]
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
