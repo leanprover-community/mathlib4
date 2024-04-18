@@ -195,40 +195,20 @@ variable [HasWeakSheafify J D]
 /-- Construct a cocone by sheafifying a cocone point of a cocone `E` of presheaves
 over a functor which factors through sheaves.
 In `isColimitSheafifyCocone`, we show that this is a colimit cocone when `E` is a colimit. -/
-@[simps]
 noncomputable def sheafifyCocone {F : K ⥤ Sheaf J D}
-    (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F where
-  pt := presheafToSheaf J D |>.obj E.pt
-  ι :=
-    { app := fun k => ⟨E.ι.app k ≫ toSheafify J E.pt⟩
-      naturality := fun i j f => by
-        ext1
-        dsimp
-        erw [Category.comp_id, ← Category.assoc, E.w f] }
+    (E : Cocone (F ⋙ sheafToPresheaf J D)) : Cocone F :=
+  (Cocones.precompose
+    (isoWhiskerLeft F (asIso (sheafificationAdjunction J D).counit).symm).hom).obj
+    ((presheafToSheaf J D).mapCocone E)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.sheafify_cocone CategoryTheory.Sheaf.sheafifyCocone
 
 /-- If `E` is a colimit cocone of presheaves, over a diagram factoring through sheaves,
 then `sheafifyCocone E` is a colimit cocone. -/
-@[simps]
 noncomputable def isColimitSheafifyCocone {F : K ⥤ Sheaf J D}
-    (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) where
-  desc S := ⟨sheafifyLift J (hE.desc ((sheafToPresheaf J D).mapCocone S)) S.pt.2⟩
-  fac := by
-    intro S j
-    ext1
-    dsimp [sheafifyCocone]
-    erw [Category.assoc, toSheafify_sheafifyLift, hE.fac]
-    rfl
-  uniq := by
-    intro S m hm
-    ext1
-    apply sheafifyLift_unique
-    apply hE.uniq ((sheafToPresheaf J D).mapCocone S)
-    intro j
-    dsimp
-    simp only [← Category.assoc, ← hm] -- Porting note: was `simpa only [...]`
-    rfl
+    (E : Cocone (F ⋙ sheafToPresheaf J D)) (hE : IsColimit E) : IsColimit (sheafifyCocone E) :=
+  (IsColimit.precomposeHomEquiv _ ((presheafToSheaf J D).mapCocone E)).symm
+    (isColimitOfPreserves _ hE)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Sheaf.is_colimit_sheafify_cocone CategoryTheory.Sheaf.isColimitSheafifyCocone
 
