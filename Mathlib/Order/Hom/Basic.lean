@@ -751,36 +751,27 @@ section Disjoint
 
 variable [PartialOrder α] [PartialOrder β] (f : OrderEmbedding α β)
 
-/-- If the images by an order embedding of two elements are disjoint, then they are themselves
-disjoint. -/
+/-- If the images by an order embedding of two elements are disjoint,
+then they are themselves disjoint. -/
 lemma Disjoint.of_orderEmbedding [OrderBot α] [OrderBot β] {a₁ a₂ : α} :
     Disjoint (f a₁) (f a₂) → Disjoint a₁ a₂ := by
-  simp_rw [Disjoint]
   intro h x h₁ h₂
-  have hx₁ : f x ≤ f a₁ := (OrderEmbedding.le_iff_le f).mpr h₁
-  have hx₂ : f x ≤ f a₂ := (OrderEmbedding.le_iff_le f).mpr h₂
-  have hxb : f x ≤ ⊥ := h hx₁ hx₂
-  have hxeb : f x ≤ f ⊥ := le_trans hxb (OrderBot.bot_le (f ⊥))
-  exact (OrderEmbedding.le_iff_le f).mp hxeb
+  rw [← f.le_iff_le] at h₁ h₂ ⊢
+  calc
+    f x ≤ ⊥ := h h₁ h₂
+    _ ≤ f ⊥ := bot_le
 
-/-- If the images by an order embedding of two elements are codisjoint, then they are themselves
-codisjoint. -/
+/-- If the images by an order embedding of two elements are codisjoint,
+then they are themselves codisjoint. -/
 lemma Codisjoint.of_orderEmbedding [OrderTop α] [OrderTop β] {a₁ a₂ : α} :
-    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ := by
-  simp_rw [Codisjoint]
-  intro h x h₁ h₂
-  have hx₁ : f a₁ ≤ f x := (OrderEmbedding.le_iff_le f).mpr h₁
-  have hx₂ : f a₂ ≤ f x := (OrderEmbedding.le_iff_le f).mpr h₂
-  have hxt : ⊤ ≤ f x := h hx₁ hx₂
-  have hxet : f ⊤ ≤ f x := le_trans (OrderTop.le_top (f ⊤)) hxt
-  exact (OrderEmbedding.le_iff_le f).mp hxet
+    Codisjoint (f a₁) (f a₂) → Codisjoint a₁ a₂ :=
+  Disjoint.of_orderEmbedding (α := αᵒᵈ) (β := βᵒᵈ) f.dual
 
-/-- If the images by an order embedding of two elements are complements, then they are themselves
-complements. -/
+/-- If the images by an order embedding of two elements are complements,
+then they are themselves complements. -/
 lemma IsCompl.of_orderEmbedding [BoundedOrder α] [BoundedOrder β] {a₁ a₂ : α} :
-    IsCompl (f a₁) (f a₂) → IsCompl a₁ a₂ := by
-  intro ⟨hd, hcd⟩
-  exact ⟨Disjoint.of_orderEmbedding f hd, Codisjoint.of_orderEmbedding f hcd⟩
+    IsCompl (f a₁) (f a₂) → IsCompl a₁ a₂ := fun ⟨hd, hcd⟩ ↦
+  ⟨Disjoint.of_orderEmbedding f hd, Codisjoint.of_orderEmbedding f hcd⟩
 
 end Disjoint
 
