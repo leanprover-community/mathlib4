@@ -352,7 +352,6 @@ noncomputable instance : Preadditive W.Localization' := preadditive W.Q' W
 instance : W.Q'.Additive := functor_additive W.Q' W
 instance [HasZeroObject C] : HasZeroObject W.Localization' := W.Q'.hasZeroObject_of_additive
 
-
 end Localization
 
 end CategoryTheory
