@@ -47,10 +47,8 @@ def rightAdd (f g : X ⟶ Y) : X ⟶ Y :=
   biprod.lift (𝟙 X) (𝟙 X) ≫ biprod.desc f g
 #align category_theory.semiadditive_of_binary_biproducts.right_add CategoryTheory.SemiadditiveOfBinaryBiproducts.rightAdd
 
--- mathport name: «expr +ₗ »
 local infixr:65 " +ₗ " => leftAdd X Y
 
--- mathport name: «expr +ᵣ »
 local infixr:65 " +ᵣ " => rightAdd X Y
 
 theorem isUnital_leftAdd : EckmannHilton.IsUnital (· +ₗ ·) 0 := by

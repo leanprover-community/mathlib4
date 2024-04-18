@@ -55,7 +55,7 @@ variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
-variable [ReflectsIsomorphisms (forget D)]
+variable [(forget D).ReflectsIsomorphisms]
 
 instance sheafIsAbelian [HasFiniteLimits D] : Abelian (Sheaf J D) :=
   let adj := sheafificationAdjunction J D

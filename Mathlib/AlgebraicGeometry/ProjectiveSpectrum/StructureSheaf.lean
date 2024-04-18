@@ -88,7 +88,7 @@ def isFractionPrelocal : PrelocalPredicate fun x : ProjectiveSpectrum.top 𝒜 =
 
 /-- We will define the structure sheaf as the subsheaf of all dependent functions in
 `Π x : U, HomogeneousLocalization 𝒜 x` consisting of those functions which can locally be expressed
-as a ratio of `A` of same grading.-/
+as a ratio of `A` of same grading. -/
 def isLocallyFraction : LocalPredicate fun x : ProjectiveSpectrum.top 𝒜 => at x :=
   (isFractionPrelocal 𝒜).sheafify
 #align algebraic_geometry.projective_spectrum.structure_sheaf.is_locally_fraction AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.isLocallyFraction
@@ -171,7 +171,7 @@ open SectionSubring
 variable {𝒜}
 
 /-- The functions satisfying `isLocallyFraction` form a subring of all dependent functions
-`Π x : U, HomogeneousLocalization 𝒜 x`.-/
+`Π x : U, HomogeneousLocalization 𝒜 x`. -/
 def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) : Subring (∀ x : U.unop, at x.1)
     where
   carrier := {f | (isLocallyFraction 𝒜).pred f}
@@ -185,7 +185,7 @@ def sectionsSubring (U : (Opens (ProjectiveSpectrum.top 𝒜))ᵒᵖ) : Subring 
 end
 
 /-- The structure sheaf (valued in `Type`, not yet `CommRing`) is the subsheaf consisting of
-functions satisfying `isLocallyFraction`.-/
+functions satisfying `isLocallyFraction`. -/
 def structureSheafInType : Sheaf (Type _) (ProjectiveSpectrum.top 𝒜) :=
   subsheafToTypes (isLocallyFraction 𝒜)
 #align algebraic_geometry.projective_spectrum.structure_sheaf.structure_sheaf_in_Type AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structureSheafInType
@@ -196,7 +196,7 @@ instance commRingStructureSheafInTypeObj (U : (Opens (ProjectiveSpectrum.top �
 #align algebraic_geometry.projective_spectrum.structure_sheaf.comm_ring_structure_sheaf_in_Type_obj AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.commRingStructureSheafInTypeObj
 
 /-- The structure presheaf, valued in `CommRing`, constructed by dressing up the `Type` valued
-structure presheaf.-/
+structure presheaf. -/
 @[simps]
 def structurePresheafInCommRing : Presheaf CommRingCat (ProjectiveSpectrum.top 𝒜) where
   obj U := CommRingCat.of ((structureSheafInType 𝒜).1.obj U)
@@ -214,7 +214,7 @@ attribute [nolint simpNF]
   AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf.structurePresheafInCommRing_map_apply
 
 /-- Some glue, verifying that that structure presheaf valued in `CommRing` agrees with the `Type`
-valued structure presheaf.-/
+valued structure presheaf. -/
 def structurePresheafCompForget :
     structurePresheafInCommRing 𝒜 ⋙ forget CommRingCat ≅ (structureSheafInType 𝒜).1 :=
   NatIso.ofComponents (fun U => Iso.refl _) (by aesop_cat)
@@ -226,7 +226,7 @@ namespace ProjectiveSpectrum
 
 open TopCat.Presheaf ProjectiveSpectrum.StructureSheaf Opens
 
-/-- The structure sheaf on `Proj` 𝒜, valued in `CommRing`.-/
+/-- The structure sheaf on `Proj` 𝒜, valued in `CommRing`. -/
 def Proj.structureSheaf : Sheaf CommRingCat (ProjectiveSpectrum.top 𝒜) :=
   ⟨structurePresheafInCommRing 𝒜,
     (-- We check the sheaf condition under `forget CommRing`.
@@ -332,7 +332,7 @@ def homogeneousLocalizationToStalk (x : ProjectiveSpectrum.top 𝒜) :
 #align algebraic_geometry.homogeneous_localization_to_stalk AlgebraicGeometry.homogeneousLocalizationToStalk
 
 /-- Using `homogeneousLocalizationToStalk`, we construct a ring isomorphism between stalk at `x`
-and homogeneous localization at `x` for any point `x` in `Proj`.-/
+and homogeneous localization at `x` for any point `x` in `Proj`. -/
 def Proj.stalkIso' (x : ProjectiveSpectrum.top 𝒜) :
     (Proj.structureSheaf 𝒜).presheaf.stalk x ≃+* CommRingCat.of (at x) :=
   RingEquiv.ofBijective (stalkToFiberRingHom _ x)

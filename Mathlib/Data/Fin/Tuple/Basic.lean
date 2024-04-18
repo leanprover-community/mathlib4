@@ -967,6 +967,22 @@ theorem preimage_insertNth_Icc_of_not_mem {i : Fin (n + 1)} {x : α i} {q₁ q�
     simp only [mem_preimage, insertNth_mem_Icc, hx, false_and_iff, mem_empty_iff_false]
 #align fin.preimage_insert_nth_Icc_of_not_mem Fin.preimage_insertNth_Icc_of_not_mem
 
+/-- Separates an `n+1`-tuple, returning a selected index and then the rest of the tuple.
+Functional form of `Equiv.piFinSuccAbove`. -/
+def extractNth (i : Fin (n + 1)) (f : (∀ j, α j)) :
+    α i × ∀ j, α (i.succAbove j) :=
+  (f i, fun j => f (i.succAbove j))
+
+@[simp]
+theorem extractNth_insertNth {i : Fin (n + 1)} (x : α i) (p : ∀ j : Fin n, α (i.succAbove j)) :
+    i.extractNth (i.insertNth x p) = (x, p) := by
+  simp [extractNth]
+
+@[simp]
+theorem insertNth_extractNth {i : Fin (n + 1)} (f : ∀ j, α j) :
+    i.insertNth (i.extractNth f).1 (i.extractNth f).2 = f := by
+  simp [Fin.extractNth, Fin.insertNth_eq_iff]
+
 end InsertNth
 
 section Find

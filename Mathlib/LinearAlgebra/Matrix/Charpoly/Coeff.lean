@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -62,11 +62,11 @@ theorem charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
     sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
-  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id.def, Int.cast_one,
+  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id, Int.cast_one,
     Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
   apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
-  intro c hc; rw [← C_eq_int_cast, C_mul']
+  intro c hc; rw [← C_eq_intCast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]
   apply lt_of_le_of_lt degree_le_natDegree _
