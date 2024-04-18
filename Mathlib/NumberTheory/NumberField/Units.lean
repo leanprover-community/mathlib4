@@ -567,7 +567,7 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
 
 /-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem`. -/
-theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : Fin (rank K) → ℤ),
+theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K), ∃! (e : Fin (rank K) → ℤ),
     x = ζ * ∏ i, (fundSystem K i) ^ (e i) := by
   let ζ := x * (∏ i, (fundSystem K i) ^ ((basisModTorsion K).repr (Additive.ofMul ↑x) i))⁻¹
   have h_tors : ζ ∈ torsion K := by

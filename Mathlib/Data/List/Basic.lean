@@ -361,17 +361,13 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 -- Porting note: in Std
 #align list.nil_eq_append_iff List.nil_eq_append
 
-theorem append_eq_cons_iff {a b c : List α} {x : α} :
-    a ++ b = x :: c ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
-  cases a <;>
-    simp only [and_assoc, @eq_comm _ c, nil_append, cons_append, cons.injEq, true_and_iff,
-      false_and_iff, exists_false, false_or_iff, or_false_iff, exists_and_left, exists_eq_left']
-#align list.append_eq_cons_iff List.append_eq_cons_iff
+-- 2024-03-24
+@[deprecated] alias append_eq_cons_iff := append_eq_cons
+#align list.append_eq_cons_iff List.append_eq_cons
 
-theorem cons_eq_append_iff {a b c : List α} {x : α} :
-    (x :: c : List α) = a ++ b ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
-  rw [eq_comm, append_eq_cons_iff]
-#align list.cons_eq_append_iff List.cons_eq_append_iff
+-- 2024-03-24
+@[deprecated] alias cons_eq_append_iff := cons_eq_append
+#align list.cons_eq_append_iff List.cons_eq_append
 
 #align list.append_eq_append_iff List.append_eq_append_iff
 
@@ -2650,13 +2646,13 @@ theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H)
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
-  rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
+  rw [attach, attachWith, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
 -- @[simp] -- Porting note (#10959): lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
-  rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
+  rw [attach, attachWith, map_pmap]; exact pmap_eq_map _ _ _ _
 #align list.attach_map_coe' List.attach_map_coe'
 
 theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f i.val) = l.map f :=
