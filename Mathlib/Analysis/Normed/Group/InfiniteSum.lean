@@ -64,7 +64,7 @@ theorem cauchySeq_finset_of_norm_bounded_eventually {f : ι → E} {g : ι → �
     exact (ht hi).2
   calc
     ‖∑ i in t, f i‖ ≤ ∑ i in t, g i := norm_sum_le_of_le _ this
-    _ ≤ ‖∑ i in t, g i‖ := (le_abs_self _)
+    _ ≤ ‖∑ i in t, g i‖ := le_abs_self _
     _ < ε := hs _ (ht.mono_right le_sup_left)
 #align cauchy_seq_finset_of_norm_bounded_eventually cauchySeq_finset_of_norm_bounded_eventually
 
@@ -84,8 +84,8 @@ theorem cauchySeq_range_of_norm_bounded {f : ℕ → E} (g : ℕ → ℝ)
   rw [dist_eq_norm, ← sum_Ico_eq_sub _ hn] at hg ⊢
   calc
     ‖∑ k in Ico N n, f k‖ ≤ ∑ k in _, ‖f k‖ := norm_sum_le _ _
-    _ ≤ ∑ k in _, g k := (sum_le_sum fun x _ => hf x)
-    _ ≤ ‖∑ k in _, g k‖ := (le_abs_self _)
+    _ ≤ ∑ k in _, g k := sum_le_sum fun x _ => hf x
+    _ ≤ ‖∑ k in _, g k‖ := le_abs_self _
     _ < ε := hg
 #align cauchy_seq_range_of_norm_bounded cauchySeq_range_of_norm_bounded
 

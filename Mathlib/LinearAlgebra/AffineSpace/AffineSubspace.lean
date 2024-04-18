@@ -227,7 +227,7 @@ theorem directionOfNonempty_eq_direction {s : AffineSubspace k P} (h : (s : Set 
   refine le_antisymm ?_ (Submodule.span_le.2 Set.Subset.rfl)
   rw [← SetLike.coe_subset_coe, directionOfNonempty, direction, Submodule.coe_set_mk,
     AddSubmonoid.coe_set_mk]
-  exact (vsub_set_subset_vectorSpan k _)
+  exact vsub_set_subset_vectorSpan k _
 #align affine_subspace.direction_of_nonempty_eq_direction AffineSubspace.directionOfNonempty_eq_direction
 
 /-- The set of vectors in the direction of a nonempty affine subspace is given by `vsub_set`. -/
@@ -1176,7 +1176,7 @@ instance [Nonempty s] : Nonempty (affineSpan k s) :=
 /-- The affine span of a set is `⊥` if and only if that set is empty. -/
 @[simp]
 theorem affineSpan_eq_bot : affineSpan k s = ⊥ ↔ s = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← Ne.def, ← nonempty_iff_ne_bot, affineSpan_nonempty,
+  rw [← not_iff_not, ← Ne, ← Ne, ← nonempty_iff_ne_bot, affineSpan_nonempty,
     nonempty_iff_ne_empty]
 #align affine_span_eq_bot affineSpan_eq_bot
 
