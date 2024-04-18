@@ -164,7 +164,7 @@ variable {α E : Type*} [MeasurableSpace α]
   {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
   {f : α → E}
 
-theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
+theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
     Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
   let bound : α → ℝ := indicator (s 0) fun a => ‖f a‖
@@ -182,7 +182,11 @@ theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) 
     refine' fun n => eventually_of_forall fun x => _
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-#align antitone.tendsto_set_integral Antitone.tendsto_set_integral
+#align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
+
+@[deprecated]
+alias _root_.Antitone.tendsto_set_integral :=
+  _root_.Antitone.tendsto_setIntegral -- deprecated on 2024-04-17
 
 end TendstoMono
 

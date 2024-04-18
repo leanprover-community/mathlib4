@@ -236,6 +236,13 @@ def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   map f := ⟨f, by continuity⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
 
+instance : FintypeCat.toProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : FintypeCat.toProfinite.Full where
+  preimage f := fun x ↦ f x
+  witness _ := rfl
+
 end DiscreteTopology
 
 end Profinite

@@ -189,10 +189,7 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
       neg' := fun f => by
         simp [(ContinuousAffineMap.neg_apply)]
       add_le' := fun f g => by
-        simp only [coe_add, max_le_iff]
-        -- Porting note: previously `Pi.add_apply, add_contLinear, ` in the previous `simp only`
-        -- suffices, but now they don't fire.
-        rw [add_contLinear]
+        simp only [coe_add, max_le_iff, Pi.add_apply, add_contLinear]
         exact
           ⟨(norm_add_le _ _).trans (add_le_add (le_max_left _ _) (le_max_left _ _)),
             (norm_add_le _ _).trans (add_le_add (le_max_right _ _) (le_max_right _ _))⟩
@@ -200,24 +197,18 @@ noncomputable instance : NormedAddCommGroup (V →A[𝕜] W) :=
         rcases max_eq_iff.mp h₀ with (⟨h₁, h₂⟩ | ⟨h₁, h₂⟩) <;> rw [h₁] at h₂
         · rw [norm_le_zero_iff, contLinear_eq_zero_iff_exists_const] at h₂
           obtain ⟨q, rfl⟩ := h₂
-          simp only [norm_eq_zero] at h₁
-          -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
-          -- `simp only`, but now they don't fire.
-          rw [coe_const, Function.const_apply] at h₁
+          simp only [norm_eq_zero, coe_const, Function.const_apply] at h₁
           rw [h₁]
           rfl
         · rw [norm_eq_zero', contLinear_eq_zero_iff_exists_const] at h₁
           obtain ⟨q, rfl⟩ := h₁
-          simp only [norm_le_zero_iff] at h₂
-          -- Porting note: prevously `coe_const, Function.const_apply` were in the previous
-          -- `simp only`, but now they don't fire.
-          rw [coe_const, Function.const_apply] at h₂
+          simp only [norm_le_zero_iff, coe_const, Function.const_apply] at h₂
           rw [h₂]
           rfl }
 
 instance : NormedSpace 𝕜 (V →A[𝕜] W) where
   norm_smul_le t f := by
-    simp only [SMul.smul, norm_def, (smul_contLinear), norm_smul]
+    simp only [SMul.smul, norm_def, smul_contLinear, norm_smul]
     -- Porting note: previously all these rewrites were in the `simp only`,
     -- but now they don't fire.
     -- (in fact, `norm_smul` fires, but only once rather than twice!)

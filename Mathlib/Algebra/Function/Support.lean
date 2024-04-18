@@ -83,6 +83,28 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
 #align function.support_eq_iff Function.support_eq_iff
 
 @[to_additive]
+theorem ext_iff_mulSupport {f g : α → M} :
+    f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x :=
+  ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ ↦ rfl⟩, fun ⟨h₁, h₂⟩ ↦ funext fun x ↦ by
+    if hx : x ∈ f.mulSupport then exact h₂ x hx
+    else rw [nmem_mulSupport.1 hx, nmem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
+
+@[to_additive]
+theorem mulSupport_update_of_ne_one [DecidableEq α] (f : α → M) (x : α) {y : M} (hy : y ≠ 1) :
+    mulSupport (update f x y) = insert x (mulSupport f) := by
+  ext a; rcases eq_or_ne a x with rfl | hne <;> simp [*]
+
+@[to_additive]
+theorem mulSupport_update_one [DecidableEq α] (f : α → M) (x : α) :
+    mulSupport (update f x 1) = mulSupport f \ {x} := by
+  ext a; rcases eq_or_ne a x with rfl | hne <;> simp [*]
+
+@[to_additive]
+theorem mulSupport_update_eq_ite [DecidableEq α] [DecidableEq M] (f : α → M) (x : α) (y : M) :
+    mulSupport (update f x y) = if y = 1 then mulSupport f \ {x} else insert x (mulSupport f) := by
+  rcases eq_or_ne y 1 with rfl | hy <;> simp [mulSupport_update_one, mulSupport_update_of_ne_one, *]
+
+@[to_additive]
 theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by

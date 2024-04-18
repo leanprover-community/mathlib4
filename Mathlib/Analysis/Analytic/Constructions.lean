@@ -233,7 +233,7 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact (pow_le_one _ (coe_nonneg r) hr.le)
+    exact pow_le_one _ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :
