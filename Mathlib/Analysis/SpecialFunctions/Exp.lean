@@ -445,6 +445,7 @@ namespace Complex
 
 -- Adaptation note: nightly-2024-04-01
 -- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12226
 @[simp, nolint simpNF]
 theorem comap_exp_cobounded : comap exp (cobounded ℂ) = comap re atTop :=
   calc
