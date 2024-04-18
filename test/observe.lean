@@ -1,9 +1,13 @@
-import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 
 open Nat
 
-set_option maxHeartbeats 8000 in
+-- Adaptation note: at nightly-2024-03-27,
+-- we had to increase `maxHeartbeats` here from 8000 to 16000.
+-- Adaptation note: at nightly-2024-04-01,
+-- we had to increase `maxHeartbeats` here from 16000 to 24000.
+-- (Note: successive runs are faster, because of the `exact?` cache initialisation.)
+set_option maxHeartbeats 24000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N
@@ -11,7 +15,7 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   have prime : p.Prime := by
     apply minFac_prime
     observe : n.factorial > 0
-    linarith
+    omega
   constructor
   · by_contra!
     observe : p ∣ n.factorial

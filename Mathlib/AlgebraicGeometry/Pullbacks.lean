@@ -661,10 +661,14 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
       (𝒰.map i) pullback.snd pullback.snd g pullback.condition.symm pullback.condition.symm
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
       (PullbackCone.isLimitOfFlip <| pullbackIsPullback _ _)
+  -- Adaptation note: nightly-2024-04-01
+  -- Previously we just had `(limit.isoLimitCone ⟨_, this⟩).inv` inlined in the `refine'` below.
+  -- Now that doesn't type check,
+  -- and we need to introduce a `let` with a manual type annotation on the source of the morphism.
+  let h : pullback pullback.snd pullback.snd ⟶ _ := (limit.isoLimitCone ⟨_, this⟩).inv
   refine'
     @openCoverOfIsIso
-      (f := (pullbackSymmetry _ _).hom ≫
-        (limit.isoLimitCone ⟨_, this⟩).inv ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
+      (f := (pullbackSymmetry _ _).hom ≫ h ≫ pullback.map _ _ _ _ (𝟙 _) (𝟙 _) (𝟙 _) _ _) ?_
   · simp only [Category.comp_id, Category.id_comp, ← pullback.condition]
     -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl
@@ -685,7 +689,8 @@ def openCoverOfBase (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCover
       (fun i =>
         pullback.map _ _ _ _ pullback.fst pullback.fst (𝒰.map i) pullback.condition.symm
           pullback.condition.symm)
-      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm) fun _ => Iso.refl _
+      ((Equiv.prodPUnit 𝒰.J).symm.trans (Equiv.sigmaEquivProd 𝒰.J PUnit).symm)
+        fun _ => Iso.refl _
   intro i
   -- Porting note: deviated from original proof a bit so that it won't timeout.
   rw [Iso.refl_hom, Category.id_comp, openCoverOfBase'_map]

@@ -125,11 +125,18 @@ which performs quite poorly!
 def editCost : Levenshtein.Cost String String Nat := Levenshtein.defaultCost
 
 /-- Check whether a goal can be solved by `rfl`, and fill in the `SearchNode.rfl?` field. -/
-def compute_rfl? (n : SearchNode) : MetaM SearchNode := withMCtx n.mctx do
-  if (← try? n.goal.applyRfl).isSome then
-    pure { n with mctx := ← getMCtx, rfl? := some true }
-  else
-    pure { n with rfl? := some false }
+def compute_rfl? (n : SearchNode) : MetaM SearchNode := do
+  try
+    withoutModifyingState <| withMCtx n.mctx do
+      -- We use `withReducible` here to follow the behaviour of `rw`.
+      n.goal.refl
+      pure { n with mctx := ← getMCtx, rfl? := some true }
+  catch _e =>
+    withMCtx n.mctx do
+      if (←  try? n.goal.applyRfl).isSome then
+        pure { n with mctx := ← getMCtx, rfl? := some true }
+      else
+        pure { n with rfl? := some false }
 
 /-- Fill in the `SearchNode.dist?` field with the edit distance between the two sides. -/
 def compute_dist? (n : SearchNode) : SearchNode :=
@@ -238,7 +245,7 @@ try rewriting the current goal in the `SearchNode` by one of them,
 returning a `MLList MetaM SearchNode`, i.e. a lazy list of next possible goals.
 -/
 def rewrites (hyps : Array (Expr × Bool × Nat))
-    (lemmas : ModuleDiscrTreeRef (Name × Bool × Nat))
+    (lemmas : ModuleDiscrTreeRef (Name × RwDirection))
     (forbidden : NameSet := ∅) (n : SearchNode) : MLList MetaM SearchNode := .squash fun _ => do
   if ← isTracingEnabledFor `rw_search then do
     trace[rw_search] "searching:\n{← toString n}"
@@ -315,6 +322,6 @@ elab_rules : tactic |
         else if r₁.dist?.getD 0 ≤ r₂.dist?.getD 0 then r₁ else r₂
   setMCtx min.mctx
   replaceMainGoal [min.goal]
-  let type? := if min.rfl? = some true then none else some (← min.goal.getType)
+  let type? ← if min.rfl? = some true then pure none else do pure <| some (← min.goal.getType)
   addRewriteSuggestion tk (min.history.toList.map (·.2))
     type? (origSpan? := ← getRef)

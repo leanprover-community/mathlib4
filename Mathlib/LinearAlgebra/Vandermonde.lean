@@ -61,6 +61,7 @@ theorem vandermonde_succ {n : ℕ} (v : Fin n.succ → R) :
       Fin.cons (fun (j : Fin n.succ) => v 0 ^ (j : ℕ)) fun i =>
         Fin.cons 1 fun j => v i.succ * vandermonde (Fin.tail v) i j := by
   conv_lhs => rw [← Fin.cons_self_tail v, vandermonde_cons]
+  rfl
 #align matrix.vandermonde_succ Matrix.vandermonde_succ
 
 theorem vandermonde_mul_vandermonde_transpose {n : ℕ} (v w : Fin n → R) (i j) :

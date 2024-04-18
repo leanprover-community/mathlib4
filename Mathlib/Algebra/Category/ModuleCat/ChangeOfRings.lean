@@ -621,7 +621,10 @@ def HomEquiv.evalAt {X : ModuleCat R} {Y : ModuleCat S} (s : S)
     X →ₗ[R] Y :=
   @LinearMap.mk _ _ _ _ (RingHom.id R) X Y _ _ _ (_)
     { toFun := fun x => s • (g x : Y)
-      map_add' := by intros; dsimp; rw [map_add,smul_add] }
+      map_add' := by
+        intros
+        dsimp only
+        rw [map_add,smul_add] }
     (by
       intros r x
       rw [AddHom.toFun_eq_coe, AddHom.coe_mk, RingHom.id_apply,
@@ -641,7 +644,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     {toFun := fun s => HomEquiv.evalAt f s g, map_add' := fun (s₁ s₂ : S) => ?_,
       map_smul' := fun (r : R) (s : S) => ?_}
     · ext
-      dsimp
+      dsimp only [evalAt_apply, LinearMap.add_apply]
       rw [← add_smul]
     · ext x
       apply mul_smul (f r) s (g x)

@@ -251,6 +251,7 @@ theorem isSymm_iff_eq_flip {B : LinearMap.BilinForm R M} : B.IsSymm ↔ B = B.fl
     rw [← h, flip_apply, RingHom.id_apply]
   intro x y
   conv_lhs => rw [h]
+  rfl
 #align linear_map.is_symm_iff_eq_flip LinearMap.isSymm_iff_eq_flip
 
 end Symmetric

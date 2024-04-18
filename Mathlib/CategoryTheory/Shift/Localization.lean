@@ -43,6 +43,7 @@ variable {A}
 
 lemma iff {X Y : C} (f : X ⟶ Y) (a : A) : W (f⟦a⟧') ↔ W f := by
   conv_rhs => rw [← @IsCompatibleWithShift.condition _ _ W A _ _ _ a]
+  rfl
 
 lemma shiftFunctor_comp_inverts (a : A) :
     W.IsInvertedBy (shiftFunctor C a ⋙ L) := fun _ _ f hf =>
