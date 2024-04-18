@@ -98,7 +98,7 @@ namespace Complex
 lemma differentiable_at_Gamma_nat_add_one (n : ℕ) :
     DifferentiableAt ℂ Gamma (n + 1) := by
   refine differentiableAt_Gamma _ (fun m ↦ ?_)
-  simp only [Ne, ← ofReal_nat_cast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
+  simp only [Ne, ← ofReal_natCast, ← ofReal_one, ← ofReal_add, ← ofReal_neg, ofReal_inj,
     eq_neg_iff_add_eq_zero]
   positivity
 
