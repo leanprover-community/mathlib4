@@ -6,6 +6,7 @@ Authors: Ali Ramsey, Eric Wieser
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.TensorProduct.Basic
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 
 /-!
 # Coalgebras
@@ -15,6 +16,10 @@ In this file we define `Coalgebra`, and provide instances for:
 * Commutative semirings: `CommSemiring.toCoalgebra`
 * Binary products: `Prod.instCoalgebra`
 * Finitely supported functions: `Finsupp.instCoalgebra`
+
+For an `R`-coalgebra `A` we also give support for decomposing `Coalgebra.comul x : A ⊗[R] A`
+as a sum `∑ x₁ ⊗ₜ x₂` via `Coalgebra.comul_repr` and `Coalgebra.comul_repr_spec`,
+based on Sweedler notation.
 
 ## References
 
@@ -80,19 +85,32 @@ theorem rTensor_counit_comul (a : A) : counit.rTensor A (comul a) = 1 ⊗ₜ[R] 
 theorem lTensor_counit_comul (a : A) : counit.lTensor A (comul a) = a ⊗ₜ[R] 1 :=
   LinearMap.congr_fun lTensor_counit_comp_comul a
 
-open BigOperators
+section
+open BigOperators TensorProduct
 
-lemma sum_counit_tmul_eq_one_tmul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, counit (R := R) (x i) ⊗ₜ y i = 1 ⊗ₜ[R] a := by
+variable (R)
+
+/-- An arbitrarily chosen finset `{(a₁, a₂)}` in `A × A` such that `comul(a) = ∑ a₁ ⊗ a₂`. -/
+noncomputable def comulRepr (a : A) : Finset (A × A) :=
+  exists_finset (Coalgebra.comul (R := R) a) |>.choose
+
+variable {R}
+
+lemma comulRepr_spec (a : A) :
+    comul a = ∑ x in comulRepr R a, x.1 ⊗ₜ[R] x.2 :=
+  exists_finset (comul a) |>.choose_spec
+
+lemma sum_counit_tmul_eq_one_tmul (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, counit (R := R) x.1 ⊗ₜ x.2 = 1 ⊗ₜ[R] a := by
   simpa [repr, map_sum] using congr($(rTensor_counit_comp_comul (R := R) (A := A)) a)
 
-lemma sum_tmul_counit_eq_tmul_one (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, (x i) ⊗ₜ counit (R := R) (y i) = a ⊗ₜ[R] 1 := by
+lemma sum_tmul_counit_eq_tmul_one (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, x.1 ⊗ₜ counit (R := R) x.2 = a ⊗ₜ[R] 1 := by
   simpa [repr, map_sum] using congr($(lTensor_counit_comp_comul (R := R) (A := A)) a)
 
-
+end
 end Coalgebra
 section CommSemiring
 

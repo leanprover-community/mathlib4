@@ -72,24 +72,24 @@ theorem mul_antipode_lTensor_comul_apply (a : A) :
 
 open BigOperators Coalgebra
 
-lemma sum_antipode_mul_eq_algebraMap_counit (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, antipode (R := R) (x i) * y i = algebraMap R A (counit a) := by
+lemma sum_antipode_mul_eq_algebraMap_counit (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, antipode (R := R) x.1 * x.2 = algebraMap R A (counit a) := by
   simpa [repr, map_sum] using congr($(mul_antipode_rTensor_comul (R := R)) a)
 
-lemma sum_mul_antipode_eq_algebraMap_counit (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, x i * antipode (R := R) (y i) = algebraMap R A (counit a) := by
+lemma sum_mul_antipode_eq_algebraMap_counit (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, x.1 * antipode (R := R) x.2 = algebraMap R A (counit a) := by
   simpa [repr, map_sum] using congr($(mul_antipode_lTensor_comul (R := R)) a)
 
-lemma sum_antipode_mul_eq_smul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, antipode (R := R) (x i) * y i = (counit (R := R) a) • 1 := by
+lemma sum_antipode_mul_eq_smul (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, antipode (R := R) x.1 * x.2 = (counit (R := R) a) • 1 := by
   rw [sum_antipode_mul_eq_algebraMap_counit (repr := repr), Algebra.smul_def, mul_one]
 
-lemma sum_mul_antipode_eq_smul (a : A) {ι : Type*} (s : Finset ι) (x y : ι → A)
-    (repr : comul a = ∑ i in s, x i ⊗ₜ[R] y i) :
-    ∑ i in s, x i * antipode (R := R) (y i) = (counit (R := R) a) • 1 := by
+lemma sum_mul_antipode_eq_smul (a : A) (S : Finset (A × A))
+    (repr : comul a = ∑ x in S, x.1 ⊗ₜ[R] x.2) :
+    ∑ x in S, x.1 * antipode (R := R) x.2 = (counit (R := R) a) • 1 := by
   rw [sum_mul_antipode_eq_algebraMap_counit (repr := repr), Algebra.smul_def, mul_one]
 
 end HopfAlgebra
