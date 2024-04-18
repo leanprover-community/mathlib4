@@ -757,6 +757,14 @@ theorem length_toFreeSemigroup (x : FreeMagma α) : (toFreeSemigroup x).length =
 
 end FreeMagma
 
+def FreeMagmaSurjHom {α : Type u} [Mul α] : FreeMagma α →ₙ* α where
+  toFun := (FreeMagma.recOn · (·) fun _ _ x y ↦ x * y)
+  map_mul' := fun _ _ ↦ rfl
+
+def FreeSemigroupSurjHom {α : Type u} [Semigroup α] : FreeSemigroup α →ₙ* α where
+  toFun := fun x ↦ x.2.foldl (· * ·) x.1
+  map_mul' := fun x y ↦ by simp [List.foldl_assoc]
+
 /-- Isomorphism between `Magma.AssocQuotient (FreeMagma α)` and `FreeSemigroup α`. -/
 @[to_additive "Isomorphism between `AddMagma.AssocQuotient (FreeAddMagma α)` and
 `FreeAddSemigroup α`."]
@@ -767,7 +775,6 @@ def FreeMagmaAssocQuotientEquiv (α : Type u) :
       (by ext; rfl)
       (by ext1; rfl)
 #align free_magma_assoc_quotient_equiv FreeMagmaAssocQuotientEquiv
-
 
 namespace List
 
@@ -791,7 +798,7 @@ def of (x : α) : List α := [x]
 
 @[to_additive (attr := simp)]
 theorem length_mul (x y : List α) : (x * y).length = x.length + y.length := by
-  simp [Nat.add_right_comm, List.length, List.length_append]
+  simp [Nat.add_right_comm, length, length_append]
 
 theorem length_of (x : α) : (of x).length = 1 := rfl
 
@@ -814,14 +821,14 @@ variable {β : Type v} [Monoid β] (f : α → β)
 
 theorem append_foldl_mul (b : β) (x y : List β) :
     (x ++ y).foldl (· * ·) b = x.foldl (· * ·) b * y.foldl (· * ·) 1 := by
-  rw [← @List.foldl_assoc β (· * ·), mul_one, List.foldl_append]
+  rw [← @foldl_assoc β (· * ·), mul_one, foldl_append]
 
 /-- Lifts a function `α → β` to a monoid homomorphism `List α → β` given a monoid `β`. -/
 @[simp]
 def lift : (α → β) ≃ (List α →* β) where
   toFun f :=
     { toFun := fun x ↦ x.foldl (· * f ·) 1
-      map_one' := by simp [List.foldl]
+      map_one' := by simp [foldl]
       map_mul' := fun x y ↦ by
         simp [← foldl_map]
         rw [← foldl_append, append_foldl_mul] }
@@ -887,8 +894,6 @@ theorem mul_seq {f g : List (α → β)} {x : List α} :
 
 end Category
 
-end List
-
 /-- Isomorphism between `WithOne (FreeSemigroup α)` and `List α`. -/
 @[to_additive "Isomorphism between `WithOne (FreeAddSemigroup α)` and
 `FreeAddMonoid α`."]
@@ -905,10 +910,12 @@ def FreeSemigroupWithOneEquiv (α : Type u) :
   left_inv x := by cases x <;> rfl
   right_inv x := by cases x <;> rfl
   map_mul' := fun x y ↦ by
-    simp
+    simp only [mul_def, append_eq]
     match x with
-    | 1 => rw [one_mul, (by rfl : (1:List _) = List.nil), List.nil_append]
+    | 1 => rw [one_mul, (by rfl : (1:List _) = nil), nil_append]
     | some x =>
       match y with
-      | 1 => rw [mul_one, (by rfl : (1:List _) = List.nil), List.append_nil]
+      | 1 => rw [mul_one, (by rfl : (1:List _) = nil), append_nil]
       | some y => rfl
+
+end List
