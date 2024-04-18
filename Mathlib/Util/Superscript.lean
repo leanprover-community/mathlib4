@@ -248,25 +248,6 @@ def subscript.parenthesizer := Superscript.scriptParser.parenthesizer ``subscrip
 @[combinator_formatter subscript]
 def subscript.formatter := Superscript.scriptParser.formatter ``subscript
 
-section deleteme -- lean4#2269
-
-@[nolint docBlame]
-def registerAliasCore {α} (mapRef : IO.Ref (AliasTable α)) (aliasName : Name)
-    (value : AliasValue α) : IO Unit := do
-  if (← mapRef.get).contains aliasName then
-    throw ↑s!"alias '{aliasName}' has already been declared"
-  mapRef.modify (·.insert aliasName value)
-
-@[nolint docBlame]
-def registerAlias (aliasName declName : Name) (p : ParserAliasValue)
-    (kind? : Option SyntaxNodeKind := none) (info : ParserAliasInfo := {}) : IO Unit := do
-  registerAliasCore parserAliasesRef aliasName p
-  if let some kind := kind? then
-    parserAlias2kindRef.modify (·.insert aliasName kind)
-  parserAliases2infoRef.modify (·.insert aliasName { info with declName })
-
-end deleteme
-
 initialize
   registerAlias `superscript ``superscript superscript
   registerAliasCore Formatter.formatterAliasesRef `superscript superscript.formatter

@@ -71,6 +71,22 @@ example : let x := 1; let y := 2 + x; y = 3 := by
   guard_target =ₛ 2 + 1 = 3
   rfl
 
+/-!
+Do not reorder hypotheses. (`unfold_let` makes a change)
+-/
+example : let ty := Int; ty → Nat → Nat := by
+  intro _ a a
+  unfold_let at *
+  exact a
+
+/-!
+Do not reorder hypotheses. (`unfold_let` does not make a change)
+-/
+set_option linter.unusedVariables false in
+example (a : Int) (a : Nat) : Nat := by
+  unfold_let at *
+  exact a
+
 example : 1 + 2 = 2 + 1 := by
   unfold_projs
   guard_target =ₛ Nat.add (nat_lit 1) (nat_lit 2) = Nat.add (nat_lit 2) (nat_lit 1)
