@@ -594,9 +594,7 @@ is a smooth vector bundle. -/
 instance smoothVectorBundle : SmoothVectorBundle F Z.Fiber IB where
   smoothOn_coordChangeL := by
     rintro - - ⟨i, rfl⟩ ⟨i', rfl⟩
-    -- Porting note: Originally `Z.smoothOn_coordChange IB i i'`
-    refine'
-      (VectorBundleCore.IsSmooth.smoothOn_coordChange (Z := Z) (IB := IB) i i').congr fun b hb => _
+    refine (Z.smoothOn_coordChange IB i i').congr fun b hb ↦ ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.smooth_vector_bundle VectorBundleCore.smoothVectorBundle

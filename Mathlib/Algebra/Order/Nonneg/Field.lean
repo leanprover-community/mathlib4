@@ -22,6 +22,7 @@ This is used to derive algebraic structures on `ℝ≥0` and `ℚ≥0` automatic
 * `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedSemifield` if `α` is a `LinearOrderedField`.
 -/
 
+assert_not_exists abs_inv
 
 open Set
 
@@ -81,7 +82,7 @@ theorem mk_zpow (hx : 0 ≤ x) (n : ℤ) :
 instance linearOrderedSemifield : LinearOrderedSemifield { x : α // 0 ≤ x } :=
   Subtype.coe_injective.linearOrderedSemifield _ Nonneg.coe_zero Nonneg.coe_one Nonneg.coe_add
     Nonneg.coe_mul Nonneg.coe_inv Nonneg.coe_div (fun _ _ => rfl) Nonneg.coe_pow Nonneg.coe_zpow
-    Nonneg.coe_nat_cast (fun _ _ => rfl) fun _ _ => rfl
+    Nonneg.coe_natCast (fun _ _ => rfl) fun _ _ => rfl
 #align nonneg.linear_ordered_semifield Nonneg.linearOrderedSemifield
 
 end LinearOrderedSemifield

@@ -33,7 +33,7 @@ variable [Module R M] [Module R M₁] [Module R M₂] [Module R M₃]
 
 /-- An isometric equivalence between two quadratic spaces `M₁, Q₁` and `M₂, Q₂` over a ring `R`,
 is a linear equivalence between `M₁` and `M₂` that commutes with the quadratic forms. -/
--- Porting note: not implemented @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
 structure IsometryEquiv (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂)
     extends M₁ ≃ₗ[R] M₂ where
   map_app' : ∀ m, Q₂ (toFun m) = Q₁ m

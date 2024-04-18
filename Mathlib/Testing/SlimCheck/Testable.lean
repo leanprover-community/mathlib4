@@ -275,11 +275,11 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
     Testable (NamedBinder var <| ∀ h, β h) where
   run := fun cfg min ↦ do
     if h : p then
-      let res := (runProp (β h) cfg min)
+      let res := runProp (β h) cfg min
       let s := printProp p
       (fun r ↦ addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| fun q _ ↦ q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (fun _ ↦ pure <| gaveUp 1)
+      let res := fun _ ↦ pure <| gaveUp 1
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else
