@@ -212,10 +212,7 @@ lemma hasSum_nat_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     mul_zero, zero_mul, Complex.exp_zero, Real.exp_zero, ofReal_one, mul_one, Int.cast_neg,
     Int.cast_natCast, neg_sq, ← add_mul, add_sub_assoc, ← sub_sub, sub_self, zero_sub,
     ← sub_eq_add_neg, mul_neg] at this
-  -- workaround for a slow `convert`
-  -- should this be extracted as a congruence lemma for `HasSum`?
-  have hh {f g : ℕ → ℂ} {z : ℂ} (hf : HasSum f z) (h : g = f) : HasSum g z := h ▸ hf
-  refine hh this <| funext fun n ↦ ?_
+  refine this.congr_fun <| funext fun n ↦ ?_
   push_cast
   rw [Complex.cos, mul_div_cancel₀ _ two_ne_zero]
   congr 3 <;> ring
