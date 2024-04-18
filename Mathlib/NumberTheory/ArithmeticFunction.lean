@@ -652,18 +652,18 @@ theorem map_prod_of_subset_primeFactors [CommSemiring R] {f : ArithmeticFunction
   map_prod_of_prime h_mult t fun _ a => prime_of_mem_primeFactors (ht a)
 
 @[arith_mult]
-theorem nat_cast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
+theorem natCast {f : ArithmeticFunction ℕ} [Semiring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
-#align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.nat_cast
+#align nat.arithmetic_function.is_multiplicative.nat_cast ArithmeticFunction.IsMultiplicative.natCast
 
 @[arith_mult]
-theorem int_cast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
+theorem intCast {f : ArithmeticFunction ℤ} [Ring R] (h : f.IsMultiplicative) :
     IsMultiplicative (f : ArithmeticFunction R) :=
                                  -- Porting note: was `by simp [cop, h]`
   ⟨by simp [h], fun {m n} cop => by simp [h.2 cop]⟩
-#align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.int_cast
+#align nat.arithmetic_function.is_multiplicative.int_cast ArithmeticFunction.IsMultiplicative.intCast
 
 @[arith_mult]
 theorem mul [CommSemiring R] {f g : ArithmeticFunction R} (hf : f.IsMultiplicative)
@@ -926,7 +926,7 @@ theorem isMultiplicative_id : IsMultiplicative ArithmeticFunction.id :=
 theorem IsMultiplicative.ppow [CommSemiring R] {f : ArithmeticFunction R} (hf : f.IsMultiplicative)
     {k : ℕ} : IsMultiplicative (f.ppow k) := by
   induction' k with k hi
-  · exact isMultiplicative_zeta.nat_cast
+  · exact isMultiplicative_zeta.natCast
   · rw [ppow_succ']
     apply hf.pmul hi
 #align nat.arithmetic_function.is_multiplicative.ppow ArithmeticFunction.IsMultiplicative.ppow
@@ -1146,7 +1146,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
   · simp_rw [prodPrimeFactors_apply hn.ne_zero, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp;
     rw [zeta_apply_ne (prime_of_mem_factors <| List.mem_toFinset.mp hp).ne_zero, cast_one]
-  rw [isMultiplicative_zeta.nat_cast.prodPrimeFactors_add_of_squarefree h_mult hn,
+  rw [isMultiplicative_zeta.natCast.prodPrimeFactors_add_of_squarefree h_mult hn,
     coe_zeta_mul_apply]
 
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
@@ -1157,7 +1157,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
         (prime_of_mem_factors (List.mem_toFinset.mp hp))]
     ring
-  · rw [(isMultiplicative_moebius.int_cast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
+  · rw [(isMultiplicative_moebius.intCast.pmul hf).prodPrimeFactors_one_add_of_squarefree hn]
     simp_rw [pmul_apply, intCoe_apply]
 
 open UniqueFactorizationMonoid
@@ -1180,7 +1180,7 @@ theorem moebius_mul_coe_zeta : (μ * ζ : ArithmeticFunction ℤ) = 1 := by
   · intro a b _ha _hb hab ha' hb'
     rw [IsMultiplicative.map_mul_of_coprime _ hab, ha', hb',
       IsMultiplicative.map_mul_of_coprime isMultiplicative_one hab]
-    exact isMultiplicative_moebius.mul isMultiplicative_zeta.nat_cast
+    exact isMultiplicative_moebius.mul isMultiplicative_zeta.natCast
 #align nat.arithmetic_function.moebius_mul_coe_zeta ArithmeticFunction.moebius_mul_coe_zeta
 
 @[simp]

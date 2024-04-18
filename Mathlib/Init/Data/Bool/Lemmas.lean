@@ -113,7 +113,7 @@ theorem of_decide_true {p : Prop} [Decidable p] : decide p → p :=
   (decide_iff p).1
 #align of_to_bool_true Bool.of_decide_true
 
-theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> exact by decide
+theorem bool_iff_false {b : Bool} : ¬b ↔ b = false := by cases b <;> decide
 #align bool_iff_false Bool.bool_iff_false
 
 theorem bool_eq_false {b : Bool} : ¬b → b = false :=
@@ -146,7 +146,7 @@ theorem coe_and_iff (a b : Bool) : a && b ↔ a ∧ b := by simp
 #align band_coe_iff Bool.coe_and_iff
 
 theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
-  cases a <;> cases b <;> exact by decide
+  cases a <;> cases b <;> decide
 #align bxor_coe_iff Bool.coe_xor_iff
 
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib

@@ -1402,8 +1402,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 #align add_subgroup.coe_map AddSubgroup.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := by
-  erw [mem_image_iff_bex]; simp
+theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
 #align subgroup.mem_map Subgroup.mem_map
 #align add_subgroup.mem_map AddSubgroup.mem_map
 
@@ -2137,7 +2136,7 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       rw [eq_top_iff'] at h
       intro x y
       apply Subgroup.mem_center_iff.mp _ x
-      exact (h y)
+      exact h y
   }
 #align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 

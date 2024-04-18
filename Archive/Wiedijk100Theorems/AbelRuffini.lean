@@ -127,8 +127,7 @@ theorem real_roots_Phi_ge_aux (hab : b < a) :
   by_cases hb : (1 : ℝ) - a + b < 0
   · have hf1 : f 1 < 0 := by simp [hf, hb]
     have hfa : 0 ≤ f a := by
-      -- Porting note: was `simp_rw`
-      simp only [hf, ← sq]
+      simp_rw [hf, ← sq]
       refine' add_nonneg (sub_nonneg.mpr (pow_le_pow_right ha _)) _ <;> norm_num
     obtain ⟨x, ⟨-, hx1⟩, hx2⟩ := intermediate_value_Ico' hle (hc _) (Set.mem_Ioc.mpr ⟨hf1, hf0⟩)
     obtain ⟨y, ⟨hy1, -⟩, hy2⟩ := intermediate_value_Ioc ha (hc _) (Set.mem_Ioc.mpr ⟨hf1, hfa⟩)

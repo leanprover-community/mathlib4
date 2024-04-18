@@ -179,7 +179,7 @@ theorem unique_irreducible ⦃p q : R⦄ (hp : Irreducible p) (hq : Irreducible 
   · obtain rfl : n = 0 := by
       clear hn this
       revert H n
-      exact by decide
+      decide
     simp [not_irreducible_one, pow_zero] at this
   · simpa only [pow_one] using hn.symm
   · obtain ⟨n, rfl⟩ : ∃ k, n = 1 + k + 1 := Nat.exists_eq_add_of_lt H

@@ -71,7 +71,7 @@ In this section we define the relevant projection maps and prove some compatibil
 ### Main definitions
 
 * Let `J : I → Prop`. Then `Proj J : (I → Bool) → (I → Bool)` is the projection mapping everything
-  that satisfies `J i` to itself, and everything else to `False`.
+  that satisfies `J i` to itself, and everything else to `false`.
 
 * The image of `C` under `Proj J` is denoted `π C J` and the corresponding map `C → π C J` is called
   `ProjRestrict`. If `J` implies `K` we have a map `ProjRestricts : π C K → π C J`.
@@ -83,7 +83,7 @@ In this section we define the relevant projection maps and prove some compatibil
 variable (J K L : I → Prop) [∀ i, Decidable (J i)] [∀ i, Decidable (K i)] [∀ i, Decidable (L i)]
 
 /--
-The projection mapping everything that satisfies `J i` to itself, and everything else to `False`
+The projection mapping everything that satisfies `J i` to itself, and everything else to `false`
 -/
 def Proj : (I → Bool) → (I → Bool) :=
   fun c i ↦ if J i then c i else false
@@ -471,7 +471,7 @@ variable (s : Finset I)
 /-- The `ℤ`-linear map induced by precomposition of the projection `C → π C (· ∈ s)`. -/
 noncomputable
 def πJ : LocallyConstant (π C (· ∈ s)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
-  LocallyConstant.comapₗ ℤ _ (continuous_projRestrict C (· ∈ s))
+  LocallyConstant.comapₗ ℤ ⟨_, (continuous_projRestrict C (· ∈ s))⟩
 
 theorem eval_eq_πJ (l : Products I) (hl : l.isGood (π C (· ∈ s))) :
     l.eval C = πJ C s (l.eval (π C (· ∈ s))) := by
@@ -654,7 +654,8 @@ end Fin
 theorem fin_comap_jointlySurjective
     (hC : IsClosed C)
     (f : LocallyConstant C ℤ) : ∃ (s : Finset I)
-    (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap (ProjRestrict C (· ∈ s)) := by
+    (g : LocallyConstant (π C (· ∈ s)) ℤ), f = g.comap ⟨(ProjRestrict C (· ∈ s)),
+      continuous_projRestrict _ _⟩ := by
   obtain ⟨J, g, h⟩ := @Profinite.exists_locallyConstant.{0, u, u} (Finset I)ᵒᵖ _ _ _
     (spanCone hC.isCompact) ℤ
     (spanCone_isLimit hC.isCompact) f
@@ -864,15 +865,15 @@ theorem contained_proj (o : Ordinal) : contained (π C (ord I · < o)) o := by
 @[simps!]
 noncomputable
 def πs (o : Ordinal) : LocallyConstant (π C (ord I · < o)) ℤ →ₗ[ℤ] LocallyConstant C ℤ :=
-  LocallyConstant.comapₗ ℤ (ProjRestrict C (ord I · < o)) (continuous_projRestrict _ _)
+  LocallyConstant.comapₗ ℤ ⟨(ProjRestrict C (ord I · < o)), (continuous_projRestrict _ _)⟩
 
 theorem coe_πs (o : Ordinal) (f : LocallyConstant (π C (ord I · < o)) ℤ) :
     πs C o f = f ∘ ProjRestrict C (ord I · < o) := by
-  simp only [πs_apply, continuous_projRestrict, LocallyConstant.coe_comap]
+  rfl
 
 theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
-  LocallyConstant.comap_injective _ (continuous_projRestrict _ _)
-  (Set.surjective_mapsTo_image_restrict _ _)
+  LocallyConstant.comap_injective ⟨_, (continuous_projRestrict _ _)⟩
+    (Set.surjective_mapsTo_image_restrict _ _)
 
 /-- The `ℤ`-linear map induced by precomposition of the projection
     `π C (ord I · < o₂) → π C (ord I · < o₁)` for `o₁ ≤ o₂`. -/
@@ -880,16 +881,16 @@ theorem injective_πs (o : Ordinal) : Function.Injective (πs C o) :=
 noncomputable
 def πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) :
     LocallyConstant (π C (ord I · < o₁)) ℤ →ₗ[ℤ] LocallyConstant (π C (ord I · < o₂)) ℤ :=
-  LocallyConstant.comapₗ ℤ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h))
-    (continuous_projRestricts _ _)
+  LocallyConstant.comapₗ ℤ ⟨(ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)),
+    (continuous_projRestricts _ _)⟩
 
 theorem coe_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) (f : LocallyConstant (π C (ord I · < o₁)) ℤ) :
     (πs' C h f).toFun = f.toFun ∘ (ProjRestricts C (fun _ hh ↦ lt_of_lt_of_le hh h)) := by
-  simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
-    LocallyConstant.coe_comap]
+  rfl
 
 theorem injective_πs' {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂) : Function.Injective (πs' C h) :=
-  LocallyConstant.comap_injective _ (continuous_projRestricts _ _) (surjective_projRestricts _ _)
+  LocallyConstant.comap_injective ⟨_, (continuous_projRestricts _ _)⟩
+    (surjective_projRestricts _ fun _ hi ↦ lt_of_lt_of_le hi h)
 
 namespace Products
 
@@ -899,16 +900,14 @@ theorem lt_ord_of_lt {l m : Products I} {o : Ordinal} (h₁ : m < l)
 
 theorem eval_πs {l : Products I} {o : Ordinal} (hlt : ∀ i ∈ l.val, ord I i < o) :
     πs C o (l.eval (π C (ord I · < o))) = l.eval C := by
-  simpa only [← LocallyConstant.coe_inj, πs_apply, continuous_projRestrict,
-    LocallyConstant.coe_comap] using evalFacProp C (ord I · < o) hlt
+  simpa only [← LocallyConstant.coe_inj] using evalFacProp C (ord I · < o) hlt
 
 theorem eval_πs' {l : Products I} {o₁ o₂ : Ordinal} (h : o₁ ≤ o₂)
     (hlt : ∀ i ∈ l.val, ord I i < o₁) :
     πs' C h (l.eval (π C (ord I · < o₁))) = l.eval (π C (ord I · < o₂)) := by
   rw [← LocallyConstant.coe_inj, ← LocallyConstant.toFun_eq_coe]
-  simp only [πs'_apply, LocallyConstant.toFun_eq_coe, continuous_projRestricts,
-    LocallyConstant.coe_comap]
-  exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt _
+  exact evalFacProps C (fun (i : I) ↦ ord I i < o₁) (fun (i : I) ↦ ord I i < o₂) hlt
+    (fun _ hh ↦ lt_of_lt_of_le hh h)
 
 theorem eval_πs_image {l : Products I} {o : Ordinal}
     (hl : ∀ i ∈ l.val, ord I i < o) : eval C '' { m | m < l } =
@@ -1161,10 +1160,10 @@ variable {o : Ordinal} (hC : IsClosed C) (hsC : contained C (Order.succ o))
 
 section ExactSequence
 
-/-- The subset of `C` consisting of those elements whose `o`-th entry is `False`. -/
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `false`. -/
 def C0 := C ∩ {f | f (term I ho) = false}
 
-/-- The subset of `C` consisting of those elements whose `o`-th entry is `True`. -/
+/-- The subset of `C` consisting of those elements whose `o`-th entry is `true`. -/
 def C1 := C ∩ {f | f (term I ho) = true}
 
 theorem isClosed_C0 : IsClosed (C0 C ho) := by
@@ -1198,7 +1197,7 @@ theorem contained_C' : contained (C' C ho) o := fun f hf i hi ↦ contained_C1 C
 
 variable (o)
 
-/-- Swapping the `o`-th coordinate to `True`. -/
+/-- Swapping the `o`-th coordinate to `true`. -/
 noncomputable
 def SwapTrue : (I → Bool) → I → Bool :=
   fun f i ↦ if ord I i = o then true else f i
@@ -1245,12 +1244,12 @@ theorem continuous_CC'₁ : Continuous (CC'₁ C hsC ho) :=
 /-- The `ℤ`-linear map induced by precomposing with `CC'₀` -/
 noncomputable
 def Linear_CC'₀ : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
-  LocallyConstant.comapₗ ℤ (CC'₀ C ho) (continuous_CC'₀ C ho)
+  LocallyConstant.comapₗ ℤ ⟨(CC'₀ C ho), (continuous_CC'₀ C ho)⟩
 
 /-- The `ℤ`-linear map induced by precomposing with `CC'₁` -/
 noncomputable
 def Linear_CC'₁ : LocallyConstant C ℤ →ₗ[ℤ] LocallyConstant (C' C ho) ℤ :=
-  LocallyConstant.comapₗ ℤ (CC'₁ C hsC ho) (continuous_CC'₁ C hsC ho)
+  LocallyConstant.comapₗ ℤ ⟨(CC'₁ C hsC ho), (continuous_CC'₁ C hsC ho)⟩
 
 /-- The difference between `Linear_CC'₁` and `Linear_CC'₀`. -/
 noncomputable
@@ -1312,7 +1311,7 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
   have h₁ : Continuous C₁C := Continuous.subtype_mk
     ((continuous_swapTrue o).comp continuous_subtype_val) _
   refine ⟨LocallyConstant.piecewise' ?_ (isClosed_C0 C hC ho)
-      (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap C₀C) (f.comap C₁C) ?_, ?_⟩
+      (isClosed_proj _ o (isClosed_C1 C hC ho)) (f.comap ⟨C₀C, h₀⟩) (f.comap ⟨C₁C, h₁⟩) ?_, ?_⟩
   · rintro _ ⟨y, hyC, rfl⟩
     simp only [Set.mem_union, Set.mem_setOf_eq, Set.mem_univ, iff_true]
     rw [← union_C0C1_eq C ho] at hyC
@@ -1325,13 +1324,14 @@ theorem CC_exact {f : LocallyConstant C ℤ} (hf : Linear_CC' C hsC ho f = 0) :
     cases' hx with hx₀ hx₁
     · have hx₀' : ProjRestrict C (ord I · < o) ⟨x, hx⟩ = x := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using C0_projOrd C hsC ho hx₀
-      simp only [hx₀', hx₀, h₀, LocallyConstant.piecewise'_apply_left, LocallyConstant.coe_comap,
-        Function.comp_apply, πs_apply, continuous_projRestrict]
+      simp only [πs_apply_apply, hx₀', hx₀, LocallyConstant.piecewise'_apply_left,
+        LocallyConstant.coe_comap, ContinuousMap.coe_mk, Function.comp_apply]
     · have hx₁' : (ProjRestrict C (ord I · < o) ⟨x, hx⟩).val ∈ π (C1 C ho) (ord I · < o) := by
         simpa only [ProjRestrict, Set.MapsTo.val_restrict_apply] using ⟨x, hx₁, rfl⟩
-      simp only [C₁C, πs_apply, continuous_projRestrict, LocallyConstant.coe_comap,
+      simp only [C₁C, πs_apply_apply, continuous_projRestrict, LocallyConstant.coe_comap,
         Function.comp_apply, hx₁', LocallyConstant.piecewise'_apply_right, h₁]
       congr
+      simp only [ContinuousMap.coe_mk, Subtype.mk.injEq]
       exact C1_projOrd C hsC ho hx₁
 
 variable (o) in
@@ -1515,10 +1515,10 @@ theorem Products.max_eq_eval [Inhabited I] (l : Products I) (hl : l.val ≠ [])
     rw [← max_eq_o_cons_tail ho l hl hlh]; exact l.prop
   rw [max_eq_o_cons_tail' ho l hl hlh hlc, Products.evalCons]
   ext x
-  simp only [Linear_CC', Linear_CC'₀, Linear_CC'₁, LocallyConstant.comapₗ, Subtype.coe_eta,
+  simp only [Linear_CC', Linear_CC'₁, LocallyConstant.comapₗ, Linear_CC'₀, Subtype.coe_eta,
     LinearMap.sub_apply, LinearMap.coe_mk, AddHom.coe_mk, LocallyConstant.sub_apply,
-    continuous_CC'₀, continuous_CC'₁, LocallyConstant.coe_comap, LocallyConstant.coe_mul,
-    Function.comp_apply, Pi.mul_apply]
+    LocallyConstant.coe_comap, LocallyConstant.coe_mul, ContinuousMap.coe_mk, Function.comp_apply,
+    Pi.mul_apply]
   rw [CC'₁, CC'₀, Products.eval_eq, Products.eval_eq, Products.eval_eq]
   simp only [mul_ite, mul_one, mul_zero]
   have hi' : ∀ i, i ∈ l.Tail.val → (x.val i = SwapTrue o x.val i) := by

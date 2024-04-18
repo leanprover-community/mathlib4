@@ -682,7 +682,7 @@ theorem offDiag_union (h : Disjoint s t) :
   · rintro (((⟨h0, h1, h2⟩|⟨h0, h1, h2⟩)|⟨h0, h1⟩)|⟨h0, h1⟩) <;> simp [*]
     · rintro h3
       rw [h3] at h0
-      exact (Set.disjoint_left.mp h h0 h1)
+      exact Set.disjoint_left.mp h h0 h1
     · rintro h3
       rw [h3] at h0
       exact (Set.disjoint_right.mp h h0 h1).elim

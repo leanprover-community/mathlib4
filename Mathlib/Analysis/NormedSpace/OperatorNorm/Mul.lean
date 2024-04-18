@@ -113,6 +113,8 @@ alias op_norm_mulLeftRight_apply_le :=
   opNorm_mulLeftRight_apply_le -- deprecated on 2024-02-02
 
 theorem opNorm_mulLeftRight_le :
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
