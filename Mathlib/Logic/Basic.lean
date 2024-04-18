@@ -668,8 +668,8 @@ variable {α β : Sort*} {p q : α → Prop}
 theorem forall_swap {p : α → β → Prop} : (∀ x y, p x y) ↔ ∀ y x, p x y := ⟨swap, swap⟩
 #align forall_swap forall_swap
 
-set_option autoImplicit true in
-theorem forall₂_swap {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
+theorem forall₂_swap
+    {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∀ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∀ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := ⟨swap₂, swap₂⟩
 #align forall₂_swap forall₂_swap
 
@@ -712,8 +712,8 @@ lemma forall_or_exists_not (P : α → Prop) : (∀ a, P a) ∨ ∃ a, ¬ P a :=
 lemma exists_or_forall_not (P : α → Prop) : (∃ a, P a) ∨ ∀ a, ¬ P a := by
   rw [← not_exists]; exact em _
 
-set_option autoImplicit true in
-theorem forall_imp_iff_exists_imp [ha : Nonempty α] : (∀ x, p x) → b ↔ ∃ x, p x → b := by
+theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha : Nonempty α] :
+    (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
   exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
@@ -747,8 +747,7 @@ theorem forall₃_true_iff {β : α → Sort*} {γ : ∀ a, β a → Sort*} :
 
 #align exists_const exists_const
 
-set_option autoImplicit true in
-theorem exists_unique_const (α) [i : Nonempty α] [Subsingleton α] :
+theorem exists_unique_const {b : Prop} (α : Sort*) [i : Nonempty α] [Subsingleton α] :
     (∃! _ : α, b) ↔ b := by simp
 #align exists_unique_const exists_unique_const
 
@@ -838,8 +837,8 @@ theorem forall_eq_apply_imp_iff' {f : α → β} {p : β → Prop} :
 
 #align exists_comm exists_comm
 
-set_option autoImplicit true in
-theorem exists₂_comm {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
+theorem exists₂_comm
+    {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*} {p : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Prop} :
     (∃ i₁ j₁ i₂ j₂, p i₁ j₁ i₂ j₂) ↔ ∃ i₂ j₂ i₁ j₁, p i₁ j₁ i₂ j₂ := by
   simp only [@exists_comm (κ₁ _), @exists_comm ι₁]
 #align exists₂_comm exists₂_comm
@@ -848,8 +847,9 @@ theorem And.exists {p q : Prop} {f : p ∧ q → Prop} : (∃ h, f h) ↔ ∃ hp
   ⟨fun ⟨h, H⟩ ↦ ⟨h.1, h.2, H⟩, fun ⟨hp, hq, H⟩ ↦ ⟨⟨hp, hq⟩, H⟩⟩
 #align and.exists And.exists
 
-set_option autoImplicit true in
-theorem forall_or_of_or_forall (h : b ∨ ∀ x, p x) (x) : b ∨ p x := h.imp_right fun h₂ ↦ h₂ x
+theorem forall_or_of_or_forall {α : Sort*} {p : α → Prop} {b : Prop} (h : b ∨ ∀ x, p x) (x : α) :
+    b ∨ p x :=
+  h.imp_right fun h₂ ↦ h₂ x
 #align forall_or_of_or_forall forall_or_of_or_forall
 
 -- See Note [decidable namespace]
@@ -950,16 +950,14 @@ lemma imp_congr_eq {a b c d : Prop} (h₁ : a = c) (h₂ : b = d) : (a → b) = 
 lemma imp_congr_ctx_eq {a b c d : Prop} (h₁ : a = c) (h₂ : c → b = d) : (a → b) = (c → d) :=
   propext (imp_congr_ctx h₁.to_iff fun hc ↦ (h₂ hc).to_iff)
 
-set_option autoImplicit true in
-lemma eq_true_intro (h : a) : a = True := propext (iff_true_intro h)
-set_option autoImplicit true in
-lemma eq_false_intro (h : ¬a) : a = False := propext (iff_false_intro h)
+lemma eq_true_intro {a : Prop} (h : a) : a = True := propext (iff_true_intro h)
+
+lemma eq_false_intro {a : Prop} (h : ¬a) : a = False := propext (iff_false_intro h)
 
 -- FIXME: `alias` creates `def Iff.eq := propext` instead of `lemma Iff.eq := propext`
 @[nolint defLemma] alias Iff.eq := propext
 
-set_option autoImplicit true in
-lemma iff_eq_eq : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
+lemma iff_eq_eq {a b : Prop} : (a ↔ b) = (a = b) := propext ⟨propext, Eq.to_iff⟩
 
 -- They were not used in Lean 3 and there are already lemmas with those names in Lean 4
 #noalign eq_false
@@ -1000,14 +998,15 @@ theorem ExistsUnique.unique₂ {α : Sort*} {p : α → Sort*} [∀ x, Subsingle
 end Quantifiers
 
 /-! ### Classical lemmas -/
-set_option autoImplicit true
+
 namespace Classical
-variable {p : α → Prop}
 
 -- use shortened names to avoid conflict when classical namespace is open.
 /-- Any prop `p` is decidable classically. A shorthand for `Classical.propDecidable`. -/
 noncomputable def dec (p : Prop) : Decidable p := by infer_instance
 #align classical.dec Classical.dec
+
+variable {α : Sort*} {p : α → Prop}
 
 /-- Any predicate `p` is decidable classically. -/
 noncomputable def decPred (p : α → Prop) : DecidablePred p := by infer_instance
@@ -1018,13 +1017,13 @@ noncomputable def decRel (p : α → α → Prop) : DecidableRel p := by infer_i
 #align classical.dec_rel Classical.decRel
 
 /-- Any type `α` has decidable equality classically. -/
-noncomputable def decEq (α : Sort u) : DecidableEq α := by infer_instance
+noncomputable def decEq (α : Sort*) : DecidableEq α := by infer_instance
 #align classical.dec_eq Classical.decEq
 
 /-- Construct a function from a default value `H0`, and a function to use if there exists a value
 satisfying the predicate. -/
 -- @[elab_as_elim] -- FIXME
-noncomputable def existsCases (H0 : C) (H : ∀ a, p a → C) : C :=
+noncomputable def existsCases {α C : Sort*} {p : α → Prop} (H0 : C) (H : ∀ a, p a → C) : C :=
   if h : ∃ a, p a then H (Classical.choose h) (Classical.choose_spec h) else H0
 #align classical.exists_cases Classical.existsCases
 
@@ -1049,6 +1048,7 @@ def choice_of_byContradiction' {α : Sort*} (contra : ¬(α → False) → α) :
 
 end Classical
 
+set_option autoImplicit true in
 /-- This function has the same type as `Exists.recOn`, and can be used to case on an equality,
 but `Exists.recOn` can only eliminate into Prop, while this version eliminates into any universe
 using the axiom of choice. -/
@@ -1058,9 +1058,9 @@ noncomputable def Exists.classicalRecOn {p : α → Prop} (h : ∃ a, p a) {C} (
 #align exists.classical_rec_on Exists.classicalRecOn
 
 /-! ### Declarations about bounded quantifiers -/
-
 section BoundedQuantifiers
-variable {r p q : α → Prop} {P Q : ∀ x, p x → Prop} {b : Prop}
+
+variable {α : Sort*} {r p q : α → Prop} {P Q : ∀ x, p x → Prop} {b : Prop}
 
 theorem bex_def : (∃ (x : _) (_ : p x), q x) ↔ ∃ x, p x ∧ q x :=
   ⟨fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩, fun ⟨x, px, qx⟩ ↦ ⟨x, px, qx⟩⟩
@@ -1180,7 +1180,7 @@ end BoundedQuantifiers
 
 section ite
 
-variable {σ : α → Sort*} (f : α → β) {P Q R : Prop} [Decidable P] [Decidable Q]
+variable {α : Sort*} {σ : α → Sort*} {P Q R : Prop} [Decidable P] [Decidable Q]
   {a b c : α} {A : P → α} {B : ¬P → α}
 
 theorem dite_eq_iff : dite P A B = c ↔ (∃ h, A h = c) ∨ ∃ h, B h = c := by
@@ -1270,15 +1270,15 @@ theorem ite_eq_or_eq : ite P a b = a ∨ ite P a b = b :=
 
 /-- A two-argument function applied to two `dite`s is a `dite` of that two-argument function
 applied to each of the branches. -/
-theorem apply_dite₂ (f : α → β → γ) (P : Prop) [Decidable P] (a : P → α) (b : ¬P → α)
-    (c : P → β) (d : ¬P → β) :
+theorem apply_dite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P]
+    (a : P → α) (b : ¬P → α) (c : P → β) (d : ¬P → β) :
     f (dite P a b) (dite P c d) = dite P (fun h ↦ f (a h) (c h)) fun h ↦ f (b h) (d h) := by
   by_cases h : P <;> simp [h]
 #align apply_dite2 apply_dite₂
 
 /-- A two-argument function applied to two `ite`s is a `ite` of that two-argument function
 applied to each of the branches. -/
-theorem apply_ite₂ (f : α → β → γ) (P : Prop) [Decidable P] (a b : α) (c d : β) :
+theorem apply_ite₂ {α β γ : Sort*} (f : α → β → γ) (P : Prop) [Decidable P] (a b : α) (c d : β) :
     f (ite P a b) (ite P c d) = ite P (f a c) (f b d) :=
   apply_dite₂ f P (fun _ ↦ a) (fun _ ↦ b) (fun _ ↦ c) fun _ ↦ d
 #align apply_ite2 apply_ite₂
@@ -1344,15 +1344,15 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
 
 end ite
 
-theorem not_beq_of_ne [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
+theorem not_beq_of_ne {α : Type*} [BEq α] [LawfulBEq α] {a b : α} (ne : a ≠ b) : ¬(a == b) :=
   fun h => ne (eq_of_beq h)
 
-theorem beq_eq_decide [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
+theorem beq_eq_decide {α : Type*} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = decide (a = b) := by
   rw [← beq_iff_eq a b]
   cases a == b <;> simp
 
 @[ext]
-theorem beq_ext (inst1 : BEq α) (inst2 : BEq α)
+theorem beq_ext {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     (h : ∀ x y, @BEq.beq _ inst1 x y = @BEq.beq _ inst2 x y) :
     inst1 = inst2 := by
   have ⟨beq1⟩ := inst1
@@ -1361,7 +1361,7 @@ theorem beq_ext (inst1 : BEq α) (inst2 : BEq α)
   funext x y
   exact h x y
 
-theorem lawful_beq_subsingleton (inst1 : BEq α) (inst2 : BEq α)
+theorem lawful_beq_subsingleton {α : Type*} (inst1 : BEq α) (inst2 : BEq α)
     [@LawfulBEq α inst1] [@LawfulBEq α inst2] :
     inst1 = inst2 := by
   apply beq_ext
