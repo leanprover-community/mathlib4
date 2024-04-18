@@ -397,9 +397,9 @@ theorem frobenius_add : frobenius R p (x + y) = frobenius R p x + frobenius R p 
   (frobenius R p).map_add x y
 #align frobenius_add frobenius_add
 
-theorem frobenius_nat_cast (n : ℕ) : frobenius R p n = n :=
+theorem frobenius_natCast (n : ℕ) : frobenius R p n = n :=
   map_natCast (frobenius R p) n
-#align frobenius_nat_cast frobenius_nat_cast
+#align frobenius_nat_cast frobenius_natCast
 
 open BigOperators
 
