@@ -208,7 +208,8 @@ class ConditionallyCompleteLinearOrder (α : Type*) extends ConditionallyComplet
   csInf_of_not_bddBelow : ∀ s, ¬BddBelow s → sInf s = sInf (∅ : Set α)
 #align conditionally_complete_linear_order ConditionallyCompleteLinearOrder
 
-instance (α : Type*) [ConditionallyCompleteLinearOrder α] : LinearOrder α :=
+instance ConditionallyCompleteLinearOrder.toLinearOrder [ConditionallyCompleteLinearOrder α] :
+    LinearOrder α :=
   { ‹ConditionallyCompleteLinearOrder α› with
     max := Sup.sup, min := Inf.inf,
     min_def := fun a b ↦ by
