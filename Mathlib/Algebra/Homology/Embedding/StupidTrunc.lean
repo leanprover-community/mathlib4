@@ -74,6 +74,12 @@ lemma ιStupidTruncf_eq (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
+lemma ιStupidTruncf'_eq {i : ι} {i' : ι'} (h : e.f i = i') :
+    K.ιStupidTruncf e i' = ((K.restriction e).extendXIso e h).hom ≫
+      (K.restrictionXIso e h).hom := by
+  subst h
+  simp [ιStupidTruncf_eq, restrictionXIso]
+
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
   comm' i' j' hij' := by
@@ -135,7 +141,7 @@ lemma πStupidTruncf_eq (i : ι) :
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
-lemma πStupidTruncf_eq' {i : ι} {i' : ι'} (h : e.f i = i'):
+lemma πStupidTruncf_eq' {i : ι} {i' : ι'} (h : e.f i = i') :
     K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
       ((K.restriction e).extendXIso e h).inv := by
   subst h

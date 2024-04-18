@@ -232,7 +232,6 @@ lemma prev_f_of_not_mem_boundaryGE [e.IsRelIff] {i j : ι} (hij : c.prev j = i)
     rw [c.prev_eq' hi] at hij
     exact hij' (by simpa only [hij] using hi)
 
-
 variable {e} in
 lemma BoundaryGE.false {j : ι} (hj : e.BoundaryGE j) [e.IsTruncLE] : False := by
   obtain ⟨i, hi⟩ := e.mem_prev hj.1
@@ -263,6 +262,11 @@ variable {e} in
 lemma BoundaryLE.not_mem {j : ι} (hj : e.BoundaryLE j) {k' : ι'} (hk' : c'.Rel (e.f j) k')
     (a : ι) : e.f a ≠ k' := fun ha =>
   hj.2 a (by simpa only [ha] using hk')
+
+variable {e} in
+lemma BoundaryLE.false {j : ι} (hj : e.BoundaryLE j) [e.IsTruncGE] : False := by
+  obtain ⟨i, hi⟩ := e.mem_next hj.1
+  exact hj.2 i (by simpa only [hi] using hj.1)
 
 end Embedding
 

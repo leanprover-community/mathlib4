@@ -70,9 +70,24 @@ lemma restrictionStupidTruncIso_hom_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
   rw [extendMap_f _ e₂ (h.f_index i₁), restrictionMap_f' _ e₂ (h.f_index i₁)]
   simp [restrictionXIso]
 
+variable {K L} in
+@[reassoc (attr := simp)]
+lemma restrictionStupidTruncIso_inv_naturality [e₁.IsRelIff] [e₂.IsRelIff] :
+    (K.restrictionStupidTruncIso h).inv ≫ restrictionMap (stupidTruncMap φ e₂) e₁ =
+       restrictionMap φ e₁ ≫ (L.restrictionStupidTruncIso h).inv := by
+  ext i₁
+  dsimp [stupidTruncMap, restrictionStupidTruncIso, stupidTruncXIso]
+  rw [extendMap_f _ e₂ (h.f_index i₁), restrictionMap_f' _ e₂ (h.f_index i₁)]
+  simp [restrictionXIso]
+
 noncomputable def mapStupidTruncLE [e₁.IsTruncLE] [e₂.IsRelIff] :
     K.stupidTrunc e₂ ⟶ K.stupidTrunc e₁ :=
   e₁.liftExtend ((K.restrictionStupidTruncIso h).hom)
+    (fun _ hi₁ _ _ => hi₁.false.elim)
+
+noncomputable def mapStupidTruncGE [e₁.IsTruncGE] [e₂.IsRelIff] :
+    K.stupidTrunc e₁ ⟶ K.stupidTrunc e₂ :=
+  e₁.descExtend ((K.restrictionStupidTruncIso h).inv)
     (fun _ hi₁ _ _ => hi₁.false.elim)
 
 open ComplexShape.Embedding
@@ -116,6 +131,45 @@ noncomputable def mapStupidTruncLE_trans [e₁.IsTruncLE] [e₂.IsTruncLE] [e₃
   rw [← cancel_epi (K.πStupidTrunc e₃), mapStupidTruncLE_fac_assoc,
     mapStupidTruncLE_fac, mapStupidTruncLE_fac]
 
+variable {K L} in
+@[reassoc (attr := simp)]
+lemma mapStupidTruncGE_naturality [e₁.IsTruncGE] [e₂.IsRelIff] :
+    K.mapStupidTruncGE h ≫ stupidTruncMap φ e₂ =
+      stupidTruncMap φ e₁ ≫ L.mapStupidTruncGE h := by
+  apply (e₁.homEquiv' _ _).injective
+  ext1
+  dsimp [homEquiv, mapStupidTruncGE, stupidTruncMap]
+  rw [homRestrict'_postcomp, extend_comp_homRestrict', homRestrict'_descExtend,
+    homRestrict'_descExtend]
+  apply restrictionStupidTruncIso_inv_naturality
+
+@[reassoc (attr := simp)]
+lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
+    K.mapStupidTruncGE h ≫ K.ιStupidTrunc e₂  = K.ιStupidTrunc e₁ := by
+  apply (e₁.homEquiv' _ _).injective
+  ext i₁ : 2
+  dsimp [mapStupidTruncGE]
+  rw [homRestrict'_postcomp, homRestrict'_descExtend, homRestrict'_f e₁ _ rfl]
+  dsimp [ιStupidTrunc]
+  rw [ιStupidTruncf_eq, ιStupidTruncf'_eq _ _ (h.f_index i₁)]
+  simp [restrictionStupidTruncIso, stupidTruncXIso, extendXIso, extend.XIso, restrictionXIso]
+
+instance [e₁.IsTruncGE] [e₂.IsTruncGE] : Mono (K.mapStupidTruncGE h) :=
+  mono_of_mono_fac (K.mapStupidTruncGE_fac h)
+
+variable (e₁) in
+@[simp]
+noncomputable def mapStupidTruncGE_refl [e₁.IsTruncGE] :
+    K.mapStupidTruncGE (Subset.refl e₁) = 𝟙 _ := by
+  rw [← cancel_mono (K.ιStupidTrunc e₁), mapStupidTruncGE_fac, id_comp]
+
+@[reassoc (attr := simp)]
+noncomputable def mapStupidTruncGE_trans [e₁.IsTruncGE] [e₂.IsTruncGE] [e₃.IsTruncGE]
+    (h' : e₂.Subset e₃) :
+    K.mapStupidTruncGE h ≫ K.mapStupidTruncGE h' = K.mapStupidTruncGE (h.trans h') := by
+  rw [← cancel_mono (K.ιStupidTrunc e₃), assoc, mapStupidTruncGE_fac,
+    mapStupidTruncGE_fac, mapStupidTruncGE_fac]
+
 end HomologicalComplex
 
 namespace ComplexShape
@@ -146,6 +200,19 @@ noncomputable def mapStupidTruncLE :
 
 end
 
+section
+
+variable [e₁.IsTruncGE] [e₂.IsRelIff] (h : e₁.Subset e₂)
+variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+
+@[simps]
+noncomputable def mapStupidTruncGE :
+    e₁.stupidTruncFunctor C ⟶ e₂.stupidTruncFunctor C where
+  app K := K.mapStupidTruncGE h
+
+end
+
+
 end Subset
 
 section
@@ -168,6 +235,28 @@ instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
   infer_instance
 
 end
+
+section
+
+variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Preorder α] {ι : α → Type*}
+  {c : Π (a : α), ComplexShape (ι a)} (e : Π (a : α), Embedding (c a) c')
+  (he : ∀ ⦃a a' : α⦄, a ≤ a' → (e a).Subset (e a'))
+  [∀ a, (e a).IsTruncGE]
+  (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
+
+@[simps]
+noncomputable def stupidTruncGEFiltration :
+    α ⥤ (HomologicalComplex C c' ⥤ HomologicalComplex C c') where
+  obj a := (e a).stupidTruncFunctor C
+  map {a a'} φ := (he (leOfHom φ)).mapStupidTruncGE C
+
+instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
+    Mono (((stupidTruncGEFiltration e he C).map φ).app K) := by
+  dsimp
+  infer_instance
+
+end
+
 
 end Embedding
 
