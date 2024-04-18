@@ -609,7 +609,7 @@ lemma Integrable.integral_eq_integral_Ioc_meas_le {f : α → ℝ} {M : ℝ}
     (f_intble : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) (f_bdd : f ≤ᵐ[μ] (fun _ ↦ M)) :
     ∫ ω, f ω ∂μ = ∫ t in Ioc 0 M, ENNReal.toReal (μ {a : α | t ≤ f a}) := by
   rw [f_intble.integral_eq_integral_meas_le f_nn]
-  rw [set_integral_eq_of_subset_of_ae_diff_eq_zero
+  rw [setIntegral_eq_of_subset_of_ae_diff_eq_zero
       measurableSet_Ioi.nullMeasurableSet Ioc_subset_Ioi_self ?_]
   apply eventually_of_forall (fun t ht ↦ ?_)
   have htM : M < t := by simp_all only [mem_diff, mem_Ioi, mem_Ioc, not_and, not_le]
