@@ -126,7 +126,7 @@ lemma isRatCondKernelCDFAux_density_Iic (κ : kernel α (γ × ℝ)) [IsFiniteKe
       refine ⟨i, hq.le.trans ?_⟩
       exact mod_cast hi i le_rfl
   integrable a q := integrable_density le_rfl a measurableSet_Iic
-  set_integral a A hA q := set_integral_density le_rfl a measurableSet_Iic hA
+  setIntegral a A hA q := setIntegral_density le_rfl a measurableSet_Iic hA
 
 /-- Taking the kernel density of intervals `Iic q` for `q : ℚ` gives a function with the property
 `isRatCondKernelCDF`. -/

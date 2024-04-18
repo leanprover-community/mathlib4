@@ -7,7 +7,7 @@ import Mathlib.Algebra.Quotient
 import Mathlib.Algebra.Group.Subgroup.Actions
 import Mathlib.Algebra.Group.Subgroup.MulOpposite
 import Mathlib.Data.Fintype.Prod
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.GroupTheory.GroupAction.Basic
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
