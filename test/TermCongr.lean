@@ -129,7 +129,8 @@ def f {α : Type} [DecidableEq α] (n : α) (_ : n = n) : α := n
 
 lemma test (n n' : Nat) (h : n = n') (hn : n = n) (hn' : n' = n') :
     f n hn = f n' hn' := by
-  exact congr(f $h ‹_›)
+  have := congr(f $h ‹_›) -- without expected type
+  exact congr(f $h _) -- with expected type
 
 end SubsingletonDependence
 
