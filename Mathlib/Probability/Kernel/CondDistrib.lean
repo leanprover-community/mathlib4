@@ -217,7 +217,7 @@ theorem set_lintegral_condDistrib_of_measurableSet (hX : Measurable X) (hY : AEM
 `s` is equal to the conditional expectation of the indicator of `Y ⁻¹' s`. -/
 theorem condDistrib_ae_eq_condexp (hX : Measurable X) (hY : Measurable Y) (hs : MeasurableSet s) :
     (fun a => (condDistrib Y X μ (X a) s).toReal) =ᵐ[μ] μ⟦Y ⁻¹' s|mβ.comap X⟧ := by
-  refine' ae_eq_condexp_of_forall_set_integral_eq hX.comap_le _ _ _ _
+  refine' ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le _ _ _ _
   · exact (integrable_const _).indicator (hY hs)
   · exact fun t _ _ => (integrable_toReal_condDistrib hX.aemeasurable hs).integrableOn
   · intro t ht _
@@ -237,7 +237,7 @@ theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
     μ[fun a => f (X a, Y a)|mβ.comap X] =ᵐ[μ] fun a => ∫ y, f (X a,y) ∂condDistrib Y X μ (X a) := by
   have hf_int' : Integrable (fun a => f (X a, Y a)) μ :=
     (integrable_map_measure hf_int.1 (hX.aemeasurable.prod_mk hY)).mp hf_int
-  refine' (ae_eq_condexp_of_forall_set_integral_eq hX.comap_le hf_int' (fun s _ _ => _) _ _).symm
+  refine' (ae_eq_condexp_of_forall_setIntegral_eq hX.comap_le hf_int' (fun s _ _ => _) _ _).symm
   · exact (hf_int.integral_condDistrib hX.aemeasurable hY).integrableOn
   · rintro s ⟨t, ht, rfl⟩ _
     change ∫ a in X ⁻¹' t, ((fun x' => ∫ y, f (x', y) ∂(condDistrib Y X μ) x') ∘ X) a ∂μ =
@@ -248,8 +248,8 @@ theorem condexp_prod_ae_eq_integral_condDistrib' [NormedSpace ℝ F] [CompleteSp
     · rw [← Measure.restrict_map hX ht]
       exact (hf_int.1.integral_condDistrib_map hY).restrict
     rw [← Measure.restrict_map hX ht, ← Measure.fst_map_prod_mk₀ hY, condDistrib,
-      Measure.set_integral_condKernel_univ_right ht hf_int.integrableOn,
-      set_integral_map (ht.prod MeasurableSet.univ) hf_int.1 (hX.aemeasurable.prod_mk hY),
+      Measure.setIntegral_condKernel_univ_right ht hf_int.integrableOn,
+      setIntegral_map (ht.prod MeasurableSet.univ) hf_int.1 (hX.aemeasurable.prod_mk hY),
       mk_preimage_prod, preimage_univ, inter_univ]
   · exact aestronglyMeasurable'_integral_condDistrib hX.aemeasurable hY hf_int.1
 #align probability_theory.condexp_prod_ae_eq_integral_cond_distrib' ProbabilityTheory.condexp_prod_ae_eq_integral_condDistrib'
