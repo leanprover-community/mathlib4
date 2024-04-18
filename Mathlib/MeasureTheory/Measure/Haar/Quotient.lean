@@ -135,12 +135,11 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.mulInvariantMeasure_quotien
     [hasFun : HasFundamentalDomain Γ.op G ν] [QuotientMeasureEqMeasurePreimage ν μ] :
     μ.IsMulLeftInvariant where
   map_mul_left_eq_self x := by
-    apply Measure.ext
-    intro A hA
+    ext A hA
     obtain ⟨x₁, h⟩ := @Quotient.exists_rep _ (QuotientGroup.leftRel Γ) x
     convert measure_preimage_smul x₁ μ A using 1
     · rw [← h, Measure.map_apply (measurable_const_mul _) hA]
-      rfl
+      simp [← MulAction.Quotient.coe_smul_out', ← Quotient.mk''_eq_mk]
     exact smulInvariantMeasure_quotient ν
 
 variable [IsMulLeftInvariant μ] [SigmaFinite μ]
@@ -247,6 +246,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
       ← fund_dom_s.measure_zero_of_invariant _ (fun g ↦ QuotientGroup.sound _ _ g) h]
     apply measure_mono
     refine interior_subset.trans ?_
+    rw [QuotientGroup.coe_mk']
     show (K : Set G) ⊆ π ⁻¹' (π '' K)
     exact subset_preimage_image π K
   · show ν (π ⁻¹' (π '' K) ∩ s) ≠ ⊤

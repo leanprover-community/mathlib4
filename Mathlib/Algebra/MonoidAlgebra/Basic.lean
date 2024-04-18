@@ -268,9 +268,9 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
         mul_one, sum_single] }
 #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
+theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
-#align monoid_algebra.nat_cast_def MonoidAlgebra.nat_cast_def
+#align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -345,10 +345,10 @@ instance nonAssocRing [Ring k] [MulOneClass G] : NonAssocRing (MonoidAlgebra k G
     intCast_negSucc := fun n => by simp; rfl }
 #align monoid_algebra.non_assoc_ring MonoidAlgebra.nonAssocRing
 
-theorem int_cast_def [Ring k] [MulOneClass G] (z : ℤ) :
+theorem intCast_def [Ring k] [MulOneClass G] (z : ℤ) :
     (z : MonoidAlgebra k G) = single (1 : G) (z : k) :=
   rfl
-#align monoid_algebra.int_cast_def MonoidAlgebra.int_cast_def
+#align monoid_algebra.int_cast_def MonoidAlgebra.intCast_def
 
 instance ring [Ring k] [Monoid G] : Ring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonAssocRing, MonoidAlgebra.semiring with }
@@ -699,8 +699,8 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     { liftAddHom fun x => (smulAddHom k A).flip (f x) with
       toFun := fun a => a.sum fun m t => t • f m
       map_smul' := fun t' a => by
-        -- Porting note: `dsimp` is required for beta reduction.
-        dsimp only []
+        -- Porting note(#12129): additional beta reduction needed
+        beta_reduce
         rw [Finsupp.smul_sum, sum_smul_index']
         · simp_rw [smul_assoc, MonoidHom.id_apply]
         · intro m
@@ -1038,8 +1038,8 @@ def equivariantOfLinearOfComm : V →ₗ[MonoidAlgebra k G] W where
   toFun := f
   map_add' v v' := by simp
   map_smul' c v := by
-    -- Porting note: `dsimp` is required for beta reduction.
-    dsimp only []
+    -- Porting note(#12129): additional beta reduction needed
+    beta_reduce
     -- Porting note: Was `apply`.
     refine Finsupp.induction c ?_ ?_
     · simp
@@ -1410,9 +1410,9 @@ instance nonAssocSemiring : NonAssocSemiring k[G] :=
         mul_one, sum_single] }
 #align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
-theorem nat_cast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
+theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
-#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.nat_cast_def
+#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -1488,10 +1488,10 @@ instance nonAssocRing [Ring k] [AddZeroClass G] : NonAssocRing k[G] :=
     intCast_negSucc := fun n => by simp; rfl }
 #align add_monoid_algebra.non_assoc_ring AddMonoidAlgebra.nonAssocRing
 
-theorem int_cast_def [Ring k] [AddZeroClass G] (z : ℤ) :
+theorem intCast_def [Ring k] [AddZeroClass G] (z : ℤ) :
     (z : k[G]) = single (0 : G) (z : k) :=
   rfl
-#align add_monoid_algebra.int_cast_def AddMonoidAlgebra.int_cast_def
+#align add_monoid_algebra.int_cast_def AddMonoidAlgebra.intCast_def
 
 instance ring [Ring k] [AddMonoid G] : Ring k[G] :=
   { AddMonoidAlgebra.nonAssocRing, AddMonoidAlgebra.semiring with }
@@ -1757,8 +1757,8 @@ protected def AddMonoidAlgebra.toMultiplicative [Semiring k] [Add G] :
       Multiplicative.ofAdd with
     toFun := equivMapDomain Multiplicative.ofAdd
     map_mul' := fun x y => by
-      -- Porting note: `dsimp` is required for beta reduction.
-      dsimp only []
+      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
+      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Multiplicative.ofAdd]
       exact MonoidAlgebra.mapDomain_mul (α := Multiplicative G) (β := k)
@@ -1771,8 +1771,8 @@ protected def MonoidAlgebra.toAdditive [Semiring k] [Mul G] :
   { Finsupp.domCongr Additive.ofMul with
     toFun := equivMapDomain Additive.ofMul
     map_mul' := fun x y => by
-      -- Porting note: `dsimp` is required for beta reduction.
-      dsimp only []
+      -- Porting note: added `dsimp only`; `beta_reduce` alone is not sufficient
+      dsimp only
       repeat' rw [equivMapDomain_eq_mapDomain (M := k)]
       dsimp [Additive.ofMul]
       convert MonoidAlgebra.mapDomain_mul (β := k) (MulHom.id G) x y }

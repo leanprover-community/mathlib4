@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
 import Mathlib.MeasureTheory.Integral.ExpDecay
-import Mathlib.Analysis.SpecialFunctions.ImproperIntegrals
 import Mathlib.Analysis.MellinTransform
 
 #align_import analysis.special_functions.gamma.basic from "leanprover-community/mathlib"@"cca40788df1b8755d5baf17ab2f27dacc2e17acb"
@@ -123,7 +122,7 @@ def GammaIntegral (s : ℂ) : ℂ :=
 
 theorem GammaIntegral_conj (s : ℂ) : GammaIntegral (conj s) = conj (GammaIntegral s) := by
   rw [GammaIntegral, GammaIntegral, ← integral_conj]
-  refine' set_integral_congr measurableSet_Ioi fun x hx => _
+  refine' setIntegral_congr measurableSet_Ioi fun x hx => _
   dsimp only
   rw [RingHom.map_mul, conj_ofReal, cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)),
     cpow_def_of_ne_zero (ofReal_ne_zero.mpr (ne_of_gt hx)), ← exp_conj, RingHom.map_mul, ←
@@ -135,7 +134,7 @@ theorem GammaIntegral_ofReal (s : ℝ) :
   have : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
   rw [GammaIntegral]
   conv_rhs => rw [this, ← _root_.integral_ofReal]
-  refine' set_integral_congr measurableSet_Ioi _
+  refine' setIntegral_congr measurableSet_Ioi _
   intro x hx; dsimp only
   conv_rhs => rw [← this]
   rw [ofReal_mul, ofReal_cpow (mem_Ioi.mp hx).le]
@@ -398,7 +397,7 @@ lemma integral_cpow_mul_exp_neg_mul_Ioi {a : ℂ} {r : ℝ} (ha : 0 < a.re) (hr 
     rw [← cpow_add _ _ (one_div_ne_zero <| ofReal_ne_zero.mpr hr.ne'), add_sub_cancel]
   calc
     _ = ∫ (t : ℝ) in Ioi 0, (1 / r) ^ (a - 1) * (r * t) ^ (a - 1) * exp (-(r * t)) := by
-      refine MeasureTheory.set_integral_congr measurableSet_Ioi (fun x hx ↦ ?_)
+      refine MeasureTheory.setIntegral_congr measurableSet_Ioi (fun x hx ↦ ?_)
       rw [mem_Ioi] at hx
       rw [mul_cpow_ofReal_nonneg hr.le hx.le, ← mul_assoc, one_div, ← ofReal_inv,
         ← mul_cpow_ofReal_nonneg (inv_pos.mpr hr).le hr.le, ← ofReal_mul r⁻¹, inv_mul_cancel hr.ne',
@@ -489,7 +488,7 @@ theorem tendsto_self_mul_Gamma_nhds_zero : Tendsto (fun z : ℂ => z * Gamma z) 
     (eventuallyEq_of_mem self_mem_nhdsWithin Complex.Gamma_add_one)
   refine' ContinuousAt.comp (g := Gamma) _ (continuous_id.add continuous_const).continuousAt
   refine' (Complex.differentiableAt_Gamma _ fun m => _).continuousAt
-  rw [zero_add, ← ofReal_nat_cast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]
+  rw [zero_add, ← ofReal_natCast, ← ofReal_neg, ← ofReal_one, Ne, ofReal_inj]
   refine' (lt_of_le_of_lt _ zero_lt_one).ne'
   exact neg_nonpos.mpr (Nat.cast_nonneg _)
 #align complex.tendsto_self_mul_Gamma_nhds_zero Complex.tendsto_self_mul_Gamma_nhds_zero
@@ -514,7 +513,7 @@ theorem Gamma_eq_integral {s : ℝ} (hs : 0 < s) :
     have cc : ∀ r : ℝ, Complex.ofReal' r = @RCLike.ofReal ℂ _ r := fun r => rfl
     conv_lhs => rw [this]; enter [1, 2, x]; rw [cc]
     rw [_root_.integral_ofReal, ← cc, Complex.ofReal_re]
-  refine' set_integral_congr measurableSet_Ioi fun x hx => _
+  refine' setIntegral_congr measurableSet_Ioi fun x hx => _
   push_cast
   rw [Complex.ofReal_cpow (le_of_lt hx)]
   push_cast; rfl
@@ -536,8 +535,8 @@ theorem _root_.Complex.Gamma_ofReal (s : ℝ) : Complex.Gamma (s : ℂ) = Gamma 
 #align complex.Gamma_of_real Complex.Gamma_ofReal
 
 theorem Gamma_nat_eq_factorial (n : ℕ) : Gamma (n + 1) = n ! := by
-  rw [Gamma, Complex.ofReal_add, Complex.ofReal_nat_cast, Complex.ofReal_one,
-    Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_nat_cast, Complex.ofReal_re]
+  rw [Gamma, Complex.ofReal_add, Complex.ofReal_natCast, Complex.ofReal_one,
+    Complex.Gamma_nat_eq_factorial, ← Complex.ofReal_natCast, Complex.ofReal_re]
 #align real.Gamma_nat_eq_factorial Real.Gamma_nat_eq_factorial
 
 @[simp]
@@ -555,7 +554,7 @@ theorem Gamma_zero : Gamma 0 = 0 := by
 /-- At `-n` for `n ∈ ℕ`, the Gamma function is undefined; by convention we assign it the value `0`.
 -/
 theorem Gamma_neg_nat_eq_zero (n : ℕ) : Gamma (-n) = 0 := by
-  simpa only [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Complex.Gamma_ofReal,
+  simpa only [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Complex.Gamma_ofReal,
     Complex.ofReal_eq_zero] using Complex.Gamma_neg_nat_eq_zero n
 #align real.Gamma_neg_nat_eq_zero Real.Gamma_neg_nat_eq_zero
 
@@ -566,7 +565,7 @@ theorem Gamma_pos_of_pos {s : ℝ} (hs : 0 < s) : 0 < Gamma s := by
     intro x hx
     rw [Function.mem_support]
     exact mul_ne_zero (exp_pos _).ne' (rpow_pos_of_pos hx _).ne'
-  rw [set_integral_pos_iff_support_of_nonneg_ae]
+  rw [setIntegral_pos_iff_support_of_nonneg_ae]
   · rw [this, volume_Ioi, ← ENNReal.ofReal_zero]
     exact ENNReal.ofReal_lt_top
   · refine' eventually_of_mem (self_mem_ae_restrict measurableSet_Ioi) _
@@ -586,7 +585,7 @@ lemma integral_rpow_mul_exp_neg_mul_Ioi {a r : ℝ} (ha : 0 < a) (hr : 0 < r) :
     ∫ t : ℝ in Ioi 0, t ^ (a - 1) * exp (-(r * t)) = (1 / r) ^ a * Gamma a := by
   rw [← ofReal_inj, ofReal_mul, ← Gamma_ofReal, ofReal_cpow (by positivity), ofReal_div]
   convert integral_cpow_mul_exp_neg_mul_Ioi (by rwa [ofReal_re] : 0 < (a : ℂ).re) hr
-  refine _root_.integral_ofReal.symm.trans <| set_integral_congr measurableSet_Ioi (fun t ht ↦ ?_)
+  refine _root_.integral_ofReal.symm.trans <| setIntegral_congr measurableSet_Ioi (fun t ht ↦ ?_)
   norm_cast
   rw [← ofReal_cpow (le_of_lt ht), RCLike.ofReal_mul]
   rfl
@@ -643,7 +642,7 @@ theorem Gamma_eq_zero_iff (s : ℝ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m :=
 
 theorem differentiableAt_Gamma {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : DifferentiableAt ℝ Gamma s := by
   refine' (Complex.differentiableAt_Gamma _ _).hasDerivAt.real_of_complex.differentiableAt
-  simp_rw [← Complex.ofReal_nat_cast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
+  simp_rw [← Complex.ofReal_natCast, ← Complex.ofReal_neg, Ne, Complex.ofReal_inj]
   exact hs
 #align real.differentiable_at_Gamma Real.differentiableAt_Gamma
 

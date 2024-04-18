@@ -55,14 +55,14 @@ theorem irrational_nrt_of_notint_nrt {x : ℝ} (n : ℕ) (m : ℤ) (hxr : x ^ n 
     rw [Int.cast_ne_zero, Int.natCast_ne_zero]
     exact P
   have c2 : ((D : ℤ) : ℝ) ^ n ≠ 0 := pow_ne_zero _ c1
-  rw [num_den', cast_pow, cast_mk, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow, ← Int.cast_pow,
-    ← Int.cast_mul, Int.cast_inj] at hxr
+  rw [mk'_eq_divInt, cast_pow, cast_mk, div_pow, div_eq_iff_mul_eq c2, ← Int.cast_pow,
+    ← Int.cast_pow, ← Int.cast_mul, Int.cast_inj] at hxr
   have hdivn : (D : ℤ) ^ n ∣ N ^ n := Dvd.intro_left m hxr
   rw [← Int.dvd_natAbs, ← Int.coe_nat_pow, Int.natCast_dvd_natCast, Int.natAbs_pow,
-    Nat.pow_dvd_pow_iff hnpos] at hdivn
+    Nat.pow_dvd_pow_iff hnpos.ne'] at hdivn
   obtain rfl : D = 1 := by rw [← Nat.gcd_eq_right hdivn, C.gcd_eq_one]
   refine' hv ⟨N, _⟩
-  rw [num_den', Int.ofNat_one, divInt_one, cast_intCast]
+  rw [mk'_eq_divInt, Int.ofNat_one, divInt_one, cast_intCast]
 #align irrational_nrt_of_notint_nrt irrational_nrt_of_notint_nrt
 
 /-- If `x^n = m` is an integer and `n` does not divide the `multiplicity p m`, then `x`

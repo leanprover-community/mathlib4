@@ -396,7 +396,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rintro rfl
     obtain ⟨q, hq⟩ := hm.nonempty
     rw [mem_setOf, sub_eq_zero, mul_comm] at hq
-    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_pos).mp ⟨d, hq⟩
+    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
     rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
@@ -407,13 +407,13 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨hq1 : (q₁.num : ZMod m.natAbs) = q₂.num, hq2 : (q₁.den : ZMod m.natAbs) = q₂.den⟩ :=
     Prod.ext_iff.mp hqf
   have hd₁ : m ∣ q₁.num * q₂.num - d * (q₁.den * q₂.den) := by
-    rw [← Int.natAbs_dvd, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
+    rw [← Int.natAbs_dvd, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
     push_cast
     rw [hq1, hq2, ← sq, ← sq]
     norm_cast
-    rw [ZMod.int_cast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
+    rw [ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
   have hd₂ : m ∣ q₁.num * q₂.den - q₂.num * q₁.den := by
-    rw [← Int.natAbs_dvd, ← ZMod.int_cast_eq_int_cast_iff_dvd_sub]
+    rw [← Int.natAbs_dvd, ← ZMod.intCast_eq_intCast_iff_dvd_sub]
     push_cast
     rw [hq1, hq2]
   replace hm₀ : (m : ℚ) ≠ 0 := Int.cast_ne_zero.mpr hm₀
