@@ -467,23 +467,15 @@ variable (α)
 
 variable [LinearOrder α] [TopologicalSpace α] [IsLower α]
 
-lemma basis_inter : ∀ ⦃s⦄, s ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} →
-    ∀ ⦃t⦄, t ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} → s ∩ t ∈ {r : Set α | ∃ a, (Ici a)ᶜ = r} := by
-  intros s hs t ht
-  simp at *
-  rcases hs with ⟨b, hb⟩
-  rcases ht with ⟨c, hc⟩
-  use b ⊓ c
-  rw [← hc, ← hb, Iio_inter_Iio]
-
-lemma basis_finiteInter : FiniteInter (insert (univ : Set α) {s : Set α | ∃ a, (Ici a)ᶜ = s}) :=
-  (FiniteInter.mk₂ (basis_inter α))
-
-lemma test :
+lemma isTopologicalBasis_insert_univ_subbasis :
     IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Ici a)ᶜ = s}) := by
   exact isTopologicalBasis_of_subbasis_of_inter (by
-    rw [Topology.IsLower.topology_eq α]
-    exact rfl
-  ) (basis_inter α)
+      rw [Topology.IsLower.topology_eq α]; exact rfl)
+    (fun _ hs _ ht => by
+      simp at *
+      rcases hs with ⟨b, hb⟩
+      rcases ht with ⟨c, hc⟩
+      use b ⊓ c
+      rw [← hc, ← hb, Iio_inter_Iio])
 
 end LinearOrder
