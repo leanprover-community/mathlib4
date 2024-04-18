@@ -306,10 +306,6 @@ theorem IsPreconnected.mem_intervals {s : Set α} (hs : IsPreconnected s) :
     exact Or.inl (hs.eq_univ_of_unbounded hb ha)
 #align is_preconnected.mem_intervals IsPreconnected.mem_intervals
 
-@[simp]
-lemma exists_apply_eq_apply2 {α β γ} {f : α → β → γ} {a : α} {b : β} : ∃ x y, f x y = f a b :=
-  ⟨a, b, rfl⟩
-
 /-- A preconnected set is either one of the intervals `Icc`, `Ico`, `Ioc`, `Ioo`, `Ici`, `Ioi`,
 `Iic`, `Iio`, or `univ`, or `∅`. The converse statement requires `α` to be densely ordered. Though
 one can represent `∅` as `(Inf ∅, Inf ∅)`, we include it into the list of possible cases to improve
