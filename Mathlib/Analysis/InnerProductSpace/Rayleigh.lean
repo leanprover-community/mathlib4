@@ -110,7 +110,7 @@ theorem _root_.LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf {T : F �
   convert T.hasStrictFDerivAt.inner ℝ (hasStrictFDerivAt_id x₀) using 1
   ext y
   rw [ContinuousLinearMap.smul_apply, ContinuousLinearMap.comp_apply, fderivInnerCLM_apply,
-    ContinuousLinearMap.prod_apply, innerSL_apply, id.def, ContinuousLinearMap.id_apply,
+    ContinuousLinearMap.prod_apply, innerSL_apply, id, ContinuousLinearMap.id_apply,
     hT.apply_clm x₀ y, real_inner_comm _ x₀, two_smul]
 #align linear_map.is_symmetric.has_strict_fderiv_at_re_apply_inner_self LinearMap.IsSymmetric.hasStrictFDerivAt_reApplyInnerSelf
 
@@ -252,8 +252,8 @@ theorem hasEigenvalue_iSup_of_finiteDimensional (hT : T.IsSymmetric) :
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMaxOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
-    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne.def, not_false_iff]
-    simpa [← norm_eq_zero, Ne.def]
+    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
+    simpa [← norm_eq_zero, Ne]
   exact hasEigenvalue_of_hasEigenvector (T'.prop.hasEigenvector_of_isMaxOn hx₀_ne this)
 #align linear_map.is_symmetric.has_eigenvalue_supr_of_finite_dimensional LinearMap.IsSymmetric.hasEigenvalue_iSup_of_finiteDimensional
 
@@ -272,8 +272,8 @@ theorem hasEigenvalue_iInf_of_finiteDimensional (hT : T.IsSymmetric) :
   have hx₀ : ‖x₀‖ = ‖x‖ := by simpa using hx₀'
   have : IsMinOn T'.val.reApplyInnerSelf (sphere 0 ‖x₀‖) x₀ := by simpa only [← hx₀] using hTx₀
   have hx₀_ne : x₀ ≠ 0 := by
-    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne.def, not_false_iff]
-    simpa [← norm_eq_zero, Ne.def]
+    have : ‖x₀‖ ≠ 0 := by simp only [hx₀, norm_eq_zero, hx, Ne, not_false_iff]
+    simpa [← norm_eq_zero, Ne]
   exact hasEigenvalue_of_hasEigenvector (T'.prop.hasEigenvector_of_isMinOn hx₀_ne this)
 #align linear_map.is_symmetric.has_eigenvalue_infi_of_finite_dimensional LinearMap.IsSymmetric.hasEigenvalue_iInf_of_finiteDimensional
 

@@ -122,15 +122,15 @@ theorem even_card_odd_degree_vertices [Fintype V] [DecidableRel G.Adj] :
     Even (univ.filter fun v => Odd (G.degree v)).card := by
   classical
     have h := congr_arg (fun n => ↑n : ℕ → ZMod 2) G.sum_degrees_eq_twice_card_edges
-    simp only [ZMod.nat_cast_self, zero_mul, Nat.cast_mul] at h
+    simp only [ZMod.natCast_self, zero_mul, Nat.cast_mul] at h
     rw [Nat.cast_sum, ← sum_filter_ne_zero] at h
     rw [@sum_congr _ _ _ _ (fun v => (G.degree v : ZMod 2)) (fun _v => (1 : ZMod 2)) _ rfl] at h
-    · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne.def] at h
+    · simp only [filter_congr, mul_one, nsmul_eq_mul, sum_const, Ne] at h
       rw [← ZMod.eq_zero_iff_even]
       convert h
       exact ZMod.ne_zero_iff_odd.symm
     · intro v
-      simp only [true_and_iff, mem_filter, mem_univ, Ne.def]
+      simp only [true_and_iff, mem_filter, mem_univ, Ne]
       rw [ZMod.eq_zero_iff_even, ZMod.eq_one_iff_odd, Nat.odd_iff_not_even, imp_self]
       trivial
 #align simple_graph.even_card_odd_degree_vertices SimpleGraph.even_card_odd_degree_vertices
@@ -165,7 +165,7 @@ theorem exists_ne_odd_degree_of_exists_odd_degree [Fintype V] [DecidableRel G.Ad
     rw [hg]
     apply Nat.succ_pos
   rcases card_pos.mp hg' with ⟨w, hw⟩
-  simp only [true_and_iff, mem_filter, mem_univ, Ne.def] at hw
+  simp only [true_and_iff, mem_filter, mem_univ, Ne] at hw
   exact ⟨w, hw⟩
 #align simple_graph.exists_ne_odd_degree_of_exists_odd_degree SimpleGraph.exists_ne_odd_degree_of_exists_odd_degree
 
