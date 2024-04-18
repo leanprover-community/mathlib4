@@ -186,15 +186,17 @@ lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i 
 theorem eigenvalues_eq (i : n) :
     hA.eigenvalues i =
       RCLike.re (star (hA.eigenvectorUnitaryᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorUnitaryᵀ i) := by
+   have ST := hA.spectral_theorem1
+/-
   have := hA.spectral_theorem1
-  rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := hA.eigenvectorMatrixInv)] at this
+  rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := Invertible(hA.eigenvectorUnitary))] at this
   have := congr_arg RCLike.re (congr_fun (congr_fun this i) i)
   rw [diagonal_apply_eq, Function.comp_apply, RCLike.ofReal_re,
     inv_eq_left_inv hA.eigenvectorMatrix_mul_inv, ← conjTranspose_eigenvectorMatrix, mul_mul_apply]
     at this
   exact this.symm
 #align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
-
+-/
 #exit
 
 
