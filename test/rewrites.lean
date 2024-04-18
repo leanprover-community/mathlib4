@@ -2,10 +2,6 @@ import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
 import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
--- Adaptation note:
--- Without `attribute [refl] Eq.refl`, `rw?` isn't effective.
--- I'll move this attribute upstream.
-import Mathlib.Init.Core
 
 -- This is partially duplicative with the tests for `rw?` in Lean.
 -- It's useful to re-test here with a larger environment.
