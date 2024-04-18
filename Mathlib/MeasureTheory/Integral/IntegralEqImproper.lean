@@ -761,8 +761,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
-    apply le_antisymm (le_top)
-    rw [← volume_Ici (a := b)]
+    rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
   exact (Completion.uniformEmbedding_coe E).embedding
@@ -938,8 +937,8 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
   suffices ∃ a, Tendsto f atBot (𝓝 a) from tendsto_nhds_limUnder this
   let g := f ∘ (fun x ↦ -x)
   have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
-    intro x (hx : -a < x)
-    have : -x ∈ Iic a := by simp; linarith
+    intro x hx
+    have : -x ∈ Iic a := by simp only [mem_Iic, mem_Ioi, neg_le] at *; exact hx.le
     simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
   have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg

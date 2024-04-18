@@ -50,8 +50,7 @@ abbrev Aₙ : Matrix (Fin n) (Fin n) ℕ :=
       else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2)
 
 theorem AₙIsCoxeter : IsCoxeter (Aₙ n) where
-  symmetric := by
-    simp [Matrix.IsSymm]; aesop
+  symmetric := by simp only [Matrix.IsSymm]; aesop
 
 /-- The Coxeter matrix of family Bₙ.
 
@@ -68,7 +67,7 @@ abbrev Bₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem BₙIsCoxeter : IsCoxeter (Bₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by simp only [Matrix.IsSymm]; aesop
 
 /-- The Coxeter matrix of family Dₙ.
 
@@ -88,7 +87,7 @@ abbrev Dₙ : Matrix (Fin n) (Fin n) ℕ :=
         else (if (j : ℕ) + 1 = i ∨ (i : ℕ) + 1 = j then 3 else 2))
 
 theorem DₙIsCoxeter : IsCoxeter (Dₙ n) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by simp only [Matrix.IsSymm]; aesop
 
 /-- The Coxeter matrix of m-indexed family I₂(m).
 
@@ -102,7 +101,7 @@ abbrev I₂ₘ (m : ℕ) : Matrix (Fin 2) (Fin 2) ℕ :=
   Matrix.of fun i j => if i = j then 1 else m + 2
 
 theorem I₂ₘIsCoxeter (m : ℕ) : IsCoxeter (I₂ₘ m) where
-  symmetric := by simp [Matrix.IsSymm]; aesop
+  symmetric := by simp only [Matrix.IsSymm]; aesop
 
 /-- The Coxeter matrix of system E₆.
 
