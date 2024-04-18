@@ -28,8 +28,6 @@ namespace Nat
 
 variable {m n : ℕ}
 
-lemma pos_of_eq_one (h : n = 1) : 0 < n := by simp[h]
-
 /-- Returns 1 if m and n are equal and 0 otherwise -/
 def isEqNat (n m : ℕ) : ℕ := if n = m then 1 else 0
 
@@ -43,16 +41,16 @@ def isLeNat (n m : ℕ) : ℕ := if n ≤ m then 1 else 0
 def isDvdNat (n m : ℕ) : ℕ := if n ∣ m then 1 else 0
 
 @[simp] lemma isEqNat_pos_iff : 0 < isEqNat n m ↔ n = m := by
-  simp[isEqNat]; by_cases n = m <;> simp[*]
+  by_cases n = m <;> simp [*, isEqNat]
 
 @[simp] lemma isLtNat_pos_iff : 0 < isLtNat n m ↔ n < m := by
-  simp[isLtNat]; by_cases n < m <;> simp[*]
+  by_cases n < m <;> simp [*, isLtNat]
 
 @[simp] lemma isLeNat_pos_iff : 0 < isLeNat n m ↔ n ≤ m := by
-  simp[isLeNat]; by_cases n ≤ m <;> simp[*]
+  by_cases n ≤ m <;> simp [*, isLeNat]
 
 @[simp] lemma isDvdNat_pos_iff : 0 < isDvdNat n m ↔ n ∣ m := by
-  simp[isDvdNat]; by_cases n ∣ m <;> simp[*]
+  by_cases n ∣ m <;> simp [*, isDvdNat]
 
 /-- Returns 1 if n is equal to 0 and 0 otherwise -/
 def inv (n : ℕ) : ℕ := isEqNat n 0
@@ -62,13 +60,13 @@ def pos (n : ℕ) : ℕ := isLtNat 0 n
 
 @[simp] lemma inv_zero : inv 0 = 1 := rfl
 
-@[simp] lemma inv_iff_ne_zero : inv n = 0 ↔ 0 < n := by simp[inv, isEqNat, zero_lt_iff]
+@[simp] lemma inv_iff_ne_zero : inv n = 0 ↔ 0 < n := by simp [inv, isEqNat, zero_lt_iff]
 
-@[simp] lemma inv_ne_zero (h : n ≠ 0) : inv n = 0 := by simp[inv, isEqNat, h]
+@[simp] lemma inv_ne_zero (h : n ≠ 0) : inv n = 0 := by simp [inv, isEqNat, h]
 
 @[simp] lemma pos_zero : pos 0 = 0 := rfl
 
-@[simp] lemma pos_ne_zero (h : n ≠ 0) : pos n = 1 := by simp[pos, isLtNat, h]
+@[simp] lemma pos_ne_zero (h : n ≠ 0) : pos n = 1 := by simp [pos, isLtNat, h]
 
 /-- Returns 1 if m and n are both positive and 0 otherwise -/
 def and (n m : ℕ) : ℕ := isLtNat 0 (n * m)
@@ -76,40 +74,47 @@ def and (n m : ℕ) : ℕ := isLtNat 0 (n * m)
 /-- Returns 1 if either m or n is positive and 0 otherwise -/
 def or (n m : ℕ) : ℕ := isLtNat 0 (n + m)
 
-lemma and_eq (n m : ℕ) : and n m = if 0 < n ∧ 0 < m then 1 else 0 := by simp[and, isLtNat]
+lemma and_eq (n m : ℕ) : and n m = if 0 < n ∧ 0 < m then 1 else 0 := by simp [and, isLtNat]
 
 lemma and_eq_one (n m : ℕ) : and n m = 1 ↔ 0 < n ∧ 0 < m := by
-  simp[and_eq, imp_false, Nat.pos_iff_ne_zero]
+  simp [and_eq, imp_false, Nat.pos_iff_ne_zero]
 
-lemma or_eq (n m : ℕ) : or n m = if 0 < n ∨ 0 < m then 1 else 0 := by simp[or, isLtNat]
+lemma or_eq (n m : ℕ) : or n m = if 0 < n ∨ 0 < m then 1 else 0 := by simp [or, isLtNat]
 
 @[simp] lemma and_pos_iff (n m : ℕ) : 0 < and n m ↔ 0 < n ∧ 0 < m := by
-  simp[and_eq]; by_cases 0 < n ∧ 0 < m <;> simp[*]
+  by_cases 0 < n ∧ 0 < m <;> simp [*, and_eq]
 
 @[simp] lemma or_pos_iff (n m : ℕ) : 0 < or n m ↔ 0 < n ∨ 0 < m := by
-  simp[or_eq]; by_cases 0 < n ∨ 0 < m <;> simp[*]
+  by_cases 0 < n ∨ 0 < m <;> simp [*, or_eq]
 
-@[simp] lemma inv_pos_iff (n : ℕ) : 0 < inv n ↔ ¬0 < n := by simp[inv]
+@[simp] lemma inv_pos_iff (n : ℕ) : 0 < inv n ↔ ¬0 < n := by simp [inv]
 
-@[simp] lemma pos_pos_iff (n : ℕ) : 0 < pos n ↔ 0 < n := by simp[pos]
+@[simp] lemma pos_pos_iff (n : ℕ) : 0 < pos n ↔ 0 < n := by simp [pos]
 
 /-- Bounded universal (for all) quantifier -/
 def ball (n : ℕ) (p : ℕ → ℕ) : ℕ := n.rec 1 (fun n ih => (p n).pos.and ih)
 
 @[simp] lemma ball_pos_iff {p : ℕ → ℕ} {n : ℕ} : 0 < ball n p ↔ ∀ m < n, 0 < p m := by
-  induction' n with n ih <;> simp[ball, Nat.lt_succ_iff] at*
-  · simp[ih]; exact ⟨
-    by rintro ⟨hn, hp⟩ m hm; rcases lt_or_eq_of_le hm with (hm | rfl); {exact hp _ hm };{exact hn },
-    by intro h; exact ⟨h n (Nat.le_refl n), fun m hm => h m (le_of_lt hm)⟩⟩
+  induction n with
+  | zero => simp [ball]
+  | succ n ih =>
+    simp only [ball, and_pos_iff, pos_pos_iff, Nat.lt_succ_iff] at *
+    rw [ih]
+    constructor
+    · rintro ⟨hn, hp⟩ m hm
+      rcases lt_or_eq_of_le hm with (hm | rfl)
+      · exact hp _ hm
+      · exact hn
+    · intro h
+      exact ⟨h n (Nat.le_refl n), fun m hm => h m (le_of_lt hm)⟩
 
 @[simp] lemma ball_eq_zero_iff {p : ℕ → ℕ} {n : ℕ} : ball n p = 0 ↔ ∃ m < n, p m = 0 := by
-  simpa[-ball_pos_iff] using not_iff_not.mpr (ball_pos_iff (p := p) (n := n))
+  simpa [-ball_pos_iff] using ball_pos_iff.not
 
 lemma ball_pos_iff_eq_one {p : ℕ → ℕ} {n : ℕ} : ball n p = 1 ↔ 0 < ball n p := by
-  induction' n with n _ <;> simp[ball, Nat.lt_succ_iff] at*
-  · constructor
-    · intro h; simpa using pos_of_eq_one h
-    · intro h; simpa[and_eq_one] using h
+  cases n with
+  | zero => simp [ball]
+  | succ n => simp [ball, and_eq_one]
 
 /-- Arithmetized partial recursive function -/
 inductive PartArith : ∀ {n}, (Vector ℕ n →. ℕ) → Prop
@@ -140,7 +145,7 @@ variable {n : ℕ} {α β : Type u}
 infixr:70 " :> " => vecCons
 
 lemma comp_vecCons (f : α → β) (a : α) (s : Fin n → α) : (fun x => f $ (a :> s) x) = f a :> f ∘ s :=
-funext (fun i => cases (by simp) (by simp) i)
+  funext (fun i => cases (by simp) (by simp) i)
 
 lemma comp_vecCons' (f : α → β) (a : α) (s : Fin n → α) :
     (fun x => f $ (a :> s) x) = f a :> fun i => f (s i) :=
@@ -157,21 +162,21 @@ open Primrec
 variable {n : ℕ}
 
 lemma to_partrec' {n} {f : Vector ℕ n →. ℕ} (hf : PartArith f) : Partrec' f := by
-  induction hf
-  case zero => exact Partrec'.of_part (Partrec.const' 0)
-  case one  => exact Partrec'.of_part (Partrec.const' 1)
-  case add n i j =>
+  induction hf with
+  | zero => exact Partrec'.of_part (Partrec.const' 0)
+  | one  => exact Partrec'.of_part (Partrec.const' 1)
+  | add i j =>
     exact (Partrec'.of_part ((Primrec.nat_add.comp
       (Primrec.vector_get.comp _root_.Primrec.id (_root_.Primrec.const i))
       (Primrec.vector_get.comp _root_.Primrec.id (_root_.Primrec.const j))).to_comp.partrec))
-  case mul n i j =>
+  | mul i j =>
     exact (Partrec'.of_part ((Primrec.nat_mul.comp
       (Primrec.vector_get.comp _root_.Primrec.id (_root_.Primrec.const i))
       (Primrec.vector_get.comp _root_.Primrec.id (_root_.Primrec.const j))).to_comp.partrec))
-  case proj n i =>
+  | proj i =>
     exact Partrec'.of_part
       (Primrec.vector_get.comp _root_.Primrec.id (_root_.Primrec.const i)).to_comp.partrec
-  case equal n i j =>
+  | @equal n i j =>
     have : Primrec (fun (v : Vector ℕ n) => if v.get i = v.get j then 1 else 0) :=
       Primrec.ite
         (Primrec.eq.comp
@@ -180,7 +185,7 @@ lemma to_partrec' {n} {f : Vector ℕ n →. ℕ} (hf : PartArith f) : Partrec' 
         (_root_.Primrec.const 1)
         (_root_.Primrec.const 0)
     exact Partrec'.of_part this.to_comp.partrec
-  case lt n i j =>
+  | @lt n i j =>
     have : Primrec (fun (v : Vector ℕ n) => if v.get i < v.get j then 1 else 0) :=
       Primrec.ite
         (Primrec.nat_lt.comp
@@ -189,10 +194,8 @@ lemma to_partrec' {n} {f : Vector ℕ n →. ℕ} (hf : PartArith f) : Partrec' 
         (_root_.Primrec.const 1)
         (_root_.Primrec.const 0)
     exact Partrec'.of_part this.to_comp.partrec
-  case comp m n f g _ _ hf hg =>
-    exact Partrec'.comp g hf hg
-  case rfind f _ hf =>
-    exact Partrec'.rfind hf
+  | comp g _ _ hf hg => exact Partrec'.comp g hf hg
+  | rfind _ hf => exact Partrec'.rfind hf
 
 lemma of_eq {n} {f g : Vector ℕ n →. ℕ} (hf : PartArith f) (H : ∀ i, f i = g i) : PartArith g :=
   (funext H : f = g) ▸ hf
@@ -200,21 +203,21 @@ lemma of_eq {n} {f g : Vector ℕ n →. ℕ} (hf : PartArith f) (H : ∀ i, f i
 lemma bind (f : Vector ℕ n → ℕ →. ℕ) (hf : @PartArith (n + 1) fun v => f v.tail v.head) {g}
     (hg : @PartArith n g) : @PartArith n fun v => (g v).bind (f v) :=
   (hf.comp (g :> fun i v => v.get i)
-  (fun i => by cases i using Fin.cases <;> simp[*]; exact proj _)).of_eq (by
-    intro v; simp
+  (fun i => by cases i using Fin.cases <;> simp [*]; exact proj _)).of_eq (by
+    intro v; simp only [coe_some, bind_eq_bind]
     rcases Part.eq_none_or_eq_some (g v) with (hgv | ⟨x, hgv⟩)
-    · simp[hgv, mOfFn]
-    · simp[hgv, Matrix.comp_vecCons']
-      have : mOfFn (fun i => (g :> fun j v => Part.some $ v.get j) i v) = pure (Vector.ofFn
-          (x :> fun j => v.get j)) := by
-        rw[← Vector.mOfFn_pure]; apply congr_arg
-        funext i; cases i using Fin.cases <;> simp[hgv]
-      simp[this])
+    · simp [hgv, mOfFn]
+    · simp [hgv, Matrix.comp_vecCons']
+      have : mOfFn (fun i => (g :> fun j v => Part.some $ v.get j) i v) =
+          pure (Vector.ofFn (x :> fun j => v.get j)) := by
+        rw [← Vector.mOfFn_pure]; apply congr_arg
+        funext i; cases i using Fin.cases <;> simp [hgv]
+      simp [this])
 
 lemma map (f : Vector ℕ n → ℕ → ℕ) (hf : @Arith (n + 1) fun v => f v.tail v.head) {g}
     (hg : @PartArith n g) : @PartArith n fun v => (g v).map (f v) :=
   (bind (Part.some $ f · ·) (hf.of_eq <| by simp) hg).of_eq <| by
-  intro v; rcases Part.eq_none_or_eq_some (g v) with (_ | ⟨x, _⟩) <;> simp[*]
+  intro v; rcases Part.eq_none_or_eq_some (g v) with (_ | ⟨x, _⟩) <;> simp [*]
 
 lemma comp₁ (f : ℕ →. ℕ) (hf : @PartArith 1 fun v => f (v.get 0)) {n g} (hg : @Arith n g) :
     @PartArith n fun v => f (g v) :=
@@ -226,8 +229,8 @@ lemma comp₂ (f : ℕ → ℕ →. ℕ) (hf : @PartArith 2 fun v => f (v.get 0)
     (by intro i
         have : (fun j => (![↑g, h] : Fin 2 → Vector ℕ n →. ℕ) j i) =
             (fun j => pure (![g i, h i] j)) := by
-          funext j; cases j using Fin.cases <;> simp[Fin.eq_zero]
-        simp[Matrix.comp_vecCons']; simp[this] )
+          funext j; cases j using Fin.cases <;> simp [Fin.eq_zero]
+        simp only [get_zero, bind_eq_bind]; simp [this] )
 
 lemma rfind' {n} {f : ℕ → Vector ℕ n → ℕ} (h : Arith (n := n + 1) (fun v => f v.head v.tail)) :
     PartArith (fun v => Nat.rfind fun n => Part.some (f n v = 0)) := rfind h
@@ -277,7 +280,7 @@ protected lemma cons {n m f g} (hf : @Arith n f) (hg : @Vec n m g) :
 
 lemma tail {n f} (hf : @Arith n f) : @Arith n.succ fun v => f v.tail :=
   (hf.comp _ fun i => @proj _ i.succ).of_eq fun v => by
-    rw[← ofFn_get v.tail]; congr; funext i; simp
+    rw [← ofFn_get v.tail]; congr; funext i; simp
 
 lemma comp' {n m f g} (hf : @Arith m f) (hg : @Vec n m g) : Arith fun v => f (g v) :=
   (hf.comp _ hg).of_eq fun v => by simp
@@ -289,7 +292,7 @@ lemma comp₁ (f : ℕ → ℕ) (hf : @Arith 1 fun v => f (v.get 0)) {n g} (hg :
 lemma comp₂ (f : ℕ → ℕ → ℕ) (hf : @Arith 2 fun v => f (v.get 0) (v.get 1)) {n g h}
     (hg : @Arith n g) (hh : @Arith n h) : @Arith n fun v => f (g v) (h v) :=
   (hf.comp ![g, h] (fun i => i.cases hg (fun i => by simpa using hh))).of_eq
-    (by intro i; simp[Matrix.comp_vecCons'])
+    (by intro i; simp [Matrix.comp_vecCons'])
 
 lemma succ {n} (i : Fin n) : Arith (fun v => v.get i + 1) := (add 0 1).comp₂ _ (proj i) one
 
@@ -308,7 +311,7 @@ lemma or {n} (i j : Fin n) : Arith (fun v => or (v.get i) (v.get j)) :=
   (lt 0 1).comp₂ _ zero (add i j)
 
 lemma le {n} (i j : Fin n) : @Arith n (fun v => isLeNat (v.get i) (v.get j)) :=
-  ((or 0 1).comp₂ _ (lt i j) (equal i j)).of_eq <| by simp[Nat.or_eq, Nat.le_iff_lt_or_eq, isLeNat]
+  ((or 0 1).comp₂ _ (lt i j) (equal i j)).of_eq <| by simp [Nat.or_eq, Nat.le_iff_lt_or_eq, isLeNat]
 
 lemma if_pos {n} {f g h : Vector ℕ n → ℕ} (hf : Arith f) (hg : Arith g) (hh : Arith h) :
     Arith (fun v => if 0 < f v then g v else h v) := by
@@ -317,7 +320,7 @@ lemma if_pos {n} {f g h : Vector ℕ n → ℕ} (hf : Arith f) (hg : Arith g) (h
       ((mul 0 1).comp₂ _ ((pos 0).comp₁ _ hf) hg)
       ((mul 0 1).comp₂ _ ((inv 0).comp₁ _ hf) hh)
   exact this.of_eq <| by
-    intro i; by_cases hf : f i = 0 <;> simp[hf, zero_lt_iff]
+    intro i; by_cases hf : f i = 0 <;> simp [hf, zero_lt_iff]
 
 lemma to_Arith {f : Vector ℕ n → ℕ} (h : Arith f) : @PartArith n (fun x => f x) := h
 
