@@ -227,9 +227,7 @@ lemma ContextFreeGrammar.reverse_derives (g : ContextFreeGrammar T) {s : List (S
     obtain ⟨r, rin, rewr⟩ := orig
     simp only [ContextFreeGrammar.reverse, List.mem_map] at rin
     obtain ⟨r₀, rin₀, rfl⟩ := rin
-    use r₀
-    constructor
-    · exact rin₀
+    refine ⟨r₀, rin₀, ?_⟩
     rw [ContextFreeRule.rewrites_iff] at rewr ⊢
     rcases rewr with ⟨p, q, rfl, rfl⟩
     use q.reverse, p.reverse
@@ -251,12 +249,6 @@ theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) 
     apply Set.eq_of_subset_of_subset
     · apply ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language
     · intro w hwg
-      obtain ⟨g₀, rfl⟩ : ∃ g₀ : ContextFreeGrammar T, g = g₀.reverse
-      · use g.reverse
-        rw [ContextFreeGrammar.reverse_reverse]
-      rw [ContextFreeGrammar.reverse_reverse]
-      have finished_modulo_reverses := g₀.reverse_mem_language_of_mem_reverse_language hwg
-      rw [List.reverse_reverse] at finished_modulo_reverses
-      exact finished_modulo_reverses
+      rwa [ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language, ← mem_reverse]
 
 end closure_reversal
