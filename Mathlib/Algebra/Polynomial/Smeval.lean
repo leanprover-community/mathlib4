@@ -263,11 +263,8 @@ end NatPowAssoc
 
 section Neg
 
---variable (R : Type*) [CommRing R] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S]
---variable {S : Type v} [NonAssocRing S] [Pow S ℕ] [NatPowAssoc S]
-
 theorem _root_.Int.cast_neg_nat (G : Type*) [AddGroupWithOne G] (m : ℕ) : -(m : G) = (-m : ℤ) := by
-  rw [neg_eq_iff_add_eq_zero, Int.cast_neg, Int.cast_Nat_cast, add_neg_eq_zero]
+  rw [neg_eq_iff_add_eq_zero, Int.cast_neg, add_neg_eq_zero, ← AddGroupWithOne.intCast_ofNat]
 
 theorem smeval_at_neg_nat (S : Type*) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc S] (q : ℕ[X])
     (n : ℕ) : q.smeval (-(n : S)) = q.smeval (-n : ℤ) := by
@@ -275,8 +272,8 @@ theorem smeval_at_neg_nat (S : Type*) [NonAssocRing S]  [Pow S ℕ] [NatPowAssoc
     simp only [smul_pow, sum_def, Int.cast_sum, Int.cast_mul, Int.cast_npow]
     refine Finset.sum_congr rfl ?_
     intro k _
-    rw [Int.cast_neg_nat, nsmul_eq_mul, ← Int.cast_Nat_cast, ← Int.cast_npow, ← Int.cast_mul,
-      ← nsmul_eq_mul]
+    rw [Int.cast_neg_nat, nsmul_eq_mul, ← AddGroupWithOne.intCast_ofNat, ← Int.cast_npow,
+      ← Int.cast_mul, ← nsmul_eq_mul]
 
 theorem smeval_neg (R : Type*) {S : Type*} [NonAssocRing S] [Pow S ℕ] [Ring R]
     [Module R S] (x : S) (p : R[X]) : (-p).smeval x = - p.smeval x := by
