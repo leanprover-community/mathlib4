@@ -6,7 +6,7 @@ Authors: Yury Kudryashov, Heather Macbeth
 import Mathlib.Analysis.Convex.Cone.Extension
 import Mathlib.Analysis.NormedSpace.RCLike
 import Mathlib.Analysis.NormedSpace.Extend
-import Mathlib.Data.RCLike.Lemmas
+import Mathlib.Analysis.RCLike.Lemmas
 
 #align_import analysis.normed_space.hahn_banach.extension from "leanprover-community/mathlib"@"915591b2bb3ea303648db07284a161a7f2a9e3d4"
 
@@ -103,7 +103,7 @@ theorem exists_extension_norm_eq (p : Subspace 𝕜 E) (f : p →L[𝕜] 𝕜) :
   · calc
       ‖g.extendTo𝕜‖ = ‖g‖ := g.norm_extendTo𝕜
       _ = ‖fr‖ := hnormeq
-      _ ≤ ‖reCLM‖ * ‖f‖ := (ContinuousLinearMap.opNorm_comp_le _ _)
+      _ ≤ ‖reCLM‖ * ‖f‖ := ContinuousLinearMap.opNorm_comp_le _ _
       _ = ‖f‖ := by rw [reCLM_norm, one_mul]
   · exact f.opNorm_le_bound g.extendTo𝕜.opNorm_nonneg fun x => h x ▸ g.extendTo𝕜.le_opNorm x
 #align exists_extension_norm_eq exists_extension_norm_eq

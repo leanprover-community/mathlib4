@@ -77,7 +77,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
       _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine' ⟨⟨i₀, hi₀⟩, k, _, by convert ksum, _⟩
-  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne.def, Subtype.coe_mk]
+  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
     intro e _ het
     by_cases hes : e ∈ s
     · have hge : 0 < g e := by
@@ -97,7 +97,7 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) • e := rfl
       _ = t.centerMass f id := by
         simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
-          centerMass, fsum, inv_one, one_smul, id.def]
+          centerMass, fsum, inv_one, one_smul, id]
 #align caratheodory.mem_convex_hull_erase Caratheodory.mem_convexHull_erase
 
 variable {s : Set E} {x : E} (hx : x ∈ convexHull 𝕜 s)

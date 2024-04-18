@@ -269,7 +269,7 @@ class ContinuousSemilinearMapClass (F : Type*) {R S : outParam (Type*)} [Semirin
 #align continuous_semilinear_map_class ContinuousSemilinearMapClass
 
 -- `σ`, `R` and `S` become metavariables, but they are all outparams so it's OK
--- Porting note: was attribute [nolint dangerous_instance]
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
 -- attribute [nolint dangerous_instance] ContinuousSemilinearMapClass.toContinuousMapClass
 
 /-- `ContinuousLinearMapClass F R M M₂` asserts `F` is a type of bundled continuous
@@ -284,7 +284,7 @@ abbrev ContinuousLinearMapClass (F : Type*) (R : outParam (Type*)) [Semiring R]
 /-- Continuous linear equivalences between modules. We only put the type classes that are necessary
 for the definition, although in applications `M` and `M₂` will be topological modules over the
 topological semiring `R`. -/
--- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
+-- Porting note (#5171): linter not ported yet; was @[nolint has_nonempty_instance]
 structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
@@ -888,7 +888,7 @@ instance semiring [ContinuousAdd M₁] : Semiring (M₁ →L[R₁] M₁) where
   natCast_succ n := AddMonoid.nsmul_succ n (1 : M₁ →L[R₁] M₁)
 #align continuous_linear_map.semiring ContinuousLinearMap.semiring
 
-/-- `ContinuousLinearMap.toLinearMap` as a `RingHom`.-/
+/-- `ContinuousLinearMap.toLinearMap` as a `RingHom`. -/
 @[simps]
 def toLinearMapRingHom [ContinuousAdd M₁] : (M₁ →L[R₁] M₁) →+* M₁ →ₗ[R₁] M₁ where
   toFun := toLinearMap
@@ -1258,7 +1258,7 @@ variable (R₁)
 variable [ContinuousSMul R₁ M₁]
 
 /-- Given an element `x` of a topological space `M` over a semiring `R`, the natural continuous
-linear map from `R` to `M` by taking multiples of `x`.-/
+linear map from `R` to `M` by taking multiples of `x`. -/
 def toSpanSingleton (x : M₁) : R₁ →L[R₁] M₁
     where
   toLinearMap := LinearMap.toSpanSingleton R₁ M₁ x
@@ -1350,6 +1350,17 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Subm
 #align continuous_linear_map.infi_ker_proj ContinuousLinearMap.iInf_ker_proj
 
 variable (R φ)
+
+/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
+product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
+def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L[R] ((i : α) → φ (f i)) where
+  toFun := fun v i ↦ v (f i)
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  cont := by continuity
+
+@[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
+    Pi.compRightL R φ f v i = v (f i) := rfl
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
