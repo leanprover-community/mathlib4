@@ -582,7 +582,7 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η]  [DecidableEq
     Pi.orthonormalBasis B j = LinearMap.stdBasis 𝕜 _ j.fst ((B j.fst) j.snd) := by simp
 
 @[simp]
-theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η]  [DecidableEq η] {ι : η → Type*}
+theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) (x : (i : η ) → E i)
     (j : (i : η) × (ι i)) :
