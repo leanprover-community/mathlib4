@@ -252,9 +252,8 @@ theorem Language.IsContextFree.reverse {L : Language T} (CFL : L.IsContextFree) 
     L.reverse.IsContextFree := by
   obtain ⟨g, rfl⟩ := CFL
   use g.reverse
-  apply Set.eq_of_subset_of_subset
-  · apply ContextFreeGrammar.reverse_mem_language_of_mem_reverse_language
-  · intro _ _
-    rwa [ContextFreeGrammar.mem_reverse_language_iff_reverse_mem_language, ← mem_reverse]
+  ext w
+  rw [Language.mem_reverse]
+  exact g.mem_reverse_language_iff_reverse_mem_language w
 
 end closure_reversal
