@@ -61,6 +61,7 @@ def add : W.LeftFraction X Y where
   s := φ.s
   hs := φ.hs
 
+@[simp]
 lemma symm_add : φ.symm.add = φ.add := by
   dsimp [add, symm]
   congr 1
