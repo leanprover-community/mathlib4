@@ -242,6 +242,23 @@ theorem mulSupport_along_fiber_subset (f : α × β → M) (a : α) :
 #align function.mul_support_along_fiber_subset Function.mulSupport_along_fiber_subset
 #align function.support_along_fiber_subset Function.support_along_fiber_subset
 
+@[to_additive]
+theorem mulSupport_in_fiber (f : α × β → M) (a : α) :
+    (mulSupport fun b => f (a, b)) = {b | (a, b) ∈ (mulSupport f)} := rfl
+
+@[to_additive]
+theorem mulSupport_on_image (f : α × β → M) :
+    (mulSupport fun a => (fun b => f (a, b))) = (mulSupport f).image Prod.fst := by
+  refine mulSupport_eq_iff.mpr ?_
+  constructor
+  · intro x hx
+    simp_all only [mem_image, mem_mulSupport, ne_eq, Prod.exists, exists_and_right, exists_eq_right]
+    exact mulSupport_nonempty_iff.mp hx
+  · intro x hx
+    simp_all only [mem_image, mem_mulSupport, ne_eq, Prod.exists, exists_and_right, exists_eq_right,
+      not_exists, not_not]
+    exact rfl
+
 end One
 
 @[to_additive]
