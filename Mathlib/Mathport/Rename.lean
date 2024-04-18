@@ -125,9 +125,8 @@ these reasons, you should use `#align` on any theorem that needs to be renamed f
 -/
 syntax (name := align) "#align " ident ppSpace ident : command
 
-set_option autoImplicit true in
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
-def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
+def ensureUnused {m : Type → Type} [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
   if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"
