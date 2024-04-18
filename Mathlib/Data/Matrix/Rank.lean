@@ -119,6 +119,18 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
+variable {m n R : Type*} [Fintype n] [CommRing R] [DecidableEq n]
+
+@[simp]
+theorem rank_mul_units (A : (Matrix n n R)ˣ) (B : Matrix m n R) :
+    rank (B * (A : Matrix n n R)) = rank B :=
+  rank_mul_eq_left_of_isUnit_det _ _ <| A.isUnit.map detMonoidHom
+
+@[simp]
+theorem rank_units_mul [Fintype m] (A : (Matrix n n R)ˣ) (B : Matrix n m R) :
+    rank ((A : Matrix n n R) * B) = rank B :=
+  rank_mul_eq_right_of_isUnit_det _ _ <| A.isUnit.map detMonoidHom
+
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
     (A : Matrix m m R) : rank (A.submatrix f e) ≤ rank A := by
