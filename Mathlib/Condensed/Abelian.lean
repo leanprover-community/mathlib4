@@ -17,7 +17,7 @@ Condensed abelian groups form an abelian category.
 
 universe u
 
-open CategoryTheory Limits
+open CategoryTheory
 
 /--
 The category of condensed abelian groups, defined as sheaves of abelian groups over
@@ -25,8 +25,5 @@ The category of condensed abelian groups, defined as sheaves of abelian groups o
 -/
 abbrev CondensedAb := Condensed.{u} AddCommGroupCat.{u+1}
 
-noncomputable instance CondensedAb.abelian :
-    CategoryTheory.Abelian CondensedAb.{u} :=
-  letI : PreservesLimits (forget AddCommGroupCat.{u+1}) :=
-    AddCommGroupCat.forgetPreservesLimits.{u+1}
+noncomputable instance CondensedAb.abelian : Abelian CondensedAb.{u} :=
   CategoryTheory.sheafIsAbelian
