@@ -102,7 +102,7 @@ instance [Monad m] : MonadLift m (ContT r m) where
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id.def, run,
+  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
     ContT.monadLift]
 #align cont_t.monad_lift_bind ContT.monadLift_bind
 

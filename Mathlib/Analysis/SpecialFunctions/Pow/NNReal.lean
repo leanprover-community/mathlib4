@@ -128,14 +128,14 @@ theorem sqrt_eq_rpow (x : ℝ≥0) : sqrt x = x ^ (1 / (2 : ℝ)) := by
 #align nnreal.sqrt_eq_rpow NNReal.sqrt_eq_rpow
 
 @[simp, norm_cast]
-theorem rpow_nat_cast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
-  NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_nat_cast x n
-#align nnreal.rpow_nat_cast NNReal.rpow_nat_cast
+theorem rpow_natCast (x : ℝ≥0) (n : ℕ) : x ^ (n : ℝ) = x ^ n :=
+  NNReal.eq <| by simpa only [coe_rpow, coe_pow] using Real.rpow_natCast x n
+#align nnreal.rpow_nat_cast NNReal.rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n : ℕ) :=
-  rpow_nat_cast x n
+  rpow_natCast x n
 
 theorem rpow_two (x : ℝ≥0) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
 #align nnreal.rpow_two NNReal.rpow_two
@@ -563,20 +563,20 @@ theorem rpow_mul (x : ℝ≥0∞) (y z : ℝ) : x ^ (y * z) = (x ^ y) ^ z := by
 #align ennreal.rpow_mul ENNReal.rpow_mul
 
 @[simp, norm_cast]
-theorem rpow_nat_cast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
+theorem rpow_natCast (x : ℝ≥0∞) (n : ℕ) : x ^ (n : ℝ) = x ^ n := by
   cases x
   · cases n <;> simp [top_rpow_of_pos (Nat.cast_add_one_pos _), top_pow (Nat.succ_pos _)]
   · simp [coe_rpow_of_nonneg _ (Nat.cast_nonneg n)]
-#align ennreal.rpow_nat_cast ENNReal.rpow_nat_cast
+#align ennreal.rpow_nat_cast ENNReal.rpow_natCast
 
 @[simp]
 lemma rpow_ofNat (x : ℝ≥0∞) (n : ℕ) [n.AtLeastTwo] :
     x ^ (no_index (OfNat.ofNat n) : ℝ) = x ^ (OfNat.ofNat n) :=
-  rpow_nat_cast x n
+  rpow_natCast x n
 
 @[simp, norm_cast]
-lemma rpow_int_cast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
-  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, rpow_nat_cast, zpow_natCast,
+lemma rpow_intCast (x : ℝ≥0∞) (n : ℤ) : x ^ (n : ℝ) = x ^ n := by
+  cases n <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, rpow_natCast, zpow_natCast,
     Int.cast_negSucc, rpow_neg, zpow_negSucc]
 
 theorem rpow_two (x : ℝ≥0∞) : x ^ (2 : ℝ) = x ^ 2 := rpow_ofNat x 2
@@ -772,7 +772,7 @@ theorem le_rpow_self_of_one_le {x : ℝ≥0∞} {z : ℝ} (hx : 1 ≤ x) (h_one_
 theorem rpow_pos_of_nonneg {p : ℝ} {x : ℝ≥0∞} (hx_pos : 0 < x) (hp_nonneg : 0 ≤ p) : 0 < x ^ p := by
   by_cases hp_zero : p = 0
   · simp [hp_zero, zero_lt_one]
-  · rw [← Ne.def] at hp_zero
+  · rw [← Ne] at hp_zero
     have hp_pos := lt_of_le_of_ne hp_nonneg hp_zero.symm
     rw [← zero_rpow_of_pos hp_pos]
     exact rpow_lt_rpow hx_pos hp_pos
@@ -871,10 +871,10 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   by_cases hp0 : p = 0
   · simp [hp0]
   by_cases hx0 : x = 0
-  · rw [← Ne.def] at hp0
+  · rw [← Ne] at hp0
     have hp_pos : 0 < p := lt_of_le_of_ne hp_nonneg hp0.symm
     simp [hx0, hp_pos, hp_pos.ne.symm]
-  rw [← Ne.def] at hx0
+  rw [← Ne] at hx0
   exact ofReal_rpow_of_pos (hx_nonneg.lt_of_ne hx0.symm)
 #align ennreal.of_real_rpow_of_nonneg ENNReal.ofReal_rpow_of_nonneg
 
@@ -885,22 +885,22 @@ theorem ofReal_rpow_of_nonneg {x p : ℝ} (hx_nonneg : 0 ≤ x) (hp_nonneg : 0 �
   rw [← rpow_mul, inv_mul_cancel hy, rpow_one]
 
 lemma pow_rpow_inv_natCast {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ n) ^ (n⁻¹ : ℝ) = x := by
-  rw [← rpow_nat_cast, ← rpow_mul, mul_inv_cancel (by positivity), rpow_one]
+  rw [← rpow_natCast, ← rpow_mul, mul_inv_cancel (by positivity), rpow_one]
 
 lemma rpow_inv_natCast_pow {n : ℕ} (hn : n ≠ 0) (x : ℝ≥0∞) : (x ^ (n⁻¹ : ℝ)) ^ n = x := by
-  rw [← rpow_nat_cast, ← rpow_mul, inv_mul_cancel (by positivity), rpow_one]
+  rw [← rpow_natCast, ← rpow_mul, inv_mul_cancel (by positivity), rpow_one]
 
 lemma rpow_natCast_mul (x : ℝ≥0∞) (n : ℕ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
-  rw [rpow_mul, rpow_nat_cast]
+  rw [rpow_mul, rpow_natCast]
 
 lemma rpow_mul_natCast (x : ℝ≥0∞) (y : ℝ) (n : ℕ) : x ^ (y * n) = (x ^ y) ^ n := by
-  rw [rpow_mul, rpow_nat_cast]
+  rw [rpow_mul, rpow_natCast]
 
 lemma rpow_intCast_mul (x : ℝ≥0∞) (n : ℤ) (z : ℝ) : x ^ (n * z) = (x ^ n) ^ z := by
-  rw [rpow_mul, rpow_int_cast]
+  rw [rpow_mul, rpow_intCast]
 
 lemma rpow_mul_intCast (x : ℝ≥0∞) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y) ^ n := by
-  rw [rpow_mul, rpow_int_cast]
+  rw [rpow_mul, rpow_intCast]
 
 lemma rpow_left_injective {x : ℝ} (hx : x ≠ 0) : Injective fun y : ℝ≥0∞ ↦ y ^ x :=
   HasLeftInverse.injective ⟨fun y ↦ y ^ x⁻¹, rpow_rpow_inv hx⟩
@@ -927,21 +927,21 @@ end ENNReal
 -- namespace NormNum
 
 -- theorem nnrpow_pos (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c : ℝ≥0) (hb : b = b') (h : a ^ b' = c) :
---     a ^ b = c := by rw [← h, hb, NNReal.rpow_nat_cast]
+--     a ^ b = c := by rw [← h, hb, NNReal.rpow_natCast]
 -- #align norm_num.nnrpow_pos NormNum.nnrpow_pos
 
 -- theorem nnrpow_neg (a : ℝ≥0) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
---   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_nat_cast]
+--   rw [← hc, ← h, hb, NNReal.rpow_neg, NNReal.rpow_natCast]
 -- #align norm_num.nnrpow_neg NormNum.nnrpow_neg
 
 -- theorem ennrpow_pos (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c) :
---     a ^ b = c := by rw [← h, hb, ENNReal.rpow_nat_cast]
+--     a ^ b = c := by rw [← h, hb, ENNReal.rpow_natCast]
 -- #align norm_num.ennrpow_pos NormNum.ennrpow_pos
 
 -- theorem ennrpow_neg (a : ℝ≥0∞) (b : ℝ) (b' : ℕ) (c c' : ℝ≥0∞) (hb : b = b') (h : a ^ b' = c)
 --     (hc : c⁻¹ = c') : a ^ (-b) = c' := by
---   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_nat_cast]
+--   rw [← hc, ← h, hb, ENNReal.rpow_neg, ENNReal.rpow_natCast]
 -- #align norm_num.ennrpow_neg NormNum.ennrpow_neg
 
 -- /-- Evaluate `NNReal.rpow a b` where `a` is a rational numeral and `b` is an integer. -/

@@ -47,7 +47,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   -- Get rid of the easy case `m = 0`
   obtain rfl | m_pos := m.eq_zero_or_pos
   · refine' ⟨⊥, by simp, _, by simpa using hs.symm⟩
-    simp only [Nat.le_zero, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id.def, and_assoc,
+    simp only [le_zero_iff, card_eq_zero, mem_biUnion, exists_prop, mem_filter, id, and_assoc,
       sdiff_eq_empty_iff_subset, subset_iff]
     exact fun x hx a ha =>
       ⟨{a}, mem_map_of_mem _ (P.le hx ha), singleton_subset_iff.2 ha, mem_singleton_self _⟩
@@ -110,9 +110,9 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
   · simp only [mem_insert, forall_eq_or_imp, extend_parts, and_iff_left hR₁, htn, hn]
     exact ite_eq_or_eq _ _ _
   · conv in _ ∈ _ => rw [← insert_erase hu₁]
-    simp only [and_imp, mem_insert, forall_eq_or_imp, Ne.def, extend_parts]
+    simp only [and_imp, mem_insert, forall_eq_or_imp, Ne, extend_parts]
     refine' ⟨_, fun x hx => (card_le_card _).trans <| hR₂ x _⟩
-    · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id.def]
+    · simp only [filter_insert, if_pos htu, biUnion_insert, mem_erase, id]
       obtain rfl | hut := eq_or_ne u t
       · rw [sdiff_eq_empty_iff_subset.2 (subset_union_left _ _)]
         exact bot_le
@@ -121,7 +121,7 @@ theorem equitabilise_aux (hs : a * m + b * (m + 1) = s.card) :
           (hR₂ (u \ t) <| P.mem_avoid.2 ⟨u, hu₁, fun i => hut <| i.antisymm htu, rfl⟩)
       -- Porting note: `not_and` required because `∃ x ∈ s, p x` is defined differently
       simp only [not_exists, not_and, mem_biUnion, and_imp, mem_union, mem_filter, mem_sdiff,
-        id.def, not_or]
+        id, not_or]
       exact fun hi₁ hi₂ hi₃ =>
         ⟨⟨hi₁, hi₂⟩, fun x hx hx' => hi₃ _ hx <| hx'.trans <| sdiff_subset _ _⟩
     · apply sdiff_subset_sdiff Subset.rfl (biUnion_subset_biUnion_of_subset_left _ _)

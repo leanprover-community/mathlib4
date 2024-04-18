@@ -175,9 +175,9 @@ theorem tendsto_nhds_top_iff_nnreal {m : α → ℝ≥0∞} {f : Filter α} :
 theorem tendsto_nhds_top_iff_nat {m : α → ℝ≥0∞} {f : Filter α} :
     Tendsto m f (𝓝 ∞) ↔ ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a :=
   tendsto_nhds_top_iff_nnreal.trans
-    ⟨fun h n => by simpa only [ENNReal.coe_nat] using h n, fun h x =>
+    ⟨fun h n => by simpa only [ENNReal.coe_natCast] using h n, fun h x =>
       let ⟨n, hn⟩ := exists_nat_gt x
-      (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_nat, coe_lt_coe]⟩
+      (h n).mono fun y => lt_trans <| by rwa [← ENNReal.coe_natCast, coe_lt_coe]⟩
 #align ennreal.tendsto_nhds_top_iff_nat ENNReal.tendsto_nhds_top_iff_nat
 
 theorem tendsto_nhds_top {m : α → ℝ≥0∞} {f : Filter α} (h : ∀ n : ℕ, ∀ᶠ a in f, ↑n < m a) :
@@ -437,25 +437,25 @@ theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   simp_rw [Nat.succ_eq_add_one, pow_add, pow_one, continuous_iff_continuousAt]
   intro x
   refine' ENNReal.Tendsto.mul (IH.tendsto _) _ tendsto_id _ <;> by_cases H : x = 0
-  · simp only [H, zero_ne_top, Ne.def, or_true_iff, not_false_iff]
+  · simp only [H, zero_ne_top, Ne, or_true_iff, not_false_iff]
   · exact Or.inl fun h => H (pow_eq_zero h)
-  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or_iff, eq_self_iff_true, not_true, Ne.def,
+  · simp only [H, pow_eq_top_iff, zero_ne_top, false_or_iff, eq_self_iff_true, not_true, Ne,
       not_false_iff, false_and_iff]
-  · simp only [H, true_or_iff, Ne.def, not_false_iff]
+  · simp only [H, true_or_iff, Ne, not_false_iff]
 #align ennreal.continuous_pow ENNReal.continuous_pow
 
 theorem continuousOn_sub :
     ContinuousOn (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) { p : ℝ≥0∞ × ℝ≥0∞ | p ≠ ⟨∞, ∞⟩ } := by
   rw [ContinuousOn]
   rintro ⟨x, y⟩ hp
-  simp only [Ne.def, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
+  simp only [Ne, Set.mem_setOf_eq, Prod.mk.inj_iff] at hp
   exact tendsto_nhdsWithin_of_tendsto_nhds (tendsto_sub (not_and_or.mp hp))
 #align ennreal.continuous_on_sub ENNReal.continuousOn_sub
 
 theorem continuous_sub_left {a : ℝ≥0∞} (a_ne_top : a ≠ ∞) : Continuous (a - ·) := by
   change Continuous (Function.uncurry Sub.sub ∘ (a, ·))
   refine continuousOn_sub.comp_continuous (Continuous.Prod.mk a) fun x => ?_
-  simp only [a_ne_top, Ne.def, mem_setOf_eq, Prod.mk.inj_iff, false_and_iff, not_false_iff]
+  simp only [a_ne_top, Ne, mem_setOf_eq, Prod.mk.inj_iff, false_and_iff, not_false_iff]
 #align ennreal.continuous_sub_left ENNReal.continuous_sub_left
 
 theorem continuous_nnreal_sub {a : ℝ≥0} : Continuous fun x : ℝ≥0∞ => (a : ℝ≥0∞) - x :=
@@ -475,7 +475,7 @@ theorem continuous_sub_right (a : ℝ≥0∞) : Continuous fun x : ℝ≥0∞ =>
   · rw [show (fun x => x - a) = (fun p : ℝ≥0∞ × ℝ≥0∞ => p.fst - p.snd) ∘ fun x => ⟨x, a⟩ by rfl]
     apply ContinuousOn.comp_continuous continuousOn_sub (continuous_id'.prod_mk continuous_const)
     intro x
-    simp only [a_infty, Ne.def, mem_setOf_eq, Prod.mk.inj_iff, and_false_iff, not_false_iff]
+    simp only [a_infty, Ne, mem_setOf_eq, Prod.mk.inj_iff, and_false_iff, not_false_iff]
 #align ennreal.continuous_sub_right ENNReal.continuous_sub_right
 
 protected theorem Tendsto.pow {f : Filter α} {m : α → ℝ≥0∞} {a : ℝ≥0∞} {n : ℕ}
@@ -907,7 +907,7 @@ theorem tsum_const_eq_top_of_ne_zero {α : Type*} [Infinite α] {c : ℝ≥0∞}
     ∑' _ : α, c = ∞ := by
   have A : Tendsto (fun n : ℕ => (n : ℝ≥0∞) * c) atTop (𝓝 (∞ * c)) := by
     apply ENNReal.Tendsto.mul_const tendsto_nat_nhds_top
-    simp only [true_or_iff, top_ne_zero, Ne.def, not_false_iff]
+    simp only [true_or_iff, top_ne_zero, Ne, not_false_iff]
   have B : ∀ n : ℕ, (n : ℝ≥0∞) * c ≤ ∑' _ : α, c := fun n => by
     rcases Infinite.exists_subset_card_eq α n with ⟨s, hs⟩
     simpa [hs] using @ENNReal.sum_le_tsum α (fun _ => c) s
@@ -1057,7 +1057,7 @@ theorem tsum_add_one_eq_top {f : ℕ → ℝ≥0∞} (hf : ∑' n, f n = ∞) (h
 #align ennreal.tsum_add_one_eq_top ENNReal.tsum_add_one_eq_top
 
 /-- A sum of extended nonnegative reals which is finite can have only finitely many terms
-above any positive threshold.-/
+above any positive threshold. -/
 theorem finite_const_le_of_tsum_ne_top {ι : Type*} {a : ι → ℝ≥0∞} (tsum_ne_top : ∑' i, a i ≠ ∞)
     {ε : ℝ≥0∞} (ε_ne_zero : ε ≠ 0) : { i : ι | ε ≤ a i }.Finite := by
   by_contra h
