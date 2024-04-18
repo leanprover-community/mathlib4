@@ -404,6 +404,16 @@ instance (priority := 90) t0Space : T0Space α :=
 
 end PartialOrder
 
+section LinearOrder
+
+variable [LinearOrder α] [TopologicalSpace α] [IsUpper α]
+
+lemma isTopologicalBasis_insert_univ_subbasis :
+    IsTopologicalBasis (insert univ {s : Set α | ∃ a, (Iic a)ᶜ = s}) :=
+  IsLower.isTopologicalBasis_insert_univ_subbasis (α := αᵒᵈ)
+
+end LinearOrder
+
 end IsUpper
 
 instance instIsLowerProd [Preorder α] [TopologicalSpace α] [IsLower α]
