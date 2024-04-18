@@ -8,6 +8,7 @@ import Mathlib.Combinatorics.SimpleGraph.Basic
 import Mathlib.Data.Rat.Cast.Order
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Tactic.GCongr
+import Mathlib.Tactic.NormNum
 import Mathlib.Tactic.Positivity
 import Mathlib.Tactic.Ring
 
@@ -160,7 +161,7 @@ theorem edgeDensity_empty_right (s : Finset α) : edgeDensity r s ∅ = 0 := by
 theorem card_interedges_finpartition_left [DecidableEq α] (P : Finpartition s) (t : Finset β) :
     (interedges r s t).card = ∑ a in P.parts, (interedges r a t).card := by
   classical
-  simp_rw [← P.biUnion_parts, interedges_biUnion_left, id.def]
+  simp_rw [← P.biUnion_parts, interedges_biUnion_left, id]
   rw [card_biUnion]
   exact fun x hx y hy h ↦ interedges_disjoint_left r (P.disjoint hx hy h) _
 #align rel.card_interedges_finpartition_left Rel.card_interedges_finpartition_left

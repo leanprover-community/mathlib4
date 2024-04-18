@@ -112,7 +112,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
     · exact fun x ↦ by positivity
     · rw [integral_mul_left, GaussianFourier.integral_rexp_neg_mul_sq_norm (by positivity)]
       nth_rewrite 2 [← pow_one π]
-      rw [← rpow_nat_cast, ← rpow_nat_cast, ← rpow_sub pi_pos, ← rpow_mul pi_nonneg,
+      rw [← rpow_natCast, ← rpow_natCast, ← rpow_sub pi_pos, ← rpow_mul pi_nonneg,
         ← rpow_add pi_pos]
       ring_nf
       exact rpow_zero _
@@ -123,7 +123,7 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
         zero_lt_one |>.comp A |>.const_mul (π ^ (-finrank ℝ V / 2 : ℝ))
       rw [mul_zero] at B
       convert B using 2 with x
-      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_nat_cast, φ]
+      simp only [neg_mul, one_mul, Function.comp_apply, ← mul_assoc, ← rpow_natCast, φ]
       congr 1
       rw [mul_rpow (by positivity) (by positivity), ← rpow_mul pi_nonneg,
         ← rpow_mul (norm_nonneg _), ← mul_assoc, ← rpow_add pi_pos, mul_comm]
@@ -141,12 +141,12 @@ lemma tendsto_integral_gaussian_smul' (hf : Integrable f) {v : V} (h'f : Continu
   congr
   rw [ofReal_mul, ofReal_mul, ofReal_exp, ← mul_assoc]
   congr
-  · rw [mul_cpow_ofReal_nonneg pi_nonneg hc.le, ← rpow_nat_cast, ← rpow_mul hc.le, mul_comm,
+  · rw [mul_cpow_ofReal_nonneg pi_nonneg hc.le, ← rpow_natCast, ← rpow_mul hc.le, mul_comm,
       ofReal_cpow pi_nonneg, ofReal_cpow hc.le]
     simp [div_eq_inv_mul]
   · norm_cast
     simp only [one_div, norm_smul, Real.norm_eq_abs, mul_pow, _root_.sq_abs, neg_mul, neg_inj,
-      ← rpow_nat_cast, ← rpow_mul hc.le, mul_assoc]
+      ← rpow_natCast, ← rpow_mul hc.le, mul_assoc]
     norm_num
 
 end Real

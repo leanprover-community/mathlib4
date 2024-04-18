@@ -314,6 +314,7 @@ import Mathlib.Algebra.Lie.CartanMatrix
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Classical
+import Mathlib.Algebra.Lie.Derivation.AdjointAction
 import Mathlib.Algebra.Lie.Derivation.Basic
 import Mathlib.Algebra.Lie.DirectSum
 import Mathlib.Algebra.Lie.Engel
@@ -352,6 +353,7 @@ import Mathlib.Algebra.Module.Hom
 import Mathlib.Algebra.Module.Injective
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.Algebra.Module.LinearMap.End
+import Mathlib.Algebra.Module.LinearMap.Polynomial
 import Mathlib.Algebra.Module.LocalizedModule
 import Mathlib.Algebra.Module.MinimalAxioms
 import Mathlib.Algebra.Module.Opposites
@@ -372,7 +374,8 @@ import Mathlib.Algebra.Module.Submodule.Pointwise
 import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.Torsion
 import Mathlib.Algebra.Module.ULift
-import Mathlib.Algebra.Module.Zlattice
+import Mathlib.Algebra.Module.Zlattice.Basic
+import Mathlib.Algebra.Module.Zlattice.Covolume
 import Mathlib.Algebra.MonoidAlgebra.Basic
 import Mathlib.Algebra.MonoidAlgebra.Degree
 import Mathlib.Algebra.MonoidAlgebra.Division
@@ -1345,6 +1348,7 @@ import Mathlib.CategoryTheory.Linear.LinearFunctor
 import Mathlib.CategoryTheory.Linear.Yoneda
 import Mathlib.CategoryTheory.Localization.Adjunction
 import Mathlib.CategoryTheory.Localization.CalculusOfFractions
+import Mathlib.CategoryTheory.Localization.CalculusOfFractions.Fractions
 import Mathlib.CategoryTheory.Localization.Composition
 import Mathlib.CategoryTheory.Localization.Construction
 import Mathlib.CategoryTheory.Localization.Equivalence
@@ -1444,6 +1448,7 @@ import Mathlib.CategoryTheory.Quotient.Preadditive
 import Mathlib.CategoryTheory.Shift.Basic
 import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Shift.Induced
+import Mathlib.CategoryTheory.Shift.InducedShiftSequence
 import Mathlib.CategoryTheory.Shift.Localization
 import Mathlib.CategoryTheory.Shift.Opposite
 import Mathlib.CategoryTheory.Shift.Pullback
@@ -1459,13 +1464,13 @@ import Mathlib.CategoryTheory.Sites.Coherent.Basic
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.CoherentTopology
 import Mathlib.CategoryTheory.Sites.Coherent.Comparison
-import Mathlib.CategoryTheory.Sites.Coherent.CoverDense
 import Mathlib.CategoryTheory.Sites.Coherent.Equivalence
 import Mathlib.CategoryTheory.Sites.Coherent.ExtensiveSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPrecoherent
 import Mathlib.CategoryTheory.Sites.Coherent.ReflectsPreregular
 import Mathlib.CategoryTheory.Sites.Coherent.RegularSheaves
 import Mathlib.CategoryTheory.Sites.Coherent.RegularTopology
+import Mathlib.CategoryTheory.Sites.Coherent.SheafComparison
 import Mathlib.CategoryTheory.Sites.CompatiblePlus
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.ConcreteSheafification
@@ -1861,6 +1866,7 @@ import Mathlib.Data.List.Duplicate
 import Mathlib.Data.List.EditDistance.Bounds
 import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Data.List.EditDistance.Estimator
+import Mathlib.Data.List.Enum
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.GetD
@@ -1919,6 +1925,7 @@ import Mathlib.Data.Matroid.Basic
 import Mathlib.Data.Matroid.Dual
 import Mathlib.Data.Matroid.IndepAxioms
 import Mathlib.Data.Matroid.Init
+import Mathlib.Data.Matroid.Restrict
 import Mathlib.Data.Multiset.Antidiagonal
 import Mathlib.Data.Multiset.Basic
 import Mathlib.Data.Multiset.Bind
@@ -3160,6 +3167,7 @@ import Mathlib.Order.Ideal
 import Mathlib.Order.InitialSeg
 import Mathlib.Order.Interval
 import Mathlib.Order.Irreducible
+import Mathlib.Order.IsWellOrderLimitElement
 import Mathlib.Order.Iterate
 import Mathlib.Order.JordanHolder
 import Mathlib.Order.KrullDimension
@@ -3235,11 +3243,13 @@ import Mathlib.Probability.Kernel.Basic
 import Mathlib.Probability.Kernel.Composition
 import Mathlib.Probability.Kernel.CondDistrib
 import Mathlib.Probability.Kernel.Condexp
-import Mathlib.Probability.Kernel.Disintegration
+import Mathlib.Probability.Kernel.Disintegration.Basic
 import Mathlib.Probability.Kernel.Disintegration.CdfToKernel
 import Mathlib.Probability.Kernel.Disintegration.CondCdf
 import Mathlib.Probability.Kernel.Disintegration.Density
+import Mathlib.Probability.Kernel.Disintegration.Integral
 import Mathlib.Probability.Kernel.Disintegration.MeasurableStieltjes
+import Mathlib.Probability.Kernel.Disintegration.Unique
 import Mathlib.Probability.Kernel.IntegralCompProd
 import Mathlib.Probability.Kernel.Invariance
 import Mathlib.Probability.Kernel.MeasurableIntegral
@@ -3296,7 +3306,8 @@ import Mathlib.RingTheory.Bialgebra
 import Mathlib.RingTheory.Binomial
 import Mathlib.RingTheory.ChainOfDivisors
 import Mathlib.RingTheory.ClassGroup
-import Mathlib.RingTheory.Coalgebra
+import Mathlib.RingTheory.Coalgebra.Basic
+import Mathlib.RingTheory.Coalgebra.Hom
 import Mathlib.RingTheory.Complex
 import Mathlib.RingTheory.Congruence
 import Mathlib.RingTheory.Coprime.Basic
