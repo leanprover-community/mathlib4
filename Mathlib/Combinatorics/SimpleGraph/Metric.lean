@@ -122,15 +122,21 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
+lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v := by
+  apply dist_eq_zero_iff_eq_or_not_reachable.not.mp at h
+  push_neg at h
+  exact h.2
+
+lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
+    ∃ p : G.Walk u v, p.length = G.dist u v :=
+  Reachable.exists_walk_of_dist (Reachable.of_dist_ne_zero h)
+
 /- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
 theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
   refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
-  · have : u ≠ v ∧ G.Reachable u v := by
-      rw [and_iff_not_or_not, ne_eq, not_not, ← Iff.not dist_eq_zero_iff_eq_or_not_reachable, h]
-      apply one_ne_zero
-    obtain ⟨w, hw⟩ := Reachable.exists_walk_of_dist this.2
+  · let ⟨w, hw⟩ := exists_walk_of_dist_ne_zero (ne_zero_of_eq_one h)
     rw [h] at hw
-    apply w.eq_of_length_eq_one hw
+    apply w.adj_of_length_eq_one hw
   · have : (Adj.toWalk h).length = 1 := by rw [Walk.length_cons, Walk.length_nil]
     have : G.dist u v ≤ 1 := by
       rw [← this]
