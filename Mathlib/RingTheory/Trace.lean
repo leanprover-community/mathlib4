@@ -118,8 +118,7 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
-  -- porting note (#10745): was `simp [-coe_lmul_eq_mul]`.
-  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
+  simp [-coe_lmul_eq_mul]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
@@ -143,13 +142,10 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
   cases nonempty_fintype κ
   rw [trace_eq_matrix_trace (b.smul c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   simp only [AlgHom.map_sum, smul_leftMulMatrix, Finset.sum_apply,
-    Matrix.diag]
--- Porting note: the `rw` was inside `simp only`, but it doesn't work anymore.
-  rw [Finset.sum_apply
+    Matrix.diag, Finset.sum_apply
       i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
-  apply Finset.sum_apply
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
@@ -376,7 +372,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
 -- Porting note: the following `letI` was not needed.
-  letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
+  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
@@ -416,7 +412,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x
-  let pb := (adjoin.powerBasis hx)
+  let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
 -- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
@@ -435,7 +431,7 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L)]
     · simp only [algebraMap_eq_smul_one]
--- Porting note: `smul_one_smul` was in the `simp only`.
+      -- Porting note: `smul_one_smul` was in the `simp only`.
       apply smul_one_smul
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,

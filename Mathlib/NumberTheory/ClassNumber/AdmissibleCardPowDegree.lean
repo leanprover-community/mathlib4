@@ -134,7 +134,7 @@ theorem exists_approx_polynomial {b : Fq[X]} (hb : b ≠ 0) {ε : ℝ} (hε : 0 
     rwa [← Real.log_lt_log_iff (Int.cast_pos.mpr (cardPowDegree.pos h')) hbε,
       cardPowDegree_nonzero _ h', cardPowDegree_nonzero _ hb, Algebra.smul_def, eq_intCast,
       Int.cast_pow, Int.cast_natCast, Int.cast_pow, Int.cast_natCast,
-      log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_nat_cast, ← rpow_nat_cast, log_rpow q_pos',
+      log_mul (pow_ne_zero _ q_pos'.ne') hε.ne', ← rpow_natCast, ← rpow_natCast, log_rpow q_pos',
       log_rpow q_pos', ← lt_div_iff (log_pos one_lt_q'), add_div,
       mul_div_cancel_right₀ _ (log_pos one_lt_q').ne']
   -- And that result follows from manipulating the result from `exists_approx_polynomial_aux`
@@ -159,7 +159,7 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   · rwa [← hyz']
   by_cases hxz' : x = z
   · rwa [hxz', sub_self, map_zero]
-  rw [← Ne.def, ← sub_ne_zero] at hxy' hyz' hxz'
+  rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
   refine' lt_of_le_of_lt _ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']

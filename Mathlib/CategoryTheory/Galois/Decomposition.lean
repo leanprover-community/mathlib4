@@ -150,7 +150,7 @@ lemma connected_component_unique {X A B : C} [IsConnected A] [IsConnected B] (a 
   have hn : IsInitial Y → False := not_initial_of_inhabited F y
   have : IsIso u := IsConnected.noTrivialComponent Y u hn
   have : IsIso v := IsConnected.noTrivialComponent Y v hn
-  use ((asIso u).symm ≪≫ asIso v)
+  use (asIso u).symm ≪≫ asIso v
   have hu : G.map u y = a := by
     simp only [y, e, ← PreservesPullback.iso_hom_fst G, fiberPullbackEquiv, Iso.toEquiv_comp,
       Equiv.symm_trans_apply, Iso.toEquiv_symm_fun, types_comp_apply, inv_hom_id_apply]

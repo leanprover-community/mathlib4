@@ -881,7 +881,7 @@ lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
 lemma toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.ofNonnegIff'
+  StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)

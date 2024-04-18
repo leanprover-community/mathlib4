@@ -191,7 +191,7 @@ jobs:
             request = {
                 'type': 'stream',
                 'to': 'nightly-testing',
-                'topic': 'Mathlib status update',
+                'topic': 'Mathlib bump branch reminders',
                 'content': f"🛠️: it looks like it's time to create a new bump/nightly-{current_version} branch from nightly-testing, and then PR that to {bump_branch}."
             }
             result = client.send_message(request)

@@ -758,7 +758,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
         dist_triangle_right _ _ _
       _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
-      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := (add_le_add (A x n) (A y n))
+      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
     have : ∀ n : ℕ, ∃ j, y ∈ closedBall (u j) ((1 / 2) ^ n) := fun n ↦ by
