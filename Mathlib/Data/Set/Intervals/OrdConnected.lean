@@ -292,25 +292,15 @@ protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) 
     rwa [hz]⟩
 #align is_antichain.ord_connected IsAntichain.ordConnected
 
-lemma ordConnected_inter_Icc_of_subset (h : Ioo x y ⊆ s) : OrdConnected (s ∩ Icc x y) := by
-  simp_rw [ordConnected_iff]
-  intros u hu v hv _huv w hw
-  have h2w : w ∈ Icc x y := ⟨hu.2.1.trans hw.1, hw.2.trans hv.2.2⟩
-  refine ⟨?_, h2w⟩
-  by_cases hwu : w = u
-  · subst w; exact hu.1
-  by_cases hwv : w = v
-  · subst w; exact hv.1
-  refine h ⟨h2w.1.lt_of_ne ?_, h2w.2.lt_of_ne ?_⟩
-  · rintro rfl; exact hwu <| hu.2.1.antisymm hw.1
-  · rintro rfl; exact hwv <| hw.2.antisymm hv.2.2
+lemma ordConnected_inter_Icc_of_subset (h : Ioo x y ⊆ s) : OrdConnected (s ∩ Icc x y) :=
+  ordConnected_of_Ioo fun _u ⟨_, hu, _⟩ _v ⟨_, _, hv⟩ _ ↦
+    Ioo_subset_Ioo hu hv |>.trans <| subset_inter h Ioo_subset_Icc_self
 
 lemma ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
     OrdConnected (s ∩ Icc x y) ↔ Ioo x y ⊆ s := by
-  refine ⟨fun h z hz ↦ ?_, ordConnected_inter_Icc_of_subset⟩
-  simp_rw [ordConnected_iff] at h
-  have hxy : x ≤ y := hz.1.trans hz.2 |>.le
-  exact h x ⟨hx, le_rfl, hxy⟩ y ⟨hy, hxy, le_rfl⟩ hxy ⟨hz.1.le, hz.2.le⟩ |>.1
+  refine ⟨fun h ↦ Ioo_subset_Icc_self.trans fun z hz ↦ ?_, ordConnected_inter_Icc_of_subset⟩
+  have hxy : x ≤ y := hz.1.trans hz.2
+  exact h.out ⟨hx, left_mem_Icc.2 hxy⟩ ⟨hy, right_mem_Icc.2 hxy⟩ hz |>.1
 
 lemma not_ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
     ¬ OrdConnected (s ∩ Icc x y) ↔ ∃ z ∉ s, z ∈ Ioo x y := by
