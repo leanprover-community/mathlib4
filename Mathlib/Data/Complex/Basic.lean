@@ -495,6 +495,7 @@ end
 
 /-! ### Cast lemmas -/
 
+noncomputable instance instNNRatCast : NNRatCast ℂ where nnratCast q := ofReal' q
 noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
 
 -- See note [no_index around OfNat.ofNat]
@@ -502,6 +503,7 @@ noncomputable instance instRatCast : RatCast ℂ where ratCast q := ofReal' q
     ofReal' (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
 @[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ofReal' n = n := rfl
 @[simp, norm_cast] lemma ofReal_intCast (n : ℤ) : ofReal' n = n := rfl
+@[simp, norm_cast] lemma ofReal_nnratCast (q : ℚ≥0) : ofReal' q = q := rfl
 @[simp, norm_cast] lemma ofReal_ratCast (q : ℚ) : ofReal' q = q := rfl
 #align complex.of_real_nat_cast Complex.ofReal_natCast
 #align complex.of_real_int_cast Complex.ofReal_intCast
@@ -515,6 +517,8 @@ lemma re_ofNat (n : ℕ) [n.AtLeastTwo] : (no_index (OfNat.ofNat n) : ℂ).re = 
 @[simp, norm_cast] lemma natCast_im (n : ℕ) : (n : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma intCast_re (n : ℤ) : (n : ℂ).re = n := rfl
 @[simp, norm_cast] lemma intCast_im (n : ℤ) : (n : ℂ).im = 0 := rfl
+@[simp, norm_cast] lemma re_nnratCast (q : ℚ≥0) : (q : ℂ).re = q := rfl
+@[simp, norm_cast] lemma im_nnratCast (q : ℚ≥0) : (q : ℂ).im = 0 := rfl
 @[simp, norm_cast] lemma ratCast_re (q : ℚ) : (q : ℂ).re = q := rfl
 @[simp, norm_cast] lemma ratCast_im (q : ℚ) : (q : ℂ).im = 0 := rfl
 #align complex.nat_cast_re Complex.natCast_re
@@ -818,10 +822,16 @@ lemma div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / n
 noncomputable instance instField : Field ℂ where
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero
-  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
+  nnqsmul := (· • ·)
   qsmul := (· • ·)
+  nnratCast_def q := by ext <;> simp [NNRat.cast_def, div_re, div_im, mul_div_mul_comm]
+  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
+  nnqsmul_def n z := ext_iff.2 <| by simp [NNRat.smul_def, smul_re, smul_im]
   qsmul_def n z := ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 #align complex.field Complex.instField
+
+@[simp, norm_cast]
+lemma ofReal_nnqsmul (q : ℚ≥0) (r : ℝ) : ofReal' (q • r) = q • r := by simp [NNRat.smul_def]
 
 @[simp, norm_cast]
 lemma ofReal_qsmul (q : ℚ) (r : ℝ) : ofReal' (q • r) = q • r := by simp [Rat.smul_def]

@@ -352,6 +352,10 @@ theorem star_intCast [Ring R] [StarRing R] (z : ℤ) : star (z : R) = z :=
 #align star_int_cast star_intCast
 
 @[simp, norm_cast]
+lemma star_nnratCast [DivisionSemiring R] [StarRing R] (q : ℚ≥0) : star (q : R) = q :=
+  (congr_arg unop <| map_nnratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) q).trans (unop_nnratCast _)
+
+@[simp, norm_cast]
 theorem star_ratCast [DivisionRing R] [StarRing R] (r : ℚ) : star (r : R) = r :=
   (congr_arg unop <| map_ratCast (starRingEquiv : R ≃+* Rᵐᵒᵖ) r).trans (unop_ratCast _)
 #align star_rat_cast star_ratCast

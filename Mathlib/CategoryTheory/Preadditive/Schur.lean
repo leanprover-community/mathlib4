@@ -58,25 +58,20 @@ theorem isIso_iff_nonzero [HasKernels C] {X Y : C} [Simple X] [Simple Y] (f : X 
    fun w => isIso_of_hom_simple w⟩
 #align category_theory.is_iso_iff_nonzero CategoryTheory.isIso_iff_nonzero
 
+open scoped Classical in
 /-- In any preadditive category with kernels,
-the endomorphisms of a simple object form a division ring.
--/
-noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) := by
-  classical exact
-    { (inferInstance : Ring (End X)) with
-      inv := fun f =>
-        if h : f = 0 then 0
-        else
-          haveI := isIso_of_hom_simple h
-          inv f
-      exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
-      inv_zero := dif_pos rfl
-      mul_inv_cancel := fun f h => by
-        dsimp
-        rw [dif_neg h]
-        haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f
-      qsmul := qsmulRec _ }
+the endomorphisms of a simple object form a division ring. -/
+noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) where
+  inv f := if h : f = 0 then 0 else haveI := isIso_of_hom_simple h; inv f
+  exists_pair_ne := ⟨𝟙 X, 0, id_nonzero _⟩
+  inv_zero := dif_pos rfl
+  mul_inv_cancel f hf := by
+    dsimp
+    rw [dif_neg hf]
+    haveI := isIso_of_hom_simple hf
+    exact IsIso.inv_hom_id f
+  nnqsmul := _
+  qsmul := _
 
 open FiniteDimensional
 

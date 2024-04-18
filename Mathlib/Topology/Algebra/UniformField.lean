@@ -153,14 +153,13 @@ theorem mul_hatInv_cancel {x : hat K} (x_ne : x ≠ 0) : x * hatInv x = 1 := by
   rwa [closure_singleton, mem_singleton_iff] at fxclo
 #align uniform_space.completion.mul_hat_inv_cancel UniformSpace.Completion.mul_hatInv_cancel
 
-instance instField : Field (hat K) :=
-  { Completion.instInvCompletion,
-    (by infer_instance : CommRing (hat K)) with
-    exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
-    mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
-    inv_zero := by simp only [Inv.inv, ite_true]
-    -- TODO: use a better defeq
-    qsmul := qsmulRec _ }
+instance instField : Field (hat K) where
+  exists_pair_ne := ⟨0, 1, fun h => zero_ne_one ((uniformEmbedding_coe K).inj h)⟩
+  mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
+  inv_zero := by simp only [Inv.inv, ite_true]
+  -- TODO: use a better defeq
+  nnqsmul := _
+  qsmul := _
 #align uniform_space.completion.field UniformSpace.Completion.instField
 
 instance : TopologicalDivisionRing (hat K) :=

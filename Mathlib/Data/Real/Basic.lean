@@ -172,10 +172,12 @@ theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
 
 instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
 instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
+instance instNNRatCast : NNRatCast ℝ where nnratCast q := ⟨q⟩
 instance instRatCast : RatCast ℝ where ratCast q := ⟨q⟩
 
 lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
 lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
+lemma ofCauchy_nnratCast (q : ℚ≥0) : (⟨q⟩ : ℝ) = q := rfl
 lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 #align real.of_cauchy_nat_cast Real.ofCauchy_natCast
 #align real.of_cauchy_int_cast Real.ofCauchy_intCast
@@ -183,6 +185,7 @@ lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 
 lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
 lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
+lemma cauchy_nnratCast (q : ℚ≥0) : (q : ℝ).cauchy = q := rfl
 lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_nat_cast Real.cauchy_natCast
 #align real.cauchy_int_cast Real.cauchy_intCast
@@ -573,9 +576,12 @@ noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
       Ne, ofCauchy.injEq] at *
     exact CauSeq.Completion.inv_mul_cancel h
   inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
+  nnqsmul := _
+  qsmul := _
+  nnratCast_def q := by
+    rw [← ofCauchy_nnratCast, NNRat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_natCast]
   ratCast_def q := by
     rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
-  qsmul := _
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance

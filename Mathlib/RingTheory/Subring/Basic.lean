@@ -758,7 +758,7 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 #align subring.center_eq_top Subring.center_eq_top
 
 /-- The center is commutative. -/
-instance : CommRing (center R) :=
+instance instCommRing : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
 end
@@ -767,15 +767,16 @@ section DivisionRing
 
 variable {K : Type u} [DivisionRing K]
 
-instance : Field (center K) :=
-  { inferInstanceAs (CommRing (center K)) with
-    inv := fun a => ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
-    mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
-    div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
-    div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
-    inv_zero := Subtype.ext inv_zero
-    -- TODO: use a nicer defeq
-    qsmul := qsmulRec _ }
+instance instField : Field (center K) where
+  __ := instCommRing
+  inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
+  mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
+  div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
+  div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
+  inv_zero := Subtype.ext inv_zero
+  -- TODO: use a nicer defeq
+  nnqsmul := _
+  qsmul := _
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=

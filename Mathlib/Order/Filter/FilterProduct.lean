@@ -49,6 +49,7 @@ instance groupWithZero [GroupWithZero β] : GroupWithZero β* :=
 instance divisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := Germ.semiring
   __ := Germ.groupWithZero
+  nnqsmul := _
 
 instance divisionRing [DivisionRing β] : DivisionRing β* :=
   { Germ.ring, Germ.divisionSemiring with qsmul := qsmulRec _ }

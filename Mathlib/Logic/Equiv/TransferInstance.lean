@@ -560,10 +560,15 @@ protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) :
 noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink.{v} α) :=
   Equiv.isDomain  (Shrink.ringEquiv α)
 
+/-- Transfer `NNRatCast` across an `Equiv` -/
+@[reducible] protected def nnratCast [NNRatCast β] : NNRatCast α where nnratCast q := e.symm q
+
 /-- Transfer `RatCast` across an `Equiv` -/
-@[reducible]
-protected def ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
+@[reducible] protected def ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
 #align equiv.has_rat_cast Equiv.ratCast
+
+noncomputable instance _root_.Shrink.instNNRatCast [Small.{v} α] [NNRatCast α] :
+    NNRatCast (Shrink.{v} α) := (equivShrink α).symm.nnratCast
 
 noncomputable instance _root_.Shrink.instRatCast [Small.{v} α] [RatCast α] :
     RatCast (Shrink.{v} α) := (equivShrink α).symm.ratCast
@@ -577,7 +582,9 @@ protected def divisionRing [DivisionRing β] : DivisionRing α := by
   let mul := e.mul
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
+  let nnratCast := e.nnratCast
   let ratCast := e.ratCast
+  let nnqsmul := e.smul ℚ≥0
   let qsmul := e.smul ℚ
   apply e.injective.divisionRing _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.division_ring Equiv.divisionRing
@@ -595,7 +602,9 @@ protected def field [Field β] : Field α := by
   let mul := e.mul
   let npow := e.pow ℕ
   let zpow := e.pow ℤ
+  let nnratCast := e.nnratCast
   let ratCast := e.ratCast
+  let nnqsmul := e.smul ℚ≥0
   let qsmul := e.smul ℚ
   apply e.injective.field _ <;> intros <;> exact e.apply_symm_apply _
 #align equiv.field Equiv.field

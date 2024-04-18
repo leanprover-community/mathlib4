@@ -17,23 +17,31 @@ variable {α : Type*}
 
 namespace MulOpposite
 
+@[to_additive] instance instNNRatCast [NNRatCast α] : NNRatCast αᵐᵒᵖ := ⟨fun q ↦ op q⟩
 @[to_additive] instance instRatCast [RatCast α] : RatCast αᵐᵒᵖ := ⟨fun q ↦ op q⟩
 
 @[to_additive (attr := simp, norm_cast)]
-theorem op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q :=
-  rfl
+lemma op_nnratCast [NNRatCast α] (q : ℚ≥0) : op (q : α) = q := rfl
+
+@[to_additive (attr := simp, norm_cast)]
+lemma unop_nnratCast [NNRatCast α] (q : ℚ≥0) : unop (q : αᵐᵒᵖ) = q := rfl
+
+@[to_additive (attr := simp, norm_cast)]
+lemma op_ratCast [RatCast α] (q : ℚ) : op (q : α) = q := rfl
 #align mul_opposite.op_rat_cast MulOpposite.op_ratCast
 #align add_opposite.op_rat_cast AddOpposite.op_ratCast
 
 @[to_additive (attr := simp, norm_cast)]
-theorem unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q :=
-  rfl
+lemma unop_ratCast [RatCast α] (q : ℚ) : unop (q : αᵐᵒᵖ) = q := rfl
 #align mul_opposite.unop_rat_cast MulOpposite.unop_ratCast
 #align add_opposite.unop_rat_cast AddOpposite.unop_ratCast
 
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵐᵒᵖ where
   __ := instSemiring
   __ := instGroupWithZero
+  nnqsmul := _
+  nnratCast_def q := unop_injective $ by rw [unop_nnratCast, unop_div, unop_natCast, unop_natCast,
+    NNRat.cast_def, div_eq_mul_inv, Nat.cast_comm]
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵐᵒᵖ where
   __ := instRing
@@ -57,6 +65,9 @@ namespace AddOpposite
 instance instDivisionSemiring [DivisionSemiring α] : DivisionSemiring αᵃᵒᵖ where
   __ := instSemiring
   __ := instGroupWithZero
+  nnqsmul := _
+  nnratCast_def q := unop_injective $ by rw [unop_nnratCast, unop_div, unop_natCast, unop_natCast,
+    NNRat.cast_def, div_eq_mul_inv]
 
 instance instDivisionRing [DivisionRing α] : DivisionRing αᵃᵒᵖ where
   __ := instRing
