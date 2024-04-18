@@ -20,10 +20,10 @@ variable {C : Type*} [Category C] (P Q : C → Prop)
 /-- A predicate `C → Prop` on the objects of a category is closed under isomorphisms
 if whenever `P X`, then all the objects `Y` that are isomorphic to `X` also satisfy `P Y`. -/
 class ClosedUnderIsomorphisms : Prop where
-  mem_of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
+  of_iso {X Y : C} (_ : X ≅ Y) (_ : P X) : P Y
 
 lemma mem_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) (hX : P X) : P Y :=
-  ClosedUnderIsomorphisms.mem_of_iso e hX
+  ClosedUnderIsomorphisms.of_iso e hX
 
 lemma mem_iff_of_iso [ClosedUnderIsomorphisms P] {X Y : C} (e : X ≅ Y) : P X ↔ P Y :=
   ⟨mem_of_iso P e, mem_of_iso P e.symm⟩
@@ -63,7 +63,7 @@ lemma isoClosure_le_iff [ClosedUnderIsomorphisms Q] : isoClosure P ≤ Q ↔ P �
     fun h => (monotone_isoClosure h).trans (by rw [isoClosure_eq_self])⟩
 
 instance : ClosedUnderIsomorphisms (isoClosure P) where
-  mem_of_iso := by
+  of_iso := by
     rintro X Y e ⟨Z, hZ, ⟨f⟩⟩
     exact ⟨Z, hZ, ⟨e.symm.trans f⟩⟩
 

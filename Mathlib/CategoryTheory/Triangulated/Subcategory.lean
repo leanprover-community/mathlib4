@@ -94,7 +94,7 @@ def mk' : Subcategory C where
   ext₂' T hT h₁ h₃ := le_isoClosure P _ (ext₂ T hT h₁ h₃)
 
 instance : ClosedUnderIsomorphisms (mk' P zero shift ext₂).P where
-  mem_of_iso {X Y} e hX := by
+  of_iso {X Y} e hX := by
     refine' ext₂ (Triangle.mk e.hom (0 : Y ⟶ 0) 0) _ hX zero
     refine' isomorphic_distinguished _ (contractible_distinguished X) _ _
     exact Triangle.isoMk _ _ (Iso.refl _) e.symm (Iso.refl _)
