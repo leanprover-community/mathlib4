@@ -79,8 +79,7 @@ theorem one_of_isUnit {x : O} (hx : IsUnit x) : v (algebraMap O R x) = 1 :=
 theorem one_of_isUnit' {x : O} (hx : IsUnit x) (H : ∀ x, v (algebraMap O R x) ≤ 1) :
     v (algebraMap O R x) = 1 :=
   let ⟨u, hu⟩ := hx
-  le_antisymm (H _) <|
-    by
+  le_antisymm (H _) <| by
     rw [← v.map_one, ← (algebraMap O R).map_one, ← u.mul_inv, ← mul_one (v (algebraMap O R x)), hu,
       (algebraMap O R).map_mul, v.map_mul]
     exact mul_le_mul_left' (H (u⁻¹ : Units O)) _
