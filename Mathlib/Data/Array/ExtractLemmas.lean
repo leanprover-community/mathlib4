@@ -5,7 +5,7 @@ Authors: Jiecheng Zhao
 -/
 import Std.Data.Array.Lemmas
 /-!
-# lemmas about Array.extract
+# Lemmas about `Array.extract`
 
 Some useful lemmas about Array.extract
 -/
