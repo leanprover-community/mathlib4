@@ -196,3 +196,8 @@ info: [notation3] syntax declaration has name Test.termδNat
 #guard_msgs in
 set_option trace.notation3 true in
 notation3 "δNat" => (default : Nat)
+
+/-- info: δNat : ℕ -/
+#guard_msgs in #check (default : Nat)
+/-- info: δNat : ℕ -/
+#guard_msgs in #check @default Nat (Inhabited.mk 5)
