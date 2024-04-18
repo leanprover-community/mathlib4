@@ -167,7 +167,7 @@ theorem natDegree_expand (p : ℕ) (f : R[X]) : (expand R p f).natDegree = f.nat
       erw [WithBot.coe_le_coe, ← Nat.div_mul_cancel hpn]
       exact Nat.mul_le_mul_right p hn
     · rfl
-  · refine' le_degree_of_ne_zero _
+  · apply le_degree_of_ne_zero
     erw [coeff_expand_mul hp, ← leadingCoeff]
     exact mt leadingCoeff_eq_zero.1 hf
 #align polynomial.nat_degree_expand Polynomial.natDegree_expand

@@ -1183,7 +1183,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     · norm_num
       exact pow_pos hε _
     rw [sub_sub_cancel]
-    refine' le_sqrt_of_sq_le _
+    apply le_sqrt_of_sq_le
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
@@ -1921,7 +1921,7 @@ theorem Orthonormal.inner_products_summable (hv : Orthonormal 𝕜 v) :
   apply hasSum_of_isLUB_of_nonneg
   · intro b
     simp only [norm_nonneg, pow_nonneg]
-  · refine' isLUB_ciSup _
+  · apply isLUB_ciSup
     use ‖x‖ ^ 2
     rintro y ⟨s, rfl⟩
     exact hv.sum_inner_products_le x

@@ -311,7 +311,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
-    refine' collinear_insert_of_mem_affineSpan_pair _
+    apply collinear_insert_of_mem_affineSpan_pair
     rw [← hPQ]
     exact right_mem_affineSpan_pair _ _ _
   have ha : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.Q₁ cfg.Q := by

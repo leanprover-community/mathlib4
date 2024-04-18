@@ -1139,7 +1139,7 @@ theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
   refine' le_antisymm _ _
   · refine' le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => _
     apply sInf_le hμ
-  · refine' le_sInf _
+  · apply le_sInf
     intro μ hμ t
     exact le_trans (boundedBy_le t) (iInf₂_le μ hμ)
 #align measure_theory.outer_measure.Inf_eq_bounded_by_Inf_gen MeasureTheory.OuterMeasure.sInf_eq_boundedBy_sInfGen
@@ -1389,7 +1389,7 @@ end Subadditive
 section Mono
 
 theorem extend_mono' ⦃s₁ s₂ : Set α⦄ (h₁ : P s₁) (hs : s₁ ⊆ s₂) : extend m s₁ ≤ extend m s₂ := by
-  refine' le_iInf _
+  apply le_iInf
   intro h₂
   rw [extend_eq m h₁]
   exact m_mono h₁ h₂ hs
@@ -1462,12 +1462,12 @@ theorem inducedOuterMeasure_eq_iInf (s : Set α) :
     intro t ht hs
     refine' le_trans (mono' _ hs) _
     exact le_of_eq (inducedOuterMeasure_eq' _ msU m_mono _)
-  · refine' le_iInf _
+  · apply le_iInf
     intro f
-    refine' le_iInf _
+    apply le_iInf
     intro hf
     refine' le_trans _ (extend_iUnion_le_tsum_nat' _ msU _)
-    refine' le_iInf _
+    apply le_iInf
     intro h2f
     exact iInf_le_of_le _ (iInf_le_of_le h2f <| iInf_le _ hf)
 #align measure_theory.induced_outer_measure_eq_infi MeasureTheory.inducedOuterMeasure_eq_iInf
@@ -1512,11 +1512,11 @@ theorem inducedOuterMeasure_caratheodory (s : Set α) :
     exact h t
   · intro h u
     conv_rhs => rw [inducedOuterMeasure_eq_iInf _ msU m_mono]
-    refine' le_iInf _
+    apply le_iInf
     intro t
-    refine' le_iInf _
+    apply le_iInf
     intro ht
-    refine' le_iInf _
+    apply le_iInf
     intro h2t
     refine' le_trans _ (le_trans (h t ht) <| le_of_eq <| inducedOuterMeasure_eq' _ msU m_mono ht)
     refine'

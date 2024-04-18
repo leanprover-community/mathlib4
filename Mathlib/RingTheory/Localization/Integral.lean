@@ -191,7 +191,7 @@ theorem RingHom.isIntegralElem_localization_at_leadingCoeff {R S : Type*} [CommR
   haveI : Nontrivial Rₘ := nontrivial_of_ne 1 0 triv
   obtain ⟨b, hb⟩ := isUnit_iff_exists_inv.mp (map_units Rₘ ⟨p.leadingCoeff, hM⟩)
   refine' ⟨p.map (algebraMap R Rₘ) * C b, ⟨_, _⟩⟩
-  · refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
+  · apply monic_mul_C_of_leadingCoeff_mul_eq_one
     rwa [leadingCoeff_map_of_leadingCoeff_ne_zero (algebraMap R Rₘ)]
     refine' fun hfp => zero_ne_one
       (_root_.trans (zero_mul b).symm (hfp ▸ hb) : (0 : Rₘ) = 1)

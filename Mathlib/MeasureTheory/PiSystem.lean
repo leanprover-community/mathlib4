@@ -471,7 +471,7 @@ theorem piiUnionInter_mono_right {π : ι → Set (Set α)} {S T : Set ι} (hST 
 
 theorem generateFrom_piiUnionInter_le {m : MeasurableSpace α} (π : ι → Set (Set α))
     (h : ∀ n, generateFrom (π n) ≤ m) (S : Set ι) : generateFrom (piiUnionInter π S) ≤ m := by
-  refine' generateFrom_le _
+  apply generateFrom_le
   rintro t ⟨ht_p, _, ft, hft_mem_pi, rfl⟩
   refine' Finset.measurableSet_biInter _ fun x hx_mem => (h x) _ _
   exact measurableSet_generateFrom (hft_mem_pi x hx_mem)

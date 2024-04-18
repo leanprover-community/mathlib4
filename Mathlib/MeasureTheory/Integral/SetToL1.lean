@@ -1512,7 +1512,7 @@ theorem tendsto_setToFun_of_L1 (hT : DominatedFinMeasAdditive μ T C) {ι} (f : 
       simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply]
       refine' (tendsto_congr' _).mp hfs
       filter_upwards [hfsi] with i hi
-      refine' lintegral_congr_ae _
+      apply lintegral_congr_ae
       filter_upwards [hi.coeFn_toL1, hfi.coeFn_toL1] with x hxi hxf
       simp_rw [F_lp, dif_pos hi, hxi, hxf]
     suffices Tendsto (fun i => setToFun μ T hT (F_lp i)) l (𝓝 (setToFun μ T hT f)) by
@@ -1737,7 +1737,7 @@ theorem tendsto_setToFun_of_dominated_convergence (hT : DominatedFinMeasAdditive
   convert lintegral_norm_tendsto_zero with n
   rw [L1.norm_def]
   congr 1
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   rw [← Integrable.toL1_sub]
   refine' ((fs_int n).sub f_int).coeFn_toL1.mono fun x hx => _
   dsimp only

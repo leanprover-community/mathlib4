@@ -159,7 +159,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 @[simp]
 theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
   rw [isNClique_iff, isClique_bot_iff]
-  refine' and_congr_left _
+  apply and_congr_left
   rintro rfl
   exact card_le_one.symm
 #align simple_graph.is_n_clique_bot_iff SimpleGraph.isNClique_bot_iff

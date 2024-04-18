@@ -255,7 +255,7 @@ theorem toJordanDecomposition_eq_of_eq_add_withDensity {f : α → ℝ} (hf : Me
         (jordanDecomposition_add_withDensity_mutuallySingular hf htμ) := by
   haveI := isFiniteMeasure_withDensity_ofReal hfi.2
   haveI := isFiniteMeasure_withDensity_ofReal hfi.neg.2
-  refine' toJordanDecomposition_eq _
+  apply toJordanDecomposition_eq
   simp_rw [JordanDecomposition.toSignedMeasure, hadd]
   ext i hi
   rw [VectorMeasure.sub_apply, toSignedMeasure_apply_measurable hi,
@@ -338,12 +338,12 @@ theorem singularPart_neg (s : SignedMeasure α) (μ : Measure α) :
   have h₁ :
     ((-s).toJordanDecomposition.posPart.singularPart μ).toSignedMeasure =
       (s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure := by
-    refine' toSignedMeasure_congr _
+    apply toSignedMeasure_congr
     rw [toJordanDecomposition_neg, JordanDecomposition.neg_posPart]
   have h₂ :
     ((-s).toJordanDecomposition.negPart.singularPart μ).toSignedMeasure =
       (s.toJordanDecomposition.posPart.singularPart μ).toSignedMeasure := by
-    refine' toSignedMeasure_congr _
+    apply toSignedMeasure_congr
     rw [toJordanDecomposition_neg, JordanDecomposition.neg_negPart]
   rw [singularPart, singularPart, neg_sub, h₁, h₂]
 #align measure_theory.signed_measure.singular_part_neg MeasureTheory.SignedMeasure.singularPart_neg

@@ -851,7 +851,7 @@ def compCLM {g : D → E} (hg : g.HasTemperateGrowth)
       rcases hg.norm_iteratedFDeriv_le_uniform_aux n with ⟨l, C, hC, hgrowth⟩
       rcases hg_upper with ⟨kg, Cg, hg_upper'⟩
       have hCg : 1 ≤ 1 + Cg := by
-        refine' le_add_of_nonneg_right _
+        apply le_add_of_nonneg_right
         specialize hg_upper' 0
         rw [norm_zero] at hg_upper'
         exact nonneg_of_mul_nonneg_left hg_upper' (by positivity)

@@ -135,7 +135,7 @@ theorem integrable_toReal_condDistrib (hX : AEMeasurable X μ) (hs : MeasurableS
     Integrable (fun a => (condDistrib Y X μ (X a) s).toReal) μ := by
   refine' integrable_toReal_of_lintegral_ne_top _ _
   · exact Measurable.comp_aemeasurable (kernel.measurable_coe _ hs) hX
-  · refine' ne_of_lt _
+  · apply ne_of_lt
     calc
       ∫⁻ a, condDistrib Y X μ (X a) s ∂μ ≤ ∫⁻ _, 1 ∂μ := lintegral_mono fun a => prob_le_one
       _ = μ univ := lintegral_one

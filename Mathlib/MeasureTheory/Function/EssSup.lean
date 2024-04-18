@@ -249,7 +249,7 @@ theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable 
 theorem essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
   rw [essSup_congr_ae hg.ae_eq_mk, essSup_map_measure_of_measurable hg.measurable_mk hf]
-  refine' essSup_congr_ae _
+  apply essSup_congr_ae
   have h_eq := ae_of_ae_map hf hg.ae_eq_mk
   rw [← EventuallyEq] at h_eq
   exact h_eq.symm

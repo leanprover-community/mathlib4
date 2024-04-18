@@ -250,12 +250,12 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)
     intro s
     rw [SetLike.mem_coe]
-    refine' sum_mem _
+    apply sum_mem
     intro i _
     refine' mem_iSup_of_mem i _
     exact LinearMap.mem_range_self _ (f i)
   · apply topologicalClosure_minimal
-    · refine' iSup_le _
+    · apply iSup_le
       rintro i x ⟨x, rfl⟩
       use lp.single 2 i x
       exact hV.linearIsometry_apply_single x
@@ -467,7 +467,7 @@ protected theorem dense_span (b : HilbertBasis ι 𝕜 E) :
     refine' mem_closure_of_tendsto (b.hasSum_repr x) (eventually_of_forall _)
     intro s
     simp only [SetLike.mem_coe]
-    refine' sum_mem _
+    apply sum_mem
     rintro i -
     refine' smul_mem _ _ _
     exact subset_span ⟨i, rfl⟩

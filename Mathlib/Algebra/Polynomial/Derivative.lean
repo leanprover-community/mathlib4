@@ -360,7 +360,7 @@ theorem degree_derivative_eq [NoZeroSMulDivisors ℕ R] (p : R[X]) (hp : 0 < nat
     intro n hn
     apply le_trans (degree_C_mul_X_pow_le _ _) (WithBot.coe_le_coe.2 (tsub_le_tsub_right _ _))
     apply le_natDegree_of_mem_supp _ hn
-  · refine' le_sup _
+  · apply le_sup
     rw [mem_support_derivative, tsub_add_cancel_of_le, mem_support_iff]
     · rw [coeff_natDegree, Ne, leadingCoeff_eq_zero]
       intro h

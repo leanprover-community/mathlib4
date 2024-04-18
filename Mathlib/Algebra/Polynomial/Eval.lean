@@ -903,7 +903,7 @@ theorem degree_map_eq_of_leadingCoeff_ne_zero (f : R →+* S) (hf : f (leadingCo
     have hp0 : p ≠ 0 :=
       leadingCoeff_ne_zero.mp fun hp0 => hf (_root_.trans (congr_arg _ hp0) f.map_zero)
     rw [degree_eq_natDegree hp0]
-    refine' le_degree_of_ne_zero _
+    apply le_degree_of_ne_zero
     rw [coeff_map]
     exact hf
 #align polynomial.degree_map_eq_of_leading_coeff_ne_zero Polynomial.degree_map_eq_of_leadingCoeff_ne_zero

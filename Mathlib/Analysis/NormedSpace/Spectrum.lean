@@ -309,7 +309,7 @@ theorem isUnit_one_sub_smul_of_lt_inv_radius {a : A} {z : 𝕜} (h : ↑‖z‖�
     suffices hu : IsUnit (u⁻¹ • (1 : A) - a) by
       rwa [IsUnit.smul_sub_iff_sub_inv_smul, inv_inv u] at hu
     rw [Units.smul_def, ← Algebra.algebraMap_eq_smul_one, ← mem_resolventSet_iff]
-    refine mem_resolventSet_of_spectralRadius_lt ?_
+    apply mem_resolventSet_of_spectralRadius_lt
     rwa [Units.val_inv_eq_inv_val, nnnorm_inv,
       coe_inv (nnnorm_ne_zero_iff.mpr (Units.val_mk0 hz ▸ hz : (u : 𝕜) ≠ 0)), lt_inv_iff_lt_inv]
 #align spectrum.is_unit_one_sub_smul_of_lt_inv_radius spectrum.isUnit_one_sub_smul_of_lt_inv_radius

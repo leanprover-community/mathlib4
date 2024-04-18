@@ -283,7 +283,7 @@ lemma measurableSet_succ_memPartition (t : ℕ → Set α) (n : ℕ) {s : Set α
     MeasurableSet[generateFrom (memPartition t (n + 1))] s := by
   rw [← diff_union_inter s (t n)]
   refine MeasurableSet.union ?_ ?_ <;>
-    · refine measurableSet_generateFrom ?_
+    · apply measurableSet_generateFrom
       rw [memPartition_succ]
       exact ⟨s, hs, by simp⟩
 
@@ -335,7 +335,7 @@ lemma measurableSet_generateFrom_memPartition (t : ℕ → Set α) (n : ℕ) :
     simp_rw [← iUnion_inter, ← sUnion_eq_biUnion, sUnion_memPartition, univ_inter]
   rw [this]
   refine MeasurableSet.biUnion (finite_memPartition _ _).countable (fun v hv ↦ ?_)
-  refine measurableSet_generateFrom ?_
+  apply measurableSet_generateFrom
   rw [memPartition_succ]
   exact ⟨v, hv, Or.inl rfl⟩
 

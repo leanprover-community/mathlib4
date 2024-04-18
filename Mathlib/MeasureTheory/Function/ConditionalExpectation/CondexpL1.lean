@@ -135,7 +135,7 @@ theorem norm_condexpIndL1Fin_le (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x 
   swap; · rw [← memℒp_one_iff_integrable]; exact Lp.memℒp _
   have h_eq :
     ∫⁻ a, ‖condexpIndL1Fin hm hs hμs x a‖₊ ∂μ = ∫⁻ a, ‖condexpIndSMul hm hs hμs x a‖₊ ∂μ := by
-    refine' lintegral_congr_ae _
+    apply lintegral_congr_ae
     refine' (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x).mono fun z hz => _
     dsimp only
     rw [hz]

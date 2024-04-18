@@ -276,7 +276,7 @@ theorem iInter_Iic_eq_empty_iff : ⋂ i, Iic (f i) = ∅ ↔ ¬ BddBelow (range 
   simp [not_bddBelow_iff, Set.eq_empty_iff_forall_not_mem]
 
 theorem iInter_Iio_of_not_bddBelow_range (hf : ¬ BddBelow (range f)) : ⋂ i, Iio (f i) = ∅ := by
-  refine' eq_empty_of_subset_empty _
+  apply eq_empty_of_subset_empty
   rw [← iInter_Iic_eq_empty_iff.mpr hf]
   gcongr
   exact Iio_subset_Iic_self

@@ -400,7 +400,7 @@ theorem lift'_iInf_of_map_univ {f : ι → Filter α} {g : Set α → Set β}
 theorem lift'_inf (f g : Filter α) {s : Set α → Set β} (hs : ∀ t₁ t₂, s (t₁ ∩ t₂) = s t₁ ∩ s t₂) :
     (f ⊓ g).lift' s = f.lift' s ⊓ g.lift' s := by
   rw [inf_eq_iInf, inf_eq_iInf, lift'_iInf hs]
-  refine iInf_congr ?_
+  apply iInf_congr
   rintro (_|_) <;> rfl
 #align filter.lift'_inf Filter.lift'_inf
 

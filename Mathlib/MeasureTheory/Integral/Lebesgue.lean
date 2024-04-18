@@ -395,7 +395,7 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
       rw [restrict_lintegral _ (h_meas n)]
       · refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
         congr 2 with a
-        refine' and_congr_right _
+        apply and_congr_right
         simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       gcongr with n
@@ -436,7 +436,7 @@ theorem lintegral_tendsto_of_tendsto_of_monotone {f : ℕ → α → ℝ≥0∞}
     rw [key]
     exact tendsto_atTop_iSup this
   rw [← lintegral_iSup' hf h_mono]
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   filter_upwards [h_mono, h_tendsto] with _ hx_mono hx_tendsto using
     tendsto_nhds_unique hx_tendsto (tendsto_atTop_iSup hx_mono)
 #align measure_theory.lintegral_tendsto_of_tendsto_of_monotone MeasureTheory.lintegral_tendsto_of_tendsto_of_monotone
@@ -1217,7 +1217,7 @@ theorem lintegral_tendsto_of_tendsto_of_antitone {f : ℕ → α → ℝ≥0∞}
     rw [key]
     exact tendsto_atTop_iInf this
   rw [← lintegral_iInf' hf h_anti h0]
-  refine lintegral_congr_ae ?_
+  apply lintegral_congr_ae
   filter_upwards [h_anti, h_tendsto] with _ hx_anti hx_tendsto
     using tendsto_nhds_unique hx_tendsto (tendsto_atTop_iInf hx_anti)
 

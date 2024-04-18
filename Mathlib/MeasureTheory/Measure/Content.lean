@@ -360,7 +360,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [Opens.coe_mk]
   haveI : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.iSup_add]
-  refine' iSup_le _
+  apply iSup_le
   rintro ⟨L, hL⟩
   let L' : Compacts G := ⟨closure L, L.isCompact.closure⟩
   suffices μ L' + μ.outerMeasure (↑U' \ U) ≤ μ.outerMeasure U' by
@@ -376,7 +376,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [Opens.coe_mk]
   haveI : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.add_iSup]
-  refine' iSup_le _
+  apply iSup_le
   rintro ⟨M, hM⟩
   let M' : Compacts G := ⟨closure M, M.isCompact.closure⟩
   suffices μ L' + μ M' ≤ μ.outerMeasure U' by
