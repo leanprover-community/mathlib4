@@ -361,7 +361,7 @@ theorem mk_pow (x : ℕ × K) (n : ℕ) : mk K p x ^ n = mk K p (x.1, x.2 ^ n) :
     exact ⟨0, by simp_rw [iterate_frobenius, add_zero, mul_pow, ← pow_mul,
       ← pow_add, mul_assoc, ← pow_add]⟩
 
-theorem nat_cast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
+theorem natCast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   induction' n with n ih
   · induction' x with x ih
     · simp
@@ -370,26 +370,26 @@ theorem nat_cast (n x : ℕ) : (x : PerfectClosure K p) = mk K p (n, x) := by
   rw [ih]; apply Quot.sound
   -- Porting note: was `conv`
   suffices R K p (n, (x : K)) (Nat.succ n, frobenius K p (x : K)) by
-    rwa [frobenius_nat_cast K p x] at this
+    rwa [frobenius_natCast K p x] at this
   apply R.intro
-#align perfect_closure.nat_cast PerfectClosure.nat_cast
+#align perfect_closure.nat_cast PerfectClosure.natCast
 
-theorem int_cast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
-  induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_ofNat, Int.cast_negSucc, nat_cast K p 0]
+theorem intCast (x : ℤ) : (x : PerfectClosure K p) = mk K p (0, x) := by
+  induction x <;> simp only [Int.ofNat_eq_coe, Int.cast_natCast, Int.cast_negSucc, natCast K p 0]
   rfl
-#align perfect_closure.int_cast PerfectClosure.int_cast
+#align perfect_closure.int_cast PerfectClosure.intCast
 
-theorem nat_cast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
+theorem natCast_eq_iff (x y : ℕ) : (x : PerfectClosure K p) = y ↔ (x : K) = y := by
   constructor <;> intro H
-  · rw [nat_cast K p 0, nat_cast K p 0, mk_eq_iff] at H
+  · rw [natCast K p 0, natCast K p 0, mk_eq_iff] at H
     cases' H with z H
-    simpa only [zero_add, iterate_fixed (frobenius_nat_cast K p _)] using H
-  rw [nat_cast K p 0, nat_cast K p 0, H]
-#align perfect_closure.nat_cast_eq_iff PerfectClosure.nat_cast_eq_iff
+    simpa only [zero_add, iterate_fixed (frobenius_natCast K p _)] using H
+  rw [natCast K p 0, natCast K p 0, H]
+#align perfect_closure.nat_cast_eq_iff PerfectClosure.natCast_eq_iff
 
 instance instCharP : CharP (PerfectClosure K p) p := by
   constructor; intro x; rw [← CharP.cast_eq_zero_iff K]
-  rw [← Nat.cast_zero, nat_cast_eq_iff, Nat.cast_zero]
+  rw [← Nat.cast_zero, natCast_eq_iff, Nat.cast_zero]
 
 theorem frobenius_mk (x : ℕ × K) :
     (frobenius (PerfectClosure K p) p : PerfectClosure K p → PerfectClosure K p) (mk K p x) =

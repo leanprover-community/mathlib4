@@ -273,7 +273,7 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget

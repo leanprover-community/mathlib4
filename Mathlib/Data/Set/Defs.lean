@@ -319,7 +319,7 @@ def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
 section image2
 
 /-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, f a b = c}
 #align set.image2 Set.image2
 

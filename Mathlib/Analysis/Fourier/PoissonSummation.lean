@@ -49,8 +49,6 @@ open TopologicalSpace Filter MeasureTheory Asymptotics
 
 open scoped Real BigOperators Filter FourierTransform
 
-attribute [local instance] Real.fact_zero_lt_one
-
 open ContinuousMap
 
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function

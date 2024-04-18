@@ -5,6 +5,7 @@ Authors: Adam Topaz, Dagur Asgeirsson, Filippo A. E. Nuccio, Riccardo Brasca
 -/
 import Mathlib.Topology.Category.Stonean.Basic
 import Mathlib.Topology.Category.CompHaus.Limits
+import Mathlib.Topology.Category.Profinite.Limits
 /-!
 # Explicit (co)limits in the category of Stonean spaces
 
@@ -148,6 +149,14 @@ instance : PreservesFiniteCoproducts Stonean.toCompHaus := by
   apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
   exact CompHaus.finiteCoproduct.isColimit _
 
+instance : PreservesFiniteCoproducts Stonean.toProfinite := by
+  refine ⟨fun J hJ ↦ ⟨fun {F} ↦ ?_⟩⟩
+  suffices PreservesColimit (Discrete.functor (F.obj ∘ Discrete.mk)) Stonean.toProfinite from
+    preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm
+  apply preservesColimitOfPreservesColimitCocone (Stonean.finiteCoproduct.isColimit _)
+  exact Profinite.finiteCoproduct.isColimit fun a ↦
+      toProfinite.obj (((Discrete.functor (F.obj ∘ Discrete.mk)).obj ∘ Discrete.mk) a)
+
 end FiniteCoproducts
 
 end Stonean
@@ -217,7 +226,7 @@ def pullback.lift {X Y Z W : Stonean} (f : X ⟶ Z) {i : Y ⟶ Z} (hi : OpenEmbe
     W ⟶ pullback f hi where
   toFun := fun z => ⟨a z, by
     simp only [Set.mem_preimage]
-    use (b z)
+    use b z
     exact congr_fun (DFunLike.ext'_iff.mp w.symm) z⟩
   continuous_toFun := by
     apply Continuous.subtype_mk
@@ -329,6 +338,16 @@ instance : PreservesPullbacksOfInclusions Stonean.toCompHaus.{u} where
     have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
     have := Stonean.createsPullbacksOfOpenEmbedding f this
     exact preservesLimitOfReflectsOfPreserves Stonean.toCompHaus compHausToTop
+
+noncomputable
+instance : PreservesPullbacksOfInclusions Stonean.toProfinite.{u} where
+  preservesPullbackInl := by
+    intros X Y Z f
+    apply (config := { allowSynthFailures := true }) preservesPullbackSymmetry
+    have : OpenEmbedding (coprod.inl : X ⟶ X ⨿ Y) := Stonean.Sigma.openEmbedding_ι _ _
+    have : CreatesLimit (cospan f _) (Stonean.toProfinite ⋙ Profinite.toTopCat) :=
+      Stonean.createsPullbacksOfOpenEmbedding f this
+    exact preservesLimitOfReflectsOfPreserves Stonean.toProfinite Profinite.toTopCat
 
 instance : FinitaryExtensive Stonean.{u} :=
   finitaryExtensive_of_preserves_and_reflects Stonean.toCompHaus
