@@ -190,7 +190,7 @@ variable (R S)
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
--- Porting note: dot notation `().toBilin` does not work anymore.
+  -- Porting note: dot notation `().toBilin` does not work anymore.
   LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
 #align algebra.trace_form Algebra.traceForm
 
@@ -282,8 +282,9 @@ variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
--- Porting note: `conv` was `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
--- and it was after the first `rw`.
+  -- Porting note: `conv` was
+  -- `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
+  -- and it was after the first `rw`.
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
@@ -371,13 +372,13 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
--- Porting note: the following `letI` was not needed.
-  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
+  -- Porting note: the following `letI` was not needed.
+  letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
--- Porting note: the following goal does not exist in mathlib3.
+  -- Porting note: the following goal does not exist in mathlib3.
   · exact (fun x => x.1)
   · intro x; rfl
   · intro σ
@@ -399,7 +400,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
     Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   refine' Finset.sum_congr rfl fun σ _ => _
   · letI : Algebra L E := σ.toRingHom.toAlgebra
--- Porting note: `Finset.card_univ` was inside `simp only`.
+    -- Porting note: `Finset.card_univ` was inside `simp only`.
     simp only [Finset.sum_const]
     congr
     rw [← AlgHom.card L F E]
@@ -415,8 +416,8 @@ theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L
   let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
--- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
--- in the previous `rw`.
+  -- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
+  -- in the previous `rw`.
   · convert (sum_embeddings_eq_finrank_mul L E pb).symm
     ext
     simp
@@ -594,9 +595,7 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   rw [RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
     embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
--- Porting note: the following is necessary.
-  haveI := IsDomain.to_noZeroDivisors (AlgebraicClosure L)
-  refine' mt mul_self_eq_zero.mp _
+  refine mt mul_self_eq_zero.mp ?_
   · simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
     rintro i ⟨_, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
