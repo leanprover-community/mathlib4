@@ -45,9 +45,8 @@ theorem rank_unitary_mul (A : unitaryGroup n R) (B : Matrix m n R) :
   rank_mul_units (unitary.toUnits A) _
 
 @[simp]
-theorem rank_mul_unitary [CommRing R][Fintype m]
-    [StarRing R] (A : unitaryGroup n R)(B : Matrix n m R) :
-    rank ((A : Matrix n n R) * B) = rank B :=
+theorem rank_mul_unitary [CommRing R] [Fintype m] [StarRing R] (A : unitaryGroup n R)
+    (B : Matrix n m R) : rank ((A : Matrix n n R) * B) = rank B :=
   rank_units_mul (unitary.toUnits A) _
 
 end RankMulUnitaryTheorems
