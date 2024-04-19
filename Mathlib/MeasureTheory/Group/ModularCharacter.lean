@@ -89,7 +89,7 @@ noncomputable def modularCharacter (μ : Measure G) [IsHaarMeasure μ] [InnerReg
       _ = haarScalarFactor (map (· * h) (map (· * g) μ)) (map (· * g) μ) *
         haarScalarFactor (map (· * g) μ) μ := rfl
       _ = haarScalarFactor (map (· * (g * h)) μ) μ := by simp only [map_map mul_h_meas mul_g_meas,
-        comp_mul_right, ←haarScalarFactor_eq_mul]
+        comp_mul_right, ← haarScalarFactor_eq_mul]
 
 end Measure
 
