@@ -3,7 +3,7 @@ Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Fintype.Basic
+import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Sigma
 
 #align_import data.fintype.sigma from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -43,3 +43,11 @@ instance PSigma.instFintype : Fintype (Σ' i, κ i) := .ofEquiv _ (Equiv.psigmaE
 
 @[simp] lemma Finset.univ_sigma_univ : univ.sigma (fun _ ↦ univ) = (univ : Finset (Σ i, κ i)) := rfl
 #align finset.univ_sigma_univ Finset.univ_sigma_univ
+
+instance Infinite.sigma_of_left {α : Type*} {β : α → Type*} [Infinite α] [∀ a, Nonempty (β a)] :
+    Infinite ((a : α) × (β a)) :=
+  Infinite.of_surjective Sigma.fst Sigma.fst_surjective
+
+theorem Infinite.sigma_of_right {α : Type*} {β : α → Type*} {a : α} [Infinite (β a)] :
+    Infinite ((a : α) × (β a)) :=
+  Infinite.of_injective (f := fun x ↦ ⟨a,x⟩) fun _ _ ↦ by simp

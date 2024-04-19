@@ -286,3 +286,19 @@ theorem WellFounded.induction_bot {α} {r : α → α → Prop} (hwf : WellFound
 #align well_founded.induction_bot WellFounded.induction_bot
 
 end Induction
+
+section WellFoundedLT
+
+theorem WellFoundedLT.of_strictMono [Preorder α] [Preorder β] [WellFoundedLT β] {f : α → β}
+    (hf : StrictMono f) : WellFoundedLT α where
+  wf := by
+    refine WellFounded.wellFounded_iff_has_min.2 ?_
+    rintro s ⟨a, ha⟩
+    have hs' : (f '' s).Nonempty := ⟨f a, a, ha, rfl⟩
+    obtain ⟨x, hx, hex⟩ := WellFounded.min_mem wellFounded_lt _ hs'
+    refine ⟨x, hx, fun y hy hlt ↦ ?_⟩
+    apply WellFounded.not_lt_min wellFounded_lt (s.image f) hs' (Set.mem_image_of_mem _ hy)
+    rw [← hex]
+    exact hf hlt
+
+end WellFoundedLT
