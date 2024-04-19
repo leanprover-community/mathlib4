@@ -48,42 +48,6 @@ theorem orbit.pairwiseDisjoint :
   contrapose! h
   exact (orbit.eq_or_disjoint x y).resolve_right h
 
-/- -- move this to `Mathlib.Data.Setoid.Partition`
-lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
-    (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
-    Setoid.IsPartition s := by
-  refine ⟨h₃, fun a ↦ ?_⟩
-  simp only [exists_unique_iff_exists, exists_prop]
-  apply exists_unique_of_exists_of_unique (h₂ a)
-  intro b₁ b₂ hb₁ hb₂
-  apply h₁.elim hb₁.1 hb₂.1
-  simp only [Set.not_disjoint_iff]
-  exact ⟨a, hb₁.2, hb₂.2⟩
--/
-
-/- moved to Mathlib.Data.Set.Pairwise.Basic
--- move this to one of
--- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
-lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint {α : Type*} {s : Set (Set α)}
-    (h : s.PairwiseDisjoint id) {a b : Set α} (ha : a ∈ s) (hb : b ∈ s) :
-    a = b ∨ Disjoint a b := by
-  rw [or_iff_not_imp_right]
-  exact h.elim ha hb
--/
-
-/-
-moved to
--- move this to one of
--- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
-lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
-    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
-  constructor
-  · intro h x y
-    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
-  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
-    exact (h x y).resolve_left hxy
--/
-
 /-- Orbits of an element form a partition -/
 theorem IsPartition.of_orbits :
     Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
