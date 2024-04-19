@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Floris van Doorn
+Authors: Noam Atar
 -/
 import Mathlib.MeasureTheory.Constructions.Prod.Integral
 import Mathlib.MeasureTheory.Function.LocallyIntegrable
@@ -52,7 +52,7 @@ lemma map_right_mul_eq_modularCharacter_smul (μ : Measure G) [IsHaarMeasure μ]
 
 @[to_additive addModularCharacter_pos]
 lemma modularCharacter_pos (μ : Measure G) [IsHaarMeasure μ] (g : G) :
-    0 < modularCharacter_fun μ g := haarScalarFactor_pos_of_isOpenPosMeasure _ μ
+    0 < modularCharacter_fun μ g := haarScalarFactor_pos_of_isHaarMeasure _ μ
 
 /-- The modular character does not depend on the choice of the haar measure. -/
 @[to_additive addModularCharacter_eq "The additive modular character does not depend on the choice
@@ -76,7 +76,7 @@ theorem modularCharacter_eq (μ μ': Measure G) [IsHaarMeasure μ] [IsHaarMeasur
 noncomputable def modularCharacter (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ] :
     G →* ℝ≥0 where
   toFun := modularCharacter_fun μ
-  map_one' := by simp [modularCharacter_fun, haarScalarFactor_self_eq_one μ]
+  map_one' := by simp [modularCharacter_fun, haarScalarFactor_self μ]
   map_mul' := fun g h => by
     have mul_g_meas : Measurable (· * g) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) g
     have mul_h_meas : Measurable (· * h) := Measurable.mul_const (fun ⦃_⦄ a ↦ a) h
@@ -89,7 +89,7 @@ noncomputable def modularCharacter (μ : Measure G) [IsHaarMeasure μ] [InnerReg
       _ = haarScalarFactor (map (· * h) (map (· * g) μ)) (map (· * g) μ) *
         haarScalarFactor (map (· * g) μ) μ := rfl
       _ = haarScalarFactor (map (· * (g * h)) μ) μ := by simp only [map_map mul_h_meas mul_g_meas,
-        comp_mul_right, haarScalarFactor_mul_haarScalarFactor _ _ _]
+        comp_mul_right, ←haarScalarFactor_eq_mul]
 
 end Measure
 
