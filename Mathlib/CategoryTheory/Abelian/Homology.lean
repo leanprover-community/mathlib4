@@ -112,7 +112,7 @@ def homology'IsoKernelDesc : homology' f g w ≅ kernel (cokernel.desc f g w) :=
 
 namespace homology'
 
--- `homology.π` is taken
+-- `homology'.π` is taken
 /-- The canonical map from the kernel of `g` to the homology of `f` and `g`. -/
 def π' : kernel g ⟶ homology' f g w :=
   cokernel.π _ ≫ (homology'IsoCokernelLift _ _ _).inv

@@ -274,7 +274,7 @@ theorem nodup_toList (p : Perm α) (x : α) : Nodup (toList p x) := by
   rw [nodup_iff_nthLe_inj]
   rintro n m hn hm
   rw [length_toList, ← hc.orderOf] at hm hn
-  rw [← cycleOf_apply_self, ← Ne.def, ← mem_support] at hx
+  rw [← cycleOf_apply_self, ← Ne, ← mem_support] at hx
   rw [nthLe_toList, nthLe_toList, ← cycleOf_pow_apply_self p x n, ←
     cycleOf_pow_apply_self p x m]
   cases' n with n <;> cases' m with m
@@ -306,7 +306,7 @@ theorem next_toList_eq_apply (p : Perm α) (x y : α) (hy : y ∈ toList p x) :
   obtain ⟨k, hk, hk'⟩ := hy.left.exists_pow_eq_of_mem_support hy.right
   rw [← nthLe_toList p x k (by simpa using hk)] at hk'
   simp_rw [← hk']
-  rw [next_nthLe _ (nodup_toList _ _), nthLe_toList, nthLe_toList, ← mul_apply, ← pow_succ,
+  rw [next_nthLe _ (nodup_toList _ _), nthLe_toList, nthLe_toList, ← mul_apply, ← pow_succ',
     length_toList, ← pow_mod_orderOf_cycleOf_apply p (k + 1), IsCycle.orderOf]
   exact isCycle_cycleOf _ (mem_support.mp hy.right)
 #align equiv.perm.next_to_list_eq_apply Equiv.Perm.next_toList_eq_apply
@@ -325,7 +325,7 @@ theorem SameCycle.toList_isRotated {f : Perm α} {x y : α} (h : SameCycle f x y
     toList f x ~r toList f y := by
   by_cases hx : x ∈ f.support
   · obtain ⟨_ | k, _, hy⟩ := h.exists_pow_eq_of_mem_support hx
-    · simp only [coe_one, id.def, pow_zero, Nat.zero_eq] at hy
+    · simp only [coe_one, id, pow_zero, Nat.zero_eq] at hy
       -- Porting note: added `IsRotated.refl`
       simp [hy, IsRotated.refl]
     use k.succ
@@ -383,7 +383,7 @@ theorem formPerm_toList (f : Perm α) (x : α) : formPerm (toList f x) = f.cycle
   by_cases hy : SameCycle f x y
   · obtain ⟨k, _, rfl⟩ := hy.exists_pow_eq_of_mem_support (mem_support.mpr hx)
     rw [cycleOf_apply_apply_pow_self, List.formPerm_apply_mem_eq_next (nodup_toList f x),
-      next_toList_eq_apply, pow_succ, mul_apply]
+      next_toList_eq_apply, pow_succ', mul_apply]
     rw [mem_toList_iff]
     exact ⟨⟨k, rfl⟩, mem_support.mpr hx⟩
   · rw [cycleOf_apply_of_not_sameCycle hy, formPerm_apply_of_not_mem]

@@ -57,7 +57,7 @@ instance (priority := 100) of_subsingleton {α : Sort*} [Subsingleton α] : Fini
 #align finite.of_subsingleton Finite.of_subsingleton
 
 -- Higher priority for `Prop`s
--- @[nolint instance_priority] -- Porting note: linter not found
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 instance prop (p : Prop) : Finite p :=
   Finite.of_subsingleton
 #align finite.prop Finite.prop

@@ -580,7 +580,7 @@ instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (Matrix n
 
 instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne (Matrix n n α) where
   intCast_ofNat n := show diagonal _ = diagonal _ by
-    rw [Int.cast_ofNat]
+    rw [Int.cast_natCast]
   intCast_negSucc n := show diagonal _ = -(diagonal _) by
     rw [Int.cast_negSucc, diagonal_neg]
   __ := addGroup
@@ -2716,7 +2716,7 @@ theorem map_matrix_mul (M : Matrix m n α) (N : Matrix n o α) (i : m) (j : o) (
 
 theorem map_dotProduct [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (v w : n → R) :
     f (v ⬝ᵥ w) = f ∘ v ⬝ᵥ f ∘ w := by
-  simp only [Matrix.dotProduct, f.map_sum, f.map_mul, Function.comp]
+  simp only [Matrix.dotProduct, map_sum f, f.map_mul, Function.comp]
 #align ring_hom.map_dot_product RingHom.map_dotProduct
 
 theorem map_vecMul [NonAssocSemiring R] [NonAssocSemiring S] (f : R →+* S) (M : Matrix n m R)

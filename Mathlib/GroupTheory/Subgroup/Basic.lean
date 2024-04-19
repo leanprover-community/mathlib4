@@ -523,7 +523,7 @@ namespace Subgroup
 variable (H K : Subgroup G)
 
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 @[to_additive
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
@@ -1402,8 +1402,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 #align add_subgroup.coe_map AddSubgroup.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := by
-  erw [mem_image_iff_bex]; simp
+theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
 #align subgroup.mem_map Subgroup.mem_map
 #align add_subgroup.mem_map AddSubgroup.mem_map
 
@@ -1803,9 +1802,9 @@ variable {η : Type*} {f : η → Type*}
 /-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
 `s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
 `f i` belongs to `Pi I s` whenever `i ∈ I`. -/
-@[to_additive " A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
+@[to_additive "A version of `Set.pi` for `AddSubmonoid`s. Given an index set `I` and a family
   of submodules `s : Π i, AddSubmonoid f i`, `pi I s` is the `AddSubmonoid` of dependent functions
-  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/ "]
+  `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`."]
 def _root_.Submonoid.pi [∀ i, MulOneClass (f i)] (I : Set η) (s : ∀ i, Submonoid (f i)) :
     Submonoid (∀ i, f i) where
   carrier := I.pi fun i => (s i).carrier
@@ -1820,9 +1819,9 @@ variable [∀ i, Group (f i)]
 `s : Π i, Subgroup f i`, `pi I s` is the subgroup of dependent functions `f : Π i, f i` such that
 `f i` belongs to `pi I s` whenever `i ∈ I`. -/
 @[to_additive
-      " A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family
+      "A version of `Set.pi` for `AddSubgroup`s. Given an index set `I` and a family
       of submodules `s : Π i, AddSubgroup f i`, `pi I s` is the `AddSubgroup` of dependent functions
-      `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`. -/ "]
+      `f : Π i, f i` such that `f i` belongs to `pi I s` whenever `i ∈ I`."]
 def pi (I : Set η) (H : ∀ i, Subgroup (f i)) : Subgroup (∀ i, f i) :=
   { Submonoid.pi I fun i => (H i).toSubmonoid with
     inv_mem' := fun hp i hI => (H i).inv_mem (hp i hI) }
@@ -2137,7 +2136,7 @@ def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
       rw [eq_top_iff'] at h
       intro x y
       apply Subgroup.mem_center_iff.mp _ x
-      exact (h y)
+      exact h y
   }
 #align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 
@@ -2277,7 +2276,7 @@ This may be easier to work with, as it avoids inequalities and negations.  -/
 theorem _root_.normalizerCondition_iff_only_full_group_self_normalizing :
     NormalizerCondition G ↔ ∀ H : Subgroup G, H.normalizer = H → H = ⊤ := by
   apply forall_congr'; intro H
-  simp only [lt_iff_le_and_ne, le_normalizer, true_and_iff, le_top, Ne.def]
+  simp only [lt_iff_le_and_ne, le_normalizer, true_and_iff, le_top, Ne]
   tauto
 #align normalizer_condition_iff_only_full_group_self_normalizing normalizerCondition_iff_only_full_group_self_normalizing
 

@@ -100,7 +100,7 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   simp_rw [norm_circle_smul]
 #align vector_fourier.norm_fourier_integral_le_integral_norm VectorFourier.norm_fourierIntegral_le_integral_norm
 
-/-- The Fourier integral converts right-translation into scalar multiplication by a phase factor.-/
+/-- The Fourier integral converts right-translation into scalar multiplication by a phase factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd V] (e : AddChar 𝕜 𝕊) (μ : Measure V)
     [μ.IsAddRightInvariant] (L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜) (f : V → E) (v₀ : V) :
     fourierIntegral e μ L (f ∘ fun v ↦ v + v₀) =
@@ -118,8 +118,9 @@ end Defs
 
 section Continuous
 
-/- In this section we assume 𝕜, V, W have topologies, and L, e are continuous (but f needn't be).
-   This is used to ensure that `e [-L v w]` is (ae strongly) measurable. We could get away with
+/-! In this section we assume 𝕜, `V`, `W` have topologies,
+  and `L`, `e` are continuous (but `f` needn't be).
+   This is used to ensure that `e (-L v w)` is (a.e. strongly) measurable. We could get away with
    imposing only a measurable-space structure on 𝕜 (it doesn't have to be the Borel sigma-algebra of
    a topology); but it seems hard to imagine cases where this extra generality would be useful, and
    allowing it would complicate matters in the most important use cases.
@@ -128,9 +129,9 @@ variable [TopologicalSpace 𝕜] [TopologicalRing 𝕜] [TopologicalSpace V] [Bo
   [TopologicalSpace W] {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →ₗ[𝕜] W →ₗ[𝕜] 𝕜}
 
 /-- For any `w`, the Fourier integral is convergent iff `f` is integrable. -/
-theorem fourier_integral_convergent_iff (he : Continuous e)
+theorem fourierIntegral_convergent_iff (he : Continuous e)
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (w : W) :
-    Integrable f μ ↔ Integrable (fun v : V ↦ e (-L v w) • f v) μ := by
+    Integrable (fun v : V ↦ e (-L v w) • f v) μ ↔ Integrable f μ := by
   -- first prove one-way implication
   have aux {g : V → E} (hg : Integrable g μ) (x : W) :
       Integrable (fun v : V ↦ e (-L v x) • g v) μ := by
@@ -139,12 +140,15 @@ theorem fourier_integral_convergent_iff (he : Continuous e)
     simp_rw [← integrable_norm_iff (c.aestronglyMeasurable.smul hg.1), norm_circle_smul]
     exact hg.norm
   -- then use it for both directions
-  refine ⟨fun hf ↦ aux hf w, fun hf ↦ ?_⟩
+  refine ⟨fun hf ↦ ?_, fun hf ↦ aux hf w⟩
   have := aux hf (-w)
   simp_rw [← mul_smul (e _) (e _) (f _), ← e.map_add_mul, LinearMap.map_neg, neg_add_self,
     e.map_zero_one, one_smul] at this -- the `(e _)` speeds up elaboration considerably
   exact this
-#align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourier_integral_convergent_iff
+#align vector_fourier.fourier_integral_convergent_iff VectorFourier.fourierIntegral_convergent_iff
+
+@[deprecated] alias fourier_integral_convergent_iff :=
+  VectorFourier.fourierIntegral_convergent_iff -- 2024-03-29
 
 variable [CompleteSpace E]
 
@@ -155,8 +159,8 @@ theorem fourierIntegral_add (he : Continuous e) (hL : Continuous fun p : V × W 
   dsimp only [Pi.add_apply, fourierIntegral]
   simp_rw [smul_add]
   rw [integral_add]
-  · exact (fourier_integral_convergent_iff he hL w).mp hf
-  · exact (fourier_integral_convergent_iff he hL w).mp hg
+  · exact (fourierIntegral_convergent_iff he hL w).2 hf
+  · exact (fourierIntegral_convergent_iff he hL w).2 hg
 #align vector_fourier.fourier_integral_add VectorFourier.fourierIntegral_add
 
 /-- The Fourier integral of an `L^1` function is a continuous function. -/
@@ -164,7 +168,7 @@ theorem fourierIntegral_continuous [FirstCountableTopology W] (he : Continuous e
     (hL : Continuous fun p : V × W ↦ L p.1 p.2) {f : V → E} (hf : Integrable f μ) :
     Continuous (fourierIntegral e μ L f) := by
   apply continuous_of_dominated
-  · exact fun w ↦ ((fourier_integral_convergent_iff he hL w).mp hf).1
+  · exact fun w ↦ ((fourierIntegral_convergent_iff he hL w).2 hf).1
   · exact fun w ↦ ae_of_all _ fun v ↦ le_of_eq (norm_circle_smul _ _)
   · exact hf.norm
   · refine ae_of_all _ fun v ↦ (he.comp ?_).smul continuous_const
@@ -195,7 +199,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
   _ = ∫ ξ, (∫ x, M.flip (g ξ) (e (-L x ξ) • f x) ∂μ) ∂ν := by
     congr with ξ
     apply (ContinuousLinearMap.integral_comp_comm _ _).symm
-    exact (fourier_integral_convergent_iff he hL _).1 hf
+    exact (fourierIntegral_convergent_iff he hL _).2 hf
   _ = ∫ x, (∫ ξ, M.flip (g ξ) (e (-L x ξ) • f x) ∂ν) ∂μ := by
     rw [integral_integral_swap]
     have : Integrable (fun (p : W × V) ↦ ‖M‖ * (‖g p.1‖ * ‖f p.2‖)) (ν.prod μ) :=
@@ -222,7 +226,7 @@ theorem integral_bilin_fourierIntegral_eq_flip
   _ = ∫ x, M (f x) (∫ ξ, e (-L.flip ξ x) • g ξ ∂ν) ∂μ := by
     congr with x
     apply ContinuousLinearMap.integral_comp_comm
-    apply (fourier_integral_convergent_iff he _ _).1 hg
+    apply (fourierIntegral_convergent_iff he _ _).2 hg
     exact hL.comp continuous_swap
 
 /-- The Fourier transform satisfies `∫ 𝓕 f * g = ∫ f * 𝓕 g`, i.e., it is self-adjoint. -/
@@ -236,6 +240,38 @@ theorem integral_fourierIntegral_smul_eq_flip
 end Fubini
 
 end VectorFourier
+
+namespace VectorFourier
+
+variable {𝕜 ι E F V W : Type*} [Fintype ι] [NontriviallyNormedField 𝕜]
+  [NormedAddCommGroup V] [NormedSpace 𝕜 V] [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup W] [NormedSpace 𝕜 W] [MeasurableSpace W] [BorelSpace W]
+  {e : AddChar 𝕜 𝕊} {μ : Measure V} {L : V →L[𝕜] W →L[𝕜] 𝕜}
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+
+theorem fourierIntegral_continuousLinearMap_apply
+    {f : V → (F →L[ℝ] E)} {a : F} {w : W} (he : Continuous e) (hf : Integrable f μ) :
+    fourierIntegral e μ L.toLinearMap₂ f w a =
+      fourierIntegral e μ L.toLinearMap₂ (fun x ↦ f x a) w := by
+  rw [fourierIntegral, ContinuousLinearMap.integral_apply]
+  · rfl
+  · apply (fourierIntegral_convergent_iff he _ _).2 hf
+    exact L.continuous₂
+
+theorem fourierIntegral_continuousMultilinearMap_apply
+    {f : V → (ContinuousMultilinearMap ℝ M E)} {m : (i : ι) → M i} {w : W} (he : Continuous e)
+    (hf : Integrable f μ) :
+    fourierIntegral e μ L.toLinearMap₂ f w m =
+      fourierIntegral e μ L.toLinearMap₂ (fun x ↦ f x m) w := by
+  rw [fourierIntegral, ContinuousMultilinearMap.integral_apply]
+  · rfl
+  · apply (fourierIntegral_convergent_iff he _ _).2 hf
+    exact L.continuous₂
+
+end VectorFourier
+
 
 /-! ## Fourier theory for functions on `𝕜` -/
 
@@ -271,7 +307,8 @@ theorem norm_fourierIntegral_le_integral_norm (e : AddChar 𝕜 𝕊) (μ : Meas
   VectorFourier.norm_fourierIntegral_le_integral_norm _ _ _ _ _
 #align fourier.norm_fourier_integral_le_integral_norm Fourier.norm_fourierIntegral_le_integral_norm
 
-/-- The Fourier transform converts right-translation into scalar multiplication by a phase factor.-/
+/-- The Fourier transform converts right-translation into scalar multiplication by a phase
+factor. -/
 theorem fourierIntegral_comp_add_right [MeasurableAdd 𝕜] (e : AddChar 𝕜 𝕊) (μ : Measure 𝕜)
     [μ.IsAddRightInvariant] (f : 𝕜 → E) (v₀ : 𝕜) :
     fourierIntegral e μ (f ∘ fun v ↦ v + v₀) = fun w ↦ e (v₀ * w) • fourierIntegral e μ f w :=
@@ -317,9 +354,42 @@ theorem vector_fourierIntegral_eq_integral_exp_smul {V : Type*} [AddCommGroup V]
     neg_mul]
 #align real.vector_fourier_integral_eq_integral_exp_smul Real.vector_fourierIntegral_eq_integral_exp_smul
 
+/-- The Fourier integral is well defined iff the function is integrable. Version with a general
+continuous bilinear function `L`. For the specialization to the inner product in an inner product
+space, see `Real.fourierIntegral_convergent_iff`. -/
+@[simp]
+theorem fourierIntegral_convergent_iff' {V W : Type*} [NormedAddCommGroup V] [NormedSpace ℝ V]
+    [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace V] [BorelSpace V] {μ : Measure V}
+    {f : V → E} (L : V →L[ℝ] W →L[ℝ] ℝ) (w : W) :
+    Integrable (fun v : V ↦ 𝐞 (- L v w) • f v) μ ↔ Integrable f μ :=
+  VectorFourier.fourierIntegral_convergent_iff (E := E) (L := L.toLinearMap₂)
+    continuous_fourierChar L.continuous₂ _
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E]
-  {V : Type*} [NormedAddCommGroup V]
+section Apply
+
+variable {ι F V W : Type*} [Fintype ι]
+  [NormedAddCommGroup V] [NormedSpace ℝ V] [MeasurableSpace V] [BorelSpace V]
+  [NormedAddCommGroup W] [NormedSpace ℝ W] [MeasurableSpace W] [BorelSpace W]
+  {μ : Measure V} {L : V →L[ℝ] W →L[ℝ] ℝ}
+  [NormedAddCommGroup F] [NormedSpace ℝ F]
+  [NormedAddCommGroup E] [NormedSpace ℂ E]
+  {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+
+theorem fourierIntegral_continuousLinearMap_apply'
+    {f : V → (F →L[ℝ] E)} {a : F} {w : W} (hf : Integrable f μ) :
+    VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w a =
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x a) w :=
+  VectorFourier.fourierIntegral_continuousLinearMap_apply continuous_fourierChar hf
+
+theorem fourierIntegral_continuousMultilinearMap_apply'
+    {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {w : W} (hf : Integrable f μ) :
+    VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ f w m =
+      VectorFourier.fourierIntegral 𝐞 μ L.toLinearMap₂ (fun x ↦ f x m) w :=
+  VectorFourier.fourierIntegral_continuousMultilinearMap_apply continuous_fourierChar hf
+
+end Apply
+
+variable {V : Type*} [NormedAddCommGroup V]
   [InnerProductSpace ℝ V] [MeasurableSpace V] [BorelSpace V] [FiniteDimensional ℝ V]
   {W : Type*} [NormedAddCommGroup W]
   [InnerProductSpace ℝ W] [MeasurableSpace W] [BorelSpace W] [FiniteDimensional ℝ W]
@@ -355,14 +425,26 @@ lemma fourierIntegralInv_eq' (f : V → E) (w : V) :
     𝓕⁻ f w = ∫ v, Complex.exp ((↑(2 * π * ⟪v, w⟫) * Complex.I)) • f v := by
   simp_rw [fourierIntegralInv_eq, Submonoid.smul_def, Real.fourierChar_apply]
 
-lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
-    𝓕⁻ f w = 𝓕 f (-w) := by
-  simp [fourierIntegral_eq, fourierIntegralInv_eq]
-
 lemma fourierIntegral_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕 (f ∘ A) w = (𝓕 f) (A w) := by
   simp only [fourierIntegral_eq, ← A.inner_map_map, Function.comp_apply, ←
     MeasurePreserving.integral_comp A.measurePreserving A.toHomeomorph.measurableEmbedding]
+
+lemma fourierIntegralInv_eq_fourierIntegral_neg (f : V → E) (w : V) :
+    𝓕⁻ f w = 𝓕 f (-w) := by
+  simp [fourierIntegral_eq, fourierIntegralInv_eq]
+
+lemma fourierIntegralInv_eq_fourierIntegral_comp_neg (f : V → E) :
+    𝓕⁻ f = 𝓕 (fun x ↦ f (-x)) := by
+  ext y
+  rw [fourierIntegralInv_eq_fourierIntegral_neg]
+  change 𝓕 f (LinearIsometryEquiv.neg ℝ y) = 𝓕 (f ∘ LinearIsometryEquiv.neg ℝ) y
+  exact (fourierIntegral_comp_linearIsometry _ _ _).symm
+
+lemma fourierIntegralInv_comm (f : V → E) :
+    𝓕 (𝓕⁻ f) = 𝓕⁻ (𝓕 f) := by
+  conv_rhs => rw [fourierIntegralInv_eq_fourierIntegral_comp_neg]
+  simp_rw [← fourierIntegralInv_eq_fourierIntegral_neg]
 
 lemma fourierIntegralInv_comp_linearIsometry (A : W ≃ₗᵢ[ℝ] V) (f : V → E) (w : W) :
     𝓕⁻ (f ∘ A) w = (𝓕⁻ f) (A w) := by
@@ -383,5 +465,21 @@ theorem fourierIntegral_real_eq_integral_exp_smul (f : ℝ → E) (w : ℝ) :
 
 @[deprecated] alias fourierIntegral_eq_integral_exp_smul :=
   fourierIntegral_real_eq_integral_exp_smul -- deprecated on 2024-02-21
+
+@[simp] theorem fourierIntegral_convergent_iff {μ : Measure V} {f : V → E} (w : V) :
+    Integrable (fun v : V ↦ 𝐞 (- ⟪v, w⟫) • f v) μ ↔ Integrable f μ :=
+  fourierIntegral_convergent_iff' (innerSL ℝ) w
+
+theorem fourierIntegral_continuousLinearMap_apply
+    {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F]
+    {f : V → (F →L[ℝ] E)} {a : F} {v : V} (hf : Integrable f) :
+    𝓕 f v a = 𝓕 (fun x ↦ f x a) v :=
+  fourierIntegral_continuousLinearMap_apply' (L := innerSL ℝ) hf
+
+theorem fourierIntegral_continuousMultilinearMap_apply {ι : Type*} [Fintype ι]
+    {M : ι → Type*} [∀ i, NormedAddCommGroup (M i)] [∀ i, NormedSpace ℝ (M i)]
+    {f : V → ContinuousMultilinearMap ℝ M E} {m : (i : ι) → M i} {v : V} (hf : Integrable f) :
+    𝓕 f v m = 𝓕 (fun x ↦ f x m) v :=
+  fourierIntegral_continuousMultilinearMap_apply' (L := innerSL ℝ) hf
 
 end Real
