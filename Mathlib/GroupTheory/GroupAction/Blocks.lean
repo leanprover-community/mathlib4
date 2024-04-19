@@ -15,7 +15,7 @@ import Mathlib.GroupTheory.Subgroup.Actions
 Given `SMul G X`, an action of a type `G` on a type `X`, we define
 
 - the predicate `IsBlock G B` states that `B : Set X` is a block,
-  which means that the sets `g • B`, for `g ∈ G` form a partition of `X`.
+  which means that the sets `g • B`, for `g ∈ G`, are equal or disjoint.
 
 - a bunch of lemmas that give examples of “trivial” blocks : ⊥, ⊤, singletons,
   and non trivial blocks: orbit of the group, orbit of a normal subgroup…
@@ -48,7 +48,7 @@ theorem orbit.pairwiseDisjoint :
   contrapose! h
   exact (orbit.eq_or_disjoint x y).resolve_right h
 
--- move this to `Mathlib.Data.Setoid.Partition`
+/- -- move this to `Mathlib.Data.Setoid.Partition`
 lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
     (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
     Setoid.IsPartition s := by
@@ -59,7 +59,9 @@ lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*}
   apply h₁.elim hb₁.1 hb₂.1
   simp only [Set.not_disjoint_iff]
   exact ⟨a, hb₁.2, hb₂.2⟩
+-/
 
+/- moved to Mathlib.Data.Set.Pairwise.Basic
 -- move this to one of
 -- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
 lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint {α : Type*} {s : Set (Set α)}
@@ -67,7 +69,10 @@ lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint {α : Type*} {s : Set (Set α)}
     a = b ∨ Disjoint a b := by
   rw [or_iff_not_imp_right]
   exact h.elim ha hb
+-/
 
+/-
+moved to
 -- move this to one of
 -- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
 lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
@@ -77,6 +82,7 @@ lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)
     apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
   · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
     exact (h x y).resolve_left hxy
+-/
 
 /-- Orbits of an element form a partition -/
 theorem IsPartition.of_orbits :

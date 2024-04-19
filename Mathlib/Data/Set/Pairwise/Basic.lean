@@ -334,6 +334,27 @@ theorem PairwiseDisjoint.elim (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈
   hs.eq hi hj h
 #align set.pairwise_disjoint.elim Set.PairwiseDisjoint.elim
 
+lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint' {α : Type*} {s : Set (Set α)}
+    (h : s.PairwiseDisjoint id) {a b : Set α} (ha : a ∈ s) (hb : b ∈ s) :
+    a = b ∨ Disjoint a b := by
+  rw [or_iff_not_imp_right]
+  exact h.elim ha hb
+
+lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint
+  -- {α : Type*} {s : Set (Set α)}
+    (h : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s) :
+    i = j ∨ Disjoint (f i) (f j) := by
+  rw [or_iff_not_imp_right]
+  exact h.elim hi hj
+
+lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
+    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
+  constructor
+  · intro h x y
+    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
+  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
+    exact (h x y).resolve_left hxy
+
 end PartialOrderBot
 
 section SemilatticeInfBot
