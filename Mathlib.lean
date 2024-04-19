@@ -1645,6 +1645,7 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
+import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
@@ -3008,6 +3009,7 @@ import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
 import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
