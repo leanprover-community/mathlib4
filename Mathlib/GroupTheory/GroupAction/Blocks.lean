@@ -39,7 +39,8 @@ variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 theorem orbit.pairwise_disjoint :
     (Set.range fun x : X => orbit G x).PairwiseDisjoint id := by
   by_contra h
-  rcases Set.exists_ne_mem_inter_of_not_pairwiseDisjoint h with ⟨s, ⟨x, rfl⟩, t, ⟨y, rfl⟩, hst, z, ⟨hzx, hzy⟩⟩
+  rcases Set.exists_ne_mem_inter_of_not_pairwiseDisjoint h
+    with ⟨s, ⟨x, rfl⟩, t, ⟨y, rfl⟩, hst, z, ⟨hzx, hzy⟩⟩
   apply hst
   simp only [id_eq] at hzx hzy
   simp only [← orbit_eq_iff.mpr hzx, ← orbit_eq_iff.mpr hzy]
