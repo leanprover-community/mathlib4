@@ -1351,6 +1351,17 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Subm
 
 variable (R φ)
 
+/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
+product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
+def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L[R] ((i : α) → φ (f i)) where
+  toFun := fun v i ↦ v (f i)
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  cont := by continuity
+
+@[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
+    Pi.compRightL R φ f v i = v (f i) := rfl
+
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
 def iInfKerProjEquiv {I J : Set ι} [DecidablePred fun i => i ∈ I] (hd : Disjoint I J)
