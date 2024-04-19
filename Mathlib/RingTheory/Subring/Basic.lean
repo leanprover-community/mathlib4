@@ -768,7 +768,6 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
-  __ := commRing
   inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
   mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
