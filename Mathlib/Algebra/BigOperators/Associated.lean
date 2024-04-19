@@ -109,11 +109,11 @@ z for which `p` holds and a unit. -/
 theorem Submonoid.divisor_closure_induction [Monoid α] {s : Set α} {p : α → Prop} {x : α}
     (h : x ∈ Submonoid.divisor_closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
     (mul : ∀ x y, p x → p y → p (x*y))
-    (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), ∃ z ∈ {x | p x}, y ~ᵤ z) : p x := by
+    (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), p y) : p x := by
   have := Submonoid.divisor_closure_le (s := s) (S := ⟨⟨_, fun hx hy => mul _ _ hx hy⟩, one⟩)
   simp only [IsDivisorClosed, coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk,
     Subsemigroup.mem_mk, forall_exists_index] at this
-  exact this mem div h
+  exact this mem (fun b hb a x hax => ⟨_, div b hb a x hax, Associated.refl a⟩) h
 
 theorem top_divisor_closed [Monoid α] : IsDivisorClosed (⊤ : Submonoid α) :=
   fun _ _ a _ => ⟨_, Submonoid.mem_top a, Associated.refl a⟩
