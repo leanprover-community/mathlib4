@@ -94,7 +94,7 @@ If you are working with a `NonUnitalRing` and not a `NonUnitalSemiring`, see
 lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
     (h_le_iff : ∀ x y : R, x ≤ y ↔ ∃ s, y = x + star s * s) : StarOrderedRing R where
   le_iff x y := by
-    refine' ⟨fun h => _, _⟩
+    refine ⟨fun h => ?_, ?_⟩
     · obtain ⟨p, hp⟩ := (h_le_iff x y).mp h
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩

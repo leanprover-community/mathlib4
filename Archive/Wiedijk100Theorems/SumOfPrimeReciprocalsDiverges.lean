@@ -154,7 +154,7 @@ theorem card_le_two_pow {x k : ℕ} :
     obtain ⟨⟨-, hmp⟩, hms⟩ := hm
     use! (m + 1).factors
     · rwa [Multiset.coe_nodup, ← Nat.squarefree_iff_nodup_factors m.succ_ne_zero]
-    refine' ⟨fun p => _, _⟩
+    refine ⟨fun p => ?_, ?_⟩
     · suffices p ∈ (m + 1).factors → ∃ a : ℕ, a < k ∧ a.succ = p by simpa
       simp only [Nat.mem_factors m.succ_ne_zero]
       intro hp

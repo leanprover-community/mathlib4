@@ -154,7 +154,7 @@ def cartesianClosedOfReflective : CartesianClosed D :=
             adj := by
               apply Adjunction.restrictFullyFaithful i i (exp.adjunction (i.obj B))
               · symm
-                refine' NatIso.ofComponents (fun X => _) (fun f => _)
+                refine NatIso.ofComponents (fun X => ?_) (fun f => ?_)
                 · haveI :=
                     Adjunction.rightAdjointPreservesLimits.{0, 0} (Adjunction.ofRightAdjoint i)
                   apply asIso (prodComparison i B X)

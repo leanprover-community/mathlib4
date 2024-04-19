@@ -237,7 +237,7 @@ theorem nim_add_equiv_zero_iff (o₁ o₂ : Ordinal) : (nim o₁ + nim o₂ ≈ 
     wlog h : o₁ < o₂
     · exact (fuzzy_congr_left add_comm_equiv).1 (this _ _ hne.symm (hne.lt_or_lt.resolve_left h))
     rw [Impartial.fuzzy_zero_iff_gf, zero_lf_le, nim_def o₂]
-    refine' ⟨toLeftMovesAdd (Sum.inr _), _⟩
+    refine ⟨toLeftMovesAdd (Sum.inr ?_), ?_⟩
     · exact (Ordinal.principalSegOut h).top
     · -- Porting note: squeezed simp
       simpa only [Ordinal.typein_top, Ordinal.type_lt, PGame.add_moveLeft_inr, PGame.moveLeft_mk]

@@ -304,7 +304,7 @@ theorem convexHull_range_eq_exists_affineCombination (v : ι → E) : convexHull
         ← sum_subset (subset_union_right s s'), sum_ite_of_true _ _ fun i hi => hi,
         sum_ite_of_true _ _ fun i hi => hi, ← mul_sum, ← mul_sum, hw₁, hw₁', ← add_mul, hab,
         mul_one] <;> intro i _ hi' <;> simp [hi']
-    refine' ⟨s ∪ s', W, _, hW₁, _⟩
+    refine ⟨s ∪ s', W, ?_, hW₁, ?_⟩
     · rintro i -
       by_cases hi : i ∈ s <;> by_cases hi' : i ∈ s' <;>
         simp [W, hi, hi', add_nonneg, mul_nonneg ha (hw₀ i _), mul_nonneg hb (hw₀' i _)]
@@ -398,7 +398,7 @@ theorem convexHull_eq_union_convexHull_finite_subsets (s : Set E) :
   · rw [_root_.convexHull_eq]
     rintro x ⟨ι, t, w, z, hw₀, hw₁, hz, rfl⟩
     simp only [mem_iUnion]
-    refine' ⟨t.image z, _, _⟩
+    refine ⟨t.image z, ?_, ?_⟩
     · rw [coe_image, Set.image_subset_iff]
       exact hz
     · apply t.centerMass_mem_convexHull hw₀

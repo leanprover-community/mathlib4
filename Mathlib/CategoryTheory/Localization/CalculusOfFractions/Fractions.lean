@@ -286,7 +286,7 @@ lemma exists_leftFraction₂ {X Y : C} (f f' : L.obj X ⟶ L.obj Y) :
   have : IsIso (L.map (φ'.s ≫ α.s)) := by
     rw [L.map_comp]
     infer_instance
-  refine' ⟨ψ, _, _⟩
+  refine ⟨ψ, ?_, ?_⟩
   · rw [← cancel_mono (L.map (φ'.s ≫ α.s)), LeftFraction.map_comp_map_s,
       hα, L.map_comp, hφ, LeftFraction.map_comp_map_s_assoc,
       L.map_comp]

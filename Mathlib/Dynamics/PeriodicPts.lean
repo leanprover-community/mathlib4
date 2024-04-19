@@ -371,7 +371,7 @@ theorem iterate_eq_iterate_iff_of_lt_minimalPeriod {m n : ℕ} (hm : m < minimal
 #align function.minimal_period_id Function.minimalPeriod_id
 
 theorem minimalPeriod_eq_one_iff_isFixedPt : minimalPeriod f x = 1 ↔ IsFixedPt f x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← iterate_one f]
     refine Function.IsPeriodicPt.isFixedPt ?_
     rw [← h]

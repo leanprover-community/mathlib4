@@ -322,7 +322,7 @@ instance NonemptyCompacts.secondCountableTopology [SecondCountableTopology α] :
     rcases exists_countable_dense α with ⟨s, cs, s_dense⟩
     let v0 := { t : Set α | t.Finite ∧ t ⊆ s }
     let v : Set (NonemptyCompacts α) := { t : NonemptyCompacts α | (t : Set α) ∈ v0 }
-    refine' ⟨⟨v, _, _⟩⟩
+    refine ⟨⟨v, ?_, ?_⟩⟩
     · have : v0.Countable := countable_setOf_finite_subset cs
       exact this.preimage SetLike.coe_injective
     · refine' fun t => mem_closure_iff.2 fun ε εpos => _

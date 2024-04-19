@@ -222,7 +222,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
         f.lt_iff_lt.2 (show (0 : ℕ) < 1 from zero_lt_one), _⟩
       · rw [← hf, ← hf]; simp
     · rintro ⟨n, m, hnm, h, h'⟩
-      refine' ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) _, _⟩
+      refine ⟨OrderEmbedding.ofStrictMono (fun i => if (i : ℕ) = 0 then n else m) ?_, ?_⟩
       · rintro ⟨⟨_ | i⟩, hi⟩ ⟨⟨_ | j⟩, hj⟩
         · simp
         · simp [hnm]

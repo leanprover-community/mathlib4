@@ -200,7 +200,7 @@ theorem exists_compl_positive_negative :
         j.toSignedMeasure ≤[S] 0 ∧
           0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart Sᶜ = 0 := by
   obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
-  refine' ⟨S, hS₁, _, _, hS₂, hS₃⟩
+  refine ⟨S, hS₁, ?_, ?_, hS₂, hS₃⟩
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
     rw [toSignedMeasure, toSignedMeasure_sub_apply hA,
       show j.posPart A = 0 from nonpos_iff_eq_zero.1 (hS₂ ▸ measure_mono hA₁), ENNReal.zero_toReal,
@@ -553,7 +553,7 @@ theorem mutuallySingular_iff (s t : SignedMeasure α) :
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     obtain ⟨i, hi₁, hi₂, hi₃, hipos, hineg⟩ := s.toJordanDecomposition_spec
     obtain ⟨j, hj₁, hj₂, hj₃, hjpos, hjneg⟩ := t.toJordanDecomposition_spec
-    refine' ⟨u, hmeas, _, _⟩
+    refine ⟨u, hmeas, ?_, ?_⟩
     · rw [totalVariation, Measure.add_apply, hipos, hineg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       -- Porting note: added `← NNReal.eq_iff`
@@ -574,7 +574,7 @@ theorem mutuallySingular_ennreal_iff (s : SignedMeasure α) (μ : VectorMeasure 
   constructor
   · rintro ⟨u, hmeas, hu₁, hu₂⟩
     obtain ⟨i, hi₁, hi₂, hi₃, hpos, hneg⟩ := s.toJordanDecomposition_spec
-    refine' ⟨u, hmeas, _, _⟩
+    refine ⟨u, hmeas, ?_, ?_⟩
     · rw [totalVariation, Measure.add_apply, hpos, hneg, toMeasureOfZeroLE_apply _ _ _ hmeas,
         toMeasureOfLEZero_apply _ _ _ hmeas]
       -- Porting note: added `← NNReal.eq_iff`

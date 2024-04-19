@@ -52,7 +52,7 @@ theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x
   refine Set.ext fun z => ?_
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
-      refine' ⟨1 - t, _, _⟩
+      refine ⟨1 - t, ?_, ?_⟩
       · rwa [Set.sub_mem_Icc_iff_right, sub_self, sub_zero]
       · rwa [lineMap_apply_one_sub]
 #align affine_segment_comm affineSegment_comm
@@ -300,7 +300,7 @@ theorem wbtw_self_right (x y : P) : Wbtw R x y y :=
 
 @[simp]
 theorem wbtw_self_iff {x y : P} : Wbtw R x y x ↔ y = x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · -- Porting note: Originally `simpa [Wbtw, affineSegment] using h`
     have ⟨_, _, h₂⟩ := h
     rw [h₂.symm, lineMap_same_apply]
@@ -671,7 +671,7 @@ variable {R}
 
 theorem wbtw_iff_left_eq_or_right_mem_image_Ici {x y z : P} :
     Wbtw R x y z ↔ x = y ∨ z ∈ lineMap x y '' Set.Ici (1 : R) := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨r, ⟨hr0, hr1⟩, rfl⟩
     rcases hr0.lt_or_eq with (hr0' | rfl)
     · rw [Set.mem_image]

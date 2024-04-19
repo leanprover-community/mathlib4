@@ -176,7 +176,7 @@ instance preservesLimitsOfShape_plusFunctor
     PreservesLimitsOfShape K (J.plusFunctor D) := by
   constructor; intro F; apply preservesLimitOfEvaluation; intro X
   apply preservesLimitOfPreservesLimitCone (limit.isLimit F)
-  refine' ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, _, _⟩
+  refine ⟨fun S => liftToPlusObjLimitObj.{w, v, u} F X.unop S, ?_, ?_⟩
   · intro S k
     apply liftToPlusObjLimitObj_fac
   · intro S m hm

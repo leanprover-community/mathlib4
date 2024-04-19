@@ -290,7 +290,7 @@ theorem isElementary_of_exists (f : M ↪[L] N)
     simp [ih1, ih2]
   · intro n φ ih xs
     simp only [BoundedFormula.realize_all]
-    refine' ⟨fun h a => _, _⟩
+    refine ⟨fun h a => ?_, ?_⟩
     · rw [← ih, Fin.comp_snoc]
       exact h (f a)
     · contrapose!

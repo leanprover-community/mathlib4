@@ -173,7 +173,7 @@ theorem div_eq_quo_add_rem_div (f : R[X]) {g : R[X]} (hg : g.Monic) :
     ∃ q r : R[X], r.degree < g.degree ∧
       (algebraMap R[X] K f) / (algebraMap R[X] K g) =
         algebraMap R[X] K q + (algebraMap R[X] K r) / (algebraMap R[X] K g) := by
-  refine' ⟨f /ₘ g, f %ₘ g, _, _⟩
+  refine ⟨f /ₘ g, f %ₘ g, ?_, ?_⟩
   · exact degree_modByMonic_lt _ hg
   · have hg' : algebraMap R[X] K g ≠ 0 :=
       -- Porting note: the proof was `by exact_mod_cast Monic.ne_zero hg`

@@ -333,7 +333,7 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
     continuous_extension.continuousAt.preimage_mem_nhds
       (WithZeroTopology.singleton_mem_nhds_of_ne_zero h)
   rw [mem_closure_iff_nhds']
-  refine' ⟨fun hx => _, fun hx s hs => _⟩
+  refine ⟨fun hx => ?_, fun hx s hs => ?_⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
     replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]

@@ -227,7 +227,7 @@ theorem mellin_convergent_top_of_isBigO {f : ℝ → ℝ}
   simp_rw [IsBigOWith, eventually_atTop] at hd'
   obtain ⟨e, he⟩ := hd'
   have he' : 0 < max e 1 := zero_lt_one.trans_le (le_max_right _ _)
-  refine' ⟨max e 1, he', _, _⟩
+  refine ⟨max e 1, he', ?_, ?_⟩
   · refine' AEStronglyMeasurable.mul _ (hfc.mono_set (Ioi_subset_Ioi he'.le))
     refine' (ContinuousAt.continuousOn fun t ht => _).aestronglyMeasurable measurableSet_Ioi
     exact continuousAt_rpow_const _ _ (Or.inl <| (he'.trans ht).ne')

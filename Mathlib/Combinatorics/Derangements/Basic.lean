@@ -56,7 +56,7 @@ protected def subtypeEquiv (p : α → Prop) [DecidablePred p] :
   calc
     derangements (Subtype p) ≃ { f : { f : Perm α // ∀ a, ¬p a → a ∈ fixedPoints f } //
         ∀ a, a ∈ fixedPoints f → ¬p a } := by
-      refine' (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => _, _⟩
+      refine (Perm.subtypeEquivSubtypePerm p).subtypeEquiv fun f => ⟨fun hf a hfa ha => ?_, ?_⟩
       · refine' hf ⟨a, ha⟩ (Subtype.ext _)
         simp_rw [mem_fixedPoints, IsFixedPt, Perm.subtypeEquivSubtypePerm,
         Equiv.coe_fn_mk, Perm.ofSubtype_apply_of_mem _ ha] at hfa
@@ -95,7 +95,7 @@ def atMostOneFixedPointEquivSum_derangements [DecidableEq α] (a : α) :
           (fun x : Perm α => fixedPoints x ⊆ {a})
           (¬a ∈ fixedPoints ·)
     _ ≃ Sum { f : Perm α // fixedPoints f = {a} } { f : Perm α // fixedPoints f = ∅ } := by
-      refine' Equiv.sumCongr (subtypeEquivRight fun f => _) (subtypeEquivRight fun f => _)
+      refine Equiv.sumCongr (subtypeEquivRight fun f => ?_) (subtypeEquivRight fun f => ?_)
       · rw [Set.eq_singleton_iff_unique_mem, and_comm]
         rfl
       · rw [Set.eq_empty_iff_forall_not_mem]

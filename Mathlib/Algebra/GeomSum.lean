@@ -543,7 +543,7 @@ theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i in range
 
 theorem geom_sum_pos_iff [LinearOrderedRing α] (hn : n ≠ 0) :
     (0 < ∑ i in range n, x ^ i) ↔ Odd n ∨ 0 < x + 1 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [or_iff_not_imp_left, ← not_le, ← Nat.even_iff_not_odd]
     refine' fun hn hx => h.not_le _
     simpa [if_pos hn] using geom_sum_alternating_of_le_neg_one hx n

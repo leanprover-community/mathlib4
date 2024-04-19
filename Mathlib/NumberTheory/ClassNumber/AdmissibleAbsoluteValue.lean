@@ -76,7 +76,7 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
   haveI := Classical.decEq R
   induction' n with n ih
   · intro ε _hε b _hb A
-    refine' ⟨0, 1, _, _⟩
+    refine ⟨0, 1, ?_, ?_⟩
     · simp
     rintro ⟨i, ⟨⟩⟩
   intro ε hε b hb A

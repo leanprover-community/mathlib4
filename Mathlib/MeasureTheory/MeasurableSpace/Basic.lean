@@ -1960,7 +1960,7 @@ noncomputable def schroederBernstein {f : α → β} {g : β → α} (hf : Measu
   have Fmono : ∀ {A B}, A ⊆ B → F A ⊆ F B := fun h =>
     compl_subset_compl.mpr <| Set.image_subset _ <| compl_subset_compl.mpr <| Set.image_subset _ h
   let X : ℕ → Set α := fun n => F^[n] univ
-  refine' ⟨iInter X, _, _⟩
+  refine ⟨iInter X, ?_, ?_⟩
   · apply MeasurableSet.iInter
     intro n
     induction' n with n ih

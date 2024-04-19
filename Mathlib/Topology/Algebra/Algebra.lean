@@ -40,7 +40,7 @@ variable [TopologicalSpace R] [TopologicalSpace A] [TopologicalSemiring A]
 
 theorem continuous_algebraMap_iff_smul :
     Continuous (algebraMap R A) ↔ Continuous fun p : R × A => p.1 • p.2 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · simp only [Algebra.smul_def]
     exact (h.comp continuous_fst).mul continuous_snd
   · rw [algebraMap_eq_smul_one']

@@ -91,7 +91,7 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     refine' lt_of_lt_of_le ((@Rat.cast_lt ℝ _ _ _).1 _) ((inv_le ε0 (Nat.cast_pos.2 k0)).1 ik)
     simpa using sub_lt_iff_lt_add'.2 (lt_of_le_of_lt hy <| sub_lt_iff_lt_add.1 <| hf₂ _ k0 _ yS)
   let g : CauSeq ℚ abs := ⟨fun n => f n / n, hg⟩
-  refine' ⟨mk g, ⟨fun x xS => _, fun y h => _⟩⟩
+  refine ⟨mk g, ⟨fun x xS => ?_, fun y h => ?_⟩⟩
   · refine' le_of_forall_ge_of_dense fun z xz => _
     cases' exists_nat_gt (x - z)⁻¹ with K hK
     refine' le_mk_of_forall_le ⟨K, fun n nK => _⟩

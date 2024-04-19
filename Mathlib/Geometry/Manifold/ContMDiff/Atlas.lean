@@ -242,7 +242,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       intro y hy
       simp only [mfld_simps] at hy
       have H : ContMDiffWithinAt I I ⊤ f (f ≫ₕ c').source ((extChartAt I x).symm y) := by
-        refine' (h₁ ((extChartAt I x).symm y) _).mono _
+        refine (h₁ ((extChartAt I x).symm y) ?_).mono ?_
         · simp only [hy, mfld_simps]
         · mfld_set_tac
       have hy' : (extChartAt I x).symm y ∈ c.source := by simp only [hy, mfld_simps]
@@ -256,7 +256,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
       simp only [mfld_simps] at hy
       have H : ContMDiffWithinAt I I ⊤ f.symm (f.symm ≫ₕ c).source
           ((extChartAt I (f x)).symm y) := by
-        refine' (h₂ ((extChartAt I (f x)).symm y) _).mono _
+        refine (h₂ ((extChartAt I (f x)).symm y) ?_).mono ?_
         · simp only [hy, mfld_simps]
         · mfld_set_tac
       have hy' : (extChartAt I (f x)).symm y ∈ c'.source := by simp only [hy, mfld_simps]

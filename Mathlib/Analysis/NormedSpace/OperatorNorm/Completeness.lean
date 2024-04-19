@@ -41,7 +41,7 @@ to function. Coercion to function of the result is definitionally equal to `f`. 
 def ofMemClosureImageCoeBounded (f : E' → F) {s : Set (E' →SL[σ₁₂] F)} (hs : IsBounded s)
     (hf : f ∈ closure (((↑) : (E' →SL[σ₁₂] F) → E' → F) '' s)) : E' →SL[σ₁₂] F := by
   -- `f` is a linear map due to `linearMapOfMemClosureRangeCoe`
-  refine' (linearMapOfMemClosureRangeCoe f _).mkContinuousOfExistsBound _
+  refine (linearMapOfMemClosureRangeCoe f ?_).mkContinuousOfExistsBound ?_
   · refine' closure_mono (image_subset_iff.2 fun g _ => _) hf
     exact ⟨g, rfl⟩
   · -- We need to show that `f` has bounded norm. Choose `C` such that `‖g‖ ≤ C` for all `g ∈ s`.

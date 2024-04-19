@@ -188,7 +188,7 @@ theorem tietze_extension_step (f : X →ᵇ ℝ) (e : C(X, Y)) (he : ClosedEmbed
     refine' disjoint_image_of_injective he.inj (Disjoint.preimage _ _)
     rwa [Iic_disjoint_Ici, not_le]
   rcases exists_bounded_mem_Icc_of_closed_of_le hc₁ hc₂ hd hf3.le with ⟨g, hg₁, hg₂, hgf⟩
-  refine' ⟨g, _, _⟩
+  refine ⟨g, ?_, ?_⟩
   · refine' (norm_le <| div_nonneg hf.le h3.le).mpr fun y => _
     simpa [abs_le, neg_div] using hgf y
   · refine' (dist_le <| mul_nonneg h23.le hf.le).mpr fun x => _
@@ -295,7 +295,7 @@ theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a
     ∃ g : Y →ᵇ ℝ, (∀ y, g y ∈ Icc a b) ∧ g ∘ e = f := by
   rcases exists_extension_norm_eq_of_closedEmbedding (f - const X ((a + b) / 2)) he with
     ⟨g, hgf, hge⟩
-  refine' ⟨const Y ((a + b) / 2) + g, fun y => _, _⟩
+  refine ⟨const Y ((a + b) / 2) + g, fun y => ?_, ?_⟩
   · suffices ‖f - const X ((a + b) / 2)‖ ≤ (b - a) / 2 by
       simpa [Real.Icc_eq_closedBall, add_mem_closedBall_iff_norm] using
         (norm_coe_le_norm g y).trans (hgf.trans_le this)
@@ -489,7 +489,7 @@ theorem exists_extension_forall_mem_of_closedEmbedding (f : C(X, ℝ)) {t : Set 
       h.symm.continuous.comp <| G.continuous.subtype_mk _⟩
   have hgG : ∀ {y a}, g y = a ↔ G y = h a := @fun y a =>
     h.toEquiv.symm_apply_eq.trans Subtype.ext_iff
-  refine' ⟨g, fun y => _, _⟩
+  refine ⟨g, fun y => ?_, ?_⟩
   · rcases hG y with ⟨a, ha, hay⟩
     convert ha
     exact hgG.2 hay.symm

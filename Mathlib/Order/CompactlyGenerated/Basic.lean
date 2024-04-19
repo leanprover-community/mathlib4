@@ -247,7 +247,7 @@ theorem IsSupClosedCompact.wellFounded (h : IsSupClosedCompact α) :
 
 theorem isSupFiniteCompact_iff_all_elements_compact :
     IsSupFiniteCompact α ↔ ∀ k : α, IsCompactElement k := by
-  refine' ⟨fun h k s hs => _, fun h s => _⟩
+  refine ⟨fun h k s hs => ?_, fun h s => ?_⟩
   · obtain ⟨t, ⟨hts, htsup⟩⟩ := h s
     use t, hts
     rwa [← htsup]

@@ -606,7 +606,7 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   refine' (smul_eq_zero_iff_eq (w i)).1 _
-  refine' hv s (fun i => w i • g i) (fun i hi => _) _ i
+  refine hv s (fun i => w i • g i) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ smul_zero _
   · rw [← hsum, Finset.sum_congr rfl _]
@@ -622,7 +622,7 @@ theorem LinearIndependent.units_smul {v : ι → M} (hv : LinearIndependent R v)
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
   rw [← (w i).mul_left_eq_zero]
-  refine' hv s (fun i => g i • (w i : R)) (fun i hi => _) _ i
+  refine hv s (fun i => g i • (w i : R)) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ zero_smul _ _
   · rw [← hsum, Finset.sum_congr rfl _]

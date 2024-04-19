@@ -595,7 +595,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
   rw [ContinuousAt, h2y, tendsto_order]
   have := tendsto_order.mp ((show Continuous fun x => f x y
     from hf.comp <| continuous_id.prod_mk continuous_const).tendsto x)
-  refine' ⟨fun z hz => _, fun z hz => _⟩
+  refine ⟨fun z hz => ?_, fun z hz => ?_⟩
   · refine' (this.1 z hz).mono fun x' hx' =>
       hx'.trans_le <| le_csSup _ <| mem_image_of_mem (f x') hyK
     exact hK.bddAbove_image (hf.comp <| Continuous.Prod.mk x').continuousOn

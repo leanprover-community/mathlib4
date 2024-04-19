@@ -344,7 +344,7 @@ theorem mem_ideal_smul_span_iff_exists_sum {ι : Type*} (f : ι → M) (x : M) :
   refine' fun hx => span_induction (mem_smul_span.mp hx) _ _ _ _
   · simp only [Set.mem_iUnion, Set.mem_range, Set.mem_singleton_iff]
     rintro x ⟨y, hy, x, ⟨i, rfl⟩, rfl⟩
-    refine' ⟨Finsupp.single i y, fun j => _, _⟩
+    refine ⟨Finsupp.single i y, fun j => ?_, ?_⟩
     · letI := Classical.decEq ι
       rw [Finsupp.single_apply]
       split_ifs

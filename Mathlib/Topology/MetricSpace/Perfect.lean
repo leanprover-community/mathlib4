@@ -47,7 +47,7 @@ private theorem Perfect.small_diam_aux (ε_pos : 0 < ε) {x : α} (xC : x ∈ C)
     rw [ENNReal.div_pos_iff]
     exact ⟨ne_of_gt ε_pos, by norm_num⟩
   have := hC.closure_nhds_inter x xC this EMetric.isOpen_ball
-  refine' ⟨this.1, this.2, _, _⟩
+  refine ⟨this.1, this.2, ?_, ?_⟩
   · rw [IsClosed.closure_subset_iff hC.closed]
     apply inter_subset_right
   rw [EMetric.diam_closure]

@@ -236,7 +236,7 @@ theorem sum_bernoulli (n : ℕ) :
   have f := sum_bernoulli' n.succ.succ
   simp_rw [sum_range_succ', cast_succ, ← eq_sub_iff_add_eq] at f
   -- Porting note: was `convert f`
-  refine' Eq.trans _ (Eq.trans f _)
+  refine Eq.trans ?_ (Eq.trans f ?_)
   · congr
     funext x
     rw [bernoulli_eq_bernoulli'_of_ne_one (succ_ne_zero x ∘ succ.inj)]

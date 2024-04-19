@@ -189,7 +189,7 @@ theorem SurjectiveOnWith.mono {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup
 
 theorem SurjectiveOnWith.exists_pos {f : NormedAddGroupHom V₁ V₂} {K : AddSubgroup V₂} {C : ℝ}
     (h : f.SurjectiveOnWith K C) : ∃ C' > 0, f.SurjectiveOnWith K C' := by
-  refine' ⟨|C| + 1, _, _⟩
+  refine ⟨|C| + 1, ?_, ?_⟩
   · linarith [abs_nonneg C]
   · apply h.mono
     linarith [le_abs_self C]
@@ -821,7 +821,7 @@ def NormNoninc (f : NormedAddGroupHom V W) : Prop :=
 namespace NormNoninc
 
 theorem normNoninc_iff_norm_le_one : f.NormNoninc ↔ ‖f‖ ≤ 1 := by
-  refine' ⟨fun h => _, fun h => fun v => _⟩
+  refine ⟨fun h => ?_, fun h => fun v => ?_⟩
   · refine' opNorm_le_bound _ zero_le_one fun v => _
     simpa [one_mul] using h v
   · simpa using le_of_opNorm_le f h v

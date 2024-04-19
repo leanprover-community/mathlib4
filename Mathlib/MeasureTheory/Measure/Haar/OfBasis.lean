@@ -166,7 +166,7 @@ theorem parallelepiped_single [DecidableEq ι] (a : ι → ℝ) :
     · rw [sup_eq_right.mpr hai, inf_eq_left.mpr hai]
       exact ⟨mul_nonneg ht.1 hai, mul_le_of_le_one_left hai ht.2⟩
   · intro h
-    refine' ⟨fun i => x i / a i, fun i => _, funext fun i => _⟩
+    refine ⟨fun i => x i / a i, fun i => ?_, funext fun i => ?_⟩
     · specialize h i
       rcases le_total (a i) 0 with hai | hai
       · rw [sup_eq_left.mpr hai, inf_eq_right.mpr hai] at h

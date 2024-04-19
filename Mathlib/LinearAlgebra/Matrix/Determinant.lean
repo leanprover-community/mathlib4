@@ -519,7 +519,7 @@ theorem det_eq_of_forall_row_eq_smul_add_pred_aux {n : ℕ} (k : Fin (n + 1)) :
       {M N : Matrix (Fin n.succ) (Fin n.succ) R} (_h0 : ∀ j, M 0 j = N 0 j)
       (_hsucc : ∀ (i : Fin n) (j), M i.succ j = N i.succ j + c i * M (Fin.castSucc i) j),
       det M = det N := by
-  refine' Fin.induction _ (fun k ih => _) k <;> intro c hc M N h0 hsucc
+  refine Fin.induction ?_ (fun k ih => ?_) k <;> intro c hc M N h0 hsucc
   · congr
     ext i j
     refine Fin.cases (h0 j) (fun i => ?_) i

@@ -201,7 +201,7 @@ theorem exists_locallyConstant {α : Type*} (hC : IsLimit C) (f : LocallyConstan
   cases isEmpty_or_nonempty S
   · suffices ∃ j, IsEmpty (F.obj j) by
       refine this.imp fun j hj => ?_
-      refine' ⟨⟨hj.elim, fun A => _⟩, _⟩
+      refine ⟨⟨hj.elim, fun A => ?_⟩, ?_⟩
       · suffices (fun a ↦ IsEmpty.elim hj a) ⁻¹' A = ∅ by
           rw [this]
           exact isOpen_empty

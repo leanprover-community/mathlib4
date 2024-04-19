@@ -154,7 +154,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     refine' le_trans _ (le_d_f _ _ hmn)
     exact le_add_of_le_of_nonneg le_rfl (pow_nonneg (le_of_lt <| half_pos <| zero_lt_one) _)
   have hs : MeasurableSet s := MeasurableSet.iUnion fun n => MeasurableSet.iInter fun m => hf _ _
-  refine' ⟨s, hs, _, _⟩
+  refine ⟨s, hs, ?_, ?_⟩
   · intro t ht hts
     have : 0 ≤ d t :=
       (add_le_add_iff_left γ).1 <|

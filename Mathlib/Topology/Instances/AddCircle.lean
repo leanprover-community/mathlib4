@@ -465,7 +465,7 @@ theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     convert congr_arg (QuotientAddGroup.mk : 𝕜 → (AddCircle p)) ha using 1
     rw [coe_add, ← Int.cast_natCast, han, zsmul_eq_mul, mul_div_right_comm, eq_comm,
       add_left_eq_self, ← zsmul_eq_mul, coe_zsmul, coe_period, smul_zero]
-  refine' ⟨(a % n).toNat, _, _, he⟩
+  refine ⟨(a % n).toNat, ?_, ?_, he⟩
   · rw [← Int.ofNat_lt, han]
     exact Int.emod_lt_of_pos _ (Int.ofNat_lt.2 h)
   · have := (gcd_mul_addOrderOf_div_eq p (Int.toNat (a % ↑n)) h).trans
@@ -491,7 +491,7 @@ def setAddOrderOfEquiv {n : ℕ} (hn : 0 < n) :
   Equiv.symm <|
     Equiv.ofBijective (fun m => ⟨↑((m : 𝕜) / n * p), addOrderOf_div_of_gcd_eq_one hn m.prop.2⟩)
       (by
-        refine' ⟨fun m₁ m₂ h => Subtype.ext _, fun u => _⟩
+        refine ⟨fun m₁ m₂ h => Subtype.ext ?_, fun u => ?_⟩
         · simp_rw [Subtype.ext_iff] at h
           rw [← sub_eq_zero, ← coe_sub, ← sub_mul, ← sub_div, ← Int.cast_natCast m₁,
             ← Int.cast_natCast m₂, ← Int.cast_sub, coe_eq_zero_iff] at h

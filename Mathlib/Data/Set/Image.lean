@@ -631,7 +631,7 @@ theorem powerset_insert (s : Set α) (a : α) : 𝒫 insert a s = 𝒫 s ∪ ins
   · intro h
     by_cases hs : a ∈ t
     · right
-      refine' ⟨t \ {a}, _, _⟩
+      refine ⟨t \ {a}, ?_, ?_⟩
       · rw [diff_singleton_subset_iff]
         assumption
       · rw [insert_diff_singleton, insert_eq_of_mem hs]

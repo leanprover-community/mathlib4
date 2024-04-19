@@ -119,7 +119,7 @@ theorem det_vandermonde {n : ℕ} (v : Fin n → R) :
   · intro i j
     simp_rw [of_apply]
     rw [Matrix.cons_val_zero]
-    refine' Fin.cases _ (fun i => _) i
+    refine Fin.cases ?_ (fun i => ?_) i
     · simp
     rw [Matrix.cons_val_succ, Matrix.cons_val_succ, Pi.one_apply]
     ring

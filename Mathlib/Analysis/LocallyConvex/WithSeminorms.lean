@@ -191,7 +191,7 @@ theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
   · rw [p.moduleFilterBasis.toFilterBasis.hasBasis.le_basis_iff
         (Metric.nhds_basis_ball.comap _)]
     intro ε hε
-    refine' ⟨(p i).ball 0 ε, _, _⟩
+    refine ⟨(p i).ball 0 ε, ?_, ?_⟩
     · rw [← (Finset.sup_singleton : _ = p i)]
       exact p.basisSets_mem {i} hε
     · rw [id, (p i).ball_zero_eq_preimage_ball]

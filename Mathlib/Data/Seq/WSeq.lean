@@ -1632,7 +1632,7 @@ theorem liftRel_join.lem (R : α → β → Prop) {S T} {U : WSeq α → WSeq β
             exact mb
         | some (a, s'), some (b, t'), ⟨ab, st'⟩, _, rs5, mt => by
           simp?  at rs5  says simp only [destruct_append.aux] at rs5
-          refine' ⟨some (b, append t' (join T')), _, _⟩
+          refine ⟨some (b, append t' (join T')), ?_, ?_⟩
           · simp (config := { unfoldPartialApp := true }) only [destruct_join, destruct_join.aux]
             apply mem_bind mT
             simp only [destruct_append, destruct_append.aux]

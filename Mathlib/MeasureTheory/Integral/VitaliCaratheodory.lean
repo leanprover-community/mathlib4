@@ -210,7 +210,7 @@ theorem exists_lt_lowerSemicontinuous_lintegral_ge [SigmaFinite μ] (f : α → 
   rcases exists_le_lowerSemicontinuous_lintegral_ge μ f' (fmeas.add wmeas).coe_nnreal_ennreal
       this with
     ⟨g, le_g, gcont, gint⟩
-  refine' ⟨g, fun x => _, gcont, _⟩
+  refine ⟨g, fun x => ?_, gcont, ?_⟩
   · calc
       (f x : ℝ≥0∞) < f' x := by
         simpa only [← ENNReal.coe_lt_coe, add_zero] using add_lt_add_left (wpos x) (f x)
@@ -432,7 +432,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
   have Ig : (∫⁻ x, g x ∂μ) < ∞ := by
     refine' lt_of_le_of_lt (lintegral_mono fun x => _) If
     simpa using gf x
-  refine' ⟨g, gf, gcont, _, _⟩
+  refine ⟨g, gf, gcont, ?_, ?_⟩
   · refine'
       Integrable.mono fint gcont.measurable.coe_nnreal_real.aemeasurable.aestronglyMeasurable _
     exact Filter.eventually_of_forall fun x => by simp [gf x]

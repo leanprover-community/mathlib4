@@ -202,7 +202,7 @@ theorem Acc.sym2_gameAdd {a b} (ha : Acc rα a) (hb : Acc rα b) :
     Acc (Sym2.GameAdd rα) s(a, b) := by
   induction' ha with a _ iha generalizing b
   induction' hb with b hb ihb
-  refine' Acc.intro _ fun s => _
+  refine Acc.intro ?_ fun s => ?_
   induction' s using Sym2.inductionOn with c d
   rw [Sym2.GameAdd]
   dsimp

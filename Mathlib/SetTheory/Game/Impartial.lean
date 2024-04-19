@@ -201,7 +201,7 @@ theorem fuzzy_zero_iff_gf : G ‖ 0 ↔ 0 ⧏ G :=
 #align pgame.impartial.fuzzy_zero_iff_gf SetTheory.PGame.Impartial.fuzzy_zero_iff_gf
 
 theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ (G ≈ 0) := by
-  refine' ⟨fun hb => _, fun hp i => _⟩
+  refine ⟨fun hb => ?_, fun hp i => ?_⟩
   · rw [equiv_zero_iff_le G, le_zero_lf]
     exact fun i => (hb i).1
   · rw [fuzzy_zero_iff_lf]
@@ -209,7 +209,7 @@ theorem forall_leftMoves_fuzzy_iff_equiv_zero : (∀ i, G.moveLeft i ‖ 0) ↔ 
 #align pgame.impartial.forall_left_moves_fuzzy_iff_equiv_zero SetTheory.PGame.Impartial.forall_leftMoves_fuzzy_iff_equiv_zero
 
 theorem forall_rightMoves_fuzzy_iff_equiv_zero : (∀ j, G.moveRight j ‖ 0) ↔ (G ≈ 0) := by
-  refine' ⟨fun hb => _, fun hp i => _⟩
+  refine ⟨fun hb => ?_, fun hp i => ?_⟩
   · rw [equiv_zero_iff_ge G, zero_le_lf]
     exact fun i => (hb i).2
   · rw [fuzzy_zero_iff_gf]

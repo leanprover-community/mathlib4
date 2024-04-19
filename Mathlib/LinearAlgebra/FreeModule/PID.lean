@@ -270,7 +270,7 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   refine ⟨Fin.cons a as, ?_⟩
   intro i
   rw [Basis.coe_mkFinConsOfLE, Basis.coe_mkFinConsOfLE]
-  refine' Fin.cases _ (fun i ↦ _) i
+  refine Fin.cases ?_ (fun i ↦ ?_) i
   · simp only [Fin.cons_zero, Fin.castLE_zero]
     exact a_smul_y'.symm
   · rw [Fin.castLE_succ]

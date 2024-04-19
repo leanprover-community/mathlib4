@@ -242,7 +242,7 @@ theorem isIso_of_isIso_app (α : F ⟶ G) [∀ X : C, IsIso (α.app X)] : IsIso 
 /-- Horizontal composition of natural isomorphisms. -/
 @[simps]
 def hcomp {F G : C ⥤ D} {H I : D ⥤ E} (α : F ≅ G) (β : H ≅ I) : F ⋙ H ≅ G ⋙ I := by
-  refine' ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, _, _⟩
+  refine ⟨α.hom ◫ β.hom, α.inv ◫ β.inv, ?_, ?_⟩
   · ext
     rw [← NatTrans.exchange]
     simp
@@ -257,7 +257,7 @@ theorem isIso_map_iff {F₁ F₂ : C ⥤ D} (e : F₁ ≅ F₂) {X Y : C} (f : X
   suffices ∀ {F₁ F₂ : C ⥤ D} (_ : F₁ ≅ F₂) (_ : IsIso (F₁.map f)), IsIso (F₂.map f) by
     exact fun F₁ F₂ e => ⟨this e, this e.symm⟩
   intro F₁ F₂ e hf
-  refine' IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, _, _⟩
+  refine IsIso.mk ⟨e.inv.app Y ≫ inv (F₁.map f) ≫ e.hom.app X, ?_, ?_⟩
   · simp only [NatTrans.naturality_assoc, IsIso.hom_inv_id_assoc, Iso.inv_hom_id_app]
   · simp only [assoc, ← e.hom.naturality, IsIso.inv_hom_id_assoc, Iso.inv_hom_id_app]
 #align category_theory.nat_iso.is_iso_map_iff CategoryTheory.NatIso.isIso_map_iff

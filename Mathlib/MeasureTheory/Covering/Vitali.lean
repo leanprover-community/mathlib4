@@ -287,7 +287,7 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
           exists_lt_of_lt_csSup (vnonempty.image _) (half_lt_self R0pos)
         rcases (mem_image _ _ _).1 r'mem with ⟨a, hav, rfl⟩
         exact ⟨a, hav, hr'⟩
-      refine' ⟨8 * R0, _, _⟩
+      refine ⟨8 * R0, ?_, ?_⟩
       · apply lt_of_le_of_lt (measure_mono _) (hRμ (c a))
         apply closedBall_subset_closedBall'
         rw [dist_comm]

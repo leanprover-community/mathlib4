@@ -196,7 +196,7 @@ variable [DivisionMonoid α] {a : α}
 
 @[to_additive (attr := simp)]
 theorem isSquare_inv : IsSquare a⁻¹ ↔ IsSquare a := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rw [← isSquare_op_iff, ← inv_inv a]
     exact h.map (MulEquiv.inv' α)
   · exact (isSquare_op_iff.mpr h).map (MulEquiv.inv' α).symm

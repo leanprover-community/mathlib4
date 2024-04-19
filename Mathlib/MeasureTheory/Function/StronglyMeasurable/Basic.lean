@@ -298,7 +298,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
     rw [SimpleFunc.restrict_apply _ ((hS_meas n).inter ht)]
     refine' Set.indicator_of_not_mem _ _
     simp [hxt]
-  refine' ⟨fs, _, fun x => _⟩
+  refine ⟨fs, ?_, fun x => ?_⟩
   · simp_rw [SimpleFunc.support_eq]
     refine' fun n => (measure_biUnion_finset_le _ _).trans_lt _
     refine' ENNReal.sum_lt_top_iff.mpr fun y hy => _

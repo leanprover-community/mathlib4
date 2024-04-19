@@ -3520,7 +3520,7 @@ variable [DecidableEq α]
 theorem disjoint_toFinset {m1 m2 : Multiset α} :
     _root_.Disjoint m1.toFinset m2.toFinset ↔ m1.Disjoint m2 := by
   rw [Finset.disjoint_iff_ne]
-  refine' ⟨fun h a ha1 ha2 => _, _⟩
+  refine ⟨fun h a ha1 ha2 => ?_, ?_⟩
   · rw [← Multiset.mem_toFinset] at ha1 ha2
     exact h _ ha1 _ ha2 rfl
   · rintro h a ha b hb rfl

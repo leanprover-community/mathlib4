@@ -147,7 +147,7 @@ theorem actionDiagonalSucc_inv_apply {G : Type u} [Group G] {n : ℕ} (g : G) (f
     funext x
     dsimp [actionDiagonalSucc]
     erw [hn, Equiv.piFinSuccAbove_symm_apply]
-    refine' Fin.cases _ (fun i => _) x
+    refine Fin.cases ?_ (fun i => ?_) x
     · simp only [Fin.insertNth_zero, Fin.cons_zero, Fin.partialProd_zero, mul_one]
     · simp only [Fin.cons_succ, Pi.smul_apply, smul_eq_mul, Fin.partialProd_succ', ← mul_assoc]
       rfl

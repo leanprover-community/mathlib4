@@ -1531,7 +1531,7 @@ theorem subtypeRestr_symm_eqOn_of_le {U V : Opens X} (hU : Nonempty U) (hV : Non
   have hyV : e.symm y ∈ (V.partialHomeomorphSubtypeCoe hV).target := by
     rw [Opens.partialHomeomorphSubtypeCoe_target] at hy ⊢
     exact hUV hy.2
-  refine' (V.partialHomeomorphSubtypeCoe hV).injOn _ trivial _
+  refine (V.partialHomeomorphSubtypeCoe hV).injOn ?_ trivial ?_
   · rw [← PartialHomeomorph.symm_target]
     apply PartialHomeomorph.map_source
     rw [PartialHomeomorph.symm_source]

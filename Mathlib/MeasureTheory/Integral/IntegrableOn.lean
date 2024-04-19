@@ -623,7 +623,7 @@ theorem ContinuousOn.aestronglyMeasurable_of_isCompact [TopologicalSpace α] [Op
   letI := pseudoMetrizableSpacePseudoMetric β
   borelize β
   rw [aestronglyMeasurable_iff_aemeasurable_separable]
-  refine' ⟨hf.aemeasurable h's, f '' s, _, _⟩
+  refine ⟨hf.aemeasurable h's, f '' s, ?_, ?_⟩
   · exact (hs.image_of_continuousOn hf).isSeparable
   · exact mem_of_superset (self_mem_ae_restrict h's) (subset_preimage_image _ _)
 #align continuous_on.ae_strongly_measurable_of_is_compact ContinuousOn.aestronglyMeasurable_of_isCompact

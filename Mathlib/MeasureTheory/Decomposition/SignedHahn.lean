@@ -308,7 +308,7 @@ theorem exists_subset_restrict_nonpos (hi : s i < 0) :
   have : ∃ k, 1 ≤ bdd k ∧ 1 / (bdd k : ℝ) < s E := by
     rw [tendsto_atTop_atTop] at h₄
     obtain ⟨k, hk⟩ := h₄ (max (1 / s E + 1) 1)
-    refine' ⟨k, _, _⟩
+    refine ⟨k, ?_, ?_⟩
     · have hle := le_of_max_le_right (hk k le_rfl)
       norm_cast at hle
     · have : 1 / s E < bdd k := by

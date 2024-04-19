@@ -1436,7 +1436,7 @@ theorem hasFPowerSeriesAt_iff :
     eventually_of_mem (EMetric.ball_mem_nhds 0 r_pos) fun _ => by simpa using h, _⟩
   simp only [Metric.eventually_nhds_iff]
   rintro ⟨r, r_pos, h⟩
-  refine' ⟨p.radius ⊓ r.toNNReal, by simp, _, _⟩
+  refine ⟨p.radius ⊓ r.toNNReal, by simp, ?_, ?_⟩
   · simp only [r_pos.lt, lt_inf_iff, ENNReal.coe_pos, Real.toNNReal_pos, and_true_iff]
     obtain ⟨z, z_pos, le_z⟩ := NormedField.exists_norm_lt 𝕜 r_pos.lt
     have : (‖z‖₊ : ENNReal) ≤ p.radius := by

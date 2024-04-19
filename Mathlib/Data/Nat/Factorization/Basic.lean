@@ -179,7 +179,7 @@ theorem factorization_eq_zero_iff_remainder {p r : ℕ} (i : ℕ) (pp : p.Prime)
   refine' ⟨factorization_eq_zero_of_remainder i, fun h => _⟩
   rw [factorization_eq_zero_iff] at h
   contrapose! h
-  refine' ⟨pp, _, _⟩
+  refine ⟨pp, ?_, ?_⟩
   · rwa [← Nat.dvd_add_iff_right (dvd_mul_right p i)]
   · contrapose! hr0
     exact (add_eq_zero_iff.mp hr0).2

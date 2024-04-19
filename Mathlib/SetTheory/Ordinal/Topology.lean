@@ -39,7 +39,7 @@ instance : TopologicalSpace Ordinal.{u} := Preorder.topology Ordinal.{u}
 instance : OrderTopology Ordinal.{u} := ⟨rfl⟩
 
 theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
-  refine' ⟨fun h ⟨h₀, hsucc⟩ => _, fun ha => _⟩
+  refine ⟨fun h ⟨h₀, hsucc⟩ => ?_, fun ha => ?_⟩
   · obtain ⟨b, c, hbc, hbc'⟩ :=
       (mem_nhds_iff_exists_Ioo_subset' ⟨0, Ordinal.pos_iff_ne_zero.2 h₀⟩ ⟨_, lt_succ a⟩).1
         (h.mem_nhds rfl)
@@ -184,7 +184,7 @@ theorem isLimit_of_mem_frontier (ha : a ∈ frontier s) : IsLimit a := by
 
 theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u}) :
     IsNormal f ↔ StrictMono f ∧ Continuous f := by
-  refine' ⟨fun h => ⟨h.strictMono, _⟩, _⟩
+  refine ⟨fun h => ⟨h.strictMono, ?_⟩, ?_⟩
   · rw [continuous_def]
     intro s hs
     rw [isOpen_iff] at *

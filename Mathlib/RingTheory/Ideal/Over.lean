@@ -65,7 +65,7 @@ theorem exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem {r : S}
   · intro p p_nonzero ih _ hp
     rw [eval₂_mul, eval₂_X] at hp
     obtain ⟨i, hi, mem⟩ := ih p_nonzero (r_non_zero_divisor hp)
-    refine' ⟨i + 1, _, _⟩
+    refine ⟨i + 1, ?_, ?_⟩
     · simp [hi, mem]
     · simpa [hi] using mem
 #align ideal.exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem Ideal.exists_coeff_ne_zero_mem_comap_of_non_zero_divisor_root_mem

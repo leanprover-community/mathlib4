@@ -303,7 +303,7 @@ end
 #align list.perm_append_right_iff List.perm_append_right_iff
 
 theorem perm_option_to_list {o₁ o₂ : Option α} : o₁.toList ~ o₂.toList ↔ o₁ = o₂ := by
-  refine' ⟨fun p => _, fun e => e ▸ Perm.refl _⟩
+  refine ⟨fun p => ?_, fun e => e ▸ Perm.refl _⟩
   cases' o₁ with a <;> cases' o₂ with b; · rfl
   · cases p.length_eq
   · cases p.length_eq

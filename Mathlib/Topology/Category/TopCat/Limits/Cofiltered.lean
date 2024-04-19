@@ -70,7 +70,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
   constructor
   · rintro ⟨j, V, hV, rfl⟩
     let U : ∀ i, Set (F.obj i) := fun i => if h : i = j then by rw [h]; exact V else Set.univ
-    refine' ⟨U, {j}, _, _⟩
+    refine ⟨U, {j}, ?_, ?_⟩
     · simp only [Finset.mem_singleton]
       rintro i rfl
       simpa [U]
@@ -80,7 +80,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
     let g : ∀ e ∈ G, j ⟶ e := fun _ he => (hj he).some
     let Vs : J → Set (F.obj j) := fun e => if h : e ∈ G then F.map (g e h) ⁻¹' U e else Set.univ
     let V : Set (F.obj j) := ⋂ (e : J) (_he : e ∈ G), Vs e
-    refine' ⟨j, V, _, _⟩
+    refine ⟨j, V, ?_, ?_⟩
     · -- An intermediate claim used to apply induction along `G : Finset J` later on.
       have :
         ∀ (S : Set (Set (F.obj j))) (E : Finset J) (P : J → Set (F.obj j)) (_univ : Set.univ ∈ S)

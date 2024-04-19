@@ -133,7 +133,7 @@ protected theorem quotient {I : Ideal A} (h : I.FG) [FinitePresentation R A] :
     FinitePresentation R (A ⧸ I) where
   out := by
     obtain ⟨n, f, hf⟩ := FinitePresentation.out (R := R) (A := A)
-    refine' ⟨n, (Ideal.Quotient.mkₐ R I).comp f, _, _⟩
+    refine ⟨n, (Ideal.Quotient.mkₐ R I).comp f, ?_, ?_⟩
     · exact (Ideal.Quotient.mkₐ_surjective R I).comp hf.1
     · refine' Ideal.fg_ker_comp _ _ hf.2 _ hf.1
       simp [h]
@@ -237,7 +237,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
   obtain ⟨n, f, hf, s, hs⟩ := FinitePresentation.out (R := R) (A := B)
   letI RX := MvPolynomial (Fin n) R
   letI AX := MvPolynomial (Fin n) A
-  refine' ⟨n, MvPolynomial.aeval (f ∘ X), _, _⟩
+  refine ⟨n, MvPolynomial.aeval (f ∘ X), ?_, ?_⟩
   · rw [← Algebra.range_top_iff_surjective, ← Algebra.adjoin_range_eq_range_aeval,
       Set.range_comp f MvPolynomial.X, eq_top_iff, ← @adjoin_adjoin_of_tower R A B,
       adjoin_image, adjoin_range_X, Algebra.map_top, (Algebra.range_top_iff_surjective _).mpr hf]

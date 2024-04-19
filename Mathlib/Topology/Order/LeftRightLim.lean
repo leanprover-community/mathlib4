@@ -218,7 +218,7 @@ theorem continuousWithinAt_Ioi_iff_rightLim_eq :
 /-- A monotone function is continuous at a point if and only if its left and right limits
 coincide. -/
 theorem continuousAt_iff_leftLim_eq_rightLim : ContinuousAt f x ↔ leftLim f x = rightLim f x := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · have A : leftLim f x = f x :=
       hf.continuousWithinAt_Iio_iff_leftLim_eq.1 h.continuousWithinAt
     have B : rightLim f x = f x :=

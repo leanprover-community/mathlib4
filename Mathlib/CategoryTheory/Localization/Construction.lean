@@ -361,7 +361,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D
 def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
   eqToIso
     (by
-      refine' Functor.ext (fun G => _) fun G₁ G₂ τ => _
+      refine Functor.ext (fun G => ?_) fun G₁ G₂ τ => ?_
       · apply uniq
         dsimp [Functor]
         erw [fac]

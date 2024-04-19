@@ -119,7 +119,7 @@ theorem OxfordInvariants.Week3P1 (n : ℕ) (a : ℕ → ℕ) (a_pos : ∀ i ≤ 
       Finset.single_le_sum h (Finset.self_mem_range_succ n)
     refine fun i _ ↦ div_nonneg ?_ ?_ <;> refine mul_nonneg ?_ ?_ <;> exact Nat.cast_nonneg _
   -- Claim that the sum equals `(aₙ + aₙ₊₂)/aₙ₊₁ * b - (aₙ * b - a₀)/aₙ₊₁`
-  refine' ⟨(a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1), _, _⟩
+  refine ⟨(a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1), ?_, ?_⟩
   -- Check that this indeed equals the sum
   · calc
       (((a n + a (n + 2)) / a (n + 1) * b - (a n * b - a 0) / a (n + 1) : ℕ) : α) =

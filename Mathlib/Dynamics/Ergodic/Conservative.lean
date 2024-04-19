@@ -199,7 +199,7 @@ protected theorem iterate (hf : Conservative f μ) (n : ℕ) : Conservative f^[n
   have : (n + 1) * m = l - k := by
     apply Nat.mul_div_cancel'
     exact (Nat.modEq_iff_dvd' hkl.le).1 hn
-  refine' ⟨f^[k] x, hk, m, _, _⟩
+  refine ⟨f^[k] x, hk, m, ?_, ?_⟩
   · intro hm
     rw [hm, mul_zero, eq_comm, tsub_eq_zero_iff_le] at this
     exact this.not_lt hkl

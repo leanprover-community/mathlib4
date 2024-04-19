@@ -67,7 +67,7 @@ theorem independent_iff_completeLattice_independent :
     simp only [submodule_mk]
     exact (CompleteLattice.independent_iff_linearIndependent_of_ne_zero (R := K) hf).mpr hi
   · rw [independent_iff]
-    refine' h.linearIndependent (Projectivization.submodule ∘ f) (fun i => _) fun i => _
+    refine h.linearIndependent (Projectivization.submodule ∘ f) (fun i => ?_) fun i => ?_
     · simpa only [Function.comp_apply, submodule_eq] using Submodule.mem_span_singleton_self _
     · exact rep_nonzero (f i)
 #align projectivization.independent_iff_complete_lattice_independent Projectivization.independent_iff_completeLattice_independent

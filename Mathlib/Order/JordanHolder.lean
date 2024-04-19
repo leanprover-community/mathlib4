@@ -565,7 +565,7 @@ theorem mem_snoc {s : CompositionSeries X} {x y : X} {hsat : IsMaximal s.top x} 
   simp only [snoc, mem_def]
   constructor
   · rintro ⟨i, rfl⟩
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · right
       simp
     · left
@@ -679,7 +679,7 @@ theorem snoc_snoc_swap {s : CompositionSeries X} {x₁ x₂ y₁ y₂ : X} {hsat
   ⟨e, by
     intro i
     dsimp only [e]
-    refine' Fin.lastCases _ (fun i => _) i
+    refine Fin.lastCases ?_ (fun i => ?_) i
     · erw [Equiv.swap_apply_left, snoc_castSucc, snoc_last, Fin.succ_last, snoc_last,
         snoc_castSucc, snoc_castSucc, Fin.succ_castSucc, snoc_castSucc, Fin.succ_last,
         snoc_last]

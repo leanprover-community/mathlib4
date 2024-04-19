@@ -155,7 +155,7 @@ theorem forall_biUnionTagged (p : (ι → ℝ) → Box ι → Prop) (π : Prepar
     (∀ J ∈ π.biUnionTagged πi, p ((π.biUnionTagged πi).tag J) J) ↔
       ∀ J ∈ π, ∀ J' ∈ πi J, p ((πi J).tag J') J' := by
   simp only [mem_biUnionTagged]
-  refine' ⟨fun H J hJ J' hJ' => _, fun H J' ⟨J, hJ, hJ'⟩ => _⟩
+  refine ⟨fun H J hJ J' hJ' => ?_, fun H J' ⟨J, hJ, hJ'⟩ => ?_⟩
   · rw [← π.tag_biUnionTagged hJ hJ']
     exact H J' ⟨J, hJ, hJ'⟩
   · rw [π.tag_biUnionTagged hJ hJ']

@@ -460,7 +460,7 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
     apply h3x h2i'' i_i''.symm; convert hi''.2 j using 1; simp [p', hj'.symm]
   by_cases h2j₂ : j₂ = j'
   · cases h2j₂; refine' ⟨x', hx'.1, _⟩; convert hi''.2 j' using 1; simp [p']
-  refine' ⟨(cs i).b j₂.succ, _, _⟩
+  refine ⟨(cs i).b j₂.succ, ?_, ?_⟩
   · convert hi'.2 j₂ using 1; simp [p, hj₂]
   · convert hi''.2 j₂ using 1; simp [p', h2j₂]
 #align theorems_100.«82».mi_not_on_boundary Theorems100.«82».mi_not_onBoundary

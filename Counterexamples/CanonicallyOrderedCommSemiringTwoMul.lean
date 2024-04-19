@@ -76,7 +76,7 @@ instance csrN21 : AddCancelCommMonoid (ℕ × ZMod 2) :=
 /-- A strict inequality forces the first components to be different. -/
 @[simp]
 theorem lt_def : a < b ↔ a.1 < b.1 := by
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · rcases h with ⟨rfl | a1, h1⟩
     · exact (not_or.mp h1).1.elim rfl
     · exact a1

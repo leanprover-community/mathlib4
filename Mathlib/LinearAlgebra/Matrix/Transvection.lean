@@ -370,7 +370,7 @@ def listTransvecRow : List (Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :
 theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk : k ≤ r) :
     (((listTransvecCol M).drop k).prod * M) (inr unit) i = M (inr unit) i := by
   -- Porting note: `apply` didn't work anymore, because of the implicit arguments
-  refine' Nat.decreasingInduction' _ hk _
+  refine Nat.decreasingInduction' ?_ hk ?_
   · intro n hn _ IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     rw [List.drop_eq_get_cons hn']
@@ -397,7 +397,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
     simpa only [List.drop, _root_.zero_le, ite_true] using H 0 (zero_le _)
   intro k hk
   -- Porting note: `apply` didn't work anymore, because of the implicit arguments
-  refine' Nat.decreasingInduction' _ hk _
+  refine Nat.decreasingInduction' ?_ hk ?_
   · intro n hn hk IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩

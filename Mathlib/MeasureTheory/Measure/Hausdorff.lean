@@ -1084,7 +1084,7 @@ theorem hausdorffMeasure_smul_right_image [NormedAddCommGroup E] [NormedSpace �
     · simp only [image_smul, LinearMap.toSpanSingleton_apply, Set.image_image]
       ext e
       simp only [mem_image]
-      refine' ⟨fun ⟨x, h⟩ => ⟨x, _⟩, fun ⟨x, h⟩ => ⟨x, _⟩⟩
+      refine ⟨fun ⟨x, h⟩ => ⟨x, ?_⟩, fun ⟨x, h⟩ => ⟨x, ?_⟩⟩
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn]
         exact h
       · rw [smul_comm (norm _), smul_comm (norm _), inv_smul_smul₀ hn] at h

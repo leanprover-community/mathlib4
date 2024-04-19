@@ -698,7 +698,7 @@ theorem wOppSide_iff_exists_wbtw {s : AffineSubspace R P} {x y : P} :
 theorem SOppSide.exists_sbtw {s : AffineSubspace R P} {x y : P} (h : s.SOppSide x y) :
     ∃ p ∈ s, Sbtw R x p y := by
   obtain ⟨p, hp, hw⟩ := wOppSide_iff_exists_wbtw.1 h.wOppSide
-  refine' ⟨p, hp, hw, _, _⟩
+  refine ⟨p, hp, hw, ?_, ?_⟩
   · rintro rfl
     exact h.2.1 hp
   · rintro rfl

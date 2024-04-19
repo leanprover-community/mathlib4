@@ -54,7 +54,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
       simp only [Set.mem_setOf_eq, ha]
     rel_equiv := fun {n} r x y xy => by
       rw [← iff_eq_eq]
-      refine' ⟨fun hx => _, fun hy => _⟩
+      refine ⟨fun hx => ?_, fun hy => ?_⟩
       · refine' mem_of_superset (inter_mem hx (iInter_mem.2 xy)) _
         rintro a ⟨ha1, ha2⟩
         simp only [Set.mem_iInter, Set.mem_setOf_eq] at *
@@ -130,7 +130,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]
     simp only [Function.comp, ih, h']
-    refine' ⟨fun h => _, fun h m => _⟩
+    refine ⟨fun h => ?_, fun h m => ?_⟩
     · contrapose! h
       simp_rw [← Ultrafilter.eventually_not, not_forall] at h
       refine'

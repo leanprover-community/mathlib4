@@ -671,7 +671,7 @@ theorem crossing_pos_eq (hab : a < b) :
   have hab' : 0 < b - a := sub_pos.2 hab
   have hf : ∀ ω i, b - a ≤ (f i ω - a)⁺ ↔ b ≤ f i ω := by
     intro i ω
-    refine' ⟨fun h => _, fun h => _⟩
+    refine ⟨fun h => ?_, fun h => ?_⟩
     · rwa [← sub_le_sub_iff_right a, ←
         posPart_eq_of_posPart_pos (lt_of_lt_of_le hab' h)]
     · rw [← sub_le_sub_iff_right a] at h

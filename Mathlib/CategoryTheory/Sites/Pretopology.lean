@@ -175,7 +175,7 @@ def trivial : Pretopology C where
   has_isos X Y f i := ⟨_, _, i, rfl⟩
   pullbacks X Y f S := by
     rintro ⟨Z, g, i, rfl⟩
-    refine' ⟨pullback g f, pullback.snd, _, _⟩
+    refine ⟨pullback g f, pullback.snd, ?_, ?_⟩
     · refine' ⟨⟨pullback.lift (f ≫ inv g) (𝟙 _) (by simp), ⟨_, by aesop_cat⟩⟩⟩
       ext
       · rw [assoc, pullback.lift_fst, ← pullback.condition_assoc]

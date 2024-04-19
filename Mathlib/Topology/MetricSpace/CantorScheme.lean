@@ -108,7 +108,7 @@ theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (induc
   simp only [CantorScheme.Disjoint, _root_.Pairwise, Ne, not_forall, exists_prop]
   refine' ⟨res x n, _, _, hA, _⟩
   rw [not_disjoint_iff]
-  refine' ⟨(inducedMap A).2 ⟨x, hx⟩, _, _⟩
+  refine ⟨(inducedMap A).2 ⟨x, hx⟩, ?_, ?_⟩
   · rw [← res_succ]
     apply map_mem
   rw [hxy, ih, ← res_succ]
@@ -151,7 +151,7 @@ theorem VanishingDiam.map_continuous [TopologicalSpace β] [DiscreteTopology β]
   rintro ⟨x, hx⟩ ε ε_pos
   cases' hA.dist_lt _ ε_pos x with n hn
   rw [_root_.eventually_nhds_iff]
-  refine' ⟨(↑)⁻¹' cylinder x n, _, _, by simp⟩
+  refine ⟨(↑)⁻¹' cylinder x n, ?_, ?_, by simp⟩
   · rintro ⟨y, hy⟩ hyx
     rw [mem_preimage, Subtype.coe_mk, cylinder_eq_res, mem_setOf] at hyx
     apply hn

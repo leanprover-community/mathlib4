@@ -209,7 +209,7 @@ theorem LipschitzOnWith.extend_finite_dimension {α : Type*} [PseudoMetricSpace 
   obtain ⟨g, hg, gs⟩ :
     ∃ g : α → ι → ℝ, LipschitzWith (‖A.toContinuousLinearMap‖₊ * K) g ∧ EqOn (A ∘ f) g s :=
     L.extend_pi
-  refine' ⟨A.symm ∘ g, _, _⟩
+  refine ⟨A.symm ∘ g, ?_, ?_⟩
   · have LAsymm : LipschitzWith ‖A.symm.toContinuousLinearMap‖₊ A.symm := by
       apply A.symm.lipschitz
     apply (LAsymm.comp hg).weaken

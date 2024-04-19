@@ -791,7 +791,7 @@ theorem mem_span_finite_of_mem_span {S : Set M} {x : M} (hx : x ∈ span R S) :
   · use ∅
     simp
   · rintro x y ⟨X, hX, hxX⟩ ⟨Y, hY, hyY⟩
-    refine' ⟨X ∪ Y, _, _⟩
+    refine ⟨X ∪ Y, ?_, ?_⟩
     · rw [Finset.coe_union]
       exact Set.union_subset hX hY
     rw [Finset.coe_union, span_union, mem_sup]

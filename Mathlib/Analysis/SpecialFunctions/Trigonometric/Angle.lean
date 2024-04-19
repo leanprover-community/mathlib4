@@ -990,7 +990,7 @@ theorem sign_two_nsmul_eq_sign_iff {θ : Angle} :
     ((2 : ℕ) • θ).sign = θ.sign ↔ θ = π ∨ |θ.toReal| < π / 2 := by
   by_cases hpi : θ = π; · simp [hpi]
   rw [or_iff_right hpi]
-  refine' ⟨fun h => _, fun h => _⟩
+  refine ⟨fun h => ?_, fun h => ?_⟩
   · by_contra hle
     rw [not_lt, le_abs, le_neg] at hle
     have hpi' : θ.toReal ≠ π := by simpa using hpi

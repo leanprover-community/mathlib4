@@ -205,7 +205,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
     rw [← Nat.mul_dvd_mul_iff_left index_pos, index_mul_card, ← index_map, index_mul_card]
     exact K.card_quotient_dvd_card
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
-  refine' ⟨H.comap (QuotientGroup.mk' K), _, _⟩
+  refine ⟨H.comap (QuotientGroup.mk' K), ?_, ?_⟩
   · have key : (N.map (QuotientGroup.mk' K)).comap (QuotientGroup.mk' K) = N := by
       refine' comap_map_eq_self _
       rwa [QuotientGroup.ker_mk']

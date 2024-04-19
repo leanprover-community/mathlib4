@@ -828,7 +828,7 @@ def evalInduction {σ} {f : σ → Option σ} {b : σ} {C : σ → Sort*} {a : �
 #align turing.eval_induction Turing.evalInduction
 
 theorem mem_eval {σ} {f : σ → Option σ} {a b} : b ∈ eval f a ↔ Reaches f a b ∧ f b = none := by
-  refine' ⟨fun h ↦ _, fun ⟨h₁, h₂⟩ ↦ _⟩
+  refine ⟨fun h ↦ ?_, fun ⟨h₁, h₂⟩ ↦ ?_⟩
   · -- Porting note: Explicitly specify `c`.
     refine' @evalInduction _ _ _ (fun a ↦ Reaches f a b ∧ f b = none) _ h fun a h IH ↦ _
     cases' e : f a with a'
@@ -2024,7 +2024,7 @@ theorem tr_respects : Respects (TM0.step M) (TM1.step (tr M)) fun a b ↦ trCfg 
         | TM0.Stmt.write a => T.write a⟩ := by
       cases' s with d a <;> rfl
     intro e
-    refine' TransGen.head _ (TransGen.head' this _)
+    refine TransGen.head ?_ (TransGen.head' this ?_)
     · simp only [TM1.step, TM1.stepAux]
       rw [e]
       rfl

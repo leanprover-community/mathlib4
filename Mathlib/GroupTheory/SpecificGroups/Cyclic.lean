@@ -517,7 +517,7 @@ theorem isSimpleGroup_of_prime_card {α : Type u} [Group α] [Fintype α] {p : �
     classical
       have hcard := card_subgroup_dvd_card H
       rw [h, dvd_prime (Fact.out (p := p.Prime))] at hcard
-      refine' hcard.imp (fun h1 => _) fun hp => _
+      refine hcard.imp (fun h1 => ?_) fun hp => ?_
       · haveI := Fintype.card_le_one_iff_subsingleton.1 (le_of_eq h1)
         apply eq_bot_of_subsingleton
       · exact eq_top_of_card_eq _ (hp.trans h.symm)⟩

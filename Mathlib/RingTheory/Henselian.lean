@@ -246,7 +246,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         exact le_self_add
       -- hence the sequence converges to some limit point `a`, which is the `a` we are looking for
       obtain ⟨a, ha⟩ := IsPrecomplete.prec' c (aux _ _)
-      refine' ⟨a, _, _⟩
+      refine ⟨a, ?_, ?_⟩
       · show f.IsRoot a
         suffices ∀ n, f.eval a ≡ 0 [SMOD (I ^ n • ⊤ : Ideal R)] by exact IsHausdorff.haus' _ this
         intro n

@@ -74,7 +74,7 @@ lemma abs_mul_sin_arg (x : ℂ) : abs x * Real.sin (arg x) = x.im := by
   simpa [-abs_mul_cos_add_sin_mul_I] using congr_arg im (abs_mul_cos_add_sin_mul_I x)
 
 theorem abs_eq_one_iff (z : ℂ) : abs z = 1 ↔ ∃ θ : ℝ, exp (θ * I) = z := by
-  refine' ⟨fun hz => ⟨arg z, _⟩, _⟩
+  refine ⟨fun hz => ⟨arg z, ?_⟩, ?_⟩
   · calc
       exp (arg z * I) = abs z * exp (arg z * I) := by rw [hz, ofReal_one, one_mul]
       _ = z := abs_mul_exp_arg_mul_I z
@@ -241,7 +241,7 @@ lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=
   natCast_arg
 
 theorem arg_eq_zero_iff {z : ℂ} : arg z = 0 ↔ 0 ≤ z.re ∧ z.im = 0 := by
-  refine' ⟨fun h => _, _⟩
+  refine ⟨fun h => ?_, ?_⟩
   · rw [← abs_mul_cos_add_sin_mul_I z, h]
     simp [abs.nonneg]
   · cases' z with x y

@@ -576,7 +576,7 @@ theorem Convex.mem_Ioo (h : x < y) :
 endpoints. -/
 theorem Convex.mem_Ioc (h : x < y) :
     z ∈ Ioc x y ↔ ∃ a b, 0 ≤ a ∧ 0 < b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  refine' ⟨fun hz => _, _⟩
+  refine ⟨fun hz => ?_, ?_⟩
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ioc_subset_Icc_self hz)
     obtain rfl | hb' := hb.eq_or_lt
     · rw [add_zero] at hab
@@ -594,7 +594,7 @@ theorem Convex.mem_Ioc (h : x < y) :
 endpoints. -/
 theorem Convex.mem_Ico (h : x < y) :
     z ∈ Ico x y ↔ ∃ a b, 0 < a ∧ 0 ≤ b ∧ a + b = 1 ∧ a * x + b * y = z := by
-  refine' ⟨fun hz => _, _⟩
+  refine ⟨fun hz => ?_, ?_⟩
   · obtain ⟨a, b, ha, hb, hab, rfl⟩ := (Convex.mem_Icc h.le).1 (Ico_subset_Icc_self hz)
     obtain rfl | ha' := ha.eq_or_lt
     · rw [zero_add] at hab

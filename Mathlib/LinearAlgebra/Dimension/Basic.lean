@@ -362,7 +362,7 @@ theorem rank_subsingleton [Subsingleton R] : Module.rank R M = 1 := by
     rw [Cardinal.mk_le_one_iff_set_subsingleton]
     apply subsingleton_of_subsingleton
   intro w hw
-  refine' ⟨⟨{0}, _⟩, _⟩
+  refine ⟨⟨{0}, ?_⟩, ?_⟩
   · rw [linearIndependent_iff']
     intros
     exact Subsingleton.elim _ _

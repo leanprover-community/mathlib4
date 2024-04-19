@@ -652,7 +652,7 @@ of those points. -/
 theorem dist_eq_iff_eq_smul_rotation_pi_div_two_vadd_midpoint {p₁ p₂ p : P} (h : p₁ ≠ p₂) :
     dist p₁ p = dist p₂ p ↔
       ∃ r : ℝ, r • o.rotation (π / 2 : ℝ) (p₂ -ᵥ p₁) +ᵥ midpoint ℝ p₁ p₂ = p := by
-  refine' ⟨fun hd => _, fun hr => _⟩
+  refine ⟨fun hd => ?_, fun hr => ?_⟩
   · have hi : ⟪p₂ -ᵥ p₁, p -ᵥ midpoint ℝ p₁ p₂⟫ = 0 := by
       rw [@dist_eq_norm_vsub' V, @dist_eq_norm_vsub' V, ←
         mul_self_inj (norm_nonneg _) (norm_nonneg _), ← real_inner_self_eq_norm_mul_norm, ←

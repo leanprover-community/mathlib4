@@ -1760,7 +1760,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
     ContDiffAt 𝕜 n Ring.inverse (x : R) := by
   induction' n using ENat.nat_induction with n IH Itop
   · intro m hm
-    refine' ⟨{ y : R | IsUnit y }, _, _⟩
+    refine ⟨{ y : R | IsUnit y }, ?_, ?_⟩
     · simp [nhdsWithin_univ]
       exact x.nhds
     · use ftaylorSeriesWithin 𝕜 inverse univ
@@ -1770,7 +1770,7 @@ theorem contDiffAt_ring_inverse [CompleteSpace R] (x : Rˣ) :
         exact (inverse_continuousAt x').continuousWithinAt
       · simp [ftaylorSeriesWithin]
   · rw [contDiffAt_succ_iff_hasFDerivAt]
-    refine' ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), _, _⟩
+    refine ⟨fun x : R => -mulLeftRight 𝕜 R (inverse x) (inverse x), ?_, ?_⟩
     · refine' ⟨{ y : R | IsUnit y }, x.nhds, _⟩
       rintro _ ⟨y, rfl⟩
       simp_rw [inverse_unit]
@@ -1892,7 +1892,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
     -- suffices to produce the derivative and show that it is `n` times continuously differentiable
     have eq_f₀' : f' (f.symm a) = f₀' := (hff' (f.symm a) (mem_of_mem_nhds hu)).unique hf₀'
     -- This follows by a bootstrapping formula expressing the derivative as a function of `f` itself
-    refine' ⟨inverse ∘ f' ∘ f.symm, _, _⟩
+    refine ⟨inverse ∘ f' ∘ f.symm, ?_, ?_⟩
     · -- We first check that the derivative of `f` is that formula
       have h_nhds : { y : E | ∃ e : E ≃L[𝕜] F, ↑e = f' y } ∈ 𝓝 (f.symm a) := by
         have hf₀' := f₀'.nhds

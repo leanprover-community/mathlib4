@@ -157,7 +157,7 @@ theorem smul_eq_of_mul_dvd (hn : 0 < n) (han : orderOf a ^ 2 ∣ n) :
   let f : {b : A | orderOf b = n} → {b : A | orderOf b = n} := fun b => ⟨a * b, han b.property⟩
   have hf : Surjective f := by
     rintro ⟨b, hb⟩
-    refine' ⟨⟨a⁻¹ * b, _⟩, _⟩
+    refine ⟨⟨a⁻¹ * b, ?_⟩, ?_⟩
     · rw [mem_setOf_eq, ← orderOf_inv, mul_inv_rev, inv_inv, mul_comm]
       apply han
       simpa

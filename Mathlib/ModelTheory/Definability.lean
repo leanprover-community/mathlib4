@@ -272,7 +272,7 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
       rw [hx a, ← Function.comp_apply (f := x), ← hy]
       simp
     · rintro ⟨y, ys, rfl⟩
-      refine' ⟨⟨y, ys, _⟩, fun a => _⟩
+      refine ⟨⟨y, ys, ?_⟩, fun a => ?_⟩
       · ext
         simp [Set.apply_rangeSplitting f]
       · rw [Function.comp_apply, Function.comp_apply, apply_rangeSplitting f,

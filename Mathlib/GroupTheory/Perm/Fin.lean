@@ -90,7 +90,7 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
   cases n; · simp
-  refine' Fin.cases _ (fun i => _) i
+  refine Fin.cases ?_ (fun i => ?_) i
   · simp
   rw [coe_finRotate, decomposeFin_symm_apply_succ, if_congr i.succ_eq_last_succ rfl rfl]
   split_ifs with h
@@ -224,7 +224,7 @@ theorem cycleRange_apply {n : ℕ} (i j : Fin n.succ) :
 @[simp]
 theorem cycleRange_zero (n : ℕ) : cycleRange (0 : Fin n.succ) = 1 := by
   ext j
-  refine' Fin.cases _ (fun j => _) j
+  refine Fin.cases ?_ (fun j => ?_) j
   · simp
   · rw [cycleRange_of_gt (Fin.succ_pos j), one_apply]
 #align fin.cycle_range_zero Fin.cycleRange_zero

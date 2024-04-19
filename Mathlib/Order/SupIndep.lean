@@ -119,7 +119,7 @@ theorem SupIndep.image [DecidableEq ι] {s : Finset ι'} {g : ι' → ι} (hs : 
 #align finset.sup_indep.image Finset.SupIndep.image
 
 theorem supIndep_map {s : Finset ι'} {g : ι' ↪ ι} : (s.map g).SupIndep f ↔ s.SupIndep (f ∘ g) := by
-  refine' ⟨fun hs t ht i hi hit => _, fun hs => _⟩
+  refine ⟨fun hs t ht i hi hit => ?_, fun hs => ?_⟩
   · rw [← sup_map]
     exact hs (map_subset_map.2 ht) ((mem_map' _).2 hi) (by rwa [mem_map'])
   · classical

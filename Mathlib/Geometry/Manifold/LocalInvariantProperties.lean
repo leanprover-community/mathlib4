@@ -612,7 +612,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
       intro s x f e' he'G he'x h hx
       have hxs : x ∈ s := by simpa only [e'.left_inv he'x, mfld_simps] using hx
       rcases h hxs with ⟨e, heG, hef, hex⟩
-      refine' ⟨e'.symm.trans e, G.trans (G.symm he'G) heG, _, _⟩
+      refine ⟨e'.symm.trans e, G.trans (G.symm he'G) heG, ?_, ?_⟩
       · intro y hy
         simp only [mfld_simps] at hy
         simp only [hef ⟨hy.1, hy.2.2⟩, mfld_simps]
@@ -626,7 +626,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
     left_invariance' := by
       intro s x f e' he'G _ hfx h hx
       rcases h hx with ⟨e, heG, hef, hex⟩
-      refine' ⟨e.trans e', G.trans heG he'G, _, _⟩
+      refine ⟨e.trans e', G.trans heG he'G, ?_, ?_⟩
       · intro y hy
         simp only [mfld_simps] at hy
         simp only [hef ⟨hy.1, hy.2.1⟩, mfld_simps]

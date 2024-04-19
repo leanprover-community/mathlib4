@@ -610,7 +610,7 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne, coe_eq_zero] using hx
-  refine' ⟨n, _, _⟩
+  refine ⟨n, ?_, ?_⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
 #align ennreal.exists_mem_Ico_zpow ENNReal.exists_mem_Ico_zpow
@@ -623,7 +623,7 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
     simpa only [Ne, coe_eq_zero] using hx
-  refine' ⟨n, _, _⟩
+  refine ⟨n, ?_, ?_⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
 #align ennreal.exists_mem_Ioc_zpow ENNReal.exists_mem_Ioc_zpow

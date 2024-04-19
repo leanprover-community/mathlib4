@@ -861,7 +861,7 @@ lemma quasiIso_iff_of_zeros {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)
     exact IsLimit.ofIsoLimit S₂.cyclesIsKernel
       (Fork.ext (asIso (S₂.liftCycles φ.τ₂ w)).symm (by simp))
   · rintro ⟨h₁, h₂⟩
-    refine' ⟨⟨h₁.lift S₂.iCycles (by simp), _, _⟩⟩
+    refine ⟨⟨h₁.lift S₂.iCycles (by simp), ?_, ?_⟩⟩
     · rw [← cancel_mono φ.τ₂, assoc, h₁.lift_f, liftCycles_i, id_comp]
     · rw [← cancel_mono S₂.iCycles, assoc, liftCycles_i, h₁.lift_f, id_comp]
 

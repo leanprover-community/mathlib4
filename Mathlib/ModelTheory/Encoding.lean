@@ -139,8 +139,8 @@ theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi,
     · cases ij
       rfl
     · rw [Cardinal.le_def]
-      refine' ⟨⟨Sum.elim (fun i => ⟨0, var (Sum.inl i)⟩)
-        fun F => ⟨1, func F.2 fun _ => var (Sum.inr 0)⟩, _⟩⟩
+      refine ⟨⟨Sum.elim (fun i => ⟨0, var (Sum.inl i)⟩)
+        fun F => ⟨1, func F.2 fun ?_ => var (Sum.inr 0)⟩, ?_⟩⟩
       · rintro (a | a) (b | b) h
         · simp only [Sum.elim_inl, Sigma.mk.inj_iff, heq_eq_eq, var.injEq, Sum.inl.injEq, true_and]
             at h
@@ -268,7 +268,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
         rw [h2]
       simp only [Sigma.mk.inj_iff, heq_eq_eq, rel.injEq, true_and]
-      refine' ⟨funext fun i => _, _⟩
+      refine ⟨funext fun i => ?_, ?_⟩
       · obtain ⟨h1, h2⟩ := Option.eq_some_iff_get_eq.1 (h i)
         rw [eq_mp_eq_cast, cast_eq_iff_heq]
         exact (Sigma.ext_iff.1 ((Sigma.eta (Option.get _ h1)).trans h2)).2

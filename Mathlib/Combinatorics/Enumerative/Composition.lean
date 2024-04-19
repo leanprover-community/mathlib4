@@ -375,7 +375,7 @@ theorem mem_range_embedding_iff {j : Fin n} {i : Fin c.length} :
     simp [sizeUpTo_succ', k.is_lt]
   · intro h
     apply Set.mem_range.2
-    refine' ⟨⟨j - c.sizeUpTo i, _⟩, _⟩
+    refine ⟨⟨j - c.sizeUpTo i, ?_⟩, ?_⟩
     · rw [tsub_lt_iff_left, ← sizeUpTo_succ']
       · exact h.2
       · exact h.1

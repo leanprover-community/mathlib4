@@ -362,7 +362,7 @@ theorem exists_solution :
     ∃ f : ℝ → E, f v.t₀ = v.x₀ ∧ ∀ t ∈ Icc v.tMin v.tMax,
       HasDerivWithinAt f (v t (f t)) (Icc v.tMin v.tMax) t := by
   rcases v.exists_fixed with ⟨f, hf⟩
-  refine' ⟨f ∘ v.proj, _, fun t ht => _⟩
+  refine ⟨f ∘ v.proj, ?_, fun t ht => ?_⟩
   · simp only [(· ∘ ·), proj_coe, f.map_t₀]
   · simp only [(· ∘ ·), v.proj_of_mem ht]
     lift t to Icc v.tMin v.tMax using ht
