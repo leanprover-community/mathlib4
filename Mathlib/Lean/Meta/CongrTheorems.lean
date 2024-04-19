@@ -28,17 +28,32 @@ Note that this is slightly abusing `.subsingletonInst` since
 (2) the argument might not even be an instance. -/
 def mkHCongrWithArity' (f : Expr) (numArgs : Nat) : MetaM CongrTheorem := do
   let thm ← mkHCongrWithArity f numArgs
-  process thm thm.type thm.argKinds.toList #[] #[] #[]
+  process thm thm.type thm.argKinds.toList #[] #[] #[] #[]
 where
-  /-- Process the congruence theorem by trying to pre-prove arguments using `prove`. -/
+  /--
+  Process the congruence theorem by trying to pre-prove arguments using `prove`.
+
+  - `cthm` is the original `CongrTheorem`, modified only after visiting every argument.
+  - `type` is type of the congruence theorem, after all the parameters so far have been applied.
+  - `argKinds` is the list of `CongrArgKind`s, which this function recurses on.
+  - `argKinds'` is the accumulated array of `CongrArgKind`s, which is the original array but
+    with some kinds replaced by `.subsingletonInst`.
+  - `params` is the *new* list of parameters, as fvars that need to be abstracted at the end.
+  - `args` is the list of arguments (fvars) to supply to `cthm.proof` before abstracting `params`.
+  - `letArgs` records `(fvar, expr)` assignments for each `fvar` that was solved for by `prove`.
+  -/
   process (cthm : CongrTheorem) (type : Expr) (argKinds : List CongrArgKind)
-      (argKinds' : Array CongrArgKind) (params args : Array Expr) : MetaM CongrTheorem := do
+      (argKinds' : Array CongrArgKind) (params args : Array Expr)
+      (letArgs : Array (Expr × Expr)) : MetaM CongrTheorem := do
     match argKinds with
     | [] =>
-      if params.size == args.size then
+      if letArgs.isEmpty then
+        -- Then we didn't prove anything, so we can use the CongrTheorem as-is.
         return cthm
       else
-        let pf' ← mkLambdaFVars params (mkAppN cthm.proof args)
+        let proof := letArgs.foldr (init := mkAppN cthm.proof args) (fun (fvar, val) proof =>
+          (proof.abstract #[fvar]).instantiate1 val)
+        let pf' ← mkLambdaFVars params proof
         return {proof := pf', type := ← inferType pf', argKinds := argKinds'}
     | argKind :: argKinds =>
       match argKind with
@@ -48,12 +63,15 @@ where
           -- See if we can prove `eq` from previous parameters.
           let g := (← mkFreshExprMVar (← inferType eq)).mvarId!
           let g ← g.clear eq.fvarId!
-          if (← observing? <| prove g params).isSome then
+          if (← observing? <| prove g args).isSome then
+            let eqPf ← instantiateMVars (.mvar g)
             process cthm type' argKinds (argKinds'.push .subsingletonInst)
-              (params := params ++ #[x, y]) (args := args ++ #[x, y, .mvar g])
+              (params := params ++ #[x, y]) (args := args ++ params')
+              (letArgs := letArgs.push (eq, eqPf))
           else
             process cthm type' argKinds (argKinds'.push argKind)
               (params := params ++ params') (args := args ++ params')
+              (letArgs := letArgs)
       | _ => panic! "Unexpected CongrArgKind"
   /-- Close the goal given only the fvars in `params`, or else fails. -/
   prove (g : MVarId) (params : Array Expr) : MetaM Unit := do

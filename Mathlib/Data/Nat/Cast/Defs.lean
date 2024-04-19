@@ -24,8 +24,10 @@ Preferentially, the homomorphism is written as the coercion `Nat.cast`.
 * `Nat.cast`: Canonical homomorphism `ℕ → R`.
 -/
 
+variable {R : Type*}
+
 /-- The numeral `((0+1)+⋯)+1`. -/
-protected def Nat.unaryCast {R : Type*} [One R] [Zero R] [Add R] : ℕ → R
+protected def Nat.unaryCast [One R] [Zero R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => Nat.unaryCast n + 1
 #align nat.unary_cast Nat.unaryCast
@@ -59,7 +61,7 @@ instance is what makes things like `37 : R` type check.  Note that `0` and `1` a
 because they are recognized as terms of `R` (at least when `R` is an `AddMonoidWithOne`) through
 `Zero` and `One`, respectively. -/
 @[nolint unusedArguments]
-instance (priority := 100) instOfNatAtLeastTwo {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+instance (priority := 100) instOfNatAtLeastTwo {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
     OfNat R n where
   ofNat := n.cast
 
@@ -71,10 +73,10 @@ in `no_index` so as not to confuse `simp`, as `no_index (OfNat.ofNat n)`.
 Some discussion is [on Zulip here](https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20Polynomial.2Ecoeff.20example/near/395438147).
 -/
 
-@[simp, norm_cast] theorem Nat.cast_ofNat {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+@[simp, norm_cast] theorem Nat.cast_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
   (Nat.cast (no_index (OfNat.ofNat n)) : R) = OfNat.ofNat n := rfl
 
-theorem Nat.cast_eq_ofNat {R : Type*} {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
+theorem Nat.cast_eq_ofNat {n : ℕ} [NatCast R] [Nat.AtLeastTwo n] :
     (Nat.cast n : R) = OfNat.ofNat n :=
   rfl
 
@@ -119,7 +121,7 @@ if we need to shadow another coercion
 
 namespace Nat
 
-variable {R : Type*} [AddMonoidWithOne R]
+variable [AddMonoidWithOne R]
 
 @[simp, norm_cast]
 theorem cast_zero : ((0 : ℕ) : R) = 0 :=
@@ -149,17 +151,17 @@ end Nat
 namespace Nat
 
 @[simp, norm_cast]
-theorem cast_one {R : Type*} [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
+theorem cast_one [AddMonoidWithOne R] : ((1 : ℕ) : R) = 1 := by
   rw [cast_succ, Nat.cast_zero, zero_add]
 #align nat.cast_one Nat.cast_oneₓ
 
 @[simp, norm_cast]
-theorem cast_add {R : Type*} [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
+theorem cast_add [AddMonoidWithOne R] (m n : ℕ) : ((m + n : ℕ) : R) = m + n := by
   induction n <;> simp [add_succ, add_assoc, Nat.add_zero, Nat.cast_one, Nat.cast_zero, *]
 #align nat.cast_add Nat.cast_addₓ
 
 /-- Computationally friendlier cast than `Nat.unaryCast`, using binary representation. -/
-protected def binCast {R : Type*} [Zero R] [One R] [Add R] : ℕ → R
+protected def binCast [Zero R] [One R] [Add R] : ℕ → R
   | 0 => 0
   | n + 1 => if (n + 1) % 2 = 0
     then (Nat.binCast ((n + 1) / 2)) + (Nat.binCast ((n + 1) / 2))
@@ -167,7 +169,7 @@ protected def binCast {R : Type*} [Zero R] [One R] [Add R] : ℕ → R
 #align nat.bin_cast Nat.binCast
 
 @[simp]
-theorem binCast_eq {R : Type*} [AddMonoidWithOne R] (n : ℕ) :
+theorem binCast_eq [AddMonoidWithOne R] (n : ℕ) :
     (Nat.binCast n : R) = ((n : ℕ) : R) := by
   apply Nat.strongInductionOn n
   intros k hk
@@ -190,18 +192,18 @@ section deprecated
 set_option linter.deprecated false
 
 @[norm_cast, deprecated]
-theorem cast_bit0 {R : Type*} [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
+theorem cast_bit0 [AddMonoidWithOne R] (n : ℕ) : ((bit0 n : ℕ) : R) = bit0 (n : R) :=
   Nat.cast_add _ _
 #align nat.cast_bit0 Nat.cast_bit0
 
 @[norm_cast, deprecated]
-theorem cast_bit1 {R : Type*} [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
+theorem cast_bit1 [AddMonoidWithOne R] (n : ℕ) : ((bit1 n : ℕ) : R) = bit1 (n : R) := by
   rw [bit1, cast_add_one, cast_bit0]; rfl
 #align nat.cast_bit1 Nat.cast_bit1
 
 end deprecated
 
-theorem cast_two {R : Type*} [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
+theorem cast_two [AddMonoidWithOne R] : ((2 : ℕ) : R) = (2 : R) := rfl
 #align nat.cast_two Nat.cast_two
 
 attribute [simp, norm_cast] Int.natAbs_ofNat
@@ -210,13 +212,13 @@ end Nat
 
 /-- `AddMonoidWithOne` implementation using unary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.unary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.unary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with }
 #align add_monoid_with_one.unary AddMonoidWithOne.unary
 
 /-- `AddMonoidWithOne` implementation using binary recursion. -/
 @[reducible]
-protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMonoidWithOne R :=
+protected def AddMonoidWithOne.binary [AddMonoid R] [One R] : AddMonoidWithOne R :=
   { ‹One R›, ‹AddMonoid R› with
     natCast := Nat.binCast,
     natCast_zero := by simp only [Nat.binCast, Nat.cast],
@@ -226,18 +228,18 @@ protected def AddMonoidWithOne.binary {R : Type*} [AddMonoid R] [One R] : AddMon
       rw [Nat.binCast_eq, Nat.binCast_eq, Nat.cast_succ] }
 #align add_monoid_with_one.binary AddMonoidWithOne.binary
 
-theorem one_add_one_eq_two {α : Type*} [AddMonoidWithOne α] : 1 + 1 = (2 : α) := by
+theorem one_add_one_eq_two [AddMonoidWithOne R] : 1 + 1 = (2 : R) := by
   rw [← Nat.cast_one, ← Nat.cast_add]
   apply congrArg
   decide
 #align one_add_one_eq_two one_add_one_eq_two
 
-theorem two_add_one_eq_three {α : Type*} [AddMonoidWithOne α] : 2 + 1 = (3 : α) := by
+theorem two_add_one_eq_three [AddMonoidWithOne R] : 2 + 1 = (3 : R) := by
   rw [← one_add_one_eq_two, ← Nat.cast_one, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg
   decide
 
-theorem three_add_one_eq_four {α : Type*} [AddMonoidWithOne α] : 3 + 1 = (4 : α) := by
+theorem three_add_one_eq_four [AddMonoidWithOne R] : 3 + 1 = (4 : R) := by
   rw [← two_add_one_eq_three, ← one_add_one_eq_two, ← Nat.cast_one,
     ← Nat.cast_add, ← Nat.cast_add, ← Nat.cast_add]
   apply congrArg

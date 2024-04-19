@@ -275,6 +275,10 @@ lemma quasispectrum_eq_spectrum_union (R : Type*) {A : Type*} [CommSemiring R]
   rw [not_iff_not, isQuasiregular_iff_isUnit, ← sub_eq_add_neg, Algebra.algebraMap_eq_smul_one]
   exact (IsUnit.smul_sub_iff_sub_inv_smul hr.unit a).symm
 
+lemma spectrum_subset_quasispectrum (R : Type*) {A : Type*} [CommSemiring R] [Ring A] [Algebra R A]
+    (a : A) : spectrum R a ⊆ quasispectrum R a :=
+  quasispectrum_eq_spectrum_union R a ▸ Set.subset_union_left _ _
+
 lemma quasispectrum_eq_spectrum_union_zero (R : Type*) {A : Type*} [Semifield R] [Ring A]
     [Algebra R A] (a : A) : quasispectrum R a = spectrum R a ∪ {0} := by
   convert quasispectrum_eq_spectrum_union R a
@@ -326,7 +330,7 @@ end Unitization
 
 /-- A class for `𝕜`-algebras with a partial order where the ordering is compatible with the
 (quasi)spectrum. -/
-class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommRing 𝕜] [NonUnitalRing A] [PartialOrder A]
+class NonnegSpectrumClass (𝕜 A : Type*) [OrderedCommSemiring 𝕜] [NonUnitalRing A] [PartialOrder A]
     [Module 𝕜 A] : Prop where
   quasispectrum_nonneg_of_nonneg : ∀ a : A, 0 ≤ a → ∀ x ∈ quasispectrum 𝕜 a, 0 ≤ x
 
@@ -334,7 +338,7 @@ export NonnegSpectrumClass (quasispectrum_nonneg_of_nonneg)
 
 namespace NonnegSpectrumClass
 
-lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
+lemma iff_spectrum_nonneg {𝕜 A : Type*} [LinearOrderedSemifield 𝕜] [Ring A] [PartialOrder A]
     [Algebra 𝕜 A] : NonnegSpectrumClass 𝕜 A ↔ ∀ a : A, 0 ≤ a → ∀ x ∈ spectrum 𝕜 a, 0 ≤ x := by
   simp [show NonnegSpectrumClass 𝕜 A ↔ _ from ⟨fun ⟨h⟩ ↦ h, (⟨·⟩)⟩,
     quasispectrum_eq_spectrum_union_zero]
@@ -343,7 +347,7 @@ alias ⟨_, of_spectrum_nonneg⟩ := iff_spectrum_nonneg
 
 end NonnegSpectrumClass
 
-lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [LinearOrderedField 𝕜] [Ring A] [PartialOrder A]
+lemma spectrum_nonneg_of_nonneg {𝕜 A : Type*} [OrderedCommSemiring 𝕜] [Ring A] [PartialOrder A]
     [Algebra 𝕜 A] [NonnegSpectrumClass 𝕜 A] ⦃a : A⦄ (ha : 0 ≤ a) ⦃x : 𝕜⦄ (hx : x ∈ spectrum 𝕜 a) :
     0 ≤ x :=
-  NonnegSpectrumClass.iff_spectrum_nonneg.mp inferInstance a ha x hx
+  NonnegSpectrumClass.quasispectrum_nonneg_of_nonneg a ha x (spectrum_subset_quasispectrum 𝕜 a hx)
