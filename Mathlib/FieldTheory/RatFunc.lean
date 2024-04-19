@@ -814,9 +814,12 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
         ofFractionRing_mul, IsLocalization.mul_mk'_eq_mk'_of_mul, Algebra.smul_def]
   commutes' c x := mul_comm _ _
 
-instance : Coe (Polynomial K) (RatFunc K) := ⟨fun P ↦ algebraMap _ _ P⟩
-
 variable {K}
+
+@[coe]
+def coePolynomial (P : Polynomial K) : RatFunc K := algebraMap _ _ P
+
+instance : Coe (Polynomial K) (RatFunc K) := ⟨coePolynomial⟩
 
 theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
   rfl
@@ -1697,9 +1700,7 @@ theorem coe_apply : coeAlgHom F f = f :=
 #align ratfunc.coe_apply RatFunc.coe_apply
 
 theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
-  erw [RatFunc.coe_def, RatFunc.coeAlgHom, liftAlgHom_apply, RatFunc.num_algebraMap,
-    RatFunc.denom_algebraMap P, map_one, div_one]
-  rfl
+  simp only [coePolynomial, coe_def, AlgHom.commutes, Polynomial.algebraMap_hahnSeries_apply]
 
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
@@ -1771,7 +1772,7 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
 set_option linter.uppercaseLean3 false in
 #align ratfunc.coe_X RatFunc.coe_X
 
-theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
+theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
   · simp only [Nat.zero_eq, Int.ofNat_eq_coe, zpow_zero]
@@ -1790,10 +1791,10 @@ theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
   induction' n with n_pos n_neg
-  · apply single_pow
+  · apply single_one_eq_pow
   · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
       single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
-      Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
+      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
   RingHom.toAlgebra (coeAlgHom F).toRingHom
