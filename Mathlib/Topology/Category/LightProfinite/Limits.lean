@@ -21,7 +21,7 @@ which may be useful due to their definitional properties.
 
 -/
 
-universe u
+universe u w
 
 open CategoryTheory Profinite TopologicalSpace Limits
 
@@ -110,7 +110,7 @@ end Pullback
 
 section FiniteCoproduct
 
-instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLight] :
+instance {α : Type w} [Finite α] (X : α → ProfiniteMax.{u, w}) [∀ a, (X a).IsLight] :
     (Profinite.finiteCoproduct X).IsLight where
   countable_clopens := by
     refine @Function.Surjective.countable ((a : α) → Clopens (X a)) _ inferInstance
@@ -131,7 +131,7 @@ instance {α : Type} [Fintype α] (X : α → Profinite.{u}) [∀ a, (X a).IsLig
       · simp only [Clopens.coe_mk, Set.mem_iUnion]
         refine ⟨i, xi, (by simpa using hx), rfl⟩
 
-variable {α : Type} [Fintype α] (X : α → LightProfinite.{u})
+variable {α : Type w} [Finite α] (X : α → LightProfiniteMax.{u, w})
 
 /--
 The "explicit" coproduct of a finite family of objects in `LightProfinite`, whose underlying
@@ -139,7 +139,7 @@ profinite set is the disjoint union with its usual topology.
 -/
 noncomputable
 def finiteCoproduct : LightProfinite :=
-  ofIsLight (Profinite.finiteCoproduct fun a ↦ (X a).toProfinite)
+  ofIsLight (Profinite.finiteCoproduct.{u, w} fun a ↦ (X a).toProfinite)
 
 /-- The inclusion of one of the factors into the explicit finite coproduct. -/
 def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
@@ -150,7 +150,7 @@ def finiteCoproduct.ι (a : α) : X a ⟶ finiteCoproduct X where
 To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors. This is the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : LightProfiniteMax.{u, w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a, x⟩ => e a x
   continuous_toFun := by
@@ -159,10 +159,10 @@ def finiteCoproduct.desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B))
     exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : LightProfinite.{u}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : LightProfiniteMax.{u, w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : LightProfinite.{u}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : LightProfiniteMax.{u, w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a, x⟩
   specialize h a
@@ -221,10 +221,20 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
   exact (isLimitMapConePullbackConeEquiv lightToProfinite (pullback.condition f g)).symm
     (Profinite.pullback.isLimit _ _)
 
+instance (X : LightProfinite) : Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
+  ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+
+/-- A one-element space is terminal in `LightProfinite` -/
+def isTerminalPUnit : IsTerminal ((FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
+  Limits.IsTerminal.ofUnique _
+
 instance : HasTerminal LightProfinite.{u} :=
-  haveI : ∀ X, Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
   Limits.hasTerminal_of_unique (FintypeCat.of PUnit.{u+1}).toLightProfinite
+
+/-- The isomorphism from an arbitrary terminal object of `LightProfinite` to a one-element space. -/
+noncomputable def terminalIsoPUnit :
+    ⊤_ LightProfinite.{u} ≅ (FintypeCat.of PUnit.{u+1}).toLightProfinite :=
+  terminalIsTerminal.uniqueUpToIso LightProfinite.isTerminalPUnit
 
 noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
   preserves J _ := by
