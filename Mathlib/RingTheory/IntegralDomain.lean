@@ -96,8 +96,8 @@ variable [Ring R] [IsDomain R] [Fintype R]
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
     DivisionRing R where
-  __ := ‹Ring R›
   __ := Fintype.groupWithZeroOfCancel R
+  __ := ‹Ring R›
   nnqsmul := _
   qsmul := _
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
