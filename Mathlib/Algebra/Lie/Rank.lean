@@ -49,34 +49,34 @@ Then the coefficients of the characteristic polynomial of `ad R L x` are polynom
 The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
 noncomputable
-def rank : ℕ := polyRank (ad R L).toLinearMap
+def rank : ℕ := nilRank (ad R L).toLinearMap
 
 lemma polyCharpoly_coeff_rank_ne_zero :
     (polyCharpoly (ad R L).toLinearMap b).coeff (rank R L) ≠ 0 :=
-  polyCharpoly_coeff_polyRank_ne_zero _ _
+  polyCharpoly_coeff_nilRank_ne_zero _ _
 
 lemma rank_eq_natTrailingDegree :
     rank R L = (polyCharpoly (ad R L).toLinearMap b).natTrailingDegree := by
-  apply polyRank_eq_polyCharpoly_natTrailingDegree
+  apply nilRank_eq_polyCharpoly_natTrailingDegree
 
 open FiniteDimensional
 lemma rank_le_card [StrongRankCondition R] : rank R L ≤ Fintype.card ι :=
-  polyRank_le_card _ b
+  nilRank_le_card _ b
 
 open FiniteDimensional
 lemma rank_le_finrank [StrongRankCondition R] : rank R L ≤ finrank R L :=
-  polyRank_le_finrank _
+  nilRank_le_finrank _
 
 variable {L}
 
 lemma rank_le_natTrailingDegree_charpoly_ad :
     rank R L ≤ (ad R L x).charpoly.natTrailingDegree :=
-  polyRank_le_natTrailingDegree_charpoly _ _
+  nilRank_le_natTrailingDegree_charpoly _ _
 
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
-def IsRegular (x : L) : Prop := LinearMap.IsRegular (ad R L).toLinearMap x
+def IsRegular (x : L) : Prop := LinearMap.IsNilRegular (ad R L).toLinearMap x
 
 lemma isRegular_def :
     IsRegular R x = (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := rfl
@@ -85,11 +85,11 @@ lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
     IsRegular R x ↔
     MvPolynomial.eval (b.repr x)
       ((polyCharpoly (ad R L).toLinearMap b).coeff (rank R L)) ≠ 0 :=
-  LinearMap.isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero _ _ _
+  LinearMap.isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ _ _
 
 lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
     IsRegular R x ↔ (ad R L x).charpoly.natTrailingDegree = rank R L :=
-  LinearMap.isRegular_iff_natTrailingDegree_charpoly_eq_polyRank _ _
+  LinearMap.isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank _ _
 section IsDomain
 
 variable (L)
@@ -98,10 +98,10 @@ variable [IsDomain R] [StrongRankCondition R]
 open Cardinal FiniteDimensional MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
     ∃ x : L, IsRegular R x :=
-  LinearMap.exists_isRegular_of_finrank_le_card _ h
+  LinearMap.exists_isNilRegular_of_finrank_le_card _ h
 
 lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x :=
-  LinearMap.exists_isRegular _
+  LinearMap.exists_isNilRegular _
 
 end IsDomain
 

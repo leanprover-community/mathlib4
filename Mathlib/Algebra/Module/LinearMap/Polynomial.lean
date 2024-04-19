@@ -37,6 +37,11 @@ that evaluates on elements `x` of `L` to the characteristic polynomial of `φ x`
   is the characteristic polynomial of `φ x`.
 * `LinearMap.polyCharpoly_coeff_isHomogeneous`: the coefficients of `polyCharpoly`
   are homogeneous polynomials in the parameters.
+* `LinearMap.nilRank`: the smallest index at which `polyCharpoly` has a non-zero coefficient,
+  which is independent of the choice of basis for `L`.
+* `LinearMap.IsNilRegular`: an element `x` of `L` is *nil-regular* with respect to `φ`
+  if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero,
+  where `n` denotes the nil-rank of `φ`.
 
 ## Implementation details
 
@@ -48,6 +53,10 @@ the base change of the `R`-linear map `φ : L →ₗ[R] End R M`
 to the multivariate polynomial ring `MvPolynomial ι R`,
 and showing that `polyCharpolyAux φ` is equal to the characteristic polynomial of this base change.
 The proof concludes because characteristic polynomials are independent of the chosen basis.
+
+## References
+
+* [barnes1967]: "On Cartan subalgebras of Lie algebras" by D.W. Barnes.
 
 -/
 
@@ -396,32 +405,32 @@ lemma polyCharpoly_coeff_eq_zero_iff_of_basis (b : Basis ι R L) (b' : Basis ι'
 
 section aux
 
-/-- (Implementation detail, see `LinearMap.polyRank`.)
+/-- (Implementation detail, see `LinearMap.nilRank`.)
 
 Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
-Then `LinearMap.polyRankAux φ b` is the smallest index
+Then `LinearMap.nilRankAux φ b` is the smallest index
 at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
 
-This number does not depend on the choice of `b`, see `polyRankAux_basis_indep`. -/
+This number does not depend on the choice of `b`, see `nilRankAux_basis_indep`. -/
 noncomputable
-def polyRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
+def nilRankAux (φ : L →ₗ[R] Module.End R M) (b : Basis ι R L) : ℕ :=
   (polyCharpoly φ b).natTrailingDegree
 
-lemma polyCharpoly_coeff_polyRankAux_ne_zero [Nontrivial R] :
-    (polyCharpoly φ b).coeff (polyRankAux φ b) ≠ 0 := by
+lemma polyCharpoly_coeff_nilRankAux_ne_zero [Nontrivial R] :
+    (polyCharpoly φ b).coeff (nilRankAux φ b) ≠ 0 := by
   apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
   apply polyCharpoly_ne_zero
 
-lemma polyRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
-    polyRankAux φ b ≤ polyRankAux φ b' := by
+lemma nilRankAux_le [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
+    nilRankAux φ b ≤ nilRankAux φ b' := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   rw [Ne.def, (polyCharpoly_coeff_eq_zero_iff_of_basis φ b b' _).not]
-  apply polyCharpoly_coeff_polyRankAux_ne_zero
+  apply polyCharpoly_coeff_nilRankAux_ne_zero
 
-lemma polyRankAux_basis_indep [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
-    polyRankAux φ b = (polyCharpoly φ b').natTrailingDegree := by
-  apply le_antisymm <;> apply polyRankAux_le
+lemma nilRankAux_basis_indep [Nontrivial R] (b : Basis ι R L) (b' : Basis ι' R L) :
+    nilRankAux φ b = (polyCharpoly φ b').natTrailingDegree := by
+  apply le_antisymm <;> apply nilRankAux_le
 
 end aux
 
@@ -429,41 +438,41 @@ variable [Module.Finite R L] [Module.Free R L]
 
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms.
-Then `LinearMap.polyRank φ b` is the smallest index
+Then `LinearMap.nilRank φ b` is the smallest index
 at which `LinearMap.polyCharpoly φ b` has a non-zero coefficient.
 
 This number does not depend on the choice of `b`,
-see `LinearMap.polyRank_eq_polyCharpoly_natTrailingDegree`. -/
+see `LinearMap.nilRank_eq_polyCharpoly_natTrailingDegree`. -/
 noncomputable
-def polyRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
-  polyRankAux φ (Module.Free.chooseBasis R L)
+def nilRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
+  nilRankAux φ (Module.Free.chooseBasis R L)
 
 variable [Nontrivial R]
 
-lemma polyRank_eq_polyCharpoly_natTrailingDegree [Nontrivial R] (b : Basis ι R L) :
-    polyRank φ = (polyCharpoly φ b).natTrailingDegree := by
-  apply polyRankAux_basis_indep
+lemma nilRank_eq_polyCharpoly_natTrailingDegree [Nontrivial R] (b : Basis ι R L) :
+    nilRank φ = (polyCharpoly φ b).natTrailingDegree := by
+  apply nilRankAux_basis_indep
 
-lemma polyCharpoly_coeff_polyRank_ne_zero [Nontrivial R] :
-    (polyCharpoly φ b).coeff (polyRank φ) ≠ 0 := by
-  rw [polyRank_eq_polyCharpoly_natTrailingDegree _ b]
-  apply polyCharpoly_coeff_polyRankAux_ne_zero
+lemma polyCharpoly_coeff_nilRank_ne_zero [Nontrivial R] :
+    (polyCharpoly φ b).coeff (nilRank φ) ≠ 0 := by
+  rw [nilRank_eq_polyCharpoly_natTrailingDegree _ b]
+  apply polyCharpoly_coeff_nilRankAux_ne_zero
 
 open FiniteDimensional Module.Free
 
 variable [StrongRankCondition R]
 
-lemma polyRank_le_card (b : Basis ι R M) : polyRank φ ≤ Fintype.card ι := by
+lemma nilRank_le_card (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   rw [← FiniteDimensional.finrank_eq_card_basis b, ← polyCharpoly_natDegree φ (chooseBasis R L),
     Polynomial.coeff_natDegree, (polyCharpoly_monic _ _).leadingCoeff]
   apply one_ne_zero
 
-lemma polyRank_le_finrank : polyRank φ ≤ finrank R M := by
-  simpa only [finrank_eq_card_chooseBasisIndex R M] using polyRank_le_card φ (chooseBasis R M)
+lemma nilRank_le_finrank : nilRank φ ≤ finrank R M := by
+  simpa only [finrank_eq_card_chooseBasisIndex R M] using nilRank_le_card φ (chooseBasis R M)
 
-lemma polyRank_le_natTrailingDegree_charpoly (x : L) :
-    polyRank φ ≤ (φ x).charpoly.natTrailingDegree := by
+lemma nilRank_le_natTrailingDegree_charpoly (x : L) :
+    nilRank φ ≤ (φ x).charpoly.natTrailingDegree := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
   intro h
   apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
@@ -473,32 +482,32 @@ lemma polyRank_le_natTrailingDegree_charpoly (x : L) :
 
 /-- Let `L` and `M` be finite free modules over `R`,
 and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
-and denote `n := polyRank φ`.
+and denote `n := nilRank φ`.
 
-An element `x : L` is *regular* with respect to `φ`
+An element `x : L` is *nil-regular* with respect to `φ`
 if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
-def IsRegular (x : L) : Prop :=
-  Polynomial.coeff (φ x).charpoly (polyRank φ) ≠ 0
+def IsNilRegular (x : L) : Prop :=
+  Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0
 
 variable (x : L)
 
-lemma isRegular_def :
-    IsRegular φ x = (Polynomial.coeff (φ x).charpoly (polyRank φ) ≠ 0) := rfl
+lemma isNilRegular_def :
+    IsNilRegular φ x = (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := rfl
 
-lemma isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero :
-    IsRegular φ x ↔
+lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
+    IsNilRegular φ x ↔
     MvPolynomial.eval (b.repr x)
-      ((polyCharpoly φ b).coeff (polyRank φ)) ≠ 0 := by
-  rw [IsRegular, polyCharpoly_coeff_eval]
+      ((polyCharpoly φ b).coeff (nilRank φ)) ≠ 0 := by
+  rw [IsNilRegular, polyCharpoly_coeff_eval]
 
-lemma isRegular_iff_natTrailingDegree_charpoly_eq_polyRank :
-    IsRegular φ x ↔ (φ x).charpoly.natTrailingDegree = polyRank φ := by
-  rw [isRegular_def]
+lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank :
+    IsNilRegular φ x ↔ (φ x).charpoly.natTrailingDegree = nilRank φ := by
+  rw [isNilRegular_def]
   constructor
   · intro h
     exact le_antisymm
       (Polynomial.natTrailingDegree_le_of_ne_zero h)
-      (polyRank_le_natTrailingDegree_charpoly φ x)
+      (nilRank_le_natTrailingDegree_charpoly φ x)
   · intro h
     rw [← h]
     apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
@@ -509,29 +518,28 @@ section IsDomain
 variable [IsDomain R] [StrongRankCondition R]
 
 open Cardinal FiniteDimensional MvPolynomial in
-lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
-    ∃ x : L, IsRegular φ x := by
+lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
+    ∃ x : L, IsNilRegular φ x := by
   let b := chooseBasis R L
   let bₘ := chooseBasis R M
   let n := Fintype.card (ChooseBasisIndex R M)
   have aux :
-    ((polyCharpoly φ b).coeff (polyRank φ)).IsHomogeneous (n - polyRank φ) :=
-    polyCharpoly_coeff_isHomogeneous _ b (polyRank φ) (n - polyRank φ)
-      (by simp [polyRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
-  obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (polyRank φ)) ≠ 0 := by
+    ((polyCharpoly φ b).coeff (nilRank φ)).IsHomogeneous (n - nilRank φ) :=
+    polyCharpoly_coeff_isHomogeneous _ b (nilRank φ) (n - nilRank φ)
+      (by simp [nilRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
+  obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (nilRank φ)) ≠ 0 := by
     by_contra! h₀
-    apply polyCharpoly_coeff_polyRank_ne_zero φ b
+    apply polyCharpoly_coeff_nilRank_ne_zero φ b
     apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
     simp only [finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
   let c := Finsupp.equivFunOnFinite.symm x
   use b.repr.symm c
-  rwa [isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero _ b, LinearEquiv.apply_symm_apply]
+  rwa [isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ b, LinearEquiv.apply_symm_apply]
 
-lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular φ x := by
-  apply exists_isRegular_of_finrank_le_card
+lemma exists_isNilRegular [Infinite R] : ∃ x : L, IsNilRegular φ x := by
+  apply exists_isNilRegular_of_finrank_le_card
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
 
 end IsDomain
-
 
 end LinearMap
