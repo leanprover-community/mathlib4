@@ -700,8 +700,8 @@ theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f
 @[simp]
 lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
     Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=
-  ⟨fun h ↦ show f = fun x ↦ f x + c + (-c)
-    by simp only [add_neg_cancel_right] ▸ h.add (integrable_const _), fun h ↦ h.add (integrable_const _)⟩
+  ⟨fun h ↦ show f = fun x ↦ f x + c + (-c) by simp only [add_neg_cancel_right]
+    ▸ h.add (integrable_const _), fun h ↦ h.add (integrable_const _)⟩
 
 @[simp]
 lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
