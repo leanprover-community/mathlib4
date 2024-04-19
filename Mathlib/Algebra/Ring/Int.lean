@@ -70,12 +70,6 @@ instance instDistrib      : Distrib ℤ      := inferInstance
 instance instCharZero : CharZero ℤ where
   cast_injective _ _ := ofNat.inj
 
-/-! ### Miscellaneous lemmas -/
-
-lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
-    (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_natCast _
-
 end Int
 
 assert_not_exists Set.range
