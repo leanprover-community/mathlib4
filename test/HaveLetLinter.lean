@@ -5,20 +5,17 @@ import Mathlib.Tactic.Tauto
 `haveLet` linter. -/
 elab "noise" : tactic => do Lean.logInfo ""
 
-#guard_msgs(drop info) in
--- check that `tauto` does not trigger the linter
-example : True := by
-  noise
-  tauto
-
+set_option linter.haveLet 2 in
 #guard_msgs in
--- replace is ignored, no matter what
+-- check that `tauto`, `replace`, `classical`, `classical!` are ignored
 example : True := by
+  classical!
+  classical
   let zero := 0
   replace _zero := zero
   let eq := (rfl : 0 = 0)
   replace _eq := eq
-  exact .intro
+  tauto
 
 /--
 info:
@@ -30,6 +27,17 @@ warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of
 #guard_msgs in
 example : True := by
   noise
+  have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
+  exact .intro
+
+set_option linter.haveLet 0 in
+set_option linter.haveLet 2 in
+/--
+warning: '_zero : Nat' is a Type and not a Prop. Consider using 'let' instead of 'have'.
+[linter.haveLet]
+-/
+#guard_msgs in
+example : True := by
   have ⟨_zero, _⟩ : Fin 1 := ⟨0, Nat.zero_lt_one⟩
   exact .intro
 
@@ -91,8 +99,8 @@ example : True := by
   have _b : Nat := 2
   tauto
 
-set_option linter.haveLet false in
-set_option linter.haveLet true in
+set_option linter.haveLet 0 in
+set_option linter.haveLet 1 in
 /--
 info:
 
@@ -121,8 +129,8 @@ example (h : False) : True := by
   noise
   exact .intro
 
-set_option linter.haveLet false in
-set_option linter.haveLet true in
+set_option linter.haveLet 0 in
+set_option linter.haveLet 1 in
 /--
 info:
 

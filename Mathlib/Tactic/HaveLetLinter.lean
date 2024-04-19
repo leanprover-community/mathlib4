@@ -24,10 +24,20 @@ open Lean Elab Command Meta
 namespace Mathlib.Linter
 
 /-- The `have` vs `let` linter emits a warning on `have`s introducing a hypothesis whose
-Type is not `Prop` *if* the proof is incomplete. -/
-register_option linter.haveLet : Bool := {
-  defValue := true
-  descr := "enable the `have` vs `let` linter"
+Type is not `Prop`.
+There are three settings:
+* `0` -- inactive;
+* `1` -- active only on noisy declarations;
+* `2` or more -- always active.
+
+The default value is `1`.
+-/
+register_option linter.haveLet : Nat := {
+  defValue := 1
+  descr := "enable the `have` vs `let` linter:\n\
+            * 0 -- inactive;\n\
+            * 1 -- active only on noisy declarations;\n\
+            * 2 or more -- always active."
 }
 
 namespace haveLet
@@ -96,18 +106,17 @@ def nonPropHaves : InfoTree → CommandElabM (Array (Syntax × Format)) :=
     -- everything that is a Type triggers a warning on `have`
     return typeFmts.map fun ((_, fmt), na) => (stx, f!"{na} : {fmt}"))
 
-/-- Gets the value of the `linter.haveLet` option. -/
-def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.haveLet o
-
 /-- The main implementation of the `have` vs `let` linter. -/
 def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
-  unless getLinterHash (← getOptions) && (← getInfoState).enabled do
+  let gh := linter.haveLet.get (← getOptions)
+  unless gh != 0 && (← getInfoState).enabled do
     return
-  unless (← MonadState.get).messages.isEmpty do
-  let trees ← getInfoTrees
-  for t in trees.toArray do
-    for (s, fmt) in ← nonPropHaves t do
-      Linter.logLint linter.haveLet s m!"'{fmt}' is a Type and not a Prop. \
-        Consider using 'let' instead of 'have'."
+  unless gh == 1 && (← MonadState.get).messages.isEmpty do
+    let trees ← getInfoTrees
+    for t in trees.toArray do
+      for (s, fmt) in ← nonPropHaves t do
+        -- emulate `Linter.logLint linter.haveLet ...` with an option taking values not in `Bool`
+        logWarningAt s <| .tagged linter.haveLet.name m!"'{fmt}' is a Type and not a Prop. \
+          Consider using 'let' instead of 'have'. [{linter.haveLet.name}]"
 
 initialize addLinter haveLetLinter
