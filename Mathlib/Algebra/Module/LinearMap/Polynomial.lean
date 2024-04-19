@@ -492,7 +492,7 @@ def IsNilRegular (x : L) : Prop :=
 variable (x : L)
 
 lemma isNilRegular_def :
-    IsNilRegular φ x = (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := rfl
+    IsNilRegular φ x ↔ (Polynomial.coeff (φ x).charpoly (nilRank φ) ≠ 0) := Iff.rfl
 
 lemma isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero :
     IsNilRegular φ x ↔

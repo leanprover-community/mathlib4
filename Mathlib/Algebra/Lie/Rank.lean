@@ -30,13 +30,90 @@ if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-
 
 open scoped BigOperators
 
-namespace LieAlgebra
+variable {R A L M ι ιₘ : Type*}
+variable [CommRing R] [Nontrivial R]
+variable [CommRing A] [Algebra R A]
+variable [LieRing L] [LieAlgebra R L] [Module.Finite R L] [Module.Free R L]
+variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+variable [Module.Finite R M] [Module.Free R M]
+variable [Fintype ι] [DecidableEq ι]
+variable [Fintype ιₘ] [DecidableEq ιₘ]
+variable (b : Basis ι R L) (bₘ : Basis ιₘ R M) (x : L)
 
-variable {R A L ι : Type*}
-variable [CommRing R] [Nontrivial R] [CommRing A] [Algebra R A]
-variable [LieRing L] [LieAlgebra R L]
-variable [Module.Finite R L] [Module.Free R L] [Fintype ι] [DecidableEq ι]
-variable (b : Basis ι R L) (x : L)
+namespace LieModule
+
+open LieAlgebra LinearMap Module.Free
+
+variable (R L M)
+
+local notation "φ" => LieHom.toLinearMap (LieModule.toEndomorphism R L M)
+
+/--
+Let `M` be a representation of a Lie algebra `L` over a nontrivial commutative ring `R`,
+and assume that `L` and `M` are finite free as `R`-module.
+Then the coefficients of the characteristic polynomial of `⁅x, ·⁆` are polynomial in `x`.
+The *rank* of `M` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
+-/
+noncomputable
+def rank : ℕ := nilRank φ
+
+lemma polyCharpoly_coeff_rank_ne_zero :
+    (polyCharpoly φ b).coeff (rank R L M) ≠ 0 :=
+  polyCharpoly_coeff_nilRank_ne_zero _ _
+
+lemma rank_eq_natTrailingDegree :
+    rank R L M = (polyCharpoly φ b).natTrailingDegree := by
+  apply nilRank_eq_polyCharpoly_natTrailingDegree
+
+open FiniteDimensional
+lemma rank_le_card [StrongRankCondition R] : rank R L M ≤ Fintype.card ιₘ :=
+  nilRank_le_card _ bₘ
+
+open FiniteDimensional
+lemma rank_le_finrank [StrongRankCondition R] : rank R L M ≤ finrank R M :=
+  nilRank_le_finrank _
+
+variable {L}
+
+lemma rank_le_natTrailingDegree_charpoly_ad :
+    rank R L M ≤ (toEndomorphism R L M x).charpoly.natTrailingDegree :=
+  nilRank_le_natTrailingDegree_charpoly _ _
+
+/-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
+Then `x` is *regular*
+if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
+def IsRegular (x : L) : Prop := LinearMap.IsNilRegular φ x
+
+lemma isRegular_def :
+    IsRegular R M x ↔ (toEndomorphism R L M x).charpoly.coeff (rank R L M) ≠ 0 := Iff.rfl
+
+lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
+    IsRegular R M x ↔
+    MvPolynomial.eval (b.repr x)
+      ((polyCharpoly φ b).coeff (rank R L M)) ≠ 0 :=
+  LinearMap.isNilRegular_iff_coeff_polyCharpoly_nilRank_ne_zero _ _ _
+
+lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
+    IsRegular R M x ↔ (toEndomorphism R L M x).charpoly.natTrailingDegree = rank R L M :=
+  LinearMap.isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank _ _
+section IsDomain
+
+variable (L)
+variable [IsDomain R] [StrongRankCondition R]
+
+open Cardinal FiniteDimensional MvPolynomial in
+lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
+    ∃ x : L, IsRegular R M x :=
+  LinearMap.exists_isNilRegular_of_finrank_le_card _ h
+
+lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R M x :=
+  LinearMap.exists_isNilRegular _
+
+end IsDomain
+
+end LieModule
+
+namespace LieAlgebra
 
 open LieAlgebra LinearMap Module.Free
 
@@ -49,7 +126,7 @@ Then the coefficients of the characteristic polynomial of `ad R L x` are polynom
 The *rank* of `L` is the smallest `n` for which the `n`-th coefficient is not the zero polynomial.
 -/
 noncomputable
-def rank : ℕ := nilRank (ad R L).toLinearMap
+abbrev rank : ℕ := LieModule.rank R L L
 
 lemma polyCharpoly_coeff_rank_ne_zero :
     (polyCharpoly (ad R L).toLinearMap b).coeff (rank R L) ≠ 0 :=
@@ -76,10 +153,10 @@ lemma rank_le_natTrailingDegree_charpoly_ad :
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
-def IsRegular (x : L) : Prop := LinearMap.IsNilRegular (ad R L).toLinearMap x
+abbrev IsRegular (x : L) : Prop := LieModule.IsRegular R L x
 
 lemma isRegular_def :
-    IsRegular R x = (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := rfl
+    IsRegular R x ↔ (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := Iff.rfl
 
 lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
     IsRegular R x ↔
