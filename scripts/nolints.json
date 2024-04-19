@@ -65,7 +65,6 @@
  ["docBlame", "«term_≡_[SMOD_]»"],
  ["docBlame", "termℤ"],
  ["docBlame", "«termℤ√_»"],
- ["docBlame", "«term∃!_,_»"],
  ["docBlame", "«term∫_In_.._,_»"],
  ["docBlame", "«term∫_In_.._,_∂_»"],
  ["docBlame", "«term∮_InC(_,_),_»"],

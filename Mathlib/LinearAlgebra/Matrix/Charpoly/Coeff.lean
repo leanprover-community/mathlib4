@@ -66,7 +66,7 @@ theorem charpoly_sub_diagonal_degree_lt :
     Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
   apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
-  intro c hc; rw [← C_eq_int_cast, C_mul']
+  intro c hc; rw [← C_eq_intCast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]
   apply lt_of_le_of_lt degree_le_natDegree _
