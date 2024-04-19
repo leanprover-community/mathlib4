@@ -1,5 +1,23 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Chris Hughes
+-/
+
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Data.Set.UnionLift
+
+#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
+
+/-!
+# Subalgebras and directed Unions of sets
+
+## Main results
+
+ * `Subalgebra.coe_iSup_of_directed`: a directed supremum consists of the union of the algebras
+ * `Subalgebra.iSupLift`: define an algebra homomorphism on a directed supremum of subalgebras by
+   defining it on each subalgebra, and proving that it agrees on the intersection of subalgebras.
+-/
 
 namespace Subalgebra
 

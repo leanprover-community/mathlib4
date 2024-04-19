@@ -1,14 +1,27 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Andrew Yang, Antoine Chambert-Loir
+-/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
+
+/-!
+# More operations on subalgebras
+
+In this file we relate the definitions in `RingTheory.Ideal.Operations` to subalgebras.
+The contents of this file are somewhat random since both `Subalgebra.Basic` and `Ideal.Operations`
+are somewhat of a grab-bag of definitions, and this is whatever ends up in the intersection.
+-/
+
 
 namespace AlgHom
 
 open BigOperators
 
-universe u u' v w w'
-
-variable {R' : Type u'} {R : Type u} {A : Type v} {B : Type w} {C : Type w'} [CommSemiring R] [Semiring A] [Algebra R A]
-  [Semiring B] [Algebra R B] [Semiring C] [Algebra R C] (φ : A →ₐ[R] B)
+variable {R A B : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 theorem ker_rangeRestrict (f : A →ₐ[R] B) : RingHom.ker f.rangeRestrict = RingHom.ker f :=
   Ideal.ext fun _ ↦ Subtype.ext_iff
@@ -19,16 +32,14 @@ namespace Subalgebra
 
 open BigOperators Algebra
 
-universe u u' v w w'
-
-variable {R : Type u} {A : Type v} {B : Type w} [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
-  (S : Subalgebra R A)
+variable {R S : Type*} [CommSemiring R] [CommRing S] [Algebra R S]
+variable (S' : Subalgebra R S)
 
 /-- Suppose we are given `∑ i, lᵢ * sᵢ = 1` in `S`, and `S'` a subalgebra of `S` that contains
 `lᵢ` and `sᵢ`. To check that an `x : S` falls in `S'`, we only need to show that
 `sᵢ ^ n • x ∈ S'` for some `n` for each `sᵢ`. -/
-theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type*} [CommRing S] [Algebra R S]
-    (S' : Subalgebra R S) {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
+theorem mem_of_finset_sum_eq_one_of_pow_smul_mem
+    {ι : Type*} (ι' : Finset ι) (s : ι → S) (l : ι → S)
     (e : ∑ i in ι', l i * s i = 1) (hs : ∀ i, s i ∈ S') (hl : ∀ i, l i ∈ S') (x : S)
     (H : ∀ i, ∃ n : ℕ, (s i ^ n : S) • x ∈ S') : x ∈ S' := by
   -- Porting note: needed to add this instance
@@ -58,8 +69,8 @@ theorem mem_of_finset_sum_eq_one_of_pow_smul_mem {S : Type*} [CommRing S] [Algeb
   exact ⟨⟨_, hn i⟩, rfl⟩
 #align subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem Subalgebra.mem_of_finset_sum_eq_one_of_pow_smul_mem
 
-theorem mem_of_span_eq_top_of_smul_pow_mem {S : Type*} [CommRing S] [Algebra R S]
-    (S' : Subalgebra R S) (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
+theorem mem_of_span_eq_top_of_smul_pow_mem
+    (s : Set S) (l : s →₀ S) (hs : Finsupp.total s S S (↑) l = 1)
     (hs' : s ⊆ S') (hl : ∀ i, l i ∈ S') (x : S) (H : ∀ r : s, ∃ n : ℕ, (r : S) ^ n • x ∈ S') :
     x ∈ S' :=
   mem_of_finset_sum_eq_one_of_pow_smul_mem S' l.support (↑) l hs (fun x => hs' x.2) hl x H

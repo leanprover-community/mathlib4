@@ -1,5 +1,23 @@
+/-
+Copyright (c) 2018 Kenny Lau. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Riccardo Brasca
+-/
 import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+
+#align_import algebra.algebra.subalgebra.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
+
+/-!
+# Products of subalgebras
+
+In this file we define the product of two subalgebras as a subalgebra of the product algebra.
+
+## Main definitions
+
+ * `Subalgebra.prod`: the product of two subalgebras.
+-/
+
 
 namespace Subalgebra
 
