@@ -197,6 +197,30 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+protected theorem Specializes.inv {x y : G} (h : x ⤳ y) : (x⁻¹) ⤳ (y⁻¹) :=
+  h.map continuous_inv
+
+@[to_additive]
+protected theorem Inseparable.inv {x y : G} (h : Inseparable x y) : Inseparable (x⁻¹) (y⁻¹) :=
+  h.map continuous_inv
+
+@[to_additive]
+protected theorem Specializes.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpace G]
+    [ContinuousMul G] [ContinuousInv G] {x y : G} (h : x ⤳ y) : ∀ m : ℤ, (x ^ m) ⤳ (y ^ m)
+  | .ofNat n => by simpa using h.pow n
+  | .negSucc n => by simpa using (h.pow (n + 1)).inv
+
+@[to_additive]
+protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpace G]
+    [ContinuousMul G] [ContinuousInv G] {x y : G} (h : Inseparable x y) (m : ℤ) :
+    Inseparable (x ^ m) (y ^ m) :=
+  (h.specializes.zpow m).antisymm (h.specializes'.zpow m)
+
+@[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -487,6 +511,8 @@ end Conj
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
 
+instance : TopologicalGroup (ULift G) where
+
 section ZPow
 
 @[to_additive (attr := continuity)]
@@ -747,7 +773,7 @@ theorem DenseRange.topologicalClosure_map_subgroup [Group H] [TopologicalSpace H
 #align dense_range.topological_closure_map_subgroup DenseRange.topologicalClosure_map_subgroup
 #align dense_range.topological_closure_map_add_subgroup DenseRange.topologicalClosure_map_addSubgroup
 
-/-- The topological closure of a normal subgroup is normal.-/
+/-- The topological closure of a normal subgroup is normal. -/
 @[to_additive "The topological closure of a normal additive subgroup is normal."]
 theorem Subgroup.is_normal_topologicalClosure {G : Type*} [TopologicalSpace G] [Group G]
     [TopologicalGroup G] (N : Subgroup G) [N.Normal] : (Subgroup.topologicalClosure N).Normal where
@@ -1170,7 +1196,7 @@ theorem ContinuousOn.div' (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
 
 end ContinuousDiv
 
-section DivInTopologicalGroup
+section DivInvTopologicalGroup
 
 variable [Group G] [TopologicalSpace G] [TopologicalGroup G]
 
@@ -1230,7 +1256,7 @@ theorem nhds_translation_div (x : G) : comap (· / x) (𝓝 1) = 𝓝 x := by
 #align nhds_translation_div nhds_translation_div
 #align nhds_translation_sub nhds_translation_sub
 
-end DivInTopologicalGroup
+end DivInvTopologicalGroup
 
 /-!
 ### Topological operations on pointwise sums and products
@@ -1602,7 +1628,7 @@ theorem TopologicalGroup.t2Space_of_one_sep (H : ∀ x : G, x ≠ 1 → ∃ U �
     T2Space G := by
   suffices T1Space G from inferInstance
   refine t1Space_iff_specializes_imp_eq.2 fun x y hspec ↦ by_contra fun hne ↦ ?_
-  rcases H (x * y⁻¹) (by rwa [Ne.def, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
+  rcases H (x * y⁻¹) (by rwa [Ne, mul_inv_eq_one]) with ⟨U, hU₁, hU⟩
   exact hU <| mem_of_mem_nhds <| hspec.map (continuous_mul_right y⁻¹) (by rwa [mul_inv_self])
 #align topological_group.t2_space_of_one_sep TopologicalGroup.t2Space_of_one_sep
 #align topological_add_group.t2_space_of_zero_sep TopologicalAddGroup.t2Space_of_zero_sep

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
@@ -566,12 +566,12 @@ theorem mapDomain_support_of_injOn [DecidableEq β] {f : α → β} (s : α →�
     (hf : Set.InjOn f s.support) : (mapDomain f s).support = Finset.image f s.support :=
   Finset.Subset.antisymm mapDomain_support <| by
     intro x hx
-    simp only [mem_image, exists_prop, mem_support_iff, Ne.def] at hx
+    simp only [mem_image, exists_prop, mem_support_iff, Ne] at hx
     rcases hx with ⟨hx_w, hx_h_left, rfl⟩
-    simp only [mem_support_iff, Ne.def]
+    simp only [mem_support_iff, Ne]
     rw [mapDomain_apply' (↑s.support : Set _) _ _ hf]
     · exact hx_h_left
-    · simp only [mem_coe, mem_support_iff, Ne.def]
+    · simp only [mem_coe, mem_support_iff, Ne]
       exact hx_h_left
     · exact Subset.refl _
 #align finsupp.map_domain_support_of_inj_on Finsupp.mapDomain_support_of_injOn
@@ -881,7 +881,7 @@ def filter (p : α → Prop) [DecidablePred p] (f : α →₀ M) : α →₀ M w
   toFun a := if p a then f a else 0
   support := f.support.filter p
   mem_support_toFun a := by
-    simp only -- Porting note: necessary to beta reduce to activate `split_ifs`
+    beta_reduce -- Porting note(#12129): additional beta reduction needed to activate `split_ifs`
     split_ifs with h <;>
       · simp only [h, mem_filter, mem_support_iff]
         tauto
@@ -1553,7 +1553,7 @@ variable {α M}
 
 theorem support_smul [AddMonoid M] [SMulZeroClass R M] {b : R} {g : α →₀ M} :
     (b • g).support ⊆ g.support := fun a => by
-  simp only [smul_apply, mem_support_iff, Ne.def]
+  simp only [smul_apply, mem_support_iff, Ne]
   exact mt fun h => h.symm ▸ smul_zero _
 #align finsupp.support_smul Finsupp.support_smul
 
@@ -1649,12 +1649,12 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
       Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
-section DistribMulActionHom
+section DistribMulActionSemiHom
 
 variable [Semiring R]
 variable [AddCommMonoid M] [AddCommMonoid N] [DistribMulAction R M] [DistribMulAction R N]
 
-/-- `Finsupp.single` as a `DistribMulActionHom`.
+/-- `Finsupp.single` as a `DistribMulActionSemiHom`.
 
 See also `Finsupp.lsingle` for the version as a linear map. -/
 def DistribMulActionHom.single (a : α) : M →+[R] α →₀ M :=
@@ -1680,7 +1680,7 @@ theorem distribMulActionHom_ext' {f g : (α →₀ M) →+[R] N}
   distribMulActionHom_ext fun a => DistribMulActionHom.congr_fun (h a)
 #align finsupp.distrib_mul_action_hom_ext' Finsupp.distribMulActionHom_ext'
 
-end DistribMulActionHom
+end DistribMulActionSemiHom
 
 section
 
@@ -1858,11 +1858,11 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 #align finsupp.split_support Finsupp.splitSupport
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne.def, ← support_eq_empty, ← Ne.def, ←
+  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   -- porting note (#10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
-    Sigma.exists, Ne.def]
+    Sigma.exists, Ne]
 #align finsupp.mem_split_support_iff_nonzero Finsupp.mem_splitSupport_iff_nonzero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
