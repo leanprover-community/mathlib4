@@ -5,7 +5,6 @@ Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Limits
-import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 
@@ -25,30 +24,8 @@ namespace ModuleCat
 
 open CategoryTheory Limits
 
-section
-
-variable {R : Type u} [Ring R] {J : Type u₂} [Category.{v₂} J]
-
-section
-
-variable (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)]
-
-lemma small_sections_of_hasLimit_forget₂ :
-    Small.{v} (F ⋙ forget (ModuleCat R)).sections := by
-  change Small.{v} ((F ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
-  have : HasLimit (F ⋙ forget₂ _ AddCommGroupCat) := inferInstance
-  --depends on `AddCommGroupCat.hasLimit_iff_small_sections` from #11669
-  sorry
-
-instance : HasLimit F := by
-  have := small_sections_of_hasLimit_forget₂ F
-  apply hasLimit
-
-noncomputable instance : PreservesLimit F (forget₂ _ AddCommGroupCat) := by
-  have := small_sections_of_hasLimit_forget₂ F
-  infer_instance
-
-end
+variable {R : Type u} {S : Type u'} [Ring R] [Ring S] (f : R →+* S)
+    {J : Type u₂} [Category.{v₂} J]
 
 instance : (forget (ModuleCat R)).ReflectsIsomorphisms where
   reflects f _ :=
@@ -63,15 +40,30 @@ instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphism
       infer_instance
     apply isIso_of_reflects_iso _ (forget _)
 
-noncomputable instance {R : Type u} [Ring R] {J : Type u₂} [Category.{v₂} J]
-    (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
-    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) := by
+section
+
+variable (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)]
+
+lemma small_sections_of_hasLimit_forget₂ :
+    Small.{v} (F ⋙ forget (ModuleCat R)).sections := by
+  change Small.{v} ((F ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
+  rw [← AddCommGroupCat.hasLimit_iff_small_sections]
+  infer_instance
+
+instance : HasLimit F := by
+  have := small_sections_of_hasLimit_forget₂ F
+  apply hasLimit
+
+noncomputable instance : PreservesLimit F (forget₂ _ AddCommGroupCat) := by
+  have := small_sections_of_hasLimit_forget₂ F
+  infer_instance
+
+noncomputable instance : ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) := by
   apply reflectsLimitOfReflectsIsomorphisms
 
 end
 
 noncomputable instance preservesLimitRestrictScalars
-    {R : Type u} {S : Type u'} [Ring R] [Ring S] (f : R →+* S) {J : Type u₂} [Category.{v₂} J]
     (F : J ⥤ ModuleCat.{v} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => by
@@ -100,6 +92,8 @@ instance (X : Cᵒᵖ) : HasLimit ((F ⋙ evaluation R X) ⋙ forget₂ _ AddCom
   change HasLimit (F ⋙ evaluation R X ⋙ forget₂ _ AddCommGroupCat)
   infer_instance
 
+/-- A cone in the category `PresheafOfModules R` is limit if it is so after the application
+of the functors `evalurtion R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
     (hc : ∀ (X : Cᵒᵖ), IsLimit ((evaluation R X).mapCone c)) : IsLimit c where
   lift s := Hom.mk'' (fun X => (hc X).lift ((evaluation R X).mapCone s)) (fun X Y f => by
@@ -126,6 +120,8 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
+/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
+corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]
 noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
   obj X := limit (F ⋙ evaluation R X)
@@ -160,7 +156,10 @@ noncomputable def limitBundledCore : BundledCorePresheafOfModules R where
     erw [limMap_π_assoc]
     dsimp
 
-noncomputable def limitConeπApp (j : J) : (limitBundledCore F).toPresheafOfModules ⟶ F.obj j :=
+/-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the canonical map
+`(limitBundledCore F).toPresheafOfModules ⟶ F.obj j` for all `j : J`. -/
+noncomputable def limitConeπApp (j : J) :
+    (limitBundledCore F).toPresheafOfModules ⟶ F.obj j :=
   PresheafOfModules.Hom.mk'' (fun X => limit.π (F ⋙ evaluation R X) j) (fun X Y f => by
     dsimp
     simp only [assoc, preservesLimitsIso_inv_π]
@@ -172,11 +171,14 @@ lemma limitConeπApp_naturality {i j : J} (f : i ⟶ j) :
   ext1 X
   exact limit.w (F ⋙ evaluation R X) f
 
+/-- The (limit) cone for `F : J ⥤ PresheafOfModules.{v} R` that is constructed for the limit
+of `F ⋙ evaluation R X` for all `X`. -/
 @[simps]
 noncomputable def limitCone : Cone F where
   pt := (limitBundledCore F).toPresheafOfModules
   π := { app := limitConeπApp F }
 
+/-- The cone `limitCone F` is limit for any `F : J ⥤ PresheafOfModules.{v} R`. -/
 noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
   evaluationJointlyReflectsLimits _ _ (fun _ => limit.isLimit _)
 
@@ -205,10 +207,10 @@ variable [HasLimitsOfShape J AddCommGroupCat.{v}]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
-noncomputable def evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
+noncomputable instance evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
     PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
 
-noncomputable def toPresheafPreservesLimitsOfShape :
+noncomputable instance toPresheafPreservesLimitsOfShape :
     PreservesLimitsOfShape J (toPresheaf.{v} R) where
 
 end
@@ -218,11 +220,9 @@ instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
 
 noncomputable instance preservesFiniteLimitsEvaluation (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
-  preservesFiniteLimits J _ _ := evaluationPreservesLimitsOfShape.{v} R J X
 
 noncomputable instance preservesFiniteLimitsToPresheaf :
     PreservesFiniteLimits (toPresheaf R) where
-  preservesFiniteLimits _ _ _ := toPresheafPreservesLimitsOfShape _ _
 
 end Limits
 
