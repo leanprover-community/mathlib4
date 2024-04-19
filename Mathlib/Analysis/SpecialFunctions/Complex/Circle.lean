@@ -94,7 +94,7 @@ theorem periodic_expMapCircle : Periodic expMapCircle (2 * π) := fun z =>
   expMapCircle_eq_expMapCircle.2 ⟨1, by rw [Int.cast_one, one_mul]⟩
 #align periodic_exp_map_circle periodic_expMapCircle
 
--- Adaptation note: nightly-2024-04-01
+-- Adaptation note: nightly-2024-04-14
 -- The simpNF linter now times out on this lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/12229
 @[simp, nolint simpNF]
