@@ -39,10 +39,13 @@ instance rel : LargeCategory RelCat where
   comp f g x z := ∃ y, f x y ∧ g y z
 #align category_theory.rel CategoryTheory.rel
 
-@[ext] theorem rel_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
-  funext₂ (fun a b => propext (h a b))
+
 
 namespace RelCat
+
+@[ext] theorem hom_ext {X Y : RelCat} (f g : X ⟶ Y) (h : ∀ a b, f a b ↔ g a b) : f = g :=
+  funext₂ (fun a b => propext (h a b))
+
 namespace Hom
 
 protected theorem rel_id (X : RelCat) : 𝟙 X = (· = ·) := rfl
@@ -63,19 +66,19 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   map f := f.graph
   map_id X := by
     ext
-    simp[Hom.rel_id_apply₂]
+    simp [Hom.rel_id_apply₂]
   map_comp f g := by
     ext
-    simp[Hom.rel_comp_apply₂]
+    simp [Hom.rel_comp_apply₂]
 
 
 @[simp] theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
     graphFunctor.map f x y ↔ f x = y := f.graph_def x y
 
-instance graphFunctor_faithful : Faithful graphFunctor where
+instance graphFunctor_faithful : graphFunctor.Faithful where
   map_injective h := Function.graph_injective h
 
-instance graphFunctor_essSurj : EssSurj graphFunctor :=
+instance graphFunctor_essSurj : graphFunctor.EssSurj :=
     graphFunctor.essSurj_of_surj Function.surjective_id
 
 /-- A relation is an isomorphism in `RelCat` iff it is the image of an isomorphism in
@@ -152,20 +155,22 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := by rfl
 
-instance opFunctor_isEquivalence : IsEquivalence opFunctor where
-  inverse := unopFunctor
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-
-instance unopFunctor_isEquivalence : IsEquivalence unopFunctor where
-  inverse := opFunctor
-  unitIso := Iso.refl _
-  counitIso := Iso.refl _
-
 /-- `rel` is self-dual: The map that swaps the argument order of a
     relation induces an equivalence between `rel` and its opposite. -/
-def opFunctor_equivalence : Equivalence RelCat RelCatᵒᵖ :=
-  Equivalence.mk opFunctor unopFunctor (Iso.refl _) (Iso.refl _)
+@[simps]
+def opEquivalence : Equivalence RelCat RelCatᵒᵖ where
+  functor := opFunctor
+  inverse := unopFunctor
+  unitIso := (Iso.refl _)
+  counitIso := (Iso.refl _)
+
+instance : opFunctor.IsEquivalence := by
+  change opEquivalence.functor.IsEquivalence
+  infer_instance
+
+instance : unopFunctor.IsEquivalence := by
+  change opEquivalence.inverse.IsEquivalence
+  infer_instance
 
 end Opposite
 
