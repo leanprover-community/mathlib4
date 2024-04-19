@@ -17,8 +17,6 @@ This file establishes that all derivations of finite-dimensional Killing Lie alg
 The following statements hold for a finite-dimensional Lie algebra `L` with non-degenerate Killing
 form.
 
-- `LieDerivation.Killing.ad_injective`: the adjoint action is injective,
-- `LieDerivation.Killing.equiv_rangeAd`: `L` is isomorphic to its adjoint representation,
 - `LieDerivation.Killing.rangeAd_eq_top`: the range of the adjoint action is full,
 - `LieDerivation.Killing.exists_eq_ad`: any derivation is an inner derivation.
 -/
@@ -39,25 +37,14 @@ local notation "𝕀" => LieHom.idealRange (ad R L)
 /-- A local notation for the Killing complement of the ideal range of `ad`. -/
 local notation "𝕀ᗮ" => LieIdeal.killingCompl R 𝔻 𝕀
 
-/-- The adjoint action on a finite-dimensional Killing Lie algebra is injective. -/
-lemma ad_injective : Function.Injective (ad R L) := by
-  apply (LieHom.ker_eq_bot (ad R L)).mp
-  rw [ad_ker_eq_center, LieAlgebra.center_eq_bot_of_semisimple]
-
-/-- The Lie algebra isomorphism between a finite-dimensional Killing Lie algebra and its adjoint
-representation. -/
-noncomputable def equiv_rangeAd : L ≃ₗ⁅R⁆ (ad R L).idealRange := by
-  have h := LieEquiv.ofInjective (ad R L) (ad_injective R L)
-  rw [← ad_isIdealMorphism] at h
-  exact h
-
 /-- The restriction of the Killing form of a finite-dimensional Killing Lie algebra to the range of
 the adjoint action is nondegenerate. -/
 lemma killingForm_nondegenerate_on_rangeAd :
     ((killingForm R 𝔻).restrict (lieIdealSubalgebra R 𝔻 𝕀).toSubmodule).Nondegenerate := by
   apply LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot.mpr
   rw [← LieIdeal.killingForm_eq]
-  have _ : LieAlgebra.IsKilling R (lieIdealSubalgebra R 𝔻 𝕀) := (equiv_rangeAd R L).isKilling
+  have _ : LieAlgebra.IsKilling R (lieIdealSubalgebra R 𝔻 𝕀) :=
+    (equivRangeAdOfCenterEqBot (LieAlgebra.center_eq_bot_of_semisimple R L)).isKilling
   rw [← LieAlgebra.IsKilling.ker_killingForm_eq_bot]
   exact rfl
 
@@ -77,7 +64,7 @@ lemma compl_rangeAd_eq_bot : 𝕀ᗮ = ⊥ := by
   rw [LieSubmodule.eq_bot_iff]
   intro D hD
   ext x
-  apply ad_injective R L
+  apply injective_ad_of_center_eq_bot (LieAlgebra.center_eq_bot_of_semisimple R L)
   rw [zero_apply, LieHom.map_zero, ← lie_der_ad_eq_ad_der]
   have h1 : ⁅D, ad R L x⁆ ∈ 𝕀ᗮ := lie_mem_left _ _ _ _ _ hD
   have h2 : ⁅D, ad R L x⁆ ∈ 𝕀 := lie_mem_right _ _ _ _ _ (LieHom.mem_idealRange (ad R L) x)
