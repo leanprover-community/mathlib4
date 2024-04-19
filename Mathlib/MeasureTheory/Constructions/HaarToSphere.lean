@@ -72,7 +72,7 @@ theorem toSphere_apply_univ : μ.toSphere univ = dim E * μ (ball 0 1) := by
 instance : IsFiniteMeasure μ.toSphere where
   measure_univ_lt_top := by
     rw [toSphere_apply_univ']
-    exact ENNReal.mul_lt_top (ENNReal.nat_ne_top _) <|
+    exact ENNReal.mul_lt_top (ENNReal.natCast_ne_top _) <|
       ne_top_of_le_ne_top measure_ball_lt_top.ne <| measure_mono (diff_subset _ _)
 
 /-- The measure on `(0, +∞)` that has density `(· ^ n)` with respect to the Lebesgue measure. -/
@@ -114,14 +114,14 @@ theorem measurePreserving_homeomorphUnitSphereProd :
     ((borel_eq_generateFrom_Iio _).symm.trans BorelSpace.measurable_eq.symm)
     isPiSystem_measurableSet isPiSystem_Iio
     μ.toSphere.toFiniteSpanningSetsIn (finiteSpanningSetsIn_volumeIoiPow_range_Iio _)
-    fun s hs ↦ forall_range_iff.2 fun r ↦ ?_
+    fun s hs ↦ forall_mem_range.2 fun r ↦ ?_
   have : Ioo (0 : ℝ) r = r.1 • Ioo (0 : ℝ) 1 := by
     rw [LinearOrderedField.smul_Ioo r.2.out, smul_zero, smul_eq_mul, mul_one]
   have hpos : 0 < dim E := FiniteDimensional.finrank_pos
   rw [(Homeomorph.measurableEmbedding _).map_apply, toSphere_apply' _ hs, volumeIoiPow_apply_Iio,
     comap_subtype_coe_apply (measurableSet_singleton _).compl, toSphere_apply_aux, this,
     smul_assoc, μ.addHaar_smul_of_nonneg r.2.out.le, Nat.sub_add_cancel hpos, Nat.cast_pred hpos,
-    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_coe_nat, ← ENNReal.ofReal_mul, mul_div_cancel']
+    sub_add_cancel, mul_right_comm, ← ENNReal.ofReal_natCast, ← ENNReal.ofReal_mul, mul_div_cancel₀]
   exacts [(Nat.cast_pos.2 hpos).ne', Nat.cast_nonneg _]
 
 end Measure
@@ -145,7 +145,7 @@ lemma integral_fun_norm_addHaar (f : ℝ → F) :
       rw [integral_withDensity_eq_integral_smul, μ.toSphere_apply_univ,
         ENNReal.toReal_mul, ENNReal.toReal_nat, ← nsmul_eq_mul, smul_assoc,
         integral_subtype_comap measurableSet_Ioi fun a ↦ Real.toNNReal (a ^ (dim E - 1)) • f a,
-        set_integral_congr measurableSet_Ioi fun x hx ↦ ?_]
+        setIntegral_congr measurableSet_Ioi fun x hx ↦ ?_]
       · rw [NNReal.smul_def, Real.coe_toNNReal _ (pow_nonneg hx.out.le _)]
       · exact (measurable_subtype_coe.pow_const _).real_toNNReal
 

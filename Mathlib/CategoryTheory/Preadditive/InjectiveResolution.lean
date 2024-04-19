@@ -39,6 +39,7 @@ variable {C : Type u} [Category.{v} C] [HasZeroObject C] [HasZeroMorphisms C]
 An `InjectiveResolution Z` consists of a bundled `ℕ`-indexed cochain complex of injective objects,
 along with a quasi-isomorphism from the complex consisting of just `Z` supported in degree `0`.
 -/
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure InjectiveResolution (Z : C) where
   /-- the cochain complex involved in the resolution -/
@@ -98,7 +99,7 @@ theorem ι_f_succ (n : ℕ) : I.ι.f (n + 1) = 0 :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_succ CategoryTheory.InjectiveResolution.ι_f_succ
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 @[reassoc]
 theorem ι_f_zero_comp_complex_d :
     I.ι.f 0 ≫ I.cocomplex.d 0 1 = 0 := by
@@ -106,7 +107,7 @@ theorem ι_f_zero_comp_complex_d :
 set_option linter.uppercaseLean3 false in
 #align category_theory.InjectiveResolution.ι_f_zero_comp_complex_d CategoryTheory.InjectiveResolution.ι_f_zero_comp_complex_d
 
--- Porting note: removed @[simp] simp can prove this
+-- Porting note (#10618): removed @[simp] simp can prove this
 theorem complex_d_comp (n : ℕ) :
     I.cocomplex.d n (n + 1) ≫ I.cocomplex.d (n + 1) (n + 2) = 0 := by
   simp

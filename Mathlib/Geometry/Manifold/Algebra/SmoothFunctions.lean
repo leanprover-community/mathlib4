@@ -132,7 +132,7 @@ def compLeftMonoidHom {G' : Type*} [Monoid G'] [TopologicalSpace G'] [ChartedSpa
 
 variable (I') {N}
 
--- porting note: TODO: generalize to any smooth map instead of `Set.inclusion`
+-- Porting note (#11215): TODO: generalize to any smooth map instead of `Set.inclusion`
 /-- For a Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group homomorphism from
 `C^∞⟮I, V; I', G⟯` to `C^∞⟮I, U; I', G⟯`. -/
 @[to_additive "For an additive Lie group `G` and open sets `U ⊆ V` in `N`, the 'restriction' group

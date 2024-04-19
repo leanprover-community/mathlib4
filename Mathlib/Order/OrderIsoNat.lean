@@ -8,7 +8,7 @@ import Mathlib.Data.Nat.Lattice
 import Mathlib.Logic.Denumerable
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Order.Hom.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.order_iso_nat from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -74,7 +74,7 @@ theorem acc_iff_no_decreasing_seq {x} :
       rintro ⟨x, hx⟩
       cases exists_not_acc_lt_of_not_acc hx with
       | intro w h => exact ⟨⟨w, h.1⟩, h.2⟩
-    obtain ⟨f, h⟩ := Classical.axiom_of_choice this
+    choose f h using this
     refine' fun E =>
       by_contradiction fun hx => E.elim' ⟨natGT (fun n => (f^[n] ⟨x, hx⟩).1) fun n => _, 0, rfl⟩
     simp only [Function.iterate_succ']
@@ -186,7 +186,7 @@ theorem exists_increasing_or_nonincreasing_subseq' (r : α → α → Prop) (f :
       have h : ∀ n : ℕ, ∃ n' : ℕ, n < n' ∧ r (f (n + m)) (f (n' + m)) := by
         intro n
         have h := hm _ (le_add_of_nonneg_left n.zero_le)
-        simp only [exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
+        simp only [bad, exists_prop, not_not, Set.mem_setOf_eq, not_forall] at h
         obtain ⟨n', hn1, hn2⟩ := h
         obtain ⟨x, hpos, rfl⟩ := exists_pos_add_of_lt hn1
         refine' ⟨n + x, add_lt_add_left hpos n, _⟩

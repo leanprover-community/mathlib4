@@ -32,13 +32,13 @@ open Asymptotics Filter Set Real MeasureTheory FiniteDimensional
 
 variable {E : Type*} [NormedAddCommGroup E]
 
-theorem sqrt_one_add_norm_sq_le (x : E) : Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
+theorem sqrt_one_add_norm_sq_le (x : E) : √((1 : ℝ) + ‖x‖ ^ 2) ≤ 1 + ‖x‖ := by
   rw [sqrt_le_left (by positivity)]
   simp [add_sq]
 #align sqrt_one_add_norm_sq_le sqrt_one_add_norm_sq_le
 
 theorem one_add_norm_le_sqrt_two_mul_sqrt (x : E) :
-    (1 : ℝ) + ‖x‖ ≤ Real.sqrt 2 * sqrt ((1 : ℝ) + ‖x‖ ^ 2) := by
+    (1 : ℝ) + ‖x‖ ≤ √2 * √(1 + ‖x‖ ^ 2) := by
   rw [← sqrt_mul zero_le_two]
   have := sq_nonneg (‖x‖ - 1)
   apply le_sqrt_of_sq_le
@@ -49,7 +49,7 @@ theorem rpow_neg_one_add_norm_sq_le {r : ℝ} (x : E) (hr : 0 < r) :
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2) ≤ (2 : ℝ) ^ (r / 2) * (1 + ‖x‖) ^ (-r) :=
   calc
     ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)
-      = (2 : ℝ) ^ (r / 2) * ((Real.sqrt 2 * Real.sqrt ((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
+      = (2 : ℝ) ^ (r / 2) * ((√2 * √((1 : ℝ) + ‖x‖ ^ 2)) ^ r)⁻¹ := by
       rw [rpow_div_two_eq_sqrt, rpow_div_two_eq_sqrt, mul_rpow, mul_inv, rpow_neg,
         mul_inv_cancel_left₀] <;> positivity
     _ ≤ (2 : ℝ) ^ (r / 2) * ((1 + ‖x‖) ^ r)⁻¹ := by
@@ -73,7 +73,6 @@ theorem closedBall_rpow_sub_one_eq_empty_aux {r t : ℝ} (hr : 0 < r) (ht : 1 < 
 #align closed_ball_rpow_sub_one_eq_empty_aux closedBall_rpow_sub_one_eq_empty_aux
 
 variable [NormedSpace ℝ E] [FiniteDimensional ℝ E]
-
 variable {E}
 
 theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ) < r) :
@@ -82,7 +81,7 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   have h_int : ∀ x : ℝ, x ∈ Ioc (0 : ℝ) 1 →
       ENNReal.ofReal ((x ^ (-r⁻¹) - 1) ^ n) ≤ ENNReal.ofReal (x ^ (-(r⁻¹ * n))) := fun x hx ↦ by
     apply ENNReal.ofReal_le_ofReal
-    rw [← neg_mul, rpow_mul hx.1.le, rpow_nat_cast]
+    rw [← neg_mul, rpow_mul hx.1.le, rpow_natCast]
     refine' pow_le_pow_left _ (by simp only [sub_le_self_iff, zero_le_one]) n
     rw [le_sub_iff_add_le', add_zero]
     refine' Real.one_le_rpow_of_pos_of_le_one_of_nonpos hx.1 hx.2 _
@@ -95,13 +94,14 @@ theorem finite_integral_rpow_sub_one_pow_aux {r : ℝ} (n : ℕ) (hnr : (n : ℝ
   rwa [neg_lt_neg_iff, inv_mul_lt_iff' hr, one_mul]
 #align finite_integral_rpow_sub_one_pow_aux finite_integral_rpow_sub_one_pow_aux
 
-theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+variable [MeasurableSpace E] [BorelSpace E] {μ : Measure E} [μ.IsAddHaarMeasure]
+
+theorem finite_integral_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
     (∫⁻ x : E, ENNReal.ofReal ((1 + ‖x‖) ^ (-r)) ∂μ) < ∞ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   -- We start by applying the layer cake formula
   have h_meas : Measurable fun ω : E => (1 + ‖ω‖) ^ (-r) :=
-    -- porting note: was `by measurability`
+    -- Porting note: was `by measurability`
     (measurable_norm.const_add _).pow_const _
   have h_pos : ∀ x : E, 0 ≤ (1 + ‖x‖) ^ (-r) := fun x ↦ by positivity
   rw [lintegral_eq_lintegral_meas_le μ (eventually_of_forall h_pos) h_meas.aemeasurable]
@@ -131,16 +131,15 @@ theorem finite_integral_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Me
       (finite_integral_rpow_sub_one_pow_aux (finrank ℝ E) hnr).ne measure_ball_lt_top.ne
   · -- The integral from 1 to ∞ is zero:
     have h_int'' : ∀ t ∈ Ioi (1 : ℝ), f t = 0 := fun t ht => by
-      simp only [closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
+      simp only [f, closedBall_rpow_sub_one_eq_empty_aux E hr ht, measure_empty]
     -- The integral over the constant zero function is finite:
     rw [set_lintegral_congr_fun measurableSet_Ioi (ae_of_all volume <| h_int''), lintegral_const 0,
       zero_mul]
     exact WithTop.zero_lt_top
 #align finite_integral_one_add_norm finite_integral_one_add_norm
 
-theorem integrable_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure]
-    {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) : Integrable (fun x : E => (1 + ‖x‖) ^ (-r)) μ := by
+theorem integrable_one_add_norm {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    Integrable (fun x ↦ (1 + ‖x‖) ^ (-r)) μ := by
   constructor
   · measurability
   -- Lower Lebesgue integral
@@ -150,9 +149,8 @@ theorem integrable_one_add_norm [MeasurableSpace E] [BorelSpace E] {μ : Measure
   exact finite_integral_one_add_norm hnr
 #align integrable_one_add_norm integrable_one_add_norm
 
-theorem integrable_rpow_neg_one_add_norm_sq [MeasurableSpace E] [BorelSpace E] {μ : Measure E}
-    [μ.IsAddHaarMeasure] {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
-    Integrable (fun x : E => ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
+theorem integrable_rpow_neg_one_add_norm_sq {r : ℝ} (hnr : (finrank ℝ E : ℝ) < r) :
+    Integrable (fun x ↦ ((1 : ℝ) + ‖x‖ ^ 2) ^ (-r / 2)) μ := by
   have hr : 0 < r := lt_of_le_of_lt (finrank ℝ E).cast_nonneg hnr
   refine ((integrable_one_add_norm hnr).const_mul <| (2 : ℝ) ^ (r / 2)).mono'
     ?_ (eventually_of_forall fun x => ?_)

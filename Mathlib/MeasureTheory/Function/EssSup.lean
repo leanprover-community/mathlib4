@@ -15,12 +15,12 @@ We define the essential supremum and infimum of a function `f : α → β` with 
 almost everywhere.
 
 TODO: The essential supremum of functions `α → ℝ≥0∞` is used in particular to define the norm in
-the `L∞` space (see MeasureTheory/LpSpace.lean).
+the `L∞` space (see `Mathlib.MeasureTheory.Function.LpSpace`).
 
 There is a different quantity which is sometimes also called essential supremum: the least
 upper-bound among measurable functions of a family of measurable functions (in an almost-everywhere
 sense). We do not define that quantity here, which is simply the supremum of a map with values in
-`α →ₘ[μ] β` (see MeasureTheory/AEEqFun.lean).
+`α →ₘ[μ] β` (see `Mathlib.MeasureTheory.Function.AEEqFun`).
 
 ## Main definitions
 
@@ -205,7 +205,7 @@ theorem essInf_antitone_measure {f : α → β} (hμν : μ ≪ ν) : essInf f �
 theorem essSup_smul_measure {f : α → β} {c : ℝ≥0∞} (hc : c ≠ 0) :
     essSup f (c • μ) = essSup f μ := by
   simp_rw [essSup]
-  suffices h_smul : (c • μ).ae = μ.ae; · rw [h_smul]
+  suffices h_smul : (c • μ).ae = μ.ae by rw [h_smul]
   ext1
   simp_rw [mem_ae_iff]
   simp [hc]

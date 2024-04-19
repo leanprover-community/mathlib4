@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Monotone
 
 #align_import set_theory.ordinal.topology from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
@@ -53,7 +53,7 @@ theorem isOpen_singleton_iff : IsOpen ({a} : Set Ordinal) ↔ ¬IsLimit a := by
     · exact (ha ha').elim
 #align ordinal.is_open_singleton_iff Ordinal.isOpen_singleton_iff
 
--- porting note: todo: generalize to a `SuccOrder`
+-- Porting note (#11215): TODO: generalize to a `SuccOrder`
 theorem nhds_right' (a : Ordinal) : 𝓝[>] a = ⊥ := (covBy_succ a).nhdsWithin_Ioi
 
 -- todo: generalize to a `SuccOrder`
@@ -198,8 +198,7 @@ theorem isNormal_iff_strictMono_and_continuous (f : Ordinal.{u} → Ordinal.{u})
   · rw [isNormal_iff_strictMono_limit]
     rintro ⟨h, h'⟩
     refine' ⟨h, fun o ho a h => _⟩
-    suffices : o ∈ f ⁻¹' Set.Iic a
-    exact Set.mem_preimage.1 this
+    suffices o ∈ f ⁻¹' Set.Iic a from Set.mem_preimage.1 this
     rw [mem_closed_iff_sup (IsClosed.preimage h' (@isClosed_Iic _ _ _ _ a))]
     exact
       ⟨_, out_nonempty_iff_ne_zero.2 ho.1, typein (· < ·), fun i => h _ (typein_lt_self i),
@@ -222,8 +221,8 @@ theorem enumOrd_isNormal_iff_isClosed (hs : s.Unbounded (· < ·)) :
     change ((enumOrdOrderIso hs) _).val = f x
     rw [OrderIso.apply_symm_apply]
   · rw [isClosed_iff_bsup] at h
-    suffices : enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b
-    exact this.trans (bsup_le H)
+    suffices enumOrd s a ≤ bsup.{u, u} a fun b (_ : b < a) => enumOrd s b from
+      this.trans (bsup_le H)
     cases' enumOrd_surjective hs _
         (h ha.1 (fun b _ => enumOrd s b) fun b _ => enumOrd_mem hs b) with
       b hb

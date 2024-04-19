@@ -74,12 +74,12 @@ theorem subset_product_image_snd [DecidableEq β] : (s ×ˢ t).image Prod.snd �
 
 theorem product_image_fst [DecidableEq α] (ht : t.Nonempty) : (s ×ˢ t).image Prod.fst = s := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_fst Finset.product_image_fst
 
 theorem product_image_snd [DecidableEq β] (ht : s.Nonempty) : (s ×ˢ t).image Prod.snd = t := by
   ext i
-  simp [mem_image, ht.bex]
+  simp [mem_image, ht.exists_mem]
 #align finset.product_image_snd Finset.product_image_snd
 
 theorem subset_product [DecidableEq α] [DecidableEq β] {s : Finset (α × β)} :
@@ -205,7 +205,7 @@ theorem Nonempty.snd (h : (s ×ˢ t).Nonempty) : t.Nonempty :=
   ⟨xy.2, (mem_product.1 hxy).2⟩
 #align finset.nonempty.snd Finset.Nonempty.snd
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem nonempty_product : (s ×ˢ t).Nonempty ↔ s.Nonempty ∧ t.Nonempty :=
   ⟨fun h => ⟨h.fst, h.snd⟩, fun h => h.1.product h.2⟩
 #align finset.nonempty_product Finset.nonempty_product

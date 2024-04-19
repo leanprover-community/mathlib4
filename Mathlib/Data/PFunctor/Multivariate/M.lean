@@ -84,7 +84,7 @@ instance M.Path.inhabited (x : P.last.M) {i} [Inhabited (P.drop.B x.head i)] :
       (PFunctor.M.casesOn' x
         (r := fun _ => PFunctor.M.dest x = ⟨a, f⟩)
         <| by
-        intros; simp [PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
+        intros; simp [a, PFunctor.M.dest_mk, PFunctor.M.children_mk]; rfl)
       _ default⟩
 #align mvpfunctor.M.path.inhabited MvPFunctor.M.Path.inhabited
 
@@ -313,7 +313,7 @@ theorem M.bisim' {α : TypeVec n} (R : P.M α → P.M α → Prop)
     induction Hr
     · rw [← Quot.factor_mk_eq R (EqvGen R) this]
       rwa [appendFun_comp_id, ← MvFunctor.map_map, ← MvFunctor.map_map, h]
-    -- porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
+    -- Porting note: `cc` was replaced with `aesop`, maybe there is a more light-weight solution?
     all_goals aesop
 #align mvpfunctor.M.bisim' MvPFunctor.M.bisim'
 

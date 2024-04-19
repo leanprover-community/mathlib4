@@ -25,15 +25,12 @@ open scoped ENNReal
 universe u v
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
-
 variable {E : Type u} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 theorem HasFPowerSeriesAt.hasStrictFDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -97,7 +94,7 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
     simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
-  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 #align has_fpower_series_on_ball.fderiv HasFPowerSeriesOnBall.fderiv
 
@@ -146,7 +143,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 protected theorem HasFPowerSeriesAt.hasStrictDerivAt (h : HasFPowerSeriesAt f p x) :
@@ -181,11 +177,10 @@ end deriv
 section fderiv
 
 variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
-
 variable {f : E → F} {x : E} {s : Set E}
 
 /-! The case of continuously polynomial functions. We get the same differentiability
-results as for analytic functions, but without the assumptions that `F` is complete.-/
+results as for analytic functions, but without the assumptions that `F` is complete. -/
 
 theorem HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
@@ -212,7 +207,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
     simpa using
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
-  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a finite power series on a ball, then so does its derivative.
@@ -275,7 +270,6 @@ end fderiv
 section deriv
 
 variable {p : FormalMultilinearSeries 𝕜 𝕜 F} {r : ℝ≥0∞}
-
 variable {f : 𝕜 → F} {x : 𝕜} {s : Set 𝕜}
 
 /-- If a function is polynomial on a set `s`, so is its derivative. -/
@@ -338,7 +332,7 @@ theorem changeOrigin_toFormalMultilinearSeries [DecidableEq ι] :
     intro ⟨s, hs⟩
     have h : sᶜ.card = 1 := by rw [card_compl, hs, Fintype.card_fin, Nat.add_sub_cancel]
     obtain ⟨a, ha⟩ := card_eq_one.mp h
-    refine ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
+    exact ⟨a, Subtype.ext (compl_eq_comm.mp ha)⟩
   rw [Function.comp_apply, Subtype.coe_mk, compl_singleton, piecewise_erase_univ,
     toFormalMultilinearSeries, dif_pos (Nat.add_sub_of_le Fintype.card_pos).symm]
   simp_rw [domDomCongr_apply, compContinuousLinearMap_apply, ContinuousLinearMap.proj_apply,
@@ -372,10 +366,10 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 open Fintype ContinuousLinearMap in
 theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
-  simp only [derivSeries, strongUniformity_topology_eq, compFormalMultilinearSeries_apply,
-    changeOriginSeries, compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
-    coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
+  simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
+    compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
+    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
+    continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,

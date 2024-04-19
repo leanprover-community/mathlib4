@@ -1,12 +1,9 @@
 import Mathlib.Tactic.DeriveToExpr
-import Mathlib.Tactic.RunCmd
 
 namespace tests
 open Lean
 
--- TODO this file fails without this line due to a bug in the handler?
-set_option autoImplicit true
---set_option trace.Elab.Deriving.toExpr true
+-- set_option trace.Elab.Deriving.toExpr true
 
 inductive MyMaybe (α : Type u)
   | none | some (x : α)
@@ -40,13 +37,14 @@ inductive Foo
 run_cmd Elab.Command.liftTermElabM <|
   Meta.check <| toExpr (Foo.l [Foo.l [], Foo.l [Foo.l []]])
 
-inductive Bar
-  | func (x : Bool → Nat)
-  --deriving ToExpr
-/- As expected:
-failed to synthesize instance
+/--
+error: failed to synthesize instance
   ToExpr (Bool → Nat)
 -/
+#guard_msgs in
+inductive Bar
+  | func (x : Bool → Nat)
+  deriving ToExpr
 
 def boolFunHelper (x y : α) (b : Bool) : α := if b then x else y
 
