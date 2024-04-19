@@ -75,6 +75,8 @@ instance : (forget R).Faithful where
 instance : (forget R).Full where
   preimage φ := ⟨φ⟩
 
+/-- Evaluation on an object `X` gives a functor
+`SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
 def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
   forget _ ⋙ PresheafOfModules.evaluation _ X
 
