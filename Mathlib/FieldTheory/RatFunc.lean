@@ -181,7 +181,6 @@ section IsDomain
 
 variable [IsDomain K]
 
-  --⟨algebraMap _ _⟩
 /-- `RatFunc.mk (p q : K[X])` is `p / q` as a rational function.
 
 If `q = 0`, then `mk` returns 0.
@@ -819,7 +818,7 @@ instance : Coe (Polynomial K) (RatFunc K) := ⟨fun P ↦ algebraMap _ _ P⟩
 
 variable {K}
 
-theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x := by
+theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
   rfl
 #align ratfunc.mk_one RatFunc.mk_one
 
@@ -1707,8 +1706,8 @@ theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
   (coeAlgHom F).map_zero
 #align ratfunc.coe_zero RatFunc.coe_zero
 
-theorem coe_ne_zero {f : Polynomial F} : f ≠ 0 → (↑f : PowerSeries F) ≠ 0 := by
-  simp only [Ne.def, Polynomial.coe_eq_zero_iff, imp_self]
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+  simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
@@ -1780,18 +1779,20 @@ theorem single_pow {R : Type _} [Ring R] (n : ℕ) :
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
 
-theorem single_inv (d : ℤ) (α : F) (hα : α ≠ 0) :
-    (single (d : ℤ) (α : F))⁻¹ = single (-d) (α⁻¹ : F) := by
-  rw [inv_eq_of_mul_eq_one_left];
-  simp only [HahnSeries.single_mul_single, add_left_neg, inv_mul_cancel hα]
+theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
+    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
+  apply eq_inv_of_mul_eq_one_right
+  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
+    inv_mul_cancel hα]
   rfl
+
 
 theorem single_zpow (n : ℤ) :
     single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
   induction' n with n_pos n_neg
   · apply single_pow
-  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one, ←
-      single_inv (n_neg + 1 : ℤ) (1 : F) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
       Nat.cast_one, inv_inj, zpow_natCast, single_pow, inv_one]
 
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
