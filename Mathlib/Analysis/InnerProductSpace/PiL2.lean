@@ -535,7 +535,7 @@ protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) := by
   classical
-  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ h ↦ ?_⟩
+  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ _h ↦ ?_⟩
   · exact (Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm
   · simp [LinearMap.stdBasis, (B j.fst).orthonormal.1 j.snd]
   · simp_rw [Basis.map_apply, Pi.basis_apply, LinearMap.stdBasis, WithLp.linearEquiv_symm_apply,
@@ -544,7 +544,7 @@ protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η]
     rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add, Pi.single_eq_same]
     · obtain rfl | hj := eq_or_ne j j'
       · rw [Pi.single_eq_same]
-        exact (B j).orthonormal.2 (ne_of_apply_ne _ h)
+        exact (B j).orthonormal.2 (ne_of_apply_ne _ _h)
       · rw [Pi.single_eq_of_ne hj, inner_zero_right]
     · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
 
@@ -556,17 +556,12 @@ theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η �
       ((Pi.basis fun i : η ↦ (B i).toBasis).map (WithLp.linearEquiv 2 _ _).symm) := by ext; rfl
 
 @[simp]
-theorem _root_.Pi.orthonormalBasis_coe_apply {η : Type*} [Fintype η] {ι : η → Type*}
-    [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
-    [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
-    (j : (i : η) × (ι i)) :
-    Pi.orthonormalBasis B j = (Pi.basis fun i : η ↦ (B i).toBasis) j := rfl
-
 theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η]  [DecidableEq η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
-    Pi.orthonormalBasis B j = LinearMap.stdBasis 𝕜 _ j.fst ((B j.fst) j.snd) := by simp
+    Pi.orthonormalBasis B j = (WithLp.equiv _ _).symm (Pi.single _ (B j.fst j.snd)) := by
+  simp [Pi.orthonormalBasis, LinearMap.stdBasis]
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
