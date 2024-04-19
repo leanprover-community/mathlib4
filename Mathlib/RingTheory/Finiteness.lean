@@ -5,6 +5,7 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
