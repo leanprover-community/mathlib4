@@ -587,59 +587,60 @@ end Comp
 
 section CommRing
 
-variable [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R] [CommSemiring N] [AddCommMonoid M] [Module R M]
+variable [Module R N] [SMulCommClass R N N] [IsScalarTower R N N]
 
 /-- The product of linear forms is a quadratic form. -/
-def linMulLin (f g : M →ₗ[R] R) : QuadraticMap R M R where
+def linMulLin (f g : M →ₗ[R] N) : QuadraticMap R M N where
   toFun := f * g
   toFun_smul a x := by
-    simp only [smul_eq_mul, RingHom.id_apply, Pi.mul_apply, LinearMap.map_smulₛₗ]
-    ring
+    rw [Pi.mul_apply, Pi.mul_apply, LinearMap.map_smulₛₗ, RingHom.id_apply, LinearMap.map_smulₛₗ,
+      RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, (smul_eq_mul R)]
   exists_companion' :=
-    ⟨(LinearMap.mul R R).compl₁₂ f g + (LinearMap.mul R R).compl₁₂ g f, fun x y => by
+    ⟨(LinearMap.mul R N).compl₁₂ f g + (LinearMap.mul R N).compl₁₂ g f, fun x y => by
       simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply',
         LinearMap.add_apply]
       ring_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticMap.linMulLin
 
 @[simp]
-theorem linMulLin_apply (f g : M →ₗ[R] R) (x) : linMulLin f g x = f x * g x :=
+theorem linMulLin_apply (f g : M →ₗ[R] N) (x) : linMulLin f g x = f x * g x :=
   rfl
 #align quadratic_form.lin_mul_lin_apply QuadraticMap.linMulLin_apply
 
 @[simp]
-theorem add_linMulLin (f g h : M →ₗ[R] R) : linMulLin (f + g) h = linMulLin f h + linMulLin g h :=
+theorem add_linMulLin (f g h : M →ₗ[R] N) : linMulLin (f + g) h = linMulLin f h + linMulLin g h :=
   ext fun _ => add_mul _ _ _
 #align quadratic_form.add_lin_mul_lin QuadraticMap.add_linMulLin
 
 @[simp]
-theorem linMulLin_add (f g h : M →ₗ[R] R) : linMulLin f (g + h) = linMulLin f g + linMulLin f h :=
+theorem linMulLin_add (f g h : M →ₗ[R] N) : linMulLin f (g + h) = linMulLin f g + linMulLin f h :=
   ext fun _ => mul_add _ _ _
 #align quadratic_form.lin_mul_lin_add QuadraticMap.linMulLin_add
 
-variable [AddCommMonoid N] [Module R N]
+variable {N' : Type*} [AddCommMonoid N'] [Module R N']
 
 @[simp]
-theorem linMulLin_comp (f g : M →ₗ[R] R) (h : N →ₗ[R] M) :
+theorem linMulLin_comp (f g : M →ₗ[R] N) (h : N' →ₗ[R] M) :
     (linMulLin f g).comp h = linMulLin (f.comp h) (g.comp h) :=
   rfl
 #align quadratic_form.lin_mul_lin_comp QuadraticMap.linMulLin_comp
 
 variable {n : Type*}
 
-/-- `sq` is the quadratic form mapping the vector `x : R` to `x * x` -/
+/-- `sq` is the quadratic form mapping the vector `x : N` to `x * x` -/
 @[simps!]
-def sq : QuadraticMap R R R :=
+def sq : QuadraticMap R N N :=
   linMulLin LinearMap.id LinearMap.id
 #align quadratic_form.sq QuadraticMap.sq
 
 /-- `proj i j` is the quadratic form mapping the vector `x : n → R` to `x i * x j` -/
-def proj (i j : n) : QuadraticMap R (n → R) R :=
-  linMulLin (@LinearMap.proj _ _ _ (fun _ => R) _ _ i) (@LinearMap.proj _ _ _ (fun _ => R) _ _ j)
+def proj (i j : n) : QuadraticMap R (n → N) N :=
+  linMulLin (@LinearMap.proj _ _ _ (fun _ => N) _ _ i) (@LinearMap.proj _ _ _ (fun _ => N) _ _ j)
 #align quadratic_form.proj QuadraticMap.proj
 
 @[simp]
-theorem proj_apply (i j : n) (x : n → R) : proj i j x = x i * x j :=
+theorem proj_apply (i j : n) (x : n → N) : proj (R := R) i j x = x i * x j :=
   rfl
 #align quadratic_form.proj_apply QuadraticMap.proj_apply
 
