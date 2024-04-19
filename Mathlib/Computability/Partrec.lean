@@ -138,7 +138,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
     refine' ⟨fd, _⟩
     have := rfind_spec (get_mem fd)
-    simp at this ⊢
+    simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e
     rw [e]; trivial⟩
 #align nat.rfind_opt_dom Nat.rfindOpt_dom
@@ -225,7 +225,7 @@ theorem ppred : Partrec fun n => ppred n :=
           simp [show 0 ≠ m.succ by intro h; injection h] at h
     · refine' eq_some_iff.2 _
       simp only [mem_rfind, not_true, IsEmpty.forall_iff, decide_True, mem_some_iff,
-        Bool.false_eq_decide_iff, true_and]
+        false_eq_decide_iff, true_and]
       intro m h
       simp [ne_of_gt h]
 #align nat.partrec.ppred Nat.Partrec.ppred
@@ -274,7 +274,6 @@ protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcoda
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem of_eq {f g : α → σ} (hf : Computable f) (H : ∀ n, f n = g n) : Computable g :=
@@ -422,7 +421,6 @@ end Computable
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -494,7 +492,6 @@ end Partrec
 namespace Partrec₂
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
@@ -521,7 +518,6 @@ end Partrec₂
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 nonrec theorem comp {f : β → σ} {g : α → β} (hf : Computable f) (hg : Computable g) :
@@ -539,8 +535,9 @@ end Computable
 namespace Computable₂
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
+
+theorem mk {f : α → β → σ} (hf : Computable fun p : α × β => f p.1 p.2) : Computable₂ f := hf
 
 nonrec theorem comp {f : β → γ → σ} {g : α → β} {h : α → γ} (hf : Computable₂ f)
     (hg : Computable g) (hh : Computable h) : Computable fun a => f (g a) (h a) :=
@@ -557,7 +554,6 @@ end Computable₂
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -625,7 +621,6 @@ theorem Vector.mOfFn_part_some {α n} :
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
@@ -758,7 +753,6 @@ end Computable
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -817,31 +811,30 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
       b ∈ PFun.fix f a := by
   intro F; refine' ⟨fun h => _, fun h => _⟩
   · rcases h with ⟨n, ⟨_x, h₁⟩, h₂⟩
-    have : ∀ (m a') (_ : Sum.inr a' ∈ F a m) (_ : b ∈ PFun.fix f a'), b ∈ PFun.fix f a := by
+    have : ∀ m a', Sum.inr a' ∈ F a m → b ∈ PFun.fix f a' → b ∈ PFun.fix f a := by
       intro m a' am ba
-      induction' m with m IH generalizing a' <;> simp at am
+      induction' m with m IH generalizing a' <;> simp [F] at am
       · rwa [← am]
       rcases am with ⟨a₂, am₂, fa₂⟩
       exact IH _ am₂ (PFun.mem_fix_iff.2 (Or.inr ⟨_, fa₂, ba⟩))
-    cases n <;> simp at h₂
+    cases n <;> simp [F] at h₂
     rcases h₂ with (h₂ | ⟨a', am', fa'⟩)
     · cases' h₁ (Nat.lt_succ_self _) with a' h
       injection mem_unique h h₂
     · exact this _ _ am' (PFun.mem_fix_iff.2 (Or.inl fa'))
-  · suffices
-      ∀ (a') (_ : b ∈ PFun.fix f a') (k) (_ : Sum.inr a' ∈ F a k),
-        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, ∀ (_ : k ≤ m), ∃ a₂, Sum.inr a₂ ∈ F a m by
-      rcases this _ h 0 (by simp) with ⟨n, hn₁, hn₂⟩
+  · suffices ∀ a', b ∈ PFun.fix f a' → ∀ k, Sum.inr a' ∈ F a k →
+        ∃ n, Sum.inl b ∈ F a n ∧ ∀ m < n, k ≤ m → ∃ a₂, Sum.inr a₂ ∈ F a m by
+      rcases this _ h 0 (by simp [F]) with ⟨n, hn₁, hn₂⟩
       exact ⟨_, ⟨⟨_, hn₁⟩, fun {m} mn => hn₂ m mn (Nat.zero_le _)⟩, hn₁⟩
     intro a₁ h₁
     apply @PFun.fixInduction _ _ _ _ _ _ h₁
     intro a₂ h₂ IH k hk
     rcases PFun.mem_fix_iff.1 h₂ with (h₂ | ⟨a₃, am₃, _⟩)
     · refine' ⟨k.succ, _, fun m mk km => ⟨a₂, _⟩⟩
-      · simp
+      · simp [F]
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
-    · rcases IH _ am₃ k.succ (by simp; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
+    · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
       · refine' ⟨n, hn₁, fun m mn km => _⟩
         cases' km.lt_or_eq_dec with km km
         · exact hn₂ _ mn km
@@ -858,7 +851,7 @@ theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := b
   have hp : Partrec₂ p :=
     hF.map ((sum_casesOn Computable.id (const true).to₂ (const false).to₂).comp snd).to₂
   exact (hp.rfind.bind (hF.bind (sum_casesOn_right snd snd.to₂ none.to₂).to₂).to₂).of_eq fun a =>
-    ext fun b => by simp; apply fix_aux f
+    ext fun b => by simp [p]; apply fix_aux f
 #align partrec.fix Partrec.fix
 
 end Partrec

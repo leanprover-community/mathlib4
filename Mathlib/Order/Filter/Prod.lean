@@ -139,6 +139,20 @@ theorem tendsto_snd : Tendsto Prod.snd (f ×ˢ g) g :=
   tendsto_inf_right tendsto_comap
 #align filter.tendsto_snd Filter.tendsto_snd
 
+/-- If a function tends to a product `g ×ˢ h` of filters, then its first component tends to
+`g`. See also `Filter.Tendsto.fst_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.fst {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).1) f g :=
+  tendsto_fst.comp H
+
+/-- If a function tends to a product `g ×ˢ h` of filters, then its second component tends to
+`h`. See also `Filter.Tendsto.snd_nhds` for the special case of converging to a point in a
+product of two topological spaces. -/
+theorem Tendsto.snd {h : Filter γ} {m : α → β × γ} (H : Tendsto m f (g ×ˢ h)) :
+    Tendsto (fun a ↦ (m a).2) f h :=
+  tendsto_snd.comp H
+
 theorem Tendsto.prod_mk {h : Filter γ} {m₁ : α → β} {m₂ : α → γ}
     (h₁ : Tendsto m₁ f g) (h₂ : Tendsto m₂ f h) : Tendsto (fun x => (m₁ x, m₂ x)) f (g ×ˢ h) :=
   tendsto_inf.2 ⟨tendsto_comap_iff.2 h₁, tendsto_comap_iff.2 h₂⟩
@@ -181,6 +195,10 @@ theorem Eventually.curry {la : Filter α} {lb : Filter β} {p : α × β → Pro
   exact ha.mono fun a ha => hb.mono fun b hb => h ha hb
 #align filter.eventually.curry Filter.Eventually.curry
 
+protected lemma Frequently.uncurry {la : Filter α} {lb : Filter β} {p : α → β → Prop}
+    (h : ∃ᶠ x in la, ∃ᶠ y in lb, p x y) : ∃ᶠ xy in la ×ˢ lb, p xy.1 xy.2 :=
+  mt (fun h ↦ by simpa only [not_frequently] using h.curry) h
+
 /-- A fact that is eventually true about all pairs `l ×ˢ l` is eventually true about
 all diagonal pairs `(i, i)` -/
 theorem Eventually.diag_of_prod {p : α × α → Prop} (h : ∀ᶠ i in f ×ˢ f, p i) :
@@ -193,14 +211,14 @@ theorem Eventually.diag_of_prod_left {f : Filter α} {g : Filter γ} {p : (α ×
     (∀ᶠ x in (f ×ˢ f) ×ˢ g, p x) → ∀ᶠ x : α × γ in f ×ˢ g, p ((x.1, x.1), x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.diag_of_prod.prod_mk hs).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_left Filter.Eventually.diag_of_prod_left
 
 theorem Eventually.diag_of_prod_right {f : Filter α} {g : Filter γ} {p : α × γ × γ → Prop} :
     (∀ᶠ x in f ×ˢ (g ×ˢ g), p x) → ∀ᶠ x : α × γ in f ×ˢ g, p (x.1, x.2, x.2) := by
   intro h
   obtain ⟨t, ht, s, hs, hst⟩ := eventually_prod_iff.1 h
-  refine' (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
+  exact (ht.prod_mk hs.diag_of_prod).mono fun x hx => by simp only [hst hx.1 hx.2]
 #align filter.eventually.diag_of_prod_right Filter.Eventually.diag_of_prod_right
 
 theorem tendsto_diag : Tendsto (fun i => (i, i)) f (f ×ˢ f) :=
@@ -413,6 +431,7 @@ theorem prod_pure_pure {a : α} {b : β} :
     (pure a : Filter α) ×ˢ (pure b : Filter β) = pure (a, b) := by simp
 #align filter.prod_pure_pure Filter.prod_pure_pure
 
+@[simp]
 theorem prod_eq_bot : f ×ˢ g = ⊥ ↔ f = ⊥ ∨ g = ⊥ := by
   simp_rw [← empty_mem_iff_bot, mem_prod_iff, subset_empty_iff, prod_eq_empty_iff, ← exists_prop,
     Subtype.exists', exists_or, exists_const, Subtype.exists, exists_prop, exists_eq_right]
@@ -428,11 +447,11 @@ theorem prod_neBot : NeBot (f ×ˢ g) ↔ NeBot f ∧ NeBot g := by
   simp only [neBot_iff, Ne, prod_eq_bot, not_or]
 #align filter.prod_ne_bot Filter.prod_neBot
 
-theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
+protected theorem NeBot.prod (hf : NeBot f) (hg : NeBot g) : NeBot (f ×ˢ g) := prod_neBot.2 ⟨hf, hg⟩
 #align filter.ne_bot.prod Filter.NeBot.prod
 
-instance prod_neBot' [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
-#align filter.prod_ne_bot' Filter.prod_neBot'
+instance prod.instNeBot [hf : NeBot f] [hg : NeBot g] : NeBot (f ×ˢ g) := hf.prod hg
+#align filter.prod_ne_bot' Filter.prod.instNeBot
 
 @[simp]
 lemma disjoint_prod {f' : Filter α} {g' : Filter β} :

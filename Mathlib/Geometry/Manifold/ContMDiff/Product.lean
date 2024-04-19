@@ -50,8 +50,8 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 F₂] {F₃ : Type*} [NormedAddCommGroup F₃] [NormedSpace 𝕜 F₃] {F₄ : Type*}
   [NormedAddCommGroup F₄] [NormedSpace 𝕜 F₄]
   -- declare functions, sets, points and smoothness indices
-  {e : LocalHomeomorph M H}
-  {e' : LocalHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
+  {e : PartialHomeomorph M H}
+  {e' : PartialHomeomorph M' H'} {f f₁ : M → M'} {s s₁ t : Set M} {x : M} {m n : ℕ∞}
 variable {I I'}
 
 section ProdMk
@@ -402,10 +402,8 @@ variable {ι : Type*} [Fintype ι] {Fi : ι → Type*} [∀ i, NormedAddCommGrou
 theorem contMDiffWithinAt_pi_space :
     ContMDiffWithinAt I 𝓘(𝕜, ∀ i, Fi i) n φ s x ↔
       ∀ i, ContMDiffWithinAt I 𝓘(𝕜, Fi i) n (fun x => φ x i) s x := by
-  -- Porting note: `simp` fails to apply it on the LHS
-  rw [contMDiffWithinAt_iff]
   simp only [contMDiffWithinAt_iff, continuousWithinAt_pi, contDiffWithinAt_pi, forall_and,
-    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), LocalEquiv.refl_coe, id]
+    writtenInExtChartAt, extChartAt_model_space_eq_id, (· ∘ ·), PartialEquiv.refl_coe, id]
 #align cont_mdiff_within_at_pi_space contMDiffWithinAt_pi_space
 
 theorem contMDiffOn_pi_space :

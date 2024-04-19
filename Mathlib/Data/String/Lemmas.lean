@@ -3,19 +3,14 @@ Copyright (c) 2021 Chris Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Bailey
 -/
-import Mathlib.Data.List.Basic
+import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Data.String.Defs
+import Mathlib.Tactic.Basic
 
 namespace String
 
 lemma congr_append : ∀ (a b : String), a ++ b = String.mk (a.data ++ b.data)
   | ⟨_⟩, ⟨_⟩ => rfl
-
-@[simp] lemma length_append : ∀ (as bs : String), (as ++ bs).length = as.length + bs.length
-  | ⟨as⟩, ⟨bs⟩ => by
-    rw [congr_append]
-    simp only [String.length]
-    exact List.length_append as bs
 
 @[simp] lemma length_replicate (n : ℕ) (c : Char) : (replicate n c).length = n := by
   simp only [String.length, String.replicate, List.length_replicate]

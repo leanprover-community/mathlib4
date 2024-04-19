@@ -21,6 +21,7 @@ universe uR uA uM₁ uM₂
 variable {R : Type uR} {A : Type uA} {M₁ : Type uM₁} {M₂ : Type uM₂}
 
 open TensorProduct
+open LinearMap (BilinForm)
 
 namespace QuadraticForm
 
@@ -92,8 +93,9 @@ theorem baseChange_tmul (Q : QuadraticForm R M₂) (a : A) (m₂ : M₂) :
 
 theorem associated_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     associated (R := A) (Q.baseChange A) = (associated (R := R) Q).baseChange A := by
-  dsimp only [QuadraticForm.baseChange, BilinForm.baseChange]
+  dsimp only [QuadraticForm.baseChange, LinearMap.baseChange]
   rw [associated_tmul (QuadraticForm.sq (R := A)) Q, associated_sq]
+  exact rfl
 
 theorem polarBilin_baseChange [Invertible (2 : A)] (Q : QuadraticForm R M₂) :
     polarBilin (Q.baseChange A) = (polarBilin Q).baseChange A := by

@@ -68,10 +68,10 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
       simp,
     zpow_succ' := fun n f => by
       ext x
-      simp [zpow_ofNat, pow_succ],
+      simp [zpow_natCast, pow_succ],
     zpow_neg' := fun n f => by
       ext x
-      simp [Nat.succ_eq_add_one, zpow_ofNat, -Int.natCast_add] }
+      simp [Nat.succ_eq_add_one, zpow_natCast, -Int.natCast_add] }
 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
@@ -84,7 +84,7 @@ instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End 
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl,
     natCast := fun n => n • (1 : AddMonoid.End M),
     natCast_zero := AddMonoid.nsmul_zero _,
-    natCast_succ := fun n => (AddMonoid.nsmul_succ n 1).trans (add_comm _ _) }
+    natCast_succ := fun n => AddMonoid.nsmul_succ n 1 }
 
 /-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
@@ -93,21 +93,35 @@ theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
   rfl
 #align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
 
+@[simp]
+theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
+  rfl
+
+-- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
+theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
+  rfl
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
+    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m :=
+  rfl
+
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
   AddMonoidHom.addCommGroup
 
 instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
   { AddMonoid.End.instSemiring, AddMonoid.End.instAddCommGroup with
     intCast := fun z => z • (1 : AddMonoid.End M),
-    intCast_ofNat := ofNat_zsmul _,
+    intCast_ofNat := natCast_zsmul _,
     intCast_negSucc := negSucc_zsmul _ }
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.int_cast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
-#align add_monoid.End.int_cast_apply AddMonoid.End.int_cast_apply
+#align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
 
 /-!
 ### Morphisms of morphisms
@@ -122,7 +136,7 @@ namespace MonoidHom
 @[to_additive]
 theorem ext_iff₂ {_ : MulOneClass M} {_ : MulOneClass N} {_ : CommMonoid P} {f g : M →* N →* P} :
     f = g ↔ ∀ x y, f x y = g x y :=
-  FunLike.ext_iff.trans <| forall_congr' fun _ => FunLike.ext_iff
+  DFunLike.ext_iff.trans <| forall_congr' fun _ => DFunLike.ext_iff
 #align monoid_hom.ext_iff₂ MonoidHom.ext_iff₂
 #align add_monoid_hom.ext_iff₂ AddMonoidHom.ext_iff₂
 
@@ -331,6 +345,14 @@ theorem AddMonoidHom.map_mul_iff (f : R →+ S) :
   Iff.symm AddMonoidHom.ext_iff₂
 #align add_monoid_hom.map_mul_iff AddMonoidHom.map_mul_iff
 
+lemma AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute {a : R} :
+    mulLeft a = mulRight a ↔ ∀ b, Commute a b :=
+  DFunLike.ext_iff
+
+lemma AddMonoidHom.mulRight_eq_mulLeft_iff_forall_commute {b : R} :
+    mulRight b = mulLeft b ↔ ∀ a, Commute a b :=
+  DFunLike.ext_iff
+
 /-- The left multiplication map: `(a, b) ↦ a * b`. See also `AddMonoidHom.mulLeft`. -/
 @[simps!]
 def AddMonoid.End.mulLeft : R →+ AddMonoid.End R :=
@@ -345,10 +367,6 @@ def AddMonoid.End.mulRight : R →+ AddMonoid.End R :=
 #align add_monoid.End.mul_right AddMonoid.End.mulRight
 #align add_monoid.End.mul_right_apply_apply AddMonoid.End.mulRight_apply_apply
 
-lemma AddMonoid.End.mulRight_eq_mulLeft_of_commute (a : R) (h : ∀ (b : R), Commute a b) :
-    mulRight a = mulLeft a :=
-  AddMonoidHom.ext fun _ ↦ (h _).eq.symm
-
 end Semiring
 
 section CommSemiring
@@ -357,9 +375,9 @@ variable {R S : Type*} [NonUnitalNonAssocCommSemiring R]
 
 namespace AddMonoid.End
 
-lemma comm_mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) := by
-  ext a
-  exact mulRight_eq_mulLeft_of_commute _ (Commute.all _)
+lemma mulRight_eq_mulLeft : mulRight = (mulLeft : R →+ AddMonoid.End R) :=
+  AddMonoidHom.ext fun _ =>
+    Eq.symm <| AddMonoidHom.mulLeft_eq_mulRight_iff_forall_commute.2 (.all _)
 
 end AddMonoid.End
 

@@ -21,7 +21,6 @@ subgroup, subgroups
 open BigOperators
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
 
 namespace Subgroup
@@ -85,14 +84,14 @@ theorem noncommProd_mem (K : Subgroup G) {ι : Type*} {t : Finset ι} {f : ι �
 #align subgroup.noncomm_prod_mem Subgroup.noncommProd_mem
 #align add_subgroup.noncomm_sum_mem AddSubgroup.noncommSum_mem
 
--- porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
+-- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_list_prod (l : List H) : (l.prod : G) = (l.map Subtype.val).prod :=
   SubmonoidClass.coe_list_prod l
 #align subgroup.coe_list_prod Subgroup.val_list_prod
 #align add_subgroup.coe_list_sum AddSubgroup.val_list_sum
 
--- porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
+-- Porting note: increased priority to appease `simpNF`, otherwise left-hand side reduces
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
     (m.prod : G) = (m.map Subtype.val).prod :=
@@ -100,7 +99,7 @@ theorem val_multiset_prod {G} [CommGroup G] (H : Subgroup G) (m : Multiset H) :
 #align subgroup.coe_multiset_prod Subgroup.val_multiset_prod
 #align add_subgroup.coe_multiset_sum AddSubgroup.val_multiset_sum
 
--- porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
+-- Porting note: increased priority to appease `simpNF`, otherwise `simp` can prove it.
 @[to_additive (attr := simp 1100, norm_cast)]
 theorem val_finset_prod {ι G} [CommGroup G] (H : Subgroup G) (f : ι → H) (s : Finset ι) :
     ↑(∏ i in s, f i) = (∏ i in s, f i : G) :=
@@ -118,7 +117,7 @@ instance fintypeBot : Fintype (⊥ : Subgroup G) :=
 
 /- curly brackets `{}` are used here instead of instance brackets `[]` because
   the instance in a goal is often not the same as the one inferred by type class inference.  -/
-@[to_additive] -- porting note: removed `simp` because `simpNF` says it can prove it.
+@[to_additive] -- Porting note: removed `simp` because `simpNF` says it can prove it.
 theorem card_bot {_ : Fintype (⊥ : Subgroup G)} : Fintype.card (⊥ : Subgroup G) = 1 :=
   Fintype.card_eq_one_iff.2
     ⟨⟨(1 : G), Set.mem_singleton 1⟩, fun ⟨_y, hy⟩ => Subtype.eq <| Subgroup.mem_bot.1 hy⟩

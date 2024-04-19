@@ -107,7 +107,7 @@ instance hallMatchingsOn.finite {ι : Type u} {α : Type v} (t : ι → Finset �
     intro f f' h
     ext a
     rw [Function.funext_iff] at h
-    simpa using h a
+    simpa [g] using h a
 #align hall_matchings_on.finite hallMatchingsOn.finite
 
 /-- This is the version of **Hall's Marriage Theorem** in terms of indexed
@@ -156,7 +156,7 @@ theorem Finset.all_card_le_biUnion_card_iff_exists_injective {ι : Type u} {α :
   · -- The reverse direction is a straightforward cardinality argument
     rintro ⟨f, hf₁, hf₂⟩ s
     rw [← Finset.card_image_of_injective s hf₁]
-    apply Finset.card_le_of_subset
+    apply Finset.card_le_card
     intro
     rw [Finset.mem_image, Finset.mem_biUnion]
     rintro ⟨x, hx, rfl⟩
@@ -219,8 +219,8 @@ theorem Fintype.all_card_le_filter_rel_iff_exists_injective {α : Type u} {β : 
   have h : ∀ A : Finset α, (univ.filter fun b : β => ∃ a ∈ A, r a b) = A.biUnion r' := by
     intro A
     ext b
-    simp
-  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp
+    simp [r']
+  have h' : ∀ (f : α → β) (x), r x (f x) ↔ f x ∈ r' x := by simp [r']
   simp_rw [h, h']
   apply Finset.all_card_le_biUnion_card_iff_exists_injective
 #align fintype.all_card_le_filter_rel_iff_exists_injective Fintype.all_card_le_filter_rel_iff_exists_injective

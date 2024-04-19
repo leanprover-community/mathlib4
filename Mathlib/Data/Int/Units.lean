@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Data.Nat.Units
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Algebra.Ring.Units
 import Mathlib.Tactic.Common
 
@@ -30,13 +30,6 @@ theorem units_natAbs (u : ℤˣ) : natAbs u = 1 :=
 theorem units_eq_one_or (u : ℤˣ) : u = 1 ∨ u = -1 := by
   simpa only [Units.ext_iff, units_natAbs] using natAbs_eq u
 #align int.units_eq_one_or Int.units_eq_one_or
-
-@[simp]
-theorem units_ne_neg_self (u : ℤˣ) : u ≠ -u := by
-  rcases units_eq_one_or u with rfl | rfl <;> decide
-
-@[simp]
-theorem neg_units_ne_self (u : ℤˣ) : -u ≠ u := (units_ne_neg_self u).symm
 
 theorem units_ne_iff_eq_neg {u u' : ℤˣ} : u ≠ u' ↔ u = -u' := by
   rcases units_eq_one_or u with rfl | rfl <;>

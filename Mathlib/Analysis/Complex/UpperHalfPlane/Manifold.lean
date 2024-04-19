@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Topology
-import Mathlib.Geometry.Manifold.MFDeriv
+import Mathlib.Geometry.Manifold.MFDeriv.Basic
 
 #align_import analysis.complex.upper_half_plane.manifold from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
@@ -35,4 +35,3 @@ theorem mdifferentiable_coe : MDifferentiable 𝓘(ℂ) 𝓘(ℂ) ((↑) : ℍ �
 #align upper_half_plane.mdifferentiable_coe UpperHalfPlane.mdifferentiable_coe
 
 end UpperHalfPlane
-

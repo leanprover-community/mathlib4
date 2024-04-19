@@ -128,7 +128,7 @@ theorem principal_add_isLimit {o : Ordinal} (ho₁ : 1 < o) (ho : Principal (· 
   refine' ⟨fun ho₀ => _, fun a hao => _⟩
   · rw [ho₀] at ho₁
     exact not_lt_of_gt zero_lt_one ho₁
-  · cases' eq_or_ne a 0 with ha ha
+  · rcases eq_or_ne a 0 with ha | ha
     · rw [ha, succ_zero]
       exact ho₁
     · refine' lt_of_le_of_lt _ (ho hao hao)
@@ -149,7 +149,7 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 #align ordinal.principal_add_iff_add_left_eq_self Ordinal.principal_add_iff_add_left_eq_self
 
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
-    ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
+    ∃ b c, b < a ∧ c < a ∧ b + c = a := by
   unfold Principal at ha
   push_neg at ha
   rcases ha with ⟨b, c, hb, hc, H⟩
@@ -218,8 +218,8 @@ theorem principal_add_iff_zero_or_omega_opow {o : Ordinal} :
     clear ao
     revert h'
     apply not_lt_of_le
-    suffices e : (omega^log omega o) * ↑n + o = o
-    · simpa only [e] using le_add_right ((omega^log omega o) * ↑n) o
+    suffices e : (omega^log omega o) * ↑n + o = o by
+      simpa only [e] using le_add_right ((omega^log omega o) * ↑n) o
     induction' n with n IH
     · simp [Nat.cast_zero, mul_zero, zero_add]
     simp only [Nat.cast_succ, mul_add_one, add_assoc, this, IH]
@@ -323,7 +323,7 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
 theorem principal_mul_omega : Principal (· * ·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← nat_cast_mul]
+    dsimp only; rw [← natCast_mul]
     apply nat_lt_omega
 #align ordinal.principal_mul_omega Ordinal.principal_mul_omega
 
@@ -373,7 +373,7 @@ theorem principal_add_of_principal_mul_opow {o b : Ordinal} (hb : 1 < b)
 theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
     Principal (· * ·) o ↔ o ≤ 2 ∨ ∃ a : Ordinal, o = (omega^omega^a) := by
   refine' ⟨fun ho => _, _⟩
-  · cases' le_or_lt o 2 with ho₂ ho₂
+  · rcases le_or_lt o 2 with ho₂ | ho₂
     · exact Or.inl ho₂
     rcases principal_add_iff_zero_or_omega_opow.1 (principal_add_of_principal_mul ho ho₂.ne') with
       (rfl | ⟨a, rfl⟩)
@@ -381,8 +381,7 @@ theorem principal_mul_iff_le_two_or_omega_opow_opow {o : Ordinal} :
     rcases principal_add_iff_zero_or_omega_opow.1
         (principal_add_of_principal_mul_opow one_lt_omega ho) with
       (rfl | ⟨b, rfl⟩)
-    · left
-      simpa using one_le_two
+    · simp
     exact Or.inr ⟨b, rfl⟩
   · rintro (ho₂ | ⟨a, rfl⟩)
     · exact principal_mul_of_le_two ho₂
@@ -416,7 +415,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
 theorem principal_opow_omega : Principal (·^·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    simp_rw [← nat_cast_opow]
+    simp_rw [← natCast_opow]
     apply nat_lt_omega
 #align ordinal.principal_opow_omega Ordinal.principal_opow_omega
 

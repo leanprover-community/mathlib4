@@ -80,10 +80,10 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     refine' (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => _
     calc
       μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
-        rw [pow_succ', mul_assoc]
-      _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := (hε.1 x)
+        rw [pow_succ, mul_assoc]
+      _ ≤ ↑(C ^ n) * μ (closedBall x (2 * ε)) := hε.1 x
       _ ≤ ↑(C ^ n) * (C * μ (closedBall x ε)) := by gcongr; exact hε.2 x
-      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ', ENNReal.coe_mul]
+      _ = ↑(C ^ (n + 1)) * μ (closedBall x ε) := by rw [← mul_assoc, pow_succ, ENNReal.coe_mul]
   rcases lt_or_le K 1 with (hK | hK)
   · refine' ⟨1, _⟩
     simp only [ENNReal.coe_one, one_mul]
@@ -96,7 +96,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
           le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
     refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
     conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
-    rw [← Real.rpow_nat_cast]
+    rw [← Real.rpow_natCast]
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
 #align is_unif_loc_doubling_measure.exists_eventually_forall_measure_closed_ball_le_mul IsUnifLocDoublingMeasure.exists_eventually_forall_measure_closedBall_le_mul
 
@@ -114,7 +114,7 @@ theorem one_le_scalingConstantOf (K : ℝ) : 1 ≤ scalingConstantOf μ K :=
 theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
     ∃ R : ℝ,
       0 < R ∧
-        ∀ (x t r) (_ : t ∈ Ioc 0 K) (_ : r ≤ R),
+        ∀ x t r, t ∈ Ioc 0 K → r ≤ R →
           μ (closedBall x (t * r)) ≤ scalingConstantOf μ K * μ (closedBall x r) := by
   have h := Classical.choose_spec (exists_eventually_forall_measure_closedBall_le_mul μ K)
   rcases mem_nhdsWithin_Ioi_iff_exists_Ioc_subset.1 h with ⟨R, Rpos, hR⟩
