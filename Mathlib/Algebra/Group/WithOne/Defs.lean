@@ -9,6 +9,7 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
+import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
@@ -239,6 +240,16 @@ instance monoid [Semigroup α] : Monoid (WithOne α) where
     | (a : α), 1, c => by simp
     | (a : α), (b : α), 1 => by simp
     | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
+
+@[to_additive]
+instance instMulAction [Semigroup α] : MulAction (WithOne α) α where
+  smul := lMul
+  one_smul := fun a => rfl
+  mul_smul := fun a b c => by
+    cases a <;> cases b <;> try rfl
+    next a' b' =>
+      show (a' * b') * c = a' * (b' * c)
+      rw [mul_assoc]
 
 @[to_additive]
 instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
