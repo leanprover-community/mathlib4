@@ -182,41 +182,6 @@ lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := 
 lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i ≠ 0} := by
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
---this one needs some translation work...
-theorem eigenvalues_eq (i : n) :
-    hA.eigenvalues i =
-      RCLike.re (star (hA.eigenvectorUnitaryᵀ i) ⬝ᵥ A *ᵥ hA.eigenvectorUnitaryᵀ i) := by
-   have ST := hA.spectral_theorem1
-/-
-  have := hA.spectral_theorem1
-  rw [← @Matrix.mul_inv_eq_iff_eq_mul_of_invertible (A := Invertible(hA.eigenvectorUnitary))] at this
-  have := congr_arg RCLike.re (congr_fun (congr_fun this i) i)
-  rw [diagonal_apply_eq, Function.comp_apply, RCLike.ofReal_re,
-    inv_eq_left_inv hA.eigenvectorMatrix_mul_inv, ← conjTranspose_eigenvectorMatrix, mul_mul_apply]
-    at this
-  exact this.symm
-#align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
--/
-#exit
-
-
-/-- The columns of `Matrix.IsHermitian.eigenVectorMatrix` form the basis-/
-theorem transpose_eigenvectorMatrix_apply (i : n) :
-    hA.eigenvectorMatrixᵀ i = hA.eigenvectorBasis i :=
-  funext fun j => eigenvectorMatrix_apply hA j i
-
-
-theorem conjTranspose_eigenvectorMatrixInv : hA.eigenvectorMatrixInvᴴ = hA.eigenvectorMatrix := by
-  ext i j
-  rw [conjTranspose_apply, eigenvectorMatrixInv_apply, eigenvectorMatrix_apply, star_star]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv Matrix.IsHermitian.conjTranspose_eigenvectorMatrixInv
-
-theorem conjTranspose_eigenvectorMatrix : hA.eigenvectorMatrixᴴ = hA.eigenvectorMatrixInv := by
-  rw [← conjTranspose_eigenvectorMatrixInv, conjTranspose_conjTranspose]
-#align matrix.is_hermitian.conj_transpose_eigenvector_matrix Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
-
-
-
 end DecidableEq
 
 
