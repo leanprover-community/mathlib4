@@ -697,6 +697,27 @@ theorem integrable_neg_iff {f : α → β} : Integrable (-f) μ ↔ Integrable f
   ⟨fun h => neg_neg f ▸ h.neg, Integrable.neg⟩
 #align measure_theory.integrable_neg_iff MeasureTheory.integrable_neg_iff
 
+@[simp]
+lemma integrable_add_iff_integrable_right {f g : α → β} (hf : Integrable f μ) :
+    Integrable (f + g) μ ↔ Integrable g μ :=
+  ⟨fun h ↦ show g = f + g + (-f) by simp only [add_neg_cancel_comm] ▸ h.add hf.neg,
+    fun h ↦ hf.add h⟩
+
+@[simp]
+lemma integrable_add_iff_integrable_left {f g : α → β} (hf : Integrable f μ) :
+    Integrable (g + f) μ ↔ Integrable g μ := by
+  rw [add_comm, integrable_add_iff_integrable_right hf]
+
+@[simp]
+lemma integrable_add_const_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
+    Integrable (fun x ↦ f x + c) μ ↔ Integrable f μ :=
+  integrable_add_iff_integrable_left (integrable_const _)
+
+@[simp]
+lemma integrable_const_add_iff [IsFiniteMeasure μ] {f : α → β} {c : β} :
+    Integrable (fun x ↦ c + f x) μ ↔ Integrable f μ :=
+  integrable_add_iff_integrable_right (integrable_const _)
+
 theorem Integrable.sub {f g : α → β} (hf : Integrable f μ) (hg : Integrable g μ) :
     Integrable (f - g) μ := by simpa only [sub_eq_add_neg] using hf.add hg.neg
 #align measure_theory.integrable.sub MeasureTheory.Integrable.sub
