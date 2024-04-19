@@ -55,10 +55,10 @@ which can be expanded to
   ∫ θ in (d / l).arcsin..(π / 2), min d (θ.sin * l)
 )
 ```
-We then show the two integrals equal their respective values `l - (l^2 - d^2).sqrt` and
+We then show the two integrals equal their respective values `l - √(l^2 - d^2)` and
 `(π / 2 - (d / l).arcsin) * d`. Then with some algebra we conclude
 ```
-ℙ[N] = (2 * l) / (d * π) - 2 / (d * π) * ((l^2 - d^2).sqrt + d * (d / l).arcsin) + 1
+ℙ[N] = (2 * l) / (d * π) - 2 / (d * π) * (√(l^2 - d^2) + d * (d / l).arcsin) + 1
 ```
 
 ## References
@@ -225,7 +225,7 @@ lemma buffon_integral :
     simp_rw [MeasureTheory.IntegrableOn, Measure.volume_eq_prod, ← Measure.prod_restrict,
       integrable_needleCrossesIndicator d l hd]
 
-  rw [Measure.volume_eq_prod, MeasureTheory.set_integral_prod _ this,
+  rw [Measure.volume_eq_prod, MeasureTheory.setIntegral_prod _ this,
     MeasureTheory.integral_integral_swap ?integrable]
 
   case integrable => simp_rw [Function.uncurry_def, Prod.mk.eta,
@@ -247,7 +247,7 @@ lemma buffon_integral :
     · rw [if_pos h, if_pos (this.mp h)]
     · rw [if_neg h, if_neg (this.not.mp h)]
 
-  simp_rw [indicator_eq, MeasureTheory.set_integral_indicator measurableSet_Icc, Pi.one_apply]
+  simp_rw [indicator_eq, MeasureTheory.setIntegral_indicator measurableSet_Icc, Pi.one_apply]
 
 /--
   From `buffon_integral`, in both the short and the long case, we have
@@ -273,7 +273,7 @@ lemma short_needle_inter_eq (h : l ≤ d) (θ : ℝ) :
 -/
 theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
   simp_rw [buffon_integral d l hd B hBₘ hB, short_needle_inter_eq d l hl h _,
-    MeasureTheory.set_integral_const, Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
+    MeasureTheory.setIntegral_const, Real.volume_Icc, smul_eq_mul, mul_one, mul_comm (d * π)⁻¹ _,
     mul_eq_mul_right_iff]
 
   apply Or.inl
@@ -284,7 +284,7 @@ theorem buffon_short (h : l ≤ d) : ℙ[N l B] = (2 * l) * (d * π)⁻¹ := by
       mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
     simp_rw [ENNReal.toReal_ofReal_eq_iff, MeasureTheory.ae_of_all _ this]
 
-  simp_rw [MeasureTheory.set_integral_congr_ae measurableSet_Icc this,
+  simp_rw [MeasureTheory.setIntegral_congr_ae measurableSet_Icc this,
     ← smul_eq_mul, integral_smul_const, smul_eq_mul, mul_comm, mul_eq_mul_left_iff,
     MeasureTheory.integral_Icc_eq_integral_Ioc, ← intervalIntegral.integral_of_le Real.pi_pos.le,
     integral_sin, Real.cos_zero, Real.cos_pi, sub_neg_eq_add, one_add_one_eq_two, true_or]
@@ -319,7 +319,7 @@ lemma integral_min_eq_two_mul :
   have that `θ.sin * l ≤ d`, and thus the integral is `∫ θ in (0)..(d / l).arcsin, θ.sin * l`.
 -/
 lemma integral_zero_to_arcsin_min :
-    ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - (1 - (d / l) ^ 2).sqrt) * l := by
+    ∫ θ in (0)..(d / l).arcsin, min d (θ.sin * l) = (1 - √(1 - (d / l) ^ 2)) * l := by
   have : Set.EqOn (fun θ => min d (θ.sin * l)) (Real.sin · * l) (Set.uIcc 0 (d / l).arcsin) := by
     intro θ ⟨hθ₁, hθ₂⟩
     have : 0 ≤ (d / l).arcsin := Real.arcsin_nonneg.mpr (div_nonneg hd.le hl.le)
@@ -359,7 +359,7 @@ lemma integral_arcsin_to_pi_div_two_min (h : d ≤ l) :
   Buffon's Needle, the long case (`d ≤ l`).
 -/
 theorem buffon_long (h : d ≤ l) :
-    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * ((l^2 - d^2).sqrt + d * (d / l).arcsin) + 1 := by
+    ℙ[N l B] = (2 * l) / (d * π) - 2 / (d * π) * (√(l^2 - d^2) + d * (d / l).arcsin) + 1 := by
 
   simp only [
     buffon_integral d l hd B hBₘ hB, MeasureTheory.integral_const, smul_eq_mul, mul_one,
@@ -377,7 +377,7 @@ theorem buffon_long (h : d ≤ l) :
       · rw [min_eq_right (not_le.mp h).le]; exact mul_nonneg (Real.sin_nonneg_of_mem_Icc hθ) hl.le
     simp_rw [ENNReal.toReal_ofReal_eq_iff, MeasureTheory.ae_of_all _ this]
 
-  rw [MeasureTheory.set_integral_congr_ae measurableSet_Icc this,
+  rw [MeasureTheory.setIntegral_congr_ae measurableSet_Icc this,
     MeasureTheory.integral_Icc_eq_integral_Ioc,
     ← intervalIntegral.integral_of_le Real.pi_pos.le, integral_min_eq_two_mul,
     ← intervalIntegral.integral_add_adjacent_intervals
