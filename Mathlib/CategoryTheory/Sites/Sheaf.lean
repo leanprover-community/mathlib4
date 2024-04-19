@@ -394,7 +394,7 @@ variable {J} {A}
 /-- If the empty sieve is a cover of `X`, then `F(X)` is terminal. -/
 def Sheaf.isTerminalOfBotCover (F : Sheaf J A) (X : C) (H : ⊥ ∈ J X) :
     IsTerminal (F.1.obj (op X)) := by
-  refine' @IsTerminal.ofUnique _ _ _ ?_
+  refine @IsTerminal.ofUnique _ _ _ ?_
   intro Y
   choose t h using F.2 Y _ H (by tauto) (by tauto)
   exact ⟨⟨t⟩, fun a => h.2 a (by tauto)⟩
