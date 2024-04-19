@@ -104,12 +104,10 @@ below, then `p` holds for all elements of the divisor closure of `s`.
 First condition: `p` holds for `1`.
 Second condition: `p` holds for all elements of `s`.
 Third condition: `p` is preserved under multiplication.
-Fourth condition: If `p` holds for an element x, then each divisor of x is the product of an element
-z for which `p` holds and a unit. -/
+Fourth condition: If `p` holds for an element x, then it holds for any divisor of x. -/
 theorem Submonoid.divisor_closure_induction [Monoid α] {s : Set α} {p : α → Prop} {x : α}
     (h : x ∈ Submonoid.divisor_closure s) (mem : ∀ x ∈ s, p x) (one : p 1)
-    (mul : ∀ x y, p x → p y → p (x*y))
-    (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), p y) : p x := by
+    (mul : ∀ x y, p x → p y → p (x*y)) (div : ∀ x (_ : p x), ∀ y k (_ : x = y*k), p y) : p x := by
   have := Submonoid.divisor_closure_le (s := s) (S := ⟨⟨_, fun hx hy => mul _ _ hx hy⟩, one⟩)
   simp only [IsDivisorClosed, coe_set_mk, Subsemigroup.coe_set_mk, and_imp, mem_mk,
     Subsemigroup.mem_mk, forall_exists_index] at this
