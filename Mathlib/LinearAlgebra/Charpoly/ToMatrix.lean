@@ -36,7 +36,7 @@ namespace LinearMap
 
 section Basic
 
-attribute [-instance] instCoeOut
+attribute [-instance] instCoeOutOfCoeSort
 
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
 attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
