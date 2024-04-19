@@ -72,6 +72,14 @@ theorem EffectiveEpiFamily.transitive_of_finite {α : Type} [Finite α] {Y : α 
     exact ⟨β i, inferInstance, Y_n i, π_n i, H i, fun b ↦
       ⟨Y_n i b, (𝟙 _), π_n i b ≫ π i, ⟨(⟨i, b⟩ : Σ (i : α), β i)⟩, by simp⟩⟩
 
+instance precoherentEffectiveEpiFamilyCompEffectiveEpis
+    {α : Type} [Finite α] {Y Z : α → C} (π : (a : α) → (Y a ⟶ X)) [EffectiveEpiFamily Y π]
+    (f : (a : α) → Z a ⟶ Y a) [h : ∀ a, EffectiveEpi (f a)] :
+    EffectiveEpiFamily _ fun a ↦ f a ≫ π a := by
+  simp_rw [effectiveEpi_iff_effectiveEpiFamily] at h
+  exact EffectiveEpiFamily.reindex (e := Equiv.sigmaPUnit α) _ _
+    (EffectiveEpiFamily.transitive_of_finite (β := fun _ ↦ Unit) _ inferInstance _ h)
+
 /--
 A sieve belongs to the coherent topology if and only if it contains a finite
 `EffectiveEpiFamily`.

@@ -75,7 +75,7 @@ instance (S : LightProfinite.{u}) : S.toProfinite.IsLight where
       refine @Pi.finite _ _ ?_ _
       simp only [Functor.comp_obj, toProfinite_obj_toCompHaus_toTop_α]
       infer_instance
-    · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩).1
+    · exact fun a ↦ a.snd.comap (S.cone.π.app ⟨a.fst⟩)
     · intro a
       obtain ⟨n, g, h⟩ := Profinite.exists_locallyConstant S.cone S.isLimit a
       exact ⟨⟨unop n, g⟩, h.symm⟩

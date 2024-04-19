@@ -99,7 +99,7 @@ subordinate to `U`, see `SmoothBumpCovering.exists_isSubordinate`.
 
 This covering can be used, e.g., to construct a partition of unity and to prove the weak
 Whitney embedding theorem. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure SmoothBumpCovering (s : Set M := univ) where
   /-- The center point of each bump in the smooth covering. -/
   c : ι → M
@@ -271,14 +271,13 @@ theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite :=
 
 /-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
   This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
-def fintsupport (x : M ): Finset ι :=
+def fintsupport (x : M) : Finset ι :=
   (ρ.finite_tsupport x).toFinset
 
 theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
   Finite.mem_toFinset _
 
-theorem eventually_fintsupport_subset :
-    ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ :=
+theorem eventually_fintsupport_subset : ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ :=
   ρ.toPartitionOfUnity.eventually_fintsupport_subset _
 
 theorem finsupport_subset_fintsupport : ρ.finsupport x₀ ⊆ ρ.fintsupport x₀ :=

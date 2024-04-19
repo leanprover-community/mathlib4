@@ -164,7 +164,7 @@ variable {α E : Type*} [MeasurableSpace α]
   {μ : Measure α} [NormedAddCommGroup E] [NormedSpace ℝ E] {s : ℕ → Set α}
   {f : α → E}
 
-theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
+theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (h_anti : Antitone s)
     (hfi : IntegrableOn f (s 0) μ) :
     Tendsto (fun i => ∫ a in s i, f a ∂μ) atTop (𝓝 (∫ a in ⋂ n, s n, f a ∂μ)) := by
   let bound : α → ℝ := indicator (s 0) fun a => ‖f a‖
@@ -182,7 +182,11 @@ theorem _root_.Antitone.tendsto_set_integral (hsm : ∀ i, MeasurableSet (s i)) 
     refine' fun n => eventually_of_forall fun x => _
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
-#align antitone.tendsto_set_integral Antitone.tendsto_set_integral
+#align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
+
+@[deprecated]
+alias _root_.Antitone.tendsto_set_integral :=
+  _root_.Antitone.tendsto_setIntegral -- deprecated on 2024-04-17
 
 end TendstoMono
 
@@ -406,7 +410,7 @@ theorem continuousAt_parametric_primitive_of_dominated {F : X → ℝ → E} (bo
       (bound_integrable.mono_set_ae <| eventually_of_forall <| hsub ha₀ hb₀).mono_fun'
         ((hF_meas x).mono_set <| hsub ha₀ hb₀)
         (ae_restrict_of_ae_restrict_of_subset (hsub ha₀ hb₀) hx)
-    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel'_right,
+    rw [intervalIntegral.integral_sub, add_assoc, add_sub_cancel,
       intervalIntegral.integral_add_adjacent_intervals]
     · exact hiF hx ha₀ hb₀
     · exact hiF hx hb₀ ht

@@ -20,7 +20,8 @@ universe u v w x
 
 namespace Function
 
--- Porting note: in Lean 3 this was tagged @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 /-- `α ↪ β` is a bundled injective function. -/
 structure Embedding (α : Sort*) (β : Sort*) where
   /-- An embedding as a function. Use coercion instead. -/
@@ -114,6 +115,10 @@ theorem ext {α β} {f g : Embedding α β} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext f g h
 #align function.embedding.ext Function.Embedding.ext
 
+instance {α β : Sort*} [IsEmpty α] : Unique (α ↪ β) where
+  default := ⟨isEmptyElim, Function.injective_of_subsingleton _⟩
+  uniq := by intro; ext v; exact isEmptyElim v
+
 -- Porting note : in Lean 3 `DFunLike.ext_iff.symm` works
 theorem ext_iff {α β} {f g : Embedding α β} : (∀ x, f x = g x) ↔ f = g :=
   Iff.symm (DFunLike.ext_iff)
@@ -206,9 +211,9 @@ def setValue {α β} (f : α ↪ β) (a : α) (b : β) [∀ a', Decidable (a' = 
     split_ifs at h with h₁ h₂ _ _ h₅ h₆ <;>
         (try subst b) <;>
         (try simp only [f.injective.eq_iff, not_true_eq_false] at *)
-    · rw[h₁,h₂]
-    · rw[h₁,h]
-    · rw[h₅, ← h]
+    · rw [h₁,h₂]
+    · rw [h₁,h]
+    · rw [h₅, ← h]
     · exact h₆.symm
     · exfalso; exact h₅ h.symm
     · exfalso; exact h₁ h

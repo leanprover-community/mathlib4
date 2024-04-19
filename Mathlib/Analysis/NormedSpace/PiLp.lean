@@ -64,7 +64,7 @@ We also set up the theory for `PseudoEMetricSpace` and `PseudoMetricSpace`.
 
 set_option linter.uppercaseLean3 false
 
-open Real Set Filter IsROrC Bornology BigOperators Uniformity Topology NNReal ENNReal
+open Real Set Filter RCLike Bornology BigOperators Uniformity Topology NNReal ENNReal
 
 noncomputable section
 
@@ -75,6 +75,11 @@ different distances. -/
 abbrev PiLp (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : Type _ :=
   WithLp p (∀ i : ι, α i)
 #align pi_Lp PiLp
+
+/-The following should not be a `FunLike` instance because then the coercion `⇑` would get
+unfolded to `FunLike.coe` instead of `WithLp.equiv`. -/
+instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) : CoeFun (PiLp p α) (fun _ ↦ (i : ι) → α i) where
+  coe := WithLp.equiv p _
 
 instance (p : ℝ≥0∞) {ι : Type*} (α : ι → Type*) [∀ i, Inhabited (α i)] : Inhabited (PiLp p α) :=
   ⟨fun _ => default⟩
@@ -395,13 +400,12 @@ attribute [local instance] PiLp.pseudoMetricAux
 
 theorem lipschitzWith_equiv_aux : LipschitzWith 1 (WithLp.equiv p (∀ i, β i)) := by
   intro x y
+  simp_rw [ENNReal.coe_one, one_mul, edist_pi_def, Finset.sup_le_iff, Finset.mem_univ,
+    forall_true_left, WithLp.equiv_pi_apply]
   rcases p.dichotomy with (rfl | h)
-  · simpa only [ENNReal.coe_one, one_mul, edist_eq_iSup, edist, Finset.sup_le_iff, Finset.mem_univ,
-      forall_true_left] using le_iSup fun i => edist (x i) (y i)
-  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (zero_lt_one.trans_le h).ne'
+  · simpa only [edist_eq_iSup] using le_iSup fun i => edist (x i) (y i)
+  · have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (zero_lt_one.trans_le h).ne'
     rw [edist_eq_sum (zero_lt_one.trans_le h)]
-    simp only [edist, forall_prop_of_true, one_mul, Finset.mem_univ, Finset.sup_le_iff,
-      ENNReal.coe_one]
     intro i
     calc
       edist (x i) (y i) = (edist (x i) (y i) ^ p.toReal) ^ (1 / p.toReal) := by
@@ -421,7 +425,7 @@ theorem antilipschitzWith_equiv_aux :
     exact fun i => Finset.le_sup (f := fun i => edist (x i) (y i)) (Finset.mem_univ i)
   · have pos : 0 < p.toReal := zero_lt_one.trans_le h
     have nonneg : 0 ≤ 1 / p.toReal := one_div_nonneg.2 (le_of_lt pos)
-    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel' 1 (ne_of_gt pos)
+    have cancel : p.toReal * (1 / p.toReal) = 1 := mul_div_cancel₀ 1 (ne_of_gt pos)
     rw [edist_eq_sum pos, ENNReal.toReal_div 1 p]
     simp only [edist, ← one_div, ENNReal.one_toReal]
     calc
@@ -435,7 +439,7 @@ theorem antilipschitzWith_equiv_aux :
         simp only [nsmul_eq_mul, Finset.card_univ, ENNReal.rpow_one, Finset.sum_const,
           ENNReal.mul_rpow_of_nonneg _ _ nonneg, ← ENNReal.rpow_mul, cancel]
         have : (Fintype.card ι : ℝ≥0∞) = (Fintype.card ι : ℝ≥0) :=
-          (ENNReal.coe_nat (Fintype.card ι)).symm
+          (ENNReal.coe_natCast (Fintype.card ι)).symm
         rw [this, ENNReal.coe_rpow_of_nonneg _ nonneg]
 #align pi_Lp.antilipschitz_with_equiv_aux PiLp.antilipschitzWith_equiv_aux
 
@@ -610,13 +614,13 @@ end Linfty
 theorem norm_eq_of_nat {p : ℝ≥0∞} [Fact (1 ≤ p)] {β : ι → Type*}
     [∀ i, SeminormedAddCommGroup (β i)] (n : ℕ) (h : p = n) (f : PiLp p β) :
     ‖f‖ = (∑ i, ‖f i‖ ^ n) ^ (1 / (n : ℝ)) := by
-  have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.nat_ne_top n)
-  simp only [one_div, h, Real.rpow_nat_cast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
+  have := p.toReal_pos_iff_ne_top.mpr (ne_of_eq_of_ne h <| ENNReal.natCast_ne_top n)
+  simp only [one_div, h, Real.rpow_natCast, ENNReal.toReal_nat, eq_self_iff_true, Finset.sum_congr,
     norm_eq_sum this]
 #align pi_Lp.norm_eq_of_nat PiLp.norm_eq_of_nat
 
 theorem norm_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x : PiLp 2 β) :
-    ‖x‖ = Real.sqrt (∑ i : ι, ‖x i‖ ^ 2) := by
+    ‖x‖ = √(∑ i : ι, ‖x i‖ ^ 2) := by
   rw [norm_eq_of_nat 2 (by norm_cast) _] -- Porting note: was `convert`
   rw [Real.sqrt_eq_rpow]
   norm_cast
@@ -638,7 +642,7 @@ theorem norm_sq_eq_of_L2 (β : ι → Type*) [∀ i, SeminormedAddCommGroup (β 
 #align pi_Lp.norm_sq_eq_of_L2 PiLp.norm_sq_eq_of_L2
 
 theorem dist_eq_of_L2 {β : ι → Type*} [∀ i, SeminormedAddCommGroup (β i)] (x y : PiLp 2 β) :
-    dist x y = (∑ i, dist (x i) (y i) ^ 2).sqrt := by
+    dist x y = √(∑ i, dist (x i) (y i) ^ 2) := by
   simp_rw [dist_eq_norm, norm_eq_of_L2, sub_apply]
 #align pi_Lp.dist_eq_of_L2 PiLp.dist_eq_of_L2
 
@@ -664,7 +668,7 @@ instance instBoundedSMul [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (�
     · have hp0 : 0 < p.toReal := zero_lt_one.trans_le hp
       have hpt : p ≠ ⊤ := p.toReal_pos_iff_ne_top.mp hp0
       rw [nnnorm_eq_sum hpt, nnnorm_eq_sum hpt, NNReal.rpow_one_div_le_iff hp0, NNReal.mul_rpow,
-        ← NNReal.rpow_mul, div_mul_cancel 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
+        ← NNReal.rpow_mul, div_mul_cancel₀ 1 hp0.ne', NNReal.rpow_one, Finset.mul_sum]
       simp_rw [← NNReal.mul_rpow, smul_apply]
       exact Finset.sum_le_sum fun i _ => NNReal.rpow_le_rpow (nnnorm_smul_le _ _) hp0.le
 

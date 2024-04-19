@@ -418,6 +418,14 @@ theorem MeasurableSet.nhdsWithin_isMeasurablyGenerated {s : Set α} (hs : Measur
   Filter.inf_isMeasurablyGenerated _ _
 #align measurable_set.nhds_within_is_measurably_generated MeasurableSet.nhdsWithin_isMeasurablyGenerated
 
+instance (priority := 100) OpensMeasurableSpace.separatesPoints [T0Space α] :
+    SeparatesPoints α := by
+  rw [separatesPoints_iff]
+  intro x y hxy
+  apply Inseparable.eq
+  rw [inseparable_iff_forall_open]
+  exact fun s hs => hxy _ hs.measurableSet
+
 -- see Note [lower instance priority]
 instance (priority := 100) OpensMeasurableSpace.toMeasurableSingletonClass [T1Space α] :
     MeasurableSingletonClass α :=
@@ -1029,7 +1037,7 @@ protected theorem Homeomorph.measurable (h : α ≃ₜ γ) : Measurable h :=
   h.continuous.measurable
 #align homeomorph.measurable Homeomorph.measurable
 
-/-- A homeomorphism between two Borel spaces is a measurable equivalence.-/
+/-- A homeomorphism between two Borel spaces is a measurable equivalence. -/
 def Homeomorph.toMeasurableEquiv (h : γ ≃ₜ γ₂) : γ ≃ᵐ γ₂ where
   measurable_toFun := h.measurable
   measurable_invFun := h.symm.measurable
@@ -1145,7 +1153,7 @@ lemma MeasurableEmbedding.borelSpace {α β : Type*} [MeasurableSpace α] [Topol
   have : MeasurableSpace.comap e (borel β) = ‹_› := by simpa [hβ.measurable_eq] using h'e.comap_eq
   rw [← this, ← borel_comap, h''e.induced]
 
-instance _root_.ULift.instBorelSpace [BorelSpace α] : BorelSpace (ULift α) :=
+instance _root_.ULift.instBorelSpace : BorelSpace (ULift α) :=
   MeasurableEquiv.ulift.measurableEmbedding.borelSpace Homeomorph.ulift.inducing
 
 instance DiscreteMeasurableSpace.toBorelSpace {α : Type*} [TopologicalSpace α] [DiscreteTopology α]
@@ -1636,7 +1644,7 @@ instance Rat.borelSpace : BorelSpace ℚ :=
   ⟨borel_eq_top_of_countable.symm⟩
 #align rat.borel_space Rat.borelSpace
 
-/- Instances on `Real` and `Complex` are special cases of `IsROrC` but without these instances,
+/- Instances on `Real` and `Complex` are special cases of `RCLike` but without these instances,
 Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
 instance Real.measurableSpace : MeasurableSpace ℝ :=
   borel ℝ
@@ -1680,8 +1688,8 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       ∑' n : ℤ, μ (s ∩ f ⁻¹' Ico ((t : ℝ≥0∞) ^ n) ((t : ℝ≥0∞) ^ (n + 1))) := by
   have A : μ s = μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' Ioi 0) := by
     rw [← measure_union]
-    · rw [← inter_distrib_left, ← preimage_union, singleton_union, Ioi_insert, ← _root_.bot_eq_zero,
-        Ici_bot, preimage_univ, inter_univ]
+    · rw [← inter_union_distrib_left, ← preimage_union, singleton_union, Ioi_insert,
+        ← _root_.bot_eq_zero, Ici_bot, preimage_univ, inter_univ]
     · exact disjoint_singleton_left.mpr not_mem_Ioi_self
         |>.preimage f |>.inter_right' s |>.inter_left' s
     · exact hs.inter (hf measurableSet_Ioi)
@@ -1709,7 +1717,7 @@ theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace �
       refine disjoint_left.2 fun x hx h'x => lt_irrefl (f x) ?_
       calc
         f x < (t : ℝ≥0∞) ^ (i + 1) := hx.2.2
-        _ ≤ (t : ℝ≥0∞) ^ j := (ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h)
+        _ ≤ (t : ℝ≥0∞) ^ j := ENNReal.zpow_le_of_le (ENNReal.one_le_coe_iff.2 ht.le) h
         _ ≤ f x := h'x.2.1
     · intro n
       exact hs.inter (hf measurableSet_Ico)
@@ -1895,6 +1903,27 @@ theorem tendsto_measure_cthickening_of_isCompact [MetricSpace α] [MeasurableSpa
     ⟨1, zero_lt_one, hs.isBounded.cthickening.measure_lt_top.ne⟩ hs.isClosed
 #align tendsto_measure_cthickening_of_is_compact tendsto_measure_cthickening_of_isCompact
 
+/-- If a measurable space is countably generated and separates points, it arises as
+the borel sets of some second countable t4 topology (i.e. a separable metrizable one). -/
+theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
+    [m : MeasurableSpace α] [CountablyGenerated α] [SeparatesPoints α] :
+    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ BorelSpace α := by
+  rcases measurableEquiv_nat_bool_of_countablyGenerated α with ⟨s, ⟨f⟩⟩
+  letI := induced f inferInstance
+  let F := f.toEquiv.toHomeomorphOfInducing $ inducing_induced _
+  exact ⟨inferInstance, F.secondCountableTopology, F.symm.t4Space,
+    MeasurableEmbedding.borelSpace f.measurableEmbedding F.inducing⟩
+
+/-- If a measurable space on `α` is countably generated and separates points, there is some
+second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
+open set is measurable. -/
+theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
+    [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+    ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
+  rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+  rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
+  exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
+
 namespace Real
 
 open MeasurableSpace MeasureTheory
@@ -2074,6 +2103,9 @@ theorem aemeasurable_coe_nnreal_real_iff {f : α → ℝ≥0} {μ : Measure α} 
     AEMeasurable (fun x => f x : α → ℝ) μ ↔ AEMeasurable f μ :=
   ⟨fun h => by simpa only [Real.toNNReal_coe] using h.real_toNNReal, AEMeasurable.coe_nnreal_real⟩
 #align ae_measurable_coe_nnreal_real_iff aemeasurable_coe_nnreal_real_iff
+
+@[deprecated] -- 2024-03-02
+alias aEMeasurable_coe_nnreal_real_iff := aemeasurable_coe_nnreal_real_iff
 
 /-- The set of finite `ℝ≥0∞` numbers is `MeasurableEquiv` to `ℝ≥0`. -/
 def MeasurableEquiv.ennrealEquivNNReal : { r : ℝ≥0∞ | r ≠ ∞ } ≃ᵐ ℝ≥0 :=

@@ -84,7 +84,7 @@ instance AddMonoid.End.instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End 
     right_distrib := fun _ _ _ => AddMonoidHom.ext fun _ => rfl,
     natCast := fun n => n • (1 : AddMonoid.End M),
     natCast_zero := AddMonoid.nsmul_zero _,
-    natCast_succ := fun n => (AddMonoid.nsmul_succ n 1).trans (add_comm _ _) }
+    natCast_succ := fun n => AddMonoid.nsmul_succ n 1 }
 
 /-- See also `AddMonoid.End.natCast_def`. -/
 @[simp]
@@ -118,10 +118,10 @@ instance AddMonoid.End.instRing [AddCommGroup M] : Ring (AddMonoid.End M) :=
 
 /-- See also `AddMonoid.End.intCast_def`. -/
 @[simp]
-theorem AddMonoid.End.int_cast_apply [AddCommGroup M] (z : ℤ) (m : M) :
+theorem AddMonoid.End.intCast_apply [AddCommGroup M] (z : ℤ) (m : M) :
     (↑z : AddMonoid.End M) m = z • m :=
   rfl
-#align add_monoid.End.int_cast_apply AddMonoid.End.int_cast_apply
+#align add_monoid.End.int_cast_apply AddMonoid.End.intCast_apply
 
 /-!
 ### Morphisms of morphisms

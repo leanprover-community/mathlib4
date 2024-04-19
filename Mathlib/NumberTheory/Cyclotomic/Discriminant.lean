@@ -77,13 +77,13 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
   congr 1
   · rcases eq_or_ne p 2 with (rfl | hp2)
     · rcases Nat.exists_eq_succ_of_ne_zero (hp2 rfl) with ⟨k, rfl⟩
-      rw [coe_two, succ_sub_succ_eq_sub, tsub_zero, mul_one]; simp only [_root_.pow_succ]
+      rw [coe_two, succ_sub_succ_eq_sub, tsub_zero, mul_one]; simp only [_root_.pow_succ']
       rw [mul_assoc, Nat.mul_div_cancel_left _ zero_lt_two, Nat.mul_div_cancel_left _ zero_lt_two]
       cases k
       · simp
-      · norm_num; simp_rw [_root_.pow_succ, (even_two.mul_right _).neg_one_pow,
+      · norm_num; simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
-    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne.def, ← coe_two, PNat.coe_inj]
+    · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
       obtain ⟨a, ha⟩ := (hp.out.even_sub_one hp2).two_dvd
       rw [ha, mul_left_comm, mul_assoc, Nat.mul_div_cancel_left _ two_pos,
@@ -93,11 +93,11 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       rw [mul_left_comm, ← ha]
       exact one_le_mul (one_le_pow _ _ hp.1.pos) (succ_le_iff.2 <| tsub_pos_of_lt hp.1.one_lt)
   · have H := congr_arg (@derivative K _) (cyclotomic_prime_pow_mul_X_pow_sub_one K p k)
-    rw [derivative_mul, derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_nat_cast,
-      derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_nat_cast, ← PNat.pow_coe,
+    rw [derivative_mul, derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast,
+      derivative_sub, derivative_one, sub_zero, derivative_X_pow, C_eq_natCast, ← PNat.pow_coe,
       hζ.minpoly_eq_cyclotomic_of_irreducible hirr] at H
     replace H := congr_arg (fun P => aeval ζ P) H
-    simp only [aeval_add, aeval_mul, minpoly.aeval, zero_mul, add_zero, aeval_nat_cast,
+    simp only [aeval_add, aeval_mul, minpoly.aeval, zero_mul, add_zero, aeval_natCast,
       _root_.map_sub, aeval_one, aeval_X_pow] at H
     replace H := congr_arg (Algebra.norm K) H
     have hnorm : (norm K) (ζ ^ (p : ℕ) ^ k - 1) = (p : K) ^ (p : ℕ) ^ k := by
@@ -118,7 +118,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
     · simp only [H, mul_comm _ (k + 1)]; norm_cast
     · -- Porting note: was `replace h := pow_eq_zero h; rw [coe_coe] at h; simpa using hne.1`
       have := hne.1
-      rw [PNat.pow_coe, Nat.cast_pow, Ne.def, pow_eq_zero_iff (by omega)] at this
+      rw [PNat.pow_coe, Nat.cast_pow, Ne, pow_eq_zero_iff (by omega)] at this
       exact absurd (pow_eq_zero h) this
 #align is_cyclotomic_extension.discr_prime_pow_ne_two IsCyclotomicExtension.discr_prime_pow_ne_two
 

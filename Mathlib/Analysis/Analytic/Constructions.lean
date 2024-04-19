@@ -46,14 +46,14 @@ lemma FormalMultilinearSeries.radius_prod_eq_min
     rw [le_min_iff]
     have := (p.prod q).isLittleO_one_of_lt_radius hr
     constructor
-    all_goals { -- kludge, there is no "work_on_goal" in Lean 4?
+    all_goals
       apply FormalMultilinearSeries.le_radius_of_isBigO
       refine (isBigO_of_le _ fun n ↦ ?_).trans this.isBigO
       rw [norm_mul, norm_norm, norm_mul, norm_norm]
       refine mul_le_mul_of_nonneg_right ?_ (norm_nonneg _)
       rw [FormalMultilinearSeries.prod, ContinuousMultilinearMap.opNorm_prod]
-      try apply le_max_left
-      try apply le_max_right }
+    · apply le_max_left
+    · apply le_max_right
   · refine ENNReal.le_of_forall_nnreal_lt fun r hr => ?_
     rw [lt_min_iff] at hr
     have := ((p.isLittleO_one_of_lt_radius hr.1).add
@@ -187,7 +187,7 @@ lemma AnalyticAt.pow {f : E → A} {z : E} (hf : AnalyticAt 𝕜 f z) (n : ℕ) 
     apply analyticAt_const
   | succ m hm =>
     simp only [pow_succ]
-    exact hf.mul hm
+    exact hm.mul hf
 
 /-- Powers of analytic functions (into a normed `𝕜`-algebra) are analytic. -/
 lemma AnalyticOn.pow {f : E → A} {s : Set E} (hf : AnalyticOn 𝕜 f s) (n : ℕ) :
@@ -199,7 +199,7 @@ section Geometric
 variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A]
   [NormOneClass A]
 
-/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`.-/
+/-- The geometric series `1 + x + x ^ 2 + ...` as a `FormalMultilinearSeries`. -/
 def formalMultilinearSeries_geometric : FormalMultilinearSeries 𝕜 A A :=
   fun n ↦ ContinuousMultilinearMap.mkPiAlgebraFin 𝕜 n A
 
@@ -228,12 +228,12 @@ lemma formalMultilinearSeries_geometric_radius (𝕜) [NontriviallyNormedField �
       Real.norm_of_nonneg (NNReal.coe_nonneg _), ← NNReal.coe_one,
       NNReal.coe_lt_coe]
   · refine le_of_forall_nnreal_lt (fun r hr ↦ ?_)
-    rw [← Nat.cast_one, ENNReal.coe_lt_coe_nat, Nat.cast_one] at hr
+    rw [← Nat.cast_one, ENNReal.coe_lt_natCast, Nat.cast_one] at hr
     apply FormalMultilinearSeries.le_radius_of_isBigO
     simp_rw [formalMultilinearSeries_geometric_apply_norm, one_mul]
     refine isBigO_of_le atTop (fun n ↦ ?_)
     rw [norm_one, Real.norm_of_nonneg (pow_nonneg (coe_nonneg r) _)]
-    exact (pow_le_one _ (coe_nonneg r) hr.le)
+    exact pow_le_one _ (coe_nonneg r) hr.le
 
 lemma hasFPowerSeriesOnBall_inv_one_sub
     (𝕜 𝕝 : Type*) [NontriviallyNormedField 𝕜] [NontriviallyNormedField 𝕝] [NormedAlgebra 𝕜 𝕝] :

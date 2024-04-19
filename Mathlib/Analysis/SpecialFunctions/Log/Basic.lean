@@ -217,18 +217,18 @@ theorem log_nonpos (hx : 0 ≤ x) (h'x : x ≤ 1) : log x ≤ 0 :=
   (log_nonpos_iff' hx).2 h'x
 #align real.log_nonpos Real.log_nonpos
 
-theorem log_nat_cast_nonneg (n : ℕ) : 0 ≤ log n := by
+theorem log_natCast_nonneg (n : ℕ) : 0 ≤ log n := by
   if hn : n = 0 then
     simp [hn]
   else
     have : (1 : ℝ) ≤ n := mod_cast Nat.one_le_of_lt <| Nat.pos_of_ne_zero hn
     exact log_nonneg this
 
-theorem log_neg_nat_cast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
+theorem log_neg_natCast_nonneg (n : ℕ) : 0 ≤ log (-n) := by
   rw [← log_neg_eq_log, neg_neg]
-  exact log_nat_cast_nonneg _
+  exact log_natCast_nonneg _
 
-theorem log_int_cast_nonneg (n : ℤ) : 0 ≤ log n := by
+theorem log_intCast_nonneg (n : ℤ) : 0 ≤ log n := by
   cases lt_trichotomy 0 n with
   | inl hn =>
       have : (1 : ℝ) ≤ n := mod_cast hn
@@ -293,17 +293,17 @@ theorem log_pow (x : ℝ) (n : ℕ) : log (x ^ n) = n * log x := by
   · simp
   rcases eq_or_ne x 0 with (rfl | hx)
   · simp
-  rw [pow_succ', log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
+  rw [pow_succ, log_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
 #align real.log_pow Real.log_pow
 
 @[simp]
 theorem log_zpow (x : ℝ) (n : ℤ) : log (x ^ n) = n * log x := by
   induction n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, log_pow, Int.cast_ofNat]
+  · rw [Int.ofNat_eq_coe, zpow_natCast, log_pow, Int.cast_natCast]
   rw [zpow_negSucc, log_inv, log_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
 #align real.log_zpow Real.log_zpow
 
-theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (sqrt x) = log x / 2 := by
+theorem log_sqrt {x : ℝ} (hx : 0 ≤ x) : log (√x) = log x / 2 := by
   rw [eq_div_iff, mul_comm, ← Nat.cast_two, ← log_pow, sq_sqrt hx]
   exact two_ne_zero
 #align real.log_sqrt Real.log_sqrt
@@ -475,7 +475,7 @@ theorem tendsto_log_comp_add_sub_log (y : ℝ) :
 #align real.tendsto_log_comp_add_sub_log Real.tendsto_log_comp_add_sub_log
 
 theorem tendsto_log_nat_add_one_sub_log : Tendsto (fun k : ℕ => log (k + 1) - log k) atTop (𝓝 0) :=
-  (tendsto_log_comp_add_sub_log 1).comp tendsto_nat_cast_atTop_atTop
+  (tendsto_log_comp_add_sub_log 1).comp tendsto_natCast_atTop_atTop
 #align real.tendsto_log_nat_add_one_sub_log Real.tendsto_log_nat_add_one_sub_log
 
 end Real
@@ -489,7 +489,7 @@ variable {e : ℝ} {d : ℕ}
 
 lemma log_nonneg_of_isNat {n : ℕ} (h : NormNum.IsNat e n) : 0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsNat.to_eq h rfl]
-  exact Real.log_nat_cast_nonneg _
+  exact Real.log_natCast_nonneg _
 
 lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true) :
     0 < Real.log (e : ℝ) := by
@@ -500,7 +500,7 @@ lemma log_pos_of_isNat {n : ℕ} (h : NormNum.IsNat e n) (w : Nat.blt 1 n = true
 lemma log_nonneg_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) :
     0 ≤ Real.log (e : ℝ) := by
   rw [NormNum.IsInt.neg_to_eq h rfl]
-  exact Real.log_neg_nat_cast_nonneg _
+  exact Real.log_neg_natCast_nonneg _
 
 lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat.blt 1 n = true) :
     0 < Real.log (e : ℝ) := by
@@ -509,24 +509,21 @@ lemma log_pos_of_isNegNat {n : ℕ} (h : NormNum.IsInt e (.negOfNat n)) (w : Nat
   apply Real.log_pos
   simpa using w
 
-set_option autoImplicit true in
-lemma log_pos_of_isRat :
+lemma log_pos_of_isRat {n : ℤ} :
     (NormNum.IsRat e n d) → (decide ((1 : ℚ) < n / d)) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : 1 < (n : ℝ) / d := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos this
 
-set_option autoImplicit true in
-lemma log_pos_of_isRat_neg :
+lemma log_pos_of_isRat_neg {n : ℤ} :
     (NormNum.IsRat e n d) → (decide (n / d < (-1 : ℚ))) → (0 < Real.log (e : ℝ))
   | ⟨inv, eq⟩, h => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
     have : (n : ℝ) / d < -1 := by exact_mod_cast of_decide_eq_true h
     exact Real.log_pos_of_lt_neg_one this
 
-set_option autoImplicit true in
-lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
+lemma log_nz_of_isRat {n : ℤ} : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     → (decide (n / d < (1 : ℚ))) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
@@ -534,8 +531,7 @@ lemma log_nz_of_isRat : (NormNum.IsRat e n d) → (decide ((0 : ℚ) < n / d))
     have h₂' : (n : ℝ) / d < 1 := by exact_mod_cast of_decide_eq_true h₂
     exact ne_of_lt <| Real.log_neg h₁' h₂'
 
-set_option autoImplicit true in
-lemma log_nz_of_isRat_neg : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
+lemma log_nz_of_isRat_neg {n : ℤ} : (NormNum.IsRat e n d) → (decide (n / d < (0 : ℚ)))
     → (decide ((-1 : ℚ) < n / d)) → (Real.log (e : ℝ) ≠ 0)
   | ⟨inv, eq⟩, h₁, h₂ => by
     rw [eq, invOf_eq_inv, ← div_eq_mul_inv]
@@ -549,7 +545,7 @@ def evalLogNatCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Nat.cast $a)) =>
     assertInstancesCommute
-    pure (.nonnegative q(Real.log_nat_cast_nonneg $a))
+    pure (.nonnegative q(Real.log_natCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of an integer is always nonnegative. -/
@@ -558,7 +554,7 @@ def evalLogIntCast : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
   | 0, ~q(ℝ), ~q(Real.log (Int.cast $a)) =>
     assertInstancesCommute
-    pure (.nonnegative q(Real.log_int_cast_nonneg $a))
+    pure (.nonnegative q(Real.log_intCast_nonneg $a))
   | _, _, _ => throwError "not Real.log"
 
 /-- Extension for the `positivity` tactic: `Real.log` of a numeric literal. -/

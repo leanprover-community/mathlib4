@@ -30,15 +30,13 @@ variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
 elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
--- @[ext] -- Porting note: generates the wrong lemma
--- in lean3 it generated `x.toProd = y.toProd → x = y`, now it generates
--- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
--- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
--- `getStructureFieldsFlattened` instead of `getStructureFields`.
+@[ext (flat := false)]
 structure NonemptyInterval (α : Type*) [LE α] extends Prod α α where
   /-- The starting point of an interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
+#align nonempty_interval.ext NonemptyInterval.ext
+#align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
 namespace NonemptyInterval
 
@@ -49,17 +47,6 @@ variable [LE α] {s t : NonemptyInterval α}
 theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
   fun s t h => by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
-
--- Porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
-#align nonempty_interval.ext NonemptyInterval.ext
-
--- Porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
-  toProd_injective.eq_iff.symm
-#align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
@@ -568,9 +555,7 @@ instance lattice : Lattice (Interval α) :=
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
-        -- Porting note: was `simp only` but that fails to use the second lemma.
-        rw [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc
-        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] -- at hb hc ⊢
+        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
         exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
