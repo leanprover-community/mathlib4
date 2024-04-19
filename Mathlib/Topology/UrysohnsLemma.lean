@@ -698,7 +698,9 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
       simp only [mem_setOf_eq, toFinset_setOf, ContinuousMap.mul_apply, ContinuousMap.coe_prod,
         ContinuousMap.coe_sub, ContinuousMap.coe_one, Finset.prod_apply]
       apply unitInterval.mul_mem
-      · apply prod_mem  -- gives an error "tactic 'apply' failed, failed to unify". `(1 - g c) x` needs to be understood as `fun c => (1 - g c) x`
+      · sorry
+      -- apply prod_mem  gives an error "tactic 'apply' failed, failed to unify". `(1 - g c) x` needs to be understood as `fun c => (1 - g c) x
+      -- leaving a code using an ad hoc lemma icc_prod_Icc in https://github.com/yoh-tanimoto/mathlib4/blob/yoh/yoh/RMK/urysohn.lean
       -- · apply icc_prod_Icc i.val
       --   constructor
       --   · rw [hg]
