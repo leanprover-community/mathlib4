@@ -22,7 +22,7 @@ namespace Int
 
 instance instCommRingInt : CommRing ℤ where
   __ := instAddCommGroup
-  __ := instCommSemigroupInt
+  __ := instCommSemigroup
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   left_distrib := Int.mul_add

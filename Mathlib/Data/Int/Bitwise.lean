@@ -473,7 +473,7 @@ theorem shiftRight_neg (m n : ℤ) : m >>> (-n) = m <<< n := by rw [← shiftLef
 -- Porting note: what's the correct new name?
 @[simp]
 theorem shiftLeft_coe_nat (m n : ℕ) : (m : ℤ) <<< (n : ℤ) = ↑(m <<< n) :=
-  by simp [instShiftLeftInt, HShiftLeft.hShiftLeft]
+  by unfold_projs; simp
 #align int.shiftl_coe_nat Int.shiftLeft_coe_nat
 
 -- Porting note: what's the correct new name?
@@ -524,7 +524,7 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
           rw [← Nat.shiftLeft'_sub, Nat.add_sub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
       congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
-          Nat.sub_self, Nat.shiftLeft', Nat.succ_eq_add_one]
+          Nat.sub_self, Nat.shiftLeft']
 #align int.shiftl_add Int.shiftLeft_add
 
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=

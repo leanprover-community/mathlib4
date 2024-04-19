@@ -238,9 +238,8 @@ lemma isLowerSet_of_isClosed : IsClosed s → IsLowerSet s := fun h ↦
 
 lemma lowerClosure_subset_closure : ↑(lowerClosure s) ⊆ closure s := by
   convert closure.mono (@upperSet_le_scott α _)
-  rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α) ?_ s]
-  · exact instIsUpperSetUpperSet
-  · exact topology_eq α
+  rw [@IsUpperSet.closure_eq_lowerClosure α _ (upperSet α)]
+  exact topology_eq α
 
 lemma isClosed_Iic : IsClosed (Iic a) :=
   isClosed_iff_isLowerSet_and_dirSupClosed.2 ⟨isLowerSet_Iic _, dirSupClosed_Iic _⟩

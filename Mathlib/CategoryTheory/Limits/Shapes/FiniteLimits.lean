@@ -167,7 +167,7 @@ variable {J : Type v}
 namespace WidePullbackShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option _)
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where
