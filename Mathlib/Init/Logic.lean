@@ -362,7 +362,7 @@ theorem decidableEq_inr_neg {α : Sort u} [h : DecidableEq α] {a b : α}
 
 #align inhabited.default Inhabited.default
 #align arbitrary Inhabited.default
-#align nonempty_of_inhabited instNonempty
+#align nonempty_of_inhabited instNonemptyOfInhabited
 
 /- subsingleton -/
 

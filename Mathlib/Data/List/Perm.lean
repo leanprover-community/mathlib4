@@ -677,7 +677,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq {α : Type*} [DecidableEq α] :
-     instBEqList = @instBEq (List α) instDecidableEqList :=
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
     show (l₁ == l₂) = _
