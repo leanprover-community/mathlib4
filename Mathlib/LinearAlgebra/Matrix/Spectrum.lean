@@ -67,6 +67,15 @@ lemma mulVec_eigenvectorBasis (j : n) :
     congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
      finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
+theorem eigenvalues_eq (i : n) :
+     (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
+    (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
+    simp only [mulVec_eigenvectorBasis, dotProduct_smul,←EuclideanSpace.inner_eq_star_dotProduct]
+    --rw [inner_self_eq_norm_mul_norm (𝕜 := 𝕜) ((eigenvectorBasis hA) i)]
+
+    --, OrthonormalBasis.orthonormal, Orthonormal]
+    sorry
+
 /--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
@@ -183,8 +192,6 @@ lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i 
   rw [rank_eq_rank_diagonal hA, Matrix.rank_diagonal]
 
 end DecidableEq
-
-
 
 end IsHermitian
 
