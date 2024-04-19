@@ -103,7 +103,7 @@ theorem card_antidiagonal (s : Multiset α) : card (antidiagonal s) = 2 ^ card s
 theorem prod_map_add [CommSemiring β] {s : Multiset α} {f g : α → β} :
     prod (s.map fun a ↦ f a + g a) =
       sum ((antidiagonal s).map fun p ↦ (p.1.map f).prod * (p.2.map g).prod) := by
-  refine' s.induction_on _ _
+  refine s.induction_on ?_ ?_
   · simp only [map_zero, prod_zero, antidiagonal_zero, map_singleton, mul_one, sum_singleton]
   · intro a s ih
     simp only [map_cons, prod_cons, ih, sum_map_mul_left.symm, add_mul, mul_left_comm (f a),

@@ -363,7 +363,7 @@ theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
 
 theorem inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
-  refine' CategoryTheory.Functor.ext _ _
+  refine CategoryTheory.Functor.ext ?_ ?_
   · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩

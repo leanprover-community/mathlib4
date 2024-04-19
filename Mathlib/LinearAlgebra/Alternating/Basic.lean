@@ -1053,7 +1053,7 @@ theorem curryLeft_compLinearMap {n : ℕ} (g : M₂'' →ₗ[R'] M'')
     (f : M'' [⋀^Fin n.succ]→ₗ[R'] N'') (m : M₂'') :
     (f.compLinearMap g).curryLeft m = (f.curryLeft (g m)).compLinearMap g :=
   ext fun v => congr_arg f <| funext <| by
-    refine' Fin.cases _ _
+    refine Fin.cases ?_ ?_
     · rfl
     · simp
 #align alternating_map.curry_left_comp_linear_map AlternatingMap.curryLeft_compLinearMap

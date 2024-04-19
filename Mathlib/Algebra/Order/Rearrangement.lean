@@ -117,7 +117,7 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
     (hσ : { x | σ x ≠ x } ⊆ s) :
     ((∑ i in s, f i • g (σ i)) = ∑ i in s, f i • g i) ↔ MonovaryOn f (g ∘ σ) s := by
   classical
-    refine' ⟨not_imp_not.1 fun h ↦ _, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm _⟩
+    refine ⟨not_imp_not.1 fun h ↦ ?_, fun h ↦ (hfg.sum_smul_comp_perm_le_sum_smul hσ).antisymm ?_ ⟩
     · rw [MonovaryOn] at h
       push_neg at h
       obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h

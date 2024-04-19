@@ -451,7 +451,7 @@ theorem liftAux_tprodCoeff (φ : MultilinearMap R s E) (z : R) (f : Π i, s i) :
 
 theorem liftAux.smul {φ : MultilinearMap R s E} (r : R) (x : ⨂[R] i, s i) :
     liftAux φ (r • x) = r • liftAux φ x := by
-  refine' PiTensorProduct.induction_on' x _ _
+  refine PiTensorProduct.induction_on' x ?_ ?_
   · intro z f
     rw [smul_tprodCoeff' r z f, liftAux_tprodCoeff, liftAux_tprodCoeff, smul_assoc]
   · intro z y ihz ihy

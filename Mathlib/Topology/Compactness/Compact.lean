@@ -133,7 +133,7 @@ theorem IsCompact.adherence_nhdset {f : Filter X} (hs : IsCompact s) (hf₂ : f 
 
 theorem isCompact_iff_ultrafilter_le_nhds :
     IsCompact s ↔ ∀ f : Ultrafilter X, ↑f ≤ 𝓟 s → ∃ x ∈ s, ↑f ≤ 𝓝 x := by
-  refine' (forall_neBot_le_iff _).trans _
+  refine (forall_neBot_le_iff ?_).trans ?_
   · rintro f g hle ⟨x, hxs, hxf⟩
     exact ⟨x, hxs, hxf.mono hle⟩
   · simp only [Ultrafilter.clusterPt_iff]

@@ -1539,7 +1539,7 @@ private theorem lintegral_rpow_tsum_coe_nnnorm_sub_le_tsum {f : ℕ → α → E
     refine' (h_rpow_mono.orderIsoOfSurjective _ h_rpow_surj).liminf_apply _ _ _ _
     all_goals isBoundedDefault
   rw [h_liminf_pow]
-  refine' (lintegral_liminf_le' _).trans _
+  refine (lintegral_liminf_le' ?_).trans ?_
   · exact fun n =>
       (Finset.aemeasurable_sum (Finset.range (n + 1)) fun i _ =>
             ((hf (i + 1)).sub (hf i)).ennnorm).pow_const
@@ -1613,7 +1613,7 @@ theorem ae_tendsto_of_cauchy_snorm [CompleteSpace E] {f : ℕ → α → E}
       exact fun N n m hnN hmN => ae_lt_of_essSup_lt (h_cau N n m hnN hmN)
     simp_rw [snorm_exponent_top, snormEssSup] at h_cau
     refine' h_cau_ae.mono fun x hx => cauchySeq_tendsto_of_complete _
-    refine' cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) _ _
+    refine cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) ?_ ?_
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
       rw [dist_eq_norm, ← ENNReal.toReal_ofReal (norm_nonneg _),

@@ -155,7 +155,7 @@ theorem map_iUnion_fin_meas_set_eq_sum (T : Set α → β) (T_empty : T ∅ = 0)
     (h_disj : ∀ᵉ (i ∈ sι) (j ∈ sι), i ≠ j → Disjoint (S i) (S j)) :
     T (⋃ i ∈ sι, S i) = ∑ i in sι, T (S i) := by
   revert hSp h_disj
-  refine' Finset.induction_on sι _ _
+  refine Finset.induction_on sι ?_ ?_
   · simp only [Finset.not_mem_empty, IsEmpty.forall_iff, iUnion_false, iUnion_empty, sum_empty,
       forall₂_true_iff, imp_true_iff, forall_true_left, not_false_iff, T_empty]
   intro a s has h hps h_disj
@@ -1363,7 +1363,7 @@ theorem setToFun_finset_sum' (hT : DominatedFinMeasAdditive μ T C) {ι} (s : Fi
     {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     setToFun μ T hT (∑ i in s, f i) = ∑ i in s, setToFun μ T hT (f i) := by
   revert hf
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · intro _
     simp only [setToFun_zero, Finset.sum_empty]
   · intro i s his ih hf
@@ -1671,7 +1671,7 @@ theorem setToFun_congr_smul_measure (c : ℝ≥0∞) (hc_ne_top : c ≠ ∞)
     have h : ∀ s, MeasurableSet s → μ s < ∞ → T s = 0 := fun s hs _ => hT_smul.eq_zero hs
     rw [setToFun_zero_left' _ h, setToFun_measure_zero]
     simp [hc0]
-  refine' setToFun_congr_measure c⁻¹ c _ hc_ne_top (le_of_eq _) le_rfl hT hT_smul f
+  refine setToFun_congr_measure c⁻¹ c ?_ hc_ne_top (le_of_eq ?_ ) le_rfl hT hT_smul f
   · simp [hc0]
   · rw [smul_smul, ENNReal.inv_mul_cancel hc0 hc_ne_top, one_smul]
 #align measure_theory.set_to_fun_congr_smul_measure MeasureTheory.setToFun_congr_smul_measure

@@ -172,7 +172,7 @@ theorem induction_on_adjoin [IsNoetherian R A] (P : Subalgebra R A → Prop) (ba
     (S : Subalgebra R A) : P S := by
   classical
   obtain ⟨t, rfl⟩ := S.fg_of_noetherian
-  refine' Finset.induction_on t _ _
+  refine Finset.induction_on t ?_ ?_
   · simpa using base
   intro x t _ h
   rw [Finset.coe_insert]

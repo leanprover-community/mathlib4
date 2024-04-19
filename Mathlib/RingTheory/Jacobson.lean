@@ -338,8 +338,8 @@ theorem isIntegral_isLocalization_polynomial_quotient
     simp only [Set.mem_insert_iff] at hp
     cases' hp with hy hy
     · rw [hy]
-      refine' φ.isIntegralElem_localization_at_leadingCoeff ((Quotient.mk P) X)
-        (pX.map (Quotient.mk P')) _ M _
+      refine φ.isIntegralElem_localization_at_leadingCoeff ((Quotient.mk P) X)
+        (pX.map (Quotient.mk P')) ?_ M ?_
       · rwa [eval₂_map, hφ', ← hom_eval₂, Quotient.eq_zero_iff_mem, eval₂_C_X]
       · use 1
         simp only [pow_one]
@@ -542,8 +542,8 @@ private theorem quotient_mk_comp_C_isIntegral_of_jacobson' [Nontrivial R] (hR : 
       (IsLocalization.map (Localization M') φ M.le_comap_map).comp
         (algebraMap (R ⧸ P') (Localization M)) by
       rw [this]
-      refine' RingHom.IsIntegral.trans (algebraMap (R ⧸ P') (Localization M))
-        (IsLocalization.map (Localization M') φ M.le_comap_map) _ _
+      refine RingHom.IsIntegral.trans (algebraMap (R ⧸ P') (Localization M))
+        (IsLocalization.map (Localization M') φ M.le_comap_map) ?_ ?_
       · exact (algebraMap (R ⧸ P') (Localization M)).isIntegral_of_surjective
           (IsField.localization_map_bijective hM ((Quotient.maximal_ideal_iff_isField_quotient _).mp
             (isMaximal_comap_C_of_isMaximal P hP'))).2

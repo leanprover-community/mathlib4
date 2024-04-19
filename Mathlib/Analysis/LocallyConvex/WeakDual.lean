@@ -104,7 +104,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   have h := @Metric.nhds_basis_ball 𝕜 _ 0
   have h' := Filter.hasBasis_pi fun _ : F => h
   have h'' := Filter.HasBasis.comap (fun x y => B x y) h'
-  refine' h''.to_hasBasis _ _
+  refine h''.to_hasBasis ?_ ?_
   · rintro (U : Set F × (F → ℝ)) hU
     cases' hU with hU₁ hU₂
     simp only [_root_.id]

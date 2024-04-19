@@ -317,7 +317,7 @@ theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     intro
     rw [H]
   refine Quotient.sound' (Or.inl ⟨l₂.length - l₁.length, ?_⟩)
-  refine' List.ext_get _ fun i h h₂ ↦ Eq.symm _
+  refine List.ext_get ?_ fun i h h₂ ↦ Eq.symm ?_
   · simp only [add_tsub_cancel_of_le h, List.length_append, List.length_replicate]
   simp only [ListBlank.nth_mk] at H
   cases' lt_or_le i l₁.length with h' h'

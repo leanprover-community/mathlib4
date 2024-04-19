@@ -185,7 +185,7 @@ variable (H)
 theorem normalizer_eq_self_iff :
     H.normalizer = H ↔ (LieModule.maxTrivSubmodule R H <| L ⧸ H.toLieSubmodule) = ⊥ := by
   rw [LieSubmodule.eq_bot_iff]
-  refine' ⟨fun h => _, fun h => le_antisymm _ H.le_normalizer⟩
+  refine ⟨fun h => ?_, fun h => le_antisymm ?_  H.le_normalizer⟩
   · rintro ⟨x⟩ hx
     suffices x ∈ H by rwa [Submodule.Quotient.quot_mk_eq_mk, Submodule.Quotient.mk_eq_zero,
       coe_toLieSubmodule, mem_coe_submodule]

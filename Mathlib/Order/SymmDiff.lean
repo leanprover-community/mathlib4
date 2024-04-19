@@ -189,7 +189,7 @@ theorem sdiff_symmDiff_eq_sup : (a \ b) ∆ b = a ⊔ b := by
 theorem symmDiff_sup_inf : a ∆ b ⊔ a ⊓ b = a ⊔ b := by
   refine' le_antisymm (sup_le symmDiff_le_sup inf_le_sup) _
   rw [sup_inf_left, symmDiff]
-  refine' sup_le (le_inf le_sup_right _) (le_inf _ le_sup_right)
+  refine sup_le (le_inf le_sup_right ?_) (le_inf ?_  le_sup_right)
   · rw [sup_right_comm]
     exact le_sup_of_le_left le_sdiff_sup
   · rw [sup_assoc]

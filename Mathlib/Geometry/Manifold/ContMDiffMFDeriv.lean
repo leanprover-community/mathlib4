@@ -136,7 +136,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       simp_rw [writtenInExtChartAt, Function.comp_apply]
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
     refine Filter.EventuallyEq.fderivWithin_eq_nhds ?_
-    refine' eventually_of_mem (inter_mem _ _) this
+    refine eventually_of_mem (inter_mem ?_ ?_ ) this
     · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
     refine' extChartAt_preimage_mem_nhds' _ hx₂ _
     exact h2x₂.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds _ _)
@@ -593,7 +593,7 @@ theorem tangentMap_tangentBundle_pure (p : TangentBundle I M) :
   rw [← fderivWithin_inter N] at B
   rw [← fderivWithin_inter N, ← B]
   congr 1
-  refine' fderivWithin_congr (fun y hy => _) _
+  refine fderivWithin_congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
     simp only [hy, Prod.mk.inj_iff, mfld_simps]
   · simp only [Prod.mk.inj_iff, mfld_simps]

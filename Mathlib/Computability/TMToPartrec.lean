@@ -1994,10 +1994,10 @@ theorem codeSupp'_supports {S c k} (H : codeSupp c k ⊆ S) : Supports (codeSupp
     have H' := H; simp only [codeSupp_cons, Finset.union_subset_iff] at H'
     refine' trStmts₁_supports' (trNormal_supports H) (Finset.union_subset_left H) fun h => _
     refine' supports_union.2 ⟨IHf H'.2, _⟩
-    refine' trStmts₁_supports' (trNormal_supports _) (Finset.union_subset_right h) fun h => _
+    refine trStmts₁_supports' (trNormal_supports ?_) (Finset.union_subset_right h) fun h => ?_
     · simp only [codeSupp, Finset.union_subset_iff, contSupp] at h H ⊢
       exact ⟨h.2.2.1, h.2.2.2, H.2⟩
-    refine' supports_union.2 ⟨IHfs _, _⟩
+    refine supports_union.2 ⟨IHfs ?_, ?_ ⟩
     · rw [codeSupp, contSupp_cons₁] at H'
       exact Finset.union_subset_right (Finset.union_subset_right H'.2)
     exact

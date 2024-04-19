@@ -72,7 +72,7 @@ theorem card_toMultiset (f : α →₀ ℕ) : Multiset.card (toMultiset f) = f.s
 
 theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
     f.toMultiset.map g = toMultiset (f.mapDomain g) := by
-  refine' f.induction _ _
+  refine f.induction ?_ ?_
   · rw [toMultiset_zero, Multiset.map_zero, mapDomain_zero, toMultiset_zero]
   · intro a n f _ _ ih
     rw [toMultiset_add, Multiset.map_add, ih, mapDomain_add, mapDomain_single,
@@ -84,7 +84,7 @@ theorem toMultiset_map (f : α →₀ ℕ) (g : α → β) :
 @[to_additive (attr := simp)]
 theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
     f.toMultiset.prod = f.prod fun a n => a ^ n := by
-  refine' f.induction _ _
+  refine f.induction ?_ ?_
   · rw [toMultiset_zero, Multiset.prod_zero, Finsupp.prod_zero_index]
   · intro a n f _ _ ih
     rw [toMultiset_add, Multiset.prod_add, ih, toMultiset_single, Multiset.prod_nsmul,
@@ -94,7 +94,7 @@ theorem prod_toMultiset [CommMonoid α] (f : α →₀ ℕ) :
 
 @[simp]
 theorem toFinset_toMultiset [DecidableEq α] (f : α →₀ ℕ) : f.toMultiset.toFinset = f.support := by
-  refine' f.induction _ _
+  refine f.induction ?_ ?_
   · rw [toMultiset_zero, Multiset.toFinset_zero, support_zero]
   · intro a n f ha hn ih
     rw [toMultiset_add, Multiset.toFinset_add, ih, toMultiset_single, support_add_eq,

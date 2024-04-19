@@ -30,7 +30,7 @@ variable {C : Type u} [Category.{v} C]
     since mathlib does not have a notion of quotient objects at the time of writing. -/
 @[simps!]
 def subobjectIsoSubobjectOp [Abelian C] (X : C) : Subobject X ≃o (Subobject (op X))ᵒᵈ := by
-  refine' OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) _ _
+  refine OrderIso.ofHomInv (cokernelOrderHom X) (kernelOrderHom X) ?_ ?_
   · change (cokernelOrderHom X).comp (kernelOrderHom X) = _
     refine' OrderHom.ext _ _ (funext (Subobject.ind _ _))
     intro A f hf

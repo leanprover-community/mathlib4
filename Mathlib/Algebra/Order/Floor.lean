@@ -539,7 +539,7 @@ theorem floor_div_nat (a : α) (n : ℕ) : ⌊a / n⌋₊ = ⌊a⌋₊ / n := by
     apply div_nonpos_of_nonpos_of_nonneg ha n.cast_nonneg
   obtain rfl | hn := n.eq_zero_or_pos
   · rw [cast_zero, div_zero, Nat.div_zero, floor_zero]
-  refine' (floor_eq_iff _).2 _
+  refine (floor_eq_iff ?_).2 ?_
   · exact div_nonneg ha n.cast_nonneg
   constructor
   · exact cast_div_le.trans (div_le_div_of_nonneg_right (floor_le ha) n.cast_nonneg)

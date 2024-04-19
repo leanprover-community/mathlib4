@@ -199,7 +199,7 @@ section UnionIxx
 variable [LinearOrder α] {s : Set α} {a : α} {f : ι → α}
 
 theorem IsGLB.biUnion_Ioi_eq (h : IsGLB s a) : ⋃ x ∈ s, Ioi x = Ioi a := by
-  refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ioi_subset_Ioi (h.1 hx)
   · rcases h.exists_between hx with ⟨y, hys, _, hyx⟩
     exact mem_biUnion hys hyx
@@ -219,7 +219,7 @@ theorem IsLUB.iUnion_Iio_eq (h : IsLUB (range f) a) : ⋃ x, Iio (f x) = Iio a :
 
 theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
     ⋃ x ∈ s, Ici x = Ioi a := by
-  refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ici_subset_Ioi.mpr (lt_of_le_of_ne (a_glb.1 hx) fun h => (h ▸ a_not_mem) hx)
   · rcases a_glb.exists_between hx with ⟨y, hys, _, hyx⟩
     rw [mem_iUnion₂]
@@ -228,7 +228,7 @@ theorem IsGLB.biUnion_Ici_eq_Ioi (a_glb : IsGLB s a) (a_not_mem : a ∉ s) :
 
 theorem IsGLB.biUnion_Ici_eq_Ici (a_glb : IsGLB s a) (a_mem : a ∈ s) :
     ⋃ x ∈ s, Ici x = Ici a := by
-  refine' (iUnion₂_subset fun x hx => _).antisymm fun x hx => _
+  refine (iUnion₂_subset fun x hx => ?_).antisymm fun x hx => ?_
   · exact Ici_subset_Ici.mpr (mem_lowerBounds.mp a_glb.1 x hx)
   · exact mem_iUnion₂.mpr ⟨a, a_mem, hx⟩
 #align is_glb.bUnion_Ici_eq_Ici IsGLB.biUnion_Ici_eq_Ici

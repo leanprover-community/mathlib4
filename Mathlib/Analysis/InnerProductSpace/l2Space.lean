@@ -105,7 +105,7 @@ namespace lp
 
 theorem summable_inner (f g : lp G 2) : Summable fun i => ⟪f i, g i⟫ := by
   -- Apply the Direct Comparison Test, comparing with ∑' i, ‖f i‖ * ‖g i‖ (summable by Hölder)
-  refine' .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul _ f g) _
+  refine .of_norm_bounded (fun i => ‖f i‖ * ‖g i‖) (lp.summable_mul ?_ f g) ?_
   · rw [Real.isConjExponent_iff]; norm_num
   intro i
   -- Then apply Cauchy-Schwarz pointwise
@@ -245,7 +245,7 @@ protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
     -- Porting note: dot notation broken
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rintro x ⟨f, rfl⟩
     refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)
     intro s

@@ -272,7 +272,7 @@ theorem length_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l
 
 theorem ofList_toList (s : CompositionSeries X) :
     ofList s.toList s.toList_ne_nil s.chain'_toList = s := by
-  refine' ext_fun _ _
+  refine ext_fun ?_ ?_
   · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
     simp [ofList, toList]
@@ -287,7 +287,7 @@ theorem ofList_toList' (s : CompositionSeries X) :
 @[simp]
 theorem toList_ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) :
     toList (ofList l hl hc) = l := by
-  refine' List.ext_get _ _
+  refine List.ext_get ?_ ?_
   · rw [length_toList, length_ofList,
       tsub_add_cancel_of_le (Nat.succ_le_of_lt <| List.length_pos_of_ne_nil hl)]
   · intro i hi hi'
@@ -485,7 +485,7 @@ def append (s₁ s₂ : CompositionSeries X) (h : s₁.top = s₂.bot) : Composi
   length := s₁.length + s₂.length
   series := Matrix.vecAppend (Nat.add_succ s₁.length s₂.length).symm (s₁ ∘ Fin.castSucc) s₂
   step' i := by
-    refine' Fin.addCases _ _ i
+    refine Fin.addCases ?_ ?_  i
     · intro i
       rw [append_succ_castAdd_aux _ _ _ h, append_castAdd_aux]
       exact s₁.step i
@@ -529,7 +529,7 @@ def snoc (s : CompositionSeries X) (x : X) (hsat : IsMaximal s.top x) : Composit
   length := s.length + 1
   series := Fin.snoc s x
   step' i := by
-    refine' Fin.lastCases _ _ i
+    refine Fin.lastCases ?_ ?_  i
     · rwa [Fin.snoc_castSucc, Fin.succ_last, Fin.snoc_last, ← top]
     · intro i
       rw [Fin.snoc_castSucc, ← Fin.castSucc_fin_succ, Fin.snoc_castSucc]
@@ -636,7 +636,7 @@ theorem append {s₁ s₂ t₁ t₂ : CompositionSeries X} (hs : s₁.top = s₂
 
   ⟨e, by
     intro i
-    refine' Fin.addCases _ _ i
+    refine Fin.addCases ?_ ?_  i
     · intro i
       simpa [e, top, bot] using h₁.choose_spec i
     · intro i
@@ -653,7 +653,7 @@ protected theorem snoc {s₁ s₂ : CompositionSeries X} {x₁ x₂ : X} {hsat�
       _ ≃ Fin (s₂.length + 1) := finSuccEquivLast.symm
 
   ⟨e, fun i => by
-    refine' Fin.lastCases _ _ i
+    refine Fin.lastCases ?_ ?_  i
     · simpa [e, top] using htop
     · intro i
       simpa [e, Fin.succ_castSucc] using hequiv.choose_spec i⟩
@@ -761,7 +761,7 @@ theorem exists_top_eq_snoc_equivalant (s : CompositionSeries X) (x : X) (hm : Is
         conv_lhs => rw [eq_snoc_eraseTop h0s]
         exact Equivalent.snoc hteqv (by simpa using (isMaximal_eraseTop_top h0s).iso_refl)
       refine this.trans ?_
-      refine' Equivalent.snoc_snoc_swap _ _
+      refine Equivalent.snoc_snoc_swap ?_ ?_
       · exact
           iso_symm
             (second_iso_of_eq hm

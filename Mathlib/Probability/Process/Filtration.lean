@@ -284,7 +284,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
       stronglyMeasurable_one.indicator (hsm i) := by
   simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
-  refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
+  refine le_antisymm (generateFrom_le ?_) (generateFrom_le ?_ )
   · rintro _ ⟨j, hij, rfl⟩
     refine' measurableSet_generateFrom ⟨j, measurableSet_generateFrom ⟨hij, _⟩⟩
     rw [comap_eq_generateFrom]

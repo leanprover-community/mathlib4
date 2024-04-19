@@ -259,7 +259,7 @@ def cokernelOrderHom [HasCokernels C] (X : C) : Subobject X →o (Subobject (op 
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) _).op _
+      refine Subobject.mk_le_mk_of_comm (cokernel.desc f (cokernel.π g) ?_).op ?_
       · rw [← Subobject.ofMkLEMk_comp h, Category.assoc, cokernel.condition, comp_zero]
       · exact Quiver.Hom.unop_inj (cokernel.π_desc _ _ _)
 #align category_theory.limits.cokernel_order_hom CategoryTheory.Limits.cokernelOrderHom
@@ -283,7 +283,7 @@ def kernelOrderHom [HasKernels C] (X : C) : (Subobject (op X))ᵒᵈ →o Subobj
     Subobject.ind₂ _ <| by
       intro A B f g hf hg h
       dsimp only [Subobject.lift_mk]
-      refine' Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) _) _
+      refine Subobject.mk_le_mk_of_comm (kernel.lift g.unop (kernel.ι f.unop) ?_) ?_
       · rw [← Subobject.ofMkLEMk_comp h, unop_comp, kernel.condition_assoc, zero_comp]
       · exact Quiver.Hom.op_inj (by simp)
 #align category_theory.limits.kernel_order_hom CategoryTheory.Limits.kernelOrderHom

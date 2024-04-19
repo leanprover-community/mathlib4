@@ -97,11 +97,11 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   have h_eq_sum : μ[martingalePart f ℱ μ j|ℱ i] =ᵐ[μ]
       f 0 + ∑ k in Finset.range j, (μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i]) := by
     rw [martingalePart_eq_sum]
-    refine' (condexp_add (hf_int 0) _).trans _
+    refine (condexp_add (hf_int 0) ?_).trans ?_
     · exact integrable_finset_sum' _ fun i _ => ((hf_int _).sub (hf_int _)).sub integrable_condexp
     refine' (EventuallyEq.add EventuallyEq.rfl (condexp_finset_sum fun i _ => _)).trans _
     · exact ((hf_int _).sub (hf_int _)).sub integrable_condexp
-    refine' EventuallyEq.add _ _
+    refine EventuallyEq.add ?_ ?_
     · rw [condexp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
       · exact (hf 0).mono (ℱ.mono (zero_le i))
     · exact eventuallyEq_sum fun k _ => condexp_sub ((hf_int _).sub (hf_int _)) integrable_condexp
@@ -114,7 +114,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     rw [Pi.sub_apply, Pi.zero_apply, hx, sub_self]
   have h_lt : ∀ k, k < i → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ]
       f (k + 1) - f k - μ[f (k + 1) - f k|ℱ k] := by
-    refine' fun k hk => EventuallyEq.sub _ _
+    refine fun k hk => EventuallyEq.sub ?_ ?_
     · rw [condexp_of_stronglyMeasurable]
       · exact ((hf (k + 1)).mono (ℱ.mono (Nat.succ_le_of_lt hk))).sub ((hf k).mono (ℱ.mono hk.le))
       · exact (hf_int _).sub (hf_int _)

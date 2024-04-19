@@ -186,7 +186,7 @@ theorem memℒp_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ 
     Memℒp (fun a => ∑ i in s, f i a) p μ := by
   haveI : DecidableEq ι := Classical.decEq _
   revert hf
-  refine' Finset.induction_on s _ _
+  refine Finset.induction_on s ?_ ?_
   · simp only [zero_mem_ℒp', Finset.sum_empty, imp_true_iff]
   · intro i s his ih hf
     simp only [his, Finset.sum_insert, not_false_iff]

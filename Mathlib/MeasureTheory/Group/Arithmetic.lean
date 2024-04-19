@@ -411,7 +411,7 @@ theorem measurableSet_eq_fun_of_countable {m : MeasurableSpace α} {E} [Measurab
     ext1 x
     simp only [Set.mem_setOf_eq, Set.mem_iUnion, Set.mem_inter_iff, exists_eq_right']
   rw [this]
-  refine' MeasurableSet.iUnion fun j => MeasurableSet.inter _ _
+  refine MeasurableSet.iUnion fun j => MeasurableSet.inter ?_ ?_
   · exact hf (measurableSet_singleton j)
   · exact hg (measurableSet_singleton j)
 #align measurable_set_eq_fun_of_countable measurableSet_eq_fun_of_countable

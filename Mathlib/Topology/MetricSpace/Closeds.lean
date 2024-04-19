@@ -207,7 +207,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
       intro u
       let v := { x : α | x ∈ s ∧ ∃ y ∈ u, edist x y < δ }
       exists v, (fun x hx => hx.1 : v ⊆ s)
-      refine' hausdorffEdist_le_of_mem_edist _ _
+      refine hausdorffEdist_le_of_mem_edist ?_ ?_
       · intro x hx
         have : x ∈ ⋃ y ∈ s, ball y δ := hs (by simp)
         rcases mem_iUnion₂.1 this with ⟨y, ys, dy⟩

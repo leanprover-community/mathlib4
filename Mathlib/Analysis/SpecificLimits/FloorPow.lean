@@ -151,7 +151,7 @@ theorem tendsto_div_of_monotone_of_exists_subseq_tendsto_div (u : ℕ → ℝ) (
       _ ≤ ε * c (N - 1) + ε * c (N - 1) * l := add_le_add (ha _ aN').2 le_rfl
       _ = ε * (1 + l) * c (N - 1) := by ring
       _ ≤ ε * (1 + l) * n := by gcongr
-  refine' tendsto_order.2 ⟨fun d hd => _, fun d hd => _⟩
+  refine tendsto_order.2 ⟨fun d hd => ?_, fun d hd => ?_ ⟩
   · obtain ⟨ε, hε, εpos⟩ : ∃ ε : ℝ, d + ε * (1 + l) < l ∧ 0 < ε := by
       have L : Tendsto (fun ε => d + ε * (1 + l)) (𝓝[>] 0) (𝓝 (d + 0 * (1 + l))) := by
         apply Tendsto.mono_left _ nhdsWithin_le_nhds
@@ -203,7 +203,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
   have A :
     Tendsto (fun n : ℕ => (⌊c k ^ (n + 1)⌋₊ : ℝ) / c k ^ (n + 1) * c k / (⌊c k ^ n⌋₊ / c k ^ n))
       atTop (𝓝 (1 * c k / 1)) := by
-    refine' Tendsto.div (Tendsto.mul _ tendsto_const_nhds) _ one_ne_zero
+    refine Tendsto.div (Tendsto.mul ?_ tendsto_const_nhds) ?_  one_ne_zero
     · refine' tendsto_nat_floor_div_atTop.comp _
       exact (tendsto_pow_atTop_atTop_of_one_lt (cone k)).comp (tendsto_add_atTop_nat 1)
     · refine' tendsto_nat_floor_div_atTop.comp _

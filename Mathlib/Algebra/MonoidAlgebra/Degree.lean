@@ -140,7 +140,7 @@ theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
     (l.map fun f : R[A] => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
   refine OrderDual.ofDual_le_ofDual.mpr ?_
-  refine' sup_support_list_prod_le _ _ l
+  refine sup_support_list_prod_le ?_ ?_  l
   · refine' (OrderDual.ofDual_le_ofDual.mp _)
     exact degt0
   · refine' (fun a b => OrderDual.ofDual_le_ofDual.mp _)
@@ -286,7 +286,7 @@ theorem supDegree_prod_le {R A B : Type*} [CommSemiring R] [AddCommMonoid A] [Ad
     {D : A → B} (hzero : D 0 = 0) (hadd : ∀ a1 a2, D (a1 + a2) = D a1 + D a2)
     {ι} {s : Finset ι} {f : ι → R[A]} :
     (∏ i in s, f i).supDegree D ≤ ∑ i in s, (f i).supDegree D := by
-  refine' s.induction _ _
+  refine s.induction ?_ ?_
   · rw [Finset.prod_empty, Finset.sum_empty, one_def, supDegree_single]
     split_ifs; exacts [bot_le, hzero.le]
   · intro i s his ih

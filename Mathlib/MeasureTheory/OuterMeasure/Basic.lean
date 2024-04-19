@@ -764,7 +764,7 @@ theorem ofFunction_union_of_top_of_nonempty_inter {s t : Set α}
 theorem comap_ofFunction {β} (f : β → α) (h : Monotone m ∨ Surjective f) :
     comap f (OuterMeasure.ofFunction m m_empty) =
       OuterMeasure.ofFunction (fun s => m (f '' s)) (by simp; simp [m_empty]) := by
-  refine' le_antisymm (le_ofFunction.2 fun s => _) fun s => _
+  refine le_antisymm (le_ofFunction.2 fun s => ?_) fun s => ?_
   · rw [comap_apply]
     apply ofFunction_le
   · rw [comap_apply, ofFunction_apply, ofFunction_apply]
@@ -790,7 +790,7 @@ theorem map_ofFunction {β} {f : α → β} (hf : Injective f) :
   refine' (map_ofFunction_le _).antisymm fun s => _
   simp only [ofFunction_apply, map_apply, le_iInf_iff]
   intro t ht
-  refine' iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le _ _)
+  refine iInf_le_of_le (fun n => (range f)ᶜ ∪ f '' t n) (iInf_le_of_le ?_ ?_ )
   · rw [← union_iUnion, ← inter_subset, ← image_preimage_eq_inter_range, ← image_iUnion]
     exact image_subset _ ht
   · refine' ENNReal.tsum_le_tsum fun n => le_of_eq _
@@ -1136,7 +1136,7 @@ theorem sInfGen_def (m : Set (OuterMeasure α)) (t : Set α) :
 
 theorem sInf_eq_boundedBy_sInfGen (m : Set (OuterMeasure α)) :
     sInf m = OuterMeasure.boundedBy (sInfGen m) := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · refine' le_boundedBy.2 fun s => le_iInf₂ fun μ hμ => _
     apply sInf_le hμ
   · refine' le_sInf _
@@ -1233,7 +1233,7 @@ theorem map_iInf_comap {ι β} [Nonempty ι] {f : α → β} (m : ι → OuterMe
     map f (⨅ i, comap f (m i)) = ⨅ i, map f (comap f (m i)) := by
   refine' (map_iInf_le _ _).antisymm fun s => _
   simp only [map_apply, comap_apply, iInf_apply, le_iInf_iff]
-  refine' fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le _ _)
+  refine fun t ht => iInf_le_of_le (fun n => f '' t n ∪ (range f)ᶜ) (iInf_le_of_le ?_ ?_ )
   · rw [← iUnion_union, Set.union_comm, ← inter_subset, ← image_iUnion, ←
       image_preimage_eq_inter_range]
     exact image_subset _ ht
@@ -1688,7 +1688,7 @@ theorem exists_measurable_superset_eq_trim (m : OuterMeasure α) (s : Set α) :
     have : Tendsto (fun n : ℕ => ms + (n : ℝ≥0∞)⁻¹) atTop (𝓝 (ms + 0)) :=
       tendsto_const_nhds.add ENNReal.tendsto_inv_nat_nhds_zero
     rw [add_zero] at this
-    refine' le_antisymm (ge_of_tendsto' this fun n => _) _
+    refine le_antisymm (ge_of_tendsto' this fun n => ?_) ?_
     · exact le_trans (m.mono' <| iInter_subset t n) (hm' n).le
     · refine' iInf_le_of_le (⋂ n, t n) _
       refine iInf_le_of_le (subset_iInter hsub) ?_
@@ -1761,7 +1761,7 @@ theorem trim_iSup {ι} [Countable ι] (μ : ι → OuterMeasure α) :
 This theorem shows that a restricted trimmed outer measure is a trimmed outer measure. -/
 theorem restrict_trim {μ : OuterMeasure α} {s : Set α} (hs : MeasurableSet s) :
     (restrict s μ).trim = restrict s μ.trim := by
-  refine' le_antisymm (fun t => _) (le_trim_iff.2 fun t ht => _)
+  refine le_antisymm (fun t => ?_) (le_trim_iff.2 fun t ht => ?_ )
   · rw [restrict_apply]
     rcases μ.exists_measurable_superset_eq_trim (t ∩ s) with ⟨t', htt', ht', hμt'⟩
     rw [← hμt']

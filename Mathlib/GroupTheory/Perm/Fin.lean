@@ -45,7 +45,7 @@ theorem Equiv.Perm.decomposeFin_symm_apply_zero {n : ℕ} (p : Fin (n + 1)) (e :
 @[simp]
 theorem Equiv.Perm.decomposeFin_symm_apply_succ {n : ℕ} (e : Perm (Fin n)) (p : Fin (n + 1))
     (x : Fin n) : Equiv.Perm.decomposeFin.symm (p, e) x.succ = swap 0 p (e x).succ := by
-  refine' Fin.cases _ _ p
+  refine Fin.cases ?_ ?_  p
   · simp [Equiv.Perm.decomposeFin, EquivFunctor.map]
   · intro i
     by_cases h : i = e x

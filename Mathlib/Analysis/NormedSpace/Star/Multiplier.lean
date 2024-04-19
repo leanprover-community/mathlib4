@@ -695,7 +695,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
         refine' ⟨star x, mem_closedBall_zero_iff.2 ((nnnorm_star x).trans_le hx'), _⟩
-        refine' lt_csSup_of_lt _ ⟨x, hx, rfl⟩ _
+        refine lt_csSup_of_lt ?_ ⟨x, hx, rfl⟩ ?_
         · refine' ⟨‖a‖₊ * ‖a‖₊, _⟩
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)

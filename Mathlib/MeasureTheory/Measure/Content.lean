@@ -175,7 +175,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
     μ.innerContent (⨆ i : ℕ, U i) ≤ ∑' i : ℕ, μ.innerContent (U i) := by
   have h3 : ∀ (t : Finset ℕ) (K : ℕ → Compacts G), μ (t.sup K) ≤ t.sum fun i => μ (K i) := by
     intro t K
-    refine' Finset.induction_on t _ _
+    refine Finset.induction_on t ?_ ?_
     · simp only [μ.empty, nonpos_iff_eq_zero, Finset.sum_empty, Finset.sup_empty]
     · intro n s hn ih
       rw [Finset.sup_insert, Finset.sum_insert hn]
@@ -454,7 +454,7 @@ variable [MeasurableSpace G] [R1Space G] [BorelSpace G]
   on compact sets. -/
 theorem measure_eq_content_of_regular (H : MeasureTheory.Content.ContentRegular μ)
     (K : TopologicalSpace.Compacts G) : μ.measure ↑K = μ K := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · apply ENNReal.le_of_forall_pos_le_add
     intro ε εpos _
     obtain ⟨K', K'_hyp⟩ := contentRegular_exists_compact μ H K (ne_bot_of_gt εpos)

@@ -141,7 +141,7 @@ def limitConeIsLimit (F : J ⥤ Cat.{v, v}) : IsLimit (limitCone F) where
     exact Types.Limit.π_mk.{v, v} _ _ _ _
   uniq s m w := by
     symm
-    refine' CategoryTheory.Functor.ext _ _
+    refine CategoryTheory.Functor.ext ?_ ?_
     · intro X
       apply Types.limit_ext.{v, v}
       intro j

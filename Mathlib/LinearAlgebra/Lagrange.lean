@@ -573,7 +573,7 @@ theorem nodal_insert_eq_nodal [DecidableEq ι] {i : ι} (hi : i ∉ s) :
 
 theorem derivative_nodal [DecidableEq ι] :
     derivative (nodal s v) = ∑ i in s, nodal (s.erase i) v := by
-  refine' s.induction_on _ fun i t hit IH => _
+  refine s.induction_on ?_ fun i t hit IH => ?_
   · rw [nodal_empty, derivative_one, sum_empty]
   · rw [nodal_insert_eq_nodal hit, derivative_mul, IH, derivative_sub, derivative_X, derivative_C,
       sub_zero, one_mul, sum_insert hit, mul_sum, erase_insert hit, add_right_inj]

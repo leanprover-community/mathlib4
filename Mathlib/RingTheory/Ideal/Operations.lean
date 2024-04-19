@@ -717,7 +717,7 @@ theorem mul_le_inf : I * J ≤ I ⊓ J :=
 
 theorem multiset_prod_le_inf {s : Multiset (Ideal R)} : s.prod ≤ s.inf := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · rw [Multiset.inf_zero]
       exact le_top
     intro a s ih
@@ -1617,7 +1617,7 @@ theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra
   · intro x y
     exact Submodule.add_mem _
   intro a x hx
-  refine' Submodule.smul_induction_on hx _ _
+  refine Submodule.smul_induction_on hx ?_ ?_
   · intro r hr s _
     rw [smul_comm]
     exact Submodule.smul_mem_smul hr Submodule.mem_top
@@ -2254,7 +2254,7 @@ variable [Ring R] [Ring S] [FunLike F R S] [rc : RingHomClass F R S]
 
 theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     (∀ J ∈ A, RingHom.ker f ≤ J) → map f (sInf A) = sInf (map f '' A) := by
-  refine' fun h => le_antisymm (le_sInf _) _
+  refine fun h => le_antisymm (le_sInf ?_) ?_
   · intro j hj y hy
     cases' (mem_map_iff_of_surjective f hf).1 hy with x hx
     cases' (Set.mem_image _ _ _).mp hj with J hJ
@@ -2275,7 +2275,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
 
 theorem map_isPrime_of_surjective {f : F} (hf : Function.Surjective f) {I : Ideal R} [H : IsPrime I]
     (hk : RingHom.ker f ≤ I) : IsPrime (map f I) := by
-  refine' ⟨fun h => H.ne_top (eq_top_iff.2 _), fun {x y} => _⟩
+  refine ⟨fun h => H.ne_top (eq_top_iff.2 ?_), fun {x y} => ?_ ⟩
   · replace h := congr_arg (comap f) h
     rw [comap_map_of_surjective _ hf, comap_top] at h
     exact h ▸ sup_le (le_of_eq rfl) hk

@@ -1409,7 +1409,7 @@ protected theorem Infinite.image2_right (ht : t.Infinite) (ha : a ∈ s) (hf : I
 
 theorem infinite_image2 (hfs : ∀ b ∈ t, InjOn (fun a => f a b) s) (hft : ∀ a ∈ s, InjOn (f a) t) :
     (image2 f s t).Infinite ↔ s.Infinite ∧ t.Nonempty ∨ t.Infinite ∧ s.Nonempty := by
-  refine' ⟨fun h => Set.infinite_prod.1 _, _⟩
+  refine ⟨fun h => Set.infinite_prod.1 ?_, ?_ ⟩
   · rw [← image_uncurry_prod] at h
     exact h.of_image _
   · rintro (⟨hs, b, hb⟩ | ⟨ht, a, ha⟩)

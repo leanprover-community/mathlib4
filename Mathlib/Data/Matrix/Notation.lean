@@ -263,7 +263,7 @@ theorem mul_val_succ [Fintype n'] (A : Matrix (Fin m.succ) n' α) (B : Matrix n'
 theorem cons_mul [Fintype n'] (v : n' → α) (A : Fin m → n' → α) (B : Matrix n' o' α) :
     of (vecCons v A) * B = of (vecCons (v ᵥ* B) (of.symm (of A * B))) := by
   ext i j
-  refine' Fin.cases _ _ i
+  refine Fin.cases ?_ ?_  i
   · rfl
   simp [mul_val_succ]
 #align matrix.cons_mul Matrix.cons_mul

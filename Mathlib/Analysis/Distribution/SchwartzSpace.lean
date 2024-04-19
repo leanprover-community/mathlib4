@@ -254,7 +254,7 @@ instance instSMul : SMul 𝕜 𝓢(E, F) :=
       decay' := fun k n => by
         refine ⟨f.seminormAux k n * (‖c‖ + 1), fun x => ?_⟩
         have hc : 0 ≤ ‖c‖ := by positivity
-        refine' le_trans _ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans _)
+        refine le_trans ?_ ((mul_le_mul_of_nonneg_right (f.le_seminormAux k n x) hc).trans ?_ )
         · apply Eq.le
           rw [mul_comm _ ‖c‖, ← mul_assoc]
           exact decay_smul_aux k n f c x
@@ -620,7 +620,7 @@ theorem _root_.Function.HasTemperateGrowth.norm_iteratedFDeriv_le_uniform_aux {f
   use C', hC'
   intro N hN x
   rw [← Finset.mem_range_succ_iff] at hN
-  refine' le_trans (f N x) (mul_le_mul _ _ (by positivity) hC')
+  refine le_trans (f N x) (mul_le_mul ?_ ?_  (by positivity) hC')
   · simp only [C', Finset.le_sup'_iff, le_max_iff]
     right
     exact ⟨N, hN, rfl.le⟩

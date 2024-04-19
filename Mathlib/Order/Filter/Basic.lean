@@ -2824,7 +2824,7 @@ theorem seq_mono {f₁ f₂ : Filter (α → β)} {g₁ g₂ : Filter α} (hf : 
 
 @[simp]
 theorem pure_seq_eq_map (g : α → β) (f : Filter α) : seq (pure g) f = f.map g := by
-  refine' le_antisymm (le_map fun s hs => _) (le_seq fun s hs t ht => _)
+  refine le_antisymm (le_map fun s hs => ?_) (le_seq fun s hs t ht => ?_ )
   · rw [← singleton_seq]
     apply seq_mem_seq _ hs
     exact singleton_mem_pure
@@ -2835,7 +2835,7 @@ theorem pure_seq_eq_map (g : α → β) (f : Filter α) : seq (pure g) f = f.map
 
 @[simp]
 theorem seq_pure (f : Filter (α → β)) (a : α) : seq f (pure a) = map (fun g : α → β => g a) f := by
-  refine' le_antisymm (le_map fun s hs => _) (le_seq fun s hs t ht => _)
+  refine le_antisymm (le_map fun s hs => ?_) (le_seq fun s hs t ht => ?_ )
   · rw [← seq_singleton]
     exact seq_mem_seq hs singleton_mem_pure
   · refine' sets_of_superset (map (fun g : α → β => g a) f) (image_mem_map hs) _
@@ -2846,7 +2846,7 @@ theorem seq_pure (f : Filter (α → β)) (a : α) : seq f (pure a) = map (fun g
 @[simp]
 theorem seq_assoc (x : Filter α) (g : Filter (α → β)) (h : Filter (β → γ)) :
     seq h (seq g x) = seq (seq (map (· ∘ ·) h) g) x := by
-  refine' le_antisymm (le_seq fun s hs t ht => _) (le_seq fun s hs t ht => _)
+  refine le_antisymm (le_seq fun s hs t ht => ?_) (le_seq fun s hs t ht => ?_ )
   · rcases mem_seq_iff.1 hs with ⟨u, hu, v, hv, hs⟩
     rcases mem_map_iff_exists_image.1 hu with ⟨w, hw, hu⟩
     refine' mem_of_superset _ (Set.seq_mono ((Set.seq_mono hu Subset.rfl).trans hs) Subset.rfl)
@@ -2860,7 +2860,7 @@ theorem seq_assoc (x : Filter α) (g : Filter (α → β)) (h : Filter (β → �
 
 theorem prod_map_seq_comm (f : Filter α) (g : Filter β) :
     (map Prod.mk f).seq g = seq (map (fun b a => (a, b)) g) f := by
-  refine' le_antisymm (le_seq fun s hs t ht => _) (le_seq fun s hs t ht => _)
+  refine le_antisymm (le_seq fun s hs t ht => ?_) (le_seq fun s hs t ht => ?_ )
   · rcases mem_map_iff_exists_image.1 hs with ⟨u, hu, hs⟩
     refine' mem_of_superset _ (Set.seq_mono hs Subset.rfl)
     rw [← Set.prod_image_seq_comm]

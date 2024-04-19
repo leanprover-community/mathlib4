@@ -195,7 +195,7 @@ theorem edgeDensity_sub_edgeDensity_le_one_sub_mul (hs : s₂ ⊆ s₁) (ht : t�
     (ht₂ : t₂.Nonempty) :
     edgeDensity r s₂ t₂ - edgeDensity r s₁ t₁ ≤ 1 - s₂.card / s₁.card * (t₂.card / t₁.card) := by
   refine' (sub_le_sub_left (mul_edgeDensity_le_edgeDensity r hs ht hs₂ ht₂) _).trans _
-  refine' le_trans _ (mul_le_of_le_one_right _ (edgeDensity_le_one r s₂ t₂))
+  refine le_trans ?_ (mul_le_of_le_one_right ?_  (edgeDensity_le_one r s₂ t₂))
   · rw [sub_mul, one_mul]
   refine' sub_nonneg_of_le (mul_le_one _ _ _)
   · exact div_le_one_of_le ((@Nat.cast_le ℚ).2 (card_le_card hs)) (Nat.cast_nonneg _)

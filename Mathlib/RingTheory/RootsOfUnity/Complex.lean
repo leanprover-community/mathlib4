@@ -158,7 +158,7 @@ theorem IsPrimitiveRoot.arg {n : ℕ} {ζ : ℂ} (h : IsPrimitiveRoot ζ n) (hn 
     · push_cast; rfl
     · push_cast; rfl
     field_simp [hn]
-    refine' ⟨(neg_lt_neg Real.pi_pos).trans_le _, _⟩
+    refine ⟨(neg_lt_neg Real.pi_pos).trans_le ?_, ?_ ⟩
     · rw [neg_zero]
       exact mul_nonneg (mul_nonneg i.cast_nonneg <| by simp [Real.pi_pos.le])
         (by rw [inv_nonneg]; simp only [Nat.cast_nonneg])

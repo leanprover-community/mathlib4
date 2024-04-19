@@ -371,7 +371,7 @@ theorem mellin_hasDerivAt_of_isBigO_rpow [NormedSpace ℂ E] {a b : ℝ}
     exact mellinConvergent_of_isBigO_rpow hfc hf_top hs_top hf_bot hs_bot
   have h3 : AEStronglyMeasurable (F' s) (volume.restrict <| Ioi 0) := by
     apply LocallyIntegrableOn.aestronglyMeasurable
-    refine' hfc.continuousOn_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => _).mul _)
+    refine hfc.continuousOn_smul isOpen_Ioi ((ContinuousAt.continuousOn fun t ht => ?_).mul ?_ )
     · exact continuousAt_ofReal_cpow_const _ _ (Or.inr <| ne_of_gt ht)
     · refine' continuous_ofReal.comp_continuousOn _
       exact continuousOn_log.mono (subset_compl_singleton_iff.mpr not_mem_Ioi_self)

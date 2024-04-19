@@ -519,8 +519,8 @@ theorem _root_.DiffContOnCl.two_pi_i_inv_smul_circleIntegral_sub_inv_smul {R : �
     {f : ℂ → E} (hf : DiffContOnCl ℂ f (ball c R)) (hw : w ∈ ball c R) :
     ((2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) = f w := by
   have hR : 0 < R := not_le.mp (ball_eq_empty.not.mp (Set.nonempty_of_mem hw).ne_empty)
-  refine' two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
-    countable_empty hw _ _
+  refine two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_countable
+    countable_empty hw ?_ ?_
   · simpa only [closure_ball c hR.ne.symm] using hf.continuousOn
   · simpa only [diff_empty] using fun z hz => hf.differentiableAt isOpen_ball hz
 set_option linter.uppercaseLean3 false in

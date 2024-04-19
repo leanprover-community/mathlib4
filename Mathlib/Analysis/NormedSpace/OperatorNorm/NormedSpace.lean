@@ -201,7 +201,7 @@ theorem opNorm_comp_linearIsometryEquiv (f : F →SL[σ₂₃] G) (g : F' ≃ₛ
   cases subsingleton_or_nontrivial F'
   · haveI := g.symm.toLinearEquiv.toEquiv.subsingleton
     simp
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · convert f.opNorm_comp_le g.toLinearIsometry.toContinuousLinearMap
     simp [g.toLinearIsometry.norm_toContinuousLinearMap]
   · convert (f.comp g.toLinearIsometry.toContinuousLinearMap).opNorm_comp_le
@@ -220,7 +220,7 @@ alias op_norm_comp_linearIsometryEquiv :=
 is the product of the norms. -/
 @[simp]
 theorem norm_smulRight_apply (c : E →L[𝕜] 𝕜) (f : Fₗ) : ‖smulRight c f‖ = ‖c‖ * ‖f‖ := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · refine' opNorm_le_bound _ (mul_nonneg (norm_nonneg _) (norm_nonneg _)) fun x => _
     calc
       ‖c x • f‖ = ‖c x‖ * ‖f‖ := norm_smul _ _

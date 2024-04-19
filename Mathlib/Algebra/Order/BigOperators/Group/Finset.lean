@@ -217,7 +217,7 @@ lemma mul_le_prod {i j : ι} (hf : ∀ i ∈ s, 1 ≤ f i) (hi : i ∈ s) (hj : 
 @[to_additive sum_le_card_nsmul]
 theorem prod_le_pow_card (s : Finset ι) (f : ι → N) (n : N) (h : ∀ x ∈ s, f x ≤ n) :
     s.prod f ≤ n ^ s.card := by
-  refine' (Multiset.prod_le_pow_card (s.val.map f) n _).trans _
+  refine (Multiset.prod_le_pow_card (s.val.map f) n ?_).trans ?_
   · simpa using h
   · simp
 #align finset.prod_le_pow_card Finset.prod_le_pow_card

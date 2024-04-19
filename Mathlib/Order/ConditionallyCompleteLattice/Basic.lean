@@ -1297,7 +1297,7 @@ theorem isLUB_sSup' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       · exact False.elim (not_top_le_coe a (ha h₁))
     · rintro (⟨⟩ | b) hb
       · exact le_top
-      refine' some_le_some.2 (csSup_le _ _)
+      refine some_le_some.2 (csSup_le ?_ ?_ )
       · rcases hs with ⟨⟨⟩ | b, hb⟩
         · exact absurd hb h₁
         · exact ⟨b, hb⟩

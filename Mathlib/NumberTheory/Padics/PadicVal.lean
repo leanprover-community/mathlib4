@@ -444,7 +444,7 @@ lemma add_eq_min {q r : ℚ} (hqr : q + r ≠ 0) (hq : q ≠ 0) (hr : r ≠ 0)
   have h3 := min_le_padicValRat_add (p := p) (ne_of_eq_of_ne (add_neg_cancel_right r q) hr)
   rw [add_neg_cancel_right, padicValRat.neg] at h2 h3
   rw [add_comm] at h3
-  refine' le_antisymm (le_min _ _) h1
+  refine le_antisymm (le_min ?_ ?_ ) h1
   · contrapose! h2
     rw [min_eq_right h2.le] at h3
     exact lt_min h2 (lt_of_le_of_ne h3 hval)

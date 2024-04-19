@@ -98,9 +98,9 @@ protected theorem Subsingleton.intersecting (hs : s.Subsingleton) : s.Intersecti
 
 theorem intersecting_iff_eq_empty_of_subsingleton [Subsingleton α] (s : Set α) :
     s.Intersecting ↔ s = ∅ := by
-  refine'
+  refine
     subsingleton_of_subsingleton.intersecting.trans
-      ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem _, _⟩
+      ⟨not_imp_comm.2 fun h => subsingleton_of_subsingleton.eq_singleton_of_mem ?_, ?_ ⟩
   · obtain ⟨a, ha⟩ := nonempty_iff_ne_empty.2 h
     rwa [Subsingleton.elim ⊥ a]
   · rintro rfl

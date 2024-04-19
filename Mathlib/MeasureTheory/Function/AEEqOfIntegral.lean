@@ -369,8 +369,8 @@ theorem AEFinStronglyMeasurable.ae_nonneg_of_forall_setIntegral_nonneg {f : α �
   suffices 0 ≤ᵐ[μ.restrict t] f from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl.symm.le
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
-  refine'
-    ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => _) fun s hs hμts => _
+  refine
+    ae_nonneg_of_forall_setIntegral_nonneg_of_sigmaFinite (fun s hs hμts => ?_) fun s hs hμts => ?_
   · rw [IntegrableOn, Measure.restrict_restrict hs]
     rw [Measure.restrict_apply hs] at hμts
     exact hf_int_finite (s ∩ t) (hs.inter hf.measurableSet) hμts
@@ -433,7 +433,7 @@ theorem ae_eq_zero_restrict_of_forall_setIntegral_eq_zero {f : α → E}
   rcases (hf_int_finite t ht hμt.lt_top).aestronglyMeasurable.isSeparable_ae_range with
     ⟨u, u_sep, hu⟩
   refine ae_eq_zero_of_forall_dual_of_isSeparable ℝ u_sep (fun c => ?_) hu
-  refine' ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real _ _ ht hμt
+  refine ae_eq_zero_restrict_of_forall_setIntegral_eq_zero_real ?_ ?_  ht hμt
   · intro s hs hμs
     exact ContinuousLinearMap.integrable_comp c (hf_int_finite s hs hμs)
   · intro s hs hμs
@@ -509,7 +509,7 @@ theorem AEFinStronglyMeasurable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this hf.ae_eq_zero_compl
   haveI : SigmaFinite (μ.restrict t) := hf.sigmaFinite_restrict
-  refine' ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite _ _
+  refine ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite ?_ ?_
   · intro s hs hμs
     rw [IntegrableOn, Measure.restrict_restrict hs]
     rw [Measure.restrict_apply hs] at hμs
@@ -583,7 +583,7 @@ theorem ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim (hm : 
   suffices f =ᵐ[μ.restrict t] 0 from
     ae_of_ae_restrict_of_ae_restrict_compl _ this htf_zero
   refine measure_eq_zero_of_trim_eq_zero hm ?_
-  refine' ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite _ _
+  refine ae_eq_zero_of_forall_setIntegral_eq_of_sigmaFinite ?_ ?_
   · intro s hs hμs
     unfold IntegrableOn
     rw [restrict_trim hm (μ.restrict t) hs, Measure.restrict_restrict (hm s hs)]
@@ -609,7 +609,7 @@ theorem Integrable.ae_eq_zero_of_forall_setIntegral_eq_zero {f : α → E} (hf :
   let f_Lp := hf_Lp.toLp f
   have hf_f_Lp : f =ᵐ[μ] f_Lp := (Memℒp.coeFn_toLp hf_Lp).symm
   refine hf_f_Lp.trans ?_
-  refine' Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top _ _
+  refine Lp.ae_eq_zero_of_forall_setIntegral_eq_zero f_Lp one_ne_zero ENNReal.coe_ne_top ?_ ?_
   · exact fun s _ _ => Integrable.integrableOn (L1.integrable_coeFn _)
   · intro s hs hμs
     rw [integral_congr_ae (ae_restrict_of_ae hf_f_Lp.symm)]

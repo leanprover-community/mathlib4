@@ -1309,7 +1309,7 @@ theorem lt_inf'_iff : a < s.inf' H f ↔ ∀ i ∈ s, a < f i :=
 #align finset.lt_inf'_iff Finset.lt_inf'_iff
 
 theorem exists_mem_eq_sup' (f : ι → α) : ∃ i, i ∈ s ∧ s.sup' H f = f i := by
-  refine' H.cons_induction (fun c => _) fun c s hc hs ih => _
+  refine H.cons_induction (fun c => ?_) fun c s hc hs ih => ?_
   · exact ⟨c, mem_singleton_self c, rfl⟩
   · rcases ih with ⟨b, hb, h'⟩
     rw [sup'_cons hs, h']
@@ -1950,7 +1950,7 @@ theorem map_finset_sup [DecidableEq α] [DecidableEq β] (s : Finset γ) (f : γ
 theorem count_finset_sup [DecidableEq β] (s : Finset α) (f : α → Multiset β) (b : β) :
     count b (s.sup f) = s.sup fun a => count b (f a) := by
   letI := Classical.decEq α
-  refine' s.induction _ _
+  refine s.induction ?_ ?_
   · exact count_zero _
   · intro i s _ ih
     rw [Finset.sup_insert, sup_eq_union, count_union, Finset.sup_insert, ih]

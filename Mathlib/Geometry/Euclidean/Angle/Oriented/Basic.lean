@@ -57,7 +57,7 @@ def oangle (x y : V) : Real.Angle :=
 /-- Oriented angles are continuous when the vectors involved are nonzero. -/
 theorem continuousAt_oangle {x : V × V} (hx1 : x.1 ≠ 0) (hx2 : x.2 ≠ 0) :
     ContinuousAt (fun y : V × V => o.oangle y.1 y.2) x := by
-  refine' (Complex.continuousAt_arg_coe_angle _).comp _
+  refine (Complex.continuousAt_arg_coe_angle ?_).comp ?_
   · exact o.kahler_ne_zero hx1 hx2
   exact ((continuous_ofReal.comp continuous_inner).add
     ((continuous_ofReal.comp o.areaForm'.continuous₂).mul continuous_const)).continuousAt

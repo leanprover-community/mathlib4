@@ -357,7 +357,7 @@ theorem submodule_eq_span_le_iff_stable_ge (n₀ : ℕ) :
     simp only [not_le, Nat.lt_succ_iff] at hj'
     rw [Nat.succ_eq_add_one, ← hF _ hj']
     rintro _ ⟨m, hm, rfl⟩
-    refine' Submodule.smul_induction_on hm (fun r hr m' hm' => _) (fun x y hx hy => _)
+    refine Submodule.smul_induction_on hm (fun r hr m' hm' => ?_) (fun x y hx hy => ?_ )
     · rw [add_comm, ← monomial_smul_single]
       exact F'.smul_mem
         ⟨_, reesAlgebra.monomial_mem.mpr (by rwa [pow_one])⟩ (hj <| Set.mem_image_of_mem _ hm')

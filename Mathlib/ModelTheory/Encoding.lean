@@ -120,7 +120,7 @@ theorem card_le : #(L.Term α) ≤ max ℵ₀ #(Sum α (Σi, L.Functions i)) :=
 #align first_order.language.term.card_le FirstOrder.Language.Term.card_le
 
 theorem card_sigma : #(Σn, L.Term (Sum α (Fin n))) = max ℵ₀ #(Sum α (Σi, L.Functions i)) := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rw [mk_sigma]
     refine' (sum_le_iSup_lift _).trans _
     rw [mk_nat, lift_aleph0, mul_eq_max_of_aleph0_le_left le_rfl, max_le_iff,

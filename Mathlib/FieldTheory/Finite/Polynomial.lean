@@ -96,7 +96,7 @@ theorem indicator_mem_restrictDegree (c : σ → K) :
   simp_rw [← Multiset.coe_countAddMonoidHom, map_sum,
     AddMonoidHom.map_nsmul, Multiset.coe_countAddMonoidHom, nsmul_eq_mul, Nat.cast_id]
   trans
-  refine' Finset.sum_eq_single n _ _
+  refine Finset.sum_eq_single n ?_ ?_
   · intro b _ ne
     simp [Multiset.count_singleton, ne, if_neg (Ne.symm _)]
   · intro h; exact (h <| Finset.mem_univ _).elim

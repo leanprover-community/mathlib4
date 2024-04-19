@@ -546,7 +546,7 @@ theorem mkMetric_le_liminf_tsum {β : Type*} {ι : β → Type*} [∀ n, Countab
     ⟨n, hn, hrn, htn, hstn⟩
   set u : ℕ → Set X := fun j => ⋃ b ∈ decode₂ (ι n) j, t n b
   refine iInf₂_le_of_le u (by rwa [iUnion_decode₂]) ?_
-  refine' iInf_le_of_le (fun j => _) _
+  refine iInf_le_of_le (fun j => ?_) ?_
   · rw [EMetric.diam_iUnion_mem_option]
     exact iSup₂_le fun _ _ => (htn _).trans hrn.le
   · calc
@@ -1004,7 +1004,7 @@ theorem hausdorffMeasure_pi_real {ι : Type*} [Fintype ι] :
       hausdorffMeasure_le_liminf_sum _ (Set.pi univ fun i => Ioo (a i : ℝ) (b i))
         (fun n : ℕ => 1 / (n : ℝ≥0∞)) A t B C
     _ ≤ liminf (fun n : ℕ => ∑ i : γ n, (1 / (n : ℝ≥0∞)) ^ Fintype.card ι) atTop := by
-      refine' liminf_le_liminf _ _
+      refine liminf_le_liminf ?_ ?_
       · filter_upwards [B] with _ hn
         apply Finset.sum_le_sum fun i _ => _
         simp only [ENNReal.rpow_natCast]

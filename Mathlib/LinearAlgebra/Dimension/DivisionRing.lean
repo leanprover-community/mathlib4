@@ -258,8 +258,8 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
     by_contra gx_ne_zero
     -- We'll derive a contradiction by showing `b '' (univ \ {i})` of cardinality `n - 1`
     -- spans a vector space of dimension `n`.
-    refine' not_le_of_gt (span_lt_top_of_card_lt_finrank
-      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from _)) _
+    refine not_le_of_gt (span_lt_top_of_card_lt_finrank
+      (show (b '' (Set.univ \ {i})).toFinset.card < finrank K V from ?_)) ?_
     · calc
         (b '' (Set.univ \ {i})).toFinset.card = ((Set.univ \ {i}).toFinset.image b).card := by
           rw [Set.toFinset_card, Fintype.card_ofFinset]

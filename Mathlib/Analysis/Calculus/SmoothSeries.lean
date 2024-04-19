@@ -234,7 +234,7 @@ theorem contDiff_tsum (hf : ∀ i, ContDiff 𝕜 N (f i)) (hv : ∀ k : ℕ, (k 
   constructor
   · intro m hm
     rw [iteratedFDeriv_tsum hf hv h'f hm]
-    refine' continuous_tsum _ (hv m hm) _
+    refine continuous_tsum ?_ (hv m hm) ?_
     · intro i
       exact ContDiff.continuous_iteratedFDeriv hm (hf i)
     · intro n x

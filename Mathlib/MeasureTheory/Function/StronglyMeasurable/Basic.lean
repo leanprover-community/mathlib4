@@ -267,7 +267,7 @@ theorem _root_.stronglyMeasurable_bot_iff [Nonempty β] [T2Space β] :
   cases' isEmpty_or_nonempty α with hα hα
   · simp only [@Subsingleton.stronglyMeasurable' _ _ ⊥ _ _ f,
       eq_iff_true_of_subsingleton, exists_const]
-  refine' ⟨fun hf => _, fun hf_eq => _⟩
+  refine ⟨fun hf => ?_, fun hf_eq => ?_ ⟩
   · refine' ⟨f hα.some, _⟩
     let fs := hf.approx
     have h_fs_tendsto : ∀ x, Tendsto (fun n => fs n x) atTop (𝓝 (f x)) := hf.tendsto_approx

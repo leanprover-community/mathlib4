@@ -666,7 +666,7 @@ theorem continuousWithinAt_arg_of_re_neg_of_im_zero {z : ℂ} (hre : z.re < 0) (
     filter_upwards [self_mem_nhdsWithin (s := { z : ℂ | 0 ≤ z.im }),
       mem_nhdsWithin_of_mem_nhds this] with _ him hre
     rw [arg, if_neg hre.not_le, if_pos him]
-  refine' ContinuousWithinAt.congr_of_eventuallyEq _ this _
+  refine ContinuousWithinAt.congr_of_eventuallyEq ?_ this ?_
   · refine'
       (Real.continuousAt_arcsin.comp_continuousWithinAt
             ((continuous_im.continuousAt.comp_continuousWithinAt continuousWithinAt_neg).div

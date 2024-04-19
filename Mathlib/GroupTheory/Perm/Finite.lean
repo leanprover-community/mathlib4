@@ -197,7 +197,7 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
     rw [coe_union] at *
     have hd1'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd1)
     have hd2'' := disjoint_coe.2 (disjoint_iff_disjoint_support.1 hd2)
-    refine' isConj_of_support_equiv _ _
+    refine isConj_of_support_equiv ?_ ?_
     · refine'
           ((Equiv.Set.ofEq hd1').trans (Equiv.Set.union hd1''.le_bot)).trans
             ((Equiv.sumCongr (subtypeEquiv f fun a => _) (subtypeEquiv g fun a => _)).trans

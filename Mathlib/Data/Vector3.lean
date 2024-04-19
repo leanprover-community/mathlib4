@@ -279,7 +279,7 @@ theorem vectorAllP_cons (p : α → Prop) (x : α) (v : Vector3 α n) :
 
 theorem vectorAllP_iff_forall (p : α → Prop) (v : Vector3 α n) :
     VectorAllP p v ↔ ∀ i, p (v i) := by
-  refine' v.recOn _ _
+  refine v.recOn ?_ ?_
   · exact ⟨fun _ => Fin2.elim0, fun _ => trivial⟩
   · simp only [vectorAllP_cons]
     refine' fun {n} a v IH =>

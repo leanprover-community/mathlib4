@@ -248,7 +248,7 @@ instance NNReal.hasMeasurablePow : MeasurablePow ℝ≥0 ℝ :=
 #align nnreal.has_measurable_pow NNReal.hasMeasurablePow
 
 instance ENNReal.hasMeasurablePow : MeasurablePow ℝ≥0∞ ℝ := by
-  refine' ⟨ENNReal.measurable_of_measurable_nnreal_prod _ _⟩
+  refine ⟨ENNReal.measurable_of_measurable_nnreal_prod ?_ ?_ ⟩
   · simp_rw [ENNReal.coe_rpow_def]
     refine Measurable.ite ?_ measurable_const (measurable_fst.pow measurable_snd).coe_nnreal_ennreal
     exact

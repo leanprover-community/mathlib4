@@ -49,7 +49,7 @@ theorem compl_section_ordSeparatingSet_mem_nhdsWithin_Ici (hd : Disjoint s (clos
       disjoint_left.1 hd ha
     refine mem_of_superset (Ico_mem_nhdsWithin_Ici (left_mem_Ico.2 hac)) fun x hx hx' => ?_
     refine' hx.2.ne (eq_of_mem_ordConnectedSection_of_uIcc_subset hx' hc _)
-    refine' subset_inter (subset_iUnion₂_of_subset a ha _) _
+    refine subset_inter (subset_iUnion₂_of_subset a ha ?_) ?_
     · exact OrdConnected.uIcc_subset inferInstance (hsub' ⟨hx.1, hx.2.le.trans hcb⟩)
         (hsub' ⟨hac.le, hcb⟩)
     · rcases mem_iUnion₂.1 (ordConnectedSection_subset hx').2 with ⟨y, hyt, hxy⟩

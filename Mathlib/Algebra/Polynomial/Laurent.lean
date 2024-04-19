@@ -375,7 +375,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem leftInverse_trunc_toLaurent :
     Function.LeftInverse (trunc : R[T;T⁻¹] → R[X]) Polynomial.toLaurent := by
-  refine' fun f => f.induction_on' _ _
+  refine fun f => f.induction_on' ?_ ?_
   · intro f g hf hg
     simp only [hf, hg, _root_.map_add]
   · intro n r
@@ -464,7 +464,7 @@ inclusion `ℕ ↪ ℤ`. -/
 theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.castEmbedding := by
   generalize hd : f.support = s
   revert f
-  refine' Finset.induction_on s _ _ <;> clear s
+  refine Finset.induction_on s ?_ ?_  <;> clear s
   · simp (config := { contextual := true }) only [Polynomial.support_eq_empty, map_zero,
       Finsupp.support_zero, eq_self_iff_true, imp_true_iff, Finset.map_empty,
       Finsupp.support_eq_empty]

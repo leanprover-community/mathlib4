@@ -257,7 +257,7 @@ theorem isConj_of_cycleType_eq {σ τ : Perm α} (h : cycleType σ = cycleType �
     have hs : σ.cycleType = σ'.cycleType := by
       rw [← Finset.mem_def, mem_cycleFactorsFinset_iff] at hσ'l
       rw [hc.cycleType, ← hσ', hσ'l.left.cycleType]; rfl
-    refine' hd.isConj_mul (hσ hs) (hπ _) _
+    refine hd.isConj_mul (hσ hs) (hπ ?_) ?_
     · rw [cycleType_mul_inv_mem_cycleFactorsFinset_eq_sub, ← h, add_comm, hs,
         add_tsub_cancel_right]
       rwa [Finset.mem_def]

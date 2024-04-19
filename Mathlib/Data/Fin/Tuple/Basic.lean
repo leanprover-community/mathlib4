@@ -172,7 +172,7 @@ def consInduction {α : Type*} {P : ∀ {n : ℕ}, (Fin n → α) → Sort v} (h
 
 theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ : x₀ ∉ Set.range x)
     (hx : Function.Injective x) : Function.Injective (cons x₀ x : Fin n.succ → α) := by
-  refine' Fin.cases _ _
+  refine Fin.cases ?_ ?_
   · refine' Fin.cases _ _
     · intro
       rfl
@@ -180,7 +180,7 @@ theorem cons_injective_of_injective {α} {x₀ : α} {x : Fin n → α} (hx₀ :
       rw [cons_zero, cons_succ] at h
       exact hx₀.elim ⟨_, h.symm⟩
   · intro i
-    refine' Fin.cases _ _
+    refine Fin.cases ?_ ?_
     · intro h
       rw [cons_zero, cons_succ] at h
       exact hx₀.elim ⟨_, h⟩
@@ -355,7 +355,7 @@ theorem append_assoc {p : ℕ} {α : Type*} (a : Fin m → α) (b : Fin n → α
 theorem append_left_eq_cons {α : Type*} {n : ℕ} (x₀ : Fin 1 → α) (x : Fin n → α) :
     Fin.append x₀ x = Fin.cons (x₀ 0) x ∘ Fin.cast (add_comm _ _) := by
   ext i
-  refine' Fin.addCases _ _ i <;> clear i
+  refine Fin.addCases ?_ ?_  i <;> clear i
   · intro i
     rw [Subsingleton.elim i 0, Fin.append_left, Function.comp_apply, eq_comm]
     exact Fin.cons_zero _ _
@@ -652,7 +652,7 @@ theorem comp_snoc {α : Type*} {β : Type*} (g : α → β) (q : Fin n → α) (
 theorem append_right_eq_snoc {α : Type*} {n : ℕ} (x : Fin n → α) (x₀ : Fin 1 → α) :
     Fin.append x x₀ = Fin.snoc x (x₀ 0) := by
   ext i
-  refine' Fin.addCases _ _ i <;> clear i
+  refine Fin.addCases ?_ ?_  i <;> clear i
   · intro i
     rw [Fin.append_left]
     exact (@snoc_castSucc _ (fun _ => α) _ _ i).symm

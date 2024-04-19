@@ -187,7 +187,7 @@ protected def moduleFilterBasis : ModuleFilterBasis 𝕜 E where
 
 theorem filter_eq_iInf (p : SeminormFamily 𝕜 E ι) :
     p.moduleFilterBasis.toFilterBasis.filter = ⨅ i, (𝓝 0).comap (p i) := by
-  refine' le_antisymm (le_iInf fun i => _) _
+  refine le_antisymm (le_iInf fun i => ?_) ?_
   · rw [p.moduleFilterBasis.toFilterBasis.hasBasis.le_basis_iff
         (Metric.nhds_basis_ball.comap _)]
     intro ε hε

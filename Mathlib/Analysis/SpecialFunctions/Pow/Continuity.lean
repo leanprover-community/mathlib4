@@ -211,7 +211,7 @@ theorem continuousAt_rpow_of_ne (p : ℝ × ℝ) (hp : p.1 ≠ 0) :
   cases hp with
   | inl hp =>
     rw [continuousAt_congr (rpow_eq_nhds_of_neg hp)]
-    refine' ContinuousAt.mul _ (continuous_cos.continuousAt.comp _)
+    refine ContinuousAt.mul ?_ (continuous_cos.continuousAt.comp ?_ )
     · refine' continuous_exp.continuousAt.comp (ContinuousAt.mul _ continuous_snd.continuousAt)
       refine' (continuousAt_log _).comp continuous_fst.continuousAt
       exact hp.ne
@@ -334,7 +334,7 @@ theorem continuousAt_cpow_zero_of_re_pos {z : ℂ} (hz : 0 < z.re) :
   rw [ContinuousAt, zero_cpow hz₀, tendsto_zero_iff_norm_tendsto_zero]
   refine' squeeze_zero (fun _ => norm_nonneg _) (fun _ => abs_cpow_le _ _) _
   simp only [div_eq_mul_inv, ← Real.exp_neg]
-  refine' Tendsto.zero_mul_isBoundedUnder_le _ _
+  refine Tendsto.zero_mul_isBoundedUnder_le ?_ ?_
   · convert
         (continuous_fst.norm.tendsto ((0 : ℂ), z)).rpow
           ((continuous_re.comp continuous_snd).tendsto _) _ <;>
@@ -428,7 +428,7 @@ theorem continuousAt_rpow {x : ℝ≥0} {y : ℝ} (h : x ≠ 0 ∨ 0 < y) :
     erw [coe_rpow, Real.coe_toNNReal _ (Real.rpow_nonneg p.1.2 _)]
     rfl
   rw [this]
-  refine' continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp _ _)
+  refine continuous_real_toNNReal.continuousAt.comp (ContinuousAt.comp ?_ ?_ )
   · apply Real.continuousAt_rpow
     simpa using h
   · exact ((continuous_subtype_val.comp continuous_fst).prod_mk continuous_snd).continuousAt

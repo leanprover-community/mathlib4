@@ -450,7 +450,7 @@ theorem addOrderOf_coe_rat {q : ℚ} : addOrderOf (↑(↑q * p) : AddCircle p) 
 
 theorem addOrderOf_eq_pos_iff {u : AddCircle p} {n : ℕ} (h : 0 < n) :
     addOrderOf u = n ↔ ∃ m < n, m.gcd n = 1 ∧ ↑(↑m / ↑n * p) = u := by
-  refine' ⟨QuotientAddGroup.induction_on' u fun k hk => _, _⟩
+  refine ⟨QuotientAddGroup.induction_on' u fun k hk => ?_, ?_ ⟩
   · rintro ⟨m, _, h₁, rfl⟩
     exact addOrderOf_div_of_gcd_eq_one h h₁
   have h0 := addOrderOf_nsmul_eq_zero (k : AddCircle p)

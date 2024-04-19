@@ -288,7 +288,7 @@ local notation "μ" => MeasureTheory.Measure.addHaar
 variable (E)
 
 theorem u_int_pos : 0 < ∫ x : E, u x ∂μ := by
-  refine' (integral_pos_iff_support_of_nonneg u_nonneg _).mpr _
+  refine (integral_pos_iff_support_of_nonneg u_nonneg ?_).mpr ?_
   · exact (u_continuous E).integrable_of_hasCompactSupport (u_compact_support E)
   · rw [u_support]; exact measure_ball_pos _ _ zero_lt_one
 #align exists_cont_diff_bump_base.u_int_pos ExistsContDiffBumpBase.u_int_pos
@@ -421,7 +421,7 @@ theorem y_le_one {D : ℝ} (x : E) (Dpos : 0 < D) : y D x ≤ 1 := by
 theorem y_pos_of_mem_ball {D : ℝ} {x : E} (Dpos : 0 < D) (D_lt_one : D < 1)
     (hx : x ∈ ball (0 : E) (1 + D)) : 0 < y D x := by
   simp only [mem_ball_zero_iff] at hx
-  refine' (integral_pos_iff_support_of_nonneg (w_mul_φ_nonneg D x) _).2 _
+  refine (integral_pos_iff_support_of_nonneg (w_mul_φ_nonneg D x) ?_).2 ?_
   · have F_comp : HasCompactSupport (w D) := w_compact_support E Dpos
     have B : LocallyIntegrable (φ : E → ℝ) μ :=
       (locallyIntegrable_const _).indicator measurableSet_closedBall

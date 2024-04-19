@@ -858,7 +858,7 @@ end
 theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClosedTopology β] [Zero β]
     [MeasurableSpace β] [OpensMeasurableSpace β] (i : ℕ → β) (f : α → β) (a : α) (hf : Measurable f)
     (h_zero : (0 : β) = ⊥) : ⨆ n, (approx i f n : α →ₛ β) a = ⨆ (k) (_ : i k ≤ f a), i k := by
-  refine' le_antisymm (iSup_le fun n => _) (iSup_le fun k => iSup_le fun hk => _)
+  refine le_antisymm (iSup_le fun n => ?_) (iSup_le fun k => iSup_le fun hk => ?_ )
   · rw [approx_apply a hf, h_zero]
     refine' Finset.sup_le fun k _ => _
     split_ifs with h
@@ -994,7 +994,7 @@ theorem map_lintegral (g : β → ℝ≥0∞) (f : α →ₛ β) :
   refine' Finset.sum_image' _ fun b hb => _
   rcases mem_range.1 hb with ⟨a, rfl⟩
   rw [map_preimage_singleton, ← f.sum_measure_preimage_singleton, Finset.mul_sum]
-  refine' Finset.sum_congr _ _
+  refine Finset.sum_congr ?_ ?_
   · congr
   · intro x
     simp only [Finset.mem_filter]

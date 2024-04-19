@@ -1840,7 +1840,7 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
     rw [← ofReal_norm_eq_coe_nnnorm, ENNReal.ofReal_rpow_of_nonneg (norm_nonneg _) hpq.symm.nonneg]
   rw [h_left, h_right_f, h_right_g]
   -- we can now apply `ENNReal.lintegral_mul_le_Lp_mul_Lq` (up to the `toReal` application)
-  refine' ENNReal.toReal_mono _ _
+  refine ENNReal.toReal_mono ?_ ?_
   · refine' ENNReal.mul_ne_top _ _
     · convert hf.snorm_ne_top
       rw [snorm_eq_lintegral_rpow_nnnorm]

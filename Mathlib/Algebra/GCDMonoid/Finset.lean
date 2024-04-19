@@ -241,7 +241,7 @@ theorem gcd_eq_gcd_filter_ne_zero [DecidablePred fun x : β ↦ f x = 0] :
 
 nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a * s.gcd f := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_left]
@@ -250,7 +250,7 @@ nonrec theorem gcd_mul_left {a : α} : (s.gcd fun x ↦ a * f x) = normalize a *
 
 nonrec theorem gcd_mul_right {a : α} : (s.gcd fun x ↦ f x * a) = s.gcd f * normalize a := by
   classical
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     · intro b t _ h
       rw [gcd_insert, gcd_insert, h, ← gcd_mul_right]
@@ -294,7 +294,7 @@ theorem gcd_eq_of_dvd_sub {s : Finset β} {f g : β → α} {a : α}
     GCDMonoid.gcd a (s.gcd f) = GCDMonoid.gcd a (s.gcd g) := by
   classical
     revert h
-    refine' s.induction_on _ _
+    refine s.induction_on ?_ ?_
     · simp
     intro b s _ hi h
     rw [gcd_insert, gcd_insert, gcd_comm (f b), ← gcd_assoc,

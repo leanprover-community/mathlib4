@@ -531,7 +531,7 @@ theorem symm_ω_eq_trianglePQB₂_circumsphere : cfg.symm.ω = cfg.trianglePQB�
 
 theorem symm_ω : cfg.symm.ω = cfg.ω := by
   rw [symm_ω_eq_trianglePQB₂_circumsphere, ω]
-  refine' circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ _ _
+  refine circumsphere_eq_of_cospherical hd2.out cfg.cospherical_QPB₂A₂ ?_ ?_
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_emptyc_eq]
     rw [Set.insert_comm]

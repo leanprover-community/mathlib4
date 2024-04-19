@@ -44,7 +44,7 @@ theorem StrictMonoOn.continuousWithinAt_right_of_exists_between {f : α → β} 
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_ ⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       ((h_mono.le_iff_le has hxs).2 hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩
@@ -65,7 +65,7 @@ theorem continuousWithinAt_right_of_monotoneOn_of_exists_between {f : α → β}
     ContinuousWithinAt f (Ici a) a := by
   have ha : a ∈ Ici a := left_mem_Ici
   have has : a ∈ s := mem_of_mem_nhdsWithin ha hs
-  refine' tendsto_order.2 ⟨fun b hb => _, fun b hb => _⟩
+  refine tendsto_order.2 ⟨fun b hb => ?_, fun b hb => ?_ ⟩
   · filter_upwards [hs, @self_mem_nhdsWithin _ _ a (Ici a)] with _ hxs hxa using hb.trans_le
       (h_mono has hxs hxa)
   · rcases hfs b hb with ⟨c, hcs, hac, hcb⟩

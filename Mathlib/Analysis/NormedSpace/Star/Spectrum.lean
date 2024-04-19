@@ -31,7 +31,7 @@ variable {𝕜 : Type*} [NormedField 𝕜] {E : Type*} [NormedRing E] [StarRing 
 theorem unitary.spectrum_subset_circle (u : unitary E) :
     spectrum 𝕜 (u : E) ⊆ Metric.sphere 0 1 := by
   nontriviality E
-  refine' fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm _ _)
+  refine fun k hk => mem_sphere_zero_iff_norm.mpr (le_antisymm ?_ ?_ )
   · simpa only [CstarRing.norm_coe_unitary u] using norm_le_norm_of_mem hk
   · rw [← unitary.val_toUnits_apply u] at hk
     have hnk := ne_zero_of_mem_of_unit hk

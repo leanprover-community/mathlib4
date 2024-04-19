@@ -209,7 +209,7 @@ theorem arctan_eq_arccos {x : ℝ} (h : 0 ≤ x) : arctan x = arccos (√(1 + x 
 -- The junk values for `arccos` and `sqrt` make this true even for `1 < x`.
 theorem arccos_eq_arctan {x : ℝ} (h : 0 < x) : arccos x = arctan (√(1 - x ^ 2) / x) := by
   rw [arccos, eq_comm]
-  refine' arctan_eq_of_tan_eq _ ⟨_, _⟩
+  refine arctan_eq_of_tan_eq ?_ ⟨?_, ?_ ⟩
   · rw_mod_cast [tan_pi_div_two_sub, tan_arcsin, inv_div]
   · linarith only [arcsin_le_pi_div_two x, pi_pos]
   · linarith only [arcsin_pos.2 h]

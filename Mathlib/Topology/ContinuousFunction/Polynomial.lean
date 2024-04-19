@@ -65,7 +65,7 @@ variable {α : Type*} [TopologicalSpace α] [CommSemiring R] [TopologicalSpace R
 @[simp]
 theorem aeval_continuousMap_apply (g : R[X]) (f : C(α, R)) (x : α) :
     ((Polynomial.aeval f) g) x = g.eval (f x) := by
-  refine' Polynomial.induction_on' g _ _
+  refine Polynomial.induction_on' g ?_ ?_
   · intro p q hp hq
     simp [hp, hq]
   · intro n a

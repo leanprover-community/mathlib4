@@ -59,7 +59,7 @@ namespace Cardinal
 section UsingOrdinals
 
 theorem ord_isLimit {c} (co : ℵ₀ ≤ c) : (ord c).IsLimit := by
-  refine' ⟨fun h => aleph0_ne_zero _, fun a => lt_imp_lt_of_le_imp_le fun h => _⟩
+  refine ⟨fun h => aleph0_ne_zero ?_, fun a => lt_imp_lt_of_le_imp_le fun h => ?_ ⟩
   · rw [← Ordinal.le_zero, ord_le] at h
     simpa only [card_zero, nonpos_iff_eq_zero] using co.trans h
   · rw [ord_le] at h ⊢

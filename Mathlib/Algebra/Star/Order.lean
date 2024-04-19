@@ -99,7 +99,7 @@ lemma of_le_iff [NonUnitalSemiring R] [PartialOrder R] [StarRing R]
       exact ⟨star p * p, AddSubmonoid.subset_closure ⟨p, rfl⟩, hp⟩
     · rintro ⟨p, hp, hpxy⟩
       revert x y hpxy
-      refine' AddSubmonoid.closure_induction hp _ (fun x y h => add_zero x ▸ h.ge) _
+      refine AddSubmonoid.closure_induction hp ?_ (fun x y h => add_zero x ▸ h.ge) ?_
       · rintro _ ⟨s, rfl⟩ x y rfl
         exact (h_le_iff _ _).mpr ⟨s, rfl⟩
       · rintro a b ha hb x y rfl

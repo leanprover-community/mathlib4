@@ -55,7 +55,7 @@ namespace Real
 /-- Asymptotic bound for the `Γ` function integrand. -/
 theorem Gamma_integrand_isLittleO (s : ℝ) :
     (fun x : ℝ => exp (-x) * x ^ s) =o[atTop] fun x : ℝ => exp (-(1 / 2) * x) := by
-  refine' isLittleO_of_tendsto (fun x hx => _) _
+  refine isLittleO_of_tendsto (fun x hx => ?_) ?_
   · exfalso; exact (exp_pos (-(1 / 2) * x)).ne' hx
   have : (fun x : ℝ => exp (-x) * x ^ s / exp (-(1 / 2) * x)) =
       (fun x : ℝ => exp (1 / 2 * x) / x ^ s)⁻¹ := by

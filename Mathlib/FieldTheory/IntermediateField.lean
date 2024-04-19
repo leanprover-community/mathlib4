@@ -542,7 +542,7 @@ instance AlgHom.inhabited : Inhabited (S →ₐ[K] L) :=
 
 theorem aeval_coe {R : Type*} [CommRing R] [Algebra R K] [Algebra R L] [IsScalarTower R K L]
     (x : S) (P : R[X]) : aeval (x : L) P = aeval x P := by
-  refine' Polynomial.induction_on' P (fun f g hf hg => _) fun n r => _
+  refine Polynomial.induction_on' P (fun f g hf hg => ?_) fun n r => ?_
   · rw [aeval_add, aeval_add, AddMemClass.coe_add, hf, hg]
   · simp only [MulMemClass.coe_mul, aeval_monomial, SubmonoidClass.coe_pow, mul_eq_mul_right_iff]
     left

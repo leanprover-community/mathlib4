@@ -266,7 +266,7 @@ theorem Equiv.fg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
 
 theorem Substructure.fg_iff_structure_fg (S : L.Substructure M) : S.FG ↔ Structure.FG L S := by
   rw [Structure.fg_def]
-  refine' ⟨fun h => FG.of_map_embedding S.subtype _, fun h => _⟩
+  refine ⟨fun h => FG.of_map_embedding S.subtype ?_, fun h => ?_ ⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom
@@ -283,7 +283,7 @@ theorem Equiv.cg_iff {N : Type*} [L.Structure N] (f : M ≃[L] N) :
 
 theorem Substructure.cg_iff_structure_cg (S : L.Substructure M) : S.CG ↔ Structure.CG L S := by
   rw [Structure.cg_def]
-  refine' ⟨fun h => CG.of_map_embedding S.subtype _, fun h => _⟩
+  refine ⟨fun h => CG.of_map_embedding S.subtype ?_, fun h => ?_ ⟩
   · rw [← Hom.range_eq_map, range_subtype]
     exact h
   · have h := h.map S.subtype.toHom

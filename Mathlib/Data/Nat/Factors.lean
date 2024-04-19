@@ -200,7 +200,7 @@ theorem eq_prime_pow_of_unique_prime_dvd {n p : ℕ} (hpos : n ≠ 0)
 /-- For positive `a` and `b`, the prime factors of `a * b` are the union of those of `a` and `b` -/
 theorem perm_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) :
     (a * b).factors ~ a.factors ++ b.factors := by
-  refine' (factors_unique _ _).symm
+  refine (factors_unique ?_ ?_ ).symm
   · rw [List.prod_append, prod_factors ha, prod_factors hb]
   · intro p hp
     rw [List.mem_append] at hp

@@ -245,7 +245,7 @@ open Topology
 variable {α : Type*}
 
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
-  refine' ContinuousAt.add _ _
+  refine ContinuousAt.add ?_ ?_
   · refine' continuous_ofReal.continuousAt.comp _
     refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
     exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h

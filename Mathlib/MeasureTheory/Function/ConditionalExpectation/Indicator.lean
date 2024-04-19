@@ -97,7 +97,7 @@ theorem condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
         s.indicator (sᶜ.indicator (μ[sᶜ.indicator f|m])) := by
       refine Filter.EventuallyEq.rfl.add ?_
       have : sᶜ.indicator (μ[sᶜ.indicator f|m]) =ᵐ[μ] μ[sᶜ.indicator f|m] := by
-        refine' (condexp_indicator_aux hs.compl _).symm.trans _
+        refine (condexp_indicator_aux hs.compl ?_).symm.trans ?_
         · exact indicator_ae_eq_restrict_compl (hm _ hs.compl)
         · rw [Set.indicator_indicator, Set.inter_self]
       filter_upwards [this] with x hx
@@ -107,7 +107,7 @@ theorem condexp_indicator (hf_int : Integrable f μ) (hs : MeasurableSet[m] s) :
     _ =ᵐ[μ] s.indicator (μ[s.indicator f|m]) := by
       rw [Set.indicator_indicator, Set.inter_compl_self, Set.indicator_empty', add_zero]
     _ =ᵐ[μ] μ[s.indicator f|m] := by
-      refine' (condexp_indicator_aux hs _).symm.trans _
+      refine (condexp_indicator_aux hs ?_).symm.trans ?_
       · exact indicator_ae_eq_restrict_compl (hm _ hs)
       · rw [Set.indicator_indicator, Set.inter_self]
 #align measure_theory.condexp_indicator MeasureTheory.condexp_indicator

@@ -505,8 +505,8 @@ theorem add_le_of_limit {a b c : Ordinal} (h : IsLimit b) : a + b ≤ c ↔ ∀ 
           rw [← typein_lt_typein (Sum.Lex r s), typein_enum]
           have := H _ (h.2 _ (typein_lt_type s x))
           rw [add_succ, succ_le_iff] at this
-          refine'
-            (RelEmbedding.ofMonotone (fun a => _) fun a b => _).ordinal_type_le.trans_lt this
+          refine
+            (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_ ).ordinal_type_le.trans_lt this
           · rcases a with ⟨a | b, h⟩
             · exact Sum.inl a
             · exact Sum.inr ⟨b, by cases h; assumption⟩
@@ -617,7 +617,7 @@ theorem sub_isLimit {a b} (l : IsLimit a) (h : b < a) : IsLimit (a - b) :=
 theorem one_add_omega : 1 + ω = ω := by
   refine' le_antisymm _ (le_add_left _ _)
   rw [omega, ← lift_one.{_, 0}, ← lift_add, lift_le, ← type_unit, ← type_sum_lex]
-  refine' ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone _ _)⟩
+  refine ⟨RelEmbedding.collapse (RelEmbedding.ofMonotone ?_ ?_ )⟩
   · apply Sum.rec
     exact fun _ => 0
     exact Nat.succ
@@ -763,7 +763,7 @@ private theorem mul_le_of_limit_aux {α β r s} [IsWellOrder α r] [IsWellOrder 
   have := H _ (h.2 _ (typein_lt_type s b))
   rw [mul_succ] at this
   have := ((add_lt_add_iff_left _).2 (typein_lt_type _ a)).trans_le this
-  refine' (RelEmbedding.ofMonotone (fun a => _) fun a b => _).ordinal_type_le.trans_lt this
+  refine (RelEmbedding.ofMonotone (fun a => ?_) fun a b => ?_ ).ordinal_type_le.trans_lt this
   · rcases a with ⟨⟨b', a'⟩, h⟩
     by_cases e : b = b'
     · refine' Sum.inr ⟨a', _⟩
@@ -1638,7 +1638,7 @@ theorem sup_succ_eq_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) :
 
 theorem sup_eq_lsub_iff_succ {ι : Type u} (f : ι → Ordinal.{max u v}) :
     sup.{_, v} f = lsub.{_, v} f ↔ ∀ a < lsub.{_, v} f, succ a < lsub.{_, v} f := by
-  refine' ⟨fun h => _, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => _)⟩
+  refine ⟨fun h => ?_, fun hf => le_antisymm (sup_le_lsub f) (lsub_le fun i => ?_ )⟩
   · rw [← h]
     exact fun a => sup_not_succ_of_ne_sup fun i => (lsub_le_iff.1 (le_of_eq h.symm) i).ne
   by_contra! hle

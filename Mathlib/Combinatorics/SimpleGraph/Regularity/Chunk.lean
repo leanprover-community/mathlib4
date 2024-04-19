@@ -245,7 +245,7 @@ private theorem m_add_one_div_m_le_one_add [Nonempty α]
   have : ↑1 + ↑1 / (m : ℝ) ≤ ↑1 + ε ^ 5 / 100 := by
     rw [add_le_add_iff_left, ← one_div_div (100 : ℝ)]
     exact one_div_le_one_div_of_le (by sz_positivity) (hundred_div_ε_pow_five_le_m hPα hPε)
-  refine' (pow_le_pow_left _ this 2).trans _
+  refine (pow_le_pow_left ?_ this 2).trans ?_
   · positivity
   rw [add_sq, one_pow, add_assoc, add_le_add_iff_left, mul_one, ← le_sub_iff_add_le',
     div_eq_mul_one_div _ (49 : ℝ), mul_div_left_comm (2 : ℝ), ← mul_sub_left_distrib, div_pow,
@@ -281,7 +281,7 @@ private theorem density_sub_eps_le_sum_density_div_card [Nonempty α]
   · refine' mul_le_of_le_one_right (cast_nonneg _) _
     rw [div_mul_eq_mul_div, ← mul_assoc, mul_assoc]
     refine div_le_one_of_le ?_ (by positivity)
-    refine' (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) _).trans _
+    refine (mul_le_mul_of_nonneg_right (one_sub_le_m_div_m_add_one_sq hPα hPε) ?_).trans ?_
     · exact mod_cast _root_.zero_le _
     rw [sq, mul_mul_mul_comm, mul_comm ((m : ℝ) / _), mul_comm ((m : ℝ) / _)]
     refine' mul_le_mul _ _ _ (cast_nonneg _)
@@ -317,7 +317,7 @@ private theorem sum_density_div_card_le_density_add_eps [Nonempty α]
   rw [mul_mul_mul_comm, mul_comm (x.card : ℝ), mul_comm (y.card : ℝ), div_le_iff, mul_assoc]
   · refine' le_mul_of_one_le_right (cast_nonneg _) _
     rw [div_mul_eq_mul_div, one_le_div]
-    refine' le_trans _ (mul_le_mul_of_nonneg_right (m_add_one_div_m_le_one_add hPα hPε hε₁) _)
+    refine le_trans ?_ (mul_le_mul_of_nonneg_right (m_add_one_div_m_le_one_add hPα hPε hε₁) ?_ )
     · rw [sq, mul_mul_mul_comm, mul_comm (_ / (m : ℝ)), mul_comm (_ / (m : ℝ))]
       exact mul_le_mul (sum_card_subset_chunk_parts_le (by sz_positivity) hA hx)
         (sum_card_subset_chunk_parts_le (by sz_positivity) hB hy) (by positivity) (by positivity)
@@ -363,7 +363,7 @@ private theorem edgeDensity_chunk_aux [Nonempty α]
         (G.edgeDensity ab.1 ab.2 : ℝ)) / ↑16 ^ P.parts.card := by
     have rflU := Set.Subset.refl (chunk hP G ε hU).parts.toSet
     have rflV := Set.Subset.refl (chunk hP G ε hV).parts.toSet
-    refine' (le_trans _ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans _
+    refine (le_trans ?_ <| density_sub_eps_le_sum_density_div_card hPα hPε rflU rflV).trans ?_
     · rw [biUnion_parts, biUnion_parts]
     · rw [card_chunk (m_pos hPα).ne', card_chunk (m_pos hPα).ne', ← cast_mul, ← mul_pow, cast_pow]
       norm_cast
@@ -493,7 +493,7 @@ theorem edgeDensity_chunk_not_uniform [Nonempty α] (hPα : P.parts.card * 16 ^ 
       · -- This seems faster than `exact div_nonneg (by positivity) (by positivity)` and *much*
         -- (tens of seconds) faster than `positivity` on its own.
         apply div_nonneg <;> positivity
-      refine' le_trans _ (mul_le_mul_of_nonneg_right UVl _)
+      refine le_trans ?_ (mul_le_mul_of_nonneg_right UVl ?_ )
       · norm_num
         nlinarith
       · norm_num

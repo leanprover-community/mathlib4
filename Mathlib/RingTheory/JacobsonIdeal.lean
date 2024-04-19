@@ -209,7 +209,7 @@ theorem comap_jacobson {f : R →+* S} {K : Ideal S} :
 theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f) {K : Ideal S} :
     comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rw [← top_inf_eq (sInf _), ← sInf_insert, comap_sInf', sInf_eq_iInf]
     refine iInf_le_iInf_of_subset fun J hJ => ?_
     have : comap f (map f J) = J :=

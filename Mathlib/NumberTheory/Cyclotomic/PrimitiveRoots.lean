@@ -418,7 +418,7 @@ theorem pow_sub_one_norm_prime_pow_ne_two {k s : ℕ} (hζ : IsPrimitiveRoot ζ 
       have H : K⟮η + 1⟯.toSubalgebra = K⟮η⟯.toSubalgebra := by
         simp only [IntermediateField.adjoin_simple_toSubalgebra_of_integral
             (IsCyclotomicExtension.integral {p ^ (k + 1)} K L _)]
-        refine' Subalgebra.ext fun x => ⟨fun hx => adjoin_le _ hx, fun hx => adjoin_le _ hx⟩
+        refine Subalgebra.ext fun x => ⟨fun hx => adjoin_le ?_ hx, fun hx => adjoin_le ?_  hx⟩
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]
           exact Subalgebra.add_mem _ (subset_adjoin (mem_singleton η)) (Subalgebra.one_mem _)
         · simp only [Set.singleton_subset_iff, SetLike.mem_coe]

@@ -65,7 +65,7 @@ theorem measurable_of_measurable_coe (f : β → Measure α)
 instance instMeasurableAdd₂ {α : Type*} {m : MeasurableSpace α} : MeasurableAdd₂ (Measure α) := by
   refine' ⟨Measure.measurable_of_measurable_coe _ fun s hs => _⟩
   simp_rw [Measure.coe_add, Pi.add_apply]
-  refine' Measurable.add _ _
+  refine Measurable.add ?_ ?_
   · exact (Measure.measurable_coe hs).comp measurable_fst
   · exact (Measure.measurable_coe hs).comp measurable_snd
 #align measure_theory.measure.has_measurable_add₂ MeasureTheory.Measure.instMeasurableAdd₂
@@ -133,9 +133,9 @@ theorem lintegral_join {m : Measure (Measure α)} {f : α → ℝ≥0∞} (hf : 
     ∀ (s : ℕ → Finset ℝ≥0∞) (f : ℕ → ℝ≥0∞ → Measure α → ℝ≥0∞), (∀ n r, Measurable (f n r)) →
       Monotone (fun n μ => ∑ r in s n, r * f n r μ) →
       ⨆ n, ∑ r in s n, r * ∫⁻ μ, f n r μ ∂m = ∫⁻ μ, ⨆ n, ∑ r in s n, r * f n r μ ∂m by
-    refine'
+    refine
       this (fun n => SimpleFunc.range (SimpleFunc.eapprox f n))
-        (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) _ _
+        (fun n r μ => μ (SimpleFunc.eapprox f n ⁻¹' {r})) ?_ ?_
     · exact fun n r => measurable_coe (SimpleFunc.measurableSet_preimage _ _)
     · exact fun n m h μ => SimpleFunc.lintegral_mono (SimpleFunc.monotone_eapprox _ h) le_rfl
   intro s f hf hm

@@ -120,7 +120,7 @@ to `(y : R) • x ∈ integralClosure R L`. -/
 theorem exists_integral_multiples (s : Finset L) :
     ∃ y ≠ (0 : A), ∀ x ∈ s, IsIntegral A (y • x) := by
   haveI := Classical.decEq L
-  refine' s.induction _ _
+  refine s.induction ?_ ?_
   · use 1, one_ne_zero
     rintro x ⟨⟩
   · rintro x s hx ⟨y, hy, hs⟩

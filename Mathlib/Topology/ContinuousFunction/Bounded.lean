@@ -1478,12 +1478,12 @@ variable [CstarRing β]
 
 instance instCstarRing : CstarRing (α →ᵇ β) where
   norm_star_mul_self {f} := by
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · rw [← sq, norm_le (sq_nonneg _)]
       dsimp [star_apply]
       intro x
       rw [CstarRing.norm_star_mul_self, ← sq]
-      refine' sq_le_sq' _ _
+      refine sq_le_sq' ?_ ?_
       · linarith [norm_nonneg (f x), norm_nonneg f]
       · exact norm_coe_le_norm f x
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _), norm_le (Real.sqrt_nonneg _)]

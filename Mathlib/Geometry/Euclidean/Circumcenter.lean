@@ -395,7 +395,7 @@ theorem circumcenter_eq_centroid (s : Simplex ℝ P 1) :
 @[simp]
 theorem circumsphere_reindex {m n : ℕ} (s : Simplex ℝ P m) (e : Fin (m + 1) ≃ Fin (n + 1)) :
     (s.reindex e).circumsphere = s.circumsphere := by
-  refine' s.circumsphere_unique_dist_eq.2 _ ⟨_, _⟩ <;> rw [← s.reindex_range_points e]
+  refine s.circumsphere_unique_dist_eq.2 _ ⟨?_, ?_ ⟩ <;> rw [← s.reindex_range_points e]
   · exact (s.reindex e).circumsphere_unique_dist_eq.1.1
   · exact (s.reindex e).circumsphere_unique_dist_eq.1.2
 #align affine.simplex.circumsphere_reindex Affine.Simplex.circumsphere_reindex

@@ -101,7 +101,7 @@ theorem adjoin_induction₂ {p : A → A → Prop} {a b : A} (ha : a ∈ adjoin 
     (Hadd_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ + y₂))
     (Hmul_left : ∀ x₁ x₂ y, p x₁ y → p x₂ y → p (x₁ * x₂) y)
     (Hmul_right : ∀ x y₁ y₂, p x y₁ → p x y₂ → p x (y₁ * y₂)) : p a b := by
-  refine' adjoin_induction hb _ (fun r => _) (Hadd_right a) (Hmul_right a)
+  refine adjoin_induction hb ?_ (fun r => ?_ ) (Hadd_right a) (Hmul_right a)
   · exact adjoin_induction ha Hs Halg_left
       (fun x y Hx Hy z hz => Hadd_left x y z (Hx z hz) (Hy z hz))
       fun x y Hx Hy z hz => Hmul_left x y z (Hx z hz) (Hy z hz)

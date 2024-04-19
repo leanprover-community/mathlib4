@@ -858,7 +858,7 @@ theorem eqOn_right_half_plane_of_superexponential_decay {g : ℂ → E}
     EqOn f g {z : ℂ | 0 ≤ z.re} := by
   suffices EqOn (f - g) 0 {z : ℂ | 0 ≤ z.re} by
     simpa only [EqOn, Pi.sub_apply, Pi.zero_apply, sub_eq_zero] using this
-  refine' eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) _ hre _
+  refine eq_zero_on_right_half_plane_of_superexponential_decay (hfd.sub hgd) ?_ hre ?_
   · set l : Filter ℂ := cobounded ℂ ⊓ 𝓟 {z : ℂ | 0 < z.re}
     suffices ∀ {c₁ c₂ B₁ B₂ : ℝ}, c₁ ≤ c₂ → B₁ ≤ B₂ → 0 ≤ B₂ →
         (fun z => expR (B₁ * abs z ^ c₁)) =O[l] fun z => expR (B₂ * abs z ^ c₂) by

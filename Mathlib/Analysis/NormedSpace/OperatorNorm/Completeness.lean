@@ -202,14 +202,14 @@ def extend : Fₗ →SL[σ₁₂] F :=
   have eq := uniformly_extend_of_ind h_e h_dense f.uniformContinuous
   { toFun := (h_e.denseInducing h_dense).extend f
     map_add' := by
-      refine' h_dense.induction_on₂ _ _
+      refine h_dense.induction_on₂ ?_ ?_
       · exact isClosed_eq (cont.comp continuous_add)
           ((cont.comp continuous_fst).add (cont.comp continuous_snd))
       · intro x y
         simp only [eq, ← e.map_add]
         exact f.map_add _ _
     map_smul' := fun k => by
-      refine' fun b => h_dense.induction_on b _ _
+      refine fun b => h_dense.induction_on b ?_ ?_
       · exact isClosed_eq (cont.comp (continuous_const_smul _))
           ((continuous_const_smul _).comp cont)
       · intro x

@@ -256,7 +256,7 @@ theorem out [NormedSpace ℂ E] (hf : CircleIntegrable f c R) :
     IntervalIntegrable (fun θ : ℝ => deriv (circleMap c R) θ • f (circleMap c R θ)) volume 0
       (2 * π) := by
   simp only [CircleIntegrable, deriv_circleMap, intervalIntegrable_iff] at *
-  refine' (hf.norm.const_mul |R|).mono' _ _
+  refine (hf.norm.const_mul |R|).mono' ?_ ?_
   · exact ((continuous_circleMap _ _).aestronglyMeasurable.mul_const I).smul hf.aestronglyMeasurable
   · simp [norm_smul]
 #align circle_integrable.out CircleIntegrable.out
@@ -275,7 +275,7 @@ theorem circleIntegrable_iff [NormedSpace ℂ E] {f : ℂ → E} {c : ℂ} (R : 
   · simp (config := { unfoldPartialApp := true }) [h₀, const]
   refine ⟨fun h => h.out, fun h => ?_⟩
   simp only [CircleIntegrable, intervalIntegrable_iff, deriv_circleMap] at h ⊢
-  refine' (h.norm.const_mul |R|⁻¹).mono' _ _
+  refine (h.norm.const_mul |R|⁻¹).mono' ?_ ?_
   · have H : ∀ {θ}, circleMap 0 R θ * I ≠ 0 := fun {θ} => by simp [h₀, I_ne_zero]
     simpa only [inv_smul_smul₀ H]
       using ((continuous_circleMap 0 R).aestronglyMeasurable.mul_const

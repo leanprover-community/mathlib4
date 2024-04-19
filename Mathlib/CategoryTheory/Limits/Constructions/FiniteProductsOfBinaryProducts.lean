@@ -48,7 +48,7 @@ def extendFan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Fan fun i : Fin n => f i
     (c₂ : BinaryFan (f 0) c₁.pt) : Fan f :=
   Fan.mk c₂.pt
     (by
-      refine' Fin.cases _ _
+      refine Fin.cases ?_ ?_
       · apply c₂.fst
       · intro i
         apply c₂.snd ≫ c₁.π.app ⟨i⟩)
@@ -64,8 +64,8 @@ def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
   fac := fun s ⟨j⟩ => by
-    refine' Fin.inductionOn j ?_ ?_
-    · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
+    refine Fin.inductionOn j ?_ ?_
+    · apply (BinaryFan.IsLimit.lift' t₂ _ _ ).2.1
     · rintro i -
       dsimp only [extendFan_π_app]
       rw [Fin.cases_succ, ← assoc, (BinaryFan.IsLimit.lift' t₂ _ _).2.2, t₁.fac]
@@ -185,7 +185,7 @@ def extendCofan {n : ℕ} {f : Fin (n + 1) → C} (c₁ : Cofan fun i : Fin n =>
     (c₂ : BinaryCofan (f 0) c₁.pt) : Cofan f :=
   Cofan.mk c₂.pt
     (by
-      refine' Fin.cases _ _
+      refine Fin.cases ?_ ?_
       · apply c₂.inl
       · intro i
         apply c₁.ι.app ⟨i⟩ ≫ c₂.inr)
@@ -202,8 +202,8 @@ def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i :
     apply t₁.desc ⟨_, Discrete.natTrans fun i => s.ι.app ⟨i.as.succ⟩⟩
   fac s := by
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
-    · apply (BinaryCofan.IsColimit.desc' t₂ _ _).2.1
+    refine Fin.inductionOn j ?_ ?_
+    · apply (BinaryCofan.IsColimit.desc' t₂ _ _ ).2.1
     · rintro i -
       dsimp only [extendCofan_ι_app]
       rw [Fin.cases_succ, assoc, (BinaryCofan.IsColimit.desc' t₂ _ _).2.2, t₁.fac]

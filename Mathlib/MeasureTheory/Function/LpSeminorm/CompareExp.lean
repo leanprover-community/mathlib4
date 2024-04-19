@@ -251,7 +251,7 @@ theorem snorm_le_snorm_mul_snorm_of_nnnorm {p q r : ℝ≥0∞}
   have hpq : p < q := by
     suffices 1 / q < 1 / p by rwa [one_div, one_div, ENNReal.inv_lt_inv] at this
     rw [hpqr]
-    refine' ENNReal.lt_add_right _ _
+    refine ENNReal.lt_add_right ?_ ?_
     · simp only [hq_ne_zero, one_div, Ne, ENNReal.inv_eq_top, not_false_iff]
     · simp only [hr_top, one_div, Ne, ENNReal.inv_eq_zero, not_false_iff]
   rw [snorm_eq_snorm' hp_zero (hpq.trans_le le_top).ne, snorm_eq_snorm' hq_ne_zero hq_top,

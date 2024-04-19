@@ -114,7 +114,7 @@ theorem leftLim_le (h : x ≤ y) : leftLim f x ≤ f y := by
   · simpa [leftLim, h'] using hf h
   haveI A : NeBot (𝓝[<] x) := neBot_iff.2 h'
   rw [leftLim_eq_sSup hf h']
-  refine' csSup_le _ _
+  refine csSup_le ?_ ?_
   · simp only [image_nonempty]
     exact (forall_mem_nonempty_iff_neBot.2 A) _ self_mem_nhdsWithin
   · simp only [mem_image, mem_Iio, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂]
@@ -243,7 +243,7 @@ theorem countable_not_continuousWithinAt_Ioi [SecondCountableTopology β] :
   rintro x (hx : ¬ContinuousWithinAt f (Ioi x) x)
   dsimp
   contrapose! hx
-  refine' tendsto_order.2 ⟨fun m hm => _, fun u hu => _⟩
+  refine tendsto_order.2 ⟨fun m hm => ?_, fun u hu => ?_ ⟩
   · filter_upwards [@self_mem_nhdsWithin _ _ x (Ioi x)] with y hy using hm.trans_le
       (hf (le_of_lt hy))
   rcases hx u hu with ⟨v, xv, fvu⟩

@@ -121,7 +121,7 @@ variable (α)
 variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
 
 theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
-  refine' le_antisymm _ (generateFrom_le _)
+  refine le_antisymm ?_ (generateFrom_le ?_ )
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
@@ -150,7 +150,7 @@ theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
 theorem borel_eq_generateFrom_Iic :
     borel α = MeasurableSpace.generateFrom (range Iic) := by
   rw [borel_eq_generateFrom_Ioi]
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · refine' MeasurableSpace.generateFrom_le fun t ht => _
     obtain ⟨u, rfl⟩ := ht
     rw [← compl_Iic]
@@ -877,7 +877,7 @@ intervals. -/
 theorem ext_of_Iic {α : Type*} [TopologicalSpace α] {m : MeasurableSpace α}
     [SecondCountableTopology α] [LinearOrder α] [OrderTopology α] [BorelSpace α] (μ ν : Measure α)
     [IsFiniteMeasure μ] (h : ∀ a, μ (Iic a) = ν (Iic a)) : μ = ν := by
-  refine' ext_of_Ioc_finite μ ν _ fun a b hlt => _
+  refine ext_of_Ioc_finite μ ν ?_ fun a b hlt => ?_
   · rcases exists_countable_dense_bot_top α with ⟨s, hsc, hsd, -, hst⟩
     have : DirectedOn (· ≤ ·) s := directedOn_iff_directed.2 (Subtype.mono_coe _).directed_le
     simp only [← biSup_measure_Iic hsc (hsd.exists_ge' hst) this, h]
@@ -1127,7 +1127,7 @@ theorem pi_le_borel_pi {ι : Type*} {π : ι → Type*} [∀ i, TopologicalSpace
 
 theorem prod_le_borel_prod : Prod.instMeasurableSpace ≤ borel (α × β) := by
   rw [‹BorelSpace α›.measurable_eq, ‹BorelSpace β›.measurable_eq]
-  refine' sup_le _ _
+  refine sup_le ?_ ?_
   · exact comap_le_iff_le_map.mpr continuous_fst.borel_measurable
   · exact comap_le_iff_le_map.mpr continuous_snd.borel_measurable
 #align prod_le_borel_prod prod_le_borel_prod
@@ -2426,7 +2426,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
     exact exists_nat_ge (f x)
   let sets n := sigma_finite_sets n ∩ norm_sets n
   have h_meas : ∀ n, MeasurableSet (sets n) := by
-    refine' fun n => MeasurableSet.inter _ _
+    refine fun n => MeasurableSet.inter ?_ ?_
     · exact measurable_spanningSets μ n
     · exact hf measurableSet_Iic
   have h_finite : ∀ n, μ (sets n) < ∞ := by

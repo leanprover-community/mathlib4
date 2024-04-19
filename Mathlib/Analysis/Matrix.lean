@@ -166,7 +166,7 @@ theorem norm_row (v : n → α) : ‖row v‖ = ‖v‖ :=
 theorem nnnorm_diagonal [DecidableEq n] (v : n → α) : ‖diagonal v‖₊ = ‖v‖₊ := by
   simp_rw [nnnorm_def, Pi.nnnorm_def]
   congr 1 with i : 1
-  refine' le_antisymm (Finset.sup_le fun j hj => _) _
+  refine le_antisymm (Finset.sup_le fun j hj => ?_) ?_
   · obtain rfl | hij := eq_or_ne i j
     · rw [diagonal_apply_eq]
     · rw [diagonal_apply_ne _ hij, nnnorm_zero]

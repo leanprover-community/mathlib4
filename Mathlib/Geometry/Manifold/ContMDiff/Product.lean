@@ -151,7 +151,7 @@ theorem contMDiffWithinAt_fst {s : Set (M × N)} {p : M × N} :
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_fst, _⟩
-  refine' contDiffWithinAt_fst.congr (fun y hy => _) _
+  refine contDiffWithinAt_fst.congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]
@@ -220,7 +220,7 @@ theorem contMDiffWithinAt_snd {s : Set (M × N)} {p : M × N} :
   /- porting note: `simp` fails to apply lemmas to `ModelProd`. Was
   rw [contMDiffWithinAt_iff']
   refine' ⟨continuousWithinAt_snd, _⟩
-  refine' contDiffWithinAt_snd.congr (fun y hy => _) _
+  refine contDiffWithinAt_snd.congr (fun y hy => ?_) ?_
   · simp only [mfld_simps] at hy
     simp only [hy, mfld_simps]
   · simp only [mfld_simps]

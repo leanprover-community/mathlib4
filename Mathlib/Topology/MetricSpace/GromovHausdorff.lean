@@ -386,7 +386,7 @@ theorem hausdorffDist_optimal {X : Type u} [MetricSpace X] [CompactSpace X] [Non
           hausdorffDist_optimal_le_HD _ _ candidatesBDist_mem_candidatesB
         _ ≤ diam (univ : Set X) + 1 + diam (univ : Set Y) := HD_candidatesBDist_le
         _ ≤ hausdorffDist (p : Set ℓ_infty_ℝ) q := not_lt.1 h
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · apply le_csInf
     · refine' (Set.Nonempty.prod _ _).image _ <;> exact ⟨_, rfl⟩
     · rintro b ⟨⟨p, q⟩, ⟨hp, hq⟩, rfl⟩
@@ -419,7 +419,7 @@ instance : MetricSpace GHSpace where
   edist_dist _ _ := by exact ENNReal.coe_nnreal_eq _
   dist_self x := by
     rcases exists_rep x with ⟨y, hy⟩
-    refine' le_antisymm _ _
+    refine le_antisymm ?_ ?_
     · apply csInf_le
       · exact ⟨0, by rintro b ⟨⟨u, v⟩, -, rfl⟩; exact hausdorffDist_nonneg⟩
       · simp only [mem_image, mem_prod, mem_setOf_eq, Prod.exists]
@@ -624,7 +624,7 @@ theorem ghDist_le_of_approx_subsets {s : Set X} (Φ : s → Y) {ε₁ ε₂ ε�
     refine' hausdorffDist_le_of_mem_dist this (fun x _ => hs x) fun x _ =>
       ⟨x, mem_univ _, by simpa only [dist_self]⟩
   have : hausdorffDist (Fl '' s) (Fr '' range Φ) ≤ ε₂ / 2 + δ := by
-    refine' hausdorffDist_le_of_mem_dist (by linarith) _ _
+    refine hausdorffDist_le_of_mem_dist (by linarith) ?_ ?_
     · intro x' hx'
       rcases (Set.mem_image _ _ _).1 hx' with ⟨x, ⟨x_in_s, xx'⟩⟩
       rw [← xx']

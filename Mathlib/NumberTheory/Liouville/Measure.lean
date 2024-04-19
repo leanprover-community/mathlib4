@@ -65,7 +65,7 @@ theorem setOf_liouvilleWith_subset_aux :
   rw [Finset.mem_Icc, ← Int.lt_add_one_iff, ← Int.lt_add_one_iff, ← neg_lt_iff_pos_add, add_comm, ←
     @Int.cast_lt ℝ, ← @Int.cast_lt ℝ]
   push_cast
-  refine' ⟨lt_of_le_of_lt _ hlt.1, hlt.2.trans_le _⟩
+  refine ⟨lt_of_le_of_lt ?_ hlt.1, hlt.2.trans_le ?_ ⟩
   · simp only [mul_nonneg hx01.left b.cast_nonneg, neg_le_sub_iff_le_add, le_add_iff_nonneg_left]
   · rw [add_le_add_iff_left]
     exact mul_le_of_le_one_left hb0.le hx01.2.le

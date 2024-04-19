@@ -155,7 +155,7 @@ theorem decomposeAux_coe {i : ι} (x : gradeBy R f i) :
   classical
   obtain ⟨x, hx⟩ := x
   revert hx
-  refine' Finsupp.induction x _ _
+  refine Finsupp.induction x ?_ ?_
   · intro hx
     symm
     exact AddMonoidHom.map_zero _

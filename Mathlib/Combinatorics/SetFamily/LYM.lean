@@ -65,7 +65,7 @@ variable [DecidableEq α] [Fintype α]
 theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     𝒜.card * r ≤ (∂ 𝒜).card * (Fintype.card α - r + 1) := by
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
-  refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
+  refine card_mul_le_card_mul' (· ⊆ ·) (fun s hs => ?_) (fun s hs => ?_ )
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
     refine card_le_card ?_
     simp_rw [image_subset_iff, mem_bipartiteBelow]

@@ -138,7 +138,7 @@ theorem _root_.TensorPower.list_prod_gradedMonoid_mk_single (n : ℕ) (x : Fin n
           (GradedMonoid.mk _ (PiTensorProduct.tprod R fun _ : Fin 1 => x a) :
             GradedMonoid fun n => ⨂[R]^n M)).prod =
       GradedMonoid.mk n (PiTensorProduct.tprod R x) := by
-  refine' Fin.consInduction _ _ x <;> clear x
+  refine Fin.consInduction ?_ ?_  x <;> clear x
   · rw [List.finRange_zero, List.map_nil, List.prod_nil]
     rfl
   · intro n x₀ x ih

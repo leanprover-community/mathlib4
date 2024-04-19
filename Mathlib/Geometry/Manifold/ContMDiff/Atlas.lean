@@ -37,7 +37,7 @@ theorem contMDiff_model : ContMDiff I 𝓘(𝕜, E) n I := by
   intro x
   refine' (contMDiffAt_iff _ _).mpr ⟨I.continuousAt, _⟩
   simp only [mfld_simps]
-  refine' contDiffWithinAt_id.congr_of_eventuallyEq _ _
+  refine contDiffWithinAt_id.congr_of_eventuallyEq ?_ ?_
   · exact Filter.eventuallyEq_of_mem self_mem_nhdsWithin fun x₂ => I.right_inv
   simp_rw [Function.comp_apply, I.left_inv, Function.id_def]
 #align cont_mdiff_model contMDiff_model
@@ -215,7 +215,7 @@ theorem isLocalStructomorphOn_contDiffGroupoid_iff (f : PartialHomeomorph M M') 
     have h3e : EqOn (c ∘ f.symm ∘ c'.symm) e.symm (c'.symm ⁻¹' f.target ∩ e.target) := by
       have h1 : EqOn (c.symm ≫ₕ f ≫ₕ c').symm e.symm (e.target ∩ e.target) := by
         apply EqOn.symm
-        refine' e.isImage_source_target.symm_eqOn_of_inter_eq_of_eqOn _ _
+        refine e.isImage_source_target.symm_eqOn_of_inter_eq_of_eqOn ?_ ?_
         · rw [inter_self, inter_eq_right.mpr h2e]
         · rw [inter_self]; exact hef.symm
       have h2 : e.target ⊆ (c.symm ≫ₕ f ≫ₕ c').target := by

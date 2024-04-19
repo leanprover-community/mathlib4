@@ -197,7 +197,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let U : X → X → Set X := fun x y => {z | f z - ε < g x y z}
   have U_nhd_y : ∀ x y, U x y ∈ 𝓝 y := by
     intro x y
-    refine' IsOpen.mem_nhds _ _
+    refine IsOpen.mem_nhds ?_ ?_
     · apply isOpen_lt <;> continuity
     · rw [Set.mem_setOf_eq, w₂]
       exact sub_lt_self _ pos
@@ -231,7 +231,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- This is still a neighbourhood of `x`.
   have W_nhd : ∀ x, W x ∈ 𝓝 x := by
     intro x
-    refine' IsOpen.mem_nhds _ _
+    refine IsOpen.mem_nhds ?_ ?_
     · -- Porting note: mathlib3 `continuity` found `continuous_set_coe`
       apply isOpen_lt (continuous_set_coe _ _)
       continuity

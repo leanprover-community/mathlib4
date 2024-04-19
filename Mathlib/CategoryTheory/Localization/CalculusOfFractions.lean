@@ -337,7 +337,7 @@ namespace Localization
 /-- Composition of morphisms in the constructed localized category
 for a morphism property that has left calculus of fractions. -/
 noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : Hom W X Z := by
-  refine' Quot.lift₂ (fun a b => a.comp b) _ _ z₁ z₂
+  refine Quot.lift₂ (fun a b => a.comp b) ?_ ?_  z₁ z₂
   · rintro a b₁ b₂ ⟨U, t₁, t₂, hst, hft, ht⟩
     obtain ⟨z₁, fac₁⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₁.f)
     obtain ⟨z₂, fac₂⟩ := exists_leftFraction (RightFraction.mk a.s a.hs b₂.f)
@@ -376,7 +376,7 @@ noncomputable def Hom.comp {X Y Z : C} (z₁ : Hom W X Y) (z₂ : Hom W Y Z) : H
     simp only [assoc] at fac₁' fac₂'
     rw [comp_eq _ _ z₁ fac₁, comp_eq _ _ z₂ fac₂]
     apply Quot.sound
-    refine' LeftFractionRel.trans _ ((_ : LeftFractionRel p₁ p₂).trans _)
+    refine LeftFractionRel.trans ?_ ((?_ : LeftFractionRel p₁ p₂).trans ?_ )
     · have eq : a₁.s ≫ z₁.f ≫ w₁.s = a₁.s ≫ t₁ ≫ w₁.f := by rw [← fac₁', reassoc_of% fac₁]
       obtain ⟨Z, u, hu, fac₃⟩ := HasLeftCalculusOfFractions.ext _ _ _ a₁.hs eq
       simp only [assoc] at fac₃

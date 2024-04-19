@@ -128,7 +128,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   · -- Easy case #2: 0 < re r -- again use continuity
     exact (Complex.continuous_ofReal_cpow_const h').intervalIntegrable _ _
   -- Now the hard case: re r = 0 and 0 is in the interval.
-  refine' (IntervalIntegrable.intervalIntegrable_norm_iff _).mp _
+  refine (IntervalIntegrable.intervalIntegrable_norm_iff ?_).mp ?_
   · refine' (measurable_of_continuousOn_compl_singleton (0 : ℝ) _).aestronglyMeasurable
     exact ContinuousAt.continuousOn fun x hx =>
       Complex.continuousAt_ofReal_cpow_const x r (Or.inr hx)
@@ -260,7 +260,7 @@ theorem intervalIntegrable_cos : IntervalIntegrable cos μ a b :=
 
 theorem intervalIntegrable_one_div_one_add_sq :
     IntervalIntegrable (fun x : ℝ => 1 / (↑1 + x ^ 2)) μ a b := by
-  refine' (continuous_const.div _ fun x => _).intervalIntegrable a b
+  refine (continuous_const.div ?_ fun x => ?_ ).intervalIntegrable a b
   · continuity
   · nlinarith
 #align interval_integral.interval_integrable_one_div_one_add_sq intervalIntegral.intervalIntegrable_one_div_one_add_sq

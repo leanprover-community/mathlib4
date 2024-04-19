@@ -634,7 +634,7 @@ instance Bundle.Prod.smoothVectorBundle : SmoothVectorBundle (F₁ × F₂) (E�
     rintro _ _ ⟨e₁, e₂, i₁, i₂, rfl⟩ ⟨e₁', e₂', i₁', i₂', rfl⟩
     rw [SmoothOn]
     refine ContMDiffOn.congr ?_ (e₁.coordChangeL_prod 𝕜 e₁' e₂ e₂')
-    refine' ContMDiffOn.clm_prodMap _ _
+    refine ContMDiffOn.clm_prodMap ?_ ?_
     · refine' (smoothOn_coordChangeL IB e₁ e₁').mono _
       simp only [Trivialization.baseSet_prod, mfld_simps]
       mfld_set_tac

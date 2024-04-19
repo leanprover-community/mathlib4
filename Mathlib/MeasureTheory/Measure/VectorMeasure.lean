@@ -938,7 +938,7 @@ theorem restrict_le_restrict_countable_iUnion [Countable β] {f : β → Set α}
     (hf₁ : ∀ b, MeasurableSet (f b)) (hf₂ : ∀ b, v ≤[f b] w) : v ≤[⋃ b, f b] w := by
   cases nonempty_encodable β
   rw [← Encodable.iUnion_decode₂]
-  refine' restrict_le_restrict_iUnion v w _ _
+  refine restrict_le_restrict_iUnion v w ?_ ?_
   · intro n
     measurability
   · intro n
@@ -950,7 +950,7 @@ theorem restrict_le_restrict_countable_iUnion [Countable β] {f : β → Set α}
 theorem restrict_le_restrict_union (hi₁ : MeasurableSet i) (hi₂ : v ≤[i] w) (hj₁ : MeasurableSet j)
     (hj₂ : v ≤[j] w) : v ≤[i ∪ j] w := by
   rw [Set.union_eq_iUnion]
-  refine' restrict_le_restrict_countable_iUnion v w _ _
+  refine restrict_le_restrict_countable_iUnion v w ?_ ?_
   · measurability
   · rintro (_ | _) <;> simpa
 #align measure_theory.vector_measure.restrict_le_restrict_union MeasureTheory.VectorMeasure.restrict_le_restrict_union
@@ -1300,7 +1300,7 @@ def toMeasureOfZeroLE' (s : SignedMeasure α) (i : Set α) (hi : 0 ≤[i] s) (j 
 provides the measure, mapping measurable sets `j` to `s (i ∩ j)`. -/
 def toMeasureOfZeroLE (s : SignedMeasure α) (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) :
     Measure α := by
-  refine' Measure.ofMeasurable (s.toMeasureOfZeroLE' i hi₂) _ _
+  refine Measure.ofMeasurable (s.toMeasureOfZeroLE' i hi₂) ?_ ?_
   · simp_rw [toMeasureOfZeroLE', s.restrict_apply hi₁ MeasurableSet.empty, Set.empty_inter i,
       s.empty]
     rfl

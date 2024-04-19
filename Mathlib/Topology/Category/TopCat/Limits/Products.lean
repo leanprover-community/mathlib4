@@ -186,7 +186,7 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   uniq := by
     intro S m h
     -- Porting note: used to be `ext x`
-    refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
+    refine ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext ?_ ?_ )
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
       exact h
@@ -338,7 +338,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         exact fun _ => or_not
       refine' ⟨BinaryCofan.IsColimit.mk _ _ _ _ _⟩
       · intro T f g
-        refine' ContinuousMap.mk _ _
+        refine ContinuousMap.mk ?_ ?_
         · exact fun x =>
             if h : x ∈ Set.range c.inl then f ((Equiv.ofInjective _ h₁.inj).symm ⟨x, h⟩)
             else g ((Equiv.ofInjective _ h₂.inj).symm ⟨x, (this x).resolve_left h⟩)
@@ -376,12 +376,12 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             exact h₂.isOpen_range
       · intro T f g
         ext x
-        refine' (dif_pos _).trans _
+        refine (dif_pos ?_).trans ?_
         · exact ⟨x, rfl⟩
         · dsimp; conv_lhs => erw [Equiv.ofInjective_symm_apply]
       · intro T f g
         ext x
-        refine' (dif_neg _).trans _
+        refine (dif_neg ?_).trans ?_
         · rintro ⟨y, e⟩
           have : c.inr x ∈ Set.range c.inl ⊓ Set.range c.inr := ⟨⟨_, e⟩, ⟨_, rfl⟩⟩
           rwa [disjoint_iff.mp h₃.1] at this

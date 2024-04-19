@@ -187,7 +187,7 @@ noncomputable def toPGameEmbedding : Ordinal.{u} ↪o PGame.{u} where
 /-- The sum of ordinals as games corresponds to natural addition of ordinals. -/
 theorem toPGame_add : ∀ a b : Ordinal.{u}, a.toPGame + b.toPGame ≈ (a ♯ b).toPGame
   | a, b => by
-    refine' ⟨le_of_forall_lf (fun i => _) isEmptyElim, le_of_forall_lf (fun i => _) isEmptyElim⟩
+    refine ⟨le_of_forall_lf (fun i => ?_) isEmptyElim, le_of_forall_lf (fun i => ?_ ) isEmptyElim⟩
     · apply leftMoves_add_cases i <;>
       intro i <;>
       let wf := toLeftMovesToPGame_symm_lt i <;>

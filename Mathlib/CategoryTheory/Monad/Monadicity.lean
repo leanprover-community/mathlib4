@@ -128,9 +128,9 @@ def leftAdjointComparison
     [∀ A : (adj).toMonad.Algebra, HasCoequalizer ((F).map A.a)
       ((adj).counit.app ((F).obj A.A))] :
     (adj).toMonad.Algebra ⥤ D := by
-  refine'
+  refine
     Adjunction.leftAdjointOfEquiv (G := comparison adj)
-      (F_obj := fun A => comparisonLeftAdjointObj A) (fun A B => _) _
+      (F_obj := fun A => comparisonLeftAdjointObj A) (fun A B => ?_) ?_
   · apply comparisonLeftAdjointHomEquiv
   · intro A B B' g h
     ext1

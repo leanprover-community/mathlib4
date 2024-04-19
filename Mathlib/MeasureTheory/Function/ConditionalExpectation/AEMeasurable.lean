@@ -702,7 +702,7 @@ theorem Memℒp.induction_stronglyMeasurable (hm : m ≤ m0) (hp_ne_top : p ≠ 
   change P f_Lp
   -- Porting note: `P` should be an explicit argument to `Lp.induction_stronglyMeasurable`, but
   -- it isn't?
-  refine' Lp.induction_stronglyMeasurable hm hp_ne_top (P := fun f => P f) _ _ h_closed f_Lp hfm_Lp
+  refine Lp.induction_stronglyMeasurable hm hp_ne_top (P := fun f => P f) ?_ ?_  h_closed f_Lp hfm_Lp
   · intro c s hs hμs
     rw [Lp.simpleFunc.coe_indicatorConst]
     refine h_ae indicatorConstLp_coeFn.symm ?_ (h_ind c hs hμs)

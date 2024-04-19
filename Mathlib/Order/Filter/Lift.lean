@@ -204,7 +204,7 @@ theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β
   refine lift_iInf_le.antisymm fun s => ?_
   have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
-    refine' iInf_sets_induct ht _ fun hs ht => _
+    refine iInf_sets_induct ht ?_ fun hs ht => ?_
     · inhabit ι
       exact iInf₂_le_of_le default univ (iInf_le _ univ_mem)
     · rw [hg]

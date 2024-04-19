@@ -280,7 +280,7 @@ def coordChangeL (e e' : Trivialization F (π F E)) [e.IsLinear R] [e'.IsLinear 
     continuous_toFun := by
       by_cases hb : b ∈ e.baseSet ∩ e'.baseSet
       · rw [dif_pos hb]
-        refine' (e'.continuousOn.comp_continuous _ _).snd
+        refine (e'.continuousOn.comp_continuous ?_ ?_ ).snd
         · exact e.continuousOn_symm.comp_continuous (Continuous.Prod.mk b) fun y =>
             mk_mem_prod hb.1 (mem_univ y)
         · exact fun y => e'.mem_source.mpr hb.2

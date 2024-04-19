@@ -1094,7 +1094,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
           intro x
           obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
-        refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
+        refine Subfield.closure_le.mpr (Set.union_subset (fun x hx => ?_) ?_ )
         · obtain ⟨y, hy⟩ := hx
           refine ⟨y, ?_⟩
           -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644

@@ -191,12 +191,12 @@ theorem fac : W.Q ⋙ lift G hG = G :=
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
   suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
-    refine' Functor.ext _ _
+    refine Functor.ext ?_ ?_
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  refine' Paths.ext_functor _ _
+  refine Paths.ext_functor ?_ ?_
   · ext X
     cases X
     apply Functor.congr_obj h
@@ -376,7 +376,7 @@ def unitIso : 𝟭 (W.Localization ⥤ D) ≅ functor W D ⋙ inverse W D :=
 def counitIso : inverse W D ⋙ functor W D ≅ 𝟭 (W.FunctorsInverting D) :=
   eqToIso
     (by
-      refine' Functor.ext _ _
+      refine Functor.ext ?_ ?_
       · rintro ⟨G, hG⟩
         ext
         exact fac G hG

@@ -284,7 +284,7 @@ theorem le_dist_coe (z w : ℍ) : w.im * (1 - Real.exp (-dist z w)) ≤ dist (z 
 `TopologicalSpace` is definitionally equal to the subtype topology. -/
 instance : MetricSpace ℍ :=
   metricSpaceAux.replaceTopology <| by
-    refine' le_antisymm (continuous_id_iff_le.1 _) _
+    refine le_antisymm (continuous_id_iff_le.1 ?_) ?_
     · refine' (@continuous_iff_continuous_dist ℍ ℍ metricSpaceAux.toPseudoMetricSpace _ _).2 _
       have : ∀ x : ℍ × ℍ, 2 * √(x.1.im * x.2.im) ≠ 0 := fun x => by positivity
       -- `continuity` fails to apply `Continuous.div`

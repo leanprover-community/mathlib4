@@ -283,7 +283,7 @@ vectors subtracting that point on the right. -/
 theorem coe_direction_eq_vsub_set_right {s : AffineSubspace k P} {p : P} (hp : p ∈ s) :
     (s.direction : Set V) = (· -ᵥ p) '' s := by
   rw [coe_direction_eq_vsub_set ⟨p, hp⟩]
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · rintro v ⟨p1, hp1, p2, hp2, rfl⟩
     exact ⟨p1 -ᵥ p2 +ᵥ p, vadd_mem_of_mem_direction (vsub_mem_direction hp1 hp2) hp, vadd_vsub _ _⟩
   · rintro v ⟨p2, hp2, rfl⟩
@@ -1039,7 +1039,7 @@ open AffineSubspace Set
 theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((p -ᵥ ·) '' s) := by
   rw [vectorSpan_def]
-  refine' le_antisymm _ (Submodule.span_mono _)
+  refine le_antisymm ?_ (Submodule.span_mono ?_ )
   · rw [Submodule.span_le]
     rintro v ⟨p1, hp1, p2, hp2, hv⟩
     simp_rw [← vsub_sub_vsub_cancel_left p1 p2 p] at hv
@@ -1053,7 +1053,7 @@ theorem vectorSpan_eq_span_vsub_set_left {s : Set P} {p : P} (hp : p ∈ s) :
 theorem vectorSpan_eq_span_vsub_set_right {s : Set P} {p : P} (hp : p ∈ s) :
     vectorSpan k s = Submodule.span k ((· -ᵥ p) '' s) := by
   rw [vectorSpan_def]
-  refine' le_antisymm _ (Submodule.span_mono _)
+  refine le_antisymm ?_ (Submodule.span_mono ?_ )
   · rw [Submodule.span_le]
     rintro v ⟨p1, hp1, p2, hp2, hv⟩
     simp_rw [← vsub_sub_vsub_cancel_right p1 p2 p] at hv
@@ -1445,7 +1445,7 @@ variable {k : Type*} {V : Type*} {P : Type*} [Ring k] [AddCommGroup V] [Module k
 of any one difference between points in the two subspaces. -/
 theorem direction_sup {s1 s2 : AffineSubspace k P} {p1 p2 : P} (hp1 : p1 ∈ s1) (hp2 : p2 ∈ s2) :
     (s1 ⊔ s2).direction = s1.direction ⊔ s2.direction ⊔ k ∙ p2 -ᵥ p1 := by
-  refine' le_antisymm _ _
+  refine le_antisymm ?_ ?_
   · change (affineSpan k ((s1 : Set P) ∪ s2)).direction ≤ _
     rw [← mem_coe] at hp1
     rw [direction_affineSpan, vectorSpan_eq_span_vsub_set_right k (Set.mem_union_left _ hp1),

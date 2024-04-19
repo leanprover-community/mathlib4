@@ -103,7 +103,7 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     rfl
   have le_d_f : ∀ n m, m ≤ n → γ - 2 * (1 / 2) ^ m + (1 / 2) ^ n ≤ d (f m n) := by
     intro n m h
-    refine' Nat.le_induction _ _ n h
+    refine Nat.le_induction ?_ ?_  n h
     · have := he₂ m
       simp_rw [f, Nat.Ico_succ_singleton, Finset.inf_singleton]
       linarith

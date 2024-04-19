@@ -414,7 +414,7 @@ theorem least_descending_central_series_length_eq_nilpotencyClass :
 theorem lowerCentralSeries_length_eq_nilpotencyClass :
     Nat.find (nilpotent_iff_lowerCentralSeries.mp hG) = Group.nilpotencyClass (G := G) := by
   rw [← least_descending_central_series_length_eq_nilpotencyClass]
-  refine' le_antisymm (Nat.find_mono _) (Nat.find_mono _)
+  refine le_antisymm (Nat.find_mono ?_) (Nat.find_mono ?_ )
   · rintro n ⟨H, ⟨hH, hn⟩⟩
     rw [← le_bot_iff, ← hn]
     exact descending_central_series_ge_lower H hH n

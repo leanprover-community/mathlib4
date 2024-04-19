@@ -141,7 +141,7 @@ theorem right_invariance {s : Set H} {x : H} {f : H → H'} {e : PartialHomeomor
   refine ⟨fun h ↦ ?_, hG.right_invariance' he hxe⟩
   have := hG.right_invariance' (G.symm he) (e.mapsTo hxe) h
   rw [e.symm_symm, e.left_inv hxe] at this
-  refine' hG.congr _ ((hG.congr_set _).mp this)
+  refine hG.congr ?_ ((hG.congr_set ?_ ).mp this)
   · refine' eventually_of_mem (e.open_source.mem_nhds hxe) fun x' hx' ↦ _
     simp_rw [Function.comp_apply, e.left_inv hx']
   · rw [eventuallyEq_set]
@@ -255,7 +255,7 @@ theorem liftPropWithinAt_indep_chart_source_aux (g : M → H') (he : e ∈ G.max
   simp_rw [PartialHomeomorph.trans_apply, e.left_inv xe]
   rw [hG.congr_iff]
   · refine' hG.congr_set _
-    refine' (eventually_of_mem _ fun y (hy : y ∈ e'.symm ⁻¹' e.source) ↦ _).set_eq
+    refine (eventually_of_mem ?_ fun y (hy : y ∈ e'.symm ⁻¹' e.source) ↦ ?_ ).set_eq
     · refine' (e'.symm.continuousAt <| e'.mapsTo xe').preimage_mem_nhds (e.open_source.mem_nhds _)
       simp_rw [e'.left_inv xe', xe]
     simp_rw [mem_preimage, PartialHomeomorph.coe_trans_symm, PartialHomeomorph.symm_symm,

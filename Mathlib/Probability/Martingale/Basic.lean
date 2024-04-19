@@ -280,7 +280,7 @@ protected theorem sup {f g : ι → Ω → ℝ} (hf : Submartingale f ℱ μ) (h
     Submartingale (f ⊔ g) ℱ μ := by
   refine' ⟨fun i => @StronglyMeasurable.sup _ _ _ _ (ℱ i) _ _ _ (hf.adapted i) (hg.adapted i),
     fun i j hij => _, fun i => Integrable.sup (hf.integrable _) (hg.integrable _)⟩
-  refine' EventuallyLE.sup_le _ _
+  refine EventuallyLE.sup_le ?_ ?_
   · exact EventuallyLE.trans (hf.2.1 i j hij)
       (condexp_mono (hf.integrable _) (Integrable.sup (hf.integrable j) (hg.integrable j))
         (eventually_of_forall fun x => le_max_left _ _))

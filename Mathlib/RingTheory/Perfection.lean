@@ -571,7 +571,7 @@ theorem valAux_mul (f g : PreTilt K v O hv p) :
   replace hn := coeff_ne_zero_of_le hn (le_max_right m n)
   have hfg : coeff _ _ (max m n + 1) (f * g) ≠ 0 := by
     rw [RingHom.map_mul]
-    refine' ModP.mul_ne_zero_of_pow_p_ne_zero _ _
+    refine ModP.mul_ne_zero_of_pow_p_ne_zero ?_ ?_
     · rw [← RingHom.map_pow, coeff_pow_p f]; assumption
     · rw [← RingHom.map_pow, coeff_pow_p g]; assumption
   rw [valAux_eq (coeff_add_ne_zero hm 1), valAux_eq (coeff_add_ne_zero hn 1), valAux_eq hfg]

@@ -41,7 +41,7 @@ theorem linearIndependent_single {φ : ι → Type*} {f : ∀ ι, φ ι → M}
       exact disjoint_bot_right
     apply (hf i).map h_disjoint
   · intro i t _ hit
-    refine' (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono _ _
+    refine (disjoint_lsingle_lsingle {i} t (disjoint_singleton_left.2 hit)).mono ?_ ?_
     · rw [span_le]
       simp only [iSup_singleton]
       rw [range_coe]

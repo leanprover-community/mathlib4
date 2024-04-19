@@ -269,7 +269,7 @@ variable (α)
 @[to_additive]
 theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 / x.1) (𝓝 (1 : α)) := by
   rw [nhds_eq_comap_uniformity, Filter.comap_comap]
-  refine' le_antisymm (Filter.map_le_iff_le_comap.1 _) _
+  refine le_antisymm (Filter.map_le_iff_le_comap.1 ?_) ?_
   · intro s hs
     rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
     refine mem_map.2 (mem_of_superset ht ?_)
