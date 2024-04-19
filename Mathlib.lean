@@ -56,6 +56,7 @@ import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.Kernels
@@ -3369,6 +3370,8 @@ import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Basis
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
