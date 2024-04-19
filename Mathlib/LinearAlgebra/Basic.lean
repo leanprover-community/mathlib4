@@ -121,7 +121,6 @@ variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
 open Submodule
 
 variable {σ₂₁ : R₂ →+* R} {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 section
@@ -367,7 +366,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     have hxz : z + x ∈ p := by
       apply h₂
       simp [hx, hz]
-    suffices z + x - x ∈ p by simpa only [this, add_sub_cancel]
+    suffices z + x - x ∈ p by simpa only [this, add_sub_cancel_right]
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
 
@@ -422,13 +421,9 @@ namespace Submodule
 section AddCommMonoid
 
 variable [Semiring R] [Semiring R₂] [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R₂ M₂]
-
 variable (p p' : Submodule R M) (q : Submodule R₂ M₂)
-
 variable {τ₁₂ : R →+* R₂}
-
 variable {F : Type*} [FunLike F M M₂] [SemilinearMapClass F τ₁₂ M M₂]
 
 open LinearMap
@@ -506,13 +501,9 @@ namespace LinearMap
 section Semiring
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R₂ M₂] [Module R₃ M₃]
-
 variable {τ₁₂ : R →+* R₂} {τ₂₃ : R₂ →+* R₃} {τ₁₃ : R →+* R₃}
-
 variable [RingHomCompTriple τ₁₂ τ₂₃ τ₁₃]
 
 /-- A monomorphism is injective. -/
@@ -596,13 +587,9 @@ section AddCommMonoid
 section Subsingleton
 
 variable [Semiring R] [Semiring R₂]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂]
-
 variable [Module R M] [Module R₂ M₂]
-
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
-
 variable [RingHomInvPair σ₁₂ σ₂₁] [RingHomInvPair σ₂₁ σ₁₂]
 
 section Module
@@ -654,9 +641,7 @@ end Subsingleton
 section Uncurry
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable (V V₂ R)
 
 /-- Linear equivalence between a curried and uncurried function.
@@ -686,25 +671,15 @@ end Uncurry
 section
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-
 variable [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃] [AddCommMonoid M₄]
-
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂} {module_M₃ : Module R₃ M₃}
-
 variable {σ₁₂ : R →+* R₂} {σ₂₁ : R₂ →+* R}
-
 variable {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃} [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃]
-
 variable {σ₃₂ : R₃ →+* R₂}
-
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-
 variable {re₂₃ : RingHomInvPair σ₂₃ σ₃₂} {re₃₂ : RingHomInvPair σ₃₂ σ₂₃}
-
 variable (f : M →ₛₗ[σ₁₂] M₂) (g : M₂ →ₛₗ[σ₂₁] M) (e : M ≃ₛₗ[σ₁₂] M₂) (h : M₂ →ₛₗ[σ₂₃] M₃)
-
 variable (e'' : M₂ ≃ₛₗ[σ₂₃] M₃)
-
 variable (p q : Submodule R M)
 
 /-- Linear equivalence between two equal submodules. -/
@@ -913,21 +888,13 @@ end AddCommMonoid
 section AddCommGroup
 
 variable [Semiring R] [Semiring R₂] [Semiring R₃] [Semiring R₄]
-
 variable [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃] [AddCommGroup M₄]
-
 variable {module_M : Module R M} {module_M₂ : Module R₂ M₂}
-
 variable {module_M₃ : Module R₃ M₃} {module_M₄ : Module R₄ M₄}
-
 variable {σ₁₂ : R →+* R₂} {σ₃₄ : R₃ →+* R₄}
-
 variable {σ₂₁ : R₂ →+* R} {σ₄₃ : R₄ →+* R₃}
-
 variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPair σ₂₁ σ₁₂}
-
 variable {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPair σ₄₃ σ₃₄}
-
 variable (e e₁ : M ≃ₛₗ[σ₁₂] M₂) (e₂ : M₃ ≃ₛₗ[σ₃₄] M₄)
 
 -- @[simp] -- Porting note (#10618): simp can prove this
@@ -971,7 +938,6 @@ end Neg
 section CommSemiring
 
 variable [CommSemiring R] [AddCommMonoid M] [AddCommMonoid M₂] [AddCommMonoid M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
 
 open LinearMap
@@ -1097,9 +1063,7 @@ end CommSemiring
 section Field
 
 variable [Field K] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module K M] [Module K M₂] [Module K M₃]
-
 variable (K) (M)
 
 open LinearMap
@@ -1174,7 +1138,6 @@ end Equiv
 section FunLeft
 
 variable (R M) [Semiring R] [AddCommMonoid M] [Module R M]
-
 variable {m n p : Type*}
 
 namespace LinearMap

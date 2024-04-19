@@ -103,6 +103,15 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 #align quotient_group.mk'_eq_mk' QuotientGroup.mk'_eq_mk'
 #align quotient_add_group.mk'_eq_mk' QuotientAddGroup.mk'_eq_mk'
 
+open scoped Pointwise in
+@[to_additive]
+theorem sound (U : Set (G ⧸ N)) (g : N.op) :
+    g • (mk' N) ⁻¹' U = (mk' N) ⁻¹' U := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_smul_set_iff_inv_smul_mem]
+  congr! 1
+  exact Quotient.sound ⟨g⁻¹, rfl⟩
+
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
 
@@ -304,7 +313,7 @@ lemma preimage_image_coe (s : Set G) : ((↑) : G → Q) ⁻¹' ((↑) '' s) = N
   ext a
   constructor
   · rintro ⟨b, hb, h⟩
-    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel' _ _⟩
+    refine ⟨a / b, (QuotientGroup.eq_one_iff _).1 ?_, b, hb, div_mul_cancel _ _⟩
     simp only [h, QuotientGroup.mk_div, div_self']
   · rintro ⟨a, ha, b, hb, rfl⟩
     refine ⟨b, hb, ?_⟩
@@ -526,7 +535,6 @@ def equivQuotientSubgroupOfOfEq {A' A B' B : Subgroup G} [hAN : (A'.subgroupOf A
 section ZPow
 
 variable {A B C : Type u} [CommGroup A] [CommGroup B] [CommGroup C]
-
 variable (f : A →* B) (g : B →* A) (e : A ≃* B) (d : B ≃* C) (n : ℤ)
 
 /-- The map of quotients by powers of an integer induced by a group homomorphism. -/
@@ -731,7 +739,6 @@ open scoped Classical
 open QuotientGroup Subgroup
 
 variable {F G H : Type u} [Group F] [Group G] [Group H] [Fintype F] [Fintype H]
-
 variable (f : F →* G) (g : G →* H)
 
 /-- If `F` and `H` are finite such that `ker(G →* H) ≤ im(F →* G)`, then `G` is finite. -/

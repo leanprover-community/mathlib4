@@ -1,6 +1,6 @@
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Init.Core
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
@@ -27,7 +27,7 @@ example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
 --   rw_search
 
 
--- All rewrite-only lemmas from `Mathlib.Data.Polynomial.Degree.Definitions`,
+-- All rewrite-only lemmas from `Mathlib.Algebra.Polynomial.Degree.Definitions`,
 -- whose statements are equalities.
 -- TODO: `rw_search` should handle `iff` as well.
 
@@ -76,11 +76,11 @@ example {R : Type u} {a : R} [Semiring R] (n : ℕ) (ha : a ≠ 0) :
 --   done
 
 -- Fails:
--- -- Polynomial.natDegree_int_cast.{u}
+-- -- Polynomial.natDegree_intCast.{u}
 -- example {R : Type u} [Ring R] (n : ℤ) : Polynomial.natDegree (n : R[X]) = 0 := by
---   rw_search [-Polynomial.natDegree_int_cast]
+--   rw_search [-Polynomial.natDegree_intCast]
 --   -- Mathlib proof:
---   -- rw [← C_eq_int_cast, natDegree_C]
+--   -- rw [← C_eq_intCast, natDegree_C]
 --   done
 
 -- Fails:

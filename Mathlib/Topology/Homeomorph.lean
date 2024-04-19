@@ -467,6 +467,13 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
+/-- The codomain of a homeomorphism is a locally compact space if and only if
+the domain is a locally compact space. -/
+theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
+  exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
+    fun _ => h.closedEmbedding.locallyCompactSpace⟩
+
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
@@ -758,7 +765,7 @@ section
 variable {ι : Type*}
 
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
-  depending on whether they satisfy a predicate p or not.-/
+  depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i
@@ -810,20 +817,20 @@ variable {Z : Type*} [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace
 @[simps toEquiv]
 def toHomeomorph (e : X ≃ Y) (he : ∀ s, IsOpen (e ⁻¹' s) ↔ IsOpen s) : X ≃ₜ Y where
   toEquiv := e
-  continuous_toFun := continuous_def.2 λ s ↦ (he _).2
-  continuous_invFun := continuous_def.2 λ s ↦ by convert (he _).1; simp
+  continuous_toFun := continuous_def.2 fun s ↦ (he _).2
+  continuous_invFun := continuous_def.2 fun s ↦ by convert (he _).1; simp
 
 @[simp] lemma coe_toHomeomorph (e : X ≃ Y) (he) : ⇑(e.toHomeomorph he) = e := rfl
 lemma toHomeomorph_apply (e : X ≃ Y) (he) (x : X) : e.toHomeomorph he x = e x := rfl
 
 @[simp] lemma toHomeomorph_refl :
-  (Equiv.refl X).toHomeomorph (λ _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
+  (Equiv.refl X).toHomeomorph (fun _s ↦ Iff.rfl) = Homeomorph.refl _ := rfl
 
 @[simp] lemma toHomeomorph_symm (e : X ≃ Y) (he) :
-  (e.toHomeomorph he).symm = e.symm.toHomeomorph λ s ↦ by convert (he _).symm; simp := rfl
+  (e.toHomeomorph he).symm = e.symm.toHomeomorph fun s ↦ by convert (he _).symm; simp := rfl
 
 lemma toHomeomorph_trans (e : X ≃ Y) (f : Y ≃ Z) (he hf) :
-    (e.trans f).toHomeomorph (λ _s ↦ (he _).trans (hf _)) =
+    (e.trans f).toHomeomorph (fun _s ↦ (he _).trans (hf _)) =
     (e.toHomeomorph he).trans (f.toHomeomorph hf) := rfl
 
 /-- An inducing equiv between topological spaces is a homeomorphism. -/

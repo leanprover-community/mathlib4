@@ -193,7 +193,7 @@ open scoped Classical
 If either of the kernels is not s-finite, `compProd` is given the junk value 0. -/
 noncomputable def compProd (κ : kernel α β) (η : kernel (α × β) γ) : kernel α (β × γ) :=
 if h : IsSFiniteKernel κ ∧ IsSFiniteKernel η then
-{ val := λ a ↦
+{ val := fun a ↦
     Measure.ofMeasurable (fun s _ => compProdFun κ η a s) (compProdFun_empty κ η a)
       (@compProdFun_iUnion _ _ _ _ _ _ κ η h.2 a)
   property := by
@@ -318,6 +318,18 @@ theorem ae_ae_of_ae_compProd {p : β × γ → Prop} (h : ∀ᵐ bc ∂(κ ⊗�
     ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
   ae_null_of_compProd_null h
 #align probability_theory.kernel.ae_ae_of_ae_comp_prod ProbabilityTheory.kernel.ae_ae_of_ae_compProd
+
+lemma ae_compProd_of_ae_ae {p : β × γ → Prop} (hp : MeasurableSet {x | p x})
+    (h : ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c)) :
+    ∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc := by
+  simp_rw [ae_iff] at h ⊢
+  rw [compProd_null]
+  · exact h
+  · exact hp.compl
+
+lemma ae_compProd_iff {p : β × γ → Prop} (hp : MeasurableSet {x | p x}) :
+    (∀ᵐ bc ∂(κ ⊗ₖ η) a, p bc) ↔ ∀ᵐ b ∂κ a, ∀ᵐ c ∂η (a, b), p (b, c) :=
+  ⟨fun h ↦ ae_ae_of_ae_compProd h, fun h ↦ ae_compProd_of_ae_ae hp h⟩
 
 end Ae
 
@@ -530,7 +542,7 @@ theorem compProd_apply_univ_le (κ : kernel α β) (η : kernel (α × β) γ) [
   calc
     ∫⁻ b, η (a, b) Set.univ ∂κ a ≤ ∫⁻ _, Cη ∂κ a :=
       lintegral_mono fun b => measure_le_bound η (a, b) Set.univ
-    _ = Cη * κ a Set.univ := (MeasureTheory.lintegral_const Cη)
+    _ = Cη * κ a Set.univ := MeasureTheory.lintegral_const Cη
     _ = κ a Set.univ * Cη := mul_comm _ _
 #align probability_theory.kernel.comp_prod_apply_univ_le ProbabilityTheory.kernel.compProd_apply_univ_le
 
@@ -570,6 +582,25 @@ lemma compProd_add_right (μ : kernel α β) (κ η : kernel (α × β) γ)
     OuterMeasure.coe_add]
   rw [lintegral_add_left]
   exact measurable_kernel_prod_mk_left' hs a
+
+lemma comapRight_compProd_id_prod {δ : Type*} {mδ : MeasurableSpace δ}
+    (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ) [IsSFiniteKernel η]
+    {f : δ → γ} (hf : MeasurableEmbedding f) :
+    comapRight (κ ⊗ₖ η) (MeasurableEmbedding.id.prod_mk hf) = κ ⊗ₖ (comapRight η hf) := by
+  ext a t ht
+  rw [comapRight_apply' _ _ _ ht, compProd_apply, compProd_apply _ _ _ ht]
+  swap; · exact (MeasurableEmbedding.id.prod_mk hf).measurableSet_image.mpr ht
+  refine lintegral_congr (fun b ↦ ?_)
+  simp only [id_eq, Set.mem_image, Prod.mk.injEq, Prod.exists]
+  rw [comapRight_apply']
+  swap; · exact measurable_prod_mk_left ht
+  congr with x
+  simp only [Set.mem_setOf_eq, Set.mem_image]
+  constructor
+  · rintro ⟨b', c, h, rfl, rfl⟩
+    exact ⟨c, h, rfl⟩
+  · rintro ⟨c, h, rfl⟩
+    exact ⟨b, c, h, rfl, rfl⟩
 
 end CompositionProduct
 
@@ -894,6 +925,13 @@ instance IsSFiniteKernel.fst (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : 
   by rw [kernel.fst]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.fst ProbabilityTheory.kernel.IsSFiniteKernel.fst
 
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_fst {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (fst κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (fst κ) a Set.univ)⟩
+  rw [fst_apply' _ _ MeasurableSet.univ]
+  simp
+
 lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
     fst (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ f hf := by
@@ -901,6 +939,11 @@ lemma fst_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [fst_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_fst hs
+
+lemma fst_map_id_prod (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    fst (map κ (fun a ↦ (a, f a)) (measurable_id.prod_mk hf)) = κ := by
+  rw [fst_map_prod _ measurable_id' hf, kernel.map_id']
 
 @[simp]
 lemma fst_compProd (κ : kernel α β) (η : kernel (α × β) γ) [IsSFiniteKernel κ] [IsMarkovKernel η] :
@@ -955,6 +998,13 @@ instance IsSFiniteKernel.snd (κ : kernel α (β × γ)) [IsSFiniteKernel κ] : 
   by rw [kernel.snd]; infer_instance
 #align probability_theory.kernel.is_s_finite_kernel.snd ProbabilityTheory.kernel.IsSFiniteKernel.snd
 
+instance (priority := 100) isFiniteKernel_of_isFiniteKernel_snd {κ : kernel α (β × γ)}
+    [h : IsFiniteKernel (snd κ)] :
+    IsFiniteKernel κ := by
+  refine ⟨h.bound, h.bound_lt_top, fun a ↦ le_trans ?_ (measure_le_bound (snd κ) a Set.univ)⟩
+  rw [snd_apply' _ _ MeasurableSet.univ]
+  simp
+
 lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
     (hf : Measurable f) (hg : Measurable g) :
     snd (map κ (fun x ↦ (f x, g x)) (hf.prod_mk hg)) = map κ g hg := by
@@ -962,6 +1012,11 @@ lemma snd_map_prod (κ : kernel α β) {f : β → γ} {g : β → δ}
   rw [snd_apply' _ _ hs, map_apply', map_apply' _ _ _ hs]
   · rfl
   · exact measurable_snd hs
+
+lemma snd_map_prod_id (κ : kernel α β) {γ : Type*} {mγ : MeasurableSpace γ}
+    {f : β → γ} (hf : Measurable f) :
+    snd (map κ (fun a ↦ (f a, a)) (hf.prod_mk measurable_id)) = κ := by
+  rw [snd_map_prod _ hf measurable_id', kernel.map_id']
 
 lemma snd_prodMkLeft (δ : Type*) [MeasurableSpace δ] (κ : kernel α (β × γ)) :
     snd (prodMkLeft δ κ) = prodMkLeft δ (snd κ) := rfl

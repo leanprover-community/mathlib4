@@ -272,7 +272,7 @@ lemma subst_into_smulg {α} [AddCommGroup α]
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
+  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
@@ -473,7 +473,7 @@ open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
+  let tgt ← withReducible goal.getType'
   let r ← abelNFCore s cfg tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))

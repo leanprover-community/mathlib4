@@ -86,11 +86,8 @@ theorem IsCountablySpanning.prod {C : Set (Set α)} {D : Set (Set β)} (hC : IsC
 #align is_countably_spanning.prod IsCountablySpanning.prod
 
 variable [MeasurableSpace α] [MeasurableSpace α'] [MeasurableSpace β] [MeasurableSpace β']
-
 variable [MeasurableSpace γ]
-
 variable {μ μ' : Measure α} {ν ν' : Measure β} {τ : Measure γ}
-
 variable [NormedAddCommGroup E]
 
 /-! ### Measurability
@@ -375,8 +372,8 @@ theorem prod_prod (s : Set α) (t : Set β) : μ.prod ν (s ×ˢ t) = μ s * ν 
     calc
       μ s * ν t ≤ μ s' * ν t := mul_le_mul_right' (measure_mono hss') _
       _ = ∫⁻ _ in s', ν t ∂μ := by rw [set_lintegral_const, mul_comm]
-      _ ≤ ∫⁻ x in s', f x ∂μ := (set_lintegral_mono measurable_const hfm fun x => id)
-      _ ≤ ∫⁻ x, f x ∂μ := (lintegral_mono' restrict_le_self le_rfl)
+      _ ≤ ∫⁻ x in s', f x ∂μ := set_lintegral_mono measurable_const hfm fun x => id
+      _ ≤ ∫⁻ x, f x ∂μ := lintegral_mono' restrict_le_self le_rfl
       _ = μ.prod ν ST := (prod_apply hSTm).symm
       _ = μ.prod ν (s ×ˢ t) := measure_toMeasurable _
 #align measure_theory.measure.prod_prod MeasureTheory.Measure.prod_prod

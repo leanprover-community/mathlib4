@@ -185,7 +185,7 @@ def applyFinsupp (tf : TotalFunction α β) : α →₀ β where
     intro a
     rcases tf with ⟨A, y⟩
     simp only [apply, zeroDefaultSupp, List.mem_map, List.mem_filter, exists_and_right,
-      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne.def, zeroDefault]
+      List.mem_toFinset, exists_eq_right, Sigma.exists, Ne, zeroDefault]
     constructor
     · rintro ⟨od, hval, hod⟩
       have := List.mem_dlookup (List.nodupKeys_dedupKeys A) hval

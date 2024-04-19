@@ -59,7 +59,7 @@ theorem map_birkhoffAverage (S : Type*) {F N : Type*}
     [DivisionSemiring S] [AddCommMonoid N] [Module S N] [FunLike F M N]
     [AddMonoidHomClass F M N] (g' : F) (f : α → α) (g : α → M) (n : ℕ) (x : α) :
     g' (birkhoffAverage R f g n x) = birkhoffAverage S f (g' ∘ g) n x := by
-  simp only [birkhoffAverage, map_inv_nat_cast_smul g' R S, map_birkhoffSum]
+  simp only [birkhoffAverage, map_inv_natCast_smul g' R S, map_birkhoffSum]
 
 theorem birkhoffAverage_congr_ring (S : Type*) [DivisionSemiring S] [Module S M]
     (f : α → α) (g : α → M) (n : ℕ) (x : α) :

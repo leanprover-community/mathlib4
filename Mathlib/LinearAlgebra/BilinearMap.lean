@@ -36,39 +36,22 @@ section Semiring
 
 -- the `ₗ` subscript variables are for special cases about linear (as opposed to semilinear) maps
 variable {R : Type*} [Semiring R] {S : Type*} [Semiring S]
-
 variable {R₂ : Type*} [Semiring R₂] {S₂ : Type*} [Semiring S₂]
-
 variable {M : Type*} {N : Type*} {P : Type*}
-
 variable {M₂ : Type*} {N₂ : Type*} {P₂ : Type*}
-
 variable {Nₗ : Type*} {Pₗ : Type*}
-
 variable {M' : Type*} {N' : Type*} {P' : Type*}
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-
 variable [AddCommMonoid M₂] [AddCommMonoid N₂] [AddCommMonoid P₂]
-
 variable [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-
 variable [AddCommGroup M'] [AddCommGroup N'] [AddCommGroup P']
-
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
-
 variable [Module R M₂] [Module S N₂] [Module R P₂] [Module S₂ P₂]
-
 variable [Module R Pₗ] [Module S Pₗ]
-
 variable [Module R M'] [Module S N'] [Module R₂ P'] [Module S₂ P']
-
 variable [SMulCommClass S₂ R₂ P] [SMulCommClass S R Pₗ] [SMulCommClass S₂ R₂ P']
-
 variable [SMulCommClass S₂ R P₂]
-
 variable {ρ₁₂ : R →+* R₂} {σ₁₂ : S →+* S₂}
-
 variable (ρ₁₂ σ₁₂)
 
 /-- Create a bilinear map from a function that is semilinear in each component.
@@ -211,17 +194,13 @@ theorem domRestrict₁₂_apply (f : M →ₛₗ[ρ₁₂] N →ₛₗ[σ₁₂]
 section restrictScalars
 
 variable (R' S' : Type*)
-
 variable [Semiring R'] [Semiring S'] [Module R' M] [Module S' N] [Module R' Pₗ] [Module S' Pₗ]
-
 variable [SMulCommClass S' R' Pₗ]
-
 variable [SMul S' S] [IsScalarTower S' S N] [IsScalarTower S' S Pₗ]
-
 variable [SMul R' R] [IsScalarTower R' R M] [IsScalarTower R' R Pₗ]
 
 /-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
-then the restriction of scalars is a `R'`-`S'` bilinear map.-/
+then the restriction of scalars is a `R'`-`S'` bilinear map. -/
 @[simps!]
 def restrictScalars₁₂ (B : M →ₗ[R] N →ₗ[S] Pₗ) : M →ₗ[R'] N →ₗ[S'] Pₗ :=
   LinearMap.mk₂' R' S'
@@ -249,29 +228,17 @@ end Semiring
 section CommSemiring
 
 variable {R : Type*} [CommSemiring R] {R₂ : Type*} [CommSemiring R₂]
-
 variable {R₃ : Type*} [CommSemiring R₃] {R₄ : Type*} [CommSemiring R₄]
-
 variable {M : Type*} {N : Type*} {P : Type*} {Q : Type*}
-
 variable {Mₗ : Type*} {Nₗ : Type*} {Pₗ : Type*} {Qₗ Qₗ' : Type*}
-
 variable [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
-
 variable [AddCommMonoid Mₗ] [AddCommMonoid Nₗ] [AddCommMonoid Pₗ]
-
 variable [AddCommMonoid Qₗ] [AddCommMonoid Qₗ']
-
 variable [Module R M] [Module R₂ N] [Module R₃ P] [Module R₄ Q]
-
 variable [Module R Mₗ] [Module R Nₗ] [Module R Pₗ] [Module R Qₗ] [Module R Qₗ']
-
 variable {σ₁₂ : R →+* R₂} {σ₂₃ : R₂ →+* R₃} {σ₁₃ : R →+* R₃}
-
 variable {σ₄₂ : R₄ →+* R₂} {σ₄₃ : R₄ →+* R₃}
-
 variable [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomCompTriple σ₄₂ σ₂₃ σ₄₃]
-
 variable (R)
 
 /-- Create a bilinear map from a function that is linear in each component.
@@ -374,7 +341,7 @@ theorem compl₂_apply (g : Q →ₛₗ[σ₄₂] N) (m : M) (q : Q) : f.compl�
 @[simp]
 theorem compl₂_id : f.compl₂ LinearMap.id = f := by
   ext
-  rw [compl₂_apply, id_coe, id.def]
+  rw [compl₂_apply, id_coe, _root_.id]
 #align linear_map.compl₂_id LinearMap.compl₂_id
 
 /-- Composing linear maps `Q → M` and `Q' → N` with a bilinear map `M → N → P` to
@@ -392,7 +359,7 @@ theorem compl₁₂_apply (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) (g : Qₗ →
 @[simp]
 theorem compl₁₂_id_id (f : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ) : f.compl₁₂ LinearMap.id LinearMap.id = f := by
   ext
-  simp_rw [compl₁₂_apply, id_coe, id.def]
+  simp_rw [compl₁₂_apply, id_coe, _root_.id]
 #align linear_map.compl₁₂_id_id LinearMap.compl₁₂_id_id
 
 theorem compl₁₂_inj {f₁ f₂ : Mₗ →ₗ[R] Nₗ →ₗ[R] Pₗ} {g : Qₗ →ₗ[R] Mₗ} {g' : Qₗ' →ₗ[R] Nₗ}
@@ -436,30 +403,20 @@ theorem lsmul_apply (r : R) (m : M) : lsmul R M r m = r • m := rfl
 #align linear_map.lsmul_apply LinearMap.lsmul_apply
 
 variable (R M) in
-/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`.
-
-This should eventually replace `_root_.BilinForm`. -/
+/-- For convenience, a shorthand for the type of bilinear forms from `M` to `R`. -/
 protected abbrev BilinForm : Type _ := M →ₗ[R] M →ₗ[R] R
-
-/-- The restriction of a bilinear form to a submodule. -/
-abbrev _root_.Submodule.restrictBilinear (p : Submodule R M) (f : LinearMap.BilinForm R M) :
-    LinearMap.BilinForm R p :=
-  f.compl₁₂ p.subtype p.subtype
 
 end CommSemiring
 
 section CommRing
 
 variable {R R₂ S S₂ M N P : Type*}
-
 variable {Mₗ Nₗ Pₗ : Type*}
-
 variable [CommRing R] [CommRing S] [CommRing R₂] [CommRing S₂]
 
 section AddCommGroup
 
 variable [AddCommGroup M] [AddCommGroup N] [AddCommGroup P]
-
 variable [Module R M] [Module S N] [Module R₂ P] [Module S₂ P]
 
 theorem lsmul_injective [NoZeroSMulDivisors R M] {x : R} (hx : x ≠ 0) :

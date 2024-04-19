@@ -7,6 +7,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.FinCases
 
 #align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
@@ -32,9 +33,6 @@ As an example, we should have a function that constructs
 from a non-surjective order preserving function `Fin n → Fin n`
 a morphism `Δ[n] ⟶ ∂Δ[n]`.
 -/
-
-set_option autoImplicit true
-
 
 universe v u
 
@@ -81,7 +79,6 @@ def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
 set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
--- mathport name: standard_simplex
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
@@ -176,7 +173,7 @@ def boundary (n : ℕ) : SSet.{u} where
 set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
--- mathport name: sSet.boundary
+/-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
@@ -200,7 +197,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 set_option linter.uppercaseLean3 false in
 #align sSet.horn SSet.horn
 
--- mathport name: sSet.horn
+/-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/
@@ -352,18 +349,19 @@ instance Truncated.largeCategory (n : ℕ) : LargeCategory (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasLimits : HasLimits (Truncated n) := by
+instance Truncated.hasLimits {n : ℕ} : HasLimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
-instance Truncated.hasColimits : HasColimits (Truncated n) := by
+instance Truncated.hasColimits {n : ℕ} : HasColimits (Truncated n) := by
   dsimp only [Truncated]
   infer_instance
 
 -- Porting note (#10756): added an `ext` lemma.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
-lemma Truncated.hom_ext {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) : f = g :=
+lemma Truncated.hom_ext {n : ℕ} {X Y : Truncated n} {f g : X ⟶ Y} (w : ∀ n, f.app n = g.app n) :
+    f = g :=
   NatTrans.ext _ _ (funext w)
 
 /-- The skeleton functor on simplicial sets. -/

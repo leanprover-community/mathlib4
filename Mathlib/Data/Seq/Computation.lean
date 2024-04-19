@@ -17,9 +17,6 @@ This file provides a `Computation` type where `Computation α` is the type of
 unbounded computations returning `α`.
 -/
 
-set_option autoImplicit true
-
-
 open Function
 
 universe u v w
@@ -253,7 +250,7 @@ attribute [simp] lmap rmap
 theorem corec_eq (f : β → Sum α β) (b : β) : destruct (corec f b) = rmap (corec f) (f b) := by
   dsimp [corec, destruct]
   rw [show Stream'.corec' (Corec.f f) (Sum.inr b) 0 =
-    Sum.rec Option.some (λ _ => none) (f b) by
+    Sum.rec Option.some (fun _ ↦ none) (f b) by
     dsimp [Corec.f, Stream'.corec', Stream'.corec, Stream'.map, Stream'.get, Stream'.iterate]
     match (f b) with
     | Sum.inl x => rfl
@@ -271,7 +268,6 @@ section Bisim
 
 variable (R : Computation α → Computation α → Prop)
 
--- mathport name: «expr ~ »
 /-- bisimilarity relation-/
 local infixl:50 " ~ " => R
 
@@ -430,7 +426,6 @@ def Promises (s : Computation α) (a : α) : Prop :=
   ∀ ⦃a'⦄, a' ∈ s → a = a'
 #align computation.promises Computation.Promises
 
--- mathport name: «expr ~> »
 /-- `Promises s a`, or `s ~> a`, asserts that although the computation `s`
   may not terminate, if it does, then the result is `a`. -/
 scoped infixl:50 " ~> " => Promises
@@ -752,7 +747,7 @@ theorem bind_pure (f : α → β) (s) : bind s (pure ∘ f) = map f s := by
 -- Porting note: used to use `rw [bind_pure]`
 @[simp]
 theorem bind_pure' (s : Computation α) : bind s pure = s := by
-  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s (pure) ∧ c₂ = s
+  apply eq_of_bisim fun c₁ c₂ => c₁ = c₂ ∨ ∃ s, c₁ = bind s pure ∧ c₂ = s
   · intro c₁ c₂ h
     match c₁, c₂, h with
     | _, c₂, Or.inl (Eq.refl _) => cases' destruct c₂ with b cb <;> simp
@@ -969,7 +964,6 @@ def Equiv (c₁ c₂ : Computation α) : Prop :=
   ∀ a, a ∈ c₁ ↔ a ∈ c₂
 #align computation.equiv Computation.Equiv
 
--- mathport name: «expr ~ »
 /-- equivalence relation for computations-/
 scoped infixl:50 " ~ " => Equiv
 
@@ -1237,14 +1231,17 @@ def LiftRelAux (R : α → β → Prop) (C : Computation α → Computation β �
   | Sum.inr ca, Sum.inr cb => C ca cb
 #align computation.lift_rel_aux Computation.LiftRelAux
 
+variable {R : α → β → Prop} {C : Computation α → Computation β → Prop}
+
 -- Porting note: was attribute [simp] LiftRelAux
 -- but right now `simp` on defs is a Lean 4 catastrophe
 -- Instead we add the equation lemmas and tag them @[simp]
-@[simp] lemma liftRelAux_inl_inl : LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
-@[simp] lemma liftRelAux_inl_inr {cb} :
+@[simp] lemma liftRelAux_inl_inl {a : α} {b : β} :
+  LiftRelAux R C (Sum.inl a) (Sum.inl b) = R a b := rfl
+@[simp] lemma liftRelAux_inl_inr {a : α} {cb} :
     LiftRelAux R C (Sum.inl a) (Sum.inr cb) = ∃ b, b ∈ cb ∧ R a b :=
   rfl
-@[simp] lemma liftRelAux_inr_inl {ca} :
+@[simp] lemma liftRelAux_inr_inl {b : β} {ca} :
     LiftRelAux R C (Sum.inr ca) (Sum.inl b) = ∃ a, a ∈ ca ∧ R a b :=
   rfl
 @[simp] lemma liftRelAux_inr_inr {ca cb} :
@@ -1278,8 +1275,8 @@ theorem LiftRelRec.lem {R : α → β → Prop} (C : Computation α → Computat
     (H : ∀ {ca cb}, C ca cb → LiftRelAux R C (destruct ca) (destruct cb)) (ca cb) (Hc : C ca cb) (a)
     (ha : a ∈ ca) : LiftRel R ca cb := by
   revert cb
-  refine' memRecOn (C := (λ ca => ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
-    ha _ (fun ca' IH => _) <;> intro cb Hc <;> have h := H Hc
+  refine memRecOn (C := (fun ca ↦ ∀ (cb : Computation β), C ca cb → LiftRel R ca cb))
+    ha ?_ (fun ca' IH => ?_) <;> intro cb Hc <;> have h := H Hc
   · simp only [destruct_pure, LiftRelAux.ret_left] at h
     simp [h]
   · simp only [liftRel_think_left]

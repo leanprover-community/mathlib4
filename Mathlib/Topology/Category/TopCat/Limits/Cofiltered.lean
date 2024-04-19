@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
 -/
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Filtered.Basic
 
 #align_import topology.category.Top.limits.cofiltered from "leanprover-community/mathlib"@"dbdf71cee7bb20367cb7e37279c08b0c218cf967"
 
@@ -64,7 +65,7 @@ theorem isTopologicalBasis_cofiltered_limit (T : ∀ j, Set (Set (F.obj j)))
       exact ⟨j, V, hV, rfl⟩
   -- Using `D`, we can apply the characterization of the topological basis of a
   -- topology defined as an infimum...
-  convert isTopologicalBasis_iInf hT fun j (x : D.pt) => D.π.app j x using 1
+  convert IsTopologicalBasis.iInf_induced hT fun j (x : D.pt) => D.π.app j x using 1
   ext U0
   constructor
   · rintro ⟨j, V, hV, rfl⟩

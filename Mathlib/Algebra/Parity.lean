@@ -306,7 +306,7 @@ set_option linter.deprecated false in
 
 @[simp]
 theorem even_two : Even (2 : α) :=
-  ⟨1, by rw[one_add_one_eq_two]⟩
+  ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
 
 @[simp]
@@ -327,7 +327,7 @@ theorem Even.pow_of_ne_zero (hm : Even m) : ∀ {a : ℕ}, a ≠ 0 → Even (m ^
   | 0, a0 => (a0 rfl).elim
   | a + 1, _ => by
     rw [pow_succ]
-    exact hm.mul_right _
+    exact hm.mul_left _
 #align even.pow_of_ne_zero Even.pow_of_ne_zero
 
 section WithOdd
@@ -419,7 +419,7 @@ theorem Odd.pow (hm : Odd m) : ∀ {a : ℕ}, Odd (m ^ a)
     exact odd_one
   | a + 1 => by
     rw [pow_succ]
-    exact hm.mul <| Odd.pow hm
+    exact (Odd.pow hm).mul hm
 #align odd.pow Odd.pow
 
 end WithOdd
@@ -449,7 +449,7 @@ variable [CanonicallyOrderedCommSemiring α]
 -- either `2 • t` or `t + t` instead of `2 * t`.
 theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
   obtain ⟨k, rfl⟩ := hn
-  rw [pos_iff_ne_zero, Ne.def, add_eq_zero_iff, not_and']
+  rw [pos_iff_ne_zero, Ne, add_eq_zero_iff, not_and']
   exact fun h => (one_ne_zero h).elim
 #align odd.pos Odd.pos
 

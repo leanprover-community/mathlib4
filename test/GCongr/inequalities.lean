@@ -3,7 +3,8 @@ Copyright (c) 2022 Heather Macbeth. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Parity
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.GCongr

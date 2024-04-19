@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Chris Hughes, Mantas Bakšys
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Order.MinMax
+import Mathlib.Order.WithBot
 
 #align_import data.list.min_max from "leanprover-community/mathlib"@"6d0adfa76594f304b4650d098273d4366edeb61b"
 
@@ -21,9 +23,6 @@ The main definitions are `argmax`, `argmin`, `minimum` and `maximum` for lists.
 `minimum l` returns a `WithTop α`, the smallest element of `l` for nonempty lists, and `⊤` for
 `[]`
 -/
-
-set_option autoImplicit true
-
 
 namespace List
 
@@ -442,12 +441,12 @@ lemma coe_minimum_of_length_pos (h : 0 < l.length) :
   WithTop.coe_untop _ _
 
 @[simp]
-theorem le_maximum_of_length_pos_iff (h : 0 < l.length) :
+theorem le_maximum_of_length_pos_iff {b : α} (h : 0 < l.length) :
     b ≤ maximum_of_length_pos h ↔ b ≤ l.maximum :=
   WithBot.le_unbot_iff _
 
 @[simp]
-theorem minimum_of_length_pos_le_iff (h : 0 < l.length) :
+theorem minimum_of_length_pos_le_iff {b : α} (h : 0 < l.length) :
     minimum_of_length_pos h ≤ b ↔ l.minimum ≤ b :=
   le_maximum_of_length_pos_iff (α := αᵒᵈ) h
 
@@ -469,12 +468,12 @@ theorem minimum_of_length_pos_le_of_mem (h : a ∈ l) (w : 0 < l.length) :
     l.minimum_of_length_pos w ≤ a :=
   le_maximum_of_length_pos_of_mem (α := αᵒᵈ) h w
 
-theorem getElem_le_maximum_of_length_pos (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+theorem getElem_le_maximum_of_length_pos {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l[i] ≤ l.maximum_of_length_pos h := by
   apply le_maximum_of_length_pos_of_mem
   exact get_mem l i w
 
-theorem minimum_of_length_pos_le_getElem (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
+theorem minimum_of_length_pos_le_getElem {i : ℕ} (w : i < l.length) (h := (Nat.zero_lt_of_lt w)) :
     l.minimum_of_length_pos h ≤ l[i] :=
   getElem_le_maximum_of_length_pos (α := αᵒᵈ) w
 
