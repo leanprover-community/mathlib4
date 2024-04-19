@@ -200,6 +200,36 @@ lemma coe_mul [Mul α] (a b : α) : (↑(a * b) : WithOne α) = a * b := rfl
 #align with_zero.coe_add WithZero.coe_add
 
 @[to_additive]
+theorem coe_mul_ne_one [Mul α] {a : α} {b : WithOne α} : a * b ≠ 1 :=
+  match b with
+  | 1 => coe_ne_one
+  | (c : α) => coe_ne_one
+
+@[to_additive]
+theorem mul_coe_ne_one [Mul α] {a : WithOne α} {b : α} : a * b ≠ 1 :=
+  match a with
+  | 1 => coe_ne_one
+  | (c : α) => coe_ne_one
+
+@[to_additive]
+def oMul [Mul α] (a : WithOne α) (b : α) : α :=
+  match a with
+  | 1 => b
+  | (c : α) => c * b
+
+@[to_additive]
+def Mulo [Mul α] (a : α) (b : WithOne α) : α :=
+  match b with
+  | 1 => a
+  | (c : α) => a * c
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_oMul [Mul α] {a : WithOne α} {b : α} : oMul a b = a * b := by cases a <;> rfl
+
+@[to_additive (attr := simp, norm_cast)]
+theorem coe_Mulo [Mul α] {a : α} {b : WithOne α} : Mulo a b = a * b := by cases b <;> rfl
+
+@[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) where
   __ := mulOneClass
   mul_assoc a b c := match a, b, c with
