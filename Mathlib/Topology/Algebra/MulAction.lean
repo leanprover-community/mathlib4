@@ -145,6 +145,16 @@ instance MulOpposite.continuousSMul : ContinuousSMul M Xᵐᵒᵖ :=
 #align add_opposite.has_continuous_vadd AddOpposite.continuousVAdd
 
 @[to_additive]
+protected theorem Specializes.smul {a b : M} {x y : X} (h₁ : a ⤳ b) (h₂ : x ⤳ y) :
+    (a • x) ⤳ (b • y) :=
+  (h₁.prod h₂).map continuous_smul
+
+@[to_additive]
+protected theorem Inseparable.smul {a b : M} {x y : X} (h₁ : Inseparable a b)
+    (h₂ : Inseparable x y) : Inseparable (a • x) (b • y) :=
+  (h₁.prod h₂).map continuous_smul
+
+@[to_additive]
 lemma IsCompact.smul_set {k : Set M} {u : Set X} (hk : IsCompact k) (hu : IsCompact u) :
     IsCompact (k • u) := by
   rw [← Set.image_smul_prod]
