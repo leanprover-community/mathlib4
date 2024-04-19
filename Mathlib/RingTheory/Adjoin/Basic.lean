@@ -5,6 +5,7 @@ Authors: Kenny Lau
 -/
 import Mathlib.Algebra.Algebra.Operations
 import Mathlib.Algebra.Algebra.Subalgebra.Tower
+import Mathlib.LinearAlgebra.Basis
 import Mathlib.LinearAlgebra.Prod
 import Mathlib.LinearAlgebra.Finsupp
 

@@ -3,13 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Algebra.Algebra.Bilinear
 import Mathlib.Algebra.GeomSum
-import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.GroupPower.Ring
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
+import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.LinearAlgebra.Matrix.ToLin
+import Mathlib.LinearAlgebra.Quotient
+import Mathlib.RingTheory.Ideal.Operations
 
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
