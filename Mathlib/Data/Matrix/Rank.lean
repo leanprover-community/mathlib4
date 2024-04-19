@@ -119,7 +119,6 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
 
-
 @[simp]
 theorem rank_mul_units [DecidableEq n] (A : (Matrix n n R)ˣ) (B : Matrix m n R) :
     rank (B * (A : Matrix n n R)) = rank B :=
