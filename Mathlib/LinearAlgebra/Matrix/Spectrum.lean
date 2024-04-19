@@ -40,8 +40,7 @@ section RankMulUnitaryTheorems
 variable {m R : Type*} [CommRing R] [StarRing R]
 
 @[simp]
-theorem rank_unitary_mul
-    (A : unitaryGroup n R) (B : Matrix m n R) :
+theorem rank_unitary_mul (A : unitaryGroup n R) (B : Matrix m n R) :
     rank (B * (A : Matrix n n R)) = rank B :=
   rank_mul_units (unitary.toUnits A) _
 
