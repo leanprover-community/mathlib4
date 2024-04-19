@@ -54,7 +54,7 @@ namespace BilinForm
 
 
 /-- The proposition that a bilinear form is reflexive -/
-def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl (toLin B)
+def IsRefl (B : BilinForm R M) : Prop := LinearMap.IsRefl B
 #align bilin_form.is_refl LinearMap.BilinForm.IsRefl
 
 namespace IsRefl
@@ -92,7 +92,7 @@ theorem isRefl_neg {B : BilinForm R₁ M₁} : (-B).IsRefl ↔ B.IsRefl :=
 #align bilin_form.is_refl_neg LinearMap.BilinForm.isRefl_neg
 
 /-- The proposition that a bilinear form is symmetric -/
-def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm (toLin B)
+def IsSymm (B : BilinForm R M) : Prop := LinearMap.IsSymm B
 #align bilin_form.is_symm LinearMap.BilinForm.IsSymm
 
 namespace IsSymm
@@ -406,8 +406,7 @@ theorem nondegenerate_iff_ker_eq_bot {B : BilinForm R M} :
 #align bilin_form.nondegenerate_iff_ker_eq_bot LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot
 
 theorem Nondegenerate.ker_eq_bot {B : BilinForm R M} (h : B.Nondegenerate) :
-    LinearMap.ker (BilinForm.toLin B) = ⊥ :=
-  nondegenerate_iff_ker_eq_bot.mp h
+    LinearMap.ker B = ⊥ := nondegenerate_iff_ker_eq_bot.mp h
 #align bilin_form.nondegenerate.ker_eq_bot LinearMap.BilinForm.Nondegenerate.ker_eq_bot
 
 theorem compLeft_injective (B : BilinForm R₁ M₁) (b : B.Nondegenerate) :
@@ -429,8 +428,7 @@ section FiniteDimensional
 variable [FiniteDimensional K V]
 
 /-- Given a nondegenerate bilinear form `B` on a finite-dimensional vector space, `B.toDual` is
-the linear equivalence between a vector space and its dual with the underlying linear map
-`B.toLin`. -/
+the linear equivalence between a vector space and its dual. -/
 noncomputable def toDual (B : BilinForm K V) (b : B.Nondegenerate) : V ≃ₗ[K] Module.Dual K V :=
   B.linearEquivOfInjective (LinearMap.ker_eq_bot.mp <| b.ker_eq_bot)
     Subspace.dual_finrank_eq.symm
@@ -489,8 +487,7 @@ lemma dualBasis_dualBasis_flip (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
     B.dualBasis hB (B.flip.dualBasis hB.flip b) = b := by
   ext i
   refine LinearMap.ker_eq_bot.mp hB.ker_eq_bot ((B.flip.dualBasis hB.flip b).ext (fun j ↦ ?_))
-  simp_rw [BilinForm.toLin_apply, apply_dualBasis_left, ← B.flip_apply,
-    apply_dualBasis_left, @eq_comm _ i j]
+  simp_rw [apply_dualBasis_left, ← B.flip_apply, apply_dualBasis_left, @eq_comm _ i j]
 
 @[simp]
 lemma dualBasis_flip_dualBasis (B : BilinForm K V) (hB : B.Nondegenerate) {ι}
@@ -510,10 +507,10 @@ end DualBasis
 section LinearAdjoints
 
 /-- Given bilinear forms `B₁, B₂` where `B₂` is nondegenerate, `symmCompOfNondegenerate`
-is the linear map `B₂.toLin⁻¹ ∘ B₁.toLin`. -/
+is the linear map `B₂ ∘ B₁`. -/
 noncomputable def symmCompOfNondegenerate (B₁ B₂ : BilinForm K V) (b₂ : B₂.Nondegenerate) :
     V →ₗ[K] V :=
-  (B₂.toDual b₂).symm.toLinearMap.comp (BilinForm.toLin B₁)
+  (B₂.toDual b₂).symm.toLinearMap.comp B₁
 #align bilin_form.symm_comp_of_nondegenerate LinearMap.BilinForm.symmCompOfNondegenerate
 
 theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinForm K V}
@@ -522,7 +519,6 @@ theorem comp_symmCompOfNondegenerate_apply (B₁ : BilinForm K V) {B₂ : BilinF
   erw [symmCompOfNondegenerate]
   simp only [coe_comp, LinearEquiv.coe_coe, Function.comp_apply, DFunLike.coe_fn_eq]
   erw [LinearEquiv.apply_symm_apply (B₂.toDual b₂)]
-  rfl
 #align bilin_form.comp_symm_comp_of_nondegenerate_apply LinearMap.BilinForm.comp_symmCompOfNondegenerate_apply
 
 @[simp]
