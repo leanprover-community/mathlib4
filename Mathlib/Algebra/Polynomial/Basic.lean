@@ -690,10 +690,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  -- Adaptation note (2024-04-14): needed this as `rw` instead of `simp`.
-  rw [← ofFinsupp_single]
-  simp only [coeff]
-  rw [Finsupp.single_apply]
+  simp [coeff, Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
 @[simp]
