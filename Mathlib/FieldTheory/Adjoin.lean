@@ -1092,7 +1092,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
       · exact RingHom.injective f
       · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
           intro x
-          obtain ⟨y, hy⟩ := (this (Subtype.mem x))
+          obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
         refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
@@ -1194,7 +1194,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, finrank_pos⟩
+  · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
   obtain ⟨L, fin, hn⟩ := ih
   obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
     contrapose! hnfd

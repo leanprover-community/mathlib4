@@ -223,34 +223,23 @@ theorem stereo_left_inv (hv : ‖v‖ = 1) {x : sphere (0 : E) 1} (hx : (x : E) 
   have pythag : 1 = a ^ 2 + ‖y‖ ^ 2 := by
     have hvy' : ⟪a • v, y⟫_ℝ = 0 := by simp only [inner_smul_left, hvy, mul_zero]
     convert norm_add_sq_eq_norm_sq_add_norm_sq_of_inner_eq_zero _ _ hvy' using 2
-    -- porting note (#10745): was simp [← split] but wasn't finding `norm_eq_of_mem_sphere`
-    · simp only [norm_eq_of_mem_sphere, Nat.cast_one, mul_one, ← split]
+    · simp [← split]
     · simp [norm_smul, hv, ← sq, sq_abs]
     · exact sq _
-  -- Porting note: added to work around cancel_denoms and nlinarith failures
-  have duh : ‖y.val‖ ^ 2 = 1 - a ^ 2 := by
-    rw [← Submodule.coe_norm, pythag]; ring
   -- two facts which will be helpful for clearing denominators in the main calculation
   have ha : 1 - a ≠ 0 := by
     have : a < 1 := (inner_lt_one_iff_real_of_norm_one hv (by simp)).mpr hx.symm
     linarith
   -- the core of the problem is these two algebraic identities:
   have h₁ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * 4 * (2 / (1 - a)) = 1 := by
-    -- Porting note: used to be `field_simp; simp only [Submodule.coe_norm] at *; nlinarith`
-    -- but cancel_denoms does not seem to be working and
-    -- nlinarith cannot close the goal even if it did
-    -- clear_value because field_simp does zeta-reduction (by design?) and is annoying
-    clear_value a y
-    field_simp
-    rw [duh]
-    ring
+    field_simp; simp only [Submodule.coe_norm] at *; nlinarith
   have h₂ : (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 + 4)⁻¹ * (2 ^ 2 / (1 - a) ^ 2 * ‖y‖ ^ 2 - 4) = a := by
-    -- Porting note: field_simp is not behaving as in ml3
-    -- see porting note above; previous proof used trans and was comparably complicated
-    clear_value a y
     field_simp
-    rw [duh]
-    ring
+    transitivity (1 - a) ^ 2 * (a * (2 ^ 2 * ‖y‖ ^ 2 + 4 * (1 - a) ^ 2))
+    · congr
+      simp only [Submodule.coe_norm] at *
+      nlinarith
+    ring!
   convert
     congr_arg₂ Add.add (congr_arg (fun t => t • (y : E)) h₁) (congr_arg (fun t => t • v) h₂) using 1
   · simp [a, inner_add_right, inner_smul_right, hvy, real_inner_self_eq_norm_mul_norm, hv, mul_smul,
@@ -435,8 +424,8 @@ instance EuclideanSpace.instSmoothManifoldWithCornersSphere {n : ℕ} [Fact (fin
         stereographic'_source]
       simp only [modelWithCornersSelf_coe, modelWithCornersSelf_coe_symm, Set.preimage_id,
         Set.range_id, Set.inter_univ, Set.univ_inter, Set.compl_singleton_eq, Set.preimage_setOf_eq]
-      simp only [id.def, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
-        innerSL_apply, Ne.def, sphere_ext_iff, real_inner_comm (v' : E)]
+      simp only [id, comp_apply, Submodule.subtypeL_apply, PartialHomeomorph.coe_coe_symm,
+        innerSL_apply, Ne, sphere_ext_iff, real_inner_comm (v' : E)]
       rfl)
 
 /-- The inclusion map (i.e., `coe`) from the sphere in `E` to `E` is smooth.  -/

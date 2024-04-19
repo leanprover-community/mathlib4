@@ -241,7 +241,7 @@ theorem sum_hom_units_eq_zero (f : G →* R) (hf : f ≠ 1) : ∑ g : G, f g = 0
       _ = ∑ b : MonoidHom.range f.toHomUnits, c • ((b : Rˣ) : R) :=
         (Finset.sum_subtype _ (by simp) _)
       _ = c • ∑ b : MonoidHom.range f.toHomUnits, ((b : Rˣ) : R) := smul_sum.symm
-      _ = c • (0 : R) := (congr_arg₂ _ rfl ?_)
+      _ = c • (0 : R) := congr_arg₂ _ rfl ?_
       -- remaining goal 2, proven below
       _ = (0 : R) := smul_zero _
     · -- remaining goal 1
