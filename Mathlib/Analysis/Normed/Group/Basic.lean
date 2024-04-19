@@ -1912,7 +1912,7 @@ end Real
 
 namespace Int
 
-instance normedAddCommGroup : NormedAddCommGroup ℤ where
+instance instNormedAddCommGroup : NormedAddCommGroup ℤ where
   norm n := ‖(n : ℝ)‖
   dist_eq m n := by simp only [Int.dist_eq, norm, Int.cast_sub]
 
