@@ -61,6 +61,8 @@ lemma diag_rename_comm_apply (p : MvPolynomial A R) :
       ((MvPolynomial.map f).comp (MvPolynomial.rename hf.restrict).toRingHom)) p
   rw [diag_rename_comm]
 
+--lemma diag_rename_comp_apply_of_bij (hbij : Function.Bijective hf.restrict) : True := sorry
+
 end
 
 lemma finiteType_of_adjoin_finite {A : Type v} [CommRing A] [Algebra R A] (T : Set A) (h : Set.Finite T) :
@@ -75,7 +77,7 @@ section
 variable {R}
 
 instance {ι : Type*} (p : MvPolynomial ι R) : Finite (MvPolynomial.coefficients p) := by
-  admit
+  sorry
 
 end
 
@@ -96,13 +98,13 @@ lemma Ideal.span_pow (S : Set R) (n : ℕ) :
   ext x
   constructor
   intro h
-  admit
-  admit
+  sorry
+  sorry
   --rw [Set.mem_pow (s := Ideal.span S) (a := x) (n := n)] at h
 
 lemma Ideal.mem_span_asSum (S : Set R) (x : R) (h : x ∈ Ideal.span S) :
     ∃ (f : S →₀ R), x = Finsupp.sum f (fun s r ↦ r * s) := by
-  admit
+  sorry
 
 #check Ideal.mem_span_asSum
 
@@ -230,17 +232,8 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
         simp only [AlgHom.comp_apply, ← RingHom.mem_ker]
         erw [Ideal.Quotient.mkₐ_ker R₀ (RingHom.ker (Ideal.Quotient.mkₐ (↥R₀) I₀).toRingHom ^ 2)]
         erw [Ideal.Quotient.mkₐ_ker R₀]
-        admit
-        --refine Submodule.span_induction ha ?_ ?_ ?_ ?_
-        --· intro s hs
-        --  rw [Ideal.mem_sq (S := S₀) (hsp := rfl)]
-        --  admit
-        --· simp
-        --· intro x y hx hy
-        --  simp
-        --· intro r x hx
-        --  simp
-    · admit
+        sorry
+    · sorry
 
 section
 
@@ -301,23 +294,16 @@ noncomputable def hAux₀ (i : ι) : MvPolynomial ι R₀ := by
     apply hcoeffsH
     exact hr
 
+@[simp]
+lemma hAux₀_map (i : ι) :
+    (MvPolynomial.map (SubringClass.subtype R₀)) (hAux₀ I σ R₀ hcoeffsH i) = hAux I σ i := by
+  simp only [hAux₀]
+  change (MvPolynomial.map (algebraMap R₀ R)) _ = _
+  simp
+
 variable (I₀ : Ideal (MvPolynomial ι R₀)) (S₀ : Set (MvPolynomial ι R₀))
   (hspan₀ : Ideal.span S₀ = I₀)
   (hpreim₀ : MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S = S₀)
-
-noncomputable def varTrans : S₀ ≃ S := by
-  apply Equiv.ofBijective ?_ ⟨?_, ?_⟩
-  · intro ⟨s, hs⟩
-    exact ⟨MvPolynomial.map (SubringClass.subtype R₀) s, by rw [← hpreim₀] at hs; exact hs⟩
-  · admit
-  · admit
-
-#check AlgHom.comp (MvPolynomial.map (MvPolynomial.map (SubringClass.subtype R₀)))
-  (MvPolynomial.rename (varTrans S R₀ S₀ hpreim₀))
-
---lemma comm_diag_varTrans :
---    (MvPolynomial.eval (Subtype.val)).comp
---    ((MvPolynomial.map (SubringClass.subtype R₀)).comp
 
 noncomputable def sOfh₀ : MvPolynomial ι R₀ →ₐ[R₀] MvPolynomial ι R₀ :=
   MvPolynomial.aeval (fun j : ι => hAux₀ I σ R₀ hcoeffsH j)
@@ -325,7 +311,17 @@ noncomputable def sOfh₀ : MvPolynomial ι R₀ →ₐ[R₀] MvPolynomial ι R�
 @[simp]
 lemma incl_sOfh₀ (p : MvPolynomial ι R₀) :
     (MvPolynomial.map (SubringClass.subtype R₀)) ((sOfh₀ I σ R₀ hcoeffsH) p)
-    = sOfh I σ (MvPolynomial.map (SubringClass.subtype R₀) p) := sorry
+    = sOfh I σ (MvPolynomial.map (SubringClass.subtype R₀) p) := by
+  change ((MvPolynomial.map (SubringClass.subtype R₀)).comp (sOfh₀ I σ R₀ hcoeffsH)) p
+    = ((sOfh I σ).toRingHom.comp (MvPolynomial.map (SubringClass.subtype R₀))) p
+  have : (MvPolynomial.map (SubringClass.subtype R₀)).comp (sOfh₀ I σ R₀ hcoeffsH)
+    = (sOfh I σ).toRingHom.comp (MvPolynomial.map (SubringClass.subtype R₀)) := by
+    apply MvPolynomial.ringHom_ext
+    · intro r
+      simp
+    · intro i
+      simp [sOfh₀, sOfh]
+  rw [this]
 
 variable (hspan : Ideal.span S = I)
 
@@ -334,26 +330,72 @@ lemma exists_PAux₀ (s : MvPolynomial ι R₀) (hs : s ∈ S₀) :
       MvPolynomial.IsHomogeneous P₀ 2 ∧
       MvPolynomial.eval Subtype.val P₀ = sOfh₀ I σ R₀ hcoeffsH s := by
   let p : MvPolynomial ι R := MvPolynomial.map (SubringClass.subtype R₀) s
-  have hp : p ∈ S := sorry
+  have hp : p ∈ S := by
+    rw [← hpreim₀] at hs
+    exact hs
   let Ps : MvPolynomial S (MvPolynomial ι R) := P ⟨p, hp⟩
   have hPshomog : MvPolynomial.IsHomogeneous Ps 2 := hPhom ⟨p, hp⟩
-  have hc : MvPolynomial.coefficients Ps ⊆ Set.range (MvPolynomial.map (SubringClass.subtype R₀)) := sorry
+  have hc : MvPolynomial.coefficients Ps ⊆ Set.range (MvPolynomial.map (SubringClass.subtype R₀)) := by
+    intro r hr
+    have h1 : Ps ∈ Set.range P := Set.mem_range_self _
+    have h2 : MvPolynomial.coefficients Ps ⊆ MvPolynomial.Set.coefficients (Set.range P) :=
+      MvPolynomial.Set.coefficients_in (Set.range P) Ps h1
+    have h3' : MvPolynomial.coefficients r ⊆ R₀ := by
+      apply Set.Subset.trans ?_ hcoeffsP
+      apply MvPolynomial.Set.coefficients_in
+      apply h2
+      exact hr
+    have h3 : MvPolynomial.coefficients r ⊆ Set.range (SubringClass.subtype R₀) := by
+      intro x hx
+      use ⟨x, h3' hx⟩
+      rfl
+    exact RingOfDefinition.exists_preimage_of_coefficients' (SubringClass.subtype R₀) r h3
   obtain ⟨P', hP'⟩ := RingOfDefinition.exists_preimage_of_coefficients'
     (MvPolynomial.map (SubringClass.subtype R₀))
     Ps hc
-  have hP'homog : MvPolynomial.IsHomogeneous P' 2 := by
-    refine MvPolynomial.isHomogeneous_of_map (MvPolynomial.map (SubringClass.subtype R₀)) ?_ P' ?_
-    · apply MvPolynomial.map_injective
-      exact Subtype.val_injective
-    · rw [hP']
-      exact hPshomog
-  let f : S → S₀ := sorry
-  let P₀ : MvPolynomial S₀ (MvPolynomial ι R₀) :=
-    MvPolynomial.rename f P'
+  --have hP'homog : MvPolynomial.IsHomogeneous P' 2 := by
+  --  refine MvPolynomial.isHomogeneous_of_map (MvPolynomial.map (SubringClass.subtype R₀)) ?_ P' ?_
+  --  · apply MvPolynomial.map_injective
+  --    exact Subtype.val_injective
+  --  · rw [hP']
+  --    exact hPshomog
   have hinj : Function.Injective
       (MvPolynomial.map (SubringClass.subtype R₀) : MvPolynomial ι R₀ →+* MvPolynomial ι R) := by
     apply MvPolynomial.map_injective
     exact Subtype.val_injective
+  have hres : Set.MapsTo (MvPolynomial.map (SubringClass.subtype R₀)) S₀ S := by
+    rw [← hpreim₀]
+    apply Set.mapsTo_preimage
+  have hresinj : Function.Injective hres.restrict := by
+    rw [Set.MapsTo.restrict_inj]
+    apply Set.injOn_of_injective
+    exact hinj
+  have hressurj : Function.Surjective hres.restrict := by
+    intro ⟨p, hp⟩
+    have : MvPolynomial.coefficients p ⊆ Set.range (SubringClass.subtype R₀) := by
+      intro r hr
+      have h1 := MvPolynomial.Set.coefficients_in S p hp hr
+      have h2 := hcoeffsS h1
+      use ⟨r, h2⟩
+      rfl
+    obtain ⟨p', hp'⟩ :=
+      RingOfDefinition.exists_preimage_of_coefficients' (SubringClass.subtype R₀)
+      p
+      this
+    have : p' ∈ S₀ := by
+      rw [← hpreim₀]
+      change (MvPolynomial.map (SubringClass.subtype R₀)) p' ∈ S
+      rw [hp']
+      exact hp
+    use ⟨p', this⟩
+    aesop
+  let g : S₀ ≃ S := Equiv.ofBijective hres.restrict ⟨hresinj, hressurj⟩
+  let P₀ : MvPolynomial S₀ (MvPolynomial ι R₀) :=
+    MvPolynomial.rename g.symm P'
+  have hrenP₀ : (MvPolynomial.rename hres.restrict) P₀ = P' := by
+    simp only [MvPolynomial.rename_rename, P₀]
+    change MvPolynomial.rename (g ∘ g.symm) P' = P'
+    simp
   refine ⟨P₀, ?_, ?_⟩
   · rw [MvPolynomial.IsHomogeneous.rename_isHomogeneous_iff]
     refine MvPolynomial.isHomogeneous_of_map (MvPolynomial.map (SubringClass.subtype R₀)) ?_ P' ?_
@@ -361,12 +403,11 @@ lemma exists_PAux₀ (s : MvPolynomial ι R₀) (hs : s ∈ S₀) :
       exact Subtype.val_injective
     · rw [hP']
       exact hPshomog
-    · admit
-  · simp [P₀]
-    --rw [MvPolynomial.eval_rename]
-    apply hinj
+    · exact Equiv.injective g.symm
+  · apply hinj
+    rw [diag_rename_comm_apply _ hres, hrenP₀, hP']
     simp
-    -- ∀ (s : S), MvPolynomial.eval Subtype.val (P s) = sOfh I σ s
+    exact hPeval ⟨p, hp⟩
 
 lemma hAux₀_eval (a : MvPolynomial ι R₀) (ha : a ∈ I₀):
     MvPolynomial.aeval (hAux₀ I σ R₀ hcoeffsH) a ∈ I₀ ^ 2 := by
@@ -374,7 +415,7 @@ lemma hAux₀_eval (a : MvPolynomial ι R₀) (ha : a ∈ I₀):
   refine Submodule.span_induction ha ?_ ?_ ?_ ?_
   · intro s hs
     rw [Ideal.mem_sq]
-    exact exists_PAux₀ I σ R₀ hcoeffsH S₀ s hs
+    exact exists_PAux₀ I S σ R₀ hcoeffsS hcoeffsH P hPhom hPeval hcoeffsP I₀ S₀ hspan₀ hpreim₀ hspan s hs
     exact hspan₀.symm
   · simp
   · intro x y hx hy
