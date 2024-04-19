@@ -234,7 +234,7 @@ theorem arg_ofReal_of_nonneg {x : ℝ} (hx : 0 ≤ x) : arg x = 0 := by simp [ar
 
 @[simp, norm_cast]
 lemma natCast_arg {n : ℕ} : arg n = 0 :=
-  ofReal_nat_cast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
+  ofReal_natCast n ▸ arg_ofReal_of_nonneg n.cast_nonneg
 
 @[simp]
 lemma ofNat_arg {n : ℕ} [n.AtLeastTwo] : arg (no_index (OfNat.ofNat n)) = 0 :=

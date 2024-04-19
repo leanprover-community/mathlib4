@@ -278,7 +278,7 @@ section Semiring
 
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
-theorem even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by
+theorem even_iff_exists_two_mul (a : α) : Even a ↔ ∃ b, a = 2 * b := by
   simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
@@ -292,7 +292,8 @@ theorem Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
   even_iff_two_dvd.2 <| ha.two_dvd.trans hab
 #align even.trans_dvd Even.trans_dvd
 
-theorem Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
+theorem Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b :=
+  ha.trans_dvd hab
 #align has_dvd.dvd.even Dvd.dvd.even
 
 @[simp]
@@ -311,17 +312,25 @@ theorem even_two : Even (2 : α) :=
   ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
 
-@[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
+@[simp]
+theorem Even.mul_left (ha : Even a) (b) : Even (b * a) :=
+  ha.map (AddMonoidHom.mulLeft b)
 #align even.mul_left Even.mul_left
 
-@[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
+@[simp]
+theorem Even.mul_right (ha : Even a) (b) : Even (a * b) :=
+  ha.map (AddMonoidHom.mulRight b)
 #align even.mul_right Even.mul_right
 
-theorem even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
+theorem even_two_mul (a : α) : Even (2 * a) :=
+  ⟨a, two_mul _⟩
 #align even_two_mul even_two_mul
 
 theorem Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
-  | n + 1, _ => by rw [pow_succ]; exact ha.mul_left _
+  | 0, a0 => (a0 rfl).elim
+  | a + 1, _ => by
+    rw [pow_succ]
+    exact ha.mul_left _
 #align even.pow_of_ne_zero Even.pow_of_ne_zero
 
 section WithOdd
@@ -354,12 +363,12 @@ theorem range_two_mul_add_one (α : Type*) [Semiring α] :
 #align range_two_mul_add_one range_two_mul_add_one
 
 theorem Even.add_odd : Even a → Odd b → Odd (a + b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  exact ⟨a + b, by rw [mul_add, ← two_mul, add_assoc]⟩
+  rintro ⟨m, rfl⟩ ⟨n, rfl⟩
+  exact ⟨m + n, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
 
 theorem Even.odd_add : Even a → Odd b → Odd (b + a) :=
-  fun he ho ↦ by simp only [he.add_odd ho, add_comm]
+  fun he ho ↦ by simp only [he.add_odd ho, add_comm b a]
 
 theorem Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := by
   rw [add_comm]
@@ -367,8 +376,8 @@ theorem Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := by
 #align odd.add_even Odd.add_even
 
 theorem Odd.add_odd : Odd a → Odd b → Even (a + b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  refine' ⟨a + b + 1, _⟩
+  rintro ⟨m, rfl⟩ ⟨n, rfl⟩
+  refine' ⟨n + m + 1, _⟩
   rw [two_mul, two_mul]
   ac_rfl
 #align odd.add_odd Odd.add_odd
@@ -382,7 +391,8 @@ theorem odd_one : Odd (1 : α) :=
 
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
 
-theorem odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
+theorem odd_two_mul_add_one (a : α) : Odd (2 * a + 1) :=
+  ⟨a, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
 
 @[simp] lemma odd_add_self_one' : Odd (a + (a + 1)) := by simp [← add_assoc]
@@ -394,7 +404,8 @@ theorem odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 @[simp] lemma one_add_self_self : Odd (1 + a + a) := by simp [add_comm 1 a]
 
 theorem Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (f a) := by
-  rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
+  rintro ⟨m, rfl⟩
+  exact ⟨f m, by simp [two_mul]⟩
 #align odd.map Odd.map
 
 @[simp]
@@ -409,7 +420,9 @@ theorem Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
   | 0 => by
     rw [pow_zero]
     exact odd_one
-  | n + 1 => by rw [pow_succ]; exact ha.pow.mul ha
+  | a + 1 => by
+    rw [pow_succ]
+    exact (Odd.pow ha).mul ha
 #align odd.pow Odd.pow
 
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
@@ -452,7 +465,7 @@ variable [CanonicallyOrderedCommSemiring α]
 
 -- this holds more generally in a `CanonicallyOrderedAddCommMonoid` if we refactor `Odd` to use
 -- either `2 • t` or `t + t` instead of `2 * t`.
-theorem Odd.pos [Nontrivial α] {n : α} (hn : Odd n) : 0 < n := by
+theorem Odd.pos [Nontrivial α] {a : α} (hn : Odd a) : 0 < a := by
   obtain ⟨k, rfl⟩ := hn
   rw [pos_iff_ne_zero, Ne, add_eq_zero_iff, not_and']
   exact fun h => (one_ne_zero h).elim
@@ -472,8 +485,8 @@ simp can prove this:
 theorem even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 #align even_neg_two even_neg_two
 
-theorem Odd.neg (hp : Odd a) : Odd (-a) := by
-  obtain ⟨k, hk⟩ := hp
+theorem Odd.neg (ha : Odd a) : Odd (-a) := by
+  obtain ⟨k, hk⟩ := ha
   use -(k + 1)
   rw [mul_neg, mul_add, neg_add, add_assoc, two_mul (1 : α), neg_add, neg_add_cancel_right, ←
     neg_add, hk]
