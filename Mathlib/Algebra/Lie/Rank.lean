@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Lie.OfAssociative
-import Mathlib.Algebra.Lie.TensorProduct
 import Mathlib.Algebra.Module.LinearMap.Polynomial
 
 /-!
@@ -71,19 +70,13 @@ lemma rank_le_finrank [StrongRankCondition R] : rank R L ≤ finrank R L :=
 variable {L}
 
 lemma rank_le_natTrailingDegree_charpoly_ad :
-    rank R L ≤ (ad R L x).charpoly.natTrailingDegree := by
-  apply Polynomial.natTrailingDegree_le_of_ne_zero
-  intro h
-  apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
-  rw [polyCharpoly_coeff_eval, map_zero] at h
-  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
-  apply (LinearMap.charpoly_monic _).ne_zero
+    rank R L ≤ (ad R L x).charpoly.natTrailingDegree :=
+  polyRank_le_natTrailingDegree_charpoly _ _
 
 /-- Let `x` be an element of a Lie algebra `L` over `R`, and write `n` for `rank R L`.
 Then `x` is *regular*
 if the `n`-th coefficient of the characteristic polynomial of `ad R L x` is non-zero. -/
-def IsRegular (x : L) : Prop :=
-  Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0
+def IsRegular (x : L) : Prop := LinearMap.IsRegular (ad R L).toLinearMap x
 
 lemma isRegular_def :
     IsRegular R x = (Polynomial.coeff (ad R L x).charpoly (rank R L) ≠ 0) := rfl
@@ -91,23 +84,12 @@ lemma isRegular_def :
 lemma isRegular_iff_coeff_polyCharpoly_rank_ne_zero :
     IsRegular R x ↔
     MvPolynomial.eval (b.repr x)
-      ((polyCharpoly (ad R L).toLinearMap b).coeff (rank R L)) ≠ 0 := by
-  rw [IsRegular, polyCharpoly_coeff_eval]
-  rfl
+      ((polyCharpoly (ad R L).toLinearMap b).coeff (rank R L)) ≠ 0 :=
+  LinearMap.isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero _ _ _
 
 lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
-    IsRegular R x ↔ (ad R L x).charpoly.natTrailingDegree = rank R L := by
-  rw [isRegular_def]
-  constructor
-  · intro h
-    exact le_antisymm
-      (Polynomial.natTrailingDegree_le_of_ne_zero h)
-      (rank_le_natTrailingDegree_charpoly_ad R x)
-  · intro h
-    rw [← h]
-    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
-    apply (LinearMap.charpoly_monic _).ne_zero
-
+    IsRegular R x ↔ (ad R L x).charpoly.natTrailingDegree = rank R L :=
+  LinearMap.isRegular_iff_natTrailingDegree_charpoly_eq_polyRank _ _
 section IsDomain
 
 variable (L)
@@ -115,25 +97,11 @@ variable [IsDomain R] [StrongRankCondition R]
 
 open Cardinal FiniteDimensional MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :
-    ∃ x : L, IsRegular R x := by
-  let b := chooseBasis R L
-  let n := Fintype.card (ChooseBasisIndex R L)
-  have aux :
-    ((polyCharpoly (ad R L).toLinearMap b).coeff (rank R L)).IsHomogeneous (n - rank R L) :=
-    polyCharpoly_coeff_isHomogeneous _ b (rank R L) (n - rank R L)
-      (by simp [rank_le_card R L b, finrank_eq_card_chooseBasisIndex])
-  obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (rank R L)) ≠ 0 := by
-    by_contra! h₀
-    apply polyCharpoly_coeff_rank_ne_zero R L b
-    apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
-    simp only [finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
-  let c := Finsupp.equivFunOnFinite.symm x
-  use b.repr.symm c
-  rwa [isRegular_iff_coeff_polyCharpoly_rank_ne_zero _ b, LinearEquiv.apply_symm_apply]
+    ∃ x : L, IsRegular R x :=
+  LinearMap.exists_isRegular_of_finrank_le_card _ h
 
-lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x := by
-  apply exists_isRegular_of_finrank_le_card
-  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x :=
+  LinearMap.exists_isRegular _
 
 end IsDomain
 

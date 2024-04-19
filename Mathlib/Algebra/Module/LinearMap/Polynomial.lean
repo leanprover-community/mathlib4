@@ -462,4 +462,76 @@ lemma polyRank_le_card (b : Basis ι R M) : polyRank φ ≤ Fintype.card ι := b
 lemma polyRank_le_finrank : polyRank φ ≤ finrank R M := by
   simpa only [finrank_eq_card_chooseBasisIndex R M] using polyRank_le_card φ (chooseBasis R M)
 
+lemma polyRank_le_natTrailingDegree_charpoly (x : L) :
+    polyRank φ ≤ (φ x).charpoly.natTrailingDegree := by
+  apply Polynomial.natTrailingDegree_le_of_ne_zero
+  intro h
+  apply_fun (MvPolynomial.eval ((chooseBasis R L).repr x)) at h
+  rw [polyCharpoly_coeff_eval, map_zero] at h
+  apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr _ h
+  apply (LinearMap.charpoly_monic _).ne_zero
+
+/-- Let `L` and `M` be finite free modules over `R`,
+and let `φ : L →ₗ[R] Module.End R M` be a linear family of endomorphisms,
+and denote `n := polyRank φ`.
+
+An element `x : L` is *regular* with respect to `φ`
+if the `n`-th coefficient of the characteristic polynomial of `φ x` is non-zero. -/
+def IsRegular (x : L) : Prop :=
+  Polynomial.coeff (φ x).charpoly (polyRank φ) ≠ 0
+
+variable (x : L)
+
+lemma isRegular_def :
+    IsRegular φ x = (Polynomial.coeff (φ x).charpoly (polyRank φ) ≠ 0) := rfl
+
+lemma isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero :
+    IsRegular φ x ↔
+    MvPolynomial.eval (b.repr x)
+      ((polyCharpoly φ b).coeff (polyRank φ)) ≠ 0 := by
+  rw [IsRegular, polyCharpoly_coeff_eval]
+
+lemma isRegular_iff_natTrailingDegree_charpoly_eq_polyRank :
+    IsRegular φ x ↔ (φ x).charpoly.natTrailingDegree = polyRank φ := by
+  rw [isRegular_def]
+  constructor
+  · intro h
+    exact le_antisymm
+      (Polynomial.natTrailingDegree_le_of_ne_zero h)
+      (polyRank_le_natTrailingDegree_charpoly φ x)
+  · intro h
+    rw [← h]
+    apply Polynomial.trailingCoeff_nonzero_iff_nonzero.mpr
+    apply (LinearMap.charpoly_monic _).ne_zero
+
+section IsDomain
+
+variable [IsDomain R] [StrongRankCondition R]
+
+open Cardinal FiniteDimensional MvPolynomial in
+lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
+    ∃ x : L, IsRegular φ x := by
+  let b := chooseBasis R L
+  let bₘ := chooseBasis R M
+  let n := Fintype.card (ChooseBasisIndex R M)
+  have aux :
+    ((polyCharpoly φ b).coeff (polyRank φ)).IsHomogeneous (n - polyRank φ) :=
+    polyCharpoly_coeff_isHomogeneous _ b (polyRank φ) (n - polyRank φ)
+      (by simp [polyRank_le_card φ bₘ, finrank_eq_card_chooseBasisIndex])
+  obtain ⟨x, hx⟩ : ∃ r, eval r ((polyCharpoly _ b).coeff (polyRank φ)) ≠ 0 := by
+    by_contra! h₀
+    apply polyCharpoly_coeff_polyRank_ne_zero φ b
+    apply aux.eq_zero_of_forall_eval_eq_zero_of_le_card h₀ (le_trans _ h)
+    simp only [finrank_eq_card_chooseBasisIndex, Nat.cast_le, Nat.sub_le]
+  let c := Finsupp.equivFunOnFinite.symm x
+  use b.repr.symm c
+  rwa [isRegular_iff_coeff_polyCharpoly_polyRank_ne_zero _ b, LinearEquiv.apply_symm_apply]
+
+lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular φ x := by
+  apply exists_isRegular_of_finrank_le_card
+  exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite R›
+
+end IsDomain
+
+
 end LinearMap
