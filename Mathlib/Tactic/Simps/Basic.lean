@@ -897,7 +897,7 @@ def getProjectionExprs (stx : Syntax) (tgt : Expr) (rhs : Expr) (cfg : Config) :
   let rhsArgs := rhs.getAppArgs.toList.drop params.size
   let (rawUnivs, projDeclata) ← getRawProjections stx str
   return projDeclata.map fun proj ↦
-    (rhsArgs.getD (a₀ := default) proj.projNrs.head!,
+    (rhsArgs.getD (fallback := default) proj.projNrs.head!,
       { proj with
         expr := (proj.expr.instantiateLevelParams rawUnivs
           tgt.getAppFn.constLevels!).instantiateLambdasOrApps params
