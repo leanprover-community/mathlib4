@@ -248,8 +248,8 @@ section Terminal
 
 /-- A one-element space is terminal in `CompHaus` -/
 def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
-  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun X =>
-    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun _ ↦
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun _ ↦ rfl⟩
   Limits.IsTerminal.ofUnique _
 
 /-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/

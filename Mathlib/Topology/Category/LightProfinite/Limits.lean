@@ -222,7 +222,7 @@ instance : PreservesLimitsOfShape WalkingCospan lightToProfinite := by
     (Profinite.pullback.isLimit _ _)
 
 instance (X : LightProfinite) : Unique (X ⟶ (FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
-  ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+  ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun _ => rfl⟩
 
 /-- A one-element space is terminal in `LightProfinite` -/
 def isTerminalPUnit : IsTerminal ((FintypeCat.of PUnit.{u+1}).toLightProfinite) :=
