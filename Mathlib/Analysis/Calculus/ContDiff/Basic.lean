@@ -606,7 +606,7 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     have wv : w ⊆ f ⁻¹' v := fun y hy => hy.2.2
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
-    refine' ⟨w, _, fun y => (g' (f y)).comp (f' y), _, _⟩
+    refine ⟨w, ?_, fun y => (g' (f y)).comp (f' y), ?_, ?_ ⟩
     show w ∈ 𝓝[s] x
     · apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu

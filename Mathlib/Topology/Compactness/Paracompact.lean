@@ -222,7 +222,7 @@ theorem refinement_of_locallyCompact_sigmaCompact_of_nhds_basis_set [WeaklyLocal
     choose T hT using fun n ↦ (Kdiffc (n + 1)).elim_nhds_subcover' _ (hxr n)
     set T' : ∀ n, Set ↑(Kdiff (n + 1) ∩ s) := fun n ↦ T n
     -- Finally, we take the union of all these coverings
-    refine' ⟨Σn, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, _, _, _⟩
+    refine ⟨Σn, T' n, fun a ↦ a.2, fun a ↦ r a.1 a.2, ?_, ?_, ?_ ⟩
     · rintro ⟨n, x, hx⟩
       exact ⟨x.2.2, hrp _ _⟩
     · refine' fun x hx ↦ mem_iUnion.2 _

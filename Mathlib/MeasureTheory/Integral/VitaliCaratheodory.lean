@@ -176,7 +176,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
     SimpleFunc.exists_le_lowerSemicontinuous_lintegral_ge μ (SimpleFunc.eapproxDiff f n)
       (δpos n).ne'
   choose g f_le_g gcont hg using this
-  refine' ⟨fun x => ∑' n, g n x, fun x => _, _, _⟩
+  refine ⟨fun x => ∑' n, g n x, fun x => ?_, ?_, ?_ ⟩
   · rw [← SimpleFunc.tsum_eapproxDiff f hf]
     exact ENNReal.tsum_le_tsum fun n => ENNReal.coe_le_coe.2 (f_le_g n x)
   · refine' lowerSemicontinuous_tsum fun n => _

@@ -246,7 +246,7 @@ def binaryProductFunctor : Type u ⥤ Type u ⥤ Type u where
 explicit binary product functor given by the product type.
 -/
 noncomputable def binaryProductIsoProd : binaryProductFunctor ≅ (prod.functor : Type u ⥤ _) := by
-  refine' NatIso.ofComponents (fun X => _) (fun _ => _)
+  refine NatIso.ofComponents (fun X => ?_) (fun ?_ => ?_ )
   · refine' NatIso.ofComponents (fun Y => _) (fun _ => _)
     · exact ((limit.isLimit _).conePointUniqueUpToIso (binaryProductLimit X Y)).symm
     · apply Limits.prod.hom_ext <;> simp <;> rfl
@@ -492,7 +492,7 @@ The converse of `unique_of_type_equalizer`.
 noncomputable def typeEqualizerOfUnique (t : ∀ y : Y, g y = h y → ∃! x : X, f x = y) :
     IsLimit (Fork.ofι _ w) :=
   Fork.IsLimit.mk' _ fun s => by
-    refine' ⟨fun i => _, _, _⟩
+    refine ⟨fun i => ?_, ?_, ?_ ⟩
     · apply Classical.choose (t (s.ι i) _)
       apply congr_fun s.condition i
     · funext i

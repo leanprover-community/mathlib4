@@ -519,7 +519,7 @@ theorem TotallyBounded.exists_subset {s : Set α} (hs : TotallyBounded s) {U : S
   rcases hs r hr with ⟨k, fk, ks⟩
   let u := k ∩ { y | ∃ x ∈ s, (x, y) ∈ r }
   choose f hfs hfr using fun x : u => x.coe_prop.2
-  refine' ⟨range f, _, _, _⟩
+  refine ⟨range f, ?_, ?_, ?_ ⟩
   · exact range_subset_iff.2 hfs
   · haveI : Fintype u := (fk.inter_of_left _).fintype
     exact finite_range f

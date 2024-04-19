@@ -389,7 +389,7 @@ theorem shadow_compression_subset_compression_shadow (u v : Finset α)
   -- and we already had that `v` and `s` are disjoint,
   -- so it only remains to get `(s ∪ v) \ u ∈ ∂ 𝒜 \ ∂ 𝒜'`
   simp_rw [mem_shadow_iff_insert_mem]
-  refine' ⟨hus, hsv.symm, ⟨x, _, _⟩, _⟩
+  refine ⟨hus, hsv.symm, ⟨x, ?_, ?_⟩, ?_ ⟩
   -- `(s ∪ v) \ u ∈ ∂ 𝒜` is pretty direct:
   · exact not_mem_sdiff_of_not_mem_left (not_mem_union.2 ⟨‹x ∉ s›, ‹x ∉ v›⟩)
   · rwa [← insert_sdiff_of_not_mem _ ‹x ∉ u›, ← insert_union]

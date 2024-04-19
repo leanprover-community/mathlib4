@@ -1175,7 +1175,7 @@ theorem zero_left : (0 : VectorMeasure α M) ⟂ᵥ w :=
 theorem add_left [T2Space N] [ContinuousAdd M] (h₁ : v₁ ⟂ᵥ w) (h₂ : v₂ ⟂ᵥ w) : v₁ + v₂ ⟂ᵥ w := by
   obtain ⟨u, hmu, hu₁, hu₂⟩ := h₁
   obtain ⟨v, hmv, hv₁, hv₂⟩ := h₂
-  refine' mk (u ∩ v) (hmu.inter hmv) (fun t ht _ => _) fun t ht hmt => _
+  refine mk (u ∩ v) (hmu.inter hmv) (fun t ht ?_ => ?_) fun t ht hmt => ?_
   · rw [add_apply, hu₁ _ (Set.subset_inter_iff.1 ht).1, hv₁ _ (Set.subset_inter_iff.1 ht).2,
       zero_add]
   · rw [Set.compl_inter] at ht

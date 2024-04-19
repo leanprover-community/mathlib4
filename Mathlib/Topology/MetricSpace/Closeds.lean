@@ -217,7 +217,7 @@ instance Closeds.compactSpace [CompactSpace α] : CompactSpace (Closeds α) :=
         exact ⟨y, yu, le_of_lt hy⟩
     -- introduce the set F of all subsets of `s` (seen as members of `Closeds α`).
     let F := { f : Closeds α | (f : Set α) ⊆ s }
-    refine' ⟨F, _, fun u _ => _⟩
+    refine ⟨F, ?_, fun u ?_ => ?_ ⟩
     -- `F` is finite
     · apply @Finite.of_finite_image _ _ F _
       · apply fs.finite_subsets.subset fun b => _

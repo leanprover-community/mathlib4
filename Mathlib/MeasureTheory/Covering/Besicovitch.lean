@@ -629,7 +629,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
     have : μ s / (N + 1) < μ (o ∩ v i) := hi.trans_le (measure_mono (inter_subset_inter_left _ so))
     exact ((tendsto_order.1 C).1 _ this).exists
   -- Bring back the finset `w i` of `↑(u i)` to a finset of `α`, and check that it works by design.
-  refine' ⟨Finset.image (fun x : u i => x) w, _, _, _⟩
+  refine ⟨Finset.image (fun x : u i => x) w, ?_, ?_, ?_ ⟩
   -- show that the finset is included in `s`.
   · simp only [image_subset_iff, Finset.coe_image]
     intro y _

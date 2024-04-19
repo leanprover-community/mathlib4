@@ -861,7 +861,7 @@ theorem eval_maximal {σ} {f : σ → Option σ} {a b} (h : b ∈ eval f a) {c} 
 #align turing.eval_maximal Turing.eval_maximal
 
 theorem reaches_eval {σ} {f : σ → Option σ} {a b} (ab : Reaches f a b) : eval f a = eval f b := by
-  refine' Part.ext fun _ ↦ ⟨fun h ↦ _, fun h ↦ _⟩
+  refine Part.ext fun ?_ ↦ ⟨fun h ↦ ?_, fun h ↦ ?_ ⟩
   · have ⟨ac, c0⟩ := mem_eval.1 h
     exact mem_eval.2 ⟨(or_iff_left_of_imp fun cb ↦ (eval_maximal h).1 cb ▸ ReflTransGen.refl).1
       (reaches_total ab ac), c0⟩

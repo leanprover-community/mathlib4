@@ -486,7 +486,7 @@ theorem IsCycle.existsUnique_cycle_subtype {f : Perm α} (hf : IsCycle f) :
 theorem IsCycle.existsUnique_cycle_nontrivial_subtype {f : Perm α} (hf : IsCycle f) :
     ∃! s : { s : Cycle α // s.Nodup ∧ s.Nontrivial }, (s : Cycle α).formPerm s.prop.left = f := by
   obtain ⟨⟨s, hn⟩, hs, hs'⟩ := hf.existsUnique_cycle_subtype
-  refine' ⟨⟨s, hn, _⟩, _, _⟩
+  refine ⟨⟨s, hn, ?_⟩, ?_, ?_ ⟩
   · rw [hn.nontrivial_iff]
     subst f
     intro H

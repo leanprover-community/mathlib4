@@ -341,7 +341,7 @@ instance instCompleteSpace [CompleteSpace β] : CompleteSpace (α →ᵇ β) :=
     have fF_bdd : ∀ x N, dist (f N x) (F x) ≤ b N :=
       fun x N => le_of_tendsto (tendsto_const_nhds.dist (hF x))
         (Filter.eventually_atTop.2 ⟨N, fun n hn => f_bdd x N n N (le_refl N) hn⟩)
-    refine' ⟨⟨⟨F, _⟩, _⟩, _⟩
+    refine ⟨⟨⟨F, ?_⟩, ?_⟩, ?_ ⟩
     · -- Check that `F` is continuous, as a uniform limit of continuous functions
       have : TendstoUniformly (fun n x => f n x) F atTop := by
         refine' Metric.tendstoUniformly_iff.2 fun ε ε0 => _

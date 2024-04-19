@@ -38,7 +38,7 @@ theorem Ico_lemma {α} [LinearOrder α] {x₁ x₂ y₁ y₂ z₁ z₂ w : α} (
     (h₂ : y₂ < x₂) (hz₁ : z₁ ≤ y₂) (hz₂ : y₁ ≤ z₂) (hw : w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂) :
     ∃ w, w ∈ Ico x₁ x₂ ∧ w ∉ Ico y₁ y₂ ∧ w ∈ Ico z₁ z₂ := by
   simp only [not_and, not_lt, mem_Ico] at hw
-  refine' ⟨max x₁ (min w y₂), _, _, _⟩
+  refine ⟨max x₁ (min w y₂), ?_, ?_, ?_ ⟩
   · simp [le_refl, lt_trans h₁ (lt_trans hy h₂), h₂]
   · simp (config := { contextual := true }) [hw, lt_irrefl, not_le_of_lt h₁]
   · simp [hw.2.1, hw.2.2, hz₁, lt_of_lt_of_le h₁ hz₂]
@@ -498,7 +498,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
           (le_trans (hp2 j).1 <| le_of_lt (h2p2 j).2) (le_trans (h2p2 j).1 <| le_of_lt (hp2 j).2)
           ⟨hj, hp1 j⟩ with
         ⟨w, hw, h2w, h3w⟩
-      refine' ⟨fun j' => if j' = j then w else p2 j', _, _, _⟩
+      refine ⟨fun j' => if j' = j then w else p2 j', ?_, ?_, ?_ ⟩
       · intro j'; by_cases h : j' = j
         · simp only [if_pos h]; exact h ▸ h3w
         · simp only [if_neg h]; exact hp2 j'

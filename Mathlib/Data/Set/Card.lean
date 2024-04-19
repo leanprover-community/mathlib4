@@ -329,7 +329,7 @@ theorem encard_eq_three {α : Type u_1} {s : Set α} :
       encard_insert_of_not_mem (fun h ↦ h.2 rfl), (by exact rfl : (3 : ℕ∞) = 2 + 1),
       WithTop.add_right_cancel_iff WithTop.one_ne_top, encard_eq_two] at h
     obtain ⟨y, z, hne, hs⟩ := h
-    refine' ⟨x, y, z, _, _, hne, _⟩
+    refine ⟨x, y, z, ?_, ?_, hne, ?_ ⟩
     · rintro rfl; exact (hs.symm.subset (Or.inl rfl)).2 rfl
     · rintro rfl; exact (hs.symm.subset (Or.inr rfl)).2 rfl
     rw [← hs, insert_diff_singleton, insert_eq_of_mem hx]

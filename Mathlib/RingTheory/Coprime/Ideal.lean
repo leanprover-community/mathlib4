@@ -89,7 +89,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     have := sup_iInf_eq_top fun b hb => Hb b hb (ne_of_mem_of_not_mem hb hat).symm
     rw [eq_top_iff_one, Submodule.mem_sup] at this
     obtain ⟨u, hu, v, hv, huv⟩ := this
-    refine' ⟨fun i => if hi : i = a then ⟨v, _⟩ else ⟨u * μ i, _⟩, _⟩
+    refine ⟨fun i => if hi : i = a then ⟨v, ?_⟩ else ⟨u * μ i, ?_⟩, ?_ ⟩
     · simp only [mem_iInf] at hv ⊢
       intro j hj ij
       rw [Finset.mem_cons, ← hi] at hj

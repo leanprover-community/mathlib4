@@ -644,7 +644,7 @@ theorem mem_iInf' {ι} {s : ι → Filter α} {U : Set α} :
   simp only [mem_iInf, SetCoe.forall', biInter_eq_iInter]
   refine' ⟨_, fun ⟨I, If, V, hVs, _, hVU, _⟩ => ⟨I, If, fun i => V i, fun i => hVs i, hVU⟩⟩
   rintro ⟨I, If, V, hV, rfl⟩
-  refine' ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => _, fun i hi => _, _⟩
+  refine ⟨I, If, fun i => if hi : i ∈ I then V ⟨i, hi⟩ else univ, fun i => ?_, fun i hi => ?_, ?_ ⟩
   · dsimp only
     split_ifs
     exacts [hV _, univ_mem]

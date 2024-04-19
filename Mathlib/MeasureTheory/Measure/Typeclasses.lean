@@ -1055,7 +1055,7 @@ instance sum.sigmaFinite {ι} [Finite ι] (μ : ι → Measure α) [∀ i, Sigma
   cases nonempty_fintype ι
   have : ∀ n, MeasurableSet (⋂ i : ι, spanningSets (μ i) n) := fun n =>
     MeasurableSet.iInter fun i => measurable_spanningSets (μ i) n
-  refine' ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun _ => trivial, fun n => _, _⟩⟩⟩
+  refine ⟨⟨⟨fun n => ⋂ i, spanningSets (μ i) n, fun ?_ => trivial, fun n => ?_, ?_ ⟩⟩⟩
   · rw [sum_apply _ (this n), tsum_fintype, ENNReal.sum_lt_top_iff]
     rintro i -
     exact (measure_mono <| iInter_subset _ i).trans_lt (measure_spanningSets_lt_top (μ i) n)

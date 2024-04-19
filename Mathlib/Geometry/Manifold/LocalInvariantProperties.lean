@@ -603,7 +603,7 @@ theorem isLocalStructomorphWithinAt_localInvariantProp [ClosedUnderRestriction G
         exact ⟨e, heG, hef.mono this, hex⟩
       · rintro h hx
         rcases h ⟨hx, hux⟩ with ⟨e, heG, hef, hex⟩
-        refine' ⟨e.restr (interior u), _, _, _⟩
+        refine ⟨e.restr (interior u), ?_, ?_, ?_ ⟩
         · exact closedUnderRestriction' heG isOpen_interior
         · have : s ∩ u ∩ e.source = s ∩ (e.source ∩ u) := by mfld_set_tac
           simpa only [this, interior_interior, hu.interior_eq, mfld_simps] using hef

@@ -835,7 +835,7 @@ protected theorem IsCycle.isCycleOn (hf : f.IsCycle) : f.IsCycleOn { x | f x ≠
 in non-degenerate cases. -/
 theorem isCycle_iff_exists_isCycleOn :
     f.IsCycle ↔ ∃ s : Set α, s.Nontrivial ∧ f.IsCycleOn s ∧ ∀ ⦃x⦄, ¬IsFixedPt f x → x ∈ s := by
-  refine' ⟨fun hf => ⟨{ x | f x ≠ x }, _, hf.isCycleOn, fun _ => id⟩, _⟩
+  refine ⟨fun hf => ⟨{ x | f x ≠ x }, ?_, hf.isCycleOn, fun ?_ => id⟩, ?_ ⟩
   · obtain ⟨a, ha⟩ := hf
     exact ⟨f a, f.injective.ne ha.1, a, ha.1, ha.1⟩
   · rintro ⟨s, hs, hf, hsf⟩

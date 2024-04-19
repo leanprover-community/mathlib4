@@ -377,7 +377,7 @@ def MeasurablySeparable {α : Type*} [MeasurableSpace α] (s t : Set α) : Prop 
 theorem MeasurablySeparable.iUnion [Countable ι] {α : Type*} [MeasurableSpace α] {s t : ι → Set α}
     (h : ∀ m n, MeasurablySeparable (s m) (t n)) : MeasurablySeparable (⋃ n, s n) (⋃ m, t m) := by
   choose u hsu htu hu using h
-  refine' ⟨⋃ m, ⋂ n, u m n, _, _, _⟩
+  refine ⟨⋃ m, ⋂ n, u m n, ?_, ?_, ?_ ⟩
   · refine' iUnion_subset fun m => subset_iUnion_of_subset m _
     exact subset_iInter fun n => hsu m n
   · simp_rw [disjoint_iUnion_left, disjoint_iUnion_right]

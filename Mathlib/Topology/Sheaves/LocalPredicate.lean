@@ -196,7 +196,7 @@ theorem isSheaf (P : LocalPredicate T) : (subpresheafToTypes P.toPrelocalPredica
       congr_arg Subtype.val (sf_comp i j)
     -- So, we can obtain a unique gluing
     obtain ⟨gl, gl_spec, gl_uniq⟩ := (sheafToTypes X T).existsUnique_gluing U sf' sf'_comp
-    refine' ⟨⟨gl, _⟩, _, _⟩
+    refine ⟨⟨gl, ?_⟩, ?_, ?_ ⟩
     · -- Our first goal is to show that this chosen gluing satisfies the
       -- predicate. Of course, we use locality of the predicate.
       apply P.locality

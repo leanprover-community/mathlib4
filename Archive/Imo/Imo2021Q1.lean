@@ -84,7 +84,7 @@ theorem exists_finset_3_le_card_with_pairs_summing_to_squares (n : ℕ) (hn : 10
       (∀ a ∈ B, ∀ b ∈ B, a ≠ b → ∃ k, a + b = k ^ 2) ∧
       ∀ c ∈ B, n ≤ c ∧ c ≤ 2 * n := by
   obtain ⟨a, b, c, hna, hab, hbc, hcn, h₁, h₂, h₃⟩ := exists_triplet_summing_to_squares n hn
-  refine' ⟨{a, b, c}, _, _, _⟩
+  refine ⟨{a, b, c}, ?_, ?_, ?_ ⟩
   · suffices ({a, b, c} : Finset ℕ).card = 3 by rw [this]
     suffices a ∉ {b, c} ∧ b ∉ {c} by
       rw [Finset.card_insert_of_not_mem this.1, Finset.card_insert_of_not_mem this.2,

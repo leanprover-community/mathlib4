@@ -158,7 +158,7 @@ instance of_powerSeries_localization [CommRing R] :
     IsLocalization (Submonoid.powers (PowerSeries.X : PowerSeries R)) (LaurentSeries R) where
   map_units' := by
     rintro ⟨_, n, rfl⟩
-    refine' ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, _, _⟩, _⟩
+    refine ⟨⟨single (n : ℤ) 1, single (-n : ℤ) 1, ?_, ?_⟩, ?_ ⟩
     · simp only [single_mul_single, mul_one, add_right_neg]
       rfl
     · simp only [single_mul_single, mul_one, add_left_neg]

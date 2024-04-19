@@ -86,7 +86,7 @@ theorem exists_sub_one_mem_and_smul_eq_zero_of_fg_of_le_smul {R : Type*} [CommRi
   rw [fg_def] at hn
   rcases hn with ⟨s, hfs, hs⟩
   have : ∃ r : R, r - 1 ∈ I ∧ N ≤ (I • span R s).comap (LinearMap.lsmul R M r) ∧ s ⊆ N := by
-    refine' ⟨1, _, _, _⟩
+    refine ⟨1, ?_, ?_, ?_ ⟩
     · rw [sub_self]
       exact I.zero_mem
     · rw [hs]

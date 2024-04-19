@@ -125,7 +125,7 @@ theorem boundedFormula_realize_cast {β : Type*} {n : ℕ} (φ : L.BoundedFormul
       ∀ (m : ∀ a, M a) (a : α),
         (fun i : Fin (k + 1) => (Fin.snoc v m : _ → ∀ a, M a) i a) =
           Fin.snoc (fun i : Fin k => v i a) (m a) := by
-      refine' fun m a => funext (Fin.reverseInduction _ fun i _ => _)
+      refine fun m a => funext (Fin.reverseInduction ?_ fun i ?_ => ?_ )
       · simp only [Fin.snoc_last]
       · simp only [Fin.snoc_castSucc]
     simp only [← Fin.comp_snoc]

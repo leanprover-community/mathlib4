@@ -575,7 +575,7 @@ theorem contDiffWithinAt_succ_iff_hasFDerivWithinAt {n : ℕ} :
       apply nhdsWithin_le_of_mem hu
       exact nhdsWithin_mono _ (subset_insert x u) hv
     · rw [hasFTaylorSeriesUpToOn_succ_iff_right]
-      refine' ⟨fun y _ => rfl, fun y hy => _, _⟩
+      refine ⟨fun y ?_ => rfl, fun y hy => ?_, ?_ ⟩
       · change
           HasFDerivWithinAt (fun z => (continuousMultilinearCurryFin0 𝕜 E F).symm (f z))
             (FormalMultilinearSeries.unshift (p' y) (f y) 1).curryLeft (v ∩ u) y

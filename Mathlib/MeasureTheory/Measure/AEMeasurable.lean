@@ -196,7 +196,7 @@ theorem exists_ae_eq_range_subset (H : AEMeasurable f μ) {t : Set β} (ht : ∀
     (h₀ : t.Nonempty) : ∃ g, Measurable g ∧ range g ⊆ t ∧ f =ᵐ[μ] g := by
   let s : Set α := toMeasurable μ { x | f x = H.mk f x ∧ f x ∈ t }ᶜ
   let g : α → β := piecewise s (fun _ => h₀.some) (H.mk f)
-  refine' ⟨g, _, _, _⟩
+  refine ⟨g, ?_, ?_, ?_ ⟩
   · exact Measurable.piecewise (measurableSet_toMeasurable _ _) measurable_const H.measurable_mk
   · rintro _ ⟨x, rfl⟩
     by_cases hx : x ∈ s

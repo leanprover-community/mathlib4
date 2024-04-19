@@ -1966,7 +1966,7 @@ theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 
 #align category_theory.limits.pullback_symmetry_hom_of_mono_eq CategoryTheory.Limits.pullbackSymmetry_hom_of_mono_eq
 
 instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst : pullback f f ⟶ _) := by
-  refine' ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), _, by simp⟩⟩
+  refine ⟨⟨pullback.lift (𝟙 _) (𝟙 _) (by simp), ?_ , by simp⟩⟩
   ext
   · simp
   · simp [fst_eq_snd_of_mono_eq]

@@ -1107,7 +1107,7 @@ theorem IsCompact.finite_compact_cover {s : Set X} (hs : IsCompact s) {ι : Type
   rcases hs.binary_compact_cover hU.1 (isOpen_biUnion hU') hsC with
     ⟨K₁, K₂, h1K₁, h1K₂, h2K₁, h2K₂, hK⟩
   rcases ih h1K₂ U hU' h2K₂ with ⟨K, h1K, h2K, h3K⟩
-  refine' ⟨update K x K₁, _, _, _⟩
+  refine ⟨update K x K₁, ?_, ?_, ?_ ⟩
   · intro i
     rcases eq_or_ne i x with rfl | hi
     · simp only [update_same, h1K₁]
@@ -2331,7 +2331,7 @@ theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : 
     rw [← not_disjoint_iff_nonempty_inter, imp_not_comm, not_forall] at H1
     cases' H1 (disjoint_compl_left_iff_subset.2 <| hab.trans <| union_subset_union hau hbv)
       with si H2
-    refine' ⟨⋂ U ∈ si, Subtype.val U, _, _, _⟩
+    refine ⟨⋂ U ∈ si, Subtype.val U, ?_, ?_, ?_ ⟩
     · exact isClopen_biInter_finset fun s _ => s.2.1
     · exact mem_iInter₂.2 fun s _ => s.2.2
     · rwa [← disjoint_compl_left_iff_subset, disjoint_iff_inter_eq_empty,

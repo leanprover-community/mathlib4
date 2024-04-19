@@ -1937,7 +1937,7 @@ theorem SimpleFunc.exists_lt_lintegral_simpleFunc_of_lt_lintegral {m : Measurabl
     obtain ⟨t, ht, ts, mlt, t_top⟩ :
       ∃ t : Set α, MeasurableSet t ∧ t ⊆ s ∧ L / ↑c < μ t ∧ μ t < ∞ :=
       Measure.exists_subset_measure_lt_top hs this
-    refine' ⟨piecewise t ht (const α c) (const α 0), fun x => _, _, _⟩
+    refine ⟨piecewise t ht (const α c) (const α 0), fun x => ?_, ?_, ?_ ⟩
     · refine indicator_le_indicator_of_subset ts (fun x => ?_) x
       exact zero_le _
     · simp only [ht, const_zero, coe_piecewise, coe_const, SimpleFunc.coe_zero, univ_inter,

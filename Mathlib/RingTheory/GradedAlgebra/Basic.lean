@@ -278,7 +278,7 @@ def GradedRing.projZeroRingHom : A →+* A where
     rw [decompose_add]
     rfl
   map_mul' := by
-    refine' DirectSum.Decomposition.inductionOn 𝒜 (fun x => _) _ _
+    refine DirectSum.Decomposition.inductionOn 𝒜 (fun x => ?_) ?_ ?_
     · simp only [zero_mul, decompose_zero, zero_apply, ZeroMemClass.coe_zero]
     · rintro i ⟨c, hc⟩
       refine' DirectSum.Decomposition.inductionOn 𝒜 _ _ _

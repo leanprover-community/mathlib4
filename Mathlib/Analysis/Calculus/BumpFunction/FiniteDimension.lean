@@ -161,7 +161,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
     refine' .of_nnnorm_bounded _ δc.summable fun n => _
     rw [← NNReal.coe_le_coe, coe_nnnorm]
     simpa only [norm_iteratedFDeriv_zero] using hr n 0 (zero_le n) x
-  refine' ⟨fun x => ∑' n, (r n • g n) x, _, _, _⟩
+  refine ⟨fun x => ∑' n, (r n • g n) x, ?_, ?_, ?_ ⟩
   · apply Subset.antisymm
     · intro x hx
       simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, mem_support, Ne] at hx

@@ -298,7 +298,7 @@ theorem exists_mk0_eq_mk0 [IsDedekindDomain S] (h : Algebra.IsAlgebraic R L) (I 
   obtain ⟨b, b_mem, b_ne_zero, b_min⟩ := exists_min abv I
   suffices Ideal.span {b} ∣ Ideal.span {algebraMap _ _ M} * I.1 by
     obtain ⟨J, hJ⟩ := this
-    refine' ⟨⟨J, _⟩, _, _⟩
+    refine ⟨⟨J, ?_⟩, ?_, ?_ ⟩
     · rw [mem_nonZeroDivisors_iff_ne_zero]
       rintro rfl
       rw [Ideal.zero_eq_bot, Ideal.mul_bot] at hJ

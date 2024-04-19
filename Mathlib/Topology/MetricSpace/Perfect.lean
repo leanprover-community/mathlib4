@@ -120,7 +120,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   have hdom : ∀ {x : ℕ → Bool}, x ∈ (inducedMap D).1 := fun {x} => by
     rw [hanti.map_of_vanishingDiam hdiam fun l => (DP l).property.2]
     apply mem_univ
-  refine' ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, _, _, _⟩
+  refine ⟨fun x => (inducedMap D).2 ⟨x, hdom⟩, ?_, ?_, ?_ ⟩
   · rintro y ⟨x, rfl⟩
     exact map_mem ⟨_, hdom⟩ 0
   · apply hdiam.map_continuous.comp

@@ -110,7 +110,7 @@ theorem LocallyIntegrableOn.exists_nat_integrableOn [SecondCountableTopology X]
   have T'_count : T'.Countable := Countable.insert ∅ T_count
   have T'_ne : T'.Nonempty := by simp only [T', insert_nonempty]
   rcases T'_count.exists_eq_range T'_ne with ⟨u, hu⟩
-  refine' ⟨u, _, _, _⟩
+  refine ⟨u, ?_, ?_, ?_ ⟩
   · intro n
     have : u n ∈ T' := by rw [hu]; exact mem_range_self n
     rcases mem_insert_iff.1 this with h|h

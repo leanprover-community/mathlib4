@@ -242,7 +242,7 @@ theorem cof_eq_sInf_lsub (o : Ordinal.{u}) : cof o =
     have := typein_lt_self a
     simp_rw [← hf, lt_lsub_iff] at this
     cases' this with i hi
-    refine' ⟨enum (· < ·) (f i) _, _, _⟩
+    refine ⟨enum (· < ·) (f i) ?_, ?_, ?_ ⟩
     · rw [type_lt, ← hf]
       apply lt_lsub
     · rw [mem_preimage, typein_enum]
@@ -828,7 +828,7 @@ theorem infinite_pigeonhole_set {β α : Type u} {s : Set β} (f : s → α) (θ
     (hθ : θ ≤ #s) (h₁ : ℵ₀ ≤ θ) (h₂ : #α < θ.ord.cof) :
     ∃ (a : α) (t : Set β) (h : t ⊆ s), θ ≤ #t ∧ ∀ ⦃x⦄ (hx : x ∈ t), f ⟨x, h hx⟩ = a := by
   cases' infinite_pigeonhole_card f θ hθ h₁ h₂ with a ha
-  refine' ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, _, _, _⟩
+  refine ⟨a, { x | ∃ h, f ⟨x, h⟩ = a }, ?_, ?_, ?_ ⟩
   · rintro x ⟨hx, _⟩
     exact hx
   · refine'

@@ -1020,7 +1020,7 @@ private theorem succ_le_iff' {a b : Ordinal} : a + 1 ≤ b ↔ a < b :=
     inductionOn a fun α r hr =>
       inductionOn b fun β s hs ⟨⟨f, t, hf⟩⟩ => by
         haveI := hs
-        refine' ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun _ => t) (fun a b ↦ _), fun a b ↦ _⟩⟩
+        refine ⟨⟨RelEmbedding.ofMonotone (Sum.rec f fun ?_ => t) (fun a b ↦ ?_), fun a b ↦ ?_ ⟩⟩
         · rcases a with (a | _) <;> rcases b with (b | _)
           · simpa only [Sum.lex_inl_inl] using f.map_rel_iff.2
           · intro

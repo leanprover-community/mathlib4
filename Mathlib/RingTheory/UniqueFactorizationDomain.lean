@@ -1674,7 +1674,7 @@ theorem exists_prime_dvd_of_not_inf_one {a b : α} (ha : a ≠ 0) (hb : b ≠ 0)
   obtain ⟨⟨p0, p0_irr⟩, p0_mem⟩ := Multiset.exists_mem_of_ne_zero ((mt WithTop.coe_eq_coe.mpr) hz)
   rw [Multiset.inf_eq_inter] at p0_mem
   obtain ⟨p, rfl⟩ : ∃ p, Associates.mk p = p0 := Quot.exists_rep p0
-  refine' ⟨p, _, _, _⟩
+  refine ⟨p, ?_, ?_, ?_ ⟩
   · rw [← UniqueFactorizationMonoid.irreducible_iff_prime, ← irreducible_mk]
     exact p0_irr
   · apply dvd_of_mk_le_mk

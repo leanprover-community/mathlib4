@@ -443,8 +443,8 @@ instance : Trans (ReflTransGen r) (TransGen r) (TransGen r) :=
   ⟨trans_right⟩
 
 theorem tail'_iff : TransGen r a c ↔ ∃ b, ReflTransGen r a b ∧ r b c := by
-  refine' ⟨fun h ↦ _, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
-  cases' h with _ hac b _ hab hbc
+  refine ⟨fun h ↦ ?_, fun ⟨b, hab, hbc⟩ ↦ tail' hab hbc⟩
+  cases' h with _ hac b _  hab hbc
   · exact ⟨_, by rfl, hac⟩
   · exact ⟨_, hab.to_reflTransGen, hbc⟩
 #align relation.trans_gen.tail'_iff Relation.TransGen.tail'_iff

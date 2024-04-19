@@ -151,7 +151,7 @@ theorem riesz_extension (s : ConvexCone ℝ E) (f : E →ₗ.[ℝ] ℝ)
     ∃ g : E →ₗ[ℝ] ℝ, (∀ x : f.domain, g x = f x) ∧ ∀ x ∈ s, 0 ≤ g x := by
   rcases RieszExtension.exists_top s f nonneg dense
     with ⟨⟨g_dom, g⟩, ⟨-, hfg⟩, rfl : g_dom = ⊤, hgs⟩
-  refine' ⟨g.comp (LinearMap.id.codRestrict ⊤ fun _ ↦ trivial), _, _⟩
+  refine ⟨g.comp (LinearMap.id.codRestrict ⊤ fun ?_ ↦ trivial), ?_, ?_ ⟩
   · exact fun x => (hfg rfl).symm
   · exact fun x hx => hgs ⟨x, _⟩ hx
 #align riesz_extension riesz_extension

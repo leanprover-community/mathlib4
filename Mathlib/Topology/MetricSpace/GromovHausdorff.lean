@@ -404,7 +404,7 @@ theorem ghDist_eq_hausdorffDist (X : Type u) [MetricSpace X] [CompactSpace X] [N
   let F := kuratowskiEmbedding (OptimalGHCoupling X Y)
   let Φ := F ∘ optimalGHInjl X Y
   let Ψ := F ∘ optimalGHInjr X Y
-  refine' ⟨Φ, Ψ, _, _, _⟩
+  refine ⟨Φ, Ψ, ?_, ?_, ?_ ⟩
   · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjl X Y)
   · exact (kuratowskiEmbedding.isometry _).comp (isometry_optimalGHInjr X Y)
   · rw [← image_univ, ← image_univ, image_comp F, image_univ, image_comp F (optimalGHInjr X Y),

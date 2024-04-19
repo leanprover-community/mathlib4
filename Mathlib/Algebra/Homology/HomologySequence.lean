@@ -179,7 +179,7 @@ lemma opcycles_right_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.E
       dsimp
       rw [← p_opcyclesMap_assoc, hk, comp_zero])
     dsimp at H
-    refine' ⟨S.X₃.descOpcycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₃.descOpcycles H.1 _ rfl ?_, ?_ ⟩
     · rw [← cancel_epi (S.g.f (c.prev i)), comp_zero, Hom.comm_assoc, H.2,
         d_pOpcycles_assoc, zero_comp]
     · rw [← cancel_epi (S.X₂.pOpcycles i), opcyclesMap_comp_descOpcycles, p_descOpcycles, H.2])
@@ -201,7 +201,7 @@ lemma cycles_left_exact (S : ShortComplex (HomologicalComplex C c)) (hS : S.Exac
       dsimp
       rw [assoc, ← cyclesMap_i, reassoc_of% hk, zero_comp])
     dsimp at H
-    refine' ⟨S.X₁.liftCycles H.1 _ rfl _, _⟩
+    refine ⟨S.X₁.liftCycles H.1 _ rfl ?_, ?_ ⟩
     · rw [← cancel_mono (S.f.f _), assoc, zero_comp, ← Hom.comm, reassoc_of% H.2,
         iCycles_d, comp_zero]
     · rw [← cancel_mono (S.X₂.iCycles i), liftCycles_comp_cyclesMap, liftCycles_i, H.2])

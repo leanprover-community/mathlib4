@@ -422,7 +422,7 @@ theorem exists_isSubordinate [T2Space M] [SigmaCompactSpace M] (hs : IsClosed s)
   rcases exists_subset_iUnion_closed_subset hs (fun i => (f i).isOpen_support)
     (fun x _ => hfin.point_finite x) hsub' with ⟨V, hsV, hVc, hVf⟩
   choose r hrR hr using fun i => (f i).exists_r_pos_lt_subset_ball (hVc i) (hVf i)
-  refine' ⟨ι, ⟨c, fun i => (f i).updateRIn (r i) (hrR i), hcs, _, fun x hx => _⟩, fun i => _⟩
+  refine ⟨ι, ⟨c, fun i => (f i).updateRIn (r i) (hrR i), hcs, ?_, fun x hx => ?_⟩, fun i => ?_ ⟩
   · simpa only [SmoothBumpFunction.support_updateRIn]
   · refine' (mem_iUnion.1 <| hsV hx).imp fun i hi => _
     exact ((f i).updateRIn _ _).eventuallyEq_one_of_dist_lt
