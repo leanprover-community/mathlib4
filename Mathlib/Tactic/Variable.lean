@@ -272,12 +272,11 @@ where
         (binders.zip toOmit).filterMap fun (b, omit) => if omit then none else some b
       if let some expectedBinders := expectedBinders? then
         trace[«variable?»] "checking expected binders"
-        /- We re-elaborate the biders to record expressions that represent the whole resulting
-        local contexts (auto-bound implicits make it so we can't just use the argument to the
-        function for `Term.elabBinders`). -/
+        /- We re-elaborate the binders to create an expression that represents the entire resulting
+        local context (auto-bound implicits mean we can't just the `binders` array). -/
         let elabAndPackageBinders (binders : TSyntaxArray ``bracketedBinder) :
             TermElabM AbstractMVarsResult :=
-          withoutModifyingState <| Term.withAutoBoundImplicit <|
+          withoutModifyingStateWithInfoAndMessages <| Term.withAutoBoundImplicit <|
             Term.elabBinders binders fun _ => do
               let e ← mkForallFVars (← getLCtx).getFVars (.sort .zero)
               let res ← abstractMVars e
@@ -285,10 +284,7 @@ where
               -- level names.
               return {res with paramNames := (← get).levelNames.toArray ++ res.paramNames}
         let ctx1 ← elabAndPackageBinders binders'
-        -- For the expected binders, turn off the linter since it might, for example,
-        -- contain unused variables.
-        let ctx2 ← withOptions (fun opts => opts.set Linter.linter.all.name false) do
-          elabAndPackageBinders expectedBinders
+        let ctx2 ← elabAndPackageBinders expectedBinders
         trace[«variable?»] "new context: paramNames = {ctx1.paramNames}, {
           ""}numMVars = {ctx1.numMVars}\n{indentD ctx1.expr}"
         trace[«variable?»] "expected context: paramNames = {ctx2.paramNames}, {
@@ -309,4 +305,5 @@ where
 /-- Hint for the unused variables linter. Copies the one for `variable`. -/
 @[unused_variables_ignore_fn]
 def ignorevariable? : Lean.Linter.IgnoreFunction := fun _ stack _ =>
-  stack.matches [`null, none, `null, `Mathlib.Command.variable?]
+  stack.matches [`null, none, `null, ``Mathlib.Command.Variable.variable?]
+  || stack.matches [`null, none, `null, `null, ``Mathlib.Command.Variable.variable?]
