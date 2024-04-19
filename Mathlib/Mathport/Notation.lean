@@ -250,10 +250,25 @@ partial def exprToMatcher (boundFVars : HashMap FVarId Name) (localFVars : HashM
         -- This is an fvar from a `variable`. Match by name and type.
         let (_, m) ← exprToMatcher boundFVars localFVars (← instantiateMVars (← inferType e))
         return ([`fvar], ← ``(matchFVar $(quote n) $m))
-  | .app f arg =>
-    let (keys, matchF) ← exprToMatcher boundFVars localFVars f
-    let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
-    return (if keys.isEmpty then [`app] else keys, ← ``(matchApp $matchF $matchArg))
+  | .app .. =>
+    e.withApp fun f args => do
+      let (keys, matchF) ← exprToMatcher boundFVars localFVars f
+      let mut fty ← inferType f
+      let mut matcher := matchF
+      for arg in args do
+        fty ← whnf fty
+        guard fty.isForall
+        let bi := fty.bindingInfo!
+        fty := fty.bindingBody!.instantiate1 arg
+        if bi.isInstImplicit then
+          -- Assumption: elaborated instances are canonical, so no need to match.
+          -- The type of the instance is already accounted for by the previous arguments
+          -- and the type of `f`.
+          matcher ← ``(matchApp $matcher pure)
+        else
+          let (_, matchArg) ← exprToMatcher boundFVars localFVars arg
+          matcher ← ``(matchApp $matcher $matchArg)
+      return (if keys.isEmpty then [`app] else keys, matcher)
   | .lit (.natVal n) => return ([`lit], ← ``(natLitMatcher $(quote n)))
   | .forallE n t b bi =>
     let (_, matchDom) ← exprToMatcher boundFVars localFVars t
@@ -568,7 +583,7 @@ elab (name := notation3) doc:(docComment)? attrs?:(Parser.Term.attributes)? attr
       trace[notation3] "Matcher creation succeeded; assembling delaborator"
       let delabName := name ++ `delab
       let matcher ← ms.foldrM (fun m t => `($(m.2) >=> $t)) (← `(pure))
-      trace[notation3] "matcher: {indentD matcher}"
+      trace[notation3] "matcher:{indentD matcher}"
       let mut result ← `(`($pat))
       for (name, id) in boundIdents.toArray do
         match boundType.findD name .normal with

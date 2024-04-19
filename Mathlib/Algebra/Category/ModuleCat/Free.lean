@@ -45,7 +45,7 @@ theorem disjoint_span_sum : Disjoint (span R (range (u ∘ Sum.inl)))
     (span R (range (u ∘ Sum.inr))) := by
   rw [huv, disjoint_comm]
   refine' Disjoint.mono_right (span_mono (range_comp_subset_range _ _)) _
-  rw [← LinearMap.range_coe, (span_eq (LinearMap.range S.f)), hS.moduleCat_range_eq_ker]
+  rw [← LinearMap.range_coe, span_eq (LinearMap.range S.f), hS.moduleCat_range_eq_ker]
   exact range_ker_disjoint hw
 
 /-- In the commutative diagram
@@ -113,8 +113,8 @@ theorem span_exact {β : Type*} {u : ι ⊕ β → S.X₂} (huv : u ∘ Sum.inl 
   rw [← sub_add_cancel m m', ← hnm,]
   simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
-      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
-    by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
+      (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) := by
+    congr; ext a b; rw [← Function.comp_apply (f := S.f), ← huv, Function.comp_apply]
   rw [hn']
   apply add_mem
   · rw [Finsupp.mem_span_range_iff_exists_finsupp]

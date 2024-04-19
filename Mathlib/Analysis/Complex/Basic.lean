@@ -161,7 +161,7 @@ theorem norm_real (r : ℝ) : ‖(r : ℂ)‖ = ‖r‖ :=
 
 @[simp 1100]
 theorem norm_rat (r : ℚ) : ‖(r : ℂ)‖ = |(r : ℝ)| := by
-  rw [← ofReal_rat_cast]
+  rw [← ofReal_ratCast]
   exact norm_real _
 #align complex.norm_rat Complex.norm_rat
 
@@ -726,12 +726,12 @@ lemma neg_ofReal_mem_slitPlane {x : ℝ} : -↑x ∈ slitPlane ↔ x < 0 := by
 lemma zero_not_mem_slitPlane : 0 ∉ slitPlane := mt ofReal_mem_slitPlane.1 (lt_irrefl _)
 
 @[simp]
-lemma nat_cast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
+lemma natCast_mem_slitPlane {n : ℕ} : ↑n ∈ slitPlane ↔ n ≠ 0 := by
   simpa [pos_iff_ne_zero] using @ofReal_mem_slitPlane n
 
 @[simp]
 lemma ofNat_mem_slitPlane (n : ℕ) [n.AtLeastTwo] : no_index (OfNat.ofNat n) ∈ slitPlane :=
-  nat_cast_mem_slitPlane.2 (NeZero.ne n)
+  natCast_mem_slitPlane.2 (NeZero.ne n)
 
 lemma mem_slitPlane_iff_not_le_zero {z : ℂ} : z ∈ slitPlane ↔ ¬z ≤ 0 :=
   mem_slitPlane_iff.trans not_le_zero_iff.symm
