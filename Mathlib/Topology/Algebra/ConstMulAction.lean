@@ -157,6 +157,15 @@ theorem IsCompact.smul {α β} [SMul α β] [TopologicalSpace β] [ContinuousCon
 #align is_compact.smul IsCompact.smul
 #align is_compact.vadd IsCompact.vadd
 
+@[to_additive]
+theorem Specializes.const_smul {x y : α} (h : x ⤳ y) (c : M) : (c • x) ⤳ (c • y) :=
+  h.map (continuous_const_smul c)
+
+@[to_additive]
+theorem Inseparable.const_smul {x y : α} (h : Inseparable x y) (c : M) :
+    Inseparable (c • x) (c • y) :=
+  h.map (continuous_const_smul c)
+
 end SMul
 
 section Monoid
