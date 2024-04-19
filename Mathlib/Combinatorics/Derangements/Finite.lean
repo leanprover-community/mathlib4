@@ -101,6 +101,8 @@ theorem card_derangements_fin_eq_numDerangements {n : ℕ} :
   · rfl
   · rfl
   -- knock out cases 0 and 1
+  · rfl
+  · rfl
   -- now we have n ≥ 2. rewrite everything in terms of card_derangements, so that we can use
   -- `card_derangements_fin_add_two`
   rw [numDerangements_add_two, card_derangements_fin_add_two, mul_add, hyp, hyp] <;> omega
