@@ -861,10 +861,10 @@ theorem Cauchy_Discrete_le {X : Type _} {uX : UniformSpace X} (hX : uX = ⊥)
   (Cauchy_Discrete_le_principal hX hα).choose_spec
 
 /-- The constant to which a non-empty Cauchy filter in a discrete uniform space converges is
-unique (discreteness is not needed for the equality, and hence is removed from the assumptions, but
-the discrete is the typical  use-case).-/
-theorem neBot_unique_principal {X : Type _} [UniformSpace X] {α : Filter X} (hα : α.NeBot)
-    {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y := by
+unique (the uniformity is not needed for the equality, and hence is removed from the assumptions,
+but the discrete uniform one is the typical  use-case).-/
+theorem neBot_unique_principal {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y := by
   rw [principal_singleton, hα.le_pure_iff] at hx hy
   exact pure_injective (hx ▸ hy)
 
