@@ -135,7 +135,7 @@ theorem Matrix.toBilin'_apply (M : Matrix n n R₂) (x y : n → R₂) :
     Matrix.toBilin' M x y = ∑ i, ∑ j, (x i * M i j) * y j := by
     conv_rhs => {
       apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
-          rw [mul_assoc, mul_comm (M i j),  ←smul_eq_mul, ←smul_eq_mul]
+          rw [mul_assoc, mul_comm (M i j),  ← smul_eq_mul, ← smul_eq_mul]
     }
 #align matrix.to_bilin'_apply Matrix.toBilin'_apply
 
@@ -260,7 +260,7 @@ theorem Matrix.toBilin_apply (M : Matrix n n R₂) (x y : M₂) :
     Matrix.toBilin b M x y = ∑ i, ∑ j, b.repr x i * M i j * b.repr y j := by
     conv_rhs => {
       apply Finset.sum_congr rfl fun i  _ => Finset.sum_congr rfl fun j _ => by
-          rw [mul_assoc, mul_comm (M i j),  ←smul_eq_mul, ←smul_eq_mul]
+          rw [mul_assoc, mul_comm (M i j),  ← smul_eq_mul, ← smul_eq_mul]
     }
 #align matrix.to_bilin_apply Matrix.toBilin_apply
 
