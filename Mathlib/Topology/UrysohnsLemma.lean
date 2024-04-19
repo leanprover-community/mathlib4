@@ -642,7 +642,7 @@ lemma exists_forall_tsupport_iUnion_one_iUnion_of_isOpen_isClosed [NormalSpace X
           all_goals
             simp only [Finset.mem_filter, Finset.mem_univ, true_and, not_le]
             rw [Fin.lt_def]
-            simp only [Fin.val_nat_cast]
+            simp only [Fin.val_natCast]
             exact lt_add_one m
       intro x hx
       have huniv : {j : Fin (Nat.succ n) | j ≤ ⟨n, (lt_add_one n)⟩ }.toFinset = Finset.univ := by
