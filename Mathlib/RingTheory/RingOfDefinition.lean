@@ -75,6 +75,11 @@ lemma Ideal.span_preimage_le_comap (f : R →+* S) (T : Set S) :
   · intro a x hx
     exact Ideal.mul_mem_left _ a hx
 
+lemma MvPolynomial.isHomogeneous_of_map (f : R →+* S) (hf : Function.Injective f)
+    (p : MvPolynomial ι R) {n : ℕ} (hphomog : MvPolynomial.IsHomogeneous (MvPolynomial.map f p) n) :
+    MvPolynomial.IsHomogeneous p n :=
+  sorry
+
 variable [Algebra R S]
   {T : Type t} [CommRing T] [Algebra R T]
   {T' : Type t} [CommRing T'] [Algebra R T']
@@ -138,6 +143,30 @@ lemma baseChangeHom_mk_X (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap
       = Ideal.Quotient.mk I (MvPolynomial.X i) := by
   simp [baseChangeHom]
 
+lemma exists_preimage_of_coefficients' (f : R →+* S) (t : MvPolynomial ι S)
+    (hc : MvPolynomial.coefficients t ⊆ Set.range f) :
+    ∃ (p : MvPolynomial ι R), MvPolynomial.map f p = t := by
+  have (m : ι →₀ ℕ) : ∃ (r : R), f r = t.coeff m ∧ (t.coeff m = 0 → r = 0) := by
+    by_cases h : m ∈ t.support
+    · obtain ⟨r, hr⟩ := hc (MvPolynomial.coefficients_mem m h)
+      use r
+      simp_all
+    · simp at h
+      use 0
+      simp only [map_zero, implies_true, and_true]
+      exact h.symm
+  choose c h1 h2 using this
+  let p : (ι →₀ ℕ) →₀ R := Finsupp.ofSupportFinite c <| by
+    apply Set.Finite.subset
+    · exact Finsupp.finite_support t
+    · intro m minc h
+      exact minc (h2 m h)
+  use p
+  apply MvPolynomial.ext
+  intro m
+  rw [MvPolynomial.coeff_map]
+  exact h1 m
+
 lemma exists_preimage_of_coefficients (t : MvPolynomial ι S)
     (hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
     ∃ (p : MvPolynomial ι R), MvPolynomial.map (algebraMap R S) p = t := by
@@ -161,6 +190,20 @@ lemma exists_preimage_of_coefficients (t : MvPolynomial ι S)
   intro m
   rw [MvPolynomial.coeff_map]
   exact h1 m
+
+noncomputable def MvPolynomial.choosePreimageOfCoeffs (t : MvPolynomial ι S)
+    (h : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
+    MvPolynomial ι R := by
+  choose p _ using exists_preimage_of_coefficients t h
+  exact p
+
+noncomputable def MvPolynomial.Set.choosePreimageOfCoeffs (T : Set (MvPolynomial ι S))
+    (h : MvPolynomial.Set.coefficients T ⊆ Set.range (algebraMap R S))
+    (t : T) : MvPolynomial ι R := by
+  apply MvPolynomial.choosePreimageOfCoeffs t.val
+  apply Set.Subset.trans
+  exact MvPolynomial.Set.coefficients_in T t.val t.property
+  exact h
 
 variable (T : Set (MvPolynomial ι S)) (hgen : I = Ideal.span T)
   (hcoeffs : (MvPolynomial.Set.coefficients T) ⊆ (Set.range <| algebraMap R S))

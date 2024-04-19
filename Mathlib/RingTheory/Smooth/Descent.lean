@@ -32,6 +32,37 @@ namespace Algebra
 
 variable (R : Type u) [CommRing R]
 
+section
+
+variable {R}
+
+variable {S : Type v} [CommRing S] (f : R →+* S)
+variable {A : Set R} {B : Set S} (hf : Set.MapsTo f A B)
+
+def foo : MvPolynomial A R →+* S := f.comp (MvPolynomial.eval Subtype.val)
+noncomputable def foo' : MvPolynomial A R →+* S :=
+  (MvPolynomial.eval Subtype.val).comp ((MvPolynomial.map f).comp (MvPolynomial.rename hf.restrict).toRingHom)
+
+lemma diag_rename_comm :
+    f.comp (MvPolynomial.eval Subtype.val)
+    = (MvPolynomial.eval Subtype.val).comp
+      ((MvPolynomial.map f).comp (MvPolynomial.rename hf.restrict).toRingHom) := by
+  apply MvPolynomial.ringHom_ext
+  · intro r
+    simp
+  · intro a
+    simp
+
+lemma diag_rename_comm_apply (p : MvPolynomial A R) :
+    f ((MvPolynomial.eval Subtype.val) p) =
+      (MvPolynomial.eval Subtype.val) ((MvPolynomial.map f) (MvPolynomial.rename hf.restrict p)) := by
+  change (f.comp (MvPolynomial.eval Subtype.val)) p
+    = ((MvPolynomial.eval Subtype.val).comp
+      ((MvPolynomial.map f).comp (MvPolynomial.rename hf.restrict).toRingHom)) p
+  rw [diag_rename_comm]
+
+end
+
 lemma finiteType_of_adjoin_finite {A : Type v} [CommRing A] [Algebra R A] (T : Set A) (h : Set.Finite T) :
     FiniteType R (Algebra.adjoin R T) :=
   sorry
@@ -43,19 +74,12 @@ section
 
 variable {R}
 
-def MvPolynomial.coefficients {ι : Type*} (p : MvPolynomial ι R) : Set R := (p.coeff '' p.support)
-
 instance {ι : Type*} (p : MvPolynomial ι R) : Finite (MvPolynomial.coefficients p) := by
   admit
-
-def MvPolynomial.Set.coefficients {ι : Type*} (S : Set (MvPolynomial ι R)) : Set R := sorry
 
 end
 
 namespace Smooth
-
---lemma Ideal.mem_pow (I : Ideal R) (n : ℕ) (x : R) :
---  x ∈ I ^ n ↔ ∃ (S : Finset I) (f : S → R), Finset.sum S (fun i ↦ f i * i) := sorry
 
 lemma AlgHom.apply_mvPolynomial' (σ : Type*) {S : Type*} [CommRing S] [Algebra R S]
     (f : MvPolynomial σ R →ₐ[R] S) (p : MvPolynomial σ R) :
@@ -64,9 +88,6 @@ lemma AlgHom.apply_mvPolynomial' (σ : Type*) {S : Type*} [CommRing S] [Algebra 
       fun x ↦ (MvPolynomial.coeff x p) •
         (Finsupp.prod x (fun i k ↦ (f (MvPolynomial.X i)) ^ k)) :=
   sorry
-
---def SetProd (S : Set R) (n : ℕ) : Set R :=
---  { r : R |  }
 
 open Pointwise
 
@@ -93,8 +114,8 @@ lemma Ideal.mem_span_pow (S : Set R) (r : R) (n : ℕ) :
 --    ∃ (f : Fin 2 →₀ (S →₀ R)),
 --      r = Finsupp.sum f := sorry
 
-lemma Ideal.mem_sq (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R)
-  (h : x ∈ I ^ 2) : ∃ (p : MvPolynomial S R),
+lemma Ideal.mem_sq (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
+  x ∈ I ^ 2 ↔ ∃ (p : MvPolynomial S R),
     MvPolynomial.IsHomogeneous p 2 ∧ MvPolynomial.eval Subtype.val p = x := sorry
 
 --lemma AlgHom.apply_mvPolynomial (σ : Type*) {S : Type*} [CommRing S] [Algebra R S] (f : MvPolynomial σ R →ₐ[R] S)
@@ -118,11 +139,8 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
       exact Submodule.subset_span s.property
     rw [this]
     simp
-  let coeff (s : S) : (ι →₀ ℕ) →₀ R := s.val
   let sOfh (s : S) : MvPolynomial ι R :=
     MvPolynomial.aeval (fun j : ι => h j) (s : MvPolynomial ι R)
-  have hfeq : f = MvPolynomial.aeval (f ∘ MvPolynomial.X) :=
-    MvPolynomial.aeval_unique f
   have hcomp (s : S) : σ (f s) = Ideal.Quotient.mk I (sOfh s) := by
     rw [AlgHom.apply_mvPolynomial']
     simp
@@ -137,8 +155,7 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     rw [← Ideal.Quotient.eq_zero_iff_mem, ← hcomp s, hsigf_zero]
   have (s : S) : ∃ (p : MvPolynomial S (MvPolynomial ι R)),
       MvPolynomial.IsHomogeneous p 2 ∧ MvPolynomial.eval Subtype.val p = sOfh s := by
-    apply Ideal.mem_sq _ (RingHom.ker f.toRingHom)
-    · exact hS.symm
+    apply (Ideal.mem_sq _ (RingHom.ker f.toRingHom) _ hS.symm _).mp
     · exact hinkersq s
   choose p hphomog hpeval using this
   let coeffs_s : Set R := MvPolynomial.Set.coefficients (S : Set (MvPolynomial ι R))
@@ -147,6 +164,16 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     MvPolynomial.Set.coefficients (Set.range p)
   let coeffs : Set R := coeffs_s ∪ coeffs_h ∪ coeffs_p
   let R₀ := (Algebra.adjoin ℤ coeffs).toSubring
+  let h' (i : ι) : MvPolynomial ι R₀ := by
+    apply RingOfDefinition.MvPolynomial.choosePreimageOfCoeffs (h i)
+    apply Set.Subset.trans
+    exact MvPolynomial.Set.coefficients_in (Set.range h) (h i) (Set.mem_range_self i)
+    intro r hr
+    refine ⟨⟨r, ?_⟩, rfl⟩
+    apply Algebra.subset_adjoin
+    apply Set.mem_union_left
+    apply Set.mem_union_right
+    exact hr
   use R₀
   let S₀ : Set (MvPolynomial ι R₀) :=
     MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S
@@ -196,7 +223,168 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     rw [hS₀']
     exact FinitePresentation.mvPolynomial R₀ ι
   · fapply FormallySmooth.of_split (Ideal.Quotient.mkₐ R₀ I₀)
+    · fapply Ideal.Quotient.liftₐ I₀
+      · apply AlgHom.comp (Ideal.Quotient.mkₐ R₀ (RingHom.ker (Ideal.Quotient.mkₐ (↥R₀) I₀).toRingHom ^ 2))
+        exact MvPolynomial.aeval h'
+      · intro a ha
+        simp only [AlgHom.comp_apply, ← RingHom.mem_ker]
+        erw [Ideal.Quotient.mkₐ_ker R₀ (RingHom.ker (Ideal.Quotient.mkₐ (↥R₀) I₀).toRingHom ^ 2)]
+        erw [Ideal.Quotient.mkₐ_ker R₀]
+        admit
+        --refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+        --· intro s hs
+        --  rw [Ideal.mem_sq (S := S₀) (hsp := rfl)]
+        --  admit
+        --· simp
+        --· intro x y hx hy
+        --  simp
+        --· intro r x hx
+        --  simp
     · admit
+
+section
+
+variable {R : Type*} [CommRing R]-- {A : Type*} [CommRing A] [Algebra R A]
+
+variable {ι : Type*} (I : Ideal (MvPolynomial ι R)) (S : Set (MvPolynomial ι R))
+
+variable (σ : MvPolynomial ι R ⧸ I →ₐ[R] MvPolynomial ι R ⧸ (I ^ 2))
+
+noncomputable def hAux (i : ι) : MvPolynomial ι R :=
+  (Quotient.exists_rep (σ (Ideal.Quotient.mk I (MvPolynomial.X i)))).choose
+
+@[simp]
+lemma hAux_eq (i : ι) : hAux I σ i = σ (MvPolynomial.X i : MvPolynomial ι R) := by
+  simp only [hAux]
+  exact Exists.choose_spec (Quotient.exists_rep _)
+
+noncomputable def sOfh : MvPolynomial ι R →ₐ[R] MvPolynomial ι R :=
+  MvPolynomial.aeval (fun j : ι => hAux I σ j)
+
+lemma sigma_eq_mk_sOfh (p : MvPolynomial ι R) : σ p = sOfh I σ p := by
+  let f : MvPolynomial ι R →ₐ[R] MvPolynomial ι R ⧸ I ^ 2 :=
+    σ.comp (Ideal.Quotient.mkₐ R I)
+  let g : MvPolynomial ι R →ₐ[R] MvPolynomial ι R ⧸ I ^ 2 :=
+    (Ideal.Quotient.mkₐ R (I ^ 2)).comp (sOfh I σ)
+  suffices h : f = g by
+    change f p = g p
+    congr
+  apply MvPolynomial.algHom_ext
+  intro i
+  simp [f, g, sOfh]
+
+lemma sOfh_mem_sq (p : MvPolynomial ι R) (hp : p ∈ I) : sOfh I σ p ∈ I ^ 2 := by
+  suffices h : Ideal.Quotient.mk I p = 0 by
+    rw [← Ideal.Quotient.eq_zero_iff_mem, ← sigma_eq_mk_sOfh, h]
+    simp
+  rwa [Ideal.Quotient.eq_zero_iff_mem]
+
+lemma sOfh_exists_P (p : MvPolynomial ι R) (hp : p ∈ I) (hspan : Ideal.span S = I) :
+    ∃ (P : MvPolynomial S (MvPolynomial ι R)),
+        MvPolynomial.IsHomogeneous P 2 ∧ MvPolynomial.eval Subtype.val P = sOfh I σ p :=
+  (Ideal.mem_sq _ I _ hspan.symm _).mp <| sOfh_mem_sq I σ p hp
+
+variable (R₀ : Subring R) (hcoeffsS : MvPolynomial.Set.coefficients S ⊆ R₀)
+  (hcoeffsH : MvPolynomial.Set.coefficients (Set.range <| hAux I σ) ⊆ R₀)
+
+variable (P : S → MvPolynomial S (MvPolynomial ι R))
+variable (hPhom : ∀ s : S, MvPolynomial.IsHomogeneous (P s) 2)
+variable (hPeval : ∀ s : S, MvPolynomial.eval Subtype.val (P s) = sOfh I σ s)
+variable (hcoeffsP : MvPolynomial.Set.coefficients (MvPolynomial.Set.coefficients (Set.range P)) ⊆ R₀)
+
+noncomputable def hAux₀ (i : ι) : MvPolynomial ι R₀ := by
+  apply RingOfDefinition.MvPolynomial.choosePreimageOfCoeffs (hAux I σ i)
+  apply Set.Subset.trans
+  · exact MvPolynomial.Set.coefficients_in (Set.range <| hAux I σ) (hAux I σ i) (Set.mem_range_self i)
+  · intro r hr
+    refine ⟨⟨r, ?_⟩, rfl⟩
+    apply hcoeffsH
+    exact hr
+
+variable (I₀ : Ideal (MvPolynomial ι R₀)) (S₀ : Set (MvPolynomial ι R₀))
+  (hspan₀ : Ideal.span S₀ = I₀)
+  (hpreim₀ : MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S = S₀)
+
+noncomputable def varTrans : S₀ ≃ S := by
+  apply Equiv.ofBijective ?_ ⟨?_, ?_⟩
+  · intro ⟨s, hs⟩
+    exact ⟨MvPolynomial.map (SubringClass.subtype R₀) s, by rw [← hpreim₀] at hs; exact hs⟩
+  · admit
+  · admit
+
+#check AlgHom.comp (MvPolynomial.map (MvPolynomial.map (SubringClass.subtype R₀)))
+  (MvPolynomial.rename (varTrans S R₀ S₀ hpreim₀))
+
+--lemma comm_diag_varTrans :
+--    (MvPolynomial.eval (Subtype.val)).comp
+--    ((MvPolynomial.map (SubringClass.subtype R₀)).comp
+
+noncomputable def sOfh₀ : MvPolynomial ι R₀ →ₐ[R₀] MvPolynomial ι R₀ :=
+  MvPolynomial.aeval (fun j : ι => hAux₀ I σ R₀ hcoeffsH j)
+
+@[simp]
+lemma incl_sOfh₀ (p : MvPolynomial ι R₀) :
+    (MvPolynomial.map (SubringClass.subtype R₀)) ((sOfh₀ I σ R₀ hcoeffsH) p)
+    = sOfh I σ (MvPolynomial.map (SubringClass.subtype R₀) p) := sorry
+
+variable (hspan : Ideal.span S = I)
+
+lemma exists_PAux₀ (s : MvPolynomial ι R₀) (hs : s ∈ S₀) :
+    ∃ (P₀ : MvPolynomial S₀ (MvPolynomial ι R₀)),
+      MvPolynomial.IsHomogeneous P₀ 2 ∧
+      MvPolynomial.eval Subtype.val P₀ = sOfh₀ I σ R₀ hcoeffsH s := by
+  let p : MvPolynomial ι R := MvPolynomial.map (SubringClass.subtype R₀) s
+  have hp : p ∈ S := sorry
+  let Ps : MvPolynomial S (MvPolynomial ι R) := P ⟨p, hp⟩
+  have hPshomog : MvPolynomial.IsHomogeneous Ps 2 := hPhom ⟨p, hp⟩
+  have hc : MvPolynomial.coefficients Ps ⊆ Set.range (MvPolynomial.map (SubringClass.subtype R₀)) := sorry
+  obtain ⟨P', hP'⟩ := RingOfDefinition.exists_preimage_of_coefficients'
+    (MvPolynomial.map (SubringClass.subtype R₀))
+    Ps hc
+  have hP'homog : MvPolynomial.IsHomogeneous P' 2 := by
+    refine MvPolynomial.isHomogeneous_of_map (MvPolynomial.map (SubringClass.subtype R₀)) ?_ P' ?_
+    · apply MvPolynomial.map_injective
+      exact Subtype.val_injective
+    · rw [hP']
+      exact hPshomog
+  let f : S → S₀ := sorry
+  let P₀ : MvPolynomial S₀ (MvPolynomial ι R₀) :=
+    MvPolynomial.rename f P'
+  have hinj : Function.Injective
+      (MvPolynomial.map (SubringClass.subtype R₀) : MvPolynomial ι R₀ →+* MvPolynomial ι R) := by
+    apply MvPolynomial.map_injective
+    exact Subtype.val_injective
+  refine ⟨P₀, ?_, ?_⟩
+  · rw [MvPolynomial.IsHomogeneous.rename_isHomogeneous_iff]
+    refine MvPolynomial.isHomogeneous_of_map (MvPolynomial.map (SubringClass.subtype R₀)) ?_ P' ?_
+    · apply MvPolynomial.map_injective
+      exact Subtype.val_injective
+    · rw [hP']
+      exact hPshomog
     · admit
+  · simp [P₀]
+    --rw [MvPolynomial.eval_rename]
+    apply hinj
+    simp
+    -- ∀ (s : S), MvPolynomial.eval Subtype.val (P s) = sOfh I σ s
+
+lemma hAux₀_eval (a : MvPolynomial ι R₀) (ha : a ∈ I₀):
+    MvPolynomial.aeval (hAux₀ I σ R₀ hcoeffsH) a ∈ I₀ ^ 2 := by
+  rw [← hspan₀] at ha
+  refine Submodule.span_induction ha ?_ ?_ ?_ ?_
+  · intro s hs
+    rw [Ideal.mem_sq]
+    exact exists_PAux₀ I σ R₀ hcoeffsH S₀ s hs
+    exact hspan₀.symm
+  · simp
+  · intro x y hx hy
+    simp only [map_add]
+    exact Ideal.add_mem _ hx hy
+  · intro a x hx
+    simp only [smul_eq_mul, _root_.map_mul]
+    apply Ideal.mul_mem_left
+    exact hx
+
+end
 
 end Smooth
