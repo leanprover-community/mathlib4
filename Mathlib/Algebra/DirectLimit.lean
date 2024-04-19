@@ -6,6 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.SuppressCompilation
 
