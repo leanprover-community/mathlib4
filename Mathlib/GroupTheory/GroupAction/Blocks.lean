@@ -355,78 +355,42 @@ theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     exact hx
   · intro a
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
-    obtain ⟨g, hab⟩ := exists_smul_eq G b a
-    have hg : a ∈ g • B := by
-      change a ∈ (fun b => g • b) '' B
-      rw [Set.mem_image]
-      use b
+    obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
     constructor
-    · simp only [Set.mem_range, exists_apply_eq_apply, exists_unique_iff_exists, exists_true_left]
-      exact hg
-    · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
-        forall_apply_eq_imp_iff']
-      intro B' g' hg' ha
-      rw [← hg']
-      apply symm
-      apply Or.resolve_right (IsBlock.def.mp hB g g')
+    · simp only [Set.mem_range, exists_apply_eq_apply,
+        exists_unique_iff_exists, exists_true_left, Set.smul_mem_smul_set_iff]
+      exact hb
+    · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp,
+        forall_exists_index, forall_apply_eq_imp_iff']
+      rintro B' g' ⟨rfl⟩ ha
+      apply Or.resolve_right (IsBlock.def.mp hB g' g)
       rw [Set.not_disjoint_iff]
-      use a
-      rw [hg']
-      exact ⟨hg, ha⟩
+      refine ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
   rintro B' ⟨g, rfl⟩; exact hB.translate g
 
 section Normal
-
-/-- An orbit of a normal subgroup is a block -/
-theorem orbit.isBlock_of_normal' {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
-    IsBlock G (orbit N a) := by
-  unfold IsBlock
-  convert Set.Pairwise.mono _ (orbit.pairwiseDisjoint (G := N))
-  rintro _ ⟨g, rfl⟩
-  suffices g • (orbit N a) = orbit N (g • a) by
-    simp only [this, Set.mem_range, exists_apply_eq_apply]
-  ext x
-  rw [Set.mem_smul_set_iff_inv_smul_mem]
-  constructor
-  · rintro ⟨k, hk⟩
-    rw [← smul_eq_iff_eq_inv_smul] at hk
-    use ⟨g * k * g⁻¹, nN.conj_mem k k.prop g⟩
-    simp only [Submonoid.mk_smul, ← smul_smul, ← hk, inv_smul_smul]
-    rfl
-  · rintro ⟨k, rfl⟩
-    simp only
-    use ⟨g⁻¹ * k * g, by
-      convert nN.conj_mem k k.prop g⁻¹
-      simp only [inv_inv]⟩
-    simp only [Submonoid.mk_smul, ← smul_smul]
-    rfl
-  exact N.toSubmonoid.mulAction
 
 /-- An orbit of a normal subgroup is a block -/
 theorem orbit.isBlock_of_normal {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
     IsBlock G (orbit N a) := by
   rw [IsBlock.def_one]
   intro g
-  suffices g • orbit N a = orbit N (g • a) by rw [this]; apply orbit.eq_or_disjoint
-  change ((fun x : X => g • x) '' Set.range fun k : N => k • a) = Set.range fun k : N => k • g • a
-  simp only [Set.image_smul, Set.smul_set_range]
+  suffices g • orbit N a = orbit N (g • a) by
+    rw [this]
+    apply orbit.eq_or_disjoint
+  simp only [orbit, Set.image_smul, Set.smul_set_range]
   ext
   simp only [Set.mem_range]
   constructor
   · rintro ⟨⟨k, hk⟩, rfl⟩
-    suffices g * k * g⁻¹ ∈ N by
-      use ⟨g * k * g⁻¹, this⟩
-      change (g * k * g⁻¹) • g • a = g • k • a
-      rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
-    apply nN.conj_mem; exact hk
+    use ⟨g * k * g⁻¹, nN.conj_mem k hk g⟩
+    simp only [Submonoid.mk_smul]
+    rw [smul_smul, inv_mul_cancel_right, ← smul_smul]
   · rintro ⟨⟨k, hk⟩, rfl⟩
-    suffices g⁻¹ * k * g ∈ N by
-      use ⟨g⁻¹ * k * g, this⟩
-      change g • (g⁻¹ * k * g) • a = k • g • a
-      simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
-    convert nN.conj_mem k hk g⁻¹
-    rw [inv_inv]
+    use ⟨g⁻¹ * k * g, nN.conj_mem' k hk g⟩
+    simp only [Submonoid.mk_smul]
+    simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
 /-- The orbits of a normal subgroup form a block system -/
 theorem IsBlockSystem.of_normal {N : Subgroup G} (nN : Subgroup.Normal N) :

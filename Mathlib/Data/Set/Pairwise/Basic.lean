@@ -334,12 +334,6 @@ theorem PairwiseDisjoint.elim (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈
   hs.eq hi hj h
 #align set.pairwise_disjoint.elim Set.PairwiseDisjoint.elim
 
-lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint' {α : Type*} {s : Set (Set α)}
-    (h : s.PairwiseDisjoint id) {a b : Set α} (ha : a ∈ s) (hb : b ∈ s) :
-    a = b ∨ Disjoint a b := by
-  rw [or_iff_not_imp_right]
-  exact h.elim ha hb
-
 lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint
   -- {α : Type*} {s : Set (Set α)}
     (h : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s) :
