@@ -44,8 +44,6 @@ noncomputable section
 
 open Complex Filter Topology Asymptotics Real Set Classical MeasureTheory
 
-set_option profiler true
-
 section kernel_defs
 /-!
 ## Definitions and elementary properties of kernels
