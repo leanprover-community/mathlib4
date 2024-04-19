@@ -1431,14 +1431,14 @@ theorem SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_on
       TendstoUniformlyOnFilter (fun n : ι × ι => fun z => f n.fst z / f n.snd z) 1 (l ×ˢ l) l' := by
   refine ⟨fun hf u hu => ?_, fun hf u hu => ?_⟩
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
-    refine'
+    refine
       (hf { p : G × G | dist p.fst p.snd < ε } <| dist_mem_uniformity hε).mono fun x hx =>
-        H 1 (f x.fst.fst x.snd / f x.fst.snd x.snd) _
+        H 1 (f x.fst.fst x.snd / f x.fst.snd x.snd) ?_
     simpa [dist_eq_norm_div, norm_div_rev] using hx
   · obtain ⟨ε, hε, H⟩ := uniformity_basis_dist.mem_uniformity_iff.mp hu
-    refine'
+    refine
       (hf { p : G × G | dist p.fst p.snd < ε } <| dist_mem_uniformity hε).mono fun x hx =>
-        H (f x.fst.fst x.snd) (f x.fst.snd x.snd) _
+        H (f x.fst.fst x.snd) (f x.fst.snd x.snd) ?_
     simpa [dist_eq_norm_div, norm_div_rev] using hx
 #align seminormed_group.uniform_cauchy_seq_on_filter_iff_tendsto_uniformly_on_filter_one SeminormedGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_one
 #align seminormed_add_group.uniform_cauchy_seq_on_filter_iff_tendsto_uniformly_on_filter_zero SeminormedAddGroup.uniformCauchySeqOnFilter_iff_tendstoUniformlyOnFilter_zero
@@ -1695,7 +1695,7 @@ theorem nnnorm_pow_le_mul_norm (n : ℕ) (a : E) : ‖a ^ n‖₊ ≤ n * ‖a�
 theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
     a ^ n ∈ closedBall (b ^ n) (n • r) := by
   simp only [mem_closedBall, dist_eq_norm_div, ← div_pow] at h ⊢
-  refine' (norm_pow_le_mul_norm n (a / b)).trans _
+  refine (norm_pow_le_mul_norm n (a / b)).trans ?_
   simpa only [nsmul_eq_mul] using mul_le_mul_of_nonneg_left h n.cast_nonneg
 #align pow_mem_closed_ball pow_mem_closedBall
 #align nsmul_mem_closed_ball nsmul_mem_closedBall
@@ -1703,7 +1703,7 @@ theorem pow_mem_closedBall {n : ℕ} (h : a ∈ closedBall b r) :
 @[to_additive]
 theorem pow_mem_ball {n : ℕ} (hn : 0 < n) (h : a ∈ ball b r) : a ^ n ∈ ball (b ^ n) (n • r) := by
   simp only [mem_ball, dist_eq_norm_div, ← div_pow] at h ⊢
-  refine' lt_of_le_of_lt (norm_pow_le_mul_norm n (a / b)) _
+  refine lt_of_le_of_lt (norm_pow_le_mul_norm n (a / b)) ?_
   replace hn : 0 < (n : ℝ) := by norm_cast
   rw [nsmul_eq_mul]
   nlinarith
@@ -2023,7 +2023,7 @@ variable [PseudoEMetricSpace α] {K Kf Kg : ℝ≥0} {f g : α → E}
 theorem mul_lipschitzWith (hf : AntilipschitzWith Kf f) (hg : LipschitzWith Kg g) (hK : Kg < Kf⁻¹) :
     AntilipschitzWith (Kf⁻¹ - Kg)⁻¹ fun x => f x * g x := by
   letI : PseudoMetricSpace α := PseudoEMetricSpace.toPseudoMetricSpace hf.edist_ne_top
-  refine' AntilipschitzWith.of_le_mul_dist fun x y => _
+  refine AntilipschitzWith.of_le_mul_dist fun x y => ?_
   rw [NNReal.coe_inv, ← _root_.div_eq_inv_mul]
   rw [le_div_iff (NNReal.coe_pos.2 <| tsub_pos_iff_lt.2 hK)]
   rw [mul_comm, NNReal.coe_sub hK.le, _root_.sub_mul]

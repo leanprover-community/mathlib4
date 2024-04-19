@@ -41,7 +41,7 @@ theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
 theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
     IsPrimePow n ↔ ∃ p k : ℕ, 0 < k ∧ n.factorization = Finsupp.single p k := by
   rw [isPrimePow_nat_iff]
-  refine' exists₂_congr fun p k => _
+  refine exists₂_congr fun p k => ?_
   constructor
   · rintro ⟨hp, hk, hn⟩
     exact ⟨hk, by rw [← hn, Nat.Prime.factorization_pow hp]⟩
@@ -68,7 +68,7 @@ theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
   · refine' absurd _ hk0.ne'
     simp [← Nat.factorization_eq_zero_of_non_prime n pp, h1]
   refine ⟨p, pp, ?_⟩
-  refine' Nat.eq_of_factorization_eq (Nat.ord_compl_pos p hn0).ne' (by simp) fun q => _
+  refine Nat.eq_of_factorization_eq (Nat.ord_compl_pos p hn0).ne' (by simp) fun q => ?_
   rw [Nat.factorization_ord_compl n p, h1]
   simp
 #align is_prime_pow.exists_ord_compl_eq_one IsPrimePow.exists_ord_compl_eq_one

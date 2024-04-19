@@ -250,7 +250,7 @@ theorem nth_eq_sInf (p : ℕ → Prop) (n : ℕ) : nth p n = sInf {x | p x ∧ �
   · push_neg at hn
     rcases hn with ⟨hf, hn⟩
     rw [nth_of_card_le _ hn]
-    refine' ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => _).trans sInf_empty).symm
+    refine ((congr_arg sInf <| Set.eq_empty_of_forall_not_mem fun k hk => ?_).trans sInf_empty).symm
     rcases exists_lt_card_nth_eq hk.1 with ⟨k, hlt, rfl⟩
     exact (hk.2 _ ((hlt hf).trans_le hn)).false
 #align nat.nth_eq_Inf Nat.nth_eq_sInf
@@ -314,7 +314,7 @@ variable {p}
 theorem filter_range_nth_eq_insert {k : ℕ}
     (hlt : ∀ hf : (setOf p).Finite, k + 1 < hf.toFinset.card) :
     (range (nth p (k + 1))).filter p = insert (nth p k) ((range (nth p k)).filter p) := by
-  refine' (filter_range_nth_subset_insert p k).antisymm fun a ha => _
+  refine (filter_range_nth_subset_insert p k).antisymm fun a ha => ?_
   simp only [mem_insert, mem_filter, mem_range] at ha ⊢
   have : nth p k < nth p (k + 1) := nth_lt_nth' k.lt_succ_self hlt
   rcases ha with (rfl | ⟨hlt, hpa⟩)
@@ -362,7 +362,7 @@ theorem nth_count {n : ℕ} (hpn : p n) : nth p (count p n) = n :=
 #align nat.nth_count Nat.nth_count
 
 theorem nth_lt_of_lt_count {n k : ℕ} (h : k < count p n) : nth p k < n := by
-  refine' (count_monotone p).reflect_lt _
+  refine (count_monotone p).reflect_lt ?_
   rwa [count_nth]
   exact fun hf => h.trans_le (count_le_card hf n)
 #align nat.nth_lt_of_lt_count Nat.nth_lt_of_lt_count
@@ -375,7 +375,7 @@ variable (p)
 
 theorem nth_count_eq_sInf (n : ℕ) : nth p (count p n) = sInf {i : ℕ | p i ∧ n ≤ i} := by
   refine' (nth_eq_sInf _ _).trans (congr_arg sInf _)
-  refine' Set.ext fun a => and_congr_right fun hpa => _
+  refine Set.ext fun a => and_congr_right fun hpa => ?_
   refine' ⟨fun h => not_lt.1 fun ha => _, fun hn k hk => lt_of_lt_of_le (nth_lt_of_lt_count hk) hn⟩
   have hn : nth p (count p a) < a := h _ (count_strict_mono hpa ha)
   rwa [nth_count hpa, lt_self_iff_false] at hn

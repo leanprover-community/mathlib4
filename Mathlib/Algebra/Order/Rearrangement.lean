@@ -88,7 +88,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     · rw [hτ, ← hσa, swap_self, trans_refl]
     have h1s : σ⁻¹ a ∈ s := by
       rw [Ne, ← inv_eq_iff_eq] at hσa
-      refine' mem_of_mem_insert_of_ne (hσ fun h ↦ hσa _) hσa
+      refine mem_of_mem_insert_of_ne (hσ fun h ↦ hσa ?_) hσa
       rwa [apply_inv_self, eq_comm] at h
     simp only [← s.sum_erase_add _ h1s, add_comm]
     rw [← add_assoc, ← add_assoc]
@@ -123,9 +123,9 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
       obtain ⟨x, hx, y, hy, hgxy, hfxy⟩ := h
       set τ : Perm ι := (Equiv.swap x y).trans σ
       have hτs : { x | τ x ≠ x } ⊆ s := by
-        refine' (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz ↦ _)
+        refine (set_support_mul_subset σ <| swap x y).trans (Set.union_subset hσ fun z hz ↦ ?_)
         obtain ⟨_, rfl | rfl⟩ := swap_apply_ne_self_iff.1 hz <;> assumption
-      refine' ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' _).ne
+      refine ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' ?_).ne
       obtain rfl | hxy := eq_or_ne x y
       · cases lt_irrefl _ hfxy
       simp only [τ, ← s.sum_erase_add _ hx,

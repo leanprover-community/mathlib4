@@ -63,7 +63,7 @@ abbrev liftToDiagramLimitObj {X : C} {K : Type max v u} [SmallCategory K] [HasLi
         (limit.lift F _).naturality, ← (limit.lift F _).naturality, ← Category.assoc, ←
         Category.assoc]
       congr 1
-      refine' limit.hom_ext (fun j => _)
+      refine limit.hom_ext (fun j => ?_)
       erw [Category.assoc, Category.assoc, limit.lift_π, limit.lift_π, limit.lift_π_assoc,
         limit.lift_π_assoc, Category.assoc, Category.assoc, Multiequalizer.condition]
       rfl)
@@ -131,7 +131,7 @@ def liftToPlusObjLimitObj {K : Type max v u} [SmallCategory K] [FinCategory K]
       (by
         intro i j f
         rw [← Iso.eq_comp_inv, Category.assoc, ← Iso.inv_comp_eq]
-        refine' colimit.hom_ext (fun w => _)
+        refine colimit.hom_ext (fun w => ?_)
         dsimp [plusMap]
         erw [colimit.ι_map_assoc,
           colimitObjIsoColimitCompEvaluation_ι_inv (F ⋙ J.diagramFunctor D X).flip w j,
@@ -155,7 +155,7 @@ theorem liftToPlusObjLimitObj_fac {K : Type max v u} [SmallCategory K] [FinCateg
   congr 1
   dsimp
   rw [Category.assoc, Category.assoc, ← Iso.eq_inv_comp, Iso.inv_comp_eq, Iso.inv_comp_eq]
-  refine' colimit.hom_ext (fun j => _)
+  refine colimit.hom_ext (fun j => ?_)
   dsimp [plusMap]
   simp only [HasColimit.isoOfNatIso_ι_hom_assoc, ι_colimMap]
   dsimp [IsLimit.conePointUniqueUpToIso, HasLimit.isoOfNatIso, IsLimit.map]
@@ -182,10 +182,10 @@ instance preservesLimitsOfShape_plusFunctor
   · intro S m hm
     dsimp [liftToPlusObjLimitObj]
     simp_rw [← Category.assoc, Iso.eq_comp_inv, ← Iso.comp_inv_eq]
-    refine' limit.hom_ext (fun k => _)
+    refine limit.hom_ext (fun k => ?_)
     simp only [limit.lift_π, Category.assoc, ← hm]
     congr 1
-    refine' colimit.hom_ext (fun k => _)
+    refine colimit.hom_ext (fun k => ?_)
     dsimp [plusMap, plusObj]
     erw [colimit.ι_map, colimit.ι_desc_assoc, limit.lift_π]
     conv_lhs => dsimp

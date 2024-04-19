@@ -148,7 +148,7 @@ theorem cauchySeq_iff_le_tendsto_0 {s : ℕ → α} :
     have S0 := fun n => le_csSup (hS n) (S0m n)
     -- Prove that it tends to `0`, by using the Cauchy property of `s`
     refine' ⟨fun N => sSup (S N), S0, ub, Metric.tendsto_atTop.2 fun ε ε0 => _⟩
-    refine' (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => _
+    refine (Metric.cauchySeq_iff.1 hs (ε / 2) (half_pos ε0)).imp fun N hN n hn => ?_
     rw [Real.dist_0_eq_abs, abs_of_nonneg (S0 n)]
     refine' lt_of_le_of_lt (csSup_le ⟨_, S0m _⟩ _) (half_lt_self ε0)
     rintro _ ⟨⟨m', n'⟩, ⟨hm', hn'⟩, rfl⟩

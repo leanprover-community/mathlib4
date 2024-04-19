@@ -117,7 +117,7 @@ variable {s t}
 
 @[to_additive Set.AddAntidiagonal.finite_of_isPWO]
 theorem finite_of_isPWO (hs : s.IsPWO) (ht : t.IsPWO) (a) : (mulAntidiagonal s t a).Finite := by
-  refine' not_infinite.1 fun h => _
+  refine not_infinite.1 fun h => ?_
   have h1 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.fst ⁻¹'o (· ≤ ·)) := fun f hf =>
     hs (Prod.fst ∘ f) fun n => (mem_mulAntidiagonal.1 (hf n)).1
   have h2 : (mulAntidiagonal s t a).PartiallyWellOrderedOn (Prod.snd ⁻¹'o (· ≤ ·)) := fun f hf =>

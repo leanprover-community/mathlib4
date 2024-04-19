@@ -238,7 +238,7 @@ theorem blimsup_cthickening_ae_eq_blimsup_thickening {p : ℕ → Prop} {s : ℕ
       EventuallyEq.rfl]
     apply HasSubset.Subset.eventuallyLE
     change _ ≤ _
-    refine' mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) _ (s i))
+    refine mono_blimsup' (hr'.mono fun i hi pi => cthickening_subset_thickening' (hi pi) ?_ (s i))
     nlinarith [hi pi]
   · exact mono_blimsup fun i _ => thickening_subset_cthickening _ _
 #align blimsup_cthickening_ae_eq_blimsup_thickening blimsup_cthickening_ae_eq_blimsup_thickening
@@ -275,7 +275,7 @@ theorem blimsup_thickening_mul_ae_eq (p : ℕ → Prop) (s : ℕ → Set α) {M 
   let q : ℕ → Prop := fun i => p i ∧ 0 < r i
   have h₁ : blimsup (fun i => thickening (r i) (s i)) atTop p =
       blimsup (fun i => thickening (r i) (s i)) atTop q := by
-    refine' blimsup_congr' (eventually_of_forall fun i h => _)
+    refine blimsup_congr' (eventually_of_forall fun i h => ?_)
     replace hi : 0 < r i := by contrapose! h; apply thickening_of_nonpos h
     simp only [q, hi, iff_self_and, imp_true_iff]
   have h₂ : blimsup (fun i => thickening (M * r i) (s i)) atTop p =

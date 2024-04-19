@@ -111,7 +111,7 @@ theorem Polynomial.toLaurent_apply [Semiring R] (p : R[X]) :
 /-- The `R`-algebra map, taking a polynomial with coefficients in `R` to a Laurent polynomial
 with coefficients in `R`. -/
 def Polynomial.toLaurentAlg [CommSemiring R] : R[X] →ₐ[R] R[T;T⁻¹] := by
-  refine' AlgHom.comp _ (toFinsuppIsoAlg R).toAlgHom
+  refine AlgHom.comp ?_ (toFinsuppIsoAlg R).toAlgHom
   exact mapDomainAlgHom R R Int.ofNatHom
 #align polynomial.to_laurent_alg Polynomial.toLaurentAlg
 
@@ -470,7 +470,7 @@ theorem toLaurent_support (f : R[X]) : f.toLaurent.support = f.support.map Nat.c
       Finsupp.support_eq_empty]
   · intro a s as hf f fs
     have : (erase a f).toLaurent.support = s.map Nat.castEmbedding := by
-      refine' hf (f.erase a) _
+      refine hf (f.erase a) ?_
       simp only [fs, Finset.erase_eq_of_not_mem as, Polynomial.support_erase,
         Finset.erase_insert_eq_erase]
     rw [← monomial_add_erase f a, Finset.map_insert, ← this, map_add, Polynomial.toLaurent_C_mul_T,
@@ -499,10 +499,10 @@ theorem degree_zero : degree (0 : R[T;T⁻¹]) = ⊥ :=
 
 @[simp]
 theorem degree_eq_bot_iff {f : R[T;T⁻¹]} : f.degree = ⊥ ↔ f = 0 := by
-  refine' ⟨fun h => _, fun h => by rw [h, degree_zero]⟩
+  refine ⟨fun h => ?_, fun h => by rw [h, degree_zero]⟩
   rw [degree, Finset.max_eq_sup_withBot] at h
   ext n
-  refine' not_not.mp fun f0 => _
+  refine not_not.mp fun f0 => ?_
   simp_rw [Finset.sup_eq_bot_iff, Finsupp.mem_support_iff, Ne, WithBot.coe_ne_bot] at h
   exact h n f0
 #align laurent_polynomial.degree_eq_bot_iff LaurentPolynomial.degree_eq_bot_iff
@@ -514,7 +514,7 @@ theorem degree_C_mul_T (n : ℤ) (a : R) (a0 : a ≠ 0) : degree (C a * T n) = n
   rw [degree]
   -- Porting note: was `convert Finset.max_singleton`
   have : Finsupp.support (C a * T n) = {n} := by
-    refine' support_eq_singleton.mpr _
+    refine support_eq_singleton.mpr ?_
     rw [← single_eq_C_mul_T]
     simp only [single_eq_same, a0, Ne, not_false_iff, eq_self_iff_true, and_self_iff]
   rw [this]

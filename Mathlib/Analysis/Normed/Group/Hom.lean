@@ -434,7 +434,7 @@ theorem norm_id_of_nontrivial_seminorm (h : ∃ x : V, ‖x‖ ≠ 0) : ‖id V�
 
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 theorem norm_id {V : Type*} [NormedAddCommGroup V] [Nontrivial V] : ‖id V‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm V _
+  refine norm_id_of_nontrivial_seminorm V ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : V)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align normed_add_group_hom.norm_id NormedAddGroupHom.norm_id

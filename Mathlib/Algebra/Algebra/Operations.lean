@@ -282,7 +282,7 @@ theorem map_op_mul :
         map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) M := by
   apply le_antisymm
   · simp_rw [map_le_iff_le_comap]
-    refine' mul_le.2 fun m hm n hn => _
+    refine mul_le.2 fun m hm n hn => ?_
     rw [mem_comap, map_equiv_eq_comap_symm, map_equiv_eq_comap_symm]
     show op n * op m ∈ _
     exact mul_mem_mul hn hm

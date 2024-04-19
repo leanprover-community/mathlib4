@@ -475,7 +475,7 @@ theorem coe_smul_adicCompletionIntegers (r : R) (x : v.adicCompletionIntegers K)
 instance : NoZeroSMulDivisors R (v.adicCompletionIntegers K) where
   eq_zero_or_eq_zero_of_smul_eq_zero {c x} hcx := by
     rw [Algebra.smul_def, mul_eq_zero] at hcx
-    refine' hcx.imp_left fun hc => _
+    refine hcx.imp_left fun hc => ?_
     letI : UniformSpace K := v.adicValued.toUniformSpace
     rw [← map_zero (algebraMap R (v.adicCompletionIntegers K))] at hc
     exact

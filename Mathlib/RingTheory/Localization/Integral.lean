@@ -128,7 +128,7 @@ variable [CommRing C]
 
 theorem integerNormalization_eq_zero_iff {p : K[X]} :
     integerNormalization (nonZeroDivisors A) p = 0 ↔ p = 0 := by
-  refine' Polynomial.ext_iff.trans (Polynomial.ext_iff.trans _).symm
+  refine Polynomial.ext_iff.trans (Polynomial.ext_iff.trans ?_).symm
   obtain ⟨⟨b, nonzero⟩, hb⟩ := integerNormalization_spec (nonZeroDivisors A) p
   constructor <;> intro h i
   · -- Porting note: avoided some defeq abuse
@@ -432,8 +432,8 @@ theorem ideal_span_singleton_map_subset {L : Type*} [IsDomain R] [IsDomain S] [F
   obtain ⟨y, z, hz0, yz_eq⟩ :=
     IsIntegralClosure.exists_smul_eq_mul alg inj y' (nonZeroDivisors.coe_ne_zero z')
   have injRS : Function.Injective (algebraMap R S) := by
-    refine'
-      Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from _)
+    refine
+      Function.Injective.of_comp (show Function.Injective (algebraMap S L ∘ algebraMap R S) from ?_)
     rwa [← RingHom.coe_comp, ← IsScalarTower.algebraMap_eq]
   have hz0' : algebraMap R S z ∈ S⁰ :=
     map_mem_nonZeroDivisors (algebraMap R S) injRS (mem_nonZeroDivisors_of_ne_zero hz0)

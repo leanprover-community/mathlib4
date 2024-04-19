@@ -113,7 +113,7 @@ theorem log_stirlingSeq_diff_le_geo_sum (n : ℕ) :
     exact inv_lt_one (one_lt_pow ((lt_add_iff_pos_left 1).mpr <| by positivity) two_ne_zero)
   have hab (k : ℕ) : (1 : ℝ) / (2 * ↑(k + 1) + 1) * ((1 / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) ≤
       (((1 : ℝ) / (2 * ↑(n + 1) + 1)) ^ 2) ^ ↑(k + 1) := by
-    refine' mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) _
+    refine mul_le_of_le_one_left (pow_nonneg h_nonneg ↑(k + 1)) ?_
     rw [one_div]
     exact inv_le_one (le_add_of_nonneg_left <| by positivity)
   exact hasSum_le hab (log_stirlingSeq_diff_hasSum n) g
@@ -133,7 +133,7 @@ theorem log_stirlingSeq_sub_log_stirlingSeq_succ (n : ℕ) :
     rw [← mul_lt_mul_right h₃]
     have H : 0 < (2 * ((n : ℝ) + 1) + 1) ^ 2 - 1 := by nlinarith [@cast_nonneg ℝ _ n]
     convert H using 1 <;> field_simp [h₃.ne']
-  refine' (log_stirlingSeq_diff_le_geo_sum n).trans _
+  refine (log_stirlingSeq_diff_le_geo_sum n).trans ?_
   push_cast
   rw [div_le_div_iff h₂ h₁]
   field_simp [h₃.ne']

@@ -84,7 +84,7 @@ theorem centralMoment_one [IsProbabilityMeasure μ] : centralMoment X 1 μ = 0 :
     simp only [measure_univ, ENNReal.one_toReal, sub_self, zero_mul]
   · simp only [centralMoment, Pi.sub_apply, pow_one]
     have : ¬Integrable (fun x => X x - integral μ X) μ := by
-      refine' fun h_sub => h_int _
+      refine fun h_sub => h_int ?_
       have h_add : X = (fun x => X x - integral μ X) + fun _ => integral μ X := by ext1 x; simp
       rw [h_add]
       exact h_sub.add (integrable_const _)
@@ -194,7 +194,7 @@ theorem mgf_pos' (hμ : μ ≠ 0) (h_int_X : Integrable (fun ω => exp (t * X ω
       simp only [Function.mem_support, Set.mem_univ, iff_true_iff]
       exact (exp_pos _).ne'
     rw [h_eq_univ, Set.inter_univ _]
-    refine' Ne.bot_lt _
+    refine Ne.bot_lt ?_
     simp only [hμ, ENNReal.bot_eq_zero, Ne, Measure.measure_univ_eq_zero, not_false_iff]
   · filter_upwards with x
     rw [Pi.zero_apply]
@@ -361,7 +361,7 @@ theorem measure_le_le_exp_mul_mgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
 theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
     (μ {ω | ε ≤ X ω}).toReal ≤ exp (-t * ε + cgf X μ t) := by
-  refine' (measure_ge_le_exp_mul_mgf ε ht h_int).trans _
+  refine (measure_ge_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 #align probability_theory.measure_ge_le_exp_cgf ProbabilityTheory.measure_ge_le_exp_cgf
@@ -370,7 +370,7 @@ theorem measure_ge_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : 0 ≤ t)
 theorem measure_le_le_exp_cgf [IsFiniteMeasure μ] (ε : ℝ) (ht : t ≤ 0)
     (h_int : Integrable (fun ω => exp (t * X ω)) μ) :
     (μ {ω | X ω ≤ ε}).toReal ≤ exp (-t * ε + cgf X μ t) := by
-  refine' (measure_le_le_exp_mul_mgf ε ht h_int).trans _
+  refine (measure_le_le_exp_mul_mgf ε ht h_int).trans ?_
   rw [exp_add]
   exact mul_le_mul le_rfl (le_exp_log _) mgf_nonneg (exp_pos _).le
 #align probability_theory.measure_le_le_exp_cgf ProbabilityTheory.measure_le_le_exp_cgf

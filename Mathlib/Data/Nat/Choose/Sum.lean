@@ -169,7 +169,7 @@ theorem sum_powerset_apply_card {α β : Type*} [AddCommMonoid α] (f : ℕ → 
     exact card_le_card hy
   · refine' sum_congr rfl fun y _ ↦ _
     rw [← card_powersetCard, ← sum_const]
-    refine' sum_congr powersetCard_eq_filter.symm fun z hz ↦ _
+    refine sum_congr powersetCard_eq_filter.symm fun z hz ↦ ?_
     rw [(mem_powersetCard.1 hz).2]
 #align finset.sum_powerset_apply_card Finset.sum_powerset_apply_card
 

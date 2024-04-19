@@ -180,7 +180,7 @@ theorem exp_add : exp (x + y) = exp x * exp y := by
     intro j
     refine' Finset.sum_congr rfl fun m _ => _
     rw [add_pow, div_eq_mul_inv, sum_mul]
-    refine' Finset.sum_congr rfl fun I hi => _
+    refine Finset.sum_congr rfl fun I hi => ?_
     have h₁ : (m.choose I : ℂ) ≠ 0 :=
       Nat.cast_ne_zero.2 (pos_iff_ne_zero.1 (Nat.choose_pos (Nat.le_of_lt_succ (mem_range.1 hi))))
     have h₂ := Nat.choose_mul_factorial_mul_factorial (Nat.le_of_lt_succ <| Finset.mem_range.1 hi)
@@ -1313,7 +1313,7 @@ theorem exp_bound {x : ℂ} (hx : abs x ≤ 1) {n : ℕ} (hn : 0 < n) :
     abs (∑ m in (range j).filter fun k => n ≤ k, (x ^ m / m.factorial : ℂ)) =
       abs (∑ m in (range j).filter fun k => n ≤ k,
         (x ^ n * (x ^ (m - n) / m.factorial) : ℂ)) := by
-      refine' congr_arg abs (sum_congr rfl fun m hm => _)
+      refine congr_arg abs (sum_congr rfl fun m hm => ?_)
       rw [mem_filter, mem_range] at hm
       rw [← mul_div_assoc, ← pow_add, add_tsub_cancel_of_le hm.2]
     _ ≤ ∑ m in filter (fun k => n ≤ k) (range j), abs (x ^ n * (x ^ (m - n) / m.factorial)) :=

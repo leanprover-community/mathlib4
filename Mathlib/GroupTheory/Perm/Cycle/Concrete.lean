@@ -166,7 +166,7 @@ theorem isCycle_formPerm (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
 theorem support_formPerm [Fintype α] (s : Cycle α) (h : Nodup s) (hn : Nontrivial s) :
     support (formPerm s h) = s.toFinset := by
   induction' s using Quot.inductionOn with s
-  refine' support_formPerm_of_nodup s h _
+  refine support_formPerm_of_nodup s h ?_
   rintro _ rfl
   simpa [Nat.succ_le_succ_iff] using length_nontrivial hn
 #align cycle.support_form_perm Cycle.support_formPerm
@@ -400,7 +400,7 @@ def toCycle (f : Perm α) (hf : IsCycle f) : Cycle α :=
     (fun x _ l => if f x = x then l else toList f x)
     (by
       intro x y _ s
-      refine' heq_of_eq _
+      refine heq_of_eq ?_
       split_ifs with hx hy hy <;> try rfl
       · have hc : SameCycle f x y := IsCycle.sameCycle hf hx hy
         exact Quotient.sound' hc.toList_isRotated)
@@ -471,7 +471,7 @@ theorem IsCycle.existsUnique_cycle {f : Perm α} (hf : IsCycle f) :
       rw [formPerm_eq_one_iff _ hn]
       exact Nat.le_of_lt_succ hx
     · rw [← mem_toFinset]
-      refine' support_formPerm_le l _
+      refine support_formPerm_le l ?_
       simpa using hx
 #align equiv.perm.is_cycle.exists_unique_cycle Equiv.Perm.IsCycle.existsUnique_cycle
 
@@ -490,7 +490,7 @@ theorem IsCycle.existsUnique_cycle_nontrivial_subtype {f : Perm α} (hf : IsCycl
   · rw [hn.nontrivial_iff]
     subst f
     intro H
-    refine' hf.ne_one _
+    refine hf.ne_one ?_
     simpa using Cycle.formPerm_subsingleton _ H
   · simpa using hs
   · rintro ⟨t, ht, ht'⟩ ht''

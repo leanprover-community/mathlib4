@@ -416,7 +416,7 @@ noncomputable instance : Inf (GroupSeminorm E) :=
           ⟨1, by rwa [div_one, map_one_eq_zero p, map_one_eq_zero q, add_zero]⟩
       mul_le' := fun x y =>
         le_ciInf_add_ciInf fun u v => by
-          refine' ciInf_le_of_le mul_bddBelow_range_add (u * v) _
+          refine ciInf_le_of_le mul_bddBelow_range_add (u * v) ?_
           rw [mul_div_mul_comm, add_add_add_comm]
           exact add_le_add (map_mul_le_add p _ _) (map_mul_le_add q _ _)
       inv' := fun x =>

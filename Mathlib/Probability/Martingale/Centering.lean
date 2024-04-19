@@ -105,7 +105,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
     · rw [condexp_of_stronglyMeasurable (ℱ.le _) _ (hf_int 0)]
       · exact (hf 0).mono (ℱ.mono (zero_le i))
     · exact eventuallyEq_sum fun k _ => condexp_sub ((hf_int _).sub (hf_int _)) integrable_condexp
-  refine' h_eq_sum.trans _
+  refine h_eq_sum.trans ?_
   have h_ge : ∀ k, i ≤ k → μ[f (k + 1) - f k|ℱ i] - μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] 0 := by
     intro k hk
     have : μ[μ[f (k + 1) - f k|ℱ k]|ℱ i] =ᵐ[μ] μ[f (k + 1) - f k|ℱ i] :=
@@ -125,7 +125,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
   refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_range_add_sum_Ico _ hij, ←
     add_zero (∑ i in Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
-  refine' (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add _
+  refine (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add ?_
   refine' (eventuallyEq_sum fun k hk => h_ge k (Finset.mem_Ico.mp hk).1).trans _
   simp only [Finset.sum_const_zero, Pi.zero_apply]
   rfl
@@ -145,7 +145,7 @@ theorem martingalePart_add_ae_eq [SigmaFiniteFiltration μ ℱ] {f g : ℕ → �
   have hhmgle : Martingale h ℱ μ := hf.sub (martingale_martingalePart
     (hf.adapted.add <| Predictable.adapted hg <| hg0.symm ▸ stronglyMeasurable_zero) fun n =>
     (hf.integrable n).add <| hgint n)
-  refine' (eventuallyEq_iff_sub.2 _).symm
+  refine (eventuallyEq_iff_sub.2 ?_).symm
   filter_upwards [hhmgle.eq_zero_of_predictable hhpred n] with ω hω
   unfold_let h at hω
   rw [Pi.sub_apply] at hω

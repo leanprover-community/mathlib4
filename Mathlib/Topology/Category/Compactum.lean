@@ -338,7 +338,7 @@ theorem str_eq_of_le_nhds {X : Compactum} (F : Ultrafilter X) (x : X) : ↑F ≤
     obtain ⟨G, h1⟩ := Ultrafilter.exists_ultrafilter_of_finite_inter_nonempty _ this
     have c1 : X.join G = F := Ultrafilter.coe_le_coe.1 fun P hP => h1 (Or.inr ⟨P, hP, rfl⟩)
     have c2 : G.map X.str = X.incl x := by
-      refine' Ultrafilter.coe_le_coe.1 fun P hP => _
+      refine Ultrafilter.coe_le_coe.1 fun P hP => ?_
       apply mem_of_superset (h1 (Or.inl rfl))
       rintro x ⟨rfl⟩
       exact hP

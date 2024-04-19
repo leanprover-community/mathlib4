@@ -175,7 +175,7 @@ theorem abs_rpow_le_abs_rpow (x y : ℝ) : |x ^ y| ≤ |x| ^ y := by
 #align real.abs_rpow_le_abs_rpow Real.abs_rpow_le_abs_rpow
 
 theorem abs_rpow_le_exp_log_mul (x y : ℝ) : |x ^ y| ≤ exp (log x * y) := by
-  refine' (abs_rpow_le_abs_rpow x y).trans _
+  refine (abs_rpow_le_abs_rpow x y).trans ?_
   by_cases hx : x = 0
   · by_cases hy : y = 0 <;> simp [hx, hy, zero_le_one]
   · rw [rpow_def_of_pos (abs_pos.2 hx), log_abs]

@@ -801,7 +801,7 @@ theorem frontier_le_subset_eq (hf : Continuous f) (hg : Continuous g) :
     frontier { b | f b ≤ g b } ⊆ { b | f b = g b } := by
   rw [frontier_eq_closure_inter_closure, closure_le_eq hf hg]
   rintro b ⟨hb₁, hb₂⟩
-  refine' le_antisymm hb₁ (closure_lt_subset_le hg hf _)
+  refine le_antisymm hb₁ (closure_lt_subset_le hg hf ?_)
   convert hb₂ using 2; simp only [not_le.symm]; rfl
 #align frontier_le_subset_eq frontier_le_subset_eq
 

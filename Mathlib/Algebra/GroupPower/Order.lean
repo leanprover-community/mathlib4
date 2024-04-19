@@ -464,7 +464,7 @@ alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
 #align pow_two_pos_of_ne_zero pow_two_pos_of_ne_zero
 
 theorem pow_bit0_pos_iff (a : R) {n : ℕ} (hn : n ≠ 0) : 0 < a ^ bit0 n ↔ a ≠ 0 := by
-  refine' ⟨fun h => _, fun h => pow_bit0_pos h n⟩
+  refine ⟨fun h => ?_, fun h => pow_bit0_pos h n⟩
   rintro rfl
   rw [zero_pow (Nat.bit0_ne_zero hn)] at h
   exact lt_irrefl _ h

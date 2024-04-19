@@ -421,7 +421,7 @@ theorem of_separable_splitting_field [sp : p.IsSplittingField F E] (hp : p.Separ
   letI := K⟮x⟯.isScalarTower (R := F)
   rw [of_separable_splitting_field_aux hp K (Multiset.mem_toFinset.mp hx), hK, finrank_mul_finrank]
   symm
-  refine' LinearEquiv.finrank_eq _
+  refine LinearEquiv.finrank_eq ?_
   rfl
 #align is_galois.of_separable_splitting_field IsGalois.of_separable_splitting_field
 

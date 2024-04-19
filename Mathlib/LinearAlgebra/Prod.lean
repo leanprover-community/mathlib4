@@ -869,7 +869,7 @@ variable [Module R M] [Module R M₂] [Module R M₃]
 `Prod f g` is equal to the product of `range f` and `range g`. -/
 theorem range_prod_eq {f : M →ₗ[R] M₂} {g : M →ₗ[R] M₃} (h : ker f ⊔ ker g = ⊤) :
     range (prod f g) = (range f).prod (range g) := by
-  refine' le_antisymm (f.range_prod_le g) _
+  refine le_antisymm (f.range_prod_le g) ?_
   simp only [SetLike.le_def, prod_apply, mem_range, SetLike.mem_coe, mem_prod, exists_imp, and_imp,
     Prod.forall, Pi.prod]
   rintro _ _ x rfl y rfl

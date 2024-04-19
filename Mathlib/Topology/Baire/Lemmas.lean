@@ -135,10 +135,10 @@ theorem IsGδ.dense_iUnion_interior_of_closed [Countable ι] {s : Set X} (hs : I
   let g i := (frontier (f i))ᶜ
   have hgo : ∀ i, IsOpen (g i) := fun i => isClosed_frontier.isOpen_compl
   have hgd : Dense (⋂ i, g i) := by
-    refine' dense_iInter_of_isOpen hgo fun i x => _
+    refine dense_iInter_of_isOpen hgo fun i x => ?_
     rw [closure_compl, interior_frontier (hc _)]
     exact id
-  refine' (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono _
+  refine (hd.inter_of_Gδ hs (.iInter_of_isOpen fun i => (hgo i)) hgd).mono ?_
   rintro x ⟨hxs, hxg⟩
   rw [mem_iInter] at hxg
   rcases mem_iUnion.1 (hU hxs) with ⟨i, hi⟩

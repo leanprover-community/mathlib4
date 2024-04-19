@@ -109,7 +109,7 @@ theorem isConformalMap_iff_is_complex_or_conj_linear :
         simp only [hmap, coe_comp', ContinuousLinearEquiv.coe_coe, Function.comp_apply,
           conjCLE_apply, starRingEnd_self_apply]
       rw [minor₁] at h₂ ⊢
-      refine' isConformalMap_complex_linear_conj _
+      refine isConformalMap_complex_linear_conj ?_
       contrapose! h₂ with w
       simp only [w, restrictScalars_zero, zero_comp]
 #align is_conformal_map_iff_is_complex_or_conj_linear isConformalMap_iff_is_complex_or_conj_linear

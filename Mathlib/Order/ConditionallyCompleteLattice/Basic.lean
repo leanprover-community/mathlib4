@@ -937,7 +937,7 @@ theorem ciInf_eq_of_forall_ge_of_forall_gt_exists_lt [Nonempty ι] {f : ι → �
 `f n ≤ g n` for all `n`, then `⨆ n, f n` belongs to all the intervals `[f n, g n]`. -/
 theorem Monotone.ciSup_mem_iInter_Icc_of_antitone [SemilatticeSup β] {f g : β → α} (hf : Monotone f)
     (hg : Antitone g) (h : f ≤ g) : (⨆ n, f n) ∈ ⋂ n, Icc (f n) (g n) := by
-  refine' mem_iInter.2 fun n => _
+  refine mem_iInter.2 fun n => ?_
   haveI : Nonempty β := ⟨n⟩
   have : ∀ m, f m ≤ g n := fun m => hf.forall_le_of_antitone hg h m n
   exact ⟨le_ciSup ⟨g <| n, forall_mem_range.2 this⟩ _, ciSup_le this⟩
@@ -1340,7 +1340,7 @@ theorem isGLB_sInf' {β : Type*} [ConditionallyCompleteLattice β] {s : Set (Wit
       exact top_le_iff.2 (Set.mem_singleton_iff.1 (h ha))
     · rintro (⟨⟩ | a) ha
       · exact le_top
-      refine' some_le_some.2 (csInf_le _ ha)
+      refine some_le_some.2 (csInf_le ?_ ha)
       rcases hs with ⟨⟨⟩ | b, hb⟩
       · exfalso
         apply h
@@ -1550,7 +1550,7 @@ variable {l u : α → β → γ} {l₁ u₁ : β → γ → α} {l₂ u₂ : α
 theorem csSup_image2_eq_csSup_csSup (h₁ : ∀ b, GaloisConnection (swap l b) (u₁ b))
     (h₂ : ∀ a, GaloisConnection (l a) (u₂ a)) (hs₀ : s.Nonempty) (hs₁ : BddAbove s)
     (ht₀ : t.Nonempty) (ht₁ : BddAbove t) : sSup (image2 l s t) = l (sSup s) (sSup t) := by
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   rw [csSup_le_iff (hs₁.image2 (fun _ => (h₁ _).monotone_l) (fun _ => (h₂ _).monotone_l) ht₁)
       (hs₀.image2 ht₀),
     forall_image2_iff, forall₂_swap, (h₂ _).le_iff_le, csSup_le_iff ht₁ ht₀]
@@ -1674,7 +1674,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
         · cases a
           · exact le_top
           · apply WithTop.some_le_some.2
-            refine' csInf_le _ haS
+            refine csInf_le ?_ haS
             use ⊥
             intro b _
             exact bot_le

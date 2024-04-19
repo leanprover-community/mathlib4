@@ -155,7 +155,7 @@ set, then for `μ`-a.e. `x`, if the orbit of `x` visits `s` at least once, then 
 infinitely many times.  -/
 theorem ae_forall_image_mem_imp_frequently_image_mem (hf : Conservative f μ)
     (hs : MeasurableSet s) : ∀ᵐ x ∂μ, ∀ k, f^[k] x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := by
-  refine' ae_all_iff.2 fun k => _
+  refine ae_all_iff.2 fun k => ?_
   refine' (hf.ae_mem_imp_frequently_image_mem (hf.measurable.iterate k hs)).mono fun x hx hk => _
   rw [← map_add_atTop_eq_nat k, frequently_map]
   refine (hx hk).mono fun n hn => ?_
@@ -178,7 +178,7 @@ theorem ae_frequently_mem_of_mem_nhds [TopologicalSpace α] [SecondCountableTopo
     ∀ᵐ x ∂μ, ∀ s ∈ 𝓝 x, ∃ᶠ n in atTop, f^[n] x ∈ s := by
   have : ∀ s ∈ countableBasis α, ∀ᵐ x ∂μ, x ∈ s → ∃ᶠ n in atTop, f^[n] x ∈ s := fun s hs =>
     h.ae_mem_imp_frequently_image_mem (isOpen_of_mem_countableBasis hs).measurableSet
-  refine' ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => _
+  refine ((ae_ball_iff <| countable_countableBasis α).2 this).mono fun x hx s hs => ?_
   rcases (isBasis_countableBasis α).mem_nhds_iff.1 hs with ⟨o, hoS, hxo, hos⟩
   exact (hx o hoS hxo).mono fun n hn => hos hn
 #align measure_theory.conservative.ae_frequently_mem_of_mem_nhds MeasureTheory.Conservative.ae_frequently_mem_of_mem_nhds

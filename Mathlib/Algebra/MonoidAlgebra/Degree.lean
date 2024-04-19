@@ -139,7 +139,7 @@ theorem sup_support_list_prod_le (degb0 : degb 0 ≤ 0)
 theorem le_inf_support_list_prod (degt0 : 0 ≤ degt 0)
     (degtm : ∀ a b, degt a + degt b ≤ degt (a + b)) (l : List R[A]) :
     (l.map fun f : R[A] => f.support.inf degt).sum ≤ l.prod.support.inf degt := by
-  refine' OrderDual.ofDual_le_ofDual.mpr _
+  refine OrderDual.ofDual_le_ofDual.mpr ?_
   refine' sup_support_list_prod_le _ _ l
   · refine' (OrderDual.ofDual_le_ofDual.mp _)
     exact degt0

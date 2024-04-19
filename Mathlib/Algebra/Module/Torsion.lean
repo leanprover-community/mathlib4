@@ -110,7 +110,7 @@ but requires the stronger hypothesis `NoZeroSMulDivisors R M`. -/
 theorem CompleteLattice.Independent.linear_independent' {ι R M : Type*} {v : ι → M} [Ring R]
     [AddCommGroup M] [Module R M] (hv : CompleteLattice.Independent fun i => R ∙ v i)
     (h_ne_zero : ∀ i, Ideal.torsionOf R M (v i) = ⊥) : LinearIndependent R v := by
-  refine' linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => _
+  refine linearIndependent_iff_not_smul_mem_span.mpr fun i r hi => ?_
   replace hv := CompleteLattice.independent_def.mp hv i
   simp only [iSup_subtype', ← Submodule.span_range_eq_iSup, disjoint_iff] at hv
   have : r • v i ∈ ⊥ := by

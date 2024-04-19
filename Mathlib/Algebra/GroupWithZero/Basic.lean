@@ -325,7 +325,7 @@ instance (priority := 100) GroupWithZero.toDivisionMonoid : DivisionMonoid G₀ 
       by_cases hb : b = 0
       · simp [hb]
 
-      refine' inv_eq_of_mul _
+      refine inv_eq_of_mul ?_
       simp [mul_assoc, ha, hb],
     inv_eq_of_mul := fun _ _ => inv_eq_of_mul }
 #align group_with_zero.to_division_monoid GroupWithZero.toDivisionMonoid

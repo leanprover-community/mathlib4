@@ -343,7 +343,7 @@ theorem digits_len (b n : ℕ) (hb : 1 < b) (hn : n ≠ 0) : (b.digits n).length
     simp [h, log_eq_zero_iff, ← Nat.div_eq_zero_iff hb0.bot_lt]
   · have : n / b < n := div_lt_self (Nat.pos_of_ne_zero hn) hb
     rw [IH _ this h, log_div_base, tsub_add_cancel_of_le]
-    refine' Nat.succ_le_of_lt (log_pos hb _)
+    refine Nat.succ_le_of_lt (log_pos hb ?_)
     contrapose! h
     exact div_eq_of_lt h
 #align nat.digits_len Nat.digits_len

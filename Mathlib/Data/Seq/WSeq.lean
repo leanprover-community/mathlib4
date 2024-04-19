@@ -665,7 +665,7 @@ theorem head_think (s : WSeq α) : head (think s) = (head s).think := by simp [h
 
 @[simp]
 theorem flatten_pure (s : WSeq α) : flatten (Computation.pure s) = s := by
-  refine' Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) _ rfl
+  refine Seq.eq_of_bisim (fun s1 s2 => flatten (Computation.pure s2) = s1) ?_ rfl
   intro s' s h
   rw [← h]
   simp only [Seq.BisimO, flatten, Seq.omap, pure_def, Seq.corec_eq, destruct_pure]

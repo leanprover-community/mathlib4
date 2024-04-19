@@ -200,7 +200,7 @@ theorem gauge_le_one_of_mem {x : E} (hx : x ∈ s) : gauge s x ≤ 1 :=
 /-- Gauge is subadditive. -/
 theorem gauge_add_le (hs : Convex ℝ s) (absorbs : Absorbent ℝ s) (x y : E) :
     gauge s (x + y) ≤ gauge s x + gauge s y := by
-  refine' le_of_forall_pos_lt_add fun ε hε => _
+  refine le_of_forall_pos_lt_add fun ε hε => ?_
   obtain ⟨a, ha, ha', x, hx, rfl⟩ :=
     exists_lt_of_gauge_lt absorbs (lt_add_of_pos_right (gauge s x) (half_pos hε))
   obtain ⟨b, hb, hb', y, hy, rfl⟩ :=
@@ -236,7 +236,7 @@ theorem le_gauge_of_not_mem (hs₀ : StarConvex ℝ 0 s) (hs₂ : Absorbs ℝ s 
   obtain ⟨r, hr, h⟩ := hs₂.exists_pos
   refine' le_csInf ⟨r, hr, singleton_subset_iff.1 <| h _ (Real.norm_of_nonneg hr.le).ge⟩ _
   rintro b ⟨hb, x, hx', rfl⟩
-  refine' not_lt.1 fun hba => hx _
+  refine not_lt.1 fun hba => hx ?_
   have ha := hb.trans hba
   refine ⟨(a⁻¹ * b) • x, hs₀ hx' (by positivity) ?_, ?_⟩
   · rw [← div_eq_inv_mul]
@@ -389,7 +389,7 @@ theorem interior_subset_gauge_lt_one (s : Set E) : interior s ⊆ { x | gauge s 
 
 theorem gauge_lt_one_eq_self_of_isOpen (hs₁ : Convex ℝ s) (hs₀ : (0 : E) ∈ s) (hs₂ : IsOpen s) :
     { x | gauge s x < 1 } = s := by
-  refine' (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm _
+  refine (gauge_lt_one_subset_self hs₁ ‹_› <| absorbent_nhds_zero <| hs₂.mem_nhds hs₀).antisymm ?_
   convert interior_subset_gauge_lt_one s
   exact hs₂.interior_eq.symm
 #align gauge_lt_one_eq_self_of_open gauge_lt_one_eq_self_of_isOpen

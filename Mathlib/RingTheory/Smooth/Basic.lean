@@ -313,7 +313,7 @@ theorem of_isLocalization : FormallySmooth R Rₘ := by
     { IsLocalization.lift this with commutes' := IsLocalization.lift_eq this }
   use this
   apply AlgHom.coe_ringHom_injective
-  refine' IsLocalization.ringHom_ext M _
+  refine IsLocalization.ringHom_ext M ?_
   ext
   simp
 #align algebra.formally_smooth.of_is_localization Algebra.FormallySmooth.of_isLocalization
@@ -332,7 +332,7 @@ theorem localization_base [FormallySmooth R Sₘ] : FormallySmooth Rₘ Sₘ := 
           r =
         algebraMap _ _ r
     congr 1
-    refine' IsLocalization.ringHom_ext M _
+    refine IsLocalization.ringHom_ext M ?_
     rw [RingHom.comp_assoc, ← IsScalarTower.algebraMap_eq, ← IsScalarTower.algebraMap_eq,
       AlgHom.comp_algebraMap]
   use f

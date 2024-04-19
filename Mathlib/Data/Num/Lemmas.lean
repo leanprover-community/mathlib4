@@ -1655,7 +1655,7 @@ theorem gcd_to_nat_aux :
     rw [natSize_to_nat, mul_to_nat, Nat.size_le] at h ⊢
     rw [mod_to_nat, mul_comm]
     rw [pow_succ, ← Nat.mod_add_div b (pos a)] at h
-    refine' lt_of_mul_lt_mul_right (lt_of_le_of_lt _ h) (Nat.zero_le 2)
+    refine lt_of_mul_lt_mul_right (lt_of_le_of_lt ?_ h) (Nat.zero_le 2)
     rw [mul_two, mul_add]
     refine'
       add_le_add_left

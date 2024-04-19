@@ -341,7 +341,7 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
       ((Nat.dvd_add_iff_right (Nat.dvd_mul_left m (n * x))).mpr
         ((congr_arg _ h).mpr (Nat.dvd_mul_right m n)))
   rw [mul_comm, mul_ne_zero_iff, ← one_le_iff_ne_zero] at ha hb
-  refine' mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) _)
+  refine mul_ne_zero hb.2 ha.2 (eq_zero_of_mul_eq_self_left (ne_of_gt (add_le_add ha.1 hb.1)) ?_)
   rw [← mul_assoc, ← h, add_mul, add_mul, mul_comm _ n, ← mul_assoc, mul_comm y]
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 

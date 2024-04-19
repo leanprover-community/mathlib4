@@ -538,7 +538,7 @@ theorem indep_iSup_of_directed_le {Ω} {m : ι → MeasurableSpace Ω} {m' m0 : 
       rw [h_gen_n i, h_gen']
     exact fun n => (h_indep n).indepSets
   -- now go from π-systems to σ-algebras
-  refine' IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi _ h_gen' h_pi_system_indep
+  refine IndepSets.indep (iSup_le h_le) h_le' hp_supr_pi hp'_pi ?_ h_gen' h_pi_system_indep
   exact (generateFrom_iUnion_measurableSet _).symm
 
 theorem iIndepSet.indep_generateFrom_lt [Preorder ι] [IsMarkovKernel κ] {s : ι → Set Ω}
@@ -772,7 +772,7 @@ theorem iIndepFun_iff_measure_inter_preimage_eq_mul {ι : Type*} {β : ι → Ty
     · rwa [h_preim i hi_mem] at h
     · rwa [h_preim i hi_mem]
   have h_right_eq : ∀ a, (∏ i in S, κ a (setsΩ i)) = ∏ i in S, κ a ((f i) ⁻¹' (setsβ i)) := by
-    refine' fun a ↦ Finset.prod_congr rfl fun i hi_mem => _
+    refine fun a ↦ Finset.prod_congr rfl fun i hi_mem => ?_
     rw [h_preim i hi_mem]
   filter_upwards [h S h_measβ] with a ha
   rw [h_left_eq a, h_right_eq a, ha]
@@ -781,7 +781,7 @@ theorem indepFun_iff_indepSet_preimage {mβ : MeasurableSpace β} {mβ' : Measur
     [IsMarkovKernel κ] (hf : Measurable f) (hg : Measurable g) :
     IndepFun f g κ μ ↔
       ∀ s t, MeasurableSet s → MeasurableSet t → IndepSet (f ⁻¹' s) (g ⁻¹' t) κ μ := by
-  refine' indepFun_iff_measure_inter_preimage_eq_mul.trans _
+  refine indepFun_iff_measure_inter_preimage_eq_mul.trans ?_
   constructor <;> intro h s t hs ht <;> specialize h s t hs ht
   · rwa [indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
   · rwa [← indepSet_iff_measure_inter_eq_mul (hf hs) (hg ht) κ μ]
@@ -942,7 +942,7 @@ theorem iIndepFun.indepFun_prod_mk [IsMarkovKernel κ] (hf_Indep : iIndepFun m f
     p ⟨j, Finset.mem_insert_of_mem (Finset.mem_singleton_self _)⟩) :=
       Measurable.prod (measurable_pi_apply _) (measurable_pi_apply _)
   rw [h_left, h_right]
-  refine' (hf_Indep.indepFun_finset s {k} _ hf_meas).comp h_meas_left h_meas_right
+  refine (hf_Indep.indepFun_finset s {k} ?_ hf_meas).comp h_meas_left h_meas_right
   rw [Finset.disjoint_singleton_right]
   simp only [s, Finset.mem_insert, Finset.mem_singleton, not_or]
   exact ⟨hik.symm, hjk.symm⟩

@@ -273,7 +273,7 @@ theorem n_lt_a_pow : ∀ n : ℕ, n < a ^ n
       rw [← mul_two]
       exact Nat.mul_le_mul_left _ a1
     simp only [_root_.pow_succ, gt_iff_lt]
-    refine' lt_of_lt_of_le _ this
+    refine lt_of_lt_of_le ?_ this
     exact add_lt_add_of_lt_of_le IH (lt_of_le_of_lt (Nat.zero_le _) IH)
 #align pell.n_lt_a_pow Pell.n_lt_a_pow
 
@@ -596,7 +596,7 @@ theorem xn_modEq_x2n_add_lem (n j) : xn a1 n ∣ d a1 * yn a1 n * (yn a1 n * xn 
 
 theorem xn_modEq_x2n_add (n j) : xn a1 (2 * n + j) + xn a1 j ≡ 0 [MOD xn a1 n] := by
   rw [two_mul, add_assoc, xn_add, add_assoc, ← zero_add 0]
-  refine' (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add _
+  refine (dvd_mul_right (xn a1 n) (xn a1 (n + j))).modEq_zero_nat.add ?_
   rw [yn_add, left_distrib, add_assoc, ← zero_add 0]
   exact
     ((dvd_mul_right _ _).mul_left _).modEq_zero_nat.add (xn_modEq_x2n_add_lem _ _ _).modEq_zero_nat
@@ -694,7 +694,7 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
           rw [lem2 (n + 1) (Nat.lt_succ_self _) j2n,
             show 2 * n - (n + 1) = n - 1 by
               rw [two_mul, tsub_add_eq_tsub_tsub, add_tsub_cancel_right]]
-          refine' lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt _)
+          refine lt_sub_left_of_add_lt (Int.ofNat_lt_ofNat_of_lt ?_)
           rcases lt_or_eq_of_le <| Nat.le_of_succ_le_succ ij with lin | ein
           · rw [Nat.mod_eq_of_lt (strictMono_x _ lin)]
             have ll : xn a1 (n - 1) + xn a1 (n - 1) ≤ xn a1 n := by
@@ -962,7 +962,7 @@ theorem eq_pow_of_pell {m n k} :
     obtain ⟨z, ze⟩ : w ∣ yn w1 w :=
       modEq_zero_iff_dvd.1 ((yn_modEq_a_sub_one w1 w).trans dvd_rfl.modEq_zero_nat)
     have nt : (↑(n ^ k) : ℤ) < 2 * a * n - n * n - 1 := by
-      refine' eq_pow_of_pell_lem hn.ne' hk.ne' _
+      refine eq_pow_of_pell_lem hn.ne' hk.ne' ?_
       calc
         n ^ k ≤ n ^ w := Nat.pow_le_pow_of_le_right hn kw
         _ < (w + 1) ^ w := Nat.pow_lt_pow_left (Nat.lt_succ_of_le nw) wpos.ne'

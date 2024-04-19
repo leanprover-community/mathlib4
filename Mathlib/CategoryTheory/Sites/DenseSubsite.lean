@@ -199,7 +199,7 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   rw [← G.image_preimage (f ≫ g₂ ≫ _)]
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
-  refine' congr_fun _ x
+  refine congr_fun ?_ x
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
     ← ℱ.map_comp, ← op_comp, G.image_preimage]
   congr 3
@@ -335,7 +335,7 @@ noncomputable def sheafCoyonedaHom (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
     conv_lhs => rw [← hf'.some.fac]
     simp only [← Category.assoc, op_comp, Functor.map_comp]
     congr 1
-    refine' (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans _
+    refine (appHom_restrict (homOver α (unop X)) hf'.some.map.op x).trans ?_
     simp
 #align category_theory.cover_dense.sheaf_coyoneda_hom CategoryTheory.Functor.IsCoverDense.sheafCoyonedaHom
 

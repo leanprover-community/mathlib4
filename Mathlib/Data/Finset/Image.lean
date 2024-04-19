@@ -290,7 +290,7 @@ theorem attach_map_val {s : Finset α} : s.attach.map (Embedding.subtype _) = s 
 
 theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addLeftEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
+  refine disjoint_iff_inf_le.mpr ?_
   intro k hk
   simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addLeftEmbedding, mem_inter]
     at hk
@@ -300,7 +300,7 @@ theorem disjoint_range_addLeftEmbedding (a b : ℕ) :
 
 theorem disjoint_range_addRightEmbedding (a b : ℕ) :
     Disjoint (range a) (map (addRightEmbedding a) (range b)) := by
-  refine' disjoint_iff_inf_le.mpr _
+  refine disjoint_iff_inf_le.mpr ?_
   intro k hk
   simp only [exists_prop, mem_range, inf_eq_inter, mem_map, addRightEmbedding, mem_inter]
     at hk
@@ -401,7 +401,7 @@ theorem image_congr (h : (s : Set α).EqOn f g) : Finset.image f s = Finset.imag
 
 theorem _root_.Function.Injective.mem_finset_image (hf : Injective f) :
     f a ∈ s.image f ↔ a ∈ s := by
-  refine' ⟨fun h => _, Finset.mem_image_of_mem f⟩
+  refine ⟨fun h => ?_, Finset.mem_image_of_mem f⟩
   obtain ⟨y, hy, heq⟩ := mem_image.1 h
   exact hf heq ▸ hy
 #align function.injective.mem_finset_image Function.Injective.mem_finset_image

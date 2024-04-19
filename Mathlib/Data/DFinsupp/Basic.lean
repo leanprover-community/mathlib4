@@ -1019,7 +1019,7 @@ theorem add_closure_iUnion_range_single :
 they are equal. -/
 theorem addHom_ext {γ : Type w} [AddZeroClass γ] ⦃f g : (Π₀ i, β i) →+ γ⦄
     (H : ∀ (i : ι) (y : β i), f (single i y) = g (single i y)) : f = g := by
-  refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_iUnion_range_single fun f hf => _
+  refine AddMonoidHom.eq_of_eqOn_denseM add_closure_iUnion_range_single fun f hf => ?_
   simp only [Set.mem_iUnion, Set.mem_range] at hf
   rcases hf with ⟨x, y, rfl⟩
   apply H
@@ -1995,7 +1995,7 @@ theorem _root_.AddSubmonoid.bsupr_eq_mrange_dfinsupp_sumAddHom (p : ι → Prop)
     exact sumAddHom_single _ _ _
   · rintro x ⟨v, rfl⟩
     refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
-    refine' AddSubmonoid.mem_iSup_of_mem i _
+    refine AddSubmonoid.mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
     · simp [hp]

@@ -86,7 +86,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
   have h4f := h4f.preimage_mem_nhds (extChartAt_source_mem_nhds I' (f x₀ (g x₀)))
   have h3f := contMDiffAt_iff_contMDiffAt_nhds.mp (hf.of_le <| (self_le_add_left 1 m).trans hmn)
   have h2f : ∀ᶠ x₂ in 𝓝 x₀, ContMDiffAt I I' 1 (f x₂) (g x₂) := by
-    refine' ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => _
+    refine ((continuousAt_id.prod hg.continuousAt).tendsto.eventually h3f).mono fun x hx => ?_
     exact hx.comp (g x) (contMDiffAt_const.prod_mk contMDiffAt_id)
   have h2g := hg.continuousAt.preimage_mem_nhds (extChartAt_source_mem_nhds I (g x₀))
   have :
@@ -122,7 +122,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
               writtenInExtChartAt I I' (g x) (f x) ∘
                 extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm)
           (range I) (extChartAt I (g x₀) (g x))) x₀ := by
-    refine' this.congr_of_eventuallyEq _
+    refine this.congr_of_eventuallyEq ?_
     filter_upwards [h2g, h2f]
     intro x₂ hx₂ h2x₂
     have :
@@ -135,7 +135,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
       rintro x ⟨hx, h2x⟩
       simp_rw [writtenInExtChartAt, Function.comp_apply]
       rw [(extChartAt I (g x₂)).left_inv hx, (extChartAt I' (f x₂ (g x₂))).left_inv h2x]
-    refine' Filter.EventuallyEq.fderivWithin_eq_nhds _
+    refine Filter.EventuallyEq.fderivWithin_eq_nhds ?_
     refine' eventually_of_mem (inter_mem _ _) this
     · exact extChartAt_preimage_mem_nhds' _ hx₂ (extChartAt_source_mem_nhds I (g x₂))
     refine' extChartAt_preimage_mem_nhds' _ hx₂ _
@@ -155,7 +155,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
           ((mfderiv I I' (f x) (g x)).comp
             (fderivWithin 𝕜 (extChartAt I (g x) ∘ (extChartAt I (g x₀)).symm) (range I)
               (extChartAt I (g x₀) (g x))))) x₀ := by
-    refine' this.congr_of_eventuallyEq _
+    refine this.congr_of_eventuallyEq ?_
     filter_upwards [h2g, h2f, h4f]
     intro x₂ hx₂ h2x₂ h3x₂
     symm
@@ -174,7 +174,7 @@ protected theorem ContMDiffAt.mfderiv {x₀ : N} (f : N → M → M') (g : N →
     · simp_rw [writtenInExtChartAt, Function.comp_apply,
         (extChartAt I (g x₂)).left_inv (mem_extChartAt_source I (g x₂))]
     · simp_rw [Function.comp_apply, (extChartAt I (g x₀)).left_inv hx₂]
-  refine' this.congr_of_eventuallyEq _
+  refine this.congr_of_eventuallyEq ?_
   filter_upwards [h2g, h4f] with x hx h2x
   rw [inTangentCoordinates_eq]
   · rfl
@@ -364,7 +364,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
     -/
   have one_le_n : 1 ≤ n := (le_add_left le_rfl).trans hmn
   -- First step: local reduction on the space, to a set `s'` which is contained in chart domains.
-  refine' contMDiffOn_of_locally_contMDiffOn fun p hp => _
+  refine contMDiffOn_of_locally_contMDiffOn fun p hp => ?_
   have hf' := contMDiffOn_iff.1 hf
   simp only [mfld_simps] at hp
   let l := chartAt H p.proj
@@ -471,7 +471,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
           tangentMap I I l.symm (il.symm (Dl q)) := by
         refine' tangentMapWithin_eq_tangentMap U'lq _
         -- Porting note: the arguments below were underscores.
-        refine' mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) _
+        refine mdifferentiableAt_atlas_symm I (chart_mem_atlas H (TotalSpace.proj p)) ?_
         simp only [Dl, il, hq, mfld_simps]
       rw [this, tangentMap_chart_symm, hDl]
       · simp only [il, hq, mfld_simps]
@@ -510,7 +510,7 @@ theorem ContMDiffOn.contMDiffOn_tangentMapWithin (hf : ContMDiffOn I I' n f s) (
         exact (chartAt (ModelProd H' E') (tangentMapWithin I I' f s p)).left_inv this
       · simp only [hq, mfld_simps]
     have E : tangentMapWithin I I' f s' q = tangentMapWithin I I' f s q := by
-      refine' tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q _
+      refine tangentMapWithin_subset (by unfold_let; mfld_set_tac) U'q ?_
       apply hf.mdifferentiableOn one_le_n
       simp only [hq, mfld_simps]
     dsimp only [Function.comp_def] at A B C D E ⊢

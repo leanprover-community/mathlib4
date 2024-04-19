@@ -260,8 +260,8 @@ theorem isSeparating_iff_epi (𝒢 : Set C)
   refine' ⟨fun h A => ⟨fun u v huv => h _ _ fun G hG f => _⟩, fun h X Y f g hh => _⟩
   · simpa using Sigma.ι (fun f : ΣG : 𝒢, (G : C) ⟶ A => (f.1 : C)) ⟨⟨G, hG⟩, f⟩ ≫= huv
   · haveI := h X
-    refine'
-      (cancel_epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ X))).1 (colimit.hom_ext fun j => _)
+    refine
+      (cancel_epi (Sigma.desc (@Sigma.snd 𝒢 fun G => (G : C) ⟶ X))).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 #align category_theory.is_separating_iff_epi CategoryTheory.isSeparating_iff_epi
 
@@ -271,7 +271,7 @@ theorem isCoseparating_iff_mono (𝒢 : Set C)
   refine' ⟨fun h A => ⟨fun u v huv => h _ _ fun G hG f => _⟩, fun h X Y f g hh => _⟩
   · simpa using huv =≫ Pi.π (fun f : ΣG : 𝒢, A ⟶ (G : C) => (f.1 : C)) ⟨⟨G, hG⟩, f⟩
   · haveI := h Y
-    refine' (cancel_mono (Pi.lift (@Sigma.snd 𝒢 fun G => Y ⟶ (G : C)))).1 (limit.hom_ext fun j => _)
+    refine (cancel_mono (Pi.lift (@Sigma.snd 𝒢 fun G => Y ⟶ (G : C)))).1 (limit.hom_ext fun j => ?_)
     simpa using hh j.as.1.1 j.as.1.2 j.as.2
 #align category_theory.is_coseparating_iff_mono CategoryTheory.isCoseparating_iff_mono
 
@@ -525,7 +525,7 @@ theorem isSeparator_iff_epi (G : C) [∀ A : C, HasCoproduct fun _ : G ⟶ A => 
   refine' ⟨fun h A => ⟨fun u v huv => h _ _ fun i => _⟩, fun h X Y f g hh => _⟩
   · simpa using Sigma.ι _ i ≫= huv
   · haveI := h X
-    refine' (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => _)
+    refine (cancel_epi (Sigma.desc fun f : G ⟶ X => f)).1 (colimit.hom_ext fun j => ?_)
     simpa using hh j.as
 #align category_theory.is_separator_iff_epi CategoryTheory.isSeparator_iff_epi
 
@@ -535,7 +535,7 @@ theorem isCoseparator_iff_mono (G : C) [∀ A : C, HasProduct fun _ : A ⟶ G =>
   refine' ⟨fun h A => ⟨fun u v huv => h _ _ fun i => _⟩, fun h X Y f g hh => _⟩
   · simpa using huv =≫ Pi.π _ i
   · haveI := h Y
-    refine' (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => _)
+    refine (cancel_mono (Pi.lift fun f : Y ⟶ G => f)).1 (limit.hom_ext fun j => ?_)
     simpa using hh j.as
 #align category_theory.is_coseparator_iff_mono CategoryTheory.isCoseparator_iff_mono
 

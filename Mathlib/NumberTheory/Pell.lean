@@ -232,7 +232,7 @@ theorem y_ne_zero_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : a.y ≠ 0 := 
 
 /-- If a solution has `x > 1`, then `d` is positive. -/
 theorem d_pos_of_one_lt_x {a : Solution₁ d} (ha : 1 < a.x) : 0 < d := by
-  refine' pos_of_mul_pos_left _ (sq_nonneg a.y)
+  refine pos_of_mul_pos_left ?_ (sq_nonneg a.y)
   rw [a.prop_y, sub_pos]
   exact one_lt_pow ha two_ne_zero
 #align pell.solution₁.d_pos_of_one_lt_x Pell.Solution₁.d_pos_of_one_lt_x
@@ -263,7 +263,7 @@ theorem eq_one_or_neg_one_iff_y_eq_zero {a : Solution₁ d} : a = 1 ∨ a = -1 �
 /-- The set of solutions with `x > 0` is closed under multiplication. -/
 theorem x_mul_pos {a b : Solution₁ d} (ha : 0 < a.x) (hb : 0 < b.x) : 0 < (a * b).x := by
   simp only [x_mul]
-  refine' neg_lt_iff_pos_add'.mp (abs_lt.mp _).1
+  refine neg_lt_iff_pos_add'.mp (abs_lt.mp ?_).1
   rw [← abs_of_pos ha, ← abs_of_pos hb, ← abs_mul, ← sq_lt_sq, mul_pow a.x, a.prop_x, b.prop_x, ←
     sub_pos]
   ring_nf
@@ -368,13 +368,13 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
   let ξ : ℝ := √d
   have hξ : Irrational ξ := by
-    refine' irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) _ two_pos
+    refine irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) ?_ two_pos
     rintro ⟨x, hx⟩
     refine' hd ⟨x, @Int.cast_injective ℝ _ _ d (x * x) _⟩
     rw [← sq_sqrt <| Int.cast_nonneg.mpr h₀.le, Int.cast_mul, ← hx, sq]
   obtain ⟨M, hM₁⟩ := exists_int_gt (2 * |ξ| + 1)
   have hM : {q : ℚ | |q.1 ^ 2 - d * (q.2 : ℤ) ^ 2| < M}.Infinite := by
-    refine' Infinite.mono (fun q h => _) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
+    refine Infinite.mono (fun q h => ?_) (infinite_rat_abs_sub_lt_one_div_den_sq_of_irrational hξ)
     have h0 : 0 < (q.2 : ℝ) ^ 2 := pow_pos (Nat.cast_pos.mpr q.pos) 2
     have h1 : (q.num : ℝ) / (q.den : ℝ) = q := mod_cast q.num_div_den
     rw [mem_setOf, abs_sub_comm, ← @Int.cast_lt ℝ, ← div_lt_div_right (abs_pos_of_pos h0)]
@@ -384,7 +384,7 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     refine' mul_lt_mul'' (((abs_add ξ q).trans _).trans_lt hM₁) h (abs_nonneg _) (abs_nonneg _)
     rw [two_mul, add_assoc, add_le_add_iff_left, ← sub_le_iff_le_add']
     rw [mem_setOf, abs_sub_comm] at h
-    refine' (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans _)
+    refine (abs_sub_abs_le_abs_sub (q : ℝ) ξ).trans (h.le.trans ?_)
     rw [div_le_one h0, one_le_sq_iff_one_le_abs, Nat.abs_cast, Nat.one_le_cast]
     exact q.pos
   obtain ⟨m, hm⟩ : ∃ m : ℤ, {q : ℚ | q.1 ^ 2 - d * (q.den : ℤ) ^ 2 = m}.Infinite := by
@@ -551,7 +551,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
     rcases hn.eq_or_lt with (rfl | hn)
     · simp only [zpow_zero, y_one, le_refl]
     · exact (y_zpow_pos h.x_pos h.2.1 hn).le
-  refine' strictMono_int_of_lt_succ fun n => _
+  refine strictMono_int_of_lt_succ fun n => ?_
   rcases le_or_lt 0 n with hn | hn
   · exact H n hn
   · let m : ℤ := -n - 1
@@ -563,7 +563,7 @@ theorem y_strictMono {a : Solution₁ d} (h : IsFundamental a) :
 /-- If `a` is a fundamental solution, then `(a^m).y < (a^n).y` if and only if `m < n`. -/
 theorem zpow_y_lt_iff_lt {a : Solution₁ d} (h : IsFundamental a) (m n : ℤ) :
     (a ^ m).y < (a ^ n).y ↔ m < n := by
-  refine' ⟨fun H => _, fun H => h.y_strictMono H⟩
+  refine ⟨fun H => ?_, fun H => h.y_strictMono H⟩
   contrapose! H
   exact h.y_strictMono.monotone H
 #align pell.is_fundamental.zpow_y_lt_iff_lt Pell.IsFundamental.zpow_y_lt_iff_lt
@@ -626,9 +626,9 @@ the `x`-coordinate stays positive. -/
 theorem mul_inv_x_pos {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : 0 < (a * a₁⁻¹).x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, lt_add_neg_iff_add_lt, zero_add]
-  refine' (mul_lt_mul_left <| zero_lt_one.trans hax).mp _
+  refine (mul_lt_mul_left <| zero_lt_one.trans hax).mp ?_
   rw [(by ring : a.x * (d * (a.y * a₁.y)) = d * a.y * (a.x * a₁.y))]
-  refine' ((mul_le_mul_left <| mul_pos h.d_pos hay).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt _
+  refine ((mul_le_mul_left <| mul_pos h.d_pos hay).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [← mul_assoc, mul_assoc d, ← sq, a.prop_y, ← sub_pos]
   ring_nf
   exact zero_lt_one.trans h.1
@@ -639,10 +639,10 @@ the `x`-coordinate decreases. -/
 theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solution₁ d} (hax : 1 < a.x)
     (hay : 0 < a.y) : (a * a₁⁻¹).x < a.x := by
   simp only [x_mul, x_inv, y_inv, mul_neg, add_neg_lt_iff_le_add']
-  refine' (mul_lt_mul_left h.2.1).mp _
+  refine (mul_lt_mul_left h.2.1).mp ?_
   rw [(by ring : a₁.y * (a.x * a₁.x) = a.x * a₁.y * a₁.x)]
-  refine'
-    ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt _
+  refine
+    ((mul_le_mul_right <| zero_lt_one.trans h.1).mpr <| x_mul_y_le_y_mul_x h hax hay).trans_lt ?_
   rw [mul_assoc, ← sq, a₁.prop_x, ← sub_neg]
   -- Porting note: was `ring_nf`
   suffices a.y - a.x * a₁.y < 0 by convert this using 1; ring
@@ -672,7 +672,7 @@ theorem eq_pow_of_nonneg {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : So
     · have prop := a.prop
       rw [← hy, sq (0 : ℤ), zero_mul, mul_zero, sub_zero,
         sq_eq_one_iff] at prop
-      refine' prop.resolve_right fun hf => _
+      refine prop.resolve_right fun hf => ?_
       have := (hax.trans_eq hax').le.trans_eq hf
       norm_num at this
     · exact hy.symm
@@ -737,7 +737,7 @@ theorem existsUnique_pos_generator (h₀ : 0 < d) (hd : ¬IsSquare d) :
 Pell equation `x^2 - d*y^2 = 1` if and only if it is a fundamental solution. -/
 theorem pos_generator_iff_fundamental (a : Solution₁ d) :
     (1 < a.x ∧ 0 < a.y ∧ ∀ b : Solution₁ d, ∃ n : ℤ, b = a ^ n ∨ b = -a ^ n) ↔ IsFundamental a := by
-  refine' ⟨fun h => _, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
+  refine ⟨fun h => ?_, fun H => ⟨H.1, H.2.1, H.eq_zpow_or_neg_zpow⟩⟩
   have h₀ := d_pos_of_one_lt_x h.1
   have hd := d_nonsquare_of_one_lt_x h.1
   obtain ⟨a₁, ha₁⟩ := IsFundamental.exists_of_not_isSquare h₀ hd

@@ -484,7 +484,7 @@ namespace Set
 variable {s t : Set α} {a : α}
 
 @[simp] lemma wcovBy_insert (x : α) (s : Set α) : s ⩿ insert x s := by
-  refine' wcovBy_of_eq_or_eq (subset_insert x s) fun t hst h2t => _
+  refine wcovBy_of_eq_or_eq (subset_insert x s) fun t hst h2t => ?_
   by_cases h : x ∈ t
   · exact Or.inr (subset_antisymm h2t <| insert_subset_iff.mpr ⟨h, hst⟩)
   · refine' Or.inl (subset_antisymm _ hst)
@@ -554,7 +554,7 @@ theorem swap_covBy_swap : x.swap ⋖ y.swap ↔ x ⋖ y :=
 #align prod.swap_covby_swap Prod.swap_covBy_swap
 
 theorem fst_eq_or_snd_eq_of_wcovBy : x ⩿ y → x.1 = y.1 ∨ x.2 = y.2 := by
-  refine' fun h => of_not_not fun hab => _
+  refine fun h => of_not_not fun hab => ?_
   push_neg at hab
   exact
     h.2 (mk_lt_mk.2 <| Or.inl ⟨hab.1.lt_of_le h.1.1, le_rfl⟩)

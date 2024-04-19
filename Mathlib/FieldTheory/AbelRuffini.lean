@@ -346,8 +346,8 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
       | inl hx => exact ⟨isIntegral α, hpq.1⟩
       | inr hx => exact ⟨isIntegral β, hpq.2⟩
   have key : minpoly F γ = minpoly F (f ⟨γ, hγ⟩) := by
-    refine' minpoly.eq_of_irreducible_of_monic
-      (minpoly.irreducible (isIntegral γ)) _ (minpoly.monic (isIntegral γ))
+    refine minpoly.eq_of_irreducible_of_monic
+      (minpoly.irreducible (isIntegral γ)) ?_ (minpoly.monic (isIntegral γ))
     suffices aeval (⟨γ, hγ⟩ : F⟮α, β⟯) (minpoly F γ) = 0 by
       rw [aeval_algHom_apply, this, AlgHom.map_zero]
     apply (algebraMap (↥F⟮α, β⟯) (solvableByRad F E)).injective
@@ -358,7 +358,7 @@ theorem induction2 {α β γ : solvableByRad F E} (hγ : γ ∈ F⟮α, β⟯) (
     erw [Polynomial.aeval_subalgebra_coe (minpoly F γ)]
     simp
   rw [P, key]
-  refine' gal_isSolvable_of_splits ⟨Normal.splits _ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
+  refine gal_isSolvable_of_splits ⟨Normal.splits ?_ (f ⟨γ, hγ⟩)⟩ (gal_mul_isSolvable hα hβ)
   apply SplittingField.instNormal
 #align solvable_by_rad.induction2 solvableByRad.induction2
 

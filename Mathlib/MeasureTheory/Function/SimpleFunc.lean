@@ -729,7 +729,7 @@ instance instBoundedOrder [LE β] [BoundedOrder β] : BoundedOrder (α →ₛ β
 
 theorem finset_sup_apply [SemilatticeSup β] [OrderBot β] {f : γ → α →ₛ β} (s : Finset γ) (a : α) :
     s.sup f a = s.sup fun c => f c a := by
-  refine' Finset.induction_on s rfl _
+  refine Finset.induction_on s rfl ?_
   intro a s _ ih
   rw [Finset.sup_insert, Finset.sup_insert, sup_apply, ih]
 #align measure_theory.simple_func.finset_sup_apply MeasureTheory.SimpleFunc.finset_sup_apply
@@ -867,7 +867,7 @@ theorem iSup_approx_apply [TopologicalSpace β] [CompleteLattice β] [OrderClose
   · refine' le_iSup_of_le (k + 1) _
     rw [approx_apply a hf]
     have : k ∈ Finset.range (k + 1) := Finset.mem_range.2 (Nat.lt_succ_self _)
-    refine' le_trans (le_of_eq _) (Finset.le_sup this)
+    refine le_trans (le_of_eq ?_) (Finset.le_sup this)
     rw [if_pos hk]
 #align measure_theory.simple_func.supr_approx_apply MeasureTheory.SimpleFunc.iSup_approx_apply
 
@@ -911,12 +911,12 @@ theorem monotone_eapprox (f : α → ℝ≥0∞) : Monotone (eapprox f) :=
 theorem iSup_eapprox_apply (f : α → ℝ≥0∞) (hf : Measurable f) (a : α) :
     ⨆ n, (eapprox f n : α →ₛ ℝ≥0∞) a = f a := by
   rw [eapprox, iSup_approx_apply ennrealRatEmbed f a hf rfl]
-  refine' le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt _)
+  refine le_antisymm (iSup_le fun i => iSup_le fun hi => hi) (le_of_not_gt ?_)
   intro h
   rcases ENNReal.lt_iff_exists_rat_btwn.1 h with ⟨q, _, lt_q, q_lt⟩
   have :
     (Real.toNNReal q : ℝ≥0∞) ≤ ⨆ (k : ℕ) (_ : ennrealRatEmbed k ≤ f a), ennrealRatEmbed k := by
-    refine' le_iSup_of_le (Encodable.encode q) _
+    refine le_iSup_of_le (Encodable.encode q) ?_
     rw [ennrealRatEmbed_encode q]
     exact le_iSup_of_le (le_of_lt q_lt) le_rfl
   exact lt_irrefl _ (lt_of_le_of_lt this lt_q)
@@ -1241,7 +1241,7 @@ protected theorem mul {β} [MonoidWithZero β] {f g : α →ₛ β} (hf : f.FinM
 
 theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf : ∀ᵐ a ∂μ, f a ≠ ∞) :
     f.lintegral μ < ∞ := by
-  refine' sum_lt_top fun a ha => _
+  refine sum_lt_top fun a ha => ?_
   rcases eq_or_ne a ∞ with (rfl | ha)
   · simp only [ae_iff, Ne, Classical.not_not] at hf
     simp [Set.preimage, hf]
@@ -1252,9 +1252,9 @@ theorem lintegral_lt_top {f : α →ₛ ℝ≥0∞} (hm : f.FinMeasSupp μ) (hf 
 #align measure_theory.simple_func.fin_meas_supp.lintegral_lt_top MeasureTheory.SimpleFunc.FinMeasSupp.lintegral_lt_top
 
 theorem of_lintegral_ne_top {f : α →ₛ ℝ≥0∞} (h : f.lintegral μ ≠ ∞) : f.FinMeasSupp μ := by
-  refine' finMeasSupp_iff.2 fun b hb => _
+  refine finMeasSupp_iff.2 fun b hb => ?_
   rw [f.lintegral_eq_of_subset' (Finset.subset_insert b _)] at h
-  refine' ENNReal.lt_top_of_mul_ne_top_right _ hb
+  refine ENNReal.lt_top_of_mul_ne_top_right ?_ hb
   exact (lt_top_of_sum_ne_top h (Finset.mem_insert_self _ _)).ne
 #align measure_theory.simple_func.fin_meas_supp.of_lintegral_ne_top MeasureTheory.SimpleFunc.FinMeasSupp.of_lintegral_ne_top
 

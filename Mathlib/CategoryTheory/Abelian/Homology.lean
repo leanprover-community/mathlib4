@@ -349,7 +349,7 @@ noncomputable def homology'FunctorIso (i : ι) :
       intro X Y f
       dsimp
       rw [← Iso.inv_comp_eq, ← Category.assoc, ← Iso.eq_comp_inv]
-      refine' coequalizer.hom_ext _
+      refine coequalizer.hom_ext ?_
       dsimp [homology'Iso]
       simp only [PreservesCokernel.iso_inv]
       dsimp [homology'.map]

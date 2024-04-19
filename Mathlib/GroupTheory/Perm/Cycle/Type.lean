@@ -591,7 +591,7 @@ theorem card_support (h : IsThreeCycle σ) : σ.support.card = 3 := by
 #align equiv.perm.is_three_cycle.card_support Equiv.Perm.IsThreeCycle.card_support
 
 theorem _root_.card_support_eq_three_iff : σ.support.card = 3 ↔ σ.IsThreeCycle := by
-  refine' ⟨fun h => _, IsThreeCycle.card_support⟩
+  refine ⟨fun h => ?_, IsThreeCycle.card_support⟩
   by_cases h0 : σ.cycleType = 0
   · rw [← sum_cycleType, h0, sum_zero] at h
     exact (ne_of_lt zero_lt_three h).elim

@@ -207,7 +207,7 @@ protected theorem induction_on' {motive : (⨂[R] i, s i) → Prop} (z : ⨂[R] 
   have C0 : motive 0 := by
     have h₁ := tprodCoeff 0 0
     rwa [zero_tprodCoeff] at h₁
-  refine' AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 _
+  refine AddCon.induction_on z fun x ↦ FreeAddMonoid.recOn x C0 ?_
   simp_rw [AddCon.coe_add]
   refine' fun f y ih ↦ add _ _ _ ih
   convert tprodCoeff f.1 f.2

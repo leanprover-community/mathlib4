@@ -366,8 +366,8 @@ variable {R S R' S'}
 theorem Algebra.IsPushout.symm (h : Algebra.IsPushout R S R' S') : Algebra.IsPushout R R' S S' := by
   let _ := (Algebra.TensorProduct.includeRight : R' →ₐ[R] S ⊗ R').toRingHom.toAlgebra
   let e : R' ⊗[R] S ≃ₗ[R'] S' := by
-    refine' { (_root_.TensorProduct.comm R R' S).trans <|
-      h.1.equiv.restrictScalars R with map_smul' := _ }
+    refine { (_root_.TensorProduct.comm R R' S).trans <|
+      h.1.equiv.restrictScalars R with map_smul' := ?_ }
     intro r x
     change
       h.1.equiv (TensorProduct.comm R R' S (r • x)) = r • h.1.equiv (TensorProduct.comm R R' S x)

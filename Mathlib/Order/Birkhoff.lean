@@ -189,7 +189,7 @@ noncomputable def OrderIso.lowerSetSupIrred : α ≃o LowerSet {a : α // SupIrr
     { toFun := fun a ↦ ⟨{b | ↑b ≤ a}, fun b c hcb hba ↦ hba.trans' hcb⟩
       invFun := fun s ↦ (s : Set {a : α // SupIrred a}).toFinset.sup (↑)
       left_inv := fun a ↦ by
-        refine' le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) _
+        refine le_antisymm (Finset.sup_le fun b ↦ Set.mem_toFinset.1) ?_
         obtain ⟨s, rfl, hs⟩ := exists_supIrred_decomposition a
         exact Finset.sup_le fun i hi ↦
           le_sup_of_le (b := ⟨i, hs hi⟩) (Set.mem_toFinset.2 <| le_sup (f := id) hi) le_rfl

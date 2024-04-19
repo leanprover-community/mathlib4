@@ -253,7 +253,7 @@ theorem norm_eq_iInf_iff_real_inner_le_zero {K : Set F} (h : Convex ℝ K) {u : 
         ‖u - v‖ * ‖u - v‖ ≤ ‖u - v‖ * ‖u - v‖ - 2 * inner (u - v) ((w : F) - v) := by linarith
         _ ≤ ‖u - v‖ ^ 2 - 2 * inner (u - v) ((w : F) - v) + ‖(w : F) - v‖ ^ 2 := by
           rw [sq]
-          refine' le_add_of_nonneg_right _
+          refine le_add_of_nonneg_right ?_
           exact sq_nonneg _
         _ = ‖u - v - (w - v)‖ ^ 2 := (@norm_sub_sq ℝ _ _ _ _ _ _).symm
         _ = ‖u - w‖ * ‖u - w‖ := by
@@ -745,7 +745,7 @@ theorem reflection_singleton_apply (u v : E) :
 theorem reflection_eq_self_iff (x : E) : reflection K x = x ↔ x ∈ K := by
   rw [← orthogonalProjection_eq_self_iff, reflection_apply, sub_eq_iff_eq_add', ← two_smul 𝕜,
     two_smul ℕ, ← two_smul 𝕜]
-  refine' (smul_right_injective E _).eq_iff
+  refine (smul_right_injective E ?_).eq_iff
   exact two_ne_zero
 #align reflection_eq_self_iff reflection_eq_self_iff
 
@@ -941,7 +941,7 @@ theorem orthogonalProjection_tendsto_closure_iSup [CompleteSpace E] {ι : Type*}
   obtain ⟨I, hI⟩ : ∃ I, a ∈ U I := by rwa [Submodule.mem_iSup_of_directed _ hU.directed_le] at ha
   refine ⟨I, fun i (hi : I ≤ i) => ?_⟩
   rw [norm_sub_rev, orthogonalProjection_minimal]
-  refine' lt_of_le_of_lt _ hay
+  refine lt_of_le_of_lt ?_ hay
   change _ ≤ ‖y - (⟨a, hU hi hI⟩ : U i)‖
   exact ciInf_le ⟨0, Set.forall_mem_range.mpr fun _ => norm_nonneg _⟩ _
 #align orthogonal_projection_tendsto_closure_supr orthogonalProjection_tendsto_closure_iSup
@@ -1210,7 +1210,7 @@ theorem LinearIsometryEquiv.reflections_generate_dim_aux [FiniteDimensional ℝ 
       intro w hw
       apply hV
       rw [hW w hw]
-      refine' reflection_mem_subspace_eq_self _
+      refine reflection_mem_subspace_eq_self ?_
       rw [Submodule.mem_orthogonal_singleton_iff_inner_left]
       exact Submodule.sub_mem _ v.prop hφv _ hw
     -- `v` is also fixed by `φ.trans ρ`
@@ -1401,7 +1401,7 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
       cases' eq_or_mem_of_mem_insert ha' with ha ha
       · rintro ⟨b, hb'⟩ hab'
         have hb : b ∈ v := by
-          refine' mem_of_mem_insert_of_ne hb' _
+          refine mem_of_mem_insert_of_ne hb' ?_
           intro hbe'
           apply hab'
           simp [ha, hbe']

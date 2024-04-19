@@ -307,7 +307,7 @@ variable {G : Type*} [Group G] [TopologicalSpace G] [ContinuousMul G] (H : Subgr
 
 @[to_additive]
 theorem isOpen_of_mem_nhds {g : G} (hg : (H : Set G) ∈ 𝓝 g) : IsOpen (H : Set G) := by
-  refine' isOpen_iff_mem_nhds.2 fun x hx => _
+  refine isOpen_iff_mem_nhds.2 fun x hx => ?_
   have hg' : g ∈ H := SetLike.mem_coe.1 (mem_of_mem_nhds hg)
   have : Filter.Tendsto (fun y => y * (x⁻¹ * g)) (𝓝 x) (𝓝 g) :=
     (continuous_id.mul continuous_const).tendsto' _ _ (mul_inv_cancel_left _ _)

@@ -117,7 +117,7 @@ theorem encard_insert_of_not_mem {a : α} (has : a ∉ s) : (insert a s).encard 
   rw [← union_singleton, encard_union_eq (by simpa), encard_singleton]
 
 theorem Finite.encard_lt_top (h : s.Finite) : s.encard < ⊤ := by
-  refine' h.induction_on (by simp) _
+  refine h.induction_on (by simp) ?_
   rintro a t hat _ ht'
   rw [encard_insert_of_not_mem hat]
   exact lt_tsub_iff_right.1 ht'
@@ -288,7 +288,7 @@ theorem encard_pair {x y : α} (hne : x ≠ y) : ({x, y} : Set α).encard = 2 :=
     WithTop.add_right_cancel_iff WithTop.one_ne_top, encard_singleton]
 
 theorem encard_eq_one : s.encard = 1 ↔ ∃ x, s = {x} := by
-  refine' ⟨fun h ↦ _, fun ⟨x, hx⟩ ↦ by rw [hx, encard_singleton]⟩
+  refine ⟨fun h ↦ ?_, fun ⟨x, hx⟩ ↦ by rw [hx, encard_singleton]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
   exact ⟨x, ((finite_singleton x).eq_of_subset_of_encard_le' (by simpa) (by simp [h])).symm⟩
 
@@ -313,7 +313,7 @@ theorem exists_ne_of_one_lt_encard (h : 1 < s.encard) (a : α) : ∃ b ∈ s, b 
   rw [h' b hb, h' b' hb']
 
 theorem encard_eq_two : s.encard = 2 ↔ ∃ x y, x ≠ y ∧ s = {x, y} := by
-  refine' ⟨fun h ↦ _, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
+  refine ⟨fun h ↦ ?_, fun ⟨x, y, hne, hs⟩ ↦ by rw [hs, encard_pair hne]⟩
   obtain ⟨x, hx⟩ := nonempty_of_encard_ne_zero (s := s) (by rw [h]; simp)
   rw [← insert_eq_of_mem hx, ← insert_diff_singleton, encard_insert_of_not_mem (fun h ↦ h.2 rfl),
     ← one_add_one_eq_two, WithTop.add_right_cancel_iff (WithTop.one_ne_top), encard_eq_one] at h
@@ -998,7 +998,7 @@ theorem exists_subset_or_subset_of_two_mul_lt_ncard {n : ℕ} (hst : 2 * n < (s 
 /-! ### Explicit description of a set from its cardinality -/
 
 @[simp] theorem ncard_eq_one : s.ncard = 1 ↔ ∃ a, s = {a} := by
-  refine' ⟨fun h ↦ _, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
+  refine ⟨fun h ↦ ?_, by rintro ⟨a, rfl⟩; rw [ncard_singleton]⟩
   have hft := (finite_of_ncard_ne_zero (ne_zero_of_eq_one h)).fintype
   simp_rw [ncard_eq_toFinset_card', @Finset.card_eq_one _ (toFinset s)] at h
   refine h.imp fun a ha ↦ ?_

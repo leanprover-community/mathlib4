@@ -133,7 +133,7 @@ theorem integrable_exp_neg_mul_sq {b : ℝ} (hb : 0 < b) : Integrable fun x : �
 
 theorem integrableOn_Ioi_exp_neg_mul_sq_iff {b : ℝ} :
     IntegrableOn (fun x : ℝ => exp (-b * x ^ 2)) (Ioi 0) ↔ 0 < b := by
-  refine' ⟨fun h => _, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
+  refine ⟨fun h => ?_, fun h => (integrable_exp_neg_mul_sq h).integrableOn⟩
   by_contra! hb
   have : ∫⁻ _ : ℝ in Ioi 0, 1 ≤ ∫⁻ x : ℝ in Ioi 0, ‖exp (-b * x ^ 2)‖₊ := by
     apply lintegral_mono (fun x ↦ _)
@@ -241,7 +241,7 @@ theorem integral_gaussian (b : ℝ) : ∫ x : ℝ, exp (-b * x ^ 2) = √(π / b
     · exact div_nonpos_of_nonneg_of_nonpos pi_pos.le hb
     · simpa only [not_lt, integrable_exp_neg_mul_sq_iff] using hb
   -- Assume now `b > 0`. Then both sides are non-negative and their squares agree.
-  refine' (sq_eq_sq (by positivity) (by positivity)).1 _
+  refine (sq_eq_sq (by positivity) (by positivity)).1 ?_
   rw [← ofReal_inj, ofReal_pow, ← coe_algebraMap, RCLike.algebraMap_eq_ofReal, ← integral_ofReal,
     sq_sqrt (div_pos pi_pos hb).le, ← RCLike.algebraMap_eq_ofReal, coe_algebraMap, ofReal_div]
   convert integral_gaussian_sq_complex (by rwa [ofReal_re] : 0 < (b : ℂ).re) with _ x
@@ -277,9 +277,9 @@ theorem integral_gaussian_complex {b : ℂ} (hb : 0 < re b) :
   · -- integral is continuous
     exact ContinuousAt.continuousOn continuousAt_gaussian_integral
   · -- `(π / b) ^ (1 / 2 : ℂ)` is continuous
-    refine'
+    refine
       ContinuousAt.continuousOn fun b hb =>
-        (continuousAt_cpow_const (Or.inl _)).comp (continuousAt_const.div continuousAt_id (nv hb))
+        (continuousAt_cpow_const (Or.inl ?_)).comp (continuousAt_const.div continuousAt_id (nv hb))
     rw [div_re, ofReal_im, ofReal_re, zero_mul, zero_div, add_zero]
     exact div_pos (mul_pos pi_pos hb) (normSq_pos.mpr (nv hb))
   · -- equality at 1
@@ -354,7 +354,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
-    refine' setIntegral_congr measurableSet_Ioi fun x hx => _
+    refine setIntegral_congr measurableSet_Ioi fun x hx => ?_
     dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]

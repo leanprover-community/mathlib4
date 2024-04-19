@@ -417,7 +417,7 @@ theorem adjoin_adjoin_left (T : Set E) :
   · exact subset_adjoin_of_subset_right _ _ (Set.subset_union_right _ _)
 -- Porting note: orginal proof times out
   · rintro x ⟨f, rfl⟩
-    refine' Subfield.subset_closure _
+    refine Subfield.subset_closure ?_
     left
     exact ⟨f, rfl⟩
 -- Porting note: orginal proof times out
@@ -898,7 +898,7 @@ theorem exists_finset_of_mem_supr'' {ι : Type*} {f : ι → IntermediateField F
     (h : ∀ i, Algebra.IsAlgebraic F (f i)) {x : E} (hx : x ∈ ⨆ i, f i) :
     ∃ s : Finset (Σ i, f i), x ∈ ⨆ i ∈ s, adjoin F ((minpoly F (i.2 : _)).rootSet E) := by
 -- Porting note: writing `fun i x1 hx1 => ...` does not work.
-  refine' exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => _)) hx)
+  refine exists_finset_of_mem_iSup (SetLike.le_def.mp (iSup_le (fun i => ?_)) hx)
   intro x1 hx1
   refine' SetLike.le_def.mp (le_iSup_of_le ⟨i, x1, hx1⟩ _)
     (subset_adjoin F (rootSet (minpoly F x1) E) _)

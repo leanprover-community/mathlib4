@@ -267,7 +267,7 @@ theorem countable_not_continuousAt [SecondCountableTopology β] :
   apply
     (hf.countable_not_continuousWithinAt_Ioi.union hf.countable_not_continuousWithinAt_Iio).mono
       _
-  refine' compl_subset_compl.1 _
+  refine compl_subset_compl.1 ?_
   simp only [compl_union]
   rintro x ⟨hx, h'x⟩
   simp only [mem_setOf_eq, Classical.not_not, mem_compl_iff] at hx h'x ⊢

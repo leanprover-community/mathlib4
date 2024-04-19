@@ -153,7 +153,7 @@ theorem isCompact_basicOpen (X : Scheme) {U : Opens X.carrier} (hU : IsCompact (
         (Set.mem_range_self ⟨i, hi⟩))
   · rintro ⟨i, hi⟩ ⟨⟨j, hj⟩, hj'⟩
     rw [← hj']
-    refine' Set.Subset.trans _ (Set.subset_iUnion₂ j hj)
+    refine Set.Subset.trans ?_ (Set.subset_iUnion₂ j hj)
     exact Set.Subset.rfl
 #align algebraic_geometry.is_compact_basic_open AlgebraicGeometry.isCompact_basicOpen
 

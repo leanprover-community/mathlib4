@@ -334,7 +334,7 @@ theorem opNorm_le_of_shell' {f : E →SL[σ₁₂] F} {ε C : ℝ} (ε_pos : 0 <
     · simp [h0]
     · rwa [ball_zero_eq] at hx
   · rw [← inv_inv c, norm_inv, inv_lt_one_iff_of_pos (norm_pos_iff.2 <| inv_ne_zero h0)] at hc
-    refine' opNorm_le_of_shell ε_pos hC hc _
+    refine opNorm_le_of_shell ε_pos hC hc ?_
     rwa [norm_inv, div_eq_mul_inv, inv_inv]
 #align continuous_linear_map.op_norm_le_of_shell' ContinuousLinearMap.opNorm_le_of_shell'
 
@@ -346,7 +346,7 @@ alias op_norm_le_of_shell' :=
 one controls the norm of `f`. -/
 theorem opNorm_le_of_unit_norm [NormedSpace ℝ E] [NormedSpace ℝ F] {f : E →L[ℝ] F} {C : ℝ}
     (hC : 0 ≤ C) (hf : ∀ x, ‖x‖ = 1 → ‖f x‖ ≤ C) : ‖f‖ ≤ C := by
-  refine' opNorm_le_bound' f hC fun x hx => _
+  refine opNorm_le_bound' f hC fun x hx => ?_
   have H₁ : ‖‖x‖⁻¹ • x‖ = 1 := by rw [norm_smul, norm_inv, norm_norm, inv_mul_cancel hx]
   have H₂ := hf _ H₁
   rwa [map_smul, norm_smul, norm_inv, norm_norm, ← div_eq_inv_mul, _root_.div_le_iff] at H₂

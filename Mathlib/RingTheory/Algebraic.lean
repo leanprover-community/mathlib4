@@ -66,7 +66,7 @@ theorem Subalgebra.isAlgebraic_iff (S : Subalgebra R A) :
     S.IsAlgebraic ↔ @Algebra.IsAlgebraic R S _ _ S.algebra := by
   delta Algebra.IsAlgebraic Subalgebra.IsAlgebraic
   rw [Subtype.forall']
-  refine' forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl _
+  refine forall_congr' fun x => exists_congr fun p => and_congr Iff.rfl ?_
   have h : Function.Injective S.val := Subtype.val_injective
   conv_rhs => rw [← h.eq_iff, AlgHom.map_zero]
   rw [← aeval_algHom_apply, S.val_apply]
@@ -462,7 +462,7 @@ theorem Subalgebra.inv_mem_of_algebraic {x : A} (hx : _root_.IsAlgebraic K (x : 
   · intro h
     contradiction
   · intro p a hp ha _ih _ne_zero aeval_eq
-    refine' A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq _
+    refine A.inv_mem_of_root_of_coeff_zero_ne_zero aeval_eq ?_
     rwa [coeff_add, hp, zero_add, coeff_C, if_pos rfl]
   · intro p hp ih _ne_zero aeval_eq
     rw [AlgHom.map_mul, aeval_X, mul_eq_zero] at aeval_eq

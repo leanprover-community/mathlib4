@@ -91,7 +91,7 @@ theorem bernoulli'_spec (n : ℕ) :
 theorem bernoulli'_spec' (n : ℕ) :
     (∑ k in antidiagonal n, ((k.1 + k.2).choose k.2 : ℚ) / (k.2 + 1) * bernoulli' k.1) = 1 := by
   refine' ((sum_antidiagonal_eq_sum_range_succ_mk _ n).trans _).trans (bernoulli'_spec n)
-  refine' sum_congr rfl fun x hx => _
+  refine sum_congr rfl fun x hx => ?_
   simp only [add_tsub_cancel_of_le, mem_range_succ_iff.mp hx, cast_sub]
 #align bernoulli'_spec' bernoulli'_spec'
 
@@ -143,7 +143,7 @@ theorem sum_bernoulli' (n : ℕ) : (∑ k in range n, (n.choose k : ℚ) * berno
     rw_mod_cast [sum_range_succ, bernoulli'_def, ← this, choose_succ_self_right]
     ring
   simp_rw [mul_sum, ← mul_assoc]
-  refine' sum_congr rfl fun k hk => _
+  refine sum_congr rfl fun k hk => ?_
   congr
   have : ((n - k : ℕ) : ℚ) + 1 ≠ 0 := by norm_cast; exact succ_ne_zero _
   field_simp [← cast_sub (mem_range.1 hk).le, mul_comm]
@@ -289,7 +289,7 @@ theorem bernoulliPowerSeries_mul_exp_sub_one : bernoulliPowerSeries A * (exp A -
   have hite2 : ite (n.succ = 0) 1 0 = (0 : ℚ) := if_neg n.succ_ne_zero
   simp only [CharP.cast_eq_zero, zero_add, inv_one, map_one, sub_self, mul_zero, add_eq]
   rw [← map_zero (algebraMap ℚ A), ← zero_div (n.succ ! : ℚ), ← hite2, ← bernoulli_spec', sum_div]
-  refine' congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) _)
+  refine congr_arg (algebraMap ℚ A) (sum_congr rfl fun x h => eq_div_of_mul_eq (hfact n.succ) ?_)
   rw [mem_antidiagonal] at h
   rw [← h, add_choose, cast_div_charZero (factorial_mul_factorial_dvd_factorial_add _ _)]
   field_simp [hfact x.1, mul_comm _ (bernoulli x.1), mul_assoc]

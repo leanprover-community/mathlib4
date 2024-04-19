@@ -193,7 +193,7 @@ theorem tsum_meas_le_meas_iUnion_of_disjoint₀ {ι : Type*} [MeasurableSpace α
     (As_disj : Pairwise (AEDisjoint μ on As)) : (∑' i, μ (As i)) ≤ μ (⋃ i, As i) := by
   rcases show Summable fun i => μ (As i) from ENNReal.summable with ⟨S, hS⟩
   rw [hS.tsum_eq]
-  refine' tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall _)
+  refine tendsto_le_of_eventuallyLE hS tendsto_const_nhds (eventually_of_forall ?_)
   intro s
   simp only [← measure_biUnion_finset₀ (fun _i _hi _j _hj hij => As_disj hij) fun i _ => As_mble i]
   exact measure_mono (iUnion₂_subset_iUnion (fun i : ι => i ∈ s) fun i : ι => As i)
@@ -344,7 +344,7 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
       μ (⋃ b, s b) = ∞ := top_unique (hb ▸ (h_le b).trans <| measure_mono <| subset_iUnion _ _)
       _ = μ (⋃ b, t b) := Eq.symm <| top_unique <| hb ▸ measure_mono (subset_iUnion _ _)
   push_neg at htop
-  refine' le_antisymm (measure_mono (iUnion_mono hsub)) _
+  refine le_antisymm (measure_mono (iUnion_mono hsub)) ?_
   set M := toMeasurable μ
   have H : ∀ b, (M (t b) ∩ M (⋃ b, s b) : Set α) =ᵐ[μ] M (t b) := by
     refine' fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) _ _ _
@@ -930,7 +930,7 @@ theorem ae_smul_measure_iff {p : α → Prop} {c : ℝ≥0∞} (hc : c ≠ 0) :
 
 theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν) t ≠ ∞) (h' : s ⊆ t)
     (h'' : (μ + ν) s = (μ + ν) t) : μ s = μ t := by
-  refine' le_antisymm (measure_mono h') _
+  refine le_antisymm (measure_mono h') ?_
   have : μ t + ν t ≤ μ s + ν t :=
     calc
       μ t + ν t = μ s + ν s := h''.symm
@@ -1014,7 +1014,7 @@ variable {m : Set (Measure α)}
 theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.sInf_eq_boundedBy_sInfGen]
-  refine' OuterMeasure.boundedBy_caratheodory fun t => _
+  refine OuterMeasure.boundedBy_caratheodory fun t => ?_
   simp only [OuterMeasure.sInfGen, le_iInf_iff, forall_mem_image,
     measure_eq_iInf t]
   intro μ hμ u htu _hu
@@ -2107,7 +2107,7 @@ open MeasureTheory Measure
 variable {m0 : MeasurableSpace α} {m1 : MeasurableSpace β} {f : α → β} (hf : MeasurableEmbedding f)
 
 nonrec theorem map_apply (μ : Measure α) (s : Set β) : μ.map f s = μ (f ⁻¹' s) := by
-  refine' le_antisymm _ (le_map_apply hf.measurable.aemeasurable s)
+  refine le_antisymm ?_ (le_map_apply hf.measurable.aemeasurable s)
   set t := f '' toMeasurable μ (f ⁻¹' s) ∪ (range f)ᶜ
   have htm : MeasurableSet t :=
     (hf.measurableSet_image.2 <| measurableSet_toMeasurable _ _).union

@@ -139,7 +139,7 @@ theorem mdifferentiableWithinAt_iff {f : M → M'} {s : Set M} {x : M} :
       ContinuousWithinAt f s x ∧
         DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
           ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' s) ((extChartAt I x) x) := by
-  refine' and_congr Iff.rfl (exists_congr fun f' => _)
+  refine and_congr Iff.rfl (exists_congr fun f' => ?_)
   rw [inter_comm]
   simp only [HasFDerivWithinAt, nhdsWithin_inter, nhdsWithin_extChartAt_target_eq]
 #align mdifferentiable_within_at_iff mdifferentiableWithinAt_iff

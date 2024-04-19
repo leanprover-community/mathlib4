@@ -118,7 +118,7 @@ theorem bertrand_main_inequality {n : ℕ} (n_large : 512 ≤ n) :
     n * (2 * n) ^ sqrt (2 * n) * 4 ^ (2 * n / 3) ≤ 4 ^ n := by
   rw [← @cast_le ℝ]
   simp only [cast_add, cast_one, cast_mul, cast_pow, ← Real.rpow_natCast]
-  refine' _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
+  refine _root_.trans ?_ (Bertrand.real_main_inequality (by exact_mod_cast n_large))
   gcongr
   · have n2_pos : 0 < 2 * n := by positivity
     exact mod_cast n2_pos
@@ -133,7 +133,7 @@ factorization of the central binomial coefficent only has factors at most `2 * n
 theorem centralBinom_factorization_small (n : ℕ) (n_large : 2 < n)
     (no_prime : ¬∃ p : ℕ, p.Prime ∧ n < p ∧ p ≤ 2 * n) :
     centralBinom n = ∏ p in Finset.range (2 * n / 3 + 1), p ^ (centralBinom n).factorization p := by
-  refine' (Eq.trans _ n.prod_pow_factorization_centralBinom).symm
+  refine (Eq.trans ?_ n.prod_pow_factorization_centralBinom).symm
   apply Finset.prod_subset
   · exact Finset.range_subset.2 (add_le_add_right (Nat.div_le_self _ _) _)
   intro x hx h2x
@@ -172,13 +172,13 @@ theorem centralBinom_le_of_no_bertrand_prime (n : ℕ) (n_large : 2 < n)
     · exact pow_factorization_choose_le (mul_pos two_pos n_pos)
     have : (Finset.Icc 1 (sqrt (2 * n))).card = sqrt (2 * n) := by rw [card_Icc, Nat.add_sub_cancel]
     rw [Finset.prod_const]
-    refine' pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => _).trans this.le)
+    refine pow_le_pow_right n2_pos ((Finset.card_le_card fun x hx => ?_).trans this.le)
     obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hx
     exact Finset.mem_Icc.mpr ⟨(Finset.mem_filter.1 h1).2.one_lt.le, h2⟩
   · refine' le_trans _ (primorial_le_4_pow (2 * n / 3))
     refine' (Finset.prod_le_prod' fun p hp => (_ : f p ≤ p)).trans _
     · obtain ⟨h1, h2⟩ := Finset.mem_filter.1 hp
-      refine' (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le _).trans (pow_one p).le
+      refine (pow_le_pow_right (Finset.mem_filter.1 h1).2.one_lt.le ?_).trans (pow_one p).le
       exact Nat.factorization_choose_le_one (sqrt_lt'.mp <| not_le.1 h2)
     refine' Finset.prod_le_prod_of_subset_of_one_le' (Finset.filter_subset _ _) _
     exact fun p hp _ => (Finset.mem_filter.1 hp).2.one_lt.le

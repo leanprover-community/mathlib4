@@ -63,7 +63,7 @@ theorem mem_closure_ne_iff_frequently_within {z : α} {s : Set α} :
 @[simp]
 theorem eventually_nhdsWithin_nhdsWithin {a : α} {s : Set α} {p : α → Prop} :
     (∀ᶠ y in 𝓝[s] a, ∀ᶠ x in 𝓝[s] y, p x) ↔ ∀ᶠ x in 𝓝[s] a, p x := by
-  refine' ⟨fun h => _, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
+  refine ⟨fun h => ?_, fun h => (eventually_nhds_nhdsWithin.2 h).filter_mono inf_le_left⟩
   simp only [eventually_nhdsWithin_iff] at h ⊢
   exact h.mono fun x hx hxs => (hx hxs).self_of_nhds hxs
 #align eventually_nhds_within_nhds_within eventually_nhdsWithin_nhdsWithin
@@ -1007,7 +1007,7 @@ theorem Set.LeftInvOn.map_nhdsWithin_eq {f : α → β} {g : β → α} {x : β}
   · exact hg.tendsto_nhdsWithin (mapsTo_image _ _)
   · have A : g ∘ f =ᶠ[𝓝[g '' s] g x] id :=
       h.rightInvOn_image.eqOn.eventuallyEq_of_mem self_mem_nhdsWithin
-    refine' le_map_of_right_inverse A _
+    refine le_map_of_right_inverse A ?_
     simpa only [hx] using hf.tendsto_nhdsWithin (h.mapsTo (surjOn_image _ _))
 #align set.left_inv_on.map_nhds_within_eq Set.LeftInvOn.map_nhdsWithin_eq
 

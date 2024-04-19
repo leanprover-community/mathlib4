@@ -1063,7 +1063,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
   · rintro i j hij
     -- use free_group unit ≃ ℤ
-    refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
+    refine FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr ?_
     intro n hne1
     change FreeGroup.lift (fun _ => a i) (FreeGroup.of () ^ n) • X' j ⊆ X' i
     simp only [map_zpow, FreeGroup.lift.of]

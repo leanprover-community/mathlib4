@@ -82,7 +82,7 @@ theorem cyclotomic_pos {n : ℕ} (hn : 2 < n) {R} [LinearOrderedCommRing R] (x :
   · apply pos_of_mul_pos_left
     · rwa [this]
     rw [eval_prod]
-    refine' Finset.prod_nonneg fun i hi => _
+    refine Finset.prod_nonneg fun i hi => ?_
     simp only [Finset.mem_erase, mem_properDivisors] at hi
     rw [geom_sum_pos_iff hn'.ne'] at h
     cases' h with hk hx
@@ -311,7 +311,7 @@ theorem sub_one_pow_totient_lt_natAbs_cyclotomic_eval {n : ℕ} {q : ℕ} (hn' :
       Int.natAbs_ne_zero, Nat.cast_zero, ← coeff_zero_eq_eval_zero, cyclotomic_coeff_zero _ hn']
     exact one_ne_zero
   rw [← @Nat.cast_lt ℝ, Nat.cast_pow, Nat.cast_sub hq'.le, Nat.cast_one, Int.cast_natAbs]
-  refine' (sub_one_pow_totient_lt_cyclotomic_eval hn' (Nat.one_lt_cast.2 hq')).trans_le _
+  refine (sub_one_pow_totient_lt_cyclotomic_eval hn' (Nat.one_lt_cast.2 hq')).trans_le ?_
   convert (cyclotomic.eval_apply (q : ℤ) n (algebraMap ℤ ℝ)).trans_le (le_abs_self _)
   simp
 #align polynomial.sub_one_pow_totient_lt_nat_abs_cyclotomic_eval Polynomial.sub_one_pow_totient_lt_natAbs_cyclotomic_eval

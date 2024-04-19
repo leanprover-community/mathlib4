@@ -292,13 +292,13 @@ instance : MetricSpace ℍ :=
         Continuous.dist, continuous_coe.comp, continuous_fst, continuous_snd,
         Real.continuous_sqrt.comp, continuous_im.comp]
     · letI : MetricSpace ℍ := metricSpaceAux
-      refine' le_of_nhds_le_nhds fun z => _
+      refine le_of_nhds_le_nhds fun z => ?_
       rw [nhds_induced]
       refine' (nhds_basis_ball.le_basis_iff (nhds_basis_ball.comap _)).2 fun R hR => _
       have h₁ : 1 < R / im z + 1 := lt_add_of_pos_left _ (div_pos hR z.im_pos)
       have h₀ : 0 < R / im z + 1 := one_pos.trans h₁
       refine' ⟨log (R / im z + 1), Real.log_pos h₁, _⟩
-      refine' fun w hw => (dist_coe_le w z).trans_lt _
+      refine fun w hw => (dist_coe_le w z).trans_lt ?_
       rwa [← lt_div_iff' z.im_pos, sub_lt_iff_lt_add, ← Real.lt_log_iff_exp_lt h₀]
 
 theorem im_pos_of_dist_center_le {z : ℍ} {r : ℝ} {w : ℂ}
@@ -346,7 +346,7 @@ instance : ProperSpace ℍ := by
   apply isCompact_closedBall
 
 theorem isometry_vertical_line (a : ℝ) : Isometry fun y => mk ⟨a, exp y⟩ (exp_pos y) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   rw [dist_of_re_eq]
   exacts [congr_arg₂ _ (log_exp _) (log_exp _), rfl]
 #align upper_half_plane.isometry_vertical_line UpperHalfPlane.isometry_vertical_line
@@ -356,7 +356,7 @@ theorem isometry_real_vadd (a : ℝ) : Isometry (a +ᵥ · : ℍ → ℍ) :=
 #align upper_half_plane.isometry_real_vadd UpperHalfPlane.isometry_real_vadd
 
 theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ → ℍ) := by
-  refine' Isometry.of_dist_eq fun y₁ y₂ => _
+  refine Isometry.of_dist_eq fun y₁ y₂ => ?_
   simp only [dist_eq, coe_pos_real_smul, pos_real_im]; congr 2
   rw [dist_smul₀, mul_mul_mul_comm, Real.sqrt_mul (mul_self_nonneg _), Real.sqrt_mul_self_eq_abs,
     Real.norm_eq_abs, mul_left_comm]

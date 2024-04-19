@@ -63,7 +63,7 @@ theorem eq_bot_of_generator_maximal_map_eq_zero (b : Basis ι R M) {N : Submodul
     (hgen : generator (N.map ϕ) = (0 : R)) : N = ⊥ := by
   rw [Submodule.eq_bot_iff]
   intro x hx
-  refine' b.ext_elem fun i ↦ _
+  refine b.ext_elem fun i ↦ ?_
   rw [(eq_bot_iff_generator_eq_zero _).mpr hgen] at hϕ
   rw [LinearEquiv.map_zero, Finsupp.zero_apply]
   exact
@@ -121,7 +121,7 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
   have d_dvd_left : d ∣ a := (mem_iff_generator_dvd _).mp (subset_span (mem_insert _ _))
   have d_dvd_right : d ∣ ψ ⟨y, hNO yN⟩ :=
     (mem_iff_generator_dvd _).mp (subset_span (mem_insert_of_mem _ (mem_singleton _)))
-  refine' dvd_trans _ d_dvd_right
+  refine dvd_trans ?_ d_dvd_right
   rw [dvd_generator_iff, Ideal.span, ←
     span_singleton_generator (Submodule.span R {a, ψ ⟨y, hNO yN⟩})]
   obtain ⟨r₁, r₂, d_eq⟩ : ∃ r₁ r₂ : R, d = r₁ * a + r₂ * ψ ⟨y, hNO yN⟩ := by
@@ -135,8 +135,8 @@ theorem generator_maximal_submoduleImage_dvd {N O : Submodule R M} (hNO : N ≤ 
     refine ⟨y, yN, ?_⟩
     change r₁ * ϕ ⟨y, hNO yN⟩ + r₂ * ψ ⟨y, hNO yN⟩ = d
     rw [d_eq, ϕy_eq]
-  refine'
-    le_antisymm (this.trans (le_of_eq _)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
+  refine
+    le_antisymm (this.trans (le_of_eq ?_)) (Ideal.span_singleton_le_span_singleton.mpr d_dvd_left)
   rw [span_singleton_generator]
   apply (le_trans _ this).eq_of_not_gt (hϕ ψ')
   rw [← span_singleton_generator (ϕ.submoduleImage N)]
@@ -242,13 +242,13 @@ theorem Submodule.basis_of_pid_aux [Finite ι] {O : Type*} [AddCommGroup O] [Mod
   -- And `a • y'` is orthogonal to `N'`.
   have ay'_ortho_N' : ∀ (c : R), ∀ z ∈ N', c • a • y' + z = 0 → c = 0 := by
     intro c z zN' hc
-    refine' (mul_eq_zero.mp (y'_ortho_M' (a * c) z (N'_le_M' zN') _)).resolve_left a_zero
+    refine (mul_eq_zero.mp (y'_ortho_M' (a * c) z (N'_le_M' zN') ?_)).resolve_left a_zero
     rw [mul_comm, mul_smul, hc]
   -- So we can extend a basis for `N'` with `y`
   refine' ⟨y'_ortho_M', ay'_ortho_N', fun n' bN' ↦ ⟨_, _⟩⟩
   · refine' Basis.mkFinConsOfLE y yN bN' N'_le_N _ _
     · intro c z zN' hc
-      refine' ay'_ortho_N' c z zN' _
+      refine ay'_ortho_N' c z zN' ?_
       rwa [← a_smul_y'] at hc
     · intro z zN
       obtain ⟨b, hb⟩ : _ ∣ ϕ ⟨z, N_le_M zN⟩ := generator_submoduleImage_dvd_of_mem N_le_M ϕ zN
@@ -674,7 +674,7 @@ theorem Ideal.smithCoeffs_ne_zero (b : Basis ι R S) (I : Ideal S) (hI : I ≠ �
     Ideal.smithCoeffs b I hI i ≠ 0 := by
   intro hi
   apply Basis.ne_zero (Ideal.selfBasis b I hI) i
-  refine' Subtype.coe_injective _
+  refine Subtype.coe_injective ?_
   simp [hi]
 #align ideal.smith_coeffs_ne_zero Ideal.smithCoeffs_ne_zero
 

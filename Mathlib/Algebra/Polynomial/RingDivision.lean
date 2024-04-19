@@ -131,7 +131,7 @@ variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 instance : NoZeroDivisors R[X] where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
     rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
-    refine' eq_zero_or_eq_zero_of_mul_eq_zero _
+    refine eq_zero_or_eq_zero_of_mul_eq_zero ?_
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by
@@ -304,7 +304,7 @@ theorem Monic.irreducible_iff_natDegree (hp : p.Monic) :
       p ≠ 1 ∧ ∀ f g : R[X], f.Monic → g.Monic → f * g = p → f.natDegree = 0 ∨ g.natDegree = 0 := by
   by_cases hp1 : p = 1; · simp [hp1]
   rw [irreducible_of_monic hp hp1, and_iff_right hp1]
-  refine' forall₄_congr fun a b ha hb => _
+  refine forall₄_congr fun a b ha hb => ?_
   rw [ha.natDegree_eq_zero_iff_eq_one, hb.natDegree_eq_zero_iff_eq_one]
 #align polynomial.monic.irreducible_iff_nat_degree Polynomial.Monic.irreducible_iff_natDegree
 
@@ -1258,7 +1258,7 @@ theorem aeval_eq_zero_of_mem_rootSet {p : T[X]} [CommRing S] [IsDomain S] [Algeb
 theorem rootSet_mapsTo {p : T[X]} {S S'} [CommRing S] [IsDomain S] [Algebra T S] [CommRing S']
     [IsDomain S'] [Algebra T S'] [NoZeroSMulDivisors T S'] (f : S →ₐ[T] S') :
     (p.rootSet S).MapsTo f (p.rootSet S') := by
-  refine' rootSet_maps_to' (fun h₀ => _) f
+  refine rootSet_maps_to' (fun h₀ => ?_) f
   obtain rfl : p = 0 :=
     map_injective _ (NoZeroSMulDivisors.algebraMap_injective T S') (by rwa [Polynomial.map_zero])
   exact Polynomial.map_zero _
@@ -1307,7 +1307,7 @@ theorem leadingCoeff_divByMonic_X_sub_C (p : R[X]) (hp : degree p ≠ 0) (a : R)
   nontriviality
   cases' hp.lt_or_lt with hd hd
   · rw [degree_eq_bot.mp <| Nat.WithBot.lt_zero_iff.mp hd, zero_divByMonic]
-  refine' leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) _
+  refine leadingCoeff_divByMonic_of_monic (monic_X_sub_C a) ?_
   rwa [degree_X_sub_C, Nat.WithBot.one_le_iff_zero_lt]
 set_option linter.uppercaseLean3 false in
 #align polynomial.leading_coeff_div_by_monic_X_sub_C Polynomial.leadingCoeff_divByMonic_X_sub_C

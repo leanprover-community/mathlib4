@@ -160,7 +160,7 @@ theorem fg_unit {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] (I : (
   refine' ⟨T, span_eq_of_le _ hT _⟩
   rw [← one_mul I, ← mul_one (span R (T : Set A))]
   conv_rhs => rw [← I.inv_mul, ← mul_assoc]
-  refine' mul_le_mul_left (le_trans _ <| mul_le_mul_right <| span_le.mpr hT')
+  refine mul_le_mul_left (le_trans ?_ <| mul_le_mul_right <| span_le.mpr hT')
   simp only [Units.val_one, span_mul_span]
   rwa [one_le]
 #align submodule.fg_unit Submodule.fg_unit
@@ -327,7 +327,7 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
     rw [sub_eq_zero]
-    refine' Finset.sum_congr rfl fun y hy => _
+    refine Finset.sum_congr rfl fun y hy => ?_
     unfold id
     rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
@@ -526,7 +526,7 @@ theorem exists_radical_pow_le_of_fg {R : Type*} [CommSemiring R] (I : Ideal R) (
     obtain h | h := le_or_lt n i
     · apply Ideal.mul_le_right.trans ((Ideal.pow_le_pow_right h).trans hn)
     · apply Ideal.mul_le_left.trans
-      refine' (Ideal.pow_le_pow_right _).trans hm
+      refine (Ideal.pow_le_pow_right ?_).trans hm
       rw [add_comm, Nat.add_sub_assoc h.le]
       apply Nat.le_add_right
 #align ideal.exists_radical_pow_le_of_fg Ideal.exists_radical_pow_le_of_fg

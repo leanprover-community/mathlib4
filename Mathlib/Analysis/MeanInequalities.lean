@@ -152,7 +152,7 @@ theorem geom_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw : ∀ i 
     ∏ i in s, z i ^ w i = x :=
   calc
     ∏ i in s, z i ^ w i = ∏ i in s, x ^ w i := by
-      refine' prod_congr rfl fun i hi => _
+      refine prod_congr rfl fun i hi => ?_
       rcases eq_or_ne (w i) 0 with h₀ | h₀
       · rw [h₀, rpow_zero, rpow_zero]
       · rw [hx i hi h₀]
@@ -170,7 +170,7 @@ theorem arith_mean_weighted_of_constant (w z : ι → ℝ) (x : ℝ) (hw' : ∑ 
     (hx : ∀ i ∈ s, w i ≠ 0 → z i = x) : ∑ i in s, w i * z i = x :=
   calc
     ∑ i in s, w i * z i = ∑ i in s, w i * x := by
-      refine' sum_congr rfl fun i hi => _
+      refine sum_congr rfl fun i hi => ?_
       rcases eq_or_ne (w i) 0 with hwi | hwi
       · rw [hwi, zero_mul, zero_mul]
       · rw [hx i hi hwi]
@@ -483,7 +483,7 @@ theorem isGreatest_Lp (f : ι → ℝ≥0) {p q : ℝ} (hpq : p.IsConjExponent q
     · simp [hf, hpq.ne_zero, hpq.symm.ne_zero]
     · have A : p + q - q ≠ 0 := by simp [hpq.ne_zero]
       have B : ∀ y : ℝ≥0, y * y ^ p / y = y ^ p := by
-        refine' fun y => mul_div_cancel_left_of_imp fun h => _
+        refine fun y => mul_div_cancel_left_of_imp fun h => ?_
         simp [h, hpq.ne_zero]
       simp only [Set.mem_setOf_eq, div_rpow, ← sum_div, ← rpow_mul,
         div_mul_cancel₀ _ hpq.symm.ne_zero, rpow_one, div_le_iff hf, one_mul, hpq.mul_eq_add, ←

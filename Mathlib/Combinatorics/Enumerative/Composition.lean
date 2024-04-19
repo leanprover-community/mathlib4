@@ -522,7 +522,7 @@ theorem eq_ones_iff {c : Composition n} : c = ones n ↔ ∀ i ∈ c.blocks, i =
 #align composition.eq_ones_iff Composition.eq_ones_iff
 
 theorem ne_ones_iff {c : Composition n} : c ≠ ones n ↔ ∃ i ∈ c.blocks, 1 < i := by
-  refine' (not_congr eq_ones_iff).trans _
+  refine (not_congr eq_ones_iff).trans ?_
   have : ∀ j ∈ c.blocks, j = 1 ↔ j ≤ 1 := fun j hj => by simp [le_antisymm_iff, c.one_le_blocks hj]
   simp (config := { contextual := true }) [this]
 #align composition.ne_ones_iff Composition.ne_ones_iff

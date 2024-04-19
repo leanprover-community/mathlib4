@@ -140,7 +140,7 @@ theorem increasing_cantorFunction (h1 : 0 < c) (h2 : c < 1 / 2) {n : ℕ} {f g :
       rw [gn]
       simp at hn
     apply (cantorFunction_le (le_of_lt h1) h3 hf_max).trans_lt
-    refine' lt_of_lt_of_le _ (cantorFunction_le (le_of_lt h1) h3 hg_min)
+    refine lt_of_lt_of_le ?_ (cantorFunction_le (le_of_lt h1) h3 hg_min)
     have : c / (1 - c) < 1 := by
       rw [div_lt_one, lt_sub_iff_add_lt]
       · convert _root_.add_lt_add h2 h2
@@ -183,13 +183,13 @@ theorem cantorFunction_injective (h1 : 0 < c) (h2 : c < 1 / 2) :
       exact Nat.find_min this hk
     cases fn : f n
     · apply _root_.ne_of_lt
-      refine' increasing_cantorFunction h1 h2 hn fn _
+      refine increasing_cantorFunction h1 h2 hn fn ?_
       apply Bool.eq_true_of_not_eq_false
       rw [← fn]
       apply Ne.symm
       exact Nat.find_spec this
     · apply _root_.ne_of_gt
-      refine' increasing_cantorFunction h1 h2 (fun k hk => (hn k hk).symm) _ fn
+      refine increasing_cantorFunction h1 h2 (fun k hk => (hn k hk).symm) ?_ fn
       apply Bool.eq_false_of_not_eq_true
       rw [← fn]
       apply Ne.symm
@@ -264,11 +264,11 @@ theorem mk_Iic_real (a : ℝ) : #(Iic a) = 𝔠 :=
 theorem mk_Ioo_real {a b : ℝ} (h : a < b) : #(Ioo a b) = 𝔠 := by
   refine' le_antisymm (mk_real ▸ mk_set_le _) _
   have h1 : #((fun x => x - a) '' Ioo a b) ≤ #(Ioo a b) := mk_image_le
-  refine' le_trans _ h1
+  refine le_trans ?_ h1
   rw [image_sub_const_Ioo, sub_self]
   replace h := sub_pos_of_lt h
   have h2 : #(Inv.inv '' Ioo 0 (b - a)) ≤ #(Ioo 0 (b - a)) := mk_image_le
-  refine' le_trans _ h2
+  refine le_trans ?_ h2
   rw [image_inv, inv_Ioo_0_left h, mk_Ioi_real]
 #align cardinal.mk_Ioo_real Cardinal.mk_Ioo_real
 

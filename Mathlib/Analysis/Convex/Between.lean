@@ -366,7 +366,7 @@ theorem wbtw_swap_left_iff [NoZeroSMulDivisors R V] {x y : P} (z : P) :
     · nth_rw 1 [← mul_one tx] at h
       rw [← mul_sub, add_eq_zero_iff_neg_eq] at h
       have h' : ty = 0 := by
-        refine' le_antisymm _ hty.1
+        refine le_antisymm ?_ hty.1
         rw [← h, Left.neg_nonpos_iff]
         exact mul_nonneg htx.1 (sub_nonneg.2 hty.2)
       simp [h']
@@ -613,7 +613,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
     have hle : line[R, t.points i₁, p₁] ≤ affineSpan R (Set.range t.points) := by
       refine' affineSpan_pair_le_of_mem_of_mem (mem_affineSpan R (Set.mem_range_self _)) _
       have hle : line[R, t.points i₂, t.points i₃] ≤ affineSpan R (Set.range t.points) := by
-        refine' affineSpan_mono R _
+        refine affineSpan_mono R ?_
         simp [Set.insert_subset_iff]
       rw [AffineSubspace.le_def'] at hle
       exact hle _ h₁.wbtw.mem_affineSpan

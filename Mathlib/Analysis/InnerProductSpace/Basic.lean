@@ -835,7 +835,7 @@ a sum. -/
 theorem Orthonormal.inner_sum {v : ι → E} (hv : Orthonormal 𝕜 v) (l₁ l₂ : ι → 𝕜) (s : Finset ι) :
     ⟪∑ i in s, l₁ i • v i, ∑ i in s, l₂ i • v i⟫ = ∑ i in s, conj (l₁ i) * l₂ i := by
   simp_rw [sum_inner, inner_smul_left]
-  refine' Finset.sum_congr rfl fun i hi => _
+  refine Finset.sum_congr rfl fun i hi => ?_
   rw [hv.inner_right_sum l₂ hi]
 #align orthonormal.inner_sum Orthonormal.inner_sum
 
@@ -1183,7 +1183,7 @@ instance (priority := 100) InnerProductSpace.toUniformConvexSpace : UniformConve
     · norm_num
       exact pow_pos hε _
     rw [sub_sub_cancel]
-    refine' le_sqrt_of_sq_le _
+    refine le_sqrt_of_sq_le ?_
     rw [sq, eq_sub_iff_add_eq.2 (parallelogram_law_with_norm ℝ x y), ← sq ‖x - y‖, hx, hy]
     ring_nf
     exact sub_le_sub_left (pow_le_pow_left hε.le hxy _) 4⟩
@@ -1238,7 +1238,7 @@ for all `x`.
 -/
 theorem ext_inner_map (S T : V →ₗ[ℂ] V) : (∀ x : V, ⟪S x, x⟫_ℂ = ⟪T x, x⟫_ℂ) ↔ S = T := by
   rw [← sub_eq_zero, ← inner_map_self_eq_zero]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   rw [LinearMap.sub_apply, inner_sub_left, sub_eq_zero]
 #align ext_inner_map ext_inner_map
 
@@ -1692,7 +1692,7 @@ theorem real_inner_div_norm_mul_norm_eq_neg_one_iff (x y : F) :
     ⟪x, y⟫_ℝ / (‖x‖ * ‖y‖) = -1 ↔ x ≠ 0 ∧ ∃ r : ℝ, r < 0 ∧ y = r • x := by
   rw [← neg_eq_iff_eq_neg, ← neg_div, ← inner_neg_right, ← norm_neg y,
     real_inner_div_norm_mul_norm_eq_one_iff, (@neg_surjective ℝ _).exists]
-  refine' Iff.rfl.and (exists_congr fun r => _)
+  refine Iff.rfl.and (exists_congr fun r => ?_)
   rw [neg_pos, neg_smul, neg_inj]
 #align real_inner_div_norm_mul_norm_eq_neg_one_iff real_inner_div_norm_mul_norm_eq_neg_one_iff
 
@@ -1910,7 +1910,7 @@ theorem Orthonormal.sum_inner_products_le {s : Finset ι} (hv : Orthonormal 𝕜
 /-- Bessel's inequality. -/
 theorem Orthonormal.tsum_inner_products_le (hv : Orthonormal 𝕜 v) :
     ∑' i, ‖⟪v i, x⟫‖ ^ 2 ≤ ‖x‖ ^ 2 := by
-  refine' tsum_le_of_sum_le' _ fun s => hv.sum_inner_products_le x
+  refine tsum_le_of_sum_le' ?_ fun s => hv.sum_inner_products_le x
   simp only [norm_nonneg, pow_nonneg]
 #align orthonormal.tsum_inner_products_le Orthonormal.tsum_inner_products_le
 
@@ -2139,7 +2139,7 @@ theorem OrthogonalFamily.summable_iff_norm_sq_summable [CompleteSpace E] (f : �
       obtain ⟨a, H⟩ := hf _ hε'
       use a
       intro s₁ hs₁ s₂ hs₂
-      refine' (abs_lt_of_sq_lt_sq' _ (le_of_lt hε)).2
+      refine (abs_lt_of_sq_lt_sq' ?_ (le_of_lt hε)).2
       have has : a ≤ s₁ ⊓ s₂ := le_inf hs₁ hs₂
       rw [hV.norm_sq_diff_sum]
       have Hs₁ : ∑ x : ι in s₁ \ s₂, ‖f x‖ ^ 2 < ε ^ 2 / 2 := by

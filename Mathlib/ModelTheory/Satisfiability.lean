@@ -164,7 +164,7 @@ theorem isSatisfiable_union_distinctConstantsTheory_of_infinite (T : L.Theory) (
           ((lift_le_aleph0.2 (finset_card_lt_aleph0 _).le).trans
             (aleph0_le_lift.2 (aleph0_le_mk M)))
     · apply Monotone.directed_le
-      refine' monotone_const.union (monotone_distinctConstantsTheory.comp _)
+      refine monotone_const.union (monotone_distinctConstantsTheory.comp ?_)
       simp only [Finset.coe_map, Function.Embedding.coe_subtype]
       exact Monotone.comp (g := Set.image ((↑) : s → α)) (f := ((↑) : Finset s → Set s))
         Set.monotone_image fun _ _ => Finset.coe_subset.2
@@ -181,8 +181,8 @@ theorem exists_large_model_of_infinite_model (T : L.Theory) (κ : Cardinal.{w}) 
   rw [ModelType.reduct_Carrier, coe_of]
   refine' _root_.trans (lift_le.2 (le_of_eq (Cardinal.mk_out κ).symm)) _
   rw [← mk_univ]
-  refine'
-    (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{max u v w}.1 _)
+  refine
+    (card_le_of_model_distinctConstantsTheory L Set.univ N).trans (lift_le.{max u v w}.1 ?_)
   rw [lift_lift]
 #align first_order.language.Theory.exists_large_model_of_infinite_model FirstOrder.Language.Theory.exists_large_model_of_infinite_model
 
@@ -425,7 +425,7 @@ theorem IsMaximal.mem_or_not_mem (h : T.IsMaximal) (φ : L.Sentence) : φ ∈ T 
 #align first_order.language.Theory.is_maximal.mem_or_not_mem FirstOrder.Language.Theory.IsMaximal.mem_or_not_mem
 
 theorem IsMaximal.mem_of_models (h : T.IsMaximal) {φ : L.Sentence} (hφ : T ⊨ᵇ φ) : φ ∈ T := by
-  refine' (h.mem_or_not_mem φ).resolve_right fun con => _
+  refine (h.mem_or_not_mem φ).resolve_right fun con => ?_
   rw [models_iff_not_satisfiable, Set.union_singleton, Set.insert_eq_of_mem con] at hφ
   exact hφ h.1
 #align first_order.language.Theory.is_maximal.mem_of_models FirstOrder.Language.Theory.IsMaximal.mem_of_models

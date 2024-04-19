@@ -734,13 +734,13 @@ theorem cos_toReal (θ : Angle) : Real.cos θ.toReal = cos θ := by
 theorem cos_nonneg_iff_abs_toReal_le_pi_div_two {θ : Angle} : 0 ≤ cos θ ↔ |θ.toReal| ≤ π / 2 := by
   nth_rw 1 [← coe_toReal θ]
   rw [abs_le, cos_coe]
-  refine' ⟨fun h => _, cos_nonneg_of_mem_Icc⟩
+  refine ⟨fun h => ?_, cos_nonneg_of_mem_Icc⟩
   by_contra hn
   rw [not_and_or, not_le, not_le] at hn
-  refine' (not_lt.2 h) _
+  refine (not_lt.2 h) ?_
   rcases hn with (hn | hn)
   · rw [← Real.cos_neg]
-    refine' cos_neg_of_pi_div_two_lt_of_lt (by linarith) _
+    refine cos_neg_of_pi_div_two_lt_of_lt (by linarith) ?_
     linarith [neg_pi_lt_toReal θ]
   · refine' cos_neg_of_pi_div_two_lt_of_lt hn _
     linarith [toReal_le_pi θ]
@@ -1040,7 +1040,7 @@ theorem continuousAt_sign {θ : Angle} (h0 : θ ≠ 0) (hpi : θ ≠ π) : Conti
 theorem _root_.ContinuousOn.angle_sign_comp {α : Type*} [TopologicalSpace α] {f : α → Angle}
     {s : Set α} (hf : ContinuousOn f s) (hs : ∀ z ∈ s, f z ≠ 0 ∧ f z ≠ π) :
     ContinuousOn (sign ∘ f) s := by
-  refine' (ContinuousAt.continuousOn fun θ hθ => _).comp hf (Set.mapsTo_image f s)
+  refine (ContinuousAt.continuousOn fun θ hθ => ?_).comp hf (Set.mapsTo_image f s)
   obtain ⟨z, hz, rfl⟩ := hθ
   exact continuousAt_sign (hs _ hz).1 (hs _ hz).2
 #align continuous_on.angle_sign_comp ContinuousOn.angle_sign_comp

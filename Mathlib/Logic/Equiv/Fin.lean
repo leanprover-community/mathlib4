@@ -524,7 +524,7 @@ def Nat.divModEquiv (n : ℕ) [NeZero n] : ℕ ≃ ℕ × Fin n where
   -- TODO: is there a canonical order of `*` and `+` here?
   left_inv a := Nat.div_add_mod' _ _
   right_inv p := by
-    refine' Prod.ext _ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
+    refine Prod.ext ?_ (Fin.ext <| Nat.mul_add_mod_of_lt p.2.is_lt)
     dsimp only
     rw [add_comm, Nat.add_mul_div_right _ _ (NeZero.pos n), Nat.div_eq_of_lt p.2.is_lt, zero_add]
 #align nat.div_mod_equiv Nat.divModEquiv

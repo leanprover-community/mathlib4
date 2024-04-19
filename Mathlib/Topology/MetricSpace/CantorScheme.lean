@@ -98,7 +98,7 @@ protected theorem Antitone.closureAntitone [TopologicalSpace α] (hanti : Cantor
 /-- A scheme where the children of each set are pairwise disjoint induces an injective map. -/
 theorem Disjoint.map_injective (hA : CantorScheme.Disjoint A) : Injective (inducedMap A).2 := by
   rintro ⟨x, hx⟩ ⟨y, hy⟩ hxy
-  refine' Subtype.coe_injective (res_injective _)
+  refine Subtype.coe_injective (res_injective ?_)
   dsimp
   ext n : 1
   induction' n with n ih; · simp
@@ -172,7 +172,7 @@ theorem ClosureAntitone.map_of_vanishingDiam [CompleteSpace α] (hdiam : Vanishi
   choose u hu using fun n => hnonempty (res x n)
   have umem : ∀ n m : ℕ, n ≤ m → u m ∈ A (res x n) := by
     have : Antitone fun n : ℕ => A (res x n) := by
-      refine' antitone_nat_of_succ_le _
+      refine antitone_nat_of_succ_le ?_
       intro n
       apply hanti.antitone
     intro n m hnm

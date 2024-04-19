@@ -44,7 +44,7 @@ variable {S : Type*} [CommRing S] {f : R →+* S} {I J : Ideal S}
 theorem coeff_zero_mem_comap_of_root_mem_of_eval_mem {r : S} (hr : r ∈ I) {p : R[X]}
     (hp : p.eval₂ f r ∈ I) : p.coeff 0 ∈ I.comap f := by
   rw [← p.divX_mul_X_add, eval₂_add, eval₂_C, eval₂_mul, eval₂_X] at hp
-  refine' mem_comap.mpr ((I.add_mem_iff_right _).mp hp)
+  refine mem_comap.mpr ((I.add_mem_iff_right ?_).mp hp)
   exact I.mul_mem_left _ hr
 #align ideal.coeff_zero_mem_comap_of_root_mem_of_eval_mem Ideal.coeff_zero_mem_comap_of_root_mem_of_eval_mem
 
@@ -80,10 +80,10 @@ theorem injective_quotient_le_comap_map (P : Ideal R[X]) :
         (Ideal.map (Polynomial.mapRingHom (Quotient.mk (P.comap (C : R →+* R[X])))) P)
         (Polynomial.mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
         le_comap_map := by
-  refine' quotientMap_injective' (le_of_eq _)
+  refine quotientMap_injective' (le_of_eq ?_)
   rw [comap_map_of_surjective (mapRingHom (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))))
       (map_surjective (Ideal.Quotient.mk (P.comap (C : R →+* R[X]))) Ideal.Quotient.mk_surjective)]
-  refine' le_antisymm (sup_le le_rfl _) (le_sup_of_le_left le_rfl)
+  refine le_antisymm (sup_le le_rfl ?_) (le_sup_of_le_left le_rfl)
   refine' fun p hp =>
     polynomial_mem_ideal_of_coeff_mem_ideal P p fun n => Ideal.Quotient.eq_zero_iff_mem.mp _
   simpa only [coeff_map, coe_mapRingHom] using ext_iff.mp (Ideal.mem_bot.mp (mem_comap.mp hp)) n
@@ -274,7 +274,7 @@ theorem comap_ne_bot_of_integral_mem [Nontrivial R] [IsDomain S] {x : S} (x_ne_z
 
 theorem eq_bot_of_comap_eq_bot [Nontrivial R] [IsDomain S] (hRS : Algebra.IsIntegral R S)
     (hI : I.comap (algebraMap R S) = ⊥) : I = ⊥ := by
-  refine' eq_bot_iff.2 fun x hx => _
+  refine eq_bot_iff.2 fun x hx => ?_
   by_cases hx0 : x = 0
   · exact hx0.symm ▸ Ideal.zero_mem ⊥
   · exact absurd hI (comap_ne_bot_of_integral_mem hx0 hx (hRS x))

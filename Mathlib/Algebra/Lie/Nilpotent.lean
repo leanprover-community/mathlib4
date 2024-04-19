@@ -240,7 +240,7 @@ variable {R L M}
 theorem _root_.LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot (N : LieSubmodule R L M) :
     LieModule.IsNilpotent R L N ↔ ∃ k, N.lcs k = ⊥ := by
   rw [isNilpotent_iff]
-  refine' exists_congr fun k => _
+  refine exists_congr fun k => ?_
   rw [N.lowerCentralSeries_eq_lcs_comap k, LieSubmodule.comap_incl_eq_bot,
     inf_eq_right.mpr (N.lcs_le_self k)]
 #align lie_submodule.is_nilpotent_iff_exists_lcs_eq_bot LieSubmodule.isNilpotent_iff_exists_lcs_eq_bot

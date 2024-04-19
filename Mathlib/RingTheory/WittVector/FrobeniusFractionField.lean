@@ -274,7 +274,7 @@ theorem exists_frobenius_solution_fractionRing_aux (m n : ℕ) (r' q' : 𝕎 k) 
 theorem exists_frobenius_solution_fractionRing {a : FractionRing (𝕎 k)} (ha : a ≠ 0) :
     ∃ᵉ (b ≠ 0) (m : ℤ), φ b * a = (p : FractionRing (𝕎 k)) ^ m * b := by
   revert ha
-  refine' Localization.induction_on a _
+  refine Localization.induction_on a ?_
   rintro ⟨r, q, hq⟩ hrq
   have hq0 : q ≠ 0 := mem_nonZeroDivisors_iff_ne_zero.1 hq
   have hr0 : r ≠ 0 := fun h => hrq (by simp [h])

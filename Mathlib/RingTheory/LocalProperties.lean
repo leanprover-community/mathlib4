@@ -243,14 +243,14 @@ theorem Ideal.le_of_localization_maximal {I J : Ideal R}
     simpa using Submodule.mem_colon.mp
       (show (1 : R) ∈ J.colon (Ideal.span {x}) from this.symm ▸ Submodule.mem_top) x
       (Ideal.mem_span_singleton_self x)
-  refine' Not.imp_symm (J.colon (Ideal.span {x})).exists_le_maximal _
+  refine Not.imp_symm (J.colon (Ideal.span {x})).exists_le_maximal ?_
   push_neg
   intro P hP le
   obtain ⟨⟨⟨a, ha⟩, ⟨s, hs⟩⟩, eq⟩ :=
     (IsLocalization.mem_map_algebraMap_iff P.primeCompl _).mp (h P hP (Ideal.mem_map_of_mem _ hx))
   rw [← _root_.map_mul, ← sub_eq_zero, ← map_sub] at eq
   obtain ⟨⟨m, hm⟩, eq⟩ := (IsLocalization.map_eq_zero_iff P.primeCompl _ _).mp eq
-  refine' hs ((hP.isPrime.mem_or_mem (le (Ideal.mem_colon_singleton.mpr _))).resolve_right hm)
+  refine hs ((hP.isPrime.mem_or_mem (le (Ideal.mem_colon_singleton.mpr ?_))).resolve_right hm)
   simp only [Subtype.coe_mk, mul_sub, sub_eq_zero, mul_comm x s, mul_left_comm] at eq
   simpa only [mul_assoc, eq] using J.mul_mem_left m ha
 #align ideal.le_of_localization_maximal Ideal.le_of_localization_maximal

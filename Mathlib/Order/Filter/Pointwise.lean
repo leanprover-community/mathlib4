@@ -713,7 +713,7 @@ theorem bot_pow {n : ℕ} (hn : n ≠ 0) : (⊥ : Filter α) ^ n = ⊥ := by
 
 @[to_additive]
 theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [mul_univ_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -722,7 +722,7 @@ theorem mul_top_of_one_le (hf : 1 ≤ f) : f * ⊤ = ⊤ := by
 
 @[to_additive]
 theorem top_mul_of_one_le (hf : 1 ≤ f) : ⊤ * f = ⊤ := by
-  refine' top_le_iff.1 fun s => _
+  refine top_le_iff.1 fun s => ?_
   simp only [mem_mul, mem_top, exists_and_left, exists_eq_left]
   rintro ⟨t, ht, hs⟩
   rwa [univ_mul_of_one_mem (mem_one.1 <| hf ht), univ_subset_iff] at hs
@@ -1397,9 +1397,9 @@ theorem NeBot.zero_smul_nonneg (hg : g.NeBot) : 0 ≤ (0 : Filter α) • g :=
 #align filter.ne_bot.zero_smul_nonneg Filter.NeBot.zero_smul_nonneg
 
 theorem zero_smul_filter_nonpos : (0 : α) • g ≤ 0 := by
-  refine' fun s hs => mem_smul_filter.2 _
+  refine fun s hs => mem_smul_filter.2 ?_
   convert @univ_mem _ g
-  refine' eq_univ_iff_forall.2 fun a => _
+  refine eq_univ_iff_forall.2 fun a => ?_
   rwa [mem_preimage, zero_smul]
 #align filter.zero_smul_filter_nonpos Filter.zero_smul_filter_nonpos
 

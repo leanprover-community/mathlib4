@@ -145,7 +145,7 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
   /- Since `g ε z → 1` as `ε → 0⁻`, it suffices to prove that `‖g ε z • f z‖ ≤ C`
     for all negative `ε`. -/
   suffices ∀ᶠ ε : ℝ in 𝓝[<] (0 : ℝ), ‖g ε z • f z‖ ≤ C by
-    refine' le_of_tendsto (Tendsto.mono_left _ nhdsWithin_le_nhds) this
+    refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
     apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
     simp
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
@@ -187,15 +187,15 @@ theorem horizontal_strip (hfd : DiffContOnCl ℂ f (im ⁻¹' Ioo a b))
       rw [norm_smul, Real.exp_add, ← hre, Real.exp_add, Real.exp_log hA₀, mul_assoc, mul_comm _ A]
       gcongr
       exacts [hδ <| Ioo_subset_Icc_self him, Hle _ hre him]
-    refine' Real.tendsto_exp_atBot.comp _
+    refine Real.tendsto_exp_atBot.comp ?_
     suffices H : Tendsto (fun R => δ + B * (expR ((d - c) * R))⁻¹) atTop (𝓝 (δ + B * 0)) by
       rw [mul_zero, add_zero] at H
-      refine' Tendsto.atBot_add _ tendsto_const_nhds
+      refine Tendsto.atBot_add ?_ tendsto_const_nhds
       simpa only [id, (· ∘ ·), add_mul, mul_assoc, ← div_eq_inv_mul, ← Real.exp_sub, ← sub_mul,
         sub_sub_cancel]
         using H.neg_mul_atTop δ₀ <| Real.tendsto_exp_atTop.comp <|
           tendsto_const_nhds.mul_atTop hd₀ tendsto_id
-    refine' tendsto_const_nhds.add (tendsto_const_nhds.mul _)
+    refine tendsto_const_nhds.add (tendsto_const_nhds.mul ?_)
     exact tendsto_inv_atTop_zero.comp <| Real.tendsto_exp_atTop.comp <|
       tendsto_const_nhds.mul_atTop (sub_pos.2 hcd) tendsto_id
   have hR₀ : 0 < R := (_root_.abs_nonneg _).trans_lt hzR
@@ -290,7 +290,7 @@ theorem vertical_strip (hfd : DiffContOnCl ℂ f (re ⁻¹' Ioo a b))
     refine ⟨c, hc, B, ?_⟩
     have : Tendsto (· * -I) (comap (|re ·|) atTop ⊓ 𝓟 (im ⁻¹' Ioo a b))
         (comap (|im ·|) atTop ⊓ 𝓟 (re ⁻¹' Ioo a b)) := by
-      refine' (tendsto_comap_iff.2 _).inf H.tendsto
+      refine (tendsto_comap_iff.2 ?_).inf H.tendsto
       simpa [(· ∘ ·)] using tendsto_comap
     simpa [(· ∘ ·)] using hO.comp_tendsto this
   all_goals simpa
@@ -701,7 +701,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
   -- the norm `‖f x‖` takes its maximum value at some `x₀ : ℝ`.
   obtain ⟨x₀, hx₀, hmax⟩ : ∃ x : ℝ, 0 ≤ x ∧ ∀ y : ℝ, 0 ≤ y → ‖f y‖ ≤ ‖f x‖ := by
     have hfc : ContinuousOn (fun x : ℝ => f x) (Ici 0) := by
-      refine' hd.continuousOn.comp continuous_ofReal.continuousOn fun x hx => _
+      refine hd.continuousOn.comp continuous_ofReal.continuousOn fun x hx => ?_
       rwa [closure_setOf_lt_re]
     by_cases h₀ : ∀ x : ℝ, 0 ≤ x → f x = 0
     · refine' ⟨0, le_rfl, fun y hy => _⟩; rw [h₀ y hy, h₀ 0 le_rfl]
@@ -735,7 +735,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
         _ ≤ abs (z - x₀) := abs_re_le_abs _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.
-    refine' (h.not_le <| this ▸ _).elim
+    refine (h.not_le <| this ▸ ?_).elim
     simpa using him 0
 #align phragmen_lindelof.right_half_plane_of_tendsto_zero_on_real PhragmenLindelof.right_half_plane_of_tendsto_zero_on_real
 
@@ -758,7 +758,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   -- `right_half_plane_of_tendsto_zero_on_real`, hence `‖exp (ε * z) • f z‖ ≤ C` for all `ε < 0`.
   -- Taking the limit as `ε → 0`, we obtain the required inequality.
   suffices ∀ᶠ ε : ℝ in 𝓝[<] 0, ‖exp (ε * z) • f z‖ ≤ C by
-    refine' le_of_tendsto (Tendsto.mono_left _ nhdsWithin_le_nhds) this
+    refine le_of_tendsto (Tendsto.mono_left ?_ nhdsWithin_le_nhds) this
     apply ((continuous_ofReal.mul continuous_const).cexp.smul continuous_const).norm.tendsto'
     simp
   filter_upwards [self_mem_nhdsWithin] with ε ε₀; change ε < 0 at ε₀
@@ -770,7 +770,7 @@ theorem right_half_plane_of_bounded_on_real (hd : DiffContOnCl ℂ f {z | 0 < z.
   refine' right_half_plane_of_tendsto_zero_on_real hd _ _ (fun y => _) hz
   · rcases hexp with ⟨c, hc, B, hO⟩
     refine ⟨c, hc, B, (IsBigO.of_bound 1 ?_).trans hO⟩
-    refine' eventually_inf_principal.2 <| eventually_of_forall fun z hz => _
+    refine eventually_inf_principal.2 <| eventually_of_forall fun z hz => ?_
     rw [hgn, one_mul]
     refine' mul_le_of_le_one_left (norm_nonneg _) (Real.exp_le_one_iff.2 _)
     exact mul_nonpos_of_nonpos_of_nonneg ε₀.le (le_of_lt hz)

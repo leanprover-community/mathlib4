@@ -567,7 +567,7 @@ theorem of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback b.inl (0 : X ⟶ 0) b.snd (0 : 0 ⟶ Y) := by
-  refine' of_right _ (by simp) (of_isBilimit h)
+  refine of_right ?_ (by simp) (of_isBilimit h)
   simp
 #align category_theory.is_pullback.inl_snd' CategoryTheory.IsPullback.inl_snd'
 
@@ -591,7 +591,7 @@ theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
 theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback b.inr (0 : Y ⟶ 0) b.fst (0 : 0 ⟶ X) := by
   apply flip
-  refine' of_bot _ (by simp) (of_isBilimit h)
+  refine of_bot ?_ (by simp) (of_isBilimit h)
   simp
 #align category_theory.is_pullback.inr_fst' CategoryTheory.IsPullback.inr_fst'
 
@@ -614,7 +614,7 @@ theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem of_is_bilimit' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPullback (0 : 0 ⟶ X) (0 : 0 ⟶ Y) b.inl b.inr := by
-  refine' IsPullback.of_right _ (by simp) (IsPullback.inl_snd' h).flip
+  refine IsPullback.of_right ?_ (by simp) (IsPullback.inl_snd' h).flip
   simp
 #align category_theory.is_pullback.of_is_bilimit' CategoryTheory.IsPullback.of_is_bilimit'
 
@@ -780,7 +780,7 @@ theorem of_has_biproduct (X Y : C) [HasBinaryBiproduct X Y] :
 theorem inl_snd' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.inl (0 : X ⟶ 0) b.snd (0 : 0 ⟶ Y) := by
   apply flip
-  refine' of_right _ (by simp) (of_isBilimit h)
+  refine of_right ?_ (by simp) (of_isBilimit h)
   simp
 #align category_theory.is_pushout.inl_snd' CategoryTheory.IsPushout.inl_snd'
 
@@ -802,7 +802,7 @@ theorem inl_snd (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem inr_fst' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.inr (0 : Y ⟶ 0) b.fst (0 : 0 ⟶ X) := by
-  refine' of_bot _ (by simp) (of_isBilimit h)
+  refine of_bot ?_ (by simp) (of_isBilimit h)
   simp
 #align category_theory.is_pushout.inr_fst' CategoryTheory.IsPushout.inr_fst'
 
@@ -824,7 +824,7 @@ theorem inr_fst (X Y : C) [HasBinaryBiproduct X Y] :
 
 theorem of_is_bilimit' {b : BinaryBicone X Y} (h : b.IsBilimit) :
     IsPushout b.fst b.snd (0 : X ⟶ 0) (0 : Y ⟶ 0) := by
-  refine' IsPushout.of_right _ (by simp) (IsPushout.inl_snd' h)
+  refine IsPushout.of_right ?_ (by simp) (IsPushout.inl_snd' h)
   simp
 #align category_theory.is_pushout.of_is_bilimit' CategoryTheory.IsPushout.of_is_bilimit'
 

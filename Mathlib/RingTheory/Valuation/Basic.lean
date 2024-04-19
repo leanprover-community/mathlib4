@@ -565,7 +565,7 @@ instance [Nontrivial Γ₀] [NoZeroDivisors Γ₀] : Ideal.IsPrime (supp v) :=
 theorem map_add_supp (a : R) {s : R} (h : s ∈ supp v) : v (a + s) = v a := by
   have aux : ∀ a s, v s = 0 → v (a + s) ≤ v a := by
     intro a' s' h'
-    refine' le_trans (v.map_add a' s') (max_le le_rfl _)
+    refine le_trans (v.map_add a' s') (max_le le_rfl ?_)
     simp [h']
   apply le_antisymm (aux a s h)
   calc

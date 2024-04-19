@@ -144,7 +144,7 @@ theorem decomposeAux_single (m : M) (r : R) :
   refine' (lift_single _ _ _).trans _
   refine' (DirectSum.of_smul R _ _ _).symm.trans _
   apply DirectSum.of_eq_of_gradedMonoid_eq
-  refine' Sigma.subtype_ext rfl _
+  refine Sigma.subtype_ext rfl ?_
   refine' (Finsupp.smul_single' _ _ _).trans _
   rw [mul_one]
   rfl

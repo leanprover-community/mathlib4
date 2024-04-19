@@ -284,7 +284,7 @@ protected theorem isUnit {I : FractionalIdeal A⁰ K} (hI : I ≠ 0) : IsUnit I 
 #align is_dedekind_domain_inv.is_unit IsDedekindDomainInv.isUnit
 
 theorem isNoetherianRing : IsNoetherianRing A := by
-  refine' isNoetherianRing_iff.mpr ⟨fun I : Ideal A => _⟩
+  refine isNoetherianRing_iff.mpr ⟨fun I : Ideal A => ?_⟩
   by_cases hI : I = ⊥
   · rw [hI]; apply Submodule.fg_bot
   have hI : (I : FractionalIdeal A⁰ (FractionRing A)) ≠ 0 := coeIdeal_ne_zero.mpr hI
@@ -1308,7 +1308,7 @@ theorem IsDedekindDomain.inf_prime_pow_eq_prod {ι : Type*} (s : Finset ι) (f :
     ih (fun i hi => prime i (Finset.mem_insert_of_mem hi)) fun i hi j hj =>
       coprime i (Finset.mem_insert_of_mem hi) j (Finset.mem_insert_of_mem hj)
   rw [Finset.inf_insert, Finset.prod_insert ha, ih]
-  refine' le_antisymm (Ideal.le_mul_of_no_prime_factors _ inf_le_left inf_le_right) Ideal.mul_le_inf
+  refine le_antisymm (Ideal.le_mul_of_no_prime_factors ?_ inf_le_left inf_le_right) Ideal.mul_le_inf
   intro P hPa hPs hPp
   obtain ⟨b, hb, hPb⟩ := Ideal.prod_le_prime.mp hPs
   haveI := Ideal.isPrime_of_prime (prime a (Finset.mem_insert_self a s))

@@ -744,7 +744,7 @@ theorem exists_nhds_square {s : Set (X × X)} {x : X} (hx : s ∈ 𝓝 (x, x)) :
 /-- `Prod.fst` maps neighborhood of `x : X × Y` within the section `Prod.snd ⁻¹' {x.2}`
 to `𝓝 x.1`. -/
 theorem map_fst_nhdsWithin (x : X × Y) : map Prod.fst (𝓝[Prod.snd ⁻¹' {x.2}] x) = 𝓝 x.1 := by
-  refine' le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => _
+  refine le_antisymm (continuousAt_fst.mono_left inf_le_left) fun s hs => ?_
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩
@@ -765,7 +765,7 @@ theorem isOpenMap_fst : IsOpenMap (@Prod.fst X Y) :=
 /-- `Prod.snd` maps neighborhood of `x : X × Y` within the section `Prod.fst ⁻¹' {x.1}`
 to `𝓝 x.2`. -/
 theorem map_snd_nhdsWithin (x : X × Y) : map Prod.snd (𝓝[Prod.fst ⁻¹' {x.1}] x) = 𝓝 x.2 := by
-  refine' le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => _
+  refine le_antisymm (continuousAt_snd.mono_left inf_le_left) fun s hs => ?_
   rcases x with ⟨x, y⟩
   rw [mem_map, nhdsWithin, mem_inf_principal, mem_nhds_prod_iff] at hs
   rcases hs with ⟨u, hu, v, hv, H⟩

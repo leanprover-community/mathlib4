@@ -143,7 +143,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
 /-- The function `exp (b * x) / x ^ s` tends to `+∞` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => exp (b * x) / x ^ s) atTop atTop := by
-  refine' ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' _
+  refine ((tendsto_rpow_atTop hb).comp (tendsto_exp_div_rpow_atTop (s / b))).congr' ?_
   filter_upwards [eventually_ge_atTop (0 : ℝ)] with x hx₀
   simp [Real.div_rpow, (exp_pos x).le, rpow_nonneg, ← Real.rpow_mul, ← exp_mul,
     mul_comm x, hb.ne', *]
@@ -152,7 +152,7 @@ theorem tendsto_exp_mul_div_rpow_atTop (s : ℝ) (b : ℝ) (hb : 0 < b) :
 /-- The function `x ^ s * exp (-b * x)` tends to `0` at `+∞`, for any real `s` and `b > 0`. -/
 theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0 < b) :
     Tendsto (fun x : ℝ => x ^ s * exp (-b * x)) atTop (𝓝 0) := by
-  refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
+  refine (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' ?_
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
 #align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 @[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
@@ -320,7 +320,7 @@ theorem isLittleO_exp_neg_mul_rpow_atTop {a : ℝ} (ha : 0 < a) (b : ℝ) :
     rw [rpow_eq_zero_iff_of_nonneg ht.le] at h
     exact (ht.ne' h.1).elim
   · refine' (tendsto_exp_mul_div_rpow_atTop (-b) a ha).inv_tendsto_atTop.congr' _
-    refine' (eventually_ge_atTop 0).mp (eventually_of_forall fun t ht => _)
+    refine (eventually_ge_atTop 0).mp (eventually_of_forall fun t ht => ?_)
     dsimp only
     rw [Pi.inv_apply, inv_div, ← inv_div_inv, neg_mul, Real.exp_neg, rpow_neg ht, inv_inv]
 #align is_o_exp_neg_mul_rpow_at_top isLittleO_exp_neg_mul_rpow_atTop

@@ -137,8 +137,8 @@ instance subsingleton_of_trichotomous_of_irrefl [IsTrichotomous β s] [IsIrrefl 
     [IsWellFounded α r] : Subsingleton (r ≼i s) :=
   ⟨fun f g => by
     ext a
-    refine' IsWellFounded.induction r a fun b IH =>
-      extensional_of_trichotomous_of_irrefl s fun x => _
+    refine IsWellFounded.induction r a fun b IH =>
+      extensional_of_trichotomous_of_irrefl s fun x => ?_
     rw [f.init_iff, g.init_iff]
     exact exists_congr fun x => and_congr_left fun hx => IH _ hx ▸ Iff.rfl⟩
 #align initial_seg.subsingleton_of_trichotomous_of_irrefl InitialSeg.subsingleton_of_trichotomous_of_irrefl
@@ -363,7 +363,7 @@ instance [IsWellOrder β s] : Subsingleton (r ≺i s) :=
       show ((f : r ≼i s) : α → β) = (g : r ≼i s)
       rw [@Subsingleton.elim _ _ (f : r ≼i s) g]
     have et : f.top = g.top := by
-      refine' extensional_of_trichotomous_of_irrefl s fun x => _
+      refine extensional_of_trichotomous_of_irrefl s fun x => ?_
       simp only [PrincipalSeg.down, ef]
     cases f
     cases g

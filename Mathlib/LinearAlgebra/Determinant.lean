@@ -568,7 +568,7 @@ theorem Basis.isUnit_det (e' : Basis ι R M) : IsUnit (e.det e') :=
 /-- Any alternating map to `R` where `ι` has the cardinality of a basis equals the determinant
 map with respect to that basis, multiplied by the value of that alternating map on that basis. -/
 theorem AlternatingMap.eq_smul_basis_det (f : M [⋀^ι]→ₗ[R] R) : f = f e • e.det := by
-  refine' Basis.ext_alternating e fun i h => _
+  refine Basis.ext_alternating e fun i h => ?_
   let σ : Equiv.Perm ι := Equiv.ofBijective i (Finite.injective_iff_bijective.1 h)
   change f (e ∘ σ) = (f e • e.det) (e ∘ σ)
   simp [AlternatingMap.map_perm, Basis.det_self]

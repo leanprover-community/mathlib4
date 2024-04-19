@@ -62,7 +62,7 @@ instance ΓRestrictAlgebra {X : Scheme} {Y : TopCat} {f : Y ⟶ X} (hf : OpenEmb
 lemma Scheme.map_basicOpen' (X : Scheme) (U : Opens X) (r : Scheme.Γ.obj (op <| X ∣_ᵤ U)) :
     U.openEmbedding.isOpenMap.functor.obj ((X ∣_ᵤ U).basicOpen r) = X.basicOpen
     (X.presheaf.map (eqToHom U.openEmbedding_obj_top.symm).op r) := by
-  refine' (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans _
+  refine (Scheme.image_basicOpen (X.ofRestrict U.openEmbedding) r).trans ?_
   erw [← Scheme.basicOpen_res_eq _ _ (eqToHom U.openEmbedding_obj_top).op]
   rw [← comp_apply, ← CategoryTheory.Functor.map_comp, ← op_comp, eqToHom_trans, eqToHom_refl,
     op_id, CategoryTheory.Functor.map_id]

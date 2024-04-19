@@ -210,7 +210,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
       (∏ i in s, f i) +
         ∑ i in s,
           g i * (∏ j in s.filter (· < i), (f j + g j)) * ∏ j in s.filter fun j => i < j, f j := by
-  refine' Finset.induction_on_max s (by simp) _
+  refine Finset.induction_on_max s (by simp) ?_
   clear s
   intro a s ha ihs
   have ha' : a ∉ s := fun ha' => lt_irrefl a (ha a ha')
@@ -222,7 +222,7 @@ theorem prod_add_ordered [LinearOrder ι] [CommSemiring α] (s : Finset ι) (f g
   · rw [filter_false_of_mem, prod_empty, mul_one]
     exact (forall_mem_insert _ _ _).2 ⟨lt_irrefl a, fun i hi => (ha i hi).not_lt⟩
   · rw [mul_sum]
-    refine' sum_congr rfl fun i hi => _
+    refine sum_congr rfl fun i hi => ?_
     rw [filter_insert, if_neg (ha i hi).not_lt, filter_insert, if_pos (ha i hi), prod_insert,
       mul_left_comm]
     exact mt (fun ha => (mem_filter.1 ha).1) ha'
@@ -234,7 +234,7 @@ theorem sum_pow_mul_eq_add_pow (a b : α) (s : Finset ι) :
     (∑ t in s.powerset, a ^ t.card * b ^ (s.card - t.card)) = (a + b) ^ s.card := by
   classical
   rw [← prod_const, prod_add]
-  refine' Finset.sum_congr rfl fun t ht => _
+  refine Finset.sum_congr rfl fun t ht => ?_
   rw [prod_const, prod_const, ← card_sdiff (mem_powerset.1 ht)]
 #align finset.sum_pow_mul_eq_add_pow Finset.sum_pow_mul_eq_add_pow
 

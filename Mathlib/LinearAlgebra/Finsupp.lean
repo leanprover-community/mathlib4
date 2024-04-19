@@ -247,7 +247,7 @@ theorem ker_lsingle (a : α) : ker (lsingle a : M →ₗ[R] α →₀ M) = ⊥ :
 theorem lsingle_range_le_ker_lapply (s t : Set α) (h : Disjoint s t) :
     ⨆ a ∈ s, LinearMap.range (lsingle a : M →ₗ[R] α →₀ M) ≤
       ⨅ a ∈ t, ker (lapply a : (α →₀ M) →ₗ[R] M) := by
-  refine' iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 _
+  refine iSup_le fun a₁ => iSup_le fun h₁ => range_le_iff_comap.2 ?_
   simp only [(ker_comp _ _).symm, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   intro b _ a₂ h₂
   have : a₁ ≠ a₂ := fun eq => h.le_bot ⟨h₁, eq.symm ▸ h₂⟩
@@ -277,7 +277,7 @@ theorem disjoint_lsingle_lsingle (s t : Set α) (hs : Disjoint s t) :
   · apply disjoint_compl_right
   · apply disjoint_compl_right
   rw [disjoint_iff_inf_le]
-  refine' le_trans (le_iInf fun i => _) iInf_ker_lapply_le_bot
+  refine le_trans (le_iInf fun i => ?_) iInf_ker_lapply_le_bot
   classical
     by_cases his : i ∈ s
     · by_cases hit : i ∈ t
@@ -298,7 +298,7 @@ def supported (s : Set α) : Submodule R (α →₀ M) where
   carrier := { p | ↑p.support ⊆ s }
   add_mem' {p q} hp hq := by
     classical
-    refine' Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) _) (union_subset hp hq)
+    refine Subset.trans (Subset.trans (Finset.coe_subset.2 support_add) ?_) (union_subset hp hq)
     rw [Finset.coe_union]
   zero_mem' := by
     simp only [subset_def, Finset.mem_coe, Set.mem_setOf_eq, mem_support_iff, zero_apply]
@@ -429,7 +429,7 @@ theorem disjoint_supported_supported {s t : Set α} (h : Disjoint s t) :
 
 theorem disjoint_supported_supported_iff [Nontrivial M] {s t : Set α} :
     Disjoint (supported M R s) (supported M R t) ↔ Disjoint s t := by
-  refine' ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => _, disjoint_supported_supported⟩
+  refine ⟨fun h => Set.disjoint_left.mpr fun x hx1 hx2 => ?_, disjoint_supported_supported⟩
   rcases exists_ne (0 : M) with ⟨y, hy⟩
   have := h.le_bot ⟨single_mem_supported R y hx1, single_mem_supported R y hx2⟩
   rw [mem_bot, single_eq_zero] at this
@@ -604,7 +604,7 @@ theorem lmapDomain_supported (f : α → α') (s : Set α) :
   · rcases Finset.mem_image.1 (mapDomain_support hx) with ⟨c, hc, rfl⟩
     exact Function.invFunOn_mem (by simpa using hl hc)
   · rw [← LinearMap.comp_apply, ← lmapDomain_comp]
-    refine' (mapDomain_congr fun c hc => _).trans mapDomain_id
+    refine (mapDomain_congr fun c hc => ?_).trans mapDomain_id
     exact Function.invFunOn_eq (by simpa using hl hc)
 #align finsupp.lmap_domain_supported Finsupp.lmapDomain_supported
 
@@ -805,7 +805,7 @@ theorem span_image_eq_map_total (s : Set α) :
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
     -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
     rw [mem_comap, total_apply]
-    refine' sum_mem _
+    refine sum_mem ?_
     simp [this]
 #align finsupp.span_image_eq_map_total Finsupp.span_image_eq_map_total
 

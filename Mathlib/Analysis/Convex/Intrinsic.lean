@@ -155,7 +155,7 @@ Note that neither `intrinsicInterior` nor `intrinsicFrontier` is monotone.
 
 
 theorem intrinsicClosure_mono (h : s ⊆ t) : intrinsicClosure 𝕜 s ⊆ intrinsicClosure 𝕜 t := by
-  refine' image_subset_iff.2 fun x hx => _
+  refine image_subset_iff.2 fun x hx => ?_
   refine' ⟨Set.inclusion (affineSpan_mono _ h) x, _, rfl⟩
   refine' (continuous_inclusion (affineSpan_mono _ h)).closure_preimage_subset _ (closure_mono _ hx)
   exact fun y hy => h hy

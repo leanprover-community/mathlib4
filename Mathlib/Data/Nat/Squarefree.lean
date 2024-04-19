@@ -208,7 +208,7 @@ theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
     · subst n0
       cases d4 (by decide)
     refine' minSqFacProp_div _ prime_two d2 (mt (dvd_div_iff d2).2 d4) _
-    refine' minSqFacAux_has_prop 3 (Nat.div_pos (le_of_dvd n0 d2) (by decide)) 0 rfl _
+    refine minSqFacAux_has_prop 3 (Nat.div_pos (le_of_dvd n0 d2) (by decide)) 0 rfl ?_
     refine' fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
     rintro rfl
     contradiction
@@ -216,7 +216,7 @@ theorem minSqFac_has_prop (n : ℕ) : MinSqFacProp n (minSqFac n) := by
     · subst n0
       cases d2 (by decide)
     refine' minSqFacAux_has_prop _ n0 0 rfl _
-    refine' fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
+    refine fun p pp dp => succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
     contradiction
 #align nat.min_sq_fac_has_prop Nat.minSqFac_has_prop
@@ -376,7 +376,7 @@ and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` a
 theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
   simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
-  refine' forall₂_congr fun p hp => _
+  refine forall₂_congr fun p hp => ?_
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 
@@ -455,13 +455,13 @@ theorem squarefree_bit10 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit0
   · rw [bit0_eq_two_mul (bit1 n), mul_dvd_mul_iff_left (two_ne_zero' ℕ)]
     exact Nat.not_two_dvd_bit1 _
   · rw [bit0_eq_two_mul, Nat.mul_div_right _ (by decide : 0 < 2)]
-    refine' h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
+    refine h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
     rintro rfl
     exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit10 Tactic.NormNum.squarefree_bit10
 
 theorem squarefree_bit1 (n : ℕ) (h : SquarefreeHelper n 1) : Squarefree (bit1 n) := by
-  refine' h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le _)
+  refine h (by decide) fun p pp dp => Nat.succ_le_of_lt (lt_of_le_of_ne pp.two_le ?_)
   rintro rfl; exact Nat.not_two_dvd_bit1 _ dp
 #align tactic.norm_num.squarefree_bit1 Tactic.NormNum.squarefree_bit1
 
@@ -471,7 +471,7 @@ theorem squarefree_helper_0 {k} (k0 : 0 < k) {p : ℕ} (pp : Nat.Prime p) (h : b
   · rw [bit1, bit0_eq_two_mul] at hp
     change 2 * (_ + 1) ≤ _ at hp
     rw [bit1, bit0_eq_two_mul]
-    refine' Or.inl (lt_of_le_of_ne hp _)
+    refine Or.inl (lt_of_le_of_ne hp ?_)
     rintro rfl
     exact Nat.not_prime_mul (by decide) (lt_add_of_pos_left _ k0) pp
   · exact Or.inr hp
@@ -482,14 +482,14 @@ theorem squarefreeHelper_1 (n k k' : ℕ) (e : k + 1 = k')
     SquarefreeHelper n k := fun k0 ih => by
   subst e
   refine' H (Nat.succ_pos _) fun p pp dp => _
-  refine' (squarefree_helper_0 k0 pp (ih p pp dp)).resolve_right fun hp => _
+  refine (squarefree_helper_0 k0 pp (ih p pp dp)).resolve_right fun hp => ?_
   subst hp; cases hk pp dp
 #align tactic.norm_num.squarefree_helper_1 Tactic.NormNum.squarefreeHelper_1
 
 theorem squarefreeHelper_2 (n k k' c : ℕ) (e : k + 1 = k') (hc : bit1 n % bit1 k = c) (c0 : 0 < c)
     (h : SquarefreeHelper n k') : SquarefreeHelper n k := by
   refine' squarefree_helper_1 _ _ _ e (fun _ => _) h
-  refine' mt _ (ne_of_gt c0); intro e₁
+  refine mt ?_ (ne_of_gt c0); intro e₁
   rwa [← hc, ← Nat.dvd_iff_mod_eq_zero]
 #align tactic.norm_num.squarefree_helper_2 Tactic.NormNum.squarefreeHelper_2
 
@@ -512,7 +512,7 @@ theorem squarefreeHelper_3 (n n' k k' c : ℕ) (e : k + 1 = k') (hn' : bit1 n' *
   refine' @Nat.minSqFacProp_div _ _ pk dk dkk none _
   rw [this]
   refine' H (Nat.succ_pos _) fun p pp dp => _
-  refine' (squarefree_helper_0 k0 pp (ih p pp <| dvd_trans dp dn')).resolve_right fun e => _
+  refine (squarefree_helper_0 k0 pp (ih p pp <| dvd_trans dp dn')).resolve_right fun e => ?_
   subst e
   contradiction
 #align tactic.norm_num.squarefree_helper_3 Tactic.NormNum.squarefreeHelper_3

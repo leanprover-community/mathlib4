@@ -317,7 +317,7 @@ theorem eq_wittStructureInt (Φ : MvPolynomial idx ℤ) (φ : ℕ → MvPolynomi
   rw [map_wittStructureInt]
   -- Porting note: was `refine' congr_fun _ k`
   revert k
-  refine' congr_fun _
+  refine congr_fun ?_
   apply ExistsUnique.unique (wittStructureRat_existsUnique p (map (Int.castRingHom ℚ) Φ))
   · intro n
     specialize h n

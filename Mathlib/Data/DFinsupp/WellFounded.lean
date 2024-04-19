@@ -122,7 +122,7 @@ theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠
     · intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot
-    refine' fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) _
+    refine fun x ht h => Lex.acc_of_single_erase b (h b <| t.mem_insert_self b) ?_
     refine' ih _ (by rw [support_erase, ht, Finset.erase_insert hb]) fun a ha => _
     rw [erase_ne (ha.ne_of_not_mem hb)]
     exact h a (Finset.mem_insert_of_mem ha)

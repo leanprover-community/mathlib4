@@ -529,7 +529,7 @@ theorem coeff_eq_zero_of_totalDegree_lt {f : MvPolynomial σ R} {d : σ →₀ �
     rw [totalDegree, Finset.sup_lt_iff] at h
     · specialize h d
       rw [mem_support_iff] at h
-      refine' not_not.mp (mt h _)
+      refine not_not.mp (mt h ?_)
       exact lt_irrefl _
     · exact lt_of_le_of_lt (Nat.zero_le _) h
 #align mv_polynomial.coeff_eq_zero_of_total_degree_lt MvPolynomial.coeff_eq_zero_of_totalDegree_lt

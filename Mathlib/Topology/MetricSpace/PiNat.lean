@@ -450,7 +450,7 @@ protected def metricSpaceOfDiscreteUniformity {E : ℕ → Type*} [∀ n, Unifor
       · simp only [le_iInf_iff, le_principal_iff]
         intro n
         refine' mem_iInf_of_mem ((1 / 2) ^ n : ℝ) _
-        refine' mem_iInf_of_mem (by positivity) _
+        refine mem_iInf_of_mem (by positivity) ?_
         simp only [mem_principal, setOf_subset_setOf, Prod.forall]
         intro x y hxy
         exact apply_eq_of_dist_lt hxy le_rfl }
@@ -469,7 +469,7 @@ protected theorem completeSpace : CompleteSpace (∀ n, E n) := by
   refine' Metric.complete_of_convergent_controlled_sequences (fun n => (1 / 2) ^ n) (by simp) _
   intro u hu
   refine' ⟨fun n => u n n, tendsto_pi_nhds.2 fun i => _⟩
-  refine' tendsto_const_nhds.congr' _
+  refine tendsto_const_nhds.congr' ?_
   filter_upwards [Filter.Ici_mem_atTop i] with n hn
   exact apply_eq_of_dist_lt (hu i i n le_rfl hn) le_rfl
 #align pi_nat.complete_space PiNat.completeSpace
@@ -767,7 +767,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
     choose x hx using this
     have I : (⋂ n : ℕ, closedBall (u (x n)) ((1 / 2) ^ n)).Nonempty := ⟨y, mem_iInter.2 hx⟩
     refine ⟨⟨x, I⟩, ?_⟩
-    refine' dist_le_zero.1 _
+    refine dist_le_zero.1 ?_
     have J : ∀ n : ℕ, dist (g ⟨x, I⟩) y ≤ (1 / 2) ^ n + (1 / 2) ^ n := fun n =>
       calc
         dist (g ⟨x, I⟩) y ≤ dist (g ⟨x, I⟩) (u (x n)) + dist y (u (x n)) :=
@@ -902,7 +902,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
       apply @mem_iInf_of_iInter _ _ _ _ _ K.finite_toSet fun i =>
           { p : (∀ i : ι, F i) × ∀ i : ι, F i | dist (p.fst i) (p.snd i) < δ }
       · rintro ⟨i, hi⟩
-        refine' mem_iInf_of_mem δ (mem_iInf_of_mem δpos _)
+        refine mem_iInf_of_mem δ (mem_iInf_of_mem δpos ?_)
         simp only [Prod.forall, imp_self, mem_principal, Subset.rfl]
       · rintro ⟨x, y⟩ hxy
         simp only [mem_iInter, mem_setOf_eq, SetCoe.forall, Finset.mem_range, Finset.mem_coe] at hxy
@@ -928,7 +928,7 @@ protected def metricSpace : MetricSpace (∀ i, F i) where
       intro i ε εpos
       refine' mem_iInf_of_mem (min ((1 / 2) ^ encode i : ℝ) ε) _
       have : 0 < min ((1 / 2) ^ encode i : ℝ) ε := lt_min (by simp) εpos
-      refine' mem_iInf_of_mem this _
+      refine mem_iInf_of_mem this ?_
       simp only [and_imp, Prod.forall, setOf_subset_setOf, lt_min_iff, mem_principal]
       intro x y hn hε
       calc

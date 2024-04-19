@@ -949,7 +949,7 @@ theorem isIntegral_quotientMap_iff {I : Ideal S} :
   have : (Ideal.quotientMap I f le_rfl).comp g = (Ideal.Quotient.mk I).comp f :=
     Ideal.quotientMap_comp_mk le_rfl
   refine' ⟨fun h => _, fun h => RingHom.IsIntegral.tower_top g _ (this ▸ h)⟩
-  refine' this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) _ h
+  refine this ▸ RingHom.IsIntegral.trans g (Ideal.quotientMap I f le_rfl) ?_ h
   exact g.isIntegral_of_surjective Ideal.Quotient.mk_surjective
 #align is_integral_quotient_map_iff isIntegral_quotientMap_iff
 

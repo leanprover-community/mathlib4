@@ -847,7 +847,7 @@ theorem finprod_eventually_eq_prod {M : Type*} [CommMonoid M] {f : ι → X → 
 @[to_additive]
 theorem continuous_finprod {f : ι → X → M} (hc : ∀ i, Continuous (f i))
     (hf : LocallyFinite fun i => mulSupport (f i)) : Continuous fun x => ∏ᶠ i, f i x := by
-  refine' continuous_iff_continuousAt.2 fun x => _
+  refine continuous_iff_continuousAt.2 fun x => ?_
   rcases finprod_eventually_eq_prod hf x with ⟨s, hs⟩
   refine ContinuousAt.congr ?_ (EventuallyEq.symm hs)
   exact tendsto_finset_prod _ fun i _ => (hc i).continuousAt
@@ -897,7 +897,7 @@ theorem continuousMul_iInf {ts : ι' → TopologicalSpace M}
 theorem continuousMul_inf {t₁ t₂ : TopologicalSpace M} (h₁ : @ContinuousMul M t₁ _)
     (h₂ : @ContinuousMul M t₂ _) : @ContinuousMul M (t₁ ⊓ t₂) _ := by
   rw [inf_eq_iInf]
-  refine' continuousMul_iInf fun b => _
+  refine continuousMul_iInf fun b => ?_
   cases b <;> assumption
 #align has_continuous_mul_inf continuousMul_inf
 #align has_continuous_add_inf continuousAdd_inf

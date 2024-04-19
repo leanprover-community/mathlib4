@@ -217,7 +217,7 @@ instance countableInterFilter_inf (l₁ l₂ : Filter α) [CountableInterFilter 
   choose s hs t ht hst using hS
   replace hs : (⋂ i ∈ S, s i ‹_›) ∈ l₁ := (countable_bInter_mem hSc).2 hs
   replace ht : (⋂ i ∈ S, t i ‹_›) ∈ l₂ := (countable_bInter_mem hSc).2 ht
-  refine' mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => _)
+  refine mem_of_superset (inter_mem_inf hs ht) (subset_sInter fun i hi => ?_)
   rw [hst i hi]
   apply inter_subset_inter <;> exact iInter_subset_of_subset i (iInter_subset _ _)
 #align countable_Inter_filter_inf countableInterFilter_inf
@@ -272,7 +272,7 @@ theorem mem_countableGenerate_iff {s : Set α} :
     intro s H
     exact subset_trans (sInter_subset_sInter (subset_iUnion₂ s H)) (hT s H)
   rcases h with ⟨S, Sg, Sct, hS⟩
-  refine' mem_of_superset ((countable_sInter_mem Sct).mpr _) hS
+  refine mem_of_superset ((countable_sInter_mem Sct).mpr ?_) hS
   intro s H
   exact CountableGenerateSets.basic (Sg H)
 #align filter.mem_countable_generate_iff Filter.mem_countableGenerate_iff

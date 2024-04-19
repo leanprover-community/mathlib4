@@ -96,7 +96,7 @@ theorem factors_chain {n : ℕ} :
       let m := minFac (k + 2)
       have : (k + 2) / m < (k + 2) := factors_lemma
       rw [factors]
-      refine' List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain _)
+      refine List.Chain.cons ((le_minFac.2 h).resolve_left (by simp)) (factors_chain ?_)
       exact fun p pp d => minFac_le_of_dvd pp.two_le (d.trans <| div_dvd_of_dvd <| minFac_dvd _)
 #align nat.factors_chain Nat.factors_chain
 
@@ -171,7 +171,7 @@ theorem factors_unique {n : ℕ} {l : List ℕ} (h₁ : prod l = n) (h₂ : ∀ 
     l ~ factors n := by
   refine' perm_of_prod_eq_prod _ _ _
   · rw [h₁]
-    refine' (prod_factors _).symm
+    refine (prod_factors ?_).symm
     rintro rfl
     rw [prod_eq_zero_iff] at h₁
     exact Prime.ne_zero (h₂ 0 h₁) rfl

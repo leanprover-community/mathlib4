@@ -143,7 +143,7 @@ theorem StrictConvex.is_linear_image (hs : StrictConvex 𝕜 s) {f : E → F} (h
 theorem StrictConvex.linear_preimage {s : Set F} (hs : StrictConvex 𝕜 s) (f : E →ₗ[𝕜] F)
     (hf : Continuous f) (hfinj : Injective f) : StrictConvex 𝕜 (s.preimage f) := by
   intro x hx y hy hxy a b ha hb hab
-  refine' preimage_interior_subset_interior_preimage hf _
+  refine preimage_interior_subset_interior_preimage hf ?_
   rw [mem_preimage, f.map_add, f.map_smul, f.map_smul]
   exact hs hx hy (hfinj.ne hxy) ha hb hab
 #align strict_convex.linear_preimage StrictConvex.linear_preimage
@@ -161,7 +161,7 @@ variable [TopologicalSpace β] [LinearOrderedCancelAddCommMonoid β] [OrderTopol
 
 protected theorem Set.OrdConnected.strictConvex {s : Set β} (hs : OrdConnected s) :
     StrictConvex 𝕜 s := by
-  refine' strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => _
+  refine strictConvex_iff_openSegment_subset.2 fun x hx y hy hxy => ?_
   cases' hxy.lt_or_lt with hlt hlt <;> [skip; rw [openSegment_symm]] <;>
     exact
       (openSegment_subset_Ioo hlt).trans
@@ -366,7 +366,7 @@ theorem StrictConvex.add_smul_sub_mem (h : StrictConvex 𝕜 s) (hx : x ∈ s) (
 theorem StrictConvex.affine_preimage {s : Set F} (hs : StrictConvex 𝕜 s) {f : E →ᵃ[𝕜] F}
     (hf : Continuous f) (hfinj : Injective f) : StrictConvex 𝕜 (f ⁻¹' s) := by
   intro x hx y hy hxy a b ha hb hab
-  refine' preimage_interior_subset_interior_preimage hf _
+  refine preimage_interior_subset_interior_preimage hf ?_
   rw [mem_preimage, Convex.combo_affine_apply hab]
   exact hs hx hy (hfinj.ne hxy) ha hb hab
 #align strict_convex.affine_preimage StrictConvex.affine_preimage

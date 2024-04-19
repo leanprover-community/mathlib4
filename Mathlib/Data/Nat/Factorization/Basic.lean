@@ -558,7 +558,7 @@ theorem ord_proj_dvd_ord_proj_of_dvd {a b : ℕ} (hb0 : b ≠ 0) (hab : a ∣ b)
 
 theorem ord_proj_dvd_ord_proj_iff_dvd {a b : ℕ} (ha0 : a ≠ 0) (hb0 : b ≠ 0) :
     (∀ p : ℕ, ord_proj[p] a ∣ ord_proj[p] b) ↔ a ∣ b := by
-  refine' ⟨fun h => _, fun hab p => ord_proj_dvd_ord_proj_of_dvd hb0 hab p⟩
+  refine ⟨fun h => ?_, fun hab p => ord_proj_dvd_ord_proj_of_dvd hb0 hab p⟩
   rw [← factorization_le_iff_dvd ha0 hb0]
   intro q
   rcases le_or_lt q 1 with (hq_le | hq1)
@@ -586,7 +586,7 @@ theorem ord_compl_dvd_ord_compl_of_dvd {a b : ℕ} (hab : a ∣ b) (p : ℕ) :
 
 theorem ord_compl_dvd_ord_compl_iff_dvd (a b : ℕ) :
     (∀ p : ℕ, ord_compl[p] a ∣ ord_compl[p] b) ↔ a ∣ b := by
-  refine' ⟨fun h => _, fun hab p => ord_compl_dvd_ord_compl_of_dvd hab p⟩
+  refine ⟨fun h => ?_, fun hab p => ord_compl_dvd_ord_compl_of_dvd hab p⟩
   rcases eq_or_ne b 0 with (rfl | hb0)
   · simp
   if pa : a.Prime then ?_ else simpa [pa] using h a
@@ -938,7 +938,7 @@ theorem eq_iff_prime_padicValNat_eq (a b : ℕ) (ha : a ≠ 0) (hb : b ≠ 0) :
   · rintro rfl
     simp
   · intro h
-    refine' eq_of_factorization_eq ha hb fun p => _
+    refine eq_of_factorization_eq ha hb fun p => ?_
     by_cases pp : p.Prime
     · simp [factorization_def, pp, h p pp]
     · simp [factorization_eq_zero_of_non_prime, pp]

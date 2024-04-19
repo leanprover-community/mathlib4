@@ -105,7 +105,7 @@ theorem ne_top_iff_one : I ≠ ⊤ ↔ (1 : α) ∉ I :=
 
 @[simp]
 theorem unit_mul_mem_iff_mem {x y : α} (hy : IsUnit y) : y * x ∈ I ↔ x ∈ I := by
-  refine' ⟨fun h => _, fun h => I.mul_mem_left y h⟩
+  refine ⟨fun h => ?_, fun h => I.mul_mem_left y h⟩
   obtain ⟨y', hy'⟩ := hy.exists_left_inv
   have := I.mul_mem_left y' h
   rwa [← mul_assoc, hy', one_mul] at this
@@ -543,7 +543,7 @@ theorem IsMaximal.isPrime {I : Ideal α} (H : I.IsMaximal) : I.IsPrime :=
       rcases Submodule.mem_span_insert.mp oJ with ⟨a, b, h, oe⟩
       obtain F : y * 1 = y * (a • x + b) := congr_arg (fun g : α => y * g) oe
       rw [← mul_one y, F, mul_add, mul_comm, smul_eq_mul, mul_assoc]
-      refine' Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y _)
+      refine Submodule.add_mem I (I.mul_mem_left a hxy) (Submodule.smul_mem I y ?_)
       rwa [Submodule.span_eq] at h⟩
 #align ideal.is_maximal.is_prime Ideal.IsMaximal.isPrime
 
@@ -664,7 +664,7 @@ theorem span_pow_eq_top (s : Set α) (hs : span s = ⊤) (n : ℕ) :
   have hf : (f.support.sum fun a => f a * a) = 1 := hf -- Porting note: was `change ... at hf`
   have := sum_pow_mem_span_pow f.support (fun a => f a * a) n
   rw [hf, one_pow] at this
-  refine' span_le.mpr _ this
+  refine span_le.mpr ?_ this
   rintro _ hx
   simp_rw [Set.mem_image] at hx
   rcases hx with ⟨x, _, rfl⟩

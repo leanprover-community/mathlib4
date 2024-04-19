@@ -756,7 +756,7 @@ theorem univ_pi_nonempty_iff : (pi univ t).Nonempty ↔ ∀ i, (t i).Nonempty :=
 theorem pi_eq_empty_iff : s.pi t = ∅ ↔ ∃ i, IsEmpty (α i) ∨ i ∈ s ∧ t i = ∅ := by
   rw [← not_nonempty_iff_eq_empty, pi_nonempty_iff]
   push_neg
-  refine' exists_congr fun i => _
+  refine exists_congr fun i => ?_
   cases isEmpty_or_nonempty (α i) <;> simp [*, forall_and, eq_empty_iff_forall_not_mem]
 #align set.pi_eq_empty_iff Set.pi_eq_empty_iff
 
@@ -975,7 +975,7 @@ theorem univ_pi_ite (s : Set ι) [DecidablePred (· ∈ s)] (t : ∀ i, Set (α 
     (pi univ fun i => if i ∈ s then t i else univ) = s.pi t := by
   ext
   simp_rw [mem_univ_pi]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => ?_
   split_ifs with h <;> simp [h]
 #align set.univ_pi_ite Set.univ_pi_ite
 

@@ -523,7 +523,7 @@ theorem natCast_zmod_eq_zero_iff_dvd (a b : ℕ) : (a : ZMod b) = 0 ↔ b ∣ a 
 theorem val_intCast {n : ℕ} (a : ℤ) [NeZero n] : ↑(a : ZMod n).val = a % n := by
   have hle : (0 : ℤ) ≤ ↑(a : ZMod n).val := Int.natCast_nonneg _
   have hlt : ↑(a : ZMod n).val < (n : ℤ) := Int.ofNat_lt.mpr (ZMod.val_lt a)
-  refine' (Int.emod_eq_of_lt hle hlt).symm.trans _
+  refine (Int.emod_eq_of_lt hle hlt).symm.trans ?_
   rw [← ZMod.intCast_eq_intCast_iff', Int.cast_natCast, ZMod.natCast_val, ZMod.cast_id]
 #align zmod.val_int_cast ZMod.val_intCast
 
@@ -957,7 +957,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
     cases m
     · right
       rwa [show Nat.succ Nat.zero = 1 from rfl, mul_one] at he
-    refine' (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left _ zero_lt_two).elim
+    refine (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left ?_ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
     erw [Nat.succ_le_succ_iff, Nat.succ_le_succ_iff]; simp
@@ -1206,7 +1206,7 @@ theorem valMinAbs_natCast_of_half_lt (ha : n / 2 < a) (ha' : a < n) :
 -- Porting note: There was an extraneous `nat_` in the mathlib3 name
 @[simp]
 theorem valMinAbs_natCast_eq_self [NeZero n] : (a : ZMod n).valMinAbs = a ↔ a ≤ n / 2 := by
-  refine' ⟨fun ha => _, valMinAbs_natCast_of_le_half⟩
+  refine ⟨fun ha => ?_, valMinAbs_natCast_of_le_half⟩
   rw [← Int.natAbs_ofNat a, ← ha]
   exact natAbs_valMinAbs_le a
 #align zmod.val_min_nat_abs_nat_cast_eq_self ZMod.valMinAbs_natCast_eq_self

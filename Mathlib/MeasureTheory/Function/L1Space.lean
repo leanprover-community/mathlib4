@@ -76,7 +76,7 @@ theorem lintegral_edist_triangle {f g h : α → β} (hf : AEStronglyMeasurable 
     (hh : AEStronglyMeasurable h μ) :
     (∫⁻ a, edist (f a) (g a) ∂μ) ≤ (∫⁻ a, edist (f a) (h a) ∂μ) + ∫⁻ a, edist (g a) (h a) ∂μ := by
   rw [← lintegral_add_left' (hf.edist hh)]
-  refine' lintegral_mono fun a => _
+  refine lintegral_mono fun a => ?_
   apply edist_triangle_right
 #align measure_theory.lintegral_edist_triangle MeasureTheory.lintegral_edist_triangle
 
@@ -265,7 +265,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
     intro x
     rw [Real.nnnorm_of_nonneg]
   simp_rw [HasFiniteIntegral, this]
-  refine' lt_of_le_of_lt (lintegral_mono fun x => _) (lt_top_iff_ne_top.2 hf)
+  refine lt_of_le_of_lt (lintegral_mono fun x => ?_) (lt_top_iff_ne_top.2 hf)
   by_cases hfx : f x = ∞
   · simp [hfx]
   · lift f x to ℝ≥0 using hfx with fx h
@@ -274,7 +274,7 @@ theorem hasFiniteIntegral_toReal_of_lintegral_ne_top {f : α → ℝ≥0∞} (hf
 
 theorem isFiniteMeasure_withDensity_ofReal {f : α → ℝ} (hfi : HasFiniteIntegral f μ) :
     IsFiniteMeasure (μ.withDensity fun x => ENNReal.ofReal <| f x) := by
-  refine' isFiniteMeasure_withDensity ((lintegral_mono fun x => _).trans_lt hfi).ne
+  refine isFiniteMeasure_withDensity ((lintegral_mono fun x => ?_).trans_lt hfi).ne
   exact Real.ofReal_le_ennnorm (f x)
 #align measure_theory.is_finite_measure_with_density_of_real MeasureTheory.isFiniteMeasure_withDensity_ofReal
 
@@ -397,7 +397,7 @@ theorem HasFiniteIntegral.smul [NormedAddCommGroup 𝕜] [SMulZeroClass 𝕜 β]
   simp only [HasFiniteIntegral]; intro hfi
   calc
     (∫⁻ a : α, ‖c • f a‖₊ ∂μ) ≤ ∫⁻ a : α, ‖c‖₊ * ‖f a‖₊ ∂μ := by
-      refine' lintegral_mono _
+      refine lintegral_mono ?_
       intro i
       -- After leanprover/lean4#2734, we need to do beta reduction `exact mod_cast`
       beta_reduce
@@ -736,7 +736,7 @@ theorem Integrable.bdd_mul {F : Type*} [NormedDivisionRing F] {f g : α → F} (
       intro x
       simp only [nnnorm_mul]
       exact mul_le_mul_of_nonneg_right (hC x) (zero_le _)
-    refine' lt_of_le_of_lt (lintegral_mono_nnreal this) _
+    refine lt_of_le_of_lt (lintegral_mono_nnreal this) ?_
     simp only [ENNReal.coe_mul]
     rw [lintegral_const_mul' _ _ ENNReal.coe_ne_top]
     exact ENNReal.mul_lt_top ENNReal.coe_ne_top (ne_of_lt hint.2)
@@ -1288,7 +1288,7 @@ set_option linter.uppercaseLean3 false in
 #align measure_theory.ae_eq_fun.integrable_iff_mem_L1 MeasureTheory.AEEqFun.integrable_iff_mem_L1
 
 theorem Integrable.add {f g : α →ₘ[μ] β} : Integrable f → Integrable g → Integrable (f + g) := by
-  refine' induction_on₂ f g fun f hf g hg hfi hgi => _
+  refine induction_on₂ f g fun f hf g hg hfi hgi => ?_
   simp only [integrable_mk, mk_add_mk] at hfi hgi ⊢
   exact hfi.add hgi
 #align measure_theory.ae_eq_fun.integrable.add MeasureTheory.AEEqFun.Integrable.add

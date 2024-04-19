@@ -125,7 +125,7 @@ theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
   · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
     letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
     have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
-    refine' generateFrom_le _
+    refine generateFrom_le ?_
     rintro _ ⟨a, rfl | rfl⟩
     · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
       · rw [hb.Ioi_eq, ← compl_Iio]
@@ -443,7 +443,7 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
-  refine' MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet _
+  refine MeasurableSet.pi i.countable_toSet fun a ha => IsOpen.measurableSet ?_
   rw [eq_generateFrom_countableBasis (π a)]
   exact .basic _ (hi a ha)
 #align pi.opens_measurable_space Pi.opensMeasurableSpace
@@ -714,7 +714,7 @@ theorem Dense.borel_eq_generateFrom_Ico_mem_aux {α : Type*} [TopologicalSpace �
   refine' le_antisymm _ (generateFrom_Ico_mem_le_borel _ _)
   letI : MeasurableSpace α := generateFrom S
   rw [borel_eq_generateFrom_Iio]
-  refine' generateFrom_le (forall_mem_range.2 fun a => _)
+  refine generateFrom_le (forall_mem_range.2 fun a => ?_)
   rcases hd.exists_countable_dense_subset_bot_top with ⟨t, hts, hc, htd, htb, -⟩
   by_cases ha : ∀ b < a, (Ioo b a).Nonempty
   · convert_to MeasurableSet (⋃ (l ∈ t) (u ∈ t) (_ : l < u) (_ : u ≤ a), Ico l u)
@@ -965,7 +965,7 @@ respective pieces, then it is measurable. -/
 theorem ContinuousOn.measurable_piecewise {f g : α → γ} {s : Set α} [∀ j : α, Decidable (j ∈ s)]
     (hf : ContinuousOn f s) (hg : ContinuousOn g sᶜ) (hs : MeasurableSet s) :
     Measurable (s.piecewise f g) := by
-  refine' measurable_of_isOpen fun t ht => _
+  refine measurable_of_isOpen fun t ht => ?_
   rw [piecewise_preimage, Set.ite]
   apply MeasurableSet.union
   · rcases _root_.continuousOn_iff'.1 hf t ht with ⟨u, u_open, hu⟩
@@ -1369,7 +1369,7 @@ theorem measurableSet_of_mem_nhdsWithin_Ioi {s : Set α} (h : ∀ x ∈ s, s ∈
     rw [this]
     refine' (measurableSet_singleton _).union _
     have A : ∀ x ∈ s \ {x₀}, x < x₀ := fun x hx => lt_of_le_of_ne (h₀ _) (by simpa using hx.2)
-    refine' measurableSet_of_mem_nhdsWithin_Ioi_aux (fun x hx => _) fun x hx => ⟨x₀, A x hx⟩
+    refine measurableSet_of_mem_nhdsWithin_Ioi_aux (fun x hx => ?_) fun x hx => ⟨x₀, A x hx⟩
     obtain ⟨u, hu, us⟩ : ∃ (u : α), u ∈ Ioi x ∧ Ioo x u ⊆ s :=
       (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).1 (h x hx.1)
     refine' (mem_nhdsWithin_Ioi_iff_exists_Ioo_subset' (A x hx)).2 ⟨u, hu, fun y hy => ⟨us hy, _⟩⟩
@@ -2390,7 +2390,7 @@ theorem measurable_of_tendsto' {ι} {f : ι → α → ℝ≥0} {g : α → ℝ�
     [IsCountablyGenerated u] (hf : ∀ i, Measurable (f i)) (lim : Tendsto f u (𝓝 g)) :
     Measurable g := by
   simp_rw [← measurable_coe_nnreal_ennreal_iff] at hf ⊢
-  refine' ENNReal.measurable_of_tendsto' u hf _
+  refine ENNReal.measurable_of_tendsto' u hf ?_
   rw [tendsto_pi_nhds] at lim ⊢
   exact fun x => (ENNReal.continuous_coe.tendsto (g x)).comp (lim x)
 #align measurable_of_tendsto_nnreal' NNReal.measurable_of_tendsto'
@@ -2436,7 +2436,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
   · exact fun x hx => hx.2
   · have :
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
-      refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
+      refine Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => ?_
       simp only [norm_sets, Set.mem_setOf_eq]
       refine fun hif => hif.trans ?_
       exact mod_cast hij

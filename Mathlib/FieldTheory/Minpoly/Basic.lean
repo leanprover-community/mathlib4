@@ -94,7 +94,7 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
 /-- A minimal polynomial is not `1`. -/
 theorem ne_one [Nontrivial B] : minpoly A x ≠ 1 := by
   intro h
-  refine' (one_ne_zero : (1 : B) ≠ 0) _
+  refine (one_ne_zero : (1 : B) ≠ 0) ?_
   simpa using congr_arg (Polynomial.aeval x) h
 #align minpoly.ne_one minpoly.ne_one
 
@@ -252,7 +252,7 @@ variable {x : B}
 /-- If `a` strictly divides the minimal polynomial of `x`, then `x` cannot be a root for `a`. -/
 theorem aeval_ne_zero_of_dvdNotUnit_minpoly {a : A[X]} (hx : IsIntegral A x) (hamonic : a.Monic)
     (hdvd : DvdNotUnit a (minpoly A x)) : Polynomial.aeval x a ≠ 0 := by
-  refine' fun ha => (min A x hamonic ha).not_lt (degree_lt_degree _)
+  refine fun ha => (min A x hamonic ha).not_lt (degree_lt_degree ?_)
   obtain ⟨_, c, hu, he⟩ := hdvd
   have hcm := hamonic.of_mul_monic_left (he.subst <| monic hx)
   rw [he, hamonic.natDegree_mul hcm]
@@ -268,7 +268,7 @@ variable [IsDomain A] [IsDomain B]
 
 /-- A minimal polynomial is irreducible. -/
 theorem irreducible (hx : IsIntegral A x) : Irreducible (minpoly A x) := by
-  refine' (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => _
+  refine (irreducible_of_monic (monic hx) <| ne_one A x).2 fun f g hf hg he => ?_
   rw [← hf.isUnit_iff, ← hg.isUnit_iff]
   by_contra! h
   have heval := congr_arg (Polynomial.aeval x) he

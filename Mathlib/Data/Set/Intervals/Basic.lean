@@ -778,7 +778,7 @@ lemma subsingleton_Icc_of_ge (hba : b ≤ a) : Set.Subsingleton (Icc a b) :=
 
 @[simp] lemma subsingleton_Icc_iff {α : Type*} [LinearOrder α] {a b : α} :
     Set.Subsingleton (Icc a b) ↔ b ≤ a := by
-  refine' ⟨fun h ↦ _, subsingleton_Icc_of_ge⟩
+  refine ⟨fun h ↦ ?_, subsingleton_Icc_of_ge⟩
   contrapose! h
   simp only [ge_iff_le, gt_iff_lt, not_subsingleton_iff]
   exact ⟨a, ⟨le_refl _, h.le⟩, b, ⟨h.le, le_refl _⟩, h.ne⟩
@@ -1193,14 +1193,14 @@ open scoped Classical
 
 @[simp]
 theorem Ioi_subset_Ioi_iff : Ioi b ⊆ Ioi a ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Ioi_subset_Ioi h⟩
+  refine ⟨fun h => ?_, fun h => Ioi_subset_Ioi h⟩
   by_contra ba
   exact lt_irrefl _ (h (not_le.mp ba))
 #align set.Ioi_subset_Ioi_iff Set.Ioi_subset_Ioi_iff
 
 @[simp]
 theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Ioi_subset_Ici h⟩
+  refine ⟨fun h => ?_, fun h => Ioi_subset_Ici h⟩
   by_contra ba
   obtain ⟨c, bc, ca⟩ : ∃ c, b < c ∧ c < a := exists_between (not_le.mp ba)
   exact lt_irrefl _ (ca.trans_le (h bc))
@@ -1208,7 +1208,7 @@ theorem Ioi_subset_Ici_iff [DenselyOrdered α] : Ioi b ⊆ Ici a ↔ a ≤ b := 
 
 @[simp]
 theorem Iio_subset_Iio_iff : Iio a ⊆ Iio b ↔ a ≤ b := by
-  refine' ⟨fun h => _, fun h => Iio_subset_Iio h⟩
+  refine ⟨fun h => ?_, fun h => Iio_subset_Iio h⟩
   by_contra ab
   exact lt_irrefl _ (h (not_le.mp ab))
 #align set.Iio_subset_Iio_iff Set.Iio_subset_Iio_iff

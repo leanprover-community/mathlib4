@@ -448,7 +448,7 @@ theorem finprod_cond_eq_prod_of_cond_iff (f : α → M) {p : α → Prop} {t : F
     intro x hx
     exact (h hx.2).1 hx.1
   erw [finprod_mem_def, finprod_eq_prod_of_mulSupport_subset _ this]
-  refine' Finset.prod_congr rfl fun x hx => mulIndicator_apply_eq_self.2 fun hxs => _
+  refine Finset.prod_congr rfl fun x hx => mulIndicator_apply_eq_self.2 fun hxs => ?_
   contrapose! hxs
   exact (h hxs).2 hx
 #align finprod_cond_eq_prod_of_cond_iff finprod_cond_eq_prod_of_cond_iff
@@ -942,7 +942,7 @@ theorem finprod_mem_image' {s : Set β} {g : β → α} (hg : (s ∩ mulSupport 
       have := finprod_mem_eq_prod (comp f g) hs
       unfold Function.comp at this
       rw [this, ← Finset.prod_image hg]
-      refine' finprod_mem_eq_prod_of_inter_mulSupport_eq f _
+      refine finprod_mem_eq_prod_of_inter_mulSupport_eq f ?_
       rw [Finset.coe_image, hs.coe_toFinset, ← image_inter_mulSupport_eq, inter_assoc, inter_self]
     · unfold Function.comp at hs
       rw [finprod_mem_eq_one_of_infinite hs, finprod_mem_eq_one_of_infinite]
@@ -1178,7 +1178,7 @@ theorem finprod_eq_zero {M₀ : Type*} [CommMonoidWithZero M₀] (f : α → M�
     (hf : (mulSupport f).Finite) : ∏ᶠ x, f x = 0 := by
   nontriviality
   rw [finprod_eq_prod f hf]
-  refine' Finset.prod_eq_zero (hf.mem_toFinset.2 _) hx
+  refine Finset.prod_eq_zero (hf.mem_toFinset.2 ?_) hx
   simp [hx]
 #align finprod_eq_zero finprod_eq_zero
 

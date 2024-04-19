@@ -127,7 +127,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
     · push_cast
       ring
     congr 2
-    refine' Finset.sum_congr rfl fun x hxb => _
+    refine Finset.sum_congr rfl fun x hxb => ?_
     rw [if_neg]
     rintro rfl
     exact hab hxb

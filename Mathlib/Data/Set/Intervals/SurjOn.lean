@@ -63,7 +63,7 @@ theorem surjOn_Icc_of_monotone_surjective (h_mono : Monotone f) (h_surj : Functi
 theorem surjOn_Ioi_of_monotone_surjective (h_mono : Monotone f) (h_surj : Function.Surjective f)
     (a : α) : SurjOn f (Ioi a) (Ioi (f a)) := by
   rw [← compl_Iic, ← compl_compl (Ioi (f a))]
-  refine' MapsTo.surjOn_compl _ h_surj
+  refine MapsTo.surjOn_compl ?_ h_surj
   exact fun x hx => (h_mono hx).not_lt
 #align surj_on_Ioi_of_monotone_surjective surjOn_Ioi_of_monotone_surjective
 

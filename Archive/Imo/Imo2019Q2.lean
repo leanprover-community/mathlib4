@@ -311,7 +311,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
   have haQ : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.B cfg.A := by
     rw [Collinear.two_zsmul_oangle_eq_right _ cfg.A_ne_B cfg.Q_ne_B]
     rw [Set.pair_comm, Set.insert_comm]
-    refine' collinear_insert_of_mem_affineSpan_pair _
+    refine collinear_insert_of_mem_affineSpan_pair ?_
     rw [← hPQ]
     exact right_mem_affineSpan_pair _ _ _
   have ha : (2 : ℤ) • ∡ cfg.C cfg.B cfg.Q = (2 : ℤ) • ∡ cfg.C cfg.Q₁ cfg.Q := by
@@ -343,7 +343,7 @@ theorem sbtw_A_B₁_C : Sbtw ℝ cfg.A cfg.B₁ cfg.C :=
 #align imo2019_q2.imo2019q2_cfg.sbtw_A_B₁_C Imo2019Q2.Imo2019q2Cfg.sbtw_A_B₁_C
 
 theorem sbtw_A_A₁_A₂ : Sbtw ℝ cfg.A cfg.A₁ cfg.A₂ := by
-  refine' Sphere.sbtw_secondInter cfg.A_mem_circumsphere _
+  refine Sphere.sbtw_secondInter cfg.A_mem_circumsphere ?_
   convert cfg.sbtw_B_A₁_C.dist_lt_max_dist _
   change _ = max (dist (cfg.triangleABC.points 1) _) (dist (cfg.triangleABC.points 2) _)
   simp_rw [circumsphere_center, circumsphere_radius, dist_circumcenter_eq_circumradius, max_self]
@@ -365,7 +365,7 @@ theorem A₂_ne_B : cfg.A₂ ≠ cfg.B := by
   intro h
   have h₁ := cfg.sbtw_A_A₁_A₂
   rw [h] at h₁
-  refine' cfg.not_collinear_ABC _
+  refine cfg.not_collinear_ABC ?_
   have hc : Collinear ℝ ({cfg.A, cfg.C, cfg.B, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.right_mem_affineSpan
@@ -378,11 +378,11 @@ theorem A₂_ne_C : cfg.A₂ ≠ cfg.C := by
   intro h
   have h₁ := cfg.sbtw_A_A₁_A₂
   rw [h] at h₁
-  refine' cfg.not_collinear_ABC _
+  refine cfg.not_collinear_ABC ?_
   have hc : Collinear ℝ ({cfg.A, cfg.B, cfg.C, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.left_mem_affineSpan
-  refine' hc.subset (Set.insert_subset_insert (Set.insert_subset_insert _))
+  refine hc.subset (Set.insert_subset_insert (Set.insert_subset_insert ?_))
   rw [Set.singleton_subset_iff]
   exact Set.mem_insert _ _
 #align imo2019_q2.imo2019q2_cfg.A₂_ne_C Imo2019Q2.Imo2019q2Cfg.A₂_ne_C
@@ -418,7 +418,7 @@ variable [Module.Oriented ℝ V (Fin 2)]
 
 theorem two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂ :
     (2 : ℤ) • ∡ cfg.Q cfg.P cfg.A₂ = (2 : ℤ) • ∡ cfg.B cfg.A cfg.A₂ := by
-  refine' two_zsmul_oangle_of_parallel cfg.QP_parallel_BA _
+  refine two_zsmul_oangle_of_parallel cfg.QP_parallel_BA ?_
   convert AffineSubspace.Parallel.refl (k := ℝ) (P := Pt) _ using 1
   rw [cfg.collinear_PAA₁A₂.affineSpan_eq_of_ne (Set.mem_insert_of_mem _
     (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
@@ -448,7 +448,7 @@ theorem Q₁_ne_A₂ : cfg.Q₁ ≠ cfg.A₂ := by
   intro h
   have h₁ := cfg.sbtw_Q_A₁_Q₁
   rw [h] at h₁
-  refine' cfg.not_collinear_QPA₂ _
+  refine cfg.not_collinear_QPA₂ ?_
   have hA₂ := cfg.sbtw_A_A₁_A₂.right_mem_affineSpan
   have hA₂A₁ : line[ℝ, cfg.A₂, cfg.A₁] ≤ line[ℝ, cfg.A, cfg.A₁] :=
     affineSpan_pair_le_of_left_mem hA₂
@@ -535,11 +535,11 @@ theorem symm_ω : cfg.symm.ω = cfg.ω := by
   · simp only [trianglePQB₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_emptyc_eq]
     rw [Set.insert_comm]
-    refine' Set.insert_subset_insert (Set.insert_subset_insert _)
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
   · simp only [triangleQPA₂, Matrix.range_cons, Matrix.range_empty, Set.singleton_union,
       insert_emptyc_eq]
-    refine' Set.insert_subset_insert (Set.insert_subset_insert _)
+    refine Set.insert_subset_insert (Set.insert_subset_insert ?_)
     simp
 #align imo2019_q2.imo2019q2_cfg.symm_ω Imo2019Q2.Imo2019q2Cfg.symm_ω
 

@@ -68,7 +68,7 @@ variable {R A B}
 /-- An algebra over a Noetherian ring is finitely generated if and only if it is finitely
 presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
-  refine' ⟨fun h => _, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
+  refine ⟨fun h => ?_, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
   refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
@@ -306,7 +306,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
       from leI hq, add_zero] at hx
     suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
-      refine' add_mem _ hq
+      refine add_mem ?_ hq
       rw [hs] at this
       exact this hx
     rw [Ideal.span_le]
@@ -380,7 +380,7 @@ theorem ker_fg_of_mvPolynomial {n : ℕ} (f : MvPolynomial (Fin n) R →ₐ[R] A
         · exact Set.mem_range_self _
         · exact add_mem (Ideal.mul_mem_right _ _ hy₁) (Ideal.mul_mem_left _ _ hy₂)
     obtain ⟨_, ⟨x, rfl⟩, y, hy, rfl⟩ := AddSubmonoid.mem_sup.mp this
-    refine' add_mem _ hy
+    refine add_mem ?_ hy
     simp only [RingHom.mem_ker, AlgHom.toRingHom_eq_coe, AlgHom.coe_toRingHom, map_add,
       show f y = 0 from leI hy, add_zero, hh'] at hx
     suffices Ideal.span (s : Set RXm) ≤ (Ideal.span s').comap aeval_h by

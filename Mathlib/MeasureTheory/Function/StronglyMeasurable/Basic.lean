@@ -216,7 +216,7 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
     have h_tendsto_norm : Tendsto (fun n => ‖hf.approx n x‖) atTop (𝓝 0) := by
       convert h_tendsto.norm
       rw [norm_zero]
-    refine' squeeze_zero_norm (fun n => _) h_tendsto_norm
+    refine squeeze_zero_norm (fun n => ?_) h_tendsto_norm
     calc
       ‖min 1 (c / ‖hf.approx n x‖) • hf.approx n x‖ =
           ‖min 1 (c / ‖hf.approx n x‖)‖ * ‖hf.approx n x‖ :=
@@ -228,12 +228,12 @@ theorem tendsto_approxBounded_of_norm_le {β} {f : α → β} [NormedAddCommGrou
         · exact le_min zero_le_one (div_nonneg ((norm_nonneg _).trans hfx) (norm_nonneg _))
       _ = ‖hf.approx n x‖ := by rw [norm_one, one_mul]
   rw [← one_smul ℝ (f x)]
-  refine' Tendsto.smul _ h_tendsto
+  refine Tendsto.smul ?_ h_tendsto
   have : min 1 (c / ‖f x‖) = 1 := by
     rw [min_eq_left_iff, one_le_div (lt_of_le_of_ne (norm_nonneg _) (Ne.symm hfx0))]
     exact hfx
   nth_rw 2 [this.symm]
-  refine' Tendsto.min tendsto_const_nhds _
+  refine Tendsto.min tendsto_const_nhds ?_
   exact Tendsto.div tendsto_const_nhds h_tendsto.norm hfx0
 #align measure_theory.strongly_measurable.tendsto_approx_bounded_of_norm_le MeasureTheory.StronglyMeasurable.tendsto_approxBounded_of_norm_le
 
@@ -301,7 +301,7 @@ theorem finStronglyMeasurable_of_set_sigmaFinite [TopologicalSpace β] [Zero β]
   refine ⟨fs, ?_, fun x => ?_⟩
   · simp_rw [SimpleFunc.support_eq]
     refine' fun n => (measure_biUnion_finset_le _ _).trans_lt _
-    refine' ENNReal.sum_lt_top_iff.mpr fun y hy => _
+    refine ENNReal.sum_lt_top_iff.mpr fun y hy => ?_
     rw [SimpleFunc.restrict_preimage_singleton _ ((hS_meas n).inter ht)]
     swap
     · letI : (y : β) → Decidable (y = 0) := fun y => Classical.propDecidable _
@@ -1052,7 +1052,7 @@ theorem exists_set_sigmaFinite [Zero β] [TopologicalSpace β] [T2Space β]
       intro n x hxt
       rw [Set.mem_compl_iff, Set.mem_iUnion, not_exists] at hxt
       simpa [T] using hxt n
-    refine' fun x hxt => tendsto_nhds_unique (h_approx x) _
+    refine fun x hxt => tendsto_nhds_unique (h_approx x) ?_
     rw [funext fun n => h_fs_zero n x hxt]
     exact tendsto_const_nhds
   · refine' ⟨⟨⟨fun n => tᶜ ∪ T n, fun _ => trivial, fun n => _, _⟩⟩⟩
@@ -2015,7 +2015,7 @@ theorem exists_set_sigmaFinite (hf : AEFinStronglyMeasurable f μ) :
   rcases hf with ⟨g, hg, hfg⟩
   obtain ⟨t, ht, hgt_zero, htμ⟩ := hg.exists_set_sigmaFinite
   refine ⟨t, ht, ?_, htμ⟩
-  refine' EventuallyEq.trans (ae_restrict_of_ae hfg) _
+  refine EventuallyEq.trans (ae_restrict_of_ae hfg) ?_
   rw [EventuallyEq, ae_restrict_iff' ht.compl]
   exact eventually_of_forall hgt_zero
 #align measure_theory.ae_fin_strongly_measurable.exists_set_sigma_finite MeasureTheory.AEFinStronglyMeasurable.exists_set_sigmaFinite
@@ -2092,7 +2092,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
   have h_tendsto : Tendsto U atTop (𝓝 fun p => u p.fst p.snd) := by
     rw [tendsto_pi_nhds]
     exact fun p => ht_sf p.fst p.snd
-  refine' measurable_of_tendsto_metrizable (fun n => _) h_tendsto
+  refine measurable_of_tendsto_metrizable (fun n => ?_) h_tendsto
   have h_meas : Measurable fun p : (t_sf n).range × α => u (↑p.fst) p.snd := by
     have :
       (fun p : ↥(t_sf n).range × α => u (↑p.fst) p.snd) =
@@ -2106,7 +2106,7 @@ theorem measurable_uncurry_of_continuous_of_measurable {α β ι : Type*} [Topol
         (⟨t_sf n p.fst, SimpleFunc.mem_range_self _ _⟩, p.snd) :=
     rfl
   simp_rw [U, this]
-  refine' h_meas.comp (Measurable.prod_mk _ measurable_snd)
+  refine h_meas.comp (Measurable.prod_mk ?_ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 #align measure_theory.measurable_uncurry_of_continuous_of_measurable MeasureTheory.measurable_uncurry_of_continuous_of_measurable
 
@@ -2146,7 +2146,7 @@ theorem stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable {α β ι
         (⟨t_sf n p.fst, SimpleFunc.mem_range_self _ _⟩, p.snd) :=
     rfl
   simp_rw [U, this]
-  refine' h_str_meas.comp_measurable (Measurable.prod_mk _ measurable_snd)
+  refine h_str_meas.comp_measurable (Measurable.prod_mk ?_ measurable_snd)
   exact ((t_sf n).measurable.comp measurable_fst).subtype_mk
 #align measure_theory.strongly_measurable_uncurry_of_continuous_of_strongly_measurable MeasureTheory.stronglyMeasurable_uncurry_of_continuous_of_stronglyMeasurable
 

@@ -155,7 +155,7 @@ theorem card_le_of_separated (s : Finset E) (hs : ∀ c ∈ s, ‖c‖ ≤ 2)
     convert h c hc d hd hcd
     norm_num
   have A_subset : A ⊆ ball (0 : E) ρ := by
-    refine' iUnion₂_subset fun x hx => _
+    refine iUnion₂_subset fun x hx => ?_
     apply ball_subset_ball'
     calc
       δ + dist x 0 ≤ δ + 2 := by rw [dist_zero_right]; exact add_le_add le_rfl (hs x hx)
@@ -419,7 +419,7 @@ theorem exists_normalized_aux2 {N : ℕ} {τ : ℝ} (a : SatelliteConfig E N τ)
         _ ≤ 4 := by norm_num
     calc
       a.r j - δ ≤ a.r j - a.r j / 4 * δ := by
-        refine' sub_le_sub le_rfl _
+        refine sub_le_sub le_rfl ?_
         refine' mul_le_of_le_one_left δnonneg _
         linarith only [C]
       _ = (1 - δ / 4) * a.r j := by ring

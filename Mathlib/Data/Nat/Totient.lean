@@ -90,7 +90,7 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
       Nat.zero_eq, zero_add]
     -- Porting note: below line was `mono`
     refine Finset.card_mono ?_
-    refine' monotone_filter_left a.Coprime _
+    refine monotone_filter_left a.Coprime ?_
     simp only [Finset.le_eq_subset]
     exact Ico_subset_Ico rfl.le (add_le_add_left (le_of_lt (mod_lt n a_pos)) k)
   simp only [mul_succ]
@@ -175,7 +175,7 @@ theorem sum_totient (n : ℕ) : n.divisors.sum φ = n := by
   rw [← sum_div_divisors n φ]
   have : n = ∑ d : ℕ in n.divisors, (filter (fun k : ℕ => n.gcd k = d) (range n)).card := by
     nth_rw 1 [← card_range n]
-    refine' card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨_, hn.ne'⟩
+    refine card_eq_sum_card_fiberwise fun x _ => mem_divisors.2 ⟨?_, hn.ne'⟩
     apply gcd_dvd_left
   nth_rw 3 [this]
   exact sum_congr rfl fun x hx => totient_div_of_dvd (dvd_of_mem_divisors hx)
@@ -229,7 +229,7 @@ theorem totient_prime {p : ℕ} (hp : p.Prime) : φ p = p - 1 := by
 #align nat.totient_prime Nat.totient_prime
 
 theorem totient_eq_iff_prime {p : ℕ} (hp : 0 < p) : p.totient = p - 1 ↔ p.Prime := by
-  refine' ⟨fun h => _, totient_prime⟩
+  refine ⟨fun h => ?_, totient_prime⟩
   replace hp : 1 < p := by
     apply lt_of_le_of_ne
     · rwa [succ_le_iff]
@@ -301,7 +301,7 @@ theorem totient_mul_prod_primeFactors (n : ℕ) :
   rw [totient_eq_prod_factorization hn]
   nth_rw 3 [← factorization_prod_pow_eq_self hn]
   simp only [prod_primeFactors_prod_factorization, ← Finsupp.prod_mul]
-  refine' Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => _
+  refine Finsupp.prod_congr (M := ℕ) (N := ℕ) fun p hp => ?_
   rw [Finsupp.mem_support_iff, ← zero_lt_iff] at hp
   rw [mul_comm, ← mul_assoc, ← pow_succ', Nat.sub_one, Nat.succ_pred_eq_of_pos hp]
 #align nat.totient_mul_prod_factors Nat.totient_mul_prod_primeFactors
@@ -325,7 +325,7 @@ theorem totient_eq_mul_prod_factors (n : ℕ) :
     exact prod_pos fun p hp => pos_of_mem_primeFactors hp
   simp only [totient_eq_div_primeFactors_mul n, prod_primeFactors_dvd n, cast_mul, cast_prod,
     cast_div_charZero, mul_comm_div, mul_right_inj' hn', div_eq_iff hpQ, ← prod_mul_distrib]
-  refine' prod_congr rfl fun p hp => _
+  refine prod_congr rfl fun p hp => ?_
   have hp := pos_of_mem_factors (List.mem_toFinset.mp hp)
   have hp' : (p : ℚ) ≠ 0 := cast_ne_zero.mpr hp.ne.symm
   rw [sub_mul, one_mul, mul_comm, mul_inv_cancel hp', cast_pred hp]

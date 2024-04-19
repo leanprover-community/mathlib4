@@ -94,9 +94,9 @@ theorem exists_convex_convex_compl_subset (hs : Convex 𝕜 s) (ht : Convex 𝕜
   suffices h : ∀ c ∈ Cᶜ, ∃ a ∈ C, (segment 𝕜 c a ∩ t).Nonempty by
     obtain ⟨p, hp, u, hu, hut⟩ := h x hx
     obtain ⟨q, hq, v, hv, hvt⟩ := h y hy
-    refine'
+    refine
       not_disjoint_segment_convexHull_triple hz hu hv
-        (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min _ hC.1)
+        (hC.2.symm.mono (ht.segment_subset hut hvt) <| convexHull_min ?_ hC.1)
     simp [insert_subset_iff, hp, hq, singleton_subset_iff.2 hzC]
   rintro c hc
   by_contra! h

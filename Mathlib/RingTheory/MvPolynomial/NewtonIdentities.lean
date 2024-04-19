@@ -201,7 +201,7 @@ private theorem esymm_mul_psum_summand_to_weight (k : ℕ) (a : ℕ × ℕ) (ha 
   rw [sum_comm]
   refine' sum_congr rfl fun x _ ↦ _
   rw [sum_mul]
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [mem_powersetCard_univ.mp hs, ← mem_antidiagonal.mp ha, add_sub_self_left]
 
 private theorem esymm_mul_psum_to_weight (k : ℕ) :

@@ -1099,7 +1099,7 @@ theorem intervalIntegral_pos_of_pos_on {f : ℝ → ℝ} {a b : ℝ} (hfi : Inte
     ⟨mem_support.mpr (hpos x hx).ne', Ioo_subset_Ioc_self hx⟩
   have h₀ : 0 ≤ᵐ[volume.restrict (uIoc a b)] f := by
     rw [EventuallyLE, uIoc_of_le hab.le]
-    refine' ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc _
+    refine ae_restrict_of_ae_eq_of_ae_restrict Ioo_ae_eq_Ioc ?_
     rw [ae_restrict_iff' measurableSet_Ioo]
     filter_upwards with x hx using (hpos x hx).le
   rw [integral_pos_iff_support_of_nonneg_ae' h₀ hfi]

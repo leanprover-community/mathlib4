@@ -105,7 +105,7 @@ def BlankExtends.above {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} (h₁ : Blank
 theorem BlankExtends.above_of_le {Γ} [Inhabited Γ] {l l₁ l₂ : List Γ} :
     BlankExtends l₁ l → BlankExtends l₂ l → l₁.length ≤ l₂.length → BlankExtends l₁ l₂ := by
   rintro ⟨i, rfl⟩ ⟨j, e⟩ h; use i - j
-  refine' List.append_cancel_right (e.symm.trans _)
+  refine List.append_cancel_right (e.symm.trans ?_)
   rw [List.append_assoc, ← List.replicate_add, tsub_add_cancel_of_le]
   apply_fun List.length at e
   simp only [List.length_append, List.length_replicate] at e
@@ -311,7 +311,7 @@ theorem ListBlank.nth_succ {Γ} [Inhabited Γ] (l : ListBlank Γ) (n : ℕ) :
 @[ext]
 theorem ListBlank.ext {Γ} [i : Inhabited Γ] {L₁ L₂ : ListBlank Γ} :
     (∀ i, L₁.nth i = L₂.nth i) → L₁ = L₂ := by
-  refine' ListBlank.induction_on L₁ fun l₁ ↦ ListBlank.induction_on L₂ fun l₂ H ↦ _
+  refine ListBlank.induction_on L₁ fun l₁ ↦ ListBlank.induction_on L₂ fun l₂ H ↦ ?_
   wlog h : l₁.length ≤ l₂.length
   · cases le_total l₁.length l₂.length <;> [skip; symm] <;> apply this <;> try assumption
     intro

@@ -85,7 +85,7 @@ theorem leftInv_removeZero (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
   | 1 => simp -- TODO: why?
   | n + 2 =>
     simp only [leftInv, neg_inj]
-    refine' Finset.sum_congr rfl fun c cuniv => _
+    refine Finset.sum_congr rfl fun c cuniv => ?_
     rcases c with ⟨c, hc⟩
     ext v
     dsimp
@@ -235,7 +235,7 @@ theorem comp_rightInv_aux2 (p : FormalMultilinearSeries 𝕜 E F) (i : E ≃L[�
       ∑ c : Composition (n + 2) in {c : Composition (n + 2) | 1 < c.length}.toFinset,
         p c.length ((p.rightInv i).applyComposition c v) := by
   have N : 0 < n + 2 := by norm_num
-  refine' sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => _
+  refine sum_congr rfl fun c hc => p.congr rfl fun j hj1 hj2 => ?_
   have : ∀ k, c.blocksFun k < n + 2 := by
     simp only [Set.mem_toFinset (s := {c : Composition (n + 2) | 1 < c.length}),
       Set.mem_setOf_eq] at hc

@@ -269,7 +269,7 @@ theorem linearIndependent_of_top_le_span_of_card_eq_finrank {ι : Type*} [Fintyp
         _ = finrank K V := card_eq
     -- We already have that `b '' univ` spans the whole space,
     -- so we only need to show that the span of `b '' (univ \ {i})` contains each `b j`.
-    refine' spans.trans (span_le.mpr _)
+    refine spans.trans (span_le.mpr ?_)
     rintro _ ⟨j, rfl, rfl⟩
     -- The case that `j ≠ i` is easy because `b j ∈ b '' (univ \ {i})`.
     by_cases j_eq : j = i

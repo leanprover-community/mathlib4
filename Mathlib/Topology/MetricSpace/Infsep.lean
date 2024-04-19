@@ -233,7 +233,7 @@ theorem einfsep_triple (hxy : x ≠ y) (hyz : y ≠ z) (hxz : x ≠ z) :
 theorem le_einfsep_pi_of_le {π : β → Type*} [Fintype β] [∀ b, PseudoEMetricSpace (π b)]
     {s : ∀ b : β, Set (π b)} {c : ℝ≥0∞} (h : ∀ b, c ≤ einfsep (s b)) :
     c ≤ einfsep (Set.pi univ s) := by
-  refine' le_einfsep fun x hx y hy hxy => _
+  refine le_einfsep fun x hx y hy hxy => ?_
   rw [mem_univ_pi] at hx hy
   rcases Function.ne_iff.mp hxy with ⟨i, hi⟩
   exact le_trans (le_einfsep_iff.1 (h i) _ (hx _) _ (hy _) hi) (edist_le_pi_edist _ _ i)

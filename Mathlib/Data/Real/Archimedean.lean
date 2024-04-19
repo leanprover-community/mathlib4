@@ -62,7 +62,7 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
     cases' exists_int_gt U with k hk
     refine fun d => ⟨k * d, fun z h => ?_⟩
     rcases h with ⟨y, yS, hy⟩
-    refine' Int.cast_le.1 (hy.trans _)
+    refine Int.cast_le.1 (hy.trans ?_)
     push_cast
     exact mul_le_mul_of_nonneg_right ((hU yS).trans hk.le) d.cast_nonneg
   choose f hf using fun d : ℕ =>
@@ -328,9 +328,9 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
   · have : Nonempty { r' : ℚ // x < ↑r' } := by
       obtain ⟨r, hrx⟩ := exists_rat_gt x
       exact ⟨⟨r, hrx⟩⟩
-    refine' le_ciInf fun r => _
+    refine le_ciInf fun r => ?_
     obtain ⟨y, hxy, hyr⟩ := exists_rat_btwn r.prop
-    refine' ciInf_set_le hf (hxy.trans _)
+    refine ciInf_set_le hf (hxy.trans ?_)
     exact_mod_cast hyr
   · refine' le_ciInf fun q => _
     have hq := q.prop

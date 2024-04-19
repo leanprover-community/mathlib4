@@ -134,7 +134,7 @@ theorem concaveOn_of_slope_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) ≤ (f y - f x) / (y - x)) :
     ConcaveOn 𝕜 s f := by
   rw [← neg_convexOn_iff]
-  refine' convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => _
+  refine convexOn_of_slope_mono_adjacent hs fun hx hz hxy hyz => ?_
   rw [← neg_le_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz
@@ -182,7 +182,7 @@ theorem strictConcaveOn_of_slope_strict_anti_adjacent (hs : Convex 𝕜 s)
         x ∈ s → z ∈ s → x < y → y < z → (f z - f y) / (z - y) < (f y - f x) / (y - x)) :
     StrictConcaveOn 𝕜 s f := by
   rw [← neg_strictConvexOn_iff]
-  refine' strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => _
+  refine strictConvexOn_of_slope_strict_mono_adjacent hs fun hx hz hxy hyz => ?_
   rw [← neg_lt_neg_iff]
   simp_rw [← neg_div, neg_sub, Pi.neg_apply, neg_sub_neg]
   exact hf hx hz hxy hyz

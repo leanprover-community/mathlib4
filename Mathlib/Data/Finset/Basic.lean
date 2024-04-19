@@ -2012,7 +2012,7 @@ theorem erase_ssubset {a : α} {s : Finset α} (h : a ∈ s) : s.erase a ⊂ s :
 #align finset.erase_ssubset Finset.erase_ssubset
 
 theorem ssubset_iff_exists_subset_erase {s t : Finset α} : s ⊂ t ↔ ∃ a ∈ t, s ⊆ t.erase a := by
-  refine' ⟨fun h => _, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
+  refine ⟨fun h => ?_, fun ⟨a, ha, h⟩ => ssubset_of_subset_of_ssubset h <| erase_ssubset ha⟩
   obtain ⟨a, ht, hs⟩ := not_subset.1 h.2
   exact ⟨a, ht, subset_erase.2 ⟨h.1, hs⟩⟩
 #align finset.ssubset_iff_exists_subset_erase Finset.ssubset_iff_exists_subset_erase

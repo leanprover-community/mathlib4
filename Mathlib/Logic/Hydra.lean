@@ -141,7 +141,7 @@ theorem _root_.Acc.cutExpand [IsIrrefl α r] {a : α} (hacc : Acc r a) : Acc (Cu
   classical
   simp only [cutExpand_iff, mem_singleton]
   rintro ⟨t, a, hr, rfl, rfl⟩
-  refine' acc_of_singleton fun a' ↦ _
+  refine acc_of_singleton fun a' ↦ ?_
   rw [erase_singleton, zero_add]
   exact ih a' ∘ hr a'
 #align acc.cut_expand Acc.cutExpand

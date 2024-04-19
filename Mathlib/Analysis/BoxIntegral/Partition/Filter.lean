@@ -507,7 +507,7 @@ theorem tendsto_embedBox_toFilteriUnion_top (l : IntegrationParams) (h : I ≤ J
       (l.toFilteriUnion J (Prepartition.single J I h)) := by
   simp only [toFilteriUnion, tendsto_iSup]; intro c
   set π₀ := Prepartition.single J I h
-  refine' le_iSup_of_le (max c π₀.compl.distortion) _
+  refine le_iSup_of_le (max c π₀.compl.distortion) ?_
   refine' ((l.hasBasis_toFilterDistortioniUnion I c ⊤).tendsto_iff
     (l.hasBasis_toFilterDistortioniUnion J _ _)).2 fun r hr => _
   refine' ⟨r, hr, fun π hπ => _⟩

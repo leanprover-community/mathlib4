@@ -270,7 +270,7 @@ theorem Convex.second_derivative_within_at_symmetric {s : Set E} (s_conv : Conve
     intro m
     have : x + (4 : ℝ) • (z + (0 : ℝ) • m) = y := by simp [hz]
     rw [← this]
-    refine' tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add <| tendsto_const_nhds.smul <| tendsto_const_nhds.add ?_
     exact continuousAt_id.smul continuousAt_const
   have B : ∀ m : E, ∀ᶠ t in 𝓝[>] (0 : ℝ), x + (4 : ℝ) • (z + t • m) ∈ interior s := by
     intro m

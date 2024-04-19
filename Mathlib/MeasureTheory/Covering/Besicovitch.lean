@@ -522,7 +522,7 @@ theorem exist_disjoint_covering_families {N : ℕ} {τ : ℝ} (hτ : 1 < τ)
     contrapose! h
     simpa only [jxi, jyi, and_true_iff, eq_self_iff_true, ← not_disjoint_iff_nonempty_inter] using h
   · -- show that the balls of color at most `N` cover every center.
-    refine' range_subset_iff.2 fun b => _
+    refine range_subset_iff.2 fun b => ?_
     obtain ⟨a, ha⟩ :
       ∃ a : Ordinal, a < p.lastStep ∧ dist (p.c b) (p.c (p.index a)) < p.r (p.index a) := by
       simpa only [iUnionUpTo, exists_prop, mem_iUnion, mem_ball, Subtype.exists,
@@ -650,7 +650,7 @@ theorem exist_finset_disjoint_balls_large_measure (μ : Measure α) [IsFiniteMea
       μ o = 1 / (N + 1) * μ s + N / (N + 1) * μ s := by
         rw [μo, ← add_mul, ENNReal.div_add_div_same, add_comm, ENNReal.div_self, one_mul] <;> simp
       _ ≤ μ ((⋃ x ∈ w, closedBall (↑x) (r ↑x)) ∩ o) + N / (N + 1) * μ s := by
-        refine' add_le_add _ le_rfl
+        refine add_le_add ?_ le_rfl
         rw [div_eq_mul_inv, one_mul, mul_comm, ← div_eq_mul_inv]
         apply hw.le.trans (le_of_eq _)
         rw [← Finset.set_biUnion_coe, inter_comm _ o, inter_iUnion₂, Finset.set_biUnion_coe,
@@ -1029,12 +1029,12 @@ theorem exists_closedBall_covering_tsum_measure_le (μ : Measure α) [SigmaFinit
             ∑ i : Fin N, ∑' x : ((↑) : s' → α) '' S i, μ (closedBall x (r x)) :=
         (add_le_add le_rfl (ENNReal.tsum_iUnion_le (fun x => μ (closedBall x (r x))) _))
       _ ≤ μ s + ε / 2 + ∑ i : Fin N, ε / 2 / N := by
-        refine' add_le_add A _
+        refine add_le_add A ?_
         refine' Finset.sum_le_sum _
         intro i _
         exact B i
       _ ≤ μ s + ε / 2 + ε / 2 := by
-        refine' add_le_add le_rfl _
+        refine add_le_add le_rfl ?_
         simp only [Finset.card_fin, Finset.sum_const, nsmul_eq_mul, ENNReal.mul_div_le]
       _ = μ s + ε := by rw [add_assoc, ENNReal.add_halves]
 #align besicovitch.exists_closed_ball_covering_tsum_measure_le Besicovitch.exists_closedBall_covering_tsum_measure_le

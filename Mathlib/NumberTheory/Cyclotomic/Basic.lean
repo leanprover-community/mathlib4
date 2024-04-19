@@ -147,7 +147,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
       have hb : f b ∈ (adjoin A {b : B | ∃ a : ℕ+, a ∈ S ∧ b ^ (a : ℕ) = 1}).map f :=
         ⟨b, ((isCyclotomicExtension_iff _ _ _).1 hS).2 b, rfl⟩
       rw [IsScalarTower.toAlgHom_apply, ← adjoin_image] at hb
-      refine' adjoin_mono (fun y hy => _) hb
+      refine adjoin_mono (fun y hy => ?_) hb
       obtain ⟨b₁, ⟨⟨n, hn⟩, h₁⟩⟩ := hy
       exact ⟨n, ⟨mem_union_left T hn.1, by rw [← h₁, ← AlgHom.map_pow, hn.2, AlgHom.map_one]⟩⟩
 #align is_cyclotomic_extension.trans IsCyclotomicExtension.trans
@@ -221,7 +221,7 @@ theorem of_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) [H : IsCycl
       simp only [PNat.mul_coe, Nat.mul_div_left, PNat.pos]
   · refine' _root_.eq_top_iff.2 _
     rw [← ((iff_adjoin_eq_top S A B).1 H).2]
-    refine' adjoin_mono fun x hx => _
+    refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
     obtain ⟨m, hm⟩ := hx
     exact ⟨m, ⟨Or.inr hm.1, hm.2⟩⟩
@@ -235,7 +235,7 @@ theorem iff_union_of_dvd (h : ∀ s ∈ S, n ∣ s) (hS : S.Nonempty) :
     ⟨fun H => of_union_of_dvd A B h hS, fun H => (iff_adjoin_eq_top _ A _).2 ⟨fun s hs => _, _⟩⟩
   · exact H.exists_prim_root (subset_union_left _ _ hs)
   · rw [_root_.eq_top_iff, ← ((iff_adjoin_eq_top _ A B).1 H).2]
-    refine' adjoin_mono fun x hx => _
+    refine adjoin_mono fun x hx => ?_
     simp only [union_singleton, mem_insert_iff, mem_setOf_eq] at hx ⊢
     obtain ⟨m, rfl | hm, hxpow⟩ := hx
     · obtain ⟨y, hy⟩ := hS
@@ -390,7 +390,7 @@ theorem adjoin_roots_cyclotomic_eq_adjoin_root_cyclotomic {n : ℕ+} [IsDomain B
   · suffices hx : x ^ n.1 = 1 by
       obtain ⟨i, _, rfl⟩ := hζ.eq_pow_of_pow_eq_one hx n.pos
       exact SetLike.mem_coe.2 (Subalgebra.pow_mem _ (subset_adjoin <| mem_singleton ζ) _)
-    refine' (isRoot_of_unity_iff n.pos B).2 _
+    refine (isRoot_of_unity_iff n.pos B).2 ?_
     refine' ⟨n, Nat.mem_divisors_self n n.ne_zero, _⟩
     rw [mem_rootSet', aeval_def, ← eval_map, map_cyclotomic, ← IsRoot] at hx
     exact hx.2
@@ -421,7 +421,7 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
           (x := x) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ hb₁ hb₂ => ?_)
           (fun b₁ b₂ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
-        refine' subset_adjoin _
+        refine subset_adjoin ?_
         simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq, hb]
         rw [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
         exact ((IsPrimitiveRoot.iff_def ζ n).1 h).1
@@ -583,7 +583,7 @@ instance {R : Type*} [CommRing R] [Algebra R K] : IsScalarTower R K (CyclotomicF
   SplittingField.isScalarTower _
 
 instance CyclotomicField.noZeroSMulDivisors : NoZeroSMulDivisors A (CyclotomicField n K) := by
-  refine' NoZeroSMulDivisors.of_algebraMap_injective _
+  refine NoZeroSMulDivisors.of_algebraMap_injective ?_
   rw [IsScalarTower.algebraMap_eq A K (CyclotomicField n K)]
   exact
     (Function.Injective.comp (NoZeroSMulDivisors.algebraMap_injective K (CyclotomicField n K))

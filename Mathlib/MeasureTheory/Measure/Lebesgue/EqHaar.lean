@@ -504,10 +504,10 @@ theorem addHaar_closed_unit_ball_eq_addHaar_unit_ball :
   have A : Tendsto
       (fun r : ℝ => ENNReal.ofReal (r ^ finrank ℝ E) * μ (closedBall (0 : E) 1)) (𝓝[<] 1)
         (𝓝 (ENNReal.ofReal ((1 : ℝ) ^ finrank ℝ E) * μ (closedBall (0 : E) 1))) := by
-    refine' ENNReal.Tendsto.mul _ (by simp) tendsto_const_nhds (by simp)
+    refine ENNReal.Tendsto.mul ?_ (by simp) tendsto_const_nhds (by simp)
     exact ENNReal.tendsto_ofReal ((tendsto_id'.2 nhdsWithin_le_nhds).pow _)
   simp only [one_pow, one_mul, ENNReal.ofReal_one] at A
-  refine' le_of_tendsto A _
+  refine le_of_tendsto A ?_
   refine' mem_nhdsWithin_Iio_iff_exists_Ioo_subset.2 ⟨(0 : ℝ), by simp, fun r hr => _⟩
   dsimp
   rw [← addHaar_closedBall' μ (0 : E) hr.1.le]
@@ -748,7 +748,7 @@ theorem tendsto_addHaar_inter_smul_zero_of_density_zero (s : Set E) (x : E)
         (𝓝 (μ (⋂ n : ℕ, t \ closedBall 0 n))) := by
       have N : ∃ n : ℕ, μ (t \ closedBall 0 n) ≠ ∞ :=
         ⟨0, ((measure_mono (diff_subset t _)).trans_lt h''t.lt_top).ne⟩
-      refine' tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ _) N
+      refine tendsto_measure_iInter (fun n ↦ ht.diff measurableSet_closedBall) (fun m n hmn ↦ ?_) N
       exact diff_subset_diff Subset.rfl (closedBall_subset_closedBall (Nat.cast_le.2 hmn))
     have : ⋂ n : ℕ, t \ closedBall 0 n = ∅ := by
       simp_rw [diff_eq, ← inter_iInter, iInter_eq_compl_iUnion_compl, compl_compl,

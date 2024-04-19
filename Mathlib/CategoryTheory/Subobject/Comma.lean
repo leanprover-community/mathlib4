@@ -229,7 +229,7 @@ def quotientEquiv [HasColimits C] [PreservesColimits S] (A : CostructuredArrow S
       ext
       exact unop_left_comp_ofMkLEMk_unop _
     · refine' Subobject.mk_le_mk_of_comm (Subobject.ofMkLEMk _ _ h).unop.left.op _
-      refine' Quiver.Hom.unop_inj _
+      refine Quiver.Hom.unop_inj ?_
       have := congr_arg Quiver.Hom.unop (Subobject.ofMkLEMk_comp h)
       simpa only [unop_op, Functor.id_obj, Functor.const_obj_obj, MonoOver.mk'_obj, Over.mk_left,
         MonoOver.mk'_arrow, unop_comp, Quiver.Hom.unop_op, comp_left]

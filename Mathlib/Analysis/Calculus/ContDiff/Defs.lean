@@ -670,7 +670,7 @@ protected theorem ContDiffWithinAt.eventually {n : ℕ} (h : ContDiffWithinAt �
   rcases h.contDiffOn le_rfl with ⟨u, hu, _, hd⟩
   have : ∀ᶠ y : E in 𝓝[insert x s] x, u ∈ 𝓝[insert x s] y ∧ y ∈ u :=
     (eventually_nhdsWithin_nhdsWithin.2 hu).and hu
-  refine' this.mono fun y hy => (hd y hy.2).mono_of_mem _
+  refine this.mono fun y hy => (hd y hy.2).mono_of_mem ?_
   exact nhdsWithin_mono y (subset_insert _ _) hy.1
 #align cont_diff_within_at.eventually ContDiffWithinAt.eventually
 
@@ -1134,7 +1134,7 @@ differentiable there, and its derivative (expressed with `fderivWithin`) is `C^n
 theorem contDiffOn_succ_iff_fderivWithin {n : ℕ} (hs : UniqueDiffOn 𝕜 s) :
     ContDiffOn 𝕜 (n + 1 : ℕ) f s ↔
       DifferentiableOn 𝕜 f s ∧ ContDiffOn 𝕜 n (fun y => fderivWithin 𝕜 f s y) s := by
-  refine' ⟨fun H => _, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2⟩
+  refine ⟨fun H => ?_, fun h => contDiffOn_succ_of_fderivWithin h.1 h.2⟩
   refine' ⟨H.differentiableOn (WithTop.coe_le_coe.2 (Nat.le_add_left 1 n)), fun x hx => _⟩
   rcases contDiffWithinAt_succ_iff_hasFDerivWithinAt.1 (H x hx) with ⟨u, hu, f', hff', hf'⟩
   rcases mem_nhdsWithin.1 hu with ⟨o, o_open, xo, ho⟩
@@ -1177,10 +1177,10 @@ theorem contDiffOn_top_iff_fderivWithin (hs : UniqueDiffOn 𝕜 s) :
   constructor
   · intro h
     refine' ⟨h.differentiableOn le_top, _⟩
-    refine' contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_fderivWithin hs).1 _).2
+    refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_fderivWithin hs).1 ?_).2
     exact h.of_le le_top
   · intro h
-    refine' contDiffOn_top.2 fun n => _
+    refine contDiffOn_top.2 fun n => ?_
     have A : (n : ℕ∞) ≤ ∞ := le_top
     apply ((contDiffOn_succ_iff_fderivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
     exact WithTop.coe_le_coe.2 (Nat.le_succ n)
@@ -1394,7 +1394,7 @@ theorem contDiffAt_succ_iff_hasFDerivAt {n : ℕ} :
     refine' ⟨f', ⟨t, _⟩, h_cont_diff.contDiffAt H⟩
     refine' ⟨mem_nhds_iff.mpr ⟨t, Subset.rfl, ht, hxt⟩, _⟩
     intro y hyt
-    refine' (h_fderiv y (htu hyt)).hasFDerivAt _
+    refine (h_fderiv y (htu hyt)).hasFDerivAt ?_
     exact mem_nhds_iff.mpr ⟨t, htu, ht, hyt⟩
   · rintro ⟨f', ⟨u, H, h_fderiv⟩, h_cont_diff⟩
     refine' ⟨u, H, f', _, h_cont_diff.contDiffWithinAt⟩

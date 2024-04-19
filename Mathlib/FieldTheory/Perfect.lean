@@ -232,7 +232,7 @@ instance toPerfectRing (p : ℕ) [ExpChar K p] : PerfectRing K p := by
       natDegree_pow, natDegree_X_sub_C, mul_one]
   have hg_sep : (g.map ι).Separable := (separable_of_irreducible <| minpoly.irreducible ha).map
   rw [hg_pow] at hg_sep
-  refine' (Separable.of_pow (not_isUnit_X_sub_C a) _ hg_sep).2
+  refine (Separable.of_pow (not_isUnit_X_sub_C a) ?_ hg_sep).2
   rw [g.natDegree_map ι, ← Nat.pos_iff_ne_zero, natDegree_pos_iff_degree_pos]
   exact minpoly.degree_pos ha
 

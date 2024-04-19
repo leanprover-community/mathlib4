@@ -141,7 +141,7 @@ theorem prime_def_le_sqrt {p : ℕ} : Prime p ↔ 2 ≤ p ∧ ∀ m, 2 ≤ m →
         rcases le_total m k with mk | km
         · exact this mk m2 e
         · rw [mul_comm] at e
-          refine' this km (lt_of_mul_lt_mul_right _ (zero_le m)) e
+          refine this km (lt_of_mul_lt_mul_right ?_ (zero_le m)) e
           rwa [one_mul, ← e]⟩
 #align nat.prime_def_le_sqrt Nat.prime_def_le_sqrt
 
@@ -617,7 +617,7 @@ theorem Prime.eq_one_of_pow {x n : ℕ} (h : (x ^ n).Prime) : n = 1 :=
 #align nat.prime.eq_one_of_pow Nat.Prime.eq_one_of_pow
 
 theorem Prime.pow_eq_iff {p a k : ℕ} (hp : p.Prime) : a ^ k = p ↔ a = p ∧ k = 1 := by
-  refine' ⟨fun h => _, fun h => by rw [h.1, h.2, pow_one]⟩
+  refine ⟨fun h => ?_, fun h => by rw [h.1, h.2, pow_one]⟩
   rw [← h] at hp
   rw [← h, hp.eq_one_of_pow, eq_self_iff_true, and_true_iff, pow_one]
 #align nat.prime.pow_eq_iff Nat.Prime.pow_eq_iff

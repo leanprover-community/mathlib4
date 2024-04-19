@@ -73,7 +73,7 @@ theorem commutator_centralizer_commutator_le_center :
   rw [← Subgroup.centralizer_univ, ← Subgroup.coe_top, ←
     Subgroup.commutator_eq_bot_iff_le_centralizer]
   suffices ⁅⁅⊤, centralizer (commutator G : Set G)⁆, centralizer (commutator G : Set G)⁆ = ⊥ by
-    refine' Subgroup.commutator_commutator_eq_bot_of_rotate _ this
+    refine Subgroup.commutator_commutator_eq_bot_of_rotate ?_ this
     rwa [Subgroup.commutator_comm (centralizer (commutator G : Set G))]
   rw [Subgroup.commutator_comm, Subgroup.commutator_eq_bot_iff_le_centralizer]
   exact Set.centralizer_subset (Subgroup.commutator_mono le_top le_top)

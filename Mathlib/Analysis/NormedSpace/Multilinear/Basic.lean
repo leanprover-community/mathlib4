@@ -148,7 +148,7 @@ theorem exists_bound_of_continuous (hf : Continuous f) :
   have : 0 < (‖c‖ / ε) ^ Fintype.card ι := pow_pos (div_pos (zero_lt_one.trans hc) ε0) _
   refine' ⟨_, this, _⟩
   refine' f.bound_of_shell_of_continuous hf (fun _ => ε0) (fun _ => hc) fun m hcm hm => _
-  refine' (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans _
+  refine (hε m ((pi_norm_lt_iff ε0).2 hm)).le.trans ?_
   rw [← div_le_iff' this, one_div, ← inv_pow, inv_div, Fintype.card, ← prod_const]
   exact prod_le_prod (fun _ _ => div_nonneg ε0.le (norm_nonneg _)) fun i _ => hcm i
 #align multilinear_map.exists_bound_of_continuous MultilinearMap.exists_bound_of_continuous
@@ -245,7 +245,7 @@ theorem continuous_of_bound (C : ℝ) (H : ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m 
     intro m
     apply le_trans (H m) (mul_le_mul_of_nonneg_right (le_max_left _ _) _)
     exact prod_nonneg fun (i : ι) _ => norm_nonneg (m i)
-  refine' continuous_iff_continuousAt.2 fun m => _
+  refine continuous_iff_continuousAt.2 fun m => ?_
   refine'
     continuousAt_of_locally_lipschitz zero_lt_one
       (D * Fintype.card ι * (‖m‖ + 1) ^ (Fintype.card ι - 1)) fun m' h' => _

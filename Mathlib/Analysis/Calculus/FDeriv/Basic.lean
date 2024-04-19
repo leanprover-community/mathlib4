@@ -352,7 +352,7 @@ on a neighborhood of `x₀` then its derivative at `x₀` has norm bounded by `C
 theorem HasFDerivAt.le_of_lipschitzOn
     {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {s : Set E} (hs : s ∈ 𝓝 x₀) {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖f'‖ ≤ C := by
-  refine' hf.le_of_lip' C.coe_nonneg _
+  refine hf.le_of_lip' C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 #align has_fderiv_at.le_of_lip HasFDerivAt.le_of_lipschitzOn
 
@@ -489,7 +489,7 @@ theorem HasFDerivAt.lim (hf : HasFDerivAt f f' x) (v : E) {α : Type*} {c : α �
     Tendsto (fun n => c n • (f (x + (c n)⁻¹ • v) - f x)) l (𝓝 (f' v)) := by
   refine' (hasFDerivWithinAt_univ.2 hf).lim _ univ_mem hc _
   intro U hU
-  refine' (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => _
+  refine (eventually_ne_of_tendsto_norm_atTop hc (0 : 𝕜)).mono fun y hy => ?_
   convert mem_of_mem_nhds hU
   dsimp only
   rw [← mul_smul, mul_inv_cancel hy, one_smul]
@@ -599,7 +599,7 @@ Version using `fderiv`. -/
 -- Porting note: renamed so that dot-notation makes sense
 theorem norm_fderiv_le_of_lipschitzOn {f : E → F} {x₀ : E} {s : Set E} (hs : s ∈ 𝓝 x₀)
     {C : ℝ≥0} (hlip : LipschitzOnWith C f s) : ‖fderiv 𝕜 f x₀‖ ≤ C := by
-  refine' norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg _
+  refine norm_fderiv_le_of_lip' 𝕜 C.coe_nonneg ?_
   filter_upwards [hs] with x hx using hlip.norm_sub_le hx (mem_of_mem_nhds hs)
 #align fderiv_at.le_of_lip norm_fderiv_le_of_lipschitzOn
 
@@ -780,7 +780,7 @@ section Continuous
 theorem HasFDerivAtFilter.tendsto_nhds (hL : L ≤ 𝓝 x) (h : HasFDerivAtFilter f f' x L) :
     Tendsto f L (𝓝 (f x)) := by
   have : Tendsto (fun x' => f x' - f x) L (𝓝 0) := by
-    refine' h.isBigO_sub.trans_tendsto (Tendsto.mono_left _ hL)
+    refine h.isBigO_sub.trans_tendsto (Tendsto.mono_left ?_ hL)
     rw [← sub_self x]
     exact tendsto_id.sub tendsto_const_nhds
   have := this.add (tendsto_const_nhds (x := f x))
@@ -899,7 +899,7 @@ theorem fderivWithin_eventually_congr_set (h : s =ᶠ[𝓝 x] t) :
 
 theorem Filter.EventuallyEq.hasStrictFDerivAt_iff (h : f₀ =ᶠ[𝓝 x] f₁) (h' : ∀ y, f₀' y = f₁' y) :
     HasStrictFDerivAt f₀ f₀' x ↔ HasStrictFDerivAt f₁ f₁' x := by
-  refine' isLittleO_congr ((h.prod_mk_nhds h).mono _) .rfl
+  refine isLittleO_congr ((h.prod_mk_nhds h).mono ?_) .rfl
   rintro p ⟨hp₁, hp₂⟩
   simp only [*]
 #align filter.eventually_eq.has_strict_fderiv_at_iff Filter.EventuallyEq.hasStrictFDerivAt_iff

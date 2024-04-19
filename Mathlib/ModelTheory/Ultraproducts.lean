@@ -49,7 +49,7 @@ instance setoidPrestructure : L.Prestructure ((u : Filter α).productSetoid M) :
       { funMap := fun {n} f x a => funMap f fun i => x i a
         RelMap := fun {n} r x => ∀ᶠ a : α in u, RelMap r fun i => x i a }
     fun_equiv := fun {n} f x y xy => by
-      refine' mem_of_superset (iInter_mem.2 xy) fun a ha => _
+      refine mem_of_superset (iInter_mem.2 xy) fun a ha => ?_
       simp only [Set.mem_iInter, Set.mem_setOf_eq] at ha
       simp only [Set.mem_setOf_eq, ha]
     rel_equiv := fun {n} r x y xy => by

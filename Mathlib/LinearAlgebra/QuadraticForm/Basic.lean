@@ -1312,7 +1312,7 @@ theorem basisRepr_eq_of_iIsOrtho {R M} [CommRing R] [AddCommGroup M] [Module R M
     Q.basisRepr v = weightedSumSquares _ fun i => Q (v i) := by
   ext w
   rw [basisRepr_apply, ← @associated_eq_self_apply R, map_sum, weightedSumSquares_apply]
-  refine' sum_congr rfl fun j hj => _
+  refine sum_congr rfl fun j hj => ?_
   rw [← @associated_eq_self_apply R, LinearMap.map_sum₂, sum_eq_single_of_mem j hj]
   · rw [LinearMap.map_smul, LinearMap.map_smul₂, smul_eq_mul, associated_apply, smul_eq_mul,
       smul_eq_mul]

@@ -124,7 +124,7 @@ theorem StieltjesFunction.ae_hasDerivAt (f : StieltjesFunction) :
       norm_num; linarith
     · filter_upwards [self_mem_nhdsWithin]
       rintro y (hy : y < x)
-      refine' div_le_div_of_nonpos_of_le (by linarith) _
+      refine div_le_div_of_nonpos_of_le (by linarith) ?_
       simpa only [sub_le_sub_iff_right] using f.mono.leftLim_le (le_refl y)
   -- prove the result by splitting into left and right limits.
   rw [hasDerivAt_iff_tendsto_slope, slope_fun_def_field, ← nhds_left'_sup_nhds_right', tendsto_sup]

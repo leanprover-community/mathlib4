@@ -447,11 +447,11 @@ theorem quadratic_reciprocity' {a b : ℕ} (ha : Odd a) (hb : Odd b) :
         -- applied under the binder `fun ↦ ...`
         simp_rw [qrSign.mul_left x y a, Nat.cast_mul, mul_left, mul_mul_mul_comm] }
   have rhs_apply : ∀ a b : ℕ, rhs a b = qrSign b a * J(b | a) := fun a b => rfl
-  refine' value_at a (rhs a) (fun p pp hp => Eq.symm _) hb
+  refine value_at a (rhs a) (fun p pp hp => Eq.symm ?_) hb
   have hpo := pp.eq_two_or_odd'.resolve_left hp
   rw [@legendreSym.to_jacobiSym p ⟨pp⟩, rhs_apply, Nat.cast_id, qrSign.eq_iff_eq hpo ha,
     qrSign.symm hpo ha]
-  refine' value_at p (rhs p) (fun q pq hq => _) ha
+  refine value_at p (rhs p) (fun q pq hq => ?_) ha
   have hqo := pq.eq_two_or_odd'.resolve_left hq
   rw [rhs_apply, Nat.cast_id, ← @legendreSym.to_jacobiSym p ⟨pp⟩, qrSign.symm hqo hpo,
     qrSign.neg_one_pow hpo hqo, @legendreSym.quadratic_reciprocity' p q ⟨pp⟩ ⟨pq⟩ hp hq]

@@ -114,7 +114,7 @@ alias op_norm_zero_iff :=
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
 theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm _
+  refine norm_id_of_nontrivial_seminorm ?_
   obtain ⟨x, hx⟩ := exists_ne (0 : E)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align continuous_linear_map.norm_id ContinuousLinearMap.norm_id

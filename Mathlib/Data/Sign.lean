@@ -353,14 +353,14 @@ theorem sign_neg (ha : a < 0) : sign a = -1 := by rwa [sign_apply, if_neg <| asy
 #align sign_neg sign_neg
 
 theorem sign_eq_one_iff : sign a = 1 ↔ 0 < a := by
-  refine' ⟨fun h => _, fun h => sign_pos h⟩
+  refine ⟨fun h => ?_, fun h => sign_pos h⟩
   by_contra hn
   rw [sign_apply, if_neg hn] at h
   split_ifs at h
 #align sign_eq_one_iff sign_eq_one_iff
 
 theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
-  refine' ⟨fun h => _, fun h => sign_neg h⟩
+  refine ⟨fun h => ?_, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
   · assumption
@@ -380,7 +380,7 @@ lemma StrictMono.sign_comp {β F : Type*} [Zero β] [Preorder β] [DecidableRel 
 
 @[simp]
 theorem sign_eq_zero_iff : sign a = 0 ↔ a = 0 := by
-  refine' ⟨fun h => _, fun h => h.symm ▸ sign_zero⟩
+  refine ⟨fun h => ?_, fun h => h.symm ▸ sign_zero⟩
   rw [sign_apply] at h
   split_ifs at h with h_1 h_2
   cases' h

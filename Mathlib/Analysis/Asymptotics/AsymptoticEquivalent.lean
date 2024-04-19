@@ -254,7 +254,7 @@ theorem IsEquivalent.smul {α E 𝕜 : Type*} [NormedField 𝕜] [NormedAddCommG
       (EventuallyEq.refl _ fun x ↦ b x • v x) using 1
     ext
     rw [Pi.mul_apply, mul_comm, mul_smul, ← smul_sub]
-  refine' (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO _)
+  refine (isLittleO_congr this.symm <| EventuallyEq.rfl).mp ((isBigO_refl b l).smul_isLittleO ?_)
   rcases huv.isBigO.exists_pos with ⟨C, hC, hCuv⟩
   rw [IsEquivalent] at *
   rw [isLittleO_iff] at *

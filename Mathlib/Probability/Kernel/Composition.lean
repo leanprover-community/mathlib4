@@ -172,7 +172,7 @@ theorem measurable_compProdFun_of_finite (κ : kernel α β) [IsFiniteKernel κ]
 theorem measurable_compProdFun (κ : kernel α β) [IsSFiniteKernel κ] (η : kernel (α × β) γ)
     [IsSFiniteKernel η] (hs : MeasurableSet s) : Measurable fun a => compProdFun κ η a s := by
   simp_rw [compProdFun_tsum_right κ η _ hs]
-  refine' Measurable.ennreal_tsum fun n => _
+  refine Measurable.ennreal_tsum fun n => ?_
   simp only [compProdFun]
   have h_meas : Measurable (Function.uncurry fun a b => seq η n (a, b) {c : γ | (b, c) ∈ s}) := by
     have :
@@ -1093,7 +1093,7 @@ instance IsSFiniteKernel.comp (η : kernel β γ) [IsSFiniteKernel η] (κ : ker
 /-- Composition of kernels is associative. -/
 theorem comp_assoc {δ : Type*} {mδ : MeasurableSpace δ} (ξ : kernel γ δ) [IsSFiniteKernel ξ]
     (η : kernel β γ) (κ : kernel α β) : ξ ∘ₖ η ∘ₖ κ = ξ ∘ₖ (η ∘ₖ κ) := by
-  refine' ext_fun fun a f hf => _
+  refine ext_fun fun a f hf => ?_
   simp_rw [lintegral_comp _ _ _ hf, lintegral_comp _ _ _ hf.lintegral_kernel]
 #align probability_theory.kernel.comp_assoc ProbabilityTheory.kernel.comp_assoc
 

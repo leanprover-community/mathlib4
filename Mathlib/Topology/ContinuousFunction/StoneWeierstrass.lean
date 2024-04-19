@@ -173,9 +173,9 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   -- We start by boiling down to a statement about close approximation.
   rw [eq_top_iff]
   rintro f -
-  refine'
+  refine
     Filter.Frequently.mem_closure
-      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => _)
+      ((Filter.HasBasis.frequently_iff Metric.nhds_basis_ball).mpr fun ε pos => ?_)
   simp only [exists_prop, Metric.mem_ball]
   -- It will be helpful to assume `X` is nonempty later,
   -- so we get that out of the way here.

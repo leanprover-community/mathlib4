@@ -348,7 +348,7 @@ containing it. -/
 theorem _root_.Set.measure_eq_iInf_isOpen (A : Set α) (μ : Measure α) [OuterRegular μ] :
     μ A = ⨅ (U : Set α) (_ : A ⊆ U) (_ : IsOpen U), μ U := by
   refine' le_antisymm (le_iInf₂ fun s hs => le_iInf fun _ => μ.mono hs) _
-  refine' le_of_forall_lt' fun r hr => _
+  refine le_of_forall_lt' fun r hr => ?_
   simpa only [iInf_lt_iff, exists_prop] using A.exists_isOpen_lt_of_lt r hr
 #align set.measure_eq_infi_is_open Set.measure_eq_iInf_isOpen
 

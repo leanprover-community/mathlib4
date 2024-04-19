@@ -105,7 +105,7 @@ theorem polar_empty : B.polar ∅ = Set.univ :=
 
 @[simp]
 theorem polar_zero : B.polar ({0} : Set E) = Set.univ := by
-  refine' Set.eq_univ_iff_forall.mpr fun y x hx => _
+  refine Set.eq_univ_iff_forall.mpr fun y x hx => ?_
   rw [Set.mem_singleton_iff.mp hx, map_zero, LinearMap.zero_apply, norm_zero]
   exact zero_le_one
 #align linear_map.polar_zero LinearMap.polar_zero
@@ -141,7 +141,7 @@ variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 theorem polar_univ (h : SeparatingRight B) : B.polar Set.univ = {(0 : F)} := by
   rw [Set.eq_singleton_iff_unique_mem]
   refine' ⟨by simp only [zero_mem_polar], fun y hy => h _ fun x => _⟩
-  refine' norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => _)
+  refine norm_le_zero_iff.mp (le_of_forall_le_of_dense fun ε hε => ?_)
   rcases NormedField.exists_norm_lt 𝕜 hε with ⟨c, hc, hcε⟩
   calc
     ‖B x y‖ = ‖c‖ * ‖B (c⁻¹ • x) y‖ := by

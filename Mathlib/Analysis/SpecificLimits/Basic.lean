@@ -97,12 +97,12 @@ theorem tendsto_natCast_div_add_atTop {𝕜 : Type*} [DivisionRing 𝕜] [Topolo
   · have : 𝓝 (1 : 𝕜) = 𝓝 (1 / (1 + x * (0 : 𝕜))) := by
       rw [mul_zero, add_zero, div_one]
     rw [this]
-    refine' tendsto_const_nhds.div (tendsto_const_nhds.add _) (by simp)
+    refine tendsto_const_nhds.div (tendsto_const_nhds.add ?_) (by simp)
     simp_rw [div_eq_mul_inv]
-    refine' tendsto_const_nhds.mul _
+    refine tendsto_const_nhds.mul ?_
     have := ((continuous_algebraMap ℝ 𝕜).tendsto _).comp tendsto_inverse_atTop_nhds_zero_nat
     rw [map_zero, Filter.tendsto_atTop'] at this
-    refine' Iff.mpr tendsto_atTop' _
+    refine Iff.mpr tendsto_atTop' ?_
     intros
     simp_all only [comp_apply, map_inv₀, map_natCast]
 #align tendsto_coe_nat_div_add_at_top tendsto_natCast_div_add_atTop
@@ -355,8 +355,8 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
     convert ENNReal.tsum_coe_eq (NNReal.hasSum_geometric hr)
     rw [ENNReal.coe_inv <| ne_of_gt <| tsub_pos_iff_lt.2 hr, coe_sub, coe_one]
   · rw [tsub_eq_zero_iff_le.mpr hr, ENNReal.inv_zero, ENNReal.tsum_eq_iSup_nat, iSup_eq_top]
-    refine' fun a ha ↦
-      (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn ↦ lt_of_lt_of_le hn _
+    refine fun a ha ↦
+      (ENNReal.exists_nat_gt (lt_top_iff_ne_top.1 ha)).imp fun n hn ↦ lt_of_lt_of_le hn ?_
     calc
       (n : ℝ≥0∞) = ∑ i in range n, 1 := by rw [sum_const, nsmul_one, card_range]
       _ ≤ ∑ i in range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
@@ -384,7 +384,7 @@ then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric : CauchySeq f := by
   refine' cauchySeq_of_edist_le_of_tsum_ne_top _ hu _
   rw [ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
-  refine' ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 _)
+  refine ENNReal.mul_ne_top hC (ENNReal.inv_ne_top.2 ?_)
   exact (tsub_pos_iff_lt.2 hr).ne'
 #align cauchy_seq_of_edist_le_geometric cauchySeq_of_edist_le_geometric
 
@@ -413,7 +413,7 @@ variable [PseudoEMetricSpace α] (C : ℝ≥0∞) (hC : C ≠ ⊤) {f : ℕ → 
 /-- If `edist (f n) (f (n+1))` is bounded by `C * 2^-n`, then `f` is a Cauchy sequence. -/
 theorem cauchySeq_of_edist_le_geometric_two : CauchySeq f := by
   simp only [div_eq_mul_inv, ENNReal.inv_pow] at hu
-  refine' cauchySeq_of_edist_le_geometric 2⁻¹ C _ hC hu
+  refine cauchySeq_of_edist_le_geometric 2⁻¹ C ?_ hC hu
   simp [ENNReal.one_lt_two]
 #align cauchy_seq_of_edist_le_geometric_two cauchySeq_of_edist_le_geometric_two
 
@@ -590,7 +590,7 @@ theorem exists_pos_tsum_mul_lt_of_countable {ε : ℝ≥0∞} (hε : ε ≠ 0) {
   rcases exists_pos_sum_of_countable hε ι with ⟨δ', Hpos, Hsum⟩
   have : ∀ i, 0 < max 1 (w i) := fun i ↦ zero_lt_one.trans_le (le_max_left _ _)
   refine' ⟨fun i ↦ δ' i / max 1 (w i), fun i ↦ div_pos (Hpos _) (this i), _⟩
-  refine' lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ _) Hsum
+  refine lt_of_le_of_lt (ENNReal.tsum_le_tsum fun i ↦ ?_) Hsum
   rw [coe_div (this i).ne']
   refine' mul_le_of_le_div' (mul_le_mul_left' (ENNReal.inv_le_inv.2 _) _)
   exact coe_le_coe.2 (le_max_right _ _)
@@ -615,7 +615,7 @@ theorem tendsto_factorial_div_pow_self_atTop :
       div_nonneg (mod_cast n.factorial_pos.le)
         (pow_nonneg (mod_cast n.zero_le) _))
     (by
-      refine' (eventually_gt_atTop 0).mono fun n hn ↦ _
+      refine (eventually_gt_atTop 0).mono fun n hn ↦ ?_
       rcases Nat.exists_eq_succ_of_ne_zero hn.ne.symm with ⟨k, rfl⟩
       rw [← prod_range_add_one_eq_factorial, pow_eq_prod_const, div_eq_mul_inv, ← inv_eq_one_div,
         prod_natCast, Nat.cast_succ, ← prod_inv_distrib, ← prod_mul_distrib,

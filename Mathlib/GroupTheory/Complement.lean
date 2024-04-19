@@ -540,7 +540,7 @@ theorem mk''_toEquiv (hS : S ∈ Subgroup.leftTransversals (H : Set G)) (q : G �
 @[to_additive]
 theorem toEquiv_apply {f : G ⧸ H → G} (hf : ∀ q, (f q : G ⧸ H) = q) (q : G ⧸ H) :
     (toEquiv (range_mem_leftTransversals hf) q : G) = f q := by
-  refine' (Subtype.ext_iff.mp _).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
+  refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
   exact (toEquiv (range_mem_leftTransversals hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
 #align subgroup.mem_left_transversals.to_equiv_apply Subgroup.MemLeftTransversals.toEquiv_apply
 #align add_subgroup.mem_left_transversals.to_equiv_apply AddSubgroup.MemLeftTransversals.toEquiv_apply
@@ -591,7 +591,7 @@ theorem mk''_toEquiv (hS : S ∈ Subgroup.rightTransversals (H : Set G))
 theorem toEquiv_apply {f : Quotient (QuotientGroup.rightRel H) → G}
     (hf : ∀ q, Quotient.mk'' (f q) = q) (q : Quotient (QuotientGroup.rightRel H)) :
     (toEquiv (range_mem_rightTransversals hf) q : G) = f q := by
-  refine' (Subtype.ext_iff.mp _).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
+  refine (Subtype.ext_iff.mp ?_).trans (Subtype.coe_mk (f q) ⟨q, rfl⟩)
   exact (toEquiv (range_mem_rightTransversals hf)).apply_eq_iff_eq_symm_apply.mpr (hf q).symm
 #align subgroup.mem_right_transversals.to_equiv_apply Subgroup.MemRightTransversals.toEquiv_apply
 #align add_subgroup.mem_right_transversals.to_equiv_apply AddSubgroup.MemRightTransversals.toEquiv_apply
@@ -631,7 +631,7 @@ variable {F : Type*} [Group F] [MulAction F G] [QuotientAction F H]
 noncomputable instance : MulAction F (leftTransversals (H : Set G)) where
   smul f T :=
     ⟨f • (T : Set G), by
-      refine' mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => _
+      refine mem_leftTransversals_iff_existsUnique_inv_mul_mem.mpr fun g => ?_
       obtain ⟨t, ht1, ht2⟩ := mem_leftTransversals_iff_existsUnique_inv_mul_mem.mp T.2 (f⁻¹ • g)
       refine' ⟨⟨f • (t : G), Set.smul_mem_smul_set t.2⟩, _, _⟩
       · exact smul_inv_smul f g ▸ QuotientAction.inv_mul_mem f ht1
@@ -738,13 +738,13 @@ theorem isComplement'_of_coprime [Fintype G] [Fintype H] [Fintype K]
 theorem isComplement'_stabilizer {α : Type*} [MulAction G α] (a : α)
     (h1 : ∀ h : H, h • a = a → h = 1) (h2 : ∀ g : G, ∃ h : H, h • g • a = a) :
     IsComplement' H (MulAction.stabilizer G a) := by
-  refine' isComplement_iff_existsUnique.mpr fun g => _
+  refine isComplement_iff_existsUnique.mpr fun g => ?_
   obtain ⟨h, hh⟩ := h2 g
   have hh' : (↑h * g) • a = a := by rwa [mul_smul]
   refine' ⟨⟨h⁻¹, h * g, hh'⟩, inv_mul_cancel_left ↑h g, _⟩
   rintro ⟨h', g, hg : g • a = a⟩ rfl
   specialize h1 (h * h') (by rwa [mul_smul, smul_def h', ← hg, ← mul_smul, hg])
-  refine' Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext _)
+  refine Prod.ext (eq_inv_of_mul_eq_one_right h1) (Subtype.ext ?_)
   rwa [Subtype.ext_iff, coe_one, coe_mul, ← self_eq_mul_left, mul_assoc (↑h) (↑h') g] at h1
 #align subgroup.is_complement'_stabilizer Subgroup.isComplement'_stabilizer
 

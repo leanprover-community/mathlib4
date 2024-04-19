@@ -457,7 +457,7 @@ theorem sqLe_cancel {c d x y z w : ℕ} (zw : SqLe y d x c) (h : SqLe (x + z) c 
     SqLe z c w d := by
   apply le_of_not_gt
   intro l
-  refine' not_le_of_gt _ h
+  refine not_le_of_gt ?_ h
   simp only [SqLe, mul_add, mul_comm, mul_left_comm, add_assoc, gt_iff_lt]
   have hm := sqLe_add_mixed zw (le_of_lt l)
   simp only [SqLe, mul_assoc, gt_iff_lt] at l zw
@@ -480,7 +480,7 @@ theorem sqLe_mul {d x y z w : ℕ} :
       have :=
         Int.mul_nonneg (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le xy))
           (sub_nonneg_of_le (Int.ofNat_le_ofNat_of_le zw))
-      refine' Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg _)
+      refine Int.le_of_ofNat_le_ofNat (le_of_sub_nonneg ?_)
       convert this using 1
       simp only [one_mul, Int.ofNat_add, Int.ofNat_mul]
       ring

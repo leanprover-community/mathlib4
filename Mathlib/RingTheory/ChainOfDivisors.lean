@@ -168,15 +168,15 @@ theorem element_of_chain_eq_pow_second_of_chain {q r : Associates M} {n : ℕ} (
       · contradiction
       rw [Finset.card_image_iff]
       refine' Set.injOn_of_injective (fun m m' h => Fin.ext _) _
-      refine'
-        pow_injective_of_not_unit (element_of_chain_not_isUnit_of_index_ne_zero (by simp) h₁) _ h
+      refine
+        pow_injective_of_not_unit (element_of_chain_not_isUnit_of_index_ne_zero (by simp) h₁) ?_ h
       exact Irreducible.ne_zero (second_of_chain_is_irreducible hn h₁ (@h₂) hq)
     suffices H' : ∀ r ∈ Finset.univ.image fun m : Fin (i + 1) => c 1 ^ (m : ℕ), r ≤ q by
       simp only [← Nat.succ_le_iff, Nat.succ_eq_add_one, ← this]
       apply card_subset_divisors_le_length_of_chain (@h₂) H'
     simp only [Finset.mem_image]
     rintro r ⟨a, _, rfl⟩
-    refine' dvd_trans _ hr
+    refine dvd_trans ?_ hr
     use c 1 ^ (i - (a : ℕ))
     rw [pow_mul_pow_sub (c 1)]
     · exact H
@@ -189,7 +189,7 @@ theorem eq_pow_second_of_chain_of_has_chain {q : Associates M} {n : ℕ} (hn : n
   classical
     obtain ⟨i, hi'⟩ := element_of_chain_eq_pow_second_of_chain hn h₁ (@fun r => h₂) (dvd_refl q) hq
     convert hi'
-    refine' (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ _)
+    refine (Nat.lt_succ_iff.1 i.prop).antisymm' (Nat.le_of_succ_le_succ ?_)
     calc
       n + 1 = (Finset.univ : Finset (Fin (n + 1))).card := (Finset.card_fin _).symm
       _ = (Finset.univ.image c).card := (Finset.card_image_iff.mpr (h₁.injective.injOn _)).symm
@@ -336,7 +336,7 @@ theorem multiplicity_prime_le_multiplicity_image_by_factor_orderIso {m p : Assoc
 theorem multiplicity_prime_eq_multiplicity_image_by_factor_orderIso {m p : Associates M}
     {n : Associates N} (hn : n ≠ 0) (hp : p ∈ normalizedFactors m) (d : Set.Iic m ≃o Set.Iic n) :
     multiplicity p m = multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n := by
-  refine' le_antisymm (multiplicity_prime_le_multiplicity_image_by_factor_orderIso hp d) _
+  refine le_antisymm (multiplicity_prime_le_multiplicity_image_by_factor_orderIso hp d) ?_
   suffices multiplicity (↑(d ⟨p, dvd_of_mem_normalizedFactors hp⟩)) n ≤
       multiplicity (↑(d.symm (d ⟨p, dvd_of_mem_normalizedFactors hp⟩))) m by
     rw [d.symm_apply_apply ⟨p, dvd_of_mem_normalizedFactors hp⟩, Subtype.coe_mk] at this

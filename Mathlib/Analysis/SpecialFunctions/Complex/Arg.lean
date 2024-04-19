@@ -599,7 +599,7 @@ theorem arg_eq_nhds_of_re_neg_of_im_pos (hx_re : x.re < 0) (hx_im : 0 < x.im) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) + π := by
   suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ 0 < y.im from
     h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_nonneg hy.1 hy.2.le
-  refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ 0 < x.im)
+  refine IsOpen.eventually_mem ?_ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ 0 < x.im)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_zero continuous_im)
 #align complex.arg_eq_nhds_of_re_neg_of_im_pos Complex.arg_eq_nhds_of_re_neg_of_im_pos
@@ -608,7 +608,7 @@ theorem arg_eq_nhds_of_re_neg_of_im_neg (hx_re : x.re < 0) (hx_im : x.im < 0) :
     arg =ᶠ[𝓝 x] fun x => Real.arcsin ((-x).im / abs x) - π := by
   suffices h_forall_nhds : ∀ᶠ y : ℂ in 𝓝 x, y.re < 0 ∧ y.im < 0 from
     h_forall_nhds.mono fun y hy => arg_of_re_neg_of_im_neg hy.1 hy.2
-  refine' IsOpen.eventually_mem _ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ x.im < 0)
+  refine IsOpen.eventually_mem ?_ (⟨hx_re, hx_im⟩ : x.re < 0 ∧ x.im < 0)
   exact
     IsOpen.and (isOpen_lt continuous_re continuous_zero) (isOpen_lt continuous_im continuous_zero)
 #align complex.arg_eq_nhds_of_re_neg_of_im_neg Complex.arg_eq_nhds_of_re_neg_of_im_neg
@@ -689,7 +689,7 @@ theorem continuousAt_arg_coe_angle (h : x ≠ 0) : ContinuousAt ((↑) ∘ arg :
   · rw [← Function.comp_id (((↑) : ℝ → Real.Angle) ∘ arg),
       (Function.funext_iff.2 fun _ => (neg_neg _).symm : (id : ℂ → ℂ) = Neg.neg ∘ Neg.neg), ←
       Function.comp.assoc]
-    refine' ContinuousAt.comp _ continuous_neg.continuousAt
+    refine ContinuousAt.comp ?_ continuous_neg.continuousAt
     suffices ContinuousAt (Function.update (((↑) ∘ arg) ∘ Neg.neg : ℂ → Real.Angle) 0 π) (-x) by
       rwa [continuousAt_update_of_ne (neg_ne_zero.2 h)] at this
     have ha :

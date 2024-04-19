@@ -71,7 +71,7 @@ noncomputable def ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x, d x 
     -- Porting note: added `unfold`
     unfold dist
     rw [← NNReal.coe_add, NNReal.coe_le_coe]
-    refine' NNReal.le_iInf_add_iInf fun lxy lyz => _
+    refine NNReal.le_iInf_add_iInf fun lxy lyz => ?_
     calc
       ⨅ l, (zipWith d (x::l) (l ++ [z])).sum ≤
           (zipWith d (x::lxy ++ y::lyz) ((lxy ++ y::lyz) ++ [z])).sum :=
@@ -116,7 +116,7 @@ theorem le_two_mul_dist_ofPreNNDist (d : X → X → ℝ≥0) (dist_self : ∀ x
     `d xₖ₊₁ xₖ₊₂ + ... + d xₙ₋₁ xₙ` are less than or equal to `L / 2`.
     Then `d x₀ xₖ ≤ L`, `d xₖ xₖ₊₁ ≤ L`, and `d xₖ₊₁ xₙ ≤ L`, thus `d x₀ xₙ ≤ 2 * L`. -/
   rw [dist_ofPreNNDist, ← NNReal.coe_two, ← NNReal.coe_mul, NNReal.mul_iInf, NNReal.coe_le_coe]
-  refine' le_ciInf fun l => _
+  refine le_ciInf fun l => ?_
   have hd₀_trans : Transitive fun x y => d x y = 0 := by
     intro a b c hab hbc
     rw [← nonpos_iff_eq_zero]
@@ -208,7 +208,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   set d : X → X → ℝ≥0 := fun x y => if h : ∃ n, (x, y) ∉ U n then (1 / 2) ^ Nat.find h else 0
   have hd₀ : ∀ {x y}, d x y = 0 ↔ Inseparable x y := by
     intro x y
-    refine' Iff.trans _ hB.inseparable_iff_uniformity.symm
+    refine Iff.trans ?_ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
@@ -235,7 +235,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
       rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
-      refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
+      refine Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) ?_)
       exact ⟨x₂, h₁₂, x₃, h₂₃, h₃₄⟩
     · exact (dif_neg H).trans_le (zero_le _)
   -- Porting note: without the next line, `uniformity_basis_dist_pow` ends up introducing some
@@ -247,7 +247,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
   · refine' fun n _ => ⟨n + 1, trivial, fun x hx => _⟩
     rw [mem_setOf_eq] at hx
     contrapose! hx
-    refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
+    refine le_trans ?_ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
     rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
       mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity

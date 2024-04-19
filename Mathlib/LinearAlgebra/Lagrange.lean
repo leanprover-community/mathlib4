@@ -246,7 +246,7 @@ theorem basis_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : Lagrange.basis s v 
 theorem eval_basis_self (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).eval (v i) = 1 := by
   rw [Lagrange.basis, eval_prod]
-  refine' prod_eq_one fun j H => _
+  refine prod_eq_one fun j H => ?_
   rw [eval_basisDivisor_left_of_ne]
   rcases mem_erase.mp H with ⟨hij, hj⟩
   exact mt (hvs hi hj) hij.symm
@@ -266,7 +266,7 @@ theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
   rw [← card_erase_of_mem hi, card_eq_sum_ones]
   convert natDegree_prod _ _ H using 1
-  refine' sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne _).symm
+  refine sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne ?_).symm
   rw [Ne, ← basisDivisor_eq_zero_iff]
   exact H _ hj
 #align lagrange.nat_degree_basis Lagrange.natDegree_basis
@@ -289,7 +289,7 @@ theorem sum_basis (hvs : Set.InjOn v s) (hs : s.Nonempty) :
   · intro i hi
     rw [eval_finset_sum, eval_one, ← add_sum_erase _ _ hi, eval_basis_self hvs hi,
       add_right_eq_self]
-    refine' sum_eq_zero fun j hj => _
+    refine sum_eq_zero fun j hj => ?_
     rcases mem_erase.mp hj with ⟨hij, _⟩
     rw [eval_basis_of_ne hij hi]
 #align lagrange.sum_basis Lagrange.sum_basis
@@ -347,7 +347,7 @@ theorem eval_interpolate_at_node (hvs : Set.InjOn v s) (hi : i ∈ s) :
     eval (v i) (interpolate s v r) = r i := by
   rw [interpolate_apply, eval_finset_sum, ← add_sum_erase _ _ hi]
   simp_rw [eval_mul, eval_C, eval_basis_self hvs hi, mul_one, add_right_eq_self]
-  refine' sum_eq_zero fun j H => _
+  refine sum_eq_zero fun j H => ?_
   rw [eval_basis_of_ne (mem_erase.mp H).1 hi, mul_zero]
 #align lagrange.eval_interpolate_at_node Lagrange.eval_interpolate_at_node
 
@@ -464,13 +464,13 @@ theorem interpolate_eq_sum_interpolate_insert_sdiff (hvt : Set.InjOn v t) (hs : 
           (hvt.mono (coe_subset.mpr (insert_subset_iff.mpr ⟨hi, sdiff_subset _ _⟩)))
           (mem_insert_self _ _),
         mul_one, add_right_eq_self]
-      refine' sum_eq_zero fun j hj => _
+      refine sum_eq_zero fun j hj => ?_
       rcases mem_erase.mp hj with ⟨hij, _⟩
       rw [eval_basis_of_ne hij hi', mul_zero]
     · have H : (∑ j in s, eval (v i) (Lagrange.basis s v j)) = 1 := by
         rw [← eval_finset_sum, sum_basis (hvt.mono hst) hs, eval_one]
       rw [← mul_one (r i), ← H, mul_sum]
-      refine' sum_congr rfl fun j hj => _
+      refine sum_congr rfl fun j hj => ?_
       congr
       exact
         eval_interpolate_at_node _ (hvt.mono (insert_subset_iff.mpr ⟨hst hj, sdiff_subset _ _⟩))
@@ -577,7 +577,7 @@ theorem derivative_nodal [DecidableEq ι] :
   · rw [nodal_empty, derivative_one, sum_empty]
   · rw [nodal_insert_eq_nodal hit, derivative_mul, IH, derivative_sub, derivative_X, derivative_C,
       sub_zero, one_mul, sum_insert hit, mul_sum, erase_insert hit, add_right_inj]
-    refine' sum_congr rfl fun j hjt => _
+    refine sum_congr rfl fun j hjt => ?_
     rw [t.erase_insert_of_ne (ne_of_mem_of_not_mem hjt hit).symm,
       nodal_insert_eq_nodal (mem_of_mem_erase.mt hit)]
 #align lagrange.derivative_nodal Lagrange.derivative_nodal
@@ -676,7 +676,7 @@ theorem eval_interpolate_not_at_node (hx : ∀ i ∈ s, x ≠ v i) :
     eval x (interpolate s v r) =
       eval x (nodal s v) * ∑ i in s, nodalWeight s v i * (x - v i)⁻¹ * r i := by
   simp_rw [interpolate_apply, mul_sum, eval_finset_sum, eval_mul, eval_C]
-  refine' sum_congr rfl fun i hi => _
+  refine sum_congr rfl fun i hi => ?_
   rw [← mul_assoc, mul_comm, eval_basis_not_at_node hi (hx _ hi)]
 #align lagrange.eval_interpolate_not_at_node Lagrange.eval_interpolate_not_at_node
 

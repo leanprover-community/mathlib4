@@ -43,7 +43,7 @@ noncomputable def isometryEquivSignWeightedSumSquares (w : ι → ℝ) :
       ((Pi.basisFun ℝ ι).unitsSMul fun i => (isUnit_iff_ne_zero.2 <| hu' i).unit)
   ext1 v
   rw [basisRepr_apply, weightedSumSquares_apply, weightedSumSquares_apply]
-  refine' sum_congr rfl fun j hj => _
+  refine sum_congr rfl fun j hj => ?_
   have hsum :
     (∑ i : ι, v i • ((isUnit_iff_ne_zero.2 <| hu' i).unit : ℝ) • (Pi.basisFun ℝ ι) i) j =
       v j • (Real.sign (u j) * u j) ^ (-(1 / 2 : ℝ)) := by

@@ -83,7 +83,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
     rw [intervalIntegrable_iff]
     have : IntegrableOn (fun x ↦ C * ‖g x‖) (Ι c d) := IntegrableOn.mono hgi hsub' le_rfl
     exact Integrable.mono' this (aestronglyMeasurable_deriv _ _) hg_ae
-  refine' hlt.not_le (sub_le_iff_le_add'.1 _)
+  refine hlt.not_le (sub_le_iff_le_add'.1 ?_)
   calc
     ‖f d‖ - ‖f c‖ ≤ ‖f d - f c‖ := norm_sub_norm_le _ _
     _ = ‖∫ x in c..d, deriv f x‖ := congr_arg _ (integral_deriv_eq_sub hfd hfi).symm
@@ -181,7 +181,7 @@ theorem not_intervalIntegrable_of_sub_inv_isBigO_punctured {f : ℝ → F} {a b 
     filter_upwards [self_mem_nhdsWithin] with x hx
     simpa using ((hasDerivAt_id x).sub_const c).log (sub_ne_zero.2 hx)
   have B : Tendsto (fun x => ‖Real.log (x - c)‖) (𝓝[≠] c) atTop := by
-    refine' tendsto_abs_atBot_atTop.comp (Real.tendsto_log_nhdsWithin_zero.comp _)
+    refine tendsto_abs_atBot_atTop.comp (Real.tendsto_log_nhdsWithin_zero.comp ?_)
     rw [← sub_self c]
     exact ((hasDerivAt_id c).sub_const c).tendsto_punctured_nhds one_ne_zero
   exact not_intervalIntegrable_of_tendsto_norm_atTop_of_deriv_isBigO_punctured
@@ -200,7 +200,7 @@ theorem intervalIntegrable_sub_inv_iff {a b c : ℝ} :
     exact not_intervalIntegrable_of_sub_inv_isBigO_punctured (isBigO_refl _ _) hne hc h
   · rintro (rfl | h₀)
     · exact IntervalIntegrable.refl
-    refine' ((continuous_sub_right c).continuousOn.inv₀ _).intervalIntegrable
+    refine ((continuous_sub_right c).continuousOn.inv₀ ?_).intervalIntegrable
     exact fun x hx => sub_ne_zero.2 <| ne_of_mem_of_not_mem hx h₀
 #align interval_integrable_sub_inv_iff intervalIntegrable_sub_inv_iff
 

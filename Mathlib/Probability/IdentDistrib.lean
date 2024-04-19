@@ -322,7 +322,7 @@ variable {E : Type*} [MeasurableSpace E] [NormedAddCommGroup E] [BorelSpace E]
 theorem Memℒp.uniformIntegrable_of_identDistrib_aux {ι : Type*} {f : ι → α → E} {j : ι} {p : ℝ≥0∞}
     (hp : 1 ≤ p) (hp' : p ≠ ∞) (hℒp : Memℒp (f j) p μ) (hfmeas : ∀ i, StronglyMeasurable (f i))
     (hf : ∀ i, IdentDistrib (f i) (f j) μ μ) : UniformIntegrable f p μ := by
-  refine' uniformIntegrable_of' hp hp' hfmeas fun ε hε => _
+  refine uniformIntegrable_of' hp hp' hfmeas fun ε hε => ?_
   by_cases hι : Nonempty ι
   swap; · exact ⟨0, fun i => False.elim (hι <| Nonempty.intro i)⟩
   obtain ⟨C, hC₁, hC₂⟩ := hℒp.snorm_indicator_norm_ge_pos_le (hfmeas _) hε

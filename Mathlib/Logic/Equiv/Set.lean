@@ -665,7 +665,7 @@ theorem preimage_piEquivPiSubtypeProd_symm_pi {α : Type*} {β : α → Type*} (
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i := by
   ext ⟨f, g⟩
   simp only [mem_preimage, mem_univ_pi, prod_mk_mem_set_prod_eq, Subtype.forall, ← forall_and]
-  refine' forall_congr' fun i => _
+  refine forall_congr' fun i => ?_
   dsimp only [Subtype.coe_mk]
   by_cases hi : p i <;> simp [hi]
 #align equiv.preimage_pi_equiv_pi_subtype_prod_symm_pi Equiv.preimage_piEquivPiSubtypeProd_symm_pi

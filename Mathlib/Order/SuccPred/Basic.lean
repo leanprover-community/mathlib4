@@ -287,7 +287,7 @@ theorem le_succ_iterate (k : ℕ) (x : α) : x ≤ succ^[k] x := by
 
 theorem isMax_iterate_succ_of_eq_of_lt {n m : ℕ} (h_eq : succ^[n] a = succ^[m] a)
     (h_lt : n < m) : IsMax (succ^[n] a) := by
-  refine' max_of_succ_le (le_trans _ h_eq.symm.le)
+  refine max_of_succ_le (le_trans ?_ h_eq.symm.le)
   have : succ (succ^[n] a) = succ^[n + 1] a := by rw [Function.iterate_succ', comp]
   rw [this]
   have h_le : n + 1 ≤ m := Nat.succ_le_of_lt h_lt
@@ -577,7 +577,7 @@ section CompleteLattice
 variable [CompleteLattice α] [SuccOrder α]
 
 theorem succ_eq_iInf (a : α) : succ a = ⨅ (b) (_ : a < b), b := by
-  refine' le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) _
+  refine le_antisymm (le_iInf fun b => le_iInf succ_le_of_lt) ?_
   obtain rfl | ha := eq_or_ne a ⊤
   · rw [succ_top]
     exact le_top
@@ -928,7 +928,7 @@ section CompleteLattice
 variable [CompleteLattice α] [PredOrder α]
 
 theorem pred_eq_iSup (a : α) : pred a = ⨆ (b) (_ : b < a), b := by
-  refine' le_antisymm _ (iSup_le fun b => iSup_le le_pred_of_lt)
+  refine le_antisymm ?_ (iSup_le fun b => iSup_le le_pred_of_lt)
   obtain rfl | ha := eq_or_ne a ⊥
   · rw [pred_bot]
     exact bot_le
@@ -975,7 +975,7 @@ theorem pred_succ_iterate_of_not_isMax (i : α) (n : ℕ) (hin : ¬IsMax (succ^[
     have h_sub_le : succ^[n] i ≤ succ^[n.succ] i := by
       rw [Function.iterate_succ']
       exact le_succ _
-    refine' fun h_max => hin fun j hj => _
+    refine fun h_max => hin fun j hj => ?_
     have hj_le : j ≤ succ^[n] i := h_max (h_sub_le.trans hj)
     exact hj_le.trans h_sub_le
   rw [Function.iterate_succ, Function.iterate_succ']

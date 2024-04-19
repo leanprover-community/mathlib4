@@ -382,7 +382,7 @@ theorem mem_adjoin_support (f : R[M]) : f ∈ adjoin R (of' R M '' f.support) :=
 elements of `S` generates `R[M]`. -/
 theorem support_gen_of_gen {S : Set R[M]} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of' R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
   have hincl :
@@ -425,7 +425,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R R[M]] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of'_mem_span [Nontrivial R] {m : M} {S : Set M} :
     of' R M m ∈ span R (of' R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of', ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h
@@ -563,7 +563,7 @@ theorem mem_adjoin_support (f : MonoidAlgebra R M) : f ∈ adjoin R (of R M '' f
 of `S` generates `MonoidAlgebra R M`. -/
 theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R S = ⊤) :
     Algebra.adjoin R (⋃ f ∈ S, of R M '' (f.support : Set M)) = ⊤ := by
-  refine' le_antisymm le_top _
+  refine le_antisymm le_top ?_
   rw [← hS, adjoin_le_iff]
   intro f hf
   -- Porting note: ⋃ notation did not work here. Was
@@ -609,7 +609,7 @@ theorem exists_finset_adjoin_eq_top [h : FiniteType R (MonoidAlgebra R M)] :
 `S : Set M` if and only if `m ∈ S`. -/
 theorem of_mem_span_of_iff [Nontrivial R] {m : M} {S : Set M} :
     of R M m ∈ span R (of R M '' S) ↔ m ∈ S := by
-  refine' ⟨fun h => _, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
+  refine ⟨fun h => ?_, fun h => Submodule.subset_span <| Set.mem_image_of_mem (of R M) h⟩
   erw [of, MonoidHom.coe_mk, ← Finsupp.supported_eq_span_single, Finsupp.mem_supported,
     Finsupp.support_single_ne_zero _ (one_ne_zero' R)] at h
   simpa using h

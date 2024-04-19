@@ -195,7 +195,7 @@ instance tendstoIccClassNhdsPi {ι : Type*} {α : ι → Type*} [∀ i, Preorder
     mem_powerset_iff]
   intro i s hs
   have : Tendsto (fun g : ∀ i, α i => g i) (𝓝 f) (𝓝 (f i)) := (continuous_apply i).tendsto f
-  refine' (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono _
+  refine (tendsto_lift'.1 ((this.comp tendsto_fst).Icc (this.comp tendsto_snd)) s hs).mono ?_
   exact fun p hp g hg => hp ⟨hg.1 _, hg.2 _⟩
 #align tendsto_Icc_class_nhds_pi tendstoIccClassNhdsPi
 
@@ -590,7 +590,7 @@ theorem countable_setOf_covBy_right [SecondCountableTopology α] :
       refine' h'z x xt ⟨ux.1.trans_le (ux'.2.trans (hy x' x't.1).le), _⟩
       by_contra! H
       exact lt_irrefl _ ((Hy _ _ x't.1 H).trans_lt h')
-  refine' this.countable_of_isOpen (fun x hx => _) fun x hx => ⟨x, hz x hx, le_rfl⟩
+  refine this.countable_of_isOpen (fun x hx => ?_) fun x hx => ⟨x, hz x hx, le_rfl⟩
   suffices H : Ioc (z x) x = Ioo (z x) (y x) by
     rw [H]
     exact isOpen_Ioo

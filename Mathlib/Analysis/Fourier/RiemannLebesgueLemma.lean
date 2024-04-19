@@ -111,7 +111,7 @@ of interest as a preparatory step for the more general result
 theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support (hf1 : Continuous f)
     (hf2 : HasCompactSupport f) :
     Tendsto (fun w : V => ∫ v : V, 𝐞 (-⟪v, w⟫) • f v) (cocompact V) (𝓝 0) := by
-  refine' NormedAddCommGroup.tendsto_nhds_zero.mpr fun ε hε => _
+  refine NormedAddCommGroup.tendsto_nhds_zero.mpr fun ε hε => ?_
   suffices ∃ T : ℝ, ∀ w : V, T ≤ ‖w‖ → ‖∫ v : V, 𝐞 (-⟪v, w⟫) • f v‖ < ε by
     simp_rw [← comap_dist_left_atTop_eq_cocompact (0 : V), eventually_comap, eventually_atTop,
       dist_eq_norm', sub_zero]
@@ -153,16 +153,16 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   simp_rw [norm_circle_smul]
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
-    refine' (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
+    refine (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => ?_).symm
     dsimp only [A] at hv
     simp only [mem_setOf, not_le] at hv
     rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
     · rw [← sub_neg_eq_add]
       refine' le_trans _ (norm_sub_norm_le _ _)
       rw [le_sub_iff_add_le, norm_neg]
-      refine' le_trans _ hv.le
+      refine le_trans ?_ hv.le
       rw [add_le_add_iff_left, hw'_nm, ← div_div]
-      refine' (div_le_one <| norm_pos_iff.mpr hw_ne).mpr _
+      refine (div_le_one <| norm_pos_iff.mpr hw_ne).mpr ?_
       refine' le_trans (le_add_of_nonneg_right <| one_div_nonneg.mpr <| _) hw_bd
       exact (mul_pos (zero_lt_two' ℝ) hδ1).le
     · exact (le_add_of_nonneg_right zero_le_one).trans hv.le
@@ -184,7 +184,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
     Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
-  refine' bdA2.trans_lt _
+  refine bdA2.trans_lt ?_
   rw [div_mul_eq_mul_div, div_lt_iff (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,
     mul_lt_mul_left hε]
   rw [← ENNReal.toReal_le_toReal] at hB_vol
@@ -204,7 +204,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
   · convert tendsto_const_nhds (x := (0 : E)) with w
     apply integral_undef
     rwa [Real.fourierIntegral_convergent_iff]
-  refine' Metric.tendsto_nhds.mpr fun ε hε => _
+  refine Metric.tendsto_nhds.mpr fun ε hε => ?_
   obtain ⟨g, hg_supp, hfg, hg_cont, -⟩ :=
     hfi.exists_hasCompactSupport_integral_sub_le (div_pos hε two_pos)
   refine'
@@ -215,7 +215,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact :
       (eventually_of_forall fun w hI => _)
   rw [dist_eq_norm] at hI ⊢
   have : ‖(∫ v, 𝐞 (-⟪v, w⟫) • f v) - ∫ v, 𝐞 (-⟪v, w⟫) • g v‖ ≤ ε / 2 := by
-    refine' le_trans _ hfg
+    refine le_trans ?_ hfg
     simp_rw [← integral_sub ((Real.fourierIntegral_convergent_iff w).2 hfi)
       ((Real.fourierIntegral_convergent_iff w).2 (hg_cont.integrable_of_hasCompactSupport hg_supp)),
       ← smul_sub, ← Pi.sub_apply]

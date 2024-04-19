@@ -446,7 +446,7 @@ theorem orthogonalProjection_vadd_eq_self {s : AffineSubspace ℝ P} [Nonempty s
     orthogonalProjection s (v +ᵥ p) = ⟨p, hp⟩ := by
   have h := vsub_orthogonalProjection_mem_direction_orthogonal s (v +ᵥ p)
   rw [vadd_vsub_assoc, Submodule.add_mem_iff_right _ hv] at h
-  refine' (eq_of_vsub_eq_zero _).symm
+  refine (eq_of_vsub_eq_zero ?_).symm
   ext
   refine' Submodule.disjoint_def.1 s.direction.orthogonal_disjoint _ _ h
   exact (_ : s.direction).2

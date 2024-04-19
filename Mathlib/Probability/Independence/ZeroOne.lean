@@ -110,7 +110,7 @@ For the example of `f = atTop`, we can take
 theorem kernel.indep_biSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s κ μα)
     (hf : ∀ t, p t → tᶜ ∈ f) {t : Set ι} (ht : p t) :
     Indep (⨆ n ∈ t, s n) (limsup s f) κ μα := by
-  refine' indep_of_indep_of_le_right (indep_biSup_compl h_le h_indep t) _
+  refine indep_of_indep_of_le_right (indep_biSup_compl h_le h_indep t) ?_
   refine' limsSup_le_of_le (by isBoundedDefault) _
   simp only [Set.mem_compl_iff, eventually_map]
   exact eventually_of_mem (hf t ht) le_iSup₂
@@ -162,7 +162,7 @@ theorem kernel.indep_iSup_limsup (h_le : ∀ n, s n ≤ m0) (h_indep : iIndep s 
     rw [← this]
     exact indep_iSup_directed_limsup h_le h_indep hf hns hnsp
   rw [iSup_comm]
-  refine' iSup_congr fun n => _
+  refine iSup_congr fun n => ?_
   have h : ⨆ (i : α) (_ : n ∈ ns i), s n = ⨆ _ : ∃ i, n ∈ ns i, s n := by rw [iSup_exists]
   haveI : Nonempty (∃ i : α, n ∈ ns i) := ⟨hns_univ n⟩
   rw [h, iSup_const]

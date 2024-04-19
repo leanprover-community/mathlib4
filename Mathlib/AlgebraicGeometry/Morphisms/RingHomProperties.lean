@@ -56,7 +56,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
       (X.presheaf.map (eqToHom (Scheme.preimage_basicOpen f r).symm).op), ← eq_iff_iff]
   congr
   delta IsLocalization.Away.map
-  refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
+  refine IsLocalization.ringHom_ext (Submonoid.powers r) ?_
   generalize_proofs h1 h2 h3
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here

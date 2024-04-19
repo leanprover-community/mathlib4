@@ -404,7 +404,7 @@ theorem cospherical_or_collinear_of_two_zsmul_oangle_eq {p₁ p₂ p₃ p₄ : P
       exact ⟨t.mem_circumsphere 0, t.mem_circumsphere 1, t.mem_circumsphere 2⟩
     have hc' : Collinear ℝ ({p₁, p₃, p₄} : Set P) := by
       rwa [← collinear_iff_of_two_zsmul_oangle_eq h]
-    refine' Or.inr _
+    refine Or.inr ?_
     rw [Set.insert_comm p₁ p₂] at hc
     rwa [Set.insert_comm p₁ p₂, hc'.collinear_insert_iff_of_ne (Set.mem_insert _ _)
       (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))) he]

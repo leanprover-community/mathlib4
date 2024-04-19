@@ -641,14 +641,14 @@ theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
 @[to_additive]
 theorem prod_set [Monoid α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = (v.take i).toList.prod * a * (v.drop (i + 1)).toList.prod := by
-  refine' (List.prod_set v.toList i a).trans _
+  refine (List.prod_set v.toList i a).trans ?_
   simp_all
 #align vector.prod_update_nth Vector.prod_set
 
 @[to_additive]
 theorem prod_set' [CommGroup α] (v : Vector α n) (i : Fin n) (a : α) :
     (v.set i a).toList.prod = v.toList.prod * (v.get i)⁻¹ * a := by
-  refine' (List.prod_set' v.toList i a).trans _
+  refine (List.prod_set' v.toList i a).trans ?_
   simp [get_eq_get, mul_assoc]; rfl
 #align vector.prod_update_nth' Vector.prod_set'
 

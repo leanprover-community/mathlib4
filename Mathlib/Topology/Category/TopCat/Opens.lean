@@ -395,7 +395,7 @@ lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
 theorem functor_map_eq_inf {X : TopCat} (U V : Opens X) :
     U.openEmbedding.isOpenMap.functor.obj ((Opens.map U.inclusion).obj V) = V ⊓ U := by
   ext1
-  refine' Set.image_preimage_eq_inter_range.trans _
+  refine Set.image_preimage_eq_inter_range.trans ?_
   erw [set_range_forget_map_inclusion U]
   rfl
 #align topological_space.opens.functor_map_eq_inf TopologicalSpace.Opens.functor_map_eq_inf

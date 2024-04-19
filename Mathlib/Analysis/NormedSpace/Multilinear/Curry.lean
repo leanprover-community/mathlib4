@@ -456,7 +456,7 @@ variable {𝕜 G}
 theorem ContinuousMultilinearMap.fin0_apply_norm (f : G[×0]→L[𝕜] G') {x : Fin 0 → G} :
     ‖f x‖ = ‖f‖ := by
   obtain rfl : x = 0 := Subsingleton.elim _ _
-  refine' le_antisymm (by simpa using f.le_opNorm 0) _
+  refine le_antisymm (by simpa using f.le_opNorm 0) ?_
   have : ‖ContinuousMultilinearMap.curry0 𝕜 G f.uncurry0‖ ≤ ‖f.uncurry0‖ :=
     ContinuousMultilinearMap.opNorm_le_bound _ (norm_nonneg _) fun m => by
       simp [-ContinuousMultilinearMap.apply_zero_curry0]

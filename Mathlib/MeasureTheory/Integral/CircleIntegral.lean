@@ -303,7 +303,7 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
     simp only [circleIntegrable_iff R, deriv_circleMap]
     rw [← image_circleMap_Ioc] at hw; rcases hw with ⟨θ, hθ, rfl⟩
     replace hθ : θ ∈ [[0, 2 * π]] := Icc_subset_uIcc (Ioc_subset_Icc_self hθ)
-    refine' not_intervalIntegrable_of_sub_inv_isBigO_punctured _ Real.two_pi_pos.ne hθ
+    refine not_intervalIntegrable_of_sub_inv_isBigO_punctured ?_ Real.two_pi_pos.ne hθ
     set f : ℝ → ℂ := fun θ' => circleMap c R θ' - circleMap c R θ
     have : ∀ᶠ θ' in 𝓝[≠] θ, f θ' ∈ ball (0 : ℂ) 1 \ {0} := by
       suffices ∀ᶠ z in 𝓝[≠] circleMap c R θ, z - circleMap c R θ ∈ ball (0 : ℂ) 1 \ {0} from
@@ -311,8 +311,8 @@ theorem circleIntegrable_sub_zpow_iff {c w : ℂ} {R : ℝ} {n : ℤ} :
           (deriv_circleMap_ne_zero hR)).eventually this
       filter_upwards [self_mem_nhdsWithin, mem_nhdsWithin_of_mem_nhds (ball_mem_nhds _ zero_lt_one)]
       simp_all [dist_eq, sub_eq_zero]
-    refine' (((hasDerivAt_circleMap c R θ).isBigO_sub.mono inf_le_left).inv_rev
-      (this.mono fun θ' h₁ h₂ => absurd h₂ h₁.2)).trans _
+    refine (((hasDerivAt_circleMap c R θ).isBigO_sub.mono inf_le_left).inv_rev
+      (this.mono fun θ' h₁ h₂ => absurd h₂ h₁.2)).trans ?_
     refine' IsBigO.of_bound |R|⁻¹ (this.mono fun θ' hθ' => _)
     set x := abs (f θ')
     suffices x⁻¹ ≤ x ^ n by
@@ -508,7 +508,7 @@ theorem integral_sub_zpow_of_ne {n : ℤ} (hn : n ≠ -1) (c w : ℂ) (R : ℝ) 
         rwa [Ne, ← eq_neg_iff_add_eq_zero, ← Int.cast_one, ← Int.cast_neg, Int.cast_inj]
       simp [mul_assoc, mul_div_cancel_left₀ _ hn']
     exacts [sub_ne_zero.2, neg_le_iff_add_nonneg.1]
-  refine' integral_eq_zero_of_hasDerivWithinAt' fun z hz => (hd z _).hasDerivWithinAt
+  refine integral_eq_zero_of_hasDerivWithinAt' fun z hz => (hd z ?_).hasDerivWithinAt
   exact (ne_or_eq z w).imp_right fun (h : z = w) => H <| h ▸ hz
 #align circle_integral.integral_sub_zpow_of_ne circleIntegral.integral_sub_zpow_of_ne
 

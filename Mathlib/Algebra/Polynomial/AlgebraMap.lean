@@ -494,7 +494,7 @@ theorem dvd_term_of_dvd_eval_of_dvd_terms {z p : S} {f : S[X]} (i : ℕ) (dvd_ev
   by_cases hi : i ∈ f.support
   · rw [eval, eval₂_eq_sum, sum_def] at dvd_eval
     rw [← Finset.insert_erase hi, Finset.sum_insert (Finset.not_mem_erase _ _)] at dvd_eval
-    refine' (dvd_add_left _).mp dvd_eval
+    refine (dvd_add_left ?_).mp dvd_eval
     apply Finset.dvd_sum
     intro j hj
     exact dvd_terms j (Finset.ne_of_mem_erase hj)

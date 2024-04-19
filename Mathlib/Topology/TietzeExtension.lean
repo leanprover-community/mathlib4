@@ -248,7 +248,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
       (𝓝 <| (limUnder atTop g).compContinuous e) :=
     ((continuous_compContinuous e).tendsto _).comp hg_cau.tendsto_limUnder
   have hge : (limUnder atTop g).compContinuous e = f := by
-    refine' tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 _)
+    refine tendsto_nhds_unique this (tendsto_iff_dist_tendsto_zero.2 ?_)
     refine' squeeze_zero (fun _ => dist_nonneg) hgf _
     rw [← zero_mul ‖f‖]
     refine' (tendsto_pow_atTop_nhds_zero_of_lt_one _ _).mul tendsto_const_nhds <;> norm_num1
@@ -299,7 +299,7 @@ theorem exists_extension_forall_mem_Icc_of_closedEmbedding (f : X →ᵇ ℝ) {a
   · suffices ‖f - const X ((a + b) / 2)‖ ≤ (b - a) / 2 by
       simpa [Real.Icc_eq_closedBall, add_mem_closedBall_iff_norm] using
         (norm_coe_le_norm g y).trans (hgf.trans_le this)
-    refine' (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x => _
+    refine (norm_le <| div_nonneg (sub_nonneg.2 hle) zero_le_two).2 fun x => ?_
     simpa only [Real.Icc_eq_closedBall] using hf x
   · ext x
     have : g (e x) = f x - (a + b) / 2 := congr_fun hge x

@@ -741,7 +741,7 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
       refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
-      refine' p.asIdeal.sub_mem hx' (hp _)
+      refine p.asIdeal.sub_mem hx' (hp ?_)
       rwa [mem_ker, map_sub, sub_eq_zero]
 #align prime_spectrum.image_comap_zero_locus_eq_zero_locus_comap PrimeSpectrum.image_comap_zeroLocus_eq_zeroLocus_comap
 

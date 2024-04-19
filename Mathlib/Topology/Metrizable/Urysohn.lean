@@ -86,7 +86,7 @@ theorem exists_inducing_l_infty : ∃ f : X → ℕ →ᵇ ℝ, Inducing f := by
     have : ∀ᶠ y in 𝓝 x, ∀ UV, δ ≤ ε UV → dist (F y UV) (F x UV) ≤ δ := by
       refine' (eventually_all_finite h_fin).2 fun UV _ => _
       exact (f UV).continuous.tendsto x (closedBall_mem_nhds _ δ0)
-    refine' this.mono fun y hy => (BoundedContinuousFunction.dist_le δ0.le).2 fun UV => _
+    refine this.mono fun y hy => (BoundedContinuousFunction.dist_le δ0.le).2 fun UV => ?_
     rcases le_total δ (ε UV) with hle | hle
     exacts [hy _ hle, (Real.dist_le_of_mem_Icc (hf0ε _ _) (hf0ε _ _)).trans (by rwa [sub_zero])]
   · /- Finally, we prove that each neighborhood `V` of `x : X`

@@ -588,7 +588,7 @@ section DistribLattice
 variable [DistribLattice α] [OrderBot α] [@DecidableRel α Disjoint] (s t u v : Finset α)
 
 theorem disjSups_assoc : ∀ s t u : Finset α, s ○ t ○ u = s ○ (t ○ u) := by
-  refine' associative_of_commutative_of_le disjSups_comm _
+  refine associative_of_commutative_of_le disjSups_comm ?_
   simp only [le_eq_subset, disjSups_subset_iff, mem_disjSups]
   rintro s t u _ ⟨a, ha, b, hb, hab, rfl⟩ c hc habc
   rw [disjoint_sup_left] at habc

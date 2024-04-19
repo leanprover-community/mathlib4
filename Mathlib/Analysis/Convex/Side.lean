@@ -844,7 +844,7 @@ theorem wOppSide_pointReflection {s : AffineSubspace R P} {x : P} (y : P) (hx : 
 
 theorem sOppSide_pointReflection {s : AffineSubspace R P} {x y : P} (hx : x ∈ s) (hy : y ∉ s) :
     s.SOppSide y (pointReflection R x y) := by
-  refine' (sbtw_pointReflection_of_ne R fun h => hy _).sOppSide_of_not_mem_of_mem hy hx
+  refine (sbtw_pointReflection_of_ne R fun h => hy ?_).sOppSide_of_not_mem_of_mem hy hx
   rwa [← h]
 #align affine_subspace.s_opp_side_point_reflection AffineSubspace.sOppSide_pointReflection
 

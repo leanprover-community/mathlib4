@@ -351,11 +351,11 @@ end Inf
 theorem exists_le_of_le {a b : α} {P Q : Finpartition a} (h : P ≤ Q) (hb : b ∈ Q.parts) :
     ∃ c ∈ P.parts, c ≤ b := by
   by_contra H
-  refine' Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) _)
+  refine Q.ne_bot hb (disjoint_self.1 <| Disjoint.mono_right (Q.le hb) ?_)
   rw [← P.sup_parts, Finset.disjoint_sup_right]
   rintro c hc
   obtain ⟨d, hd, hcd⟩ := h hc
-  refine' (Q.disjoint hb hd _).mono_right hcd
+  refine (Q.disjoint hb hd ?_).mono_right hcd
   rintro rfl
   simp only [not_exists, not_and] at H
   exact H _ hc hcd
@@ -466,7 +466,7 @@ def avoid (b : α) : Finpartition (a \ b) :=
 theorem mem_avoid : c ∈ (P.avoid b).parts ↔ ∃ d ∈ P.parts, ¬d ≤ b ∧ d \ b = c := by
   simp only [avoid, ofErase, mem_erase, Ne, mem_image, exists_prop, ← exists_and_left,
     @and_left_comm (c ≠ ⊥)]
-  refine' exists_congr fun d ↦ and_congr_right' <| and_congr_left _
+  refine exists_congr fun d ↦ and_congr_right' <| and_congr_left ?_
   rintro rfl
   rw [sdiff_eq_bot_iff]
 #align finpartition.mem_avoid Finpartition.mem_avoid
@@ -675,7 +675,7 @@ theorem card_filter_atomise_le_two_pow (ht : t ∈ F) :
   suffices h :
     ((atomise s F).parts.filter fun u ↦ u ⊆ t ∧ u.Nonempty) ⊆
       (F.erase t).powerset.image fun P ↦ s.filter fun i ↦ ∀ x ∈ F, x ∈ insert t P ↔ i ∈ x by
-    refine' (card_le_card h).trans (card_image_le.trans _)
+    refine (card_le_card h).trans (card_image_le.trans ?_)
     rw [card_powerset, card_erase_of_mem ht]
   rw [subset_iff]
   simp_rw [mem_image, mem_powerset, mem_filter, and_imp, Finset.Nonempty, exists_imp, mem_atomise,

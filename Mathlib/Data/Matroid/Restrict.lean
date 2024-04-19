@@ -142,7 +142,7 @@ theorem restrict_finite {R : Set α} (hR : R.Finite) : (M ↾ R).Finite :=
 
 theorem restrict_restrict_eq {R₁ R₂ : Set α} (M : Matroid α) (hR : R₂ ⊆ R₁) :
     (M ↾ R₁) ↾ R₂ = M ↾ R₂ := by
-  refine' eq_of_indep_iff_indep_forall rfl _
+  refine eq_of_indep_iff_indep_forall rfl ?_
   simp only [restrict_ground_eq, restrict_indep_iff, and_congr_left_iff, and_iff_left_iff_imp]
   exact fun _ h _ _ ↦ h.trans hR
 

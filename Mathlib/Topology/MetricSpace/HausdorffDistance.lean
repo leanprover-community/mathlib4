@@ -149,7 +149,7 @@ theorem continuous_infEdist : Continuous fun x => infEdist x s :=
 
 /-- The edist to a set and to its closure coincide -/
 theorem infEdist_closure : infEdist x (closure s) = infEdist x s := by
-  refine' le_antisymm (infEdist_anti subset_closure) _
+  refine le_antisymm (infEdist_anti subset_closure) ?_
   refine' ENNReal.le_of_forall_pos_le_add fun ε εpos h => _
   have ε0 : 0 < (ε / 2 : ℝ≥0∞) := by simpa [pos_iff_ne_zero] using εpos
   have : infEdist x (closure s) < infEdist x (closure s) + ε / 2 :=
@@ -638,7 +638,7 @@ theorem infDist_inter_closedBall_of_mem (h : y ∈ s) :
     infDist x (s ∩ closedBall x (dist y x)) = infDist x s := by
   replace h : y ∈ s ∩ closedBall x (dist y x) := ⟨h, mem_closedBall.2 le_rfl⟩
   refine le_antisymm ?_ (infDist_le_infDist_of_subset (inter_subset_left _ _) ⟨y, h⟩)
-  refine' not_lt.1 fun hlt => _
+  refine not_lt.1 fun hlt => ?_
   rcases (infDist_lt_iff ⟨y, h.1⟩).mp hlt with ⟨z, hzs, hz⟩
   rcases le_or_lt (dist z x) (dist y x) with hle | hlt
   · exact hz.not_le (infDist_le_dist_of_mem ⟨hzs, hle⟩)

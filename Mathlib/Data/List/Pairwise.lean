@@ -137,7 +137,7 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
     (h : ∀ x ∈ l, p x) {S : β → β → Prop}
     (hS : ∀ ⦃x⦄ (hx : p x) ⦃y⦄ (hy : p y), R x y → S (f x hx) (f y hy)) :
     Pairwise S (l.pmap f h) := by
-  refine' (pairwise_pmap h).2 (Pairwise.imp_of_mem _ hl)
+  refine (pairwise_pmap h).2 (Pairwise.imp_of_mem ?_ hl)
   intros; apply hS; assumption
 #align list.pairwise.pmap List.Pairwise.pmap
 

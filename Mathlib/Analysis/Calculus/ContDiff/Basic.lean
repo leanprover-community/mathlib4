@@ -1002,7 +1002,7 @@ theorem ContDiffWithinAt.hasFDerivWithinAt_nhds {f : E → F → G} {g : E → F
   · refine' inter_mem _ self_mem_nhdsWithin
     have := mem_of_mem_nhdsWithin (mem_insert _ _) hv
     refine' mem_nhdsWithin_insert.mpr ⟨this, _⟩
-    refine' (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' _
+    refine (continuousWithinAt_id.prod hg.continuousWithinAt).preimage_mem_nhdsWithin' ?_
     rw [← nhdsWithin_le_iff] at hst hv ⊢
     exact (hst.trans <| nhdsWithin_mono _ <| subset_insert _ _).trans hv
   · intro z hz
@@ -1916,7 +1916,7 @@ theorem PartialHomeomorph.contDiffAt_symm [CompleteSpace E] (f : PartialHomeomor
         rw [eq_f₀']
         exact contDiffAt_map_inverse _
       have h_deriv₂ : ContDiffAt 𝕜 n f.symm a := by
-        refine' IH (hf.of_le _)
+        refine IH (hf.of_le ?_)
         norm_cast
         exact Nat.le_succ n
       exact (h_deriv₁.comp _ hf').comp _ h_deriv₂
@@ -2048,7 +2048,7 @@ theorem contDiffOn_top_iff_derivWithin (hs : UniqueDiffOn 𝕜 s₂) :
     refine contDiffOn_top.2 fun n => ((contDiffOn_succ_iff_derivWithin hs).1 ?_).2
     exact h.of_le le_top
   · intro h
-    refine' contDiffOn_top.2 fun n => _
+    refine contDiffOn_top.2 fun n => ?_
     have A : (n : ℕ∞) ≤ ∞ := le_top
     apply ((contDiffOn_succ_iff_derivWithin hs).2 ⟨h.1, h.2.of_le A⟩).of_le
     exact WithTop.coe_le_coe.2 (Nat.le_succ n)

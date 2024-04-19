@@ -126,7 +126,7 @@ theorem support_rangeIcc_subset [DecidableEq ι] [∀ i, DecidableEq (α i)] :
     (f.rangeIcc g).support ⊆ f.support ∪ g.support := by
   refine fun x hx => ?_
   by_contra h
-  refine' not_mem_support_iff.2 _ hx
+  refine not_mem_support_iff.2 ?_ hx
   rw [rangeIcc_apply, not_mem_support_iff.1 (not_mem_mono (subset_union_left _ _) h),
     not_mem_support_iff.1 (not_mem_mono (subset_union_right _ _) h)]
   exact Icc_self _
@@ -165,7 +165,7 @@ instance instLocallyFiniteOrder : LocallyFiniteOrder (Π₀ i, α i) :=
   LocallyFiniteOrder.ofIcc (Π₀ i, α i)
     (fun f g => (f.support ∪ g.support).dfinsupp <| f.rangeIcc g)
     (fun f g x => by
-      refine' (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans _
+      refine (mem_dfinsupp_iff_of_support_subset <| support_rangeIcc_subset).trans ?_
       simp_rw [mem_rangeIcc_apply_iff, forall_and]
       rfl)
 

@@ -134,7 +134,7 @@ theorem apply_eq_one_iff (p : PMF α) (a : α) : p a = 1 ↔ p.support = {a} := 
 #align pmf.apply_eq_one_iff PMF.apply_eq_one_iff
 
 theorem coe_le_one (p : PMF α) (a : α) : p a ≤ 1 := by
-  refine' hasSum_le (fun b => _) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
+  refine hasSum_le (fun b => ?_) (hasSum_ite_eq a (p a)) (hasSum_coe_one p)
   split_ifs with h <;> simp only [h, zero_le', le_rfl]
 #align pmf.coe_le_one PMF.coe_le_one
 

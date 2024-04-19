@@ -241,7 +241,7 @@ theorem CauchySeq.comp_injective [SemilatticeSup β] [NoMaxOrder β] [Nonempty �
 
 theorem Function.Bijective.cauchySeq_comp_iff {f : ℕ → ℕ} (hf : Bijective f) (u : ℕ → α) :
     CauchySeq (u ∘ f) ↔ CauchySeq u := by
-  refine' ⟨fun H => _, fun H => H.comp_injective hf.injective⟩
+  refine ⟨fun H => ?_, fun H => H.comp_injective hf.injective⟩
   lift f to ℕ ≃ ℕ using hf
   simpa only [(· ∘ ·), f.apply_symm_apply] using H.comp_injective f.symm.injective
 #align function.bijective.cauchy_seq_comp_iff Function.Bijective.cauchySeq_comp_iff
@@ -327,7 +327,7 @@ theorem Filter.HasBasis.cauchySeq_iff {γ} [Nonempty β] [SemilatticeSup β] {u 
     {s : γ → Set (α × α)} (h : (𝓤 α).HasBasis p s) :
     CauchySeq u ↔ ∀ i, p i → ∃ N, ∀ m, N ≤ m → ∀ n, N ≤ n → (u m, u n) ∈ s i := by
   rw [cauchySeq_iff_tendsto, ← prod_atTop_atTop_eq]
-  refine' (atTop_basis.prod_self.tendsto_iff h).trans _
+  refine (atTop_basis.prod_self.tendsto_iff h).trans ?_
   simp only [exists_prop, true_and_iff, MapsTo, preimage, subset_def, Prod.forall, mem_prod_eq,
     mem_setOf_eq, mem_Ici, and_imp, Prod.map, ge_iff_le, @forall_swap (_ ≤ _) β]
 #align filter.has_basis.cauchy_seq_iff Filter.HasBasis.cauchySeq_iff
@@ -662,7 +662,7 @@ theorem isCompact_of_totallyBounded_isClosed [CompleteSpace α] {s : Set α} (ht
 /-- Every Cauchy sequence over `ℕ` is totally bounded. -/
 theorem CauchySeq.totallyBounded_range {s : ℕ → α} (hs : CauchySeq s) :
     TotallyBounded (range s) := by
-  refine' totallyBounded_iff_subset.2 fun a ha => _
+  refine totallyBounded_iff_subset.2 fun a ha => ?_
   cases' cauchySeq_iff.1 hs a ha with n hn
   refine' ⟨s '' { k | k ≤ n }, image_subset_range _ _, (finite_le_nat _).image _, _⟩
   rw [range_subset_iff, biUnion_image]

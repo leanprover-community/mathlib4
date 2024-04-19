@@ -169,7 +169,7 @@ theorem card_filter_equitabilise_big :
 
 theorem card_filter_equitabilise_small (hm : m ≠ 0) :
     ((P.equitabilise h).parts.filter fun u : Finset α => u.card = m).card = a := by
-  refine' (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 _).resolve_right hm
+  refine (mul_eq_mul_right_iff.1 <| (add_left_inj (b * (m + 1))).1 ?_).resolve_right hm
   rw [h, ← (P.equitabilise h).sum_card_parts]
   have hunion :
     (P.equitabilise h).parts =

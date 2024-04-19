@@ -786,7 +786,7 @@ def totalSpaceTopology (a : FiberPrebundle F E) : TopologicalSpace (TotalSpace F
 
 theorem continuous_symm_of_mem_pretrivializationAtlas (he : e ∈ a.pretrivializationAtlas) :
     @ContinuousOn _ _ _ a.totalSpaceTopology e.toPartialEquiv.symm e.target := by
-  refine' fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono _) U h)
+  refine fun z H U h => preimage_nhdsWithin_coinduced' H (le_def.1 (nhds_mono ?_) U h)
   exact le_iSup₂ (α := TopologicalSpace (TotalSpace F E)) e he
 #align fiber_prebundle.continuous_symm_of_mem_pretrivialization_atlas FiberPrebundle.continuous_symm_of_mem_pretrivializationAtlas
 

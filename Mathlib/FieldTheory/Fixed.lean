@@ -142,7 +142,7 @@ theorem linearIndependent_smul_of_linearIndependent {s : Finset F} :
       (linearIndependent_iff'.1 (ih hs.1) s.attach (fun i => g • l i - l i) _ ⟨i, his⟩
           (mem_attach _ _) :
         _)
-  refine' (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans _
+  refine (sum_attach s fun i ↦ (g • l i - l i) • MulAction.toFun G F i).trans ?_
   ext g'; dsimp only
   conv_lhs =>
     rw [sum_apply]
@@ -209,10 +209,10 @@ theorem of_eval₂ (f : Polynomial (FixedPoints.subfield G F))
     ((IsInvariantSubring.subtypeHom G (subfield G F).toSubring)) f := rfl
   erw [← Polynomial.map_dvd_map' (Subfield.subtype <| FixedPoints.subfield G F), minpoly, this,
     Polynomial.map_toSubring _ _, prodXSubSMul]
-  refine'
+  refine
     Fintype.prod_dvd_of_coprime
       (Polynomial.pairwise_coprime_X_sub_C <| MulAction.injective_ofQuotientStabilizer G x) fun y =>
-      QuotientGroup.induction_on y fun g => _
+      QuotientGroup.induction_on y fun g => ?_
   rw [Polynomial.dvd_iff_isRoot, Polynomial.IsRoot.def, MulAction.ofQuotientStabilizer_mk,
     Polynomial.eval_smul', ← this, ← Subfield.toSubring_subtype_eq_subtype, ←
     IsInvariantSubring.coe_subtypeHom' G (FixedPoints.subfield G F).toSubring, h,

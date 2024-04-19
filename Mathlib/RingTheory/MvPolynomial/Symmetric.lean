@@ -243,7 +243,7 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
         (Finsupp.single (∑ i : σ in t, Finsupp.single i 1) (1 : R)).support := by
   rw [esymm_eq_sum_monomial]
   simp only [← single_eq_monomial]
-  refine' Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) _
+  refine Finsupp.support_sum_eq_biUnion (powersetCard n (univ : Finset σ)) ?_
   intro s t hst
   rw [disjoint_left, Finsupp.support_single_ne_zero _ one_ne_zero]
   rw [Finsupp.support_single_ne_zero _ one_ne_zero]

@@ -49,7 +49,7 @@ theorem not_zero {n : ℕ} (h1 : ProblemPredicate n) : n ≠ 0 :=
 theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
   have h2 : 10 ^ 3 ≤ 10 * n := by
     rw [← h1.left]
-    refine' Nat.base_pow_length_digits_le 10 n _ (not_zero h1)
+    refine Nat.base_pow_length_digits_le 10 n ?_ (not_zero h1)
     simp
   linarith
 #align imo1960_q1.ge_100 Imo1960Q1.ge_100
@@ -57,7 +57,7 @@ theorem ge_100 {n : ℕ} (h1 : ProblemPredicate n) : 100 ≤ n := by
 theorem lt_1000 {n : ℕ} (h1 : ProblemPredicate n) : n < 1000 := by
   have h2 : n < 10 ^ 3 := by
     rw [← h1.left]
-    refine' Nat.lt_base_pow_length_digits _
+    refine Nat.lt_base_pow_length_digits ?_
     simp
   linarith
 #align imo1960_q1.lt_1000 Imo1960Q1.lt_1000

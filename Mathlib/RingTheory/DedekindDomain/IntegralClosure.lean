@@ -108,7 +108,7 @@ theorem integralClosure_le_span_dualBasis [IsSeparable K L] {ι : Type*} [Fintyp
     (b : Basis ι K L) (hb_int : ∀ i, IsIntegral A (b i)) [IsIntegrallyClosed A] :
     Subalgebra.toSubmodule (integralClosure A L) ≤
     Submodule.span A (Set.range <| (traceForm K L).dualBasis (traceForm_nondegenerate K L) b) := by
-  refine' le_trans _ (IsIntegralClosure.range_le_span_dualBasis (integralClosure A L) b hb_int)
+  refine le_trans ?_ (IsIntegralClosure.range_le_span_dualBasis (integralClosure A L) b hb_int)
   intro x hx
   exact ⟨⟨x, hx⟩, rfl⟩
 #align integral_closure_le_span_dual_basis integralClosure_le_span_dualBasis
@@ -182,7 +182,7 @@ theorem IsIntegralClosure.isNoetherian [IsIntegrallyClosed A] [IsNoetherianRing 
   let f : C →ₗ[A] Submodule.span A (Set.range b') :=
     (Submodule.inclusion (IsIntegralClosure.range_le_span_dualBasis C b hb_int)).comp
       ((Algebra.linearMap C L).restrictScalars A).rangeRestrict
-  refine' isNoetherian_of_ker_bot f _
+  refine isNoetherian_of_ker_bot f ?_
   rw [LinearMap.ker_comp, Submodule.ker_inclusion, Submodule.comap_bot, LinearMap.ker_codRestrict]
   exact LinearMap.ker_eq_bot_of_injective (IsIntegralClosure.algebraMap_injective C A L)
 #align is_integral_closure.is_noetherian IsIntegralClosure.isNoetherian

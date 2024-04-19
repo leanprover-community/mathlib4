@@ -189,7 +189,7 @@ theorem exists_le_lowerSemicontinuous_lintegral_ge (f : α → ℝ≥0∞) (hf :
       _ ≤ ∑' n, ((∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ) + δ n) := ENNReal.tsum_le_tsum hg
       _ = ∑' n, ∫⁻ x, SimpleFunc.eapproxDiff f n x ∂μ + ∑' n, δ n := ENNReal.tsum_add
       _ ≤ (∫⁻ x : α, f x ∂μ) + ε := by
-        refine' add_le_add _ hδ.le
+        refine add_le_add ?_ hδ.le
         rw [← lintegral_tsum]
         · simp_rw [SimpleFunc.tsum_eapproxDiff f hf, le_refl]
         · intro n; exact (SimpleFunc.measurable _).coe_nnreal_ennreal.aemeasurable
@@ -401,7 +401,7 @@ theorem exists_upperSemicontinuous_le_lintegral_le (f : α → ℝ≥0) (int_f :
     rw [← SimpleFunc.lintegral_eq_lintegral]
     simp only [SimpleFunc.coe_map, Function.comp_apply]
   have int_fs_lt_top : (∫⁻ x, fs x ∂μ) ≠ ∞ := by
-    refine' ne_top_of_le_ne_top int_f (lintegral_mono fun x => _)
+    refine ne_top_of_le_ne_top int_f (lintegral_mono fun x => ?_)
     simpa only [ENNReal.coe_le_coe] using fs_le_f x
   obtain ⟨g, g_le_fs, gcont, gint⟩ :
     ∃ g : α → ℝ≥0,
@@ -430,7 +430,7 @@ theorem exists_upperSemicontinuous_le_integral_le (f : α → ℝ≥0)
   have If : (∫⁻ x, f x ∂μ) < ∞ := hasFiniteIntegral_iff_ofNNReal.1 fint.hasFiniteIntegral
   rcases exists_upperSemicontinuous_le_lintegral_le f If.ne εpos.ne' with ⟨g, gf, gcont, gint⟩
   have Ig : (∫⁻ x, g x ∂μ) < ∞ := by
-    refine' lt_of_le_of_lt (lintegral_mono fun x => _) If
+    refine lt_of_le_of_lt (lintegral_mono fun x => ?_) If
     simpa using gf x
   refine ⟨g, gf, gcont, ?_, ?_⟩
   · refine'

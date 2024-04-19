@@ -110,7 +110,7 @@ theorem applyComposition_ones (p : FormalMultilinearSeries 𝕜 E F) (n : ℕ) :
   apply p.congr (Composition.ones_blocksFun _ _)
   intro j hjn hj1
   obtain rfl : j = 0 := by omega
-  refine' congr_arg v _
+  refine congr_arg v ?_
   rw [Fin.ext_iff, Fin.coe_castLE, Composition.ones_embedding, Fin.val_mk]
 #align formal_multilinear_series.apply_composition_ones FormalMultilinearSeries.applyComposition_ones
 
@@ -399,7 +399,7 @@ theorem comp_id (p : FormalMultilinearSeries 𝕜 E F) : p.comp (id 𝕜 E) = p 
     apply p.congr (Composition.ones_length n)
     intros
     rw [applyComposition_ones]
-    refine' congr_arg v _
+    refine congr_arg v ?_
     rw [Fin.ext_iff, Fin.coe_castLE, Fin.val_mk]
   show
     ∀ b : Composition n,
@@ -436,7 +436,7 @@ theorem id_comp (p : FormalMultilinearSeries 𝕜 E F) (h : p 0 = 0) : (id 𝕜 
     · ext v
       rw [compAlongComposition_apply, id_apply_one' _ _ (Composition.single_length n_pos)]
       dsimp [applyComposition]
-      refine' p.congr rfl fun i him hin => congr_arg v <| _
+      refine p.congr rfl fun i him hin => congr_arg v <| ?_
       ext; simp
     show
       ∀ b : Composition n,
@@ -795,7 +795,7 @@ theorem HasFPowerSeriesAt.comp {g : F → G} {f : E → F} {q : FormalMultilinea
     -- we use the fact that the partial sums of `q` converge locally uniformly to `g`, and that
     -- composition passes to the limit under locally uniform convergence.
     have B₁ : ContinuousAt (fun z : F => g (f x + z)) (f (x + y) - f x) := by
-      refine' ContinuousAt.comp _ (continuous_const.add continuous_id).continuousAt
+      refine ContinuousAt.comp ?_ (continuous_const.add continuous_id).continuousAt
       simp only [add_sub_cancel, _root_.id]
       exact Hg.continuousOn.continuousAt (IsOpen.mem_nhds EMetric.isOpen_ball fy_mem)
     have B₂ : f (x + y) - f x ∈ EMetric.ball (0 : F) rg := by
@@ -1107,7 +1107,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
       { blocks := ofFn fun j => (i.2 j).length
         blocks_pos := by
           intro k hk
-          refine' ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => _) k hk
+          refine ((forall_mem_ofFn_iff (P := fun i => 0 < i)).2 fun j => ?_) k hk
           exact Composition.length_pos_of_pos _ (Composition.blocks_pos' _ _ _)
         blocks_sum := by dsimp only [Composition.length]; simp [sum_ofFn] }⟩
   left_inv := by
@@ -1127,7 +1127,7 @@ def sigmaEquivSigmaPi (n : ℕ) :
         Composition.length_gather _ _
       conv_rhs => rw [← ofFn_get b.blocks]
       congr 1
-      refine' (Fin.heq_fun_iff B).2 fun i => _
+      refine (Fin.heq_fun_iff B).2 fun i => ?_
       rw [sigmaCompositionAux, Composition.length, List.get_map_rev List.length,
         List.get_of_eq (map_length_splitWrtComposition _ _)]
   right_inv := by
@@ -1198,7 +1198,7 @@ theorem comp_assoc (r : FormalMultilinearSeries 𝕜 G H) (q : FormalMultilinear
   intro k hk1 hk2
   -- finally, check that the coordinates of `v` one is using are the same. Based on
   -- `size_up_to_size_up_to_add`.
-  refine' congr_arg v (Fin.ext _)
+  refine congr_arg v (Fin.ext ?_)
   dsimp [Composition.embedding]
   rw [sizeUpTo_sizeUpTo_add _ _ hi1 hj1, add_assoc]
 #align formal_multilinear_series.comp_assoc FormalMultilinearSeries.comp_assoc

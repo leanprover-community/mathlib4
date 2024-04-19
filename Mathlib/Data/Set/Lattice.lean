@@ -1538,7 +1538,7 @@ end
 theorem InjOn.image_iInter_eq [Nonempty ι] {s : ι → Set α} {f : α → β} (h : InjOn f (⋃ i, s i)) :
     (f '' ⋂ i, s i) = ⋂ i, f '' s i := by
   inhabit ι
-  refine' Subset.antisymm (image_iInter_subset s f) fun y hy => _
+  refine Subset.antisymm (image_iInter_subset s f) fun y hy => ?_
   simp only [mem_iInter, mem_image] at hy
   choose x hx hy using hy
   refine' ⟨x default, mem_iInter.2 fun i => _, hy _⟩
@@ -1854,7 +1854,7 @@ theorem sInter_prod_sInter {S : Set (Set α)} {T : Set (Set β)} (hS : S.Nonempt
     ⋂₀ S ×ˢ ⋂₀ T = ⋂ r ∈ S ×ˢ T, r.1 ×ˢ r.2 := by
   obtain ⟨s₁, h₁⟩ := hS
   obtain ⟨s₂, h₂⟩ := hT
-  refine' Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => _
+  refine Set.Subset.antisymm (sInter_prod_sInter_subset S T) fun x hx => ?_
   rw [mem_iInter₂] at hx
   exact ⟨fun s₀ h₀ => (hx (s₀, s₂) ⟨h₀, h₂⟩).1, fun s₀ h₀ => (hx (s₁, s₀) ⟨h₁, h₀⟩).2⟩
 #align set.sInter_prod_sInter Set.sInter_prod_sInter
@@ -2027,7 +2027,7 @@ theorem univ_pi_eq_iInter (t : ∀ i, Set (π i)) : pi univ t = ⋂ i, eval i �
 
 theorem pi_diff_pi_subset (i : Set α) (s t : ∀ a, Set (π a)) :
     pi i s \ pi i t ⊆ ⋃ a ∈ i, eval a ⁻¹' (s a \ t a) := by
-  refine' diff_subset_comm.2 fun x hx a ha => _
+  refine diff_subset_comm.2 fun x hx a ha => ?_
   simp only [mem_diff, mem_pi, mem_iUnion, not_exists, mem_preimage, not_and, not_not,
     eval_apply] at hx
   exact hx.2 _ ha (hx.1 _ ha)

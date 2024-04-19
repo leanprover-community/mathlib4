@@ -106,7 +106,7 @@ theorem image_le_of_liminf_slope_right_lt_deriv_boundary' {f f' : ℝ → ℝ} {
   rintro x ⟨hxB : f x ≤ B x, xab⟩ y hy
   cases' hxB.lt_or_eq with hxB hxB
   · -- If `f x < B x`, then all we need is continuity of both sides
-    refine' nonempty_of_mem (inter_mem _ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
+    refine nonempty_of_mem (inter_mem ?_ (Ioc_mem_nhdsWithin_Ioi ⟨le_rfl, hy⟩))
     have : ∀ᶠ x in 𝓝[Icc a b] x, f x < B x :=
       A x (Ico_subset_Icc_self xab) (IsOpen.mem_nhds (isOpen_lt continuous_fst continuous_snd) hxB)
     have : ∀ᶠ x in 𝓝[>] x, f x < B x := nhdsWithin_le_of_mem (Icc_mem_nhdsWithin_Ioi xab) this
@@ -356,9 +356,9 @@ version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment' {f' : ℝ → E} {C : ℝ}
     (hf : ∀ x ∈ Icc a b, HasDerivWithinAt f (f' x) (Icc a b) x)
     (bound : ∀ x ∈ Ico a b, ‖f' x‖ ≤ C) : ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
-  refine'
+  refine
     norm_image_sub_le_of_norm_deriv_right_le_segment (fun x hx => (hf x hx).continuousWithinAt)
-      (fun x hx => _) bound
+      (fun x hx => ?_) bound
   exact (hf x <| Ico_subset_Icc_self hx).mono_of_mem (Icc_mem_nhdsWithin_Ici hx)
 #align norm_image_sub_le_of_norm_deriv_le_segment' norm_image_sub_le_of_norm_deriv_le_segment'
 
@@ -368,7 +368,7 @@ version. -/
 theorem norm_image_sub_le_of_norm_deriv_le_segment {C : ℝ} (hf : DifferentiableOn ℝ f (Icc a b))
     (bound : ∀ x ∈ Ico a b, ‖derivWithin f (Icc a b) x‖ ≤ C) :
     ∀ x ∈ Icc a b, ‖f x - f a‖ ≤ C * (x - a) := by
-  refine' norm_image_sub_le_of_norm_deriv_le_segment' _ bound
+  refine norm_image_sub_le_of_norm_deriv_le_segment' ?_ bound
   exact fun x hx => (hf x hx).hasDerivWithinAt
 #align norm_image_sub_le_of_norm_deriv_le_segment norm_image_sub_le_of_norm_deriv_le_segment
 
@@ -620,7 +620,7 @@ theorem eqOn_of_fderivWithin_eq (hs : Convex ℝ s) (hf : DifferentiableOn 𝕜 
     (hf' : ∀ x ∈ s, fderivWithin 𝕜 f s x = fderivWithin 𝕜 g s x) (hx : x ∈ s) (hfgx : f x = g x) :
     s.EqOn f g := fun y hy => by
   suffices f x - g x = f y - g y by rwa [hfgx, sub_self, eq_comm, sub_eq_zero] at this
-  refine' hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => _) hx hy
+  refine hs.is_const_of_fderivWithin_eq_zero (hf.sub hg) (fun z hz => ?_) hx hy
   rw [fderivWithin_sub (hs' _ hz) (hf _ hz) (hg _ hz), sub_eq_zero, hf' _ hz]
 #align convex.eq_on_of_fderiv_within_eq Convex.eqOn_of_fderivWithin_eq
 

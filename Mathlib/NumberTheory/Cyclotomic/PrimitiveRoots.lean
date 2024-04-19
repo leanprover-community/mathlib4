@@ -469,7 +469,7 @@ theorem pow_sub_one_norm_prime_ne_two {k : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p 
     [hpri : Fact (p : ℕ).Prime] [IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) {s : ℕ} (hs : s ≤ k) (hodd : p ≠ 2) :
     norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
-  refine' hζ.pow_sub_one_norm_prime_pow_ne_two hirr hs fun h => _
+  refine hζ.pow_sub_one_norm_prime_pow_ne_two hirr hs fun h => ?_
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
   rw [← PNat.coe_inj, coe_two, PNat.pow_coe, ← pow_one 2] at h
 -- Porting note: the proof is slightly different because of coercions.

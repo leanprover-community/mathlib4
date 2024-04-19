@@ -516,7 +516,7 @@ theorem eventually_uniformity_comp_subset {s : Set (α × α)} (hs : s ∈ 𝓤 
 theorem Filter.Tendsto.uniformity_trans {l : Filter β} {f₁ f₂ f₃ : β → α}
     (h₁₂ : Tendsto (fun x => (f₁ x, f₂ x)) l (𝓤 α))
     (h₂₃ : Tendsto (fun x => (f₂ x, f₃ x)) l (𝓤 α)) : Tendsto (fun x => (f₁ x, f₃ x)) l (𝓤 α) := by
-  refine' le_trans (le_lift'.2 fun s hs => mem_map.2 _) comp_le_uniformity
+  refine le_trans (le_lift'.2 fun s hs => mem_map.2 ?_) comp_le_uniformity
   filter_upwards [mem_map.1 (h₁₂ hs), mem_map.1 (h₂₃ hs)] with x hx₁₂ hx₂₃ using ⟨_, hx₁₂, hx₂₃⟩
 #align filter.tendsto.uniformity_trans Filter.Tendsto.uniformity_trans
 
@@ -929,7 +929,7 @@ theorem closure_eq_uniformity (s : Set <| α × α) :
 
 theorem uniformity_hasBasis_closed :
     HasBasis (𝓤 α) (fun V : Set (α × α) => V ∈ 𝓤 α ∧ IsClosed V) id := by
-  refine' Filter.hasBasis_self.2 fun t h => _
+  refine Filter.hasBasis_self.2 fun t h => ?_
   rcases comp_comp_symm_mem_uniformity_sets h with ⟨w, w_in, w_symm, r⟩
   refine' ⟨closure w, mem_of_superset w_in subset_closure, isClosed_closure, _⟩
   refine Subset.trans ?_ r
@@ -1004,7 +1004,7 @@ theorem isOpen_iff_open_ball_subset {s : Set α} :
 /-- The uniform neighborhoods of all points of a dense set cover the whole space. -/
 theorem Dense.biUnion_uniformity_ball {s : Set α} {U : Set (α × α)} (hs : Dense s) (hU : U ∈ 𝓤 α) :
     ⋃ x ∈ s, ball x U = univ := by
-  refine' iUnion₂_eq_univ_iff.2 fun y => _
+  refine iUnion₂_eq_univ_iff.2 fun y => ?_
   rcases hs.inter_nhds_nonempty (mem_nhds_right y hU) with ⟨x, hxs, hxy : (x, y) ∈ U⟩
   exact ⟨x, hxs, hxy⟩
 #align dense.bUnion_uniformity_ball Dense.biUnion_uniformity_ball

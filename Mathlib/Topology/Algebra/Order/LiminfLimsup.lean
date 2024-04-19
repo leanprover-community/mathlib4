@@ -474,7 +474,7 @@ variable [CompleteLinearOrder R] [TopologicalSpace R] [OrderTopology R]
 
 theorem iInf_eq_of_forall_le_of_tendsto {x : R} {as : ι → R} (x_le : ∀ i, x ≤ as i) {F : Filter ι}
     [Filter.NeBot F] (as_lim : Filter.Tendsto as F (𝓝 x)) : ⨅ i, as i = x := by
-  refine' iInf_eq_of_forall_ge_of_forall_gt_exists_lt (fun i ↦ x_le i) _
+  refine iInf_eq_of_forall_ge_of_forall_gt_exists_lt (fun i ↦ x_le i) ?_
   apply fun w x_lt_w ↦ ‹Filter.NeBot F›.nonempty_of_mem (eventually_lt_of_tendsto_lt x_lt_w as_lim)
 #align infi_eq_of_forall_le_of_tendsto iInf_eq_of_forall_le_of_tendsto
 
@@ -535,7 +535,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
       obtain ⟨j, hj₁, hj₂⟩ := hω (i + 1)
       replace hi : (∑ k in Finset.range i, (s (k + 1)).indicator 1 ω) = k + 1 :=
         le_antisymm (h i) hi
-      refine' not_lt.2 (h <| j + 1) _
+      refine not_lt.2 (h <| j + 1) ?_
       rw [← Finset.sum_range_add_sum_Ico _ (i.le_succ.trans (hj₁.trans j.le_succ)), hi]
       refine' lt_add_of_pos_right _ _
       rw [(Finset.sum_const_zero.symm : 0 = ∑ k in Finset.Ico i (j + 1), 0)]
@@ -561,7 +561,7 @@ theorem limsup_eq_tendsto_sum_indicator_nat_atTop (s : ℕ → Set α) :
         suffices (∑ k in Finset.Ico i j, (s (k + 1)).indicator 1 ω) = 0 by
           rw [this, add_zero]
           exact hle _ le_rfl
-        refine' Finset.sum_eq_zero fun m hm ↦ _
+        refine Finset.sum_eq_zero fun m hm ↦ ?_
         exact Set.indicator_of_not_mem (hcon _ <| (Finset.mem_Ico.1 hm).1.trans m.le_succ) _
     exact not_le.2 (lt_of_lt_of_le i.lt_succ_self <| h _ le_rfl) this
 #align limsup_eq_tendsto_sum_indicator_nat_at_top limsup_eq_tendsto_sum_indicator_nat_atTop

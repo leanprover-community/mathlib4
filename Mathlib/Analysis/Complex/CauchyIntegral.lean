@@ -353,7 +353,7 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
     (hd : ∀ z ∈ (ball c R \ {c}) \ s, DifferentiableAt ℂ f z) (hy : Tendsto f (𝓝[{c}ᶜ] c) (𝓝 y)) :
     (∮ z in C(c, R), (z - c)⁻¹ • f z) = (2 * π * I : ℂ) • y := by
   rw [← sub_eq_zero, ← norm_le_zero_iff]
-  refine' le_of_forall_le_of_dense fun ε ε0 => _
+  refine le_of_forall_le_of_dense fun ε ε0 => ?_
   obtain ⟨δ, δ0, hδ⟩ : ∃ δ > (0 : ℝ), ∀ z ∈ closedBall c δ \ {c}, dist (f z) y < ε / (2 * π) :=
     ((nhdsWithin_hasBasis nhds_basis_closedBall _).tendsto_iff nhds_basis_ball).1 hy _
       (div_pos ε0 Real.two_pi_pos)
@@ -383,11 +383,11 @@ theorem circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of
           (sphere_subset_closedBall.trans <| closedBall_subset_closedBall hrR) hzne
       · exact continuousOn_const
     _ ≤ 2 * π * r * (r⁻¹ * (ε / (2 * π))) := by
-      refine' circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => _
+      refine circleIntegral.norm_integral_le_of_norm_le_const hr0.le fun z hz => ?_
       specialize hzne z hz
       rw [mem_sphere, dist_eq_norm] at hz
       rw [norm_smul, norm_inv, hz, ← dist_eq_norm]
-      refine' mul_le_mul_of_nonneg_left (hδ _ ⟨_, hzne⟩).le (inv_nonneg.2 hr0.le)
+      refine mul_le_mul_of_nonneg_left (hδ _ ⟨?_, hzne⟩).le (inv_nonneg.2 hr0.le)
       rwa [mem_closedBall_iff_norm, hz]
     _ = ε := by field_simp [hr0.ne', Real.two_pi_pos.ne']; ac_rfl
 #align complex.circle_integral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto Complex.circleIntegral_sub_center_inv_smul_of_differentiable_on_off_countable_of_tendsto
@@ -464,10 +464,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
     have A : ContinuousAt (fun w => (2 * π * I : ℂ)⁻¹ • ∮ z in C(c, R), (z - w)⁻¹ • f z) w := by
       have := hasFPowerSeriesOn_cauchy_integral
         ((hc.mono sphere_subset_closedBall).circleIntegrable R.coe_nonneg) hR
-      refine' this.continuousOn.continuousAt (EMetric.isOpen_ball.mem_nhds _)
+      refine this.continuousOn.continuousAt (EMetric.isOpen_ball.mem_nhds ?_)
       rwa [Metric.emetric_ball_nnreal]
     have B : ContinuousAt f w := hc.continuousAt (closedBall_mem_nhds_of_mem hw)
-    refine' tendsto_nhds_unique_of_frequently_eq A B ((mem_closure_iff_frequently.1 this).mono _)
+    refine tendsto_nhds_unique_of_frequently_eq A B ((mem_closure_iff_frequently.1 this).mono ?_)
     intro z hz
     rw [circleIntegral_sub_inv_smul_of_differentiable_on_off_countable_aux hs hz hc hd,
       inv_smul_smul₀]
@@ -480,7 +480,7 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_inv_smul_of_differentiable_on_off_c
   rcases mem_nhds_iff_exists_Ioo_subset.1 (this <| inter_mem ht <| isOpen_ball.mem_nhds hw) with
     ⟨l, u, hlu₀, hlu_sub⟩
   obtain ⟨x, hx⟩ : (Ioo l u \ g ⁻¹' s).Nonempty := by
-    refine' nonempty_diff.2 fun hsub => _
+    refine nonempty_diff.2 fun hsub => ?_
     have : (Ioo l u).Countable :=
       (hs.preimage ((add_right_injective w).comp ofReal_injective)).mono hsub
     rw [← Cardinal.le_aleph0_iff_set_countable, Cardinal.mk_Ioo_real (hlu₀.1.trans hlu₀.2)] at this

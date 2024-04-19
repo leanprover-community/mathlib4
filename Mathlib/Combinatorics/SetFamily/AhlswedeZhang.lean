@@ -165,7 +165,7 @@ lemma truncatedSup_union_of_not_mem (hs : a ∉ lowerClosure s) (ht : a ∉ lowe
 
 lemma truncatedSup_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedSup s a = a := by
-  refine' le_antisymm _ le_truncatedSup
+  refine le_antisymm ?_ le_truncatedSup
   simp_rw [truncatedSup_of_mem (subset_lowerClosure ha), sup'_le_iff, mem_filter]
   rintro b ⟨hb, hab⟩
   exact (hs.eq ha hb hab).ge
@@ -236,7 +236,7 @@ lemma truncatedInf_union_of_not_mem (hs : a ∉ upperClosure s) (ht : a ∉ uppe
 
 lemma truncatedInf_of_isAntichain (hs : IsAntichain (· ≤ ·) (s : Set α)) (ha : a ∈ s) :
     truncatedInf s a = a := by
-  refine' le_antisymm truncatedInf_le _
+  refine le_antisymm truncatedInf_le ?_
   simp_rw [truncatedInf_of_mem (subset_upperClosure ha), le_inf'_iff, mem_filter]
   rintro b ⟨hb, hba⟩
   exact (hs.eq hb ha hba).ge
@@ -356,7 +356,7 @@ lemma IsAntichain.le_infSum (h𝒜 : IsAntichain (· ⊆ ·) (𝒜 : Set (Finset
   calc
     _ = ∑ s in 𝒜, (truncatedInf 𝒜 s).card / (s.card * (card α).choose s.card : ℚ) := ?_
     _ ≤ _ := sum_le_univ_sum_of_nonneg fun s ↦ by positivity
-  refine' sum_congr rfl fun s hs ↦ _
+  refine sum_congr rfl fun s hs ↦ ?_
   rw [truncatedInf_of_isAntichain h𝒜 hs, div_mul_cancel_left₀]
   have := (nonempty_iff_ne_empty.2 $ ne_of_mem_of_not_mem hs h𝒜₀).card_pos
   positivity

@@ -247,10 +247,10 @@ variable {α : Type*}
 theorem continuousAt_clog {x : ℂ} (h : x ∈ slitPlane) : ContinuousAt log x := by
   refine' ContinuousAt.add _ _
   · refine' continuous_ofReal.continuousAt.comp _
-    refine' (Real.continuousAt_log _).comp Complex.continuous_abs.continuousAt
+    refine (Real.continuousAt_log ?_).comp Complex.continuous_abs.continuousAt
     exact Complex.abs.ne_zero_iff.mpr <| slitPlane_ne_zero h
   · have h_cont_mul : Continuous fun x : ℂ => x * I := continuous_id'.mul continuous_const
-    refine' h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp _)
+    refine h_cont_mul.continuousAt.comp (continuous_ofReal.continuousAt.comp ?_)
     exact continuousAt_arg h
 #align continuous_at_clog continuousAt_clog
 

@@ -378,7 +378,7 @@ theorem mem_smul_top_iff (N : Submodule R M) (x : N) :
 @[simp]
 theorem smul_comap_le_comap_smul (f : M →ₗ[R] M') (S : Submodule R M') (I : Ideal R) :
     I • S.comap f ≤ (I • S).comap f := by
-  refine' Submodule.smul_le.mpr fun r hr x hx => _
+  refine Submodule.smul_le.mpr fun r hr x hx => ?_
   rw [Submodule.mem_comap] at hx ⊢
   rw [f.map_smul]
   exact Submodule.smul_mem_smul hr hx
@@ -1448,7 +1448,7 @@ variable {G : Type*} [FunLike G S R] [rcg : RingHomClass G S R]
 
 theorem map_le_comap_of_inv_on (g : G) (I : Ideal R) (hf : Set.LeftInvOn g f I) :
     I.map f ≤ I.comap g := by
-  refine' Ideal.span_le.2 _
+  refine Ideal.span_le.2 ?_
   rintro x ⟨x, hx, rfl⟩
   rw [SetLike.mem_coe, mem_comap, hf hx]
   exact hx
@@ -1717,7 +1717,7 @@ section Injective
 variable (hf : Function.Injective f)
 
 theorem comap_bot_le_of_injective : comap f ⊥ ≤ I := by
-  refine' le_trans (fun x hx => _) bot_le
+  refine le_trans (fun x hx => ?_) bot_le
   rw [mem_comap, Submodule.mem_bot, ← map_zero f] at hx
   exact Eq.symm (hf hx) ▸ Submodule.zero_mem ⊥
 #align ideal.comap_bot_le_of_injective Ideal.comap_bot_le_of_injective
@@ -1857,8 +1857,8 @@ theorem comap_le_iff_le_map {I : Ideal R} {K : Ideal S} : comap f K ≤ I ↔ K 
 #align ideal.comap_le_iff_le_map Ideal.comap_le_iff_le_map
 
 theorem map.isMaximal {I : Ideal R} (H : IsMaximal I) : IsMaximal (map f I) := by
-  refine'
-    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 _
+  refine
+    or_iff_not_imp_left.1 (map_eq_top_or_isMaximal_of_surjective f hf.right H) fun h => H.1.1 ?_
   calc
     I = comap f (map f I) := ((relIsoOfBijective f hf).right_inv I).symm
     _ = comap f ⊤ := by rw [h]
@@ -2262,7 +2262,7 @@ theorem map_sInf {A : Set (Ideal R)} {f : F} (hf : Function.Surjective f) :
     exact mem_map_of_mem f (sInf_le_of_le hJ.left (le_of_eq rfl) hx.left)
   · intro y hy
     cases' hf y with x hx
-    refine' hx ▸ mem_map_of_mem f _
+    refine hx ▸ mem_map_of_mem f ?_
     have : ∀ I ∈ A, y ∈ map f I := by simpa using hy
     rw [Submodule.mem_sInf]
     intro J hJ

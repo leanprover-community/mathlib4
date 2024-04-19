@@ -66,7 +66,7 @@ theorem separable_minpoly_mod {p : ℕ} [Fact p.Prime] (hdiv : ¬p ∣ n) :
     convert RingHom.map_dvd (mapRingHom (Int.castRingHom (ZMod p)))
         (minpoly_dvd_x_pow_sub_one h)
     simp only [map_sub, map_pow, coe_mapRingHom, map_X, map_one]
-  refine' Separable.of_dvd (separable_X_pow_sub_C 1 _ one_ne_zero) hdvd
+  refine Separable.of_dvd (separable_X_pow_sub_C 1 ?_ one_ne_zero) hdvd
   by_contra hzero
   exact hdiv ((ZMod.natCast_zmod_eq_zero_iff_dvd n p).1 hzero)
 #align is_primitive_root.separable_minpoly_mod IsPrimitiveRoot.separable_minpoly_mod
@@ -138,7 +138,7 @@ theorem minpoly_eq_pow {p : ℕ} [hprime : Fact p.Prime] (hdiv : ¬p ∣ n) :
       refine' (dvd_or_coprime _ _ (aux.1 Pirr)).resolve_left _
       rw [map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic]
       intro hdiv
-      refine' hdiff (eq_of_monic_of_associated Pmonic Qmonic _)
+      refine hdiff (eq_of_monic_of_associated Pmonic Qmonic ?_)
       exact associated_of_dvd_dvd hdiv (Pirr.dvd_symm Qirr hdiv)
     · apply (map_dvd_map (Int.castRingHom ℚ) Int.cast_injective Pmonic).2
       exact minpoly_dvd_x_pow_sub_one h

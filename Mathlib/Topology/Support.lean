@@ -248,7 +248,7 @@ theorem _root_.hasCompactMulSupport_comp_left (hg : ∀ {x}, g x = 1 ↔ x = 1) 
 theorem comp_closedEmbedding (hf : HasCompactMulSupport f) {g : α' → α}
     (hg : ClosedEmbedding g) : HasCompactMulSupport (f ∘ g) := by
   rw [hasCompactMulSupport_def, Function.mulSupport_comp_eq_preimage]
-  refine' IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure _
+  refine IsCompact.of_isClosed_subset (hg.isCompact_preimage hf) isClosed_closure ?_
   rw [hg.toEmbedding.closure_eq_preimage_closure_image]
   exact preimage_mono (closure_mono <| image_preimage_subset _ _)
 #align has_compact_mul_support.comp_closed_embedding HasCompactMulSupport.comp_closedEmbedding

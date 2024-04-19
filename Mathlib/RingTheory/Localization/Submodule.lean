@@ -163,7 +163,7 @@ theorem mem_span_iff {N : Type*} [AddCommGroup N] [Module R N] [Module S N] [IsS
 
 theorem mem_span_map {x : S} {a : Set R} :
     x ∈ Ideal.span (algebraMap R S '' a) ↔ ∃ y ∈ Ideal.span a, ∃ z : M, x = mk' S y z := by
-  refine' (mem_span_iff M).trans _
+  refine (mem_span_iff M).trans ?_
   constructor
   · rw [← coeSubmodule_span]
     rintro ⟨_, ⟨y, hy, rfl⟩, z, hz⟩

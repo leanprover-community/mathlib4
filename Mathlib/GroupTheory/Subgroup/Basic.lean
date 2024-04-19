@@ -2113,7 +2113,7 @@ instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidab
 
 @[to_additive]
 instance centerCharacteristic : (center G).Characteristic := by
-  refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
+  refine characteristic_iff_comap_le.mpr fun ϕ g hg => ?_
   rw [mem_center_iff]
   intro h
   rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]
@@ -2350,7 +2350,7 @@ theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s �
 @[to_additive]
 instance Centralizer.characteristic [hH : H.Characteristic] :
     (centralizer (H : Set G)).Characteristic := by
-  refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
+  refine Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective ?_
   rw [map_mul, map_mul]
   exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
 #align subgroup.subgroup.centralizer.characteristic Subgroup.Centralizer.characteristic
@@ -2725,7 +2725,7 @@ theorem subgroupOf_range_eq_of_le {G₁ G₂ : Type*} [Group G₁] [Group G₂] 
     (f : G₁ →* G₂) (h : f.range ≤ K) :
     f.range.subgroupOf K = (f.codRestrict K fun x => h ⟨x, rfl⟩).range := by
   ext k
-  refine' exists_congr _
+  refine exists_congr ?_
   simp [Subtype.ext_iff]
 #align monoid_hom.subgroup_of_range_eq_of_le MonoidHom.subgroupOf_range_eq_of_le
 #align add_monoid_hom.add_subgroup_of_range_eq_of_le AddMonoidHom.addSubgroupOf_range_eq_of_le
@@ -3777,7 +3777,7 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
       MonoidHom.restrict_apply, Subtype.mk_eq_mk, ← mul_assoc, mul_inv_self, one_mul]
     rw [mul_assoc, mul_inv_self, mul_one]
   rw [eq_top_iff, ← MonoidHom.range_top_of_surjective _ hs, MonoidHom.range_eq_map]
-  refine' le_trans (map_mono (eq_top_iff.1 ht)) (map_le_iff_le_comap.2 (normalClosure_le_normal _))
+  refine le_trans (map_mono (eq_top_iff.1 ht)) (map_le_iff_le_comap.2 (normalClosure_le_normal ?_))
   rw [Set.singleton_subset_iff, SetLike.mem_coe]
   simp only [MonoidHom.codRestrict_apply, MulEquiv.coe_toMonoidHom, MulAut.conj_apply, coe_mk,
     MonoidHom.restrict_apply, mem_comap]

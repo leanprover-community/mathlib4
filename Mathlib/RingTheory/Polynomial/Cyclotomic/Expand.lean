@@ -87,7 +87,7 @@ theorem cyclotomic_expand_eq_cyclotomic {p n : ℕ} (hp : Nat.Prime p) (hdiv : p
   · have hpos := Nat.mul_pos hzero hp.pos
     have hprim := Complex.isPrimitiveRoot_exp _ hpos.ne.symm
     rw [cyclotomic_eq_minpoly hprim hpos]
-    refine' minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) _
+    refine minpoly.isIntegrallyClosed_dvd (hprim.isIntegral hpos) ?_
     rw [aeval_def, ← eval_map, map_expand, map_cyclotomic, expand_eval, ← IsRoot.def,
       @isRoot_cyclotomic_iff]
     · convert IsPrimitiveRoot.pow_of_dvd hprim hp.ne_zero (dvd_mul_left p n)

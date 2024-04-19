@@ -263,7 +263,7 @@ theorem MeasurableEmbedding.aemeasurable_map_iff {g : β → γ} (hf : Measurabl
 
 theorem MeasurableEmbedding.aemeasurable_comp_iff {g : β → γ} (hg : MeasurableEmbedding g)
     {μ : Measure α} : AEMeasurable (g ∘ f) μ ↔ AEMeasurable f μ := by
-  refine' ⟨fun H => _, hg.measurable.comp_aemeasurable⟩
+  refine ⟨fun H => ?_, hg.measurable.comp_aemeasurable⟩
   suffices AEMeasurable ((rangeSplitting g ∘ rangeFactorization g) ∘ f) μ by
     rwa [(rightInverse_rangeSplitting hg.injective).comp_eq_id] at this
   exact hg.measurable_rangeSplitting.comp_aemeasurable H.subtype_mk

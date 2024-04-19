@@ -230,7 +230,7 @@ theorem uniformGroup_iInf {ι : Sort*} {us' : ι → UniformSpace β}
 theorem uniformGroup_inf {u₁ u₂ : UniformSpace β} (h₁ : @UniformGroup β u₁ _)
     (h₂ : @UniformGroup β u₂ _) : @UniformGroup β (u₁ ⊓ u₂) _ := by
   rw [inf_eq_iInf]
-  refine' uniformGroup_iInf fun b => _
+  refine uniformGroup_iInf fun b => ?_
   cases b <;> assumption
 #align uniform_group_inf uniformGroup_inf
 #align uniform_add_group_inf uniformAddGroup_inf
@@ -272,7 +272,7 @@ theorem uniformity_eq_comap_nhds_one : 𝓤 α = comap (fun x : α × α => x.2 
   refine' le_antisymm (Filter.map_le_iff_le_comap.1 _) _
   · intro s hs
     rcases mem_uniformity_of_uniformContinuous_invariant uniformContinuous_div hs with ⟨t, ht, hts⟩
-    refine' mem_map.2 (mem_of_superset ht _)
+    refine mem_map.2 (mem_of_superset ht ?_)
     rintro ⟨a, b⟩
     simpa [subset_def] using hts a b a
   · intro s hs

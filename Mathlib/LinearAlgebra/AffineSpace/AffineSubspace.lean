@@ -139,7 +139,7 @@ theorem vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints {s : Set P} {p1 
   rcases hp2 with ⟨p2a, ⟨hp2a, ⟨v2, ⟨hv2, hv2p⟩⟩⟩⟩
   rw [hv1p, hv2p, vsub_vadd_eq_vsub_sub (v1 +ᵥ p1a), vadd_vsub_assoc, add_comm, add_sub_assoc]
   have hv1v2 : v1 - v2 ∈ vectorSpan k s := (vectorSpan k s).sub_mem hv1 hv2
-  refine' (vectorSpan k s).add_mem _ hv1v2
+  refine (vectorSpan k s).add_mem ?_ hv1v2
   exact vsub_mem_vectorSpan k hp1a hp2a
 #align vsub_mem_vector_span_of_mem_span_points_of_mem_span_points vsub_mem_vectorSpan_of_mem_spanPoints_of_mem_spanPoints
 
@@ -211,13 +211,13 @@ def directionOfNonempty {s : AffineSubspace k P} (h : (s : Set P).Nonempty) : Su
   add_mem' := by
     rintro _ _ ⟨p1, hp1, p2, hp2, rfl⟩ ⟨p3, hp3, p4, hp4, rfl⟩
     rw [← vadd_vsub_assoc]
-    refine' vsub_mem_vsub _ hp4
+    refine vsub_mem_vsub ?_ hp4
     convert s.smul_vsub_vadd_mem 1 hp1 hp2 hp3
     rw [one_smul]
   smul_mem' := by
     rintro c _ ⟨p1, hp1, p2, hp2, rfl⟩
     rw [← vadd_vsub (c • (p1 -ᵥ p2)) p2]
-    refine' vsub_mem_vsub _ hp2
+    refine vsub_mem_vsub ?_ hp2
     exact s.smul_vsub_vadd_mem c hp1 hp2 hp2
 #align affine_subspace.direction_of_nonempty AffineSubspace.directionOfNonempty
 
@@ -273,7 +273,7 @@ theorem vadd_mem_iff_mem_direction {s : AffineSubspace k P} (v : V) {p : P} (hp 
 the original point is in the subspace. -/
 theorem vadd_mem_iff_mem_of_mem_direction {s : AffineSubspace k P} {v : V} (hv : v ∈ s.direction)
     {p : P} : v +ᵥ p ∈ s ↔ p ∈ s := by
-  refine' ⟨fun h => _, fun h => vadd_mem_of_mem_direction hv h⟩
+  refine ⟨fun h => ?_, fun h => vadd_mem_of_mem_direction hv h⟩
   convert vadd_mem_of_mem_direction (Submodule.neg_mem _ hv) h
   simp
 #align affine_subspace.vadd_mem_iff_mem_of_mem_direction AffineSubspace.vadd_mem_iff_mem_of_mem_direction
@@ -359,12 +359,12 @@ theorem ext_of_direction_eq {s1 s2 : AffineSubspace k P} (hd : s1.direction = s2
   constructor
   · intro hp
     rw [← vsub_vadd p hn.some]
-    refine' vadd_mem_of_mem_direction _ hq2
+    refine vadd_mem_of_mem_direction ?_ hq2
     rw [← hd]
     exact vsub_mem_direction hp hq1
   · intro hp
     rw [← vsub_vadd p hn.some]
-    refine' vadd_mem_of_mem_direction _ hq1
+    refine vadd_mem_of_mem_direction ?_ hq1
     rw [hd]
     exact vsub_mem_direction hp hq2
 #align affine_subspace.ext_of_direction_eq AffineSubspace.ext_of_direction_eq
@@ -499,7 +499,7 @@ theorem spanPoints_subset_coe_of_subset_coe {s : Set P} {s1 : AffineSubspace k P
   rintro p ⟨p1, hp1, v, hv, hp⟩
   rw [hp]
   have hp1s1 : p1 ∈ (s1 : Set P) := Set.mem_of_mem_of_subset hp1 h
-  refine' vadd_mem_of_mem_direction _ hp1s1
+  refine vadd_mem_of_mem_direction ?_ hp1s1
   have hs : vectorSpan k s ≤ s1.direction := vectorSpan_mono k h
   rw [SetLike.le_def] at hs
   rw [← SetLike.mem_coe]
@@ -597,7 +597,7 @@ instance : CompleteLattice (AffineSubspace k P) :=
     inf_le_right := fun _ _ => Set.inter_subset_right _ _
     le_sInf := fun S s1 hs1 => by
       -- Porting note: surely there is an easier way?
-      refine' Set.subset_sInter (t := (s1 : Set P)) _
+      refine Set.subset_sInter (t := (s1 : Set P)) ?_
       rintro t ⟨s, _hs, rfl⟩
       exact Set.subset_iInter (hs1 s)
     top :=
@@ -890,7 +890,7 @@ theorem direction_eq_top_iff_of_nonempty {s : AffineSubspace k P} (h : (s : Set 
   constructor
   · intro hd
     rw [← direction_top k V P] at hd
-    refine' ext_of_direction_eq hd _
+    refine ext_of_direction_eq hd ?_
     simp [h]
   · rintro rfl
     simp
@@ -981,7 +981,7 @@ theorem sup_direction_lt_of_nonempty_of_inter_empty {s1 s2 : AffineSubspace k P}
   rw [← sub_eq_zero, sub_eq_add_neg, neg_vsub_eq_vsub_rev, add_comm v1, add_assoc, ←
     vadd_vsub_assoc, ← neg_neg v2, add_comm, ← sub_eq_add_neg, ← vsub_vadd_eq_vsub_sub,
     vsub_eq_zero_iff_eq] at hv1v2
-  refine' Set.Nonempty.ne_empty _ he
+  refine Set.Nonempty.ne_empty ?_ he
   use v1 +ᵥ p1, vadd_mem_of_mem_direction hv1 hp1
   rw [hv1v2]
   exact vadd_mem_of_mem_direction (Submodule.neg_mem _ hv2) hp2

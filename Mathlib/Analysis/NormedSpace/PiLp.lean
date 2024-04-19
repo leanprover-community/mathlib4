@@ -346,7 +346,7 @@ theorem iSup_edist_ne_top_aux {ι : Type*} [Finite ι] {α : ι → Type*}
     [∀ i, PseudoMetricSpace (α i)] (f g : PiLp ∞ α) : (⨆ i, edist (f i) (g i)) ≠ ⊤ := by
   cases nonempty_fintype ι
   obtain ⟨M, hM⟩ := Finite.exists_le fun i => (⟨dist (f i) (g i), dist_nonneg⟩ : ℝ≥0)
-  refine' ne_of_lt ((iSup_le fun i => _).trans_lt (@ENNReal.coe_lt_top M))
+  refine ne_of_lt ((iSup_le fun i => ?_).trans_lt (@ENNReal.coe_lt_top M))
   simp only [edist, PseudoMetricSpace.edist_dist, ENNReal.ofReal_eq_coe_nnreal dist_nonneg]
   exact mod_cast hM i
 #align pi_Lp.supr_edist_ne_top_aux PiLp.iSup_edist_ne_top_aux

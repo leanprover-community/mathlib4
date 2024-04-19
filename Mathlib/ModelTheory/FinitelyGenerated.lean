@@ -90,7 +90,7 @@ theorem FG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [fg_def]
   refine' ⟨f ⁻¹' t, t.finite_toSet.preimage (f.injective.injOn _), _⟩
   have hf : Function.Injective f.toHom := f.injective
-  refine' map_injective_of_injective hf _
+  refine map_injective_of_injective hf ?_
   rw [← h, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]
   intro x hx
   have h' := subset_closure (L := L) hx
@@ -165,7 +165,7 @@ theorem CG.of_map_embedding {N : Type*} [L.Structure N] (f : M ↪[L] N) {s : L.
   rw [cg_def]
   refine ⟨f ⁻¹' t, h1.preimage f.injective, ?_⟩
   have hf : Function.Injective f.toHom := f.injective
-  refine' map_injective_of_injective hf _
+  refine map_injective_of_injective hf ?_
   rw [← h2, map_closure, Embedding.coe_toHom, image_preimage_eq_of_subset]
   intro x hx
   have h' := subset_closure (L := L) hx

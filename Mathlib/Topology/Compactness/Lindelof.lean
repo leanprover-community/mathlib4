@@ -441,7 +441,7 @@ def Filter.coclosedLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
 theorem hasBasis_coclosedLindelof :
     (Filter.coclosedLindelof X).HasBasis (fun s => IsClosed s ∧ IsLindelof s) compl := by
   simp only [Filter.coclosedLindelof, iInf_and']
-  refine' hasBasis_biInf_principal' _ ⟨∅, isClosed_empty, isLindelof_empty⟩
+  refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
@@ -528,7 +528,7 @@ theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ
   nonLindelof_univ X (h ▸ hs)
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
-  refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
+  refine hasBasis_coLindelof.neBot_iff.2 fun {s} hs => ?_
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]

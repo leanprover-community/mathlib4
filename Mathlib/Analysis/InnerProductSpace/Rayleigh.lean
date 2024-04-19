@@ -195,7 +195,7 @@ theorem hasEigenvector_of_isMaxOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iSup_rayleigh_eq_iSup_rayleigh_sphere hx₀']
-  refine' IsMaxOn.iSup_eq hx₀'' _
+  refine IsMaxOn.iSup_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx
@@ -215,7 +215,7 @@ theorem hasEigenvector_of_isMinOn (hT : IsSelfAdjoint T) {x₀ : E} (hx₀ : x�
   have hx₀' : 0 < ‖x₀‖ := by simp [hx₀]
   have hx₀'' : x₀ ∈ sphere (0 : E) ‖x₀‖ := by simp
   rw [T.iInf_rayleigh_eq_iInf_rayleigh_sphere hx₀']
-  refine' IsMinOn.iInf_eq hx₀'' _
+  refine IsMinOn.iInf_eq hx₀'' ?_
   intro x hx
   dsimp
   have : ‖x‖ = ‖x₀‖ := by simpa using hx

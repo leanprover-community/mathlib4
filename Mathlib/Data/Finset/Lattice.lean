@@ -595,7 +595,7 @@ theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (
   induction' s using Finset.induction with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   simp only [Finset.sup_le_iff, mem_product, mem_pi, and_imp, Prod.forall,
     inf_insert, inf_image]
   refine'
@@ -892,7 +892,7 @@ theorem sup'_induction {p : α → Prop} (hp : ∀ a₁, p a₁ → ∀ a₂, p 
     (hs : ∀ b ∈ s, p (f b)) : p (s.sup' H f) := by
   show @WithBot.recBotCoe α (fun _ => Prop) True p ↑(s.sup' H f)
   rw [coe_sup']
-  refine' sup_induction trivial _ hs
+  refine sup_induction trivial ?_ hs
   rintro (_ | a₁) h₁ a₂ h₂
   · rw [WithBot.none_eq_bot, bot_sup_eq]
     exact h₂
@@ -910,7 +910,7 @@ theorem sup'_mem (s : Set α) (w : ∀ᵉ (x ∈ s) (y ∈ s), x ⊔ y ∈ s) {�
 theorem sup'_congr {t : Finset β} {f g : β → α} (h₁ : s = t) (h₂ : ∀ x ∈ s, f x = g x) :
     s.sup' H f = t.sup' (h₁ ▸ H) g := by
   subst s
-  refine' eq_of_forall_ge_iff fun c => _
+  refine eq_of_forall_ge_iff fun c => ?_
   simp (config := { contextual := true }) only [sup'_le_iff, h₂]
 #align finset.sup'_congr Finset.sup'_congr
 

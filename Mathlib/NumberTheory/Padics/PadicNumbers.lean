@@ -584,7 +584,7 @@ def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
       max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
         ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
     exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
-    refine' max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) _
+    refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
     exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
 #align padic_norm_e padicNormE
 
@@ -687,7 +687,7 @@ def limSeq : ℕ → ℚ :=
 
 theorem exi_rat_seq_conv {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (f i - (limSeq f i : ℚ_[p]) : ℚ_[p]) < ε := by
-  refine' (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ _
+  refine (exists_nat_gt (1 / ε)).imp fun N hN i hi ↦ ?_
   have h := Classical.choose_spec (rat_dense' (f i) (div_nat_pos i))
   refine' lt_of_lt_of_le h ((div_le_iff' <| mod_cast succ_pos _).mpr _)
   rw [right_distrib]

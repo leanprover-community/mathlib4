@@ -341,7 +341,7 @@ theorem mul_lt_omega_opow {a b c : Ordinal} (c0 : 0 < c) (ha : a < (omega^c)) (h
     rw [opow_succ, mul_assoc, mul_lt_mul_iff_left (opow_pos _ omega_pos)]
     exact principal_mul_omega hn hb
   · rcases ((opow_isNormal one_lt_omega).limit_lt l).1 ha with ⟨x, hx, ax⟩
-    refine' (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt _
+    refine (mul_le_mul' (le_of_lt ax) (le_of_lt hb)).trans_lt ?_
     rw [← opow_succ, opow_lt_opow_iff_right one_lt_omega]
     exact l.2 _ hx
 #align ordinal.mul_lt_omega_opow Ordinal.mul_lt_omega_opow

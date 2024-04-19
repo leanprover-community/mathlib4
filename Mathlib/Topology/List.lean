@@ -61,7 +61,7 @@ theorem nhds_list (as : List α) : 𝓝 as = traverse 𝓝 as := by
       -- simp only [List.forall₂_and_left, flip] at hv ⊢
       simp only [List.forall₂_and_left, Function.flip_def] at hv ⊢
       exact ⟨hv.1, hu.flip⟩
-    refine' mem_of_superset _ hvs
+    refine mem_of_superset ?_ hvs
     exact mem_traverse _ _ (this.imp fun a s ⟨hs, ha⟩ => IsOpen.mem_nhds hs ha)
 #align nhds_list nhds_list
 

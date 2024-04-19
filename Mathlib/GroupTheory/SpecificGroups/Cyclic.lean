@@ -300,7 +300,7 @@ theorem IsCyclic.card_pow_eq_one_le [DecidableEq α] [Fintype α] [IsCyclic α] 
               rw [pow_mul, hm, ← pow_gcd_card_eq_one_iff]; exact (mem_filter.1 hx).2
             dsimp only
             rw [zpow_natCast, ← pow_mul, Nat.mul_div_cancel_left', hm]
-            refine' Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) _
+            refine Nat.dvd_of_mul_dvd_mul_right (gcd_pos_of_pos_left (Fintype.card α) hn0) ?_
             conv_lhs =>
               rw [Nat.div_mul_cancel (Nat.gcd_dvd_right _ _), ←
                 orderOf_eq_card_of_forall_mem_zpowers hg]
@@ -433,7 +433,7 @@ private theorem card_orderOf_eq_totient_aux₁ :
   have h1 :
     (∑ m in d.properDivisors, (univ.filter fun a : α => orderOf a = m).card) =
       ∑ m in d.properDivisors, φ m := by
-    refine' Finset.sum_congr rfl fun m hm => _
+    refine Finset.sum_congr rfl fun m hm => ?_
     simp only [mem_filter, mem_range, mem_properDivisors] at hm
     refine' IH m hm.2 (hm.1.trans hd) (Finset.card_pos.2 ⟨a ^ (d / m), _⟩)
     simp only [mem_filter, mem_univ, orderOf_pow a, ha, true_and_iff,
@@ -469,7 +469,7 @@ theorem card_orderOf_eq_totient_aux₂ {d : ℕ} (hd : d ∣ Fintype.card α) :
         exact mem_erase_of_ne_of_mem hm₂ hm₁
       simp [this, h0]
     _ ≤ ∑ m in c.divisors.erase d, φ m := by
-      refine' sum_le_sum fun m hm => _
+      refine sum_le_sum fun m hm => ?_
       have hmc : m ∣ c := by
         simp only [mem_erase, mem_divisors] at hm
         tauto

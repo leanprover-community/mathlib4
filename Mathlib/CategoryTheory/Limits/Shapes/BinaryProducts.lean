@@ -424,7 +424,7 @@ theorem BinaryFan.isLimit_iff_isIso_fst {X Y : C} (h : IsTerminal Y) (c : Binary
 
 theorem BinaryFan.isLimit_iff_isIso_snd {X Y : C} (h : IsTerminal X) (c : BinaryFan X Y) :
     Nonempty (IsLimit c) ↔ IsIso c.snd := by
-  refine' Iff.trans _ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
+  refine Iff.trans ?_ (BinaryFan.isLimit_iff_isIso_fst h (BinaryFan.mk c.snd c.fst))
   exact
     ⟨fun h => ⟨BinaryFan.isLimitFlip h.some⟩, fun h =>
       ⟨(BinaryFan.isLimitFlip h.some).ofIsoLimit (isoBinaryFanMk c).symm⟩⟩
@@ -482,7 +482,7 @@ theorem BinaryCofan.isColimit_iff_isIso_inl {X Y : C} (h : IsInitial Y) (c : Bin
 
 theorem BinaryCofan.isColimit_iff_isIso_inr {X Y : C} (h : IsInitial X) (c : BinaryCofan X Y) :
     Nonempty (IsColimit c) ↔ IsIso c.inr := by
-  refine' Iff.trans _ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
+  refine Iff.trans ?_ (BinaryCofan.isColimit_iff_isIso_inl h (BinaryCofan.mk c.inr c.inl))
   exact
     ⟨fun h => ⟨BinaryCofan.isColimitFlip h.some⟩, fun h =>
       ⟨(BinaryCofan.isColimitFlip h.some).ofIsoColimit (isoBinaryCofanMk c).symm⟩⟩

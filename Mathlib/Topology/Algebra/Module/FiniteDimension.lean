@@ -183,7 +183,7 @@ theorem LinearMap.continuous_iff_isClosed_ker (l : E →ₗ[𝕜] 𝕜) :
     automatically continuous. -/
 theorem LinearMap.continuous_of_nonzero_on_open (l : E →ₗ[𝕜] 𝕜) (s : Set E) (hs₁ : IsOpen s)
     (hs₂ : s.Nonempty) (hs₃ : ∀ x ∈ s, l x ≠ 0) : Continuous l := by
-  refine' l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => _)
+  refine l.continuous_of_isClosed_ker (l.isClosed_or_dense_ker.resolve_right fun hl => ?_)
   rcases hs₂ with ⟨x, hx⟩
   have : x ∈ interior (LinearMap.ker l : Set E)ᶜ := by
     rw [mem_interior_iff_mem_nhds]

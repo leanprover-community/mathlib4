@@ -1706,7 +1706,7 @@ lemma erase_le : s.erase a ≤ s := diff_subset _ _
 
 lemma sdiff_sup_lowerClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t) :
     s.sdiff t ⊔ lowerClosure t = s := by
-  refine' le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ _
+  refine le_antisymm (sup_le sdiff_le_left <| lowerClosure_le.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_lowerClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩
@@ -1767,7 +1767,7 @@ lemma le_erase : s ≤ s.erase a := diff_subset _ _
 
 lemma sdiff_inf_upperClosure (hts : t ⊆ s) (hst : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     s.sdiff t ⊓ upperClosure t = s := by
-  refine' ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ _
+  refine ge_antisymm (le_inf le_sdiff_left <| le_upperClosure.2 hts) fun a ha ↦ ?_
   obtain hat | hat := em (a ∈ t)
   · exact subset_union_right _ _ (subset_upperClosure hat)
   · refine subset_union_left _ _ ⟨ha, ?_⟩

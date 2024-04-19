@@ -81,7 +81,7 @@ theorem Lp.ae_eq_zero_of_forall_setIntegral_eq_zero' (hm : m ≤ m0) (f : Lp E' 
   let f_meas : lpMeas E' 𝕜 m p μ := ⟨f, hf_meas⟩
   -- Porting note: `simp only` does not call `rfl` to try to close the goal. See https://github.com/leanprover-community/mathlib4/issues/5025
   have hf_f_meas : f =ᵐ[μ] f_meas := by simp only [Subtype.coe_mk]; rfl
-  refine' hf_f_meas.trans _
+  refine hf_f_meas.trans ?_
   refine' lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero hm f_meas hp_ne_zero hp_ne_top _ _
   · intro s hs hμs
     have hfg_restrict : f =ᵐ[μ.restrict s] f_meas := ae_restrict_of_ae hf_f_meas
@@ -143,7 +143,7 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     -- rules, synthesized m0 inferred m
     unfold IntegrableOn
     rw [restrict_trim hm _ hs]
-    refine' Integrable.trim hm _ hfm.stronglyMeasurable_mk
+    refine Integrable.trim hm ?_ hfm.stronglyMeasurable_mk
     exact Integrable.congr (hf_int_finite s hs hμs) (ae_restrict_of_ae hfm.ae_eq_mk)
   have hg_mk_int_finite :
     ∀ s, MeasurableSet[m] s → μ.trim hm s < ∞ → @IntegrableOn _ _ m _ (hgm.mk g) s (μ.trim hm) := by
@@ -154,7 +154,7 @@ theorem ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' (hm : m ≤ m0) [SigmaFin
     -- rules, synthesized m0 inferred m
     unfold IntegrableOn
     rw [restrict_trim hm _ hs]
-    refine' Integrable.trim hm _ hgm.stronglyMeasurable_mk
+    refine Integrable.trim hm ?_ hgm.stronglyMeasurable_mk
     exact Integrable.congr (hg_int_finite s hs hμs) (ae_restrict_of_ae hgm.ae_eq_mk)
   have hfg_mk_eq :
     ∀ s : Set α,

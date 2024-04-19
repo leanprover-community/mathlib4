@@ -310,7 +310,7 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
 
 theorem _root_.IsAntichain.finite_of_partiallyWellOrderedOn (ha : IsAntichain r s)
     (hp : s.PartiallyWellOrderedOn r) : s.Finite := by
-  refine' not_infinite.1 fun hi => _
+  refine not_infinite.1 fun hi => ?_
   obtain ⟨m, n, hmn, h⟩ := hp (fun n => hi.natEmbedding _ n) fun n => (hi.natEmbedding _ n).2
   exact hmn.ne ((hi.natEmbedding _).injective <| Subtype.val_injective <|
     ha.eq (hi.natEmbedding _ m).2 (hi.natEmbedding _ n).2 h)
@@ -751,7 +751,7 @@ noncomputable def minBadSeqOfBadSeq (r : α → α → Prop) (rk : α → ℕ) (
       ⟨_, f, fun _ _ => rfl, hf, rfl⟩
     obtain ⟨h1, h2, h3⟩ := Classical.choose_spec (Nat.find_spec h)
     refine' ⟨Classical.choose (Nat.find_spec h), h1, by convert h2, fun g hg1 hg2 con => _⟩
-    refine' Nat.find_min h _ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), con, rfl⟩
+    refine Nat.find_min h ?_ ⟨g, fun m mn => (h1 m mn).trans (hg1 m mn), con, rfl⟩
     rwa [← h3]
 #align set.partially_well_ordered_on.min_bad_seq_of_bad_seq Set.PartiallyWellOrderedOn.minBadSeqOfBadSeq
 

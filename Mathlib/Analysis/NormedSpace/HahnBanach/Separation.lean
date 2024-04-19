@@ -134,7 +134,7 @@ theorem geometric_hahn_banach_open_open (hs₁ : Convex ℝ s) (hs₂ : IsOpen s
   · exact ⟨0, 1, fun a _ha => by norm_num, by simp⟩
   obtain ⟨f, s, hf₁, hf₂⟩ := geometric_hahn_banach_open hs₁ hs₂ ht₁ disj
   have hf : IsOpenMap f := by
-    refine' f.isOpenMap_of_ne_zero _
+    refine f.isOpenMap_of_ne_zero ?_
     rintro rfl
     simp_rw [ContinuousLinearMap.zero_apply] at hf₁ hf₂
     exact (hf₁ _ ha₀).not_le (hf₂ _ hb₀)
@@ -205,7 +205,7 @@ theorem geometric_hahn_banach_point_point [T1Space E] (hxy : x ≠ y) :
 theorem iInter_halfspaces_eq (hs₁ : Convex ℝ s) (hs₂ : IsClosed s) :
     ⋂ l : E →L[ℝ] ℝ, { x | ∃ y ∈ s, l x ≤ l y } = s := by
   rw [Set.iInter_setOf]
-  refine' Set.Subset.antisymm (fun x hx => _) fun x hx l => ⟨x, hx, le_rfl⟩
+  refine Set.Subset.antisymm (fun x hx => ?_) fun x hx l => ⟨x, hx, le_rfl⟩
   by_contra h
   obtain ⟨l, s, hlA, hl⟩ := geometric_hahn_banach_closed_point hs₁ hs₂ h
   obtain ⟨y, hy, hxy⟩ := hx l

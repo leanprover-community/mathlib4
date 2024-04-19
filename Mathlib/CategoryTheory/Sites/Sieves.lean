@@ -512,7 +512,7 @@ lemma ofArrows_le_ofObjects
 lemma ofArrows_eq_ofObjects {X : C} (hX : IsTerminal X)
     {I : Type*} (Y : I → C) (f : ∀ i, Y i ⟶ X) :
     ofArrows Y f = ofObjects Y X := by
-  refine' le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => _)
+  refine le_antisymm (ofArrows_le_ofObjects Y f) (fun W g => ?_)
   rw [mem_ofArrows_iff, mem_ofObjects_iff]
   rintro ⟨i, ⟨h⟩⟩
   exact ⟨i, h, hX.hom_ext _ _⟩

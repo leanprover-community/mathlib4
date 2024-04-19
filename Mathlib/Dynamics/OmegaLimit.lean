@@ -247,7 +247,7 @@ theorem eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit
     simp only [j, iUnion_subset_iff, compl_subset_compl]
     intros u hu
     mono
-    refine' iInter_subset_of_subset u (iInter_subset_of_subset hu _)
+    refine iInter_subset_of_subset u (iInter_subset_of_subset hu ?_)
     all_goals exact Subset.rfl
   have hw₄ : kᶜ ⊆ (closure (image2 ϕ w s))ᶜ := by
     simp only [compl_subset_compl]
@@ -275,7 +275,7 @@ theorem eventually_mapsTo_of_isCompact_absorbing_of_isOpen_of_omegaLimit_subset 
   rcases eventually_closure_subset_of_isCompact_absorbing_of_isOpen_of_omegaLimit_subset f ϕ s hc₁
       hc₂ hn₁ hn₂ with
     ⟨u, hu_mem, hu⟩
-  refine' mem_of_superset hu_mem fun t ht x hx ↦ _
+  refine mem_of_superset hu_mem fun t ht x hx ↦ ?_
   exact hu (subset_closure <| mem_image2_of_mem ht hx)
 #align eventually_maps_to_of_is_compact_absorbing_of_is_open_of_omega_limit_subset eventually_mapsTo_of_isCompact_absorbing_of_isOpen_of_omegaLimit_subset
 
@@ -288,7 +288,7 @@ theorem eventually_closure_subset_of_isOpen_of_omegaLimit_subset [CompactSpace �
 theorem eventually_mapsTo_of_isOpen_of_omegaLimit_subset [CompactSpace β] {v : Set β}
     (hv₁ : IsOpen v) (hv₂ : ω f ϕ s ⊆ v) : ∀ᶠ t in f, MapsTo (ϕ t) s v := by
   rcases eventually_closure_subset_of_isOpen_of_omegaLimit_subset f ϕ s hv₁ hv₂ with ⟨u, hu_mem, hu⟩
-  refine' mem_of_superset hu_mem fun t ht x hx ↦ _
+  refine mem_of_superset hu_mem fun t ht x hx ↦ ?_
   exact hu (subset_closure <| mem_image2_of_mem ht hx)
 #align eventually_maps_to_of_is_open_of_omega_limit_subset eventually_mapsTo_of_isOpen_of_omegaLimit_subset
 
@@ -331,7 +331,7 @@ variable {τ : Type*} [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] {�
 open omegaLimit
 
 theorem isInvariant_omegaLimit (hf : ∀ t, Tendsto (t + ·) f f) : IsInvariant ϕ (ω f ϕ s) := by
-  refine' fun t ↦ MapsTo.mono_right _ (omegaLimit_subset_of_tendsto ϕ s (hf t))
+  refine fun t ↦ MapsTo.mono_right ?_ (omegaLimit_subset_of_tendsto ϕ s (hf t))
   exact
     mapsTo_omegaLimit _ (mapsTo_id _) (fun t' x ↦ (ϕ.map_add _ _ _).symm)
       (continuous_const.flow ϕ continuous_id)

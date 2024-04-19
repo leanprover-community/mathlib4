@@ -200,7 +200,7 @@ monic polynomial with integer coefficients. -/
 theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} {n : ℕ}
     (h : IsPrimitiveRoot ζ n) : ∃ P : ℤ[X], map (Int.castRingHom K) P =
       cyclotomic' n K ∧ P.degree = (cyclotomic' n K).degree ∧ P.Monic := by
-  refine' lifts_and_degree_eq_and_monic _ (cyclotomic'.monic n K)
+  refine lifts_and_degree_eq_and_monic ?_ (cyclotomic'.monic n K)
   induction' n using Nat.strong_induction_on with k ihk generalizing ζ
   rcases k.eq_zero_or_pos with (rfl | hpos)
   · use 1
@@ -211,7 +211,7 @@ theorem int_coeff_of_cyclotomic' {K : Type*} [CommRing K] [IsDomain K] {ζ : K} 
     intro i _
     exact cyclotomic'.monic i K
   have Bint : B ∈ lifts (Int.castRingHom K) := by
-    refine' Subsemiring.prod_mem (lifts (Int.castRingHom K)) _
+    refine Subsemiring.prod_mem (lifts (Int.castRingHom K)) ?_
     intro x hx
     have xsmall := (Nat.mem_properDivisors.1 hx).2
     obtain ⟨d, hd⟩ := (Nat.mem_properDivisors.1 hx).1

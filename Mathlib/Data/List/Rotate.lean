@@ -637,7 +637,7 @@ theorem cyclicPermutations_eq_nil_iff {l : List α} : cyclicPermutations l = [[]
 @[simp]
 theorem cyclicPermutations_eq_singleton_iff {l : List α} {x : α} :
     cyclicPermutations l = [[x]] ↔ l = [x] := by
-  refine' ⟨fun h => _, fun h => by simp [cyclicPermutations, h, dropLast_eq_take]⟩
+  refine ⟨fun h => ?_, fun h => by simp [cyclicPermutations, h, dropLast_eq_take]⟩
   rw [eq_comm, ← isRotated_singleton_iff', ← mem_cyclicPermutations_iff, h, mem_singleton]
 #align list.cyclic_permutations_eq_singleton_iff List.cyclicPermutations_eq_singleton_iff
 
@@ -663,7 +663,7 @@ theorem cyclicPermutations_rotate (l : List α) (k : ℕ) :
     cases l
     · simp
     · rw [length_cyclicPermutations_of_ne_nil] <;> simp
-  refine' ext_nthLe this fun n hn hn' => _
+  refine ext_nthLe this fun n hn hn' => ?_
   rw [nthLe_rotate, nthLe_cyclicPermutations, rotate_rotate, ← rotate_mod, Nat.add_comm]
   cases l <;> simp
 #align list.cyclic_permutations_rotate List.cyclicPermutations_rotate

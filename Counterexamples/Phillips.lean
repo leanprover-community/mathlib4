@@ -621,7 +621,7 @@ example : CompleteSpace (DiscreteCopy ℝ →ᵇ ℝ) := by infer_instance
 theorem measurable_comp (Hcont : #ℝ = aleph 1) (φ : (DiscreteCopy ℝ →ᵇ ℝ) →L[ℝ] ℝ) :
     Measurable fun x => φ (f Hcont x) := by
   have : Measurable fun _ : ℝ => φ.toBoundedAdditiveMeasure.continuousPart univ := measurable_const
-  refine' this.measurable_of_countable_ne _
+  refine this.measurable_of_countable_ne ?_
   exact countable_ne Hcont φ
 #align counterexample.phillips_1940.measurable_comp Counterexample.Phillips1940.measurable_comp
 

@@ -67,7 +67,7 @@ theorem schwarz_aux {f : ℂ → ℂ} (hd : DifferentiableOn ℂ f (ball c R₁)
     ‖dslope f c z‖ ≤ R₂ / R₁ := by
   have hR₁ : 0 < R₁ := nonempty_ball.1 ⟨z, hz⟩
   suffices ∀ᶠ r in 𝓝[<] R₁, ‖dslope f c z‖ ≤ R₂ / r by
-    refine' ge_of_tendsto _ this
+    refine ge_of_tendsto ?_ this
     exact (tendsto_const_nhds.div tendsto_id hR₁.ne').mono_left nhdsWithin_le_nhds
   rw [mem_ball] at hz
   filter_upwards [Ioo_mem_nhdsWithin_Iio ⟨hz, le_rfl⟩] with r hr
@@ -104,7 +104,7 @@ theorem norm_dslope_le_div_of_mapsTo_ball (hd : DifferentiableOn ℂ f (ball c R
       rw [g.dslope_comp, hgf, RCLike.norm_ofReal, abs_norm]
       exact fun _ => hd.differentiableAt (ball_mem_nhds _ hR₁)
     _ ≤ R₂ / R₁ := by
-      refine' schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp _ h_maps) hz
+      refine schwarz_aux (g.differentiable.comp_differentiableOn hd) (MapsTo.comp ?_ h_maps) hz
       simpa only [hg', NNReal.coe_one, one_mul] using g.lipschitz.mapsTo_ball hg₀ (f c) R₂
 #align complex.norm_dslope_le_div_of_maps_to_ball Complex.norm_dslope_le_div_of_mapsTo_ball
 

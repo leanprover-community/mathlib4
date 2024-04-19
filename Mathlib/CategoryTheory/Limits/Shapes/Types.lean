@@ -893,7 +893,7 @@ lemma quot_mk_eq_iff [Mono f] (a b : X₁ ⊕ X₂) :
 lemma inl_eq_inr_iff [Mono f] (x₁ : X₁) (x₂ : X₂) :
     (inl f g x₁ = inr f g x₂) ↔
       ∃ (s : S), f s = x₁ ∧ g s = x₂ := by
-  refine' (Pushout.quot_mk_eq_iff f g (Sum.inl x₁) (Sum.inr x₂)).trans _
+  refine (Pushout.quot_mk_eq_iff f g (Sum.inl x₁) (Sum.inr x₂)).trans ?_
   constructor
   · rintro ⟨⟩
     exact ⟨_, rfl, rfl⟩

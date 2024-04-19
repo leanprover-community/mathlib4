@@ -192,9 +192,9 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
   obtain ⟨f, hf, rfl⟩ := computable_iff.1 hp
   unfold RePred
   dsimp only []
-  refine'
+  refine
     (Partrec.cond hf (Decidable.Partrec.const' (Part.some ())) Partrec.none).of_eq fun n =>
-      Part.ext fun a => _
+      Part.ext fun a => ?_
   cases a; cases f n <;> simp
 #align computable_pred.to_re ComputablePred.to_re
 

@@ -87,7 +87,7 @@ def Seminorm.ofSMulLE [NormedField 𝕜] [AddCommGroup E] [Module 𝕜 E] (f : E
     (add_le : ∀ x y, f (x + y) ≤ f x + f y) (smul_le : ∀ (r : 𝕜) (x), f (r • x) ≤ ‖r‖ * f x) :
     Seminorm 𝕜 E :=
   Seminorm.of f add_le fun r x => by
-    refine' le_antisymm (smul_le r x) _
+    refine le_antisymm (smul_le r x) ?_
     by_cases h : r = 0
     · simp [h, map_zero]
     rw [← mul_le_mul_left (inv_pos.mpr (norm_pos_iff.mpr h))]
@@ -410,7 +410,7 @@ theorem finset_sup_smul (p : ι → Seminorm 𝕜 E) (s : Finset ι) (C : ℝ≥
 
 theorem finset_sup_le_sum (p : ι → Seminorm 𝕜 E) (s : Finset ι) : s.sup p ≤ ∑ i in s, p i := by
   classical
-  refine' Finset.sup_le_iff.mpr _
+  refine Finset.sup_le_iff.mpr ?_
   intro i hi
   rw [Finset.sum_eq_sum_diff_singleton_add hi, le_add_iff_nonneg_left]
   exact bot_le
@@ -1012,7 +1012,7 @@ theorem smul_closedBall_subset {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} :
 
 theorem smul_closedBall_zero {p : Seminorm 𝕜 E} {k : 𝕜} {r : ℝ} (hk : 0 < ‖k‖) :
     k • p.closedBall 0 r = p.closedBall 0 (‖k‖ * r) := by
-  refine' subset_antisymm smul_closedBall_subset _
+  refine subset_antisymm smul_closedBall_subset ?_
   intro x
   rw [Set.mem_smul_set, Seminorm.mem_closedBall_zero]
   refine fun hx => ⟨k⁻¹ • x, ?_, ?_⟩
@@ -1044,14 +1044,14 @@ protected theorem absorbent_closedBall_zero (hr : 0 < r) : Absorbent 𝕜 (close
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_ball (hpr : p x < r) : Absorbent 𝕜 (ball p x r) := by
-  refine' (p.absorbent_ball_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine (p.absorbent_ball_zero <| sub_pos.2 hpr).subset fun y hy => ?_
   rw [p.mem_ball_zero] at hy
   exact p.mem_ball.2 ((map_sub_le_add p _ _).trans_lt <| add_lt_of_lt_sub_right hy)
 #align seminorm.absorbent_ball Seminorm.absorbent_ball
 
 /-- Seminorm-balls containing the origin are absorbent. -/
 protected theorem absorbent_closedBall (hpr : p x < r) : Absorbent 𝕜 (closedBall p x r) := by
-  refine' (p.absorbent_closedBall_zero <| sub_pos.2 hpr).subset fun y hy => _
+  refine (p.absorbent_closedBall_zero <| sub_pos.2 hpr).subset fun y hy => ?_
   rw [p.mem_closedBall_zero] at hy
   exact p.mem_closedBall.2 ((map_sub_le_add p _ _).trans <| add_le_of_le_sub_right hy)
 #align seminorm.absorbent_closed_ball Seminorm.absorbent_closedBall

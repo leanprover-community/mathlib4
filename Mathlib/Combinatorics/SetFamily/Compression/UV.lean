@@ -105,7 +105,7 @@ theorem compress_self (u a : α) : compress u u a = a := by
 /-- An element can be compressed to any other element by removing/adding the differences. -/
 @[simp]
 theorem compress_sdiff_sdiff (a b : α) : compress (a \ b) (b \ a) b = a := by
-  refine' (compress_of_disjoint_of_le disjoint_sdiff_self_left sdiff_le).trans _
+  refine (compress_of_disjoint_of_le disjoint_sdiff_self_left sdiff_le).trans ?_
   rw [sup_sdiff_self_right, sup_sdiff, disjoint_sdiff_self_right.sdiff_eq_left, sup_eq_right]
   exact sdiff_sdiff_le
 #align uv.compress_sdiff_sdiff UV.compress_sdiff_sdiff
@@ -260,7 +260,7 @@ theorem sup_sdiff_mem_of_mem_compression (ha : a ∈ 𝓒 u v s) (hva : v ≤ a)
   · exact ha
   have hu : u = ⊥ := by
     suffices Disjoint u (u \ v) by rwa [(hua.mono_right hva).sdiff_eq_left, disjoint_self] at this
-    refine' hua.mono_right _
+    refine hua.mono_right ?_
     rw [← compress_idem, compress_of_disjoint_of_le hua hva]
     exact sdiff_le_sdiff_right le_sup_right
   have hv : v = ⊥ := by

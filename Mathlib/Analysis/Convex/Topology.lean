@@ -259,7 +259,7 @@ open AffineMap
 protected theorem Convex.strictConvex' {s : Set E} (hs : Convex 𝕜 s)
     (h : (s \ interior s).Pairwise fun x y => ∃ c : 𝕜, lineMap x y c ∈ interior s) :
     StrictConvex 𝕜 s := by
-  refine' strictConvex_iff_openSegment_subset.2 _
+  refine strictConvex_iff_openSegment_subset.2 ?_
   intro x hx y hy hne
   by_cases hx' : x ∈ interior s
   · exact hs.openSegment_interior_self_subset_interior hx' hy

@@ -126,7 +126,7 @@ theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
 
 theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
-  refine' le_of_le_graph _
+  refine le_of_le_graph ?_
   rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
   rw [← hg.graph_closure_eq_closure_graph]
   exact Submodule.topologicalClosure_mono (le_graph_of_le h)

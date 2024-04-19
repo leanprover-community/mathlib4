@@ -61,7 +61,7 @@ theorem measure_inter_notConvergentSeq_eq_zero [SemilatticeSup ι] [Nonempty ι]
     μ (s ∩ ⋂ j, notConvergentSeq f g n j) = 0 := by
   simp_rw [Metric.tendsto_atTop, ae_iff] at hfg
   rw [← nonpos_iff_eq_zero, ← hfg]
-  refine' measure_mono fun x => _
+  refine measure_mono fun x => ?_
   simp only [Set.mem_inter_iff, Set.mem_iInter, ge_iff_le, mem_notConvergentSeq_iff]
   push_neg
   rintro ⟨hmem, hx⟩

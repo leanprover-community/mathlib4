@@ -84,7 +84,7 @@ theorem IsTopologicalBasis.insert_empty {s : Set (Set α)} (h : IsTopologicalBas
     · obtain ⟨t₃, h₃, hs⟩ := h.exists_subset_inter _ h₁ _ h₂ x ⟨hx₁, hx₂⟩
       exact ⟨t₃, .inr h₃, hs⟩
   · rw [h.eq_generateFrom]
-    refine' le_antisymm (le_generateFrom fun t => _) (generateFrom_anti <| subset_insert ∅ s)
+    refine le_antisymm (le_generateFrom fun t => ?_) (generateFrom_anti <| subset_insert ∅ s)
     rintro (rfl | ht)
     · exact @isOpen_empty _ (generateFrom s)
     · exact .basic t ht

@@ -375,7 +375,7 @@ In a `LocalRing R`, split any `Prop` over `R` into the three cases:
 theorem split_by_characteristic_localRing [LocalRing R]
     (h_pos : ∀ p : ℕ, IsPrimePow p → CharP R p → P) (h_equal : Algebra ℚ R → P)
     (h_mixed : ∀ p : ℕ, Nat.Prime p → MixedCharZero R p → P) : P := by
-  refine' split_by_characteristic R _ h_equal h_mixed
+  refine split_by_characteristic R ?_ h_equal h_mixed
   intro p p_pos p_char
   have p_ppow : IsPrimePow (p : ℕ) := or_iff_not_imp_left.mp (charP_zero_or_prime_power R p) p_pos
   exact h_pos p p_ppow p_char

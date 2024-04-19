@@ -50,7 +50,7 @@ theorem snorm'_le_snorm'_mul_rpow_measure_univ {p q : ℝ} (hp0_lt : 0 < p) (hpq
 theorem snorm'_le_snormEssSup_mul_rpow_measure_univ {q : ℝ} (hq_pos : 0 < q) :
     snorm' f q μ ≤ snormEssSup f μ * μ Set.univ ^ (1 / q) := by
   have h_le : (∫⁻ a : α, (‖f a‖₊ : ℝ≥0∞) ^ q ∂μ) ≤ ∫⁻ _ : α, snormEssSup f μ ^ q ∂μ := by
-    refine' lintegral_mono_ae _
+    refine lintegral_mono_ae ?_
     have h_nnnorm_le_snorm_ess_sup := coe_nnnorm_ae_le_snormEssSup f μ
     exact h_nnnorm_le_snorm_ess_sup.mono fun x hx => by gcongr
   rw [snorm', ← ENNReal.rpow_one (snormEssSup f μ)]
@@ -77,7 +77,7 @@ theorem snorm_le_snorm_mul_rpow_measure_univ {p q : ℝ≥0∞} (hpq : p ≤ q)
       exact le_rfl
     rw [snorm_eq_snorm' hp0 hp_top]
     have hp_pos : 0 < p.toReal := ENNReal.toReal_pos hp0_lt.ne' hp_top
-    refine' (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq _)
+    refine (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos).trans (le_of_eq ?_)
     congr
     exact one_div _
   have hp_lt_top : p < ∞ := hpq.trans_lt (lt_top_iff_ne_top.mpr hq_top)
@@ -135,7 +135,7 @@ theorem Memℒp.memℒp_of_exponent_le {p q : ℝ≥0∞} [IsFiniteMeasure μ] {
   by_cases hq_top : q = ∞
   · rw [snorm_eq_snorm' hp0 hp_top]
     rw [hq_top, snorm_exponent_top] at hfq_lt_top
-    refine' lt_of_le_of_lt (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos) _
+    refine lt_of_le_of_lt (snorm'_le_snormEssSup_mul_rpow_measure_univ hp_pos) ?_
     refine' ENNReal.mul_lt_top hfq_lt_top.ne _
     exact (ENNReal.rpow_lt_top_of_nonneg (by simp [hp_pos.le]) (measure_ne_top μ Set.univ)).ne
   have hq0 : q ≠ 0 := by
@@ -173,16 +173,16 @@ theorem snorm_le_snorm_top_mul_snorm (p : ℝ≥0∞) (f : α → E) {g : α →
     (∫⁻ x, (‖b (f x) (g x)‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) ≤
         (∫⁻ x, (‖f x‖₊ : ℝ≥0∞) ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^ (1 / p.toReal) := by
       gcongr ?_ ^ _
-      refine' lintegral_mono_ae (h.mono fun a ha => _)
+      refine lintegral_mono_ae (h.mono fun a ha => ?_)
       rw [← ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg]
-      refine' ENNReal.rpow_le_rpow _ ENNReal.toReal_nonneg
+      refine ENNReal.rpow_le_rpow ?_ ENNReal.toReal_nonneg
       rw [← ENNReal.coe_mul, ENNReal.coe_le_coe]
       exact ha
     _ ≤
         (∫⁻ x, essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ ^ p.toReal * (‖g x‖₊ : ℝ≥0∞) ^ p.toReal ∂μ) ^
           (1 / p.toReal) := by
       gcongr ?_ ^ _
-      refine' lintegral_mono_ae _
+      refine lintegral_mono_ae ?_
       filter_upwards [@ENNReal.ae_le_essSup _ _ μ fun x => (‖f x‖₊ : ℝ≥0∞)] with x hx
       gcongr
     _ = essSup (fun x => (‖f x‖₊ : ℝ≥0∞)) μ *

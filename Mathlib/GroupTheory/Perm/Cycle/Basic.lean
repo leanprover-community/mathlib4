@@ -477,7 +477,7 @@ theorem IsCycle.eq_swap_of_apply_apply_eq_self {α : Type*} [DecidableEq α] {f 
       if hfyx : y = f x then by simp [hfyx, hffx]
       else by
         rw [swap_apply_of_ne_of_ne hyx hfyx]
-        refine' by_contradiction fun hy => _
+        refine by_contradiction fun hy => ?_
         cases' hz.2 hy with j hj
         rw [← sub_add_cancel j i, zpow_add, mul_apply, hi] at hj
         cases' zpow_apply_eq_of_apply_apply_eq_self hffx (j - i) with hji hji
@@ -556,7 +556,7 @@ we have the weaker assumption that `∀ (x ∈ f.support), f x = g x`. -/
 theorem IsCycle.support_congr (hf : IsCycle f) (hg : IsCycle g) (h : f.support ⊆ g.support)
     (h' : ∀ x ∈ f.support, f x = g x) : f = g := by
   have : f.support = g.support := by
-    refine' le_antisymm h _
+    refine le_antisymm h ?_
     intro z hz
     obtain ⟨x, hx, _⟩ := id hf
     have hx' : g x ≠ x := by rwa [← h' x (mem_support.mpr hx)]
@@ -568,7 +568,7 @@ theorem IsCycle.support_congr (hf : IsCycle f) (hg : IsCycle g) (h : f.support �
       pow_eq_on_of_mem_support h'' _ x
         (mem_inter_of_mem (mem_support.mpr hx) (mem_support.mpr hx')),
       pow_apply_mem_support, mem_support]
-  refine' Equiv.Perm.support_congr h _
+  refine Equiv.Perm.support_congr h ?_
   simpa [← this] using h'
 #align equiv.perm.is_cycle.support_congr Equiv.Perm.IsCycle.support_congr
 
@@ -591,7 +591,7 @@ theorem IsCycle.support_pow_eq_iff (hf : IsCycle f) {n : ℕ} :
   rw [orderOf_dvd_iff_pow_eq_one]
   constructor
   · intro h H
-    refine' hf.ne_one _
+    refine hf.ne_one ?_
     rw [← support_eq_empty_iff, ← h, H, support_one]
   · intro H
     apply le_antisymm (support_pow_le _ n) _
@@ -620,7 +620,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
       have hr : support (f ^ n) = support f := by
         rw [hf.support_pow_eq_iff]
         rintro ⟨k, rfl⟩
-        refine' h.ne_one _
+        refine h.ne_one ?_
         simp [pow_mul, pow_orderOf_eq_one]
       have : orderOf (f ^ n) = orderOf f := by rw [h.orderOf, hr, hf.orderOf]
       rw [orderOf_pow, Nat.div_eq_self] at this
@@ -630,7 +630,7 @@ theorem IsCycle.pow_iff [Finite β] {f : Perm β} (hf : IsCycle f) {n : ℕ} :
     · intro h
       obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime h
       have hf' : IsCycle ((f ^ n) ^ m) := by rwa [hm]
-      refine' hf'.of_pow fun x hx => _
+      refine hf'.of_pow fun x hx => ?_
       rw [hm]
       exact support_pow_le _ n hx
 #align equiv.perm.is_cycle.pow_iff Equiv.Perm.IsCycle.pow_iff
@@ -703,7 +703,7 @@ theorem IsCycle.isCycle_pow_pos_of_lt_prime_order [Finite β] {f : Perm β} (hf 
     obtain ⟨m, hm⟩ := exists_pow_eq_self_of_coprime this
     have hf'' := hf
     rw [← hm] at hf''
-    refine' hf''.of_pow _
+    refine hf''.of_pow ?_
     rw [hm]
     exact support_pow_le f n
 #align equiv.perm.is_cycle.is_cycle_pow_pos_of_lt_prime_order Equiv.Perm.IsCycle.isCycle_pow_pos_of_lt_prime_order

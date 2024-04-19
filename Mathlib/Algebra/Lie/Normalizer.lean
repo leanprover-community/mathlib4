@@ -137,7 +137,7 @@ theorem mem_normalizer_iff' (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H 
 
 theorem mem_normalizer_iff (x : L) : x ∈ H.normalizer ↔ ∀ y : L, y ∈ H → ⁅x, y⁆ ∈ H := by
   rw [mem_normalizer_iff']
-  refine' forall₂_congr fun y hy => _
+  refine forall₂_congr fun y hy => ?_
   rw [← lie_skew, neg_mem_iff (G := L)]
 #align lie_subalgebra.mem_normalizer_iff LieSubalgebra.mem_normalizer_iff
 

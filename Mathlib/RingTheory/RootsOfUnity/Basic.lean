@@ -703,7 +703,7 @@ theorem neg_one (p : ℕ) [Nontrivial R] [h : CharP R p] (hp : p ≠ 2) :
 /-- If `1 < k` then `(∑ i in range k, ζ ^ i) = 0`. -/
 theorem geom_sum_eq_zero [IsDomain R] {ζ : R} (hζ : IsPrimitiveRoot ζ k) (hk : 1 < k) :
     ∑ i in range k, ζ ^ i = 0 := by
-  refine' eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) _
+  refine eq_zero_of_ne_zero_of_mul_left_eq_zero (sub_ne_zero_of_ne (hζ.ne_one hk).symm) ?_
   rw [mul_neg_geom_sum, hζ.pow_eq_one, sub_self]
 #align is_primitive_root.geom_sum_eq_zero IsPrimitiveRoot.geom_sum_eq_zero
 
@@ -782,10 +782,10 @@ theorem zpowers_eq {k : ℕ+} {ζ : Rˣ} (h : IsPrimitiveRoot ζ k) :
     Subgroup.zpowers ζ = rootsOfUnity k R := by
   apply SetLike.coe_injective
   haveI F : Fintype (Subgroup.zpowers ζ) := Fintype.ofEquiv _ h.zmodEquivZPowers.toEquiv
-  refine'
+  refine
     @Set.eq_of_subset_of_card_le Rˣ (Subgroup.zpowers ζ) (rootsOfUnity k R) F
       (rootsOfUnity.fintype R k)
-      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) _
+      (Subgroup.zpowers_le_of_mem <| show ζ ∈ rootsOfUnity k R from h.pow_eq_one) ?_
   calc
     Fintype.card (rootsOfUnity k R) ≤ k := card_rootsOfUnity R k
     _ = Fintype.card (ZMod k) := (ZMod.card k).symm
@@ -996,7 +996,7 @@ theorem nthRoots_one_eq_biUnion_primitiveRoots' {ζ : R} {n : ℕ+} (h : IsPrimi
   · apply le_of_eq
     rw [h.card_nthRootsFinset, Finset.card_biUnion]
     · nth_rw 1 [← Nat.sum_totient n]
-      refine' sum_congr rfl _
+      refine sum_congr rfl ?_
       simp only [Nat.mem_divisors]
       rintro k ⟨⟨d, hd⟩, -⟩
       rw [mul_comm] at hd

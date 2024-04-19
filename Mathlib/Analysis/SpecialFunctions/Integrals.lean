@@ -89,7 +89,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
   · rw [IntervalIntegrable.iff_comp_neg, neg_zero]
     have m := (this (-c) (by linarith)).smul (cos (r * π))
     rw [intervalIntegrable_iff] at m ⊢
-    refine' m.congr_fun _ measurableSet_Ioc; intro x hx
+    refine m.congr_fun ?_ measurableSet_Ioc; intro x hx
     rw [uIoc_of_le (by linarith : 0 ≤ -c)] at hx
     simp only [Pi.smul_apply, Algebra.id.smul_eq_mul, log_neg_eq_log, mul_comm,
       rpow_def_of_pos hx.1, rpow_def_of_neg (by linarith [hx.1] : -x < 0)]
@@ -140,7 +140,7 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
   · -- case `0 ≤ c`: integrand is identically 1
     have : IntervalIntegrable (fun _ => 1 : ℝ → ℝ) μ 0 c := intervalIntegrable_const
     rw [intervalIntegrable_iff_integrableOn_Ioc_of_le hc] at this ⊢
-    refine' IntegrableOn.congr_fun this (fun x hx => _) measurableSet_Ioc
+    refine IntegrableOn.congr_fun this (fun x hx => ?_) measurableSet_Ioc
     dsimp only
     rw [Complex.norm_eq_abs, Complex.abs_cpow_eq_rpow_re_of_pos hx.1, ← h', rpow_zero]
   · -- case `c < 0`: integrand is identically constant, *except* at `x = 0` if `r ≠ 0`.
@@ -158,9 +158,9 @@ theorem intervalIntegrable_cpow {r : ℂ} (h : 0 ≤ r.re ∨ (0 : ℝ) ∉ [[a,
         rw [Complex.ofReal_cpow_of_nonpos hx.2.le, norm_mul, ← Complex.ofReal_neg,
           Complex.norm_eq_abs (_ ^ _), Complex.abs_cpow_eq_rpow_re_of_pos (neg_pos.mpr hx.2), ← h',
           rpow_zero, one_mul]
-      refine' IntegrableOn.congr_fun _ this measurableSet_Ioo
+      refine IntegrableOn.congr_fun ?_ this measurableSet_Ioo
       rw [integrableOn_const]
-      refine' Or.inr ((measure_mono Set.Ioo_subset_Icc_self).trans_lt _)
+      refine Or.inr ((measure_mono Set.Ioo_subset_Icc_self).trans_lt ?_)
       exact isFiniteMeasureOnCompacts_of_isLocallyFiniteMeasure.lt_top_of_isCompact isCompact_Icc
 #align interval_integral.interval_integrable_cpow intervalIntegral.intervalIntegrable_cpow
 
@@ -184,7 +184,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
     · refine' ContinuousOn.aestronglyMeasurable _ measurableSet_uIoc
       refine ContinuousAt.continuousOn fun x hx => ?_
       rw [uIoc_of_le hc] at hx
-      refine' (continuousAt_cpow_const (Or.inl _)).comp Complex.continuous_ofReal.continuousAt
+      refine (continuousAt_cpow_const (Or.inl ?_)).comp Complex.continuous_ofReal.continuousAt
       rw [Complex.ofReal_re]
       exact hx.1
   intro c; rcases le_total 0 c with (hc | hc)
@@ -192,7 +192,7 @@ theorem intervalIntegrable_cpow' {r : ℂ} (h : -1 < r.re) :
   · rw [IntervalIntegrable.iff_comp_neg, neg_zero]
     have m := (this (-c) (by linarith)).const_mul (Complex.exp (π * Complex.I * r))
     rw [intervalIntegrable_iff, uIoc_of_le (by linarith : 0 ≤ -c)] at m ⊢
-    refine' m.congr_fun (fun x hx => _) measurableSet_Ioc
+    refine m.congr_fun (fun x hx => ?_) measurableSet_Ioc
     dsimp only
     have : -x ≤ 0 := by linarith [hx.1]
     rw [Complex.ofReal_cpow_of_nonpos this, mul_comm]
@@ -357,7 +357,7 @@ theorem integral_cpow {r : ℂ} (h : -1 < r.re ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[
   by_cases hab : (0 : ℝ) ∉ [[a, b]]
   · apply integral_eq_sub_of_hasDerivAt (fun x hx => ?_)
       (intervalIntegrable_cpow (r := r) <| Or.inr hab)
-    refine' hasDerivAt_ofReal_cpow (ne_of_mem_of_not_mem hx hab) _
+    refine hasDerivAt_ofReal_cpow (ne_of_mem_of_not_mem hx hab) ?_
     contrapose! hr; rwa [add_eq_zero_iff_eq_neg]
   replace h : -1 < r.re := by tauto
   suffices ∀ c : ℝ, (∫ x : ℝ in (0)..c, (x : ℂ) ^ r) =
@@ -391,7 +391,7 @@ theorem integral_rpow {r : ℝ} (h : -1 < r ∨ r ≠ -1 ∧ (0 : ℝ) ∉ [[a, 
     · -- Porting note: was `change ... with ...`
       have : Complex.re = RCLike.re := rfl
       rw [this, ← integral_re]; rfl
-      refine' intervalIntegrable_iff.mp _
+      refine intervalIntegrable_iff.mp ?_
       cases' h' with h' h'
       · exact intervalIntegrable_cpow' h'
       · exact intervalIntegrable_cpow (Or.inr h'.2)
@@ -420,7 +420,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_le hab, ← integral_of_le hab]
       _ = ∫ x in (0)..(b - a), x ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine' integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonneg <| _) rfl
+        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonneg <| ?_) rfl
         rw [uIcc_of_le (sub_nonneg.2 hab)] at hx
         exact hx.1
       _ = |b - a| ^ (n + 1) / (n + 1) := by simp [abs_of_nonneg (sub_nonneg.2 hab)]
@@ -429,7 +429,7 @@ theorem integral_pow_abs_sub_uIoc : ∫ x in Ι a b, |x - a| ^ n = |b - a| ^ (n 
         rw [uIoc_of_lt hab, ← integral_of_le hab.le]
       _ = ∫ x in b - a..0, (-x) ^ n := by
         simp only [integral_comp_sub_right fun x => |x| ^ n, sub_self]
-        refine' integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonpos <| _) rfl
+        refine integral_congr fun x hx => congr_arg₂ Pow.pow (abs_of_nonpos <| ?_) rfl
         rw [uIcc_of_le (sub_nonpos.2 hab.le)] at hx
         exact hx.2
       _ = |b - a| ^ (n + 1) / (n + 1) := by
@@ -605,7 +605,7 @@ theorem integral_mul_cpow_one_add_sq {t : ℂ} (ht : t ≠ -1) :
     · field_simp; ring
     · exact mod_cast add_pos_of_pos_of_nonneg zero_lt_one (sq_nonneg x)
   · apply Continuous.intervalIntegrable
-    refine' continuous_ofReal.mul _
+    refine continuous_ofReal.mul ?_
     apply Continuous.cpow
     · exact continuous_const.add (continuous_ofReal.pow 2)
     · exact continuous_const

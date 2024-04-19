@@ -1135,7 +1135,7 @@ theorem pathConnectedSpace_iff_zerothHomotopy :
   letI := pathSetoid X
   constructor
   · intro h
-    refine' ⟨(nonempty_quotient_iff _).mpr h.1, ⟨_⟩⟩
+    refine ⟨(nonempty_quotient_iff _).mpr h.1, ⟨?_⟩⟩
     rintro ⟨x⟩ ⟨y⟩
     exact Quotient.sound (PathConnectedSpace.joined x y)
   · unfold ZerothHomotopy

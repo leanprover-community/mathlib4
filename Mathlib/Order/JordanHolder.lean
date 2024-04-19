@@ -592,7 +592,7 @@ theorem snoc_eraseTop_top {s : CompositionSeries X} (h : IsMaximal s.eraseTop.to
     Nat.pos_of_ne_zero
       (by
         intro hs
-        refine' ne_of_gt (lt_of_isMaximal h) _
+        refine ne_of_gt (lt_of_isMaximal h) ?_
         simp [top, Fin.ext_iff, hs])
   (eq_snoc_eraseTop h).symm
 #align composition_series.snoc_erase_top_top CompositionSeries.snoc_eraseTop_top

@@ -137,7 +137,7 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
       exact hQ2.symm
   · rintro ⟨RPID, Punique⟩
     haveI : LocalRing R := LocalRing.of_unique_nonzero_prime Punique
-    refine' { not_a_field' := _ }
+    refine { not_a_field' := ?_ }
     rcases Punique with ⟨P, ⟨hP1, hP2⟩, _⟩
     have hPM : P ≤ maximalIdeal R := le_maximalIdeal hP2.1
     intro h

@@ -160,12 +160,12 @@ theorem cardPowDegree_anti_archimedean {x y z : Fq[X]} {a : ℤ} (hxy : cardPowD
   by_cases hxz' : x = z
   · rwa [hxz', sub_self, map_zero]
   rw [← Ne, ← sub_ne_zero] at hxy' hyz' hxz'
-  refine' lt_of_le_of_lt _ (max_lt hxy hyz)
+  refine lt_of_le_of_lt ?_ (max_lt hxy hyz)
   rw [cardPowDegree_nonzero _ hxz', cardPowDegree_nonzero _ hxy',
     cardPowDegree_nonzero _ hyz']
   have : (1 : ℤ) ≤ Fintype.card Fq := mod_cast (@Fintype.one_lt_card Fq _ _).le
   simp only [Int.cast_pow, Int.cast_natCast, le_max_iff]
-  refine' Or.imp (pow_le_pow_right this) (pow_le_pow_right this) _
+  refine Or.imp (pow_le_pow_right this) (pow_le_pow_right this) ?_
   rw [natDegree_le_iff_degree_le, natDegree_le_iff_degree_le, ← le_max_iff, ←
     degree_eq_natDegree hxy', ← degree_eq_natDegree hyz']
   convert degree_add_le (x - y) (y - z) using 2

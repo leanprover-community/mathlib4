@@ -307,7 +307,7 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
       rw [h_empty, measure_empty]; exact ENNReal.coe_lt_top
     ext1 x
     rw [Set.mem_preimage, Set.mem_singleton_iff, mem_empty_iff_false, iff_false_iff]
-    refine' fun hxy => hyf _
+    refine fun hxy => hyf ?_
     rw [mem_range, Set.mem_range]
     exact ⟨x, hxy⟩
   specialize hf_snorm y hyf
@@ -317,7 +317,7 @@ theorem measure_preimage_lt_top_of_memℒp (hp_pos : p ≠ 0) (hp_ne_top : p ≠
   | inr hf_snorm =>
     cases hf_snorm with
     | inl hf_snorm =>
-      refine' absurd _ hy_ne
+      refine absurd ?_ hy_ne
       simpa [hp_pos_real] using hf_snorm
     | inr hf_snorm => simp [hf_snorm]
 #align measure_theory.simple_func.measure_preimage_lt_top_of_mem_ℒp MeasureTheory.SimpleFunc.measure_preimage_lt_top_of_memℒp
@@ -801,7 +801,7 @@ theorem coeFn_le (f g : Lp.simpleFunc G p μ) : (f : α → G) ≤ᵐ[μ] g ↔ 
 
 instance instCovariantClassLE :
     CovariantClass (Lp.simpleFunc G p μ) (Lp.simpleFunc G p μ) (· + ·) (· ≤ ·) := by
-  refine' ⟨fun f g₁ g₂ hg₁₂ => _⟩
+  refine ⟨fun f g₁ g₂ hg₁₂ => ?_⟩
   rw [← Lp.simpleFunc.coeFn_le] at hg₁₂ ⊢
   have h_add_1 : ((f + g₁ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₁ := Lp.coeFn_add _ _
   have h_add_2 : ((f + g₂ : Lp.simpleFunc G p μ) : α → G) =ᵐ[μ] (f : α → G) + g₂ := Lp.coeFn_add _ _
@@ -873,7 +873,7 @@ theorem denseRange_coeSimpleFuncNonnegToLpNonneg [hp : Fact (1 ≤ p)] (hp_ne_to
       Tendsto (fun n : ℕ => snorm ((x n : α → G) - (g : α → G)) p μ) atTop (𝓝 0) := by
     apply SimpleFunc.tendsto_approxOn_Lp_snorm g_meas zero_mem hp_ne_top
     · have hg_nonneg : (0 : α → G) ≤ᵐ[μ] g := (Lp.coeFn_nonneg _).mpr g.2
-      refine' hg_nonneg.mono fun a ha => subset_closure _
+      refine hg_nonneg.mono fun a ha => subset_closure ?_
       simpa using ha
     · simp_rw [sub_zero]; exact hg_memℒp.snorm_lt_top
   refine'
@@ -915,7 +915,7 @@ theorem Lp.induction [_i : Fact (1 ≤ p)] (hp_ne_top : p ≠ ∞) (P : Lp E p �
     (h_add : ∀ ⦃f g⦄, ∀ hf : Memℒp f p μ, ∀ hg : Memℒp g p μ, Disjoint (support f) (support g) →
       P (hf.toLp f) → P (hg.toLp g) → P (hf.toLp f + hg.toLp g))
     (h_closed : IsClosed { f : Lp E p μ | P f }) : ∀ f : Lp E p μ, P f := by
-  refine' fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed _
+  refine fun f => (Lp.simpleFunc.denseRange hp_ne_top).induction_on f h_closed ?_
   refine' Lp.simpleFunc.induction (α := α) (E := E) (lt_of_lt_of_le zero_lt_one _i.elim).ne'
     hp_ne_top _ _
   · exact fun c s => h_ind c

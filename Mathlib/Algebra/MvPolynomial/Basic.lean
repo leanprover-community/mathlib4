@@ -511,7 +511,7 @@ theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R
 @[simp]
 theorem adjoin_range_X : Algebra.adjoin R (range (X : σ → MvPolynomial σ R)) = ⊤ := by
   set S := Algebra.adjoin R (range (X : σ → MvPolynomial σ R))
-  refine' top_unique fun p hp => _; clear hp
+  refine top_unique fun p hp => ?_; clear hp
   induction p using MvPolynomial.induction_on with
   | h_C => exact S.algebraMap_mem _
   | h_add p q hp hq => exact S.add_mem hp hq

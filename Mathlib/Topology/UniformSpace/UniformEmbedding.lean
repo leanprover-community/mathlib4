@@ -86,7 +86,7 @@ theorem UniformInducing.cauchy_map_iff {f : α → β} (hf : UniformInducing f) 
 
 theorem uniformInducing_of_compose {f : α → β} {g : β → γ} (hf : UniformContinuous f)
     (hg : UniformContinuous g) (hgf : UniformInducing (g ∘ f)) : UniformInducing f := by
-  refine' ⟨le_antisymm _ hf.le_comap⟩
+  refine ⟨le_antisymm ?_ hf.le_comap⟩
   rw [← hgf.1, ← Prod.map_def, ← Prod.map_def, ← Prod.map_comp_map f f g g, ← comap_comap]
   exact comap_mono hg.le_comap
 #align uniform_inducing_of_compose uniformInducing_of_compose

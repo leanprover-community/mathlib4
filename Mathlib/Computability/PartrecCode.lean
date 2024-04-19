@@ -848,10 +848,10 @@ private def G (L : List (List (Option ℕ))) : Option (List (Option ℕ)) :=
 private theorem hG : Primrec G := by
   have a := (Primrec.ofNat (ℕ × Code)).comp (Primrec.list_length (α := List (Option ℕ)))
   have k := Primrec.fst.comp a
-  refine' Primrec.option_some.comp (Primrec.list_map (Primrec.list_range.comp k) (_ : Primrec _))
+  refine Primrec.option_some.comp (Primrec.list_map (Primrec.list_range.comp k) (?_ : Primrec _))
   replace k := k.comp (Primrec.fst (β := ℕ))
   have n := Primrec.snd (α := List (List (Option ℕ))) (β := ℕ)
-  refine' Primrec.nat_casesOn k (_root_.Primrec.const Option.none) (_ : Primrec _)
+  refine Primrec.nat_casesOn k (_root_.Primrec.const Option.none) (?_ : Primrec _)
   have k := k.comp (Primrec.fst (β := ℕ))
   have n := n.comp (Primrec.fst (β := ℕ))
   have k' := Primrec.snd (α := List (List (Option ℕ)) × ℕ) (β := ℕ)
@@ -908,17 +908,17 @@ private theorem hG : Primrec G := by
       (Primrec.snd (α := (List (List (Option ℕ)) × ℕ) × ℕ)
         (β := Code × Code × Option ℕ × Option ℕ))
     have z := Primrec.fst.comp (Primrec.unpair.comp n)
-    refine'
+    refine
       Primrec.nat_casesOn (Primrec.snd.comp (Primrec.unpair.comp n))
         (hlup.comp <| L.pair <| (k.pair cf).pair z)
-        (_ : Primrec _)
+        (?_ : Primrec _)
     have L := L.comp (Primrec.fst (β := ℕ))
     have z := z.comp (Primrec.fst (β := ℕ))
     have y := Primrec.snd
       (α := ((List (List (Option ℕ)) × ℕ) × ℕ) × Code × Code × Option ℕ × Option ℕ) (β := ℕ)
     have h₁ := hlup.comp <| L.pair <| (((k'.pair c).comp Primrec.fst).comp Primrec.fst).pair
       (Primrec₂.natPair.comp z y)
-    refine' Primrec.option_bind h₁ (_ : Primrec _)
+    refine Primrec.option_bind h₁ (?_ : Primrec _)
     have z := z.comp (Primrec.fst (β := ℕ))
     have y := y.comp (Primrec.fst (β := ℕ))
     have i := Primrec.snd
@@ -938,7 +938,7 @@ private theorem hG : Primrec G := by
     have z := Primrec.fst.comp (Primrec.unpair.comp n)
     have m := Primrec.snd.comp (Primrec.unpair.comp n)
     have h₁ := hlup.comp <| L.pair <| (k.pair cf).pair (Primrec₂.natPair.comp z m)
-    refine' Primrec.option_bind h₁ (_ : Primrec _)
+    refine Primrec.option_bind h₁ (?_ : Primrec _)
     have m := m.comp (Primrec.fst (β := ℕ))
     refine Primrec.nat_casesOn Primrec.snd (Primrec.option_some.comp m) ?_
     unfold Primrec₂
@@ -1028,7 +1028,7 @@ open Partrec Computable
 
 theorem eval_eq_rfindOpt (c n) : eval c n = Nat.rfindOpt fun k => evaln k c n :=
   Part.ext fun x => by
-    refine' evaln_complete.trans (Nat.rfindOpt_mono _).symm
+    refine evaln_complete.trans (Nat.rfindOpt_mono ?_).symm
     intro a m n hl; apply evaln_mono hl
 #align nat.partrec.code.eval_eq_rfind_opt Nat.Partrec.Code.eval_eq_rfindOpt
 

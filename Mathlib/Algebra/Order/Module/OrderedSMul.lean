@@ -118,7 +118,7 @@ the first axiom of `OrderedSMul`. -/
 theorem OrderedSMul.mk' (h : ∀ ⦃a b : M⦄ ⦃c : 𝕜⦄, a < b → 0 < c → c • a ≤ c • b) :
     OrderedSMul 𝕜 M := by
   have hlt' : ∀ (a b : M) (c : 𝕜), a < b → 0 < c → c • a < c • b := by
-    refine' fun a b c hab hc => (h hab hc).lt_of_ne _
+    refine fun a b c hab hc => (h hab hc).lt_of_ne ?_
     rw [Ne, hc.ne'.isUnit.smul_left_cancel]
     exact hab.ne
   refine' { smul_lt_smul_of_pos := fun {a b c} => hlt' a b c..}

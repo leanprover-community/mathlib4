@@ -207,7 +207,7 @@ theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
   rw [← leadingCoeff_eq_zero, leadingCoeff, ← Ne, ← mem_support_iff] at h
   rw [content, ← Finset.insert_erase h, Finset.gcd_insert, leadingCoeff, content,
     eraseLead_support]
-  refine' congr rfl (Finset.gcd_congr rfl fun i hi => _)
+  refine congr rfl (Finset.gcd_congr rfl fun i hi => ?_)
   rw [Finset.mem_erase] at hi
   rw [eraseLead_coeff, if_neg hi.1]
 #align polynomial.content_eq_gcd_leading_coeff_content_erase_lead Polynomial.content_eq_gcd_leadingCoeff_content_eraseLead

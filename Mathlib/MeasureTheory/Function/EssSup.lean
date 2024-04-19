@@ -217,7 +217,7 @@ variable {γ : Type*} {mγ : MeasurableSpace γ} {f : α → γ} {g : γ → β}
 
 theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
     essSup (g ∘ f) μ ≤ essSup g (Measure.map f μ) := by
-  refine' limsSup_le_limsSup_of_le (fun t => _) (by isBoundedDefault) (by isBoundedDefault)
+  refine limsSup_le_limsSup_of_le (fun t => ?_) (by isBoundedDefault) (by isBoundedDefault)
   simp_rw [Filter.mem_map]
   have : g ∘ f ⁻¹' t = f ⁻¹' (g ⁻¹' t) := by
     ext1 x
@@ -228,7 +228,7 @@ theorem essSup_comp_le_essSup_map_measure (hf : AEMeasurable f μ) :
 
 theorem MeasurableEmbedding.essSup_map_measure (hf : MeasurableEmbedding f) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable)
+  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf.measurable.aemeasurable)
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => _)
   rw [eventually_map] at h_le ⊢
   exact hf.ae_map_iff.mpr h_le
@@ -239,7 +239,7 @@ variable [MeasurableSpace β] [TopologicalSpace β] [SecondCountableTopology β]
 
 theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable f μ) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
-  refine' le_antisymm _ (essSup_comp_le_essSup_map_measure hf)
+  refine le_antisymm ?_ (essSup_comp_le_essSup_map_measure hf)
   refine' limsSup_le_limsSup (by isBoundedDefault) (by isBoundedDefault) (fun c h_le => _)
   rw [eventually_map] at h_le ⊢
   rw [ae_map_iff hf (measurableSet_le hg measurable_const)]
@@ -249,7 +249,7 @@ theorem essSup_map_measure_of_measurable (hg : Measurable g) (hf : AEMeasurable 
 theorem essSup_map_measure (hg : AEMeasurable g (Measure.map f μ)) (hf : AEMeasurable f μ) :
     essSup g (Measure.map f μ) = essSup (g ∘ f) μ := by
   rw [essSup_congr_ae hg.ae_eq_mk, essSup_map_measure_of_measurable hg.measurable_mk hf]
-  refine' essSup_congr_ae _
+  refine essSup_congr_ae ?_
   have h_eq := ae_of_ae_map hf hg.ae_eq_mk
   rw [← EventuallyEq] at h_eq
   exact h_eq.symm

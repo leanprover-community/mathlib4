@@ -198,7 +198,7 @@ def trivial : Pretopology C where
       cases hh
       apply singleton.mk
     · rintro ⟨_⟩
-      refine' bind_comp g singleton.mk _
+      refine bind_comp g singleton.mk ?_
       rw [hTi]
       apply singleton.mk
 #align category_theory.pretopology.trivial CategoryTheory.Pretopology.trivial

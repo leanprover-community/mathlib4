@@ -575,7 +575,7 @@ theorem subset_image_iff {t : Set β} :
   rwa [image_preimage_inter, inter_eq_left]
 
 theorem image_subset_image_iff {f : α → β} (hf : Injective f) : f '' s ⊆ f '' t ↔ s ⊆ t := by
-  refine' Iff.symm <| (Iff.intro (image_subset f)) fun h => _
+  refine Iff.symm <| (Iff.intro (image_subset f)) fun h => ?_
   rw [← preimage_image_eq s hf, ← preimage_image_eq t hf]
   exact preimage_mono h
 #align set.image_subset_image_iff Set.image_subset_image_iff
@@ -1519,7 +1519,7 @@ variable {α : Type u} {β : Type v} {f : α → β}
 
 @[simp]
 theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, Surjective.preimage_injective⟩
+  refine ⟨fun h y => ?_, Surjective.preimage_injective⟩
   obtain ⟨x, hx⟩ : (f ⁻¹' {y}).Nonempty := by
     rw [h.nonempty_apply_iff preimage_empty]
     apply singleton_nonempty
@@ -1528,14 +1528,14 @@ theorem preimage_injective : Injective (preimage f) ↔ Surjective f := by
 
 @[simp]
 theorem preimage_surjective : Surjective (preimage f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, Injective.preimage_surjective⟩
+  refine ⟨fun h x x' hx => ?_, Injective.preimage_surjective⟩
   cases' h {x} with s hs; have := mem_singleton x
   rwa [← hs, mem_preimage, hx, ← mem_preimage, hs, mem_singleton_iff, eq_comm] at this
 #align set.preimage_surjective Set.preimage_surjective
 
 @[simp]
 theorem image_surjective : Surjective (image f) ↔ Surjective f := by
-  refine' ⟨fun h y => _, Surjective.image_surjective⟩
+  refine ⟨fun h y => ?_, Surjective.image_surjective⟩
   cases' h {y} with s hs
   have := mem_singleton y; rw [← hs] at this; rcases this with ⟨x, _, hx⟩
   exact ⟨x, hx⟩
@@ -1543,7 +1543,7 @@ theorem image_surjective : Surjective (image f) ↔ Surjective f := by
 
 @[simp]
 theorem image_injective : Injective (image f) ↔ Injective f := by
-  refine' ⟨fun h x x' hx => _, Injective.image_injective⟩
+  refine ⟨fun h x x' hx => ?_, Injective.image_injective⟩
   rw [← singleton_eq_singleton_iff]; apply h
   rw [image_singleton, image_singleton, hx]
 #align set.image_injective Set.image_injective

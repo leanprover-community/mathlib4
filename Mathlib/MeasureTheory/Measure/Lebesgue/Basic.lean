@@ -200,7 +200,7 @@ theorem volume_le_diam (s : Set ℝ) : volume s ≤ EMetric.diam s := by
 theorem _root_.Filter.Eventually.volume_pos_of_nhds_real {p : ℝ → Prop} {a : ℝ}
     (h : ∀ᶠ x in 𝓝 a, p x) : (0 : ℝ≥0∞) < volume { x | p x } := by
   rcases h.exists_Ioo_subset with ⟨l, u, hx, hs⟩
-  refine' lt_of_lt_of_le _ (measure_mono hs)
+  refine lt_of_lt_of_le ?_ (measure_mono hs)
   simpa [-mem_Ioo] using hx.1.trans hx.2
 #align filter.eventually.volume_pos_of_nhds_real Filter.Eventually.volume_pos_of_nhds_real
 
@@ -294,7 +294,7 @@ theorem volume_pi_le_diam_pow (s : Set (ι → ℝ)) : volume s ≤ EMetric.diam
 
 theorem smul_map_volume_mul_left {a : ℝ} (h : a ≠ 0) :
     ENNReal.ofReal |a| • Measure.map (a * ·) volume = volume := by
-  refine' (Real.measure_ext_Ioo_rat fun p q => _).symm
+  refine (Real.measure_ext_Ioo_rat fun p q => ?_).symm
   cases' lt_or_gt_of_ne h with h h
   · simp only [Real.volume_Ioo, Measure.smul_apply, ← ENNReal.ofReal_mul (le_of_lt <| neg_pos.2 h),
       Measure.map_apply (measurable_const_mul a) measurableSet_Ioo, neg_sub_neg, neg_mul,
@@ -353,7 +353,7 @@ uses this particular case). -/
 theorem smul_map_diagonal_volume_pi [DecidableEq ι] {D : ι → ℝ} (h : det (diagonal D) ≠ 0) :
     ENNReal.ofReal (abs (det (diagonal D))) • Measure.map (toLin' (diagonal D)) volume =
       volume := by
-  refine' (Measure.pi_eq fun s hs => _).symm
+  refine (Measure.pi_eq fun s hs => ?_).symm
   simp only [det_diagonal, Measure.coe_smul, Algebra.id.smul_eq_mul, Pi.smul_apply]
   rw [Measure.map_apply _ (MeasurableSet.univ_pi hs)]
   swap; · exact Continuous.measurable (LinearMap.continuous_on_pi _)

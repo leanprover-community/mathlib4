@@ -151,7 +151,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem condexp_ae_eq_condexpL1CLM (hm : m ≤ m0) [SigmaFinite (μ.trim hm)] (hf : Integrable f μ) :
     μ[f|m] =ᵐ[μ] condexpL1CLM F' hm μ (hf.toL1 f) := by
-  refine' (condexp_ae_eq_condexpL1 hm f).trans (eventually_of_forall fun x => _)
+  refine (condexp_ae_eq_condexpL1 hm f).trans (eventually_of_forall fun x => ?_)
   rw [condexpL1_eq hf]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.condexp_ae_eq_condexp_L1_clm MeasureTheory.condexp_ae_eq_condexpL1CLM
@@ -202,7 +202,7 @@ theorem condexp_congr_ae (h : f =ᵐ[μ] g) : μ[f|m] =ᵐ[μ] μ[g|m] := by
 
 theorem condexp_of_aestronglyMeasurable' (hm : m ≤ m0) [hμm : SigmaFinite (μ.trim hm)] {f : α → F'}
     (hf : AEStronglyMeasurable' m f μ) (hfi : Integrable f μ) : μ[f|m] =ᵐ[μ] f := by
-  refine' ((condexp_congr_ae hf.ae_eq_mk).trans _).trans hf.ae_eq_mk.symm
+  refine ((condexp_congr_ae hf.ae_eq_mk).trans ?_).trans hf.ae_eq_mk.symm
   rw [condexp_of_stronglyMeasurable hm hf.stronglyMeasurable_mk
     ((integrable_congr hf.ae_eq_mk).mp hfi)]
 #align measure_theory.condexp_of_ae_strongly_measurable' MeasureTheory.condexp_of_aestronglyMeasurable'
@@ -317,7 +317,7 @@ theorem condexp_smul (c : 𝕜) (f : α → F') : μ[c • f|m] =ᵐ[μ] c • �
   refine' (condexp_ae_eq_condexpL1 hm _).trans _
   rw [condexpL1_smul c f]
   refine' (@condexp_ae_eq_condexpL1 _ _ _ _ _ m _ _ hm _ f).mp _
-  refine' (coeFn_smul c (condexpL1 hm μ f)).mono fun x hx1 hx2 => _
+  refine (coeFn_smul c (condexpL1 hm μ f)).mono fun x hx1 hx2 => ?_
   simp only [hx1, hx2, Pi.smul_apply]
 #align measure_theory.condexp_smul MeasureTheory.condexp_smul
 
@@ -407,12 +407,12 @@ theorem tendsto_condexp_unique (fs gs : ℕ → α → F') (f g : α → F')
   by_cases hm : m ≤ m0; swap; · simp_rw [condexp_of_not_le hm]; rfl
   by_cases hμm : SigmaFinite (μ.trim hm); swap; · simp_rw [condexp_of_not_sigmaFinite hm hμm]; rfl
   haveI : SigmaFinite (μ.trim hm) := hμm
-  refine' (condexp_ae_eq_condexpL1 hm f).trans ((condexp_ae_eq_condexpL1 hm g).trans _).symm
+  refine (condexp_ae_eq_condexpL1 hm f).trans ((condexp_ae_eq_condexpL1 hm g).trans ?_).symm
   rw [← Lp.ext_iff]
   have hn_eq : ∀ n, condexpL1 hm μ (gs n) = condexpL1 hm μ (fs n) := by
     intro n
     ext1
-    refine' (condexp_ae_eq_condexpL1 hm (gs n)).symm.trans ((hfg n).symm.trans _)
+    refine (condexp_ae_eq_condexpL1 hm (gs n)).symm.trans ((hfg n).symm.trans ?_)
     exact condexp_ae_eq_condexpL1 hm (fs n)
   have hcond_fs : Tendsto (fun n => condexpL1 hm μ (fs n)) atTop (𝓝 (condexpL1 hm μ f)) :=
     tendsto_condexpL1_of_dominated_convergence hm _ (fun n => (hfs_int n).1) h_int_bound_fs

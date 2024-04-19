@@ -232,8 +232,8 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul_sub_sq (hs : s₂ ⊆ s₁) (
   have hr : 2 * δ - δ ^ 2 = 1 - (1 - δ) * (1 - δ) := by ring
   rw [hr]
   norm_cast
-  refine'
-    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans _
+  refine
+    (Rat.cast_le.2 <| abs_edgeDensity_sub_edgeDensity_le_one_sub_mul r hs ht hs₂' ht₂').trans ?_
   push_cast
   have h₁ := hs₂'.mono hs
   have h₂ := ht₂'.mono ht
@@ -376,7 +376,7 @@ theorem card_interedges_add_card_interedges_compl (h : Disjoint s t) :
     (G.interedges s t).card + (Gᶜ.interedges s t).card = s.card * t.card := by
   rw [← card_product, interedges_def, interedges_def]
   have : ((s ×ˢ t).filter fun e ↦ Gᶜ.Adj e.1 e.2) = (s ×ˢ t).filter fun e ↦ ¬G.Adj e.1 e.2 := by
-    refine' filter_congr fun x hx ↦ _
+    refine filter_congr fun x hx ↦ ?_
     rw [mem_product] at hx
     rw [compl_adj, and_iff_right (h.forall_ne_finset hx.1 hx.2)]
   rw [this, ← card_union_of_disjoint, filter_union_filter_neg_eq]

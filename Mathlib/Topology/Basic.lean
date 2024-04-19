@@ -1225,7 +1225,7 @@ alias ⟨_, Filter.Frequently.mem_closure⟩ := mem_closure_iff_frequently
 to `s` then `x` is in `s`. -/
 theorem isClosed_iff_frequently : IsClosed s ↔ ∀ x, (∃ᶠ y in 𝓝 x, y ∈ s) → x ∈ s := by
   rw [← closure_subset_iff_isClosed]
-  refine' forall_congr' fun x => _
+  refine forall_congr' fun x => ?_
   rw [mem_closure_iff_frequently]
 #align is_closed_iff_frequently isClosed_iff_frequently
 
@@ -1454,7 +1454,7 @@ theorem tendsto_inf_principal_nhds_iff_of_forall_eq {f : α → X} {l : Filter �
     rintro U ⟨t, ht, htU⟩ x hx
     have : f x ∈ t := (h x hx).symm ▸ mem_of_mem_nhds ht
     exact htU this
-  refine' ⟨fun h' => _, le_trans inf_le_left⟩
+  refine ⟨fun h' => ?_, le_trans inf_le_left⟩
   have := sup_le h' h
   rw [sup_inf_right, sup_principal, union_compl_self, principal_univ, inf_top_eq, sup_le_iff]
     at this

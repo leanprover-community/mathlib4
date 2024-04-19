@@ -76,7 +76,7 @@ theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
   · let b := FiniteDimensional.finBasis (RatFunc Fq) F
     exact FiniteDimensional.of_fintype_basis (b.mapCoeffs e this)
   · let b := FiniteDimensional.finBasis Fqt F
-    refine' FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm _)
+    refine FiniteDimensional.of_fintype_basis (b.mapCoeffs e.symm ?_)
     intro c x; convert (this (e.symm c) x).symm; simp only [e.apply_symm_apply]
 #align function_field_iff functionField_iff
 

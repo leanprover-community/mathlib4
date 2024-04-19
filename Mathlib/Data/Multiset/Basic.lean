@@ -1359,7 +1359,7 @@ theorem map_le_map {f : α → β} {s t : Multiset α} (h : s ≤ t) : map f s �
 
 @[simp]
 theorem map_lt_map {f : α → β} {s t : Multiset α} (h : s < t) : s.map f < t.map f := by
-  refine' (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le _
+  refine (map_le_map h.le).lt_of_not_le fun H => h.ne <| eq_of_le_of_card_le h.le ?_
   rw [← s.card_map f, ← t.card_map f]
   exact card_le_card H
 #align multiset.map_lt_map Multiset.map_lt_map
@@ -2706,7 +2706,7 @@ section Embedding
 theorem map_le_map_iff {f : α → β} (hf : Function.Injective f) {s t : Multiset α} :
     s.map f ≤ t.map f ↔ s ≤ t := by
   classical
-    refine' ⟨fun h => le_iff_count.mpr fun a => _, map_le_map⟩
+    refine ⟨fun h => le_iff_count.mpr fun a => ?_, map_le_map⟩
     simpa [count_map_eq_count' f _ hf] using le_iff_count.mp h (f a)
 #align multiset.map_le_map_iff Multiset.map_le_map_iff
 
@@ -2830,7 +2830,7 @@ theorem rel_cons_left {a as bs} :
 theorem rel_cons_right {as b bs} :
     Rel r as (b ::ₘ bs) ↔ ∃ a as', r a b ∧ Rel r as' bs ∧ as = a ::ₘ as' := by
   rw [← rel_flip, rel_cons_left]
-  refine' exists₂_congr fun a as' => _
+  refine exists₂_congr fun a as' => ?_
   rw [rel_flip, flip]
 #align multiset.rel_cons_right Multiset.rel_cons_right
 
@@ -2954,7 +2954,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
     s.attach.filter p =
       (s.filter fun x ↦ ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x ↦ mem_of_mem_filter) := by
   classical
-  refine' Multiset.map_injective Subtype.val_injective _
+  refine Multiset.map_injective Subtype.val_injective ?_
   rw [map_filter' _ Subtype.val_injective]
   simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
     exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]

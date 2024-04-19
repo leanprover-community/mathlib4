@@ -214,7 +214,7 @@ theorem of_exponent_ge {p q : ℝ≥0∞} {f : ∀ i, E i} (hfq : Memℓp f q) (
 theorem add {f g : ∀ i, E i} (hf : Memℓp f p) (hg : Memℓp g p) : Memℓp (f + g) p := by
   rcases p.trichotomy with (rfl | rfl | hp)
   · apply memℓp_zero
-    refine' (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => _
+    refine (hf.finite_dsupport.union hg.finite_dsupport).subset fun i => ?_
     simp only [Pi.add_apply, Ne, Set.mem_union, Set.mem_setOf_eq]
     contrapose!
     rintro ⟨hf', hg'⟩
@@ -273,7 +273,7 @@ theorem const_smul {f : ∀ i, E i} (hf : Memℓp f p) (c : 𝕜) : Memℓp (c �
     have := (hf.summable hp).mul_left (↑(‖c‖₊ ^ p.toReal) : ℝ)
     simp_rw [← coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul, NNReal.summable_coe,
       ← NNReal.mul_rpow] at this ⊢
-    refine' NNReal.summable_of_le _ this
+    refine NNReal.summable_of_le ?_ this
     intro i
     gcongr
     apply nnnorm_smul_le
@@ -452,7 +452,7 @@ theorem norm_zero : ‖(0 : lp E p)‖ = 0 := by
 #align lp.norm_zero lp.norm_zero
 
 theorem norm_eq_zero_iff {f : lp E p} : ‖f‖ = 0 ↔ f = 0 := by
-  refine' ⟨fun h => _, by rintro rfl; exact norm_zero⟩
+  refine ⟨fun h => ?_, by rintro rfl; exact norm_zero⟩
   rcases p.trichotomy with (rfl | rfl | hp)
   · ext i
     have : { i : α | ¬f i = 0 } = ∅ := by simpa [lp.norm_eq_card_dsupport f] using h
@@ -503,7 +503,7 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
         rcases p.dichotomy with (rfl | hp')
         · cases isEmpty_or_nonempty α
           · simp only [lp.eq_zero' f, zero_add, norm_zero, le_refl]
-          refine' (lp.isLUB_norm (f + g)).2 _
+          refine (lp.isLUB_norm (f + g)).2 ?_
           rintro x ⟨i, rfl⟩
           refine' le_trans _ (add_mem_upperBounds_add
             (lp.isLUB_norm f).1 (lp.isLUB_norm g).1 ⟨_, ⟨i, rfl⟩, _, ⟨i, rfl⟩, rfl⟩)
@@ -516,9 +516,9 @@ instance normedAddCommGroup [hp : Fact (1 ≤ p)] : NormedAddCommGroup (lp E p) 
           -- apply Minkowski's inequality
           obtain ⟨C, hC₁, hC₂, hCfg⟩ :=
             Real.Lp_add_le_hasSum_of_nonneg hp' hf₁ hg₁ (norm_nonneg' _) (norm_nonneg' _) hf₂ hg₂
-          refine' le_trans _ hC₂
+          refine le_trans ?_ hC₂
           rw [← Real.rpow_le_rpow_iff (norm_nonneg' (f + g)) hC₁ hp'']
-          refine' hasSum_le _ (lp.hasSum_norm hp'' (f + g)) hCfg
+          refine hasSum_le ?_ (lp.hasSum_norm hp'' (f + g)) hCfg
           intro i
           gcongr
           apply norm_add_le
@@ -572,7 +572,7 @@ theorem sum_rpow_le_norm_rpow (hp : 0 < p.toReal) (f : lp E p) (s : Finset α) :
 
 theorem norm_le_of_forall_le' [Nonempty α] {f : lp E ∞} (C : ℝ) (hCf : ∀ i, ‖f i‖ ≤ C) :
     ‖f‖ ≤ C := by
-  refine' (isLUB_norm f).2 _
+  refine (isLUB_norm f).2 ?_
   rintro - ⟨i, rfl⟩
   exact hCf i
 #align lp.norm_le_of_forall_le' lp.norm_le_of_forall_le'
@@ -677,7 +677,7 @@ theorem norm_const_smul_le (hp : p ≠ 0) (c : 𝕜) (f : lp E p) : ‖c • f�
     have hRHS := (lp.hasSum_norm hp f).mul_left (‖c‖ ^ p.toReal)
     simp_rw [← coe_nnnorm, ← _root_.coe_nnnorm, ← NNReal.coe_rpow, ← NNReal.coe_mul,
       NNReal.hasSum_coe] at hRHS hLHS
-    refine' hasSum_mono hLHS hRHS fun i => _
+    refine hasSum_mono hLHS hRHS fun i => ?_
     dsimp only
     rw [← NNReal.mul_rpow]
     -- Porting note: added
@@ -699,7 +699,7 @@ variable [NormedDivisionRing 𝕜] [∀ i, Module 𝕜 (E i)] [∀ i, BoundedSMu
 theorem norm_const_smul (hp : p ≠ 0) {c : 𝕜} (f : lp E p) : ‖c • f‖ = ‖c‖ * ‖f‖ := by
   obtain rfl | hc := eq_or_ne c 0
   · simp
-  refine' le_antisymm (norm_const_smul_le hp c f) _
+  refine le_antisymm (norm_const_smul_le hp c f) ?_
   have := mul_le_mul_of_nonneg_left (norm_const_smul_le hp c⁻¹ (c • f)) (norm_nonneg c)
   rwa [inv_smul_smul₀ hc, norm_inv, mul_inv_cancel_left₀ (norm_ne_zero_iff.mpr hc)] at this
 #align lp.norm_const_smul lp.norm_const_smul
@@ -834,12 +834,12 @@ instance inftyCstarRing [∀ i, CstarRing (B i)] : CstarRing (lp B ∞) where
     intro f
     apply le_antisymm
     · rw [← sq]
-      refine' lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => _
+      refine lp.norm_le_of_forall_le (sq_nonneg ‖f‖) fun i => ?_
       simp only [lp.star_apply, CstarRing.norm_star_mul_self, ← sq, infty_coeFn_mul, Pi.mul_apply]
       refine' sq_le_sq' _ (lp.norm_apply_le_norm ENNReal.top_ne_zero _ _)
       linarith [norm_nonneg (f i), norm_nonneg f]
     · rw [← sq, ← Real.le_sqrt (norm_nonneg _) (norm_nonneg _)]
-      refine' lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => _
+      refine lp.norm_le_of_forall_le ‖star f * f‖.sqrt_nonneg fun i => ?_
       rw [Real.le_sqrt (norm_nonneg _) (norm_nonneg _), sq, ← CstarRing.norm_star_mul_self]
       exact lp.norm_apply_le_norm ENNReal.top_ne_zero (star f * f) i
 #align lp.infty_cstar_ring lp.inftyCstarRing
@@ -982,7 +982,7 @@ variable [DecidableEq α]
 /-- The element of `lp E p` which is `a : E i` at the index `i`, and zero elsewhere. -/
 protected def single (p) (i : α) (a : E i) : lp E p :=
   ⟨fun j => if h : j = i then Eq.ndrec a h.symm else 0, by
-    refine' (memℓp_zero _).of_exponent_ge (zero_le p)
+    refine (memℓp_zero ?_).of_exponent_ge (zero_le p)
     refine' (Set.finite_singleton i).subset _
     intro j
     simp only [forall_exists_index, Set.mem_singleton_iff, Ne, dite_eq_right_iff,
@@ -1123,7 +1123,7 @@ theorem norm_apply_le_of_tendsto {C : ℝ} {F : ι → lp E ∞} (hCF : ∀ᶠ k
     {f : ∀ a, E a} (hf : Tendsto (id fun i => F i : ι → ∀ a, E a) l (𝓝 f)) (a : α) : ‖f a‖ ≤ C := by
   have : Tendsto (fun k => ‖F k a‖) l (𝓝 ‖f a‖) :=
     (Tendsto.comp (continuous_apply a).continuousAt hf).norm
-  refine' le_of_tendsto this (hCF.mono _)
+  refine le_of_tendsto this (hCF.mono ?_)
   intro k hCFk
   exact (norm_apply_le_norm ENNReal.top_ne_zero (F k) a).trans hCFk
 #align lp.norm_apply_le_of_tendsto lp.norm_apply_le_of_tendsto
@@ -1137,14 +1137,14 @@ theorem sum_rpow_le_of_tendsto (hp : p ≠ ∞) {C : ℝ} {F : ι → lp E p} (h
   have hp'' : 0 < p.toReal := ENNReal.toReal_pos hp' hp
   let G : (∀ a, E a) → ℝ := fun f => ∑ a in s, ‖f a‖ ^ p.toReal
   have hG : Continuous G := by
-    refine' continuous_finset_sum s _
+    refine continuous_finset_sum s ?_
     intro a _
     have : Continuous fun f : ∀ a, E a => f a := continuous_apply a
     exact this.norm.rpow_const fun _ => Or.inr hp''.le
-  refine' le_of_tendsto (hG.continuousAt.tendsto.comp hf) _
+  refine le_of_tendsto (hG.continuousAt.tendsto.comp hf) ?_
   refine hCF.mono ?_
   intro k hCFk
-  refine' (lp.sum_rpow_le_norm_rpow hp'' (F k) s).trans _
+  refine (lp.sum_rpow_le_norm_rpow hp'' (F k) s).trans ?_
   gcongr
 #align lp.sum_rpow_le_of_tendsto lp.sum_rpow_le_of_tendsto
 
@@ -1184,9 +1184,9 @@ theorem tendsto_lp_of_tendsto_pi {F : ℕ → lp E p} (hF : CauchySeq F) {f : lp
   intro ε hε
   have hε' : { p : lp E p × lp E p | ‖p.1 - p.2‖ < ε } ∈ uniformity (lp E p) :=
     NormedAddCommGroup.uniformity_basis_dist.mem_of_mem hε
-  refine' (hF.eventually_eventually hε').mono _
+  refine (hF.eventually_eventually hε').mono ?_
   rintro n (hn : ∀ᶠ l in atTop, ‖(fun f => F n - f) (F l)‖ < ε)
-  refine' norm_le_of_tendsto (hn.mono fun k hk => hk.le) _
+  refine norm_le_of_tendsto (hn.mono fun k hk => hk.le) ?_
   rw [tendsto_pi_nhds]
   intro a
   exact (hf.apply_nhds a).const_sub (F n a)

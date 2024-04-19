@@ -896,7 +896,7 @@ theorem embDomain_apply (f : α ↪ β) (v : α →₀ M) (a : α) : embDomain f
 theorem embDomain_notin_range (f : α ↪ β) (v : α →₀ M) (a : β) (h : a ∉ Set.range f) :
     embDomain f v a = 0 := by
   classical
-    refine' dif_neg (mt (fun h => _) h)
+    refine dif_neg (mt (fun h => ?_) h)
     rcases Finset.mem_map.1 h with ⟨a, _h, rfl⟩
     exact Set.mem_range_self a
 #align finsupp.emb_domain_notin_range Finsupp.embDomain_notin_range
@@ -1192,7 +1192,7 @@ theorem add_closure_setOf_eq_single :
 then they are equal. -/
 theorem addHom_ext [AddZeroClass N] ⦃f g : (α →₀ M) →+ N⦄
     (H : ∀ x y, f (single x y) = g (single x y)) : f = g := by
-  refine' AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single _
+  refine AddMonoidHom.eq_of_eqOn_denseM add_closure_setOf_eq_single ?_
   rintro _ ⟨x, y, rfl⟩
   apply H
 #align finsupp.add_hom_ext Finsupp.addHom_ext

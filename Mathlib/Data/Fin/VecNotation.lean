@@ -346,7 +346,7 @@ theorem vecAlt0_vecAppend (v : Fin n → α) : vecAlt0 rfl (vecAppend rfl v v) =
     exact (Nat.mod_eq_of_lt h).symm
   · rw [Fin.val_mk, not_lt] at h
     simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_eq_sub_mod h]
-    refine' (Nat.mod_eq_of_lt _).symm
+    refine (Nat.mod_eq_of_lt ?_).symm
     rw [tsub_lt_iff_left h]
     exact add_lt_add i.2 i.2
 #align matrix.vec_alt0_vec_append Matrix.vecAlt0_vecAppend

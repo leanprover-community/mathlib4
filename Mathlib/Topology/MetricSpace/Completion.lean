@@ -127,7 +127,7 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
     simp only [uniformity_prod_eq_prod, mem_prod_iff, exists_prop, Filter.mem_map,
       Set.mem_setOf_eq] at T
     rcases T with ⟨t1, ht1, t2, ht2, ht⟩
-    refine' mem_of_superset ht1 _
+    refine mem_of_superset ht1 ?_
     have A : ∀ a b : Completion α, (a, b) ∈ t1 → dist a b < ε := by
       intro a b hab
       have : ((a, b), (a, a)) ∈ t1 ×ˢ t2 := ⟨hab, refl_mem_uniformity ht2⟩

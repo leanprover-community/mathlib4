@@ -386,7 +386,7 @@ The version where `K` is an `R`-algebra is `LinearIndependent.restrict_scalars_a
 theorem LinearIndependent.restrict_scalars [Semiring K] [SMulWithZero R K] [Module K M]
     [IsScalarTower R K M] (hinj : Function.Injective fun r : R => r • (1 : K))
     (li : LinearIndependent K v) : LinearIndependent R v := by
-  refine' linearIndependent_iff'.mpr fun s g hg i hi => hinj _
+  refine linearIndependent_iff'.mpr fun s g hg i hi => hinj ?_
   dsimp only; rw [zero_smul]
   refine' (linearIndependent_iff'.mp li : _) _ (g · • (1:K)) _ i hi
   simp_rw [smul_assoc, one_smul]
@@ -605,7 +605,7 @@ theorem LinearIndependent.group_smul {G : Type*} [hG : Group G] [DistribMulActio
     (hv : LinearIndependent R v) (w : ι → G) : LinearIndependent R (w • v) := by
   rw [linearIndependent_iff''] at hv ⊢
   intro s g hgs hsum i
-  refine' (smul_eq_zero_iff_eq (w i)).1 _
+  refine (smul_eq_zero_iff_eq (w i)).1 ?_
   refine hv s (fun i => w i • g i) (fun i hi => ?_) ?_ i
   · dsimp only
     exact (hgs i hi).symm ▸ smul_zero _
@@ -738,7 +738,7 @@ theorem LinearIndependent.not_mem_span_image [Nontrivial R] (hv : LinearIndepend
     exact mem_span_singleton_self (v x)
   intro w
   apply LinearIndependent.ne_zero x hv
-  refine' disjoint_def.1 (hv.disjoint_span_image _) (v x) h' w
+  refine disjoint_def.1 (hv.disjoint_span_image ?_) (v x) h' w
   simpa using h
 #align linear_independent.not_mem_span_image LinearIndependent.not_mem_span_image
 
@@ -970,7 +970,7 @@ theorem linearIndependent_iff_not_smul_mem_span :
 /-- See also `CompleteLattice.independent_iff_linearIndependent_of_ne_zero`. -/
 theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v) :
     CompleteLattice.Independent fun i => R ∙ v i := by
-  refine' CompleteLattice.independent_def.mp fun i => _
+  refine CompleteLattice.independent_def.mp fun i => ?_
   rw [disjoint_iff_inf_le]
   intro m hm
   simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
@@ -1033,7 +1033,7 @@ theorem exists_maximal_independent (s : ι → M) :
       refine' linearDependent_comp_subtype.mpr ⟨f, _, sum_f, f_ne⟩
       simp only [Finsupp.mem_supported, hJ] at supp_f ⊢
       rintro x hx
-      refine' (memJ.mp (supp_f hx)).resolve_left _
+      refine (memJ.mp (supp_f hx)).resolve_left ?_
       rintro rfl
       exact hIlinind (Finsupp.mem_support_iff.mp hx)
     use f i, hfi
@@ -1090,7 +1090,7 @@ theorem LinearIndependent.image_subtype {s : Set M} {f : M →ₗ[R] M'}
     (hf_inj : Disjoint (span R s) (LinearMap.ker f)) :
     LinearIndependent R (fun x => x : f '' s → M') := by
   rw [← Subtype.range_coe (s := s)] at hf_inj
-  refine' (hs.map hf_inj).to_subtype_range' _
+  refine (hs.map hf_inj).to_subtype_range' ?_
   simp [Set.range_comp f]
 #align linear_independent.image_subtype LinearIndependent.image_subtype
 
@@ -1246,7 +1246,7 @@ variable {v : ι → M} {s t : Set M} {x y z : M}
 theorem linearIndependent_unique_iff (v : ι → M) [Unique ι] :
     LinearIndependent R v ↔ v default ≠ 0 := by
   simp only [linearIndependent_iff, Finsupp.total_unique, smul_eq_zero]
-  refine' ⟨fun h hv => _, fun hv l hl => Finsupp.unique_ext <| hl.resolve_right hv⟩
+  refine ⟨fun h hv => ?_, fun hv l hl => Finsupp.unique_ext <| hl.resolve_right hv⟩
   have := h (Finsupp.single default 1) (Or.inr hv)
   exact one_ne_zero (Finsupp.single_eq_zero.1 this)
 #align linear_independent_unique_iff linearIndependent_unique_iff

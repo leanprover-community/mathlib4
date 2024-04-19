@@ -209,7 +209,7 @@ theorem isVonNBounded_of_smul_tendsto_zero {ε : ι → 𝕝} {l : Filter ι} [l
     rw [← Set.mem_inv_smul_set_iff₀ hn] at hnx
     exact hx (hVb.smul_mono haε hnx)
   rcases this.choice with ⟨x, hx⟩
-  refine' Filter.frequently_false l (Filter.Eventually.frequently _)
+  refine Filter.frequently_false l (Filter.Eventually.frequently ?_)
   filter_upwards [hx,
     (H (_ ∘ x) fun n => (x n).2).eventually (eventually_mem_set.mpr hV)] using fun n => id
 #align bornology.is_vonN_bounded_of_smul_tendsto_zero Bornology.isVonNBounded_of_smul_tendsto_zero

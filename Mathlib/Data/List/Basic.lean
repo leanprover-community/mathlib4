@@ -1457,7 +1457,7 @@ attribute [deprecated get_reverse'] nthLe_reverse'
 
 theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
     l = [l.nthLe 0 (by omega)] := by
-  refine' ext_get (by convert h) fun n h₁ h₂ => _
+  refine ext_get (by convert h) fun n h₁ h₂ => ?_
   simp only [get_singleton]
   congr
   omega
@@ -3014,7 +3014,7 @@ lemma filter_attach' (l : List α) (p : {a // a ∈ l} → Bool) [DecidableEq α
     l.attach.filter p =
       (l.filter fun x => ∃ h, p ⟨x, h⟩).attach.map (Subtype.map id fun x => mem_of_mem_filter) := by
   classical
-  refine' map_injective_iff.2 Subtype.coe_injective _
+  refine map_injective_iff.2 Subtype.coe_injective ?_
   simp [(· ∘ ·), map_filter' _ Subtype.coe_injective]
 #align list.filter_attach' List.filter_attach'
 

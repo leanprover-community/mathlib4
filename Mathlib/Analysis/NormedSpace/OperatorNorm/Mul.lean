@@ -306,7 +306,7 @@ theorem opNorm_lsmul [NormedField 𝕜'] [NormedAlgebra 𝕜 𝕜'] [NormedSpace
   obtain ⟨y, hy⟩ := exists_ne (0 : E)
   have := le_of_opNorm_le _ (h 1) y
   simp_rw [lsmul_apply, one_smul, norm_one, mul_one] at this
-  refine' le_of_mul_le_mul_right _ (norm_pos_iff.mpr hy)
+  refine le_of_mul_le_mul_right ?_ (norm_pos_iff.mpr hy)
   simp_rw [one_mul, this]
 #align continuous_linear_map.op_norm_lsmul ContinuousLinearMap.opNorm_lsmul
 

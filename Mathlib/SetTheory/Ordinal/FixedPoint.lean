@@ -189,7 +189,7 @@ theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
     exact nfpFamily_fp H _
   · rw [derivFamily_limit _ l,
       IsNormal.bsup.{max u v, u, max u v} H (fun a _ => derivFamily f a) l.1]
-    refine' eq_of_forall_ge_iff fun c => _
+    refine eq_of_forall_ge_iff fun c => ?_
     simp (config := { contextual := true }) only [bsup_le_iff, IH]
 #align ordinal.deriv_family_fp Ordinal.derivFamily_fp
 
@@ -633,7 +633,7 @@ theorem nfp_mul_zero (a : Ordinal) : nfp (a * ·) 0 = 0 := by
 @[simp]
 theorem nfp_zero_mul : nfp (HMul.hMul 0) = id := by
   rw [← sup_iterate_eq_nfp]
-  refine' funext fun a => (sup_le fun n => _).antisymm (le_sup (fun n => (0 * ·)^[n] a) 0)
+  refine funext fun a => (sup_le fun n => ?_).antisymm (le_sup (fun n => (0 * ·)^[n] a) 0)
   induction' n with n _
   · rfl
   rw [Function.iterate_succ']
@@ -682,7 +682,7 @@ theorem mul_eq_right_iff_opow_omega_dvd {a b : Ordinal} : a * b = b ↔ (a^omega
       add_left_cancel] at hab
     cases' eq_zero_or_opow_omega_le_of_mul_eq_right hab with hab hab
     · exact hab
-    refine' (not_lt_of_le hab (mod_lt b (opow_ne_zero omega _))).elim
+    refine (not_lt_of_le hab (mod_lt b (opow_ne_zero omega ?_))).elim
     rwa [← Ordinal.pos_iff_ne_zero]
   cases' h with c hc
   rw [hc, ← mul_assoc, ← opow_one_add, one_add_omega]

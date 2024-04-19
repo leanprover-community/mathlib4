@@ -113,7 +113,7 @@ nonrec theorem IsEquivalence.exact_iff {D : Type u₁} [Category.{v₁} D] [Abel
 /-- The dual result is true even in non-abelian categories, see
     `CategoryTheory.exact_comp_mono_iff`. -/
 theorem exact_epi_comp_iff {W : C} (h : W ⟶ X) [Epi h] : Exact (h ≫ f) g ↔ Exact f g := by
-  refine' ⟨fun hfg => _, fun h => exact_epi_comp h⟩
+  refine ⟨fun hfg => ?_, fun h => exact_epi_comp h⟩
   let hc := isCokernelOfComp _ _ (colimit.isColimit (parallelPair (h ≫ f) 0))
     (by rw [← cancel_epi h, ← Category.assoc, CokernelCofork.condition, comp_zero]) rfl
   refine' (exact_iff' _ _ (limit.isLimit _) hc).2 ⟨_, ((exact_iff _ _).1 hfg).2⟩

@@ -310,7 +310,7 @@ theorem irreducible_aux3 {k m m' n : ℕ} (hkm : k < m) (hmn : m < n) (hkm' : k 
 
 theorem irreducible_of_coprime (hp : p.IsUnitTrinomial)
     (h : IsRelPrime p p.mirror) : Irreducible p := by
-  refine' irreducible_of_mirror hp.not_isUnit (fun q hpq => _) h
+  refine irreducible_of_mirror hp.not_isUnit (fun q hpq => ?_) h
   have hq : IsUnitTrinomial q := (isUnitTrinomial_iff'' hpq).mp hp
   obtain ⟨k, m, n, hkm, hmn, u, v, w, hp⟩ := hp
   obtain ⟨k', m', n', hkm', hmn', x, y, z, hq⟩ := hq
@@ -352,7 +352,7 @@ theorem irreducible_of_isCoprime (hp : p.IsUnitTrinomial) (h : IsCoprime p p.mir
 /-- A unit trinomial is irreducible if it has no complex roots in common with its mirror -/
 theorem irreducible_of_coprime' (hp : IsUnitTrinomial p)
     (h : ∀ z : ℂ, ¬(aeval z p = 0 ∧ aeval z (mirror p) = 0)) : Irreducible p := by
-  refine' hp.irreducible_of_coprime fun q hq hq' => _
+  refine hp.irreducible_of_coprime fun q hq hq' => ?_
   suffices ¬0 < q.natDegree by
     rcases hq with ⟨p, rfl⟩
     replace hp := hp.leadingCoeff_isUnit

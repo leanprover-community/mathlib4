@@ -566,7 +566,7 @@ theorem exists_smooth_zero_one_of_isClosed [T2Space M] [SigmaCompactSpace M] {s 
     ⟨⟨_, g.smooth_sum⟩, fun x hx => _, fun x => g.sum_eq_one, fun x =>
       ⟨g.sum_nonneg x, g.sum_le_one x⟩⟩
   suffices ∀ i, g i x = 0 by simp only [this, ContMDiffMap.coeFn_mk, finsum_zero, Pi.zero_apply]
-  refine' fun i => f.toSmoothPartitionOfUnity_zero_of_zero _
+  refine fun i => f.toSmoothPartitionOfUnity_zero_of_zero ?_
   exact nmem_support.1 (subset_compl_comm.1 (hf.support_subset i) hx)
 #align exists_smooth_zero_one_of_closed exists_smooth_zero_one_of_isClosed
 

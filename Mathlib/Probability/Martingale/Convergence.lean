@@ -115,7 +115,7 @@ theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a 
     exact ⟨k + 1, fun N => lt_of_le_of_lt (hk N) k.lt_succ_self⟩
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
-  refine' Classical.not_not.2 hω _
+  refine Classical.not_not.2 hω ?_
   push_neg
   intro k
   induction' k with k ih
@@ -155,7 +155,7 @@ theorem tendsto_of_uncrossing_lt_top (hf₁ : liminf (fun n => (‖f n ω‖₊ 
 /-- An L¹-bounded submartingale has bounded upcrossings almost everywhere. -/
 theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) (hab : a < b) : ∀ᵐ ω ∂μ, upcrossings a b f ω < ∞ := by
-  refine' ae_lt_top (hf.adapted.measurable_upcrossings hab) _
+  refine ae_lt_top (hf.adapted.measurable_upcrossings hab) ?_
   have := hf.mul_lintegral_upcrossings_le_lintegral_pos_part a b
   rw [mul_comm, ← ENNReal.le_div_iff_mul_le] at this
   · refine' (lt_of_le_of_lt this (ENNReal.div_lt_top _ _)).ne
@@ -171,7 +171,7 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
       refine' ne_of_lt (iSup_lt_iff.2 ⟨R + ‖a‖₊ * μ Set.univ, ENNReal.add_lt_top.2
         ⟨ENNReal.coe_lt_top, ENNReal.mul_lt_top ENNReal.coe_lt_top.ne (measure_ne_top _ _)⟩,
         fun n => le_trans _ (hR' n)⟩)
-      refine' lintegral_mono fun ω => _
+      refine lintegral_mono fun ω => ?_
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
       by_cases hnonneg : 0 ≤ f n ω - a
       · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
@@ -346,7 +346,7 @@ theorem Martingale.eq_condexp_of_tendsto_snorm {μ : Measure Ω} (hf : Martingal
     tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hgtends (fun m => zero_le _)
       fun m => snorm_one_condexp_le_snorm _
   have hev : ∀ m ≥ n, snorm (μ[f m - g|ℱ n]) 1 μ = snorm (f n - μ[g|ℱ n]) 1 μ := by
-    refine' fun m hm => snorm_congr_ae ((condexp_sub (hf.integrable m) hg).trans _)
+    refine fun m hm => snorm_congr_ae ((condexp_sub (hf.integrable m) hg).trans ?_)
     filter_upwards [hf.2 n m hm] with x hx
     simp only [hx, Pi.sub_apply]
   exact tendsto_nhds_unique (tendsto_atTop_of_eventually_const hev) ht
@@ -456,7 +456,7 @@ theorem tendsto_snorm_condexp (g : Ω → ℝ) :
     integrable_condexp.tendsto_snorm_condexp stronglyMeasurable_condexp
   have heq : ∀ n, ∀ᵐ x ∂μ, (μ[μ[g|⨆ n, ℱ n]|ℱ n]) x = (μ[g|ℱ n]) x := fun n =>
     condexp_condexp_of_le (le_iSup _ n) (iSup_le fun n => ℱ.le n)
-  refine' ht.congr fun n => snorm_congr_ae _
+  refine ht.congr fun n => snorm_congr_ae ?_
   filter_upwards [heq n] with x hxeq
   simp only [hxeq, Pi.sub_apply]
 #align measure_theory.tendsto_snorm_condexp MeasureTheory.tendsto_snorm_condexp

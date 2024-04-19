@@ -555,10 +555,10 @@ theorem mapDomain_apply' (S : Set α) {f : α → β} (x : α →₀ M) (hS : (x
     by_cases hax : a ∈ x.support
     · rw [← Finset.add_sum_erase _ _ hax, if_pos rfl]
       convert add_zero (x a)
-      refine' Finset.sum_eq_zero fun i hi => if_neg _
+      refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact (hf.mono hS).ne (Finset.mem_of_mem_erase hi) hax (Finset.ne_of_mem_erase hi)
     · rw [not_mem_support_iff.1 hax]
-      refine' Finset.sum_eq_zero fun i hi => if_neg _
+      refine Finset.sum_eq_zero fun i hi => if_neg ?_
       exact hf.ne (hS hi) ha (ne_of_mem_of_not_mem hi hax)
 #align finsupp.map_domain_apply' Finsupp.mapDomain_apply'
 
@@ -936,7 +936,7 @@ theorem filter_single_of_neg {a : α} {b : M} (h : ¬p a) : (single a b).filter 
 theorem prod_filter_index [CommMonoid N] (g : α → M → N) :
     (f.filter p).prod g = ∏ x in (f.filter p).support, g x (f x) := by
   classical
-    refine' Finset.prod_congr rfl fun x hx => _
+    refine Finset.prod_congr rfl fun x hx => ?_
     rw [support_filter, Finset.mem_filter] at hx
     rw [filter_apply_pos _ _ hx.2]
 #align finsupp.prod_filter_index Finsupp.prod_filter_index
@@ -1268,7 +1268,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
   classical
     rw [Finsupp.curry, Finsupp.curry, Finsupp.sum, Finsupp.sum, filter_sum, support_filter,
       sum_filter]
-    refine' Finset.sum_congr rfl _
+    refine Finset.sum_congr rfl ?_
     rintro ⟨a₁, a₂⟩ _
     split_ifs with h
     · rw [filter_apply_pos, filter_single_of_pos] <;> exact h
@@ -1278,7 +1278,7 @@ theorem filter_curry (f : α × β →₀ M) (p : α → Prop) [DecidablePred p]
 theorem support_curry [DecidableEq α] (f : α × β →₀ M) :
     f.curry.support ⊆ f.support.image Prod.fst := by
   rw [← Finset.biUnion_singleton]
-  refine' Finset.Subset.trans support_sum _
+  refine Finset.Subset.trans support_sum ?_
   exact Finset.biUnion_mono fun a _ => support_single_subset
 #align finsupp.support_curry Finsupp.support_curry
 

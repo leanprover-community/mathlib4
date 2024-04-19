@@ -145,7 +145,7 @@ theorem innerContent_of_isCompact {K : Set G} (h1K : IsCompact K) (h2K : IsOpen 
 theorem innerContent_bot : μ.innerContent ⊥ = 0 := by
   refine' le_antisymm _ (zero_le _)
   rw [← μ.empty]
-  refine' iSup₂_le fun K hK => _
+  refine iSup₂_le fun K hK => ?_
   have : K = ⊥ := by
     ext1
     rw [subset_empty_iff.mp hK, Compacts.coe_bot]
@@ -180,7 +180,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
     · intro n s hn ih
       rw [Finset.sup_insert, Finset.sum_insert hn]
       exact le_trans (μ.sup_le _ _) (add_le_add_left ih _)
-  refine' iSup₂_le fun K hK => _
+  refine iSup₂_le fun K hK => ?_
   obtain ⟨t, ht⟩ :=
     K.isCompact.elim_finite_subcover _ (fun i => (U i).isOpen) (by rwa [← Opens.coe_iSup])
   rcases K.isCompact.finite_compact_cover t (SetLike.coe ∘ U) (fun i _ => (U i).isOpen) ht with
@@ -190,7 +190,7 @@ theorem innerContent_iSup_nat [R1Space G] (U : ℕ → Opens G) :
   · ext1
     rw [Compacts.coe_finset_sup, Finset.sup_eq_iSup]
     exact h3K'
-  refine' le_trans (Finset.sum_le_sum _) (ENNReal.sum_le_tsum t)
+  refine le_trans (Finset.sum_le_sum ?_) (ENNReal.sum_le_tsum t)
   intro i _
   refine' le_trans _ (le_iSup _ (L i))
   refine' le_trans _ (le_iSup _ (h2K' i))
@@ -351,7 +351,7 @@ variable [S : MeasurableSpace G] [BorelSpace G]
 /-- For the outer measure coming from a content, all Borel sets are measurable. -/
 theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [@BorelSpace.measurable_eq G _ _]
-  refine' MeasurableSpace.generateFrom_le _
+  refine MeasurableSpace.generateFrom_le ?_
   intro U hU
   rw [μ.outerMeasure_caratheodory]
   intro U'
@@ -360,7 +360,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [Opens.coe_mk]
   haveI : Nonempty { L : Compacts G // (L : Set G) ⊆ U' ∩ U } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.iSup_add]
-  refine' iSup_le _
+  refine iSup_le ?_
   rintro ⟨L, hL⟩
   let L' : Compacts G := ⟨closure L, L.isCompact.closure⟩
   suffices μ L' + μ.outerMeasure (↑U' \ U) ≤ μ.outerMeasure U' by
@@ -376,7 +376,7 @@ theorem borel_le_caratheodory : S ≤ μ.outerMeasure.caratheodory := by
   rw [Opens.coe_mk]
   haveI : Nonempty { M : Compacts G // (M : Set G) ⊆ ↑U' \ closure L } := ⟨⟨⊥, empty_subset _⟩⟩
   rw [ENNReal.add_iSup]
-  refine' iSup_le _
+  refine iSup_le ?_
   rintro ⟨M, hM⟩
   let M' : Compacts G := ⟨closure M, M.isCompact.closure⟩
   suffices μ L' + μ M' ≤ μ.outerMeasure U' by

@@ -154,7 +154,7 @@ theorem quasiErgodic (hf : Ergodic f μ) : QuasiErgodic f μ :=
 /-- See also `Ergodic.ae_empty_or_univ_of_preimage_ae_le`. -/
 theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : MeasurableSet s)
     (hs' : f ⁻¹' s ≤ᵐ[μ] s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
-  refine' hf.quasiErgodic.ae_empty_or_univ' hs _
+  refine hf.quasiErgodic.ae_empty_or_univ' hs ?_
   refine' ae_eq_of_ae_subset_of_measure_ge hs' (hf.measure_preimage hs).symm.le _ h_fin
   exact measurableSet_preimage hf.measurable hs
 #align ergodic.ae_empty_or_univ_of_preimage_ae_le' Ergodic.ae_empty_or_univ_of_preimage_ae_le'
@@ -163,7 +163,7 @@ theorem ae_empty_or_univ_of_preimage_ae_le' (hf : Ergodic f μ) (hs : Measurable
 theorem ae_empty_or_univ_of_ae_le_preimage' (hf : Ergodic f μ) (hs : MeasurableSet s)
     (hs' : s ≤ᵐ[μ] f ⁻¹' s) (h_fin : μ s ≠ ∞) : s =ᵐ[μ] (∅ : Set α) ∨ s =ᵐ[μ] univ := by
   replace h_fin : μ (f ⁻¹' s) ≠ ∞ := by rwa [hf.measure_preimage hs]
-  refine' hf.quasiErgodic.ae_empty_or_univ' hs _
+  refine hf.quasiErgodic.ae_empty_or_univ' hs ?_
   exact (ae_eq_of_ae_subset_of_measure_ge hs' (hf.measure_preimage hs).le hs h_fin).symm
 #align ergodic.ae_empty_or_univ_of_ae_le_preimage' Ergodic.ae_empty_or_univ_of_ae_le_preimage'
 

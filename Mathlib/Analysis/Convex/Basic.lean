@@ -619,7 +619,7 @@ section
 
 theorem Set.OrdConnected.convex_of_chain [OrderedSemiring 𝕜] [OrderedAddCommMonoid E] [Module 𝕜 E]
     [OrderedSMul 𝕜 E] {s : Set E} (hs : s.OrdConnected) (h : IsChain (· ≤ ·) s) : Convex 𝕜 s := by
-  refine' convex_iff_segment_subset.mpr fun x hx y hy => _
+  refine convex_iff_segment_subset.mpr fun x hx y hy => ?_
   obtain hxy | hyx := h.total hx hy
   · exact (segment_subset_Icc hxy).trans (hs.out hx hy)
   · rw [segment_symm]

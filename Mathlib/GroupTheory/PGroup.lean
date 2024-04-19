@@ -55,7 +55,7 @@ theorem of_bot : IsPGroup p (⊥ : Subgroup G) :=
 
 theorem iff_card [Fact p.Prime] [Fintype G] : IsPGroup p G ↔ ∃ n : ℕ, card G = p ^ n := by
   have hG : card G ≠ 0 := card_ne_zero
-  refine' ⟨fun h => _, fun ⟨n, hn⟩ => of_card hn⟩
+  refine ⟨fun h => ?_, fun ⟨n, hn⟩ => of_card hn⟩
   suffices ∀ q ∈ Nat.factors (card G), q = p by
     use (card G).factors.length
     rw [← List.prod_replicate, ← List.eq_replicate_of_mem this, Nat.prod_factors hG]

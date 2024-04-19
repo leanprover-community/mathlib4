@@ -203,7 +203,7 @@ private theorem add_left' (f f' g : α →₂[μ] E) : ⟪f + f', g⟫ = inner f
 
 private theorem smul_left' (f g : α →₂[μ] E) (r : 𝕜) : ⟪r • f, g⟫ = conj r * inner f g := by
   rw [inner_def, inner_def, ← smul_eq_mul, ← integral_smul]
-  refine' integral_congr_ae ((coeFn_smul r f).mono fun x hx => _)
+  refine integral_congr_ae ((coeFn_smul r f).mono fun x hx => ?_)
   simp only
   rw [smul_eq_mul, ← inner_smul_left, hx, Pi.smul_apply]
   -- Porting note: was
@@ -234,7 +234,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
       setIntegral_congr_ae hs h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∈ s → indicatorConstLp 2 hs hμs c x = c :=
       indicatorConstLp_coeFn_mem
-    refine' h_indicator.mono fun x hx hxs => _
+    refine h_indicator.mono fun x hx hxs => ?_
     congr
     exact hx hxs
   have h_right : (∫ x in sᶜ, ⟪(indicatorConstLp 2 hs hμs c) x, f x⟫ ∂μ) = 0 := by
@@ -247,7 +247,7 @@ theorem inner_indicatorConstLp_eq_setIntegral_inner (f : Lp E 2 μ) (hs : Measur
       exact setIntegral_congr_ae hs.compl h_ae_eq
     have h_indicator : ∀ᵐ x : α ∂μ, x ∉ s → indicatorConstLp 2 hs hμs c x = 0 :=
       indicatorConstLp_coeFn_nmem
-    refine' h_indicator.mono fun x hx hxs => _
+    refine h_indicator.mono fun x hx hxs => ?_
     rw [hx hxs]
     exact inner_zero_left _
   rw [h_left, h_right, add_zero]

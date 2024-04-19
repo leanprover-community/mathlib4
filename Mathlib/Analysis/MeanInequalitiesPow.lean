@@ -270,7 +270,7 @@ theorem rpow_arith_mean_le_arith_mean_rpow (w z : ι → ℝ≥0∞) (hw' : ∑ 
     -- verify the hypothesis `∑ i in s, (w i).toNNReal = 1`, using `∑ i in s, w i = 1` .
     have h_sum_nnreal : ∑ i in s, w i = ↑(∑ i in s, (w i).toNNReal) := by
       rw [coe_finset_sum]
-      refine' sum_congr rfl fun i hi => (coe_toNNReal _).symm
+      refine sum_congr rfl fun i hi => (coe_toNNReal ?_).symm
       refine' (lt_top_of_sum_ne_top _ hi).ne
       exact hw'.symm ▸ ENNReal.one_ne_top
     rwa [← coe_inj, ← h_sum_nnreal]

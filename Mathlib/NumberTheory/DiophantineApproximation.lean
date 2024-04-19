@@ -107,7 +107,7 @@ theorem exists_int_int_abs_mul_sub_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
         -- simp only [floor_eq_zero_iff, algebraMap.coe_zero, mul_zero, fract_zero,
         --   zero_mul, Set.left_mem_Ico, zero_lt_one]
         simp only [f, cast_zero, mul_zero, fract_zero, zero_mul, floor_zero]
-      refine' Ne.lt_of_le (fun h => n_pos.ne _) (mem_Icc.mp hm).1
+      refine Ne.lt_of_le (fun h => n_pos.ne ?_) (mem_Icc.mp hm).1
       exact mod_cast hf₀.symm.trans (h.symm ▸ hf : f 0 = n)
     refine' ⟨⌊ξ * m⌋ + 1, m, hm₀, (mem_Icc.mp hm).2, _⟩
     rw [cast_add, ← sub_sub, sub_mul, cast_one, one_mul, abs_le]
@@ -244,7 +244,7 @@ theorem den_le_and_le_num_le_of_sub_lt_one_div_den_sq {ξ q : ℚ}
     · have hξ₀ : (0 : ℚ) < ξ.den := Nat.cast_pos.mpr ξ.pos
       rw [← Rat.num_div_den ξ, div_mul_eq_mul_div, div_sub' _ _ _ hξ₀.ne', abs_div, abs_of_pos hξ₀,
         div_lt_iff hξ₀, div_mul_comm, mul_one] at h
-      refine' Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt _ h).le
+      refine Nat.cast_le.mp ((one_lt_div hq₀).mp <| lt_of_le_of_lt ?_ h).le
       norm_cast
       rw [mul_comm _ q.num]
       exact Int.one_le_abs (sub_ne_zero_of_ne <| mt Rat.eq_iff_mul_eq_mul.mpr H)
@@ -277,7 +277,7 @@ theorem finite_rat_abs_sub_lt_one_div_den_sq (ξ : ℚ) :
     refine' ⟨q.den, Set.mem_Ioc.mpr ⟨q.pos, hd⟩, _⟩
     simp only [prod_singleton, mem_image, mem_Icc, (congr_arg Prod.snd (Eq.symm hq₂)).trans rfl]
     exact ⟨q.num, hn, hq₂⟩
-  refine' Finite.of_finite_image (Finite.subset _ H) (injOn_of_injective hinj s)
+  refine Finite.of_finite_image (Finite.subset ?_ H) (injOn_of_injective hinj s)
   exact Finite.biUnion (finite_Ioc _ _) fun x _ => Finite.prod (finite_Icc _ _) (finite_singleton _)
 #align rat.finite_rat_abs_sub_lt_one_div_denom_sq Rat.finite_rat_abs_sub_lt_one_div_den_sq
 
@@ -420,11 +420,11 @@ private theorem aux₁ : 0 < fract ξ := by
   have hv₀ : (0 : ℝ) < v := cast_pos.mpr (zero_lt_two.trans_le hv)
   obtain ⟨hv₁, hv₂⟩ := aux₀ (zero_lt_two.trans_le hv)
   obtain ⟨hcop, _, h⟩ := h
-  refine' fract_pos.mpr fun hf => _
+  refine fract_pos.mpr fun hf => ?_
   rw [hf] at h
   have H : (2 * v - 1 : ℝ) < 1 := by
-    refine'
-      (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt _ h))
+    refine
+      (mul_lt_iff_lt_one_right hv₀).mp ((inv_lt_inv hv₀ (mul_pos hv₁ hv₂)).mp (lt_of_le_of_lt ?_ h))
     have h' : (⌊ξ⌋ : ℝ) - u / v = (⌊ξ⌋ * v - u) / v := by field_simp
     rw [h', abs_div, abs_of_pos hv₀, ← one_div, div_le_div_right hv₀]
     norm_cast

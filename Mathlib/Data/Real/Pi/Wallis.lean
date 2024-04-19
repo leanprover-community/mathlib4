@@ -99,10 +99,10 @@ theorem le_W (k : ℕ) : ((2 : ℝ) * k + 1) / (2 * k + 2) * (π / 2) ≤ W k :=
 #align real.wallis.le_W Real.Wallis.le_W
 
 theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
-  refine' tendsto_of_tendsto_of_tendsto_of_le_of_le _ tendsto_const_nhds le_W W_le
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_ tendsto_const_nhds le_W W_le
   have : 𝓝 (π / 2) = 𝓝 ((1 - 0) * (π / 2)) := by rw [sub_zero, one_mul]
   rw [this]
-  refine' Tendsto.mul _ tendsto_const_nhds
+  refine Tendsto.mul ?_ tendsto_const_nhds
   have h : ∀ n : ℕ, ((2 : ℝ) * n + 1) / (2 * n + 2) = 1 - 1 / (2 * n + 2) := by
     intro n
     rw [sub_div' _ _ _ (ne_of_gt (add_pos_of_nonneg_of_pos (mul_nonneg
@@ -110,7 +110,7 @@ theorem tendsto_W_nhds_pi_div_two : Tendsto W atTop (𝓝 <| π / 2) := by
     congr 1; ring
   simp_rw [h]
   refine' (tendsto_const_nhds.div_atTop _).const_sub _
-  refine' Tendsto.atTop_add _ tendsto_const_nhds
+  refine Tendsto.atTop_add ?_ tendsto_const_nhds
   exact tendsto_natCast_atTop_atTop.const_mul_atTop two_pos
 #align real.wallis.tendsto_W_nhds_pi_div_two Real.Wallis.tendsto_W_nhds_pi_div_two
 

@@ -751,7 +751,7 @@ theorem sqrtTwoAddSeries_nonneg {x : ℝ} (h : 0 ≤ x) : ∀ n : ℕ, 0 ≤ sqr
 theorem sqrtTwoAddSeries_lt_two : ∀ n : ℕ, sqrtTwoAddSeries 0 n < 2
   | 0 => by norm_num
   | n + 1 => by
-    refine' lt_of_lt_of_le _ (sqrt_sq zero_lt_two.le).le
+    refine lt_of_lt_of_le ?_ (sqrt_sq zero_lt_two.le).le
     rw [sqrtTwoAddSeries, sqrt_lt_sqrt_iff, ← lt_sub_iff_add_lt']
     · refine' (sqrtTwoAddSeries_lt_two n).trans_le _
       norm_num

@@ -718,11 +718,11 @@ theorem split_eq_scale_split' : ∀ {o o' m} [NF o], split' o = (o', m) → spli
       haveI := h.snd
       simp only [split_eq_scale_split' h', and_imp]
       have : 1 + (e - 1) = e := by
-        refine' repr_inj.1 _
+        refine repr_inj.1 ?_
         simp only [repr_add, repr, opow_zero, Nat.succPNat_coe, Nat.cast_one, mul_one, add_zero,
           repr_sub]
         have := mt repr_inj.1 e0
-        refine' Ordinal.add_sub_cancel_of_le _
+        refine Ordinal.add_sub_cancel_of_le ?_
         have := one_le_iff_ne_zero.2 this
         exact this
       intros
@@ -913,7 +913,7 @@ theorem repr_opow_aux₂ {a0 a'} [N0 : NF a0] [Na' : NF a'] (m : ℕ) (d : ω �
   have Rl : R < ω ^ (repr a0 * succ ↑k) := by
     by_cases k0 : k = 0
     · simp [R, k0]
-      refine' lt_of_lt_of_le _ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
+      refine lt_of_lt_of_le ?_ (opow_le_opow_right omega_pos (one_le_iff_ne_zero.2 e0))
       cases' m with m <;> simp [opowAux, omega_pos]
       rw [← add_one_eq_succ, ← Nat.cast_succ]
       apply nat_lt_omega

@@ -90,7 +90,7 @@ theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι →
     filter_upwards [hb_nonneg, bound_summable]
       with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
   have hF_integrable : ∀ n, Integrable (F n) μ := by
-    refine' fun n => bound_integrable.mono' (hF_meas n) _
+    refine fun n => bound_integrable.mono' (hF_meas n) ?_
     exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
   simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
   refine' tendsto_integral_filter_of_dominated_convergence
@@ -112,7 +112,7 @@ theorem integral_tsum {ι} [Countable ι] {f : ι → α → G} (hf : ∀ i, AES
   have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
   have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
     rw [← lintegral_tsum hf''] at hf'
-    refine' (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono _
+    refine (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono ?_
     intro x hx
     rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
     exact hx.ne
@@ -179,7 +179,7 @@ theorem _root_.Antitone.tendsto_setIntegral (hsm : ∀ i, MeasurableSet (s i)) (
   · rw [integrable_indicator_iff (hsm 0)]
     exact hfi.norm
   · simp_rw [norm_indicator_eq_indicator_norm]
-    refine' fun n => eventually_of_forall fun x => _
+    refine fun n => eventually_of_forall fun x => ?_
     exact indicator_le_indicator_of_subset (h_anti (zero_le n)) (fun a => norm_nonneg _) _
   · filter_upwards [] with a using le_trans (h_anti.tendsto_indicator _ _ _) (pure_le_nhds _)
 #align antitone.tendsto_set_integral Antitone.tendsto_setIntegral
@@ -339,7 +339,7 @@ theorem continuousWithinAt_primitive (hb₀ : μ {b₀} = 0)
       · exact ⟨min_le_of_left_le (min_le_right _ _),
           le_max_of_le_right (h₁.trans <| h₂.trans (le_max_right a b₂))⟩
     apply ContinuousWithinAt.congr _ this (this _ h₀); clear this
-    refine' continuousWithinAt_const.add _
+    refine continuousWithinAt_const.add ?_
     have :
       (fun b => ∫ x in b₁..b, f x ∂μ) =ᶠ[𝓝[Icc b₁ b₂] b₀] fun b =>
         ∫ x in b₁..b₂, indicator {x | x ≤ b} f x ∂μ := by
@@ -466,7 +466,7 @@ theorem continuousOn_primitive (h_int : IntegrableOn f (Icc a b) μ) :
       simp_rw [integral_of_le x_in.1]
     rw [continuousOn_congr this]
     intro x₀ _
-    refine' continuousWithinAt_primitive (measure_singleton x₀) _
+    refine continuousWithinAt_primitive (measure_singleton x₀) ?_
     simp only [intervalIntegrable_iff_integrableOn_Ioc_of_le, min_eq_left, max_eq_right, h,
       min_self]
     exact h_int.mono Ioc_subset_Icc_self le_rfl

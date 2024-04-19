@@ -2051,7 +2051,7 @@ theorem mex_le_lsub {ι : Type u} (f : ι → Ordinal.{max u v}) : mex.{_, v} f 
 
 theorem mex_monotone {α β : Type u} {f : α → Ordinal.{max u v}} {g : β → Ordinal.{max u v}}
     (h : Set.range f ⊆ Set.range g) : mex.{_, v} f ≤ mex.{_, v} g := by
-  refine' mex_le_of_ne fun i hi => _
+  refine mex_le_of_ne fun i hi => ?_
   cases' h ⟨i, rfl⟩ with j hj
   rw [← hj] at hi
   exact ne_mex g j hi
@@ -2481,7 +2481,7 @@ theorem isLimit_iff_omega_dvd {a : Ordinal} : IsLimit a ↔ a ≠ 0 ∧ ω ∣ a
       (add_le_add_right (mul_div_le _ _) _).trans
         (lt_sub.1 <| nat_lt_limit (sub_isLimit l hx) _).le
   · rcases h with ⟨a0, b, rfl⟩
-    refine' mul_isLimit_left omega_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt _ a0)
+    refine mul_isLimit_left omega_isLimit (Ordinal.pos_iff_ne_zero.2 <| mt ?_ a0)
     intro e
     simp only [e, mul_zero]
 #align ordinal.is_limit_iff_omega_dvd Ordinal.isLimit_iff_omega_dvd

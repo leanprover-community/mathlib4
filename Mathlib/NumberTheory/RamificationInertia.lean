@@ -377,7 +377,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   -- And we conclude `L = span L {det A} ≤ span K b`, so `span K b` spans everything.
   · intro x hx
     rw [Submodule.restrictScalars_mem, IsScalarTower.algebraMap_apply R S L] at hx
-    refine' IsFractionRing.ideal_span_singleton_map_subset R _ hRL span_d hx
+    refine IsFractionRing.ideal_span_singleton_map_subset R ?_ hRL span_d hx
     haveI : NoZeroSMulDivisors R L := NoZeroSMulDivisors.of_algebraMap_injective hRL
     rw [← IsFractionRing.isAlgebraic_iff' R S]
     intro x
@@ -666,7 +666,7 @@ theorem finrank_prime_pow_ramificationIdx [IsDedekindDomain S] (hP0 : P ≠ ⊥)
   by_cases hP : FiniteDimensional (R ⧸ p) (S ⧸ P)
   · haveI := hP
     haveI := (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mpr hP
-    refine' Cardinal.natCast_injective _
+    refine Cardinal.natCast_injective ?_
     rw [finrank_eq_rank', Nat.cast_mul, finrank_eq_rank', hdim, nsmul_eq_mul]
   have hPe := mt (finiteDimensional_iff_of_rank_eq_nsmul he hdim).mp hP
   simp only [finrank_of_infinite_dimensional hP, finrank_of_infinite_dimensional hPe,

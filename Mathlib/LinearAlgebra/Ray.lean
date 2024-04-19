@@ -412,14 +412,14 @@ theorem eq_zero_of_sameRay_neg_smul_right [NoZeroSMulDivisors R M] {r : R} (hr :
   · rfl
   · simpa [hr.ne] using h₀
   · rw [← sub_eq_zero, smul_smul, ← sub_smul, smul_eq_zero] at h
-    refine' h.resolve_left (ne_of_gt <| sub_pos.2 _)
+    refine h.resolve_left (ne_of_gt <| sub_pos.2 ?_)
     exact (mul_neg_of_pos_of_neg hr₂ hr).trans hr₁
 #align eq_zero_of_same_ray_neg_smul_right eq_zero_of_sameRay_neg_smul_right
 
 /-- If a vector is in the same ray as its negation, that vector is zero. -/
 theorem eq_zero_of_sameRay_self_neg [NoZeroSMulDivisors R M] (h : SameRay R x (-x)) : x = 0 := by
   nontriviality M; haveI : Nontrivial R := Module.nontrivial R M
-  refine' eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) _
+  refine eq_zero_of_sameRay_neg_smul_right (neg_lt_zero.2 (zero_lt_one' R)) ?_
   rwa [neg_one_smul]
 #align eq_zero_of_same_ray_self_neg eq_zero_of_sameRay_self_neg
 
@@ -707,7 +707,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :
     (∃ r : R, 0 < r ∧ r • x = y) ↔ SameRay R x y := by
-  refine' ⟨fun h => _, fun h => h.exists_pos_left hx hy⟩
+  refine ⟨fun h => ?_, fun h => h.exists_pos_left hx hy⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_pos_smul_right x hr
 #align exists_pos_left_iff_same_ray exists_pos_left_iff_sameRay
@@ -723,7 +723,7 @@ theorem exists_pos_left_iff_sameRay_and_ne_zero (hx : x ≠ 0) :
 
 theorem exists_nonneg_left_iff_sameRay (hx : x ≠ 0) :
     (∃ r : R, 0 ≤ r ∧ r • x = y) ↔ SameRay R x y := by
-  refine' ⟨fun h => _, fun h => h.exists_nonneg_left hx⟩
+  refine ⟨fun h => ?_, fun h => h.exists_nonneg_left hx⟩
   rcases h with ⟨r, hr, rfl⟩
   exact SameRay.sameRay_nonneg_smul_right x hr
 #align exists_nonneg_left_iff_same_ray exists_nonneg_left_iff_sameRay

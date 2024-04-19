@@ -376,7 +376,7 @@ theorem kreplace_nodupKeys (a : α) (b : β a) {l : List (Sigma β)} :
 theorem Perm.kreplace {a : α} {b : β a} {l₁ l₂ : List (Sigma β)} (nd : l₁.NodupKeys) :
     l₁ ~ l₂ → kreplace a b l₁ ~ kreplace a b l₂ :=
   perm_lookmap _ <| by
-    refine' nd.pairwise_ne.imp _
+    refine nd.pairwise_ne.imp ?_
     intro x y h z h₁ w h₂
     split_ifs at h₁ h₂ with h_2 h_1 <;> cases h₁ <;> cases h₂
     exact (h (h_2.symm.trans h_1)).elim

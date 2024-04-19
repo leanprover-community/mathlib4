@@ -331,7 +331,7 @@ theorem biSup_eq_range_dfinsupp_lsum (p : ι → Prop) [DecidablePred p] (S : ι
     simp only [lsum_apply_apply, sumAddHom_single, LinearMap.toAddMonoidHom_coe, coeSubtype]
   · rintro x ⟨v, rfl⟩
     refine' dfinsupp_sumAddHom_mem _ _ _ fun i _ => _
-    refine' mem_iSup_of_mem i _
+    refine mem_iSup_of_mem i ?_
     by_cases hp : p i
     · simp [hp]
     · simp [hp]
@@ -435,7 +435,7 @@ theorem independent_iff_forall_dfinsupp (p : ι → Submodule R N) :
         lsum ℕ (M := fun i ↦ ↥(p i)) (fun i => (p i).subtype) (erase i v) = x → x = 0 := by
   simp_rw [CompleteLattice.independent_def, Submodule.disjoint_def,
     Submodule.mem_biSup_iff_exists_dfinsupp, exists_imp, filter_ne_eq_erase]
-  refine' forall_congr' fun i => Subtype.forall'.trans _
+  refine forall_congr' fun i => Subtype.forall'.trans ?_
   simp_rw [Submodule.coe_eq_zero]
 #align complete_lattice.independent_iff_forall_dfinsupp CompleteLattice.independent_iff_forall_dfinsupp
 

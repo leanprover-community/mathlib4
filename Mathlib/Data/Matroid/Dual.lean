@@ -75,7 +75,7 @@ section dual
     · simp only [inter_subset_right, true_and]
       exact ⟨B', hB', disjoint_of_subset_left (inter_subset_left _ _) disjoint_sdiff_left⟩
     · rw [and_iff_right hI'X]
-      refine' disjoint_of_subset_right hB'IB _
+      refine disjoint_of_subset_right hB'IB ?_
       rw [disjoint_union_right, and_iff_left hI'B]
       exact disjoint_of_subset hI'X hI.subset disjoint_sdiff_right
     simp only [mem_setOf_eq, subset_inter_iff, and_imp, forall_exists_index]
@@ -186,7 +186,7 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
   simp only [diff_inter_self_eq_diff, mem_diff, not_and, not_not, imp_iff_right he.1.1] at he
   simp_rw [dual_dep_iff_forall, insert_subset_iff, and_iff_right he.1.1,
     and_iff_left ((inter_subset_left _ _).trans (diff_subset _ _))]
-  refine' fun B' hB' ↦ by_contra (fun hem ↦ _)
+  refine fun B' hB' ↦ by_contra (fun hem ↦ ?_)
   rw [nonempty_iff_ne_empty, not_ne_iff, ← union_singleton, diff_inter_diff,
    union_inter_distrib_right, union_empty_iff, singleton_inter_eq_empty, diff_eq,
    inter_right_comm, inter_eq_self_of_subset_right hB'.subset_ground, ← diff_eq,
@@ -194,7 +194,7 @@ theorem Base.compl_inter_basis_of_inter_basis (hB : M.Base B) (hBX : M.Basis (B 
   obtain ⟨f, hfb, hBf⟩ := hB.exchange hB' ⟨he.2, hem.2⟩
 
   have hi : M.Indep (insert f (B ∩ X)) := by
-    refine' hBf.indep.subset (insert_subset_insert _)
+    refine hBf.indep.subset (insert_subset_insert ?_)
     simp_rw [subset_diff, and_iff_right (inter_subset_left _ _), disjoint_singleton_right,
       mem_inter_iff, iff_false_intro he.1.2, and_false, not_false_iff]
   exact hfb.2 (hBX.mem_of_insert_indep (Or.elim (hem.1 hfb.1) (False.elim ∘ hfb.2) id) hi).1

@@ -420,13 +420,13 @@ theorem eventually_nhds {x : X} (p : Y → Prop) (hx : x ∈ e.source) :
 theorem eventually_nhds' {x : X} (p : X → Prop) (hx : x ∈ e.source) :
     (∀ᶠ y in 𝓝 (e x), p (e.symm y)) ↔ ∀ᶠ x in 𝓝 x, p x := by
   rw [e.eventually_nhds _ hx]
-  refine' eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => _)
+  refine eventually_congr ((e.eventually_left_inverse hx).mono fun y hy => ?_)
   rw [hy]
 #align local_homeomorph.eventually_nhds' PartialHomeomorph.eventually_nhds'
 
 theorem eventually_nhdsWithin {x : X} (p : Y → Prop) {s : Set X}
     (hx : x ∈ e.source) : (∀ᶠ y in 𝓝[e.symm ⁻¹' s] e x, p y) ↔ ∀ᶠ x in 𝓝[s] x, p (e x) := by
-  refine' Iff.trans _ eventually_map
+  refine Iff.trans ?_ eventually_map
   rw [e.map_nhdsWithin_eq hx, e.image_source_inter_eq', e.nhdsWithin_target_inter (e.mapsTo hx)]
 #align local_homeomorph.eventually_nhds_within PartialHomeomorph.eventually_nhdsWithin
 
@@ -1190,7 +1190,7 @@ on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
   simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
-  refine' forall₂_congr fun x hx => _
+  refine forall₂_congr fun x hx => ?_
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
   exact IsOpen.mem_nhds e.open_source (e.map_target (h hx))
@@ -1510,7 +1510,7 @@ theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
   rw [ofSet_trans', sets_identity, ← trans_of_set' _ openness₂, trans_assoc]
   refine' EqOnSource.trans' (eqOnSource_refl _) _
   -- f has been eliminated !!!
-  refine' Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) _
+  refine Setoid.trans (symm_trans_self (s.partialHomeomorphSubtypeCoe hs)) ?_
   simp only [mfld_simps, Setoid.refl]
 #align local_homeomorph.subtype_restr_symm_trans_subtype_restr PartialHomeomorph.subtypeRestr_symm_trans_subtypeRestr
 

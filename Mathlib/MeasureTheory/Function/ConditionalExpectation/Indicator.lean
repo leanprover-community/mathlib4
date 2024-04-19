@@ -66,7 +66,7 @@ theorem condexp_indicator_aux (hs : MeasurableSet[m] s) (hf : f =ᵐ[μ.restrict
   swap; · simp_rw [condexp_of_not_le hm, Set.indicator_zero']; rfl
   have hsf_zero : ∀ g : α → E, g =ᵐ[μ.restrict sᶜ] 0 → s.indicator g =ᵐ[μ] g := fun g =>
     indicator_ae_eq_of_restrict_compl_ae_eq_zero (hm _ hs)
-  refine' ((hsf_zero (μ[f|m]) (condexp_ae_eq_restrict_zero hs.compl hf)).trans _).symm
+  refine ((hsf_zero (μ[f|m]) (condexp_ae_eq_restrict_zero hs.compl hf)).trans ?_).symm
   exact condexp_congr_ae (hsf_zero f hf).symm
 #align measure_theory.condexp_indicator_aux MeasureTheory.condexp_indicator_aux
 
@@ -117,7 +117,7 @@ theorem condexp_restrict_ae_eq_restrict (hm : m ≤ m0) [SigmaFinite (μ.trim hm
     (μ.restrict s)[f|m] =ᵐ[μ.restrict s] μ[f|m] := by
   have : SigmaFinite ((μ.restrict s).trim hm) := by rw [← restrict_trim hm _ hs_m]; infer_instance
   rw [ae_eq_restrict_iff_indicator_ae_eq (hm _ hs_m)]
-  refine' EventuallyEq.trans _ (condexp_indicator hf_int hs_m)
+  refine EventuallyEq.trans ?_ (condexp_indicator hf_int hs_m)
   refine' ae_eq_condexp_of_forall_setIntegral_eq hm (hf_int.indicator (hm _ hs_m)) _ _ _
   · intro t ht _
     rw [← integrable_indicator_iff (hm _ ht), Set.indicator_indicator, Set.inter_comm, ←
@@ -151,15 +151,15 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
   have hs_m₂ : MeasurableSet[m₂] s := by rwa [← Set.inter_univ s, ← hs Set.univ, Set.inter_univ]
   by_cases hf_int : Integrable f μ
   swap; · simp_rw [condexp_undef hf_int]; rfl
-  refine' ((condexp_indicator hf_int hs_m).symm.trans _).trans (condexp_indicator hf_int hs_m₂)
+  refine ((condexp_indicator hf_int hs_m).symm.trans ?_).trans (condexp_indicator hf_int hs_m₂)
   refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hm₂
     (fun s _ _ => integrable_condexp.integrableOn)
     (fun s _ _ => integrable_condexp.integrableOn) _ _
     stronglyMeasurable_condexp.aeStronglyMeasurable'
   swap
   · have : StronglyMeasurable[m] (μ[s.indicator f|m]) := stronglyMeasurable_condexp
-    refine' this.aeStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on hm hs_m
-      (fun t => (hs t).mp) _
+    refine this.aeStronglyMeasurable'.aeStronglyMeasurable'_of_measurableSpace_le_on hm hs_m
+      (fun t => (hs t).mp) ?_
     exact condexp_ae_eq_restrict_zero hs_m.compl (indicator_ae_eq_restrict_compl (hm _ hs_m))
   intro t ht _
   have : ∫ x in t, (μ[s.indicator f|m]) x ∂μ = ∫ x in s ∩ t, (μ[s.indicator f|m]) x ∂μ := by
@@ -175,7 +175,7 @@ theorem condexp_ae_eq_restrict_of_measurableSpace_eq_on {m m₂ m0 : MeasurableS
           refine' setIntegral_congr_ae (hm₂ _ ht) _
           filter_upwards [this] with x hx _ using hx
         _ = 0 := integral_zero _ _
-    refine' condexp_ae_eq_restrict_zero hs_m.compl _
+    refine condexp_ae_eq_restrict_zero hs_m.compl ?_
     exact indicator_ae_eq_restrict_compl (hm _ hs_m)
   have hst_m : MeasurableSet[m] (s ∩ t) := (hs _).mpr (hs_m₂.inter ht)
   simp_rw [this, setIntegral_condexp hm₂ (hf_int.indicator (hm _ hs_m)) ht,

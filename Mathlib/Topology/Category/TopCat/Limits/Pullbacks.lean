@@ -428,7 +428,7 @@ theorem coinduced_of_isColimit {F : J ⥤ TopCatMax.{v, u}} (c : Cocone F) (hc :
     c.pt.str = ⨆ j, (F.obj j).str.coinduced (c.ι.app j) := by
   let homeo := homeoOfIso (hc.coconePointUniqueUpToIso (colimitCoconeIsColimit F))
   ext
-  refine' homeo.symm.isOpen_preimage.symm.trans (Iff.trans _ isOpen_iSup_iff.symm)
+  refine homeo.symm.isOpen_preimage.symm.trans (Iff.trans ?_ isOpen_iSup_iff.symm)
   exact isOpen_iSup_iff
 #align Top.coinduced_of_is_colimit TopCat.coinduced_of_isColimit
 

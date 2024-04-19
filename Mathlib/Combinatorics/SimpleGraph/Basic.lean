@@ -738,7 +738,7 @@ theorem incidenceSet_inter_incidenceSet_subset (h : a ≠ b) :
 
 theorem incidenceSet_inter_incidenceSet_of_adj (h : G.Adj a b) :
     G.incidenceSet a ∩ G.incidenceSet b = {s(a, b)} := by
-  refine' (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm _
+  refine (G.incidenceSet_inter_incidenceSet_subset <| h.ne).antisymm ?_
   rintro _ (rfl : _ = s(a, b))
   exact ⟨G.mk'_mem_incidenceSet_left_iff.2 h, G.mk'_mem_incidenceSet_right_iff.2 h⟩
 #align simple_graph.incidence_set_inter_incidence_set_of_adj SimpleGraph.incidenceSet_inter_incidenceSet_of_adj

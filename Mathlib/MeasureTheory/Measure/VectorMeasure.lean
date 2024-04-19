@@ -895,7 +895,7 @@ variable (v w : VectorMeasure α M)
 nonrec theorem neg_le_neg {i : Set α} (hi : MeasurableSet i) (h : v ≤[i] w) : -w ≤[i] -v := by
   intro j hj₁
   rw [restrict_apply _ hi hj₁, restrict_apply _ hi hj₁, neg_apply, neg_apply]
-  refine' neg_le_neg _
+  refine neg_le_neg ?_
   rw [← restrict_apply _ hi hj₁, ← restrict_apply _ hi hj₁]
   exact h j hj₁
 #align measure_theory.vector_measure.neg_le_neg MeasureTheory.VectorMeasure.neg_le_neg
@@ -914,7 +914,7 @@ variable (v w : VectorMeasure α M) {i j : Set α}
 
 theorem restrict_le_restrict_iUnion {f : ℕ → Set α} (hf₁ : ∀ n, MeasurableSet (f n))
     (hf₂ : ∀ n, v ≤[f n] w) : v ≤[⋃ n, f n] w := by
-  refine' restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => _
+  refine restrict_le_restrict_of_subset_le v w fun a ha₁ ha₂ => ?_
   have ha₃ : ⋃ n, a ∩ disjointed f n = a := by
     rwa [← Set.inter_iUnion, iUnion_disjointed, Set.inter_eq_left]
   have ha₄ : Pairwise (Disjoint on fun n => a ∩ disjointed f n) :=

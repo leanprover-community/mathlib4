@@ -216,14 +216,14 @@ variable [PartialOrder α] {a b : α}
 @[simp]
 theorem Set.Ici.isAtom_iff {b : Set.Ici a} : IsAtom b ↔ a ⋖ b := by
   rw [← bot_covBy_iff]
-  refine' (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) _).symm
+  refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => a ≤ c) ?_).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Ici
 #align set.Ici.is_atom_iff Set.Ici.isAtom_iff
 
 @[simp]
 theorem Set.Iic.isCoatom_iff {a : Set.Iic b} : IsCoatom a ↔ ↑a ⋖ b := by
   rw [← covBy_top_iff]
-  refine' (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) _).symm
+  refine (Set.OrdConnected.apply_covBy_apply_iff (OrderEmbedding.subtype fun c => c ≤ b) ?_).symm
   simpa only [OrderEmbedding.subtype_apply, Subtype.range_coe_subtype] using Set.ordConnected_Iic
 #align set.Iic.is_coatom_iff Set.Iic.isCoatom_iff
 
@@ -456,7 +456,7 @@ theorem sSup_atoms_le_eq (b : α) : sSup { a : α | IsAtom a ∧ a ≤ b } = b :
 
 @[simp]
 theorem sSup_atoms_eq_top : sSup { a : α | IsAtom a } = ⊤ := by
-  refine' Eq.trans (congr rfl (Set.ext fun x => _)) (sSup_atoms_le_eq ⊤)
+  refine Eq.trans (congr rfl (Set.ext fun x => ?_)) (sSup_atoms_le_eq ⊤)
   exact (and_iff_left le_top).symm
 #align Sup_atoms_eq_top sSup_atoms_eq_top
 
@@ -817,7 +817,7 @@ theorem isAtom_of_u_bot [OrderBot α] [OrderBot β] {l : α → β} {u : β → 
 theorem isAtom_iff [OrderBot α] [IsAtomic α] [OrderBot β] {l : α → β} {u : β → α}
     (gi : GaloisInsertion l u) (hbot : u ⊥ = ⊥) (h_atom : ∀ a, IsAtom a → u (l a) = a) (a : α) :
     IsAtom (l a) ↔ IsAtom a := by
-  refine' ⟨fun hla => _, fun ha => gi.isAtom_of_u_bot hbot ((h_atom a ha).symm ▸ ha)⟩
+  refine ⟨fun hla => ?_, fun ha => gi.isAtom_of_u_bot hbot ((h_atom a ha).symm ▸ ha)⟩
   obtain ⟨a', ha', hab'⟩ :=
     (eq_bot_or_exists_atom_le (u (l a))).resolve_left (hbot ▸ fun h => hla.1 (gi.u_injective h))
   have :=

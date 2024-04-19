@@ -992,14 +992,14 @@ section LinearOrderedField
 variable {α : Type*} [LinearOrderedField α] [FloorRing α] {p : α} (hp : 0 < p)
 
 theorem toIcoDiv_eq_floor (a b : α) : toIcoDiv hp a b = ⌊(b - a) / p⌋ := by
-  refine' toIcoDiv_eq_of_sub_zsmul_mem_Ico hp _
+  refine toIcoDiv_eq_of_sub_zsmul_mem_Ico hp ?_
   rw [Set.mem_Ico, zsmul_eq_mul, ← sub_nonneg, add_comm, sub_right_comm, ← sub_lt_iff_lt_add,
     sub_right_comm _ _ a]
   exact ⟨Int.sub_floor_div_mul_nonneg _ hp, Int.sub_floor_div_mul_lt _ hp⟩
 #align to_Ico_div_eq_floor toIcoDiv_eq_floor
 
 theorem toIocDiv_eq_neg_floor (a b : α) : toIocDiv hp a b = -⌊(a + p - b) / p⌋ := by
-  refine' toIocDiv_eq_of_sub_zsmul_mem_Ioc hp _
+  refine toIocDiv_eq_of_sub_zsmul_mem_Ioc hp ?_
   rw [Set.mem_Ioc, zsmul_eq_mul, Int.cast_neg, neg_mul, sub_neg_eq_add, ← sub_nonneg,
     sub_add_eq_sub_sub]
   refine' ⟨_, Int.sub_floor_div_mul_nonneg _ hp⟩
@@ -1048,7 +1048,7 @@ section LinearOrderedAddCommGroup
 variable {α : Type*} [LinearOrderedAddCommGroup α] [Archimedean α] {p : α} (hp : 0 < p) (a : α)
 
 theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
+  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIocDiv_zsmul_mem_Ioc hp a b with ⟨hl, hr⟩
   refine' ⟨toIocDiv hp a b, ⟨lt_sub_iff_add_lt.mp hl, _⟩⟩
   rw [add_smul, one_smul, ← add_assoc]
@@ -1056,7 +1056,7 @@ theorem iUnion_Ioc_add_zsmul : ⋃ n : ℤ, Ioc (a + n • p) (a + (n + 1) • p
 #align Union_Ioc_add_zsmul iUnion_Ioc_add_zsmul
 
 theorem iUnion_Ico_add_zsmul : ⋃ n : ℤ, Ico (a + n • p) (a + (n + 1) • p) = univ := by
-  refine' eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr _
+  refine eq_univ_iff_forall.mpr fun b => mem_iUnion.mpr ?_
   rcases sub_toIcoDiv_zsmul_mem_Ico hp a b with ⟨hl, hr⟩
   refine' ⟨toIcoDiv hp a b, ⟨le_sub_iff_add_le.mp hl, _⟩⟩
   rw [add_smul, one_smul, ← add_assoc]

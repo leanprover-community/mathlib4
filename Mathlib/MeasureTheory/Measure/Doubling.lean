@@ -77,7 +77,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
     induction' n with n ih
     · simp
     replace ih := eventually_nhdsWithin_pos_mul_left (two_pos : 0 < (2 : ℝ)) ih
-    refine' (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => _
+    refine (ih.and (exists_measure_closedBall_le_mul' μ)).mono fun ε hε x => ?_
     calc
       μ (closedBall x ((2 : ℝ) ^ (n + 1) * ε)) = μ (closedBall x ((2 : ℝ) ^ n * (2 * ε))) := by
         rw [pow_succ, mul_assoc]
@@ -94,7 +94,7 @@ theorem exists_eventually_forall_measure_closedBall_le_mul (K : ℝ) :
       ⟨C ^ ⌈Real.logb 2 K⌉₊,
         ((hμ ⌈Real.logb 2 K⌉₊).and eventually_mem_nhdsWithin).mono fun ε hε x t ht =>
           le_trans (measure_mono <| closedBall_subset_closedBall _) (hε.1 x)⟩
-    refine' mul_le_mul_of_nonneg_right (ht.trans _) (mem_Ioi.mp hε.2).le
+    refine mul_le_mul_of_nonneg_right (ht.trans ?_) (mem_Ioi.mp hε.2).le
     conv_lhs => rw [← Real.rpow_logb two_pos (by norm_num) (by linarith : 0 < K)]
     rw [← Real.rpow_natCast]
     exact Real.rpow_le_rpow_of_exponent_le one_le_two (Nat.le_ceil (Real.logb 2 K))
@@ -123,7 +123,7 @@ theorem eventually_measure_mul_le_scalingConstantOf_mul (K : ℝ) :
   · have : t * r < 0 := mul_neg_of_pos_of_neg ht.1 rneg
     simp only [closedBall_eq_empty.2 this, measure_empty, zero_le']
   · simp only [mul_zero, closedBall_zero]
-    refine' le_mul_of_one_le_of_le _ le_rfl
+    refine le_mul_of_one_le_of_le ?_ le_rfl
     apply ENNReal.one_le_coe_iff.2 (le_max_right _ _)
   · apply (hR ⟨rpos, hr⟩ x t ht.2).trans _
     exact mul_le_mul_right' (ENNReal.coe_le_coe.2 (le_max_left _ _)) _

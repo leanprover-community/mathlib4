@@ -242,7 +242,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     suffices 0 ≤ ∑' l : ℕ, s (⋃ _ : l < k, restrictNonposSeq s i l) by
       rw [sub_neg]
       exact lt_of_lt_of_le hi₂ this
-    refine' tsum_nonneg _
+    refine tsum_nonneg ?_
     intro l; by_cases h : l < k
     · convert h₁ _ h
       ext x
@@ -401,7 +401,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
       of_union (Set.disjoint_of_subset_right (Set.Subset.trans hD hC₁) disjoint_compl_right) hA₁
         hD₁]
     linarith
-  refine' not_le.2 this _
+  refine not_le.2 this ?_
   refine' csInf_le bddBelow_measureOfNegatives ⟨A ∪ D, ⟨_, _⟩, rfl⟩
   · exact hA₁.union hD₁
   · exact restrict_le_restrict_union _ _ hA₁ hA₂ hD₁ hD₂

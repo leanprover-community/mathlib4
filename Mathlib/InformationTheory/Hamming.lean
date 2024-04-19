@@ -436,7 +436,7 @@ instance : PseudoMetricSpace (Hamming β) where
     · rintro ⟨_, hε, hs⟩ ⟨_, _⟩ hab
       rw [mem_idRel] at hab
       rw [hab]
-      refine' hs (lt_of_eq_of_lt _ hε)
+      refine hs (lt_of_eq_of_lt ?_ hε)
       exact mod_cast hammingDist_self _
   toBornology := ⟨⊥, bot_le⟩
   cobounded_sets := by

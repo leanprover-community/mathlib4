@@ -67,10 +67,10 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
-    refine' card_le_card _
+    refine card_le_card ?_
     simp_rw [image_subset_iff, mem_bipartiteBelow]
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
-  refine' le_trans _ tsub_tsub_le_tsub_add
+  refine le_trans ?_ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
   refine' card_le_card fun t ht => _
   -- Porting note: commented out the following line
@@ -212,7 +212,7 @@ theorem sum_card_slice_div_choose_le_one [Fintype α]
     (∑ r in range (Fintype.card α + 1), ((𝒜 # r).card : 𝕜) / (Fintype.card α).choose r) ≤ 1 := by
   classical
     rw [← sum_flip]
-    refine' (le_card_falling_div_choose le_rfl h𝒜).trans _
+    refine (le_card_falling_div_choose le_rfl h𝒜).trans ?_
     rw [div_le_iff] <;> norm_cast
     · simpa only [Nat.sub_self, one_mul, Nat.choose_zero_right, falling] using
         Set.Sized.card_le (sized_falling 0 𝒜)
@@ -239,7 +239,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
-    refine' (sum_le_sum fun r hr => _).trans (sum_card_slice_div_choose_le_one h𝒜)
+    refine (sum_le_sum fun r hr => ?_).trans (sum_card_slice_div_choose_le_one h𝒜)
     rw [mem_range] at hr
     refine' div_le_div_of_nonneg_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _

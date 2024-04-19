@@ -448,7 +448,7 @@ to be finite. -/
 theorem map_piecewise_add [DecidableEq ι] (m m' : ∀ i, M₁ i) (t : Finset ι) :
     f (t.piecewise (m + m') m') = ∑ s in t.powerset, f (s.piecewise m m') := by
   revert m'
-  refine' Finset.induction_on t (by simp) _
+  refine Finset.induction_on t (by simp) ?_
   intro i t hit Hrec m'
   have A : (insert i t).piecewise (m + m') m' = update (t.piecewise (m + m') m') i (m i + m' i) :=
     t.piecewise_insert _ _ _
@@ -1060,7 +1060,7 @@ map is multiplied by `∏ i in s, c i`. This is mainly an auxiliary statement to
 require the index set `ι` to be finite. -/
 theorem map_piecewise_smul [DecidableEq ι] (c : ι → R) (m : ∀ i, M₁ i) (s : Finset ι) :
     f (s.piecewise (fun i => c i • m i) m) = (∏ i in s, c i) • f m := by
-  refine' s.induction_on (by simp) _
+  refine s.induction_on (by simp) ?_
   intro j s j_not_mem_s Hrec
   have A :
     Function.update (s.piecewise (fun i => c i • m i) m) j (m j) =

@@ -368,7 +368,7 @@ theorem normalCore_eq_ker : H.normalCore = (MulAction.toPermHom G (G ⧸ H)).ker
   apply le_antisymm
   · intro g hg
     apply Equiv.Perm.ext
-    refine' fun q ↦ QuotientGroup.induction_on q _
+    refine fun q ↦ QuotientGroup.induction_on q ?_
     refine' fun g' => (MulAction.Quotient.smul_mk H g g').trans (QuotientGroup.eq.mpr _)
     rw [smul_eq_mul, mul_inv_rev, ← inv_inv g', inv_inv]
     exact H.normalCore.inv_mem hg g'⁻¹

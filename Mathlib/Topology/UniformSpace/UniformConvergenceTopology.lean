@@ -382,7 +382,7 @@ protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
   -- This follows directly from the fact that the upper adjoint in a Galois connection maps
   -- infimas to infimas.
   rw [inf_eq_iInf, inf_eq_iInf, UniformFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_fun.inf_eq UniformFun.inf_eq
 
@@ -522,7 +522,7 @@ protected def uniformEquivPiComm : UniformEquiv (α →ᵤ ∀ i, δ i) (∀ i, 
       unfold Pi.uniformSpace
       rw [UniformSpace.ofCoreEq_toCore, UniformSpace.ofCoreEq_toCore,
         UniformSpace.comap_iInf, UniformFun.iInf_eq]
-      refine' iInf_congr fun i => _
+      refine iInf_congr fun i => ?_
       rw [← UniformSpace.comap_comap, UniformFun.comap_eq]
       rfl
 #align uniform_fun.uniform_equiv_Pi_comm UniformFun.uniformEquivPiComm
@@ -768,7 +768,7 @@ protected theorem iInf_eq {u : ι → UniformSpace γ} :
 protected theorem inf_eq {u₁ u₂ : UniformSpace γ} :
     𝒱(α, γ, 𝔖, u₁ ⊓ u₂) = 𝒱(α, γ, 𝔖, u₁) ⊓ 𝒱(α, γ, 𝔖, u₂) := by
   rw [inf_eq_iInf, inf_eq_iInf, UniformOnFun.iInf_eq]
-  refine' iInf_congr fun i => _
+  refine iInf_congr fun i => ?_
   cases i <;> rfl
 #align uniform_on_fun.inf_eq UniformOnFun.inf_eq
 
@@ -849,7 +849,7 @@ protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α
   rw [this, @UniformSpace.comap_comap (α →ᵤ[𝔖] β) (f '' t →ᵤ β)]
   -- But this is exactly monotonicity of `comap` applied to
   -- `UniformFun.precomp_continuous`.
-  refine' UniformSpace.comap_mono _
+  refine UniformSpace.comap_mono ?_
   rw [← uniformContinuous_iff]
   exact UniformFun.precomp_uniformContinuous
 #align uniform_on_fun.precomp_uniform_continuous UniformOnFun.precomp_uniformContinuous
@@ -900,9 +900,9 @@ of `TendstoUniformlyOn`) for all `S ∈ 𝔖`. -/
 protected theorem tendsto_iff_tendstoUniformlyOn {F : ι → α →ᵤ[𝔖] β} {f : α →ᵤ[𝔖] β} :
     Tendsto F p (𝓝 f) ↔ ∀ s ∈ 𝔖, TendstoUniformlyOn (toFun 𝔖 ∘ F) (toFun 𝔖 f) p s := by
   rw [UniformOnFun.topologicalSpace_eq, nhds_iInf, tendsto_iInf]
-  refine' forall_congr' fun s => _
+  refine forall_congr' fun s => ?_
   rw [nhds_iInf, tendsto_iInf]
-  refine' forall_congr' fun hs => _
+  refine forall_congr' fun hs => ?_
   rw [nhds_induced (T := _), tendsto_comap_iff, tendstoUniformlyOn_iff_tendstoUniformly_comp_coe,
     UniformFun.tendsto_iff_tendstoUniformly]
   rfl
@@ -963,7 +963,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
     congr
     rw [Pi.uniformSpace, UniformSpace.ofCoreEq_toCore, Pi.uniformSpace,
       UniformSpace.ofCoreEq_toCore, UniformSpace.comap_iInf, UniformOnFun.iInf_eq]
-    refine' iInf_congr fun i => _
+    refine iInf_congr fun i => ?_
     rw [← UniformSpace.comap_comap, UniformOnFun.comap_eq]
     rfl
 #align uniform_on_fun.uniform_equiv_Pi_comm UniformOnFun.uniformEquivPiComm

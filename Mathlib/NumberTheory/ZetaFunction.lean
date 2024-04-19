@@ -143,7 +143,7 @@ theorem continuousAt_zetaKernel₁ {t : ℝ} (ht : 0 < t) : ContinuousAt zetaKer
     refine' (continuousAt_jacobiTheta _).comp (ContinuousAt.mul _ continuousAt_const)
     · rwa [mul_I_im, ofReal_re]
     · exact continuous_ofReal.continuousAt
-  refine' this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => _)
+  refine this.congr (eventually_of_mem (Ioi_mem_nhds ht) fun u hu => ?_)
   rw [zetaKernel₁_eq_jacobiTheta hu]
 #align continuous_at_zeta_kernel₁ continuousAt_zetaKernel₁
 

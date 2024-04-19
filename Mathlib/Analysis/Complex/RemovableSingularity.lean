@@ -51,7 +51,7 @@ theorem differentiableOn_compl_singleton_and_continuousAt_iff {f : ℂ → E} {s
   rcases eq_or_ne x c with (rfl | hne)
   · refine' (analyticAt_of_differentiable_on_punctured_nhds_of_continuousAt
       _ hc).differentiableAt.differentiableWithinAt
-    refine' eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => _)
+    refine eventually_nhdsWithin_iff.2 ((eventually_mem_nhds.2 hs).mono fun z hz hzx => ?_)
     exact hd.differentiableAt (inter_mem hz (isOpen_ne.mem_nhds hzx))
   · simpa only [DifferentiableWithinAt, HasFDerivWithinAt, hne.nhdsWithin_diff_singleton] using
       hd x ⟨hx, hne⟩
@@ -145,10 +145,10 @@ theorem two_pi_I_inv_smul_circleIntegral_sub_sq_inv_smul_of_differentiable {U : 
   congr 1
   trans ∮ z in C(c, R), ((z - w₀) ^ 2)⁻¹ • (f z - f w₀)
   · have h1 : ContinuousOn (fun z : ℂ => ((z - w₀) ^ 2)⁻¹) (sphere c R) := by
-      refine' ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => _
+      refine ((continuous_id'.sub continuous_const).pow 2).continuousOn.inv₀ fun w hw h => ?_
       exact sphere_disjoint_ball.ne_of_mem hw hw₀ (sub_eq_zero.mp (sq_eq_zero_iff.mp h))
     have h2 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f z) c R := by
-      refine' ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le _
+      refine ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le ?_
       exact h1.smul (hf.continuousOn.mono (sphere_subset_closedBall.trans hc))
     have h3 : CircleIntegrable (fun z : ℂ => ((z - w₀) ^ 2)⁻¹ • f w₀) c R :=
       ContinuousOn.circleIntegrable (pos_of_mem_ball hw₀).le (h1.smul continuousOn_const)

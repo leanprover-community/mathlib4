@@ -405,7 +405,7 @@ lemma exact_iff_epi_kernel_lift [S.HasHomology] [HasKernel S.g] :
 lemma exact_iff_mono_cokernel_desc [S.HasHomology] [HasCokernel S.f] :
     S.Exact ↔ Mono (cokernel.desc S.f S.g S.zero) := by
   rw [exact_iff_mono_fromOpcycles]
-  refine' (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm _)
+  refine (MorphismProperty.RespectsIso.monomorphisms C).arrow_mk_iso_iff (Iso.symm ?_)
   exact Arrow.isoMk S.opcyclesIsoCokernel.symm (Iso.refl _) (by aesop_cat)
 
 lemma QuasiIso.exact_iff {S₁ S₂ : ShortComplex C} (φ : S₁ ⟶ S₂)

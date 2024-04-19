@@ -197,7 +197,7 @@ theorem tendsto_div_of_monotone_of_tendsto_div_floor_pow (u : ℕ → ℝ) (l : 
       (tendsto_nat_floor_atTop (α := ℝ)).comp (tendsto_pow_atTop_atTop_of_one_lt (cone k)), hc k⟩
   have H : ∀ n : ℕ, (0 : ℝ) < ⌊c k ^ n⌋₊ := by
     intro n
-    refine' zero_lt_one.trans_le _
+    refine zero_lt_one.trans_le ?_
     simp only [Real.rpow_natCast, Nat.one_le_cast, Nat.one_le_floor_iff,
       one_le_pow_of_one_le (cone k).le n]
   have A :
@@ -297,7 +297,7 @@ theorem sum_div_nat_floor_pow_sq_le_div_sq (N : ℕ) {j : ℝ} (hj : 0 < j) {c :
       refine' sum_le_sum fun i _hi => _
       rw [mul_div_assoc', mul_one, div_le_div_iff]; rotate_left
       · apply sq_pos_of_pos
-        refine' zero_lt_one.trans_le _
+        refine zero_lt_one.trans_le ?_
         simp only [Nat.le_floor, one_le_pow_of_one_le, hc.le, Nat.one_le_cast, Nat.cast_one]
       · exact sq_pos_of_pos (pow_pos cpos _)
       rw [one_mul, ← mul_pow]

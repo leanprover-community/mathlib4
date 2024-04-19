@@ -859,7 +859,7 @@ end Filter
 
 -- see Note [lower instance priority]
 instance (priority := 100) NormedDivisionRing.to_hasContinuousInv₀ : HasContinuousInv₀ α := by
-  refine' ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 _⟩
+  refine ⟨fun r r0 => tendsto_iff_norm_sub_tendsto_zero.2 ?_⟩
   have r0' : 0 < ‖r‖ := norm_pos_iff.2 r0
   rcases exists_between r0' with ⟨ε, ε0, εr⟩
   have : ∀ᶠ e in 𝓝 r, ‖e⁻¹ - r⁻¹‖ ≤ ‖r - e‖ / ‖r‖ / ε := by

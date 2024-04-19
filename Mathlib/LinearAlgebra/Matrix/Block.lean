@@ -235,7 +235,7 @@ protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : Bl
     have hb' : image b' univ = (image b univ).erase k := by
       convert image_subtype_ne_univ_eq_image_erase k b
     rw [ih _ (erase_ssubset <| max'_mem _ _) h' hb']
-    refine' Finset.prod_congr rfl fun l hl => _
+    refine Finset.prod_congr rfl fun l hl => ?_
     let he : { a // b' a = l } ≃ { a // b a = l } :=
       haveI hc : ∀ i, b i = l → b i ≠ k := fun i hi => ne_of_eq_of_ne hi (ne_of_mem_erase hl)
       Equiv.subtypeSubtypeEquivSubtype @(hc)

@@ -221,7 +221,7 @@ theorem prod_Ico_reflect (f : ℕ → M) (k : ℕ) {m n : ℕ} (h : m ≤ n + 1)
     exact (add_le_add_iff_right 1).1 (le_trans (Nat.lt_iff_add_one_le.1 hi) h)
   cases' lt_or_le k m with hkm hkm
   · rw [← Nat.Ico_image_const_sub_eq_Ico (this _ hkm)]
-    refine' (prod_image _).symm
+    refine (prod_image ?_).symm
     simp only [mem_Ico]
     rintro i ⟨_, im⟩ j ⟨_, jm⟩ Hij
     rw [← tsub_tsub_cancel_of_le (this _ im), Hij, tsub_tsub_cancel_of_le (this _ jm)]

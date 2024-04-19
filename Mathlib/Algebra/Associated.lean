@@ -154,7 +154,7 @@ theorem Prime.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd [CancelCommMonoidWith
   obtain ⟨y, hy⟩ := hpow
   -- Then we can divide out a common factor of `p ^ n` from the equation `hy`.
   have : a ^ n.succ * x ^ n = p * y := by
-    refine' mul_left_cancel₀ (pow_ne_zero n hp.ne_zero) _
+    refine mul_left_cancel₀ (pow_ne_zero n hp.ne_zero) ?_
     rw [← mul_assoc _ p, ← pow_succ, ← hy, mul_pow, ← mul_assoc (a ^ n.succ), mul_comm _ (p ^ n),
       mul_assoc]
   -- So `p ∣ a` (and we're done) or `p ∣ x`, which can't be the case since it implies `p^2 ∣ b`.
@@ -244,11 +244,11 @@ theorem not_irreducible_pow {α} [Monoid α] {x : α} {n : ℕ} (hn : n ≠ 1) :
 theorem irreducible_or_factor {α} [Monoid α] (x : α) (h : ¬IsUnit x) :
     Irreducible x ∨ ∃ a b, ¬IsUnit a ∧ ¬IsUnit b ∧ a * b = x := by
   haveI := Classical.dec
-  refine' or_iff_not_imp_right.2 fun H => _
+  refine or_iff_not_imp_right.2 fun H => ?_
   simp? [h, irreducible_iff] at H ⊢ says
     simp only [exists_and_left, not_exists, not_and, irreducible_iff, h, not_false_eq_true,
       true_and] at H ⊢
-  refine' fun a b h => by_contradiction fun o => _
+  refine fun a b h => by_contradiction fun o => ?_
   simp? [not_or] at o says simp only [not_or] at o
   exact H _ o.1 _ o.2 h.symm
 #align irreducible_or_factor irreducible_or_factor
@@ -1236,7 +1236,7 @@ section CancelCommMonoidWithZero
 theorem isUnit_of_associated_mul [CancelCommMonoidWithZero α] {p b : α} (h : Associated (p * b) p)
     (hp : p ≠ 0) : IsUnit b := by
   cases' h with a ha
-  refine' isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp _)
+  refine isUnit_of_mul_eq_one b a ((mul_right_inj' hp).mp ?_)
   rwa [← mul_assoc, mul_one]
 #align is_unit_of_associated_mul isUnit_of_associated_mul
 
@@ -1267,7 +1267,7 @@ theorem dvd_prime_pow [CancelCommMonoidWithZero α] {p q : α} (hp : Prime p) (n
     q ∣ p ^ n ↔ ∃ i ≤ n, Associated q (p ^ i) := by
   induction' n with n ih generalizing q
   · simp [← isUnit_iff_dvd_one, associated_one_iff_isUnit]
-  refine' ⟨fun h => _, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
+  refine ⟨fun h => ?_, fun ⟨i, hi, hq⟩ => hq.dvd.trans (pow_dvd_pow p hi)⟩
   rw [pow_succ'] at h
   rcases hp.left_dvd_or_dvd_right_of_dvd_mul h with (⟨q, rfl⟩ | hno)
   · rw [mul_dvd_mul_iff_left hp.ne_zero, ih] at h

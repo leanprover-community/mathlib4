@@ -433,7 +433,7 @@ ring is nontrivial. -/
 theorem AffineIndependent.affineSpan_disjoint_of_disjoint [Nontrivial k] {p : ι → P}
     (ha : AffineIndependent k p) {s1 s2 : Set ι} (hd : Disjoint s1 s2) :
     Disjoint (affineSpan k (p '' s1) : Set P) (affineSpan k (p '' s2)) := by
-  refine' Set.disjoint_left.2 fun p0 hp0s1 hp0s2 => _
+  refine Set.disjoint_left.2 fun p0 hp0s1 hp0s2 => ?_
   cases' ha.exists_mem_inter_of_exists_mem_inter_affineSpan hp0s1 hp0s2 with i hi
   exact Set.disjoint_iff.1 hd hi
 #align affine_independent.affine_span_disjoint_of_disjoint AffineIndependent.affineSpan_disjoint_of_disjoint
@@ -704,7 +704,7 @@ theorem affineIndependent_of_ne_of_mem_of_mem_of_not_mem {s : AffineSubspace k P
     convert affineIndependent_of_ne k hp₁p₂
     ext x
     fin_cases x <;> rfl
-  refine' ha.affineIndependent_of_not_mem_span _
+  refine ha.affineIndependent_of_not_mem_span ?_
   intro h
   refine' hp₃ ((AffineSubspace.le_def' _ s).1 _ p₃ h)
   simp_rw [affineSpan_le, Set.image_subset_iff, Set.subset_def, Set.mem_preimage]
@@ -774,12 +774,12 @@ theorem sign_eq_of_affineCombination_mem_affineSpan_single_lineMap {p : ι → P
   classical
     rw [← s.affineCombination_affineCombinationSingleWeights k p h₁, ←
       s.affineCombination_affineCombinationLineMapWeights p h₂ h₃ c] at hs
-    refine'
+    refine
       sign_eq_of_affineCombination_mem_affineSpan_pair h hw
         (s.sum_affineCombinationSingleWeights k h₁)
         (s.sum_affineCombinationLineMapWeights h₂ h₃ c) hs h₂ h₃
         (Finset.affineCombinationSingleWeights_apply_of_ne k h₁₂.symm)
-        (Finset.affineCombinationSingleWeights_apply_of_ne k h₁₃.symm) _
+        (Finset.affineCombinationSingleWeights_apply_of_ne k h₁₃.symm) ?_
     rw [Finset.affineCombinationLineMapWeights_apply_left h₂₃,
       Finset.affineCombinationLineMapWeights_apply_right h₂₃]
     simp_all only [sub_pos, sign_pos]

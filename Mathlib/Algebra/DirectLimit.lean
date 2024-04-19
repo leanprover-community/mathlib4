@@ -290,7 +290,7 @@ theorem toModule_totalize_of_le [∀ i (k : G i), Decidable (k ≠ 0)] {x : Dire
   rw [← @DFinsupp.sum_single ι G _ _ _ x]
   unfold DFinsupp.sum
   simp only [map_sum]
-  refine' Finset.sum_congr rfl fun k hk => _
+  refine Finset.sum_congr rfl fun k hk => ?_
   rw [DirectSum.single_eq_lof R k (x k), DirectSum.toModule_lof, DirectSum.toModule_lof,
     totalize_of_le (hx k hk), totalize_of_le (le_trans (hx k hk) hij), DirectedSystem.map_map]
 #align module.direct_limit.to_module_totalize_of_le Module.DirectLimit.toModule_totalize_of_le

@@ -200,7 +200,7 @@ theorem balancedSz_zero {l : ℕ} : BalancedSz l 0 ↔ l ≤ 1 := by
 
 theorem balancedSz_up {l r₁ r₂ : ℕ} (h₁ : r₁ ≤ r₂) (h₂ : l + r₂ ≤ 1 ∨ r₂ ≤ delta * l)
     (H : BalancedSz l r₁) : BalancedSz l r₂ := by
-  refine' or_iff_not_imp_left.2 fun h => _
+  refine or_iff_not_imp_left.2 fun h => ?_
   refine' ⟨_, h₂.resolve_left h⟩
   cases H with
   | inl H =>
@@ -1211,7 +1211,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
     refine' ⟨Or.inr ⟨_, _⟩, Or.inr ⟨_, _⟩, Or.inr ⟨_, _⟩⟩
     · refine' (mul_le_mul_left (by decide)).1 (le_trans this _)
       rw [two_mul, Nat.succ_le_iff]
-      refine' add_lt_add_of_lt_of_le _ mm₂
+      refine add_lt_add_of_lt_of_le ?_ mm₂
       simpa using (mul_lt_mul_right ml0).2 (by decide : 1 < 3)
     · exact Nat.le_of_lt_succ (Valid'.node4L_lemma₁ lr₂ mr₂ mm₁)
     · exact Valid'.node4L_lemma₂ mr₂
@@ -1299,7 +1299,7 @@ theorem Valid'.rotateL {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : V
 theorem Valid'.rotateR {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂)
     (H1 : ¬size l + size r ≤ 1) (H2 : delta * size r < size l)
     (H3 : 2 * size l ≤ 9 * size r + 5 ∨ size l ≤ 3) : Valid' o₁ (@rotateR α l x r) o₂ := by
-  refine' Valid'.dual_iff.2 _
+  refine Valid'.dual_iff.2 ?_
   rw [dual_rotateR]
   refine' hr.dual.rotateL hl.dual _ _ _
   · rwa [size_dual, size_dual, add_comm]
@@ -1355,7 +1355,7 @@ theorem Valid'.balanceL_aux {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (h
     (H₁ : size l = 0 → size r ≤ 1) (H₂ : 1 ≤ size l → 1 ≤ size r → size r ≤ delta * size l)
     (H₃ : 2 * @size α l ≤ 9 * size r + 5 ∨ size l ≤ 3) : Valid' o₁ (@balanceL α l x r) o₂ := by
   rw [balanceL_eq_balance hl.2 hr.2 H₁ H₂, balance_eq_balance' hl.3 hr.3 hl.2 hr.2]
-  refine' hl.balance'_aux hr (Or.inl _) H₃
+  refine hl.balance'_aux hr (Or.inl ?_) H₃
   rcases Nat.eq_zero_or_pos (size r) with r0 | r0
   · rw [r0]; exact Nat.zero_le _
   rcases Nat.eq_zero_or_pos (size l) with l0 | l0

@@ -40,7 +40,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
   · simp [h]
   have hp : p.Prime := Not.imp_symm (choose n k).factorization_eq_zero_of_non_prime h
   have hkn : k ≤ n := by
-    refine' le_of_not_lt fun hnk => h _
+    refine le_of_not_lt fun hnk => h ?_
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
   simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast]

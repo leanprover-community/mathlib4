@@ -247,7 +247,7 @@ theorem strictMonoOn_log : StrictMonoOn log (Set.Ioi 0) := fun _ hx _ _ hxy => l
 theorem strictAntiOn_log : StrictAntiOn log (Set.Iio 0) := by
   rintro x (hx : x < 0) y (hy : y < 0) hxy
   rw [← log_abs y, ← log_abs x]
-  refine' log_lt_log (abs_pos.2 hy.ne) _
+  refine log_lt_log (abs_pos.2 hy.ne) ?_
   rwa [abs_of_neg hy, abs_of_neg hx, neg_lt_neg_iff]
 #align real.strict_anti_on_log Real.strictAntiOn_log
 
@@ -321,7 +321,7 @@ theorem abs_log_mul_self_lt (x : ℝ) (h1 : 0 < x) (h2 : x ≤ 1) : |log x * x| 
   replace : log (1 / x) < 1 / x := by linarith
   rw [log_div one_ne_zero h1.ne', log_one, zero_sub, lt_div_iff h1] at this
   have aux : 0 ≤ -log x * x := by
-    refine' mul_nonneg _ h1.le
+    refine mul_nonneg ?_ h1.le
     rw [← log_inv]
     apply log_nonneg
     rw [← le_inv h1 zero_lt_one, inv_one]
@@ -337,7 +337,7 @@ theorem tendsto_log_atTop : Tendsto log atTop atTop :=
 
 theorem tendsto_log_nhdsWithin_zero : Tendsto log (𝓝[≠] 0) atBot := by
   rw [← show _ = log from funext log_abs]
-  refine' Tendsto.comp (g := log) _ tendsto_abs_nhdsWithin_zero
+  refine Tendsto.comp (g := log) ?_ tendsto_abs_nhdsWithin_zero
   simpa [← tendsto_comp_exp_atBot] using tendsto_id
 #align real.tendsto_log_nhds_within_zero Real.tendsto_log_nhdsWithin_zero
 

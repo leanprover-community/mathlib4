@@ -140,7 +140,7 @@ theorem StrictConvexSpace.of_pairwise_sphere_norm_ne_two
 convex space. See also a more -/
 theorem StrictConvexSpace.of_norm_add
     (h : ∀ x y : E, ‖x‖ = 1 → ‖y‖ = 1 → ‖x + y‖ = 2 → SameRay ℝ x y) : StrictConvexSpace ℝ E := by
-  refine' StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => _
+  refine StrictConvexSpace.of_pairwise_sphere_norm_ne_two fun x hx y hy => mt fun h₂ => ?_
   rw [mem_sphere_zero_iff_norm] at hx hy
   exact (sameRay_iff_of_norm_eq (hx.trans hy.symm)).1 (h x y hx hy h₂)
 #align strict_convex_space.of_norm_add StrictConvexSpace.of_norm_add

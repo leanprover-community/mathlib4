@@ -219,7 +219,7 @@ variable [OrderedCancelCommMonoid α] {s : Set α} {a : α}
 theorem mulSalemSpencer_insert_of_lt (hs : ∀ i ∈ s, i < a) :
     MulSalemSpencer (insert a s) ↔
       MulSalemSpencer s ∧ ∀ ⦃b c⦄, b ∈ s → c ∈ s → a * b = c * c → a = b := by
-  refine' mulSalemSpencer_insert.trans _
+  refine mulSalemSpencer_insert.trans ?_
   rw [← and_assoc]
   exact and_iff_left fun b c hb hc h => ((mul_lt_mul_of_lt_of_lt (hs _ hb) (hs _ hc)).ne h).elim
 #align mul_salem_spencer_insert_of_lt mulSalemSpencer_insert_of_lt
@@ -322,7 +322,7 @@ Salem-Spencer subset. The usual Roth number corresponds to `addRothNumber (Finse
 def mulRothNumber : Finset α →o ℕ :=
   ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
+    refine Nat.findGreatest_mono (fun m => ?_) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber
@@ -365,7 +365,7 @@ theorem mulRothNumber_empty : mulRothNumber (∅ : Finset α) = 0 :=
 
 @[to_additive (attr := simp)]
 theorem mulRothNumber_singleton (a : α) : mulRothNumber ({a} : Finset α) = 1 := by
-  refine' MulSalemSpencer.roth_number_eq _
+  refine MulSalemSpencer.roth_number_eq ?_
   rw [coe_singleton]
   exact mulSalemSpencer_singleton a
 #align mul_roth_number_singleton mulRothNumber_singleton
@@ -391,7 +391,7 @@ theorem le_mulRothNumber_product (s : Finset α) (t : Finset β) :
   obtain ⟨u, hus, hucard, hu⟩ := mulRothNumber_spec s
   obtain ⟨v, hvt, hvcard, hv⟩ := mulRothNumber_spec t
   rw [← hucard, ← hvcard, ← card_product]
-  refine' MulSalemSpencer.le_mulRothNumber _ (product_subset_product hus hvt)
+  refine MulSalemSpencer.le_mulRothNumber ?_ (product_subset_product hus hvt)
   rw [coe_product]
   exact hu.prod hv
 #align le_mul_roth_number_product le_mulRothNumber_product

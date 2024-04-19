@@ -78,7 +78,7 @@ theorem glueDist_glued_points [Nonempty Z] (Φ : Z → X) (Ψ : Z → Y) (ε : �
   have : ⨅ q, dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) = 0 := by
     have A : ∀ q, 0 ≤ dist (Φ p) (Φ q) + dist (Ψ p) (Ψ q) := fun _ =>
       add_nonneg dist_nonneg dist_nonneg
-    refine' le_antisymm _ (le_ciInf A)
+    refine le_antisymm ?_ (le_ciInf A)
     have : 0 = dist (Φ p) (Φ p) + dist (Ψ p) (Ψ p) := by simp
     rw [this]
     exact ciInf_le ⟨0, forall_mem_range.2 A⟩ p
@@ -461,7 +461,7 @@ protected theorem completeSpace [∀ i, CompleteSpace (E i)] : CompleteSpace (Σ
     exact (isometry_mk i).uniformInducing.isComplete_range
   have hd : ∀ (i j), ∀ x ∈ s i, ∀ y ∈ s j, (x, y) ∈ U → i = j := fun i j x hx y hy hxy =>
     (Eq.symm hx).trans ((fst_eq_of_dist_lt_one _ _ hxy).trans hy)
-  refine' completeSpace_of_isComplete_univ _
+  refine completeSpace_of_isComplete_univ ?_
   convert isComplete_iUnion_separated hc (dist_mem_uniformity zero_lt_one) hd
   simp only [s, ← preimage_iUnion, iUnion_of_singleton, preimage_univ]
 #align metric.sigma.complete_space Metric.Sigma.completeSpace
@@ -521,7 +521,7 @@ theorem toGlue_commute (hΦ : Isometry Φ) (hΨ : Isometry Ψ) :
   let _ := i.toUniformSpace.toTopologicalSpace
   funext
   simp only [comp, toGlueL, toGlueR]
-  refine' SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
   exact glueDist_glued_points Φ Ψ 0 _
 #align metric.to_glue_commute Metric.toGlue_commute
 
@@ -651,7 +651,7 @@ theorem toInductiveLimit_commute (I : ∀ n, Isometry (f n)) (n : ℕ) :
   let _ := h.toUniformSpace.toTopologicalSpace
   funext x
   simp only [comp, toInductiveLimit]
-  refine' SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 _)
+  refine SeparationQuotient.mk_eq_mk.2 (Metric.inseparable_iff.2 ?_)
   show inductiveLimitDist f ⟨n.succ, f n x⟩ ⟨n, x⟩ = 0
   rw [inductiveLimitDist_eq_dist I ⟨n.succ, f n x⟩ ⟨n, x⟩ n.succ, leRecOn_self,
     leRecOn_succ, leRecOn_self, dist_self]

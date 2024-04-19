@@ -1314,7 +1314,7 @@ def ord (c : Cardinal) : Ordinal :=
       suffices ∀ {α β}, α ≈ β → F α ≤ F β from
         fun α β h => (this h).antisymm (this (Setoid.symm h))
       rintro α β ⟨f⟩
-      refine' le_ciInf_iff'.2 fun i => _
+      refine le_ciInf_iff'.2 fun i => ?_
       haveI := @RelEmbedding.isWellOrder _ _ (f ⁻¹'o i.1) _ (↑(RelIso.preimage f i.1)) i.2
       exact
         (ciInf_le' _
@@ -1511,7 +1511,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
-  refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
+  refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
   rw [← h', lift.principalSeg_coe, ← lift_card]

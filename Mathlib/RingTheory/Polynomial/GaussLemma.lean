@@ -192,9 +192,9 @@ theorem isIntegrallyClosed_iff' :
   constructor
   · intro hR p hp; exact Monic.irreducible_iff_irreducible_map_fraction_map hp
   · intro H
-    refine'
+    refine
       (isIntegrallyClosed_iff K).mpr fun {x} hx =>
-        RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x _
+        RingHom.mem_range.mp <| minpoly.mem_range_of_degree_eq_one R x ?_
     rw [← Monic.degree_map (minpoly.monic hx) (algebraMap R K)]
     apply
       degree_eq_one_of_irreducible_of_root ((H _ <| minpoly.monic hx).mp (minpoly.irreducible hx))

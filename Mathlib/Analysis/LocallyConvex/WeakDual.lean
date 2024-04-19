@@ -118,7 +118,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
       rw [← LinearMap.toSeminormFamily_apply]
       have hyU' : y ∈ U' := (Set.Finite.mem_toFinset hU₁).mpr hy
       have hp : p y ≤ U'.sup p := Finset.le_sup hyU'
-      refine' lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx _)
+      refine lt_of_le_of_lt (hp x) (lt_of_lt_of_le hx ?_)
       exact Finset.inf'_le _ hyU'
     rw [Set.not_nonempty_iff_eq_empty.mp hU₃]
     simp only [Set.empty_pi, Set.preimage_univ, Set.subset_univ, and_true_iff]
@@ -130,7 +130,7 @@ theorem LinearMap.hasBasis_weakBilin (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜) :
   refine' ⟨(s, fun _ => r), ⟨by simp only [s.finite_toSet], fun y _ => hr⟩, fun x hx => _⟩
   simp only [Set.mem_preimage, Set.mem_pi, Finset.mem_coe, mem_ball_zero_iff] at hx
   simp only [_root_.id, Seminorm.mem_ball, sub_zero]
-  refine' Seminorm.finset_sup_apply_lt hr fun y hy => _
+  refine Seminorm.finset_sup_apply_lt hr fun y hy => ?_
   rw [LinearMap.toSeminormFamily_apply]
   exact hx y hy
 #align linear_map.has_basis_weak_bilin LinearMap.hasBasis_weakBilin

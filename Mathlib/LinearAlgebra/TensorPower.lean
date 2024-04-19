@@ -140,7 +140,7 @@ theorem cast_cast {i j k} (h : i = j) (h' : j = k) (a : ⨂[R]^i M) :
 @[ext]
 theorem gradedMonoid_eq_of_cast {a b : GradedMonoid fun n => ⨂[R] _ : Fin n, M} (h : a.fst = b.fst)
     (h2 : cast R M h a.snd = b.snd) : a = b := by
-  refine' gradedMonoid_eq_of_reindex_cast h _
+  refine gradedMonoid_eq_of_reindex_cast h ?_
   rw [cast] at h2
   rw [← Fin.castIso_to_equiv, ← h2]
 #align tensor_power.graded_monoid_eq_of_cast TensorPower.gradedMonoid_eq_of_cast
@@ -175,7 +175,7 @@ theorem one_mul {n} (a : ⨂[R]^n M) : cast R M (zero_add n) (ₜ1 ₜ* a) = a :
       tprod_mul_tprod, cast_tprod]
     congr 2 with i
     rw [Fin.elim0_append]
-    refine' congr_arg a (Fin.ext _)
+    refine congr_arg a (Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.tmul_add, map_add, map_add, hx, hy]
@@ -189,7 +189,7 @@ theorem mul_one {n} (a : ⨂[R]^n M) : cast R M (add_zero _) (a ₜ* ₜ1) = a :
       tprod_mul_tprod R a _, cast_tprod]
     congr 2 with i
     rw [Fin.append_elim0]
-    refine' congr_arg a (Fin.ext _)
+    refine congr_arg a (Fin.ext ?_)
     simp
   | add x y hx hy =>
     rw [TensorProduct.add_tmul, map_add, map_add, hx, hy]
@@ -215,7 +215,7 @@ theorem mul_assoc {na nb nc} (a : (⨂[R]^na) M) (b : (⨂[R]^nb) M) (c : (⨂[R
   simp only [e, LinearMap.compMultilinearMap_apply, lhs_eq, rhs_eq, tprod_mul_tprod, cast_tprod]
   congr with j
   rw [Fin.append_assoc]
-  refine' congr_arg (Fin.append a (Fin.append b c)) (Fin.ext _)
+  refine congr_arg (Fin.append a (Fin.append b c)) (Fin.ext ?_)
   rw [Fin.coe_cast, Fin.coe_cast]
 #align tensor_power.mul_assoc TensorPower.mul_assoc
 

@@ -156,7 +156,7 @@ theorem sInter_nhds (l : Filter α) : ⋂₀ { s | s ∈ 𝓝 l } = Iic l := by
 
 @[simp]
 theorem nhds_mono {l₁ l₂ : Filter α} : 𝓝 l₁ ≤ 𝓝 l₂ ↔ l₁ ≤ l₂ := by
-  refine' ⟨fun h => _, fun h => monotone_nhds h⟩
+  refine ⟨fun h => ?_, fun h => monotone_nhds h⟩
   rw [← Iic_subset_Iic, ← sInter_nhds, ← sInter_nhds]
   exact sInter_subset_sInter h
 #align filter.nhds_mono Filter.nhds_mono

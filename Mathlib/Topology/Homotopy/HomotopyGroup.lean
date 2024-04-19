@@ -521,7 +521,7 @@ theorem isUnital_auxGroup (i : N) :
 
 theorem auxGroup_indep (i j : N) : (auxGroup i : Group (HomotopyGroup N X x)) = auxGroup j := by
   by_cases h : i = j; · rw [h]
-  refine' Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) _)
+  refine Group.ext (EckmannHilton.mul (isUnital_auxGroup i) (isUnital_auxGroup j) ?_)
   rintro ⟨a⟩ ⟨b⟩ ⟨c⟩ ⟨d⟩
   change Quotient.mk' _ = _
   apply congr_arg Quotient.mk'

@@ -322,7 +322,7 @@ theorem OrderBot.atBot_eq (α) [PartialOrder α] [OrderBot α] : (atBot : Filter
 
 @[nontriviality]
 theorem Subsingleton.atTop_eq (α) [Subsingleton α] [Preorder α] : (atTop : Filter α) = ⊤ := by
-  refine' top_unique fun s hs x => _
+  refine top_unique fun s hs x => ?_
   rw [atTop, ciInf_subsingleton x, mem_principal] at hs
   exact hs left_mem_Ici
 #align filter.subsingleton.at_top_eq Filter.Subsingleton.atTop_eq
@@ -450,7 +450,7 @@ lemma atTop_eq_generate_of_forall_exists_le [LinearOrder α] {s : Set α} (hs : 
 
 lemma atTop_eq_generate_of_not_bddAbove [LinearOrder α] {s : Set α} (hs : ¬ BddAbove s) :
     (atTop : Filter α) = generate (Ici '' s) := by
-  refine' atTop_eq_generate_of_forall_exists_le fun x ↦ _
+  refine atTop_eq_generate_of_forall_exists_le fun x ↦ ?_
   obtain ⟨y, hy, hy'⟩ := not_bddAbove_iff.mp hs x
   exact ⟨y, hy, hy'.le⟩
 
@@ -1085,7 +1085,7 @@ lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
 `fun x ↦ r * f x` tends to infinity if and only if `0 < r. `-/
 theorem tendsto_const_mul_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
     Tendsto (fun x => r * f x) l atTop ↔ 0 < r := by
-  refine' ⟨fun hrf => not_le.mp fun hr => _, fun hr => (tendsto_const_mul_atTop_of_pos hr).mpr h⟩
+  refine ⟨fun hrf => not_le.mp fun hr => ?_, fun hr => (tendsto_const_mul_atTop_of_pos hr).mpr h⟩
   rcases ((h.eventually_ge_atTop 0).and (hrf.eventually_gt_atTop 0)).exists with ⟨x, hx, hrx⟩
   exact (mul_nonpos_of_nonpos_of_nonneg hr hx).not_lt hrx
 #align filter.tendsto_const_mul_at_top_iff_pos Filter.tendsto_const_mul_atTop_iff_pos
@@ -1600,7 +1600,7 @@ theorem map_atTop_eq_of_gc [SemilatticeSup α] [SemilatticeSup β] {f : α → �
     le_antisymm
       (hf.tendsto_atTop_atTop fun b => ⟨g (b ⊔ b'), le_sup_left.trans <| hgi _ le_sup_right⟩) _
   rw [@map_atTop_eq _ _ ⟨g b'⟩]
-  refine' le_iInf fun a => iInf_le_of_le (f a ⊔ b') <| principal_mono.2 fun b hb => _
+  refine le_iInf fun a => iInf_le_of_le (f a ⊔ b') <| principal_mono.2 fun b hb => ?_
   rw [mem_Ici, sup_le_iff] at hb
   exact ⟨g b, (gc _ _ hb.2).1 hb.1, le_antisymm ((gc _ _ hb.2).2 le_rfl) (hgi _ hb.2)⟩
 #align filter.map_at_top_eq_of_gc Filter.map_atTop_eq_of_gc

@@ -220,7 +220,7 @@ theorem norm_eventually_eq_of_isLocalMax {f : E → F} {c : E}
 
 theorem isOpen_setOf_mem_nhds_and_isMaxOn_norm {f : E → F} {s : Set E}
     (hd : DifferentiableOn ℂ f s) : IsOpen {z | s ∈ 𝓝 z ∧ IsMaxOn (norm ∘ f) s z} := by
-  refine' isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and _
+  refine isOpen_iff_mem_nhds.2 fun z hz => (eventually_eventually_nhds.2 hz.1).and ?_
   replace hd : ∀ᶠ w in 𝓝 z, DifferentiableAt ℂ f w := hd.eventually_differentiableAt hz.1
   exact (norm_eventually_eq_of_isLocalMax hd <| hz.2.isLocalMax hz.1).mono fun x hx y hy =>
     le_trans (hz.2 hy).out hx.ge
@@ -343,7 +343,7 @@ theorem eventually_eq_of_isLocalMax_norm {f : E → F} {c : E}
 theorem eventually_eq_or_eq_zero_of_isLocalMin_norm {f : E → ℂ} {c : E}
     (hf : ∀ᶠ z in 𝓝 c, DifferentiableAt ℂ f z) (hc : IsLocalMin (norm ∘ f) c) :
     (∀ᶠ z in 𝓝 c, f z = f c) ∨ f c = 0 := by
-  refine' or_iff_not_imp_right.mpr fun h => _
+  refine or_iff_not_imp_right.mpr fun h => ?_
   have h1 : ∀ᶠ z in 𝓝 c, f z ≠ 0 := hf.self_of_nhds.continuousAt.eventually_ne h
   have h2 : IsLocalMax (norm ∘ f)⁻¹ c := hc.inv (h1.mono fun z => norm_pos_iff.mpr)
   have h3 : IsLocalMax (norm ∘ f⁻¹) c := by refine' h2.congr (eventually_of_forall _); simp
@@ -377,7 +377,7 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
   rcases exists_mem_frontier_infDist_compl_eq_dist hwU this with ⟨z, hzU, hzw⟩
   refine' ⟨z, frontier_interior_subset hzU, fun x hx => (hle hx).out.trans_eq _⟩
-  refine' (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) _).symm
+  refine (norm_eq_norm_of_isMaxOn_of_ball_subset hd (hle.on_subset subset_closure) ?_).symm
   rw [dist_comm, ← hzw]
   exact ball_infDist_compl_subset.trans interior_subset
 #align complex.exists_mem_frontier_is_max_on_norm Complex.exists_mem_frontier_isMaxOn_norm
@@ -412,7 +412,7 @@ theorem eqOn_closure_of_eqOn_frontier {f g : E → F} {U : Set E} (hU : IsBounde
     (hf : DiffContOnCl ℂ f U) (hg : DiffContOnCl ℂ g U) (hfg : EqOn f g (frontier U)) :
     EqOn f g (closure U) := by
   suffices H : ∀ z ∈ closure U, ‖(f - g) z‖ ≤ 0 by simpa [sub_eq_zero] using H
-  refine' fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => _) hz
+  refine fun z hz => norm_le_of_forall_mem_frontier_norm_le hU (hf.sub hg) (fun w hw => ?_) hz
   simp [hfg hw]
 #align complex.eq_on_closure_of_eq_on_frontier Complex.eqOn_closure_of_eqOn_frontier
 

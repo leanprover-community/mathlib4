@@ -424,7 +424,7 @@ theorem iterate_derivative_mul {n} (p q : R[X]) :
   congr
   refine' (sum_range_succ' _ _).trans (congr_arg₂ (· + ·) _ _)
   · rw [sum_range_succ, Nat.choose_succ_self, zero_smul, add_zero]
-    refine' sum_congr rfl fun k hk => _
+    refine sum_congr rfl fun k hk => ?_
     rw [mem_range] at hk
     congr
     omega
@@ -548,7 +548,7 @@ set_option linter.uppercaseLean3 false in
 theorem derivative_prod [DecidableEq ι] {s : Multiset ι} {f : ι → R[X]} :
     derivative (Multiset.map f s).prod =
       (Multiset.map (fun i => (Multiset.map f (s.erase i)).prod * derivative (f i)) s).sum := by
-  refine' Multiset.induction_on s (by simp) fun i s h => _
+  refine Multiset.induction_on s (by simp) fun i s h => ?_
   rw [Multiset.map_cons, Multiset.prod_cons, derivative_mul, Multiset.map_cons _ i s,
     Multiset.sum_cons, Multiset.erase_cons_head, mul_comm (derivative (f i))]
   congr

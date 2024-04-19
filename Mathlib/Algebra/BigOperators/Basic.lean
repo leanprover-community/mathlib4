@@ -339,7 +339,7 @@ theorem prod_eq_one {f : α → β} {s : Finset α} (h : ∀ x ∈ s, f x = 1) :
 @[to_additive]
 theorem prod_disjUnion (h) :
     ∏ x in s₁.disjUnion s₂ h, f x = (∏ x in s₁, f x) * ∏ x in s₂, f x := by
-  refine' Eq.trans _ (fold_disjUnion h)
+  refine Eq.trans ?_ (fold_disjUnion h)
   rw [one_mul]
   rfl
 #align finset.prod_disj_union Finset.prod_disjUnion
@@ -348,7 +348,7 @@ theorem prod_disjUnion (h) :
 @[to_additive]
 theorem prod_disjiUnion (s : Finset ι) (t : ι → Finset α) (h) :
     ∏ x in s.disjiUnion t h, f x = ∏ i in s, ∏ x in t i, f x := by
-  refine' Eq.trans _ (fold_disjiUnion h)
+  refine Eq.trans ?_ (fold_disjiUnion h)
   dsimp [Finset.prod, Multiset.prod, Multiset.fold, Finset.disjUnion, Finset.fold]
   congr
   exact prod_const_one.symm
@@ -722,7 +722,7 @@ lemma prod_diag [DecidableEq α] (s : Finset α) (f : α × α → β) :
 theorem prod_finset_product (r : Finset (γ × α)) (s : Finset γ) (t : γ → Finset α)
     (h : ∀ p : γ × α, p ∈ r ↔ p.1 ∈ s ∧ p.2 ∈ t p.1) {f : γ × α → β} :
     ∏ p in r, f p = ∏ c in s, ∏ a in t c, f (c, a) := by
-  refine' Eq.trans _ (prod_sigma s t fun p => f (p.1, p.2))
+  refine Eq.trans ?_ (prod_sigma s t fun p => f (p.1, p.2))
   apply prod_equiv (Equiv.sigmaEquivProd _ _).symm <;> simp [h]
 #align finset.prod_finset_product Finset.prod_finset_product
 #align finset.sum_finset_product Finset.sum_finset_product
@@ -739,7 +739,7 @@ theorem prod_finset_product' (r : Finset (γ × α)) (s : Finset γ) (t : γ →
 theorem prod_finset_product_right (r : Finset (α × γ)) (s : Finset γ) (t : γ → Finset α)
     (h : ∀ p : α × γ, p ∈ r ↔ p.2 ∈ s ∧ p.1 ∈ t p.2) {f : α × γ → β} :
     ∏ p in r, f p = ∏ c in s, ∏ a in t c, f (a, c) := by
-  refine' Eq.trans _ (prod_sigma s t fun p => f (p.2, p.1))
+  refine Eq.trans ?_ (prod_sigma s t fun p => f (p.2, p.1))
   apply prod_equiv ((Equiv.prodComm _ _).trans (Equiv.sigmaEquivProd _ _).symm) <;> simp [h]
 #align finset.prod_finset_product_right Finset.prod_finset_product_right
 #align finset.sum_finset_product_right Finset.sum_finset_product_right
@@ -912,7 +912,7 @@ theorem prod_eq_mul_of_mem {s : Finset α} {f : α → β} (a b : α) (ha : a �
     (hn : a ≠ b) (h₀ : ∀ c ∈ s, c ≠ a ∧ c ≠ b → f c = 1) : ∏ x in s, f x = f a * f b := by
   haveI := Classical.decEq α; let s' := ({a, b} : Finset α)
   have hu : s' ⊆ s := by
-    refine' insert_subset_iff.mpr _
+    refine insert_subset_iff.mpr ?_
     apply And.intro ha
     apply singleton_subset_iff.mpr hb
   have hf : ∀ c ∈ s, c ∉ s' → f c = 1 := by
@@ -1356,7 +1356,7 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
         ?_ ?_ ?_ ?_
     _ = ∏ x in t, g x := prod_filter_ne_one _
   · intros a ha
-    refine' (mem_filter.mp ha).elim _
+    refine (mem_filter.mp ha).elim ?_
     intros h₁ h₂
     refine (mem_filter.mpr ⟨hi a h₁ _, ?_⟩)
     specialize h a h₁ fun H ↦ by rw [H] at h₂; simp at h₂
@@ -1366,7 +1366,7 @@ theorem prod_bij_ne_one {s : Finset α} {t : Finset γ} {f : α → β} {g : γ 
     refine' (mem_filter.mp ha₂).elim fun _ha₂₁ _ha₂₂ ↦ _
     apply i_inj
   · intros b hb
-    refine' (mem_filter.mp hb).elim fun h₁ h₂ ↦ _
+    refine (mem_filter.mp hb).elim fun h₁ h₂ ↦ ?_
     obtain ⟨a, ha₁, ha₂, eq⟩ := i_surj b h₁ fun H ↦ by rw [H] at h₂; simp at h₂
     exact ⟨a, mem_filter.mpr ⟨ha₁, ha₂⟩, eq⟩
   · refine' (fun a ha => (mem_filter.mp ha).elim fun h₁ h₂ ↦ _)
@@ -1477,11 +1477,11 @@ theorem prod_list_map_count [DecidableEq α] (l : List α) {M : Type*} [CommMono
   · rw [insert_eq_of_mem has, ← insert_erase has, prod_insert (not_mem_erase _ _),
       prod_insert (not_mem_erase _ _), ← mul_assoc, count_cons_self, pow_succ']
     congr 1
-    refine' prod_congr rfl fun x hx => _
+    refine prod_congr rfl fun x hx => ?_
     rw [count_cons_of_ne (ne_of_mem_erase hx)]
   rw [prod_insert has, count_cons_self, count_eq_zero_of_not_mem (mt mem_toFinset.2 has), pow_one]
   congr 1
-  refine' prod_congr rfl fun x hx => _
+  refine prod_congr rfl fun x hx => ?_
   rw [count_cons_of_ne]
   rintro rfl
   exact has hx
@@ -1514,7 +1514,7 @@ open Multiset
 @[to_additive]
 theorem prod_multiset_map_count [DecidableEq α] (s : Multiset α) {M : Type*} [CommMonoid M]
     (f : α → M) : (s.map f).prod = ∏ m in s.toFinset, f m ^ s.count m := by
-  refine' Quot.induction_on s fun l => _
+  refine Quot.induction_on s fun l => ?_
   simp [prod_list_map_count l f]
 #align finset.prod_multiset_map_count Finset.prod_multiset_map_count
 #align finset.sum_multiset_map_count Finset.sum_multiset_map_count
@@ -1531,7 +1531,7 @@ theorem prod_multiset_count [DecidableEq α] [CommMonoid α] (s : Multiset α) :
 theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Multiset α) (s : Finset α)
     (hs : m.toFinset ⊆ s) : m.prod = ∏ i in s, i ^ m.count i := by
   revert hs
-  refine' Quot.induction_on m fun l => _
+  refine Quot.induction_on m fun l => ?_
   simp only [quot_mk_to_coe'', prod_coe, coe_count]
   apply prod_list_count_of_subset l s
 #align finset.prod_multiset_count_of_subset Finset.prod_multiset_count_of_subset
@@ -2372,7 +2372,7 @@ theorem exists_smul_of_dvd_count (s : Multiset α) {k : ℕ}
 
 theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.prod id ∣ S.prod := by
   rw [Finset.prod_eq_multiset_prod]
-  refine' Multiset.prod_dvd_prod_of_le _
+  refine Multiset.prod_dvd_prod_of_le ?_
   simp [Multiset.dedup_le S]
 #align multiset.to_finset_prod_dvd_prod Multiset.toFinset_prod_dvd_prod
 

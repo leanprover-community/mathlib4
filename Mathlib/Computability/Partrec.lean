@@ -181,13 +181,13 @@ theorem of_primrec {f : ℕ → ℕ} (hf : Nat.Primrec f) : Partrec f := by
   | left => exact left
   | right => exact right
   | pair _ _ pf pg =>
-    refine' (pf.pair pg).of_eq_tot fun n => _
+    refine (pf.pair pg).of_eq_tot fun n => ?_
     simp [Seq.seq]
   | comp _ _ pf pg =>
-    refine' (pf.comp pg).of_eq_tot fun n => _
+    refine (pf.comp pg).of_eq_tot fun n => ?_
     simp
   | prec _ _ pf pg =>
-    refine' (pf.prec pg).of_eq_tot fun n => _
+    refine (pf.prec pg).of_eq_tot fun n => ?_
     simp only [unpaired, PFun.coe_val, bind_eq_bind]
     induction n.unpair.2 with
     | zero => simp
@@ -647,7 +647,7 @@ theorem bind_decode_iff {f : α → β → Option σ} :
         (h := fun (a : α × ℕ) (n : ℕ) ↦ map (fun b ↦ f a.1 b) (Part.ofOption (decode n)))
         (Primrec.encdec.to_comp.comp snd) (const Option.none)
         ((ofOption (Computable.decode.comp snd)).map (hf.comp (fst.comp <| fst.comp fst) snd).to₂)
-    refine' this.of_eq fun a => _
+    refine this.of_eq fun a => ?_
     simp; cases decode (α := β) a.2 <;> simp [encodek]⟩
 #align computable.bind_decode_iff Computable.bind_decode_iff
 

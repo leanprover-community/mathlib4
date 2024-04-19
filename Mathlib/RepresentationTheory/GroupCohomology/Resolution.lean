@@ -553,7 +553,7 @@ set_option linter.uppercaseLean3 false in
 /-- Simpler expression for the differential in the standard resolution of `k` as a
 `G`-representation. It sends `(g₀, ..., gₙ₊₁) ↦ ∑ (-1)ⁱ • (g₀, ..., ĝᵢ, ..., gₙ₊₁)`. -/
 theorem d_eq (n : ℕ) : ((groupCohomology.resolution k G).d (n + 1) n).hom = d k G (n + 1) := by
-  refine' Finsupp.lhom_ext' fun x => LinearMap.ext_ring _
+  refine Finsupp.lhom_ext' fun x => LinearMap.ext_ring ?_
   dsimp [groupCohomology.resolution]
 /- Porting note (#11039): broken proof was
   simpa [← @intCast_smul k, simplicial_object.δ] -/

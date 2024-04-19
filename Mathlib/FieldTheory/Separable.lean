@@ -260,7 +260,7 @@ theorem nodup_of_separable_prod [Nontrivial R] {s : Multiset R}
     (hs : Separable (Multiset.map (fun a => X - C a) s).prod) : s.Nodup := by
   rw [Multiset.nodup_iff_ne_cons_cons]
   rintro a t rfl
-  refine' not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs _)
+  refine not_isUnit_X_sub_C a (isUnit_of_self_mul_dvd_separable hs ?_)
   simpa only [Multiset.map_cons, Multiset.prod_cons] using mul_dvd_mul_left _ (dvd_mul_right _ _)
 #align polynomial.nodup_of_separable_prod Polynomial.nodup_of_separable_prod
 
@@ -533,7 +533,7 @@ theorem _root_.Irreducible.separable [CharZero F] {f : F[X]} (hf : Irreducible f
   rw [separable_iff_derivative_ne_zero hf, Ne, ← degree_eq_bot, degree_derivative_eq]
   · rintro ⟨⟩
   rw [pos_iff_ne_zero, Ne, natDegree_eq_zero_iff_degree_le_zero, degree_le_zero_iff]
-  refine' fun hf1 => hf.not_unit _
+  refine fun hf1 => hf.not_unit ?_
   rw [hf1, isUnit_C, isUnit_iff_ne_zero]
   intro hf2
   rw [hf2, C_0] at hf1

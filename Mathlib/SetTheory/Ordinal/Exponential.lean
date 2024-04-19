@@ -86,7 +86,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
   | H₂ _ ih =>
     simp only [opow_succ, ih, mul_one]
   | H₃ b l IH =>
-    refine' eq_of_forall_ge_iff fun c => _
+    refine eq_of_forall_ge_iff fun c => ?_
     rw [opow_le_of_limit Ordinal.one_ne_zero l]
     exact ⟨fun H => by simpa only [opow_zero] using H 0 l.pos, fun H b' h => by rwa [IH _ h]⟩
 #align ordinal.one_opow Ordinal.one_opow
@@ -197,9 +197,9 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
   | H₂ c IH =>
     rw [add_succ, opow_succ, IH, opow_succ, mul_assoc]
   | H₃ c l IH =>
-    refine'
+    refine
       eq_of_forall_ge_iff fun d =>
-        (((opow_isNormal a1).trans (add_isNormal b)).limit_le l).trans _
+        (((opow_isNormal a1).trans (add_isNormal b)).limit_le l).trans ?_
     dsimp only [Function.comp_def]
     simp (config := { contextual := true }) only [IH]
     exact
@@ -238,11 +238,11 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   | H₂ c IH =>
     rw [mul_succ, opow_add, IH, opow_succ]
   | H₃ c l IH =>
-    refine'
+    refine
       eq_of_forall_ge_iff fun d =>
         (((opow_isNormal a1).trans (mul_isNormal (Ordinal.pos_iff_ne_zero.2 b0))).limit_le
               l).trans
-          _
+          ?_
     dsimp only [Function.comp_def]
     simp (config := { contextual := true }) only [IH]
     exact (opow_le_of_limit (opow_ne_zero _ a0) l).symm
@@ -463,7 +463,7 @@ theorem sup_opow_nat {o : Ordinal} (ho : 0 < o) : (sup fun n : ℕ => o ^ (n : O
   rcases lt_or_eq_of_le (one_le_iff_pos.2 ho) with (ho₁ | rfl)
   · exact (opow_isNormal ho₁).apply_omega
   · rw [one_opow]
-    refine' le_antisymm (sup_le fun n => by rw [one_opow]) _
+    refine le_antisymm (sup_le fun n => by rw [one_opow]) ?_
     convert le_sup (fun n : ℕ => 1 ^ (n : Ordinal)) 0
     rw [Nat.cast_zero, opow_zero]
 #align ordinal.sup_opow_nat Ordinal.sup_opow_nat

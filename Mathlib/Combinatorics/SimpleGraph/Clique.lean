@@ -159,7 +159,7 @@ protected theorem IsNClique.map (h : G.IsNClique n s) {f : α ↪ β} :
 @[simp]
 theorem isNClique_bot_iff : (⊥ : SimpleGraph α).IsNClique n s ↔ n ≤ 1 ∧ s.card = n := by
   rw [isNClique_iff, isClique_bot_iff]
-  refine' and_congr_left _
+  refine and_congr_left ?_
   rintro rfl
   exact card_le_one.symm
 #align simple_graph.is_n_clique_bot_iff SimpleGraph.isNClique_bot_iff
@@ -300,7 +300,7 @@ theorem CliqueFree.comap {H : SimpleGraph β} (f : H ↪g G) : G.CliqueFree n �
 /-- See `SimpleGraph.cliqueFree_of_chromaticNumber_lt` for a tighter bound. -/
 theorem cliqueFree_of_card_lt [Fintype α] (hc : card α < n) : G.CliqueFree n := by
   by_contra h
-  refine' Nat.lt_le_asymm hc _
+  refine Nat.lt_le_asymm hc ?_
   rw [cliqueFree_iff, not_isEmpty_iff] at h
   simpa only [Fintype.card_fin] using Fintype.card_le_of_embedding h.some.toEmbedding
 #align simple_graph.clique_free_of_card_lt SimpleGraph.cliqueFree_of_card_lt
@@ -512,7 +512,7 @@ theorem cliqueSet_map (hn : n ≠ 1) (G : SimpleGraph α) (f : α ↪ β) :
       obtain ⟨b, hb, hba⟩ := exists_mem_ne (hn.lt_of_le' <| Finset.card_pos.2 ⟨a, ha⟩) a
       obtain ⟨c, _, _, hc, _⟩ := hs ha hb hba.symm
       exact ⟨c, hc⟩
-    refine' ⟨s.preimage f <| f.injective.injOn _, ⟨_, by rw [← card_map f, hs']⟩, hs'⟩
+    refine ⟨s.preimage f <| f.injective.injOn _, ⟨?_, by rw [← card_map f, hs']⟩, hs'⟩
     rw [coe_preimage]
     exact fun a ha b hb hab => map_adj_apply.1 (hs ha hb <| f.injective.ne hab)
   · rintro ⟨s, hs, rfl⟩
@@ -565,7 +565,7 @@ protected alias ⟨_, CliqueFree.cliqueFinset⟩ := cliqueFinset_eq_empty_iff
 
 theorem card_cliqueFinset_le : (G.cliqueFinset n).card ≤ (card α).choose n := by
   rw [← card_univ, ← card_powersetCard]
-  refine' card_mono fun s => _
+  refine card_mono fun s => ?_
   simpa [mem_powersetCard_univ] using IsNClique.card_eq
 #align simple_graph.card_clique_finset_le SimpleGraph.card_cliqueFinset_le
 

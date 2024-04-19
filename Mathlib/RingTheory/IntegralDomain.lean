@@ -61,7 +61,7 @@ def Fintype.groupWithZeroOfCancel (M : Type*) [CancelMonoidWithZero M] [Decidabl
 theorem exists_eq_pow_of_mul_eq_pow_of_coprime {R : Type*} [CommSemiring R] [IsDomain R]
     [GCDMonoid R] [Unique Rˣ] {a b c : R} {n : ℕ} (cp : IsCoprime a b) (h : a * b = c ^ n) :
     ∃ d : R, a = d ^ n := by
-  refine' exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one _) h
+  refine exists_eq_pow_of_mul_eq_pow (isUnit_of_dvd_one ?_) h
   obtain ⟨x, y, hxy⟩ := cp
   rw [← hxy]
   exact  -- Porting note: added `GCDMonoid.` twice
@@ -77,9 +77,9 @@ theorem Finset.exists_eq_pow_of_mul_eq_pow_of_coprime {ι R : Type*} [CommSemiri
   classical
     intro i hi
     rw [← insert_erase hi, prod_insert (not_mem_erase i s)] at hprod
-    refine'
+    refine
       exists_eq_pow_of_mul_eq_pow_of_coprime
-        (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => _) hprod
+        (IsCoprime.prod_right fun j hj => h i hi j (erase_subset i s hj) fun hij => ?_) hprod
     rw [hij] at hj
     exact (s.not_mem_erase _) hj
 #align finset.exists_eq_pow_of_mul_eq_pow_of_coprime Finset.exists_eq_pow_of_mul_eq_pow_of_coprime
@@ -121,7 +121,7 @@ theorem card_nthRoots_subgroup_units [Fintype G] [DecidableEq G] (f : G →* R) 
     {n : ℕ} (hn : 0 < n) (g₀ : G) :
     Finset.card (Finset.univ.filter (fun g ↦ g^n = g₀)) ≤ Multiset.card (nthRoots n (f g₀)) := by
   haveI : DecidableEq R := Classical.decEq _
-  refine' le_trans _ (nthRoots n (f g₀)).toFinset_card_le
+  refine le_trans ?_ (nthRoots n (f g₀)).toFinset_card_le
   apply card_le_card_of_inj_on f
   · intro g hg
     rw [mem_filter] at hg

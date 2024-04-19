@@ -733,7 +733,7 @@ theorem oangle_eq_angle_of_sign_eq_one {x y : V} (h : (o.oangle x y).sign = 1) :
     o.oangle x y = InnerProductGeometry.angle x y := by
   by_cases hx : x = 0; · exfalso; simp [hx] at h
   by_cases hy : y = 0; · exfalso; simp [hy] at h
-  refine' (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right _
+  refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_right ?_
   intro hxy
   rw [hxy, Real.Angle.sign_neg, neg_eq_iff_eq_neg, ← SignType.neg_iff, ← not_le] at h
   exact h (Real.Angle.sign_coe_nonneg_of_nonneg_of_le_pi (InnerProductGeometry.angle_nonneg _ _)
@@ -746,7 +746,7 @@ theorem oangle_eq_neg_angle_of_sign_eq_neg_one {x y : V} (h : (o.oangle x y).sig
     o.oangle x y = -InnerProductGeometry.angle x y := by
   by_cases hx : x = 0; · exfalso; simp [hx] at h
   by_cases hy : y = 0; · exfalso; simp [hy] at h
-  refine' (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left _
+  refine (o.oangle_eq_angle_or_eq_neg_angle hx hy).resolve_left ?_
   intro hxy
   rw [hxy, ← SignType.neg_iff, ← not_le] at h
   exact h (Real.Angle.sign_coe_nonneg_of_nonneg_of_le_pi (InnerProductGeometry.angle_nonneg _ _)

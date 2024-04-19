@@ -369,7 +369,7 @@ theorem add_point (f : α → E) {s : Set α} {x : α} (hx : x ∈ s) (u : ℕ �
       _ ≤ ((∑ i in Finset.Ico 0 (N - 1), edist (f (w (i + 1))) (f (w i))) +
               ∑ i in Finset.Ico (N - 1) (N + 1), edist (f (w (i + 1))) (f (w i))) +
             ∑ i in Finset.Ico (N + 1) (n + 1), edist (f (w (i + 1))) (f (w i)) := by
-        refine' add_le_add (add_le_add le_rfl _) le_rfl
+        refine add_le_add (add_le_add le_rfl ?_) le_rfl
         have A : N - 1 + 1 = N := Nat.succ_pred_eq_of_pos Npos
         have B : N - 1 + 1 < N + 1 := A.symm ▸ N.lt_succ_self
         have C : N - 1 < N + 1 := lt_of_le_of_lt N.pred_le N.lt_succ_self
@@ -517,7 +517,7 @@ theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
 
 theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
     (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
-  refine' iSup_le _
+  refine iSup_le ?_
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le

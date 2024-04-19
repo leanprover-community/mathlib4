@@ -135,7 +135,7 @@ theorem smul_subset_of_coprime (han : (orderOf a).Coprime n) :
     a • approxOrderOf A n δ ⊆ approxOrderOf A (orderOf a * n) δ := by
   simp_rw [approxOrderOf, thickening_eq_biUnion_ball, ← image_smul, image_iUnion₂, image_smul,
     smul_ball'', smul_eq_mul, mem_setOf_eq]
-  refine' iUnion₂_subset_iff.mpr fun b hb c hc => _
+  refine iUnion₂_subset_iff.mpr fun b hb c hc => ?_
   simp only [mem_iUnion, exists_prop]
   refine ⟨a * b, ?_, hc⟩
   rw [← hb] at han ⊢
@@ -236,7 +236,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   have hu : Tendsto (addOrderOf ∘ u) atTop atTop := by
     rw [(funext hu₀ : addOrderOf ∘ u = (↑))]
     have h_mono : Monotone ((↑) : Nat.Primes → ℕ) := fun p q hpq => hpq
-    refine' h_mono.tendsto_atTop_atTop fun n => _
+    refine h_mono.tendsto_atTop_atTop fun n => ?_
     obtain ⟨p, hp, hp'⟩ := n.exists_infinite_primes
     exact ⟨⟨p, hp'⟩, hp⟩
   set E := addWellApproximable 𝕊 δ
@@ -249,8 +249,8 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
   have hB₀ : ∀ p, MeasurableSet (B p) := fun p =>
     MeasurableSet.measurableSet_blimsup fun n _ => isOpen_thickening.measurableSet
   have hE₀ : NullMeasurableSet E μ := by
-    refine' (MeasurableSet.measurableSet_blimsup fun n hn =>
-      IsOpen.measurableSet _).nullMeasurableSet
+    refine (MeasurableSet.measurableSet_blimsup fun n hn =>
+      IsOpen.measurableSet ?_).nullMeasurableSet
     exact isOpen_thickening
   have hE₁ : ∀ p, E = A p ∪ B p ∪ C p := by
     intro p
@@ -272,7 +272,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∤n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
-    refine' (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup fun n hn => _)
+    refine (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup fun n hn => ?_)
     replace hn := Nat.coprime_comm.mp (hp.coprime_iff_not_dvd.2 hn.2)
     exact approxAddOrderOf.image_nsmul_subset_of_coprime (δ n) hp.pos hn
   have hB : ∀ p : Nat.Primes, B p =ᵐ[μ] (∅ : Set 𝕊) ∨ B p =ᵐ[μ] univ := by
@@ -285,7 +285,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       apply (HasSubset.Subset.eventuallyLE this).congr EventuallyEq.rfl
       exact blimsup_thickening_mul_ae_eq μ (fun n => 0 < n ∧ p∣∣n) (fun n => {y | addOrderOf y = n})
         (Nat.cast_pos.mpr hp.pos) _ hδ
-    refine' (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup _)
+    refine (SupHom.apply_blimsup_le (sSupHom.setImage f)).trans (mono_blimsup ?_)
     rintro n ⟨hn, h_div, h_ndiv⟩
     have h_cop : (addOrderOf x).Coprime (n / p) := by
       obtain ⟨q, rfl⟩ := h_div
@@ -318,7 +318,7 @@ theorem addWellApproximable_ae_empty_or_univ (δ : ℕ → ℝ) (hδ : Tendsto �
       replace hE₂ : E =ᵐ[μ] C p := hE₂ p (h p)
       have h_qmp : Measure.QuasiMeasurePreserving (-u p +ᵥ ·) μ μ :=
         (measurePreserving_vadd _ μ).quasiMeasurePreserving
-      refine' (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans _ hE₂.symm)
+      refine (h_qmp.vadd_ae_eq_of_ae_eq (u p) hE₂).trans (ae_eq_trans ?_ hE₂.symm)
       rw [hC]
     exact ae_empty_or_univ_of_forall_vadd_ae_eq_self hE₀ h hu
   · right

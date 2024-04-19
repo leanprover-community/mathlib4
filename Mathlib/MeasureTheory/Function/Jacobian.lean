@@ -435,7 +435,7 @@ theorem mul_le_addHaar_image_of_lt_det (A : E →L[ℝ] E) {m : ℝ≥0}
         (𝓝 (‖(B.symm : E →L[ℝ] E)‖₊ * (‖(B.symm : E →L[ℝ] E)‖₊⁻¹ - 0)⁻¹ * 0)) := by
       rcases eq_or_ne ‖(B.symm : E →L[ℝ] E)‖₊ 0 with (H | H)
       · simpa only [H, zero_mul] using tendsto_const_nhds
-      refine' Tendsto.mul (tendsto_const_nhds.mul _) tendsto_id
+      refine Tendsto.mul (tendsto_const_nhds.mul ?_) tendsto_id
       refine' (Tendsto.sub tendsto_const_nhds tendsto_id).inv₀ _
       simpa only [tsub_zero, inv_eq_zero, Ne] using H
     simp only [mul_zero] at this
@@ -703,7 +703,7 @@ theorem aemeasurable_fderivWithin (hs : MeasurableSet s)
     `ApproximatesLinearOn.norm_fderiv_sub_le` that `f'` is uniformly approximated by `A n`, which
     gives the conclusion. -/
   -- fix a precision `ε`
-  refine' aemeasurable_of_unif_approx fun ε εpos => _
+  refine aemeasurable_of_unif_approx fun ε εpos => ?_
   let δ : ℝ≥0 := ⟨ε, le_of_lt εpos⟩
   have δpos : 0 < δ := εpos
   -- partition `s` into sets `s ∩ t n` on which `f` is approximated by linear maps `A n`.
@@ -755,7 +755,7 @@ theorem aemeasurable_ofReal_abs_det_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
     AEMeasurable (fun x => ENNReal.ofReal |(f' x).det|) (μ.restrict s) := by
   apply ENNReal.measurable_ofReal.comp_aemeasurable
-  refine' continuous_abs.measurable.comp_aemeasurable _
+  refine continuous_abs.measurable.comp_aemeasurable ?_
   refine' ContinuousLinearMap.continuous_det.measurable.comp_aemeasurable _
   exact aemeasurable_fderivWithin μ hs hf'
 #align measure_theory.ae_measurable_of_real_abs_det_fderiv_within MeasureTheory.aemeasurable_ofReal_abs_det_fderivWithin
@@ -764,7 +764,7 @@ theorem aemeasurable_toNNReal_abs_det_fderivWithin (hs : MeasurableSet s)
     (hf' : ∀ x ∈ s, HasFDerivWithinAt f (f' x) s x) :
     AEMeasurable (fun x => |(f' x).det|.toNNReal) (μ.restrict s) := by
   apply measurable_real_toNNReal.comp_aemeasurable
-  refine' continuous_abs.measurable.comp_aemeasurable _
+  refine continuous_abs.measurable.comp_aemeasurable ?_
   refine' ContinuousLinearMap.continuous_det.measurable.comp_aemeasurable _
   exact aemeasurable_fderivWithin μ hs hf'
 #align measure_theory.ae_measurable_to_nnreal_abs_det_fderiv_within MeasureTheory.aemeasurable_toNNReal_abs_det_fderivWithin
@@ -886,7 +886,7 @@ theorem addHaar_image_le_lintegral_abs_det_fderiv_aux2 (hs : MeasurableSet s) (h
     Tendsto (fun ε : ℝ≥0 => (∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * ε * μ s) (𝓝[>] 0)
       (𝓝 ((∫⁻ x in s, ENNReal.ofReal |(f' x).det| ∂μ) + 2 * (0 : ℝ≥0) * μ s)) := by
     apply Tendsto.mono_left _ nhdsWithin_le_nhds
-    refine' tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add ?_
     refine' ENNReal.Tendsto.mul_const _ (Or.inr h's)
     exact ENNReal.Tendsto.const_mul (ENNReal.tendsto_coe.2 tendsto_id) (Or.inr ENNReal.coe_ne_top)
   simp only [add_zero, zero_mul, mul_zero, ENNReal.coe_zero] at this
@@ -1041,7 +1041,7 @@ theorem lintegral_abs_det_fderiv_le_addHaar_image_aux2 (hs : MeasurableSet s) (h
     Tendsto (fun ε : ℝ≥0 => μ (f '' s) + 2 * ε * μ s) (𝓝[>] 0)
       (𝓝 (μ (f '' s) + 2 * (0 : ℝ≥0) * μ s)) := by
     apply Tendsto.mono_left _ nhdsWithin_le_nhds
-    refine' tendsto_const_nhds.add _
+    refine tendsto_const_nhds.add ?_
     refine' ENNReal.Tendsto.mul_const _ (Or.inr h's)
     exact ENNReal.Tendsto.const_mul (ENNReal.tendsto_coe.2 tendsto_id) (Or.inr ENNReal.coe_ne_top)
   simp only [add_zero, zero_mul, mul_zero, ENNReal.coe_zero] at this
@@ -1139,7 +1139,7 @@ theorem restrict_map_withDensity_abs_det_fderiv_eq_addHaar (hs : MeasurableSet s
   obtain ⟨u, u_meas, uf⟩ : ∃ u, Measurable u ∧ EqOn u f s := by
     classical
     refine' ⟨piecewise s f 0, _, piecewise_eqOn _ _ _⟩
-    refine' ContinuousOn.measurable_piecewise _ continuous_zero.continuousOn hs
+    refine ContinuousOn.measurable_piecewise ?_ continuous_zero.continuousOn hs
     have : DifferentiableOn ℝ f s := fun x hx => (hf' x hx).differentiableWithinAt
     exact this.continuousOn
   have u' : ∀ x ∈ s, HasFDerivWithinAt u (f' x) s x := fun x hx =>

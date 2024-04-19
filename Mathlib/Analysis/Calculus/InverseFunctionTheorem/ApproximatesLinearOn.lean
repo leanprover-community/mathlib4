@@ -297,8 +297,8 @@ theorem image_mem_nhds (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.Nonline
 
 theorem map_nhds_eq (hf : ApproximatesLinearOn f f' s c) (f'symm : f'.NonlinearRightInverse) {x : E}
     (hs : s ∈ 𝓝 x) (hc : Subsingleton F ∨ c < f'symm.nnnorm⁻¹) : map f (𝓝 x) = 𝓝 (f x) := by
-  refine'
-    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => _)
+  refine
+    le_antisymm ((hf.continuousOn x (mem_of_mem_nhds hs)).continuousAt hs) (le_map fun t ht => ?_)
   have : f '' (s ∩ t) ∈ 𝓝 (f x) :=
     (hf.mono_set (inter_subset_left s t)).image_mem_nhds f'symm (inter_mem hs ht) hc
   exact mem_of_superset this (image_subset _ (inter_subset_right _ _))
@@ -345,10 +345,10 @@ protected theorem surjective [CompleteSpace E] (hf : ApproximatesLinearOn f (f' 
     let p : ℝ → Prop := fun R => closedBall (f 0) R ⊆ Set.range f
     have hp : ∀ᶠ r : ℝ in atTop, p ((N⁻¹ - c) * r) := by
       have hr : ∀ᶠ r : ℝ in atTop, 0 ≤ r := eventually_ge_atTop 0
-      refine' hr.mono fun r hr => Subset.trans _ (image_subset_range f (closedBall 0 r))
+      refine hr.mono fun r hr => Subset.trans ?_ (image_subset_range f (closedBall 0 r))
       refine' hf.surjOn_closedBall_of_nonlinearRightInverse f'.toNonlinearRightInverse hr _
       exact subset_univ _
-    refine' ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono _
+    refine ((tendsto_id.const_mul_atTop hc').frequently hp.frequently).mono ?_
     exact fun R h y hy => h hy
 #align approximates_linear_on.surjective ApproximatesLinearOn.surjective
 
@@ -366,7 +366,7 @@ Use properties of `PartialHomeomorph` instead. -/
 theorem inverse_continuousOn (hf : ApproximatesLinearOn f (f' : E →L[𝕜] F) s c)
     (hc : Subsingleton E ∨ c < N⁻¹) : ContinuousOn (hf.toPartialEquiv hc).symm (f '' s) := by
   apply continuousOn_iff_continuous_restrict.2
-  refine' ((hf.antilipschitz hc).to_rightInvOn' _ (hf.toPartialEquiv hc).right_inv').continuous
+  refine ((hf.antilipschitz hc).to_rightInvOn' ?_ (hf.toPartialEquiv hc).right_inv').continuous
   exact fun x hx => (hf.toPartialEquiv hc).map_target hx
 #align approximates_linear_on.inverse_continuous_on ApproximatesLinearOn.inverse_continuousOn
 

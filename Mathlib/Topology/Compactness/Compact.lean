@@ -56,7 +56,7 @@ theorem IsCompact.compl_mem_sets (hs : IsCompact s) {f : Filter X} (hf : ∀ x �
 within `s` such that `tᶜ` belongs to `f`. -/
 theorem IsCompact.compl_mem_sets_of_nhdsWithin (hs : IsCompact s) {f : Filter X}
     (hf : ∀ x ∈ s, ∃ t ∈ 𝓝[s] x, tᶜ ∈ f) : sᶜ ∈ f := by
-  refine' hs.compl_mem_sets fun x hx => _
+  refine hs.compl_mem_sets fun x hx => ?_
   rcases hf x hx with ⟨t, ht, hst⟩
   replace ht := mem_inf_principal.1 ht
   apply mem_inf_of_inter ht hst
@@ -649,7 +649,7 @@ theorem Tendsto.isCompact_insert_range {f : ℕ → X} {x} (hf : Tendsto f atTop
 theorem hasBasis_coclosedCompact :
     (Filter.coclosedCompact X).HasBasis (fun s => IsClosed s ∧ IsCompact s) compl := by
   simp only [Filter.coclosedCompact, iInf_and']
-  refine' hasBasis_biInf_principal' _ ⟨∅, isClosed_empty, isCompact_empty⟩
+  refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isCompact_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
@@ -804,7 +804,7 @@ theorem IsCompact.ne_univ [NoncompactSpace X] (hs : IsCompact s) : s ≠ univ :=
 #align is_compact.ne_univ IsCompact.ne_univ
 
 instance [NoncompactSpace X] : NeBot (Filter.cocompact X) := by
-  refine' Filter.hasBasis_cocompact.neBot_iff.2 fun hs => _
+  refine Filter.hasBasis_cocompact.neBot_iff.2 fun hs => ?_
   contrapose hs; rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]; exact noncompact_univ X
 
@@ -1130,7 +1130,7 @@ protected lemma Pi.exists_compact_superset_iff {s : Set (Π i, X i)} :
 type `Π d, X d` the `Filter.coprodᵢ` of filters `Filter.cocompact` on `X d`. -/
 theorem Filter.coprodᵢ_cocompact {X : ι → Type*} [∀ d, TopologicalSpace (X d)] :
     (Filter.coprodᵢ fun d => Filter.cocompact (X d)) = Filter.cocompact (∀ d, X d) := by
-  refine' le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) _
+  refine le_antisymm (iSup_le fun i => Filter.comap_cocompact_le (continuous_apply i)) ?_
   refine' compl_surjective.forall.2 fun s H => _
   simp only [compl_mem_coprodᵢ, Filter.mem_cocompact, compl_subset_compl, image_subset_iff] at H ⊢
   choose K hKc htK using H

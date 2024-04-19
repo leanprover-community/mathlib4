@@ -819,7 +819,7 @@ theorem Orthonormal.exists_orthonormalBasis_extension_of_card_eq {ι : Type*} [F
     rwa [orthonormal_subtype_range hsv]
   obtain ⟨Y, b₀, hX, hb₀⟩ := hX.exists_orthonormalBasis_extension
   have hιY : Fintype.card ι = Y.card := by
-    refine' card_ι.symm.trans _
+    refine card_ι.symm.trans ?_
     exact FiniteDimensional.finrank_eq_card_finset_basis b₀.toBasis
   have hvsY : s.MapsTo v Y := (s.mapsTo_image v).mono_right (by rwa [← range_restrict])
   have hsv' : Set.InjOn v s := by

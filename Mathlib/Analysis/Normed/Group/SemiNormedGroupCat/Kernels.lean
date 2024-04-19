@@ -347,7 +347,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem explicitCokernelDesc_normNoninc {X Y Z : SemiNormedGroupCat.{u}} {f : X ⟶ Y} {g : Y ⟶ Z}
     {cond : f ≫ g = 0} (hg : g.NormNoninc) : (explicitCokernelDesc cond).NormNoninc := by
-  refine' NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.2 _
+  refine NormedAddGroupHom.NormNoninc.normNoninc_iff_norm_le_one.2 ?_
   rw [← NNReal.coe_one]
   exact
     explicitCokernelDesc_norm_le_of_norm_le cond 1

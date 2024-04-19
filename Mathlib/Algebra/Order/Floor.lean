@@ -449,7 +449,7 @@ theorem floor_add_nat (ha : 0 ≤ a) (n : ℕ) : ⌊a + n⌋₊ = ⌊a⌋₊ + n
         le_floor_iff ha]
     · obtain ⟨d, rfl⟩ := exists_add_of_le hb
       rw [Nat.cast_add, add_left_comm _ b, add_left_comm _ (b : α)]
-      refine' iff_of_true _ le_self_add
+      refine iff_of_true ?_ le_self_add
       exact le_add_of_nonneg_right <| ha.trans <| le_add_of_nonneg_right d.cast_nonneg
 #align nat.floor_add_nat Nat.floor_add_nat
 

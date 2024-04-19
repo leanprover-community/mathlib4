@@ -830,56 +830,56 @@ instance OrderDual.instLocallyFiniteOrder : LocallyFiniteOrder αᵒᵈ where
   finset_mem_Ioo _ _ _ := (mem_Ioo (α := α)).trans and_comm
 
 theorem Icc_toDual : Icc (toDual a) (toDual b) = (Icc b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Icc, mem_Icc (α := α)]
   exact and_comm
 #align Icc_to_dual Icc_toDual
 
 theorem Ico_toDual : Ico (toDual a) (toDual b) = (Ioc b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ico, mem_Ioc (α := α)]
   exact and_comm
 #align Ico_to_dual Ico_toDual
 
 theorem Ioc_toDual : Ioc (toDual a) (toDual b) = (Ico b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ioc, mem_Ico (α := α)]
   exact and_comm
 #align Ioc_to_dual Ioc_toDual
 
 theorem Ioo_toDual : Ioo (toDual a) (toDual b) = (Ioo b a).map toDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ioo, mem_Ioo (α := α)]
   exact and_comm
 #align Ioo_to_dual Ioo_toDual
 
 theorem Icc_ofDual (a b : αᵒᵈ) : Icc (ofDual a) (ofDual b) = (Icc b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Icc, mem_Icc (α := αᵒᵈ)]
   exact and_comm
 #align Icc_of_dual Icc_ofDual
 
 theorem Ico_ofDual (a b : αᵒᵈ) : Ico (ofDual a) (ofDual b) = (Ioc b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ico, mem_Ioc (α := αᵒᵈ)]
   exact and_comm
 #align Ico_of_dual Ico_ofDual
 
 theorem Ioc_ofDual (a b : αᵒᵈ) : Ioc (ofDual a) (ofDual b) = (Ico b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ioc, mem_Ico (α := αᵒᵈ)]
   exact and_comm
 #align Ioc_of_dual Ioc_ofDual
 
 theorem Ioo_ofDual (a b : αᵒᵈ) : Ioo (ofDual a) (ofDual b) = (Ioo b a).map ofDual.toEmbedding := by
-  refine' Eq.trans _ map_refl.symm
+  refine Eq.trans ?_ map_refl.symm
   ext c
   rw [mem_Ioo, mem_Ioo (α := αᵒᵈ)]
   exact and_comm
@@ -1311,28 +1311,28 @@ variable (hp : ∀ ⦃a b x⦄, a ≤ x → x ≤ b → p a → p b → p x)
 
 theorem map_subtype_embedding_Icc : (Icc a b).map (Embedding.subtype p) = (Icc a b : Finset α) := by
   rw [subtype_Icc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Icc] at hx
   exact hp hx.1 hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Icc Finset.map_subtype_embedding_Icc
 
 theorem map_subtype_embedding_Ico : (Ico a b).map (Embedding.subtype p) = (Ico a b : Finset α) := by
   rw [subtype_Ico_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ico] at hx
   exact hp hx.1 hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ico Finset.map_subtype_embedding_Ico
 
 theorem map_subtype_embedding_Ioc : (Ioc a b).map (Embedding.subtype p) = (Ioc a b : Finset α) := by
   rw [subtype_Ioc_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioc] at hx
   exact hp hx.1.le hx.2 a.prop b.prop
 #align finset.map_subtype_embedding_Ioc Finset.map_subtype_embedding_Ioc
 
 theorem map_subtype_embedding_Ioo : (Ioo a b).map (Embedding.subtype p) = (Ioo a b : Finset α) := by
   rw [subtype_Ioo_eq]
-  refine' Finset.subtype_map_of_mem fun x hx => _
+  refine Finset.subtype_map_of_mem fun x hx => ?_
   rw [mem_Ioo] at hx
   exact hp hx.1.le hx.2.le a.prop b.prop
 #align finset.map_subtype_embedding_Ioo Finset.map_subtype_embedding_Ioo

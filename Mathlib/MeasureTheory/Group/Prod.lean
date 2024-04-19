@@ -175,7 +175,7 @@ theorem quasiMeasurePreserving_inv : QuasiMeasurePreserving (Inv.inv : G → G) 
 
 @[to_additive]
 theorem measure_inv_null : μ s⁻¹ = 0 ↔ μ s = 0 := by
-  refine' ⟨fun hs => _, (quasiMeasurePreserving_inv μ).preimage_null⟩
+  refine ⟨fun hs => ?_, (quasiMeasurePreserving_inv μ).preimage_null⟩
   rw [← inv_inv s]
   exact (quasiMeasurePreserving_inv μ).preimage_null hs
 #align measure_theory.measure_inv_null MeasureTheory.measure_inv_null
@@ -296,7 +296,7 @@ theorem ae_measure_preimage_mul_right_lt_top [IsMulLeftInvariant ν] (sm : Measu
 theorem ae_measure_preimage_mul_right_lt_top_of_ne_zero [IsMulLeftInvariant ν]
     (sm : MeasurableSet s) (h2s : ν s ≠ 0) (h3s : ν s ≠ ∞) :
     ∀ᵐ x ∂μ, ν ((fun y => y * x) ⁻¹' s) < ∞ := by
-  refine' (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono _
+  refine (ae_measure_preimage_mul_right_lt_top ν ν sm h3s).filter_mono ?_
   refine' (absolutelyContinuous_of_isMulLeftInvariant μ ν _).ae_le
   refine mt ?_ h2s
   intro hν
@@ -329,7 +329,7 @@ theorem measure_lintegral_div_measure [IsMulLeftInvariant ν] (sm : MeasurableSe
   have hg : Measurable g :=
     (hf.comp measurable_inv).div ((measurable_measure_mul_right ν sm).comp measurable_inv)
   simp_rw [measure_mul_lintegral_eq μ ν sm g hg, g, inv_inv]
-  refine' lintegral_congr_ae _
+  refine lintegral_congr_ae ?_
   refine' (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => _
   simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν h2s _) hx.ne]
 #align measure_theory.measure_lintegral_div_measure MeasureTheory.measure_lintegral_div_measure
@@ -468,7 +468,7 @@ theorem quasiMeasurePreserving_div_left_of_right_invariant [IsMulRightInvariant 
 @[to_additive]
 theorem quasiMeasurePreserving_div_of_right_invariant [IsMulRightInvariant μ] :
     QuasiMeasurePreserving (fun p : G × G => p.1 / p.2) (μ.prod ν) μ := by
-  refine' QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => _)
+  refine QuasiMeasurePreserving.prod_of_left measurable_div (eventually_of_forall fun y => ?_)
   exact (measurePreserving_div_right μ y).quasiMeasurePreserving
 #align measure_theory.quasi_measure_preserving_div_of_right_invariant MeasureTheory.quasiMeasurePreserving_div_of_right_invariant
 #align measure_theory.quasi_measure_preserving_sub_of_right_invariant MeasureTheory.quasiMeasurePreserving_sub_of_right_invariant

@@ -59,11 +59,11 @@ theorem condexp_indep_eq (hle₁ : m₁ ≤ m) (hle₂ : m₂ ≤ m) [SigmaFinit
       integral_add' huint.integrableOn hvint.integrableOn]
   · have heq₁ : (fun f : lpMeas E ℝ m₁ 1 μ => ∫ x, (f : Ω → E) x ∂μ) =
         (fun f : Lp E 1 μ => ∫ x, f x ∂μ) ∘ Submodule.subtypeL _ := by
-      refine' funext fun f => integral_congr_ae _
+      refine funext fun f => integral_congr_ae ?_
       simp_rw [Submodule.coe_subtypeL', Submodule.coeSubtype]; norm_cast
     have heq₂ : (fun f : lpMeas E ℝ m₁ 1 μ => ∫ x in s, (f : Ω → E) x ∂μ) =
         (fun f : Lp E 1 μ => ∫ x in s, f x ∂μ) ∘ Submodule.subtypeL _ := by
-      refine' funext fun f => integral_congr_ae (ae_restrict_of_ae _)
+      refine funext fun f => integral_congr_ae (ae_restrict_of_ae ?_)
       simp_rw [Submodule.coe_subtypeL', Submodule.coeSubtype]
       exact eventually_of_forall fun _ => (by trivial)
     refine' isClosed_eq (Continuous.const_smul _ _) _

@@ -54,7 +54,7 @@ theorem mem_map_algebraMap_iff {I : Ideal R} {z} : z ∈ Ideal.map (algebraMap R
     ∃ x : I × M, z * algebraMap R S x.2 = algebraMap R S x.1 := by
   constructor
   · change _ → z ∈ map_ideal M S I
-    refine' fun h => Ideal.mem_sInf.1 h fun z hz => _
+    refine fun h => Ideal.mem_sInf.1 h fun z hz => ?_
     obtain ⟨y, hy⟩ := hz
     let Z : { x // x ∈ I } := ⟨y, hy.left⟩
     use ⟨Z, 1⟩
@@ -77,7 +77,7 @@ theorem map_comap (J : Ideal S) : Ideal.map (algebraMap R S) (Ideal.comap (algeb
 
 theorem comap_map_of_isPrime_disjoint (I : Ideal R) (hI : I.IsPrime) (hM : Disjoint (M : Set R) I) :
     Ideal.comap (algebraMap R S) (Ideal.map (algebraMap R S) I) = I := by
-  refine' le_antisymm _ Ideal.le_comap_map
+  refine le_antisymm ?_ Ideal.le_comap_map
   refine' (fun a ha => _)
   obtain ⟨⟨b, s⟩, h⟩ := (mem_map_algebraMap_iff M S).1 (Ideal.mem_comap.1 ha)
   replace h : algebraMap R S (s * a) = algebraMap R S b := by

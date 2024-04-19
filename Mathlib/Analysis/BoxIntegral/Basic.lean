@@ -204,7 +204,7 @@ theorem HasIntegral.of_mul (a : ℝ)
     (h : ∀ ε : ℝ, 0 < ε → ∃ r : ℝ≥0 → ℝⁿ → Ioi (0 : ℝ), (∀ c, l.RCond (r c)) ∧ ∀ c π,
       l.MemBaseSet I c (r c) π → IsPartition π → dist (integralSum f vol π) y ≤ a * ε) :
     HasIntegral I l f vol y := by
-  refine' hasIntegral_iff.2 fun ε hε => _
+  refine hasIntegral_iff.2 fun ε hε => ?_
   rcases exists_pos_mul_lt hε a with ⟨ε', hε', ha⟩
   rcases h ε' hε' with ⟨r, hr, H⟩
   exact ⟨r, hr, fun c π hπ hπp => (H c π hπ hπp).trans ha.le⟩
@@ -631,7 +631,7 @@ sum of integrals of `f` over the boxes of `π₀`. -/
 theorem tendsto_integralSum_sum_integral (h : Integrable I l f vol) (π₀ : Prepartition I) :
     Tendsto (integralSum f vol) (l.toFilteriUnion I π₀)
       (𝓝 <| ∑ J in π₀.boxes, integral J l f vol) := by
-  refine' ((l.hasBasis_toFilteriUnion I π₀).tendsto_iff nhds_basis_closedBall).2 fun ε ε0 => _
+  refine ((l.hasBasis_toFilteriUnion I π₀).tendsto_iff nhds_basis_closedBall).2 fun ε ε0 => ?_
   refine' ⟨h.convergenceR ε, h.convergenceR_cond ε, _⟩
   simp only [mem_inter_iff, Set.mem_iUnion, mem_setOf_eq]
   rintro π ⟨c, hc, hU⟩
@@ -646,7 +646,7 @@ See also `BoxIntegral.Integrable.toBoxAdditive` for a bundled version. -/
 theorem sum_integral_congr (h : Integrable I l f vol) {π₁ π₂ : Prepartition I}
     (hU : π₁.iUnion = π₂.iUnion) :
     ∑ J in π₁.boxes, integral J l f vol = ∑ J in π₂.boxes, integral J l f vol := by
-  refine' tendsto_nhds_unique (h.tendsto_integralSum_sum_integral π₁) _
+  refine tendsto_nhds_unique (h.tendsto_integralSum_sum_integral π₁) ?_
   rw [l.toFilteriUnion_congr _ hU]
   exact h.tendsto_integralSum_sum_integral π₂
 #align box_integral.integrable.sum_integral_congr BoxIntegral.Integrable.sum_integral_congr
@@ -684,7 +684,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
     Integrable.{u, v, v} I l f μ.toBoxAdditive.toSMul := by
   have huc := I.isCompact_Icc.uniformContinuousOn_of_continuous hc
   rw [Metric.uniformContinuousOn_iff_le] at huc
-  refine' integrable_iff_cauchy_basis.2 fun ε ε0 => _
+  refine integrable_iff_cauchy_basis.2 fun ε ε0 => ?_
   rcases exists_pos_mul_lt ε0 (μ.toBoxAdditive I) with ⟨ε', ε0', hε⟩
   rcases huc ε' ε0' with ⟨δ, δ0 : 0 < δ, Hδ⟩
   refine' ⟨fun _ _ => ⟨δ / 2, half_pos δ0⟩, fun _ _ _ => rfl, fun c₁ c₂ π₁ π₂ h₁ h₁p h₂ h₂p => _⟩
@@ -696,7 +696,7 @@ theorem integrable_of_continuousOn [CompleteSpace E] {I : Box ι} {f : ℝⁿ �
     intro J hJ
     have : 0 ≤ μ.toBoxAdditive J := ENNReal.toReal_nonneg
     rw [norm_smul, Real.norm_eq_abs, abs_of_nonneg this, ← dist_eq_norm]
-    refine' mul_le_mul_of_nonneg_left _ this
+    refine mul_le_mul_of_nonneg_left ?_ this
     refine' Hδ _ (TaggedPrepartition.tag_mem_Icc _ _) _ (TaggedPrepartition.tag_mem_Icc _ _) _
     rw [← add_halves δ]
     refine' (dist_triangle_left _ _ J.upper).trans (add_le_add (h₁.1 _ _ _) (h₂.1 _ _ _))
@@ -768,7 +768,7 @@ theorem HasIntegral.of_bRiemann_eq_false_of_forall_isLittleO (hl : l.bRiemann = 
     · rintro b -
       rw [← Nat.cast_two, ← Nat.cast_pow, ← nsmul_eq_mul]
       refine' nsmul_le_nsmul_left (hεs0 _).le _
-      refine' (Finset.card_le_card _).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
+      refine (Finset.card_le_card ?_).trans ((hπδ.isHenstock hlH).card_filter_tag_eq_le b)
       exact filter_subset_filter _ (filter_subset _ _)
     · rw [Finset.coe_image, Set.image_subset_iff]
       exact fun J hJ => (Finset.mem_filter.1 hJ).2

@@ -726,7 +726,7 @@ theorem polynomial_not_isField : ¬IsField R[X] := by
 /-- The only constant in a maximal ideal over a field is `0`. -/
 theorem eq_zero_of_constant_mem_of_maximal (hR : IsField R) (I : Ideal R[X]) [hI : I.IsMaximal]
     (x : R) (hx : C x ∈ I) : x = 0 := by
-  refine' Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 _)
+  refine Classical.by_contradiction fun hx0 => hI.ne_top ((eq_top_iff_one I).2 ?_)
   obtain ⟨y, hy⟩ := hR.mul_inv_cancel hx0
   convert I.mul_mem_left (C y) hx
   rw [← C.map_mul, hR.mul_comm y x, hy, RingHom.map_one]
@@ -1210,7 +1210,7 @@ theorem map_mvPolynomial_eq_eval₂ {S : Type*} [CommRing S] [Finite σ] (ϕ : M
     (p : MvPolynomial σ R) :
     ϕ p = MvPolynomial.eval₂ (ϕ.comp MvPolynomial.C) (fun s => ϕ (MvPolynomial.X s)) p := by
   cases nonempty_fintype σ
-  refine' Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) _
+  refine Trans.trans (congr_arg ϕ (MvPolynomial.as_sum p)) ?_
   rw [MvPolynomial.eval₂_eq', map_sum ϕ]
   congr
   ext

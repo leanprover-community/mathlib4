@@ -717,7 +717,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
   suffices range f = ⋂ n, F n by
     have E_meas : ∀ s : b, MeasurableSet (E s) := by
       intro b
-      refine' isClosed_closure.measurableSet.inter _
+      refine isClosed_closure.measurableSet.inter ?_
       refine MeasurableSet.iInter fun s => ?_
       exact MeasurableSet.iInter fun hs => (q_meas _).diff (q_meas _)
     have F_meas : ∀ n, MeasurableSet (F n) := by
@@ -918,7 +918,7 @@ theorem _root_.Measurable.measurableEmbedding {f : γ → α}
 theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
-  refine' le_antisymm _ (borel_anti hle)
+  refine le_antisymm ?_ (borel_anti hle)
   intro s hs
   have e := @Continuous.measurableEmbedding
     _ _ t' _ (@borel _ t') _ (@BorelSpace.mk _ _ (borel γ) rfl)
@@ -1069,7 +1069,7 @@ theorem measurableEquiv_range_coe_nat_of_infinite_of_countable [Infinite α] [Co
   have : PolishSpace (range ((↑) : ℕ → ℝ)) :=
     Nat.closedEmbedding_coe_real.isClosedMap.isClosed_range.polishSpace
   refine ⟨PolishSpace.Equiv.measurableEquiv ?_⟩
-  refine' (nonempty_equiv_of_countable.some : α ≃ ℕ).trans _
+  refine (nonempty_equiv_of_countable.some : α ≃ ℕ).trans ?_
   exact Equiv.ofInjective ((↑) : ℕ → ℝ) Nat.cast_injective
 #align measure_theory.measurable_equiv_range_coe_nat_of_infinite_of_countable MeasureTheory.measurableEquiv_range_coe_nat_of_infinite_of_countable
 

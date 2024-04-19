@@ -160,7 +160,7 @@ theorem contDiffWithinAt_localInvariantProp (n : ℕ∞) :
 
 theorem contDiffWithinAtProp_mono_of_mem (n : ℕ∞) ⦃s x t⦄ ⦃f : H → H'⦄ (hts : s ∈ 𝓝[t] x)
     (h : ContDiffWithinAtProp I I' n f s x) : ContDiffWithinAtProp I I' n f t x := by
-  refine' h.mono_of_mem _
+  refine h.mono_of_mem ?_
   refine' inter_mem _ (mem_of_superset self_mem_nhdsWithin <| inter_subset_right _ _)
   rwa [← Filter.mem_map, ← I.image_eq, I.symm_map_nhdsWithin_image]
 #align cont_diff_within_at_prop_mono_of_mem contDiffWithinAtProp_mono_of_mem
@@ -432,12 +432,12 @@ theorem contMDiffWithinAt_iff_of_mem_source' {x' : M} {y : M'} (hx : x' ∈ (cha
         ContDiffWithinAt 𝕜 n (extChartAt I' y ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).target ∩ (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' y).source))
           (extChartAt I x x') := by
-  refine' (contMDiffWithinAt_iff_of_mem_source hx hy).trans _
+  refine (contMDiffWithinAt_iff_of_mem_source hx hy).trans ?_
   rw [← extChartAt_source I] at hx
   rw [← extChartAt_source I'] at hy
   rw [and_congr_right_iff]
   set e := extChartAt I x; set e' := extChartAt I' (f x)
-  refine' fun hc => contDiffWithinAt_congr_nhds _
+  refine fun hc => contDiffWithinAt_congr_nhds ?_
   rw [← e.image_source_inter_eq', ← map_extChartAt_nhdsWithin_eq_image' I hx, ←
     map_extChartAt_nhdsWithin' I hx, inter_comm, nhdsWithin_inter_of_mem]
   exact hc (extChartAt_source_mem_nhds' _ hy)
@@ -568,7 +568,7 @@ theorem contMDiffOn_iff :
     · simp only [w, hz, mfld_simps]
     · mfld_set_tac
   · rintro ⟨hcont, hdiff⟩ x hx
-    refine' (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr _
+    refine (contDiffWithinAt_localInvariantProp I I' n).liftPropWithinAt_iff.mpr ?_
     refine ⟨hcont x hx, ?_⟩
     dsimp [ContDiffWithinAtProp]
     convert hdiff x (f x) (extChartAt I x x) (by simp only [hx, mfld_simps]) using 1
@@ -803,7 +803,7 @@ theorem contMDiffOn_iff_source_of_mem_maximalAtlas (he : e ∈ maximalAtlas I M)
     ContMDiffOn I I' n f s ↔
       ContMDiffOn 𝓘(𝕜, E) I' n (f ∘ (e.extend I).symm) (e.extend I '' s) := by
   simp_rw [ContMDiffOn, Set.forall_mem_image]
-  refine' forall₂_congr fun x hx => _
+  refine forall₂_congr fun x hx => ?_
   rw [contMDiffWithinAt_iff_source_of_mem_maximalAtlas he (hs hx)]
   apply contMDiffWithinAt_congr_nhds
   simp_rw [nhdsWithin_eq_iff_eventuallyEq,
@@ -857,7 +857,7 @@ theorem contMDiffAt_iff_contMDiffAt_nhds {n : ℕ} :
   refine' ⟨_, fun h => h.self_of_nhds⟩
   rw [contMDiffAt_iff_contMDiffOn_nhds]
   rintro ⟨u, hu, h⟩
-  refine' (eventually_mem_nhds.mpr hu).mono fun x' hx' => _
+  refine (eventually_mem_nhds.mpr hu).mono fun x' hx' => ?_
   exact (h x' <| mem_of_mem_nhds hx').contMDiffAt hx'
 #align cont_mdiff_at_iff_cont_mdiff_at_nhds contMDiffAt_iff_contMDiffAt_nhds
 

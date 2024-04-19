@@ -468,7 +468,7 @@ alias ⟨_, ext_of_sUnion_eq_univ⟩ := ext_iff_of_sUnion_eq_univ
 theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (hc : T.Countable) (h_inter : IsPiSystem S) (hU : ⋃₀ T = univ) (htop : ∀ t ∈ T, μ t ≠ ∞)
     (ST_eq : ∀ t ∈ T, ∀ s ∈ S, μ (s ∩ t) = ν (s ∩ t)) (T_eq : ∀ t ∈ T, μ t = ν t) : μ = ν := by
-  refine' ext_of_sUnion_eq_univ hc hU fun t ht => _
+  refine ext_of_sUnion_eq_univ hc hU fun t ht => ?_
   ext1 u hu
   simp only [restrict_apply hu]
   refine' induction_on_inter h_gen h_inter _ (ST_eq t ht) _ _ hu
@@ -490,7 +490,7 @@ theorem ext_of_generateFrom_of_cover {S T : Set (Set α)} (h_gen : ‹_› = gen
 theorem ext_of_generateFrom_of_cover_subset {S T : Set (Set α)} (h_gen : ‹_› = generateFrom S)
     (h_inter : IsPiSystem S) (h_sub : T ⊆ S) (hc : T.Countable) (hU : ⋃₀ T = univ)
     (htop : ∀ s ∈ T, μ s ≠ ∞) (h_eq : ∀ s ∈ S, μ s = ν s) : μ = ν := by
-  refine' ext_of_generateFrom_of_cover h_gen hc h_inter hU htop _ fun t ht => h_eq t (h_sub ht)
+  refine ext_of_generateFrom_of_cover h_gen hc h_inter hU htop ?_ fun t ht => h_eq t (h_sub ht)
   intro t ht s hs; rcases (s ∩ t).eq_empty_or_nonempty with H | H
   · simp only [H, measure_empty]
   · exact h_eq _ (h_inter _ hs _ (h_sub ht) H)
@@ -644,7 +644,7 @@ theorem ae_restrict_iff' {p : α → Prop} (hs : MeasurableSet s) :
 theorem _root_.Filter.EventuallyEq.restrict {f g : α → δ} {s : Set α} (hfg : f =ᵐ[μ] g) :
     f =ᵐ[μ.restrict s] g := by
   -- note that we cannot use `ae_restrict_iff` since we do not require measurability
-  refine' hfg.filter_mono _
+  refine hfg.filter_mono ?_
   rw [Measure.ae_le_iff_absolutelyContinuous]
   exact Measure.absolutelyContinuous_of_le Measure.restrict_le_self
 #align filter.eventually_eq.restrict Filter.EventuallyEq.restrict

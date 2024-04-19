@@ -194,7 +194,7 @@ theorem adjoin_eq_span : Subalgebra.toSubmodule (adjoin R s) = span R (Submonoid
     · exact
         ⟨z, hd * r, Submonoid.mul_mem _ (Submonoid.subset_closure hs) hr,
           (mul_smul_comm _ _ _).symm⟩
-  refine' span_le.2 _
+  refine span_le.2 ?_
   change Submonoid.closure s ≤ (adjoin R s).toSubsemiring.toSubmonoid
   exact Submonoid.closure_le.2 subset_adjoin
 #align algebra.adjoin_eq_span Algebra.adjoin_eq_span
@@ -375,7 +375,7 @@ theorem pow_smul_mem_of_smul_subset_of_mem_adjoin [CommSemiring B] [Algebra R B]
   use l.support.sup n₁
   intro n hn
   rw [Finsupp.smul_sum]
-  refine' B'.toSubmodule.sum_mem _
+  refine B'.toSubmodule.sum_mem ?_
   intro a ha
   have : n ≥ n₁ a := le_trans (Finset.le_sup ha) hn
   dsimp only

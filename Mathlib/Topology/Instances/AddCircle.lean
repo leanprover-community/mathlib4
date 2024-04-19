@@ -675,7 +675,7 @@ theorem liftIco_eq_lift_Icc {f : 𝕜 → B} (h : f a = f (a + p)) :
 theorem liftIco_continuous [TopologicalSpace B] {f : 𝕜 → B} (hf : f a = f (a + p))
     (hc : ContinuousOn f <| Icc a (a + p)) : Continuous (liftIco p a f) := by
   rw [liftIco_eq_lift_Icc hf]
-  refine' Continuous.comp _ (homeoIccQuot p a).continuous_toFun
+  refine Continuous.comp ?_ (homeoIccQuot p a).continuous_toFun
   exact continuous_coinduced_dom.mpr (continuousOn_iff_continuous_restrict.mp hc)
 #align add_circle.lift_Ico_continuous AddCircle.liftIco_continuous
 

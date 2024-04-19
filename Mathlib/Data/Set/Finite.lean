@@ -815,7 +815,7 @@ union `⋃ i, s i` is a finite set. -/
 theorem Finite.iUnion {ι : Type*} {s : ι → Set α} {t : Set ι} (ht : t.Finite)
     (hs : ∀ i ∈ t, (s i).Finite) (he : ∀ i, i ∉ t → s i = ∅) : (⋃ i, s i).Finite := by
   suffices ⋃ i, s i ⊆ ⋃ i ∈ t, s i by exact (ht.biUnion hs).subset this
-  refine' iUnion_subset fun i x hx => _
+  refine iUnion_subset fun i x hx => ?_
   by_cases hi : i ∈ t
   · exact mem_biUnion hi hx
   · rw [he i hi, mem_empty_iff_false] at hx
@@ -1611,7 +1611,7 @@ theorem iUnion_pi_of_monotone {ι ι' : Type*} [LinearOrder ι'] [Nonempty ι'] 
     ⋃ j : ι', I.pi (fun i => s i j) = I.pi fun i => ⋃ j, s i j := by
   simp only [pi_def, biInter_eq_iInter, preimage_iUnion]
   haveI := hI.fintype.finite
-  refine' iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => _)
+  refine iUnion_iInter_of_monotone (ι' := ι') (fun (i : I) j₁ j₂ h => ?_)
   exact preimage_mono <| hs i i.2 h
 #align set.Union_pi_of_monotone Set.iUnion_pi_of_monotone
 

@@ -174,7 +174,7 @@ theorem Definable.preimage_comp (f : α → β) {s : Set (α → M)} (h : A.Defi
 
 theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f : α ≃ β) :
     A.Definable L ((fun g : β → M => g ∘ f) '' s) := by
-  refine' (congr rfl _).mp (h.preimage_comp f.symm)
+  refine (congr rfl ?_).mp (h.preimage_comp f.symm)
   rw [image_eq_preimage_of_inverse]
   · intro i
     ext b
@@ -260,9 +260,9 @@ theorem Definable.image_comp {s : Set (β → M)} (h : A.Definable L s) (f : α 
         A.Definable L { x : α → M | x a = x (rangeSplitting f (rangeFactorization f a)) } := by
           refine' fun a => ⟨(var a).equal (var (rangeSplitting f (rangeFactorization f a))), ext _⟩
           simp
-      refine' (congr rfl (ext _)).mp (definable_finset_biInter h' Finset.univ)
+      refine (congr rfl (ext ?_)).mp (definable_finset_biInter h' Finset.univ)
       simp
-    refine' (congr rfl (ext fun x => _)).mp (h.inter h')
+    refine (congr rfl (ext fun x => ?_)).mp (h.inter h')
     simp only [Equiv.coe_trans, mem_inter_iff, mem_preimage, mem_image, exists_exists_and_eq_and,
       mem_setOf_eq]
     constructor

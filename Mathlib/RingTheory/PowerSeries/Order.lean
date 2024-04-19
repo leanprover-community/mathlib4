@@ -44,7 +44,7 @@ open multiplicity
 variable [Semiring R] {φ : R⟦X⟧}
 
 theorem exists_coeff_ne_zero_iff_ne_zero : (∃ n : ℕ, coeff R n φ ≠ 0) ↔ φ ≠ 0 := by
-  refine' not_iff_not.mp _
+  refine not_iff_not.mp ?_
   push_neg
   -- FIXME: the `FunLike.coe` doesn't seem to be picked up in the expression after #8386?
   simp [PowerSeries.ext_iff, (coeff R _).map_zero]
@@ -235,7 +235,7 @@ theorem coeff_mul_of_lt_order {φ ψ : R⟦X⟧} {n : ℕ} (h : ↑n < ψ.order)
   rw [coeff_mul]
   apply Finset.sum_congr rfl
   intro x hx
-  refine' mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt _ h))
+  refine mul_eq_zero_of_right (coeff R x.fst φ) (coeff_of_lt_order x.snd (lt_of_le_of_lt ?_ h))
   rw [mem_antidiagonal] at hx
   norm_cast
   omega
@@ -382,7 +382,7 @@ theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0)
       _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
       _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
   simp [← hdfg, this] at H
-  refine' (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) _).symm
+  refine (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) ?_).symm
   convert H
 
 end OrderIsDomain

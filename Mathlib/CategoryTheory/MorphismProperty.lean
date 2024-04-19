@@ -233,7 +233,7 @@ theorem RespectsIso.of_respects_arrow_iso (P : MorphismProperty C)
 
 lemma RespectsIso.isoClosure_eq {P : MorphismProperty C} (hP : P.RespectsIso) :
     P.isoClosure = P := by
-  refine' le_antisymm _ (P.subset_isoClosure)
+  refine le_antisymm ?_ (P.subset_isoClosure)
   intro X Y f ⟨X', Y', f', hf', ⟨e⟩⟩
   exact (hP.arrow_mk_iso_iff e).1 hf'
 
@@ -1005,7 +1005,7 @@ lemma IsStableUnderProductsOfShape.mk (J : Type*)
   intro X₁ X₂ c₁ c₂ hc₁ hc₂ f hf
   let φ := fun j => f.app (Discrete.mk j)
   have hf' := hW _ _ φ (fun j => hf (Discrete.mk j))
-  refine' (hW₀.arrow_mk_iso_iff _).2 hf'
+  refine (hW₀.arrow_mk_iso_iff ?_).2 hf'
   refine' Arrow.isoMk
     (IsLimit.conePointUniqueUpToIso hc₁ (limit.isLimit X₁) ≪≫ (Pi.isoLimit _).symm)
     (IsLimit.conePointUniqueUpToIso hc₂ (limit.isLimit X₂) ≪≫ (Pi.isoLimit _).symm) _

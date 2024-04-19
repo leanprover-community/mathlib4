@@ -66,17 +66,17 @@ theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
 #align real.continuous_tan Real.continuous_tan
 
 theorem continuousOn_tan_Ioo : ContinuousOn tan (Ioo (-(π / 2)) (π / 2)) := by
-  refine' ContinuousOn.mono continuousOn_tan fun x => _
+  refine ContinuousOn.mono continuousOn_tan fun x => ?_
   simp only [and_imp, mem_Ioo, mem_setOf_eq, Ne]
   rw [cos_eq_zero_iff]
   rintro hx_gt hx_lt ⟨r, hxr_eq⟩
   rcases le_or_lt 0 r with h | h
   · rw [lt_iff_not_ge] at hx_lt
-    refine' hx_lt _
+    refine hx_lt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, mul_le_mul_right (half_pos pi_pos)]
     simp [h]
   · rw [lt_iff_not_ge] at hx_gt
-    refine' hx_gt _
+    refine hx_gt ?_
     rw [hxr_eq, ← one_mul (π / 2), mul_div_assoc, ge_iff_le, neg_mul_eq_neg_mul,
       mul_le_mul_right (half_pos pi_pos)]
     have hr_le : r ≤ -1 := by rwa [Int.lt_iff_add_one_le, ← le_neg_iff_add_nonpos_right] at h

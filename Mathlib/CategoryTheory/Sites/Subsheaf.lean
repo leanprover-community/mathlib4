@@ -184,7 +184,7 @@ def Subpresheaf.sheafify : Subpresheaf F where
   obj U := { s | G.sieveOfSection s ∈ J (unop U) }
   map := by
     rintro U V i s hs
-    refine' J.superset_covering _ (J.pullback_stable i.unop hs)
+    refine J.superset_covering ?_ (J.pullback_stable i.unop hs)
     intro _ _ h
     dsimp at h ⊢
     rwa [← FunctorToTypes.map_comp_apply]
@@ -248,7 +248,7 @@ theorem Subpresheaf.sheafify_isSheaf (hF : Presieve.IsSheaf J F) :
         (by simp only [Category.assoc, h₂, e]))
   obtain ⟨t, ht, ht'⟩ := hF _ (J.bind_covering hS fun V i hi => (x i hi).2) _ this
   refine' ⟨⟨t, _⟩, (H ⟨t, _⟩).mpr ht, fun y hy => Subtype.ext (ht' _ ((H _).mp hy))⟩
-  refine' J.superset_covering _ (J.bind_covering hS fun V i hi => (x i hi).2)
+  refine J.superset_covering ?_ (J.bind_covering hS fun V i hi => (x i hi).2)
   intro V i hi
   dsimp
   rw [ht _ hi]

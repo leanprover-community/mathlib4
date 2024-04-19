@@ -235,7 +235,7 @@ theorem IsConnected.Icc_subset {s : Set α} (hs : IsConnected s) {a b : α} (ha 
 space. -/
 theorem IsPreconnected.eq_univ_of_unbounded {s : Set α} (hs : IsPreconnected s) (hb : ¬BddBelow s)
     (ha : ¬BddAbove s) : s = univ := by
-  refine' eq_univ_of_forall fun x => _
+  refine eq_univ_of_forall fun x => ?_
   obtain ⟨y, ys, hy⟩ : ∃ y ∈ s, y < x := not_bddBelow_iff.1 hb x
   obtain ⟨z, zs, hz⟩ : ∃ z ∈ s, x < z := not_bddAbove_iff.1 ha x
   exact hs.Icc_subset ys zs ⟨le_of_lt hy, le_of_lt hz⟩
@@ -509,7 +509,7 @@ theorem setOf_isPreconnected_eq_of_ordered :
       range (uncurry Icc) ∪ range (uncurry Ico) ∪ range (uncurry Ioc) ∪ range (uncurry Ioo) ∪
       -- unbounded intervals and `univ`
       (range Ici ∪ range Ioi ∪ range Iic ∪ range Iio ∪ {univ, ∅}) := by
-  refine' Subset.antisymm setOf_isPreconnected_subset_of_ordered _
+  refine Subset.antisymm setOf_isPreconnected_subset_of_ordered ?_
   simp only [subset_def, forall_mem_range, uncurry, or_imp, forall_and, mem_union,
     mem_setOf_eq, insert_eq, mem_singleton_iff, forall_eq, forall_true_iff, and_true_iff,
     isPreconnected_Icc, isPreconnected_Ico, isPreconnected_Ioc, isPreconnected_Ioo,

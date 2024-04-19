@@ -55,7 +55,7 @@ instance Closeds.emetricSpace : EMetricSpace (Closeds α) where
 /-- The edistance to a closed set depends continuously on the point and the set -/
 theorem continuous_infEdist_hausdorffEdist :
     Continuous fun p : α × Closeds α => infEdist p.1 p.2 := by
-  refine' continuous_of_le_add_edist 2 (by simp) _
+  refine continuous_of_le_add_edist 2 (by simp) ?_
   rintro ⟨x, s⟩ ⟨y, t⟩
   calc
     infEdist x s ≤ infEdist x t + hausdorffEdist (t : Set α) s :=
@@ -76,7 +76,7 @@ theorem isClosed_subsets_of_isClosed (hs : IsClosed s) :
   refine isClosed_of_closure_subset fun
     (t : Closeds α) (ht : t ∈ closure {t : Closeds α | (t : Set α) ⊆ s}) (x : α) (hx : x ∈ t) => ?_
   have : x ∈ closure s := by
-    refine' mem_closure_iff.2 fun ε εpos => _
+    refine mem_closure_iff.2 fun ε εpos => ?_
     obtain ⟨u : Closeds α, hu : u ∈ {t : Closeds α | (t : Set α) ⊆ s}, Dtu : edist t u < ε⟩ :=
       mem_closure_iff.1 ht ε εpos
     obtain ⟨y : α, hy : y ∈ u, Dxy : edist x y < ε⟩ := exists_edist_lt_of_hausdorffEdist_lt hx Dtu
@@ -104,7 +104,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
     We will have to show that a point in `s n` is close to a point in `t0`, and a point
     in `t0` is close to a point in `s n`. The completeness then follows from a
     standard criterion. -/
-  refine' complete_of_convergent_controlled_sequences B B_pos fun s hs => _
+  refine complete_of_convergent_controlled_sequences B B_pos fun s hs => ?_
   let t0 := ⋂ n, closure (⋃ m ≥ n, s m : Set α)
   let t : Closeds α := ⟨t0, isClosed_iInter fun _ => isClosed_closure⟩
   use t
@@ -178,7 +178,7 @@ instance Closeds.completeSpace [CompleteSpace α] : CompleteSpace (Closeds α) :
   have main : ∀ n : ℕ, edist (s n) t ≤ 2 * B n := fun n =>
     hausdorffEdist_le_of_mem_edist (I1 n) (I2 n)
   -- from this, the convergence of `s n` to `t0` follows.
-  refine' tendsto_atTop.2 fun ε εpos => _
+  refine tendsto_atTop.2 fun ε εpos => ?_
   have : Tendsto (fun n => 2 * B n) atTop (𝓝 (2 * 0)) :=
     ENNReal.Tendsto.const_mul (ENNReal.tendsto_pow_atTop_nhds_zero_of_lt_one <|
       by simp [ENNReal.one_lt_two]) (Or.inr <| by simp)

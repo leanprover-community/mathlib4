@@ -372,7 +372,7 @@ theorem integrableOn_iff_integrable_of_support_subset (h1s : support f ⊆ s) :
 
 theorem integrableOn_Lp_of_measure_ne_top {E} [NormedAddCommGroup E] {p : ℝ≥0∞} {s : Set α}
     (f : Lp E p μ) (hp : 1 ≤ p) (hμs : μ s ≠ ∞) : IntegrableOn f s μ := by
-  refine' memℒp_one_iff_integrable.mp _
+  refine memℒp_one_iff_integrable.mp ?_
   have hμ_restrict_univ : (μ.restrict s) Set.univ < ∞ := by
     simpa only [Set.univ_inter, MeasurableSet.univ, Measure.restrict_apply, lt_top_iff_ne_top]
   haveI hμ_finite : IsFiniteMeasure (μ.restrict s) := ⟨hμ_restrict_univ⟩

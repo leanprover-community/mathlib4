@@ -329,7 +329,7 @@ theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) 
   · simp [hP]
   · refine' le_antisymm (degree_map_le _ _) _
     rw [degree_eq_natDegree hP]
-    refine' le_degree_of_ne_zero _
+    refine le_degree_of_ne_zero ?_
     rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
     exact one_ne_zero
 #align polynomial.monic.degree_map Polynomial.Monic.degree_map
@@ -452,7 +452,7 @@ theorem Monic.mul_left_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : q * p 
   rw [Ne, ← degree_eq_bot, hp.degree_mul, WithBot.add_eq_bot, not_or, degree_eq_bot]
   refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
-  refine' (lt_trans _ h).ne'
+  refine (lt_trans ?_ h).ne'
   simp
 #align polynomial.monic.mul_left_ne_zero Polynomial.Monic.mul_left_ne_zero
 
@@ -463,7 +463,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
     degree_eq_bot]
   refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
-  refine' (lt_trans _ h).ne'
+  refine (lt_trans ?_ h).ne'
   simp
 #align polynomial.monic.mul_right_ne_zero Polynomial.Monic.mul_right_ne_zero
 
@@ -555,7 +555,7 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     replace hp := congr_arg (· * C ↑h.unit⁻¹) hp
     simp only [zero_mul] at hp
     rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
-    refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
+    refine monic_mul_C_of_leadingCoeff_mul_eq_one ?_
     simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
   · rintro rfl
     rw [zero_mul]

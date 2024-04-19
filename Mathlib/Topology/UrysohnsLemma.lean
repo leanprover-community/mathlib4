@@ -254,7 +254,7 @@ theorem lim_of_nmem_U (c : CU P) (x : X) (h : x ∉ c.U) : c.lim x = 1 := by
 
 theorem lim_eq_midpoint (c : CU P) (x : X) :
     c.lim x = midpoint ℝ (c.left.lim x) (c.right.lim x) := by
-  refine' tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 _)
+  refine tendsto_nhds_unique (c.tendsto_approx_atTop x) ((tendsto_add_atTop_iff_nat 1).1 ?_)
   simp only [approx]
   exact (c.left.tendsto_approx_atTop x).midpoint (c.right.tendsto_approx_atTop x)
 #align urysohns.CU.lim_eq_midpoint Urysohns.CU.lim_eq_midpoint

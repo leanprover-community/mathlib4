@@ -220,7 +220,7 @@ theorem IsClosed.isGreatest_csSup {s : Set α} (hc : IsClosed s) (hs : s.Nonempt
 then it sends this supremum to the supremum of the image of `s`. -/
 theorem Monotone.map_csSup_of_continuousAt {f : α → β} {s : Set α} (Cf : ContinuousAt f (sSup s))
     (Mf : Monotone f) (ne : s.Nonempty) (H : BddAbove s) : f (sSup s) = sSup (f '' s) := by
-  refine' ((isLUB_csSup (ne.image f) (Mf.map_bddAbove H)).unique _).symm
+  refine ((isLUB_csSup (ne.image f) (Mf.map_bddAbove H)).unique ?_).symm
   refine' (isLUB_csSup ne H).isLUB_of_tendsto (fun x _ y _ xy => Mf xy) ne _
   exact Cf.mono_left inf_le_left
 #align monotone.map_cSup_of_continuous_at Monotone.map_csSup_of_continuousAt

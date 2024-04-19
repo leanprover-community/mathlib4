@@ -353,7 +353,7 @@ theorem circumradius_nonneg {n : ℕ} (s : Simplex ℝ P n) : 0 ≤ s.circumradi
 /-- The circumradius of a simplex with at least two points is
 positive. -/
 theorem circumradius_pos {n : ℕ} (s : Simplex ℝ P (n + 1)) : 0 < s.circumradius := by
-  refine' lt_of_le_of_ne s.circumradius_nonneg _
+  refine lt_of_le_of_ne s.circumradius_nonneg ?_
   intro h
   have hr := s.dist_circumcenter_eq_circumradius
   simp_rw [← h, dist_eq_zero] at hr
@@ -470,7 +470,7 @@ theorem orthogonalProjection_eq_circumcenter_of_exists_dist_eq {n : ℕ} (s : Si
       a ∈ Set.range (fun (i : Fin (n + 1)) => s.points i) → dist a p = r := by
     cases' hr with r hr
     use r
-    refine' Set.forall_mem_range.mpr _
+    refine Set.forall_mem_range.mpr ?_
     exact hr
   rw [exists_dist_eq_iff_exists_dist_orthogonalProjection_eq (subset_affineSpan ℝ _) p] at hr
   cases' hr with r hr
@@ -760,9 +760,9 @@ theorem exists_circumradius_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   use r
   intro sx hsxps
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
-    refine'
+    refine
       sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
-        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
+        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) ?_
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
@@ -787,7 +787,7 @@ theorem exists_circumradius_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     ∃ r : ℝ, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumradius = r := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
-  refine' exists_circumradius_eq_of_cospherical_subset _ hd hc
+  refine exists_circumradius_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
 #align euclidean_geometry.exists_circumradius_eq_of_cospherical EuclideanGeometry.exists_circumradius_eq_of_cospherical
 
@@ -812,9 +812,9 @@ theorem exists_circumcenter_eq_of_cospherical_subset {s : AffineSubspace ℝ P} 
   use c
   intro sx hsxps
   have hsx : affineSpan ℝ (Set.range sx.points) = s := by
-    refine'
+    refine
       sx.independent.affineSpan_eq_of_le_of_card_eq_finrank_add_one
-        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) _
+        (spanPoints_subset_coe_of_subset_coe (hsxps.trans h)) ?_
     simp [hd]
   have hc : c ∈ affineSpan ℝ (Set.range sx.points) := hsx.symm ▸ hc
   exact
@@ -839,7 +839,7 @@ theorem exists_circumcenter_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     ∃ c : P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumcenter = c := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
-  refine' exists_circumcenter_eq_of_cospherical_subset _ hd hc
+  refine exists_circumcenter_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
 #align euclidean_geometry.exists_circumcenter_eq_of_cospherical EuclideanGeometry.exists_circumcenter_eq_of_cospherical
 
@@ -881,7 +881,7 @@ theorem exists_circumsphere_eq_of_cospherical {ps : Set P} {n : ℕ} [FiniteDime
     ∃ c : Sphere P, ∀ sx : Simplex ℝ P n, Set.range sx.points ⊆ ps → sx.circumsphere = c := by
   haveI : Nonempty (⊤ : AffineSubspace ℝ P) := Set.univ.nonempty
   rw [← finrank_top, ← direction_top ℝ V P] at hd
-  refine' exists_circumsphere_eq_of_cospherical_subset _ hd hc
+  refine exists_circumsphere_eq_of_cospherical_subset ?_ hd hc
   exact Set.subset_univ _
 #align euclidean_geometry.exists_circumsphere_eq_of_cospherical EuclideanGeometry.exists_circumsphere_eq_of_cospherical
 

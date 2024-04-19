@@ -174,7 +174,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   rw [SetCoe.forall'] at h
   choose! φ u hu hUu hux hφ h2φ heφ using h
   have heuφ : ∀ x : U, EqOn e (fun q => (q.1, φ x q.1 q.2)) (u x ×ˢ univ) := fun x p hp ↦ by
-    refine' (heφ x).2 _
+    refine (heφ x).2 ?_
     rw [(heφ x).1]
     exact hp
   have huφ : ∀ (x x' : U) (y : B), y ∈ u x → y ∈ u x' → φ x y = φ x' y := fun p p' y hyp hyp' ↦ by
@@ -197,7 +197,7 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
   have hΦ : ∀ (y) (hy : y ∈ U), Φ y = Φ₀ ⟨y, hy⟩ := fun y hy => dif_pos hy
   have hΦφ : ∀ x : U, ∀ y ∈ u x, Φ y = φ x y := by
     intro x y hyu
-    refine' (hΦ y (hUu x hyu)).trans _
+    refine (hΦ y (hUu x hyu)).trans ?_
     exact iUnionLift_mk ⟨y, hyu⟩ _
   have hΦ : SmoothOn IB 𝓘(𝕜, F →L[𝕜] F) (fun y => (Φ y : F →L[𝕜] F)) U := by
     apply contMDiffOn_of_locally_contMDiffOn

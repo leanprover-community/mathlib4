@@ -492,7 +492,7 @@ theorem HasFiniteFPowerSeriesOnBall.changeOrigin (hf : HasFiniteFPowerSeriesOnBa
         FormalMultilinearSeries.sum (FormalMultilinearSeries.changeOrigin p y) z := by
       rw [mem_emetric_ball_zero_iff, lt_tsub_iff_right, add_comm] at hz
       rw [p.changeOrigin_eval_of_finite hf.finite, add_assoc, hf.sum]
-      refine' mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt _ hz)
+      refine mem_emetric_ball_zero_iff.2 (lt_of_le_of_lt ?_ hz)
       exact mod_cast nnnorm_add_le y z
     rw [this]
     apply (p.changeOrigin y).hasSum_of_finite fun _ => p.changeOrigin_finite_of_finite hf.finite

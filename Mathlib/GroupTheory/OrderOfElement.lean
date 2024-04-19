@@ -345,7 +345,7 @@ theorem orderOf_eq_of_pow_and_pow_div_prime (hn : 0 < n) (hx : x ^ n = 1)
     rw [hb, ← mul_assoc] at ha
     exact Dvd.intro_left (orderOf x * b) ha.symm
   -- Use the minimum prime factor of `a` as `p`.
-  refine' hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one _
+  refine hd a.minFac (Nat.minFac_prime h) a_min_fac_dvd_p_sub_one ?_
   rw [← orderOf_dvd_iff_pow_eq_one, Nat.dvd_div_iff a_min_fac_dvd_p_sub_one, ha, mul_comm,
     Nat.mul_dvd_mul_iff_left (IsOfFinOrder.orderOf_pos _)]
   · exact Nat.minFac_dvd a
@@ -503,9 +503,9 @@ theorem orderOf_mul_eq_right_of_forall_prime_mul_dvd (hy : IsOfFinOrder y)
   have hxy := dvd_of_forall_prime_mul_dvd hdvd
   apply orderOf_eq_of_pow_and_pow_div_prime hoy <;> simp only [Ne, ← orderOf_dvd_iff_pow_eq_one]
   · exact h.orderOf_mul_dvd_lcm.trans (lcm_dvd hxy dvd_rfl)
-  refine' fun p hp hpy hd => hp.ne_one _
+  refine fun p hp hpy hd => hp.ne_one ?_
   rw [← Nat.dvd_one, ← mul_dvd_mul_iff_right hoy.ne', one_mul, ← dvd_div_iff hpy]
-  refine' (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 _) hd)
+  refine (orderOf_dvd_lcm_mul h).trans (lcm_dvd ((dvd_div_iff hpy).2 ?_) hd)
   by_cases h : p ∣ orderOf x
   exacts [hdvd p hp h, (hp.coprime_iff_not_dvd.2 h).mul_dvd_of_dvd_of_dvd hpy hxy]
 #align commute.order_of_mul_eq_right_of_forall_prime_mul_dvd Commute.orderOf_mul_eq_right_of_forall_prime_mul_dvd
@@ -1140,7 +1140,7 @@ lemma Nat.Coprime.pow_left_bijective (hn : (Nat.card G).Coprime n) : Bijective (
 @[to_additive add_inf_eq_bot_of_coprime]
 theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype H] [Fintype K]
     (h : Nat.Coprime (Fintype.card H) (Fintype.card K)) : H ⊓ K = ⊥ := by
-  refine' (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => _
+  refine (H ⊓ K).eq_bot_iff_forall.mpr fun x hx => ?_
   rw [← orderOf_eq_one_iff, ← Nat.dvd_one, ← h.gcd_eq_one, Nat.dvd_gcd_iff]
   exact
     ⟨(congr_arg (· ∣ Fintype.card H) (orderOf_coe ⟨x, hx.1⟩)).mpr orderOf_dvd_card,

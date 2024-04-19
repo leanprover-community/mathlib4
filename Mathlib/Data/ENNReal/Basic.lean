@@ -826,7 +826,7 @@ theorem preimage_coe_nnreal_ennreal (h : u.OrdConnected) : ((↑) ⁻¹' u : Set
 
 -- Porting note (#11215): TODO: generalize to `WithTop`
 theorem image_coe_nnreal_ennreal (h : t.OrdConnected) : ((↑) '' t : Set ℝ≥0∞).OrdConnected := by
-  refine' ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => _⟩
+  refine ⟨forall_mem_image.2 fun x hx => forall_mem_image.2 fun y hy z hz => ?_⟩
   rcases ENNReal.le_coe_iff.1 hz.2 with ⟨z, rfl, -⟩
   exact mem_image_of_mem _ (h.out hx hy ⟨ENNReal.coe_le_coe.1 hz.1, ENNReal.coe_le_coe.1 hz.2⟩)
 #align set.ord_connected.image_coe_nnreal_ennreal Set.OrdConnected.image_coe_nnreal_ennreal

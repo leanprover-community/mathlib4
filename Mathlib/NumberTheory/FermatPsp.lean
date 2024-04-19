@@ -92,7 +92,7 @@ theorem coprime_of_probablePrime {n b : ℕ} (h : ProbablePrime n b) (h₁ : 1 �
     -- Since `k` divides `b`, `k` also divides any power of `b` except `b ^ 0`. Therefore, it
     -- suffices to show that `n - 1` isn't zero. However, we know that `n - 1` isn't zero because we
     -- assumed `2 ≤ n` when doing `by_cases`.
-    refine' dvd_of_mul_right_dvd (dvd_pow_self (k * j) _)
+    refine dvd_of_mul_right_dvd (dvd_pow_self (k * j) ?_)
     omega
   -- If `n = 1`, then it follows trivially that `n` is coprime with `b`.
   · rw [show n = 1 by omega]
@@ -371,7 +371,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
 
 theorem frequently_atTop_fermatPsp {b : ℕ} (h : 1 ≤ b) : ∃ᶠ n in Filter.atTop, FermatPsp n b := by
   -- Based on the proof of `Nat.frequently_atTop_modEq_one`
-  refine' Filter.frequently_atTop.2 fun n => _
+  refine Filter.frequently_atTop.2 fun n => ?_
   obtain ⟨p, hp⟩ := exists_infinite_pseudoprimes h n
   exact ⟨p, hp.2, hp.1⟩
 #align fermat_psp.frequently_at_top_fermat_psp Nat.frequently_atTop_fermatPsp

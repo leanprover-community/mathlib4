@@ -85,7 +85,7 @@ theorem ae_empty_or_univ_of_forall_vadd_ae_eq_self {s : Set <| AddCircle T}
   suffices ∀ᶠ j in l, μ (s ∩ I j) / μ (I j) = μ s / ENNReal.ofReal T by
     replace hd := hd.congr' this
     rwa [tendsto_const_nhds_iff, ENNReal.div_eq_one_iff hT₁ ENNReal.ofReal_ne_top] at hd
-  refine' (hu₂.eventually_gt_atTop 0).mono fun j hj => _
+  refine (hu₂.eventually_gt_atTop 0).mono fun j hj => ?_
   have : addOrderOf (u j) = n j := rfl
   have huj : IsOfFinAddOrder (u j) := addOrderOf_pos_iff.mp hj
   have huj' : 1 ≤ (↑(n j) : ℝ) := by norm_cast

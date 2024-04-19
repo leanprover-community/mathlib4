@@ -348,7 +348,7 @@ theorem exponent_ne_zero_iff_range_orderOf_finite (h : ∀ g : G, 0 < orderOf g)
     exact pow_ne_one_of_lt_orderOf' he het (pow_exponent_eq_one t)
   · lift Set.range (orderOf (G := G)) to Finset ℕ using he with t ht
     have htpos : 0 < t.prod id := by
-      refine' Finset.prod_pos fun a ha => _
+      refine Finset.prod_pos fun a ha => ?_
       rw [← Finset.mem_coe, ht] at ha
       obtain ⟨k, rfl⟩ := ha
       exact h k
@@ -466,7 +466,7 @@ theorem exists_orderOf_eq_exponent (hG : ExponentExists G) : ∃ g : G, orderOf 
   obtain ⟨t, ht⟩ := hne.csSup_mem hfin
   use t
   apply Nat.dvd_antisymm (order_dvd_exponent _)
-  refine' Nat.dvd_of_factors_subperm he _
+  refine Nat.dvd_of_factors_subperm he ?_
   rw [List.subperm_ext_iff]
   by_contra! h
   obtain ⟨p, hp, hpe⟩ := h

@@ -1264,7 +1264,7 @@ theorem OrderEmbedding.le_map_sup [SemilatticeSup α] [SemilatticeSup β] (f : �
 
 theorem OrderIso.map_inf [SemilatticeInf α] [SemilatticeInf β] (f : α ≃o β) (x y : α) :
     f (x ⊓ y) = f x ⊓ f y := by
-  refine' (f.toOrderEmbedding.map_inf_le x y).antisymm _
+  refine (f.toOrderEmbedding.map_inf_le x y).antisymm ?_
   apply f.symm.le_iff_le.1
   simpa using f.symm.toOrderEmbedding.map_inf_le (f x) (f y)
 #align order_iso.map_inf OrderIso.map_inf

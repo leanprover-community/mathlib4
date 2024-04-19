@@ -49,7 +49,7 @@ variable [IsDomain A]
 theorem num_isRoot_scaleRoots_of_aeval_eq_zero [UniqueFactorizationMonoid A] {p : A[X]} {x : K}
     (hr : aeval x p = 0) : IsRoot (scaleRoots p (den A x)) (num A x) := by
   apply isRoot_of_eval₂_map_eq_zero (IsFractionRing.injective A K)
-  refine' scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero _
+  refine scaleRoots_aeval_eq_zero_of_aeval_mk'_eq_zero ?_
   rw [mk'_num_den]
   exact hr
 #align num_is_root_scale_roots_of_aeval_eq_zero num_isRoot_scaleRoots_of_aeval_eq_zero

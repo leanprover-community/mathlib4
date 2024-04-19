@@ -443,7 +443,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     · specialize h i (Or.inr hi2)
       rw [if_pos hi2] at h
       exact h.2
-  refine' ⟨fun n hn => _, h_inter_eq⟩
+  refine ⟨fun n hn => ?_, h_inter_eq⟩
   simp only [g]
   split_ifs with hn1 hn2 h
   · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
@@ -451,7 +451,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
       (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
-    refine' Set.iInter_subset_of_subset hn _
+    refine Set.iInter_subset_of_subset hn ?_
     simp_rw [g, if_pos hn1, if_pos hn2]
     exact h.subset
   · simp [hf1m n hn1]
@@ -471,7 +471,7 @@ theorem piiUnionInter_mono_right {π : ι → Set (Set α)} {S T : Set ι} (hST 
 
 theorem generateFrom_piiUnionInter_le {m : MeasurableSpace α} (π : ι → Set (Set α))
     (h : ∀ n, generateFrom (π n) ≤ m) (S : Set ι) : generateFrom (piiUnionInter π S) ≤ m := by
-  refine' generateFrom_le _
+  refine generateFrom_le ?_
   rintro t ⟨ht_p, _, ft, hft_mem_pi, rfl⟩
   refine' Finset.measurableSet_biInter _ fun x hx_mem => (h x) _ _
   exact measurableSet_generateFrom (hft_mem_pi x hx_mem)
@@ -483,7 +483,7 @@ theorem subset_piiUnionInter {π : ι → Set (Set α)} {S : Set ι} {i : ι} (h
     intro j hj
     rw [mem_singleton_iff] at hj
     rwa [hj]
-  refine' Subset.trans _ (piiUnionInter_mono_right h_ss)
+  refine Subset.trans ?_ (piiUnionInter_mono_right h_ss)
   rw [piiUnionInter_singleton]
   exact subset_union_left _ _
 #align subset_pi_Union_Inter subset_piiUnionInter
@@ -503,7 +503,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
     (ht : t ∈ piiUnionInter (fun n => { s | MeasurableSet[m n] s }) S) :
     MeasurableSet[⨆ i ∈ S, m i] t := by
   rcases ht with ⟨pt, hpt, ft, ht_m, rfl⟩
-  refine' pt.measurableSet_biInter fun i hi => _
+  refine pt.measurableSet_biInter fun i hi => ?_
   suffices h_le : m i ≤ ⨆ i ∈ S, m i from h_le (ft i) (ht_m i hi)
   have hi' : i ∈ S := hpt hi
   exact le_iSup₂ (f := fun i (_ : i ∈ S) => m i) i hi'
@@ -683,7 +683,7 @@ def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
   has_iUnion_nat {f} hd hf := by
     simp only []
     rw [iUnion_inter]
-    refine' d.has_iUnion_nat _ hf
+    refine d.has_iUnion_nat ?_ hf
     exact hd.mono fun i j => Disjoint.mono (inter_subset_left _ _) (inter_subset_left _ _)
 #align measurable_space.dynkin_system.restrict_on MeasurableSpace.DynkinSystem.restrictOn
 

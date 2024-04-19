@@ -78,11 +78,11 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
-  refine' .mk'' fun {a b} hlt => ?_
+  refine .mk'' fun {a b} hlt => ?_
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]
-  refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => _
+  refine' isCompact_iff_ultrafilter_le_nhds.2 fun f hf => ?_
   contrapose! hf
   rw [le_principal_iff]
   have hpt : ∀ x ∈ Icc a b, {x} ∉ f := fun x hx hxf =>
@@ -117,7 +117,7 @@ instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (�
   rcases (mem_nhdsWithin_Ici_iff_exists_mem_Ioc_Ico_subset hlt).1
       (mem_nhdsWithin_of_mem_nhds hU) with
     ⟨y, hxy, hyU⟩
-  refine' mem_of_superset _ hyU; clear! U
+  refine mem_of_superset ?_ hyU; clear! U
   have hy : y ∈ Icc a b := ⟨hc.1.trans hxy.1.le, hxy.2⟩
   by_cases hay : Icc a y ∈ f
   · refine' mem_of_superset (f.diff_mem_iff.2 ⟨f.diff_mem_iff.2 ⟨hay, hcs.2⟩, hpt y hy⟩) _
@@ -443,7 +443,7 @@ theorem IsCompact.sSup_lt_iff_of_continuous [ClosedIciTopology α] {f : β → �
   refine' ⟨fun h x hx => (le_csSup (hK.bddAbove_image hf) <| mem_image_of_mem f hx).trans_lt h,
     fun h => _⟩
   obtain ⟨x, hx, h2x⟩ := hK.exists_forall_ge h0K hf
-  refine' (csSup_le (h0K.image f) _).trans_lt (h x hx)
+  refine (csSup_le (h0K.image f) ?_).trans_lt (h x hx)
   rintro _ ⟨x', hx', rfl⟩; exact h2x x' hx'
 #align is_compact.Sup_lt_iff_of_continuous IsCompact.sSup_lt_iff_of_continuous
 
@@ -604,7 +604,7 @@ theorem IsCompact.continuous_sSup {f : γ → β → α} {K : Set β} (hK : IsCo
       exact (hy y' hy').trans_lt hz
     obtain ⟨u, v, hu, _, hxu, hKv, huv⟩ :=
       generalized_tube_lemma isCompact_singleton hK (isOpen_Iio.preimage hf) h
-    refine' eventually_of_mem (hu.mem_nhds (singleton_subset_iff.mp hxu)) fun x' hx' => _
+    refine eventually_of_mem (hu.mem_nhds (singleton_subset_iff.mp hxu)) fun x' hx' => ?_
     rw [hK.sSup_lt_iff_of_continuous h0K
         (show Continuous (f x') from hf.comp <| Continuous.Prod.mk x').continuousOn]
     exact fun y' hy' => huv (mk_mem_prod hx' (hKv hy'))
@@ -639,7 +639,7 @@ theorem image_uIcc_eq_Icc (h : ContinuousOn f [[a, b]]) :
 
 theorem image_uIcc (h : ContinuousOn f <| [[a, b]]) :
     f '' [[a, b]] = [[sInf (f '' [[a, b]]), sSup (f '' [[a, b]])]] := by
-  refine' h.image_uIcc_eq_Icc.trans (uIcc_of_le _).symm
+  refine h.image_uIcc_eq_Icc.trans (uIcc_of_le ?_).symm
   refine' csInf_le_csSup _ _ (nonempty_uIcc.image _) <;> rw [h.image_uIcc_eq_Icc]
   exacts [bddBelow_Icc, bddAbove_Icc]
 #align continuous_on.image_uIcc ContinuousOn.image_uIcc

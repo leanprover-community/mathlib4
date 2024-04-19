@@ -78,7 +78,7 @@ private lemma ineq {a₀ a₁ b₀ b₁ c₀ c₁ d₀ d₁ : β}
   obtain hcd | hcd := (mul_nonneg hc₀ hd₁).eq_or_gt
   · rw [hcd] at h₀₁ h₁₀
     rw [h₀₁.antisymm, h₁₀.antisymm, add_zero] <;> positivity
-  refine' le_of_mul_le_mul_right _ hcd
+  refine le_of_mul_le_mul_right ?_ hcd
   calc (a₀ * b₁ + a₁ * b₀) * (c₀ * d₁)
       = a₀ * b₁ * (c₀ * d₁) + c₀ * d₁ * (a₁ * b₀) := by ring
     _ ≤ a₀ * b₁ * (a₁ * b₀) + c₀ * d₁ * (c₀ * d₁) := mul_add_mul_le_mul_add_mul h₀₁ h₁₀
@@ -157,13 +157,13 @@ lemma collapse_modular (hu : a ∉ u) (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ f₂) (h
       · simpa [*] using h ‹s ⊆ _› ‹insert a t ⊆ _›
       · simpa [*] using h ‹insert a s ⊆ _› ‹insert a t ⊆ _›
     · rw [add_zero, add_mul]
-      refine' (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans _
+      refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (union_mem_sups ‹_› ‹_›) (union_mem_sups ‹_› ‹_›) rfl
         (insert_union _ _ _), insert_inter_of_not_mem ‹_›, ← mul_add]
       exact mul_le_mul_of_nonneg_right (le_collapse_of_mem ‹_› h₃ rfl <| inter_mem_infs ‹_› ‹_›) <|
         add_nonneg (h₄ _) <| h₄ _
     · rw [zero_add, add_mul]
-      refine' (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans _
+      refine (add_le_add (h ‹_› ‹_›) <| h ‹_› ‹_›).trans ?_
       rw [collapse_of_mem ‹_› (inter_mem_infs ‹_› ‹_›) (inter_mem_infs ‹_› ‹_›)
         (inter_insert_of_not_mem ‹_›) (insert_inter_distrib _ _ _).symm, union_insert,
         insert_union_distrib, ← add_mul]

@@ -38,7 +38,7 @@ theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : 
     g.continuantsAux m = g.continuantsAux (n + 1) := by
   refine' Nat.le_induction rfl (fun k hnk hk => _) _ n_lt_m
   rcases Nat.exists_eq_add_of_lt hnk with ⟨k, rfl⟩
-  refine' (continuantsAux_stable_step_of_terminated _).trans hk
+  refine (continuantsAux_stable_step_of_terminated ?_).trans hk
   exact terminated_stable (Nat.le_add_right _ _) terminated_at_n
 #align generalized_continued_fraction.continuants_aux_stable_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_of_terminated
 

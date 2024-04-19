@@ -699,7 +699,7 @@ theorem spanSingleton_ne_zero_iff {y : P} : spanSingleton S y ≠ 0 ↔ y ≠ 0 
 @[simp]
 theorem spanSingleton_one : spanSingleton S (1 : P) = 1 := by
   ext
-  refine' (mem_spanSingleton S).trans ((exists_congr _).trans (mem_one_iff S).symm)
+  refine (mem_spanSingleton S).trans ((exists_congr ?_).trans (mem_one_iff S).symm)
   intro x'
   rw [Algebra.smul_def, mul_one]
 #align fractional_ideal.span_singleton_one FractionalIdeal.spanSingleton_one
@@ -722,7 +722,7 @@ theorem spanSingleton_pow (x : P) (n : ℕ) : spanSingleton S x ^ n = spanSingle
 theorem coeIdeal_span_singleton (x : R) :
     (↑(Ideal.span {x} : Ideal R) : FractionalIdeal S P) = spanSingleton S (algebraMap R P x) := by
   ext y
-  refine' (mem_coeIdeal S).trans (Iff.trans _ (mem_spanSingleton S).symm)
+  refine (mem_coeIdeal S).trans (Iff.trans ?_ (mem_spanSingleton S).symm)
   constructor
   · rintro ⟨y', hy', rfl⟩
     obtain ⟨x', rfl⟩ := Submodule.mem_span_singleton.mp hy'
@@ -783,7 +783,7 @@ theorem mk'_mul_coeIdeal_eq_coeIdeal {I J : Ideal R₁} {x y : R₁} (hy : y ∈
       IsLocalization.mk'_self, spanSingleton_one]
   let y' : (FractionalIdeal R₁⁰ K)ˣ := Units.mkOfMulEqOne _ _ this
   have coe_y' : ↑y' = spanSingleton R₁⁰ (IsLocalization.mk' K (1 : R₁) ⟨y, hy⟩) := rfl
-  refine' Iff.trans _ (y'.mul_right_inj.trans coeIdeal_inj)
+  refine Iff.trans ?_ (y'.mul_right_inj.trans coeIdeal_inj)
   rw [coe_y', coeIdeal_mul, coeIdeal_span_singleton, coeIdeal_mul, coeIdeal_span_singleton, ←
     mul_assoc, spanSingleton_mul_spanSingleton, ← mul_assoc, spanSingleton_mul_spanSingleton,
     mul_comm (mk' _ _ _), ← IsLocalization.mk'_eq_mul_mk'_one, mul_comm (mk' _ _ _), ←

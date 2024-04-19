@@ -247,7 +247,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       rwa [Multiset.eq_of_mem_replicate z]
     · simp_rw [Multiset.sum_sum, Multiset.sum_replicate, Nat.nsmul_eq_mul]
       rw [← hf'.2]
-      refine' sum_congr rfl fun i hi => Nat.div_mul_cancel _
+      refine sum_congr rfl fun i hi => Nat.div_mul_cancel ?_
       rcases hf₄ i hi with ⟨w, _, hw₂⟩
       rw [← hw₂]
       exact dvd_mul_left _ _

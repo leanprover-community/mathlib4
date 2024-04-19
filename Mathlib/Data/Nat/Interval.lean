@@ -318,7 +318,7 @@ theorem image_Ico_mod (n a : ℕ) : (Ico n (n + a)).image (· % a) = range a := 
   · refine' ⟨i + a * (n / a), ⟨_, _⟩, _⟩
     · exact hn.symm.le.trans (add_le_add_right hi _)
     · rw [add_comm n a]
-      refine' add_lt_add_of_lt_of_le hia (le_trans _ hn.le)
+      refine add_lt_add_of_lt_of_le hia (le_trans ?_ hn.le)
       simp only [zero_le, le_add_iff_nonneg_left]
     · rw [Nat.add_mul_mod_self_left, Nat.mod_eq_of_lt hia]
 #align nat.image_Ico_mod Nat.image_Ico_mod

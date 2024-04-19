@@ -132,7 +132,7 @@ theorem toPGame_lf {a b : Ordinal} (h : a < b) : a.toPGame ⧏ b.toPGame := by
 #align ordinal.to_pgame_lf Ordinal.toPGame_lf
 
 theorem toPGame_le {a b : Ordinal} (h : a ≤ b) : a.toPGame ≤ b.toPGame := by
-  refine' le_iff_forall_lf.2 ⟨fun i => _, isEmptyElim⟩
+  refine le_iff_forall_lf.2 ⟨fun i => ?_, isEmptyElim⟩
   rw [toPGame_moveLeft']
   exact toPGame_lf ((toLeftMovesToPGame_symm_lt i).trans_le h)
 #align ordinal.to_pgame_le Ordinal.toPGame_le

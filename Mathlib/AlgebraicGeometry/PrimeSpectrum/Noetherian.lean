@@ -38,7 +38,7 @@ theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     exact ⟨0, le_top⟩
   have lt_add : ∀ z ∉ M, M < M + span R {z} := by
     intro z hz
-    refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
+    refine lt_of_le_of_ne le_sup_left fun m_eq => hz ?_
     rw [m_eq]
     exact Ideal.mem_sup_right (mem_span_singleton_self z)
   obtain ⟨x, hx, y, hy, hxy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left htop
@@ -81,7 +81,7 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
   obtain ⟨x, hx, y, hy, h_xy⟩ := (Ideal.not_isPrime_iff.mp h_prM).resolve_left h_topM
   have lt_add : ∀ z ∉ M, M < M + span A {z} := by
     intro z hz
-    refine' lt_of_le_of_ne le_sup_left fun m_eq => hz _
+    refine lt_of_le_of_ne le_sup_left fun m_eq => hz ?_
     rw [m_eq]
     exact mem_sup_right (mem_span_singleton_self z)
   obtain ⟨Wx, h_Wx_le, h_Wx_ne⟩ := hgt (M + span A {x}) (lt_add _ hx) (ne_bot_of_gt (lt_add _ hx))

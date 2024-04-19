@@ -61,7 +61,7 @@ This is the case, e.g., if `R` is a nontrivially normed field. -/
 theorem Submodule.eq_top_of_nonempty_interior' [NeBot (𝓝[{ x : R | IsUnit x }] 0)]
     (s : Submodule R M) (hs : (interior (s : Set M)).Nonempty) : s = ⊤ := by
   rcases hs with ⟨y, hy⟩
-  refine' Submodule.eq_top_iff'.2 fun x => _
+  refine Submodule.eq_top_iff'.2 fun x => ?_
   rw [mem_interior_iff_mem_nhds] at hy
   have : Tendsto (fun c : R => y + c • x) (𝓝[{ x : R | IsUnit x }] 0) (𝓝 (y + (0 : R) • x)) :=
     tendsto_const_nhds.add ((tendsto_nhdsWithin_of_tendsto_nhds tendsto_id).smul tendsto_const_nhds)

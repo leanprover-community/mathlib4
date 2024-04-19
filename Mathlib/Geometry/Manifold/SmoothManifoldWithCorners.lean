@@ -360,7 +360,7 @@ protected theorem locallyCompactSpace [LocallyCompactSpace E] (I : ModelWithCorn
       fun s => I.symm '' (s ∩ range I) := fun x ↦ by
     rw [← I.symm_map_nhdsWithin_range]
     exact ((compact_basis_nhds (I x)).inf_principal _).map _
-  refine' .of_hasBasis this _
+  refine .of_hasBasis this ?_
   rintro x s ⟨-, hsc⟩
   exact (hsc.inter_right I.isClosed_range).image I.continuous_symm
 #align model_with_corners.locally_compact ModelWithCorners.locallyCompactSpace
@@ -1016,7 +1016,7 @@ theorem extend_source_mem_nhdsWithin {x : M} (h : x ∈ f.source) : (f.extend I)
 #align local_homeomorph.extend_source_mem_nhds_within PartialHomeomorph.extend_source_mem_nhdsWithin
 
 theorem continuousOn_extend : ContinuousOn (f.extend I) (f.extend I).source := by
-  refine' I.continuous.comp_continuousOn _
+  refine I.continuous.comp_continuousOn ?_
   rw [extend_source]
   exact f.continuousOn
 #align local_homeomorph.continuous_on_extend PartialHomeomorph.continuousOn_extend
@@ -1200,7 +1200,7 @@ theorem extend_symm_preimage_inter_range_eventuallyEq_aux {s : Set M} {x : M} (h
     congr
     · skip
     rw [← univ_inter (_ ∩ range I)]
-  refine' (eventuallyEq_univ.mpr _).symm.inter EventuallyEq.rfl
+  refine (eventuallyEq_univ.mpr ?_).symm.inter EventuallyEq.rfl
   refine' I.continuousAt_symm.preimage_mem_nhds (f.open_target.mem_nhds _)
   simp_rw [f.extend_coe, Function.comp_apply, I.left_inv, f.mapsTo hx]
 #align local_homeomorph.extend_symm_preimage_inter_range_eventually_eq_aux PartialHomeomorph.extend_symm_preimage_inter_range_eventuallyEq_aux
@@ -1232,7 +1232,7 @@ theorem extend_coord_change_source_mem_nhdsWithin {x : E}
     ((f.extend I).symm ≫ f'.extend I).source ∈ 𝓝[range I] x := by
   rw [f.extend_coord_change_source] at hx ⊢
   obtain ⟨x, hx, rfl⟩ := hx
-  refine' I.image_mem_nhdsWithin _
+  refine I.image_mem_nhdsWithin ?_
   exact (PartialHomeomorph.open_source _).mem_nhds hx
 #align local_homeomorph.extend_coord_change_source_mem_nhds_within PartialHomeomorph.extend_coord_change_source_mem_nhdsWithin
 
@@ -1267,7 +1267,7 @@ theorem contDiffWithinAt_extend_coord_change [ChartedSpace H M] (hf : f ∈ maxi
 theorem contDiffWithinAt_extend_coord_change' [ChartedSpace H M] (hf : f ∈ maximalAtlas I M)
     (hf' : f' ∈ maximalAtlas I M) {x : M} (hxf : x ∈ f.source) (hxf' : x ∈ f'.source) :
     ContDiffWithinAt 𝕜 ⊤ (f.extend I ∘ (f'.extend I).symm) (range I) (f'.extend I x) := by
-  refine' contDiffWithinAt_extend_coord_change I hf hf' _
+  refine contDiffWithinAt_extend_coord_change I hf hf' ?_
   rw [← extend_image_source_inter]
   exact mem_image_of_mem _ ⟨hxf', hxf⟩
 #align local_homeomorph.cont_diff_within_at_extend_coord_change' PartialHomeomorph.contDiffWithinAt_extend_coord_change'

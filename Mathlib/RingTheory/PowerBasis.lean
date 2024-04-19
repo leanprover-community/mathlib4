@@ -170,7 +170,7 @@ theorem minpolyGen_monic (pb : PowerBasis A S) : Monic (minpolyGen pb) := by
 
 theorem dim_le_natDegree_of_root (pb : PowerBasis A S) {p : A[X]} (ne_zero : p ≠ 0)
     (root : aeval pb.gen p = 0) : pb.dim ≤ p.natDegree := by
-  refine' le_of_not_lt fun hlt => ne_zero _
+  refine le_of_not_lt fun hlt => ne_zero ?_
   rw [p.as_sum_range' _ hlt, Finset.sum_range]
   refine' Fintype.sum_eq_zero _ fun i => _
   simp_rw [aeval_eq_sum_range' hlt, Finset.sum_range, ← pb.basis_eq_pow] at root
@@ -257,7 +257,7 @@ theorem constr_pow_aeval (pb : PowerBasis A S) {y : S'} (hy : aeval y (minpoly A
     apply natDegree_lt_natDegree hf
     exact degree_modByMonic_lt _ (minpoly.monic pb.isIntegral_gen)
   rw [aeval_eq_sum_range' this, aeval_eq_sum_range' this, map_sum]
-  refine' Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => _
+  refine Finset.sum_congr rfl fun i (hi : i ∈ Finset.range pb.dim) => ?_
   rw [Finset.mem_range] at hi
   rw [LinearMap.map_smul]
   congr
@@ -429,7 +429,7 @@ theorem linearIndependent_pow [Algebra K S] (x : S) :
   by_cases h : IsIntegral K x; swap
   · rw [minpoly.eq_zero h, natDegree_zero]
     exact linearIndependent_empty_type
-  refine' Fintype.linearIndependent_iff.2 fun g hg i => _
+  refine Fintype.linearIndependent_iff.2 fun g hg i => ?_
   simp only at hg
   simp_rw [Algebra.smul_def, ← aeval_monomial, ← map_sum] at hg
   apply (fun hn0 => (minpoly.degree_le_of_ne_zero K x (mt (fun h0 => ?_) hn0) hg).not_lt).mtr
@@ -508,7 +508,7 @@ theorem adjoin_gen_eq_top (B : PowerBasis R S) : adjoin R ({B.gen} : Set S) = �
 theorem adjoin_eq_top_of_gen_mem_adjoin {B : PowerBasis R S} {x : S}
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : adjoin R ({x} : Set S) = ⊤ := by
   rw [_root_.eq_top_iff, ← B.adjoin_gen_eq_top]
-  refine' adjoin_le _
+  refine adjoin_le ?_
   simp [hx]
 #align power_basis.adjoin_eq_top_of_gen_mem_adjoin PowerBasis.adjoin_eq_top_of_gen_mem_adjoin
 

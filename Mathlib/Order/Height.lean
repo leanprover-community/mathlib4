@@ -314,7 +314,7 @@ theorem chainHeight_insert_of_forall_lt (a : α) (ha : ∀ b ∈ s, b < a) :
 
 theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chainHeight := by
   classical
-    refine' iSup₂_le fun l hl ↦ _
+    refine iSup₂_le fun l hl ↦ ?_
     let l₁ := l.filter (· ∈ s)
     let l₂ := l.filter (· ∈ t)
     have hl₁ : ↑l₁.length ≤ s.chainHeight := by
@@ -323,7 +323,7 @@ theorem chainHeight_union_le : (s ∪ t).chainHeight ≤ s.chainHeight + t.chain
     have hl₂ : ↑l₂.length ≤ t.chainHeight := by
       apply Set.length_le_chainHeight_of_mem_subchain
       exact ⟨hl.1.sublist (filter_sublist _), fun i h ↦ by simpa using (of_mem_filter h : _)⟩
-    refine' le_trans _ (add_le_add hl₁ hl₂)
+    refine le_trans ?_ (add_le_add hl₁ hl₂)
     simp_rw [l₁, l₂, ← Nat.cast_add, ← Multiset.coe_card, ← Multiset.card_add,
       ← Multiset.filter_coe]
     rw [Multiset.filter_add_filter, Multiset.filter_eq_self.mpr, Multiset.card_add, Nat.cast_add]
@@ -355,7 +355,7 @@ theorem wellFoundedGT_of_chainHeight_ne_top (s : Set α) (hs : s.chainHeight ≠
   haveI : IsTrans { x // x ∈ s } (↑· < ↑·) := inferInstance
 
   obtain ⟨n, hn⟩ := WithTop.ne_top_iff_exists.1 hs
-  refine' ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ _⟩⟩
+  refine ⟨RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun f ↦ ?_⟩⟩
   refine' n.lt_succ_self.not_le (WithTop.coe_le_coe.1 <| hn.symm ▸ _)
   refine'
     le_iSup₂_of_le _

@@ -173,7 +173,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
     exact tendsto_setIntegral_of_monotone (fun k => (J k).measurableSet_Ioo)
       (Box.Ioo.comp J).monotone Hi
   -- Thus it suffices to prove the same about the RHS.
-  refine' tendsto_nhds_unique_of_eventuallyEq hI_tendsto _ (eventually_of_forall HJ_eq)
+  refine tendsto_nhds_unique_of_eventuallyEq hI_tendsto ?_ (eventually_of_forall HJ_eq)
   clear hI_tendsto
   rw [tendsto_pi_nhds] at hJl hJu
   /- We'll need to prove a similar statement about the integrals over the front sides and the
@@ -207,7 +207,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_aux₂ (I : Box (
   /- Thus it suffices to show that the distance between the integrals of the restrictions of `f` to
     `{x | x i = c k}` and `{x | x i = d}` over `((J k).face i).Icc` tends to zero as `k → ∞`. Choose
     `ε > 0`. -/
-  refine' H.congr_dist (Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε εpos => _)
+  refine H.congr_dist (Metric.nhds_basis_closedBall.tendsto_right_iff.2 fun ε εpos => ?_)
   have hvol_pos : ∀ J : Box (Fin n), 0 < ∏ j, (J.upper j - J.lower j) := fun J =>
     prod_pos fun j hj => sub_pos.2 <| J.lower_lt_upper _
   /- Choose `δ > 0` such that for any `x y ∈ I.Icc` at distance at most `δ`, the distance between
@@ -352,7 +352,7 @@ theorem integral_divergence_of_hasFDerivWithinAt_off_countable_of_equiv {F : Typ
       · exact fun i => (Hc i).comp eL.symm.continuousOn hIcc'.subset
       · refine' fun x hx i => (Hd (eL.symm x) ⟨_, hx.2⟩ i).comp x eL.symm.hasFDerivAt
         rw [← hIcc]
-        refine' preimage_interior_subset_interior_preimage eL.continuous _
+        refine preimage_interior_subset_interior_preimage eL.continuous ?_
         simpa only [Set.mem_preimage, eL.apply_symm_apply, ← pi_univ_Icc,
           interior_pi_set (@finite_univ (Fin _) _), interior_Icc] using hx.1
       · rw [← he_vol.integrableOn_comp_preimage he_emb, hIcc]

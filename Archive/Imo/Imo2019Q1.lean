@@ -34,7 +34,7 @@ theorem imo2019_q1 (f : ℤ → ℤ) :
   -- Using `h` for `(0, b)` and `(-1, b + 1)`, we get `f (b + 1) = f b + m`
   obtain ⟨m, H⟩ : ∃ m, ∀ b, f (b + 1) = f b + m := by
     refine ⟨(f 0 - f (-2)) / 2, fun b => ?_⟩
-    refine' sub_eq_iff_eq_add'.1 (Int.eq_ediv_of_mul_eq_right two_ne_zero _)
+    refine sub_eq_iff_eq_add'.1 (Int.eq_ediv_of_mul_eq_right two_ne_zero ?_)
     have h1 : f 0 + 2 * f b = f (f b) := by simpa using hf 0 b
     have h2 : f (-2) + 2 * f (b + 1) = f (f b) := by simpa using hf (-1) (b + 1)
     linarith

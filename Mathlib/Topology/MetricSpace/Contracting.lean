@@ -83,7 +83,7 @@ theorem edist_le_of_fixedPoint (hf : ContractingWith K f) {x y} (h : edist x y �
 
 theorem eq_or_edist_eq_top_of_fixedPoints (hf : ContractingWith K f) {x y} (hx : IsFixedPt f x)
     (hy : IsFixedPt f y) : x = y ∨ edist x y = ∞ := by
-  refine' or_iff_not_imp_right.2 fun h ↦ edist_le_zero.1 _
+  refine or_iff_not_imp_right.2 fun h ↦ edist_le_zero.1 ?_
   simpa only [hx.eq, edist_self, add_zero, ENNReal.zero_div] using hf.edist_le_of_fixedPoint h hy
 #align contracting_with.eq_or_edist_eq_top_of_fixed_points ContractingWith.eq_or_edist_eq_top_of_fixedPoints
 

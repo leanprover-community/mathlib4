@@ -186,7 +186,7 @@ theorem zero_mass : (0 : FiniteMeasure Ω).mass = 0 :=
 
 @[simp]
 theorem mass_zero_iff (μ : FiniteMeasure Ω) : μ.mass = 0 ↔ μ = 0 := by
-  refine' ⟨fun μ_mass => _, fun hμ => by simp only [hμ, zero_mass]⟩
+  refine ⟨fun μ_mass => ?_, fun hμ => by simp only [hμ, zero_mass]⟩
   apply toMeasure_injective
   apply Measure.measure_univ_eq_zero.mp
   rwa [← ennreal_mass, ENNReal.coe_eq_zero]

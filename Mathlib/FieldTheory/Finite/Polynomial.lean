@@ -210,7 +210,7 @@ theorem rank_R [Fintype σ] : Module.rank K (R σ K) = Fintype.card (σ → K) :
     _ = #{ s : σ →₀ ℕ | ∀ n : σ, s n ≤ Fintype.card K - 1 } := by rw [rank_finsupp_self']
     _ = #{ s : σ → ℕ | ∀ n : σ, s n < Fintype.card K } := by
       refine Quotient.sound ⟨Equiv.subtypeEquiv Finsupp.equivFunOnFinite fun f => ?_⟩
-      refine' forall_congr' fun n => le_tsub_iff_right _
+      refine forall_congr' fun n => le_tsub_iff_right ?_
       exact Fintype.card_pos_iff.2 ⟨0⟩
     _ = #(σ → { n // n < Fintype.card K }) :=
       (@Equiv.subtypePiEquivPi σ (fun _ => ℕ) fun s n => n < Fintype.card K).cardinal_eq
@@ -242,7 +242,7 @@ theorem range_evalᵢ [Finite σ] : range (evalᵢ σ K) = ⊤ := by
 -- Porting note: was `(evalᵢ σ K).ker`.
 theorem ker_evalₗ [Finite σ] : ker (evalᵢ σ K) = ⊥ := by
   cases nonempty_fintype σ
-  refine' (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank _).mpr (range_evalᵢ σ K)
+  refine (ker_eq_bot_iff_range_eq_top_of_finrank_eq_finrank ?_).mpr (range_evalᵢ σ K)
   rw [FiniteDimensional.finrank_fintype_fun_eq_card, finrank_R]
 #align mv_polynomial.ker_evalₗ MvPolynomial.ker_evalₗ
 

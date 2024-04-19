@@ -205,7 +205,7 @@ theorem SemiconjBy.zpow_right {A X Y : M} (hx : IsUnit X.det) (hy : IsUnit Y.det
       rw [det_pow]
       exact hy.pow n.succ
     rw [zpow_negSucc, zpow_negSucc, nonsing_inv_apply _ hx', nonsing_inv_apply _ hy', SemiconjBy]
-    refine' (isRegular_of_isLeftRegular_det hy'.isRegular.left).left _
+    refine (isRegular_of_isLeftRegular_det hy'.isRegular.left).left ?_
     dsimp only
     rw [← mul_assoc, ← (h.pow_right n.succ).eq, mul_assoc, mul_smul,
       mul_adjugate, ← Matrix.mul_assoc,

@@ -387,7 +387,7 @@ theorem toSignedMeasure_injective : Injective <| @JordanDecomposition.toSignedMe
     of_symmDiff_compl_positive_negative hS₁.compl hT₁.compl ⟨hS₃, (compl_compl S).symm ▸ hS₂⟩
       ⟨hT₃, (compl_compl T).symm ▸ hT₂⟩
   -- it suffices to show the Jordan decompositions have the same positive parts
-  refine' eq_of_posPart_eq_posPart _ hj
+  refine eq_of_posPart_eq_posPart ?_ hj
   ext1 i hi
   -- we see that the positive parts of the two Jordan decompositions are equal to their
   -- associated signed measures restricted on their associated Hahn decompositions

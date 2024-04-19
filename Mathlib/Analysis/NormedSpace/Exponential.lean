@@ -294,7 +294,7 @@ theorem exp_add_of_commute_of_mem_ball [CharZero 𝕂] {x y : 𝔸} (hxy : Commu
     congr
     ext
     rw [hxy.add_pow' _, Finset.smul_sum]
-  refine' tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => _
+  refine tsum_congr fun n => Finset.sum_congr rfl fun kl hkl => ?_
   rw [nsmul_eq_smul_cast 𝕂, smul_smul, smul_mul_smul, ← Finset.mem_antidiagonal.mp hkl,
     Nat.cast_add_choose, Finset.mem_antidiagonal.mp hkl]
   congr 1
@@ -411,7 +411,7 @@ variable [NormedRing 𝔹] [NormedAlgebra 𝕂 𝔹]
 /-- In a normed algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ`, the series defining the exponential map
 has an infinite radius of convergence. -/
 theorem expSeries_radius_eq_top : (expSeries 𝕂 𝔸).radius = ∞ := by
-  refine' (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => _
+  refine (expSeries 𝕂 𝔸).radius_eq_top_of_summable_norm fun r => ?_
   refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial r) _
   filter_upwards [eventually_cofinite_ne 0] with n hn
   rw [norm_mul, norm_norm (expSeries 𝕂 𝔸 n), expSeries]
@@ -680,7 +680,7 @@ exponential function on `𝔸`. -/
 theorem exp_eq_exp : (exp 𝕂 : 𝔸 → 𝔸) = exp 𝕂' := by
   ext x
   rw [exp, exp]
-  refine' tsum_congr fun n => _
+  refine tsum_congr fun n => ?_
   rw [expSeries_eq_expSeries 𝕂 𝕂' 𝔸 n x]
 #align exp_eq_exp NormedSpace.exp_eq_exp
 

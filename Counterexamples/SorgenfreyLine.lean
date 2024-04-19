@@ -83,7 +83,7 @@ theorem nhds_basis_Ico (a : ℝₗ) : (𝓝 a).HasBasis (a < ·) (Ico a ·) := b
   rw [TopologicalSpace.nhds_generateFrom]
   haveI : Nonempty { x // x ≤ a } := Set.nonempty_Iic_subtype
   have : (⨅ x : { i // i ≤ a }, 𝓟 (Ici ↑x)) = 𝓟 (Ici a) := by
-    refine' (IsLeast.isGLB _).iInf_eq
+    refine (IsLeast.isGLB ?_).iInf_eq
     exact ⟨⟨⟨a, le_rfl⟩, rfl⟩, forall_mem_range.2 fun b => principal_mono.2 <| Ici_subset_Ici.2 b.2⟩
   simp only [mem_setOf_eq, iInf_and, iInf_exists, @iInf_comm _ (_ ∈ _), @iInf_comm _ (Set ℝₗ),
     iInf_iInf_eq_right, mem_Ico]
@@ -162,7 +162,7 @@ instance : OrderClosedTopology ℝₗ :=
   ⟨isClosed_le_prod.preimage (continuous_toReal.prod_map continuous_toReal)⟩
 
 instance : ContinuousAdd ℝₗ := by
-  refine' ⟨continuous_iff_continuousAt.2 _⟩
+  refine ⟨continuous_iff_continuousAt.2 ?_⟩
   rintro ⟨x, y⟩
   rw [ContinuousAt, nhds_prod_eq, nhds_eq_comap (x + y), tendsto_comap_iff,
     nhds_eq_map, nhds_eq_map, prod_map_map_eq, ← nhdsWithin_prod_eq, Ici_prod_Ici]
@@ -218,7 +218,7 @@ instance : T5Space ℝₗ := by
       _ ≤ max x y := le_max_left _ _
 
 theorem denseRange_ratCast : DenseRange ((↑) : ℚ → ℝₗ) := by
-  refine' dense_iff_inter_open.2 _
+  refine dense_iff_inter_open.2 ?_
   rintro U Uo ⟨x, hx⟩
   rcases isOpen_iff.1 Uo _ hx with ⟨y, hxy, hU⟩
   rcases exists_rat_btwn hxy with ⟨z, hxz, hzy⟩

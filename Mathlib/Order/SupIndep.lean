@@ -92,7 +92,7 @@ theorem SupIndep.pairwiseDisjoint (hs : s.SupIndep f) : (s : Set ι).PairwiseDis
 
 theorem SupIndep.le_sup_iff (hs : s.SupIndep f) (hts : t ⊆ s) (hi : i ∈ s) (hf : ∀ i, f i ≠ ⊥) :
     f i ≤ t.sup f ↔ i ∈ t := by
-  refine' ⟨fun h => _, le_sup⟩
+  refine ⟨fun h => ?_, le_sup⟩
   by_contra hit
   exact hf i (disjoint_self.1 <| (hs hts hi hit).mono_right h)
 #align finset.sup_indep.le_sup_iff Finset.SupIndep.le_sup_iff
@@ -111,7 +111,7 @@ theorem SupIndep.image [DecidableEq ι] {s : Finset ι'} {g : ι' → ι} (hs : 
   obtain ⟨i, hi, rfl⟩ := hi
   haveI : DecidableEq ι' := Classical.decEq _
   suffices hts : t ⊆ (s.erase i).image g by
-    refine' (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans _)
+    refine (supIndep_iff_disjoint_erase.1 hs i hi).mono_right ((sup_mono hts).trans ?_)
     rw [sup_image]
   rintro j hjt
   obtain ⟨j, hj, rfl⟩ := mem_image.1 (ht hjt)
@@ -189,7 +189,7 @@ theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := b
   classical
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
     fun hi => hit <| by simpa using hi using 1
-  refine' eq_of_forall_ge_iff _
+  refine eq_of_forall_ge_iff ?_
   simp only [Finset.sup_le_iff, mem_filter, mem_attach, true_and_iff, Function.comp_apply,
     Subtype.forall, Subtype.coe_mk]
   exact fun a => forall_congr' fun j => ⟨fun h _ => h, fun h hj => h (ht hj) hj⟩
@@ -346,7 +346,7 @@ def Independent {ι : Sort*} {α : Type*} [CompleteLattice α] (t : ι → α) :
 theorem setIndependent_iff {α : Type*} [CompleteLattice α] (s : Set α) :
     SetIndependent s ↔ Independent ((↑) : s → α) := by
   simp_rw [Independent, SetIndependent, SetCoe.forall, sSup_eq_iSup]
-  refine' forall₂_congr fun a ha => _
+  refine forall₂_congr fun a ha => ?_
   simp [iSup_subtype, iSup_and]
 #align complete_lattice.set_independent_iff CompleteLattice.setIndependent_iff
 
@@ -488,10 +488,10 @@ theorem CompleteLattice.independent_iff_supIndep [CompleteLattice α] {s : Finse
     CompleteLattice.Independent (f ∘ ((↑) : s → ι)) ↔ s.SupIndep f := by
   classical
     rw [Finset.supIndep_iff_disjoint_erase]
-    refine' Subtype.forall.trans (forall₂_congr fun a b => _)
+    refine Subtype.forall.trans (forall₂_congr fun a b => ?_)
     rw [Finset.sup_eq_iSup]
     congr! 1
-    refine' iSup_subtype.trans _
+    refine iSup_subtype.trans ?_
     congr! 1
     simp [iSup_and, @iSup_comm _ (_ ∈ s)]
 #align complete_lattice.independent_iff_sup_indep CompleteLattice.independent_iff_supIndep

@@ -170,11 +170,11 @@ theorem hasFDerivAt_stereoInvFunAux_comp_coe (v : E) :
 theorem contDiff_stereoInvFunAux : ContDiff ℝ ⊤ (stereoInvFunAux v) := by
   have h₀ : ContDiff ℝ ⊤ fun w : E => ‖w‖ ^ 2 := contDiff_norm_sq ℝ
   have h₁ : ContDiff ℝ ⊤ fun w : E => (‖w‖ ^ 2 + 4)⁻¹ := by
-    refine' (h₀.add contDiff_const).inv _
+    refine (h₀.add contDiff_const).inv ?_
     intro x
     nlinarith
   have h₂ : ContDiff ℝ ⊤ fun w => (4 : ℝ) • w + (‖w‖ ^ 2 - 4) • v := by
-    refine' (contDiff_const.smul contDiff_id).add _
+    refine (contDiff_const.smul contDiff_id).add ?_
     exact (h₀.sub contDiff_const).smul contDiff_const
   exact h₁.smul h₂
 #align cont_diff_stereo_inv_fun_aux contDiff_stereoInvFunAux
@@ -193,7 +193,7 @@ theorem stereoInvFun_apply (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
 
 theorem stereoInvFun_ne_north_pole (hv : ‖v‖ = 1) (w : (ℝ ∙ v)ᗮ) :
     stereoInvFun hv w ≠ (⟨v, by simp [hv]⟩ : sphere (0 : E) 1) := by
-  refine' Subtype.coe_ne_coe.1 _
+  refine Subtype.coe_ne_coe.1 ?_
   rw [← inner_lt_one_iff_real_of_norm_one _ hv]
   · have hw : ⟪v, w⟫_ℝ = 0 := Submodule.mem_orthogonal_singleton_iff_inner_right.mp w.2
     have hw' : (‖(w : E)‖ ^ 2 + 4)⁻¹ * (‖(w : E)‖ ^ 2 - 4) < 1 := by

@@ -384,7 +384,7 @@ theorem finrank_direction_altitude {n : ℕ} (s : Simplex ℝ P (n + 1)) (i : Fi
   have h := Submodule.finrank_add_inf_finrank_orthogonal
     (vectorSpan_mono ℝ (Set.image_subset_range s.points ↑(univ.erase i)))
   have hc : card (univ.erase i) = n + 1 := by rw [card_erase_of_mem (mem_univ _)]; simp
-  refine' add_left_cancel (_root_.trans h _)
+  refine add_left_cancel (_root_.trans h ?_)
   rw [s.independent.finrank_vectorSpan (Fintype.card_fin _), ← Finset.coe_image,
     s.independent.finrank_vectorSpan_image_finset hc]
 #align affine.simplex.finrank_direction_altitude Affine.Simplex.finrank_direction_altitude
@@ -563,7 +563,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 the altitude. -/
 theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
-  refine' spanPoints_subset_coe_of_subset_coe _
+  refine spanPoints_subset_coe_of_subset_coe ?_
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 #align affine.triangle.affine_span_orthocenter_point_le_altitude Affine.Triangle.affineSpan_orthocenter_point_le_altitude
@@ -609,7 +609,7 @@ theorem altitude_replace_orthocenter_eq_affineSpan {t₁ t₂ : Triangle ℝ P}
   rw [hu, Finset.coe_insert, Finset.coe_singleton, Set.image_insert_eq, Set.image_singleton, h₁, h₃]
   have hle : (t₁.altitude i₃).directionᗮ ≤ line[ℝ, t₁.orthocenter, t₁.points i₃].directionᗮ :=
     Submodule.orthogonal_le (direction_le (affineSpan_orthocenter_point_le_altitude _ _))
-  refine' hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) _)
+  refine hle ((t₁.vectorSpan_isOrtho_altitude_direction i₃) ?_)
   have hui : Finset.univ.erase i₃ = {i₁, i₂} := by
     clear hle h₂ h₃
     -- Porting note (#11043): was `decide!`
@@ -689,7 +689,7 @@ theorem exists_of_range_subset_orthocentricSystem {t : Triangle ℝ P}
   · right
     have hs := Set.subset_diff_singleton hps h
     rw [Set.insert_diff_self_of_not_mem ho] at hs
-    refine' Set.eq_of_subset_of_card_le hs _
+    refine Set.eq_of_subset_of_card_le hs ?_
     rw [Set.card_range_of_injective hpi, Set.card_range_of_injective t.independent.injective]
 #align euclidean_geometry.exists_of_range_subset_orthocentric_system EuclideanGeometry.exists_of_range_subset_orthocentricSystem
 
@@ -747,7 +747,7 @@ theorem affineSpan_of_orthocentricSystem {s : Set P} (ho : OrthocentricSystem s)
     ⟨p 0, mem_affineSpan ℝ (Set.mem_range_self _), mem_affineSpan ℝ (hps (Set.mem_range_self _))⟩
   have hfd : FiniteDimensional ℝ (affineSpan ℝ s).direction := by rw [hs]; infer_instance
   haveI := hfd
-  refine' eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) _
+  refine eq_of_le_of_finrank_eq (direction_le (affineSpan_mono ℝ hps)) ?_
   rw [hs, direction_affineSpan, direction_affineSpan, ha.finrank_vectorSpan (Fintype.card_fin _),
     t.independent.finrank_vectorSpan (Fintype.card_fin _)]
 #align euclidean_geometry.affine_span_of_orthocentric_system EuclideanGeometry.affineSpan_of_orthocentricSystem

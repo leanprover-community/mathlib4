@@ -91,7 +91,7 @@ theorem IsOpen.exists_smooth_support_eq {s : Set E} (hs : IsOpen s) :
   let ι := { f : E → ℝ // f.support ⊆ s ∧ HasCompactSupport f ∧ ContDiff ℝ ⊤ f ∧ range f ⊆ Icc 0 1 }
   obtain ⟨T, T_count, hT⟩ : ∃ T : Set ι, T.Countable ∧ ⋃ f ∈ T, support (f : E → ℝ) = s := by
     have : ⋃ f : ι, (f : E → ℝ).support = s := by
-      refine' Subset.antisymm (iUnion_subset fun f => f.2.1) _
+      refine Subset.antisymm (iUnion_subset fun f => f.2.1) ?_
       intro x hx
       rcases exists_smooth_tsupport_subset (hs.mem_nhds hx) with ⟨f, hf⟩
       let g : ι := ⟨f, (subset_tsupport f).trans hf.1, hf.2.1, hf.2.2.1, hf.2.2.2.1⟩
@@ -560,7 +560,7 @@ instance (priority := 100) {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E
         have C : (R - 1) / (R + 1) < 1 := by apply (div_lt_one _).2 <;> linarith
         simp only [hR, if_true, support_comp_inv_smul₀ A.ne', y_support _ (IR R hR) C,
           _root_.smul_ball A.ne', Real.norm_of_nonneg A.le, smul_zero]
-        refine' congr (congr_arg ball (Eq.refl 0)) _
+        refine congr (congr_arg ball (Eq.refl 0)) ?_
         field_simp; ring }
 
 end ExistsContDiffBumpBase

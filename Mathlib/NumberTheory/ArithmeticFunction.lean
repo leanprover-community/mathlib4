@@ -965,7 +965,7 @@ lemma cardFactors_zero : Ω 0 = 0 := rfl
 
 @[simp]
 theorem cardFactors_eq_one_iff_prime {n : ℕ} : Ω n = 1 ↔ n.Prime := by
-  refine' ⟨fun h => _, fun h => List.length_eq_one.2 ⟨n, factors_prime h⟩⟩
+  refine ⟨fun h => ?_, fun h => List.length_eq_one.2 ⟨n, factors_prime h⟩⟩
   cases' n with n
   · simp at h
   rcases List.length_eq_one.1 h with ⟨x, hx⟩

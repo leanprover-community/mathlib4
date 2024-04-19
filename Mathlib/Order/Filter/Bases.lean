@@ -345,7 +345,7 @@ protected theorem _root_.FilterBasis.hasBasis (B : FilterBasis α) :
 
 theorem HasBasis.to_hasBasis' (hl : l.HasBasis p s) (h : ∀ i, p i → ∃ i', p' i' ∧ s' i' ⊆ s i)
     (h' : ∀ i', p' i' → s' i' ∈ l) : l.HasBasis p' s' := by
-  refine' ⟨fun t => ⟨fun ht => _, fun ⟨i', hi', ht⟩ => mem_of_superset (h' i' hi') ht⟩⟩
+  refine ⟨fun t => ⟨fun ht => ?_, fun ⟨i', hi', ht⟩ => mem_of_superset (h' i' hi') ht⟩⟩
   rcases hl.mem_iff.1 ht with ⟨i, hi, ht⟩
   rcases h i hi with ⟨i', hi', hs's⟩
   exact ⟨i', hi', hs's.trans ht⟩
@@ -443,7 +443,7 @@ theorem HasBasis.to_image_id {ι : Type*} {p : ι → Prop} {s : ι → Set α} 
 `p j ∧ q j`, then `{s j | p j ∧ q j}` is a basis of `l`. -/
 theorem HasBasis.restrict (h : l.HasBasis p s) {q : ι → Prop}
     (hq : ∀ i, p i → ∃ j, p j ∧ q j ∧ s j ⊆ s i) : l.HasBasis (fun i => p i ∧ q i) s := by
-  refine' ⟨fun t => ⟨fun ht => _, fun ⟨i, hpi, hti⟩ => h.mem_iff.2 ⟨i, hpi.1, hti⟩⟩⟩
+  refine ⟨fun t => ⟨fun ht => ?_, fun ⟨i, hpi, hti⟩ => h.mem_iff.2 ⟨i, hpi.1, hti⟩⟩⟩
   rcases h.mem_iff.1 ht with ⟨i, hpi, hti⟩
   rcases hq i hpi with ⟨j, hpj, hqj, hji⟩
   exact ⟨j, ⟨hpj, hqj⟩, hji.trans hti⟩
@@ -520,7 +520,7 @@ theorem hasBasis_iInf' {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} 
       choose u hu using hV
       exact ⟨⟨I, u⟩, ⟨hI, fun i _ => (hu i).1⟩, iInter₂_mono fun i _ => (hu i).2⟩
     · rintro ⟨⟨I, f⟩, ⟨hI₁, hI₂⟩, hsub⟩
-      refine' mem_of_superset _ hsub
+      refine mem_of_superset ?_ hsub
       exact (biInter_mem hI₁).mpr fun i hi => mem_iInf_of_mem i <| (hl i).mem_of_mem <| hI₂ _ hi⟩
 #align filter.has_basis_infi' Filter.hasBasis_iInf'
 
@@ -533,7 +533,7 @@ theorem hasBasis_iInf {ι : Type*} {ι' : ι → Type*} {l : ι → Filter α} {
   · rcases (hasBasis_iInf' hl).mem_iff.mp ht with ⟨⟨I, f⟩, ⟨hI, hf⟩, hsub⟩
     exact ⟨⟨I, fun i => f i⟩, ⟨hI, Subtype.forall.mpr hf⟩, trans (iInter_subtype _ _) hsub⟩
   · rintro ⟨⟨I, f⟩, ⟨hI, hf⟩, hsub⟩
-    refine' mem_of_superset _ hsub
+    refine mem_of_superset ?_ hsub
     cases hI.nonempty_fintype
     exact iInter_mem.2 fun i => mem_iInf_of_mem ↑i <| (hl i).mem_of_mem <| hf _
 #align filter.has_basis_infi Filter.hasBasis_iInf
@@ -697,7 +697,7 @@ theorem inf_principal_neBot_iff {s : Set α} : NeBot (l ⊓ 𝓟 s) ↔ ∀ U �
 #align filter.inf_principal_ne_bot_iff Filter.inf_principal_neBot_iff
 
 theorem mem_iff_inf_principal_compl {f : Filter α} {s : Set α} : s ∈ f ↔ f ⊓ 𝓟 sᶜ = ⊥ := by
-  refine' not_iff_not.1 ((inf_principal_neBot_iff.trans _).symm.trans neBot_iff)
+  refine not_iff_not.1 ((inf_principal_neBot_iff.trans ?_).symm.trans neBot_iff)
   exact
     ⟨fun h hs => by simpa [Set.not_nonempty_empty] using h s hs, fun hs t ht =>
       inter_compl_nonempty_iff.2 fun hts => hs <| mem_of_superset ht hts⟩
@@ -789,9 +789,9 @@ theorem hasBasis_iInf_principal_finite {ι : Type*} (s : ι → Set α) :
 theorem hasBasis_biInf_principal {s : β → Set α} {S : Set β} (h : DirectedOn (s ⁻¹'o (· ≥ ·)) S)
     (ne : S.Nonempty) : (⨅ i ∈ S, 𝓟 (s i)).HasBasis (fun i => i ∈ S) s :=
   ⟨fun t => by
-    refine' mem_biInf_of_directed _ ne
+    refine mem_biInf_of_directed ?_ ne
     rw [directedOn_iff_directed, ← directed_comp] at h ⊢
-    refine' h.mono_comp _
+    refine h.mono_comp ?_
     exact fun _ _ => principal_mono.2⟩
 #align filter.has_basis_binfi_principal Filter.hasBasis_biInf_principal
 

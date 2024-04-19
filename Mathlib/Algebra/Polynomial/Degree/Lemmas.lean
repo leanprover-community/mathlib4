@@ -75,7 +75,7 @@ theorem natDegree_le_iff_coeff_eq_zero : p.natDegree ≤ n ↔ ∀ N : ℕ, n < 
 
 theorem natDegree_add_le_iff_left {n : ℕ} (p q : R[X]) (qn : q.natDegree ≤ n) :
     (p + q).natDegree ≤ n ↔ p.natDegree ≤ n := by
-  refine' ⟨fun h => _, fun h => natDegree_add_le_of_degree_le h qn⟩
+  refine ⟨fun h => ?_, fun h => natDegree_add_le_of_degree_le h qn⟩
   refine' natDegree_le_iff_coeff_eq_zero.mpr fun m hm => _
   convert natDegree_le_iff_coeff_eq_zero.mp h m hm using 1
   rw [coeff_add, natDegree_le_iff_coeff_eq_zero.mp qn _ hm, add_zero]
@@ -133,7 +133,7 @@ force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
 theorem natDegree_mul_C_eq_of_mul_ne_zero (h : p.leadingCoeff * a ≠ 0) :
     (p * C a).natDegree = p.natDegree := by
-  refine' eq_natDegree_of_le_mem_support (natDegree_mul_C_le p a) _
+  refine eq_natDegree_of_le_mem_support (natDegree_mul_C_le p a) ?_
   refine' mem_support_iff.mpr _
   rwa [coeff_mul_C]
 set_option linter.uppercaseLean3 false in
@@ -144,7 +144,7 @@ force the polynomial `p` to be non-zero, via `p.leading_coeff ≠ 0`.
 -/
 theorem natDegree_C_mul_eq_of_mul_ne_zero (h : a * p.leadingCoeff ≠ 0) :
     (C a * p).natDegree = p.natDegree := by
-  refine' eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) _
+  refine eq_natDegree_of_le_mem_support (natDegree_C_mul_le a p) ?_
   refine' mem_support_iff.mpr _
   rwa [coeff_C_mul]
 set_option linter.uppercaseLean3 false in
@@ -228,7 +228,7 @@ theorem natDegree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
   by_cases H : ∃ x ∈ s, f x ≠ 0
   · obtain ⟨x, hx, hx'⟩ := H
     have hs : s.Nonempty := ⟨x, hx⟩
-    refine' natDegree_eq_of_degree_eq_some _
+    refine natDegree_eq_of_degree_eq_some ?_
     rw [degree_sum_eq_of_disjoint]
     · rw [← Finset.sup'_eq_sup hs, ← Finset.sup'_eq_sup hs,
         Nat.cast_withBot, Finset.coe_sup' hs, ←
@@ -397,7 +397,7 @@ theorem natDegree_comp : natDegree (p.comp q) = natDegree p * natDegree q := by
       natDegree_C, mul_zero]
   · by_cases p0 : p = 0
     · simp only [p0, zero_comp, natDegree_zero, zero_mul]
-    refine' le_antisymm natDegree_comp_le (le_natDegree_of_ne_zero _)
+    refine le_antisymm natDegree_comp_le (le_natDegree_of_ne_zero ?_)
     simp only [coeff_comp_degree_mul_degree q0, p0, mul_eq_zero, leadingCoeff_eq_zero, or_self_iff,
       ne_zero_of_natDegree_gt (Nat.pos_of_ne_zero q0), pow_ne_zero, Ne, not_false_iff]
 #align polynomial.nat_degree_comp Polynomial.natDegree_comp

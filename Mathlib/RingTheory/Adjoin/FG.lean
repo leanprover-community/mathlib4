@@ -63,7 +63,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     rcases hr with ⟨l, hlq, rfl⟩
     have := @Finsupp.total_apply A A (adjoin R s)
     rw [this, Finsupp.sum]
-    refine' sum_mem _
+    refine sum_mem ?_
     intro z hz
     change (l z).1 * _ ∈ _
     have : (l z).1 ∈ Subalgebra.toSubmodule (adjoin R s) := (l z).2
@@ -72,7 +72,7 @@ theorem fg_trans (h1 : (adjoin R s).toSubmodule.FG) (h2 : (adjoin (adjoin R s) t
     have := @Finsupp.total_apply A A R
     rw [this] at hl
     rw [← hl, Finsupp.sum_mul]
-    refine' sum_mem _
+    refine sum_mem ?_
     intro t ht
     change _ * _ ∈ _
     rw [smul_mul_assoc]

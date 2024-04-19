@@ -165,7 +165,7 @@ lemma Set.Finite.cofinite_inf_principal_diff {s t : Set α} (ht : t.Finite) :
 
 /-- For natural numbers the filters `Filter.cofinite` and `Filter.atTop` coincide. -/
 theorem Nat.cofinite_eq_atTop : @cofinite ℕ = atTop := by
-  refine' le_antisymm _ atTop_le_cofinite
+  refine le_antisymm ?_ atTop_le_cofinite
   refine' atTop_basis.ge_iff.2 fun N _ => _
   simpa only [mem_cofinite, compl_Ici] using finite_lt_nat N
 #align nat.cofinite_eq_at_top Nat.cofinite_eq_atTop

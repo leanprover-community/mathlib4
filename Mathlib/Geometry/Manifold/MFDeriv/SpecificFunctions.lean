@@ -385,14 +385,14 @@ variable (I I' I'')
 theorem mfderiv_prod_left {x₀ : M} {y₀ : M'} :
     mfderiv I (I.prod I') (fun x => (x, y₀)) x₀ =
       ContinuousLinearMap.inl 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans _
+  refine ((mdifferentiableAt_id I).mfderiv_prod (mdifferentiableAt_const I I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inl]
 #align mfderiv_prod_left mfderiv_prod_left
 
 theorem mfderiv_prod_right {x₀ : M} {y₀ : M'} :
     mfderiv I' (I.prod I') (fun y => (x₀, y)) y₀ =
       ContinuousLinearMap.inr 𝕜 (TangentSpace I x₀) (TangentSpace I' y₀) := by
-  refine' ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans _
+  refine ((mdifferentiableAt_const I' I).mfderiv_prod (mdifferentiableAt_id I')).trans ?_
   rw [mfderiv_id, mfderiv_const, ContinuousLinearMap.inr]
 #align mfderiv_prod_right mfderiv_prod_right
 

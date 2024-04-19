@@ -257,7 +257,7 @@ end F
 /-- A Type that does not have `UniqueProds`. -/
 example : ¬UniqueProds ℕ := by
   rintro ⟨h⟩
-  refine' not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) _
+  refine not_not.mpr (h (Finset.singleton_nonempty 0) (Finset.insert_nonempty 0 {1})) ?_
   simp [UniqueMul, not_or]
   exact ⟨⟨0, 1, by simp⟩, ⟨0, 0, by simp⟩⟩
 
@@ -266,7 +266,7 @@ example (n : ℕ) (n2 : 2 ≤ n) : ¬UniqueSums (ZMod n) := by
   haveI : Fintype (ZMod n) := @ZMod.fintype n ⟨(zero_lt_two.trans_le n2).ne'⟩
   haveI : Nontrivial (ZMod n) := CharP.nontrivial_of_char_ne_one (one_lt_two.trans_le n2).ne'
   rintro ⟨h⟩
-  refine' not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) _
+  refine not_not.mpr (h Finset.univ_nonempty Finset.univ_nonempty) ?_
   suffices ∀ x y : ZMod n, ∃ x' y' : ZMod n, x' + y' = x + y ∧ (x' = x → ¬y' = y) by
     simpa [UniqueAdd]
   exact fun x y => ⟨x - 1, y + 1, sub_add_add_cancel _ _ _, by simp⟩

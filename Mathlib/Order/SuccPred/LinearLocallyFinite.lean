@@ -332,7 +332,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
     · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
-    refine' hj_min (min_of_le_pred _)
+    refine hj_min (min_of_le_pred ?_)
     refine' (@le_of_toZ_le _ _ _ _ _ i0 j i _).trans _
     · exact le_of_not_le h
     · have h_le_pred : i ≤ pred^[(-toZ i0 j).toNat + 1] i0 := by

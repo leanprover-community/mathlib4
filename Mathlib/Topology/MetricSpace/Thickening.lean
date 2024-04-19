@@ -424,7 +424,7 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
   rw [← NNReal.coe_two, ← NNReal.coe_div, ENNReal.ofReal_coe_nnreal] at hzs hzt
   obtain ⟨x, hx, hzx⟩ := hzs
   obtain ⟨y, hy, hzy⟩ := hzt
-  refine' (h x hx y hy).not_le _
+  refine (h x hx y hy).not_le ?_
   calc
     edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
     _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le
@@ -573,7 +573,7 @@ theorem closedBall_subset_cthickening {α : Type*} [PseudoMetricSpace α] {x : �
 
 theorem cthickening_subset_iUnion_closedBall_of_lt {α : Type*} [PseudoMetricSpace α] (E : Set α)
     {δ δ' : ℝ} (hδ₀ : 0 < δ') (hδδ' : δ < δ') : cthickening δ E ⊆ ⋃ x ∈ E, closedBall x δ' := by
-  refine' (cthickening_subset_thickening' hδ₀ hδδ' E).trans fun x hx => _
+  refine (cthickening_subset_thickening' hδ₀ hδδ' E).trans fun x hx => ?_
   obtain ⟨y, hy₁, hy₂⟩ := mem_thickening_iff.mp hx
   exact mem_iUnion₂.mpr ⟨y, hy₁, hy₂.le⟩
 #align metric.cthickening_subset_Union_closed_ball_of_lt Metric.cthickening_subset_iUnion_closedBall_of_lt
@@ -621,7 +621,7 @@ nonrec theorem _root_.IsClosed.cthickening_eq_biUnion_closedBall {α : Type*} [P
 /-- For the equality, see `infEdist_cthickening`. -/
 theorem infEdist_le_infEdist_cthickening_add :
     infEdist x s ≤ infEdist x (cthickening δ s) + ENNReal.ofReal δ := by
-  refine' le_of_forall_lt' fun r h => _
+  refine le_of_forall_lt' fun r h => ?_
   simp_rw [← lt_tsub_iff_right, infEdist_lt_iff, mem_cthickening_iff] at h
   obtain ⟨y, hy, hxy⟩ := h
   exact infEdist_le_edist_add_infEdist.trans_lt

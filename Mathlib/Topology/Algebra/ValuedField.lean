@@ -198,7 +198,7 @@ noncomputable def extension : hat K → Γ₀ :=
 #align valued.extension Valued.extension
 
 theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) := by
-  refine' Completion.denseInducing_coe.continuous_extend _
+  refine Completion.denseInducing_coe.continuous_extend ?_
   intro x₀
   rcases eq_or_ne x₀ 0 with (rfl | h)
   · refine' ⟨0, _⟩
@@ -274,7 +274,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
 
 @[simp, norm_cast]
 theorem extension_extends (x : K) : extension (x : hat K) = v x := by
-  refine' Completion.denseInducing_coe.extend_eq_of_tendsto _
+  refine Completion.denseInducing_coe.extend_eq_of_tendsto ?_
   rw [← Completion.denseInducing_coe.nhds_eq_comap]
   exact Valued.continuous_valuation.continuousAt
 #align valued.extension_extends Valued.extension_extends

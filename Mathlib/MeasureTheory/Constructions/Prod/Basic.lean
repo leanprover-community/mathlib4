@@ -392,7 +392,7 @@ instance prod.instIsOpenPosMeasure {X Y : Type*} [TopologicalSpace X] [Topologic
   constructor
   rintro U U_open ⟨⟨x, y⟩, hxy⟩
   rcases isOpen_prod_iff.1 U_open x y hxy with ⟨u, v, u_open, v_open, xu, yv, huv⟩
-  refine' ne_of_gt (lt_of_lt_of_le _ (measure_mono huv))
+  refine ne_of_gt (lt_of_lt_of_le ?_ (measure_mono huv))
   simp only [prod_prod, CanonicallyOrderedCommSemiring.mul_pos]
   constructor
   · exact u_open.measure_pos μ ⟨x, xu⟩
@@ -671,7 +671,7 @@ theorem prod_swap : map Prod.swap (μ.prod ν) = ν.prod μ := by
     map_sum measurable_swap.aemeasurable, this]
   congr 1
   ext1 i
-  refine' (prod_eq _).symm
+  refine (prod_eq ?_).symm
   intro s t hs ht
   simp_rw [map_apply measurable_swap (hs.prod ht), preimage_swap_prod, prod_prod, mul_comm]
 #align measure_theory.measure.prod_swap MeasureTheory.Measure.prod_swap
@@ -736,10 +736,10 @@ theorem prodAssoc_prod [SFinite τ] :
     map_sum MeasurableEquiv.prodAssoc.measurable.aemeasurable, prod_sum, prod_sum, this]
   congr
   ext1 i
-  refine' (prod_eq_generateFrom generateFrom_measurableSet generateFrom_prod
+  refine (prod_eq_generateFrom generateFrom_measurableSet generateFrom_prod
     isPiSystem_measurableSet isPiSystem_prod ((sFiniteSeq μ i.1.1)).toFiniteSpanningSetsIn
     ((sFiniteSeq ν i.1.2).toFiniteSpanningSetsIn.prod (sFiniteSeq τ i.2).toFiniteSpanningSetsIn)
-      _).symm
+      ?_).symm
   rintro s hs _ ⟨t, ht, u, hu, rfl⟩; rw [mem_setOf_eq] at hs ht hu
   simp_rw [map_apply (MeasurableEquiv.measurable _) (hs.prod (ht.prod hu)),
     MeasurableEquiv.prodAssoc, MeasurableEquiv.coe_mk, Equiv.prod_assoc_preimage, prod_prod,
@@ -754,7 +754,7 @@ theorem prod_restrict (s : Set α) (t : Set β) :
     prod_sum, prod_sum, restrict_sum_of_countable]
   congr 1
   ext1 i
-  refine' prod_eq fun s' t' hs' ht' => _
+  refine prod_eq fun s' t' hs' ht' => ?_
   rw [restrict_apply (hs'.prod ht'), prod_inter_prod, prod_prod, restrict_apply hs',
     restrict_apply ht']
 #align measure_theory.measure.prod_restrict MeasureTheory.Measure.prod_restrict
@@ -769,7 +769,7 @@ theorem prod_dirac (y : β) : μ.prod (dirac y) = map (fun x => (x, y)) μ := by
   rw [← sum_sFiniteSeq μ, prod_sum_left, map_sum measurable_prod_mk_right.aemeasurable]
   congr
   ext1 i
-  refine' prod_eq fun s t hs ht => _
+  refine prod_eq fun s t hs ht => ?_
   simp_rw [map_apply measurable_prod_mk_right (hs.prod ht), mk_preimage_prod_left_eq_if, measure_if,
     dirac_apply' _ ht, ← indicator_mul_right _ fun _ => sFiniteSeq μ i s, Pi.one_apply, mul_one]
 #align measure_theory.measure.prod_dirac MeasureTheory.Measure.prod_dirac
@@ -778,7 +778,7 @@ theorem dirac_prod (x : α) : (dirac x).prod ν = map (Prod.mk x) ν := by
   rw [← sum_sFiniteSeq ν, prod_sum_right, map_sum measurable_prod_mk_left.aemeasurable]
   congr
   ext1 i
-  refine' prod_eq fun s t hs ht => _
+  refine prod_eq fun s t hs ht => ?_
   simp_rw [map_apply measurable_prod_mk_left (hs.prod ht), mk_preimage_prod_right_eq_if, measure_if,
     dirac_apply' _ hs, ← indicator_mul_left _ _ fun _ => sFiniteSeq ν i t, Pi.one_apply, one_mul]
 #align measure_theory.measure.dirac_prod MeasureTheory.Measure.dirac_prod
@@ -822,7 +822,7 @@ theorem map_prod_map {δ} [MeasurableSpace δ] {f : α → β} {g : γ → δ} (
     map_sum hg.aemeasurable, prod_sum, map_sum (hf.prod_map hg).aemeasurable]
   congr
   ext1 i
-  refine' prod_eq fun s t hs ht => _
+  refine prod_eq fun s t hs ht => ?_
   rw [map_apply (hf.prod_map hg) (hs.prod ht), map_apply hf hs, map_apply hg ht]
   exact prod_prod (f ⁻¹' s) (g ⁻¹' t)
 #align measure_theory.measure.map_prod_map MeasureTheory.Measure.map_prod_map

@@ -161,7 +161,7 @@ theorem lhopital_zero_atTop_on_Ioi (hff' : ∀ x ∈ Ioi a, HasDerivAt f (f' x) 
       exact hg' _ (fact2 x hx))
     (hftop.comp tendsto_inv_zero_atTop) (hgtop.comp tendsto_inv_zero_atTop)
     (by
-      refine' (tendsto_congr' _).mp (hdiv.comp tendsto_inv_zero_atTop)
+      refine (tendsto_congr' ?_).mp (hdiv.comp tendsto_inv_zero_atTop)
       rw [eventuallyEq_iff_exists_mem]
       use Ioi 0, self_mem_nhdsWithin
       intro x hx

@@ -208,7 +208,7 @@ theorem upperCentralSeries_isAscendingCentralSeries :
 #align upper_central_series_is_ascending_central_series upperCentralSeries_isAscendingCentralSeries
 
 theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
-  refine' monotone_nat_of_le_succ _
+  refine monotone_nat_of_le_succ ?_
   intro n x hx y
   rw [mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
   exact mul_mem hx (Normal.conj_mem (upperCentralSeries_normal G n) x⁻¹ (inv_mem hx) y)
@@ -310,7 +310,7 @@ instance lowerCentralSeries_normal (n : ℕ) : Normal (lowerCentralSeries G n) :
   · exact @Subgroup.commutator_normal _ _ (lowerCentralSeries G d) ⊤ hd _
 
 theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
-  refine' antitone_nat_of_succ_le fun n x hx => _
+  refine antitone_nat_of_succ_le fun n x hx => ?_
   simp only [mem_lowerCentralSeries_succ_iff, exists_prop, mem_top, exists_true_left,
     true_and_iff] at hx
   refine'
@@ -729,7 +729,7 @@ instance isNilpotent_prod [IsNilpotent G₁] [IsNilpotent G₂] : IsNilpotent (G
 theorem nilpotencyClass_prod [IsNilpotent G₁] [IsNilpotent G₂] :
     Group.nilpotencyClass (G₁ × G₂) =
     max (Group.nilpotencyClass G₁) (Group.nilpotencyClass G₂) := by
-  refine' eq_of_forall_ge_iff fun k => _
+  refine eq_of_forall_ge_iff fun k => ?_
   simp only [max_le_iff, ← lowerCentralSeries_eq_bot_iff_nilpotencyClass_le,
     lowerCentralSeries_prod, prod_eq_bot_iff]
 #align nilpotency_class_prod nilpotencyClass_prod

@@ -48,7 +48,7 @@ namespace MutuallySingular
 theorem mk {s t : Set α} (hs : μ s = 0) (ht : ν t = 0) (hst : univ ⊆ s ∪ t) :
     MutuallySingular μ ν := by
   use toMeasurable μ s, measurableSet_toMeasurable _ _, (measure_toMeasurable _).trans hs
-  refine' measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx _) ht
+  refine measure_mono_null (fun x hx => (hst trivial).resolve_left fun hxs => hx ?_) ht
   exact subset_toMeasurable _ _ hxs
 #align measure_theory.measure.mutually_singular.mk MeasureTheory.Measure.MutuallySingular.mk
 

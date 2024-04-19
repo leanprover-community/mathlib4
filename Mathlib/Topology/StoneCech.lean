@@ -112,7 +112,7 @@ theorem ultrafilter_comap_pure_nhds (b : Ultrafilter α) : comap pure (𝓝 b) �
   simp only [comap_iInf, comap_principal]
   intro s hs
   rw [← le_principal_iff]
-  refine' iInf_le_of_le { u | s ∈ u } _
+  refine iInf_le_of_le { u | s ∈ u } ?_
   refine' iInf_le_of_le ⟨hs, ⟨s, rfl⟩⟩ _
   exact principal_mono.2 fun a => id
 #align ultrafilter_comap_pure_nhds ultrafilter_comap_pure_nhds
@@ -205,7 +205,7 @@ theorem ultrafilter_extend_eq_iff {f : α → γ} {b : Ultrafilter α} {c : γ} 
     have t : ↑b' ≤ 𝓝 b := ultrafilter_converges_iff.mpr (bind_pure _).symm
     rw [← h]
     have := (continuous_ultrafilter_extend f).tendsto b
-    refine' le_trans _ (le_trans (map_mono t) this)
+    refine le_trans ?_ (le_trans (map_mono t) this)
     change _ ≤ map (Ultrafilter.extend f ∘ pure) ↑b
     rw [ultrafilter_extend_extends]
     exact le_rfl, fun h =>

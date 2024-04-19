@@ -36,7 +36,7 @@ theorem continuousAt_sign_of_pos {a : α} (h : 0 < a) : ContinuousAt SignType.si
 #align continuous_at_sign_of_pos continuousAt_sign_of_pos
 
 theorem continuousAt_sign_of_neg {a : α} (h : a < 0) : ContinuousAt SignType.sign a := by
-  refine' (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr _
+  refine (continuousAt_const : ContinuousAt (fun x => (-1 : SignType)) a).congr ?_
   rw [Filter.EventuallyEq, eventually_nhds_iff]
   exact ⟨{ x | x < 0 }, fun x hx => (sign_neg hx).symm, isOpen_gt' 0, h⟩
 #align continuous_at_sign_of_neg continuousAt_sign_of_neg

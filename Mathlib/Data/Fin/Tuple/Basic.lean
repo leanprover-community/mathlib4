@@ -310,7 +310,7 @@ theorem append_right_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hv 
     append u v = u ∘ Fin.cast (by rw [hv, add_zero]) := by
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · rw [append_left, Function.comp_apply]
-    refine' congr_arg u (Fin.ext _)
+    refine congr_arg u (Fin.ext ?_)
     simp
   · exact (Fin.cast hv r).elim0
 #align fin.append_right_nil Fin.append_right_nil
@@ -326,7 +326,7 @@ theorem append_left_nil {α : Type*} (u : Fin m → α) (v : Fin n → α) (hu :
   refine funext (Fin.addCases (fun l => ?_) fun r => ?_)
   · exact (Fin.cast hu l).elim0
   · rw [append_right, Function.comp_apply]
-    refine' congr_arg v (Fin.ext _)
+    refine congr_arg v (Fin.ext ?_)
     simp [hu]
 #align fin.append_left_nil Fin.append_left_nil
 

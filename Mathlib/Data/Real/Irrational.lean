@@ -355,7 +355,7 @@ theorem of_int_mul (m : ℤ) (h : Irrational (m * x)) : Irrational x :=
 
 theorem mul_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x * m) := by
   rw [← cast_intCast]
-  refine' h.mul_rat _
+  refine h.mul_rat ?_
   rwa [Int.cast_ne_zero]
 #align irrational.mul_int Irrational.mul_int
 
@@ -431,7 +431,7 @@ theorem int_div (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (m / x)
 
 theorem div_int (h : Irrational x) {m : ℤ} (hm : m ≠ 0) : Irrational (x / m) := by
   rw [← cast_intCast]
-  refine' h.div_rat _
+  refine h.div_rat ?_
   rwa [Int.cast_ne_zero]
 #align irrational.div_int Irrational.div_int
 

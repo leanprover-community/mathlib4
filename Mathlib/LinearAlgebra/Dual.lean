@@ -373,7 +373,7 @@ theorem toDual_ker : LinearMap.ker b.toDual = ⊥ :=
 
 -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.range
 theorem toDual_range [Finite ι] : LinearMap.range b.toDual = ⊤ := by
-  refine' eq_top_iff'.2 fun f => _
+  refine eq_top_iff'.2 fun f => ?_
   let lin_comb : ι →₀ R := Finsupp.equivFunOnFinite.symm fun i => f (b i)
   refine' ⟨Finsupp.total ι M R b lin_comb, b.ext fun i => _⟩
   rw [b.toDual_eq_repr _ i, repr_total b]
@@ -898,7 +898,7 @@ def dualAnnihilator {R : Type u} {M : Type v} [CommSemiring R] [AddCommMonoid M]
 
 @[simp]
 theorem mem_dualAnnihilator (φ : Module.Dual R M) : φ ∈ W.dualAnnihilator ↔ ∀ w ∈ W, φ w = 0 := by
-  refine' LinearMap.mem_ker.trans _
+  refine LinearMap.mem_ker.trans ?_
   simp_rw [LinearMap.ext_iff, dualRestrict_apply]
   exact ⟨fun h w hw => h ⟨w, hw⟩, fun h w => h w.1 w.2⟩
 #align submodule.mem_dual_annihilator Submodule.mem_dualAnnihilator
@@ -1519,7 +1519,7 @@ theorem dualCopairing_nondegenerate (W : Subspace K V₁) : W.dualCopairing.Nond
 -- Argument from https://math.stackexchange.com/a/2423263/172988
 theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
     (W ⊓ W').dualAnnihilator = W.dualAnnihilator ⊔ W'.dualAnnihilator := by
-  refine' le_antisymm _ (sup_dualAnnihilator_le_inf W W')
+  refine le_antisymm ?_ (sup_dualAnnihilator_le_inf W W')
   let F : V₁ →ₗ[K] (V₁ ⧸ W) × V₁ ⧸ W' := (Submodule.mkQ W).prod (Submodule.mkQ W')
   -- Porting note (#11036): broken dot notation lean4#1910 LinearMap.ker
   have : LinearMap.ker F = W ⊓ W' := by simp only [F, LinearMap.ker_prod, ker_mkQ]

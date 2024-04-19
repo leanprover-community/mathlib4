@@ -137,7 +137,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
 -- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
   · have := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
     obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h
-    refine' adjoin_mono _ y.2
+    refine adjoin_mono ?_ y.2
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
     exact hζ.pow_eq_one
   · rintro ⟨y, rfl⟩

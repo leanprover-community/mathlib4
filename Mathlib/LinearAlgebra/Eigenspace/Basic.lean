@@ -120,7 +120,7 @@ theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasE
 
 theorem mem_spectrum_of_hasEigenvalue {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
-  refine' spectrum.mem_iff.mpr fun h_unit => _
+  refine spectrum.mem_iff.mpr fun h_unit => ?_
   set f' := LinearMap.GeneralLinearGroup.toLinearEquiv h_unit.unit
   rcases hμ.exists_hasEigenvector with ⟨v, hv⟩
   refine' hv.2 ((LinearMap.ker_eq_bot'.mp f'.ker) v (_ : μ • v - f v = 0))

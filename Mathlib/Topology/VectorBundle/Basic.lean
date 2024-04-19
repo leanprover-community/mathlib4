@@ -770,7 +770,7 @@ instance vectorBundle : VectorBundle R F Z.Fiber where
     apply localTriv.isLinear
   continuousOn_coordChange' := by
     rintro _ _ ⟨i, rfl⟩ ⟨i', rfl⟩
-    refine' (Z.continuousOn_coordChange i i').congr fun b hb => _
+    refine (Z.continuousOn_coordChange i i').congr fun b hb => ?_
     ext v
     exact Z.localTriv_coordChange_eq i i' hb v
 #align vector_bundle_core.vector_bundle VectorBundleCore.vectorBundle
@@ -911,7 +911,7 @@ def toFiberPrebundle (a : VectorPrebundle R F E) : FiberPrebundle F E :=
         isBoundedBilinearMap_apply.continuous.comp_continuousOn
           ((a.continuousOn_coordChange he' he).prod_map continuousOn_id)
       rw [e.target_inter_preimage_symm_source_eq e', inter_comm]
-      refine' (continuousOn_fst.prod this).congr _
+      refine (continuousOn_fst.prod this).congr ?_
       rintro ⟨b, f⟩ ⟨hb, -⟩
       dsimp only [Function.comp_def, Prod.map]
       rw [a.mk_coordChange _ _ hb, e'.mk_symm hb.1] }

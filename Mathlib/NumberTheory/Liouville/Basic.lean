@@ -116,7 +116,7 @@ theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N 
     -- use the "separation from `1`" (assumption `L`) for numerators,
     refine (L this).trans ?_
     -- remove a common factor and use the Lipschitz assumption `B`
-    refine' mul_le_mul_of_nonneg_left ((B this).trans _) (zero_le_one.trans (d0 a))
+    refine mul_le_mul_of_nonneg_left ((B this).trans ?_) (zero_le_one.trans (d0 a))
     exact mul_le_mul_of_nonneg_left (le_max_right _ M) dist_nonneg
 #align liouville.exists_one_le_pow_mul_dist Liouville.exists_one_le_pow_mul_dist
 
@@ -167,7 +167,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.
-    refine' (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp _).symm
+    refine (irrational_iff_ne_rational α).mp ha z (a + 1) (mem_singleton_iff.mp ?_).symm
     refine U.subset ?_
     refine' ⟨hq, Finset.mem_coe.mp (Multiset.mem_toFinset.mpr _)⟩
     exact (mem_roots fR0).mpr (IsRoot.def.mpr hy)
@@ -202,7 +202,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   refine' (_ : (b : ℝ) ^ f.natDegree * |x - a / b| < 1 / A).trans_le _
   -- This branch of the proof uses the Liouville condition and the Archimedean property
   · refine' (lt_div_iff' hA).mpr _
-    refine' lt_of_le_of_lt _ a1
+    refine lt_of_le_of_lt ?_ a1
     gcongr
     refine hn.le.trans ?_
     rw [one_add_one_eq_two]

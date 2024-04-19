@@ -116,7 +116,7 @@ instance instAdd : Add Cₛ^n⟮I; F, V⟯ := by
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.add ht).congr_of_eventuallyEq _
+  refine (hs.add ht).congr_of_eventuallyEq ?_
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).1
@@ -134,7 +134,7 @@ instance instSub : Sub Cₛ^n⟮I; F, V⟯ := by
   have ht := t.contMDiff x₀
   rw [contMDiffAt_section] at hs ht ⊢
   set e := trivializationAt F V x₀
-  refine' (hs.sub ht).congr_of_eventuallyEq _
+  refine (hs.sub ht).congr_of_eventuallyEq ?_
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).map_sub
@@ -166,7 +166,7 @@ instance instSMul : SMul 𝕜 Cₛ^n⟮I; F, V⟯ := by
   set e := trivializationAt F V x₀
   refine' (contMDiffAt_const.smul hs).congr_of_eventuallyEq _
   · exact c
-  refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
+  refine eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) ?_
   intro x hx
   apply (e.linear 𝕜 hx).2
 #align cont_mdiff_section.has_smul ContMDiffSection.instSMul
@@ -182,7 +182,7 @@ instance instNeg : Neg Cₛ^n⟮I; F, V⟯ := by
   have hs := s.contMDiff x₀
   rw [contMDiffAt_section] at hs ⊢
   set e := trivializationAt F V x₀
-  refine' hs.neg.congr_of_eventuallyEq _
+  refine hs.neg.congr_of_eventuallyEq ?_
   refine' eventually_of_mem (e.open_baseSet.mem_nhds <| mem_baseSet_trivializationAt F V x₀) _
   intro x hx
   apply (e.linear 𝕜 hx).map_neg
@@ -211,9 +211,9 @@ instance instZSMul : SMul ℤ Cₛ^n⟮I; F, V⟯ :=
 @[simp]
 theorem coe_zsmul (s : Cₛ^n⟮I; F, V⟯) (z : ℤ) : ⇑(z • s : Cₛ^n⟮I; F, V⟯) = z • ⇑s := by
   cases' z with n n
-  refine' (coe_nsmul s n).trans _
+  refine (coe_nsmul s n).trans ?_
   simp only [Int.ofNat_eq_coe, natCast_zsmul]
-  refine' (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans _
+  refine (congr_arg Neg.neg (coe_nsmul s (n + 1))).trans ?_
   simp only [negSucc_zsmul, neg_inj]
 #align cont_mdiff_section.coe_zsmul ContMDiffSection.coe_zsmul
 

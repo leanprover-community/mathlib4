@@ -496,7 +496,7 @@ theorem Ideal.homogeneousCore_eq_sSup :
 
 theorem Ideal.homogeneousCore'_eq_sSup :
     I.homogeneousCore' 𝒜 = sSup { J : Ideal A | J.IsHomogeneous 𝒜 ∧ J ≤ I } := by
-  refine' (IsLUB.sSup_eq _).symm
+  refine (IsLUB.sSup_eq ?_).symm
   apply IsGreatest.isLUB
   have coe_mono : Monotone (toIdeal : HomogeneousIdeal 𝒜 → Ideal A) := fun x y => id
   convert coe_mono.map_isGreatest (Ideal.homogeneousCore.gc 𝒜).isGreatest_u using 1

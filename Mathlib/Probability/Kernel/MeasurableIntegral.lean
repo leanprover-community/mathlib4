@@ -106,7 +106,7 @@ theorem measurable_kernel_prod_mk_left [IsSFiniteKernel κ] {t : Set (α × β)}
       ∑' n, kernel.seq κ n a (Prod.mk a ⁻¹' t) := fun a =>
     kernel.sum_apply' _ _ (measurable_prod_mk_left ht)
   simp_rw [this]
-  refine' Measurable.ennreal_tsum fun n => _
+  refine Measurable.ennreal_tsum fun n => ?_
   exact measurable_kernel_prod_mk_left_of_finite ht inferInstance
 #align probability_theory.kernel.measurable_kernel_prod_mk_left ProbabilityTheory.kernel.measurable_kernel_prod_mk_left
 
@@ -115,7 +115,7 @@ theorem measurable_kernel_prod_mk_left' [IsSFiniteKernel η] {s : Set (β × γ)
   have : ∀ b, Prod.mk b ⁻¹' s = {c | ((a, b), c) ∈ {p : (α × β) × γ | (p.1.2, p.2) ∈ s}} := by
     intro b; rfl
   simp_rw [this]
-  refine' (measurable_kernel_prod_mk_left _).comp measurable_prod_mk_left
+  refine (measurable_kernel_prod_mk_left ?_).comp measurable_prod_mk_left
   exact (measurable_fst.snd.prod_mk measurable_snd) hs
 #align probability_theory.kernel.measurable_kernel_prod_mk_left' ProbabilityTheory.kernel.measurable_kernel_prod_mk_left'
 
@@ -162,7 +162,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
   simp_rw [this]
   -- Porting note: trouble finding the induction motive
   -- refine' measurable_iSup fun n => SimpleFunc.induction _ _ (F n)
-  refine' measurable_iSup fun n => _
+  refine measurable_iSup fun n => ?_
   refine' SimpleFunc.induction
     (P := fun f => Measurable (fun (a : α) => ∫⁻ (b : β), f (a, b) ∂κ a)) _ _ (F n)
   · intro c t ht
@@ -185,7 +185,7 @@ theorem _root_.Measurable.lintegral_kernel_prod_right {f : α → β → ℝ≥0
 
 theorem _root_.Measurable.lintegral_kernel_prod_right' {f : α × β → ℝ≥0∞} (hf : Measurable f) :
     Measurable fun a => ∫⁻ b, f (a, b) ∂κ a := by
-  refine' Measurable.lintegral_kernel_prod_right _
+  refine Measurable.lintegral_kernel_prod_right ?_
   have : (uncurry fun (a : α) (b : β) => f (a, b)) = f := by
     ext x; rw [uncurry_apply_pair]
   rwa [this]
@@ -299,7 +299,7 @@ theorem StronglyMeasurable.integral_kernel_prod_right ⦃f : α → β → E⦄
           SimpleFunc.norm_approxOn_zero_le hf.measurable (by simp) (x, y) n
       · -- Porting note:
         -- refine' eventually_of_forall fun y => SimpleFunc.tendsto_approxOn _ _ _
-        refine' eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) _
+        refine eventually_of_forall fun y => SimpleFunc.tendsto_approxOn hf.measurable (by simp) ?_
         apply subset_closure
         simp [-uncurry_apply_pair]
     · simp [f', hfx, integral_undef]

@@ -113,7 +113,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
       · simp [hgs hs, hs]
     · simp [hgv hv, show x ∉ s from fun h => hv (hsv h)]
   have gc_support : (Function.support fun x : α => g x • c) ⊆ v := by
-    refine' Function.support_subset_iff'.2 fun x hx => _
+    refine Function.support_subset_iff'.2 fun x hx => ?_
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
     refine' Memℒp.smul_of_top_left (memℒp_top_const _) _
@@ -123,7 +123,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
       simp only [lt_top_iff_ne_top, hμv.ne, nnnorm_one, ENNReal.coe_one, one_div, one_mul, Ne,
         ENNReal.rpow_eq_top_iff, inv_lt_zero, false_and_iff, or_false_iff, not_and, not_lt,
         ENNReal.toReal_nonneg, imp_true_iff]
-    refine' (snorm_mono fun x => _).trans_lt this
+    refine (snorm_mono fun x => ?_).trans_lt this
     by_cases hx : x ∈ v
     · simp only [hx, abs_of_nonneg (hg_range x).1, (hg_range x).2, Real.norm_eq_abs,
         indicator_of_mem, CstarRing.norm_one]
@@ -331,7 +331,7 @@ theorem boundedContinuousFunction_dense [SecondCountableTopologyEither α E] [_i
     (hp : p ≠ ∞) [μ.WeaklyRegular] : (boundedContinuousFunction E p μ).topologicalClosure = ⊤ := by
   rw [AddSubgroup.eq_top_iff']
   intro f
-  refine' mem_closure_iff_frequently.mpr _
+  refine mem_closure_iff_frequently.mpr ?_
   rw [Metric.nhds_basis_closedBall.frequently_iff]
   intro ε hε
   have A : ENNReal.ofReal ε ≠ 0 := by simp only [Ne, ENNReal.ofReal_eq_zero, not_le, hε]

@@ -29,7 +29,7 @@ theorem tendstoUniformlyOn_tsum {f : α → β → F} (hu : Summable u) {s : Set
     (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     TendstoUniformlyOn (fun t : Finset α => fun x => ∑ n in t, f n x) (fun x => ∑' n, f n x) atTop
       s := by
-  refine' tendstoUniformlyOn_iff.2 fun ε εpos => _
+  refine tendstoUniformlyOn_iff.2 fun ε εpos => ?_
   filter_upwards [(tendsto_order.1 (tendsto_tsum_compl_atTop_zero u)).2 _ εpos] with t ht x hx
   have A : Summable fun n => ‖f n x‖ :=
     .of_nonneg_of_le (fun _ ↦ norm_nonneg _) (fun n => hfu n x hx) hu
@@ -70,7 +70,7 @@ theorem continuousOn_tsum [TopologicalSpace β] {f : α → β → F} {s : Set �
     (hf : ∀ i, ContinuousOn (f i) s) (hu : Summable u) (hfu : ∀ n x, x ∈ s → ‖f n x‖ ≤ u n) :
     ContinuousOn (fun x => ∑' n, f n x) s := by
   classical
-    refine' (tendstoUniformlyOn_tsum hu hfu).continuousOn (eventually_of_forall _)
+    refine (tendstoUniformlyOn_tsum hu hfu).continuousOn (eventually_of_forall ?_)
     intro t
     exact continuousOn_finset_sum _ fun i _ => hf i
 #align continuous_on_tsum continuousOn_tsum

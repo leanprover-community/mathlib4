@@ -405,7 +405,7 @@ theorem nim_add_nim_equiv {n m : ℕ} : nim n + nim m ≈ nim (n ^^^ m) := by
 theorem grundyValue_add (G H : PGame) [G.Impartial] [H.Impartial] {n m : ℕ} (hG : grundyValue G = n)
     (hH : grundyValue H = m) : grundyValue (G + H) = n ^^^ m := by
   rw [← nim_grundyValue (n ^^^ m), grundyValue_eq_iff_equiv]
-  refine' Equiv.trans _ nim_add_nim_equiv
+  refine Equiv.trans ?_ nim_add_nim_equiv
   convert add_congr (equiv_nim_grundyValue G) (equiv_nim_grundyValue H) <;> simp only [hG, hH]
 #align pgame.grundy_value_add SetTheory.PGame.grundyValue_add
 

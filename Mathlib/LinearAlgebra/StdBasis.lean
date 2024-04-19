@@ -97,7 +97,7 @@ theorem proj_stdBasis_ne (i j : ι) (h : i ≠ j) : (proj i).comp (stdBasis R φ
 
 theorem iSup_range_stdBasis_le_iInf_ker_proj (I J : Set ι) (h : Disjoint I J) :
     ⨆ i ∈ I, range (stdBasis R φ i) ≤ ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
-  refine' iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 _
+  refine iSup_le fun i => iSup_le fun hi => range_le_iff_comap.2 ?_
   simp only [← ker_comp, eq_top_iff, SetLike.le_def, mem_ker, comap_iInf, mem_iInf]
   rintro b - j hj
   rw [proj_stdBasis_ne R φ j i, zero_apply]
@@ -127,7 +127,7 @@ theorem iSup_range_stdBasis_eq_iInf_ker_proj {I J : Set ι} (hd : Disjoint I J)
     ⨆ i ∈ I, range (stdBasis R φ i) = ⨅ i ∈ J, ker (proj i : (∀ i, φ i) →ₗ[R] φ i) := by
   refine' le_antisymm (iSup_range_stdBasis_le_iInf_ker_proj _ _ _ _ hd) _
   have : Set.univ ⊆ ↑hI.toFinset ∪ J := by rwa [hI.coe_toFinset]
-  refine' le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => _)
+  refine le_trans (iInf_ker_proj_le_iSup_range_stdBasis R φ this) (iSup_mono fun i => ?_)
   rw [Set.Finite.mem_toFinset]
 #align linear_map.supr_range_std_basis_eq_infi_ker_proj LinearMap.iSup_range_stdBasis_eq_iInf_ker_proj
 
