@@ -831,39 +831,42 @@ theorem secondCountable_of_separable [SeparableSpace α] : SecondCountableTopolo
 
 section DiscreteUniformity
 
+open Filter
+
 /-- A Cauchy filter in a discrete uniform space is contained in a principal filter-/
 theorem Cauchy_Discrete_le_principal {X : Type _} {uX : UniformSpace X}
-    (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α ≤ 𝓟 {x} := by
+    (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : ∃ x : X, α = 𝓟 {x} := by
   rcases hα with ⟨α_ne_bot, α_le⟩
-  rw [Filter.le_def] at α_le
+  rw [le_def] at α_le
   specialize α_le idRel
+  replace hX : uniformity X = 𝓟 idRel := by convert bot_uniformity
   simp only [le_def, hX, mem_principal, idRel_subset, mem_idRel, eq_self_iff_true, imp_true_iff,
     forall_true_left, mem_prod_iff] at α_le
   obtain ⟨_, ⟨hS, ⟨_, ⟨hT, H⟩⟩⟩⟩ := α_le
   obtain ⟨x, hx⟩ :=
     prod_subset_idRel_Eq_singleton_left (Filter.nonempty_of_mem hS) (Filter.nonempty_of_mem hT) H
   use x
-  rwa [Filter.le_principal_iff, ← hx]
+  suffices α ≤ 𝓟 {x} by
+    rw [principal_singleton] at this ⊢
+    simp_all only [le_pure_iff', false_or, α_ne_bot.1]
+  rwa [le_principal_iff, ← hx]
 
 /-- A constant to which a Cauchy filter in a discrete uniform space converges. -/
-noncomputable def Cauchy_Discrete_constant {X : Type _} {_ : UniformSpace X}
-    (hX : uniformity X = 𝓟 idRel) {α : Filter X} (hα : Cauchy α) : X :=
+noncomputable def Cauchy_Discrete_constant {X : Type _} {uX : UniformSpace X}
+    (hX : uX = ⊥) {α : Filter X} (hα : Cauchy α) : X :=
   (Cauchy_Discrete_le_principal hX hα).choose
 
-theorem Cauchy_Discrete_le {X : Type _} {_ : UniformSpace X} (hX : uniformity X = 𝓟 idRel)
-    {α : Filter X} (hα : Cauchy α) : α ≤ 𝓟 {Cauchy_Discrete_constant hX hα} :=
+theorem Cauchy_Discrete_le {X : Type _} {uX : UniformSpace X} (hX : uX = ⊥)
+    {α : Filter X} (hα : Cauchy α) : α = 𝓟 {Cauchy_Discrete_constant hX hα} :=
   (Cauchy_Discrete_le_principal hX hα).choose_spec
 
 /-- The constant to which a non-empty Cauchy filter in a discrete uniform space converges is
-unique. -/
-theorem neBot_unique_principal {X : Type _} [UniformSpace X] (hX : uniformity X = 𝓟 idRel)
-    {α : Filter X} (hα : α.NeBot) {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y := by
-  have h_disc : DiscreteTopology X := discreteTopology_of_discrete_uniformity hX
-  have t2X := @DiscreteTopology.toT2Space X _ h_disc
-  apply @eq_of_nhds_neBot X _ t2X x y
-  apply @neBot_of_le _ _ _ hα
-  simp only [discreteTopology_iff_nhds.mp h_disc, le_inf_iff, le_pure_iff]
-  exact ⟨le_principal_iff.mp hx, le_principal_iff.mp hy⟩
+unique (discreteness is not needed for the equality, and hence is removed from the assumptions, but
+the discrete is the typical  use-case).-/
+theorem neBot_unique_principal {X : Type _} [UniformSpace X] {α : Filter X} (hα : α.NeBot)
+    {x y : X} (hx : α ≤ 𝓟 {x}) (hy : α ≤ 𝓟 {y}) : x = y := by
+  rw [principal_singleton, hα.le_pure_iff] at hx hy
+  exact pure_injective (hx ▸ hy)
 
 end DiscreteUniformity
 
