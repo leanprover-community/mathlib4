@@ -266,7 +266,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
       -- z ∈ s is above x and y
       obtain ⟨z, hzs, ⟨hxz, hyz⟩⟩ := hdir x hxs y hys
       use z, hzs
-      rw [sup_insert, id.def, sup_le_iff]
+      rw [sup_insert, id, sup_le_iff]
       exact ⟨le_trans hay hyz, le_trans hsx_sup hxz⟩
 #align finset.sup_le_of_le_directed Finset.sup_le_of_le_directed
 
