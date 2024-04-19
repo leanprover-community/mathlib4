@@ -20,23 +20,17 @@ limits exist in the category `PresheafOfModules R`.
 
 universe v v₁ v₂ u₁ u₂ u u'
 
-namespace PresheafOfModules
-
 open CategoryTheory Category Limits
+
+namespace PresheafOfModules
 
 variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
   {J : Type u₂} [Category.{v₂} J]
+  (F : J ⥤ PresheafOfModules.{v} R)
 
 section Limits
 
-section
-
-variable (F : J ⥤ PresheafOfModules.{v} R)
-  [∀ X, HasLimit (F ⋙ evaluation R X ⋙ forget₂ _ AddCommGroupCat)]
-
-instance (X : Cᵒᵖ) : HasLimit ((F ⋙ evaluation R X) ⋙ forget₂ _ AddCommGroupCat) := by
-  change HasLimit (F ⋙ evaluation R X ⋙ forget₂ _ AddCommGroupCat)
-  infer_instance
+variable [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
 
 /-- A cone in the category `PresheafOfModules R` is limit if it is so after the application
 of the functors `evalurtion R X` for all `X`. -/
@@ -58,8 +52,6 @@ def evaluationJointlyReflectsLimits (c : Cone F)
     dsimp
     rw [← hm]
     rfl
-
-section
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f)) := by
@@ -141,15 +133,12 @@ noncomputable instance toPresheafPreservesLimit :
       (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGroupCat)
         (isLimitLimitCone F)))
 
-end
+end Limits
 
-end
-
-section
+section UnivLE
 
 variable (R J)
-
-variable [HasLimitsOfShape J AddCommGroupCat.{v}]
+variable [UnivLE.{u₂, v}]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
@@ -159,7 +148,9 @@ noncomputable instance evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
 noncomputable instance toPresheafPreservesLimitsOfShape :
     PreservesLimitsOfShape J (toPresheaf.{v} R) where
 
-end
+end UnivLE
+
+namespace Finite
 
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
@@ -170,6 +161,6 @@ noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
 noncomputable instance toPresheafPreservesFiniteLimits :
     PreservesFiniteLimits (toPresheaf R) where
 
-end Limits
+end Finite
 
 end PresheafOfModules

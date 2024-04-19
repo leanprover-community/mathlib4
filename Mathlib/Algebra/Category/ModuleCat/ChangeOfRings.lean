@@ -860,11 +860,10 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 
 noncomputable instance preservesLimitRestrictScalars
     {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
-    (F : J ⥤ ModuleCat.{v} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
+    (F : J ⥤ ModuleCat.{v} S) [Small.{v} (F ⋙ forget _).sections] :
     PreservesLimit F (restrictScalars f) :=
   ⟨fun {c} hc => by
-    have : HasLimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) := by
-      assumption
+    have : Small.{v} ((F ⋙ restrictScalars f) ⋙ forget _).sections := by assumption
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
     exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
 

@@ -138,14 +138,13 @@ end HasLimits
 open HasLimits
 
 /-- If `(F ⋙ forget (ModuleCat R)).sections` is `u`-small, `F` has a limit. -/
-lemma hasLimit : HasLimit F := HasLimit.mk {
+instance hasLimit : HasLimit F := HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
 
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
-  has_limit F := hasLimit F
 
 -- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
@@ -177,6 +176,10 @@ instance forget₂AddCommGroupPreservesLimit :
   preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
     (forget₂AddCommGroupPreservesLimitsAux F)
 
+instance forget₂AddCommGroupReflectsLimit :
+    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  reflectsLimitOfReflectsIsomorphisms _ _
+
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
@@ -202,34 +205,6 @@ instance forgetPreservesLimitsOfSize [UnivLE.{v, w}] :
 instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
 #align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
-
-section
-/-!
-If `G : J ⥤ ModuleCat R` is such that `G ⋙ forget₂ _ AddCommGroupCat` has a limit,
-then the limit of `G` automatically exists and `forget₂ _ AddCommGroupCat`
-preserves and reflects this limit.
--/
-
-variable (G : J ⥤ ModuleCat.{w} R) [HasLimit (G ⋙ forget₂ _ AddCommGroupCat)]
-
-lemma small_sections_of_hasLimit_comp_forget₂ :
-    Small.{w} (G ⋙ forget (ModuleCat R)).sections := by
-  change Small.{w} ((G ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
-  rw [← AddCommGroupCat.hasLimit_iff_small_sections]
-  infer_instance
-
-instance : HasLimit G := by
-  have := small_sections_of_hasLimit_comp_forget₂ G
-  apply hasLimit
-
-noncomputable instance : PreservesLimit G (forget₂ _ AddCommGroupCat) := by
-  have := small_sections_of_hasLimit_comp_forget₂ G
-  infer_instance
-
-noncomputable instance : ReflectsLimit G (forget₂ _ AddCommGroupCat) := by
-  apply reflectsLimitOfReflectsIsomorphisms
-
-end
 
 section DirectLimit
 
