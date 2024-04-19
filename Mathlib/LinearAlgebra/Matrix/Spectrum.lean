@@ -165,7 +165,6 @@ lemma spectral_theorem' :
   simpa [ ← Matrix.mul_assoc, hA.eigenvectorMatrix_mul_inv, Matrix.one_mul] using
     congr_arg (hA.eigenvectorMatrix * ·) hA.spectral_theorem
 
-
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector matrix -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem']
