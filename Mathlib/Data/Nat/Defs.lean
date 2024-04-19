@@ -1377,6 +1377,11 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
 #align nat.dvd_div_iff Nat.dvd_div_iff
 
+lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
+  obtain ⟨e, rfl⟩ := hdiv
+  rw [← Nat.mul_assoc, Nat.mul_comm _ (a / b), Nat.div_mul_cancel h]
+  exact Nat.dvd_mul_right a e
+
 @[simp] lemma div_dvd_iff_dvd_mul (h : b ∣ a) (hbpos : 0 < b) : a / b ∣ c ↔ a ∣ b * c :=
   exists_congr <| fun d => by
   have := Nat.dvd_trans (Nat.dvd_mul_left _ d) (Nat.mul_dvd_mul_left d h)
