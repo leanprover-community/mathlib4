@@ -418,8 +418,8 @@ theorem realize_liftAt {n n' m : ℕ} {φ : L.BoundedFormula α n} {v : α → M
       · rw [if_pos h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
         simp only [coe_cast, coe_castAdd, val_last, self_eq_add_right]
-        refine
-          le_antisymm (le_of_add_le_add_left ((hmn.trans (Nat.succ_le_of_lt h)).trans ?_)) n'.zero_le
+        refine le_antisymm (le_of_add_le_add_left ((hmn.trans (Nat.succ_le_of_lt h)).trans ?_))
+          n'.zero_le
         rw [add_zero]
       · rw [if_neg h]
         refine' (congr rfl (ext _)).trans (snoc_last _ _)
