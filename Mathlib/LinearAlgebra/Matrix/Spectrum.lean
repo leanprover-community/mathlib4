@@ -17,10 +17,7 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 
 ## Tags
 
-spectral theorem, diagonalization theorem
-
--/
-
+spectral theorem, diagonalization theorem-/
 
 namespace Matrix
 
@@ -160,7 +157,6 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   convert congr_arg det hA.spectral_theorem2
   rw [det_mul_right_comm]
   simp
-
 
 @[simp]
 theorem rank_mul_units (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
