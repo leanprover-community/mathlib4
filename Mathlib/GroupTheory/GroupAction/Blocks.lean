@@ -36,41 +36,56 @@ section orbits
 
 variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 
-theorem orbit.pairwise_disjoint :
-    (Set.range fun x : X => orbit G x).PairwiseDisjoint id := by
-  by_contra h
-  rcases Set.exists_ne_mem_inter_of_not_pairwiseDisjoint h
-    with ⟨s, ⟨x, rfl⟩, t, ⟨y, rfl⟩, hst, z, ⟨hzx, hzy⟩⟩
-  apply hst
-  simp only [id_eq] at hzx hzy
-  simp only [← orbit_eq_iff.mpr hzx, ← orbit_eq_iff.mpr hzy]
-
-theorem orbit.equal_or_disjoint (a b : X) :
+theorem orbit.eq_or_disjoint (a b : X) :
     orbit G a = orbit G b ∨ Disjoint (orbit G a) (orbit G b) := by
-  cases' em (Disjoint (orbit G a) (orbit G b)) with h h
-  · apply Or.intro_right; exact h
-  apply Or.intro_left
-  rw [Set.not_disjoint_iff] at h
-  obtain ⟨x, hxa, hxb⟩ := h
-  rw [← orbit_eq_iff] at hxa hxb
-  rw [← hxa, ← hxb]
+  apply (em (Disjoint (orbit G a) (orbit G b))).symm.imp _ id
+  simp (config := { contextual := true })
+    only [Set.not_disjoint_iff, ← orbit_eq_iff, forall_exists_index, and_imp, eq_comm, implies_true]
 
--- TODO : simplify using the preceding orbit.eq_or_disjoint?
+theorem orbit.pairwiseDisjoint :
+    (Set.range fun x : X => orbit G x).PairwiseDisjoint id := by
+  rintro s ⟨x, rfl⟩ t ⟨y, rfl⟩ h
+  contrapose! h
+  exact (orbit.eq_or_disjoint x y).resolve_right h
+
+-- move this to `Mathlib.Data.Setoid.Partition`
+lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
+    (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
+    Setoid.IsPartition s := by
+  refine ⟨h₃, fun a ↦ ?_⟩
+  simp only [exists_unique_iff_exists, exists_prop]
+  apply exists_unique_of_exists_of_unique (h₂ a)
+  intro b₁ b₂ hb₁ hb₂
+  apply h₁.elim hb₁.1 hb₂.1
+  simp only [Set.not_disjoint_iff]
+  exact ⟨a, hb₁.2, hb₂.2⟩
+
+-- move this to one of
+-- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
+lemma _root_.Set.PairwiseDisjoint.eq_or_disjoint {α : Type*} {s : Set (Set α)}
+    (h : s.PairwiseDisjoint id) {a b : Set α} (ha : a ∈ s) (hb : b ∈ s) :
+    a = b ∨ Disjoint a b := by
+  rw [or_iff_not_imp_right]
+  exact h.elim ha hb
+
+-- move this to one of
+-- [Mathlib.Order.Atoms, Mathlib.Data.Finset.Lattice, Mathlib.Order.CompleteLatticeIntervals]
+lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
+    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
+  constructor
+  · intro h x y
+    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
+  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
+    exact (h x y).resolve_left hxy
+
 /-- Orbits of an element form a partition -/
 theorem IsPartition.of_orbits :
     Setoid.IsPartition (Set.range fun a : X => orbit G a) := by
-  constructor
+  apply orbit.pairwiseDisjoint.isPartition_of_exists_of_ne_empty
+  · intro x
+    exact ⟨_, ⟨x, rfl⟩, mem_orbit_self x⟩
   · rintro ⟨a, ha : orbit G a = ∅⟩
-    exact Set.Nonempty.ne_empty (MulAction.orbit_nonempty a) ha
-  intro a; use orbit G a
-  constructor
-  · simp only [Set.mem_range_self, mem_orbit_self, exists_unique_iff_exists, exists_true_left]
-  · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp, forall_exists_index,
-      forall_apply_eq_imp_iff']
-    rintro B b ⟨rfl⟩ ha
-    apply symm
-    rw [orbit_eq_iff]
-    exact ha
+    exact (MulAction.orbit_nonempty a).ne_empty ha
 
 end orbits
 
@@ -97,54 +112,33 @@ variable {G}
 the sets g • B and g' • B are either equal or disjoint -/
 theorem IsBlock.def {B : Set X} :
     IsBlock G B ↔ ∀ g g' : G, g • B = g' • B ∨ Disjoint (g • B) (g' • B) := by
-  constructor
-  · intro hB g g'
-    by_cases h : g • B = g' • B
-    · left; exact h
-    · right; exact hB (Set.mem_range_self g) (Set.mem_range_self g') h
-  · intro hB
-    rintro C ⟨g, rfl⟩ C' ⟨g', rfl⟩ hgg'
-    cases hB g g' with
-    | inl h => exfalso; exact hgg' h
-    | inr h => exact h
+  apply Set.pairwiseDisjoint_range_iff
 
 /-- Alternate definition of a block -/
 theorem IsBlock.mk_notempty {B : Set X} :
     IsBlock G B ↔ ∀ g g' : G, g • B ∩ g' • B ≠ ∅ → g • B = g' • B := by
-  rw [IsBlock.def]
-  apply forall_congr'; intro g
-  apply forall_congr'; intro g'
-  rw [Set.disjoint_iff_inter_eq_empty]
-  exact or_iff_not_imp_right
+  simp_rw [IsBlock.def, or_iff_not_imp_right, Set.disjoint_iff_inter_eq_empty]
 
 /-- A fixed block is a block -/
 theorem IsFixedBlock.isBlock {B : Set X} (hfB : IsFixedBlock G B) :
     IsBlock G B := by
-  rw [IsBlock.def]
-  intro g g'
-  apply Or.intro_left
-  rw [hfB g, hfB g']
+  simp [IsBlock.def, hfB _]
 
 variable (X)
 
 /-- The empty set is a block -/
 theorem isBlock_empty : IsBlock G (⊥ : Set X) := by
-  rw [IsBlock.def]
-  intro g g'; apply Or.intro_left
-  simp only [Set.bot_eq_empty, Set.smul_set_empty]
+  simp [IsBlock.def, Set.bot_eq_empty, Set.smul_set_empty]
 
 variable {X}
 
 theorem isBlock_singleton (a : X) : IsBlock G ({a} : Set X) := by
-  rw [IsBlock.def]
-  intro g g'
-  simp [Classical.or_iff_not_imp_left]
+  simp [IsBlock.def, Classical.or_iff_not_imp_left]
 
 /-- Subsingletons are (trivial) blocks -/
 theorem isBlock_subsingleton {B : Set X} (hB : B.Subsingleton) :
-    IsBlock G B := by cases Set.Subsingleton.eq_empty_or_singleton hB with
-  | inl h => rw [h]; apply isBlock_empty
-  | inr h => obtain ⟨a, rfl⟩ := h; apply isBlock_singleton
+    IsBlock G B :=
+  hB.induction_on (isBlock_empty _) isBlock_singleton
 
 end SMul
 
@@ -157,43 +151,30 @@ theorem IsBlock.def_one {B : Set X} :
   rw [IsBlock.def]; constructor
   · intro hB g
     simpa only [one_smul] using hB g 1
-  · intro hB
-    intro g g'
-    cases hB (g'⁻¹ * g) with
-    | inl h =>
-      apply Or.intro_left
-      rw [← inv_inv g', eq_inv_smul_iff, smul_smul]
-      exact h
-    | inr h =>
-      apply Or.intro_right
+  · intro hB g g'
+    apply (hB (g'⁻¹ * g)).imp
+    · rw [← smul_smul, ← eq_inv_smul_iff, inv_inv]
+      exact id
+    · intro h
       rw [Set.disjoint_iff] at h ⊢
-      rintro x ⟨hx, hx'⟩
-      simp only [Set.mem_empty_iff_false]
-      suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ⊓ B by
-        apply h this
-      simp only [Set.inf_eq_inter, Set.mem_inter_iff]
-      simp only [← Set.mem_smul_set_iff_inv_smul_mem]
-      rw [← smul_smul]; rw [smul_inv_smul]
-      exact ⟨hx, hx'⟩
+      rintro x hx
+      suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ∩ B by apply h this
+      simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul]
+      exact hx
 
 theorem IsBlock.mk_notempty_one {B : Set X} :
     IsBlock G B ↔ ∀ g : G, g • B ∩ B ≠ ∅ → g • B = B := by
-  rw [IsBlock.def_one]
-  apply forall_congr'
-  intro g
-  rw [Set.disjoint_iff_inter_eq_empty]
-  exact or_iff_not_imp_right
+  simp_rw [IsBlock.def_one, Set.disjoint_iff_inter_eq_empty, or_iff_not_imp_right]
 
 theorem IsBlock.mk_mem {B : Set X} :
-    IsBlock G B ↔
-      ∀ (g : G) (a : X) (_ : a ∈ B) (_ : g • a ∈ B), g • B = B := by
+    IsBlock G B ↔ ∀ (g : G) (a : X) (_ : a ∈ B) (_ : g • a ∈ B), g • B = B := by
   rw [IsBlock.mk_notempty_one]
   simp only [← Set.nonempty_iff_ne_empty, Set.nonempty_def, Set.mem_inter_iff,
     exists_imp, and_imp, Set.mem_smul_set_iff_inv_smul_mem]
   constructor
   · intro H g a ha hga
     apply H g (g • a) _ hga
-    simp only [inv_smul_smul]; exact ha
+    simpa only [inv_smul_smul] using ha
   · intro H g a ha hga
     rw [← eq_inv_smul_iff, eq_comm]
     exact H g⁻¹ a hga ha
@@ -204,46 +185,49 @@ theorem IsBlock.def_mem {B : Set X} (hB : IsBlock G B) {a : X} {g : G} :
 
 theorem IsBlock.mk_subset {B : Set X} :
     IsBlock G B ↔ ∀ {g : G} {b : X} (_ : b ∈ B) (_ : b ∈ g • B), g • B ≤ B := by
+  simp_rw [IsBlock.mk_notempty_one, ← Set.nonempty_iff_ne_empty]
   constructor
   · intro hB g b hb hgb
-    rw [Set.le_iff_subset, Set.set_smul_subset_iff,
-      hB.def_mem hb (Set.mem_smul_set_iff_inv_smul_mem.mp hgb)]
-  · rw [IsBlock.mk_notempty_one]
-    intro hB g hg
-    rw [← Set.nonempty_iff_ne_empty] at hg
-    obtain ⟨b : X, hb' : b ∈ g • B, hb : b ∈ B⟩ := Set.nonempty_def.mp hg
-    apply le_antisymm
-    · exact hB hb hb'
+    exact (hB g ⟨b, hgb, hb⟩).le
+  · intro hB g ⟨b, hb', hb⟩
+    apply le_antisymm (hB hb hb')
     suffices g⁻¹ • B ≤ B by
       rw [Set.le_iff_subset] at this ⊢
-      rw [← inv_inv g, ← Set.set_smul_subset_iff]; exact this
-    exact hB (Set.mem_smul_set_iff_inv_smul_mem.mp hb')
-      (Set.smul_mem_smul_set_iff.mpr hb)
+      rwa [← inv_inv g, ← Set.set_smul_subset_iff]
+    exact hB (Set.mem_smul_set_iff_inv_smul_mem.mp hb') (Set.smul_mem_smul_set_iff.mpr hb)
+
+/-- An invariant block is a fixed block -/
+theorem IsInvariantBlock.isFixedBlock {B : Set X} (hfB : IsInvariantBlock G B) :
+    IsFixedBlock G B := by
+  intro g
+  apply le_antisymm (hfB g)
+  intro x hx
+  rw [Set.mem_smul_set_iff_inv_smul_mem]
+  apply hfB g⁻¹
+  rwa [Set.smul_mem_smul_set_iff]
 
 /-- An invariant block is a block -/
 theorem IsInvariantBlock.isBlock {B : Set X} (hfB : IsInvariantBlock G B) :
-    IsBlock G B := by
-  rw [IsBlock.def_one]
-  intro g; apply Or.intro_left
-  apply le_antisymm
-  exact hfB g
-  · intro x hx
-    rw [Set.mem_smul_set_iff_inv_smul_mem]
-    apply hfB g⁻¹
-    rw [Set.smul_mem_smul_set_iff]; exact hx
+    IsBlock G B :=
+  hfB.isFixedBlock.isBlock
 
 /-- An orbit is a block -/
-theorem IsBlock_of_orbit (a : X) : IsBlock G (orbit G a) := by
-  apply IsFixedBlock.isBlock
-  intro g; apply smul_orbit
+theorem isFixedBlock_orbit (a : X) : IsFixedBlock G (orbit G a) :=
+  (smul_orbit · a)
+
+/-- An orbit is a block -/
+theorem isBlock_orbit (a : X) : IsBlock G (orbit G a) :=
+  (isFixedBlock_orbit a).isBlock
 
 variable (X)
 
 /-- The full set is a (trivial) block -/
-theorem top_IsBlock : IsBlock G (⊤ : Set X) := by
-  apply IsFixedBlock.isBlock
-  intro g
-  simp only [Set.top_eq_univ, Set.smul_set_univ]
+theorem isFixedBlock_top : IsFixedBlock G (⊤ : Set X) :=
+  fun _ ↦ by simp only [Set.top_eq_univ, Set.smul_set_univ]
+
+/-- The full set is a (trivial) block -/
+theorem isBlock_top : IsBlock G (⊤ : Set X) :=
+  (isFixedBlock_top _).isBlock
 
 variable {X}
 
@@ -258,12 +242,11 @@ theorem IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
     IsBlock H (j ⁻¹' B) := by
   rw [IsBlock.def_one]
   intro g
-  cases' IsBlock.def_one.mp hB (φ g) with heq hdis
-  · left
+  apply (IsBlock.def_one.mp hB (φ g)).imp
+  · intro heq
     rw [← Group.preimage_smul_setₛₗ Y X φ j, heq]
-  · right
-    rw [← Group.preimage_smul_setₛₗ Y X φ j]
-    exact Disjoint.preimage _ hdis
+  · rw [← Group.preimage_smul_setₛₗ Y X φ j]
+    exact Disjoint.preimage _
 
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
     {φ : G →* H} (j : X →ₑ[φ] Y)
@@ -333,7 +316,7 @@ theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock
   · -- ι = ∅, block = ⊤
     suffices (⋂ i : ι, B i) = Set.univ by
       rw [this]
-      exact IsBlock.def_one.mp (top_IsBlock X)
+      exact IsBlock.def_one.mp (isBlock_top X)
     simp only [Set.top_eq_univ, Set.iInter_eq_univ]
     intro i; exfalso; apply hι.false; exact i
   intro g
@@ -429,7 +412,7 @@ section Normal
 theorem orbit.isBlock_of_normal' {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
     IsBlock G (orbit N a) := by
   unfold IsBlock
-  convert Set.Pairwise.mono _ (orbit.pairwise_disjoint (G := N))
+  convert Set.Pairwise.mono _ (orbit.pairwiseDisjoint (G := N))
   rintro _ ⟨g, rfl⟩
   suffices g • (orbit N a) = orbit N (g • a) by
     simp only [this, Set.mem_range, exists_apply_eq_apply]
@@ -455,7 +438,7 @@ theorem orbit.isBlock_of_normal {N : Subgroup G} (nN : Subgroup.Normal N) (a : X
     IsBlock G (orbit N a) := by
   rw [IsBlock.def_one]
   intro g
-  suffices g • orbit N a = orbit N (g • a) by rw [this]; apply orbit.equal_or_disjoint
+  suffices g • orbit N a = orbit N (g • a) by rw [this]; apply orbit.eq_or_disjoint
   change ((fun x : X => g • x) '' Set.range fun k : N => k • a) = Set.range fun k : N => k • g • a
   simp only [Set.image_smul, Set.smul_set_range]
   ext
