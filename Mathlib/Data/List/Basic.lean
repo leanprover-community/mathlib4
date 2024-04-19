@@ -629,13 +629,7 @@ theorem disjoint_reverse_iff_disjoint (l₁ l₂: List α) :
 
 theorem Perm.disjoint_left {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
     Disjoint l₁ l ↔ Disjoint l₂ l := by
-  constructor
-  · intro _ a hyp_l2 _
-    apply (Perm.mem_iff p).mpr at hyp_l2
-    aesop
-  · intro _ a hyp_l1 _
-    apply (Perm.mem_iff p).mp at hyp_l1
-    aesop
+  simp_rw [List.disjoint_left, p.mem_iff]
 
 /-! ### empty -/
 
