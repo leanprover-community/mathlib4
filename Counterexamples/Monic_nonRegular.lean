@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 
-import Mathlib.Data.Polynomial.Monic
+import Mathlib.Algebra.Polynomial.Monic
 
 /-!
 # `Monic` does not necessarily imply `IsRegular` in a `Semiring` with no opposites
@@ -71,7 +71,8 @@ instance : CommSemiring N₃ :=
     left_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     right_distrib := by rintro ⟨⟩ ⟨⟩ ⟨⟩ <;> rfl
     zero_mul := by rintro ⟨⟩ <;> rfl
-    mul_zero := by rintro ⟨⟩ <;> rfl }
+    mul_zero := by rintro ⟨⟩ <;> rfl
+    nsmul := nsmulRec }
 
 theorem X_add_two_mul_X_add_two : (X + C 2 : N₃[X]) * (X + C 2) = (X + C 2) * (X + C 3) := by
   simp only [mul_add, add_mul, X_mul, add_assoc]

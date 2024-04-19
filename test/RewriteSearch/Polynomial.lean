@@ -1,14 +1,14 @@
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Init.Core
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
 
 open Polynomial
 
-/-- info: Try this: rw [@natDegree_sub, @sub_eq_add_neg, @natDegree_C_add, @natDegree_neg] -/
-#guard_msgs in
+-- info: Try this: rw [@natDegree_sub, @sub_eq_neg_add, @natDegree_add_C, @natDegree_neg]
+#guard_msgs(drop info) in
 example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
     natDegree (p - C a) = natDegree p := by
   rw_search [-Polynomial.natDegree_sub_C, -sub_eq_neg_add]
@@ -27,7 +27,7 @@ example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
 --   rw_search
 
 
--- All rewrite-only lemmas from `Mathlib.Data.Polynomial.Degree.Definitions`,
+-- All rewrite-only lemmas from `Mathlib.Algebra.Polynomial.Degree.Definitions`,
 -- whose statements are equalities.
 -- TODO: `rw_search` should handle `iff` as well.
 

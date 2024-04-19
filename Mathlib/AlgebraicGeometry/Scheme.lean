@@ -231,7 +231,7 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
--- porting note: removed @[simps]
+-- Porting note: removed @[simps]
 -- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
 -- We probably want `Spec.obj`, but note
 -- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.

@@ -45,7 +45,6 @@ open scoped BigOperators NNReal ENNReal
 open Set MeasureTheory Classical
 
 variable {α : Type*} [LinearOrder α] {E : Type*} [PseudoEMetricSpace E]
-
 variable (f : ℝ → E) (s : Set ℝ) (l : ℝ≥0)
 
 /-- `f` has constant speed `l` on `s` if the variation of `f` on `s ∩ Icc x y` is equal to
@@ -59,7 +58,7 @@ variable {f s l}
 
 theorem HasConstantSpeedOnWith.hasLocallyBoundedVariationOn (h : HasConstantSpeedOnWith f s l) :
     LocallyBoundedVariationOn f s := fun x y hx hy => by
-  simp only [BoundedVariationOn, h hx hy, Ne.def, ENNReal.ofReal_ne_top, not_false_iff]
+  simp only [BoundedVariationOn, h hx hy, Ne, ENNReal.ofReal_ne_top, not_false_iff]
 #align has_constant_speed_on_with.has_locally_bounded_variation_on HasConstantSpeedOnWith.hasLocallyBoundedVariationOn
 
 theorem hasConstantSpeedOnWith_of_subsingleton (f : ℝ → E) {s : Set ℝ} (hs : s.Subsingleton)

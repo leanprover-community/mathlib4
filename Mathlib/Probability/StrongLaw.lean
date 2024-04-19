@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Probability.IdentDistrib
-import Mathlib.MeasureTheory.Integral.IntervalIntegral
+import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
@@ -201,13 +201,13 @@ integral of the whole function. -/
 theorem tendsto_integral_truncation {f : α → ℝ} (hf : Integrable f μ) :
     Tendsto (fun A => ∫ x, truncation f A x ∂μ) atTop (𝓝 (∫ x, f x ∂μ)) := by
   refine' tendsto_integral_filter_of_dominated_convergence (fun x => abs (f x)) _ _ _ _
-  · exact eventually_of_forall fun A => hf.aestronglyMeasurable.truncation
-  · apply eventually_of_forall fun A => ?_
-    apply eventually_of_forall fun x => ?_
+  · exact eventually_of_forall fun A ↦ hf.aestronglyMeasurable.truncation
+  · filter_upwards with A
+    filter_upwards with x
     rw [Real.norm_eq_abs]
     exact abs_truncation_le_abs_self _ _ _
-  · apply hf.abs
-  · apply eventually_of_forall fun x => ?_
+  · exact hf.abs
+  · filter_upwards with x
     apply tendsto_const_nhds.congr' _
     filter_upwards [Ioi_mem_atTop (abs (f x))] with A hA
     exact (truncation_eq_self hA).symm
@@ -780,7 +780,7 @@ lemma strong_law_ae_of_measurable
       norm_add₃_le _ _ _
   _ ≤ (∑ i in Finset.range n, ‖X i ω - Y k i ω‖) / n + δ + δ := by
       gcongr
-      simp only [Function.comp_apply, norm_smul, norm_inv, IsROrC.norm_natCast,
+      simp only [Function.comp_apply, norm_smul, norm_inv, RCLike.norm_natCast,
         div_eq_inv_mul, inv_pos, Nat.cast_pos, inv_lt_zero]
       gcongr
       exact norm_sum_le _ _

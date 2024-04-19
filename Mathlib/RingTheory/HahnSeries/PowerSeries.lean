@@ -32,7 +32,8 @@ set_option linter.uppercaseLean3 false
 
 open Finset Function
 
-open BigOperators Classical Pointwise Polynomial
+open scoped Classical
+open BigOperators Pointwise Polynomial
 
 noncomputable section
 
@@ -153,13 +154,13 @@ theorem ofPowerSeries_X_pow {R} [CommSemiring R] (n : ℕ) :
 #align hahn_series.of_power_series_X_pow HahnSeries.ofPowerSeries_X_pow
 
 -- Lemmas about converting hahn_series over fintype to and from mv_power_series
-/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Fintype` `σ`.
+/-- The ring `HahnSeries (σ →₀ ℕ) R` is isomorphic to `MvPowerSeries σ R` for a `Finite` `σ`.
 We take the index set of the hahn series to be `Finsupp` rather than `pi`,
-even though we assume `Fintype σ` as this is more natural for alignment with `MvPowerSeries`.
+even though we assume `Finite σ` as this is more natural for alignment with `MvPowerSeries`.
 After importing `Algebra.Order.Pi` the ring `HahnSeries (σ → ℕ) R` could be constructed instead.
  -/
 @[simps]
-def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
+def toMvPowerSeries {σ : Type*} [Finite σ] : HahnSeries (σ →₀ ℕ) R ≃+* MvPowerSeries σ R where
   toFun f := f.coeff
   invFun f := ⟨(f : (σ →₀ ℕ) → R), Finsupp.isPWO _⟩
   left_inv f := by
@@ -186,7 +187,7 @@ def toMvPowerSeries {σ : Type*} [Fintype σ] : HahnSeries (σ →₀ ℕ) R ≃
       rw [and_iff_right (left_ne_zero_of_mul h), and_iff_right (right_ne_zero_of_mul h)]
 #align hahn_series.to_mv_power_series HahnSeries.toMvPowerSeries
 
-variable {σ : Type*} [Fintype σ]
+variable {σ : Type*} [Finite σ]
 
 theorem coeff_toMvPowerSeries {f : HahnSeries (σ →₀ ℕ) R} {n : σ →₀ ℕ} :
     MvPowerSeries.coeff R n (toMvPowerSeries f) = f.coeff n :=

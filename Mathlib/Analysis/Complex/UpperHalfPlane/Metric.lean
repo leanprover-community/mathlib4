@@ -44,7 +44,7 @@ theorem dist_eq (z w : ℍ) : dist z w = 2 * arsinh (dist (z : ℂ) w / (2 * sqr
 
 theorem sinh_half_dist (z w : ℍ) :
     sinh (dist z w / 2) = dist (z : ℂ) w / (2 * sqrt (z.im * w.im)) := by
-  rw [dist_eq, mul_div_cancel_left (arsinh _) two_ne_zero, sinh_arsinh]
+  rw [dist_eq, mul_div_cancel_left₀ (arsinh _) two_ne_zero, sinh_arsinh]
 #align upper_half_plane.sinh_half_dist UpperHalfPlane.sinh_half_dist
 
 theorem cosh_half_dist (z w : ℍ) :
@@ -110,7 +110,7 @@ protected theorem dist_triangle (a b c : ℍ) : dist a c ≤ dist a b + dist b c
     div_mul_eq_mul_div]
   · gcongr
     exact EuclideanGeometry.mul_dist_le_mul_dist_add_mul_dist (a : ℂ) b c (conj (b : ℂ))
-  · rw [dist_comm, dist_pos, Ne.def, Complex.conj_eq_iff_im]
+  · rw [dist_comm, dist_pos, Ne, Complex.conj_eq_iff_im]
     exact b.im_ne_zero
 #align upper_half_plane.dist_triangle UpperHalfPlane.dist_triangle
 
@@ -163,7 +163,7 @@ theorem dist_coe_center_sq (z w : ℍ) (r : ℝ) : dist (z : ℂ) (w.center r) ^
     2 * z.im * w.im * (Real.cosh (dist z w) - Real.cosh r) + (w.im * Real.sinh r) ^ 2 := by
   have H : 2 * z.im * w.im ≠ 0 := by positivity
   simp only [Complex.dist_eq, Complex.sq_abs, normSq_apply, coe_re, coe_im, center_re, center_im,
-    cosh_dist', mul_div_cancel' _ H, sub_sq z.im, mul_pow, Real.cosh_sq, sub_re, sub_im, mul_sub, ←
+    cosh_dist', mul_div_cancel₀ _ H, sub_sq z.im, mul_pow, Real.cosh_sq, sub_re, sub_im, mul_sub, ←
     sq]
   ring
 #align upper_half_plane.dist_coe_center_sq UpperHalfPlane.dist_coe_center_sq
@@ -245,9 +245,11 @@ theorem dist_log_im_le (z w : ℍ) : dist (log z.im) (log w.im) ≤ dist z w :=
   calc
     dist (log z.im) (log w.im) = dist (mk ⟨0, z.im⟩ z.im_pos) (mk ⟨0, w.im⟩ w.im_pos) :=
       Eq.symm <| dist_of_re_eq rfl
-    _ ≤ dist z w := mul_le_mul_of_nonneg_left (arsinh_le_arsinh.2 <|
-      div_le_div_of_le (mul_nonneg zero_le_two (sqrt_nonneg _)) <| by
-        simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)) zero_le_two
+    _ ≤ dist z w := by
+      simp_rw [dist_eq]
+      gcongr
+      · simpa [sqrt_sq_eq_abs] using Complex.abs_im_le_abs (z - w)
+      · simp
 #align upper_half_plane.dist_log_im_le UpperHalfPlane.dist_log_im_le
 
 theorem im_le_im_mul_exp_dist (z w : ℍ) : z.im ≤ w.im * Real.exp (dist z w) := by
@@ -362,7 +364,7 @@ theorem isometry_pos_mul (a : { x : ℝ // 0 < x }) : Isometry (a • · : ℍ �
   exact mul_div_mul_left _ _ (mt _root_.abs_eq_zero.1 a.2.ne')
 #align upper_half_plane.isometry_pos_mul UpperHalfPlane.isometry_pos_mul
 
-/-- `SL(2, ℝ)` acts on the upper half plane as an isometry.-/
+/-- `SL(2, ℝ)` acts on the upper half plane as an isometry. -/
 instance : IsometricSMul SL(2, ℝ) ℍ :=
   ⟨fun g => by
     have h₀ : Isometry (fun z => ModularGroup.S • z : ℍ → ℍ) :=

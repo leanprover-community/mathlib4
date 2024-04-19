@@ -54,7 +54,7 @@ def proj (S : D) (T : C ⥤ D) : StructuredArrow S T ⥤ C :=
 
 variable {S S' S'' : D} {Y Y' Y'' : C} {T T' : C ⥤ D}
 
--- porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
@@ -258,7 +258,7 @@ def mapIso (i : S ≅ S') : StructuredArrow S T ≌ StructuredArrow S' T :=
   Comma.mapLeftIso _ ((Functor.const _).mapIso i)
 
 /-- A natural isomorphism `T ≅ T'` induces an equivalence
-    `StructuredArrow S T ≌ StructuredArrow S T'`.-/
+    `StructuredArrow S T ≌ StructuredArrow S T'`. -/
 @[simp]
 def mapNatIso (i : T ≅ T') : StructuredArrow S T ≌ StructuredArrow S T' :=
   Comma.mapRightIso _ i
@@ -397,7 +397,7 @@ def proj (S : C ⥤ D) (T : D) : CostructuredArrow S T ⥤ C :=
 
 variable {T T' T'' : D} {Y Y' Y'' : C} {S S' : C ⥤ D}
 
--- porting note: this lemma was added because `Comma.hom_ext`
+-- Porting note: this lemma was added because `Comma.hom_ext`
 -- was not triggered automatically
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]

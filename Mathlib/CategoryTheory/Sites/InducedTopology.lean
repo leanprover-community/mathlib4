@@ -41,9 +41,7 @@ open Limits Opposite Presieve
 section
 
 variable {C : Type*} [Category C] {D : Type*} [Category D] {G : C ⥤ D}
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-
 variable (A : Type v) [Category.{u} A]
 
 -- variables (A) [full G] [faithful G]
@@ -148,9 +146,7 @@ end
 section SmallSite
 
 variable {C : Type v} [SmallCategory C] {D : Type v} [SmallCategory D] {G : C ⥤ D}
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
-
 variable (A : Type u) [Category.{v} A]
 
 instance [Full G] [Faithful G] [G.IsCoverDense K]  :

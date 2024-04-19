@@ -82,18 +82,14 @@ Hilbert space, Hilbert sum, l2, Hilbert basis, unitary equivalence, isometric is
 -/
 
 
-open IsROrC Submodule Filter
+open RCLike Submodule Filter
 
 open scoped BigOperators NNReal ENNReal Classical ComplexConjugate Topology
 
 noncomputable section
 
-variable {ι : Type*}
-
-variable {𝕜 : Type*} [IsROrC 𝕜] {E : Type*}
-
+variable {ι 𝕜 : Type*} [RCLike 𝕜] {E : Type*}
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E] [cplt : CompleteSpace E]
-
 variable {G : ι → Type*} [∀ i, NormedAddCommGroup (G i)] [∀ i, InnerProductSpace 𝕜 (G i)]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -128,14 +124,14 @@ instance instInnerProductSpace : InnerProductSpace 𝕜 (lp G 2) :=
           congr
           funext i
           rw [norm_sq_eq_inner (𝕜 := 𝕜)]
-          -- porting note: `simp` couldn't do this anymore
-        _ = re (∑' i, ⟪f i, f i⟫) := (IsROrC.reCLM.map_tsum ?_).symm
+          -- Porting note: `simp` couldn't do this anymore
+        _ = re (∑' i, ⟪f i, f i⟫) := (RCLike.reCLM.map_tsum ?_).symm
       · norm_num
       · exact summable_inner f f
     conj_symm := fun f g => by
       calc
         conj _ = conj (∑' i, ⟪g i, f i⟫) := by congr
-        _ = ∑' i, conj ⟪g i, f i⟫ := IsROrC.conjCLE.map_tsum
+        _ = ∑' i, conj ⟪g i, f i⟫ := RCLike.conjCLE.map_tsum
         _ = ∑' i, ⟪f i, g i⟫ := by simp only [inner_conj_symm]
         _ = _ := by congr
     add_left := fun f₁ f₂ g => by
@@ -248,7 +244,7 @@ protected theorem linearIsometry_apply_dfinsupp_sum_single (W₀ : Π₀ i : ι,
 protected theorem range_linearIsometry [∀ i, CompleteSpace (G i)] :
     LinearMap.range hV.linearIsometry.toLinearMap =
       (⨆ i, LinearMap.range (V i).toLinearMap).topologicalClosure := by
-    -- porting note: dot notation broken
+    -- Porting note: dot notation broken
   refine' le_antisymm _ _
   · rintro x ⟨f, rfl⟩
     refine' mem_closure_of_tendsto (hV.hasSum_linearIsometry f) (eventually_of_forall _)
@@ -271,7 +267,6 @@ end OrthogonalFamily
 section IsHilbertSum
 
 variable (𝕜 G)
-
 variable (V : ∀ i, G i →ₗᵢ[𝕜] E) (F : ι → Submodule 𝕜 E)
 
 /-- Given a family of Hilbert spaces `G : ι → Type*`, a Hilbert sum of `G` consists of a Hilbert
@@ -346,11 +341,10 @@ protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_single (hV : IsHil
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
 `lp G 2`, a finitely-supported vector in `lp G 2` is the image of the associated finite sum of
 elements of `E`. -/
-@[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
     hV.linearIsometryEquiv.symm (W₀.sum (lp.single 2)) = W₀.sum fun i => V i := by
-  simp [IsHilbertSum.linearIsometryEquiv, OrthogonalFamily.linearIsometry_apply_dfinsupp_sum_single]
+  simp only [map_dfinsupp_sum, IsHilbertSum.linearIsometryEquiv_symm_apply_single]
 #align is_hilbert_sum.linear_isometry_equiv_symm_apply_dfinsupp_sum_single IsHilbertSum.linearIsometryEquiv_symm_apply_dfinsupp_sum_single
 
 /-- In the canonical isometric isomorphism between a Hilbert sum `E` of `G : ι → Type*` and
@@ -359,7 +353,8 @@ elements of `E`. -/
 @[simp]
 protected theorem IsHilbertSum.linearIsometryEquiv_apply_dfinsupp_sum_single
     (hV : IsHilbertSum 𝕜 G V) (W₀ : Π₀ i : ι, G i) :
-    (hV.linearIsometryEquiv (W₀.sum fun i => V i) : ∀ i, G i) = W₀ := by
+    ((W₀.sum (γ := lp G 2) fun a b ↦ hV.linearIsometryEquiv (V a b)) : ∀ i, G i) = W₀ := by
+  rw [← map_dfinsupp_sum]
   rw [← hV.linearIsometryEquiv_symm_apply_dfinsupp_sum_single]
   rw [LinearIsometryEquiv.apply_symm_apply]
   ext i

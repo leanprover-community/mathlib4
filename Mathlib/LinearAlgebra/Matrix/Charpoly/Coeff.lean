@@ -3,8 +3,8 @@ Copyright (c) 2020 Aaron Anderson, Jalex Stark. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Jalex Stark
 -/
-import Mathlib.Data.Polynomial.Expand
-import Mathlib.Data.Polynomial.Laurent
+import Mathlib.Algebra.Polynomial.Expand
+import Mathlib.Algebra.Polynomial.Laurent
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Basic
 import Mathlib.LinearAlgebra.Matrix.Reindex
 import Mathlib.RingTheory.Polynomial.Nilpotent
@@ -63,7 +63,7 @@ theorem charpoly_sub_diagonal_degree_lt :
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
     sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
   simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id.def, Int.cast_one,
-    Units.val_one, add_sub_cancel, Equiv.coe_refl]
+    Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
   apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
   intro c hc; rw [← C_eq_int_cast, C_mul']
@@ -102,7 +102,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
     · simp
     · assumption
   rw [← sub_add_cancel M.charpoly (∏ i : n, (X - C (M i i)))]
-  -- porting note: added `↑` in front of `Fintype.card n`
+  -- Porting note: added `↑` in front of `Fintype.card n`
   have h1 : (∏ i : n, (X - C (M i i))).degree = ↑(Fintype.card n) := by
     rw [degree_eq_iff_natDegree_eq_of_pos (Nat.pos_of_ne_zero h), natDegree_prod']
     simp_rw [natDegree_X_sub_C]
@@ -125,7 +125,7 @@ theorem charpoly_degree_eq_dim [Nontrivial R] (M : Matrix n n R) :
 #align matrix.charpoly_nat_degree_eq_dim Matrix.charpoly_natDegree_eq_dim
 
 theorem charpoly_monic (M : Matrix n n R) : M.charpoly.Monic := by
-  nontriviality R -- porting note: was simply `nontriviality`
+  nontriviality R -- Porting note: was simply `nontriviality`
   by_cases h : Fintype.card n = 0
   · rw [charpoly, det_of_card_zero h]
     apply monic_one
@@ -180,7 +180,7 @@ theorem eval_det (M : Matrix n n R[X]) (r : R) :
   apply congr_arg det
   ext
   symm
-  -- porting note: `exact` was `convert`
+  -- Porting note: `exact` was `convert`
   exact matPolyEquiv_eval _ _ _ _
 #align matrix.eval_det Matrix.eval_det
 
@@ -260,19 +260,19 @@ variable {p : ℕ} [Fact p.Prime]
 theorem matPolyEquiv_eq_X_pow_sub_C {K : Type*} (k : ℕ) [Field K] (M : Matrix n n K) :
     matPolyEquiv ((expand K k : K[X] →+* K[X]).mapMatrix (charmatrix (M ^ k))) =
       X ^ k - C (M ^ k) := by
-  -- porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
+  -- Porting note: `i` and `j` are used later on, but were not mentioned in mathlib3
   ext m i j
   rw [coeff_sub, coeff_C, matPolyEquiv_coeff_apply, RingHom.mapMatrix_apply, Matrix.map_apply,
     AlgHom.coe_toRingHom, DMatrix.sub_apply, coeff_X_pow]
   by_cases hij : i = j
   · rw [hij, charmatrix_apply_eq, AlgHom.map_sub, expand_C, expand_X, coeff_sub, coeff_X_pow,
       coeff_C]
-                             -- porting note: the second `Matrix.` was `DMatrix.`
+                             -- Porting note: the second `Matrix.` was `DMatrix.`
     split_ifs with mp m0 <;> simp only [Matrix.one_apply_eq, Matrix.zero_apply]
   · rw [charmatrix_apply_ne _ _ _ hij, AlgHom.map_neg, expand_C, coeff_neg, coeff_C]
     split_ifs with m0 mp <;>
-      -- porting note: again, the first `Matrix.` that was `DMatrix.`
-      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne.def,
+      -- Porting note: again, the first `Matrix.` that was `DMatrix.`
+      simp only [hij, zero_sub, Matrix.zero_apply, sub_zero, neg_zero, Matrix.one_apply_ne, Ne,
         not_false_iff]
 set_option linter.uppercaseLean3 false in
 #align mat_poly_equiv_eq_X_pow_sub_C matPolyEquiv_eq_X_pow_sub_C
@@ -306,10 +306,10 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [Nat.zero_eq]  -- porting note: `rw [Nat.zero_eq]` was not present
+  · rw [Nat.zero_eq]  -- Porting note: `rw [Nat.zero_eq]` was not present
     rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
       smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
-    apply neg_mem  -- porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
+    apply neg_mem  -- Porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
   · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top

@@ -34,20 +34,47 @@ open Filter Asymptotics Set
 open ContinuousLinearMap (smulRight smulRight_one_eq_iff)
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
+variable {G : Type*} [NormedAddCommGroup G] [NormedSpace 𝕜 G]
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L L₁ L₂ : Filter 𝕜}
+
+/-! ### Derivative of bilinear maps -/
+
+namespace ContinuousLinearMap
+
+variable {B : E →L[𝕜] F →L[𝕜] G} {u : 𝕜 → E} {v : 𝕜 → F} {u' : E} {v' : F}
+
+theorem hasDerivWithinAt_of_bilinear
+    (hu : HasDerivWithinAt u u' s x) (hv : HasDerivWithinAt v v' s x) :
+    HasDerivWithinAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) s x := by
+  simpa using (B.hasFDerivWithinAt_of_bilinear
+    hu.hasFDerivWithinAt hv.hasFDerivWithinAt).hasDerivWithinAt
+
+theorem hasDerivAt_of_bilinear (hu : HasDerivAt u u' x) (hv : HasDerivAt v v' x) :
+    HasDerivAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) x := by
+  simpa using (B.hasFDerivAt_of_bilinear hu.hasFDerivAt hv.hasFDerivAt).hasDerivAt
+
+theorem hasStrictDerivAt_of_bilinear (hu : HasStrictDerivAt u u' x) (hv : HasStrictDerivAt v v' x) :
+    HasStrictDerivAt (fun x ↦ B (u x) (v x)) (B (u x) v' + B u' (v x)) x := by
+  simpa using
+    (B.hasStrictFDerivAt_of_bilinear hu.hasStrictFDerivAt hv.hasStrictFDerivAt).hasStrictDerivAt
+
+theorem derivWithin_of_bilinear (hxs : UniqueDiffWithinAt 𝕜 s x)
+    (hu : DifferentiableWithinAt 𝕜 u s x) (hv : DifferentiableWithinAt 𝕜 v s x) :
+    derivWithin (fun y => B (u y) (v y)) s x =
+      B (u x) (derivWithin v s x) + B (derivWithin u s x) (v x) :=
+  (B.hasDerivWithinAt_of_bilinear hu.hasDerivWithinAt hv.hasDerivWithinAt).derivWithin hxs
+
+theorem deriv_of_bilinear (hu : DifferentiableAt 𝕜 u x) (hv : DifferentiableAt 𝕜 v x) :
+    deriv (fun y => B (u y) (v y)) x = B (u x) (deriv v x) + B (deriv u x) (v x) :=
+  (B.hasDerivAt_of_bilinear hu.hasDerivAt hv.hasDerivAt).deriv
+
+end ContinuousLinearMap
 
 section SMul
 
@@ -149,6 +176,22 @@ theorem deriv_const_smul (c : R) (hf : DifferentiableAt 𝕜 f x) :
     deriv (fun y => c • f y) x = c • deriv f x :=
   (hf.hasDerivAt.const_smul c).deriv
 #align deriv_const_smul deriv_const_smul
+
+/-- A variant of `deriv_const_smul` without differentiability assumption when the scalar
+multiplication is by field elements. -/
+lemma deriv_const_smul' {f : 𝕜 → F} {x : 𝕜} {R : Type*} [Field R] [Module R F] [SMulCommClass 𝕜 R F]
+    [ContinuousConstSMul R F] (c : R) :
+    deriv (fun y ↦ c • f y) x = c • deriv f x := by
+  by_cases hf : DifferentiableAt 𝕜 f x
+  · exact deriv_const_smul c hf
+  · rcases eq_or_ne c 0 with rfl | hc
+    · simp only [zero_smul, deriv_const']
+    · have H : ¬DifferentiableAt 𝕜 (fun y ↦ c • f y) x := by
+        contrapose! hf
+        change DifferentiableAt 𝕜 (fun y ↦ f y) x
+        conv => enter [2, y]; rw [← inv_smul_smul₀ hc (f y)]
+        exact DifferentiableAt.const_smul hf c⁻¹
+      rw [deriv_zero_of_not_differentiableAt hf, deriv_zero_of_not_differentiableAt H, smul_zero]
 
 end ConstSMul
 

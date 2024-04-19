@@ -29,8 +29,6 @@ from the natural numbers into it is injective.
 * Unify with `CharP` (possibly using an out-parameter)
 -/
 
-set_option autoImplicit true
-
 /-- Typeclass for monoids with characteristic zero.
   (This is usually stated on fields but it makes sense for any additive monoid with 1.)
 
@@ -46,6 +44,8 @@ class CharZero (R) [AddMonoidWithOne R] : Prop where
   injective. -/
   cast_injective : Function.Injective (Nat.cast : ℕ → R)
 #align char_zero CharZero
+
+variable {R : Type*}
 
 theorem charZero_of_inj_zero [AddGroupWithOne R] (H : ∀ n : ℕ, (n : R) = 0 → n = 0) :
     CharZero R :=
@@ -85,7 +85,7 @@ theorem cast_ne_zero {n : ℕ} : (n : R) ≠ 0 ↔ n ≠ 0 :=
 #align nat.cast_ne_zero Nat.cast_ne_zero
 
 theorem cast_add_one_ne_zero (n : ℕ) : (n + 1 : R) ≠ 0 := by
-  -- porting note: old proof was `exact_mod_cast n.succ_ne_zero`
+  -- Porting note: old proof was `exact_mod_cast n.succ_ne_zero`
   norm_cast
   exact n.succ_ne_zero
 #align nat.cast_add_one_ne_zero Nat.cast_add_one_ne_zero

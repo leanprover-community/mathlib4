@@ -69,8 +69,8 @@ instance (priority := 100) ConditionallyCompleteLinearOrderedField.to_archimedea
       by_contra! h
       obtain ⟨x, h⟩ := h
       have := csSup_le _ _ (range_nonempty Nat.cast)
-        (forall_range_iff.2 fun m =>
-          le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_range_iff.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
+        (forall_mem_range.2 fun m =>
+          le_sub_iff_add_le.2 <| le_csSup _ _ ⟨x, forall_mem_range.2 h⟩ ⟨m+1, Nat.cast_succ m⟩)
       linarith)
 #align conditionally_complete_linear_ordered_field.to_archimedean ConditionallyCompleteLinearOrderedField.to_archimedean
 
@@ -143,14 +143,14 @@ theorem cutMap_nonempty (a : α) : (cutMap β a).Nonempty :=
 
 theorem cutMap_bddAbove (a : α) : BddAbove (cutMap β a) := by
   obtain ⟨q, hq⟩ := exists_rat_gt a
-  exact ⟨q, ball_image_iff.2 fun r hr => mod_cast (hq.trans' hr).le⟩
+  exact ⟨q, forall_mem_image.2 fun r hr => mod_cast (hq.trans' hr).le⟩
 #align linear_ordered_field.cut_map_bdd_above LinearOrderedField.cutMap_bddAbove
 
 theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b := by
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
-    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel'_right _ _⟩
+    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
     · norm_cast
       rw [coe_mem_cutMap_iff]
       exact mod_cast sub_lt_comm.mp hq₁q

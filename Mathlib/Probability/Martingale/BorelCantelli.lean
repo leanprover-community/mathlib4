@@ -192,21 +192,21 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
     hf.sub_martingale (martingale_const_fun _ _ (hf.adapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
     ext ω
-    simp only [sub_self, Pi.zero_apply]
+    simp only [g, sub_self, Pi.zero_apply]
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
-    simpa only [sub_sub_sub_cancel_right]
+    simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
   convert hω using 1
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine' ⟨b + |f 0 ω|, fun y hy => _⟩ <;> obtain ⟨n, rfl⟩ := hy
-    · simp_rw [sub_eq_add_neg]
+    · simp_rw [g, sub_eq_add_neg]
       exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs _)
     · exact sub_le_iff_le_add.1 (le_trans (sub_le_sub_left (le_abs_self _) _) (hb ⟨n, rfl⟩))
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨c, hc⟩ := h
     · exact ⟨c - f 0 ω, hc.sub_const _⟩
     · refine' ⟨c + f 0 ω, _⟩
       have := hc.add_const (f 0 ω)
-      simpa only [sub_add_cancel]
+      simpa only [g, sub_add_cancel]
 #align measure_theory.submartingale.bdd_above_iff_exists_tendsto MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto
 
 /-!

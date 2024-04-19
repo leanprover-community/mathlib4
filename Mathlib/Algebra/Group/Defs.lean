@@ -488,20 +488,18 @@ section
 
 variable {M : Type u}
 
--- use `x * npowRec n x` and not `npowRec n x * x` in the definition to make sure that
--- definitional unfolding of `npowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
 Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
-  | n + 1, a => a * npowRec n a
+  | n + 1, a => npowRec n a * a
 #align npow_rec npowRec
 
 /-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
 times. Use instead `n • a`, which has better definitional behavior. -/
 def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
-  | n + 1, a => a + nsmulRec n a
+  | n + 1, a => nsmulRec n a + a
 #align nsmul_rec nsmulRec
 
 attribute [to_additive existing] npowRec
@@ -593,12 +591,13 @@ need right away.
 
 /-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
-  /-- Multiplication by a natural number. -/
-  protected nsmul : ℕ → M → M := nsmulRec
+  /-- Multiplication by a natural number.
+  Set this to `nsmulRec` unless `Module` diamonds are possible. -/
+  protected nsmul : ℕ → M → M
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
-  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = x + nsmul n x := by intros; rfl
+  protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
 #align add_monoid AddMonoid
 
 attribute [instance 150] AddSemigroup.toAdd
@@ -615,7 +614,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
   /-- Raising to the power `(0 : ℕ)` gives `1`. -/
   protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
   /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = x * npow n x := by intros; rfl
+  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 #align monoid Monoid
 
 #align monoid.npow_zero' Monoid.npow_zero
@@ -652,10 +651,10 @@ theorem pow_zero (a : M) : a ^ 0 = 1 :=
 #align zero_nsmul zero_nsmul
 
 @[to_additive succ_nsmul]
-theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
+theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
   Monoid.npow_succ n a
-#align pow_succ pow_succ
-#align succ_nsmul succ_nsmul
+#align pow_succ' pow_succ
+#align succ_nsmul' succ_nsmul
 
 end
 
@@ -775,16 +774,16 @@ end CancelMonoid
 
 /-- The fundamental power operation in a group. `zpowRec n a = a*a*...*a` n times, for integer `n`.
 Use instead `a ^ n`, which has better definitional behavior. -/
-def zpowRec {M : Type*} [One M] [Mul M] [Inv M] : ℤ → M → M
-  | Int.ofNat n, a => npowRec n a
-  | Int.negSucc n, a => (npowRec n.succ a)⁻¹
+def zpowRec [One G] [Mul G] [Inv G] (npow : ℕ → G → G := npowRec) : ℤ → G → G
+  | Int.ofNat n, a => npow n a
+  | Int.negSucc n, a => (npow n.succ a)⁻¹
 #align zpow_rec zpowRec
 
 /-- The fundamental scalar multiplication in an additive group. `zpowRec n a = a+a+...+a` n
 times, for integer `n`. Use instead `n • a`, which has better definitional behavior. -/
-def zsmulRec {M : Type*} [Zero M] [Add M] [Neg M] : ℤ → M → M
-  | Int.ofNat n, a => nsmulRec n a
-  | Int.negSucc n, a => -nsmulRec n.succ a
+def zsmulRec [Zero G] [Add G] [Neg G] (nsmul : ℕ → G → G := nsmulRec) : ℤ → G → G
+  | Int.ofNat n, a => nsmul n a
+  | Int.negSucc n, a => -nsmul n.succ a
 #align zsmul_rec zsmulRec
 
 attribute [to_additive existing] zpowRec
@@ -878,11 +877,11 @@ class DivInvMonoid (G : Type u) extends Monoid G, Inv G, Div G where
   /-- `a / b := a * b⁻¹` -/
   protected div_eq_mul_inv : ∀ a b : G, a / b = a * b⁻¹ := by intros; rfl
   /-- The power operation: `a ^ n = a * ··· * a`; `a ^ (-n) = a⁻¹ * ··· a⁻¹` (`n` times) -/
-  protected zpow : ℤ → G → G := zpowRec
+  protected zpow : ℤ → G → G := zpowRec npowRec
   /-- `a ^ 0 = 1` -/
   protected zpow_zero' : ∀ a : G, zpow 0 a = 1 := by intros; rfl
-  /-- `a ^ (n + 1) = a * a ^ n` -/
-  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = a * zpow (Int.ofNat n) a := by
+  /-- `a ^ (n + 1) = a ^ n * a` -/
+  protected zpow_succ' (n : ℕ) (a : G) : zpow (Int.ofNat n.succ) a = zpow (Int.ofNat n) a  * a := by
     intros; rfl
   /-- `a ^ -(n + 1) = (a ^ (n + 1))⁻¹` -/
   protected zpow_neg' (n : ℕ) (a : G) : zpow (Int.negSucc n) a = (zpow n.succ a)⁻¹ := by intros; rfl
@@ -919,12 +918,15 @@ explanations on this.
 class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub := SubNegMonoid.sub'
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
-  protected zsmul : ℤ → G → G := zsmulRec
+  /-- Multiplication by an integer.
+  Set this to `zsmulRec` unless `Module` diamonds are possible. -/
+  protected zsmul : ℤ → G → G
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
-      zsmul (Int.ofNat n.succ) a = a + zsmul (Int.ofNat n) a := by
+      zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by
     intros; rfl
-  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by intros; rfl
+  protected zsmul_neg' (n : ℕ) (a : G) : zsmul (Int.negSucc n) a = -zsmul n.succ a := by
+    intros; rfl
 #align sub_neg_monoid SubNegMonoid
 
 attribute [to_additive SubNegMonoid] DivInvMonoid
@@ -954,31 +956,35 @@ variable [DivInvMonoid G] {a b : G}
 #align zpow_zero zpow_zero
 #align zero_zsmul zero_zsmul
 
-@[to_additive (attr := simp, norm_cast) coe_nat_zsmul]
-theorem zpow_coe_nat (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
+@[to_additive (attr := simp, norm_cast) natCast_zsmul]
+theorem zpow_natCast (a : G) : ∀ n : ℕ, a ^ (n : ℤ) = a ^ n
   | 0 => (zpow_zero _).trans (pow_zero _).symm
   | n + 1 => calc
-    a ^ (↑(n + 1) : ℤ) = a * a ^ (n : ℤ) := DivInvMonoid.zpow_succ' _ _
-    _ = a * a ^ n := congrArg (a * ·) (zpow_coe_nat a n)
+    a ^ (↑(n + 1) : ℤ) = a ^ (n : ℤ) * a := DivInvMonoid.zpow_succ' _ _
+    _ = a ^ n * a := congrArg (· * a) (zpow_natCast a n)
     _ = a ^ (n + 1) := (pow_succ _ _).symm
-#align zpow_coe_nat zpow_coe_nat
-#align zpow_of_nat zpow_coe_nat
-#align coe_nat_zsmul coe_nat_zsmul
-#align of_nat_zsmul coe_nat_zsmul
+#align zpow_coe_nat zpow_natCast
+#align zpow_of_nat zpow_natCast
+#align coe_nat_zsmul natCast_zsmul
+#align of_nat_zsmul natCast_zsmul
+
+-- 2024-03-20
+@[deprecated] alias zpow_coe_nat := zpow_natCast
+@[deprecated] alias coe_nat_zsmul := natCast_zsmul
 
 -- See note [no_index around OfNat.ofNat]
 @[to_additive ofNat_zsmul]
 lemma zpow_ofNat (a : G) (n : ℕ) : a ^ (no_index (OfNat.ofNat n) : ℤ) = a ^ OfNat.ofNat n :=
-  zpow_coe_nat ..
+  zpow_natCast ..
 
 theorem zpow_negSucc (a : G) (n : ℕ) : a ^ (Int.negSucc n) = (a ^ (n + 1))⁻¹ := by
-  rw [← zpow_coe_nat]
+  rw [← zpow_natCast]
   exact DivInvMonoid.zpow_neg' n a
 #align zpow_neg_succ_of_nat zpow_negSucc
 
 theorem negSucc_zsmul {G} [SubNegMonoid G] (a : G) (n : ℕ) :
     Int.negSucc n • a = -((n + 1) • a) := by
-  rw [← coe_nat_zsmul]
+  rw [← natCast_zsmul]
   exact SubNegMonoid.zsmul_neg' n a
 #align zsmul_neg_succ_of_nat negSucc_zsmul
 

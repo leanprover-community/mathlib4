@@ -3,11 +3,12 @@ Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Fintype.Prod
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Int.Parity
 import Mathlib.GroupTheory.GroupAction.Ring
 import Mathlib.Tactic.NoncommRing
+import Mathlib.Tactic.Ring
 
 #align_import imo.imo1998_q2 from "leanprover-community/mathlib"@"308826471968962c6b59c7ff82a22757386603e3"
 
@@ -40,7 +41,7 @@ Rearranging gives the result.
 -/
 
 
--- porting note: `A` already upper case
+-- Porting note: `A` already upper case
 set_option linter.uppercaseLean3 false
 
 open scoped Classical
@@ -140,7 +141,7 @@ theorem A_fibre_over_judgePair {p : JudgePair J} (h : p.Distinct) :
     AgreedTriple.contestant := by
   dsimp only [A, agreedContestants]; ext c; constructor <;> intro h
   · rw [Finset.mem_image]; refine' ⟨⟨c, p⟩, _⟩; aesop
-  -- porting note: this used to be `finish`
+  -- Porting note: this used to be `finish`
   · simp only [Finset.mem_filter, Finset.mem_image, Prod.exists] at h
     rcases h with ⟨_, ⟨_, ⟨_, ⟨h, _⟩⟩⟩⟩
     cases h; aesop
@@ -230,7 +231,7 @@ end
 theorem clear_denominators {a b k : ℕ} (ha : 0 < a) (hb : 0 < b) :
     (b - 1 : ℚ) / (2 * b) ≤ k / a ↔ ((b : ℕ) - 1) * a ≤ k * (2 * b) := by
   rw [div_le_div_iff]
-  -- porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
+  -- Porting note: proof used to finish with `<;> norm_cast <;> simp [ha, hb]`
   · convert Nat.cast_le (α := ℚ)
     · aesop
     · norm_cast

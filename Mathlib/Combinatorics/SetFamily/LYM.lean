@@ -5,8 +5,9 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Combinatorics.DoubleCounting
+import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SetFamily.Shadow
+import Mathlib.Data.Rat.Field
 import Mathlib.Data.Rat.Order
 
 #align_import combinatorics.set_family.lym from "leanprover-community/mathlib"@"861a26926586cd46ff80264d121cdb6fa0e35cc1"
@@ -72,7 +73,7 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   refine' le_trans _ tsub_tsub_le_tsub_add
   rw [← (Set.Sized.shadow h𝒜) hs, ← card_compl, ← card_image_of_injOn (insert_inj_on' _)]
   refine' card_le_card fun t ht => _
-  -- porting note: commented out the following line
+  -- Porting note: commented out the following line
   -- infer_instance
   rw [mem_bipartiteAbove] at ht
   have : ∅ ∉ 𝒜 := by
@@ -240,7 +241,7 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
     refine' (sum_le_sum fun r hr => _).trans (sum_card_slice_div_choose_le_one h𝒜)
     rw [mem_range] at hr
-    refine' div_le_div_of_le_left _ _ _ <;> norm_cast
+    refine' div_le_div_of_nonneg_left _ _ _ <;> norm_cast
     · exact Nat.zero_le _
     · exact choose_pos (Nat.lt_succ_iff.1 hr)
     · exact choose_le_middle _ _
