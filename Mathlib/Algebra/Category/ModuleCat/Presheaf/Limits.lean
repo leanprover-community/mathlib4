@@ -135,10 +135,11 @@ noncomputable instance toPresheafPreservesLimit :
 
 end Limits
 
-section UnivLE
-
 variable (R J)
-variable [UnivLE.{u₂, v}]
+
+section Small
+
+variable [Small.{v} J]
 
 instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
@@ -148,7 +149,7 @@ noncomputable instance evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
 noncomputable instance toPresheafPreservesLimitsOfShape :
     PreservesLimitsOfShape J (toPresheaf.{v} R) where
 
-end UnivLE
+end Small
 
 namespace Finite
 
