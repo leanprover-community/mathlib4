@@ -64,22 +64,13 @@ lemma mulVec_eigenvectorBasis (j : n) :
     congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
      finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
--- dotProduct_smul,←EuclideanSpace.inner_eq_star_dotProduct
 theorem eigenvalues_eq (i : n) :
      (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
-    (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
-    simp only [mulVec_eigenvectorBasis, dotProduct_smul,←EuclideanSpace.inner_eq_star_dotProduct,
-              inner_self_eq_norm_sq_to_K, RCLike.smul_re]
-    --simp [OrthonormalBasis.orthonormal, Orthonormal]
-  --,
-  --←Orthonormal
-  -- ←OrthonormalBasis.orthonormal
-    --inner_self_eq_norm_sq]
-
-    --inner_self_eq_norm_mul_norm (𝕜 := 𝕜) ((eigenvectorBasis hA) i)]
-
-    --, OrthonormalBasis.orthonormal, Orthonormal]
-    sorry
+      (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
+     simp only [mulVec_eigenvectorBasis, dotProduct_smul,←EuclideanSpace.inner_eq_star_dotProduct,
+               inner_self_eq_norm_sq_to_K, RCLike.smul_re,
+               (OrthonormalBasis.orthonormal (hA.eigenvectorBasis)).1 i, mul_one,
+                algebraMap.coe_one, one_pow, RCLike.one_re]
 
 /--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
