@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.RingTheory.TensorProduct.Basic
 
 #align_import algebra.category.Module.change_of_rings from "leanprover-community/mathlib"@"56b71f0b55c03f70332b862e65c3aa1aa1249ca1"
@@ -44,7 +45,7 @@ suppress_compilation
 
 set_option linter.uppercaseLean3 false -- Porting note: Module
 
-open CategoryTheory
+open CategoryTheory Limits
 
 namespace ModuleCat
 
@@ -856,5 +857,15 @@ instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* 
 instance {R : Type u₁} {S : Type u₂} [CommRing R] [CommRing S] (f : R →+* S) :
     CategoryTheory.IsRightAdjoint (restrictScalars f) :=
   ⟨_, extendRestrictScalarsAdj f⟩
+
+noncomputable instance preservesLimitRestrictScalars
+    {R : Type*} {S : Type*} [Ring R] [Ring S] (f : R →+* S) {J : Type*} [Category J]
+    (F : J ⥤ ModuleCat.{v} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
+    PreservesLimit F (restrictScalars f) :=
+  ⟨fun {c} hc => by
+    have : HasLimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) := by
+      assumption
+    have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
+    exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
 
 end ModuleCat

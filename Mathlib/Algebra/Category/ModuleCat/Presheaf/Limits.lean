@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
-import Mathlib.Algebra.Category.ModuleCat.Limits
+import Mathlib.Algebra.Category.ModuleCat.ChangeOfRings
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 
@@ -19,60 +19,6 @@ limits exist in the category `PresheafOfModules R`.
 -/
 
 universe v v₁ v₂ u₁ u₂ u u'
-
-namespace ModuleCat
-
-open CategoryTheory Limits
-
-variable {R : Type u} {S : Type u'} [Ring R] [Ring S] (f : R →+* S)
-    {J : Type u₂} [Category.{v₂} J]
-
-instance : (forget (ModuleCat R)).ReflectsIsomorphisms where
-  reflects f _ :=
-    (inferInstance : IsIso ((LinearEquiv.mk f
-      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
-      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
-
-instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphisms where
-  reflects f _ := by
-    have : IsIso ((forget _).map f) := by
-      change IsIso ((forget _).map ((forget₂ _ AddCommGroupCat).map f))
-      infer_instance
-    apply isIso_of_reflects_iso _ (forget _)
-
-section
-
-variable (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)]
-
-lemma small_sections_of_hasLimit_forget₂ :
-    Small.{v} (F ⋙ forget (ModuleCat R)).sections := by
-  change Small.{v} ((F ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
-  rw [← AddCommGroupCat.hasLimit_iff_small_sections]
-  infer_instance
-
-instance : HasLimit F := by
-  have := small_sections_of_hasLimit_forget₂ F
-  apply hasLimit
-
-noncomputable instance : PreservesLimit F (forget₂ _ AddCommGroupCat) := by
-  have := small_sections_of_hasLimit_forget₂ F
-  infer_instance
-
-noncomputable instance : ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) := by
-  apply reflectsLimitOfReflectsIsomorphisms
-
-end
-
-noncomputable instance preservesLimitRestrictScalars
-    (F : J ⥤ ModuleCat.{v} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
-    PreservesLimit F (restrictScalars f) :=
-  ⟨fun {c} hc => by
-    have : HasLimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) := by
-      assumption
-    have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
-    exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
-
-end ModuleCat
 
 namespace PresheafOfModules
 
@@ -218,10 +164,10 @@ end
 instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
 
-noncomputable instance preservesFiniteLimitsEvaluation (X : Cᵒᵖ) :
+noncomputable instance evaluationPreservesFiniteLimits (X : Cᵒᵖ) :
     PreservesFiniteLimits (evaluation.{v} R X) where
 
-noncomputable instance preservesFiniteLimitsToPresheaf :
+noncomputable instance toPresheafPreservesFiniteLimits :
     PreservesFiniteLimits (toPresheaf R) where
 
 end Limits

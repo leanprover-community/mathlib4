@@ -203,6 +203,34 @@ instance forgetPreservesLimits : PreservesLimits (forget (ModuleCat.{w} R)) :=
   ModuleCat.forgetPreservesLimitsOfSize.{w, w}
 #align Module.forget_preserves_limits ModuleCat.forgetPreservesLimits
 
+section
+/-!
+If `G : J ⥤ ModuleCat R` is such that `G ⋙ forget₂ _ AddCommGroupCat` has a limit,
+then the limit of `G` automatically exists and `forget₂ _ AddCommGroupCat`
+preserves and reflects this limit.
+-/
+
+variable (G : J ⥤ ModuleCat.{w} R) [HasLimit (G ⋙ forget₂ _ AddCommGroupCat)]
+
+lemma small_sections_of_hasLimit_comp_forget₂ :
+    Small.{w} (G ⋙ forget (ModuleCat R)).sections := by
+  change Small.{w} ((G ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
+  rw [← AddCommGroupCat.hasLimit_iff_small_sections]
+  infer_instance
+
+instance : HasLimit G := by
+  have := small_sections_of_hasLimit_comp_forget₂ G
+  apply hasLimit
+
+noncomputable instance : PreservesLimit G (forget₂ _ AddCommGroupCat) := by
+  have := small_sections_of_hasLimit_comp_forget₂ G
+  infer_instance
+
+noncomputable instance : ReflectsLimit G (forget₂ _ AddCommGroupCat) := by
+  apply reflectsLimitOfReflectsIsomorphisms
+
+end
+
 section DirectLimit
 
 open Module
