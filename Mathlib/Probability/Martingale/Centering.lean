@@ -122,7 +122,7 @@ theorem martingale_martingalePart (hf : Adapted ℱ f) (hf_int : ∀ n, Integrab
       · exact stronglyMeasurable_condexp.mono (ℱ.mono hk.le)
       · exact integrable_condexp
   rw [martingalePart_eq_sum]
-  refine' EventuallyEq.add EventuallyEq.rfl _
+  refine EventuallyEq.add EventuallyEq.rfl ?_
   rw [← Finset.sum_range_add_sum_Ico _ hij, ←
     add_zero (∑ i in Finset.range i, (f (i + 1) - f i - μ[f (i + 1) - f i|ℱ i]))]
   refine' (eventuallyEq_sum fun k hk => h_lt k (Finset.mem_range.mp hk)).add _

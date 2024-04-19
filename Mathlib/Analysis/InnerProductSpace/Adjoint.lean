@@ -174,7 +174,7 @@ theorem eq_adjoint_iff (A : E →L[𝕜] F) (B : F →L[𝕜] E) : A = B† ↔ 
 @[simp]
 theorem adjoint_id :
     ContinuousLinearMap.adjoint (ContinuousLinearMap.id 𝕜 E) = ContinuousLinearMap.id 𝕜 E := by
-  refine' Eq.symm _
+  refine Eq.symm ?_
   rw [eq_adjoint_iff]
   simp
 #align continuous_linear_map.adjoint_id ContinuousLinearMap.adjoint_id
@@ -426,7 +426,7 @@ theorem eq_adjoint_iff_basis {ι₁ : Type*} {ι₂ : Type*} (b₁ : Basis ι₁
     (A : E →ₗ[𝕜] F) (B : F →ₗ[𝕜] E) :
     A = LinearMap.adjoint B ↔ ∀ (i₁ : ι₁) (i₂ : ι₂), ⟪A (b₁ i₁), b₂ i₂⟫ = ⟪b₁ i₁, B (b₂ i₂)⟫ := by
   refine' ⟨fun h x y => by rw [h, adjoint_inner_left], fun h => _⟩
-  refine' Basis.ext b₁ fun i₁ => _
+  refine Basis.ext b₁ fun i₁ => ?_
   exact ext_inner_right_basis b₂ fun i₂ => by simp only [adjoint_inner_left, h i₁ i₂]
 #align linear_map.eq_adjoint_iff_basis LinearMap.eq_adjoint_iff_basis
 

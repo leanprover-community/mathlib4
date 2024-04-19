@@ -217,7 +217,7 @@ theorem discr_powerBasis_eq_norm [IsSeparable K L] :
   let E := AlgebraicClosure L
   letI := fun a b : E => Classical.propDecidable (Eq a b)
   have e : Fin pb.dim ≃ (L →ₐ[K] E) := by
-    refine' equivOfCardEq _
+    refine equivOfCardEq ?_
     rw [Fintype.card_fin, AlgHom.card]
     exact (PowerBasis.finrank pb).symm
   have hnodup : ((minpoly K pb.gen).aroots E).Nodup :=

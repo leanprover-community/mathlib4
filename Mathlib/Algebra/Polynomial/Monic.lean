@@ -450,7 +450,7 @@ theorem Monic.mul_left_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : q * p 
   by_cases h : p = 1
   · simpa [h]
   rw [Ne, ← degree_eq_bot, hp.degree_mul, WithBot.add_eq_bot, not_or, degree_eq_bot]
-  refine' ⟨hq, _⟩
+  refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
   refine' (lt_trans _ h).ne'
   simp
@@ -461,7 +461,7 @@ theorem Monic.mul_right_ne_zero (hp : Monic p) {q : R[X]} (hq : q ≠ 0) : p * q
   · simpa [h]
   rw [Ne, ← degree_eq_bot, hp.degree_mul_comm, hp.degree_mul, WithBot.add_eq_bot, not_or,
     degree_eq_bot]
-  refine' ⟨hq, _⟩
+  refine ⟨hq, ?_⟩
   rw [← hp.degree_le_zero_iff_eq_one, not_le] at h
   refine' (lt_trans _ h).ne'
   simp
@@ -503,7 +503,7 @@ theorem degree_smul_of_smul_regular {S : Type*} [Monoid S] [DistribMulAction S R
   · rw [degree_le_iff_coeff_zero]
     intro m hm
     rw [degree_lt_iff_coeff_zero] at hm
-    refine' h _
+    refine h ?_
     simpa using hm m le_rfl
 #align polynomial.degree_smul_of_smul_regular Polynomial.degree_smul_of_smul_regular
 

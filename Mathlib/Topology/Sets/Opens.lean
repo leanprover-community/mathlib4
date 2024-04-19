@@ -300,7 +300,7 @@ theorem isBasis_iff_nbhd {B : Set (Opens α)} :
   constructor <;> intro h
   · rintro ⟨sU, hU⟩ x hx
     rcases h.mem_nhds_iff.mp (IsOpen.mem_nhds hU hx) with ⟨sV, ⟨⟨V, H₁, H₂⟩, hsV⟩⟩
-    refine' ⟨V, H₁, _⟩
+    refine ⟨V, H₁, ?_⟩
     cases V
     dsimp at H₂
     subst H₂
@@ -348,12 +348,12 @@ theorem isCompactElement_iff (s : Opens α) :
   refine' ⟨_, fun H ι U hU => _⟩
   · introv H hU hU'
     obtain ⟨t, ht⟩ := H ι (fun i => ⟨U i, hU i⟩) (by simpa)
-    refine' ⟨t, Set.Subset.trans ht _⟩
+    refine ⟨t, Set.Subset.trans ht ?_⟩
     rw [coe_finset_sup, Finset.sup_eq_iSup]
     rfl
   · obtain ⟨t, ht⟩ :=
       H (fun i => U i) (fun i => (U i).isOpen) (by simpa using show (s : Set α) ⊆ ↑(iSup U) from hU)
-    refine' ⟨t, Set.Subset.trans ht _⟩
+    refine ⟨t, Set.Subset.trans ht ?_⟩
     simp only [Set.iUnion_subset_iff]
     show ∀ i ∈ t, U i ≤ t.sup U
     exact fun i => Finset.le_sup

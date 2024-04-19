@@ -354,7 +354,7 @@ theorem exists_root {f : Polynomial (AlgebraicClosureAux k)}
   rw [monic_map_iff] at hfm
   have := hfm.irreducible_of_irreducible_map (ofStep k n) p hfi
   obtain ⟨x, hx⟩ := toStepSucc.exists_root k hfm this
-  refine' ⟨ofStep k (n + 1) x, _⟩
+  refine ⟨ofStep k (n + 1) x, ?_⟩
   rw [← ofStep_succ k n, eval_map, ← hom_eval₂, hx, RingHom.map_zero]
 #noalign algebraic_closure.exists_root
 

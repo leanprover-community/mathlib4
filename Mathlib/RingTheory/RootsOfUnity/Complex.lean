@@ -78,7 +78,7 @@ nonrec theorem mem_rootsOfUnity (n : ℕ+) (x : Units ℂ) :
   · intro h
     obtain ⟨i, hi, H⟩ : ∃ i < (n : ℕ), exp (2 * π * I / n) ^ i = x := by
       simpa only using (isPrimitiveRoot_exp n n.ne_zero).eq_pow_of_pow_eq_one h n.pos
-    refine' ⟨i, hi, _⟩
+    refine ⟨i, hi, ?_⟩
     rw [← H, ← exp_nat_mul]
     congr 1
     field_simp [hn0, mul_comm (i : ℂ)]

@@ -484,7 +484,7 @@ theorem totalDegree_list_prod :
 
 theorem totalDegree_multiset_prod (s : Multiset (MvPolynomial σ R)) :
     s.prod.totalDegree ≤ (s.map MvPolynomial.totalDegree).sum := by
-  refine' Quotient.inductionOn s fun l => _
+  refine Quotient.inductionOn s fun l => ?_
   rw [Multiset.quot_mk_to_coe, Multiset.prod_coe, Multiset.map_coe, Multiset.sum_coe]
   exact totalDegree_list_prod l
 #align mv_polynomial.total_degree_multiset_prod MvPolynomial.totalDegree_multiset_prod

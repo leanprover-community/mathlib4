@@ -486,7 +486,7 @@ theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
   · have : {f : Lp F' 1 μ | AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ} =
         condexpL1CLM F' hm μ ⁻¹' {f | AEStronglyMeasurable' m f μ} := rfl
     rw [this]
-    refine' IsClosed.preimage (condexpL1CLM F' hm μ).continuous _
+    refine IsClosed.preimage (condexpL1CLM F' hm μ).continuous ?_
     exact isClosed_aeStronglyMeasurable' hm
 #align measure_theory.ae_strongly_measurable'_condexp_L1_clm MeasureTheory.aestronglyMeasurable'_condexpL1CLM
 

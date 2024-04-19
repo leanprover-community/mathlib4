@@ -144,7 +144,7 @@ theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i 
 theorem induced_of_isLimit {F : J ⥤ TopCatMax.{v, u}} (C : Cone F) (hC : IsLimit C) :
     C.pt.str = ⨅ j, (F.obj j).str.induced (C.π.app j) := by
   let homeo := homeoOfIso (hC.conePointUniqueUpToIso (limitConeInfiIsLimit F))
-  refine' homeo.inducing.induced.trans _
+  refine homeo.inducing.induced.trans ?_
   change induced homeo (⨅ j : J, _) = _
   simp [induced_iInf, induced_compose]
   rfl
@@ -242,7 +242,7 @@ theorem prod_topology {X Y : TopCat.{u}} :
       induced (Limits.prod.fst : X ⨯ Y ⟶ _) X.str ⊓
         induced (Limits.prod.snd : X ⨯ Y ⟶ _) Y.str := by
   let homeo := homeoOfIso (prodIsoProd X Y)
-  refine' homeo.inducing.induced.trans _
+  refine homeo.inducing.induced.trans ?_
   change induced homeo (_ ⊓ _) = _
   simp [induced_compose]
   rfl

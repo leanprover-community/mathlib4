@@ -53,7 +53,7 @@ theorem ContMDiffWithinAt.comp {t : Set M'} {g : M' → M''} (x : M)
     (hg : ContMDiffWithinAt I' I'' n g t (f x)) (hf : ContMDiffWithinAt I I' n f s x)
     (st : MapsTo f s t) : ContMDiffWithinAt I I'' n (g ∘ f) s x := by
   rw [contMDiffWithinAt_iff] at hg hf ⊢
-  refine' ⟨hg.1.comp hf.1 st, _⟩
+  refine ⟨hg.1.comp hf.1 st, ?_⟩
   set e := extChartAt I x
   set e' := extChartAt I' (f x)
   have : e' (f x) = (writtenInExtChartAt I I' x f) (e x) := by simp only [e, e', mfld_simps]

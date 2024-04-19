@@ -101,7 +101,7 @@ theorem Nonempty.pairwise_iff_exists_forall [IsEquiv α r] {s : Set ι} (hs : s.
     s.Pairwise (r on f) ↔ ∃ z, ∀ x ∈ s, r (f x) z := by
   constructor
   · rcases hs with ⟨y, hy⟩
-    refine' fun H => ⟨f y, fun x hx => _⟩
+    refine fun H => ⟨f y, fun x hx => ?_⟩
     rcases eq_or_ne x y with (rfl | hne)
     · apply IsRefl.refl
     · exact H hx hy hne

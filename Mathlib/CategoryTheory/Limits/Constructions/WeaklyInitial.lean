@@ -50,7 +50,7 @@ theorem hasInitial_of_weakly_initial_and_hasWideEqualizers [HasWideEqualizers.{v
   haveI : Nonempty endos := ⟨𝟙 _⟩
   have : ∀ X : C, Unique (wideEqualizer (id : endos → endos) ⟶ X) := by
     intro X
-    refine' ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => _⟩
+    refine ⟨⟨i ≫ Classical.choice (hT X)⟩, fun a => ?_⟩
     let E := equalizer a (i ≫ Classical.choice (hT _))
     let e : E ⟶ wideEqualizer id := equalizer.ι _ _
     let h : T ⟶ E := Classical.choice (hT E)

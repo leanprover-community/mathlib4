@@ -208,7 +208,7 @@ theorem tendsto_setIntegral_peak_smul_of_integrableOn_of_tendsto
       apply tendsto_const_nhds.congr'
       filter_upwards [h'ts] with x hx using by simp [hx]
   simp only [one_smul, zero_add] at A
-  refine' Tendsto.congr' _ A
+  refine Tendsto.congr' ?_ A
   filter_upwards [integrableOn_peak_smul_of_integrableOn_of_tendsto hs h'ts
     hlφ hiφ h'iφ hmg hcg,
     (tendsto_order.1 (tendsto_iff_norm_sub_tendsto_zero.1 hiφ)).2 1 zero_lt_one] with i hi h'i
@@ -296,7 +296,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
           ⟨0, le_rfl, hnc₀, by simp only [h, mem_empty_iff_false, IsEmpty.forall_iff, imp_true_iff]⟩
       obtain ⟨x, hx, h'x⟩ : ∃ x ∈ s \ u, ∀ y ∈ s \ u, c y ≤ c x :=
         IsCompact.exists_isMaxOn (hs.diff u_open) h (hc.mono (diff_subset _ _))
-      refine' ⟨c x, hnc x hx.1, h'c x hx.1 _, h'x⟩
+      refine ⟨c x, hnc x hx.1, h'c x hx.1 ?_, h'x⟩
       rintro rfl
       exact hx.2 x₀u
     obtain ⟨t', tt', t'x₀⟩ : ∃ t', t < t' ∧ t' < c x₀ := exists_between tx₀

@@ -251,7 +251,7 @@ def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMono (F.map f)
     where
   toFun f := f.map F
   invFun s := by
-    refine' ⟨F.preimage s.retraction, _⟩
+    refine ⟨F.preimage s.retraction, ?_⟩
     apply F.map_injective
     simp only [map_comp, image_preimage, map_id]
     apply SplitMono.id

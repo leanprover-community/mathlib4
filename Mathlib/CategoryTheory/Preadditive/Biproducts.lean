@@ -674,7 +674,7 @@ instance subsingleton_preadditive_of_hasBinaryBiproducts {C : Type u} [Category.
       (by convert (inferInstance : HasBinaryBiproduct X X))
     have h₂ := @biprod.add_eq_lift_id_desc _ _ b _ _ f g
       (by convert (inferInstance : HasBinaryBiproduct X X))
-    refine' h₁.trans (Eq.trans _ h₂.symm)
+    refine h₁.trans (Eq.trans ?_ h₂.symm)
     congr!
 #align category_theory.subsingleton_preadditive_of_has_binary_biproducts CategoryTheory.subsingleton_preadditive_of_hasBinaryBiproducts
 

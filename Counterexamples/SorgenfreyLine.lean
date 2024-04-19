@@ -197,7 +197,7 @@ instance : T5Space ℝₗ := by
   Then `⋃ x ∈ s, Ico x (X x)` and `⋃ y ∈ t, Ico y (Y y)` are
   disjoint open sets that include `s` and `t`.
   -/
-  refine' ⟨fun s t hd₁ hd₂ => _⟩
+  refine ⟨fun s t hd₁ hd₂ => ?_⟩
   choose! X hX hXd using fun x (hx : x ∈ s) =>
     exists_Ico_disjoint_closed isClosed_closure (disjoint_left.1 hd₂ hx)
   choose! Y hY hYd using fun y (hy : y ∈ t) =>

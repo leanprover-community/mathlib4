@@ -451,7 +451,7 @@ If `X` is exactly (defeq to) the gluing of `U i`, then using `Multicoequalizer.d
 def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     (hf : ∀ x y, (pullback.fst : pullback (𝒰.map x) (𝒰.map y) ⟶ _) ≫ f x = pullback.snd ≫ f y) :
     X ⟶ Y := by
-  refine' inv 𝒰.fromGlued ≫ _
+  refine inv 𝒰.fromGlued ≫ ?_
   fapply Multicoequalizer.desc
   exact f
   rintro ⟨i, j⟩

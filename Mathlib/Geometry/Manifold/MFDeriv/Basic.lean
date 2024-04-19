@@ -232,7 +232,7 @@ theorem HasMFDerivWithinAt.hasMFDerivAt (h : HasMFDerivWithinAt I I' f s x f') (
 
 theorem MDifferentiableWithinAt.hasMFDerivWithinAt (h : MDifferentiableWithinAt I I' f s x) :
     HasMFDerivWithinAt I I' f s x (mfderivWithin I I' f s x) := by
-  refine' ⟨h.1, _⟩
+  refine ⟨h.1, ?_⟩
   simp only [mfderivWithin, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 #align mdifferentiable_within_at.has_mfderiv_within_at MDifferentiableWithinAt.hasMFDerivWithinAt
@@ -246,7 +246,7 @@ protected theorem MDifferentiableWithinAt.mfderivWithin (h : MDifferentiableWith
 
 theorem MDifferentiableAt.hasMFDerivAt (h : MDifferentiableAt I I' f x) :
     HasMFDerivAt I I' f x (mfderiv I I' f x) := by
-  refine' ⟨h.1, _⟩
+  refine ⟨h.1, ?_⟩
   simp only [mfderiv, h, if_pos, mfld_simps]
   exact DifferentiableWithinAt.hasFDerivWithinAt h.2
 #align mdifferentiable_at.has_mfderiv_at MDifferentiableAt.hasMFDerivAt
@@ -677,7 +677,7 @@ variable (x)
 theorem HasMFDerivWithinAt.comp (hg : HasMFDerivWithinAt I' I'' g u (f x) g')
     (hf : HasMFDerivWithinAt I I' f s x f') (hst : s ⊆ f ⁻¹' u) :
     HasMFDerivWithinAt I I'' (g ∘ f) s x (g'.comp f') := by
-  refine' ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, _⟩
+  refine ⟨ContinuousWithinAt.comp hg.1 hf.1 hst, ?_⟩
   have A :
     HasFDerivWithinAt (writtenInExtChartAt I' I'' (f x) g ∘ writtenInExtChartAt I I' x f)
       (ContinuousLinearMap.comp g' f' : E →L[𝕜] E'') ((extChartAt I x).symm ⁻¹' s ∩ range I)

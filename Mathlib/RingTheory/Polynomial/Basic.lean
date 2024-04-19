@@ -769,7 +769,7 @@ theorem isPrime_map_C_iff_isPrime (P : Ideal R) :
       classical
         let m := Nat.find hf
         let n := Nat.find hg
-        refine' ⟨m + n, _⟩
+        refine ⟨m + n, ?_⟩
         rw [coeff_mul, ← Finset.insert_erase ((Finset.mem_antidiagonal (a := (m,n))).mpr rfl),
           Finset.sum_insert (Finset.not_mem_erase _ _), (P.add_mem_iff_left _).not]
         · apply mt h.2

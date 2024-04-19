@@ -78,7 +78,7 @@ theorem mem_ringOfIntegers (x : K) : x ∈ 𝓞 K ↔ IsIntegral ℤ x :=
 theorem isIntegral_of_mem_ringOfIntegers {K : Type*} [Field K] {x : K} (hx : x ∈ 𝓞 K) :
     IsIntegral ℤ (⟨x, hx⟩ : 𝓞 K) := by
   obtain ⟨P, hPm, hP⟩ := hx
-  refine' ⟨P, hPm, _⟩
+  refine ⟨P, hPm, ?_⟩
   rw [← Polynomial.aeval_def, ← Subalgebra.coe_eq_zero, Polynomial.aeval_subalgebra_coe,
     Polynomial.aeval_def, Subtype.coe_mk, hP]
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.isIntegral_of_mem_ringOfIntegers

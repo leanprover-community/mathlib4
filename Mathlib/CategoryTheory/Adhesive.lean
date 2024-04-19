@@ -157,7 +157,7 @@ theorem IsPushout.isVanKampen_inl {W E X Z : C} (c : BinaryCofan W E) [FinitaryE
   · dsimp; rw [← pullback.condition_assoc, Category.assoc, hi.w]
   constructor
   · rintro ⟨hc₃, hc₄⟩
-    refine' ⟨hc₄, _⟩
+    refine ⟨hc₄, ?_⟩
     let Y'' := pullback αZ i
     let cmp : Y' ⟶ Y'' := pullback.lift i' αY hi.w
     have e₁ : (g' ≫ cmp) ≫ pullback.snd = αW ≫ c.inl := by

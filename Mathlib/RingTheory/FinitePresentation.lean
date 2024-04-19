@@ -70,7 +70,7 @@ presented. -/
 theorem of_finiteType [IsNoetherianRing R] : FiniteType R A ↔ FinitePresentation R A := by
   refine' ⟨fun h => _, fun hfp => Algebra.FiniteType.of_finitePresentation⟩
   obtain ⟨n, f, hf⟩ := Algebra.FiniteType.iff_quotient_mvPolynomial''.1 h
-  refine' ⟨n, f, hf, _⟩
+  refine ⟨n, f, hf, ?_⟩
   have hnoet : IsNoetherianRing (MvPolynomial (Fin n) R) := by infer_instance
   -- Porting note: rewrote code to help typeclass inference
   rw [isNoetherianRing_iff] at hnoet
@@ -254,7 +254,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
       rw [← adjoin_restrictScalars, adjoin_range_X, Subalgebra.restrictScalars_top,
         Subalgebra.restrictScalars_top]
     letI g : t → AX := fun x => MvPolynomial.C (x : A) - map (algebraMap R A) (t' x)
-    refine' ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, _⟩
+    refine ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, ?_⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
     let s₀ := (MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g

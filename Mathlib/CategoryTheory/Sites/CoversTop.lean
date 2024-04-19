@@ -136,7 +136,7 @@ lemma exists_unique_section :
       rw [hs i b]
       exact (Presieve.IsSheafFor.valid_glue (H _ (hY X))
         (hx.familyOfElements_isCompatible _) a ⟨i, ⟨b⟩⟩).trans (familyOfElements_apply hx _ _ _)
-    refine' ⟨⟨fun X => s X.unop, _⟩, fun i => (hs i (𝟙 (Y i))).trans (by simp)⟩
+    refine ⟨⟨fun X => s X.unop, ?_⟩, fun i => (hs i (𝟙 (Y i))).trans (by simp)⟩
     rintro ⟨Y₁⟩ ⟨Y₂⟩ ⟨f : Y₂ ⟶ Y₁⟩
     change F.map f.op (s Y₁) = s Y₂
     apply (Presieve.isSeparated_of_isSheaf J F H _ (hY Y₂)).ext

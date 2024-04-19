@@ -157,7 +157,7 @@ theorem countable_univ_iff : (univ : Set α).Countable ↔ Countable α :=
 theorem Countable.exists_eq_range {s : Set α} (hc : s.Countable) (hs : s.Nonempty) :
     ∃ f : ℕ → α, s = range f := by
   rcases hc.exists_surjective hs with ⟨f, hf⟩
-  refine' ⟨(↑) ∘ f, _⟩
+  refine ⟨(↑) ∘ f, ?_⟩
   rw [hf.range_comp, Subtype.range_coe]
 #align set.countable.exists_eq_range Set.Countable.exists_eq_range
 

@@ -120,7 +120,7 @@ theorem WCovBy.of_image (f : α ↪o β) (h : f a ⩿ f b) : a ⩿ b :=
 #align wcovby.of_image WCovBy.of_image
 
 theorem WCovBy.image (f : α ↪o β) (hab : a ⩿ b) (h : (range f).OrdConnected) : f a ⩿ f b := by
-  refine' ⟨f.monotone hab.le, fun c ha hb => _⟩
+  refine ⟨f.monotone hab.le, fun c ha hb => ?_⟩
   obtain ⟨c, rfl⟩ := h.out (mem_range_self _) (mem_range_self _) ⟨ha.le, hb.le⟩
   rw [f.lt_iff_lt] at ha hb
   exact hab.2 ha hb

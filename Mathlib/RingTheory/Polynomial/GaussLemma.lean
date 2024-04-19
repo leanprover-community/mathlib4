@@ -175,7 +175,7 @@ theorem Monic.irreducible_iff_irreducible_map_fraction_map [IsIntegrallyClosed R
         (Exists.intro (C a.leadingCoeff) <| by rw [← C_mul, this, C_1]))
   · exact Polynomial.map_injective _ (IsFractionRing.injective R K) H
   · by_contra h_contra
-    refine' hₐ _
+    refine hₐ ?_
     rw [← ha, ← Polynomial.coe_mapRingHom]
     exact
       IsUnit.mul (IsUnit.map _ h_contra)

@@ -27,9 +27,9 @@ variable {A : Type u} [CommRing A] [IsDomain A] [IsNoetherianRing A]
 theorem exists_primeSpectrum_prod_le (I : Ideal R) :
     ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I := by
   -- Porting note: Need to specify `P` explicitly
-  refine' IsNoetherian.induction
+  refine IsNoetherian.induction
     (P := fun I => ∃ Z : Multiset (PrimeSpectrum R), Multiset.prod (Z.map asIdeal) ≤ I)
-    (fun (M : Ideal R) hgt => _) I
+    (fun (M : Ideal R) hgt => ?_) I
   by_cases h_prM : M.IsPrime
   · use {⟨M, h_prM⟩}
     rw [Multiset.map_singleton, Multiset.prod_singleton]
@@ -63,9 +63,9 @@ theorem exists_primeSpectrum_prod_le_and_ne_bot_of_domain (h_fA : ¬IsField A) {
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥ := by
   revert h_nzI
   -- Porting note: Need to specify `P` explicitly
-  refine' IsNoetherian.induction (P := fun I => I ≠ ⊥ → ∃ Z : Multiset (PrimeSpectrum A),
+  refine IsNoetherian.induction (P := fun I => I ≠ ⊥ → ∃ Z : Multiset (PrimeSpectrum A),
       Multiset.prod (Z.map asIdeal) ≤ I ∧ Multiset.prod (Z.map asIdeal) ≠ ⊥)
-    (fun (M : Ideal A) hgt => _) I
+    (fun (M : Ideal A) hgt => ?_) I
   intro h_nzM
   have hA_nont : Nontrivial A := IsDomain.toNontrivial
   by_cases h_topM : M = ⊤

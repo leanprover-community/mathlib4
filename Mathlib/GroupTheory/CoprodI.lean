@@ -725,7 +725,7 @@ def toWord {i j} (w : NeWord M i j) : Word M
 theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i j), w'.toWord = w := by
   suffices ∃ (i j : _) (w' : NeWord M i j), w'.toWord.toList = w.toList by
     rcases this with ⟨i, j, w, h⟩
-    refine' ⟨i, j, w, _⟩
+    refine ⟨i, j, w, ?_⟩
     ext
     rw [h]
   cases' w with l hnot1 hchain
@@ -1042,7 +1042,7 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
     simp
   rw [this, MonoidHom.coe_comp]
   clear this
-  refine' Function.Injective.comp _ (MulEquiv.injective freeGroupEquivCoprodI)
+  refine Function.Injective.comp ?_ (MulEquiv.injective freeGroupEquivCoprodI)
   -- Step two: Invoke the ping-pong lemma for free products
   show Function.Injective (lift fun i : ι => FreeGroup.lift fun _ => a i)
   -- Prepare to instantiate lift_injective_of_ping_pong

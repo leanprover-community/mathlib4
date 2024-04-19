@@ -562,7 +562,7 @@ instance {α : ι → Type*} [Nonempty ι] [∀ i, MeasureSpace (α i)]
 instance pi.isLocallyFiniteMeasure
     [∀ i, TopologicalSpace (α i)] [∀ i, IsLocallyFiniteMeasure (μ i)] :
     IsLocallyFiniteMeasure (Measure.pi μ) := by
-  refine' ⟨fun x => _⟩
+  refine ⟨fun x => ?_⟩
   choose s hxs ho hμ using fun i => (μ i).exists_isOpen_measure_lt_top (x i)
   refine' ⟨pi univ s, set_pi_mem_nhds finite_univ fun i _ => IsOpen.mem_nhds (ho i) (hxs i), _⟩
   rw [pi_pi]
@@ -741,7 +741,7 @@ theorem measurePreserving_piEquivPiSubtypeProd (p : ι → Prop) [DecidablePred 
     MeasurePreserving (MeasurableEquiv.piEquivPiSubtypeProd α p) (Measure.pi μ)
       ((Measure.pi fun i : Subtype p => μ i).prod (Measure.pi fun i => μ i)) := by
   set e := (MeasurableEquiv.piEquivPiSubtypeProd α p).symm
-  refine' MeasurePreserving.symm e _
+  refine MeasurePreserving.symm e ?_
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   have : e ⁻¹' pi univ s =
       (pi univ fun i : { i // p i } => s i) ×ˢ pi univ fun i : { i // ¬p i } => s i :=
@@ -803,7 +803,7 @@ theorem measurePreserving_piFinSuccAbove {n : ℕ} {α : Fin (n + 1) → Type u}
     MeasurePreserving (MeasurableEquiv.piFinSuccAbove α i) (Measure.pi μ)
       ((μ i).prod <| Measure.pi fun j => μ (i.succAbove j)) := by
   set e := (MeasurableEquiv.piFinSuccAbove α i).symm
-  refine' MeasurePreserving.symm e _
+  refine MeasurePreserving.symm e ?_
   refine' ⟨e.measurable, (pi_eq fun s _ => _).symm⟩
   rw [e.map_apply, i.prod_univ_succAbove _, ← pi_pi, ← prod_prod]
   congr 1 with ⟨x, f⟩
@@ -884,7 +884,7 @@ theorem measurePreserving_pi_empty {ι : Type u} {α : ι → Type v} [Fintype �
     MeasurePreserving (MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit) (Measure.pi μ)
       (Measure.dirac ()) := by
   set e := MeasurableEquiv.ofUniqueOfUnique (∀ i, α i) Unit
-  refine' ⟨e.measurable, _⟩
+  refine ⟨e.measurable, ?_⟩
   rw [Measure.pi_of_empty, Measure.map_dirac e.measurable]
 #align measure_theory.measure_preserving_pi_empty MeasureTheory.measurePreserving_pi_empty
 

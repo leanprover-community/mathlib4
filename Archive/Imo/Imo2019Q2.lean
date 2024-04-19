@@ -329,7 +329,7 @@ theorem A₁_ne_B : cfg.A₁ ≠ cfg.B := by
         (Set.mem_insert_of_mem _ (Set.mem_insert_of_mem _ (Set.mem_singleton _))))
       hBQ₁ cfg.Q_ne_B.symm hQQ₁.symm
   rw [affineIndependent_iff_not_collinear_set] at hBQ₁Q
-  refine' hBQ₁Q _
+  refine hBQ₁Q ?_
   rw [← h, Set.pair_comm, Set.insert_comm]
   exact cfg.sbtw_Q_A₁_Q₁.wbtw.collinear
 #align imo2019_q2.imo2019q2_cfg.A₁_ne_B Imo2019Q2.Imo2019q2Cfg.A₁_ne_B
@@ -369,7 +369,7 @@ theorem A₂_ne_B : cfg.A₂ ≠ cfg.B := by
   have hc : Collinear ℝ ({cfg.A, cfg.C, cfg.B, cfg.A₁} : Set Pt) :=
     collinear_insert_insert_of_mem_affineSpan_pair h₁.left_mem_affineSpan
       cfg.sbtw_B_A₁_C.right_mem_affineSpan
-  refine' hc.subset _
+  refine hc.subset ?_
   rw [Set.pair_comm _ cfg.A₁, Set.insert_comm _ cfg.A₁, Set.insert_comm _ cfg.A₁, Set.pair_comm]
   exact Set.subset_insert _ _
 #align imo2019_q2.imo2019q2_cfg.A₂_ne_B Imo2019Q2.Imo2019q2Cfg.A₂_ne_B
@@ -438,7 +438,7 @@ theorem not_collinear_QPA₂ : ¬Collinear ℝ ({cfg.Q, cfg.P, cfg.A₂} : Set P
   rw [collinear_iff_of_two_zsmul_oangle_eq cfg.two_zsmul_oangle_QPA₂_eq_two_zsmul_oangle_BAA₂, ←
     affineIndependent_iff_not_collinear_set]
   have h : Cospherical ({cfg.B, cfg.A, cfg.A₂} : Set Pt) := by
-    refine' cfg.triangleABC.circumsphere.cospherical.subset _
+    refine cfg.triangleABC.circumsphere.cospherical.subset ?_
     simp only [Set.insert_subset_iff, cfg.A_mem_circumsphere, cfg.B_mem_circumsphere,
       cfg.A₂_mem_circumsphere, Sphere.mem_coe, Set.singleton_subset_iff, and_true]
   exact h.affineIndependent_of_ne cfg.A_ne_B.symm cfg.A₂_ne_B.symm cfg.A₂_ne_A.symm
@@ -630,7 +630,7 @@ theorem P₁_mem_ω : cfg.P₁ ∈ cfg.ω := by rw [← symm_ω]; exact cfg.symm
 theorem result : Concyclic ({cfg.P, cfg.Q, cfg.P₁, cfg.Q₁} : Set Pt) := by
   refine' ⟨_, coplanar_of_fact_finrank_eq_two _⟩
   rw [cospherical_iff_exists_sphere]
-  refine' ⟨cfg.ω, _⟩
+  refine ⟨cfg.ω, ?_⟩
   simp only [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨cfg.P_mem_ω, cfg.Q_mem_ω, cfg.P₁_mem_ω, cfg.Q₁_mem_ω⟩
 #align imo2019_q2.imo2019q2_cfg.result Imo2019Q2.Imo2019q2Cfg.result

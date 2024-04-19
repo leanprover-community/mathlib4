@@ -160,7 +160,7 @@ variable {A : Type*} [CommRing R] [CommRing A]
 
 theorem scaleRoots.isWeaklyEisensteinAt (p : R[X]) {x : R} {P : Ideal R} (hP : x ∈ P) :
     (scaleRoots p x).IsWeaklyEisensteinAt P := by
-  refine' ⟨fun i => _⟩
+  refine ⟨fun i => ?_⟩
   rw [coeff_scaleRoots]
   rw [natDegree_scaleRoots, ← tsub_pos_iff_lt] at i
   exact Ideal.mul_mem_left _ _ (Ideal.pow_mem_of_mem P hP _ i)

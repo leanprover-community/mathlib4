@@ -228,7 +228,7 @@ open Karoubi
 variable (C)
 
 instance : IsIdempotentComplete (Karoubi C) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   intro P p hp
   simp only [hom_ext_iff, comp_f] at hp
   use ⟨P.X, p.f, hp⟩

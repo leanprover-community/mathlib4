@@ -321,7 +321,7 @@ theorem _root_.MeasureTheory.Integrable.comp_snd_map_prod_mk
     Integrable (fun x : β × Ω => f x.2) (μ.map fun ω => (X ω, ω)) := by
   by_cases hX : AEMeasurable X μ
   · have hf := hf_int.1.comp_snd_map_prod_mk X (mΩ := mΩ) (mβ := mβ)
-    refine' ⟨hf, _⟩
+    refine ⟨hf, ?_⟩
     rw [HasFiniteIntegral, lintegral_map' hf.ennnorm (hX.prod_mk aemeasurable_id)]
     exact hf_int.2
   · rw [Measure.map_of_not_aemeasurable]

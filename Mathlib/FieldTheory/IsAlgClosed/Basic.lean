@@ -169,7 +169,7 @@ theorem degree_eq_one_of_irreducible [IsAlgClosed k] {p : k[X]} (hp : Irreducibl
 theorem algebraMap_surjective_of_isIntegral {k K : Type*} [Field k] [Ring K] [IsDomain K]
     [hk : IsAlgClosed k] [Algebra k K] (hf : Algebra.IsIntegral k K) :
     Function.Surjective (algebraMap k K) := by
-  refine' fun x => ⟨-(minpoly k x).coeff 0, _⟩
+  refine fun x => ⟨-(minpoly k x).coeff 0, ?_⟩
   have hq : (minpoly k x).leadingCoeff = 1 := minpoly.monic (hf x)
   have h : (minpoly k x).degree = 1 := degree_eq_one_of_irreducible k (minpoly.irreducible (hf x))
   have : aeval x (minpoly k x) = 0 := minpoly.aeval k x

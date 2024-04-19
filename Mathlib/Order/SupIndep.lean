@@ -185,7 +185,7 @@ example {α ι} [Lattice α] [OrderBot α] (s : Finset ι) (f : ι → α) :
 -/
 @[simp, nolint simpNF]
 theorem supIndep_attach : (s.attach.SupIndep fun a => f a) ↔ s.SupIndep f := by
-  refine' ⟨fun h t ht i his hit => _, SupIndep.attach⟩
+  refine ⟨fun h t ht i his hit => ?_, SupIndep.attach⟩
   classical
   convert h (filter_subset (fun (i : { x // x ∈ s }) => (i : ι) ∈ t) _) (mem_attach _ ⟨i, ‹_›⟩)
     fun hi => hit <| by simpa using hi using 1
@@ -265,7 +265,7 @@ theorem SupIndep.product {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α}
 theorem supIndep_product_iff {s : Finset ι} {t : Finset ι'} {f : ι × ι' → α} :
     (s.product t).SupIndep f ↔ (s.SupIndep fun i => t.sup fun i' => f (i, i'))
       ∧ t.SupIndep fun i' => s.sup fun i => f (i, i') := by
-  refine' ⟨_, fun h => h.1.product h.2⟩
+  refine ⟨?_, fun h => h.1.product h.2⟩
   simp_rw [supIndep_iff_pairwiseDisjoint]
   refine' fun h => ⟨fun i hi j hj hij => _, fun i hi j hj hij => _⟩ <;>
       simp_rw [Finset.disjoint_sup_left, Finset.disjoint_sup_right] <;>

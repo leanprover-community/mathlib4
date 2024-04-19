@@ -262,7 +262,7 @@ theorem AffineTargetMorphismProperty.IsLocal.affine_openCover_TFAE
   · rintro ⟨𝒰, h𝒰, H⟩; exact targetAffineLocallyOfOpenCover hP f 𝒰 H
   tfae_have 5 → 2
   · rintro ⟨ι, U, hU, hU', H⟩
-    refine' ⟨Y.openCoverOfSuprEqTop U hU, hU', _⟩
+    refine ⟨Y.openCoverOfSuprEqTop U hU, hU', ?_⟩
     intro i
     specialize H i
     -- Porting note (#10754): added these two instances manually
@@ -418,7 +418,7 @@ theorem PropertyIsLocalAtTarget.openCover_TFAE {P : MorphismProperty Scheme}
   · intro H; exact ⟨PUnit, fun _ => ⊤, ciSup_const, fun _ => H _⟩
   tfae_have 6 → 2
   · rintro ⟨ι, U, hU, H⟩
-    refine' ⟨Y.openCoverOfSuprEqTop U hU, _⟩
+    refine ⟨Y.openCoverOfSuprEqTop U hU, ?_⟩
     intro i
     rw [← hP.1.arrow_mk_iso_iff (morphismRestrictOpensRange f _)]
     convert H i

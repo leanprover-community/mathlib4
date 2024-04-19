@@ -232,7 +232,7 @@ instance [Reflective R] (X : (Adjunction.ofRightAdjoint R).toMonad.Algebra) :
 
 instance comparison_essSurj [Reflective R] :
     (Monad.comparison (Adjunction.ofRightAdjoint R)).EssSurj := by
-  refine' ⟨fun X => ⟨(leftAdjoint R).obj X.A, ⟨_⟩⟩⟩
+  refine ⟨fun X => ⟨(leftAdjoint R).obj X.A, ⟨?_⟩⟩⟩
   symm
   refine' Monad.Algebra.isoMk _ _
   · exact asIso ((Adjunction.ofRightAdjoint R).unit.app X.A)

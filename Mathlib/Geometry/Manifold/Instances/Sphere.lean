@@ -97,7 +97,7 @@ theorem stereoToFun_apply (x : E) :
 
 theorem contDiffOn_stereoToFun :
     ContDiffOn ℝ ⊤ (stereoToFun v) {x : E | innerSL _ v x ≠ (1 : ℝ)} := by
-  refine' ContDiffOn.smul _ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
+  refine ContDiffOn.smul ?_ (orthogonalProjection (ℝ ∙ v)ᗮ).contDiff.contDiffOn
   refine' contDiff_const.contDiffOn.div _ _
   · exact (contDiff_const.sub (innerSL ℝ v).contDiff).contDiffOn
   · intro x h h'

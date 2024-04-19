@@ -376,7 +376,7 @@ nonrec theorem quadrant_I (hd : DiffContOnCl ℂ f (Ioi 0 ×ℂ Ioi 0))
     -- `f ∘ exp` with the same `c` and `B' = max B 0`.
     rw [sub_zero, div_div_cancel' Real.pi_pos.ne']
     rcases hB with ⟨c, hc, B, hO⟩
-    refine' ⟨c, hc, max B 0, _⟩
+    refine ⟨c, hc, max B 0, ?_⟩
     rw [← comap_comap, comap_abs_atTop, comap_sup, inf_sup_right]
     -- We prove separately the estimates as `ζ.re → ∞` and as `ζ.re → -∞`
     refine' IsBigO.sup _

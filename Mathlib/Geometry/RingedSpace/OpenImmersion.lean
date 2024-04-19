@@ -526,7 +526,7 @@ instance forgetPreservesLimitsOfLeft : PreservesLimit (cospan f g) (forget C) :=
   preservesLimitOfPreservesLimitCone (pullbackConeOfLeftIsLimit f g)
     (by
       apply (IsLimit.postcomposeHomEquiv (diagramIsoCospan _) _).toFun
-      refine' (IsLimit.equivIsoLimit _).toFun (limit.isLimit (cospan f.base g.base))
+      refine (IsLimit.equivIsoLimit ?_).toFun (limit.isLimit (cospan f.base g.base))
       fapply Cones.ext
       · exact Iso.refl _
       change ∀ j, _ = 𝟙 _ ≫ _ ≫ _
@@ -1188,7 +1188,7 @@ noncomputable def isoRestrict {X Y : LocallyRingedSpace} {f : X ⟶ Y}
     (H : LocallyRingedSpace.IsOpenImmersion f) :
     X ≅ Y.restrict H.base_open := by
   apply LocallyRingedSpace.isoOfSheafedSpaceIso
-  refine' SheafedSpace.forgetToPresheafedSpace.preimageIso _
+  refine SheafedSpace.forgetToPresheafedSpace.preimageIso ?_
   exact PresheafedSpace.IsOpenImmersion.isoRestrict H
 #align algebraic_geometry.LocallyRingedSpace.is_open_immersion.iso_restrict AlgebraicGeometry.LocallyRingedSpace.IsOpenImmersion.isoRestrict
 

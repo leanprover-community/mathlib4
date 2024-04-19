@@ -49,7 +49,7 @@ theorem affineSegment_eq_segment (x y : V) : affineSegment R x y = segment R x y
 #align affine_segment_eq_segment affineSegment_eq_segment
 
 theorem affineSegment_comm (x y : P) : affineSegment R x y = affineSegment R y x := by
-  refine' Set.ext fun z => _
+  refine Set.ext fun z => ?_
   constructor <;>
     · rintro ⟨t, ht, hxy⟩
       refine' ⟨1 - t, _, _⟩
@@ -543,7 +543,7 @@ theorem Sbtw.affineCombination_of_mem_affineSpan_pair [NoZeroDivisors R] [NoZero
   intro hz
   have hw₁w₂ : (∑ i in s, (w₁ - w₂) i) = 0 := by
     simp_rw [Pi.sub_apply, Finset.sum_sub_distrib, hw₁, hw₂, sub_self]
-  refine' hs.1 _
+  refine hs.1 ?_
   have ha' := ha s (w₁ - w₂) hw₁w₂ hz i his
   rwa [Pi.sub_apply, sub_eq_zero] at ha'
 #align sbtw.affine_combination_of_mem_affine_span_pair Sbtw.affineCombination_of_mem_affineSpan_pair
@@ -652,7 +652,7 @@ theorem sbtw_of_sbtw_of_sbtw_of_mem_affineSpan_pair [NoZeroSMulDivisors R V]
   have hs' := sign_sum Finset.univ_nonempty (SignType.sign (w i₃)) fun i _ => hs i
   rw [hs'] at hss
   simp_rw [hss, sign_eq_one_iff] at hs
-  refine' ⟨hs i₁, _⟩
+  refine ⟨hs i₁, ?_⟩
   rw [hu] at hw
   rw [Finset.sum_insert, Finset.sum_insert, Finset.sum_singleton] at hw
   · by_contra hle
@@ -843,7 +843,7 @@ theorem Sbtw.trans_right_left {w x y z : P} (h₁ : Sbtw R w x z) (h₂ : Sbtw R
 
 theorem Wbtw.collinear {x y z : P} (h : Wbtw R x y z) : Collinear R ({x, y, z} : Set P) := by
   rw [collinear_iff_exists_forall_eq_smul_vadd]
-  refine' ⟨x, z -ᵥ x, _⟩
+  refine ⟨x, z -ᵥ x, ?_⟩
   intro p hp
   simp_rw [Set.mem_insert_iff, Set.mem_singleton_iff] at hp
   rcases hp with (rfl | rfl | rfl)

@@ -550,7 +550,7 @@ theorem enum_lt_enum {r : α → α → Prop} [IsWellOrder α r] {o₁ o₂ : Or
 theorem relIso_enum' {α β : Type u} {r : α → α → Prop} {s : β → β → Prop} [IsWellOrder α r]
     [IsWellOrder β s] (f : r ≃r s) (o : Ordinal) :
     ∀ (hr : o < type r) (hs : o < type s), f (enum r o hr) = enum s o hs := by
-  refine' inductionOn o _; rintro γ t wo ⟨g⟩ ⟨h⟩
+  refine inductionOn o ?_; rintro γ t wo ⟨g⟩ ⟨h⟩
   rw [enum_type g, enum_type (PrincipalSeg.ltEquiv g f)]; rfl
 #align ordinal.rel_iso_enum' Ordinal.relIso_enum'
 

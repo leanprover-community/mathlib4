@@ -284,7 +284,7 @@ theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Deri
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
   · exact der_replicate_I_of_mod3 c hc
   · use count I ys
-    refine' And.intro _ hi
+    refine And.intro ?_ hi
     apply replicate_count_eq_of_count_eq_length
     exact count_I_eq_length_of_count_U_zero_and_neg_mem hu nmtail
 #align miu.base_case_suf Miu.base_case_suf

@@ -114,7 +114,7 @@ theorem linearIndependent : LinearIndependent R x := by
     ext
     simp
   rw [this]
-  refine' hx.comp _
+  refine hx.comp ?_
   rw [← linearIndependent_iff_injective_total]
   exact linearIndependent_X _ _
 #align algebraic_independent.linear_independent AlgebraicIndependent.linearIndependent

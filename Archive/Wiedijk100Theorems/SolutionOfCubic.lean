@@ -59,7 +59,7 @@ theorem cubic_basic_eq_zero_iff (hω : IsPrimitiveRoot ω 3) (hp_nonzero : p ≠
   have h₁ : ∀ x a₁ a₂ a₃ : K, x = a₁ ∨ x = a₂ ∨ x = a₃ ↔ (x - a₁) * (x - a₂) * (x - a₃) = 0 := by
     intros; simp only [mul_eq_zero, sub_eq_zero, or_assoc]
   rw [h₁]
-  refine' Eq.congr _ rfl
+  refine Eq.congr ?_ rfl
   have hs_nonzero : s ≠ 0 := by
     contrapose! hp_nonzero with hs_nonzero
     linear_combination -1 * ht + t * hs_nonzero

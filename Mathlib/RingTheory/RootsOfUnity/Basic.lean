@@ -336,7 +336,7 @@ variable {k l : ℕ}
 
 theorem mk_of_lt (ζ : M) (hk : 0 < k) (h1 : ζ ^ k = 1) (h : ∀ l : ℕ, 0 < l → l < k → ζ ^ l ≠ 1) :
     IsPrimitiveRoot ζ k := by
-  refine' ⟨h1, fun l hl => _⟩
+  refine ⟨h1, fun l hl => ?_⟩
   suffices k.gcd l = k by exact this ▸ k.gcd_dvd_right l
   rw [eq_iff_le_not_lt]
   refine' ⟨Nat.le_of_dvd hk (k.gcd_dvd_left l), _⟩
@@ -735,7 +735,7 @@ def zmodEquivZPowers (h : IsPrimitiveRoot ζ k) : ZMod k ≃+ Additive (Subgroup
         rw [← (CharP.intCast_eq_zero_iff (ZMod k) k _).mpr this, eq_comm]
         exact ZMod.intCast_rightInverse i
       · rintro ⟨ξ, i, rfl⟩
-        refine' ⟨Int.castAddHom (ZMod k) i, _⟩
+        refine ⟨Int.castAddHom (ZMod k) i, ?_⟩
         rw [AddMonoidHom.liftOfRightInverse_comp_apply]
         rfl)
 #align is_primitive_root.zmod_equiv_zpowers IsPrimitiveRoot.zmodEquivZPowers

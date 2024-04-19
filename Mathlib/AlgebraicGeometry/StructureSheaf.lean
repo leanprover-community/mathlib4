@@ -191,7 +191,7 @@ def sectionsSubring (U : (Opens (PrimeSpectrum.Top R))ᵒᵖ) :
   neg_mem' := by
     intro a ha x
     rcases ha x with ⟨V, m, i, r, s, w⟩
-    refine' ⟨V, m, i, -r, s, _⟩
+    refine ⟨V, m, i, -r, s, ?_⟩
     intro y
     rcases w y with ⟨nm, w⟩
     fconstructor

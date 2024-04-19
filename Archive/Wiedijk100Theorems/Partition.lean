@@ -152,12 +152,12 @@ theorem num_series' [Field α] (i : ℕ) :
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
         cases' h with p hp
-        refine' ⟨((i + 1) * (p - 1), i + 1), _⟩
+        refine ⟨((i + 1) * (p - 1), i + 1), ?_⟩
         ext ⟨a₁, a₂⟩
         simp only [mem_filter, Prod.mk.inj_iff, mem_antidiagonal, mem_singleton]
         constructor
         · rintro ⟨a_left, ⟨a, rfl⟩, rfl⟩
-          refine' ⟨_, rfl⟩
+          refine ⟨?_, rfl⟩
           rw [Nat.mul_sub_left_distrib, ← hp, ← a_left, mul_one, Nat.add_sub_cancel]
         · rintro ⟨rfl, rfl⟩
           match p with
@@ -291,7 +291,7 @@ theorem partialOddGF_prop [Field α] (n m : ℕ) :
     ext k
     constructor
     · rintro ⟨p, rfl⟩
-      refine' ⟨p, ⟨⟩, _⟩
+      refine ⟨p, ⟨⟩, ?_⟩
       apply mul_comm
     rintro ⟨a_w, -, rfl⟩
     apply Dvd.intro_left a_w rfl
@@ -316,7 +316,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     have := Nat.mod_add_div i 2
     rw [Nat.not_even_iff] at hi₂
     rw [hi₂, add_comm] at this
-    refine' ⟨i / 2, _, this⟩
+    refine ⟨i / 2, ?_, this⟩
     rw [Nat.div_lt_iff_lt_mul zero_lt_two]
     exact lt_of_le_of_lt hin h
   · rintro ⟨a, -, rfl⟩

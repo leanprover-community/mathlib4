@@ -118,7 +118,7 @@ alias set_integral_eq :=
   setIntegral_eq -- deprecated on 2024-04-17
 
 theorem add (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (f + g) ℱ μ := by
-  refine' ⟨hf.adapted.add hg.adapted, fun i j hij => _⟩
+  refine ⟨hf.adapted.add hg.adapted, fun i j hij => ?_⟩
   exact (condexp_add (hf.integrable j) (hg.integrable j)).trans ((hf.2 i j hij).add (hg.2 i j hij))
 #align measure_theory.martingale.add MeasureTheory.Martingale.add
 
@@ -131,7 +131,7 @@ theorem sub (hf : Martingale f ℱ μ) (hg : Martingale g ℱ μ) : Martingale (
 #align measure_theory.martingale.sub MeasureTheory.Martingale.sub
 
 theorem smul (c : ℝ) (hf : Martingale f ℱ μ) : Martingale (c • f) ℱ μ := by
-  refine' ⟨hf.adapted.smul c, fun i j hij => _⟩
+  refine ⟨hf.adapted.smul c, fun i j hij => ?_⟩
   refine' (condexp_smul c (f j)).trans ((hf.2 i j hij).mono fun x hx => _)
   simp only [Pi.smul_apply, hx]
 #align measure_theory.martingale.smul MeasureTheory.Martingale.smul
@@ -191,7 +191,7 @@ alias set_integral_le :=
 
 theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Supermartingale f ℱ μ)
     (hg : Supermartingale g ℱ μ) : Supermartingale (f + g) ℱ μ := by
-  refine' ⟨hf.1.add hg.1, fun i j hij => _, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
+  refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine' (condexp_add (hf.integrable j) (hg.integrable j)).le.trans _
   filter_upwards [hf.2.1 i j hij, hg.2.1 i j hij]
   intros
@@ -205,7 +205,7 @@ theorem add_martingale [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)]
 
 theorem neg [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Supermartingale f ℱ μ) :
     Submartingale (-f) ℱ μ := by
-  refine' ⟨hf.1.neg, fun i j hij => _, fun i => (hf.2.2 i).neg⟩
+  refine ⟨hf.1.neg, fun i j hij => ?_, fun i => (hf.2.2 i).neg⟩
   refine' EventuallyLE.trans _ (condexp_neg (f j)).symm.le
   filter_upwards [hf.2.1 i j hij] with _ _
   simpa
@@ -235,7 +235,7 @@ theorem ae_le_condexp [LE E] (hf : Submartingale f ℱ μ) {i j : ι} (hij : i �
 
 theorem add [Preorder E] [CovariantClass E E (· + ·) (· ≤ ·)] (hf : Submartingale f ℱ μ)
     (hg : Submartingale g ℱ μ) : Submartingale (f + g) ℱ μ := by
-  refine' ⟨hf.1.add hg.1, fun i j hij => _, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
+  refine ⟨hf.1.add hg.1, fun i j hij => ?_, fun i => (hf.2.2 i).add (hg.2.2 i)⟩
   refine' EventuallyLE.trans _ (condexp_add (hf.integrable j) (hg.integrable j)).symm.le
   filter_upwards [hf.2.1 i j hij, hg.2.1 i j hij]
   intros
@@ -301,7 +301,7 @@ theorem submartingale_of_setIntegral_le [IsFiniteMeasure μ] {f : ι → Ω → 
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j : ι,
       i ≤ j → ∀ s : Set Ω, MeasurableSet[ℱ i] s → ∫ ω in s, f i ω ∂μ ≤ ∫ ω in s, f j ω ∂μ) :
     Submartingale f ℱ μ := by
-  refine' ⟨hadp, fun i j hij => _, hint⟩
+  refine ⟨hadp, fun i j hij => ?_, hint⟩
   suffices f i ≤ᵐ[μ.trim (ℱ.le i)] μ[f j|ℱ i] by exact ae_le_of_ae_le_trim this
   suffices 0 ≤ᵐ[μ.trim (ℱ.le i)] μ[f j|ℱ i] - f i by
     filter_upwards [this] with x hx
@@ -322,7 +322,7 @@ alias submartingale_of_set_integral_le :=
 theorem submartingale_of_condexp_sub_nonneg [IsFiniteMeasure μ] {f : ι → Ω → ℝ} (hadp : Adapted ℱ f)
     (hint : ∀ i, Integrable (f i) μ) (hf : ∀ i j, i ≤ j → 0 ≤ᵐ[μ] μ[f j - f i|ℱ i]) :
     Submartingale f ℱ μ := by
-  refine' ⟨hadp, fun i j hij => _, hint⟩
+  refine ⟨hadp, fun i j hij => ?_, hint⟩
   rw [← condexp_of_stronglyMeasurable (ℱ.le _) (hadp _) (hint _), ← eventually_sub_nonneg]
   exact EventuallyLE.trans (hf i j hij) (condexp_sub (hint _) (hint _)).le
 #align measure_theory.submartingale_of_condexp_sub_nonneg MeasureTheory.submartingale_of_condexp_sub_nonneg
@@ -365,7 +365,7 @@ variable {F : Type*} [NormedLatticeAddCommGroup F] [NormedSpace ℝ F] [Complete
 
 theorem smul_nonneg {f : ι → Ω → F} {c : ℝ} (hc : 0 ≤ c) (hf : Supermartingale f ℱ μ) :
     Supermartingale (c • f) ℱ μ := by
-  refine' ⟨hf.1.smul c, fun i j hij => _, fun i => (hf.2.2 i).smul c⟩
+  refine ⟨hf.1.smul c, fun i j hij => ?_, fun i => (hf.2.2 i).smul c⟩
   refine' (condexp_smul c (f j)).le.trans _
   filter_upwards [hf.2.1 i j hij] with _ hle
   simp_rw [Pi.smul_apply]

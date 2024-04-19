@@ -115,7 +115,7 @@ theorem range_sdiff_eq_biUnion {x k : ℕ} : range x \ M x k = U x k := by
   constructor
   · rintro ⟨hex, hexh⟩
     obtain ⟨p, ⟨hpp, hpe1⟩, hpk⟩ := hexh hex
-    refine' ⟨p, _, ⟨hex, hpe1⟩⟩
+    refine ⟨p, ?_, ⟨hex, hpe1⟩⟩
     exact ⟨(Nat.le_of_dvd e.succ_pos hpe1).trans_lt (Nat.succ_lt_succ hex), hpk, hpp⟩
   · rintro ⟨p, hpfilter, ⟨hex, hpe1⟩⟩
     rw [imp_iff_right hex]

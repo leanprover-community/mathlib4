@@ -1490,7 +1490,7 @@ theorem exists_finset_piecewise_mem_of_mem_nhds [DecidableEq ι] {s : Set (∀ a
     (hs : s ∈ 𝓝 x) (y : ∀ a, π a) : ∃ I : Finset ι, I.piecewise x y ∈ s := by
   simp only [nhds_pi, Filter.mem_pi'] at hs
   rcases hs with ⟨I, t, htx, hts⟩
-  refine' ⟨I, hts fun i hi => _⟩
+  refine ⟨I, hts fun i hi => ?_⟩
   simpa [Finset.mem_coe.1 hi] using mem_of_mem_nhds (htx i)
 #align exists_finset_piecewise_mem_of_mem_nhds exists_finset_piecewise_mem_of_mem_nhds
 

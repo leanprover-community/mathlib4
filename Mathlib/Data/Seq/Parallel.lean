@@ -258,7 +258,7 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
       · simp at dl
         cases' dl with dc dl
         · rw [dc] at ad
-          refine' ⟨c, Or.inr _, ad⟩
+          refine ⟨c, Or.inr ?_, ad⟩
           rw [Seq.destruct_eq_cons e]
           apply Seq.mem_cons
         · exact

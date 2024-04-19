@@ -314,7 +314,7 @@ theorem bernoulli_apply : bernoulli p h b = cond b p (1 - p) := rfl
 
 @[simp]
 theorem support_bernoulli : (bernoulli p h).support = { b | cond b (p ≠ 0) (p ≠ 1) } := by
-  refine' Set.ext fun b => _
+  refine Set.ext fun b => ?_
   induction b
   · simp_rw [mem_support_iff, bernoulli_apply, Bool.cond_false, Ne, tsub_eq_zero_iff_le, not_le]
     exact ⟨ne_of_lt, lt_of_le_of_ne h⟩

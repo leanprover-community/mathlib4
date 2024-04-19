@@ -248,7 +248,7 @@ theorem sublattice_closure_eq_top (L : Set C(X, ℝ)) (nA : L.Nonempty)
   let k : (L : Type _) :=
     ⟨xs.inf' xs_nonempty fun x => (h x : C(X, ℝ)),
       Finset.inf'_mem _ inf_mem _ _ _ fun x _ => (h x).2⟩
-  refine' ⟨k.1, _, k.2⟩
+  refine ⟨k.1, ?_, k.2⟩
   -- We just need to verify the bound, which we do pointwise.
   rw [dist_lt_iff pos]
   intro z

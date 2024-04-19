@@ -1158,7 +1158,7 @@ theorem distinctConstantsTheory_eq_iUnion (s : Set α) :
   classical
     simp only [distinctConstantsTheory]
     rw [← image_iUnion, ← iUnion_inter]
-    refine' congr rfl (congr (congr rfl _) rfl)
+    refine congr rfl (congr (congr rfl ?_) rfl)
     ext ⟨i, j⟩
     simp only [prod_mk_mem_set_prod_eq, Finset.coe_map, Function.Embedding.coe_subtype, mem_iUnion,
       mem_image, Finset.mem_coe, Subtype.exists, Subtype.coe_mk, exists_and_right, exists_eq_right]

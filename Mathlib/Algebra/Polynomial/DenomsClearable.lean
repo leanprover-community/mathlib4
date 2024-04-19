@@ -46,7 +46,7 @@ theorem denomsClearable_zero (N : ℕ) (a : R) (bu : bi * i b = 1) : DenomsClear
 
 theorem denomsClearable_C_mul_X_pow {N : ℕ} (a : R) (bu : bi * i b = 1) {n : ℕ} (r : R)
     (nN : n ≤ N) : DenomsClearable a b N (C r * X ^ n) i := by
-  refine' ⟨r * a ^ n * b ^ (N - n), bi, bu, _⟩
+  refine ⟨r * a ^ n * b ^ (N - n), bi, bu, ?_⟩
   rw [C_mul_X_pow_eq_monomial, map_monomial, ← C_mul_X_pow_eq_monomial, eval_mul, eval_pow, eval_C]
   rw [RingHom.map_mul, RingHom.map_mul, RingHom.map_pow, RingHom.map_pow, eval_X, mul_comm]
   rw [← tsub_add_cancel_of_le nN]

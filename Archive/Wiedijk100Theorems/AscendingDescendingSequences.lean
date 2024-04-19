@@ -80,7 +80,7 @@ theorem erdos_szekeres {r s n : ℕ} {f : Fin n → α} (hn : r * s < n) (hf : I
       intro hi
       rw [mem_image] at this
       obtain ⟨t, ht₁, ht₂⟩ := this
-      refine' ⟨t, by rwa [ht₂], _⟩
+      refine ⟨t, by rwa [ht₂], ?_⟩
       rw [mem_filter] at ht₁
       apply ht₁.2.2
   -- Show first that the pair of labels is unique.

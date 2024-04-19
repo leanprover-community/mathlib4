@@ -318,7 +318,7 @@ set_option linter.uppercaseLean3 false in
 /-- Corecursor for `Seq α` as a coinductive type. Iterates `f` to produce new elements
   of the sequence until `none` is obtained. -/
 def corec (f : β → Option (α × β)) (b : β) : Seq α := by
-  refine' ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => _⟩
+  refine ⟨Stream'.corec' (Corec.f f) (some b), fun {n} h => ?_⟩
   rw [Stream'.corec'_eq]
   change Stream'.corec' (Corec.f f) (Corec.f f (some b)).2 n = none
   revert h; generalize some b = o; revert o

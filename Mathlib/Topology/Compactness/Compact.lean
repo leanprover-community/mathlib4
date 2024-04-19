@@ -298,7 +298,7 @@ theorem IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
   apply mt ((htc i₀).elim_directed_family_closed t htcl)
   push_neg
   simp only [← nonempty_iff_ne_empty] at htn ⊢
-  refine' ⟨htd, fun i => _⟩
+  refine ⟨htd, fun i => ?_⟩
   rcases htd i₀ i with ⟨j, hji₀, hji⟩
   exact (htn j).mono (subset_inter hji₀ hji)
 #align is_compact.nonempty_Inter_of_directed_nonempty_compact_closed IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed
@@ -903,7 +903,7 @@ theorem Filter.comap_cocompact_le {f : X → Y} (hf : Continuous f) :
     (Filter.cocompact Y).comap f ≤ Filter.cocompact X := by
   rw [(Filter.hasBasis_cocompact.comap f).le_basis_iff Filter.hasBasis_cocompact]
   intro t ht
-  refine' ⟨f '' t, ht.image hf, _⟩
+  refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 #align filter.comap_cocompact_le Filter.comap_cocompact_le
 
@@ -1027,7 +1027,7 @@ theorem IsCompact.prod {t : Set Y} (hs : IsCompact s) (ht : IsCompact t) :
   obtain ⟨y : Y, ty : y ∈ t, hy : map Prod.snd f.1 ≤ 𝓝 y⟩ :=
     ht (f.map Prod.snd) (mem_map.2 <| mem_of_superset hfs fun x => And.right)
   rw [map_le_iff_le_comap] at hx hy
-  refine' ⟨⟨x, y⟩, ⟨sx, ty⟩, _⟩
+  refine ⟨⟨x, y⟩, ⟨sx, ty⟩, ?_⟩
   rw [nhds_prod_eq]; exact le_inf hx hy
 #align is_compact.prod IsCompact.prod
 
@@ -1048,7 +1048,7 @@ instance [CompactSpace X] [CompactSpace Y] : CompactSpace (X ⊕ Y) :=
 
 instance {X : ι → Type*} [Finite ι] [∀ i, TopologicalSpace (X i)] [∀ i, CompactSpace (X i)] :
     CompactSpace (Σi, X i) := by
-  refine' ⟨_⟩
+  refine ⟨?_⟩
   rw [Sigma.univ]
   exact isCompact_iUnion fun i => isCompact_range continuous_sigmaMk
 

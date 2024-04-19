@@ -92,7 +92,7 @@ instance Prod.instBoundedLENhdsClass : BoundedLENhdsClass (α × β) := by
 
 instance Pi.instBoundedLENhdsClass [Finite ι] [∀ i, Preorder (π i)] [∀ i, TopologicalSpace (π i)]
     [∀ i, BoundedLENhdsClass (π i)] : BoundedLENhdsClass (∀ i, π i) := by
-  refine' ⟨fun x ↦ _⟩
+  refine ⟨fun x ↦ ?_⟩
   rw [nhds_pi]
   choose f hf using fun i ↦ isBounded_le_nhds (x i)
   exact ⟨f, eventually_pi hf⟩
@@ -262,7 +262,7 @@ theorem tendsto_of_no_upcrossings [DenselyOrdered α] {f : Filter β} {u : β �
     ∃ c : α, Tendsto u f (𝓝 c) := by
   rcases f.eq_or_neBot with rfl | hbot
   · exact ⟨sInf ∅, tendsto_bot⟩
-  refine' ⟨limsup u f, _⟩
+  refine ⟨limsup u f, ?_⟩
   apply tendsto_of_le_liminf_of_limsup_le _ le_rfl h h'
   by_contra! hlt
   obtain ⟨a, ⟨⟨la, au⟩, as⟩⟩ : ∃ a, (f.liminf u < a ∧ a < f.limsup u) ∧ a ∈ s :=

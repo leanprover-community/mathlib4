@@ -100,7 +100,7 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
           (by
             delta iSup
             rwa [Subtype.range_coe])
-      refine' ⟨t.image Subtype.val, by simp, ht.trans _⟩
+      refine ⟨t.image Subtype.val, by simp, ht.trans ?_⟩
       rw [Finset.sup_le_iff]
       exact fun x hx => @Finset.le_sup _ _ _ _ _ id _ (Finset.mem_image_of_mem Subtype.val hx)
 #align complete_lattice.is_compact_element_iff CompleteLattice.isCompactElement_iff

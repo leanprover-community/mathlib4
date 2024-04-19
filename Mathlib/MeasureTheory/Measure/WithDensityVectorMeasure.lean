@@ -217,7 +217,7 @@ theorem Integrable.withDensityᵥ_trim_eq_integral {m m0 : MeasurableSpace α} {
 theorem Integrable.withDensityᵥ_trim_absolutelyContinuous {m m0 : MeasurableSpace α} {μ : Measure α}
     (hm : m ≤ m0) (hfi : Integrable f μ) :
     (μ.withDensityᵥ f).trim hm ≪ᵥ (μ.trim hm).toENNRealVectorMeasure := by
-  refine' VectorMeasure.AbsolutelyContinuous.mk fun j hj₁ hj₂ => _
+  refine VectorMeasure.AbsolutelyContinuous.mk fun j hj₁ hj₂ => ?_
   rw [Measure.toENNRealVectorMeasure_apply_measurable hj₁, trim_measurableSet_eq hm hj₁] at hj₂
   rw [VectorMeasure.trim_measurableSet_eq hm hj₁, withDensityᵥ_apply hfi (hm _ hj₁)]
   simp only [Measure.restrict_eq_zero.mpr hj₂, integral_zero_measure]

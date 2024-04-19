@@ -90,7 +90,7 @@ variable (R)
 
 @[simp]
 theorem torsionOf_eq_top_iff (m : M) : torsionOf R M m = ⊤ ↔ m = 0 := by
-  refine' ⟨fun h => _, fun h => by simp [h]⟩
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
   rw [← one_smul R m, ← mem_torsionOf_iff m (1 : R), h]
   exact Submodule.mem_top
 #align ideal.torsion_of_eq_top_iff Ideal.torsionOf_eq_top_iff

@@ -272,7 +272,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
   have : ∀ s : A, ∃ t : A, ∀ u : A, f (↑u \ ↑s) ≤ 2 * f (↑t \ ↑s) := by
     intro s
     have B : BddAbove (range fun u : A => f (↑u \ ↑s)) := by
-      refine' ⟨f.C, fun x hx => _⟩
+      refine ⟨f.C, fun x hx => ?_⟩
       rcases hx with ⟨u, hu⟩
       rw [← hu]
       exact f.le_bound _
@@ -284,7 +284,7 @@ theorem exists_discrete_support_nonpos (f : BoundedAdditiveMeasure α) :
       change f (↑t' \ ↑s) ≤ S
       exact le_ciSup B t'
     rcases exists_lt_of_lt_ciSup (half_lt_self S_pos) with ⟨t, ht⟩
-    refine' ⟨t, fun u => _⟩
+    refine ⟨t, fun u => ?_⟩
     calc
       f (↑u \ ↑s) ≤ S := le_ciSup B _
       _ ≤ 2 * f (↑t \ ↑s) := (div_le_iff' two_pos).1 ht.le

@@ -121,7 +121,7 @@ theorem tangentConeAt.lim_zero {α : Type*} (l : Filter α) {c : α → 𝕜} {d
 theorem tangentCone_mono_nhds (h : 𝓝[s] x ≤ 𝓝[t] x) :
     tangentConeAt 𝕜 s x ⊆ tangentConeAt 𝕜 t x := by
   rintro y ⟨c, d, ds, ctop, clim⟩
-  refine' ⟨c, d, _, ctop, clim⟩
+  refine ⟨c, d, ?_, ctop, clim⟩
   suffices Tendsto (fun n => x + d n) atTop (𝓝[t] x) from
     tendsto_principal.1 (tendsto_inf.1 this).2
   refine' (tendsto_inf.2 ⟨_, tendsto_principal.2 ds⟩).mono_right h
@@ -311,7 +311,7 @@ theorem UniqueDiffWithinAt.prod {t : Set F} {y : F} (hs : UniqueDiffWithinAt �
     (ht : UniqueDiffWithinAt 𝕜 t y) : UniqueDiffWithinAt 𝕜 (s ×ˢ t) (x, y) := by
   rw [uniqueDiffWithinAt_iff] at hs ht ⊢
   rw [closure_prod_eq]
-  refine' ⟨_, hs.2, ht.2⟩
+  refine ⟨?_, hs.2, ht.2⟩
   have : _ ≤ Submodule.span 𝕜 (tangentConeAt 𝕜 (s ×ˢ t) (x, y)) := Submodule.span_mono
     (union_subset (subset_tangentCone_prod_left ht.2) (subset_tangentCone_prod_right hs.2))
   rw [LinearMap.span_inl_union_inr, SetLike.le_def] at this

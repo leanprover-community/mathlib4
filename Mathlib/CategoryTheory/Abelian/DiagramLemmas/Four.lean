@@ -112,8 +112,8 @@ theorem epi_of_epi_of_epi_of_mono'
   dsimp at g₀ h₅
   rw [comp_sub] at h₅
   obtain ⟨A₄, π₄, _, f₀, h₆⟩ := surjective_up_to_refinements_of_epi (app' φ 0 _) g₀
-  refine' ⟨A₄, π₄ ≫ π₃ ≫ π₂ ≫ π₁, inferInstance,
-    π₄ ≫ π₃ ≫ f₁ + f₀ ≫ (by exact R₁.map' 0 1), _⟩
+  refine ⟨A₄, π₄ ≫ π₃ ≫ π₂ ≫ π₁, inferInstance,
+    π₄ ≫ π₃ ≫ f₁ + f₀ ≫ (by exact R₁.map' 0 1), ?_⟩
   rw [assoc, assoc, assoc, add_comp, assoc, assoc, assoc, NatTrans.naturality,
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp

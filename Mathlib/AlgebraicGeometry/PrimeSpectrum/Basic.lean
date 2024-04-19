@@ -738,7 +738,7 @@ theorem image_comap_zeroLocus_eq_zeroLocus_comap (hf : Surjective f) (I : Ideal 
       exact Ideal.mem_map_of_mem f (h_I_p hx)
     · ext x
       rw [comap_asIdeal, Ideal.mem_comap, Ideal.mem_map_iff_of_surjective f hf]
-      refine' ⟨_, fun hx => ⟨x, hx, rfl⟩⟩
+      refine ⟨?_, fun hx => ⟨x, hx, rfl⟩⟩
       rintro ⟨x', hx', heq⟩
       rw [← sub_sub_cancel x' x]
       refine' p.asIdeal.sub_mem hx' (hp _)
@@ -839,7 +839,7 @@ theorem isTopologicalBasis_basic_opens :
   · rintro p U hp ⟨s, hs⟩
     rw [← compl_compl U, Set.mem_compl_iff, ← hs, mem_zeroLocus, Set.not_subset] at hp
     obtain ⟨f, hfs, hfp⟩ := hp
-    refine' ⟨basicOpen f, ⟨f, rfl⟩, hfp, _⟩
+    refine ⟨basicOpen f, ⟨f, rfl⟩, hfp, ?_⟩
     rw [← Set.compl_subset_compl, ← hs, basicOpen_eq_zeroLocus_compl, compl_compl]
     exact zeroLocus_anti_mono (Set.singleton_subset_iff.mpr hfs)
 #align prime_spectrum.is_topological_basis_basic_opens PrimeSpectrum.isTopologicalBasis_basic_opens

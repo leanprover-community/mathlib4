@@ -136,7 +136,7 @@ theorem rfindOpt_dom {α} {f : ℕ → Option α} : (rfindOpt f).Dom ↔ ∃ n a
     have s := Nat.find_spec h'
     have fd : (rfind fun n => (f n).isSome).Dom :=
       ⟨Nat.find h', by simpa using s.symm, fun _ _ => trivial⟩
-    refine' ⟨fd, _⟩
+    refine ⟨fd, ?_⟩
     have := rfind_spec (get_mem fd)
     simp? at this ⊢ says simp only [coe_some, mem_some_iff, ofOption_dom] at this ⊢
     cases' Option.isSome_iff_exists.1 this.symm with a e

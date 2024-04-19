@@ -170,7 +170,7 @@ whose inverse is `G : B ≅ A`. -/
 @[simps! inverse]
 def equivalence : A ≌ B :=
   letI : G.IsEquivalence := by
-    refine' Functor.IsEquivalence.ofIso _
+    refine Functor.IsEquivalence.ofIso ?_
       (Functor.IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
     calc
       eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _

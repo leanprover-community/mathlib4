@@ -176,7 +176,7 @@ theorem exists_preimage_norm_le (surj : Surjective f) :
     intro y
     rw [← dist_eq_norm, dist_comm]
     exact (hg y).1
-  refine' ⟨2 * C + 1, by linarith, fun y => _⟩
+  refine ⟨2 * C + 1, by linarith, fun y => ?_⟩
   have hnle : ∀ n : ℕ, ‖h^[n] y‖ ≤ (1 / 2) ^ n * ‖y‖ := by
     intro n
     induction' n with n IH

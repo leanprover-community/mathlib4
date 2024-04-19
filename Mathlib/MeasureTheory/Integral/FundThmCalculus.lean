@@ -1139,7 +1139,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le (hab : a ≤ b) (hcont : Continu
   have A : closure (Ioc a b) ⊆ s := by
     apply s_closed.closure_subset_iff.2
     intro t ht
-    refine' ⟨_, ⟨ht.1.le, ht.2⟩⟩
+    refine ⟨?_, ⟨ht.1.le, ht.2⟩⟩
     exact
       sub_le_integral_of_hasDeriv_right_of_le_Ico ht.2 (hcont.mono (Icc_subset_Icc ht.1.le le_rfl))
         (fun x hx => hderiv x ⟨ht.1.trans_le hx.1, hx.2⟩)

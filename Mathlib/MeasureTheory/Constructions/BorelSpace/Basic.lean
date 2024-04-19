@@ -294,7 +294,7 @@ lemma opensMeasurableSpace_iff_forall_measurableSet
 instance (priority := 100) BorelSpace.countablyGenerated {α : Type*} [TopologicalSpace α]
     [MeasurableSpace α] [BorelSpace α] [SecondCountableTopology α] : CountablyGenerated α := by
   obtain ⟨b, bct, -, hb⟩ := exists_countable_basis α
-  refine' ⟨⟨b, bct, _⟩⟩
+  refine ⟨⟨b, bct, ?_⟩⟩
   borelize α
   exact hb.borel_eq_generateFrom
 #align borel_space.countably_generated BorelSpace.countablyGenerated
@@ -2438,7 +2438,7 @@ theorem exists_spanning_measurableSet_le {m : MeasurableSpace α} {f : α → �
       ⋃ i, sigma_finite_sets i ∩ norm_sets i = (⋃ i, sigma_finite_sets i) ∩ ⋃ i, norm_sets i := by
       refine' Set.iUnion_inter_of_monotone (monotone_spanningSets μ) fun i j hij x => _
       simp only [norm_sets, Set.mem_setOf_eq]
-      refine' fun hif => hif.trans _
+      refine fun hif => hif.trans ?_
       exact mod_cast hij
     rw [this, norm_sets_spanning, iUnion_spanningSets μ, Set.inter_univ]
 

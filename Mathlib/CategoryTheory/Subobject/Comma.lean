@@ -48,7 +48,7 @@ variable {S : D} {T : C ⥤ D}
     object. -/
 def projectSubobject [HasLimits C] [PreservesLimits T] {A : StructuredArrow S T} :
     Subobject A → Subobject A.right := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.right) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.right) ?_
   intro P Q f g hf hg i hi
   refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i) _
   exact congr_arg CommaMorphism.right hi
@@ -135,7 +135,7 @@ variable {S : C ⥤ D} {T : D}
     object. -/
 def projectQuotient [HasColimits C] [PreservesColimits S] {A : CostructuredArrow S T} :
     Subobject (op A) → Subobject (op A.left) := by
-  refine' Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) _
+  refine Subobject.lift (fun P f hf => Subobject.mk f.unop.left.op) ?_
   intro P Q f g hf hg i hi
   refine' Subobject.mk_eq_mk_of_comm _ _ ((proj S T).mapIso i.unop).op (Quiver.Hom.unop_inj _)
   have := congr_arg Quiver.Hom.unop hi

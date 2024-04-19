@@ -216,7 +216,7 @@ theorem adjMatrix_mulVec_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
 theorem adjMatrix_vecMul_apply [NonAssocSemiring α] (v : V) (vec : V → α) :
     (vec ᵥ* G.adjMatrix α) v = ∑ u in G.neighborFinset v, vec u := by
   simp only [← dotProduct_adjMatrix, vecMul]
-  refine' congr rfl _; ext x
+  refine congr rfl ?_; ext x
   rw [← transpose_apply (adjMatrix α G) x v, transpose_adjMatrix]
 #align simple_graph.adj_matrix_vec_mul_apply SimpleGraph.adjMatrix_vecMul_apply
 

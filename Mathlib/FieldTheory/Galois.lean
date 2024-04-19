@@ -225,8 +225,8 @@ theorem fixingSubgroup_fixedField [FiniteDimensional F E] : fixingSubgroup (fixe
       ((Fintype.bijective_iff_injective_and_card (Set.inclusion H_le)).mpr
         ⟨Set.inclusion_injective H_le, this⟩).2).symm
   apply Fintype.card_congr
-  refine' (FixedPoints.toAlgHomEquiv H E).trans _
-  refine' (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans _
+  refine (FixedPoints.toAlgHomEquiv H E).trans ?_
+  refine (algEquivEquivAlgHom (fixedField H) E).toEquiv.symm.trans ?_
   exact (fixingSubgroupEquiv (fixedField H)).toEquiv.symm
 #align intermediate_field.fixing_subgroup_fixed_field IntermediateField.fixingSubgroup_fixedField
 

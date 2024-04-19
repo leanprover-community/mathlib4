@@ -94,7 +94,7 @@ theorem hasIntegralIndicatorConst (l : IntegrationParams) (hl : l.bRiemann = fal
     simp only [t, TaggedPrepartition.iUnion_def, TaggedPrepartition.mem_filter, Set.mem_iUnion,
       exists_prop]
     rcases hπp x hxI with ⟨J, hJπ, hxJ⟩
-    refine' ⟨J, ⟨hJπ, _⟩, hxJ⟩
+    refine ⟨J, ⟨hJπ, ?_⟩, hxJ⟩
     contrapose hxF
     refine' hrs'F _ ⟨π.tag_mem_Icc J, hxF⟩ _
     simpa only [r, s.piecewise_eq_of_not_mem _ _ hxF] using hπ.1 J hJπ (Box.coe_subset_Icc hxJ)

@@ -350,7 +350,7 @@ theorem Measure.restrict_singleton' {a : α} : μ.restrict {a} = 0 := by
 #align measure_theory.measure.restrict_singleton' MeasureTheory.Measure.restrict_singleton'
 
 instance Measure.restrict.instNoAtoms (s : Set α) : NoAtoms (μ.restrict s) := by
-  refine' ⟨fun x => _⟩
+  refine ⟨fun x => ?_⟩
   obtain ⟨t, hxt, ht1, ht2⟩ := exists_measurable_superset_of_null (measure_singleton x : μ {x} = 0)
   apply measure_mono_null hxt
   rw [Measure.restrict_apply ht1]
@@ -1148,7 +1148,7 @@ theorem Measure.exists_isOpen_measure_lt_top [TopologicalSpace α] (μ : Measure
 
 instance isLocallyFiniteMeasureSMulNNReal [TopologicalSpace α] (μ : Measure α)
     [IsLocallyFiniteMeasure μ] (c : ℝ≥0) : IsLocallyFiniteMeasure (c • μ) := by
-  refine' ⟨fun x => _⟩
+  refine ⟨fun x => ?_⟩
   rcases μ.exists_isOpen_measure_lt_top x with ⟨o, xo, o_open, μo⟩
   refine' ⟨o, o_open.mem_nhds xo, _⟩
   apply ENNReal.mul_lt_top _ μo.ne

@@ -175,9 +175,9 @@ Then `zipWith f hf` is a binary operation `Π₀ i, β₁ i → Π₀ i, β₂ i
 def zipWith (f : ∀ i, β₁ i → β₂ i → β i) (hf : ∀ i, f i 0 0 = 0) (x : Π₀ i, β₁ i) (y : Π₀ i, β₂ i) :
     Π₀ i, β i :=
   ⟨fun i => f i (x i) (y i), by
-    refine' x.support'.bind fun xs => _
-    refine' y.support'.map fun ys => _
-    refine' ⟨xs + ys, fun i => _⟩
+    refine x.support'.bind fun xs => ?_
+    refine y.support'.map fun ys => ?_
+    refine ⟨xs + ys, fun i => ?_⟩
     obtain h1 | (h1 : x i = 0) := xs.prop i
     · left
       rw [Multiset.mem_add]

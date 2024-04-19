@@ -104,7 +104,7 @@ theorem rank_add_rank_split (db : V₂ →ₗ[K] V) (eb : V₃ →ₗ[K] V) (cd 
       Prod.mk.inj_iff, coprod_apply, map_neg, neg_apply, LinearMap.mem_range, Pi.prod] at h ⊢
     intro hde
     rcases h hde with ⟨c, h₁, h₂⟩
-    refine' ⟨c, h₁, _⟩
+    refine ⟨c, h₁, ?_⟩
     rw [h₂, _root_.neg_neg]
 #align rank_add_rank_split rank_add_rank_split
 

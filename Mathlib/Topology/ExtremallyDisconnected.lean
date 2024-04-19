@@ -60,7 +60,7 @@ instance [ExtremallyDisconnected X] [T2Space X] : TotallySeparatedSpace X :=
       by simp only [Set.union_compl_self, Set.subset_univ], disjoint_compl_right⟩
     rw [Set.mem_compl_iff, mem_closure_iff]
     push_neg
-    refine' ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, _⟩⟩
+    refine ⟨V, ⟨hUV.2.1, hUV.2.2.2.1, ?_⟩⟩
     rw [← Set.disjoint_iff_inter_eq_empty, disjoint_comm]
     exact hUV.2.2.2.2 }
 

@@ -376,7 +376,7 @@ theorem nonempty_iInter_clPrehaar (K₀ : PositiveCompacts G) :
   let V₀ := ⋂ V ∈ t, (V : OpenNhdsOf (1 : G)).carrier
   have h1V₀ : IsOpen V₀ := isOpen_biInter_finset <| by rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₁
   have h2V₀ : (1 : G) ∈ V₀ := by simp only [V₀, mem_iInter]; rintro ⟨⟨V, hV₁⟩, hV₂⟩ _; exact hV₂
-  refine' ⟨prehaar K₀ V₀, _⟩
+  refine ⟨prehaar K₀ V₀, ?_⟩
   constructor
   · apply prehaar_mem_haarProduct K₀; use 1; rwa [h1V₀.interior_eq]
   · simp only [mem_iInter]; rintro ⟨V, hV⟩ h2V; apply subset_closure

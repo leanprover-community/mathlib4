@@ -341,7 +341,7 @@ theorem image_coe_sphere (z : ℍ) (r : ℝ) :
 #align upper_half_plane.image_coe_sphere UpperHalfPlane.image_coe_sphere
 
 instance : ProperSpace ℍ := by
-  refine' ⟨fun z r => _⟩
+  refine ⟨fun z r => ?_⟩
   rw [inducing_subtype_val.isCompact_iff (f := ((↑) : ℍ → ℂ)), image_coe_closedBall]
   apply isCompact_closedBall
 

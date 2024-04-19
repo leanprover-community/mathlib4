@@ -163,7 +163,7 @@ theorem StarConvex.mem (hs : StarConvex 𝕜 x s) (h : s.Nonempty) : x ∈ s := 
 
 theorem starConvex_iff_forall_pos (hx : x ∈ s) : StarConvex 𝕜 x s ↔
     ∀ ⦃y⦄, y ∈ s → ∀ ⦃a b : 𝕜⦄, 0 < a → 0 < b → a + b = 1 → a • x + b • y ∈ s := by
-  refine' ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, _⟩
+  refine ⟨fun h y hy a b ha hb hab => h hy ha.le hb.le hab, ?_⟩
   intro h y hy a b ha hb hab
   obtain rfl | ha := ha.eq_or_lt
   · rw [zero_add] at hab
@@ -234,7 +234,7 @@ theorem StarConvex.add_left (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (z + x) ((fun x => z + x) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_left StarConvex.add_left
 
@@ -242,7 +242,7 @@ theorem StarConvex.add_right (hs : StarConvex 𝕜 x s) (z : E) :
     StarConvex 𝕜 (x + z) ((fun x => x + z) '' s) := by
   intro y hy a b ha hb hab
   obtain ⟨y', hy', rfl⟩ := hy
-  refine' ⟨a • x + b • y', hs hy' ha hb hab, _⟩
+  refine ⟨a • x + b • y', hs hy' ha hb hab, ?_⟩
   rw [smul_add, smul_add, add_add_add_comm, ← add_smul, hab, one_smul]
 #align star_convex.add_right StarConvex.add_right
 
@@ -360,7 +360,7 @@ theorem StarConvex.affine_preimage (f : E →ᵃ[𝕜] F) {s : Set F} (hs : Star
 theorem StarConvex.affine_image (f : E →ᵃ[𝕜] F) {s : Set E} (hs : StarConvex 𝕜 x s) :
     StarConvex 𝕜 (f x) (f '' s) := by
   rintro y ⟨y', ⟨hy', hy'f⟩⟩ a b ha hb hab
-  refine' ⟨a • x + b • y', ⟨hs hy' ha hb hab, _⟩⟩
+  refine ⟨a • x + b • y', ⟨hs hy' ha hb hab, ?_⟩⟩
   rw [Convex.combo_affine_apply hab, hy'f]
 #align star_convex.affine_image StarConvex.affine_image
 

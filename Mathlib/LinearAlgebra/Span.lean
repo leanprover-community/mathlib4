@@ -191,7 +191,7 @@ theorem span_induction' {p : ∀ x, x ∈ span R s → Prop}
     (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (Submodule.add_mem _ ‹_› ‹_›))
     (smul : ∀ (a : R) (x hx), p x hx → p (a • x) (Submodule.smul_mem _ _ ‹_›)) {x}
     (hx : x ∈ span R s) : p x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ span R s) (hc : p x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ span R s) (hc : p x hx) => hc
   refine'
     span_induction hx (fun m hm => ⟨subset_span hm, mem m hm⟩) ⟨zero_mem _, zero⟩
       (fun x y hx hy =>
@@ -706,7 +706,7 @@ theorem iSup_induction' {ι : Sort*} (p : ι → Submodule R M) {C : ∀ x, (x �
     (mem : ∀ (i) (x) (hx : x ∈ p i), C x (mem_iSup_of_mem i hx)) (zero : C 0 (zero_mem _))
     (add : ∀ x y hx hy, C x hx → C y hy → C (x + y) (add_mem ‹_› ‹_›)) {x : M}
     (hx : x ∈ ⨆ i, p i) : C x hx := by
-  refine' Exists.elim _ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
+  refine Exists.elim ?_ fun (hx : x ∈ ⨆ i, p i) (hc : C x hx) => hc
   refine' iSup_induction p (C := fun x : M ↦ ∃ (hx : x ∈ ⨆ i, p i), C x hx) hx
     (fun i x hx => _) _ fun x y => _
   · exact ⟨_, mem _ _ hx⟩

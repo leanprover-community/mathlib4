@@ -597,7 +597,7 @@ theorem Equiv.lieModule_isNilpotent_iff (f : L ≃ₗ⁅R⁆ L₂) (g : M ≃ₗ
   · have hg : Surjective (g : M →ₗ[R] M₂) := g.surjective
     exact f.surjective.lieModuleIsNilpotent hg hfg
   · have hg : Surjective (g.symm : M₂ →ₗ[R] M) := g.symm.surjective
-    refine' f.symm.surjective.lieModuleIsNilpotent hg fun x m => _
+    refine f.symm.surjective.lieModuleIsNilpotent hg fun x m => ?_
     rw [LinearEquiv.coe_coe, LieEquiv.coe_to_lieHom, ← g.symm_apply_apply ⁅f.symm x, g.symm m⁆, ←
       hfg, f.apply_symm_apply, g.apply_symm_apply]
 #align equiv.lie_module_is_nilpotent_iff Equiv.lieModule_isNilpotent_iff

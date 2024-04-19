@@ -185,7 +185,7 @@ theorem equiv_iff {x y : Σˣ f} {i : ι} (hx : x.1 ≤ i) (hy : y.1 ≤ i) :
     x ≈ y ↔ (f x.1 i hx) x.2 = (f y.1 i hy) y.2 := by
   cases x
   cases y
-  refine' ⟨fun xy => _, fun xy => ⟨i, hx, hy, xy⟩⟩
+  refine ⟨fun xy => ?_, fun xy => ⟨i, hx, hy, xy⟩⟩
   obtain ⟨j, _, _, h⟩ := xy
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
   have h := congr_arg (f j k jk) h
@@ -198,7 +198,7 @@ theorem funMap_unify_equiv {n : ℕ} (F : L.Functions n) (x : Fin n → Σˣ f) 
     (hi : i ∈ upperBounds (range (Sigma.fst ∘ x))) (hj : j ∈ upperBounds (range (Sigma.fst ∘ x))) :
     Structure.Sigma.mk f i (funMap F (unify f x i hi)) ≈ .mk f j (funMap F (unify f x j hj)) := by
   obtain ⟨k, ik, jk⟩ := directed_of (· ≤ ·) i j
-  refine' ⟨k, ik, jk, _⟩
+  refine ⟨k, ik, jk, ?_⟩
   rw [(f i k ik).map_fun, (f j k jk).map_fun, comp_unify, comp_unify]
 #align first_order.language.direct_limit.fun_map_unify_equiv FirstOrder.Language.DirectLimit.funMap_unify_equiv
 
@@ -261,7 +261,7 @@ theorem funMap_quotient_mk'_sigma_mk' {n : ℕ} {F : L.Functions n} {i : ι} {x 
   simp only [funMap_quotient_mk', Quotient.eq]
   obtain ⟨k, ik, jk⟩ :=
     directed_of (· ≤ ·) i (Classical.choose (Finite.bddAbove_range fun _ : Fin n => i))
-  refine' ⟨k, jk, ik, _⟩
+  refine ⟨k, jk, ik, ?_⟩
   simp only [Embedding.map_fun, comp_unify]
   rfl
 #align first_order.language.direct_limit.fun_map_quotient_mk_sigma_mk FirstOrder.Language.DirectLimit.funMap_quotient_mk'_sigma_mk'
@@ -279,7 +279,7 @@ theorem relMap_quotient_mk'_sigma_mk' {n : ℕ} {R : L.Relations n} {i : ι} {x 
 theorem exists_quotient_mk'_sigma_mk'_eq {α : Type*} [Finite α] (x : α → DirectLimit G f) :
     ∃ (i : ι) (y : α → G i), x = fun a => ⟦.mk f i (y a)⟧ := by
   obtain ⟨i, hi⟩ := Finite.bddAbove_range fun a => (x a).out.1
-  refine' ⟨i, unify f (Quotient.out ∘ x) i hi, _⟩
+  refine ⟨i, unify f (Quotient.out ∘ x) i hi, ?_⟩
   ext a
   rw [Quotient.eq_mk_iff_out, unify]
   generalize_proofs r
@@ -323,7 +323,7 @@ theorem of_apply {i : ι} {x : G i} : of L ι G f i x = ⟦.mk f i x⟧ :=
 -- of this theorem would not be useful.
 theorem of_f {i j : ι} {hij : i ≤ j} {x : G i} : of L ι G f j (f i j hij x) = of L ι G f i x := by
   rw [of_apply, of_apply, Quotient.eq]
-  refine' Setoid.symm ⟨j, hij, refl j, _⟩
+  refine Setoid.symm ⟨j, hij, refl j, ?_⟩
   simp only [DirectedSystem.map_self]
 #align first_order.language.direct_limit.of_f FirstOrder.Language.DirectLimit.of_f
 

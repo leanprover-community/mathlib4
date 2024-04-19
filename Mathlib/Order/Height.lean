@@ -261,7 +261,7 @@ theorem chainHeight_eq_iSup_Ici : s.chainHeight = ⨆ i ∈ s, (s ∩ Set.Ici i)
     · exact zero_le _
     · apply le_trans _ (le_iSup₂ x (cons_mem_subchain_iff.mp h).1)
       apply length_le_chainHeight_of_mem_subchain
-      refine' ⟨h.1, fun i hi ↦ ⟨h.2 i hi, _⟩⟩
+      refine ⟨h.1, fun i hi ↦ ⟨h.2 i hi, ?_⟩⟩
       cases hi
       · exact left_mem_Ici
       rename_i hi
@@ -286,7 +286,7 @@ theorem chainHeight_insert_of_forall_gt (a : α) (hx : ∀ b ∈ s, a < b) :
   · rintro (_ | ⟨y, ys⟩) h
     · exact ⟨[], nil_mem_subchain _, zero_le _⟩
     · have h' := cons_mem_subchain_iff.mp h
-      refine' ⟨ys, ⟨h'.2.1.1, fun i hi ↦ _⟩, by simp⟩
+      refine ⟨ys, ⟨h'.2.1.1, fun i hi ↦ ?_⟩, by simp⟩
       apply (h'.2.1.2 i hi).resolve_left
       rintro rfl
       cases' chain'_iff_pairwise.mp h.1 with _ _ hy

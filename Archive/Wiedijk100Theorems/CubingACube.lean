@@ -318,7 +318,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
     · simp [p, if_neg hj']
   rcases v.1 hp with ⟨_, ⟨i', rfl⟩, hi'⟩
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
-  refine' ⟨i, h2i, i', h2i', _⟩
+  refine ⟨i, h2i, i', h2i', ?_⟩
   rintro rfl
   apply not_le_of_lt (hi'.2 ⟨1, Nat.le_of_succ_le_succ h.three_le⟩).2
   simp only [tail, Cube.tail, p]
@@ -519,7 +519,7 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     have hp' : p' ∈ (cs i').toSet := by simpa [p', toSet, forall_fin_succ, hi'.symm] using h1p3
     have h2p' : p' ∈ (cs i'').toSet := by
       simp only [p', toSet, forall_fin_succ, cons_succ, cons_zero, mem_setOf_eq]
-      refine' ⟨_, by simpa [toSet] using hi''.2⟩
+      refine ⟨?_, by simpa [toSet] using hi''.2⟩
       have : (cs i).b 0 = (cs i'').b 0 := by rw [hi.1, h2i''.1]
       simp [side, hw', xm, this, h3i'']
     apply not_disjoint_iff.mpr ⟨p', hp', h2p'⟩

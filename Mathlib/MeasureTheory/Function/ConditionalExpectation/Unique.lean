@@ -53,7 +53,7 @@ theorem lpMeas.ae_eq_zero_of_forall_setIntegral_eq_zero (hm : m ≤ m0) (f : lpM
     (hf_zero : ∀ s : Set α, MeasurableSet[m] s → μ s < ∞ → ∫ x in s, (f : Lp E' p μ) x ∂μ = 0) :
     f =ᵐ[μ] (0 : α → E') := by
   obtain ⟨g, hg_sm, hfg⟩ := lpMeas.ae_fin_strongly_measurable' hm f hp_ne_zero hp_ne_top
-  refine' hfg.trans _
+  refine hfg.trans ?_
   -- Porting note: added
   unfold Filter.EventuallyEq at hfg
   refine' ae_eq_zero_of_forall_setIntegral_eq_of_finStronglyMeasurable_trim hm _ _ hg_sm

@@ -419,7 +419,7 @@ theorem isLocalizedModule_toPushforwardStalkAlgHom_aux (y) :
   obtain ⟨⟨s, ⟨_, n, rfl⟩⟩, hsn⟩ :=
     @IsLocalization.surj _ _ _ _ _ _
       (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) s'
-  refine' ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, _⟩
+  refine ⟨⟨s, ⟨r, hpr⟩ ^ n⟩, ?_⟩
   rw [Submonoid.smul_def, Algebra.smul_def, algebraMap_pushforward_stalk, toPushforwardStalk,
     comp_apply, comp_apply]
   iterate 2
@@ -467,7 +467,7 @@ instance isLocalizedModule_toPushforwardStalkAlgHom :
             (StructureSheaf.IsLocalization.to_basicOpen S <| algebraMap R S r) x).trans
         this
     obtain ⟨⟨_, n, rfl⟩, e⟩ := (IsLocalization.mk'_eq_zero_iff _ _).mp this
-    refine' ⟨⟨r, hpr⟩ ^ n, _⟩
+    refine ⟨⟨r, hpr⟩ ^ n, ?_⟩
     rw [Submonoid.smul_def, Algebra.smul_def]
     -- Porting note: manually rewrite `Submonoid.coe_pow`
     change (algebraMap R S) (r ^ n) * x = 0

@@ -224,7 +224,7 @@ theorem eventualRange_eq_iff {f : i ⟶ j} :
   rw [subset_antisymm_iff, eventualRange, and_iff_right (iInter₂_subset _ _), subset_iInter₂_iff]
   refine' ⟨fun h k g => h _ _, fun h j' f' => _⟩
   obtain ⟨k, g, g', he⟩ := cospan f f'
-  refine' (h g).trans _
+  refine (h g).trans ?_
   rw [he, F.map_comp]
   apply range_comp_subset_range
 #align category_theory.functor.eventual_range_eq_iff CategoryTheory.Functor.eventualRange_eq_iff
@@ -238,7 +238,7 @@ theorem IsMittagLeffler.toPreimages (h : F.IsMittagLeffler) : (F.toPreimages s).
   (isMittagLeffler_iff_subset_range_comp _).2 fun j => by
     obtain ⟨j₁, g₁, f₁, -⟩ := IsCofilteredOrEmpty.cone_objs i j
     obtain ⟨j₂, f₂, h₂⟩ := F.isMittagLeffler_iff_eventualRange.1 h j₁
-    refine' ⟨j₂, f₂ ≫ f₁, fun j₃ f₃ => _⟩
+    refine ⟨j₂, f₂ ≫ f₁, fun j₃ f₃ => ?_⟩
     rintro _ ⟨⟨x, hx⟩, rfl⟩
     have : F.map f₂ x ∈ F.eventualRange j₁ := by
       rw [h₂]
@@ -343,7 +343,7 @@ theorem toPreimages_nonempty_of_surjective [hFn : ∀ j : J, Nonempty (F.obj j)]
 theorem eval_section_injective_of_eventually_injective {j}
     (Finj : ∀ (i) (f : i ⟶ j), (F.map f).Injective) (i) (f : i ⟶ j) :
     (fun s : F.sections => s.val j).Injective := by
-  refine' fun s₀ s₁ h => Subtype.ext <| funext fun k => _
+  refine fun s₀ s₁ h => Subtype.ext <| funext fun k => ?_
   obtain ⟨m, mi, mk, _⟩ := IsCofilteredOrEmpty.cone_objs i k
   dsimp at h
   rw [← s₀.prop (mi ≫ f), ← s₁.prop (mi ≫ f)] at h

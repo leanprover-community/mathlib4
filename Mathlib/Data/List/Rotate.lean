@@ -600,7 +600,7 @@ theorem mem_cyclicPermutations_self (l : List α) : l ∈ cyclicPermutations l :
   cases' l with x l
   · simp
   · rw [mem_iff_nthLe]
-    refine' ⟨0, by simp, _⟩
+    refine ⟨0, by simp, ?_⟩
     simp
 #align list.mem_cyclic_permutations_self List.mem_cyclicPermutations_self
 
@@ -630,7 +630,7 @@ theorem mem_cyclicPermutations_iff {l l' : List α} : l ∈ cyclicPermutations l
 
 @[simp]
 theorem cyclicPermutations_eq_nil_iff {l : List α} : cyclicPermutations l = [[]] ↔ l = [] := by
-  refine' ⟨fun h => _, fun h => by simp [h]⟩
+  refine ⟨fun h => ?_, fun h => by simp [h]⟩
   rw [eq_comm, ← isRotated_nil_iff', ← mem_cyclicPermutations_iff, h, mem_singleton]
 #align list.cyclic_permutations_eq_nil_iff List.cyclicPermutations_eq_nil_iff
 
@@ -681,9 +681,9 @@ theorem isRotated_cyclicPermutations_iff {l l' : List α} :
   by_cases hl : l = []
   · simp [hl, eq_comm]
   have hl' : l.cyclicPermutations.length = l.length := length_cyclicPermutations_of_ne_nil _ hl
-  refine' ⟨fun h => _, IsRotated.cyclicPermutations⟩
+  refine ⟨fun h => ?_, IsRotated.cyclicPermutations⟩
   obtain ⟨k, hk⟩ := h
-  refine' ⟨k % l.length, _⟩
+  refine ⟨k % l.length, ?_⟩
   have hk' : k % l.length < l.length := mod_lt _ (length_pos_of_ne_nil hl)
   rw [← nthLe_cyclicPermutations _ _ (hk'.trans_le hl'.ge), ← nthLe_rotate' _ k]
   simp [hk, hl', Nat.sub_add_cancel hk'.le]

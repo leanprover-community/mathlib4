@@ -391,7 +391,7 @@ def colimitPresheafObjIsoComponentwiseLimit (F : J ⥤ PresheafedSpace.{_, _, v}
   refine' (limitObjIsoLimitCompEvaluation _ _).trans (Limits.lim.mapIso _)
   fapply NatIso.ofComponents
   · intro X
-    refine' (F.obj (unop X)).presheaf.mapIso (eqToIso _)
+    refine (F.obj (unop X)).presheaf.mapIso (eqToIso ?_)
     simp only [Functor.op_obj, unop_op, op_inj_iff, Opens.map_coe, SetLike.ext'_iff,
       Set.preimage_preimage]
     refine congr_arg (Set.preimage · U.1) (funext fun x => ?_)

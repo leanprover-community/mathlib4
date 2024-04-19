@@ -56,7 +56,7 @@ attribute [instance] IsReduced.component_reduced
 
 theorem isReducedOfStalkIsReduced [∀ x : X.carrier, _root_.IsReduced (X.presheaf.stalk x)] :
     IsReduced X := by
-  refine' ⟨fun U => ⟨fun s hs => _⟩⟩
+  refine ⟨fun U => ⟨fun s hs => ?_⟩⟩
   apply Presheaf.section_ext X.sheaf U s 0
   intro x
   rw [RingHom.map_zero]
@@ -100,7 +100,7 @@ instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj
 
 theorem affine_isReduced_iff (R : CommRingCat) :
     IsReduced (Scheme.Spec.obj <| op R) ↔ _root_.IsReduced R := by
-  refine' ⟨_, fun h => inferInstance⟩
+  refine ⟨?_, fun h => inferInstance⟩
   intro h
   have : _root_.IsReduced
       (LocallyRingedSpace.Γ.obj (op <| Spec.toLocallyRingedSpace.obj <| op R)) := by
@@ -136,7 +136,7 @@ theorem reduce_to_affine_global (P : ∀ (X : Scheme) (_ : Opens X.carrier), Pro
     X.affineBasisCover_is_basis.exists_subset_of_mem_open (SetLike.mem_coe.2 x.prop) U.isOpen
   let U' : Opens _ := ⟨_, (X.affineBasisCover.IsOpen j).base_open.isOpen_range⟩
   let i' : U' ⟶ U := homOfLE i
-  refine' ⟨U', hx, i', _⟩
+  refine ⟨U', hx, i', ?_⟩
   obtain ⟨_, _, rfl, rfl, h₂'⟩ := h₂ (X.affineBasisCover.map j)
   apply h₂'
   apply h₃
@@ -260,7 +260,7 @@ theorem isIntegralOfIsIrreducibleIsReduced [IsReduced X] [H : IrreducibleSpace X
   haveI := (@LocallyRingedSpace.component_nontrivial X.toLocallyRingedSpace U hU).1
   have : NoZeroDivisors
       (X.toLocallyRingedSpace.toSheafedSpace.toPresheafedSpace.presheaf.obj (op U)) := by
-    refine' ⟨fun {a b} e => _⟩
+    refine ⟨fun {a b} e => ?_⟩
     simp_rw [← basicOpen_eq_bot_iff, ← Opens.not_nonempty_iff_eq_bot]
     by_contra! h
     obtain ⟨_, ⟨x, hx₁, rfl⟩, ⟨x, hx₂, e'⟩⟩ :=

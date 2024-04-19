@@ -277,7 +277,7 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 
 instance fullMap (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
   preimage {g h} e := by
-    refine' homMk e.left _
+    refine homMk e.left ?_
     rw [← cancel_mono f, assoc]
     apply w e
 #align category_theory.mono_over.full_map CategoryTheory.MonoOver.fullMap

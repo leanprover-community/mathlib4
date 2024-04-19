@@ -272,7 +272,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
         _ _ _ _ C (K.map f).nonempty (K.map f).isClosed b h
 
       -- the rest of the proof is a straightforward algebraic manipulation
-      refine' ⟨y, _, hyb⟩
+      refine ⟨y, ?_, hyb⟩
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
       intro x hxK
       apply hxy (f x)

@@ -249,7 +249,7 @@ theorem modByMonic_eq_sub_mul_div :
       dsimp
       rw [dif_pos hq, if_pos h]
       rw [modByMonic, dif_pos hq] at ih
-      refine' ih.trans _
+      refine ih.trans ?_
       unfold divByMonic
       rw [dif_pos hq, dif_pos hq, if_pos h, mul_add, sub_add_eq_sub_sub]
     else by

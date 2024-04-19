@@ -265,7 +265,7 @@ theorem nth_mul_coeff' (n : ℕ) :
     apply Function.uncurry ![x, y]
     simp_rw [product_val, this, Multiset.mem_product, mem_univ_val, true_and_iff, range_val,
       Multiset.range_succ, Multiset.mem_cons, Multiset.mem_range] at ha
-    refine' ⟨a.fst, ⟨a.snd, _⟩⟩
+    refine ⟨a.fst, ⟨a.snd, ?_⟩⟩
     cases' ha with ha ha <;> omega
   use f
   intro x y

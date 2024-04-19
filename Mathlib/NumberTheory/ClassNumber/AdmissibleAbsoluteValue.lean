@@ -63,7 +63,7 @@ theorem exists_partition {ι : Type*} [Finite ι] {ε : ℝ} (hε : 0 < ε) {b :
       ∀ i₀ i₁, t i₀ = t i₁ → (abv (A i₁ % b - A i₀ % b) : ℝ) < abv b • ε := by
   rcases Finite.exists_equiv_fin ι with ⟨n, ⟨e⟩⟩
   obtain ⟨t, ht⟩ := h.exists_partition' n hε hb (A ∘ e.symm)
-  refine' ⟨t ∘ e, fun i₀ i₁ h ↦ _⟩
+  refine ⟨t ∘ e, fun i₀ i₁ h ↦ ?_⟩
   convert (config := {transparency := .default})
     ht (e i₀) (e i₁) h <;> simp only [e.symm_apply_apply]
 #align absolute_value.is_admissible.exists_partition AbsoluteValue.IsAdmissible.exists_partition

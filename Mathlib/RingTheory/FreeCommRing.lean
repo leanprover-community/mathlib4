@@ -250,7 +250,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
-      refine' ⟨q + r, _⟩
+      refine ⟨q + r, ?_⟩
       rw [RingHom.map_add, hq, hr]
       norm_cast
   specialize this (of p) hps

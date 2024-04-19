@@ -75,7 +75,7 @@ open PrincipalIdealRing
 theorem irreducible_of_span_eq_maximalIdeal {R : Type*} [CommRing R] [LocalRing R] [IsDomain R]
     (ϖ : R) (hϖ : ϖ ≠ 0) (h : maximalIdeal R = Ideal.span {ϖ}) : Irreducible ϖ := by
   have h2 : ¬IsUnit ϖ := show ϖ ∈ maximalIdeal R from h.symm ▸ Submodule.mem_span_singleton_self ϖ
-  refine' ⟨h2, _⟩
+  refine ⟨h2, ?_⟩
   intro a b hab
   by_contra! h
   obtain ⟨ha : a ∈ maximalIdeal R, hb : b ∈ maximalIdeal R⟩ := h
@@ -228,10 +228,10 @@ theorem of_ufd_of_unique_irreducible [UniqueFactorizationMonoid R] (h₁ : ∃ p
     (h₂ : ∀ ⦃p q : R⦄, Irreducible p → Irreducible q → Associated p q) :
     HasUnitMulPowIrreducibleFactorization R := by
   obtain ⟨p, hp⟩ := h₁
-  refine' ⟨p, hp, _⟩
+  refine ⟨p, hp, ?_⟩
   intro x hx
   cases' WfDvdMonoid.exists_factors x hx with fx hfx
-  refine' ⟨Multiset.card fx, _⟩
+  refine ⟨Multiset.card fx, ?_⟩
   have H := hfx.2
   rw [← Associates.mk_eq_mk_iff_associated] at H ⊢
   rw [← H, ← Associates.prod_mk, Associates.mk_pow, ← Multiset.prod_replicate]
@@ -261,7 +261,7 @@ theorem aux_pid_of_ufd_of_unique_irreducible (R : Type u) [CommRing R] [IsDomain
   obtain ⟨p, _, H⟩ := HasUnitMulPowIrreducibleFactorization.of_ufd_of_unique_irreducible h₁ h₂
   have ex : ∃ n : ℕ, p ^ n ∈ I := by
     obtain ⟨n, u, rfl⟩ := H hx0
-    refine' ⟨n, _⟩
+    refine ⟨n, ?_⟩
     simpa only [Units.mul_inv_cancel_right] using I.mul_mem_right (↑u⁻¹) hxI
   constructor
   use p ^ Nat.find ex
@@ -365,7 +365,7 @@ theorem unit_mul_pow_congr_pow {p q : R} (hp : Irreducible p) (hq : Irreducible 
     (m n : ℕ) (h : ↑u * p ^ m = v * q ^ n) : m = n := by
   have key : Associated (Multiset.replicate m p).prod (Multiset.replicate n q).prod := by
     rw [Multiset.prod_replicate, Multiset.prod_replicate, Associated]
-    refine' ⟨u * v⁻¹, _⟩
+    refine ⟨u * v⁻¹, ?_⟩
     simp only [Units.val_mul]
     rw [mul_left_comm, ← mul_assoc, h, mul_right_comm, Units.mul_inv, one_mul]
   have := by
