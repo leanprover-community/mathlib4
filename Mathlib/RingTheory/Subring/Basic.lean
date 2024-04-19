@@ -758,7 +758,7 @@ theorem center_eq_top (R) [CommRing R] : center R = ⊤ :=
 #align subring.center_eq_top Subring.center_eq_top
 
 /-- The center is commutative. -/
-instance instCommRing : CommRing (center R) :=
+instance : CommRing (center R) :=
   { inferInstanceAs (CommSemiring (Subsemiring.center R)), (center R).toRing with }
 
 end
@@ -768,7 +768,7 @@ section DivisionRing
 variable {K : Type u} [DivisionRing K]
 
 instance instField : Field (center K) where
-  __ := instCommRing
+  __ := commRing
   inv a := ⟨a⁻¹, Set.inv_mem_center₀ a.prop⟩
   mul_inv_cancel a ha := Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne ha
   div a b := ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩

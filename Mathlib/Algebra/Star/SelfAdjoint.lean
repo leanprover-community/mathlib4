@@ -442,12 +442,12 @@ instance instRatCast : RatCast (selfAdjoint R) where
 @[simp, norm_cast] lemma val_ratCast (q : ℚ) : (q : selfAdjoint R) = (q : R) := rfl
 #align self_adjoint.coe_rat_cast selfAdjoint.val_ratCast
 
-instance instNNQSMul : SMul ℚ≥0 (selfAdjoint R) where
+instance instSMulNNRat : SMul ℚ≥0 (selfAdjoint R) where
   smul a x := ⟨a • (x : R), by rw [NNRat.smul_def]; exact (isSelfAdjoint_nnratCast a).mul x.prop⟩
 
-instance instQSMul : SMul ℚ (selfAdjoint R) where
+instance instSMulRat : SMul ℚ (selfAdjoint R) where
   smul a x := ⟨a • (x : R), by rw [Rat.smul_def]; exact (isSelfAdjoint_ratCast a).mul x.prop⟩
-#align self_adjoint.has_qsmul selfAdjoint.instQSMul
+#align self_adjoint.has_qsmul selfAdjoint.instSMulRat
 
 @[simp, norm_cast] lemma val_nnqsmul (q : ℚ≥0) (x : selfAdjoint R) : ↑(q • x) = q • (x : R) := rfl
 @[simp, norm_cast] lemma val_qsmul (q : ℚ) (x : selfAdjoint R) : ↑(q • x) = q • (x : R) := rfl

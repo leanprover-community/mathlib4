@@ -297,8 +297,8 @@ instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 
-instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α :=
-  ⟨fun a x y => by simp only [smul_def, smul_eq_mul, mul_assoc]⟩
+instance instIsScalarTowerRight : IsScalarTower ℚ≥0 α α where
+  smul_assoc a x y := by simp only [smul_def, smul_eq_mul, mul_assoc]
 
 end NNRat
 
