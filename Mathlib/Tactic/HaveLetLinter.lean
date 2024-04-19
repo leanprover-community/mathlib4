@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Lean.Elab.Command
-import Lean.Linter.Util
+import Lean.Server.InfoUtils
 import Std.Data.List.Basic
 
 /-!
@@ -115,6 +115,7 @@ def haveLetLinter : Linter where run := withSetOptionIn fun _stx => do
     let trees ← getInfoTrees
     for t in trees.toArray do
       for (s, fmt) in ← nonPropHaves t do
+        -- `import Lean.Linter.Util`
         -- emulate `Linter.logLint linter.haveLet ...` with an option taking values not in `Bool`
         logWarningAt s <| .tagged linter.haveLet.name m!"'{fmt}' is a Type and not a Prop. \
           Consider using 'let' instead of 'have'. [{linter.haveLet.name}]"
