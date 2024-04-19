@@ -76,9 +76,7 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
-lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := by
-  intro x y
-  rw [RingHom.id_apply, LieModule.traceForm_comm]
+lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := LieModule.traceForm_comm R L M
 
 @[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
