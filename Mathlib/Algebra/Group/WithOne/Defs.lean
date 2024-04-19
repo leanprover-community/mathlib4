@@ -211,23 +211,25 @@ theorem mul_coe_ne_one [Mul α] {a : WithOne α} {b : α} : a * b ≠ 1 :=
   | 1 => coe_ne_one
   | (c : α) => coe_ne_one
 
-@[to_additive]
-def oMul [Mul α] (a : WithOne α) (b : α) : α :=
+/-- WithOne α left acts over the original magma α. -/
+@[to_additive "WithZero α left acts over the original additive magma α."]
+def lMul [Mul α] (a : WithOne α) (b : α) : α :=
   match a with
   | 1 => b
   | (c : α) => c * b
 
-@[to_additive]
-def Mulo [Mul α] (a : α) (b : WithOne α) : α :=
+/-- WithOne α right acts over the original magma α. -/
+@[to_additive "WithZero α right acts over the original additive magma α."]
+def rMul [Mul α] (a : α) (b : WithOne α) : α :=
   match b with
   | 1 => a
   | (c : α) => a * c
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_oMul [Mul α] {a : WithOne α} {b : α} : oMul a b = a * b := by cases a <;> rfl
+theorem coe_lMul [Mul α] {a : WithOne α} {b : α} : lMul a b = a * b := by cases a <;> rfl
 
 @[to_additive (attr := simp, norm_cast)]
-theorem coe_Mulo [Mul α] {a : α} {b : WithOne α} : Mulo a b = a * b := by cases b <;> rfl
+theorem coe_rMul [Mul α] {a : α} {b : WithOne α} : rMul a b = a * b := by cases b <;> rfl
 
 @[to_additive]
 instance monoid [Semigroup α] : Monoid (WithOne α) where
