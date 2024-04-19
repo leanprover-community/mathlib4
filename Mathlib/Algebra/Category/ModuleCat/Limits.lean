@@ -171,14 +171,18 @@ def forget₂AddCommGroupPreservesLimitsAux :
     (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGroupCat.{w})
 #align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
+/-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
+instance forget₂AddCommGroupPreservesLimit :
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    (forget₂AddCommGroupPreservesLimitsAux F)
+
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
       (forget₂ (ModuleCat.{w} R) AddCommGroupCat.{w}) where
-  preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦ preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
-          (forget₂AddCommGroupPreservesLimitsAux K) }
+  preservesLimitsOfShape := { preservesLimit := inferInstance }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :

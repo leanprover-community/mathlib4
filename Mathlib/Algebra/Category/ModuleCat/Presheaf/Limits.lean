@@ -7,6 +7,7 @@ import Mathlib.Algebra.Category.ModuleCat.Presheaf
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.CategoryTheory.Limits.Preserves.Limits
+import Mathlib.CategoryTheory.Limits.FunctorCategory
 
 /-! # Limits in categories of presheaves of modules
 
@@ -18,29 +19,36 @@ limits exist in the category `PresheafOfModules R`.
 
 -/
 
-universe w' w v₁ v₂ v u₁ u₂ u
-
-namespace AddCommGroupCat
-
-open CategoryTheory
-
-instance : (forget AddCommGroupCat).ReflectsIsomorphisms := inferInstance
-
-end AddCommGroupCat
+universe v v₁ v₂ u₁ u₂ u u'
 
 namespace ModuleCat
 
 open CategoryTheory Limits
 
+section
+
+variable {R : Type u} [Ring R] {J : Type u₂} [Category.{v₂} J]
 
 section
 
-variable (R : Type w) [Ring R] (J : Type u₂) [Category.{v₂} J]
+variable (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)]
 
-instance (F : J ⥤ ModuleCat.{w'} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
-    HasLimit F := sorry
-instance (F : J ⥤ ModuleCat.{w'} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
-    PreservesLimit F (forget _) := sorry
+lemma small_sections_of_hasLimit_forget₂ :
+    Small.{v} (F ⋙ forget (ModuleCat R)).sections := by
+  change Small.{v} ((F ⋙ forget₂ _ AddCommGroupCat) ⋙ forget _).sections
+  have : HasLimit (F ⋙ forget₂ _ AddCommGroupCat) := inferInstance
+  --depends on `AddCommGroupCat.hasLimit_iff_small_sections` from #11669
+  sorry
+
+instance : HasLimit F := by
+  have := small_sections_of_hasLimit_forget₂ F
+  apply hasLimit
+
+noncomputable instance : PreservesLimit F (forget₂ _ AddCommGroupCat) := by
+  have := small_sections_of_hasLimit_forget₂ F
+  infer_instance
+
+end
 
 instance : (forget (ModuleCat R)).ReflectsIsomorphisms where
   reflects f _ :=
@@ -48,36 +56,29 @@ instance : (forget (ModuleCat R)).ReflectsIsomorphisms where
       (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
       (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
 
-instance : (forget₂ (ModuleCat.{w'} R) AddCommGroupCat.{w'}).ReflectsIsomorphisms where
+instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphisms where
   reflects f _ := by
     have : IsIso ((forget _).map f) := by
       change IsIso ((forget _).map ((forget₂ _ AddCommGroupCat).map f))
       infer_instance
     apply isIso_of_reflects_iso _ (forget _)
 
-noncomputable instance {R : Type w} [Ring R] {J : Type u₂} [Category.{v₂} J]
-    (F : J ⥤ ModuleCat.{w'} R) [PreservesLimit F (forget₂ (ModuleCat R) AddCommGroupCat)]
-    [HasLimit F] :
+noncomputable instance {R : Type u} [Ring R] {J : Type u₂} [Category.{v₂} J]
+    (F : J ⥤ ModuleCat.{v} R) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
     ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) := by
   apply reflectsLimitOfReflectsIsomorphisms
 
 end
 
 noncomputable instance preservesLimitRestrictScalars
-    {R : Type w} {S : Type u} [Ring R] [Ring S] (f : R →+* S) {J : Type u₂} [Category.{v₂} J]
-    (F : J ⥤ ModuleCat.{w'} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
-    PreservesLimit F (restrictScalars.{w'} f) := sorry
-
---noncomputable instance preservesLimitsOfShapeRestrictScalars
---    {R : Type w} {S : Type u} [Ring R] [Ring S] (J : Type u₂) [Category.{v₂} J]
---    [PreservesLimitsOfShape J (forget₂ (ModuleCat.{w'} R) AddCommGroupCat.{w'})]
---    [PreservesLimitsOfShape J (forget₂ (ModuleCat.{w'} S) AddCommGroupCat.{w'})] (f : R →+* S) :
---    PreservesLimitsOfShape J  (restrictScalars.{w'} f) where
---  preservesLimit {K} := ⟨fun {c} hc => by
---    have : HasLimit ((K ⋙ restrictScalars f) ⋙ forget₂ _ AddCommGroupCat) :=
---      ⟨_, (isLimitOfPreserves (forget₂ (ModuleCat.{w'} S) AddCommGroupCat.{w'}) hc)⟩
---    exact isLimitOfReflects (forget₂ (ModuleCat.{w'} R) AddCommGroupCat.{w'})
---      (isLimitOfPreserves (forget₂ (ModuleCat.{w'} S) AddCommGroupCat.{w'}) hc)⟩
+    {R : Type u} {S : Type u'} [Ring R] [Ring S] (f : R →+* S) {J : Type u₂} [Category.{v₂} J]
+    (F : J ⥤ ModuleCat.{v} S) [HasLimit (F ⋙ forget₂ _ AddCommGroupCat)] :
+    PreservesLimit F (restrictScalars f) :=
+  ⟨fun {c} hc => by
+    have : HasLimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) := by
+      assumption
+    have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
+    exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
 
 end ModuleCat
 
@@ -85,13 +86,15 @@ namespace PresheafOfModules
 
 open CategoryTheory Category Limits
 
+variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{u}}
+  {J : Type u₂} [Category.{v₂} J]
+
 section Limits
 
-variable {C : Type u₁} [Category.{v₁} C] {R : Cᵒᵖ ⥤ RingCat.{w}}
-  {J : Type u₂} [Category.{v₂} J] (F : J ⥤ PresheafOfModules.{w'} R)
+section
+
+variable (F : J ⥤ PresheafOfModules.{v} R)
   [∀ X, HasLimit (F ⋙ evaluation R X ⋙ forget₂ _ AddCommGroupCat)]
-  --[∀ (X : Cᵒᵖ), PreservesLimitsOfShape J
-  --  (forget₂ (ModuleCat.{w'} (R.obj X)) AddCommGroupCat.{w'})]
 
 instance (X : Cᵒᵖ) : HasLimit ((F ⋙ evaluation R X) ⋙ forget₂ _ AddCommGroupCat) := by
   change HasLimit (F ⋙ evaluation R X ⋙ forget₂ _ AddCommGroupCat)
@@ -119,7 +122,7 @@ def evaluationJointlyReflectsLimits (c : Cone F)
 section
 
 instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars.{w'} (R.map f)) := by
+    HasLimit (F ⋙ evaluation R Y ⋙ ModuleCat.restrictScalars (R.map f)) := by
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
@@ -180,8 +183,17 @@ noncomputable def isLimitLimitCone : IsLimit (limitCone F) :=
 instance hasLimit : HasLimit F := ⟨_, isLimitLimitCone F⟩
 
 noncomputable instance evaluationPreservesLimit (X : Cᵒᵖ) :
-    PreservesLimit F (evaluation R X : PresheafOfModules.{w'} R ⥤ _) :=
+    PreservesLimit F (evaluation R X) :=
   preservesLimitOfPreservesLimitCone (isLimitLimitCone F) (limit.isLimit _)
+
+noncomputable instance toPresheafPreservesLimit :
+    PreservesLimit F (toPresheaf R) :=
+  preservesLimitOfPreservesLimitCone (isLimitLimitCone F)
+    (Limits.evaluationJointlyReflectsLimits _
+      (fun X => isLimitOfPreserves (evaluation R X ⋙ forget₂ _ AddCommGroupCat)
+        (isLimitLimitCone F)))
+
+end
 
 end
 
@@ -189,21 +201,28 @@ section
 
 variable (R J)
 
--- this assumption should be found automatically in suitable universes
-variable [HasLimitsOfShape J (AddCommGroupCat.{w'} )]
+variable [HasLimitsOfShape J AddCommGroupCat.{v}]
 
-instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{w'} R) where
+instance hasLimitsOfShape : HasLimitsOfShape J (PresheafOfModules.{v} R) where
 
 noncomputable def evaluationPreservesLimitsOfShape (X : Cᵒᵖ) :
-    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{w'} R ⥤ _) where
+    PreservesLimitsOfShape J (evaluation R X : PresheafOfModules.{v} R ⥤ _) where
+
+noncomputable def toPresheafPreservesLimitsOfShape :
+    PreservesLimitsOfShape J (toPresheaf.{v} R) where
 
 end
 
-instance : HasFiniteLimits (PresheafOfModules.{w'} R) :=
+instance hasFiniteLimits : HasFiniteLimits (PresheafOfModules.{v} R) :=
   ⟨fun _ => inferInstance⟩
 
-noncomputable instance (X : Cᵒᵖ) : PreservesFiniteLimits (evaluation.{w'} R X) where
-  preservesFiniteLimits J _ _ := evaluationPreservesLimitsOfShape.{w'} R J X
+noncomputable instance preservesFiniteLimitsEvaluation (X : Cᵒᵖ) :
+    PreservesFiniteLimits (evaluation.{v} R X) where
+  preservesFiniteLimits J _ _ := evaluationPreservesLimitsOfShape.{v} R J X
+
+noncomputable instance preservesFiniteLimitsToPresheaf :
+    PreservesFiniteLimits (toPresheaf R) where
+  preservesFiniteLimits _ _ _ := toPresheafPreservesLimitsOfShape _ _
 
 end Limits
 

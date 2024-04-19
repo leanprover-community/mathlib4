@@ -195,7 +195,7 @@ variable (R)
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
