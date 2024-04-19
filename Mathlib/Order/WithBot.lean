@@ -525,7 +525,7 @@ theorem coe_max [LinearOrder α] (x y : α) : ((max x y : α) : WithBot α) = ma
 
 instance instWellFoundedLT [LT α] [WellFoundedLT α] : WellFoundedLT (WithBot α) where
   wf :=
-  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := (nofun)
+  have not_lt_bot : ∀ a : WithBot α, ¬ a < ⊥ := nofun
   have acc_bot := ⟨_, by simp [not_lt_bot]⟩
   .intro fun
     | ⊥ => acc_bot
