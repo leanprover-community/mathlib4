@@ -1067,8 +1067,8 @@ noncomputable def iteratedFDerivComponent {α : Type*}
       (MultilinearMap R (fun (_ : α) ↦ (∀ i, M₁ i)) M₂) where
   toFun := fun z ↦
     { toFun := fun v ↦ domDomRestrictₗ f (fun i ↦ i ∈ s) z (fun i ↦ v (e.symm i) i)
-      map_add' := by classical!; simp [iteratedFDeriv_aux]
-      map_smul' := by classical!; simp [iteratedFDeriv_aux] }
+      map_add' := by classical simp [iteratedFDeriv_aux]
+      map_smul' := by classical simp [iteratedFDeriv_aux] }
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
 
