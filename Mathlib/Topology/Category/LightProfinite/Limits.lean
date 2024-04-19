@@ -226,6 +226,19 @@ instance : HasTerminal LightProfinite.{u} :=
     ⟨⟨⟨fun _ => PUnit.unit, by continuity⟩⟩, fun f => by ext; aesop⟩
   Limits.hasTerminal_of_unique (FintypeCat.of PUnit.{u+1}).toLightProfinite
 
+noncomputable instance : PreservesFiniteCoproducts LightProfinite.toTopCat.{u} where
+  preserves J _ := by
+    have : PreservesColimitsOfShape (Discrete J) Profinite.toTopCat.{u} :=
+      (inferInstance : PreservesColimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
+    exact (inferInstance : PreservesColimitsOfShape (Discrete J)
+      (LightProfinite.lightToProfinite.{u} ⋙ Profinite.toTopCat.{u}))
+
+noncomputable instance : PreservesLimitsOfShape WalkingCospan LightProfinite.toTopCat.{u} := by
+  have : PreservesLimitsOfShape WalkingCospan Profinite.toTopCat.{u} :=
+      (inferInstance : PreservesLimitsOfShape _ (profiniteToCompHaus.{u} ⋙ compHausToTop.{u}))
+  unfold LightProfinite.toTopCat
+  infer_instance
+
 end HasPreserves
 
 end LightProfinite
