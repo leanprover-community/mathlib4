@@ -56,6 +56,7 @@ import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.Kernels
@@ -1651,6 +1652,7 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
+import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
@@ -3016,6 +3018,7 @@ import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
 import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -3377,6 +3380,8 @@ import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Basis
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing
@@ -3923,6 +3928,7 @@ import Mathlib.Topology.ContinuousFunction.NonUnitalFunctionalCalculus
 import Mathlib.Topology.ContinuousFunction.Ordered
 import Mathlib.Topology.ContinuousFunction.Polynomial
 import Mathlib.Topology.ContinuousFunction.Sigma
+import Mathlib.Topology.ContinuousFunction.StarOrdered
 import Mathlib.Topology.ContinuousFunction.StoneWeierstrass
 import Mathlib.Topology.ContinuousFunction.T0Sierpinski
 import Mathlib.Topology.ContinuousFunction.UniqueCFC
