@@ -151,9 +151,9 @@ lemma charpoly_eq_of_equiv {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup
   let b₂ := b₁.map e
   rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂]
   -- extract the following idiom
-  dsimp only [Matrix.charpoly]
+  dsimp only [Matrix.charpoly, b₂]
   congr 1
-  ext i j : 2
+  ext i j : 1
   simp [Matrix.charmatrix, toMatrix, Matrix.diagonal, ← H]
 
 open Module.Free in
@@ -161,23 +161,23 @@ lemma finrank_maximalGeneralizedEigenspace :
     finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maximalGeneralizedEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
-    simp [Module.End.maximalGeneralizedEigenspace, Module.End.generalizedEigenspace]
+    simp [V, Module.End.maximalGeneralizedEigenspace, Module.End.generalizedEigenspace]
   let W := ⨅ (n : ℕ), LinearMap.range (φ ^ n)
   have hVW : IsCompl V W := by
     rw [hV]
     exact LinearMap.isCompl_iSup_ker_pow_iInf_range_pow φ
   have hφV : ∀ x ∈ V, φ x ∈ V := by
-    simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero,
+    simp only [V, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero,
       forall_exists_index]
     intro x n hx
     use n
-    rw [← LinearMap.mul_apply, ← pow_succ', pow_succ, LinearMap.mul_apply, hx, map_zero]
+    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply, hx, map_zero]
   have hφW : ∀ x ∈ W, φ x ∈ W := by
-    simp only [Submodule.mem_iInf, mem_range]
+    simp only [W, Submodule.mem_iInf, mem_range]
     intro x H n
     obtain ⟨y, rfl⟩ := H n
     use φ y
-    rw [← LinearMap.mul_apply, ← pow_succ', pow_succ, LinearMap.mul_apply]
+    rw [← LinearMap.mul_apply, ← pow_succ, pow_succ', LinearMap.mul_apply]
   let F := φ.restrict hφV
   let G := φ.restrict hφW
   let ψ := F.prodMap G
@@ -187,11 +187,12 @@ lemma finrank_maximalGeneralizedEigenspace :
   let b := bV.prod bW
   rw [charpoly_eq_of_equiv φ ψ e.symm, charpoly_prodMap]
   swap
-  · rw [LinearEquiv.symm_symm, LinearEquiv.toLinearMap_symm_comp_eq]
+  · dsimp only [e, V, W]
+    rw [LinearEquiv.symm_symm, LinearEquiv.toLinearMap_symm_comp_eq]
     apply b.ext
     simp only [Submodule.coe_prodEquivOfIsCompl, Basis.prod_apply, coe_inl, coe_inr, coe_comp,
       Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, prodMap_apply,
-      restrict_coe_apply, Sum.forall, implies_true, and_self]
+      restrict_coe_apply, Sum.forall, implies_true, and_self, e, V, W, b, ψ, F, G]
   rw [natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
@@ -201,14 +202,14 @@ lemma finrank_maximalGeneralizedEigenspace :
       rw [hVW.inf_eq_bot, Submodule.mem_bot] at this
       rwa [Subtype.ext_iff]
     have hxV : x.1 ∈ V := by
-      simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero]
+      simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V]
       use 1
       rw [Subtype.ext_iff] at hx
       rwa [pow_one]
     exact ⟨hxV, x.2⟩
   rw [hG, add_zero, eq_comm]
   apply ((charpoly_nilpotent_tfae F).out 2 3).mp
-  simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero]
+  simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V, F]
   rintro x ⟨n, hx⟩
   use n
   apply Subtype.ext
@@ -218,7 +219,7 @@ lemma finrank_maximalGeneralizedEigenspace :
   clear hx
   induction n with
   | zero => simp only [Nat.zero_eq, pow_zero, one_apply]
-  | succ n ih => simp only [pow_succ, LinearMap.mul_apply, ih, restrict_apply]
+  | succ n ih => simp only [pow_succ', LinearMap.mul_apply, ih, restrict_apply]
 
 end LinearMap
 
@@ -272,23 +273,27 @@ variable (x y : L)
 
 variable (R M)
 
+open LieModule LinearMap
+
 noncomputable
 def lieCharpoly₁ : Polynomial R[X] :=
   letI bL := chooseBasis R L
   letI bM := chooseBasis R M
-  (lieCharpoly bL bM).map <| RingHomClass.toRingHom <|
+  (LinearMap.polyCharpoly (toEndomorphism R L M).toLinearMap bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
 lemma lieCharpoly₁_monic : (lieCharpoly₁ R M x y).Monic :=
-  (lieCharpoly_monic _ _).map _
+  (polyCharpoly_monic _ _).map _
 
 lemma lieCharpoly₁_natDegree : (lieCharpoly₁ R M x y).natDegree = finrank R M := by
-    rw [lieCharpoly₁, (lieCharpoly_monic _ _).natDegree_map, lieCharpoly_natDegree,
+    rw [lieCharpoly₁, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree,
       finrank_eq_card_chooseBasisIndex]
 
 lemma lieCharpoly₁_map_eval (r : R) :
     (lieCharpoly₁ R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
-  rw [lieCharpoly₁, map_map, ← lieCharpoly_map (chooseBasis R L) (chooseBasis R M)]
+  rw [lieCharpoly₁, map_map]
+  -- TODO: rename `polyCharpoly_coeff_map`, since the `coeff` shouldn't be there
+  erw [← polyCharpoly_coeff_map (LieHom.toLinearMap φ) (chooseBasis R L) (r • y + x)]
   congr 1
   apply MvPolynomial.ringHom_ext
   · intro;
@@ -306,9 +311,9 @@ lemma lieCharpoly₁_map_eval (r : R) :
 
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
-  rw [finrank_eq_card_chooseBasisIndex] at hij
+  -- rw [finrank_eq_card_chooseBasisIndex] at hij
   classical
-  have := lieCharpoly_coeff_isHomogeneous (chooseBasis R L) (chooseBasis R M) _ _ hij
+  have := polyCharpoly_coeff_isHomogeneous (toEndomorphism R L M).toLinearMap (chooseBasis R L) _ _ hij
   rw [← mul_one j, lieCharpoly₁, coeff_map]
   apply MvPolynomial.aeval_natDegree_le _ this.totalDegree_le _ _
   intro k
@@ -347,7 +352,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     have : engel K x = ⊤ := by
       apply LieSubalgebra.to_submodule_injective
       apply eq_of_le_of_finrank_le le_top _
-      simp only [finrank_top, hr, le_refl]
+      dsimp only [r] at hr
+      simp_rw [finrank_top, hr, le_refl]
     rw [this]
     exact le_top
   let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly₁ K E ⟨x, hx⟩ u₁
@@ -357,7 +363,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
     simp only [lieCharpoly₁_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
       Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
-      LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk] at this
+      LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk, χ, r] at this
     intro z hz
     obtain ⟨n, hn⟩ := this ⟨z, hz⟩
     rw [mem_engel_iff]
@@ -369,7 +375,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     ext i : 1
     obtain hi|rfl|hi := lt_trichotomy i r
     · rw [this i hi, coeff_X_pow, if_neg hi.ne]
-    · simp only [coeff_X_pow, ← lieCharpoly₁_natDegree K E ⟨x, hx⟩ u, if_true]
+    · simp_rw [coeff_X_pow, if_true, r, ← lieCharpoly₁_natDegree K E ⟨x, hx⟩ u]
       have := (lieCharpoly₁_monic K E ⟨x, hx⟩ u).leadingCoeff
       rwa [leadingCoeff] at this
     · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
@@ -391,7 +397,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     obtain hz₀|hz₀ := eq_or_ne z 0
     · refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
-      · dsimp only at hz₀
+      · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
@@ -409,10 +415,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     apply hz0
     obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
     have : ⁅(⟨x, hx⟩ : U), z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
-    simp [mem_engel_iff] at this ⊢
+    simp [mem_engel_iff, E] at this ⊢
     obtain ⟨n, hn⟩ := this
     use n+1
-    rwa [pow_succ']
+    rwa [pow_succ]
   obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff (ψ u)).eval α ≠ 0 := by
     specialize hψ u
     classical
@@ -422,20 +428,23 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       refine (card_roots' _).trans ?_
       rw [constantCoeff_apply]
       apply lieCharpoly₁_coeff_natDegree
-      suffices finrank K Q + r = finrank K L by omega
+      suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
       apply Submodule.finrank_quotient_add_finrank
-    obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
+    obtain ⟨s, hs⟩ := _root_.exists_finset_le_card K _ hLK
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
       omega
     · intro α hα
-      simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and] at hα
+      simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
   -- sorry -- the proof below works
   have hcard : natDegree (coeff (χ u) i) < s.card := by
     apply lt_of_le_of_lt (lieCharpoly₁_coeff_natDegree _ _ _ _ i (r - i) _)
-    all_goals omega
+    · omega
+    · dsimp only [r] at hi ⊢
+      -- omega fails???
+      rw [Nat.add_sub_cancel' hi.le]
   apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ hcard
   intro α hα
   let y := α • u + ⟨x, hx⟩
@@ -458,7 +467,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     clear hn
     induction n with
     | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
-    | succ n ih => rw [pow_succ, pow_succ, LinearMap.mul_apply, ih]; rfl
+    | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
   set n := Nat.find hz' with hn'
   have hn := Nat.find_spec hz'
@@ -473,7 +482,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   use ((LieModule.toEndomorphism K U Q) y ^ k) (LieSubmodule.Quotient.mk' E z)
   refine ⟨?_, ?_⟩
   · apply Nat.find_min hz'; omega
-  · rw [← hn, hk, pow_succ, LinearMap.mul_apply]
+  · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
 
 open Cardinal in
 lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
