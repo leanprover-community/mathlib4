@@ -266,11 +266,21 @@ protected def norm  : (E K) →*₀ ℝ where
   map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
       Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
 
+protected theorem norm_zero :
+    mixedEmbedding.norm (0 : E K) = 0 := mixedEmbedding.norm.map_zero'
+
+protected theorem norm_one :
+    mixedEmbedding.norm (1 : E K) = 1 := mixedEmbedding.norm.map_one'
+
+protected theorem norm_zero_iff {x : E K} :
+    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
+    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+
 protected theorem norm_ne_zero_iff {x : E K} :
     mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_ne_zero_iff,
-    Finset.prod_ne_zero_iff, Finset.mem_univ, forall_true_left, pow_ne_zero_iff two_ne_zero,
-    norm_ne_zero_iff]
+  rw [← not_iff_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_zero_iff, not_and_or, not_forall, not_not]
 
 theorem norm_real (c : ℝ) :
     mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
