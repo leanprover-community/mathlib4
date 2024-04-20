@@ -53,7 +53,7 @@ protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
     have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt
     have d₂0 : 0 < (d₂ : ℤ) := mod_cast h₂.bot_lt
-    simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg_iff_of_pos_right, divInt_add_divInt, Ne.def,
+    simp only [d₁0, d₂0, h₁, h₂, mul_pos, divInt_nonneg_iff_of_pos_right, divInt_add_divInt, Ne,
       Nat.cast_eq_zero, not_false_iff]
     intro n₁0 n₂0
     apply add_nonneg <;> apply mul_nonneg <;> · first |assumption|apply Int.ofNat_zero_le

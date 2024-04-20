@@ -5,15 +5,14 @@ Authors: Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Group.Nat
-import Mathlib.Algebra.Ring.Hom.Defs
 import Mathlib.GroupTheory.GroupAction.Opposite
 
 #align_import algebra.hom.iterate from "leanprover-community/mathlib"@"792a2a264169d64986541c6f8f7e3bbb6acb6295"
 
 /-!
-# Iterates of monoid and ring homomorphisms
+# Iterates of monoid homomorphisms
 
-Iterate of a monoid/ring homomorphism is a monoid/ring homomorphism but it has a wrong type, so Lean
+Iterate of a monoid homomorphism is a monoid homomorphism but it has a wrong type, so Lean
 can't apply lemmas like `MonoidHom.map_one` to `f^[n] 1`. Though it is possible to define
 a monoid structure on the endomorphisms, quite often we do not want to convert from
 `M →* M` to `Monoid.End M` and from `f^[n]` to `f^n` just to apply a simple lemma.
@@ -95,20 +94,6 @@ theorem AddMonoid.End.coe_pow {A} [AddMonoid A] (f : AddMonoid.End A) (n : ℕ) 
   hom_coe_pow _ rfl (fun _ _ => rfl) _ _
 #align add_monoid.End.coe_pow AddMonoid.End.coe_pow
 
-namespace RingHom
-
-section Semiring
-
-variable {R : Type*} [Semiring R] (f : R →+* R) (n : ℕ) (x y : R)
-
-theorem coe_pow (n : ℕ) : ⇑(f ^ n) = f^[n] :=
-  hom_coe_pow _ rfl (fun _ _ => rfl) f n
-#align ring_hom.coe_pow RingHom.coe_pow
-
-end Semiring
-
-end RingHom
-
 --what should be the namespace for this section?
 section Monoid
 
@@ -117,7 +102,7 @@ variable [Monoid G] (a : G) (n : ℕ)
 @[to_additive (attr := simp)]
 theorem smul_iterate [MulAction G H] : (a • · : H → H)^[n] = (a ^ n • ·) :=
   funext fun b =>
-    Nat.recOn n (by rw [iterate_zero, id.def, pow_zero, one_smul])
+    Nat.recOn n (by rw [iterate_zero, id, pow_zero, one_smul])
     fun n ih => by rw [iterate_succ', comp_apply, ih, pow_succ', mul_smul]
 #align smul_iterate smul_iterate
 #align vadd_iterate vadd_iterate
@@ -206,3 +191,5 @@ theorem Commute.function_commute_mul_right (h : Commute a b) :
 #align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup
+
+assert_not_exists Ring

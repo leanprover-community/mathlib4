@@ -219,7 +219,7 @@ theorem integral_gaussian_sq_complex {b : ℂ} (hb : 0 < b.re) :
       rw [← integral_comp_polarCoord_symm]
       simp only [polarCoord_symm_apply, ofReal_mul, ofReal_cos, ofReal_sin]
     _ = (∫ r in Ioi (0 : ℝ), r * cexp (-b * (r : ℂ) ^ 2)) * ∫ θ in Ioo (-π) π, 1 := by
-      rw [← set_integral_prod_mul]
+      rw [← setIntegral_prod_mul]
       congr with p : 1
       rw [mul_one]
       congr
@@ -354,7 +354,7 @@ theorem Real.Gamma_one_half_eq : Real.Gamma (1 / 2) = √π := by
   rw [Gamma_eq_integral one_half_pos, ← integral_comp_rpow_Ioi_of_pos zero_lt_two]
   convert congr_arg (fun x : ℝ => 2 * x) (integral_gaussian_Ioi 1) using 1
   · rw [← integral_mul_left]
-    refine' set_integral_congr measurableSet_Ioi fun x hx => _
+    refine' setIntegral_congr measurableSet_Ioi fun x hx => _
     dsimp only
     have : (x ^ (2 : ℝ)) ^ (1 / (2 : ℝ) - 1) = x⁻¹ := by
       rw [← rpow_mul (le_of_lt hx)]

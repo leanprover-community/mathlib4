@@ -1019,7 +1019,7 @@ theorem irreducible : Irreducible v.asIdeal :=
 #align is_dedekind_domain.height_one_spectrum.irreducible IsDedekindDomain.HeightOneSpectrum.irreducible
 
 theorem associates_irreducible : Irreducible <| Associates.mk v.asIdeal :=
-  (Associates.irreducible_mk _).mpr v.irreducible
+  Associates.irreducible_mk.mpr v.irreducible
 #align is_dedekind_domain.height_one_spectrum.associates_irreducible IsDedekindDomain.HeightOneSpectrum.associates_irreducible
 
 /-- An equivalence between the height one and maximal spectra for rings of Krull dimension 1. -/
