@@ -186,7 +186,7 @@ lemma weightSpace_le_weightSpaceOf (x : L) (χ : L → R) :
   iInf_le _ x
 
 variable (R L) in
-/-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is is
+/-- A weight of a Lie module is a map `L → R` such that the corresponding weight space is
 non-trivial. -/
 structure Weight where
   /-- The family of eigenvalues corresponding to a weight. -/
