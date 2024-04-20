@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.Analysis.Normed.Group.InfiniteSum
+import Mathlib.Topology.Instances.ENNReal
 
 #align_import analysis.normed.field.infinite_sum from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
@@ -22,7 +23,8 @@ We first establish results about arbitrary index types, `ι` and `ι'`, and then
 
 variable {R : Type*} {ι : Type*} {ι' : Type*} [NormedRing R]
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 open Finset
 

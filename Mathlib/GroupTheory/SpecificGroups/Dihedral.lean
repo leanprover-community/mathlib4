@@ -136,7 +136,7 @@ theorem r_one_pow (k : ℕ) : (r 1 : DihedralGroup n) ^ k = r k := by
   induction' k with k IH
   · rw [Nat.cast_zero]
     rfl
-  · rw [pow_succ, IH, r_mul_r]
+  · rw [pow_succ', IH, r_mul_r]
     congr 1
     norm_cast
     rw [Nat.one_add]

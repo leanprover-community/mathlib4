@@ -3,7 +3,7 @@ Copyright (c) 2023 Dagur Asgeirsson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
-import Mathlib.LinearAlgebra.Dimension.Finite
+import Mathlib.LinearAlgebra.Dimension.Free
 import Mathlib.Algebra.Homology.ShortComplex.ModuleCat
 
 /-!
@@ -25,8 +25,6 @@ This file proves results about linear independence and span in exact sequences o
 linear algebra, module, free
 
 -/
-
-set_option autoImplicit true
 
 open CategoryTheory
 
@@ -83,7 +81,7 @@ end LinearIndependent
 
 section Span
 
-
+set_option autoImplicit true in
 /-- In the commutative diagram
 ```
     f     g
@@ -103,18 +101,18 @@ theorem span_exact (huv : u ∘ Sum.inl = S.f ∘ v)
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hgm
   obtain ⟨cm, hm⟩ := hgm
   let m' : S.X₂ := Finsupp.sum cm fun j a ↦ a • (u (Sum.inr j))
-  have hsub : m - m' ∈ LinearMap.range S.f
-  · rw [hS.moduleCat_range_eq_ker]
+  have hsub : m - m' ∈ LinearMap.range S.f := by
+    rw [hS.moduleCat_range_eq_ker]
     simp only [LinearMap.mem_ker, map_sub, sub_eq_zero]
     rw [← hm, map_finsupp_sum]
-    simp only [Function.comp_apply, SMulHomClass.map_smul]
+    simp only [Function.comp_apply, map_smul]
   obtain ⟨n, hnm⟩ := hsub
   have hn : n ∈ span R (range v) := hv mem_top
   rw [Finsupp.mem_span_range_iff_exists_finsupp] at hn
   obtain ⟨cn, hn⟩ := hn
   rw [← hn, map_finsupp_sum] at hnm
   rw [← sub_add_cancel m m', ← hnm,]
-  simp only [SMulHomClass.map_smul]
+  simp only [map_smul]
   have hn' : (Finsupp.sum cn fun a b ↦ b • S.f (v a)) =
       (Finsupp.sum cn fun a b ↦ b • u (Sum.inl a)) :=
     by congr; ext a b; change b • (S.f ∘ v) a = _; rw [← huv]; rfl
@@ -138,7 +136,7 @@ theorem span_rightExact {w : ι' → S.X₃} (hv : ⊤ ≤ span R (range v))
     simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Sum.elim_comp_inr]
     rw [ModuleCat.epi_iff_surjective] at hE
     rw [← Function.comp.assoc, Function.RightInverse.comp_eq_id (Function.rightInverse_invFun hE),
-      Function.comp.left_id]
+      Function.id_comp]
 
 end Span
 
@@ -151,7 +149,7 @@ def Basis.ofShortExact
     (span_rightExact hS'.exact (le_of_eq (bN.span_eq.symm)) (le_of_eq (bP.span_eq.symm)) hS'.epi_g)
 
 /-- In a short exact sequence `0 ⟶ X₁ ⟶ X₂ ⟶ X₃ ⟶ 0`, if `X₁` and `X₃` are free,
-then `X₂` is free.-/
+then `X₂` is free. -/
 theorem free_shortExact [Module.Free R S.X₁] [Module.Free R S.X₃] :
     Module.Free R S.X₂ :=
   Module.Free.of_basis (Basis.ofShortExact hS' (Module.Free.chooseBasis R S.X₁)
@@ -166,7 +164,7 @@ theorem free_shortExact_rank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
   exact ⟨Basis.indexEquiv (Module.Free.chooseBasis R S.X₂) (Basis.ofShortExact hS'
     (Module.Free.chooseBasis R S.X₁) (Module.Free.chooseBasis R S.X₃))⟩
 
-theorem free_shortExact_finrank_add [Module.Free R S.X₁] [Module.Free R S.X₃]
+theorem free_shortExact_finrank_add {n p : ℕ} [Module.Free R S.X₁] [Module.Free R S.X₃]
     [Module.Finite R S.X₁] [Module.Finite R S.X₃]
     (hN : FiniteDimensional.finrank R S.X₁ = n)
     (hP : FiniteDimensional.finrank R S.X₃ = p)

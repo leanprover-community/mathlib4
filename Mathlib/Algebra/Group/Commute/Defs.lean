@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Neil Strickland, Yury Kudryashov
 -/
 import Mathlib.Algebra.Group.Semiconj.Defs
+import Mathlib.Data.Nat.Defs
+import Mathlib.Init.Algebra.Classes
 
 #align_import algebra.group.commute from "leanprover-community/mathlib"@"05101c3df9d9cfe9430edc205860c79b6d660102"
 
@@ -35,6 +37,12 @@ def Commute {S : Type*} [Mul S] (a b : S) : Prop :=
   SemiconjBy a b b
 #align commute Commute
 #align add_commute AddCommute
+
+/--
+Two elements `a` and `b` commute if `a * b = b * a`.
+-/
+@[to_additive]
+theorem commute_iff_eq {S : Type*} [Mul S] (a b : S) : Commute a b ↔ a * b = b * a := Iff.rfl
 
 namespace Commute
 
@@ -185,7 +193,7 @@ theorem pow_pow (h : Commute a b) (m n : ℕ) : Commute (a ^ m) (b ^ n) :=
 #align add_commute.nsmul_nsmul AddCommute.nsmul_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
   (Commute.refl a).pow_right n
@@ -193,7 +201,7 @@ theorem self_pow (a : M) (n : ℕ) : Commute a (a ^ n) :=
 #align add_commute.self_nsmul AddCommute.self_nsmulₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
   (Commute.refl a).pow_left n
@@ -201,19 +209,13 @@ theorem pow_self (a : M) (n : ℕ) : Commute (a ^ n) a :=
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
 #align commute.pow_self Commute.pow_self
 
--- porting note: `simpNF` told me to remove the `simp` attribute
+-- Porting note: `simpNF` told me to remove the `simp` attribute
 @[to_additive]
 theorem pow_pow_self (a : M) (m n : ℕ) : Commute (a ^ m) (a ^ n) :=
   (Commute.refl a).pow_pow m n
 #align commute.pow_pow_self Commute.pow_pow_selfₓ
 #align add_commute.nsmul_nsmul_self AddCommute.nsmul_nsmul_selfₓ
 -- `MulOneClass.toHasMul` vs. `MulOneClass.toMul`
-
-@[to_additive succ_nsmul']
-theorem _root_.pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  (pow_succ a n).trans (self_pow _ _)
-#align pow_succ' pow_succ'
-#align succ_nsmul' succ_nsmul'
 
 end Monoid
 
@@ -252,6 +254,25 @@ theorem mul_inv_cancel_assoc (h : Commute a b) : a * (b * a⁻¹) = b := by
 end Group
 
 end Commute
+
+section Monoid
+variable {M : Type*} [Monoid M] {n : ℕ}
+
+@[to_additive succ_nsmul']
+lemma pow_succ' (a : M) (n : ℕ) : a ^ (n + 1) = a * a ^ n :=
+  (pow_succ a n).trans (Commute.self_pow _ _).symm
+#align pow_succ pow_succ'
+#align succ_nsmul succ_nsmul'
+
+@[to_additive]
+lemma mul_pow_sub_one (hn : n ≠ 0) (a : M) : a * a ^ (n - 1) = a ^ n := by
+  rw [← pow_succ', Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+
+@[to_additive]
+lemma pow_sub_one_mul (hn : n ≠ 0) (a : M) : a ^ (n - 1) * a = a ^ n := by
+  rw [← pow_succ, Nat.sub_add_cancel $ Nat.one_le_iff_ne_zero.2 hn]
+
+end Monoid
 
 section CommGroup
 

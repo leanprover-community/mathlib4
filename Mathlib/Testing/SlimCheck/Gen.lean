@@ -4,10 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henrik Böving, Simon Hudon
 -/
 import Mathlib.Control.Random
-import Mathlib.Control.ULiftable
-import Mathlib.Data.List.Perm
-import Mathlib.Data.Subtype
-import Mathlib.Data.Nat.Basic
 
 #align_import testing.slim_check.gen from "leanprover-community/mathlib"@"fdc286cc6967a012f41b87f76dcd2797b53152af"
 
@@ -46,12 +42,12 @@ namespace Gen
 
 /-- Lift `Random.random` to the `Gen` monad. -/
 def chooseAny (α : Type u) [Random Id α] : Gen α :=
-  λ _ => rand α
+  fun _ ↦ rand α
 
 /-- Lift `BoundedRandom.randomR` to the `Gen` monad. -/
 def choose (α : Type u) [Preorder α] [BoundedRandom Id α] (lo hi : α) (h : lo ≤ hi) :
     Gen {a // lo ≤ a ∧ a ≤ hi} :=
-  λ _ => randBound α lo hi h
+  fun _ ↦ randBound α lo hi h
 
 lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ hi) :
     lo ≤ Nat.pred a ∧ Nat.pred a < hi :=

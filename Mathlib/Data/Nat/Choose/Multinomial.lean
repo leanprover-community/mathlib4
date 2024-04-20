@@ -58,7 +58,9 @@ theorem multinomial_nil : multinomial ∅ f = 1 := by
   rfl
 #align nat.multinomial_nil Nat.multinomial_nil
 
-lemma multinomial_cons (ha : a ∉ s) :
+variable {s f}
+
+lemma multinomial_cons (ha : a ∉ s) (f : α → ℕ) :
     multinomial (s.cons a ha) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
   rw [multinomial, Nat.div_eq_iff_eq_mul_left _ (prod_factorial_dvd_factorial_sum _ _), prod_cons,
     multinomial, mul_assoc, mul_left_comm _ (f a)!,
@@ -66,13 +68,13 @@ lemma multinomial_cons (ha : a ∉ s) :
     Nat.add_choose_mul_factorial_mul_factorial, Finset.sum_cons]
   exact prod_pos fun i _ ↦ by positivity
 
-lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) :
+lemma multinomial_insert [DecidableEq α] (ha : a ∉ s) (f : α → ℕ) :
     multinomial (insert a s) f = (f a + ∑ i in s, f i).choose (f a) * multinomial s f := by
   rw [← cons_eq_insert _ _ ha, multinomial_cons]
 #align nat.multinomial_insert Nat.multinomial_insert
 
-@[simp]
-lemma multinomial_singleton : multinomial {a} f = 1 := by rw [← cons_empty, multinomial_cons]; simp
+@[simp] lemma multinomial_singleton (a : α) (f : α → ℕ) : multinomial {a} f = 1 := by
+  rw [← cons_empty, multinomial_cons]; simp
 #align nat.multinomial_singleton Nat.multinomial_singleton
 
 @[simp]
@@ -106,7 +108,7 @@ theorem binomial_eq [DecidableEq α] (h : a ≠ b) :
 
 theorem binomial_eq_choose [DecidableEq α] (h : a ≠ b) :
     multinomial {a, b} f = (f a + f b).choose (f a) := by
-  simp [binomial_eq _ h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
+  simp [binomial_eq h, choose_eq_factorial_div_factorial (Nat.le_add_right _ _)]
 #align nat.binomial_eq_choose Nat.binomial_eq_choose
 
 theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
@@ -117,7 +119,7 @@ theorem binomial_spec [DecidableEq α] (hab : a ≠ b) :
 @[simp]
 theorem binomial_one [DecidableEq α] (h : a ≠ b) (h₁ : f a = 1) :
     multinomial {a, b} f = (f b).succ := by
-  simp [multinomial_insert_one {b} f (Finset.not_mem_singleton.mpr h) h₁]
+  simp [multinomial_insert_one (Finset.not_mem_singleton.mpr h) h₁]
 #align nat.binomial_one Nat.binomial_one
 
 theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
@@ -125,7 +127,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false, not_false_eq_true]
+    h, Ne, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
   rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
@@ -134,7 +136,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
 theorem succ_mul_binomial [DecidableEq α] (h : a ≠ b) :
     (f a + f b).succ * multinomial {a, b} f =
       (f a).succ * multinomial {a, b} (Function.update f a (f a).succ) := by
-  rw [binomial_eq_choose _ h, binomial_eq_choose _ h, mul_comm (f a).succ, Function.update_same,
+  rw [binomial_eq_choose h, binomial_eq_choose h, mul_comm (f a).succ, Function.update_same,
     Function.update_noteq (ne_comm.mp h)]
   rw [succ_mul_choose_eq (f a + f b) (f a), succ_add (f a) (f b)]
 #align nat.succ_mul_binomial Nat.succ_mul_binomial
@@ -179,11 +181,10 @@ theorem multinomial_update (a : α) (f : α →₀ ℕ) :
   simp only [multinomial_eq]
   classical
     by_cases h : a ∈ f.support
-    · rw [← Finset.insert_erase h, Nat.multinomial_insert _ f (Finset.not_mem_erase a _),
+    · rw [← Finset.insert_erase h, Nat.multinomial_insert (Finset.not_mem_erase a _),
         Finset.add_sum_erase _ f h, support_update_zero]
       congr 1
-      exact
-        Nat.multinomial_congr _ fun _ h => (Function.update_noteq (Finset.mem_erase.1 h).1 0 f).symm
+      exact Nat.multinomial_congr fun _ h ↦ (Function.update_noteq (mem_erase.1 h).1 0 f).symm
     rw [not_mem_support_iff] at h
     rw [h, Nat.choose_zero_right, one_mul, ← h, update_self]
 #align finsupp.multinomial_update Finsupp.multinomial_update
@@ -213,6 +214,9 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_same]
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
+@[simp]
+theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+
 end Multiset
 
 namespace Finset
@@ -236,18 +240,18 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
   induction' s using Finset.induction with a s ha ih
   · rw [sum_empty]
     rintro (_ | n)
-      -- Porting note : Lean cannot infer this instance by itself
+      -- Porting note: Lean cannot infer this instance by itself
     · haveI : Subsingleton (Sym α 0) := Unique.instSubsingleton
       rw [_root_.pow_zero, Fintype.sum_subsingleton]
       swap
-        -- Porting note : Lean cannot infer this instance by itself
+        -- Porting note: Lean cannot infer this instance by itself
       · have : Zero (Sym α 0) := Sym.instZeroSym
         exact ⟨0, by simp [eq_iff_true_of_subsingleton]⟩
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-    · rw [_root_.pow_succ, zero_mul]
-      -- Porting note : Lean cannot infer this instance by itself
+    · rw [_root_.pow_succ, mul_zero]
+      -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
   intro n; specialize ih (hc.mono <| s.subset_insert a)
@@ -273,3 +277,23 @@ theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
 #align finset.sum_pow Finset.sum_pow
 
 end Finset
+
+namespace Sym
+
+variable {n : ℕ} {α : Type*} [DecidableEq α]
+
+theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+    (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
+  rw [Multiset.multinomial_filter_ne x]
+  rw [← mem_coe] at hx
+  refine congrArg₂ _ ?_ ?_
+  · rw [card_coe, count_coe_fill_self_of_not_mem hx]
+  · refine congrArg _ ?_
+    rw [coe_fill, coe_replicate, Multiset.filter_add]
+    rw [Multiset.filter_eq_self.mpr]
+    · rw [add_right_eq_self]
+      rw [Multiset.filter_eq_nil]
+      exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
+    · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+end Sym

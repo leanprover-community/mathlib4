@@ -338,7 +338,7 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
   · let m := midpoint ℝ b c
     have : dist b c ≠ 0 := (dist_pos.mpr hbc).ne'
     have hm := dist_sq_mul_dist_add_dist_sq_mul_dist a b c m (angle_midpoint_eq_pi b c hbc)
-    simp only [dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
+    simp only [m, dist_left_midpoint, dist_right_midpoint, Real.norm_two] at hm
     calc
       dist a b ^ 2 + dist a c ^ 2 = 2 / dist b c * (dist a b ^ 2 *
         ((2:ℝ)⁻¹ * dist b c) + dist a c ^ 2 * (2⁻¹ * dist b c)) := by field_simp; ring
@@ -348,8 +348,7 @@ theorem dist_sq_add_dist_sq_eq_two_mul_dist_midpoint_sq_add_half_dist_sq (a b c 
 theorem dist_mul_of_eq_angle_of_dist_mul (a b c a' b' c' : P) (r : ℝ) (h : ∠ a' b' c' = ∠ a b c)
     (hab : dist a' b' = r * dist a b) (hcb : dist c' b' = r * dist c b) :
     dist a' c' = r * dist a c := by
-  have h' : dist a' c' ^ 2 = (r * dist a c) ^ 2
-  calc
+  have h' : dist a' c' ^ 2 = (r * dist a c) ^ 2 := calc
     dist a' c' ^ 2 =
         dist a' b' ^ 2 + dist c' b' ^ 2 - 2 * dist a' b' * dist c' b' * Real.cos (∠ a' b' c') := by
       simp [pow_two, law_cos a' b' c']

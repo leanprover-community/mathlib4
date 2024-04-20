@@ -72,9 +72,8 @@ instance center.commMonoid : CommMonoid (center M) :=
   { (center M).toMonoid, Subsemigroup.center.commSemigroup with }
 
 -- no instance diamond, unlike the primed version
-example :
-    center.commMonoid.toMonoid = Submonoid.toMonoid (center M) :=
-  rfl
+example : center.commMonoid.toMonoid = Submonoid.toMonoid (center M) := by
+  with_reducible_and_instances rfl
 
 @[to_additive]
 theorem mem_center_iff {z : M} : z ∈ center M ↔ ∀ g, g * z = z * g := by

@@ -13,7 +13,7 @@ between homological complexes in `HomologicalComplex C c`. In degree `i`,
 it is isomorphic to `(F.X j) ⊞ (G.X i)` if there is a `j` such that `c.Rel i j`,
 and `G.X i` otherwise. (This is also known as the mapping cone of `φ`. Under
 the name `CochainComplex.mappingCone`, a specific API shall be developed
-for the case of cochain complexes indexed by `ℤ` (TODO).)
+for the case of cochain complexes indexed by `ℤ`.)
 
 When we assume `hc : ∀ j, ∃ i, c.Rel i j` (which holds in the case of chain complexes,
 or cochain complexes indexed by `ℤ`), then for any homological complex `K`,
@@ -229,7 +229,6 @@ noncomputable def homotopyCofiber : HomologicalComplex C c where
       · simp [homotopyCofiber.inlX_d φ j k _ hjk hk]
       · simp [homotopyCofiber.inlX_d' φ j k hjk hk]
     · simp
-
 
 namespace homotopyCofiber
 
