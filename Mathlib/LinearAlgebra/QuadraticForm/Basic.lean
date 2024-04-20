@@ -587,7 +587,7 @@ end Comp
 
 section CommRing
 
-variable [CommSemiring R] [CommSemiring N] [AddCommMonoid M] [Module R M]
+variable [CommSemiring R]  [CommSemiring N]  [AddCommMonoid M] [Module R M]
 variable [Module R N] [SMulCommClass R N N] [IsScalarTower R N N]
 
 /-- The product of linear forms is a quadratic form. -/
@@ -598,9 +598,10 @@ def linMulLin (f g : M →ₗ[R] N) : QuadraticMap R M N where
       RingHom.id_apply, smul_mul_assoc, mul_smul_comm, ← smul_assoc, (smul_eq_mul R)]
   exists_companion' :=
     ⟨(LinearMap.mul R N).compl₁₂ f g + (LinearMap.mul R N).compl₁₂ g f, fun x y => by
-      simp only [Pi.mul_apply, map_add, LinearMap.compl₁₂_apply, LinearMap.mul_apply',
-        LinearMap.add_apply]
-      ring_nf⟩
+      simp only [Pi.mul_apply, map_add, left_distrib, right_distrib, LinearMap.add_apply,
+        LinearMap.compl₁₂_apply, LinearMap.mul_apply']
+      rw [mul_comm (g x) (f y)]
+      abel_nf⟩
 #align quadratic_form.lin_mul_lin QuadraticMap.linMulLin
 
 @[simp]
@@ -1116,7 +1117,7 @@ theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef 
 theorem linMulLinSelfPosDef {R} {N' : Type*} [LinearOrderedCommRing R] [Module R M]
     [LinearOrderedCommSemiring N'] [ExistsAddOfLE N'] [Module R N'] [SMulCommClass R N' N']
     [IsScalarTower R N' N']
-    (f : M →ₗ[R] N') (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin f f) := fun _x hx =>
+    (f : M →ₗ[R] N') (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (R := R) (N := N') f f) := fun _x hx =>
   mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
 #align quadratic_form.lin_mul_lin_self_pos_def QuadraticMap.linMulLinSelfPosDef
 
