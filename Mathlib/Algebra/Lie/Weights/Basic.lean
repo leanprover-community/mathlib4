@@ -195,8 +195,7 @@ structure Weight where
 
 namespace Weight
 
-instance instFunLike :
-    FunLike (Weight R L M) L R where
+instance instFunLike : FunLike (Weight R L M) L R where
   coe χ := χ.1
   coe_injective' χ₁ χ₂ h := by cases χ₁; cases χ₂; simp_all
 
