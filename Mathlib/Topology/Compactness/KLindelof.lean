@@ -549,7 +549,7 @@ theorem IsSigmaCompact.isKLindelof (hκ : ℵ₀ < κ) (hs : IsSigmaCompact s) :
 
 /-- A compact space `X` is `κ`-Lindelöf. -/
 instance (priority := 100) [CompactSpace X] : KLindelofSpace κ X :=
-  { isKLindelof_univ := isCompact_univ.isKLindelof}
+  { isKLindelof_univ := isCompact_univ.isKLindelof _}
 
 /-- A sigma-compact space `X` is `κ`-Lindelöf. -/
 instance (priority := 100) [SigmaCompactSpace X] [hκ : Fact (ℵ₀ < κ)] : KLindelofSpace κ X :=
