@@ -276,7 +276,7 @@ alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 
 section Semiring
 
-variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 theorem even_iff_exists_two_mul (a : α) : Even a ↔ ∃ b, a = 2 * b := by
   simp [even_iff_exists_two_nsmul]

@@ -27,7 +27,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
   rw [zpow_natCast]
-  refine' one_lt_pow' ha ?_
+  refine one_lt_pow' ha ?_
   rintro rfl
   simp at hn
 #align one_lt_zpow' one_lt_zpow'
@@ -379,6 +379,16 @@ theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := b
   simp_rw [← sq]
   exact lt_of_pow_lt_pow_left _ hb
 #align lt_of_mul_self_lt_mul_self lt_of_mul_self_lt_mul_self
+
+/-!
+### Lemmas for canonically linear ordered semirings or linear ordered rings
+
+The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+more familiar settings:
+* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+  `ℚ≥0` or `ℝ≥0`
+-/
 
 variable [ExistsAddOfLE R]
 
