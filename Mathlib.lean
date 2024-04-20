@@ -87,6 +87,7 @@ import Mathlib.Algebra.Category.ModuleCat.Monoidal.Basic
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Closed
 import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
 import Mathlib.Algebra.Category.ModuleCat.Presheaf
+import Mathlib.Algebra.Category.ModuleCat.Presheaf.Limits
 import Mathlib.Algebra.Category.ModuleCat.Products
 import Mathlib.Algebra.Category.ModuleCat.Projective
 import Mathlib.Algebra.Category.ModuleCat.Sheaf
