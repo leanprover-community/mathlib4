@@ -513,27 +513,27 @@ analysis](https://hal.inria.fr/hal-02463336).
 
 
 /-!
-### Design note on `AddWithZero` and `MulWithOne`
+### Design note on `AddZeroClass` and `MulOneClass`
 
-An `AddWithZero` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
+An `AddZeroClass` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
 often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
 `Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
 that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
 goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
-To solve this issue, we embed an `ℕ`-action in the definition of an `AddWithZero` (which is by
+To solve this issue, we embed an `ℕ`-action in the definition of an `AddZeroClass` (which is by
 default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
 a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
 explanations on this pattern.
 
 For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddWithZero`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
+an `AddZeroClass`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
 
 The tactic `to_additive` transfers definitions and results from multiplication with one to addition
 with zero. To work, it has to map fields to fields. This means that we should also add corresponding
-fields to the multiplicative structure `MulWithOne`, which could solve defeq problems for powers if
+fields to the multiplicative structure `MulOneClass`, which could solve defeq problems for powers if
 needed. These problems do not come up in practice, so most of the time we will not need to adjust
 the `npow` field when defining multiplicative objects.
 
