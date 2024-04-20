@@ -206,10 +206,22 @@ variable (n) (α : Type v) [CommRing α] [StarRing α] {A : Matrix n n α}
 is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
-theorem mem_specialUnitaryGroup_iff  (h : A ∈ unitaryGroup n α):
-    A ∈ specialUnitaryGroup n α ↔ A.det = 1 := by
-  simp_all only [Submonoid.mem_inf, true_and]
-  exact MonoidHom.mem_mker detMonoidHom
+theorem mem_specialUnitaryGroup_iff {A : Matrix n n α}:
+    A ∈ specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1:= by
+  simp only [specialUnitaryGroup]
+  apply Iff.intro
+  . rintro ⟨h1, h2⟩
+    simp_all only [SetLike.mem_coe,
+      unitary.mul_star_self_of_mem,
+      true_and]
+    exact
+      h2
+  . rintro ⟨h1, h2⟩
+    simp_all only [Submonoid.mem_inf, true_and]
+    apply And.intro
+    . apply mem_unitaryGroup_iff.mpr
+      exact h1
+    . exact h2
 
 end specialUnitaryGroup
 
@@ -251,10 +263,10 @@ attribute [local instance] starRingOfComm
 is one. (This definition is only correct if 2 is invertible.)-/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
-theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
-    A ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by
-  simp_all only [Submonoid.mem_inf, true_and]
-  exact MonoidHom.mem_mker detMonoidHom
+theorem mem_specialOrthogonalGroup_iff  {A : Matrix n n β}:
+    A ∈ specialOrthogonalGroup n β ↔ A * star A = 1 ∧ A.det = 1 := by
+  rw [specialOrthogonalGroup]
+  apply mem_specialUnitaryGroup_iff
 
 /-- Given an orthogonal Matrix with the determinant 1, we get an instance of
 `specialOrthogonalGroup n β` -/
