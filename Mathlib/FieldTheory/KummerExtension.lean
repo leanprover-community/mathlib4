@@ -109,7 +109,7 @@ lemma ne_zero_of_irreducible_X_pow_sub_C' {n : ℕ} (hn : n ≠ 1) {a : K}
 
 lemma root_X_pow_sub_C_eq_zero_iff {n : ℕ} {a : K} (H : Irreducible (X ^ n - C a)) :
     (AdjoinRoot.root (X ^ n - C a)) = 0 ↔ a = 0 := by
-  have hn := (Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H))
+  have hn := Nat.pos_iff_ne_zero.mpr (ne_zero_of_irreducible_X_pow_sub_C H)
   refine ⟨not_imp_not.mp (root_X_pow_sub_C_ne_zero' hn), ?_⟩
   rintro rfl
   have := not_imp_not.mp (fun hn ↦ ne_zero_of_irreducible_X_pow_sub_C' hn H) rfl
@@ -196,7 +196,7 @@ theorem X_pow_sub_C_irreducible_of_odd
     intro E _ _ x hx
     have : IsIntegral K x := not_not.mp fun h ↦ by
       simpa only [degree_zero, degree_X_pow_sub_C hp.pos,
-        WithBot.nat_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
+        WithBot.natCast_ne_bot] using congr_arg degree (hx.symm.trans (dif_neg h))
     apply IH (Nat.odd_mul.mp hn).2
     intros q hq hqn b hb
     apply ha q hq (dvd_mul_of_dvd_right hqn p) (Algebra.norm _ b)

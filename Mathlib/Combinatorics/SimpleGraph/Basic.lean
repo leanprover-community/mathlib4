@@ -453,7 +453,7 @@ variable {G₁ G₂ : SimpleGraph V}
 `G.Adj`. This is the order embedding; for the edge set of a particular graph, see
 `SimpleGraph.edgeSet`.
 
-The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `refl`.
+The way `edgeSet` is defined is such that `mem_edgeSet` is proved by `Iff.rfl`.
 (That is, `s(v, w) ∈ G.edgeSet` is definitionally equal to `G.Adj v w`.)
 -/
 -- Porting note: We need a separate definition so that dot notation works.

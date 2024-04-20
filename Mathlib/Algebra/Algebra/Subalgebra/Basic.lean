@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Operations
@@ -151,9 +152,9 @@ protected theorem nsmul_mem {x : A} (hx : x ∈ S) (n : ℕ) : n • x ∈ S :=
   nsmul_mem hx n
 #align subalgebra.nsmul_mem Subalgebra.nsmul_mem
 
-protected theorem coe_nat_mem (n : ℕ) : (n : A) ∈ S :=
-  coe_nat_mem S n
-#align subalgebra.coe_nat_mem Subalgebra.coe_nat_mem
+protected theorem natCast_mem (n : ℕ) : (n : A) ∈ S :=
+  natCast_mem S n
+#align subalgebra.coe_nat_mem Subalgebra.natCast_mem
 
 protected theorem list_prod_mem {L : List A} (h : ∀ x ∈ L, x ∈ S) : L.prod ∈ S :=
   list_prod_mem h
@@ -202,10 +203,14 @@ protected theorem zsmul_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Alg
   zsmul_mem hx n
 #align subalgebra.zsmul_mem Subalgebra.zsmul_mem
 
-protected theorem coe_int_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
+protected theorem intCast_mem {R : Type u} {A : Type v} [CommRing R] [Ring A] [Algebra R A]
     (S : Subalgebra R A) (n : ℤ) : (n : A) ∈ S :=
-  coe_int_mem S n
-#align subalgebra.coe_int_mem Subalgebra.coe_int_mem
+  intCast_mem S n
+#align subalgebra.coe_int_mem Subalgebra.intCast_mem
+
+-- 2024-04-05
+@[deprecated natCast_mem] alias coe_nat_mem := Subalgebra.natCast_mem
+@[deprecated intCast_mem] alias coe_int_mem := Subalgebra.intCast_mem
 
 /-- The projection from a subalgebra of `A` to an additive submonoid of `A`. -/
 def toAddSubmonoid {R : Type u} {A : Type v} [CommSemiring R] [Semiring A] [Algebra R A]
@@ -981,7 +986,7 @@ instance : Unique (Subalgebra R R) :=
   { inferInstanceAs (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
-      refine' le_antisymm ?_ bot_le
+      refine le_antisymm ?_ bot_le
       intro _ _
       simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
 
@@ -1431,7 +1436,7 @@ variable {R : Type*} [Semiring R]
 
 /-- A subsemiring is an `ℕ`-subalgebra. -/
 def subalgebraOfSubsemiring (S : Subsemiring R) : Subalgebra ℕ R :=
-  { S with algebraMap_mem' := fun i => coe_nat_mem S i }
+  { S with algebraMap_mem' := fun i => natCast_mem S i }
 #align subalgebra_of_subsemiring subalgebraOfSubsemiring
 
 @[simp]

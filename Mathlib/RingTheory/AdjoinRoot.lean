@@ -699,8 +699,8 @@ end Field
 end Equiv
 
 -- Porting note: consider splitting the file here.  In the current mathlib3, the only result
--- that depends any of these lemmas is
--- `normalized_factors_map_equiv_normalized_factors_min_poly_mk` in `number_theory.kummer_dedekind`
+-- that depends any of these lemmas was
+-- `normalizedFactorsMapEquivNormalizedFactorsMinPolyMk` in `NumberTheory.KummerDedekind`
 -- that uses
 -- `PowerBasis.quotientEquivQuotientMinpolyMap == PowerBasis.quotientEquivQuotientMinpolyMap`
 section
@@ -795,7 +795,7 @@ theorem Polynomial.quotQuotEquivComm_symm_mk_mk (p : R[X]) :
 #align adjoin_root.polynomial.quot_quot_equiv_comm_symm_mk_mk AdjoinRoot.Polynomial.quotQuotEquivComm_symm_mk_mk
 
 /-- The natural isomorphism `R[α]/I[α] ≅ (R/I)[X]/(f mod I)` for `α` a root of `f : R[X]`
-  and `I : Ideal R`.-/
+  and `I : Ideal R`. -/
 def quotAdjoinRootEquivQuotPolynomialQuot :
     AdjoinRoot f ⧸ I.map (of f) ≃+*
     (R ⧸ I)[X] ⧸ span ({f.map (Ideal.Quotient.mk I)} : Set (R ⧸ I)[X]) :=

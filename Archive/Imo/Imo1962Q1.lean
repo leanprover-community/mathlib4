@@ -119,7 +119,7 @@ theorem case_more_digits {c n : ℕ} (h1 : (digits 10 c).length ≥ 6) (h2 : Pro
     exact case_0_digit h5 h2
   calc
     n ≥ 10 * c := le.intro h2.left.symm
-    _ ≥ 10 ^ (digits 10 c).length := (base_pow_length_digits_le 10 c (by decide) h3)
+    _ ≥ 10 ^ (digits 10 c).length := base_pow_length_digits_le 10 c (by decide) h3
     _ ≥ 10 ^ 6 := pow_le_pow_right (by decide) h1
     _ ≥ 153846 := by norm_num
 #align imo1962_q1.case_more_digits Imo1962Q1.case_more_digits
