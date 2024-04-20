@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
 -/
 import Mathlib.Algebra.Group.Hom.Instances
+import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Set.Function
 import Mathlib.Logic.Pairwise
 
