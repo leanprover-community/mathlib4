@@ -515,9 +515,9 @@ analysis](https://hal.inria.fr/hal-02463336).
 /-!
 ### Design note on `AddZeroClass` and `MulOneClass`
 
-An `AddZeroClass` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
-as an instance as it makes it possible to use the language of linear algebra. However, there are
-often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
+An `AddZeroClass` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to
+declare as an instance as it makes it possible to use the language of linear algebra. However, there
+are often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
 `Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
 that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
 goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
