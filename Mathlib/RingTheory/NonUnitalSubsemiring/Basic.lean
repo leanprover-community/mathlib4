@@ -5,8 +5,11 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Subsemigroup.Membership
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 

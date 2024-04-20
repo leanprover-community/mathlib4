@@ -244,7 +244,7 @@ the instance priority should be even lower, see Note [lower instance priority].
 
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  instDecidableEqQuotient
+  inferInstanceAs <| DecidableEq <| Quotient (IsConj.setoid α)
 
 end Monoid
 

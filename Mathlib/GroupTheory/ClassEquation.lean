@@ -8,6 +8,7 @@ import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.Group.ConjFinite
 import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Set.Card
+import Mathlib.GroupTheory.Subgroup.Center
 
 /-!
 # Class Equation

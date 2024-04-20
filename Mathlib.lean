@@ -56,6 +56,7 @@ import Mathlib.Algebra.Category.GroupCat.EnoughInjectives
 import Mathlib.Algebra.Category.GroupCat.EpiMono
 import Mathlib.Algebra.Category.GroupCat.EquivalenceGroupAddGroup
 import Mathlib.Algebra.Category.GroupCat.FilteredColimits
+import Mathlib.Algebra.Category.GroupCat.ForgetCorepresentable
 import Mathlib.Algebra.Category.GroupCat.Images
 import Mathlib.Algebra.Category.GroupCat.Injective
 import Mathlib.Algebra.Category.GroupCat.Kernels
@@ -179,6 +180,8 @@ import Mathlib.Algebra.GradedMulAction
 import Mathlib.Algebra.Group.AddChar
 import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Center
+import Mathlib.Algebra.Group.Centralizer
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Algebra.Group.Commute.Basic
 import Mathlib.Algebra.Group.Commute.Defs
@@ -195,6 +198,7 @@ import Mathlib.Algebra.Group.Freiman
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.Group.Hom.CompTypeclasses
 import Mathlib.Algebra.Group.Hom.Defs
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Algebra.Group.Hom.Instances
 import Mathlib.Algebra.Group.InjSurj
 import Mathlib.Algebra.Group.Int
@@ -324,6 +328,7 @@ import Mathlib.Algebra.Homology.TotalComplexSymmetry
 import Mathlib.Algebra.Invertible.Basic
 import Mathlib.Algebra.Invertible.Defs
 import Mathlib.Algebra.Invertible.GroupWithZero
+import Mathlib.Algebra.Invertible.Ring
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Algebra.Jordan.Basic
 import Mathlib.Algebra.Lie.Abelian
@@ -577,6 +582,8 @@ import Mathlib.Algebra.Ring.AddAut
 import Mathlib.Algebra.Ring.Aut
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.BooleanRing
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.Algebra.Ring.CentroidHom
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.CompTypeclasses
@@ -587,6 +594,7 @@ import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Fin
 import Mathlib.Algebra.Ring.Hom.Basic
 import Mathlib.Algebra.Ring.Hom.Defs
+import Mathlib.Algebra.Ring.Hom.IterateHom
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.Algebra.Ring.InjSurj
 import Mathlib.Algebra.Ring.Int
@@ -1670,6 +1678,7 @@ import Mathlib.Condensed.Equivalence
 import Mathlib.Condensed.Explicit
 import Mathlib.Condensed.Functors
 import Mathlib.Condensed.Limits
+import Mathlib.Condensed.Module
 import Mathlib.Condensed.Solid
 import Mathlib.Condensed.TopComparison
 import Mathlib.Control.Applicative
@@ -2468,8 +2477,8 @@ import Mathlib.GroupTheory.SpecificGroups.Cyclic
 import Mathlib.GroupTheory.SpecificGroups.Dihedral
 import Mathlib.GroupTheory.SpecificGroups.KleinFour
 import Mathlib.GroupTheory.SpecificGroups.Quaternion
-import Mathlib.GroupTheory.Subgroup.Saturated
-import Mathlib.GroupTheory.Subgroup.Simple
+import Mathlib.GroupTheory.Subgroup.Center
+import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.GroupTheory.Submonoid.Center
 import Mathlib.GroupTheory.Submonoid.Centralizer
 import Mathlib.GroupTheory.Submonoid.Inverses
@@ -3014,6 +3023,7 @@ import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.NumberTheory.LSeries.Convolution
 import Mathlib.NumberTheory.LSeries.Deriv
 import Mathlib.NumberTheory.LSeries.Dirichlet
+import Mathlib.NumberTheory.LSeries.HurwitzZetaEven
 import Mathlib.NumberTheory.LSeries.Linearity
 import Mathlib.NumberTheory.LSeries.MellinEqDirichlet
 import Mathlib.NumberTheory.LegendreSymbol.AddCharacter
@@ -3375,6 +3385,8 @@ import Mathlib.RingTheory.Henselian
 import Mathlib.RingTheory.HopfAlgebra
 import Mathlib.RingTheory.Ideal.AssociatedPrime
 import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Basis
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
 import Mathlib.RingTheory.Ideal.LocalRing

@@ -5,6 +5,7 @@ Authors: Chris Birkbeck
 -/
 import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Order.Monoid.Submonoid
+import Mathlib.Algebra.Order.Ring.Defs
 
 /-!
 
