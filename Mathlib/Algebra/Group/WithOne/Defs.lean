@@ -242,16 +242,6 @@ instance monoid [Semigroup α] : Monoid (WithOne α) where
     | (a : α), (b : α), (c : α) => by simp_rw [← coe_mul, mul_assoc]
 
 @[to_additive]
-instance instMulAction [Semigroup α] : MulAction (WithOne α) α where
-  smul := lMul
-  one_smul := fun a => rfl
-  mul_smul := fun a b c => by
-    cases a <;> cases b <;> try rfl
-    next a' b' =>
-      show (a' * b') * c = a' * (b' * c)
-      rw [mul_assoc]
-
-@[to_additive]
 instance commMonoid [CommSemigroup α] : CommMonoid (WithOne α) where
   mul_comm := fun a b => match a, b with
     | (a : α), (b : α) => congr_arg some (mul_comm a b)

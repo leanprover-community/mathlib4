@@ -6,6 +6,7 @@ Authors: Mario Carneiro, Johan Commelin
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Data.Option.Basic
+import Mathlib.Algebra.Group.Opposite
 
 #align_import algebra.group.with_one.basic from "leanprover-community/mathlib"@"4dc134b97a3de65ef2ed881f3513d56260971562"
 
@@ -169,6 +170,24 @@ theorem _root_.MulEquiv.withOneCongr_trans (e₁ : α ≃* β) (e₂ : β ≃* �
 #align mul_equiv.with_one_congr_trans MulEquiv.withOneCongr_trans
 
 end Map
+
+@[to_additive]
+instance instMulAction [Semigroup α] : MulAction (WithOne α) α where
+  smul := lMul
+  one_smul := fun a => rfl
+  mul_smul := fun a b c => by
+    obtain _ | a := a <;> obtain _ | b := b <;> try rfl
+    show (a * b) * c = a * (b * c)
+    rw [mul_assoc]
+
+@[to_additive]
+instance instMulOpAction [Semigroup α] : MulAction (MulOpposite <| WithOne α) α where
+  smul := fun a ↦ (rMul · a.unop)
+  one_smul := fun a => rfl
+  mul_smul := fun a b c => by
+    obtain ⟨_⟩ | ⟨a⟩ := a <;> obtain ⟨_⟩ | ⟨b⟩ := b <;> try rfl
+    show c * (b * a) = c * b * a
+    rw [mul_assoc]
 
 end WithOne
 
