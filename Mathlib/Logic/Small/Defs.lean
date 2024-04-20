@@ -23,9 +23,6 @@ If `α ≃ β`, then `Small.{w} α ↔ Small.{w} β`.
 See `Mathlib.Logic.Small.Basic` for further instances and theorems.
 -/
 
-set_option autoImplicit true
-
-
 universe u w v v'
 
 /-- A type is `Small.{w}` if there exists an equivalence to some `S : Type w`.
