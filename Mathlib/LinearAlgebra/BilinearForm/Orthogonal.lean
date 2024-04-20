@@ -161,6 +161,8 @@ theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
   Iff.rfl
 #align bilin_form.mem_orthogonal_iff LinearMap.BilinForm.mem_orthogonal_iff
 
+@[simp] lemma orthogonal_bot : B.orthogonal ⊥ = ⊤ := by ext; simp [IsOrtho]
+
 theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
 #align bilin_form.orthogonal_le LinearMap.BilinForm.orthogonal_le
 
@@ -318,7 +320,9 @@ variable [FiniteDimensional K V]
 
 open FiniteDimensional Submodule
 
-theorem finrank_add_finrank_orthogonal {B : BilinForm K V} {W : Subspace K V} (b₁ : B.IsRefl) :
+variable {B : BilinForm K V} {W : Subspace K V}
+
+theorem finrank_add_finrank_orthogonal (b₁ : B.IsRefl) :
     finrank K W + finrank K (B.orthogonal W) =
       finrank K V + finrank K (W ⊓ B.orthogonal ⊤ : Subspace K V) := by
   rw [← toLin_restrict_ker_eq_inf_orthogonal _ _ b₁, ←
@@ -332,7 +336,7 @@ theorem finrank_add_finrank_orthogonal {B : BilinForm K V} {W : Subspace K V} (b
 
 /-- A subspace is complement to its orthogonal complement with respect to some
 reflexive bilinear form if that bilinear form restricted on to the subspace is nondegenerate. -/
-theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Subspace K V}
+theorem restrict_nondegenerate_of_isCompl_orthogonal
     (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) : IsCompl W (B.orthogonal W) := by
   have : W ⊓ B.orthogonal W = ⊥ := by
     rw [eq_bot_iff]
@@ -351,11 +355,39 @@ theorem restrict_nondegenerate_of_isCompl_orthogonal {B : BilinForm K V} {W : Su
 
 /-- A subspace is complement to its orthogonal complement with respect to some reflexive bilinear
 form if and only if that bilinear form restricted on to the subspace is nondegenerate. -/
-theorem restrict_nondegenerate_iff_isCompl_orthogonal {B : BilinForm K V} {W : Subspace K V}
+theorem restrict_nondegenerate_iff_isCompl_orthogonal
     (b₁ : B.IsRefl) : (B.restrict W).Nondegenerate ↔ IsCompl W (B.orthogonal W) :=
   ⟨fun b₂ => restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂, fun h =>
     B.nondegenerateRestrictOfDisjointOrthogonal b₁ h.1⟩
 #align bilin_form.restrict_nondegenerate_iff_is_compl_orthogonal LinearMap.BilinForm.restrict_nondegenerate_iff_isCompl_orthogonal
+
+lemma orthogonal_eq_top_iff (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) :
+    B.orthogonal W = ⊤ ↔ W = ⊥ := by
+  refine ⟨fun h ↦ ?_, fun h ↦ by simp [h]⟩
+  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).inf_eq_bot
+  rwa [h, inf_top_eq] at this
+
+lemma eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
+    (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) (b₃ : B.orthogonal W = ⊥) :
+    W = ⊤ := by
+  have := (B.restrict_nondegenerate_of_isCompl_orthogonal b₁ b₂).sup_eq_top
+  rwa [b₃, sup_bot_eq] at this
+
+lemma orthogonal_eq_bot_iff
+    (b₁ : B.IsRefl) (b₂ : (B.restrict W).Nondegenerate) (b₃ : B.Nondegenerate) :
+    B.orthogonal W = ⊥ ↔ W = ⊤ := by
+  refine ⟨eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot b₁ b₂, fun h ↦ ?_⟩
+  rw [h, eq_bot_iff]
+  exact fun x hx ↦ b₃ x fun y ↦ b₁ y x <| by simpa using hx y
+
+lemma inf_orthogonal_self_le_ker_restrict (b₁ : B.IsRefl) :
+    W ⊓ B.orthogonal W ≤ (LinearMap.ker <| B.restrict W).map W.subtype := by
+  rintro v ⟨hv : v ∈ W, hv' : v ∈ B.orthogonal W⟩
+  simp only [Submodule.mem_map, mem_ker, restrict_apply, Submodule.coeSubtype, Subtype.exists,
+    exists_and_left, exists_prop, exists_eq_right_right]
+  refine ⟨?_, hv⟩
+  ext ⟨w, hw⟩
+  exact b₁ w v <| hv' w hw
 
 end
 

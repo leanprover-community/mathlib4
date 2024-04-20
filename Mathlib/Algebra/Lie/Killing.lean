@@ -355,18 +355,18 @@ variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { __ := I.toSubmodule.orthogonalBilin (killingForm R L)
+  { __ := (killingForm R L).orthogonal I.toSubmodule
     lie_mem := by
       intro x y hy
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, Submodule.mem_orthogonalBilin_iff,
-        LieSubmodule.mem_coeSubmodule, LinearMap.isOrtho_def] at hy ⊢
+        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
+        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
       intro z hz
       rw [← LieModule.traceForm_apply_lie_apply]
       exact hy _ <| lie_mem_left _ _ _ _ _ hz }
 
 @[simp] lemma toSubmodule_killingCompl :
-    LieSubmodule.toSubmodule I.killingCompl = I.toSubmodule.orthogonalBilin (killingForm R L) :=
+    LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=
   rfl
 
 @[simp] lemma mem_killingCompl {x : L} :
@@ -376,7 +376,7 @@ noncomputable def killingCompl : LieIdeal R L :=
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
   ext x
-  simp [LinearMap.ext_iff, LinearMap.isOrtho_def, LieModule.traceForm_comm R L L x]
+  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
