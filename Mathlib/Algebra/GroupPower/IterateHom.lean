@@ -133,10 +133,14 @@ theorem mul_left_iterate : (a * ·)^[n] = (a ^ n * ·) :=
 #align add_left_iterate add_left_iterate
 
 @[to_additive (attr := simp)]
-theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) :=
-  smul_iterate (MulOpposite.op a) n
+theorem mul_right_iterate : (· * a)^[n] = (· * a ^ n) := by
+  induction' n with n hn
+  · simp only [Nat.zero_eq, iterate_zero, pow_zero, mul_one]
+    exact rfl
+  · rw [iterate_succ, hn, comp_mul_right, pow_succ, pow_mul_comm']
 #align mul_right_iterate mul_right_iterate
 #align add_right_iterate add_right_iterate
+
 
 @[to_additive]
 theorem mul_right_iterate_apply_one : (· * a)^[n] 1 = a ^ n := by simp [mul_right_iterate]

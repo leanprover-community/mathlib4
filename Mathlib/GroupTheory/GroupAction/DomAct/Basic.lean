@@ -139,10 +139,16 @@ lemma mk_inv [Inv M] (a : M) : mk (a⁻¹) = (mk a)⁻¹ := rfl
 lemma symm_mk_inv [Inv M] (a : Mᵈᵐᵃ) : mk.symm (a⁻¹) = (mk.symm a)⁻¹ := rfl
 
 @[to_additive (attr := simp)]
-lemma mk_pow [Monoid M] (a : M) (n : ℕ) : mk (a ^ n) = mk a ^ n := rfl
+lemma mk_pow [Monoid M] (a : M) (n : ℕ) : mk (a ^ n) = mk a ^ n := by
+  induction' n with n hn
+  · simp only [Nat.zero_eq, pow_zero, mk_one]
+  · rw [pow_succ, pow_succ, pow_mul_comm', ← hn, mk_mul]
 
 @[to_additive (attr := simp)]
-lemma symm_mk_pow [Monoid M] (a : Mᵈᵐᵃ) (n : ℕ) : mk.symm (a ^ n) = mk.symm a ^ n := rfl
+lemma symm_mk_pow [Monoid M] (a : Mᵈᵐᵃ) (n : ℕ) : mk.symm (a ^ n) = mk.symm a ^ n := by
+  induction' n with n hn
+  · simp only [Nat.zero_eq, pow_zero, symm_mk_one]
+  · rw [pow_succ, pow_succ, pow_mul_comm', ← hn, symm_mk_mul]
 
 @[to_additive (attr := simp)]
 lemma mk_zpow [DivInvMonoid M] (a : M) (n : ℤ) : mk (a ^ n) = mk a ^ n := rfl
