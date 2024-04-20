@@ -346,7 +346,7 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
 #align nat.coprime.mul_add_mul_ne_mul Nat.Coprime.mul_add_mul_ne_mul
 
 theorem dvd_gcd_mul_of_dvd_mul {x n m : ℕ} (h : x ∣ n * m) : x ∣ gcd x n * m := by
-  rcases h with ⟨ y, hy ⟩
+  rcases h with ⟨y, hy⟩
   rw [← gcd_mul_right, hy, gcd_mul_left]
   exact dvd_mul_right x (gcd m y)
 
