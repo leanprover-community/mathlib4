@@ -6,7 +6,6 @@ Authors: Leonardo de Moura
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Algebra.Order.Ring.Nat
 
