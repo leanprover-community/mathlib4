@@ -364,7 +364,7 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
 #align add_opposite.unop_pow AddOpposite.unop_pow
 
 instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
-  unop_injective.mulOneClass rfl (fun x y ↦ rfl) (fun x y ↦ rfl)
+  unop_injective.mulOneClass _ rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
 
 instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
   unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
