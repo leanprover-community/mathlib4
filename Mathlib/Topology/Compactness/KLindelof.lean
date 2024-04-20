@@ -521,16 +521,19 @@ theorem IsClosed.isKLindelof [KLindelofSpace κ X] (h : IsClosed s) : IsKLindelo
   isKLindelof_univ.of_isClosed_subset h (subset_univ _)
 
 /-- A compact set `s` is `κ`-Lindelöf. -/
-theorem IsCompact.isKLindelof (hs : IsCompact s) :
-    IsKLindelof κ s := by tauto
+theorem IsCompact.isKLindelof (hs : IsCompact s) (κ : Cardinal.{u}) :
+  IsKLindelof κ s := by tauto
 
 /-- A `κ`-Lindelöf set `s` is compact for `κ` ≤ ℵ₀. -/
-theorem IsKLindelof.isCompact (hs : IsKLindelof κ s) (hκ : κ ≤ ℵ₀) :
+theorem IsKLindelof.isCompact (hκ : κ ≤ ℵ₀) (hs : IsKLindelof κ s) :
     IsCompact s := by
   rw [IsCompact]
   intro f hf hfs
   have := f.toCardinalInterFilter.of_cardinalInterFilter_of_le hκ
   exact hs hfs
+
+theorem IsKLindelof_iff_isCompact : IsKLindelof ℵ₀ s ↔ IsCompact s :=
+  ⟨fun h => h.isCompact (le_refl _), fun h => h.isKLindelof ℵ₀⟩
 
 /-- A Lindelöf set `s` is `κ`-Lindelöf. -/
 theorem IsLindelof.isKLindelof (hs : IsLindelof s) (hκ : ℵ₀ < κ) :
