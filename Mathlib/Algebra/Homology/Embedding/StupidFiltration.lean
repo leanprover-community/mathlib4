@@ -145,7 +145,7 @@ lemma mapStupidTruncGE_naturality [e₁.IsTruncGE] [e₂.IsRelIff] :
 
 @[reassoc (attr := simp)]
 lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
-    K.mapStupidTruncGE h ≫ K.ιStupidTrunc e₂  = K.ιStupidTrunc e₁ := by
+    K.mapStupidTruncGE h ≫ K.ιStupidTrunc e₂ = K.ιStupidTrunc e₁ := by
   apply (e₁.homEquiv' _ _).injective
   ext i₁ : 2
   dsimp [mapStupidTruncGE]
@@ -156,6 +156,26 @@ lemma mapStupidTruncGE_fac [e₁.IsTruncGE] [e₂.IsTruncGE] :
 
 instance [e₁.IsTruncGE] [e₂.IsTruncGE] : Mono (K.mapStupidTruncGE h) :=
   mono_of_mono_fac (K.mapStupidTruncGE_fac h)
+
+lemma isIso_mapStupidTruncGE_f [e₁.IsTruncGE] [e₂.IsTruncGE] (i : ι)
+    (hi : (∃ i₁, e₁.f i₁ = i) ∨ (∀ i₂, e₂.f i₂ ≠ i)) :
+    IsIso ((K.mapStupidTruncGE h).f i) := by
+  obtain ⟨i₁, hi₁⟩ | hi := hi
+  · have fac := (eval _ _ i).congr_map (K.mapStupidTruncGE_fac h)
+    dsimp at fac
+    obtain ⟨i₂, hi₂⟩ := h.subset ⟨_, hi₁⟩
+    have := K.isIso_ιStupidTrunc_f e₁ hi₁
+    have := K.isIso_ιStupidTrunc_f e₂ hi₂
+    exact IsIso.of_isIso_fac_right fac
+  · refine' ⟨0, _, _⟩
+    · apply IsZero.eq_of_src
+      apply isZero_stupidTrunc_X
+      intro i₁ hi₁
+      obtain ⟨i₂, hi₂⟩ := h.subset ⟨_, hi₁⟩
+      exact hi i₂ hi₂
+    · apply IsZero.eq_of_src
+      apply isZero_stupidTrunc_X
+      exact hi
 
 variable (e₁) in
 @[simp]

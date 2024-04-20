@@ -113,6 +113,8 @@ end ComplexShape
 
 namespace CochainComplex
 
+section
+
 variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
 noncomputable abbrev stupidFiltrationGEFunctor :
@@ -126,6 +128,79 @@ variable (K L : CochainComplex C ℤ)
 
 noncomputable abbrev stupidFiltrationGE : ℤᵒᵖ ⥤ CochainComplex C ℤ :=
   stupidFiltrationGEFunctor C ⋙ ((evaluation _ _).obj K)
+
+noncomputable def stupidFiltrationGEObjToSingle (n : ℤ) :
+    K.stupidFiltrationGE.obj ⟨n⟩ ⟶ (HomologicalComplex.single C (up ℤ) n).obj (K.X n) :=
+  HomologicalComplex.mkHomToSingle
+    (K.stupidTruncXIso (embeddingUpIntGE n) (add_zero n)).hom (by
+      rintro k hk
+      apply IsZero.eq_of_src
+      apply K.isZero_stupidTrunc_X
+      dsimp at hk ⊢
+      omega)
+
+@[reassoc]
+lemma stupidFiltrationGE_map_to_single (n₀ n₁ : ℤ) (h : n₀ < n₁) :
+    K.stupidFiltrationGE.map (homOfLE h.le).op ≫
+      K.stupidFiltrationGEObjToSingle n₀ = 0 := by
+  apply HomologicalComplex.to_single_hom_ext
+  apply IsZero.eq_of_src
+  apply K.isZero_stupidTrunc_X
+  intros
+  dsimp
+  omega
+
+@[simps]
+noncomputable def shortComplexStupidFiltrationGE (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    ShortComplex (CochainComplex C ℤ) :=
+  ShortComplex.mk _ _ (K.stupidFiltrationGE_map_to_single n₀ n₁ (by omega))
+
+lemma isIso_stupidFiltrationGE_map_f (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (k : ℤ) (hk : n₁ ≤ k ∨ k < n₀) :
+    IsIso ((K.stupidFiltrationGE.map (homOfLE h).op).f k) := by
+  apply HomologicalComplex.isIso_mapStupidTruncGE_f
+  obtain hk|hk := hk
+  · obtain ⟨j, hj⟩ := Int.eq_add_ofNat_of_le hk
+    exact Or.inl ⟨j, by dsimp; omega⟩
+  · exact Or.inr (fun i₂ => by dsimp; omega)
+
+end
+
+section
+
+variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C]
+  (K L : CochainComplex C ℤ) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
+
+noncomputable def shortComplexStupidFiltrationGESplitting (k : ℤ) :
+    ((K.shortComplexStupidFiltrationGE n₀ n₁ h).map
+      (HomologicalComplex.eval _ _ k)).Splitting :=
+  if hk : k = n₀
+  then
+    { s := eqToHom (by dsimp; rw [hk]) ≫
+          (HomologicalComplex.singleObjXSelf (up ℤ) n₀ (K.X n₀)).hom ≫
+          eqToHom (by rw [hk]) ≫ (K.stupidTruncXIso (embeddingUpIntGE n₀)
+            (i := 0) (by dsimp; omega)).inv
+      s_g := by
+        subst hk
+        simp [stupidFiltrationGEObjToSingle]
+      r := 0
+      f_r := by
+        apply IsZero.eq_of_src
+        apply K.isZero_stupidTrunc_X
+        intro
+        dsimp
+        omega
+      id := by
+        subst hk
+        simp [stupidFiltrationGEObjToSingle] }
+  else
+    have := K.isIso_stupidFiltrationGE_map_f n₀ n₁ (by omega) k (by omega)
+    { r := inv ((K.stupidFiltrationGE.map (homOfLE (show n₀ ≤ n₁ by omega)).op).f k)
+      s := 0
+      s_g := by
+        apply IsZero.eq_of_tgt
+        exact HomologicalComplex.isZero_single_obj_X (up ℤ) _ _ _ hk }
+
+end
 
 end CochainComplex
 
