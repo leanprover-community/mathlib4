@@ -205,7 +205,8 @@ lemma hasSum_int_evenKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
 lemma hasSum_int_cosKernel₀ (a : ℝ) {t : ℝ} (ht : 0 < t) :
     HasSum (fun n : ℤ ↦ if n = 0 then 0 else cexp (2 * π * I * a * n) * rexp (-π * n ^ 2 * t))
     (↑(cosKernel a t) - 1) := by
-  simpa? says simpa only [neg_mul, ofReal_exp, ofReal_neg, ofReal_mul, ofReal_pow, ofReal_intCast,
+  simpa? using hasSum_ite_sub_hasSum (hasSum_int_cosKernel a ht) 0
+  says simpa only [neg_mul, ofReal_exp, ofReal_neg, ofReal_mul, ofReal_pow, ofReal_intCast,
     Int.cast_zero, mul_zero, Complex.exp_zero, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true,
     zero_pow, zero_mul, Real.exp_zero, ofReal_one, mul_one] using
     hasSum_ite_sub_hasSum (hasSum_int_cosKernel a ht) 0
