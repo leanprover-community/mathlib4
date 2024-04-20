@@ -262,7 +262,7 @@ private theorem holder_lemma1 {ι₁ : Type u} {ι₂ : Type v} {s : Finset ι�
     (hf : ∀ i ∈ s, ∀ j ∈ t, 0 < f i j) :
   ∑ j in t, ∏ i in s, (f i j) ^ w i ≤ ∏ i in s, (∑ j in t, f i j) ^ w i := by
   by_cases ht : t = ∅; rw [ht, sum_empty]; exact Finset.prod_nonneg (fun i _ ↦ zero_rpow_nonneg _)
-  rw [←ne_eq, ←nonempty_iff_ne_empty] at ht
+  rw [← ne_eq, ← nonempty_iff_ne_empty] at ht
   let β : ι₂ → ℝ := λ k ↦ (∏ i in s, (f i k) ^ w i) / (∑ j in t, (∏ i in s, (f i j) ^ w i))
   have hfw := fun i hi j hj ↦ rpow_pos_of_pos (hf i hi j hj) (w i)
   have hfw2 := fun j hj ↦ Finset.prod_pos fun i hi ↦ (hfw i hi j hj)
@@ -274,7 +274,7 @@ private theorem holder_lemma1 {ι₁ : Type u} {ι₂ : Type v} {s : Finset ι�
   have hβ1' : ∀ k ∈ t, 0 ≤ β k := by intros; apply le_of_lt; apply hβ1; assumption
   have hβ2 : ∑ j in t, β j = 1 := by
     dsimp only [β]
-    rw [←Finset.sum_div, div_eq_one_iff_eq]
+    rw [← Finset.sum_div, div_eq_one_iff_eq]
     exact ne_of_gt hfw3
   have fβ : ∀ i ∈ s, ∀ j ∈ t, (0 : ℝ) ≤ (f i j / β j) :=
     fun i hi j hj ↦ le_of_lt (div_pos (hf i hi j hj) (hβ1 j hj))
@@ -285,23 +285,23 @@ private theorem holder_lemma1 {ι₁ : Type u} {ι₂ : Type v} {s : Finset ι�
   have sum1 : ∀ {ι} (s : Finset ι) (f : ι → ℝ),
     ∀ r : ℝ, (0 < r) → (∑ i in s, f i) = 1 → (∏ i in s, r ^ f i) = r := by
     intros _ s f r hr h
-    rw [←Real.rpow_sum_of_pos hr, h, rpow_one]
+    rw [← Real.rpow_sum_of_pos hr, h, rpow_one]
 
   convert_to ∏ k in t, (∏ i in s, (f i k / β k) ^ w i) ^ β k ≤ _
-  rw [←sum1 t β _ hfw3 hβ2]
+  rw [← sum1 t β _ hfw3 hβ2]
   congr! 2 with k hk
   rw [prod_div_rpow_distrib (fun i hi ↦ le_of_lt (hf i hi k hk)) (fun _ _ ↦ hβ1' k hk),
-      ←Real.rpow_sum_of_nonneg (hβ1' k hk) hw, hw', rpow_one, ←div_mul,
+      ← Real.rpow_sum_of_nonneg (hβ1' k hk) hw, hw', rpow_one, ← div_mul,
       div_self (ne_of_gt (hfw2 k hk)), one_mul]
 
   trans ∏ i in s, (∏ k in t, (f i k / β k) ^ β k) ^ w i
   have x := Finset.prod_congr rfl (fun i hi ↦ Real.finset_prod_rpow (hs := fββ i hi) (w i))
-  rw [←x, Finset.prod_comm]
+  rw [← x, Finset.prod_comm]
   congr! 1 with k hk
-  rw [←Real.finset_prod_rpow (hs := (fun i hi ↦ fβw i hi k hk))]
+  rw [← Real.finset_prod_rpow (hs := (fun i hi ↦ fβw i hi k hk))]
   congr! 1 with i hi
-  rw [←Real.rpow_mul (fβ i hi k hk), mul_comm, Real.rpow_mul (fβ i hi k hk)]
-  
+  rw [← Real.rpow_mul (fβ i hi k hk), mul_comm, Real.rpow_mul (fβ i hi k hk)]
+
   convert_to _ ≤ ∏ i in s, (∑ j in t, β j * (f i j / β j)) ^ w i
   congr! 3 with _ _ j hj
   rw [mul_div, mul_comm, mul_div_assoc, div_self (ne_of_gt (hβ1 j hj)), mul_one]
@@ -322,15 +322,14 @@ private theorem holder_lemma2
   convert_to ∑ j in t', ∏ i in s, f i j ^ w i ≤ _
   rw [Finset.sum_filter]
   congr! 1 with j hj
-  split_ifs with h
-  · rfl
-  . rw [hp] at h
-    push_neg at h h
-    obtain ⟨i, hi, h⟩ := h
-    rw [Finset.prod_eq_zero_iff]
-    suffices h : f i j = 0 from by use i; rw [h]; refine ⟨hi, zero_rpow (ne_of_gt (hw i hi))⟩
-    exact le_antisymm h (hf i hi j hj)
-  
+  split_ifs with h; rfl
+  rw [hp] at h
+  push_neg at h h
+  obtain ⟨i, hi, h⟩ := h
+  rw [Finset.prod_eq_zero_iff]
+  suffices h : f i j = 0 from by use i; rw [h]; refine ⟨hi, zero_rpow (ne_of_gt (hw i hi))⟩
+  exact le_antisymm h (hf i hi j hj)
+
   have hf1 : ∀ i ∈ s, ∀ j ∈ t', 0 ≤ f i j := by intro i hi k hk; apply hf i hi; classical
     apply Finset.mem_of_mem_filter k hk
   have hf2 : ∀ i ∈ s, 0 ≤ ∑ j in t', f i j := by
@@ -361,7 +360,7 @@ theorem holder_inequality
   · apply holder_lemma2
     · simp only [mem_filter, and_imp]
       exact fun i hi pi ↦ lt_of_le_of_ne (wpos i hi) pi.symm
-    · rw [←wsum, Finset.sum_filter]
+    · rw [← wsum, Finset.sum_filter]
       congr! 1; rw [ite_not, ite_eq_right_iff]; exact symm
     · intro i hi k hk; refine hf ?_ ?_ k hk; classical
       apply Finset.mem_of_mem_filter i hi

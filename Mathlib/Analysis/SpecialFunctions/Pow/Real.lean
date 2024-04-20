@@ -514,8 +514,8 @@ lemma rpow_mul_intCast (hx : 0 ≤ x) (y : ℝ) (n : ℤ) : x ^ (y * n) = (x ^ y
 in `Mathlib/Analysis/SpecialFunctions/Pow/NNReal.lean` instead. -/
 
 theorem prod_div_rpow_distrib {ι : Type*} {s : Finset ι} {f g h : ι → ℝ}
-  (hf : ∀ x ∈ s, 0 ≤ f x) (hg : ∀ x ∈ s, 0 ≤ g x)
-  : ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)) := by
+    (hf : ∀ x ∈ s, 0 ≤ f x) (hg : ∀ x ∈ s, 0 ≤ g x) :
+    ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)) := by
   revert hf hg
   apply Finset.cons_induction_on (p := fun s => (∀ x ∈ s, 0 ≤ f x) → (∀ x ∈ s, 0 ≤ g x) →
     ∏ x in s, (f x / g x) ^ (h x) = (∏ x in s, (f x) ^ (h x)) / (∏ x in s, (g x) ^ (h x)))
@@ -524,7 +524,7 @@ theorem prod_div_rpow_distrib {ι : Type*} {s : Finset ι} {f g h : ι → ℝ}
     intro x s _ ih hf hg
     rw [ih, div_rpow, div_mul_div_comm] <;>
     intros <;> (first | apply hf | apply hg) <;>
-    first | (left ; trivial) | (right ; trivial)
+    first | (left; trivial) | (right; trivial)
 
 /-!
 ## Order and monotonicity
