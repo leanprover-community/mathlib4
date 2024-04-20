@@ -10,14 +10,6 @@ import Mathlib.Algebra.Lie.Rank
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
-
--- move this
-lemma List.TFAE.not_iff {l : List Prop} :
-    TFAE (l.map Not) ↔ TFAE l := by
-  simp only [TFAE, mem_map, forall_exists_index, and_imp, forall_apply_eq_imp_iff₂, not_iff_not]
-
-alias ⟨_, List.TFAE.not⟩ := List.TFAE.not_iff
-
 namespace Matrix
 
 variable {K R m n : Type*}
@@ -27,17 +19,7 @@ variable [Field K] [CommRing R] [Nontrivial R]
 
 variable (A : Matrix m m R) (B : Matrix m n R) (C : Matrix n m R) (D : Matrix n n R)
 
-lemma charmatrix_fromBlocks :
-    charmatrix (fromBlocks A B C D) =
-    fromBlocks (charmatrix A) (- B.map Polynomial.C) (- C.map Polynomial.C) (charmatrix D) := by
-  simp only [charmatrix]
-  ext (i|i) (j|j) : 2 <;> simp [diagonal]
 
-lemma charpoly_fromBlocks_zero₁₂ :
-    (fromBlocks A 0 C D).charpoly = (A.charpoly * D.charpoly) := by
-  rw [charpoly, charmatrix_fromBlocks, Matrix.map_zero _ (Polynomial.C_0), neg_zero]
-  have := det_fromBlocks_zero₁₂ (charmatrix A) (- C.map Polynomial.C) (charmatrix D)
-  convert this -- need to bash through two different `DecidableEq` instances
 
 end Matrix
 
@@ -52,73 +34,6 @@ lemma exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
   · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
     exact ⟨s, hs.ge⟩
 
--- move to Mathlib.Data.Polynomial.RingDivision
-open Cardinal Polynomial in
-lemma Polynomial.eq_zero_of_forall_eval_zero_of_natDegree_lt_card
-    {R : Type*} [CommRing R] [IsDomain R] (f : R[X])
-    (hf : ∀ r, f.eval r = 0) (hfR : f.natDegree < #R) :
-    f = 0 := by
-  contrapose! hf
-  exact exists_eval_ne_zero_of_natDegree_lt_card f hf hfR
-
--- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
-lemma Polynomial.natTrailingDegree_X_pow {R : Type*} [Semiring R] [Nontrivial R] (n : ℕ) :
-    (X (R := R) ^ n).natTrailingDegree = n := by
-  rw [← one_mul (X ^ _), natTrailingDegree_mul_X_pow one_ne_zero]
-  simp only [natTrailingDegree_one, zero_add]
-
--- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
-lemma Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
-    {R : Type*} [CommRing R] {p : Polynomial R} (h : constantCoeff p ≠ 0) :
-    p.natTrailingDegree = 0 :=
-  le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
-
--- move to Mathlib.Data.Polynomial.Degree.TrailingDegree
-lemma Polynomial.Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
-    {R : Type*} [CommRing R] {p : Polynomial R}
-    (h₁ : p.Monic) (h₂ : p.natTrailingDegree = p.natDegree) :
-    p = X ^ p.natDegree := by
-  ext n
-  obtain hn|rfl|hn := lt_trichotomy n p.natDegree
-  · rw [coeff_X_pow, if_neg hn.ne]
-    apply coeff_eq_zero_of_lt_natTrailingDegree
-    rwa [h₂]
-  · rw [coeff_X_pow, if_pos rfl]
-    exact h₁.leadingCoeff
-  · rw [coeff_X_pow, if_neg hn.ne']
-    exact coeff_eq_zero_of_natDegree_lt hn
-
--- move to Mathlib.RingTheory.MvPolynomial.Homogeneous
-lemma _root_.MvPolynomial.IsHomogeneous.totalDegree_le {R : Type*} [CommSemiring R]
-    {σ : Type*} {n : ℕ} (F : MvPolynomial σ R) (hF : F.IsHomogeneous n) :
-    F.totalDegree ≤ n := by
-  by_cases h : F = 0
-  · simp only [h, MvPolynomial.totalDegree_zero, zero_le]
-  · rw [hF.totalDegree h]
-
--- move to Mathlib.RingTheory.Polynomial.Basic
-open BigOperators MvPolynomial Polynomial in
-lemma _root_.MvPolynomial.aeval_natDegree_le {R : Type*} [CommSemiring R]
-    {σ : Type*} {m n : ℕ} (F : MvPolynomial σ R) (hF : F.totalDegree ≤ m)
-    (f : σ → Polynomial R) (hf : ∀ i, (f i).natDegree ≤ n) :
-    (MvPolynomial.aeval f F).natDegree ≤ m * n := by
-  rw [MvPolynomial.aeval_def, MvPolynomial.eval₂]
-  apply (Polynomial.natDegree_sum_le _ _).trans
-  simp only [Function.comp_apply]
-  apply Finset.sup_le
-  intro d hd
-  rw [← C_eq_algebraMap]
-  apply (Polynomial.natDegree_C_mul_le _ _).trans
-  apply (Polynomial.natDegree_prod_le _ _).trans
-  have : ∑ i in d.support, (d i) * n ≤ m * n := by
-    rw [← Finset.sum_mul]
-    apply mul_le_mul' (.trans _ hF) le_rfl
-    rw [MvPolynomial.totalDegree]
-    exact Finset.le_sup_of_le hd le_rfl
-  apply (Finset.sum_le_sum _).trans this
-  rintro i -
-  apply Polynomial.natDegree_pow_le.trans
-  exact mul_le_mul' le_rfl (hf i)
 
 -- move this
 namespace LinearMap
@@ -130,34 +45,6 @@ variable (φ : Module.End K M)
 
 open FiniteDimensional Polynomial
 
--- move to (?) Mathlib.LinearAlgebra.Charpoly.Basic
-lemma charpoly_natDegree : natDegree (charpoly φ) = finrank K M := by
-  rw [charpoly, Matrix.charpoly_natDegree_eq_dim, finrank_eq_card_chooseBasisIndex]
-
--- move to Mathlib.LinearAlgebra.Matrix.ToLin
-open Module.Free in
-lemma toMatrix_prodMap {M₁ M₂ ι₁ ι₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
-    [Module K M₁] [Module K M₂]
-    [Fintype ι₁] [Fintype ι₂] [DecidableEq ι₁] [DecidableEq ι₂] [DecidableEq (ι₁ ⊕ ι₂)]
-    (b₁ : Basis ι₁ K M₁) (b₂ : Basis ι₂ K M₂)
-    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
-    toMatrix (b₁.prod b₂) (b₁.prod b₂) (φ₁.prodMap φ₂) =
-      Matrix.fromBlocks (toMatrix b₁ b₁ φ₁) 0 0 (toMatrix b₂ b₂ φ₂) := by
-  ext (i|i) (j|j) <;> simp [toMatrix]
-
--- move to Mathlib.LinearAlgebra.Charpoly.ToMatrix
-open Module.Free in
-lemma charpoly_prodMap {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
-    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
-    [Module.Free K M₁] [Module.Free K M₂]
-    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) :
-    (φ₁.prodMap φ₂).charpoly = φ₁.charpoly * φ₂.charpoly := by
-  let b₁ := chooseBasis K M₁
-  let b₂ := chooseBasis K M₂
-  let b := b₁.prod b₂
-  classical
-  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂, ← charpoly_toMatrix (φ₁.prodMap φ₂) b,
-    toMatrix_prodMap b₁ b₂ φ₁ φ₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
 open Module.Free in
 lemma charpoly_nilpotent_tfae :
@@ -267,7 +154,7 @@ lemma charpoly_eq_of_equiv {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup
   dsimp only [Matrix.charpoly]
   congr 1
   ext i j : 2
-  simp [charmatrix, toMatrix, Matrix.diagonal, ← H]
+  simp [Matrix.charmatrix, toMatrix, Matrix.diagonal, ← H]
 
 open Module.Free in
 lemma finrank_maximalGeneralizedEigenspace :
