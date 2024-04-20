@@ -191,3 +191,5 @@ theorem Commute.function_commute_mul_right (h : Commute a b) :
 #align add_commute.function_commute_add_right AddCommute.function_commute_add_right
 
 end Semigroup
+
+assert_not_exists Ring
