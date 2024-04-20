@@ -245,7 +245,7 @@ private theorem exists_mono_in_high_dimension' :
     -- Then `Option α` has only one element, so any line is monochromatic.
     by_cases h : Nonempty α
     case neg =>
-      refine' ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
+      refine ⟨Unit, inferInstance, fun C => ⟨diagonal _ Unit, C fun _ => none, ?_⟩⟩
       rintro (_ | ⟨a⟩)
       · rfl
       · exact (h ⟨a⟩).elim
