@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Basic
-import Mathlib.GroupTheory.Subsemigroup.Center
-import Mathlib.GroupTheory.Subsemigroup.Centralizer
 import Mathlib.Algebra.Star.Pointwise
+import Mathlib.Algebra.Group.Centralizer
 
 /-! # `Set.center`, `Set.centralizer` and the `star` operation -/
 
