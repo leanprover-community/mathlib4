@@ -339,10 +339,8 @@ def signAux3 [Finite α] (f : Perm α) {s : Multiset α} : (∀ x, x ∈ s) → 
 theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs : ∀ x, x ∈ s) :
     signAux3 (f * g) hs = signAux3 f hs * signAux3 g hs ∧
       Pairwise fun x y => signAux3 (swap x y) hs = -1 := by
-  let ⟨l, hl⟩ := Quotient.exists_rep s
-  rcases Finite.exists_equiv_fin α with ⟨n, ⟨e⟩⟩
-  --clear _let_match
-  subst hl
+  obtain ⟨n, ⟨e⟩⟩ := Finite.exists_equiv_fin α
+  obtain ⟨l, rfl⟩ := Quotient.exists_rep s
   show
     signAux2 l (f * g) = signAux2 l f * signAux2 l g ∧
     Pairwise fun x y => signAux2 l (swap x y) = -1
@@ -353,8 +351,8 @@ theorem signAux3_mul_and_swap [Finite α] (f g : Perm α) (s : Multiset α) (hs 
       signAux_eq_signAux2 _ _ e fun _ _ => hs _, ← signAux_eq_signAux2 _ _ e fun _ _ => hs _,
       hfg, signAux_mul]
   · intro x y hxy
-    have hexy : e x ≠ e y := mt e.injective.eq_iff.1 hxy
-    rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hexy]
+    rw [← e.injective.ne_iff] at hxy
+    rw [← signAux_eq_signAux2 _ _ e fun _ _ => hs _, symm_trans_swap_trans, signAux_swap hxy]
 #align equiv.perm.sign_aux3_mul_and_swap Equiv.Perm.signAux3_mul_and_swap
 
 theorem signAux3_symm_trans_trans [Finite α] [DecidableEq β] [Finite β] (f : Perm α) (e : α ≃ β)

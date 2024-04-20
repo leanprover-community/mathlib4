@@ -80,8 +80,8 @@ theorem absolutelyContinuous {X : Ω → E} {s : Set E} (hu : IsUniform X s ℙ 
 theorem measure_preimage {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
     (hu : IsUniform X s ℙ μ) {A : Set E} (hA : MeasurableSet A) :
     ℙ (X ⁻¹' A) = μ (s ∩ A) / μ s := by
-   rwa [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu, ProbabilityTheory.cond_apply',
-    ENNReal.div_eq_inv_mul.symm]
+  rwa [← map_apply_of_aemeasurable (hu.aemeasurable hns hnt) hA, hu, ProbabilityTheory.cond_apply',
+    ENNReal.div_eq_inv_mul]
 #align measure_theory.pdf.is_uniform.measure_preimage MeasureTheory.pdf.IsUniform.measure_preimage
 
 theorem isProbabilityMeasure {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞)
@@ -108,8 +108,7 @@ theorem hasPDF {X : Ω → E} {s : Set E} (hns : μ s ≠ 0) (hnt : μ s ≠ ∞
   apply hasPDF_of_map_eq_withDensity (hu.aemeasurable hns hnt) (t.indicator ((μ t)⁻¹ • 1)) <|
     (measurable_one.aemeasurable.const_smul (μ t)⁻¹).indicator (measurableSet_toMeasurable μ s)
   rw [hu, withDensity_indicator (measurableSet_toMeasurable μ s), withDensity_smul _ measurable_one,
-    withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable]
-  rfl
+    withDensity_one, restrict_toMeasurable hnt, measure_toMeasurable, ProbabilityTheory.cond]
 #align measure_theory.pdf.is_uniform.has_pdf MeasureTheory.pdf.IsUniform.hasPDF
 
 theorem pdf_eq_zero_of_measure_eq_zero_or_top {X : Ω → E} {s : Set E}
@@ -132,9 +131,8 @@ theorem pdf_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
   have : HasPDF X ℙ μ := hasPDF hns hnt hu
   have : IsProbabilityMeasure ℙ := isProbabilityMeasure hns hnt hu
   apply (eq_of_map_eq_withDensity _ _).mp
-  · rw [hu, withDensity_indicator hms,
-    withDensity_smul _ measurable_one, withDensity_one]
-    rfl
+  · rw [hu, withDensity_indicator hms, withDensity_smul _ measurable_one, withDensity_one,
+      ProbabilityTheory.cond]
   · exact (measurable_one.aemeasurable.const_smul (μ s)⁻¹).indicator hms
 
 theorem pdf_toReal_ae_eq {X : Ω → E} {s : Set E} (hms : MeasurableSet s)
@@ -207,8 +205,7 @@ lemma uniformPDF_ite {s : Set E} {x : E} :
     uniformPDF s x μ = if x ∈ s then (μ s)⁻¹ else 0 := by
   unfold uniformPDF
   unfold Set.indicator
-  rename_i inst x_1
-  simp_all only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
+  simp only [Pi.smul_apply, Pi.one_apply, smul_eq_mul, mul_one]
 
 end pdf
 

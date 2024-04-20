@@ -502,7 +502,8 @@ on `S`. -/
 lemma monotoneOn_derivWithin (hfc : ConvexOn ℝ S f) (hfd : DifferentiableOn ℝ f S) :
     MonotoneOn (derivWithin f S) S := by
   intro x hx y hy hxy
-  rcases eq_or_lt_of_le hxy with rfl | hxy'; rfl
+  rcases eq_or_lt_of_le hxy with rfl | hxy'
+  · rfl
   exact (hfc.derivWithin_le_slope hx hy hxy' (hfd x hx)).trans
     (hfc.slope_le_derivWithin hx hy hxy' (hfd y hy))
 
@@ -511,7 +512,8 @@ on `S`. -/
 theorem monotoneOn_deriv (hfc : ConvexOn ℝ S f) (hfd : ∀ x ∈ S, DifferentiableAt ℝ f x) :
     MonotoneOn (deriv f) S := by
   intro x hx y hy hxy
-  rcases eq_or_lt_of_le hxy with rfl | hxy'; rfl
+  rcases eq_or_lt_of_le hxy with rfl | hxy'
+  · rfl
   exact (hfc.deriv_le_slope hx hy hxy' (hfd x hx)).trans (hfc.slope_le_deriv hx hy hxy' (hfd y hy))
 
 end ConvexOn
@@ -740,7 +742,8 @@ end right
 lemma antitoneOn_derivWithin (hfc : ConcaveOn ℝ S f) (hfd : DifferentiableOn ℝ f S) :
     AntitoneOn (derivWithin f S) S := by
   intro x hx y hy hxy
-  rcases eq_or_lt_of_le hxy with rfl | hxy'; rfl
+  rcases eq_or_lt_of_le hxy with rfl | hxy'
+  · rfl
   exact (hfc.derivWithin_le_slope hx hy hxy' (hfd y hy)).trans
     (hfc.slope_le_derivWithin hx hy hxy' (hfd x hx))
 
