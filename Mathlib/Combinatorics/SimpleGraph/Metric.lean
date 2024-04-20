@@ -171,7 +171,7 @@ theorem dist_eq_two_iff {u v : V} :
 
 theorem two_lt_dist_iff {u v : V} :
     2 < G.dist u v ↔ u ≠ v ∧ ¬G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) ∧ G.Reachable u v := by
-  refine ⟨fun h ↦ ⟨?c, ?b, ?a, ?d⟩, fun h ↦ ?_⟩
+  refine ⟨fun h ↦ ⟨?c, ?b, ?a, ?_⟩, fun h ↦ ?_⟩
   case a =>
     by_contra con
     have hn : u ≠ v := ?c
@@ -190,8 +190,7 @@ theorem two_lt_dist_iff {u v : V} :
     have : G.dist u v ≠ 0 := by omega
     rw [ne_eq, ← Reachable.dist_eq_zero_iff (Reachable.of_dist_ne_zero this), ← ne_eq]
     exact this
-  case d =>
-    have : G.dist u v ≠ 0 := by omega
+  · have : G.dist u v ≠ 0 := by omega
     exact Reachable.of_dist_ne_zero this
   · obtain ⟨hn, ha, h, hr⟩ := h
     apply LE.le.lt_of_ne
