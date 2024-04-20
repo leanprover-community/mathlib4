@@ -66,11 +66,11 @@ lemma rank_eq_natTrailingDegree :
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
 open FiniteDimensional
-lemma rank_le_card [StrongRankCondition R] : rank R L M ≤ Fintype.card ιₘ :=
+lemma rank_le_card : rank R L M ≤ Fintype.card ιₘ :=
   nilRank_le_card _ bₘ
 
 open FiniteDimensional
-lemma rank_le_finrank [StrongRankCondition R] : rank R L M ≤ finrank R M :=
+lemma rank_le_finrank : rank R L M ≤ finrank R M :=
   nilRank_le_finrank _
 
 variable {L}
@@ -99,7 +99,7 @@ lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
 section IsDomain
 
 variable (L)
-variable [IsDomain R] [StrongRankCondition R]
+variable [IsDomain R]
 
 open Cardinal FiniteDimensional MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
@@ -137,11 +137,11 @@ lemma rank_eq_natTrailingDegree :
   apply nilRank_eq_polyCharpoly_natTrailingDegree
 
 open FiniteDimensional
-lemma rank_le_card [StrongRankCondition R] : rank R L ≤ Fintype.card ι :=
+lemma rank_le_card : rank R L ≤ Fintype.card ι :=
   nilRank_le_card _ b
 
 open FiniteDimensional
-lemma rank_le_finrank [StrongRankCondition R] : rank R L ≤ finrank R L :=
+lemma rank_le_finrank : rank R L ≤ finrank R L :=
   nilRank_le_finrank _
 
 variable {L}
@@ -170,7 +170,7 @@ lemma isRegular_iff_natTrailingDegree_charpoly_eq_rank :
 section IsDomain
 
 variable (L)
-variable [IsDomain R] [StrongRankCondition R]
+variable [IsDomain R]
 
 open Cardinal FiniteDimensional MvPolynomial in
 lemma exists_isRegular_of_finrank_le_card (h : finrank R L ≤ #R) :

@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Dimension.Finrank
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.LinearAlgebra.Matrix.Charpoly.Univ
 
 /-!
@@ -358,13 +359,12 @@ lemma polyCharpoly_ne_zero [Nontrivial R] : (polyCharpoly φ b) ≠ 0 :=
   (polyCharpoly_monic _ _).ne_zero
 
 @[simp]
-lemma polyCharpoly_natDegree [Nontrivial R] [StrongRankCondition R] :
+lemma polyCharpoly_natDegree [Nontrivial R] :
     (polyCharpoly φ b).natDegree = finrank R M := by
   rw [polyCharpoly, polyCharpolyAux, (charpoly.univ_monic _ _).natDegree_map,
     charpoly.univ_natDegree, finrank_eq_card_chooseBasisIndex]
 
-lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M)
-    [StrongRankCondition R] :
+lemma polyCharpoly_coeff_isHomogeneous (i j : ℕ) (hij : i + j = finrank R M) [Nontrivial R] :
     ((polyCharpoly φ b).coeff i).IsHomogeneous j := by
   rw [finrank_eq_card_chooseBasisIndex] at hij
   rw [polyCharpoly, polyCharpolyAux, Polynomial.coeff_map, ← one_mul j]
@@ -451,18 +451,16 @@ def nilRank (φ : L →ₗ[R] Module.End R M) : ℕ :=
 
 variable [Nontrivial R]
 
-lemma nilRank_eq_polyCharpoly_natTrailingDegree [Nontrivial R] (b : Basis ι R L) :
+lemma nilRank_eq_polyCharpoly_natTrailingDegree (b : Basis ι R L) :
     nilRank φ = (polyCharpoly φ b).natTrailingDegree := by
   apply nilRankAux_basis_indep
 
-lemma polyCharpoly_coeff_nilRank_ne_zero [Nontrivial R] :
+lemma polyCharpoly_coeff_nilRank_ne_zero :
     (polyCharpoly φ b).coeff (nilRank φ) ≠ 0 := by
   rw [nilRank_eq_polyCharpoly_natTrailingDegree _ b]
   apply polyCharpoly_coeff_nilRankAux_ne_zero
 
 open FiniteDimensional Module.Free
-
-variable [StrongRankCondition R]
 
 lemma nilRank_le_card (b : Basis ι R M) : nilRank φ ≤ Fintype.card ι := by
   apply Polynomial.natTrailingDegree_le_of_ne_zero
@@ -517,7 +515,7 @@ lemma isNilRegular_iff_natTrailingDegree_charpoly_eq_nilRank :
 
 section IsDomain
 
-variable [IsDomain R] [StrongRankCondition R]
+variable [IsDomain R]
 
 open Cardinal FiniteDimensional MvPolynomial in
 lemma exists_isNilRegular_of_finrank_le_card (h : finrank R M ≤ #R) :
