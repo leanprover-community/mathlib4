@@ -685,7 +685,8 @@ instance (hreg : κ.IsRegular) [KLindelofSpace κ X] [KLindelofSpace κ Y] :
     KLindelofSpace κ (X ⊕ Y) where
     isKLindelof_univ := by
       rw [← range_inl_union_range_inr]
-      sorry --exact (isKLindelof_range continuous_inl).union hreg (isKLindelof_range continuous_inr)
+      exact IsKLindelof.union hreg (isKLindelof_range continuous_inl)
+        (isKLindelof_range continuous_inr)
 
 instance (hreg : κ.IsRegular) {X : ι → Type u} (hι : #ι < κ) [∀ i, TopologicalSpace (X i)]
     [∀ i, KLindelofSpace κ (X i)] : KLindelofSpace κ (Σi, X i) where
