@@ -200,11 +200,8 @@ instance : Mul αˣ where
 instance : One αˣ where
   one := ⟨1, 1, one_mul 1, one_mul 1⟩
 
-/-- Units of a monoid have a multiplication and multiplicative identity. -/
-@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
-instance instMulOneClass : MulOneClass αˣ where
-  one_mul u := ext <| one_mul (u : α)
-  mul_one u := ext <| mul_one (u : α)
+
+
 
 /-- Units of a monoid are inhabited because `1` is a unit. -/
 @[to_additive "Additive units of an additive monoid are inhabited because `0` is an additive unit."]
@@ -268,6 +265,19 @@ theorem mul_inv : (a * ↑a⁻¹ : α) = 1 :=
   rw [Commute, SemiconjBy, inv_mul, mul_inv]
 
 @[to_additive] lemma commute_inv_coe : Commute ↑a⁻¹ (a : α) := a.commute_coe_inv.symm
+
+/-- Units of a monoid have a multiplication and multiplicative identity. -/
+@[to_additive "Additive units of an additive monoid have an addition and an additive identity."]
+instance instMulOneClass : MulOneClass αˣ where
+  one_mul u := ext <| one_mul (u : α)
+  mul_one u := ext <| mul_one (u : α)
+  npow n a := {
+        val := a ^ n
+        inv := a⁻¹ ^ n
+        val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
+        inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
+  npow_zero a := by ext; simp
+  npow_succ n a := by ext; simp [pow_succ]
 
 @[to_additive]
 theorem inv_mul_of_eq {a : α} (h : ↑u = a) : ↑u⁻¹ * a = 1 := by rw [← h, u.inv_mul]
@@ -376,14 +386,7 @@ protected theorem eq_inv_of_mul_eq_one_right {a : α} (h : a * u = 1) : a = ↑u
 @[to_additive]
 instance instMonoid : Monoid αˣ :=
   { (inferInstance : MulOneClass αˣ) with
-    mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _,
-    npow := fun n a ↦
-      { val := a ^ n
-        inv := a⁻¹ ^ n
-        val_inv := by rw [← a.commute_coe_inv.mul_pow]; simp
-        inv_val := by rw [← a.commute_inv_coe.mul_pow]; simp }
-    npow_zero := fun a ↦ by ext; simp
-    npow_succ := fun n a ↦ by ext; simp [pow_succ] }
+    mul_assoc := fun _ _ _ => ext <| mul_assoc _ _ _, }
 
 /-- Units of a monoid have division -/
 @[to_additive "Additive units of an additive monoid have subtraction."]
