@@ -816,6 +816,8 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
 
 variable {K}
 
+/-- The coercion from polynomials to rational functions, implemented as the algebra map from a
+domain to its field of fractions -/
 @[coe]
 def coePolynomial (P : Polynomial K) : RatFunc K := algebraMap _ _ P
 
