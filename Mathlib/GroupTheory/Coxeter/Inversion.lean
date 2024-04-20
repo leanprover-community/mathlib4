@@ -97,6 +97,7 @@ theorem isReflection_conjugate_iff (w t : W) :
 /-- The proposition that `t` is a right inversion of `w`; i.e., `t` is a reflection and
 $\ell (w t) < \ell(w)$. -/
 def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ w
+
 /-- The proposition that `t` is a left inversion of `w`; i.e., `t` is a reflection and
 $\ell (t w) < \ell(w)$. -/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
@@ -138,8 +139,11 @@ local prefix:100 "ris" => cs.rightInvSeq
 local prefix:100 "lis" => cs.leftInvSeq
 
 @[simp] theorem rightInvSeq_nil : ris [] = [] := rfl
+
 @[simp] theorem leftInvSeq_nil : lis [] = [] := rfl
+
 @[simp] theorem rightInvSeq_singleton (i : B) : ris [i] = [s i] := by simp [rightInvSeq]
+
 @[simp] theorem leftInvSeq_singleton (i : B) : lis [i] = [s i] := rfl
 
 theorem rightInvSeq_concat (ω : List B) (i : B) :
@@ -311,17 +315,13 @@ theorem nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : Lis
   intro j j' j_lt_j' j'_lt_length dup
   -- dup : get? (rightInvSeq cs ω) j = get? (rightInvSeq cs ω) j'
   -- ⊢ False
-
   simp at j'_lt_length
   -- j'_lt_length: j' < List.length ω
-
   rw [get?_eq_get (by simp; linarith), get?_eq_get (by simp; linarith)] at dup
   apply Option.some_injective at dup
   rw [← getD_eq_get _ 1, ← getD_eq_get _ 1] at dup
-
   set! t := (ris ω).getD j 1 with h₁
   set! t' := (ris (ω.eraseIdx j)).getD (j' - 1) 1 with h₂
-
   have h₃ : t' = (ris ω).getD j' 1                    := by
     rw [h₂]
     rw [cs.getD_rightInvSeq, cs.getD_rightInvSeq]
@@ -342,31 +342,25 @@ theorem nodup_rightInvSeq_of_reduced {ω : List B} (rω : cs.IsReduced ω) : Lis
     rw [length_take]
     rw [min_eq_left_of_lt (j_lt_j'.trans j'_lt_length)]
     rw [Nat.sub_sub, add_comm 1, Nat.add_sub_cancel' (by linarith)]
-
   have h₄ : t * t' = 1                                := by
     rw [h₁, h₃, dup]
     exact cs.getD_rightInvSeq_mul_self _ _
-
   have h₅ := calc
     π ω   = π ω * t * t'                              := by rw [mul_assoc, h₄]; group
     _     = (π (ω.eraseIdx j)) * t'                   :=
         congrArg (· * t') (cs.wordProd_mul_getD_rightInvSeq _ _)
     _     = π ((ω.eraseIdx j).eraseIdx (j' - 1))      :=
         cs.wordProd_mul_getD_rightInvSeq _ _
-
   have h₆ := calc
     ω.length = ℓ (π ω)                                    := rω.symm
     _        = ℓ (π ((ω.eraseIdx j).eraseIdx (j' - 1)))   := congrArg cs.length h₅
     _        ≤ ((ω.eraseIdx j).eraseIdx (j' - 1)).length  := cs.length_wordProd_le _
-
   have h₇ := add_le_add_right (add_le_add_right h₆ 1) 1
-
   have h₈ : j' - 1 < List.length (eraseIdx ω j)           := by
     apply (@Nat.add_lt_add_iff_right 1).mp
     rw [Nat.sub_add_cancel (by linarith)]
     rw [length_eraseIdx_add_one (by linarith)]
     linarith
-
   rw [length_eraseIdx_add_one h₈] at h₇
   rw [length_eraseIdx_add_one (by linarith)] at h₇
   linarith
