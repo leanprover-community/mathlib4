@@ -83,19 +83,21 @@ variable [MulZeroOneClass M₀]
 /-- Pull back a `MulZeroOneClass` instance along an injective function.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀' → M₀)
-    (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ a b, f (a * b) = f a * f b) :
+protected def Function.Injective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] [Pow M₀' ℕ]
+    (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+    (mul : ∀ a b, f (a * b) = f a * f b) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     MulZeroOneClass M₀' :=
-  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul with }
+  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul npow with }
 #align function.injective.mul_zero_one_class Function.Injective.mulZeroOneClass
 
 /-- Push forward a `MulZeroOneClass` instance along a surjective function.
 See note [reducible non-instances]. -/
 @[reducible]
-protected def Function.Surjective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] (f : M₀ → M₀')
-    (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ a b, f (a * b) = f a * f b) :
+protected def Function.Surjective.mulZeroOneClass [Mul M₀'] [Zero M₀'] [One M₀'] [Pow M₀' ℕ]
+    (f : M₀ → M₀') (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
+    (mul : ∀ a b, f (a * b) = f a * f b) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     MulZeroOneClass M₀' :=
-  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul with }
+  { hf.mulZeroClass f zero mul, hf.mulOneClass f one mul npow with }
 #align function.surjective.mul_zero_one_class Function.Surjective.mulZeroOneClass
 
 end MulZeroOneClass
