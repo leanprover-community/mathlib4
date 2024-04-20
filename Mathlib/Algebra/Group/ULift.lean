@@ -123,12 +123,12 @@ instance commSemigroup [CommSemigroup α] : CommSemigroup (ULift α) :=
 
 @[to_additive]
 instance mulOneClass [MulOneClass α] : MulOneClass (ULift α) :=
-  Equiv.ulift.injective.mulOneClass _ rfl (by intros; rfl)
+  Equiv.ulift.injective.mulOneClass _ rfl (by intros; rfl) (by intros; rfl)
 #align ulift.mul_one_class ULift.mulOneClass
 #align ulift.add_zero_class ULift.addZeroClass
 
-instance mulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass (ULift α) :=
-  Equiv.ulift.injective.mulZeroOneClass _ rfl rfl (by intros; rfl)
+instance mulZeroOneClass [MulZeroOneClass α] : MulZeroOneClass (ULift α) := by
+  exact Equiv.ulift.injective.mulZeroOneClass _ rfl rfl (by intros; rfl) (by intros; rfl)
 #align ulift.mul_zero_one_class ULift.mulZeroOneClass
 
 @[to_additive]
