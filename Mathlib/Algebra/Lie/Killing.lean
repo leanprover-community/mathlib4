@@ -692,7 +692,7 @@ lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
 lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
     LieSubmodule.toSubmodule (corootSpace α) = K ∙ coroot α := by
   if hα : α.IsZero then
-    simp [α.coe_eq_zero_iff.mpr hα, coroot_eq_zero_iff.mpr hα]
+    simp [hα.eq, coroot_eq_zero_iff.mpr hα]
   else
     set α' := (cartanEquivDual H).symm α
     have hα' : (cartanEquivDual H).symm α ≠ 0 := by simpa using hα

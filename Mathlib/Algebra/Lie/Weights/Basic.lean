@@ -211,6 +211,8 @@ We make this definition because we cannot define a `Zero (Weight R L M)` instanc
 space of the zero function can be trivial. -/
 def IsZero (χ : Weight R L M) := (χ : L → R) = 0
 
+@[simp] lemma IsZero.eq {χ : Weight R L M} (hχ : χ.IsZero) : (χ : L → R) = 0 := hχ
+
 @[simp] lemma coe_eq_zero_iff (χ : Weight R L M) : (χ : L → R) = 0 ↔ χ.IsZero := Iff.rfl
 
 /-- The proposition that a weight of a Lie module is non-zero. -/
