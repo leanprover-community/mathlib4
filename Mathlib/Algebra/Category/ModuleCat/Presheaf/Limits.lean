@@ -33,7 +33,7 @@ section Limits
 variable [∀ X, Small.{v} ((F ⋙ evaluation R X) ⋙ forget _).sections]
 
 /-- A cone in the category `PresheafOfModules R` is limit if it is so after the application
-of the functors `evalurtion R X` for all `X`. -/
+of the functors `evaluation R X` for all `X`. -/
 def evaluationJointlyReflectsLimits (c : Cone F)
     (hc : ∀ (X : Cᵒᵖ), IsLimit ((evaluation R X).mapCone c)) : IsLimit c where
   lift s := Hom.mk'' (fun X => (hc X).lift ((evaluation R X).mapCone s)) (fun X Y f => by

@@ -534,7 +534,7 @@ theorem isLocalization_stalk'
   rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
--- Porting note: I have splitted this into two lemmas
+-- Porting note: I have split this into two lemmas
 theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩
