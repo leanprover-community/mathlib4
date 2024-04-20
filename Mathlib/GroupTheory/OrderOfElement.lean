@@ -42,15 +42,15 @@ variable [Monoid G] {a b x y : G} {n m : ℕ}
 
 section IsOfFinOrder
 
--- Porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
+-- Porting note(#12129): additional beta reduction needed
 @[to_additive]
 theorem isPeriodicPt_mul_iff_pow_eq_one (x : G) : IsPeriodicPt (x * ·) n 1 ↔ x ^ n = 1 := by
-  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; dsimp; rw [mul_one]
+  rw [IsPeriodicPt, IsFixedPt, mul_left_iterate]; beta_reduce; rw [mul_one]
 #align is_periodic_pt_mul_iff_pow_eq_one isPeriodicPt_mul_iff_pow_eq_one
 #align is_periodic_pt_add_iff_nsmul_eq_zero isPeriodicPt_add_iff_nsmul_eq_zero
 
 /-- `IsOfFinOrder` is a predicate on an element `x` of a monoid to be of finite order, i.e. there
-exists `n ≥ 1` such that `x ^ n = 1`.-/
+exists `n ≥ 1` such that `x ^ n = 1`. -/
 @[to_additive "`IsOfFinAddOrder` is a predicate on an element `a` of an
 additive monoid to be of finite order, i.e. there exists `n ≥ 1` such that `n • a = 0`."]
 def IsOfFinOrder (x : G) : Prop :=
@@ -101,7 +101,7 @@ lemma IsOfFinOrder.pow {n : ℕ} : IsOfFinOrder a → IsOfFinOrder (a ^ n) := by
   rintro ⟨m, hm, ha⟩
   exact ⟨m, hm, by simp [pow_right_comm _ n, ha]⟩
 
-/-- Elements of finite order are of finite order in submonoids.-/
+/-- Elements of finite order are of finite order in submonoids. -/
 @[to_additive "Elements of finite order are of finite order in submonoids."]
 theorem Submonoid.isOfFinOrder_coe {H : Submonoid G} {x : H} :
     IsOfFinOrder (x : G) ↔ IsOfFinOrder x := by
@@ -147,7 +147,7 @@ noncomputable abbrev IsOfFinOrder.groupPowers (hx : IsOfFinOrder x) :
 end IsOfFinOrder
 
 /-- `orderOf x` is the order of the element `x`, i.e. the `n ≥ 1`, s.t. `x ^ n = 1` if it exists.
-Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention.-/
+Otherwise, i.e. if `x` is of infinite order, then `orderOf x` is `0` by convention. -/
 @[to_additive
   "`addOrderOf a` is the order of the element `a`, i.e. the `n ≥ 1`, s.t. `n • a = 0` if it
   exists. Otherwise, i.e. if `a` is of infinite order, then `addOrderOf a` is `0` by convention."]
@@ -174,10 +174,9 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  -- Porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
-  refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
-  -- Porting note: we need a `dsimp` in the middle of the rewrite to do beta reduction
-  rw [orderOf, mul_left_iterate]; dsimp; rw [mul_one]
+  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  -- Porting note(#12129): additional beta reduction needed in the middle of the rewrite
+  rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one
 #align add_order_of_nsmul_eq_zero addOrderOf_nsmul_eq_zero
 
@@ -852,7 +851,7 @@ lemma isOfFinOrder_of_finite (x : G) : IsOfFinOrder x := by
 #align exists_nsmul_eq_zero isOfFinAddOrder_of_finite
 
 /-- This is the same as `IsOfFinOrder.orderOf_pos` but with one fewer explicit assumption since this
-is automatic in case of a finite cancellative monoid.-/
+is automatic in case of a finite cancellative monoid. -/
 @[to_additive "This is the same as `IsOfFinAddOrder.addOrderOf_pos` but with one fewer explicit
 assumption since this is automatic in case of a finite cancellative additive monoid."]
 lemma orderOf_pos (x : G) : 0 < orderOf x := (isOfFinOrder_of_finite x).orderOf_pos
@@ -860,7 +859,7 @@ lemma orderOf_pos (x : G) : 0 < orderOf x := (isOfFinOrder_of_finite x).orderOf_
 #align add_order_of_pos addOrderOf_pos
 
 /-- This is the same as `orderOf_pow'` and `orderOf_pow''` but with one assumption less which is
-automatic in the case of a finite cancellative monoid.-/
+automatic in the case of a finite cancellative monoid. -/
 @[to_additive "This is the same as `addOrderOf_nsmul'` and
 `addOrderOf_nsmul` but with one assumption less which is automatic in the case of a
 finite cancellative additive monoid."]
@@ -1149,7 +1148,7 @@ theorem inf_eq_bot_of_coprime {G : Type*} [Group G] {H K : Subgroup G} [Fintype 
 #align inf_eq_bot_of_coprime inf_eq_bot_of_coprime
 #align add_inf_eq_bot_of_coprime add_inf_eq_bot_of_coprime
 
-/- TODO: Generalise to `Submonoid.powers`.-/
+/- TODO: Generalise to `Submonoid.powers`. -/
 @[to_additive]
 theorem image_range_orderOf [DecidableEq G] :
     Finset.image (fun i => x ^ i) (Finset.range (orderOf x)) = (zpowers x : Set G).toFinset := by

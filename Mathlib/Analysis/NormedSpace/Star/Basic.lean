@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id, norm_mul]
 
 namespace CstarRing
 
@@ -248,7 +248,7 @@ theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
   calc
     _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
     _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
-    _ = ‖A⋆‖ := (norm_mem_unitary_mul (star A) (unitary.star_mem U.prop))
+    _ = ‖A⋆‖ := norm_mem_unitary_mul (star A) (unitary.star_mem U.prop)
     _ = ‖A‖ := norm_star _
 #align cstar_ring.norm_mul_coe_unitary CstarRing.norm_mul_coe_unitary
 

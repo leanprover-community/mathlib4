@@ -203,7 +203,7 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
   rw [one_div, div_inv_eq_mul, ←
     mul_self_inj (mul_nonneg (norm_nonneg _) (Real.sqrt_nonneg _)) (norm_nonneg _),
     norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _), ←
-    mul_assoc, mul_comm, mul_comm _ (Real.sqrt _), ← mul_assoc, ← mul_assoc,
+    mul_assoc, mul_comm, mul_comm _ (√_), ← mul_assoc, ← mul_assoc,
     Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
     LinearIsometryEquiv.norm_map]
   swap; · simpa using h.symm

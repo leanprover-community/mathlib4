@@ -3,7 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Nat.Totient
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.GroupTheory.Subgroup.Simple
@@ -261,7 +261,7 @@ instance Subgroup.isCyclic {α : Type u} [Group α] [IsCyclic α] (H : Subgroup 
           by_contradiction fun h =>
             Nat.find_min hex
               (Int.ofNat_lt.1 <| by
-                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.coe_nat_pos.2 (Nat.find_spec hex).1))
+                rw [← hk₄]; exact Int.emod_lt_of_pos _ (Int.natCast_pos.2 (Nat.find_spec hex).1))
               ⟨Nat.pos_of_ne_zero h, hk₅⟩
         ⟨k / (Nat.find hex : ℤ),
           Subtype.ext_iff_val.2
@@ -337,7 +337,7 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   obtain ⟨g, hg⟩ := h.exists_generator
   use g
   rw [← card_zpowers g, (eq_top_iff' (zpowers g)).mpr hg]
-  exact (Nat.card_congr (Equiv.Set.univ α))
+  exact Nat.card_congr (Equiv.Set.univ α)
 
 @[to_additive]
 lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
@@ -374,7 +374,7 @@ theorem IsCyclic.unique_zpow_zmod (ha : ∀ x : α, x ∈ zpowers a) (x : α) :
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
       Int.modEq_comm, Int.modEq_iff_add_fac, ← ZMod.int_coe_zmod_eq_iff]
   · rw [← zpow_natCast, zpow_eq_zpow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers ha,
-      ← ZMod.int_cast_eq_int_cast_iff] at hy
+      ← ZMod.intCast_eq_intCast_iff] at hy
     simp [hy]
 
 @[to_additive]
@@ -384,8 +384,8 @@ lemma IsCyclic.ext {G : Type*} [Group G] [Fintype G] [IsCyclic G] {d : ℕ} {a b
   specialize h g
   subst hGcard
   rw [pow_eq_pow_iff_modEq, orderOf_eq_card_of_forall_mem_zpowers hg,
-    ← ZMod.nat_cast_eq_nat_cast_iff] at h
-  simpa [ZMod.nat_cast_val, ZMod.cast_id'] using h
+    ← ZMod.natCast_eq_natCast_iff] at h
+  simpa [ZMod.natCast_val, ZMod.cast_id'] using h
 
 end
 
@@ -640,7 +640,7 @@ section SpecificInstances
 instance : IsAddCyclic ℤ := ⟨1, fun n ↦ ⟨n, by simp only [smul_eq_mul, mul_one]⟩⟩
 
 instance ZMod.instIsAddCyclic (n : ℕ) : IsAddCyclic (ZMod n) :=
-  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.int_cast_surjective
+  isAddCyclic_of_surjective (Int.castRingHom _) ZMod.intCast_surjective
 
 instance ZMod.instIsSimpleAddGroup {p : ℕ} [Fact p.Prime] : IsSimpleAddGroup (ZMod p) :=
   AddCommGroup.is_simple_iff_isAddCyclic_and_prime_card.2
@@ -752,7 +752,7 @@ noncomputable def zmodAddCyclicAddEquiv [AddGroup G] (h : IsAddCyclic G) :
     congr
     rw [← Nat.card_zmultiples]
     exact Nat.card_congr (Equiv.subtypeUnivEquiv surj)
-  exact (Int.quotientZMultiplesNatEquivZMod n)
+  exact Int.quotientZMultiplesNatEquivZMod n
     |>.symm.trans <| QuotientAddGroup.quotientAddEquivOfEq kereq
     |>.symm.trans <| QuotientAddGroup.quotientKerEquivOfSurjective (zmultiplesHom G g) surj
 

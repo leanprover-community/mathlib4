@@ -34,7 +34,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
   protected toFun : G → H
-  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead.-/
+  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead. -/
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]

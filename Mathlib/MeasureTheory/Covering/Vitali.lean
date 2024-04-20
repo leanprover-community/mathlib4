@@ -380,10 +380,10 @@ theorem exists_disjoint_covering_ae [MetricSpace α] [MeasurableSpace α] [Opens
   calc
     μ ((s \ ⋃ a ∈ u, B a) ∩ ball x (R x)) ≤ μ (⋃ a : { a // a ∉ w }, closedBall (c a) (3 * r a)) :=
       measure_mono M
-    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := (measure_iUnion_le _)
+    _ ≤ ∑' a : { a // a ∉ w }, μ (closedBall (c a) (3 * r a)) := measure_iUnion_le _
     _ ≤ ∑' a : { a // a ∉ w }, C * μ (B a) := (ENNReal.tsum_le_tsum fun a => μB a (ut (vu a.1.2)))
     _ = C * ∑' a : { a // a ∉ w }, μ (B a) := ENNReal.tsum_mul_left
-    _ ≤ C * (ε / C) := (mul_le_mul_left' hw.le _)
+    _ ≤ C * (ε / C) := mul_le_mul_left' hw.le _
     _ ≤ ε := ENNReal.mul_div_le
 #align vitali.exists_disjoint_covering_ae Vitali.exists_disjoint_covering_ae
 
