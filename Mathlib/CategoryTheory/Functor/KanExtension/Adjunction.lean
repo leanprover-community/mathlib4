@@ -16,7 +16,10 @@ with `L` (see `Functor.lanAdjunction`).
 
 ## TODO
 - dualize the results for right Kan extensions
-- refactor the file `CategoryTheory.Limits.KanExtension`
+- refactor the file `CategoryTheory.Limits.KanExtension` so that
+the definitions of `Lan` and `Ran` in that file (which rely on the
+existence of (co)limits) are replaced by the new definition
+`Functor.lan` which is based on Kan extensions API.
 
 -/
 
