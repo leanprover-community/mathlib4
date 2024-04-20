@@ -8,6 +8,7 @@ Authors: Antoine Chambert-Loir
 import Mathlib.GroupTheory.SpecificGroups.Alternating
 import Mathlib.GroupTheory.GroupAction.FixingSubgroup
 import Mathlib.GroupTheory.Perm.DomMulAct
+import Mathlib.GroupTheory.Perm.ConjAct
 import Mathlib.GroupTheory.Perm.Cycle.PossibleTypes
 
 /-! # Centralizer of a permutation and cardinality of conjugacy classes
@@ -118,37 +119,6 @@ def Equiv.permWithCycleType (c : Multiset ℕ) :=
 variable {α}
 
 namespace Equiv.Perm
-
-/-- `a : α` belongs to the support of `k • g` iff
-  `k⁻¹ * a` belongs to the support of `g` -/
-theorem conj_support_eq (k : ConjAct (Perm α)) (g : Perm α) (a : α) :
-    a ∈ (k • g).support ↔ ConjAct.ofConjAct k⁻¹ a ∈ g.support := by
-  simp only [mem_support, ConjAct.smul_def, not_iff_not, coe_mul,
-    Function.comp_apply, ConjAct.ofConjAct_inv]
-  apply Equiv.apply_eq_iff_eq_symm_apply
-
-theorem cycleFactorsFinset_conj (g k : Perm α) :
-    (k * g * k⁻¹).cycleFactorsFinset =
-      Finset.map (MulAut.conj k).toEquiv.toEmbedding g.cycleFactorsFinset := by
-  ext c
-  rw [Finset.mem_map_equiv, ← mem_cycleFactorsFinset_conj g k]
-  simp only [MulEquiv.toEquiv_eq_coe, MulEquiv.coe_toEquiv_symm, MulAut.conj_symm_apply]
-  group
-
-/-- A permutation `c` is a cycle of `g` iff `k • c` is a cycle of `k • g` -/
-theorem mem_cycleFactorsFinset_conj'
-    (k : ConjAct (Perm α)) (g c : Perm α) :
-    k • c ∈ (k • g).cycleFactorsFinset ↔ c ∈ g.cycleFactorsFinset := by
-  simp only [ConjAct.smul_def]
-  apply mem_cycleFactorsFinset_conj
-
-theorem cycleFactorsFinset_conj_eq
-    (k : ConjAct (Perm α)) (g : Perm α) :
-    cycleFactorsFinset (k • g) = k • cycleFactorsFinset g := by
-  ext c
-  rw [← mem_cycleFactorsFinset_conj' k⁻¹ (k • g) c]
-  simp only [inv_smul_smul]
-  exact Finset.inv_smul_mem_iff
 
 open scoped Pointwise
 
