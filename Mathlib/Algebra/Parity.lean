@@ -425,18 +425,17 @@ theorem Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
 lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
     a ^ n + b ^ n = 0 := by
   obtain ⟨k, rfl⟩ := hn
-  induction k with
-  | zero => simpa
-  | succ k ih =>
-    have : a ^ 2 = b ^ 2 := add_right_cancel $
-      calc
-        a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
-        _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
-    refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) ?_
+  induction' k with k ih
+  · simpa
+  have : a ^ 2 = b ^ 2 := add_right_cancel $
     calc
-      _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
-        rw [add_mul, ← pow_add, add_right_comm]; rfl
-      _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
+      a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
+      _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
+  refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) ?_
+  calc
+    _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
+      rw [add_mul, ← pow_add, add_right_comm]; rfl
+    _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
 
 end WithOdd
 
@@ -526,8 +525,17 @@ end Ring
 
 section Powers
 
-section LinearOrderedSemiring_ExistsAddOfLE
+/-!
+### Lemmas for canonically linear ordered semirings or linear ordered rings
 
+The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+more familiar settings:
+* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+  `ℚ≥0` or `ℝ≥0`
+-/
+
+section LinearOrderedSemiring
 variable [LinearOrderedSemiring R] [ExistsAddOfLE R] {a b : R} {n : ℕ}
 
 theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
@@ -591,19 +599,17 @@ theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
 #align odd.strict_mono_pow Odd.strictMono_pow
 
-end LinearOrderedSemiring_ExistsAddOfLE
+end LinearOrderedSemiring
 
 section LinearOrderedRing
-
 variable [LinearOrderedRing R] {a : R} {n : ℕ}
-
-set_option linter.deprecated false
 
 theorem Even.pow_abs {p : ℕ} (hp : Even p) (a : R) : |a| ^ p = a ^ p := by
   rw [← abs_pow, abs_eq_self]
   exact hp.pow_nonneg _
 #align even.pow_abs Even.pow_abs
 
+set_option linter.deprecated false in
 @[simp]
 theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
   (even_bit0 _).pow_abs _
