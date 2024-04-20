@@ -240,6 +240,9 @@ instance commSemigroup [∀ i, CommSemigroup (f i)] : CommSemigroup (∀ i, f i)
 instance mulOneClass [∀ i, MulOneClass (f i)] : MulOneClass (∀ i, f i) where
   one_mul := by intros; ext; exact one_mul _
   mul_one := by intros; ext; exact mul_one _
+  npow := fun n x i => x i ^ n
+  npow_zero := by intros; ext; exact MulOneClass.npow_zero _
+  npow_succ := by intros; ext; exact MulOneClass.npow_succ _ _
 #align pi.mul_one_class Pi.mulOneClass
 #align pi.add_zero_class Pi.addZeroClass
 
@@ -251,9 +254,6 @@ instance invOneClass [∀ i, InvOneClass (f i)] : InvOneClass (∀ i, f i) where
 instance monoid [∀ i, Monoid (f i)] : Monoid (∀ i, f i) where
   __ := semigroup
   __ := mulOneClass
-  npow := fun n x i => x i ^ n
-  npow_zero := by intros; ext; exact Monoid.npow_zero _
-  npow_succ := by intros; ext; exact Monoid.npow_succ _ _
 #align pi.monoid Pi.monoid
 #align pi.add_monoid Pi.addMonoid
 
