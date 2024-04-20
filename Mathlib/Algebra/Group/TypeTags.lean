@@ -289,21 +289,21 @@ instance Multiplicative.monoid [AddMonoid α] : Monoid (Multiplicative α) :=
   { Multiplicative.mulOneClass, Multiplicative.semigroup with }
 
 @[simp]
-theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
+theorem ofMul_pow [MulOneClass α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
   rfl
 #align of_mul_pow ofMul_pow
 
 @[simp]
-theorem toMul_nsmul [Monoid α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
+theorem toMul_nsmul [MulOneClass α] (n : ℕ) (a : Additive α) : toMul (n • a) = toMul a ^ n :=
   rfl
 
 @[simp]
-theorem ofAdd_nsmul [AddMonoid α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
+theorem ofAdd_nsmul [AddZeroClass α] (n : ℕ) (a : α) : ofAdd (n • a) = ofAdd a ^ n :=
   rfl
 #align of_add_nsmul ofAdd_nsmul
 
 @[simp]
-theorem toAdd_pow [AddMonoid α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
+theorem toAdd_pow [AddZeroClass α] (a : Multiplicative α) (n : ℕ) : toAdd (a ^ n) = n • toAdd a :=
   rfl
 
 instance Additive.addLeftCancelMonoid [LeftCancelMonoid α] : AddLeftCancelMonoid (Additive α) :=

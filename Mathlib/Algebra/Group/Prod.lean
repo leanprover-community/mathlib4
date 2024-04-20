@@ -207,15 +207,15 @@ instance [SemigroupWithZero M] [SemigroupWithZero N] : SemigroupWithZero (M × N
 
 @[to_additive]
 instance instMulOneClass [MulOneClass M] [MulOneClass N] : MulOneClass (M × N) :=
-  { one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
+  { npow := fun z a => ⟨MulOneClass.npow z a.1, MulOneClass.npow z a.2⟩,
+    npow_zero := fun z => ext (MulOneClass.npow_zero _) (MulOneClass.npow_zero _),
+    npow_succ := fun z a => ext (MulOneClass.npow_succ _ _) (MulOneClass.npow_succ _ _),
+    one_mul := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨one_mul _, one_mul _⟩,
     mul_one := fun a => Prod.recOn a fun _ _ => mk.inj_iff.mpr ⟨mul_one _, mul_one _⟩ }
 
 @[to_additive]
 instance instMonoid [Monoid M] [Monoid N] : Monoid (M × N) :=
-  { npow := fun z a => ⟨Monoid.npow z a.1, Monoid.npow z a.2⟩,
-    npow_zero := fun z => ext (Monoid.npow_zero _) (Monoid.npow_zero _),
-    npow_succ := fun z a => ext (Monoid.npow_succ _ _) (Monoid.npow_succ _ _),
-    one_mul := by simp,
+  { one_mul := by simp,
     mul_one := by simp }
 
 @[to_additive Prod.subNegMonoid]

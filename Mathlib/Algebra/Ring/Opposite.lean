@@ -54,7 +54,7 @@ instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵐᵒ�
 instance instSemiring [Semiring α] : Semiring αᵐᵒᵖ where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
-  __ := instMonoidWithZero
+--  __ := instMonoidWithZero
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵐᵒᵖ where
   __ := instNonUnitalSemiring
@@ -146,7 +146,7 @@ instance instNonAssocSemiring [NonAssocSemiring α] : NonAssocSemiring αᵃᵒ�
 instance instSemiring [Semiring α] : Semiring αᵃᵒᵖ where
   __ := instNonUnitalSemiring
   __ := instNonAssocSemiring
-  __ := instMonoidWithZero
+--  __ := instMonoidWithZero
 
 instance instNonUnitalCommSemiring [NonUnitalCommSemiring α] : NonUnitalCommSemiring αᵃᵒᵖ where
   __ := instNonUnitalSemiring
