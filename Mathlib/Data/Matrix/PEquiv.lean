@@ -96,7 +96,7 @@ theorem matrix_mul_apply [Fintype m] [Semiring α] [DecidableEq n] (M : Matrix l
 theorem toPEquiv_mul_matrix [Fintype m] [DecidableEq m] [Semiring α] (f : m ≃ m)
     (M : Matrix m n α) : f.toPEquiv.toMatrix * M = M.submatrix f id := by
   ext i j
-  rw [mul_matrix_apply, Equiv.toPEquiv_apply, submatrix_apply, id.def]
+  rw [mul_matrix_apply, Equiv.toPEquiv_apply, submatrix_apply, id]
 #align pequiv.to_pequiv_mul_matrix PEquiv.toPEquiv_mul_matrix
 
 theorem mul_toPEquiv_toMatrix {m n α : Type*} [Fintype n] [DecidableEq n] [Semiring α] (f : n ≃ n)

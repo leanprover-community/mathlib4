@@ -204,6 +204,26 @@ theorem Filter.TendstoNhdsWithinIio.mul_const [MulPosStrictMono 𝕜] [MulPosRef
 
 end tendsto_nhds
 
+@[to_additive]
+protected theorem Specializes.mul {a b c d : M} (hab : a ⤳ b) (hcd : c ⤳ d) : (a * c) ⤳ (b * d) :=
+  hab.smul hcd
+
+@[to_additive]
+protected theorem Inseparable.mul {a b c d : M} (hab : Inseparable a b) (hcd : Inseparable c d) :
+    Inseparable (a * c) (b * d) :=
+  hab.smul hcd
+
+@[to_additive]
+protected theorem Specializes.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : a ⤳ b) (n : ℕ) : (a ^ n) ⤳ (b ^ n) :=
+  Nat.recOn n (by simp only [pow_zero, specializes_rfl]) fun _ ihn ↦ by
+    simpa only [pow_succ] using ihn.mul h
+
+@[to_additive]
+protected theorem Inseparable.pow {M : Type*} [Monoid M] [TopologicalSpace M] [ContinuousMul M]
+    {a b : M} (h : Inseparable a b) (n : ℕ) : Inseparable (a ^ n) (b ^ n) :=
+  (h.specializes.pow n).antisymm (h.specializes'.pow n)
+
 /-- Construct a unit from limits of units and their inverses. -/
 @[to_additive (attr := simps)
   "Construct an additive unit from limits of additive units and their negatives."]

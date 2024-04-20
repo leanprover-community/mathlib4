@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Logic.Embedding.Set
 
 #align_import logic.equiv.fin from "leanprover-community/mathlib"@"bd835ef554f37ef9b804f0903089211f89cb370b"
 
@@ -313,6 +314,25 @@ def Equiv.piFinSucc (n : ℕ) (β : Type u) : (Fin (n + 1) → β) ≃ β × (Fi
 #align equiv.pi_fin_succ Equiv.piFinSucc
 #align equiv.pi_fin_succ_apply Equiv.piFinSucc_apply
 #align equiv.pi_fin_succ_symm_apply Equiv.piFinSucc_symm_apply
+
+/-- An embedding `e : Fin (n+1) ↪ ι` corresponds to an embedding `f : Fin n ↪ ι` (corresponding
+the last `n` coordinates of `e`) together with a value not taken by `f` (corresponding to `e 0`). -/
+def Equiv.embeddingFinSucc (n : ℕ) (ι : Type*) :
+    (Fin (n+1) ↪ ι) ≃ (Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :=
+  ((finSuccEquiv n).embeddingCongr (Equiv.refl ι)).trans
+    (Function.Embedding.optionEmbeddingEquiv (Fin n) ι)
+
+@[simp] lemma Equiv.embeddingFinSucc_fst {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+    ((Equiv.embeddingFinSucc n ι e).1 : Fin n → ι) = e ∘ Fin.succ := rfl
+
+@[simp] lemma Equiv.embeddingFinSucc_snd {n : ℕ} {ι : Type*} (e : Fin (n+1) ↪ ι) :
+    ((Equiv.embeddingFinSucc n ι e).2 : ι) = e 0 := rfl
+
+@[simp] lemma Equiv.coe_embeddingFinSucc_symm {n : ℕ} {ι : Type*}
+    (f : Σ (e : Fin n ↪ ι), {i // i ∉ Set.range e}) :
+    ((Equiv.embeddingFinSucc n ι).symm f : Fin (n + 1) → ι) = Fin.cons f.2.1 f.1 := by
+  ext i
+  exact Fin.cases rfl (fun j ↦ rfl) i
 
 /-- Equivalence between `Fin (n + 1) → β` and `β × (Fin n → β)` which separates out the last
 element of the tuple. -/
