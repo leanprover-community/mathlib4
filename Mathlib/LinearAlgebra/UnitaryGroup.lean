@@ -204,10 +204,12 @@ variable (n) (α : Type v) [CommRing α] [StarRing α] {A : Matrix n n α}
 
 /--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.)-/
-abbrev specialUnitaryGroup := (MonoidHom.restrict detMonoidHom (unitaryGroup n α)).ker
+abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 theorem mem_specialUnitaryGroup_iff  (h : A ∈ unitaryGroup n α):
-    ⟨A, h⟩ ∈ specialUnitaryGroup n α ↔ A.det = 1 := by rfl
+    A ∈ specialUnitaryGroup n α ↔ A.det = 1 := by
+  simp_all only [Submonoid.mem_inf, true_and]
+  exact MonoidHom.mem_mker detMonoidHom
 
 end specialUnitaryGroup
 
@@ -250,12 +252,9 @@ is one. (This definition is only correct if 2 is invertible.)-/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
 theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
-    ⟨A,h⟩ ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by rfl
-
-/-- Given an orthogonal Matrix with the determinant 1, we get an instance of
-`specialOrthogonalGroup n β` -/
-def specialOrthogonalGroup.mkOfDetEqOne (h1 : star A * A = 1) (h2 : A.det = 1) :
-    specialOrthogonalGroup n β := ⟨⟨A,(mem_orthogonalGroup_iff' n β).mpr h1⟩,h2⟩
+    A ∈ specialOrthogonalGroup n β ↔ A.det = 1 := by
+  simp_all only [Submonoid.mem_inf, true_and]
+  exact MonoidHom.mem_mker detMonoidHom
 
 end specialOrthogonalGroup
 
