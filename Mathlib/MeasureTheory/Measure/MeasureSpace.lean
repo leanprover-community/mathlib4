@@ -251,7 +251,7 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
   tsub_le_iff_left.2 <|
     calc
       μ s₁ ≤ μ (s₂ ∪ s₁) := measure_mono (subset_union_right _ _)
-      _ = μ (s₂ ∪ s₁ \ s₂) := (congr_arg μ union_diff_self.symm)
+      _ = μ (s₂ ∪ s₁ \ s₂) := congr_arg μ union_diff_self.symm
       _ ≤ μ s₂ + μ (s₁ \ s₂) := measure_union_le _ _
 
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
@@ -278,7 +278,7 @@ theorem measure_eq_measure_of_between_null_diff {s₁ s₂ s₃ : Set α} (h12 :
   have key : μ s₃ ≤ μ s₁ :=
     calc
       μ s₃ = μ (s₃ \ s₁ ∪ s₁) := by rw [diff_union_of_subset (h12.trans h23)]
-      _ ≤ μ (s₃ \ s₁) + μ s₁ := (measure_union_le _ _)
+      _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _
       _ = μ s₁ := by simp only [h_nulldiff, zero_add]
 
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
@@ -350,7 +350,7 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
     refine' fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) _ _ _
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
-        _ ≤ μ (s b) := (h_le b)
+        _ ≤ μ (s b) := h_le b
         _ ≤ μ (M (t b) ∩ M (⋃ b, s b)) :=
           measure_mono <|
             subset_inter ((hsub b).trans <| subset_toMeasurable _ _)
@@ -360,8 +360,8 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := (measure_congr (EventuallyEq.countable_iUnion H).symm)
-    _ ≤ μ (M (⋃ b, s b)) := (measure_mono (iUnion_subset fun b => inter_subset_right _ _))
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
+    _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right _ _)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 #align measure_theory.measure_Union_congr_of_subset MeasureTheory.measure_iUnion_congr_of_subset
 
@@ -483,16 +483,16 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
   calc
     μ (⋃ n, t n) ≤ μ (⋃ n, T n) := measure_mono (iUnion_mono fun i => subset_toMeasurable _ _)
     _ = μ (⋃ n, Td n) := by rw [iUnion_disjointed]
-    _ ≤ ∑' n, μ (Td n) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
     _ = ⨆ I : Finset ℕ, ∑ n in I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
         (∑ n in I, μ (Td n)) = μ (⋃ n ∈ I, Td n) :=
           (measure_biUnion_finset ((disjoint_disjointed T).set_pairwise I) fun n _ => hm n).symm
-        _ ≤ μ (⋃ n ∈ I, T n) := (measure_mono (iUnion₂_mono fun n _hn => disjointed_subset _ _))
-        _ = μ (⋃ n ∈ I, t n) := (measure_biUnion_toMeasurable I.countable_toSet _)
-        _ ≤ μ (t N) := (measure_mono (iUnion₂_subset hN))
+        _ ≤ μ (⋃ n ∈ I, T n) := measure_mono (iUnion₂_mono fun n _hn => disjointed_subset _ _)
+        _ = μ (⋃ n ∈ I, t n) := measure_biUnion_toMeasurable I.countable_toSet _
+        _ ≤ μ (t N) := measure_mono (iUnion₂_subset hN)
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
 #align measure_theory.measure_Union_eq_supr MeasureTheory.measure_iUnion_eq_iSup
 
@@ -691,7 +691,7 @@ theorem toMeasure_apply₀ (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s 
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, hts, htm, heq⟩
   calc
     m.toMeasure h s = m.toMeasure h t := measure_congr heq.symm
-    _ = m t := (toMeasure_apply m h htm)
+    _ = m t := toMeasure_apply m h htm
     _ ≤ m s := m.mono hts
 
 #align measure_theory.to_measure_apply₀ MeasureTheory.toMeasure_apply₀

@@ -343,7 +343,7 @@ theorem equivRealProdAddHom_symm_apply (p : ℝ × ℝ) :
 def equivRealProdLm : ℂ ≃ₗ[ℝ] ℝ × ℝ :=
   { equivRealProdAddHom with
     -- Porting note: `simp` has issues with `Prod.smul_def`
-    map_smul' := fun r c => by simp [equivRealProdAddHom, (Prod.smul_def), smul_eq_mul] }
+    map_smul' := fun r c => by simp [equivRealProdAddHom, Prod.smul_def, smul_eq_mul] }
 #align complex.equiv_real_prod_lm Complex.equivRealProdLm
 
 theorem equivRealProdLm_symm_apply (p : ℝ × ℝ) :

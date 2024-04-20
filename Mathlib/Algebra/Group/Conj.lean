@@ -244,7 +244,7 @@ the instance priority should be even lower, see Note [lower instance priority].
 
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  instDecidableEqQuotient
+  inferInstanceAs <| DecidableEq <| Quotient (IsConj.setoid α)
 
 end Monoid
 
@@ -265,7 +265,7 @@ def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id.def]⟩
+    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
 #align conj_classes.mk_equiv ConjClasses.mkEquiv
 
 end CommMonoid
