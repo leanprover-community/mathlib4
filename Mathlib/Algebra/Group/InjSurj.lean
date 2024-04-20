@@ -103,7 +103,7 @@ protected def rightCancelSemigroup [RightCancelSemigroup M₂] (f : M₁ → M�
 #align function.injective.right_cancel_semigroup Function.Injective.rightCancelSemigroup
 #align function.injective.add_right_cancel_semigroup Function.Injective.addRightCancelSemigroup
 
-variable [One M₁]
+variable [One M₁] [Pow M₁ ℕ]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits an injective map that
 preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -/
@@ -111,14 +111,17 @@ preserves `1` and `*` to a `MulOneClass`.  See note [reducible non-instances]. -
 "A type endowed with `0` and `+` is an `AddZeroClass`, if it admits an
 injective map that preserves `0` and `+` to an `AddZeroClass`."]
 protected def mulOneClass [MulOneClass M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₁ :=
+    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    MulOneClass M₁ :=
   { ‹One M₁›, ‹Mul M₁› with
     one_mul := fun x => hf <| by erw [mul, one, one_mul],
-    mul_one := fun x => hf <| by erw [mul, one, mul_one] }
+    mul_one := fun x => hf <| by erw [mul, one, mul_one]
+    npow := fun n x => x ^ n,
+    npow_zero := fun x => hf <| by erw [npow, one, pow_zero],
+    npow_succ := fun n x => hf <| by erw [npow, pow_succ, mul, npow]
+    }
 #align function.injective.mul_one_class Function.Injective.mulOneClass
 #align function.injective.add_zero_class Function.Injective.addZeroClass
-
-variable [Pow M₁ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits an injective map that preserves `1`
 and `*` to a monoid.  See note [reducible non-instances]. -/
@@ -128,10 +131,7 @@ injective map that preserves `0` and `+` to an additive monoid. See note
 [reducible non-instances]."]
 protected def monoid [Monoid M₂] (f : M₁ → M₂) (hf : Injective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₁ :=
-  { hf.mulOneClass f one mul, hf.semigroup f mul with
-    npow := fun n x => x ^ n,
-    npow_zero := fun x => hf <| by erw [npow, one, pow_zero],
-    npow_succ := fun n x => hf <| by erw [npow, pow_succ, mul, npow] }
+  { hf.mulOneClass f one mul npow, hf.semigroup f mul with }
 #align function.injective.monoid Function.Injective.monoid
 #align function.injective.add_monoid Function.Injective.addMonoid
 
