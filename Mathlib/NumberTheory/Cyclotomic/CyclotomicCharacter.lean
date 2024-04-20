@@ -104,7 +104,7 @@ local notation "χ₀" => ModularCyclotomicCharacter.toFun
 theorem toFun_spec (g : L ≃+* L) {n : ℕ+} (t : rootsOfUnity n L) :
     g (t : Lˣ) = (t ^ (χ₀ n g).val : Lˣ) := by
   rw [ModularCyclotomicCharacter_aux_spec g n t, ← zpow_natCast, ModularCyclotomicCharacter.toFun,
-    ZMod.val_int_cast, ← Subgroup.coe_zpow]
+    ZMod.val_intCast, ← Subgroup.coe_zpow]
   exact Units.ext_iff.1 <| SetCoe.ext_iff.2 <| zpow_eq_zpow_emod _ pow_card_eq_one
 
 theorem toFun_spec' (g : L ≃+* L) {n : ℕ+} {t : Lˣ} (ht : t ∈ rootsOfUnity n L) :
@@ -145,8 +145,8 @@ lemma comp (g h : L ≃+* L) : χ₀ n (g * h) =
     ← Subgroup.coe_pow]
   congr 2
   norm_cast
-  simp only [pow_eq_pow_iff_modEq, ← ZMod.nat_cast_eq_nat_cast_iff, SubmonoidClass.coe_pow,
-    ZMod.nat_cast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
+  simp only [pow_eq_pow_iff_modEq, ← ZMod.natCast_eq_natCast_iff, SubmonoidClass.coe_pow,
+    ZMod.natCast_val, Nat.cast_mul, ZMod.cast_mul (m := orderOf ζ) orderOf_dvd_card]
 
 end ModularCyclotomicCharacter
 
