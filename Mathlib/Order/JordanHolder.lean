@@ -227,10 +227,8 @@ theorem toList_injective : Function.Injective (@CompositionSeries.toList X _ _) 
     Nat.succ_injective
       ((List.length_ofFn s₁).symm.trans <| (congr_arg List.length h).trans <| List.length_ofFn s₂)
   apply ext_fun h₁
-  -- Porting note: `List.nthLe_ofFn` has been deprecated but `List.get_ofFn` has a
-  --               different type, so we do golf here.
-  exact congr_fun <|
-          List.ofFn_injective <| h.trans <| List.ofFn_congr (congr_arg Nat.succ h₁).symm _
+  exact congr_fun <| List.ofFn_injective <| h.trans <|
+    List.ofFn_congr (congr_arg Nat.succ h₁).symm _
 #align composition_series.to_list_injective CompositionSeries.toList_injective
 
 theorem chain'_toList (s : CompositionSeries X) : List.Chain' IsMaximal s.toList :=
@@ -262,11 +260,8 @@ theorem mem_toList {s : CompositionSeries X} {x : X} : x ∈ s.toList ↔ x ∈ 
 def ofList (l : List X) (hl : l ≠ []) (hc : List.Chain' IsMaximal l) : CompositionSeries X
     where
   length := l.length - 1
-  series i :=
-    l.nthLe i
-      (by
-        conv_rhs => rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt (List.length_pos_of_ne_nil hl))]
-        exact i.2)
+  series i := l.get <| i.cast <|
+    tsub_add_cancel_of_le (Nat.succ_le_of_lt (List.length_pos_of_ne_nil hl))
   step' := fun ⟨i, hi⟩ => List.chain'_iff_get.1 hc i hi
 #align composition_series.of_list CompositionSeries.ofList
 
@@ -280,8 +275,7 @@ theorem ofList_toList (s : CompositionSeries X) :
   refine' ext_fun _ _
   · rw [length_ofList, length_toList, Nat.add_one_sub_one]
   · rintro ⟨i, hi⟩
-    -- Porting note: Was `dsimp [ofList, toList]; rw [List.nthLe_ofFn']`.
-    simp [ofList, toList, -List.ofFn_succ]
+    simp [ofList, toList]
 #align composition_series.of_list_to_list CompositionSeries.ofList_toList
 
 @[simp]
