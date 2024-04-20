@@ -256,6 +256,11 @@ theorem mem_specialOrthogonalGroup_iff  (h : A ∈ orthogonalGroup n β):
   simp_all only [Submonoid.mem_inf, true_and]
   exact MonoidHom.mem_mker detMonoidHom
 
+/-- Given an orthogonal Matrix with the determinant 1, we get an instance of
+`specialOrthogonalGroup n β` -/
+def specialOrthogonalGroup.mkOfDetEqOne (h1 : star A * A = 1) (h2 : A.det = 1) :
+    specialOrthogonalGroup n β := ⟨A, (mem_orthogonalGroup_iff' n β).mpr h1, h2⟩
+
 end specialOrthogonalGroup
 
 end Matrix
