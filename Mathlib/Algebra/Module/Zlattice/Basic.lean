@@ -391,7 +391,7 @@ theorem fundamentalDomain_ae_parallelepiped [Fintype ι] [MeasurableSpace E] (μ
   rw [← b.sum_repr x, ← Finset.sum_erase_add _ _ (Finset.mem_univ i), this, one_smul, ← vadd_eq_add]
   refine Set.mem_iUnion.mpr ⟨i, AffineSubspace.vadd_mem_mk' _
     (sum_smul_mem _ _ (fun i hi ↦ Submodule.subset_span ?_))⟩
-  exact ⟨i, ⟨Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩⟩
+  exact ⟨i, Set.mem_diff_singleton.mpr ⟨trivial, Finset.ne_of_mem_erase hi⟩, rfl⟩
 
 end Real
 
@@ -486,7 +486,7 @@ theorem Zlattice.module_free [IsZlattice K L] : Module.Free ℤ L := by
     exact noZeroSMulDivisors _
   infer_instance
 
-instance instModuleFree__of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
+instance instModuleFree_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E]
     [NormedSpace ℝ E] [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] :
     Module.Free ℤ L := by
   have : Module ℚ E := Module.compHom E (algebraMap ℚ ℝ)
@@ -568,7 +568,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     obtain ⟨n, -, m, -, h_neq, h_eq⟩ := Set.Infinite.exists_ne_map_eq_of_mapsTo
       Set.infinite_univ h_mapsto h_finite
     have h_nz : (-n + m : ℚ) ≠ 0 := by
-      rwa [Ne.def, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne.def]
+      rwa [Ne, add_eq_zero_iff_eq_neg.not, neg_inj, Rat.coe_int_inj, ← Ne]
     apply (smul_mem_iff _ h_nz).mp
     refine span_subset_span ℤ ℚ _ ?_
     rwa [add_smul, neg_smul, SetLike.mem_coe, ← Zspan.fract_eq_fract, ← zsmul_eq_smul_cast ℚ,
@@ -617,5 +617,19 @@ theorem Basis.ofZlatticeBasis_span :
     _ = (map L.subtype.toIntLinearMap (span ℤ (Set.range b))).toAddSubgroup := by
         rw [Submodule.map_span]
     _ = L := by simp [b.span_eq]
+
+theorem Zlattice.isAddFundamentalDomain {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] {L : AddSubgroup E} [DiscreteTopology L] [IsZlattice ℝ L] [Finite ι]
+    (b : Basis ι ℤ L) [MeasurableSpace E] [OpensMeasurableSpace E] (μ : MeasureTheory.Measure E) :
+    MeasureTheory.IsAddFundamentalDomain L (Zspan.fundamentalDomain (b.ofZlatticeBasis ℝ)) μ := by
+  convert Zspan.isAddFundamentalDomain (b.ofZlatticeBasis ℝ) μ
+  all_goals exact (b.ofZlatticeBasis_span ℝ).symm
+
+instance instCountable_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [FiniteDimensional ℝ E] (L : AddSubgroup E) [DiscreteTopology L] [IsZlattice ℝ L] :
+    Countable L := by
+  rw [← (Module.Free.chooseBasis ℤ L).ofZlatticeBasis_span ℝ]
+  change Countable (span ℤ (Set.range (Basis.ofZlatticeBasis ℝ L _)))
+  infer_instance
 
 end Zlattice
