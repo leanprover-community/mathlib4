@@ -314,6 +314,11 @@ def llcomp : (Nₗ →ₗ[R] Pₗ) →ₗ[R] (M →ₗ[R] Nₗ) →ₗ[R] M →�
       map_smul' := fun (_c : R) _f => ext₂ fun g _x => g.map_smul _ _ }
 #align linear_map.llcomp LinearMap.llcomp
 
+/-- Linearly composing linear map on the right hand-side: given `L : M → N` and another module `P`,
+then `L ∘ _` is a linear-map from `Hom(N, P)` to `Hom(M, P)` -/
+def lrcomp : (M →ₗ[R] Nₗ) →ₗ[R] (Nₗ →ₗ[R] Pₗ) →ₗ[R] M →ₗ[R] Pₗ :=
+  llcomp _ _ _ _ |>.flip
+
 variable {R M Nₗ Pₗ}
 
 section
@@ -325,6 +330,11 @@ theorem llcomp_apply (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) (x : M) :
 
 theorem llcomp_apply' (f : Nₗ →ₗ[R] Pₗ) (g : M →ₗ[R] Nₗ) : llcomp R M Nₗ Pₗ f g = f ∘ₗ g := rfl
 #align linear_map.llcomp_apply' LinearMap.llcomp_apply'
+
+lemma lrcomp_apply (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) (x : M) :
+    lrcomp R M Nₗ Pₗ f g x = g (f x) := rfl
+
+lemma lrcomp_apply' (f : M →ₗ[R] Nₗ) (g : Nₗ →ₗ[R] Pₗ) : lrcomp R M Nₗ Pₗ f g = g ∘ₗ f := rfl
 
 end
 

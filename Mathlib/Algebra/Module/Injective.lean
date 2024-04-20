@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Preadditive.Injective
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.LinearAlgebra.LinearPMap
+import Mathlib.LinearAlgebra.BilinearMap
 import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import algebra.module.injective from "leanprover-community/mathlib"@"f8d8465c3c392a93b9ed226956e26dee00975946"
