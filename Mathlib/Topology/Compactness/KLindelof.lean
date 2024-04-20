@@ -700,11 +700,11 @@ instance [hreg : Fact κ.IsRegular] [KLindelofSpace κ X] [KLindelofSpace κ Y] 
       exact IsKLindelof.union hreg.out (isKLindelof_range continuous_inl)
         (isKLindelof_range continuous_inr)
 
-instance [hreg : Fact κ.IsRegular] {X : ι → Type u} (hι : #ι < κ) [∀ i, TopologicalSpace (X i)]
-    [∀ i, KLindelofSpace κ (X i)] : KLindelofSpace κ (Σi, X i) where
+instance [hreg : Fact κ.IsRegular] [hι : Fact (#ι < κ)] {X : ι → Type u}
+    [∀ i, TopologicalSpace (X i)] [∀ i, KLindelofSpace κ (X i)] : KLindelofSpace κ (Σi, X i) where
   isKLindelof_univ := by
     rw [Sigma.univ]
-    exact isKLindelof_iUnion hreg.out hι fun i => isKLindelof_range continuous_sigmaMk
+    exact isKLindelof_iUnion hreg.out hι.out fun i => isKLindelof_range continuous_sigmaMk
 
 instance Quot.KLindelofSpace {r : X → X → Prop} [KLindelofSpace κ X] :
     KLindelofSpace κ (Quot r) where
