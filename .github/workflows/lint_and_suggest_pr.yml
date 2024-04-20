@@ -27,6 +27,7 @@ jobs:
           ./scripts/lint-style.sh --fix
 
       - name: suggester / lint-style
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-style
@@ -42,6 +43,7 @@ jobs:
           ./scripts/lint-bib.sh
 
       - name: suggester / lint-bib
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-bib
@@ -78,6 +80,7 @@ jobs:
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: suggester / import list
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: imports
