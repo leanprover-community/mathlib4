@@ -48,7 +48,6 @@ universe v v₂ u u₂
 open CategoryTheory CategoryTheory.Limits
 
 variable {V : Type u} [Category.{v} V]
-
 variable [HasImages V]
 
 namespace CategoryTheory
@@ -70,7 +69,7 @@ structure Exact [HasZeroMorphisms V] [HasKernels V] {A B C : V} (f : A ⟶ B) (g
   epi : Epi (imageToKernel f g w)
 #align category_theory.exact CategoryTheory.Exact
 
--- porting note: it seems it no longer works in Lean4, so that some `haveI` have been added below
+-- Porting note: it seems it no longer works in Lean4, so that some `haveI` have been added below
 -- This works as an instance even though `Exact` itself is not a class, as long as the goal is
 -- literally of the form `Epi (imageToKernel f g h.w)` (where `h : Exact f g`). If the proof of
 -- `f ≫ g = 0` looks different, we are out of luck and have to add the instance by hand.
@@ -102,7 +101,7 @@ theorem Preadditive.exact_of_iso_of_exact {A₁ B₁ C₁ A₂ B₂ C₂ : V} (f
     (p : α.hom.right = β.hom.left) (h : Exact f₁ g₁) : Exact f₂ g₂ := by
   rw [Preadditive.exact_iff_homology'_zero] at h ⊢
   rcases h with ⟨w₁, ⟨i⟩⟩
-  suffices w₂ : f₂ ≫ g₂ = 0; exact ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
+  suffices w₂ : f₂ ≫ g₂ = 0 from ⟨w₂, ⟨(homology'.mapIso w₁ w₂ α β p).symm.trans i⟩⟩
   rw [← cancel_epi α.hom.left, ← cancel_mono β.inv.right, comp_zero, zero_comp, ← w₁]
   have eq₁ := β.inv.w
   have eq₂ := α.hom.w
@@ -224,7 +223,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
   refine' ⟨by simp, _⟩
-  refine' @IsIso.epi_of_iso _ _ _ _ _ ?_
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
 
@@ -239,7 +238,7 @@ instance Exact.epi_factorThruKernelSubobject (h : Exact f g) :
   haveI := h.epi
   apply epi_comp
 
--- porting note: this can no longer be an instance in Lean4
+-- Porting note: this can no longer be an instance in Lean4
 lemma Exact.epi_kernel_lift (h : Exact f g) : Epi (kernel.lift g f h.w) := by
   rw [← factorThruKernelSubobject_comp_kernelSubobjectIso]
   haveI := h.epi_factorThruKernelSubobject
@@ -353,7 +352,6 @@ end
 namespace Functor
 
 variable [HasZeroMorphisms V] [HasKernels V] {W : Type u₂} [Category.{v₂} W]
-
 variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an

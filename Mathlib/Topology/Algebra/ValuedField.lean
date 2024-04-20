@@ -97,8 +97,8 @@ instance (priority := 100) Valued.topologicalDivisionRing [Valued K Γ₀] :
 #align valued.topological_division_ring Valued.topologicalDivisionRing
 
 /-- A valued division ring is separated. -/
-instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : SeparatedSpace K := by
-  rw [separated_iff_t2]
+instance (priority := 100) ValuedRing.separated [Valued K Γ₀] : T0Space K := by
+  suffices T2Space K by infer_instance
   apply TopologicalAddGroup.t2Space_of_zero_sep
   intro x x_ne
   refine' ⟨{ k | v k < v x }, _, fun h => lt_irrefl _ h⟩
@@ -268,7 +268,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
-      _ = v (a * z₀⁻¹) * v z₀ := (Valuation.map_mul _ _ _)
+      _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
       _ = v z₀ := by rw [this, one_mul]
 #align valued.continuous_extension Valued.continuous_extension
 
@@ -335,12 +335,10 @@ theorem closure_coe_completion_v_lt {γ : Γ₀ˣ} :
   rw [mem_closure_iff_nhds']
   refine' ⟨fun hx => _, fun hx s hs => _⟩
   · obtain ⟨⟨-, y, hy₁ : v y < (γ : Γ₀), rfl⟩, hy₂⟩ := hx _ hγ₀
-    replace hy₂ : v y = γ₀
-    · simpa using hy₂
+    replace hy₂ : v y = γ₀ := by simpa using hy₂
     rwa [← hy₂]
   · obtain ⟨y, hy₁, hy₂⟩ := Completion.denseRange_coe.mem_nhds (inter_mem hγ₀ hs)
-    replace hy₁ : v y = γ₀
-    · simpa using hy₁
+    replace hy₁ : v y = γ₀ := by simpa using hy₁
     rw [← hy₁] at hx
     exact ⟨⟨y, ⟨y, hx, rfl⟩⟩, hy₂⟩
 #align valued.closure_coe_completion_v_lt Valued.closure_coe_completion_v_lt

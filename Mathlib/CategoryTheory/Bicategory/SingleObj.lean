@@ -68,8 +68,6 @@ protected def star : MonoidalSingleObj C :=
   PUnit.unit
 #align category_theory.monoidal_single_obj.star CategoryTheory.MonoidalSingleObj.star
 
-attribute [local simp] id_tensorHom tensorHom_id in
-
 /-- The monoidal functor from the endomorphisms of the single object
 when we promote a monoidal category to a single object bicategory,
 to the original monoidal category.
@@ -89,7 +87,7 @@ when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
 noncomputable def endMonoidalStarFunctorIsEquivalence :
-    IsEquivalence (endMonoidalStarFunctor C).toFunctor where
+    (endMonoidalStarFunctor C).IsEquivalence where
   inverse :=
     { obj := fun X => X
       map := fun f => f }

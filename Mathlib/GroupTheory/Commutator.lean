@@ -6,6 +6,7 @@ Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 import Mathlib.Algebra.Group.Commutator
 import Mathlib.Data.Bracket
 import Mathlib.GroupTheory.Subgroup.Finite
+import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.Tactic.Group
 
 #align_import group_theory.commutator from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
@@ -131,8 +132,8 @@ section Normal
 instance commutator_normal [h₁ : H₁.Normal] [h₂ : H₂.Normal] : Normal ⁅H₁, H₂⁆ := by
   let base : Set G := { x | ∃ g₁ ∈ H₁, ∃ g₂ ∈ H₂, ⁅g₁, g₂⁆ = x }
   change (closure base).Normal
-  suffices h_base : base = Group.conjugatesOfSet base
-  · rw [h_base]
+  suffices h_base : base = Group.conjugatesOfSet base by
+    rw [h_base]
     exact Subgroup.normalClosure_normal
   refine' Set.Subset.antisymm Group.subset_conjugatesOfSet fun a h => _
   simp_rw [Group.mem_conjugatesOfSet_iff, isConj_iff] at h

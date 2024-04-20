@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
 -/
 import Mathlib.Analysis.Complex.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
 import Mathlib.Data.Complex.Determinant
 
 #align_import analysis.complex.operator_norm from "leanprover-community/mathlib"@"468b141b14016d54b479eb7a0fff1e360b7e3cf6"
@@ -16,7 +16,6 @@ The continuous linear maps `Complex.reCLM` (real part), `Complex.imCLM` (imagina
 `Analysis.Complex.Basic`. This file contains a few calculations requiring more imports:
 the operator norm and (for `Complex.conjCLE`) the determinant.
 -/
-
 
 open ContinuousLinearMap
 

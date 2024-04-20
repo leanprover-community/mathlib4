@@ -51,7 +51,7 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- porting note: @[nolint has_nonempty_instance] is not here yet
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -223,8 +223,8 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_nonempty_partialOrder this with ⟨v, hv⟩
-  suffices : ∀ i, i ∈ v.carrier
-  exact ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
+  suffices ∀ i, i ∈ v.carrier from
+    ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
   contrapose! hv
   rcases hv with ⟨i, hi⟩
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩

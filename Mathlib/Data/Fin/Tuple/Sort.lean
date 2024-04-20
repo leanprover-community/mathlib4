@@ -31,7 +31,6 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 namespace Tuple
 
 variable {n : ℕ}
-
 variable {α : Type*} [LinearOrder α]
 
 /-- `graph f` produces the finset of pairs `(f i, i)`
@@ -52,7 +51,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note: was `simp`
+    -- porting note (#10745): was `simp`
     dsimp only
     rw [Prod.ext_iff]
     simp
@@ -121,8 +120,8 @@ variable {n : ℕ} {α : Type*}
 theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
     {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
     j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
-  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a
-  · refine ⟨h1 j, fun h ↦ ?_⟩
+  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
+    refine ⟨h1 j, fun h ↦ ?_⟩
     by_contra! hc
     let p : Fin m → Prop := fun x ↦ f x ≤ a
     let q : Fin m → Prop := fun x ↦ x < Fintype.card {i // f i ≤ a}
@@ -186,7 +185,7 @@ theorem eq_sort_iff :
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
   rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
-  simp only [id.def, and_iff_left_iff_imp]
+  simp only [id, and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 #align tuple.sort_eq_refl_iff_monotone Tuple.sort_eq_refl_iff_monotone
 

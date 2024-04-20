@@ -74,7 +74,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     set τ : Perm ι := σ.trans (swap a (σ a)) with hτ
     have hτs : { x | τ x ≠ x } ⊆ s := by
       intro x hx
-      simp only [Ne.def, Set.mem_setOf_eq, Equiv.coe_trans, Equiv.swap_comp_apply] at hx
+      simp only [τ, Ne, Set.mem_setOf_eq, Equiv.coe_trans, Equiv.swap_comp_apply] at hx
       split_ifs at hx with h₁ h₂
       · obtain rfl | hax := eq_or_ne x a
         · contradiction
@@ -87,7 +87,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
     obtain hσa | hσa := eq_or_ne a (σ a)
     · rw [hτ, ← hσa, swap_self, trans_refl]
     have h1s : σ⁻¹ a ∈ s := by
-      rw [Ne.def, ← inv_eq_iff_eq] at hσa
+      rw [Ne, ← inv_eq_iff_eq] at hσa
       refine' mem_of_mem_insert_of_ne (hσ fun h ↦ hσa _) hσa
       rwa [apply_inv_self, eq_comm] at h
     simp only [← s.sum_erase_add _ h1s, add_comm]
@@ -104,7 +104,7 @@ theorem MonovaryOn.sum_smul_comp_perm_le_sum_smul (hfg : MonovaryOn f g s)
       cases' hamax with hamax hamax
       · exact hamax.le
       · exact hamax.1.le
-    · rw [mem_erase, Ne.def, eq_inv_iff_eq] at hx
+    · rw [mem_erase, Ne, eq_inv_iff_eq] at hx
       rw [swap_apply_of_ne_of_ne hx.1 (σ.injective.ne _)]
       rintro rfl
       exact has hx.2
@@ -128,7 +128,8 @@ theorem MonovaryOn.sum_smul_comp_perm_eq_sum_smul_iff (hfg : MonovaryOn f g s)
       refine' ((hfg.sum_smul_comp_perm_le_sum_smul hτs).trans_lt' _).ne
       obtain rfl | hxy := eq_or_ne x y
       · cases lt_irrefl _ hfxy
-      simp only [← s.sum_erase_add _ hx, ← (s.erase x).sum_erase_add _ (mem_erase.2 ⟨hxy.symm, hy⟩),
+      simp only [τ, ← s.sum_erase_add _ hx,
+        ← (s.erase x).sum_erase_add _ (mem_erase.2 ⟨hxy.symm, hy⟩),
         add_assoc, Equiv.coe_trans, Function.comp_apply, swap_apply_right, swap_apply_left]
       refine' add_lt_add_of_le_of_lt (Finset.sum_congr rfl fun z hz ↦ _).le
         (smul_add_smul_lt_smul_add_smul hfxy hgxy)

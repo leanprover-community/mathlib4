@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Data.Set.Intervals.OrderEmbedding
-import Mathlib.Data.Set.Lattice
 import Mathlib.Order.Antichain
+import Mathlib.Order.SetNotation
 
 #align_import data.set.intervals.ord_connected from "leanprover-community/mathlib"@"76de8ae01554c3b37d66544866659ff174e66e1f"
 
@@ -154,12 +154,12 @@ theorem ordConnected_dual {s : Set α} : OrdConnected (OrderDual.ofDual ⁻¹' s
 
 theorem ordConnected_sInter {S : Set (Set α)} (hS : ∀ s ∈ S, OrdConnected s) :
     OrdConnected (⋂₀ S) :=
-  ⟨fun _ hx _ hy => subset_sInter fun s hs => (hS s hs).out (hx s hs) (hy s hs)⟩
+  ⟨fun _x hx _y hy _z hz s hs => (hS s hs).out (hx s hs) (hy s hs) hz⟩
 #align set.ord_connected_sInter Set.ordConnected_sInter
 
 theorem ordConnected_iInter {ι : Sort*} {s : ι → Set α} (hs : ∀ i, OrdConnected (s i)) :
     OrdConnected (⋂ i, s i) :=
-  ordConnected_sInter <| forall_range_iff.2 hs
+  ordConnected_sInter <| forall_mem_range.2 hs
 #align set.ord_connected_Inter Set.ordConnected_iInter
 
 instance ordConnected_iInter' {ι : Sort*} {s : ι → Set α} [∀ i, OrdConnected (s i)] :
@@ -260,7 +260,7 @@ theorem ordConnected_image {E : Type*} [EquivLike E α β] [OrderIsoClass E α �
   apply ordConnected_preimage (e : α ≃o β).symm
 #align set.ord_connected_image Set.ordConnected_image
 
--- porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
+-- Porting note: split up `simp_rw [← image_univ, OrdConnected_image e]`, would not work otherwise
 @[instance]
 theorem ordConnected_range {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
     OrdConnected (range e) := by
@@ -283,7 +283,7 @@ end Preorder
 
 section PartialOrder
 
-variable {α : Type*} [PartialOrder α] {s : Set α}
+variable {α : Type*} [PartialOrder α] {s : Set α} {x y : α}
 
 protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) s) : s.OrdConnected :=
   ⟨fun x hx y hy z hz => by
@@ -291,6 +291,20 @@ protected theorem _root_.IsAntichain.ordConnected (hs : IsAntichain (· ≤ ·) 
     rw [Icc_self, mem_singleton_iff] at hz
     rwa [hz]⟩
 #align is_antichain.ord_connected IsAntichain.ordConnected
+
+lemma ordConnected_inter_Icc_of_subset (h : Ioo x y ⊆ s) : OrdConnected (s ∩ Icc x y) :=
+  ordConnected_of_Ioo fun _u ⟨_, hu, _⟩ _v ⟨_, _, hv⟩ _ ↦
+    Ioo_subset_Ioo hu hv |>.trans <| subset_inter h Ioo_subset_Icc_self
+
+lemma ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
+    OrdConnected (s ∩ Icc x y) ↔ Ioo x y ⊆ s := by
+  refine ⟨fun h ↦ Ioo_subset_Icc_self.trans fun z hz ↦ ?_, ordConnected_inter_Icc_of_subset⟩
+  have hxy : x ≤ y := hz.1.trans hz.2
+  exact h.out ⟨hx, left_mem_Icc.2 hxy⟩ ⟨hy, right_mem_Icc.2 hxy⟩ hz |>.1
+
+lemma not_ordConnected_inter_Icc_iff (hx : x ∈ s) (hy : y ∈ s) :
+    ¬ OrdConnected (s ∩ Icc x y) ↔ ∃ z ∉ s, z ∈ Ioo x y := by
+  simp_rw [ordConnected_inter_Icc_iff hx hy, subset_def, not_forall, exists_prop, and_comm]
 
 end PartialOrder
 

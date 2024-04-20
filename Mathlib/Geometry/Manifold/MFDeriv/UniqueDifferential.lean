@@ -55,7 +55,7 @@ theorem UniqueMDiffOn.image_denseRange' (hs : UniqueMDiffOn I s) {f : M → M'}
     {f' : M → E →L[𝕜] E'} (hf : ∀ x ∈ s, HasMFDerivWithinAt I I' f s x (f' x))
     (hd : ∀ x ∈ s, DenseRange (f' x)) :
     UniqueMDiffOn I' (f '' s) :=
-  ball_image_iff.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
+  forall_mem_image.2 fun x hx ↦ (hs x hx).image_denseRange (hf x hx) (hd x hx)
 
 /-- If `s` has the unique differential property, `f` is differentiable on `s` and its derivative
 at every point of `s` has dense range, then `f '' s` has the unique differential property. -/
@@ -122,8 +122,8 @@ theorem UniqueMDiffWithinAt.smooth_bundle_preimage {p : TotalSpace F Z}
     UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (π F Z ⁻¹' s) p := by
   set e := trivializationAt F Z p.proj
   have hp : p ∈ e.source := FiberBundle.mem_trivializationAt_proj_source
-  have : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (s ×ˢ univ) (e p)
-  · rw [← Prod.mk.eta (p := e p), FiberBundle.trivializationAt_proj_fst]
+  have : UniqueMDiffWithinAt (I.prod 𝓘(𝕜, F)) (s ×ˢ univ) (e p) := by
+    rw [← Prod.mk.eta (p := e p), FiberBundle.trivializationAt_proj_fst]
     exact hs.prod (uniqueMDiffWithinAt_univ _)
   rw [← e.left_inv hp]
   refine (this.preimage_partialHomeomorph e.mdifferentiable.symm (e.map_source hp)).mono ?_

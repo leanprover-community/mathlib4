@@ -35,7 +35,7 @@ set_option linter.uppercaseLean3 false -- `Module`
 variable {R : Type u} [Ring R] (M : ModuleCat.{v} R)
 
 /-- The categorical subobjects of a module `M` are in one-to-one correspondence with its
-    submodules.-/
+    submodules. -/
 noncomputable def subobjectModule : Subobject M ≃o Submodule R M :=
   OrderIso.symm
     { invFun := fun S => LinearMap.range S.arrow
@@ -102,7 +102,8 @@ are equal if they differ by an element of the image.
 The application is for homology:
 two elements in homology are equal if they differ by a boundary.
 -/
--- Porting note: TODO compiler complains that this is marked with `@[ext]`. Should this be changed?
+-- Porting note (#11215): TODO compiler complains that this is marked with `@[ext]`.
+-- Should this be changed?
 -- @[ext] this is no longer an ext lemma under the current interpretation see eg
 -- the conversation beginning at
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/

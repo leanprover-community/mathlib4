@@ -20,7 +20,8 @@ the scalar restriction of a linear map.
 
 open Filter Asymptotics ContinuousLinearMap Set Metric
 
-open Topology Classical NNReal Filter Asymptotics ENNReal
+open scoped Classical
+open Topology NNReal Filter Asymptotics ENNReal
 
 noncomputable section
 
@@ -36,19 +37,14 @@ respectively by `𝕜'` and `𝕜` where `𝕜'` is a normed algebra over `𝕜`
 
 
 variable (𝕜 : Type*) [NontriviallyNormedField 𝕜]
-
 variable {𝕜' : Type*} [NontriviallyNormedField 𝕜'] [NormedAlgebra 𝕜 𝕜']
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E] [NormedSpace 𝕜' E]
-
 variable [IsScalarTower 𝕜 𝕜' E]
-
 variable {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F] [NormedSpace 𝕜' F]
-
 variable [IsScalarTower 𝕜 𝕜' F]
-
 variable {f : E → F} {f' : E →L[𝕜'] F} {s : Set E} {x : E}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.restrictScalars (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt f (f'.restrictScalars 𝕜) x :=
   h
@@ -59,39 +55,47 @@ theorem HasFDerivAtFilter.restrictScalars {L} (h : HasFDerivAtFilter f f' x L) :
   .of_isLittleO h.1
 #align has_fderiv_at_filter.restrict_scalars HasFDerivAtFilter.restrictScalars
 
+@[fun_prop]
 theorem HasFDerivAt.restrictScalars (h : HasFDerivAt f f' x) :
     HasFDerivAt f (f'.restrictScalars 𝕜) x :=
   .of_isLittleO h.1
 #align has_fderiv_at.restrict_scalars HasFDerivAt.restrictScalars
 
+@[fun_prop]
 theorem HasFDerivWithinAt.restrictScalars (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt f (f'.restrictScalars 𝕜) s x :=
   .of_isLittleO h.1
 #align has_fderiv_within_at.restrict_scalars HasFDerivWithinAt.restrictScalars
 
+@[fun_prop]
 theorem DifferentiableAt.restrictScalars (h : DifferentiableAt 𝕜' f x) : DifferentiableAt 𝕜 f x :=
   (h.hasFDerivAt.restrictScalars 𝕜).differentiableAt
 #align differentiable_at.restrict_scalars DifferentiableAt.restrictScalars
 
+@[fun_prop]
 theorem DifferentiableWithinAt.restrictScalars (h : DifferentiableWithinAt 𝕜' f s x) :
     DifferentiableWithinAt 𝕜 f s x :=
   (h.hasFDerivWithinAt.restrictScalars 𝕜).differentiableWithinAt
 #align differentiable_within_at.restrict_scalars DifferentiableWithinAt.restrictScalars
 
+@[fun_prop]
 theorem DifferentiableOn.restrictScalars (h : DifferentiableOn 𝕜' f s) : DifferentiableOn 𝕜 f s :=
   fun x hx => (h x hx).restrictScalars 𝕜
 #align differentiable_on.restrict_scalars DifferentiableOn.restrictScalars
 
+@[fun_prop]
 theorem Differentiable.restrictScalars (h : Differentiable 𝕜' f) : Differentiable 𝕜 f := fun x =>
   (h x).restrictScalars 𝕜
 #align differentiable.restrict_scalars Differentiable.restrictScalars
 
+@[fun_prop]
 theorem HasFDerivWithinAt.of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivWithinAt f g' s x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivWithinAt f f' s x := by
   rw [← H] at h
   exact .of_isLittleO h.1
 #align has_fderiv_within_at_of_restrict_scalars HasFDerivWithinAt.of_restrictScalars
 
+@[fun_prop]
 theorem hasFDerivAt_of_restrictScalars {g' : E →L[𝕜] F} (h : HasFDerivAt f g' x)
     (H : f'.restrictScalars 𝕜 = g') : HasFDerivAt f f' x := by
   rw [← H] at h

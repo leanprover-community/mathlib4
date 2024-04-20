@@ -60,7 +60,7 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
   h (Subsingleton.elim _ _)
 #align not_is_field_of_subsingleton not_isField_of_subsingleton
 
-open Classical
+open scoped Classical
 
 /-- Transferring from `IsField` to `Semifield`. -/
 noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R :=
@@ -74,7 +74,7 @@ noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) 
 
 /-- Transferring from `IsField` to `Field`. -/
 noncomputable def IsField.toField {R : Type u} [Ring R] (h : IsField R) : Field R :=
-  { ‹Ring R›, IsField.toSemifield h with }
+  { ‹Ring R›, IsField.toSemifield h with qsmul := qsmulRec _ }
 #align is_field.to_field IsField.toField
 
 /-- For each field, and for each nonzero element of said field, there is a unique inverse.

@@ -18,7 +18,7 @@ There are no non-zero integers `a`, `b` and `c` such that `a ^ 4 + b ^ 4 = c ^ 4
 
 noncomputable section
 
-open Classical
+open scoped Classical
 
 /-- Shorthand for three non-zero integers `a`, `b`, and `c` satisfying `a ^ 4 + b ^ 4 = c ^ 2`.
 We will show that no integers satisfy this equation. Clearly Fermat's Last theorem for n = 4
@@ -90,18 +90,18 @@ theorem coprime_of_minimal {a b c : ℤ} (h : Minimal a b c) : IsCoprime a b := 
   apply Int.gcd_eq_one_iff_coprime.mp
   by_contra hab
   obtain ⟨p, hp, hpa, hpb⟩ := Nat.Prime.not_coprime_iff_dvd.mp hab
-  obtain ⟨a1, rfl⟩ := Int.coe_nat_dvd_left.mpr hpa
-  obtain ⟨b1, rfl⟩ := Int.coe_nat_dvd_left.mpr hpb
+  obtain ⟨a1, rfl⟩ := Int.natCast_dvd.mpr hpa
+  obtain ⟨b1, rfl⟩ := Int.natCast_dvd.mpr hpb
   have hpc : (p : ℤ) ^ 2 ∣ c := by
-    rw [← Int.pow_dvd_pow_iff zero_lt_two, ← h.1.2.2]
+    rw [← Int.pow_dvd_pow_iff two_ne_zero, ← h.1.2.2]
     apply Dvd.intro (a1 ^ 4 + b1 ^ 4)
     ring
   obtain ⟨c1, rfl⟩ := hpc
   have hf : Fermat42 a1 b1 c1 :=
-    (Fermat42.mul (Int.coe_nat_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
+    (Fermat42.mul (Int.natCast_ne_zero.mpr (Nat.Prime.ne_zero hp))).mpr h.1
   apply Nat.le_lt_asymm (h.2 _ _ _ hf)
   rw [Int.natAbs_mul, lt_mul_iff_one_lt_left, Int.natAbs_pow, Int.natAbs_ofNat]
-  · exact Nat.one_lt_pow _ _ two_ne_zero (Nat.Prime.one_lt hp)
+  · exact Nat.one_lt_pow two_ne_zero (Nat.Prime.one_lt hp)
   · exact Nat.pos_of_ne_zero (Int.natAbs_ne_zero.2 (ne_zero hf))
 #align fermat_42.coprime_of_minimal Fermat42.coprime_of_minimal
 
@@ -234,12 +234,10 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
   -- use m is positive to exclude m = - i ^ 2
   have hi' : ¬m = -i ^ 2 := by
     by_contra h1
-    have hit : -i ^ 2 ≤ 0
-    apply neg_nonpos.mpr (sq_nonneg i)
+    have hit : -i ^ 2 ≤ 0 := neg_nonpos.mpr (sq_nonneg i)
     rw [← h1] at hit
     apply absurd h4 (not_lt.mpr hit)
-  replace hi : m = i ^ 2
-  · apply Or.resolve_right hi hi'
+  replace hi : m = i ^ 2 := Or.resolve_right hi hi'
   rw [mul_comm] at hs
   rw [Int.gcd_comm] at hcp
   -- obtain d such that r * s = d ^ 2
@@ -253,8 +251,7 @@ theorem not_minimal {a b c : ℤ} (h : Minimal a b c) (ha2 : a % 2 = 1) (hc : 0 
       exact neg_nonpos.mpr ((mul_nonneg_iff_of_pos_right h4).mpr (sq_nonneg d))
     have h2' : 0 ≤ b' ^ 2 := by apply sq_nonneg b'
     exact absurd (lt_of_le_of_ne h2' (Ne.symm (pow_ne_zero _ h2b0))) (not_lt.mpr h2)
-  replace hd : r * s = d ^ 2
-  · apply Or.resolve_right hd hd'
+  replace hd : r * s = d ^ 2 := Or.resolve_right hd hd'
   -- r = +/- j ^ 2
   obtain ⟨j, hj⟩ := Int.sq_of_gcd_eq_one htt4 hd
   have hj0 : j ≠ 0 := by

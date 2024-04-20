@@ -3,7 +3,7 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
 
 #align_import category_theory.monoidal.CommMon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
@@ -60,14 +60,15 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 set_option linter.uppercaseLean3 false in
 #align CommMon_.comp_hom CommMon_.comp_hom
 
--- porting note: added because `Mon_.Hom.ext` is not triggered automatically
+-- Porting note: added because `Mon_.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext _ _ h
 
--- porting note: the following two lemmas `id'` and `comp'` have been added to ease automation;
+-- Porting note (#10688): the following two lemmas `id'` and `comp'`
+-- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
@@ -86,8 +87,8 @@ set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_ CommMon_.forget₂Mon_
 
 -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : Full (forget₂Mon_ C) := InducedCategory.full _
-instance : Faithful (forget₂Mon_ C) := InducedCategory.faithful _
+instance : (forget₂Mon_ C).Full := InducedCategory.full _
+instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
 theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
@@ -144,7 +145,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (C) (D)
 
--- porting note: added @[simps] to ease automation
+-- Porting note (#10688): added @[simps] to ease automation
 /-- `mapCommMon` is functorial in the lax braided functor. -/
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
@@ -170,8 +171,6 @@ def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommM
   map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
 #align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
-
-attribute [local simp] id_tensorHom tensorHom_id
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]

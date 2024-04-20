@@ -59,6 +59,6 @@ instance (priority := 100) commRing_strongRankCondition : StrongRankCondition R 
     rw [← monomial_add_erase (minpoly R g) 0, hP] at heval
     replace heval := congr_fun heval (Fin.last n)
     -- Porting note: ...it's just that this line gives a timeout without slightly raising heartbeats
-    simpa [hnex] using heval
+    simpa [g, hnex] using heval
   contradiction
 #align comm_ring_strong_rank_condition commRing_strongRankCondition

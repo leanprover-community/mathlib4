@@ -102,7 +102,7 @@ elab_rules : tactic
 | `(tactic| convert $[$cfg:config]? $[←%$sym]? $term $[using $n]? $[with $ps?*]?) =>
   withMainContext do
     let config ← Congr!.elabConfig (mkOptionalNode cfg)
-    let patterns := (Std.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
+    let patterns := (Lean.Elab.Tactic.RCases.expandRIntroPats (ps?.getD #[])).toList
     let expectedType ← mkFreshExprMVar (mkSort (← getLevel (← getMainTarget)))
     let (e, gs) ←
       withCollectingNewGoalsFrom (allowNaturalHoles := true) (tagSuffix := `convert) do

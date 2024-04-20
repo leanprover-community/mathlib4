@@ -19,6 +19,10 @@ the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S
 For the pointwise inverse of submonoids of groups, please refer to
 `GroupTheory.Submonoid.Pointwise`.
 
+`N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that
+are in `N`. See the implementation notes of `GroupTheory/Submonoid/Units` for more details on
+related constructions.
+
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
@@ -151,9 +155,6 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 #align add_submonoid.from_comm_left_neg AddSubmonoid.fromCommLeftNeg
 
 variable (hS : S ≤ IsUnit.submonoid M)
-
--- Porting note: commented out next line
- -- include hS
 
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
