@@ -157,7 +157,7 @@ theorem dist_eq_two_iff {u v : V} :
   · have : G.dist u v ≠ 0 := by simp [h]
     obtain ⟨w, hw⟩ := exists_walk_of_dist_ne_zero this
     rw [h] at hw
-    exact w.commonNeighbor_of_length_eq_two hw
+    exact w.commonNeighbors_of_length_eq_two hw
   · obtain ⟨hn, ha, _, h⟩ := h
     rw [mem_commonNeighbors] at h
     let w : G.Walk u v := .cons h.1 (.cons h.2.symm .nil)
