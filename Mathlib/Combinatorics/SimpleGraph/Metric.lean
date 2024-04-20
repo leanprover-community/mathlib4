@@ -198,9 +198,7 @@ theorem two_lt_dist_iff {u v : V} :
       rw [ne_eq, ← Reachable.dist_eq_zero_iff hr] at hn
       simp [Nat.two_le_iff, hn, ha]
     · symm
-      rw [ne_eq]
-      apply dist_eq_two_iff.not.mpr
-      push_neg
+      rw [ne_eq, dist_eq_two_iff.not]
       aesop
 
 theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
