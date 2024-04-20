@@ -41,7 +41,7 @@ instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒ�
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
 instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
-  unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
+  unop_injective.addZeroClass _ (by exact rfl) (fun _ _ => rfl) (fun _ _ => rfl)
 
 instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
@@ -124,9 +124,7 @@ instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
 instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
   toSemigroup := instSemigroup
   __ := instMulOneClass
-  npow n a := op <| a.unop ^ n
-  npow_zero _ := unop_injective <| pow_zero _
-  npow_succ _ _ := unop_injective <| pow_succ' _ _
+
 
 @[to_additive]
 instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
@@ -189,10 +187,20 @@ instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
 section Monoid
 variable [Monoid α]
 
-@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
+@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := by
+  induction' n with m hm
+  · simp only [Nat.zero_eq, pow_zero, op_one]
+  · rw [pow_succ, op_mul, hm]
+    exact (pow_succ' (op x) m).symm
+
 #align mul_opposite.op_pow MulOpposite.op_pow
 
-@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
+@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := by
+  induction' n with m hm
+  · simp only [Nat.zero_eq, pow_zero, unop_one]
+  · rw [pow_succ, unop_mul, hm]
+    exact (pow_succ' (unop x) m).symm
+
 #align mul_opposite.unop_pow MulOpposite.unop_pow
 
 end Monoid
@@ -343,9 +351,6 @@ instance instRightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigro
 instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
   unop_injective.commSemigroup _ fun _ _ => rfl
 
-instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
-  unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
-
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
 
 @[simp]
@@ -357,6 +362,9 @@ theorem op_pow {β} [Pow α β] (a : α) (b : β) : op (a ^ b) = op a ^ b :=
 theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = unop a ^ b :=
   rfl
 #align add_opposite.unop_pow AddOpposite.unop_pow
+
+instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
+  unop_injective.mulOneClass rfl (fun x y ↦ rfl) (fun x y ↦ rfl)
 
 instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
   unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
