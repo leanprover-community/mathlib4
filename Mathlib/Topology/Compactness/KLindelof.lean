@@ -541,8 +541,8 @@ instance (priority := 100) [CompactSpace X] : KLindelofSpace κ X :=
   { isKLindelof_univ := isCompact_univ.isKLindelof}
 
 /-- A sigma-compact space `X` is `κ`-Lindelöf. -/
-instance (priority := 100) [SigmaCompactSpace X] (hκ : Cardinal.aleph0 < κ) : KLindelofSpace κ X :=
-  { isKLindelof_univ := isSigmaCompact_univ.isKLindelof hκ}
+instance (priority := 100) [SigmaCompactSpace X] [hκ : Fact (Cardinal.aleph0 < κ)] : KLindelofSpace κ X :=
+  { isKLindelof_univ := isSigmaCompact_univ.isKLindelof hκ.out}
 
 /-- `X` is a non-`κ`-Lindelöf topological space if it is not a `κ`-Lindelöf space. -/
 class NonKLindelofSpace (κ : Cardinal.{u}) (X : Type u) [TopologicalSpace X] : Prop where
@@ -681,18 +681,18 @@ protected theorem ClosedEmbedding.KLindelofSpace [h : KLindelofSpace κ Y] {f : 
   ⟨by rw [hf.toInducing.isKLindelof_iff, image_univ]; exact hf.isClosed_range.isKLindelof⟩
 
 /-- The disjoint union of two `κ`-Lindelöf spaces is `κ`-Lindelöf. -/
-instance (hreg : κ.IsRegular) [KLindelofSpace κ X] [KLindelofSpace κ Y] :
+instance [hreg : Fact κ.IsRegular] [KLindelofSpace κ X] [KLindelofSpace κ Y] :
     KLindelofSpace κ (X ⊕ Y) where
     isKLindelof_univ := by
       rw [← range_inl_union_range_inr]
-      exact IsKLindelof.union hreg (isKLindelof_range continuous_inl)
+      exact IsKLindelof.union hreg.out (isKLindelof_range continuous_inl)
         (isKLindelof_range continuous_inr)
 
-instance (hreg : κ.IsRegular) {X : ι → Type u} (hι : #ι < κ) [∀ i, TopologicalSpace (X i)]
+instance [hreg : Fact κ.IsRegular] {X : ι → Type u} (hι : #ι < κ) [∀ i, TopologicalSpace (X i)]
     [∀ i, KLindelofSpace κ (X i)] : KLindelofSpace κ (Σi, X i) where
   isKLindelof_univ := by
     rw [Sigma.univ]
-    exact isKLindelof_iUnion hreg hι fun i => isKLindelof_range continuous_sigmaMk
+    exact isKLindelof_iUnion hreg.out hι fun i => isKLindelof_range continuous_sigmaMk
 
 instance Quot.KLindelofSpace {r : X → X → Prop} [KLindelofSpace κ X] :
     KLindelofSpace κ (Quot r) where
