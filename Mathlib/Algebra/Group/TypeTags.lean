@@ -264,29 +264,29 @@ theorem toAdd_one [Zero α] : toAdd (1 : Multiplicative α) = 0 :=
   rfl
 #align to_add_one toAdd_one
 
-instance Additive.addZeroClass [MulOneClass α] : AddZeroClass (Additive α) where
+instance Additive.addZeroClass [h : MulOneClass α] : AddZeroClass (Additive α) where
   zero := 0
   add := (· + ·)
   zero_add := @one_mul α _
   add_zero := @mul_one α _
+  nsmul := @MulOneClass.npow α h
+  nsmul_zero := @MulOneClass.npow_zero α h
+  nsmul_succ := @MulOneClass.npow_succ α h
 
-instance Multiplicative.mulOneClass [AddZeroClass α] : MulOneClass (Multiplicative α) where
+instance Multiplicative.mulOneClass [h : AddZeroClass α] : MulOneClass (Multiplicative α) where
   one := 1
   mul := (· * ·)
   one_mul := @zero_add α _
   mul_one := @add_zero α _
+  npow := @AddZeroClass.nsmul α h
+  npow_zero := @AddZeroClass.nsmul_zero α h
+  npow_succ := @AddZeroClass.nsmul_succ α h
 
-instance Additive.addMonoid [h : Monoid α] : AddMonoid (Additive α) :=
-  { Additive.addZeroClass, Additive.addSemigroup with
-    nsmul := @Monoid.npow α h
-    nsmul_zero := @Monoid.npow_zero α h
-    nsmul_succ := @Monoid.npow_succ α h }
+instance Additive.addMonoid [Monoid α] : AddMonoid (Additive α) :=
+  { Additive.addZeroClass, Additive.addSemigroup with }
 
-instance Multiplicative.monoid [h : AddMonoid α] : Monoid (Multiplicative α) :=
-  { Multiplicative.mulOneClass, Multiplicative.semigroup with
-    npow := @AddMonoid.nsmul α h
-    npow_zero := @AddMonoid.nsmul_zero α h
-    npow_succ := @AddMonoid.nsmul_succ α h }
+instance Multiplicative.monoid [AddMonoid α] : Monoid (Multiplicative α) :=
+  { Multiplicative.mulOneClass, Multiplicative.semigroup with }
 
 @[simp]
 theorem ofMul_pow [Monoid α] (n : ℕ) (a : α) : ofMul (a ^ n) = n • ofMul a :=
