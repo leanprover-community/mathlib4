@@ -578,7 +578,7 @@ theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 
     exact lt_irrefl 0 h, hn.pow_pos⟩
 #align even.pow_pos_iff Even.pow_pos_iff
 
-theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
+lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
   have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
   intro a b hab
   obtain ha | ha := le_total 0 a
