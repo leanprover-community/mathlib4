@@ -591,7 +591,7 @@ noncomputable def cartanEquivDual :
 assuming `K` has characteristic zero). -/
 lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
     (cartanEquivDual H).symm α ∈ corootSpace α := by
-  obtain ⟨e, he₀, he⟩ := exists_forall_lie_eq_smul K H L α
+  obtain ⟨e : L, he₀ : e ≠ 0, he : ∀ x, ⁅x, e⁆ = α x • e⟩ := exists_forall_lie_eq_smul K H L α
   have heα : e ∈ rootSpace H α := (mem_weightSpace L α e).mpr fun x ↦ ⟨1, by simp [← he x]⟩
   obtain ⟨f, hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
     contrapose! he₀
