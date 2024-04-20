@@ -278,7 +278,7 @@ lemma mem_corootSpace {x : H} :
 lemma mem_corootSpace' {x : H} :
     x ∈ corootSpace α ↔
     x ∈ Submodule.span R ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H) := by
-  set s : Set H := {u : H | ∃ᵉ (y ∈ rootSpace H α) (z ∈ rootSpace H (-α)), ⁅y, z⁆ = u}
+  set s : Set H := ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H)
   suffices H.subtype '' s = {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} by
     obtain ⟨x, hx⟩ := x
     erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
