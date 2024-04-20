@@ -376,7 +376,7 @@ theorem isLindelof_open_iff_eq_countable_iUnion_of_isTopologicalBasis (b : ι �
     obtain ⟨t, ht⟩ :=
       h₁.elim_countable_subcover (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) Subset.rfl
     refine ⟨t.image f', Countable.image (ht.1) f', le_antisymm ?_ ?_⟩
-    · refine' Set.Subset.trans ht.2 _
+    · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
       rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
@@ -439,7 +439,7 @@ def Filter.coclosedLindelof (X : Type*) [TopologicalSpace X] : Filter X :=
 theorem hasBasis_coclosedLindelof :
     (Filter.coclosedLindelof X).HasBasis (fun s => IsClosed s ∧ IsLindelof s) compl := by
   simp only [Filter.coclosedLindelof, iInf_and']
-  refine' hasBasis_biInf_principal' _ ⟨∅, isClosed_empty, isLindelof_empty⟩
+  refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
@@ -526,7 +526,7 @@ theorem IsLindelof.ne_univ [NonLindelofSpace X] (hs : IsLindelof s) : s ≠ univ
   nonLindelof_univ X (h ▸ hs)
 
 instance [NonLindelofSpace X] : NeBot (Filter.coLindelof X) := by
-  refine' hasBasis_coLindelof.neBot_iff.2 fun {s} hs => _
+  refine hasBasis_coLindelof.neBot_iff.2 fun {s} hs => ?_
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]
@@ -544,7 +544,6 @@ theorem nonLindelofSpace_of_neBot (_ : NeBot (Filter.coLindelof X)) : NonLindelo
 
 theorem Filter.coLindelof_neBot_iff : NeBot (Filter.coLindelof X) ↔ NonLindelofSpace X :=
   ⟨nonLindelofSpace_of_neBot, fun _ => inferInstance⟩
-
 
 theorem not_LindelofSpace_iff : ¬LindelofSpace X ↔ NonLindelofSpace X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
@@ -571,7 +570,7 @@ theorem Filter.comap_coLindelof_le {f : X → Y} (hf : Continuous f) :
     (Filter.coLindelof Y).comap f ≤ Filter.coLindelof X := by
   rw [(hasBasis_coLindelof.comap f).le_basis_iff hasBasis_coLindelof]
   intro t ht
-  refine' ⟨f '' t, ht.image hf, _⟩
+  refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 
 theorem isLindelof_range [LindelofSpace X] {f : X → Y} (hf : Continuous f) : IsLindelof (range f) :=

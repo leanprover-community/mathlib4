@@ -68,6 +68,17 @@ instance CountableInterFilter.toCardinalInterFilter (l : Filter α) [CountableIn
   cardinal_sInter_mem := fun S hS a ↦ CountableInterFilter.countable_sInter_mem S
     ((countable_iff_lt_aleph_one S).mpr hS) a
 
+/-- Every filter is a CardinalInterFilter with c = aleph 0-/
+instance Filter.toCardinalInterFilter (l : Filter α) : CardinalInterFilter l (ℵ₀) where
+    cardinal_sInter_mem := by
+      intro S hS a
+      simp_all only [aleph_zero,
+        lt_aleph0_iff_subtype_finite,
+        setOf_mem_eq,
+        sInter_mem,
+        implies_true,
+        forall_const]
+
 theorem cardinalInterFilter_aleph_one_iff :
     CardinalInterFilter l (aleph 1) ↔ CountableInterFilter l :=
   ⟨fun _ ↦ ⟨fun S h a ↦

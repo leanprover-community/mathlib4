@@ -398,7 +398,7 @@ theorem isLindelof_open_iff_eq_cardinal_iUnion_of_isTopologicalBasis (b : ι →
     obtain ⟨t, ht⟩ :=
       h₁.elim_cardinal_subcover hreg (b ∘ f') (fun i => hb.isOpen (Set.mem_range_self _)) Subset.rfl
     refine ⟨t.image f', lt_of_le_of_lt mk_image_le ht.1, le_antisymm ?_ ?_⟩
-    · refine' Set.Subset.trans ht.2 _
+    · refine Set.Subset.trans ht.2 ?_
       simp only [Set.iUnion_subset_iff]
       intro i hi
       rw [← Set.iUnion_subtype (fun x : ι => x ∈ t.image f') fun i => b i.1]
@@ -465,7 +465,7 @@ def Filter.coclosedKLindelof (κ : Cardinal.{u}) (X : Type u) [TopologicalSpace 
 theorem hasBasis_coclosedKLindelof (hreg : κ.IsRegular) :
     (Filter.coclosedKLindelof κ X).HasBasis (fun s => IsClosed s ∧ IsKLindelof κ s) compl := by
   simp only [Filter.coclosedKLindelof, iInf_and']
-  refine' hasBasis_biInf_principal' _ ⟨∅, isClosed_empty, isKLindelof_empty⟩
+  refine hasBasis_biInf_principal' ?_ ⟨∅, isClosed_empty, isKLindelof_empty⟩
   rintro s ⟨hs₁, hs₂⟩ t ⟨ht₁, ht₂⟩
   exact ⟨s ∪ t, ⟨⟨hs₁.union ht₁, hs₂.union hreg ht₂⟩, compl_subset_compl.2 (subset_union_left _ _),
     compl_subset_compl.2 (subset_union_right _ _)⟩⟩
@@ -524,8 +524,16 @@ theorem IsClosed.isKLindelof [KLindelofSpace κ X] (h : IsClosed s) : IsKLindelo
 theorem IsCompact.isKLindelof (hs : IsCompact s) :
     IsKLindelof κ s := by tauto
 
+/-- A `κ`-Lindelöf set `s` is compact for `κ` ≤ ℵ₀. -/
+theorem IsKLindelof.isCompact (hs : IsKLindelof κ s) (hκ : κ ≤ ℵ₀) :
+    IsCompact s := by
+  rw [IsCompact]
+  intro f hf hfs
+  have := f.toCardinalInterFilter.of_cardinalInterFilter_of_le hκ
+  exact hs hfs
+
 /-- A Lindelöf set `s` is `κ`-Lindelöf. -/
-theorem IsLindelof.isKLindelof (hs : IsLindelof s) (hκ : Cardinal.aleph0 < κ) :
+theorem IsLindelof.isKLindelof (hs : IsLindelof s) (hκ : ℵ₀ < κ) :
     IsKLindelof κ s := by
   rw [IsKLindelof]
   intro f _ _ hsub
@@ -533,7 +541,7 @@ theorem IsLindelof.isKLindelof (hs : IsLindelof s) (hκ : Cardinal.aleph0 < κ) 
   exact hs hsub
 
 /-- A σ-compact set `s` is `κ`-Lindelöf-/
-theorem IsSigmaCompact.isKLindelof (hκ : Cardinal.aleph0 < κ) (hs : IsSigmaCompact s) :
+theorem IsSigmaCompact.isKLindelof (hκ : ℵ₀ < κ) (hs : IsSigmaCompact s) :
     IsKLindelof κ s := IsLindelof.isKLindelof (IsSigmaCompact.isLindelof hs) hκ
 
 /-- A compact space `X` is `κ`-Lindelöf. -/
@@ -541,7 +549,7 @@ instance (priority := 100) [CompactSpace X] : KLindelofSpace κ X :=
   { isKLindelof_univ := isCompact_univ.isKLindelof}
 
 /-- A sigma-compact space `X` is `κ`-Lindelöf. -/
-instance (priority := 100) [SigmaCompactSpace X] [hκ : Fact (Cardinal.aleph0 < κ)] : KLindelofSpace κ X :=
+instance (priority := 100) [SigmaCompactSpace X] [hκ : Fact (ℵ₀ < κ)] : KLindelofSpace κ X :=
   { isKLindelof_univ := isSigmaCompact_univ.isKLindelof hκ.out}
 
 /-- `X` is a non-`κ`-Lindelöf topological space if it is not a `κ`-Lindelöf space. -/
@@ -555,9 +563,8 @@ lemma nonKLindelof_univ (X : Type u) [TopologicalSpace X]
 theorem IsKLindelof.ne_univ [NonKLindelofSpace κ X] (hs : IsKLindelof κ s) : s ≠ univ := fun h ↦
   nonKLindelof_univ X (h ▸ hs)
 
-theorem coKLindelof_NeBot_of_nonKLindelof (hreg : κ.IsRegular) [NonKLindelofSpace κ X] :
-    NeBot (Filter.coKLindelof κ X) := by
-  refine' (hasBasis_coKLindelof hreg).neBot_iff.2 fun {s} hs => _
+instance [hreg : Fact κ.IsRegular] [NonKLindelofSpace κ X] : NeBot (Filter.coKLindelof κ X) := by
+  refine (hasBasis_coKLindelof hreg.out).neBot_iff.2 fun {s} hs => ?_
   contrapose hs
   rw [not_nonempty_iff_eq_empty, compl_empty_iff] at hs
   rw [hs]
@@ -568,18 +575,19 @@ theorem Filter.coKLindelof_eq_bot (hreg : κ.IsRegular) [KLindelofSpace κ X] :
     Filter.coKLindelof κ X = ⊥ :=
   (hasBasis_coKLindelof hreg).eq_bot_iff.mpr ⟨Set.univ, isKLindelof_univ, Set.compl_univ⟩
 
-theorem coclosedKLindelof_NeBot_of_nonKLindelof (hreg : κ.IsRegular) [NonKLindelofSpace κ X] :
-    NeBot (Filter.coclosedKLindelof κ X) := by
-  have : NeBot (coKLindelof κ X) := coKLindelof_NeBot_of_nonKLindelof hreg
-  exact neBot_of_le coKLindelof_le_coclosedKLindelof
+instance [Fact κ.IsRegular] [NonKLindelofSpace κ X] :
+    NeBot (Filter.coclosedKLindelof κ X) :=
+  neBot_of_le coKLindelof_le_coclosedKLindelof
 
 theorem nonKLindelofSpace_of_neBot (hreg : κ.IsRegular)
     (_ : NeBot (Filter.coKLindelof κ X)) : NonKLindelofSpace κ X :=
   ⟨fun h' => (Filter.nonempty_of_mem (h'.compl_mem_coKLindelof hreg)).ne_empty compl_univ⟩
 
 theorem Filter.coKLindelof_neBot_iff (hreg : κ.IsRegular) :
-    NeBot (Filter.coKLindelof κ X) ↔ NonKLindelofSpace κ X :=
-  ⟨nonKLindelofSpace_of_neBot hreg, fun _ => coKLindelof_NeBot_of_nonKLindelof hreg⟩
+    NeBot (Filter.coKLindelof κ X) ↔ NonKLindelofSpace κ X := by
+  refine ⟨nonKLindelofSpace_of_neBot hreg, fun _ ↦ ?_⟩
+  have : Fact (κ.IsRegular) := ⟨hreg⟩
+  infer_instance
 
 theorem not_KLindelofSpace_iff : ¬KLindelofSpace κ X ↔ NonKLindelofSpace κ X :=
   ⟨fun h₁ => ⟨fun h₂ => h₁ ⟨h₂⟩⟩, fun ⟨h₁⟩ ⟨h₂⟩ => h₁ h₂⟩
@@ -609,7 +617,7 @@ theorem Filter.comap_coKLindelof_le_of_isRegular (hreg : Cardinal.IsRegular κ) 
     (hf : Continuous f) : (Filter.coKLindelof κ Y).comap f ≤ Filter.coKLindelof κ X := by
   rw [((hasBasis_coKLindelof hreg).comap f).le_basis_iff (hasBasis_coKLindelof hreg)]
   intro t ht
-  refine' ⟨f '' t, ht.image hf, _⟩
+  refine ⟨f '' t, ht.image hf, ?_⟩
   simpa using t.subset_preimage_image f
 
 theorem isKLindelof_range [KLindelofSpace κ X] {f : X → Y} (hf : Continuous f) :
@@ -673,7 +681,8 @@ theorem IsKLindelof.cardinality (hreg : κ.IsRegular) (hs : IsKLindelof κ s)
 
 protected theorem ClosedEmbedding.nonKLindelofSpace (hreg : κ.IsRegular) [NonKLindelofSpace κ X]
     {f : X → Y} (hf : ClosedEmbedding f) : NonKLindelofSpace κ Y := by
-  have : NeBot (coKLindelof κ X) := coKLindelof_NeBot_of_nonKLindelof hreg
+  have : Fact (κ.IsRegular) := ⟨hreg⟩
+  have : NeBot (coKLindelof κ X) := inferInstance
   exact nonKLindelofSpace_of_neBot hreg (hf.tendsto_coKLindelof hreg).neBot
 
 protected theorem ClosedEmbedding.KLindelofSpace [h : KLindelofSpace κ Y] {f : X → Y}
@@ -715,6 +724,9 @@ only for open sets in the definition, and then conclude that this holds for all 
 def IsHereditarilyKLindelof (κ : Cardinal.{u}) (s : Set X) :=
   ∀ t ⊆ s, IsKLindelof κ t
 
+lemma IsHereditarilyLindelof.isHereditarilyKLindelof (hs : IsHereditarilyLindelof s) (hκ : ℵ₀ < κ) :
+    IsHereditarilyKLindelof κ s := fun t ht => IsLindelof.isKLindelof (hs t ht) hκ
+
 /-- Type class for Hereditarily `κ`-Lindelöf spaces.  -/
 class HereditarilyKLindelofSpace (κ : Cardinal.{u}) (X : Type u) [TopologicalSpace X] : Prop where
   /-- In a Hereditarily `κ`-Lindelöf space, `Set.univ` is a Hereditarily `κ`-Lindelöf set. -/
@@ -746,3 +758,7 @@ instance HereditarilyKLindelof.kLindelofSpace_subtype [HereditarilyKLindelofSpac
     (p : X → Prop) : KLindelofSpace κ {x // p x} := by
   apply isKLindelof_iff_KLindelofSpace.mp
   exact HereditarilyKLindelof_KLindelofSets fun x ↦ p x
+
+lemma HereditarilyLindelof.HereditarilyKLindelof (hs : HereditarilyLindelofSpace s) (hκ : ℵ₀ < κ) :
+    HereditarilyKLindelofSpace κ s where isHereditarilyKLindelof_univ :=
+  IsHereditarilyLindelof.isHereditarilyKLindelof hs.isHereditarilyLindelof_univ hκ
