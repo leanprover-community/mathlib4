@@ -427,11 +427,11 @@ theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → 
     rw [h'] at h
     exact h
 
-theorem commonNeighbor_of_length_eq_two {u v : V} :
+theorem commonNeighbors_of_length_eq_two {u v : V} :
     ∀ {p : G.Walk u v}, p.length = 2 → Nonempty (G.commonNeighbors u v)
   | nil => by simp
   | cons _ nil => by simp
-  | cons h (cons h' nil) => by rw [nonempty_subtype]; tauto
+  | cons _ (cons _ nil) => by rw [nonempty_subtype]; tauto
   | cons _ (cons _ (cons _ _)) => by simp
 
 @[simp]
