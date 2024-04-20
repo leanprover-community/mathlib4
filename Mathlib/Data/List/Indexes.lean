@@ -203,12 +203,11 @@ theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h 
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
 #align list.nth_le_map_with_index List.nthLe_mapIdx
 
--- Porting note: Changed the type to use `List.get` instead of deprecated `List.nthLe`.
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
-  induction' l with hd tl IH generalizing f
-  · rfl
-  · simp [IH]
+  induction l generalizing f with
+  | nil => rfl
+  | cons _ _ IH => simp [IH]
 #align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
 end MapIdx

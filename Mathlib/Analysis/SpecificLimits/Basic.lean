@@ -31,7 +31,7 @@ open Topology Nat BigOperators uniformity NNReal ENNReal
 variable {α : Type*} {β : Type*} {ι : Type*}
 
 theorem tendsto_inverse_atTop_nhds_zero_nat : Tendsto (fun n : ℕ ↦ (n : ℝ)⁻¹) atTop (𝓝 0) :=
-  tendsto_inv_atTop_zero.comp tendsto_nat_cast_atTop_atTop
+  tendsto_inv_atTop_zero.comp tendsto_natCast_atTop_atTop
 #align tendsto_inverse_at_top_nhds_0_nat tendsto_inverse_atTop_nhds_zero_nat
 @[deprecated] alias tendsto_inverse_atTop_nhds_0_nat := tendsto_inverse_atTop_nhds_zero_nat
 
@@ -651,7 +651,7 @@ lemma tendsto_nat_ceil_atTop {α : Type*} [LinearOrderedSemiring α] [FloorSemir
 lemma tendsto_nat_floor_mul_atTop {α : Type _} [LinearOrderedSemifield α] [FloorSemiring α]
     [Archimedean α] (a : α) (ha : 0 < a) : Tendsto (fun (x:ℕ) => ⌊a * x⌋₊) atTop atTop :=
   Tendsto.comp tendsto_nat_floor_atTop
-    <| Tendsto.const_mul_atTop ha tendsto_nat_cast_atTop_atTop
+    <| Tendsto.const_mul_atTop ha tendsto_natCast_atTop_atTop
 
 variable {R : Type*} [TopologicalSpace R] [LinearOrderedField R] [OrderTopology R] [FloorRing R]
 
