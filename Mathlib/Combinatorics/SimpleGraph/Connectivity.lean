@@ -417,6 +417,23 @@ theorem eq_of_length_eq_zero {u v : V} : ∀ {p : G.Walk u v}, p.length = 0 → 
   | nil, _ => rfl
 #align simple_graph.walk.eq_of_length_eq_zero SimpleGraph.Walk.eq_of_length_eq_zero
 
+theorem adj_of_length_eq_one {u v : V} : ∀ {p : G.Walk u v}, p.length = 1 → G.Adj u v
+  | nil => by simp
+  | cons h nil => by intro; exact h
+  | cons h _ => by
+    rw [length_cons, add_left_eq_self]
+    intro h'
+    apply eq_of_length_eq_zero at h'
+    rw [h'] at h
+    exact h
+
+theorem commonNeighbor_of_length_eq_two {u v : V} :
+    ∀ {p : G.Walk u v}, p.length = 2 → Nonempty (G.commonNeighbors u v)
+  | nil => by simp
+  | cons _ nil => by simp
+  | cons h (cons h' nil) => by rw [nonempty_subtype]; tauto
+  | cons _ (cons _ (cons _ _)) => by simp
+
 @[simp]
 theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0) ↔ u = v := by
   constructor

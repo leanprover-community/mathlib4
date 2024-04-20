@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2022 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Kyle Miller, Vincent Beffara
+Authors: Kyle Miller, Vincent Beffara, Rida Hamadani
 -/
 import Mathlib.Combinatorics.SimpleGraph.Connectivity
 import Mathlib.Data.Nat.Lattice
@@ -121,6 +121,88 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
   · have h' : ¬G.Reachable v u := fun h' => absurd h'.symm h
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
+
+lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v := by
+  apply dist_eq_zero_iff_eq_or_not_reachable.not.mp at h
+  push_neg at h
+  exact h.2
+
+lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
+    ∃ p : G.Walk u v, p.length = G.dist u v :=
+  Reachable.exists_walk_of_dist (Reachable.of_dist_ne_zero h)
+
+/- The distance between vertices is equal to `1` if and only if these vertices are adjacent. -/
+theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · let ⟨w, hw⟩ := exists_walk_of_dist_ne_zero (ne_zero_of_eq_one h)
+    rw [h] at hw
+    apply w.adj_of_length_eq_one hw
+  · have : (Adj.toWalk h).length = 1 := by rw [Walk.length_cons, Walk.length_nil]
+    have : G.dist u v ≤ 1 := by
+      rw [← this]
+      apply dist_le
+    rw [← LE.le.ge_iff_eq this, Nat.succ_le_iff]
+    apply Reachable.pos_dist_of_ne
+    · apply Adj.reachable h
+    · apply Adj.ne h
+
+theorem dist_eq_two_iff {u v : V} :
+    G.dist u v = 2 ↔ u ≠ v ∧ ¬ G.Adj u v ∧ Nonempty (G.commonNeighbors u v) := by
+  refine ⟨fun h ↦ ⟨?_, ?_, ?_⟩, fun h ↦ ?_⟩
+  · have : G.dist u v ≠ 0 := by simp [h]
+    rw [ne_eq, ← Reachable.dist_eq_zero_iff (Reachable.of_dist_ne_zero this), ← ne_eq]
+    exact this
+  · rw [← dist_eq_one_iff_adj, h]
+    omega
+  · have : G.dist u v ≠ 0 := by simp [h]
+    obtain ⟨w, hw⟩ := exists_walk_of_dist_ne_zero this
+    rw [h] at hw
+    exact w.commonNeighbor_of_length_eq_two hw
+  · obtain ⟨hn, ha, _, h⟩ := h
+    rw [mem_commonNeighbors] at h
+    let w : G.Walk u v := .cons h.1 (.cons h.2.symm .nil)
+    apply LE.le.antisymm
+    · have : w.length = 2 := by tauto
+      rw [← this]
+      apply dist_le
+    · rw [ne_eq, ← Reachable.dist_eq_zero_iff (w.reachable)] at hn
+      rw [← dist_eq_one_iff_adj] at ha
+      simp [Nat.two_le_iff, hn, ha]
+
+theorem two_lt_dist_iff {u v : V} :
+    2 < G.dist u v ↔ u ≠ v ∧ ¬G.Adj u v ∧ IsEmpty (G.commonNeighbors u v) ∧ G.Reachable u v := by
+  refine ⟨fun h ↦ ⟨?c, ?b, ?a, ?d⟩, fun h ↦ ?_⟩
+  case a =>
+    by_contra con
+    have hn : u ≠ v := ?c
+    have ha : ¬G.Adj u v := ?b
+    have : G.dist u v ≠ 2 := by omega
+    rw [ne_eq, dist_eq_two_iff] at this
+    push_neg at this
+    simp only [ne_eq, hn, not_false_eq_true, ha, forall_true_left] at this
+    rw [not_isEmpty_iff] at con
+    exact this con
+  case b =>
+    have : G.dist u v ≠ 1 := by omega
+    rw [ne_eq, dist_eq_one_iff_adj.not] at this
+    exact this
+  case c =>
+    have : G.dist u v ≠ 0 := by omega
+    rw [ne_eq, ← Reachable.dist_eq_zero_iff (Reachable.of_dist_ne_zero this), ← ne_eq]
+    exact this
+  case d =>
+    have : G.dist u v ≠ 0 := by omega
+    exact Reachable.of_dist_ne_zero this
+  · obtain ⟨hn, ha, h, hr⟩ := h
+    apply LE.le.lt_of_ne
+    · rw [← dist_eq_one_iff_adj.not] at ha
+      rw [ne_eq, ← Reachable.dist_eq_zero_iff hr] at hn
+      simp [Nat.two_le_iff, hn, ha]
+    · symm
+      rw [ne_eq]
+      apply dist_eq_two_iff.not.mpr
+      push_neg
+      aesop
 
 theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
