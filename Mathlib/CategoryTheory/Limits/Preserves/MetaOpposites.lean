@@ -162,7 +162,7 @@ def ReflectedFunctor.op : ReflectedFunctor → ReflectedFunctor
 instance : Coe ReflectedFunctor Term where
   coe := ReflectedFunctor.self
 
-def preservesLimit : Bool → CommandElabM Term
+def getPreservesLimit : Bool → CommandElabM Term
   | false => `(PreservesLimit)
   | true => `(PreservesColimit)
 
@@ -173,9 +173,10 @@ variable {C : Type u₁} [Category.{v₁} C]
 variable {D : Type u₂} [Category.{v₂} D]
 variable {J : Type w} [Category.{w'} J]
 
+
 def mySyntax (n : Name) (C D J : ReflectedCategory) (K F : ReflectedFunctor) (proof : Term) :
     CommandElabM Syntax :=
-  `(/-- This is a docstring. -/
+  `(/-- This $proof is a docstring. -/
     def $(mkIdent n) (K : $(J) ⥤ $(C.op)) (F : $(C) ⥤ $(D)) [PreservesColimit $(K.op) $(F)] :
         PreservesLimit $(K) $(F.op) := $proof)
 
@@ -193,8 +194,15 @@ elab "adds" : command => do
           ++ (if backward then "Of" else "") ++ oppositeFunctorDeclarationName C D
         let name : Name := .str (.str (.str .anonymous "CategoryTheory") "Limits") innerName
         elabCommand (← mySyntax name C D J K F (← `(sorry)))
+        let docstring := "This is another docstring"
+        -- let docstring := s!"If {F'.asDocstring} preserves {if colimit then "" else "co"}limits "
+        --   ++ s!"of {K.opposite.asDocstring}, then {F'.opposite.asDocstring} preserves "
+        --   ++ s!"{if colimit then "co" else ""}limits of {K.asDocstring}."
+        addDocString name docstring
 
 adds
+
+#check CategoryTheory.Limits.preservesLimitLeftOp
 
 end
 
