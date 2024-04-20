@@ -522,7 +522,7 @@ theorem IsClosed.isKLindelof [KLindelofSpace κ X] (h : IsClosed s) : IsKLindelo
 
 /-- A compact set `s` is `κ`-Lindelöf. -/
 theorem IsCompact.isKLindelof (hs : IsCompact s) (κ : Cardinal.{u}) :
-  IsKLindelof κ s := by tauto
+    IsKLindelof κ s := by tauto
 
 /-- A `κ`-Lindelöf set `s` is compact for `κ` ≤ ℵ₀. -/
 theorem IsKLindelof.isCompact (hκ : κ ≤ ℵ₀) (hs : IsKLindelof κ s) :
