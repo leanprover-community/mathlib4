@@ -59,15 +59,14 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels/builds-mathlib
-    echo "Adding labels breaks-mathlib and full-ci"
-    # We also add the 'full-ci' label, as fixing a Mathlib breakage may require toolchains for all OSes
+    echo "Adding labels breaks-mathlib"
     curl -L -s \
       -X POST \
       -H "Accept: application/vnd.github+json" \
       -H "Authorization: Bearer $TOKEN" \
       -H "X-GitHub-Api-Version: 2022-11-28" \
       https://api.github.com/repos/leanprover/lean4/issues/$pr_number/labels \
-      -d '{"labels":["breaks-mathlib", "full-ci"]}'
+      -d '{"labels":["breaks-mathlib"]}'
   fi
 
   # Use GitHub API to check if a comment already exists
@@ -84,6 +83,8 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
     message="- 🟡 Mathlib branch $branch build against this PR was cancelled. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$CHECK_OUTCOME" == "success" ]; then
     message="- ✅ Mathlib branch $branch has successfully built against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
+  elif [ "$BUILD_OUTCOME" == "failure" ] ; then
+    message="- 💥 Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$CHECK_OUTCOME" == "failure" ]; then
     message="- ❌ Mathlib branch $branch built against this PR, but lean4checker failed. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$LINT_OUTCOME" == "failure" ]; then
@@ -96,8 +97,6 @@ if [[ "$branch_name" =~ ^lean-pr-testing-([0-9]+)$ ]]; then
     message="- ❌ Mathlib branch $branch built against this PR, but was unexpectedly noisy. ($current_time) [View Log]($WORKFLOW_URL)"
   elif [ "$TEST_OUTCOME" == "failure" ]; then
     message="- ❌ Mathlib branch $branch built against this PR, but testing failed. ($current_time) [View Log]($WORKFLOW_URL)"
-  elif [ "$BUILD_OUTCOME" == "failure" ] ; then
-    message="- 💥 Mathlib branch $branch build failed against this PR. ($current_time) [View Log]($WORKFLOW_URL)"
   else
     message="- 🟡 Mathlib branch $branch build this PR didn't complete normally. ($current_time) [View Log]($WORKFLOW_URL)"
   fi

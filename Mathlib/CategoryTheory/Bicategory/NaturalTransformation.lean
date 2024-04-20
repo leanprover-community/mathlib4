@@ -24,9 +24,6 @@ transformations.
   between `F` and `G`
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Bicategory
@@ -71,8 +68,6 @@ structure OplaxNatTrans (F G : OplaxFunctor B C) where
 #align category_theory.oplax_nat_trans.naturality_id CategoryTheory.OplaxNatTrans.naturality_id
 #align category_theory.oplax_nat_trans.naturality_comp' CategoryTheory.OplaxNatTrans.naturality_comp
 #align category_theory.oplax_nat_trans.naturality_comp CategoryTheory.OplaxNatTrans.naturality_comp
-
-attribute [pp_dot] OplaxNatTrans.app
 
 attribute [nolint docBlame] CategoryTheory.OplaxNatTrans.app
   CategoryTheory.OplaxNatTrans.naturality
@@ -292,12 +287,13 @@ lemma ext {F G : OplaxFunctor B C} {α β : F ⟶ G} {m n : α ⟶ β} (w : ∀ 
   apply w
 
 @[simp]
-lemma Modification.id_app' {F G : OplaxFunctor B C} (α : F ⟶ G) :
+lemma Modification.id_app' {X : B} {F G : OplaxFunctor B C} (α : F ⟶ G) :
     Modification.app (𝟙 α) X = 𝟙 (α.app X) := rfl
 
 @[simp]
-lemma Modification.comp_app' {F G : OplaxFunctor B C} {α β γ : F ⟶ G} (m : α ⟶ β) (n : β ⟶ γ) :
-    (m ≫ n).app X = m.app X ≫ n.app X := rfl
+lemma Modification.comp_app' {X : B} {F G : OplaxFunctor B C} {α β γ : F ⟶ G}
+    (m : α ⟶ β) (n : β ⟶ γ) : (m ≫ n).app X = m.app X ≫ n.app X :=
+  rfl
 
 /-- Construct a modification isomorphism between oplax natural transformations
 by giving object level isomorphisms, and checking naturality only in the forward direction.

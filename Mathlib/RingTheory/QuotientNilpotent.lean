@@ -45,7 +45,7 @@ theorem Ideal.IsNilpotent.induction_on (hI : IsNilpotent I)
   apply h₂ (I ^ 2) _ (Ideal.pow_le_self two_ne_zero)
   · apply H n.succ _ (I ^ 2)
     · rw [← pow_mul, eq_bot_iff, ← hI, Nat.succ_eq_add_one, Nat.succ_eq_add_one]
-      apply Ideal.pow_le_pow_right (by linarith)
+      apply Ideal.pow_le_pow_right (by omega)
     · exact n.succ.lt_succ_self
   · apply h₁
     rw [← Ideal.map_pow, Ideal.map_quotient_self]
@@ -65,7 +65,6 @@ theorem IsNilpotent.isUnit_quotient_mk_iff {R : Type*} [CommRing R] {I : Ideal R
         ((DoubleQuot.quotQuotEquivQuotSup I J).trans
               (Ideal.quotEquivOfEq (sup_eq_right.mpr e))).symm.toRingHom
   · introv e H
-    skip
     obtain ⟨y, hy⟩ := Ideal.Quotient.mk_surjective (↑H.unit⁻¹ : S ⧸ I)
     have : Ideal.Quotient.mk I (x * y) = Ideal.Quotient.mk I 1 := by
       rw [map_one, _root_.map_mul, hy, IsUnit.mul_val_inv]

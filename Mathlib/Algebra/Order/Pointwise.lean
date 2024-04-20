@@ -27,7 +27,7 @@ open Pointwise
 
 variable {α : Type*}
 
--- Porting note : Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
+-- Porting note: Swapped the place of `CompleteLattice` and `ConditionallyCompleteLattice`
 -- due to simpNF problem between `sSup_xx` `csSup_xx`.
 
 section CompleteLattice
@@ -180,8 +180,6 @@ variable {K : Type*} [LinearOrderedField K] {a b r : K} (hr : 0 < r)
 
 open Set
 
--- Porting note: Removing `include hr`
-
 theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   ext x
   simp only [mem_smul_set, smul_eq_mul, mem_Ioo]
@@ -193,7 +191,7 @@ theorem smul_Ioo : r • Ioo a b = Ioo (r • a) (r • b) := by
   · rintro ⟨a_left, a_right⟩
     use x / r
     refine' ⟨⟨(lt_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, _⟩
-    rw [mul_div_cancel' _ (ne_of_gt hr)]
+    rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioo LinearOrderedField.smul_Ioo
 
 theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
@@ -207,7 +205,7 @@ theorem smul_Icc : r • Icc a b = Icc (r • a) (r • b) := by
   · rintro ⟨a_left, a_right⟩
     use x / r
     refine' ⟨⟨(le_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, _⟩
-    rw [mul_div_cancel' _ (ne_of_gt hr)]
+    rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Icc LinearOrderedField.smul_Icc
 
 theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
@@ -221,7 +219,7 @@ theorem smul_Ico : r • Ico a b = Ico (r • a) (r • b) := by
   · rintro ⟨a_left, a_right⟩
     use x / r
     refine' ⟨⟨(le_div_iff' hr).mpr a_left, (div_lt_iff' hr).mpr a_right⟩, _⟩
-    rw [mul_div_cancel' _ (ne_of_gt hr)]
+    rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ico LinearOrderedField.smul_Ico
 
 theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
@@ -235,7 +233,7 @@ theorem smul_Ioc : r • Ioc a b = Ioc (r • a) (r • b) := by
   · rintro ⟨a_left, a_right⟩
     use x / r
     refine' ⟨⟨(lt_div_iff' hr).mpr a_left, (div_le_iff' hr).mpr a_right⟩, _⟩
-    rw [mul_div_cancel' _ (ne_of_gt hr)]
+    rw [mul_div_cancel₀ _ (ne_of_gt hr)]
 #align linear_ordered_field.smul_Ioc LinearOrderedField.smul_Ioc
 
 theorem smul_Ioi : r • Ioi a = Ioi (r • a) := by
@@ -248,7 +246,7 @@ theorem smul_Ioi : r • Ioi a = Ioi (r • a) := by
     use x / r
     constructor
     exact (lt_div_iff' hr).mpr h
-    exact mul_div_cancel' _ (ne_of_gt hr)
+    exact mul_div_cancel₀ _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Ioi LinearOrderedField.smul_Ioi
 
 theorem smul_Iio : r • Iio a = Iio (r • a) := by
@@ -261,7 +259,7 @@ theorem smul_Iio : r • Iio a = Iio (r • a) := by
     use x / r
     constructor
     exact (div_lt_iff' hr).mpr h
-    exact mul_div_cancel' _ (ne_of_gt hr)
+    exact mul_div_cancel₀ _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Iio LinearOrderedField.smul_Iio
 
 theorem smul_Ici : r • Ici a = Ici (r • a) := by
@@ -274,7 +272,7 @@ theorem smul_Ici : r • Ici a = Ici (r • a) := by
     use x / r
     constructor
     exact (le_div_iff' hr).mpr h
-    exact mul_div_cancel' _ (ne_of_gt hr)
+    exact mul_div_cancel₀ _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Ici LinearOrderedField.smul_Ici
 
 theorem smul_Iic : r • Iic a = Iic (r • a) := by
@@ -287,7 +285,7 @@ theorem smul_Iic : r • Iic a = Iic (r • a) := by
     use x / r
     constructor
     exact (div_le_iff' hr).mpr h
-    exact mul_div_cancel' _ (ne_of_gt hr)
+    exact mul_div_cancel₀ _ (ne_of_gt hr)
 #align linear_ordered_field.smul_Iic LinearOrderedField.smul_Iic
 
 end LinearOrderedField

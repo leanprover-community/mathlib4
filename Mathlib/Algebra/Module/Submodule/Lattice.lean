@@ -6,7 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro, Kevin Buzzard, Yury Kudryashov
 import Mathlib.Algebra.Module.Equiv
 import Mathlib.Algebra.Module.Submodule.Basic
 import Mathlib.Algebra.PUnitInstances
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebra.module.submodule.lattice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -34,9 +34,7 @@ variable {R S M : Type*}
 section AddCommMonoid
 
 variable [Semiring R] [Semiring S] [AddCommMonoid M] [Module R M] [Module S M]
-
 variable [SMul S R] [IsScalarTower S R M]
-
 variable {p q : Submodule R M}
 
 namespace Submodule

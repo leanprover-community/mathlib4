@@ -6,6 +6,7 @@ Authors: Joseph Myers
 import Mathlib.Algebra.Order.Module.Algebra
 import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.LinearAlgebra.LinearIndependent
+import Mathlib.RingTheory.Subring.Units
 
 #align_import linear_algebra.ray from "leanprover-community/mathlib"@"0f6670b8af2dff699de1c0b4b49039b31bc13c46"
 
@@ -31,11 +32,8 @@ open BigOperators
 section StrictOrderedCommSemiring
 
 variable (R : Type*) [StrictOrderedCommSemiring R]
-
 variable {M : Type*} [AddCommMonoid M] [Module R M]
-
 variable {N : Type*} [AddCommMonoid N] [Module R N]
-
 variable (ι : Type*) [DecidableEq ι]
 
 /-- Two vectors are in the same ray if either one of them is zero or some positive multiples of them
@@ -171,8 +169,10 @@ theorem map (f : M →ₗ[R] N) (h : SameRay R x y) : SameRay R (f x) (f y) :=
 
 /-- The images of two vectors under an injective linear map are on the same ray if and only if the
 original vectors are on the same ray. -/
-theorem _root_.Function.Injective.sameRay_map_iff {F : Type*} [LinearMapClass F R M N] {f : F}
-    (hf : Function.Injective f) : SameRay R (f x) (f y) ↔ SameRay R x y := by
+theorem _root_.Function.Injective.sameRay_map_iff
+    {F : Type*} [FunLike F M N] [LinearMapClass F R M N]
+    {f : F} (hf : Function.Injective f) :
+    SameRay R (f x) (f y) ↔ SameRay R x y := by
   simp only [SameRay, map_zero, ← hf.eq_iff, map_smul]
 #align function.injective.same_ray_map_iff Function.Injective.sameRay_map_iff
 
@@ -210,7 +210,7 @@ theorem add_right (hy : SameRay R x y) (hz : SameRay R x z) : SameRay R x (y + z
 
 end SameRay
 
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 set_option linter.unusedVariables false in
 /-- Nonzero vectors, as used to define rays. This type depends on an unused argument `R` so that
 `RayVector.Setoid` can be an instance. -/
@@ -238,7 +238,7 @@ instance RayVector.Setoid : Setoid (RayVector R M)
       exact hxy.trans hyz fun hy => (y.2 hy).elim⟩
 
 /-- A ray (equivalence class of nonzero vectors with common positive multiples) in a module. -/
--- Porting note: removed has_nonempty_instance nolint, no such linter
+-- Porting note(#5171): removed has_nonempty_instance nolint, no such linter
 def Module.Ray :=
   Quotient (RayVector.Setoid R M)
 #align module.ray Module.Ray
@@ -391,7 +391,6 @@ end StrictOrderedCommSemiring
 section StrictOrderedCommRing
 
 variable {R : Type*} [StrictOrderedCommRing R]
-
 variable {M N : Type*} [AddCommGroup M] [AddCommGroup N] [Module R M] [Module R N] {x y : M}
 
 /-- `SameRay.neg` as an `iff`. -/
@@ -477,7 +476,7 @@ instance : InvolutiveNeg (Module.Ray R M)
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
   induction' x using Module.Ray.ind with x hx
-  rw [neg_rayOfNeZero, Ne.def, ray_eq_iff]
+  rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 #align module.ray.ne_neg_self Module.Ray.ne_neg_self
 
@@ -506,7 +505,6 @@ end StrictOrderedCommRing
 section LinearOrderedCommRing
 
 variable {R : Type*} [LinearOrderedCommRing R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M]
 
 -- Porting note: Needed to add coercion ↥ below
@@ -649,7 +647,6 @@ end LinearOrderedCommRing
 namespace SameRay
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y v₁ v₂ : M}
 
 theorem exists_pos_left (h : SameRay R x y) (hx : x ≠ 0) (hy : y ≠ 0) :
@@ -706,7 +703,6 @@ end SameRay
 section LinearOrderedField
 
 variable {R : Type*} [LinearOrderedField R]
-
 variable {M : Type*} [AddCommGroup M] [Module R M] {x y : M}
 
 theorem exists_pos_left_iff_sameRay (hx : x ≠ 0) (hy : y ≠ 0) :

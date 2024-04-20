@@ -20,7 +20,6 @@ namespace MvQPF
 open MvFunctor
 
 variable {n : ℕ} {A : Type u}
-
 variable (F : A → TypeVec.{u} n → Type u)
 
 /-- Dependent sum of an `n`-ary functor. The sum can range over

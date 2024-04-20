@@ -3,8 +3,8 @@ Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
-import Mathlib.Topology.ContinuousOn
 import Mathlib.Order.Filter.Partial
+import Mathlib.Topology.Basic
 
 #align_import topology.partial from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 

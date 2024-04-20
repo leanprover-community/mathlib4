@@ -6,7 +6,7 @@ Authors: David Wärn
 import Mathlib.Logic.Encodable.Basic
 import Mathlib.Order.Atoms
 import Mathlib.Order.UpperLower.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.ideal from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -64,7 +64,7 @@ structure Ideal (P) [LE P] extends LowerSet P where
   directed' : DirectedOn (· ≤ ·) carrier
 #align order.ideal Order.Ideal
 
--- Porting note: todo: remove this configuration and use the default configuration.
+-- Porting note (#11215): TODO: remove this configuration and use the default configuration.
 -- We keep this to be consistent with Lean 3.
 initialize_simps_projections Ideal (+toLowerSet, -carrier)
 
@@ -147,12 +147,12 @@ theorem mem_compl_of_ge {x y : P} : x ≤ y → x ∈ (I : Set P)ᶜ → y ∈ (
 instance instPartialOrderIdeal : PartialOrder (Ideal P) :=
   PartialOrder.lift SetLike.coe SetLike.coe_injective
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_subset_coe : (s : Set P) ⊆ t ↔ s ≤ t :=
   Iff.rfl
 #align order.ideal.coe_subset_coe Order.Ideal.coe_subset_coe
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_ssubset_coe : (s : Set P) ⊂ t ↔ s < t :=
   Iff.rfl
 #align order.ideal.coe_ssubset_coe Order.Ideal.coe_ssubset_coe
@@ -468,7 +468,6 @@ end SemilatticeSupOrderBot
 section DistribLattice
 
 variable [DistribLattice P]
-
 variable {I J : Ideal P}
 
 theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i ⊔ j) :
@@ -476,7 +475,7 @@ theorem eq_sup_of_le_sup {x i j : P} (hi : i ∈ I) (hj : j ∈ J) (hx : x ≤ i
   refine' ⟨x ⊓ i, I.lower inf_le_right hi, x ⊓ j, J.lower inf_le_right hj, _⟩
   calc
     x = x ⊓ (i ⊔ j) := left_eq_inf.mpr hx
-    _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left
+    _ = x ⊓ i ⊔ x ⊓ j := inf_sup_left _ _ _
 #align order.ideal.eq_sup_of_le_sup Order.Ideal.eq_sup_of_le_sup
 
 theorem coe_sup_eq : ↑(I ⊔ J) = { x | ∃ i ∈ I, ∃ j ∈ J, x = i ⊔ j } :=

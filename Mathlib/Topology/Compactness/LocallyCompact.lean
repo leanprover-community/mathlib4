@@ -15,18 +15,8 @@ We define the following classes of topological spaces:
 open Set Filter Topology TopologicalSpace Classical
 
 variable {X : Type*} {Y : Type*} {ι : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] {s t : Set X}
 
-
-/-- We say that a topological space is a *weakly locally compact space*,
-if each point of this space admits a compact neighborhood. -/
-class WeaklyLocallyCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
-  /-- Every point of a weakly locally compact space admits a compact neighborhood. -/
-  exists_compact_mem_nhds (x : X) : ∃ s, IsCompact s ∧ s ∈ 𝓝 x
-
-export WeaklyLocallyCompactSpace (exists_compact_mem_nhds)
-#align exists_compact_mem_nhds WeaklyLocallyCompactSpace.exists_compact_mem_nhds
 
 instance [WeaklyLocallyCompactSpace X] [WeaklyLocallyCompactSpace Y] :
     WeaklyLocallyCompactSpace (X × Y) where
@@ -61,20 +51,6 @@ theorem disjoint_nhds_cocompact [WeaklyLocallyCompactSpace X] (x : X) :
     Disjoint (𝓝 x) (cocompact X) :=
   let ⟨_, hc, hx⟩ := exists_compact_mem_nhds x
   disjoint_of_disjoint_of_mem disjoint_compl_right hx hc.compl_mem_cocompact
-
-/-- There are various definitions of "locally compact space" in the literature,
-which agree for Hausdorff spaces but not in general.
-This one is the precise condition on X needed
-for the evaluation map `C(X, Y) × X → Y` to be continuous for all `Y`
-when `C(X, Y)` is given the compact-open topology.
-
-See also `WeaklyLocallyCompactSpace`, a typeclass that only assumes
-that each point has a compact neighborhood. -/
-class LocallyCompactSpace (X : Type*) [TopologicalSpace X] : Prop where
-  /-- In a locally compact space,
-    every neighbourhood of every point contains a compact neighbourhood of that same point. -/
-  local_compact_nhds : ∀ (x : X), ∀ n ∈ 𝓝 x, ∃ s ∈ 𝓝 x, s ⊆ n ∧ IsCompact s
-#align locally_compact_space LocallyCompactSpace
 
 theorem compact_basis_nhds [LocallyCompactSpace X] (x : X) :
     (𝓝 x).HasBasis (fun s => s ∈ 𝓝 x ∧ IsCompact s) fun s => s :=
@@ -152,28 +128,6 @@ instance Function.locallyCompactSpace [LocallyCompactSpace Y] [CompactSpace Y] :
 
 end Pi
 
-/-- We say that `X` and `Y` are a locally compact pair of topological spaces,
-if for any continuous map `f : X → Y`, a point `x : X`, and a neighbourhood `s ∈ 𝓝 (f x)`,
-there exists a compact neighbourhood `K ∈ 𝓝 x` such that `f` maps `K` to `s`.
-
-This is a technical assumption that appears in several theorems,
-most notably in `ContinuousMap.continuous_comp'` and `ContinuousMap.continuous_eval`.
-It is satisfied in two cases:
-
-- if `X` is a locally compact topological space, for obvious reasons;
-- if `X` is a weakly locally compact topological space and `Y` is an R₁ space;
-  this fact is a simple generalization of the theorem
-  saying that a weakly locally compact R₁ topological space is locally compact.
--/
-class LocallyCompactPair (X Y : Type*) [TopologicalSpace X] [TopologicalSpace Y] : Prop where
-  /-- If `f : X → Y` is a continuous map in a locally compact pair of topological spaces
-  and `s : Set Y` is a neighbourhood of `f x`, `x : X`,
-  then there exists a compact neighbourhood `K` of `x` such that `f` maps `K` to `s`. -/
-  exists_mem_nhds_isCompact_mapsTo : ∀ {f : X → Y} {x : X} {s : Set Y},
-    Continuous f → s ∈ 𝓝 (f x) → ∃ K ∈ 𝓝 x, IsCompact K ∧ MapsTo f K s
-
-export LocallyCompactPair (exists_mem_nhds_isCompact_mapsTo)
-
 instance (priority := 900) [LocallyCompactSpace X] : LocallyCompactPair X Y where
   exists_mem_nhds_isCompact_mapsTo hf hs :=
     let ⟨K, hKx, hKs, hKc⟩ := local_compact_nhds (hf.continuousAt hs); ⟨K, hKx, hKc, hKs⟩
@@ -233,7 +187,7 @@ protected theorem OpenEmbedding.locallyCompactSpace [LocallyCompactSpace Y] {f :
   have : ∀ x : X,
       (𝓝 x).HasBasis (fun s ↦ (s ∈ 𝓝 (f x) ∧ IsCompact s) ∧ s ⊆ range f) (f ⁻¹' ·) := fun x ↦ by
     rw [hf.nhds_eq_comap]
-    exact ((compact_basis_nhds _).restrict_subset <| hf.open_range.mem_nhds <|
+    exact ((compact_basis_nhds _).restrict_subset <| hf.isOpen_range.mem_nhds <|
       mem_range_self _).comap _
   refine .of_hasBasis this fun x s hs => ?_
   rw [hf.toInducing.isCompact_iff, image_preimage_eq_of_subset hs.2]

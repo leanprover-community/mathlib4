@@ -52,7 +52,7 @@ theorem image2_mem_map₂ (hs : s ∈ f) (ht : t ∈ g) : image2 m s t ∈ map�
 
 theorem map_prod_eq_map₂ (m : α → β → γ) (f : Filter α) (g : Filter β) :
     Filter.map (fun p : α × β => m p.1 p.2) (f ×ˢ g) = map₂ m f g := by
-  rw [map₂, copy_eq]; rfl
+  rw [map₂, copy_eq, uncurry_def]
 #align filter.map_prod_eq_map₂ Filter.map_prod_eq_map₂
 
 theorem map_prod_eq_map₂' (m : α × β → γ) (f : Filter α) (g : Filter β) :
@@ -148,7 +148,7 @@ theorem map₂_pure : map₂ m (pure a) (pure b) = pure (m a b) := by rw [map₂
 
 theorem map₂_swap (m : α → β → γ) (f : Filter α) (g : Filter β) :
     map₂ m f g = map₂ (fun a b => m b a) g f := by
-  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂]; rfl
+  rw [← map_prod_eq_map₂, prod_comm, map_map, ← map_prod_eq_map₂, Function.comp_def]
 #align filter.map₂_swap Filter.map₂_swap
 
 @[simp]

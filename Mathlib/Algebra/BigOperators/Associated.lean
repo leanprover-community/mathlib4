@@ -109,12 +109,10 @@ theorem Finset.prod_primes_dvd [CancelCommMonoidWithZero α] [Unique αˣ] {s : 
       Multiset.prod_primes_dvd n (by simpa only [Multiset.map_id', Finset.mem_def] using h)
         (by simpa only [Multiset.map_id', Finset.mem_def] using div)
         (by
-          -- POrting note: was
-          -- `simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter, ←
-          --    Multiset.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup]`
+          simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter, ←
+            Multiset.count_eq_card_filter_eq, ← Multiset.nodup_iff_count_le_one, s.nodup]
+          -- Porting note: these lines were not necessary
           intro a
-          simp only [Multiset.map_id', associated_eq_eq, Multiset.countP_eq_card_filter]
-          change Multiset.card (Multiset.filter (fun b => a = b) s.val) ≤ 1
           apply le_of_eq_of_le (Multiset.count_eq_card_filter_eq _ _).symm
           apply Multiset.nodup_iff_count_le_one.mp
           exact s.nodup)
@@ -201,9 +199,17 @@ theorem Prime.dvd_finset_prod_iff {S : Finset α} {p : M} (pp : Prime p) (g : α
   ⟨pp.exists_mem_finset_dvd, fun ⟨_, ha1, ha2⟩ => dvd_trans ha2 (dvd_prod_of_mem g ha1)⟩
 #align prime.dvd_finset_prod_iff Prime.dvd_finset_prod_iff
 
+theorem Prime.not_dvd_finset_prod {S : Finset α} {p : M} (pp : Prime p) {g : α → M}
+    (hS : ∀ a ∈ S, ¬p ∣ g a) : ¬p ∣ S.prod g := by
+  exact mt (Prime.dvd_finset_prod_iff pp _).1 <| not_exists.2 fun a => not_and.2 (hS a)
+
 theorem Prime.dvd_finsupp_prod_iff {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p) :
     p ∣ f.prod g ↔ ∃ a ∈ f.support, p ∣ g a (f a) :=
   Prime.dvd_finset_prod_iff pp _
 #align prime.dvd_finsupp_prod_iff Prime.dvd_finsupp_prod_iff
+
+theorem Prime.not_dvd_finsupp_prod {f : α →₀ M} {g : α → M → ℕ} {p : ℕ} (pp : Prime p)
+    (hS : ∀ a ∈ f.support, ¬p ∣ g a (f a)) : ¬p ∣ f.prod g :=
+  Prime.not_dvd_finset_prod pp hS
 
 end CommMonoidWithZero

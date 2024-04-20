@@ -8,7 +8,7 @@ import Mathlib.Data.Fintype.Prod
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.Subgroup.MulOpposite
 import Mathlib.GroupTheory.Subgroup.Actions
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import group_theory.coset from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -281,7 +281,7 @@ theorem rightCoset_eq_iff {x y : α} : op x • (s : Set α) = op y • s ↔ y 
 
 end CosetSubgroup
 
--- porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
+-- Porting note: see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.E2.9C.94.20to_additive.2Emap_namespace
 run_cmd Lean.Elab.Command.liftCoreM <| ToAdditive.insertTranslation `QuotientGroup `QuotientAddGroup
 
 namespace QuotientGroup
@@ -289,7 +289,7 @@ namespace QuotientGroup
 variable [Group α] (s : Subgroup α)
 
 /-- The equivalence relation corresponding to the partition of a group by left cosets
-of a subgroup.-/
+of a subgroup. -/
 @[to_additive "The equivalence relation corresponding to the partition of a group by left cosets
  of a subgroup."]
 def leftRel : Setoid α :=
@@ -393,12 +393,12 @@ def quotientRightRelEquivQuotientLeftRel : Quotient (QuotientGroup.rightRel s) �
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
-      -- porting note: replace with `by group`
+      -- Porting note: replace with `by group`
   invFun :=
     Quotient.map' (fun g => g⁻¹) fun a b => by
       rw [leftRel_apply, rightRel_apply]
       exact fun h => (congr_arg (· ∈ s) (by simp [mul_assoc])).mp (s.inv_mem h)
-      -- porting note: replace with `by group`
+      -- Porting note: replace with `by group`
   left_inv g :=
     Quotient.inductionOn' g fun g =>
       Quotient.sound'
@@ -508,7 +508,7 @@ theorem eq' {a b : α} : (mk a : α ⧸ s) = mk b ↔ a⁻¹ * b ∈ s :=
 #align quotient_group.eq' QuotientGroup.eq'
 #align quotient_add_group.eq' QuotientAddGroup.eq'
 
-@[to_additive] -- porting note: `simp` can prove this.
+@[to_additive] -- Porting note (#10618): `simp` can prove this.
 theorem out_eq' (a : α ⧸ s) : mk a.out' = a :=
   Quotient.out_eq' a
 #align quotient_group.out_eq' QuotientGroup.out_eq'
@@ -644,14 +644,14 @@ def quotientEquivProdOfLE' (h_le : s ≤ t) (f : α ⧸ t → α)
       rwa [mul_inv_rev, mul_assoc, inv_mul_cancel_left]
   left_inv := by
     refine' Quotient.ind' fun a => _
-    simp_rw [Quotient.map'_mk'', id.def, mul_inv_cancel_left]
+    simp_rw [Quotient.map'_mk'', id, mul_inv_cancel_left]
   right_inv := by
     refine' Prod.rec _
     refine' Quotient.ind' fun a => _
     refine' Quotient.ind' fun b => _
     have key : Quotient.mk'' (f (Quotient.mk'' a) * b) = Quotient.mk'' a :=
       (QuotientGroup.mk_mul_of_mem (f a) b.2).trans (hf a)
-    simp_rw [Quotient.map'_mk'', id.def, key, inv_mul_cancel_left]
+    simp_rw [Quotient.map'_mk'', id, key, inv_mul_cancel_left]
 #align subgroup.quotient_equiv_prod_of_le' Subgroup.quotientEquivProdOfLE'
 #align add_subgroup.quotient_equiv_sum_of_le' AddSubgroup.quotientEquivSumOfLE'
 
@@ -681,7 +681,7 @@ def quotientSubgroupOfEmbeddingOfLE (H : Subgroup α) (h : s ≤ t) :
 #align subgroup.quotient_subgroup_of_embedding_of_le Subgroup.quotientSubgroupOfEmbeddingOfLE
 #align add_subgroup.quotient_add_subgroup_of_embedding_of_le AddSubgroup.quotientAddSubgroupOfEmbeddingOfLE
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfEmbeddingOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : s) :
     quotientSubgroupOfEmbeddingOfLE H h (QuotientGroup.mk g) =
@@ -700,7 +700,7 @@ def quotientSubgroupOfMapOfLE (H : Subgroup α) (h : s ≤ t) :
 #align subgroup.quotient_subgroup_of_map_of_le Subgroup.quotientSubgroupOfMapOfLE
 #align add_subgroup.quotient_add_subgroup_of_map_of_le AddSubgroup.quotientAddSubgroupOfMapOfLE
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientSubgroupOfMapOfLE_apply_mk (H : Subgroup α) (h : s ≤ t) (g : H) :
     quotientSubgroupOfMapOfLE H h (QuotientGroup.mk g) =
@@ -739,7 +739,7 @@ def quotientiInfSubgroupOfEmbedding {ι : Type*} (f : ι → Subgroup α) (H : S
 #align subgroup.quotient_infi_subgroup_of_embedding Subgroup.quotientiInfSubgroupOfEmbedding
 #align add_subgroup.quotient_infi_add_subgroup_of_embedding AddSubgroup.quotientiInfAddSubgroupOfEmbedding
 
--- porting note: I had to add the type ascription to the right-hand side or else Lean times out.
+-- Porting note: I had to add the type ascription to the right-hand side or else Lean times out.
 @[to_additive (attr := simp)]
 theorem quotientiInfSubgroupOfEmbedding_apply_mk {ι : Type*} (f : ι → Subgroup α) (H : Subgroup α)
     (g : H) (i : ι) :

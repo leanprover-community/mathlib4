@@ -175,6 +175,9 @@ theorem Nat.frequently_atTop_iff_infinite {p : ℕ → Prop} :
   rw [← Nat.cofinite_eq_atTop, frequently_cofinite_iff_infinite]
 #align nat.frequently_at_top_iff_infinite Nat.frequently_atTop_iff_infinite
 
+lemma Nat.eventually_pos : ∀ᶠ (k : ℕ) in Filter.atTop, 0 < k :=
+  Filter.eventually_of_mem (Filter.mem_atTop_sets.mpr ⟨1, fun _ hx ↦ hx⟩) (fun _ hx ↦ hx)
+
 theorem Filter.Tendsto.exists_within_forall_le {α β : Type*} [LinearOrder β] {s : Set α}
     (hs : s.Nonempty) {f : α → β} (hf : Filter.Tendsto f Filter.cofinite Filter.atTop) :
     ∃ a₀ ∈ s, ∀ a ∈ s, f a₀ ≤ f a := by

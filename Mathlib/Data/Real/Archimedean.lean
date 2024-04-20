@@ -3,10 +3,10 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Floris van Doorn
 -/
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Set.Image
-import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Bounds
+import Mathlib.Algebra.Order.Archimedean
+import Mathlib.Data.Real.Basic
+import Mathlib.Data.Set.Intervals.Disjoint
 
 #align_import data.real.basic from "leanprover-community/mathlib"@"cb42593171ba005beaaf4549fcfe0dece9ada4c9"
 
@@ -15,7 +15,8 @@ import Mathlib.Algebra.Bounds
 
 -/
 
-open Pointwise CauSeq Classical
+open scoped Classical
+open Pointwise CauSeq
 
 namespace Real
 
@@ -72,7 +73,7 @@ theorem exists_isLUB (S : Set ℝ) (hne : S.Nonempty) (hbdd : BddAbove S) : ∃ 
   have hf₂ : ∀ n > 0, ∀ y ∈ S, (y - ((n : ℕ) : ℝ)⁻¹) < (f n / n : ℚ) := by
     intro n n0 y yS
     have := (Int.sub_one_lt_floor _).trans_le (Int.cast_le.2 <| (hf n).2 _ ⟨y, yS, Int.floor_le _⟩)
-    simp only [Rat.cast_div, Rat.cast_coe_int, Rat.cast_coe_nat, gt_iff_lt]
+    simp only [Rat.cast_div, Rat.cast_intCast, Rat.cast_natCast, gt_iff_lt]
     rwa [lt_div_iff (Nat.cast_pos.2 n0 : (_ : ℝ) < _), sub_mul, _root_.inv_mul_cancel]
     exact ne_of_gt (Nat.cast_pos.2 n0)
   have hg : IsCauSeq abs (fun n => f n / n : ℕ → ℚ) := by
@@ -177,17 +178,17 @@ theorem sSup_empty : sSup (∅ : Set ℝ) = 0 :=
   dif_neg <| by simp
 #align real.Sup_empty Real.sSup_empty
 
-theorem ciSup_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
+@[simp] lemma iSup_of_isEmpty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨆ i, f i = 0 := by
   dsimp [iSup]
   convert Real.sSup_empty
   rw [Set.range_eq_empty_iff]
   infer_instance
-#align real.csupr_empty Real.ciSup_empty
+#align real.csupr_empty Real.iSup_of_isEmpty
 
 @[simp]
 theorem ciSup_const_zero {α : Sort*} : ⨆ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
-  · exact Real.ciSup_empty _
+  · exact Real.iSup_of_isEmpty _
   · exact ciSup_const
 #align real.csupr_const_zero Real.ciSup_const_zero
 
@@ -200,22 +201,21 @@ theorem iSup_of_not_bddAbove {α : Sort*} {f : α → ℝ} (hf : ¬BddAbove (Set
   sSup_of_not_bddAbove hf
 #align real.supr_of_not_bdd_above Real.iSup_of_not_bddAbove
 
-theorem sSup_univ : sSup (@Set.univ ℝ) = 0 :=
-  Real.sSup_of_not_bddAbove fun ⟨_, h⟩ => not_le_of_lt (lt_add_one _) <| h (Set.mem_univ _)
+theorem sSup_univ : sSup (@Set.univ ℝ) = 0 := Real.sSup_of_not_bddAbove not_bddAbove_univ
 #align real.Sup_univ Real.sSup_univ
 
 @[simp]
 theorem sInf_empty : sInf (∅ : Set ℝ) = 0 := by simp [sInf_def, sSup_empty]
 #align real.Inf_empty Real.sInf_empty
 
-theorem ciInf_empty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
-  rw [iInf_of_empty', sInf_empty]
-#align real.cinfi_empty Real.ciInf_empty
+@[simp] nonrec lemma iInf_of_isEmpty {α : Sort*} [IsEmpty α] (f : α → ℝ) : ⨅ i, f i = 0 := by
+  rw [iInf_of_isEmpty, sInf_empty]
+#align real.cinfi_empty Real.iInf_of_isEmpty
 
 @[simp]
 theorem ciInf_const_zero {α : Sort*} : ⨅ _ : α, (0 : ℝ) = 0 := by
   cases isEmpty_or_nonempty α
-  · exact Real.ciInf_empty _
+  · exact Real.iInf_of_isEmpty _
   · exact ciInf_const
 #align real.cinfi_const_zero Real.ciInf_const_zero
 
@@ -243,7 +243,7 @@ As `0` is the default value for `Real.sSup` of the empty set or sets which are n
 suffices to show that `f i` is nonnegative to show that `0 ≤ ⨆ i, f i`.
 -/
 protected theorem iSup_nonneg {ι : Sort*} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ ⨆ i, f i :=
-  sSup_nonneg _ <| Set.forall_range_iff.2 hf
+  sSup_nonneg _ <| Set.forall_mem_range.2 hf
 #align real.supr_nonneg Real.iSup_nonneg
 
 /--
@@ -258,7 +258,7 @@ protected theorem sSup_le {S : Set ℝ} {a : ℝ} (hS : ∀ x ∈ S, x ≤ a) (h
 
 protected theorem iSup_le {ι : Sort*} {f : ι → ℝ} {a : ℝ} (hS : ∀ i, f i ≤ a) (ha : 0 ≤ a) :
     ⨆ i, f i ≤ a :=
-  Real.sSup_le (Set.forall_range_iff.2 hS) ha
+  Real.sSup_le (Set.forall_mem_range.2 hS) ha
 #align real.supr_le Real.iSup_le
 
 /-- As `0` is the default value for `Real.sSup` of the empty set, it suffices to show that `S` is
@@ -280,7 +280,7 @@ theorem sInf_nonneg (S : Set ℝ) (hS : ∀ x ∈ S, (0 : ℝ) ≤ x) : 0 ≤ sI
 bounded below by `0` to show that `0 ≤ iInf f`.
 -/
 theorem iInf_nonneg {ι} {f : ι → ℝ} (hf : ∀ i, 0 ≤ f i) : 0 ≤ iInf f :=
-  sInf_nonneg _ <| Set.forall_range_iff.2 hf
+  sInf_nonneg _ <| Set.forall_mem_range.2 hf
 
 /--
 As `0` is the default value for `Real.sInf` of the empty set or sets which are not bounded below, it
@@ -345,5 +345,25 @@ theorem iInf_Ioi_eq_iInf_rat_gt {f : ℝ → ℝ} (x : ℝ) (hf : BddBelow (f ''
     · refine' hf_mono (le_trans _ hyq.le)
       norm_cast
 #align infi_Ioi_eq_infi_rat_gt Real.iInf_Ioi_eq_iInf_rat_gt
+
+theorem not_bddAbove_coe : ¬ (BddAbove <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddAbove, upperBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_gt _
+
+theorem not_bddBelow_coe : ¬ (BddBelow <| range (fun (x : ℚ) ↦ (x : ℝ))) := by
+  dsimp only [BddBelow, lowerBounds]
+  rw [Set.not_nonempty_iff_eq_empty]
+  ext
+  simpa using exists_rat_lt _
+
+theorem iUnion_Iic_rat : ⋃ r : ℚ, Iic (r : ℝ) = univ := by
+  exact iUnion_Iic_of_not_bddAbove_range not_bddAbove_coe
+#align real.Union_Iic_rat Real.iUnion_Iic_rat
+
+theorem iInter_Iic_rat : ⋂ r : ℚ, Iic (r : ℝ) = ∅ := by
+  exact iInter_Iic_eq_empty_iff.mpr not_bddBelow_coe
+#align real.Inter_Iic_rat Real.iInter_Iic_rat
 
 end Real
