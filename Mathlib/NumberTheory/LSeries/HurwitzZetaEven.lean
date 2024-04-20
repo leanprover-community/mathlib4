@@ -16,30 +16,33 @@ import Mathlib.Analysis.Complex.RemovableSingularity
 In this file we study the functions on `ℂ` which are the meromorphic continuation of the following
 series (convergent for `1 < re s`), where `a ∈ ℝ` is a parameter:
 
-`completedHurwitzZetaEven a s = 1 / 2 * □ * ∑' n : ℤ, 1 / |n + a| ^ s`
+`hurwitzZetaEven a s = 1 / 2 * ∑' n : ℤ, 1 / |n + a| ^ s`
 
 and
 
-`completedCosZeta a s = □ * ∑' n : ℕ, cos (2 * π * a * n) / |n| ^ s`
+`cosZeta a s = ∑' n : ℕ, cos (2 * π * a * n) / |n| ^ s`.
 
-where `□` denotes a Gamma factor. Note that the term for `n = -a` in the first sum is omitted
-if `a` is an integer, and the term for `n = 0` is omitted in the second sum (always).
+Note that the term for `n = -a` in the first sum is omitted if `a` is an integer, and the term for
+`n = 0` is omitted in the second sum (always).
 
 Of course, we cannot *define* these functions by the above formulae (since existence of the
 meromorphic continuation is not at all obvious); we in fact construct them as Mellin transforms of
-various versions of the Jacobi theta function. We also define modified versions with a subscript `0`
-which are entire functions differing from the above by multiples of `1 / s` and `1 / (1 - s)`.
+various versions of the Jacobi theta function.
+
+We also define completed versions of these functions with nicer functional equations (satisfying
+`completedHurwitzZetaEven a s = Gammaℝ s * hurwitzZetaEven a s`, and similarly for `cosZeta`); and
+modified versions with a subscript `0`, which are entire functions differing from the above by
+multiples of `1 / s` and `1 / (1 - s)`.
 
 ## Main definitions and theorems
-
-* `completedHurwitzZetaEven`: the completed Hurwitz zeta function
-* `completedCosZeta`: the completed cosine zeta function
-* `differentiableAt_completedHurwitzZetaEven` and `differentiableAt_completedCosZeta`:
-  differentiability away from `s = 0` and `s = 1`
+* `hurwitzZetaEven` and `cosZeta`: the zeta functions
+* `completedHurwitzZetaEven` and `completedCosZeta`: completed variants
+* `differentiableAt_hurwitzZetaEven` and `differentiableAt_cosZeta`:
+  differentiability away from `s = 1`
 * `completedHurwitzZetaEven_one_sub`: the functional equation
   `completedHurwitzZetaEven a (1 - s) = completedCosZeta a s`
-* `completedHurwitzZetaEven_eq_tsum_int` and `completedCosZeta_eq_tsum_nat`: relation between the
-  zeta functions and corresponding Dirichlet series for `1 < re s`
+* `hasSum_int_hurwitzZetaEven` and `hasSum_nat_cosZeta`: relation between the zeta functions and
+  the corresponding Dirichlet series for `1 < re s`.
 -/
 noncomputable section
 
@@ -669,13 +672,13 @@ lemma tendsto_hurwitzZetaEven_sub_one_div_nhds_one (a : UnitAddCircle) :
   simpa only [one_div, sub_self, div_zero, Gammaℝ_one, div_one, sub_zero] using
     (differentiableAt_hurwitzZetaEven_sub_one_div a).continuousAt.tendsto
 
-lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven' (a b : UnitAddCircle) :
+lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
     Differentiable ℂ (fun s ↦ hurwitzZetaEven a s - hurwitzZetaEven b s) := by
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
   · -- NB. This can be written more tidy with `convert`, but the `convert` version is 3x slower, as
-    -- it spends 877 TC synthesis steps trying to infer `Subsingleton (ℂ → ℂ)`.
+    -- it spends 877 TC synthesis steps vainly trying to infer `Subsingleton (ℂ → ℂ)`.
     have (s) : (hurwitzZetaEven a s - hurwitzZetaEven b s) = ((hurwitzZetaEven a s -
         1 / (s - 1) / Gammaℝ s) - (hurwitzZetaEven b s - 1 / (s - 1) / Gammaℝ s)) := by abel
     exact funext this ▸ (differentiableAt_hurwitzZetaEven_sub_one_div a).sub
