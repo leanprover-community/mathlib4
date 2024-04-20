@@ -45,7 +45,32 @@ open Opposite
 
 namespace CategoryTheory
 
-variable (C : Type*) [Category C]
+variable {C : Type*} [Category C]
+
+structure DirectFactor (X Y : C) where
+  s : X ⟶ Y
+  r : Y ⟶ X
+  sr : s ≫ r = 𝟙 _ := by aesop_cat
+
+namespace DirectFactor
+
+attribute [reassoc (attr := simp)] sr
+
+variable {X Y : C} (h : DirectFactor X Y)
+instance : IsSplitEpi h.r := ⟨⟨{ section_ := h.s }⟩⟩
+instance : IsSplitMono h.s := ⟨⟨{ retraction := h.r }⟩⟩
+
+variable {D : Type*} [Category D] (F : C ⥤ D)
+
+@[simps]
+def map : DirectFactor (F.obj X) (F.obj Y) where
+  s := F.map h.s
+  r := F.map h.r
+  sr := by rw [← F.map_comp, h.sr, F.map_id]
+
+end DirectFactor
+
+variable (C)
 
 /-- A category is idempotent complete iff all idempotent endomorphisms `p`
 split as a composition `p = e ≫ i` with `i ≫ e = 𝟙 _` -/
@@ -55,6 +80,13 @@ class IsIdempotentComplete : Prop where
   idempotents_split :
     ∀ (X : C) (p : X ⟶ X), p ≫ p = p → ∃ (Y : C) (i : Y ⟶ X) (e : X ⟶ Y), i ≫ e = 𝟙 Y ∧ e ≫ i = p
 #align category_theory.is_idempotent_complete CategoryTheory.IsIdempotentComplete
+
+variable {C} in
+lemma directFactor_of_isIdempotentComplete [IsIdempotentComplete C]
+    (Y : C) (p : Y ⟶ Y) (hp : p ≫ p = p) :
+    ∃ (X : C) (e : DirectFactor X Y), e.r ≫ e.s = p := by
+  obtain ⟨X, j, q, hjq, hqj⟩ := IsIdempotentComplete.idempotents_split _ _ hp
+  exact ⟨X, DirectFactor.mk j q hjq, hqj⟩
 
 namespace Idempotents
 

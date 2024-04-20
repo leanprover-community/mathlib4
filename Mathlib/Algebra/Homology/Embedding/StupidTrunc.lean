@@ -1,5 +1,6 @@
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.Restriction
+import Mathlib.CategoryTheory.Idempotents.Basic
 
 open CategoryTheory Category Limits ZeroObject
 
@@ -54,31 +55,32 @@ lemma stupidTruncMap_comp_f (i' : ι') :
 lemma stupidTruncMap_comp :
     stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by aesop_cat
 
-
 end
 
 section
 
 variable (K L : HomologicalComplex C c') (φ : K ⟶ L)
-  (e : c.Embedding c') [e.IsTruncGE]
+  (e : c.Embedding c')
 
 open Classical in
-noncomputable def ιStupidTruncf (i' : ι') : (K.stupidTrunc e).X i' ⟶ K.X i' :=
+noncomputable def ιStupidTruncf [e.IsRelIff] (i' : ι') : (K.stupidTrunc e).X i' ⟶ K.X i' :=
   if h : ∃ (i : ι), e.f i = i'
   then (K.stupidTruncXIso e h.choose_spec).hom
   else 0
 
-lemma ιStupidTruncf_eq (i : ι) :
+lemma ιStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.ιStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).hom := by
   dsimp [ιStupidTruncf]
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
-lemma ιStupidTruncf'_eq {i : ι} {i' : ι'} (h : e.f i = i') :
+lemma ιStupidTruncf'_eq [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.ιStupidTruncf e i' = ((K.restriction e).extendXIso e h).hom ≫
       (K.restrictionXIso e h).hom := by
   subst h
   simp [ιStupidTruncf_eq, restrictionXIso]
+
+variable [e.IsTruncGE]
 
 noncomputable def ιStupidTrunc : K.stupidTrunc e ⟶ K where
   f := K.ιStupidTruncf e
@@ -127,25 +129,27 @@ end
 section
 
 variable (K L : HomologicalComplex C c') (φ : K ⟶ L)
-  (e : c.Embedding c') [e.IsTruncLE]
+  (e : c.Embedding c')
 
 open Classical in
-noncomputable def πStupidTruncf (i' : ι') : K.X i' ⟶ (K.stupidTrunc e).X i' :=
+noncomputable def πStupidTruncf [e.IsRelIff] (i' : ι') : K.X i' ⟶ (K.stupidTrunc e).X i' :=
   if h : ∃ (i : ι), e.f i = i'
   then (K.stupidTruncXIso e h.choose_spec).inv
   else 0
 
-lemma πStupidTruncf_eq (i : ι) :
+lemma πStupidTruncf_eq [e.IsRelIff] (i : ι) :
     K.πStupidTruncf e (e.f i) = ((K.restriction e).extendXIso e rfl).inv := by
   dsimp [πStupidTruncf]
   rw [dif_pos ⟨i, rfl⟩]
   simp [extendXIso, extend.XIso, stupidTruncXIso]
 
-lemma πStupidTruncf_eq' {i : ι} {i' : ι'} (h : e.f i = i') :
+lemma πStupidTruncf_eq' [e.IsRelIff] {i : ι} {i' : ι'} (h : e.f i = i') :
     K.πStupidTruncf e i' = (K.restrictionXIso e h).inv ≫
       ((K.restriction e).extendXIso e h).inv := by
   subst h
   simp [πStupidTruncf_eq, restrictionXIso]
+
+variable [e.IsTruncLE]
 
 noncomputable def πStupidTrunc : K ⟶ K.stupidTrunc e where
   f := K.πStupidTruncf e
@@ -188,6 +192,27 @@ lemma πStupicTrunc_naturality :
   · obtain ⟨i, rfl⟩ := hi'
     simp [πStupidTrunc, πStupidTruncf_eq, stupidTruncMap, extendMap_f _ e rfl]
   · apply (L.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_tgt
+
+end
+
+section
+
+variable (K : HomologicalComplex C c') (e : c.Embedding c') [e.IsRelIff] (i' : ι')
+
+@[reassoc (attr := simp)]
+lemma ιStupidTruncf_πStupidTruncf :
+    K.ιStupidTruncf e i' ≫ K.πStupidTruncf e i' = 𝟙 _ := by
+  by_cases hi' : ∃ i, e.f i = i'
+  · obtain ⟨i, rfl⟩ := hi'
+    rw [ιStupidTruncf_eq, πStupidTruncf_eq, Iso.hom_inv_id]
+  · apply IsZero.eq_of_src
+    apply isZero_stupidTrunc_X
+    simpa using hi'
+
+noncomputable def stupidTruncDirectFactor :
+    DirectFactor ((K.stupidTrunc e).X i') (K.X i') where
+  s := K.ιStupidTruncf e i'
+  r := K.πStupidTruncf e i'
 
 end
 

@@ -217,9 +217,9 @@ end Subset
 
 section
 
-variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Preorder α] {ι : α → Type*}
+variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Category α] {ι : α → Type*}
   {c : Π (a : α), ComplexShape (ι a)} (e : Π (a : α), Embedding (c a) c')
-  (he : ∀ ⦃a a' : α⦄, a' ≤ a → (e a).Subset (e a'))
+  (he : ∀ ⦃a a' : α⦄ (_ : a' ⟶ a), (e a).Subset (e a'))
   [∀ a, (e a).IsTruncLE]
   (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
@@ -227,7 +227,7 @@ variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Preorder α] {ι : 
 noncomputable def stupidTruncLEFiltration :
     α ⥤ (HomologicalComplex C c' ⥤ HomologicalComplex C c') where
   obj a := (e a).stupidTruncFunctor C
-  map {a a'} φ := (he (leOfHom φ)).mapStupidTruncLE C
+  map {a a'} φ := (he φ).mapStupidTruncLE C
 
 instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
     Epi (((stupidTruncLEFiltration e he C).map φ).app K) := by
@@ -238,9 +238,9 @@ end
 
 section
 
-variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Preorder α] {ι : α → Type*}
+variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Category α] {ι : α → Type*}
   {c : Π (a : α), ComplexShape (ι a)} (e : Π (a : α), Embedding (c a) c')
-  (he : ∀ ⦃a a' : α⦄, a ≤ a' → (e a).Subset (e a'))
+  (he : ∀ ⦃a a' : α⦄ (_ : a ⟶ a'), (e a).Subset (e a'))
   [∀ a, (e a).IsTruncGE]
   (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
 
@@ -248,7 +248,7 @@ variable {ι' : Type*} {c' : ComplexShape ι'} {α : Type*} [Preorder α] {ι : 
 noncomputable def stupidTruncGEFiltration :
     α ⥤ (HomologicalComplex C c' ⥤ HomologicalComplex C c') where
   obj a := (e a).stupidTruncFunctor C
-  map {a a'} φ := (he (leOfHom φ)).mapStupidTruncGE C
+  map {a a'} φ := (he φ).mapStupidTruncGE C
 
 instance {a a' : α} (φ : a ⟶ a') (K : HomologicalComplex C c') :
     Mono (((stupidTruncGEFiltration e he C).map φ).app K) := by
