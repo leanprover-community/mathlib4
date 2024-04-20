@@ -416,7 +416,7 @@ protected def commSemigroup [CommSemigroup M₁] (f : M₁ → M₂) (hf : Surje
 #align function.surjective.comm_semigroup Function.Surjective.commSemigroup
 #align function.surjective.add_comm_semigroup Function.Surjective.addCommSemigroup
 
-variable [One M₂]
+variable [One M₂] [Pow M₂ ℕ]
 
 /-- A type endowed with `1` and `*` is a `MulOneClass`, if it admits a surjective map that preserves
 `1` and `*` from a `MulOneClass`. See note [reducible non-instances]. -/
@@ -424,14 +424,19 @@ variable [One M₂]
 "A type endowed with `0` and `+` is an `AddZeroClass`, if it admits a
 surjective map that preserves `0` and `+` to an `AddZeroClass`."]
 protected def mulOneClass [MulOneClass M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
-    (mul : ∀ x y, f (x * y) = f x * f y) : MulOneClass M₂ :=
+    (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
+    MulOneClass M₂ :=
   { ‹One M₂›, ‹Mul M₂› with
     one_mul := hf.forall.2 fun x => by erw [← one, ← mul, one_mul],
-    mul_one := hf.forall.2 fun x => by erw [← one, ← mul, mul_one] }
+    mul_one := hf.forall.2 fun x => by erw [← one, ← mul, mul_one],
+    npow := fun n x => x ^ n,
+    npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
+    npow_succ := fun n => hf.forall.2 fun x => by
+      dsimp only
+      erw [← npow, pow_succ, ← npow, ← mul]
+     }
 #align function.surjective.mul_one_class Function.Surjective.mulOneClass
 #align function.surjective.add_zero_class Function.Surjective.addZeroClass
-
-variable [Pow M₂ ℕ]
 
 /-- A type endowed with `1` and `*` is a monoid, if it admits a surjective map that preserves `1`
 and `*` to a monoid. See note [reducible non-instances]. -/
@@ -441,12 +446,8 @@ surjective map that preserves `0` and `+` to an additive monoid. This version ta
 as a `[SMul ℕ M₂]` argument."]
 protected def monoid [Monoid M₁] (f : M₁ → M₂) (hf : Surjective f) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) : Monoid M₂ :=
-  { hf.semigroup f mul, hf.mulOneClass f one mul with
-    npow := fun n x => x ^ n,
-    npow_zero := hf.forall.2 fun x => by dsimp only; erw [← npow, pow_zero, ← one],
-    npow_succ := fun n => hf.forall.2 fun x => by
-      dsimp only
-      erw [← npow, pow_succ, ← npow, ← mul] }
+  { hf.semigroup f mul, hf.mulOneClass f one mul npow with
+ }
 #align function.surjective.monoid Function.Surjective.monoid
 #align function.surjective.add_monoid Function.Surjective.addMonoid
 
