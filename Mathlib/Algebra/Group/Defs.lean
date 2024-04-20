@@ -436,66 +436,18 @@ instance (priority := 100) RightCancelSemigroup.toIsRightCancelMul (G : Type u)
 #align right_cancel_semigroup.to_is_right_cancel_mul RightCancelSemigroup.toIsRightCancelMul
 #align add_right_cancel_semigroup.to_is_right_cancel_add AddRightCancelSemigroup.toIsRightCancelAdd
 
-/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
-`1 * a = a` and `a * 1 = a` for all `a : M`. -/
-class MulOneClass (M : Type u) extends One M, Mul M where
-  /-- One is a left neutral element for multiplication -/
-  protected one_mul : ∀ a : M, 1 * a = a
-  /-- One is a right neutral element for multiplication -/
-  protected mul_one : ∀ a : M, a * 1 = a
-#align mul_one_class MulOneClass
-
-/-- Typeclass for expressing that a type `M` with addition and a zero satisfies
-`0 + a = a` and `a + 0 = a` for all `a : M`. -/
-class AddZeroClass (M : Type u) extends Zero M, Add M where
-  /-- Zero is a left neutral element for addition -/
-  protected zero_add : ∀ a : M, 0 + a = a
-  /-- Zero is a right neutral element for addition -/
-  protected add_zero : ∀ a : M, a + 0 = a
-#align add_zero_class AddZeroClass
-
-attribute [to_additive] MulOneClass
-
-@[to_additive (attr := ext)]
-theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
-  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁⟩ @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂⟩ ⟨rfl⟩
-  -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
-  -- congr
-  suffices one₁ = one₂ by cases this; rfl
-  exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
-#align mul_one_class.ext MulOneClass.ext
-#align add_zero_class.ext AddZeroClass.ext
-
-section MulOneClass
-
-variable {M : Type u} [MulOneClass M]
-
-@[to_additive (attr := simp)]
-theorem one_mul : ∀ a : M, 1 * a = a :=
-  MulOneClass.one_mul
-#align one_mul one_mul
-#align zero_add zero_add
-
-@[to_additive (attr := simp)]
-theorem mul_one : ∀ a : M, a * 1 = a :=
-  MulOneClass.mul_one
-#align mul_one mul_one
-#align add_zero add_zero
-
-end MulOneClass
-
 section
 
 variable {M : Type u}
 
-/-- The fundamental power operation in a monoid. `npowRec n a = a*a*...*a` n times.
+/-- The fundamental power operation in a multiplication with one. `npowRec n a = a*a*...*a` n times.
 Use instead `a ^ n`, which has better definitional behavior. -/
 def npowRec [One M] [Mul M] : ℕ → M → M
   | 0, _ => 1
   | n + 1, a => npowRec n a * a
 #align npow_rec npowRec
 
-/-- The fundamental scalar multiplication in an additive monoid. `nsmulRec n a = a+a+...+a` n
+/-- The fundamental scalar multiplication in an addition with zero. `nsmulRec n a = a+a+...+a` n
 times. Use instead `n • a`, which has better definitional behavior. -/
 def nsmulRec [Zero M] [Add M] : ℕ → M → M
   | 0, _ => 0
@@ -505,6 +457,8 @@ def nsmulRec [Zero M] [Add M] : ℕ → M → M
 attribute [to_additive existing] npowRec
 
 end
+
+
 
 library_note "forgetful inheritance"/--
 Suppose that one can put two mathematical structures on a type, a rich one `R` and a poor one
@@ -559,27 +513,27 @@ analysis](https://hal.inria.fr/hal-02463336).
 
 
 /-!
-### Design note on `AddMonoid` and `Monoid`
+### Design note on `AddWithZero` and `MulWithOne`
 
-An `AddMonoid` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
+An `AddWithZero` has a natural `ℕ`-action, defined by `n • a = a + ... + a`, that we want to declare
 as an instance as it makes it possible to use the language of linear algebra. However, there are
 often other natural `ℕ`-actions. For instance, for any semiring `R`, the space of polynomials
 `Polynomial R` has a natural `R`-action defined by multiplication on the coefficients. This means
 that `Polynomial ℕ` would have two natural `ℕ`-actions, which are equal but not defeq. The same
 goes for linear maps, tensor products, and so on (and even for `ℕ` itself).
 
-To solve this issue, we embed an `ℕ`-action in the definition of an `AddMonoid` (which is by
+To solve this issue, we embed an `ℕ`-action in the definition of an `AddWithZero` (which is by
 default equal to the naive action `a + ... + a`, but can be adjusted when needed), and declare
 a `SMul ℕ α` instance using this action. See Note [forgetful inheritance] for more
 explanations on this pattern.
 
 For example, when we define `Polynomial R`, then we declare the `ℕ`-action to be by multiplication
 on each coefficient (using the `ℕ`-action on `R` that comes from the fact that `R` is
-an `AddMonoid`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
+an `AddWithZero`). In this way, the two natural `SMul ℕ (Polynomial ℕ)` instances are defeq.
 
-The tactic `to_additive` transfers definitions and results from multiplicative monoids to additive
-monoids. To work, it has to map fields to fields. This means that we should also add corresponding
-fields to the multiplicative structure `Monoid`, which could solve defeq problems for powers if
+The tactic `to_additive` transfers definitions and results from multiplication with one to addition
+with zero. To work, it has to map fields to fields. This means that we should also add corresponding
+fields to the multiplicative structure `MulWithOne`, which could solve defeq problems for powers if
 needed. These problems do not come up in practice, so most of the time we will not need to adjust
 the `npow` field when defining multiplicative objects.
 
@@ -589,8 +543,13 @@ need right away.
 -/
 
 
-/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
-class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+/-- Typeclass for expressing that a type `M` with addition and a zero satisfies
+`0 + a = a` and `a + 0 = a` for all `a : M`. -/
+class AddZeroClass (M : Type u) extends Zero M, Add M where
+  /-- Zero is a left neutral element for addition -/
+  protected zero_add : ∀ a : M, 0 + a = a
+  /-- Zero is a right neutral element for addition -/
+  protected add_zero : ∀ a : M, a + 0 = a
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
   protected nsmul : ℕ → M → M
@@ -598,10 +557,108 @@ class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
   protected nsmul_succ : ∀ (n : ℕ) (x), nsmul (n + 1) x = nsmul n x + x := by intros; rfl
-#align add_monoid AddMonoid
+#align add_zero_class AddZeroClass
 
 attribute [instance 150] AddSemigroup.toAdd
 attribute [instance 50] AddZeroClass.toAdd
+
+/-- Typeclass for expressing that a type `M` with multiplication and a one satisfies
+`1 * a = a` and `a * 1 = a` for all `a : M`. -/
+class MulOneClass (M : Type u) extends One M, Mul M where
+  /-- One is a left neutral element for multiplication -/
+  protected one_mul : ∀ a : M, 1 * a = a
+  /-- One is a right neutral element for multiplication -/
+  protected mul_one : ∀ a : M, a * 1 = a
+  /-- Raising to the power of a natural number. -/
+  protected npow : ℕ → M → M := npowRec
+  /-- Raising to the power `(0 : ℕ)` gives `1`. -/
+  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
+  /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
+  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
+#align mul_one_class MulOneClass
+
+
+
+attribute [to_additive] MulOneClass
+
+@[default_instance high] instance MulOneClass.toNatPow {M : Type*} [MulOneClass M] : Pow M ℕ :=
+  ⟨fun x n ↦ MulOneClass.npow n x⟩
+#align monoid.has_pow MulOneClass.toNatPow
+
+instance AddZeroClass.toNatSMul {M : Type*} [AddZeroClass M] : SMul ℕ M :=
+  ⟨AddZeroClass.nsmul⟩
+#align add_monoid.has_smul_nat AddZeroClass.toNatSMul
+
+attribute [to_additive existing toNatSMul] MulOneClass.toNatPow
+
+section
+
+variable {M : Type*} [MulOneClass M]
+
+@[to_additive (attr := simp) nsmul_eq_smul]
+theorem npow_eq_pow (n : ℕ) (x : M) : MulOneClass.npow n x = x ^ n :=
+  rfl
+#align npow_eq_pow npow_eq_pow
+#align nsmul_eq_smul nsmul_eq_smul
+
+-- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
+@[to_additive zero_nsmul, simp]
+theorem pow_zero (a : M) : a ^ 0 = 1 :=
+  MulOneClass.npow_zero _
+#align pow_zero pow_zero
+#align zero_nsmul zero_nsmul
+
+@[to_additive succ_nsmul]
+theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
+  MulOneClass.npow_succ n a
+#align pow_succ' pow_succ
+#align succ_nsmul' succ_nsmul
+
+end
+
+@[to_additive (attr := ext)]
+theorem MulOneClass.ext {M : Type u} : ∀ ⦃m₁ m₂ : MulOneClass M⦄, m₁.mul = m₂.mul → m₁ = m₂ := by
+  rintro @⟨⟨one₁⟩, ⟨mul₁⟩, one_mul₁, mul_one₁, npow₁, npow_zero₁, npow_succ₁⟩
+    @⟨⟨one₂⟩, ⟨mul₂⟩, one_mul₂, mul_one₂, npow₂, npow_zero₂, npow_succ₂⟩ ⟨rfl⟩
+  -- FIXME (See https://github.com/leanprover/lean4/issues/1711)
+  congr
+  suffices one₁ = one₂ by cases this; rfl
+  exact (one_mul₂ one₁).symm.trans (mul_one₁ one₂)
+  -- have e1 : npow₁ = npow₂ := by refine funext₂ ?h; rfl
+  suffices npow₁ = npow₂ by cases this; rfl
+  sorry
+  -- refine funext₂ ?mk.mk.mk.mk.mk.mk.refl.e_npow.h
+  -- intros
+  -- suffices npow_zero₁ = npow_zero₂ by cases this; rfl
+
+#align mul_one_class.ext MulOneClass.ext
+#align add_zero_class.ext AddZeroClass.ext
+
+
+section MulOneClass
+
+variable {M : Type u} [MulOneClass M]
+
+@[to_additive (attr := simp)]
+theorem one_mul : ∀ a : M, 1 * a = a :=
+  MulOneClass.one_mul
+#align one_mul one_mul
+#align zero_add zero_add
+
+@[to_additive (attr := simp)]
+theorem mul_one : ∀ a : M, a * 1 = a :=
+  MulOneClass.mul_one
+#align mul_one mul_one
+#align add_zero add_zero
+
+end MulOneClass
+
+/-- An `AddMonoid` is an `AddSemigroup` with an element `0` such that `0 + a = a + 0 = a`. -/
+class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
+
+#align add_monoid AddMonoid
+
+
 
 #align add_monoid.nsmul_zero' AddMonoid.nsmul_zero
 #align add_monoid.nsmul_succ' AddMonoid.nsmul_succ
@@ -609,12 +666,6 @@ attribute [instance 50] AddZeroClass.toAdd
 /-- A `Monoid` is a `Semigroup` with an element `1` such that `1 * a = a * 1 = a`. -/
 @[to_additive]
 class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
-  /-- Raising to the power of a natural number. -/
-  protected npow : ℕ → M → M := npowRec
-  /-- Raising to the power `(0 : ℕ)` gives `1`. -/
-  protected npow_zero : ∀ x, npow 0 x = 1 := by intros; rfl
-  /-- Raising to the power `(n + 1 : ℕ)` behaves as expected. -/
-  protected npow_succ : ∀ (n : ℕ) (x), npow (n + 1) x = npow n x * x := by intros; rfl
 #align monoid Monoid
 
 #align monoid.npow_zero' Monoid.npow_zero
@@ -623,40 +674,7 @@ class Monoid (M : Type u) extends Semigroup M, MulOneClass M where
 -- Bug #660
 attribute [to_additive existing] Monoid.toMulOneClass
 
-@[default_instance high] instance Monoid.toNatPow {M : Type*} [Monoid M] : Pow M ℕ :=
-  ⟨fun x n ↦ Monoid.npow n x⟩
-#align monoid.has_pow Monoid.toNatPow
 
-instance AddMonoid.toNatSMul {M : Type*} [AddMonoid M] : SMul ℕ M :=
-  ⟨AddMonoid.nsmul⟩
-#align add_monoid.has_smul_nat AddMonoid.toNatSMul
-
-attribute [to_additive existing toNatSMul] Monoid.toNatPow
-
-section
-
-variable {M : Type*} [Monoid M]
-
-@[to_additive (attr := simp) nsmul_eq_smul]
-theorem npow_eq_pow (n : ℕ) (x : M) : Monoid.npow n x = x ^ n :=
-  rfl
-#align npow_eq_pow npow_eq_pow
-#align nsmul_eq_smul nsmul_eq_smul
-
--- the attributes are intentionally out of order. `zero_smul` proves `zero_nsmul`.
-@[to_additive zero_nsmul, simp]
-theorem pow_zero (a : M) : a ^ 0 = 1 :=
-  Monoid.npow_zero _
-#align pow_zero pow_zero
-#align zero_nsmul zero_nsmul
-
-@[to_additive succ_nsmul]
-theorem pow_succ (a : M) (n : ℕ) : a ^ (n + 1) = a ^ n * a :=
-  Monoid.npow_succ n a
-#align pow_succ' pow_succ
-#align succ_nsmul' succ_nsmul
-
-end
 
 section Monoid
 
@@ -1256,6 +1274,8 @@ initialize_simps_projections LeftCancelSemigroup
 initialize_simps_projections AddLeftCancelSemigroup
 initialize_simps_projections RightCancelSemigroup
 initialize_simps_projections AddRightCancelSemigroup
+initialize_simps_projections MulOneClass
+initialize_simps_projections AddZeroClass
 initialize_simps_projections Monoid
 initialize_simps_projections AddMonoid
 initialize_simps_projections CommMonoid
