@@ -10,7 +10,7 @@ import Mathlib.LinearAlgebra.Dual
 
 A perfect pairing of two (left) modules may be defined either as:
  1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-    bijective. (It follows from this that both `M` and `N` are both reflexive modules.)
+    bijective. It follows from this that both `M` and `N` are reflexive modules.
  2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
     reflexive.)
 
@@ -21,6 +21,8 @@ to connect 1 and 2.
 
  * `PerfectPairing`
  * `PerfectPairing.flip`
+ * `PerfectPairing.toDualLeft`
+ * `PerfectPairing.toDualRight`
  * `LinearEquiv.flip`
  * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
  * `LinearEquiv.toPerfectPairing`
@@ -57,7 +59,61 @@ protected def flip : PerfectPairing R N M where
 
 @[simp] lemma flip_flip : p.flip.flip = p := rfl
 
--- TODO `M` and `N` are both reflexive
+/-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
+@[simps]
+noncomputable def toDualLeft : M ≃ₗ[R] Dual R N where
+  toFun := p.toLin
+  map_add' := LinearMap.map_add p.toLin
+  map_smul' := LinearMapClass.map_smul p.toLin
+  invFun f := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose f
+  left_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.1
+  right_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.2
+
+theorem toDualLeft_invFun (f : Dual R N) (x : N) : p.toLin (p.toDualLeft.invFun f) x = f x := by
+  have h := p.toDualLeft.right_inv
+  rw [rightInverse_iff_comp, funext_iff] at h
+  specialize h f
+  simp_all
+
+/-- The linear equivalence from `N` to `Dual R M` induced by a perfect pairing. -/
+noncomputable def toDualRight : N ≃ₗ[R] Dual R M := toDualLeft p.flip
+
+theorem toDualRight_InvFun (x : M) (f : Dual R M) : (p.toLin x) (p.toDualRight.invFun f) = f x := by
+  have h := p.toDualRight.right_inv
+  rw [rightInverse_iff_comp, funext_iff] at h
+  specialize h f
+  simp_all [toDualLeft_invFun, toDualRight]
+  rw [LinearMap.ext_iff] at h
+  exact h x
+
+theorem toDualLeft_of_toDualRightInvFun (x : M) (f : Dual R M) :
+    (p.toDualLeft x) (p.toDualRight.invFun f) = f x := by
+  rw [@toDualLeft_apply]
+  exact toDualRight_InvFun p x f
+
+theorem toDualRight_symm_toDualLeft (x : M) :
+    p.toDualRight.symm.dualMap (p.toDualLeft x) = Dual.eval R M x := by
+  ext f
+  simp only [LinearEquiv.dualMap_apply, Dual.eval_apply]
+  exact toDualLeft_of_toDualRightInvFun p x f
+
+theorem bijective_toDualRight_symm_toDualLeft :
+    Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
+  Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
+    (LinearEquiv.bijective p.toDualLeft)
+
+theorem reflexive_left : IsReflexive R M where
+  bijective_dual_eval' := by
+    constructor
+    · intro a b h
+      rw [← toDualRight_symm_toDualLeft p a, ← toDualRight_symm_toDualLeft p b] at h
+      apply (bijective_toDualRight_symm_toDualLeft p).1 h
+    · intro a
+      simp_rw [← toDualRight_symm_toDualLeft p]
+      apply (bijective_toDualRight_symm_toDualLeft p).2
+
+theorem reflexive_right : IsReflexive R N :=
+  reflexive_left (p := p.flip)
 
 end PerfectPairing
 
