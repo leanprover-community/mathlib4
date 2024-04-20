@@ -106,11 +106,12 @@ lemma toMvPolynomial_constantCoeff (M : Matrix m n R) (i : m) :
     mul_zero, Finset.sum_const_zero]
 
 @[simp]
-lemma toMvPolynomial_zero (i : m) : (0 : Matrix m n R).toMvPolynomial i = 0 := by
-  simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero]
+lemma toMvPolynomial_zero : (0 : Matrix m n R).toMvPolynomial = 0 := by
+  ext; simp only [toMvPolynomial, zero_apply, map_zero, Finset.sum_const_zero, Pi.zero_apply]
 
 @[simp]
-lemma toMvPolynomial_one [DecidableEq n] (i : n) : (1 : Matrix n n R).toMvPolynomial i = X i := by
+lemma toMvPolynomial_one [DecidableEq n] : (1 : Matrix n n R).toMvPolynomial = X := by
+  ext i : 1
   rw [toMvPolynomial, Finset.sum_eq_single i]
   · simp only [one_apply_eq, ← C_mul_X_eq_monomial, C_1, one_mul]
   · rintro j - hj
@@ -118,9 +119,10 @@ lemma toMvPolynomial_one [DecidableEq n] (i : n) : (1 : Matrix n n R).toMvPolyno
   · intro h
     exact (h (Finset.mem_univ _)).elim
 
-lemma toMvPolynomial_add (M N : Matrix m n R) (i : m) :
-    (M + N).toMvPolynomial i = M.toMvPolynomial i + N.toMvPolynomial i := by
-  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib]
+lemma toMvPolynomial_add (M N : Matrix m n R) :
+    (M + N).toMvPolynomial = M.toMvPolynomial + N.toMvPolynomial := by
+  ext i : 1
+  simp only [toMvPolynomial, add_apply, map_add, Finset.sum_add_distrib, Pi.add_apply]
 
 lemma toMvPolynomial_mul (M : Matrix m n R) (N : Matrix n o R) (i : m) :
     (M * N).toMvPolynomial i = bind₁ N.toMvPolynomial (M.toMvPolynomial i) := by
@@ -177,16 +179,16 @@ lemma toMvPolynomial_constantCoeff (f : M₁ →ₗ[R] M₂) (i : ι₂) :
   Matrix.toMvPolynomial_constantCoeff _ _
 
 @[simp]
-lemma toMvPolynomial_zero (i : ι₂) : (0 : M₁ →ₗ[R] M₂).toMvPolynomial b₁ b₂ i = 0 := by
-  simp only [toMvPolynomial, map_zero, Matrix.toMvPolynomial_zero]
+lemma toMvPolynomial_zero : (0 : M₁ →ₗ[R] M₂).toMvPolynomial b₁ b₂ = 0 := by
+  unfold toMvPolynomial; simp only [map_zero, Matrix.toMvPolynomial_zero]
 
 @[simp]
-lemma toMvPolynomial_id (i : ι₁) : (id : M₁ →ₗ[R] M₁).toMvPolynomial b₁ b₁ i = X i := by
-  simp only [toMvPolynomial, toMatrix_id, Matrix.toMvPolynomial_one]
+lemma toMvPolynomial_id : (id : M₁ →ₗ[R] M₁).toMvPolynomial b₁ b₁ = X := by
+  unfold toMvPolynomial; simp only [toMatrix_id, Matrix.toMvPolynomial_one]
 
-lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) (i : ι₂) :
-    (f + g).toMvPolynomial b₁ b₂ i = f.toMvPolynomial b₁ b₂ i + g.toMvPolynomial b₁ b₂ i := by
-  simp only [toMvPolynomial, map_add, Matrix.toMvPolynomial_add]
+lemma toMvPolynomial_add (f g : M₁ →ₗ[R] M₂) :
+    (f + g).toMvPolynomial b₁ b₂ = f.toMvPolynomial b₁ b₂ + g.toMvPolynomial b₁ b₂ := by
+  unfold toMvPolynomial; simp only [map_add, Matrix.toMvPolynomial_add]
 
 lemma toMvPolynomial_comp (g : M₂ →ₗ[R] M₃) (f : M₁ →ₗ[R] M₂) (i : ι₃) :
     (g ∘ₗ f).toMvPolynomial b₁ b₃ i =
