@@ -79,19 +79,28 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
   measure_univ_lt_top := by simp
 #align add_circle.is_finite_measure AddCircle.isFiniteMeasure
 
+instance : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
+  ExistsIsAddFundamentalDomain := ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
+
+instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCircle T)) := by
+  apply MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage
+  simp [(isAddFundamentalDomain_Ioc' hT.out 0).covolume_eq_volume, AddCircle.measure_univ]
+
 /-- The covering map from `ℝ` to the "additive circle" `ℝ ⧸ (ℤ ∙ T)` is measure-preserving,
 considered with respect to the standard measure (defined to be the Haar measure of total mass `T`)
 on the additive circle, and with respect to the restriction of Lebsegue measure on `ℝ` to an
 interval (t, t + T]. -/
 protected theorem measurePreserving_mk (t : ℝ) :
     MeasurePreserving (β := AddCircle T) ((↑) : ℝ → AddCircle T)
-      (volume.restrict (Ioc t (t + T))) := by
-  apply MeasurePreservingQuotientAddGroup.mk'
-  · exact isAddFundamentalDomain_Ioc' hT.out t
-  · simp
-  · haveI : CompactSpace (ℝ ⧸ zmultiples T) := inferInstanceAs (CompactSpace (AddCircle T))
-    simp [← ENNReal.ofReal_coe_nnreal, Real.coe_toNNReal T hT.out.le, -Real.coe_toNNReal']
+      (volume.restrict (Ioc t (t + T))) :=
+  measurePreserving_quotientAddGroup_mk_of_AddQuotientMeasureEqMeasurePreimage
+    volume (𝓕 := Ioc t (t+T)) (isAddFundamentalDomain_Ioc' hT.out _) _
 #align add_circle.measure_preserving_mk AddCircle.measurePreserving_mk
+
+lemma add_projection_respects_measure (t : ℝ) {U : Set (AddCircle T)} (meas_U : MeasurableSet U) :
+    volume U = volume (QuotientAddGroup.mk ⁻¹' U ∩ (Ioc t (t + T))) :=
+  (isAddFundamentalDomain_Ioc' hT.out _).addProjection_respects_measure_apply
+    (volume : Measure (AddCircle T)) meas_U
 
 theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     volume (Metric.closedBall x ε) = ENNReal.ofReal (min T (2 * ε)) := by
@@ -106,9 +115,8 @@ theorem volume_closedBall {x : AddCircle T} (ε : ℝ) :
     conv_rhs => rw [← if_ctx_congr (Iff.rfl : ε < T / 2 ↔ ε < T / 2) h₁ fun _ => rfl, ← hT']
     apply coe_real_preimage_closedBall_inter_eq
     simpa only [hT', Real.closedBall_eq_Icc, zero_add, zero_sub] using Ioc_subset_Icc_self
-  rw [addHaar_closedBall_center]
-  simp only [restrict_apply' measurableSet_Ioc, (by linarith : -(T / 2) + T = T / 2), h₂, ←
-    (AddCircle.measurePreserving_mk T (-(T / 2))).measure_preimage measurableSet_closedBall]
+  rw [addHaar_closedBall_center, add_projection_respects_measure T (-(T/2))
+    measurableSet_closedBall, (by linarith : -(T / 2) + T = T / 2), h₂]
   by_cases hε : ε < T / 2
   · simp [hε, min_eq_right (by linarith : 2 * ε ≤ T)]
   · simp [I, hε, min_eq_left (by linarith : T ≤ 2 * ε)]
@@ -248,7 +256,7 @@ theorem intervalIntegral_add_eq_of_pos (hf : Periodic f T) (hT : 0 < T) (t s : �
   simp only [integral_of_le, hT.le, le_add_iff_nonneg_right]
   haveI : VAddInvariantMeasure (AddSubgroup.zmultiples T) ℝ volume :=
     ⟨fun c s _ => measure_preimage_add _ _ _⟩
-  apply IsAddFundamentalDomain.set_integral_eq (G := AddSubgroup.zmultiples T)
+  apply IsAddFundamentalDomain.setIntegral_eq (G := AddSubgroup.zmultiples T)
   exacts [isAddFundamentalDomain_Ioc hT t, isAddFundamentalDomain_Ioc hT s, hf.map_vadd_zmultiples]
 #align function.periodic.interval_integral_add_eq_of_pos Function.Periodic.intervalIntegral_add_eq_of_pos
 
@@ -285,7 +293,7 @@ theorem intervalIntegral_add_zsmul_eq (hf : Periodic f T) (n : ℤ) (t : ℝ)
   have : ∀ m : ℕ, (∫ x in (0)..m • T, f x) = m • ∫ x in (0)..T, f x := fun m ↦ by
     induction' m with m ih
     · simp
-    · simp only [succ_nsmul', hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
+    · simp only [succ_nsmul, hf.intervalIntegral_add_eq_add 0 (m • T) h_int, ih, zero_add]
   -- Then prove it for all integers
   cases' n with n n
   · simp [← this n]

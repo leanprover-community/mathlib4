@@ -26,18 +26,18 @@ open scoped Real
 namespace Real
 
 theorem pi_gt_sqrtTwoAddSeries (n : ℕ) :
-    (2 : ℝ) ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) < π := by
-  have : sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) * (2 : ℝ) ^ (n + 2) < π := by
+    (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) < π := by
+  have : √(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) * (2 : ℝ) ^ (n + 2) < π := by
     rw [← lt_div_iff, ← sin_pi_over_two_pow_succ]; apply sin_lt; apply div_pos pi_pos
     all_goals apply pow_pos; norm_num
   apply lt_of_le_of_lt (le_of_eq _) this
-  rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
+  rw [pow_succ' _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
 #align real.pi_gt_sqrt_two_add_series Real.pi_gt_sqrtTwoAddSeries
 
 theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
-    π < (2 : ℝ) ^ (n + 1) * sqrt (2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
+    π < (2 : ℝ) ^ (n + 1) * √(2 - sqrtTwoAddSeries 0 n) + 1 / (4 : ℝ) ^ n := by
   have : π <
-      (sqrt (2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
+      (√(2 - sqrtTwoAddSeries 0 n) / (2 : ℝ) + (1 : ℝ) / ((2 : ℝ) ^ n) ^ 3 / 4) *
       (2 : ℝ) ^ (n + 2) := by
     rw [← div_lt_iff, ← sin_pi_over_two_pow_succ]
     refine' lt_of_lt_of_le (lt_add_of_sub_right_lt (sin_gt_sub_cube _ _)) _
@@ -54,15 +54,15 @@ theorem pi_lt_sqrtTwoAddSeries (n : ℕ) :
       norm_num
     rw [← le_div_iff]
     refine' le_trans ((div_le_div_right _).mpr pi_le_four) _; apply pow_pos; norm_num
-    rw [pow_succ, pow_succ, ← mul_assoc, ← div_div]
+    simp only [pow_succ', ← div_div, one_div]
     -- Porting note: removed `convert le_rfl`
     all_goals (repeat' apply pow_pos); norm_num
   apply lt_of_lt_of_le this (le_of_eq _); rw [add_mul]; congr 1
-  · rw [pow_succ _ (n + 1), ← mul_assoc, div_mul_cancel₀, mul_comm]; norm_num
-  rw [pow_succ, ← pow_mul, mul_comm n 2, pow_mul, show (2 : ℝ) ^ 2 = 4 by norm_num, pow_succ,
-    pow_succ, ← mul_assoc (2 : ℝ), show (2 : ℝ) * 2 = 4 by norm_num, ← mul_assoc, div_mul_cancel₀,
-    mul_comm ((2 : ℝ) ^ n), ← div_div, div_mul_cancel₀]
-  apply pow_ne_zero; norm_num; norm_num
+  · ring
+  simp only [show (4 : ℝ) = 2 ^ 2 by norm_num, ← pow_mul, div_div, ← pow_add]
+  rw [one_div, one_div, inv_mul_eq_iff_eq_mul₀, eq_comm, mul_inv_eq_iff_eq_mul₀, ← pow_add]
+  rw [add_assoc, Nat.mul_succ, add_comm, add_comm n, add_assoc, mul_comm n]
+  all_goals norm_num
 #align real.pi_lt_sqrt_two_add_series Real.pi_lt_sqrtTwoAddSeries
 
 /-- From an upper bound on `sqrtTwoAddSeries 0 n = 2 cos (π / 2 ^ (n+1))` of the form
@@ -100,8 +100,8 @@ private def numDen : Syntax → Option (Syntax.Term × Syntax.Term)
   | _          => none
 
 /-- Create a proof of `a < π` for a fixed rational number `a`, given a witness, which is a
-sequence of rational numbers `sqrt 2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
-`sqrt (2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `sqrt (2 - r n) ≥ a/2^(n+1)`. -/
+sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
+`√(2 + r i) ≤ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ a/2^(n+1)`. -/
 elab "pi_lower_bound " "[" l:term,* "]" : tactic => do
   let rat_sep := l.elemsAndSeps
   let sep := rat_sep.getD 1 .missing
@@ -146,8 +146,8 @@ section Tactic
 open Lean Elab Tactic
 
 /-- Create a proof of `π < a` for a fixed rational number `a`, given a witness, which is a
-sequence of rational numbers `sqrt 2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
-`sqrt (2 + r i) ≥ r(i+1)`, where `r 0 = 0` and `sqrt (2 - r n) ≥ (a - 1/4^n) / 2^(n+1)`. -/
+sequence of rational numbers `√2 < r 1 < r 2 < ... < r n < 2` satisfying the property that
+`√(2 + r i) ≥ r(i+1)`, where `r 0 = 0` and `√(2 - r n) ≥ (a - 1/4^n) / 2^(n+1)`. -/
 elab "pi_upper_bound " "[" l:term,* "]" : tactic => do
   let rat_sep := l.elemsAndSeps
   let sep := rat_sep.getD 1 .missing

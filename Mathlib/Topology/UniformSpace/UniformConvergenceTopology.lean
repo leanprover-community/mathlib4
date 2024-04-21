@@ -167,6 +167,12 @@ instance [Nonempty β] : Nonempty (α →ᵤ β) := Pi.instNonempty
 
 instance [Nonempty β] : Nonempty (α →ᵤ[𝔖] β) := Pi.instNonempty
 
+instance [Subsingleton β] : Subsingleton (α →ᵤ β) :=
+  inferInstanceAs <| Subsingleton <| α → β
+
+instance [Subsingleton β] : Subsingleton (α →ᵤ[𝔖] β) :=
+  inferInstanceAs <| Subsingleton <| α → β
+
 /-- Reinterpret `f : α → β` as an element of `α →ᵤ β`. -/
 def UniformFun.ofFun : (α → β) ≃ (α →ᵤ β) :=
   ⟨fun x => x, fun x => x, fun _ => rfl, fun _ => rfl⟩
@@ -235,7 +241,6 @@ protected def filter (𝓕 : Filter <| β × β) : Filter ((α →ᵤ β) × (α
   (UniformFun.basis α β 𝓕).filter
 #align uniform_fun.filter UniformFun.filter
 
--- mathport name: exprΦ
 --local notation "Φ" => fun (α β : Type*) (uvx : ((α →ᵤ β) × (α →ᵤ β)) × α) =>
   --(uvx.fst.fst uvx.2, uvx.1.2 uvx.2)
 
@@ -299,7 +304,6 @@ instance uniformSpace : UniformSpace (α →ᵤ β) :=
 instance topologicalSpace : TopologicalSpace (α →ᵤ β) :=
   inferInstance
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- By definition, the uniformity of `α →ᵤ β` admits the family `{(f, g) | ∀ x, (f x, g x) ∈ V}`
@@ -540,7 +544,6 @@ namespace UniformOnFun
 variable {α β : Type*} {γ ι : Type*}
 variable {s s' : Set α} {x : α} {p : Filter ι} {g : ι → α}
 
--- mathport name: «expr𝒰( , , )»
 local notation "𝒰(" α ", " β ", " u ")" => @UniformFun.uniformSpace α β u
 
 /-- Basis sets for the uniformity of `𝔖`-convergence: for `S : Set α` and `V : Set (β × β)`,
@@ -555,7 +558,7 @@ protected def gen (𝔖) (S : Set α) (V : Set (β × β)) : Set ((α →ᵤ[�
 `UniformOnFun.gen 𝔖 S V = (S.restrict × S.restrict) ⁻¹' (UniformFun.gen S β V)`.
 This is the crucial fact for proving that the family `UniformOnFun.gen S V` for `S ∈ 𝔖` and
 `V ∈ 𝓤 β` is indeed a basis for the uniformity `α →ᵤ[𝔖] β` endowed with `𝒱(α, β, 𝔖, uβ)`
-the uniform structure of `𝔖`-convergence, as defined in `UniformOnFun.uniform_space`. -/
+the uniform structure of `𝔖`-convergence, as defined in `UniformOnFun.uniformSpace`. -/
 protected theorem gen_eq_preimage_restrict {𝔖} (S : Set α) (V : Set (β × β)) :
     UniformOnFun.gen 𝔖 S V =
       Prod.map (S.restrict ∘ UniformFun.toFun) (S.restrict ∘ UniformFun.toFun) ⁻¹'
@@ -870,6 +873,14 @@ theorem t2Space_of_covering [T2Space β] (h : ⋃₀ 𝔖 = univ) : T2Space (α 
     obtain ⟨s, hs, hxs⟩ : ∃ s ∈ 𝔖, x ∈ s := mem_sUnion.mp (h.symm ▸ True.intro)
     exact separated_by_continuous (uniformContinuous_eval_of_mem β 𝔖 hxs hs).continuous hx
 #align uniform_on_fun.t2_space_of_covering UniformOnFun.t2Space_of_covering
+
+/-- The restriction map from `α →ᵤ[𝔖] β` to `⋃₀ 𝔖 → β` is uniformly continuous. -/
+theorem uniformContinuous_restrict_toFun :
+    UniformContinuous ((⋃₀ 𝔖).restrict ∘ toFun 𝔖 : (α →ᵤ[𝔖] β) → ⋃₀ 𝔖 → β) := by
+  rw [uniformContinuous_pi]
+  intro ⟨x, hx⟩
+  obtain ⟨s : Set α, hs : s ∈ 𝔖, hxs : x ∈ s⟩ := mem_sUnion.mpr hx
+  exact uniformContinuous_eval_of_mem β 𝔖 hxs hs
 
 /-- If `𝔖` covers `α`, the natural map `UniformOnFun.toFun` from `α →ᵤ[𝔖] β` to `α → β` is
 uniformly continuous.

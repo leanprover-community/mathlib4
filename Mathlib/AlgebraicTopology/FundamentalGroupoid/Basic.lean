@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -217,7 +217,7 @@ theorem trans_assoc_reparam {x₀ x₁ x₂ x₃ : X} (p : Path x₀ x₁) (q : 
         (Subtype.ext transAssocReparamAux_zero) (Subtype.ext transAssocReparamAux_one) := by
   ext x
   simp only [transAssocReparamAux, Path.trans_apply, mul_inv_cancel_left₀, not_le,
-    Function.comp_apply, Ne.def, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
+    Function.comp_apply, Ne, not_false_iff, bit0_eq_zero, one_ne_zero, mul_ite, Subtype.coe_mk,
     Path.coe_reparam]
   -- TODO: why does split_ifs not reduce the ifs??????
   split_ifs with h₁ h₂ h₃ h₄ h₅
@@ -271,7 +271,7 @@ end Path
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type u) where
-  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 #align fundamental_groupoid FundamentalGroupoid
 

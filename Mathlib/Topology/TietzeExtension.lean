@@ -130,7 +130,7 @@ instance Unique.instTietzeExtension {Y : Type v} [TopologicalSpace Y] [Unique Y]
     TietzeExtension.{u, v} Y where
   exists_restrict_eq' _ _ f := ⟨.const _ default, by ext x; exact Subsingleton.elim _ _⟩
 
-/-- Any retract of a `TietzeExtension` space is one itself.-/
+/-- Any retract of a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (ι : C(Y, Z)) (r : C(Z, Y))
     (h : r.comp ι = .id Y) : TietzeExtension.{u, v} Y where
@@ -142,7 +142,7 @@ theorem TietzeExtension.of_retract {Y : Type v} {Z : Type w} [TopologicalSpace Y
     rw [← r.comp_assoc ι, h, f.id_comp] at this
     congrm($this x)
 
-/-- Any homeomorphism from a `TietzeExtension` space is one itself.-/
+/-- Any homeomorphism from a `TietzeExtension` space is one itself. -/
 theorem TietzeExtension.of_homeo {Y : Type v} {Z : Type w} [TopologicalSpace Y]
     [TopologicalSpace Z] [TietzeExtension.{u, w} Z] (e : Y ≃ₜ Z) :
     TietzeExtension.{u, v} Y :=
@@ -230,7 +230,7 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     intro n
     induction' n with n ihn
     · simp [g0]
-    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ, mul_assoc]
+    · rw [g_succ n, add_compContinuous, ← dist_sub_right, add_sub_cancel_left, pow_succ', mul_assoc]
       refine' (hF_dist _).trans (mul_le_mul_of_nonneg_left _ (by norm_num1))
       rwa [← dist_eq_norm']
   have hg_dist : ∀ n, dist (g n) (g (n + 1)) ≤ 1 / 3 * ‖f‖ * (2 / 3) ^ n := by
@@ -238,9 +238,9 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     calc
       dist (g n) (g (n + 1)) = ‖F (f - (g n).compContinuous e)‖ := by
         rw [g_succ, dist_eq_norm', add_sub_cancel_left]
-      _ ≤ ‖f - (g n).compContinuous e‖ / 3 := (hF_norm _)
+      _ ≤ ‖f - (g n).compContinuous e‖ / 3 := hF_norm _
       _ = 1 / 3 * dist ((g n).compContinuous e) f := by rw [dist_eq_norm', one_div, div_eq_inv_mul]
-      _ ≤ 1 / 3 * ((2 / 3) ^ n * ‖f‖) := (mul_le_mul_of_nonneg_left (hgf n) (by norm_num1))
+      _ ≤ 1 / 3 * ((2 / 3) ^ n * ‖f‖) := mul_le_mul_of_nonneg_left (hgf n) (by norm_num1)
       _ = 1 / 3 * ‖f‖ * (2 / 3) ^ n := by ac_rfl
   have hg_cau : CauchySeq g := cauchySeq_of_le_geometric _ _ (by norm_num1) hg_dist
   have :
@@ -411,7 +411,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       · have hay : a < (g - dg) y := by
           calc
             a = c - (b - c) := by rw [← hsub, sub_sub_cancel]
-            _ < g y - (b - c) := (sub_lt_sub_right hc _)
+            _ < g y - (b - c) := sub_lt_sub_right hc _
             _ ≤ g y - dg y := sub_le_sub_left (dgmem _).2 _
         rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
         exact ⟨x, xu, hxy.le, hyxu.le⟩
@@ -502,7 +502,7 @@ attribute [deprecated] exists_extension_of_closedEmbedding -- deprecated since 2
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
-on `s`. Let `t` be a nonempty convex set of real numbers (we use `ord_connected` instead of `convex`
+on `s`. Let `t` be a nonempty convex set of real numbers (we use `OrdConnected` instead of `Convex`
 to automatically deduce this argument by typeclass search) such that `f x ∈ t` for all `x : s`. Then
 there exists a continuous real-valued function `g : C(Y, ℝ)` such that `g y ∈ t` for all `y` and
 `g.restrict s = f`. -/

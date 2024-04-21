@@ -522,7 +522,7 @@ theorem _root_.IsFractional.nsmul {I : Submodule R P} :
     simp
   | n + 1, h => by
     rw [succ_nsmul]
-    exact h.sup (IsFractional.nsmul n h)
+    exact (IsFractional.nsmul n h).sup h
 #align is_fractional.nsmul IsFractional.nsmul
 
 instance : SMul ℕ (FractionalIdeal S P) where smul n I := ⟨n • ↑I, I.isFractional.nsmul n⟩
@@ -551,7 +551,7 @@ theorem _root_.IsFractional.mul {I J : Submodule R P} :
 theorem _root_.IsFractional.pow {I : Submodule R P} (h : IsFractional S I) :
     ∀ n : ℕ, IsFractional S (I ^ n : Submodule R P)
   | 0 => isFractional_of_le_one _ (pow_zero _).le
-  | n + 1 => (pow_succ I n).symm ▸ h.mul (IsFractional.pow h n)
+  | n + 1 => (pow_succ I n).symm ▸ (IsFractional.pow h n).mul h
 #align is_fractional.pow IsFractional.pow
 
 /-- `FractionalIdeal.mul` is the product of two fractional ideals,
@@ -632,14 +632,14 @@ protected theorem mul_induction_on {I J : FractionalIdeal S P} {C : P → Prop} 
 instance : NatCast (FractionalIdeal S P) :=
   ⟨Nat.unaryCast⟩
 
-theorem coe_nat_cast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
+theorem coe_natCast (n : ℕ) : ((n : FractionalIdeal S P) : Submodule R P) = n :=
   show ((n.unaryCast : FractionalIdeal S P) : Submodule R P) = n
   by induction n <;> simp [*, Nat.unaryCast]
-#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_nat_cast
+#align fractional_ideal.coe_nat_cast FractionalIdeal.coe_natCast
 
 instance commSemiring : CommSemiring (FractionalIdeal S P) :=
   Function.Injective.commSemiring _ Subtype.coe_injective coe_zero coe_one coe_add coe_mul
-    (fun _ _ => coe_nsmul _ _) coe_pow coe_nat_cast
+    (fun _ _ => coe_nsmul _ _) coe_pow coe_natCast
 
 end Semiring
 

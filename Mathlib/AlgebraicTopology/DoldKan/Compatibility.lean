@@ -65,8 +65,8 @@ variable {eA} {e'}
 `e'.inverse ⋙ eA.inverse`. -/
 @[simps! functor]
 def equivalence₁ : A ≌ B' :=
-  letI : IsEquivalence F :=
-    IsEquivalence.ofIso hF (IsEquivalence.ofEquivalence (equivalence₀ eA e'))
+  letI : F.IsEquivalence :=
+    Functor.IsEquivalence.ofIso hF (Functor.IsEquivalence.ofEquivalence (equivalence₀ eA e'))
   F.asEquivalence
 #align algebraic_topology.dold_kan.compatibility.equivalence₁ AlgebraicTopology.DoldKan.Compatibility.equivalence₁
 
@@ -88,7 +88,8 @@ def equivalence₁CounitIso : (e'.inverse ⋙ eA.inverse) ⋙ F ≅ 𝟭 B' :=
 
 theorem equivalence₁CounitIso_eq : (equivalence₁ hF).counitIso = equivalence₁CounitIso hF := by
   ext Y
-  dsimp [equivalence₁, equivalence₀, IsEquivalence.inverse, IsEquivalence.ofEquivalence]
+  dsimp [equivalence₁, equivalence₀, Functor.IsEquivalence.inverse,
+    Functor.IsEquivalence.ofEquivalence]
   simp
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_counit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁CounitIso_eq
 
@@ -106,7 +107,7 @@ def equivalence₁UnitIso : 𝟭 A ≅ F ⋙ e'.inverse ⋙ eA.inverse :=
 
 theorem equivalence₁UnitIso_eq : (equivalence₁ hF).unitIso = equivalence₁UnitIso hF := by
   ext X
-  dsimp [equivalence₁, NatIso.hcomp, IsEquivalence.ofEquivalence]
+  dsimp [equivalence₁, NatIso.hcomp, Functor.IsEquivalence.ofEquivalence]
   simp
 #align algebraic_topology.dold_kan.compatibility.equivalence₁_unit_iso_eq AlgebraicTopology.DoldKan.Compatibility.equivalence₁UnitIso_eq
 
@@ -168,8 +169,9 @@ variable {eB}
 whose inverse is `G : B ≅ A`. -/
 @[simps! inverse]
 def equivalence : A ≌ B :=
-  letI : IsEquivalence G := by
-    refine' IsEquivalence.ofIso _ (IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
+  letI : G.IsEquivalence := by
+    refine' Functor.IsEquivalence.ofIso _
+      (Functor.IsEquivalence.ofEquivalence (equivalence₂ eB hF).symm)
     calc
       eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅ (eB.functor ⋙ e'.inverse) ⋙ eA.inverse := Iso.refl _
       _ ≅ (G ⋙ eA.functor) ⋙ eA.inverse := isoWhiskerRight hG _
@@ -221,8 +223,8 @@ variable {η hF hG}
 
 theorem equivalenceCounitIso_eq : (equivalence hF hG).counitIso = equivalenceCounitIso η := by
   ext1; apply NatTrans.ext; ext Y
-  dsimp [equivalence, Functor.asEquivalence, IsEquivalence.ofEquivalence]
-  rw [equivalenceCounitIso_hom_app, IsEquivalence.ofIso_unitIso_inv_app]
+  dsimp [equivalence, Functor.asEquivalence, Functor.IsEquivalence.ofEquivalence]
+  rw [equivalenceCounitIso_hom_app, Functor.IsEquivalence.ofIso_unitIso_inv_app]
   dsimp
   simp only [comp_id, id_comp, F.map_comp, assoc,
     equivalence₂CounitIso_eq, equivalence₂CounitIso_hom_app,
@@ -244,7 +246,7 @@ unit isomorphism of `e'` and the isomorphism `hF : eA.functor ⋙ e'.functor ≅
 def υ : eA.functor ≅ F ⋙ e'.inverse :=
   calc
     eA.functor ≅ eA.functor ⋙ 𝟭 A' := (Functor.leftUnitor _).symm
-    _ ≅ eA.functor ⋙ e'.functor ⋙ e'.inverse := (isoWhiskerLeft _ e'.unitIso)
+    _ ≅ eA.functor ⋙ e'.functor ⋙ e'.inverse := isoWhiskerLeft _ e'.unitIso
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse := Iso.refl _
     _ ≅ F ⋙ e'.inverse := isoWhiskerRight hF _
 #align algebraic_topology.dold_kan.compatibility.υ AlgebraicTopology.DoldKan.Compatibility.υ
@@ -272,8 +274,9 @@ variable {ε hF hG}
 
 theorem equivalenceUnitIso_eq : (equivalence hF hG).unitIso = equivalenceUnitIso hG ε := by
   ext1; apply NatTrans.ext; ext X
-  dsimp [equivalence, Functor.asEquivalence, IsEquivalence.ofEquivalence, IsEquivalence.inverse]
-  rw [IsEquivalence.ofIso_counitIso_inv_app]
+  dsimp [equivalence, Functor.asEquivalence, Functor.IsEquivalence.ofEquivalence,
+    Functor.IsEquivalence.inverse]
+  rw [Functor.IsEquivalence.ofIso_counitIso_inv_app]
   dsimp
   erw [id_comp, comp_id]
   simp only [equivalence₂UnitIso_eq eB hF, equivalence₂UnitIso_hom_app,

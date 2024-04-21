@@ -103,7 +103,7 @@ private theorem card_nonuniformWitness_sdiff_biUnion_star (hV : V ∈ P.parts) (
     rw [← biUnion_filter_atomise hX (G.nonuniformWitness_subset h₂), star, mem_sdiff,
       mem_biUnion] at hx
     simp only [not_exists, mem_biUnion, and_imp, exists_prop, mem_filter,
-      not_and, mem_sdiff, id.def, mem_sdiff] at hx ⊢
+      not_and, mem_sdiff, id, mem_sdiff] at hx ⊢
     obtain ⟨⟨B, hB₁, hB₂⟩, hx⟩ := hx
     exact ⟨B, hB₁, hB₂, fun A hA AB => hx A hA <| AB.trans hB₁.2.1⟩
   apply (card_le_card q).trans (card_biUnion_le.trans _)
@@ -138,11 +138,11 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
           ((2 : ℝ) * 2) ^ P.parts.card * m / U.card := by
         rw [mul_pow, ← mul_div_assoc, mul_assoc]
       _ = ↑4 ^ P.parts.card * m / U.card := by norm_num
-      _ ≤ 1 := (div_le_one_of_le (pow_mul_m_le_card_part hP hU) (cast_nonneg _))
+      _ ≤ 1 := div_le_one_of_le (pow_mul_m_le_card_part hP hU) (cast_nonneg _)
       _ ≤ ↑2 ^ P.parts.card * ε ^ 2 / 10 := by
         refine' (one_le_sq_iff <| by positivity).1 _
         rw [div_pow, mul_pow, pow_right_comm, ← pow_mul ε,
-          one_le_div (sq_pos_of_ne_zero (10 : ℝ) <| by norm_num)]
+          one_le_div (sq_pos_of_ne_zero <| by norm_num)]
         calc
           (↑10 ^ 2) = 100 := by norm_num
           _ ≤ ↑4 ^ P.parts.card * ε ^ 5 := hPε
@@ -161,7 +161,7 @@ private theorem one_sub_eps_mul_card_nonuniformWitness_le_card_star (hV : V ∈ 
     _ ≤ (G.nonuniformWitness ε U V).card - ↑2 ^ (P.parts.card - 1) * m := by
       refine' sub_le_sub_left _ _
       have : (2 : ℝ) ^ P.parts.card = ↑2 ^ (P.parts.card - 1) * 2 := by
-        rw [← _root_.pow_succ', tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
+        rw [← _root_.pow_succ, tsub_add_cancel_of_le (succ_le_iff.2 hP₁)]
       rw [← mul_div_right_comm, this, mul_right_comm _ (2 : ℝ), mul_assoc, le_div_iff]
       refine' mul_le_mul_of_nonneg_left _ (by positivity)
       exact (G.le_card_nonuniformWitness hunif).trans

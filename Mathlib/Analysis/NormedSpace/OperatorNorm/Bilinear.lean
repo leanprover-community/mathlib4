@@ -304,7 +304,8 @@ def compSL : (F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ�
 #align continuous_linear_map.compSL ContinuousLinearMap.compSL
 
 theorem norm_compSL_le :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((F →SL[σ₂₃] G) →L[𝕜₃] (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G) :=
       hasOpNorm (E := F →SL[σ₂₃] G) (F := (E →SL[σ₁₂] F) →SL[σ₂₃] E →SL[σ₁₃] G)
     ‖compSL E F G σ₁₂ σ₂₃‖ ≤ 1 :=
@@ -340,6 +341,8 @@ def compL : (Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E �
 #align continuous_linear_map.compL ContinuousLinearMap.compL
 
 theorem norm_compL_le :
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((Fₗ →L[𝕜] Gₗ) →L[𝕜] (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ) :=
       hasOpNorm (E := Fₗ →L[𝕜] Gₗ) (F := (E →L[𝕜] Fₗ) →L[𝕜] E →L[𝕜] Gₗ)
     ‖compL 𝕜 E Fₗ Gₗ‖ ≤ 1 :=
@@ -364,19 +367,24 @@ def precompL (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) : (Eₗ →L[𝕜] E) →L[
   (precompR Eₗ (flip L)).flip
 #align continuous_linear_map.precompL ContinuousLinearMap.precompL
 
+@[simp] lemma precompL_apply (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) (u : Eₗ →L[𝕜] E) (f : Fₗ) (g : Eₗ) :
+    precompL Eₗ L u f g = L (u g) f := rfl
+
 theorem norm_precompR_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : SeminormedAddCommGroup ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     letI : NormedSpace 𝕜 ((Eₗ →L[𝕜] Fₗ) →L[𝕜] Eₗ →L[𝕜] Gₗ) := inferInstance
     ‖precompR Eₗ L‖ ≤ ‖L‖ :=
   calc
     ‖precompR Eₗ L‖ ≤ ‖compL 𝕜 Eₗ Fₗ Gₗ‖ * ‖L‖ := opNorm_comp_le _ _
-    _ ≤ 1 * ‖L‖ := (mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _))
+    _ ≤ 1 * ‖L‖ := mul_le_mul_of_nonneg_right (norm_compL_le _ _ _ _) (norm_nonneg _)
     _ = ‖L‖ := by rw [one_mul]
 #align continuous_linear_map.norm_precompR_le ContinuousLinearMap.norm_precompR_le
 
 theorem norm_precompL_le (L : E →L[𝕜] Fₗ →L[𝕜] Gₗ) :
-    -- Porting note: added
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm ((Eₗ →L[𝕜] E) →L[𝕜] Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ) :=
       hasOpNorm (E := Eₗ →L[𝕜] E) (F := Fₗ →L[𝕜] Eₗ →L[𝕜] Gₗ)
     ‖precompL Eₗ L‖ ≤ ‖L‖ := by

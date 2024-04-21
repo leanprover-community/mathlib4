@@ -245,7 +245,7 @@ instance (priority := 100) CompatibleSMul.isScalarTower [SMul R' R] [IsScalarTow
     exact Quotient.sound' <| AddConGen.Rel.of _ _ <| Eqv.of_smul _ _ _⟩
 #align tensor_product.compatible_smul.is_scalar_tower TensorProduct.CompatibleSMul.isScalarTower
 
-/-- `smul` can be moved from one side of the product to the other .-/
+/-- `smul` can be moved from one side of the product to the other . -/
 theorem smul_tmul [DistribMulAction R' N] [CompatibleSMul R R' M N] (r : R') (m : M) (n : N) :
     (r • m) ⊗ₜ n = m ⊗ₜ[R] (r • n) :=
   CompatibleSMul.smul_tmul _ _ _
@@ -334,13 +334,13 @@ protected theorem add_smul (r s : R'') (x : M ⊗[R] N) : (r + s) • x = r • 
 #align tensor_product.add_smul TensorProduct.add_smul
 
 instance addMonoid : AddMonoid (M ⊗[R] N) :=
-{ TensorProduct.addZeroClass _ _ with
-  toAddSemigroup := TensorProduct.addSemigroup _ _
-  toZero := (TensorProduct.addZeroClass _ _).toZero
-  nsmul := fun n v => n • v
-  nsmul_zero := by simp [TensorProduct.zero_smul]
-  nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
-    forall_const] }
+  { TensorProduct.addZeroClass _ _ with
+    toAddSemigroup := TensorProduct.addSemigroup _ _
+    toZero := (TensorProduct.addZeroClass _ _).toZero
+    nsmul := fun n v => n • v
+    nsmul_zero := by simp [TensorProduct.zero_smul]
+    nsmul_succ := by simp only [TensorProduct.one_smul, TensorProduct.add_smul, add_comm,
+      forall_const] }
 
 instance addCommMonoid : AddCommMonoid (M ⊗[R] N) :=
   { TensorProduct.addCommSemigroup _ _ with
@@ -760,6 +760,10 @@ theorem rid_symm_apply (m : M) : (TensorProduct.rid R M).symm m = m ⊗ₜ 1 :=
   rfl
 #align tensor_product.rid_symm_apply TensorProduct.rid_symm_apply
 
+variable (R) in
+theorem lid_eq_rid : TensorProduct.lid R R = TensorProduct.rid R R :=
+  LinearEquiv.toLinearMap_injective <| ext' mul_comm
+
 open LinearMap
 
 section
@@ -859,6 +863,11 @@ def mapIncl (p : Submodule R P) (q : Submodule R Q) : p ⊗[R] q →ₗ[R] P ⊗
   map p.subtype q.subtype
 #align tensor_product.map_incl TensorProduct.mapIncl
 
+lemma range_mapIncl (p : Submodule R P) (q : Submodule R Q) :
+    LinearMap.range (mapIncl p q) = Submodule.span R (Set.image2 (· ⊗ₜ ·) p q) := by
+  rw [mapIncl, map_range_eq_span_tmul]
+  congr; ext; simp
+
 section
 
 variable {P' Q' : Type*}
@@ -870,6 +879,11 @@ theorem map_comp (f₂ : P →ₗ[R] P') (f₁ : M →ₗ[R] P) (g₂ : Q →ₗ
   ext' fun _ _ => rfl
 #align tensor_product.map_comp TensorProduct.map_comp
 
+lemma range_mapIncl_mono {p p' : Submodule R P} {q q' : Submodule R Q} (hp : p ≤ p') (hq : q ≤ q') :
+    LinearMap.range (mapIncl p q) ≤ LinearMap.range (mapIncl p' q') := by
+  simp_rw [range_mapIncl]
+  exact Submodule.span_mono (Set.image2_subset hp hq)
+
 theorem lift_comp_map (i : P →ₗ[R] Q →ₗ[R] Q') (f : M →ₗ[R] P) (g : N →ₗ[R] Q) :
     (lift i).comp (map f g) = lift ((i.comp f).compl₂ g) :=
   ext' fun _ _ => rfl
@@ -880,7 +894,7 @@ attribute [local ext high] ext
 @[simp]
 theorem map_id : map (id : M →ₗ[R] M) (id : N →ₗ[R] N) = .id := by
   ext
-  simp only [mk_apply, id_coe, compr₂_apply, id.def, map_tmul]
+  simp only [mk_apply, id_coe, compr₂_apply, _root_.id, map_tmul]
 #align tensor_product.map_id TensorProduct.map_id
 
 @[simp]
@@ -1153,6 +1167,21 @@ lemma comm_comp_lTensor_comp_comm_eq (g : N →ₗ[R] P) :
       rTensor Q g :=
   TensorProduct.ext rfl
 
+/-- Given a linear map `f : N → P`, `f ⊗ M` is injective if and only if `M ⊗ f` is injective. -/
+theorem lTensor_inj_iff_rTensor_inj :
+    Function.Injective (lTensor M f) ↔ Function.Injective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is surjective if and only if `M ⊗ f` is surjective. -/
+theorem lTensor_surj_iff_rTensor_surj :
+    Function.Surjective (lTensor M f) ↔ Function.Surjective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
+/-- Given a linear map `f : N → P`, `f ⊗ M` is bijective if and only if `M ⊗ f` is bijective. -/
+theorem lTensor_bij_iff_rTensor_bij :
+    Function.Bijective (lTensor M f) ↔ Function.Bijective (rTensor M f) := by
+  simp [← comm_comp_rTensor_comp_comm_eq]
+
 open TensorProduct
 
 attribute [local ext high] TensorProduct.ext
@@ -1169,7 +1198,7 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
     simp only [compr₂_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
 #align linear_map.ltensor_hom LinearMap.lTensorHom
 
-/-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `M ⊗ f`. -/
+/-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`. -/
 def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
@@ -1256,7 +1285,7 @@ theorem lTensor_id : (id : N →ₗ[R] N).lTensor M = id :=
 
 -- `simp` can prove this.
 theorem lTensor_id_apply (x : M ⊗[R] N) : (LinearMap.id : N →ₗ[R] N).lTensor M x = x := by
-  rw [lTensor_id, id_coe, id.def]
+  rw [lTensor_id, id_coe, _root_.id]
 #align linear_map.ltensor_id_apply LinearMap.lTensor_id_apply
 
 @[simp]
@@ -1266,7 +1295,7 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 
 -- `simp` can prove this.
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
-  rw [rTensor_id, id_coe, id.def]
+  rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
 
 variable {N}
@@ -1377,7 +1406,7 @@ instance addCommGroup : AddCommGroup (M ⊗[R] N) :=
     add_left_neg := fun x => TensorProduct.add_left_neg x
     zsmul := fun n v => n • v
     zsmul_zero' := by simp [TensorProduct.zero_smul]
-    zsmul_succ' := by simp [Nat.succ_eq_one_add, TensorProduct.one_smul, TensorProduct.add_smul]
+    zsmul_succ' := by simp [Nat.succ_eq_add_one, TensorProduct.one_smul, TensorProduct.add_smul]
     zsmul_neg' := fun n x => by
       change (-n.succ : ℤ) • x = -(((n : ℤ) + 1) • x)
       rw [← zero_add (_ • x), ← TensorProduct.add_left_neg ((n.succ : ℤ) • x), add_assoc,

@@ -152,10 +152,10 @@ theorem iso_of_iso (f : A₀ ⟶ A₁) [IsIso f.1] : IsIso f :=
         simp }, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.endofunctor.algebra.iso_of_iso CategoryTheory.Endofunctor.Algebra.iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
+instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 #align category_theory.endofunctor.algebra.forget_reflects_iso CategoryTheory.Endofunctor.Algebra.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget F) := { }
+instance forget_faithful : (forget F).Faithful := { }
 #align category_theory.endofunctor.algebra.forget_faithful CategoryTheory.Endofunctor.Algebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/
@@ -375,10 +375,10 @@ theorem iso_of_iso (f : V₀ ⟶ V₁) [IsIso f.1] : IsIso f :=
         simp }, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.endofunctor.coalgebra.iso_of_iso CategoryTheory.Endofunctor.Coalgebra.iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms (forget F) where reflects := iso_of_iso
+instance forget_reflects_iso : (forget F).ReflectsIsomorphisms where reflects := iso_of_iso
 #align category_theory.endofunctor.coalgebra.forget_reflects_iso CategoryTheory.Endofunctor.Coalgebra.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget F) := { }
+instance forget_faithful : (forget F).Faithful := { }
 #align category_theory.endofunctor.coalgebra.forget_faithful CategoryTheory.Endofunctor.Coalgebra.forget_faithful
 
 /-- An algebra morphism with an underlying epimorphism hom in `C` is an algebra epimorphism. -/

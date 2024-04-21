@@ -37,7 +37,7 @@ open scoped NNReal ENNReal Topology BigOperators MeasureTheory
 
 namespace MeasureTheory
 
-variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [IsROrC 𝕜]
+variable {α β F F' G G' 𝕜 : Type*} {p : ℝ≥0∞} [RCLike 𝕜]
   -- 𝕜 for ℝ or ℂ
   -- F for a Lp submodule
   [NormedAddCommGroup F]
@@ -184,11 +184,11 @@ variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
 
 theorem condexpIndL1_of_measurableSet_of_measure_ne_top (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
     (x : G) : condexpIndL1 hm μ s x = condexpIndL1Fin hm hs hμs x := by
-  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne.def, not_false_iff, and_self_iff]
+  simp only [condexpIndL1, And.intro hs hμs, dif_pos, Ne, not_false_iff, and_self_iff]
 #align measure_theory.condexp_ind_L1_of_measurable_set_of_measure_ne_top MeasureTheory.condexpIndL1_of_measurableSet_of_measure_ne_top
 
 theorem condexpIndL1_of_measure_eq_top (hμs : μ s = ∞) (x : G) : condexpIndL1 hm μ s x = 0 := by
-  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne.def, dif_neg, not_false_iff,
+  simp only [condexpIndL1, hμs, eq_self_iff_true, not_true, Ne, dif_neg, not_false_iff,
     and_false_iff]
 #align measure_theory.condexp_ind_L1_of_measure_eq_top MeasureTheory.condexpIndL1_of_measure_eq_top
 
@@ -275,7 +275,7 @@ theorem condexpInd_ae_eq_condexpIndSMul (hm : m ≤ m0) [SigmaFinite (μ.trim hm
     (hs : MeasurableSet s) (hμs : μ s ≠ ∞) (x : G) :
     condexpInd G hm μ s x =ᵐ[μ] condexpIndSMul hm hs hμs x := by
   refine' EventuallyEq.trans _ (condexpIndL1Fin_ae_eq_condexpIndSMul hm hs hμs x)
-  simp [condexpInd, condexpIndL1, hs, hμs]; rfl
+  simp [condexpInd, condexpIndL1, hs, hμs]
 #align measure_theory.condexp_ind_ae_eq_condexp_ind_smul MeasureTheory.condexpInd_ae_eq_condexpIndSMul
 
 variable {hm : m ≤ m0} [SigmaFinite (μ.trim hm)]
@@ -332,14 +332,18 @@ theorem dominatedFinMeasAdditive_condexpInd (hm : m ≤ m0) (μ : Measure α)
 
 variable {G}
 
-theorem set_integral_condexpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
+theorem setIntegral_condexpInd (hs : MeasurableSet[m] s) (ht : MeasurableSet t) (hμs : μ s ≠ ∞)
     (hμt : μ t ≠ ∞) (x : G') : ∫ a in s, condexpInd G' hm μ t x a ∂μ = (μ (t ∩ s)).toReal • x :=
   calc
     ∫ a in s, condexpInd G' hm μ t x a ∂μ = ∫ a in s, condexpIndSMul hm ht hμt x a ∂μ :=
-      set_integral_congr_ae (hm s hs)
+      setIntegral_congr_ae (hm s hs)
         ((condexpInd_ae_eq_condexpIndSMul hm ht hμt x).mono fun _ hx _ => hx)
-    _ = (μ (t ∩ s)).toReal • x := set_integral_condexpIndSMul hs ht hμs hμt x
-#align measure_theory.set_integral_condexp_ind MeasureTheory.set_integral_condexpInd
+    _ = (μ (t ∩ s)).toReal • x := setIntegral_condexpIndSMul hs ht hμs hμt x
+#align measure_theory.set_integral_condexp_ind MeasureTheory.setIntegral_condexpInd
+
+@[deprecated]
+alias set_integral_condexpInd :=
+  setIntegral_condexpInd -- deprecated on 2024-04-17
 
 theorem condexpInd_of_measurable (hs : MeasurableSet[m] s) (hμs : μ s ≠ ∞) (c : G) :
     condexpInd G hm μ s c = indicatorConstLp 1 (hm s hs) hμs c := by
@@ -398,34 +402,38 @@ theorem condexpL1CLM_indicatorConst (hs : MeasurableSet s) (hμs : μ s ≠ ∞)
   rw [Lp.simpleFunc.coe_indicatorConst]; exact condexpL1CLM_indicatorConstLp hs hμs x
 #align measure_theory.condexp_L1_clm_indicator_const MeasureTheory.condexpL1CLM_indicatorConst
 
-/-- Auxiliary lemma used in the proof of `set_integral_condexpL1CLM`. -/
-theorem set_integral_condexpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
+/-- Auxiliary lemma used in the proof of `setIntegral_condexpL1CLM`. -/
+theorem setIntegral_condexpL1CLM_of_measure_ne_top (f : α →₁[μ] F') (hs : MeasurableSet[m] s)
     (hμs : μ s ≠ ∞) : ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   refine' @Lp.induction _ _ _ _ _ _ _ ENNReal.one_ne_top
     (fun f : α →₁[μ] F' => ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ) _ _
     (isClosed_eq _ _) f
   · intro x t ht hμt
     simp_rw [condexpL1CLM_indicatorConst ht hμt.ne x]
-    rw [Lp.simpleFunc.coe_indicatorConst, set_integral_indicatorConstLp (hm _ hs)]
-    exact set_integral_condexpInd hs ht hμs hμt.ne x
+    rw [Lp.simpleFunc.coe_indicatorConst, setIntegral_indicatorConstLp (hm _ hs)]
+    exact setIntegral_condexpInd hs ht hμs hμt.ne x
   · intro f g hf_Lp hg_Lp _ hf hg
     simp_rw [(condexpL1CLM F' hm μ).map_add]
-    rw [set_integral_congr_ae (hm s hs) ((Lp.coeFn_add (condexpL1CLM F' hm μ (hf_Lp.toLp f))
+    rw [setIntegral_congr_ae (hm s hs) ((Lp.coeFn_add (condexpL1CLM F' hm μ (hf_Lp.toLp f))
       (condexpL1CLM F' hm μ (hg_Lp.toLp g))).mono fun x hx _ => hx)]
-    rw [set_integral_congr_ae (hm s hs)
+    rw [setIntegral_congr_ae (hm s hs)
       ((Lp.coeFn_add (hf_Lp.toLp f) (hg_Lp.toLp g)).mono fun x hx _ => hx)]
     simp_rw [Pi.add_apply]
     rw [integral_add (L1.integrable_coeFn _).integrableOn (L1.integrable_coeFn _).integrableOn,
       integral_add (L1.integrable_coeFn _).integrableOn (L1.integrable_coeFn _).integrableOn, hf,
       hg]
-  · exact (continuous_set_integral s).comp (condexpL1CLM F' hm μ).continuous
-  · exact continuous_set_integral s
-#align measure_theory.set_integral_condexp_L1_clm_of_measure_ne_top MeasureTheory.set_integral_condexpL1CLM_of_measure_ne_top
+  · exact (continuous_setIntegral s).comp (condexpL1CLM F' hm μ).continuous
+  · exact continuous_setIntegral s
+#align measure_theory.set_integral_condexp_L1_clm_of_measure_ne_top MeasureTheory.setIntegral_condexpL1CLM_of_measure_ne_top
+
+@[deprecated]
+alias set_integral_condexpL1CLM_of_measure_ne_top :=
+  setIntegral_condexpL1CLM_of_measure_ne_top -- deprecated on 2024-04-17
 
 /-- The integral of the conditional expectation `condexpL1CLM` over an `m`-measurable set is equal
-to the integral of `f` on that set. See also `set_integral_condexp`, the similar statement for
+to the integral of `f` on that set. See also `setIntegral_condexp`, the similar statement for
 `condexp`. -/
-theorem set_integral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s) :
+theorem setIntegral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] s) :
     ∫ x in s, condexpL1CLM F' hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   let S := spanningSets (μ.trim hm)
   have hS_meas : ∀ i, MeasurableSet[m] (S i) := measurable_spanningSets (μ.trim hm)
@@ -444,21 +452,25 @@ theorem set_integral_condexpL1CLM (f : α →₁[μ] F') (hs : MeasurableSet[m] 
   have h_eq_forall :
     (fun i => ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) = fun i => ∫ x in S i ∩ s, f x ∂μ :=
     funext fun i =>
-      set_integral_condexpL1CLM_of_measure_ne_top f (@MeasurableSet.inter α m _ _ (hS_meas i) hs)
+      setIntegral_condexpL1CLM_of_measure_ne_top f (@MeasurableSet.inter α m _ _ (hS_meas i) hs)
         (hS_finite i).ne
   have h_right : Tendsto (fun i => ∫ x in S i ∩ s, f x ∂μ) atTop (𝓝 (∫ x in s, f x ∂μ)) := by
     have h :=
-      tendsto_set_integral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
+      tendsto_setIntegral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
         (L1.integrable_coeFn f).integrableOn
     rwa [← hs_eq] at h
   have h_left : Tendsto (fun i => ∫ x in S i ∩ s, condexpL1CLM F' hm μ f x ∂μ) atTop
       (𝓝 (∫ x in s, condexpL1CLM F' hm μ f x ∂μ)) := by
-    have h := tendsto_set_integral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
+    have h := tendsto_setIntegral_of_monotone (fun i => (hS_meas0 i).inter (hm s hs)) h_mono
       (L1.integrable_coeFn (condexpL1CLM F' hm μ f)).integrableOn
     rwa [← hs_eq] at h
   rw [h_eq_forall] at h_left
   exact tendsto_nhds_unique h_left h_right
-#align measure_theory.set_integral_condexp_L1_clm MeasureTheory.set_integral_condexpL1CLM
+#align measure_theory.set_integral_condexp_L1_clm MeasureTheory.setIntegral_condexpL1CLM
+
+@[deprecated]
+alias set_integral_condexpL1CLM :=
+  setIntegral_condexpL1CLM -- deprecated on 2024-04-17
 
 theorem aestronglyMeasurable'_condexpL1CLM (f : α →₁[μ] F') :
     AEStronglyMeasurable' m (condexpL1CLM F' hm μ f) μ := by
@@ -551,14 +563,18 @@ theorem integrable_condexpL1 (f : α → F') : Integrable (condexpL1 hm μ f) μ
 #align measure_theory.integrable_condexp_L1 MeasureTheory.integrable_condexpL1
 
 /-- The integral of the conditional expectation `condexpL1` over an `m`-measurable set is equal to
-the integral of `f` on that set. See also `set_integral_condexp`, the similar statement for
+the integral of `f` on that set. See also `setIntegral_condexp`, the similar statement for
 `condexp`. -/
-theorem set_integral_condexpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
+theorem setIntegral_condexpL1 (hf : Integrable f μ) (hs : MeasurableSet[m] s) :
     ∫ x in s, condexpL1 hm μ f x ∂μ = ∫ x in s, f x ∂μ := by
   simp_rw [condexpL1_eq hf]
-  rw [set_integral_condexpL1CLM (hf.toL1 f) hs]
-  exact set_integral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
-#align measure_theory.set_integral_condexp_L1 MeasureTheory.set_integral_condexpL1
+  rw [setIntegral_condexpL1CLM (hf.toL1 f) hs]
+  exact setIntegral_congr_ae (hm s hs) (hf.coeFn_toL1.mono fun x hx _ => hx)
+#align measure_theory.set_integral_condexp_L1 MeasureTheory.setIntegral_condexpL1
+
+@[deprecated]
+alias set_integral_condexpL1 :=
+  setIntegral_condexpL1 -- deprecated on 2024-04-17
 
 theorem condexpL1_add (hf : Integrable f μ) (hg : Integrable g μ) :
     condexpL1 hm μ (f + g) = condexpL1 hm μ f + condexpL1 hm μ g :=
