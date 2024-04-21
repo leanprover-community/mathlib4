@@ -347,9 +347,7 @@ theorem invFun_eq_symm {e : A₁ ≃ₐ[R] A₂} : e.invFun = e.symm :=
 #align alg_equiv.inv_fun_eq_symm AlgEquiv.invFun_eq_symm
 
 @[simp]
-theorem symm_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.symm = e := by
-  ext
-  rfl
+theorem symm_symm (e : A₁ ≃ₐ[R] A₂) : e.symm.symm = e := rfl
 #align alg_equiv.symm_symm AlgEquiv.symm_symm
 
 theorem symm_bijective : Function.Bijective (symm : (A₁ ≃ₐ[R] A₂) → A₂ ≃ₐ[R] A₁) :=
@@ -463,23 +461,20 @@ theorem arrowCongr_comp (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A�
 #align alg_equiv.arrow_congr_comp AlgEquiv.arrowCongr_comp
 
 @[simp]
-theorem arrowCongr_refl : arrowCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ →ₐ[R] A₂) := by
-  ext
+theorem arrowCongr_refl : arrowCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ →ₐ[R] A₂) :=
   rfl
 #align alg_equiv.arrow_congr_refl AlgEquiv.arrowCongr_refl
 
 @[simp]
 theorem arrowCongr_trans (e₁ : A₁ ≃ₐ[R] A₂) (e₁' : A₁' ≃ₐ[R] A₂')
     (e₂ : A₂ ≃ₐ[R] A₃) (e₂' : A₂' ≃ₐ[R] A₃') :
-    arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') := by
-  ext
+    arrowCongr (e₁.trans e₂) (e₁'.trans e₂') = (arrowCongr e₁ e₁').trans (arrowCongr e₂ e₂') :=
   rfl
 #align alg_equiv.arrow_congr_trans AlgEquiv.arrowCongr_trans
 
 @[simp]
 theorem arrowCongr_symm (e₁ : A₁ ≃ₐ[R] A₁') (e₂ : A₂ ≃ₐ[R] A₂') :
-    (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm := by
-  ext
+    (arrowCongr e₁ e₂).symm = arrowCongr e₁.symm e₂.symm :=
   rfl
 #align alg_equiv.arrow_congr_symm AlgEquiv.arrowCongr_symm
 
@@ -499,8 +494,7 @@ def equivCongr (e : A₁ ≃ₐ[R] A₂) (e' : A₁' ≃ₐ[R] A₂') : (A₁ �
     simp_rw [trans_apply, apply_symm_apply]
 
 @[simp]
-theorem equivCongr_refl : equivCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ ≃ₐ[R] A₁') := by
-  ext
+theorem equivCongr_refl : equivCongr AlgEquiv.refl AlgEquiv.refl = Equiv.refl (A₁ ≃ₐ[R] A₁') :=
   rfl
 
 @[simp]
@@ -528,7 +522,7 @@ def ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ : f.comp 
 
 theorem coe_algHom_ofAlgHom (f : A₁ →ₐ[R] A₂) (g : A₂ →ₐ[R] A₁) (h₁ h₂) :
     ↑(ofAlgHom f g h₁ h₂) = f :=
-  AlgHom.ext fun _ => rfl
+  rfl
 #align alg_equiv.coe_alg_hom_of_alg_hom AlgEquiv.coe_algHom_ofAlgHom
 
 @[simp]
@@ -648,14 +642,12 @@ theorem ofLinearEquiv_symm :
 
 @[simp]
 theorem ofLinearEquiv_toLinearEquiv (map_mul) (map_one) :
-    ofLinearEquiv e.toLinearEquiv map_mul map_one = e := by
-  ext
+    ofLinearEquiv e.toLinearEquiv map_mul map_one = e :=
   rfl
 #align alg_equiv.of_linear_equiv_to_linear_equiv AlgEquiv.ofLinearEquiv_toLinearEquiv
 
 @[simp]
-theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_one map_mul) = l := by
-  ext
+theorem toLinearEquiv_ofLinearEquiv : toLinearEquiv (ofLinearEquiv l map_one map_mul) = l :=
   rfl
 #align alg_equiv.to_linear_equiv_of_linear_equiv AlgEquiv.toLinearEquiv_ofLinearEquiv
 
@@ -717,9 +709,7 @@ def autCongr (ϕ : A₁ ≃ₐ[R] A₂) : (A₁ ≃ₐ[R] A₁) ≃* A₂ ≃ₐ
 #align alg_equiv.aut_congr AlgEquiv.autCongr
 
 @[simp]
-theorem autCongr_refl : autCongr AlgEquiv.refl = MulEquiv.refl (A₁ ≃ₐ[R] A₁) := by
-  ext
-  rfl
+theorem autCongr_refl : autCongr AlgEquiv.refl = MulEquiv.refl (A₁ ≃ₐ[R] A₁) := rfl
 #align alg_equiv.aut_congr_refl AlgEquiv.autCongr_refl
 
 @[simp]

@@ -349,7 +349,7 @@ theorem ext_iff : f = g ↔ ∀ x, f x = g x :=
 
 @[simp]
 theorem mk_coe (f : M →ₛₗ[σ] M₃) (h) : (LinearMap.mk f h : M →ₛₗ[σ] M₃) = f :=
-  ext fun _ ↦ rfl
+  rfl
 #align linear_map.mk_coe LinearMap.mk_coe
 
 variable (fₗ gₗ f g)
@@ -557,13 +557,11 @@ theorem coe_comp : (f.comp g : M₁ → M₃) = f ∘ g :=
 #align linear_map.coe_comp LinearMap.coe_comp
 
 @[simp]
-theorem comp_id : f.comp id = f :=
-  LinearMap.ext fun _ ↦ rfl
+theorem comp_id : f.comp id = f := rfl
 #align linear_map.comp_id LinearMap.comp_id
 
 @[simp]
-theorem id_comp : id.comp f = f :=
-  LinearMap.ext fun _ ↦ rfl
+theorem id_comp : id.comp f = f := rfl
 #align linear_map.id_comp LinearMap.id_comp
 
 theorem comp_assoc

@@ -946,7 +946,7 @@ variable (S : Subalgebra R A)
 This is the algebra version of `Submodule.topEquiv`. -/
 @[simps!]
 def topEquiv : (⊤ : Subalgebra R A) ≃ₐ[R] A :=
-  AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl <| AlgHom.ext fun _ => Subtype.ext rfl
+  AlgEquiv.ofAlgHom (Subalgebra.val ⊤) toTop rfl rfl
 #align subalgebra.top_equiv Subalgebra.topEquiv
 
 instance subsingleton_of_subsingleton [Subsingleton A] : Subsingleton (Subalgebra R A) :=

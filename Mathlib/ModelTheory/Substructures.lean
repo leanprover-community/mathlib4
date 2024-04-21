@@ -537,7 +537,7 @@ theorem comap_top (f : M →[L] N) : (⊤ : L.Substructure N).comap f = ⊤ :=
 
 @[simp]
 theorem map_id (S : L.Substructure M) : S.map (Hom.id L M) = S :=
-  ext fun _ => ⟨fun ⟨_, h, rfl⟩ => h, fun h => ⟨_, h, rfl⟩⟩
+  SetLike.coe_injective <| Set.image_id _
 #align first_order.language.substructure.map_id FirstOrder.Language.Substructure.map_id
 
 theorem map_closure (f : M →[L] N) (s : Set M) : (closure L s).map f = closure L (f '' s) :=

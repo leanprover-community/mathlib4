@@ -205,7 +205,7 @@ theorem coe_mk (f : α → β)
 
 @[to_additive (attr := simp)]
 theorem mk_coe (f : A →*[n] β) (h) : mk f h = f :=
-  ext fun _ => rfl
+  rfl
 #align freiman_hom.mk_coe FreimanHom.mk_coe
 #align add_freiman_hom.mk_coe AddFreimanHom.mk_coe
 
@@ -274,13 +274,13 @@ theorem cancel_left_on {g : B →*[n] γ} {f₁ f₂ : A →*[n] β} (hg : B.Inj
 
 @[to_additive (attr := simp)]
 theorem comp_id (f : A →*[n] β) {hf} : f.comp (FreimanHom.id A n) hf = f :=
-  ext fun _ => rfl
+  rfl
 #align freiman_hom.comp_id FreimanHom.comp_id
 #align add_freiman_hom.comp_id AddFreimanHom.comp_id
 
 @[to_additive (attr := simp)]
 theorem id_comp (f : A →*[n] β) {hf} : (FreimanHom.id B n).comp f hf = f :=
-  ext fun _ => rfl
+  rfl
 #align freiman_hom.id_comp FreimanHom.id_comp
 #align add_freiman_hom.id_comp AddFreimanHom.id_comp
 
@@ -368,7 +368,7 @@ theorem inv_apply (f : A →*[n] G) (x : α) : f⁻¹ x = (f x)⁻¹ :=
 
 @[to_additive (attr := simp)]
 theorem inv_comp (f : B →*[n] G) (g : A →*[n] β) {hf hf'} : f⁻¹.comp g hf = (f.comp g hf')⁻¹ :=
-  ext fun _ => rfl
+  rfl
 #align freiman_hom.inv_comp FreimanHom.inv_comp
 #align add_freiman_hom.neg_comp AddFreimanHom.neg_comp
 
@@ -393,7 +393,7 @@ theorem div_apply (f g : A →*[n] G) (x : α) : (f / g) x = f x / g x :=
 @[to_additive (attr := simp)]
 theorem div_comp (f₁ f₂ : B →*[n] G) (g : A →*[n] β) {hf hf₁ hf₂} :
     (f₁ / f₂).comp g hf = f₁.comp g hf₁ / f₂.comp g hf₂ :=
-  ext fun _ => rfl
+  rfl
 #align freiman_hom.div_comp FreimanHom.div_comp
 #align add_freiman_hom.sub_comp AddFreimanHom.sub_comp
 
