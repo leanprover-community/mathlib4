@@ -39,34 +39,6 @@ variable {R}
 
 section
 
-variable {σ : Type*}
-
-lemma MvPolynomial.empty_support_iff_degree_zero (m : σ →₀ ℕ) :
-    MvPolynomial.degree m = 0 ↔ IsEmpty m.support := by
-  simp_all [MvPolynomial.degree]
-
-lemma MvPolynomial.nonempty_support_of_degree (m : σ →₀ ℕ) :
-    0 < MvPolynomial.degree m ↔ Nonempty m.support := by
-  constructor
-  · intro h
-    have : MvPolynomial.degree m ≠ 0 := by
-      symm
-      apply Nat.ne_of_lt
-      exact h
-    sorry
-  · sorry
-
-theorem MvPolynomial.IsHomogeneous.induction_on' {P : MvPolynomial σ R → Prop}
-    (p : MvPolynomial σ R) {n : ℕ} (h : MvPolynomial.IsHomogeneous p n)
-    (h1 : ∀ (u : σ →₀ ℕ) (hd : MvPolynomial.degree u = n) (a : R), P ((MvPolynomial.monomial u) a))
-    (h2 : ∀ (p q : MvPolynomial σ R) (hp : MvPolynomial.IsHomogeneous p n)
-      (hq : MvPolynomial.IsHomogeneous q n), P p → P q → P (p + q)) : P p :=
-  sorry
-
-#check MvPolynomial.IsHomogeneous.induction_on'
-
-end
-
 variable {S : Type v} [CommRing S] (f : R →+* S)
 variable {A : Set R} {B : Set S} (hf : Set.MapsTo f A B)
 
@@ -90,90 +62,20 @@ lemma diag_rename_comm_apply (p : MvPolynomial A R) :
 
 end
 
-lemma finiteType_of_adjoin_finite {A : Type v} [CommRing A] [Algebra R A] (T : Set A) (h : Set.Finite T) :
-    FiniteType R (Algebra.adjoin R T) :=
-  sorry
+theorem finiteType_of_adjoin_finite {A : Type v} [CommRing A] [Algebra R A] (T : Set A)
+    (h : Set.Finite T) : FiniteType R (Algebra.adjoin R T) := by
+  rw [Algebra.adjoin_eq_range]
+  apply Algebra.FiniteType.of_surjective _ (AlgHom.rangeRestrict (MvPolynomial.aeval Subtype.val))
+  · exact AlgHom.rangeRestrict_surjective _
+  · haveI : Finite T := Set.Finite.to_subtype h
+    apply FiniteType.mvPolynomial
 
 variable (A : Type u) [CommRing A] [Algebra R A]
 variable [FormallySmooth R A] (hfp : FinitePresentation R A)
 
-section
-
-variable {R}
-
-instance {ι : Type*} (p : MvPolynomial ι R) : Finite (MvPolynomial.coefficients p) := by
-  sorry
-
-end
-
 namespace Smooth
 
 open Pointwise
-
-lemma Ideal.span_pow (S : Set R) (n : ℕ) :
-    Ideal.span S ^ n = Ideal.span (S ^ n) := by
-  ext x
-  constructor
-  intro h
-  sorry
-  sorry
-  --rw [Set.mem_pow (s := Ideal.span S) (a := x) (n := n)] at h
-
-lemma Ideal.mem_span_asSum (S : Set R) (x : R) (h : x ∈ Ideal.span S) :
-    ∃ (f : S →₀ R), x = Finsupp.sum f (fun s r ↦ r * s) := by
-  sorry
-
-lemma Ideal.mem_span_pow (S : Set R) (r : R) (n : ℕ) :
-  r ∈ Ideal.span S ^ n ↔
-    ∃ (c : Fin n → (S →₀ R)), True := sorry
-
-lemma Ideal.mem_pow (I : Ideal R) (a b : R) {n m : ℕ} (ha : a ∈ I ^ n) (hb : b ∈ I ^ m) :
-    a * b ∈ I ^ (n + m) :=
-  sorry
-
-lemma Set.mem_pow' (S : Set R) (a b : R) {n m : ℕ} (ha : a ∈ S ^ n) (hb : b ∈ S ^ m) :
-    a * b ∈ S ^ (n + m) :=
-  sorry
-
-lemma Set.mem_span_monomial {n : ℕ} (S : Set R) :
-    ∀ (u : S →₀ ℕ) (_ : MvPolynomial.degree u = n),
-    Finsupp.prod u (fun n e ↦ (n : R) ^ e) ∈ S ^ n := by
-  apply Nat.caseStrongInductionOn n
-  · intro u h
-    simp_all [MvPolynomial.degree, Finsupp.prod, h]
-  · intro n ih u hdeg
-    have : Nonempty u.support := by
-      apply (MvPolynomial.nonempty_support_of_degree u).mp
-      rw [hdeg]
-      omega
-    obtain ⟨⟨⟨s, hs⟩, hssup⟩⟩ := this
-    rw [← Finsupp.mul_prod_erase (hyf := hssup)]
-    let u' : S →₀ ℕ := Finsupp.erase ⟨s, hs⟩ u
-    have hdegs : MvPolynomial.degree u = u ⟨s, hs⟩ + MvPolynomial.degree u' := by
-      simp only [MvPolynomial.degree, u']
-      change Finsupp.sum u (fun _ x ↦ x) = _ + Finsupp.sum _ (fun _ x ↦ x)
-      rw [Finsupp.add_sum_erase u ⟨s, hs⟩ (fun _ x ↦ x) hssup]
-    have hdeg' : MvPolynomial.degree u' ≤ n := by
-      have : u ⟨s, hs⟩ ≠ 0 := by
-        simp at hssup
-        exact hssup
-      omega
-    have h1 : s ^ u ⟨s, hs⟩ ∈ S ^ (u ⟨s, hs⟩) := Set.pow_mem_pow hs _
-    have h2 : Finsupp.prod u' (fun n e ↦ (n : R) ^ e) ∈ S ^ (MvPolynomial.degree u') := by
-      apply ih
-      exact hdeg'
-      rfl
-    simp only [← hdeg, hdegs]
-    apply Set.mem_pow'
-    exact h1
-    exact h2
-
-lemma Set.mem_span_monomial_one (S : Set R)
-    (u : S →₀ ℕ) (h : MvPolynomial.degree u = 1) :
-    Finsupp.prod u (fun n e ↦ (n : R) ^ e) ∈ S := by
-  suffices h' : Finsupp.prod u (fun n e ↦ (n : R) ^ e) ∈ S ^ 1 by simp at h'; exact h'
-  apply Set.mem_span_monomial
-  exact h
 
 lemma Ideal.mem_span' (S : Set R) (x : R) (hx : x ∈ Ideal.span S) : ∃ (p : MvPolynomial S R),
     MvPolynomial.IsHomogeneous p 1 ∧ MvPolynomial.eval Subtype.val p = x := by
@@ -185,10 +87,6 @@ lemma Ideal.mem_span' (S : Set R) (x : R) (hx : x ∈ Ideal.span S) : ∃ (p : M
     exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
   · rintro a x ⟨px, hpxhom, rfl⟩
     exact ⟨MvPolynomial.C a * px, MvPolynomial.IsHomogeneous.C_mul hpxhom a, by simp⟩
-
-lemma Ideal.mem_sq (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
-  x ∈ I ^ 2 ↔ ∃ (p : MvPolynomial S R),
-    MvPolynomial.IsHomogeneous p 2 ∧ MvPolynomial.eval Subtype.val p = x := sorry
 
 lemma Ideal.mem_span_pow' {n : ℕ} (S : Set R) (x : R) :
     x ∈ (Ideal.span S) ^ n ↔ ∃ (p : MvPolynomial S R),
@@ -202,7 +100,7 @@ lemma Ideal.mem_span_pow' {n : ℕ} (S : Set R) (x : R) :
       refine Submodule.smul_induction_on h ?_ ?_
       · intro r hr t ht
         obtain ⟨pr, hprhom, rfl⟩ := ih n (by omega) r hr
-        obtain ⟨pt, hpthom, rfl⟩ := Ideal.mem_span' R S t ht
+        obtain ⟨pt, hpthom, rfl⟩ := Ideal.mem_span' S t ht
         exact ⟨pr * pt, MvPolynomial.IsHomogeneous.mul hprhom hpthom, by simp⟩
       · rintro x y ⟨px, hpxhom, rfl⟩ ⟨py, hpyhom, rfl⟩
         exact ⟨px + py, MvPolynomial.IsHomogeneous.add hpxhom hpyhom, by simp⟩
@@ -216,6 +114,21 @@ lemma Ideal.mem_span_pow' {n : ℕ} (S : Set R) (x : R) :
       MvPolynomial.degree, ← Finset.prod_pow_eq_pow_sum, Finsupp.prod]
     apply Ideal.prod_mem_prod
     exact fun x _ ↦ Ideal.pow_mem_pow (Ideal.subset_span x.2) _
+
+lemma Ideal.mem_sq (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
+  x ∈ I ^ 2 ↔ ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p 2 ∧ MvPolynomial.eval Subtype.val p = x := by
+  subst hsp
+  exact Ideal.mem_span_pow' S x
+
+lemma Ideal.mem_span_iff (I : Ideal R) (S : Set R) (hsp : I = Ideal.span S) (x : R) :
+  x ∈ I ↔ ∃ (p : MvPolynomial S R),
+    MvPolynomial.IsHomogeneous p 1 ∧ MvPolynomial.eval Subtype.val p = x := by
+  subst hsp
+  have : Ideal.span S = Ideal.span S ^ 1 := by
+    simp
+  rw [this]
+  exact Ideal.mem_span_pow' (n := 1) S x
 
 section
 
@@ -259,7 +172,7 @@ lemma sOfh_mem_sq (p : MvPolynomial ι R) (hp : p ∈ I) : sOfh f σ p ∈ I ^ 2
 lemma sOfh_exists_P (p : MvPolynomial ι R) (hp : p ∈ I) (hspan : Ideal.span S = I) :
     ∃ (P : MvPolynomial S (MvPolynomial ι R)),
         MvPolynomial.IsHomogeneous P 2 ∧ MvPolynomial.eval Subtype.val P = sOfh f σ p :=
-  (Ideal.mem_sq _ I _ hspan.symm _).mp <| sOfh_mem_sq f σ p hp
+  (Ideal.mem_sq I _ hspan.symm _).mp <| sOfh_mem_sq f σ p hp
 
 variable (R₀ : Subring R) (hcoeffsS : MvPolynomial.Set.coefficients S ⊆ R₀)
   (hcoeffsH : MvPolynomial.Set.coefficients (Set.range <| hAux f σ) ⊆ R₀)
@@ -321,7 +234,7 @@ lemma hAux_sub_X_ex_rep (hspan : Ideal.span S = I) (i : ι)
     ∃ (p : MvPolynomial S (MvPolynomial ι R)),
     MvPolynomial.IsHomogeneous p 1 ∧
     MvPolynomial.eval Subtype.val p = hAux f σ i - MvPolynomial.X i := by
-  rw [← Ideal.mem_span]
+  rw [← Ideal.mem_span_iff]
   apply hAux_sub_X_in_I
   exact hsig
   exact hspan.symm
@@ -370,7 +283,7 @@ lemma hAux₀_mod (hspan : Ideal.span S = I)
   have homog : MvPolynomial.IsHomogeneous Q₀ 1 := by
     apply RingOfDefinition.setMapRepr_homog hres Q hcQ h2 hpreim₀ Subtype.val_injective
     apply hAuxSubXRep_homog f S σ hspan i hsig
-  rw [Ideal.mem_span (hsp := hspan₀.symm)]
+  rw [Ideal.mem_span_iff (hsp := hspan₀.symm)]
   refine ⟨Q₀, homog, ?_⟩
   apply MvPolynomial.map_injective (SubringClass.subtype R₀) (Subtype.val_injective)
   simp [Q₀, Q]
@@ -485,10 +398,8 @@ lemma hAux₀_eval (a : MvPolynomial ι R₀) (ha : a ∈ I₀):
   rw [← hspan₀] at ha
   refine Submodule.span_induction ha ?_ ?_ ?_ ?_
   · intro s hs
-    rw [Ideal.mem_sq]
-    exact exists_PAux₀ f S σ R₀ hcoeffsS hcoeffsH P hPhom hPeval hcoeffsP S₀ hpreim₀ hspan s hs
-    exact S₀
-    exact hspan₀.symm
+    rw [Ideal.mem_sq _ S₀ hspan₀.symm]
+    exact exists_PAux₀ f S σ R₀ hcoeffsS hcoeffsH P hPhom hPeval hcoeffsP S₀ hpreim₀ s hs
   · simp
   · intro x y hx hy
     simp only [map_add]
@@ -515,7 +426,7 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
       apply Ideal.subset_span
       exact s.property
     · exact hS
-  choose p _ _ using this
+  choose p hphom hpeval using this
   let coeffs_p : Set R := MvPolynomial.Set.coefficients <|
     MvPolynomial.Set.coefficients (Set.range p)
   let coeffs_q : Set R := Set.iUnion
@@ -532,6 +443,10 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     apply Set.Subset.trans ?_ Algebra.subset_adjoin
     apply Set.Subset.trans ?_ (Set.subset_union_right _ coeffs_q)
     apply Set.subset_iUnion _ i
+  have hcoeffsP : MvPolynomial.Set.coefficients (MvPolynomial.Set.coefficients (Set.range p)) ⊆ R₀ := by
+    apply Set.Subset.trans ?_ Algebra.subset_adjoin
+    apply Set.Subset.trans ?_ (Set.subset_union_left _ _)
+    exact Set.subset_union_right _ coeffs_p
   have hcoeffsH : MvPolynomial.Set.coefficients (Set.range (hAux f σ)) ⊆ R₀ := by
     apply Set.Subset.trans
     exact Set.subset_union_right coeffs_s coeffs_h
@@ -588,7 +503,6 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
     obtain ⟨S₀', hS₀'⟩ := Set.Finite.exists_finset_coe hS₀fin
     use S₀'
     rw [hS₀']
-    --exact FinitePresentation.mvPolynomial R₀ ι
   · fapply FormallySmooth.of_split (Ideal.Quotient.mkₐ R₀ I₀)
     · fapply Ideal.Quotient.liftₐ I₀
       · apply AlgHom.comp (Ideal.Quotient.mkₐ R₀ (RingHom.ker (Ideal.Quotient.mkₐ (↥R₀) I₀).toRingHom ^ 2))
@@ -598,8 +512,7 @@ theorem descent : ∃ (R₀ : Subring R) (A₀ : Type u) (_ : CommRing A₀) (_ 
         simp only [AlgHom.comp_apply, ← RingHom.mem_ker]
         erw [Ideal.Quotient.mkₐ_ker R₀ (RingHom.ker (Ideal.Quotient.mkₐ (↥R₀) I₀).toRingHom ^ 2)]
         erw [Ideal.Quotient.mkₐ_ker R₀]
-        fapply hAux₀_eval
-        exact S₀
+        fapply hAux₀_eval f S σ R₀ hcoeffsS hcoeffsH p hphom hpeval hcoeffsP I₀ S₀ rfl
         rfl
         exact ha
     · apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ R₀ I₀)

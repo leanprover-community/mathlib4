@@ -50,11 +50,6 @@ def prod [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) : N :=
 #align finsupp.prod Finsupp.prod
 #align finsupp.sum Finsupp.sum
 
-@[to_additive]
-theorem prod_def [Zero M] [CommMonoid N] (f : α →₀ M) (g : α → M → N) :
-    prod f g = ∏ a in f.support, g a (f a) :=
-  rfl
-
 variable [Zero M] [Zero M'] [CommMonoid N]
 
 @[to_additive]

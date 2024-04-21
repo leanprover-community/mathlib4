@@ -62,9 +62,6 @@ lemma MvPolynomial.Set.coefficients_in (S : Set (MvPolynomial ι R))
 
 variable {S : Type w} [CommRing S]
 
-lemma MvPolynomial.restricts_surj_of_coeffs (f : R →+* S) (T : Set (MvPolynomial ι S))
-    (hc : MvPolynomial.Set.coefficients T ⊆ Set.range f) : True := sorry
-
 lemma Ideal.span_preimage_le_comap (f : R →+* S) (T : Set S) :
     Ideal.span (f ⁻¹' T) ≤ Ideal.comap f (Ideal.span T) := by
   intro p hp
@@ -80,8 +77,13 @@ lemma Ideal.span_preimage_le_comap (f : R →+* S) (T : Set S) :
 
 lemma MvPolynomial.isHomogeneous_of_map (f : R →+* S) (hf : Function.Injective f)
     (p : MvPolynomial ι R) {n : ℕ} (hphomog : MvPolynomial.IsHomogeneous (MvPolynomial.map f p) n) :
-    MvPolynomial.IsHomogeneous p n :=
-  sorry
+    MvPolynomial.IsHomogeneous p n := by
+  intro u hu
+  apply hphomog
+  rw [MvPolynomial.coeff_map]
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hf
+  intro h
+  exact hu (hf _ h)
 
 variable [Algebra R S]
   {T : Type t} [CommRing T] [Algebra R T]
@@ -198,14 +200,14 @@ lemma exists_preimage_of_coefficients (t : MvPolynomial ι S)
 
 noncomputable def MvPolynomial.choosePreimageOfCoeffs (t : MvPolynomial ι S)
     (h : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
-    MvPolynomial ι R := by
-  choose p _ using exists_preimage_of_coefficients t h
-  exact p
+    MvPolynomial ι R :=
+  (exists_preimage_of_coefficients t h).choose
 
 @[simp]
 lemma MvPolynomial.choosePreimageOfCoeffs_map (t : MvPolynomial ι S)
     (h : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S)) :
-    MvPolynomial.map (algebraMap R S) (MvPolynomial.choosePreimageOfCoeffs t h) = t := sorry
+    MvPolynomial.map (algebraMap R S) (MvPolynomial.choosePreimageOfCoeffs t h) = t :=
+  (exists_preimage_of_coefficients t h).choose_spec
 
 noncomputable def MvPolynomial.Set.choosePreimageOfCoeffs (T : Set (MvPolynomial ι S))
     (h : MvPolynomial.Set.coefficients T ⊆ Set.range (algebraMap R S))
