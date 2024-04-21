@@ -150,7 +150,7 @@ theorem cutMap_add (a b : α) : cutMap β (a + b) = cutMap β a + cutMap β b :=
   refine (image_subset_iff.2 fun q hq => ?_).antisymm ?_
   · rw [mem_setOf_eq, ← sub_lt_iff_lt_add] at hq
     obtain ⟨q₁, hq₁q, hq₁ab⟩ := exists_rat_btwn hq
-    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel'_right _ _⟩
+    refine ⟨q₁, by rwa [coe_mem_cutMap_iff], q - q₁, ?_, add_sub_cancel _ _⟩
     · norm_cast
       rw [coe_mem_cutMap_iff]
       exact mod_cast sub_lt_comm.mp hq₁q
@@ -369,7 +369,7 @@ theorem ringHom_monotone (hR : ∀ r : R, 0 ≤ r → ∃ s : R, s ^ 2 = r) (f :
 instance Real.RingHom.unique : Unique (ℝ →+* ℝ) where
   default := RingHom.id ℝ
   uniq f := congr_arg OrderRingHom.toRingHom (@Subsingleton.elim (ℝ →+*o ℝ) _
-      ⟨f, ringHom_monotone (fun r hr => ⟨Real.sqrt r, sq_sqrt hr⟩) f⟩ default)
+      ⟨f, ringHom_monotone (fun r hr => ⟨√r, sq_sqrt hr⟩) f⟩ default)
 #align real.ring_hom.unique Real.RingHom.unique
 
 end Real

@@ -94,7 +94,7 @@ open Filter
 variable (𝕜 E)
 
 /-- Given a unit-length element `x` of a normed space `E` over a field `𝕜`, the natural linear
-    isometry map from `𝕜` to `E` by taking multiples of `x`.-/
+    isometry map from `𝕜` to `E` by taking multiples of `x`. -/
 def _root_.LinearIsometry.toSpanSingleton {v : E} (hv : ‖v‖ = 1) : 𝕜 →ₗᵢ[𝕜] E :=
   { LinearMap.toSpanSingleton 𝕜 E v with norm_map' := fun x => by simp [norm_smul, hv] }
 #align linear_isometry.to_span_singleton LinearIsometry.toSpanSingleton
@@ -397,7 +397,7 @@ protected def seminorm : Seminorm 𝕜₂ (E →SL[σ₁₂] F) :=
 
 private lemma uniformity_eq_seminorm :
     𝓤 (E →SL[σ₁₂] F) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
-  refine ContinuousLinearMap.seminorm.uniformity_eq_of_hasBasis
+  refine ContinuousLinearMap.seminorm (σ₁₂ := σ₁₂) (E := E) (F := F) |>.uniformity_eq_of_hasBasis
     (ContinuousLinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
     ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
   · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩

@@ -868,7 +868,7 @@ theorem not_bddBelow_univ [NoMinOrder α] : ¬BddBelow (univ : Set α) :=
 
 @[simp]
 theorem upperBounds_empty : upperBounds (∅ : Set α) = univ := by
-  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, ball_empty_iff, forall_true_iff]
+  simp only [upperBounds, eq_univ_iff_forall, mem_setOf_eq, forall_mem_empty, forall_true_iff]
 #align upper_bounds_empty upperBounds_empty
 
 @[simp]
@@ -937,7 +937,7 @@ protected theorem BddAbove.insert [IsDirected α (· ≤ ·)] {s : Set α} (a : 
   bddAbove_insert.2
 #align bdd_above.insert BddAbove.insert
 
-/-- Adding a point to a set preserves its boundedness below.-/
+/-- Adding a point to a set preserves its boundedness below. -/
 @[simp]
 theorem bddBelow_insert [IsDirected α (· ≥ ·)] {s : Set α} {a : α} :
     BddBelow (insert a s) ↔ BddBelow s := by
@@ -1590,7 +1590,7 @@ lemma bddBelow_range_prod {F : ι → α × β} :
     BddBelow (range F) ↔ BddBelow (range <| Prod.fst ∘ F) ∧ BddBelow (range <| Prod.snd ∘ F) :=
   bddAbove_range_prod (α := αᵒᵈ) (β := βᵒᵈ)
 
-theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isLUB_prod {s : Set (α × β)} (p : α × β) :
     IsLUB s p ↔ IsLUB (Prod.fst '' s) p.1 ∧ IsLUB (Prod.snd '' s) p.2 := by
   refine'
     ⟨fun H =>
@@ -1607,7 +1607,7 @@ theorem isLUB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × �
         H.2.2 <| monotone_snd.mem_upperBounds_image hq⟩
 #align is_lub_prod isLUB_prod
 
-theorem isGLB_prod [Preorder α] [Preorder β] {s : Set (α × β)} (p : α × β) :
+theorem isGLB_prod {s : Set (α × β)} (p : α × β) :
     IsGLB s p ↔ IsGLB (Prod.fst '' s) p.1 ∧ IsGLB (Prod.snd '' s) p.2 :=
   @isLUB_prod αᵒᵈ βᵒᵈ _ _ _ _
 #align is_glb_prod isGLB_prod

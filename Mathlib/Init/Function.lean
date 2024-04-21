@@ -28,7 +28,12 @@ attribute [eqns comp_def] comp
 
 lemma flip_def {f : α → β → φ} : flip f = fun b a => f a b := rfl
 
-attribute [eqns flip_def] flip
+-- Adaptation note: nightly-2024-03-16
+-- Because of changes in how equation lemmas are generated,
+-- `@[eqns]` will only work properly when used immediately after the definition
+-- (and when none of the default equation lemmas are needed).
+-- Thus this usage is no longer allowed:
+-- attribute [eqns flip_def] flip
 
 /-- Composition of dependent functions: `(f ∘' g) x = f (g x)`, where type of `g x` depends on `x`
 and type of `f (g x)` depends on `x` and `g x`. -/
@@ -73,6 +78,9 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 @[reducible]
 def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
+
+-- Adaptation note: nightly-2024-03-16: added to replace simp [Function.swap]
+theorem swap_def {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : swap f = fun y x => f x y := rfl
 
 @[reducible, deprecated] -- Deprecated since 13 January 2024
 def app {β : α → Sort u₂} (f : ∀ x, β x) (x : α) : β x :=
@@ -167,7 +175,7 @@ theorem LeftInverse.injective {g : β → α} {f : α → β} : LeftInverse g f 
   fun h a b faeqfb =>
   calc
     a = g (f a) := (h a).symm
-    _ = g (f b) := (congr_arg g faeqfb)
+    _ = g (f b) := congr_arg g faeqfb
     _ = b := h b
 #align function.left_inverse.injective Function.LeftInverse.injective
 
@@ -194,7 +202,7 @@ theorem leftInverse_of_surjective_of_rightInverse {f : α → β} {g : β → α
   Exists.elim (surjf y) fun x hx =>
     calc
       f (g y) = f (g (f x)) := hx ▸ rfl
-      _ = f x := (Eq.symm (rfg x) ▸ rfl)
+      _ = f x := Eq.symm (rfg x) ▸ rfl
       _ = y := hx
 #align function.left_inverse_of_surjective_of_right_inverse Function.leftInverse_of_surjective_of_rightInverse
 

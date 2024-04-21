@@ -140,7 +140,7 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
 #align finite_dimensional.fintype_basis_index FiniteDimensional.fintypeBasisIndex
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
-  a finite type.-/
+  a finite type. -/
 noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   infer_instance
@@ -322,12 +322,12 @@ noncomputable def basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) 
         apply_fun Equiv.finsuppUnique
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           smul_eq_mul, Pi.smul_apply, Equiv.finsuppUnique_apply]
-        exact div_mul_cancel _ h
+        exact div_mul_cancel₀ _ h
       right_inv := fun f => by
         ext
         simp only [LinearEquiv.map_smulₛₗ, Finsupp.coe_smul, Finsupp.single_eq_same,
           RingHom.id_apply, smul_eq_mul, Pi.smul_apply]
-        exact mul_div_cancel _ h }
+        exact mul_div_cancel_right₀ _ h }
 #align finite_dimensional.basis_singleton FiniteDimensional.basisSingleton
 
 @[simp]
@@ -343,6 +343,17 @@ theorem range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v :
 #align finite_dimensional.range_basis_singleton FiniteDimensional.range_basisSingleton
 
 end DivisionRing
+
+section Tower
+
+variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
+
+theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+  Module.Finite.trans K A
+#align finite_dimensional.trans FiniteDimensional.trans
+
+end Tower
 
 end FiniteDimensional
 
@@ -497,6 +508,12 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   rw [h_finrank_inf]
   rfl
 #align submodule.eq_top_of_disjoint Submodule.eq_top_of_disjoint
+
+theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
+    {s t : Submodule K V} (hdisjoint : Disjoint s t) :
+    finrank K s + finrank K t ≤ finrank K V := by
+  rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
+  exact Submodule.finrank_le _
 
 end DivisionRing
 
@@ -689,7 +706,7 @@ theorem comap_eq_sup_ker_of_disjoint {p : Submodule K V} [FiniteDimensional K p]
   obtain ⟨⟨y, hy⟩, hxy⟩ :=
     surjective_of_injective ((injective_restrict_iff_disjoint h).mpr h') ⟨f x, hx⟩
   replace hxy : f y = f x := by simpa [Subtype.ext_iff] using hxy
-  exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel'_right y x⟩
+  exact Submodule.mem_sup.mpr ⟨y, hy, x - y, by simp [hxy], add_sub_cancel y x⟩
 
 theorem ker_comp_eq_of_commute_of_disjoint_ker [FiniteDimensional K V] {f g : V →ₗ[K] V}
     (h : Commute f g) (h' : Disjoint (ker f) (ker g)) :
@@ -1143,9 +1160,9 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
-  nontriviality E
-  exact .of_rank_eq_one Subalgebra.rank_bot
+@[deprecated Subalgebra.finite_bot] -- 2024-04-11
+theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
+  Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
@@ -1243,7 +1260,7 @@ theorem exists_ker_pow_eq_ker_pow_succ [FiniteDimensional K V] (f : End K V) :
       · exact zero_le (finrank _ _)
       · have h_ker_lt_ker : LinearMap.ker (f ^ n) < LinearMap.ker (f ^ n.succ) := by
           refine' lt_of_le_of_ne _ (h_contra n (Nat.le_of_succ_le_succ hn))
-          rw [pow_succ]
+          rw [pow_succ']
           apply LinearMap.ker_le_ker_comp
         have h_finrank_lt_finrank :
             finrank K (LinearMap.ker (f ^ n)) < finrank K (LinearMap.ker (f ^ n.succ)) := by
@@ -1280,7 +1297,7 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
     LinearMap.ker (f ^ m) = LinearMap.ker (f ^ (k + (m - k))) := by
       rw [add_tsub_cancel_of_le (h_k_le.trans hm)]
     _ = LinearMap.ker (f ^ k) := by rw [ker_pow_constant hk _]
-    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := (ker_pow_constant hk (finrank K V - k))
+    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := ker_pow_constant hk (finrank K V - k)
     _ = LinearMap.ker (f ^ finrank K V) := by rw [add_tsub_cancel_of_le h_k_le]
 #align module.End.ker_pow_eq_ker_pow_finrank_of_le Module.End.ker_pow_eq_ker_pow_finrank_of_le
 
@@ -1308,7 +1325,7 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
   let hs := Basis.ofVectorSpace K V
   calc
     #V = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = #(s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
+    _ = #(s → K) := Quotient.sound ⟨Finsupp.equivFunOnFinite⟩
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 

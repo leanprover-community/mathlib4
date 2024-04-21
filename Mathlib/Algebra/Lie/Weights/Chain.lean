@@ -31,12 +31,12 @@ We provide basic definitions and results to support `α`-chain techniques in thi
  * `LieModule.weightSpaceChain`: given weights `χ₁`, `χ₂` together with integers `p` and `q`, this
    is the sum of the weight spaces `k • χ₁ + χ₂` for `p < k < q`.
  * `LieModule.trace_toEndomorphism_weightSpaceChain_eq_zero`: given a root `α` relative to a Cartan
-   subalgebra `H`, there is a natural ideal `(rootSpaceProductNegSelf α).range` in `H`. This lemma
+   subalgebra `H`, there is a natural ideal `corootSpace α` in `H`. This lemma
    states that this ideal acts by trace-zero endomorphisms on the sum of root spaces of any
    `α`-chain, provided the weight spaces at the endpoints are both trivial.
- * `LieModule.exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero`: given a (potential) root
+ * `LieModule.exists_forall_mem_corootSpace_smul_add_eq_zero`: given a (potential) root
    `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
-   `(rootSpaceProductNegSelf α).range` of `H`, we may find an integral linear combination between
+   `corootSpace α` of `H`, we may find an integral linear combination between
    `α` and any weight `χ` of a representation.
 
 -/
@@ -156,37 +156,39 @@ variable [H.IsCartanSubalgebra] [IsNoetherian R L]
 lemma trace_toEndomorphism_weightSpaceChain_eq_zero
     (hp : weightSpace M (p • α + χ) = ⊥)
     (hq : weightSpace M (q • α + χ) = ⊥)
-    {x : H} (hx : x ∈ (rootSpaceProductNegSelf α).range) :
+    {x : H} (hx : x ∈ corootSpace α) :
     LinearMap.trace R _ (toEndomorphism R H (weightSpaceChain M α χ p q) x) = 0 := by
-  obtain ⟨t, rfl⟩ := hx
-  induction' t using TensorProduct.induction_on with y z _ _ h₁ h₂
-  · simp
-  · let f : Module.End R (weightSpaceChain M α χ p q) :=
+  rw [LieAlgebra.mem_corootSpace'] at hx
+  induction hx using Submodule.span_induction'
+  · next u hu =>
+    obtain ⟨y, hy, z, hz, hyz⟩ := hu
+    let f : Module.End R (weightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(y : L), m⁆,
-          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M α χ p q hq y.property hm⟩
+          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_right M α χ p q hq hy hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
     let g : Module.End R (weightSpaceChain M α χ p q) :=
       { toFun := fun ⟨m, hm⟩ ↦ ⟨⁅(z : L), m⁆,
-          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp z.property hm⟩
+          lie_mem_weightSpaceChain_of_weightSpace_eq_bot_left M α χ p q hp hz hm⟩
         map_add' := fun _ _ ↦ by simp
         map_smul' := fun t m ↦ by simp }
-    have hfg : toEndomorphism R H _ (rootSpaceProductNegSelf α (y ⊗ₜ z)) = ⁅f, g⁆ := by
-      ext; simp [f, g]
+    have hfg : toEndomorphism R H _ u = ⁅f, g⁆ := by ext; simp [f, g, ← hyz]
     simp [hfg]
-  · rw [LieModuleHom.map_add, LieHom.map_add, map_add, h₁, h₂, zero_add]
+  · simp
+  · simp_all
+  · simp_all
 
 /-- Given a (potential) root `α` relative to a Cartan subalgebra `H`, if we restrict to the ideal
-`I = (rootSpaceProductNegSelf α).range` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
+`I = corootSpace α` of `H` (informally, `I = ⁅H(α), H(-α)⁆`), we may find an
 integral linear combination between `α` and any weight `χ` of a representation.
 
 This is Proposition 4.4 from [carter2005] and is a key step in the proof that the roots of a
 semisimple Lie algebra form a root system. It shows that the restriction of `α` to `I` vanishes iff
 the restriction of every root to `I` vanishes (which cannot happen in a semisimple Lie algebra). -/
-lemma exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero
+lemma exists_forall_mem_corootSpace_smul_add_eq_zero
     [IsDomain R] [IsPrincipalIdealRing R] [CharZero R] [NoZeroSMulDivisors R M] [IsNoetherian R M]
     (hα : α ≠ 0) (hχ : weightSpace M χ ≠ ⊥) :
-    ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ (rootSpaceProductNegSelf α).range, (a • α + b • χ) x = 0 := by
+    ∃ a b : ℤ, 0 < b ∧ ∀ x ∈ corootSpace α, (a • α + b • χ) x = 0 := by
   obtain ⟨p, hp₀, q, hq₀, hp, hq⟩ := exists₂_weightSpace_smul_add_eq_bot M α χ hα
   let a := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ)) • i
   let b := ∑ i in Finset.Ioo p q, finrank R (weightSpace M (i • α + χ))

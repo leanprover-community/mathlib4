@@ -219,7 +219,7 @@ instance quotient : IsSemisimpleModule R (M ⧸ m) :=
   .congr (m.quotientEquivOfIsCompl P compl)
 
 -- does not work as an instance, not sure why
-protected theorem range [IsSemisimpleModule R M] (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
+protected theorem range (f : M →ₗ[R] N) : IsSemisimpleModule R (range f) :=
   .congr (quotKerEquivRange _).symm
 
 section
@@ -346,7 +346,7 @@ proof_wanted IsSemisimpleRing.matrix [Fintype ι] [DecidableEq ι] [IsSemisimple
     IsSemisimpleRing (Matrix ι ι R)
 
 universe u in
-/- The existence part of the Artin–Wedderburn theorem. -/
+/-- The existence part of the Artin–Wedderburn theorem. -/
 proof_wanted isSemisimpleRing_iff_pi_matrix_divisionRing {R : Type u} [Ring R] :
     IsSemisimpleRing R ↔
     ∃ (n : ℕ) (S : Fin n → Type u) (d : Fin n → ℕ) (_ : ∀ i, DivisionRing (S i)),

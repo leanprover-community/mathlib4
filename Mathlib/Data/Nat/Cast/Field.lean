@@ -27,13 +27,11 @@ namespace Nat
 variable {α : Type*}
 
 @[simp]
-theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (n_nonzero : (n : α) ≠ 0) :
+theorem cast_div [DivisionSemiring α] {m n : ℕ} (n_dvd : n ∣ m) (hn : (n : α) ≠ 0) :
     ((m / n : ℕ) : α) = m / n := by
   rcases n_dvd with ⟨k, rfl⟩
-  have : n ≠ 0 := by
-    rintro rfl
-    simp at n_nonzero
-  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n k,cast_mul, mul_div_cancel _ n_nonzero]
+  have : n ≠ 0 := by rintro rfl; simp at hn
+  rw [Nat.mul_div_cancel_left _ this.bot_lt, mul_comm n, cast_mul, mul_div_cancel_right₀ _ hn]
 #align nat.cast_div Nat.cast_div
 
 theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d : ℕ}
@@ -57,7 +55,7 @@ theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   cases n
   · rw [cast_zero, div_zero, Nat.div_zero, cast_zero]
   rw [le_div_iff, ← Nat.cast_mul, @Nat.cast_le]
-  exact (Nat.div_mul_le_self m _)
+  exact Nat.div_mul_le_self m _
   · exact Nat.cast_pos.2 (Nat.succ_pos _)
 #align nat.cast_div_le Nat.cast_div_le
 
