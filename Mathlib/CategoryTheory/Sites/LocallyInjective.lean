@@ -113,7 +113,7 @@ lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
 lemma equalizerSieve_mem_of_equalizerSieve_app_mem
     {X : Cᵒᵖ} (x y : F₁.obj X) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
     [IsLocallyInjective J φ] :
-    equalizerSieve x y ∈ J X.unop  :=
+    equalizerSieve x y ∈ J X.unop :=
   (isLocallyInjective_iff_equalizerSieve_mem_imp J φ).1 inferInstance x y h
 
 instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J ψ] :
