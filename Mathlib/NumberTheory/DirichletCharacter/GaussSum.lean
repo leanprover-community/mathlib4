@@ -19,8 +19,8 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
   suffices e.mulShift u = e by conv_lhs => rw [← this, gaussSum_mulShift]
   rw [(by ring : u.val = (u - 1) + 1), ← mulShift_mul, mulShift_one, mul_left_eq_self]
   rsuffices ⟨a, ha⟩ : (d : ℤ) ∣ (u.val.val - 1 : ℤ)
-  · have : u.val - 1 = ↑(u.val.val - 1 : ℤ) := by simp only [ZMod.nat_cast_val, Int.cast_sub,
-      ZMod.int_cast_cast, ZMod.cast_id', id_eq, Int.cast_one]
+  · have : u.val - 1 = ↑(u.val.val - 1 : ℤ) := by simp only [ZMod.natCast_val, Int.cast_sub,
+      ZMod.intCast_cast, ZMod.cast_id', id_eq, Int.cast_one]
     rw [this, ha]
     ext1 y
     simpa only [Int.cast_mul, Int.cast_natCast, mulShift_apply, mul_assoc, one_apply]
@@ -28,7 +28,7 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
   rw [← Units.eq_iff, Units.val_one, ZMod.unitsMap_def, Units.coe_map] at hu
   have : ZMod.castHom hd (ZMod d) u.val = ((u.val.val : ℤ) : ZMod d) := by simp
   rwa [MonoidHom.coe_coe, this, ← Int.cast_one, eq_comm,
-    ZMod.int_cast_eq_int_cast_iff_dvd_sub] at hu
+    ZMod.intCast_eq_intCast_iff_dvd_sub] at hu
 
 /-- If `gaussSum χ e ≠ 0`, and `d` is such that `e.mulShift d = 1`, then `χ` must factor through
 `d`. (This will be used to show that Gauss sums vanish when `χ` is primitive and `e` is not.)-/
@@ -71,7 +71,7 @@ lemma gaussSum_mulShift_of_isPrimitive [IsDomain R] {χ : DirichletCharacter R N
         refine lt_of_le_of_ne (Nat.le_of_dvd N.pos ⟨d, mul_comm b d ▸ hb⟩) ?_
         contrapose! hd'
         simpa only [ne_eq, PNat.ne_zero, not_false_eq_true, right_eq_mul₀] using (hd' ▸ hb :)
-      rw [Ne, ZMod.nat_cast_zmod_eq_zero_iff_dvd]
+      rw [Ne, ZMod.natCast_zmod_eq_zero_iff_dvd]
       exact fun h ↦ not_lt_of_le (Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hb_ne) h) hb_lt
     · rw [isNontrivial_iff_ne_trivial, mulShift_mulShift, mul_assoc, ← Nat.cast_mul,
-        ← hb, ZMod.nat_cast_self, mul_zero, mulShift_zero, not_ne_iff]
+        ← hb, ZMod.natCast_self, mul_zero, mulShift_zero, not_ne_iff]
