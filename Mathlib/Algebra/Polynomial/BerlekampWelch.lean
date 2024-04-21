@@ -32,6 +32,7 @@ Then the received polynomial is the sum of the message polynomial and the error 
 
 -/
 
+
 noncomputable def BerlekampWelchDecoding {F : Type} [Field F] (m e : ℕ)
     (a : Fin (m + e + e) -> F) (received : Fin (m + e + e) → F) (i_ : Fin m) : F :=
   let n := m + e + e
@@ -58,6 +59,20 @@ theorem BerlekampWelchDecodingCorrect {F : Type} [Field F] [DecidableEq F] (m e 
       = message := by
   unfold BerlekampWelchDecoding SimpleReedSolomonCode
   lift_lets
+  extract_lets n AB_mat A_mat full_mat AB_vec qe_vec q_vec e_vec e_poly q_poly f_poly
+  ext i_
+  -- TODO critical question: Is it always the case that full_mat is invertible?
+  -- If so, how to prove it?
+  -- If not, what is the semantic situation that leads to it not being inveritble
+  -- subquestion is it related to the possibility of the error vector being even sparser than the algorithm requires?
+
+  -- have : full_mat *ᵥ qe_vec = -AB_vec := by
+  --   apply?
+
+  have e_poly_is_errors : e_poly = List.prod (X - ) := by
+    apply?
+
+
 
 
 end Polynomial
