@@ -95,9 +95,11 @@ theorem _root_.ContinuousOn.const_isBigOWithUniformlyOn_isCompact
     (fun (i, _x) ↦ C i) fun _ => c := by
   refine isBigOWith_iff.mpr <| eventually_of_mem ?_ (fun x hx ↦ ?_) (U := s ×ˢ Set.univ)
   · exact prod_mem_prod (mem_principal_self s) univ_mem
-  · rewrite [div_mul_cancel _ hc]
-    replace hs := hs.image_of_continuousOn hf |>.image continuous_norm
-    have h_sSup := hs.isLUB_sSup <| Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x.1, hx.1⟩
+  · rewrite [div_mul_cancel₀ _ hc]
+    replace hs: IsCompact ((fun a ↦ ‖a‖) '' (C '' s)) :=
+      hs.image_of_continuousOn hf |>.image continuous_norm
+    have h_sSup: IsLUB ((fun a ↦ ‖a‖) '' (C '' s)) (sSup ((fun a ↦ ‖a‖) '' (C '' s))) :=
+      hs.isLUB_sSup <| Set.image_nonempty.mpr <| Set.image_nonempty.mpr ⟨x.1, hx.1⟩
     exact h_sSup.1 <| Set.mem_image_of_mem _ <| Set.mem_image_of_mem _ hx.1
 
 /-- A family of constant functions `f (i, x) = C i` is uniformly O(1) w.r.t. `s`,
