@@ -18,7 +18,6 @@ somewhere else.
 ## functoriality for `MonoidAlgebra`
 
 We prove some functoriality definitions for the `Semiring` variable.
-It remains to prove that this is a functor.
 
 ## tensor product
 
@@ -29,8 +28,6 @@ It remains to prove that this is a functor.
    `MonoidAlgebra R α` with `N` is `R`-linearly equivalent to `MonoidAlgebra N α`
 
 ## TODO
-
-* State and prove functoriality properties
 
 * Prove the `lTensor` variants
 
@@ -89,6 +86,12 @@ lemma addHom_apply [MulOneClass α] (e : N →+ P) (x : MonoidAlgebra N α) :
   simp only [addHom_single, RingHom.toAddMonoidHom_eq_coe,
     mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe, mapRange_single]
 
+theorem addHom_eq_addHom' [MulOneClass α] (e : N →+ P) :
+    (addHom e : MonoidAlgebra N α →+ MonoidAlgebra P α) = addHom' e := by
+  apply Finsupp.addHom_ext
+  intro a n
+  erw [addHom_single, addHom'_single]
+
 lemma addHom_id [MulOneClass α] :
     (addHom (AddMonoidHom.id N) : MonoidAlgebra N α →+ MonoidAlgebra N α)
       = AddMonoidHom.id _ :=
@@ -120,18 +123,8 @@ lemma addHom'_comp [Semiring M] [MulOneClass α] (f : M →+ N) (e : N →+ P) :
 variable [Monoid α]
 -- TODO : generalize to [MulOneClass α]
 
--- if one uses Finsupp.mapRange.AddMonoidHom, multiplicativity requires a proof
-/-- RingHom functoriality for the monoid algebra -/
-noncomputable def ringHom (e : N →+* P) :
-    MonoidAlgebra N α →+* MonoidAlgebra P α :=
-  liftNCRingHom (singleOneRingHom.comp e) (of P α) (by
-    intro n a
-    simp only [commute_iff_eq, RingHom.coe_comp, Function.comp_apply,
-      singleOneRingHom_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
-      singleAddHom_apply, of_apply, single_mul_single, one_mul, mul_one])
-
-/-- RingHom functoriality for the monoid algebra -/
-noncomputable def ringHom' (e : N →+* P) :
+/-- RingHom functoriality for the monoid algebra (MulOneClass)-/
+noncomputable def ringHom' {α : Type*} [MulOneClass α] (e : N →+* P) :
     MonoidAlgebra N α →+* MonoidAlgebra P α := {
   addHom' e.toAddMonoidHom with
   map_one' := by simp [one_def, addHom'_single]
@@ -143,6 +136,16 @@ noncomputable def ringHom' (e : N →+* P) :
     ext a m
     rw [Finsupp.sum_mul, map_finsupp_sum, Finsupp.sum_mul]
     simp only [single_mul_single, addHom'_single, AddMonoidHom.coe_coe, map_mul] }
+
+-- if one uses Finsupp.mapRange.AddMonoidHom, multiplicativity requires a proof
+/-- RingHom functoriality for the monoid algebra -/
+noncomputable def ringHom (e : N →+* P) :
+    MonoidAlgebra N α →+* MonoidAlgebra P α :=
+  liftNCRingHom (singleOneRingHom.comp e) (of P α) (by
+    intro n a
+    simp only [commute_iff_eq, RingHom.coe_comp, Function.comp_apply,
+      singleOneRingHom_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+      singleAddHom_apply, of_apply, single_mul_single, one_mul, mul_one])
 
 @[simp]
 lemma ringHom_single (e : N →+* P) (a  : α) (n : N) :
