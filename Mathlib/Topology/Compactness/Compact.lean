@@ -612,6 +612,7 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
   simp only [cocompact, hasBasis_cofinite.eq_biInf, isCompact_iff_finite]
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
 
+/-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
 theorem disjoint_cocompact_iff (f : Filter X) :
     Disjoint f (Filter.cocompact X) ↔ ∃ K : Set X, IsCompact K ∧ K ∈ f := by
   constructor
