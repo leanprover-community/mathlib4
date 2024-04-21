@@ -31,7 +31,9 @@ def leftpad (n : Nat) (c : Char := ' ') (s : String) : String :=
 def replicate (n : Nat) (c : Char) : String :=
   ⟨List.replicate n c⟩
 
--- TODO add `List.rightpad` to Std to bring this definition in line with the above
+-- TODO bring this definition in line with the above, either by:
+-- adding `List.rightpad` to Std and changing the definition of `rightpad` here to match
+-- or by changing the definition of `leftpad` above to match this
 /-- Pad `s : String` with repeated occurrences of `c : Char` on the right until it's of length `n`.
   If `s` is initially larger than `n`, just return `s`. -/
 def rightpad (n : Nat) (c : Char := ' ') (s : String) : String :=
