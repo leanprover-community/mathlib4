@@ -5,6 +5,12 @@ Authors: Mario Carneiro
 -/
 import Std.Tactic.Alias
 
+/-!
+# Arrays
+
+This file contains basic properties of arrays.
+-/
+
 attribute [simp] Array.toArrayAux_eq
 
 alias List.toArray_data := Array.data_toArray

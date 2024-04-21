@@ -2,12 +2,16 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-The integers, with addition, multiplication, and subtraction.
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
 import Std.Data.Int.Order
+
+/-!
+# Integers
+
+This file contains basic properties of integers with addition, multiplication, and subtraction.
+-/
 
 open Nat
 
@@ -62,6 +66,10 @@ protected theorem ofNat_add_one_out (n : ℕ) : ↑n + (1 : ℤ) = ↑(succ n) :
 #align int.neg_succ_of_nat_inj_iff Int.negSucc_inj
 #align int.neg_succ_of_nat_eq Int.negSucc_eq
 
+/--
+  Let `a` and `b` be in `ℤ`.
+  If `-a = -b`, then `a = b`.
+-/
 protected theorem neg_eq_neg {a b : ℤ} (h : -a = -b) : a = b := Int.neg_inj.1 h
 #align int.neg_inj Int.neg_eq_neg
 

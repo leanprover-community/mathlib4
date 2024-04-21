@@ -18,7 +18,9 @@ import Mathlib.Tactic.Common
 #align_import data.list.basic from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
-# Basic properties of lists
+# Lists
+
+This file contains basic properties of lists.
 -/
 
 assert_not_exists Set.range
