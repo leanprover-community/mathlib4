@@ -164,7 +164,7 @@ theorem ringHom_comp [Semiring M] (f : M →+* N) (e : N →+* P) :
   ext x <;> simp
 
 /-- RingHom functoriality for the monoid algebra (equivalence) -/
-noncomputable def equivRingHom (e : N ≃+* P) :
+noncomputable def ringEquiv (e : N ≃+* P) :
     MonoidAlgebra N α ≃+* MonoidAlgebra P α := by
   apply RingEquiv.ofHomInv (ringHom e) (ringHom e.symm) <;>
   · convert ringHom_comp _ _
@@ -177,7 +177,7 @@ noncomputable def linearMap [Semiring R] [Module R N] [Module R P] (e : N →ₗ
     MonoidAlgebra N α →ₗ[R] MonoidAlgebra P α := {
   addHom e.toAddMonoidHom  with
   map_smul' := fun r x ↦ by
-    simp?
+    simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, RingHom.id_apply]
     rw [← MonoidAlgebra.sum_single x]
     simp only [map_finsupp_sum, smul_sum]
     apply congr_arg
@@ -206,14 +206,10 @@ lemma algHom_apply_single (e : N →ₐ[R] P) (a : α) (n : N) :
     algHom e (single a n) = single a (e n) := by
   simp [algHom]
 
--- TODO : here one needs a new proof
 /-- The alg equiv of monoid algebras induced by an alg equiv between their coefficients. -/
 noncomputable def algEquiv (e : N ≃ₐ[R] P) :
-    MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α :=
-  sorry
-/- {
-  mapRange.linearEquiv e.toLinearEquiv,
-  algHom e.toAlgHom with } -/
+    MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α := {
+  ringEquiv e.toRingEquiv, algHom e.toAlgHom with }
 
 end MonoidAlgebra
 
@@ -227,7 +223,7 @@ variable [Monoid α] [DecidableEq α]
 variable [CommSemiring R]
 variable {S : Type*} [CommSemiring S] [Algebra R S]
 variable [Semiring M] [Algebra R M] [Algebra S M] [IsScalarTower R S M]
-variable  [Semiring N] [Algebra R N]
+variable [Semiring N] [Algebra R N]
 
 namespace MonoidAlgebra
 
@@ -262,6 +258,11 @@ lemma rTensorAlgHom_apply_tmul_apply
   simp only [algHom_apply_apply, Algebra.TensorProduct.includeLeft_apply]
   simp only [Algebra.TensorProduct.tmul_mul_tmul, mul_one, one_mul]
 
+lemma rTensorAlgHom_apply_single_tmul_apply
+    (m : M) (a : α) (n : N) (b : α) :
+    rTensorAlgHom (S := S) (MonoidAlgebra.single a m ⊗ₜ[R] n) b = if a = b then m ⊗ₜ[R] n else 0 := by
+  rw [rTensorAlgHom_apply_tmul_apply, single_apply, ite_tmul]
+
 lemma rTensorAlgHom_toLinearMap :
     (rTensorAlgHom :
       MonoidAlgebra M α ⊗[R] N →ₐ[S] MonoidAlgebra (M ⊗[R] N) α).toLinearMap =
@@ -274,6 +275,7 @@ lemma rTensorAlgHom_toLinearMap :
   rw [rTensorAlgHom_apply_tmul_apply, ← finsuppLeft_apply_tmul_apply]
   rfl
 
+-- Useful ?
 lemma rTensorAlgHom_toLinearMap' :
     (rTensorAlgHom :
       MonoidAlgebra M α ⊗[R] N →ₐ[R] MonoidAlgebra (M ⊗[R] N) α).toLinearMap =
