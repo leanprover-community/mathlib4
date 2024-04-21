@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Tower
+import Mathlib.LinearAlgebra.TensorProduct.Finiteness
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -418,37 +419,11 @@ theorem of_one_right :
     M.injective_subtype.comp M.rTensorOne.injective
   rwa [this] at h
 
-variable {M N} in
-/-- TODO: remove once #11859 is merged -/
-private axiom test6 (s : Set (M ⊗[R] N)) (hs : s.Finite) :
-    ∃ (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N),
-    Module.Finite R M' ∧ Module.Finite R N' ∧
-    s ⊆ LinearMap.range (TensorProduct.map (inclusion hM) (inclusion hN))
-
--- TODO: remove once #11859 is merged
-variable {M N} in
-private theorem test6L (s : Set (M ⊗[R] N)) (hs : s.Finite) :
-    ∃ (M' : Submodule R S) (hM : M' ≤ M), Module.Finite R M' ∧
-    s ⊆ LinearMap.range ((inclusion hM).rTensor N) := by
-  obtain ⟨M', _, hM, _, hfin, _, h⟩ := test6 s hs
-  refine ⟨M', hM, hfin, ?_⟩
-  rw [← LinearMap.rTensor_comp_lTensor] at h
-  exact h.trans (LinearMap.range_comp_le_range _ _)
-
--- TODO: remove once #11859 is merged
-variable {M N} in
-private theorem test6R (s : Set (M ⊗[R] N)) (hs : s.Finite) :
-    ∃ (N' : Submodule R S) (hN : N' ≤ N), Module.Finite R N' ∧
-    s ⊆ LinearMap.range ((inclusion hN).lTensor M) := by
-  obtain ⟨_, N', _, hN, _, hfin, h⟩ := test6 s hs
-  refine ⟨N', hN, hfin, ?_⟩
-  rw [← LinearMap.lTensor_comp_rTensor] at h
-  exact h.trans (LinearMap.range_comp_le_range _ _)
-
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨M', hM, _, h⟩ := test6L {x, y} (Set.toFinite _)
+  obtain ⟨M', hM, _, h⟩ :=
+    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
@@ -457,7 +432,8 @@ theorem of_linearDisjoint_finite_left
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
     M.LinearDisjoint N := fun x y hxy ↦ by
-  obtain ⟨N', hN, _, h⟩ := test6R {x, y} (Set.toFinite _)
+  obtain ⟨N', hN, _, h⟩ :=
+    TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr

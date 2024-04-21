@@ -377,17 +377,6 @@ section CommRing
 
 namespace LinearDisjoint
 
--- TODO: remove once #12025 is merged
-instance _root_.Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
-    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)
-
--- TODO: remove once #12025 is merged
-theorem _root_.Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
-    (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
-    Module.Finite K ↥(E1 ⊔ E2) := by
-  rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
-  exact Module.Finite.range (Algebra.TensorProduct.productMap E1.val E2.val).toLinearMap
-
 variable [CommRing R] [CommRing S] [Algebra R S]
 
 variable (A B : Subalgebra R S)
@@ -452,12 +441,6 @@ axiom _root_.Module.Finite.injective_of_surjective_of_injective
     {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
     [AddCommGroup N] [Module R N] (i f : N →ₗ[R] M)
     (hi : Function.Injective i) (hf : Function.Surjective f) : Function.Injective f
-
-/-- TODO: remove once #9626 is merged -/
-axiom _root_.exists_linearIndependent_of_le_finrank
-    {R M : Type*} [Ring R] [AddCommGroup M] [Module R M]
-    {n : ℕ} (hn : n ≤ finrank R M) :
-    ∃ f : Fin n → M, LinearIndependent R f
 
 theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
     [Module.Finite R A] [Module.Finite R B]
