@@ -740,25 +740,25 @@ theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact
 
 theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
     (hf : Disjoint f (Filter.cocompact Y)) :
-    𝓝ˢ s ×ˢ f ≤ 𝓝ˢ (s ×ˢ ⊤) := by
+    𝓝ˢ s ×ˢ f ≤ 𝓝ˢ (s ×ˢ Set.univ) := by
   obtain ⟨K, hK, hKf⟩ := (disjoint_cocompact_iff f).mp hf
   calc
     𝓝ˢ s ×ˢ f
     _ ≤ 𝓝ˢ s ×ˢ 𝓟 K        := Filter.prod_mono_right _ (Filter.le_principal_iff.mpr hKf)
     _ ≤ 𝓝ˢ s ×ˢ 𝓝ˢ K       := Filter.prod_mono_right _ principal_le_nhdsSet
     _ = 𝓝ˢ (s ×ˢ K)         := (hs.nhdsSet_prod_eq hK).symm
-    _ ≤ 𝓝ˢ (s ×ˢ ⊤)         := nhdsSet_mono (prod_mono_right le_top)
+    _ ≤ 𝓝ˢ (s ×ˢ Set.univ)  := nhdsSet_mono (prod_mono_right le_top)
 
 theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
-    f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (⊤ ×ˢ t) := by
+    f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
   obtain ⟨K, hK, hKf⟩ := (disjoint_cocompact_iff f).mp hf
   calc
     f ×ˢ 𝓝ˢ t
     _ ≤ (𝓟 K) ×ˢ 𝓝ˢ t      := Filter.prod_mono_left _ (Filter.le_principal_iff.mpr hKf)
     _ ≤ 𝓝ˢ K ×ˢ 𝓝ˢ t       := Filter.prod_mono_left _ principal_le_nhdsSet
     _ = 𝓝ˢ (K ×ˢ t)         := (hK.nhdsSet_prod_eq ht).symm
-    _ ≤ 𝓝ˢ (⊤ ×ˢ t)         := nhdsSet_mono (prod_mono_left le_top)
+    _ ≤ 𝓝ˢ (Set.univ ×ˢ t)  := nhdsSet_mono (prod_mono_left le_top)
 
 /-- If `s` and `t` are compact sets and `n` is an open neighborhood of `s × t`, then there exist
 open neighborhoods `u ⊇ s` and `v ⊇ t` such that `u × v ⊆ n`.
