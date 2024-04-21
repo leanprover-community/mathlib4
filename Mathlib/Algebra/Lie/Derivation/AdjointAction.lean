@@ -86,14 +86,6 @@ lemma mem_ad_idealRange_iff {D : LieDerivation R L L} :
     D ∈ (ad R L).idealRange ↔ ∃ x : L, ad R L x = D :=
   (ad R L).mem_idealRange_iff (ad_isIdealMorphism R L)
 
-/-- The Lie algebra isomorphism between a Lie algebra with trivial center and the ideal range of the
-adjoint action. -/
-noncomputable def equivRangeAdOfCenterEqBot (h : LieAlgebra.center R L = ⊥) :
-    L ≃ₗ⁅R⁆ (ad R L).idealRange :=
-  letI e₁ := LieEquiv.ofInjective (ad R L) (injective_ad_of_center_eq_bot h)
-  letI e₂ := LieEquiv.ofEq (ad R L).range (ad R L).idealRange (by ext; simp [mem_ad_idealRange_iff])
-  e₁.trans e₂
-
 end AdjointAction
 
 end LieDerivation
