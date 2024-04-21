@@ -65,13 +65,14 @@ theorem uniformContinuous_eval_const [∀ i, ContinuousSMul 𝕜 (E i)] (x : Π 
     UniformContinuous fun f : ContinuousMultilinearMap 𝕜 E F ↦ f x :=
   uniformContinuous_pi.1 uniformContinuous_coe_fun x
 
-instance : UniformAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
+instance instUniformAddGroup : UniformAddGroup (ContinuousMultilinearMap 𝕜 E F) :=
   let φ : ContinuousMultilinearMap 𝕜 E F →+ (Π i, E i) →ᵤ[{s | IsVonNBounded 𝕜 s}] F :=
     { toFun := toUniformOnFun, map_add' := fun _ _ ↦ rfl, map_zero' := rfl }
   uniformEmbedding_toUniformOnFun.uniformAddGroup φ
 
-instance {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F]
-    [ContinuousConstSMul M F] : UniformContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) :=
+instance instUniformContinuousConstSMul {M : Type*}
+    [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
+    UniformContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) :=
   haveI := uniformContinuousConstSMul_of_continuousConstSMul M F
   uniformEmbedding_toUniformOnFun.uniformContinuousConstSMul fun _ _ ↦ rfl
 
@@ -79,7 +80,15 @@ end UniformAddGroup
 
 variable [TopologicalSpace F] [TopologicalAddGroup F]
 
-instance [ContinuousSMul 𝕜 F] : ContinuousSMul 𝕜 (ContinuousMultilinearMap 𝕜 E F) :=
+instance instContinuousConstSMul
+    {M : Type*} [Monoid M] [DistribMulAction M F] [SMulCommClass 𝕜 M F] [ContinuousConstSMul M F] :
+    ContinuousConstSMul M (ContinuousMultilinearMap 𝕜 E F) := by
+  letI := TopologicalAddGroup.toUniformSpace F
+  haveI := comm_topologicalAddGroup_is_uniform (G := F)
+  infer_instance
+
+instance instContinuousSMul [ContinuousSMul 𝕜 F] :
+    ContinuousSMul 𝕜 (ContinuousMultilinearMap 𝕜 E F) :=
   letI := TopologicalAddGroup.toUniformSpace F
   haveI := comm_topologicalAddGroup_is_uniform (G := F)
   let φ : ContinuousMultilinearMap 𝕜 E F →ₗ[𝕜] (Π i, E i) → F :=
@@ -120,7 +129,7 @@ theorem continuous_coe_fun :
     Continuous (DFunLike.coe : ContinuousMultilinearMap 𝕜 E F → (Π i, E i) → F) :=
   continuous_pi continuous_eval_const
 
-instance [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
+instance instT2Space [T2Space F] : T2Space (ContinuousMultilinearMap 𝕜 E F) :=
   .of_injective_continuous DFunLike.coe_injective continuous_coe_fun
 
 variable (𝕜 E F)

@@ -681,6 +681,12 @@ def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
 instance hasColimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C} : HasColimit F :=
   HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal (terminalIsTerminal) F }
 
+lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
+    (X : J) (hX : IsTerminal X) :
+    IsIso (c.ι.app X) := by
+  change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
+  infer_instance
+
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
 to the colimit of `F`. -/
@@ -716,6 +722,12 @@ def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
 instance hasColimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C}
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasColimit F :=
   HasColimit.mk { cocone := _, isColimit := colimitOfDiagramInitial (initialIsInitial) F }
+
+lemma IsLimit.isIso_π_app_of_isInitial {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
+    (X : J) (hX : IsInitial X) :
+    IsIso (c.π.app X) := by
+  change IsIso (conePointUniqueUpToIso hc (limitOfDiagramInitial hX F)).hom
+  infer_instance
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram

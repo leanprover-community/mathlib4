@@ -450,4 +450,17 @@ lemma forget₂_map_homMk :
 
 end
 
+instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where
+  reflects f _ :=
+    (inferInstance : IsIso ((LinearEquiv.mk f
+      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
+      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
+
+instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphisms where
+  reflects f _ := by
+    have : IsIso ((forget _).map f) := by
+      change IsIso ((forget _).map ((forget₂ _ AddCommGroupCat).map f))
+      infer_instance
+    apply isIso_of_reflects_iso _ (forget _)
+
 end ModuleCat

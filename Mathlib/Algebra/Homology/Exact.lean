@@ -223,7 +223,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
   refine' ⟨by simp, _⟩
-  refine' @IsIso.epi_of_iso _ _ _ _ _ ?_
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
 

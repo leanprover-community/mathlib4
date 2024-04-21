@@ -170,3 +170,21 @@ theorem Continuous.fourier_inversion (h : Continuous f)
     𝓕⁻ (𝓕 f) = f := by
   ext v
   exact hf.fourier_inversion h'f h.continuousAt
+
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is integrable, and its Fourier transform `𝓕 f` is also integrable, then `𝓕 (𝓕⁻ f) = f` at
+continuity points of `f`. -/
+theorem MeasureTheory.Integrable.fourier_inversion_inv
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) {v : V}
+    (hv : ContinuousAt f v) : 𝓕 (𝓕⁻ f) v = f v := by
+  rw [fourierIntegralInv_comm]
+  exact fourier_inversion hf h'f hv
+
+/-- **Fourier inversion formula**: If a function `f` on a finite-dimensional real inner product
+space is continuous, integrable, and its Fourier transform `𝓕 f` is also integrable,
+then `𝓕 (𝓕⁻ f) = f`. -/
+theorem Continuous.fourier_inversion_inv (h : Continuous f)
+    (hf : Integrable f) (h'f : Integrable (𝓕 f)) :
+    𝓕 (𝓕⁻ f) = f := by
+  ext v
+  exact hf.fourier_inversion_inv h'f h.continuousAt
