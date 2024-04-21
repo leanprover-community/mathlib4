@@ -3,16 +3,18 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.GroupTheory.Coxeter.Basic
-
+import Mathlib.Data.Matrix.Notation
+import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
-# Coexeter matrices
+# Coxeter matrices
 
 This file defines some standard Coxeter matrices.
 
 ## Main definitions
 
+* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal
+  entries equal to one and off-diagonal entries distinct from one.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
 * `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
   and its dual, the regular n-orthoplex (or n-cross-polytope).
@@ -30,6 +32,24 @@ This file defines some standard Coxeter matrices.
   the 120-cell and 600-cell.
 
 -/
+
+section
+
+variable {B : Type*} [DecidableEq B]
+variable (M : Matrix B B ℕ)
+
+/-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
+and off-diagonal entries distinct from one. -/
+@[mk_iff]
+structure Matrix.IsCoxeter : Prop where
+  symmetric : M.IsSymm := by aesop
+  diagonal : ∀ b : B, M b b = 1 := by aesop
+  off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
+
+instance [Fintype B] [DecidableEq B] : DecidablePred (Matrix.IsCoxeter (B := B)) :=
+  fun M => decidable_of_iff' _ M.isCoxeter_iff
+
+end
 
 namespace CoxeterMatrix
 

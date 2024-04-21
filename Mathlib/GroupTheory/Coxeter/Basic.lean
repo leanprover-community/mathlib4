@@ -3,9 +3,8 @@ Copyright (c) 2024 Newell Jensen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Newell Jensen
 -/
-import Mathlib.Data.Matrix.Notation
+import Mathlib.GroupTheory.Coxeter.Matrix
 import Mathlib.GroupTheory.PresentedGroup
-import Mathlib.LinearAlgebra.Matrix.Symmetric
 
 /-!
 # Coxeter Systems
@@ -42,8 +41,6 @@ presentation corresponding to a Coxeter matrix which is registered in a Coxeter 
 
 ## Main definitions
 
-* `Matrix.IsCoxeter` : A matrix `IsCoxeter` if it is a symmetric matrix with diagonal
-  entries equal to one and off-diagonal entries distinct from one.
 * `Matrix.CoxeterGroup` : The group presentation corresponding to a Coxeter matrix.
 * `CoxeterSystem` : A structure recording the isomorphism between a group `W` and the
   group presentation corresponding to a Coxeter matrix, i.e. `Matrix.CoxeterGroup M`.
@@ -75,17 +72,6 @@ noncomputable section
 
 variable {B : Type*} [DecidableEq B]
 variable (M : Matrix B B ℕ)
-
-/-- A matrix `IsCoxeter` if it is a symmetric matrix with diagonal entries equal to one
-and off-diagonal entries distinct from one. -/
-@[mk_iff]
-structure Matrix.IsCoxeter : Prop where
-  symmetric : M.IsSymm := by aesop
-  diagonal : ∀ b : B, M b b = 1 := by aesop
-  off_diagonal : ∀ b₁ b₂ : B, b₁ ≠ b₂ → M b₁ b₂ ≠ 1 := by aesop
-
-instance [Fintype B] [DecidableEq B] : DecidablePred (Matrix.IsCoxeter (B := B)) :=
-  fun M => decidable_of_iff' _ M.isCoxeter_iff
 
 namespace CoxeterGroup
 
