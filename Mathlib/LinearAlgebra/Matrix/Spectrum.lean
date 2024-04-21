@@ -22,8 +22,7 @@ spectral theorem, diagonalization theorem
 -/
 section RankMulUnitaryTheorems
 
-variable {m n R : Type*} {𝕜 : Type*} [RCLike 𝕜] [Fintype n]
-         {A : Matrix n n 𝕜} [CommRing R] [StarRing R][DecidableEq n]
+variable {m n R : Type*} [Fintype n] [CommRing R] [StarRing R] [DecidableEq n]
 namespace Matrix
 
 @[simp]
