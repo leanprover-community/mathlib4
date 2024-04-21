@@ -20,10 +20,7 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
   instance.
 -/
 
-set_option autoImplicit true
-
-
-variable {γ : α → Type*}
+variable {α β : Type*} {γ : α → Type*}
 
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
   ⟨0⟩

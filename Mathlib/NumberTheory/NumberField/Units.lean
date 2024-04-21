@@ -567,8 +567,8 @@ theorem fun_eq_repr {x ζ : (𝓞 K)ˣ} {f : Fin (rank K) → ℤ} (hζ : ζ ∈
 
 /-- **Dirichlet Unit Theorem**. Any unit `x` of `𝓞 K` can be written uniquely as the product of
 a root of unity and powers of the units of the fundamental system `fundSystem`. -/
-theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : Fin (rank K) → ℤ),
-    x = ζ * ∏ i, (fundSystem K i) ^ (e i) := by
+theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin (rank K) → ℤ),
+    x = ζe.1 * ∏ i, (fundSystem K i) ^ (ζe.2 i) := by
   let ζ := x * (∏ i, (fundSystem K i) ^ ((basisModTorsion K).repr (Additive.ofMul ↑x) i))⁻¹
   have h_tors : ζ ∈ torsion K := by
     rw [← QuotientGroup.eq_one_iff, QuotientGroup.mk_mul, QuotientGroup.mk_inv, ← ofMul_eq_zero,
@@ -576,13 +576,10 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! (ζ : torsion K) (e : F
     simp_rw [QuotientGroup.mk_zpow, ofMul_zpow, fundSystem, QuotientGroup.out_eq']
     rw [add_eq_zero_iff_eq_neg, neg_neg]
     exact ((basisModTorsion K).sum_repr (Additive.ofMul ↑x)).symm
-  refine ⟨⟨ζ, h_tors⟩, ?_, ?_⟩
-  · refine ⟨((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ), ?_, ?_⟩
-    · simp only [ζ, _root_.inv_mul_cancel_right]
-    · exact fun _ hf => fun_eq_repr K h_tors hf
-  · rintro η ⟨_, hf, _⟩
-    simp_rw [fun_eq_repr K η.prop hf] at hf
-    ext1; dsimp only [ζ]
+  refine ⟨⟨⟨ζ, h_tors⟩, ((basisModTorsion K).repr (Additive.ofMul ↑x) : Fin (rank K) → ℤ)⟩, ?_, ?_⟩
+  · simp only [ζ, _root_.inv_mul_cancel_right]
+  · rintro ⟨⟨ζ', h_tors'⟩, η⟩ hf
+    simp only [ζ, ← fun_eq_repr K h_tors' hf, Prod.mk.injEq, Subtype.mk.injEq, and_true]
     nth_rewrite 1 [hf]
     rw [_root_.mul_inv_cancel_right]
 
