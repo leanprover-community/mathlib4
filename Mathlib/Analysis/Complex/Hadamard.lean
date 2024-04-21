@@ -230,7 +230,7 @@ end invInterpStrip
 
 -----
 
-variable [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℂ E] (f : ℂ → E)
 
 /--
 The the interpolation of `sSupNormIm` on the two boundaries.
@@ -245,12 +245,12 @@ noncomputable def interpStrip (z : ℂ) : ℂ :=
     else (sSupNormIm f 0)^(1-z) * (sSupNormIm f 1)^(z)
 
 /-- Rewrite for `InterpStrip` when `0 < sSupNormIm f 0` and `0 < sSupNormIm f 1`. -/
-lemma interpStrip_eq_of_pos (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
+lemma interpStrip_eq_of_pos (z : ℂ) (h0 : 0 < sSupNormIm f 0) (h1 : 0 < sSupNormIm f 1) :
     interpStrip f z = (sSupNormIm f 0)^(1 - z) * (sSupNormIm f 1)^(z) := by
   simp only [ne_of_gt h0, ne_of_gt h1, interpStrip, if_false, or_false]
 
 /-- Rewrite for `InterpStrip` when `0 = sSupNormIm f 0` or `0 = sSupNormIm f 1`. -/
-lemma interpStrip_eq_of_zero (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
+lemma interpStrip_eq_of_zero (z : ℂ) (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
     interpStrip f z = 0 :=
   if_pos h
 
@@ -258,7 +258,7 @@ lemma interpStrip_eq_of_zero (h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0) :
 lemma interpStrip_eq_on_Strip (z : ℂ) (hz : z ∈ verticalStrip 0 1):
     interpStrip f z = (sSupNormIm f 0)^(1 - z) * (sSupNormIm f 1)^(z) := by
   by_cases h : ((sSupNormIm f 0) = 0 ∨ (sSupNormIm f 1) = 0)
-  · rw [interpStrip_eq_of_zero _ h]
+  · rw [interpStrip_eq_of_zero _ z h]
     cases' h with h0 h1
     · simp only [h0, ofReal_zero, zero_eq_mul, cpow_eq_zero_iff, ne_eq, true_and, ofReal_eq_zero]
       left
@@ -272,13 +272,13 @@ lemma interpStrip_eq_on_Strip (z : ℂ) (hz : z ∈ verticalStrip 0 1):
     replace h : (0 < sSupNormIm f 0) ∧ (0 < sSupNormIm f 1) := by
       exact ⟨(lt_of_le_of_ne (sSupNormIm_nonneg f 0) (ne_comm.mp h.1)),
       (lt_of_le_of_ne (sSupNormIm_nonneg f 1) (ne_comm.mp h.2))⟩
-    exact interpStrip_eq_of_pos f h.1 h.2
+    exact interpStrip_eq_of_pos f z h.1 h.2
 
-lemma diffContOnCl_interpStrip (f : ℂ → E) :
+lemma diffContOnCl_interpStrip :
     DiffContOnCl ℂ (interpStrip f) (verticalStrip 0 1) := by
   by_cases h : sSupNormIm f 0 = 0 ∨ sSupNormIm f 1 = 0
   -- Case everywhere 0
-  · eta_expand; simp_rw [interpStrip_eq_of_zero f h]; exact diffContOnCl_const
+  · eta_expand; simp_rw [interpStrip_eq_of_zero f _ h]; exact diffContOnCl_const
   -- Case nowhere 0
   · push_neg at h
     cases' h with h0 h1
@@ -286,7 +286,7 @@ lemma diffContOnCl_interpStrip (f : ℂ → E) :
     apply Differentiable.diffContOnCl
     intro z
     eta_expand
-    simp_rw [interpStrip_eq_of_pos f (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
+    simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
       (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
     refine DifferentiableAt.mul ?_ ?_
     · apply DifferentiableAt.const_cpow (DifferentiableAt.const_sub (differentiableAt_id') 1) _
@@ -295,7 +295,7 @@ lemma diffContOnCl_interpStrip (f : ℂ → E) :
       · apply differentiableAt_id'
       · left; simp only [Ne.def, ofReal_eq_zero]; rwa [eq_comm]
 
-lemma norm_le_interp_on_closedStrip_eps (ε : ℝ) (hε : ε > 0)
+lemma norm_le_interp_on_closedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalClosedStrip 0 1) :
   ‖f z‖ ≤  ‖((ε + sSupNormIm f 0)^(1-z) * (ε + sSupNormIm f 1)^(z) : ℂ)‖ := by
@@ -312,7 +312,7 @@ lemma norm_le_interp_on_closedStrip_eps (ε : ℝ) (hε : ε > 0)
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) z.re]
   · simp only [Real.rpow_pos_of_pos (sSupNormIm_eps_pos f hε _) (1-z.re)]
 
-lemma eventuallyle (f : ℂ → E) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
+lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
     (hd : DiffContOnCl ℂ f (verticalStrip 0 1)) (hz : z ∈ verticalStrip 0 1) :
     (fun _ : ℝ ↦ ‖f z‖) ≤ᶠ[nhdsWithin 0 (Ioi 0)]
     (fun ε ↦ ‖((ε + sSupNormIm f 0)^(1-z) * (ε + sSupNormIm f 1)^(z) : ℂ)‖ ) := by
@@ -321,14 +321,14 @@ lemma eventuallyle (f : ℂ → E) (hB : BddAbove ((norm ∘ f) '' (verticalClos
   refine ⟨ ?_, ⟨isOpen_Ioo, by simp only [mem_Ioo, Left.neg_neg_iff, zero_lt_one, and_self]⟩⟩
   simp only [comp_apply, mem_Ioo, mem_Ioi, and_imp] at *
   · intro x _ _ hnezero
-    exact norm_le_interp_on_closedStrip_eps f x (hnezero) hB hd
+    exact norm_le_interp_on_closedStrip_eps f x (hnezero) z hB hd
       (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
 
 lemma norm_le_interp_on_strip_zero (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
     ∀ z ∈ verticalStrip 0 1, ‖f z‖ ≤ ‖interpStrip f z‖ := by
   intro z hz
-  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f hB hd hz)
+  apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
   · apply tendsto_inf_left
     simp only [tendsto_const_nhds_iff]
   -- Proof that we can let epsilon tend to zero.
