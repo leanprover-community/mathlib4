@@ -268,12 +268,12 @@ lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n
   constructor
   exact hA
   intro x
-  have := hA.eigenvalues_eq
-  dsimp at this
-  simp_rw [((hA.eigenvectorUnitary.2).1) ▸ hA.spectral_theorem2]
-  refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
-  rw [RCLike.le_iff_re_im]
-  simpa using h i
+  have k : ∀ (i : n), 0 ≤ RCLike.re ∘ _
+  rw [hA.spectral_theorem2]
+  refine [(posSemidef_diagonal_iff.mpr h).mul_mul_conjTranspose_same _]
+  -- refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
+  -- rw [RCLike.le_iff_re_im]
+  --simpa using h i
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
@@ -357,12 +357,12 @@ theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M
   intro i _
   rw [hM.isHermitian.eigenvalues_eq]
   refine hM.2 _ fun h => ?_
-  have h_det : hM.isHermitian.eigenvectorMatrixᵀ.det = 0 :=
+  have h_det : (hM.isHermitian.eigenvectorUnitary.1)ᵀ.det = 0 :=
     Matrix.det_eq_zero_of_row_eq_zero i fun j => congr_fun h j
   simpa only [h_det, not_isUnit_zero] using
-    isUnit_det_of_invertible hM.isHermitian.eigenvectorMatrixᵀ
+    isUnit_det_of_invertible (hM.isHermitian.eigenvectorUnitary)ᵀ
 #align matrix.pos_def.det_pos Matrix.PosDef.det_pos
-
+--Matrix.isUnit_iff_isUnit_det
 end PosDef
 
 end Matrix
