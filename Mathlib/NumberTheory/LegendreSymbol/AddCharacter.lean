@@ -131,7 +131,6 @@ lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
   rcases he with ⟨b, hb_ne, hb⟩
   -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
   obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
-  have : d ≠ 0 := fun h ↦ by simp [h, Nat.cast_zero, mul_zero, ne_eq, not_true_eq_false] at hb_ne
   refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd N.pos hd) ?_, ?_⟩
   · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
   · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
