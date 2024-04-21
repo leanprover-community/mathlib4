@@ -13,8 +13,6 @@ import Mathlib.Logic.Basic
 # Miscellaneous function constructions and lemmas
 -/
 
-set_option autoImplicit true
-
 open Function
 
 universe u v w
@@ -69,8 +67,6 @@ lemma hfunext {α α' : Sort u} {β : α → Sort v} {β' : α' → Sort v} {f :
   exact eq_of_heq (this a)
 #align function.hfunext Function.hfunext
 
-theorem funext_iff {β : α → Sort*} {f₁ f₂ : ∀ x : α, β x} : f₁ = f₂ ↔ ∀ a, f₁ a = f₂ a :=
-  Iff.intro (fun h _ ↦ h ▸ rfl) funext
 #align function.funext_iff Function.funext_iff
 
 theorem ne_iff {β : α → Sort*} {f₁ f₂ : ∀ a, β a} : f₁ ≠ f₂ ↔ ∃ a, f₁ a ≠ f₂ a :=
@@ -111,6 +107,9 @@ theorem Injective.ne_iff (hf : Injective f) {x y : α} : f x ≠ f y ↔ x ≠ y
 theorem Injective.ne_iff' (hf : Injective f) {x y : α} {z : β} (h : f y = z) : f x ≠ z ↔ x ≠ y :=
   h ▸ hf.ne_iff
 #align function.injective.ne_iff' Function.Injective.ne_iff'
+
+theorem not_injective_iff : ¬ Injective f ↔ ∃ a b, f a = f b ∧ a ≠ b := by
+  simp only [Injective, not_forall, exists_prop]
 
 /-- If the co-domain `β` of an injective function `f : α → β` has decidable equality, then
 the domain `α` also has decidable equality. -/
@@ -445,7 +444,7 @@ theorem invFun_eq (h : ∃ a, f a = b) : f (invFun f b) = b :=
   by simp only [invFun, dif_pos h, h.choose_spec]
 #align function.inv_fun_eq Function.invFun_eq
 
-theorem apply_invFun_apply {α : Type u₁} {β : Type u₂} {f : α → β} {a : α} :
+theorem apply_invFun_apply {α β : Type*} {f : α → β} {a : α} :
     f (@invFun _ _ ⟨a⟩ f (f a)) = f a :=
   @invFun_eq _ _ ⟨a⟩ _ _ ⟨_, rfl⟩
 
@@ -804,13 +803,13 @@ end Extend
 
 namespace FactorsThrough
 
-protected theorem rfl {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
+protected theorem rfl {α β : Sort*} {f : α → β} : FactorsThrough f f := fun _ _ ↦ id
 
-theorem comp_left {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
+theorem comp_left {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : γ → δ) :
     FactorsThrough (g' ∘ g) f := fun _x _y hxy ↦
   congr_arg g' (h hxy)
 
-theorem comp_right {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
+theorem comp_right {α β γ δ : Sort*} {f : α → β} {g : α → γ} (h : FactorsThrough g f) (g' : δ → α) :
     FactorsThrough (g ∘ g') (f ∘ g') := fun _x _y hxy ↦
   h hxy
 
@@ -869,7 +868,7 @@ is to recursively uncurry. For instance `f : α → β → γ → δ` will be tu
 class HasUncurry (α : Type*) (β : outParam (Type*)) (γ : outParam (Type*)) where
   /-- Uncurrying operator. The most generic use is to recursively uncurry. For instance
   `f : α → β → γ → δ` will be turned into `↿f : α × β × γ → δ`. One can also add instances
-  for bundled maps.-/
+  for bundled maps. -/
   uncurry : α → β → γ
 #align function.has_uncurry Function.HasUncurry
 
@@ -933,13 +932,13 @@ lemma not_surjective : Surjective Not := not_involutive.surjective
 lemma not_bijective : Bijective Not := not_involutive.bijective
 
 @[simp]
-lemma symmetric_apply_eq_iff {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
+lemma symmetric_apply_eq_iff {α : Sort*} {f : α → α} : Symmetric (f · = ·) ↔ Involutive f := by
   simp [Symmetric, Involutive]
 
 /-- The property of a binary function `f : α → β → γ` being injective.
 Mathematically this should be thought of as the corresponding function `α × β → γ` being injective.
 -/
-def Injective2 {α β γ} (f : α → β → γ) : Prop :=
+def Injective2 {α β γ : Sort*} (f : α → β → γ) : Prop :=
   ∀ ⦃a₁ a₂ b₁ b₂⦄, f a₁ b₁ = f a₂ b₂ → a₁ = a₂ ∧ b₁ = b₂
 #align function.injective2 Function.Injective2
 
@@ -1005,6 +1004,8 @@ end Sometimes
 
 end Function
 
+variable {α β : Sort*}
+
 /-- A relation `r : α → β → Prop` is "function-like"
 (for each `a` there exists a unique `b` such that `r a b`)
 if and only if it is `(f · = ·)` for some function `f`. -/
@@ -1045,10 +1046,10 @@ def Set.piecewise {α : Type u} {β : α → Sort v} (s : Set α) (f g : ∀ i, 
   fun i ↦ if i ∈ s then f i else g i
 #align set.piecewise Set.piecewise
 
+
 /-! ### Bijectivity of `Eq.rec`, `Eq.mp`, `Eq.mpr`, and `cast` -/
 
-
-theorem eq_rec_on_bijective {α : Sort*} {C : α → Sort*} :
+theorem eq_rec_on_bijective {C : α → Sort*} :
     ∀ {a a' : α} (h : a = a'), Function.Bijective (@Eq.ndrec _ _ C · _ h)
   | _, _, rfl => ⟨fun _ _ ↦ id, fun x ↦ ⟨x, rfl⟩⟩
 #align eq_rec_on_bijective eq_rec_on_bijective
@@ -1071,11 +1072,10 @@ theorem cast_bijective {α β : Sort _} (h : α = β) : Function.Bijective (cast
 #align cast_bijective cast_bijective
 
 /-! Note these lemmas apply to `Type*` not `Sort*`, as the latter interferes with `simp`, and
-is trivial anyway.-/
-
+is trivial anyway. -/
 
 @[simp]
-theorem eq_rec_inj {α : Sort*} {a a' : α} (h : a = a') {C : α → Type*} (x y : C a) :
+theorem eq_rec_inj {a a' : α} (h : a = a') {C : α → Type*} (x y : C a) :
     (Eq.ndrec x h : C a') = Eq.ndrec y h ↔ x = y :=
   (eq_rec_on_bijective h).injective.eq_iff
 #align eq_rec_inj eq_rec_inj
@@ -1085,21 +1085,21 @@ theorem cast_inj {α β : Type u} (h : α = β) {x y : α} : cast h x = cast h y
   (cast_bijective h).injective.eq_iff
 #align cast_inj cast_inj
 
-theorem Function.LeftInverse.eq_rec_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.eq_rec_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).rec (C (g (f a)))` for LHS
     @Eq.rec β (f (g (f a))) (fun x _ ↦ γ x) (C (g (f a))) (f a) (congr_arg f (h a)) = C a :=
   eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [h]
 #align function.left_inverse.eq_rec_eq Function.LeftInverse.eq_rec_eq
 
-theorem Function.LeftInverse.eq_rec_on_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.eq_rec_on_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     -- TODO: mathlib3 uses `(congr_arg f (h a)).recOn (C (g (f a)))` for LHS
     @Eq.recOn β (f (g (f a))) (fun x _ ↦ γ x) (f a) (congr_arg f (h a)) (C (g (f a))) = C a :=
   h.eq_rec_eq _ _
 #align function.left_inverse.eq_rec_on_eq Function.LeftInverse.eq_rec_on_eq
 
-theorem Function.LeftInverse.cast_eq {α β : Sort*} {γ : β → Sort v} {f : α → β} {g : β → α}
+theorem Function.LeftInverse.cast_eq {γ : β → Sort v} {f : α → β} {g : β → α}
     (h : Function.LeftInverse g f) (C : ∀ a : α, γ (f a)) (a : α) :
     cast (congr_arg (fun a ↦ γ (f a)) (h a)) (C (g (f a))) = C a := by
   rw [cast_eq_iff_heq, h]
@@ -1111,7 +1111,7 @@ def Set.SeparatesPoints {α β : Type*} (A : Set (α → β)) : Prop :=
   ∀ ⦃x y : α⦄, x ≠ y → ∃ f ∈ A, (f x : β) ≠ f y
 #align set.separates_points Set.SeparatesPoints
 
-theorem IsSymmOp.flip_eq {α β} (op) [IsSymmOp α β op] : flip op = op :=
+theorem IsSymmOp.flip_eq (op) [IsSymmOp α β op] : flip op = op :=
   funext fun a ↦ funext fun b ↦ (IsSymmOp.symm_op a b).symm
 #align is_symm_op.flip_eq IsSymmOp.flip_eq
 

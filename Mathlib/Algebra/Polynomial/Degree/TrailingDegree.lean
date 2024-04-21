@@ -67,11 +67,9 @@ def TrailingMonic (p : R[X]) :=
   trailingCoeff p = (1 : R)
 #align polynomial.trailing_monic Polynomial.TrailingMonic
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
-theorem TrailingMonic.definition : TrailingMonic p ↔ trailingCoeff p = 1 :=
+theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.trailing_monic.def Polynomial.TrailingMonic.definition
+#align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
 instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
   inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
@@ -280,9 +278,9 @@ theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=
 #align polynomial.nat_trailing_degree_one Polynomial.natTrailingDegree_one
 
 @[simp]
-theorem natTrailingDegree_nat_cast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_nat_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_nat_cast
+theorem natTrailingDegree_natCast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_natCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_natCast
 
 @[simp]
 theorem trailingDegree_C_mul_X_pow (n : ℕ) (ha : a ≠ 0) : trailingDegree (C a * X ^ n) = n := by
@@ -514,9 +512,9 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
 #align polynomial.nat_trailing_degree_neg Polynomial.natTrailingDegree_neg
 
 @[simp]
-theorem natTrailingDegree_int_cast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_int_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_int_cast
+theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_intCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_intCast
 
 end Ring
 

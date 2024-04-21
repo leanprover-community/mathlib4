@@ -255,10 +255,9 @@ instance :
   -- `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism. `CommSemiRingCat ⥤ Type` reflecting
   -- isomorphism is added manually since Lean can't see it, but even with this addition Lean can not
   -- see `CommSemiRingCat ⥤ SemiRingCat` reflects isomorphism, so this instance is also added.
-  letI : ReflectsIsomorphisms (forget CommSemiRingCat.{u}) :=
+  letI : (forget CommSemiRingCat.{u}).ReflectsIsomorphisms :=
     CommSemiRingCat.forgetReflectIsos.{u}
-  letI : ReflectsIsomorphisms
-    (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}) :=
+  letI : (forget₂ CommSemiRingCat.{u} SemiRingCat.{u}).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ CommSemiRingCat.{u} SemiRingCat.{u}
   letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget CommSemiRingCat))
@@ -388,16 +387,16 @@ All we need to do is notice that the limit point has a `Ring` instance available
 and then reuse the existing limit.
 -/
 instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
-  letI : ReflectsIsomorphisms (forget₂ RingCat SemiRingCat) :=
+  letI : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
-  letI : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+  have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-  letI c : Cone F :=
+  let c : Cone F :=
   { pt := RingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
     π :=
-      { app := fun x => SemiRingCat.ofHom _
-        naturality := (SemiRingCat.HasLimits.limitCone
-          (F ⋙ forget₂ RingCat SemiRingCat.{u})).π.naturality } }
+      { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} (F ⋙ forget₂ _ SemiRingCat) x
+        naturality := fun _ _ f => RingHom.coe_inj
+          ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
   createsLimitOfReflectsIso fun c' t =>
     { liftedCone := c
       validLift := by apply IsLimit.uniqueUpToIso (SemiRingCat.HasLimits.limitConeIsLimit _) t
@@ -464,7 +463,7 @@ set_option linter.uppercaseLean3 false in
 def forget₂AddCommGroupPreservesLimitsAux :
     IsLimit ((forget₂ RingCat.{u} AddCommGroupCat).mapCone (limitCone.{v, u} F)) := by
   -- Porting note: inline `f` would not compile
-  letI f := (F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u})
+  letI f := F ⋙ forget₂ RingCat.{u} AddCommGroupCat.{u}
   letI : Small.{u} (Functor.sections (f ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
   apply AddCommGroupCat.limitConeIsLimit.{v, u} f
@@ -546,28 +545,21 @@ instance :
     but it seems this would introduce additional identity morphisms in `limit.π`.
     -/
     -- Porting note: need to add these instances manually
-    letI : ReflectsIsomorphisms (forget₂ CommRingCat.{u} RingCat.{u}) :=
+    letI : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
-    letI : Small.{u}
-        (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
+    have : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
       inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
-    letI : Small.{u}
-        (Functor.sections ((F ⋙ forget₂ _ RingCat ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
+    let F' := F ⋙ forget₂ CommRingCat.{u} RingCat.{u} ⋙ forget₂ RingCat.{u} SemiRingCat.{u}
+    have : Small.{u} (Functor.sections (F' ⋙ forget _)) :=
       inferInstanceAs <| Small.{u} (F ⋙ forget _).sections
-    letI c : Cone F :=
+    let c : Cone F :=
     { pt := CommRingCat.of (Types.Small.limitCone (F ⋙ forget _)).pt
       π :=
-        { app := fun x => ofHom <|
-              SemiRingCat.limitπRingHom.{v, u}
-                (F ⋙ forget₂ CommRingCat.{u} RingCat.{u} ⋙
-                  forget₂ RingCat.{u} SemiRingCat.{u}) x
+        { app := fun x => ofHom <| SemiRingCat.limitπRingHom.{v, u} F' x
           naturality :=
-            (SemiRingCat.HasLimits.limitCone.{v, u}
-                  (F ⋙
-                    forget₂ _ RingCat.{u} ⋙
-                      forget₂ _ SemiRingCat.{u})).π.naturality } }
-    createsLimitOfReflectsIso
-    fun _ t =>
+            fun _ _ f => RingHom.coe_inj
+              ((Types.Small.limitCone (F ⋙ forget _)).π.naturality f) } }
+    createsLimitOfReflectsIso fun _ t =>
     { liftedCone := c
       validLift := IsLimit.uniqueUpToIso (RingCat.limitConeIsLimit.{v, u} _) t
       makesLimit :=

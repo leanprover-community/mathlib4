@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Bool.Basic
-import Mathlib.Data.Nat.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -234,7 +234,7 @@ def bits : ℕ → List Bool :=
 
 /--`ldiff a b` performs bitwise set difference. For each corresponding
   pair of bits taken as booleans, say `aᵢ` and `bᵢ`, it applies the
-  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result.-/
+  boolean operation `aᵢ ∧ ¬bᵢ` to obtain the `iᵗʰ` bit of the result. -/
 def ldiff : ℕ → ℕ → ℕ :=
   bitwise fun a b => a && not b
 #align nat.ldiff Nat.ldiff
@@ -258,7 +258,7 @@ lemma bodd_bit (b n) : bodd (bit b n) = b := by
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
-  <;> exact by decide
+  <;> decide
 #align nat.div2_bit Nat.div2_bit
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k

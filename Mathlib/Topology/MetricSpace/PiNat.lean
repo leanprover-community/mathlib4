@@ -199,7 +199,7 @@ open List
 /-- In the case where `E` has constant value `α`,
 the cylinder `cylinder x n` can be identified with the element of `List α`
 consisting of the first `n` entries of `x`. See `cylinder_eq_res`.
-We call this list `res x n`, the restriction of `x` to `n`.-/
+We call this list `res x n`, the restriction of `x` to `n`. -/
 def res (x : ℕ → α) : ℕ → List α
   | 0 => nil
   | Nat.succ n => x n :: res x n
@@ -219,7 +219,7 @@ theorem res_succ (x : ℕ → α) (n : ℕ) : res x n.succ = x n :: res x n :=
 theorem res_length (x : ℕ → α) (n : ℕ) : (res x n).length = n := by induction n <;> simp [*]
 #align pi_nat.res_length PiNat.res_length
 
-/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`.-/
+/-- The restrictions of `x` and `y` to `n` are equal if and only if `x m = y m` for all `m < n`. -/
 theorem res_eq_res {x y : ℕ → α} {n : ℕ} :
     res x n = res y n ↔ ∀ ⦃m⦄, m < n → x m = y m := by
   constructor <;> intro h <;> induction' n with n ih; · simp
@@ -243,7 +243,7 @@ theorem res_injective : Injective (@res α) := by
   rw [h]
 #align pi_nat.res_injective PiNat.res_injective
 
-/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`.-/
+/-- `cylinder x n` is equal to the set of sequences `y` with the same restriction to `n` as `x`. -/
 theorem cylinder_eq_res (x : ℕ → α) (n : ℕ) :
     cylinder x n = { y | res y n = res x n } := by
   ext y
@@ -490,7 +490,7 @@ theorem exists_disjoint_cylinder {s : Set (∀ n, E n)} (hs : IsClosed s) {x : �
   · exact ⟨0, by simp⟩
   have A : 0 < infDist x s := (hs.not_mem_iff_infDist_pos hne).1 hx
   obtain ⟨n, hn⟩ : ∃ n, (1 / 2 : ℝ) ^ n < infDist x s := exists_pow_lt_of_lt_one A one_half_lt_one
-  refine' ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
+  refine ⟨n, disjoint_left.2 fun y ys hy => ?_⟩
   apply lt_irrefl (infDist x s)
   calc
     infDist x s ≤ dist x y := infDist_le_dist_of_mem ys
@@ -758,7 +758,7 @@ theorem exists_nat_nat_continuous_surjective_of_completeSpace (α : Type*) [Metr
       dist (g x) (g y) ≤ dist (g x) (u (x.1 n)) + dist (g y) (u (x.1 n)) :=
         dist_triangle_right _ _ _
       _ = dist (g x) (u (x.1 n)) + dist (g y) (u (y.1 n)) := by rw [← B]
-      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := (add_le_add (A x n) (A y n))
+      _ ≤ (1 / 2) ^ n + (1 / 2) ^ n := add_le_add (A x n) (A y n)
       _ = 4 * (1 / 2) ^ (n + 1) := by ring
   have g_surj : Surjective g := fun y ↦ by
     have : ∀ n : ℕ, ∃ j, y ∈ closedBall (u j) ((1 / 2) ^ n) := fun n ↦ by

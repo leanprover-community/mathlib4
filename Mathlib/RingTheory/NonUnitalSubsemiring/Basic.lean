@@ -5,9 +5,12 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.Algebra.Ring.Prod
+import Mathlib.Algebra.Group.Hom.End
 import Mathlib.Data.Set.Finite
 import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.GroupTheory.Subsemigroup.Membership
+import Mathlib.Algebra.Ring.Center
+import Mathlib.Algebra.Ring.Centralizer
 import Mathlib.GroupTheory.Subsemigroup.Centralizer
 
 #align_import ring_theory.non_unital_subsemiring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
@@ -123,7 +126,7 @@ theorem ext {S T : NonUnitalSubsemiring R} (h : ∀ x, x ∈ S ↔ x ∈ T) : S 
 #align non_unital_subsemiring.ext NonUnitalSubsemiring.ext
 
 /-- Copy of a non-unital subsemiring with a new `carrier` equal to the old one. Useful to fix
-definitional equalities.-/
+definitional equalities. -/
 protected def copy (S : NonUnitalSubsemiring R) (s : Set R) (hs : s = ↑S) :
     NonUnitalSubsemiring R :=
   { S.toAddSubmonoid.copy s hs, S.toSubsemigroup.copy s hs with carrier := s }
@@ -303,9 +306,8 @@ theorem coe_map (f : F) (s : NonUnitalSubsemiring R) : (s.map f : Set S) = f '' 
 #align non_unital_subsemiring.coe_map NonUnitalSubsemiring.coe_map
 
 @[simp]
-theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := by
-  convert Set.mem_image_iff_bex
-  simp
+theorem mem_map {f : F} {s : NonUnitalSubsemiring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
+  Iff.rfl
 #align non_unital_subsemiring.mem_map NonUnitalSubsemiring.mem_map
 
 @[simp]

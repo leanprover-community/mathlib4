@@ -33,7 +33,7 @@ or `R` has characteristic zero.
    Abelian Lie algebra, the weights of any Lie module are linear.
  * `LieModule.instLinearWeightsOfIsLieAbelian`: a typeclass instance encoding the fact that in
    characteristic zero, the weights of any finite-dimensional Lie module are linear.
- * `LieModule.exists_forall_lie_eq_smul_of_weightSpace_ne_bot`: existence of simultaneous
+ * `LieModule.exists_forall_lie_eq_smul`: existence of simultaneous
    eigenvectors from existence of simultaneous generalized eigenvectors for Noetherian Lie modules
    with linear weights.
 
@@ -53,20 +53,39 @@ class LinearWeights [LieAlgebra.IsNilpotent R L] : Prop :=
   map_smul : ∀ χ : L → R, weightSpace M χ ≠ ⊥ → ∀ (t : R) x, χ (t • x) = t • χ x
   map_lie : ∀ χ : L → R, weightSpace M χ ≠ ⊥ → ∀ x y : L, χ ⁅x, y⁆ = 0
 
+namespace Weight
+
+variable [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
+    [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : Weight R L M)
+
 /-- A weight of a Lie module, bundled as a linear map. -/
 @[simps]
-def weight.toLinear [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : weight R L M) :
-    L →ₗ[R] R where
+def toLinear : L →ₗ[R] R where
   toFun := χ
-  map_add' := LinearWeights.map_add (χ : L → R) (M := M) <| (Finite.mem_toFinset _).mp χ.property
-  map_smul' := LinearWeights.map_smul (χ : L → R) (M := M) <| (Finite.mem_toFinset _).mp χ.property
+  map_add' := LinearWeights.map_add χ χ.weightSpace_ne_bot
+  map_smul' := LinearWeights.map_smul χ χ.weightSpace_ne_bot
+
+instance instCoeLinearMap : CoeOut (Weight R L M) (L →ₗ[R] R) where
+  coe := Weight.toLinear R L M
+
+variable {R L M χ}
 
 @[simp]
-lemma weight.toLinear_apply_lie [LieAlgebra.IsNilpotent R L] [LinearWeights R L M]
-    [NoZeroSMulDivisors R M] [IsNoetherian R M] (χ : weight R L M) (x y : L) :
-    (χ : L → R) ⁅x, y⁆ = 0 :=
-  LinearWeights.map_lie (χ : L → R) ((Finite.mem_toFinset _).mp χ.property) x y
+lemma apply_lie (x y : L) :
+    χ ⁅x, y⁆ = 0 :=
+  LinearWeights.map_lie χ χ.weightSpace_ne_bot x y
+
+@[simp] lemma coe_coe : (↑(χ : L →ₗ[R] R) : L → R) = (χ : L → R) := rfl
+
+@[simp] lemma coe_toLinear_eq_zero_iff : (χ : L →ₗ[R] R) = 0 ↔ χ.IsZero :=
+  ⟨fun h ↦ funext fun x ↦ LinearMap.congr_fun h x, fun h ↦ by ext; simp [h.eq]⟩
+
+lemma coe_toLinear_ne_zero_iff : (χ : L →ₗ[R] R) ≠ 0 ↔ χ.IsNonZero := by simp
+
+/-- The kernel of a weight of a Lie module with linear weights. -/
+abbrev ker := LinearMap.ker (χ : L →ₗ[R] R)
+
+end Weight
 
 /-- For an Abelian Lie algebra, the weights of any Lie module are linear. -/
 instance instLinearWeightsOfIsLieAbelian [IsLieAbelian L] [NoZeroSMulDivisors R M] :
@@ -95,7 +114,7 @@ open FiniteDimensional
 variable [IsDomain R] [IsPrincipalIdealRing R] [Module.Free R M] [Module.Finite R M]
   [LieAlgebra.IsNilpotent R L]
 
-lemma trace_comp_toEndomorphism_weight_space_eq (χ : L → R) :
+lemma trace_comp_toEndomorphism_weightSpace_eq (χ : L → R) :
     LinearMap.trace R _ ∘ₗ (toEndomorphism R L (weightSpace M χ)).toLinearMap =
     finrank R (weightSpace M χ) • χ := by
   ext x
@@ -105,6 +124,9 @@ lemma trace_comp_toEndomorphism_weight_space_eq (χ : L → R) :
     LinearMap.isNilpotent_trace_of_isNilpotent <| isNilpotent_toEndomorphism_sub_algebraMap M χ x
   rw [LinearMap.comp_apply, LieHom.coe_toLinearMap, h₁, map_add, h₂]
   simp [mul_comm (χ x)]
+
+@[deprecated] alias trace_comp_toEndomorphism_weight_space_eq :=
+  trace_comp_toEndomorphism_weightSpace_eq -- 2024-04-06
 
 variable {R L M} in
 lemma zero_lt_finrank_weightSpace {χ : L → R} (hχ : weightSpace M χ ≠ ⊥) :
@@ -118,13 +140,13 @@ instance instLinearWeightsOfCharZero [CharZero R] :
     LinearWeights R L M where
   map_add χ hχ x y := by
     rw [← smul_right_inj (zero_lt_finrank_weightSpace hχ).ne', smul_add, ← Pi.smul_apply,
-      ← Pi.smul_apply, ← Pi.smul_apply, ← trace_comp_toEndomorphism_weight_space_eq, map_add]
+      ← Pi.smul_apply, ← Pi.smul_apply, ← trace_comp_toEndomorphism_weightSpace_eq, map_add]
   map_smul χ hχ t x := by
     rw [← smul_right_inj (zero_lt_finrank_weightSpace hχ).ne', smul_comm, ← Pi.smul_apply,
-      ← Pi.smul_apply (finrank R _), ← trace_comp_toEndomorphism_weight_space_eq, map_smul]
+      ← Pi.smul_apply (finrank R _), ← trace_comp_toEndomorphism_weightSpace_eq, map_smul]
   map_lie χ hχ x y := by
     rw [← smul_right_inj (zero_lt_finrank_weightSpace hχ).ne', nsmul_zero, ← Pi.smul_apply,
-      ← trace_comp_toEndomorphism_weight_space_eq, LinearMap.comp_apply, LieHom.coe_toLinearMap,
+      ← trace_comp_toEndomorphism_weightSpace_eq, LinearMap.comp_apply, LieHom.coe_toLinearMap,
       LieHom.map_lie, Ring.lie_def, map_sub, LinearMap.trace_mul_comm, sub_self]
 
 end FiniteDimensional
@@ -191,11 +213,10 @@ end shiftedWeightSpace
 /-- Given a Lie module `M` of a Lie algebra `L` with coefficients in `R`, if a function `χ : L → R`
 has a simultaneous generalized eigenvector for the action of `L` then it has a simultaneous true
 eigenvector, provided `M` is Noetherian and has linear weights. -/
-lemma exists_forall_lie_eq_smul_of_weightSpace_ne_bot
-    [IsNoetherian R M] (hχ : weightSpace M χ ≠ ⊥) :
+lemma exists_forall_lie_eq_smul [IsNoetherian R M] (χ : Weight R L M) :
     ∃ m : M, m ≠ 0 ∧ ∀ x : L, ⁅x, m⁆ = χ x • m := by
   replace hχ : Nontrivial (shiftedWeightSpace R L M χ) :=
-    (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr hχ
+    (LieSubmodule.nontrivial_iff_ne_bot R L M).mpr χ.weightSpace_ne_bot
   obtain ⟨⟨⟨m, _⟩, hm₁⟩, hm₂⟩ :=
     @exists_ne _ (nontrivial_max_triv_of_isNilpotent R L (shiftedWeightSpace R L M χ)) 0
   simp_rw [LieSubmodule.mem_coeSubmodule, mem_maxTrivSubmodule, Subtype.ext_iff,

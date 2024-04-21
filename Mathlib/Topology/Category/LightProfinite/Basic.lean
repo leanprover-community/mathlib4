@@ -58,7 +58,7 @@ theorem ext {Y : LightProfinite} {a b : Y.cone.pt}
 Given a functor from `ℕᵒᵖ` to finite sets we can take its limit in `Profinite` and obtain a light
 profinite set. 
 -/
-noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
+noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite.{u} where
   diagram := F
   isLimit := limit.isLimit (F ⋙ FintypeCat.toProfinite)
 
@@ -75,9 +75,9 @@ instance concreteCategory : ConcreteCategory LightProfinite := InducedCategory.c
 @[simps!]
 def lightToProfinite : LightProfinite ⥤ Profinite := inducedFunctor _
 
-instance : Faithful lightToProfinite := show Faithful <| inducedFunctor _ from inferInstance
+instance : lightToProfinite.Faithful := show (inducedFunctor _).Faithful from inferInstance
 
-instance : Full lightToProfinite := show Full <| inducedFunctor _ from inferInstance
+instance : lightToProfinite.Full := show (inducedFunctor _).Full from inferInstance
 
 instance : lightToProfinite.ReflectsEpimorphisms := inferInstance
 
@@ -97,6 +97,13 @@ instance {X : LightProfinite} : T2Space ((forget LightProfinite).obj X) :=
 def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
+
+instance : fintypeCatToLightProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : fintypeCatToLightProfinite.Full where
+  preimage f := fun x ↦ f x
+  witness _ := rfl
 
 end LightProfinite
 
@@ -118,11 +125,11 @@ def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} 
   obj X := ⟨X.diagram ⋙ Skeleton.equivalence.functor, _, limit.isLimit _⟩
   map f := f
 
-instance : Faithful LightProfinite'.toLightFunctor.{u} := ⟨id⟩
+instance : LightProfinite'.toLightFunctor.{u}.Faithful := ⟨id⟩
 
-instance : Full LightProfinite'.toLightFunctor.{u} := ⟨id, fun _ ↦ rfl⟩
+instance : LightProfinite'.toLightFunctor.{u}.Full := ⟨id, fun _ ↦ rfl⟩
 
-instance : EssSurj LightProfinite'.toLightFunctor.{u} where
+instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y := by
     let i : limit (((Y.diagram ⋙ Skeleton.equivalence.inverse) ⋙ Skeleton.equivalence.functor) ⋙
       toProfinite) ≅ Y.cone.pt := (Limits.lim.mapIso (isoWhiskerRight ((Functor.associator _ _ _) ≪≫
@@ -131,7 +138,8 @@ instance : EssSurj LightProfinite'.toLightFunctor.{u} where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : IsEquivalence LightProfinite'.toLightFunctor := Equivalence.ofFullyFaithfullyEssSurj _
+instance : LightProfinite'.toLightFunctor.IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=

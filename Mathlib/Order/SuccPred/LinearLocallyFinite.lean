@@ -7,6 +7,7 @@ import Mathlib.Order.LocallyFinite
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Order.Hom.Basic
 import Mathlib.Data.Countable.Basic
+import Mathlib.Data.Nat.Cast.Order
 import Mathlib.Logic.Encodable.Basic
 
 #align_import order.succ_pred.linear_locally_finite from "leanprover-community/mathlib"@"2705404e701abc6b3127da906f40bae062a169c9"
@@ -133,12 +134,12 @@ instance (priority := 100) LinearLocallyFiniteOrder.isSuccArchimedean [LocallyFi
     cases' hij with hij hij
     swap
     · refine' ⟨0, _⟩
-      simpa only [Function.iterate_zero, id.def] using hij
+      simpa only [Function.iterate_zero, id] using hij
     by_contra! h
     have h_lt : ∀ n, succ^[n] i < j := by
       intro n
       induction' n with n hn
-      · simpa only [Function.iterate_zero, id.def] using hij
+      · simpa only [Function.iterate_zero, id] using hij
       · refine' lt_of_le_of_ne _ (h _)
         rw [Function.iterate_succ', Function.comp_apply]
         exact succ_le_of_lt hn
@@ -166,7 +167,7 @@ instance (priority := 100) LinearOrder.isPredArchimedean_of_isSuccArchimedean [S
     refine' ⟨n, _⟩
     rw [← hn_eq]
     induction' n with n
-    · simp only [Nat.zero_eq, Function.iterate_zero, id.def]
+    · simp only [Nat.zero_eq, Function.iterate_zero, id]
     · rw [pred_succ_iterate_of_not_isMax]
       rw [Nat.succ_sub_succ_eq_sub, tsub_zero]
       suffices succ^[n] i < succ^[n.succ] i from not_isMax_of_lt this
@@ -205,7 +206,7 @@ theorem toZ_of_eq : toZ i0 i0 = 0 := by
   rw [toZ_of_ge le_rfl]
   norm_cast
   refine' le_antisymm (Nat.find_le _) (zero_le _)
-  rw [Function.iterate_zero, id.def]
+  rw [Function.iterate_zero, id]
 #align to_Z_of_eq toZ_of_eq
 
 theorem iterate_succ_toZ (i : ι) (hi : i0 ≤ i) : succ^[(toZ i0 i).toNat] i0 = i := by
@@ -230,7 +231,7 @@ theorem toZ_neg (hi : i < i0) : toZ i0 i < 0 := by
   · by_contra h
     have h_eq := iterate_pred_toZ i hi
     rw [← h_eq, h] at hi
-    simp only [neg_zero, Int.toNat_zero, Function.iterate_zero, id.def, lt_self_iff_false] at hi
+    simp only [neg_zero, Int.toNat_zero, Function.iterate_zero, id, lt_self_iff_false] at hi
 #align to_Z_neg toZ_neg
 
 theorem toZ_iterate_succ_le (n : ℕ) : toZ i0 (succ^[n] i0) ≤ n := by
@@ -264,11 +265,11 @@ theorem toZ_iterate_succ_of_not_isMax (n : ℕ) (hn : ¬IsMax (succ^[n] i0)) :
 theorem toZ_iterate_pred_of_not_isMin (n : ℕ) (hn : ¬IsMin (pred^[n] i0)) :
     toZ i0 (pred^[n] i0) = -n := by
   cases' n with n n
-  · simp only [Nat.zero_eq, Function.iterate_zero, id.def, toZ_of_eq, Nat.cast_zero, neg_zero]
+  · simp only [Nat.zero_eq, Function.iterate_zero, id, toZ_of_eq, Nat.cast_zero, neg_zero]
   have : pred^[n.succ] i0 < i0 := by
     refine' lt_of_le_of_ne (pred_iterate_le _ _) fun h_pred_iterate_eq ↦ hn _
     have h_pred_eq_pred : pred^[n.succ] i0 = pred^[0] i0 := by
-      rwa [Function.iterate_zero, id.def]
+      rwa [Function.iterate_zero, id]
     exact isMin_iterate_pred_of_eq_of_ne h_pred_eq_pred (Nat.succ_ne_zero n)
   let m := (-toZ i0 (pred^[n.succ] i0)).toNat
   have h_eq : pred^[m] i0 = pred^[n.succ] i0 := iterate_pred_toZ _ this
@@ -307,7 +308,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rfl
     by_contra h
     by_cases hm0 : m = 0
-    · rw [hm0, Function.iterate_zero, id.def] at hm
+    · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine' hi_max (max_of_succ_le (le_trans _ (@le_of_toZ_le _ _ _ _ _ i0 j i _)))
@@ -328,7 +329,7 @@ theorem toZ_mono {i j : ι} (h_le : i ≤ j) : toZ i0 i ≤ toZ i0 j := by
       rfl
     by_contra h
     by_cases hm0 : m = 0
-    · rw [hm0, Function.iterate_zero, id.def] at hm
+    · rw [hm0, Function.iterate_zero, id] at hm
       rw [hm] at h
       exact h (le_of_eq rfl)
     refine' hj_min (min_of_le_pred _)

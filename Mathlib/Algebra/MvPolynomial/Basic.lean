@@ -70,8 +70,6 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -429,7 +427,7 @@ theorem induction_on' {P : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
     fun a b f _ha _hb hPf => h2 _ _ (h1 _ _) hPf
 #align mv_polynomial.induction_on' MvPolynomial.induction_on'
 
-/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a weak form of `h_add` is required. -/
 theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -439,7 +437,7 @@ theorem induction_on''' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R)
   Finsupp.induction p (C_0.rec <| h_C 0) h_add_weak
 #align mv_polynomial.induction_on''' MvPolynomial.induction_on'''
 
-/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required.-/
+/-- Similar to `MvPolynomial.induction_on` but only a yet weaker form of `h_add` is required. -/
 theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add_weak :
       ∀ (a : σ →₀ ℕ) (b : R) (f : (σ →₀ ℕ) →₀ R),
@@ -451,7 +449,7 @@ theorem induction_on'' {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) 
     h_add_weak a b f ha hb hf <| induction_on_monomial h_C h_X a b
 #align mv_polynomial.induction_on'' MvPolynomial.induction_on''
 
-/-- Analog of `Polynomial.induction_on`.-/
+/-- Analog of `Polynomial.induction_on`. -/
 @[recursor 5]
 theorem induction_on {M : MvPolynomial σ R → Prop} (p : MvPolynomial σ R) (h_C : ∀ a, M (C a))
     (h_add : ∀ p q, M p → M q → M (p + q)) (h_X : ∀ p n, M p → M (p * X n)) : M p :=
@@ -505,7 +503,8 @@ theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
 @[simp]
-theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) : f (C r) = C r :=
+theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) :
+    f (C r) = C r :=
   f.commutes r
 #align mv_polynomial.alg_hom_C MvPolynomial.algHom_C
 
@@ -833,6 +832,10 @@ theorem X_ne_zero [Nontrivial R] (s : σ) :
 theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
   Finsupp.support_eq_empty
 #align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
+
+@[simp]
+lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 := by
+  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
 
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
@@ -1207,11 +1210,11 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 #align mv_polynomial.eval_assoc MvPolynomial.eval_assoc
 
 @[simp]
-theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 #align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
 
-theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p

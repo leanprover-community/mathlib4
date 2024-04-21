@@ -202,13 +202,13 @@ theorem trunc_coe_eq_self {n} {f : R[X]} (hn : natDegree f < n) : trunc n (f : R
     exact coeff_eq_zero_of_natDegree_lt <| lt_of_lt_of_le hn h
 
 /-- The function `coeff n : R⟦X⟧ → R` is continuous. I.e. `coeff n f` depends only on a sufficiently
-long truncation of the power series `f`.-/
+long truncation of the power series `f`. -/
 theorem coeff_coe_trunc_of_lt {n m} {f : R⟦X⟧} (h : n < m) :
     coeff R n (trunc m f) = coeff R n f := by
   rwa [coeff_coe, coeff_trunc, if_pos]
 
 /-- The `n`-th coefficient of `f*g` may be calculated
-from the truncations of `f` and `g`.-/
+from the truncations of `f` and `g`. -/
 theorem coeff_mul_eq_coeff_trunc_mul_trunc₂ {n a b} (f g) (ha : n < a) (hb : n < b) :
     coeff R n (f * g) = coeff R n (trunc a f * trunc b g) := by
   symm

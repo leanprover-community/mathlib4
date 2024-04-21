@@ -142,7 +142,7 @@ theorem exists_nat_abs_mul_sub_round_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   obtain ⟨j, k, hk₀, hk₁, h⟩ := exists_int_int_abs_mul_sub_le ξ n_pos
   have hk := toNat_of_nonneg hk₀.le
   rw [← hk] at hk₀ hk₁ h
-  exact ⟨k.toNat, coe_nat_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
+  exact ⟨k.toNat, natCast_pos.mp hk₀, Nat.cast_le.mp hk₁, (round_le (↑k.toNat * ξ) j).trans h⟩
 #align real.exists_nat_abs_mul_sub_round_le Real.exists_nat_abs_mul_sub_round_le
 
 /-- *Dirichlet's approximation theorem:*
@@ -156,7 +156,7 @@ theorem exists_rat_abs_sub_le_and_den_le (ξ : ℝ) {n : ℕ} (n_pos : 0 < n) :
   have hk₀' : (0 : ℝ) < k := Int.cast_pos.mpr hk₀
   have hden : ((j / k : ℚ).den : ℤ) ≤ k := by
     convert le_of_dvd hk₀ (Rat.den_dvd j k)
-    exact Rat.coe_int_div_eq_divInt
+    exact Rat.intCast_div_eq_divInt
   refine' ⟨j / k, _, Nat.cast_le.mp (hden.trans hk₁)⟩
   rw [← div_div, le_div_iff (Nat.cast_pos.mpr <| Rat.pos _ : (0 : ℝ) < _)]
   refine' (mul_le_mul_of_nonneg_left (Int.cast_le.mpr hden : _ ≤ (k : ℝ)) (abs_nonneg _)).trans _
@@ -445,7 +445,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
-    refine' (mul_nonneg_iff_of_pos_right hv₁).mp ?_
+    refine (mul_nonneg_iff_of_pos_right hv₁).mp ?_
     rw [← sub_one_lt_iff, zero_sub]
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
@@ -504,8 +504,8 @@ private theorem aux₃ :
     |(fract ξ)⁻¹ - v / u'| = |(fract ξ - u' / v) * (v / u' / fract ξ)| :=
       help₁ hξ₀.ne' Hv.ne' Hu.ne'
     _ = |fract ξ - u' / v| * (v / u' / fract ξ) := by rw [abs_mul, abs_of_pos H₁]
-    _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := ((mul_lt_mul_right H₁).mpr h')
-    _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := (help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne')
+    _ < ((v : ℝ) * (2 * v - 1))⁻¹ * (v / u' / fract ξ) := (mul_lt_mul_right H₁).mpr h'
+    _ = (u' * (2 * v - 1) * fract ξ)⁻¹ := help₂ hξ₀.ne' Hv.ne' Hv'.ne' Hu.ne'
     _ ≤ ((u' : ℝ) * (2 * u' - 1))⁻¹ := by
       rwa [inv_le_inv (mul_pos (mul_pos Hu Hv') hξ₀) <| mul_pos Hu Hu', mul_assoc,
         mul_le_mul_left Hu]
@@ -574,7 +574,7 @@ theorem exists_rat_eq_convergent' {v : ℕ} (h' : ContfracLegendre.Ass ξ u v) :
     use n + 1
     rw [convergent_succ, ← hn,
       (mod_cast toNat_of_nonneg huv₀.le : ((u - ⌊ξ⌋ * v).toNat : ℚ) = u - ⌊ξ⌋ * v),
-      cast_ofNat, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
+      cast_natCast, inv_div, sub_div, mul_div_cancel_right₀ _ Hv, add_sub_cancel]
 #align real.exists_rat_eq_convergent' Real.exists_rat_eq_convergent'
 
 /-- The main result, *Legendre's Theorem* on rational approximation:
@@ -590,7 +590,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)
     replace hq₁ := mul_pos hq₀ hq₁
     have hq₂ : (0 : ℝ) < 2 * (q.den * q.den) := mul_pos zero_lt_two (mul_pos hq₀ hq₀)
-    rw [cast_ofNat] at *
+    rw [cast_natCast] at *
     rw [(by norm_cast : (q.num / q.den : ℝ) = (q.num / q.den : ℚ)), Rat.num_div_den]
     exact h.trans (by rw [← one_div, sq, one_div_lt_one_div hq₂ hq₁, ← sub_pos]; ring_nf; exact hq₀)
 #align real.exists_rat_eq_convergent Real.exists_rat_eq_convergent

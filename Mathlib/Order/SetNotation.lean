@@ -101,7 +101,7 @@ open Lean Lean.PrettyPrinter.Delaborator
 
 /-- Delaborator for indexed supremum. -/
 @[delab app.iSup]
-def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
+def iSup_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -129,7 +129,7 @@ def iSup_delab : Delab := whenPPOption Lean.getPPNotation do
 
 /-- Delaborator for indexed infimum. -/
 @[delab app.iInf]
-def iInf_delab : Delab := whenPPOption Lean.getPPNotation do
+def iInf_delab : Delab := whenPPOption Lean.getPPNotation <| withOverApp 4 do
   let #[_, ι, _, f] := (← SubExpr.getExpr).getAppArgs | failure
   unless f.isLambda do failure
   let prop ← Meta.isProp ι
@@ -299,4 +299,3 @@ theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
 theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 #align set.infi_eq_Inter Set.iInf_eq_iInter
-

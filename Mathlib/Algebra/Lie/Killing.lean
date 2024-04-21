@@ -11,6 +11,7 @@ import Mathlib.Algebra.Lie.Weights.Cartan
 import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.Algebra.Lie.Weights.Linear
 import Mathlib.FieldTheory.IsAlgClosed.AlgebraicClosure
+import Mathlib.LinearAlgebra.BilinearForm.Orthogonal
 import Mathlib.LinearAlgebra.PID
 import Mathlib.LinearAlgebra.Trace
 
@@ -36,7 +37,7 @@ We define the trace / Killing form in this file and prove some basic properties.
    form on `L` via the trace form construction.
  * `LieAlgebra.IsKilling`: a typeclass encoding the fact that a Lie algebra has a non-singular
    Killing form.
- * `LieAlgebra.IsKilling.ker_restrictBilinear_eq_bot_of_isCartanSubalgebra`: if the Killing form of
+ * `LieAlgebra.IsKilling.ker_restrict_eq_bot_of_isCartanSubalgebra`: if the Killing form of
    a Lie algebra is non-singular, it remains non-singular when restricted to a Cartan subalgebra.
  * `LieAlgebra.IsKilling.isSemisimple`: if a Lie algebra has non-singular Killing form then it is
    semisimple.
@@ -45,6 +46,10 @@ We define the trace / Killing form in this file and prove some basic properties.
  * `LieAlgebra.IsKilling.span_weight_eq_top`: given a splitting Cartan subalgebra `H` of a
    finite-dimensional Lie algebra with non-singular Killing form, the corresponding roots span the
    dual space of `H`.
+ * `LieAlgebra.IsKilling.coroot`: the coroot corresponding to a root.
+ * `LieAlgebra.IsKilling.isCompl_ker_weight_span_coroot`: given a root `α` with respect to a Cartan
+   subalgebra `H`, we have a natural decomposition of `H` as the kernel of `α` and the span of the
+   coroot corresponding to `α`.
 
 ## TODO
 
@@ -75,7 +80,7 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
-@[simp] lemma traceForm_flip : (traceForm R L M).flip = traceForm R L M :=
+@[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
 /-- The trace form of a Lie module is compatible with the action of the Lie algebra.
@@ -210,6 +215,16 @@ lemma trace_toEndomorphism_eq_zero_of_mem_lcs
   · simp [hu, hv]
   · simp [hu]
 
+@[simp]
+lemma traceForm_lieSubalgebra_mk_left (L' : LieSubalgebra R L) {x : L} (hx : x ∈ L') (y : L') :
+    traceForm R L' M ⟨x, hx⟩ y = traceForm R L M x y :=
+  rfl
+
+@[simp]
+lemma traceForm_lieSubalgebra_mk_right (L' : LieSubalgebra R L) {x : L'} {y : L} (hy : y ∈ L') :
+    traceForm R L' M x ⟨y, hy⟩ = traceForm R L M x y :=
+  rfl
+
 open TensorProduct
 
 variable [LieAlgebra.IsNilpotent R L] [IsDomain R] [IsPrincipalIdealRing R]
@@ -304,7 +319,7 @@ lemma trace_eq_trace_restrict_of_le_idealizer
   exact fun m ↦ N.lie_mem (h hy m)
 
 lemma traceForm_eq_of_le_idealizer :
-    traceForm R I N = I.restrictBilinear (traceForm R L M) := by
+    traceForm R I N = (traceForm R L M).restrict I := by
   ext ⟨x, hx⟩ ⟨y, hy⟩
   change _ = trace R M (φ x ∘ₗ φ y)
   rw [N.trace_eq_trace_restrict_of_le_idealizer I h x hy]
@@ -332,6 +347,10 @@ variable [Module.Free R L] [Module.Finite R L]
 
 This is a specialisation of `LieModule.traceForm` to the adjoint representation of `L`. -/
 noncomputable abbrev killingForm : LinearMap.BilinForm R L := LieModule.traceForm R L L
+
+open LieAlgebra in
+lemma killingForm_apply_apply (x y : L) : killingForm R L x y = trace R L (ad R L x ∘ₗ ad R L y) :=
+  LieModule.traceForm_apply_apply R L L x y
 
 lemma killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting
     (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
@@ -375,11 +394,11 @@ lemma coe_killingCompl_top :
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
 lemma killingForm_eq :
-    killingForm R I = I.restrictBilinear (killingForm R L) :=
+    killingForm R I = (killingForm R L).restrict I :=
   LieSubmodule.traceForm_eq_of_le_idealizer I I <| by simp
 
-lemma restrictBilinear_killingForm :
-    I.restrictBilinear (killingForm R L) = LieModule.traceForm R I L :=
+lemma restrict_killingForm :
+    (killingForm R L).restrict I = LieModule.traceForm R I L :=
   rfl
 
 @[simp] lemma le_killingCompl_top_of_isLieAbelian [IsLieAbelian I] :
@@ -412,11 +431,15 @@ variable [IsKilling R L]
     LinearMap.ker (killingForm R L) = ⊥ := by
   simp [← LieIdeal.coe_killingCompl_top, killingCompl_top_eq_bot]
 
+lemma killingForm_nondegenerate :
+    (killingForm R L).Nondegenerate := by
+  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
+
 /-- If the Killing form of a Lie algebra is non-singular, it remains non-singular when restricted
 to a Cartan subalgebra. -/
-lemma ker_restrictBilinear_eq_bot_of_isCartanSubalgebra
+lemma ker_restrict_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
-    LinearMap.ker (H.restrictBilinear (killingForm R L)) = ⊥ := by
+    LinearMap.ker ((killingForm R L).restrict H) = ⊥ := by
   have h : Codisjoint (rootSpace H 0) (LieModule.posFittingComp R H L) :=
     (LieModule.isCompl_weightSpace_zero_posFittingComp R H L).codisjoint
   replace h : Codisjoint (H : Submodule R L) (LieModule.posFittingComp R H L : Submodule R L) := by
@@ -424,18 +447,23 @@ lemma ker_restrictBilinear_eq_bot_of_isCartanSubalgebra
       LieSubmodule.top_coeSubmodule, rootSpace_zero_eq R L H, LieSubalgebra.coe_toLieSubmodule,
       ← codisjoint_iff] at h
   suffices this : ∀ m₀ ∈ H, ∀ m₁ ∈ LieModule.posFittingComp R H L, killingForm R L m₀ m₁ = 0 by
-    simp [LinearMap.ker_restrictBilinear_eq_of_codisjoint h this]
+    simp [LinearMap.BilinForm.ker_restrict_eq_of_codisjoint h this]
   intro m₀ h₀ m₁ h₁
   exact killingForm_eq_zero_of_mem_zeroRoot_mem_posFitting R L H (le_zeroRootSubalgebra R L H h₀) h₁
 
-lemma restrictBilinear_killingForm (H : LieSubalgebra R L) :
-    H.restrictBilinear (killingForm R L) = LieModule.traceForm R H L :=
+lemma restrict_killingForm (H : LieSubalgebra R L) :
+    (killingForm R L).restrict H = LieModule.traceForm R H L :=
   rfl
 
 @[simp] lemma ker_traceForm_eq_bot_of_isCartanSubalgebra
     [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     LinearMap.ker (LieModule.traceForm R H L) = ⊥ :=
-  ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
+  ker_restrict_eq_bot_of_isCartanSubalgebra R L H
+
+lemma traceForm_cartan_nondegenerate
+    [IsNoetherian R L] [IsArtinian R L] (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
+    (LieModule.traceForm R H L).Nondegenerate := by
+  simp [LinearMap.BilinForm.nondegenerate_iff_ker_eq_bot]
 
 /-- The converse of this is true over a field of characteristic zero. There are counterexamples
 over fields with positive characteristic. -/
@@ -451,7 +479,7 @@ instance instIsLieAbelianOfIsCartanSubalgebra
     (H : LieSubalgebra R L) [H.IsCartanSubalgebra] :
     IsLieAbelian H :=
   LieModule.isLieAbelian_of_ker_traceForm_eq_bot R H L <|
-    ker_restrictBilinear_eq_bot_of_isCartanSubalgebra R L H
+    ker_restrict_eq_bot_of_isCartanSubalgebra R L H
 
 end IsKilling
 
@@ -469,35 +497,32 @@ namespace LieModule
 variable [LieAlgebra.IsNilpotent K L] [LinearWeights K L M] [IsTriangularizable K L M]
 
 lemma traceForm_eq_sum_finrank_nsmul_mul (x y : L) :
-    traceForm K L M x y = ∑ χ in weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
-  have hxy : ∀ χ : L → K, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
+    traceForm K L M x y = ∑ χ : Weight K L M, finrank K (weightSpace M χ) • (χ x * χ y) := by
+  have hxy : ∀ χ : Weight K L M, MapsTo (toEndomorphism K L M x ∘ₗ toEndomorphism K L M y)
       (weightSpace M χ) (weightSpace M χ) :=
     fun χ m hm ↦ LieSubmodule.lie_mem _ <| LieSubmodule.lie_mem _ hm
-  have hfin : {χ : L → K | (weightSpace M χ : Submodule K M) ≠ ⊥}.Finite := by
-    convert finite_weightSpace_ne_bot K L M
-    exact LieSubmodule.coeSubmodule_eq_bot_iff (weightSpace M _)
   classical
   have hds := DirectSum.isInternal_submodule_of_independent_of_iSup_eq_top
-    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace K L M)
-    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K L M)
-  simp only [LinearMap.coeFn_sum, Finset.sum_apply, traceForm_apply_apply,
-    LinearMap.trace_eq_sum_trace_restrict' hds hfin hxy]
-  exact Finset.sum_congr (by simp) (fun χ _ ↦ traceForm_weightSpace_eq K L M χ x y)
+    (LieSubmodule.independent_iff_coe_toSubmodule.mp <| independent_weightSpace' K L M)
+    (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top' K L M)
+  simp_rw [traceForm_apply_apply, LinearMap.trace_eq_sum_trace_restrict hds hxy,
+    ← traceForm_weightSpace_eq K L M _ x y]
+  rfl
 
 lemma traceForm_eq_sum_finrank_nsmul :
-    traceForm K L M = ∑ χ : weight K L M, finrank K (weightSpace M (χ : L → K)) •
-      (weight.toLinear K L M χ).smulRight (weight.toLinear K L M χ) := by
+    traceForm K L M = ∑ χ : Weight K L M, finrank K (weightSpace M χ) •
+      (χ : L →ₗ[K] K).smulRight (χ : L →ₗ[K] K) := by
   ext
   rw [traceForm_eq_sum_finrank_nsmul_mul, ← Finset.sum_attach]
   simp
 
 -- The reverse inclusion should also hold: TODO prove this!
 lemma range_traceForm_le_span_weight :
-    LinearMap.range (traceForm K L M) ≤ span K (range (weight.toLinear K L M)) := by
+    LinearMap.range (traceForm K L M) ≤ span K (range (Weight.toLinear K L M)) := by
   rintro - ⟨x, rfl⟩
   rw [LieModule.traceForm_eq_sum_finrank_nsmul, LinearMap.coeFn_sum, Finset.sum_apply]
   refine Submodule.sum_mem _ fun χ _ ↦ ?_
-  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, weight.toLinear_apply,
+  simp_rw [LinearMap.smul_apply, LinearMap.coe_smulRight, Weight.toLinear_apply,
     nsmul_eq_smul_cast (R := K)]
   exact Submodule.smul_mem _ _ <| Submodule.smul_mem _ _ <| subset_span <| mem_range_self χ
 
@@ -532,65 +557,208 @@ lemma killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero {α β : H → K
     (LieSubmodule.iSup_eq_top_iff_coe_toSubmodule.mp <| iSup_weightSpace_eq_top K H L)
   exact LinearMap.trace_eq_zero_of_mapsTo_ne hds σ hσ hf
 
+/-- Elements of the `α` root space which are Killing-orthogonal to the `-α` root space are
+Killing-orthogonal to all of `L`. -/
+lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
+    {α : H → K} {x : L} (hx : x ∈ rootSpace H α)
+    (hx' : ∀ y ∈ rootSpace H (-α), killingForm K L x y = 0) :
+    x ∈ LinearMap.ker (killingForm K L) := by
+  rw [LinearMap.mem_ker]
+  ext y
+  have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_weightSpace_eq_top K H L]
+  induction hy using LieSubmodule.iSup_induction'
+  · next β y hy =>
+    by_cases hαβ : α + β = 0
+    · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
+    · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
+  · simp
+  · simp_all
+
 namespace IsKilling
 
 variable [IsKilling K L]
+
+variable {K L} in
+/-- The restriction of the Killing form to a Cartan subalgebra, as a linear equivalence to the
+dual. -/
+@[simps!]
+noncomputable def cartanEquivDual :
+    H ≃ₗ[K] Module.Dual K H :=
+  (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
+
+/-- This is Proposition 4.18 from [carter2005] except that we use
+`LieModule.exists_forall_lie_eq_smul` instead of Lie's theorem (and so avoid
+assuming `K` has characteristic zero). -/
+lemma cartanEquivDual_symm_apply_mem_corootSpace (α : Weight K H L) :
+    (cartanEquivDual H).symm α ∈ corootSpace α := by
+  obtain ⟨e : L, he₀ : e ≠ 0, he : ∀ x, ⁅x, e⁆ = α x • e⟩ := exists_forall_lie_eq_smul K H L α
+  have heα : e ∈ rootSpace H α := (mem_weightSpace L α e).mpr fun x ↦ ⟨1, by simp [← he x]⟩
+  obtain ⟨f, hfα, hf⟩ : ∃ f ∈ rootSpace H (-α), killingForm K L e f ≠ 0 := by
+    contrapose! he₀
+    simpa using mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg K L H heα he₀
+  suffices ⁅e, f⁆ = killingForm K L e f • ((cartanEquivDual H).symm α : L) from
+    (mem_corootSpace α).mpr <| Submodule.subset_span ⟨(killingForm K L e f)⁻¹ • e,
+      Submodule.smul_mem _ _ heα, f, hfα, by simpa [inv_smul_eq_iff₀ hf]⟩
+  set α' := (cartanEquivDual H).symm α
+  rw [← sub_eq_zero, ← Submodule.mem_bot (R := K), ← ker_killingForm_eq_bot]
+  apply mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg (α := (0 : H → K))
+  · simp only [rootSpace_zero_eq, LieSubalgebra.mem_toLieSubmodule]
+    refine sub_mem ?_ (H.smul_mem _ α'.property)
+    simpa using mapsTo_toEndomorphism_weightSpace_add_of_mem_rootSpace K L H L α (-α) heα hfα
+  · intro z hz
+    replace hz : z ∈ H := by simpa using hz
+    replace he : ⁅z, e⁆ = α ⟨z, hz⟩ • e := by simpa using he ⟨z, hz⟩
+    have hαz : killingForm K L α' (⟨z, hz⟩ : H) = α ⟨z, hz⟩ :=
+      LinearMap.BilinForm.apply_toDual_symm_apply (hB := traceForm_cartan_nondegenerate K L H) _ _
+    simp [traceForm_comm K L L ⁅e, f⁆, ← traceForm_apply_lie_apply, he, mul_comm _ (α ⟨z, hz⟩), hαz]
 
 /-- Given a splitting Cartan subalgebra `H` of a finite-dimensional Lie algebra with non-singular
 Killing form, the corresponding roots span the dual space of `H`. -/
 @[simp]
 lemma span_weight_eq_top :
-    span K (range (weight.toLinear K H L)) = ⊤ := by
+    span K (range (Weight.toLinear K H L)) = ⊤ := by
   refine eq_top_iff.mpr (le_trans ?_ (LieModule.range_traceForm_le_span_weight K H L))
   rw [← traceForm_flip K H L, ← LinearMap.dualAnnihilator_ker_eq_range_flip,
     ker_traceForm_eq_bot_of_isCartanSubalgebra, Submodule.dualAnnihilator_bot]
 
 @[simp]
 lemma iInf_ker_weight_eq_bot :
-    ⨅ α : weight K H L, LinearMap.ker (weight.toLinear K H L α) = ⊥ := by
+    ⨅ α : Weight K H L, α.ker = ⊥ := by
   rw [← Subspace.dualAnnihilator_inj, Subspace.dualAnnihilator_iInf_eq,
     Submodule.dualAnnihilator_bot]
   simp [← LinearMap.range_dualMap_eq_dualAnnihilator_ker, ← Submodule.span_range_eq_iSup]
 
 @[simp]
-lemma rootSpaceProductNegSelf_zero_eq_bot :
-    (rootSpaceProductNegSelf (0 : H → K)).range = ⊥ := by
+lemma corootSpace_zero_eq_bot :
+    corootSpace (0 : H → K) = ⊥ := by
   refine eq_bot_iff.mpr fun x hx ↦ ?_
-  suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by
-    rw [LieSubmodule.mem_bot]
-    simpa [-LieModuleHom.mem_range, this, mem_range_rootSpaceProductNegSelf] using hx
+  suffices {x | ∃ y ∈ H, ∃ z ∈ H, ⁅y, z⁆ = x} = {0} by simpa [mem_corootSpace, this] using hx
   refine eq_singleton_iff_unique_mem.mpr ⟨⟨0, H.zero_mem, 0, H.zero_mem, zero_lie 0⟩, ?_⟩
   rintro - ⟨y, hy, z, hz, rfl⟩
   suffices ⁅(⟨y, hy⟩ : H), (⟨z, hz⟩ : H)⁆ = 0 by
     simpa only [Subtype.ext_iff, LieSubalgebra.coe_bracket, ZeroMemClass.coe_zero] using this
   simp
 
+section CharZero
+
 variable {K H L}
+variable [CharZero K]
 
 /-- The contrapositive of this result is very useful, taking `x` to be the element of `H`
 corresponding to a root `α` under the identification between `H` and `H^*` provided by the Killing
 form. -/
-lemma eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf [CharZero K]
-    (x : H) (α : H → K) (hαx : α x = 0) (hx : x ∈ (rootSpaceProductNegSelf α).range) :
+lemma eq_zero_of_apply_eq_zero_of_mem_corootSpace
+    (x : H) (α : H → K) (hαx : α x = 0) (hx : x ∈ corootSpace α) :
     x = 0 := by
   rcases eq_or_ne α 0 with rfl | hα; · simpa using hx
-  replace hx : x ∈ ⨅ β : weight K H L, LinearMap.ker (weight.toLinear K H L β) := by
-    simp only [Submodule.mem_iInf, Subtype.forall, Finite.mem_toFinset]
-    intro β hβ
-    obtain ⟨a, b, hb, hab⟩ := exists_forall_mem_rootSpaceProductNegSelf_smul_add_eq_zero L α β hα hβ
+  replace hx : x ∈ ⨅ β : Weight K H L, β.ker := by
+    refine (Submodule.mem_iInf _).mpr fun β ↦ ?_
+    obtain ⟨a, b, hb, hab⟩ :=
+      exists_forall_mem_corootSpace_smul_add_eq_zero L α β hα β.weightSpace_ne_bot
     simpa [hαx, hb.ne'] using hab _ hx
   simpa using hx
 
--- When `α ≠ 0`, this can be upgraded to `IsCompl`; moreover these complements are orthogonal with
--- respect to the Killing form. TODO prove this!
-lemma ker_weight_inf_rootSpaceProductNegSelf_eq_bot [CharZero K] (α : weight K H L) :
-    LinearMap.ker (weight.toLinear K H L α) ⊓ (rootSpaceProductNegSelf (α : H → K)).range = ⊥ := by
-  rw [LieIdeal.coe_to_lieSubalgebra_to_submodule, LieModuleHom.coeSubmodule_range]
+lemma disjoint_ker_weight_corootSpace (α : Weight K H L) :
+    Disjoint α.ker (corootSpace α) := by
+  rw [disjoint_iff]
   refine (Submodule.eq_bot_iff _).mpr fun x ⟨hαx, hx⟩ ↦ ?_
-  replace hαx : (α : H → K) x = 0 := by simpa using hαx
-  exact eq_zero_of_apply_eq_zero_of_mem_rootSpaceProductNegSelf x α hαx hx
+  replace hαx : α x = 0 := by simpa using hαx
+  exact eq_zero_of_apply_eq_zero_of_mem_corootSpace x α hαx hx
+
+/-- The coroot corresponding to a root. -/
+noncomputable def coroot (α : Weight K H L) : H :=
+  2 • (α <| (cartanEquivDual H).symm α)⁻¹ • (cartanEquivDual H).symm α
+
+lemma root_apply_cartanEquivDual_symm_ne_zero {α : Weight K H L} (hα : α.IsNonZero) :
+    α ((cartanEquivDual H).symm α) ≠ 0 := by
+  contrapose! hα
+  suffices (cartanEquivDual H).symm α ∈ α.ker ⊓ corootSpace α by
+    rw [(disjoint_ker_weight_corootSpace α).eq_bot] at this
+    simpa using this
+  exact Submodule.mem_inf.mp ⟨hα, cartanEquivDual_symm_apply_mem_corootSpace K L H α⟩
+
+lemma root_apply_coroot {α : Weight K H L} (hα : α.IsNonZero) :
+    α (coroot α) = 2 := by
+  rw [← Weight.coe_coe]
+  simpa [coroot] using inv_mul_cancel (root_apply_cartanEquivDual_symm_ne_zero hα)
+
+@[simp] lemma coroot_eq_zero_iff {α : Weight K H L} :
+    coroot α = 0 ↔ α.IsZero := by
+  refine ⟨fun hα ↦ ?_, fun hα ↦ ?_⟩
+  · by_contra contra
+    simpa [hα, ← α.coe_coe, map_zero] using root_apply_coroot contra
+  · simp [coroot, Weight.coe_toLinear_eq_zero_iff.mpr hα]
+
+lemma coe_corootSpace_eq_span_singleton (α : Weight K H L) :
+    LieSubmodule.toSubmodule (corootSpace α) = K ∙ coroot α := by
+  if hα : α.IsZero then
+    simp [hα.eq, coroot_eq_zero_iff.mpr hα]
+  else
+    set α' := (cartanEquivDual H).symm α
+    have hα' : (cartanEquivDual H).symm α ≠ 0 := by simpa using hα
+    have h₁ : (K ∙ coroot α) = K ∙ α' := by
+      have : IsUnit (2 * (α α')⁻¹) := by simpa using root_apply_cartanEquivDual_symm_ne_zero hα
+      change (K ∙ (2 • (α α')⁻¹ • α')) = _
+      simpa [nsmul_eq_smul_cast (R := K), smul_smul] using Submodule.span_singleton_smul_eq this _
+    have h₂ : (K ∙ (cartanEquivDual H).symm α : Submodule K H) ≤ corootSpace α := by
+      simpa using cartanEquivDual_symm_apply_mem_corootSpace K L H α
+    suffices finrank K (LieSubmodule.toSubmodule (corootSpace α)) ≤ 1 by
+      rw [← finrank_span_singleton (K := K) hα'] at this
+      exact h₁ ▸ (eq_of_le_of_finrank_le h₂ this).symm
+    have h : finrank K H = finrank K α.ker + 1 :=
+      (Module.Dual.finrank_ker_add_one_of_ne_zero <| Weight.coe_toLinear_ne_zero_iff.mpr hα).symm
+    simpa [h] using Submodule.finrank_add_finrank_le_of_disjoint (disjoint_ker_weight_corootSpace α)
+
+@[simp]
+lemma corootSpace_eq_bot_iff {α : Weight K H L} :
+    corootSpace α = ⊥ ↔ α.IsZero := by
+  simp [← LieSubmodule.coeSubmodule_eq_bot_iff, coe_corootSpace_eq_span_singleton α]
+
+lemma isCompl_ker_weight_span_coroot (α : Weight K H L) :
+    IsCompl α.ker (K ∙ coroot α) := by
+  if hα : α.IsZero then
+    simpa [Weight.coe_toLinear_eq_zero_iff.mpr hα, coroot_eq_zero_iff.mpr hα, Weight.ker]
+      using isCompl_top_bot
+  else
+    rw [← coe_corootSpace_eq_span_singleton]
+    apply Module.Dual.isCompl_ker_of_disjoint_of_ne_bot (by aesop)
+      (disjoint_ker_weight_corootSpace α)
+    replace hα : corootSpace α ≠ ⊥ := by simpa using hα
+    rwa [ne_eq, ← LieSubmodule.coe_toSubmodule_eq_iff] at hα
+
+end CharZero
 
 end IsKilling
+
+section LieEquiv
+
+variable {R L}
+variable {L' : Type*} [LieRing L'] [LieAlgebra R L']
+
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and elements `x y : L`, the
+respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
+@[simp] lemma killingForm_of_equiv_apply (e : L ≃ₗ⁅R⁆ L') (x y : L) :
+    killingForm R L' (e x) (e y) = killingForm R L x y := by
+  simp_rw [killingForm_apply_apply, ← LieAlgebra.conj_ad_apply, ← LinearEquiv.conj_comp,
+    LinearMap.trace_conj']
+
+/-- Given a Killing Lie algebra `L`, if `L'` is isomorphic to `L`, then `L'` is Killing too. -/
+lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
+  constructor
+  ext x'
+  rw [LieIdeal.mem_killingCompl]
+  refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
+  suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
+    rw [IsKilling.ker_killingForm_eq_bot] at this
+    simpa using (e : L ≃ₗ[R] L').congr_arg this
+  ext y
+  replace hx' : ∀ y', killingForm R L' x' y' = 0 := by simpa using hx'
+  specialize hx' (e y)
+  rwa [← e.apply_symm_apply x', killingForm_of_equiv_apply] at hx'
+
+alias _root_.LieEquiv.isKilling := LieAlgebra.isKilling_of_equiv
+
+end LieEquiv
 
 end LieAlgebra
 

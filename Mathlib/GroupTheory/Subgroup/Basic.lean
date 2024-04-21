@@ -5,8 +5,10 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Set.Image
-import Mathlib.GroupTheory.Submonoid.Centralizer
+import Mathlib.GroupTheory.Subsemigroup.Operations
+import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
@@ -523,7 +525,7 @@ namespace Subgroup
 variable (H K : Subgroup G)
 
 /-- Copy of a subgroup with a new `carrier` equal to the old one. Useful to fix definitional
-equalities.-/
+equalities. -/
 @[to_additive
       "Copy of an additive subgroup with a new `carrier` equal to the old one.
       Useful to fix definitional equalities"]
@@ -1402,8 +1404,7 @@ theorem coe_map (f : G →* N) (K : Subgroup G) : (K.map f : Set N) = f '' K :=
 #align add_subgroup.coe_map AddSubgroup.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := by
-  erw [mem_image_iff_bex]; simp
+theorem mem_map {f : G →* N} {K : Subgroup G} {y : N} : y ∈ K.map f ↔ ∃ x ∈ K, f x = y := Iff.rfl
 #align subgroup.mem_map Subgroup.mem_map
 #align add_subgroup.mem_map AddSubgroup.mem_map
 
@@ -2057,89 +2058,6 @@ instance topCharacteristic : Characteristic (⊤ : Subgroup G) :=
 #align subgroup.top_characteristic Subgroup.topCharacteristic
 #align add_subgroup.top_characteristic AddSubgroup.topCharacteristic
 
-variable (G)
-
-/-- The center of a group `G` is the set of elements that commute with everything in `G` -/
-@[to_additive
-      "The center of an additive group `G` is the set of elements that commute with
-      everything in `G`"]
-def center : Subgroup G :=
-  { Submonoid.center G with
-    carrier := Set.center G
-    inv_mem' := Set.inv_mem_center }
-#align subgroup.center Subgroup.center
-#align add_subgroup.center AddSubgroup.center
-
-@[to_additive]
-theorem coe_center : ↑(center G) = Set.center G :=
-  rfl
-#align subgroup.coe_center Subgroup.coe_center
-#align add_subgroup.coe_center AddSubgroup.coe_center
-
-@[to_additive (attr := simp)]
-theorem center_toSubmonoid : (center G).toSubmonoid = Submonoid.center G :=
-  rfl
-#align subgroup.center_to_submonoid Subgroup.center_toSubmonoid
-#align add_subgroup.center_to_add_submonoid AddSubgroup.center_toAddSubmonoid
-
-/-- For a group with zero, the center of the units is the same as the units of the center. -/
-@[simps! apply_val_coe symm_apply_coe_val]
-def centerUnitsEquivUnitsCenter (G₀ : Type*) [GroupWithZero G₀] :
-    Subgroup.center (G₀ˣ) ≃* (Submonoid.center G₀)ˣ where
-  toFun := MonoidHom.toHomUnits <|
-    { toFun := fun u ↦ ⟨(u : G₀ˣ),
-      (Submonoid.mem_center_iff.mpr (fun r ↦ by
-          rcases eq_or_ne r 0 with (rfl | hr)
-          · rw [mul_zero, zero_mul]
-          exact congrArg Units.val <| (u.2.comm <| Units.mk0 r hr).symm))⟩
-      map_one' := rfl
-      map_mul' := fun _ _ ↦ rfl }
-  invFun u := unitsCenterToCenterUnits G₀ u
-  left_inv _ := by ext; rfl
-  right_inv _ := by ext; rfl
-  map_mul' := map_mul _
-
-variable {G}
-
-@[to_additive]
-theorem mem_center_iff {z : G} : z ∈ center G ↔ ∀ g, g * z = z * g := by
-  rw [← Semigroup.mem_center_iff]
-  exact Iff.rfl
-#align subgroup.mem_center_iff Subgroup.mem_center_iff
-#align add_subgroup.mem_center_iff AddSubgroup.mem_center_iff
-
-instance decidableMemCenter (z : G) [Decidable (∀ g, g * z = z * g)] : Decidable (z ∈ center G) :=
-  decidable_of_iff' _ mem_center_iff
-#align subgroup.decidable_mem_center Subgroup.decidableMemCenter
-
-@[to_additive]
-instance centerCharacteristic : (center G).Characteristic := by
-  refine' characteristic_iff_comap_le.mpr fun ϕ g hg => _
-  rw [mem_center_iff]
-  intro h
-  rw [← ϕ.injective.eq_iff, ϕ.map_mul, ϕ.map_mul]
-  exact (hg.comm (ϕ h)).symm
-#align subgroup.center_characteristic Subgroup.centerCharacteristic
-#align add_subgroup.center_characteristic AddSubgroup.centerCharacteristic
-
-theorem _root_.CommGroup.center_eq_top {G : Type*} [CommGroup G] : center G = ⊤ := by
-  rw [eq_top_iff']
-  intro x
-  rw [Subgroup.mem_center_iff]
-  intro y
-  exact mul_comm y x
-#align comm_group.center_eq_top CommGroup.center_eq_top
-
-/-- A group is commutative if the center is the whole group -/
-def _root_.Group.commGroupOfCenterEqTop (h : center G = ⊤) : CommGroup G :=
-  { (_ : Group G) with
-    mul_comm := by
-      rw [eq_top_iff'] at h
-      intro x y
-      apply Subgroup.mem_center_iff.mp _ x
-      exact (h y)
-  }
-#align group.comm_group_of_center_eq_top Group.commGroupOfCenterEqTop
 
 variable (H)
 
@@ -2218,12 +2136,6 @@ theorem normalizer_eq_top : H.normalizer = ⊤ ↔ H.Normal :=
 #align subgroup.normalizer_eq_top Subgroup.normalizer_eq_top
 #align add_subgroup.normalizer_eq_top AddSubgroup.normalizer_eq_top
 
-@[to_additive]
-theorem center_le_normalizer : center G ≤ H.normalizer := fun x hx y => by
-  simp [← mem_center_iff.mp hx y, mul_assoc]
-#align subgroup.center_le_normalizer Subgroup.center_le_normalizer
-#align add_subgroup.center_le_normalizer AddSubgroup.center_le_normalizer
-
 open scoped Classical
 
 @[to_additive]
@@ -2291,74 +2203,6 @@ theorem NormalizerCondition.normal_of_coatom (hnc : NormalizerCondition G) (hmax
 
 end Normalizer
 
-section Centralizer
-
-variable {H}
-
-/-- The `centralizer` of `H` is the subgroup of `g : G` commuting with every `h : H`. -/
-@[to_additive
-      "The `centralizer` of `H` is the additive subgroup of `g : G` commuting with every `h : H`."]
-def centralizer (s : Set G) : Subgroup G :=
-  { Submonoid.centralizer s with
-    carrier := Set.centralizer s
-    inv_mem' := Set.inv_mem_centralizer }
-#align subgroup.centralizer Subgroup.centralizer
-#align add_subgroup.centralizer AddSubgroup.centralizer
-
-@[to_additive]
-theorem mem_centralizer_iff {g : G} {s : Set G} : g ∈ centralizer s ↔ ∀ h ∈ s, h * g = g * h :=
-  Iff.rfl
-#align subgroup.mem_centralizer_iff Subgroup.mem_centralizer_iff
-#align add_subgroup.mem_centralizer_iff AddSubgroup.mem_centralizer_iff
-
-@[to_additive]
-theorem mem_centralizer_iff_commutator_eq_one {g : G} {s : Set G} :
-    g ∈ centralizer s ↔ ∀ h ∈ s, h * g * h⁻¹ * g⁻¹ = 1 := by
-  simp only [mem_centralizer_iff, mul_inv_eq_iff_eq_mul, one_mul]
-#align subgroup.mem_centralizer_iff_commutator_eq_one Subgroup.mem_centralizer_iff_commutator_eq_one
-#align add_subgroup.mem_centralizer_iff_commutator_eq_zero AddSubgroup.mem_centralizer_iff_commutator_eq_zero
-
-@[to_additive]
-theorem centralizer_univ : centralizer Set.univ = center G :=
-  SetLike.ext' (Set.centralizer_univ G)
-#align subgroup.centralizer_univ Subgroup.centralizer_univ
-#align add_subgroup.centralizer_univ AddSubgroup.centralizer_univ
-
-@[to_additive]
-theorem le_centralizer_iff : H ≤ centralizer K ↔ K ≤ centralizer H :=
-  ⟨fun h x hx _y hy => (h hy x hx).symm, fun h x hx _y hy => (h hy x hx).symm⟩
-#align subgroup.le_centralizer_iff Subgroup.le_centralizer_iff
-#align add_subgroup.le_centralizer_iff AddSubgroup.le_centralizer_iff
-
-@[to_additive]
-theorem center_le_centralizer (s) : center G ≤ centralizer s :=
-  Set.center_subset_centralizer s
-#align subgroup.center_le_centralizer Subgroup.center_le_centralizer
-#align add_subgroup.center_le_centralizer AddSubgroup.center_le_centralizer
-
-@[to_additive]
-theorem centralizer_le {s t : Set G} (h : s ⊆ t) : centralizer t ≤ centralizer s :=
-  Submonoid.centralizer_le h
-#align subgroup.centralizer_le Subgroup.centralizer_le
-#align add_subgroup.centralizer_le AddSubgroup.centralizer_le
-
-@[to_additive (attr := simp)]
-theorem centralizer_eq_top_iff_subset {s : Set G} : centralizer s = ⊤ ↔ s ⊆ center G :=
-  SetLike.ext'_iff.trans Set.centralizer_eq_top_iff_subset
-#align subgroup.centralizer_eq_top_iff_subset Subgroup.centralizer_eq_top_iff_subset
-#align add_subgroup.centralizer_eq_top_iff_subset AddSubgroup.centralizer_eq_top_iff_subset
-
-@[to_additive]
-instance Centralizer.characteristic [hH : H.Characteristic] :
-    (centralizer (H : Set G)).Characteristic := by
-  refine' Subgroup.characteristic_iff_comap_le.mpr fun ϕ g hg h hh => ϕ.injective _
-  rw [map_mul, map_mul]
-  exact hg (ϕ h) (Subgroup.characteristic_iff_le_comap.mp hH ϕ hh)
-#align subgroup.subgroup.centralizer.characteristic Subgroup.Centralizer.characteristic
-#align add_subgroup.subgroup.centralizer.characteristic AddSubgroup.Centralizer.characteristic
-
-end Centralizer
-
 /-- Commutativity of a subgroup -/
 structure IsCommutative : Prop where
   /-- `*` is commutative on `H` -/
@@ -2383,10 +2227,6 @@ instance IsCommutative.commGroup [h : H.IsCommutative] : CommGroup H :=
   { H.toGroup with mul_comm := h.is_comm.comm }
 #align subgroup.is_commutative.comm_group Subgroup.IsCommutative.commGroup
 #align add_subgroup.is_commutative.add_comm_group AddSubgroup.IsCommutative.addCommGroup
-
-instance center.isCommutative : (center G).IsCommutative :=
-  ⟨⟨fun a b => Subtype.ext (b.2.comm a).symm⟩⟩
-#align subgroup.center.is_commutative Subgroup.center.isCommutative
 
 @[to_additive]
 instance map_isCommutative (f : G →* G') [H.IsCommutative] : (H.map f).IsCommutative :=
@@ -2414,19 +2254,6 @@ instance subgroupOf_isCommutative [H.IsCommutative] : (H.subgroupOf K).IsCommuta
   H.comap_injective_isCommutative Subtype.coe_injective
 #align subgroup.subgroup_of_is_commutative Subgroup.subgroupOf_isCommutative
 #align add_subgroup.add_subgroup_of_is_commutative AddSubgroup.addSubgroupOf_isCommutative
-
-@[to_additive]
-theorem le_centralizer_iff_isCommutative : K ≤ centralizer K ↔ K.IsCommutative :=
-  ⟨fun h => ⟨⟨fun x y => Subtype.ext (h y.2 x x.2)⟩⟩,
-    fun h x hx y hy => congr_arg Subtype.val (h.1.1 ⟨y, hy⟩ ⟨x, hx⟩)⟩
-#align subgroup.le_centralizer_iff_is_commutative Subgroup.le_centralizer_iff_isCommutative
-#align add_subgroup.le_centralizer_iff_is_commutative AddSubgroup.le_centralizer_iff_isCommutative
-
-@[to_additive]
-theorem le_centralizer [h : H.IsCommutative] : H ≤ centralizer H :=
-  le_centralizer_iff_isCommutative.mpr h
-#align subgroup.le_centralizer Subgroup.le_centralizer
-#align add_subgroup.le_centralizer AddSubgroup.le_centralizer
 
 end Subgroup
 
@@ -3785,16 +3612,6 @@ theorem normalClosure_eq_top_of {N : Subgroup G} [hn : N.Normal] {g g' : G} {hg 
   exact subset_normalClosure (Set.mem_singleton _)
 #align is_conj.normal_closure_eq_top_of IsConj.normalClosure_eq_top_of
 
-variable {M : Type*} [Monoid M]
-
-theorem eq_of_left_mem_center {g h : M} (H : IsConj g h) (Hg : g ∈ Set.center M) : g = h := by
-  rcases H with ⟨u, hu⟩; rwa [← u.mul_left_inj, Hg.comm u]
-#align is_conj.eq_of_left_mem_center IsConj.eq_of_left_mem_center
-
-theorem eq_of_right_mem_center {g h : M} (H : IsConj g h) (Hh : h ∈ Set.center M) : g = h :=
-  (H.symm.eq_of_left_mem_center Hh).symm
-#align is_conj.eq_of_right_mem_center IsConj.eq_of_right_mem_center
-
 end IsConj
 
 namespace ConjClasses
@@ -3806,27 +3623,7 @@ def noncenter (G : Type*) [Monoid G] : Set (ConjClasses G) :=
 @[simp] lemma mem_noncenter [Monoid G] (g : ConjClasses G) :
   g ∈ noncenter G ↔ g.carrier.Nontrivial := Iff.rfl
 
-theorem mk_bijOn (G : Type*) [Group G] :
-    Set.BijOn ConjClasses.mk (↑(Subgroup.center G)) (noncenter G)ᶜ := by
-  refine ⟨fun g hg ↦ ?_, fun x hx y _ H ↦ ?_, ?_⟩
-  · simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff]
-    intro x hx y hy
-    simp only [mem_carrier_iff_mk_eq, mk_eq_mk_iff_isConj] at hx hy
-    rw [hx.eq_of_right_mem_center hg, hy.eq_of_right_mem_center hg]
-  · rw [mk_eq_mk_iff_isConj] at H
-    exact H.eq_of_left_mem_center hx
-  · rintro ⟨g⟩ hg
-    refine ⟨g, ?_, rfl⟩
-    simp only [mem_noncenter, Set.compl_def, Set.mem_setOf, Set.not_nontrivial_iff] at hg
-    rw [SetLike.mem_coe, Subgroup.mem_center_iff]
-    intro h
-    rw [← mul_inv_eq_iff_eq_mul]
-    refine hg ?_ mem_carrier_mk
-    rw [mem_carrier_iff_mk_eq]
-    apply mk_eq_mk_iff_isConj.mpr
-    rw [isConj_comm, isConj_iff]
-    exact ⟨h, rfl⟩
-
 end ConjClasses
 
 assert_not_exists Multiset
+assert_not_exists Ring

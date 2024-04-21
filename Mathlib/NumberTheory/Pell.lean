@@ -209,8 +209,8 @@ theorem y_neg (a : Solution₁ d) : (-a).y = -a.y :=
 theorem eq_zero_of_d_neg (h₀ : d < 0) (a : Solution₁ d) : a.x = 0 ∨ a.y = 0 := by
   have h := a.prop
   contrapose! h
-  have h1 := sq_pos_of_ne_zero a.x h.1
-  have h2 := sq_pos_of_ne_zero a.y h.2
+  have h1 := sq_pos_of_ne_zero h.1
+  have h2 := sq_pos_of_ne_zero h.2
   nlinarith
 #align pell.solution₁.eq_zero_of_d_neg Pell.Solution₁.eq_zero_of_d_neg
 
@@ -366,7 +366,7 @@ open Set Real
 to the Pell equation `x^2 - d*y^2 = 1`. -/
 theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     ∃ x y : ℤ, x ^ 2 - d * y ^ 2 = 1 ∧ y ≠ 0 := by
-  let ξ : ℝ := sqrt d
+  let ξ : ℝ := √d
   have hξ : Irrational ξ := by
     refine' irrational_nrt_of_notint_nrt 2 d (sq_sqrt <| Int.cast_nonneg.mpr h₀.le) _ two_pos
     rintro ⟨x, hx⟩
@@ -396,8 +396,8 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
     rintro rfl
     obtain ⟨q, hq⟩ := hm.nonempty
     rw [mem_setOf, sub_eq_zero, mul_comm] at hq
-    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_pos).mp ⟨d, hq⟩
-    rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.coe_nat_pos.mpr q.pos) 2).ne'] at hq
+    obtain ⟨a, ha⟩ := (Int.pow_dvd_pow_iff two_ne_zero).mp ⟨d, hq⟩
+    rw [ha, mul_pow, mul_right_inj' (pow_pos (Int.natCast_pos.mpr q.pos) 2).ne'] at hq
     exact hd ⟨a, sq a ▸ hq.symm⟩
   haveI := neZero_iff.mpr (Int.natAbs_ne_zero.mpr hm₀)
   let f : ℚ → ZMod m.natAbs × ZMod m.natAbs := fun q => (q.num, q.den)
@@ -407,13 +407,13 @@ theorem exists_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨hq1 : (q₁.num : ZMod m.natAbs) = q₂.num, hq2 : (q₁.den : ZMod m.natAbs) = q₂.den⟩ :=
     Prod.ext_iff.mp hqf
   have hd₁ : m ∣ q₁.num * q₂.num - d * (q₁.den * q₂.den) := by
-    rw [← Int.natAbs_dvd, ← ZMod.int_cast_zmod_eq_zero_iff_dvd]
+    rw [← Int.natAbs_dvd, ← ZMod.intCast_zmod_eq_zero_iff_dvd]
     push_cast
     rw [hq1, hq2, ← sq, ← sq]
     norm_cast
-    rw [ZMod.int_cast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
+    rw [ZMod.intCast_zmod_eq_zero_iff_dvd, Int.natAbs_dvd, Nat.cast_pow, ← h₂]
   have hd₂ : m ∣ q₁.num * q₂.den - q₂.num * q₁.den := by
-    rw [← Int.natAbs_dvd, ← ZMod.int_cast_eq_int_cast_iff_dvd_sub]
+    rw [← Int.natAbs_dvd, ← ZMod.intCast_eq_intCast_iff_dvd_sub]
     push_cast
     rw [hq1, hq2]
   replace hm₀ : (m : ℚ) ≠ 0 := Int.cast_ne_zero.mpr hm₀
@@ -462,7 +462,7 @@ theorem exists_pos_of_not_isSquare (h₀ : 0 < d) (hd : ¬IsSquare d) :
   obtain ⟨x, y, h, hy⟩ := exists_of_not_isSquare h₀ hd
   refine' ⟨mk |x| |y| (by rwa [sq_abs, sq_abs]), _, abs_pos.mpr hy⟩
   rw [x_mk, ← one_lt_sq_iff_one_lt_abs, eq_add_of_sub_eq h, lt_add_iff_pos_right]
-  exact mul_pos h₀ (sq_pos_of_ne_zero y hy)
+  exact mul_pos h₀ (sq_pos_of_ne_zero hy)
 #align pell.solution₁.exists_pos_of_not_is_square Pell.Solution₁.exists_pos_of_not_isSquare
 
 end Solution₁
@@ -650,8 +650,8 @@ theorem mul_inv_x_lt_x {a₁ : Solution₁ d} (h : IsFundamental a₁) {a : Solu
     abs_mul, ← sq_lt_sq, mul_pow, a.prop_x]
   calc
     a.y ^ 2 = 1 * a.y ^ 2 := (one_mul _).symm
-    _ ≤ d * a.y ^ 2 := ((mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos)
-    _ < d * a.y ^ 2 + 1 := (lt_add_one _)
+    _ ≤ d * a.y ^ 2 := (mul_le_mul_right <| sq_pos_of_pos hay).mpr h.d_pos
+    _ < d * a.y ^ 2 + 1 := lt_add_one _
     _ = (1 + d * a.y ^ 2) * 1 := by rw [add_comm, mul_one]
     _ ≤ (1 + d * a.y ^ 2) * a₁.y ^ 2 :=
       (mul_le_mul_left (by have := h.d_pos; positivity)).mpr (sq_pos_of_pos h.2.1)

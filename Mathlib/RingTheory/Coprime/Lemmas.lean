@@ -52,7 +52,7 @@ alias ⟨IsCoprime.nat_coprime, Nat.Coprime.isCoprime⟩ := Nat.isCoprime_iff_co
 theorem Nat.Coprime.cast {R : Type*} [CommRing R] {a b : ℕ} (h : Nat.Coprime a b) :
     IsCoprime (a : R) (b : R) := by
   rw [← isCoprime_iff_coprime] at h
-  rw [← Int.cast_ofNat a, ← Int.cast_ofNat b]
+  rw [← Int.cast_natCast a, ← Int.cast_natCast b]
   exact IsCoprime.intCast h
 
 theorem ne_zero_or_ne_zero_of_nat_coprime {A : Type u} [CommRing A] [Nontrivial A] {a b : ℕ}
@@ -136,7 +136,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime [DecidableEq I] (h : t.Nonempty) 
   constructor
   · rintro ⟨μ, hμ⟩
     rw [sum_cons, cons_eq_insert, sdiff_singleton_eq_erase, erase_insert hat] at hμ
-    refine' ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
+    refine ⟨ih.mp ⟨Pi.single h.choose (μ a * s h.choose) + μ * fun _ ↦ s a, ?_⟩, fun b hb ↦ ?_⟩
     · rw [prod_eq_mul_prod_diff_singleton h.choose_spec, ← mul_assoc, ←
         @if_pos _ _ h.choose_spec R (_ * _) 0, ← sum_pi_single', ← sum_add_distrib] at hμ
       rw [← hμ, sum_congr rfl]
@@ -189,7 +189,7 @@ theorem exists_sum_eq_one_iff_pairwise_coprime' [Fintype I] [Nonempty I] [Decida
 -- Porting note: a lot of the capitalization wasn't working
 theorem pairwise_coprime_iff_coprime_prod [DecidableEq I] :
     Pairwise (IsCoprime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsCoprime (s i) (∏ j in t \ {i}, s j) := by
-  refine' ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
+  refine ⟨fun hp i hi ↦ IsCoprime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
     refine @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm
@@ -285,7 +285,7 @@ theorem Fintype.prod_dvd_of_isRelPrime [Fintype I] (Hs : Pairwise (IsRelPrime on
 
 theorem pairwise_isRelPrime_iff_isRelPrime_prod [DecidableEq I] :
     Pairwise (IsRelPrime on fun i : t ↦ s i) ↔ ∀ i ∈ t, IsRelPrime (s i) (∏ j in t \ {i}, s j) := by
-  refine' ⟨fun hp i hi ↦ IsRelPrime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
+  refine ⟨fun hp i hi ↦ IsRelPrime.prod_right_iff.mpr fun j hj ↦ ?_, fun hp ↦ ?_⟩
   · rw [Finset.mem_sdiff, Finset.mem_singleton] at hj
     obtain ⟨hj, ji⟩ := hj
     exact @hp ⟨i, hi⟩ ⟨j, hj⟩ fun h ↦ ji (congrArg Subtype.val h).symm

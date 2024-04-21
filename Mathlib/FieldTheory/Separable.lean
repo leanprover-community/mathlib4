@@ -277,7 +277,7 @@ theorem separable_X_pow_sub_C_unit {n : ℕ} (u : Rˣ) (hn : IsUnit (n : R)) :
   calc
     -C ↑u⁻¹ * (X ^ n - C ↑u) + C ↑u⁻¹ * C n' * X * (↑n * X ^ (n - 1)) =
         C (↑u⁻¹ * ↑u) - C ↑u⁻¹ * X ^ n + C ↑u⁻¹ * C (n' * ↑n) * (X * X ^ (n - 1)) := by
-      simp only [C.map_mul, C_eq_nat_cast]
+      simp only [C.map_mul, C_eq_natCast]
       ring
     _ = 1 := by
       simp only [Units.inv_mul, hn', C.map_one, mul_one, ← pow_succ',
@@ -508,7 +508,7 @@ theorem eq_X_sub_C_of_separable_of_root_eq {x : F} {h : F[X]} (h_sep : h.Separab
     constructor
     · apply Finset.mem_mk.mpr
       · rw [mem_roots (show h.map i ≠ 0 from map_ne_zero h_ne_zero)]
-        rw [IsRoot.definition, ← eval₂_eq_eval_map, eval₂_hom, h_root]
+        rw [IsRoot.def, ← eval₂_eq_eval_map, eval₂_hom, h_root]
         exact RingHom.map_zero i
       · exact nodup_roots (Separable.map h_sep)
     · exact h_roots

@@ -6,9 +6,8 @@ Authors: Leonardo de Moura
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
@@ -54,7 +53,6 @@ open Nat
 
 /-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
-  | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
@@ -86,10 +84,9 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- Porting note: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
+def get (l : Vector α n) (i : Fin n) : α :=
+  l.1.get <| i.cast l.2.symm
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/

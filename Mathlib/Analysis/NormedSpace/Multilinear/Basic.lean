@@ -1,10 +1,10 @@
 /-
 Copyright (c) 2020 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Sébastien Gouëzel
+Authors: Sébastien Gouëzel, Sophie Morel, Yury Kudryashov
 -/
 import Mathlib.Analysis.NormedSpace.OperatorNorm.NormedSpace
-import Mathlib.Topology.Algebra.Module.Multilinear.Basic
+import Mathlib.Topology.Algebra.Module.Multilinear.Topology
 
 #align_import analysis.normed_space.multilinear from "leanprover-community/mathlib"@"f40476639bac089693a489c9e354ebd75dc0f886"
 
@@ -48,7 +48,7 @@ suppress_compilation
 
 noncomputable section
 
-open scoped BigOperators NNReal Topology
+open scoped BigOperators NNReal Topology Uniformity
 open Finset Metric Function Filter
 
 /-
@@ -175,11 +175,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
       have A : (insert i s).piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₂ i) :=
         s.piecewise_insert _ _ _
       have B : s.piecewise m₂ m₁ = Function.update (s.piecewise m₂ m₁) i (m₁ i) := by
-        ext j
-        by_cases h : j = i
-        · rw [h]
-          simp [his]
-        · simp [h]
+        simp [eq_update_iff, his]
       rw [B, A, ← f.map_sub]
       apply le_trans (H _)
       gcongr with j
@@ -194,8 +190,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
             ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ := by
         rw [← dist_eq_norm, ← dist_eq_norm, ← dist_eq_norm]
         exact dist_triangle _ _ _
-      _ ≤
-          (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
+      _ ≤ (C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖) +
             C * ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
         (add_le_add Hrec I)
       _ = C * ∑ i in insert i s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
@@ -498,15 +493,56 @@ theorem opNorm_neg : ‖-f‖ = ‖f‖ := by
 alias op_norm_neg :=
   opNorm_neg -- deprecated on 2024-02-02
 
+variable (𝕜 E G) in
+/-- Operator seminorm on the space of continuous multilinear maps, as `Seminorm`.
+
+We use this seminorm
+to define a `SeminormedAddCommGroup` structure on `ContinuousMultilinearMap 𝕜 E G`,
+but we have to override the projection `UniformSpace`
+so that it is definitionally equal to the one coming from the topologies on `E` and `G`. -/
+protected def seminorm : Seminorm 𝕜 (ContinuousMultilinearMap 𝕜 E G) :=
+  .ofSMulLE norm opNorm_zero opNorm_add_le fun c f ↦ opNorm_smul_le f c
+
+private lemma uniformity_eq_seminorm :
+    𝓤 (ContinuousMultilinearMap 𝕜 E G) = ⨅ r > 0, 𝓟 {f | ‖f.1 - f.2‖ < r} := by
+  refine (ContinuousMultilinearMap.seminorm 𝕜 E G).uniformity_eq_of_hasBasis
+    (ContinuousMultilinearMap.hasBasis_nhds_zero_of_basis Metric.nhds_basis_closedBall)
+    ?_ fun (s, r) ⟨hs, hr⟩ ↦ ?_
+  · rcases NormedField.exists_lt_norm 𝕜 1 with ⟨c, hc⟩
+    have hc₀ : 0 < ‖c‖ := one_pos.trans hc
+    simp only [hasBasis_nhds_zero.mem_iff, Prod.exists]
+    use 1, closedBall 0 ‖c‖, closedBall 0 1
+    suffices ∀ f : ContinuousMultilinearMap 𝕜 E G, (∀ x, ‖x‖ ≤ ‖c‖ → ‖f x‖ ≤ 1) → ‖f‖ ≤ 1 by
+      simpa [NormedSpace.isVonNBounded_closedBall, closedBall_mem_nhds, Set.subset_def, Set.MapsTo]
+    intro f hf
+    refine opNorm_le_bound _ (by positivity) <|
+      f.1.bound_of_shell_of_continuous f.2 (fun _ ↦ hc₀) (fun _ ↦ hc) fun x hcx hx ↦ ?_
+    calc
+      ‖f x‖ ≤ 1 := hf _ <| (pi_norm_le_iff_of_nonneg (norm_nonneg c)).2 fun i ↦ (hx i).le
+      _ = ∏ i : ι, 1 := by simp
+      _ ≤ ∏ i, ‖x i‖ := Finset.prod_le_prod (fun _ _ ↦ zero_le_one) fun i _ ↦ by
+        simpa only [div_self hc₀.ne'] using hcx i
+      _ = 1 * ∏ i, ‖x i‖ := (one_mul _).symm
+  · rcases (NormedSpace.isVonNBounded_iff' _ _ _).1 hs with ⟨ε, hε⟩
+    rcases exists_pos_mul_lt hr (ε ^ Fintype.card ι) with ⟨δ, hδ₀, hδ⟩
+    refine ⟨δ, hδ₀, fun f hf x hx ↦ ?_⟩
+    simp only [Seminorm.mem_ball_zero, mem_closedBall_zero_iff] at hf ⊢
+    replace hf : ‖f‖ ≤ δ := hf.le
+    replace hx : ‖x‖ ≤ ε := hε x hx
+    calc
+      ‖f x‖ ≤ ‖f‖ * ε ^ Fintype.card ι := le_opNorm_mul_pow_card_of_le f hx
+      _ ≤ δ * ε ^ Fintype.card ι := by have := (norm_nonneg x).trans hx; gcongr
+      _ ≤ r := (mul_comm _ _).trans_le hδ.le
+
+instance instPseudoMetricSpace : PseudoMetricSpace (ContinuousMultilinearMap 𝕜 E G) :=
+  .replaceUniformity
+    (ContinuousMultilinearMap.seminorm 𝕜 E G).toSeminormedAddCommGroup.toPseudoMetricSpace
+    uniformity_eq_seminorm
+
 /-- Continuous multilinear maps themselves form a seminormed space with respect to
     the operator norm. -/
 instance seminormedAddCommGroup :
-    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) :=
-  AddGroupSeminorm.toSeminormedAddCommGroup
-    { toFun := norm
-      map_zero' := opNorm_zero
-      neg' := opNorm_neg
-      add_le' := fun f g ↦ opNorm_add_le f g}
+    SeminormedAddCommGroup (ContinuousMultilinearMap 𝕜 E G) := ⟨fun _ _ ↦ rfl⟩
 
 /-- An alias of `ContinuousMultilinearMap.seminormedAddCommGroup` with non-dependent types to help
 typeclass search. -/
@@ -718,7 +754,7 @@ end RestrictScalars
 For a less precise but more usable version, see `norm_image_sub_le`. The bound reads
 `‖f m - f m'‖ ≤
   ‖f‖ * ‖m 1 - m' 1‖ * max ‖m 2‖ ‖m' 2‖ * max ‖m 3‖ ‖m' 3‖ * ... * max ‖m n‖ ‖m' n‖ + ...`,
-where the other terms in the sum are the same products where `1` is replaced by any `i`.-/
+where the other terms in the sum are the same products where `1` is replaced by any `i`. -/
 theorem norm_image_sub_le' [DecidableEq ι] (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * ∑ i, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ :=
   f.toMultilinearMap.norm_image_sub_le_of_bound' (norm_nonneg _) f.le_opNorm _ _
@@ -726,7 +762,7 @@ theorem norm_image_sub_le' [DecidableEq ι] (m₁ m₂ : ∀ i, E i) :
 
 /-- The difference `f m₁ - f m₂` is controlled in terms of `‖f‖` and `‖m₁ - m₂‖`, less precise
 version. For a more precise but less usable version, see `norm_image_sub_le'`.
-The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`.-/
+The bound is `‖f m - f m'‖ ≤ ‖f‖ * card ι * ‖m - m'‖ * (max ‖m‖ ‖m'‖) ^ (card ι - 1)`. -/
 theorem norm_image_sub_le (m₁ m₂ : ∀ i, E i) :
     ‖f m₁ - f m₂‖ ≤ ‖f‖ * Fintype.card ι * max ‖m₁‖ ‖m₂‖ ^ (Fintype.card ι - 1) * ‖m₁ - m₂‖ :=
   f.toMultilinearMap.norm_image_sub_le_of_bound (norm_nonneg _) f.le_opNorm _ _
@@ -762,35 +798,6 @@ theorem continuous_eval : Continuous
       rw [dist_eq_norm]
       ring
 #align continuous_multilinear_map.continuous_eval ContinuousMultilinearMap.continuous_eval
-
-theorem continuous_eval_left (m : ∀ i, E i) :
-    Continuous fun p : ContinuousMultilinearMap 𝕜 E G => p m :=
-  continuous_eval.comp (continuous_id.prod_mk continuous_const)
-#align continuous_multilinear_map.continuous_eval_left ContinuousMultilinearMap.continuous_eval_left
-
-theorem hasSum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G}
-    {q : ContinuousMultilinearMap 𝕜 E G} (h : HasSum p q) (m : ∀ i, E i) :
-    HasSum (fun a => p a m) (q m) := by
-  dsimp [HasSum] at h ⊢
-  convert ((continuous_eval_left m).tendsto _).comp h using 1
-  ext s
-  simp
-#align continuous_multilinear_map.has_sum_eval ContinuousMultilinearMap.hasSum_eval
-
-variable (𝕜 E G)
-
-/-- The application of a multilinear map as a `ContinuousLinearMap`. -/
-def apply (m : ∀ i, E i) : ContinuousMultilinearMap 𝕜 E G →L[𝕜] G where
-  toFun c := c m
-  map_add' _ _ := rfl
-  map_smul' _ _ := rfl
-  cont := continuous_eval_left m
-
-variable {𝕜 E G}
-
-@[simp]
-lemma apply_apply {m : ∀ i, E i} {c : ContinuousMultilinearMap 𝕜 E G} :
-    (apply 𝕜 E G m) c = c m := rfl
 
 end ContinuousMultilinearMap
 
@@ -944,6 +951,20 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
+
+variable (𝕜 E G) in
+/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
+sense. This shouldn't be needed. See lean4#3927. -/
+def seminormedAddCommGroup_aux_for_smulRightL :
+    SeminormedAddCommGroup
+      (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+  ContinuousLinearMap.toSeminormedAddCommGroup
+    (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
+
+lemma norm_smulRightL_le :
+    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E G
+    ‖smulRightL 𝕜 E G‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
 
 variable (𝕜 ι G)
 
@@ -1338,16 +1359,6 @@ theorem compContinuousLinearMapEquivL_apply (g : ContinuousMultilinearMap 𝕜 E
 
 end ContinuousMultilinearMap
 
-section SMul
-
-variable {R : Type*} [Semiring R] [Module R G] [SMulCommClass 𝕜 R G] [ContinuousConstSMul R G]
-
-instance continuousConstSMul : ContinuousConstSMul R (ContinuousMultilinearMap 𝕜 E G) :=
-  ⟨fun c =>
-    (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜 _ G G (c • ContinuousLinearMap.id 𝕜 G)).2⟩
-
-end SMul
-
 end Seminorm
 
 section Norm
@@ -1355,7 +1366,7 @@ section Norm
 namespace ContinuousMultilinearMap
 
 /-! Results that are only true if the target space is a `NormedAddCommGroup` (and not just a
-`SeminormedAddCommGroup`).-/
+`SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} {G' : Type wG'} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, SeminormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
@@ -1397,11 +1408,6 @@ theorem nnnorm_ofSubsingleton_id [Subsingleton ι] [Nontrivial G] (i : ι) :
 #align continuous_multilinear_map.nnnorm_of_subsingleton ContinuousMultilinearMap.nnnorm_ofSubsingleton_id
 
 variable {𝕜 G}
-
-theorem tsum_eval {α : Type*} {p : α → ContinuousMultilinearMap 𝕜 E G} (hp : Summable p)
-    (m : ∀ i, E i) : (∑' a, p a) m = ∑' a, p a m :=
-  (hasSum_eval hp.hasSum m).tsum_eq.symm
-#align continuous_multilinear_map.tsum_eval ContinuousMultilinearMap.tsum_eval
 
 open Topology Filter
 
@@ -1456,7 +1462,7 @@ instance completeSpace [CompleteSpace G] : CompleteSpace (ContinuousMultilinearM
         ‖f n‖ = ‖f n - f 0 + f 0‖ := by
           congr 1
           abel
-        _ ≤ ‖f n - f 0‖ + ‖f 0‖ := (norm_add_le _ _)
+        _ ≤ ‖f n - f 0‖ + ‖f 0‖ := norm_add_le _ _
         _ ≤ b 0 + ‖f 0‖ := by
           apply add_le_add_right
           simpa [dist_eq_norm] using b_bound n 0 0 (zero_le _) (zero_le _)
@@ -1485,7 +1491,7 @@ end Norm
 section Norm
 
 /-! Results that are only true if the source is a `NormedAddCommGroup` (and not just a
-`SeminormedAddCommGroup`).-/
+`SeminormedAddCommGroup`). -/
 
 variable {𝕜 : Type u} {ι : Type v} {E : ι → Type wE} {G : Type wG} [Fintype ι]
   [NontriviallyNormedField 𝕜] [∀ i, NormedAddCommGroup (E i)] [∀ i, NormedSpace 𝕜 (E i)]
