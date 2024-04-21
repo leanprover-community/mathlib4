@@ -264,7 +264,12 @@ lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
-  simp_rw [hA.conjTranspose_eigenvectorMatrix.symm ▸ hA.spectral_theorem']
+  dsimp[PosSemidef]
+  constructor
+  exact hA
+  intro x
+  rw [eigenvalues_eq] at hA
+  simp_rw [((hA.eigenvectorUnitary.2).1).symm ▸ hA.spectral_theorem2]
   refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
   rw [RCLike.le_iff_re_im]
   simpa using h i
