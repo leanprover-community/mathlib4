@@ -268,8 +268,9 @@ lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n
   constructor
   exact hA
   intro x
-  rw [eigenvalues_eq] at hA
-  simp_rw [((hA.eigenvectorUnitary.2).1).symm ▸ hA.spectral_theorem2]
+  have := hA.eigenvalues_eq
+  dsimp at this
+  simp_rw [((hA.eigenvectorUnitary.2).1) ▸ hA.spectral_theorem2]
   refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
   rw [RCLike.le_iff_re_im]
   simpa using h i
