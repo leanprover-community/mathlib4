@@ -26,12 +26,12 @@ variable {m n R : Type*} [Fintype n] [CommRing R] [StarRing R] [DecidableEq n]
 namespace Matrix
 
 @[simp]
-theorem rank_unitary_mul (A : unitaryGroup n R) (B : Matrix m n R) :
+theorem rank_mul_unitary (A : unitaryGroup n R) (B : Matrix m n R) :
     rank (B * (A : Matrix n n R)) = rank B :=
   rank_mul_units (unitary.toUnits A) _
 
 @[simp]
-theorem rank_mul_unitary [Fintype m] (A : unitaryGroup n R)
+theorem rank_unitary_mul [Fintype m] (A : unitaryGroup n R)
     (B : Matrix n m R) : rank ((A : Matrix n n R) * B) = rank B :=
   rank_units_mul (unitary.toUnits A) _
 
