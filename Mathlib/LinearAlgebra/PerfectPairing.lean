@@ -124,29 +124,44 @@ variable {S : Type*} [CommRing S] [Algebra R S] (P : PerfectPairing R M N)
 
 open TensorProduct
 /-!
+
+revision: I think this may fail for non-flat base change!
+also, it might be better to skip curry/uncurry - just base change via
+TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S) p.toLin to
+  S ⊗[R] M →ₗ[S] (S ⊗[R] (N →ₗ[R] R))
+and compose with the equiv ???
+  (S ⊗[R] (N →ₗ[R] R)) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S ⊗[R] R) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S)
+We may even have base change of duals already!
+
+TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
+
 /-- The base chage of a perfect pairing`. -/
 noncomputable def baseChange : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N)
     where
   toLin := TensorProduct.curry (TensorProduct.AlgebraTensorModule.rid R S S
-    ∘ₗ TensorProduct.AlgebraTensorModule.map (RingHom.id S) ((TensorProduct.uncurry R M N R) P.toLin)
-    ∘ₗ (TensorProduct.AlgebraTensorModule.map (TensorProduct.rid S S) LinearMap.id)
-    ∘ₗ (TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N))
+    ∘ₗ TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
+      ((TensorProduct.uncurry R M N R) P.toLin)
+    ∘ₗ ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N)
+    ≪≫ₗ (TensorProduct.AlgebraTensorModule.congr
+      (TensorProduct.rid S S) (LinearEquiv.refl R (M ⊗[R] N)))))
   bijectiveLeft := sorry
   bijectiveRight := sorry
 
 
-TensorProduct.AlgebraTensorModule.map (RingHom.id S) ((TensorProduct.uncurry R M N R) P.toLin) has
-type S ⊗[R] M ⊗[R] N →ₗ[S] S ⊗[R] R
-
-compose on left with TensorProduct.AlgebraTensorModule.rid R S S : S ⊗[R] R ≃ₗ[A] S,
-on the right with (S ⊗[R] M) ⊗[S] (S ⊗[R] N) →ₗ[S] S) ≃ S ⊗[R] M ⊗[R] N
-which is TensorProduct.AlgebraTensorModule.tensorTensorTensorComm :
+TensorProduct.AlgebraTensorModule.map (RingHom.id S) ((TensorProduct.uncurry R M N R) P.toLin) :
+  S ⊗[R] M ⊗[R] N →ₗ[S] S ⊗[R] R
+so compose on left with TensorProduct.AlgebraTensorModule.rid R S S :
+  S ⊗[R] R ≃ₗ[A] S,
+on the right with
+  (S ⊗[R] M) ⊗[S] (S ⊗[R] N) →ₗ[S] S) ≃ S ⊗[R] M ⊗[R] N
+which is TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N :
   (S ⊗[R] M) ⊗[S] (S ⊗[R] N) ≃ₗ[S] (S ⊗[S] S) ⊗[R] (M ⊗[R] N)
-followed by TensorProduct.AlgebraTensorModule.map TensorProduct.lid LinearMap.id :
+followed by
+  TensorProduct.AlgebraTensorModule.congr TensorProduct.lid (LinearEquiv.refl R (M ⊗[R] N)) :
   (S ⊗[S] S) ⊗[R] (M ⊗[R] N) → S ⊗[R] M ⊗[R] N
 then curry
 
-
+/-- just copied -/
 def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
   ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
     ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm).toLinearMap
@@ -155,9 +170,11 @@ def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm
     (TensorProduct.lift.equiv A M₁ M₁ A)
     (TensorProduct.lift.equiv R _ _ _)).toLinearMap
 
+/-- just copied -/
 protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
   tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
 
+/-- just copied -/
 protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
   BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
 
