@@ -7,6 +7,9 @@ import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.Sets.Compacts
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.MeasureTheory.Measure.Content
+import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.MeasureTheory.Integral.Bochner
 
 
 /-!
@@ -31,10 +34,12 @@ noncomputable section
 
 open BoundedContinuousFunction NNReal ENNReal
 
-open Set Function TopologicalSpace
+open Set Function TopologicalSpace ZeroAtInfty
+
 
 variable {X : Type*} [TopologicalSpace X] [LocallyCompactSpace X] [T2Space X] [NormalSpace X]
 variable (Λ : C(X, ℝ) →ₗ[ℝ] ℝ) (hΛ : ∀ (f : C(X, ℝ)), 0 ≤ f → 0 ≤ Λ f)
+-- need to restrict Λ : C₀(X, ℝ)
 
 lemma Λ_mono {f g : C(X, ℝ)} (h : f ≤ g) : Λ f ≤ Λ g := by
   have : 0 ≤ g - f := by exact sub_nonneg.mpr h
@@ -443,3 +448,11 @@ def rieszContent : MeasureTheory.Content X where
   sup_le' := by
     intro K₁ K₂
     exact rieszContentNonneg_sup_le Λ hΛ
+
+variable [MeasurableSpace X] [BorelSpace X]
+
+def μ := (MeasureTheory.Content.measure (rieszContent Λ hΛ))
+
+/-- The Riesz-Markov-Kakutani theorem. -/
+theorem RMK : ∀ (f : C₀(X, ℝ)), ∫ (x : X), f x ∂(μ Λ hΛ) = Λ f.1 := by
+ sorry
