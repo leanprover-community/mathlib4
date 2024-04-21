@@ -3,8 +3,8 @@ Copyright (c) 2023 Mantas Bakšys, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mantas Bakšys, Yaël Dillies
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Rearrangement
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
@@ -70,7 +70,7 @@ other is antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem AntivaryOn.card_smul_sum_le_sum_smul_sum (hfg : AntivaryOn f g s) :
     (s.card • ∑ i in s, f i • g i) ≤ (∑ i in s, f i) • ∑ i in s, g i := by
-  refine hfg.dual_right.sum_smul_sum_le_card_smul_sum
+  exact hfg.dual_right.sum_smul_sum_le_card_smul_sum
 #align antivary_on.card_smul_sum_le_sum_smul_sum AntivaryOn.card_smul_sum_le_sum_smul_sum
 
 variable [Fintype ι]
@@ -88,7 +88,7 @@ other is antitone), the scalar product of their sum is less than the size of the
 scalar product. -/
 theorem Antivary.card_smul_sum_le_sum_smul_sum (hfg : Antivary f g) :
     (Fintype.card ι • ∑ i, f i • g i) ≤ (∑ i, f i) • ∑ i, g i := by
-  refine (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
+  exact (hfg.dual_right.monovaryOn _).sum_smul_sum_le_card_smul_sum
 #align antivary.card_smul_sum_le_sum_smul_sum Antivary.card_smul_sum_le_sum_smul_sum
 
 end SMul
@@ -156,7 +156,7 @@ theorem sum_div_card_sq_le_sum_sq_div_card :
   obtain rfl | hs := s.eq_empty_or_nonempty
   · simp
   rw [← card_pos, ← @Nat.cast_pos α] at hs
-  rw [div_pow, div_le_div_iff (sq_pos_of_ne_zero _ hs.ne') hs, sq (s.card : α), mul_left_comm, ←
+  rw [div_pow, div_le_div_iff (sq_pos_of_ne_zero hs.ne') hs, sq (s.card : α), mul_left_comm, ←
     mul_assoc]
   exact mul_le_mul_of_nonneg_right sq_sum_le_card_mul_sum_sq hs.le
 #align sum_div_card_sq_le_sum_sq_div_card sum_div_card_sq_le_sum_sq_div_card

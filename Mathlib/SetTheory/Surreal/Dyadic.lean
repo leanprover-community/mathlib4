@@ -82,7 +82,7 @@ instance uniquePowHalfSuccRightMoves (n) : Unique (powHalf (n + 1)).RightMoves :
 
 @[simp]
 theorem birthday_half : birthday (powHalf 1) = 2 := by
-  rw [birthday_def]; dsimp; simpa using Order.le_succ (1 : Ordinal)
+  rw [birthday_def]; simp
 #align pgame.birthday_half SetTheory.PGame.birthday_half
 
 /-- For all natural numbers `n`, the pre-games `powHalf n` are numeric. -/
@@ -142,15 +142,15 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
     · simp only [powHalf_moveLeft, forall_const]
       apply lf_of_lt
       calc
-        0 ≈ 0 + 0 := (Equiv.symm (add_zero_equiv 0))
-        _ ≤ powHalf n.succ + 0 := (add_le_add_right (zero_le_powHalf _) _)
+        0 ≈ 0 + 0 := Equiv.symm (add_zero_equiv 0)
+        _ ≤ powHalf n.succ + 0 := add_le_add_right (zero_le_powHalf _) _
         _ < powHalf n.succ + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
     · rintro (⟨⟨⟩⟩ | ⟨⟨⟩⟩) <;> apply lf_of_lt
       · calc
-          powHalf n ≈ powHalf n + 0 := (Equiv.symm (add_zero_equiv _))
+          powHalf n ≈ powHalf n + 0 := Equiv.symm (add_zero_equiv _)
           _ < powHalf n + powHalf n.succ := add_lt_add_left (powHalf_pos _) _
       · calc
-          powHalf n ≈ 0 + powHalf n := (Equiv.symm (zero_add_equiv _))
+          powHalf n ≈ 0 + powHalf n := Equiv.symm (zero_add_equiv _)
           _ < powHalf n.succ + powHalf n := add_lt_add_right (powHalf_pos _) _
 #align pgame.add_pow_half_succ_self_eq_pow_half SetTheory.PGame.add_powHalf_succ_self_eq_powHalf
 
@@ -186,7 +186,7 @@ theorem nsmul_pow_two_powHalf (n : ℕ) : 2 ^ n • powHalf n = 1 := by
   induction' n with n hn
   · simp only [Nat.zero_eq, pow_zero, powHalf_zero, one_smul]
   · rw [← hn, ← double_powHalf_succ_eq_powHalf n, smul_smul (2 ^ n) 2 (powHalf n.succ), mul_comm,
-      pow_succ]
+      pow_succ']
 #align surreal.nsmul_pow_two_pow_half Surreal.nsmul_pow_two_powHalf
 
 @[simp]
@@ -218,7 +218,7 @@ theorem dyadic_aux {m₁ m₂ : ℤ} {y₁ y₂ : ℕ} (h₂ : m₁ * 2 ^ y₁ =
   cases' h₂ with h₂ h₂
   · rw [h₂, add_comm, zsmul_pow_two_powHalf m₂ c y₁]
   · have := Nat.one_le_pow y₁ 2 Nat.succ_pos'
-    norm_cast at h₂; linarith
+    norm_cast at h₂; omega
 #align surreal.dyadic_aux Surreal.dyadic_aux
 
 /-- The additive monoid morphism `dyadicMap` sends ⟦⟨m, 2^n⟩⟧ to m • half ^ n. -/

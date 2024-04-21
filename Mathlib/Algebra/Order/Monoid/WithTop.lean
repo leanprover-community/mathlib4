@@ -163,19 +163,19 @@ theorem add_eq_coe :
   | some a, some b, c => by norm_cast; simp
 #align with_top.add_eq_coe WithTop.add_eq_coe
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem add_coe_eq_top_iff {x : WithTop α} {y : α} : x + y = ⊤ ↔ x = ⊤ := by simp
 #align with_top.add_coe_eq_top_iff WithTop.add_coe_eq_top_iff
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem coe_add_eq_top_iff {y : WithTop α} : ↑x + y = ⊤ ↔ y = ⊤ := by simp
 #align with_top.coe_add_eq_top_iff WithTop.coe_add_eq_top_iff
 
 theorem add_right_cancel_iff [IsRightCancelAdd α] (ha : a ≠ ⊤) : b + a = c + a ↔ b = c := by
   lift a to α using ha
-  obtain rfl | hb := (eq_or_ne b ⊤)
+  obtain rfl | hb := eq_or_ne b ⊤
   · rw [top_add, eq_comm, WithTop.add_coe_eq_top_iff, eq_comm]
   lift b to α using hb
   simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, coe_eq_coe, exists_and_left,
@@ -186,7 +186,7 @@ theorem add_right_cancel [IsRightCancelAdd α] (ha : a ≠ ⊤) (h : b + a = c +
 
 theorem add_left_cancel_iff [IsLeftCancelAdd α] (ha : a ≠ ⊤) : a + b = a + c ↔ b = c := by
   lift a to α using ha
-  obtain rfl | hb := (eq_or_ne b ⊤)
+  obtain rfl | hb := eq_or_ne b ⊤
   · rw [add_top, eq_comm, WithTop.coe_add_eq_top_iff, eq_comm]
   lift b to α using hb
   simp_rw [← WithTop.coe_add, eq_comm, WithTop.add_eq_coe, eq_comm, coe_eq_coe,
@@ -373,14 +373,19 @@ instance addMonoidWithOne : AddMonoidWithOne (WithTop α) :=
       simp only -- Porting note: Had to add this...?
       rw [Nat.cast_add_one, WithTop.coe_add, WithTop.coe_one] }
 
-@[simp, norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithTop α) = n := rfl
-#align with_top.coe_nat WithTop.coe_nat
+@[simp, norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithTop α) = n := rfl
+#align with_top.coe_nat WithTop.coe_natCast
 
-@[simp] lemma nat_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
-#align with_top.nat_ne_top WithTop.nat_ne_top
+@[simp] lemma natCast_ne_top (n : ℕ) : (n : WithTop α) ≠ ⊤ := coe_ne_top
+#align with_top.nat_ne_top WithTop.natCast_ne_top
 
-@[simp] lemma top_ne_nat (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
-#align with_top.top_ne_nat WithTop.top_ne_nat
+@[simp] lemma top_ne_natCast (n : ℕ) : (⊤ : WithTop α) ≠ n := top_ne_coe
+#align with_top.top_ne_nat WithTop.top_ne_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias nat_ne_top := natCast_ne_top
+@[deprecated] alias top_ne_nat := top_ne_natCast
 
 end AddMonoidWithOne
 
@@ -428,7 +433,7 @@ theorem zero_lt_top [OrderedAddCommMonoid α] : (0 : WithTop α) < ⊤ :=
   coe_lt_top 0
 #align with_top.zero_lt_top WithTop.zero_lt_top
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 @[norm_cast]
 theorem zero_lt_coe [OrderedAddCommMonoid α] (a : α) : (0 : WithTop α) < a ↔ 0 < a :=
@@ -487,7 +492,7 @@ lemma one_eq_coe : 1 = (a : WithBot α) ↔ a = 1 := eq_comm.trans coe_eq_one
 @[to_additive (attr := simp)] lemma one_ne_bot : (1 : WithBot α) ≠ ⊥ := coe_ne_bot
 
 @[to_additive (attr := simp)]
-theorem unbot_one [One α] : (1 : WithBot α).unbot coe_ne_bot = 1 :=
+theorem unbot_one : (1 : WithBot α).unbot coe_ne_bot = 1 :=
   rfl
 #align with_bot.unbot_one WithBot.unbot_one
 #align with_bot.unbot_zero WithBot.unbot_zero
@@ -569,14 +574,19 @@ variable [AddMonoidWithOne α]
 
 instance addMonoidWithOne : AddMonoidWithOne (WithBot α) := WithTop.addMonoidWithOne
 
-@[norm_cast] lemma coe_nat (n : ℕ) : ((n : α) : WithBot α) = n := rfl
-#align with_bot.coe_nat WithBot.coe_nat
+@[norm_cast] lemma coe_natCast (n : ℕ) : ((n : α) : WithBot α) = n := rfl
+#align with_bot.coe_nat WithBot.coe_natCast
 
-@[simp] lemma nat_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
-#align with_bot.nat_ne_bot WithBot.nat_ne_bot
+@[simp] lemma natCast_ne_bot (n : ℕ) : (n : WithBot α) ≠ ⊥ := coe_ne_bot
+#align with_bot.nat_ne_bot WithBot.natCast_ne_bot
 
-@[simp] lemma bot_ne_nat (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
-#align with_bot.bot_ne_nat WithBot.bot_ne_nat
+@[simp] lemma bot_ne_natCast (n : ℕ) : (⊥ : WithBot α) ≠ n := bot_ne_coe
+#align with_bot.bot_ne_nat WithBot.bot_ne_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias nat_ne_bot := natCast_ne_bot
+@[deprecated] alias bot_ne_nat := bot_ne_natCast
 
 end AddMonoidWithOne
 
@@ -638,13 +648,13 @@ theorem add_eq_coe : a + b = x ↔ ∃ a' b' : α, ↑a' = a ∧ ↑b' = b ∧ a
   WithTop.add_eq_coe
 #align with_bot.add_eq_coe WithBot.add_eq_coe
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem add_coe_eq_bot_iff : a + y = ⊥ ↔ a = ⊥ :=
   WithTop.add_coe_eq_top_iff
 #align with_bot.add_coe_eq_bot_iff WithBot.add_coe_eq_bot_iff
 
--- Porting note: simp can already prove this.
+-- Porting note (#10618): simp can already prove this.
 -- @[simp]
 theorem coe_add_eq_bot_iff : ↑x + b = ⊥ ↔ b = ⊥ :=
   WithTop.coe_add_eq_top_iff

@@ -43,7 +43,6 @@ structure DenseInducing [TopologicalSpace α] [TopologicalSpace β] (i : α → 
 namespace DenseInducing
 
 variable [TopologicalSpace α] [TopologicalSpace β]
-
 variable {i : α → β} (di : DenseInducing i)
 
 theorem nhds_eq_comap (di : DenseInducing i) : ∀ a : α, 𝓝 a = comap i (𝓝 <| i a) :=
@@ -245,7 +244,6 @@ namespace DenseEmbedding
 open TopologicalSpace
 
 variable [TopologicalSpace α] [TopologicalSpace β] [TopologicalSpace γ] [TopologicalSpace δ]
-
 variable {e : α → β} (de : DenseEmbedding e)
 
 theorem inj_iff {x y} : e x = e y ↔ x = y :=
@@ -352,7 +350,6 @@ theorem DenseRange.induction_on₃ [TopologicalSpace β] {e : α → β} {p : β
 section
 
 variable [TopologicalSpace β] [TopologicalSpace γ] [T2Space γ]
-
 variable {f : α → β}
 
 /-- Two continuous functions to a t2-space that agree on the dense range of a function are equal. -/

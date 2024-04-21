@@ -3,11 +3,11 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Joël Riou
 -/
+import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.CategoryTheory.ConcreteCategory.Basic
 import Mathlib.CategoryTheory.Shift.Basic
-import Mathlib.Data.Int.Basic
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import category_theory.graded_object from "leanprover-community/mathlib"@"6876fa15e3158ff3e4a4e2af1fb6e1945c6e8803"
 
@@ -32,8 +32,6 @@ introduced: if `p : I → J` is a map such that `C` has coproducts indexed by `p
 have a functor `map : GradedObject I C ⥤ GradedObject J C`.
 
 -/
-
-set_option autoImplicit true
 
 namespace CategoryTheory
 
@@ -70,9 +68,9 @@ instance categoryOfGradedObjects (β : Type w) : Category.{max w v} (GradedObjec
   CategoryTheory.pi fun _ => C
 #align category_theory.graded_object.category_of_graded_objects CategoryTheory.GradedObject.categoryOfGradedObjects
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
-lemma hom_ext {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
+lemma hom_ext {β : Type*} {X Y : GradedObject β C} (f g : X ⟶ Y) (h : ∀ x, f x = g x) : f = g := by
   funext
   apply h
 
@@ -121,14 +119,14 @@ section
 
 variable (C)
 
--- porting note: added to ease the port
+-- Porting note: added to ease the port
 /-- Pull back an `I`-graded object in `C` to a `J`-graded object along a function `J → I`. -/
 abbrev comap {I J : Type*} (h : J → I) : GradedObject I C ⥤ GradedObject J C :=
   Pi.comap (fun _ => C) h
 
--- porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
+-- Porting note: added to ease the port, this is a special case of `Functor.eqToHom_proj`
 @[simp]
-theorem eqToHom_proj {x x' : GradedObject I C} (h : x = x') (i : I) :
+theorem eqToHom_proj {I : Type*} {x x' : GradedObject I C} (h : x = x') (i : I) :
     (eqToHom h : x ⟶ x') i = eqToHom (Function.funext_iff.mp h i) := by
   subst h
   rfl
@@ -227,9 +225,7 @@ namespace GradedObject
 -- Since we're typically interested in grading by ℤ or a finite group, this should be okay.
 -- If you're grading by things in higher universes, have fun!
 variable (β : Type)
-
 variable (C : Type u) [Category.{v} C]
-
 variable [HasCoproducts.{0} C]
 
 section
@@ -250,7 +246,7 @@ The `total` functor taking a graded object to the coproduct of its graded compon
 To prove this, we need to know that the coprojections into the coproduct are monomorphisms,
 which follows from the fact we have zero morphisms and decidable equality for the grading.
 -/
-instance : Faithful (total β C) where
+instance : (total β C).Faithful where
   map_injective {X Y} f g w := by
     ext i
     replace w := Sigma.ι (fun i : β => X i) i ≫= w
@@ -265,7 +261,6 @@ namespace GradedObject
 noncomputable section
 
 variable (β : Type)
-
 variable (C : Type (u + 1)) [LargeCategory C] [ConcreteCategory C] [HasCoproducts.{0} C]
   [HasZeroMorphisms C]
 
@@ -438,8 +433,7 @@ def cofanMapObjComp : X.CofanMapObjFun r k :=
 In other words, if we have, for all `j : J` such that `hj : q j = k`,
 a colimit cofan `c j hj` which computes the coproduct of the `X i` such that `p i = j`,
 and also a colimit cofan which computes the coproduct of the points of these `c j hj`, then
-the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`.
-.-/
+the point of this latter cofan computes the coproduct of the `X i` such that `r i = k`. -/
 @[simp]
 def isColimitCofanMapObjComp :
     IsColimit (cofanMapObjComp X p q r hpqr k c c') :=
@@ -480,6 +474,14 @@ noncomputable def ιMapObjOrZero : X i ⟶ X.mapObj p j :=
 lemma ιMapObjOrZero_eq (h : p i = j) : X.ιMapObjOrZero p i j = X.ιMapObj p i j h := dif_pos h
 
 lemma ιMapObjOrZero_eq_zero (h : p i ≠ j) : X.ιMapObjOrZero p i j = 0 := dif_neg h
+
+variable {X Y} in
+@[reassoc (attr := simp)]
+lemma ιMapObjOrZero_mapMap :
+    X.ιMapObjOrZero p i j ≫ mapMap φ p j = φ i ≫ Y.ιMapObjOrZero p i j := by
+  by_cases h : p i = j
+  · simp only [ιMapObjOrZero_eq _ _ _ _ h, ι_mapMap]
+  · simp only [ιMapObjOrZero_eq_zero _ _ _ _ h, zero_comp, comp_zero]
 
 end GradedObject
 

@@ -75,7 +75,7 @@ abbrev CartesianClosed (C : Type u) [Category.{v} C] [HasFiniteProducts C] :=
   MonoidalClosed C
 #align category_theory.cartesian_closed CategoryTheory.CartesianClosed
 
--- porting note: added to ease the port of `CategoryTheory.Closed.Types`
+-- Porting note: added to ease the port of `CategoryTheory.Closed.Types`
 /-- Constructor for `CartesianClosed C`. -/
 def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
     (h : ∀ X, IsLeftAdjoint (@MonoidalCategory.tensorLeft _ _
@@ -84,7 +84,6 @@ def CartesianClosed.mk (C : Type u) [Category.{v} C] [HasFiniteProducts C]
   ⟨fun X => ⟨h X⟩⟩
 
 variable {C : Type u} [Category.{v} C] (A B : C) {X X' Y Y' Z : C}
-
 variable [HasFiniteProducts C] [Exponentiable A]
 
 /-- This is (-)^A. -/
@@ -109,7 +108,7 @@ abbrev coev : 𝟭 C ⟶ prod.functor.obj A ⋙ exp A :=
   ihom.coev A
 #align category_theory.exp.coev CategoryTheory.exp.coev
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms obtained using an exponentiable object. -/
 notation:20 A " ⟹ " B:19 => (exp A).obj B
@@ -117,7 +116,7 @@ notation:20 A " ⟹ " B:19 => (exp A).obj B
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Delaborator for `Prefunctor.obj` -/
 @[delab app.Prefunctor.obj]
-def delabPrefunctorObjExp : Delab := do
+def delabPrefunctorObjExp : Delab := whenPPOption getPPNotation <| withOverApp 6 <| do
   let e ← getExpr
   guard <| e.isAppOfArity' ``Prefunctor.obj 6
   let A ← withNaryArg 4 do
@@ -130,7 +129,7 @@ def delabPrefunctorObjExp : Delab := do
   let B ← withNaryArg 5 delab
   `($A ⟹ $B)
 
--- porting note: notation fails to elaborate with `quotPrecheck` on.
+-- Porting note: notation fails to elaborate with `quotPrecheck` on.
 set_option quotPrecheck false in
 /-- Morphisms from an exponentiable object. -/
 notation:30 B " ^^ " A:30 => (exp A).obj B
@@ -140,7 +139,7 @@ theorem ev_coev : Limits.prod.map (𝟙 A) ((coev A).app B) ≫ (ev A).app (A �
   ihom.ev_coev A B
 #align category_theory.exp.ev_coev CategoryTheory.exp.ev_coev
 
-@[simp, reassoc]
+@[reassoc]
 theorem coev_ev : (coev A).app (A ⟹ B) ≫ (exp A).map ((ev A).app B) = 𝟙 (A ⟹ B) :=
   ihom.coev_ev A B
 #align category_theory.exp.coev_ev CategoryTheory.exp.coev_ev
@@ -212,12 +211,12 @@ theorem curry_uncurry (f : X ⟶ A ⟹ Y) : curry (uncurry f) = f :=
   (Closed.isAdj.adj.homEquiv _ _).right_inv f
 #align category_theory.cartesian_closed.curry_uncurry CategoryTheory.CartesianClosed.curry_uncurry
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem curry_eq_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : curry f = g ↔ f = uncurry g :=
   Adjunction.homEquiv_apply_eq (exp.adjunction A) f g
 #align category_theory.cartesian_closed.curry_eq_iff CategoryTheory.CartesianClosed.curry_eq_iff
 
--- porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
+-- Porting note: extra `(exp.adjunction A)` argument was needed for elaboration to succeed.
 theorem eq_curry_iff (f : A ⨯ Y ⟶ X) (g : Y ⟶ A ⟹ X) : g = curry f ↔ uncurry g = f :=
   Adjunction.eq_homEquiv_apply (exp.adjunction A) f g
 #align category_theory.cartesian_closed.eq_curry_iff CategoryTheory.CartesianClosed.eq_curry_iff
@@ -341,7 +340,6 @@ def powZero {I : C} (t : IsInitial I) [CartesianClosed C] : I ⟹ B ≅ ⊤_ C w
   hom := default
   inv := CartesianClosed.curry ((mulZero t).hom ≫ t.to _)
   hom_inv_id := by
-    -- Porting note: mathport thought that the `mulZero` here was `mul_zero`!
     rw [← curry_natural_left, curry_eq_iff, ← cancel_epi (mulZero t).inv]
     apply t.hom_ext
 #align category_theory.pow_zero CategoryTheory.powZero
@@ -433,7 +431,6 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
             change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
             apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          skip
           apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 

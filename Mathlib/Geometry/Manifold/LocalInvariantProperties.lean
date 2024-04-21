@@ -47,16 +47,14 @@ in the one for `LiftPropWithinAt`.
 
 noncomputable section
 
-open Classical Manifold Topology
+open scoped Classical
+open Manifold Topology
 
 open Set Filter TopologicalSpace
 
 variable {H M H' M' X : Type*}
-
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-
 variable [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
-
 variable [TopologicalSpace X]
 
 namespace StructureGroupoid
@@ -77,7 +75,6 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
 #align structure_groupoid.local_invariant_prop StructureGroupoid.LocalInvariantProp
 
 variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
-
 variable (hG : G.LocalInvariantProp G' P)
 
 namespace LocalInvariantProp
@@ -649,7 +646,7 @@ theorem _root_.PartialHomeomorph.isLocalStructomorphWithinAt_iff {G : StructureG
     obtain ⟨e, he, hfe, hxe⟩ := hf h2x
     refine' ⟨e.restr f.source, closedUnderRestriction' he f.open_source, _, _, hxe, _⟩
     · simp_rw [PartialHomeomorph.restr_source]
-      refine' (inter_subset_right _ _).trans interior_subset
+      exact (inter_subset_right _ _).trans interior_subset
     · intro x' hx'
       exact hfe ⟨hx'.1, hx'.2.1⟩
     · rw [f.open_source.interior_eq]
