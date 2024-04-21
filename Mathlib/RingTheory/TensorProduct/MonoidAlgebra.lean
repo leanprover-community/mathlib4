@@ -159,7 +159,7 @@ theorem ringHom_id :
   ext x <;> simp
 
 theorem ringHom_comp [Semiring M] (f : M →+* N) (e : N →+* P) :
-  ((ringHom e).comp (ringHom f) : MonoidAlgebra M α →+* MonoidAlgebra P α)
+    ((ringHom e).comp (ringHom f) : MonoidAlgebra M α →+* MonoidAlgebra P α)
     = ringHom (e.comp f) := by
   ext x <;> simp
 
