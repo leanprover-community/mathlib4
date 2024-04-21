@@ -272,7 +272,7 @@ protected theorem norm_ne_zero_iff {x : E K} :
     Finset.prod_ne_zero_iff, Finset.mem_univ, forall_true_left, pow_ne_zero_iff two_ne_zero,
     norm_ne_zero_iff]
 
-theorem norm_const (c : ℝ) :
+theorem norm_real (c : ℝ) :
     mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
   simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
     Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
@@ -280,14 +280,14 @@ theorem norm_const (c : ℝ) :
 
 theorem norm_smul (c : ℝ) (x : E K) :
     mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
-  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_const]
+  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
 
 @[simp]
 theorem norm_eq_norm (x : K) :
     mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
   simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
     MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
-    norm_embedding_eq_of_isReal]
+    norm_embedding_of_isReal]
   rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
   congr 1
   · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
