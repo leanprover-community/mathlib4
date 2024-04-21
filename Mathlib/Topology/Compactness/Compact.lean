@@ -613,19 +613,16 @@ theorem cocompact_eq_cofinite (X : Type*) [TopologicalSpace X] [DiscreteTopology
 #align filter.cocompact_eq_cofinite Filter.cocompact_eq_cofinite
 
 /-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
-theorem disjoint_cocompact_iff (f : Filter X) :
-    Disjoint f (Filter.cocompact X) ↔ ∃ K : Set X, IsCompact K ∧ K ∈ f := by
-  constructor
-  · intro h
-    obtain ⟨s, hs, t, ht, hst⟩ := Filter.disjoint_iff.mp h
-    obtain ⟨K, hK, hKt⟩ := Filter.mem_cocompact.mp ht
-    use K, hK
-    filter_upwards [hs]
-    rintro x hx
-    exact Set.not_mem_compl_iff.mp (hKt.mt (Set.disjoint_left.mp hst hx))
-  · rintro ⟨K, hK, hKf⟩
-    apply Filter.disjoint_iff.mpr
-    use K, hKf, Kᶜ, hK.compl_mem_cocompact, disjoint_compl_right
+theorem disjoint_cocompact_left (f : Filter X) :
+    Disjoint (Filter.cocompact X) f ↔ ∃ K ∈ f, IsCompact K := by
+  simp_rw [hasBasis_cocompact.disjoint_iff_left, compl_compl]
+  tauto
+
+/-- A filter is disjoint from the cocompact filter if and only if it contains a compact set. -/
+theorem disjoint_cocompact_right (f : Filter X) :
+    Disjoint f (Filter.cocompact X) ↔ ∃ K ∈ f, IsCompact K := by
+  simp_rw [hasBasis_cocompact.disjoint_iff_right, compl_compl]
+  tauto
 
 -- deprecated on 2024-02-07: see `cocompact_eq_atTop` with `import Mathlib.Topology.Instances.Nat`
 @[deprecated] theorem _root_.Nat.cocompact_eq : cocompact ℕ = atTop :=
@@ -741,7 +738,7 @@ theorem IsCompact.nhdsSet_prod_eq {t : Set Y} (hs : IsCompact s) (ht : IsCompact
 theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
     (hf : Disjoint f (Filter.cocompact Y)) :
     𝓝ˢ s ×ˢ f ≤ 𝓝ˢ (s ×ˢ Set.univ) := by
-  obtain ⟨K, hK, hKf⟩ := (disjoint_cocompact_iff f).mp hf
+  obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
   calc
     𝓝ˢ s ×ˢ f
     _ ≤ 𝓝ˢ s ×ˢ 𝓟 K        := Filter.prod_mono_right _ (Filter.le_principal_iff.mpr hKf)
@@ -752,7 +749,7 @@ theorem nhdsSet_prod_le_of_disjoint_cocompact {f : Filter Y} (hs : IsCompact s)
 theorem prod_nhdsSet_le_of_disjoint_cocompact {f : Filter X} (ht : IsCompact t)
     (hf : Disjoint f (Filter.cocompact X)) :
     f ×ˢ 𝓝ˢ t ≤ 𝓝ˢ (Set.univ ×ˢ t) := by
-  obtain ⟨K, hK, hKf⟩ := (disjoint_cocompact_iff f).mp hf
+  obtain ⟨K, hKf, hK⟩ := (disjoint_cocompact_right f).mp hf
   calc
     f ×ˢ 𝓝ˢ t
     _ ≤ (𝓟 K) ×ˢ 𝓝ˢ t      := Filter.prod_mono_left _ (Filter.le_principal_iff.mpr hKf)
