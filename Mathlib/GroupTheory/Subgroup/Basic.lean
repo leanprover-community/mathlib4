@@ -1897,8 +1897,8 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
     simp only [eq_bot_iff_forall]
     constructor
     · intro h i x hx
-      have : MonoidHom.single f i x = 1 :=
-        h (MonoidHom.single f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
+      have : MonoidHom.mulSingle f i x = 1 :=
+        h (MonoidHom.mulSingle f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
       simpa using congr_fun this i
     · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
 #align subgroup.pi_eq_bot_iff Subgroup.pi_eq_bot_iff
