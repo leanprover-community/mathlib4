@@ -135,7 +135,8 @@ variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
 @[pp_dot]
 noncomputable def sqrt : Matrix n n 𝕜 :=
-  hA.1.eigenvectorMatrix * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) * hA.1.eigenvectorMatrixᴴ
+  hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
+  hA.1.eigenvectorUnitaryᴴ
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
@@ -162,23 +163,22 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
-  let C := hA.1.eigenvectorMatrix
+  let C := hA.1.eigenvectorUnitary.1
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
   suffices C * (E * (Cᴴ * C) * E) * Cᴴ = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
     change (C * E * Cᴴ) * (C * E * Cᴴ) = A
     simpa only [← mul_assoc] using this
   have : Cᴴ * C = 1 := by
-    rw [Matrix.IsHermitian.conjTranspose_eigenvectorMatrix, mul_eq_one_comm]
-    exact hA.1.eigenvectorMatrix_mul_inv
+    simp only [(hA.1.eigenvectorUnitary.2).1, mul_eq_one_comm]
+    exact (hA.1.eigenvectorUnitary.2).2
   rw [this, mul_one]
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
     refine congr_arg _ (funext fun v ↦ ?_) -- why doesn't "congr with v" work?
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
   rw [this]
-  convert hA.1.spectral_theorem'.symm
-  apply Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
+  convert hA.1.spectral_theorem2.symm
 
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
