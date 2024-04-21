@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Bool.Basic
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -258,7 +258,7 @@ lemma bodd_bit (b n) : bodd (bit b n) = b := by
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
-  <;> exact by decide
+  <;> decide
 #align nat.div2_bit Nat.div2_bit
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k

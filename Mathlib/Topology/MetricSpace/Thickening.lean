@@ -427,7 +427,7 @@ theorem _root_.Disjoint.exists_thickenings (hst : Disjoint s t) (hs : IsCompact 
   refine' (h x hx y hy).not_le _
   calc
     edist x y ≤ edist z x + edist z y := edist_triangle_left _ _ _
-    _ ≤ ↑(r / 2) + ↑(r / 2) := (add_le_add hzx.le hzy.le)
+    _ ≤ ↑(r / 2) + ↑(r / 2) := add_le_add hzx.le hzy.le
     _ = r := by rw [← ENNReal.coe_add, add_halves]
 #align disjoint.exists_thickenings Disjoint.exists_thickenings
 

@@ -890,3 +890,6 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
+    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)

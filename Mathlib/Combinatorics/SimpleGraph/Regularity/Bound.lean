@@ -199,7 +199,7 @@ theorem initialBound_pos : 0 < initialBound ε l :=
 
 theorem hundred_lt_pow_initialBound_mul {ε : ℝ} (hε : 0 < ε) (l : ℕ) :
     100 < ↑4 ^ initialBound ε l * ε ^ 5 := by
-  rw [← rpow_nat_cast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
+  rw [← rpow_natCast 4, ← div_lt_iff (pow_pos hε 5), lt_rpow_iff_log_lt _ zero_lt_four, ←
     div_lt_iff, initialBound, Nat.cast_max, Nat.cast_max]
   · push_cast
     exact lt_max_of_lt_right (lt_max_of_lt_right <| Nat.lt_floor_add_one _)
@@ -254,12 +254,12 @@ theorem add_div_le_sum_sq_div_card (hst : s ⊆ t) (f : ι → 𝕜) (d : 𝕜) 
   apply (add_le_add_left h₃ _).trans
   -- Porting note: was
   -- `simp [← mul_div_right_comm _ (t.card : 𝕜), sub_div' _ _ _ htcard.ne', ← sum_div, ← add_div,`
-  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero _ htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
+  -- `  mul_pow, div_le_iff (sq_pos_of_ne_zero htcard.ne'), sub_sq, sum_add_distrib, ← sum_mul,`
   -- `  ← mul_sum]`
   simp_rw [sub_div' _ _ _ htcard.ne']
   conv_lhs => enter [2, 2, x]; rw [div_pow]
   rw [div_pow, ← sum_div, ← mul_div_right_comm _ (t.card : 𝕜), ← add_div,
-    div_le_iff (sq_pos_of_ne_zero _ htcard.ne')]
+    div_le_iff (sq_pos_of_ne_zero htcard.ne')]
   simp_rw [sub_sq, sum_add_distrib, sum_const, nsmul_eq_mul, sum_sub_distrib, mul_pow, ← sum_mul,
     ← mul_sum, ← sum_mul]
   ring_nf; rfl

@@ -64,7 +64,7 @@ def extendFanIsLimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Fan fun i : Fin n
     apply (BinaryFan.IsLimit.lift' t₂ (s.π.app ⟨0⟩) _).1
     apply t₁.lift ⟨_, Discrete.natTrans fun ⟨i⟩ => s.π.app ⟨i.succ⟩⟩
   fac := fun s ⟨j⟩ => by
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryFan.IsLimit.lift' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendFan_π_app]
@@ -142,7 +142,7 @@ noncomputable def preservesFinOfPreservesBinaryAndTerminal :
     apply Cones.ext _ _
     apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (Category.id_comp _).symm
     · rintro i _
       dsimp [extendFan_π_app, Iso.refl_hom, Fan.mk_π_app]
@@ -202,7 +202,7 @@ def extendCofanIsColimit {n : ℕ} (f : Fin (n + 1) → C) {c₁ : Cofan fun i :
     apply t₁.desc ⟨_, Discrete.natTrans fun i => s.ι.app ⟨i.as.succ⟩⟩
   fac s := by
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply (BinaryCofan.IsColimit.desc' t₂ _ _).2.1
     · rintro i -
       dsimp only [extendCofan_ι_app]
@@ -282,7 +282,7 @@ noncomputable def preservesFinOfPreservesBinaryAndInitial :
     apply Cocones.ext _ _
     apply Iso.refl _
     rintro ⟨j⟩
-    refine' Fin.inductionOn j ?_ ?_
+    refine Fin.inductionOn j ?_ ?_
     · apply Category.comp_id
     · rintro i _
       dsimp [extendCofan_ι_app, Iso.refl_hom, Cofan.mk_ι_app]
