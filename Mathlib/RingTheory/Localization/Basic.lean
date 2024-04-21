@@ -1096,9 +1096,9 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 #align localization.mk_algebra_map Localization.mk_algebraMap
 
-theorem mk_nat_cast (m : ℕ) : (mk m 1 : Localization M) = m := by
+theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
-#align localization.mk_nat_cast Localization.mk_nat_cast
+#align localization.mk_nat_cast Localization.mk_natCast
 
 variable [IsLocalization M S]
 
@@ -1209,13 +1209,13 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
   calc
     mk a b - mk c d = mk a b + -mk c d := sub_eq_add_neg _ _
     _ = mk a b + mk (-c) d := by rw [neg_mk]
-    _ = mk (b * -c + d * a) (b * d) := (add_mk _ _ _ _)
+    _ = mk (b * -c + d * a) (b * d) := add_mk _ _ _ _
     _ = mk (d * a - b * c) (b * d) := by congr; ring
 #align localization.sub_mk Localization.sub_mk
 
-theorem mk_int_cast (m : ℤ) : (mk m 1 : Localization M) = m := by
+theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-#align localization.mk_int_cast Localization.mk_int_cast
+#align localization.mk_int_cast Localization.mk_intCast
 
 end Localization
 
