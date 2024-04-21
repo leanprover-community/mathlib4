@@ -133,6 +133,25 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
   transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
     fun t n' => t + ((instructions.find? n').getD 0)
 
+/--
+Takes a 2d array of string data and renders it into a table.
+ -/
+def formatTable (headers : Array String) (table : Array (Array String)) : String := Id.run do
+  -- Get the maximum widths of each column
+  let mut widths := headers.map (·.length)
+  for row in table do
+    for i in [0:widths.size] do
+      widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
+  -- Pad each cell with spaces to match the column width
+  let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
+  let paddedTable := table.map fun row => row.mapIdx fun i cell => cell.rightpad widths[i]!
+  -- Construct the lines of the table
+  let headerLine := String.intercalate " | " (paddedHeaders.toList)
+  let separatorLine := String.intercalate "-+-" ((widths.map (String.replicate · '-')).toList)
+  let rowLines := paddedTable.map (fun row => String.intercalate " | " (row.toList))
+  -- Return the table
+  return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)
+
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -158,13 +177,14 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let r := match r.split (· = '.') with
       | [a, b] => a ++ "." ++ b.take 2
       | _ => r
-      table := table.push (n.get!, i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
+      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
       n := slowest.find? n.get!
-    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
-    IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
-    for (name, inst, cumu, speedup) in table do
-      IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
+    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table)
+    -- let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
+    -- IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
+    -- IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
+    -- for (name, inst, cumu, speedup) in table do
+    --   IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
