@@ -869,10 +869,10 @@ we will get this for free when we prove that `𝒱(α, β, 𝔖, uβ) = 𝒱(α,
 protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α}
     (hf : MapsTo (f '' ·) 𝔗 𝔖) :
     UniformContinuous fun g : α →ᵤ[𝔖] β => ofFun 𝔗 (toFun 𝔖 g ∘ f) := by
-  simp_rw [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf, tendsto_principal]
-  refine fun t ht V hV ↦ Eventually.filter_mono (biInf_le _ (hf ht)) ?_
-  refine Eventually.filter_mono (biInf_le _ hV) (eventually_principal.2 ?_)
-  exact fun _ ↦ forall_mem_image.1
+  simp_rw [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf]
+  refine fun t ht V hV ↦ tendsto_iInf' (f '' t) <| tendsto_iInf' (hf ht) <|
+    tendsto_iInf' V <| tendsto_iInf' hV ?_
+  simpa only [tendsto_principal_principal, UniformOnFun.gen] using fun _ ↦ forall_mem_image.1
 #align uniform_on_fun.precomp_uniform_continuous UniformOnFun.precomp_uniformContinuous
 
 /-- Turn a bijection `e : γ ≃ α` such that we have both `∀ T ∈ 𝔗, e '' T ∈ 𝔖` and
