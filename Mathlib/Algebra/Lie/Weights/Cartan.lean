@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.CartanSubalgebra
-import Mathlib.Algebra.Lie.Character
 import Mathlib.Algebra.Lie.Weights.Basic
 
 /-!
@@ -19,9 +18,8 @@ Basic definitions and properties of the above ideas are provided in this file.
 
 ## Main definitions
 
-  * `LieModule.IsWeight`
   * `LieAlgebra.rootSpace`
-  * `LieAlgebra.IsRoot`
+  * `LieAlgebra.corootSpace`
   * `LieAlgebra.rootSpaceWeightSpaceProduct`
   * `LieAlgebra.rootSpaceProduct`
   * `LieAlgebra.zeroRootSubalgebra_eq_iff_is_cartan`
@@ -35,28 +33,6 @@ open Set
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L]
   (H : LieSubalgebra R L) [LieAlgebra.IsNilpotent R H]
   {M : Type*} [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
-namespace LieModule
-
-open LieAlgebra TensorProduct TensorProduct.LieModule
-open scoped BigOperators TensorProduct
-
-variable (M)
-
-/-- Given a Lie module `M` of a Lie algebra `L`, a weight of `M` with respect to a nilpotent
-subalgebra `H ⊆ L` is a Lie character whose corresponding weight space is non-empty. -/
-def IsWeight (χ : LieCharacter R H) : Prop :=
-  weightSpace M χ ≠ ⊥
-#align lie_module.is_weight LieModule.IsWeight
-
-/-- For a non-trivial nilpotent Lie module over a nilpotent Lie algebra, the zero character is a
-weight with respect to the `⊤` Lie subalgebra. -/
-theorem isWeight_zero_of_nilpotent [Nontrivial M] [LieAlgebra.IsNilpotent R L] [IsNilpotent R L M] :
-    IsWeight (⊤ : LieSubalgebra R L) M 0 := by
-  rw [IsWeight, LieHom.coe_zero, zero_weightSpace_eq_top_of_nilpotent]; exact top_ne_bot
-#align lie_module.is_weight_zero_of_nilpotent LieModule.isWeight_zero_of_nilpotent
-
-end LieModule
 
 namespace LieAlgebra
 
@@ -73,12 +49,6 @@ theorem zero_rootSpace_eq_top_of_nilpotent [IsNilpotent R L] :
     rootSpace (⊤ : LieSubalgebra R L) 0 = ⊤ :=
   zero_weightSpace_eq_top_of_nilpotent L
 #align lie_algebra.zero_root_space_eq_top_of_nilpotent LieAlgebra.zero_rootSpace_eq_top_of_nilpotent
-
-/-- A root of a Lie algebra `L` with respect to a nilpotent subalgebra `H ⊆ L` is a weight of `L`,
-regarded as a module of `H` via the adjoint action. -/
-abbrev IsRoot (χ : LieCharacter R H) :=
-  χ ≠ 0 ∧ IsWeight H L χ
-#align lie_algebra.is_root LieAlgebra.IsRoot
 
 @[simp]
 theorem rootSpace_comap_eq_weightSpace (χ : H → R) :
@@ -276,33 +246,51 @@ theorem rootSpace_zero_eq (H : LieSubalgebra R L) [H.IsCartanSubalgebra] [IsNoet
 variable {R L H}
 variable [H.IsCartanSubalgebra] [IsNoetherian R L] (α : H → R)
 
-/-- Given a root `α`, the Lie bracket restricted to the product of the root space of `α` and `-α`
-takes value in the Cartan subalgebra.
+/-- Given a root `α` relative to a Cartan subalgebra `H`, this is the span of all products of
+an element of the `α` root space and an element of the `-α` root space. Informally it is often
+denoted `⁅H(α), H(-α)⁆`.
 
-When `L` is semisimple, the image of this map is one-dimensional and is spanned by the corresponding
-coroot. -/
-def rootSpaceProductNegSelf : rootSpace H α ⊗[R] rootSpace H (-α) →ₗ⁅R,H⁆ H :=
-  ((rootSpace H 0).incl.comp <| rootSpaceProduct R L H α (-α) 0 (add_neg_self α)).codRestrict
-    H.toLieSubmodule (by
+When `L` is semisimple over a field of characteristic zero, it is spanned by the coroot
+corresponding to `α`, see `LieAlgebra.IsKilling.coe_corootSpace_eq_span_singleton`.
+
+Note that the name "coroot space" is not standard as this space does not seem to have a name in the
+informal literature. -/
+def corootSpace : LieIdeal R H :=
+  LieModuleHom.range <| ((rootSpace H 0).incl.comp <|
+    rootSpaceProduct R L H α (-α) 0 (add_neg_self α)).codRestrict H.toLieSubmodule (by
   rw [← rootSpace_zero_eq]
   exact fun p ↦ (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) p).property)
 
-@[simp]
-lemma coe_rootSpaceProductNegSelf_apply (x : rootSpace H α) (y : rootSpace H (-α)) :
-    (rootSpaceProductNegSelf α (x ⊗ₜ y) : L) = ⁅(x : L), (y : L)⁆ :=
-  rfl
-
-lemma mem_range_rootSpaceProductNegSelf {x : H} :
-    x ∈ (rootSpaceProductNegSelf α).range ↔
+lemma mem_corootSpace {x : H} :
+    x ∈ corootSpace α ↔
     (x : L) ∈ Submodule.span R {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} := by
-  have : x ∈ (rootSpaceProductNegSelf α).range ↔
-      (x : L) ∈ (rootSpaceProductNegSelf α).range.map H.toLieSubmodule.incl := by
+  have : x ∈ corootSpace α ↔
+      (x : L) ∈ LieSubmodule.map H.toLieSubmodule.incl (corootSpace α) := by
+    rw [corootSpace]
     simpa using exists_congr fun _ ↦ H.toLieSubmodule.injective_incl.eq_iff.symm
-  simp_rw [this, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
+  simp_rw [this, corootSpace, ← LieModuleHom.map_top, ← LieSubmodule.mem_coeSubmodule,
     LieSubmodule.coeSubmodule_map, LieSubmodule.top_coeSubmodule, ← TensorProduct.span_tmul_eq_top,
     LinearMap.map_span, Set.image, Set.mem_setOf_eq, exists_exists_exists_and_eq]
   change (x : L) ∈ Submodule.span R
     {x | ∃ (a : rootSpace H α) (b : rootSpace H (-α)), ⁅(a : L), (b : L)⁆ = x} ↔ _
   simp
+
+lemma mem_corootSpace' {x : H} :
+    x ∈ corootSpace α ↔
+    x ∈ Submodule.span R ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H) := by
+  set s : Set H := ({⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} : Set H)
+  suffices H.subtype '' s = {⁅y, z⁆ | (y ∈ rootSpace H α) (z ∈ rootSpace H (-α))} by
+    obtain ⟨x, hx⟩ := x
+    erw [← (H : Submodule R L).injective_subtype.mem_set_image (s := Submodule.span R s)]
+    change _ ↔ x ∈ (Submodule.span R s).map H.subtype
+    rw [Submodule.map_span, mem_corootSpace, ← this]
+    rfl
+  ext u
+  simp only [Submodule.coeSubtype, mem_image, Subtype.exists, LieSubalgebra.mem_coe_submodule,
+    exists_and_right, exists_eq_right, mem_setOf_eq, s]
+  refine ⟨fun ⟨_, y, hy, z, hz, hyz⟩ ↦ ⟨y, hy, z, hz, hyz⟩,
+    fun ⟨y, hy, z, hz, hyz⟩ ↦ ⟨?_, y, hy, z, hz, hyz⟩⟩
+  convert (rootSpaceProduct R L H α (-α) 0 (add_neg_self α) (⟨y, hy⟩ ⊗ₜ[R] ⟨z, hz⟩)).property
+  simp [hyz]
 
 end LieAlgebra
