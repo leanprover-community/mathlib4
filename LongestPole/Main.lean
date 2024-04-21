@@ -110,9 +110,9 @@ where
     if m.contains n then
       m
     else
-      let parents := (graph.find? n).getD #[]
+      let parents := graph.find! n
       let m := parents.foldr (init := m) fun n' m => go n' m
-      let t := (parents.map fun n' => (m.find? n').getD 0).foldr max 0
+      let t := (parents.map fun n' => (m.find! n')).foldr max 0
       m.insert n ((instructions.find? n).getD 0 + t)
 
 def slowestParents (cumulative : NameMap Float) (graph : NameMap (Array Name)) :
@@ -123,7 +123,7 @@ def slowestParents (cumulative : NameMap Float) (graph : NameMap (Array Name)) :
     | h :: t => Id.run do
       let mut r := h
       for n' in t do
-        if (cumulative.find? n').getD 0 > (cumulative.find? r).getD 0 then
+        if cumulative.find! n' > cumulative.find! r then
           r := n'
       return m.insert n r
 
@@ -132,12 +132,6 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
   let transitive := graph.transitiveClosure
   transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
     fun t n' => t + ((instructions.find? n').getD 0)
-
-def String.rightPad (s : String) (n : Nat) (c : Char := ' ') : String :=
-  s ++ String.replicate (n - s.length) c
-
-def String.leftPad (s : String) (n : Nat) (c : Char := ' ') : String :=
-  String.replicate (n - s.length) c ++ s
 
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
@@ -167,10 +161,10 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       table := table.push (n.get!, i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
       n := slowest.find? n.get!
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightPad widest} | instructions | (cumulative) | parallelism"
-    IO.println s!"{"".rightPad widest '-'} | ------------ | ------------ | -----------"
+    IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
+    IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
     for (name, inst, cumu, speedup) in table do
-      IO.println s!"{name.toString.rightPad widest} | {(toString inst).leftPad 12} | {(toString cumu).leftPad 12} | x{speedup}"
+      IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
