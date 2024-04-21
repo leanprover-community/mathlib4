@@ -110,7 +110,7 @@ theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedFi
     · refine ⟨i, mem_univ _, sum_pos' (fun k _ ↦ ?_) ⟨j, mem_univ _, ?_⟩⟩
       · exact ite_nonneg (sq_nonneg _) le_rfl
       · simpa only [hn, ite_true, gt_iff_lt, sub_pos] using
-          sq_pos_of_ne_zero _ (sub_ne_zero.mpr hn.2)
+          sq_pos_of_ne_zero (sub_ne_zero.mpr hn.2)
   · intro h
     rw [lapMatrix_toLinearMap₂', div_eq_zero_iff]
     refine Or.inl <| sum_eq_zero fun i _ ↦ (sum_eq_zero fun j _ ↦ ?_)

@@ -478,16 +478,10 @@ theorem finSuccEquiv_support' {f : MvPolynomial (Fin (n + 1)) R} {i : ℕ} :
     simp [h.1]
 #align mv_polynomial.fin_succ_equiv_support' MvPolynomial.finSuccEquiv_support'
 
+-- TODO: generalize `finSuccEquiv R n` to an arbitrary ZeroHom
 theorem support_finSuccEquiv_nonempty {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
     (finSuccEquiv R n f).support.Nonempty := by
-  simp only [Finset.nonempty_iff_ne_empty, Ne, Polynomial.support_eq_empty]
-  refine fun c => h ?_
-  let ii := (finSuccEquiv R n).symm
-  calc
-    f = ii (finSuccEquiv R n f) := by
-      simpa only [← AlgEquiv.invFun_eq_symm] using ((finSuccEquiv R n).left_inv f).symm
-    _ = ii 0 := by rw [c]
-    _ = 0 := by simp
+  rwa [Polynomial.support_nonempty, AddEquivClass.map_ne_zero_iff]
 #align mv_polynomial.support_fin_succ_equiv_nonempty MvPolynomial.support_finSuccEquiv_nonempty
 
 theorem degree_finSuccEquiv {f : MvPolynomial (Fin (n + 1)) R} (h : f ≠ 0) :
