@@ -327,7 +327,7 @@ local notation "R₀" => RingOfDefinition S
 
 local notation "A" => MvPolynomial ι R ⧸ I
 
-def RingOfDefinition.Set : Set (MvPolynomial ι R₀) :=
+protected def RingOfDefinition.Set : Set (MvPolynomial ι R₀) :=
   MvPolynomial.map (SubringClass.subtype R₀) ⁻¹' S
 
 local notation "S₀" => RingOfDefinition.Set S
