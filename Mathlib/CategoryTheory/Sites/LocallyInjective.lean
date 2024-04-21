@@ -79,6 +79,14 @@ instance isLocallyInjective_forget [IsLocallyInjective J φ] :
     IsLocallyInjective J (whiskerRight φ (forget D)) where
   equalizerSieve_mem x y h := equalizerSieve_mem J φ x y h
 
+lemma isLocallyInjective_forget_iff :
+    IsLocallyInjective J (whiskerRight φ (forget D)) ↔ IsLocallyInjective J φ := by
+  constructor
+  · intro
+    exact ⟨fun x y h => equalizerSieve_mem J (whiskerRight φ (forget D)) x y h⟩
+  · intro
+    infer_instance
+
 instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J ψ] :
     IsLocallyInjective J (φ ≫ ψ) where
   equalizerSieve_mem {X} x y h := by
