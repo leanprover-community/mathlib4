@@ -20,22 +20,11 @@ the spectral theorem for linear maps (`LinearMap.IsSymmetric.eigenvectorBasis_ap
 spectral theorem, diagonalization theorem
 
 -/
-
-namespace Matrix
-
-variable {m n : Type*} {𝕜 : Type*} [RCLike 𝕜] [Fintype n]
-         {A : Matrix n n 𝕜}
-
-open scoped BigOperators
-namespace IsHermitian
-
-section DecidableEq
-
-variable [DecidableEq n]
-
 section RankMulUnitaryTheorems
 
-variable {R : Type*}[CommRing R] [StarRing R]
+variable {m n R : Type*} {𝕜 : Type*} [RCLike 𝕜] [Fintype n]
+         {A : Matrix n n 𝕜} [CommRing R] [StarRing R][DecidableEq n]
+namespace Matrix
 
 @[simp]
 theorem rank_unitary_mul (A : unitaryGroup n R) (B : Matrix m n R) :
@@ -47,7 +36,20 @@ theorem rank_mul_unitary [Fintype m] (A : unitaryGroup n R)
     (B : Matrix n m R) : rank ((A : Matrix n n R) * B) = rank B :=
   rank_units_mul (unitary.toUnits A) _
 
+end Matrix
+
 end RankMulUnitaryTheorems
+namespace Matrix
+
+variable {m n : Type*} {𝕜 : Type*} [RCLike 𝕜] [Fintype n]
+         {A : Matrix n n 𝕜}
+
+open scoped BigOperators
+namespace IsHermitian
+
+section DecidableEq
+
+variable [DecidableEq n]
 
 variable (hA : A.IsHermitian)
 
