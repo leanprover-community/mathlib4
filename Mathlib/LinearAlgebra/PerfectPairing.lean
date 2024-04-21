@@ -60,42 +60,44 @@ protected def flip : PerfectPairing R N M where
 @[simp] lemma flip_flip : p.flip.flip = p := rfl
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
-@[simps]
-noncomputable def toDualLeft : M ≃ₗ[R] Dual R N where
-  toFun := p.toLin
-  map_add' := LinearMap.map_add p.toLin
-  map_smul' := LinearMapClass.map_smul p.toLin
-  invFun f := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose f
-  left_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.1
-  right_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.2
+noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
+  LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
-theorem toDualLeft_invFun (f : Dual R N) (x : N) : p.toLin (p.toDualLeft.invFun f) x = f x := by
-  have h := p.toDualLeft.right_inv
-  rw [rightInverse_iff_comp, funext_iff] at h
-  specialize h f
-  simp_all
+@[simp]
+theorem toDualLeft_apply (a : M) : p.toDualLeft a = p.toLin a :=
+  rfl
+
+@[simp]
+theorem apply_toDualLeft_symm_apply (f : Dual R N) (x : N) : p (p.toDualLeft.symm f) x = f x := by
+  have h := LinearEquiv.apply_symm_apply p.toDualLeft f
+  rw [toDualLeft_apply] at h
+  exact congrFun (congrArg DFunLike.coe h) x
 
 /-- The linear equivalence from `N` to `Dual R M` induced by a perfect pairing. -/
-noncomputable def toDualRight : N ≃ₗ[R] Dual R M := toDualLeft p.flip
+noncomputable def toDualRight : N ≃ₗ[R] Dual R M :=
+  toDualLeft p.flip
 
-theorem toDualRight_InvFun (x : M) (f : Dual R M) : (p.toLin x) (p.toDualRight.invFun f) = f x := by
-  have h := p.toDualRight.right_inv
-  rw [rightInverse_iff_comp, funext_iff] at h
-  specialize h f
-  simp_all [toDualLeft_invFun, toDualRight]
-  rw [LinearMap.ext_iff] at h
-  exact h x
+@[simp]
+theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip.toLin a :=
+  rfl
 
-theorem toDualLeft_of_toDualRightInvFun (x : M) (f : Dual R M) :
-    (p.toDualLeft x) (p.toDualRight.invFun f) = f x := by
+@[simp]
+theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
+    (p x) (p.toDualRight.symm f) = f x := by
+  have h := LinearEquiv.apply_symm_apply p.toDualRight f
+  rw [toDualRight_apply] at h
+  exact congrFun (congrArg DFunLike.coe h) x
+
+theorem toDualLeft_of_toDualRight_symm (x : M) (f : Dual R M) :
+    (p.toDualLeft x) (p.toDualRight.symm f) = f x := by
   rw [@toDualLeft_apply]
-  exact toDualRight_InvFun p x f
+  exact apply_apply_toDualRight_symm p x f
 
 theorem toDualRight_symm_toDualLeft (x : M) :
     p.toDualRight.symm.dualMap (p.toDualLeft x) = Dual.eval R M x := by
   ext f
   simp only [LinearEquiv.dualMap_apply, Dual.eval_apply]
-  exact toDualLeft_of_toDualRightInvFun p x f
+  exact toDualLeft_of_toDualRight_symm p x f
 
 theorem bijective_toDualRight_symm_toDualLeft :
     Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
