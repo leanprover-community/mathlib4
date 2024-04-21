@@ -1540,7 +1540,7 @@ theorem prod_multiset_count_of_subset [DecidableEq α] [CommMonoid α] (m : Mult
 @[to_additive]
 theorem prod_mem_multiset [DecidableEq α] (m : Multiset α) (f : { x // x ∈ m } → β) (g : α → β)
     (hfg : ∀ x, f x = g x) : ∏ x : { x // x ∈ m }, f x = ∏ x in m.toFinset, g x := by
-  refine' prod_bij' (fun x _ ↦ x) (fun x hx ↦ ⟨x, Multiset.mem_toFinset.1 hx⟩) ?_ ?_ ?_ ?_ ?_ <;>
+  refine prod_bij' (fun x _ ↦ x) (fun x hx ↦ ⟨x, Multiset.mem_toFinset.1 hx⟩) ?_ ?_ ?_ ?_ ?_ <;>
     simp [hfg]
 #align finset.prod_mem_multiset Finset.prod_mem_multiset
 #align finset.sum_mem_multiset Finset.sum_mem_multiset

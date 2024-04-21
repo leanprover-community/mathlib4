@@ -49,8 +49,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       true_and_iff, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
-      · dsimp at hxy; linarith [sq_pos_of_ne_zero _ hxy.ne', sq_nonneg y]
-      · linarith [sq_nonneg x, sq_pos_of_ne_zero _ hxy]
+      · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
+      · linarith [sq_nonneg x, sq_pos_of_ne_zero hxy]
     · cases' hxy with hxy hxy
       · exact Or.inl (le_of_lt hxy)
       · exact Or.inr hxy
