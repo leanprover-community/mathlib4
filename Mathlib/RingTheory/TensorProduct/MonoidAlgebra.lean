@@ -263,7 +263,8 @@ lemma rTensorAlgHom_apply_tmul_apply
 
 lemma rTensorAlgHom_apply_single_tmul_apply
     (m : M) (a : α) (n : N) (b : α) :
-    rTensorAlgHom (S := S) (MonoidAlgebra.single a m ⊗ₜ[R] n) b = if a = b then m ⊗ₜ[R] n else 0 := by
+    rTensorAlgHom (S := S) (MonoidAlgebra.single a m ⊗ₜ[R] n) b
+      = if a = b then m ⊗ₜ[R] n else 0 := by
   rw [rTensorAlgHom_apply_tmul_apply, single_apply, ite_tmul]
 
 lemma rTensorAlgHom_toLinearMap :
