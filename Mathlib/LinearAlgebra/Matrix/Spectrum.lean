@@ -39,6 +39,7 @@ theorem rank_mul_unitary [Fintype m] (A : unitaryGroup n R)
 end Matrix
 
 end RankMulUnitaryTheorems
+
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
