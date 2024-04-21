@@ -208,20 +208,8 @@ abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 theorem mem_specialUnitaryGroup_iff {A : Matrix n n α}:
     A ∈ specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1:= by
-  simp only [specialUnitaryGroup]
-  apply Iff.intro
-  · rintro ⟨h1, h2⟩
-    simp_all only [SetLike.mem_coe,
-      unitary.mul_star_self_of_mem,
-      true_and]
-    exact
-      h2
-  · rintro ⟨h1, h2⟩
-    simp_all only [Submonoid.mem_inf, true_and]
-    apply And.intro
-    · apply mem_unitaryGroup_iff.mpr
-      exact h1
-    · exact h2
+  rw [← mem_unitaryGroup_iff]
+  rfl
 
 end specialUnitaryGroup
 
