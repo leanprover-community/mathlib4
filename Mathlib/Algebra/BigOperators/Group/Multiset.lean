@@ -121,6 +121,10 @@ theorem prod_nsmul (m : Multiset α) : ∀ n : ℕ, (n • m).prod = m.prod ^ n
   | n + 1 => by rw [add_nsmul, one_nsmul, pow_add, pow_one, prod_add, prod_nsmul m n]
 #align multiset.prod_nsmul Multiset.prod_nsmul
 
+theorem prod_filter_mul_prod_filter_not (p) [DecidablePred p] :
+    (s.filter p).prod * (s.filter (fun a ↦ ¬ p a)).prod = s.prod := by
+  rw [← prod_add, filter_add_not]
+
 @[to_additive (attr := simp)]
 theorem prod_replicate (n : ℕ) (a : α) : (replicate n a).prod = a ^ n := by
   simp [replicate, List.prod_replicate]
@@ -154,10 +158,6 @@ theorem pow_count [DecidableEq α] (a : α) : a ^ s.count a = (s.filter (Eq a)).
   rw [filter_eq, prod_replicate]
 #align multiset.pow_count Multiset.pow_count
 #align multiset.nsmul_count Multiset.nsmul_count
-
-theorem filter_prod_mul_filter_neg (p) [DecidablePred p] :
-    (s.filter p).prod * (s.filter (fun a ↦ ¬ p a)).prod = s.prod := by
-  rw [← prod_add, filter_add_not]
 
 @[to_additive]
 theorem prod_hom [CommMonoid β] (s : Multiset α) {F : Type*} [FunLike F α β]
