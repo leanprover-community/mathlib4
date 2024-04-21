@@ -72,7 +72,7 @@ theorem Real.integrable_of_summable_norm_Icc {E : Type*} [NormedAddCommGroup E] 
         ⟨x - n, ⟨sub_nonneg.mpr x.2.1, sub_le_iff_le_add'.mpr x.2.2⟩⟩
     simpa only [ContinuousMap.restrict_apply, comp_apply, coe_addRight, Subtype.coe_mk,
       sub_add_cancel] using this
-  · exact iUnion_Icc_int_cast ℝ
+  · exact iUnion_Icc_intCast ℝ
 #align real.integrable_of_summable_norm_Icc Real.integrable_of_summable_norm_Icc
 
 end SummableNormIcc
@@ -92,7 +92,7 @@ theorem integral_comp_neg_Iic {E : Type*} [NormedAddCommGroup E] [NormedSpace �
     (c : ℝ) (f : ℝ → E) : (∫ x in Iic c, f (-x)) = ∫ x in Ioi (-c), f x := by
   have A : MeasurableEmbedding fun x : ℝ => -x :=
     (Homeomorph.neg ℝ).closedEmbedding.measurableEmbedding
-  have := MeasurableEmbedding.set_integral_map (μ := volume) A f (Ici (-c))
+  have := MeasurableEmbedding.setIntegral_map (μ := volume) A f (Ici (-c))
   rw [Measure.map_neg_eq_self (volume : Measure ℝ)] at this
   simp_rw [← integral_Ici_eq_integral_Ioi, this, neg_preimage, preimage_neg_Ici, neg_neg]
 #align integral_comp_neg_Iic integral_comp_neg_Iic
@@ -108,7 +108,7 @@ theorem integral_comp_neg_Ioi {E : Type*} [NormedAddCommGroup E] [NormedSpace �
 theorem integral_comp_abs {f : ℝ → ℝ} :
     ∫ x, f |x| = 2 * ∫ x in Ioi (0:ℝ), f x := by
   have eq : ∫ (x : ℝ) in Ioi 0, f |x| = ∫ (x : ℝ) in Ioi 0, f x := by
-    refine set_integral_congr measurableSet_Ioi (fun _ hx => ?_)
+    refine setIntegral_congr measurableSet_Ioi (fun _ hx => ?_)
     rw [abs_eq_self.mpr (le_of_lt (by exact hx))]
   by_cases hf : IntegrableOn (fun x => f |x|) (Ioi 0)
   · have int_Iic : IntegrableOn (fun x ↦ f |x|) (Iic 0) := by
@@ -125,7 +125,7 @@ theorem integral_comp_abs {f : ℝ → ℝ} :
         rw [two_mul, eq]
         congr! 1
         rw [← neg_zero, ← integral_comp_neg_Iic, neg_zero]
-        refine set_integral_congr measurableSet_Iic (fun _ hx => ?_)
+        refine setIntegral_congr measurableSet_Iic (fun _ hx => ?_)
         rw [abs_eq_neg_self.mpr (by exact hx)]
   · have : ¬ Integrable (fun x => f |x|) := by
       contrapose! hf
