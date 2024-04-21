@@ -17,7 +17,7 @@ This file establishes that all derivations of finite-dimensional Killing Lie alg
 - `LieDerivation.ad_mem_orthogonal_of_mem_orthogonal`: if a derivation `D` is in the Killing
 orthogonal of the range of the adjoint action, then, for any `x : L`, `ad (D x)` is also in this
 orthogonal.
-- `LieDerivation.Killing.rangeAd_eq_top`: in a finite-dimensional Lie algebra with non-degenerate
+- `LieDerivation.Killing.range_ad_eq_top`: in a finite-dimensional Lie algebra with non-degenerate
 Killing form, the range of the adjoint action is full,
 - `LieDerivation.Killing.exists_eq_ad`: in a finite-dimensional Lie algebra with non-degenerate
 Killing form, any derivation is an inner derivation.
