@@ -451,6 +451,13 @@ theorem toDual_def {B : BilinForm K V} (b : B.SeparatingLeft) {m n : V} : B.toDu
   rfl
 #align bilin_form.to_dual_def LinearMap.BilinForm.toDual_def
 
+@[simp]
+lemma apply_toDual_symm_apply {B : BilinForm K V} {hB : B.Nondegenerate}
+    (f : Module.Dual K V) (v : V) :
+    B ((B.toDual hB).symm f) v = f v := by
+  change B.toDual hB ((B.toDual hB).symm f) v = f v
+  simp only [LinearEquiv.apply_symm_apply]
+
 lemma Nondegenerate.flip {B : BilinForm K V} (hB : B.Nondegenerate) :
     B.flip.Nondegenerate := by
   intro x hx

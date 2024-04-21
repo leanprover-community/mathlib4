@@ -273,7 +273,7 @@ alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 
 section Semiring
 
-variable [Semiring α] [Semiring β] {a b : α}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 theorem even_iff_exists_two_mul (a : α) : Even a ↔ ∃ b, a = 2 * b := by
   simp [even_iff_exists_two_nsmul]
@@ -422,6 +422,21 @@ theorem Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
     exact (Odd.pow ha).mul ha
 #align odd.pow Odd.pow
 
+lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
+    a ^ n + b ^ n = 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  induction' k with k ih
+  · simpa
+  have : a ^ 2 = b ^ 2 := add_right_cancel $
+    calc
+      a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
+      _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
+  refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) ?_
+  calc
+    _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
+      rw [add_mul, ← pow_add, add_right_comm]; rfl
+    _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
+
 end WithOdd
 
 end Semiring
@@ -510,41 +525,52 @@ end Ring
 
 section Powers
 
-set_option linter.deprecated false
+/-!
+### Lemmas for canonically linear ordered semirings or linear ordered rings
 
-variable [LinearOrderedRing R] {a : R} {n : ℕ}
+The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+more familiar settings:
+* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+  `ℚ≥0` or `ℝ≥0`
+-/
+
+section LinearOrderedSemiring
+variable [LinearOrderedSemiring R] [ExistsAddOfLE R] {a b : R} {n : ℕ}
 
 theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_nonneg a k
+  obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
 #align even.pow_nonneg Even.pow_nonneg
 
-theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_pos ha k
+theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n :=
+  (hn.pow_nonneg _).lt_of_ne' (pow_ne_zero _ ha)
 #align even.pow_pos Even.pow_pos
 
-theorem Odd.pow_nonpos (hn : Odd n) (ha : a ≤ 0) : a ^ n ≤ 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
-#align odd.pow_nonpos Odd.pow_nonpos
-
-theorem Odd.pow_neg (hn : Odd n) (ha : a < 0) : a ^ n < 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
-#align odd.pow_neg Odd.pow_neg
+theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 := by
+  refine ⟨lt_imp_lt_of_le_imp_le (pow_nonneg · _), fun ha ↦ ?_⟩
+  obtain ⟨k, rfl⟩ := hn
+  rw [pow_succ]
+  exact mul_neg_of_pos_of_neg ((even_two_mul _).pow_pos ha.ne) ha
+#align odd.pow_neg_iff Odd.pow_neg_iff
 
 theorem Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
-  ⟨fun h => le_of_not_lt fun ha => h.not_lt <| hn.pow_neg ha, fun ha => pow_nonneg ha n⟩
+  le_iff_le_iff_lt_iff_lt.2 hn.pow_neg_iff
 #align odd.pow_nonneg_iff Odd.pow_nonneg_iff
 
-theorem Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 :=
-  ⟨fun h => le_of_not_lt fun ha => h.not_lt <| pow_pos ha _, hn.pow_nonpos⟩
+theorem Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 := by
+  rw [le_iff_lt_or_eq, le_iff_lt_or_eq, hn.pow_neg_iff, pow_eq_zero_iff]
+  rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
 #align odd.pow_nonpos_iff Odd.pow_nonpos_iff
 
 theorem Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a :=
-  ⟨fun h => lt_of_not_le fun ha => h.not_le <| hn.pow_nonpos ha, fun ha => pow_pos ha n⟩
+  lt_iff_lt_of_le_iff_le hn.pow_nonpos_iff
 #align odd.pow_pos_iff Odd.pow_pos_iff
 
-theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 :=
-  ⟨fun h => lt_of_not_le fun ha => h.not_le <| pow_nonneg ha _, hn.pow_neg⟩
-#align odd.pow_neg_iff Odd.pow_neg_iff
+alias ⟨_, Odd.pow_nonpos⟩ := Odd.pow_nonpos_iff
+#align odd.pow_nonpos Odd.pow_nonpos
+
+alias ⟨_, Odd.pow_neg⟩ := Odd.pow_neg_iff
+#align odd.pow_neg Odd.pow_neg
 
 theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
   ⟨fun h ha => by
@@ -552,18 +578,43 @@ theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 
     exact lt_irrefl 0 h, hn.pow_pos⟩
 #align even.pow_pos_iff Even.pow_pos_iff
 
+lemma Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
+  have hn₀ : n ≠ 0 := by rintro rfl; simp [Odd, eq_comm (a := 0)] at hn
+  intro a b hab
+  obtain ha | ha := le_total 0 a
+  · exact pow_lt_pow_left hab ha hn₀
+  obtain hb | hb := lt_or_le 0 b
+  · exact (hn.pow_nonpos ha).trans_lt (pow_pos hb _)
+  obtain ⟨c, hac⟩ := exists_add_of_le ha
+  obtain ⟨d, hbd⟩ := exists_add_of_le hb
+  have hd := nonneg_of_le_add_right (hb.trans_eq hbd)
+  refine lt_of_add_lt_add_right (a := c ^ n + d ^ n) ?_
+  dsimp
+  calc
+    a ^ n + (c ^ n + d ^ n) = d ^ n := by
+      rw [← add_assoc, hn.pow_add_pow_eq_zero hac.symm, zero_add]
+    _ < c ^ n := pow_lt_pow_left ?_ hd hn₀
+    _ = b ^ n + (c ^ n + d ^ n) := by rw [add_left_comm, hn.pow_add_pow_eq_zero hbd.symm, add_zero]
+  refine lt_of_add_lt_add_right (a := a + b) ?_
+  rwa [add_rotate', ← hbd, add_zero, add_left_comm, ← add_assoc, ← hac, zero_add]
+#align odd.strict_mono_pow Odd.strictMono_pow
+
+end LinearOrderedSemiring
+
+section LinearOrderedRing
+variable [LinearOrderedRing R] {a : R} {n : ℕ}
+
 theorem Even.pow_abs {p : ℕ} (hp : Even p) (a : R) : |a| ^ p = a ^ p := by
   rw [← abs_pow, abs_eq_self]
   exact hp.pow_nonneg _
 #align even.pow_abs Even.pow_abs
 
+set_option linter.deprecated false in
 @[simp]
 theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
   (even_bit0 _).pow_abs _
 #align pow_bit0_abs pow_bit0_abs
 
-theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
-#align odd.strict_mono_pow Odd.strictMono_pow
+end LinearOrderedRing
 
 end Powers

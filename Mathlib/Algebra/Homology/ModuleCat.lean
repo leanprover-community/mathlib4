@@ -34,7 +34,7 @@ namespace ModuleCat
 /-- To prove that two maps out of a homology group are equal,
 it suffices to check they are equal on the images of cycles.
 -/
-theorem homology'_ext {L M N K : ModuleCat R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
+theorem homology'_ext {L M N K : ModuleCat.{u} R} {f : L ⟶ M} {g : M ⟶ N} (w : f ≫ g = 0)
     {h k : homology' f g w ⟶ K}
     (w :
       ∀ x : LinearMap.ker g,
@@ -89,8 +89,8 @@ set_option linter.uppercaseLean3 false in
 
 @[ext]
 theorem homology'_ext' {M : ModuleCat R} (i : ι) {h k : C.homology' i ⟶ M}
-    (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k :=
-  homology'_ext _ w
+    (w : ∀ x : LinearMap.ker (C.dFrom i), h (toHomology' x) = k (toHomology' x)) : h = k := by
+  apply homology'_ext _ w
 set_option linter.uppercaseLean3 false in
 #align Module.homology_ext' ModuleCat.homology'_ext'
 
