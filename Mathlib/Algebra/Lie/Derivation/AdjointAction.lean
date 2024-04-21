@@ -26,8 +26,6 @@ values in the endormophisms of `L`.
 - `LieDerivation.lie_der_ad_eq_ad_der`: the commutator of a derivation `D` and `ad x` is `ad (D x)`,
 - `LieDerivation.ad_isIdealMorphism`: the range of the adjoint action is an ideal of the
 derivations,
-- `LieDerivation.equivRangeAdOfCenterEqBot`: the Lie algebra isomorphism between a Lie algebra with
-trivial center and the ideal range of the adjoint action.
 -/
 
 namespace LieDerivation
