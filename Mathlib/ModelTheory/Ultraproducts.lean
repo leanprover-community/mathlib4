@@ -162,7 +162,7 @@ theorem sentence_realize (φ : L.Sentence) :
 
 nonrec instance Product.instNonempty : Nonempty ((u : Filter α).Product M) :=
   letI : ∀ a, Inhabited (M a) := fun _ => Classical.inhabited_of_nonempty'
-  instNonempty
+  inferInstance
 #align first_order.language.ultraproduct.product.nonempty FirstOrder.Language.Ultraproduct.Product.instNonempty
 
 end Ultraproduct
