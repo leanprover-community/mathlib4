@@ -872,6 +872,7 @@ we will get this for free when we prove that `𝒱(α, β, 𝔖, uβ) = 𝒱(α,
 protected theorem precomp_uniformContinuous {𝔗 : Set (Set γ)} {f : γ → α}
     (hf : MapsTo (f '' ·) 𝔗 𝔖) :
     UniformContinuous fun g : α →ᵤ[𝔖] β => ofFun 𝔗 (toFun 𝔖 g ∘ f) := by
+  -- This follows from the fact that `(· ∘ f) × (· ∘ f)` maps `gen (f '' t) V` to `gen t V`.
   simp_rw [UniformContinuous, UniformOnFun.uniformity_eq, tendsto_iInf]
   refine fun t ht V hV ↦ tendsto_iInf' (f '' t) <| tendsto_iInf' (hf ht) <|
     tendsto_iInf' V <| tendsto_iInf' hV ?_
