@@ -177,7 +177,7 @@ noncomputable def linearMap [Semiring R] [Module R N] [Module R P] (e : N →ₗ
     MonoidAlgebra N α →ₗ[R] MonoidAlgebra P α := {
   addHom e.toAddMonoidHom  with
   map_smul' := fun r x ↦ by
-    simp
+    simp?
     rw [← MonoidAlgebra.sum_single x]
     simp only [map_finsupp_sum, smul_sum]
     apply congr_arg
