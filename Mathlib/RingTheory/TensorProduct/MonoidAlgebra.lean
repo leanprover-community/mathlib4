@@ -154,7 +154,7 @@ lemma ringHom_apply (e : N →+* P) (x : MonoidAlgebra N α) :
   addHom_apply e.toAddMonoidHom x
 
 theorem ringHom_id :
-  (ringHom (RingHom.id N) : MonoidAlgebra N α →+* MonoidAlgebra N α)
+    (ringHom (RingHom.id N) : MonoidAlgebra N α →+* MonoidAlgebra N α)
     = RingHom.id _ := by
   ext x <;> simp
 
