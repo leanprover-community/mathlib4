@@ -6,7 +6,6 @@ Authors: Patrick Massot, Kevin Buzzard, Scott Morrison, Johan Commelin, Chris Hu
 -/
 import Mathlib.Algebra.Group.Hom.Basic
 import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Data.Nat.Cast.Defs
 
 #align_import algebra.hom.group_instances from "leanprover-community/mathlib"@"2ed7e4aec72395b6a7c3ac4ac7873a7a43ead17c"
 
@@ -23,6 +22,7 @@ operations.
 Finally, we provide the `Ring` structure on `AddMonoid.End`.
 -/
 
+assert_not_exists AddMonoidWithOne
 
 universe uM uN uP uQ
 
@@ -76,31 +76,12 @@ instance MonoidHom.commGroup {M G} [MulOneClass M] [CommGroup G] : CommGroup (M 
 instance AddMonoid.End.instAddCommMonoid [AddCommMonoid M] : AddCommMonoid (AddMonoid.End M) :=
   AddMonoidHom.addCommMonoid
 
-instance AddMonoid.End.instAddMonoidWithOne (M) [AddCommMonoid M] :
-    AddMonoidWithOne (AddMonoid.End M) :=
-  { natCast := fun n => n • (1 : AddMonoid.End M),
-    natCast_zero := AddMonoid.nsmul_zero _,
-    natCast_succ := fun n => AddMonoid.nsmul_succ n 1 }
-
-/-- See also `AddMonoid.End.natCast_def`. -/
-@[simp]
-theorem AddMonoid.End.natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) :
-    (↑n : AddMonoid.End M) m = n • m :=
-  rfl
-#align add_monoid.End.nat_cast_apply AddMonoid.End.natCast_apply
-
 @[simp]
 theorem AddMonoid.End.zero_apply [AddCommMonoid M] (m : M) : (0 : AddMonoid.End M) m = 0 :=
   rfl
 
 -- Note: `@[simp]` omitted because `(1 : AddMonoid.End M) = id` by `AddMonoid.coe_one`
 theorem AddMonoid.End.one_apply [AddCommMonoid M] (m : M) : (1 : AddMonoid.End M) m = m :=
-  rfl
-
--- See note [no_index around OfNat.ofNat]
-@[simp]
-theorem AddMonoid.End.ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
-    (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m :=
   rfl
 
 instance AddMonoid.End.instAddCommGroup [AddCommGroup M] : AddCommGroup (AddMonoid.End M) :=
