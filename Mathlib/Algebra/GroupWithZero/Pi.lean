@@ -25,8 +25,8 @@ section MulZeroClass
 variable [∀ i, MulZeroClass (α i)] [DecidableEq ι] {i j : ι} {f : ∀ i, α i}
 
 instance mulZeroClass : MulZeroClass (∀ i, α i) where
-    zero_mul := by intros; ext; exact zero_mul _
-    mul_zero := by intros; ext; exact mul_zero _
+  zero_mul := by intros; ext; exact zero_mul _
+  mul_zero := by intros; ext; exact mul_zero _
 #align pi.mul_zero_class Pi.mulZeroClass
 
 /-- The multiplicative homomorphism including a single `MulZeroClass`
