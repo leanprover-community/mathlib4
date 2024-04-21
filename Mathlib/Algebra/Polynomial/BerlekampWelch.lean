@@ -1,8 +1,4 @@
-
-
-import Mathlib.Algebra.Polynomial.Basic
-import Mathlib.LinearAlgebra.Matrix.NonsingularInverse
-import Mathlib.Data.Matrix.ColumnRowPartitioned
+import Mathlib
 
 open Matrix Polynomial
 
@@ -61,10 +57,7 @@ theorem BerlekampWelchDecodingCorrect {F : Type} [Field F] [DecidableEq F] (m e 
     BerlekampWelchDecoding m e a (SimpleReedSolomonCode (m + e + e) m a message + error)
       = message := by
   unfold BerlekampWelchDecoding SimpleReedSolomonCode
-  ext i_
-  -- intro n
-  simp
-  sorry
+  lift_lets
 
 
 end Polynomial
