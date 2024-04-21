@@ -95,7 +95,8 @@ lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 def PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] :=
   Σ n : ℕ+, Σ' char : AddChar R (CyclotomicField n R'), IsPrimitive char
 #align add_char.primitive_add_char AddChar.PrimitiveAddChar
@@ -161,7 +162,7 @@ theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod 
 
 theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
 
 end ZModCharDef
@@ -173,7 +174,7 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
-    rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
+    rw [nsmul_eq_mul, mul_one]; exact (ZMod.natCast_zmod_val a).symm
   rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_isNontrivial_iff

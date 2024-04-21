@@ -81,7 +81,6 @@ from `B⋆` to `A⋆`.
 
 lemma dual_surjective_of_injective (f : A →ₗ[R] B) (hf : Function.Injective f) :
     Function.Surjective (dual f) :=
-  have : Fact ((0 : ℚ) < 1) := ⟨by norm_num⟩
   (Module.Baer.of_divisible _).extension_property_addMonoidHom _ hf
 
 /--
