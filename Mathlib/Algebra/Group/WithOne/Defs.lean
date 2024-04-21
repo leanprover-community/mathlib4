@@ -9,7 +9,6 @@ import Mathlib.Data.Option.Defs
 import Mathlib.Data.Option.NAry
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
-import Mathlib.GroupTheory.GroupAction.Defs
 
 #align_import algebra.group.with_one.defs from "leanprover-community/mathlib"@"995b47e555f1b6297c7cf16855f1023e355219fb"
 
