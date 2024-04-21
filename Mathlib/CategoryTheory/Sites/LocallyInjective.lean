@@ -45,6 +45,10 @@ def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.u
     dsimp at hf ⊢
     simp [hf]
 
+@[simp]
+lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : F.obj X) :
+    equalizerSieve x x = ⊤ := by aesop
+
 variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
@@ -87,20 +91,36 @@ lemma isLocallyInjective_forget_iff :
   · intro
     infer_instance
 
-instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J ψ] :
-    IsLocallyInjective J (φ ≫ ψ) where
-  equalizerSieve_mem {X} x y h := by
+lemma isLocallyInjective_iff_equalizerSieve_mem_imp :
+    IsLocallyInjective J φ ↔ ∀ ⦃X : Cᵒᵖ⦄ (x y : F₁.obj X),
+      equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop → equalizerSieve x y ∈ J X.unop := by
+  constructor
+  · intro _ X x y h
     let S := equalizerSieve (φ.app _ x) (φ.app _ y)
     let T : ∀ ⦃Y : C⦄ ⦃f : Y ⟶ X.unop⦄ (_ : S f), Sieve Y := fun Y f _ =>
       equalizerSieve (F₁.map f.op x) ((F₁.map f.op y))
-    refine J.superset_covering ?_
-      (J.transitive (equalizerSieve_mem J ψ (φ.app _ x) (φ.app _ y) (by simpa using h))
-      (Sieve.bind S.1 T) ?_)
+    refine J.superset_covering ?_ (J.transitive h (Sieve.bind S.1 T) ?_)
     · rintro Y f ⟨Z, a, g, hg, ha, rfl⟩
       simpa using ha
-    · intro U f hf
-      exact J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
-        (equalizerSieve_mem J φ (F₁.map f.op x) (F₁.map f.op y) (by simpa using hf))
+    · intro Y f hf
+      refine' J.superset_covering (Sieve.le_pullback_bind S.1 T _ hf)
+        (equalizerSieve_mem J φ _ _ ?_)
+      erw [NatTrans.naturality_apply, NatTrans.naturality_apply]
+      exact hf
+  · intro hφ
+    exact ⟨fun {X} x y h => hφ x y (by simp [h])⟩
+
+lemma equalizerSieve_mem_of_equalizerSieve_app_mem
+    {X : Cᵒᵖ} (x y : F₁.obj X) (h : equalizerSieve (φ.app _ x) (φ.app _ y) ∈ J X.unop)
+    [IsLocallyInjective J φ] :
+    equalizerSieve x y ∈ J X.unop  :=
+  (isLocallyInjective_iff_equalizerSieve_mem_imp J φ).1 inferInstance x y h
+
+instance isLocallyInjective_comp [IsLocallyInjective J φ] [IsLocallyInjective J ψ] :
+    IsLocallyInjective J (φ ≫ ψ) where
+  equalizerSieve_mem {X} x y h := by
+    apply equalizerSieve_mem_of_equalizerSieve_app_mem J φ
+    exact equalizerSieve_mem J ψ _ _ (by simpa using h)
 
 lemma isLocallyInjective_of_isLocallyInjective [IsLocallyInjective J (φ ≫ ψ)] :
     IsLocallyInjective J φ where
