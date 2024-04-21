@@ -12,6 +12,55 @@ namespace CategoryTheory
 
 variable {C : Type*} [Category C]
 
+namespace GradedObject
+
+instance {I : Type*} (i : I) [HasZeroMorphisms C] :
+    (GradedObject.eval i : GradedObject I C ⥤ C).PreservesZeroMorphisms where
+
+instance {I : Type*} (i : I) [Preadditive C] :
+    (GradedObject.eval i : GradedObject I C ⥤ C).Additive where
+
+variable [Preadditive C]
+variable {I : Type*} (S : ShortComplex (GradedObject I C))
+  {J : Type*} (p : I → J)
+  [S.X₁.HasMap p] [S.X₂.HasMap p] [S.X₃.HasMap p]
+
+@[simps]
+noncomputable def mapShortComplex : ShortComplex (GradedObject J C) where
+  f := mapMap S.f p
+  g := mapMap S.g p
+  zero := by rw [← mapMap_comp, S.zero, mapMap_zero]
+
+@[simps]
+def shortComplexSplittingEquiv :
+    S.Splitting ≃ (∀ (i : I), (S.map (eval i)).Splitting) where
+  toFun σ i := σ.map (eval i)
+  invFun τ :=
+    { r := fun i => (τ i).r
+      s := fun i => (τ i).s
+      s_g := by ext i; exact (τ i).s_g
+      f_r := by ext i; exact (τ i).f_r
+      id := by ext i; exact (τ i).id }
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+@[simps]
+noncomputable def mapShortComplexSplitting (σ : S.Splitting) :
+    (mapShortComplex S p).Splitting where
+  r := mapMap σ.r p
+  s := mapMap σ.s p
+  s_g := by
+    dsimp only [mapShortComplex]
+    rw [← mapMap_comp, σ.s_g, mapMap_id]
+  f_r := by
+    dsimp only [mapShortComplex]
+    rw [← mapMap_comp, σ.f_r, mapMap_id]
+  id := by
+    dsimp only [mapShortComplex]
+    rw [← mapMap_comp, ← mapMap_comp, ← mapMap_add, σ.id, mapMap_id]
+
+end GradedObject
+
 namespace Limits
 
 lemma IsZero.obj' {X : C} (hX : IsZero X) {D : Type*} [Category D]
@@ -79,8 +128,12 @@ end CategoryTheory
 
 namespace HomologicalComplex₂
 
-variable {C : Type*} [Category C] [Preadditive C] [IsIdempotentComplete C]
+variable {C : Type*} [Category C] [Preadditive C]
   {ι₁ ι₂ ι : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
+
+section
+
+variable [IsIdempotentComplete C]
   {K : HomologicalComplex₂ C c₁ c₂} (L : HomologicalComplex₂ C c₁ c₂)
   (c : ComplexShape ι) [TotalComplexShape c₁ c₂ c]
   (h : ∀ i₁ i₂, DirectFactor ((K.X i₁).X i₂) ((L.X i₁).X i₂))
@@ -95,6 +148,39 @@ variable {ι₁' : Type*} {c₁' : ComplexShape ι₁'} (e : c₁'.Embedding c�
 instance [K.HasTotal c] : HomologicalComplex₂.HasTotal (K.stupidTrunc e) c :=
   hasTotal_of_directFactor K c
     (fun i₁ i₂ => (K.stupidTruncDirectFactor e i₁).map (HomologicalComplex.eval _ _ i₂))
+
+end
+
+section
+
+instance : (toGradedObjectFunctor C c₁ c₂).Additive where
+
+variable (S : ShortComplex (HomologicalComplex₂ C c₁ c₂))
+  (c : ComplexShape ι) [DecidableEq ι] [TotalComplexShape c₁ c₂ c]
+  [S.X₁.HasTotal c] [S.X₂.HasTotal c] [S.X₃.HasTotal c]
+
+@[simps]
+noncomputable def total.shortComplex : ShortComplex (HomologicalComplex C c) where
+  f := total.map S.f c
+  g := total.map S.g c
+  zero := by rw [← total.map_comp, S.zero, total.map_zero]
+
+noncomputable def total.shortComplexSplitting
+    (σ : (S.map (toGradedObjectFunctor C c₁ c₂)).Splitting) (i : ι) :
+    ((total.shortComplex S c).map (HomologicalComplex.eval _ _ i)).Splitting := by
+  have : (ShortComplex.map S (toGradedObjectFunctor C c₁ c₂)).X₁.HasMap (π c₁ c₂ c) := by
+    dsimp
+    infer_instance
+  have : (ShortComplex.map S (toGradedObjectFunctor C c₁ c₂)).X₂.HasMap (π c₁ c₂ c) := by
+    dsimp
+    infer_instance
+  have : (ShortComplex.map S (toGradedObjectFunctor C c₁ c₂)).X₃.HasMap (π c₁ c₂ c) := by
+    dsimp
+    infer_instance
+  exact GradedObject.shortComplexSplittingEquiv _
+    (GradedObject.mapShortComplexSplitting _ _ σ) i
+
+end
 
 end HomologicalComplex₂
 

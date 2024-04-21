@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Linear.Basic
+import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.ComplexShapeSigns
 import Mathlib.Algebra.Homology.HomologicalBicomplex
 
@@ -30,7 +31,7 @@ namespace HomologicalComplex₂
 
 variable {C : Type*} [Category C] [Preadditive C]
   {I₁ I₂ I₁₂ : Type*} {c₁ : ComplexShape I₁} {c₂ : ComplexShape I₂}
-  (K L M : HomologicalComplex₂ C c₁ c₂) (φ : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
+  (K L M : HomologicalComplex₂ C c₁ c₂) (φ φ' : K ⟶ L) (e : K ≅ L) (ψ : L ⟶ M)
   (c₁₂ : ComplexShape I₁₂) [DecidableEq I₁₂]
   [TotalComplexShape c₁ c₂ c₁₂]
 
@@ -396,6 +397,19 @@ variable (K) in
 lemma map_id : map (𝟙 K) c₁₂ = 𝟙 _ := by
   apply (HomologicalComplex.forget _ _).map_injective
   apply GradedObject.mapMap_id
+
+variable (K L) in
+@[simp]
+lemma map_add : map (φ + φ') c₁₂ = map φ c₁₂ + map φ' c₁₂ := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  dsimp
+  apply GradedObject.mapMap_add
+
+variable (K L) in
+@[simp]
+lemma map_zero : map (0 : K ⟶ L) c₁₂ = 0 := by
+  apply (HomologicalComplex.forget _ _).map_injective
+  apply GradedObject.mapMap_zero
 
 variable [M.HasTotal c₁₂]
 
