@@ -42,17 +42,26 @@ lemma killingForm_restrict_range_ad : (killingForm R 𝔻).restrict 𝕀 = killi
   rw [← (ad_isIdealMorphism R L).eq, ← LieIdeal.killingForm_eq]
   rfl
 
+/-- The orthogonal complement of the inner derivations is a Lie submodule of all derivations. -/
+@[simps!] noncomputable def rangeAdOrthogonal : LieSubmodule R L (LieDerivation R L L) where
+  __ := 𝕀ᗮ
+  lie_mem := by
+    intro x D hD
+    have : 𝕀ᗮ = (ad R L).idealRange.killingCompl := by simp [← (ad_isIdealMorphism R L).eq]
+    change D ∈ 𝕀ᗮ at hD
+    change ⁅x, D⁆ ∈ 𝕀ᗮ
+    rw [this] at hD ⊢
+    rw [← lie_ad]
+    exact lie_mem_right _ _ (ad R L).idealRange.killingCompl _ _ hD
+
 variable {R L}
 
 /-- If a derivation `D` is in the Killing orthogonal of the range of the adjoint action, then, for
 any `x : L`, `ad (D x)` is also in this orthogonal. -/
 lemma ad_mem_orthogonal_of_mem_orthogonal {D : LieDerivation R L L} (hD : D ∈ 𝕀ᗮ) (x : L) :
     ad R L (D x) ∈ 𝕀ᗮ := by
-  have : 𝕀ᗮ = (ad R L).idealRange.killingCompl := by
-    simp [← (ad_isIdealMorphism R L).eq]
-  rw [this] at hD ⊢
-  rw [← lie_der_ad_eq_ad_der]
-  exact lie_mem_left _ _ (ad R L).idealRange.killingCompl _ _ hD
+  simp only [ad_apply_lieDerivation, LieHom.range_coeSubmodule, neg_mem_iff]
+  exact (rangeAdOrthogonal R L).lie_mem hD
 
 lemma ad_mem_ker_killingForm_ad_range_of_mem_orthogonal
     {D : LieDerivation R L L} (hD : D ∈ 𝕀ᗮ) (x : L) :
