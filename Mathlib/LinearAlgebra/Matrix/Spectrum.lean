@@ -21,14 +21,12 @@ spectral theorem, diagonalization theorem
 
 -/
 
-
 namespace Matrix
 
-variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
+variable {m n : Type*} {𝕜 : Type*} [RCLike 𝕜] [Fintype n]
+         {A : Matrix n n 𝕜}
 
 open scoped BigOperators
-
 namespace IsHermitian
 
 section DecidableEq
@@ -37,7 +35,7 @@ variable [DecidableEq n]
 
 section RankMulUnitaryTheorems
 
-variable {m R : Type*} [CommRing R] [StarRing R]
+variable {R : Type*}[CommRing R] [StarRing R]
 
 @[simp]
 theorem rank_unitary_mul (A : unitaryGroup n R) (B : Matrix m n R) :
