@@ -79,12 +79,6 @@ theorem of_bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
 theorem of_bot_right : A.LinearDisjoint ⊥ :=
   Submodule.LinearDisjoint.of_one_right _
 
--- skip of_linearDisjoint_finite_left ?? (not correct ??)
-
--- skip of_linearDisjoint_finite_right ?? (not correct ??)
-
--- skip of_linearDisjoint_finite ?? (not correct ??)
-
 end LinearDisjoint
 
 end Semiring
@@ -575,6 +569,47 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
     Nat.le_of_dvd (lt_of_lt_of_le h1 this) (H.mul_dvd_of_dvd_of_dvd
       (finrank_left_dvd_finrank_sup_of_free A B)
       (finrank_right_dvd_finrank_sup_of_free A B))
+
+variable (A B)
+
+theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
+    (H : ∀ A' : Subalgebra R S, A' ≤ A → [Module.Finite R A'] → A'.LinearDisjoint B) :
+    A.LinearDisjoint B := fun x y hxy ↦ by
+  obtain ⟨M', hM, hf, h⟩ :=
+    TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
+  obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
+  have hs' : (s : Set S) ⊆ A := by rwa [← hs, Submodule.span_le] at hM
+  let A' := Algebra.adjoin R (s : Set S)
+  have hf' : Submodule.FG (toSubmodule A') := fg_adjoin_of_finite s.finite_toSet fun x hx ↦
+    (isIntegral_algHom_iff A.val Subtype.val_injective).2 (hi ⟨x, hs' hx⟩)
+  replace hf' : Module.Finite R A' := Module.Finite.iff_fg.2 hf'
+  have hA : toSubmodule A' ≤ toSubmodule A := Algebra.adjoin_le_iff.2 hs'
+  replace h : {x, y} ⊆ (LinearMap.range (LinearMap.rTensor (toSubmodule B)
+      (Submodule.inclusion hA)) : Set _) := fun _ hx ↦ by
+    have : Submodule.inclusion hM = Submodule.inclusion hA ∘ₗ Submodule.inclusion
+      (show M' ≤ toSubmodule A' by
+        rw [← hs, Submodule.span_le]; exact Algebra.adjoin_le_iff.1 (le_refl _)) := rfl
+    rw [this, LinearMap.rTensor_comp] at h
+    exact LinearMap.range_comp_le_range _ _ (h hx)
+  obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
+  obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
+  rw [← hx', ← hy']; congr
+  exact H A' hA (by simp [← Submodule.mulMap_comp_rTensor _ _ _ hA, hx', hy', hxy])
+
+theorem of_linearDisjoint_finite_right (hi : Algebra.IsIntegral R B)
+    (H : ∀ B' : Subalgebra R S, B' ≤ B → [Module.Finite R B'] → A.LinearDisjoint B') :
+    A.LinearDisjoint B :=
+  (of_linearDisjoint_finite_left B A hi fun B' hB' _ ↦ (H B' hB').symm).symm
+
+variable {A B}
+
+theorem of_linearDisjoint_finite
+    (hA : Algebra.IsIntegral R A) (hB : Algebra.IsIntegral R B)
+    (H : ∀ (A' B' : Subalgebra R S), A' ≤ A → B' ≤ B →
+      [Module.Finite R A'] → [Module.Finite R B'] → A'.LinearDisjoint B') :
+    A.LinearDisjoint B :=
+  of_linearDisjoint_finite_left A B hA fun _ hA' _ ↦
+    of_linearDisjoint_finite_right _ B hB fun _ hB' _ ↦ H _ _ hA' hB'
 
 end LinearDisjoint
 
