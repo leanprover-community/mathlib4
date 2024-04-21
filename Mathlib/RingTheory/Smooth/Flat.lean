@@ -14,6 +14,9 @@ import Mathlib.RingTheory.TensorProduct.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.RingTheory.MvPolynomial.Homogeneous
 import Mathlib.RingTheory.RingOfDefinition
+import Mathlib.Algebra.Category.AlgebraCat.Basic
+import Mathlib.Algebra.Category.AlgebraCat.Limits
+import Mathlib.RingTheory.Flat.Algebra
 
 universe u v
 
@@ -87,6 +90,22 @@ lemma transitionMap_mk (n m : ℕ) (h : n ≤ m) (p : R) :
     (transitionMap f n m h) p = p := by
   simp [transitionMap]
 
+@[simp]
+lemma transitionMap_id (n : ℕ) :
+    transitionMap f n n (by omega) = AlgHom.id A (R ⧸ (I ^ n)) := by
+  apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ A (I ^ n))
+  · apply Ideal.Quotient.mkₐ_surjective
+  · ext
+    simp
+
+@[simp]
+lemma transitionMap_comp (n m k : ℕ) (h1 : n ≤ m) (h2 : m ≤ k) :
+    AlgHom.comp (transitionMap f n m h1) (transitionMap f m k h2)  = transitionMap f n k (by omega) := by
+  apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ A _)
+  · apply Ideal.Quotient.mkₐ_surjective
+  · ext
+    simp
+
 noncomputable def sectionAuxEquiv (m : ℕ) :
     ((R ⧸ I ^ (m + 1)) ⧸ (I ^ m).map (Ideal.Quotient.mk (I ^ (m + 1)))) ≃ₐ[A] R ⧸ (I ^ m) := by
   apply DoubleQuot.quotQuotEquivQuotOfLEₐ _
@@ -159,3 +178,70 @@ lemma sectionAux_comp_transitionMap (m : ℕ) :
       rw [subsingleton_iff_zero_eq_one, Ideal.Quotient.subsingleton_iff]
       simp
   | succ m => exact sectionAux'_comp_transitionMap f hf m
+
+@[simp]
+lemma sectionAux_comp_transitionMap_of_le (m n : ℕ) (hn : m ≤ n) :
+    AlgHom.comp (transitionMap f m n hn) (sectionAux f hf n)
+      = sectionAux f hf m := by
+  induction n, hn using Nat.le_induction with
+  | base => simp
+  | succ n hmn ih =>
+      rw [← transitionMap_comp f m n (n + 1) (by omega) (by omega), AlgHom.comp_assoc]
+      simpa
+
+open CategoryTheory Limits
+
+/-- The canonical (inverse) system over `R ⧸ (I ^ n)`. -/
+noncomputable def sectionDiag : ℕᵒᵖ ⥤ AlgebraCat A where
+  obj m := AlgebraCat.of A (R ⧸ (I ^ m.unop))
+  map {m n} := fun ⟨⟨⟨hnm⟩⟩⟩ ↦ AlgebraCat.ofHom (transitionMap f n.unop m.unop hnm)
+  map_comp {m n k} := by
+    intro ⟨⟨⟨hnm⟩⟩⟩ ⟨⟨⟨hkn⟩⟩⟩
+    dsimp only
+    change _ = AlgebraCat.ofHom (AlgHom.comp (transitionMap f _ _ _) (transitionMap f _ _ _))
+    simp
+
+noncomputable def sectionDiagCone : Cone (sectionDiag f) where
+  pt := AlgebraCat.of A B
+  π := {
+    app := fun ⟨m⟩ ↦ AlgebraCat.ofHom (sectionAux f hf m)
+    naturality := fun ⟨m⟩ ⟨n⟩ ⟨⟨⟨hnm⟩⟩⟩ ↦ by
+      simp only [Functor.const_obj_obj, sectionDiag, Functor.const_obj_map, Category.id_comp]
+      change _ = AlgebraCat.ofHom (AlgHom.comp (transitionMap f _ _ _) (sectionAux f hf _ ))
+      simp
+  }
+
+local notation "R^" => (limit (sectionDiag f) : AlgebraCat A)
+
+/-- The constructed section from `B` to the `I`-adic completion of `R`. -/
+noncomputable def section' : B →ₐ[A] R^ :=
+  limit.lift (sectionDiag f) (sectionDiagCone f hf)
+
+/-- The canonical projection from the `I`-adic completion of `R` to `B`. -/
+noncomputable def proj : R^ →ₐ[A] B :=
+  let p : R^ →ₐ[A] (R ⧸ (I ^ 1)) := limit.π (sectionDiag f) ⟨1⟩
+  let e : (R ⧸ (I ^ 1)) ≃ₐ[A] R ⧸ I := by
+    apply Ideal.quotientEquivAlgOfEq A
+    simp
+  let f' : (R ⧸ I) ≃ₐ[A] B := Ideal.quotientKerAlgEquivOfSurjective hf
+  AlgHom.comp f' (AlgHom.comp e.toAlgHom p)
+
+/-- The constructed section is indeed a section for `proj`. -/
+theorem section'_isSection :
+    AlgHom.comp (proj f hf) (section' f hf) = AlgHom.id A B :=
+  sorry
+
+--/-- TODO: `R^` is flat as `R`-algebra (uses `R` Noetherian). -/
+--instance : Algebra.Flat R (R^ : AlgebraCat A) := sorry
+--
+--instance : Algebra.Flat A R^ := sorry
+
+instance : Module.Flat A R^ := sorry
+
+instance flat : Algebra.Flat A B := by
+  constructor
+  apply Module.Flat.of_retract A R^ B (section' f hf) (proj f hf)
+  ext b
+  simp only [LinearMap.coe_comp, Function.comp_apply]
+  change (AlgHom.comp (proj f hf) (section' f hf)) b = (AlgHom.id A B) b
+  rw [section'_isSection f hf]
