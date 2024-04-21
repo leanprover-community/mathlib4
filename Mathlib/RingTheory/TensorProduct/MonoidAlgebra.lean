@@ -51,76 +51,169 @@ open Finsupp
 
 variable [Semiring N] [Semiring P]
 
-lemma apply_single
-    (e : N →+ P) (a : α) (n : N) (b : α) :
+lemma apply_single (e : N →+ P) (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b :=
-  Finsupp.apply_single e a n b
+  Finsupp.apply_single (e : N →+ P) a n b
 
-/-- RingHom functoriality for the monoid algebra -/
-noncomputable def ringHom [MulOneClass α] (e : N →+* P) :
-    MonoidAlgebra N α →+* MonoidAlgebra P α := {
-    mapRange.addMonoidHom e with
-    map_one' := ext (fun _ => by simp [one_def])
-    map_mul' := fun x y => ext (fun a => by
-      simp only [mapRange.addMonoidHom_toZeroHom, ZeroHom.toFun_eq_coe,
-        mapRange.zeroHom_apply, AddMonoidHom.toZeroHom_coe, AddMonoidHom.coe_coe]
-      simp only [mapRange_apply]
-      simp only [mul_def]
-      rw [sum_apply, map_finsupp_sum, sum_apply]
-      rw [sum_mapRange_index (by simp)]
-      apply sum_congr
-      intro b _
-      rw [sum_apply, map_finsupp_sum, sum_mapRange_index (by simp), sum_apply]
-      apply sum_congr
-      intro c _
-      rw [← _root_.map_mul]
-      exact apply_single e.toAddMonoidHom (b * c) _ a) }
+/-- AddHom functoriality for the monoid algebra -/
+noncomputable def addHom [MulOneClass α] (e : N →+ P) :
+    MonoidAlgebra N α →+ MonoidAlgebra P α :=
+  liftNC ((Finsupp.singleAddHom 1).comp e) (of P α)
 
-lemma ringHom_apply [MulOneClass α] (e : N →+* P) (x : MonoidAlgebra N α) :
-    ringHom e x = mapRange.addMonoidHom e.toAddMonoidHom x :=
+-- variant using Finsupp.mapRange.AddMonoidHom
+noncomputable def addHom' (e : N →+ P) :
+    MonoidAlgebra N α →+ MonoidAlgebra P α :=
+  Finsupp.mapRange.addMonoidHom e
+
+@[simp]
+lemma addHom_single [MulOneClass α] (e : N →+ P) (a  : α) (n : N) :
+    addHom e (single a n) = single a (e n) := by
+  simp only [addHom, liftNC_single, of_apply]
+  convert MonoidAlgebra.single_mul_single <;> simp only [one_mul, mul_one]
+
+lemma addHom'_apply [MulOneClass α] (e : N →+ P) (x : MonoidAlgebra N α) :
+    addHom' e x = mapRange ⇑e e.map_zero x :=
+  mapRange.addMonoidHom_apply _ _
+
+@[simp]
+lemma addHom'_single [MulOneClass α] (e : N →+ P) (a  : α) (n : N) :
+    addHom' e (single a n) = single a (e n) := by
+  rw [addHom'_apply, mapRange_single]
+
+lemma addHom_apply [MulOneClass α] (e : N →+ P) (x : MonoidAlgebra N α) :
+    addHom e x = mapRange.addMonoidHom e x := by
+  rw [← MonoidAlgebra.sum_single x]
+  simp only [map_finsupp_sum]
+  apply congr_arg
+  ext a n
+  simp only [addHom_single, RingHom.toAddMonoidHom_eq_coe,
+    mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe, mapRange_single]
+
+lemma addHom_id [MulOneClass α] :
+    (addHom (AddMonoidHom.id N) : MonoidAlgebra N α →+ MonoidAlgebra N α)
+      = AddMonoidHom.id _ :=
+  Finsupp.addHom_ext (addHom_single _)
+
+lemma addHom'_id [MulOneClass α] :
+    (addHom' (AddMonoidHom.id N) : MonoidAlgebra N α →+ MonoidAlgebra N α)
+      = AddMonoidHom.id _ :=
+  Finsupp.addHom_ext (addHom'_single _)
+
+lemma addHom_comp [Semiring M] [MulOneClass α] (f : M →+ N) (e : N →+ P) :
+    (addHom (e.comp f) : MonoidAlgebra M α →+ MonoidAlgebra P α)
+      = (addHom e).comp (addHom f) := by
+  apply Finsupp.addHom_ext
+  intro a m
+  simp only [AddMonoidHom.coe_comp, Function.comp_apply]
+  erw [addHom_single, addHom_single f a m, addHom_single e a _]
   rfl
 
-lemma ringHom_apply_single [MulOneClass α] (e : N →+* P) (a  : α) (n : N) :
+lemma addHom'_comp [Semiring M] [MulOneClass α] (f : M →+ N) (e : N →+ P) :
+    (addHom' (e.comp f) : MonoidAlgebra M α →+ MonoidAlgebra P α)
+      = (addHom' e).comp (addHom' f) := by
+  apply Finsupp.addHom_ext
+  intro a m
+  simp only [AddMonoidHom.coe_comp, Function.comp_apply]
+  erw [addHom'_single, addHom'_single f a m, addHom'_single e a]
+  rfl
+
+variable [Monoid α]
+-- TODO : generalize to [MulOneClass α]
+
+-- if one uses Finsupp.mapRange.AddMonoidHom, multiplicativity requires a proof
+/-- RingHom functoriality for the monoid algebra -/
+noncomputable def ringHom (e : N →+* P) :
+    MonoidAlgebra N α →+* MonoidAlgebra P α :=
+  liftNCRingHom (singleOneRingHom.comp e) (of P α) (by
+    intro n a
+    simp only [commute_iff_eq, RingHom.coe_comp, Function.comp_apply,
+      singleOneRingHom_apply, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+      singleAddHom_apply, of_apply, single_mul_single, one_mul, mul_one])
+
+/-- RingHom functoriality for the monoid algebra -/
+noncomputable def ringHom' (e : N →+* P) :
+    MonoidAlgebra N α →+* MonoidAlgebra P α := {
+  addHom' e.toAddMonoidHom with
+  map_one' := by simp [one_def, addHom'_single]
+  map_mul' := fun f g => by
+    simp only [RingHom.toAddMonoidHom_eq_coe, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe]
+    rw [← MonoidAlgebra.sum_single f, ← MonoidAlgebra.sum_single g]
+    simp only [Finsupp.mul_sum, map_finsupp_sum]
+    apply congr_arg
+    ext a m
+    rw [Finsupp.sum_mul, map_finsupp_sum, Finsupp.sum_mul]
+    simp only [single_mul_single, addHom'_single, AddMonoidHom.coe_coe, map_mul] }
+
+@[simp]
+lemma ringHom_single (e : N →+* P) (a  : α) (n : N) :
     ringHom e (single a n) = single a (e n) :=
-  mapRange.addMonoidHom_apply_single e.toAddMonoidHom a n
+  addHom_single e.toAddMonoidHom a n
+
+lemma ringHom_apply (e : N →+* P) (x : MonoidAlgebra N α) :
+    ringHom e x = mapRange.addMonoidHom e.toAddMonoidHom x :=
+  addHom_apply e.toAddMonoidHom x
+
+theorem ringHom_id :
+  (ringHom (RingHom.id N) : MonoidAlgebra N α →+* MonoidAlgebra N α)
+    = RingHom.id _ := by
+  ext x <;> simp
+
+theorem ringHom_comp [Semiring M] (f : M →+* N) (e : N →+* P) :
+  ((ringHom e).comp (ringHom f) : MonoidAlgebra M α →+* MonoidAlgebra P α)
+    = ringHom (e.comp f) := by
+  ext x <;> simp
 
 /-- RingHom functoriality for the monoid algebra (equivalence) -/
-noncomputable def equivRingHom [MulOneClass α] (e : N ≃+* P) :
-    MonoidAlgebra N α ≃+* MonoidAlgebra P α := {
-  mapRange.addEquiv e.toAddEquiv with
-  map_mul' := (ringHom e.toRingHom).map_mul' }
+noncomputable def equivRingHom (e : N ≃+* P) :
+    MonoidAlgebra N α ≃+* MonoidAlgebra P α := by
+  apply RingEquiv.ofHomInv (ringHom e) (ringHom e.symm) <;>
+  · convert ringHom_comp _ _
+    convert ringHom_id.symm
+    simp only [RingEquiv.symm_comp, RingEquiv.comp_symm]
 
+-- This could be Finsupp.mapRange.linearMap
 /-- LinearMap functoriality for the monoid algebra -/
 noncomputable def linearMap [Semiring R] [Module R N] [Module R P] (e : N →ₗ[R] P) :
     MonoidAlgebra N α →ₗ[R] MonoidAlgebra P α := {
-  mapRange.linearMap e with
-  toFun := mapRange.addMonoidHom e.toAddMonoidHom }
+  addHom e.toAddMonoidHom  with
+  map_smul' := fun r x ↦ by
+    simp
+    rw [← MonoidAlgebra.sum_single x]
+    simp only [map_finsupp_sum, smul_sum]
+    apply congr_arg
+    ext a n
+    rw [smul_single, addHom_single, addHom_single, smul_single]
+    simp only [LinearMap.toAddMonoidHom_coe, LinearMapClass.map_smul] }
 
-variable [Monoid α] [CommSemiring R] [Algebra R N] [Algebra R P]
+variable [CommSemiring R] [Algebra R N] [Algebra R P]
 
 /-- AlgHom functoriality for the monoid algebra -/
 noncomputable def algHom (e : N →ₐ[R] P) :
     MonoidAlgebra N α →ₐ[R] MonoidAlgebra P α := {
   ringHom e.toRingHom with
-  toFun := mapRange.addMonoidHom e.toAddMonoidHom
   commutes' := fun r => by
-    simp only [AlgHom.toRingHom_eq_coe, RingHom.toAddMonoidHom_eq_coe, coe_algebraMap,
-      Function.comp_apply, mapRange.addMonoidHom_apply, AddMonoidHom.coe_coe,
-      RingHom.coe_coe, mapRange_single, AlgHom.commutes] }
+    simp only [AlgHom.toRingHom_eq_coe, RingHom.toMonoidHom_eq_coe, coe_algebraMap,
+      Function.comp_apply, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, MonoidHom.coe_coe,
+        ringHom_single, RingHom.coe_coe, AlgHom.commutes] }
 
+@[simp]
 lemma algHom_apply_apply (e : N →ₐ[R] P) (x : MonoidAlgebra N α) (a : α) :
     (algHom e) x a = e (x a) := by
-  simp [algHom]
+  simp [algHom, ringHom_apply]
 
+@[simp]
 lemma algHom_apply_single (e : N →ₐ[R] P) (a : α) (n : N) :
     algHom e (single a n) = single a (e n) := by
   simp [algHom]
 
+-- TODO : here one needs a new proof
 /-- The alg equiv of monoid algebras induced by an alg equiv between their coefficients. -/
 noncomputable def algEquiv (e : N ≃ₐ[R] P) :
-    MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α := {
+    MonoidAlgebra N α ≃ₐ[R] MonoidAlgebra P α :=
+  sorry
+/- {
   mapRange.linearEquiv e.toLinearEquiv,
-  algHom e.toAlgHom with }
+  algHom e.toAlgHom with } -/
 
 end MonoidAlgebra
 
