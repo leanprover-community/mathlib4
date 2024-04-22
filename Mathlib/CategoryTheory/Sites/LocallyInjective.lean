@@ -49,6 +49,15 @@ def equalizerSieve {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) : Sieve X.u
 lemma equalizerSieve_self_eq_top {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x : F.obj X) :
     equalizerSieve x x = ⊤ := by aesop
 
+@[simp]
+lemma equalizerSieve_eq_top_iff {F : Cᵒᵖ ⥤ D} {X : Cᵒᵖ} (x y : F.obj X) :
+    equalizerSieve x y = ⊤ ↔ x = y := by
+  constructor
+  · intro h
+    simpa using (show equalizerSieve x y (𝟙 _) by simp [h])
+  · rintro rfl
+    apply equalizerSieve_self_eq_top
+
 variable {F₁ F₂ F₃ : Cᵒᵖ ⥤ D} (φ : F₁ ⟶ F₂) (ψ : F₂ ⟶ F₃)
 
 /-- A morphism `φ : F₁ ⟶ F₂` of presheaves `Cᵒᵖ ⥤ D` (with `D` a concrete category)
@@ -148,11 +157,12 @@ lemma isLocallyInjective_comp_iff [IsLocallyInjective J ψ] :
     IsLocallyInjective J (φ ≫ ψ) ↔ IsLocallyInjective J φ :=
   isLocallyInjective_iff_of_fac J rfl
 
-lemma isLocallyInjective_iff_injective_of_separated (hsep : IsSeparated J F₁) :
+lemma isLocallyInjective_iff_injective_of_separated
+    (hsep : Presieve.IsSeparated J (F₁ ⋙ forget D)) :
     IsLocallyInjective J φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.app X) := by
   constructor
   · intro _ X x y h
-    exact hsep X.unop _ (equalizerSieve_mem J φ x y h) _ _ (fun _ _ hf => hf)
+    exact (hsep _ (equalizerSieve_mem J φ x y h)).ext (fun _ _ hf => hf)
   · apply isLocallyInjective_of_injective
 
 instance (F : Cᵒᵖ ⥤ Type w) (G : GrothendieckTopology.Subpresheaf F) :
@@ -212,7 +222,10 @@ instance isLocallyInjective_forget [IsLocallyInjective φ] :
 
 lemma isLocallyInjective_iff_injective :
     IsLocallyInjective φ ↔ ∀ (X : Cᵒᵖ), Function.Injective (φ.val.app X) :=
-  Presheaf.isLocallyInjective_iff_injective_of_separated _ _ F₁.isSeparated
+  Presheaf.isLocallyInjective_iff_injective_of_separated _ _ (by
+    apply Presieve.isSeparated_of_isSheaf
+    rw [← isSheaf_iff_isSheaf_of_type]
+    exact ((sheafCompose J (forget D)).obj F₁).2)
 
 instance {F G : Sheaf J (Type w)} (f : F ⟶ G) :
     IsLocallyInjective (GrothendieckTopology.imageSheafι f) := by
