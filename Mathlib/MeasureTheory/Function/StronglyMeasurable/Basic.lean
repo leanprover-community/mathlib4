@@ -138,7 +138,7 @@ theorem StronglyMeasurable.of_finite [Finite α] {_ : MeasurableSpace α}
     (f : α → β) : StronglyMeasurable f :=
   ⟨fun _ => SimpleFunc.ofFinite f, fun _ => tendsto_const_nhds⟩
 
-@[deprecated] -- Since 2024/02/05
+@[deprecated] -- Since 2024-02-05
 alias stronglyMeasurable_of_fintype := StronglyMeasurable.of_finite
 
 @[deprecated StronglyMeasurable.of_finite]

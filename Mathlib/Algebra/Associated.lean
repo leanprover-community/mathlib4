@@ -1026,7 +1026,7 @@ theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
     exact ⟨a₁, a₂ * u, h₁, Units.mul_right_dvd.mpr h₂, mul_assoc _ _ _⟩
   · exact ⟨a₁, a₂, h₁, h₂, congr_arg _ eq⟩
 
-@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024/03/16
+@[deprecated] alias isPrimal_iff := isPrimal_mk -- 2024-03-16
 
 @[simp]
 theorem decompositionMonoid_iff : DecompositionMonoid (Associates α) ↔ DecompositionMonoid α := by
