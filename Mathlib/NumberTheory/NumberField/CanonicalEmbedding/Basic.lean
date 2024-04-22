@@ -249,7 +249,7 @@ open BigOperators
 
 variable [NumberField K] {K}
 
-/-- The norm of `x` is `∏ w real, ‖x‖_w, ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
+/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
 the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
 over `ℚ`, see `norm_eq_norm`. -/
 protected def norm  : (E K) →*₀ ℝ where
@@ -266,11 +266,15 @@ protected def norm  : (E K) →*₀ ℝ where
   map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
       Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
 
+protected theorem norm_eq_zero_iff {x : E K} :
+    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
+    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+
 protected theorem norm_ne_zero_iff {x : E K} :
     mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
-  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_ne_zero_iff,
-    Finset.prod_ne_zero_iff, Finset.mem_univ, forall_true_left, pow_ne_zero_iff two_ne_zero,
-    norm_ne_zero_iff]
+  rw [← not_iff_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
 
 theorem norm_real (c : ℝ) :
     mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
@@ -295,12 +299,11 @@ theorem norm_eq_norm (x : K) :
     · exact fun _ ↦ not_isReal_iff_isComplex
     · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
 
-theorem norm_ne_zero {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) (hx' : x ≠ 0) :
-    mixedEmbedding.norm x ≠ 0 := by
+theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
+    mixedEmbedding.norm x = 0 ↔ x = 0 := by
   obtain ⟨a, rfl⟩ := hx
-  rw [norm_eq_norm, Rat.cast_abs, ne_eq, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff]
-  contrapose! hx'
-  rw [hx', map_zero]
+  rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
+    map_eq_zero]
 
 end norm
 

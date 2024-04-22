@@ -14,17 +14,27 @@ domain for the action of `(𝓞 K)ˣ` up to roots of unity.
 
 ## Main definitions and results
 
-* `NumberField.mixedEmbedding.unitSMul`: The action of `(𝓞 K)ˣ` on `ℝ^r₁ × ℂ^r₂` defined, for
+* `NumberField.mixedEmbedding.unitSMul`: the action of `(𝓞 K)ˣ` on `ℝ^r₁ × ℂ^r₂` defined, for
 `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
-* `NumberField.mixedEmbedding.fundamentalCone`: A cone in `ℝ^r₁ × ℂ^r₂` --that is a subset fixed
+* `NumberField.mixedEmbedding.fundamentalCone`: a cone in `ℝ^r₁ × ℂ^r₂` --that is a subset fixed
 by multiplication by a scalar, see `smul_mem_of_mem`--, that is also a fundamental domain for the
 action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unitSMul_me` and
 `torsion_unitSMul_mem_of_mem`.
 
+* `NumberField.mixedEmbedding.fundamentalCone.integralPoint`: the subset of elements of the
+fundamental cone that are images by `mixedEmbedding` of algebraic integers of `K`.
+
+* `NumberField.mixedEmbedding.fundamentalCone.integralPointQuotEquivIsPrincipal`: the equivalence
+between `fundamentalCone.integralPoint K / torsion K` and the principal ideals of `𝓞 K`.
+
+* `NumberField.mixedEmbedding.fundamentalCone.card_isPrincipal_norm_mul`: for `n` positive, the
+number of principal ideals in `𝓞 K` of norm `n` multiplied by the number of roots of unity is
+equal to the number of `fundamentalCone.integralPoint K` of norm `n`.
+
 ## Tags
 
-number field, canonical embedding, units
+number field, canonical embedding, principal ideals
 -/
 
 variable (K : Type*) [Field K]
@@ -54,7 +64,7 @@ instance : SMulZeroClass (𝓞 K)ˣ (E K) where
 
 variable [NumberField K]
 
--- Lean needs to be reminded of this instance so that the next result does not time out
+-- Lean needs to be reminded of this instance so that the next result does not timeout
 instance : SMul (𝓞 K) (𝓞 K) := Algebra.toSMul
 
 theorem unitSMul_eq_iff_mul_eq {x y : (𝓞 K)} {u : (𝓞 K)ˣ} :
@@ -206,6 +216,207 @@ theorem unitSMul_mem_iff_mem_torsion {x : E K} (hx : mixedEmbedding.norm x ≠ 0
     · rw [AddSubmonoid.mk_vadd, vadd_eq_add, zero_add]
       rwa [fundamentalCone, Set.mem_preimage] at hx'
   · exact torsion_unitSMul_mem_of_mem hx' h
+
+variable (K) in
+/-- The set of images by `mixedEmbedding` of algebraic integers of `K` contained in the
+fundamental cone. -/
+def integralPoint : Set (E K) := (fundamentalCone K) ∩ (mixedEmbedding K '' (𝓞 K))
+
+theorem exists_unique_preimage_of_integralPoint {x : E K} (hx : x ∈ integralPoint K) :
+    ∃! a : (𝓞 K), mixedEmbedding K a = x := by
+  refine ⟨⟨hx.2.choose, hx.2.choose_spec.1⟩, hx.2.choose_spec.2, fun x h ↦ ?_⟩
+  rw [Subtype.ext_iff, ← (mixedEmbedding_injective K).eq_iff, h, hx.2.choose_spec.2]
+
+/-- For `a : fundamentalCone K`, the unique algebraic integer which image by `mixedEmbedding` is
+equal to `a`. -/
+def preimageOfIntegralPoint (a : integralPoint K) : (𝓞 K) :=
+  ⟨a.prop.2.choose, a.prop.2.choose_spec.1⟩
+
+@[simp]
+theorem image_preimageOfIntegralPoint (a : integralPoint K) :
+    mixedEmbedding K (preimageOfIntegralPoint a) = a := a.prop.2.choose_spec.2
+
+theorem preimageOfIntegralPoint_mixedEmbedding {x : 𝓞 K}
+    (hx : mixedEmbedding K x ∈ integralPoint K) :
+    preimageOfIntegralPoint (⟨mixedEmbedding K x, hx⟩) = x := by
+  rw [Subtype.ext_iff, ← (mixedEmbedding_injective K).eq_iff, image_preimageOfIntegralPoint]
+
+theorem exists_unitSMul_mem_integralPoint {x : E K} (hx : x ∈ mixedEmbedding K '' (𝓞 K)) :
+    ∃ u : (𝓞 K)ˣ, u • x ∈ integralPoint K := by
+  by_cases hx' : x = 0
+  · simp_rw [hx', smul_zero]
+    exact ⟨1, fundamentalCone.zero_mem _, ⟨0, zero_mem _, map_zero _⟩⟩
+  · replace hx' : mixedEmbedding.norm x ≠ 0 :=
+      (norm_eq_zero_iff' (Set.mem_range_of_mem_image (mixedEmbedding K) _ hx)).not.mpr hx'
+    obtain ⟨u, hu⟩ := exists_unitSMul_mem hx'
+    obtain ⟨x, ⟨hx₁, ⟨_, rfl⟩⟩⟩ := hx
+    refine ⟨u, hu, ?_⟩
+    rw [unitSMul_smul, ← map_mul]
+    exact ⟨u * x,  mul_mem (SetLike.coe_mem (u : 𝓞 K)) hx₁, rfl⟩
+
+theorem torsion_unitSMul_mem_integralPoint {x : E K} {ζ : (𝓞 K)ˣ} (hζ : ζ ∈ torsion K)
+    (hx : x ∈ integralPoint K) :
+    ζ • x ∈ integralPoint K := by
+  obtain ⟨a, ha, rfl⟩ := hx.2
+  refine ⟨torsion_unitSMul_mem_of_mem hx.1 hζ, ⟨ζ * a, ?_, ?_⟩⟩
+  · exact mul_mem (SetLike.coe_mem (ζ : (𝓞 K))) ha
+  · rw [unitSMul_smul, map_mul]
+
+variable (K) in
+/-- The map that sends an element of `a : fundamentalCone K` to the associates class
+of its preimage in `(𝓞 K)`. By quotienting by the kernel of the map, which is equal to the group of
+roots of unity, we get the equivalence `integralPointQuotEquivAssociates`. -/
+def integralPointToAssociates (a : integralPoint K) : Associates (𝓞 K) :=
+  ⟦preimageOfIntegralPoint a⟧
+
+@[simp]
+theorem integralPointToAssociates_apply (a : integralPoint K) :
+    integralPointToAssociates K a = ⟦preimageOfIntegralPoint a⟧ := rfl
+
+variable (K) in
+theorem integralPointToAssociates_surjective :
+    Function.Surjective (integralPointToAssociates K) := by
+  rintro ⟨x⟩
+  obtain ⟨u, hu⟩ : ∃ u : (𝓞 K)ˣ, u • (mixedEmbedding K x) ∈ integralPoint K :=
+      exists_unitSMul_mem_integralPoint ⟨x, SetLike.coe_mem x, rfl⟩
+  refine ⟨⟨u • (mixedEmbedding K x), hu⟩, ?_⟩
+  refine Quotient.sound ⟨u⁻¹, ?_⟩
+  simp_rw [unitSMul_smul, ← map_mul, ← Submonoid.coe_mul]
+  rw [preimageOfIntegralPoint_mixedEmbedding, mul_comm, Units.inv_mul_cancel_left]
+
+@[simps]
+instance integralPoint_torsionSMul: SMul (torsion K) (integralPoint K) where
+  smul := fun ⟨ζ, hζ⟩ ⟨x, hx⟩ ↦ ⟨ζ • x, torsion_unitSMul_mem_integralPoint hζ hx⟩
+
+instance : MulAction (torsion K) (integralPoint K) where
+  one_smul := fun _ ↦ by
+    rw [Subtype.mk_eq_mk, integralPoint_torsionSMul_smul_coe, OneMemClass.coe_one, one_smul]
+  mul_smul := fun _ _ _ ↦ by
+    rw [Subtype.mk_eq_mk]
+    simp_rw [integralPoint_torsionSMul_smul_coe, Submonoid.coe_mul, mul_smul]
+
+theorem integralPoint_torsionSMul_stabilizer {a : integralPoint K} (ha : (a : E K) ≠ 0) :
+    MulAction.stabilizer (torsion K) a = ⊥ := by
+  refine (Subgroup.eq_bot_iff_forall _).mpr fun ζ hζ ↦ ?_
+  rwa [MulAction.mem_stabilizer_iff, Subtype.ext_iff, integralPoint_torsionSMul_smul_coe,
+    unitSMul_smul, ← image_preimageOfIntegralPoint, ← map_mul, (mixedEmbedding_injective K).eq_iff,
+    mul_eq_right₀, OneMemClass.coe_eq_one, Units.val_eq_one, OneMemClass.coe_eq_one] at hζ
+  contrapose! ha
+  rw [← image_preimageOfIntegralPoint, ha, map_zero]
+
+theorem integralPointToAssociates_eq_iff (a b : integralPoint K) :
+    integralPointToAssociates K a = integralPointToAssociates K b ↔
+      ∃ ζ : torsion K, ζ • a = b := by
+  rw [integralPointToAssociates_apply, integralPointToAssociates_apply]
+  rw [show ⟦preimageOfIntegralPoint a⟧ = ⟦preimageOfIntegralPoint b⟧ ↔
+    ∃ u : (𝓞 K)ˣ, preimageOfIntegralPoint a * u = preimageOfIntegralPoint b by
+    rw [Associates.mk_eq_mk_iff_associated, Associated]]
+  simp_rw [mul_comm, ← unitSMul_eq_iff_mul_eq, image_preimageOfIntegralPoint, Subtype.ext_iff,
+    integralPoint_torsionSMul_smul_coe]
+  refine ⟨fun ⟨u, h⟩ ↦ ?_, fun ⟨⟨ζ, _⟩, h⟩ ↦ ⟨ζ, h⟩⟩
+  by_cases ha : (a : E K) = 0
+  · simp_rw [ha, smul_zero] at h ⊢
+    exact ⟨1, h⟩
+  · have hnz : mixedEmbedding.norm (a : E K) ≠ 0 :=
+      (norm_eq_zero_iff' ⟨a.prop.2.choose, a.prop.2.choose_spec.2⟩).not.mpr ha
+    refine ⟨⟨u, (unitSMul_mem_iff_mem_torsion hnz a.prop.1 u).mp ?_⟩, h⟩
+    rw [h]
+    exact b.prop.1
+
+variable (K) in
+/-- The equivalence between `fundamentalCone.integralPoint K / torsion K` and `Associates K`. By
+composing with the equivalence between `Associates K` and the principal ideals of `𝓞 K`, we get the
+equivalence `integralPointQuotEquivIsPrincipal`. -/
+def integralPointQuotEquivAssociates :
+    Quotient (MulAction.orbitRel (torsion K) (integralPoint K)) ≃ Associates (𝓞 K) := by
+  refine Equiv.ofBijective (Quotient.lift (integralPointToAssociates K)
+    fun _ _ h ↦ ((integralPointToAssociates_eq_iff _ _).mpr h).symm)
+    ⟨?_, (Quot.surjective_lift _).mpr (integralPointToAssociates_surjective K)⟩
+  convert Setoid.ker_lift_injective (integralPointToAssociates K)
+  all_goals
+  · ext a b
+    rw [Setoid.ker_def, eq_comm, integralPointToAssociates_eq_iff b a,
+      MulAction.orbitRel_apply, MulAction.mem_orbit_iff]
+
+@[simp]
+theorem integralPointQuotEquivAssociates_apply (a : integralPoint K) :
+    integralPointQuotEquivAssociates K ⟦a⟧ = ⟦preimageOfIntegralPoint a⟧ := rfl
+
+variable (K) in
+/-- The equivalence between `fundamentalCone.integralPoint K / torsion K` and the principal
+ideals of `𝓞 K`. -/
+def integralPointQuotEquivIsPrincipal :
+    Quotient (MulAction.orbitRel (torsion K) (integralPoint K)) ≃
+      {I : Ideal (𝓞 K) // Submodule.IsPrincipal I} :=
+  (integralPointQuotEquivAssociates K).trans (Ideal.associatesEquivIsPrincipal (𝓞 K))
+
+theorem integralPointQuotEquivIsPrincipal_apply (a : integralPoint K) :
+    integralPointQuotEquivIsPrincipal K ⟦a⟧ = Ideal.span {preimageOfIntegralPoint a} := by
+  rw [integralPointQuotEquivIsPrincipal, Equiv.trans_apply,
+    integralPointQuotEquivAssociates_apply, Ideal.associatesEquivIsPrincipal_apply]
+
+variable (K) in
+/-- The norm `mixedEmbedding.norm` defined on `fundamentalCone.integralPoint K` lifts to a function
+on the classes of `fundamentalCone.integralPoint K` modulo `torsion K`. -/
+def integralPointQuotNorm :
+    Quotient (MulAction.orbitRel (torsion K) (integralPoint K)) → ℝ := by
+  refine Quotient.lift (fun x ↦ mixedEmbedding.norm (x : E K)) fun a b ⟨u, hu⟩ ↦ ?_
+  simp_rw [← hu, integralPoint_torsionSMul_smul_coe, norm_unitSMul]
+
+theorem integralPointQuotNorm_apply (a : integralPoint K) :
+    integralPointQuotNorm K ⟦a⟧ = mixedEmbedding.norm (a : E K) := rfl
+
+theorem integralPointQuotNorm_eq_norm (a : integralPoint K) :
+    integralPointQuotNorm K ⟦a⟧ = |Algebra.norm ℤ (preimageOfIntegralPoint a)| := by
+  rw [integralPointQuotNorm_apply, ← image_preimageOfIntegralPoint, norm_eq_norm,
+    ← Algebra.coe_norm_int, Rat.cast_abs, Rat.cast_intCast, Int.cast_abs]
+
+theorem integralPointQuotNorm_eq_zero_iff
+    (q : Quotient (MulAction.orbitRel (torsion K) (integralPoint K))) :
+    integralPointQuotNorm K q = 0 ↔ Quotient.out' q = (0 : E K) := by
+  convert_to integralPointQuotNorm K ⟦Quotient.out' q⟧ = 0 ↔ Quotient.out' q = (0 : E K)
+  · rw [← @Quotient.mk''_eq_mk, Quotient.out_eq']
+  · rw [integralPointQuotNorm_apply, norm_eq_zero_iff' (by
+      rw [← image_preimageOfIntegralPoint]
+      exact Set.mem_range_self _)]
+
+variable (K) in
+/-- The equivalence between classes in `fundamentalCone.integralPoint K / torsion K` of norm `n`
+and the principal ideals of `𝓞 K` of norm `n`. -/
+def integralPointQuotNormEquivIsPrincipal (n : ℕ) :
+    { x // integralPointQuotNorm K x = n } ≃
+        { I : Ideal (𝓞 K) // Submodule.IsPrincipal I ∧ Ideal.absNorm I = n } := by
+  refine Equiv.trans ?_ (Equiv.subtypeSubtypeEquivSubtypeInter _ _)
+  refine Equiv.subtypeEquiv (integralPointQuotEquivIsPrincipal K) ?_
+  rintro ⟨a⟩
+  rw [show Quot.mk _ a = ⟦a⟧ by rfl, integralPointQuotEquivIsPrincipal_apply,
+    integralPointQuotNorm_eq_norm, Ideal.absNorm_span_singleton, Int.abs_eq_natAbs,
+    Int.cast_natCast, Nat.cast_inj]
+
+/-- For `n` positive, the number of principal ideals in `𝓞 K` of norm `n` multiplied by the number
+of roots of unity in `K` is equal to the number of `fundamentalCone.integralPoint K` of
+norm `n`. -/
+theorem card_isPrincipal_norm_mul {n : ℕ} (hn : 1 ≤ n) :
+    Nat.card {I : Ideal (𝓞 K) // Submodule.IsPrincipal I ∧ Ideal.absNorm I = n} *
+      Fintype.card (torsion K) =
+        Nat.card ({a : integralPoint K // mixedEmbedding.norm (a : E K) = n}) := by
+  rw [← Nat.card_congr (integralPointQuotNormEquivIsPrincipal K n), ← Nat.card_eq_fintype_card,
+    ← Nat.card_prod]
+  refine Nat.card_congr (Equiv.symm ?_)
+  refine (Equiv.subtypeEquiv (q := fun s ↦ integralPointQuotNorm K s.fst = n)
+    (MulAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integralPoint K))
+      fun _ ↦ ?_).trans  ?_
+  · simp only [MulAction.selfEquivSigmaOrbitsQuotientStabilizer,
+      MulAction.selfEquivSigmaOrbitsQuotientStabilizer', MulAction.selfEquivSigmaOrbits',
+      Quotient.mk'_eq_mk, Equiv.instTransSortSortSortEquivEquivEquiv_trans, Equiv.trans_apply,
+      Equiv.sigmaCongrRight_apply, Equiv.sigmaFiberEquiv_symm_apply_fst, Equiv.Set.ofEq_apply,
+      integralPointQuotNorm_apply]
+  · refine (@Equiv.subtypeSigmaEquiv _ _ (fun q ↦ integralPointQuotNorm K q = n)).trans
+      (Equiv.sigmaEquivProdOfEquiv fun ⟨_, h⟩ ↦ ?_)
+    rw [integralPoint_torsionSMul_stabilizer]
+    exact QuotientGroup.quotientBot.toEquiv
+    rw [ne_eq, ← integralPointQuotNorm_eq_zero_iff, h, Nat.cast_eq_zero, ← ne_eq]
+    linarith
 
 end fundamentalCone
 
