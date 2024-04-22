@@ -49,8 +49,8 @@ def polarCoord : PartialHomeomorph (ℝ × ℝ) (ℝ × ℝ) where
       true_and_iff, Complex.arg_lt_pi_iff]
     constructor
     · cases' hxy with hxy hxy
-      · dsimp at hxy; linarith [sq_pos_of_ne_zero _ hxy.ne', sq_nonneg y]
-      · linarith [sq_nonneg x, sq_pos_of_ne_zero _ hxy]
+      · dsimp at hxy; linarith [sq_pos_of_ne_zero hxy.ne', sq_nonneg y]
+      · linarith [sq_nonneg x, sq_pos_of_ne_zero hxy]
     · cases' hxy with hxy hxy
       · exact Or.inl (le_of_lt hxy)
       · exact Or.inr hxy
@@ -141,12 +141,12 @@ theorem integral_comp_polarCoord_symm {E : Type*} [NormedAddCommGroup E] [Normed
   calc
     ∫ p, f p = ∫ p in polarCoord.source, f p := by
       rw [← integral_univ]
-      apply set_integral_congr_set_ae
+      apply setIntegral_congr_set_ae
       exact polarCoord_source_ae_eq_univ.symm
     _ = ∫ p in polarCoord.target, abs (B p).det • f (polarCoord.symm p) := by
       apply integral_target_eq_integral_abs_det_fderiv_smul volume A
     _ = ∫ p in polarCoord.target, p.1 • f (polarCoord.symm p) := by
-      apply set_integral_congr polarCoord.open_target.measurableSet fun x hx => ?_
+      apply setIntegral_congr polarCoord.open_target.measurableSet fun x hx => ?_
       rw [B_det, abs_of_pos]
       exact hx.1
 #align integral_comp_polar_coord_symm integral_comp_polarCoord_symm

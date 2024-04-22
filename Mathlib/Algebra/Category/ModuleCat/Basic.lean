@@ -181,6 +181,8 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
   i
 #align Module.of_unique ModuleCat.ofUnique
 
+@[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
+
 -- Porting note: the simpNF linter complains, but we really need this?!
 -- @[simp, nolint simpNF]
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
@@ -447,5 +449,18 @@ lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
 
 end
+
+instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where
+  reflects f _ :=
+    (inferInstance : IsIso ((LinearEquiv.mk f
+      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
+      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
+
+instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphisms where
+  reflects f _ := by
+    have : IsIso ((forget _).map f) := by
+      change IsIso ((forget _).map ((forget₂ _ AddCommGroupCat).map f))
+      infer_instance
+    apply isIso_of_reflects_iso _ (forget _)
 
 end ModuleCat

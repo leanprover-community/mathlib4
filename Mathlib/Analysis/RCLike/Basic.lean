@@ -987,7 +987,7 @@ theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 #align is_R_or_C.continuous_re RCLike.continuous_re
@@ -1019,7 +1019,7 @@ theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
 #align is_R_or_C.continuous_im RCLike.continuous_im

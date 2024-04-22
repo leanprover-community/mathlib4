@@ -153,7 +153,7 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
   simp_rw [norm_circle_smul]
   --* Show integral can be taken over A only.
   have int_A : ∫ v : V, ‖f v - f (v + i w)‖ = ∫ v in A, ‖f v - f (v + i w)‖ := by
-    refine' (set_integral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
+    refine' (setIntegral_eq_integral_of_forall_compl_eq_zero fun v hv => _).symm
     dsimp only [A] at hv
     simp only [mem_setOf, not_le] at hv
     rw [hR_bd v _, hR_bd (v + i w) _, sub_zero, norm_zero]
@@ -175,14 +175,14 @@ theorem tendsto_integral_exp_inner_smul_cocompact_of_continuous_compact_support 
     rw [sub_add_cancel_left, norm_neg, hw'_nm, ← div_div, div_lt_iff (norm_pos_iff.mpr hw_ne), ←
       div_lt_iff' hδ1, div_div]
     exact (lt_add_of_pos_left _ one_half_pos).trans_le hw_bd
-  have bdA2 := norm_set_integral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
+  have bdA2 := norm_setIntegral_le_of_norm_le_const (hB_vol.trans_lt ENNReal.coe_lt_top) bdA ?_
   swap
   · apply Continuous.aestronglyMeasurable
     exact
       continuous_norm.comp <|
         Continuous.sub hf1 <| Continuous.comp hf1 <| continuous_id'.add continuous_const
   have : ‖_‖ = ∫ v : V in A, ‖f v - f (v + i w)‖ :=
-    Real.norm_of_nonneg (set_integral_nonneg mA fun x _ => norm_nonneg _)
+    Real.norm_of_nonneg (setIntegral_nonneg mA fun x _ => norm_nonneg _)
   rw [this] at bdA2
   refine' bdA2.trans_lt _
   rw [div_mul_eq_mul_div, div_lt_iff (NNReal.coe_pos.mpr hB_pos), mul_comm (2 : ℝ), mul_assoc,

@@ -1093,15 +1093,40 @@ theorem basis_repr_symm_apply (a : A) (i : ι) :
   simp [Equiv.uniqueProd_symm_apply, basisAux]
 
 @[simp]
-theorem basis_apply (i : ι) :
-    Algebra.TensorProduct.basis A b i = 1 ⊗ₜ b i :=
-  Algebra.TensorProduct.basis_repr_symm_apply b 1 i
+theorem basis_apply (i : ι) : basis A b i = 1 ⊗ₜ b i := basis_repr_symm_apply b 1 i
 
-theorem basis_repr_symm_apply' (a : A) (i : ι) :
-    a • Algebra.TensorProduct.basis A b i = a ⊗ₜ b i := by
+theorem basis_repr_symm_apply' (a : A) (i : ι) : a • basis A b i = a ⊗ₜ b i := by
   simpa using basis_repr_symm_apply b a i
 
+section baseChange
+
+open LinearMap
+
+variable [Fintype ι] [DecidableEq ι]
+variable {ι' N : Type*} [Fintype ι'] [DecidableEq ι'] [AddCommMonoid N] [Module R N]
+variable (A : Type*) [CommSemiring A] [Algebra R A]
+
+lemma _root_.Basis.baseChange_linearMap (b : Basis ι R M) (b' : Basis ι' R N) (ij : ι × ι') :
+    baseChange A (b'.linearMap b ij) = (basis A b').linearMap (basis A b) ij := by
+  apply (basis A b').ext
+  intro k
+  conv_lhs => simp only [basis_apply, baseChange_tmul]
+  simp_rw [Basis.linearMap_apply_apply, basis_apply]
+  split <;> simp only [TensorProduct.tmul_zero]
+
+lemma _root_.Basis.baseChange_end (b : Basis ι R M) (ij : ι × ι) :
+    baseChange A (b.end ij) = (basis A b).end ij :=
+  b.baseChange_linearMap A b ij
+
+end baseChange
+
 end Basis
+
+instance (R A M : Type*)
+    [CommSemiring R] [AddCommMonoid M] [Module R M] [Module.Free R M]
+    [CommSemiring A] [Algebra R A] :
+    Module.Free A (A ⊗[R] M) :=
+  Module.Free.of_basis <| Algebra.TensorProduct.basis A (Module.Free.chooseBasis R M)
 
 end TensorProduct
 
@@ -1121,6 +1146,51 @@ lemma toMatrix_baseChange (f : M₁ →ₗ[R] M₂) (b₁ : Basis ι R M₁) (b�
     toMatrix (basis A b₁) (basis A b₂) (f.baseChange A) =
     (toMatrix b₁ b₂ f).map (algebraMap R A) := by
   ext; simp [toMatrix_apply]
+
+end LinearMap
+
+namespace LinearMap
+
+variable (R A M N : Type*) [CommRing R] [CommRing A] [Algebra R A]
+variable [AddCommGroup M] [Module R M] [AddCommGroup N] [Module R N]
+
+open Module
+open scoped TensorProduct
+
+/-- The natural linear map $A ⊗ \text{Hom}_R(M, N) → \text{Hom}_A (M_A, N_A)$,
+where $M_A$ and $N_A$ are the respective modules over $A$ obtained by extension of scalars.
+
+See `LinearMap.tensorProductEnd` for this map specialized to endomorphisms,
+and bundled as `A`-algebra homomorphism. -/
+@[simps!]
+noncomputable
+def tensorProduct : A ⊗[R] (M →ₗ[R] N) →ₗ[A] (A ⊗[R] M) →ₗ[A] (A ⊗[R] N) :=
+  TensorProduct.AlgebraTensorModule.lift <|
+  { toFun := fun a ↦ a • baseChangeHom R A M N
+    map_add' := by simp only [add_smul, forall_true_iff]
+    map_smul' := by simp only [smul_assoc, RingHom.id_apply, forall_true_iff] }
+
+/-- The natural `A`-algebra homomorphism $A ⊗ (\text{End}_R M) → \text{End}_A (A ⊗ M)$,
+where `M` is an `R`-module, and `A` an `R`-algebra. -/
+@[simps!]
+noncomputable
+def tensorProductEnd : A ⊗[R] (End R M) →ₐ[A] End A (A ⊗[R] M) :=
+  Algebra.TensorProduct.algHomOfLinearMapTensorProduct
+    (LinearMap.tensorProduct R A M M)
+    (fun a b f g ↦ by
+      apply LinearMap.ext
+      intro x
+      simp only [tensorProduct, mul_comm a b, mul_eq_comp,
+        TensorProduct.AlgebraTensorModule.lift_apply, TensorProduct.lift.tmul, coe_restrictScalars,
+        coe_mk, AddHom.coe_mk, mul_smul, smul_apply, baseChangeHom_apply, baseChange_comp,
+        comp_apply, Algebra.mul_smul_comm, Algebra.smul_mul_assoc])
+    (by
+      apply LinearMap.ext
+      intro x
+      simp only [tensorProduct, TensorProduct.AlgebraTensorModule.lift_apply,
+        TensorProduct.lift.tmul, coe_restrictScalars, coe_mk, AddHom.coe_mk, one_smul,
+        baseChangeHom_apply, baseChange_eq_ltensor, one_apply, one_eq_id, lTensor_id,
+        LinearMap.id_apply])
 
 end LinearMap
 
@@ -1152,7 +1222,7 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
-theorem Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
