@@ -135,7 +135,7 @@ lemma Kernel.apply_eq_measure_condKernel_of_compProd_eq
     ext s hs
     conv_lhs => rw [← hκ]
     rw [Measure.compProd_apply hs, Kernel.compProd_apply hs]
-    rfl
+    simp [comap_apply', preimage, coe_fst]
   have h := eq_condKernel_of_measure_eq_compProd _ this
   rw [Kernel.fst_apply]
   filter_upwards [h] with b hb
