@@ -272,15 +272,15 @@ theorem tendsto_pow_atTop_nhds_zero_of_norm_lt_one {R : Type*} [NormedRing R] {x
   apply squeeze_zero_norm' (eventually_norm_pow_le x)
   exact tendsto_pow_atTop_nhds_zero_of_lt_one (norm_nonneg _) h
 #align tendsto_pow_at_top_nhds_0_of_norm_lt_1 tendsto_pow_atTop_nhds_zero_of_norm_lt_one
-@[deprecated] alias tendsto_pow_atTop_nhds_0_of_norm_lt_1 :=
-  tendsto_pow_atTop_nhds_zero_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias tendsto_pow_atTop_nhds_0_of_norm_lt_1 := tendsto_pow_atTop_nhds_zero_of_norm_lt_one
 
 theorem tendsto_pow_atTop_nhds_zero_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     Tendsto (fun n : ℕ ↦ r ^ n) atTop (𝓝 0) :=
   tendsto_pow_atTop_nhds_zero_of_norm_lt_one h
 #align tendsto_pow_at_top_nhds_0_of_abs_lt_1 tendsto_pow_atTop_nhds_zero_of_abs_lt_one
-@[deprecated] alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 :=
-  tendsto_pow_atTop_nhds_zero_of_abs_lt_one
+@[deprecated] -- 2024-01-31
+alias tendsto_pow_atTop_nhds_0_of_abs_lt_1 := tendsto_pow_atTop_nhds_zero_of_abs_lt_one
 
 /-! ### Geometric series-/
 
@@ -299,33 +299,35 @@ theorem hasSum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : HasSum (fun n : ℕ
   · simpa [geom_sum_eq, xi_ne_one, neg_inv, div_eq_mul_inv] using A
   · simp [norm_pow, summable_geometric_of_lt_one (norm_nonneg _) h]
 #align has_sum_geometric_of_norm_lt_1 hasSum_geometric_of_norm_lt_one
-@[deprecated] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one
+@[deprecated] alias hasSum_geometric_of_norm_lt_1 := hasSum_geometric_of_norm_lt_one -- 2024-01-31
 
 theorem summable_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : Summable fun n : ℕ ↦ ξ ^ n :=
   ⟨_, hasSum_geometric_of_norm_lt_one h⟩
 #align summable_geometric_of_norm_lt_1 summable_geometric_of_norm_lt_one
-@[deprecated] alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias summable_geometric_of_norm_lt_1 := summable_geometric_of_norm_lt_one
 
 theorem tsum_geometric_of_norm_lt_one (h : ‖ξ‖ < 1) : ∑' n : ℕ, ξ ^ n = (1 - ξ)⁻¹ :=
   (hasSum_geometric_of_norm_lt_one h).tsum_eq
 #align tsum_geometric_of_norm_lt_1 tsum_geometric_of_norm_lt_one
-@[deprecated] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one
+@[deprecated] alias tsum_geometric_of_norm_lt_1 := tsum_geometric_of_norm_lt_one -- 2024-01-31
 
 theorem hasSum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) :
     HasSum (fun n : ℕ ↦ r ^ n) (1 - r)⁻¹ :=
   hasSum_geometric_of_norm_lt_one h
 #align has_sum_geometric_of_abs_lt_1 hasSum_geometric_of_abs_lt_one
-@[deprecated] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one
+@[deprecated] alias hasSum_geometric_of_abs_lt_1 := hasSum_geometric_of_abs_lt_one -- 2024-01-31
 
 theorem summable_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : Summable fun n : ℕ ↦ r ^ n :=
   summable_geometric_of_norm_lt_one h
 #align summable_geometric_of_abs_lt_1 summable_geometric_of_abs_lt_one
-@[deprecated] alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
+@[deprecated] -- 2024-01-31
+alias summable_geometric_of_abs_lt_1 := summable_geometric_of_abs_lt_one
 
 theorem tsum_geometric_of_abs_lt_one {r : ℝ} (h : |r| < 1) : ∑' n : ℕ, r ^ n = (1 - r)⁻¹ :=
   tsum_geometric_of_norm_lt_one h
 #align tsum_geometric_of_abs_lt_1 tsum_geometric_of_abs_lt_one
-@[deprecated] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one
+@[deprecated] alias tsum_geometric_of_abs_lt_1 := tsum_geometric_of_abs_lt_one -- 2024-01-31
 
 /-- A geometric series in a normed field is summable iff the norm of the common ratio is less than
 one. -/
@@ -338,7 +340,8 @@ theorem summable_geometric_iff_norm_lt_one : (Summable fun n : ℕ ↦ ξ ^ n) �
   rw [← one_pow k] at hk
   exact lt_of_pow_lt_pow_left _ zero_le_one hk
 #align summable_geometric_iff_norm_lt_1 summable_geometric_iff_norm_lt_one
-@[deprecated] alias summable_geometric_iff_norm_lt_1 := summable_geometric_iff_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias summable_geometric_iff_norm_lt_1 := summable_geometric_iff_norm_lt_one
 
 end Geometric
 
@@ -350,15 +353,15 @@ theorem summable_norm_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R
   exact summable_of_isBigO_nat (summable_geometric_of_lt_one ((norm_nonneg _).trans hrr'.le) h)
     (isLittleO_pow_const_mul_const_pow_const_pow_of_norm_lt _ hrr').isBigO.norm_left
 #align summable_norm_pow_mul_geometric_of_norm_lt_1 summable_norm_pow_mul_geometric_of_norm_lt_one
-@[deprecated] alias summable_norm_pow_mul_geometric_of_norm_lt_1 :=
-  summable_norm_pow_mul_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias summable_norm_pow_mul_geometric_of_norm_lt_1 := summable_norm_pow_mul_geometric_of_norm_lt_one
 
 theorem summable_pow_mul_geometric_of_norm_lt_one {R : Type*} [NormedRing R] [CompleteSpace R]
     (k : ℕ) {r : R} (hr : ‖r‖ < 1) : Summable (fun n ↦ (n : R) ^ k * r ^ n : ℕ → R) :=
   .of_norm <| summable_norm_pow_mul_geometric_of_norm_lt_one _ hr
 #align summable_pow_mul_geometric_of_norm_lt_1 summable_pow_mul_geometric_of_norm_lt_one
-@[deprecated] alias summable_pow_mul_geometric_of_norm_lt_1 :=
-  summable_pow_mul_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias summable_pow_mul_geometric_of_norm_lt_1 := summable_pow_mul_geometric_of_norm_lt_one
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`, `HasSum` version. -/
 theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRing 𝕜] [CompleteSpace 𝕜]
@@ -387,15 +390,16 @@ theorem hasSum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRi
       simp [add_mul, tsum_add A B.summable, mul_add, B.tsum_eq, ← div_eq_mul_inv, sq,
         div_mul_eq_div_div_swap]
 #align has_sum_coe_mul_geometric_of_norm_lt_1 hasSum_coe_mul_geometric_of_norm_lt_one
-@[deprecated] alias hasSum_coe_mul_geometric_of_norm_lt_1 :=
-  hasSum_coe_mul_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias hasSum_coe_mul_geometric_of_norm_lt_1 := hasSum_coe_mul_geometric_of_norm_lt_one
 
 /-- If `‖r‖ < 1`, then `∑' n : ℕ, n * r ^ n = r / (1 - r) ^ 2`. -/
 theorem tsum_coe_mul_geometric_of_norm_lt_one {𝕜 : Type*} [NormedDivisionRing 𝕜] [CompleteSpace 𝕜]
     {r : 𝕜} (hr : ‖r‖ < 1) : (∑' n : ℕ, n * r ^ n : 𝕜) = r / (1 - r) ^ 2 :=
   (hasSum_coe_mul_geometric_of_norm_lt_one hr).tsum_eq
 #align tsum_coe_mul_geometric_of_norm_lt_1 tsum_coe_mul_geometric_of_norm_lt_one
-@[deprecated] alias tsum_coe_mul_geometric_of_norm_lt_1 := tsum_coe_mul_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias tsum_coe_mul_geometric_of_norm_lt_1 := tsum_coe_mul_geometric_of_norm_lt_one
 
 end MulGeometric
 
@@ -497,8 +501,8 @@ theorem NormedRing.summable_geometric_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
   have h1 : Summable fun n : ℕ ↦ ‖x‖ ^ n := summable_geometric_of_lt_one (norm_nonneg _) h
   h1.of_norm_bounded_eventually_nat _ (eventually_norm_pow_le x)
 #align normed_ring.summable_geometric_of_norm_lt_1 NormedRing.summable_geometric_of_norm_lt_one
-@[deprecated] alias NormedRing.summable_geometric_of_norm_lt_1 :=
-  NormedRing.summable_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias NormedRing.summable_geometric_of_norm_lt_1 := NormedRing.summable_geometric_of_norm_lt_one
 
 /-- Bound for the sum of a geometric series in a normed ring. This formula does not assume that the
 normed ring satisfies the axiom `‖1‖ = 1`. -/
@@ -513,8 +517,8 @@ theorem NormedRing.tsum_geometric_of_norm_lt_one (x : R) (h : ‖x‖ < 1) :
     simp
   linarith
 #align normed_ring.tsum_geometric_of_norm_lt_1 NormedRing.tsum_geometric_of_norm_lt_one
-@[deprecated] alias NormedRing.tsum_geometric_of_norm_lt_1 :=
-  NormedRing.tsum_geometric_of_norm_lt_one
+@[deprecated] -- 2024-01-31
+alias NormedRing.tsum_geometric_of_norm_lt_1 := NormedRing.tsum_geometric_of_norm_lt_one
 
 theorem geom_series_mul_neg (x : R) (h : ‖x‖ < 1) : (∑' i : ℕ, x ^ i) * (1 - x) = 1 := by
   have := (NormedRing.summable_geometric_of_norm_lt_one x h).hasSum.mul_right (1 - x)
