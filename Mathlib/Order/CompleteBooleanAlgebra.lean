@@ -470,13 +470,13 @@ theorem compl_sSup' : (sSup s)ᶜ = sInf (HasCompl.compl '' s) :=
   compl_sSup.trans sInf_image.symm
 #align compl_Sup' compl_sSup'
 
-lemma iSup_symmDiff_iSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α] {f g : ι → α} :
+theorem iSup_symmDiff_iSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α] {f g : ι → α} :
     symmDiff (⨆ i, f i) (⨆ i, g i) ≤ ⨆ i, (symmDiff (f i) (g i)) := by
   simp_rw [symmDiff_le_iff, ← iSup_sup_eq]
   exact ⟨iSup_mono (fun i ↦ sup_comm (α := α) .. ▸ le_symmDiff_sup ..),
     iSup_mono fun i ↦ sup_comm (α := α) .. ▸ symmDiff_comm (α := α) .. ▸ le_symmDiff_sup ..⟩
 
-lemma biSup_symmDiff_biSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α] {p : ι → Prop}
+theorem biSup_symmDiff_biSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α] {p : ι → Prop}
     {f g : (i : ι) → p i → α} :
     symmDiff (⨆ i, ⨆ (h : p i), f i h) (⨆ i, ⨆ (h : p i), g i h) ≤
     ⨆ i, ⨆ (h : p i), (symmDiff (f i h) (g i h)) :=
