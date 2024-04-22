@@ -94,6 +94,47 @@ end
 
 section
 
+variable [HasZeroMorphisms C] {I : Type*} (X : I → C) {J : Type*} (ι : J → I)
+  [HasCoproduct (X ∘ ι)] (hι : Function.Injective ι)
+  (hX : ∀ (i : I), ¬ i ∈ Set.range ι → IsZero (X i))
+
+open Classical in
+@[simps! pt]
+noncomputable def cofanOfIsZero : Cofan X := Cofan.mk (∐ (X ∘ ι)) (fun i =>
+  if hi : i ∈ Set.range ι
+  then eqToHom (by
+    congr
+    exact hi.choose_spec.symm) ≫ Sigma.ι _ hi.choose
+  else 0)
+
+lemma cofanOfIsZero_inj (j : J) :
+    (cofanOfIsZero X ι).inj (ι j) = Sigma.ι (X ∘ ι) j := by
+  dsimp [cofanOfIsZero]
+  have hi : ι j ∈ Set.range ι := ⟨j, rfl⟩
+  rw [dif_pos hi]
+  apply Sigma.eqToHom_comp_ι (X ∘ ι)
+  exact (hι hi.choose_spec).symm
+
+noncomputable def isColimitCofanOfIsZero : IsColimit (cofanOfIsZero X ι) :=
+  mkCofanColimit _ (fun s => Sigma.desc (fun j => s.inj (ι j)))
+    (fun s i => by
+      by_cases hi : i ∈ Set.range ι
+      · obtain ⟨j, rfl⟩ := hi
+        dsimp
+        simp [cofanOfIsZero_inj _ _ hι]
+      · apply (hX i hi).eq_of_src)
+    (fun s m hm => by
+      dsimp
+      ext j
+      simp only [colimit.ι_desc, Cofan.mk_ι_app, ← hm, cofanOfIsZero_inj _ _ hι])
+
+lemma hasCoproduct_of_isZero : HasCoproduct X :=
+  ⟨_, isColimitCofanOfIsZero X ι hι hX⟩
+
+end
+
+section
+
 variable {I : Type*} (X : I → C) (i : I)
     (hX : ∀ j, j ≠ i → IsZero (X j))
 
