@@ -440,6 +440,16 @@ lemma quasiIso_of_arrow_mk_iso (φ : K ⟶ L) (φ' : K' ⟶ L') (e : Arrow.mk φ
     [hφ : QuasiIso φ] : QuasiIso φ' := by
   simpa only [← quasiIso_iff_of_arrow_mk_iso φ φ' e]
 
+lemma quasiIso_iff_acyclic (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    (hK : K.Acyclic) :
+    QuasiIso f ↔ L.Acyclic := by
+  simp only [quasiIso_iff, acyclic_iff, fun i => quasiIsoAt_iff_exactAt f i (hK i)]
+
+lemma quasiIso_iff_acyclic' (f : K ⟶ L) [∀ i, K.HasHomology i] [∀ i, L.HasHomology i]
+    (hL : L.Acyclic) :
+    QuasiIso f ↔ K.Acyclic := by
+  simp only [quasiIso_iff, acyclic_iff, fun i => quasiIsoAt_iff_exactAt' f i (hL i)]
+
 namespace HomologicalComplex
 
 section PreservesHomology

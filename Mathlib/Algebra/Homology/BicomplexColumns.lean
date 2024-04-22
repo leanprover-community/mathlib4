@@ -559,14 +559,13 @@ lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up 
       intro x hx
       obtain rfl : x₁ + 1 = x := by simpa using hx
       dsimp
-      rw [quasiIso_iff]
-      intro i
-      rw [quasiIsoAt_iff_exactAt] -- better quasiIso_iff_acyclic
-      · apply ShortComplex.exact_of_isZero_X₂
-        dsimp
+      rw [quasiIso_iff_acyclic]
+      · apply HomologicalComplex.acyclic_of_isZero
+        apply total.isZero
         sorry
-      · apply ShortComplex.exact_of_isZero_X₂
+      · apply HomologicalComplex.acyclic_of_isZero
+        apply total.isZero
         sorry
-  | succ k => sorry -/
+  | succ k => sorry-/
 
 end HomologicalComplex₂

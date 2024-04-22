@@ -427,6 +427,10 @@ noncomputable def mapIso : K.total c₁₂ ≅ L.total c₁₂ where
   hom_inv_id := by rw [← map_comp, e.hom_inv_id, map_id]
   inv_hom_id := by rw [← map_comp, e.inv_hom_id, map_id]
 
+lemma isZero (hK : IsZero K) : IsZero (K.total c₁₂) := by
+  rw [IsZero.iff_id_eq_zero, ← map_id, hK.eq_of_src (𝟙 K) 0,
+    map_zero]
+
 end total
 
 section
