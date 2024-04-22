@@ -7,6 +7,7 @@ import ImportGraph
 import Mathlib.Data.String.Defs
 import Std.Lean.Util.Path
 import Cli
+import LongestPole.SpeedCenterJson
 
 /-!
 # `lake exe pole`
@@ -14,13 +15,9 @@ import Cli
 Longest pole analysis for Mathlib build times.
 -/
 
-set_option autoImplicit true
 
 open Cli
-
 open Lean Meta
-
-open Lean Core System
 
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
@@ -38,45 +35,18 @@ namespace SpeedCenterAPI
 def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
   runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
-structure CommitSource where
-  repo_id : String
-  hash : String
-deriving ToJson, FromJson
-
-structure Source where
-  source : CommitSource
-deriving ToJson, FromJson
-
-structure Dimension where
-  benchmark : String
-  metric : String
-  unit : String
-deriving ToJson, FromJson
-
-structure Measurement where
-  dimension : Dimension
-  value : Float
-deriving ToJson, FromJson
-
-structure Result where
-  measurements : List Measurement
-deriving ToJson, FromJson
-
-structure Run where
-  id : String
-  source : Source
-  result : Result
-deriving ToJson, FromJson
-
-structure RunResponse where
-  run : Run
-deriving ToJson, FromJson
-
-structure Message where
-  repo_id : String
-  message : String
-  commit_hash : String
-deriving ToJson, FromJson
+def getRunResponse (hash : String) : IO RunResponse := do
+  let r ← runJson hash
+  match Json.parse r with
+  | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
+  | .ok j => match fromJson? j with
+    | .ok v => pure v
+    | .error e => match fromJson? j with
+      | .ok (v : ErrorMessage) =>
+        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
+        IO.eprintln s!"Try moving to an older commit?"
+        IO.Process.exit 1
+      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
 def RunResponse.instructions (response : RunResponse) :
     NameMap Float := Id.run do
@@ -86,19 +56,6 @@ def RunResponse.instructions (response : RunResponse) :
     if n.startsWith "~" then
       r := r.insert (n.drop 1).toName m.value
   return r
-
-def getRunResponse (hash : String) : IO RunResponse := do
-  let r ← runJson hash
-  match Json.parse r with
-  | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
-  | .ok j => match fromJson? j with
-    | .ok v => pure v
-    | .error e => match fromJson? j with
-      | .ok (v : Message) =>
-        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
-        IO.eprintln s!"Try moving to an older commit?"
-        IO.Process.exit 1
-      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
 def instructions (run : String) : IO (NameMap Float) :=
   return (← getRunResponse run).instructions
@@ -144,7 +101,6 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
-open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let to := match args.flag? "to" with
@@ -161,13 +117,14 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let slowest := slowestParents cumulative graph
     let mut table := #[]
     let mut n := some to
-    while n != none do
-      let i := instructions.find! n.get!
-      let c := cumulative.find! n.get!
-      let t := total.find! n.get!
+    while hn : n.isSome do
+      let n' := n.get hn
+      let i := instructions.find! n'
+      let c := cumulative.find! n'
+      let t := total.find! n'
       let r := (t / c).toStringDecimals 2
-      table := table.push (n.get!, i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
-      n := slowest.find? n.get!
+      table := table.push (n', i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
+      n := slowest.find? n'
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
     IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
     IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
