@@ -388,6 +388,7 @@ theorem quotientMap_mk : QuotientMap (mk : X → SeparationQuotient X) :=
   quotientMap_quot_mk
 #align separation_quotient.quotient_map_mk SeparationQuotient.quotientMap_mk
 
+@[fun_prop, continuity]
 theorem continuous_mk : Continuous (mk : X → SeparationQuotient X) :=
   continuous_quot_mk
 #align separation_quotient.continuous_mk SeparationQuotient.continuous_mk
