@@ -1016,7 +1016,7 @@ theorem mk_le_mk_of_dvd {a b : α} : a ∣ b → Associates.mk a ≤ Associates.
 theorem mk_le_mk_iff_dvd {a b : α} : Associates.mk a ≤ Associates.mk b ↔ a ∣ b := mk_dvd_mk
 #align associates.mk_le_mk_iff_dvd_iff Associates.mk_le_mk_iff_dvd
 
-@[deprecated] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd
+@[deprecated] alias mk_le_mk_iff_dvd_iff := mk_le_mk_iff_dvd -- 2024-04-17
 
 @[simp]
 theorem isPrimal_mk {a : α} : IsPrimal (Associates.mk a) ↔ IsPrimal a := by
