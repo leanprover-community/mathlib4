@@ -133,6 +133,12 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
   transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
     fun t n' => t + ((instructions.find? n').getD 0)
 
+/-- Convert a float to a string with a fixed number of decimal places. -/
+def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
+  match r.toString.split (· = '.') with
+  | [a, b] => a ++ "." ++ b.take digits
+  | _ => r.toString
+
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -154,10 +160,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       let i := instructions.find! n.get!
       let c := cumulative.find! n.get!
       let t := total.find! n.get!
-      let r := (t / c).toString
-      let r := match r.split (· = '.') with
-      | [a, b] => a ++ "." ++ b.take 2
-      | _ => r
+      let r := (t / c).toStringDecimals 2
       table := table.push (n.get!, i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
       n := slowest.find? n.get!
     let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
