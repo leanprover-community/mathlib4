@@ -201,6 +201,7 @@ noncomputable def sectionDiag : ℕᵒᵖ ⥤ AlgebraCat A where
     change _ = AlgebraCat.ofHom (AlgHom.comp (transitionMap f _ _ _) (transitionMap f _ _ _))
     simp
 
+@[simps]
 noncomputable def sectionDiagCone : Cone (sectionDiag f) where
   pt := AlgebraCat.of A B
   π := {
@@ -217,6 +218,14 @@ local notation "R^" => (limit (sectionDiag f) : AlgebraCat A)
 noncomputable def section' : B →ₐ[A] R^ :=
   limit.lift (sectionDiag f) (sectionDiagCone f hf)
 
+@[simp]
+lemma section'_π_apply (m : ℕ) (b : B) :
+    limit.π (sectionDiag f) ⟨m⟩ (section' f hf b) = sectionAux f hf m b := by
+  simp only [section']
+  change (limit.lift (sectionDiag f) (sectionDiagCone f hf) ≫ limit.π (sectionDiag f) ⟨m⟩) b = sectionAux f hf m b
+  simp
+  rfl
+
 /-- The canonical projection from the `I`-adic completion of `R` to `B`. -/
 noncomputable def proj : R^ →ₐ[A] B :=
   let p : R^ →ₐ[A] (R ⧸ (I ^ 1)) := limit.π (sectionDiag f) ⟨1⟩
@@ -228,13 +237,29 @@ noncomputable def proj : R^ →ₐ[A] B :=
 
 /-- The constructed section is indeed a section for `proj`. -/
 theorem section'_isSection :
-    AlgHom.comp (proj f hf) (section' f hf) = AlgHom.id A B :=
-  sorry
+    AlgHom.comp (proj f hf) (section' f hf) = AlgHom.id A B := by
+  simp only [proj]
+  apply AlgHom.cancel_surjective (Ideal.quotientKerAlgEquivOfSurjective hf).toAlgHom
+    (EquivLike.surjective (Ideal.quotientKerAlgEquivOfSurjective hf))
+  apply AlgHom.cancel_surjective (Ideal.Quotient.mkₐ A I) (Ideal.Quotient.mkₐ_surjective _ _)
+  ext b
+  simp only [AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe, Ideal.Quotient.mkₐ_eq_mk,
+    Function.comp_apply, AlgHom.id_comp]
+  erw [section'_π_apply]
+  simp only [sectionAux, sectionAux', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_coe,
+    AlgEquiv.trans_apply, AlgEquiv.symm_apply_apply, Ideal.quotientEquivAlgOfEq_mk]
 
 --/-- TODO: `R^` is flat as `R`-algebra (uses `R` Noetherian). -/
 --instance : Algebra.Flat R (R^ : AlgebraCat A) := sorry
 --
 --instance : Algebra.Flat A R^ := sorry
+
+noncomputable instance : Algebra A R^ := inferInstance
+noncomputable instance : Ring R^ := inferInstance
+
+-- Currently this does not work, because the limit is taken in `AlgebarCat` which is the category
+-- of not necessarily commutative algebras over `R`. Unfortunately `CommAlgebraCat` does not seem to exist.
+--noncomputable instance : CommRing R^ := inferInstance
 
 instance : Module.Flat A R^ := sorry
 
