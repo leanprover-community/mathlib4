@@ -1150,7 +1150,10 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then
       by subst u; exact Walk.nil
     else
-      cons r (takeUntil p u <| by cases h; exact (hx rfl).elim; assumption)
+      cons r (takeUntil p u <| by
+        cases h
+        · exact (hx rfl).elim
+        · assumption)
 #align simple_graph.walk.take_until SimpleGraph.Walk.takeUntil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
@@ -1162,7 +1165,10 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then by
       subst u
       exact cons r p
-    else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
+    else dropUntil p u <| by
+      cases h
+      · exact (hx rfl).elim
+      · assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
@@ -1491,7 +1497,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     simp only [bypass]
     split_ifs
     · trans
-      apply length_dropUntil_le
+      · apply length_dropUntil_le
       rw [length_cons]
       exact le_add_right ih
     · rw [length_cons, length_cons]

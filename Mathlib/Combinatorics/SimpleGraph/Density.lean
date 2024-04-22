@@ -255,8 +255,8 @@ theorem abs_edgeDensity_sub_edgeDensity_le_two_mul (hs : s₂ ⊆ s₁) (ht : t�
   rw [two_mul]
   refine' (abs_sub _ _).trans (add_le_add (le_trans _ h) (le_trans _ h)) <;>
     · rw [abs_of_nonneg]
-      exact mod_cast edgeDensity_le_one r _ _
-      exact mod_cast edgeDensity_nonneg r _ _
+      · exact mod_cast edgeDensity_le_one r _ _
+      · exact mod_cast edgeDensity_nonneg r _ _
 #align rel.abs_edge_density_sub_edge_density_le_two_mul Rel.abs_edgeDensity_sub_edgeDensity_le_two_mul
 
 end Asymmetric
