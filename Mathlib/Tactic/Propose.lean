@@ -67,7 +67,8 @@ def solveByElim (orig : MVarId) (goals : Array MVarId) (use : Array Expr) (requi
   else
     cfg
   let cfg := cfg.synthInstance
-  _ ← SolveByElim.solveByElim cfg (use.toList.map pure) (pure (← getLocalHyps).toList) goals.toList
+  _ ← SolveByElim.solveByElim cfg (use.toList.map pure)
+    (fun _ => do pure (← getLocalHyps).toList) goals.toList
 
 /--
 Attempts to find lemmas which use all of the `required` expressions as arguments, and
