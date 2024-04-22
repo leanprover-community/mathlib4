@@ -297,7 +297,7 @@ def continuousRestrictionToNNReal (f : C(X, ℝ)) : C(X, ℝ≥0) :=
 
 -- to Continuous?
 def RestrictNonneg (Λ : C(X, ℝ) →ₗ[ℝ] ℝ)  (hΛ : ∀ (f : C(X, ℝ)), 0 ≤ f → 0 ≤ Λ f) :
-  C(X, ℝ≥0) → ℝ≥0 := fun f => ⟨Λ (continuousExtendToReal f), hΛ (continuousExtendToReal f) (restrictNonneg f)⟩
+    C(X, ℝ≥0) → ℝ≥0 := fun f => ⟨Λ (continuousExtendToReal f), hΛ (continuousExtendToReal f) (restrictNonneg f)⟩
 
 def rieszContentNonneg : Compacts X → ℝ≥0 := fun K =>
   sInf (RestrictNonneg Λ hΛ '' { f : C(X, ℝ≥0) | HasCompactSupport f ∧ (∀ (x : X), 0 ≤ f x)
