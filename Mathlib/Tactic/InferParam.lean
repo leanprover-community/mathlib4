@@ -3,8 +3,8 @@ Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Mario Carneiro
 -/
-import Lean
-import Mathlib.Lean.Expr.Basic
+import Lean.Elab.Tactic.Basic
+import Lean.Meta.Tactic.Replace
 
 /-!
 # Infer an optional parameter

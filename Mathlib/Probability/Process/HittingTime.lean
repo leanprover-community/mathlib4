@@ -2,13 +2,10 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.hitting_time
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Process.Stopping
+
+#align_import probability.process.hitting_time from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Hitting time
@@ -44,7 +41,7 @@ open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
 
 namespace MeasureTheory
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω}
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
 /-- Hitting time: given a stochastic process `u` and a set `s`, `hitting u s n m` is the first time
 `u` is in `s` after time `n` and before time `m` (if `u` does not hit `s` after time `n` and
@@ -54,6 +51,12 @@ The hitting time is a stopping time if the process is adapted and discrete. -/
 noncomputable def hitting [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) : Ω → ι :=
   fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m
 #align measure_theory.hitting MeasureTheory.hitting
+
+-- Adaptation note: nightly-2024-03-16: added to replace simp [hitting]
+theorem hitting_def [Preorder ι] [InfSet ι] (u : ι → Ω → β) (s : Set β) (n m : ι) :
+    hitting u s n m =
+    fun x => if ∃ j ∈ Set.Icc n m, u j x ∈ s then sInf (Set.Icc n m ∩ {i : ι | u i x ∈ s}) else m :=
+  rfl
 
 section Inequalities
 
@@ -72,22 +75,19 @@ theorem hitting_of_lt {m : ι} (h : m < n) : hitting u s n m ω = m := by
 #align measure_theory.hitting_of_lt MeasureTheory.hitting_of_lt
 
 theorem hitting_le {m : ι} (ω : Ω) : hitting u s n m ω ≤ m := by
-  cases' le_or_lt n m with h_le h_lt
-  · simp only [hitting]
-    split_ifs with h
-    · obtain ⟨j, hj₁, hj₂⟩ := h
-      change j ∈ {i | u i ω ∈ s} at hj₂
-      exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
-    · exact le_rfl
-  · rw [hitting_of_lt h_lt]
+  simp only [hitting]
+  split_ifs with h
+  · obtain ⟨j, hj₁, hj₂⟩ := h
+    change j ∈ {i | u i ω ∈ s} at hj₂
+    exact (csInf_le (BddBelow.inter_of_left bddBelow_Icc) (Set.mem_inter hj₁ hj₂)).trans hj₁.2
+  · exact le_rfl
 #align measure_theory.hitting_le MeasureTheory.hitting_le
 
 theorem not_mem_of_lt_hitting {m k : ι} (hk₁ : k < hitting u s n m ω) (hk₂ : n ≤ k) :
     u k ω ∉ s := by
   classical
   intro h
-  have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s
-  refine' ⟨k, ⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
+  have hexists : ∃ j ∈ Set.Icc n m, u j ω ∈ s := ⟨k, ⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
   refine' not_le.2 hk₁ _
   simp_rw [hitting, if_pos hexists]
   exact csInf_le bddBelow_Icc.inter_of_left ⟨⟨hk₂, le_trans hk₁.le <| hitting_le _⟩, h⟩
@@ -103,7 +103,7 @@ theorem hitting_of_le {m : ι} (hmn : m ≤ n) : hitting u s n m ω = m := by
   · rw [hitting, ite_eq_right_iff, forall_exists_index]
     conv => intro; rw [Set.mem_Icc, Set.Icc_self, and_imp, and_imp]
     intro i hi₁ hi₂ hi
-    rw [Set.inter_eq_left_iff_subset.2, csInf_singleton]
+    rw [Set.inter_eq_left.2, csInf_singleton]
     exact Set.singleton_subset_iff.2 (le_antisymm hi₂ hi₁ ▸ hi)
   · exact hitting_of_lt h
 #align measure_theory.hitting_of_le MeasureTheory.hitting_of_le
@@ -232,7 +232,7 @@ theorem hitting_isStoppingTime [ConditionallyCompleteLinearOrder ι] [IsWellOrde
     {f : Filtration ι m} {u : ι → Ω → β} {s : Set β} {n n' : ι} (hu : Adapted f u)
     (hs : MeasurableSet s) : IsStoppingTime f (hitting u s n n') := by
   intro i
-  cases' le_or_lt n' i with hi hi
+  rcases le_or_lt n' i with hi | hi
   · have h_le : ∀ ω, hitting u s n n' ω ≤ i := fun x => (hitting_le x).trans hi
     simp [h_le]
   · have h_set_eq_Union : {ω | hitting u s n n' ω ≤ i} = ⋃ j ∈ Set.Icc n i, u j ⁻¹' s := by
@@ -268,7 +268,7 @@ theorem isStoppingTime_hitting_isStoppingTime [ConditionallyCompleteLinearOrder 
       ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} := by
     ext x
     simp [← exists_or, ← or_and_right, le_or_lt]
-  have h₂ : (⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n}) = ∅ := by
+  have h₂ : ⋃ i > n, {x | τ x = i} ∩ {x | hitting u s i N x ≤ n} = ∅ := by
     ext x
     simp only [gt_iff_lt, Set.mem_iUnion, Set.mem_inter_iff, Set.mem_setOf_eq, exists_prop,
       Set.mem_empty_iff_false, iff_false_iff, not_exists, not_and, not_le]
@@ -298,7 +298,6 @@ end CompleteLattice
 section ConditionallyCompleteLinearOrderBot
 
 variable [ConditionallyCompleteLinearOrderBot ι] [IsWellOrder ι (· < ·)]
-
 variable {u : ι → Ω → β} {s : Set β} {f : Filtration ℕ m}
 
 theorem hitting_bot_le_iff {i n : ι} {ω : Ω} (hx : ∃ j, j ≤ n ∧ u j ω ∈ s) :

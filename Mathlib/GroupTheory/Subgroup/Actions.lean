@@ -2,13 +2,10 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.subgroup.actions
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.GroupTheory.Subgroup.Basic
+import Mathlib.GroupTheory.Subgroup.Center
+
+#align_import group_theory.subgroup.actions from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
 
 /-!
 # Actions by `Subgroup`s
@@ -22,21 +19,23 @@ subgroup, subgroups
 
 
 namespace Subgroup
+variable {G α β : Type*} [Group G]
 
-variable {G : Type _} [Group G]
-
-variable {α β : Type _}
+section MulAction
+variable [MulAction G α] {S : Subgroup G}
 
 /-- The action by a subgroup is the action by the underlying group. -/
 @[to_additive "The additive action by an add_subgroup is the action by the underlying `AddGroup`. "]
-instance [MulAction G α] (S : Subgroup G) : MulAction S α :=
-  inferInstanceAs (MulAction S.toSubmonoid α)
+instance instMulAction : MulAction S α := inferInstanceAs (MulAction S.toSubmonoid α)
 
-@[to_additive]
-theorem smul_def [MulAction G α] {S : Subgroup G} (g : S) (m : α) : g • m = (g : G) • m :=
-  rfl
+@[to_additive] lemma smul_def (g : S) (m : α) : g • m = (g : G) • m := rfl
 #align subgroup.smul_def Subgroup.smul_def
 #align add_subgroup.vadd_def AddSubgroup.vadd_def
+
+@[to_additive (attr := simp)]
+lemma mk_smul (g : G) (hg : g ∈ S) (a : α) : (⟨g, hg⟩ : S) • a = g • a := rfl
+
+end MulAction
 
 @[to_additive]
 instance smulCommClass_left [MulAction G β] [SMul α β] [SMulCommClass G α β] (S : Subgroup G) :

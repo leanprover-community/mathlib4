@@ -2,16 +2,13 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.sub.basic
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Order.Hom.Basic
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Order.Sub.Defs
+import Mathlib.Order.Hom.Basic
+
+#align_import algebra.order.sub.basic from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # Additional results about ordered Subtraction
@@ -19,7 +16,7 @@ import Mathlib.Algebra.Order.Sub.Defs
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 section Add
 
@@ -31,12 +28,12 @@ theorem AddHom.le_map_tsub [Preorder β] [Add β] [Sub β] [OrderedSub β] (f : 
   exact hf le_tsub_add
 #align add_hom.le_map_tsub AddHom.le_map_tsub
 
-theorem le_mul_tsub {R : Type _} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
+theorem le_mul_tsub {R : Type*} [Distrib R] [Preorder R] [Sub R] [OrderedSub R]
     [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * b - a * c ≤ a * (b - c) :=
   (AddHom.mulLeft a).le_map_tsub (monotone_id.const_mul' a) _ _
 #align le_mul_tsub le_mul_tsub
 
-theorem le_tsub_mul {R : Type _} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
+theorem le_tsub_mul {R : Type*} [CommSemiring R] [Preorder R] [Sub R] [OrderedSub R]
     [CovariantClass R R (· * ·) (· ≤ ·)] {a b c : R} : a * c - b * c ≤ (a - b) * c := by
   simpa only [mul_comm _ c] using le_mul_tsub
 #align le_tsub_mul le_tsub_mul
@@ -45,7 +42,7 @@ end Add
 
 /-- An order isomorphism between types with ordered subtraction preserves subtraction provided that
 it preserves addition. -/
-theorem OrderIso.map_tsub {M N : Type _} [Preorder M] [Add M] [Sub M] [OrderedSub M]
+theorem OrderIso.map_tsub {M N : Type*} [Preorder M] [Add M] [Sub M] [OrderedSub M]
     [PartialOrder N] [Add N] [Sub N] [OrderedSub N] (e : M ≃o N)
     (h_add : ∀ a b, e (a + b) = e a + e b) (a b : M) : e (a - b) = e a - e b := by
   let e_add : M ≃+ N := { e with map_add' := h_add }
@@ -60,7 +57,6 @@ theorem OrderIso.map_tsub {M N : Type _} [Preorder M] [Add M] [Sub M] [OrderedSu
 section Preorder
 
 variable [Preorder α]
-
 variable [AddCommMonoid α] [Sub α] [OrderedSub α] {a b c d : α}
 
 theorem AddMonoidHom.le_map_tsub [Preorder β] [AddCommMonoid β] [Sub β] [OrderedSub β] (f : α →+ β)

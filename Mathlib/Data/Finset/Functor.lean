@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Scott Morrison
-
-! This file was ported from Lean 3 source module data.finset.functor
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Finset.NAry
 import Mathlib.Data.Multiset.Functor
+
+#align_import data.finset.functor from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Functoriality of `Finset`
@@ -92,7 +89,7 @@ theorem seqRight_def (s : Finset α) (t : Finset β) : s *> t = if s = ∅ then 
 
 /-- `Finset.image₂` in terms of monadic operations. Note that this can't be taken as the definition
 because of the lack of universe polymorphism. -/
-theorem image₂_def {α β γ : Type _} (f : α → β → γ) (s : Finset α) (t : Finset β) :
+theorem image₂_def {α β γ : Type u} (f : α → β → γ) (s : Finset α) (t : Finset β) :
     image₂ f s t = f <$> s <*> t := by
   ext
   simp [mem_sup]
@@ -168,7 +165,7 @@ instance : LawfulMonad Finset :=
     bind_pure_comp := fun f s => sup_singleton'' _ _
     bind_map := fun t s => rfl
     pure_bind := fun t s => sup_singleton
-    bind_assoc := fun s f g => by simp only [bind, ←sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
+    bind_assoc := fun s f g => by simp only [bind, ← sup_biUnion, sup_eq_biUnion, biUnion_biUnion] }
 
 end Monad
 
@@ -205,7 +202,7 @@ theorem id_traverse [DecidableEq α] (s : Finset α) : traverse (pure : α → I
   exact s.val_toFinset
 #align finset.id_traverse Finset.id_traverse
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem map_comp_coe (h : α → β) :

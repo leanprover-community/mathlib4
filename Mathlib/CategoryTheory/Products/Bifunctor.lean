@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.products.bifunctor
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.products.bifunctor from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Lemmas about functors out of product categories.
@@ -22,7 +19,6 @@ namespace CategoryTheory.Bifunctor
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} {D : Type u₂} {E : Type u₃}
-
 variable [Category.{v₁} C] [Category.{v₂} D] [Category.{v₃} E]
 
 @[simp]

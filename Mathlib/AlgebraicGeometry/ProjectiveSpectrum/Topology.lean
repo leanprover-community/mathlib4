@@ -2,15 +2,13 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Johan Commelin
-
-! This file was ported from Lean 3 source module algebraic_geometry.projective_spectrum.topology
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.GradedAlgebra.HomogeneousIdeal
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Sets.Opens
+import Mathlib.Data.Set.Subsingleton
+
+#align_import algebraic_geometry.projective_spectrum.topology from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # Projective spectrum of a graded ring
@@ -44,13 +42,11 @@ noncomputable section
 
 open DirectSum BigOperators Pointwise SetLike TopCat TopologicalSpace CategoryTheory Opposite
 
-variable {R A : Type _}
-
+variable {R A : Type*}
 variable [CommSemiring R] [CommRing A] [Algebra R A]
-
 variable (𝒜 : ℕ → Submodule R A) [GradedAlgebra 𝒜]
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The projective spectrum of a graded commutative ring is the subtype of all homogenous ideals
 that are prime and do not contain the irrelevant ideal. -/
 @[ext]
@@ -247,20 +243,20 @@ theorem zeroLocus_union (s s' : Set A) : zeroLocus 𝒜 (s ∪ s') = zeroLocus _
 
 theorem vanishingIdeal_union (t t' : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (t ∪ t') = vanishingIdeal t ⊓ vanishingIdeal t' := by
-  ext1 ; exact (gc_ideal 𝒜).u_inf
+  ext1; exact (gc_ideal 𝒜).u_inf
 #align projective_spectrum.vanishing_ideal_union ProjectiveSpectrum.vanishingIdeal_union
 
-theorem zeroLocus_iSup_ideal {γ : Sort _} (I : γ → Ideal A) :
+theorem zeroLocus_iSup_ideal {γ : Sort*} (I : γ → Ideal A) :
     zeroLocus _ ((⨆ i, I i : Ideal A) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) :=
   (gc_ideal 𝒜).l_iSup
 #align projective_spectrum.zero_locus_supr_ideal ProjectiveSpectrum.zeroLocus_iSup_ideal
 
-theorem zeroLocus_iSup_homogeneousIdeal {γ : Sort _} (I : γ → HomogeneousIdeal 𝒜) :
+theorem zeroLocus_iSup_homogeneousIdeal {γ : Sort*} (I : γ → HomogeneousIdeal 𝒜) :
     zeroLocus _ ((⨆ i, I i : HomogeneousIdeal 𝒜) : Set A) = ⋂ i, zeroLocus 𝒜 (I i) :=
   (gc_homogeneousIdeal 𝒜).l_iSup
 #align projective_spectrum.zero_locus_supr_homogeneous_ideal ProjectiveSpectrum.zeroLocus_iSup_homogeneousIdeal
 
-theorem zeroLocus_iUnion {γ : Sort _} (s : γ → Set A) :
+theorem zeroLocus_iUnion {γ : Sort*} (s : γ → Set A) :
     zeroLocus 𝒜 (⋃ i, s i) = ⋂ i, zeroLocus 𝒜 (s i) :=
   (gc_set 𝒜).l_iSup
 #align projective_spectrum.zero_locus_Union ProjectiveSpectrum.zeroLocus_iUnion
@@ -270,10 +266,10 @@ theorem zeroLocus_bUnion (s : Set (Set A)) :
   by simp only [zeroLocus_iUnion]
 #align projective_spectrum.zero_locus_bUnion ProjectiveSpectrum.zeroLocus_bUnion
 
-theorem vanishingIdeal_iUnion {γ : Sort _} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
+theorem vanishingIdeal_iUnion {γ : Sort*} (t : γ → Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (⋃ i, t i) = ⨅ i, vanishingIdeal (t i) :=
   HomogeneousIdeal.toIdeal_injective <| by
-    convert(gc_ideal 𝒜).u_iInf ; exact HomogeneousIdeal.toIdeal_iInf _
+    convert (gc_ideal 𝒜).u_iInf; exact HomogeneousIdeal.toIdeal_iInf _
 #align projective_spectrum.vanishing_ideal_Union ProjectiveSpectrum.vanishingIdeal_iUnion
 
 theorem zeroLocus_inf (I J : Ideal A) :
@@ -320,7 +316,7 @@ theorem sup_vanishingIdeal_le (t t' : Set (ProjectiveSpectrum 𝒜)) :
 
 theorem mem_compl_zeroLocus_iff_not_mem {f : A} {I : ProjectiveSpectrum 𝒜} :
     I ∈ (zeroLocus 𝒜 {f} : Set (ProjectiveSpectrum 𝒜))ᶜ ↔ f ∉ I.asHomogeneousIdeal := by
-  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff] ; rfl
+  rw [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align projective_spectrum.mem_compl_zero_locus_iff_not_mem ProjectiveSpectrum.mem_compl_zeroLocus_iff_not_mem
 
 /-- The Zariski topology on the prime spectrum of a commutative ring is defined via the closed sets
@@ -348,7 +344,7 @@ set_option linter.uppercaseLean3 false in
 #align projective_spectrum.Top ProjectiveSpectrum.top
 
 theorem isOpen_iff (U : Set (ProjectiveSpectrum 𝒜)) : IsOpen U ↔ ∃ s, Uᶜ = zeroLocus 𝒜 s := by
-  simp only [@eq_comm _ (Uᶜ)] ; rfl
+  simp only [@eq_comm _ Uᶜ]; rfl
 #align projective_spectrum.is_open_iff ProjectiveSpectrum.isOpen_iff
 
 theorem isClosed_iff_zeroLocus (Z : Set (ProjectiveSpectrum 𝒜)) :
@@ -374,7 +370,6 @@ theorem zeroLocus_vanishingIdeal_eq_closure (t : Set (ProjectiveSpectrum 𝒜)) 
 theorem vanishingIdeal_closure (t : Set (ProjectiveSpectrum 𝒜)) :
     vanishingIdeal (closure t) = vanishingIdeal t := by
   have := (gc_ideal 𝒜).u_l_u_eq_u t
-  dsimp only at this
   ext1
   erw [zeroLocus_vanishingIdeal_eq_closure 𝒜 t] at this
   exact this
@@ -405,8 +400,8 @@ theorem isOpen_basicOpen {a : A} : IsOpen (basicOpen 𝒜 a : Set (ProjectiveSpe
 
 @[simp]
 theorem basicOpen_eq_zeroLocus_compl (r : A) :
-    (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜)) = zeroLocus 𝒜 {r}ᶜ :=
-  Set.ext fun x => by simp only [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff] ; rfl
+    (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜)) = (zeroLocus 𝒜 {r})ᶜ :=
+  Set.ext fun x => by simp only [Set.mem_compl_iff, mem_zeroLocus, Set.singleton_subset_iff]; rfl
 #align projective_spectrum.basic_open_eq_zero_locus_compl ProjectiveSpectrum.basicOpen_eq_zeroLocus_compl
 
 @[simp]
@@ -457,7 +452,7 @@ theorem basicOpen_eq_union_of_projection (f : A) :
 theorem isTopologicalBasis_basic_opens :
     TopologicalSpace.IsTopologicalBasis
       (Set.range fun r : A => (basicOpen 𝒜 r : Set (ProjectiveSpectrum 𝒜))) := by
-  apply TopologicalSpace.isTopologicalBasis_of_open_of_nhds
+  apply TopologicalSpace.isTopologicalBasis_of_isOpen_of_nhds
   · rintro _ ⟨r, rfl⟩
     exact isOpen_basicOpen 𝒜
   · rintro p U hp ⟨s, hs⟩

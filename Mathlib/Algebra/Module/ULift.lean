@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.module.ulift
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.ULift
 import Mathlib.Algebra.Module.Equiv
+
+#align_import algebra.module.ulift from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `ULift` instances for module and multiplicative actions
@@ -58,7 +55,7 @@ instance isScalarTower'' [SMul R M] [SMul M N] [SMul R N] [IsScalarTower R M N] 
 instance [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M] : IsCentralScalar R (ULift M) :=
   ⟨fun r m => congr_arg up <| op_smul_eq_smul r m.down⟩
 
--- Porting note: TODO this takes way longer to elaborate than it should
+-- Porting note (#11215): TODO this takes way longer to elaborate than it should
 @[to_additive]
 instance mulAction [Monoid R] [MulAction R M] : MulAction (ULift R) M where
   smul := (· • ·)
@@ -80,27 +77,27 @@ instance smulZeroClass [Zero M] [SMulZeroClass R M] : SMulZeroClass (ULift R) M 
 #align ulift.smul_zero_class ULift.smulZeroClass
 
 instance smulZeroClass' [Zero M] [SMulZeroClass R M] : SMulZeroClass R (ULift M) where
-  smul_zero c := by { ext;  simp [smul_zero] }
+  smul_zero c := by { ext; simp [smul_zero] }
 #align ulift.smul_zero_class' ULift.smulZeroClass'
 
-instance distribSmul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
+instance distribSMul [AddZeroClass M] [DistribSMul R M] : DistribSMul (ULift R) M where
   smul_add _ := smul_add _
-#align ulift.distrib_smul ULift.distribSmul
+#align ulift.distrib_smul ULift.distribSMul
 
-instance distribSmul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
+instance distribSMul' [AddZeroClass M] [DistribSMul R M] : DistribSMul R (ULift M) where
   smul_add c f g := by
     ext
     simp [smul_add]
-#align ulift.distrib_smul' ULift.distribSmul'
+#align ulift.distrib_smul' ULift.distribSMul'
 
 instance distribMulAction [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction (ULift R) M :=
-  { ULift.mulAction, ULift.distribSmul with }
+  { ULift.mulAction, ULift.distribSMul with }
 #align ulift.distrib_mul_action ULift.distribMulAction
 
 instance distribMulAction' [Monoid R] [AddMonoid M] [DistribMulAction R M] :
     DistribMulAction R (ULift M) :=
-  { ULift.mulAction', ULift.distribSmul' with }
+  { ULift.mulAction', ULift.distribSMul' with }
 #align ulift.distrib_mul_action' ULift.distribMulAction'
 
 instance mulDistribMulAction [Monoid R] [Monoid M] [MulDistribMulAction R M] :
@@ -135,7 +132,8 @@ instance smulWithZero' [Zero R] [Zero M] [SMulWithZero R M] : SMulWithZero R (UL
 instance mulActionWithZero [MonoidWithZero R] [Zero M] [MulActionWithZero R M] :
     MulActionWithZero (ULift R) M :=
   { ULift.smulWithZero with
-    -- Porting note: TODO there seems to be a mismatch in whether the carrier is explicit here
+    -- Porting note (#11215): TODO there seems to be a mismatch in whether
+    -- the carrier is explicit here
     one_smul := one_smul _
     mul_smul := mul_smul }
 #align ulift.mul_action_with_zero ULift.mulActionWithZero
@@ -163,15 +161,15 @@ instance module' [Semiring R] [AddCommMonoid M] [Module R M] : Module R (ULift M
     smul_add := smul_add }
 #align ulift.module' ULift.module'
 
-/-- The `R`-linear equivalence between `ULift M` and `M`. -/
+/-- The `R`-linear equivalence between `ULift M` and `M`.
+
+This is a linear version of `AddEquiv.ulift`. -/
 @[simps apply symm_apply]
 def moduleEquiv [Semiring R] [AddCommMonoid M] [Module R M] : ULift.{w} M ≃ₗ[R] M where
   toFun := ULift.down
   invFun := ULift.up
   map_smul' _ _ := rfl
-  map_add' _ _ := rfl
-  left_inv := ULift.up_down
-  right_inv := ULift.down_up.{v, w}
+  __ := AddEquiv.ulift
 #align ulift.module_equiv ULift.moduleEquiv
 
 end ULift

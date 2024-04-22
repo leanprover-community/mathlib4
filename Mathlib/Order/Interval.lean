@@ -2,16 +2,12 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.interval
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.SetLike.Basic
-import Mathlib.Init.Data.Prod
+
+#align_import order.interval from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 # Order intervals
@@ -28,21 +24,19 @@ interval arithmetic.
 
 open Function OrderDual Set
 
-variable {α β γ δ : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α β γ δ : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 /-- The nonempty closed intervals in an order.
 
 We define intervals by the pair of endpoints `fst`, `snd`. To convert intervals to the set of
 elements between these endpoints, use the coercion `NonemptyInterval α → Set α`. -/
--- @[ext] -- porting note: generates the wrong lemma
--- in lean3 it generated `x.toProd = y.toProd → x = y`, now it generates
--- `(x.toProd.fst = y.toProd.fst) → (x.toProd.snd = y.toProd.snd) → x = y`.
--- this is because in `Std.Tactic.Ext.withExtHyps`, the for-loop goes over
--- `getStructureFieldsFlattened` instead of `getStructureFields`.
-structure NonemptyInterval (α : Type _) [LE α] extends Prod α α where
+@[ext (flat := false)]
+structure NonemptyInterval (α : Type*) [LE α] extends Prod α α where
   /-- The starting point of an interval is smaller than the endpoint. -/
   fst_le_snd : fst ≤ snd
 #align nonempty_interval NonemptyInterval
+#align nonempty_interval.ext NonemptyInterval.ext
+#align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
 namespace NonemptyInterval
 
@@ -50,20 +44,9 @@ section LE
 
 variable [LE α] {s t : NonemptyInterval α}
 
-theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) := fun s t h =>
-  by cases s; cases t; congr
+theorem toProd_injective : Injective (toProd : NonemptyInterval α → α × α) :=
+  fun s t h => by cases s; cases t; congr
 #align nonempty_interval.to_prod_injective NonemptyInterval.toProd_injective
-
--- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext (s t : NonemptyInterval α) (h : s.toProd = t.toProd) : s = t := toProd_injective h
-#align nonempty_interval.ext NonemptyInterval.ext
-
--- porting note: This is the manually written old ext-lemma as it was generated in mathlib3.
--- Would be nice to fix `@[ext]` to generate them automatically.
-theorem ext_iff (s t : NonemptyInterval α) : s = t ↔ s.toProd = t.toProd :=
-  toProd_injective.eq_iff.symm
-#align nonempty_interval.ext_iff NonemptyInterval.ext_iff
 
 /-- The injection that induces the order on intervals. -/
 def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
@@ -72,7 +55,7 @@ def toDualProd : NonemptyInterval α → αᵒᵈ × α :=
 
 @[simp]
 theorem toDualProd_apply (s : NonemptyInterval α) : s.toDualProd = (toDual s.fst, s.snd) :=
-  Prod.mk.eta.symm
+  rfl
 #align nonempty_interval.to_dual_prod_apply NonemptyInterval.toDualProd_apply
 
 theorem toDualProd_injective : Injective (toDualProd : NonemptyInterval α → αᵒᵈ × α) :=
@@ -259,11 +242,8 @@ theorem coe_ssubset_coe : (s : Set α) ⊂ t ↔ s < t :=
   (@coeHom α _).lt_iff_lt
 #align nonempty_interval.coe_ssubset_coe NonemptyInterval.coe_ssubset_coe
 
--- Porting note: Did I port this correctly?
--- lean3 statement was `(coe_hom : nonempty_interval α → set α) = coe`
--- is it even needed?
 @[simp]
-theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = setLike.coe :=
+theorem coe_coeHom : (coeHom : NonemptyInterval α → Set α) = ((↑) : NonemptyInterval α → Set α) :=
   rfl
 #align nonempty_interval.coe_coe_hom NonemptyInterval.coe_coeHom
 
@@ -323,7 +303,7 @@ We represent intervals either as `⊥` or a nonempty interval given by its endpo
 To convert intervals to the set of elements between these endpoints, use the coercion
 `Interval α → Set α`. -/
 @[reducible] -- Porting note: added reducible, it seems to help with coercions
-def Interval (α : Type _) [LE α] :=
+def Interval (α : Type*) [LE α] :=
   WithBot (NonemptyInterval α) -- deriving Inhabited, LE, OrderBot
 #align interval Interval
 
@@ -333,7 +313,7 @@ section LE
 
 variable [LE α] {s t : Interval α}
 
--- porting note: previously found using `deriving`
+-- Porting note: previously found using `deriving`
 instance : Inhabited (Interval α) := WithBot.inhabited
 instance : LE (Interval α) := WithBot.le
 instance : OrderBot (Interval α) := WithBot.orderBot
@@ -365,7 +345,7 @@ theorem «exists» {p : Interval α → Prop} : (∃ s, p s) ↔ p ⊥ ∨ ∃ s
 #align interval.exists Interval.exists
 
 instance [IsEmpty α] : Unique (Interval α) :=
-  Option.instUniqueOption
+  inferInstanceAs <| Unique (Option _)
 
 /-- Turn an interval into an interval in the dual order. -/
 def dual : Interval α ≃ Interval αᵒᵈ :=
@@ -438,7 +418,7 @@ theorem dual_map (f : α →o β) (s : Interval α) : dual (s.map f) = s.dual.ma
 variable [BoundedOrder α]
 
 instance boundedOrder : BoundedOrder (Interval α) :=
-  WithBot.instBoundedOrderWithBotLe
+  WithBot.instBoundedOrder
 
 @[simp]
 theorem dual_top : dual (⊤ : Interval α) = ⊤ :=
@@ -537,8 +517,7 @@ section Decidable
 variable [@DecidableRel α (· ≤ ·)]
 
 instance lattice : Lattice (Interval α) :=
-  {
-    Interval.semilatticeSup with
+  { Interval.semilatticeSup with
     inf := fun s t =>
       match s, t with
       | ⊥, _ => ⊥
@@ -576,9 +555,7 @@ instance lattice : Lattice (Interval α) :=
         lift t to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hb
         lift c to NonemptyInterval α using ne_bot_of_le_ne_bot WithBot.coe_ne_bot hc
         change _ ≤ dite _ _ _
-        -- Porting note: was `simp only` but that fails to use the second lemma.
-        rw [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc
-        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] -- at hb hc ⊢
+        simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
         exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
@@ -687,7 +664,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 lift s to NonemptyInterval α using ha
                 exact iInf₂_le_of_le s hs (le_iSup₂_of_le s hs s.fst_le_snd)⟩
         le_sSup := fun s s ha => by
-          dsimp only -- Porting note: added
+          dsimp only -- Porting note (#10752): added `dsimp only`
           split_ifs with h
           · exact (h ha).le
           cases s
@@ -701,7 +678,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
               exact ha
             · exact le_iSup₂_of_le _ ha le_rfl
         sSup_le := fun s s ha => by
-          dsimp only -- Porting note: added
+          dsimp only -- Porting note (#10752): added `dsimp only`
           split_ifs with h
           · exact bot_le
           obtain ⟨b, hs, hb⟩ := not_subset.1 h
@@ -721,7 +698,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
                 iSup₂_le fun s hs => le_iInf₂ <| h.2 hs⟩
           else ⊥
         sInf_le := fun s₁ s ha => by
-          dsimp only -- Porting note: added
+          dsimp only -- Porting note (#10752): added `dsimp only`
           split_ifs with h
           · lift s to NonemptyInterval α using ne_of_mem_of_not_mem ha h.1
             -- Porting note: Lean failed to figure out the function `f` by itself,
@@ -734,7 +711,7 @@ noncomputable instance completeLattice [@DecidableRel α (· ≤ ·)] :
           cases s with
           | none => exact bot_le
           | some s =>
-            dsimp -- Porting note: added
+            dsimp -- Porting note (#11227): added a `dsimp`
             split_ifs with h
             · exact WithBot.some_le_some.2
                 ⟨iSup₂_le fun t hb => (WithBot.coe_le_coe.1 <| ha _ hb).1,
@@ -762,7 +739,7 @@ theorem coe_sInf [@DecidableRel α (· ≤ ·)] (S : Set (Interval α)) :
   classical -- Porting note: added
   -- Porting note: this `change` was
   -- change ↑ (dite _ _ _) = _
-  change setLike.coe (dite _ _ _) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
+  change ((dite _ _ _ : Interval α) : Set α) = ⋂ (s : Interval α) (_ : s ∈ S), (s : Set α)
   split_ifs with h
   · ext
     simp [WithBot.some_eq_coe, Interval.forall, h.1, ← forall_and, ← NonemptyInterval.mem_def]
@@ -781,7 +758,8 @@ theorem coe_iInf [@DecidableRel α (· ≤ ·)] (f : ι → Interval α) :
     ↑(⨅ i, f i) = ⋂ i, (f i : Set α) := by simp [iInf]
 #align interval.coe_infi Interval.coe_iInf
 
--- @[simp, norm_cast] -- Porting note: not in simpNF
+-- @[simp] -- Porting note: not in simpNF
+@[norm_cast]
 theorem coe_iInf₂ [@DecidableRel α (· ≤ ·)] (f : ∀ i, κ i → Interval α) :
     ↑(⨅ (i) (j), f i j) = ⋂ (i) (j), (f i j : Set α) := by simp_rw [coe_iInf]
 #align interval.coe_infi₂ Interval.coe_iInf₂

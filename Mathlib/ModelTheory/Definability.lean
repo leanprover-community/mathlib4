@@ -2,14 +2,12 @@
 Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.definability
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.SetLike.Basic
+import Mathlib.Data.Finset.Preimage
 import Mathlib.ModelTheory.Semantics
+
+#align_import model_theory.definability from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Definable Sets
@@ -41,7 +39,7 @@ variable {M : Type w} (A : Set M) (L : FirstOrder.Language.{u, v}) [L.Structure 
 
 open FirstOrder FirstOrder.Language FirstOrder.Language.Structure
 
-variable {α : Type u₁} {β : Type _}
+variable {α : Type u₁} {β : Type*}
 
 /-- A subset of a finite Cartesian product of a structure is definable over a set `A` when
   membership in the set is given by a first-order formula with parameters from `A`. -/
@@ -58,6 +56,21 @@ theorem Definable.map_expansion {L' : FirstOrder.Language} [L'.Structure M] (h :
   ext x
   simp only [mem_setOf_eq, LHom.realize_onFormula]
 #align set.definable.map_expansion Set.Definable.map_expansion
+
+theorem definable_iff_exists_formula_sum :
+    A.Definable L s ↔ ∃ φ : L.Formula (A ⊕ α), s = {v | φ.Realize (Sum.elim (↑) v)} := by
+  rw [Definable, Equiv.exists_congr_left (BoundedFormula.constantsVarsEquiv)]
+  refine exists_congr (fun φ => iff_iff_eq.2 (congr_arg (s = ·) ?_))
+  ext
+  simp only [Formula.Realize, BoundedFormula.constantsVarsEquiv, constantsOn, mk₂_Relations,
+    BoundedFormula.mapTermRelEquiv_symm_apply, mem_setOf_eq]
+  refine BoundedFormula.realize_mapTermRel_id ?_ (fun _ _ _ => rfl)
+  intros
+  simp only [Term.constantsVarsEquivLeft_symm_apply, Term.realize_varsToConstants,
+    coe_con, Term.realize_relabel]
+  congr
+  ext a
+  rcases a with (_ | _) | _ <;> rfl
 
 theorem empty_definable_iff :
     (∅ : Set M).Definable L s ↔ ∃ φ : L.Formula α, s = setOf φ.Realize := by
@@ -109,7 +122,7 @@ theorem Definable.union {f g : Set (α → M)} (hf : A.Definable L f) (hg : A.De
   rw [hφ, hθ, mem_setOf_eq, Formula.realize_sup, mem_union, mem_setOf_eq, mem_setOf_eq]
 #align set.definable.union Set.Definable.union
 
-theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_inf {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.inf f) := by
   classical
     refine' Finset.induction definable_univ (fun i s _ h => _) s
@@ -117,7 +130,7 @@ theorem definable_finset_inf {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).inter h
 #align set.definable_finset_inf Set.definable_finset_inf
 
-theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf : ∀ i, A.Definable L (f i))
+theorem definable_finset_sup {ι : Type*} {f : ι → Set (α → M)} (hf : ∀ i, A.Definable L (f i))
     (s : Finset ι) : A.Definable L (s.sup f) := by
   classical
     refine' Finset.induction definable_empty (fun i s _ h => _) s
@@ -125,20 +138,20 @@ theorem definable_finset_sup {ι : Type _} {f : ∀ _ : ι, Set (α → M)} (hf 
     exact (hf i).union h
 #align set.definable_finset_sup Set.definable_finset_sup
 
-theorem definable_finset_biInter {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biInter {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋂ i ∈ s, f i) := by
   rw [← Finset.inf_set_eq_iInter]
   exact definable_finset_inf hf s
 #align set.definable_finset_bInter Set.definable_finset_biInter
 
-theorem definable_finset_biUnion {ι : Type _} {f : ∀ _ : ι, Set (α → M)}
+theorem definable_finset_biUnion {ι : Type*} {f : ι → Set (α → M)}
     (hf : ∀ i, A.Definable L (f i)) (s : Finset ι) : A.Definable L (⋃ i ∈ s, f i) := by
   rw [← Finset.sup_set_eq_biUnion]
   exact definable_finset_sup hf s
 #align set.definable_finset_bUnion Set.definable_finset_biUnion
 
 @[simp]
-theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L (sᶜ) := by
+theorem Definable.compl {s : Set (α → M)} (hf : A.Definable L s) : A.Definable L sᶜ := by
   rcases hf with ⟨φ, hφ⟩
   refine' ⟨φ.not, _⟩
   ext v
@@ -171,6 +184,32 @@ theorem Definable.image_comp_equiv {s : Set (β → M)} (h : A.Definable L s) (f
     simp
 #align set.definable.image_comp_equiv Set.Definable.image_comp_equiv
 
+theorem definable_iff_finitely_definable :
+    A.Definable L s ↔ ∃ (A0 : Finset M), (A0 : Set M) ⊆ A ∧
+      (A0 : Set M).Definable L s := by
+  letI := Classical.decEq M
+  letI := Classical.decEq α
+  constructor
+  · simp only [definable_iff_exists_formula_sum]
+    rintro ⟨φ, rfl⟩
+    let A0 := (φ.freeVarFinset.preimage Sum.inl
+      (Function.Injective.injOn Sum.inl_injective _)).image Subtype.val
+    have hA0 : (A0 : Set M) ⊆ A := by simp [A0]
+    refine ⟨A0, hA0, (φ.restrictFreeVar
+      (Set.inclusion (Set.Subset.refl _))).relabel ?_, ?_⟩
+    · rintro ⟨a | a, ha⟩
+      · exact Sum.inl (Sum.inl ⟨a, by simpa [A0] using ha⟩)
+      · exact Sum.inl (Sum.inr a)
+    · ext v
+      simp only [Formula.Realize, BoundedFormula.realize_relabel,
+        Set.mem_setOf_eq]
+      apply Iff.symm
+      convert BoundedFormula.realize_restrictFreeVar _
+      · ext a
+        rcases a with ⟨_ | _, _⟩ <;> simp
+  · rintro ⟨A0, hA0, hd⟩
+    exact Definable.mono hd hA0
+
 /-- This lemma is only intended as a helper for `Definable.image_comp`. -/
 theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → M)}
     (h : A.Definable L s) : A.Definable L ((fun g : Sum α (Fin m) → M => g ∘ Sum.inl) '' s) := by
@@ -178,7 +217,7 @@ theorem Definable.image_comp_sum_inl_fin (m : ℕ) {s : Set (Sum α (Fin m) → 
   refine' ⟨(BoundedFormula.relabel id φ).exs, _⟩
   ext x
   simp only [Set.mem_image, mem_setOf_eq, BoundedFormula.realize_exs,
-    BoundedFormula.realize_relabel, Function.comp.right_id, Fin.castAdd_zero, Fin.cast_refl]
+    BoundedFormula.realize_relabel, Function.comp_id, Fin.castAdd_zero, Fin.cast_refl]
   constructor
   · rintro ⟨y, hy, rfl⟩
     exact
@@ -196,7 +235,7 @@ theorem Definable.image_comp_embedding {s : Set (β → M)} (h : A.Definable L s
       (congr rfl (ext fun x => _)).mp
         (((h.image_comp_equiv (Equiv.Set.sumCompl (range f))).image_comp_equiv
               (Equiv.sumCongr (Equiv.ofInjective f f.injective)
-                (Fintype.equivFin (↥((range f)ᶜ))).symm)).image_comp_sum_inl_fin
+                (Fintype.equivFin (↥(range f)ᶜ)).symm)).image_comp_sum_inl_fin
           _)
     simp only [mem_preimage, mem_image, exists_exists_and_eq_and]
     refine' exists_congr fun y => and_congr_right fun _ => Eq.congr_left (funext fun a => _)

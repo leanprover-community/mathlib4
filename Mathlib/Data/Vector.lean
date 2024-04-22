@@ -2,17 +2,14 @@
 Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
-
-! This file was ported from Lean 3 source module lean_core.data.vector
-! leanprover-community/lean commit 855e5b74e3a52a40552e8f067169d747d48743fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Mathport.Rename
 import Std.Data.List.Basic
 import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
 import Mathlib.Init.Data.List.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
+
+#align_import data.vector from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 The type `Vector` represents lists with fixed length.
@@ -27,7 +24,6 @@ def Vector (α : Type u) (n : ℕ) :=
 namespace Vector
 
 variable {α : Type u} {β : Type v} {φ : Type w}
-
 variable {n : ℕ}
 
 instance [DecidableEq α] : DecidableEq (Vector α n) :=
@@ -57,7 +53,6 @@ open Nat
 
 /-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
-  | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
@@ -89,10 +84,9 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- porting notes: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h] ; exact i.2)
+def get (l : Vector α n) (i : Fin n) : α :=
+  l.1.get <| i.cast l.2.symm
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
@@ -164,13 +158,18 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
 def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p] ; exact i.2⟩
+  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
 #align vector.remove_nth Vector.removeNth
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n
   | 0, _ => nil
   | _ + 1, f => cons (f 0) (ofFn fun i ↦ f i.succ)
+
+/-- Create a vector from another with a provably equal length. -/
+protected def congr {n m : ℕ} (h : n = m) : Vector α n → Vector α m
+  | ⟨x, p⟩ => ⟨x, h ▸ p⟩
+
 #align vector.of_fn Vector.ofFn
 
 section Accum
@@ -180,26 +179,51 @@ open Prod
 variable {σ : Type}
 
 /-- Runs a function over a vector returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr (f : α → σ → σ × β) : Vector α n → σ → σ × Vector β n
   | ⟨x, px⟩, c =>
     let res := List.mapAccumr f x c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr Vector.mapAccumr
 
 /-- Runs a function over a pair of vectors returning the intermediate results and a
-a final result.
+final result.
 -/
 def mapAccumr₂ {α β σ φ : Type} (f : α → β → σ → σ × φ) :
     Vector α n → Vector β n → σ → σ × Vector φ n
   | ⟨x, px⟩, ⟨y, py⟩, c =>
     let res := List.mapAccumr₂ f x y c
-    ⟨res.1, res.2, by simp [*]⟩
+    ⟨res.1, res.2, by simp [*, res]⟩
 #align vector.map_accumr₂ Vector.mapAccumr₂
 
 end Accum
 
+/-! ### Shift Primitives-/
+section Shift
+
+/-- `shiftLeftFill v i` is the vector obtained by left-shifting `v` `i` times and padding with the
+    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+def shiftLeftFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
+  Vector.congr (by simp) <|
+    append (drop i v) (replicate (min n i) fill)
+
+/-- `shiftRightFill v i` is the vector obtained by right-shifting `v` `i` times and padding with the
+    `fill` argument. If `v.length < i` then this will return `replicate n fill`. -/
+def shiftRightFill (v : Vector α n) (i : ℕ) (fill : α) : Vector α n :=
+  Vector.congr (by
+        by_cases h : i ≤ n
+        · have h₁ := Nat.sub_le n i
+          rw [min_eq_right h]
+          rw [min_eq_left h₁, ← add_tsub_assoc_of_le h, Nat.add_comm, add_tsub_cancel_right]
+        · have h₁ := le_of_not_ge h
+          rw [min_eq_left h₁, tsub_eq_zero_iff_le.mpr h₁, zero_min, Nat.add_zero]) <|
+    append (replicate (min n i) fill) (take (n - i) v)
+
+end Shift
+
+
+/-! ### Basic Theorems -/
 /-- Vector is determined by the underlying list. -/
 protected theorem eq {n : ℕ} : ∀ a1 a2 : Vector α n, toList a1 = toList a2 → a1 = a2
   | ⟨_, _⟩, ⟨_, _⟩, rfl => rfl
@@ -218,7 +242,7 @@ theorem toList_mk (v : List α) (P : List.length v = n) : toList (Subtype.mk v P
 #align vector.to_list_mk Vector.toList_mk
 
 /-- A nil vector maps to a nil list. -/
-@[simp, nolint simpNF] -- Porting note: simp can prove this in the future
+@[simp, nolint simpNF] -- Porting note (#10618): simp can prove this in the future
 theorem toList_nil : toList nil = @List.nil α :=
   rfl
 #align vector.to_list_nil Vector.toList_nil
@@ -233,13 +257,13 @@ theorem toList_length (v : Vector α n) : (toList v).length = n :=
 the `cons` of the list obtained by `toList` and the element -/
 @[simp]
 theorem toList_cons (a : α) (v : Vector α n) : toList (cons a v) = a :: toList v := by
-  cases v ; rfl
+  cases v; rfl
 #align vector.to_list_cons Vector.toList_cons
 
 /-- Appending of vectors corresponds under `toList` to appending of lists. -/
 @[simp]
 theorem toList_append {n m : ℕ} (v : Vector α n) (w : Vector α m) :
-   toList (append v w) = toList v ++ toList w := by
+    toList (append v w) = toList v ++ toList w := by
   cases v
   cases w
   rfl

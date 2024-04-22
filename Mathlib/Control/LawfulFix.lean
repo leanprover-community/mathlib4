@@ -2,16 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.lawful_fix
-! leanprover-community/mathlib commit 92ca63f0fb391a9ca5f22d2409a6080e786d99f7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Stream.Init
 import Mathlib.Tactic.ApplyFun
 import Mathlib.Control.Fix
 import Mathlib.Order.OmegaCompletePartialOrder
+
+#align_import control.lawful_fix from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
 /-!
 # Lawful fixed point operators
@@ -27,9 +24,9 @@ omega complete partial orders (ωCPO). Proofs of the lawfulness of all `Fix` ins
 
 universe u v
 
-open Classical
+open scoped Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 open OmegaCompletePartialOrder
 
@@ -40,7 +37,7 @@ functions `f`, such as the function that is defined iff its argument is not, fam
 halting problem. Instead, this requirement is limited to only functions that are `Continuous` in the
 sense of `ω`-complete partial orders, which excludes the example because it is not monotone
 (making the input argument less defined can make `f` more defined). -/
-class LawfulFix (α : Type _) [OmegaCompletePartialOrder α] extends Fix α where
+class LawfulFix (α : Type*) [OmegaCompletePartialOrder α] extends Fix α where
   fix_eq : ∀ {f : α →o α}, Continuous f → Fix.fix f = f (Fix.fix f)
 #align lawful_fix LawfulFix
 
@@ -60,7 +57,7 @@ variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 theorem approx_mono' {i : ℕ} : Fix.approx f i ≤ Fix.approx f (succ i) := by
   induction i with
   | zero => dsimp [approx]; apply @bot_le _ _ _ (f ⊥)
-  | succ _ i_ih => intro ; apply f.monotone; apply i_ih
+  | succ _ i_ih => intro; apply f.monotone; apply i_ih
 #align part.fix.approx_mono' Part.Fix.approx_mono'
 
 theorem approx_mono ⦃i j : ℕ⦄ (hij : i ≤ j) : approx f i ≤ approx f j := by
@@ -80,13 +77,13 @@ theorem mem_iff (a : α) (b : β a) : b ∈ Part.fix f a ↔ ∃ i, b ∈ approx
     rw [dom_iff_mem] at h₁
     cases' h₁ with y h₁
     replace h₁ := approx_mono' f _ _ h₁
-    suffices : y = b
-    · subst this
+    suffices y = b by
+      subst this
       exact h₁
     cases' hh with i hh
     revert h₁; generalize succ (Nat.find h₀) = j; intro h₁
     wlog case : i ≤ j
-    · cases' le_total i j with H H <;> [skip; symm] <;> apply_assumption <;> assumption
+    · rcases le_total i j with H | H <;> [skip; symm] <;> apply_assumption <;> assumption
     replace hh := approx_mono f case _ _ hh
     apply Part.mem_unique h₁ hh
   · simp only [fix_def' (⇑f) h₀, not_exists, false_iff_iff, not_mem_none]
@@ -127,15 +124,14 @@ theorem le_f_of_mem_approx {x} : x ∈ approxChain f → x ≤ f x := by
 #align part.fix.le_f_of_mem_approx Part.Fix.le_f_of_mem_approx
 
 theorem approx_mem_approxChain {i} : approx f i ∈ approxChain f :=
-  Stream'.mem_of_nth_eq rfl
+  Stream'.mem_of_get_eq rfl
 #align part.fix.approx_mem_approx_chain Part.Fix.approx_mem_approxChain
 
 end Fix
 
 open Fix
 
-variable {α : Type _}
-
+variable {α : Type*}
 variable (f : ((a : _) → Part <| β a) →o (a : _) → Part <| β a)
 
 open OmegaCompletePartialOrder
@@ -158,7 +154,7 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
     dsimp [approx]
     rfl
   · apply ωSup_le _ _ _
-    simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+    simp only [Fix.approxChain, OrderHom.coe_mk]
     intro y x
     apply approx_le_fix f
 #align part.fix_eq_ωSup Part.fix_eq_ωSup
@@ -166,11 +162,11 @@ theorem fix_eq_ωSup : Part.fix f = ωSup (approxChain f) := by
 theorem fix_le {X : (a : _) → Part <| β a} (hX : f X ≤ X) : Part.fix f ≤ X := by
   rw [fix_eq_ωSup f]
   apply ωSup_le _ _ _
-  simp only [Fix.approxChain, OrderHom.coe_fun_mk]
+  simp only [Fix.approxChain, OrderHom.coe_mk]
   intro i
   induction i with
   | zero => dsimp [Fix.approx]; apply bot_le
-  | succ _ i_ih => trans f X; apply f.monotone i_ih ; apply hX
+  | succ _ i_ih => trans f X; apply f.monotone i_ih; apply hX
 #align part.fix_le Part.fix_le
 
 variable {f} (hc : Continuous f)
@@ -222,7 +218,7 @@ instance lawfulFix {β} : LawfulFix (α → Part β) :=
   ⟨fun {_f} ↦ Part.fix_eq⟩
 #align pi.lawful_fix Pi.lawfulFix
 
-variable {γ : ∀ a : α, β a → Type _}
+variable {γ : ∀ a : α, β a → Type*}
 
 section Monotone
 
@@ -275,7 +271,6 @@ variable [∀ x y, OmegaCompletePartialOrder <| γ x y]
 section Curry
 
 variable {f : ((x : _) → (y : β x) → γ x y) →o (x : _) → (y : β x) → γ x y}
-
 variable (hc : Continuous f)
 
 theorem uncurry_curry_continuous :
@@ -285,13 +280,13 @@ theorem uncurry_curry_continuous :
 
 end Curry
 
-instance Pi.lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
+instance lawfulFix' [LawfulFix <| (x : Sigma β) → γ x.1 x.2] :
     LawfulFix ((x y : _) → γ x y) where
   fix_eq {_f} hc := by
     dsimp [fix]
     conv =>
       lhs
       erw [LawfulFix.fix_eq (uncurry_curry_continuous hc)]
-#align pi.pi.lawful_fix' Pi.Pi.lawfulFix'
+#align pi.pi.lawful_fix' Pi.lawfulFix'
 
 end Pi

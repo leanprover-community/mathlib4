@@ -2,15 +2,12 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module topology.algebra.continuous_affine_map
-! leanprover-community/mathlib commit bd1fc183335ea95a9519a1630bcf901fe9326d83
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.continuous_affine_map from "leanprover-community/mathlib"@"bd1fc183335ea95a9519a1630bcf901fe9326d83"
 
 /-!
 # Continuous affine maps.
@@ -35,21 +32,18 @@ to the notation `E →L[R] F` for `ContinuousLinearMap R E F`.
 
 
 /-- A continuous map of affine spaces. -/
-structure ContinuousAffineMap (R : Type _) {V W : Type _} (P Q : Type _) [Ring R] [AddCommGroup V]
+structure ContinuousAffineMap (R : Type*) {V W : Type*} (P Q : Type*) [Ring R] [AddCommGroup V]
   [Module R V] [TopologicalSpace P] [AddTorsor V P] [AddCommGroup W] [Module R W]
   [TopologicalSpace Q] [AddTorsor W Q] extends P →ᵃ[R] Q where
   cont : Continuous toFun
 #align continuous_affine_map ContinuousAffineMap
 
--- mathport name: «expr →A[ ] »
 notation:25 P " →A[" R "] " Q => ContinuousAffineMap R P Q
 
 namespace ContinuousAffineMap
 
-variable {R V W P Q : Type _} [Ring R]
-
+variable {R V W P Q : Type*} [Ring R]
 variable [AddCommGroup V] [Module R V] [TopologicalSpace P] [AddTorsor V P]
-
 variable [AddCommGroup W] [Module R W] [TopologicalSpace Q] [AddTorsor W Q]
 
 instance : Coe (P →A[R] Q) (P →ᵃ[R] Q) :=
@@ -62,34 +56,31 @@ theorem to_affineMap_injective {f g : P →A[R] Q} (h : (f : P →ᵃ[R] Q) = (g
   congr
 #align continuous_affine_map.to_affine_map_injective ContinuousAffineMap.to_affineMap_injective
 
-instance : ContinuousMapClass (P →A[R] Q) P Q where
+instance : FunLike (P →A[R] Q) P Q where
   coe f := f.toAffineMap
-  coe_injective' _ _ h := to_affineMap_injective <| FunLike.coe_injective h
-  map_continuous := cont
+  coe_injective' _ _ h := to_affineMap_injective <| DFunLike.coe_injective h
 
-/-- Helper instance for when there's too many metavariables to apply
-`FunLike.hasCoeToFun` directly. -/
-instance : CoeFun (P →A[R] Q) fun _ ↦ P → Q :=
-  FunLike.hasCoeToFun
+instance : ContinuousMapClass (P →A[R] Q) P Q where
+  map_continuous := cont
 
 theorem toFun_eq_coe (f : P →A[R] Q) : f.toFun = ⇑f := rfl
 #align continuous_affine_map.to_fun_eq_coe ContinuousAffineMap.toFun_eq_coe
 
 theorem coe_injective : @Function.Injective (P →A[R] Q) (P → Q) (⇑) :=
-  FunLike.coe_injective
+  DFunLike.coe_injective
 #align continuous_affine_map.coe_injective ContinuousAffineMap.coe_injective
 
 @[ext]
 theorem ext {f g : P →A[R] Q} (h : ∀ x, f x = g x) : f = g :=
-  FunLike.ext _ _ h
+  DFunLike.ext _ _ h
 #align continuous_affine_map.ext ContinuousAffineMap.ext
 
 theorem ext_iff {f g : P →A[R] Q} : f = g ↔ ∀ x, f x = g x :=
-  FunLike.ext_iff
+  DFunLike.ext_iff
 #align continuous_affine_map.ext_iff ContinuousAffineMap.ext_iff
 
 theorem congr_fun {f g : P →A[R] Q} (h : f = g) (x : P) : f x = g x :=
-  FunLike.congr_fun h _
+  DFunLike.congr_fun h _
 #align continuous_affine_map.congr_fun ContinuousAffineMap.congr_fun
 
 /-- Forgetting its algebraic properties, a continuous affine map is a continuous map. -/
@@ -157,8 +148,7 @@ theorem coe_const (q : Q) : (const R P q : P → Q) = Function.const P q := rfl
 noncomputable instance : Inhabited (P →A[R] Q) :=
   ⟨const R P <| Nonempty.some (by infer_instance : Nonempty Q)⟩
 
-variable {R P} {W₂ Q₂ : Type _}
-
+variable {R P} {W₂ Q₂ : Type*}
 variable [AddCommGroup W₂] [Module R W₂] [TopologicalSpace Q₂] [AddTorsor W₂ Q₂]
 
 /-- The composition of morphisms is a morphism. -/
@@ -176,8 +166,7 @@ theorem comp_apply (f : Q →A[R] Q₂) (g : P →A[R] Q) (x : P) : f.comp g x =
 
 section ModuleValuedMaps
 
-variable {S : Type _}
-
+variable {S : Type*}
 variable [TopologicalSpace W]
 
 instance : Zero (P →A[R] W) :=
@@ -193,7 +182,6 @@ theorem zero_apply (x : P) : (0 : P →A[R] W) x = 0 := rfl
 section MulAction
 
 variable [Monoid S] [DistribMulAction S W] [SMulCommClass R S W]
-
 variable [ContinuousConstSMul S W]
 
 instance : SMul S (P →A[R] W) where
@@ -265,10 +253,8 @@ end ContinuousAffineMap
 
 namespace ContinuousLinearMap
 
-variable {R V W : Type _} [Ring R]
-
+variable {R V W : Type*} [Ring R]
 variable [AddCommGroup V] [Module R V] [TopologicalSpace V]
-
 variable [AddCommGroup W] [Module R W] [TopologicalSpace W]
 
 /-- A continuous linear map can be regarded as a continuous affine map. -/

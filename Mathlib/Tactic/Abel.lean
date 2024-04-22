@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Scott Morrison
 -/
 import Mathlib.Tactic.NormNum
+import Mathlib.Tactic.TryThis
 import Mathlib.Util.AtomM
-import Mathlib.Data.Int.Basic
 
 /-!
 # The `abel` tactic
@@ -13,6 +13,8 @@ import Mathlib.Data.Int.Basic
 Evaluate expressions in the language of additive, commutative monoids and groups.
 
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic.Abel
 open Lean Elab Meta Tactic Qq
@@ -146,7 +148,7 @@ theorem term_add_term {α} [AddCommMonoid α] (n₁ x a₁ n₂ a₂ n' a') (h�
 theorem term_add_termg {α} [AddCommGroup α] (n₁ x a₁ n₂ a₂ n' a')
     (h₁ : n₁ + n₂ = n') (h₂ : a₁ + a₂ = a') :
     @termg α _ n₁ x a₁ + @termg α _ n₂ x a₂ = termg n' x a' := by
-  simp [h₁.symm, h₂.symm, termg, add_zsmul]
+  simp only [termg, h₁.symm, add_zsmul, h₂.symm]
   exact add_add_add_comm (n₁ • x) a₁ (n₂ • x) a₂
 
 theorem zero_term {α} [AddCommMonoid α] (x a) : @term α _ 0 x a = a := by
@@ -185,7 +187,7 @@ partial def evalAdd : NormalExpr → NormalExpr → M (NormalExpr × Expr)
 
 theorem term_neg {α} [AddCommGroup α] (n x a n' a')
     (h₁ : -n = n') (h₂ : -a = a') : -@termg α _ n x a = termg n' x a' := by
-  simp [h₂.symm, h₁.symm, termg]; exact add_comm _ _
+  simpa [h₂.symm, h₁.symm, termg] using add_comm _ _
 
 /--
 Interpret a negated expression in `abel`'s normal form.
@@ -212,13 +214,13 @@ theorem zero_smulg {α} [AddCommGroup α] (c) : smulg c (0 : α) = 0 := by
   simp [smulg, zsmul_zero]
 
 theorem term_smul {α} [AddCommMonoid α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smul c a = a') :
-  smul c (@term α _ n x a) = term n' x a' := by
+    (h₁ : c * n = n') (h₂ : smul c a = a') :
+    smul c (@term α _ n x a) = term n' x a' := by
   simp [h₂.symm, h₁.symm, term, smul, nsmul_add, mul_nsmul']
 
 theorem term_smulg {α} [AddCommGroup α] (c n x a n' a')
-  (h₁ : c * n = n') (h₂ : smulg c a = a') :
-  smulg c (@termg α _ n x a) = termg n' x a' := by
+    (h₁ : c * n = n') (h₂ : smulg c a = a') :
+    smulg c (@termg α _ n x a) = termg n' x a' := by
   simp [h₂.symm, h₁.symm, termg, smulg, zsmul_add, mul_zsmul]
 
 /--
@@ -271,7 +273,7 @@ lemma subst_into_smulg {α} [AddCommGroup α]
 lemma subst_into_smul_upcast {α} [AddCommGroup α]
     (l r tl zl tr t) (prl₁ : l = tl) (prl₂ : ↑tl = zl) (prr : r = tr)
     (prt : @smulg α _ zl tr = t) : smul l r = t := by
-  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, coe_nat_zsmul]
+  simp [← prt, prl₁, ← prl₂, prr, smul, smulg, natCast_zsmul]
 
 lemma subst_into_add {α} [AddCommMonoid α] (l r tl tr t)
     (prl : (l : α) = tl) (prr : r = tr) (prt : tl + tr = t) : l + r = t := by
@@ -297,9 +299,9 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
-  match Meta.NormNum.isIntLit e₁' with
+  match e₁'.int? with
   | some n => do
     let c ← read
     let (e₂', p₂) ← eval e₂
@@ -440,7 +442,7 @@ partial def abelNFCore
     let thms := [``term_eq, ``termg_eq, ``add_zero, ``one_nsmul, ``one_zsmul, ``zsmul_zero]
     let ctx' := { ctx with simpTheorems := #[← thms.foldlM (·.addConst ·) {:_}] }
     pure fun r' : Simp.Result ↦ do
-      Simp.mkEqTrans r' (← Simp.main r'.expr ctx' (methods := Simp.DefaultMethods.methods)).1
+      r'.mkEqTrans (← Simp.main r'.expr ctx' (methods := ← Lean.Meta.Simp.mkDefaultMethods)).1
   let rec
     /-- The recursive case of `abelNF`.
     * `root`: true when the function is called directly from `abelNFCore`
@@ -450,7 +452,7 @@ partial def abelNFCore
       `go -> eval -> evalAtom -> go` which makes no progress.
     -/
     go root parent :=
-      let pre e :=
+      let pre : Simp.Simproc := fun e =>
         try
           guard <| root || parent != e -- recursion guard
           let e ← withReducible <| whnf e
@@ -460,8 +462,8 @@ partial def abelNFCore
           let r ← simp { expr := a, proof? := pa }
           if ← withReducible <| isDefEq r.expr e then return .done { expr := r.expr }
           pure (.done r)
-        catch _ => pure <| .visit { expr := e }
-      let post := (Simp.postDefault · fun _ ↦ none)
+        catch _ => pure <| .continue
+      let post : Simp.Simproc := Simp.postDefault #[]
       (·.1) <$> Simp.main parent ctx (methods := { pre, post }),
     /-- The `evalAtom` implementation passed to `eval` calls `go` if `cfg.recursive` is true,
     and does nothing otherwise. -/
@@ -472,12 +474,13 @@ open Elab.Tactic Parser.Tactic
 /-- Use `abel_nf` to rewrite the main goal. -/
 def abelNFTarget (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) : TacticM Unit := withMainContext do
   let goal ← getMainGoal
-  let tgt ← instantiateMVars (← goal.getType)
+  let tgt ← withReducible goal.getType'
   let r ← abelNFCore s cfg tgt
   if r.expr.isConstOf ``True then
     goal.assign (← mkOfEqTrue (← r.getProof))
     replaceMainGoal []
   else
+    if r.expr == tgt then throwError "abel_nf made no progress"
     replaceMainGoal [← applySimpResultToTarget goal tgt r]
 
 /-- Use `abel_nf` to rewrite hypothesis `h`. -/
@@ -486,6 +489,7 @@ def abelNFLocalDecl (s : IO.Ref AtomM.State) (cfg : AbelNF.Config) (fvarId : FVa
   let tgt ← instantiateMVars (← fvarId.getType)
   let goal ← getMainGoal
   let myres ← abelNFCore s cfg tgt
+  if myres.expr == tgt then throwError "abel_nf made no progress"
   match ← applySimpResultToLocalDecl goal fvarId myres false with
   | none => replaceMainGoal []
   | some (_, newGoal) => replaceMainGoal [newGoal]
@@ -511,7 +515,7 @@ elab (name := abelNF) "abel_nf" tk:"!"? cfg:(config ?) loc:(location)? : tactic 
   let loc := (loc.map expandLocation).getD (.targets #[] true)
   let s ← IO.mkRef {}
   withLocation loc (abelNFLocalDecl s cfg) (abelNFTarget s cfg)
-    fun _ ↦ throwError "abel_nf failed"
+    fun _ ↦ throwError "abel_nf made no progress"
 
 @[inherit_doc abelNF] macro "abel_nf!" cfg:(config)? loc:(location)? : tactic =>
   `(tactic| abel_nf ! $(cfg)? $(loc)?)
@@ -541,9 +545,9 @@ example [AddCommGroup α] (a : α) : (3 : ℤ) • a = a + (2 : ℤ) • a := by
 ```
 -/
 macro (name := abel) "abel" : tactic =>
-  `(tactic| first | abel1 | abel_nf; trace "Try this: abel_nf")
+  `(tactic| first | abel1 | try_this abel_nf)
 @[inherit_doc abel] macro "abel!" : tactic =>
-  `(tactic| first | abel1! | abel_nf!; trace "Try this: abel_nf!")
+  `(tactic| first | abel1! | try_this abel_nf!)
 
 /--
 The tactic `abel` evaluates expressions in abelian groups.
@@ -552,6 +556,6 @@ This is the conv tactic version, which rewrites a target which is an abel equali
 See also the `abel` tactic.
 -/
 macro (name := abelConv) "abel" : conv =>
-  `(conv| first | discharge => abel1 | abel_nf; tactic => trace "Try this: abel_nf")
+  `(conv| first | discharge => abel1 | try_this abel_nf)
 @[inherit_doc abelConv] macro "abel!" : conv =>
-  `(conv| first | discharge => abel1! | abel_nf!; tactic => trace "Try this: abel_nf!")
+  `(conv| first | discharge => abel1! | try_this abel_nf!)

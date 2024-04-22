@@ -2,17 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux, Jon Bannon
-
-! This file was ported from Lean 3 source module analysis.normed_space.star.multiplier
-! leanprover-community/mathlib commit ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Star.StarAlgHom
-import Mathlib.Analysis.NormedSpace.Star.Basic
-import Mathlib.Analysis.NormedSpace.OperatorNorm
+import Mathlib.Analysis.NormedSpace.OperatorNorm.Completeness
+import Mathlib.Analysis.NormedSpace.Star.Unitization
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
-import Mathlib.Analysis.NormedSpace.Star.Mul
+
+#align_import analysis.normed_space.star.multiplier from "leanprover-community/mathlib"@"ba5ff5ad5d120fb0ef094ad2994967e9bfaf5112"
 
 /-!
 # Multiplier Algebra of a C⋆-algebra
@@ -80,7 +75,7 @@ scoped[MultiplierAlgebra] notation "𝓜(" 𝕜 ", " A ")" => DoubleCentralizer 
 
 open MultiplierAlgebra
 
--- porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
+-- Porting note: `ext` was generating the wrong extensionality lemma; it deconstructed the `×`.
 @[ext]
 lemma DoubleCentralizer.ext (𝕜 : Type u) (A : Type v) [NontriviallyNormedField 𝕜]
     [NonUnitalNormedRing A] [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
@@ -93,8 +88,7 @@ namespace DoubleCentralizer
 
 section NontriviallyNormed
 
-variable (𝕜 A : Type _) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
-
+variable (𝕜 A : Type*) [NontriviallyNormedField 𝕜] [NonUnitalNormedRing A]
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 /-!
@@ -102,8 +96,8 @@ variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A]
 
 Because the multiplier algebra is defined as the algebra of double centralizers, there is a natural
 injection `DoubleCentralizer.toProdMulOpposite : 𝓜(𝕜, A) → (A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ`
-defined by `λ a, (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module and
-algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
+defined by `fun a ↦ (a.fst, MulOpposite.op a.snd)`. We use this map to pull back the ring, module
+and algebra structure from `(A →L[𝕜] A) × (A →L[𝕜] A)ᵐᵒᵖ` to `𝓜(𝕜, A)`. -/
 
 variable {𝕜 A}
 
@@ -125,7 +119,7 @@ instance instAdd : Add 𝓜(𝕜, A) where
 instance instZero : Zero 𝓜(𝕜, A) where
   zero :=
     { toProd := 0
-      central := fun x y => (MulZeroClass.zero_mul y).trans (MulZeroClass.mul_zero x).symm }
+      central := fun x y => (zero_mul y).trans (mul_zero x).symm }
 
 instance instNeg : Neg 𝓜(𝕜, A) where
   neg a :=
@@ -143,7 +137,7 @@ instance instSub : Sub 𝓜(𝕜, A) where
 
 section Scalars
 
-variable {S : Type _} [Monoid S] [DistribMulAction S A] [SMulCommClass 𝕜 S A]
+variable {S : Type*} [Monoid S] [DistribMulAction S A] [SMulCommClass 𝕜 S A]
   [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A]
 
 instance instSMul : SMul S 𝓜(𝕜, A) where
@@ -166,7 +160,7 @@ theorem smul_snd (s : S) (a : 𝓜(𝕜, A)) : (s • a).snd = s • a.snd :=
   rfl
 #align double_centralizer.smul_snd DoubleCentralizer.smul_snd
 
-variable {T : Type _} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
+variable {T : Type*} [Monoid T] [DistribMulAction T A] [SMulCommClass 𝕜 T A]
   [ContinuousConstSMul T A] [IsScalarTower T A A] [SMulCommClass T A A]
 
 instance instIsScalarTower [SMul S T] [IsScalarTower S T A] : IsScalarTower S T 𝓜(𝕜, A) where
@@ -175,7 +169,7 @@ instance instIsScalarTower [SMul S T] [IsScalarTower S T A] : IsScalarTower S T 
 instance instSMulCommClass [SMulCommClass S T A] : SMulCommClass S T 𝓜(𝕜, A) where
   smul_comm _ _ a := ext (𝕜 := 𝕜) (A := A) _ _ <| smul_comm _ _ a.toProd
 
-instance instIsCentralScalar {R : Type _} [Semiring R] [Module R A] [SMulCommClass 𝕜 R A]
+instance instIsCentralScalar {R : Type*} [Semiring R] [Module R A] [SMulCommClass 𝕜 R A]
     [ContinuousConstSMul R A] [IsScalarTower R A A] [SMulCommClass R A A] [Module Rᵐᵒᵖ A]
     [IsCentralScalar R A] : IsCentralScalar R 𝓜(𝕜, A) where
   op_smul_eq_smul _ a := ext (𝕜 := 𝕜) (A := A) _ _ <| op_smul_eq_smul _ a.toProd
@@ -208,7 +202,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       induction' n with k hk generalizing x y
       · rfl
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
-        rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
+        rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
@@ -239,14 +233,14 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 #align double_centralizer.one_to_prod DoubleCentralizer.one_toProd
 
 @[simp]
-theorem nat_cast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.nat_cast_to_prod DoubleCentralizer.nat_cast_toProd
+#align double_centralizer.nat_cast_to_prod DoubleCentralizer.natCast_toProd
 
 @[simp]
-theorem int_cast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.int_cast_to_prod DoubleCentralizer.int_cast_toProd
+#align double_centralizer.int_cast_to_prod DoubleCentralizer.intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -303,21 +297,21 @@ theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
   rfl
 #align double_centralizer.mul_snd DoubleCentralizer.mul_snd
 
-theorem nat_cast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.nat_cast_fst DoubleCentralizer.nat_cast_fst
+#align double_centralizer.nat_cast_fst DoubleCentralizer.natCast_fst
 
-theorem nat_cast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
+theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-#align double_centralizer.nat_cast_snd DoubleCentralizer.nat_cast_snd
+#align double_centralizer.nat_cast_snd DoubleCentralizer.natCast_snd
 
-theorem int_cast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.int_cast_fst DoubleCentralizer.int_cast_fst
+#align double_centralizer.int_cast_fst DoubleCentralizer.intCast_fst
 
-theorem int_cast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
+theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-#align double_centralizer.int_cast_snd DoubleCentralizer.int_cast_snd
+#align double_centralizer.int_cast_snd DoubleCentralizer.intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
@@ -357,7 +351,7 @@ instance instRing : Ring 𝓜(𝕜, A) :=
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_smul _ _)
     (fun _x _n => Prod.ext rfl <| MulOpposite.op_pow _ _) (fun _ => rfl) fun _ => rfl
 
-/-- The canonical map `double_centralizer.to_prod` as an additive group homomorphism. -/
+/-- The canonical map `DoubleCentralizer.toProd` as an additive group homomorphism. -/
 @[simps]
 def toProdHom : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A) where
   toFun := toProd
@@ -377,7 +371,7 @@ def toProdMulOppositeHom : 𝓜(𝕜, A) →+* (A →L[𝕜] A) × (A →L[𝕜]
 
 /-- The module structure is inherited as the pullback under the additive group monomorphism
 `DoubleCentralizer.toProd : 𝓜(𝕜, A) →+ (A →L[𝕜] A) × (A →L[𝕜] A)` -/
-instance instModule {S : Type _} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
+instance instModule {S : Type*} [Semiring S] [Module S A] [SMulCommClass 𝕜 S A]
     [ContinuousConstSMul S A] [IsScalarTower S A A] [SMulCommClass S A A] : Module S 𝓜(𝕜, A) :=
   Function.Injective.module S toProdHom (ext (𝕜 := 𝕜) (A := A)) fun _x _y => rfl
 
@@ -478,7 +472,7 @@ maps `Lₐ Rₐ : A →L[𝕜] A` given by left- and right-multiplication by `a`
 Warning: if `A = 𝕜`, then this is a coercion which is not definitionally equal to the
 `algebraMap 𝕜 𝓜(𝕜, 𝕜)` coercion, but these are propositionally equal. See
 `DoubleCentralizer.coe_eq_algebraMap` below. -/
--- porting note: added `noncomputable` because an IR check failed?
+-- Porting note: added `noncomputable` because an IR check failed?
 @[coe]
 protected noncomputable def coe (a : A) : 𝓜(𝕜, A) :=
   { fst := ContinuousLinearMap.mul 𝕜 A a
@@ -507,10 +501,10 @@ theorem coe_snd (a : A) : (a : 𝓜(𝕜, A)).snd = (ContinuousLinearMap.mul �
 #align double_centralizer.coe_snd DoubleCentralizer.coe_snd
 
 theorem coe_eq_algebraMap : (DoubleCentralizer.coe 𝕜 : 𝕜 → 𝓜(𝕜, 𝕜)) = algebraMap 𝕜 𝓜(𝕜, 𝕜) := by
-  ext <;>
-  simp only [coe_fst, mul_apply', mul_one, algebraMap_toProd, Prod.algebraMap_apply, coe_snd,
-    flip_apply, one_mul] <;>
-  simp only [Algebra.algebraMap_eq_smul_one, smul_apply, one_apply, smul_eq_mul, mul_one]
+  ext x : 3
+  · rfl -- `fst` is defeq
+  · refine ContinuousLinearMap.ext fun y => ?_
+    exact mul_comm y x  -- `snd` multiplies on the wrong side
 #align double_centralizer.coe_eq_algebra_map DoubleCentralizer.coe_eq_algebraMap
 
 /-- The coercion of an algebra into its multiplier algebra as a non-unital star algebra
@@ -519,17 +513,15 @@ homomorphism. -/
 noncomputable def coeHom [StarRing 𝕜] [StarRing A] [StarModule 𝕜 A] [NormedStarGroup A] :
     A →⋆ₙₐ[𝕜] 𝓜(𝕜, A) where
   toFun a := a
-  map_smul' k a := by
-    ext <;> simp only [coe_fst, coe_snd, ContinuousLinearMap.map_smul, smul_fst, smul_snd]
-  map_zero' := by ext <;> simp only [coe_fst, coe_snd, map_zero, zero_fst, zero_snd]
-  map_add' a b := by ext <;> simp only [coe_fst, coe_snd, map_add, add_fst, add_snd]
-  map_mul' a b := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', flip_apply, mul_fst, mul_snd,
-        ContinuousLinearMap.coe_mul, Function.comp_apply, mul_assoc]
-  map_star' a := by
-    ext <;>
-      simp only [coe_fst, coe_snd, mul_apply', star_fst, star_snd, flip_apply, star_mul, star_star]
+  map_smul' _ _ := ext _ _ _ _ <| Prod.ext (map_smul _ _ _) (map_smul _ _ _)
+  map_zero' := ext _ _ _ _ <| Prod.ext (map_zero _) (map_zero _)
+  map_add' _ _ := ext _ _ _ _ <| Prod.ext (map_add _ _ _) (map_add _ _ _)
+  map_mul' _ _ := ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _))
+    (ContinuousLinearMap.ext fun _ => (mul_assoc _ _ _).symm)
+  map_star' _ := ext _ _ _ _ <| Prod.ext
+    (ContinuousLinearMap.ext fun _ => (star_star_mul _ _).symm)
+    (ContinuousLinearMap.ext fun _ => (star_mul_star _ _).symm)
 #align double_centralizer.coe_hom DoubleCentralizer.coeHom
 
 /-!
@@ -599,14 +591,10 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
     intro f C h
     have h1 : ∀ b, C * ‖f b‖₊ * ‖b‖₊ ≤ C * ‖f‖₊ * ‖b‖₊ ^ 2 := by
       intro b
-      convert mul_le_mul_right' (mul_le_mul_left' (f.le_op_nnnorm b) C) ‖b‖₊ using 1
+      convert mul_le_mul_right' (mul_le_mul_left' (f.le_opNNNorm b) C) ‖b‖₊ using 1
       ring
-    have :=
-      NNReal.div_le_of_le_mul
-        (f.op_nnnorm_le_bound _
-          (by
-            simpa only [sqrt_sq, sqrt_mul] using fun b =>
-              sqrt_le_sqrt_iff.mpr ((h b).trans (h1 b))))
+    have := NNReal.div_le_of_le_mul $ f.opNNNorm_le_bound _ $ by
+      simpa only [sqrt_sq, sqrt_mul] using fun b ↦ sqrt_le_sqrt.2 $ (h b).trans (h1 b)
     convert NNReal.rpow_le_rpow this two_pos.le
     · simp only [NNReal.rpow_two, div_pow, sq_sqrt]
       simp only [sq, mul_self_div_self]
@@ -618,7 +606,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_star_mul_self.symm
       _ ≤ ‖a.snd (star (a.fst b))‖₊ * ‖b‖₊ := (a.central (star (a.fst b)) b ▸ nnnorm_mul_le _ _)
       _ ≤ ‖a.snd‖₊ * ‖a.fst b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_op_nnnorm _) _
+        nnnorm_star (a.fst b) ▸ mul_le_mul_right' (a.snd.le_opNNNorm _) _
 
   have h2 : ∀ b, ‖a.snd b‖₊ ^ 2 ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ := by
     intro b
@@ -627,9 +615,9 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
-      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := (mul_comm _ _)
+      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
-        nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_op_nnnorm _) _
+        nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
 
   exact le_antisymm (h0 _ _ h1) (h0 _ _ h2)
 #align double_centralizer.norm_fst_eq_snd DoubleCentralizer.norm_fst_eq_snd
@@ -662,14 +650,12 @@ end NontriviallyNormed
 
 section DenselyNormed
 
-variable {𝕜 A : Type _} [DenselyNormedField 𝕜] [StarRing 𝕜]
-
+variable {𝕜 A : Type*} [DenselyNormedField 𝕜] [StarRing 𝕜]
 variable [NonUnitalNormedRing A] [StarRing A] [CstarRing A]
-
 variable [NormedSpace 𝕜 A] [SMulCommClass 𝕜 A A] [IsScalarTower 𝕜 A A] [StarModule 𝕜 A]
 
 instance instCstarRing : CstarRing 𝓜(𝕜, A) where
-  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) =>  congr_arg ((↑) : ℝ≥0 → ℝ) <|
+  norm_star_mul_self := @fun (a : 𝓜(𝕜, A)) => congr_arg ((↑) : ℝ≥0 → ℝ) <|
     show ‖star a * a‖₊ = ‖a‖₊ * ‖a‖₊ by
     /- The essence of the argument is this: let `a = (L,R)` and recall `‖a‖ = ‖L‖`.
     `star a = (star ∘ R ∘ star, star ∘ L ∘ star)`. Then for any `x y : A`, we have
@@ -691,12 +677,12 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           ‖star (a.fst (star x)) * a.fst y‖₊ ≤ ‖a.fst (star x)‖₊ * ‖a.fst y‖₊ :=
             nnnorm_star (a.fst (star x)) ▸ nnnorm_mul_le _ _
           _ ≤ ‖a.fst‖₊ * 1 * (‖a.fst‖₊ * 1) :=
-            (mul_le_mul' (a.fst.le_op_norm_of_le ((nnnorm_star x).trans_le hx))
-              (a.fst.le_op_norm_of_le hy))
+            (mul_le_mul' (a.fst.le_opNorm_of_le ((nnnorm_star x).trans_le hx))
+              (a.fst.le_opNorm_of_le hy))
           _ ≤ ‖a‖₊ * ‖a‖₊ := by simp only [mul_one, nnnorm_fst, le_rfl]
       rw [← nnnorm_snd]
       simp only [mul_snd, ← sSup_closed_unit_ball_eq_nnnorm, star_snd, mul_apply]
-      simp only [← @op_nnnorm_mul 𝕜 A]
+      simp only [← @opNNNorm_mul_apply 𝕜 _ A]
       simp only [← sSup_closed_unit_ball_eq_nnnorm, mul_apply']
       refine' csSup_eq_of_forall_le_of_forall_lt_exists_gt (hball.image _) _ fun r hr => _
       · rintro - ⟨x, hx, rfl⟩
@@ -704,7 +690,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
         rintro - ⟨y, hy, rfl⟩
         exact key x y (mem_closedBall_zero_iff.1 hx) (mem_closedBall_zero_iff.1 hy)
       · simp only [Set.mem_image, Set.mem_setOf_eq, exists_prop, exists_exists_and_eq_and]
-        have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt_iff.2 hr
+        have hr' : NNReal.sqrt r < ‖a‖₊ := ‖a‖₊.sqrt_mul_self ▸ NNReal.sqrt_lt_sqrt.2 hr
         simp_rw [← nnnorm_fst, ← sSup_closed_unit_ball_eq_nnnorm] at hr'
         obtain ⟨_, ⟨x, hx, rfl⟩, hxr⟩ := exists_lt_of_lt_csSup (hball.image _) hr'
         have hx' : ‖x‖₊ ≤ 1 := mem_closedBall_zero_iff.1 hx
@@ -714,7 +700,7 @@ instance instCstarRing : CstarRing 𝓜(𝕜, A) where
           rintro - ⟨y, hy, rfl⟩
           exact key (star x) y ((nnnorm_star x).trans_le hx') (mem_closedBall_zero_iff.1 hy)
         · simpa only [a.central, star_star, CstarRing.nnnorm_star_mul_self, NNReal.sq_sqrt, ← sq]
-            using pow_lt_pow_of_lt_left hxr zero_le' two_pos
+            using pow_lt_pow_left hxr zero_le' two_ne_zero
 
 end DenselyNormed
 

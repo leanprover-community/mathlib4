@@ -2,14 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.part
-! leanprover-community/mathlib commit 80c43012d26f63026d362c3aba28f3c3bafb07e6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Algebra.Group.Defs
+
+#align_import data.part from "leanprover-community/mathlib"@"80c43012d26f63026d362c3aba28f3c3bafb07e6"
 
 /-!
 # Partial values of a type
@@ -60,7 +58,7 @@ structure Part.{u} (α : Type u) : Type u where
 
 namespace Part
 
-variable {α : Type _} {β : Type _} {γ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*}
 
 /-- Convert a `Part α` with a decidable domain to an option -/
 def toOption (o : Part α) [Decidable o.Dom] : Option α :=
@@ -76,7 +74,7 @@ def toOption (o : Part α) [Decidable o.Dom] : Option α :=
 #align part.to_option_is_none Part.toOption_isNone
 
 /-- `Part` extensionality -/
-theorem ext' : ∀ {o p : Part α} (_ : o.Dom ↔ p.Dom) (_ : ∀ h₁ h₂, o.get h₁ = p.get h₂), o = p
+theorem ext' : ∀ {o p : Part α}, (o.Dom ↔ p.Dom) → (∀ h₁ h₂, o.get h₁ = p.get h₂) → o = p
   | ⟨od, o⟩, ⟨pd, p⟩, H1, H2 => by
     have t : od = pd := propext H1
     cases t; rw [show o = p from funext fun p => H2 p p]
@@ -288,7 +286,7 @@ theorem getOrElse_some (a : α) (d : α) [Decidable (some a).Dom] : getOrElse (s
   (some a).getOrElse_of_dom (some_dom a) d
 #align part.get_or_else_some Part.getOrElse_some
 
---Porting note: removed `simp`
+-- Porting note: removed `simp`
 theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o ↔ a ∈ o := by
   unfold toOption
   by_cases h : o.Dom <;> simp [h]
@@ -296,7 +294,7 @@ theorem mem_toOption {o : Part α} [Decidable o.Dom] {a : α} : a ∈ toOption o
   · exact mt Exists.fst h
 #align part.mem_to_option Part.mem_toOption
 
---Porting note : New theorem, like `mem_toOption` but with LHS in `simp` normal form
+-- Porting note (#10756): new theorem, like `mem_toOption` but with LHS in `simp` normal form
 @[simp]
 theorem toOption_eq_some_iff {o : Part α} [Decidable o.Dom] {a : α} :
     toOption o = Option.some a ↔ a ∈ o :=
@@ -312,7 +310,7 @@ theorem toOption_eq_none_iff {a : Part α} [Decidable a.Dom] : a.toOption = Opti
 
 /- Porting TODO: Removed `simp`. Maybe add `@[simp]` later if `@[simp]` is taken off definition of
 `Option.elim` -/
-theorem elim_toOption {α β : Type _} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
+theorem elim_toOption {α β : Type*} (a : Part α) [Decidable a.Dom] (b : β) (f : α → β) :
     a.toOption.elim b f = if h : a.Dom then f (a.get h) else b := by
   split_ifs with h
   · rw [h.toOption]
@@ -343,8 +341,8 @@ theorem ofOption_dom {α} : ∀ o : Option α, (ofOption o).Dom ↔ o.isSome
 theorem ofOption_eq_get {α} (o : Option α) : ofOption o = ⟨_, @Option.get _ o⟩ :=
   Part.ext' (ofOption_dom o) fun h₁ h₂ => by
     cases o
-    . simp at h₂
-    . rfl
+    · simp at h₂
+    · rfl
 #align part.of_option_eq_get Part.ofOption_eq_get
 
 instance : Coe (Option α) (Part α) :=
@@ -389,7 +387,7 @@ theorem of_toOption (o : Part α) [Decidable o.Dom] : ofOption (toOption o) = o 
 noncomputable def equivOption : Part α ≃ Option α :=
   haveI := Classical.dec
   ⟨fun o => toOption o, ofOption, fun o => of_toOption o, fun o =>
-    Eq.trans (by dsimp; congr ) (to_ofOption o)⟩
+    Eq.trans (by dsimp; congr) (to_ofOption o)⟩
 #align part.equiv_option Part.equivOption
 
 /-- We give `Part α` the order where everything is greater than `none`. -/
@@ -402,9 +400,7 @@ instance : PartialOrder (Part
 
 instance : OrderBot (Part α) where
   bot := none
-  bot_le := by
-    introv x
-    rintro ⟨⟨_⟩, _⟩
+  bot_le := by rintro x _ ⟨⟨_⟩, _⟩
 
 theorem le_total_of_le_of_le {x y : Part α} (z : Part α) (hx : x ≤ z) (hy : y ≤ z) :
     x ≤ y ∨ y ≤ x := by
@@ -474,7 +470,7 @@ theorem mem_assert_iff {p : Prop} {f : p → Part α} {a} : a ∈ assert p f ↔
 theorem assert_pos {p : Prop} {f : p → Part α} (h : p) : assert p f = f h := by
   dsimp [assert]
   cases h' : f h
-  simp [h', mk.injEq, h, exists_prop_of_true, true_and]
+  simp only [h', mk.injEq, h, exists_prop_of_true, true_and]
   apply Function.hfunext
   · simp only [h, h', exists_prop_of_true]
   · aesop
@@ -542,10 +538,9 @@ theorem bind_toOption (f : α → Part β) (o : Part α) [Decidable o.Dom] [∀ 
 theorem bind_assoc {γ} (f : Part α) (g : α → Part β) (k : β → Part γ) :
     (f.bind g).bind k = f.bind fun x => (g x).bind k :=
   ext fun a => by
-    simp;
-      exact
-        ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩, fun ⟨_, h₁, _, h₂, h₃⟩ =>
-          ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
+    simp only [mem_bind_iff]
+    exact ⟨fun ⟨_, ⟨_, h₁, h₂⟩, h₃⟩ => ⟨_, h₁, _, h₂, h₃⟩,
+           fun ⟨_, h₁, _, h₂, h₃⟩ => ⟨_, ⟨_, h₁, h₂⟩, h₃⟩⟩
 #align part.bind_assoc Part.bind_assoc
 
 @[simp]
@@ -577,16 +572,16 @@ instance : LawfulMonad
   map_const := by simp [Functor.mapConst, Functor.map]
   --Porting TODO : In Lean3 these were automatic by a tactic
   seqLeft_eq x y := ext'
-    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (by simp [SeqLeft.seqLeft, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   seqRight_eq x y := ext'
-    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (. <$> .), and_comm])
+    (by simp [SeqRight.seqRight, Part.bind, assert, Seq.seq, const, (· <$> ·), and_comm])
     (fun _ _ => rfl)
   pure_seq x y := ext'
-    (by simp [Seq.seq, Part.bind, assert, (. <$> .), pure])
+    (by simp [Seq.seq, Part.bind, assert, (· <$> ·), pure])
     (fun _ _ => rfl)
   bind_map x y := ext'
-    (by simp [(. >>= .), Part.bind, assert, Seq.seq, get, (. <$> .)] )
+    (by simp [(· >>= ·), Part.bind, assert, Seq.seq, get, (· <$> ·)] )
     (fun _ _ => rfl)
 
 theorem map_id' {f : α → α} (H : ∀ x : α, f x = x) (o) : map f o = o := by
@@ -631,7 +626,7 @@ theorem bind_le {α} (x : Part α) (f : α → Part β) (y : Part β) :
     apply h _ h₀ _ h₁
 #align part.bind_le Part.bind_le
 
---Porting note: No MonadFail in Lean4 yet
+-- Porting note: No MonadFail in Lean4 yet
 -- instance : MonadFail Part :=
 --   { Part.monad with fail := fun _ _ => none }
 
@@ -671,7 +666,12 @@ theorem bind_dom {f : Part α} {g : α → Part β} : (f.bind g).Dom ↔ ∃ h :
 
 section Instances
 
--- We define several instances for constants and operations on `Part α` inherited from `α`.
+/-!
+We define several instances for constants and operations on `Part α` inherited from `α`.
+
+This section could be moved to a separate file to avoid the import of `Mathlib.Algebra.Group.Defs`.
+-/
+
 @[to_additive]
 instance [One α] : One (Part α) where one := pure 1
 
@@ -695,16 +695,16 @@ instance [Union α] : Union (Part α) where union a b := (· ∪ ·) <$> a <*> b
 instance [SDiff α] : SDiff (Part α) where sdiff a b := (· \ ·) <$> a <*> b
 
 section
--- Porting note : new theorems to unfold definitions
-theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * .) b := rfl
+-- Porting note (#10756): new theorems to unfold definitions
+theorem mul_def [Mul α] (a b : Part α) : a * b = bind a fun y ↦ map (y * ·) b := rfl
 theorem one_def [One α] : (1 : Part α) = some 1 := rfl
-theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (. ⁻¹) a := rfl
-theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / .) b := rfl
-theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % .) b := rfl
-theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ .) b := rfl
-theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ .) b := rfl
-theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ .) b := rfl
-theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ .) b := rfl
+theorem inv_def [Inv α] (a : Part α) : a⁻¹ = Part.map (· ⁻¹) a := rfl
+theorem div_def [Div α] (a b : Part α) : a / b = bind a fun y => map (y / ·) b := rfl
+theorem mod_def [Mod α] (a b : Part α) : a % b = bind a fun y => map (y % ·) b := rfl
+theorem append_def [Append α] (a b : Part α) : a ++ b = bind a fun y => map (y ++ ·) b := rfl
+theorem inter_def [Inter α] (a b : Part α) : a ∩ b = bind a fun y => map (y ∩ ·) b := rfl
+theorem union_def [Union α] (a b : Part α) : a ∪ b = bind a fun y => map (y ∪ ·) b := rfl
+theorem sdiff_def [SDiff α] (a b : Part α) : a \ b = bind a fun y => map (y \ ·) b := rfl
 
 end
 
@@ -716,7 +716,7 @@ theorem one_mem_one [One α] : (1 : α) ∈ (1 : Part α) :=
 
 @[to_additive]
 theorem mul_mem_mul [Mul α] (a b : Part α) (ma mb : α) (ha : ma ∈ a) (hb : mb ∈ b) :
-    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp [← ha.2, ← hb.2]; rfl⟩
+    ma * mb ∈ a * b := ⟨⟨ha.1, hb.1⟩, by simp only [← ha.2, ← hb.2]; rfl⟩
 #align part.mul_mem_mul Part.mul_mem_mul
 #align part.add_mem_add Part.add_mem_add
 

@@ -2,13 +2,10 @@
 Copyright (c) 2020 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module number_theory.primes_congruent_one
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Polynomial.Cyclotomic.Eval
+
+#align_import number_theory.primes_congruent_one from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Primes congruent to one
@@ -43,10 +40,10 @@ theorem exists_prime_gt_modEq_one {k : ℕ} (n : ℕ) (hk0 : k ≠ 0) :
   haveI hprime : Fact p.Prime := ⟨minFac_prime (ne_of_lt hgt).symm⟩
   have hroot : IsRoot (cyclotomic k (ZMod p)) (castRingHom (ZMod p) b) := by
     have : ((b : ℤ) : ZMod p) = ↑(Int.castRingHom (ZMod p) b) := by simp
-    rw [IsRoot.def, ← map_cyclotomic_int k (ZMod p), eval_map, coe_castRingHom, ← Int.cast_ofNat,
-      this, eval₂_hom, Int.coe_castRingHom, ZMod.int_cast_zmod_eq_zero_iff_dvd _ _]
+    rw [IsRoot.def, ← map_cyclotomic_int k (ZMod p), eval_map, coe_castRingHom,
+      ← Int.cast_natCast, this, eval₂_hom, Int.coe_castRingHom, ZMod.intCast_zmod_eq_zero_iff_dvd]
     apply Int.dvd_natAbs.1
-    exact_mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
+    exact mod_cast minFac_dvd (eval (↑b) (cyclotomic k ℤ)).natAbs
   have hpb : ¬p ∣ b :=
     hprime.1.coprime_iff_not_dvd.1 (coprime_of_root_cyclotomic hk0.bot_lt hroot).symm
   refine' ⟨p, hprime.1, not_le.1 fun habs => _, _⟩

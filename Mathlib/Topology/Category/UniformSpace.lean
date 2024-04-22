@@ -2,17 +2,14 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Patrick Massot, Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.UniformSpace
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.CategoryTheory.ConcreteCategory.UnbundledHom
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.UniformSpace.Completion
+
+#align_import topology.category.UniformSpace from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of uniform spaces
@@ -46,7 +43,7 @@ deriving instance LargeCategory for UniformSpaceCat
 instance : ConcreteCategory UniformSpaceCat :=
   inferInstanceAs <| ConcreteCategory <| Bundled UniformSpace
 
-instance : CoeSort UniformSpaceCat (Type _) :=
+instance : CoeSort UniformSpaceCat (Type*) :=
   Bundled.coeSort
 
 instance (x : UniformSpaceCat) : UniformSpace x :=
@@ -69,20 +66,21 @@ instance (X Y : UniformSpaceCat) : CoeFun (X ⟶ Y) fun _ => X → Y :=
   ⟨(forget UniformSpaceCat).map⟩
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
+-- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
 theorem coe_comp {X Y Z : UniformSpaceCat} (f : X ⟶ Y) (g : Y ⟶ Z) : (f ≫ g : X → Z) = g ∘ f :=
   rfl
 #align UniformSpace.coe_comp UniformSpaceCat.coe_comp
 
 -- Porting note: `simpNF` should not trigger on `rfl` lemmas.
--- see https://github.com/leanprover-community/mathlib4/issues/5081
+-- see https://github.com/leanprover/std4/issues/86
 @[simp, nolint simpNF]
 theorem coe_id (X : UniformSpaceCat) : (𝟙 X : X → X) = id :=
   rfl
 #align UniformSpace.coe_id UniformSpaceCat.coe_id
 
--- Porting note : removed `simp` attribute due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
+-- Porting note (#11119): removed `simp` attribute
+-- due to `LEFT-HAND SIDE HAS VARIABLE AS HEAD SYMBOL.`
 theorem coe_mk {X Y : UniformSpaceCat} (f : X → Y) (hf : UniformContinuous f) :
     ((⟨f, hf⟩ : X ⟶ Y) : X → Y) = f :=
   rfl
@@ -109,7 +107,7 @@ structure CpltSepUniformSpace where
   α : Type u
   [isUniformSpace : UniformSpace α]
   [isCompleteSpace : CompleteSpace α]
-  [isSeparated : SeparatedSpace α]
+  [isT0 : T0Space α]
 #align CpltSepUniformSpace CpltSepUniformSpace
 
 namespace CpltSepUniformSpace
@@ -117,7 +115,7 @@ namespace CpltSepUniformSpace
 instance : CoeSort CpltSepUniformSpace (Type u) :=
   ⟨CpltSepUniformSpace.α⟩
 
-attribute [instance] isUniformSpace isCompleteSpace isSeparated
+attribute [instance] isUniformSpace isCompleteSpace isT0
 
 /-- The function forgetting that a complete separated uniform spaces is complete and separated. -/
 def toUniformSpace (X : CpltSepUniformSpace) : UniformSpaceCat :=
@@ -128,23 +126,22 @@ instance completeSpace (X : CpltSepUniformSpace) : CompleteSpace (toUniformSpace
   CpltSepUniformSpace.isCompleteSpace X
 #align CpltSepUniformSpace.complete_space CpltSepUniformSpace.completeSpace
 
-instance separatedSpace (X : CpltSepUniformSpace) : SeparatedSpace (toUniformSpace X).α :=
-  CpltSepUniformSpace.isSeparated X
-#align CpltSepUniformSpace.separated_space CpltSepUniformSpace.separatedSpace
+instance t0Space (X : CpltSepUniformSpace) : T0Space (toUniformSpace X).α :=
+  CpltSepUniformSpace.isT0 X
+#align CpltSepUniformSpace.separated_space CpltSepUniformSpace.t0Space
 
 /-- Construct a bundled `UniformSpace` from the underlying type and the appropriate typeclasses. -/
-def of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] : CpltSepUniformSpace :=
+def of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] : CpltSepUniformSpace :=
   ⟨X⟩
 #align CpltSepUniformSpace.of CpltSepUniformSpace.of
 
 @[simp]
-theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [SeparatedSpace X] :
+theorem coe_of (X : Type u) [UniformSpace X] [CompleteSpace X] [T0Space X] :
     (of X : Type u) = X :=
   rfl
 #align CpltSepUniformSpace.coe_of CpltSepUniformSpace.coe_of
 
 instance : Inhabited CpltSepUniformSpace :=
-  haveI : SeparatedSpace Empty := separated_iff_t2.mpr (by infer_instance)
   ⟨CpltSepUniformSpace.of Empty⟩
 
 /-- The category instance on `CpltSepUniformSpace`. -/
@@ -197,7 +194,7 @@ noncomputable def extensionHom {X : UniformSpaceCat} {Y : CpltSepUniformSpace}
   property := Completion.uniformContinuous_extension
 #align UniformSpace.extension_hom UniformSpaceCat.extensionHom
 
--- Porting note : added this instance to make things compile
+-- Porting note (#10754): added this instance to make things compile
 instance (X : UniformSpaceCat) : UniformSpace ((forget _).obj X) :=
   show UniformSpace X from inferInstance
 
@@ -225,12 +222,12 @@ noncomputable def adj : completionFunctor ⊣ forget₂ CpltSepUniformSpace Unif
           left_inv := fun f => by dsimp; erw [extension_comp_coe]
           right_inv := fun f => by
             apply Subtype.eq; funext x; cases f
-            exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.separatedSpace _)
+            exact @Completion.extension_coe _ _ _ _ _ (CpltSepUniformSpace.t0Space _)
               ‹_› _ }
       homEquiv_naturality_left_symm := fun {X' X Y} f g => by
         apply hom_ext; funext x; dsimp
         erw [coe_comp]
-        -- Porting note : used to be `erw [← Completion.extension_map]`
+        -- Porting note: used to be `erw [← Completion.extension_map]`
         have := (Completion.extension_map (γ := Y) (f := g) g.2 f.2)
         simp only [forget_map_eq_coe] at this ⊢
         erw [this]

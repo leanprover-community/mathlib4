@@ -2,15 +2,12 @@
 Copyright (c) 2020 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.universal_enveloping
-! leanprover-community/mathlib commit 32b08ef840dd25ca2e47e035c5da03ce16d2dc3c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.RingQuot
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
+
+#align_import algebra.lie.universal_enveloping from "leanprover-community/mathlib"@"32b08ef840dd25ca2e47e035c5da03ce16d2dc3c"
 
 /-!
 # Universal enveloping algebra
@@ -42,7 +39,6 @@ lie algebra, universal enveloping algebra, tensor algebra
 universe u₁ u₂ u₃
 
 variable (R : Type u₁) (L : Type u₂)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 local notation "ιₜ" => TensorAlgebra.ι R
@@ -92,7 +88,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
 variable {L}
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
-@[simps!] -- Porting note: added
+@[simps!] -- Porting note (#11445): added
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
     map_lie' := fun {x y} => by
@@ -122,7 +118,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [LieHom.coe_comp, Function.comp_apply, AlgHom.coe_toLieHom,
       UniversalEnvelopingAlgebra.ι_apply, mkAlgHom]
-    rw [RingQuot.liftAlgHom_mkAlgHom_apply]
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [RingQuot.liftAlgHom_mkAlgHom_apply]
     simp only [TensorAlgebra.lift_ι_apply, LieHom.coe_toLinearMap]
   right_inv F := by
     apply RingQuot.ringQuot_ext'
@@ -132,7 +129,8 @@ def lift : (L →ₗ⁅R⁆ A) ≃ (UniversalEnvelopingAlgebra R L →ₐ[R] A) 
     --   LinearMap.toFun_eq_coe, LinearMap.coe_comp, LieHom.coe_linearMap_comp,
     --   AlgHom.comp_toLinearMap, Function.comp_apply, AlgHom.toLinearMap_apply,
     --   RingQuot.liftAlgHom_mkAlgHom_apply, AlgHom.coe_toLieHom, LieHom.coe_mk]
-    simp [mkAlgHom]
+    -- extra `rfl` after leanprover/lean4#2644
+    simp [mkAlgHom]; rfl
 #align universal_enveloping_algebra.lift UniversalEnvelopingAlgebra.lift
 
 @[simp]

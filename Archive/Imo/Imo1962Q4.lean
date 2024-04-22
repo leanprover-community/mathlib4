@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker, Heather Macbeth
-
-! This file was ported from Lean 3 source module imo.imo1962_q4
-! leanprover-community/mathlib commit 5f25c089cb34db4db112556f23c50d12da81b297
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Complex
 import Mathlib.Tactic.Polyrith
+
+#align_import imo.imo1962_q4 from "leanprover-community/mathlib"@"5f25c089cb34db4db112556f23c50d12da81b297"
 
 /-!
 # IMO 1962 Q4
@@ -19,8 +16,6 @@ Solve the equation `cos x ^ 2 + cos (2 * x) ^ 2 + cos (3 * x) ^ 2 = 1`.
 Since Lean does not have a concept of "simplest form", we just express what is
 in fact the simplest form of the set of solutions, and then prove it equals the set of solutions.
 -/
-
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open Real
 
@@ -109,7 +104,7 @@ We now present a second solution.  The key to this solution is that, when the id
 converted to an identity which is polynomial in `a` := `cos x`, it can be rewritten as a product of
 terms, `a ^ 2 * (2 * a ^ 2 - 1) * (4 * a ^ 2 - 3)`, being equal to zero.
 -/
-theorem formula {R : Type _} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
+theorem formula {R : Type*} [CommRing R] [IsDomain R] [CharZero R] (a : R) :
     a ^ 2 + ((2 : R) * a ^ 2 - (1 : R)) ^ 2 + ((4 : R) * a ^ 3 - 3 * a) ^ 2 = 1 ↔
       ((2 : R) * a ^ 2 - (1 : R)) * ((4 : R) * a ^ 3 - 3 * a) = 0 := by
   constructor <;> intro h

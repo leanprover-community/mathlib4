@@ -2,15 +2,13 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.abelian.pseudoelements
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Init.Align
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+
+#align_import category_theory.abelian.pseudoelements from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Pseudoelements in abelian categories
@@ -237,7 +235,7 @@ def pseudoZero {P : C} : P :=
 #align category_theory.abelian.pseudoelement.pseudo_zero CategoryTheory.Abelian.Pseudoelement.pseudoZero
 
 -- Porting note: in mathlib3, we couldn't make this an instance
--- as it would have fired on on `coe_sort`.
+-- as it would have fired on `coe_sort`.
 -- However now that coercions are treated differently, this is a structural instance triggered by
 -- the appearance of `Pseudoelement`.
 instance hasZero {P : C} : Zero P :=
@@ -444,7 +442,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
       ⟨a'',
         ⟨show ⟦(a'' ≫ f : Over Q)⟧ = ⟦↑(0 : Q ⟶ Q)⟧ by
             dsimp at comm
-            simp [sub_eq_zero.2 comm],
+            simp [a'', sub_eq_zero.2 comm],
           fun Z g hh => by
           obtain ⟨X, p', q', ep', _, comm'⟩ := Quotient.exact hh
           have : a'.hom ≫ g = 0 := by
@@ -453,7 +451,7 @@ theorem sub_of_eq_image {P Q : C} (f : P ⟶ Q) (x y : P) :
           apply Quotient.sound
           -- Can we prevent quotient.sound from giving us this weird `coe_b` thingy?
           change app g (a'' : Over P) ≈ app g a
-          exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [sub_eq_add_neg, this]⟩⟩⟩
+          exact ⟨R, 𝟙 R, p, inferInstance, ep, by simp [a'', sub_eq_add_neg, this]⟩⟩⟩
 #align category_theory.abelian.pseudoelement.sub_of_eq_image CategoryTheory.Abelian.Pseudoelement.sub_of_eq_image
 
 variable [Limits.HasPullbacks C]
@@ -462,7 +460,7 @@ variable [Limits.HasPullbacks C]
     that `f p = g q`, then there is some `s : pullback f g` such that `fst s = p` and `snd s = q`.
 
     Remark: Borceux claims that `s` is unique, but this is false. See
-    `counterexamples/pseudoelement` for details. -/
+    `Counterexamples/Pseudoelement.lean` for details. -/
 theorem pseudo_pullback {P Q R : C} {f : P ⟶ R} {g : Q ⟶ R} {p : P} {q : Q} :
     f p = g q →
       ∃ s, (pullback.fst : pullback f g ⟶ P) s = p ∧ (pullback.snd : pullback f g ⟶ Q) s = q :=
@@ -479,19 +477,21 @@ section Module
 
 /-- In the category `Module R`, if `x` and `y` are pseudoequal, then the range of the associated
 morphisms is the same. -/
-theorem ModuleCat.eq_range_of_pseudoequal {R : Type _} [CommRing R] {G : ModuleCat R} {x y : Over G}
+theorem ModuleCat.eq_range_of_pseudoequal {R : Type*} [CommRing R] {G : ModuleCat R} {x y : Over G}
     (h : PseudoEqual G x y) : LinearMap.range x.hom = LinearMap.range y.hom := by
   obtain ⟨P, p, q, hp, hq, H⟩ := h
   refine' Submodule.ext fun a => ⟨fun ha => _, fun ha => _⟩
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective p).1 hp a'
     refine' ⟨q a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H, ModuleCat.comp_def, LinearMap.comp_apply,
-      ha'', ha']
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, ← H,
+      ModuleCat.comp_def, LinearMap.comp_apply, ha'', ha']
   · obtain ⟨a', ha'⟩ := ha
     obtain ⟨a'', ha''⟩ := (ModuleCat.epi_iff_surjective q).1 hq a'
     refine' ⟨p a'', _⟩
-    rw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
+    -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+    erw [← LinearMap.comp_apply, ← ModuleCat.comp_def, H, ModuleCat.comp_def, LinearMap.comp_apply,
       ha'', ha']
 set_option linter.uppercaseLean3 false in
 #align category_theory.abelian.pseudoelement.Module.eq_range_of_pseudoequal CategoryTheory.Abelian.Pseudoelement.ModuleCat.eq_range_of_pseudoequal

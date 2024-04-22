@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
-
-! This file was ported from Lean 3 source module probability.process.filtration
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Function.ConditionalExpectation.Real
+
+#align_import probability.process.filtration from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Filtrations
@@ -43,7 +40,7 @@ namespace MeasureTheory
 
 /-- A `Filtration` on a measurable space `Ω` with σ-algebra `m` is a monotone
 sequence of sub-σ-algebras of `m`. -/
-structure Filtration {Ω : Type _} (ι : Type _) [Preorder ι] (m : MeasurableSpace Ω) where
+structure Filtration {Ω : Type*} (ι : Type*) [Preorder ι] (m : MeasurableSpace Ω) where
   seq : ι → MeasurableSpace Ω
   mono' : Monotone seq
   le' : ∀ i : ι, seq i ≤ m
@@ -51,7 +48,7 @@ structure Filtration {Ω : Type _} (ι : Type _) [Preorder ι] (m : MeasurableSp
 
 attribute [coe] Filtration.seq
 
-variable {Ω β ι : Type _} {m : MeasurableSpace Ω}
+variable {Ω β ι : Type*} {m : MeasurableSpace Ω}
 
 instance [Preorder ι] : CoeFun (Filtration ι m) fun _ => ι → MeasurableSpace Ω :=
   ⟨fun f => f.seq⟩
@@ -70,7 +67,7 @@ protected theorem le (f : Filtration ι m) (i : ι) : f i ≤ m :=
 
 @[ext]
 protected theorem ext {f g : Filtration ι m} (h : (f : ι → MeasurableSpace Ω) = g) : f = g := by
-  cases f; cases g; simp only; congr
+  cases f; cases g; congr
 #align measure_theory.filtration.ext MeasureTheory.Filtration.ext
 
 variable (ι)
@@ -151,7 +148,7 @@ noncomputable instance : InfSet (Filtration ι m) :=
     { seq := fun i => if Set.Nonempty s then sInf ((fun f : Filtration ι m => f i) '' s) else m
       mono' := fun i j hij => by
         by_cases h_nonempty : Set.Nonempty s
-        swap; · simp only [h_nonempty, Set.nonempty_image_iff, if_false, le_refl]
+        swap; · simp only [h_nonempty, Set.image_nonempty, if_false, le_refl]
         simp only [h_nonempty, if_true, le_sInf_iff, Set.mem_image, forall_exists_index, and_imp,
           forall_apply_eq_imp_iff₂]
         refine' fun f hf_mem => le_trans _ (f.mono hij)
@@ -228,7 +225,7 @@ instance (priority := 100) IsFiniteMeasure.sigmaFiniteFiltration [Preorder ι] (
   ⟨fun n => by infer_instance⟩
 #align measure_theory.is_finite_measure.sigma_finite_filtration MeasureTheory.IsFiniteMeasure.sigmaFiniteFiltration
 
-/-- Given a integrable function `g`, the conditional expectations of `g` with respect to a
+/-- Given an integrable function `g`, the conditional expectations of `g` with respect to a
 filtration is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condexp_filtration [Preorder ι] {μ : Measure Ω}
     [IsFiniteMeasure μ] {f : Filtration ι m} {g : Ω → ℝ} (hg : Integrable g μ) :
@@ -285,7 +282,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     (hsm : ∀ i, MeasurableSet[m] (s i)) :
     filtrationOfSet hsm = natural (fun i => (s i).indicator (fun _ => 1 : Ω → β)) fun i =>
       stronglyMeasurable_one.indicator (hsm i) := by
-  simp [natural, filtrationOfSet, measurableSpace_iSup_eq]
+  simp only [filtrationOfSet, natural, measurableSpace_iSup_eq, exists_prop, mk.injEq]
   ext1 i
   refine' le_antisymm (generateFrom_le _) (generateFrom_le _)
   · rintro _ ⟨j, hij, rfl⟩
@@ -303,7 +300,7 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
     pick_goal 4; rw [Set.mem_singleton_iff] at heq
-    all_goals rw [heq] at hu' ; rw [← hu']
+    all_goals rw [heq] at hu'; rw [← hu']
     exacts [measurableSet_empty _, MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
       MeasurableSet.compl (measurableSet_generateFrom ⟨n, hn, rfl⟩)]
 #align measure_theory.filtration.filtration_of_set_eq_natural MeasureTheory.Filtration.filtrationOfSet_eq_natural
@@ -312,7 +309,7 @@ end
 
 section Limit
 
-variable {E : Type _} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
+variable {E : Type*} [Zero E] [TopologicalSpace E] {ℱ : Filtration ι m} {f : ι → Ω → E}
   {μ : Measure Ω}
 
 /-- Given a process `f` and a filtration `ℱ`, if `f` converges to some `g` almost everywhere and
@@ -338,7 +335,7 @@ theorem stronglyMeasurable_limit_process' : StronglyMeasurable[m] (limitProcess 
   stronglyMeasurable_limitProcess.mono (sSup_le fun _ ⟨_, hn⟩ => hn ▸ ℱ.le _)
 #align measure_theory.filtration.strongly_measurable_limit_process' MeasureTheory.Filtration.stronglyMeasurable_limit_process'
 
-theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type _} [NormedAddCommGroup F]
+theorem memℒp_limitProcess_of_snorm_bdd {R : ℝ≥0} {p : ℝ≥0∞} {F : Type*} [NormedAddCommGroup F]
     {ℱ : Filtration ℕ m} {f : ℕ → Ω → F} (hfm : ∀ n, AEStronglyMeasurable (f n) μ)
     (hbdd : ∀ n, snorm (f n) p μ ≤ R) : Memℒp (limitProcess f ℱ μ) p μ := by
   rw [limitProcess]

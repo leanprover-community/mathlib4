@@ -2,16 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.module.pi
-! leanprover-community/mathlib commit a437a2499163d85d670479f69f625f461cc5fef9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Ring.Pi
 import Mathlib.GroupTheory.GroupAction.Pi
+
+#align_import algebra.module.pi from "leanprover-community/mathlib"@"a437a2499163d85d670479f69f625f461cc5fef9"
 
 /-!
 # Pi instances for modules
@@ -32,7 +29,7 @@ variable (x y : ∀ i, f i) (i : I)
 
 namespace Pi
 
-theorem _root_.IsSMulRegular.pi {α : Type _} [∀ i, SMul α <| f i] {k : α}
+theorem _root_.IsSMulRegular.pi {α : Type*} [∀ i, SMul α <| f i] {k : α}
     (hk : ∀ i, IsSMulRegular (f i) k) : IsSMulRegular (∀ i, f i) k := fun _ _ h =>
   funext fun i => hk i (congr_fun h i : _)
 #align is_smul_regular.pi IsSMulRegular.pi
@@ -44,7 +41,7 @@ instance smulWithZero (α) [Zero α] [∀ i, Zero (f i)] [∀ i, SMulWithZero α
     zero_smul := fun _ => funext fun _ => zero_smul _ _ }
 #align pi.smul_with_zero Pi.smulWithZero
 
-instance smulWithZero' {g : I → Type _} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
+instance smulWithZero' {g : I → Type*} [∀ i, Zero (g i)] [∀ i, Zero (f i)]
     [∀ i, SMulWithZero (g i) (f i)] : SMulWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.smul' with
     smul_zero := fun _ => funext fun _ => smul_zero _
@@ -56,7 +53,7 @@ instance mulActionWithZero (α) [MonoidWithZero α] [∀ i, Zero (f i)]
   { Pi.mulAction _, Pi.smulWithZero _ with }
 #align pi.mul_action_with_zero Pi.mulActionWithZero
 
-instance mulActionWithZero' {g : I → Type _} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
+instance mulActionWithZero' {g : I → Type*} [∀ i, MonoidWithZero (g i)] [∀ i, Zero (f i)]
     [∀ i, MulActionWithZero (g i) (f i)] : MulActionWithZero (∀ i, g i) (∀ i, f i) :=
   { Pi.mulAction', Pi.smulWithZero' with }
 #align pi.mul_action_with_zero' Pi.mulActionWithZero'
@@ -73,21 +70,20 @@ instance module (α) {r : Semiring α} {m : ∀ i, AddCommMonoid <| f i} [∀ i,
 /- Extra instance to short-circuit type class resolution.
 For unknown reasons, this is necessary for certain inference problems. E.g., for this to succeed:
 ```lean
-example (β X : Type _) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) :=
-inferInstance
+example (β X : Type*) [NormedAddCommGroup β] [NormedSpace ℝ β] : Module ℝ (X → β) := inferInstance
 ```
 See: https://leanprover.zulipchat.com/#narrow/stream/113488-general/topic/Typeclass.20resolution.20under.20binders/near/281296989
 -/
 /-- A special case of `Pi.module` for non-dependent types. Lean struggles to elaborate
 definitions elsewhere in the library without this. -/
-instance Function.module (α β : Type _) [Semiring α] [AddCommMonoid β] [Module α β] :
+instance Function.module (α β : Type*) [Semiring α] [AddCommMonoid β] [Module α β] :
     Module α (I → β) :=
   Pi.module _ _ _
 #align function.module Pi.Function.module
 
 variable {I f}
 
-instance module' {g : I → Type _} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
+instance module' {g : I → Type*} {r : ∀ i, Semiring (f i)} {m : ∀ i, AddCommMonoid (g i)}
     [∀ i, Module (f i) (g i)] : Module (∀ i, f i) (∀ i, g i)
     where
   add_smul := by
@@ -110,7 +106,7 @@ instance noZeroSMulDivisors (α) [Semiring α] [∀ i, AddCommMonoid <| f i]
 
 /-- A special case of `Pi.noZeroSMulDivisors` for non-dependent types. Lean struggles to
 synthesize this instance by itself elsewhere in the library. -/
-instance _root_.Function.noZeroSMulDivisors {ι α β : Type _} [Semiring α] [AddCommMonoid β]
+instance _root_.Function.noZeroSMulDivisors {ι α β : Type*} [Semiring α] [AddCommMonoid β]
     [Module α β] [NoZeroSMulDivisors α β] : NoZeroSMulDivisors α (ι → β) :=
   Pi.noZeroSMulDivisors _
 #align function.no_zero_smul_divisors Function.noZeroSMulDivisors

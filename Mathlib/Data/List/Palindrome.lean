@@ -2,13 +2,10 @@
 Copyright (c) 2020 Google LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Wong
-
-! This file was ported from Lean 3 source module data.list.palindrome
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+
+#align_import data.list.palindrome from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Palindromes
@@ -30,7 +27,7 @@ palindrome, reverse, induction
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -52,7 +49,7 @@ variable {l : List α}
 
 theorem reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
   induction p <;> try (exact rfl)
-  simp; assumption
+  simpa
 #align list.palindrome.reverse_eq List.Palindrome.reverse_eq
 
 theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by

@@ -2,16 +2,12 @@
 Copyright (c) 2019 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module logic.unique
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.IsEmpty
 import Mathlib.Init.Logic
-import Mathlib.Init.Data.Fin.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
+
+#align_import logic.unique from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
 /-!
 # Types with a unique term
@@ -45,7 +41,6 @@ rather than a `Prop`-valued predicate,
 for good definitional properties of the default term.
 
 -/
-
 
 universe u v w
 
@@ -85,7 +80,7 @@ equivalent by `Unique.Subsingleton.unique`.
 
 See note [reducible non-instances]. -/
 @[reducible]
-def uniqueOfSubsingleton {α : Sort _} [Subsingleton α] (a : α) : Unique α where
+def uniqueOfSubsingleton {α : Sort*} [Subsingleton α] (a : α) : Unique α where
   default := a
   uniq _ := Subsingleton.elim _ _
 #align unique_of_subsingleton uniqueOfSubsingleton
@@ -112,31 +107,13 @@ def uniqueProp {p : Prop} (h : p) : Unique.{0} p where
 instance : Unique True :=
   uniqueProp trivial
 
-theorem Fin.eq_zero : ∀ n : Fin 1, n = 0
-  | ⟨_, hn⟩ => Fin.eq_of_veq (Nat.eq_zero_of_le_zero (Nat.le_of_lt_succ hn))
-#align fin.eq_zero Fin.eq_zero
-
-instance {n : ℕ} : Inhabited (Fin n.succ) :=
-  ⟨0⟩
-
-instance inhabitedFinOneAdd (n : ℕ) : Inhabited (Fin (1 + n)) :=
-  ⟨⟨0, by rw [Nat.add_comm]; exact Nat.zero_lt_succ _⟩⟩
-
-@[simp]
-theorem Fin.default_eq_zero (n : ℕ) : (default : Fin n.succ) = 0 :=
-  rfl
-#align fin.default_eq_zero Fin.default_eq_zero
-
-instance Fin.unique : Unique (Fin 1) where
-  uniq := Fin.eq_zero
-
 namespace Unique
 
 open Function
 
 section
 
-variable [Unique α]
+variable {α : Sort*} [Unique α]
 
 -- see Note [lower instance priority]
 instance (priority := 100) : Inhabited α :=
@@ -151,7 +128,7 @@ theorem default_eq (a : α) : default = a :=
 #align unique.default_eq Unique.default_eq
 
 -- see Note [lower instance priority]
-instance (priority := 100) : Subsingleton α :=
+instance (priority := 100) instSubsingleton : Subsingleton α :=
   subsingleton_of_forall_eq _ eq_default
 
 theorem forall_iff {p : α → Prop} : (∀ a, p a) ↔ p default :=
@@ -163,6 +140,8 @@ theorem exists_iff {p : α → Prop} : Exists p ↔ p default :=
 #align unique.exists_iff Unique.exists_iff
 
 end
+
+variable {α : Sort*}
 
 @[ext]
 protected theorem subsingleton_unique' : ∀ h₁ h₂ : Unique α, h₁ = h₂
@@ -187,6 +166,8 @@ theorem unique_iff_subsingleton_and_nonempty (α : Sort u) :
    fun ⟨hs, hn⟩ ↦ ⟨by inhabit α; exact Unique.mk' α⟩⟩
 #align unique_iff_subsingleton_and_nonempty unique_iff_subsingleton_and_nonempty
 
+variable {α : Sort*}
+
 @[simp]
 theorem Pi.default_def {β : α → Sort v} [∀ a, Inhabited (β a)] :
     @default (∀ a, β a) _ = fun a : α ↦ @default (β a) _ :=
@@ -206,10 +187,12 @@ instance Pi.uniqueOfIsEmpty [IsEmpty α] (β : α → Sort v) : Unique (∀ a, �
   default := isEmptyElim
   uniq _ := funext isEmptyElim
 
-theorem eq_const_of_unique [Unique α] (f : α → β) : f = Function.const α (f default) := by
-  ext x
-  rw [Subsingleton.elim x default]
-  rfl
+theorem eq_const_of_subsingleton {β : Sort*} [Subsingleton α] (f : α → β) (a : α) :
+    f = Function.const α (f a) :=
+  funext fun x ↦ Subsingleton.elim x a ▸ rfl
+
+theorem eq_const_of_unique {β : Sort*} [Unique α] (f : α → β) : f = Function.const α (f default) :=
+  eq_const_of_subsingleton ..
 #align eq_const_of_unique eq_const_of_unique
 
 theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
@@ -219,7 +202,7 @@ theorem heq_const_of_unique [Unique α] {β : α → Sort v} (f : ∀ a, β a) :
 
 namespace Function
 
-variable {f : α → β}
+variable {β : Sort*} {f : α → β}
 
 /-- If the codomain of an injective function is a subsingleton, then the domain
 is a subsingleton as well. -/
@@ -235,7 +218,8 @@ protected theorem Surjective.subsingleton [Subsingleton α] (hf : Surjective f) 
 
 /-- If the domain of a surjective function is a singleton,
 then the codomain is a singleton as well. -/
-protected def Surjective.unique (f : α → β) (hf : Surjective f) [Unique.{u} α] : Unique β :=
+protected def Surjective.unique {α : Sort u} (f : α → β) (hf : Surjective f) [Unique.{u} α] :
+    Unique β :=
   @Unique.mk' _ ⟨f default⟩ hf.subsingleton
 #align function.surjective.unique Function.Surjective.unique
 
@@ -245,15 +229,35 @@ protected def Injective.unique [Inhabited α] [Subsingleton β] (hf : Injective 
 #align function.injective.unique Function.Injective.unique
 
 /-- If a constant function is surjective, then the codomain is a singleton. -/
-def Surjective.uniqueOfSurjectiveConst (α : Type _) {β : Type _} (b : β)
+def Surjective.uniqueOfSurjectiveConst (α : Type*) {β : Type*} (b : β)
     (h : Function.Surjective (Function.const α b)) : Unique β :=
   @uniqueOfSubsingleton _ (subsingleton_of_forall_eq b <| h.forall.mpr fun _ ↦ rfl) b
 #align function.surjective.unique_of_surjective_const Function.Surjective.uniqueOfSurjectiveConst
 
 end Function
 
+section Pi
+
+variable {ι : Sort*} {α : ι → Sort*}
+
+/-- Given one value over a unique, we get a dependent function. -/
+def uniqueElim [Unique ι] (x : α (default : ι)) (i : ι) : α i := by
+  rw [Unique.eq_default i]
+  exact x
+
+@[simp]
+theorem uniqueElim_default {_ : Unique ι} (x : α (default : ι)) : uniqueElim x (default : ι) = x :=
+  rfl
+
+@[simp]
+theorem uniqueElim_const {β : Sort*} {_ : Unique ι} (x : β) (i : ι) :
+    uniqueElim (α := fun _ ↦ β) x i = x :=
+  rfl
+
+end Pi
+
 -- TODO: Mario turned this off as a simp lemma in Std, wanting to profile it.
-attribute [simp] eq_iff_true_of_subsingleton in
+attribute [local simp] eq_iff_true_of_subsingleton in
 theorem Unique.bijective {A B} [Unique A] [Unique B] {f : A → B} : Function.Bijective f := by
   rw [Function.bijective_iff_has_inverse]
   refine' ⟨default, _, _⟩ <;> intro x <;> simp

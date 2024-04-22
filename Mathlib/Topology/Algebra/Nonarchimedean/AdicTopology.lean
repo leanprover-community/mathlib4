@@ -2,16 +2,12 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.algebra.nonarchimedean.adic_topology
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Topology.Algebra.Nonarchimedean.Bases
-import Mathlib.Topology.UniformSpace.Completion
 import Mathlib.Topology.Algebra.UniformRing
+
+#align_import topology.algebra.nonarchimedean.adic_topology from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic topology
@@ -47,7 +43,7 @@ to make sure it is definitionally equal to the `I`-topology on `R` seen as an `R
 -/
 
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 open Set TopologicalAddGroup Submodule Filter
 
@@ -60,7 +56,7 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       suffices ∀ i j : ℕ, ∃ k, I ^ k ≤ I ^ i ∧ I ^ k ≤ I ^ j by
         simpa only [smul_eq_mul, mul_top, Algebra.id.map_eq_id, map_id, le_inf_iff] using this
       intro i j
-      exact ⟨max i j, pow_le_pow (le_max_left i j), pow_le_pow (le_max_right i j)⟩
+      exact ⟨max i j, pow_le_pow_right (le_max_left i j), pow_le_pow_right (le_max_right i j)⟩
     leftMul := by
       suffices ∀ (a : R) (i : ℕ), ∃ j : ℕ, a • I ^ j ≤ I ^ i by
         simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
@@ -69,11 +65,11 @@ theorem adic_basis (I : Ideal R) : SubmodulesRingBasis fun n : ℕ => (I ^ n •
       rintro a ⟨x, hx, rfl⟩
       exact (I ^ n).smul_mem r hx
     mul := by
-      suffices ∀ i : ℕ, ∃ j : ℕ, (I ^ j: Set R) * (I ^ j : Set R) ⊆ (I ^ i : Set R) by
+      suffices ∀ i : ℕ, ∃ j : ℕ, (↑(I ^ j) * ↑(I ^ j) : Set R) ⊆ (↑(I ^ i) : Set R) by
         simpa only [smul_top_eq_map, Algebra.id.map_eq_id, map_id] using this
       intro n
       use n
-      rintro a ⟨x, b, _hx, hb, rfl⟩
+      rintro a ⟨x, _hx, b, hb, rfl⟩
       exact (I ^ n).smul_mem x hb }
 #align ideal.adic_basis Ideal.adic_basis
 
@@ -115,15 +111,15 @@ theorem hasBasis_nhds_adic (I : Ideal R) (x : R) :
   rwa [map_add_left_nhds_zero x] at this
 #align ideal.has_basis_nhds_adic Ideal.hasBasis_nhds_adic
 
-variable (I : Ideal R) (M : Type _) [AddCommGroup M] [Module R M]
+variable (I : Ideal R) (M : Type*) [AddCommGroup M] [Module R M]
 
 theorem adic_module_basis :
     I.ringFilterBasis.SubmodulesBasis fun n : ℕ => I ^ n • (⊤ : Submodule R M) :=
   { inter := fun i j =>
       ⟨max i j,
         le_inf_iff.mpr
-          ⟨smul_mono_left <| pow_le_pow (le_max_left i j),
-            smul_mono_left <| pow_le_pow (le_max_right i j)⟩⟩
+          ⟨smul_mono_left <| pow_le_pow_right (le_max_left i j),
+            smul_mono_left <| pow_le_pow_right (le_max_right i j)⟩⟩
     smul := fun m i =>
       ⟨(I ^ i • ⊤ : Ideal R), ⟨i, by simp⟩, fun a a_in => by
         replace a_in : a ∈ I ^ i := by simpa [(I ^ i).mul_top] using a_in
@@ -143,7 +139,7 @@ def openAddSubgroup (n : ℕ) : @OpenAddSubgroup R _ I.adicTopology := by
   letI := I.adicTopology
   refine ⟨(I ^ n).toAddSubgroup, ?_⟩
   convert (I.adic_basis.toRing_subgroups_basis.openAddSubgroup n).isOpen
-  change (I ^ n : Set R) = (I ^ n • (⊤ : Ideal R) : Set R)
+  change (↑(I ^ n) : Set R) = ↑(I ^ n • (⊤ : Ideal R))
   simp [smul_top_eq_map, Algebra.id.map_eq_id, map_id, restrictScalars_self]
 #align ideal.open_add_subgroup Ideal.openAddSubgroup
 
@@ -185,7 +181,7 @@ theorem isAdic_iff [top : TopologicalSpace R] [TopologicalRing R] {J : Ideal R} 
         exact ⟨n, trivial, h⟩
       · rcases H with ⟨n, -, hn⟩
         rw [mem_nhds_iff]
-        refine' ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
+        exact ⟨_, hn, H₁ n, (J ^ n).zero_mem⟩
 #align is_adic_iff isAdic_iff
 
 variable [TopologicalSpace R] [TopologicalRing R]
@@ -204,16 +200,16 @@ theorem is_ideal_adic_pow {J : Ideal R} (h : IsAdic J) {n : ℕ} (hn : 0 < n) : 
     · exfalso
       exact Nat.not_succ_le_zero 0 hn
     rw [← pow_mul, Nat.succ_mul]
-    apply Ideal.pow_le_pow
+    apply Ideal.pow_le_pow_right
     apply Nat.le_add_left
 #align is_ideal_adic_pow is_ideal_adic_pow
 
-theorem is_bot_adic_iff {A : Type _} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
+theorem is_bot_adic_iff {A : Type*} [CommRing A] [TopologicalSpace A] [TopologicalRing A] :
     IsAdic (⊥ : Ideal A) ↔ DiscreteTopology A := by
   rw [isAdic_iff]
   constructor
   · rintro ⟨h, _h'⟩
-    rw [discreteTopology_iff_open_singleton_zero]
+    rw [discreteTopology_iff_isOpen_singleton_zero]
     simpa using h 1
   · intros
     constructor
@@ -226,14 +222,13 @@ theorem is_bot_adic_iff {A : Type _} [CommRing A] [TopologicalSpace A] [Topologi
 end IsAdic
 
 /-- The ring `R` is equipped with a preferred ideal. -/
-class WithIdeal (R : Type _) [CommRing R] where
+class WithIdeal (R : Type*) [CommRing R] where
   i : Ideal R
 #align with_ideal WithIdeal
 
 namespace WithIdeal
 
 variable (R)
-
 variable [WithIdeal R]
 
 instance (priority := 100) : TopologicalSpace R :=
@@ -248,9 +243,9 @@ instance (priority := 100) : UniformSpace R :=
 instance (priority := 100) : UniformAddGroup R :=
   comm_topologicalAddGroup_is_uniform
 
-/-- The adic topology on a `R` module coming from the ideal `WithIdeal.I`.
+/-- The adic topology on an `R` module coming from the ideal `WithIdeal.I`.
 This cannot be an instance because `R` cannot be inferred from `M`. -/
-def topologicalSpaceModule (M : Type _) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
+def topologicalSpaceModule (M : Type*) [AddCommGroup M] [Module R M] : TopologicalSpace M :=
   (i : Ideal R).adicModuleTopology M
 #align with_ideal.topological_space_module WithIdeal.topologicalSpaceModule
 
@@ -262,13 +257,13 @@ example : NonarchimedeanRing R := by infer_instance
 
 example : TopologicalRing (UniformSpace.Completion R) := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @TopologicalAddGroup M (WithIdeal.topologicalSpaceModule R M) _ := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @ContinuousSMul R M _ _ (WithIdeal.topologicalSpaceModule R M) := by infer_instance
 
-example (M : Type _) [AddCommGroup M] [Module R M] :
+example (M : Type*) [AddCommGroup M] [Module R M] :
     @NonarchimedeanAddGroup M _ (WithIdeal.topologicalSpaceModule R M) :=
   SubmodulesBasis.nonarchimedean _
 

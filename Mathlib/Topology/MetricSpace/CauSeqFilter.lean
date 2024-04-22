@@ -2,13 +2,10 @@
 Copyright (c) 2018 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis, Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module topology.metric_space.cau_seq_filter
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import topology.metric_space.cau_seq_filter from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Completeness in terms of `Cauchy` filters vs `isCauSeq` sequences
@@ -23,7 +20,8 @@ universe u v
 
 open Set Filter
 
-open Topology Classical
+open scoped Classical
+open Topology
 
 variable {β : Type v}
 
@@ -58,7 +56,7 @@ theorem CauchySeq.isCauSeq {f : ℕ → β} (hf : CauchySeq f) : IsCauSeq norm f
   cases' cauchy_iff.1 hf with hf1 hf2
   intro ε hε
   rcases hf2 { x | dist x.1 x.2 < ε } (dist_mem_uniformity hε) with ⟨t, ⟨ht, htsub⟩⟩
-  simp at ht; cases' ht with N hN
+  simp only [mem_map, mem_atTop_sets, ge_iff_le, mem_preimage] at ht; cases' ht with N hN
   exists N
   intro j hj
   rw [← dist_eq_norm]

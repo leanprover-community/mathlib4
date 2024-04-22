@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.monad.basic
-! leanprover-community/mathlib commit 9c6816cab5872990d450d2c2e7832176167b1c07
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.Functor.ReflectsIso
+
+#align_import category_theory.monad.basic from "leanprover-community/mathlib"@"9c6816cab5872990d450d2c2e7832176167b1c07"
 
 /-!
 # Monads
@@ -74,7 +71,7 @@ instance coeComonad : Coe (Comonad C) (C ⥤ C) :=
   ⟨fun G => G.toFunctor⟩
 #align category_theory.coe_comonad CategoryTheory.coeComonad
 
--- porting note: these lemmas are syntactic tautologies
+-- Porting note: these lemmas are syntactic tautologies
 --@[simp]
 --theorem monad_toFunctor_eq_coe : T.toFunctor = T :=
 --  rfl
@@ -135,10 +132,13 @@ def Comonad.Simps.δ : (G : C ⥤ C) ⟶ (G : C ⥤ C) ⋙ (G : C ⥤ C) :=
   G.δ
 #align category_theory.comonad.simps.δ CategoryTheory.Comonad.Simps.δ
 
-initialize_simps_projections CategoryTheory.Monad (toFunctor → coe, η' → η, μ' → μ)
+initialize_simps_projections CategoryTheory.Monad
+  (obj → obj, map → map, toFunctor → coe, η' → η, μ' → μ)
 
-initialize_simps_projections CategoryTheory.Comonad (toFunctor → coe, ε' → ε, δ' → δ)
+initialize_simps_projections CategoryTheory.Comonad
+  (obj → obj, map → map, toFunctor → coe, ε' → ε, δ' → δ)
 
+-- Porting note: investigate whether this can be a `simp` lemma?
 @[reassoc]
 theorem Monad.assoc (T : Monad C) (X : C) :
     (T : C ⥤ C).map (T.μ.app X) ≫ T.μ.app _ = T.μ.app _ ≫ T.μ.app _ :=
@@ -179,7 +179,7 @@ theorem Comonad.right_counit (G : Comonad C) (X : C) :
 @[ext]
 structure MonadHom (T₁ T₂ : Monad C) extends NatTrans (T₁ : C ⥤ C) T₂ where
   app_η : ∀ X, T₁.η.app X ≫ app X = T₂.η.app X := by aesop_cat
-  app_μ : ∀ X, T₁.μ.app X ≫ app X = ((T₁ : C ⥤ C).map (app X) ≫ app _) ≫ T₂.μ.app X := by
+  app_μ : ∀ X, T₁.μ.app X ≫ app X = (T₁.map (app X) ≫ app _) ≫ T₂.μ.app X := by
     aesop_cat
 #align category_theory.monad_hom CategoryTheory.MonadHom
 
@@ -189,7 +189,7 @@ initialize_simps_projections MonadHom (+toNatTrans, -app)
 @[ext]
 structure ComonadHom (M N : Comonad C) extends NatTrans (M : C ⥤ C) N where
   app_ε : ∀ X, app X ≫ N.ε.app X = M.ε.app X := by aesop_cat
-  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ (N : C ⥤ C).map (app X) := by aesop_cat
+  app_δ : ∀ X, app X ≫ N.δ.app X = M.δ.app X ≫ app _ ≫ N.map (app X) := by aesop_cat
 #align category_theory.comonad_hom CategoryTheory.ComonadHom
 
 initialize_simps_projections ComonadHom (+toNatTrans, -app)
@@ -203,12 +203,12 @@ instance : Quiver (Monad C) where
 instance : Quiver (Comonad C) where
   Hom := ComonadHom
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma MonadHom.ext' {T₁ T₂ : Monad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   MonadHom.ext f g h
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[ext]
 lemma ComonadHom.ext' {T₁ T₂ : Comonad C} (f g : T₁ ⟶ T₂) (h : f.app = g.app) : f = g :=
   ComonadHom.ext f g h
@@ -315,7 +315,7 @@ def monadToFunctor : Monad C ⥤ C ⥤ C where
   map f := f.toNatTrans
 #align category_theory.monad_to_functor CategoryTheory.monadToFunctor
 
-instance : Faithful (monadToFunctor C) where
+instance : (monadToFunctor C).Faithful where
 
 theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) ≅ N) (f_η f_μ) :
     (monadToFunctor _).mapIso (MonadIso.mk f f_η f_μ) = f := by
@@ -323,7 +323,7 @@ theorem monadToFunctor_mapIso_monad_iso_mk {M N : Monad C} (f : (M : C ⥤ C) �
   rfl
 #align category_theory.monad_to_functor_map_iso_monad_iso_mk CategoryTheory.monadToFunctor_mapIso_monad_iso_mk
 
-instance : ReflectsIsomorphisms (monadToFunctor C) where
+instance : (monadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := IsIso.of_iso (MonadIso.mk (asIso ((monadToFunctor C).map f)) f.app_η f.app_μ)
 
 /-- The forgetful functor from the category of comonads to the category of endofunctors.
@@ -334,7 +334,7 @@ def comonadToFunctor : Comonad C ⥤ C ⥤ C where
   map f := f.toNatTrans
 #align category_theory.comonad_to_functor CategoryTheory.comonadToFunctor
 
-instance : Faithful (comonadToFunctor C) where
+instance : (comonadToFunctor C).Faithful where
 
 theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤ C) ≅ N) (f_ε f_δ) :
     (comonadToFunctor _).mapIso (ComonadIso.mk f f_ε f_δ) = f := by
@@ -342,7 +342,7 @@ theorem comonadToFunctor_mapIso_comonad_iso_mk {M N : Comonad C} (f : (M : C ⥤
   rfl
 #align category_theory.comonad_to_functor_map_iso_comonad_iso_mk CategoryTheory.comonadToFunctor_mapIso_comonad_iso_mk
 
-instance : ReflectsIsomorphisms (comonadToFunctor C) where
+instance : (comonadToFunctor C).ReflectsIsomorphisms where
   reflects f _ := IsIso.of_iso (ComonadIso.mk (asIso ((comonadToFunctor C).map f)) f.app_ε f.app_δ)
 
 variable {C}

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module topology.algebra.order.upper_lower
-! leanprover-community/mathlib commit 992efbda6f85a5c9074375d3c7cb9764c64d8f72
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.UpperLower
 import Mathlib.Topology.Algebra.Group.Basic
+
+#align_import topology.algebra.order.upper_lower from "leanprover-community/mathlib"@"b1abe23ae96fef89ad30d9f4362c307f72a55010"
 
 /-!
 # Topological facts about upper/lower/order-connected sets
@@ -32,14 +29,14 @@ open Pointwise
 /-- Ad hoc class stating that the closure of an upper set is an upper set. This is used to state
 lemmas that do not mention algebraic operations for both the additive and multiplicative versions
 simultaneously. If you find a satisfying replacement for this typeclass, please remove it! -/
-class HasUpperLowerClosure (α : Type _) [TopologicalSpace α] [Preorder α] : Prop where
+class HasUpperLowerClosure (α : Type*) [TopologicalSpace α] [Preorder α] : Prop where
   isUpperSet_closure : ∀ s : Set α, IsUpperSet s → IsUpperSet (closure s)
   isLowerSet_closure : ∀ s : Set α, IsLowerSet s → IsLowerSet (closure s)
   isOpen_upperClosure : ∀ s : Set α, IsOpen s → IsOpen (upperClosure s : Set α)
   isOpen_lowerClosure : ∀ s : Set α, IsOpen s → IsOpen (lowerClosure s : Set α)
 #align has_upper_lower_closure HasUpperLowerClosure
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 -- See note [lower instance priority]
 @[to_additive]
@@ -48,11 +45,11 @@ instance (priority := 100) OrderedCommGroup.to_hasUpperLowerClosure [OrderedComm
   isUpperSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| one_le_div'.2 hxy) <| by
       rw [closure_smul]
-      exact ⟨x, hx, div_mul_cancel' _ _⟩
+      exact ⟨x, hx, div_mul_cancel _ _⟩
   isLowerSet_closure s h x y hxy hx :=
     closure_mono (h.smul_subset <| div_le_one'.2 hxy) <| by
       rw [closure_smul]
-      exact ⟨x, hx, div_mul_cancel' _ _⟩
+      exact ⟨x, hx, div_mul_cancel _ _⟩
   isOpen_upperClosure s hs := by
     rw [← mul_one s, ← mul_upperClosure]
     exact hs.mul_right
@@ -107,7 +104,7 @@ protected theorem IsUpperSet.interior (h : IsUpperSet s) : IsUpperSet (interior 
 #align is_upper_set.interior IsUpperSet.interior
 
 protected theorem IsLowerSet.interior (h : IsLowerSet s) : IsLowerSet (interior s) :=
-  h.ofDual.interior
+  h.toDual.interior
 #align is_lower_set.interior IsLowerSet.interior
 
 protected theorem Set.OrdConnected.interior (h : s.OrdConnected) : (interior s).OrdConnected := by

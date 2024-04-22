@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.prod
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Prod
+
+#align_import data.fintype.prod from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # fintype instance for the product of two fintypes.
@@ -23,7 +20,7 @@ open Nat
 
 universe u v
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 open Finset Function
 
@@ -44,24 +41,29 @@ theorem toFinset_off_diag {s : Set α} [DecidableEq α] [Fintype s] [Fintype s.o
 
 end Set
 
-instance (α β : Type _) [Fintype α] [Fintype β] : Fintype (α × β) :=
+instance instFintypeProd (α β : Type*) [Fintype α] [Fintype β] : Fintype (α × β) :=
   ⟨univ ×ˢ univ, fun ⟨a, b⟩ => by simp⟩
 
-@[simp]
-theorem Finset.univ_product_univ {α β : Type _} [Fintype α] [Fintype β] :
-    (univ : Finset α) ×ˢ (univ : Finset β) = univ :=
-  rfl
+namespace Finset
+variable [Fintype α] [Fintype β] {s : Finset α} {t : Finset β}
+
+@[simp] lemma univ_product_univ : univ ×ˢ univ = (univ : Finset (α × β)) := rfl
 #align finset.univ_product_univ Finset.univ_product_univ
 
+@[simp] lemma product_eq_univ [Nonempty α] [Nonempty β] : s ×ˢ t = univ ↔ s = univ ∧ t = univ := by
+  simp [eq_univ_iff_forall, forall_and]
+
+end Finset
+
 @[simp]
-theorem Fintype.card_prod (α β : Type _) [Fintype α] [Fintype β] :
+theorem Fintype.card_prod (α β : Type*) [Fintype α] [Fintype β] :
     Fintype.card (α × β) = Fintype.card α * Fintype.card β :=
   card_product _ _
 #align fintype.card_prod Fintype.card_prod
 
 section
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ Nonempty α ∧ Infinite β := by
@@ -74,7 +76,7 @@ theorem infinite_prod : Infinite (α × β) ↔ Infinite α ∧ Nonempty β ∨ 
   exact H'.false
 #align infinite_prod infinite_prod
 
-instance Pi.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
+instance Pi.infinite_of_left {ι : Sort*} {π : ι → Sort _} [∀ i, Nontrivial <| π i] [Infinite ι] :
     Infinite (∀ i : ι, π i) := by
   choose m n hm using fun i => exists_pair_ne (π i)
   refine' Infinite.of_injective (fun i => update m i (n i)) fun x y h => of_not_not fun hne => _
@@ -83,9 +85,9 @@ instance Pi.infinite_of_left {ι : Sort _} {π : ι → Sort _} [∀ i, Nontrivi
 #align pi.infinite_of_left Pi.infinite_of_left
 
 /-- If at least one `π i` is infinite and the rest nonempty, the pi type of all `π` is infinite. -/
-theorem Pi.infinite_of_exists_right {ι : Type _} {π : ι → Type _} (i : ι) [Infinite <| π i]
+theorem Pi.infinite_of_exists_right {ι : Type*} {π : ι → Type*} (i : ι) [Infinite <| π i]
     [∀ i, Nonempty <| π i] : Infinite (∀ i : ι, π i) :=
-  let ⟨m⟩ := @Pi.Nonempty ι π _
+  let ⟨m⟩ := @Pi.instNonempty ι π _
   Infinite.of_injective _ (update_injective m i)
 #align pi.infinite_of_exists_right Pi.infinite_of_exists_right
 

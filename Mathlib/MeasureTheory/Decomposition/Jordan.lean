@@ -2,14 +2,11 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module measure_theory.decomposition.jordan
-! leanprover-community/mathlib commit 70a4f2197832bceab57d7f41379b2592d1110570
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Decomposition.SignedHahn
 import Mathlib.MeasureTheory.Measure.MutuallySingular
+
+#align_import measure_theory.decomposition.jordan from "leanprover-community/mathlib"@"70a4f2197832bceab57d7f41379b2592d1110570"
 
 /-!
 # Jordan decomposition
@@ -49,14 +46,14 @@ noncomputable section
 
 open scoped Classical MeasureTheory ENNReal NNReal
 
-variable {α β : Type _} [MeasurableSpace α]
+variable {α β : Type*} [MeasurableSpace α]
 
 namespace MeasureTheory
 
 /-- A Jordan decomposition of a measurable space is a pair of mutually singular,
 finite measures. -/
 @[ext]
-structure JordanDecomposition (α : Type _) [MeasurableSpace α] where
+structure JordanDecomposition (α : Type*) [MeasurableSpace α] where
   (posPart negPart : Measure α)
   [posPart_finite : IsFiniteMeasure posPart]
   [negPart_finite : IsFiniteMeasure negPart]
@@ -201,7 +198,7 @@ theorem exists_compl_positive_negative :
     ∃ S : Set α,
       MeasurableSet S ∧
         j.toSignedMeasure ≤[S] 0 ∧
-          0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart (Sᶜ) = 0 := by
+          0 ≤[Sᶜ] j.toSignedMeasure ∧ j.posPart S = 0 ∧ j.negPart Sᶜ = 0 := by
   obtain ⟨S, hS₁, hS₂, hS₃⟩ := j.mutuallySingular
   refine' ⟨S, hS₁, _, _, hS₂, hS₃⟩
   · refine' restrict_le_restrict_of_subset_le _ _ fun A hA hA₁ => _
@@ -220,7 +217,8 @@ end JordanDecomposition
 
 namespace SignedMeasure
 
-open Classical JordanDecomposition Measure Set VectorMeasure
+open scoped Classical
+open JordanDecomposition Measure Set VectorMeasure
 
 variable {s : SignedMeasure α} {μ ν : Measure α} [IsFiniteMeasure μ] [IsFiniteMeasure ν]
 
@@ -229,10 +227,10 @@ such that `s = j.toSignedMeasure`. This property is known as the Jordan decompos
 theorem, and is shown by
 `MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition`. -/
 def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
-  let i := choose s.exists_compl_positive_negative
-  let hi := choose_spec s.exists_compl_positive_negative
+  let i := s.exists_compl_positive_negative.choose
+  let hi := s.exists_compl_positive_negative.choose_spec
   { posPart := s.toMeasureOfZeroLE i hi.1 hi.2.1
-    negPart := s.toMeasureOfLEZero (iᶜ) hi.1.compl hi.2.2
+    negPart := s.toMeasureOfLEZero iᶜ hi.1.compl hi.2.2
     posPart_finite := inferInstance
     negPart_finite := inferInstance
     mutuallySingular := by
@@ -245,9 +243,9 @@ def toJordanDecomposition (s : SignedMeasure α) : JordanDecomposition α :=
 theorem toJordanDecomposition_spec (s : SignedMeasure α) :
     ∃ (i : Set α) (hi₁ : MeasurableSet i) (hi₂ : 0 ≤[i] s) (hi₃ : s ≤[iᶜ] 0),
       s.toJordanDecomposition.posPart = s.toMeasureOfZeroLE i hi₁ hi₂ ∧
-        s.toJordanDecomposition.negPart = s.toMeasureOfLEZero (iᶜ) hi₁.compl hi₃ := by
-  set i := choose s.exists_compl_positive_negative
-  obtain ⟨hi₁, hi₂, hi₃⟩ := choose_spec s.exists_compl_positive_negative
+        s.toJordanDecomposition.negPart = s.toMeasureOfLEZero iᶜ hi₁.compl hi₃ := by
+  set i := s.exists_compl_positive_negative.choose
+  obtain ⟨hi₁, hi₂, hi₃⟩ := s.exists_compl_positive_negative.choose_spec
   exact ⟨i, hi₁, hi₂, hi₃, rfl, rfl⟩
 #align measure_theory.signed_measure.to_jordan_decomposition_spec MeasureTheory.SignedMeasure.toJordanDecomposition_spec
 
@@ -269,7 +267,7 @@ theorem toSignedMeasure_toJordanDecomposition (s : SignedMeasure α) :
     toMeasureOfLEZero_apply _ hi₃ hi₁.compl hk]
   simp only [ENNReal.coe_toReal, NNReal.coe_mk, ENNReal.some_eq_coe, sub_neg_eq_add]
   rw [← of_union _ (MeasurableSet.inter hi₁ hk) (MeasurableSet.inter hi₁.compl hk),
-    Set.inter_comm i, Set.inter_comm (iᶜ), Set.inter_union_compl _ _]
+    Set.inter_comm i, Set.inter_comm iᶜ, Set.inter_union_compl _ _]
   exact (disjoint_compl_right.inf_left _).inf_right _
 #align measure_theory.signed_measure.to_signed_measure_to_jordan_decomposition MeasureTheory.SignedMeasure.toSignedMeasure_toJordanDecomposition
 
@@ -301,6 +299,8 @@ theorem subset_negative_null_set (hu : MeasurableSet u) (hv : MeasurableSet v)
   exact this hw₁ hw₂ hwt
 #align measure_theory.signed_measure.subset_negative_null_set MeasureTheory.SignedMeasure.subset_negative_null_set
 
+open scoped symmDiff
+
 /-- If the symmetric difference of two positive sets is a null-set, then so are the differences
 between the two sets. -/
 theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv : MeasurableSet v)
@@ -312,7 +312,7 @@ theorem of_diff_eq_zero_of_symmDiff_eq_zero_positive (hu : MeasurableSet u) (hv 
       (hu.diff hv) (hv.diff hu)] at hs
   rw [zero_apply] at a b
   constructor
-  all_goals first | linarith | infer_instance | assumption
+  all_goals first | linarith | assumption
 #align measure_theory.signed_measure.of_diff_eq_zero_of_symm_diff_eq_zero_positive MeasureTheory.SignedMeasure.of_diff_eq_zero_of_symmDiff_eq_zero_positive
 
 /-- If the symmetric difference of two negative sets is a null-set, then so are the differences
@@ -440,7 +440,7 @@ open JordanDecomposition
 /-- `MeasureTheory.SignedMeasure.toJordanDecomposition` and
 `MeasureTheory.JordanDecomposition.toSignedMeasure` form an `Equiv`. -/
 @[simps apply symm_apply]
-def toJordanDecompositionEquiv (α : Type _) [MeasurableSpace α] :
+def toJordanDecompositionEquiv (α : Type*) [MeasurableSpace α] :
     SignedMeasure α ≃ JordanDecomposition α where
   toFun := toJordanDecomposition
   invFun := toSignedMeasure

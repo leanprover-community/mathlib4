@@ -2,13 +2,10 @@
 Copyright (c) 2021 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Eric Wieser
-
-! This file was ported from Lean 3 source module data.real.sign
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Real.Basic
+
+#align_import data.real.sign from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Real sign function
@@ -74,13 +71,13 @@ theorem sign_eq_zero_iff {r : ℝ} : sign r = 0 ↔ r = 0 := by
     exact (one_ne_zero h).elim
 #align real.sign_eq_zero_iff Real.sign_eq_zero_iff
 
-theorem sign_int_cast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
+theorem sign_intCast (z : ℤ) : sign (z : ℝ) = ↑(Int.sign z) := by
   obtain hn | rfl | hp := lt_trichotomy z (0 : ℤ)
   · rw [sign_of_neg (Int.cast_lt_zero.mpr hn), Int.sign_eq_neg_one_of_neg hn, Int.cast_neg,
       Int.cast_one]
   · rw [Int.cast_zero, sign_zero, Int.sign_zero, Int.cast_zero]
   · rw [sign_of_pos (Int.cast_pos.mpr hp), Int.sign_eq_one_of_pos hp, Int.cast_one]
-#align real.sign_int_cast Real.sign_int_cast
+#align real.sign_int_cast Real.sign_intCast
 
 theorem sign_neg {r : ℝ} : sign (-r) = -sign r := by
   obtain hn | rfl | hp := lt_trichotomy r (0 : ℝ)

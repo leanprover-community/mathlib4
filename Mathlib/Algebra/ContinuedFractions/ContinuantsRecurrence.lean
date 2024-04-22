@@ -2,13 +2,10 @@
 Copyright (c) 2019 Kevin Kappelmann. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann
-
-! This file was ported from Lean 3 source module algebra.continued_fractions.continuants_recurrence
-! leanprover-community/mathlib commit 5f11361a98ae4acd77f5c1837686f6f0102cdc25
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.ContinuedFractions.Translations
+
+#align_import algebra.continued_fractions.continuants_recurrence from "leanprover-community/mathlib"@"5f11361a98ae4acd77f5c1837686f6f0102cdc25"
 
 /-!
 # Recurrence Lemmas for the `continuants` Function of Continued Fractions.
@@ -24,7 +21,7 @@ function indeed satisfies the following recurrences:
 
 namespace GeneralizedContinuedFraction
 
-variable {K : Type _} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
+variable {K : Type*} {g : GeneralizedContinuedFraction K} {n : ℕ} [DivisionRing K]
 
 theorem continuantsAux_recurrence {gp ppred pred : Pair K} (nth_s_eq : g.s.get? n = some gp)
     (nth_conts_aux_eq : g.continuantsAux n = ppred)
@@ -54,11 +51,11 @@ theorem numerators_recurrence {gp : Pair K} {ppredA predA : K}
     (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_num_eq : g.numerators n = ppredA)
     (succ_nth_num_eq : g.numerators (n + 1) = predA) :
     g.numerators (n + 2) = gp.b * predA + gp.a * ppredA := by
-  obtain ⟨ppredConts, nth_conts_eq, ⟨rfl⟩⟩ : ∃ conts, g.continuants n = conts ∧ conts.a = ppredA
-  exact exists_conts_a_of_num nth_num_eq
+  obtain ⟨ppredConts, nth_conts_eq, ⟨rfl⟩⟩ : ∃ conts, g.continuants n = conts ∧ conts.a = ppredA :=
+    exists_conts_a_of_num nth_num_eq
   obtain ⟨predConts, succ_nth_conts_eq, ⟨rfl⟩⟩ :
-    ∃ conts, g.continuants (n + 1) = conts ∧ conts.a = predA
-  exact exists_conts_a_of_num succ_nth_num_eq
+      ∃ conts, g.continuants (n + 1) = conts ∧ conts.a = predA :=
+    exists_conts_a_of_num succ_nth_num_eq
   rw [num_eq_conts_a, continuants_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
 #align generalized_continued_fraction.numerators_recurrence GeneralizedContinuedFraction.numerators_recurrence
 
@@ -67,11 +64,11 @@ theorem denominators_recurrence {gp : Pair K} {ppredB predB : K}
     (succ_nth_s_eq : g.s.get? (n + 1) = some gp) (nth_denom_eq : g.denominators n = ppredB)
     (succ_nth_denom_eq : g.denominators (n + 1) = predB) :
     g.denominators (n + 2) = gp.b * predB + gp.a * ppredB := by
-  obtain ⟨ppredConts, nth_conts_eq, ⟨rfl⟩⟩ : ∃ conts, g.continuants n = conts ∧ conts.b = ppredB
-  exact exists_conts_b_of_denom nth_denom_eq
+  obtain ⟨ppredConts, nth_conts_eq, ⟨rfl⟩⟩ : ∃ conts, g.continuants n = conts ∧ conts.b = ppredB :=
+    exists_conts_b_of_denom nth_denom_eq
   obtain ⟨predConts, succ_nth_conts_eq, ⟨rfl⟩⟩ :
-    ∃ conts, g.continuants (n + 1) = conts ∧ conts.b = predB
-  exact exists_conts_b_of_denom succ_nth_denom_eq
+      ∃ conts, g.continuants (n + 1) = conts ∧ conts.b = predB :=
+    exists_conts_b_of_denom succ_nth_denom_eq
   rw [denom_eq_conts_b, continuants_recurrence succ_nth_s_eq nth_conts_eq succ_nth_conts_eq]
 #align generalized_continued_fraction.denominators_recurrence GeneralizedContinuedFraction.denominators_recurrence
 

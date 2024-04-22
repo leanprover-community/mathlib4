@@ -2,14 +2,11 @@
 Copyright (c) 2022 Jake Levinson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jake Levinson
-
-! This file was ported from Lean 3 source module combinatorics.young.young_diagram
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.UpperLower.Basic
 import Mathlib.Data.Finset.Preimage
+
+#align_import combinatorics.young.young_diagram from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 # Young diagrams
@@ -73,7 +70,7 @@ namespace YoungDiagram
 
 instance : SetLike YoungDiagram (ℕ × ℕ)
     where
-  -- porting note: TODO: figure out how to do this correctly
+  -- Porting note (#11215): TODO: figure out how to do this correctly
   coe := fun y => y.cells
   coe_injective' μ ν h := by rwa [YoungDiagram.ext_iff, ← Finset.coe_inj]
 
@@ -111,8 +108,8 @@ theorem cells_ssubset_iff {μ ν : YoungDiagram} : μ.cells ⊂ ν.cells ↔ μ 
   Iff.rfl
 #align young_diagram.cells_ssubset_iff YoungDiagram.cells_ssubset_iff
 
-instance : Sup YoungDiagram
-    where sup μ ν :=
+instance : Sup YoungDiagram where
+  sup μ ν :=
     { cells := μ.cells ∪ ν.cells
       isLowerSet := by
         rw [Finset.coe_union]
@@ -133,8 +130,8 @@ theorem mem_sup {μ ν : YoungDiagram} {x : ℕ × ℕ} : x ∈ μ ⊔ ν ↔ x 
   Finset.mem_union
 #align young_diagram.mem_sup YoungDiagram.mem_sup
 
-instance : Inf YoungDiagram
-    where inf μ ν :=
+instance : Inf YoungDiagram where
+  inf μ ν :=
     { cells := μ.cells ∩ ν.cells
       isLowerSet := by
         rw [Finset.coe_inter]
@@ -172,13 +169,14 @@ theorem cells_bot : (⊥ : YoungDiagram).cells = ∅ :=
   rfl
 #align young_diagram.cells_bot YoungDiagram.cells_bot
 
--- porting note: removed `↑`, added `.cells` and changed proof
--- @[simp] -- Porting note: simp can prove this
+-- Porting note: removed `↑`, added `.cells` and changed proof
+-- @[simp] -- Porting note (#10618): simp can prove this
 @[norm_cast]
 theorem coe_bot : (⊥ : YoungDiagram).cells = (∅ : Set (ℕ × ℕ)) := by
   refine' Set.eq_of_subset_of_subset _ _
   intros x h
-  simp [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h
+  simp? [mem_mk, Finset.coe_empty, Set.mem_empty_iff_false] at h says
+    simp only [cells_bot, Finset.coe_empty, Set.mem_empty_iff_false] at h
   simp only [cells_bot, Finset.coe_empty, Set.empty_subset]
 #align young_diagram.coe_bot YoungDiagram.coe_bot
 
@@ -250,7 +248,7 @@ theorem transpose_le_iff {μ ν : YoungDiagram} : μ.transpose ≤ ν.transpose 
   ⟨fun h => by
     convert YoungDiagram.le_of_transpose_le h
     simp, fun h => by
-    rw [←transpose_transpose μ] at h
+    rw [← transpose_transpose μ] at h
     exact YoungDiagram.le_of_transpose_le h ⟩
 #align young_diagram.transpose_le_iff YoungDiagram.transpose_le_iff
 
@@ -328,7 +326,7 @@ theorem rowLen_eq_card (μ : YoungDiagram) {i : ℕ} : μ.rowLen i = (μ.row i).
 
 @[mono]
 theorem rowLen_anti (μ : YoungDiagram) (i1 i2 : ℕ) (hi : i1 ≤ i2) : μ.rowLen i2 ≤ μ.rowLen i1 := by
-  by_contra' h_lt
+  by_contra! h_lt
   rw [← lt_self_iff_false (μ.rowLen i1)]
   rw [← mem_iff_lt_rowLen] at h_lt ⊢
   exact μ.up_left_mem hi (by rfl) h_lt
@@ -415,7 +413,6 @@ def rowLens (μ : YoungDiagram) : List ℕ :=
   (List.range <| μ.colLen 0).map μ.rowLen
 #align young_diagram.row_lens YoungDiagram.rowLens
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 @[simp]
 theorem get_rowLens {μ : YoungDiagram} {i} :
     μ.rowLens.get i = μ.rowLen i := by simp only [rowLens, List.get_range, List.get_map]
@@ -461,7 +458,6 @@ protected def cellsOfRowLens : List ℕ → Finset (ℕ × ℕ)
         (Embedding.prodMap ⟨_, Nat.succ_injective⟩ (Embedding.refl ℕ))
 #align young_diagram.cells_of_row_lens YoungDiagram.cellsOfRowLens
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     c ∈ YoungDiagram.cellsOfRowLens w ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩  := by
   induction' w with w_hd w_tl w_ih generalizing c <;> rw [YoungDiagram.cellsOfRowLens]
@@ -472,10 +468,8 @@ protected theorem mem_cellsOfRowLens {w : List ℕ} {c : ℕ × ℕ} :
     · simp [w_ih, -Finset.singleton_product, Nat.succ_lt_succ_iff]
 #align young_diagram.mem_cells_of_row_lens YoungDiagram.mem_cellsOfRowLens
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 /-- Young diagram from a sorted list -/
-def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
-    where
+def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram where
   cells := YoungDiagram.cellsOfRowLens w
   isLowerSet := by
     rintro ⟨i2, j2⟩ ⟨i1, j1⟩ ⟨hi : i1 ≤ i2, hj : j1 ≤ j2⟩ hcell
@@ -491,7 +485,6 @@ def ofRowLens (w : List ℕ) (hw : w.Sorted (· ≥ ·)) : YoungDiagram
         · exact List.pairwise_iff_get.mp hw _ _ h
 #align young_diagram.of_row_lens YoungDiagram.ofRowLens
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 theorem mem_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} {c : ℕ × ℕ} :
     c ∈ ofRowLens w hw ↔ ∃ h : c.fst < w.length, c.snd < w.get ⟨c.fst, h⟩ :=
   YoungDiagram.mem_cellsOfRowLens
@@ -502,10 +495,9 @@ theorem rowLens_length_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpo
     (ofRowLens w hw).rowLens.length = w.length := by
   simp only [length_rowLens, colLen, Nat.find_eq_iff, mem_cells, mem_ofRowLens,
     lt_self_iff_false, IsEmpty.exists_iff, Classical.not_not]
-  refine' ⟨True.intro, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
+  exact ⟨not_false, fun n hn => ⟨hn, hpos _ (List.get_mem _ _ hn)⟩⟩
 #align young_diagram.row_lens_length_of_row_lens YoungDiagram.rowLens_length_ofRowLens
 
--- Porting note: use `List.get` instead of `List.nthLe` because it has been deprecated
 /-- The length of the `i`th row in `ofRowLens w hw` is the `i`th entry of `w` -/
 theorem rowLen_ofRowLens {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (i : Fin w.length) :
     (ofRowLens w hw).rowLen i = w.get i := by
@@ -522,7 +514,6 @@ theorem ofRowLens_to_rowLens_eq_self {μ : YoungDiagram} : ofRowLens _ (rowLens_
 /-- The right_inv direction of the equivalence -/
 theorem rowLens_ofRowLens_eq_self {w : List ℕ} {hw : w.Sorted (· ≥ ·)} (hpos : ∀ x ∈ w, 0 < x) :
     (ofRowLens w hw).rowLens = w :=
-  -- Porting note: golf by `List.get`
   List.ext_get (rowLens_length_ofRowLens hpos) fun i _ h₂ =>
     get_rowLens.trans <| rowLen_ofRowLens ⟨i, h₂⟩
 #align young_diagram.row_lens_of_row_lens_eq_self YoungDiagram.rowLens_ofRowLens_eq_self

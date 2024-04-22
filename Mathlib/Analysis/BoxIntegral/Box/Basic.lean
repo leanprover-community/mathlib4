@@ -2,17 +2,13 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.box.basic
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Intervals.Monotone
-import Mathlib.Tactic.GCongr
-import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Algebra.Order.MonotoneConvergence
 import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Topology.MetricSpace.Bounded
+import Mathlib.Topology.Order.MonotoneConvergence
+
+#align_import analysis.box_integral.box.basic from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 /-!
 # Rectangular boxes in `ℝⁿ`
 
@@ -60,11 +56,12 @@ open Set Function Metric Filter
 
 noncomputable section
 
-open NNReal Classical Topology
+open scoped Classical
+open NNReal Topology
 
 namespace BoxIntegral
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 /-!
 ### Rectangular box: definition and partial order
@@ -73,7 +70,7 @@ variable {ι : Type _}
 
 /-- A nontrivial rectangular box in `ι → ℝ` with corners `lower` and `upper`. Represents the product
 of half-open intervals `(lower i, upper i]`. -/
-structure Box (ι : Type _) where
+structure Box (ι : Type*) where
   (lower upper : ι → ℝ)
   lower_lt_upper : ∀ i, lower i < upper i
 #align box_integral.box BoxIntegral.Box
@@ -292,7 +289,7 @@ theorem isSome_iff : ∀ {I : WithBot (Box ι)}, I.isSome ↔ (I : Set (ι → �
 #align box_integral.box.is_some_iff BoxIntegral.Box.isSome_iff
 
 theorem biUnion_coe_eq_coe (I : WithBot (Box ι)) :
-    (⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ))) = I := by
+    ⋃ (J : Box ι) (_ : ↑J = I), (J : Set (ι → ℝ)) = I := by
   induction I using WithBot.recBotCoe <;> simp [WithBot.coe_eq_coe]
 #align box_integral.box.bUnion_coe_eq_coe BoxIntegral.Box.biUnion_coe_eq_coe
 
@@ -457,13 +454,13 @@ protected theorem Ioo_subset_Icc (I : Box ι) : Box.Ioo I ⊆ Box.Icc I :=
 
 theorem iUnion_Ioo_of_tendsto [Finite ι] {I : Box ι} {J : ℕ → Box ι} (hJ : Monotone J)
     (hl : Tendsto (lower ∘ J) atTop (𝓝 I.lower)) (hu : Tendsto (upper ∘ J) atTop (𝓝 I.upper)) :
-    (⋃ n, Box.Ioo (J n)) = Box.Ioo I :=
+    ⋃ n, Box.Ioo (J n) = Box.Ioo I :=
   have hl' : ∀ i, Antitone fun n ↦ (J n).lower i :=
     fun i ↦ (monotone_eval i).comp_antitone (antitone_lower.comp_monotone hJ)
   have hu' : ∀ i, Monotone fun n ↦ (J n).upper i :=
     fun i ↦ (monotone_eval i).comp (monotone_upper.comp hJ)
   calc
-    (⋃ n, Box.Ioo (J n)) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
+    ⋃ n, Box.Ioo (J n) = pi univ fun i ↦ ⋃ n, Ioo ((J n).lower i) ((J n).upper i) :=
       iUnion_univ_pi_of_monotone fun i ↦ (hl' i).Ioo (hu' i)
     _ = Box.Ioo I :=
       pi_congr rfl fun i _ ↦
@@ -515,7 +512,7 @@ theorem nndist_le_distortion_mul (I : Box ι) (i : ι) :
   calc
     nndist I.lower I.upper =
         nndist I.lower I.upper / nndist (I.lower i) (I.upper i) * nndist (I.lower i) (I.upper i) :=
-      (div_mul_cancel _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
+      (div_mul_cancel₀ _ <| mt nndist_eq_zero.1 (I.lower_lt_upper i).ne).symm
     _ ≤ I.distortion * nndist (I.lower i) (I.upper i) := by
       apply mul_le_mul_right'
       apply Finset.le_sup (Finset.mem_univ i)
@@ -535,7 +532,7 @@ theorem diam_Icc_le_of_distortion_le (I : Box ι) (i : ι) {c : ℝ≥0} (h : I.
   diam_le_of_forall_dist_le this fun x hx y hy ↦
     calc
       dist x y ≤ dist I.lower I.upper := Real.dist_le_of_mem_pi_Icc hx hy
-      _ ≤ I.distortion * (I.upper i - I.lower i) := (I.dist_le_distortion_mul i)
+      _ ≤ I.distortion * (I.upper i - I.lower i) := I.dist_le_distortion_mul i
       _ ≤ c * (I.upper i - I.lower i) := by gcongr; exact sub_nonneg.2 (I.lower_le_upper i)
 #align box_integral.box.diam_Icc_le_of_distortion_le BoxIntegral.Box.diam_Icc_le_of_distortion_le
 

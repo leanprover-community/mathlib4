@@ -1,19 +1,29 @@
-import Mathlib.Data.Nat.Basic
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Fin.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Data.ZMod.Defs
 
-lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt8.val_eq_of_lt {a : Nat} : a < UInt8.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt16.val_eq_of_lt {a : Nat} : a < UInt16.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt32.val_eq_of_lt {a : Nat} : a < UInt32.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma UInt64.val_eq_of_lt {a : Nat} : a < UInt64.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
-lemma USize.val_eq_of_lt {a : Nat} : a < USize.size -> (ofNat a).val = a := Nat.mod_eq_of_lt
+lemma USize.val_eq_of_lt {a : Nat} : a < USize.size → ((ofNat a).val : Nat) = a :=
+  Nat.mod_eq_of_lt
 
 instance UInt8.neZero : NeZero UInt8.size := ⟨by decide⟩
 
@@ -23,7 +33,7 @@ instance UInt32.neZero : NeZero UInt32.size := ⟨by decide⟩
 
 instance UInt64.neZero : NeZero UInt64.size := ⟨by decide⟩
 
-instance USize.neZero : NeZero  USize.size := NeZero.of_pos usize_size_gt_zero
+instance USize.neZero : NeZero USize.size := NeZero.of_pos usize_size_gt_zero
 
 example : (0 : UInt8) = ⟨0⟩ := rfl
 
@@ -120,8 +130,8 @@ def isAlphanum (c : UInt8) : Bool :=
 
 theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
   rw [UInt32.val_eq_of_lt]
-  exact Or.inl $ Nat.lt_trans h $ by decide
-  exact Nat.lt_trans h $ by decide
+  exact Or.inl <| Nat.lt_trans h <| by decide
+  exact Nat.lt_trans h <| by decide
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩

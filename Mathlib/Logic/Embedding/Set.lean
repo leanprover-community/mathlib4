@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.embedding.set
-! leanprover-community/mathlib commit fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Embedding.Basic
 import Mathlib.Data.Set.Image
+
+#align_import logic.embedding.set from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
 /-!
 # Interactions between embeddings and sets.
@@ -52,11 +49,11 @@ def optionElim {α β} (f : α ↪ β) (x : β) (h : x ∉ Set.range f) : Option
 
 /-- Equivalence between embeddings of `Option α` and a sigma type over the embeddings of `α`. -/
 @[simps]
-def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range fᶜ) where
+def optionEmbeddingEquiv (α β) : (Option α ↪ β) ≃ Σ f : α ↪ β, ↥(Set.range f)ᶜ where
   toFun f := ⟨coeWithTop.trans f, f none, fun ⟨x, hx⟩ ↦ Option.some_ne_none x <| f.injective hx⟩
   invFun f := f.1.optionElim f.2 f.2.2
-  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def] ; rfl
-  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def] ; rfl
+  left_inv f := ext <| by rintro (_ | _) <;> simp [Option.coe_def]; rfl
+  right_inv := fun ⟨f, y, hy⟩ ↦ by ext <;> simp [Option.coe_def]; rfl
 #align function.embedding.option_embedding_equiv Function.Embedding.optionEmbeddingEquiv
 #align function.embedding.option_embedding_equiv_apply_snd_coe Function.Embedding.optionEmbeddingEquiv_apply_snd_coe
 #align function.embedding.option_embedding_equiv_symm_apply Function.Embedding.optionEmbeddingEquiv_symm_apply
@@ -88,19 +85,19 @@ end Function
 namespace Set
 
 /-- The injection map is an embedding between subsets. -/
-@[simps apply]
+@[simps apply_coe]
 def embeddingOfSubset {α} (s t : Set α) (h : s ⊆ t) : s ↪ t :=
   ⟨fun x ↦ ⟨x.1, h x.2⟩, fun ⟨x, hx⟩ ⟨y, hy⟩ h ↦ by
     congr
     injection h⟩
 #align set.embedding_of_subset Set.embeddingOfSubset
-#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply
+#align set.embedding_of_subset_apply Set.embeddingOfSubset_apply_coeₓ
 
 end Set
 
 section Subtype
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-- A subtype `{x // p x ∨ q x}` over a disjunction of `p q : α → Prop` is equivalent to a sum of
 subtypes `{x // p x} ⊕ {x // q x}` such that `¬ p x` is sent to the right, when

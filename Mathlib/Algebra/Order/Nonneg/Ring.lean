@@ -2,18 +2,15 @@
 Copyright (c) 2021 Floris van Doorn. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Floris van Doorn
-
-! This file was ported from Lean 3 source module algebra.order.nonneg.ring
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Cast.Basic
+import Mathlib.Data.Nat.Cast.Order
+import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Order.Ring.InjSurj
-import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Order.LatticeIntervals
+
+#align_import algebra.order.nonneg.ring from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # The type of nonnegative elements
@@ -27,12 +24,12 @@ When `α` is `ℝ`, this will give us some properties about `ℝ≥0`.
 
 ## Main declarations
 
-* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddMonoid` if `α` is a `LinearOrderedRing`.
+* `{x : α // 0 ≤ x}` is a `CanonicallyLinearOrderedAddCommMonoid` if `α` is a `LinearOrderedRing`.
 
 ## Implementation Notes
 
 Instead of `{x : α // 0 ≤ x}` we could also use `Set.Ici (0 : α)`, which is definitionally equal.
-However, using the explicit subtype has a big advantage: when writing and element explicitly
+However, using the explicit subtype has a big advantage: when writing an element explicitly
 with a proof of nonnegativity as `⟨x, hx⟩`, the `hx` is expected to have type `0 ≤ x`. If we would
 use `Ici 0`, then the type is expected to be `x ∈ Ici 0`. Although these types are definitionally
 equal, this often confuses the elaborator. Similar problems arise when doing cases on an element.
@@ -42,7 +39,7 @@ The disadvantage is that we have to duplicate some instances about `Set.Ici` to 
 
 open Set
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Nonneg
 
@@ -73,10 +70,10 @@ instance distribLattice [DistribLattice α] {a : α} : DistribLattice { x : α /
   Set.Ici.distribLattice
 #align nonneg.distrib_lattice Nonneg.distribLattice
 
-instance densely_ordered [Preorder α] [DenselyOrdered α] {a : α} :
+instance instDenselyOrdered [Preorder α] [DenselyOrdered α] {a : α} :
     DenselyOrdered { x : α // a ≤ x } :=
-  show DenselyOrdered (Ici a) from instDenselyOrderedElemLtToLTMemSetInstMembershipSet
-#align nonneg.densely_ordered Nonneg.densely_ordered
+  show DenselyOrdered (Ici a) from Set.instDenselyOrdered
+#align nonneg.densely_ordered Nonneg.instDenselyOrdered
 
 /-- If `sSup ∅ ≤ a` then `{x : α // a ≤ x}` is a `ConditionallyCompleteLinearOrder`. -/
 @[reducible]
@@ -92,15 +89,10 @@ The `Set.Ici` data fields are definitionally equal, but that requires unfolding 
 definitions, so type-class inference won't see this. -/
 @[reducible]
 protected noncomputable def conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    {a : α} (h : sSup ∅ ≤ a) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
-    csSup_empty :=
-      (Function.funext_iff.1 (@subset_sSup_def α (Set.Ici a) _ ⟨⟨a, le_rfl⟩⟩) ∅).trans <|
-        Subtype.eq <| by
-          rw [bot_eq]
-          cases' h.lt_or_eq with h2 h2
-          · simp [h2.not_le]
-          simp [h2] }
+    csSup_empty := by
+      rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }
 #align nonneg.conditionally_complete_linear_order_bot Nonneg.conditionallyCompleteLinearOrderBot
 
 instance inhabited [Preorder α] {a : α} : Inhabited { x : α // a ≤ x } :=
@@ -207,8 +199,8 @@ theorem mk_eq_one [OrderedSemiring α] {x : α} (hx : 0 ≤ x) :
   Subtype.ext_iff
 #align nonneg.mk_eq_one Nonneg.mk_eq_one
 
-instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x }
-    where mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
+instance mul [OrderedSemiring α] : Mul { x : α // 0 ≤ x } where
+  mul x y := ⟨x * y, mul_nonneg x.2 y.2⟩
 #align nonneg.has_mul Nonneg.mul
 
 @[simp, norm_cast]
@@ -228,21 +220,21 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl }
+    natCast_succ := fun _ => by ext; simp }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
-protected theorem coe_nat_cast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
+protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
-#align nonneg.coe_nat_cast Nonneg.coe_nat_cast
+#align nonneg.coe_nat_cast Nonneg.coe_natCast
 
 @[simp]
-theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
+theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-#align nonneg.mk_nat_cast Nonneg.mk_nat_cast
+#align nonneg.mk_nat_cast Nonneg.mk_natCast
 
-instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ
-    where pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
+instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
+  pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
 #align nonneg.has_pow Nonneg.pow
 
 @[simp, norm_cast]
@@ -326,26 +318,26 @@ def coeRingHom [OrderedSemiring α] : { x : α // 0 ≤ x } →+* α :=
     map_add' := Nonneg.coe_add }
 #align nonneg.coe_ring_hom Nonneg.coeRingHom
 
-instance canonicallyOrderedAddMonoid [OrderedRing α] :
-    CanonicallyOrderedAddMonoid { x : α // 0 ≤ x } :=
+instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
+    CanonicallyOrderedAddCommMonoid { x : α // 0 ≤ x } :=
   { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
-      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
-#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddMonoid
+      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
+#align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
 
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
     CanonicallyOrderedCommSemiring { x : α // 0 ≤ x } :=
-  { Nonneg.canonicallyOrderedAddMonoid, Nonneg.orderedCommSemiring with
+  { Nonneg.canonicallyOrderedAddCommMonoid, Nonneg.orderedCommSemiring with
     eq_zero_or_eq_zero_of_mul_eq_zero := by
       rintro ⟨a, ha⟩ ⟨b, hb⟩
       simp only [mk_mul_mk, mk_eq_zero, mul_eq_zero, imp_self]}
 #align nonneg.canonically_ordered_comm_semiring Nonneg.canonicallyOrderedCommSemiring
 
-instance canonicallyLinearOrderedAddMonoid [LinearOrderedRing α] :
-    CanonicallyLinearOrderedAddMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddMonoid with }
-#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddMonoid
+instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
+    CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
+  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+#align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder
 

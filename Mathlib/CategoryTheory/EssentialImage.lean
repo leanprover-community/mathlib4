@@ -2,15 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.essential_image
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.NatIso
 import Mathlib.CategoryTheory.FullSubcategory
+
+#align_import category_theory.essential_image from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Essential image of a functor
@@ -79,7 +75,7 @@ theorem obj_mem_essImage (F : D ⥤ C) (Y : D) : F.obj Y ∈ essImage F :=
   ⟨Y, ⟨Iso.refl _⟩⟩
 #align category_theory.functor.obj_mem_ess_image CategoryTheory.Functor.obj_mem_essImage
 
-/-- The essential image of a functor, interpreted of a full subcategory of the target category. -/
+/-- The essential image of a functor, interpreted as a full subcategory of the target category. -/
 -- Porting note: no hasNonEmptyInstance linter yet
 def EssImageSubcategory (F : C ⥤ D) :=
   FullSubcategory F.essImage
@@ -126,8 +122,6 @@ def toEssImageCompEssentialImageInclusion (F : C ⥤ D) : F.toEssImage ⋙ F.ess
 #align category_theory.functor.to_ess_image_comp_essential_image_inclusion_hom_app CategoryTheory.Functor.toEssImageCompEssentialImageInclusion_hom_app
 #align category_theory.functor.to_ess_image_comp_essential_image_inclusion_inv_app CategoryTheory.Functor.toEssImageCompEssentialImageInclusion_inv_app
 
-end Functor
-
 /-- A functor `F : C ⥤ D` is essentially surjective if every object of `D` is in the essential
 image of `F`. In other words, for every `Y : D`, there is some `X : C` with `F.obj X ≅ Y`.
 
@@ -136,37 +130,54 @@ See <https://stacks.math.columbia.edu/tag/001C>.
 class EssSurj (F : C ⥤ D) : Prop where
   /-- All the objects of the target category are in the essential image. -/
   mem_essImage (Y : D) : Y ∈ F.essImage
-#align category_theory.ess_surj CategoryTheory.EssSurj
+#align category_theory.ess_surj CategoryTheory.Functor.EssSurj
 
-instance :
-    EssSurj
-      F.toEssImage where mem_essImage := fun ⟨_, hY⟩ =>
+instance EssSurj.toEssImage : EssSurj F.toEssImage where
+  mem_essImage := fun ⟨_, hY⟩ =>
     ⟨_, ⟨⟨_, _, hY.getIso.hom_inv_id, hY.getIso.inv_hom_id⟩⟩⟩
 
-variable (F) [EssSurj F]
+variable (F)
+variable [F.EssSurj]
 
 /-- Given an essentially surjective functor, we can find a preimage for every object `Y` in the
     codomain. Applying the functor to this preimage will yield an object isomorphic to `Y`, see
     `obj_obj_preimage_iso`. -/
-def Functor.objPreimage (Y : D) : C :=
+def objPreimage (Y : D) : C :=
   essImage.witness (@EssSurj.mem_essImage _ _ _ _ F _ Y)
 #align category_theory.functor.obj_preimage CategoryTheory.Functor.objPreimage
 
 /-- Applying an essentially surjective functor to a preimage of `Y` yields an object that is
     isomorphic to `Y`. -/
-def Functor.objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
+def objObjPreimageIso (Y : D) : F.obj (F.objPreimage Y) ≅ Y :=
   Functor.essImage.getIso _
 #align category_theory.functor.obj_obj_preimage_iso CategoryTheory.Functor.objObjPreimageIso
 
-/-- The induced functor of a faithful functor is faithful -/
+/-- The induced functor of a faithful functor is faithful. -/
 instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage :=
   Faithful.of_comp_iso F.toEssImageCompEssentialImageInclusion
-#align category_theory.faithful.to_ess_image CategoryTheory.Faithful.toEssImage
+#align category_theory.faithful.to_ess_image CategoryTheory.Functor.Faithful.toEssImage
 
-/-- The induced functor of a full functor is full -/
+/-- The induced functor of a full functor is full. -/
 instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
   haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
   Full.ofCompFaithful F.toEssImage F.essImageInclusion
-#align category_theory.full.to_ess_image CategoryTheory.Full.toEssImage
+#align category_theory.full.to_ess_image CategoryTheory.Functor.Full.toEssImage
+
+instance instEssSurjId : EssSurj (𝟭 C) where
+  mem_essImage Y := ⟨Y, ⟨Iso.refl _⟩⟩
+
+theorem essSurj_of_surj (h : Function.Surjective F.obj) : EssSurj F where
+  mem_essImage Y := by
+    obtain ⟨X, rfl⟩ := h Y
+    apply obj_mem_essImage
+
+lemma essSurj_of_iso {F G : C ⥤ D} [EssSurj F] (α : F ≅ G) : EssSurj G where
+  mem_essImage Y := Functor.essImage.ofNatIso α (EssSurj.mem_essImage Y)
+
+end Functor
+
+-- deprecated on 2024-04-06
+@[deprecated] alias EssSurj := Functor.EssSurj
+@[deprecated] alias Iso.map_essSurj := Functor.essSurj_of_iso
 
 end CategoryTheory

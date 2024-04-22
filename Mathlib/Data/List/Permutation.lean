@@ -2,13 +2,10 @@
 Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.permutation
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Join
+
+#align_import data.list.permutation from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Permutations of a list
@@ -47,10 +44,12 @@ all positions. Hence, to build `[0, 1, 2, 3].permutations'`, it does
 Show that `l.Nodup → l.permutations.Nodup`. See `Data.Fintype.List`.
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 open Nat
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace List
 
@@ -93,12 +92,12 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
     map g' (permutationsAux2 t ts r ys f).2 =
       (permutationsAux2 (g t) (map g ts) (map g' r) (map g ys) f').2 := by
   induction' ys with ys_hd _ ys_ih generalizing f f'
-  . simp
-  . simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
+  · simp
+  · simp only [map, permutationsAux2_snd_cons, cons_append, cons.injEq]
     rw [ys_ih, permutationsAux2_fst]
     refine' ⟨_, rfl⟩
-    . simp only [← map_cons, ← map_append]; apply H
-    . intro a; apply H
+    · simp only [← map_cons, ← map_append]; apply H
+    · intro a; apply H
 #align list.map_permutations_aux2' List.map_permutationsAux2'
 
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
@@ -132,24 +131,27 @@ theorem map_map_permutationsAux2 {α α'} (g : α → α') (t : α) (ts ys : Lis
 
 theorem map_map_permutations'Aux (f : α → β) (t : α) (ts : List α) :
     map (map f) (permutations'Aux t ts) = permutations'Aux (f t) (map f ts) := by
-  induction' ts with a ts ih <;> [rfl; (simp [← ih]; rfl)]
+  induction' ts with a ts ih
+  · rfl
+  · simp only [permutations'Aux, map_cons, map_map, ← ih, cons.injEq, true_and, Function.comp_def]
 #align list.map_map_permutations'_aux List.map_map_permutations'Aux
 
 theorem permutations'Aux_eq_permutationsAux2 (t : α) (ts : List α) :
     permutations'Aux t ts = (permutationsAux2 t [] [ts ++ [t]] ts id).2 := by
   induction' ts with a ts ih; · rfl
-  simp [permutations'Aux, permutationsAux2_snd_cons, ih]
+  simp only [permutations'Aux, ih, cons_append, permutationsAux2_snd_cons, append_nil, id_eq,
+    cons.injEq, true_and]
   simp (config := { singlePass := true }) only [← permutationsAux2_append]
   simp [map_permutationsAux2]
 #align list.permutations'_aux_eq_permutations_aux2 List.permutations'Aux_eq_permutationsAux2
 
 theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List α} :
-    l' ∈ (permutationsAux2 t ts [] ys (l ++ .)).2 ↔
+    l' ∈ (permutationsAux2 t ts [] ys (l ++ ·)).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l' = l ++ l₁ ++ t :: l₂ ++ ts := by
   induction' ys with y ys ih generalizing l
   · simp (config := { contextual := true })
   rw [permutationsAux2_snd_cons,
-    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ .) by funext _; simp, mem_cons, ih]
+    show (fun x : List α => l ++ y :: x) = (l ++ [y] ++ ·) by funext _; simp, mem_cons, ih]
   constructor
   · rintro (rfl | ⟨l₁, l₂, l0, rfl, rfl⟩)
     · exact ⟨[], y :: ys, by simp⟩
@@ -164,7 +166,7 @@ theorem mem_permutationsAux2 {t : α} {ts : List α} {ys : List α} {l l' : List
 theorem mem_permutationsAux2' {t : α} {ts : List α} {ys : List α} {l : List α} :
     l ∈ (permutationsAux2 t ts [] ys id).2 ↔
       ∃ l₁ l₂, l₂ ≠ [] ∧ ys = l₁ ++ l₂ ∧ l = l₁ ++ t :: l₂ ++ ts :=
-  by rw [show @id (List α) = ([] ++ .) by funext _; rfl]; apply mem_permutationsAux2
+  by rw [show @id (List α) = ([] ++ ·) by funext _; rfl]; apply mem_permutationsAux2
 #align list.mem_permutations_aux2' List.mem_permutationsAux2'
 
 theorem length_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
@@ -177,8 +179,7 @@ theorem foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
       (L.bind fun y => (permutationsAux2 t ts [] y id).2) ++ r := by
   induction' L with l L ih
   · rfl
-  · simp [ih]
-    rw [← permutationsAux2_append]
+  · simp_rw [foldr_cons, ih, cons_bind, append_assoc, permutationsAux2_append]
 #align list.foldr_permutations_aux2 List.foldr_permutationsAux2
 
 theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)} {l' : List α} :
@@ -197,19 +198,19 @@ theorem mem_foldr_permutationsAux2 {t : α} {ts : List α} {r L : List (List α)
 
 theorem length_foldr_permutationsAux2 (t : α) (ts : List α) (r L : List (List α)) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) =
-      sum (map length L) + length r :=
-  by simp [foldr_permutationsAux2, (· ∘ ·), length_permutationsAux2]
+      Nat.sum (map length L) + length r :=
+  by simp [foldr_permutationsAux2, (· ∘ ·), length_permutationsAux2, length_bind']
 #align list.length_foldr_permutations_aux2 List.length_foldr_permutationsAux2
 
 theorem length_foldr_permutationsAux2' (t : α) (ts : List α) (r L : List (List α)) (n)
     (H : ∀ l ∈ L, length l = n) :
     length (foldr (fun y r => (permutationsAux2 t ts r y id).2) r L) = n * length L + length r := by
-  rw [length_foldr_permutationsAux2, (_ : List.sum (map length L) = n * length L)]
+  rw [length_foldr_permutationsAux2, (_ : Nat.sum (map length L) = n * length L)]
   induction' L with l L ih
   · simp
-  have sum_map : sum (map length L) = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
+  have sum_map : Nat.sum (map length L) = n * length L := ih fun l m => H l (mem_cons_of_mem _ m)
   have length_l : length l = n := H _ (mem_cons_self _ _)
-  simp [sum_map, length_l, mul_add, add_comm, mul_succ]
+  simp [sum_map, length_l, Nat.mul_add, Nat.add_comm, mul_succ]
 #align list.length_foldr_permutations_aux2' List.length_foldr_permutationsAux2'
 
 @[simp]

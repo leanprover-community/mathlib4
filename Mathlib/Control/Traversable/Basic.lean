@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.traversable.basic
-! leanprover-community/mathlib commit 1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.List.Defs
 import Mathlib.Data.Option.Defs
+import Mathlib.Control.Functor
+
+#align_import control.traversable.basic from "leanprover-community/mathlib"@"1fc36cc9c8264e6e81253f88be7fb2cb6c92d76a"
 
 /-!
 # Traversable type class
@@ -38,7 +35,7 @@ For more on how to use traversable, consider the Haskell tutorial:
   * `Traversable` type class - exposes the `traverse` function
   * `sequence` - based on `traverse`,
     turns a collection of effects into an effect returning a collection
-  * `IsLawfulTraversable` - laws for a traversable functor
+  * `LawfulTraversable` - laws for a traversable functor
   * `ApplicativeTransformation` - the notion of a natural transformation for applicative functors
 
 ## Tags
@@ -65,7 +62,6 @@ universe u v w
 section ApplicativeTransformation
 
 variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 /-- A transformation between applicative functors.  It is a natural
@@ -86,22 +82,21 @@ end ApplicativeTransformation
 namespace ApplicativeTransformation
 
 variable (F : Type u → Type v) [Applicative F] [LawfulApplicative F]
-
 variable (G : Type u → Type w) [Applicative G] [LawfulApplicative G]
 
 instance : CoeFun (ApplicativeTransformation F G) fun _ => ∀ {α}, F α → G α :=
-  ⟨λ η => η.app _⟩
+  ⟨fun η ↦ η.app _⟩
 
 variable {F G}
 
-@[simp]
+-- This cannot be a `simp` lemma, as the RHS is a coercion which contains `η.app`.
 theorem app_eq_coe (η : ApplicativeTransformation F G) : η.app = η :=
   rfl
 #align applicative_transformation.app_eq_coe ApplicativeTransformation.app_eq_coe
 
 @[simp]
 theorem coe_mk (f : ∀ α : Type u, F α → G α) (pp ps) :
-  (ApplicativeTransformation.mk f @pp @ps) = f :=
+    (ApplicativeTransformation.mk f @pp @ps) = f :=
   rfl
 #align applicative_transformation.coe_mk ApplicativeTransformation.coe_mk
 
@@ -191,7 +186,7 @@ theorem comp_apply (η' : ApplicativeTransformation G H) (η : ApplicativeTransf
   rfl
 #align applicative_transformation.comp_apply ApplicativeTransformation.comp_apply
 
--- porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
+-- Porting note: in mathlib3 we also had the assumption `[LawfulApplicative I]` because
 -- this was assumed
 theorem comp_assoc {I : Type u → Type t} [Applicative I]
     (η'' : ApplicativeTransformation H I) (η' : ApplicativeTransformation G H)
@@ -230,11 +225,8 @@ export Traversable (traverse)
 section Functions
 
 variable {t : Type u → Type u}
-
 variable {m : Type u → Type v} [Applicative m]
-
 variable {α β : Type u}
-
 variable {f : Type u → Type u} [Applicative f]
 
 /-- A traversable functor commutes with all applicative functors. -/
@@ -250,8 +242,8 @@ send the composition of applicative functors to the composition of the
 `traverse` of each, send each function `f` to `fun x ↦ f <$> x`, and
 satisfy a naturality condition with respect to applicative
 transformations. -/
-class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
-    Type (u + 1) where
+class LawfulTraversable (t : Type u → Type u) [Traversable t] extends LawfulFunctor t :
+    Prop where
   /-- `traverse` plays well with `pure` of the identity monad-/
   id_traverse : ∀ {α} (x : t α), traverse (pure : α → Id α) x = x
   /-- `traverse` plays well with composition of applicative functors. -/
@@ -268,34 +260,32 @@ class IsLawfulTraversable (t : Type u → Type u) [Traversable t] extends Lawful
     ∀ {F G} [Applicative F] [Applicative G] [LawfulApplicative F] [LawfulApplicative G]
       (η : ApplicativeTransformation F G) {α β} (f : α → F β) (x : t α),
       η (traverse f x) = traverse (@η _ ∘ f) x
-#align is_lawful_traversable IsLawfulTraversable
+#align is_lawful_traversable LawfulTraversable
 
 instance : Traversable Id :=
   ⟨id⟩
 
-instance : IsLawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
+instance : LawfulTraversable Id := by refine' { .. } <;> intros <;> rfl
 
 section
 
 variable {F : Type u → Type v} [Applicative F]
 
 instance : Traversable Option :=
-  ⟨@Option.traverse⟩
+  ⟨Option.traverse⟩
 
 instance : Traversable List :=
-  ⟨@List.traverse⟩
+  ⟨List.traverse⟩
 
 end
 
 namespace Sum
 
 variable {σ : Type u}
-
 variable {F : Type u → Type u}
-
 variable [Applicative F]
 
--- porting note: this was marked as a dubious translation but the only issue seems to be
+-- Porting note: this was marked as a dubious translation but the only issue seems to be
 -- a universe issue; this may be a bug in mathlib3port. I've carefully checked the universes
 -- in mathlib3 and mathlib4 and they seem to match up exactly. Discussion here
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/why.20dubious.3F/

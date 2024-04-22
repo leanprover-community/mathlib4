@@ -2,13 +2,10 @@
 Copyright (c) 2018 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Simon Hudon
-
-! This file was ported from Lean 3 source module data.pfunctor.multivariate.W
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
+
+#align_import data.pfunctor.multivariate.W from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # The W construction as a multivariate polynomial functor.
@@ -39,7 +36,7 @@ Specifically, we define the polynomial functor `wp` as:
  * B := given the tree-like structure `t`, `B t` is a valid path
    (specified inductively by `W_path`) from the root of `t` to any given node.
 
-As a result `wp.Obj α` is made of a dataless tree and a function from
+As a result `wp α` is made of a dataless tree and a function from
 its valid paths to values of `α`
 
 ## Reference
@@ -111,14 +108,14 @@ set_option linter.uppercaseLean3 false in
 
 theorem wPathCasesOn_eta {α : TypeVec n} {a : P.A} {f : P.last.B a → P.last.W}
     (h : P.WPath ⟨a, f⟩ ⟹ α) : P.wPathCasesOn (P.wPathDestLeft h) (P.wPathDestRight h) = h := by
-  ext i x ; cases x <;> rfl
+  ext i x; cases x <;> rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_path_cases_on_eta MvPFunctor.wPathCasesOn_eta
 
 theorem comp_wPathCasesOn {α β : TypeVec n} (h : α ⟹ β) {a : P.A} {f : P.last.B a → P.last.W}
     (g' : P.drop.B a ⟹ α) (g : ∀ j : P.last.B a, P.WPath (f j) ⟹ α) :
     h ⊚ P.wPathCasesOn g' g = P.wPathCasesOn (h ⊚ g') fun i => h ⊚ g i := by
-  ext i x ; cases x <;> rfl
+  ext i x; cases x <;> rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.comp_W_path_cases_on MvPFunctor.comp_wPathCasesOn
 
@@ -133,13 +130,13 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp MvPFunctor.wp
 
 /-- W-type of `P` -/
--- Porting note: used to have @[nolint has_nonempty_instance]
+-- Porting note(#5171): used to have @[nolint has_nonempty_instance]
 def W (α : TypeVec n) : Type _ :=
-  P.wp.Obj α
+  P.wp α
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W MvPFunctor.W
 
-instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W ; infer_instance
+instance mvfunctorW : MvFunctor P.W := by delta MvPFunctor.W; infer_instance
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.mvfunctor_W MvPFunctor.mvfunctorW
 
@@ -155,21 +152,21 @@ def wpMk {α : TypeVec n} (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath 
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_mk MvPFunctor.wpMk
 
-def wpRec {α : TypeVec n} {C : Type _}
+def wpRec {α : TypeVec n} {C : Type*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C) :
     ∀ (x : P.last.W) (_ : P.WPath x ⟹ α), C
   | ⟨a, f⟩, f' => g a f f' fun i => wpRec g (f i) (P.wPathDestRight f' i)
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec MvPFunctor.wpRec
 
-theorem wpRec_eq {α : TypeVec n} {C : Type _}
+theorem wpRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ (a : P.A) (f : P.last.B a → P.last.W), P.WPath ⟨a, f⟩ ⟹ α → (P.last.B a → C) → C)
     (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α) :
     P.wpRec g ⟨a, f⟩ f' = g a f f' fun i => P.wpRec g (f i) (P.wPathDestRight f' i) := rfl
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.Wp_rec_eq MvPFunctor.wpRec_eq
 
--- Note: we could replace Prop by Type _ and obtain a dependent recursor
+-- Note: we could replace Prop by Type* and obtain a dependent recursor
 theorem wp_ind {α : TypeVec n} {C : ∀ x : P.last.W, P.WPath x ⟹ α → Prop}
     (ih : ∀ (a : P.A) (f : P.last.B a → P.last.W) (f' : P.WPath ⟨a, f⟩ ⟹ α),
         (∀ i : P.last.B a, C (f i) (P.wPathDestRight f' i)) → C ⟨a, f⟩ f') :
@@ -195,7 +192,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_mk MvPFunctor.wMk
 
 /-- Recursor for `W` -/
-def wRec {α : TypeVec n} {C : Type _}
+def wRec {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) : P.W α → C
   | ⟨a, f'⟩ =>
     let g' (a : P.A) (f : P.last.B a → P.last.W) (h : P.WPath ⟨a, f⟩ ⟹ α)
@@ -206,7 +203,7 @@ set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_rec MvPFunctor.wRec
 
 /-- Defining equation for the recursor of `W` -/
-theorem wRec_eq {α : TypeVec n} {C : Type _}
+theorem wRec_eq {α : TypeVec n} {C : Type*}
     (g : ∀ a : P.A, P.drop.B a ⟹ α → (P.last.B a → P.W α) → (P.last.B a → C) → C) (a : P.A)
     (f' : P.drop.B a ⟹ α) (f : P.last.B a → P.W α) :
     P.wRec g (P.wMk a f' f) = g a f' f fun i => P.wRec g (f i) := by
@@ -222,7 +219,7 @@ theorem w_ind {α : TypeVec n} {C : P.W α → Prop}
         (∀ i, C (f i)) → C (P.wMk a f' f)) :
     ∀ x, C x := by
   intro x; cases' x with a f
-  apply @wp_ind n P α fun a f => C ⟨a, f⟩; dsimp
+  apply @wp_ind n P α fun a f => C ⟨a, f⟩
   intro a f f' ih'
   dsimp [wMk] at ih
   let ih'' := ih a (P.wPathDestLeft f') fun i => ⟨f i, P.wPathDestRight f' i⟩
@@ -254,7 +251,7 @@ theorem w_map_wMk {α β : TypeVec n} (g : α ⟹ β) (a : P.A) (f' : P.drop.B a
   show _ = P.wMk a (g ⊚ f') (MvFunctor.map g ∘ f)
   have : MvFunctor.map g ∘ f = fun i => ⟨(f i).fst, g ⊚ (f i).snd⟩ := by
     ext i : 1
-    dsimp [Function.comp]
+    dsimp [Function.comp_def]
     cases f i
     rfl
   rw [this]
@@ -275,8 +272,8 @@ set_option linter.uppercaseLean3 false in
 /-- Constructor of a value of `P.obj (α ::: β)` from components.
 Useful to avoid complicated type annotation -/
 @[reducible]
-def objAppend1 {α : TypeVec n} {β : Type _} (a : P.A) (f' : P.drop.B a ⟹ α)
-    (f : P.last.B a → β) : P.Obj (α ::: β) :=
+def objAppend1 {α : TypeVec n} {β : Type u} (a : P.A) (f' : P.drop.B a ⟹ α)
+    (f : P.last.B a → β) : P (α ::: β) :=
   ⟨a, splitFun f' f⟩
 #align mvpfunctor.obj_append1 MvPFunctor.objAppend1
 
@@ -284,7 +281,7 @@ theorem map_objAppend1 {α γ : TypeVec n} (g : α ⟹ γ) (a : P.A) (f' : P.dro
     (f : P.last.B a → P.W α) :
     appendFun g (P.wMap g) <$$> P.objAppend1 a f' f =
       P.objAppend1 a (g ⊚ f') fun x => P.wMap g (f x) :=
-  by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp] ; rfl
+  by rw [objAppend1, objAppend1, map_eq, appendFun, ← splitFun_comp]; rfl
 #align mvpfunctor.map_obj_append1 MvPFunctor.map_objAppend1
 
 /-!
@@ -295,13 +292,13 @@ the qpf axioms are expressed in terms of `map` on `P`.
 
 
 /-- Constructor for the W-type of `P` -/
-def wMk' {α : TypeVec n} : P.Obj (α ::: P.W α) → P.W α
+def wMk' {α : TypeVec n} : P (α ::: P.W α) → P.W α
   | ⟨a, f⟩ => P.wMk a (dropFun f) (lastFun f)
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_mk' MvPFunctor.wMk'
 
 /-- Destructor for the W-type of `P` -/
-def wDest' {α : TypeVec.{u} n} : P.W α → P.Obj (α.append1 (P.W α)) :=
+def wDest' {α : TypeVec.{u} n} : P.W α → P (α.append1 (P.W α)) :=
   P.wRec fun a f' f _ => ⟨a, splitFun f' f⟩
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest' MvPFunctor.wDest'
@@ -311,8 +308,8 @@ theorem wDest'_wMk {α : TypeVec n} (a : P.A) (f' : P.drop.B a ⟹ α) (f : P.la
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk MvPFunctor.wDest'_wMk
 
-theorem wDest'_wMk' {α : TypeVec n} (x : P.Obj (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
-  cases' x with a f ; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
+theorem wDest'_wMk' {α : TypeVec n} (x : P (α.append1 (P.W α))) : P.wDest' (P.wMk' x) = x := by
+  cases' x with a f; rw [wMk', wDest'_wMk, split_dropFun_lastFun]
 set_option linter.uppercaseLean3 false in
 #align mvpfunctor.W_dest'_W_mk' MvPFunctor.wDest'_wMk'
 

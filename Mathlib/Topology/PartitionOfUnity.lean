@@ -2,25 +2,23 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.partition_of_unity
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.SetTheory.Ordinal.Basic
 import Mathlib.Topology.ContinuousFunction.Algebra
-import Mathlib.Topology.Paracompact
+import Mathlib.Topology.Compactness.Paracompact
 import Mathlib.Topology.ShrinkingLemma
 import Mathlib.Topology.UrysohnsLemma
+
+#align_import topology.partition_of_unity from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Continuous partition of unity
 
-In this file we define `PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`
-to be a continuous partition of unity on `s` indexed by `ι`. More precisely, `f : PartitionOfUnity
-ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`, such that
+In this file we define `PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`
+to be a continuous partition of unity on `s` indexed by `ι`. More precisely,
+`f : PartitionOfUnity ι X s` is a collection of continuous functions `f i : C(X, ℝ)`, `i : ι`,
+such that
 
 * the supports of `f i` form a locally finite family of sets;
 * each `f i` is nonnegative;
@@ -31,7 +29,7 @@ In the case `s = univ` the last assumption follows from the previous one but it 
 have this assumption in the case `s ≠ univ`.
 
 We also define a bump function covering,
-`BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
+`BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ)`, to be a collection of
 functions `f i : C(X, ℝ)`, `i : ι`, such that
 
 * the supports of `f i` form a locally finite family of sets;
@@ -82,7 +80,8 @@ universe u v
 
 open Function Set Filter
 
-open BigOperators Topology Classical
+open scoped Classical
+open BigOperators Topology
 
 noncomputable section
 
@@ -99,12 +98,12 @@ If `X` is a normal paracompact space, then `PartitionOfUnity.exists_isSubordinat
 that for every open covering `U : Set (Set X)` of `s` there exists a partition of unity that is
 subordinate to `U`.
 -/
-structure PartitionOfUnity (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure PartitionOfUnity (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
-  sum_eq_one' : ∀ x ∈ s, (∑ᶠ i, toFun i x) = 1
-  sum_le_one' : ∀ x, (∑ᶠ i, toFun i x) ≤ 1
+  sum_eq_one' : ∀ x ∈ s, ∑ᶠ i, toFun i x = 1
+  sum_le_one' : ∀ x, ∑ᶠ i, toFun i x ≤ 1
 #align partition_of_unity PartitionOfUnity
 
 /-- A `BumpCovering ι X s` is an indexed family of functions `f i`, `i : ι`, such that
@@ -122,7 +121,7 @@ If `X` is a normal paracompact space, then `BumpCovering.exists_isSubordinate` g
 every open covering `U : Set (Set X)` of `s` there exists a `BumpCovering` of `s` that is
 subordinate to `U`.
 -/
-structure BumpCovering (ι X : Type _) [TopologicalSpace X] (s : Set X := univ) where
+structure BumpCovering (ι X : Type*) [TopologicalSpace X] (s : Set X := univ) where
   toFun : ι → C(X, ℝ)
   locallyFinite' : LocallyFinite fun i => support (toFun i)
   nonneg' : 0 ≤ toFun
@@ -134,10 +133,10 @@ variable {ι : Type u} {X : Type v} [TopologicalSpace X]
 
 namespace PartitionOfUnity
 
-variable {E : Type _} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
+variable {E : Type*} [AddCommMonoid E] [SMulWithZero ℝ E] [TopologicalSpace E] [ContinuousSMul ℝ E]
   {s : Set X} (f : PartitionOfUnity ι X s)
 
-instance : FunLike (PartitionOfUnity ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (PartitionOfUnity ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -153,7 +152,7 @@ theorem nonneg (i : ι) (x : X) : 0 ≤ f i x :=
   f.nonneg' i x
 #align partition_of_unity.nonneg PartitionOfUnity.nonneg
 
-theorem sum_eq_one {x : X} (hx : x ∈ s) : (∑ᶠ i, f i x) = 1 :=
+theorem sum_eq_one {x : X} (hx : x ∈ s) : ∑ᶠ i, f i x = 1 :=
   f.sum_eq_one' x hx
 #align partition_of_unity.sum_eq_one PartitionOfUnity.sum_eq_one
 
@@ -165,7 +164,7 @@ theorem exists_pos {x : X} (hx : x ∈ s) : ∃ i, 0 < f i x := by
   simpa only [fun i => (H i).antisymm (f.nonneg i x), finsum_zero] using zero_ne_one
 #align partition_of_unity.exists_pos PartitionOfUnity.exists_pos
 
-theorem sum_le_one (x : X) : (∑ᶠ i, f i x) ≤ 1 :=
+theorem sum_le_one (x : X) : ∑ᶠ i, f i x ≤ 1 :=
   f.sum_le_one' x
 #align partition_of_unity.sum_le_one PartitionOfUnity.sum_le_one
 
@@ -176,6 +175,89 @@ theorem sum_nonneg (x : X) : 0 ≤ ∑ᶠ i, f i x :=
 theorem le_one (i : ι) (x : X) : f i x ≤ 1 :=
   (single_le_finsum i (f.locallyFinite.point_finite x) fun j => f.nonneg j x).trans (f.sum_le_one x)
 #align partition_of_unity.le_one PartitionOfUnity.le_one
+
+section finsupport
+
+variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
+
+/-- The support of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ support f i`, i.e. `f i ≠ x₀`. -/
+def finsupport : Finset ι := (ρ.locallyFinite.point_finite x₀).toFinset
+
+@[simp]
+theorem mem_finsupport (x₀ : X) {i} :
+    i ∈ ρ.finsupport x₀ ↔ i ∈ support fun i ↦ ρ i x₀ := by
+  simp only [finsupport, mem_support, Finite.mem_toFinset, mem_setOf_eq]
+
+@[simp]
+theorem coe_finsupport (x₀ : X) :
+    (ρ.finsupport x₀ : Set ι) = support fun i ↦ ρ i x₀ := by
+  ext
+  rw [Finset.mem_coe, mem_finsupport]
+
+variable {x₀ : X}
+
+theorem sum_finsupport (hx₀ : x₀ ∈ s) : ∑ i in ρ.finsupport x₀, ρ i x₀ = 1 := by
+  rw [← ρ.sum_eq_one hx₀, finsum_eq_sum_of_support_subset _ (ρ.coe_finsupport x₀).superset]
+
+theorem sum_finsupport' (hx₀ : x₀ ∈ s) {I : Finset ι} (hI : ρ.finsupport x₀ ⊆ I) :
+    ∑ i in I, ρ i x₀ = 1 := by
+  classical
+  rw [← Finset.sum_sdiff hI, ρ.sum_finsupport hx₀]
+  suffices ∑ i in I \ ρ.finsupport x₀, (ρ i) x₀ = ∑ i in I \ ρ.finsupport x₀, 0 by
+    rw [this, add_left_eq_self, Finset.sum_const_zero]
+  apply Finset.sum_congr rfl
+  rintro x hx
+  simp only [Finset.mem_sdiff, ρ.mem_finsupport, mem_support, Classical.not_not] at hx
+  exact hx.2
+
+theorem sum_finsupport_smul_eq_finsum {M : Type*} [AddCommGroup M] [Module ℝ M] (φ : ι → X → M) :
+    ∑ i in ρ.finsupport x₀, ρ i x₀ • φ i x₀ = ∑ᶠ i, ρ i x₀ • φ i x₀ := by
+  apply (finsum_eq_sum_of_support_subset _ _).symm
+  have : (fun i ↦ (ρ i) x₀ • φ i x₀) = (fun i ↦ (ρ i) x₀) • (fun i ↦ φ i x₀) :=
+    funext fun _ => (Pi.smul_apply' _ _ _).symm
+  rw [ρ.coe_finsupport x₀, this, support_smul]
+  exact inter_subset_left _ _
+
+end finsupport
+
+section fintsupport -- partitions of unity have locally finite `tsupport`
+
+variable {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X)
+
+/-- The `tsupport`s of a partition of unity are locally finite. -/
+theorem finite_tsupport : {i | x₀ ∈ tsupport (ρ i)}.Finite := by
+  rcases ρ.locallyFinite x₀ with ⟨t, t_in, ht⟩
+  apply ht.subset
+  rintro i hi
+  simp only [inter_comm]
+  exact mem_closure_iff_nhds.mp hi t t_in
+
+/-- The tsupport of a partition of unity at a point `x₀` as a `Finset`.
+  This is the set of `i : ι` such that `x₀ ∈ tsupport f i`. -/
+def fintsupport (x₀ : X) : Finset ι :=
+  (ρ.finite_tsupport x₀).toFinset
+
+theorem mem_fintsupport_iff (i : ι) : i ∈ ρ.fintsupport x₀ ↔ x₀ ∈ tsupport (ρ i) :=
+  Finite.mem_toFinset _
+
+theorem eventually_fintsupport_subset :
+    ∀ᶠ y in 𝓝 x₀, ρ.fintsupport y ⊆ ρ.fintsupport x₀ := by
+  apply (ρ.locallyFinite.closure.eventually_subset (fun _ ↦ isClosed_closure) x₀).mono
+  intro y hy z hz
+  rw [PartitionOfUnity.mem_fintsupport_iff] at *
+  exact hy hz
+
+theorem finsupport_subset_fintsupport : ρ.finsupport x₀ ⊆ ρ.fintsupport x₀ := fun i hi ↦ by
+  rw [ρ.mem_fintsupport_iff]
+  apply subset_closure
+  exact (ρ.mem_finsupport x₀).mp hi
+
+theorem eventually_finsupport_subset : ∀ᶠ y in 𝓝 x₀, ρ.finsupport y ⊆ ρ.fintsupport x₀ :=
+  (ρ.eventually_fintsupport_subset x₀).mono
+    fun y hy ↦ (ρ.finsupport_subset_fintsupport y).trans hy
+
+end fintsupport
 
 /-- If `f` is a partition of unity on `s : Set X` and `g : X → E` is continuous at every point of
 the topological support of some `f i`, then `fun x ↦ f i x • g x` is continuous on the whole space.
@@ -204,14 +286,24 @@ def IsSubordinate (U : ι → Set X) : Prop :=
 
 variable {f}
 
+theorem exists_finset_nhd' {s : Set X} (ρ : PartitionOfUnity ι X s) (x₀ : X) :
+    ∃ I : Finset ι, (∀ᶠ x in 𝓝[s] x₀, ∑ i in I, ρ i x = 1) ∧
+      ∀ᶠ x in 𝓝 x₀, support (ρ · x) ⊆ I := by
+  rcases ρ.locallyFinite.exists_finset_support x₀ with ⟨I, hI⟩
+  refine ⟨I, eventually_nhdsWithin_iff.mpr (hI.mono fun x hx x_in ↦ ?_), hI⟩
+  have : ∑ᶠ i : ι, ρ i x = ∑ i : ι in I, ρ i x := finsum_eq_sum_of_support_subset _ hx
+  rwa [eq_comm, ρ.sum_eq_one x_in] at this
+
+theorem exists_finset_nhd (ρ : PartitionOfUnity ι X univ) (x₀ : X) :
+    ∃ I : Finset ι, ∀ᶠ x in 𝓝 x₀, ∑ i in I, ρ i x = 1 ∧ support (ρ · x) ⊆ I := by
+  rcases ρ.exists_finset_nhd' x₀ with ⟨I, H⟩
+  use I
+  rwa [nhdsWithin_univ, ← eventually_and] at H
+
 theorem exists_finset_nhd_support_subset {U : ι → Set X} (hso : f.IsSubordinate U)
     (ho : ∀ i, IsOpen (U i)) (x : X) :
-    ∃ (is : Finset ι) (n : Set X) (_ : n ∈ 𝓝 x) (_ : n ⊆ ⋂ i ∈ is, U i),
-      ∀ z ∈ n, (support fun i => f i z) ⊆ is :=
-  -- Porting note: Original proof was simply
-  -- `f.locallyFinite.exists_finset_nhd_support_subset hso ho x`
-  let ⟨a, ⟨b, ⟨c, ⟨d, e⟩⟩⟩⟩ := f.locallyFinite.exists_finset_nhd_support_subset hso ho x
-  ⟨a, b, c, d, e⟩
+    ∃ is : Finset ι, ∃ n ∈ 𝓝 x, n ⊆ ⋂ i ∈ is, U i ∧ ∀ z ∈ n, (support (f · z)) ⊆ is :=
+  f.locallyFinite.exists_finset_nhd_support_subset hso ho x
 #align partition_of_unity.exists_finset_nhd_support_subset PartitionOfUnity.exists_finset_nhd_support_subset
 
 /-- If `f` is a partition of unity that is subordinate to a family of open sets `U i` and
@@ -229,7 +321,7 @@ namespace BumpCovering
 
 variable {s : Set X} (f : BumpCovering ι X s)
 
-instance : FunLike (BumpCovering ι X s) ι fun _ ↦ C(X, ℝ) where
+instance : FunLike (BumpCovering ι X s) ι C(X, ℝ) where
   coe := toFun
   coe_injective' := fun f g h ↦ by cases f; cases g; congr
 
@@ -324,7 +416,7 @@ theorem exists_isSubordinate_of_locallyFinite [NormalSpace X] (hs : IsClosed s) 
   let ⟨f, _, hfU⟩ :=
     exists_isSubordinate_of_locallyFinite_of_prop (fun _ => True)
       (fun _ _ hs ht hd =>
-        (exists_continuous_zero_one_of_closed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
+        (exists_continuous_zero_one_of_isClosed hs ht hd).imp fun _ hf => ⟨trivial, hf⟩)
       hs U ho hf hU
   ⟨f, hfU⟩
 #align bump_covering.exists_is_subordinate_of_locally_finite BumpCovering.exists_isSubordinate_of_locallyFinite
@@ -380,7 +472,7 @@ def toPOUFun (i : ι) (x : X) : ℝ :=
 #align bump_covering.to_pou_fun BumpCovering.toPOUFun
 
 theorem toPOUFun_zero_of_zero {i : ι} {x : X} (h : f i x = 0) : f.toPOUFun i x = 0 := by
-  rw [toPOUFun, h, MulZeroClass.zero_mul]
+  rw [toPOUFun, h, zero_mul]
 #align bump_covering.to_pou_fun_zero_of_zero BumpCovering.toPOUFun_zero_of_zero
 
 theorem support_toPOUFun_subset (i : ι) : support (f.toPOUFun i) ⊆ support (f i) :=
@@ -391,12 +483,12 @@ theorem toPOUFun_eq_mul_prod (i : ι) (x : X) (t : Finset ι)
     (ht : ∀ j, WellOrderingRel j i → f j x ≠ 0 → j ∈ t) :
     f.toPOUFun i x = f i x * ∏ j in t.filter fun j => WellOrderingRel j i, (1 - f j x) := by
   refine' congr_arg _ (finprod_cond_eq_prod_of_cond_iff _ fun {j} hj => _)
-  rw [Ne.def, sub_eq_self] at hj
+  rw [Ne, sub_eq_self] at hj
   rw [Finset.mem_filter, Iff.comm, and_iff_right_iff_imp]
   exact flip (ht j) hj
 #align bump_covering.to_pou_fun_eq_mul_prod BumpCovering.toPOUFun_eq_mul_prod
 
-theorem sum_toPOUFun_eq (x : X) : (∑ᶠ i, f.toPOUFun i x) = 1 - ∏ᶠ i, (1 - f i x) := by
+theorem sum_toPOUFun_eq (x : X) : ∑ᶠ i, f.toPOUFun i x = 1 - ∏ᶠ i, (1 - f i x) := by
   set s := (f.point_finite x).toFinset
   have hs : (s : Set ι) = { i | f i x ≠ 0 } := Finite.coe_toFinset _
   have A : (support fun i => toPOUFun f i x) ⊆ s := by
@@ -481,7 +573,7 @@ theorem support_toPartitionOfUnity_subset (i : ι) :
 #align bump_covering.support_to_partition_of_unity_subset BumpCovering.support_toPartitionOfUnity_subset
 
 theorem sum_toPartitionOfUnity_eq (x : X) :
-    (∑ᶠ i, f.toPartitionOfUnity i x) = 1 - ∏ᶠ i, (1 - f i x) :=
+    ∑ᶠ i, f.toPartitionOfUnity i x = 1 - ∏ᶠ i, (1 - f i x) :=
   f.sum_toPOUFun_eq x
 #align bump_covering.sum_to_partition_of_unity_eq BumpCovering.sum_toPartitionOfUnity_eq
 

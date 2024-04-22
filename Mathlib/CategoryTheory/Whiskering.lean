@@ -2,21 +2,17 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-Ported by: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.whiskering
-! leanprover-community/mathlib commit d012cd09a9b256d870751284dd6a29882b0be105
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Iso
 import Mathlib.CategoryTheory.Functor.Category
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 
+#align_import category_theory.whiskering from "leanprover-community/mathlib"@"d012cd09a9b256d870751284dd6a29882b0be105"
+
 /-!
 # Whiskering
 
-Given a functor `F  : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
+Given a functor `F : C ⥤ D` and functors `G H : D ⥤ E` and a natural transformation `α : G ⟶ H`,
 we can construct a new natural transformation `F ⋙ G ⟶ F ⋙ H`,
 called `whiskerLeft F α`. This is the same as the horizontal composition of `𝟙 F` with `α`.
 
@@ -111,11 +107,11 @@ def whiskeringRight : (D ⥤ E) ⥤ (C ⥤ D) ⥤ C ⥤ E where
 
 variable {C} {D} {E}
 
-instance faithful_whiskeringRight_obj {F : D ⥤ E} [Faithful F] :
-    Faithful ((whiskeringRight C D E).obj F) where
+instance faithful_whiskeringRight_obj {F : D ⥤ E} [F.Faithful] :
+    ((whiskeringRight C D E).obj F).Faithful where
   map_injective hαβ := by
     ext X
-    exact (F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X)
+    exact F.map_injective <| congr_fun (congr_arg NatTrans.app hαβ) X
 #align category_theory.faithful_whiskering_right_obj CategoryTheory.faithful_whiskeringRight_obj
 
 @[simp]
@@ -140,13 +136,13 @@ theorem whiskerRight_id' {G : C ⥤ D} (F : D ⥤ E) : whiskerRight (𝟙 G) F =
   ((whiskeringRight C D E).obj F).map_id _
 #align category_theory.whisker_right_id' CategoryTheory.whiskerRight_id'
 
-@[simp]
+@[simp, reassoc]
 theorem whiskerLeft_comp (F : C ⥤ D) {G H K : D ⥤ E} (α : G ⟶ H) (β : H ⟶ K) :
     whiskerLeft F (α ≫ β) = whiskerLeft F α ≫ whiskerLeft F β :=
   rfl
 #align category_theory.whisker_left_comp CategoryTheory.whiskerLeft_comp
 
-@[simp]
+@[simp, reassoc]
 theorem whiskerRight_comp {G H K : C ⥤ D} (α : G ⟶ H) (β : H ⟶ K) (F : D ⥤ E) :
     whiskerRight (α ≫ β) F = whiskerRight α F ≫ whiskerRight β F :=
   ((whiskeringRight C D E).obj F).map_comp α β
@@ -230,7 +226,6 @@ namespace Functor
 universe u₅ v₅
 
 variable {A : Type u₁} [Category.{v₁} A]
-
 variable {B : Type u₂} [Category.{v₂} B]
 
 /-- The left unitor, a natural isomorphism `((𝟭 _) ⋙ F) ≅ F`.
@@ -256,7 +251,6 @@ def rightUnitor (F : A ⥤ B) :
 #align category_theory.functor.right_unitor_inv_app CategoryTheory.Functor.rightUnitor_inv_app
 
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {D : Type u₄} [Category.{v₄} D]
 
 /-- The associator for functors, a natural isomorphism `((F ⋙ G) ⋙ H) ≅ (F ⋙ (G ⋙ H))`.
@@ -284,7 +278,6 @@ theorem triangle (F : A ⥤ B) (G : B ⥤ C) :
 
 -- See note [dsimp, simp].
 variable {E : Type u₅} [Category.{v₅} E]
-
 variable (F : A ⥤ B) (G : B ⥤ C) (H : C ⥤ D) (K : D ⥤ E)
 
 theorem pentagon :

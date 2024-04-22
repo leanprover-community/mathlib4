@@ -2,17 +2,14 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module data.int.absolute_value
-! leanprover-community/mathlib commit 9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Units
 import Mathlib.GroupTheory.GroupAction.Units
+
+#align_import data.int.absolute_value from "leanprover-community/mathlib"@"9aba7801eeecebb61f58a5763c2b6dd1b47dc6ef"
 
 /-!
 # Absolute values and the integers
@@ -26,7 +23,7 @@ This file contains some results on absolute values applied to integers.
 -/
 
 
-variable {R S : Type _} [Ring R] [LinearOrderedCommRing S]
+variable {R S : Type*} [Ring R] [LinearOrderedCommRing S]
 
 @[simp]
 theorem AbsoluteValue.map_units_int (abv : AbsoluteValue ℤ S) (x : ℤˣ) : abv x = 1 := by
@@ -34,9 +31,9 @@ theorem AbsoluteValue.map_units_int (abv : AbsoluteValue ℤ S) (x : ℤˣ) : ab
 #align absolute_value.map_units_int AbsoluteValue.map_units_int
 
 @[simp]
-theorem AbsoluteValue.map_units_int_cast [Nontrivial R] (abv : AbsoluteValue R S) (x : ℤˣ) :
+theorem AbsoluteValue.map_units_intCast [Nontrivial R] (abv : AbsoluteValue R S) (x : ℤˣ) :
     abv ((x : ℤ) : R) = 1 := by rcases Int.units_eq_one_or x with (rfl | rfl) <;> simp
-#align absolute_value.map_units_int_cast AbsoluteValue.map_units_int_cast
+#align absolute_value.map_units_int_cast AbsoluteValue.map_units_intCast
 
 @[simp]
 theorem AbsoluteValue.map_units_int_smul (abv : AbsoluteValue R S) (x : ℤˣ) (y : R) :

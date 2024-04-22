@@ -2,22 +2,18 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module algebra.group_ring_action.invariant
-! leanprover-community/mathlib commit e7bab9a85e92cf46c02cb4725a7be2f04691e3a7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.GroupAction
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.GroupTheory.GroupAction.Hom
+import Mathlib.RingTheory.Subring.Basic
+
+#align_import algebra.group_ring_action.invariant from "leanprover-community/mathlib"@"e7bab9a85e92cf46c02cb4725a7be2f04691e3a7"
 
 /-! # Subrings invariant under an action -/
 
 
 section Ring
 
-variable (M R : Type _) [Monoid M] [Ring R] [MulSemiringAction M R]
-
+variable (M R : Type*) [Monoid M] [Ring R] [MulSemiringAction M R]
 variable (S : Subring R)
 
 open MulAction
@@ -44,10 +40,8 @@ end Ring
 
 section
 
-variable (M : Type _) [Monoid M]
-
-variable {R' : Type _} [Ring R'] [MulSemiringAction M R']
-
+variable (M : Type*) [Monoid M]
+variable {R' : Type*} [Ring R'] [MulSemiringAction M R']
 variable (U : Subring R') [IsInvariantSubring M U]
 
 /-- The canonical inclusion from an invariant subring. -/

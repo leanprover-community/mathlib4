@@ -2,17 +2,14 @@
 Copyright (c) 2021 Jordan Brown, Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
-
-! This file was ported from Lean 3 source module group_theory.solvable
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.GroupTheory.Abelianization
 import Mathlib.GroupTheory.Perm.ViaEmbedding
 import Mathlib.GroupTheory.Subgroup.Simple
 import Mathlib.SetTheory.Cardinal.Basic
+
+#align_import group_theory.solvable from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Solvable Groups
@@ -31,7 +28,7 @@ the derived series of a group.
 
 open Subgroup
 
-variable {G G' : Type _} [Group G] [Group G'] {f : G →* G'}
+variable {G G' : Type*} [Group G] [Group G'] {f : G →* G'}
 
 section derivedSeries
 
@@ -55,14 +52,14 @@ theorem derivedSeries_succ (n : ℕ) :
   rfl
 #align derived_series_succ derivedSeries_succ
 
--- porting note: had to provide inductive hypothesis explicitly
+-- Porting note: had to provide inductive hypothesis explicitly
 theorem derivedSeries_normal (n : ℕ) : (derivedSeries G n).Normal := by
   induction' n with n ih
   · exact (⊤ : Subgroup G).normal_of_characteristic
   · exact @Subgroup.commutator_normal G _ (derivedSeries G n) (derivedSeries G n) ih ih
 #align derived_series_normal derivedSeries_normal
 
--- porting note: higher simp priority to restore Lean 3 behavior
+-- Porting note: higher simp priority to restore Lean 3 behavior
 @[simp 1100]
 theorem derivedSeries_one : derivedSeries G 1 = commutator G :=
   rfl
@@ -107,20 +104,18 @@ variable (G)
 
 /-- A group `G` is solvable if its derived series is eventually trivial. We use this definition
   because it's the most convenient one to work with. -/
+@[mk_iff isSolvable_def]
 class IsSolvable : Prop where
   /-- A group `G` is solvable if its derived series is eventually trivial. -/
   solvable : ∃ n : ℕ, derivedSeries G n = ⊥
 #align is_solvable IsSolvable
-
-theorem isSolvable_def : IsSolvable G ↔ ∃ n : ℕ, derivedSeries G n = ⊥ :=
-  ⟨fun h => h.solvable, fun h => ⟨h⟩⟩
 #align is_solvable_def isSolvable_def
 
-instance (priority := 100) CommGroup.isSolvable {G : Type _} [CommGroup G] : IsSolvable G :=
+instance (priority := 100) CommGroup.isSolvable {G : Type*} [CommGroup G] : IsSolvable G :=
   ⟨⟨1, le_bot_iff.mp (Abelianization.commutator_subset_ker (MonoidHom.id G))⟩⟩
 #align comm_group.is_solvable CommGroup.isSolvable
 
-theorem isSolvable_of_comm {G : Type _} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
+theorem isSolvable_of_comm {G : Type*} [hG : Group G] (h : ∀ a b : G, a * b = b * a) :
     IsSolvable G := by
   letI hG' : CommGroup G := { hG with mul_comm := h }
   cases hG
@@ -132,17 +127,17 @@ theorem isSolvable_of_top_eq_bot (h : (⊤ : Subgroup G) = ⊥) : IsSolvable G :
 #align is_solvable_of_top_eq_bot isSolvable_of_top_eq_bot
 
 instance (priority := 100) isSolvable_of_subsingleton [Subsingleton G] : IsSolvable G :=
-  isSolvable_of_top_eq_bot G (by simp)
+  isSolvable_of_top_eq_bot G (by simp [eq_iff_true_of_subsingleton])
 #align is_solvable_of_subsingleton isSolvable_of_subsingleton
 
 variable {G}
 
-theorem solvable_of_ker_le_range {G' G'' : Type _} [Group G'] [Group G''] (f : G' →* G)
+theorem solvable_of_ker_le_range {G' G'' : Type*} [Group G'] [Group G''] (f : G' →* G)
     (g : G →* G'') (hfg : g.ker ≤ f.range) [hG' : IsSolvable G'] [hG'' : IsSolvable G''] :
     IsSolvable G := by
   obtain ⟨n, hn⟩ := id hG''
   obtain ⟨m, hm⟩ := id hG'
-  refine' ⟨⟨n + m, le_bot_iff.mp (map_bot f ▸ hm ▸ _)⟩⟩
+  refine' ⟨⟨n + m, le_bot_iff.mp (Subgroup.map_bot f ▸ hm ▸ _)⟩⟩
   clear hm
   induction' m with m hm
   · exact f.range_eq_map ▸ ((derivedSeries G n).map_eq_bot_iff.mp
@@ -168,7 +163,7 @@ instance solvable_quotient_of_solvable (H : Subgroup G) [H.Normal] [IsSolvable G
   solvable_of_surjective (QuotientGroup.mk'_surjective H)
 #align solvable_quotient_of_solvable solvable_quotient_of_solvable
 
-instance solvable_prod {G' : Type _} [Group G'] [IsSolvable G] [IsSolvable G'] :
+instance solvable_prod {G' : Type*} [Group G'] [IsSolvable G] [IsSolvable G'] :
     IsSolvable (G × G') :=
   solvable_of_ker_le_range (MonoidHom.inl G G') (MonoidHom.snd G G') fun x hx =>
     ⟨x.1, Prod.ext rfl hx.symm⟩
@@ -225,7 +220,7 @@ theorem Equiv.Perm.fin_5_not_solvable : ¬IsSolvable (Equiv.Perm (Fin 5)) := by
     exact commutator_mem_commutator ih ((derivedSeries_normal _ _).conj_mem _ ih _)
 #align equiv.perm.fin_5_not_solvable Equiv.Perm.fin_5_not_solvable
 
-theorem Equiv.Perm.not_solvable (X : Type _) (hX : 5 ≤ Cardinal.mk X) :
+theorem Equiv.Perm.not_solvable (X : Type*) (hX : 5 ≤ Cardinal.mk X) :
     ¬IsSolvable (Equiv.Perm X) := by
   intro h
   have key : Nonempty (Fin 5 ↪ X) := by

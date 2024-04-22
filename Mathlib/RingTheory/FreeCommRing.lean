@@ -2,16 +2,13 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.free_comm_ring
-! leanprover-community/mathlib commit 62c0a4ef1441edb463095ea02a06e87f3dfe135c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
+
+#align_import ring_theory.free_comm_ring from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
 /-!
 # Free commutative rings
@@ -55,7 +52,8 @@ free commutative ring, free ring
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 universe u v
 
@@ -66,7 +64,7 @@ def FreeCommRing (α : Type u) : Type u :=
   FreeAbelianGroup <| Multiplicative <| Multiset α
 #align free_comm_ring FreeCommRing
 
---Porting note: two instance below couldn't be derived
+-- Porting note: two instances below couldn't be derived
 instance FreeCommRing.instCommRing : CommRing (FreeCommRing α) := by
   delta FreeCommRing; infer_instance
 #align free_comm_ring.comm_ring FreeCommRing.instCommRing
@@ -90,9 +88,8 @@ theorem of_injective : Function.Injective (of : α → FreeCommRing α) :=
 #align free_comm_ring.of_injective FreeCommRing.of_injective
 
 -- Porting note: added to ease a proof in `Algebra.DirectLimit`
-lemma of_cons (a : α) (m : Multiset α) :
-  (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
-  @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
+lemma of_cons (a : α) (m : Multiset α) : (FreeAbelianGroup.of (Multiplicative.ofAdd (a ::ₘ m))) =
+    @HMul.hMul _ (FreeCommRing α) (FreeCommRing α) _ (of a)
     (FreeAbelianGroup.of (Multiplicative.ofAdd m)) := by
   dsimp [FreeCommRing]
   rw [← Multiset.singleton_add, ofAdd_add,
@@ -221,7 +218,7 @@ end IsSupported
 /-- The restriction map from `FreeCommRing α` to `FreeCommRing s` where `s : Set α`, defined
   by sending all variables not in `s` to zero. -/
 def restriction (s : Set α) [DecidablePred (· ∈ s)] : FreeCommRing α →+* FreeCommRing s :=
-  lift (fun a => if H : a ∈ s then of ⟨a, H⟩  else 0)
+  lift (fun a => if H : a ∈ s then of ⟨a, H⟩ else 0)
 #align free_comm_ring.restriction FreeCommRing.restriction
 
 section Restriction
@@ -250,7 +247,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
       rw [RingHom.map_neg, RingHom.map_one, Int.cast_neg, Int.cast_one]
     · rintro _ ⟨z, hzs, rfl⟩ _ _
       use 0
-      rw [RingHom.map_mul, lift_of, if_pos hzs, MulZeroClass.zero_mul]
+      rw [RingHom.map_mul, lift_of, if_pos hzs, zero_mul]
       norm_cast
     · rintro x y ⟨q, hq⟩ ⟨r, hr⟩
       refine' ⟨q + r, _⟩
@@ -263,7 +260,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   exfalso
   apply Ne.symm Int.zero_ne_one
   rcases this with ⟨w, H⟩
-  rw [← Polynomial.C_eq_int_cast] at H
+  rw [← Polynomial.C_eq_intCast] at H
   have : Polynomial.X.coeff 1 = (Polynomial.C ↑w).coeff 1 := by rw [H]; rfl
   rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
@@ -378,7 +375,7 @@ protected theorem coe_surjective : Surjective ((↑) : FreeRing α → FreeCommR
 #align free_ring.coe_surjective FreeRing.coe_surjective
 
 theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
-      @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
+    @Functor.map FreeAbelianGroup _ _ _ fun l : List α => (l : Multiset α) := by
   funext x
   erw [castFreeCommRing, toFreeCommRing, FreeRing.lift, Equiv.coe_trans, Function.comp,
     FreeAbelianGroup.liftMonoid_coe (FreeMonoid.lift FreeCommRing.of)]

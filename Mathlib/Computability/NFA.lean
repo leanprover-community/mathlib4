@@ -2,14 +2,11 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.NFA
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.DFA
 import Mathlib.Data.Fintype.Powerset
+
+#align_import computability.NFA from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Nondeterministic Finite Automata
@@ -18,10 +15,9 @@ which determines whether a string (implemented as a list over an arbitrary alpha
 set by evaluating the string over every possible path.
 We show that DFA's are equivalent to NFA's however the construction from NFA to DFA uses an
 exponential number of states.
-Note that this definition allows for Automaton with infinite states, a `Fintype` instance must be
+Note that this definition allows for Automaton with infinite states; a `Fintype` instance must be
 supplied for true NFA's.
 -/
-
 
 open Set
 
@@ -33,7 +29,7 @@ universe u v
 set_option linter.uppercaseLean3 false
 
 /-- An NFA is a set of states (`σ`), a transition function from state to state labelled by the
-  alphabet (`step`), a starting state (`start`) and a set of acceptance states (`accept`).
+  alphabet (`step`), a set of starting states (`start`) and a set of acceptance states (`accept`).
   Note the transition function sends a state to a `Set` of states. These are the states that it
   may be sent to. -/
 structure NFA (α : Type u) (σ : Type v) where
@@ -106,12 +102,13 @@ theorem eval_append_singleton (x : List α) (a : α) : M.eval (x ++ [a]) = M.ste
 #align NFA.eval_append_singleton NFA.eval_append_singleton
 
 /-- `M.accepts` is the language of `x` such that there is an accept state in `M.eval x`. -/
-def accepts : Language α := fun x => ∃ S ∈ M.accept, S ∈ M.eval x
+def accepts : Language α := {x | ∃ S ∈ M.accept, S ∈ M.eval x}
 #align NFA.accepts NFA.accepts
 
-theorem mem_accepts : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by rfl
+theorem mem_accepts {x : List α} : x ∈ M.accepts ↔ ∃ S ∈ M.accept, S ∈ M.evalFrom M.start x := by
+  rfl
 
-/-- `M.toDFA` is a `DFA` constructed from a `NFA` `M` using the subset construction. The
+/-- `M.toDFA` is a `DFA` constructed from an `NFA` `M` using the subset construction. The
   states is the type of `Set`s of `M.state` and the step function is `M.stepSet`. -/
 def toDFA : DFA α (Set σ) where
   step := M.stepSet

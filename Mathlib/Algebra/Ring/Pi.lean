@@ -2,14 +2,12 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon, Patrick Massot
-
-! This file was ported from Lean 3 source module algebra.ring.pi
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Pi
-import Mathlib.Algebra.Hom.Ring
+import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Ring.CompTypeclasses
+import Mathlib.Algebra.Ring.Hom.Defs
+
+#align_import algebra.ring.pi from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Pi instances for ring
@@ -17,7 +15,7 @@ import Mathlib.Algebra.Hom.Ring
 This file defines instances for ring, semiring and related structures on Pi Types
 -/
 
--- Porting notes: used to import `tactic.pi_instances`
+-- Porting note: used to import `tactic.pi_instances`
 
 namespace Pi
 
@@ -39,6 +37,10 @@ instance distrib [∀ i, Distrib <| f i] : Distrib (∀ i : I, f i) :=
     left_distrib := by intros; ext; exact mul_add _ _ _
     right_distrib := by intros; ext; exact add_mul _ _ _}
 #align pi.distrib Pi.distrib
+
+instance hasDistribNeg [∀ i, Mul (f i)] [∀ i, HasDistribNeg (f i)] : HasDistribNeg (∀ i, f i) where
+  neg_mul _ _ := funext fun _ ↦ neg_mul _ _
+  mul_neg _ _ := funext fun _ ↦ mul_neg _ _
 
 instance nonUnitalNonAssocSemiring [∀ i, NonUnitalNonAssocSemiring <| f i] :
     NonUnitalNonAssocSemiring (∀ i : I, f i) :=
@@ -133,7 +135,7 @@ variable {I : Type u}
 
 /-- Evaluation of functions into an indexed collection of non-unital rings at a point is a
 non-unital ring homomorphism. This is `Function.eval` as a `NonUnitalRingHom`. -/
-@[simps]
+@[simps!]
 def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring (f i)] (i : I) :
     (∀ i, f i) →ₙ+* f i :=
   { Pi.evalMulHom f i, Pi.evalAddMonoidHom f i with }
@@ -141,15 +143,15 @@ def Pi.evalNonUnitalRingHom (f : I → Type v) [∀ i, NonUnitalNonAssocSemiring
 
 /-- `Function.const` as a `NonUnitalRingHom`. -/
 @[simps]
-def Pi.constNonUnitalRingHom (α β : Type _) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
+def Pi.constNonUnitalRingHom (α β : Type*) [NonUnitalNonAssocSemiring β] : β →ₙ+* α → β :=
   { Pi.nonUnitalRingHom fun _ => NonUnitalRingHom.id β with toFun := Function.const _ }
 #align pi.const_non_unital_ring_hom Pi.constNonUnitalRingHom
 
 /-- Non-unital ring homomorphism between the function spaces `I → α` and `I → β`, induced by a
 non-unital ring homomorphism `f` between `α` and `β`. -/
 @[simps]
-protected def NonUnitalRingHom.compLeft {α β : Type _} [NonUnitalNonAssocSemiring α]
-    [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type _) : (I → α) →ₙ+* I → β :=
+protected def NonUnitalRingHom.compLeft {α β : Type*} [NonUnitalNonAssocSemiring α]
+    [NonUnitalNonAssocSemiring β] (f : α →ₙ+* β) (I : Type*) : (I → α) →ₙ+* I → β :=
   { f.toMulHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
 #align non_unital_ring_hom.comp_left NonUnitalRingHom.compLeft
 
@@ -169,9 +171,13 @@ def Pi.evalRingHom (f : I → Type v) [∀ i, NonAssocSemiring (f i)] (i : I) : 
 #align pi.eval_ring_hom Pi.evalRingHom
 #align pi.eval_ring_hom_apply Pi.evalRingHom_apply
 
+instance (f : I → Type*) [∀ i, Semiring (f i)] (i) :
+    RingHomSurjective (Pi.evalRingHom f i) where
+  is_surjective x := ⟨by classical exact (if h : · = i then h ▸ x else 0), by simp⟩
+
 /-- `Function.const` as a `RingHom`. -/
 @[simps]
-def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β :=
+def Pi.constRingHom (α β : Type*) [NonAssocSemiring β] : β →+* α → β :=
   { Pi.ringHom fun _ => RingHom.id β with toFun := Function.const _ }
 #align pi.const_ring_hom Pi.constRingHom
 #align pi.const_ring_hom_apply Pi.constRingHom_apply
@@ -179,8 +185,8 @@ def Pi.constRingHom (α β : Type _) [NonAssocSemiring β] : β →+* α → β 
 /-- Ring homomorphism between the function spaces `I → α` and `I → β`, induced by a ring
 homomorphism `f` between `α` and `β`. -/
 @[simps]
-protected def RingHom.compLeft {α β : Type _} [NonAssocSemiring α] [NonAssocSemiring β]
-    (f : α →+* β) (I : Type _) : (I → α) →+* I → β :=
+protected def RingHom.compLeft {α β : Type*} [NonAssocSemiring α] [NonAssocSemiring β]
+    (f : α →+* β) (I : Type*) : (I → α) →+* I → β :=
   { f.toMonoidHom.compLeft I, f.toAddMonoidHom.compLeft I with toFun := fun h => f ∘ h }
 #align ring_hom.comp_left RingHom.compLeft
 #align ring_hom.comp_left_apply RingHom.compLeft_apply

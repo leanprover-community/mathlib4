@@ -2,11 +2,6 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.limits_of_products_and_equalizers
-! leanprover-community/mathlib commit c3019c79074b0619edb4b27553a91b2e82242395
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Prod
 import Mathlib.Data.Fintype.Sigma
@@ -18,6 +13,8 @@ import Mathlib.CategoryTheory.Limits.Preserves.Finite
 import Mathlib.CategoryTheory.Limits.Constructions.FiniteProductsOfBinaryProducts
 import Mathlib.CategoryTheory.Limits.Constructions.Equalizers
 import Mathlib.CategoryTheory.Limits.Constructions.BinaryProducts
+
+#align_import category_theory.limits.constructions.limits_of_products_and_equalizers from "leanprover-community/mathlib"@"c3019c79074b0619edb4b27553a91b2e82242395"
 
 /-!
 # Constructing limits from products and equalizers.
@@ -44,7 +41,6 @@ namespace CategoryTheory.Limits
 universe w v v₂ u u₂
 
 variable {C : Type u} [Category.{v} C]
-
 variable {J : Type w} [SmallCategory J]
 
 -- We hide the "implementation details" inside a namespace
@@ -178,7 +174,7 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     let i : I ⟶ P := equalizer.ι s t
     apply
       preservesLimitOfPreservesLimitCone
-        (buildIsLimit s t (by simp) (by simp) (limit.isLimit _) (limit.isLimit _)
+        (buildIsLimit s t (by simp [s]) (by simp [t]) (limit.isLimit _) (limit.isLimit _)
           (limit.isLimit _))
     refine' IsLimit.ofIsoLimit (buildIsLimit _ _ _ _ _ _ _) _
     · exact Fan.mk _ fun j => G.map (Pi.π _ j)
@@ -186,11 +182,11 @@ noncomputable def preservesLimitOfPreservesEqualizersAndProduct : PreservesLimit
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [Fan.mk]
+      dsimp [s, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       congr
     · intro f
-      dsimp [Fan.mk]
+      dsimp [t, Fan.mk]
       simp only [← G.map_comp, limit.lift_π]
       apply congrArg G.map
       dsimp
@@ -221,7 +217,7 @@ noncomputable def preservesFiniteLimitsOfPreservesEqualizersAndFiniteProducts [H
   preservesFiniteLimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
+    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
     apply @preservesLimitOfPreservesEqualizersAndProduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasLimitsOfShape_discrete _ _
     · apply hasLimitsOfShape_discrete _
@@ -283,7 +279,7 @@ def buildColimit : Cocone F where
     { app := fun j => c₂.ι.app ⟨_⟩ ≫ i.π
       naturality := fun j₁ j₂ f => by
         dsimp
-        have reassoced (f : (p : J × J) × (p.fst ⟶  p.snd)) {W : C} {h : _ ⟶  W} :
+        have reassoced (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} {h : _ ⟶ W} :
           c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
             simp only [← Category.assoc, eq_whisker (hs f)]
         rw [Category.comp_id, ← reassoced ⟨⟨_, _⟩, f⟩, i.condition, ← Category.assoc, ht] }
@@ -303,11 +299,11 @@ def buildIsColimit (t₁ : IsColimit c₁) (t₂ : IsColimit c₂) (hi : IsColim
     · apply t₁.hom_ext
       intro j
       cases' j with j
-      have reassoced_s (f : (p : J ×  J) × (p.fst ⟶  p.snd)) {W : C} (h : _ ⟶  W) :
+      have reassoced_s (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ s ≫ h = F.map f.snd ≫ c₂.ι.app ⟨f.fst.snd⟩ ≫ h := by
           simp only [← Category.assoc]
           apply eq_whisker (hs f)
-      have reassoced_t (f : (p : J ×  J) × (p.fst ⟶  p.snd)) {W : C} (h : _ ⟶  W) :
+      have reassoced_t (f : (p : J × J) × (p.fst ⟶ p.snd)) {W : C} (h : _ ⟶ W) :
         c₁.ι.app ⟨f⟩ ≫ t ≫ h = c₂.ι.app ⟨f.fst.fst⟩ ≫ h := by
           simp only [← Category.assoc]
           apply eq_whisker (ht f)
@@ -352,7 +348,7 @@ theorem hasColimit_of_coequalizer_and_coproduct (F : J ⥤ C) [HasColimit (Discr
 
 /-- A colimit can be realised as a quotient of a coproduct. -/
 noncomputable def colimitQuotientCoproduct [HasColimitsOfSize.{w, w} C] (F : J ⥤ C) :
-    (∐ fun j => F.obj j) ⟶ colimit F :=
+    ∐ (fun j => F.obj j) ⟶ colimit F :=
   coequalizer.π _ _ ≫ (colimit.isoColimitCocone (colimitCoconeOfCoequalizerAndCoproduct F)).inv
 #align category_theory.limits.colimit_quotient_coproduct CategoryTheory.Limits.colimitQuotientCoproduct
 
@@ -403,7 +399,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     let i : P ⟶ I := coequalizer.π s t
     apply
       preservesColimitOfPreservesColimitCocone
-        (buildIsColimit s t (by simp) (by simp) (colimit.isColimit _) (colimit.isColimit _)
+        (buildIsColimit s t (by simp [s]) (by simp [t]) (colimit.isColimit _) (colimit.isColimit _)
           (colimit.isColimit _))
     refine' IsColimit.ofIsoColimit (buildIsColimit _ _ _ _ _ _ _) _
     · refine Cofan.mk (G.obj Q) fun j => G.map ?_
@@ -413,11 +409,11 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
     · apply G.map s
     · apply G.map t
     · intro f
-      dsimp [Cofan.mk]
+      dsimp [s, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       congr
     · intro f
-      dsimp [Cofan.mk]
+      dsimp [t, Cofan.mk]
       simp only [← G.map_comp, colimit.ι_desc]
       dsimp
     · refine Cofork.ofπ (G.map i) ?_
@@ -438,7 +434,7 @@ noncomputable def preservesColimitOfPreservesCoequalizersAndCoproduct :
 end
 
 /- Porting note: the original parameter [∀ (J) [Fintype J], PreservesColimitsOfShape
-(Discrete.{0} J) G]  triggered the error "invalid parametric local instance, parameter
+(Discrete.{0} J) G] triggered the error "invalid parametric local instance, parameter
 with type Fintype J does not have forward dependencies, type class resolution cannot use
 this kind of local instance because it will not be able to infer a value for this parameter."
 Factored out this as new class in `CategoryTheory.Limits.Preserves.Finite` -/
@@ -450,7 +446,7 @@ noncomputable def preservesFiniteColimitsOfPreservesCoequalizersAndFiniteCoprodu
   preservesFiniteColimits := by
     intro J sJ fJ
     haveI : Fintype J := inferInstance
-    haveI : Fintype ((p : J × J) × (p.fst ⟶  p.snd)) := inferInstance
+    haveI : Fintype ((p : J × J) × (p.fst ⟶ p.snd)) := inferInstance
     apply @preservesColimitOfPreservesCoequalizersAndCoproduct _ _ _ sJ _ _ ?_ ?_ _ G _ ?_ ?_
     · apply hasColimitsOfShape_discrete _ _
     · apply hasColimitsOfShape_discrete _

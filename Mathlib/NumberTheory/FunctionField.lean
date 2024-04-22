@@ -2,17 +2,14 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Ashvni Narayanan
-
-! This file was ported from Lean 3 source module number_theory.function_field
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.FieldTheory.RatFunc
 import Mathlib.RingTheory.DedekindDomain.IntegralClosure
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.Topology.Algebra.ValuedField
+
+#align_import number_theory.function_field from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Function fields
@@ -62,7 +59,7 @@ abbrev FunctionField [Algebra (RatFunc Fq) F] : Prop :=
 
 -- Porting note: Removed `protected`
 /-- `F` is a function field over `Fq` iff it is a finite extension of `Fq(t)`. -/
-theorem functionField_iff (Fqt : Type _) [Field Fqt] [Algebra Fq[X] Fqt]
+theorem functionField_iff (Fqt : Type*) [Field Fqt] [Algebra Fq[X] Fqt]
     [IsFractionRing Fq[X] Fqt] [Algebra (RatFunc Fq) F] [Algebra Fqt F] [Algebra Fq[X] F]
     [IsScalarTower Fq[X] Fqt F] [IsScalarTower Fq[X] (RatFunc Fq) F] :
     FunctionField Fq F ↔ FiniteDimensional Fqt F := by
@@ -157,7 +154,7 @@ variable [DecidableEq (RatFunc Fq)]
 Explicitly, if `f/g ∈ Fq(t)` is a nonzero quotient of polynomials, its valuation at infinity is
 `Multiplicative.ofAdd(degree(f) - degree(g))`. -/
 def inftyValuationDef (r : RatFunc Fq) : ℤₘ₀ :=
-  if r = 0 then 0 else Multiplicative.ofAdd r.intDegree
+  if r = 0 then 0 else ↑(Multiplicative.ofAdd r.intDegree)
 #align function_field.infty_valuation_def FunctionField.inftyValuationDef
 
 theorem InftyValuation.map_zero' : inftyValuationDef Fq 0 = 0 :=
@@ -172,9 +169,9 @@ theorem InftyValuation.map_mul' (x y : RatFunc Fq) :
     inftyValuationDef Fq (x * y) = inftyValuationDef Fq x * inftyValuationDef Fq y := by
   rw [inftyValuationDef, inftyValuationDef, inftyValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj,
         ← ofAdd_add, RatFunc.intDegree_mul hx hy]
 #align function_field.infty_valuation.map_mul' FunctionField.InftyValuation.map_mul'
@@ -237,7 +234,7 @@ theorem inftyValuation.polynomial {p : Fq[X]} (hp : p ≠ 0) :
     inftyValuationDef Fq (algebraMap Fq[X] (RatFunc Fq) p) =
       Multiplicative.ofAdd (p.natDegree : ℤ) := by
   have hp' : algebraMap Fq[X] (RatFunc Fq) p ≠ 0 := by
-    rw [Ne.def, RatFunc.algebraMap_eq_zero_iff]; exact hp
+    rw [Ne, RatFunc.algebraMap_eq_zero_iff]; exact hp
   rw [inftyValuationDef, if_neg hp', RatFunc.intDegree_polynomial]
 #align function_field.infty_valuation.polynomial FunctionField.inftyValuation.polynomial
 

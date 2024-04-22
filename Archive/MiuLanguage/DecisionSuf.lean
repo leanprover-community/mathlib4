@@ -2,14 +2,11 @@
 Copyright (c) 2020 Gihan Marasingha. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gihan Marasingha
-
-! This file was ported from Lean 3 source module miu_language.decision_suf
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Archive.MiuLanguage.DecisionNec
 import Mathlib.Tactic.Linarith
+
+#align_import miu_language.decision_suf from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Decision procedure - sufficient condition and decidability
@@ -75,7 +72,7 @@ where `d ≡ c [MOD 3]`.
 Given the above lemmas, the desired result reduces to an arithmetic result, given in the file
 `arithmetic.lean`.
 
-We'll use this result to show we can derive an `Miustr` of the form `M::z` where `z` is an string
+We'll use this result to show we can derive an `Miustr` of the form `M::z` where `z` is a string
 consisting only of `I`s such that `count I z ≡ 1 or 2 [MOD 3]`.
 
 As an intermediate step, we show that derive `z` from `zt`, where `t` is an `Miustr` consisting of
@@ -156,11 +153,11 @@ private theorem le_pow2_and_pow2_eq_mod3' (c : ℕ) (x : ℕ) (h : c = 1 ∨ c =
     cases' h with hc hc <;> · rw [hc]; norm_num
   rcases hk with ⟨g, hkg, hgmod⟩
   by_cases hp : c + 3 * (k + 1) ≤ 2 ^ g
-  · use g; exact ⟨hp, hgmod⟩
+  · use g, hp, hgmod
   refine' ⟨g + 2, _, _⟩
   · rw [mul_succ, ← add_assoc, pow_add]
     change c + 3 * k + 3 ≤ 2 ^ g * (1 + 3); rw [mul_add (2 ^ g) 1 3, mul_one]
-    linarith [hkg, one_le_two_pow g]
+    linarith [hkg, @Nat.one_le_two_pow g]
   · rw [pow_add, ← mul_one c]
     exact ModEq.mul hgmod rfl
 
@@ -265,12 +262,12 @@ theorem count_I_eq_length_of_count_U_zero_and_neg_mem {ys : Miustr} (hu : count 
     · -- case `x = M` gives a contradiction.
       exfalso; exact hm (mem_cons_self M xs)
     · -- case `x = I`
-      rw [count_cons, if_pos rfl, length, succ_eq_add_one, succ_inj']
+      rw [count_cons, if_pos rfl, length, succ_inj']
       apply hxs
       · simpa only [count]
       · rw [mem_cons, not_or] at hm; exact hm.2
     · -- case `x = U` gives a contradiction.
-      exfalso; simp only [count, countp_cons_of_pos] at hu
+      exfalso; simp only [count, countP_cons_of_pos (· == U) _ (rfl : U == U)] at hu
       exact succ_ne_zero _ hu
 set_option linter.uppercaseLean3 false in
 #align miu.count_I_eq_length_of_count_U_zero_and_neg_mem Miu.count_I_eq_length_of_count_U_zero_and_neg_mem
@@ -280,7 +277,8 @@ set_option linter.uppercaseLean3 false in
 theorem base_case_suf (en : Miustr) (h : Decstr en) (hu : count U en = 0) : Derivable en := by
   rcases h with ⟨⟨mhead, nmtail⟩, hi⟩
   have : en ≠ nil := by
-    intro k; simp only [k, count, countp, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
+    intro k
+    simp only [k, count, countP, countP.go, if_false, zero_mod, zero_ne_one, false_or_iff] at hi
   rcases exists_cons_of_ne_nil this with ⟨y, ys, rfl⟩
   rcases mhead
   rsuffices ⟨c, rfl, hc⟩ : ∃ c, replicate c I = ys ∧ (c % 3 = 1 ∨ c % 3 = 2)
@@ -299,7 +297,7 @@ relate to `count U`.
 
 theorem mem_of_count_U_eq_succ {xs : Miustr} {k : ℕ} (h : count U xs = succ k) : U ∈ xs := by
   induction' xs with z zs hzs
-  · exfalso; rw [count] at h ; contradiction
+  · exfalso; rw [count] at h; contradiction
   · rw [mem_cons]
     cases z <;> try exact Or.inl rfl
     all_goals right; simp only [count_cons, if_false] at h; exact hzs h
@@ -308,7 +306,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem eq_append_cons_U_of_count_U_pos {k : ℕ} {zs : Miustr} (h : count U zs = succ k) :
     ∃ as bs : Miustr, zs = as ++ ↑(U :: bs) :=
-  mem_split (mem_of_count_U_eq_succ h)
+  append_of_mem (mem_of_count_U_eq_succ h)
 set_option linter.uppercaseLean3 false in
 #align miu.eq_append_cons_U_of_count_U_pos Miu.eq_append_cons_U_of_count_U_pos
 
@@ -334,7 +332,7 @@ theorem ind_hyp_suf (k : ℕ) (ys : Miustr) (hu : count U ys = succ k) (hdec : D
     rw [cons_append, cons_append]
     dsimp [tail] at nmtail ⊢
     rw [mem_append] at nmtail
-    simpa only [mem_append, mem_cons, false_or_iff, or_false_iff] using nmtail
+    simpa only [append_assoc, cons_append, nil_append, mem_append, mem_cons, false_or] using nmtail
   · rw [count_append, count_append]; rw [← cons_append, count_append] at hic
     simp only [count_cons_self, count_nil, count_cons, if_false] at hic ⊢
     rw [add_right_comm, add_mod_right]; exact hic

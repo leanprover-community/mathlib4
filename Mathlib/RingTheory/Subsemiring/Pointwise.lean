@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.subsemiring.pointwise
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GroupRingAction.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
 import Mathlib.GroupTheory.Submonoid.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import ring_theory.subsemiring.pointwise from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-! # Pointwise instances on `Subsemiring`s
 
@@ -29,7 +26,7 @@ keep them in sync.
 
 open Set
 
-variable {M R : Type _}
+variable {M R : Type*}
 
 namespace Subsemiring
 
@@ -39,7 +36,7 @@ variable [Monoid M] [Semiring R] [MulSemiringAction M R]
 
 /-- The action on a subsemiring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale. -/
+This is available as an instance in the `Pointwise` locale. -/
 protected def pointwiseMulAction : MulAction M (Subsemiring R)
     where
   smul a S := S.map (MulSemiringAction.toRingHom _ _ a)
@@ -71,6 +68,9 @@ theorem pointwise_smul_toAddSubmonoid (m : M) (S : Subsemiring R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subsemiring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subsemiring.smul_mem_pointwise_smul Subsemiring.smul_mem_pointwise_smul
+
+instance : CovariantClass M (Subsemiring R) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subsemiring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=
@@ -177,4 +177,3 @@ theorem le_pointwise_smul_iff₀ {a : M} (ha : a ≠ 0) {S T : Subsemiring R} :
 end GroupWithZero
 
 end Subsemiring
-

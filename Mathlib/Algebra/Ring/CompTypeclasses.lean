@@ -2,18 +2,16 @@
 Copyright (c) 2021 Frédéric Dupuis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Frédéric Dupuis, Heather Macbeth
-
-! This file was ported from Lean 3 source module algebra.ring.comp_typeclasses
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.comp_typeclasses from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Propositional typeclasses on several ring homs
 
 This file contains three typeclasses used in the definition of (semi)linear maps:
+* `RingHomId σ`, which expresses the fact that `σ₂₃ = id`
 * `RingHomCompTriple σ₁₂ σ₂₃ σ₁₃`, which expresses the fact that `σ₂₃.comp σ₁₂ = σ₁₃`
 * `RingHomInvPair σ₁₂ σ₂₁`, which states that `σ₁₂` and `σ₂₁` are inverses of each other
 * `RingHomSurjective σ`, which states that `σ` is surjective
@@ -44,9 +42,19 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 -/
 
 
-variable {R₁ : Type _} {R₂ : Type _} {R₃ : Type _}
-
+variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
+
+/-- Class that expresses that a ring homomorphism is in fact the identity. -/
+-- This at first seems not very useful. However we need this when considering
+-- modules over some diagram in the category of rings,
+-- e.g. when defining presheaves over a presheaf of rings.
+-- See `Mathlib.Algebra.Category.ModuleCat.Presheaf`.
+class RingHomId {R : Type*} [Semiring R] (σ : R →+* R) : Prop where
+  eq_id : σ = RingHom.id R
+
+instance {R : Type*} [Semiring R] : RingHomId (RingHom.id R) where
+  eq_id := rfl
 
 /-- Class that expresses the fact that three ring homomorphisms form a composition triple. This is
 used to handle composition of semilinear maps. -/
@@ -78,9 +86,9 @@ class RingHomInvPair (σ : R₁ →+* R₂) (σ' : outParam (R₂ →+* R₁)) :
   comp_eq₂ : σ.comp σ' = RingHom.id R₂
 #align ring_hom_inv_pair RingHomInvPair
 
--- attribute [simp] RingHomInvPair.comp_eq Porting note: `simp` can prove it
+-- attribute [simp] RingHomInvPair.comp_eq Porting note (#10618): `simp` can prove it
 
--- attribute [simp] RingHomInvPair.comp_eq₂ Porting note: `simp` can prove it
+-- attribute [simp] RingHomInvPair.comp_eq₂ Porting note (#10618): `simp` can prove it
 
 variable {σ : R₁ →+* R₂} {σ' : R₂ →+* R₁}
 
@@ -88,13 +96,13 @@ namespace RingHomInvPair
 
 variable [RingHomInvPair σ σ']
 
--- @[simp] Porting note: `simp` can prove it
+-- @[simp] Porting note (#10618): `simp` can prove it
 theorem comp_apply_eq {x : R₁} : σ' (σ x) = x := by
   rw [← RingHom.comp_apply, comp_eq]
   simp
 #align ring_hom_inv_pair.comp_apply_eq RingHomInvPair.comp_apply_eq
 
--- @[simp] Porting note: `simp` can prove it
+-- @[simp] Porting note (#10618): `simp` can prove it
 theorem comp_apply_eq₂ {x : R₂} : σ (σ' x) = x := by
   rw [← RingHom.comp_apply, comp_eq₂]
   simp
@@ -171,7 +179,8 @@ theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : F
 namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
--- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
+-- @[nolint dangerous_instance]
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
@@ -188,5 +197,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
+
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

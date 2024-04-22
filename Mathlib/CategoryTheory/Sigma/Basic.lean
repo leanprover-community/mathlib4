@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.sigma.basic
-! leanprover-community/mathlib commit ba2245edf0c8bb155f1569fd9b9492a9b384cde6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Whiskering
 import Mathlib.CategoryTheory.Functor.FullyFaithful
 import Mathlib.CategoryTheory.NatIso
+
+#align_import category_theory.sigma.basic from "leanprover-community/mathlib"@"ba2245edf0c8bb155f1569fd9b9492a9b384cde6"
 
 /-!
 # Disjoint union of categories
@@ -61,8 +58,7 @@ lemma comp_def (i : I) (X Y Z : C i) (f : X ⟶ Y) (g : Y ⟶ Z) : comp (mk f) (
   rfl
 #align category_theory.sigma.sigma_hom.comp_def CategoryTheory.Sigma.SigmaHom.comp_def
 
-lemma assoc
-  : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
+lemma assoc : ∀ {X Y Z W : Σi, C i} (f : X ⟶ Y) (g : Y ⟶ Z) (h : Z ⟶ W), (f ≫ g) ≫ h = f ≫ g ≫ h
   | _, _, _, _, mk _, mk _, mk _ => congr_arg mk (Category.assoc _ _ _)
 #align category_theory.sigma.sigma_hom.assoc CategoryTheory.Sigma.SigmaHom.assoc
 
@@ -94,12 +90,12 @@ lemma incl_obj {i : I} (X : C i) : (incl i).obj X = ⟨i, X⟩ :=
   rfl
 #align category_theory.sigma.incl_obj CategoryTheory.Sigma.incl_obj
 
-instance (i : I) : Full (incl i : C i ⥤ Σi, C i) where
+instance (i : I) : Functor.Full (incl i : C i ⥤ Σi, C i) where
   preimage := fun ⟨f⟩ => f
   witness := fun ⟨_⟩ => rfl
 
-instance (i : I) : Faithful (incl i : C i ⥤ Σi, C i) where
-  -- Porting note: was `tidy`
+instance (i : I) : Functor.Faithful (incl i : C i ⥤ Σi, C i) where
+  -- Porting note (#10936): was `tidy`
   map_injective {_ _ _ _} h := by injection h
 
 section
@@ -255,7 +251,6 @@ end
 namespace Functor
 
 -- variable {C}
-
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
 
 /-- Assemble an `I`-indexed family of functors into a functor between the sigma types.
@@ -269,7 +264,6 @@ end Functor
 namespace natTrans
 
 variable {D : I → Type u₁} [∀ i, Category.{v₁} (D i)]
-
 variable {F G : ∀ i, C i ⥤ D i}
 
 /-- Assemble an `I`-indexed family of natural transformations into a single natural transformation.

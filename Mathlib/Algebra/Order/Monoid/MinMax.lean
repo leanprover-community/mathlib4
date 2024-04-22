@@ -2,14 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro, Johannes Hölzl
-
-! This file was ported from Lean 3 source module algebra.order.monoid.min_max
-! leanprover-community/mathlib commit de87d5053a9fe5cbde723172c0fb7e27e7436473
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.MinMax
 import Mathlib.Algebra.Order.Monoid.Lemmas
+
+#align_import algebra.order.monoid.min_max from "leanprover-community/mathlib"@"de87d5053a9fe5cbde723172c0fb7e27e7436473"
 
 /-!
 # Lemmas about `min` and `max` in an ordered monoid.
@@ -18,23 +15,33 @@ import Mathlib.Algebra.Order.Monoid.Lemmas
 
 open Function
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-! Some lemmas about types that have an ordering and a binary operation, with no
   rules relating them. -/
 
+section CommSemigroup
+variable [LinearOrder α] [CommSemigroup α] [CommSemigroup β]
 
 @[to_additive]
-theorem fn_min_mul_fn_max [LinearOrder α] [CommSemigroup β] (f : α → β) (n m : α) :
-    f (min n m) * f (max n m) = f n * f m := by cases' le_total n m with h h <;> simp [h, mul_comm]
+lemma fn_min_mul_fn_max  (f : α → β) (a b : α) : f (min a b) * f (max a b) = f a * f b := by
+  obtain h | h := le_total a b <;> simp [h, mul_comm]
 #align fn_min_mul_fn_max fn_min_mul_fn_max
 #align fn_min_add_fn_max fn_min_add_fn_max
 
 @[to_additive]
-theorem min_mul_max [LinearOrder α] [CommSemigroup α] (n m : α) : min n m * max n m = n * m :=
-  fn_min_mul_fn_max id n m
+lemma fn_max_mul_fn_min (f : α → β) (a b : α) : f (max a b) * f (min a b) = f a * f b := by
+  obtain h | h := le_total a b <;> simp [h, mul_comm]
+
+@[to_additive (attr := simp)]
+lemma min_mul_max (a b : α) : min a b * max a b = a * b := fn_min_mul_fn_max id _ _
 #align min_mul_max min_mul_max
 #align min_add_max min_add_max
+
+@[to_additive (attr := simp)]
+lemma max_mul_min (a b : α) : max a b * min a b = a * b := fn_max_mul_fn_min id _ _
+
+end CommSemigroup
 
 section CovariantClassMulLe
 

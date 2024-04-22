@@ -2,14 +2,13 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.set.equitable
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.BigOperators.Order
-import Mathlib.Data.Nat.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
+import Mathlib.Algebra.Group.Nat
+import Mathlib.Data.Set.Basic
+
+#align_import data.set.equitable from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Equitable functions
@@ -28,7 +27,7 @@ latter yet.
 
 open BigOperators
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 namespace Set
 
@@ -67,6 +66,15 @@ theorem equitableOn_iff_exists_eq_eq_add_one {s : Set α} {f : α → ℕ} :
   simp_rw [equitableOn_iff_exists_le_le_add_one, Nat.le_and_le_add_one_iff]
 #align set.equitable_on_iff_exists_eq_eq_add_one Set.equitableOn_iff_exists_eq_eq_add_one
 
+section LinearOrder
+variable [LinearOrder β] [Add β] [One β] {s : Set α} {f : α → β}
+
+@[simp]
+lemma not_equitableOn : ¬s.EquitableOn f ↔ ∃ a ∈ s, ∃ b ∈ s, f b + 1 < f a := by
+  simp [EquitableOn]; aesop
+
+end LinearOrder
+
 section OrderedSemiring
 
 variable [OrderedSemiring β]
@@ -103,8 +111,8 @@ theorem equitableOn_iff_le_le_add_one :
     exact ⟨le_rfl, Nat.le_succ _⟩
   push_neg at h
   obtain ⟨x, hx₁, hx₂⟩ := h
-  suffices h : b = (∑ i in s, f i) / s.card
-  · simp_rw [← h]
+  suffices h : b = (∑ i in s, f i) / s.card by
+    simp_rw [← h]
     apply hb
   symm
   refine'

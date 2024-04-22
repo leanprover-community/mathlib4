@@ -2,15 +2,12 @@
 Copyright (c) 2022 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey, Patrick Stevens, Thomas Browning
-
-! This file was ported from Lean 3 source module data.nat.choose.factorization
-! leanprover-community/mathlib commit dc9db541168768af03fe228703e758e649afdbfc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Choose.Central
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Data.Nat.Multiplicity
+
+#align_import data.nat.choose.factorization from "leanprover-community/mathlib"@"dc9db541168768af03fe228703e758e649afdbfc"
 
 /-!
 # Factorization of Binomial Coefficients
@@ -47,7 +44,7 @@ theorem factorization_choose_le_log : (choose n k).factorization p ≤ log p n :
     simp [choose_eq_zero_of_lt hnk]
   rw [factorization_def _ hp, @padicValNat_def _ ⟨hp⟩ _ (choose_pos hkn)]
   simp only [hp.multiplicity_choose hkn (lt_add_one _), PartENat.get_natCast]
-  refine (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
+  exact (Finset.card_filter_le _ _).trans (le_of_eq (Nat.card_Ico _ _))
 #align nat.factorization_choose_le_log Nat.factorization_choose_le_log
 
 /-- A `pow` form of `Nat.factorization_choose_le` -/
@@ -60,7 +57,7 @@ in the binomial coefficient. -/
 theorem factorization_choose_le_one (p_large : n < p ^ 2) : (choose n k).factorization p ≤ 1 := by
   apply factorization_choose_le_log.trans
   rcases eq_or_ne n 0 with (rfl | hn0); · simp
-  exact lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
+  exact Nat.lt_succ_iff.1 (log_lt_of_lt_pow hn0 p_large)
 #align nat.factorization_choose_le_one Nat.factorization_choose_le_one
 
 theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk' : p ≤ n - k)
@@ -82,13 +79,13 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
           (add_le_add_right (le_mul_of_one_le_right' ((one_le_div_iff hp.pos).mpr hk'))
             ((n - k) % p)))
         (by rwa [div_add_mod, div_add_mod, add_tsub_cancel_of_le hkn])
-  · replace hn : n < p ^ i
-    have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
-    · calc
+  · replace hn : n < p ^ i := by
+      have : 3 ≤ p := lt_of_le_of_ne hp.two_le hp'.symm
+      calc
         n < 3 * p := hn
         _ ≤ p * p := mul_le_mul_right' this p
         _ = p ^ 2 := (sq p).symm
-        _ ≤ p ^ i := pow_le_pow hp.one_lt.le hi
+        _ ≤ p ^ i := pow_le_pow_right hp.one_lt.le hi
     rwa [mod_eq_of_lt (lt_of_le_of_lt hkn hn), mod_eq_of_lt (lt_of_le_of_lt tsub_le_self hn),
       add_tsub_cancel_of_le hkn]
 #align nat.factorization_choose_of_lt_three_mul Nat.factorization_choose_of_lt_three_mul
@@ -98,8 +95,7 @@ theorem factorization_choose_of_lt_three_mul (hp' : p ≠ 2) (hk : p ≤ k) (hk'
 theorem factorization_centralBinom_of_two_mul_self_lt_three_mul (n_big : 2 < n) (p_le_n : p ≤ n)
     (big : 2 * n < 3 * p) : (centralBinom n).factorization p = 0 := by
   refine' factorization_choose_of_lt_three_mul _ p_le_n (p_le_n.trans _) big
-  · rintro rfl
-    linarith
+  · omega
   · rw [two_mul, add_tsub_cancel_left]
 #align nat.factorization_central_binom_of_two_mul_self_lt_three_mul Nat.factorization_centralBinom_of_two_mul_self_lt_three_mul
 
@@ -150,7 +146,7 @@ at most `2n`. -/
 theorem prod_pow_factorization_centralBinom (n : ℕ) :
     (∏ p in Finset.range (2 * n + 1), p ^ (centralBinom n).factorization p) = centralBinom n := by
   apply prod_pow_factorization_choose
-  linarith
+  omega
 #align nat.prod_pow_factorization_central_binom Nat.prod_pow_factorization_centralBinom
 
 end Nat

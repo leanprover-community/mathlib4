@@ -3,6 +3,7 @@ Copyright (c) 2023 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
+import Std.Data.HashMap.WF
 import Mathlib.Lean.Name
 import Mathlib.Lean.Expr.Basic
 
@@ -18,7 +19,7 @@ open Lean Meta Elab
 def printNameHashMap (h : Std.HashMap Name (Array Name)) : IO Unit :=
   for (m, names) in h.toList do
     IO.println "----"
-    IO.println $ m.toString ++ ":"
+    IO.println <| m.toString ++ ":"
     for n in names do
       IO.println n
 

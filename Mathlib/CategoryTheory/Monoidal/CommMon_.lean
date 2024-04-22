@@ -2,14 +2,11 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.monoidal.CommMon_
-! leanprover-community/mathlib commit a836c6dba9bd1ee2a0cdc9af0006a596f243031c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Monoidal.Mon_
+
+#align_import category_theory.monoidal.CommMon_ from "leanprover-community/mathlib"@"a836c6dba9bd1ee2a0cdc9af0006a596f243031c"
 
 /-!
 # The category of commutative monoids in a braided monoidal category.
@@ -63,20 +60,21 @@ theorem comp_hom {R S T : CommMon_ C} (f : R ⟶ S) (g : S ⟶ T) :
 set_option linter.uppercaseLean3 false in
 #align CommMon_.comp_hom CommMon_.comp_hom
 
--- porting note: added because `Mon_.Hom.ext` is not triggered automatically
+-- Porting note: added because `Mon_.Hom.ext` is not triggered automatically
 -- for morphisms in `CommMon_ C`
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
 @[ext]
 lemma hom_ext {A B : CommMon_ C} (f g : A ⟶ B) (h : f.hom = g.hom) : f = g :=
   Mon_.Hom.ext _ _ h
 
--- porting note: the following two lemmas `id'` and `comp'` have been added to ease automation;
+-- Porting note (#10688): the following two lemmas `id'` and `comp'`
+-- have been added to ease automation;
 @[simp]
 lemma id' (A : CommMon_ C) : (𝟙 A : A.toMon_ ⟶ A.toMon_) = 𝟙 (A.toMon_) := rfl
 
 @[simp]
 lemma comp' {A₁ A₂ A₃ : CommMon_ C} (f : A₁ ⟶ A₂) (g : A₂ ⟶ A₃) :
-  ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
+    ((f ≫ g : A₁ ⟶ A₃) : A₁.toMon_ ⟶ A₃.toMon_) = @CategoryStruct.comp (Mon_ C) _ _ _ _ f g := rfl
 
 section
 
@@ -89,8 +87,8 @@ set_option linter.uppercaseLean3 false in
 #align CommMon_.forget₂_Mon_ CommMon_.forget₂Mon_
 
 -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
-instance : Full (forget₂Mon_ C) := InducedCategory.full _
-instance : Faithful (forget₂Mon_ C) := InducedCategory.faithful _
+instance : (forget₂Mon_ C).Full := InducedCategory.full _
+instance : (forget₂Mon_ C).Faithful := InducedCategory.faithful _
 
 @[simp]
 theorem forget₂_Mon_obj_one (A : CommMon_ C) : ((forget₂Mon_ C).obj A).one = A.one :=
@@ -147,14 +145,14 @@ set_option linter.uppercaseLean3 false in
 
 variable (C) (D)
 
--- porting note: added @[simps] to ease automation
+-- Porting note (#10688): added @[simps] to ease automation
 /-- `mapCommMon` is functorial in the lax braided functor. -/
 @[simps]
 def mapCommMonFunctor : LaxBraidedFunctor C D ⥤ CommMon_ C ⥤ CommMon_ D where
   obj := mapCommMon
   map α :=
     { app := fun A => { hom := α.app A.X }
-      naturality := by intros ; ext ; simp }
+      naturality := by intros; ext; simp }
 set_option linter.uppercaseLean3 false in
 #align category_theory.lax_braided_functor.map_CommMon_functor CategoryTheory.LaxBraidedFunctor.mapCommMonFunctor
 
@@ -164,15 +162,15 @@ namespace CommMon_
 
 open CategoryTheory.LaxBraidedFunctor
 
-namespace EquivLaxBraidedFunctorPunit
+namespace EquivLaxBraidedFunctorPUnit
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps]
 def laxBraidedToCommMon : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ⥤ CommMon_ C where
-  obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit))
-  map α := ((mapCommMonFunctor (Discrete PUnit) C).map α).app _
+  obj F := (F.mapCommMon : CommMon_ _ ⥤ CommMon_ C).obj (trivial (Discrete PUnit.{u+1}))
+  map α := ((mapCommMonFunctor (Discrete PUnit.{u+1}) C).map α).app _
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPunit.laxBraidedToCommMon
+#align CommMon_.equiv_lax_braided_functor_punit.lax_braided_to_CommMon CommMon_.EquivLaxBraidedFunctorPUnit.laxBraidedToCommMon
 
 /-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
 @[simps]
@@ -190,9 +188,9 @@ def commMonToLaxBraided : CommMon_ C ⥤ LaxBraidedFunctor (Discrete PUnit.{u + 
       unit := Mon_.Hom.one_hom f
       tensor := fun _ _ => Mon_.Hom.mul_hom f }
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.CommMon_to_lax_braided CommMon_.EquivLaxBraidedFunctorPunit.commMonToLaxBraided
+#align CommMon_.equiv_lax_braided_functor_punit.CommMon_to_lax_braided CommMon_.EquivLaxBraidedFunctorPUnit.commMonToLaxBraided
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def unitIso :
     𝟭 (LaxBraidedFunctor (Discrete PUnit.{u + 1}) C) ≅
@@ -202,11 +200,11 @@ def unitIso :
       LaxBraidedFunctor.mkIso
         (MonoidalNatIso.ofComponents
           (fun _ => F.toLaxMonoidalFunctor.toFunctor.mapIso (eqToIso (by ext)))
-          (by rintro ⟨⟩ ⟨⟩ f ; aesop_cat) (by aesop_cat) (by aesop_cat)))
+          (by rintro ⟨⟩ ⟨⟩ f; aesop_cat) (by aesop_cat) (by aesop_cat)))
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPunit.unitIso
+#align CommMon_.equiv_lax_braided_functor_punit.unit_iso CommMon_.EquivLaxBraidedFunctorPUnit.unitIso
 
-/-- Implementation of `CommMon_.equivLaxBraidedFunctorPunit`. -/
+/-- Implementation of `CommMon_.equivLaxBraidedFunctorPUnit`. -/
 @[simps!]
 def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMon_ C) :=
   NatIso.ofComponents
@@ -214,22 +212,22 @@ def counitIso : commMonToLaxBraided C ⋙ laxBraidedToCommMon C ≅ 𝟭 (CommMo
       { hom := { hom := 𝟙 _ }
         inv := { hom := 𝟙 _ } })
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit.counit_iso CommMon_.EquivLaxBraidedFunctorPunit.counitIso
+#align CommMon_.equiv_lax_braided_functor_punit.counit_iso CommMon_.EquivLaxBraidedFunctorPUnit.counitIso
 
-end EquivLaxBraidedFunctorPunit
+end EquivLaxBraidedFunctorPUnit
 
-open EquivLaxBraidedFunctorPunit
+open EquivLaxBraidedFunctorPUnit
 
 /-- Commutative monoid objects in `C` are "just" braided lax monoidal functors from the trivial
 braided monoidal category to `C`.
 -/
 @[simps]
-def equivLaxBraidedFunctorPunit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ≌ CommMon_ C where
+def equivLaxBraidedFunctorPUnit : LaxBraidedFunctor (Discrete PUnit.{u + 1}) C ≌ CommMon_ C where
   functor := laxBraidedToCommMon C
   inverse := commMonToLaxBraided C
   unitIso := unitIso C
   counitIso := counitIso C
 set_option linter.uppercaseLean3 false in
-#align CommMon_.equiv_lax_braided_functor_punit CommMon_.equivLaxBraidedFunctorPunit
+#align CommMon_.equiv_lax_braided_functor_punit CommMon_.equivLaxBraidedFunctorPUnit
 
 end CommMon_

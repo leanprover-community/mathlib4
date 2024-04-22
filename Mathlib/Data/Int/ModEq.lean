@@ -2,16 +2,13 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
-
-! This file was ported from Lean 3 source module data.int.modeq
-! leanprover-community/mathlib commit 47a1a73351de8dd6c8d3d32b569c8e434b03ca47
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Std.Data.Int.DivMod
 import Mathlib.Data.Nat.ModEq
 import Mathlib.Tactic.GCongr.Core
 import Mathlib.Tactic.Ring
+
+#align_import data.int.modeq from "leanprover-community/mathlib"@"47a1a73351de8dd6c8d3d32b569c8e434b03ca47"
 
 /-!
 
@@ -45,7 +42,7 @@ instance : Decidable (ModEq n a b) := decEq (a % n) (b % n)
 
 namespace ModEq
 
-@[refl]
+@[refl, simp]
 protected theorem refl (a : ℤ) : a ≡ a [ZMOD n] :=
   @rfl _ _
 #align int.modeq.refl Int.ModEq.refl
@@ -78,9 +75,9 @@ end ModEq
 theorem modEq_comm : a ≡ b [ZMOD n] ↔ b ≡ a [ZMOD n] := ⟨ModEq.symm, ModEq.symm⟩
 #align int.modeq_comm Int.modEq_comm
 
-theorem coe_nat_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
-  unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp [coe_nat_mod]
-#align int.coe_nat_modeq_iff Int.coe_nat_modEq_iff
+theorem natCast_modEq_iff {a b n : ℕ} : a ≡ b [ZMOD n] ↔ a ≡ b [MOD n] := by
+  unfold ModEq Nat.ModEq; rw [← Int.ofNat_inj]; simp [natCast_mod]
+#align int.coe_nat_modeq_iff Int.natCast_modEq_iff
 
 theorem modEq_zero_iff_dvd : a ≡ 0 [ZMOD n] ↔ n ∣ a := by
   rw [ModEq, zero_emod, dvd_iff_emod_eq_zero]
@@ -104,7 +101,7 @@ theorem modEq_iff_add_fac {a b n : ℤ} : a ≡ b [ZMOD n] ↔ ∃ t, b = a + n 
   exact exists_congr fun t => sub_eq_iff_eq_add'
 #align int.modeq_iff_add_fac Int.modEq_iff_add_fac
 
-alias modEq_iff_dvd ↔ ModEq.dvd modEq_of_dvd
+alias ⟨ModEq.dvd, modEq_of_dvd⟩ := modEq_iff_dvd
 #align int.modeq.dvd Int.ModEq.dvd
 #align int.modeq_of_dvd Int.modEq_of_dvd
 
@@ -114,7 +111,7 @@ theorem mod_modEq (a n) : a % n ≡ a [ZMOD n] :=
 
 @[simp]
 theorem neg_modEq_neg : -a ≡ -b [ZMOD n] ↔ a ≡ b [ZMOD n] := by
---porting note: Restore old proof once #3309 is through
+-- Porting note: Restore old proof once #3309 is through
   simp [-sub_neg_eq_add, neg_sub_neg, modEq_iff_dvd, dvd_sub_comm]
 #align int.neg_modeq_neg Int.neg_modEq_neg
 
@@ -132,7 +129,7 @@ protected theorem mul_left' (h : a ≡ b [ZMOD n]) : c * a ≡ c * b [ZMOD c * n
   obtain hc | rfl | hc := lt_trichotomy c 0
   · rw [← neg_modEq_neg, ← modEq_neg, ← neg_mul, ← neg_mul, ← neg_mul]
     simp only [ModEq, mul_emod_mul_of_pos _ _ (neg_pos.2 hc), h.eq]
-  · simp
+  · simp only [zero_mul, ModEq.rfl]
   · simp only [ModEq, mul_emod_mul_of_pos _ _ hc, h.eq]
 #align int.modeq.mul_left' Int.ModEq.mul_left'
 
@@ -211,7 +208,7 @@ protected theorem mul (h₁ : a ≡ b [ZMOD n]) (h₂ : c ≡ d [ZMOD n]) : a * 
 @[gcongr] protected theorem pow (m : ℕ) (h : a ≡ b [ZMOD n]) : a ^ m ≡ b ^ m [ZMOD n] := by
   induction' m with d hd; · rfl
   rw [pow_succ, pow_succ]
-  exact h.mul hd
+  exact hd.mul h
 #align int.modeq.pow Int.ModEq.pow
 
 lemma of_mul_left (m : ℤ) (h : a ≡ b [ZMOD m * n]) : a ≡ b [ZMOD n] := by
@@ -226,14 +223,13 @@ lemma of_mul_right (m : ℤ) : a ≡ b [ZMOD n * m] → a ≡ b [ZMOD n] :=
 theorem cancel_right_div_gcd (hm : 0 < m) (h : a * c ≡ b * c [ZMOD m]) :
     a ≡ b [ZMOD m / gcd m c] := by
   letI d := gcd m c
-  have hmd := gcd_dvd_left m c
-  have hcd := gcd_dvd_right m c
   rw [modEq_iff_dvd] at h ⊢
-  -- porting note: removed `show` due to leanprover-community/mathlib4#3305
+  -- Porting note: removed `show` due to leanprover-community/mathlib4#3305
   refine Int.dvd_of_dvd_mul_right_of_gcd_one (?_ : m / d ∣ c / d * (b - a)) ?_
-  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) hcd, sub_mul]
-    exact Int.ediv_dvd_ediv hmd h
-  · rw [gcd_div hmd hcd, natAbs_ofNat, Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
+  · rw [mul_comm, ← Int.mul_ediv_assoc (b - a) gcd_dvd_right, sub_mul]
+    exact Int.ediv_dvd_ediv gcd_dvd_left h
+  · rw [gcd_div gcd_dvd_left gcd_dvd_right, natAbs_ofNat,
+      Nat.div_self (gcd_pos_of_ne_zero_left c hm.ne')]
 #align int.modeq.cancel_right_div_gcd Int.ModEq.cancel_right_div_gcd
 
 /-- To cancel a common factor `c` from a `ModEq` we must divide the modulus `m` by `gcd m c`. -/
@@ -267,12 +263,12 @@ theorem add_modEq_left : n + a ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <
 theorem add_modEq_right : a + n ≡ a [ZMOD n] := ModEq.symm <| modEq_iff_dvd.2 <| by simp
 #align int.add_modeq_right Int.add_modEq_right
 
-theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.coprime n.natAbs) :
+theorem modEq_and_modEq_iff_modEq_mul {a b m n : ℤ} (hmn : m.natAbs.Coprime n.natAbs) :
     a ≡ b [ZMOD m] ∧ a ≡ b [ZMOD n] ↔ a ≡ b [ZMOD m * n] :=
   ⟨fun h => by
     rw [modEq_iff_dvd, modEq_iff_dvd] at h
-    rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, coe_nat_dvd, natAbs_mul]
-    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← coe_nat_dvd, natAbs_dvd, dvd_natAbs] <;>
+    rw [modEq_iff_dvd, ← natAbs_dvd, ← dvd_natAbs, natCast_dvd_natCast, natAbs_mul]
+    refine' hmn.mul_dvd_of_dvd_of_dvd _ _ <;> rw [← natCast_dvd_natCast, natAbs_dvd, dvd_natAbs] <;>
       tauto,
     fun h => ⟨h.of_mul_right _, h.of_mul_left _⟩⟩
 #align int.modeq_and_modeq_iff_modeq_mul Int.modEq_and_modEq_iff_modEq_mul
@@ -289,13 +285,17 @@ theorem modEq_add_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a + n * 
     _ ≡ b [ZMOD n] := by rw [add_zero]
 #align int.modeq_add_fac Int.modEq_add_fac
 
+theorem modEq_sub_fac {a b n : ℤ} (c : ℤ) (ha : a ≡ b [ZMOD n]) : a - n * c ≡ b [ZMOD n] := by
+  convert Int.modEq_add_fac (-c) ha using 1
+  ring
+
 theorem modEq_add_fac_self {a t n : ℤ} : a + n * t ≡ a [ZMOD n] :=
   modEq_add_fac _ ModEq.rfl
 #align int.modeq_add_fac_self Int.modEq_add_fac_self
 
-theorem mod_coprime {a b : ℕ} (hab : Nat.coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
+theorem mod_coprime {a b : ℕ} (hab : Nat.Coprime a b) : ∃ y : ℤ, a * y ≡ 1 [ZMOD b] :=
   ⟨Nat.gcdA a b,
-    have hgcd : Nat.gcd a b = 1 := Nat.coprime.gcd_eq_one hab
+    have hgcd : Nat.gcd a b = 1 := Nat.Coprime.gcd_eq_one hab
     calc
       ↑a * Nat.gcdA a b ≡ ↑a * Nat.gcdA a b + ↑b * Nat.gcdB a b [ZMOD ↑b] :=
         ModEq.symm <| modEq_add_fac _ <| ModEq.refl _
@@ -314,7 +314,7 @@ theorem exists_unique_equiv (a : ℤ) {b : ℤ} (hb : 0 < b) :
 theorem exists_unique_equiv_nat (a : ℤ) {b : ℤ} (hb : 0 < b) : ∃ z : ℕ, ↑z < b ∧ ↑z ≡ a [ZMOD b] :=
   let ⟨z, hz1, hz2, hz3⟩ := exists_unique_equiv a hb
   ⟨z.natAbs, by
-    constructor <;> rw [ofNat_natAbs_eq_of_nonneg z hz1] <;> assumption⟩
+    constructor <;> rw [natAbs_of_nonneg hz1] <;> assumption⟩
 #align int.exists_unique_equiv_nat Int.exists_unique_equiv_nat
 
 theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
@@ -324,5 +324,8 @@ theorem mod_mul_right_mod (a b c : ℤ) : a % (b * c) % b = a % b :=
 theorem mod_mul_left_mod (a b c : ℤ) : a % (b * c) % c = a % c :=
   (mod_modEq _ _).of_mul_left _
 #align int.mod_mul_left_mod Int.mod_mul_left_mod
+
+-- 2024-04-02
+@[deprecated] alias coe_nat_modEq_iff := natCast_modEq_iff
 
 end Int

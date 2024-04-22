@@ -2,14 +2,11 @@
 Copyright (c) 2022 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker
-
-! This file was ported from Lean 3 source module topology.algebra.module.simple
-! leanprover-community/mathlib commit f430769b562e0cedef59ee1ed968d67e0e0c86ba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.SimpleModule
 import Mathlib.Topology.Algebra.Module.Basic
+
+#align_import topology.algebra.module.simple from "leanprover-community/mathlib"@"f430769b562e0cedef59ee1ed968d67e0e0c86ba"
 
 /-!
 # The kernel of a linear function is closed or dense

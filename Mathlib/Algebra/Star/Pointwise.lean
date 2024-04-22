@@ -2,15 +2,12 @@
 Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module algebra.star.pointwise
-! leanprover-community/mathlib commit 30413fc89f202a090a54d78e540963ed3de0056e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Star.Basic
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import algebra.star.pointwise from "leanprover-community/mathlib"@"30413fc89f202a090a54d78e540963ed3de0056e"
 
 /-!
 # Pointwise star operation on sets
@@ -31,9 +28,9 @@ open Pointwise
 
 local postfix:max "⋆" => star
 
-variable {α : Type _} {s t : Set α} {a : α}
+variable {α : Type*} {s t : Set α} {a : α}
 
-/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in locale `pointwise`.
+/-- The set `(star s : Set α)` is defined as `{x | star x ∈ s}` in the locale `Pointwise`.
 In the usual case where `star` is involutive, it is equal to `{star s | x ∈ s}`, see
 `Set.image_star`. -/
 protected def star [Star α] : Star (Set α) := ⟨preimage Star.star⟩
@@ -84,17 +81,17 @@ theorem union_star [Star α] : (s ∪ t)⋆ = s⋆ ∪ t⋆ := preimage_union
 #align set.union_star Set.union_star
 
 @[simp]
-theorem iInter_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
+theorem iInter_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋂ i, s i)⋆ = ⋂ i, (s i)⋆ :=
   preimage_iInter
 #align set.Inter_star Set.iInter_star
 
 @[simp]
-theorem iUnion_star {ι : Sort _} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
+theorem iUnion_star {ι : Sort*} [Star α] (s : ι → Set α) : (⋃ i, s i)⋆ = ⋃ i, (s i)⋆ :=
   preimage_iUnion
 #align set.Union_star Set.iUnion_star
 
 @[simp]
-theorem compl_star [Star α] : (sᶜ)⋆ = s⋆ᶜ := preimage_compl
+theorem compl_star [Star α] : sᶜ⋆ = s⋆ᶜ := preimage_compl
 #align set.compl_star Set.compl_star
 
 @[simp]
@@ -115,12 +112,12 @@ theorem Finite.star [InvolutiveStar α] {s : Set α} (hs : s.Finite) : s⋆.Fini
   hs.preimage <| star_injective.injOn _
 #align set.finite.star Set.Finite.star
 
-theorem star_singleton {β : Type _} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
+theorem star_singleton {β : Type*} [InvolutiveStar β] (x : β) : ({x} : Set β)⋆ = {x⋆} := by
   ext1 y
   rw [mem_star, mem_singleton_iff, mem_singleton_iff, star_eq_iff_star_eq, eq_comm]
 #align set.star_singleton Set.star_singleton
 
-protected theorem star_mul [Monoid α] [StarSemigroup α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
+protected theorem star_mul [Mul α] [StarMul α] (s t : Set α) : (s * t)⋆ = t⋆ * s⋆ := by
  simp_rw [← image_star, ← image2_mul, image_image2, image2_image_left, image2_image_right,
    star_mul, image2_swap _ s t]
 #align set.star_mul Set.star_mul
@@ -137,7 +134,7 @@ instance [Star α] [TrivialStar α] : TrivialStar (Set α) where
     ext1
     simp [star_trivial]
 
-protected theorem star_inv [Group α] [StarSemigroup α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
+protected theorem star_inv [Group α] [StarMul α] (s : Set α) : s⁻¹⋆ = s⋆⁻¹ := by
   ext
   simp only [mem_star, mem_inv, star_inv]
 #align set.star_inv Set.star_inv
@@ -148,3 +145,10 @@ protected theorem star_inv' [DivisionSemiring α] [StarRing α] (s : Set α) : s
 #align set.star_inv' Set.star_inv'
 
 end Set
+
+@[simp]
+lemma StarMemClass.star_coe_eq {S α : Type*} [InvolutiveStar α] [SetLike S α]
+    [StarMemClass S α] (s : S) : star (s : Set α) = s := by
+  ext x
+  simp only [Set.mem_star, SetLike.mem_coe]
+  exact ⟨by simpa only [star_star] using star_mem (s := s) (r := star x), star_mem⟩

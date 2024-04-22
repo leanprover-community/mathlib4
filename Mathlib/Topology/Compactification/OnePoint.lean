@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang, Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.alexandroff
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Option
 import Mathlib.Topology.Separation
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.alexandroff from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # The OnePoint Compactification
@@ -49,10 +46,10 @@ In this section we define `OnePoint X` to be the disjoint union of `X` and `∞`
 -/
 
 
-variable {X : Type _}
+variable {X : Type*}
 
 /-- The OnePoint extension of an arbitrary topological space `X` -/
-def OnePoint (X : Type _) :=
+def OnePoint (X : Type*) :=
   Option X
 #align alexandroff OnePoint
 
@@ -97,17 +94,17 @@ theorem coe_eq_coe {x y : X} : (x : OnePoint X) = y ↔ x = y :=
 
 @[simp]
 theorem coe_ne_infty (x : X) : (x : OnePoint X) ≠ ∞ :=
-  fun.
+  nofun
 #align alexandroff.coe_ne_infty OnePoint.coe_ne_infty
 
 @[simp]
 theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
-  fun.
+  nofun
 #align alexandroff.infty_ne_coe OnePoint.infty_ne_coe
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
 @[elab_as_elim]
-protected def rec {C : OnePoint X → Sort _} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
+protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
   | ∞ => h₁
   | (x : X) => h₂ x
@@ -117,7 +114,7 @@ theorem isCompl_range_coe_infty : IsCompl (range ((↑) : X → OnePoint X)) {�
   isCompl_range_some_none X
 #align alexandroff.is_compl_range_coe_infty OnePoint.isCompl_range_coe_infty
 
--- porting note: moved @[simp] to a new lemma
+-- Porting note: moved @[simp] to a new lemma
 theorem range_coe_union_infty : range ((↑) : X → OnePoint X) ∪ {∞} = univ :=
   range_some_union_none X
 #align alexandroff.range_coe_union_infty OnePoint.range_coe_union_infty
@@ -132,7 +129,7 @@ theorem range_coe_inter_infty : range ((↑) : X → OnePoint X) ∩ {∞} = ∅
 #align alexandroff.range_coe_inter_infty OnePoint.range_coe_inter_infty
 
 @[simp]
-theorem compl_range_coe : range ((↑) : X → OnePoint X)ᶜ = {∞} :=
+theorem compl_range_coe : (range ((↑) : X → OnePoint X))ᶜ = {∞} :=
   compl_range_some X
 #align alexandroff.compl_range_coe OnePoint.compl_range_coe
 
@@ -187,7 +184,7 @@ that `(↑)` has dense range, so it is a dense embedding.
 variable [TopologicalSpace X]
 
 instance : TopologicalSpace (OnePoint X) where
-  IsOpen s := (∞ ∈ s → IsCompact ((((↑) : X → OnePoint X) ⁻¹' s)ᶜ)) ∧
+  IsOpen s := (∞ ∈ s → IsCompact (((↑) : X → OnePoint X) ⁻¹' s)ᶜ) ∧
     IsOpen (((↑) : X → OnePoint X) ⁻¹' s)
   isOpen_univ := by simp
   isOpen_inter s t := by
@@ -199,7 +196,7 @@ instance : TopologicalSpace (OnePoint X) where
     suffices IsOpen ((↑) ⁻¹' ⋃₀ S : Set X) by
       refine' ⟨_, this⟩
       rintro ⟨s, hsS : s ∈ S, hs : ∞ ∈ s⟩
-      refine' isCompact_of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
+      refine' IsCompact.of_isClosed_subset ((ho s hsS).1 hs) this.isClosed_compl _
       exact compl_subset_compl.mpr (preimage_mono <| subset_sUnion_of_mem hsS)
     rw [preimage_sUnion]
     exact isOpen_biUnion fun s hs => (ho s hs).2
@@ -207,17 +204,17 @@ instance : TopologicalSpace (OnePoint X) where
 variable {s : Set (OnePoint X)} {t : Set X}
 
 theorem isOpen_def :
-    IsOpen s ↔ (∞ ∈ s → IsCompact (((↑) ⁻¹' s : Set X)ᶜ)) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
+    IsOpen s ↔ (∞ ∈ s → IsCompact ((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) :=
   Iff.rfl
 #align alexandroff.is_open_def OnePoint.isOpen_def
 
 theorem isOpen_iff_of_mem' (h : ∞ ∈ s) :
-    IsOpen s ↔ IsCompact (((↑) ⁻¹' s : Set X)ᶜ) ∧ IsOpen ((↑) ⁻¹' s : Set X) := by
+    IsOpen s ↔ IsCompact ((↑) ⁻¹' s : Set X)ᶜ ∧ IsOpen ((↑) ⁻¹' s : Set X) := by
   simp [isOpen_def, h]
 #align alexandroff.is_open_iff_of_mem' OnePoint.isOpen_iff_of_mem'
 
 theorem isOpen_iff_of_mem (h : ∞ ∈ s) :
-    IsOpen s ↔ IsClosed (((↑) ⁻¹' s : Set X)ᶜ) ∧ IsCompact (((↑) ⁻¹' s : Set X)ᶜ) := by
+    IsOpen s ↔ IsClosed ((↑) ⁻¹' s : Set X)ᶜ ∧ IsCompact ((↑) ⁻¹' s : Set X)ᶜ := by
   simp only [isOpen_iff_of_mem' h, isClosed_compl_iff, and_comm]
 #align alexandroff.is_open_iff_of_mem OnePoint.isOpen_iff_of_mem
 
@@ -241,7 +238,7 @@ theorem isOpen_image_coe {s : Set X} : IsOpen ((↑) '' s : Set (OnePoint X)) �
 #align alexandroff.is_open_image_coe OnePoint.isOpen_image_coe
 
 theorem isOpen_compl_image_coe {s : Set X} :
-    IsOpen (((↑) '' s : Set (OnePoint X))ᶜ) ↔ IsClosed s ∧ IsCompact s := by
+    IsOpen ((↑) '' s : Set (OnePoint X))ᶜ ↔ IsClosed s ∧ IsCompact s := by
   rw [isOpen_iff_of_mem, ← preimage_compl, compl_compl, preimage_image_eq _ coe_injective]
   exact infty_not_mem_image_coe
 #align alexandroff.is_open_compl_image_coe OnePoint.isOpen_compl_image_coe
@@ -276,7 +273,7 @@ theorem openEmbedding_coe : OpenEmbedding ((↑) : X → OnePoint X) :=
 #align alexandroff.open_embedding_coe OnePoint.openEmbedding_coe
 
 theorem isOpen_range_coe : IsOpen (range ((↑) : X → OnePoint X)) :=
-  openEmbedding_coe.open_range
+  openEmbedding_coe.isOpen_range
 #align alexandroff.is_open_range_coe OnePoint.isOpen_range_coe
 
 theorem isClosed_infty : IsClosed ({∞} : Set (OnePoint X)) := by
@@ -357,31 +354,31 @@ theorem ultrafilter_le_nhds_infty {f : Ultrafilter (OnePoint X)} :
     Ultrafilter.compl_mem_iff_not_mem]
 #align alexandroff.ultrafilter_le_nhds_infty OnePoint.ultrafilter_le_nhds_infty
 
-theorem tendsto_nhds_infty' {α : Type _} {f : OnePoint X → α} {l : Filter α} :
+theorem tendsto_nhds_infty' {α : Type*} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔ Tendsto f (pure ∞) l ∧ Tendsto (f ∘ (↑)) (coclosedCompact X) l := by
   simp [nhds_infty_eq, and_comm]
 #align alexandroff.tendsto_nhds_infty' OnePoint.tendsto_nhds_infty'
 
-theorem tendsto_nhds_infty {α : Type _} {f : OnePoint X → α} {l : Filter α} :
+theorem tendsto_nhds_infty {α : Type*} {f : OnePoint X → α} {l : Filter α} :
     Tendsto f (𝓝 ∞) l ↔
-      ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) (tᶜ) s :=
+      ∀ s ∈ l, f ∞ ∈ s ∧ ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   tendsto_nhds_infty'.trans <| by
     simp only [tendsto_pure_left, hasBasis_coclosedCompact.tendsto_left_iff, forall_and,
       and_assoc, exists_prop]
 #align alexandroff.tendsto_nhds_infty OnePoint.tendsto_nhds_infty
 
-theorem continuousAt_infty' {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} :
+theorem continuousAt_infty' {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔ Tendsto (f ∘ (↑)) (coclosedCompact X) (𝓝 (f ∞)) :=
   tendsto_nhds_infty'.trans <| and_iff_right (tendsto_pure_nhds _ _)
 #align alexandroff.continuous_at_infty' OnePoint.continuousAt_infty'
 
-theorem continuousAt_infty {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} :
+theorem continuousAt_infty {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} :
     ContinuousAt f ∞ ↔
-      ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) (tᶜ) s :=
+      ∀ s ∈ 𝓝 (f ∞), ∃ t : Set X, IsClosed t ∧ IsCompact t ∧ MapsTo (f ∘ (↑)) tᶜ s :=
   continuousAt_infty'.trans <| by simp only [hasBasis_coclosedCompact.tendsto_left_iff, and_assoc]
 #align alexandroff.continuous_at_infty OnePoint.continuousAt_infty
 
-theorem continuousAt_coe {Y : Type _} [TopologicalSpace Y] {f : OnePoint X → Y} {x : X} :
+theorem continuousAt_coe {Y : Type*} [TopologicalSpace Y] {f : OnePoint X → Y} {x : X} :
     ContinuousAt f x ↔ ContinuousAt (f ∘ (↑)) x := by
   rw [ContinuousAt, nhds_coe_eq, tendsto_map'_iff, ContinuousAt]; rfl
 #align alexandroff.continuous_at_coe OnePoint.continuousAt_coe
@@ -397,12 +394,12 @@ theorem denseEmbedding_coe [NoncompactSpace X] : DenseEmbedding ((↑) : X → O
   { openEmbedding_coe with dense := denseRange_coe }
 #align alexandroff.dense_embedding_coe OnePoint.denseEmbedding_coe
 
-@[simp]
+@[simp, norm_cast]
 theorem specializes_coe {x y : X} : (x : OnePoint X) ⤳ y ↔ x ⤳ y :=
   openEmbedding_coe.toInducing.specializes_iff
 #align alexandroff.specializes_coe OnePoint.specializes_coe
 
-@[simp]
+@[simp, norm_cast]
 theorem inseparable_coe {x y : X} : Inseparable (x : OnePoint X) y ↔ Inseparable x y :=
   openEmbedding_coe.toInducing.inseparable_iff
 #align alexandroff.inseparable_coe OnePoint.inseparable_coe
@@ -460,21 +457,24 @@ instance [T1Space X] : T1Space (OnePoint X) where
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
 
-/-- The one point compactification of a locally compact Hausdorff space is a normal (hence,
-Hausdorff and regular) topological space. -/
-instance [LocallyCompactSpace X] [T2Space X] : NormalSpace (OnePoint X) := by
-  have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z => by
+/-- The one point compactification of a locally compact R₁ space is a normal topological space. -/
+instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
+  suffices R1Space (OnePoint X) by infer_instance
+  have key : ∀ z : X, Disjoint (𝓝 (some z)) (𝓝 ∞) := fun z ↦ by
     rw [nhds_infty_eq, disjoint_sup_right, nhds_coe_eq, coclosedCompact_eq_cocompact,
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]
     exact ⟨disjoint_nhds_cocompact z, range_mem_map⟩
-  suffices : T2Space (OnePoint X); exact normalOfCompactT2
-  refine t2Space_iff_disjoint_nhds.2 fun x y hxy => ?_
+  refine ⟨fun x y ↦ ?_⟩
   induction x using OnePoint.rec <;> induction y using OnePoint.rec
-  · exact (hxy rfl).elim
-  · exact (key _).symm
-  · exact key _
-  · rwa [nhds_coe_eq, nhds_coe_eq, disjoint_map coe_injective, disjoint_nhds_nhds,
-      ← coe_injective.ne_iff]
+  · exact .inl le_rfl
+  · exact .inr (key _).symm
+  · exact .inr (key _)
+  · rw [nhds_coe_eq, nhds_coe_eq, disjoint_map coe_injective, specializes_coe]
+    apply specializes_or_disjoint_nhds
+
+/-- The one point compactification of a weakly locally compact Hausdorff space is a T₄
+(hence, Hausdorff and regular) topological space. -/
+example [WeaklyLocallyCompactSpace X] [T2Space X] : T4Space (OnePoint X) := inferInstance
 
 /-- If `X` is not a compact space, then `OnePoint X` is a connected space. -/
 instance [PreconnectedSpace X] [NoncompactSpace X] : ConnectedSpace (OnePoint X) where
@@ -494,7 +494,7 @@ theorem not_continuous_cofiniteTopology_of_symm [Infinite X] [DiscreteTopology X
 
 end OnePoint
 
-/-- A concrete counterexample shows that  `Continuous.homeoOfEquivCompactToT2`
+/-- A concrete counterexample shows that `Continuous.homeoOfEquivCompactToT2`
 cannot be generalized from `T2Space` to `T1Space`.
 
 Let `α = OnePoint ℕ` be the one-point compactification of `ℕ`, and let `β` be the same space

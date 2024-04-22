@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Reid Barton
-
-! This file was ported from Lean 3 source module topology.shrinking_lemma
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.shrinking_lemma from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # The shrinking lemma
@@ -38,7 +35,7 @@ open scoped Classical
 
 noncomputable section
 
-variable {ι X : Type _} [TopologicalSpace X] [NormalSpace X]
+variable {ι X : Type*} [TopologicalSpace X] [NormalSpace X]
 
 namespace ShrinkingLemma
 
@@ -54,7 +51,7 @@ namespace ShrinkingLemma
 This type is equipped with the following partial order: `v ≤ v'` if `v.carrier ⊆ v'.carrier`
 and `v i = v' i` for `i ∈ v.carrier`. We will use Zorn's lemma to prove that this type has
 a maximal element, then show that the maximal element must have `carrier = univ`. -/
--- porting note: @[nolint has_nonempty_instance] is not here yet
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 @[ext] structure PartialRefinement (u : ι → Set X) (s : Set X) where
   /-- A family of sets that form a partial refinement of `u`. -/
   toFun : ι → Set X
@@ -154,7 +151,7 @@ def chainSup (c : Set (PartialRefinement u s)) (hc : IsChain (· ≤ ·) c) (ne 
     · simp_rw [not_exists, not_and, not_imp_not, chainSupCarrier, mem_iUnion₂] at hx
       haveI : Nonempty (PartialRefinement u s) := ⟨ne.some⟩
       choose! v hvc hiv using hx
-      rcases(hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
+      rcases (hfin x hxs).exists_maximal_wrt v _ (mem_iUnion.1 (hU hxs)) with
         ⟨i, hxi : x ∈ u i, hmax : ∀ j, x ∈ u j → v i ≤ v j → v i = v j⟩
       rcases mem_iUnion.1 ((v i).subset_iUnion hxs) with ⟨j, hj⟩
       use j
@@ -176,19 +173,19 @@ theorem le_chainSup {c : Set (PartialRefinement u s)} (hc : IsChain (· ≤ ·) 
 `i ∉ v.carrier`, then there exists a partial refinement that is strictly greater than `v`. -/
 theorem exists_gt (v : PartialRefinement u s) (hs : IsClosed s) (i : ι) (hi : i ∉ v.carrier) :
     ∃ v' : PartialRefinement u s, v < v' := by
-  have I : (s ∩ ⋂ (j) (_ : j ≠ i), v jᶜ) ⊆ v i := by
+  have I : (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) ⊆ v i := by
     simp only [subset_def, mem_inter_iff, mem_iInter, and_imp]
     intro x hxs H
     rcases mem_iUnion.1 (v.subset_iUnion hxs) with ⟨j, hj⟩
     exact (em (j = i)).elim (fun h => h ▸ hj) fun h => (H j h hj).elim
-  have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), v jᶜ) :=
+  have C : IsClosed (s ∩ ⋂ (j) (_ : j ≠ i), (v j)ᶜ) :=
     IsClosed.inter hs (isClosed_biInter fun _ _ => isClosed_compl_iff.2 <| v.isOpen _)
   rcases normal_exists_closure_subset C (v.isOpen i) I with ⟨vi, ovi, hvi, cvi⟩
   refine' ⟨⟨update v i vi, insert i v.carrier, _, _, _, _⟩, _, _⟩
   · intro j
     rcases eq_or_ne j i with (rfl| hne) <;> simp [*, v.isOpen]
   · refine' fun x hx => mem_iUnion.2 _
-    rcases em (∃ (j : _) (_ : j ≠ i), x ∈ v j) with (⟨j, hji, hj⟩ | h)
+    rcases em (∃ j ≠ i, x ∈ v j) with (⟨j, hji, hj⟩ | h)
     · use j
       rwa [update_noteq hji]
     · push_neg at h
@@ -226,8 +223,8 @@ theorem exists_subset_iUnion_closure_subset (hs : IsClosed s) (uo : ∀ i, IsOpe
       IsChain (· ≤ ·) c → c.Nonempty → ∃ ub, ∀ v ∈ c, v ≤ ub :=
     fun c hc ne => ⟨.chainSup c hc ne uf us, fun v hv => PartialRefinement.le_chainSup _ _ _ _ hv⟩
   rcases zorn_nonempty_partialOrder this with ⟨v, hv⟩
-  suffices : ∀ i, i ∈ v.carrier
-  exact ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
+  suffices ∀ i, i ∈ v.carrier from
+    ⟨v, v.subset_iUnion, fun i => v.isOpen _, fun i => v.closure_subset (this i)⟩
   contrapose! hv
   rcases hv with ⟨i, hi⟩
   rcases v.exists_gt hs i hi with ⟨v', hlt⟩
@@ -249,7 +246,7 @@ theorem exists_subset_iUnion_closed_subset (hs : IsClosed s) (uo : ∀ i, IsOpen
 to a new open cover so that the closure of each new open set is contained in the corresponding
 original open set. -/
 theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
-    (uU : (⋃ i, u i) = univ) :
+    (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsOpen (v i)) ∧ ∀ i, closure (v i) ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closure_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩
@@ -259,7 +256,7 @@ theorem exists_iUnion_eq_closure_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, 
 to a new closed cover so that each of the new closed sets is contained in the corresponding
 original open set. See also `exists_iUnion_eq_closure_subset` for a stronger statement. -/
 theorem exists_iUnion_eq_closed_subset (uo : ∀ i, IsOpen (u i)) (uf : ∀ x, { i | x ∈ u i }.Finite)
-    (uU : (⋃ i, u i) = univ) :
+    (uU : ⋃ i, u i = univ) :
     ∃ v : ι → Set X, iUnion v = univ ∧ (∀ i, IsClosed (v i)) ∧ ∀ i, v i ⊆ u i :=
   let ⟨v, vU, hv⟩ := exists_subset_iUnion_closed_subset isClosed_univ uo (fun x _ => uf x) uU.ge
   ⟨v, univ_subset_iff.1 vU, hv⟩

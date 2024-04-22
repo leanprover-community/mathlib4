@@ -2,16 +2,13 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.ordmap.ordnode
-! leanprover-community/mathlib commit dd71334db81d0bd444af1ee339a29298bef40734
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Compare
 import Mathlib.Data.List.Defs
 import Mathlib.Data.Nat.PSub
-import Mathlib.Init.Data.Nat.Bitwise
+import Mathlib.Data.Option.Basic
+
+#align_import data.ordmap.ordnode from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
 /-!
 # Ordered sets
@@ -66,7 +63,7 @@ ordered map, ordered set, data structure
 
 -/
 
-
+universe u
 
 /- ./././Mathport/Syntax/Translate/Command.lean:355:30: infer kinds are unsupported in Lean 4:
   nil {} -/
@@ -83,7 +80,7 @@ compile_inductive% Ordnode
 
 namespace Ordnode
 
-variable {α : Type _}
+variable {α : Type*}
 
 instance : EmptyCollection (Ordnode α) :=
   ⟨nil⟩
@@ -124,7 +121,6 @@ protected def singleton (a : α) : Ordnode α :=
   node 1 nil a nil
 #align ordnode.singleton Ordnode.singleton
 
--- mathport name: «exprι »
 local prefix:arg "ι" => Ordnode.singleton
 
 instance : Singleton α (Ordnode α) :=
@@ -139,13 +135,15 @@ def size : Ordnode α → ℕ
   | node sz _ _ _ => sz
 #align ordnode.size Ordnode.size
 
-theorem size_nil : size (nil : Ordnode α) = 0 :=
-  rfl
-theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) : size (node sz l x r) = sz :=
-  rfl
+-- Adaptation note:
+-- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
+-- See https://github.com/leanprover-community/mathlib4/issues/11647
 
-attribute [eqns size_nil size_node] size
-attribute [simp] size
+@[simp] theorem size_nil : size (nil : Ordnode α) = 0 :=
+  rfl
+@[simp] theorem size_node (sz : ℕ) (l : Ordnode α) (x : α) (r : Ordnode α) :
+    size (node sz l x r) = sz :=
+  rfl
 
 /-- O(1). Is the set empty?
 
@@ -179,7 +177,7 @@ def node' (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α :=
 /-- Basic pretty printing for `Ordnode α` that shows the structure of the tree.
 
      repr {3, 1, 2, 4} = ((∅ 1 ∅) 2 ((∅ 3 ∅) 4 ∅)) -/
-def repr {α} [Repr α]  (o : Ordnode α) (n : ℕ) : Std.Format :=
+def repr {α} [Repr α] (o : Ordnode α) (n : ℕ) : Std.Format :=
   match o with
   | nil => (Std.Format.text "∅")
   | node _ l x r =>
@@ -198,7 +196,7 @@ instance {α} [Repr α] : Repr (Ordnode α) :=
 O(1). Rebalance a tree which was previously balanced but has had its left
 side grow by 1, or its right side shrink by 1. -/
 def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id r with rs
   · cases' id l with ls ll lx lr
     · exact ι x
@@ -208,8 +206,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι lx) lrx ι x
       · cases' id lr with lrs lrl lrx lrr
         · exact node 3 ll lx ι x
-        ·
-          exact
+        · exact
             if lrs < ratio * lls then node (ls + 1) ll lx (node (lrs + 1) lr x nil)
             else
               node (ls + 1) (node (lls + size lrl + 1) ll lx lrl) lrx
@@ -235,7 +232,7 @@ def balanceL (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had its right
 side grow by 1, or its left side shrink by 1. -/
 def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id l with ls
   · cases' id r with rs rl rx rr
     · exact ι x
@@ -245,8 +242,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
         · exact node 3 (ι x) rlx ι rx
       · cases' id rl with rls rll rlx rlr
         · exact node 3 (ι x) rx rr
-        ·
-          exact
+        · exact
             if rls < ratio * rrs then node (rs + 1) (node (rls + 1) nil x rl) rx rr
             else
               node (rs + 1) (node (size rll + 1) nil x rll) rlx
@@ -272,7 +268,7 @@ def balanceR (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
 O(1). Rebalance a tree which was previously balanced but has had one side change
 by at most 1. -/
 def balance (l : Ordnode α) (x : α) (r : Ordnode α) : Ordnode α := by
-  -- porting notes: removed `clean`
+  -- Porting note: removed `clean`
   cases' id l with ls ll lx lr
   · cases' id r with rs rl rx rr
     · exact ι x
@@ -351,7 +347,7 @@ def Any (P : α → Prop) : Ordnode α → Prop
   | node _ l x r => Any P l ∨ P x ∨ Any P r
 #align ordnode.any Ordnode.Any
 
-instance Any.decidable {P : α → Prop} : (t: Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
+instance Any.decidable {P : α → Prop} : (t : Ordnode α ) → [DecidablePred P] → Decidable (Any P t)
   | nil => decidableFalse
   | node _ l _ r =>
     have : Decidable (Any P l) := Any.decidable l
@@ -599,7 +595,7 @@ Case conversion may be inaccurate. Consider using '#align ordnode.map Ordnode.ma
 the function is strictly monotone, i.e. `x < y → f x < f y`.
 
      partition (fun x ↦ x + 2) {1, 2, 4} = {2, 3, 6}
-     partition (λ x : ℕ, x - 2) {1, 2, 4} = precondition violation -/
+     partition (fun x : ℕ ↦ x - 2) {1, 2, 4} = precondition violation -/
 def map {β} (f : α → β) : Ordnode α → Ordnode β
   | nil => nil
   | node s l x r => node s (map f l) (f x) (map f r)
@@ -879,13 +875,13 @@ def ofAscListAux₁ : ∀ l : List α, ℕ → Ordnode α × { l' : List α // l
   | x :: xs => fun s =>
     if s = 1 then (ι x, ⟨xs, Nat.le_succ _⟩)
     else
-      match ofAscListAux₁ xs (s.shiftl 1) with
+      match ofAscListAux₁ xs (s <<< 1) with
       | (t, ⟨[], _⟩) => (t, ⟨[], Nat.zero_le _⟩)
       | (l, ⟨y :: ys, h⟩) =>
         have := Nat.le_succ_of_le h
-        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s.shiftl 1)
+        let (r, ⟨zs, h'⟩) := ofAscListAux₁ ys (s <<< 1)
         (link l y r, ⟨zs, le_trans h' (le_of_lt this)⟩)
-        termination_by ofAscListAux₁ l => l.length
+        termination_by l => l.length
 #align ordnode.of_asc_list_aux₁ Ordnode.ofAscListAux₁
 
 /-- Auxiliary definition for `ofAscList`. -/
@@ -895,8 +891,8 @@ def ofAscListAux₂ : List α → Ordnode α → ℕ → Ordnode α
     match ofAscListAux₁ xs s with
     | (r, ⟨ys, h⟩) =>
       have := Nat.lt_succ_of_le h
-      ofAscListAux₂ ys (link l x r) (s.shiftl 1)
-      termination_by ofAscListAux₂ l => l.length
+      ofAscListAux₂ ys (link l x r) (s <<< 1)
+      termination_by l => l.length
 #align ordnode.of_asc_list_aux₂ Ordnode.ofAscListAux₂
 
 /-- O(n). Build a set from a list which is already sorted. Performs no comparisons.
@@ -1352,7 +1348,7 @@ def ofList' : List α → Ordnode α
 Equivalent elements are selected with a preference for smaller source elements.
 
     image (fun x ↦ x + 2) {1, 2, 4} = {3, 4, 6}
-    image (λ x : ℕ, x - 2) {1, 2, 4} = {0, 2} -/
+    image (fun x : ℕ ↦ x - 2) {1, 2, 4} = {0, 2} -/
 def image {α β} [LE β] [@DecidableRel β (· ≤ ·)] (f : α → β) (t : Ordnode α) : Ordnode β :=
   ofList (t.toList.map f)
 #align ordnode.image Ordnode.image

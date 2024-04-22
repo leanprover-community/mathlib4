@@ -2,13 +2,10 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
-
-! This file was ported from Lean 3 source module data.W.basic
-! leanprover-community/mathlib commit 2445c98ae4b87eabebdde552593519b9b6dc350c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Equiv.List
+
+#align_import data.W.basic from "leanprover-community/mathlib"@"2445c98ae4b87eabebdde552593519b9b6dc350c"
 
 /-!
 # W types
@@ -34,10 +31,10 @@ identifier `W` in the root namespace.
 set_option linter.uppercaseLean3 false
 
 /--
-Given `β : α → Type _`, `WType β` is the type of finitely branching trees where nodes are labeled by
+Given `β : α → Type*`, `WType β` is the type of finitely branching trees where nodes are labeled by
 elements of `α` and the children of a node labeled `a` are indexed by elements of `β a`.
 -/
-inductive WType {α : Type _} (β : α → Type _)
+inductive WType {α : Type*} (β : α → Type*)
   | mk (a : α) (f : β a → WType β) : WType β
 #align W_type WType
 
@@ -46,7 +43,7 @@ instance : Inhabited (WType fun _ : Unit => Empty) :=
 
 namespace WType
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 /-- The canonical map to the corresponding sigma type, returning the label of a node as an
   element `a` of `α`, and the children of the node as a function `β a → WType β`. -/
@@ -87,13 +84,13 @@ def equivSigma : WType β ≃ Σa : α, β a → WType β
 
 variable {β}
 
--- porting note: Universes have a different order than mathlib3 definition
+-- Porting note: Universes have a different order than mathlib3 definition
 /-- The canonical map from `WType β` into any type `γ` given a map `(Σ a : α, β a → γ) → γ`. -/
-def elim (γ : Type _) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
+def elim (γ : Type*) (fγ : (Σa : α, β a → γ) → γ) : WType β → γ
   | ⟨a, f⟩ => fγ ⟨a, fun b => elim γ fγ (f b)⟩
 #align W_type.elim WType.elim
 
-theorem elim_injective (γ : Type _) (fγ : (Σa : α, β a → γ) → γ)
+theorem elim_injective (γ : Type*) (fγ : (Σa : α, β a → γ) → γ)
     (fγ_injective : Function.Injective fγ) : Function.Injective (elim γ fγ)
   | ⟨a₁, f₁⟩, ⟨a₂, f₂⟩, h => by
     obtain ⟨rfl, h⟩ := Sigma.mk.inj_iff.mp (fγ_injective h)
@@ -148,7 +145,7 @@ induction on `n` that these are all encodable. These auxiliary constructions are
 and of themselves, so we mark them as `private`.
 -/
 @[reducible]
-private def WType' {α : Type _} (β : α → Type _) [∀ a : α, Fintype (β a)]
+private def WType' {α : Type*} (β : α → Type*) [∀ a : α, Fintype (β a)]
     [∀ a : α, Encodable (β a)] (n : ℕ) :=
   { t : WType β // t.depth ≤ n }
 

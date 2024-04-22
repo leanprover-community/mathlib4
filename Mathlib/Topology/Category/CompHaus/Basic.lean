@@ -2,17 +2,15 @@
 Copyright (c) 2020 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz, Bhavik Mehta
-
-! This file was ported from Lean 3 source module topology.category.CompHaus.basic
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Reflective
 import Mathlib.Topology.StoneCech
 import Mathlib.CategoryTheory.Monad.Limits
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.Data.Set.Subsingleton
+
+#align_import topology.category.CompHaus.basic from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # The category of Compact Hausdorff Spaces
@@ -41,9 +39,9 @@ structure CompHaus where
   /-- The underlying topological space of an object of `CompHaus`. -/
   toTop : TopCat
   -- Porting note: Renamed field.
-  /-- The underlying topological space is compact.-/
+  /-- The underlying topological space is compact. -/
   [is_compact : CompactSpace toTop]
-  /-- The underlying topological space is T2.-/
+  /-- The underlying topological space is T2. -/
   [is_hausdorff : T2Space toTop]
 set_option linter.uppercaseLean3 false in
 #align CompHaus CompHaus
@@ -53,7 +51,7 @@ namespace CompHaus
 instance : Inhabited CompHaus :=
   ⟨{ toTop := { α := PEmpty } }⟩
 
-instance : CoeSort CompHaus (Type _) :=
+instance : CoeSort CompHaus (Type*) :=
   ⟨fun X => X.toTop⟩
 
 instance {X : CompHaus} : CompactSpace X :=
@@ -75,13 +73,13 @@ set_option linter.uppercaseLean3 false in
 /-
 -- Porting note: This is now a syntactic tautology.
 @[simp]
-theorem coe_toTop {X : CompHaus} : (X.toTop : Type _) = X :=
+theorem coe_toTop {X : CompHaus} : (X.toTop : Type*) = X :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_to_Top CompHaus.coe_toTop
 -/
 
-variable (X : Type _) [TopologicalSpace X] [CompactSpace X] [T2Space X]
+variable (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- A constructor for objects of the category `CompHaus`,
 taking a type, and bundling the compact Hausdorff topology
@@ -99,15 +97,15 @@ theorem coe_of : (CompHaus.of X : Type _) = X :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus.coe_of CompHaus.coe_of
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : TopologicalSpace ((forget CompHaus).obj X) :=
   show TopologicalSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : CompactSpace ((forget CompHaus).obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus.{u}) : T2Space ((forget CompHaus).obj X) :=
   show T2Space X.toTop from inferInstance
 
@@ -142,6 +140,41 @@ noncomputable def isoOfBijective {X Y : CompHaus.{u}} (f : X ⟶ Y) (bij : Funct
 set_option linter.uppercaseLean3 false in
 #align CompHaus.iso_of_bijective CompHaus.isoOfBijective
 
+/-- Construct an isomorphism from a homeomorphism. -/
+@[simps hom inv]
+def isoOfHomeo {X Y : CompHaus.{u}} (f : X ≃ₜ Y) : X ≅ Y where
+  hom := ⟨f, f.continuous⟩
+  inv := ⟨f.symm, f.symm.continuous⟩
+  hom_inv_id := by
+    ext x
+    exact f.symm_apply_apply x
+  inv_hom_id := by
+    ext x
+    exact f.apply_symm_apply x
+
+/-- Construct a homeomorphism from an isomorphism. -/
+@[simps]
+def homeoOfIso {X Y : CompHaus.{u}} (f : X ≅ Y) : X ≃ₜ Y where
+  toFun := f.hom
+  invFun := f.inv
+  left_inv x := by simp
+  right_inv x := by simp
+  continuous_toFun := f.hom.continuous
+  continuous_invFun := f.inv.continuous
+
+/-- The equivalence between isomorphisms in `CompHaus` and homeomorphisms
+of topological spaces. -/
+@[simps]
+def isoEquivHomeo {X Y : CompHaus.{u}} : (X ≅ Y) ≃ (X ≃ₜ Y) where
+  toFun := homeoOfIso
+  invFun := isoOfHomeo
+  left_inv f := by
+    ext
+    rfl
+  right_inv f := by
+    ext
+    rfl
+
 end CompHaus
 
 /-- The fully faithful embedding of `CompHaus` in `TopCat`. -/
@@ -152,22 +185,22 @@ def compHausToTop : CompHaus.{u} ⥤ TopCat.{u} :=
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top compHausToTop
 
-instance : Full compHausToTop :=
-  show Full <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Full  :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful compHausToTop :=
-  show Faithful <| inducedFunctor _ from inferInstance
+instance : compHausToTop.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : CompactSpace (compHausToTop.obj X) :=
   show CompactSpace X.toTop from inferInstance
 
--- Porting note: Adding instance
+-- Porting note (#10754): Adding instance
 instance (X : CompHaus) : T2Space (compHausToTop.obj X) :=
   show T2Space X.toTop from inferInstance
 
-instance CompHaus.forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget CompHaus.{u}) :=
-  ⟨by intro A B f hf ; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
+instance CompHaus.forget_reflectsIsomorphisms : (forget CompHaus.{u}).ReflectsIsomorphisms :=
+  ⟨by intro A B f hf; exact CompHaus.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus.forget_reflects_isomorphisms CompHaus.forget_reflectsIsomorphisms
 
@@ -224,8 +257,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The category of compact Hausdorff spaces is reflective in the category of topological spaces.
 -/
-noncomputable instance compHausToTop.reflective : Reflective compHausToTop
-    where toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
+noncomputable instance compHausToTop.reflective : Reflective compHausToTop where
+  toIsRightAdjoint := ⟨topToCompHaus, Adjunction.adjunctionOfEquivLeft _ _⟩
 set_option linter.uppercaseLean3 false in
 #align CompHaus_to_Top.reflective compHausToTop.reflective
 
@@ -308,9 +341,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       rw [Set.disjoint_singleton_right]
       rintro ⟨y', hy'⟩
       exact hy y' hy'
-    --haveI : NormalSpace Y.toTop := normalOfCompactT2
-    haveI : NormalSpace ((forget CompHaus).obj Y) := normalOfCompactT2
-    obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_closed hC hD hCD
+    obtain ⟨φ, hφ0, hφ1, hφ01⟩ := exists_continuous_zero_one_of_isClosed hC hD hCD
     haveI : CompactSpace (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.compactSpace
     haveI : T2Space (ULift.{u} <| Set.Icc (0 : ℝ) 1) := Homeomorph.ulift.symm.t2Space
     let Z := of (ULift.{u} <| Set.Icc (0 : ℝ) 1)
@@ -333,7 +364,7 @@ theorem epi_iff_surjective {X Y : CompHaus.{u}} (f : X ⟶ Y) : Epi f ↔ Functi
       change 0 = φ (f x)
       simp only [hφ0 (Set.mem_range_self x), Pi.zero_apply]
     apply_fun fun e => (e y).down.1 at H
-    dsimp at H
+    dsimp [Z] at H
     change 0 = φ y at H
     simp only [hφ1 (Set.mem_singleton y), Pi.one_apply] at H
     exact zero_ne_one H
@@ -359,3 +390,15 @@ set_option linter.uppercaseLean3 false in
 #align CompHaus.mono_iff_injective CompHaus.mono_iff_injective
 
 end CompHaus
+
+/--
+Many definitions involving universe inequalities in Mathlib are expressed through use of `max u v`.
+Unfortunately, this leads to unbound universes which cannot be solved for during unification, eg
+`max u v =?= max v ?`.
+The current solution is to wrap `Type max u v` in `TypeMax.{u,v}`
+to expose both universe parameters directly.
+Similarly, for other concrete categories for which we need to refer to the maximum of two universes
+(e.g. any category for which we are constructing limits), we need an analogous abbreviation.
+-/
+@[nolint checkUnivs]
+abbrev CompHausMax.{w, w'} := CompHaus.{max w w'}

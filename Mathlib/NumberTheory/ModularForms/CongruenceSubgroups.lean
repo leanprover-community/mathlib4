@@ -2,16 +2,13 @@
 Copyright (c) 2022 Chris Birkbeck. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
-
-! This file was ported from Lean 3 source module number_theory.modular_forms.congruence_subgroups
-! leanprover-community/mathlib commit ae690b0c236e488a0043f6faa8ce3546e7f2f9c5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.ConjAct
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+
+#align_import number_theory.modular_forms.congruence_subgroups from "leanprover-community/mathlib"@"ae690b0c236e488a0043f6faa8ce3546e7f2f9c5"
 
 /-!
 # Congruence subgroups
@@ -46,7 +43,7 @@ theorem SL_reduction_mod_hom_val (N : ℕ) (γ : SL(2, ℤ)) :
 #align SL_reduction_mod_hom_val SL_reduction_mod_hom_val
 
 /-- The full level `N` congruence subgroup of `SL(2, ℤ)` of matrices that reduce to the identity
-modulo `N`.-/
+modulo `N`. -/
 def Gamma (N : ℕ) : Subgroup SL(2, ℤ) :=
   SLMOD(N).ker
 #align Gamma Gamma
@@ -75,7 +72,7 @@ theorem Gamma_normal (N : ℕ) : Subgroup.Normal (Gamma N) :=
 
 theorem Gamma_one_top : Gamma 1 = ⊤ := by
   ext
-  simp
+  simp [eq_iff_true_of_subsingleton]
 #align Gamma_one_top Gamma_one_top
 
 theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
@@ -100,8 +97,7 @@ def Gamma0 (N : ℕ) : Subgroup SL(2, ℤ) where
     intro a b ha hb
     simp only [Set.mem_setOf_eq]
     have h := (Matrix.two_mul_expl a.1 b.1).2.2.1
-    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq,
-      mul_eq_mul] at *
+    simp only [coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply, Set.mem_setOf_eq] at *
     rw [h]
     simp [ha, hb]
   inv_mem' := by
@@ -129,8 +125,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
   map_mul' := by
     intro A B
     have := (two_mul_expl A.1.1 B.1.1).2.2.2
-    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply,
-      mul_eq_mul] at *
+    simp only [Subgroup.coe_mul, coe_matrix_coe, coe_mul, Int.coe_castRingHom, map_apply] at *
     rw [this]
     have ha := A.property
     simp only [Int.cast_add, Int.cast_mul, add_left_eq_self, Gamma0_mem,
@@ -140,7 +135,7 @@ def Gamma0Map (N : ℕ) : Gamma0 N →* ZMod N where
 #align Gamma_0_map Gamma0Map
 
 /-- The congruence subgroup `Gamma1` (as a subgroup of `Gamma0`) of matrices whose bottom
-row is congruent to `(0,1)` modulo `N`.-/
+row is congruent to `(0,1)` modulo `N`. -/
 def Gamma1' (N : ℕ) : Subgroup (Gamma0 N) :=
   (Gamma0Map N).ker
 #align Gamma1' Gamma1'
@@ -161,7 +156,7 @@ theorem Gamma1_to_Gamma0_mem (N : ℕ) (A : Gamma0 N) : A ∈ Gamma1' N ↔
     simp only [Gamma0Map, coe_matrix_coe, Int.coe_castRingHom, map_apply, Gamma1_mem',
       MonoidHom.coe_mk, OneHom.coe_mk, Int.cast_sub, Int.cast_mul] at *
     rw [hA, ha] at adet
-    simp only [mul_one, MulZeroClass.mul_zero, sub_zero] at adet
+    simp only [mul_one, mul_zero, sub_zero] at adet
     simp only [adet, hA, ha, eq_self_iff_true, and_self_iff]
   · intro ha
     simp only [Gamma1_mem', Gamma0Map, MonoidHom.coe_mk, coe_matrix_coe,
@@ -214,7 +209,7 @@ def IsCongruenceSubgroup (Γ : Subgroup SL(2, ℤ)) : Prop :=
 theorem isCongruenceSubgroup_trans (H K : Subgroup SL(2, ℤ)) (h : H ≤ K)
     (h2 : IsCongruenceSubgroup H) : IsCongruenceSubgroup K := by
   obtain ⟨N, hN⟩ := h2
-  refine' ⟨N, le_trans hN h⟩
+  exact ⟨N, le_trans hN h⟩
 #align is_congruence_subgroup_trans isCongruenceSubgroup_trans
 
 theorem Gamma_is_cong_sub (N : ℕ+) : IsCongruenceSubgroup (Gamma N) :=

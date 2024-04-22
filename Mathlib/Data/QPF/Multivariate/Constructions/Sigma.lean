@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.qpf.multivariate.constructions.sigma
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.PFunctor.Multivariate.Basic
 import Mathlib.Data.QPF.Multivariate.Basic
+
+#align_import data.qpf.multivariate.constructions.sigma from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Dependent product and sum of QPFs are QPFs
@@ -23,16 +20,15 @@ namespace MvQPF
 open MvFunctor
 
 variable {n : ℕ} {A : Type u}
-
 variable (F : A → TypeVec.{u} n → Type u)
 
-/-- Dependent sum of of an `n`-ary functor. The sum can range over
+/-- Dependent sum of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
 def Sigma (v : TypeVec.{u} n) : Type u :=
   Σ α : A, F α v
 #align mvqpf.sigma MvQPF.Sigma
 
-/-- Dependent product of of an `n`-ary functor. The sum can range over
+/-- Dependent product of an `n`-ary functor. The sum can range over
 data types like `ℕ` or over `Type.{u-1}` -/
 def Pi (v : TypeVec.{u} n) : Type u :=
   ∀ α : A, F α v
@@ -61,12 +57,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.sigma.P MvQPF.Sigma.P
 
 /-- abstraction function for dependent sums -/
-protected def abs ⦃α⦄ : (Sigma.P F).Obj α → Sigma F α
+protected def abs ⦃α⦄ : Sigma.P F α → Sigma F α
   | ⟨a, f⟩ => ⟨a.1, MvQPF.abs ⟨a.2, f⟩⟩
 #align mvqpf.sigma.abs MvQPF.Sigma.abs
 
 /-- representation function for dependent sums -/
-protected def repr ⦃α⦄ : Sigma F α → (Sigma.P F).Obj α
+protected def repr ⦃α⦄ : Sigma F α → Sigma.P F α
   | ⟨a, f⟩ =>
     let x := MvQPF.repr f
     ⟨⟨a, x.1⟩, x.2⟩
@@ -95,12 +91,12 @@ set_option linter.uppercaseLean3 false in
 #align mvqpf.pi.P MvQPF.Pi.P
 
 /-- abstraction function for dependent products -/
-protected def abs ⦃α⦄ : (Pi.P F).Obj α → Pi F α
+protected def abs ⦃α⦄ : Pi.P F α → Pi F α
   | ⟨a, f⟩ => fun x => MvQPF.abs ⟨a x, fun i y => f i ⟨_, y⟩⟩
 #align mvqpf.pi.abs MvQPF.Pi.abs
 
 /-- representation function for dependent products -/
-protected def repr ⦃α⦄ : Pi F α → (Pi.P F).Obj α
+protected def repr ⦃α⦄ : Pi F α → Pi.P F α
   | f => ⟨fun a => (MvQPF.repr (f a)).1, fun _i a => (MvQPF.repr (f _)).2 _ a.2⟩
 #align mvqpf.pi.repr MvQPF.Pi.repr
 

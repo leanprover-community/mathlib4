@@ -2,14 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.lattice
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.FinsetOps
 import Mathlib.Data.Multiset.Fold
+
+#align_import data.multiset.lattice from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Lattice operations on multisets
@@ -18,7 +15,7 @@ import Mathlib.Data.Multiset.Fold
 
 namespace Multiset
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-! ### sup -/
 
@@ -49,8 +46,7 @@ theorem sup_cons (a : α) (s : Multiset α) : (a ::ₘ s).sup = a ⊔ s.sup :=
 #align multiset.sup_cons Multiset.sup_cons
 
 @[simp]
-theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a :=
-  sup_bot_eq
+theorem sup_singleton {a : α} : ({a} : Multiset α).sup = a := sup_bot_eq _
 #align multiset.sup_singleton Multiset.sup_singleton
 
 @[simp]
@@ -58,6 +54,7 @@ theorem sup_add (s₁ s₂ : Multiset α) : (s₁ + s₂).sup = s₁.sup ⊔ s�
   Eq.trans (by simp [sup]) (fold_add _ _ _ _ _)
 #align multiset.sup_add Multiset.sup_add
 
+@[simp]
 theorem sup_le {s : Multiset α} {a : α} : s.sup ≤ a ↔ ∀ b ∈ s, b ≤ a :=
   Multiset.induction_on s (by simp)
     (by simp (config := { contextual := true }) [or_imp, forall_and])
@@ -93,7 +90,7 @@ theorem sup_ndinsert (a : α) (s : Multiset α) : (ndinsert a s).sup = a ⊔ s.s
   rw [← sup_dedup, dedup_ext.2, sup_dedup, sup_cons]; simp
 #align multiset.sup_ndinsert Multiset.sup_ndinsert
 
-theorem nodup_sup_iff {α : Type _} [DecidableEq α] {m : Multiset (Multiset α)} :
+theorem nodup_sup_iff {α : Type*} [DecidableEq α] {m : Multiset (Multiset α)} :
     m.sup.Nodup ↔ ∀ a : Multiset α, a ∈ m → a.Nodup := by
   -- Porting note: this was originally `apply m.induction_on`, which failed due to
   -- `failed to elaborate eliminator, expected type is not available`
@@ -133,8 +130,7 @@ theorem inf_cons (a : α) (s : Multiset α) : (a ::ₘ s).inf = a ⊓ s.inf :=
 #align multiset.inf_cons Multiset.inf_cons
 
 @[simp]
-theorem inf_singleton {a : α} : ({a} : Multiset α).inf = a :=
-  inf_top_eq
+theorem inf_singleton {a : α} : ({a} : Multiset α).inf = a := inf_top_eq _
 #align multiset.inf_singleton Multiset.inf_singleton
 
 @[simp]
@@ -142,6 +138,7 @@ theorem inf_add (s₁ s₂ : Multiset α) : (s₁ + s₂).inf = s₁.inf ⊓ s�
   Eq.trans (by simp [inf]) (fold_add _ _ _ _ _)
 #align multiset.inf_add Multiset.inf_add
 
+@[simp]
 theorem le_inf {s : Multiset α} {a : α} : a ≤ s.inf ↔ ∀ b ∈ s, a ≤ b :=
   Multiset.induction_on s (by simp)
     (by simp (config := { contextual := true }) [or_imp, forall_and])

@@ -2,14 +2,11 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Floris van Doorn, Gabriel Ebner, Yury Kudryashov
-
-! This file was ported from Lean 3 source module data.nat.lattice
-! leanprover-community/mathlib commit 52fa514ec337dd970d71d8de8d0fd68b455a1e54
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.ConditionallyCompleteLattice.Finset
+
+#align_import data.nat.lattice from "leanprover-community/mathlib"@"52fa514ec337dd970d71d8de8d0fd68b455a1e54"
 
 /-!
 # Conditionally complete linear order structure on `ℕ`
@@ -25,7 +22,7 @@ open Set
 
 namespace Nat
 
-open Classical
+open scoped Classical
 
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
@@ -65,9 +62,14 @@ theorem sInf_empty : sInf ∅ = 0 := by
 #align nat.Inf_empty Nat.sInf_empty
 
 @[simp]
-theorem iInf_of_empty {ι : Sort _} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
-  rw [iInf_of_empty', sInf_empty]
+theorem iInf_of_empty {ι : Sort*} [IsEmpty ι] (f : ι → ℕ) : iInf f = 0 := by
+  rw [iInf_of_isEmpty, sInf_empty]
 #align nat.infi_of_empty Nat.iInf_of_empty
+
+/-- This combines `Nat.iInf_of_empty` with `ciInf_const`. -/
+@[simp]
+lemma iInf_const_zero {ι : Sort*} : ⨅ i : ι, 0 = 0 :=
+  (isEmpty_or_nonempty ι).elim (fun h ↦ by simp) fun h ↦ sInf_eq_zero.2 <| by simp
 
 theorem sInf_mem {s : Set ℕ} (h : s.Nonempty) : sInf s ∈ s := by
   rw [Nat.sInf_def h]
@@ -113,7 +115,7 @@ theorem sInf_upward_closed_eq_succ_iff {s : Set ℕ} (hs : ∀ k₁ k₂ : ℕ, 
     exact k; assumption
   · rintro ⟨H, H'⟩
     rw [sInf_def (⟨_, H⟩ : s.Nonempty), find_eq_iff]
-    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (lt_succ_iff.mp hnk) hns⟩
+    exact ⟨H, fun n hnk hns ↦ H' <| hs n k (Nat.lt_succ_iff.mp hnk) hns⟩
 #align nat.Inf_upward_closed_eq_succ_iff Nat.sInf_upward_closed_eq_succ_iff
 
 /-- This instance is necessary, otherwise the lattice operations would be derived via
@@ -126,20 +128,28 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
     (inferInstance : LinearOrder ℕ) with
     -- sup := sSup -- Porting note: removed, unnecessary?
     -- inf := sInf -- Porting note: removed, unnecessary?
-    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb] ; revert a ha ; exact @Nat.find_spec _ _ hb
-    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+    le_csSup := fun s a hb ha ↦ by rw [sSup_def hb]; revert a ha; exact @Nat.find_spec _ _ hb
+    csSup_le := fun s a _ ha ↦ by rw [sSup_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     le_csInf := fun s a hs hb ↦ by
-      rw [sInf_def hs] ; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
-    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩] ; exact Nat.find_min' _ ha
+      rw [sInf_def hs]; exact hb (@Nat.find_spec (fun n ↦ n ∈ s) _ _)
+    csInf_le := fun s a _ ha ↦ by rw [sInf_def ⟨a, ha⟩]; exact Nat.find_min' _ ha
     csSup_empty := by
       simp only [sSup_def, Set.mem_empty_iff_false, forall_const, forall_prop_of_false,
         not_false_iff, exists_const]
       apply bot_unique (Nat.find_min' _ _)
-      trivial }
+      trivial
+    csSup_of_not_bddAbove := by
+      intro s hs
+      simp only [mem_univ, forall_true_left, sSup,
+        mem_empty_iff_false, IsEmpty.forall_iff, forall_const, exists_const, dite_true]
+      rw [dif_neg]
+      · exact le_antisymm (zero_le _) (find_le trivial)
+      · exact hs
+    csInf_of_not_bddBelow := fun s hs ↦ by simp at hs }
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂
-  h₁.cSup_mem ((finite_le_nat k).subset hk)
+  h₁.csSup_mem ((finite_le_nat k).subset hk)
 #align nat.Sup_mem Nat.sSup_mem
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
@@ -148,8 +158,7 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
   · rw [h, Nat.sInf_empty, zero_add]
     obtain hnp | hnp := hn.eq_or_lt
     · exact hnp
-    suffices hp : p (sInf { m | p m } - n + n)
-    · exact (h.subset hp).elim
+    suffices hp : p (sInf { m | p m } - n + n) from (h.subset hp).elim
     rw [tsub_add_cancel_of_le hn]
     exact csInf_mem (nonempty_of_pos_sInf <| n.zero_le.trans_lt hnp)
   · have hp : ∃ n, n ∈ { m | p m } := ⟨_, hm⟩
@@ -160,9 +169,9 @@ theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :
 
 theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
     sInf { m | p m } + n = sInf { m | p (m - n) } := by
-  suffices h₁ : n ≤ sInf {m | p (m - n)}
-  convert sInf_add h₁
-  · simp_rw [add_tsub_cancel_right]
+  suffices h₁ : n ≤ sInf {m | p (m - n)} by
+    convert sInf_add h₁
+    simp_rw [add_tsub_cancel_right]
   obtain ⟨m, hm⟩ := nonempty_of_pos_sInf h
   refine'
     le_csInf ⟨m + n, _⟩ fun b hb ↦
@@ -175,24 +184,36 @@ theorem sInf_add' {n : ℕ} {p : ℕ → Prop} (h : 0 < sInf { m | p m }) :
 
 section
 
-variable {α : Type _} [CompleteLattice α]
+variable {α : Type*} [CompleteLattice α]
 
-theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = (⨆ k < n, u k) ⊔ u n := by
+theorem iSup_lt_succ (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = (⨆ k < n, u k) ⊔ u n := by
   simp [Nat.lt_succ_iff_lt_or_eq, iSup_or, iSup_sup_eq]
 #align nat.supr_lt_succ Nat.iSup_lt_succ
 
-theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : (⨆ k < n + 1, u k) = u 0 ⊔ ⨆ k < n, u (k + 1) := by
+theorem iSup_lt_succ' (u : ℕ → α) (n : ℕ) : ⨆ k < n + 1, u k = u 0 ⊔ ⨆ k < n, u (k + 1) := by
   rw [← sup_iSup_nat_succ]
   simp
 #align nat.supr_lt_succ' Nat.iSup_lt_succ'
 
-theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = (⨅ k < n, u k) ⊓ u n :=
+theorem iInf_lt_succ (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = (⨅ k < n, u k) ⊓ u n :=
   @iSup_lt_succ αᵒᵈ _ _ _
 #align nat.infi_lt_succ Nat.iInf_lt_succ
 
-theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : (⨅ k < n + 1, u k) = u 0 ⊓ ⨅ k < n, u (k + 1) :=
+theorem iInf_lt_succ' (u : ℕ → α) (n : ℕ) : ⨅ k < n + 1, u k = u 0 ⊓ ⨅ k < n, u (k + 1) :=
   @iSup_lt_succ' αᵒᵈ _ _ _
 #align nat.infi_lt_succ' Nat.iInf_lt_succ'
+
+theorem iSup_le_succ (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = (⨆ k ≤ n, u k) ⊔ u (n + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iSup_lt_succ]
+
+theorem iSup_le_succ' (u : ℕ → α) (n : ℕ) : ⨆ k ≤ n + 1, u k = u 0 ⊔ ⨆ k ≤ n, u (k + 1) := by
+  simp_rw [← Nat.lt_succ_iff, iSup_lt_succ']
+
+theorem iInf_le_succ (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = (⨅ k ≤ n, u k) ⊓ u (n + 1) :=
+  @iSup_le_succ αᵒᵈ _ _ _
+
+theorem iInf_le_succ' (u : ℕ → α) (n : ℕ) : ⨅ k ≤ n + 1, u k = u 0 ⊓ ⨅ k ≤ n, u (k + 1) :=
+  @iSup_le_succ' αᵒᵈ _ _ _
 
 end
 
@@ -200,22 +221,34 @@ end Nat
 
 namespace Set
 
-variable {α : Type _}
+variable {α : Type*}
 
-theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = (⋃ k < n, u k) ∪ u n :=
+theorem biUnion_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = (⋃ k < n, u k) ∪ u n :=
   Nat.iSup_lt_succ u n
 #align set.bUnion_lt_succ Set.biUnion_lt_succ
 
-theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋃ k < n + 1, u k) = u 0 ∪ ⋃ k < n, u (k + 1) :=
+theorem biUnion_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋃ k < n + 1, u k = u 0 ∪ ⋃ k < n, u (k + 1) :=
   Nat.iSup_lt_succ' u n
 #align set.bUnion_lt_succ' Set.biUnion_lt_succ'
 
-theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = (⋂ k < n, u k) ∩ u n :=
+theorem biInter_lt_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = (⋂ k < n, u k) ∩ u n :=
   Nat.iInf_lt_succ u n
 #align set.bInter_lt_succ Set.biInter_lt_succ
 
-theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : (⋂ k < n + 1, u k) = u 0 ∩ ⋂ k < n, u (k + 1) :=
+theorem biInter_lt_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k < n + 1, u k = u 0 ∩ ⋂ k < n, u (k + 1) :=
   Nat.iInf_lt_succ' u n
 #align set.bInter_lt_succ' Set.biInter_lt_succ'
+
+theorem biUnion_le_succ (u : ℕ → Set α) (n : ℕ) : ⋃ k ≤ n + 1, u k = (⋃ k ≤ n, u k) ∪ u (n + 1) :=
+  Nat.iSup_le_succ u n
+
+theorem biUnion_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋃ k ≤ n + 1, u k = u 0 ∪ ⋃ k ≤ n, u (k + 1) :=
+  Nat.iSup_le_succ' u n
+
+theorem biInter_le_succ (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = (⋂ k ≤ n, u k) ∩ u (n + 1) :=
+  Nat.iInf_le_succ u n
+
+theorem biInter_le_succ' (u : ℕ → Set α) (n : ℕ) : ⋂ k ≤ n + 1, u k = u 0 ∩ ⋂ k ≤ n, u (k + 1) :=
+  Nat.iInf_le_succ' u n
 
 end Set

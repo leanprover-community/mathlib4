@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.affine_space.slope
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
 import Mathlib.Tactic.FieldSimp
+
+#align_import linear_algebra.affine_space.slope from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Slope of a function
@@ -26,7 +23,7 @@ affine space, slope
 
 open AffineMap
 
-variable {k E PE : Type _} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
+variable {k E PE : Type*} [Field k] [AddCommGroup E] [Module k E] [AddTorsor E PE]
 
 /-- `slope f a b = (b - a)⁻¹ • (f b -ᵥ f a)` is the slope of a function `f` on the interval
 `[a, b]`. Note that `slope f a a = 0`, not the derivative of `f` at `a`. -/
@@ -82,12 +79,12 @@ theorem eq_of_slope_eq_zero {f : k → PE} {a b : k} (h : slope f a b = (0 : E))
   rw [← sub_smul_slope_vadd f a b, h, smul_zero, zero_vadd]
 #align eq_of_slope_eq_zero eq_of_slope_eq_zero
 
-theorem AffineMap.slope_comp {F PF : Type _} [AddCommGroup F] [Module k F] [AddTorsor F PF]
+theorem AffineMap.slope_comp {F PF : Type*} [AddCommGroup F] [Module k F] [AddTorsor F PF]
     (f : PE →ᵃ[k] PF) (g : k → PE) (a b : k) : slope (f ∘ g) a b = f.linear (slope g a b) := by
   simp only [slope, (· ∘ ·), f.linear.map_smul, f.linearMap_vsub]
 #align affine_map.slope_comp AffineMap.slope_comp
 
-theorem LinearMap.slope_comp {F : Type _} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
+theorem LinearMap.slope_comp {F : Type*} [AddCommGroup F] [Module k F] (f : E →ₗ[k] F) (g : k → E)
     (a b : k) : slope (f ∘ g) a b = f (slope g a b) :=
   f.toAffineMap.slope_comp g a b
 #align linear_map.slope_comp LinearMap.slope_comp
@@ -95,6 +92,9 @@ theorem LinearMap.slope_comp {F : Type _} [AddCommGroup F] [Module k F] (f : E �
 theorem slope_comm (f : k → PE) (a b : k) : slope f a b = slope f b a := by
   rw [slope, slope, ← neg_vsub_eq_vsub_rev, smul_neg, ← neg_smul, neg_inv, neg_sub]
 #align slope_comm slope_comm
+
+@[simp] lemma slope_neg (f : k → E) (x y : k) : slope (fun t ↦ -f t) x y = -slope f x y := by
+  simp only [slope_def_module, neg_sub_neg, ← smul_neg, neg_sub]
 
 /-- `slope f a c` is a linear combination of `slope f a b` and `slope f b c`. This version
 explicitly provides coefficients. If `a ≠ c`, then the sum of the coefficients is `1`, so it is

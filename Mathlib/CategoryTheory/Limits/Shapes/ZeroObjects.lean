@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johan Commelin
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.zero_objects
-! leanprover-community/mathlib commit 74333bd53d25b6809203a2bfae80eea5fc1fc076
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.limits.shapes.zero_objects from "leanprover-community/mathlib"@"74333bd53d25b6809203a2bfae80eea5fc1fc076"
 
 /-!
 # Zero objects
@@ -32,7 +29,6 @@ open CategoryTheory
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D]
 
 namespace CategoryTheory
@@ -54,7 +50,7 @@ namespace IsZero
 
 variable {X Y : C}
 
--- Porting: `to` is a reserved word, it was replaced by `to_`
+-- Porting note: `to` is a reserved word, it was replaced by `to_`
 /-- If `h : IsZero X`, then `h.to_ Y` is a choice of unique morphism `X → Y`. -/
 protected def to_ (h : IsZero X) (Y : C) : X ⟶ Y :=
   @default _ <| (h.unique_to Y).some.toInhabited
@@ -68,7 +64,7 @@ theorem to_eq (h : IsZero X) (f : X ⟶ Y) : h.to_ Y = f :=
   (h.eq_to f).symm
 #align category_theory.limits.is_zero.to_eq CategoryTheory.Limits.IsZero.to_eq
 
--- Porting: `from` is a reserved word, it was replaced by `from_`
+-- Porting note: `from` is a reserved word, it was replaced by `from_`
 /-- If `h : is_zero X`, then `h.from_ Y` is a choice of unique morphism `Y → X`. -/
 protected def from_ (h : IsZero X) (Y : C) : Y ⟶ X :=
   @default _ <| (h.unique_from Y).some.toInhabited

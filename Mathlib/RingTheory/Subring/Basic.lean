@@ -2,14 +2,11 @@
 Copyright (c) 2020 Ashvni Narayanan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ashvni Narayanan
-
-! This file was ported from Lean 3 source module ring_theory.subring.basic
-! leanprover-community/mathlib commit b915e9392ecb2a861e1e766f0e1df6ac481188ca
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.RingTheory.Subsemiring.Basic
+
+#align_import ring_theory.subring.basic from "leanprover-community/mathlib"@"b915e9392ecb2a861e1e766f0e1df6ac481188ca"
 
 /-!
 # Subrings
@@ -77,25 +74,29 @@ section SubringClass
 
 /-- `SubringClass S R` states that `S` is a type of subsets `s ⊆ R` that
 are both a multiplicative submonoid and an additive subgroup. -/
-class SubringClass (S : Type _) (R : Type u) [Ring R] [SetLike S R] extends
+class SubringClass (S : Type*) (R : Type u) [Ring R] [SetLike S R] extends
   SubsemiringClass S R, NegMemClass S R : Prop
 #align subring_class SubringClass
 
 -- See note [lower instance priority]
-instance (priority := 100) SubringClass.addSubgroupClass (S : Type _) (R : Type u)
+instance (priority := 100) SubringClass.addSubgroupClass (S : Type*) (R : Type u)
     [SetLike S R] [Ring R] [h : SubringClass S R] : AddSubgroupClass S R :=
   { h with }
 #align subring_class.add_subgroup_class SubringClass.addSubgroupClass
 
 variable [SetLike S R] [hSR : SubringClass S R] (s : S)
 
-theorem coe_int_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
-#align coe_int_mem coe_int_mem
+@[aesop safe apply (rule_sets := [SetLike])]
+theorem intCast_mem (n : ℤ) : (n : R) ∈ s := by simp only [← zsmul_one, zsmul_mem, one_mem]
+#align coe_int_mem intCast_mem
+
+-- 2024-04-05
+@[deprecated _root_.intCast_mem] alias coe_int_mem := intCast_mem
 
 namespace SubringClass
 
 instance (priority := 75) toHasIntCast : IntCast s :=
-  ⟨fun n => ⟨n, coe_int_mem s n⟩⟩
+  ⟨fun n => ⟨n, intCast_mem s n⟩⟩
 #align subring_class.to_has_int_cast SubringClass.toHasIntCast
 
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
@@ -116,46 +117,11 @@ instance (priority := 75) toCommRing {R} [CommRing R] [SetLike S R] [SubringClas
 -- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
 /-- A subring of a domain is a domain. -/
 instance (priority := 75) {R} [Ring R] [IsDomain R] [SetLike S R] [SubringClass S R] : IsDomain s :=
-  have := SubsemiringClass.noZeroDivisors (s := s) -- porting note: todo: fails without `have`
   NoZeroDivisors.to_isDomain _
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance (priority := 75) toOrderedRing {R} [OrderedRing R] [SetLike S R] [SubringClass S R] :
-    OrderedRing s :=
-  Subtype.coe_injective.orderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_ring SubringClass.toOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance (priority := 75) toOrderedCommRing {R} [OrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : OrderedCommRing s :=
-  Subtype.coe_injective.orderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) fun _ => rfl
-#align subring_class.to_ordered_comm_ring SubringClass.toOrderedCommRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance (priority := 75) toLinearOrderedRing {R} [LinearOrderedRing R] [SetLike S R]
-    [SubringClass S R] : LinearOrderedRing s :=
-  Subtype.coe_injective.linearOrderedRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_ring SubringClass.toLinearOrderedRing
-
--- Prefer subclasses of `Ring` over subclasses of `SubringClass`.
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance (priority := 75) toLinearOrderedCommRing {R} [LinearOrderedCommRing R] [SetLike S R]
-    [SubringClass S R] : LinearOrderedCommRing s :=
-  Subtype.coe_injective.linearOrderedCommRing (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subring_class.to_linear_ordered_comm_ring SubringClass.toLinearOrderedCommRing
 
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : S) : s →+* R :=
-  { SubmonoidClass.Subtype s, AddSubgroupClass.subtype s with
+  { SubmonoidClass.subtype s, AddSubgroupClass.subtype s with
     toFun := (↑) }
 #align subring_class.subtype SubringClass.subtype
 
@@ -194,7 +160,7 @@ add_decl_doc Subring.toAddSubgroup
 
 namespace Subring
 
--- porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
+-- Porting note: there is no `Subring.toSubmonoid` but we can't define it because there is a
 -- projection `s.toSubmonoid`
 #noalign subring.to_submonoid
 
@@ -393,14 +359,14 @@ protected theorem multiset_sum_mem {R} [Ring R] (s : Subring R) (m : Multiset R)
 
 /-- Product of elements of a subring of a `CommRing` indexed by a `Finset` is in the
     subring. -/
-protected theorem prod_mem {R : Type _} [CommRing R] (s : Subring R) {ι : Type _} {t : Finset ι}
+protected theorem prod_mem {R : Type*} [CommRing R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∏ i in t, f i) ∈ s :=
   prod_mem h
 #align subring.prod_mem Subring.prod_mem
 
 /-- Sum of elements in a `Subring` of a `Ring` indexed by a `Finset`
 is in the `Subring`. -/
-protected theorem sum_mem {R : Type _} [Ring R] (s : Subring R) {ι : Type _} {t : Finset ι}
+protected theorem sum_mem {R : Type*} [Ring R] (s : Subring R) {ι : Type*} {t : Finset ι}
     {f : ι → R} (h : ∀ c ∈ t, f c ∈ s) : (∑ i in t, f i) ∈ s :=
   sum_mem h
 #align subring.sum_mem Subring.sum_mem
@@ -448,7 +414,7 @@ theorem coe_pow (x : s) (n : ℕ) : ↑(x ^ n) = (x : R) ^ n :=
 #align subring.coe_pow Subring.coe_pow
 
 -- TODO: can be generalized to `AddSubmonoidClass`
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem coe_eq_zero_iff {x : s} : (x : R) = 0 ↔ x = 0 :=
   ⟨fun h => Subtype.ext (Trans.trans h s.coe_zero.symm), fun h => h.symm ▸ s.coe_zero⟩
 #align subring.coe_eq_zero_iff Subring.coe_eq_zero_iff
@@ -470,27 +436,6 @@ instance {R} [Ring R] [NoZeroDivisors R] (s : Subring R) : NoZeroDivisors s :=
 instance {R} [Ring R] [IsDomain R] (s : Subring R) : IsDomain s :=
   NoZeroDivisors.to_isDomain _
 
-/-- A subring of an `OrderedRing` is an `OrderedRing`. -/
-instance toOrderedRing {R} [OrderedRing R] (s : Subring R) : OrderedRing s :=
-  SubringClass.toOrderedRing s
-#align subring.to_ordered_ring Subring.toOrderedRing
-
-/-- A subring of an `OrderedCommRing` is an `OrderedCommRing`. -/
-instance toOrderedCommRing {R} [OrderedCommRing R] (s : Subring R) : OrderedCommRing s :=
-  SubringClass.toOrderedCommRing s
-#align subring.to_ordered_comm_ring Subring.toOrderedCommRing
-
-/-- A subring of a `LinearOrderedRing` is a `LinearOrderedRing`. -/
-instance toLinearOrderedRing {R} [LinearOrderedRing R] (s : Subring R) : LinearOrderedRing s :=
-  SubringClass.toLinearOrderedRing s
-#align subring.to_linear_ordered_ring Subring.toLinearOrderedRing
-
-/-- A subring of a `LinearOrderedCommRing` is a `LinearOrderedCommRing`. -/
-instance toLinearOrderedCommRing {R} [LinearOrderedCommRing R] (s : Subring R) :
-    LinearOrderedCommRing s :=
-  SubringClass.toLinearOrderedCommRing s
-#align subring.to_linear_ordered_comm_ring Subring.toLinearOrderedCommRing
-
 /-- The natural ring hom from a subring of ring `R` to `R`. -/
 def subtype (s : Subring R) : s →+* R :=
   { s.toSubmonoid.subtype, s.toAddSubgroup.subtype with toFun := (↑) }
@@ -501,24 +446,24 @@ theorem coeSubtype : ⇑s.subtype = ((↑) : s → R) :=
   rfl
 #align subring.coe_subtype Subring.coeSubtype
 
-@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
+@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
 theorem coe_natCast : ∀ n : ℕ, ((n : s) : R) = n :=
   map_natCast s.subtype
 #align subring.coe_nat_cast Subring.coe_natCast
 
-@[norm_cast] -- Porting note: simp can prove this (removed `@[simp]`)
+@[norm_cast] -- Porting note (#10618): simp can prove this (removed `@[simp]`)
 theorem coe_intCast : ∀ n : ℤ, ((n : s) : R) = n :=
   map_intCast s.subtype
 #align subring.coe_int_cast Subring.coe_intCast
 
 /-! ## Partial order -/
 
--- Porting note: new
+-- Porting note (#10756): new theorem
 @[simp]
 theorem coe_toSubsemiring (s : Subring R) : (s.toSubsemiring : Set R) = s :=
   rfl
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem mem_toSubmonoid {s : Subring R} {x : R} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_submonoid Subring.mem_toSubmonoid
@@ -528,7 +473,7 @@ theorem coe_toSubmonoid (s : Subring R) : (s.toSubmonoid : Set R) = s :=
   rfl
 #align subring.coe_to_submonoid Subring.coe_toSubmonoid
 
-@[simp, nolint simpNF] -- Porting note: dsimp can not prove this
+@[simp, nolint simpNF] -- Porting note (#10675): dsimp can not prove this
 theorem mem_toAddSubgroup {s : Subring R} {x : R} : x ∈ s.toAddSubgroup ↔ x ∈ s :=
   Iff.rfl
 #align subring.mem_to_add_subgroup Subring.mem_toAddSubgroup
@@ -560,6 +505,9 @@ theorem coe_top : ((⊤ : Subring R) : Set R) = Set.univ :=
 def topEquiv : (⊤ : Subring R) ≃+* R :=
   Subsemiring.topEquiv
 #align subring.top_equiv Subring.topEquiv
+
+theorem card_top (R) [Ring R] [Fintype R] : Fintype.card (⊤ : Subring R) = Fintype.card R :=
+  Fintype.card_congr topEquiv.toEquiv
 
 /-! ## comap -/
 
@@ -600,8 +548,7 @@ theorem coe_map (f : R →+* S) (s : Subring R) : (s.map f : Set S) = f '' s :=
 #align subring.coe_map Subring.coe_map
 
 @[simp]
-theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y :=
-  Set.mem_image_iff_bex.trans $ by simp
+theorem mem_map {f : R →+* S} {s : Subring R} {y : S} : y ∈ s.map f ↔ ∃ x ∈ s, f x = y := Iff.rfl
 #align subring.mem_map Subring.mem_map
 
 @[simp]
@@ -733,12 +680,12 @@ theorem mem_sInf {S : Set (Subring R)} {x : R} : x ∈ sInf S ↔ ∀ p ∈ S, x
 #align subring.mem_Inf Subring.mem_sInf
 
 @[simp, norm_cast]
-theorem coe_iInf {ι : Sort _} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
+theorem coe_iInf {ι : Sort*} {S : ι → Subring R} : (↑(⨅ i, S i) : Set R) = ⋂ i, S i := by
   simp only [iInf, coe_sInf, Set.biInter_range]
 #align subring.coe_infi Subring.coe_iInf
 
-theorem mem_iInf {ι : Sort _} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
-  simp only [iInf, mem_sInf, Set.forall_range_iff]
+theorem mem_iInf {ι : Sort*} {S : ι → Subring R} {x : R} : (x ∈ ⨅ i, S i) ↔ ∀ i, x ∈ S i := by
+  simp only [iInf, mem_sInf, Set.forall_mem_range]
 #align subring.mem_infi Subring.mem_iInf
 
 @[simp]
@@ -760,7 +707,7 @@ instance : CompleteLattice (Subring R) :=
     bot := ⊥
     bot_le := fun s _x hx =>
       let ⟨n, hn⟩ := mem_bot.1 hx
-      hn ▸ coe_int_mem s n
+      hn ▸ intCast_mem s n
     top := ⊤
     le_top := fun _s _x _hx => trivial
     inf := (· ⊓ ·)
@@ -798,7 +745,7 @@ theorem center_toSubsemiring : (center R).toSubsemiring = Subsemiring.center R :
 variable {R}
 
 theorem mem_center_iff {z : R} : z ∈ center R ↔ ∀ g, g * z = z * g :=
-  Iff.rfl
+  Subsemigroup.mem_center_iff
 #align subring.mem_center_iff Subring.mem_center_iff
 
 instance decidableMemCenter [DecidableEq R] [Fintype R] : DecidablePred (· ∈ center R) := fun _ =>
@@ -826,7 +773,9 @@ instance : Field (center K) :=
     mul_inv_cancel := fun ⟨a, ha⟩ h => Subtype.ext <| mul_inv_cancel <| Subtype.coe_injective.ne h
     div := fun a b => ⟨a / b, Set.div_mem_center₀ a.prop b.prop⟩
     div_eq_mul_inv := fun a b => Subtype.ext <| div_eq_mul_inv _ _
-    inv_zero := Subtype.ext inv_zero }
+    inv_zero := Subtype.ext inv_zero
+    -- TODO: use a nicer defeq
+    qsmul := qsmulRec _ }
 
 @[simp]
 theorem center.coe_inv (a : center K) : ((a⁻¹ : center K) : K) = (a : K)⁻¹ :=
@@ -899,7 +848,7 @@ theorem mem_closure {x : R} {s : Set R} : x ∈ closure s ↔ ∀ S : Subring R,
 #align subring.mem_closure Subring.mem_closure
 
 /-- The subring generated by a set includes the set. -/
-@[simp]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set R} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subring.subset_closure Subring.subset_closure
 
@@ -929,10 +878,27 @@ of `s`, and is preserved under addition, negation, and multiplication, then `p` 
 elements of the closure of `s`. -/
 @[elab_as_elim]
 theorem closure_induction {s : Set R} {p : R → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (H0 : p 0) (H1 : p 1) (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x : R, p x → p (-x))
-    (Hmul : ∀ x y, p x → p y → p (x * y)) : p x :=
-  (@closure_le _ _ _ ⟨⟨⟨⟨p, @Hmul⟩, H1⟩, @Hadd, H0⟩, @Hneg⟩).2 Hs h
+    (zero : p 0) (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x : R, p x → p (-x))
+    (mul : ∀ x y, p x → p y → p (x * y)) : p x :=
+  (@closure_le _ _ _ ⟨⟨⟨⟨p, @mul⟩, one⟩, @add, zero⟩, @neg⟩).2 Hs h
 #align subring.closure_induction Subring.closure_induction
+
+@[elab_as_elim]
+theorem closure_induction' {s : Set R} {p : ∀ x, x ∈ closure s → Prop}
+    (mem : ∀ (x) (h : x ∈ s), p x (subset_closure h))
+    (zero : p 0 (zero_mem _)) (one : p 1 (one_mem _))
+    (add : ∀ x hx y hy, p x hx → p y hy → p (x + y) (add_mem hx hy))
+    (neg : ∀ x hx, p x hx → p (-x) (neg_mem hx))
+    (mul : ∀ x hx y hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    {a : R} (ha : a ∈ closure s) : p a ha := by
+  refine Exists.elim ?_ fun (ha : a ∈ closure s) (hc : p a ha) => hc
+  refine
+    closure_induction ha (fun m hm => ⟨subset_closure hm, mem m hm⟩) ⟨zero_mem _, zero⟩
+      ⟨one_mem _, one⟩ ?_ (fun x hx => hx.elim fun hx' hx => ⟨neg_mem hx', neg _ _ hx⟩) ?_
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨add_mem hx' hy', add _ _ _ _ hx hy⟩)
+  · exact (fun x y hx hy => hx.elim fun hx' hx => hy.elim fun hy' hy =>
+      ⟨mul_mem hx' hy', mul _ _ _ _ hx hy⟩)
 
 /-- An induction principle for closure membership, for predicates with two arguments. -/
 @[elab_as_elim]
@@ -1063,7 +1029,7 @@ theorem map_sup (s t : Subring R) (f : R →+* S) : (s ⊔ t).map f = s.map f �
   (gc_map_comap f).l_sup
 #align subring.map_sup Subring.map_sup
 
-theorem map_iSup {ι : Sort _} (f : R →+* S) (s : ι → Subring R) :
+theorem map_iSup {ι : Sort*} (f : R →+* S) (s : ι → Subring R) :
     (iSup s).map f = ⨆ i, (s i).map f :=
   (gc_map_comap f).l_iSup
 #align subring.map_supr Subring.map_iSup
@@ -1072,7 +1038,7 @@ theorem comap_inf (s t : Subring S) (f : R →+* S) : (s ⊓ t).comap f = s.coma
   (gc_map_comap f).u_inf
 #align subring.comap_inf Subring.comap_inf
 
-theorem comap_iInf {ι : Sort _} (f : R →+* S) (s : ι → Subring S) :
+theorem comap_iInf {ι : Sort*} (f : R →+* S) (s : ι → Subring S) :
     (iInf s).comap f = ⨅ i, (s i).comap f :=
   (gc_map_comap f).u_iInf
 #align subring.comap_infi Subring.comap_iInf
@@ -1142,18 +1108,17 @@ def prodEquiv (s : Subring R) (t : Subring S) : s.prod t ≃+* s × t :=
   typically not a subring) -/
 theorem mem_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S)
     {x : R} : (x ∈ ⨆ i, S i) ↔ ∃ i, x ∈ S i := by
-  refine' ⟨_, fun ⟨i, hi⟩ => (SetLike.le_def.1 <| le_iSup S i) hi⟩
+  refine ⟨?_, fun ⟨i, hi⟩ ↦ le_iSup S i hi⟩
   let U : Subring R :=
     Subring.mk' (⋃ i, (S i : Set R)) (⨆ i, (S i).toSubmonoid) (⨆ i, (S i).toAddSubgroup)
-      (Submonoid.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-      (AddSubgroup.coe_iSup_of_directed <| hS.mono_comp _ fun _ _ => id)
-  suffices (⨆ i, S i) ≤ U by intro h; simpa using (this h)
-  exact iSup_le fun i x hx => Set.mem_iUnion.2 ⟨i, hx⟩
+      (Submonoid.coe_iSup_of_directed hS) (AddSubgroup.coe_iSup_of_directed hS)
+  suffices ⨆ i, S i ≤ U by simpa [U] using @this x
+  exact iSup_le fun i x hx ↦ Set.mem_iUnion.2 ⟨i, hx⟩
 #align subring.mem_supr_of_directed Subring.mem_iSup_of_directed
 
 theorem coe_iSup_of_directed {ι} [hι : Nonempty ι] {S : ι → Subring R} (hS : Directed (· ≤ ·) S) :
-    ((⨆ i, S i : Subring R) : Set R) = ⋃ i, ↑(S i) :=
-  Set.ext fun x => by simp [mem_iSup_of_directed hS]
+    ((⨆ i, S i : Subring R) : Set R) = ⋃ i, S i :=
+  Set.ext fun x ↦ by simp [mem_iSup_of_directed hS]
 #align subring.coe_supr_of_directed Subring.coe_iSup_of_directed
 
 theorem mem_sSup_of_directedOn {S : Set (Subring R)} (Sne : S.Nonempty) (hS : DirectedOn (· ≤ ·) S)
@@ -1221,6 +1186,10 @@ theorem range_top_of_surjective (f : R →+* S) (hf : Function.Surjective f) :
   range_top_iff_surjective.2 hf
 #align ring_hom.range_top_of_surjective RingHom.range_top_of_surjective
 
+section eqLocus
+
+variable {S : Type v} [Semiring S]
+
 /-- The subring of elements `x : R` such that `f x = g x`, i.e.,
   the equalizer of f and g as a subring of R -/
 def eqLocus (f g : R →+* S) : Subring R :=
@@ -1246,6 +1215,8 @@ theorem eq_of_eqOn_set_dense {s : Set R} (hs : closure s = ⊤) {f g : R →+* S
     f = g :=
   eq_of_eqOn_set_top <| hs ▸ eqOn_set_closure h
 #align ring_hom.eq_of_eq_on_set_dense RingHom.eq_of_eqOn_set_dense
+
+end eqLocus
 
 theorem closure_preimage_le (f : R →+* S) (s : Set S) : closure (f ⁻¹' s) ≤ (closure s).comap f :=
   closure_le.2 fun _ hx => SetLike.mem_coe.2 <| mem_comap.2 <| subset_closure hx
@@ -1276,12 +1247,12 @@ theorem range_subtype (s : Subring R) : s.subtype.range = s :=
   SetLike.coe_injective <| (coe_rangeS _).trans Subtype.range_coe
 #align subring.range_subtype Subring.range_subtype
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_fst : (fst R S).rangeS = ⊤ :=
   (fst R S).rangeS_top_of_surjective <| Prod.fst_surjective
 #align subring.range_fst Subring.range_fst
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem range_snd : (snd R S).rangeS = ⊤ :=
   (snd R S).rangeS_top_of_surjective <| Prod.snd_surjective
 #align subring.range_snd Subring.range_snd
@@ -1341,6 +1312,10 @@ def subringMap (e : R ≃+* S) : s ≃+* s.map e.toRingHom :=
   e.subsemiringMap s.toSubsemiring
 #align ring_equiv.subring_map RingEquiv.subringMap
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] RingEquiv.subringMap_symm_apply_coe
+  RingEquiv.subringMap_apply_coe
+
 end RingEquiv
 
 namespace Subring
@@ -1366,10 +1341,8 @@ protected theorem InClosure.recOn {C : R → Prop} {x : R} (hx : x ∈ closure s
     exact ha this (ih HL.2)
   replace HL := HL.1
   clear ih tl
-  -- Porting note: was `rsuffices` instead of `obtain` + `rotate_left`
-  obtain ⟨L, HL', HP | HP⟩ :
+  rsuffices ⟨L, HL', HP | HP⟩ :
     ∃ L : List R, (∀ x ∈ L, x ∈ s) ∧ (List.prod hd = List.prod L ∨ List.prod hd = -List.prod L)
-  rotate_left
   · rw [HP]
     clear HP HL hd
     induction' L with hd tl ih
@@ -1424,7 +1397,7 @@ section Actions
 
 namespace Subring
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 
 -- Porting note: Lean can find this instance already
@@ -1506,18 +1479,3 @@ instance center.smulCommClass_right : SMulCommClass R (center R) R :=
 end Subring
 
 end Actions
-
--- while this definition is not about subrings, this is the earliest we have
--- both ordered ring structures and submonoids available
-/-- The subgroup of positive units of a linear ordered semiring. -/
-def Units.posSubgroup (R : Type _) [LinearOrderedSemiring R] : Subgroup Rˣ :=
-  { (posSubmonoid R).comap (Units.coeHom R) with
-    carrier := { x | (0 : R) < x }
-    inv_mem' := Units.inv_pos.mpr }
-#align units.pos_subgroup Units.posSubgroup
-
-@[simp]
-theorem Units.mem_posSubgroup {R : Type _} [LinearOrderedSemiring R] (u : Rˣ) :
-    u ∈ Units.posSubgroup R ↔ (0 : R) < u :=
-  Iff.rfl
-#align units.mem_pos_subgroup Units.mem_posSubgroup

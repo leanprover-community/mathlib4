@@ -3,13 +3,12 @@ Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
 -/
+import Mathlib.Algebra.Order.Ring.Defs
+import Mathlib.Data.List.Defs
 import Mathlib.Tactic.Monotonicity
 import Mathlib.Tactic.NormNum
-import Mathlib.Algebra.Order.Ring.Defs
--- import measure_theory.measure.lebesgue
--- import measure_theory.function.locally_integrable
-import Mathlib.Data.List.Defs
 
+private axiom test_sorry : ∀ {α}, α
 open List Set
 
 example (x y z k : ℕ)
@@ -61,20 +60,20 @@ example {x y z : ℕ} : true := by
   have : y + x ≤ y + z := by
     mono
     guard_target = x ≤ z
-    admit
+    exact test_sorry
   trivial
 
 example {x y z : ℕ} : true := by
-  suffices : x + y ≤ z + y ; trivial
+  suffices _this : x + y ≤ z + y by trivial
   mono
   guard_target = x ≤ z
-  admit
+  exact test_sorry
 
 example {x y z w : ℕ} : true := by
   have : x + y ≤ z + w := by
     mono
-    guard_target = x ≤ z ; admit
-    guard_target = y ≤ w ; admit
+    guard_target = x ≤ z; exact test_sorry
+    guard_target = y ≤ w; exact test_sorry
   trivial
 
 -- example
@@ -137,10 +136,10 @@ example {x y z w : ℕ} : true := by
 --     xs ≤ zs := by
 --   revert ys zs
 --   induction' xs with x xs
---   ; intros ys zs h h'
---   ; cases ys with y ys
---   ; cases zs with z zs
---   ; try { cases h ; cases h' ; done },
+--  ; intros ys zs h h'
+--  ; cases ys with y ys
+--  ; cases zs with z zs
+--  ; try { cases h; cases h'; done },
 --   { apply list.le_refl },
 --   { simp [has_le.le,list.le],
 --     split,
@@ -152,10 +151,10 @@ example {x y z w : ℕ} : true := by
 --     (h : xs ≤ ys) :
 --     xs ++ zs ≤ ys ++ zs := by
 --   revert ys
---   induction xs with x xs ; intros ys h
---   · cases ys ; apply list.le_refl ; cases h
---   · cases ys with y ys ; cases h ; simp [has_le.le,list.le] at *
---     revert h ; apply and.imp_right
+--   induction xs with x xs; intros ys h
+--   · cases ys; apply list.le_refl; cases h
+--   · cases ys with y ys; cases h; simp [has_le.le,list.le] at *
+--     revert h; apply and.imp_right
 --     apply xs_ih
 
 -- @[mono]
@@ -163,18 +162,18 @@ example {x y z w : ℕ} : true := by
 --     (h : xs ≤ ys) :
 --     zs ++ xs ≤ zs ++ ys := by
 --   revert ys zs
---   induction xs with x xs ; intros ys zs h
+--   induction xs with x xs; intros ys zs h
 --   · cases ys
---     · simp ; apply list.le_refl
+--     · simp; apply list.le_refl
 --     · cases h
---   · cases ys with y ys ; cases h ; simp [has_le.le,list.le] at *
+--   · cases ys with y ys; cases h; simp [has_le.le,list.le] at *
 --     suffices : list.le' ((zs ++ [x]) ++ xs) ((zs ++ [y]) ++ ys)
---     · refine cast _ this ; simp
+--     · refine cast _ this; simp
 --     apply list.le_trans (zs ++ [y] ++ xs)
 --     · apply list_le_mono_left
 --       induction zs with z zs
---       · simp [has_le.le,list.le] ; apply h.left
---       · simp [has_le.le,list.le] ; split ; exact le_rfl
+--       · simp [has_le.le,list.le]; apply h.left
+--       · simp [has_le.le,list.le]; split; exact le_rfl
 --         apply zs_ih
 --     · apply xs_ih h.right
 
@@ -281,7 +280,7 @@ example {x y z w : ℕ} : true := by
 -- : (m + x + n) * z + k ≤ z * (y + n + m) + k :=
 -- begin
 --   ac_mono* : m + x + n ≤ y + n + m,
---   transitivity ; [ skip , apply h₁ ],
+--   transitivity; [ skip , apply h₁ ],
 --   apply le_of_eq,
 --   ac_refl,
 -- end
@@ -356,39 +355,39 @@ example {x y z w : ℕ} : true := by
 -- example {x y z w : ℕ} : true := by
 --   have : x * y ≤ z * w := by
 --     mono with [0 ≤ z,0 ≤ y]
---     · guard_target = 0 ≤ z ; admit
---     · guard_target = 0 ≤ y ; admit
---     guard_target' = x ≤ z ; admit
---     guard_target' = y ≤ w ; admit
+--     · guard_target = 0 ≤ z; admit
+--     · guard_target = 0 ≤ y; admit
+--     guard_target' = x ≤ z; admit
+--     guard_target' = y ≤ w; admit
 --   trivial
 
 -- example {x y z w : Prop} : true := by
 --   have : x ∧ y → z ∧ w := by
 --     mono
---     guard_target = x → z ; admit
---     guard_target = y → w ; admit
+--     guard_target = x → z; admit
+--     guard_target = y → w; admit
 --   trivial
 
 -- example {x y z w : Prop} : true := by
 --   have : x ∨ y → z ∨ w := by
 --     mono
---     guard_target = x → z ; admit
---     guard_target = y → w ; admit
+--     guard_target = x → z; admit
+--     guard_target = y → w; admit
 --   trivial
 
 -- example {x y z w : ℤ} : true := by
---   suffices : x + y < w + z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
+--   suffices : x + y < w + z; trivial
+--   have : x < w; admit
+--   have : y ≤ z; admit
 --   mono right
 
 -- example {x y z w : ℤ} : true := by
---   suffices : x * y < w * z ; trivial
---   have : x < w ; admit
---   have : y ≤ z ; admit
+--   suffices : x * y < w * z; trivial
+--   have : x < w; admit
+--   have : y ≤ z; admit
 --   mono right
---   · guard_target = 0 < y ; admit
---   · guard_target = 0 ≤ w ; admit
+--   · guard_target = 0 < y; admit
+--   · guard_target = 0 ≤ w; admit
 
 -- example (x y : ℕ)
 --   (h : x ≤ y)
@@ -415,10 +414,12 @@ example {x y z w : ℕ} : true := by
 --   mono
 --   mono
 
+-- import Mathlib.MeasureTheory.Function.LocallyIntegrable
+-- import Mathlib.MeasureTheory.Measure.Lebesgue.Integral
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
---   · exact (real.continuous_exp.comp $ continuous_add_right 1)
+--   · exact (real.continuous_exp.comp <| continuous_add_right 1)
 --       .locally_integrable.integrable_on_is_compact is_compact_Icc
 --   intro x
 --   dsimp only

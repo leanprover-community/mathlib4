@@ -1,11 +1,17 @@
 import Counterexamples.CanonicallyOrderedCommSemiringTwoMul
 import Counterexamples.CharPZeroNeCharZero
+import Counterexamples.CliffordAlgebra_not_injective
 import Counterexamples.Cyclotomic105
 import Counterexamples.DirectSumIsInternal
 import Counterexamples.Girard
+import Counterexamples.HomogeneousPrimeNotPrime
 import Counterexamples.LinearOrderWithPosMulPosEqZero
 import Counterexamples.MapFloor
+import Counterexamples.Monic_nonRegular
+import Counterexamples.OrderedCancelAddCommMonoidWithBounds
 import Counterexamples.Phillips
+import Counterexamples.Pseudoelement
 import Counterexamples.QuadraticForm
 import Counterexamples.SeminormLatticeNotDistrib
+import Counterexamples.SorgenfreyLine
 import Counterexamples.ZeroDivisorsInAddMonoidAlgebras

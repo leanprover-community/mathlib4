@@ -2,13 +2,10 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module order.filter.ennreal
-! leanprover-community/mathlib commit 52932b3a083d4142e78a15dc928084a22fea9ba0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Instances.ENNReal
+
+#align_import order.filter.ennreal from "leanprover-community/mathlib"@"52932b3a083d4142e78a15dc928084a22fea9ba0"
 
 /-!
 # Order properties of extended non-negative reals
@@ -21,7 +18,7 @@ open Filter ENNReal
 
 namespace ENNReal
 
-variable {α : Type _} {f : Filter α}
+variable {α : Type*} {f : Filter α}
 
 theorem eventually_le_limsup [CountableInterFilter f] (u : α → ℝ≥0∞) :
     ∀ᶠ y in f, u y ≤ f.limsup u :=
@@ -42,13 +39,12 @@ theorem limsup_const_mul_of_ne_top {u : α → ℝ≥0∞} {a : ℝ≥0∞} (ha_
   have hg_bij : Function.Bijective g :=
     Function.bijective_iff_has_inverse.mpr
       ⟨fun x => a⁻¹ * x,
-        ⟨fun x => by simp [← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
-          simp [← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
+        ⟨fun x => by simp [g, ← mul_assoc, ENNReal.inv_mul_cancel ha_zero ha_top], fun x => by
+          simp [g, ← mul_assoc, ENNReal.mul_inv_cancel ha_zero ha_top]⟩⟩
   have hg_mono : StrictMono g :=
     Monotone.strictMono_of_injective (fun _ _ _ => by rwa [mul_le_mul_left ha_zero ha_top]) hg_bij.1
   let g_iso := StrictMono.orderIsoOfSurjective g hg_mono hg_bij.2
-  refine' (OrderIso.limsup_apply g_iso _ _ _ _).symm
-  all_goals isBoundedDefault
+  exact (OrderIso.limsup_apply g_iso).symm
 #align ennreal.limsup_const_mul_of_ne_top ENNReal.limsup_const_mul_of_ne_top
 
 theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : ℝ≥0∞} :
@@ -69,7 +65,7 @@ theorem limsup_const_mul [CountableInterFilter f] {u : α → ℝ≥0∞} {a : �
     have h_top_le : (f.limsup fun x : α => ite (u x = 0) (0 : ℝ≥0∞) ⊤) = ⊤ :=
       eq_top_iff.mpr (le_limsup_of_frequently_le hu_mul)
     have hfu : f.limsup u ≠ 0 := mt limsup_eq_zero_iff.1 hu
-    simp only [ha_top, top_mul', hfu, h_top_le]
+    simp only [ha_top, top_mul', h_top_le, hfu, ite_false]
 #align ennreal.limsup_const_mul ENNReal.limsup_const_mul
 
 theorem limsup_mul_le [CountableInterFilter f] (u v : α → ℝ≥0∞) :

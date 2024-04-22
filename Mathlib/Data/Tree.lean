@@ -2,17 +2,14 @@
 Copyright (c) 2019 mathlib community. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Wojciech Nawrocki
-
-! This file was ported from Lean 3 source module data.tree
-! leanprover-community/mathlib commit ed989ff568099019c6533a4d94b27d852a5710d8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Std.Data.RBMap
 import Mathlib.Data.Num.Basic
-import Mathlib.Order.Basic
 import Mathlib.Init.Data.Ordering.Basic
+import Mathlib.Init.Order.LinearOrder
 import Mathlib.Util.CompileInductive
+import Std.Data.RBMap.Basic
+
+#align_import data.tree from "leanprover-community/mathlib"@"ed989ff568099019c6533a4d94b27d852a5710d8"
 
 /-!
 # Binary tree
@@ -148,14 +145,14 @@ def right : Tree α → Tree α
   | node _ _l r => r
 #align tree.right Tree.right
 
--- Notation for making a node with `Unit` data
+/-- A node with `Unit` data -/
 scoped infixr:65 " △ " => Tree.node ()
 
--- porting note: workaround for leanprover/lean4#2049
+-- Porting note: workaround for leanprover/lean4#2049
 compile_inductive% Tree
 
 @[elab_as_elim]
-def unitRecOn {motive : Tree Unit → Sort _} (t : Tree Unit) (base : motive nil)
+def unitRecOn {motive : Tree Unit → Sort*} (t : Tree Unit) (base : motive nil)
     (ind : ∀ x y, motive x → motive y → motive (x △ y)) : motive t :=
     -- Porting note: Old proof was `t.recOn base fun u => u.recOn ind` but
     -- structure eta makes it unnecessary (https://github.com/leanprover/lean4/issues/777).

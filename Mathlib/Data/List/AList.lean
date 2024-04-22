@@ -2,13 +2,10 @@
 Copyright (c) 2018 Sean Leather. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sean Leather, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.list.alist
-! leanprover-community/mathlib commit f808feb6c18afddb25e66a71d317643cf7fb5fbb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Sigma
+
+#align_import data.list.alist from "leanprover-community/mathlib"@"f808feb6c18afddb25e66a71d317643cf7fb5fbb"
 
 /-!
 # Association Lists
@@ -183,6 +180,15 @@ theorem perm_lookup {a : α} {s₁ s₂ : AList β} (p : s₁.entries ~ s₂.ent
 instance (a : α) (s : AList β) : Decidable (a ∈ s) :=
   decidable_of_iff _ lookup_isSome
 
+theorem keys_subset_keys_of_entries_subset_entries
+    {s₁ s₂ : AList β} (h : s₁.entries ⊆ s₂.entries) : s₁.keys ⊆ s₂.keys := by
+  intro k hk
+  letI : DecidableEq α := Classical.decEq α
+  have := h (mem_lookup_iff.1 (Option.get_mem (lookup_isSome.2 hk)))
+  rw [← mem_lookup_iff, Option.mem_def] at this
+  rw [← mem_keys, ← lookup_isSome, this]
+  exact Option.isSome_some
+
 /-! ### replace -/
 
 
@@ -311,6 +317,12 @@ theorem lookup_insert_ne {a a'} {b' : β a'} {s : AList β} (h : a ≠ a') :
   dlookup_kinsert_ne h
 #align alist.lookup_insert_ne AList.lookup_insert_ne
 
+@[simp] theorem lookup_insert_eq_none {l : AList β} {k k' : α} {v : β k} :
+    (l.insert k v).lookup k' = none ↔ (k' ≠ k) ∧ l.lookup k' = none := by
+  by_cases h : k' = k
+  · subst h; simp
+  · simp_all [lookup_insert_ne h]
+
 @[simp]
 theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlookup a := by
   rw [List.toAList, lookup, dlookup_dedupKeys]
@@ -319,7 +331,7 @@ theorem lookup_to_alist {a} (s : List (Sigma β)) : lookup a s.toAList = s.dlook
 @[simp]
 theorem insert_insert {a} {b b' : β a} (s : AList β) :
     (s.insert a b).insert a b' = s.insert a b' := by
-  ext : 1 ; simp only [AList.insert_entries, List.kerase_cons_eq]
+  ext : 1; simp only [AList.insert_entries, List.kerase_cons_eq]
 #align alist.insert_insert AList.insert_insert
 
 theorem insert_insert_of_ne {a a'} {b : β a} {b' : β a'} (s : AList β) (h : a ≠ a') :
@@ -352,7 +364,7 @@ theorem mk_cons_eq_insert (c : Sigma β) (l : List (Sigma β)) (h : (c :: l).Nod
 
 /-- Recursion on an `AList`, using `insert`. Use as `induction l using AList.insertRec`. -/
 @[elab_as_elim]
-def insertRec {C : AList β → Sort _} (H0 : C ∅)
+def insertRec {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     ∀ l : AList β, C l
   | ⟨[], _⟩ => H0
@@ -366,14 +378,14 @@ def insertRec {C : AList β → Sort _} (H0 : C ∅)
 example (l : AList β) : True := by induction l using AList.insertRec <;> trivial
 
 @[simp]
-theorem insertRec_empty {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_empty {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) :
     @insertRec α β _ C H0 IH ∅ = H0 := by
   change @insertRec α β _ C H0 IH ⟨[], _⟩ = H0
   rw [insertRec]
 #align alist.insert_rec_empty AList.insertRec_empty
 
-theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {c : Sigma β}
     {l : AList β} (h : c.1 ∉ l) :
     @insertRec α β _ C H0 IH (l.insert c.1 c.2) = IH c.1 c.2 l h (@insertRec α β _ C H0 IH l) := by
@@ -387,7 +399,7 @@ theorem insertRec_insert {C : AList β → Sort _} (H0 : C ∅)
   apply cast_heq
 #align alist.insert_rec_insert AList.insertRec_insert
 
-theorem insertRec_insert_mk {C : AList β → Sort _} (H0 : C ∅)
+theorem insertRec_insert_mk {C : AList β → Sort*} (H0 : C ∅)
     (IH : ∀ (a : α) (b : β a) (l : AList β), a ∉ l → C l → C (l.insert a b)) {a : α} (b : β a)
     {l : AList β} (h : a ∉ l) :
     @insertRec α β _ C H0 IH (l.insert a b) = IH a b l h (@insertRec α β _ C H0 IH l) :=
@@ -462,13 +474,13 @@ theorem lookup_union_right {a} {s₁ s₂ : AList β} : a ∉ s₁ → lookup a 
   dlookup_kunion_right
 #align alist.lookup_union_right AList.lookup_union_right
 
---Porting note: removing simp, LHS not in SNF, new theorem added instead.
+-- Porting note: removing simp, LHS not in SNF, new theorem added instead.
 theorem mem_lookup_union {a} {b : β a} {s₁ s₂ : AList β} :
     b ∈ lookup a (s₁ ∪ s₂) ↔ b ∈ lookup a s₁ ∨ a ∉ s₁ ∧ b ∈ lookup a s₂ :=
   mem_dlookup_kunion
 #align alist.mem_lookup_union AList.mem_lookup_union
 
---Porting note: new theorem, version of `mem_lookup_union` with LHS in simp-normal form
+-- Porting note (#10756): new theorem, version of `mem_lookup_union` with LHS in simp-normal form
 @[simp]
 theorem lookup_union_eq_some {a} {b : β a} {s₁ s₂ : AList β} :
     lookup a (s₁ ∪ s₂) = some b ↔ lookup a s₁ = some b ∨ a ∉ s₁ ∧ lookup a s₂ = some b :=
@@ -504,9 +516,9 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
     (s₁ ∪ s₂).entries ~ (s₂ ∪ s₁).entries :=
   lookup_ext (AList.nodupKeys _) (AList.nodupKeys _)
     (by
-      intros ; simp
+      intros; simp
       constructor <;> intro h'
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           apply h
@@ -514,7 +526,7 @@ theorem union_comm_of_disjoint {s₁ s₂ : AList β} (h : Disjoint s₁ s₂) :
           exact rfl
         · left
           rw [h'.2]
-      . cases' h' with h' h'
+      · cases' h' with h' h'
         · right
           refine' ⟨_, h'⟩
           intro h''

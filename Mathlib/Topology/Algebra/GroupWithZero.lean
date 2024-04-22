@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module topology.algebra.group_with_zero
-! leanprover-community/mathlib commit c10e724be91096453ee3db13862b9fb9a992fef2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Topology.Algebra.Monoid
-import Mathlib.Algebra.Group.Pi
 import Mathlib.Topology.Homeomorph
+
+#align_import topology.algebra.group_with_zero from "leanprover-community/mathlib"@"c10e724be91096453ee3db13862b9fb9a992fef2"
 
 /-!
 # Topological group with zero
@@ -45,7 +42,7 @@ operations on `Filter.Tendsto`, `ContinuousAt`, `ContinuousWithinAt`, `Continuou
 -/
 
 
-variable {α β G₀ : Type _}
+variable {α β G₀ : Type*}
 
 section DivConst
 
@@ -83,7 +80,7 @@ end DivConst
 
 /-- A type with `0` and `Inv` such that `fun x ↦ x⁻¹` is continuous at all nonzero points. Any
 normed (semi)field has this property. -/
-class HasContinuousInv₀ (G₀ : Type _) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
+class HasContinuousInv₀ (G₀ : Type*) [Zero G₀] [Inv G₀] [TopologicalSpace G₀] : Prop where
   /-- The map `fun x ↦ x⁻¹` is continuous at all nonzero points. -/
   continuousAt_inv₀ : ∀ ⦃x : G₀⦄, x ≠ 0 → ContinuousAt Inv.inv x
 #align has_continuous_inv₀ HasContinuousInv₀
@@ -107,7 +104,7 @@ theorem tendsto_inv₀ {x : G₀} (hx : x ≠ 0) : Tendsto Inv.inv (𝓝 x) (�
   continuousAt_inv₀ hx
 #align tendsto_inv₀ tendsto_inv₀
 
-theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_inv₀ : ContinuousOn (Inv.inv : G₀ → G₀) {0}ᶜ := fun _x hx =>
   (continuousAt_inv₀ hx).continuousWithinAt
 #align continuous_on_inv₀ continuousOn_inv₀
 
@@ -126,16 +123,18 @@ nonrec theorem ContinuousWithinAt.inv₀ (hf : ContinuousWithinAt f s a) (ha : f
   hf.inv₀ ha
 #align continuous_within_at.inv₀ ContinuousWithinAt.inv₀
 
+@[fun_prop]
 nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
     ContinuousAt (fun x => (f x)⁻¹) a :=
   hf.inv₀ ha
 #align continuous_at.inv₀ ContinuousAt.inv₀
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
 #align continuous.inv₀ Continuous.inv₀
 
+@[fun_prop]
 theorem ContinuousOn.inv₀ (hf : ContinuousOn f s) (h0 : ∀ x ∈ s, f x ≠ 0) :
     ContinuousOn (fun x => (f x)⁻¹) s := fun x hx => (hf x hx).inv₀ (h0 x hx)
 #align continuous_on.inv₀ ContinuousOn.inv₀
@@ -146,8 +145,22 @@ end Inv₀
 points. Then the coercion `G₀ˣ → G₀` is a topological embedding. -/
 theorem Units.embedding_val₀ [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] :
     Embedding (val : G₀ˣ → G₀) :=
-  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono <| fun _ ↦ IsUnit.ne_zero
+  embedding_val_mk <| (continuousOn_inv₀ (G₀ := G₀)).mono fun _ ↦ IsUnit.ne_zero
 #align units.embedding_coe₀ Units.embedding_val₀
+
+section NhdsInv
+
+variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] {x : G₀}
+
+lemma nhds_inv₀ (hx : x ≠ 0) : 𝓝 x⁻¹ = (𝓝 x)⁻¹ := by
+  refine le_antisymm (inv_le_iff_le_inv.1 ?_) (tendsto_inv₀ hx)
+  simpa only [inv_inv] using tendsto_inv₀ (inv_ne_zero hx)
+
+lemma tendsto_inv_iff₀ {l : Filter α} {f : α → G₀} (hx : x ≠ 0) :
+    Tendsto (fun x ↦ (f x)⁻¹) l (𝓝 x⁻¹) ↔ Tendsto f l (𝓝 x) := by
+  simp only [nhds_inv₀ hx, ← Filter.comap_inv, tendsto_comap_iff, (· ∘ ·), inv_inv]
+
+end NhdsInv
 
 /-!
 ### Continuity of division
@@ -170,9 +183,9 @@ theorem Filter.tendsto_mul_iff_of_ne_zero [T1Space G₀] {f g : α → G₀} {l 
     (hg : Tendsto g l (𝓝 y)) (hy : y ≠ 0) :
     Tendsto (fun n => f n * g n) l (𝓝 <| x * y) ↔ Tendsto f l (𝓝 x) := by
   refine' ⟨fun hfg => _, fun hf => hf.mul hg⟩
-  rw [← mul_div_cancel x hy]
+  rw [← mul_div_cancel_right₀ x hy]
   refine' Tendsto.congr' _ (hfg.div hg hy)
-  refine' (hg.eventually_ne hy).mono fun n hn => mul_div_cancel _ hn
+  exact (hg.eventually_ne hy).mono fun n hn => mul_div_cancel_right₀ _ hn
 #align filter.tendsto_mul_iff_of_ne_zero Filter.tendsto_mul_iff_of_ne_zero
 
 variable [TopologicalSpace α] [TopologicalSpace β] {s : Set α} {a : α}
@@ -201,6 +214,19 @@ theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g 
 theorem continuousOn_div : ContinuousOn (fun p : G₀ × G₀ => p.1 / p.2) { p | p.2 ≠ 0 } :=
   continuousOn_fst.div continuousOn_snd fun _ => id
 #align continuous_on_div continuousOn_div
+
+@[fun_prop]
+theorem Continuous.div₀ (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
+    Continuous (fun x => f x / g x) :=
+  by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
+
+@[fun_prop]
+theorem ContinuousAt.div₀ (hf : ContinuousAt f a) (hg : ContinuousAt g a) (h₀ : g a ≠ 0) :
+    ContinuousAt (fun x => f x / g x) a := ContinuousAt.div hf hg h₀
+
+@[fun_prop]
+theorem ContinuousOn.div₀ (hf : ContinuousOn f s) (hg : ContinuousOn g s) (h₀ : ∀ x ∈ s, g x ≠ 0) :
+    ContinuousOn (fun x => f x / g x) s := ContinuousOn.div hf hg h₀
 
 /-- The function `f x / g x` is discontinuous when `g x = 0`. However, under appropriate
 conditions, `h x (f x / g x)` is still continuous.  The condition is that if `g a = 0` then `h x y`
@@ -309,20 +335,20 @@ theorem HasContinuousInv₀.of_nhds_one (h : Tendsto Inv.inv (𝓝 (1 : G₀)) (
 
 end map_comap
 
-section Zpow
+section ZPow
 
 variable [GroupWithZero G₀] [TopologicalSpace G₀] [HasContinuousInv₀ G₀] [ContinuousMul G₀]
 
 theorem continuousAt_zpow₀ (x : G₀) (m : ℤ) (h : x ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => x ^ m) x := by
   cases' m with m m
-  · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using continuousAt_pow x m
+  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using continuousAt_pow x m
   · simp only [zpow_negSucc]
     have hx : x ≠ 0 := h.resolve_right (Int.negSucc_lt_zero m).not_le
     exact (continuousAt_pow x (m + 1)).inv₀ (pow_ne_zero _ hx)
 #align continuous_at_zpow₀ continuousAt_zpow₀
 
-theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) ({0}ᶜ) := fun _x hx =>
+theorem continuousOn_zpow₀ (m : ℤ) : ContinuousOn (fun x : G₀ => x ^ m) {0}ᶜ := fun _x hx =>
   (continuousAt_zpow₀ _ _ (Or.inl hx)).continuousWithinAt
 #align continuous_on_zpow₀ continuousOn_zpow₀
 
@@ -331,8 +357,9 @@ theorem Filter.Tendsto.zpow₀ {f : α → G₀} {l : Filter α} {a : G₀} (hf 
   (continuousAt_zpow₀ _ m h).tendsto.comp hf
 #align filter.tendsto.zpow₀ Filter.Tendsto.zpow₀
 
-variable {X : Type _} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
+variable {X : Type*} [TopologicalSpace X] {a : X} {s : Set X} {f : X → G₀}
 
+@[fun_prop]
 nonrec theorem ContinuousAt.zpow₀ (hf : ContinuousAt f a) (m : ℤ) (h : f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousAt (fun x => f x ^ m) a :=
   hf.zpow₀ m h
@@ -343,14 +370,15 @@ nonrec theorem ContinuousWithinAt.zpow₀ (hf : ContinuousWithinAt f s a) (m : �
   hf.zpow₀ m h
 #align continuous_within_at.zpow₀ ContinuousWithinAt.zpow₀
 
+@[fun_prop]
 theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s, f a ≠ 0 ∨ 0 ≤ m) :
     ContinuousOn (fun x => f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
 #align continuous_on.zpow₀ ContinuousOn.zpow₀
 
-@[continuity]
+@[continuity, fun_prop]
 theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
     Continuous fun x => f x ^ m :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)
 #align continuous.zpow₀ Continuous.zpow₀
 
-end Zpow
+end ZPow

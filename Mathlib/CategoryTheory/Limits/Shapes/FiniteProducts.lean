@@ -2,14 +2,11 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.finite_products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Products
+
+#align_import category_theory.limits.shapes.finite_products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Categories with finite (co)products
@@ -22,7 +19,7 @@ universe w v u
 
 open CategoryTheory
 
-open Classical
+open scoped Classical
 
 namespace CategoryTheory.Limits
 
@@ -32,7 +29,7 @@ variable (C : Type u) [Category.{v} C]
 with shape `Discrete J`, where we have `[Finite J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
-`J : Type _` as a corollary of this definition.
+`J : Type*` as a corollary of this definition.
 -/
 class HasFiniteProducts : Prop where
   /-- `C` has finite products -/
@@ -66,7 +63,7 @@ theorem hasFiniteProducts_of_hasProducts [HasProducts.{w} C] : HasFiniteProducts
 with shape `Discrete J`, where we have `[Fintype J]`.
 
 We require this condition only for `J = Fin n` in the definition, then deduce a version for any
-`J : Type _` as a corollary of this definition.
+`J : Type*` as a corollary of this definition.
 -/
 class HasFiniteCoproducts : Prop where
   /-- `C` has all finite coproducts -/

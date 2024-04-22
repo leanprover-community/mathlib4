@@ -2,13 +2,10 @@
 Copyright (c) 2022 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Zinkevich
-
-! This file was ported from Lean 3 source module measure_theory.measure.sub
-! leanprover-community/mathlib commit 562bbf524c595c153470e53d36c57b6f891cc480
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.Measure.MeasureSpace
+import Mathlib.MeasureTheory.Measure.Typeclasses
+
+#align_import measure_theory.measure.sub from "leanprover-community/mathlib"@"562bbf524c595c153470e53d36c57b6f891cc480"
 
 /-!
 # Subtraction of measures
@@ -33,11 +30,11 @@ Compare with `ENNReal.instSub`.
 Specifically, note that if you have `α = {1,2}`, and `μ {1} = 2`, `μ {2} = 0`, and
 `ν {2} = 2`, `ν {1} = 0`, then `(μ - ν) {1, 2} = 2`. However, if `μ ≤ ν`, and
 `ν univ ≠ ∞`, then `(μ - ν) + ν = μ`. -/
-noncomputable instance instSub {α : Type _} [MeasurableSpace α] : Sub (Measure α) :=
+noncomputable instance instSub {α : Type*} [MeasurableSpace α] : Sub (Measure α) :=
   ⟨fun μ ν => sInf { τ | μ ≤ τ + ν }⟩
 #align measure_theory.measure.has_sub MeasureTheory.Measure.instSub
 
-variable {α : Type _} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
+variable {α : Type*} {m : MeasurableSpace α} {μ ν : Measure α} {s : Set α}
 
 theorem sub_def : μ - ν = sInf { d | μ ≤ d + ν } := rfl
 #align measure_theory.measure.sub_def MeasureTheory.Measure.sub_def
@@ -76,16 +73,17 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
   -- We begin by defining `measure_sub`, which will be equal to `(μ - ν)`.
   let measure_sub : Measure α := MeasureTheory.Measure.ofMeasurable
     (fun (t : Set α) (_ : MeasurableSet t) => μ t - ν t) (by simp)
-    (by
-      intro g h_meas h_disj; simp only; rw [ENNReal.tsum_sub]
-      repeat' rw [← MeasureTheory.measure_iUnion h_disj h_meas]
-      exacts [MeasureTheory.measure_ne_top _ _, fun i => h₂ _ (h_meas _)])
+    (fun g h_meas h_disj ↦ by
+      simp only [measure_iUnion h_disj h_meas]
+      rw [ENNReal.tsum_sub _ (h₂ <| g ·)]
+      rw [← measure_iUnion h_disj h_meas]
+      apply measure_ne_top)
   -- Now, we demonstrate `μ - ν = measure_sub`, and apply it.
   have h_measure_sub_add : ν + measure_sub = μ := by
     ext1 t h_t_measurable_set
     simp only [Pi.add_apply, coe_add]
     rw [MeasureTheory.Measure.ofMeasurable_apply _ h_t_measurable_set, add_comm,
-      tsub_add_cancel_of_le (h₂ t h_t_measurable_set)]
+      tsub_add_cancel_of_le (h₂ t)]
   have h_measure_sub_eq : μ - ν = measure_sub := by
     rw [MeasureTheory.Measure.sub_def]
     apply le_antisymm
@@ -101,7 +99,7 @@ theorem sub_apply [IsFiniteMeasure ν] (h₁ : MeasurableSet s) (h₂ : ν ≤ �
 
 theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν + ν = μ := by
   ext1 s h_s_meas
-  rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s h_s_meas)]
+  rw [add_apply, sub_apply h_s_meas h₁, tsub_add_cancel_of_le (h₁ s)]
 #align measure_theory.measure.sub_add_cancel_of_le MeasureTheory.Measure.sub_add_cancel_of_le
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
@@ -114,7 +112,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     intro ν' h_ν'_in
     rw [mem_setOf_eq] at h_ν'_in
     refine' ⟨ν'.restrict s, _, restrict_le_self⟩
-    refine' ⟨ν' + (⊤ : Measure α).restrict (sᶜ), _, _⟩
+    refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
       repeat' rw [← measure_inter_add_diff t h_meas_s]
@@ -123,7 +121,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
         apply le_add_right _
         rw [← restrict_eq_self μ (inter_subset_right _ _),
           ← restrict_eq_self ν (inter_subset_right _ _)]
-        apply h_ν'_in _ (h_meas_t.inter h_meas_s)
+        apply h_ν'_in
       · rw [add_apply, restrict_apply (h_meas_t.diff h_meas_s), diff_eq, inter_assoc, inter_self,
           ← add_apply]
         have h_mu_le_add_top : μ ≤ ν' + ν + ⊤ := by simp only [add_top, le_top]
@@ -131,7 +129,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
   · refine' sInf_le_sInf_of_forall_exists_le _
-    refine' ball_image_iff.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
+    refine' forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
 #align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict

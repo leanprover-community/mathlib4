@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Robert Y. Lewis
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.truncated
-! leanprover-community/mathlib commit acbe099ced8be9c9754d62860110295cde0d7181
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.InitTail
+
+#align_import ring_theory.witt_vector.truncated from "leanprover-community/mathlib"@"acbe099ced8be9c9754d62860110295cde0d7181"
 
 /-!
 
@@ -44,7 +41,7 @@ open Function (Injective Surjective)
 
 noncomputable section
 
-variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) (R : Type _)
+variable {p : ℕ} [hp : Fact p.Prime] (n : ℕ) (R : Type*)
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -60,11 +57,11 @@ and under this assumption we construct a ring structure on `TruncatedWittVector 
 equal as types but will have different ring operations.)
 -/
 @[nolint unusedArguments]
-def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type _) :=
+def TruncatedWittVector (_ : ℕ) (n : ℕ) (R : Type*) :=
   Fin n → R
 #align truncated_witt_vector TruncatedWittVector
 
-instance (p n : ℕ) (R : Type _) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
+instance (p n : ℕ) (R : Type*) [Inhabited R] : Inhabited (TruncatedWittVector p n R) :=
   ⟨fun _ => default⟩
 
 variable {n R}
@@ -236,7 +233,6 @@ macro (name := witt_truncateFun_tac) "witt_truncateFun_tac" : tactic =>
 namespace WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 theorem truncateFun_surjective : Surjective (@truncateFun p n R) :=
@@ -262,7 +258,7 @@ theorem truncateFun_add (x y : 𝕎 R) :
 @[simp]
 theorem truncateFun_mul (x y : 𝕎 R) :
     truncateFun n (x * y) = truncateFun n x * truncateFun n y := by
-witt_truncateFun_tac
+  witt_truncateFun_tac
 #align witt_vector.truncate_fun_mul WittVector.truncateFun_mul
 
 theorem truncateFun_neg (x : 𝕎 R) : truncateFun n (-x) = -truncateFun n x := by
@@ -274,11 +270,11 @@ theorem truncateFun_sub (x y : 𝕎 R) :
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_sub WittVector.truncateFun_sub
 
-theorem truncateFun_nsmul (x : 𝕎 R) (m : ℕ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_nsmul (m : ℕ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_nsmul WittVector.truncateFun_nsmul
 
-theorem truncateFun_zsmul (x : 𝕎 R) (m : ℤ) : truncateFun n (m • x) = m • truncateFun n x := by
+theorem truncateFun_zsmul (m : ℤ) (x : 𝕎 R) : truncateFun n (m • x) = m • truncateFun n x := by
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_zsmul WittVector.truncateFun_zsmul
 
@@ -286,11 +282,11 @@ theorem truncateFun_pow (x : 𝕎 R) (m : ℕ) : truncateFun n (x ^ m) = truncat
   witt_truncateFun_tac
 #align witt_vector.truncate_fun_pow WittVector.truncateFun_pow
 
-theorem truncateFun_nat_cast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_nat_cast
+theorem truncateFun_natCast (m : ℕ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_nat_cast WittVector.truncateFun_natCast
 
-theorem truncateFun_int_cast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
-#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_int_cast
+theorem truncateFun_intCast (m : ℤ) : truncateFun n (m : 𝕎 R) = m := rfl
+#align witt_vector.truncate_fun_int_cast WittVector.truncateFun_intCast
 
 end WittVector
 
@@ -299,14 +295,13 @@ namespace TruncatedWittVector
 open WittVector
 
 variable (p n R)
-
 variable [CommRing R]
 
 instance instCommRing : CommRing (TruncatedWittVector p n R) :=
   (truncateFun_surjective p n R).commRing _ (truncateFun_zero p n R) (truncateFun_one p n R)
     (truncateFun_add n) (truncateFun_mul n) (truncateFun_neg n) (truncateFun_sub n)
-    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_nat_cast n)
-    (truncateFun_int_cast n)
+    (truncateFun_nsmul n) (truncateFun_zsmul n) (truncateFun_pow n) (truncateFun_natCast n)
+    (truncateFun_intCast n)
 
 end TruncatedWittVector
 
@@ -315,7 +310,6 @@ namespace WittVector
 open TruncatedWittVector
 
 variable (n)
-
 variable [CommRing R]
 
 /-- `truncate n` is a ring homomorphism that truncates `x` to its first `n` entries
@@ -418,19 +412,19 @@ theorem coeff_truncate {m : ℕ} (hm : n ≤ m) (i : Fin n) (x : TruncatedWittVe
 
 section Fintype
 
-instance {R : Type _} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
+instance {R : Type*} [Fintype R] : Fintype (TruncatedWittVector p n R) :=
   Pi.fintype
 
 variable (p n R)
 
-theorem card {R : Type _} [Fintype R] :
+theorem card {R : Type*} [Fintype R] :
     Fintype.card (TruncatedWittVector p n R) = Fintype.card R ^ n := by
   simp only [TruncatedWittVector, Fintype.card_fin, Fintype.card_fun]
 #align truncated_witt_vector.card TruncatedWittVector.card
 
 end Fintype
 
-theorem iInf_ker_truncate : (⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _)) = ⊥ := by
+theorem iInf_ker_truncate : ⨅ i : ℕ, RingHom.ker (@WittVector.truncate p _ i R _) = ⊥ := by
   rw [Submodule.eq_bot_iff]
   intro x hx
   ext
@@ -447,11 +441,8 @@ open TruncatedWittVector hiding truncate coeff
 section lift
 
 variable [CommRing R]
-
-variable {S : Type _} [Semiring S]
-
+variable {S : Type*} [Semiring S]
 variable (f : ∀ k : ℕ, S →+* TruncatedWittVector p k R)
-
 variable
   (f_compat : ∀ (k₁ k₂ : ℕ) (hk : k₁ ≤ k₂), (TruncatedWittVector.truncate hk).comp (f k₂) = f k₁)
 
@@ -471,7 +462,7 @@ theorem truncate_liftFun (s : S) : WittVector.truncate n (liftFun f s) = f n s :
   ext i
   simp only [liftFun, TruncatedWittVector.coeff_mk, WittVector.truncate_mk']
   rw [← f_compat (i + 1) n i.is_lt, RingHom.comp_apply, TruncatedWittVector.coeff_truncate]
-  congr with _
+  congr 1 with _
 #align witt_vector.truncate_lift_fun WittVector.truncate_liftFun
 
 variable (f)

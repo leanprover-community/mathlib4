@@ -2,14 +2,11 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Kenny Lau
-
-! This file was ported from Lean 3 source module number_theory.basic
-! leanprover-community/mathlib commit 168ad7fc5d8173ad38be9767a22d50b8ecf1cd00
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GeomSum
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import number_theory.basic from "leanprover-community/mathlib"@"168ad7fc5d8173ad38be9767a22d50b8ecf1cd00"
 
 /-!
 # Basic results in number theory
@@ -29,11 +26,11 @@ section
 
 open Ideal Ideal.Quotient
 
-theorem dvd_sub_pow_of_dvd_sub {R : Type _} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
+theorem dvd_sub_pow_of_dvd_sub {R : Type*} [CommRing R] {p : ℕ} {a b : R} (h : (p : R) ∣ a - b)
     (k : ℕ) : (p ^ (k + 1) : R) ∣ a ^ p ^ k - b ^ p ^ k := by
   induction' k with k ih
   · rwa [pow_one, pow_zero, pow_one, pow_one]
-  rw [pow_succ' p k, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ, Nat.cast_mul]
+  rw [pow_succ p k, pow_mul, pow_mul, ← geom_sum₂_mul, pow_succ']
   refine' mul_dvd_mul _ ih
   let f : R →+* R ⧸ span {(p : R)} := mk (span {(p : R)})
   have hf : ∀ r : R, (p : R) ∣ r ↔ f r = 0 := fun r ↦ by rw [eq_zero_iff_mem, mem_span_singleton]

@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
-
-! This file was ported from Lean 3 source module category_theory.monoidal.of_chosen_finite_products.basic
-! leanprover-community/mathlib commit 95a87616d63b3cb49d3fe678d416fbe9c4217bf4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monoidal.Category
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.PEmpty
+
+#align_import category_theory.monoidal.of_chosen_finite_products.basic from "leanprover-community/mathlib"@"95a87616d63b3cb49d3fe678d416fbe9c4217bf4"
 
 /-!
 # The monoidal structure on a category with chosen finite products.
@@ -33,7 +30,6 @@ which seems less often useful.
 
 universe v u
 
-noncomputable section
 
 namespace CategoryTheory
 
@@ -155,11 +151,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
     rintro ⟨⟨⟩⟩ <;> simp
     · exact w ⟨WalkingPair.left⟩
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
     · specialize w ⟨WalkingPair.right⟩
-      simp at w
+      simp? at w says
+        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+          Functor.const_obj_obj, pair_obj_left] at w
       rw [← w]
       simp
 #align category_theory.limits.is_limit.assoc CategoryTheory.Limits.IsLimit.assoc
@@ -186,19 +186,10 @@ def BinaryFan.associatorOfLimitCone (L : ∀ X Y : C, LimitCone (pair X Y)) (X Y
 /-- Construct a left unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan s.pt X} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.snd
-  inv :=
-    Q.lift
-      (BinaryFan.mk
-        (P.lift
-          { pt := X, π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } })
-        (𝟙 X))
-  -- Porting note: this should be automatable:
+  inv := Q.lift <| BinaryFan.mk (P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩) (𝟙 _)
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -210,18 +201,10 @@ def BinaryFan.leftUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s
 /-- Construct a right unitor from specified limit cones.
 -/
 @[simps]
-def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{v} C)} (P : IsLimit s)
+def BinaryFan.rightUnitor {X : C} {s : Cone (Functor.empty.{0} C)} (P : IsLimit s)
     {t : BinaryFan X s.pt} (Q : IsLimit t) : t.pt ≅ X where
   hom := t.fst
-  inv :=
-    Q.lift
-      (BinaryFan.mk (𝟙 X)
-        (P.lift
-          { pt := X
-            π :=
-            -- Porting note: there is something fishy here:
-            -- `PEmpty.rec x x` should not even typecheck.
-            { app := fun x => Discrete.rec (fun x => PEmpty.rec.{_, v+1} x x) x } }))
+  inv := Q.lift <| BinaryFan.mk (𝟙 _) <| P.lift ⟨_, fun x => x.as.elim, fun {x} => x.as.elim⟩
   hom_inv_id := by
     apply Q.hom_ext
     rintro ⟨⟨⟩⟩
@@ -242,9 +225,7 @@ section
 -- attribute [local tidy] tactic.case_bash
 
 variable {C}
-
-variable (𝒯 : LimitCone (Functor.empty.{v} C))
-
+variable (𝒯 : LimitCone (Functor.empty.{0} C))
 variable (ℬ : ∀ X Y : C, LimitCone (pair X Y))
 
 namespace MonoidalOfChosenFiniteProducts
@@ -334,20 +315,24 @@ end MonoidalOfChosenFiniteProducts
 open MonoidalOfChosenFiniteProducts
 
 /-- A category with a terminal object and binary products has a natural monoidal structure. -/
-def monoidalOfChosenFiniteProducts : MonoidalCategory C where
-  tensorUnit' := 𝒯.cone.pt
-  tensorObj X Y := tensorObj ℬ X Y
-  tensorHom f g := tensorHom ℬ f g
-  tensor_id := tensor_id ℬ
-  tensor_comp f₁ f₂ g₁ g₂ := tensor_comp ℬ f₁ f₂ g₁ g₂
-  associator X Y Z := BinaryFan.associatorOfLimitCone ℬ X Y Z
-  leftUnitor X := BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
-  rightUnitor X := BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit
-  pentagon := pentagon ℬ
-  triangle := triangle 𝒯 ℬ
-  leftUnitor_naturality f := leftUnitor_naturality 𝒯 ℬ f
-  rightUnitor_naturality f := rightUnitor_naturality 𝒯 ℬ f
-  associator_naturality f₁ f₂ f₃ := associator_naturality ℬ f₁ f₂ f₃
+def monoidalOfChosenFiniteProducts : MonoidalCategory C :=
+  letI : MonoidalCategoryStruct C :=
+    { tensorUnit := 𝒯.cone.pt
+      tensorObj := tensorObj ℬ
+      tensorHom := tensorHom ℬ
+      whiskerLeft := @fun X {_ _} g ↦ tensorHom ℬ (𝟙 X) g
+      whiskerRight := @fun{_ _} f Y ↦ tensorHom ℬ f (𝟙 Y)
+      associator := BinaryFan.associatorOfLimitCone ℬ
+      leftUnitor := fun X ↦ BinaryFan.leftUnitor 𝒯.isLimit (ℬ 𝒯.cone.pt X).isLimit
+      rightUnitor := fun X ↦ BinaryFan.rightUnitor 𝒯.isLimit (ℬ X 𝒯.cone.pt).isLimit}
+  .ofTensorHom
+    (tensor_id := tensor_id ℬ)
+    (tensor_comp := tensor_comp ℬ)
+    (pentagon := pentagon ℬ)
+    (triangle := triangle 𝒯 ℬ)
+    (leftUnitor_naturality := leftUnitor_naturality 𝒯 ℬ)
+    (rightUnitor_naturality := rightUnitor_naturality 𝒯 ℬ)
+    (associator_naturality := associator_naturality ℬ)
 #align category_theory.monoidal_of_chosen_finite_products CategoryTheory.monoidalOfChosenFiniteProducts
 
 namespace MonoidalOfChosenFiniteProducts
@@ -359,10 +344,10 @@ a fixed choice of limit data for the empty functor, and for `pair X Y` for every
 
 This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
--- Porting note: no `has_nonempty_instance` linter.
+-- Porting note(#5171): linter `has_nonempty_instance` not ported yet
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
-def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{v} C))
+def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))
     (_ℬ : ∀ X Y : C, LimitCone (pair X Y)) :=
   C
 #align category_theory.monoidal_of_chosen_finite_products.monoidal_of_chosen_finite_products_synonym CategoryTheory.MonoidalOfChosenFiniteProducts.MonoidalOfChosenFiniteProductsSynonym

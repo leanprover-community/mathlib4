@@ -2,14 +2,14 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Scott Morrison, Mario Carneiro, Andrew Yang
-
-! This file was ported from Lean 3 source module topology.category.Top.limits.products
-! leanprover-community/mathlib commit 178a32653e369dce2da68dc6b2694e385d484ef1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Category.TopCat.Limits.Basic
+import Mathlib.CategoryTheory.Limits.Shapes.Products
+import Mathlib.CategoryTheory.Limits.ConcreteCategory
+import Mathlib.Data.Set.Subsingleton
+
+#align_import topology.category.Top.limits.products from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
 
 /-!
 # Products and coproducts in the category of topological spaces
@@ -52,6 +52,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
     intro S m h
     apply ContinuousMap.ext; intro x
     funext i
+    set_option tactic.skipAssignedInstances false in
     dsimp
     rw [ContinuousMap.coe_mk, ← h ⟨i⟩]
     rfl
@@ -61,8 +62,7 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCatMax.{v, u}) : IsLimit (piFan �
 /-- The product is homeomorphic to the product of the underlying spaces,
 equipped with the product topology.
 -/
-def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) :
-  ∏ α ≅ TopCat.of (∀ i, α i) :=
+def piIsoPi {ι : Type v} (α : ι → TopCatMax.{v, u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
   (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
 #align Top.pi_iso_pi TopCat.piIsoPi
 
@@ -136,7 +136,7 @@ theorem sigmaIsoSigma_hom_ι_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) 
 @[simp]
 theorem sigmaIsoSigma_inv_apply {ι : Type v} (α : ι → TopCatMax.{v, u}) (i : ι) (x : α i) :
     (sigmaIsoSigma α).inv ⟨i, x⟩ = (Sigma.ι α i : _) x := by
-  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ←comp_app, Category.assoc, Iso.hom_inv_id,
+  rw [← sigmaIsoSigma_hom_ι_apply, ← comp_app, ← comp_app, Iso.hom_inv_id,
     Category.comp_id]
 #align Top.sigma_iso_sigma_inv_apply TopCat.sigmaIsoSigma_inv_apply
 
@@ -178,14 +178,14 @@ def prodBinaryFanIsLimit (X Y : TopCat.{u}) : IsLimit (prodBinaryFan X Y) where
   lift := fun S : BinaryFan X Y => {
     toFun := fun s => (S.fst s, S.snd s)
     -- Porting note: continuity failed again here. Lean cannot infer
-    -- ContinuousMapClass (X ⟶  Y) X Y for X Y : TopCat which may be one of the problems
-    continuous_toFun := (Continuous.prod_mk)
+    -- ContinuousMapClass (X ⟶ Y) X Y for X Y : TopCat which may be one of the problems
+    continuous_toFun := Continuous.prod_mk
       (BinaryFan.fst S).continuous_toFun (BinaryFan.snd S).continuous_toFun }
   fac := by
     rintro S (_ | _) <;> {dsimp; ext; rfl}
   uniq := by
     intro S m h
-    -- porting note: used to be `ext x`
+    -- Porting note: used to be `ext x`
     refine' ContinuousMap.ext (fun (x : ↥(S.pt)) => Prod.ext _ _)
     · specialize h ⟨WalkingPair.left⟩
       apply_fun fun e => e x at h
@@ -328,8 +328,6 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
         (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inl,
           (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.openEmbedding.comp openEmbedding_inr, _⟩
-      simp only [Functor.map_comp]
-
       erw [Set.range_comp, ← eq_compl_iff_isCompl, coe_comp, coe_comp, Set.range_comp _ Sum.inr,
         ← Set.image_compl_eq (homeoOfIso <| h.coconePointUniqueUpToIso
             (binaryCofanIsColimit X Y)).symm.bijective, Set.compl_range_inr, Set.image_comp]
@@ -346,7 +344,7 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             else g ((Equiv.ofInjective _ h₂.inj).symm ⟨x, (this x).resolve_left h⟩)
         rw [continuous_iff_continuousAt]
         intro x
-        by_cases x ∈ Set.range c.inl
+        by_cases h : x ∈ Set.range c.inl
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
@@ -356,12 +354,12 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
             apply Continuous.comp
             · exact f.continuous_toFun
             · continuity
-          · exact h₁.open_range
+          · exact h₁.isOpen_range
         · revert h x
           apply (IsOpen.continuousOn_iff _).mp
           · rw [continuousOn_iff_continuous_restrict]
             have : ∀ a, a ∉ Set.range c.inl → a ∈ Set.range c.inr := by
-              rintro a (h : a ∈ Set.range c.inlᶜ)
+              rintro a (h : a ∈ (Set.range c.inl)ᶜ)
               rwa [eq_compl_iff_isCompl.mpr h₃.symm]
             convert_to Continuous
                 (g ∘ (Homeomorph.ofEmbedding _ h₂.toEmbedding).symm ∘ Subtype.map _ this)
@@ -373,9 +371,9 @@ theorem binaryCofan_isColimit_iff {X Y : TopCat} (c : BinaryCofan X Y) :
               · continuity
               · rw [embedding_subtype_val.toInducing.continuous_iff]
                 exact continuous_subtype_val
-          · change IsOpen (Set.range c.inlᶜ)
+          · change IsOpen (Set.range c.inl)ᶜ
             rw [← eq_compl_iff_isCompl.mpr h₃.symm]
-            exact h₂.open_range
+            exact h₂.isOpen_range
       · intro T f g
         ext x
         refine' (dif_pos _).trans _

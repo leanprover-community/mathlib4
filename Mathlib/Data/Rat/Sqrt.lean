@@ -2,15 +2,14 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.rat.sqrt
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.Parity
 import Mathlib.Data.Rat.Order
 import Mathlib.Data.Rat.Lemmas
 import Mathlib.Data.Int.Sqrt
+
+#align_import data.rat.sqrt from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Square root on rational numbers
@@ -37,12 +36,12 @@ theorem exists_mul_self (x : ℚ) : (∃ q, q * q = x) ↔ Rat.sqrt x * Rat.sqrt
   ⟨fun ⟨n, hn⟩ => by rw [← hn, sqrt_eq, abs_mul_abs_self], fun h => ⟨Rat.sqrt x, h⟩⟩
 #align rat.exists_mul_self Rat.exists_mul_self
 
-theorem sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q :=
-  nonneg_iff_zero_le.1 <|
-    (divInt_nonneg _ <|
-          Int.coe_nat_pos.2 <|
-            Nat.pos_of_ne_zero fun H => q.den_nz <| Nat.sqrt_eq_zero.1 H).2 <|
-      Int.coe_nat_nonneg _
+lemma sqrt_nonneg (q : ℚ) : 0 ≤ Rat.sqrt q := mkRat_nonneg (Int.sqrt_nonneg _) _
 #align rat.sqrt_nonneg Rat.sqrt_nonneg
+
+/-- `IsSquare` can be decided on `ℚ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℚ → Prop) :=
+  fun m => decidable_of_iff' (sqrt m * sqrt m = m) <| by
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
 
 end Rat

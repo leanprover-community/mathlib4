@@ -2,14 +2,11 @@
 Copyright (c) 2021 Luke Kershaw. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Kershaw
-
-! This file was ported from Lean 3 source module category_theory.triangulated.rotate
-! leanprover-community/mathlib commit 94d4e70e97c36c896cb70fb42821acfed040de60
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Triangulated.Basic
+
+#align_import category_theory.triangulated.rotate from "leanprover-community/mathlib"@"94d4e70e97c36c896cb70fb42821acfed040de60"
 
 /-!
 # Rotate
@@ -35,9 +32,7 @@ namespace CategoryTheory.Pretriangulated
 open CategoryTheory.Category
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
-
 variable [HasShift C ℤ]
-
 variable (X : C)
 
 /-- If you rotate a triangle, you get another triangle.
@@ -123,7 +118,6 @@ def invRotate : Triangle C ⥤ Triangle C
 #align category_theory.pretriangulated.inv_rotate CategoryTheory.Pretriangulated.invRotate
 
 variable {C}
-
 variable [∀ n : ℤ, Functor.Additive (shiftFunctor C n)]
 
 /-- The unit isomorphism of the auto-equivalence of categories `triangleRotation C` of
@@ -157,12 +151,12 @@ def triangleRotation : Equivalence (Triangle C) (Triangle C)
 
 variable {C}
 
-instance : IsEquivalence (rotate C) := by
-  change IsEquivalence (triangleRotation C).functor
+instance : (rotate C).IsEquivalence := by
+  change (triangleRotation C).functor.IsEquivalence
   infer_instance
 
-instance : IsEquivalence (invRotate C) := by
-  change IsEquivalence (triangleRotation C).inverse
+instance : (invRotate C).IsEquivalence := by
+  change (triangleRotation C).inverse.IsEquivalence
   infer_instance
 
 end CategoryTheory.Pretriangulated

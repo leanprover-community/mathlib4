@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module category_theory.sites.types
-! leanprover-community/mathlib commit 9f9015c645d85695581237cc761981036be8bd37
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Canonical
+
+#align_import category_theory.sites.types from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
 
 /-!
 # Grothendieck Topology and Sheaves on the Category of Types
@@ -193,7 +190,7 @@ theorem typesGrothendieckTopology_eq_canonical :
   have : (fun _ => ULift.up true) = fun _ => ULift.up false :=
     (hs PUnit fun _ => x).isSeparatedFor.ext
       fun β f hf => funext fun y => hsx.elim <| S.2 hf fun _ => y
-  simp at this
+  simp [Function.funext_iff] at this
 #align category_theory.types_grothendieck_topology_eq_canonical CategoryTheory.typesGrothendieckTopology_eq_canonical
 
 end CategoryTheory

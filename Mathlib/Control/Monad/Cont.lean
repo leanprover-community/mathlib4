@@ -2,15 +2,12 @@
 Copyright (c) 2019 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.monad.cont
-! leanprover-community/mathlib commit d6814c584384ddf2825ff038e868451a7c956f31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Monad.Basic
 import Mathlib.Control.Monad.Writer
 import Mathlib.Init.Control.Lawful
+
+#align_import control.monad.cont from "leanprover-community/mathlib"@"d6814c584384ddf2825ff038e868451a7c956f31"
 
 /-!
 # Continuation Monad
@@ -36,7 +33,8 @@ class MonadCont (m : Type u → Type v) where
 
 open MonadCont
 
-class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m] extends LawfulMonad m where
+class LawfulMonadCont (m : Type u → Type v) [Monad m] [MonadCont m]
+    extends LawfulMonad m : Prop where
   callCC_bind_right {α ω γ} (cmd : m α) (next : Label ω m γ → α → m ω) :
     (callCC fun f => cmd >>= next f) = cmd >>= fun x => callCC fun f => next f x
   callCC_bind_left {α} (β) (x : α) (dead : Label α m β → β → m α) :
@@ -104,7 +102,7 @@ instance [Monad m] : MonadLift m (ContT r m) where
 theorem monadLift_bind [Monad m] [LawfulMonad m] {α β} (x : m α) (f : α → m β) :
     (monadLift (x >>= f) : ContT r m β) = monadLift x >>= monadLift ∘ f := by
   ext
-  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id.def, run,
+  simp only [monadLift, MonadLift.monadLift, (· ∘ ·), (· >>= ·), bind_assoc, id, run,
     ContT.monadLift]
 #align cont_t.monad_lift_bind ContT.monadLift_bind
 
@@ -143,15 +141,15 @@ instance {ε} [MonadCont m] : MonadCont (ExceptT ε m) where
 
 instance {ε} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ExceptT ε m) where
   callCC_bind_right := by
-    intros; simp [callCC, ExceptT.callCC, callCC_bind_right]; ext
+    intros; simp only [callCC, ExceptT.callCC, ExceptT.run_bind, callCC_bind_right]; ext
     dsimp
     congr with ⟨⟩ <;> simp [ExceptT.bindCont, @callCC_dummy m _]
   callCC_bind_left := by
     intros
-    simp [callCC, ExceptT.callCC, callCC_bind_right, ExceptT.goto_mkLabel, map_eq_bind_pure_comp,
-      bind_assoc, @callCC_bind_left m _, Function.comp]
+    simp only [callCC, ExceptT.callCC, ExceptT.goto_mkLabel, map_eq_bind_pure_comp, Function.comp,
+      ExceptT.run_bind, ExceptT.run_mk, bind_assoc, pure_bind, @callCC_bind_left m _]
     ext; rfl
-  callCC_dummy := by intros; simp [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
+  callCC_dummy := by intros; simp only [callCC, ExceptT.callCC, @callCC_dummy m _]; ext; rfl
 
 def OptionT.mkLabel {α β} : Label (Option.{u} α) m β → Label α (OptionT m) β
   | ⟨f⟩ => ⟨fun a => monadLift <| f (some a)⟩
@@ -172,15 +170,15 @@ instance [MonadCont m] : MonadCont (OptionT m) where
 
 instance [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (OptionT m) where
   callCC_bind_right := by
-    intros; simp [callCC, OptionT.callCC, callCC_bind_right]; ext
+    intros; simp only [callCC, OptionT.callCC, OptionT.run_bind, callCC_bind_right]; ext
     dsimp
     congr with ⟨⟩ <;> simp [@callCC_dummy m _]
   callCC_bind_left := by
     intros;
-    simp [callCC, OptionT.callCC, callCC_bind_right, OptionT.goto_mkLabel, map_eq_bind_pure_comp,
-      bind_assoc, @callCC_bind_left m _, Function.comp]
+    simp only [callCC, OptionT.callCC, OptionT.goto_mkLabel, OptionT.run_bind, OptionT.run_mk,
+      bind_assoc, pure_bind, @callCC_bind_left m _]
     ext; rfl
-  callCC_dummy := by intros; simp [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
+  callCC_dummy := by intros; simp only [callCC, OptionT.callCC, @callCC_dummy m _]; ext; rfl
 
 /- Porting note: In Lean 3, `One ω` is required for `MonadLift (WriterT ω m)`. In Lean 4,
                  `EmptyCollection ω` or `Monoid ω` is required. So we give definitions for the both
@@ -235,13 +233,14 @@ instance {σ} [MonadCont m] : MonadCont (StateT σ m) where
 instance {σ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (StateT σ m) where
   callCC_bind_right := by
     intros
-    simp [callCC, StateT.callCC, callCC_bind_right]; ext; rfl
+    simp only [callCC, StateT.callCC, StateT.run_bind, callCC_bind_right]; ext; rfl
   callCC_bind_left := by
     intros;
-    simp [callCC, StateT.callCC, callCC_bind_left, StateT.goto_mkLabel]; ext; rfl
+    simp only [callCC, StateT.callCC, StateT.goto_mkLabel, StateT.run_bind, StateT.run_mk,
+      callCC_bind_left]; ext; rfl
   callCC_dummy := by
     intros;
-    simp [callCC, StateT.callCC, callCC_bind_right, @callCC_dummy m _]
+    simp only [callCC, StateT.callCC, @callCC_dummy m _]
     ext; rfl
 
 def ReaderT.mkLabel {α β} (ρ) : Label α m β → Label α (ReaderT ρ m) β
@@ -261,11 +260,13 @@ instance {ρ} [MonadCont m] : MonadCont (ReaderT ρ m) where
   callCC := ReaderT.callCC
 
 instance {ρ} [MonadCont m] [LawfulMonadCont m] : LawfulMonadCont (ReaderT ρ m) where
-  callCC_bind_right := by intros; simp [callCC, ReaderT.callCC, callCC_bind_right]; ext; rfl
+  callCC_bind_right := by intros; simp only [callCC, ReaderT.callCC, ReaderT.run_bind,
+                                    callCC_bind_right]; ext; rfl
   callCC_bind_left := by
-    intros; simp [callCC, ReaderT.callCC, callCC_bind_left, ReaderT.goto_mkLabel]
+    intros; simp only [callCC, ReaderT.callCC, ReaderT.goto_mkLabel, ReaderT.run_bind,
+      ReaderT.run_monadLift, monadLift_self, callCC_bind_left]
     ext; rfl
-  callCC_dummy := by intros; simp [callCC, ReaderT.callCC, @callCC_dummy m _]; ext; rfl
+  callCC_dummy := by intros; simp only [callCC, ReaderT.callCC, @callCC_dummy m _]; ext; rfl
 
 /-- reduce the equivalence between two continuation passing monads to the equivalence between
 their underlying monad -/

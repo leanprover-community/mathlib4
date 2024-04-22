@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.adhesive
-! leanprover-community/mathlib commit afff1f24a6b68d0077c9d63782a1d093e337758c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Extensive
 import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
+
+#align_import category_theory.adhesive from "leanprover-community/mathlib"@"afff1f24a6b68d0077c9d63782a1d093e337758c"
 
 /-!
 
@@ -29,12 +26,8 @@ import Mathlib.CategoryTheory.Limits.Shapes.KernelPair
   monomorphisms are stable under pushouts.
 - `CategoryTheory.Adhesive.toRegularMonoCategory`: Monomorphisms in adhesive categories are
   regular (this implies that adhesive categories are balanced).
-
-## TODO
-
-Show that the following are adhesive:
-- functor categories into adhesive categories
-- the categories of sheaves over a site
+- `CategoryTHeory.adhesive_functor`: The category `C ⥤ D` is adhesive if `D`
+  has all pullbacks and all pushouts and is adhesive
 
 ## References
 - https://ncatlab.org/nlab/show/adhesive+category
@@ -50,7 +43,6 @@ open Limits
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
@@ -275,5 +267,72 @@ noncomputable instance (priority := 100) Adhesive.toRegularMonoCategory [Adhesiv
 -- This then implies that adhesive categories are balanced
 example [Adhesive C] : Balanced C :=
   inferInstance
+
+section functor
+
+universe v'' u''
+
+variable {D : Type u''} [Category.{v''} D]
+
+instance adhesive_functor [Adhesive C] [HasPullbacks C] [HasPushouts C] :
+    Adhesive (D ⥤ C) := by
+  constructor
+  intros W X Y Z f g h i hf H
+  rw [IsPushout.isVanKampen_iff]
+  apply isVanKampenColimit_of_evaluation
+  intro x
+  refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
+  refine IsVanKampenColimit.of_iso ?_ (PushoutCocone.isoMk _).symm
+  refine (IsPushout.isVanKampen_iff (H.map ((evaluation _ _).obj x))).mp ?_
+  apply Adhesive.van_kampen
+
+theorem adhesive_of_preserves_and_reflects (F : C ⥤ D) [Adhesive D]
+    [H₁ : ∀ {X Y S : C} (f : X ⟶ S) (g : Y ⟶ S) [Mono f], HasPullback f g]
+    [H₂ : ∀ {X Y S : C} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
+    [PreservesLimitsOfShape WalkingCospan F]
+    [ReflectsLimitsOfShape WalkingCospan F]
+    [PreservesColimitsOfShape WalkingSpan F]
+    [ReflectsColimitsOfShape WalkingSpan F] :
+    Adhesive C := by
+  apply Adhesive.mk (hasPullback_of_mono_left := H₁) (hasPushout_of_mono_left := H₂)
+  intros W X Y Z f g h i hf H
+  rw [IsPushout.isVanKampen_iff]
+  refine IsVanKampenColimit.of_mapCocone F ?_
+  refine (IsVanKampenColimit.precompose_isIso_iff (diagramIsoSpan _).inv).mp ?_
+  refine IsVanKampenColimit.of_iso ?_ (PushoutCocone.isoMk _).symm
+  refine (IsPushout.isVanKampen_iff (H.map F)).mp ?_
+  apply Adhesive.van_kampen
+
+theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
+    [Adhesive D] [HasPullbacks C] [HasPushouts C]
+    [PreservesLimitsOfShape WalkingCospan F]
+    [PreservesColimitsOfShape WalkingSpan F]
+    [F.ReflectsIsomorphisms] :
+    Adhesive C := by
+  haveI : ReflectsLimitsOfShape WalkingCospan F :=
+    reflectsLimitsOfShapeOfReflectsIsomorphisms
+  haveI : ReflectsColimitsOfShape WalkingSpan F :=
+    reflectsColimitsOfShapeOfReflectsIsomorphisms
+  exact adhesive_of_preserves_and_reflects F
+
+theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
+    [H₂ : ∀ {X Y S : D} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
+    [PreservesLimitsOfShape WalkingCospan Gl] :
+    Adhesive D := by
+  have := adj.leftAdjointPreservesColimits
+  have := adj.rightAdjointPreservesLimits
+  apply Adhesive.mk (hasPushout_of_mono_left := H₂)
+  intro W X Y Z f g h i _ H
+  have := Adhesive.van_kampen (IsPushout.of_hasPushout (Gr.map f) (Gr.map g))
+  rw [IsPushout.isVanKampen_iff] at this ⊢
+  refine (IsVanKampenColimit.precompose_isIso_iff
+    (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
+  refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
+    (IsColimit.uniqueUpToIso ?_ ?_)
+  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)
+  · exact (IsColimit.precomposeHomEquiv _ _).symm H.isColimit
+
+end functor
 
 end CategoryTheory

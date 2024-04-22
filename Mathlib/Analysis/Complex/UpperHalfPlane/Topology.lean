@@ -2,11 +2,6 @@
 Copyright (c) 2022 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module analysis.complex.upper_half_plane.topology
-! leanprover-community/mathlib commit 57f9349f2fe19d2de7207e99b0341808d977cdcf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.Analysis.Convex.Contractible
@@ -14,6 +9,8 @@ import Mathlib.Analysis.Convex.Normed
 import Mathlib.Analysis.Convex.Complex
 import Mathlib.Analysis.Complex.ReImTopology
 import Mathlib.Topology.Homotopy.Contractible
+
+#align_import analysis.complex.upper_half_plane.topology from "leanprover-community/mathlib"@"57f9349f2fe19d2de7207e99b0341808d977cdcf"
 
 /-!
 # Topology on the upper half plane
@@ -54,14 +51,12 @@ theorem continuous_im : Continuous im :=
   Complex.continuous_im.comp continuous_coe
 #align upper_half_plane.continuous_im UpperHalfPlane.continuous_im
 
-instance : TopologicalSpace.SecondCountableTopology ℍ :=
+instance : SecondCountableTopology ℍ :=
   TopologicalSpace.Subtype.secondCountableTopology _
 
-instance : T3Space ℍ :=
-  Subtype.t3Space
+instance : T3Space ℍ := Subtype.t3Space
 
-instance : NormalSpace ℍ :=
-  normalSpaceOfT3SecondCountable ℍ
+instance : T4Space ℍ := inferInstance
 
 instance : ContractibleSpace ℍ :=
   (convex_halfspace_im_gt 0).contractibleSpace ⟨I, one_pos.trans_eq I_im.symm⟩

@@ -2,15 +2,12 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module algebraic_topology.dold_kan.p_infty
-! leanprover-community/mathlib commit 31019c2504b17f85af7e0577585fad996935a317
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.AlgebraicTopology.DoldKan.Projections
 import Mathlib.CategoryTheory.Idempotents.FunctorCategories
 import Mathlib.CategoryTheory.Idempotents.FunctorExtension
+
+#align_import algebraic_topology.dold_kan.p_infty from "leanprover-community/mathlib"@"32a7e535287f9c73f2e4d2aef306a39190f0b504"
 
 /-!
 
@@ -21,7 +18,8 @@ to the limit the projections `P q` defined in `Projections.lean`. This
 projection is a critical tool in this formalisation of the Dold-Kan correspondence,
 because in the case of abelian categories, `PInfty` corresponds to the
 projection on the normalized Moore subcomplex, with kernel the degenerate subcomplex.
-(See `Equivalence.lean` for the general strategy of proof.)
+
+(See `Equivalence.lean` for the general strategy of proof of the Dold-Kan equivalence.)
 
 -/
 
@@ -33,7 +31,7 @@ namespace AlgebraicTopology
 
 namespace DoldKan
 
-variable {C : Type _} [Category C] [Preadditive C] {X : SimplicialObject C}
+variable {C : Type*} [Category C] [Preadditive C] {X : SimplicialObject C}
 
 theorem P_is_eventually_constant {q n : ℕ} (hqn : n ≤ q) :
     ((P (q + 1)).f n : X _[n] ⟶ _) = (P q).f n := by
@@ -161,7 +159,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem PInfty_add_QInfty : (PInfty : K[X] ⟶ _) + QInfty = 𝟙 _ := by
   dsimp only [QInfty]
-  simp only [add_sub_cancel'_right]
+  simp only [add_sub_cancel]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.P_infty_add_Q_infty AlgebraicTopology.DoldKan.PInfty_add_QInfty
 
@@ -193,7 +191,7 @@ set_option linter.uppercaseLean3 false in
 variable {C}
 
 @[simp]
-theorem map_PInfty_f {D : Type _} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
+theorem map_PInfty_f {D : Type*} [Category D] [Preadditive D] (G : C ⥤ D) [G.Additive]
     (X : SimplicialObject C) (n : ℕ) :
     (PInfty : K[((whiskering C D).obj G).obj X] ⟶ _).f n =
       G.map ((PInfty : AlternatingFaceMapComplex.obj X ⟶ _).f n) :=
@@ -222,7 +220,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   have h₃₂ : (P₃.f n).f = P₂.f n := Karoubi.hom_ext_iff.mp (map_PInfty_f (toKaroubi C) Y₂ n)
   have h₄₃ : P₄.f n = P₃.f n := by
     have h := Functor.congr_obj (toKaroubi_comp_karoubiFunctorCategoryEmbedding _ _) Y₂
-    simp only [← natTransPInfty_f_app]
+    simp only [P₃, P₄, ← natTransPInfty_f_app]
     congr 1
   have h₁₄ := Idempotents.natTrans_eq
     ((𝟙 (karoubiFunctorCategoryEmbedding SimplexCategoryᵒᵖ C)) ◫
@@ -236,7 +234,7 @@ theorem karoubi_PInfty_f {Y : Karoubi (SimplicialObject C)} (n : ℕ) :
   let π : Y₄ ⟶ Y₄ := (toKaroubi _ ⋙ karoubiFunctorCategoryEmbedding _ _).map Y.p
   have eq := Karoubi.hom_ext_iff.mp (PInfty_f_naturality n π)
   simp only [Karoubi.comp_f] at eq
-  dsimp at eq
+  dsimp [π] at eq
   rw [← eq, app_idem_assoc Y (op [n])]
 set_option linter.uppercaseLean3 false in
 #align algebraic_topology.dold_kan.karoubi_P_infty_f AlgebraicTopology.DoldKan.karoubi_PInfty_f

@@ -2,16 +2,13 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.category.Top.opens
-! leanprover-community/mathlib commit d39590fc8728fbf6743249802486f8c91ffe07bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.CategoryTheory.EqToHom
 import Mathlib.Topology.Category.TopCat.EpiMono
 import Mathlib.Topology.Sets.Opens
+
+#align_import topology.category.Top.opens from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
 /-!
 # The category of open sets in a topological space.
@@ -73,7 +70,7 @@ noncomputable def infLERight (U V : Opens X) : U ⊓ V ⟶ V :=
 
 /-- The inclusion `U i ⟶ supr U` as a morphism in the category of open sets.
 -/
-noncomputable def leSupr {ι : Type _} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
+noncomputable def leSupr {ι : Type*} (U : ι → Opens X) (i : ι) : U i ⟶ iSup U :=
   (le_iSup U i).hom
 #align topological_space.opens.le_supr TopologicalSpace.Opens.leSupr
 
@@ -103,7 +100,7 @@ theorem infLELeft_apply_mk (U V : Opens X) (x) (m) :
 #align topological_space.opens.inf_le_left_apply_mk TopologicalSpace.Opens.infLELeft_apply_mk
 
 @[simp]
-theorem leSupr_apply_mk {ι : Type _} (U : ι → Opens X) (i : ι) (x) (m) :
+theorem leSupr_apply_mk {ι : Type*} (U : ι → Opens X) (i : ι) (x) (m) :
     (leSupr U i) ⟨x, m⟩ = ⟨x, (le_iSup U i : _) m⟩ :=
   rfl
 #align topological_space.opens.le_supr_apply_mk TopologicalSpace.Opens.leSupr_apply_mk
@@ -128,11 +125,15 @@ set_option linter.uppercaseLean3 false in
 
 /-- The inclusion map from an open subset to the whole space, as a morphism in `TopCat`.
 -/
-@[simps (config := { fullyApplied := false })]
+@[simps (config := .asFn)]
 def inclusion {X : TopCat.{u}} (U : Opens X) : (toTopCat X).obj U ⟶ X where
   toFun := _
   continuous_toFun := continuous_subtype_val
 #align topological_space.opens.inclusion TopologicalSpace.Opens.inclusion
+
+@[simp]
+theorem coe_inclusion {X : TopCat} {U : Opens X} :
+    (inclusion U : U → X) = Subtype.val := rfl
 
 theorem openEmbedding {X : TopCat.{u}} (U : Opens X) : OpenEmbedding (inclusion U) :=
   IsOpen.openEmbedding_subtype_val U.2
@@ -152,6 +153,7 @@ def map (f : X ⟶ Y) : Opens Y ⥤ Opens X where
   map i := ⟨⟨fun x h => i.le h⟩⟩
 #align topological_space.opens.map TopologicalSpace.Opens.map
 
+@[simp]
 theorem map_coe (f : X ⟶ Y) (U : Opens Y) : ((map f).obj U : Set X) = f ⁻¹' (U : Set Y) :=
   rfl
 #align topological_space.opens.map_coe TopologicalSpace.Opens.map_coe
@@ -181,6 +183,9 @@ theorem map_id_obj_unop (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).obj (unop U) = un
 @[simp 1100]
 theorem op_map_id_obj (U : (Opens X)ᵒᵖ) : (map (𝟙 X)).op.obj U = U := by simp
 #align topological_space.opens.op_map_id_obj TopologicalSpace.Opens.op_map_id_obj
+
+@[simp]
+lemma map_top (f : X ⟶ Y) : (Opens.map f).obj ⊤ = ⊤ := rfl
 
 /-- The inclusion `U ⟶ (map f).obj ⊤` as a morphism in the category of open sets.
 -/
@@ -218,10 +223,10 @@ theorem op_map_comp_obj (f : X ⟶ Y) (g : Y ⟶ Z) (U) :
   rfl
 #align topological_space.opens.op_map_comp_obj TopologicalSpace.Opens.op_map_comp_obj
 
-theorem map_iSup (f : X ⟶ Y) {ι : Type _} (U : ι → Opens Y) :
+theorem map_iSup (f : X ⟶ Y) {ι : Type*} (U : ι → Opens Y) :
     (map f).obj (iSup U) = iSup ((map f).obj ∘ U) := by
   ext1; rw [iSup_def, iSup_def, map_obj]
-  dsimp; rw [Set.preimage_iUnion]; rfl
+  dsimp; rw [Set.preimage_iUnion]
 #align topological_space.opens.map_supr TopologicalSpace.Opens.map_iSup
 
 section
@@ -319,7 +324,7 @@ def IsOpenMap.adjunction {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
 #align is_open_map.adjunction IsOpenMap.adjunction
 
 instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) [H : Mono f] :
-    Full hf.functor where
+    hf.functor.Full where
   preimage i :=
     homOfLE fun x hx => by
       obtain ⟨y, hy, eq⟩ := i.le ⟨x, hx, rfl⟩
@@ -327,8 +332,12 @@ instance IsOpenMap.functorFullOfMono {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMa
 #align is_open_map.functor_full_of_mono IsOpenMap.functorFullOfMono
 
 instance IsOpenMap.functor_faithful {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) :
-    Faithful hf.functor where
+    hf.functor.Faithful where
 #align is_open_map.functor_faithful IsOpenMap.functor_faithful
+
+lemma OpenEmbedding.functor_obj_injective {X Y : TopCat} {f : X ⟶ Y} (hf : OpenEmbedding f) :
+    Function.Injective hf.isOpenMap.functor.obj :=
+  fun _ _ e ↦ Opens.ext (Set.image_injective.mpr hf.inj (congr_arg (↑· : Opens Y → Set Y) e))
 
 namespace TopologicalSpace.Opens
 
@@ -355,10 +364,10 @@ theorem adjunction_counit_app_self {X : TopCat} (U : Opens X) :
 theorem inclusion_top_functor (X : TopCat) :
     (@Opens.openEmbedding X ⊤).isOpenMap.functor = map (inclusionTopIso X).inv := by
   refine' CategoryTheory.Functor.ext _ _
-  . intro U
+  · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
-  . intros U V f
+  · intros U V f
     apply Subsingleton.elim
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
@@ -372,14 +381,14 @@ theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U :
     exact ⟨x, hx, rfl⟩
 #align topological_space.opens.functor_obj_map_obj TopologicalSpace.Opens.functor_obj_map_obj
 
--- porting note: added to ease the proof of `functor_map_eq_inf`
+-- Porting note: added to ease the proof of `functor_map_eq_inf`
 lemma set_range_forget_map_inclusion {X : TopCat} (U : Opens X) :
     Set.range ((forget TopCat).map (inclusion U)) = (U : Set X) := by
   ext x
   constructor
-  . rintro ⟨x, rfl⟩
+  · rintro ⟨x, rfl⟩
     exact x.2
-  . intro h
+  · intro h
     exact ⟨⟨x, h⟩, rfl⟩
 
 @[simp]
@@ -405,7 +414,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 @[simp]
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
-      eqToHom (by dsimp ; rw [map_functor_eq V]) :=
+      eqToHom (by dsimp; rw [map_functor_eq V]) :=
   by apply Subsingleton.elim
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 

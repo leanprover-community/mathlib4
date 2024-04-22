@@ -2,15 +2,13 @@
 Copyright (c) 2020 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module control.fix
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Part
 import Mathlib.Data.Nat.Upto
 import Mathlib.Data.Stream.Defs
+import Mathlib.Tactic.Common
+
+#align_import control.fix from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Fixed point
@@ -28,14 +26,14 @@ An instance is defined for `Part`.
 
 universe u v
 
-open Classical
+open scoped Classical
 
-variable {α : Type _} {β : α → Type _}
+variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
-class Fix (α : Type _) where
-  /-- `fix f` represents the computation of a fixed point for `f`.-/
+class Fix (α : Type*) where
+  /-- `fix f` represents the computation of a fixed point for `f`. -/
   fix : (α → α) → α
 #align has_fix Fix
 
@@ -83,9 +81,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
   revert hk
   dsimp [Part.fix]; rw [assert_pos h']; revert this
   generalize Upto.zero = z; intro _this hk
-  suffices : ∀ x',
+  suffices ∀ x',
     WellFounded.fix (Part.fix.proof_1 f x h') (fixAux f) z x' = Fix.approx f (succ k) x'
-  exact this _
+    from this _
   induction k generalizing z with
   | zero =>
     intro x'
@@ -103,10 +101,10 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rw [hk, Nat.succ_add, ← Nat.add_succ]
+      rw [hk, Nat.succ_add_eq_add_succ]
       apply Nat.lt_of_succ_le
       apply Nat.le_add_left
-    rw [succ_add_eq_succ_add] at _this hk
+    rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 #align part.fix_def Part.fix_def
 

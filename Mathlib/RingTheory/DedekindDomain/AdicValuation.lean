@@ -2,17 +2,14 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.adic_valuation
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.Valuation.ExtendToLocalization
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.Topology.Algebra.ValuedField
 import Mathlib.Algebra.Order.Group.TypeTags
+
+#align_import ring_theory.dedekind_domain.adic_valuation from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # Adic valuations on Dedekind domains
@@ -41,7 +38,7 @@ We define the completion of `K` with respect to the `v`-adic valuation, denoted
   ideal `(r)`.
 - `IsDedekindDomain.HeightOneSpectrum.int_valuation_exists_uniformizer` : There exists `π ∈ R`
   with `v`-adic valuation `Multiplicative.ofAdd (-1)`.
-- `is_dedekind_domain.height_one_spectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
+- IsDedekindDomain.HeightOneSpectrum.valuation_of_mk'` : The `v`-adic valuation of `r/s ∈ K`
   is the valuation of `r` divided by the valuation of `s`.
 - `IsDedekindDomain.HeightOneSpectrum.valuation_of_algebraMap` : The `v`-adic valuation on `K`
   extends the `v`-adic valuation on `R`.
@@ -67,7 +64,7 @@ open scoped Classical DiscreteValuation
 
 open Multiplicative IsDedekindDomain
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 namespace IsDedekindDomain.HeightOneSpectrum
@@ -81,8 +78,8 @@ multiplicative valuation. -/
 def intValuationDef (r : R) : ℤₘ₀ :=
   if r = 0 then 0
   else
-    Multiplicative.ofAdd
-      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ)
+    ↑(Multiplicative.ofAdd
+      (-(Associates.mk v.asIdeal).count (Associates.mk (Ideal.span {r} : Ideal R)).factors : ℤ))
 #align is_dedekind_domain.height_one_spectrum.int_valuation_def IsDedekindDomain.HeightOneSpectrum.intValuationDef
 
 theorem intValuationDef_if_pos {r : R} (hr : r = 0) : v.intValuationDef r = 0 :=
@@ -120,7 +117,7 @@ theorem int_valuation_le_one (x : R) : v.intValuationDef x ≤ 1 := by
   · rw [if_pos hx]; exact WithZero.zero_le 1
   · rw [if_neg hx, ← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_le_coe, ofAdd_le,
       Right.neg_nonpos_iff]
-    exact Int.coe_nat_nonneg _
+    exact Int.natCast_nonneg _
 #align is_dedekind_domain.height_one_spectrum.int_valuation_le_one IsDedekindDomain.HeightOneSpectrum.int_valuation_le_one
 
 /-- The `v`-adic valuation of `r ∈ R` is less than 1 if and only if `v` divides the ideal `(r)`. -/
@@ -132,7 +129,7 @@ theorem int_valuation_lt_one_iff_dvd (r : R) :
   · rw [← WithZero.coe_one, ← ofAdd_zero, WithZero.coe_lt_coe, ofAdd_lt, neg_lt_zero, ←
       Int.ofNat_zero, Int.ofNat_lt, zero_lt_iff]
     have h : (Ideal.span {r} : Ideal R) ≠ 0 := by
-      rw [Ne.def, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
+      rw [Ne, Ideal.zero_eq_bot, Ideal.span_singleton_eq_bot]
       exact hr
     apply Associates.count_ne_zero_iff_dvd h (by apply v.irreducible)
 #align is_dedekind_domain.height_one_spectrum.int_valuation_lt_one_iff_dvd IsDedekindDomain.HeightOneSpectrum.int_valuation_lt_one_iff_dvd
@@ -168,9 +165,9 @@ theorem IntValuation.map_mul' (x y : R) :
     v.intValuationDef (x * y) = v.intValuationDef x * v.intValuationDef y := by
   simp only [intValuationDef]
   by_cases hx : x = 0
-  · rw [hx, MulZeroClass.zero_mul, if_pos (Eq.refl _), MulZeroClass.zero_mul]
+  · rw [hx, zero_mul, if_pos (Eq.refl _), zero_mul]
   · by_cases hy : y = 0
-    · rw [hy, MulZeroClass.mul_zero, if_pos (Eq.refl _), MulZeroClass.mul_zero]
+    · rw [hy, mul_zero, if_pos (Eq.refl _), mul_zero]
     · rw [if_neg hx, if_neg hy, if_neg (mul_ne_zero hx hy), ← WithZero.coe_mul, WithZero.coe_inj, ←
         ofAdd_add, ← Ideal.span_singleton_mul_span_singleton, ← Associates.mk_mul_mk, ← neg_add,
         Associates.count_mul (by apply Associates.mk_ne_zero'.mpr hx)
@@ -249,8 +246,8 @@ theorem int_valuation_exists_uniformizer :
   use π
   rw [intValuationDef, if_neg (Associates.mk_ne_zero'.mp hπ), WithZero.coe_inj]
   apply congr_arg
-  rw [neg_inj, ← Int.ofNat_one, Int.coe_nat_inj']
-  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd_iff] at mem nmem
+  rw [neg_inj, ← Int.ofNat_one, Int.natCast_inj]
+  rw [← Ideal.dvd_span_singleton, ← Associates.mk_le_mk_iff_dvd] at mem nmem
   rw [← pow_one (Associates.mk v.asIdeal), Associates.prime_pow_dvd_iff_le hπ hv] at mem
   rw [Associates.mk_pow, Associates.prime_pow_dvd_iff_le hπ hv, not_le] at nmem
   exact Nat.eq_of_le_of_lt_succ mem nmem
@@ -400,7 +397,6 @@ instance AdicCompletion.algebra' : Algebra R (v.adicCompletion K) :=
     (adicValued.has_uniform_continuous_const_smul' R K v)
 #align is_dedekind_domain.height_one_spectrum.adic_completion.algebra' IsDedekindDomain.HeightOneSpectrum.AdicCompletion.algebra'
 
-@[simp]
 theorem coe_smul_adicCompletion (r : R) (x : K) :
     (↑(r • x) : v.adicCompletion K) = r • (↑x : v.adicCompletion K) :=
   @UniformSpace.Completion.coe_smul R K v.adicValued.toUniformSpace _ _ r x
@@ -430,40 +426,42 @@ instance : Algebra R (v.adicCompletionIntegers K) where
         (algebraMap R (adicCompletion K v)) r = (algebraMap R K r : adicCompletion K v) := rfl
       rw [Algebra.smul_def]
       refine' ValuationSubring.mul_mem _ _ _ _ x.2
-      --Porting note: added instance
+      --porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      rw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, h, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   toFun r :=
     ⟨(algebraMap R K r : adicCompletion K v), by
-      -- Porting note: added instance
+      -- porting note (#10754): added instance
       letI : Valued K ℤₘ₀ := adicValued v
-      --Porting note: rest of proof was `simpa only
+      -- Porting note: rest of proof was `simpa only
       --   [mem_adicCompletionIntegers, Valued.valuedCompletion_apply] using
       --   v.valuation_le_one _
-      rw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
+      -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+      erw [mem_adicCompletionIntegers, Valued.valuedCompletion_apply]
       exact v.valuation_le_one _⟩
   map_one' := by simp only [map_one]; rfl
   map_mul' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_mul, Subring.coe_mul, Subtype.coe_mk, UniformSpace.Completion.coe_mul]
+    simp_rw [RingHom.map_mul, Subring.coe_mul, UniformSpace.Completion.coe_mul]
   map_zero' := by simp only [map_zero]; rfl
   map_add' x y := by
     ext
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
-    simp_rw [RingHom.map_add, Subring.coe_add, Subtype.coe_mk, UniformSpace.Completion.coe_add]
+    simp_rw [RingHom.map_add, Subring.coe_add, UniformSpace.Completion.coe_add]
   commutes' r x := by
     -- Porting note: added `dsimp` line
     dsimp
     rw [mul_comm]
   smul_def' r x := by
     ext
-    --Porting note: added `dsimp`
+    -- Porting note: added `dsimp`
     dsimp
-    --Porting note: added instance
+    --porting note (#10754): added instance
     letI : Valued K ℤₘ₀ := adicValued v
     simp only [Subring.coe_mul, Algebra.smul_def]
     rfl

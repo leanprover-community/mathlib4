@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.limits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Adjunction
 import Mathlib.CategoryTheory.Adjunction.Limits
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
+
+#align_import category_theory.monad.limits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Limits and colimits in the category of algebras
@@ -39,9 +36,7 @@ universe v u v₁ v₂ u₁ u₂
 namespace Monad
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {T : Monad C}
-
 variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesLimits
@@ -282,7 +277,6 @@ theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (
 end Monad
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
@@ -321,16 +315,16 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     (Adjunction.toMonad (Adjunction.ofRightAdjoint R)))
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ i.symm
+    exact preservesColimitOfIsoDiagram _ i.symm
   letI : PreservesColimit
     (((K ⋙ A) ⋙ Monad.forget (Adjunction.toMonad (Adjunction.ofRightAdjoint R))) ⋙
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor)
       (Adjunction.toMonad (Adjunction.ofRightAdjoint R)).toFunctor := by
     dsimp
-    refine' preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
+    exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
-  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  let e := Monad.comparisonForget (Adjunction.ofRightAdjoint R)
   apply createsColimitOfNatIso e
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
@@ -346,8 +340,8 @@ noncomputable def monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape (R : D
 
 /-- A monadic functor creates colimits if it preserves colimits. -/
 noncomputable def monadicCreatesColimitsOfPreservesColimits (R : D ⥤ C) [MonadicRightAdjoint R]
-    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R
-    where CreatesColimitsOfShape :=
+    [PreservesColimitsOfSize.{v, u} R] : CreatesColimitsOfSize.{v, u} R where
+  CreatesColimitsOfShape :=
     monadicCreatesColimitsOfShapeOfPreservesColimitsOfShape _
 #align category_theory.monadic_creates_colimits_of_preserves_colimits CategoryTheory.monadicCreatesColimitsOfPreservesColimits
 
@@ -406,7 +400,7 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
       apply (asIso ((Adjunction.ofRightAdjoint R).counit.app _)).symm.trans
       apply (leftAdjoint R).mapIso
       letI := monadicCreatesLimits.{v, v} R
-      let A := (CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R)
+      let A := CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R
       apply (A.preserves (limit.isLimit F)).conePointUniqueUpToIso h
     apply preservesLimitOfIsoDiagram _ (Functor.emptyExt (F ⋙ R) _)
 #align category_theory.left_adjoint_preserves_terminal_of_reflective CategoryTheory.leftAdjointPreservesTerminalOfReflective

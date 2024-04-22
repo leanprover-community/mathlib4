@@ -2,16 +2,13 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.denumerable
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Fintype.Lattice
+import Mathlib.Data.Fintype.Card
 import Mathlib.Data.List.MinMax
 import Mathlib.Data.Nat.Order.Lemmas
 import Mathlib.Logic.Encodable.Basic
+
+#align_import logic.denumerable from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Denumerable types
@@ -27,10 +24,10 @@ typeclass.
 -/
 
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- A denumerable type is (constructively) bijective with `ℕ`. Typeclass equivalent of `α ≃ ℕ`. -/
-class Denumerable (α : Type _) extends Encodable α where
+class Denumerable (α : Type*) extends Encodable α where
   /-- `decode` and `encode` are inverses. -/
   decode_inv : ∀ n, ∃ a ∈ decode n, encode a = n
 #align denumerable Denumerable
@@ -66,7 +63,7 @@ theorem ofNat_of_decode {n b} (h : decode (α := α) n = some b) : ofNat (α := 
 
 @[simp]
 theorem encode_ofNat (n) : encode (ofNat α n) = n := by
-  obtain ⟨a, h, e⟩ := decode_inv n
+  obtain ⟨a, h, e⟩ := decode_inv (α := α) n
   rwa [ofNat_of_decode h]
 #align denumerable.encode_of_nat Denumerable.encode_ofNat
 
@@ -130,11 +127,11 @@ theorem ofNat_nat (n) : ofNat ℕ n = n :=
 /-- If `α` is denumerable, then so is `Option α`. -/
 instance option : Denumerable (Option α) :=
   ⟨fun n => by
-    cases n
-    case zero =>
+    cases n with
+    | zero =>
       refine' ⟨none, _, encode_none⟩
       rw [decode_option_zero, Option.mem_def]
-    case succ n =>
+    | succ n =>
       refine' ⟨some (ofNat α n), _, _⟩
       · rw [decode_option_succ, decode_eq_ofNat, Option.map_some', Option.mem_def]
       rw [encode_some, encode_ofNat]⟩
@@ -152,7 +149,7 @@ instance sum : Denumerable (Sum α β) :=
 
 section Sigma
 
-variable {γ : α → Type _} [∀ a, Denumerable (γ a)]
+variable {γ : α → Type*} [∀ a, Denumerable (γ a)]
 
 /-- A denumerable collection of denumerable types is denumerable. -/
 instance sigma : Denumerable (Sigma γ) :=
@@ -219,7 +216,7 @@ variable {s : Set ℕ} [Infinite s]
 
 section Classical
 
-open Classical
+open scoped Classical
 
 theorem exists_succ (x : s) : ∃ n, (x : ℕ) + n + 1 ∈ s :=
   _root_.by_contradiction fun h =>
@@ -319,10 +316,10 @@ theorem coe_comp_ofNat_range : Set.range ((↑) ∘ ofNat s : ℕ → ℕ) = s :
 #align nat.subtype.coe_comp_of_nat_range Nat.Subtype.coe_comp_ofNat_range
 
 private def toFunAux (x : s) : ℕ :=
-  (List.range x).countp (· ∈ s)
+  (List.range x).countP (· ∈ s)
 
 private theorem toFunAux_eq (x : s) : toFunAux x = ((Finset.range x).filter (· ∈ s)).card := by
-  rw [toFunAux, List.countp_eq_length_filter]
+  rw [toFunAux, List.countP_eq_length_filter]
   rfl
 
 open Finset
@@ -367,7 +364,7 @@ namespace Denumerable
 open Encodable
 
 /-- An infinite encodable type is denumerable. -/
-def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerable α := by
+def ofEncodableOfInfinite (α : Type*) [Encodable α] [Infinite α] : Denumerable α := by
   letI := @decidableRangeEncode α _
   letI : Infinite (Set.range (@encode α _)) :=
     Infinite.of_injective _ (Equiv.ofInjective _ encode_injective).injective
@@ -378,9 +375,13 @@ def ofEncodableOfInfinite (α : Type _) [Encodable α] [Infinite α] : Denumerab
 end Denumerable
 
 /-- See also `nonempty_encodable`, `nonempty_fintype`. -/
-theorem nonempty_denumerable (α : Type _) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
+theorem nonempty_denumerable (α : Type*) [Countable α] [Infinite α] : Nonempty (Denumerable α) :=
   (nonempty_encodable α).map fun h => @Denumerable.ofEncodableOfInfinite _ h _
 #align nonempty_denumerable nonempty_denumerable
+
+theorem nonempty_denumerable_iff {α : Type*} :
+    Nonempty (Denumerable α) ↔ Countable α ∧ Infinite α :=
+  ⟨fun ⟨_⟩ ↦ ⟨inferInstance, inferInstance⟩, fun ⟨_, _⟩ ↦ nonempty_denumerable _⟩
 
 instance nonempty_equiv_of_countable [Countable α] [Infinite α] [Countable β] [Infinite β] :
     Nonempty (α ≃ β) := by

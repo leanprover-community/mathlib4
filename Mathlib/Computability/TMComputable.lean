@@ -2,16 +2,13 @@
 Copyright (c) 2020 Pim Spelier, Daan van Gent. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pim Spelier, Daan van Gent
-
-! This file was ported from Lean 3 source module computability.tm_computable
-! leanprover-community/mathlib commit 6f9cb03e8a39ea345796a13c6639cb330e50869b
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.TuringMachine
-import Mathlib.Data.Polynomial.Basic
-import Mathlib.Data.Polynomial.Eval
+
+#align_import computability.tm_computable from "leanprover-community/mathlib"@"6f9cb03e8a39ea345796a13c6639cb330e50869b"
 
 /-!
 # Computable functions
@@ -119,9 +116,9 @@ def haltList (tm : FinTM2) (s : List (tm.Γ tm.k₁)) : tm.Cfg where
 
 /-- A "proof" of the fact that f eventually reaches b when repeatedly evaluated on a,
 remembering the number of steps it takes. -/
-structure EvalsTo {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) where
+structure EvalsTo {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) where
   steps : ℕ
-  evals_in_steps : (flip bind f^[steps]) a = b
+  evals_in_steps : (flip bind f)^[steps] a = b
 #align turing.evals_to Turing.EvalsTo
 
 -- note: this cannot currently be used in `calc`, as the last two arguments must be `a` and `b`.
@@ -129,33 +126,33 @@ structure EvalsTo {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) 
 -- natural, so there is a trade-off that needs to be made here. A notation can get around this.
 /-- A "proof" of the fact that `f` eventually reaches `b` in at most `m` steps when repeatedly
 evaluated on `a`, remembering the number of steps it takes. -/
-structure EvalsToInTime {σ : Type _} (f : σ → Option σ) (a : σ) (b : Option σ) (m : ℕ) extends
+structure EvalsToInTime {σ : Type*} (f : σ → Option σ) (a : σ) (b : Option σ) (m : ℕ) extends
   EvalsTo f a b where
   steps_le_m : steps ≤ m
 #align turing.evals_to_in_time Turing.EvalsToInTime
 
 /-- Reflexivity of `EvalsTo` in 0 steps. -/
 -- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsTo.refl {σ : Type _} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
+def EvalsTo.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsTo f a a :=
   ⟨0, rfl⟩
 #align turing.evals_to.refl Turing.EvalsTo.refl
 
 /-- Transitivity of `EvalsTo` in the sum of the numbers of steps. -/
 @[trans]
-def EvalsTo.trans {σ : Type _} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
+def EvalsTo.trans {σ : Type*} (f : σ → Option σ) (a : σ) (b : σ) (c : Option σ)
     (h₁ : EvalsTo f a b) (h₂ : EvalsTo f b c) : EvalsTo f a c :=
   ⟨h₂.steps + h₁.steps, by rw [Function.iterate_add_apply, h₁.evals_in_steps, h₂.evals_in_steps]⟩
 #align turing.evals_to.trans Turing.EvalsTo.trans
 
 /-- Reflexivity of `EvalsToInTime` in 0 steps. -/
 -- @[refl] -- Porting note: `@[refl]` attribute only applies to lemmas proving `x ∼ x` in Lean4.
-def EvalsToInTime.refl {σ : Type _} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
+def EvalsToInTime.refl {σ : Type*} (f : σ → Option σ) (a : σ) : EvalsToInTime f a a 0 :=
   ⟨EvalsTo.refl f a, le_refl 0⟩
 #align turing.evals_to_in_time.refl Turing.EvalsToInTime.refl
 
 /-- Transitivity of `EvalsToInTime` in the sum of the numbers of steps. -/
 @[trans]
-def EvalsToInTime.trans {σ : Type _} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
+def EvalsToInTime.trans {σ : Type*} (f : σ → Option σ) (m₁ : ℕ) (m₂ : ℕ) (a : σ) (b : σ)
     (c : Option σ) (h₁ : EvalsToInTime f a b m₁) (h₂ : EvalsToInTime f b c m₂) :
     EvalsToInTime f a c (m₂ + m₁) :=
   ⟨EvalsTo.trans f a b c h₁.toEvalsTo h₂.toEvalsTo, add_le_add h₂.steps_le_m h₁.steps_le_m⟩
@@ -263,7 +260,7 @@ def idComputableInPolyTime {α : Type} (ea : FinEncoding α) :
   outputsFun _ :=
     { steps := 1
       evals_in_steps := rfl
-      steps_le_m := by simp only [Polynomial.eval_one] }
+      steps_le_m := by simp only [Polynomial.eval_one, le_refl] }
 #align turing.id_computable_in_poly_time Turing.idComputableInPolyTime
 
 instance inhabitedTM2ComputableInPolyTime :

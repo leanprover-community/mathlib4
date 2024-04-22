@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module probability.martingale.convergence
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Martingale.Upcrossing
 import Mathlib.MeasureTheory.Function.UniformIntegrable
 import Mathlib.MeasureTheory.Constructions.Polish
+
+#align_import probability.martingale.convergence from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 
@@ -53,8 +50,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 
 namespace MeasureTheory
 
-variable {Ω ι : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
-
+variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -96,7 +92,7 @@ as required.
 Implementationwise, we have `tendsto_of_no_upcrossings` which shows that
 a bounded sequence converges if it does not visit below $a$ and above $b$ infinitely often
 for all $a, b ∈ s$ for some dense set $s$. So, we may skip the first step provided we can prove
-that the realizations are bounded almost everywhere. Indeed, suppose $(|f_n(\omega)|)$ is not
+that the realizations are bounded almost everywhere. Indeed, suppose $|f_n(\omega)|$ is not
 bounded, then either $f_n(\omega) \to \pm \infty$ or one of $\limsup f_n(\omega)$ or
 $\liminf f_n(\omega)$ equals $\pm \infty$ while the other is finite. But the first case
 contradicts $\liminf |f_n(\omega)| < \infty$ while the second case contradicts finite upcrossings.
@@ -114,8 +110,8 @@ then it does not frequently visit both below `a` and above `b`. -/
 theorem not_frequently_of_upcrossings_lt_top (hab : a < b) (hω : upcrossings a b f ω ≠ ∞) :
     ¬((∃ᶠ n in atTop, f n ω < a) ∧ ∃ᶠ n in atTop, b < f n ω) := by
   rw [← lt_top_iff_ne_top, upcrossings_lt_top_iff] at hω
-  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k
-  · obtain ⟨k, hk⟩ := hω
+  replace hω : ∃ k, ∀ N, upcrossingsBefore a b f N ω < k := by
+    obtain ⟨k, hk⟩ := hω
     exact ⟨k + 1, fun N => lt_of_le_of_lt (hk N) k.lt_succ_self⟩
   rintro ⟨h₁, h₂⟩
   rw [frequently_atTop] at h₁ h₂
@@ -178,14 +174,13 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
       refine' lintegral_mono fun ω => _
       rw [ENNReal.ofReal_le_iff_le_toReal, ENNReal.coe_toReal, coe_nnnorm]
       by_cases hnonneg : 0 ≤ f n ω - a
-      · rw [LatticeOrderedCommGroup.pos_of_nonneg _ hnonneg, Real.norm_eq_abs,
-          abs_of_nonneg hnonneg]
-      · rw [LatticeOrderedCommGroup.pos_of_nonpos _ (not_le.1 hnonneg).le]
+      · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
+      · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
         exact norm_nonneg _
-      · simp only [Ne.def, ENNReal.coe_ne_top, not_false_iff]
-    · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne.def, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+      · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
+    · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
 #align measure_theory.submartingale.upcrossings_ae_lt_top' MeasureTheory.Submartingale.upcrossings_ae_lt_top'
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -205,12 +200,13 @@ theorem Submartingale.exists_ae_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submar
 
 theorem Submartingale.exists_ae_trim_tendsto_of_bdd [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
     (hbdd : ∀ n, snorm (f n) 1 μ ≤ R) :
-    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : (⨆ n, ℱ n) ≤ m0),
+    ∀ᵐ ω ∂μ.trim (sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _ : ⨆ n, ℱ n ≤ m0),
       ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) := by
-  rw [@ae_iff _ (⨆ n, ℱ n) _ _, trim_measurableSet_eq]
+  letI := (⨆ n, ℱ n)
+  rw [ae_iff, trim_measurableSet_eq]
   · exact hf.exists_ae_tendsto_of_bdd hbdd
-  · exact MeasurableSet.compl (@measurableSet_exists_tendsto _ _ _ _ _ _ (⨆ n, ℱ n) _ _ _ _ _
-      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl)
+  · exact MeasurableSet.compl <| measurableSet_exists_tendsto
+      fun n => (hf.stronglyMeasurable n).measurable.mono (le_sSup ⟨n, rfl⟩) le_rfl
 #align measure_theory.submartingale.exists_ae_trim_tendsto_of_bdd MeasureTheory.Submartingale.exists_ae_trim_tendsto_of_bdd
 
 /-- **Almost everywhere martingale convergence theorem**: An L¹-bounded submartingale converges
@@ -224,10 +220,10 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
     rw [limitProcess, dif_pos this]
     exact (Classical.choose_spec this).2
   set g' : Ω → ℝ := fun ω => if h : ∃ c, Tendsto (fun n => f n ω) atTop (𝓝 c) then h.choose else 0
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
-    simp_rw [dif_pos hω]
+    simp_rw [g', dif_pos hω]
     exact hω.choose_spec
   have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
@@ -311,7 +307,7 @@ required.
 Similar to the a.e. martingale convergence theorem, rather than showing the existence of the
 limiting process, we phrase the L¹-martingale convergence theorem by proving that a submartingale
 does converge in L¹ to its `limitProcess`. However, in contrast to the a.e. martingale convergence
-theorem, we do not need to introduce a L¹ version of `Filtration.limitProcess` as the L¹ limit
+theorem, we do not need to introduce an L¹ version of `Filtration.limitProcess` as the L¹ limit
 and the a.e. limit of a submartingale coincide.
 
 -/
@@ -326,7 +322,7 @@ theorem Submartingale.tendsto_snorm_one_limitProcess (hf : Submartingale f ℱ �
   obtain ⟨R, hR⟩ := hunif.2.2
   have hmeas : ∀ n, AEStronglyMeasurable (f n) μ := fun n =>
     ((hf.stronglyMeasurable n).mono (ℱ.le _)).aestronglyMeasurable
-  exact tendsto_Lp_of_tendstoInMeasure _ le_rfl ENNReal.one_ne_top hmeas
+  exact tendsto_Lp_of_tendstoInMeasure le_rfl ENNReal.one_ne_top hmeas
     (memℒp_limitProcess_of_snorm_bdd hmeas hR) hunif.2.1
     (tendstoInMeasure_of_tendsto_ae hmeas <| hf.ae_tendsto_limitProcess hR)
 #align measure_theory.submartingale.tendsto_snorm_one_limit_process MeasureTheory.Submartingale.tendsto_snorm_one_limitProcess
@@ -366,7 +362,7 @@ theorem Martingale.ae_eq_condexp_limitProcess (hf : Martingale f ℱ μ)
     (hf.submartingale.tendsto_snorm_one_limitProcess hbdd) n
 #align measure_theory.martingale.ae_eq_condexp_limit_process MeasureTheory.Martingale.ae_eq_condexp_limitProcess
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges almost everywhere to `g`.
 
@@ -375,7 +371,7 @@ This martingale also converges to `g` in L¹ and this result is provided by
 theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     ∀ᵐ x ∂μ, Tendsto (fun n => (μ[g|ℱ n]) x) atTop (𝓝 (g x)) := by
-  have hle : (⨆ n, ℱ n) ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
+  have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hunif : UniformIntegrable (fun n => μ[g|ℱ n]) 1 μ :=
     hg.uniformIntegrable_condexp_filtration
   obtain ⟨R, hR⟩ := hunif.2.2
@@ -388,11 +384,11 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   have : ∀ n s, MeasurableSet[ℱ n] s →
       ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ x ∂μ := by
     intro n s hs
-    rw [← set_integral_condexp (ℱ.le n) hg hs, ← set_integral_condexp (ℱ.le n) hlimint hs]
-    refine' set_integral_congr_ae (ℱ.le _ _ hs) _
+    rw [← setIntegral_condexp (ℱ.le n) hg hs, ← setIntegral_condexp (ℱ.le n) hlimint hs]
+    refine' setIntegral_congr_ae (ℱ.le _ _ hs) _
     filter_upwards [(martingale_condexp g ℱ μ).ae_eq_condexp_limitProcess hunif n] with x hx _
     rw [hx]
-  refine' ae_eq_of_forall_set_integral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
+  refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
     (fun s _ _ => hlimint.integrableOn) (fun s hs => _) hgmeas.aeStronglyMeasurable'
     stronglyMeasurable_limitProcess.aeStronglyMeasurable'
   apply @MeasurableSpace.induction_on_inter _ _ _ (⨆ n, ℱ n)
@@ -401,19 +397,19 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     by_cases hnm : n ≤ m
     · exact ⟨m, (ℱ.mono hnm _ hs).inter ht⟩
     · exact ⟨n, hs.inter (ℱ.mono (not_le.1 hnm).le _ ht)⟩
-  · simp only [measure_empty, WithTop.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
+  · simp only [measure_empty, ENNReal.zero_lt_top, Measure.restrict_empty, integral_zero_measure,
       forall_true_left]
   · rintro t ⟨n, ht⟩ -
     exact this n _ ht
   · rintro t htmeas ht -
-    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas (hg.trim hle hgmeas)
-    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ _ htmeas
+    have hgeq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas (hg.trim hle hgmeas)
+    have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
-    rw [set_integral_trim hle hgmeas htmeas.compl,
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
-      set_integral_trim hle hgmeas htmeas, ←
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
+    rw [setIntegral_trim hle hgmeas htmeas.compl,
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
+      setIntegral_trim hle hgmeas htmeas, ←
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
       integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
       this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -
@@ -422,7 +418,7 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     exact tsum_congr fun n => heq _ (measure_lt_top _ _)
 #align measure_theory.integrable.tendsto_ae_condexp MeasureTheory.Integrable.tendsto_ae_condexp
 
-/-- Part c of the **L¹ martingale convergence theorem**: Given a integrable function `g` which
+/-- Part c of the **L¹ martingale convergence theorem**: Given an integrable function `g` which
 is measurable with respect to `⨆ n, ℱ n` where `ℱ` is a filtration, the martingale defined by
 `𝔼[g | ℱ n]` converges in L¹ to `g`.
 
@@ -431,7 +427,7 @@ This martingale also converges to `g` almost everywhere and this result is provi
 theorem Integrable.tendsto_snorm_condexp (hg : Integrable g μ)
     (hgmeas : StronglyMeasurable[⨆ n, ℱ n] g) :
     Tendsto (fun n => snorm (μ[g|ℱ n] - g) 1 μ) atTop (𝓝 0) :=
-  tendsto_Lp_of_tendstoInMeasure _ le_rfl ENNReal.one_ne_top
+  tendsto_Lp_of_tendstoInMeasure le_rfl ENNReal.one_ne_top
     (fun n => (stronglyMeasurable_condexp.mono (ℱ.le n)).aestronglyMeasurable)
     (memℒp_one_iff_integrable.2 hg) hg.uniformIntegrable_condexp_filtration.2.1
     (tendstoInMeasure_of_tendsto_ae

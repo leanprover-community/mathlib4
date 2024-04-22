@@ -2,15 +2,12 @@
 Copyright (c) 2021 Bhavik Mehta, Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
-
-! This file was ported from Lean 3 source module data.finset.slice
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Data.Nat.Interval
 import Mathlib.Order.Antichain
+
+#align_import data.finset.slice from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `r`-sets and slice
@@ -36,11 +33,11 @@ open Finset Nat
 
 open BigOperators
 
-variable {α : Type _} {ι : Sort _} {κ : ι → Sort _}
+variable {α : Type*} {ι : Sort*} {κ : ι → Sort*}
 
 namespace Set
 
-variable {A B : Set (Finset α)} {r : ℕ}
+variable {A B : Set (Finset α)} {s : Finset α} {r : ℕ}
 
 /-! ### Families of `r`-sets -/
 
@@ -53,12 +50,15 @@ def Sized (r : ℕ) (A : Set (Finset α)) : Prop :=
 theorem Sized.mono (h : A ⊆ B) (hB : B.Sized r) : A.Sized r := fun _x hx => hB <| h hx
 #align set.sized.mono Set.Sized.mono
 
+@[simp] lemma sized_empty : (∅ : Set (Finset α)).Sized r := by simp [Sized]
+@[simp] lemma sized_singleton : ({s} : Set (Finset α)).Sized r ↔ s.card = r := by simp [Sized]
+
 theorem sized_union : (A ∪ B).Sized r ↔ A.Sized r ∧ B.Sized r :=
   ⟨fun hA => ⟨hA.mono <| subset_union_left _ _, hA.mono <| subset_union_right _ _⟩, fun hA _x hx =>
     hx.elim (fun h => hA.1 h) fun h => hA.2 h⟩
 #align set.sized_union Set.sized_union
 
-alias sized_union ↔ _ sized.union
+alias ⟨_, sized.union⟩ := sized_union
 #align set.sized.union Set.sized.union
 
 --TODO: A `forall_iUnion` lemma would be handy here.
@@ -94,9 +94,9 @@ theorem Sized.univ_mem_iff [Fintype α] (hA : A.Sized r) : Finset.univ ∈ A ↔
   hA.isAntichain.top_mem_iff
 #align set.sized.univ_mem_iff Set.Sized.univ_mem_iff
 
-theorem sized_powersetLen (s : Finset α) (r : ℕ) : (powersetLen r s : Set (Finset α)).Sized r :=
-  fun _t ht => (mem_powersetLen.1 ht).2
-#align set.sized_powerset_len Set.sized_powersetLen
+theorem sized_powersetCard (s : Finset α) (r : ℕ) : (powersetCard r s : Set (Finset α)).Sized r :=
+  fun _t ht => (mem_powersetCard.1 ht).2
+#align set.sized_powerset_len Set.sized_powersetCard
 
 end Set
 
@@ -106,18 +106,18 @@ section Sized
 
 variable [Fintype α] {𝒜 : Finset (Finset α)} {s : Finset α} {r : ℕ}
 
-theorem subset_powersetLen_univ_iff : 𝒜 ⊆ powersetLen r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
-  forall_congr' fun A => by rw [mem_powerset_len_univ_iff, mem_coe]
-#align finset.subset_powerset_len_univ_iff Finset.subset_powersetLen_univ_iff
+theorem subset_powersetCard_univ_iff : 𝒜 ⊆ powersetCard r univ ↔ (𝒜 : Set (Finset α)).Sized r :=
+  forall_congr' fun A => by rw [mem_powersetCard_univ, mem_coe]
+#align finset.subset_powerset_len_univ_iff Finset.subset_powersetCard_univ_iff
 
-alias subset_powersetLen_univ_iff ↔ _ _root_.Set.Sized.subset_powersetLen_univ
-#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetLen_univ
+alias ⟨_, _root_.Set.Sized.subset_powersetCard_univ⟩ := subset_powersetCard_univ_iff
+#align set.sized.subset_powerset_len_univ Set.Sized.subset_powersetCard_univ
 
-theorem Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
+theorem _root_.Set.Sized.card_le (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
     card 𝒜 ≤ (Fintype.card α).choose r := by
-  rw [Fintype.card, ← card_powersetLen]
-  exact card_le_of_subset (subset_powersetLen_univ_iff.mpr h𝒜)
-#align set.sized.card_le Finset.Set.Sized.card_le
+  rw [Fintype.card, ← card_powersetCard]
+  exact card_le_card (subset_powersetCard_univ_iff.mpr h𝒜)
+#align set.sized.card_le Set.Sized.card_le
 
 end Sized
 
@@ -133,7 +133,6 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
   𝒜.filter fun i => i.card = r
 #align finset.slice Finset.slice
 
--- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice

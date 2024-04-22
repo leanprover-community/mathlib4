@@ -2,16 +2,13 @@
 Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Reid Barton, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.constructions.over.products
-! leanprover-community/mathlib commit ac3ae212f394f508df43e37aa093722fa9b65d31
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.CategoryTheory.Over
+import Mathlib.CategoryTheory.Comma.Over
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.WidePullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.FiniteProducts
+
+#align_import category_theory.limits.constructions.over.products from "leanprover-community/mathlib"@"ac3ae212f394f508df43e37aa093722fa9b65d31"
 
 /-!
 # Products in the over category
@@ -27,9 +24,7 @@ universe w v u -- morphism levels before object levels. See note [category_theor
 open CategoryTheory CategoryTheory.Limits
 
 variable {J : Type w}
-
 variable {C : Type u} [Category.{v} C]
-
 variable {X : C}
 
 namespace CategoryTheory.Over
@@ -67,7 +62,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     Cone F ⥤ Cone (widePullbackDiagramOfDiagramOver B F) where
   obj := conesEquivInverseObj B F
   map f :=
-    { Hom := f.Hom.left
+    { hom := f.hom.left
       w := fun j => by
         cases' j with j
         · simp
@@ -78,7 +73,7 @@ def conesEquivInverse (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
 
 -- Porting note: this should help with the additional `naturality` proof we now have to give in
 -- `conesEquivFunctor`, but doesn't.
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] Discrete
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] Discrete
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/
 @[simps]
@@ -88,14 +83,14 @@ def conesEquivFunctor (B : C) {J : Type w} (F : Discrete J ⥤ Over B) :
     { pt := Over.mk (c.π.app none)
       π :=
         { app := fun ⟨j⟩ => Over.homMk (c.π.app (some j)) (c.w (WidePullbackShape.Hom.term j))
-          -- Porting note: Added a proof for `naturality`
+          -- Porting note (#10888): added proof for `naturality`
           naturality := fun ⟨X⟩ ⟨Y⟩ ⟨⟨f⟩⟩ => by dsimp at f ⊢; aesop_cat } }
-  map f := { Hom := Over.homMk f.Hom }
+  map f := { hom := Over.homMk f.hom }
 #align category_theory.over.construct_products.cones_equiv_functor CategoryTheory.Over.ConstructProducts.conesEquivFunctor
 
 -- Porting note: unfortunately `aesop` can't cope with a `cases` rule here for the type synonym
 -- `WidePullbackShape`.
--- attribute [local aesop safe cases (rule_sets [CategoryTheory])] WidePullbackShape
+-- attribute [local aesop safe cases (rule_sets := [CategoryTheory])] WidePullbackShape
 -- If this worked we could avoid the `rintro` in `conesEquivUnitIso`.
 
 /-- (Impl) A preliminary definition to avoid timeouts. -/

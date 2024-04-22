@@ -2,15 +2,12 @@
 Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module data.int.interval
-! leanprover-community/mathlib commit f93c11933efbc3c2f0299e47b8ff83e9b539cbf6
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Order.LocallyFinite
-import Mathlib.Data.Finset.LocallyFinite
+import Mathlib.Data.Finset.LocallyFinite.Basic
+
+#align_import data.int.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
 /-!
 # Finite intervals of integers
@@ -22,8 +19,9 @@ intervals as finsets and fintypes.
 
 open Finset Int
 
-instance : LocallyFiniteOrder ℤ
-    where
+namespace Int
+
+instance instLocallyFiniteOrder : LocallyFiniteOrder ℤ where
   finsetIcc a b :=
     (Finset.range (b + 1 - a).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding a
   finsetIco a b := (Finset.range (b - a).toNat).map <| Nat.castEmbedding.trans <| addLeftEmbedding a
@@ -42,7 +40,7 @@ instance : LocallyFiniteOrder ℤ
       use (x - a).toNat
       rw [← lt_add_one_iff] at hb
       rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ico a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -52,7 +50,7 @@ instance : LocallyFiniteOrder ℤ
     · rintro ⟨ha, hb⟩
       use (x - a).toNat
       rw [toNat_sub_of_le ha]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ioc a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -62,8 +60,8 @@ instance : LocallyFiniteOrder ℤ
       exact ⟨Int.le.intro a rfl, h⟩
     · rintro ⟨ha, hb⟩
       use (x - (a + 1)).toNat
-      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel]
-      exact ⟨sub_le_sub_right hb _, add_sub_cancel'_right _ _⟩
+      rw [toNat_sub_of_le ha, ← add_one_le_iff, sub_add, add_sub_cancel_right]
+      exact ⟨sub_le_sub_right hb _, add_sub_cancel _ _⟩
   finset_mem_Ioo a b x := by
     simp_rw [mem_map, mem_range, Int.lt_toNat, Function.Embedding.trans_apply,
       Nat.castEmbedding_apply, addLeftEmbedding_apply]
@@ -74,9 +72,7 @@ instance : LocallyFiniteOrder ℤ
     · rintro ⟨ha, hb⟩
       use (x - (a + 1)).toNat
       rw [toNat_sub_of_le ha, sub_sub]
-      exact ⟨sub_lt_sub_right hb _, add_sub_cancel'_right _ _⟩
-
-namespace Int
+      exact ⟨sub_lt_sub_right hb _, add_sub_cancel _ _⟩
 
 variable (a b : ℤ)
 
@@ -103,29 +99,37 @@ theorem Ioo_eq_finset_map :
   rfl
 #align int.Ioo_eq_finset_map Int.Ioo_eq_finset_map
 
+theorem uIcc_eq_finset_map :
+    uIcc a b = (range (max a b + 1 - min a b).toNat).map
+      (Nat.castEmbedding.trans <| addLeftEmbedding <| min a b) := rfl
+#align int.uIcc_eq_finset_map Int.uIcc_eq_finset_map
+
 @[simp]
-theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := by
-  change (Finset.map _ _).card = _
-  rw [Finset.card_map, Finset.card_range]
+theorem card_Icc : (Icc a b).card = (b + 1 - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Icc Int.card_Icc
 
 @[simp]
-theorem card_Ico : (Ico a b).card = (b - a).toNat := by
-  change (Finset.map _ _).card = _
-  rw [Finset.card_map, Finset.card_range]
+theorem card_Ico : (Ico a b).card = (b - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Ico Int.card_Ico
 
 @[simp]
-theorem card_Ioc : (Ioc a b).card = (b - a).toNat := by
-  change (Finset.map _ _).card = _
-  rw [Finset.card_map, Finset.card_range]
+theorem card_Ioc : (Ioc a b).card = (b - a).toNat := (card_map _).trans <| card_range _
 #align int.card_Ioc Int.card_Ioc
 
 @[simp]
-theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := by
-  change (Finset.map _ _).card = _
-  rw [Finset.card_map, Finset.card_range]
+theorem card_Ioo : (Ioo a b).card = (b - a - 1).toNat := (card_map _).trans <| card_range _
 #align int.card_Ioo Int.card_Ioo
+
+@[simp]
+theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
+  (card_map _).trans <|
+    Int.ofNat.inj <| by
+      -- Porting note (#11215): TODO: Restore `int.coe_nat_inj` and remove the `change`
+      change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
+      rw [card_range, sup_eq_max, inf_eq_min,
+        Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
+        Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
+#align int.card_uIcc Int.card_uIcc
 
 theorem card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by
   rw [card_Icc, toNat_sub_of_le h]
@@ -143,25 +147,29 @@ theorem card_Ioo_of_lt (h : a < b) : ((Ioo a b).card : ℤ) = b - a - 1 := by
   rw [card_Ioo, sub_sub, toNat_sub_of_le h]
 #align int.card_Ioo_of_lt Int.card_Ioo_of_lt
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Icc : Fintype.card (Set.Icc a b) = (b + 1 - a).toNat := by
   rw [← card_Icc, Fintype.card_ofFinset]
 #align int.card_fintype_Icc Int.card_fintype_Icc
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ico : Fintype.card (Set.Ico a b) = (b - a).toNat := by
   rw [← card_Ico, Fintype.card_ofFinset]
 #align int.card_fintype_Ico Int.card_fintype_Ico
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioc : Fintype.card (Set.Ioc a b) = (b - a).toNat := by
   rw [← card_Ioc, Fintype.card_ofFinset]
 #align int.card_fintype_Ioc Int.card_fintype_Ioc
 
--- porting note: removed `simp` attribute because `simpNF` says it can prove it
+-- Porting note (#11119): removed `simp` attribute because `simpNF` says it can prove it
 theorem card_fintype_Ioo : Fintype.card (Set.Ioo a b) = (b - a - 1).toNat := by
   rw [← card_Ioo, Fintype.card_ofFinset]
 #align int.card_fintype_Ioo Int.card_fintype_Ioo
+
+theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a).natAbs + 1 := by
+  rw [← card_uIcc, Fintype.card_ofFinset]
+#align int.card_fintype_uIcc Int.card_fintype_uIcc
 
 theorem card_fintype_Icc_of_le (h : a ≤ b + 1) : (Fintype.card (Set.Icc a b) : ℤ) = b + 1 - a := by
   rw [card_fintype_Icc, toNat_sub_of_le h]

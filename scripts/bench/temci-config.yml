@@ -1,0 +1,4 @@
+run:
+    discarded_runs: 0
+    shuffle: false
+    in: ./scripts/bench/temci-config.run.yml

@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module group_theory.perm.fin
-! leanprover-community/mathlib commit 7e1c1263b6a25eb90bf16e80d8f47a657e403c4c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Perm.Cycle.Type
 import Mathlib.GroupTheory.Perm.Option
 import Mathlib.Logic.Equiv.Fin
 import Mathlib.Logic.Equiv.Fintype
+
+#align_import group_theory.perm.fin from "leanprover-community/mathlib"@"7e1c1263b6a25eb90bf16e80d8f47a657e403c4c"
 
 /-!
 # Permutations of `Fin n`
@@ -88,7 +85,7 @@ Define the permutations `Fin.cycleRange i`, the cycle `(0 1 2 ... i)`.
 
 open Equiv.Perm
 
---Porting note: renamed from finRotate_succ because there is already a theorem with that name
+-- Porting note: renamed from finRotate_succ because there is already a theorem with that name
 theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
     finRotate n.succ = decomposeFin.symm (1, finRotate n) := by
   ext i
@@ -106,7 +103,7 @@ theorem finRotate_succ_eq_decomposeFin {n : ℕ} :
 @[simp]
 theorem sign_finRotate (n : ℕ) : Perm.sign (finRotate (n + 1)) = (-1) ^ n := by
   induction' n with n ih
-  · simp
+  · simp; rfl
   · rw [finRotate_succ_eq_decomposeFin]
     simp [ih, pow_succ]
 #align sign_fin_rotate sign_finRotate
@@ -126,10 +123,10 @@ theorem isCycle_finRotate {n : ℕ} : IsCycle (finRotate (n + 2)) := by
   refine' ⟨0, by simp, fun x hx' => ⟨x, _⟩⟩
   clear hx'
   cases' x with x hx
-  rw [zpow_ofNat, Fin.ext_iff, Fin.val_mk]
+  rw [zpow_natCast, Fin.ext_iff, Fin.val_mk]
   induction' x with x ih; · rfl
-  rw [pow_succ, Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
-  rw [Ne.def, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
+  rw [pow_succ', Perm.mul_apply, coe_finRotate_of_ne_last, ih (lt_trans x.lt_succ_self hx)]
+  rw [Ne, Fin.ext_iff, ih (lt_trans x.lt_succ_self hx), Fin.val_last]
   exact ne_of_lt (Nat.lt_of_succ_lt_succ hx)
 #align is_cycle_fin_rotate isCycle_finRotate
 
@@ -155,7 +152,7 @@ namespace Fin
 /-- `Fin.cycleRange i` is the cycle `(0 1 2 ... i)` leaving `(i+1 ... (n-1))` unchanged. -/
 def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
   (finRotate (i + 1)).extendDomain
-    (Equiv.ofLeftInverse' (Fin.castLE (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
+    (Equiv.ofLeftInverse' (Fin.castLEEmb (Nat.succ_le_of_lt i.is_lt)).toEmbedding (↑)
       (by
         intro x
         ext
@@ -163,8 +160,8 @@ def cycleRange {n : ℕ} (i : Fin n) : Perm (Fin n) :=
 #align fin.cycle_range Fin.cycleRange
 
 theorem cycleRange_of_gt {n : ℕ} {i j : Fin n.succ} (h : i < j) : cycleRange i j = j := by
-  rw [cycleRange, ofLeftInverse'_eq_ofInjective, ←
-    Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
+  rw [cycleRange, ofLeftInverse'_eq_ofInjective,
+    ← Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
     viaFintypeEmbedding_apply_not_mem_range]
   simpa
 #align fin.cycle_range_of_gt Fin.cycleRange_of_gt
@@ -174,12 +171,12 @@ theorem cycleRange_of_le {n : ℕ} {i j : Fin n.succ} (h : j ≤ i) :
   cases n
   · exact Subsingleton.elim (α := Fin 1) _ _  --Porting note; was `simp`
   have : j = (Fin.castLE (Nat.succ_le_of_lt i.is_lt))
-    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ :=
-    by simp
+    ⟨j, lt_of_le_of_lt h (Nat.lt_succ_self i)⟩ := by simp
   ext
   erw [this, cycleRange, ofLeftInverse'_eq_ofInjective, ←
     Function.Embedding.toEquivRange_eq_ofInjective, ← viaFintypeEmbedding,
-    viaFintypeEmbedding_apply_image, coe_castLE, coe_finRotate]
+    viaFintypeEmbedding_apply_image, castLEEmb_toEmbedding, Function.Embedding.coeFn_mk,
+    coe_castLE, coe_finRotate]
   simp only [Fin.ext_iff, val_last, val_mk, val_zero, Fin.eta, castLE_mk]
   split_ifs with heq
   · rfl
@@ -259,15 +256,15 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
   · have : castSucc (j + 1) = j.succ := by
       ext
       rw [coe_castSucc, val_succ, Fin.val_add_one_of_lt (lt_of_lt_of_le hlt i.le_last)]
-    rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_below, this, swap_apply_of_ne_of_ne]
+    rw [Fin.cycleRange_of_lt hlt, Fin.succAbove_of_castSucc_lt, this, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · exact (Fin.succ_injective _).ne hlt.ne
     · rw [Fin.lt_iff_val_lt_val]
       simpa [this] using hlt
-  · rw [heq, Fin.cycleRange_self, Fin.succAbove_below, swap_apply_right, Fin.castSucc_zero]
+  · rw [heq, Fin.cycleRange_self, Fin.succAbove_of_castSucc_lt, swap_apply_right, Fin.castSucc_zero]
     · rw [Fin.castSucc_zero]
       apply Fin.succ_pos
-  · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_above, swap_apply_of_ne_of_ne]
+  · rw [Fin.cycleRange_of_gt hgt, Fin.succAbove_of_le_castSucc, swap_apply_of_ne_of_ne]
     · apply Fin.succ_ne_zero
     · apply (Fin.succ_injective _).ne hgt.ne.symm
     · simpa [Fin.le_iff_val_le_val] using hgt
@@ -277,8 +274,8 @@ theorem succAbove_cycleRange {n : ℕ} (i j : Fin n) :
 theorem cycleRange_succAbove {n : ℕ} (i : Fin (n + 1)) (j : Fin n) :
     i.cycleRange (i.succAbove j) = j.succ := by
   cases' lt_or_ge (castSucc j) i with h h
-  · rw [Fin.succAbove_below _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
-  · rw [Fin.succAbove_above _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
+  · rw [Fin.succAbove_of_castSucc_lt _ _ h, Fin.cycleRange_of_lt h, Fin.coeSucc_eq_succ]
+  · rw [Fin.succAbove_of_le_castSucc _ _ h, Fin.cycleRange_of_gt (Fin.le_castSucc_iff.mp h)]
 #align fin.cycle_range_succ_above Fin.cycleRange_succAbove
 
 @[simp]
@@ -310,7 +307,7 @@ theorem cycleType_cycleRange {n : ℕ} {i : Fin (n + 1)} (h0 : i ≠ 0) :
 #align fin.cycle_type_cycle_range Fin.cycleType_cycleRange
 
 theorem isThreeCycle_cycleRange_two {n : ℕ} : IsThreeCycle (cycleRange 2 : Perm (Fin (n + 3))) := by
-  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.eq_iff_veq]
+  rw [IsThreeCycle, cycleType_cycleRange] <;> simp [Fin.ext_iff]
 #align fin.is_three_cycle_cycle_range_two Fin.isThreeCycle_cycleRange_two
 
 end Fin

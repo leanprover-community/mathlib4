@@ -2,15 +2,12 @@
 Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module data.matrix.reflection
-! leanprover-community/mathlib commit 820b22968a2bc4a47ce5cf1d2f36a9ebe52510aa
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Matrix.Notation
 import Mathlib.Data.Matrix.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
+
+#align_import data.matrix.reflection from "leanprover-community/mathlib"@"820b22968a2bc4a47ce5cf1d2f36a9ebe52510aa"
 
 /-!
 # Lemmas for concrete matrices `Matrix (Fin m) (Fin n) α`
@@ -41,7 +38,7 @@ open Matrix
 
 namespace Matrix
 
-variable {l m n : ℕ} {α β : Type _}
+variable {l m n : ℕ} {α β : Type*}
 
 /-- `∀` with better defeq for `∀ x : Matrix (Fin m) (Fin n) α, P x`. -/
 def Forall : ∀ {m n} (_ : Matrix (Fin m) (Fin n) α → Prop), Prop
@@ -57,7 +54,7 @@ example (P : Matrix (Fin 2) (Fin 3) α → Prop) :
 ```
 -/
 theorem forall_iff : ∀ {m n} (P : Matrix (Fin m) (Fin n) α → Prop), Forall P ↔ ∀ x, P x
-  | 0, n, P => Iff.symm  Fin.forall_fin_zero_pi
+  | 0, n, P => Iff.symm Fin.forall_fin_zero_pi
   | m + 1, n, P => by
     simp only [Forall, FinVec.forall_iff, forall_iff]
     exact Iff.symm Fin.forall_fin_succ_pi
@@ -151,7 +148,7 @@ def mulᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (B : Matr
 ```lean
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂;
+     a₂₁, a₂₂] * !![b₁₁, b₁₂;
                     b₂₁, b₂₂] =
   !![a₁₁*b₁₁ + a₁₂*b₂₁, a₁₁*b₁₂ + a₁₂*b₂₂;
      a₂₁*b₁₁ + a₂₂*b₂₁, a₂₁*b₁₂ + a₂₂*b₂₂] :=
@@ -160,13 +157,13 @@ example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b�
 -/
 @[simp]
 theorem mulᵣ_eq [Mul α] [AddCommMonoid α] (A : Matrix (Fin l) (Fin m) α)
-    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A.mul B := by
-  simp [mulᵣ, Function.comp, Matrix.mul, Matrix.transpose]
+    (B : Matrix (Fin m) (Fin n) α) : mulᵣ A B = A * B := by
+  simp [mulᵣ, Function.comp, Matrix.transpose]
   rfl
 #align matrix.mulᵣ_eq Matrix.mulᵣ_eq
 
 example [AddCommMonoid α] [Mul α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁₁ b₁₂ b₂₁ b₂₂ : α) :
-    !![a₁₁, a₁₂; a₂₁, a₂₂] ⬝ !![b₁₁, b₁₂; b₂₁, b₂₂] =
+    !![a₁₁, a₁₂; a₂₁, a₂₂] * !![b₁₁, b₁₂; b₂₁, b₂₂] =
       !![a₁₁ * b₁₁ + a₁₂ * b₂₁, a₁₁ * b₁₂ + a₁₂ * b₂₂;
         a₂₁ * b₁₁ + a₂₂ * b₂₁, a₂₁ * b₁₂ + a₂₂ * b₂₂] :=
   (mulᵣ_eq _ _).symm
@@ -180,19 +177,19 @@ def mulVecᵣ [Mul α] [Add α] [Zero α] (A : Matrix (Fin l) (Fin m) α) (v : F
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
   !![a₁₁, a₁₂;
-     a₂₁, a₂₂].mulVec ![b₁, b₂] = ![a₁₁*b₁ + a₁₂*b₂, a₂₁*b₁ + a₂₂*b₂] :=
+     a₂₁, a₂₂] *ᵥ ![b₁, b₂] = ![a₁₁*b₁ + a₁₂*b₂, a₂₁*b₁ + a₂₂*b₂] :=
 (mulVecᵣ_eq _ _).symm
 ```
 -/
 @[simp]
 theorem mulVecᵣ_eq [NonUnitalNonAssocSemiring α] (A : Matrix (Fin l) (Fin m) α) (v : Fin m → α) :
-    mulVecᵣ A v = A.mulVec v := by
+    mulVecᵣ A v = A *ᵥ v := by
   simp [mulVecᵣ, Function.comp]
   rfl
 #align matrix.mul_vecᵣ_eq Matrix.mulVecᵣ_eq
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-    !![a₁₁, a₁₂; a₂₁, a₂₂].mulVec ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
+    !![a₁₁, a₁₂; a₂₁, a₂₂] *ᵥ ![b₁, b₂] = ![a₁₁ * b₁ + a₁₂ * b₂, a₂₁ * b₁ + a₂₂ * b₂] :=
   (mulVecᵣ_eq _ _).symm
 
 /-- `Matrix.vecMul` with better defeq for `Fin` -/
@@ -203,20 +200,20 @@ def vecMulᵣ [Mul α] [Add α] [Zero α] (v : Fin l → α) (A : Matrix (Fin l)
 /-- This can be used to prove
 ```lean
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-  vecMul ![b₁, b₂] !![a₁₁, a₁₂;
+  ![b₁, b₂] ᵥ* !![a₁₁, a₁₂;
                        a₂₁, a₂₂] = ![b₁*a₁₁ + b₂*a₂₁, b₁*a₁₂ + b₂*a₂₂] :=
 (vecMulᵣ_eq _ _).symm
 ```
 -/
 @[simp]
 theorem vecMulᵣ_eq [NonUnitalNonAssocSemiring α] (v : Fin l → α) (A : Matrix (Fin l) (Fin m) α) :
-    vecMulᵣ v A = vecMul v A := by
+    vecMulᵣ v A = v ᵥ* A := by
   simp [vecMulᵣ, Function.comp]
   rfl
 #align matrix.vec_mulᵣ_eq Matrix.vecMulᵣ_eq
 
 example [NonUnitalNonAssocSemiring α] (a₁₁ a₁₂ a₂₁ a₂₂ b₁ b₂ : α) :
-    vecMul ![b₁, b₂] !![a₁₁, a₁₂; a₂₁, a₂₂] = ![b₁ * a₁₁ + b₂ * a₂₁, b₁ * a₁₂ + b₂ * a₂₂] :=
+    ![b₁, b₂] ᵥ* !![a₁₁, a₁₂; a₂₁, a₂₂] = ![b₁ * a₁₁ + b₂ * a₂₁, b₁ * a₁₂ + b₂ * a₂₂] :=
   (vecMulᵣ_eq _ _).symm
 
 /-- Expand `A` to `!![A 0 0, ...; ..., A m n]` -/
@@ -233,7 +230,9 @@ example (A : Matrix (Fin 2) (Fin 2) α) :
 ```
 -/
 theorem etaExpand_eq {m n} (A : Matrix (Fin m) (Fin n) α) : etaExpand A = A := by
-  simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of, Equiv.refl_apply]
+  simp_rw [etaExpand, FinVec.etaExpand_eq, Matrix.of]
+  -- This to be in the above `simp_rw` before leanprover/lean4#2644
+  erw [Equiv.refl_apply]
 #align matrix.eta_expand_eq Matrix.etaExpand_eq
 
 example (A : Matrix (Fin 2) (Fin 2) α) : A = !![A 0 0, A 0 1; A 1 0, A 1 1] :=

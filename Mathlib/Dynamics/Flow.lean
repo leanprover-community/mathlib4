@@ -2,14 +2,11 @@
 Copyright (c) 2020 Jean Lo. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jean Lo
-
-! This file was ported from Lean 3 source module dynamics.flow
-! leanprover-community/mathlib commit 717c073262cd9d59b1a1dcda7e8ab570c5b63370
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Algebra.Group.Basic
 import Mathlib.Logic.Function.Iterate
+
+#align_import dynamics.flow from "leanprover-community/mathlib"@"717c073262cd9d59b1a1dcda7e8ab570c5b63370"
 
 /-!
 # Flows and invariant sets
@@ -41,7 +38,7 @@ open Set Function Filter
 
 section Invariant
 
-variable {τ : Type _} {α : Type _}
+variable {τ : Type*} {α : Type*}
 
 /-- A set `s ⊆ α` is invariant under `ϕ : τ → α → α` if
     `ϕ t s ⊆ s` for all `t` in `τ`. -/
@@ -65,15 +62,16 @@ theorem IsInvariant.isFwInvariant [Preorder τ] [Zero τ] {ϕ : τ → α → α
     (h : IsInvariant ϕ s) : IsFwInvariant ϕ s := fun t _ht => h t
 #align is_invariant.is_fw_invariant IsInvariant.isFwInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α}
+theorem IsFwInvariant.isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α} {s : Set α}
     (h : IsFwInvariant ϕ s) : IsInvariant ϕ s := fun t => h (zero_le t)
 #align is_fw_invariant.is_invariant IsFwInvariant.isInvariant
 
-/-- If `τ` is a `CanonicallyOrderedAddMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
+/-- If `τ` is a `CanonicallyOrderedAddCommMonoid` (e.g., `ℕ` or `ℝ≥0`), then the notions
 `IsFwInvariant` and `IsInvariant` are equivalent. -/
-theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddMonoid τ] {ϕ : τ → α → α} {s : Set α} :
+theorem isFwInvariant_iff_isInvariant [CanonicallyOrderedAddCommMonoid τ] {ϕ : τ → α → α}
+    {s : Set α} :
     IsFwInvariant ϕ s ↔ IsInvariant ϕ s :=
   ⟨IsFwInvariant.isInvariant, IsInvariant.isFwInvariant⟩
 #align is_fw_invariant_iff_is_invariant isFwInvariant_iff_isInvariant
@@ -86,8 +84,8 @@ end Invariant
 
 
 /-- A flow on a topological space `α` by an additive topological
-    monoid `τ` is a continuous monoid action of `τ` on `α`.-/
-structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type _)
+    monoid `τ` is a continuous monoid action of `τ` on `α`. -/
+structure Flow (τ : Type*) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd τ] (α : Type*)
   [TopologicalSpace α] where
   toFun : τ → α → α
   cont' : Continuous (uncurry toFun)
@@ -97,7 +95,7 @@ structure Flow (τ : Type _) [TopologicalSpace τ] [AddMonoid τ] [ContinuousAdd
 
 namespace Flow
 
-variable {τ : Type _} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type _}
+variable {τ : Type*} [AddMonoid τ] [TopologicalSpace τ] [ContinuousAdd τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
 instance : Inhabited (Flow τ α) :=
@@ -117,12 +115,12 @@ theorem ext : ∀ {ϕ₁ ϕ₂ : Flow τ α}, (∀ t x, ϕ₁ t x = ϕ₂ t x) �
 #align flow.ext Flow.ext
 
 @[continuity]
-protected theorem continuous {β : Type _} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
+protected theorem continuous {β : Type*} [TopologicalSpace β] {t : β → τ} (ht : Continuous t)
     {f : β → α} (hf : Continuous f) : Continuous fun x => ϕ (t x) (f x) :=
   ϕ.cont'.comp (ht.prod_mk hf)
 #align flow.continuous Flow.continuous
 
-alias Flow.continuous ← _root_.Continuous.flow
+alias _root_.Continuous.flow := Flow.continuous
 #align continuous.flow Continuous.flow
 
 theorem map_add (t₁ t₂ : τ) (x : α) : ϕ (t₁ + t₂) x = ϕ t₁ (ϕ t₂ x) := ϕ.map_add' _ _ _
@@ -138,8 +136,8 @@ theorem map_zero_apply (x : α) : ϕ 0 x = x := ϕ.map_zero' x
 /-- Iterations of a continuous function from a topological space `α`
     to itself defines a semiflow by `ℕ` on `α`. -/
 def fromIter {g : α → α} (h : Continuous g) : Flow ℕ α where
-  toFun n x := (g^[n]) x
-  cont' := continuous_uncurry_of_discreteTopology_left (Continuous.iterate h)
+  toFun n x := g^[n] x
+  cont' := continuous_prod_of_discrete_left.mpr (Continuous.iterate h)
   map_add' := iterate_add_apply _
   map_zero' _x := rfl
 #align flow.from_iter Flow.fromIter
@@ -156,7 +154,7 @@ end Flow
 
 namespace Flow
 
-variable {τ : Type _} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type _}
+variable {τ : Type*} [AddCommGroup τ] [TopologicalSpace τ] [TopologicalAddGroup τ] {α : Type*}
   [TopologicalSpace α] (ϕ : Flow τ α)
 
 theorem isInvariant_iff_image_eq (s : Set α) : IsInvariant ϕ s ↔ ∀ t, ϕ t '' s = s :=
@@ -180,7 +178,7 @@ def reverse : Flow τ α where
 -- Porting note: Homeomorphism.continuous_invFun : Continuous invFun := by continuity
 @[continuity]
 theorem continuous_toFun (t : τ) : Continuous (ϕ.toFun t) := by
-  rw [←curry_uncurry ϕ.toFun]
+  rw [← curry_uncurry ϕ.toFun]
   apply continuous_curry
   exact ϕ.cont'
 

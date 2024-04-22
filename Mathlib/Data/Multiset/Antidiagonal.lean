@@ -2,13 +2,10 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.multiset.antidiagonal
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Multiset.Powerset
+
+#align_import data.multiset.antidiagonal from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # The antidiagonal on a multiset.
@@ -23,7 +20,7 @@ namespace Multiset
 
 open List
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 /-- The antidiagonal of a multiset `s` consists of all pairs `(t₁, t₂)`
     such that `t₁ + t₂ = s`. These pairs are counted with multiplicities. -/
@@ -48,7 +45,7 @@ in what used to be `simp [antidiagonal_coe]`. -/
 @[simp]
 theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
     x ∈ antidiagonal s ↔ x.1 + x.2 = s :=
-  Quotient.inductionOn s <| fun l ↦ by
+  Quotient.inductionOn s fun l ↦ by
     dsimp only [quot_mk_to_coe, antidiagonal_coe]
     refine' ⟨fun h => revzip_powersetAux h, fun h ↦ _⟩
     haveI := Classical.decEq α
@@ -60,19 +57,16 @@ theorem mem_antidiagonal {s : Multiset α} {x : Multiset α × Multiset α} :
 
 @[simp]
 theorem antidiagonal_map_fst (s : Multiset α) : (antidiagonal s).map Prod.fst = powerset s :=
-  Quotient.inductionOn s <| fun l ↦ by simp [powersetAux'];
+  Quotient.inductionOn s fun l ↦ by simp [powersetAux'];
 #align multiset.antidiagonal_map_fst Multiset.antidiagonal_map_fst
 
 @[simp]
 theorem antidiagonal_map_snd (s : Multiset α) : (antidiagonal s).map Prod.snd = powerset s :=
-  Quotient.inductionOn s <| fun l ↦ by simp [powersetAux']
+  Quotient.inductionOn s fun l ↦ by simp [powersetAux']
 #align multiset.antidiagonal_map_snd Multiset.antidiagonal_map_snd
 
-/- Porting note: I changed `@antidiagonal` to `@antidiagonal.{u}` because otherwise I got
-`Multiset.antidiagonal_zero.{u_2, u_1} {α : Type (max u_1 u_2)} : ...`, which gave me issues
-and triggered the linter. -/
 @[simp]
-theorem antidiagonal_zero : @antidiagonal.{u} α 0 = {(0, 0)} :=
+theorem antidiagonal_zero : @antidiagonal α 0 = {(0, 0)} :=
   rfl
 #align multiset.antidiagonal_zero Multiset.antidiagonal_zero
 
@@ -80,11 +74,11 @@ theorem antidiagonal_zero : @antidiagonal.{u} α 0 = {(0, 0)} :=
 theorem antidiagonal_cons (a : α) (s) :
     antidiagonal (a ::ₘ s) =
       map (Prod.map id (cons a)) (antidiagonal s) + map (Prod.map (cons a) id) (antidiagonal s) :=
-  Quotient.inductionOn s <| fun l ↦ by
+  Quotient.inductionOn s fun l ↦ by
     simp only [revzip, reverse_append, quot_mk_to_coe, coe_eq_coe, powersetAux'_cons, cons_coe,
-      coe_map, antidiagonal_coe', coe_add]
+      map_coe, antidiagonal_coe', coe_add]
     rw [← zip_map, ← zip_map, zip_append, (_ : _ ++ _ = _)]
-    · congr ; simp ; rw [map_reverse] ; simp
+    · congr; simp only [List.map_id]; rw [map_reverse]; simp
     · simp
 #align multiset.antidiagonal_cons Multiset.antidiagonal_cons
 
@@ -93,7 +87,7 @@ theorem antidiagonal_eq_map_powerset [DecidableEq α] (s : Multiset α) :
   induction' s using Multiset.induction_on with a s hs
   · simp only [antidiagonal_zero, powerset_zero, zero_tsub, map_singleton]
   · simp_rw [antidiagonal_cons, powerset_cons, map_add, hs, map_map, Function.comp, Prod.map_mk,
-      id.def, sub_cons, erase_cons_head]
+      id, sub_cons, erase_cons_head]
     rw [add_comm]
     congr 1
     refine' Multiset.map_congr rfl fun x hx ↦ _

@@ -2,25 +2,22 @@
 Copyright (c) 2018 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl, Reid Barton, Sean Leather
-
-! This file was ported from Lean 3 source module category_theory.concrete_category.bundled
-! leanprover-community/mathlib commit a148d797a1094ab554ad4183a4ad6f130358ef64
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Std.Tactic.Lint.Frontend
 import Std.Tactic.Lint.Misc
-import Std.Tactic.CoeExt
 import Mathlib.Mathport.Rename
+
+#align_import category_theory.concrete_category.bundled from "leanprover-community/mathlib"@"a148d797a1094ab554ad4183a4ad6f130358ef64"
 
 /-!
 # Bundled types
 
 `Bundled c` provides a uniform structure for bundling a type equipped with a type class.
 
-We provide `Category` instances for these in `CategoryTheory/UnbundledHom.lean`
+We provide `Category` instances for these in
+`Mathlib/CategoryTheory/ConcreteCategory/UnbundledHom.lean`
 (for categories with unbundled homs, e.g. topological spaces)
-and in `CategoryTheory/BundledHom.lean` (for categories with bundled homs, e.g. monoids).
+and in `Mathlib/CategoryTheory/ConcreteCategory/BundledHom.lean`
+(for categories with bundled homs, e.g. monoids).
 -/
 
 universe u v

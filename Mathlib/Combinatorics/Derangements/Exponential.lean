@@ -2,15 +2,12 @@
 Copyright (c) 2021 Henry Swanson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Henry Swanson, Patrick Massot
-
-! This file was ported from Lean 3 source module combinatorics.derangements.exponential
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Exponential
 import Mathlib.Combinatorics.Derangements.Finite
 import Mathlib.Order.Filter.Basic
+
+#align_import combinatorics.derangements.exponential from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Derangement exponential series
@@ -20,7 +17,7 @@ The specific lemma is `numDerangements_tendsto_inv_e`.
 -/
 
 
-open Filter
+open Filter NormedSpace
 
 open scoped BigOperators
 
@@ -44,7 +41,7 @@ theorem numDerangements_tendsto_inv_e :
     rw [Real.exp_eq_exp_ℝ]
     exact expSeries_div_hasSum_exp ℝ (-1 : ℝ)
   intro n
-  rw [← Int.cast_ofNat, numDerangements_sum]
+  rw [← Int.cast_natCast, numDerangements_sum]
   push_cast
   rw [Finset.sum_div]
   -- get down to individual terms

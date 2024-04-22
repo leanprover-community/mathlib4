@@ -2,14 +2,11 @@
 Copyright (c) 2022 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.nat.factorization.prime_pow
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.IsPrimePow
 import Mathlib.Data.Nat.Factorization.Basic
+
+#align_import data.nat.factorization.prime_pow from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Prime powers and factorizations
@@ -18,7 +15,7 @@ This file deals with factorizations of prime powers.
 -/
 
 
-variable {R : Type _} [CommMonoidWithZero R] (n p : R) (k : ℕ)
+variable {R : Type*} [CommMonoidWithZero R] (n p : R) (k : ℕ)
 
 theorem IsPrimePow.minFac_pow_factorization_eq {n : ℕ} (hn : IsPrimePow n) :
     n.minFac ^ n.factorization n.minFac = n := by
@@ -32,9 +29,8 @@ theorem isPrimePow_of_minFac_pow_factorization_eq {n : ℕ}
   rcases eq_or_ne n 0 with (rfl | hn')
   · simp_all
   refine' ⟨_, _, (Nat.minFac_prime hn).prime, _, h⟩
-  rw [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.factor_iff_mem_factorization,
-    Nat.mem_factors_iff_dvd hn' (Nat.minFac_prime hn)]
-  apply Nat.minFac_dvd
+  simp [pos_iff_ne_zero, ← Finsupp.mem_support_iff, Nat.support_factorization, hn',
+    Nat.minFac_prime hn, Nat.minFac_dvd]
 #align is_prime_pow_of_min_fac_pow_factorization_eq isPrimePow_of_minFac_pow_factorization_eq
 
 theorem isPrimePow_iff_minFac_pow_factorization_eq {n : ℕ} (hn : n ≠ 1) :
@@ -54,15 +50,15 @@ theorem isPrimePow_iff_factorization_eq_single {n : ℕ} :
       rintro rfl
       simp_all only [Finsupp.single_eq_zero, eq_comm, Nat.factorization_zero, hk.ne']
     rw [Nat.eq_pow_of_factorization_eq_single hn0 hn]
-    exact
-      ⟨Nat.prime_of_mem_factorization (by simp [hn, hk.ne'] : p ∈ n.factorization.support), hk, rfl⟩
+    exact ⟨Nat.prime_of_mem_primeFactors <|
+      Finsupp.mem_support_iff.2 (by simp [hn, hk.ne'] : n.factorization p ≠ 0), hk, rfl⟩
 #align is_prime_pow_iff_factorization_eq_single isPrimePow_iff_factorization_eq_single
 
-theorem isPrimePow_iff_card_support_factorization_eq_one {n : ℕ} :
-    IsPrimePow n ↔ n.factorization.support.card = 1 := by
-  simp_rw [isPrimePow_iff_factorization_eq_single, Finsupp.card_support_eq_one', exists_prop,
-    pos_iff_ne_zero]
-#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_support_factorization_eq_one
+theorem isPrimePow_iff_card_primeFactors_eq_one {n : ℕ} :
+    IsPrimePow n ↔ n.primeFactors.card = 1 := by
+  simp_rw [isPrimePow_iff_factorization_eq_single, ← Nat.support_factorization,
+    Finsupp.card_support_eq_one', pos_iff_ne_zero]
+#align is_prime_pow_iff_card_support_factorization_eq_one isPrimePow_iff_card_primeFactors_eq_one
 
 theorem IsPrimePow.exists_ord_compl_eq_one {n : ℕ} (h : IsPrimePow n) :
     ∃ p : ℕ, p.Prime ∧ ord_compl[p] n = 1 := by
@@ -85,7 +81,7 @@ theorem exists_ord_compl_eq_one_iff_isPrimePow {n : ℕ} (hn : n ≠ 1) :
   rw [← Nat.eq_of_dvd_of_div_eq_one (Nat.ord_proj_dvd n p) h] at hn ⊢
   refine' ⟨p, n.factorization p, pp, _, by simp⟩
   contrapose! hn
-  simp [le_zero_iff.1 hn]
+  simp [Nat.le_zero.1 hn]
 #align exists_ord_compl_eq_one_iff_is_prime_pow exists_ord_compl_eq_one_iff_isPrimePow
 
 /-- An equivalent definition for prime powers: `n` is a prime power iff there is a unique prime
@@ -120,7 +116,7 @@ theorem isPrimePow_pow_iff {n k : ℕ} (hk : k ≠ 0) : IsPrimePow (n ^ k) ↔ I
   exact ⟨hp.dvd_of_dvd_pow, fun t => t.trans (dvd_pow_self _ hk)⟩
 #align is_prime_pow_pow_iff isPrimePow_pow_iff
 
-theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn : IsPrimePow n) :
+theorem Nat.Coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.Coprime a b) (hn : IsPrimePow n) :
     n ∣ a * b ↔ n ∣ a ∨ n ∣ b := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab
@@ -139,12 +135,12 @@ theorem Nat.coprime.isPrimePow_dvd_mul {n a b : ℕ} (hab : Nat.coprime a b) (hn
   have : a.factorization p = 0 ∨ b.factorization p = 0 := by
     rw [← Finsupp.not_mem_support_iff, ← Finsupp.not_mem_support_iff, ← not_and_or, ←
       Finset.mem_inter]
-    intro t -- porting note: used to be `exact` below, but the definition of `∈` has changed.
-    simpa using (Nat.factorization_disjoint_of_coprime hab).le_bot t
+    intro t -- Porting note: used to be `exact` below, but the definition of `∈` has changed.
+    simpa using hab.disjoint_primeFactors.le_bot t
   cases' this with h h <;> simp [h, imp_or]
-#align nat.coprime.is_prime_pow_dvd_mul Nat.coprime.isPrimePow_dvd_mul
+#align nat.coprime.is_prime_pow_dvd_mul Nat.Coprime.isPrimePow_dvd_mul
 
-theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
+theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.Coprime b) :
     (a * b).divisors.filter IsPrimePow = (a.divisors ∪ b.divisors).filter IsPrimePow := by
   rcases eq_or_ne a 0 with (rfl | ha)
   · simp only [Nat.coprime_zero_left] at hab
@@ -153,7 +149,7 @@ theorem Nat.mul_divisors_filter_prime_pow {a b : ℕ} (hab : a.coprime b) :
   · simp only [Nat.coprime_zero_right] at hab
     simp [hab, Finset.filter_singleton, not_isPrimePow_one]
   ext n
-  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true_iff, Ne.def,
+  simp only [ha, hb, Finset.mem_union, Finset.mem_filter, Nat.mul_eq_zero, and_true_iff, Ne,
     and_congr_left_iff, not_false_iff, Nat.mem_divisors, or_self_iff]
   apply hab.isPrimePow_dvd_mul
 #align nat.mul_divisors_filter_prime_pow Nat.mul_divisors_filter_prime_pow

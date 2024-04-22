@@ -2,15 +2,12 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.limits.kan_extension
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 import Mathlib.CategoryTheory.PUnit
-import Mathlib.CategoryTheory.StructuredArrow
+
+#align_import category_theory.limits.kan_extension from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 
@@ -43,9 +40,7 @@ open Limits
 universe v v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {S : Type u₁} {L : Type u₂} {D : Type u₃}
-
 variable [Category.{v₁} S] [Category.{v₂} L] [Category.{v₃} D]
-
 variable (ι : S ⥤ L)
 
 namespace Ran
@@ -100,13 +95,6 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     intro x y z f g
     apply limit.hom_ext
     intro j
-    -- Porting note: The fact that we need to add these instances all over the place
-    -- is certainly not ideal.
-    haveI : HasLimit (StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map (f ≫ g) ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit ((StructuredArrow.map g ⋙ StructuredArrow.map f) ⋙ diagram ι F _) := h _
     erw [limit.pre_pre, limit.pre_π, limit.pre_π]
     congr 1
     aesop_cat
@@ -164,7 +152,7 @@ end Ran
 @[simps!]
 def ran [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.rightAdjointOfEquiv (fun F G => (Ran.equiv ι G F).symm) (by {
-    -- Porting note: was `tidy`
+    -- Porting note (#10936): was `tidy`
     intros X' X Y f g
     ext t
     apply limit.hom_ext
@@ -185,13 +173,13 @@ def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.adjunction CategoryTheory.Ran.adjunction
 
-theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
+theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).counit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.id_comp]
@@ -260,6 +248,8 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     let dd := diagram ι F z
     -- Porting note: It seems that even Lean3 had some trouble with instances in this case.
     -- I don't know why lean can't deduce the following three instances...
+    -- The corresponding `haveI` statements could be removed from `Ran.loc` and it just worked,
+    -- here it doesn't...
     haveI : HasColimit (ff ⋙ gg ⋙ dd) := I _
     haveI : HasColimit ((ff ⋙ gg) ⋙ dd) := I _
     haveI : HasColimit (gg ⋙ dd) := I _
@@ -288,14 +278,14 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
         erw [colimit.ι_pre (diagram ι F (ι.obj y)) fff (CostructuredArrow.mk (𝟙 _))]
         let xx : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (ι.map ff)
         let yy : CostructuredArrow ι (ι.obj y) := CostructuredArrow.mk (𝟙 _)
-        let fff : xx ⟶ yy :=
+        let fff' : xx ⟶ yy :=
           CostructuredArrow.homMk ff
             (by
-              simp only [CostructuredArrow.mk_hom_eq_self]
+              simp only [xx, CostructuredArrow.mk_hom_eq_self]
               erw [Category.comp_id])
-        erw [colimit.w (diagram ι F (ι.obj y)) fff]
+        erw [colimit.w (diagram ι F (ι.obj y)) fff']
         congr
-        simp }
+        simp [fff] }
   invFun f :=
     { app := fun x => colimit.desc (diagram ι F x) (cocone _ f)
       naturality := by
@@ -327,15 +317,24 @@ def equiv (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] (G : L ⥤ D) :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.equiv CategoryTheory.Lan.equiv
 
+-- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] CategoryTheory.Ran.equiv_symm_apply_app
+  CategoryTheory.Ran.equiv_apply_app
+  CategoryTheory.Lan.equiv_symm_apply_app
+  CategoryTheory.Lan.equiv_apply_app
+
 end Lan
 
 /-- The left Kan extension of a functor. -/
 @[simps!]
-def lan [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] : (S ⥤ D) ⥤ L ⥤ D :=
+def lan [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] : (S ⥤ D) ⥤ L ⥤ D :=
   Adjunction.leftAdjointOfEquiv (fun F G => Lan.equiv ι F G) (by {
     intros X' X Y f g
     ext
-    simp [Lan.equiv] })
+    simp [Lan.equiv]
+    -- This used to be the end of the proof before leanprover/lean4#2644
+    erw [Equiv.coe_fn_mk, Equiv.coe_fn_mk]
+    simp })
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan CategoryTheory.lan
 
@@ -344,19 +343,19 @@ namespace Lan
 variable (D)
 
 /-- The adjunction associated to `Lan`. -/
-def adjunction [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     lan ι ⊣ (whiskeringLeft _ _ D).obj ι :=
   Adjunction.adjunctionOfEquivLeft _ _
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ X, HasColimitsOfShape (CostructuredArrow ι X) D] :
+theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
-  suffices : ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
+    apply NatIso.isIso_of_isIso_app
   intro F
-  suffices : ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ (X : S), IsIso (NatTrans.app (NatTrans.app (adjunction D ι).unit F) X) by
+    apply NatIso.isIso_of_isIso_app
   intro X
   dsimp [adjunction, equiv]
   simp only [Category.comp_id]

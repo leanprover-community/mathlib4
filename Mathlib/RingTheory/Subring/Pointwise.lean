@@ -2,16 +2,13 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.subring.pointwise
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.GroupTheory.Subgroup.Pointwise
 import Mathlib.RingTheory.Subsemiring.Pointwise
 import Mathlib.Data.Set.Pointwise.Basic
+
+#align_import ring_theory.subring.pointwise from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-! # Pointwise instances on `Subring`s
 
@@ -30,7 +27,7 @@ keep them in sync.
 
 open Set
 
-variable {M R : Type _}
+variable {M R : Type*}
 
 namespace Subring
 
@@ -77,6 +74,9 @@ theorem pointwise_smul_toSubsemiring (m : M) (S : Subring R) :
 theorem smul_mem_pointwise_smul (m : M) (r : R) (S : Subring R) : r ∈ S → m • r ∈ m • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ m • (S : Set R))
 #align subring.smul_mem_pointwise_smul Subring.smul_mem_pointwise_smul
+
+instance : CovariantClass M (Subring R) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : M) (r : R) (S : Subring R) :
     r ∈ m • S ↔ ∃ s : R, s ∈ S ∧ m • s = r :=

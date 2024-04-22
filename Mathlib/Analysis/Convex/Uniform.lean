@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module analysis.convex.uniform
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexSpace
+
+#align_import analysis.convex.uniform from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Uniformly convex spaces
@@ -42,12 +39,12 @@ open Convex Pointwise
 /-- A *uniformly convex space* is a real normed space where the triangle inequality is strict with a
 uniform bound. Namely, over the `x` and `y` of norm `1`, `‖x + y‖` is uniformly bounded above
 by a constant `< 2` when `‖x - y‖` is uniformly bounded below by a positive constant. -/
-class UniformConvexSpace (E : Type _) [SeminormedAddCommGroup E] : Prop where
+class UniformConvexSpace (E : Type*) [SeminormedAddCommGroup E] : Prop where
   uniform_convex : ∀ ⦃ε : ℝ⦄,
     0 < ε → ∃ δ, 0 < δ ∧ ∀ ⦃x : E⦄, ‖x‖ = 1 → ∀ ⦃y⦄, ‖y‖ = 1 → ε ≤ ‖x - y‖ → ‖x + y‖ ≤ 2 - δ
 #align uniform_convex_space UniformConvexSpace
 
-variable {E : Type _}
+variable {E : Type*}
 
 section SeminormedAddCommGroup
 
@@ -102,11 +99,13 @@ theorem exists_forall_closed_ball_dist_add_le_two_sub (hε : 0 < ε) :
     _ ≤ 2 - δ + δ' + δ' :=
       (add_le_add_three (h (h₁ _ hx') (h₁ _ hy') hxy') (h₂ _ hx hx'.le) (h₂ _ hy hy'.le))
     _ ≤ 2 - δ' := by
+      dsimp [δ']
       rw [← le_sub_iff_add_le, ← le_sub_iff_add_le, sub_sub, sub_sub]
       refine' sub_le_sub_left _ _
       ring_nf
-      rw [← mul_div_cancel' δ three_ne_zero]
-      norm_num -- Porting note: these three extra lines needed to make `exact` work
+      rw [← mul_div_cancel₀ δ three_ne_zero]
+      set_option tactic.skipAssignedInstances false in norm_num
+      -- Porting note: these three extra lines needed to make `exact` work
       have : 3 * (δ / 3) * (1 / 3) = δ / 3 := by linarith
       rw [this, mul_comm]
       gcongr
@@ -121,7 +120,6 @@ theorem exists_forall_closed_ball_dist_add_le_two_mul_sub (hε : 0 < ε) (r : �
   obtain ⟨δ, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (div_pos hε hr)
   refine' ⟨δ * r, mul_pos hδ hr, fun x hx y hy hxy => _⟩
   rw [← div_le_one hr, div_eq_inv_mul, ← norm_smul_of_nonneg (inv_nonneg.2 hr.le)] at hx hy
-  try infer_instance
   have := h hx hy
   simp_rw [← smul_add, ← smul_sub, norm_smul_of_nonneg (inv_nonneg.2 hr.le), ← div_eq_inv_mul,
     div_le_div_right hr, div_le_iff hr, sub_mul] at this
@@ -134,7 +132,7 @@ variable [NormedAddCommGroup E] [NormedSpace ℝ E] [UniformConvexSpace E]
 
 -- See note [lower instance priority]
 instance (priority := 100) UniformConvexSpace.toStrictConvexSpace : StrictConvexSpace ℝ E :=
-  StrictConvexSpace.ofNormAddNeTwo fun _ _ hx hy hxy =>
+  StrictConvexSpace.of_norm_add_ne_two fun _ _ hx hy hxy =>
     let ⟨_, hδ, h⟩ := exists_forall_closed_ball_dist_add_le_two_sub E (norm_sub_pos_iff.2 hxy)
     ((h hx.le hy.le le_rfl).trans_lt <| sub_lt_self _ hδ).ne
 #align uniform_convex_space.to_strict_convex_space UniformConvexSpace.toStrictConvexSpace

@@ -2,14 +2,12 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.regular.pow
-! leanprover-community/mathlib commit 46a64b5b4268c594af770c44d9e502afc6a515cb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Hom.Iterate
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.IterateHom
 import Mathlib.Algebra.Regular.Basic
+
+#align_import algebra.regular.pow from "leanprover-community/mathlib"@"46a64b5b4268c594af770c44d9e502afc6a515cb"
 
 /-!
 # Regular elements
@@ -23,7 +21,7 @@ algebra hierarchy.
 -/
 
 
-variable {R : Type _} {a b : R}
+variable {R : Type*} {a b : R}
 
 section Monoid
 
@@ -48,7 +46,7 @@ theorem IsRegular.pow (n : ℕ) (ra : IsRegular a) : IsRegular (a ^ n) :=
 /-- An element `a` is left-regular if and only if a positive power of `a` is left-regular. -/
 theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔ IsLeftRegular a := by
   refine' ⟨_, IsLeftRegular.pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
   exact IsLeftRegular.of_mul
 #align is_left_regular.pow_iff IsLeftRegular.pow_iff
 
@@ -56,7 +54,7 @@ theorem IsLeftRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsLeftRegular (a ^ n) ↔
 theorem IsRightRegular.pow_iff {n : ℕ} (n0 : 0 < n) :
     IsRightRegular (a ^ n) ↔ IsRightRegular a := by
   refine' ⟨_, IsRightRegular.pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ]
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ']
   exact IsRightRegular.of_mul
 #align is_right_regular.pow_iff IsRightRegular.pow_iff
 
@@ -67,3 +65,24 @@ theorem IsRegular.pow_iff {n : ℕ} (n0 : 0 < n) : IsRegular (a ^ n) ↔ IsRegul
 #align is_regular.pow_iff IsRegular.pow_iff
 
 end Monoid
+
+section CommMonoid
+
+open BigOperators
+
+variable {ι R : Type*} [CommMonoid R] {s : Finset ι} {f : ι → R}
+
+lemma IsLeftRegular.prod (h : ∀ i ∈ s, IsLeftRegular (f i)) :
+    IsLeftRegular (∏ i in s, f i) :=
+  s.prod_induction _ _ (@IsLeftRegular.mul R _) isRegular_one.left h
+
+lemma IsRightRegular.prod (h : ∀ i ∈ s, IsRightRegular (f i)) :
+    IsRightRegular (∏ i in s, f i) :=
+  s.prod_induction _ _ (@IsRightRegular.mul R _) isRegular_one.right h
+
+lemma IsRegular.prod (h : ∀ i ∈ s, IsRegular (f i)) :
+    IsRegular (∏ i in s, f i) :=
+  ⟨IsLeftRegular.prod fun a ha ↦ (h a ha).left,
+   IsRightRegular.prod fun a ha ↦ (h a ha).right⟩
+
+end CommMonoid

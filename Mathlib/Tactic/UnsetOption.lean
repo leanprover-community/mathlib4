@@ -6,7 +6,6 @@ Authors: Alex J. Best
 import Lean.Parser.Term
 import Lean.Parser.Do
 import Lean.Elab.Command
-import Mathlib.Data.KVMap
 
 /-!
 # The `unset_option` command
@@ -19,6 +18,8 @@ This is helpful when the user does not know the default value of the option or i
 is cleaner not to write it explicitly, or for some options where the default
 behaviour is different from any user set value.
 -/
+
+set_option autoImplicit true
 
 namespace Lean.Elab
 

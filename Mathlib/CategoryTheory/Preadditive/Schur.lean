@@ -2,17 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.preadditive.schur
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Group.Ext
 import Mathlib.CategoryTheory.Simple
 import Mathlib.CategoryTheory.Linear.Basic
 import Mathlib.CategoryTheory.Endomorphism
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
+
+#align_import category_theory.preadditive.schur from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Schur's lemma
@@ -31,8 +28,7 @@ namespace CategoryTheory
 
 open CategoryTheory.Limits
 
-variable {C : Type _} [Category C]
-
+variable {C : Type*} [Category C]
 variable [Preadditive C]
 
 -- See also `epi_of_nonzero_to_simple`, which does not require `Preadditive C`.
@@ -79,13 +75,14 @@ noncomputable instance [HasKernels C] {X : C} [Simple X] : DivisionRing (End X) 
         dsimp
         rw [dif_neg h]
         haveI := isIso_of_hom_simple h
-        exact IsIso.inv_hom_id f }
+        exact IsIso.inv_hom_id f
+      qsmul := qsmulRec _ }
 
 open FiniteDimensional
 
 section
 
-variable (𝕜 : Type _) [DivisionRing 𝕜]
+variable (𝕜 : Type*) [DivisionRing 𝕜]
 
 /-- Part of **Schur's lemma** for `𝕜`-linear categories:
 the hom space between two non-isomorphic simple objects is 0-dimensional.
@@ -95,18 +92,17 @@ theorem finrank_hom_simple_simple_eq_zero_of_not_iso [HasKernels C] [Linear 𝕜
   haveI :=
     subsingleton_of_forall_eq (0 : X ⟶ Y) fun f => by
       have p := not_congr (isIso_iff_nonzero f)
-      simp only [Classical.not_not, Ne.def] at p
-      refine' p.mp fun _ => h (asIso f)
+      simp only [Classical.not_not, Ne] at p
+      exact p.mp fun _ => h (asIso f)
   finrank_zero_of_subsingleton
 #align category_theory.finrank_hom_simple_simple_eq_zero_of_not_iso CategoryTheory.finrank_hom_simple_simple_eq_zero_of_not_iso
 
 end
 
-variable (𝕜 : Type _) [Field 𝕜]
-
+variable (𝕜 : Type*) [Field 𝕜]
 variable [IsAlgClosed 𝕜] [Linear 𝕜 C]
 
--- porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
+-- Porting note: the defeq issue in lean3 described below is no longer a problem in Lean4.
 -- In the proof below we have some difficulty using `I : FiniteDimensional 𝕜 (X ⟶ X)`
 -- where we need a `FiniteDimensional 𝕜 (End X)`.
 -- These are definitionally equal, but without eta reduction Lean can't see this.
@@ -129,7 +125,7 @@ theorem finrank_endomorphism_eq_one {X : C} (isIso_iff_nonzero : ∀ f : X ⟶ X
   have : FiniteDimensional 𝕜 (End X) := I
   obtain ⟨c, nu⟩ := spectrum.nonempty_of_isAlgClosed_of_finiteDimensional 𝕜 (End.of f)
   use c
-  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne.def,
+  rw [spectrum.mem_iff, IsUnit.sub_iff, isUnit_iff_isIso, isIso_iff_nonzero, Ne,
     Classical.not_not, sub_eq_zero, Algebra.algebraMap_eq_smul_one] at nu
   exact nu.symm
 #align category_theory.finrank_endomorphism_eq_one CategoryTheory.finrank_endomorphism_eq_one
@@ -196,7 +192,7 @@ theorem finrank_hom_simple_simple_eq_one_iff (X Y : C) [FiniteDimensional 𝕜 (
     have le_one := finrank_hom_simple_simple_le_one 𝕜 X Y
     have zero_lt : 0 < finrank 𝕜 (X ⟶ Y) :=
       finrank_pos_iff_exists_ne_zero.mpr ⟨f.hom, (isIso_iff_nonzero f.hom).mp inferInstance⟩
-    linarith
+    omega
 #align category_theory.finrank_hom_simple_simple_eq_one_iff CategoryTheory.finrank_hom_simple_simple_eq_one_iff
 
 theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 (X ⟶ X)]
@@ -206,7 +202,7 @@ theorem finrank_hom_simple_simple_eq_zero_iff (X Y : C) [FiniteDimensional 𝕜 
   refine' ⟨fun h => by rw [h]; simp, fun h => _⟩
   have := finrank_hom_simple_simple_le_one 𝕜 X Y
   interval_cases finrank 𝕜 (X ⟶ Y)
-  . rfl
+  · rfl
   · exact False.elim (h rfl)
 #align category_theory.finrank_hom_simple_simple_eq_zero_iff CategoryTheory.finrank_hom_simple_simple_eq_zero_iff
 
