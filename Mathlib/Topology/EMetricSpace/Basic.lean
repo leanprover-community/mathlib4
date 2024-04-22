@@ -470,7 +470,7 @@ instance Prod.pseudoEMetricSpaceMax [PseudoEMetricSpace β] : PseudoEMetricSpace
     max_le (le_trans (edist_triangle _ _ _) (add_le_add (le_max_left _ _) (le_max_left _ _)))
       (le_trans (edist_triangle _ _ _) (add_le_add (le_max_right _ _) (le_max_right _ _)))
   uniformity_edist := uniformity_prod.trans <| by
-    simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, setOf_and, -iInf_principal]
+    simp [PseudoEMetricSpace.uniformity_edist, ← iInf_inf_eq, setOf_and]
   toUniformSpace := inferInstance
 #align prod.pseudo_emetric_space_max Prod.pseudoEMetricSpaceMax
 
@@ -1200,7 +1200,7 @@ instance [PseudoEMetricSpace X] : EMetricSpace (SeparationQuotient X) :=
       edist_triangle := surjective_mk.forall₃.2 edist_triangle,
       toUniformSpace := inferInstance,
       uniformity_edist := comap_injective (surjective_mk.Prod_map surjective_mk) <| by
-        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist, -iInf_principal] } _
+        simp [comap_mk_uniformity, PseudoEMetricSpace.uniformity_edist] } _
 
 /-!
 ### `Additive`, `Multiplicative`
