@@ -138,6 +138,7 @@
   "Mathlib.Tactic.ToExpr",
   "Mathlib.Tactic.ToLevel",
   "Mathlib.Tactic.Trace",
+  "Mathlib.Tactic.TryThis",
   "Mathlib.Tactic.TypeCheck",
   "Mathlib.Tactic.TypeStar",
   "Mathlib.Tactic.Use",
