@@ -82,10 +82,10 @@ I document here what features are not in the original:
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
     - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
       instead of `fun x => f x * g x`.
-    - When trying to find `Continuous.mul` with the expression `Continuous fun x => 1 + x`,
+    - When trying to find `Continuous.add` with the expression `Continuous fun x => 1 + x`,
       this is possible, because we first revert the eta-reduction that happens by default,
       and then distribute the lambda. Thus this is indexed as `Continuous (1 + id)`,
-      which matches with `Continuous (f + g)` from `Continuous.mul`.
+      which matches with `Continuous (f + g)` from `Continuous.add`.
 
 I have also made some changes in the implementation:
 
@@ -424,8 +424,6 @@ which is used for `RefinedDiscrTree` indexing. -/
 def DTExpr.flatten (e : DTExpr) (initCapacity := 16) : Array Key :=
   (DTExpr.flattenAux (.mkEmpty initCapacity) e).run' {}
 
-
-
 /-- Return `true` if `e` is one of the following
 - A nat literal (numeral)
 - `Nat.zero`
@@ -528,8 +526,6 @@ where
     | .implicit
     | .strictImplicit => return !(← isType arg)
     | .default => isProof arg
-
-
 
 /-- Introduce new lambdas by η-expansion. -/
 @[specialize]
@@ -646,7 +642,7 @@ private def withLams {m} [Monad m] [MonadWithReader Context m]
     k
   else do
     let e ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) k
-    return lambdas.foldl (fun _ => ·.lam) e
+    return lambdas.foldl (fun d _ => d.lam) e
 
 /-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
 partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
@@ -953,7 +949,7 @@ partial def insertInTrie [BEq α] (keys : Array Key) (i : Nat) (v : α) : Trie �
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
@@ -968,7 +964,7 @@ def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Ke
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertDTExpr [BEq α] (d : RefinedDiscrTree α) (e : DTExpr) (v : α) : RefinedDiscrTree α :=
   insertInRefinedDiscrTree d e.flatten v
@@ -1056,6 +1052,7 @@ partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array K
   | skip+1 =>
     t.children!.foldr (init := failure) fun (k, c) x =>
       (skipEntries c (skipped.push k) (skip + k.arity)) <|> x
+
 /-- Return the possible `Trie α` that match with anything.
 We add 1 to the matching score when the key is `.opaque`,
 since this pattern is "harder" to match with. -/
