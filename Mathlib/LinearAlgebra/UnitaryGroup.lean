@@ -200,13 +200,15 @@ end UnitaryGroup
 
 section specialUnitaryGroup
 
-variable (n) (α : Type v) [CommRing α] [StarRing α] {A : Matrix n n α}
+variable (n) (α)
 
 /--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
 is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
-theorem mem_specialUnitaryGroup_iff {A : Matrix n n α}:
+variable {n} {α} {A : Matrix n n α}
+
+theorem mem_specialUnitaryGroup_iff:
     A ∈ specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1:= by
   rw [← mem_unitaryGroup_iff]
   rfl
@@ -243,7 +245,7 @@ end OrthogonalGroup
 
 section specialOrthogonalGroup
 
-variable (n) (β : Type v) [CommRing β] (A : Matrix n n β)
+variable (n) (β : Type v) [CommRing β]
 
 attribute [local instance] starRingOfComm
 
@@ -251,7 +253,9 @@ attribute [local instance] starRingOfComm
 is one. (This definition is only correct if 2 is invertible.)-/
 abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 
-theorem mem_specialOrthogonalGroup_iff  {A : Matrix n n β}:
+variable {n} {β} {A : Matrix n n β}
+
+theorem mem_specialOrthogonalGroup_iff:
     A ∈ specialOrthogonalGroup n β ↔ A * star A = 1 ∧ A.det = 1 := by
   apply mem_specialUnitaryGroup_iff
 
