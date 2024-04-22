@@ -31,51 +31,51 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
 def runCurl (args : Array String) (throwFailure := true) : IO String := do
   runCmd "curl" args throwFailure
 
-def speedCenterRunJson (hash : String) : IO String :=
+def SpeedCenterAPI.RunJson (hash : String) : IO String :=
   -- e7b27246-a3e6-496a-b552-ff4b45c7236e is the `repo_id` for the `mathlib4` repository.
   runCurl #["http://speed.lean-fro.org/mathlib4/api/run/e7b27246-a3e6-496a-b552-ff4b45c7236e?hash=" ++ hash]
 
-structure SpeedCenterSource_1 where
+structure SpeedCenterAPI.Source_1 where
   repo_id : String
   hash : String
 deriving ToJson, FromJson
 
-structure SpeedCenterSource_2 where
-  source : SpeedCenterSource_1
+structure SpeedCenterAPI.Source_2 where
+  source : SpeedCenterAPI.Source_1
 deriving ToJson, FromJson
 
-structure SpeedCenterDimension where
+structure SpeedCenterAPI.Dimension where
   benchmark : String
   metric : String
   unit : String
 deriving ToJson, FromJson
 
-structure SpeedCenterMeasurement where
-  dimension : SpeedCenterDimension
+structure SpeedCenterAPI.Measurement where
+  dimension : SpeedCenterAPI.Dimension
   value : Float
 deriving ToJson, FromJson
 
-structure SpeedCenterResult where
-  measurements : List SpeedCenterMeasurement
+structure SpeedCenterAPI.Result where
+  measurements : List SpeedCenterAPI.Measurement
 deriving ToJson, FromJson
 
-structure SpeedCenterRun_3 where
+structure SpeedCenterAPI.Run where
   id : String
-  source : SpeedCenterSource_2
-  result : SpeedCenterResult
+  source : SpeedCenterAPI.Source_2
+  result : SpeedCenterAPI.Result
 deriving ToJson, FromJson
 
-structure SpeedCenterRunResponse where
-  run : SpeedCenterRun_3
+structure SpeedCenterAPI.RunResponse where
+  run : SpeedCenterAPI.Run
 deriving ToJson, FromJson
 
-structure SpeedCenterMessage where
+structure SpeedCenterAPI.Message where
   repo_id : String
   message : String
   commit_hash : String
 deriving ToJson, FromJson
 
-def SpeedCenterRunResponse.instructions (response : SpeedCenterRunResponse) :
+def SpeedCenterAPI.RunResponse.instructions (response : SpeedCenterAPI.RunResponse) :
     NameMap Float := Id.run do
   let mut r : NameMap Float := ∅
   for m in response.run.result.measurements do
@@ -84,14 +84,14 @@ def SpeedCenterRunResponse.instructions (response : SpeedCenterRunResponse) :
       r := r.insert (n.drop 1).toName m.value
   return r
 
-def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
-  let r ← speedCenterRunJson run
+def SpeedCenterAPI.getRunResponse (hash : String) : IO SpeedCenterAPI.RunResponse := do
+  let r ← SpeedCenterAPI.RunJson hash
   match Json.parse r with
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
   | .ok j => match fromJson? j with
     | .ok v => pure v
     | .error e => match fromJson? j with
-      | .ok (v : SpeedCenterMessage) =>
+      | .ok (v : SpeedCenterAPI.Message) =>
         IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
         IO.eprintln s!"Try moving to an older commit?"
         IO.Process.exit 1
@@ -99,8 +99,8 @@ def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
 
 def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
-def speedCenterInstructions (run : String) : IO (NameMap Float) :=
-  return (← speedCenterRunResponse run).instructions
+def SpeedCenterAPI.Instructions (run : String) : IO (NameMap Float) :=
+  return (← SpeedCenterAPI.getRunResponse run).instructions
 
 partial def cumulativeInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
@@ -144,7 +144,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     IO.eprintln s!"Analyzing {to} at {<- sha}"
-    let instructions ← speedCenterInstructions (← sha)
+    let instructions ← SpeedCenterAPI.Instructions (← sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
