@@ -90,22 +90,9 @@ instance locallyDiscreteBicategory (C : Type u) [Category.{v} C] : Bicategory (L
     where
   whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
   whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
-  associator f g h :=
-    eqToIso <| by
-      apply Discrete.ext
-      -- TODO: API should deal with this
-      change (f.as ≫ g.as) ≫ h.as = f.as ≫ (g.as ≫ h.as)
-      rw [Category.assoc]
-  leftUnitor f :=
-    eqToIso <| by
-      apply Discrete.ext
-      change 𝟙 _ ≫ _ = _
-      rw [Category.id_comp]
-  rightUnitor f :=
-    eqToIso <| by
-      apply Discrete.ext
-      change _ ≫ 𝟙 _ = _
-      rw [Category.comp_id]
+  associator f g h := eqToIso <| by apply Discrete.ext; simp
+  leftUnitor f := eqToIso <| by apply Discrete.ext; simp
+  rightUnitor f := eqToIso <| by apply Discrete.ext; simp
 #align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 @[simp]
