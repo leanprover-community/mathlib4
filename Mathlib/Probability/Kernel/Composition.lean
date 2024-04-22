@@ -906,6 +906,8 @@ theorem fst_apply' (κ : kernel α (β × γ)) (a : α) {s : Set β} (hs : Measu
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
 #align probability_theory.kernel.fst_apply' ProbabilityTheory.kernel.fst_apply'
 
+theorem coe_fst (κ : kernel α (β × γ)) (a : α) : (fst κ a : Measure β) = Measure.fst (κ a) := rfl
+
 @[simp]
 lemma fst_zero : fst (0 : kernel α (β × γ)) = 0 := by simp [fst]
 

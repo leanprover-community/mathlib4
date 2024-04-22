@@ -694,14 +694,13 @@ lemma densityProcess_fst_univ [IsFiniteKernel κ] (n : ℕ) (a : α) (x : γ) :
     densityProcess κ (fst κ) n a x univ
       = if fst κ a (countablePartitionSet n x) = 0 then 0 else 1 := by
   rw [densityProcess]
-  by_cases h : fst κ a (countablePartitionSet n x) = 0
-  · simp [h]
+  split_ifs with h
+  · simp only [h]
     by_cases h' : κ a (countablePartitionSet n x ×ˢ univ) = 0
     · simp [h']
     · rw [ENNReal.div_zero h']
       simp
-  · simp only [h, ite_false]
-    rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
+  · rw [fst_apply' _ _ (measurableSet_countablePartitionSet _ _)]
     have : countablePartitionSet n x ×ˢ univ = {p : γ × β | p.1 ∈ countablePartitionSet n x} := by
       ext x
       simp

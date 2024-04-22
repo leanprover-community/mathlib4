@@ -1142,7 +1142,7 @@ theorem isMultiplicative_moebius : IsMultiplicative μ := by
 theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
     {f : ArithmeticFunction R} (h_mult : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.primeFactors, (1 + f p) = ∑ d in n.divisors, f d := by
-  trans (∏ᵖ p ∣ n, ((ζ:ArithmeticFunction R) + f) p)
+  trans (∏ᵖ p ∣ n, ((ζ : ArithmeticFunction R) + f) p)
   · simp_rw [prodPrimeFactors_apply hn.ne_zero, add_apply, natCoe_apply]
     apply Finset.prod_congr rfl; intro p hp;
     rw [zeta_apply_ne (prime_of_mem_factors <| List.mem_toFinset.mp hp).ne_zero, cast_one]
@@ -1152,7 +1152,7 @@ theorem IsMultiplicative.prodPrimeFactors_one_add_of_squarefree [CommSemiring R]
 theorem IsMultiplicative.prodPrimeFactors_one_sub_of_squarefree [CommRing R]
     (f : ArithmeticFunction R) (hf : f.IsMultiplicative) {n : ℕ} (hn : Squarefree n) :
     ∏ p in n.primeFactors, (1 - f p) = ∑ d in n.divisors, μ d * f d := by
-  trans (∏ p in n.primeFactors, (1 + (ArithmeticFunction.pmul (μ:ArithmeticFunction R) f) p))
+  trans (∏ p in n.primeFactors, (1 + (ArithmeticFunction.pmul (μ : ArithmeticFunction R) f) p))
   · apply Finset.prod_congr rfl; intro p hp
     rw [pmul_apply, intCoe_apply, ArithmeticFunction.moebius_apply_prime
         (prime_of_mem_factors (List.mem_toFinset.mp hp))]

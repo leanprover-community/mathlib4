@@ -94,19 +94,21 @@ lemma traceDual_top' :
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
   · rw [_root_.eq_bot_iff]
     intro x hx
-    change ¬∀ x, _ → _ at h; push_neg at h
-    show x = 0; by_contra hx'
+    rw [SetLike.le_def] at h
+    push_neg at h
+    rw [mem_bot]
+    by_contra hx'
     obtain ⟨_, ⟨b, rfl⟩, hb⟩ := h
     apply hb
-    simpa [hx'] using hx (x⁻¹ * b) trivial
+    simpa [hx'] using hx (x⁻¹ * b) (by simp)
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
-    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff, SetLike.le_def]
-  rfl
+    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff]
+  simp [SetLike.le_def]
 
 end Submodule
 
@@ -185,11 +187,7 @@ lemma map_equiv_traceDual [NoZeroSMulDivisors A B] (I : Submodule B (FractionRin
     rw [IsScalarTower.algebraMap_apply A B (FractionRing B), AlgEquiv.commutes,
       ← IsScalarTower.algebraMap_apply]
   simp only [AlgEquiv.toRingEquiv_eq_coe, _root_.map_mul, AlgEquiv.coe_ringEquiv,
-    AlgEquiv.apply_symm_apply]
-  show (FractionRing.algEquiv A K).symm _ ∈ (algebraMap A (FractionRing A)).range ↔ _
-  rw [← (FractionRing.algEquiv A K).symm.toAlgHom.comp_algebraMap, ← RingHom.map_range,
-    AlgEquiv.toAlgHom_eq_coe, AlgEquiv.coe_ringHom_commutes, Subring.mem_map_equiv]
-  simp
+    AlgEquiv.apply_symm_apply, ← AlgEquiv.symm_toRingEquiv, mem_one, AlgEquiv.algebraMap_eq_apply]
 
 open scoped Classical
 
@@ -217,7 +215,7 @@ def dual (I : FractionalIdeal B⁰ L) :
 variable [IsDedekindDomain B] {I J : FractionalIdeal B⁰ L} (hI : I ≠ 0) (hJ : J ≠ 0)
 
 lemma coe_dual :
-    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI]; rfl
+    (dual A K I : Submodule B L) = Iᵛ := by rw [dual, dif_neg hI, coe_mk]
 
 variable (B L)
 
