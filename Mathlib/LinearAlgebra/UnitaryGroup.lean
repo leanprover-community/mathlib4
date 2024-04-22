@@ -206,7 +206,7 @@ variable (n) (α)
 is 1. (This definition is only correct if 2 is invertible.)-/
 abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
-variable {n} {α} {A : Matrix n n α}
+variable {n} {α}
 
 theorem mem_specialUnitaryGroup_iff:
     A ∈ specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1:= by
