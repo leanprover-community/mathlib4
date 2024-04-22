@@ -136,7 +136,7 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
   simp [enumFrom_get?, get?_eq_get hi]
 
 set_option linter.deprecated false in
-@[deprecated get_enumFrom]
+@[deprecated get_enumFrom] -- 2023-01-05
 theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
     (hi : i < l.length := (by simpa using hi')) :
     (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
@@ -150,7 +150,7 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
   exact (Nat.zero_add _).symm
 
 set_option linter.deprecated false in
-@[deprecated get_enum]
+@[deprecated get_enum] -- 2023-01-05
 theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
     (hi : i < l.length := (by simpa using hi')) :
     l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..

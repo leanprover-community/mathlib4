@@ -101,7 +101,7 @@ theorem nodup_iff_injective_get {l : List α} :
       fun hinj i j hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (hinj h))⟩
 
 set_option linter.deprecated false in
-@[deprecated nodup_iff_injective_get]
+@[deprecated nodup_iff_injective_get] -- 2023-01-10
 theorem nodup_iff_nthLe_inj {l : List α} :
     Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
   nodup_iff_injective_get.trans
@@ -114,7 +114,7 @@ theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
   (nodup_iff_injective_get.1 h).eq_iff
 
 set_option linter.deprecated false in
-@[deprecated Nodup.get_inj_iff]
+@[deprecated Nodup.get_inj_iff] -- 2023-01-10
 theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
     (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
   ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
@@ -152,7 +152,7 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
   exact fun hinj => hne (hinj h)
 
 set_option linter.deprecated false in
-@[deprecated not_nodup_of_get_eq_of_ne]
+@[deprecated not_nodup_of_get_eq_of_ne] -- 2023-01-10
 theorem nthLe_eq_of_ne_imp_not_nodup (xs : List α) (n m : ℕ) (hn : n < xs.length)
     (hm : m < xs.length) (h : xs.nthLe n hn = xs.nthLe m hm) (hne : n ≠ m) : ¬Nodup xs := by
   rw [nodup_iff_nthLe_inj]

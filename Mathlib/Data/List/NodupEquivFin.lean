@@ -237,7 +237,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-@[deprecated duplicate_iff_exists_distinct_get]
+@[deprecated duplicate_iff_exists_distinct_get] -- 2023-01-19
 theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),
