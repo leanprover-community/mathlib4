@@ -94,19 +94,21 @@ lemma traceDual_top' :
     exact fun _ _ _ _ ↦ h ⟨_, rfl⟩
   · rw [_root_.eq_bot_iff]
     intro x hx
-    change ¬∀ x, _ → _ at h; push_neg at h
-    show x = 0; by_contra hx'
+    rw [SetLike.le_def] at h
+    push_neg at h
+    rw [mem_bot]
+    by_contra hx'
     obtain ⟨_, ⟨b, rfl⟩, hb⟩ := h
     apply hb
-    simpa [hx'] using hx (x⁻¹ * b) trivial
+    simpa [hx'] using hx (x⁻¹ * b) (by simp)
 
 lemma traceDual_top [Decidable (IsField A)] :
     (⊤ : Submodule B L)ᵛ = if IsField A then ⊤ else ⊥ := by
   convert traceDual_top'
   rw [← IsFractionRing.surjective_iff_isField (R := A) (K := K),
     LinearMap.range_eq_top.mpr (Algebra.trace_surjective K L),
-    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff, SetLike.le_def]
-  rfl
+    ← RingHom.range_top_iff_surjective, _root_.eq_top_iff]
+  simp [SetLike.le_def]
 
 end Submodule
 

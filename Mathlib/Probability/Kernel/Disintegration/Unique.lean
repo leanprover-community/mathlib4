@@ -88,9 +88,11 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   set ρ' : Measure (α × ℝ) := ρ.map (Prod.map id f) with hρ'def
   have hρ' : ρ'.fst = ρ.fst := by
     ext s hs
-    rw [hρ'def, Measure.fst_apply, Measure.fst_apply, Measure.map_apply]
-    exacts [rfl, Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd,
-      measurable_fst hs, hs, hs]
+    have : Measurable fun x : α × Ω ↦ Prod.map id f x :=
+      Measurable.prod measurable_fst <| hf.measurable.comp measurable_snd
+    rw [hρ'def, Measure.fst_apply hs, Measure.fst_apply hs,
+      Measure.map_apply this (measurable_fst hs)]
+    simp [preimage_preimage]
   have hρ'' : ∀ᵐ x ∂ρ.fst, kernel.map κ f hf.measurable x = ρ'.condKernel x := by
     rw [← hρ']
     refine eq_condKernel_of_measure_eq_compProd_real (kernel.map κ f hf.measurable) ?_
@@ -99,8 +101,8 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
     rw [Measure.map_apply (measurable_id.prod_map hf.measurable) hs, hρ',
       Measure.compProd_apply hs, Measure.compProd_apply (measurable_id.prod_map hf.measurable hs)]
     congr with a
-    rw [kernel.map_apply']
-    exacts [rfl, measurable_prod_mk_left hs]
+    rw [kernel.map_apply' _ _ _ (measurable_prod_mk_left hs)]
+    simp [preimage_preimage]
   suffices ∀ᵐ x ∂ρ.fst, ∀ s, MeasurableSet s → ρ'.condKernel x s = ρ.condKernel x (f ⁻¹' s) by
     filter_upwards [hρ'', this] with x hx h
     rw [kernel.map_apply] at hx
@@ -119,8 +121,8 @@ theorem eq_condKernel_of_measure_eq_compProd (κ : kernel α Ω) [IsFiniteKernel
   rw [Measure.compProd_apply hs, Measure.map_apply (measurable_id.prod_map hf.measurable) hs,
     Measure.compProd_apply]
   · congr with a
-    rw [kernel.map_apply']
-    exacts [rfl, measurable_prod_mk_left hs]
+    rw [kernel.map_apply' _ _ _ (measurable_prod_mk_left hs)]
+    simp [preimage_preimage]
   · exact measurable_id.prod_map hf.measurable hs
 
 end Measure
@@ -135,7 +137,7 @@ lemma kernel.apply_eq_measure_condKernel_of_compProd_eq
     ext s hs
     conv_lhs => rw [← hκ]
     rw [Measure.compProd_apply hs, kernel.compProd_apply _ _ _ hs]
-    rfl
+    simp [comap_apply', preimage, coe_fst]
   have h := eq_condKernel_of_measure_eq_compProd _ this
   rw [kernel.fst_apply]
   filter_upwards [h] with b hb
