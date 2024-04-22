@@ -78,12 +78,12 @@ def relationsSet : Set (FreeGroup B) := Set.range <| uncurry M.relation
 
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
-def group : Type _ := PresentedGroup M.relationsSet
+protected def Group : Type _ := PresentedGroup M.relationsSet
 
-instance : Group M.group := QuotientGroup.Quotient.group _
+instance : Group M.Group := QuotientGroup.Quotient.group _
 
 /-- The simple reflection of the Coxeter group `M.group` at the index `i`. -/
-def simple (i : B) : M.group := PresentedGroup.of i
+def simple (i : B) : M.Group := PresentedGroup.of i
 
 theorem reindex_relationsSet :
     (M.reindex e).relationsSet =
@@ -98,7 +98,7 @@ theorem reindex_relationsSet :
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
-def reindexGroupEquiv : (M.reindex e).group ≃* M.group :=
+def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
   (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
@@ -126,14 +126,14 @@ a group `W` and the Coxeter group associated to a Coxeter matrix `M`. -/
 @[ext]
 structure CoxeterSystem (W : Type*) [Group W] where
   /-- The isomorphism between `W` and the Coxeter group associated to `M`. -/
-  mulEquiv : W ≃* M.group
+  mulEquiv : W ≃* M.Group
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
 class IsCoxeterGroup.{u} (W : Type u) [Group W] : Prop where
   nonempty_system : ∃ B : Type u, ∃ M : CoxeterMatrix B, Nonempty (CoxeterSystem M W)
 
 /-- The canonical Coxeter system on the Coxeter group associated to `M`. -/
-def CoxeterMatrix.toCoxeterSystem : CoxeterSystem M M.group := ⟨.refl _⟩
+def CoxeterMatrix.toCoxeterSystem : CoxeterSystem M M.Group := ⟨.refl _⟩
 
 end
 
