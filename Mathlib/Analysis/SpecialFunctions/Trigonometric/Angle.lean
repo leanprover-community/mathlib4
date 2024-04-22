@@ -254,11 +254,11 @@ theorem cos_eq_iff_coe_eq_or_eq_neg {θ ψ : ℝ} :
         zero_add]
   · rw [angle_eq_iff_two_pi_dvd_sub, ← coe_neg, angle_eq_iff_two_pi_dvd_sub]
     rintro (⟨k, H⟩ | ⟨k, H⟩)
-    rw [← sub_eq_zero, cos_sub_cos, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
-      mul_comm π _, sin_int_mul_pi, mul_zero]
-    rw [← sub_eq_zero, cos_sub_cos, ← sub_neg_eq_add, H, mul_assoc 2 π k,
-      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero,
-      zero_mul]
+    · rw [← sub_eq_zero, cos_sub_cos, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
+        mul_comm π _, sin_int_mul_pi, mul_zero]
+    · rw [← sub_eq_zero, cos_sub_cos, ← sub_neg_eq_add, H, mul_assoc 2 π k,
+        mul_div_cancel_left₀ _ (two_ne_zero' ℝ), mul_comm π _, sin_int_mul_pi, mul_zero,
+        zero_mul]
 #align real.angle.cos_eq_iff_coe_eq_or_eq_neg Real.Angle.cos_eq_iff_coe_eq_or_eq_neg
 
 theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
@@ -276,14 +276,14 @@ theorem sin_eq_iff_coe_eq_or_add_eq_pi {θ ψ : ℝ} :
     exact h.symm
   · rw [angle_eq_iff_two_pi_dvd_sub, ← eq_sub_iff_add_eq, ← coe_sub, angle_eq_iff_two_pi_dvd_sub]
     rintro (⟨k, H⟩ | ⟨k, H⟩)
-    rw [← sub_eq_zero, sin_sub_sin, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
-      mul_comm π _, sin_int_mul_pi, mul_zero, zero_mul]
-    have H' : θ + ψ = 2 * k * π + π := by
-      rwa [← sub_add, sub_add_eq_add_sub, sub_eq_iff_eq_add, mul_assoc, mul_comm π _, ←
-        mul_assoc] at H
-    rw [← sub_eq_zero, sin_sub_sin, H', add_div, mul_assoc 2 _ π,
-      mul_div_cancel_left₀ _ (two_ne_zero' ℝ), cos_add_pi_div_two, sin_int_mul_pi, neg_zero,
-      mul_zero]
+    · rw [← sub_eq_zero, sin_sub_sin, H, mul_assoc 2 π k, mul_div_cancel_left₀ _ (two_ne_zero' ℝ),
+        mul_comm π _, sin_int_mul_pi, mul_zero, zero_mul]
+    · have H' : θ + ψ = 2 * k * π + π := by
+        rwa [← sub_add, sub_add_eq_add_sub, sub_eq_iff_eq_add, mul_assoc, mul_comm π _, ←
+          mul_assoc] at H
+      rw [← sub_eq_zero, sin_sub_sin, H', add_div, mul_assoc 2 _ π,
+        mul_div_cancel_left₀ _ (two_ne_zero' ℝ), cos_add_pi_div_two, sin_int_mul_pi, neg_zero,
+        mul_zero]
 #align real.angle.sin_eq_iff_coe_eq_or_add_eq_pi Real.Angle.sin_eq_iff_coe_eq_or_add_eq_pi
 
 theorem cos_sin_inj {θ ψ : ℝ} (Hcos : cos θ = cos ψ) (Hsin : sin θ = sin ψ) : (θ : Angle) = ψ := by

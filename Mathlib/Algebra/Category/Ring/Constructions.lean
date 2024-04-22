@@ -42,13 +42,13 @@ def pushoutCocone : Limits.PushoutCocone f g := by
   letI := RingHom.toAlgebra f
   letI := RingHom.toAlgebra g
   fapply Limits.PushoutCocone.mk
-  show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
-  show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
-  show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
-  ext r
-  trans algebraMap R (A ⊗[R] B) r
-  · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
-  · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
+  · show CommRingCat; exact CommRingCat.of (A ⊗[R] B)
+  · show A ⟶ _; exact Algebra.TensorProduct.includeLeftRingHom
+  · show B ⟶ _; exact Algebra.TensorProduct.includeRight.toRingHom
+  · ext r
+    trans algebraMap R (A ⊗[R] B) r
+    · exact Algebra.TensorProduct.includeLeft.commutes (R := R) r
+    · exact (Algebra.TensorProduct.includeRight.commutes (R := R) r).symm
 set_option linter.uppercaseLean3 false in
 #align CommRing.pushout_cocone CommRingCat.pushoutCocone
 

@@ -129,7 +129,7 @@ theorem hasFDerivAt_integral_of_dominated_loc_of_lip' {F' : α → H →L[𝕜] 
     exact ((hF_meas _ x_in).sub (hF_meas _ x₀_in)).sub (hF'_meas.apply_continuousLinearMap _)
   · refine mem_of_superset h_ball fun x hx ↦ ?_
     apply (h_diff.and h_lipsch).mono
-    rintro a ⟨-, ha_bound⟩
+    on_goal 1 => rintro a ⟨-, ha_bound⟩
     show ‖‖x - x₀‖⁻¹ • (F x a - F x₀ a - F' a (x - x₀))‖ ≤ b a + ‖F' a‖
     replace ha_bound : ‖F x a - F x₀ a‖ ≤ b a * ‖x - x₀‖ := ha_bound x hx
     calc
