@@ -194,13 +194,12 @@ lemma neg_def (q : ℚ) : -q = -q.num /. q.den := by rw [← neg_divInt, num_div
 @[simp] lemma divInt_neg (n d : ℤ) : n /. -d = -n /. d := divInt_neg' ..
 #align rat.mk_neg_denom Rat.divInt_neg
 
--- 2024-03-18
-@[deprecated] alias divInt_neg_den := divInt_neg
+@[deprecated] alias divInt_neg_den := divInt_neg -- 2024-03-18
 
 attribute [simp] divInt_sub_divInt
 
--- 2024-03-18
-@[deprecated divInt_sub_divInt] lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
+@[deprecated divInt_sub_divInt] -- 2024-03-18
+lemma sub_def'' {a b c d : ℤ} (b0 : b ≠ 0) (d0 : d ≠ 0) :
     a /. b - c /. d = (a * d - c * b) /. (b * d) := divInt_sub_divInt _ _ b0 d0
 #align rat.sub_def Rat.sub_def''
 
@@ -270,8 +269,7 @@ protected theorem add_assoc : a + b + c = a + (b + c) :=
 protected lemma add_left_neg : -a + a = 0 := by simp [add_def, normalize_eq_mkRat]
 #align rat.add_left_neg Rat.add_left_neg
 
--- 2024-03-18
-@[deprecated zero_divInt] lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _
+@[deprecated zero_divInt] lemma divInt_zero_one : 0 /. 1 = 0 := zero_divInt _ -- 2024-03-18
 #align rat.mk_zero_one Rat.zero_divInt
 
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
@@ -280,8 +278,8 @@ protected lemma add_left_neg : -a + a = 0 := by simp [add_def, normalize_eq_mkRa
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one]; rfl
 #align rat.mk_one_one Rat.divInt_one_one
 
--- 2024-03-18
-@[deprecated divInt_one] lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one]; rfl
+@[deprecated divInt_one] -- 2024-03-18
+lemma divInt_neg_one_one : -1 /. 1 = -1 := by rw [divInt_one]; rfl
 #align rat.mk_neg_one_one Rat.divInt_neg_one_one
 
 #align rat.mul_one Rat.mul_one
