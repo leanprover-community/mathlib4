@@ -86,4 +86,12 @@ theorem isConnected_iff_colimit_constPUnitFunctor_iso_pUnit
   refine zigzag_of_eqvGen_quot_rel _ (constPUnitFunctor C) ⟨c, PUnit.unit⟩ ⟨d, PUnit.unit⟩ ?_
   exact colimit_eq <| h.toEquiv.injective rfl
 
+theorem isConnected_iff_isColimit_pUnitCocone :
+    IsConnected C ↔ Nonempty (IsColimit (pUnitCocone.{w} C)) := by
+  refine ⟨fun inst => ⟨isColimitPUnitCocone C⟩, fun ⟨h⟩ => ?_⟩
+  let colimitCocone : ColimitCocone (constPUnitFunctor C) := ⟨pUnitCocone.{w} C, h⟩
+  have : HasColimit (constPUnitFunctor.{w} C) := ⟨⟨colimitCocone⟩⟩
+  simp only [isConnected_iff_colimit_constPUnitFunctor_iso_pUnit.{w} C]
+  exact ⟨colimit.isoColimitCocone colimitCocone⟩
+
 end CategoryTheory.Limits.Types
