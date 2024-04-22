@@ -3,6 +3,7 @@ Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
+import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Sheafification
 
 #align_import category_theory.sites.whiskering from "leanprover-community/mathlib"@"9f9015c645d85695581237cc761981036be8bd37"
@@ -173,9 +174,7 @@ instance hasSheafCompose_of_preservesLimitsOfSize [PreservesLimitsOfSize.{v₁, 
     J.HasSheafCompose F where
   isSheaf _ hP := Presheaf.isSheaf_comp_of_isSheaf J _ F hP
 
-namespace GrothendieckTopology
-
-variable (F : A ⥤ B) [HasWeakSheafify J A] [HasWeakSheafify J B] [HasSheafCompose J F]
+variable (F : A ⥤ B) [HasWeakSheafify J A] [HasWeakSheafify J B] [J.HasSheafCompose F]
   (P : Cᵒᵖ ⥤ A)
 
 /-- Given a Grothendieck topology `J` on `C`, and `F : A ⥤ B`, this is the natural
@@ -258,6 +257,61 @@ lemma sheafifyComposeIso_inv_fac :
       toSheafify J (P ⋙ F) := by
   rw [← cancel_mono (sheafifyCompose J F P), assoc, sheafifyComposeIso_inv_hom_id,
     comp_id, sheafifyCompose_fac]
+
+namespace GrothendieckTopology
+
+variable {D : Type*} [Category.{max v₁ u₁} D]
+  [ConcreteCategory.{max v₁ u₁} D] [PreservesLimits (forget D)]
+  [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
+  [(forget D).ReflectsIsomorphisms]
+
+/-- The canonical isomorphism `J.plusObj (P ⋙ forget D) ≅ J.plusObj P ⋙ forget D`. -/
+def plusObjComposeForget (P : Cᵒᵖ ⥤ D) :
+    J.plusObj (P ⋙ forget D) ≅ J.plusObj P ⋙ forget D := by
+  sorry
+
+@[reassoc (attr := simp)]
+lemma plusObjComposeForget_hom_naturality {P Q : Cᵒᵖ ⥤ D} (φ : P ⟶ Q) :
+    J.plusMap (whiskerRight φ (forget D)) ≫ (J.plusObjComposeForget Q).hom =
+    (J.plusObjComposeForget P).hom ≫
+      whiskerRight (J.plusMap φ) (forget D) := sorry
+
+@[reassoc (attr := simp)]
+lemma plusObjComposeForget_hom_fac (P : Cᵒᵖ ⥤ D) :
+    J.toPlus (P ⋙ forget D) ≫ (J.plusObjComposeForget P).hom =
+      whiskerRight (J.toPlus P) (forget D) := by
+  sorry
+
+/-- The canonical isomorphism `J.sheafify (P ⋙ forget D) ≅ J.sheafify P ⋙ forget D`. -/
+noncomputable def sheafifyComposeForgetIso (P : Cᵒᵖ ⥤ D) :
+    J.sheafify (P ⋙ forget D) ≅ J.sheafify P ⋙ forget D :=
+  (J.plusFunctor _).mapIso (J.plusObjComposeForget P) ≪≫
+    J.plusObjComposeForget (plusObj J P)
+
+@[reassoc (attr := simp)]
+lemma sheafifyComposeForget_fac (P : Cᵒᵖ ⥤ D) :
+    J.toSheafify (P ⋙ forget D) ≫ (J.sheafifyComposeForgetIso P).hom =
+      whiskerRight (J.toSheafify P) (forget D) := by
+  dsimp [toSheafify, sheafifyComposeForgetIso]
+  rw [assoc, ← plusMap_comp_assoc, plusObjComposeForget_hom_fac,
+    plusObjComposeForget_hom_naturality, plusMap_toPlus,
+    plusObjComposeForget_hom_fac_assoc, toPlus_naturality,
+    plusMap_toPlus, whiskerRight_comp]
+
+@[reassoc]
+lemma sheafifyCompose_forget_eq (P : Cᵒᵖ ⥤ D) :
+    sheafifyCompose J (forget D) P =
+      (plusPlusIsoSheafify J _ (P ⋙ forget D)).inv ≫
+        (J.sheafifyComposeForgetIso P).hom ≫
+          whiskerRight (plusPlusIsoSheafify J _ P).hom (forget D) := by
+  sorry
+
+instance : PreservesSheafification J (forget D) :=
+  PreservesSheafification.mk' _ _ (fun P => by
+    rw [J.sheafifyCompose_forget_eq]
+    infer_instance)
 
 end GrothendieckTopology
 
