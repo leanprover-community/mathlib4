@@ -309,10 +309,7 @@ instance : IsTrans (List α) Subset where
 
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
 
-@[deprecated subset_append_of_subset_right] -- 2023-01-05
-theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → l ⊆ l₁ ++ l₂ :=
-  subset_append_of_subset_right _
-#align list.subset_append_of_subset_right List.subset_append_of_subset_right'
+#align list.subset_append_of_subset_right List.subset_append_of_subset_right
 
 #align list.cons_subset List.cons_subset
 
@@ -512,20 +509,14 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 #align list.concat_nil List.concat_nil
 #align list.concat_cons List.concat_cons
 
-@[deprecated concat_eq_append] -- 2023-01-05
-theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
-  concat_eq_append l a
-#align list.concat_eq_append List.concat_eq_append'
+#align list.concat_eq_append List.concat_eq_append
 
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 #align list.concat_ne_nil List.concat_ne_nil
 #align list.concat_append List.concat_append
 
-@[deprecated length_concat] -- 2023-01-05
-theorem length_concat' (a : α) (l : List α) : length (concat l a) = succ (length l) := by
-  simp only [concat_eq_append, length_append, length]
-#align list.length_concat List.length_concat'
+#align list.length_concat List.length_concat
 
 #align list.append_concat List.append_concat
 
@@ -3639,11 +3630,7 @@ theorem get_attach (L : List α) (i) :
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
 
-set_option linter.deprecated false in
-@[simp, deprecated get_attach] -- 2023-01-05
-theorem nthLe_attach (L : List α) (i) (H : i < L.attach.length) :
-    (L.attach.nthLe i H).1 = L.nthLe i (length_attach L ▸ H) := get_attach ..
-#align list.nth_le_attach List.nthLe_attach
+#align list.nth_le_attach List.get_attach
 
 @[simp 1100]
 theorem mem_map_swap (x : α) (y : β) (xs : List (α × β)) :
