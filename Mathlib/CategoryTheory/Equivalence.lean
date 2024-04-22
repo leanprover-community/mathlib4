@@ -754,8 +754,8 @@ noncomputable def _root_.CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyE
     (NatIso.ofComponents F.objObjPreimageIso)
 #align category_theory.equivalence.of_fully_faithfully_ess_surj CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
--- deprecated on 2024-04-06
-@[deprecated] alias ofFullyFaithfullyEssSurj := Functor.IsEquivalence.ofFullyFaithfullyEssSurj
+@[deprecated] -- 2024-04-06
+alias ofFullyFaithfullyEssSurj := Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 @[simp]
 theorem functor_map_inj_iff (e : C ≌ D) {X Y : C} (f g : X ⟶ Y) :
