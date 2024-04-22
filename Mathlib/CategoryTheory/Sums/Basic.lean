@@ -48,11 +48,11 @@ instance sum : Category.{v₁} (Sum C D) where
     match X with
     | inl X => 𝟙 X
     | inr X => 𝟙 X
-  comp := @fun X Y Z f g =>
+  comp {X Y Z} f g :=
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => f ≫ g
     | inr X, inr Y, inr Z, f, g => f ≫ g
-  assoc := @fun W X Y Z f g h =>
+  assoc {W X Y Z} f g h :=
     match X, Y, Z, W with
     | inl X, inl Y, inl Z, inl W => Category.assoc f g h
     | inr X, inr Y, inr Z, inr W => Category.assoc f g h
@@ -93,14 +93,14 @@ variable (C : Type u₁) [Category.{v₁} C] (D : Type u₁) [Category.{v₁} D]
 @[simps]
 def inl_ : C ⥤ Sum C D where
   obj X := inl X
-  map := @fun X Y f => f
+  map {X Y} f := f
 #align category_theory.sum.inl_ CategoryTheory.Sum.inl_
 
 /-- `inr_` is the functor `X ↦ inr X`. -/
 @[simps]
 def inr_ : D ⥤ Sum C D where
   obj X := inr X
-  map := @fun X Y f => f
+  map {X Y} f := f
 #align category_theory.sum.inr_ CategoryTheory.Sum.inr_
 
 /- Porting note: `aesop_cat` not firing on `map_comp` where autotac in Lean 3 did
@@ -151,8 +151,8 @@ def equivalence : Sum C D ≌ Sum D C :=
     (NatIso.ofComponents (fun X => eqToIso (by cases X <;> rfl)))
 #align category_theory.sum.swap.equivalence CategoryTheory.Sum.Swap.equivalence
 
-instance isEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (equivalence C D).functor)
+instance isEquivalence : (swap C D).IsEquivalence :=
+  (by infer_instance : (equivalence C D).functor.IsEquivalence)
 #align category_theory.sum.swap.is_equivalence CategoryTheory.Sum.Swap.isEquivalence
 
 /-- The double swap on `C ⊕ D` is naturally isomorphic to the identity functor. -/
@@ -176,16 +176,43 @@ def sum (F : A ⥤ B) (G : C ⥤ D) : Sum A C ⥤ Sum B D
     match X with
     | inl X => inl (F.obj X)
     | inr X => inr (G.obj X)
-  map := @fun X Y f =>
+  map {X Y} f :=
     match X, Y, f with
     | inl X, inl Y, f => F.map f
     | inr X, inr Y, f => G.map f
-  map_id := @fun X => by cases X <;> (erw [Functor.map_id]; rfl)
-  map_comp := @fun X Y Z f g =>
+  map_id {X} := by cases X <;> (erw [Functor.map_id]; rfl)
+  map_comp {X Y Z} f g:=
     match X, Y, Z, f, g with
     | inl X, inl Y, inl Z, f, g => by erw [F.map_comp]; rfl
     | inr X, inr Y, inr Z, f, g => by erw [G.map_comp]; rfl
 #align category_theory.functor.sum CategoryTheory.Functor.sum
+
+/-- Similar to `sum`, but both functors land in the same category `C` -/
+def sum' (F : A ⥤ C) (G : B ⥤ C) : Sum A B ⥤ C
+    where
+  obj X :=
+    match X with
+    | inl X => F.obj X
+    | inr X => G.obj X
+  map {X Y} f :=
+    match X, Y, f with
+    | inl _, inl _, f => F.map f
+    | inr _, inr _, f => G.map f
+  map_id {X} := by cases X <;> erw [Functor.map_id]
+  map_comp {X Y Z} f g :=
+    match X, Y, Z, f, g with
+    | inl _, inl _, inl _, f, g => by erw [F.map_comp]
+    | inr _, inr _, inr _, f, g => by erw [G.map_comp]
+
+/-- The sum `F.sum' G` precomposed with the left inclusion functor is isomorphic to `F` -/
+@[simps!]
+def inlCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inl_ A B ⋙ F.sum' G ≅ F :=
+  NatIso.ofComponents fun X => Iso.refl _
+
+/-- The sum `F.sum' G` precomposed with the right inclusion functor is isomorphic to `G` -/
+@[simps!]
+def inrCompSum' (F : A ⥤ C) (G : B ⥤ C) : Sum.inr_ A B ⋙ F.sum' G ≅ G :=
+  NatIso.ofComponents fun X => Iso.refl _
 
 @[simp]
 theorem sum_obj_inl (F : A ⥤ B) (G : C ⥤ D) (a : A) : (F.sum G).obj (inl a) = inl (F.obj a) :=

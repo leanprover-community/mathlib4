@@ -20,7 +20,7 @@ namespace CategoryTheory
 variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
   [F.PreservesFiniteEffectiveEpiFamilies] [F.ReflectsFiniteEffectiveEpiFamilies]
   [F.EffectivelyEnough]
-  [Precoherent D] [Full F] [Faithful F]
+  [Precoherent D] [F.Full] [F.Faithful]
 
 lemma Functor.reflects_precoherent : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ _ := by
