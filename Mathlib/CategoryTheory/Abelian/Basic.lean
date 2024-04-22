@@ -95,7 +95,6 @@ universe v u
 namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C]
-
 variable (C)
 
 /-- A (preadditive) category `C` is called abelian if it has all finite products,
@@ -130,7 +129,6 @@ is an abelian category.
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [Preadditive C]
-
 variable [Limits.HasKernels C] [Limits.HasCokernels C]
 
 namespace OfCoimageImageComparisonIsIso
@@ -789,9 +787,10 @@ def abelian : Abelian C :=
        case of `NonPreadditiveAbelian`, this instance is an explicit argument. However, in the case
        of `abelian`, the `HasZeroMorphisms` instance is derived from `Preadditive`. So we need to
        transform an instance of "has kernels with NonPreadditiveAbelian.HasZeroMorphisms" to an
-       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms". Luckily,
-       we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can immediately close
-       the goal it creates for the two instances of `HasZeroMorphisms`, and the proof is complete.-/
+       instance of "has kernels with NonPreadditiveAbelian.Preadditive.HasZeroMorphisms".
+       Luckily, we have a `subsingleton` instance for `HasZeroMorphisms`, so `convert` can
+       immediately close the goal it creates for the two instances of `HasZeroMorphisms`,
+       and the proof is complete. -/
     NonPreadditiveAbelian.preadditive with
     has_finite_products := by infer_instance
     has_kernels := by convert (by infer_instance : Limits.HasKernels C)

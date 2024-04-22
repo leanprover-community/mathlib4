@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -66,7 +66,6 @@ end Nat.Partrec
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable Part
@@ -168,7 +167,6 @@ theorem ComputablePred.of_eq {α} [Primcodable α] {p q : α → Prop} (hp : Com
 namespace ComputablePred
 
 variable {α : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable σ]
 
 open Nat.Partrec (Code)
@@ -203,19 +201,12 @@ theorem to_re {p : α → Prop} (hp : ComputablePred p) : RePred p := by
 /-- **Rice's Theorem** -/
 theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C) {f g} (hf : Nat.Partrec f)
     (hg : Nat.Partrec g) (fC : f ∈ C) : g ∈ C := by
-  cases' h with _ h; skip
+  cases' h with _ h
   obtain ⟨c, e⟩ :=
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  simp? at e says simp only [Bool.cond_decide] at e
-  by_cases H : eval c ∈ C
-  · simp only [H, if_true] at e
-    change (fun b => g b) ∈ C
-    rwa [← e]
-  · simp only [H, if_false] at e
-    rw [e] at H
-    contradiction
+  aesop
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
@@ -345,7 +336,7 @@ protected theorem map {n f} {g : Vector ℕ (n + 1) → ℕ} (hf : @Partrec' n f
 #align nat.partrec'.map Nat.Partrec'.map
 
 /-- Analogous to `Nat.Partrec'` for `ℕ`-valued functions, a predicate for partial recursive
-  vector-valued functions.-/
+  vector-valued functions. -/
 def Vec {n m} (f : Vector ℕ n → Vector ℕ m) :=
   ∀ i, Partrec' fun v => (f v).get i
 #align nat.partrec'.vec Nat.Partrec'.Vec
@@ -425,7 +416,7 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _ro
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
-        simp only [id.def, head_ofFn],
+        simp only [id, head_ofFn],
       fun h => h.comp vector_head⟩
 #align nat.partrec'.part_iff₁ Nat.Partrec'.part_iff₁
 

@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Order
 
 #align_import algebra.order.ring.abs from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
@@ -22,9 +23,9 @@ variable [LinearOrderedCommGroup α] {a b : α}
 @[to_additive] lemma mabs_zpow (n : ℤ) (a : α) : |a ^ n|ₘ = |a|ₘ ^ |n| := by
   obtain n0 | n0 := le_total 0 n
   · obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le n0
-    simp only [mabs_pow, zpow_coe_nat, Nat.abs_cast]
+    simp only [mabs_pow, zpow_natCast, Nat.abs_cast]
   · obtain ⟨m, h⟩ := Int.eq_ofNat_of_zero_le (neg_nonneg.2 n0)
-    rw [← mabs_inv, ← zpow_neg, ← abs_neg, h, zpow_coe_nat, Nat.abs_cast, zpow_coe_nat]
+    rw [← mabs_inv, ← zpow_neg, ← abs_neg, h, zpow_natCast, Nat.abs_cast, zpow_natCast]
     exact mabs_pow m _
 #align abs_zsmul abs_zsmul
 

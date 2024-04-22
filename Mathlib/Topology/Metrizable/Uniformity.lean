@@ -205,11 +205,10 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
           (eventually_uniformity_iterate_comp_subset (hB.mem m) 2) with
       ⟨φ, -, hφ_comp, hφB⟩
     exact ⟨V ∘ φ, fun n => hV_symm _, hφ_comp, hφB⟩
-  letI := UniformSpace.separationSetoid X
   set d : X → X → ℝ≥0 := fun x y => if h : ∃ n, (x, y) ∉ U n then (1 / 2) ^ Nat.find h else 0
-  have hd₀ : ∀ {x y}, d x y = 0 ↔ x ≈ y := by
+  have hd₀ : ∀ {x y}, d x y = 0 ↔ Inseparable x y := by
     intro x y
-    refine' Iff.trans _ hB.mem_separationRel.symm
+    refine' Iff.trans _ hB.inseparable_iff_uniformity.symm
     simp only [d, true_imp_iff]
     split_ifs with h
     · rw [← not_forall] at h
@@ -219,7 +218,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     intro x y
     simp only [d, @SymmetricRel.mk_mem_comm _ _ (hU_symm _) x y]
   have hr : (1 / 2 : ℝ≥0) ∈ Ioo (0 : ℝ≥0) 1 := ⟨half_pos one_pos, NNReal.half_lt_self one_ne_zero⟩
-  letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 (Setoid.refl _)) hd_symm
+  letI I := PseudoMetricSpace.ofPreNNDist d (fun x => hd₀.2 rfl) hd_symm
   have hdist_le : ∀ x y, dist x y ≤ d x y := PseudoMetricSpace.dist_ofPreNNDist_le _ _ _
   have hle_d : ∀ {x y : X} {n : ℕ}, (1 / 2) ^ n ≤ d x y ↔ (x, y) ∉ U n := by
     intro x y n
@@ -233,7 +232,7 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     refine' PseudoMetricSpace.le_two_mul_dist_ofPreNNDist _ _ _ fun x₁ x₂ x₃ x₄ => _
     by_cases H : ∃ n, (x₁, x₄) ∉ U n
     · refine' (dif_pos H).trans_le _
-      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ']
+      rw [← NNReal.div_le_iff' two_ne_zero, ← mul_one_div (_ ^ _), ← pow_succ]
       simp only [le_max_iff, hle_d, ← not_and_or]
       rintro ⟨h₁₂, h₂₃, h₃₄⟩
       refine' Nat.find_spec H (hU_comp (lt_add_one <| Nat.find H) _)
@@ -249,8 +248,8 @@ protected theorem UniformSpace.metrizable_uniformity (X : Type*) [UniformSpace X
     rw [mem_setOf_eq] at hx
     contrapose! hx
     refine' le_trans _ ((div_le_iff' (zero_lt_two' ℝ)).2 (hd_le x.1 x.2))
-    rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ',
-      mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel _ (two_ne_zero' ℝ≥0), hle_d]
+    rwa [← NNReal.coe_two, ← NNReal.coe_div, ← NNReal.coe_pow, NNReal.coe_le_coe, pow_succ,
+      mul_one_div, NNReal.div_le_iff two_ne_zero, div_mul_cancel₀ _ (two_ne_zero' ℝ≥0), hle_d]
 #align uniform_space.metrizable_uniformity UniformSpace.metrizable_uniformity
 
 /-- A `PseudoMetricSpace` instance compatible with a given `UniformSpace` structure. -/

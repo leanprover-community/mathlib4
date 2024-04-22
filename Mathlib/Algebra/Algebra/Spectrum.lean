@@ -5,6 +5,7 @@ Authors: Jireh Loreaux
 -/
 import Mathlib.Algebra.Star.Pointwise
 import Mathlib.Algebra.Star.Subalgebra
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.Tactic.NoncommRing
 
 #align_import algebra.algebra.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
@@ -48,7 +49,6 @@ universe u v
 section Defs
 
 variable (R : Type u) {A : Type v}
-
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "↑ₐ" => algebraMap R A
@@ -97,7 +97,6 @@ namespace spectrum
 section ScalarSemiring
 
 variable {R : Type u} {A : Type v}
-
 variable [CommSemiring R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -291,7 +290,6 @@ end ScalarSemiring
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
@@ -340,7 +338,6 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
@@ -408,7 +405,6 @@ namespace AlgHom
 section CommSemiring
 
 variable {F R A B : Type*} [CommSemiring R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-
 variable [FunLike F A B] [AlgHomClass F R A B]
 
 local notation "σ" => spectrum R
@@ -429,7 +425,6 @@ end CommSemiring
 section CommRing
 
 variable {F R A B : Type*} [CommRing R] [Ring A] [Algebra R A] [Ring B] [Algebra R B]
-
 variable [FunLike F A R] [AlgHomClass F R A R]
 
 local notation "σ" => spectrum R

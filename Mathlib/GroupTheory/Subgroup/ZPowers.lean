@@ -6,7 +6,9 @@ Authors: Chris Hughes
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.GroupTheory.Subgroup.Centralizer
 
 #align_import group_theory.subgroup.zpowers from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -20,9 +22,7 @@ subgroup, subgroups
 
 
 variable {G : Type*} [Group G]
-
 variable {A : Type*} [AddGroup A]
-
 variable {N : Type*} [Group N]
 
 namespace Subgroup
@@ -62,7 +62,7 @@ theorem zpow_mem_zpowers (g : G) (k : ℤ) : g ^ k ∈ zpowers g :=
 #align subgroup.zpow_mem_zpowers Subgroup.zpow_mem_zpowers
 
 theorem npow_mem_zpowers (g : G) (k : ℕ) : g ^ k ∈ zpowers g :=
-  zpow_coe_nat g k ▸ zpow_mem_zpowers g k
+  zpow_natCast g k ▸ zpow_mem_zpowers g k
 #align subgroup.npow_mem_zpowers Subgroup.npow_mem_zpowers
 
 theorem forall_zpowers {x : G} {p : zpowers x → Prop} : (∀ g, p g) ↔ ∀ m : ℤ, p ⟨x ^ m, m, rfl⟩ :=
@@ -74,7 +74,7 @@ theorem exists_zpowers {x : G} {p : zpowers x → Prop} : (∃ g, p g) ↔ ∃ m
 #align subgroup.exists_zpowers Subgroup.exists_zpowers
 
 theorem forall_mem_zpowers {x : G} {p : G → Prop} : (∀ g ∈ zpowers x, p g) ↔ ∀ m : ℤ, p (x ^ m) :=
-  Set.forall_range_iff
+  Set.forall_mem_range
 #align subgroup.forall_mem_zpowers Subgroup.forall_mem_zpowers
 
 theorem exists_mem_zpowers {x : G} {p : G → Prop} : (∃ g ∈ zpowers x, p g) ↔ ∃ m : ℤ, p (x ^ m) :=
@@ -145,14 +145,14 @@ section Ring
 variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 
 @[simp]
-theorem int_cast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
+theorem intCast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
-#align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.int_cast_mul_mem_zmultiples
+#align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.intCast_mul_mem_zmultiples
 
 @[simp]
-theorem int_cast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
+theorem intCast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
-#align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.int_cast_mem_zmultiples_one
+#align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.intCast_mem_zmultiples_one
 
 end Ring
 

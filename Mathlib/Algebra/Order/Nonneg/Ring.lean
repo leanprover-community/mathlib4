@@ -220,18 +220,18 @@ instance addMonoidWithOne [OrderedSemiring α] : AddMonoidWithOne { x : α // 0 
     Nonneg.orderedAddCommMonoid with
     natCast := fun n => ⟨n, Nat.cast_nonneg n⟩
     natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl }
+    natCast_succ := fun _ => by ext; simp }
 #align nonneg.add_monoid_with_one Nonneg.addMonoidWithOne
 
 @[simp, norm_cast]
-protected theorem coe_nat_cast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
+protected theorem coe_natCast [OrderedSemiring α] (n : ℕ) : ((↑n : { x : α // 0 ≤ x }) : α) = n :=
   rfl
-#align nonneg.coe_nat_cast Nonneg.coe_nat_cast
+#align nonneg.coe_nat_cast Nonneg.coe_natCast
 
 @[simp]
-theorem mk_nat_cast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
+theorem mk_natCast [OrderedSemiring α] (n : ℕ) : (⟨n, n.cast_nonneg⟩ : { x : α // 0 ≤ x }) = n :=
   rfl
-#align nonneg.mk_nat_cast Nonneg.mk_nat_cast
+#align nonneg.mk_nat_cast Nonneg.mk_natCast
 
 instance pow [OrderedSemiring α] : Pow { x : α // 0 ≤ x } ℕ where
   pow x n := ⟨(x : α) ^ n, pow_nonneg x.2 n⟩
@@ -323,7 +323,7 @@ instance canonicallyOrderedAddCommMonoid [OrderedRing α] :
   { Nonneg.orderedAddCommMonoid, Nonneg.orderBot with
     le_self_add := fun _ b => le_add_of_nonneg_right b.2
     exists_add_of_le := fun {a b} h =>
-      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel'_right _ _).symm⟩ }
+      ⟨⟨b - a, sub_nonneg_of_le h⟩, Subtype.ext (add_sub_cancel _ _).symm⟩ }
 #align nonneg.canonically_ordered_add_monoid Nonneg.canonicallyOrderedAddCommMonoid
 
 instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α] :
@@ -336,7 +336,7 @@ instance canonicallyOrderedCommSemiring [OrderedCommRing α] [NoZeroDivisors α]
 
 instance canonicallyLinearOrderedAddCommMonoid [LinearOrderedRing α] :
     CanonicallyLinearOrderedAddCommMonoid { x : α // 0 ≤ x } :=
-  { Subtype.linearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
+  { Subtype.instLinearOrder _, Nonneg.canonicallyOrderedAddCommMonoid with }
 #align nonneg.canonically_linear_ordered_add_monoid Nonneg.canonicallyLinearOrderedAddCommMonoid
 
 section LinearOrder

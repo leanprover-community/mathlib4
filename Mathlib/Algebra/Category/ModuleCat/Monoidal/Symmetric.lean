@@ -54,7 +54,7 @@ theorem braiding_naturality_right (X : ModuleCat R) {Y Z : ModuleCat R} (f : Y �
 @[simp]
 theorem hexagon_forward (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).hom ≫ (braiding X _).hom ≫ (α_ Y Z X).hom =
-      ((braiding X Y).hom ⊗ 𝟙 Z) ≫ (α_ Y X Z).hom ≫ (𝟙 Y ⊗ (braiding X Z).hom) := by
+      (braiding X Y).hom ▷ Z ≫ (α_ Y X Z).hom ≫ Y ◁ (braiding X Z).hom := by
   apply TensorProduct.ext_threefold
   intro x y z
   rfl
@@ -64,7 +64,7 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem hexagon_reverse (X Y Z : ModuleCat.{u} R) :
     (α_ X Y Z).inv ≫ (braiding _ Z).hom ≫ (α_ Z X Y).inv =
-      (𝟙 X ⊗ (Y.braiding Z).hom) ≫ (α_ X Z Y).inv ≫ ((X.braiding Z).hom ⊗ 𝟙 Y) := by
+      X ◁ (Y.braiding Z).hom ≫ (α_ X Z Y).inv ≫ (X.braiding Z).hom ▷ Y := by
   apply (cancel_epi (α_ X Y Z).hom).1
   apply TensorProduct.ext_threefold
   intro x y z

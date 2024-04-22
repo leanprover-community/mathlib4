@@ -38,7 +38,6 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
 
--- mathport name: «expr →Co »
 infixr:25 " →Co " => ContinuousOrderHom
 
 section
@@ -109,7 +108,7 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl

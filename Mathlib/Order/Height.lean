@@ -73,7 +73,7 @@ theorem cons_mem_subchain_iff :
     and_assoc]
 #align set.cons_mem_subchain_iff Set.cons_mem_subchain_iff
 
-@[simp] -- Porting note: new lemma + `simp`
+@[simp] -- Porting note (#10756): new lemma + `simp`
 theorem singleton_mem_subchain_iff : [a] ∈ s.subchain ↔ a ∈ s := by simp [cons_mem_subchain_iff]
 
 instance : Nonempty s.subchain :=
@@ -140,7 +140,7 @@ theorem one_le_chainHeight_iff : 1 ≤ s.chainHeight ↔ s.Nonempty := by
 
 @[simp]
 theorem chainHeight_eq_zero_iff : s.chainHeight = 0 ↔ s = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← ENat.one_le_iff_ne_zero, one_le_chainHeight_iff,
+  rw [← not_iff_not, ← Ne, ← ENat.one_le_iff_ne_zero, one_le_chainHeight_iff,
     nonempty_iff_ne_empty]
 #align set.chain_height_eq_zero_iff Set.chainHeight_eq_zero_iff
 

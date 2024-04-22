@@ -3,10 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 
@@ -38,12 +37,12 @@ variable {R : Type u} {S : Type v} [CommRing R] [Semiring S] (f : R →+* S)
 This is an isomorphism if `f` has a right inverse (`quotientKerEquivOfRightInverse`) /
 is surjective (`quotientKerEquivOfSurjective`).
 -/
-def kerLift (f : R →+* S) : R ⧸ ker f →+* S :=
+def kerLift : R ⧸ ker f →+* S :=
   Ideal.Quotient.lift _ f fun _ => f.mem_ker.mp
 #align ring_hom.ker_lift RingHom.kerLift
 
 @[simp]
-theorem kerLift_mk (f : R →+* S) (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
+theorem kerLift_mk (r : R) : kerLift f (Ideal.Quotient.mk (ker f) r) = f r :=
   Ideal.Quotient.lift_mk _ _ _
 #align ring_hom.ker_lift_mk RingHom.kerLift_mk
 
@@ -58,7 +57,7 @@ theorem lift_injective_of_ker_le_ideal (I : Ideal R) {f : R →+* S} (H : ∀ a 
 #align ring_hom.lift_injective_of_ker_le_ideal RingHom.lift_injective_of_ker_le_ideal
 
 /-- The induced map from the quotient by the kernel is injective. -/
-theorem kerLift_injective [Semiring S] (f : R →+* S) : Function.Injective (kerLift f) :=
+theorem kerLift_injective : Function.Injective (kerLift f) :=
   lift_injective_of_ker_le_ideal (ker f) (fun a => by simp only [mem_ker, imp_self]) le_rfl
 #align ring_hom.ker_lift_injective RingHom.kerLift_injective
 
@@ -177,7 +176,6 @@ theorem bot_quotient_isMaximal_iff (I : Ideal R) : (⊥ : Ideal (R ⧸ I)).IsMax
     @mk_ker _ _ I ▸
       comap_isMaximal_of_surjective (Quotient.mk I) Quotient.mk_surjective (K := ⊥) (H := hI),
     fun hI => by
-    skip
     letI := Quotient.field I
     exact bot_isMaximal⟩
 #align ideal.bot_quotient_is_maximal_iff Ideal.bot_quotient_isMaximal_iff
@@ -296,9 +294,7 @@ end ChineseRemainder
 section QuotientAlgebra
 
 variable (R₁ R₂ : Type*) {A B : Type*}
-
 variable [CommSemiring R₁] [CommSemiring R₂] [CommRing A]
-
 variable [Algebra R₁ A] [Algebra R₂ A]
 
 /-- The `R₁`-algebra structure on `A/I` for an `R₁`-algebra `A` -/
@@ -724,7 +720,7 @@ theorem quotQuotEquivQuotSup_symm_quotQuotMk (x : R) :
 /-- The obvious isomorphism `(R/I)/J' → (R/J)/I'` -/
 def quotQuotEquivComm : (R ⧸ I) ⧸ J.map (Ideal.Quotient.mk I) ≃+*
     (R ⧸ J) ⧸ I.map (Ideal.Quotient.mk J) :=
-  ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
+  ((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
     (quotQuotEquivQuotSup J I).symm
 #align double_quot.quot_quot_equiv_comm DoubleQuot.quotQuotEquivComm
 
@@ -747,9 +743,9 @@ theorem quotQuotEquivComm_symm : (quotQuotEquivComm I J).symm = quotQuotEquivCom
   /-  Porting note: this proof used to just be rfl but currently rfl opens up a bottomless pit
   of processor cycles. Synthesizing instances does not seem to be an issue.
   -/
-  change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm))).trans
+  change (((quotQuotEquivQuotSup I J).trans (quotEquivOfEq (sup_comm ..))).trans
     (quotQuotEquivQuotSup J I).symm).symm =
-      ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm))).trans
+      ((quotQuotEquivQuotSup J I).trans (quotEquivOfEq (sup_comm ..))).trans
         (quotQuotEquivQuotSup I J).symm
   ext r
   dsimp

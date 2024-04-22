@@ -33,8 +33,8 @@ pseudofunctors can be defined by using the composition of oplax functors as foll
 ```lean
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
   mkOfOplax ((F : OplaxFunctor B C).comp G)
-  { mapIdIso := λ a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
-    mapCompIso := λ f g =>
+  { mapIdIso := fun a ↦ (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a),
+    mapCompIso := fun f g ↦
       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 ```
 although the composition of pseudofunctors in this file is defined by using the default constructor
@@ -71,9 +71,7 @@ universe w₁ w₂ w₃ v₁ v₂ v₃ u₁ u₂ u₃
 section
 
 variable {B : Type u₁} [Quiver.{v₁ + 1} B] [∀ a b : B, Quiver.{w₁ + 1} (a ⟶ b)]
-
 variable {C : Type u₂} [Quiver.{v₂ + 1} C] [∀ a b : C, Quiver.{w₂ + 1} (a ⟶ b)]
-
 variable {D : Type u₃} [Quiver.{v₃ + 1} D] [∀ a b : D, Quiver.{w₃ + 1} (a ⟶ b)]
 
 /-- A prelax functor between bicategories consists of functions between objects,
@@ -131,7 +129,6 @@ end
 section
 
 variable {B : Type u₁} [Bicategory.{w₁, v₁} B] {C : Type u₂} [Bicategory.{w₂, v₂} C]
-
 variable {D : Type u₃} [Bicategory.{w₃, v₃} D]
 
 -- Porting note: in Lean 3 the below auxiliary definition was only used once, in the definition
@@ -316,8 +313,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 See `Pseudofunctor.mkOfOplax`.
 -/
--- Porting note: removing no lint for nonempty_instance
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 -- Porting note: removing primes in structure name because
 -- my understanding is that they're no longer needed
 structure PseudoCore (F : OplaxFunctor B C) where
