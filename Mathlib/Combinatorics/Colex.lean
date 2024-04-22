@@ -456,7 +456,7 @@ theorem bitSet_bit_false (n : ℕ) : Nat.bitSet (Nat.bit false n) =
 @[simp] theorem bitSet_one : Nat.bitSet 1 = {0} := by
   rw [(by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
 
-@[simp] theorem bitSet_pow_two (k : ℕ) : Nat.bitSet (2^k) = {k} := by
+@[simp] theorem bitSet_two_pow (k : ℕ) : Nat.bitSet (2^k) = {k} := by
   induction' k using Nat.recAux with k ih
   · rw [pow_zero, (by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
   rw [pow_add, pow_one, mul_comm, bitSet_two_mul, ih, image_singleton]
