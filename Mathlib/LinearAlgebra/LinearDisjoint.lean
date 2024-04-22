@@ -179,17 +179,8 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N := by
-  refine (mulMap (1 : Submodule R S) N).codRestrict N ?_
-  intro c
-  induction c using TensorProduct.induction_on with
-  | zero => rw [_root_.map_zero]; exact N.zero_mem
-  | tmul r n =>
-    rw [mulMap_tmul]
-    obtain ⟨_, y, rfl⟩ := r
-    convert N.smul_mem y n.2 using 1
-    simp [Algebra.smul_def]
-  | add x y hx hy => rw [_root_.map_add]; exact N.add_mem hx hy
+def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N :=
+  (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
 
 theorem lTensorOne'_apply
     (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
@@ -223,17 +214,8 @@ theorem lTensorOne_symm_apply (n : N) :
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M := by
-  refine (mulMap M (1 : Submodule R S)).codRestrict M ?_
-  intro c
-  induction c using TensorProduct.induction_on with
-  | zero => rw [_root_.map_zero]; exact M.zero_mem
-  | tmul m r =>
-    rw [mulMap_tmul]
-    obtain ⟨_, y, rfl⟩ := r
-    convert M.smul_mem y m.2 using 1
-    simp [Algebra.smul_def, Algebra.commutes y m.1]
-  | add x y hx hy => rw [_root_.map_add]; exact M.add_mem hx hy
+def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M :=
+  (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
 
 theorem rTensorOne'_apply
     (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
@@ -399,22 +381,14 @@ theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N := Function.injecti
 
 theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) := Function.injective_of_subsingleton _
 
-theorem of_one_left :
-    (1 : Submodule R S).LinearDisjoint N := by
-  have : N.subtype ∘ₗ N.lTensorOne.toLinearMap =
-      mulMap (1 : Submodule R S) N := by
-    change N.subtype ∘ₗ N.lTensorOne' = _
-    simp [lTensorOne']
+theorem of_one_left : (1 : Submodule R S).LinearDisjoint N := by
+  have : N.subtype ∘ₗ N.lTensorOne.toLinearMap = mulMap 1 N := TensorProduct.ext' fun _ _ ↦ rfl
   have h : Function.Injective (N.subtype ∘ₗ N.lTensorOne.toLinearMap) :=
     N.injective_subtype.comp N.lTensorOne.injective
   rwa [this] at h
 
-theorem of_one_right :
-    M.LinearDisjoint (1 : Submodule R S) := by
-  have : M.subtype ∘ₗ M.rTensorOne.toLinearMap =
-      mulMap M (1 : Submodule R S) := by
-    change M.subtype ∘ₗ M.rTensorOne' = _
-    simp [rTensorOne']
+theorem of_one_right : M.LinearDisjoint (1 : Submodule R S) := by
+  have : M.subtype ∘ₗ M.rTensorOne.toLinearMap = mulMap M 1 := TensorProduct.ext' fun _ _ ↦ rfl
   have h : Function.Injective (M.subtype ∘ₗ M.rTensorOne.toLinearMap) :=
     M.injective_subtype.comp M.rTensorOne.injective
   rwa [this] at h
