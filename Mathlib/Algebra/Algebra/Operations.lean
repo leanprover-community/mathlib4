@@ -36,7 +36,7 @@ Let `R` be a commutative ring (or semiring) and let `A` be an `R`-algebra.
 
 It is proved that `Submodule R A` is a semiring, and also an algebra over `Set A`.
 
-Additionally, in the `pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
+Additionally, in the `Pointwise` locale we promote `Submodule.pointwiseDistribMulAction` to a
 `MulSemiringAction` as `Submodule.pointwiseMulSemiringAction`.
 
 ## Tags
@@ -607,7 +607,7 @@ variable {α : Type*} [Monoid α] [MulSemiringAction α A] [SMulCommClass α R A
 
 /-- The action on a submodule corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `Submodule.pointwiseDistribMulAction`. -/
 protected def pointwiseMulSemiringAction : MulSemiringAction α (Submodule R A) :=

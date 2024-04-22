@@ -8,6 +8,7 @@ import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Nilpotent
 
 #align_import ring_theory.finiteness from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
@@ -666,6 +667,22 @@ instance span_singleton (x : M) : Module.Finite R (R ∙ x) :=
 instance span_finset (s : Finset M) : Module.Finite R (span R (s : Set M)) :=
   ⟨(Submodule.fg_top _).mpr ⟨s, rfl⟩⟩
 
+
+theorem Module.End.isNilpotent_iff_of_finite {R M : Type*} [CommSemiring R] [AddCommMonoid M]
+    [Module R M] [Module.Finite R M] {f : End R M} :
+    IsNilpotent f ↔ ∀ m : M, ∃ n : ℕ, (f ^ n) m = 0 := by
+  refine ⟨fun ⟨n, hn⟩ m ↦ ⟨n, by simp [hn]⟩, fun h ↦ ?_⟩
+  rcases Module.Finite.out (R := R) (M := M) with ⟨S, hS⟩
+  choose g hg using h
+  use Finset.sup S g
+  ext m
+  have hm : m ∈ Submodule.span R S := by simp [hS]
+  induction hm using Submodule.span_induction'
+  · next x hx => exact LinearMap.pow_map_zero_of_le (Finset.le_sup hx) (hg x)
+  · simp
+  · simp_all
+  · simp_all
+
 variable {R}
 
 section Algebra
@@ -873,3 +890,6 @@ theorem of_comp_finite {f : A →ₐ[R] B} {g : B →ₐ[R] C} (h : (g.comp f).F
 end Finite
 
 end AlgHom
+
+instance Subalgebra.finite_bot {F E : Type*} [CommSemiring F] [Semiring E] [Algebra F E] :
+    Module.Finite F (⊥ : Subalgebra F E) := Module.Finite.range (Algebra.linearMap F E)

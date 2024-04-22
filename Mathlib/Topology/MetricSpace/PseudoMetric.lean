@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 ## Pseudo-metric spaces
@@ -1356,6 +1357,10 @@ theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
 
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 #align real.dist_0_eq_abs Real.dist_0_eq_abs
+
+theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
+  rw [Real.dist_eq, le_abs]
+  exact Or.inl (le_refl _)
 
 theorem Real.dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
   simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h

@@ -69,7 +69,7 @@ theorem eval_iterate_derivative_rootMultiplicity {p : R[X]} {t : R} :
   conv_lhs => rw [← p.pow_mul_divByMonic_rootMultiplicity_eq t, ← hm]
   rw [iterate_derivative_mul, eval_finset_sum, sum_eq_single_of_mem _ (mem_range.mpr m.succ_pos)]
   · rw [m.choose_zero_right, one_smul, eval_mul, m.sub_zero, iterate_derivative_X_sub_pow_self,
-      eval_nat_cast, nsmul_eq_mul]; rfl
+      eval_natCast, nsmul_eq_mul]; rfl
   · intro b hb hb0
     rw [iterate_derivative_X_sub_pow, eval_smul, eval_mul, eval_smul, eval_pow,
       Nat.sub_sub_self (mem_range_succ_iff.mp hb), eval_sub, eval_X, eval_C, sub_self,
@@ -320,12 +320,12 @@ theorem mod_def : p % q = p %ₘ (q * C (leadingCoeff q)⁻¹) := rfl
 
 theorem modByMonic_eq_mod (p : R[X]) (hq : Monic q) : p %ₘ q = p % q :=
   show p %ₘ q = p %ₘ (q * C (leadingCoeff q)⁻¹) by
-    simp only [Monic.def'.1 hq, inv_one, mul_one, C_1]
+    simp only [Monic.def.1 hq, inv_one, mul_one, C_1]
 #align polynomial.mod_by_monic_eq_mod Polynomial.modByMonic_eq_mod
 
 theorem divByMonic_eq_div (p : R[X]) (hq : Monic q) : p /ₘ q = p / q :=
   show p /ₘ q = C (leadingCoeff q)⁻¹ * (p /ₘ (q * C (leadingCoeff q)⁻¹)) by
-    simp only [Monic.def'.1 hq, inv_one, C_1, one_mul, mul_one]
+    simp only [Monic.def.1 hq, inv_one, C_1, one_mul, mul_one]
 #align polynomial.div_by_monic_eq_div Polynomial.divByMonic_eq_div
 
 theorem mod_X_sub_C_eq_C_eval (p : R[X]) (a : R) : p % (X - C a) = C (p.eval a) :=

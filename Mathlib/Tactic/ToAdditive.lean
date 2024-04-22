@@ -106,7 +106,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",
@@ -1355,7 +1355,7 @@ Examples:
 * `@Mul.mul Nat n m` (i.e. `(n * m : Nat)`) will not change to `+`, since its
   first argument is `Nat`, an identifier not applied to any arguments.
 * `@Mul.mul (α × β) x y` will change to `+`. It's first argument contains only the identifier
-  `prod`, but this is applied to arguments, `α` and `β`.
+  `Prod`, but this is applied to arguments, `α` and `β`.
 * `@Mul.mul (α × Int) x y` will not change to `+`, since its first argument contains `Int`.
 
 The reasoning behind the heuristic is that the first argument is the type which is "additivized",

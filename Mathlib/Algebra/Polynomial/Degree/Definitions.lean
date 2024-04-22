@@ -26,8 +26,6 @@ Results include
     The leading_coefficient of a sum is determined by the leading coefficients and degrees
 -/
 
-set_option autoImplicit true
-
 -- Porting note: `Mathlib.Data.Nat.Cast.WithTop` should be imported for `Nat.cast_withBot`.
 
 set_option linter.uppercaseLean3 false
@@ -85,11 +83,9 @@ theorem monic_of_subsingleton [Subsingleton R] (p : R[X]) : Monic p :=
   Subsingleton.elim _ _
 #align polynomial.monic_of_subsingleton Polynomial.monic_of_subsingleton
 
--- Adaptation note: 2024-03-15
--- Renamed to avoid the reserved name `Monic.def`.
-theorem Monic.def' : Monic p ↔ leadingCoeff p = 1 :=
+theorem Monic.def : Monic p ↔ leadingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.monic.def Polynomial.Monic.def'
+#align polynomial.monic.def Polynomial.Monic.def
 
 instance Monic.decidable [DecidableEq R] : Decidable (Monic p) := by unfold Monic; infer_instance
 #align polynomial.monic.decidable Polynomial.Monic.decidable
@@ -280,11 +276,11 @@ theorem natDegree_one : natDegree (1 : R[X]) = 0 :=
 #align polynomial.nat_degree_one Polynomial.natDegree_one
 
 @[simp]
-theorem natDegree_nat_cast (n : ℕ) : natDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_nat_cast, natDegree_C]
-#align polynomial.nat_degree_nat_cast Polynomial.natDegree_nat_cast
+theorem natDegree_natCast (n : ℕ) : natDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_natCast, natDegree_C]
+#align polynomial.nat_degree_nat_cast Polynomial.natDegree_natCast
 
-theorem degree_nat_cast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+theorem degree_natCast_le (n : ℕ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 @[simp]
 theorem degree_monomial (n : ℕ) (ha : a ≠ 0) : degree (monomial n a) = n := by
@@ -551,11 +547,11 @@ theorem natDegree_neg_le_of_le {p : R[X]} (hp : natDegree p ≤ m) : natDegree (
   (natDegree_neg p).le.trans hp
 
 @[simp]
-theorem natDegree_int_cast (n : ℤ) : natDegree (n : R[X]) = 0 := by
-  rw [← C_eq_int_cast, natDegree_C]
-#align polynomial.nat_degree_int_cast Polynomial.natDegree_int_cast
+theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
+  rw [← C_eq_intCast, natDegree_C]
+#align polynomial.nat_degree_intCast Polynomial.natDegree_intCast
 
-theorem degree_int_cast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
+theorem degree_intCast_le (n : ℤ) : degree (n : R[X]) ≤ 0 := degree_le_of_natDegree_le (by simp)
 
 @[simp]
 theorem leadingCoeff_neg (p : R[X]) : (-p).leadingCoeff = -p.leadingCoeff := by
@@ -1131,7 +1127,7 @@ theorem coeff_pow_mul_natDegree (p : R[X]) (n : ℕ) :
       exact coeff_mul_degree_add_degree _ _
 #align polynomial.coeff_pow_mul_nat_degree Polynomial.coeff_pow_mul_natDegree
 
-theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {g : R[X]}
+theorem coeff_mul_add_eq_of_natDegree_le {df dg : ℕ} {f g : R[X]}
     (hdf : natDegree f ≤ df) (hdg : natDegree g ≤ dg) :
     (f * g).coeff (df + dg) = f.coeff df * g.coeff dg := by
   rw [coeff_mul, Finset.sum_eq_single_of_mem (df, dg)]
@@ -1204,7 +1200,7 @@ theorem eq_C_coeff_zero_iff_natDegree_eq_zero : p = C (p.coeff 0) ↔ p.natDegre
   ⟨fun h ↦ by rw [h, natDegree_C], eq_C_of_natDegree_eq_zero⟩
 
 theorem eq_one_of_monic_natDegree_zero (hf : p.Monic) (hfd : p.natDegree = 0) : p = 1 := by
-  rw [Monic.def', leadingCoeff, hfd] at hf
+  rw [Monic.def, leadingCoeff, hfd] at hf
   rw [eq_C_of_natDegree_eq_zero hfd, hf, map_one]
 
 theorem ne_zero_of_coe_le_degree (hdeg : ↑n ≤ p.degree) : p ≠ 0 :=
@@ -1486,7 +1482,7 @@ theorem degree_X_add_C (a : R) : degree (X + C a) = 1 := by
   have : degree (C a) < degree (X : R[X]) :=
     calc
       degree (C a) ≤ 0 := degree_C_le
-      _ < 1 := (WithBot.some_lt_some.mpr zero_lt_one)
+      _ < 1 := WithBot.some_lt_some.mpr zero_lt_one
       _ = degree X := degree_X.symm
   rw [degree_add_eq_left_of_degree_lt this, degree_X]
 #align polynomial.degree_X_add_C Polynomial.degree_X_add_C

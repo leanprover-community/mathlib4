@@ -416,6 +416,23 @@ theorem opCoproductIsoProduct'_inv_comp_inj {c : Cofan Z} {f : Fan (op <| Z ·)}
     (opCoproductIsoProduct' hc hf).inv ≫ (c.inj b).op = f.proj b :=
   IsLimit.conePointUniqueUpToIso_inv_comp (Cofan.IsColimit.op hc) hf ⟨b⟩
 
+theorem opCoproductIsoProduct'_comp_self {c c' : Cofan Z} {f : Fan (op <| Z ·)}
+    (hc : IsColimit c) (hc' : IsColimit c') (hf : IsLimit f) :
+    (opCoproductIsoProduct' hc hf).hom ≫ (opCoproductIsoProduct' hc' hf).inv =
+    (hc.coconePointUniqueUpToIso hc').op.inv := by
+  apply Quiver.Hom.unop_inj
+  apply hc'.hom_ext
+  intro ⟨j⟩
+  change c'.inj _ ≫ _ = _
+  simp only [unop_op, unop_comp, Discrete.functor_obj, const_obj_obj, Iso.op_inv,
+    Quiver.Hom.unop_op, IsColimit.comp_coconePointUniqueUpToIso_inv]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, op_unop, Quiver.Hom.op_unop, Category.assoc,
+    opCoproductIsoProduct'_inv_comp_inj]
+  rw [← opCoproductIsoProduct'_inv_comp_inj hc hf]
+  simp only [Iso.hom_inv_id_assoc]
+  rfl
+
 variable (Z) in
 theorem opCoproductIsoProduct_inv_comp_ι (b : α) :
     (opCoproductIsoProduct Z).inv ≫ (Sigma.ι Z b).op = Pi.π (op <| Z ·) b :=
@@ -490,8 +507,24 @@ theorem proj_comp_opProductIsoCoproduct'_hom {f : Fan Z} {c : Cofan (op <| Z ·)
     (f.proj b).op ≫ (opProductIsoCoproduct' hf hc).hom = c.inj b :=
   IsColimit.comp_coconePointUniqueUpToIso_hom (Fan.IsLimit.op hf) hc ⟨b⟩
 
+theorem opProductIsoCoproduct'_comp_self {f f' : Fan Z} {c : Cofan (op <| Z ·)}
+    (hf : IsLimit f) (hf' : IsLimit f') (hc : IsColimit c) :
+    (opProductIsoCoproduct' hf hc).hom ≫ (opProductIsoCoproduct' hf' hc).inv =
+    (hf.conePointUniqueUpToIso hf').op.inv := by
+  apply Quiver.Hom.unop_inj
+  apply hf.hom_ext
+  intro ⟨j⟩
+  change _ ≫ f.proj _ = _
+  simp only [unop_op, unop_comp, Category.assoc, Discrete.functor_obj, Iso.op_inv,
+    Quiver.Hom.unop_op, IsLimit.conePointUniqueUpToIso_inv_comp]
+  apply Quiver.Hom.op_inj
+  simp only [op_comp, op_unop, Quiver.Hom.op_unop, proj_comp_opProductIsoCoproduct'_hom]
+  rw [← proj_comp_opProductIsoCoproduct'_hom hf' hc]
+  simp only [Category.assoc, Iso.hom_inv_id, Category.comp_id]
+  rfl
+
 variable (Z) in
-theorem proj_comp_opProductIsoCoproduct_hom (b : α) :
+theorem π_comp_opProductIsoCoproduct_hom (b : α) :
     (Pi.π Z b).op ≫ (opProductIsoCoproduct Z).hom = Sigma.ι (op <| Z ·) b :=
   proj_comp_opProductIsoCoproduct'_hom _ _ b
 

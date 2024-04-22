@@ -150,7 +150,7 @@ instance Unitization.instCstarRing : CstarRing (Unitization 𝕜 E) where
             rw [map_mul, Prod.snd_mul]
             exact norm_mul_le _ _
         rw [sq] at this
-        rw [← Ne.def, ← norm_pos_iff] at h
+        rw [← Ne, ← norm_pos_iff] at h
         simp only [add_zero, Unitization.splitMul_apply, Unitization.snd_star,
           Unitization.fst_star, star_star] at this
         exact (mul_le_mul_right h).mp this

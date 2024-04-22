@@ -207,8 +207,8 @@ theorem map_t₀ : f v.t₀ = v.x₀ :=
 protected theorem mem_closedBall (t : Icc v.tMin v.tMax) : f t ∈ closedBall v.x₀ v.R :=
   calc
     dist (f t) v.x₀ = dist (f t) (f.toFun v.t₀) := by rw [f.map_t₀']
-    _ ≤ v.C * dist t v.t₀ := (f.lipschitz.dist_le_mul _ _)
-    _ ≤ v.C * v.tDist := (mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2)
+    _ ≤ v.C * dist t v.t₀ := f.lipschitz.dist_le_mul _ _
+    _ ≤ v.C * v.tDist := mul_le_mul_of_nonneg_left (v.dist_t₀_le _) v.C.2
     _ ≤ v.R := v.isPicardLindelof.C_mul_le_R
 #align picard_lindelof.fun_space.mem_closed_ball PicardLindelof.FunSpace.mem_closedBall
 

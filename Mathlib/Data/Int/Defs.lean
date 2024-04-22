@@ -192,11 +192,9 @@ lemma natAbs_add_of_nonneg : ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a 
   | ofNat _, ofNat _, _, _ => rfl
 #align int.nat_abs_add_nonneg Int.natAbs_add_of_nonneg
 
-lemma natAbs_add_of_nonpos : ∀ {a b : Int}, a ≤ 0 → b ≤ 0 → natAbs (a + b) = natAbs a + natAbs b
-  | negSucc _, negSucc _, _, _ => by simp [negSucc_add_negSucc, Nat.succ_add]; rfl
-  | negSucc _, 0, _, _ => by simp
-  | 0, negSucc _, _, _ => by simp
-  | 0, 0, _, _ => rfl
+lemma natAbs_add_of_nonpos {a b : Int} (ha : a ≤ 0) (hb : b ≤ 0) :
+    natAbs (a + b) = natAbs a + natAbs b := by
+  omega
 #align int.nat_abs_add_neg Int.natAbs_add_of_nonpos
 
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩

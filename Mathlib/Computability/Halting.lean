@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -416,7 +416,7 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _ro
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
-        simp only [id.def, head_ofFn],
+        simp only [id, head_ofFn],
       fun h => h.comp vector_head⟩
 #align nat.partrec'.part_iff₁ Nat.Partrec'.part_iff₁
 

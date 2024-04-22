@@ -3,10 +3,9 @@ Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Patrick Massot
 -/
-import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Ideal.Quotient
+import Mathlib.Algebra.Algebra.Subalgebra.Operations
 import Mathlib.Algebra.Ring.Fin
-import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.RingTheory.Ideal.Quotient
 
 #align_import ring_theory.ideal.quotient_operations from "leanprover-community/mathlib"@"b88d81c84530450a8989e918608e5960f015e6c8"
 

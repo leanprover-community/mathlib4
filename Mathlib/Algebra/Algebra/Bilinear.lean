@@ -223,13 +223,13 @@ theorem mulRight_eq_zero_iff (a : A) : mulRight R a = 0 ↔ a = 0 := by
 @[simp]
 theorem mulLeft_one : mulLeft R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, one_mul, id.def, mulLeft_apply]
+  simp
 #align linear_map.mul_left_one LinearMap.mulLeft_one
 
 @[simp]
 theorem mulRight_one : mulRight R (1 : A) = LinearMap.id := by
   ext
-  simp only [LinearMap.id_coe, mul_one, id.def, mulRight_apply]
+  simp
 #align linear_map.mul_right_one LinearMap.mulRight_one
 
 @[simp]

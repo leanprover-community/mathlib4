@@ -328,7 +328,7 @@ variable [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ 
 variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
+-- Porting note: Lean 4 aggressively removes unused variables declared using `variable`, so
 -- we have to list all the variables explicitly here in order to match the Lean 3 signature.
 set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/

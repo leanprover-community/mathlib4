@@ -3,6 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial
@@ -617,6 +618,11 @@ lemma nnreal_iff [Algebra ℝ A] {a : A} :
     exact coe_nonneg x
   · exact .of_subset_range_algebraMap _ _ (fun _ ↦ Real.toNNReal_coe)
       fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
+
+lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
+    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+    SpectrumRestricts a ContinuousMap.realToNNReal :=
+  nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
 
 lemma real_iff [Algebra ℂ A] {a : A} :
     SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by

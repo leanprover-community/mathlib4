@@ -306,7 +306,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
-  apply ball_congr
+  apply forall₂_congr
   intro i hi
   have hin : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi

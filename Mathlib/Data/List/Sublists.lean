@@ -443,8 +443,8 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
         mem_singleton, Prod.mk.injEq] at h
     simp [h]
   · intro l₁ l₂ h
-    rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
-      zip_map_left] at * <;> [skip; simp]
+    rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
+      zip_map_left] at *
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]

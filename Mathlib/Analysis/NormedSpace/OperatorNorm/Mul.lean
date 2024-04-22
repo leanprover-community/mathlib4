@@ -113,6 +113,8 @@ alias op_norm_mulLeftRight_apply_le :=
   opNorm_mulLeftRight_apply_le -- deprecated on 2024-02-02
 
 theorem opNorm_mulLeftRight_le :
+    -- Currently, this cannot be synthesized because it violated `synthPendingDepth` restrictions
+    -- see leanprover/lean4#3927
     letI : Norm (𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜') := hasOpNorm (E := 𝕜') (F := 𝕜' →L[𝕜] 𝕜' →L[𝕜] 𝕜')
     ‖mulLeftRight 𝕜 𝕜'‖ ≤ 1 :=
   opNorm_le_bound _ zero_le_one fun x => (one_mul ‖x‖).symm ▸ opNorm_mulLeftRight_apply_le 𝕜 𝕜' x
@@ -189,7 +191,7 @@ def ring_lmap_equiv_selfₗ : (𝕜 →L[𝕜] E) ≃ₗ[𝕜] E where
   invFun := (ContinuousLinearMap.id 𝕜 𝕜).smulRight
   map_smul' := fun a f ↦ by simp only [coe_smul', Pi.smul_apply, RingHom.id_apply]
   map_add' := fun f g ↦ by simp only [add_apply]
-  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', id.def, one_smul]
+  left_inv := fun f ↦ by ext; simp only [smulRight_apply, coe_id', _root_.id, one_smul]
   right_inv := fun m ↦ by simp only [smulRight_apply, id_apply, one_smul]
 
 /-- If `M` is a normed space over `𝕜`, then the space of maps `𝕜 →L[𝕜] M` is linearly isometrically

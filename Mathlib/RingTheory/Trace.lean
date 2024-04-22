@@ -73,6 +73,7 @@ variable {ι κ : Type w} [Fintype ι]
 
 open FiniteDimensional
 
+open LinearMap (BilinForm)
 open LinearMap
 
 open Matrix
@@ -117,8 +118,7 @@ theorem trace_algebraMap_of_basis (x : R) : trace R S (algebraMap R S x) = Finty
   haveI := Classical.decEq ι
   rw [trace_apply, LinearMap.trace_eq_matrix_trace R b, Matrix.trace]
   convert Finset.sum_const x
-  -- porting note (#10745): was `simp [-coe_lmul_eq_mul]`.
-  simp only [AlgHom.commutes, toMatrix_algebraMap, diag_apply, scalar_apply, diagonal_apply_eq]
+  simp [-coe_lmul_eq_mul]
 
 #align algebra.trace_algebra_map_of_basis Algebra.trace_algebraMap_of_basis
 
@@ -142,13 +142,10 @@ theorem trace_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*}
   cases nonempty_fintype κ
   rw [trace_eq_matrix_trace (b.smul c), trace_eq_matrix_trace b, trace_eq_matrix_trace c,
     Matrix.trace, Matrix.trace, Matrix.trace, ← Finset.univ_product_univ, Finset.sum_product]
-  refine' Finset.sum_congr rfl fun i _ => _
+  refine Finset.sum_congr rfl fun i _ ↦ ?_
   simp only [AlgHom.map_sum, smul_leftMulMatrix, Finset.sum_apply,
-    Matrix.diag]
--- Porting note: the `rw` was inside `simp only`, but it doesn't work anymore.
-  rw [Finset.sum_apply
+    Matrix.diag, Finset.sum_apply
       i (Finset.univ : Finset κ) fun y => leftMulMatrix b (leftMulMatrix c x y y)]
-  apply Finset.sum_apply
 #align algebra.trace_trace_of_basis Algebra.trace_trace_of_basis
 
 theorem trace_comp_trace_of_basis [Algebra S T] [IsScalarTower R S T] {ι κ : Type*} [Finite ι]
@@ -193,7 +190,7 @@ variable (R S)
 /-- The `traceForm` maps `x y : S` to the trace of `x * y`.
 It is a symmetric bilinear form and is nondegenerate if the extension is separable. -/
 noncomputable def traceForm : BilinForm R S :=
--- Porting note: dot notation `().toBilin` does not work anymore.
+  -- Porting note: dot notation `().toBilin` does not work anymore.
   LinearMap.toBilin (LinearMap.compr₂ (lmul R S).toLinearMap (trace R S))
 #align algebra.trace_form Algebra.traceForm
 
@@ -285,8 +282,9 @@ variable (K)
 
 theorem trace_eq_trace_adjoin [FiniteDimensional K L] (x : L) :
     Algebra.trace K L x = finrank K⟮x⟯ L • trace K K⟮x⟯ (AdjoinSimple.gen K x) := by
--- Porting note: `conv` was `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
--- and it was after the first `rw`.
+  -- Porting note: `conv` was
+  -- `conv in x => rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]`
+  -- and it was after the first `rw`.
   conv =>
     lhs
     rw [← IntermediateField.AdjoinSimple.algebraMap_gen K x]
@@ -374,13 +372,13 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
     algebraMap K E (Algebra.trace K L pb.gen) =
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
--- Porting note: the following `letI` was not needed.
+  -- Porting note: the following `letI` was not needed.
   letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]
   · exact nodup_roots ((separable_map _).mpr hfx)
--- Porting note: the following goal does not exist in mathlib3.
+  -- Porting note: the following goal does not exist in mathlib3.
   · exact (fun x => x.1)
   · intro x; rfl
   · intro σ
@@ -402,7 +400,7 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
     Finset.univ_sigma_univ, Finset.sum_sigma, ← Finset.sum_nsmul]
   refine' Finset.sum_congr rfl fun σ _ => _
   · letI : Algebra L E := σ.toRingHom.toAlgebra
--- Porting note: `Finset.card_univ` was inside `simp only`.
+    -- Porting note: `Finset.card_univ` was inside `simp only`.
     simp only [Finset.sum_const]
     congr
     rw [← AlgHom.card L F E]
@@ -415,11 +413,11 @@ theorem sum_embeddings_eq_finrank_mul [FiniteDimensional K F] [IsSeparable K F]
 theorem trace_eq_sum_embeddings [FiniteDimensional K L] [IsSeparable K L] {x : L} :
     algebraMap K E (Algebra.trace K L x) = ∑ σ : L →ₐ[K] E, σ x := by
   have hx := IsSeparable.isIntegral K x
-  let pb := (adjoin.powerBasis hx)
+  let pb := adjoin.powerBasis hx
   rw [trace_eq_trace_adjoin K x, Algebra.smul_def, RingHom.map_mul, ← adjoin.powerBasis_gen hx,
     trace_eq_sum_embeddings_gen E pb (IsAlgClosed.splits_codomain _)]
--- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
--- in the previous `rw`.
+  -- Porting note: the following `convert` was `exact`, with `← algebra.smul_def, algebra_map_smul`
+  -- in the previous `rw`.
   · convert (sum_embeddings_eq_finrank_mul L E pb).symm
     ext
     simp
@@ -434,7 +432,7 @@ theorem trace_eq_sum_automorphisms (x : L) [FiniteDimensional K L] [IsGalois K L
   rw [← Fintype.sum_equiv (Normal.algHomEquivAut K (AlgebraicClosure L) L)]
   · rw [← trace_eq_sum_embeddings (AlgebraicClosure L)]
     · simp only [algebraMap_eq_smul_one]
--- Porting note: `smul_one_smul` was in the `simp only`.
+      -- Porting note: `smul_one_smul` was in the `simp only`.
       apply smul_one_smul
   · intro σ
     simp only [Normal.algHomEquivAut, AlgHom.restrictNormal', Equiv.coe_fn_mk,
@@ -597,9 +595,7 @@ theorem det_traceMatrix_ne_zero' [IsSeparable K L] : det (traceMatrix K pb.basis
   rw [RingHom.map_det, RingHom.mapMatrix_apply,
     traceMatrix_eq_embeddingsMatrixReindex_mul_trans K _ _ e,
     embeddingsMatrixReindex_eq_vandermonde, det_mul, det_transpose]
--- Porting note: the following is necessary.
-  haveI := IsDomain.to_noZeroDivisors (AlgebraicClosure L)
-  refine' mt mul_self_eq_zero.mp _
+  refine mt mul_self_eq_zero.mp ?_
   · simp only [det_vandermonde, Finset.prod_eq_zero_iff, not_exists, sub_eq_zero]
     rintro i ⟨_, j, hij, h⟩
     exact (Finset.mem_Ioi.mp hij).ne' (e.injective <| pb.algHom_ext h)
@@ -673,8 +669,9 @@ lemma traceForm_dualBasis_powerBasis_eq [FiniteDimensional K L] [IsSeparable K L
   simp only [AlgEquiv.toAlgHom_eq_coe, Polynomial.map_smul, map_div₀,
     map_pow, RingHom.coe_coe, AlgHom.coe_coe, finset_sum_coeff, coeff_smul, coeff_map, smul_eq_mul,
     coeff_X_pow, ← Fin.ext_iff, @eq_comm _ i] at this
-  rw [PowerBasis.coe_basis, Algebra.traceForm_apply, RingHom.map_ite_one_zero,
-  ← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
+  rw [PowerBasis.coe_basis]
+  simp only [RingHom.map_ite_one_zero, traceForm_apply]
+  rw [← this, trace_eq_sum_embeddings (E := AlgebraicClosure K)]
   apply Finset.sum_congr rfl
   intro σ _
   simp only [_root_.map_mul, map_div₀, map_pow]

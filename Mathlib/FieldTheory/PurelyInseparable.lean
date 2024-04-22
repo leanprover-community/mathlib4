@@ -594,13 +594,14 @@ theorem eq_separableClosure (L : IntermediateField F E)
     [IsSeparable F L] [IsPurelyInseparable L E] : L = separableClosure F E :=
   le_antisymm (le_separableClosure F E L) (separableClosure_le F E L)
 
+open separableClosure in
 /-- If `E / F` is algebraic, then an intermediate field of `E / F` is equal to the separable closure
 of `F` in `E` if and only if it is separable over `F`, and `E` is purely inseparable
 over it. -/
 theorem eq_separableClosure_iff (halg : Algebra.IsAlgebraic F E) (L : IntermediateField F E) :
     L = separableClosure F E ↔ IsSeparable F L ∧ IsPurelyInseparable L E :=
-  ⟨by rintro rfl; exact ⟨separableClosure.isSeparable F E,
-    separableClosure.isPurelyInseparable F E halg⟩, fun ⟨_, _⟩ ↦ eq_separableClosure F E L⟩
+  ⟨by rintro rfl; exact ⟨isSeparable F E, isPurelyInseparable F E halg⟩,
+   fun ⟨_, _⟩ ↦ eq_separableClosure F E L⟩
 
 -- TODO: prove it
 set_option linter.unusedVariables false in
@@ -635,8 +636,8 @@ theorem isPurelyInseparable_adjoin_simple_iff_pow_mem (q : ℕ) [hF : ExpChar F 
 if and only if for any `x ∈ S`, `x ^ (q ^ n)` is contained in `F` for some `n : ℕ`. -/
 theorem isPurelyInseparable_adjoin_iff_pow_mem (q : ℕ) [hF : ExpChar F q] {S : Set E} :
     IsPurelyInseparable F (adjoin F S) ↔ ∀ x ∈ S, ∃ n : ℕ, x ^ q ^ n ∈ (algebraMap F E).range := by
-  simp_rw [← le_perfectClosure_iff, adjoin_le_iff, ← mem_perfectClosure_iff_pow_mem q]
-  rfl
+  simp_rw [← le_perfectClosure_iff, adjoin_le_iff, ← mem_perfectClosure_iff_pow_mem q,
+    Set.le_iff_subset, Set.subset_def, SetLike.mem_coe]
 
 /-- A compositum of two purely inseparable extensions is purely inseparable. -/
 instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
@@ -873,7 +874,7 @@ theorem adjoin_eq_of_isAlgebraic (halg : Algebra.IsAlgebraic F E) :
   rw [lift_top, lift_adjoin] at h
   haveI : IsScalarTower F S K := IsScalarTower.of_algebraMap_eq (congrFun rfl)
   rw [← h, ← map_eq_of_separableClosure_eq_bot F (separableClosure_eq_bot E K)]
-  rfl
+  simp only [coe_map, IsScalarTower.coe_toAlgHom', IntermediateField.algebraMap_apply]
 
 end separableClosure
 
