@@ -70,9 +70,6 @@ variable {β}
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
 
-@[inherit_doc]
-infixl:25 " →ₚ " => DFinsupp
-
 namespace DFinsupp
 
 section Basic

@@ -30,9 +30,6 @@ import Mathlib.Order.Bounds.Basic
 Bézout's lemma, Bezout's lemma
 -/
 
-set_option autoImplicit true
-
-
 /-! ### Extended Euclidean algorithm -/
 
 
@@ -49,9 +46,9 @@ def xgcdAux : ℕ → ℤ → ℤ → ℕ → ℤ → ℤ → ℕ × ℤ × ℤ
 
 -- Porting note: these are not in mathlib3; these equation lemmas are to fix
 -- complaints by the Lean 4 `unusedHavesSuffices` linter obtained when `simp [xgcdAux]` is used.
-theorem xgcdAux_zero : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
+theorem xgcdAux_zero {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux 0 s t r' s' t' = (r', s', t') := rfl
 
-theorem xgcdAux_succ : xgcdAux (succ k) s t r' s' t' =
+theorem xgcdAux_succ {k : ℕ} {s t : ℤ} {r' : ℕ} {s' t' : ℤ} : xgcdAux (succ k) s t r' s' t' =
     xgcdAux (r' % succ k) (s' - (r' / succ k) * s) (t' - (r' / succ k) * t) (succ k) s t := rfl
 
 @[simp]
@@ -367,7 +364,7 @@ theorem exists_gcd_one' {m n : ℤ} (H : 0 < gcd m n) :
   ⟨_, m', n', H, h⟩
 #align int.exists_gcd_one' Int.exists_gcd_one'
 
-theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : 0 < k) : m ^ k ∣ n ^ k ↔ m ∣ n := by
+theorem pow_dvd_pow_iff {m n : ℤ} {k : ℕ} (k0 : k ≠ 0) : m ^ k ∣ n ^ k ↔ m ∣ n := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
   rwa [← natAbs_dvd_natAbs, ← Nat.pow_dvd_pow_iff k0, ← Int.natAbs_pow, ← Int.natAbs_pow,
     natAbs_dvd_natAbs]

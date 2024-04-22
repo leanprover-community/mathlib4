@@ -238,9 +238,9 @@ theorem exists_extension_norm_eq_of_closedEmbedding' (f : X →ᵇ ℝ) (e : C(X
     calc
       dist (g n) (g (n + 1)) = ‖F (f - (g n).compContinuous e)‖ := by
         rw [g_succ, dist_eq_norm', add_sub_cancel_left]
-      _ ≤ ‖f - (g n).compContinuous e‖ / 3 := (hF_norm _)
+      _ ≤ ‖f - (g n).compContinuous e‖ / 3 := hF_norm _
       _ = 1 / 3 * dist ((g n).compContinuous e) f := by rw [dist_eq_norm', one_div, div_eq_inv_mul]
-      _ ≤ 1 / 3 * ((2 / 3) ^ n * ‖f‖) := (mul_le_mul_of_nonneg_left (hgf n) (by norm_num1))
+      _ ≤ 1 / 3 * ((2 / 3) ^ n * ‖f‖) := mul_le_mul_of_nonneg_left (hgf n) (by norm_num1)
       _ = 1 / 3 * ‖f‖ * (2 / 3) ^ n := by ac_rfl
   have hg_cau : CauchySeq g := cauchySeq_of_le_geometric _ _ (by norm_num1) hg_dist
   have :
@@ -411,7 +411,7 @@ theorem exists_extension_forall_exists_le_ge_of_closedEmbedding [Nonempty X] (f 
       · have hay : a < (g - dg) y := by
           calc
             a = c - (b - c) := by rw [← hsub, sub_sub_cancel]
-            _ < g y - (b - c) := (sub_lt_sub_right hc _)
+            _ < g y - (b - c) := sub_lt_sub_right hc _
             _ ≤ g y - dg y := sub_le_sub_left (dgmem _).2 _
         rcases ha.exists_between hay with ⟨_, ⟨x, rfl⟩, _, hxy⟩
         exact ⟨x, xu, hxy.le, hyxu.le⟩

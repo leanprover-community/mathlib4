@@ -3,7 +3,7 @@ Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
 -/
-import Mathlib.Analysis.SpecialFunctions.Gaussian
+import Mathlib.Analysis.SpecialFunctions.Gaussian.PoissonSummation
 import Mathlib.Analysis.Calculus.SmoothSeries
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Prod
 
@@ -111,8 +111,8 @@ lemma summable_pow_mul_jacobiTheta₂_term_bound (S : ℝ) {T : ℝ} (hT : 0 < T
   conv =>
     enter [1, n]
     rw [show -(-π * (T * n ^ 2 - 2 * S * n) - -1 * n) = n * (π * T * n - (2 * π * S + 1)) by ring]
-  refine tendsto_nat_cast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
-  exact tendsto_nat_cast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
+  refine tendsto_natCast_atTop_atTop.atTop_mul_atTop (tendsto_atTop_add_const_right _ _ ?_)
+  exact tendsto_natCast_atTop_atTop.const_mul_atTop (mul_pos pi_pos hT)
 
 /-- The series defining the theta function is summable if and only if `0 < im τ`. -/
 lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_term · z τ) ↔ 0 < im τ := by
@@ -132,8 +132,8 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         enter [1, n]
         rw [show -π * n ^ 2 * τ.im - 2 * π * n * z.im =
               n * (n * (-π * τ.im) - 2 * π * z.im) by ring]
-      refine tendsto_exp_atTop.comp (tendsto_nat_cast_atTop_atTop.atTop_mul_atTop ?_)
-      exact tendsto_atTop_add_const_right _ _ (tendsto_nat_cast_atTop_atTop.atTop_mul_const
+      refine tendsto_exp_atTop.comp (tendsto_natCast_atTop_atTop.atTop_mul_atTop ?_)
+      exact tendsto_atTop_add_const_right _ _ (tendsto_natCast_atTop_atTop.atTop_mul_const
         (mul_pos_of_neg_of_neg (neg_lt_zero.mpr pi_pos) hτ))
     · -- case im τ = 0: 3-way split according to `im z`
       simp_rw [← summable_norm_iff (E := ℂ), norm_jacobiTheta₂_term, hτ, mul_zero, zero_sub] at h
@@ -144,14 +144,14 @@ lemma summable_jacobiTheta₂_term_iff (z τ : ℂ) : Summable (jacobiTheta₂_t
         refine tendsto_exp_atTop.comp ?_
         simp only [tendsto_neg_atTop_iff, mul_assoc]
         apply Filter.Tendsto.const_mul_atBot two_pos
-        exact (tendsto_nat_cast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
+        exact (tendsto_natCast_atTop_atTop.atTop_mul_neg_const hz).const_mul_atBot pi_pos
       · revert h
         simpa only [hz, mul_zero, neg_zero, Real.exp_zero, summable_const_iff] using one_ne_zero
       · have : ((-↑·) : ℕ → ℤ).Injective := fun _ _ ↦ by simp only [neg_inj, Nat.cast_inj, imp_self]
         replace h := (h.comp_injective this).tendsto_atTop_zero
         simp_rw [Function.comp_def, Int.cast_neg, Int.cast_natCast, mul_neg, neg_mul, neg_neg] at h
         refine atTop_neBot.ne (disjoint_self.mp <| h.disjoint (disjoint_nhds_atTop 0) ?_)
-        exact tendsto_exp_atTop.comp ((tendsto_nat_cast_atTop_atTop.const_mul_atTop
+        exact tendsto_exp_atTop.comp ((tendsto_natCast_atTop_atTop.const_mul_atTop
           (mul_pos two_pos pi_pos)).atTop_mul_const hz)
 
 lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
@@ -161,7 +161,7 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
   rw [jacobiTheta₂_term_fderiv, jacobiTheta₂_term, hns,
     mul_comm _ ‖cexp _‖, (by norm_num : (3 : ℝ) = 2 + 1), add_mul, add_mul]
   refine mul_le_mul_of_nonneg_left ((norm_add_le _ _).trans (add_le_add ?_ ?_)) (norm_nonneg _)
-  · simp_rw [hns, norm_mul, ← ofReal_ofNat, ← ofReal_int_cast,
+  · simp_rw [hns, norm_mul, ← ofReal_ofNat, ← ofReal_intCast,
       norm_real, norm_of_nonneg zero_le_two, Real.norm_of_nonneg pi_pos.le, norm_I, mul_one,
       Real.norm_eq_abs, Int.cast_abs, mul_assoc]
     refine mul_le_mul_of_nonneg_left (mul_le_mul_of_nonneg_left ?_ pi_pos.le) two_pos.le
@@ -169,7 +169,7 @@ lemma norm_jacobiTheta₂_term_fderiv_le (n : ℤ) (z τ : ℂ) :
     · exact mul_le_of_le_one_right (abs_nonneg _) (ContinuousLinearMap.norm_fst_le ..)
     · exact_mod_cast Int.le_self_sq |n|
   · simp_rw [hns, norm_mul, one_mul, norm_I, mul_one,
-      norm_real, norm_of_nonneg pi_pos.le, ← ofReal_int_cast, ← ofReal_pow, norm_real,
+      norm_real, norm_of_nonneg pi_pos.le, ← ofReal_intCast, ← ofReal_pow, norm_real,
       Real.norm_eq_abs, Int.cast_abs, _root_.abs_pow]
     apply mul_le_of_le_one_right (mul_nonneg pi_pos.le (pow_nonneg (abs_nonneg _) _))
     exact ContinuousLinearMap.norm_snd_le ..
@@ -225,7 +225,7 @@ lemma summable_jacobiTheta₂'_term_iff (z τ : ℂ) :
     rw [jacobiTheta₂'_term, norm_mul, ← mul_assoc]
     refine le_mul_of_one_le_left (norm_nonneg _) ?_
     simp_rw [norm_mul, norm_I, norm_real, mul_one, norm_of_nonneg pi_pos.le,
-      ← ofReal_ofNat, norm_real, norm_of_nonneg two_pos.le, ← ofReal_int_cast, norm_real,
+      ← ofReal_ofNat, norm_real, norm_of_nonneg two_pos.le, ← ofReal_intCast, norm_real,
       Real.norm_eq_abs, ← Int.cast_abs, ← mul_assoc _ (2 * π),
       inv_mul_cancel (mul_pos two_pos pi_pos).ne', one_mul]
     rw [← Int.cast_one, Int.cast_le]
@@ -455,7 +455,7 @@ lemma jacobiTheta₂'_conj (z τ : ℂ) :
   rw [← neg_inj, ← jacobiTheta₂'_neg_left, jacobiTheta₂', jacobiTheta₂', conj_tsum, ← tsum_neg]
   congr 1 with n
   simp_rw [jacobiTheta₂'_term, jacobiTheta₂_term, map_mul, ← Complex.exp_conj, map_add, map_mul,
-    ← ofReal_int_cast,← ofReal_ofNat, map_pow, conj_ofReal, conj_I]
+    ← ofReal_intCast,← ofReal_ofNat, map_pow, conj_ofReal, conj_I]
   ring_nf
 
 /-!
@@ -509,7 +509,7 @@ theorem jacobiTheta₂'_functional_equation (z τ : ℂ) :
     exact div_pos hτ (normSq_pos.mpr (fun h ↦ lt_irrefl 0 (zero_im ▸ h ▸ hτ)))
   have hj : HasDerivAt (fun w ↦ jacobiTheta₂ (w / τ) (-1 / τ))
       ((1 / τ) * jacobiTheta₂' (z / τ) (-1 / τ)) z := by
-    have := (hasDerivAt_jacobiTheta₂_fst (z / τ) hτ')
+    have := hasDerivAt_jacobiTheta₂_fst (z / τ) hτ'
     simpa only [mul_comm, one_div] using this.comp z (hasDerivAt_mul_const τ⁻¹)
   calc
   _ = deriv (jacobiTheta₂ · τ) z := (hasDerivAt_jacobiTheta₂_fst z hτ).deriv.symm

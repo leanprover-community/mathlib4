@@ -24,9 +24,6 @@ There's some balance here: it's nice to allow `Prop` to ensure there are no mult
 but it is also results in error-prone universe signatures when constraints require a `Type`.
 -/
 
-set_option autoImplicit true
-
-
 open Opposite
 
 -- We use the same universe order as in category theory.
@@ -69,8 +66,10 @@ namespace Prefunctor
 -- Porting note: added during port.
 -- These lemmas can not be `@[simp]` because after `whnfR` they have a variable on the LHS.
 -- Nevertheless they are sometimes useful when building functors.
-lemma mk_obj [Quiver V] {obj : V → V} {map} {X : V} : (Prefunctor.mk obj map).obj X = obj X := rfl
-lemma mk_map [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
+lemma mk_obj {V : Type*} [Quiver V] {obj : V → V} {map} {X : V} :
+    (Prefunctor.mk obj map).obj X = obj X := rfl
+
+lemma mk_map {V : Type*} [Quiver V] {obj : V → V} {map} {X Y : V} {f : X ⟶ Y} :
     (Prefunctor.mk obj map).map f = map f := rfl
 
 @[ext]
@@ -156,7 +155,7 @@ def Hom.unop {V} [Quiver V] {X Y : Vᵒᵖ} (f : X ⟶ Y) : unop Y ⟶ unop X :=
 #align quiver.hom.unop Quiver.Hom.unop
 
 /-- A type synonym for a quiver with no arrows. -/
--- Porting note: no has_nonempty_instance linter yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 def Empty (V : Type u) : Type u := V
 #align quiver.empty Quiver.Empty
