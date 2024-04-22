@@ -261,8 +261,7 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
     · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']
   refine (normalizedFactorsEquivOfQuotEquiv f ?_ ?_).trans ?_
-  · rwa [Ne.def, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S),
-      ← Ne.def]
+  · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)

@@ -826,6 +826,63 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme) (U : s → Opens X)
     exact (Opens.mem_iSup.mp this).choose_spec
 #align algebraic_geometry.Scheme.open_cover_of_supr_eq_top AlgebraicGeometry.Scheme.openCoverOfSuprEqTop
 
+namespace Scheme
+
+/--
+An affine open cover of `X` consists of a family of open immersions into `X` from
+spectra of rings.
+-/
+structure AffineOpenCover (X : Scheme.{u}) where
+  /-- index set of an affine open cover of a scheme `X` -/
+  J : Type v
+  /-- the ring associated to a component of an affine open cover -/
+  obj : J → CommRingCat.{u}
+  /-- the embedding of subschemes to `X` -/
+  map : ∀ j : J, Spec.obj (.op <| obj j) ⟶ X
+  /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
+  f : X.carrier → J
+  /-- the subschemes covers `X` -/
+  Covers : ∀ x, x ∈ Set.range (map (f x)).1.base
+  /-- the embedding of subschemes are open immersions -/
+  IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
+
+namespace AffineOpenCover
+
+attribute [instance] AffineOpenCover.IsOpen
+
+/-- The open cover associated to an affine open cover. -/
+@[simps]
+def openCover {X : Scheme.{u}} (𝓤 : X.AffineOpenCover) : X.OpenCover where
+  J := 𝓤.J
+  map := 𝓤.map
+  f := 𝓤.f
+  Covers := 𝓤.Covers
+
+end AffineOpenCover
+
+/-- A choice of an affine open cover of a scheme. -/
+def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
+  J := X.affineCover.J
+  map := X.affineCover.map
+  f := X.affineCover.f
+  Covers := X.affineCover.Covers
+
+@[simp]
+lemma openCover_affineOpenCover (X : Scheme.{u}) : X.affineOpenCover.openCover = X.affineCover :=
+  rfl
+
+/-- Given any open cover `𝓤`, this is an affine open cover which refines it.
+The morphism in the category of open covers which proves that this is indeed a refinement, see
+`AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
+-/
+def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
+  J := (𝓤.bind fun j => (𝓤.obj j).affineCover).J
+  map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
+  f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
+  Covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).Covers
+
+end Scheme
+
 section category
 
 /--
@@ -879,5 +936,11 @@ lemma Scheme.OpenCover.comp_app {X : Scheme.{u}} {𝓤 𝓥 𝓦 : X.OpenCover}
     (f ≫ g).app j = f.app j ≫ g.app _ := rfl
 
 end category
+
+/-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
+def Scheme.OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
+    𝓤.affineRefinement.openCover ⟶ 𝓤 where
+  idx j := j.fst
+  app j := (𝓤.obj j.fst).affineCover.map _
 
 end AlgebraicGeometry

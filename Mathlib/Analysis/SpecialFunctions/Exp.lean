@@ -38,7 +38,7 @@ theorem exp_bound_sq (x z : ℂ) (hz : ‖z‖ ≤ 1) :
       congr
       rw [exp_add]
       ring
-    _ = ‖exp x‖ * ‖exp z - 1 - z‖ := (norm_mul _ _)
+    _ = ‖exp x‖ * ‖exp z - 1 - z‖ := norm_mul _ _
     _ ≤ ‖exp x‖ * ‖z‖ ^ 2 :=
       mul_le_mul_of_nonneg_left (abs_exp_sub_one_sub_id_le hz) (norm_nonneg _)
 #align complex.exp_bound_sq Complex.exp_bound_sq
@@ -56,7 +56,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
     exact (norm_sub_norm_le _ _).trans this
   calc
     ‖exp y - exp x‖ = ‖exp (x + (y - x)) - exp x‖ := by nth_rw 1 [hy_eq]
-    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * ‖y - x‖ ^ 2 := (h_sq (y - x) (hyx.le.trans hr_le))
+    _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * ‖y - x‖ ^ 2 := h_sq (y - x) (hyx.le.trans hr_le)
     _ ≤ ‖y - x‖ * ‖exp x‖ + ‖exp x‖ * (r * ‖y - x‖) :=
       (add_le_add_left (mul_le_mul le_rfl hyx_sq_le (sq_nonneg _) (norm_nonneg _)) _)
     _ = (1 + r) * ‖exp x‖ * ‖y - x‖ := by ring
@@ -171,7 +171,7 @@ namespace Real
 
 variable {α : Type*} {x y z : ℝ} {l : Filter α}
 
-theorem exp_half (x : ℝ) : exp (x / 2) = sqrt (exp x) := by
+theorem exp_half (x : ℝ) : exp (x / 2) = √(exp x) := by
   rw [eq_comm, sqrt_eq_iff_sq_eq, sq, ← exp_add, add_halves] <;> exact (exp_pos _).le
 #align real.exp_half Real.exp_half
 

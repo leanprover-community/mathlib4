@@ -45,7 +45,7 @@ namespace AlgebraicGeometry
 open Spec (structureSheaf)
 
 /-- The category of affine schemes -/
--- Porting note: removed
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 def AffineScheme :=
   Scheme.Spec.EssImageSubcategory
@@ -107,13 +107,13 @@ def Spec : CommRingCatᵒᵖ ⥤ AffineScheme :=
 #align algebraic_geometry.AffineScheme.Spec AlgebraicGeometry.AffineScheme.Spec
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_full : Full Spec := Full.toEssImage _
+instance Spec_full : Spec.Full := Functor.Full.toEssImage _
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_faithful : Faithful Spec := Faithful.toEssImage _
+instance Spec_faithful : Spec.Faithful := Functor.Faithful.toEssImage _
 
 -- Porting note (#11081): cannot automatically derive
-instance Spec_essSurj : EssSurj Spec := EssSurj.toEssImage (F := _)
+instance Spec_essSurj : Spec.EssSurj := Functor.EssSurj.toEssImage (F := _)
 
 /-- The forgetful functor `AffineScheme ⥤ Scheme`. -/
 @[simps!]
@@ -122,12 +122,12 @@ def forgetToScheme : AffineScheme ⥤ Scheme :=
 #align algebraic_geometry.AffineScheme.forget_to_Scheme AlgebraicGeometry.AffineScheme.forgetToScheme
 
 -- Porting note (#11081): cannot automatically derive
-instance forgetToScheme_full : Full forgetToScheme :=
-show Full (Scheme.Spec.essImageInclusion) from inferInstance
+instance forgetToScheme_full : forgetToScheme.Full :=
+show (Scheme.Spec.essImageInclusion).Full from inferInstance
 
 -- Porting note (#11081): cannot automatically derive
-instance forgetToScheme_faithful : Faithful forgetToScheme :=
-show Faithful (Scheme.Spec.essImageInclusion) from inferInstance
+instance forgetToScheme_faithful : forgetToScheme.Faithful :=
+show (Scheme.Spec.essImageInclusion).Faithful from inferInstance
 
 /-- The global section functor of an affine scheme. -/
 def Γ : AffineSchemeᵒᵖ ⥤ CommRingCat :=
@@ -139,8 +139,9 @@ def equivCommRingCat : AffineScheme ≌ CommRingCatᵒᵖ :=
   equivEssImageOfReflective.symm
 #align algebraic_geometry.AffineScheme.equiv_CommRing AlgebraicGeometry.AffineScheme.equivCommRingCat
 
-instance ΓIsEquiv : IsEquivalence Γ.{u} :=
-  haveI : IsEquivalence Γ.{u}.rightOp.op := IsEquivalence.ofEquivalence equivCommRingCat.op
+instance ΓIsEquiv : Γ.{u}.IsEquivalence :=
+  haveI : Γ.{u}.rightOp.op.IsEquivalence :=
+    Functor.IsEquivalence.ofEquivalence equivCommRingCat.op
   Functor.isEquivalenceTrans Γ.{u}.rightOp.op (opOpEquivalence _).functor
 #align algebraic_geometry.AffineScheme.Γ_is_equiv AlgebraicGeometry.AffineScheme.ΓIsEquiv
 
@@ -155,7 +156,7 @@ instance hasLimits : HasLimits AffineScheme.{u} := by
 
 noncomputable instance Γ_preservesLimits : PreservesLimits Γ.{u}.rightOp :=
   @Adjunction.isEquivalencePreservesLimits _ _ _ _ Γ.rightOp
-    (IsEquivalence.ofEquivalence equivCommRingCat)
+    (Functor.IsEquivalence.ofEquivalence equivCommRingCat)
 
 noncomputable instance forgetToScheme_preservesLimits : PreservesLimits forgetToScheme := by
   apply (config := { allowSynthFailures := true })
@@ -533,7 +534,7 @@ theorem isLocalization_stalk'
   rw [IsAffineOpen.fromSpec_app_self, Category.assoc, TopCat.Presheaf.germ_res]
   rfl
 
--- Porting note: I have splitted this into two lemmas
+-- Porting note: I have split this into two lemmas
 theorem isLocalization_stalk (x : U) :
     IsLocalization.AtPrime (X.presheaf.stalk x) (hU.primeIdealOf x).asIdeal := by
   rcases x with ⟨x, hx⟩

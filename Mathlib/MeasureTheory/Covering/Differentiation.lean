@@ -144,7 +144,7 @@ theorem measure_le_of_frequently_le [SecondCountableTopology α] [BorelSpace α]
   haveI : Encodable h.index := h.index_countable.toEncodable
   calc
     ρ s ≤ ∑' x : h.index, ρ (h.covering x) := h.measure_le_tsum_of_absolutelyContinuous hρ
-    _ ≤ ∑' x : h.index, ν (h.covering x) := (ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1)
+    _ ≤ ∑' x : h.index, ν (h.covering x) := ENNReal.tsum_le_tsum fun x => (h.covering_mem x.2).1
     _ = ν (⋃ x : h.index, h.covering x) := by
       rw [measure_iUnion h.covering_disjoint_subtype fun i => h.measurableSet_u i.2]
     _ ≤ ν U := (measure_mono (iUnion_subset fun i => (h.covering_mem i.2).2))
@@ -172,7 +172,7 @@ theorem ae_eventually_measure_zero_of_singular (hρ : ρ ⟂ₘ μ) :
         conv_lhs => rw [← inter_union_compl s o]
         gcongr
         apply inter_subset_right
-      _ ≤ μ (s ∩ o) + μ oᶜ := (measure_union_le _ _)
+      _ ≤ μ (s ∩ o) + μ oᶜ := measure_union_le _ _
       _ = μ (s ∩ o) := by rw [μo, add_zero]
       _ = (ε : ℝ≥0∞)⁻¹ * (ε • μ) (s ∩ o) := by
         simp only [coe_nnreal_smul_apply, ← mul_assoc, mul_comm _ (ε : ℝ≥0∞)]
@@ -446,7 +446,7 @@ theorem measure_le_mul_of_subset_limRatioMeas_lt {p : ℝ≥0} {s : Set α}
   have A : μ tᶜ = 0 := v.ae_tendsto_limRatioMeas hρ
   suffices H : ρ (s ∩ t) ≤ (p • μ) (s ∩ t) by calc
     ρ s = ρ (s ∩ t ∪ s ∩ tᶜ) := by rw [inter_union_compl]
-    _ ≤ ρ (s ∩ t) + ρ (s ∩ tᶜ) := (measure_union_le _ _)
+    _ ≤ ρ (s ∩ t) + ρ (s ∩ tᶜ) := measure_union_le _ _
     _ ≤ (p • μ) (s ∩ t) + ρ tᶜ := by gcongr; apply inter_subset_right
     _ ≤ p * μ (s ∩ t) := by simp [(hρ A)]
     _ ≤ p * μ s := by gcongr; apply inter_subset_left
@@ -467,7 +467,7 @@ theorem mul_measure_le_of_subset_lt_limRatioMeas {q : ℝ≥0} {s : Set α}
   have A : μ tᶜ = 0 := v.ae_tendsto_limRatioMeas hρ
   suffices H : (q • μ) (s ∩ t) ≤ ρ (s ∩ t) by calc
     (q • μ) s = (q • μ) (s ∩ t ∪ s ∩ tᶜ) := by rw [inter_union_compl]
-    _ ≤ (q • μ) (s ∩ t) + (q • μ) (s ∩ tᶜ) := (measure_union_le _ _)
+    _ ≤ (q • μ) (s ∩ t) + (q • μ) (s ∩ tᶜ) := measure_union_le _ _
     _ ≤ ρ (s ∩ t) + (q • μ) tᶜ := by gcongr; apply inter_subset_right
     _ = ρ (s ∩ t) := by simp [A]
     _ ≤ ρ s := by gcongr; apply inter_subset_left

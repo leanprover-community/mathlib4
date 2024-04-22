@@ -207,7 +207,7 @@ theorem lfpApprox_ord_eq_lfp : lfpApprox f ⊥ (ord <| succ #α) = lfp f := by
 
 /-- Some ordinal approximation of the least fixed point is the least fixed point. -/
 theorem lfp_mem_range_lfpApprox : lfp f ∈ Set.range (lfpApprox f ⊥) := by
-  use (ord <| succ #α)
+  use ord <| succ #α
   exact lfpApprox_ord_eq_lfp f
 
 set_option linter.unusedVariables false in
