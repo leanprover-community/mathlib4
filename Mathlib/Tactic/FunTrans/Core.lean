@@ -355,6 +355,7 @@ def tryTheorems (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Functi
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
       trace[Meta.Tactic.fun_trans] s!"removing argument to later use {← ppOrigin' thm.thmOrigin}"
+      trace[Meta.Tactic.fun_trans] s!"NOT IMPLEMENTED"
       -- if let .some r ← removeArgRule funTransDecl e fData funTrans then
       --   return r
       return none
