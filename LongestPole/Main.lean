@@ -33,50 +33,52 @@ def runCurl (args : Array String) (throwFailure := true) : IO String := do
 
 def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 
-def SpeedCenterAPI.runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
+namespace SpeedCenterAPI
+
+def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
   runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
-structure SpeedCenterAPI.CommitSource where
+structure CommitSource where
   repo_id : String
   hash : String
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Source where
-  source : SpeedCenterAPI.CommitSource
+structure Source where
+  source : CommitSource
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Dimension where
+structure Dimension where
   benchmark : String
   metric : String
   unit : String
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Measurement where
-  dimension : SpeedCenterAPI.Dimension
+structure Measurement where
+  dimension : Dimension
   value : Float
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Result where
-  measurements : List SpeedCenterAPI.Measurement
+structure Result where
+  measurements : List Measurement
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Run where
+structure Run where
   id : String
-  source : SpeedCenterAPI.Source
-  result : SpeedCenterAPI.Result
+  source : Source
+  result : Result
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.RunResponse where
-  run : SpeedCenterAPI.Run
+structure RunResponse where
+  run : Run
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Message where
+structure Message where
   repo_id : String
   message : String
   commit_hash : String
 deriving ToJson, FromJson
 
-def SpeedCenterAPI.RunResponse.instructions (response : SpeedCenterAPI.RunResponse) :
+def RunResponse.instructions (response : RunResponse) :
     NameMap Float := Id.run do
   let mut r : NameMap Float := ∅
   for m in response.run.result.measurements do
@@ -85,23 +87,25 @@ def SpeedCenterAPI.RunResponse.instructions (response : SpeedCenterAPI.RunRespon
       r := r.insert (n.drop 1).toName m.value
   return r
 
-def SpeedCenterAPI.getRunResponse (hash : String) : IO SpeedCenterAPI.RunResponse := do
-  let r ← SpeedCenterAPI.runJson hash
+def getRunResponse (hash : String) : IO RunResponse := do
+  let r ← runJson hash
   match Json.parse r with
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
   | .ok j => match fromJson? j with
     | .ok v => pure v
     | .error e => match fromJson? j with
-      | .ok (v : SpeedCenterAPI.Message) =>
+      | .ok (v : Message) =>
         IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
         IO.eprintln s!"Try moving to an older commit?"
         IO.Process.exit 1
       | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
-def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
+def instructions (run : String) : IO (NameMap Float) :=
+  return (← getRunResponse run).instructions
 
-def SpeedCenterAPI.instructions (run : String) : IO (NameMap Float) :=
-  return (← SpeedCenterAPI.getRunResponse run).instructions
+end SpeedCenterAPI
+
+def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
 partial def cumulativeInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
