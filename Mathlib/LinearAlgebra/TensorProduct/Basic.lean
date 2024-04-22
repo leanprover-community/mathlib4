@@ -6,7 +6,6 @@ Authors: Kenny Lau, Mario Carneiro
 import Mathlib.Algebra.Module.Submodule.Bilinear
 import Mathlib.GroupTheory.Congruence
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.Tactic.SuppressCompilation
 
 #align_import linear_algebra.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
