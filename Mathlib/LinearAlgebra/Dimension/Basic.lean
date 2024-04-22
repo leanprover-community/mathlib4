@@ -101,10 +101,11 @@ theorem cardinal_le_rank' {s : Set M}
 
 end LinearIndependent
 
-@[deprecated]
+@[deprecated] -- 2023-12-27
 alias cardinal_lift_le_rank_of_linearIndependent := LinearIndependent.cardinal_lift_le_rank
-@[deprecated]
+@[deprecated] -- 2023-12-27
 alias cardinal_lift_le_rank_of_linearIndependent' := LinearIndependent.cardinal_lift_le_rank
+-- 2023-12-27
 @[deprecated] alias cardinal_le_rank_of_linearIndependent := LinearIndependent.cardinal_le_rank
 @[deprecated] alias cardinal_le_rank_of_linearIndependent' := LinearIndependent.cardinal_le_rank'
 
