@@ -479,11 +479,8 @@ lemma iSup_symmDiff_iSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α
 lemma biSup_symmDiff_biSup_le {α : Type*} {ι : Sort*} [CompleteBooleanAlgebra α] {p : ι → Prop}
     {f g : (i : ι) → p i → α} :
     symmDiff (⨆ i, ⨆ (h : p i), f i h) (⨆ i, ⨆ (h : p i), g i h) ≤
-    ⨆ i, ⨆ (h : p i), (symmDiff (f i h) (g i h)) := by
-  calc
-    symmDiff (⨆ i, ⨆ (h : p i), f i h) (⨆ i, ⨆ (h : p i), g i h)
-      ≤ ⨆ i, symmDiff (⨆ (h : p i), f i h) (⨆ (h : p i), g i h) := iSup_symmDiff_iSup_le
-    _ ≤ ⨆ i, ⨆ (h : p i), (symmDiff (f i h) (g i h)) := iSup_mono (fun i ↦ iSup_symmDiff_iSup_le)
+    ⨆ i, ⨆ (h : p i), (symmDiff (f i h) (g i h)) :=
+  le_trans iSup_symmDiff_iSup_le (iSup_mono (fun i ↦ iSup_symmDiff_iSup_le))
 
 end CompleteBooleanAlgebra
 
