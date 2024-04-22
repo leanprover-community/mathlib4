@@ -113,7 +113,12 @@ theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
     l.get i = l.get j ↔ i = j :=
   (nodup_iff_injective_get.1 h).eq_iff
 
-#align list.nodup.nth_le_inj_iff List.Nodup.get_inj_iff
+set_option linter.deprecated false in
+@[deprecated Nodup.get_inj_iff]
+theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
+    (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
+  ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
+#align list.nodup.nth_le_inj_iff List.Nodup.nthLe_inj_iff
 
 theorem nodup_iff_get?_ne_get? {l : List α} :
     l.Nodup ↔ ∀ i j : ℕ, i < j → j < l.length → l.get? i ≠ l.get? j := by

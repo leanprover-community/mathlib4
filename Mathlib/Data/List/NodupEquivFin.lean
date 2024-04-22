@@ -3,9 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
-import Mathlib.Data.Fin.Basic
-import Mathlib.Data.List.Sort
 import Mathlib.Data.List.Duplicate
+import Mathlib.Data.List.Sort
 
 #align_import data.list.nodup_equiv_fin from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
