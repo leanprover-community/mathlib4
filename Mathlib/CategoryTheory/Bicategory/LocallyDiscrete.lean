@@ -144,14 +144,23 @@ def toLoc (a : I) : LocallyDiscrete I := a
 
 def Quiver.Hom.toLoc {a b : I} (f : a ⟶ b) : toLoc a ⟶ toLoc b := ⟨f⟩
 
+@[simp]
+lemma toLoc.id (a : I) : (𝟙 a).toLoc = 𝟙 (toLoc a) := by
+  rfl
+
 -- Pseudofunctors from locally discrete categories to strict bicategories
-lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp ⟨𝟙 a⟩ ⟨f⟩).inv =
-    (F.mapId a).hom ▷ F.map ⟨f⟩ ≫ eqToHom (by simp; sorry) := by
-   -- (λ_ (F.map ⟨f⟩)).hom ≫ eqToHom (F.congr_map (Category.id_comp f.toLoc).symm) := by
-  have h := F.map₂_left_unitor ⟨f⟩
+lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (𝟙 a).toLoc f.toLoc).inv =
+    (F.mapId a).hom ▷ F.map f.toLoc ≫ eqToHom (by simp only [Category.id_comp, toLoc.id]) := by
+  have h := F.map₂_left_unitor f.toLoc
   simp at h
   rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
   simp at h
   apply h
 
-    --(congrArg F.map (id_comp f).symm) := by
+lemma map₂_right_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp f.toLoc (𝟙 b).toLoc).inv =
+    F.map f.toLoc ◁ (F.mapId b).hom ≫ eqToHom (by simp; apply Strict.comp_id) := by
+  have h := F.map₂_right_unitor f.toLoc
+  simp at h
+  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
+  simp at h
+  apply h
