@@ -187,48 +187,6 @@ instance decidableLE : @DecidableRel PosNum (· ≤ ·)
 
 end PosNum
 
-section
-
-variable {α : Type*} [One α] [Add α]
-
-section deprecated
-set_option linter.deprecated false
-
-/-- `castPosNum` casts a `PosNum` into any type which has `1` and `+`. -/
-@[deprecated, coe] -- 2022-11-18
-def castPosNum : PosNum → α
-  | 1 => 1
-  | PosNum.bit0 a => bit0 (castPosNum a)
-  | PosNum.bit1 a => bit1 (castPosNum a)
-#align cast_pos_num castPosNum
-
-/-- `castNum` casts a `Num` into any type which has `0`, `1` and `+`. -/
-@[deprecated, coe] -- 2022-11-18
-def castNum [Zero α] : Num → α
-  | 0 => 0
-  | Num.pos p => castPosNum p
-#align cast_num castNum
-
--- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) posNumCoe : CoeHTCT PosNum α :=
-  ⟨castPosNum⟩
-#align pos_num_coe posNumCoe
-
--- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) numNatCoe [Zero α] : CoeHTCT Num α :=
-  ⟨castNum⟩
-#align num_nat_coe numNatCoe
-
-end deprecated
-
-instance : Repr PosNum :=
-  ⟨fun n _ => repr (n : ℕ)⟩
-
-instance : Repr Num :=
-  ⟨fun n _ => repr (n : ℕ)⟩
-
-end
-
 namespace Num
 
 open PosNum
@@ -667,26 +625,3 @@ def gcd (a b : ZNum) : Num :=
 #align znum.gcd ZNum.gcd
 
 end ZNum
-
-section
-
-set_option linter.deprecated false
-variable {α : Type*} [Zero α] [One α] [Add α] [Neg α]
-
-/-- `castZNum` casts a `ZNum` into any type which has `0`, `1`, `+` and `neg` -/
-@[deprecated, coe] -- 2022-11-18
-def castZNum : ZNum → α
-  | 0 => 0
-  | ZNum.pos p => p
-  | ZNum.neg p => -p
-#align cast_znum castZNum
-
--- see Note [coercion into rings]
-@[deprecated] instance (priority := 900) znumCoe : CoeHTCT ZNum α :=
-  ⟨castZNum⟩
-#align znum_coe znumCoe
-
-instance : Repr ZNum :=
-  ⟨fun n _ => repr (n : ℤ)⟩
-
-end
