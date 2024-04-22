@@ -3,6 +3,7 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Lorenzo Luccioli
 -/
+import Mathlib.MeasureTheory.Measure.Prod
 import Mathlib.Probability.Kernel.Basic
 
 /-!
@@ -409,6 +410,8 @@ theorem fst_apply (κ : Kernel α (β × γ)) (a : α) : fst κ a = (κ a).map P
 
 theorem fst_apply' (κ : Kernel α (β × γ)) (a : α) {s : Set β} (hs : MeasurableSet s) :
     fst κ a s = κ a {p | p.1 ∈ s} := by rw [fst_apply, Measure.map_apply measurable_fst hs]; rfl
+
+theorem coe_fst (κ : Kernel α (β × γ)) (a : α) : (fst κ a : Measure β) = Measure.fst (κ a) := rfl
 
 @[simp]
 lemma fst_zero : fst (0 : Kernel α (β × γ)) = 0 := by simp [fst]
