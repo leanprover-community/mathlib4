@@ -165,8 +165,7 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
   NNReal.coe_injective.eq_iff
 #align nnreal.coe_eq NNReal.coe_inj
 
--- 2024-02-03
-@[deprecated] protected alias coe_eq := coe_inj
+@[deprecated] protected alias coe_eq := coe_inj -- 2024-02-03
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 #align nnreal.coe_zero NNReal.coe_zero
