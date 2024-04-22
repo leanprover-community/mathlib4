@@ -430,6 +430,10 @@ theorem embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) 
     ((embedding_of_isReal hw) x : ℂ) = (embedding w) x :=
   ComplexEmbedding.IsReal.coe_embedding_apply (isReal_iff.mp hw) x
 
+theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
+    ‖embedding_of_isReal hw x‖ = w x := by
+  rw [← norm_embedding_eq, ← embedding_of_isReal_apply hw, Complex.norm_real]
+
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
