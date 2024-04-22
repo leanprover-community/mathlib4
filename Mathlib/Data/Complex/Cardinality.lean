@@ -13,7 +13,7 @@ import Mathlib.Data.Real.Cardinality
 
 This file shows that the complex numbers have cardinality continuum, i.e. `#ℂ = 𝔠`.
 -/
--- porting note: the lemmas `mk_complex` and `mk_univ_complex` should be in the namespace `Cardinal`
+-- Porting note: the lemmas `mk_complex` and `mk_univ_complex` should be in the namespace `Cardinal`
 -- like their real counterparts.
 
 open Cardinal Set

@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.Algebra.Function.Support
 import Mathlib.Order.WellFoundedSet
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -30,8 +31,7 @@ in the file `RingTheory/LaurentSeries`.
 set_option linter.uppercaseLean3 false
 
 open Finset Function
-
-open BigOperators Classical
+open scoped Classical
 
 noncomputable section
 
@@ -112,7 +112,7 @@ theorem support_zero : support (0 : HahnSeries Γ R) = ∅ :=
 
 @[simp]
 nonrec theorem support_nonempty_iff {x : HahnSeries Γ R} : x.support.Nonempty ↔ x ≠ 0 := by
-  rw [support, support_nonempty_iff, Ne.def, coeff_fun_eq_zero_iff]
+  rw [support, support_nonempty_iff, Ne, coeff_fun_eq_zero_iff]
 #align hahn_series.support_nonempty_iff HahnSeries.support_nonempty_iff
 
 @[simp]
@@ -135,7 +135,7 @@ def of_iterate {Γ' : Type*} [PartialOrder Γ'] (x : HahnSeries Γ (HahnSeries �
       rw [hn] at hf
       exact hf rfl
     sorry
--- See Mathlib.Data.MvPolynomial.Monad for join and bind operations
+-- See Mathlib.Algebra.MvPolynomial.Monad for join and bind operations
 need a monotone pair. have:
 nonrec theorem IsPWO.exists_monotone_subseq (h : s.IsPWO) (f : ℕ → α) (hf : ∀ n, f n ∈ s) :
     ∃ g : ℕ ↪o ℕ, Monotone (f ∘ g) :=
@@ -348,5 +348,48 @@ theorem embDomain_injective {f : Γ ↪o Γ'} :
 end Domain
 
 end Zero
+
+section LocallyFiniteLinearOrder
+
+variable [Zero R] [LinearOrder Γ] [LocallyFiniteOrder Γ]
+
+theorem suppBddBelow_supp_PWO (f : Γ → R) (hf : BddBelow (Function.support f)) :
+    (Function.support f).IsPWO := Set.isWF_iff_isPWO.mp hf.wellFoundedOn_lt
+
+theorem forallLTEqZero_supp_BddBelow (f : Γ → R) (n : Γ) (hn : ∀(m : Γ), m < n → f m = 0) :
+    BddBelow (Function.support f) := by
+  simp only [BddBelow, Set.Nonempty, lowerBounds]
+  use n
+  intro m hm
+  rw [Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
+
+/-- Construct a Hahn series from any function whose support is bounded below. -/
+@[simps]
+def ofSuppBddBelow (f : Γ → R) (hf : BddBelow (Function.support f)) : HahnSeries Γ R where
+  coeff := f
+  isPWO_support' := suppBddBelow_supp_PWO f hf
+
+theorem BddBelow_zero [Nonempty Γ] : BddBelow (Function.support (0 : Γ → R)) := by
+  simp only [support_zero', bddBelow_empty]
+
+@[simp]
+theorem zero_ofSuppBddBelow [Nonempty Γ] : ofSuppBddBelow 0 BddBelow_zero = (0 : HahnSeries Γ R) :=
+  rfl
+
+theorem order_ofForallLtEqZero [Zero Γ] (f : Γ → R) (hf : f ≠ 0) (n : Γ)
+    (hn : ∀(m : Γ), m < n → f m = 0) :
+    n ≤ order (ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn)) := by
+  dsimp only [order]
+  by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
+  cases h
+  exact (hf rfl).elim
+  simp_all only [dite_false]
+  rw [Set.IsWF.le_min_iff]
+  intro m hm
+  rw [HahnSeries.support, Function.mem_support, ne_eq] at hm
+  exact not_lt.mp (mt (hn m) hm)
+
+end LocallyFiniteLinearOrder
 
 end HahnSeries

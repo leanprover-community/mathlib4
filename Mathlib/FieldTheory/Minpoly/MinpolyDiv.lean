@@ -138,7 +138,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
   induction i with
   | zero => simp [(minpolyDiv_monic hx).leadingCoeff]
   | succ i IH =>
-    rw [coeff_minpolyDiv, add_sub_assoc, pow_succ', ← sub_mul, Algebra.algebraMap_eq_smul_one]
+    rw [coeff_minpolyDiv, add_sub_assoc, pow_succ, ← sub_mul, Algebra.algebraMap_eq_smul_one]
     refine add_mem ?_ ?_
     · apply Submodule.smul_mem
       apply Submodule.subset_span
@@ -152,7 +152,7 @@ lemma coeff_minpolyDiv_sub_pow_mem_span {i} (hi : i ≤ natDegree (minpolyDiv R 
       apply Submodule.span_mono
       rintro _ ⟨j, hj, rfl⟩
       rw [Set.mem_Iio] at hj
-      exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ' x j⟩
+      exact ⟨j + 1, Nat.add_lt_of_lt_sub hj, pow_succ x j⟩
 
 lemma span_coeff_minpolyDiv :
     Submodule.span R (Set.range (coeff (minpolyDiv R x))) =
@@ -197,7 +197,7 @@ lemma sum_smul_minpolyDiv_eq_X_pow (E) [Field E] [Algebra K E] [IsAlgClosed E]
     simp only [Polynomial.map_smul, map_div₀, map_pow, RingHom.coe_coe, eval_sub, eval_finset_sum,
       eval_smul, eval_map, eval₂_minpolyDiv_self, this.eq_iff, smul_eq_mul, mul_ite, mul_zero,
       Finset.sum_ite_eq', Finset.mem_univ, ite_true, eval_pow, eval_X]
-    rw [sub_eq_zero, div_mul_cancel]
+    rw [sub_eq_zero, div_mul_cancel₀]
     rw [ne_eq, map_eq_zero_iff σ σ.toRingHom.injective]
     exact (IsSeparable.separable _ _).aeval_derivative_ne_zero (minpoly.aeval _ _)
   · refine (Polynomial.natDegree_sub_le _ _).trans_lt

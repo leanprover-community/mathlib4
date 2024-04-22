@@ -197,7 +197,6 @@ instance instSMulCommClass_sphere_sphere_sphere :
 end SMulCommClass
 
 variable (𝕜)
-
 variable [CharZero 𝕜]
 
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>

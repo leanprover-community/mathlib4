@@ -87,9 +87,7 @@ open Polynomial
 open Polynomial
 
 variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-
 variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
-
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
@@ -165,7 +163,7 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
     · exact isIntegral_zero
   · intro hx
     rw [pow_succ]
-    exact repr_mul_isIntegral hB hx (fun _ => hn _ le_rfl (fun _ => hx _) _) hmin
+    exact repr_mul_isIntegral hB (fun _ => hn _ le_rfl (fun _ => hx _) _) hx hmin
 #align power_basis.repr_pow_is_integral PowerBasis.repr_pow_isIntegral
 
 /-- Let `B B' : PowerBasis K S` be such that `IsIntegral R B.gen`, and let `P : R[X]` be such that

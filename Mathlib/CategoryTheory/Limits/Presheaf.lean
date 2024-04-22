@@ -41,9 +41,6 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Limits
@@ -53,9 +50,7 @@ universe v₁ v₂ u₁ u₂
 section SmallCategory
 
 variable {C : Type u₁} [SmallCategory C]
-
 variable {ℰ : Type u₂} [Category.{u₁} ℰ]
-
 variable (A : C ⥤ ℰ)
 
 namespace ColimitAdj
@@ -148,12 +143,12 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
   rfl
 #align category_theory.colimit_adj.extend_along_yoneda_obj CategoryTheory.ColimitAdj.extendAlongYoneda_obj
 
--- porting note: adding this lemma because lean 4 ext no longer applies all ext lemmas when
+-- Porting note: adding this lemma because lean 4 ext no longer applies all ext lemmas when
 -- stuck (and hence can see through definitional equalities). The previous lemma shows that
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
-@[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
+@[ext] lemma extendAlongYoneda_obj.hom_ext {X : ℰ} {P : Cᵒᵖ ⥤ Type u₁}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
       colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f') : f = f' :=
@@ -166,11 +161,11 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
   erw [colimit.ι_pre ((CategoryOfElements.π Y).leftOp ⋙ A) (CategoryOfElements.map f).op]
   dsimp only [extendAlongYoneda, restrictYonedaHomEquiv, IsColimit.homIso', IsColimit.homIso,
     uliftTrivial]
-  -- porting note: in mathlib3 the rest of the proof was `simp, refl`; this is squeezed
+  -- Porting note: in mathlib3 the rest of the proof was `simp, refl`; this is squeezed
   -- and appropriately reordered, presumably because of a non-confluence issue.
   simp only [Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
     Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk,
-    Iso.toEquiv_symm_fun, id.def, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
+    Iso.toEquiv_symm_fun, id, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
     Cocone.extend_ι, Cocone.extensions_app, Functor.map_id, Category.comp_id, colimit.cocone_ι]
   simp only [Functor.comp_obj, Functor.leftOp_obj, CategoryOfElements.π_obj, colimit.cocone_x,
     Functor.comp_map, Functor.leftOp_map, CategoryOfElements.π_map, Opposite.unop_op,
@@ -222,7 +217,7 @@ noncomputable def isExtensionAlongYoneda :
         (colimitOfDiagramTerminal (terminalOpOfInitial (isInitial _)) _))
     (by
       intro X Y f
-      -- porting note: this is slightly different to the `change` in mathlib3 which
+      -- Porting note: this is slightly different to the `change` in mathlib3 which
       -- didn't work
       change (colimit.desc _ _ ≫ _) = colimit.desc _ _ ≫ _
       ext
@@ -293,7 +288,7 @@ noncomputable def extendOfCompYonedaIsoLan {D : Type u₁} [SmallCategory D] (F 
 set_option linter.uppercaseLean3 false in
 #align category_theory.colimit_adj.extend_of_comp_yoneda_iso_Lan CategoryTheory.ColimitAdj.extendOfCompYonedaIsoLan
 
--- porting note: attaching `[simps!]` directly to the declaration causes a timeout.
+-- Porting note: attaching `[simps!]` directly to the declaration causes a timeout.
 attribute [simps!] extendOfCompYonedaIsoLan
 
 end ColimitAdj
@@ -362,7 +357,7 @@ The result of [MM92], Chapter I, Section 5, Corollary 3.
 -/
 noncomputable def colimitOfRepresentable (P : Cᵒᵖ ⥤ Type u₁) :
     IsColimit (coconeOfRepresentable P) := by
-  -- porting note:
+  -- Porting note:
   -- the `suffices` was not necessary in mathlib3; the function being `apply`ed has an
   -- `IsIso` input in square brackets; lean 3 was happy to give the user the input as a goal but
   -- lean 4 complains that typeclass inference can't find it.
@@ -389,7 +384,7 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
   · intro P₁ P₂ f
     apply (isColimitOfPreserves L₁ (colimitOfRepresentable P₁)).hom_ext
     intro j
-    dsimp only [id.def, isoWhiskerLeft_hom]
+    dsimp only [id, isoWhiskerLeft_hom]
     have :
       (L₁.mapCocone (coconeOfRepresentable P₁)).ι.app j ≫ L₁.map f =
         (L₁.mapCocone (coconeOfRepresentable P₂)).ι.app

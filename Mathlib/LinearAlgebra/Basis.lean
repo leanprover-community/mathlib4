@@ -234,7 +234,7 @@ theorem coe_sumCoords_eq_finsum : (b.sumCoords : M → R) = fun m => ∑ᶠ i, b
   ext m
   simp only [Basis.sumCoords, Basis.coord, Finsupp.lapply_apply, LinearMap.id_coe,
     LinearEquiv.coe_coe, Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp,
-    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id.def,
+    finsum_eq_sum _ (b.repr m).finite_support, Finsupp.sum, Finset.finite_toSet_toFinset, id,
     Finsupp.fun_support_eq]
 #align basis.coe_sum_coords_eq_finsum Basis.coe_sumCoords_eq_finsum
 
@@ -244,13 +244,13 @@ theorem coe_sumCoords_of_fintype [Fintype ι] : (b.sumCoords : M → R) = ∑ i,
   -- Porting note: - `eq_self_iff_true`
   --               + `comp_apply` `LinearMap.coeFn_sum`
   simp only [sumCoords, Finsupp.sum_fintype, LinearMap.id_coe, LinearEquiv.coe_coe, coord_apply,
-    id.def, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
+    id, Fintype.sum_apply, imp_true_iff, Finsupp.coe_lsum, LinearMap.coe_comp, comp_apply,
     LinearMap.coeFn_sum]
 #align basis.coe_sum_coords_of_fintype Basis.coe_sumCoords_of_fintype
 
 @[simp]
 theorem sumCoords_self_apply : b.sumCoords (b i) = 1 := by
-  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id.def, Basis.repr_self,
+  simp only [Basis.sumCoords, LinearMap.id_coe, LinearEquiv.coe_coe, id, Basis.repr_self,
     Function.comp_apply, Finsupp.coe_lsum, LinearMap.coe_comp, Finsupp.sum_single_index]
 #align basis.sum_coords_self_apply Basis.sumCoords_self_apply
 
@@ -313,8 +313,8 @@ theorem repr_apply_eq (f : M → ι → R) (hadd : ∀ x y, f (x + y) = f x + f 
     (x : M) (i : ι) : b.repr x i = f x i := by
   let f_i : M →ₗ[R] R :=
     { toFun := fun x => f x i
-      -- Porting note: `dsimp only []` is required for beta reduction.
-      map_add' := fun _ _ => by dsimp only []; rw [hadd, Pi.add_apply]
+      -- Porting note(#12129): additional beta reduction needed
+      map_add' := fun _ _ => by beta_reduce; rw [hadd, Pi.add_apply]
       map_smul' := fun _ _ => by simp [hsmul, Pi.smul_apply] }
   have : Finsupp.lapply i ∘ₗ ↑b.repr = f_i := by
     refine' b.ext fun j => _
@@ -409,7 +409,6 @@ end MapCoeffs
 section Reindex
 
 variable (b' : Basis ι' R M')
-
 variable (e : ι ≃ ι')
 
 /-- `b.reindex (e : ι ≃ ι')` is a basis indexed by `ι'` -/
@@ -593,7 +592,6 @@ theorem mem_submodule_iff {P : Submodule R M} (b : Basis ι R P) {x : M} :
 section Constr
 
 variable (S : Type*) [Semiring S] [Module S M']
-
 variable [SMulCommClass R S M']
 
 /-- Construct a linear map given the value at the basis, called `Basis.constr b S f` where `b` is
@@ -666,7 +664,6 @@ end Constr
 section Equiv
 
 variable (b' : Basis ι' R M') (e : ι ≃ ι')
-
 variable [AddCommMonoid M''] [Module R M'']
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`, and the index types are equivalent,
@@ -980,7 +977,6 @@ theorem Basis.equivFun_ofEquivFun [Finite ι] (e : M ≃ₗ[R] ι → R) :
 #align basis.equiv_fun_of_equiv_fun Basis.equivFun_ofEquivFun
 
 variable (S : Type*) [Semiring S] [Module S M']
-
 variable [SMulCommClass R S M']
 
 @[simp]
@@ -1012,9 +1008,7 @@ section CommSemiring
 namespace Basis
 
 variable [CommSemiring R]
-
 variable [AddCommMonoid M] [Module R M] [AddCommMonoid M'] [Module R M']
-
 variable (b : Basis ι R M) (b' : Basis ι' R M')
 
 /-- If `b` is a basis for `M` and `b'` a basis for `M'`,
@@ -1070,13 +1064,9 @@ section Module
 open LinearMap
 
 variable {v : ι → M}
-
 variable [Ring R] [CommRing R₂] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M'']
-
 variable [Module R M] [Module R₂ M] [Module R M'] [Module R M'']
-
 variable {c d : R} {x y : M}
-
 variable (b : Basis ι R M)
 
 namespace Basis
@@ -1293,7 +1283,7 @@ noncomputable def mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fi
 theorem coe_mkFinCons {n : ℕ} {N : Submodule R M} (y : M) (b : Basis (Fin n) R N)
     (hli : ∀ (c : R), ∀ x ∈ N, c • y + x = 0 → c = 0) (hsp : ∀ z : M, ∃ c : R, z + c • y ∈ N) :
     (mkFinCons y b hli hsp : Fin (n + 1) → M) = Fin.cons y ((↑) ∘ b) := by
-  -- porting note: without `unfold`, Lean can't reuse the proofs included in the definition
+  -- Porting note: without `unfold`, Lean can't reuse the proofs included in the definition
   -- `mkFinCons`
   unfold mkFinCons
   exact coe_mk (v := Fin.cons y (N.subtype ∘ b)) _ _
@@ -1368,7 +1358,7 @@ def Submodule.inductionOnRankAux (b : Basis ι R M) (P : Submodule R M → Sort*
     simpa [x_mem] using x_ortho 1 0 N.zero_mem
   induction' n with n rank_ih generalizing N
   · suffices N = ⊥ by rwa [this]
-    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => le_zero_iff.mp (rank_le _ hv)
+    apply Basis.eq_bot_of_rank_eq_zero b _ fun m hv => Nat.le_zero.mp (rank_le _ hv)
   apply ih
   intro N' N'_le x x_mem x_ortho
   apply rank_ih
@@ -1434,11 +1424,8 @@ lemma Basis.mem_center_iff {A}
 section RestrictScalars
 
 variable {S : Type*} [CommRing R] [Ring S] [Nontrivial S] [AddCommGroup M]
-
 variable [Algebra R S] [Module S M] [Module R M]
-
 variable [IsScalarTower R S M] [NoZeroSMulDivisors R S] (b : Basis ι S M)
-
 variable (R)
 
 open Submodule
@@ -1491,9 +1478,7 @@ open Basis Cardinal
 universe v v' v'' u₁' w w'
 
 variable {R : Type u} {M M₁ : Type v} {M' : Type v'} {ι : Type w}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M'] [AddCommGroup M₁] [Nontrivial R]
-
 variable [Module R M] [Module R M'] [Module R M₁]
 
 -- One might hope that a finite spanning set implies that any linearly independent set is finite.

@@ -22,7 +22,8 @@ This file provides lemmas about the interaction between infinite sums and multip
 
 open Filter Finset Function
 
-open BigOperators Classical
+open scoped Classical
+open BigOperators
 
 variable {ι κ R α : Type*}
 
@@ -195,7 +196,7 @@ section HasAntidiagonal
 variable {A : Type*} [AddCommMonoid A] [HasAntidiagonal A]
 variable [TopologicalSpace α] [NonUnitalNonAssocSemiring α] {f g : A → α}
 
-/- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
+/-- The family `(k, l) : ℕ × ℕ ↦ f k * g l` is summable if and only if the family
 `(n, k, l) : Σ (n : ℕ), antidiagonal n ↦ f k * g l` is summable. -/
 theorem summable_mul_prod_iff_summable_mul_sigma_antidiagonal :
     (Summable fun x : A × A ↦ f x.1 * g x.2) ↔

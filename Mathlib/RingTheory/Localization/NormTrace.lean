@@ -40,13 +40,9 @@ field norm, algebra norm, localization
 open scoped nonZeroDivisors
 
 variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
-
 variable {Rₘ Sₘ : Type*} [CommRing Rₘ] [Algebra R Rₘ] [CommRing Sₘ] [Algebra S Sₘ]
-
 variable (M : Submonoid R)
-
 variable [IsLocalization M Rₘ] [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable [Algebra Rₘ Sₘ] [Algebra R Sₘ] [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
 
 open Algebra
@@ -90,11 +86,8 @@ theorem Algebra.trace_localization [Module.Free R S] [Module.Finite R S] (a : S)
 section LocalizationLocalization
 
 variable (Sₘ : Type*) [CommRing Sₘ] [Algebra S Sₘ] [Algebra Rₘ Sₘ] [Algebra R Sₘ]
-
 variable [IsScalarTower R Rₘ Sₘ] [IsScalarTower R S Sₘ]
-
 variable [IsLocalization (Algebra.algebraMapSubmonoid S M) Sₘ]
-
 variable {ι : Type*} [Fintype ι] [DecidableEq ι]
 
 theorem Algebra.traceMatrix_localizationLocalization (b : Basis ι R S) :

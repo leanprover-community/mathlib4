@@ -43,7 +43,6 @@ Instances of these typeclasses mostly involving `RingHom.id` are also provided:
 
 
 variable {R₁ : Type*} {R₂ : Type*} {R₃ : Type*}
-
 variable [Semiring R₁] [Semiring R₂] [Semiring R₃]
 
 /-- Class that expresses that a ring homomorphism is in fact the identity. -/
@@ -180,7 +179,8 @@ theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : F
 namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
--- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
+-- @[nolint dangerous_instance]
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩
@@ -197,5 +197,7 @@ theorem comp [RingHomCompTriple σ₁₂ σ₂₃ σ₁₃] [RingHomSurjective �
       have := σ₂₃.surjective.comp σ₁₂.surjective
       rwa [← RingHom.coe_comp, RingHomCompTriple.comp_eq] at this }
 #align ring_hom_surjective.comp RingHomSurjective.comp
+
+instance (σ : R₁ ≃+* R₂) : RingHomSurjective (σ : R₁ →+* R₂) := ⟨σ.surjective⟩
 
 end RingHomSurjective

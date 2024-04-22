@@ -86,7 +86,7 @@ class CstarRing (E : Type*) [NonUnitalNormedRing E] [StarRing E] : Prop where
   norm_star_mul_self : ∀ {x : E}, ‖x⋆ * x‖ = ‖x‖ * ‖x‖
 #align cstar_ring CstarRing
 
-instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id.def, norm_mul]
+instance : CstarRing ℝ where norm_star_mul_self {x} := by simp only [star, id, norm_mul]
 
 namespace CstarRing
 
@@ -138,7 +138,7 @@ theorem star_mul_self_eq_zero_iff (x : E) : x⋆ * x = 0 ↔ x = 0 := by
 #align cstar_ring.star_mul_self_eq_zero_iff CstarRing.star_mul_self_eq_zero_iff
 
 theorem star_mul_self_ne_zero_iff (x : E) : x⋆ * x ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne.def, star_mul_self_eq_zero_iff]
+  simp only [Ne, star_mul_self_eq_zero_iff]
 #align cstar_ring.star_mul_self_ne_zero_iff CstarRing.star_mul_self_ne_zero_iff
 
 @[simp]
@@ -147,7 +147,7 @@ theorem mul_star_self_eq_zero_iff (x : E) : x * x⋆ = 0 ↔ x = 0 := by
 #align cstar_ring.mul_star_self_eq_zero_iff CstarRing.mul_star_self_eq_zero_iff
 
 theorem mul_star_self_ne_zero_iff (x : E) : x * x⋆ ≠ 0 ↔ x ≠ 0 := by
-  simp only [Ne.def, mul_star_self_eq_zero_iff]
+  simp only [Ne, mul_star_self_eq_zero_iff]
 #align cstar_ring.mul_star_self_ne_zero_iff CstarRing.mul_star_self_ne_zero_iff
 
 end NonUnital
@@ -155,11 +155,8 @@ end NonUnital
 section ProdPi
 
 variable {ι R₁ R₂ : Type*} {R : ι → Type*}
-
 variable [NonUnitalNormedRing R₁] [StarRing R₁] [CstarRing R₁]
-
 variable [NonUnitalNormedRing R₂] [StarRing R₂] [CstarRing R₂]
-
 variable [∀ i, NonUnitalNormedRing (R i)] [∀ i, StarRing (R i)]
 
 /-- This instance exists to short circuit type class resolution because of problems with
@@ -251,7 +248,7 @@ theorem norm_mul_coe_unitary (A : E) (U : unitary E) : ‖A * U‖ = ‖A‖ :=
   calc
     _ = ‖((U : E)⋆ * A⋆)⋆‖ := by simp only [star_star, star_mul]
     _ = ‖(U : E)⋆ * A⋆‖ := by rw [norm_star]
-    _ = ‖A⋆‖ := (norm_mem_unitary_mul (star A) (unitary.star_mem U.prop))
+    _ = ‖A⋆‖ := norm_mem_unitary_mul (star A) (unitary.star_mem U.prop)
     _ = ‖A‖ := norm_star _
 #align cstar_ring.norm_mul_coe_unitary CstarRing.norm_mul_coe_unitary
 
@@ -267,7 +264,7 @@ theorem IsSelfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing 
     (hx : IsSelfAdjoint x) (n : ℕ) : ‖x ^ 2 ^ n‖₊ = ‖x‖₊ ^ 2 ^ n := by
   induction' n with k hk
   · simp only [pow_zero, pow_one, Nat.zero_eq]
-  · rw [pow_succ, pow_mul', sq]
+  · rw [pow_succ', pow_mul', sq]
     nth_rw 1 [← selfAdjoint.mem_iff.mp hx]
     rw [← star_pow, CstarRing.nnnorm_star_mul_self, ← sq, hk, pow_mul']
 #align is_self_adjoint.nnnorm_pow_two_pow IsSelfAdjoint.nnnorm_pow_two_pow
@@ -280,11 +277,8 @@ theorem selfAdjoint.nnnorm_pow_two_pow [NormedRing E] [StarRing E] [CstarRing E]
 section starₗᵢ
 
 variable [CommSemiring 𝕜] [StarRing 𝕜]
-
 variable [SeminormedAddCommGroup E] [StarAddMonoid E] [NormedStarGroup E]
-
 variable [Module 𝕜 E] [StarModule 𝕜 E]
-
 variable (𝕜)
 
 /-- `star` bundled as a linear isometric equivalence -/

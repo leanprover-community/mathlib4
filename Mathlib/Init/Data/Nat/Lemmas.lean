@@ -496,7 +496,7 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 #align nat.strong_rec_on Nat.strongRecOn
 
--- porting note: added `elab_as_elim`
+-- Porting note: added `elab_as_elim`
 @[elab_as_elim]
 protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=

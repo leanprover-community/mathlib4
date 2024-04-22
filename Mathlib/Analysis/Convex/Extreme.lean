@@ -45,7 +45,8 @@ More not-yet-PRed stuff is available on the mathlib3 branch `sperner_again`.
 
 open Function Set
 
-open Affine Classical
+open scoped Classical
+open Affine
 
 variable {𝕜 E F ι : Type*} {π : ι → Type*}
 
@@ -250,7 +251,6 @@ end OrderedRing
 section LinearOrderedRing
 
 variable [LinearOrderedRing 𝕜] [AddCommGroup E] [Module 𝕜 E]
-
 variable [DenselyOrdered 𝕜] [NoZeroSMulDivisors 𝕜 E] {A B : Set E} {x : E}
 
 /-- A useful restatement using `segment`: `x` is an extreme point iff the only (closed) segments

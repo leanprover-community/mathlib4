@@ -56,7 +56,7 @@ lemma eval_modulus_sub (x : ZMod n) : χ (n - x) = χ (-x) := by simp
 
 lemma periodic {m : ℕ} (hm : n ∣ m) : Function.Periodic χ m := by
   intro a
-  rw [← ZMod.nat_cast_zmod_eq_zero_iff_dvd] at hm
+  rw [← ZMod.natCast_zmod_eq_zero_iff_dvd] at hm
   simp only [hm, add_zero]
 
 /-- A function that modifies the level of a Dirichlet character to some multiple
@@ -87,6 +87,7 @@ lemma changeLevel_trans {m d : ℕ} (hm : n ∣ m) (hd : m ∣ d) :
 
 lemma changeLevel_eq_cast_of_dvd {m : ℕ} (hm : n ∣ m) (a : Units (ZMod m)) :
     (changeLevel hm χ) a = χ (ZMod.cast (a : ZMod m)) := by
+  set_option tactic.skipAssignedInstances false in
   simpa [changeLevel_def, Function.comp_apply, MonoidHom.coe_comp] using
       toUnitHom_eq_char' _ <| ZMod.IsUnit_cast_of_dvd hm a
 

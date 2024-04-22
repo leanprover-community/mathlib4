@@ -28,10 +28,10 @@ We apply this API to `CompHaus` and define the functor
 
 universe w w' v u
 
-open CategoryTheory Opposite Limits regularCoverage ContinuousMap
+open CategoryTheory Opposite Limits regularTopology ContinuousMap
 
-variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{v})
-  (X : (Type (max u v))) [TopologicalSpace X]
+variable {C : Type u} [Category.{v} C] (G : C ⥤ TopCat.{w})
+  (X : Type w') [TopologicalSpace X]
 
 /--
 An auxiliary lemma to that allows us to use `QuotientMap.lift` in the proof of
@@ -65,6 +65,7 @@ theorem equalizerCondition_yonedaPresheaf
     [∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], PreservesLimit (cospan π π) G]
     (hq : ∀ (Z B : C) (π : Z ⟶ B) [EffectiveEpi π], QuotientMap (G.map π)) :
       EqualizerCondition (yonedaPresheaf G X) := by
+  apply EqualizerCondition.mk
   intro Z B π _ _
   refine ⟨fun a b h ↦ ?_, fun ⟨a, ha⟩ ↦ ?_⟩
   · simp only [yonedaPresheaf, unop_op, Quiver.Hom.unop_op, Set.coe_setOf, MapToEqualizer,

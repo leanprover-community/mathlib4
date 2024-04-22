@@ -7,7 +7,7 @@ import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.GroupTheory.Coset
 import Mathlib.GroupTheory.Subgroup.Pointwise
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import group_theory.double_coset from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -24,7 +24,7 @@ this is the usual left or right quotient of a group by a subgroup.
 * `rel`: The double coset relation defined by two subgroups `H K` of `G`.
 * `Doset.quotient`: The quotient of `G` by the double coset relation, i.e, `H \ G / K`.
 -/
--- porting note: removed import
+-- Porting note: removed import
 -- import Mathlib.Tactic.Group
 
 variable {G : Type*} [Group G] {α : Type*} [Mul α] (J : Subgroup G) (g : G)

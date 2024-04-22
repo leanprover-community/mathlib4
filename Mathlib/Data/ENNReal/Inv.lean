@@ -109,7 +109,7 @@ protected theorem mul_div_cancel' (h0 : a ≠ 0) (hI : a ≠ ∞) : a * (b / a) 
   rw [mul_comm, ENNReal.div_mul_cancel h0 hI]
 #align ennreal.mul_div_cancel' ENNReal.mul_div_cancel'
 
--- porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
+-- Porting note: `simp only [div_eq_mul_inv, mul_comm, mul_assoc]` doesn't work in the following two
 protected theorem mul_comm_div : a / b * c = a * (c / b) := by
   simp only [div_eq_mul_inv, mul_right_comm, ← mul_assoc]
 #align ennreal.mul_comm_div ENNReal.mul_comm_div
@@ -160,10 +160,10 @@ protected theorem mul_inv {a b : ℝ≥0∞} (ha : a ≠ 0 ∨ b ≠ ∞) (hb : 
   · replace hb : b ≠ 0 := coe_ne_zero.1 (hb.neg_resolve_left rfl)
     simp [hb]
   by_cases h'a : a = 0
-  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne.def,
+  · simp only [h'a, top_mul, ENNReal.inv_zero, ENNReal.coe_ne_top, zero_mul, Ne,
       not_false_iff, ENNReal.coe_zero, ENNReal.inv_eq_zero]
   by_cases h'b : b = 0
-  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne.def, not_false_iff,
+  · simp only [h'b, ENNReal.inv_zero, ENNReal.coe_ne_top, mul_top, Ne, not_false_iff,
       mul_zero, ENNReal.coe_zero, ENNReal.inv_eq_zero]
   rw [← ENNReal.coe_mul, ← ENNReal.coe_inv, ← ENNReal.coe_inv h'a, ← ENNReal.coe_inv h'b, ←
     ENNReal.coe_mul, mul_inv_rev, mul_comm]
@@ -265,7 +265,7 @@ theorem _root_.OrderIso.invENNReal_symm_apply (a : ℝ≥0∞ᵒᵈ) :
 @[simp] theorem div_top : a / ∞ = 0 := by rw [div_eq_mul_inv, inv_top, mul_zero]
 #align ennreal.div_top ENNReal.div_top
 
--- porting note: reordered 4 lemmas
+-- Porting note: reordered 4 lemmas
 
 theorem top_div : ∞ / a = if a = ∞ then 0 else ∞ := by simp [div_eq_mul_inv, top_mul']
 #align ennreal.top_div ENNReal.top_div
@@ -584,7 +584,7 @@ theorem exists_inv_two_pow_lt (ha : a ≠ 0) : ∃ n : ℕ, 2⁻¹ ^ n < a := by
 @[simp, norm_cast]
 theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ≥0∞) ^ n := by
   cases' n with n n
-  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_coe_nat]
+  · simp only [Int.ofNat_eq_coe, coe_pow, zpow_natCast]
   · have : r ^ n.succ ≠ 0 := pow_ne_zero (n + 1) hr
     simp only [zpow_negSucc, coe_inv this, coe_pow]
 #align ennreal.coe_zpow ENNReal.coe_zpow
@@ -592,7 +592,7 @@ theorem coe_zpow (hr : r ≠ 0) (n : ℤ) : (↑(r ^ n) : ℝ≥0∞) = (r : ℝ
 theorem zpow_pos (ha : a ≠ 0) (h'a : a ≠ ∞) (n : ℤ) : 0 < a ^ n := by
   cases n
   · simpa using ENNReal.pow_pos ha.bot_lt _
-  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne.def, not_false, ENNReal.inv_pos, false_and,
+  · simp only [h'a, pow_eq_top_iff, zpow_negSucc, Ne, not_false, ENNReal.inv_pos, false_and,
       not_false_eq_true]
 #align ennreal.zpow_pos ENNReal.zpow_pos
 
@@ -606,10 +606,10 @@ theorem exists_mem_Ico_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
     ∃ n : ℤ, x ∈ Ico (y ^ n) (y ^ (n + 1)) := by
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
-  have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
+  have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n ≤ x ∧ x < y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ico_zpow _ (one_lt_coe_iff.1 hy)
-    simpa only [Ne.def, coe_eq_zero] using hx
+    simpa only [Ne, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
@@ -619,10 +619,10 @@ theorem exists_mem_Ioc_zpow {x y : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) 
     ∃ n : ℤ, x ∈ Ioc (y ^ n) (y ^ (n + 1)) := by
   lift x to ℝ≥0 using h'x
   lift y to ℝ≥0 using h'y
-  have A : y ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using (zero_lt_one.trans hy).ne'
+  have A : y ≠ 0 := by simpa only [Ne, coe_eq_zero] using (zero_lt_one.trans hy).ne'
   obtain ⟨n, hn, h'n⟩ : ∃ n : ℤ, y ^ n < x ∧ x ≤ y ^ (n + 1) := by
     refine' NNReal.exists_mem_Ioc_zpow _ (one_lt_coe_iff.1 hy)
-    simpa only [Ne.def, coe_eq_zero] using hx
+    simpa only [Ne, coe_eq_zero] using hx
   refine' ⟨n, _, _⟩
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_lt_coe]
   · rwa [← ENNReal.coe_zpow A, ENNReal.coe_le_coe]
@@ -646,11 +646,11 @@ theorem Ioo_zero_top_eq_iUnion_Ico_zpow {y : ℝ≥0∞} (hy : 1 < y) (h'y : y �
 @[gcongr]
 theorem zpow_le_of_le {x : ℝ≥0∞} (hx : 1 ≤ x) {a b : ℤ} (h : a ≤ b) : x ^ a ≤ x ^ b := by
   induction' a with a a <;> induction' b with b b
-  · simp only [Int.ofNat_eq_coe, zpow_coe_nat]
+  · simp only [Int.ofNat_eq_coe, zpow_natCast]
     exact pow_le_pow_right hx (Int.le_of_ofNat_le_ofNat h)
   · apply absurd h (not_le_of_gt _)
     exact lt_of_lt_of_le (Int.negSucc_lt_zero _) (Int.ofNat_nonneg _)
-  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_coe_nat]
+  · simp only [zpow_negSucc, Int.ofNat_eq_coe, zpow_natCast]
     refine' (ENNReal.inv_le_one.2 _).trans _ <;> exact one_le_pow_of_one_le' hx _
   · simp only [zpow_negSucc, ENNReal.inv_le_inv]
     apply pow_le_pow_right hx
@@ -665,7 +665,7 @@ theorem monotone_zpow {x : ℝ≥0∞} (hx : 1 ≤ x) : Monotone ((x ^ ·) : ℤ
 protected theorem zpow_add {x : ℝ≥0∞} (hx : x ≠ 0) (h'x : x ≠ ∞) (m n : ℤ) :
     x ^ (m + n) = x ^ m * x ^ n := by
   lift x to ℝ≥0 using h'x
-  replace hx : x ≠ 0 := by simpa only [Ne.def, coe_eq_zero] using hx
+  replace hx : x ≠ 0 := by simpa only [Ne, coe_eq_zero] using hx
   simp only [← coe_zpow hx, zpow_add₀ hx, coe_mul]
 #align ennreal.zpow_add ENNReal.zpow_add
 

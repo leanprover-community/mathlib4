@@ -68,7 +68,7 @@ theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
     zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
+  simp only [pow_succ', mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
     Nat.succ_sub_succ, tsub_zero]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
 
@@ -106,7 +106,7 @@ instance verschiebungFun_isPoly : IsPoly p fun R _Rcr => @verschiebungFun p R _R
 -- Porting note: we add this example as a verification that Lean 4's instance resolution
 -- can handle what in Lean 3 we needed the `@[is_poly]` attribute to help with.
 example (p : ℕ) (f : ⦃R : Type _⦄ → [CommRing R] → WittVector p R → WittVector p R) [IsPoly p f] :
-    IsPoly p (λ (R : Type*) (I : CommRing R) => verschiebungFun ∘ (@f R I)) :=
+    IsPoly p (fun (R : Type*) (I : CommRing R) ↦ verschiebungFun ∘ (@f R I)) :=
   inferInstance
 
 variable {p}

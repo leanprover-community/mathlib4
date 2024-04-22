@@ -6,11 +6,12 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 #align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
-# A `coherence` tactic for monoidal categories, and `⊗≫` (composition up to associators)
+# A `coherence` tactic for monoidal categories
 
 We provide a `coherence` tactic,
 which proves equations where the two sides differ by replacing
@@ -22,9 +23,6 @@ which proves that any two morphisms (with the same source and target)
 in a monoidal category which are built out of associators and unitors
 are equal.
 
-We also provide `f ⊗≫ g`, the `monoidal_comp` operation,
-which automatically inserts associators and unitors as needed
-to make the target of `f` match the source of `g`.
 -/
 
 set_option autoImplicit true
@@ -90,133 +88,15 @@ instance LiftHom_comp {X Y Z : C} [LiftObj X] [LiftObj Y] [LiftObj Z] (f : X ⟶
 
 instance liftHom_WhiskerLeft (X : C) [LiftObj X] {Y Z : C} [LiftObj Y] [LiftObj Z]
     (f : Y ⟶ Z) [LiftHom f] : LiftHom (X ◁ f) where
-  lift := 𝟙 (LiftObj.lift X) ⊗ LiftHom.lift f
+  lift := LiftObj.lift X ◁ LiftHom.lift f
 
 instance liftHom_WhiskerRight {X Y : C} (f : X ⟶ Y) [LiftObj X] [LiftObj Y] [LiftHom f]
     {Z : C} [LiftObj Z] : LiftHom (f ▷ Z) where
-  lift := LiftHom.lift f ⊗ 𝟙 (LiftObj.lift Z)
+  lift := LiftHom.lift f ▷ LiftObj.lift Z
 
 instance LiftHom_tensor {W X Y Z : C} [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
     (f : W ⟶ X) (g : Y ⟶ Z) [LiftHom f] [LiftHom g] : LiftHom (f ⊗ g) where
   lift := LiftHom.lift f ⊗ LiftHom.lift g
-
-/--
-A typeclass carrying a choice of monoidal structural isomorphism between two objects.
-Used by the `⊗≫` monoidal composition operator, and the `coherence` tactic.
--/
--- We could likely turn this into a `Prop` valued existential if that proves useful.
-class MonoidalCoherence (X Y : C) [LiftObj X] [LiftObj Y] where
-  hom : X ⟶ Y
-  [isIso : IsIso hom]
-
-attribute [instance] MonoidalCoherence.isIso
-
-namespace MonoidalCoherence
-
-@[simps]
-instance refl (X : C) [LiftObj X] : MonoidalCoherence X X := ⟨𝟙 _⟩
-
-@[simps]
-instance whiskerLeft (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence Y Z] :
-    MonoidalCoherence (X ⊗ Y) (X ⊗ Z) :=
-  ⟨𝟙 X ⊗ MonoidalCoherence.hom⟩
-
-@[simps]
-instance whiskerRight (X Y Z : C) [LiftObj X] [LiftObj Y] [LiftObj Z] [MonoidalCoherence X Y] :
-    MonoidalCoherence (X ⊗ Z) (Y ⊗ Z) :=
-  ⟨MonoidalCoherence.hom ⊗ 𝟙 Z⟩
-
-@[simps]
-instance tensor_right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence (𝟙_ C) Y] :
-    MonoidalCoherence X (X ⊗ Y) :=
-  ⟨(ρ_ X).inv ≫ (𝟙 X ⊗  MonoidalCoherence.hom)⟩
-
-@[simps]
-instance tensor_right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence Y (𝟙_ C)] :
-    MonoidalCoherence (X ⊗ Y) X :=
-  ⟨(𝟙 X ⊗ MonoidalCoherence.hom) ≫ (ρ_ X).hom⟩
-
-@[simps]
-instance left (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence (𝟙_ C ⊗ X) Y :=
-  ⟨(λ_ X).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance left' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence X (𝟙_ C ⊗ Y) :=
-  ⟨MonoidalCoherence.hom ≫ (λ_ Y).inv⟩
-
-@[simps]
-instance right (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence (X ⊗ 𝟙_ C) Y :=
-  ⟨(ρ_ X).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance right' (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] :
-    MonoidalCoherence X (Y ⊗ 𝟙_ C) :=
-  ⟨MonoidalCoherence.hom ≫ (ρ_ Y).inv⟩
-
-@[simps]
-instance assoc (X Y Z W : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    [MonoidalCoherence (X ⊗ (Y ⊗ Z)) W] : MonoidalCoherence ((X ⊗ Y) ⊗ Z) W :=
-  ⟨(α_ X Y Z).hom ≫ MonoidalCoherence.hom⟩
-
-@[simps]
-instance assoc' (W X Y Z : C) [LiftObj W] [LiftObj X] [LiftObj Y] [LiftObj Z]
-    [MonoidalCoherence W (X ⊗ (Y ⊗ Z))] : MonoidalCoherence W ((X ⊗ Y) ⊗ Z) :=
-  ⟨MonoidalCoherence.hom ≫ (α_ X Y Z).inv⟩
-
-end MonoidalCoherence
-
-/-- Construct an isomorphism between two objects in a monoidal category
-out of unitors and associators. -/
-def monoidalIso (X Y : C) [LiftObj X] [LiftObj Y] [MonoidalCoherence X Y] : X ≅ Y :=
-  asIso MonoidalCoherence.hom
-
-example (X : C) : X ≅ (X ⊗ (𝟙_ C ⊗ 𝟙_ C)) := monoidalIso _ _
-
-example (X1 X2 X3 X4 X5 X6 X7 X8 X9 : C) :
-    (𝟙_ C ⊗ (X1 ⊗ X2 ⊗ ((X3 ⊗ X4) ⊗ X5)) ⊗ X6 ⊗ (X7 ⊗ X8 ⊗ X9)) ≅
-    (X1 ⊗ (X2 ⊗ X3) ⊗ X4 ⊗ (X5 ⊗ (𝟙_ C ⊗ X6) ⊗ X7) ⊗ X8 ⊗ X9) :=
-  monoidalIso _ _
-
-/-- Notation for identities up to unitors and associators. -/
-scoped[CategoryTheory.MonoidalCategory] notation " ⊗𝟙 " =>
-  Mathlib.Tactic.Coherence.MonoidalCoherence.hom -- type as \ot 𝟙
-
-/-- Compose two morphisms in a monoidal category,
-inserting unitors and associators between as necessary. -/
-def monoidalComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
-    [MonoidalCoherence X Y] (f : W ⟶ X) (g : Y ⟶ Z) : W ⟶ Z :=
-  f ≫ MonoidalCoherence.hom ≫ g
-
-@[inherit_doc Mathlib.Tactic.Coherence.monoidalComp]
-scoped[CategoryTheory.MonoidalCategory] infixr:80 " ⊗≫ " =>
-  Mathlib.Tactic.Coherence.monoidalComp -- type as \ot \gg
-
-/-- Compose two isomorphisms in a monoidal category,
-inserting unitors and associators between as necessary. -/
-noncomputable def monoidalIsoComp {W X Y Z : C} [LiftObj X] [LiftObj Y]
-    [MonoidalCoherence X Y] (f : W ≅ X) (g : Y ≅ Z) : W ≅ Z :=
-  f ≪≫ asIso MonoidalCoherence.hom ≪≫ g
-
-@[inherit_doc Mathlib.Tactic.Coherence.monoidalIsoComp]
-scoped[CategoryTheory.MonoidalCategory] infixr:80 " ≪⊗≫ " =>
-  Mathlib.Tactic.Coherence.monoidalIsoComp -- type as \ll \ot \gg
-
-example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) : U ⟶ Y := f ⊗≫ g
-
--- To automatically insert unitors/associators at the beginning or end,
--- you can use `f ⊗≫ 𝟙 _`
-example {W X Y Z : C} (f : W ⟶ (X ⊗ Y) ⊗ Z) : W ⟶ X ⊗ (Y ⊗ Z) := f ⊗≫ 𝟙 _
-
-@[simp] lemma monoidalComp_refl {X Y Z : C} (f : X ⟶ Y) (g : Y ⟶ Z) :
-    f ⊗≫ g = f ≫ g := by
-  simp [monoidalComp]
-
-example {U V W X Y : C} (f : U ⟶ V ⊗ (W ⊗ X)) (g : (V ⊗ W) ⊗ X ⟶ Y) :
-    f ⊗≫ g = f ≫ (α_ _ _ _).inv ≫ g := by
-  simp [MonoidalCategory.tensorHom_def, monoidalComp]
 
 end lifting
 
@@ -382,7 +262,8 @@ elab_rules : tactic
       MonoidalCategory.whiskerRight_tensor, MonoidalCategory.whiskerRight_id,
       MonoidalCategory.whiskerLeft_comp, MonoidalCategory.whiskerLeft_id,
       MonoidalCategory.comp_whiskerRight, MonoidalCategory.id_whiskerRight,
-      MonoidalCategory.whisker_assoc];
+      MonoidalCategory.whisker_assoc,
+      MonoidalCategory.id_tensorHom, MonoidalCategory.tensorHom_id];
     -- I'm not sure if `tensorHom` should be expanded.
     try simp only [MonoidalCategory.tensorHom_def]
     ))
@@ -412,9 +293,5 @@ elab_rules : tactic
       Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
-    monoidal_simps (config := {failIfUnchanged := false});
-    -- Workaround until we define the whiskerings as the primitives in free monoidal categories.
-    simp (config := {failIfUnchanged := false}) only
-      [← MonoidalCategory.id_tensorHom, ← MonoidalCategory.tensorHom_id]
-    ))
+    monoidal_simps (config := {failIfUnchanged := false})))
   coherence_loop
