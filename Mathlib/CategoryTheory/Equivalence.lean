@@ -654,6 +654,79 @@ end Functor
 
 namespace Equivalence
 
+/-- An equivalence is essentially surjective.
+
+See <https://stacks.math.columbia.edu/tag/02C3>.
+-/
+theorem essSurj_of_equivalence (F : C ⥤ D) [IsEquivalence F] : F.EssSurj :=
+  ⟨fun Y => ⟨F.inv.obj Y, ⟨F.asEquivalence.counitIso.app Y⟩⟩⟩
+#align category_theory.equivalence.ess_surj_of_equivalence CategoryTheory.Equivalence.essSurj_of_equivalence
+
+-- see Note [lower instance priority]
+/-- An equivalence is faithful.
+
+See <https://stacks.math.columbia.edu/tag/02C3>.
+-/
+instance (priority := 100) faithfulOfEquivalence (F : C ⥤ D) [IsEquivalence F] : F.Faithful where
+  map_injective := @fun X Y f g h => by
+    have p : F.inv.map (F.map f) = F.inv.map (F.map g) := congrArg F.inv.map h
+    simpa only [cancel_epi, cancel_mono, IsEquivalence.inv_fun_map] using p
+#align category_theory.equivalence.faithful_of_equivalence CategoryTheory.Equivalence.faithfulOfEquivalence
+
+-- see Note [lower instance priority]
+/-- An equivalence is full.
+
+See <https://stacks.math.columbia.edu/tag/02C3>.
+-/
+instance (priority := 100) full_of_equivalence (F : C ⥤ D) [IsEquivalence F] : F.Full where
+  map_surjective {X Y} f :=
+    ⟨F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y,
+      F.inv.map_injective <| by
+        simpa only [IsEquivalence.inv_fun_map, assoc, Iso.inv_hom_id_app_assoc,
+          Iso.inv_hom_id_app] using comp_id _⟩
+#align category_theory.equivalence.full_of_equivalence CategoryTheory.Equivalence.full_of_equivalence
+
+@[simps]
+private noncomputable def equivalenceInverse (F : C ⥤ D) [F.Full] [F.Faithful] [F.EssSurj] : D ⥤ C
+    where
+  obj X := F.objPreimage X
+  map {X Y} f := F.preimage ((F.objObjPreimageIso X).hom ≫ f ≫ (F.objObjPreimageIso Y).inv)
+  map_id X := by apply F.map_injective; aesop_cat
+  map_comp {X Y Z} f g := by apply F.map_injective; simp
+-- #align category_theory.equivalence.equivalence_inverse CategoryTheory.Equivalence.equivalenceInverse
+/- Porting note: this is a private def in mathlib -/
+
+--
+/-- A functor which is full, faithful, and essentially surjective is an equivalence.
+
+See <https://stacks.math.columbia.edu/tag/02C3>.
+-/
+noncomputable def _root_.CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyEssSurj
+  (F : C ⥤ D) [F.Full] [F.Faithful] [F.EssSurj] :
+    IsEquivalence F :=
+  IsEquivalence.mk (equivalenceInverse F)
+    (NatIso.ofComponents (fun X => (F.preimageIso <| F.objObjPreimageIso <| F.obj X).symm)
+      fun f => by
+        apply F.map_injective
+        aesop_cat)
+    (NatIso.ofComponents F.objObjPreimageIso)
+#align category_theory.equivalence.of_fully_faithfully_ess_surj CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyEssSurj
+
+@[deprecated] -- 2024-04-06
+alias ofFullyFaithfullyEssSurj := Functor.IsEquivalence.ofFullyFaithfullyEssSurj
+
+@[simp]
+theorem functor_map_inj_iff (e : C ≌ D) {X Y : C} (f g : X ⟶ Y) :
+    e.functor.map f = e.functor.map g ↔ f = g :=
+  ⟨fun h => e.functor.map_injective h, fun h => h ▸ rfl⟩
+#align category_theory.equivalence.functor_map_inj_iff CategoryTheory.Equivalence.functor_map_inj_iff
+
+@[simp]
+theorem inverse_map_inj_iff (e : C ≌ D) {X Y : D} (f g : X ⟶ Y) :
+    e.inverse.map f = e.inverse.map g ↔ f = g :=
+  functor_map_inj_iff e.symm f g
+#align category_theory.equivalence.inverse_map_inj_iff CategoryTheory.Equivalence.inverse_map_inj_iff
+
 instance essSurjInducedFunctor {C' : Type*} (e : C' ≃ D) : (inducedFunctor e).EssSurj where
   mem_essImage Y := ⟨e.symm Y, by simpa using ⟨default⟩⟩
 #align category_theory.equivalence.ess_surj_induced_functor CategoryTheory.Equivalence.essSurjInducedFunctor

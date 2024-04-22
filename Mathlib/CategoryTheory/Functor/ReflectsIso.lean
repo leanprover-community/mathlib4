@@ -42,8 +42,7 @@ class Functor.ReflectsIsomorphisms (F : C ⥤ D) : Prop where
   reflects : ∀ {A B : C} (f : A ⟶ B) [IsIso (F.map f)], IsIso f
 #align category_theory.reflects_isomorphisms CategoryTheory.Functor.ReflectsIsomorphisms
 
--- deprecated on 2024-04-06
-@[deprecated] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms
+@[deprecated] alias ReflectsIsomorphisms := Functor.ReflectsIsomorphisms -- 2024-04-06
 
 /-- If `F` reflects isos and `F.map f` is an iso, then `f` is an iso. -/
 theorem isIso_of_reflects_iso {A B : C} (f : A ⟶ B) (F : C ⥤ D) [IsIso (F.map f)]
