@@ -211,39 +211,10 @@ theorem restrict_eq_domRestrict_codRestrict {f : M →ₗ[R] M₁} {p : Submodul
   rfl
 #align linear_map.restrict_eq_dom_restrict_cod_restrict LinearMap.restrict_eq_domRestrict_codRestrict
 
-instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
-    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
-#align linear_map.unique_of_left LinearMap.uniqueOfLeft
-
-instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
-  coe_injective.unique
-#align linear_map.unique_of_right LinearMap.uniqueOfRight
-
-/-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
-@[simps]
-def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
-  toFun f := f a
-  map_add' f g := LinearMap.add_apply f g a
-  map_zero' := rfl
-#align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
-
-/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
-@[simps]
-def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
-  toFun := toAddMonoidHom
-  map_zero' := by ext; rfl
-  map_add' := by intros; ext; rfl
-#align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
-
 theorem sum_apply (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) (b : M) :
     (∑ d in t, f d) b = ∑ d in t, f d b :=
   _root_.map_sum ((AddMonoidHom.eval b).comp toAddMonoidHom') f _
 #align linear_map.sum_apply LinearMap.sum_apply
-
-instance [Nontrivial M] : Nontrivial (Module.End R M) := by
-  obtain ⟨m, ne⟩ := exists_ne (0 : M)
-  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
 
 @[simp, norm_cast]
 theorem coeFn_sum {ι : Type*} (t : Finset ι) (f : ι → M →ₛₗ[σ₁₂] M₂) :
