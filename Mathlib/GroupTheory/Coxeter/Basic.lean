@@ -38,7 +38,8 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 * `CoxeterMatrix.group`
 * `CoxeterSystem`
 * `IsCoxeterGroup`
-* `CoxeterSystem.simple`
+* `CoxeterSystem.simple` : If `cs` is a Coxeter system on the group `W`, then `cs.simple i` is the
+  simple reflection of `W` at the index `i`.
 
 ## References
 
@@ -77,7 +78,7 @@ def relationsSet : Set (FreeGroup B) := Set.range <| uncurry M.relation
 
 /-- The Coxeter group associated to a Coxeter matrix $M$; that is, the group
 $$\langle \{s_i\}_{i \in B} \vert \{(s_i s_{i'})^{M_{i, i'}}\}_{i, i' \in B} \rangle.$$ -/
-def group := PresentedGroup M.relationsSet
+def group : Type _ := PresentedGroup M.relationsSet
 
 instance : Group M.group := QuotientGroup.Quotient.group _
 
@@ -128,8 +129,8 @@ structure CoxeterSystem (W : Type*) [Group W] where
   mulEquiv : W ≃* M.group
 
 /-- A group is a Coxeter group if it admits a Coxeter system for some Coxeter matrix `M`. -/
-class IsCoxeterGroup (W : Type*) [Group W] : Prop where
-  nonempty_system : ∃ B : Type*, ∃ M : CoxeterMatrix B, Nonempty (CoxeterSystem M W)
+class IsCoxeterGroup.{u} (W : Type u) [Group W] : Prop where
+  nonempty_system : ∃ B : Type u, ∃ M : CoxeterMatrix B, Nonempty (CoxeterSystem M W)
 
 /-- The canonical Coxeter system on the Coxeter group associated to `M`. -/
 def CoxeterMatrix.toCoxeterSystem : CoxeterSystem M M.group := ⟨.refl _⟩
@@ -157,6 +158,7 @@ protected def reindex (e : B ≃ B') : CoxeterSystem (M.reindex e) W :=
 /-- The simple reflection of `W` at the index `i`. -/
 def simple (i : B) : W := cs.mulEquiv.symm (PresentedGroup.of i)
 
+@[simp]
 theorem _root_.CoxeterMatrix.toCoxeterSystem_simple (M : CoxeterMatrix B) :
     M.toCoxeterSystem.simple = M.simple := rfl
 
