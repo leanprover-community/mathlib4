@@ -16,26 +16,28 @@ set_option autoImplicit true
 
 /- Implication -/
 
-@[deprecated] def Implies (a b : Prop) := a → b
+@[deprecated] def Implies (a b : Prop) := a → b -- 2022-10-24
 
 /-- Implication `→` is transitive. If `P → Q` and `Q → R` then `P → R`. -/
 -- FIXME This should have `@[trans]`, but the `trans` attribute PR'd in #253 rejects it.
 -- Note that it is still rejected after #857.
-@[deprecated] theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
+@[deprecated] -- 2022-10-24
+theorem Implies.trans {p q r : Prop} (h₁ : p → q) (h₂ : q → r) :
     p → r := fun hp ↦ h₂ (h₁ hp)
 
 /- Not -/
 
-@[deprecated] def NonContradictory (a : Prop) : Prop := ¬¬a
+@[deprecated] -- 2022-10-24
+def NonContradictory (a : Prop) : Prop := ¬¬a
 
 #align non_contradictory_intro not_not_intro
 
 /- Eq -/
 
-@[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α}
+@[deprecated] theorem trans_rel_left {α : Sort u} {a b c : α} -- 2022-10-24
     (r : α → α → Prop) (h₁ : r a b) (h₂ : b = c) : r a c := h₂ ▸ h₁
 
-@[deprecated] theorem trans_rel_right {α : Sort u} {a b c : α}
+@[deprecated] theorem trans_rel_right {α : Sort u} {a b c : α} -- 2022-10-24
     (r : α → α → Prop) (h₁ : a = b) (h₂ : r b c) : r a c := h₁ ▸ h₂
 
 theorem not_of_eq_false {p : Prop} (h : p = False) : ¬p := fun hp ↦ h ▸ hp
@@ -120,11 +122,12 @@ alias ⟨not_of_not_not_not, _⟩ := not_not_not
 -- FIXME
 -- attribute [congr] not_congr
 
-@[deprecated and_comm] theorem and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm
+@[deprecated and_comm] theorem and_comm' (a b) : a ∧ b ↔ b ∧ a := and_comm -- 2022-10-24
 #align and.comm and_comm
 #align and_comm and_comm'
 
-@[deprecated and_assoc] theorem and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
+@[deprecated and_assoc] -- 2022-10-24
+theorem and_assoc' (a b) : (a ∧ b) ∧ c ↔ a ∧ (b ∧ c) := and_assoc
 #align and_assoc and_assoc'
 #align and.assoc and_assoc
 
@@ -158,11 +161,11 @@ theorem false_and_iff : False ∧ p ↔ False := iff_of_eq (false_and _)
 #align eq_true_intro eq_true
 #align eq_false_intro eq_false
 
-@[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm
+@[deprecated or_comm] theorem or_comm' (a b) : a ∨ b ↔ b ∨ a := or_comm -- 2022-10-24
 #align or.comm or_comm
 #align or_comm or_comm'
 
-@[deprecated or_assoc] theorem or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc
+@[deprecated or_assoc] theorem or_assoc' (a b) : (a ∨ b) ∨ c ↔ a ∨ (b ∨ c) := or_assoc -- 2022-10-24
 #align or.assoc or_assoc
 #align or_assoc or_assoc'
 
@@ -318,7 +321,8 @@ alias by_cases := byCases
 alias by_contradiction := byContradiction
 alias not_not_iff := not_not
 
-@[deprecated not_or] theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
+@[deprecated not_or] -- 2022-10-24
+theorem not_or_iff_and_not (p q) [Decidable p] [Decidable q] :
     ¬(p ∨ q) ↔ ¬p ∧ ¬q := not_or
 
 end Decidable
@@ -376,7 +380,7 @@ theorem rec_subsingleton {p : Prop} [h : Decidable p] {h₁ : p → Sort u} {h�
   | isTrue h => h₃ h
   | isFalse h => h₄ h
 
-@[deprecated ite_self]
+@[deprecated ite_self] -- 2022-10-24
 theorem if_t_t (c : Prop) [Decidable c] {α : Sort u} (t : α) : ite c t t = t := ite_self _
 
 theorem imp_of_if_pos {c t e : Prop} [Decidable c] (h : ite c t e) (hc : c) : t :=
