@@ -134,14 +134,7 @@ theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length)
     (l.enumFrom n).get i = (n + i, l.get ⟨i, hi⟩) := by
   rw [← Option.some_inj, ← get?_eq_get]
   simp [enumFrom_get?, get?_eq_get hi]
-
-set_option linter.deprecated false in
-@[deprecated get_enumFrom] -- 2023-01-05
-theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa using hi')) :
-    (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
-  get_enumFrom ..
-#align list.nth_le_enum_from List.nthLe_enumFrom
+#align list.nth_le_enum_from List.get_enumFrom
 
 theorem get_enum (l : List α) (i : Fin l.enum.length)
     (hi : i < l.length := (by simpa using i.2)) :
@@ -149,12 +142,7 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
   convert get_enumFrom _ _ i
   exact (Nat.zero_add _).symm
 
-set_option linter.deprecated false in
-@[deprecated get_enum] -- 2023-01-05
-theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa using hi')) :
-    l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
-#align list.nth_le_enum List.nthLe_enum
+#align list.nth_le_enum List.get_enum
 
 @[simp]
 theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
