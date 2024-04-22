@@ -445,6 +445,9 @@ instance [MetricSpace X] : MetricSpace (Multiplicative X) := ‹MetricSpace X›
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Additive X) := ‹ProperSpace X›
 instance [PseudoMetricSpace X] [ProperSpace X] : ProperSpace (Multiplicative X) := ‹ProperSpace X›
 
+instance MulOpposite.instMetricSpace [MetricSpace X] : MetricSpace Xᵐᵒᵖ :=
+  MetricSpace.induced unop unop_injective ‹_›
+
 /-!
 ### Order dual
 

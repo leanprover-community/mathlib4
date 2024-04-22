@@ -188,15 +188,13 @@ theorem IsTopologicalBasis.open_eq_sUnion' {B : Set (Set α)} (hB : IsTopologica
       fun ⟨_b, ⟨_, bu⟩, ab⟩ => bu ab⟩
 #align topological_space.is_topological_basis.open_eq_sUnion' TopologicalSpace.IsTopologicalBasis.open_eq_sUnion'
 
--- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B) {u : Set α}
-    (ou : IsOpen u) : ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
+    (ou : IsOpen u) : ∃ S ⊆ B, u = ⋃₀ S :=
   ⟨{ s ∈ B | s ⊆ u }, fun _ h => h.1, hB.open_eq_sUnion' ou⟩
 #align topological_space.is_topological_basis.open_eq_sUnion TopologicalSpace.IsTopologicalBasis.open_eq_sUnion
 
--- Porting note: use `∃ S, S ⊆ B ∧ _` instead of `∃ S (_ : S ⊆ B), _`
 theorem IsTopologicalBasis.open_iff_eq_sUnion {B : Set (Set α)} (hB : IsTopologicalBasis B)
-    {u : Set α} : IsOpen u ↔ ∃ S, S ⊆ B ∧ u = ⋃₀ S :=
+    {u : Set α} : IsOpen u ↔ ∃ S ⊆ B, u = ⋃₀ S :=
   ⟨hB.open_eq_sUnion, fun ⟨_S, hSB, hu⟩ => hu.symm ▸ isOpen_sUnion fun _s hs => hB.isOpen (hSB hs)⟩
 #align topological_space.is_topological_basis.open_iff_eq_sUnion TopologicalSpace.IsTopologicalBasis.open_iff_eq_sUnion
 
@@ -613,9 +611,14 @@ theorem isTopologicalBasis_singletons (α : Type*) [TopologicalSpace α] [Discre
     ⟨{x}, ⟨x, rfl⟩, mem_singleton x, singleton_subset_iff.2 hx⟩
 #align is_topological_basis_singletons isTopologicalBasis_singletons
 
+theorem isTopologicalBasis_subtype
+    {α : Type*} [TopologicalSpace α] {B : Set (Set α)}
+    (h : TopologicalSpace.IsTopologicalBasis B) (p : α → Prop) :
+    IsTopologicalBasis (Set.preimage (Subtype.val (p := p)) '' B) :=
+  h.inducing ⟨rfl⟩
+
 -- Porting note: moved `DenseRange.separableSpace` up
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {s : Set α}
     [SeparableSpace s] (hs : Dense s) : ∃ t ⊆ s, t.Countable ∧ Dense t :=
   let ⟨t, htc, htd⟩ := exists_countable_dense s
@@ -623,7 +626,6 @@ theorem Dense.exists_countable_dense_subset {α : Type*} [TopologicalSpace α] {
     hs.denseRange_val.dense_image continuous_subtype_val htd⟩
 #align dense.exists_countable_dense_subset Dense.exists_countable_dense_subsetₓ
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 /-- Let `s` be a dense set in a topological space `α` with partial order structure. If `s` is a
 separable space (e.g., if `α` has a second countable topology), then there exists a countable
 dense subset `t ⊆ s` such that `t` contains bottom/top element of `α` when they exist and belong
@@ -671,9 +673,31 @@ class _root_.FirstCountableTopology : Prop where
 
 attribute [instance] FirstCountableTopology.nhds_generated_countable
 
-namespace FirstCountableTopology
+/-- If `β` is a first-countable space, then its induced topology via `f` on `α` is also
+first-countable. -/
+theorem firstCountableTopology_induced (α β : Type*) [t : TopologicalSpace β]
+    [FirstCountableTopology β] (f : α → β) : @FirstCountableTopology α (t.induced f) :=
+  let _ := t.induced f;
+  ⟨fun x ↦ nhds_induced f x ▸ inferInstance⟩
 
 variable {α}
+
+instance Subtype.firstCountableTopology (s : Set α) [FirstCountableTopology α] :
+    FirstCountableTopology s :=
+  firstCountableTopology_induced s α (↑)
+
+protected theorem _root_.Inducing.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Inducing f) :
+    FirstCountableTopology α := by
+  rw [hf.1]
+  exact firstCountableTopology_induced α β f
+
+protected theorem _root_.Embedding.firstCountableTopology {β : Type*}
+    [TopologicalSpace β] [FirstCountableTopology β] {f : α → β} (hf : Embedding f) :
+    FirstCountableTopology α :=
+  hf.1.firstCountableTopology
+
+namespace FirstCountableTopology
 
 /-- In a first-countable space, a cluster point `x` of a sequence
 is the limit of some subsequence. -/
@@ -683,8 +707,6 @@ theorem tendsto_subseq [FirstCountableTopology α] {u : ℕ → α} {x : α}
 #align topological_space.first_countable_topology.tendsto_subseq TopologicalSpace.FirstCountableTopology.tendsto_subseq
 
 end FirstCountableTopology
-
-variable {α}
 
 instance {β} [TopologicalSpace β] [FirstCountableTopology α] [FirstCountableTopology β] :
     FirstCountableTopology (α × β) :=
@@ -807,7 +829,7 @@ lemma secondCountableTopology_iInf {ι} [Countable ι] {t : ι → TopologicalSp
   exact SecondCountableTopology.mk' <|
     countable_iUnion fun i => @countable_countableBasis _ (t i) (ht i)
 
--- TODO: more fine grained instances for first_countable_topology, separable_space, t2_space, ...
+-- TODO: more fine grained instances for `FirstCountableTopology`, `SeparableSpace`, `T2Space`, ...
 instance {β : Type*} [TopologicalSpace β] [SecondCountableTopology α] [SecondCountableTopology β] :
     SecondCountableTopology (α × β) :=
   ((isBasis_countableBasis α).prod (isBasis_countableBasis β)).secondCountableTopology <|
@@ -874,9 +896,8 @@ theorem countable_cover_nhds [SecondCountableTopology α] {f : α → Set α} (h
   exact fun x => ⟨x, mem_interior_iff_mem_nhds.2 (hf x)⟩
 #align topological_space.countable_cover_nhds TopologicalSpace.countable_cover_nhds
 
--- Porting note: use `∃ t, t ⊆ s ∧ _` instead of `∃ t (_ : t ⊆ s), _`
 theorem countable_cover_nhdsWithin [SecondCountableTopology α] {f : α → Set α} {s : Set α}
-    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t, t ⊆ s ∧ t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
+    (hf : ∀ x ∈ s, f x ∈ 𝓝[s] x) : ∃ t ⊆ s, t.Countable ∧ s ⊆ ⋃ x ∈ t, f x := by
   have : ∀ x : s, (↑) ⁻¹' f x ∈ 𝓝 x := fun x => preimage_coe_mem_nhds_subtype.2 (hf x x.2)
   rcases countable_cover_nhds this with ⟨t, htc, htU⟩
   refine' ⟨(↑) '' t, Subtype.coe_image_subset _ _, htc.image _, fun x hx => _⟩

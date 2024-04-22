@@ -199,7 +199,7 @@ theorem exists_add_of_le : ∀ a b : L, a ≤ b → ∃ c, b = a + c := by
   · exact ⟨0, (add_zero _).symm⟩
   · exact
       ⟨⟨b - a.1, fun H => (tsub_pos_of_lt h).ne' (Prod.mk.inj_iff.1 H).1⟩,
-        Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel'_right _ _).symm⟩
+        Subtype.ext <| Prod.ext (add_tsub_cancel_of_le h.le).symm (add_sub_cancel _ _).symm⟩
 #align counterexample.ex_L.exists_add_of_le Counterexample.ExL.exists_add_of_le
 
 theorem le_self_add : ∀ a b : L, a ≤ a + b := by

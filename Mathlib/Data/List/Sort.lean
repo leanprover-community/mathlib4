@@ -11,8 +11,9 @@ import Mathlib.Data.List.Nodup
 /-!
 # Sorting algorithms on lists
 
-In this file we define `List.Sorted r l` to be an alias for `Pairwise r l`. This alias is preferred
-in the case that `r` is a `<` or `≤`-like relation. Then we define two sorting algorithms:
+In this file we define `List.Sorted r l` to be an alias for `List.Pairwise r l`.
+This alias is preferred in the case that `r` is a `<` or `≤`-like relation.
+Then we define two sorting algorithms:
 `List.insertionSort` and `List.mergeSort`, and prove their correctness.
 -/
 
@@ -32,7 +33,7 @@ section Sorted
 
 variable {α : Type uu} {r : α → α → Prop} {a : α} {l : List α}
 
-/-- `Sorted r l` is the same as `Pairwise r l`, preferred in the case that `r`
+/-- `Sorted r l` is the same as `List.Pairwise r l`, preferred in the case that `r`
   is a `<` or `≤`-like relation (transitive and antisymmetric or asymmetric) -/
 def Sorted :=
   @Pairwise
@@ -104,7 +105,7 @@ theorem eq_of_perm_of_sorted [IsAntisymm α r] {l₁ l₂ : List α} (hp : l₁ 
   induction' hs₁ with a l₁ h₁ hs₁ IH generalizing l₂
   · exact hp.nil_eq
   · have : a ∈ l₂ := hp.subset (mem_cons_self _ _)
-    rcases mem_split this with ⟨u₂, v₂, rfl⟩
+    rcases append_of_mem this with ⟨u₂, v₂, rfl⟩
     have hp' := (perm_cons a).1 (hp.trans perm_middle)
     obtain rfl := IH hp' (hs₂.sublist <| by simp)
     change a :: u₂ ++ v₂ = u₂ ++ ([a] ++ v₂)

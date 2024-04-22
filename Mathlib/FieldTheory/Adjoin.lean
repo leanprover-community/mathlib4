@@ -3,6 +3,7 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Directed
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
@@ -751,17 +752,17 @@ instance finiteDimensional_iSup_of_finite [h : Finite ι] [∀ i, FiniteDimensio
 #align intermediate_field.finite_dimensional_supr_of_finite IntermediateField.finiteDimensional_iSup_of_finite
 
 instance finiteDimensional_iSup_of_finset
-    /-Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
+    /- Porting note: changed `h` from `∀ i ∈ s, FiniteDimensional K (t i)` because this caused an
       error. See `finiteDimensional_iSup_of_finset'` for a stronger version, that was the one
-      used in mathlib3.-/
+      used in mathlib3. -/
     {s : Finset ι} [∀ i, FiniteDimensional K (t i)] :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   iSup_subtype'' s t ▸ IntermediateField.finiteDimensional_iSup_of_finite
 #align intermediate_field.finite_dimensional_supr_of_finset IntermediateField.finiteDimensional_iSup_of_finset
 
 theorem finiteDimensional_iSup_of_finset'
-    /-Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
-    error "invalid parametric local instance".-/
+    /- Porting note: this was the mathlib3 version. Using `[h : ...]`, as in mathlib3, causes the
+    error "invalid parametric local instance". -/
     {s : Finset ι} (h : ∀ i ∈ s, FiniteDimensional K (t i)) :
     FiniteDimensional K (⨆ i ∈ s, t i : IntermediateField K L) :=
   have := Subtype.forall'.mp h
@@ -945,14 +946,18 @@ theorem adjoin_one : F⟮(1 : E)⟯ = ⊥ :=
 #align intermediate_field.adjoin_one IntermediateField.adjoin_one
 
 @[simp]
-theorem adjoin_int (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
-  exact adjoin_simple_eq_bot_iff.mpr (coe_int_mem ⊥ n)
-#align intermediate_field.adjoin_int IntermediateField.adjoin_int
+theorem adjoin_intCast (n : ℤ) : F⟮(n : E)⟯ = ⊥ := by
+  exact adjoin_simple_eq_bot_iff.mpr (intCast_mem ⊥ n)
+#align intermediate_field.adjoin_int IntermediateField.adjoin_intCast
 
 @[simp]
-theorem adjoin_nat (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
-  adjoin_simple_eq_bot_iff.mpr (coe_nat_mem ⊥ n)
-#align intermediate_field.adjoin_nat IntermediateField.adjoin_nat
+theorem adjoin_natCast (n : ℕ) : F⟮(n : E)⟯ = ⊥ :=
+  adjoin_simple_eq_bot_iff.mpr (natCast_mem ⊥ n)
+#align intermediate_field.adjoin_nat IntermediateField.adjoin_natCast
+
+-- 2024-04-05
+@[deprecated] alias adjoin_int := adjoin_intCast
+@[deprecated] alias adjoin_nat := adjoin_natCast
 
 section AdjoinRank
 
@@ -1088,7 +1093,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
       · exact RingHom.injective f
       · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
           intro x
-          obtain ⟨y, hy⟩ := (this (Subtype.mem x))
+          obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
         refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
@@ -1190,7 +1195,7 @@ theorem exists_lt_finrank_of_infinite_dimensional
     (halg : Algebra.IsAlgebraic F E) (hnfd : ¬ FiniteDimensional F E) (n : ℕ) :
     ∃ L : IntermediateField F E, FiniteDimensional F L ∧ n < finrank F L := by
   induction' n with n ih
-  · exact ⟨⊥, Subalgebra.finiteDimensional_bot, finrank_pos⟩
+  · exact ⟨⊥, Subalgebra.finite_bot, finrank_pos⟩
   obtain ⟨L, fin, hn⟩ := ih
   obtain ⟨x, hx⟩ : ∃ x : E, x ∉ L := by
     contrapose! hnfd

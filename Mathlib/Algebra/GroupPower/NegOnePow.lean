@@ -49,6 +49,10 @@ lemma negOnePow_odd (n : ℤ) (hn : Odd n) : n.negOnePow = -1 := by
   obtain ⟨k, rfl⟩ := hn
   simp only [negOnePow_add, negOnePow_two_mul, negOnePow_one, mul_neg, mul_one]
 
+@[simp]
+lemma negOnePow_two_mul_add_one (n : ℤ) : (2 * n + 1).negOnePow = -1 :=
+  negOnePow_odd _ ⟨n, rfl⟩
+
 lemma negOnePow_eq_one_iff (n : ℤ) : n.negOnePow = 1 ↔ Even n := by
   constructor
   · intro h
@@ -89,5 +93,12 @@ lemma negOnePow_eq_iff (n₁ n₂ : ℤ) :
 @[simp]
 lemma negOnePow_mul_self (n : ℤ) : (n * n).negOnePow = n.negOnePow := by
   simpa [mul_sub, negOnePow_eq_iff] using n.even_mul_pred_self
+
+lemma coe_negOnePow (K : Type*) (n : ℤ) [Field K] : n.negOnePow = (-1 : K) ^ n := by
+  rcases even_or_odd' n with ⟨k, rfl | rfl⟩
+  · rw [zpow_mul, zpow_ofNat]
+    simp
+  · rw [zpow_add_one₀ (by norm_num), zpow_mul, zpow_ofNat]
+    simp
 
 end Int

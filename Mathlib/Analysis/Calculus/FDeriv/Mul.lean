@@ -435,7 +435,7 @@ theorem Differentiable.mul (ha : Differentiable 𝕜 a) (hb : Differentiable �
 theorem DifferentiableWithinAt.pow (ha : DifferentiableWithinAt 𝕜 a s x) :
     ∀ n : ℕ, DifferentiableWithinAt 𝕜 (fun x => a x ^ n) s x
   | 0 => by simp only [pow_zero, differentiableWithinAt_const]
-  | n + 1 => by simp only [pow_succ, DifferentiableWithinAt.pow ha n, ha.mul]
+  | n + 1 => by simp only [pow_succ', DifferentiableWithinAt.pow ha n, ha.mul]
 #align differentiable_within_at.pow DifferentiableWithinAt.pow
 
 @[simp, fun_prop]

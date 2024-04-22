@@ -94,8 +94,6 @@ the second approach only when you need to weaken a condition on either `R` or `A
 
 universe u v w u₁ v₁
 
-open BigOperators
-
 section Prio
 
 -- We set this priority to 0 later in this file
@@ -107,7 +105,7 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note: unsupported @[nolint has_nonempty_instance]
+-- Porting note(#5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
   R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
@@ -436,7 +434,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-/- The identity map inducing an `Algebra` structure. -/
+/-- The identity map inducing an `Algebra` structure. -/
 instance id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.
@@ -577,7 +575,7 @@ theorem mul_sub_algebraMap_pow_commutes [Ring A] [Algebra R A] (x : A) (r : R) (
     x * (x - algebraMap R A r) ^ n = (x - algebraMap R A r) ^ n * x := by
   induction' n with n ih
   · simp
-  · rw [pow_succ, ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
+  · rw [pow_succ', ← mul_assoc, mul_sub_algebraMap_commutes, mul_assoc, ih, ← mul_assoc]
 #align algebra.mul_sub_algebra_map_pow_commutes Algebra.mul_sub_algebraMap_pow_commutes
 
 end CommSemiring
@@ -594,7 +592,7 @@ def semiringToRing [Semiring A] [Algebra R A] : Ring A :=
   { __ := (inferInstance : Semiring A)
     __ := Module.addCommMonoidToAddCommGroup R
     intCast := fun z => algebraMap R A z
-    intCast_ofNat := fun z => by simp only [Int.cast_ofNat, map_natCast]
+    intCast_ofNat := fun z => by simp only [Int.cast_natCast, map_natCast]
     intCast_negSucc := fun z => by simp }
 #align algebra.semiring_to_ring Algebra.semiringToRing
 
@@ -717,7 +715,7 @@ section Rat
 
 instance algebraRat {α} [DivisionRing α] [CharZero α] : Algebra ℚ α where
   smul := (· • ·)
-  smul_def' := DivisionRing.qsmul_eq_mul'
+  smul_def' := Rat.smul_def
   toRingHom := Rat.castHom α
   commutes' := Rat.cast_commute
 #align algebra_rat algebraRat
@@ -867,14 +865,16 @@ theorem NoZeroSMulDivisors.trans (R A M : Type*) [CommRing R] [Ring A] [IsDomain
 variable {A}
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
+-- priority manually adjusted in #11980, as it is a very common path
+instance (priority := 120) IsScalarTower.to_smulCommClass : SMulCommClass R A M :=
   ⟨fun r a m => by
     rw [algebra_compatible_smul A r (a • m), smul_smul, Algebra.commutes, mul_smul, ←
       algebra_compatible_smul]⟩
 #align is_scalar_tower.to_smul_comm_class IsScalarTower.to_smulCommClass
 
 -- see Note [lower instance priority]
-instance (priority := 100) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
+-- priority manually adjusted in #11980, as it is a very common path
+instance (priority := 110) IsScalarTower.to_smulCommClass' : SMulCommClass A R M :=
   SMulCommClass.symm _ _ _
 #align is_scalar_tower.to_smul_comm_class' IsScalarTower.to_smulCommClass'
 

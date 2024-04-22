@@ -558,34 +558,34 @@ theorem one_lt_coe_iff : 1 < (↑p : ℝ≥0∞) ↔ 1 < p := coe_lt_coe
 #align ennreal.one_lt_coe_iff ENNReal.one_lt_coe_iff
 
 @[simp, norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
-#align ennreal.coe_nat ENNReal.coe_nat
+theorem coe_natCast (n : ℕ) : ((n : ℝ≥0) : ℝ≥0∞) = n := rfl
+#align ennreal.coe_nat ENNReal.coe_natCast
 
-@[simp, norm_cast] lemma ofReal_coe_nat (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
-#align ennreal.of_real_coe_nat ENNReal.ofReal_coe_nat
+@[simp, norm_cast] lemma ofReal_natCast (n : ℕ) : ENNReal.ofReal n = n := by simp [ENNReal.ofReal]
+#align ennreal.of_real_coe_nat ENNReal.ofReal_natCast
 
 -- See note [no_index around OfNat.ofNat]
 @[simp] theorem ofReal_ofNat (n : ℕ) [n.AtLeastTwo] :
     ENNReal.ofReal (no_index (OfNat.ofNat n)) = OfNat.ofNat n :=
-  ofReal_coe_nat n
+  ofReal_natCast n
 
-@[simp] theorem nat_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.nat_ne_top n
-#align ennreal.nat_ne_top ENNReal.nat_ne_top
+@[simp] theorem natCast_ne_top (n : ℕ) : (n : ℝ≥0∞) ≠ ∞ := WithTop.natCast_ne_top n
+#align ennreal.nat_ne_top ENNReal.natCast_ne_top
 
-@[simp] theorem top_ne_nat (n : ℕ) : ∞ ≠ n := WithTop.top_ne_nat n
-#align ennreal.top_ne_nat ENNReal.top_ne_nat
+@[simp] theorem top_ne_natCast (n : ℕ) : ∞ ≠ n := WithTop.top_ne_natCast n
+#align ennreal.top_ne_nat ENNReal.top_ne_natCast
 
 @[simp] theorem one_lt_top : 1 < ∞ := coe_lt_top
 #align ennreal.one_lt_top ENNReal.one_lt_top
 
 @[simp, norm_cast]
 theorem toNNReal_nat (n : ℕ) : (n : ℝ≥0∞).toNNReal = n := by
-  rw [← ENNReal.coe_nat n, ENNReal.toNNReal_coe]
+  rw [← ENNReal.coe_natCast n, ENNReal.toNNReal_coe]
 #align ennreal.to_nnreal_nat ENNReal.toNNReal_nat
 
 @[simp, norm_cast]
 theorem toReal_nat (n : ℕ) : (n : ℝ≥0∞).toReal = n := by
-  rw [← ENNReal.ofReal_coe_nat n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
+  rw [← ENNReal.ofReal_natCast n, ENNReal.toReal_ofReal (Nat.cast_nonneg _)]
 #align ennreal.to_real_nat ENNReal.toReal_nat
 
 -- See note [no_index around OfNat.ofNat]
@@ -667,18 +667,24 @@ theorem le_of_forall_pos_le_add (h : ∀ ε : ℝ≥0, 0 < ε → b < ∞ → a 
   exact ⟨r, hr0, h.trans_le le_top, hr⟩
 #align ennreal.le_of_forall_pos_le_add ENNReal.le_of_forall_pos_le_add
 
-theorem coe_nat_lt_coe {n : ℕ} : (n : ℝ≥0∞) < r ↔ ↑n < r :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
-#align ennreal.coe_nat_lt_coe ENNReal.coe_nat_lt_coe
+theorem natCast_lt_coe {n : ℕ} : n < (r : ℝ≥0∞) ↔ n < r := ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_nat_lt_coe ENNReal.natCast_lt_coe
 
-theorem coe_lt_coe_nat {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n :=
-  ENNReal.coe_nat n ▸ coe_lt_coe
-#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_coe_nat
+theorem coe_lt_natCast {n : ℕ} : (r : ℝ≥0∞) < n ↔ r < n := ENNReal.coe_natCast n ▸ coe_lt_coe
+#align ennreal.coe_lt_coe_nat ENNReal.coe_lt_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
+@[deprecated] alias ofReal_coe_nat := ofReal_natCast
+@[deprecated] alias nat_ne_top := natCast_ne_top
+@[deprecated] alias top_ne_nat := top_ne_natCast
+@[deprecated] alias coe_nat_lt_coe := natCast_lt_coe
+@[deprecated] alias coe_lt_coe_nat := coe_lt_natCast
 
 protected theorem exists_nat_gt {r : ℝ≥0∞} (h : r ≠ ∞) : ∃ n : ℕ, r < n := by
   lift r to ℝ≥0 using h
   rcases exists_nat_gt r with ⟨n, hn⟩
-  exact ⟨n, coe_lt_coe_nat.2 hn⟩
+  exact ⟨n, coe_lt_natCast.2 hn⟩
 #align ennreal.exists_nat_gt ENNReal.exists_nat_gt
 
 @[simp]
@@ -690,7 +696,7 @@ theorem iUnion_Iio_coe_nat : ⋃ n : ℕ, Iio (n : ℝ≥0∞) = {∞}ᶜ := by
 
 @[simp]
 theorem iUnion_Iic_coe_nat : ⋃ n : ℕ, Iic (n : ℝ≥0∞) = {∞}ᶜ :=
-  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (nat_ne_top n) hx) <|
+  Subset.antisymm (iUnion_subset fun n _x hx => ne_top_of_le_ne_top (natCast_ne_top n) hx) <|
     iUnion_Iio_coe_nat ▸ iUnion_mono fun _ => Iio_subset_Iic_self
 #align ennreal.Union_Iic_coe_nat ENNReal.iUnion_Iic_coe_nat
 

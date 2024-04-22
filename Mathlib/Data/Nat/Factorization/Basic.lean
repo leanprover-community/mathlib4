@@ -11,6 +11,7 @@ import Mathlib.Data.Nat.GCD.BigOperators
 import Mathlib.Data.Nat.Interval
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Algebra.GroupPower.Order
+import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -220,7 +221,7 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
-    refine' Finset.induction_on' S ?_ ?_
+    refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)

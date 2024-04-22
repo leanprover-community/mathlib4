@@ -327,23 +327,23 @@ def preLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) : Comma (F ⋙ L) R ⥤ Co
       w := by simpa using f.w }
 #align category_theory.comma.pre_left CategoryTheory.Comma.preLeft
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Faithful F] : Faithful (preLeft F L R) where
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R).Faithful where
   map_injective {X Y} f g h := hom_ext _ _ (F.map_injective (congrArg CommaMorphism.left h))
     (by apply congrArg CommaMorphism.right h)
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [Full F] : Full (preLeft F L R) where
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full where
   preimage {X Y} f := CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w)
 
-instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [EssSurj F] : EssSurj (preLeft F L R) where
+instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj where
   mem_essImage Y :=
     ⟨Comma.mk (F.objPreimage Y.left) Y.right ((L.mapIso (F.objObjPreimageIso _)).hom ≫ Y.hom),
      ⟨isoMk (F.objObjPreimageIso _) (Iso.refl _) (by simp)⟩⟩
 
 /-- If `F` is an equivalence, then so is `preLeft F L R`. -/
-noncomputable def isEquivalencePreLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [IsEquivalence F] :
-    IsEquivalence (preLeft F L R) :=
+noncomputable def isEquivalencePreLeft (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.IsEquivalence] :
+    (preLeft F L R).IsEquivalence :=
   have := Equivalence.essSurj_of_equivalence F
-  Equivalence.ofFullyFaithfullyEssSurj _
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 /-- The functor `(F ⋙ L, R) ⥤ (L, R)` -/
 @[simps]
@@ -357,23 +357,23 @@ def preRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) : Comma L (F ⋙ R) ⥤ C
       right := F.map f.right }
 #align category_theory.comma.pre_right CategoryTheory.Comma.preRight
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Faithful F] : Faithful (preRight L F R) where
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F R).Faithful where
   map_injective {X Y } f g h := hom_ext _ _ (by apply congrArg CommaMorphism.left h)
     (F.map_injective (congrArg CommaMorphism.right h))
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [Full F] : Full (preRight L F R) where
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full where
   preimage {X Y} f := CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w)
 
-instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [EssSurj F] : EssSurj (preRight L F R) where
+instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj where
   mem_essImage Y :=
     ⟨Comma.mk Y.left (F.objPreimage Y.right) (Y.hom ≫ (R.mapIso (F.objObjPreimageIso _)).inv),
      ⟨isoMk (Iso.refl _) (F.objObjPreimageIso _) (by simp [← R.map_comp])⟩⟩
 
 /-- If `F` is an equivalence, then so is `preRight L F R`. -/
-noncomputable def isEquivalencePreRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [IsEquivalence F] :
-    IsEquivalence (preRight L F R) :=
+noncomputable def isEquivalencePreRight (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.IsEquivalence] :
+    (preRight L F R).IsEquivalence :=
   have := Equivalence.essSurj_of_equivalence F
-  Equivalence.ofFullyFaithfullyEssSurj _
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
 /-- The functor `(L, R) ⥤ (L ⋙ F, R ⋙ F)` -/
 @[simps]

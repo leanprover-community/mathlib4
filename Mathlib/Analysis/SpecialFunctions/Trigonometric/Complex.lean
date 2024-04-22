@@ -202,7 +202,7 @@ theorem cos_surjective : Function.Surjective cos := by
     rintro rfl
     simp only [zero_add, one_ne_zero, mul_zero] at hw
   refine' ⟨log w / I, cos_eq_iff_quadratic.2 _⟩
-  rw [div_mul_cancel _ I_ne_zero, exp_log w₀]
+  rw [div_mul_cancel₀ _ I_ne_zero, exp_log w₀]
   convert hw using 1
   ring
 #align complex.cos_surjective Complex.cos_surjective

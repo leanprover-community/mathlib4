@@ -529,7 +529,7 @@ macro "smul_tac" : tactic => `(tactic|
     simp only [add_comm, mul_comm, zero_smul, succ_nsmul, zsmul_eq_mul, mul_add, mul_one, mul_zero,
       neg_add, mul_neg,
       Int.ofNat_eq_coe, Int.cast_zero, Int.cast_add, Int.cast_one,
-      Int.cast_negSucc, Int.cast_ofNat, Nat.cast_succ,
+      Int.cast_negSucc, Int.cast_natCast, Nat.cast_succ,
       Localization.mk_zero, Localization.add_mk_self, Localization.neg_mk,
       ofFractionRing_zero, ← ofFractionRing_add, ← ofFractionRing_neg])
 
@@ -607,7 +607,7 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
     RatFunc.liftOn f
       (fun n d => if h : φ d ∈ S[X]⁰ then ofFractionRing (Localization.mk (φ n) ⟨φ d, h⟩) else 0)
       fun {p q p' q'} hq hq' h => by
-      dsimp only -- Porting note: force the function to be applied
+      beta_reduce -- Porting note(#12129): force the function to be applied
       rw [dif_pos, dif_pos]
       congr 1 -- Porting note: this was a `rw [ofFractionRing.inj_eq]` which was overkill anyway
       rw [Localization.mk_eq_mk_iff]
@@ -617,12 +617,12 @@ def map [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap �
       refine' Localization.r_of_eq _
       simpa only [map_mul] using congr_arg φ h
   map_one' := by
-    dsimp only -- Porting note: force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk, dif_pos]
     · simpa using ofFractionRing_one
     · simpa using Submonoid.one_mem _
   map_mul' x y := by
-    dsimp only -- Porting note: force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     cases' x with x; cases' y with y
     -- Porting note: added `using Localization.rec` (`Localization.induction_on` didn't work)
     induction' x using Localization.rec with p q
@@ -699,7 +699,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
       rw [div_eq_div_iff, ← map_mul, mul_comm p, h, map_mul, mul_comm] <;>
         exact nonZeroDivisors.ne_zero (hφ ‹_›)
   map_one' := by
-    dsimp only -- Porting note: force the function to be applied
+    dsimp only -- Porting note: force the function to be applied (not just beta reduction!)
     rw [← ofFractionRing_one, ← Localization.mk_one, liftOn_ofFractionRing_mk]
     simp only [map_one, OneMemClass.coe_one, div_one]
   map_mul' x y := by
@@ -712,7 +712,7 @@ def liftMonoidWithZeroHom (φ : R[X] →*₀ G₀) (hφ : R[X]⁰ ≤ G₀⁰.co
     · rfl
     · rfl
   map_zero' := by
-    dsimp only -- Porting note: force the function to be applied
+    beta_reduce -- Porting note(#12129): force the function to be applied
     rw [← ofFractionRing_zero, ← Localization.mk_zero (1 : R[X]⁰), liftOn_ofFractionRing_mk]
     simp only [map_zero, zero_div]
 #align ratfunc.lift_monoid_with_zero_hom RatFunc.liftMonoidWithZeroHom
@@ -815,6 +815,13 @@ instance (R : Type*) [CommSemiring R] [Algebra R K[X]] : Algebra R (RatFunc K) w
   commutes' c x := mul_comm _ _
 
 variable {K}
+
+/-- The coercion from polynomials to rational functions, implemented as the algebra map from a
+domain to its field of fractions -/
+@[coe]
+def coePolynomial (P : Polynomial K) : RatFunc K := algebraMap _ _ P
+
+instance : Coe (Polynomial K) (RatFunc K) := ⟨coePolynomial⟩
 
 theorem mk_one (x : K[X]) : RatFunc.mk x 1 = algebraMap _ _ x :=
   rfl
@@ -1164,7 +1171,7 @@ theorem num_div_dvd (p : K[X]) {q : K[X]} (hq : q ≠ 0) :
     num (algebraMap _ _ p / algebraMap _ _ q) ∣ p := by
   rw [num_div _ q, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_left p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.num_div_dvd RatFunc.num_div_dvd
 
 /-- A version of `num_div_dvd` with the LHS in simp normal form -/
@@ -1218,7 +1225,7 @@ theorem denom_div_dvd (p q : K[X]) : denom (algebraMap _ _ p / algebraMap _ _ q)
   · simp [hq]
   rw [denom_div _ hq, C_mul_dvd]
   · exact EuclideanDomain.div_dvd_of_dvd (gcd_dvd_right p q)
-  · simpa only [Ne.def, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
+  · simpa only [Ne, inv_eq_zero, Polynomial.leadingCoeff_eq_zero] using right_div_gcd_ne_zero hq
 #align ratfunc.denom_div_dvd RatFunc.denom_div_dvd
 
 @[simp]
@@ -1543,7 +1550,7 @@ theorem eval_mul {x y : RatFunc K} (hx : Polynomial.eval₂ f a (denom x) ≠ 0)
     cases mul_eq_zero.mp this <;> contradiction
   rw [div_mul_div_comm, eq_div_iff (mul_ne_zero hx hy), div_eq_mul_inv, mul_right_comm, ←
     div_eq_mul_inv, div_eq_iff hxy]
-  simp only [← Polynomial.eval₂_mul]  -- Porting note: was `repeat' rw [← Polynomial.eval₂_mul]`
+  repeat' rw [← Polynomial.eval₂_mul]
   congr 1
   apply num_denom_mul
 #align ratfunc.eval_mul RatFunc.eval_mul
@@ -1694,10 +1701,16 @@ theorem coe_apply : coeAlgHom F f = f :=
   rfl
 #align ratfunc.coe_apply RatFunc.coe_apply
 
+theorem coe_coe (P : Polynomial F) : (P : LaurentSeries F) = (P : RatFunc F) := by
+  simp only [coePolynomial, coe_def, AlgHom.commutes, Polynomial.algebraMap_hahnSeries_apply]
+
 @[simp, norm_cast]
 theorem coe_zero : ((0 : RatFunc F) : LaurentSeries F) = 0 :=
   (coeAlgHom F).map_zero
 #align ratfunc.coe_zero RatFunc.coe_zero
+
+theorem coe_ne_zero {f : Polynomial F} (hf : f ≠ 0) : (↑f : PowerSeries F) ≠ 0 := by
+  simp only [ne_eq, Polynomial.coe_eq_zero_iff, hf, not_false_eq_true]
 
 @[simp, norm_cast]
 theorem coe_one : ((1 : RatFunc F) : LaurentSeries F) = 1 :=
@@ -1760,6 +1773,30 @@ theorem coe_X : ((X : RatFunc F) : LaurentSeries F) = single 1 1 := by
   simp only [ofPowerSeries_X]  -- Porting note: added
 set_option linter.uppercaseLean3 false in
 #align ratfunc.coe_X RatFunc.coe_X
+
+theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
+    single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n h_ind
+  · simp only [Nat.zero_eq, Int.ofNat_eq_coe, zpow_zero]
+    rfl
+  · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
+      add_comm]
+
+theorem single_inv (d : ℤ) {α : F} (hα : α ≠ 0) :
+    single (-d) (α⁻¹ : F) = (single (d : ℤ) (α : F))⁻¹ := by
+  apply eq_inv_of_mul_eq_one_right
+  rw [HahnSeries.single_mul_single, add_right_neg, mul_comm,
+    inv_mul_cancel hα]
+  rfl
+
+
+theorem single_zpow (n : ℤ) :
+    single (n : ℤ) (1 : F) = single (1 : ℤ) 1 ^ n := by
+  induction' n with n_pos n_neg
+  · apply single_one_eq_pow
+  · rw [Int.negSucc_coe, Int.ofNat_add, Nat.cast_one, ← inv_one,
+      single_inv (n_neg + 1 : ℤ) one_ne_zero, zpow_neg, ← Nat.cast_one, ← Int.ofNat_add,
+      Nat.cast_one, inv_inj, zpow_natCast, single_one_eq_pow, inv_one]
 
 instance : Algebra (RatFunc F) (LaurentSeries F) :=
   RingHom.toAlgebra (coeAlgHom F).toRingHom

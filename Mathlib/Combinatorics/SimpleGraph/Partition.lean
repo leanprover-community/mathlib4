@@ -106,7 +106,7 @@ theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ 
 Each vertex is colored by the part it's contained in. -/
 def toColoring : G.Coloring P.parts :=
   Coloring.mk (fun v ↦ ⟨P.partOfVertex v, P.partOfVertex_mem v⟩) fun hvw ↦ by
-    rw [Ne.def, Subtype.mk_eq_mk]
+    rw [Ne, Subtype.mk_eq_mk]
     exact P.partOfVertex_ne_of_adj hvw
 #align simple_graph.partition.to_coloring SimpleGraph.Partition.toColoring
 

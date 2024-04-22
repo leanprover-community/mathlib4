@@ -366,7 +366,7 @@ theorem ker_le_iff [RingHomSurjective τ₁₂] {p : Submodule R M} :
     have hxz : z + x ∈ p := by
       apply h₂
       simp [hx, hz]
-    suffices z + x - x ∈ p by simpa only [this, add_sub_cancel]
+    suffices z + x - x ∈ p by simpa only [this, add_sub_cancel_right]
     exact p.sub_mem hxz hx'
 #align linear_map.ker_le_iff LinearMap.ker_le_iff
 

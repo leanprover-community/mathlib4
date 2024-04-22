@@ -17,11 +17,11 @@ with this order `ℂ` is a `StrictOrderedCommRing` and the coercion `(↑) : ℝ
 embedding.
 
 This file only provides `Complex.partialOrder` and lemmas about it. Further structural classes are
-provided by `Mathlib/Data/IsROrC/Basic.lean` as
+provided by `Mathlib/Data/RCLike/Basic.lean` as
 
-* `IsROrC.toStrictOrderedCommRing`
-* `IsROrC.toStarOrderedRing`
-* `IsROrC.toOrderedSMul`
+* `RCLike.toStrictOrderedCommRing`
+* `RCLike.toStarOrderedRing`
+* `RCLike.toOrderedSMul`
 
 These are all only available with `open scoped ComplexOrder`.
 -/
@@ -101,9 +101,7 @@ theorem not_lt_zero_iff {z : ℂ} : ¬z < 0 ↔ 0 ≤ z.re ∨ z.im ≠ 0 :=
 #align complex.not_lt_zero_iff Complex.not_lt_zero_iff
 
 theorem eq_re_of_ofReal_le {r : ℝ} {z : ℂ} (hz : (r : ℂ) ≤ z) : z = z.re := by
-  apply Complex.ext
-  rfl
-  simp only [← (Complex.le_def.1 hz).2, Complex.zero_im, Complex.ofReal_im]
+  rw [eq_comm, ← conj_eq_iff_re, conj_eq_iff_im, ← (Complex.le_def.1 hz).2, Complex.ofReal_im]
 #align complex.eq_re_of_real_le Complex.eq_re_of_ofReal_le
 
 @[simp]

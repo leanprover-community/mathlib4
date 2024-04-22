@@ -215,7 +215,7 @@ theorem support_eq_empty {f : α →₀ M} : f.support = ∅ ↔ f = 0 :=
 #align finsupp.support_eq_empty Finsupp.support_eq_empty
 
 theorem support_nonempty_iff {f : α →₀ M} : f.support.Nonempty ↔ f ≠ 0 := by
-  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne.def]
+  simp only [Finsupp.support_eq_empty, Finset.nonempty_iff_ne_empty, Ne]
 #align finsupp.support_nonempty_iff Finsupp.support_nonempty_iff
 
 #align finsupp.nonzero_iff_exists Finsupp.ne_iff
@@ -231,8 +231,6 @@ theorem finite_support (f : α →₀ M) : Set.Finite (Function.support f) :=
   f.fun_support_eq.symm ▸ f.support.finite_toSet
 #align finsupp.finite_support Finsupp.finite_support
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (a «expr ∉ » s) -/
 theorem support_subset_iff {s : Set α} {f : α →₀ M} :
     ↑f.support ⊆ s ↔ ∀ a ∉ s, f a = 0 := by
   simp only [Set.subset_def, mem_coe, mem_support_iff]; exact forall_congr' fun a => not_imp_comm
@@ -391,7 +389,7 @@ theorem eq_single_iff {f : α →₀ M} {a b} : f = single a b ↔ f.support ⊆
   refine' ⟨fun h => h.symm ▸ ⟨support_single_subset, single_eq_same⟩, _⟩
   rintro ⟨h, rfl⟩
   ext x
-  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne.def, not_false_iff]
+  by_cases hx : a = x <;> simp only [hx, single_eq_same, single_eq_of_ne, Ne, not_false_iff]
   exact not_mem_support_iff.1 (mt (fun hx => (mem_singleton.1 (h hx)).symm) hx)
 #align finsupp.eq_single_iff Finsupp.eq_single_iff
 
@@ -463,8 +461,6 @@ theorem support_eq_singleton {f : α →₀ M} {a : α} :
     fun h => h.2.symm ▸ support_single_ne_zero _ h.1⟩
 #align finsupp.support_eq_singleton Finsupp.support_eq_singleton
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem support_eq_singleton' {f : α →₀ M} {a : α} :
     f.support = {a} ↔ ∃ b ≠ 0, f = single a b :=
   ⟨fun h =>
@@ -477,8 +473,6 @@ theorem card_support_eq_one {f : α →₀ M} : card f.support = 1 ↔ ∃ a, f 
   by simp only [card_eq_one, support_eq_singleton]
 #align finsupp.card_support_eq_one Finsupp.card_support_eq_one
 
-/- ./././Mathport/Syntax/Translate/Basic.lean:632:2:
-  warning: expanding binder collection (b «expr ≠ » 0) -/
 theorem card_support_eq_one' {f : α →₀ M} :
     card f.support = 1 ↔ ∃ a, ∃ b ≠ 0, f = single a b := by
   simp only [card_eq_one, support_eq_singleton']
@@ -843,7 +837,7 @@ theorem mapRange_single {f : M → N} {hf : f 0 = 0} {a : α} {b : M} :
 theorem support_mapRange_of_injective {e : M → N} (he0 : e 0 = 0) (f : ι →₀ M)
     (he : Function.Injective e) : (Finsupp.mapRange e he0 f).support = f.support := by
   ext
-  simp only [Finsupp.mem_support_iff, Ne.def, Finsupp.mapRange_apply]
+  simp only [Finsupp.mem_support_iff, Ne, Finsupp.mapRange_apply]
   exact he.ne_iff' he0
 #align finsupp.support_map_range_of_injective Finsupp.support_mapRange_of_injective
 
@@ -873,10 +867,10 @@ def embDomain (f : α ↪ β) (v : α →₀ M) : β →₀ M where
   mem_support_toFun a₂ := by
     dsimp
     split_ifs with h
-    · simp only [h, true_iff_iff, Ne.def]
+    · simp only [h, true_iff_iff, Ne]
       rw [← not_mem_support_iff, not_not]
       classical apply Finset.choose_mem
-    · simp only [h, Ne.def, ne_self_iff_false, not_true_eq_false]
+    · simp only [h, Ne, ne_self_iff_false, not_true_eq_false]
 #align finsupp.emb_domain Finsupp.embDomain
 
 @[simp]

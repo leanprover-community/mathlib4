@@ -7,6 +7,7 @@ import Mathlib.Topology.Algebra.Order.Compact
 import Mathlib.Topology.EMetricSpace.Basic
 import Mathlib.Topology.Bornology.Constructions
 import Mathlib.Data.Set.Pointwise.Interval
+import Mathlib.Topology.Order.DenselyOrdered
 
 /-!
 ## Pseudo-metric spaces
@@ -666,7 +667,7 @@ theorem iUnion_inter_closedBall_nat (s : Set α) (x : α) : ⋃ n : ℕ, s ∩ c
 #align metric.Union_inter_closed_ball_nat Metric.iUnion_inter_closedBall_nat
 
 theorem ball_subset (h : dist x y ≤ ε₂ - ε₁) : ball x ε₁ ⊆ ball y ε₂ := fun z zx => by
-  rw [← add_sub_cancel'_right ε₁ ε₂]
+  rw [← add_sub_cancel ε₁ ε₂]
   exact lt_of_le_of_lt (dist_triangle z x y) (add_lt_add_of_lt_of_le zx h)
 #align metric.ball_subset Metric.ball_subset
 
@@ -963,7 +964,7 @@ theorem eventually_nhds_iff_ball {p : α → Prop} :
 #align metric.eventually_nhds_iff_ball Metric.eventually_nhds_iff_ball
 
 /-- A version of `Filter.eventually_prod_iff` where the first filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → Prop} :
     (∀ᶠ x in 𝓝 x₀ ×ˢ f, p x) ↔ ∃ ε > (0 : ℝ), ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∀ {x}, dist x x₀ < ε → ∀ {i}, pa i → p (x, i) := by
@@ -973,7 +974,7 @@ theorem eventually_nhds_prod_iff {f : Filter ι} {x₀ : α} {p : α × ι → P
 #align metric.eventually_nhds_prod_iff Metric.eventually_nhds_prod_iff
 
 /-- A version of `Filter.eventually_prod_iff` where the second filter consists of neighborhoods
-in a pseudo-metric space.-/
+in a pseudo-metric space. -/
 theorem eventually_prod_nhds_iff {f : Filter ι} {x₀ : α} {p : ι × α → Prop} :
     (∀ᶠ x in f ×ˢ 𝓝 x₀, p x) ↔ ∃ pa : ι → Prop, (∀ᶠ i in f, pa i) ∧
       ∃ ε > 0, ∀ {i}, pa i → ∀ {x}, dist x x₀ < ε → p (i, x) := by
@@ -1150,7 +1151,7 @@ end Metric
 
 open Metric
 
-/-Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
+/- Instantiate a pseudometric space as a pseudoemetric space. Before we can state the instance,
 we need to show that the uniform structure coming from the edistance and the
 distance coincide. -/
 
@@ -1357,6 +1358,10 @@ theorem Real.nndist_eq' (x y : ℝ) : nndist x y = Real.nnabs (y - x) :=
 theorem Real.dist_0_eq_abs (x : ℝ) : dist x 0 = |x| := by simp [Real.dist_eq]
 #align real.dist_0_eq_abs Real.dist_0_eq_abs
 
+theorem Real.sub_le_dist (x y : ℝ) : x - y ≤ dist x y := by
+  rw [Real.dist_eq, le_abs]
+  exact Or.inl (le_refl _)
+
 theorem Real.dist_left_le_of_mem_uIcc {x y z : ℝ} (h : y ∈ uIcc x z) : dist x y ≤ dist x z := by
   simpa only [dist_comm x] using abs_sub_left_of_mem_uIcc h
 #align real.dist_left_le_of_mem_uIcc Real.dist_left_le_of_mem_uIcc
@@ -1397,13 +1402,13 @@ theorem Real.closedBall_eq_Icc {x r : ℝ} : closedBall x r = Icc (x - r) (x + r
 #align real.closed_ball_eq_Icc Real.closedBall_eq_Icc
 
 theorem Real.Ioo_eq_ball (x y : ℝ) : Ioo x y = ball ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two,
-    ← add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.ball_eq_Ioo, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Ioo_eq_ball Real.Ioo_eq_ball
 
 theorem Real.Icc_eq_closedBall (x y : ℝ) : Icc x y = closedBall ((x + y) / 2) ((y - x) / 2) := by
-  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel', add_self_div_two, ←
-    add_div, add_assoc, add_sub_cancel'_right, add_self_div_two]
+  rw [Real.closedBall_eq_Icc, ← sub_div, add_comm, ← sub_add, add_sub_cancel_left, add_self_div_two,
+    ← add_div, add_assoc, add_sub_cancel, add_self_div_two]
 #align real.Icc_eq_closed_ball Real.Icc_eq_closedBall
 
 section MetricOrdered

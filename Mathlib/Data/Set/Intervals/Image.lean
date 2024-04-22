@@ -14,9 +14,7 @@ This file shows many variants of the fact that a monotone function `f` sends an 
 endpoints `a` and `b` to the interval with endpoints `f a` and `f b`.
 -/
 
-set_option autoImplicit true
-
-variable {f : α → β}
+variable {α β : Type*} {f : α → β}
 
 open Set
 
@@ -182,7 +180,7 @@ lemma StrictAnti.image_Ioo_subset (h : StrictAnti f) : f '' Ioo a b ⊆ Ioo (f b
 end Preorder
 
 section PartialOrder
-variable [PartialOrder α] [Preorder β]
+variable [PartialOrder α] [Preorder β] {a b : α}
 
 lemma StrictMonoOn.mapsTo_Ico (h : StrictMonoOn f (Icc a b)) :
     MapsTo f (Ico a b) (Ico (f a) (f b)) :=

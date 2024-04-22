@@ -71,13 +71,15 @@ class HaveLebesgueDecomposition (μ ν : Measure α) : Prop where
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `singularPart` chooses the
 measure from `HaveLebesgueDecomposition`, otherwise it returns the zero measure. For sigma-finite
 measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
+@[pp_dot]
 irreducible_def singularPart (μ ν : Measure α) : Measure α :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).1 else 0
 #align measure_theory.measure.singular_part MeasureTheory.Measure.singularPart
 
 /-- If a pair of measures `HaveLebesgueDecomposition`, then `rnDeriv` chooses the
 measurable function from `HaveLebesgueDecomposition`, otherwise it returns the zero function.
-For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`.-/
+For sigma-finite measures, `μ = μ.singularPart ν + ν.withDensity (μ.rnDeriv ν)`. -/
+@[pp_dot]
 irreducible_def rnDeriv (μ ν : Measure α) : α → ℝ≥0∞ :=
   if h : HaveLebesgueDecomposition μ ν then (Classical.choose h.lebesgue_decomposition).2 else 0
 #align measure_theory.measure.rn_deriv MeasureTheory.Measure.rnDeriv
@@ -236,6 +238,11 @@ theorem singularPart_zero (ν : Measure α) : (0 : Measure α).singularPart ν =
   singularPart_eq_zero_of_ac (AbsolutelyContinuous.zero _)
 #align measure_theory.measure.singular_part_zero MeasureTheory.Measure.singularPart_zero
 
+@[simp]
+lemma singularPart_zero_right (μ : Measure α) : μ.singularPart 0 = μ := by
+  conv_rhs => rw [haveLebesgueDecomposition_add μ 0]
+  simp
+
 lemma singularPart_eq_zero (μ ν : Measure α) [μ.HaveLebesgueDecomposition ν] :
     μ.singularPart ν = 0 ↔ μ ≪ ν := by
   have h_dec := haveLebesgueDecomposition_add μ ν
@@ -303,6 +310,12 @@ lemma singularPart_eq_self [μ.HaveLebesgueDecomposition ν] : μ.singularPart �
     exact mutuallySingular_singularPart _ _
   · conv_rhs => rw [h_dec]
     rw [(withDensity_rnDeriv_eq_zero _ _).mpr h, add_zero]
+
+@[simp]
+lemma singularPart_singularPart (μ ν : Measure α) :
+    (μ.singularPart ν).singularPart ν = μ.singularPart ν := by
+  rw [Measure.singularPart_eq_self]
+  exact Measure.mutuallySingular_singularPart _ _
 
 instance singularPart.instIsFiniteMeasure [IsFiniteMeasure μ] :
     IsFiniteMeasure (μ.singularPart ν) :=
@@ -460,6 +473,16 @@ theorem singularPart_add (μ₁ μ₂ ν : Measure α) [HaveLebesgueDecompositio
     ← haveLebesgueDecomposition_add μ₂ ν]
 #align measure_theory.measure.singular_part_add MeasureTheory.Measure.singularPart_add
 
+lemma singularPart_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+    {s : Set α} (hs : MeasurableSet s) :
+    (μ.restrict s).singularPart ν = (μ.singularPart ν).restrict s := by
+  refine (Measure.eq_singularPart (f := s.indicator (μ.rnDeriv ν)) ?_ ?_ ?_).symm
+  · exact (μ.measurable_rnDeriv ν).indicator hs
+  · exact (Measure.mutuallySingular_singularPart μ ν).restrict s
+  · ext t
+    rw [withDensity_indicator hs, ← restrict_withDensity hs, ← Measure.restrict_add,
+      ← μ.haveLebesgueDecomposition_add ν]
+
 /-- Given measures `μ` and `ν`, if `s` is a measure mutually singular to `ν` and `f` is a
 measurable function such that `μ = s + fν`, then `f = μ.rnDeriv ν`.
 
@@ -542,6 +565,14 @@ theorem rnDeriv_withDensity (ν : Measure α) [SigmaFinite ν] {f : α → ℝ�
     (ν.withDensity f).rnDeriv ν =ᵐ[ν] f :=
   rnDeriv_withDensity₀ ν hf.aemeasurable
 #align measure_theory.measure.rn_deriv_with_density MeasureTheory.Measure.rnDeriv_withDensity
+
+lemma rnDeriv_restrict (μ ν : Measure α) [HaveLebesgueDecomposition μ ν] [SigmaFinite ν]
+    {s : Set α} (hs : MeasurableSet s) :
+    (μ.restrict s).rnDeriv ν =ᵐ[ν] s.indicator (μ.rnDeriv ν) := by
+  refine (eq_rnDeriv (s := (μ.restrict s).singularPart ν)
+    ((measurable_rnDeriv _ _).indicator hs) (mutuallySingular_singularPart _ _) ?_).symm
+  rw [singularPart_restrict _ _ hs, withDensity_indicator hs, ← restrict_withDensity hs,
+    ← Measure.restrict_add, ← μ.haveLebesgueDecomposition_add ν]
 
 /-- The Radon-Nikodym derivative of the restriction of a measure to a measurable set is the
 indicator function of this set. -/
@@ -692,7 +723,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
       exact hA₃ n
     · rw [not_lt, le_zero_iff] at hb
       specialize hA₃ 0
-      simp? [hb, le_zero_iff] at hA₃ says
+      simp? [hb] at hA₃ says
         simp only [CharP.cast_eq_zero, zero_add, ne_eq, one_ne_zero, not_false_eq_true, div_self,
           ENNReal.coe_one, hb, ENNReal.coe_zero, mul_zero, nonpos_iff_eq_zero,
           ENNReal.coe_eq_zero] at hA₃
@@ -869,7 +900,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
           ← ENNReal.toReal_add, ENNReal.toReal_le_toReal, Measure.coe_smul, Pi.smul_apply,
           withDensity_apply _ (hA.inter hE₁), show ε • ν (A ∩ E) = (ε : ℝ≥0∞) * ν (A ∩ E) by rfl,
           ← set_lintegral_const, ← lintegral_add_left measurable_const] at this
-        · rw [Ne.def, ENNReal.add_eq_top, not_or]
+        · rw [Ne, ENNReal.add_eq_top, not_or]
           exact ⟨measure_ne_top _ _, measure_ne_top _ _⟩
         · exact measure_ne_top _ _
         · exact measure_ne_top _ _

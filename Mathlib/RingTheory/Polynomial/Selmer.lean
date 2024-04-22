@@ -3,7 +3,7 @@ Copyright (c) 2022 Thomas Browning. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning
 -/
-import Mathlib.Data.Polynomial.UnitTrinomial
+import Mathlib.Algebra.Polynomial.UnitTrinomial
 import Mathlib.RingTheory.Polynomial.GaussLemma
 import Mathlib.Tactic.LinearCombination
 
@@ -62,7 +62,7 @@ theorem X_pow_sub_X_sub_one_irreducible (hn1 : n ≠ 1) : Irreducible (X ^ n - X
     Units.val_neg, Units.val_one, map_neg, map_one] at h1 h2
   replace h1 : z ^ n = z + 1 := by linear_combination h1
   replace h2 := mul_eq_zero_of_left h2 z
-  rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ', Nat.sub_add_cancel hn.le] at h2
+  rw [add_mul, add_mul, add_zero, mul_assoc (-1 : ℂ), ← pow_succ, Nat.sub_add_cancel hn.le] at h2
   rw [h1] at h2 ⊢
   exact ⟨rfl, by linear_combination -h2⟩
 set_option linter.uppercaseLean3 false in

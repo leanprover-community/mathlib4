@@ -633,7 +633,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
   | ⟨_, L, _⟩, 0 => (ListBlank.nth_zero _).symm
   | ⟨a, L, R⟩, 1 => (ListBlank.nth_zero _).trans (ListBlank.head_cons _ _)
   | ⟨a, L, R⟩, (n + 1 : ℕ) + 1 => by
-    rw [add_sub_cancel]
+    rw [add_sub_cancel_right]
     change (R.cons a).nth (n + 1) = R.nth n
     rw [ListBlank.nth_succ, ListBlank.tail_cons]
 #align turing.tape.move_left_nth Turing.Tape.move_left_nth
@@ -642,7 +642,7 @@ theorem Tape.move_left_nth {Γ} [Inhabited Γ] :
 theorem Tape.move_right_nth {Γ} [Inhabited Γ] (T : Tape Γ) (i : ℤ) :
     (T.move Dir.right).nth i = T.nth (i + 1) := by
   conv => rhs; rw [← T.move_right_left]
-  rw [Tape.move_left_nth, add_sub_cancel]
+  rw [Tape.move_left_nth, add_sub_cancel_right]
 #align turing.tape.move_right_nth Turing.Tape.move_right_nth
 
 @[simp]
@@ -2688,11 +2688,10 @@ theorem tr_respects_aux {q v T k} {S : ∀ k, List (Γ k)}
 attribute [local simp] Respects TM2.step TM2.stepAux trNormal
 
 theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
-  -- Porting note: `simp only`s are required for beta reductions.
+  -- Porting note(#12129): additional beta reduction needed
   intro c₁ c₂ h
   cases' h with l v S L hT
   cases' l with l; · constructor
-  simp only [TM2.step, Respects, Option.map_some']
   rsuffices ⟨b, c, r⟩ : ∃ b, _ ∧ Reaches (TM1.step (tr M)) _ _
   · exact ⟨b, c, TransGen.head' rfl r⟩
   simp only [tr]
@@ -2703,7 +2702,7 @@ theorem tr_respects : Respects (TM2.step M) (TM1.step (tr M)) TrCfg := by
   | H₂ a _ IH => exact IH _ hT
   | H₃ p q₁ q₂ IH₁ IH₂ =>
     unfold TM2.stepAux trNormal TM1.stepAux
-    simp only []
+    beta_reduce
     cases p v <;> [exact IH₂ _ hT; exact IH₁ _ hT]
   | H₄ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩
   | H₅ => exact ⟨_, ⟨_, hT⟩, ReflTransGen.refl⟩

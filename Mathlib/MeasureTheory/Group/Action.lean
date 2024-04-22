@@ -286,7 +286,7 @@ theorem measure_pos_iff_nonempty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen 
 @[to_additive]
 theorem measure_eq_zero_iff_eq_empty_of_smulInvariant (hμ : μ ≠ 0) (hU : IsOpen U) :
     μ U = 0 ↔ U = ∅ := by
-  rw [← not_iff_not, ← Ne.def, ← pos_iff_ne_zero,
+  rw [← not_iff_not, ← Ne, ← pos_iff_ne_zero,
     measure_pos_iff_nonempty_of_smulInvariant G hμ hU, nonempty_iff_ne_empty]
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_smul_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_smulInvariant
 #align measure_theory.measure_eq_zero_iff_eq_empty_of_vadd_invariant MeasureTheory.measure_eq_zero_iff_eq_empty_of_vaddInvariant
@@ -310,7 +310,7 @@ theorem vadd_ae_eq_self_of_mem_zmultiples {G : Type u} {α : Type w} {s : Set α
     {μ : Measure α} [VAddInvariantMeasure G α μ] {x y : G}
     (hs : (x +ᵥ s : Set α) =ᵐ[μ] s) (hy : y ∈ AddSubgroup.zmultiples x) :
     (y +ᵥ s : Set α) =ᵐ[μ] s := by
-  letI : MeasurableSpace (Multiplicative G) := (inferInstanceAs (MeasurableSpace G))
+  letI : MeasurableSpace (Multiplicative G) := inferInstanceAs (MeasurableSpace G)
   letI : SMulInvariantMeasure (Multiplicative G) α μ :=
     ⟨fun g => VAddInvariantMeasure.measure_preimage_vadd (Multiplicative.toAdd g)⟩
   letI : MeasurableSMul (Multiplicative G) α :=

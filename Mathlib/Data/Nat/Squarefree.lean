@@ -83,7 +83,7 @@ theorem Squarefree.ext_iff {n m : ℕ} (hn : Squarefree n) (hm : Squarefree m) :
       hp.dvd_iff_one_le_factorization hm.ne_zero, not_le, lt_one_iff] at h₁
     have h₂ := hn.natFactorization_le_one p
     have h₃ := hm.natFactorization_le_one p
-    rw [Nat.le_add_one_iff, le_zero_iff] at h₂ h₃
+    rw [Nat.le_add_one_iff, Nat.le_zero] at h₂ h₃
     cases' h₂ with h₂ h₂
     · rwa [h₂, eq_comm, ← h₁]
     · rw [h₂, h₃.resolve_left]
@@ -272,12 +272,12 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
         x.val.prod := by
   rw [(Finset.nodup _).ext ((Finset.nodup _).map_on _)]
   · intro a
-    simp only [Multiset.mem_filter, id.def, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
+    simp only [Multiset.mem_filter, id, Multiset.mem_map, Finset.filter_val, ← Finset.mem_def,
       mem_divisors]
     constructor
     · rintro ⟨⟨an, h0⟩, hsq⟩
       use (UniqueFactorizationMonoid.normalizedFactors a).toFinset
-      simp only [id.def, Finset.mem_powerset]
+      simp only [id, Finset.mem_powerset]
       rcases an with ⟨b, rfl⟩
       rw [mul_ne_zero_iff] at h0
       rw [UniqueFactorizationMonoid.squarefree_iff_nodup_normalizedFactors h0.1] at hsq
@@ -287,7 +287,7 @@ theorem divisors_filter_squarefree {n : ℕ} (h0 : n ≠ 0) :
     · rintro ⟨s, hs, rfl⟩
       rw [Finset.mem_powerset, ← Finset.val_le_iff, Multiset.toFinset_val] at hs
       have hs0 : s.val.prod ≠ 0 := by
-        rw [Ne.def, Multiset.prod_eq_zero_iff]
+        rw [Ne, Multiset.prod_eq_zero_iff]
         intro con
         apply
           not_irreducible_zero
@@ -350,7 +350,7 @@ theorem sq_mul_squarefree_of_pos {n : ℕ} (hn : 0 < n) :
   refine' Nat.lt_le_asymm _ (Finset.le_max' S ((b * x) ^ 2) _)
   -- Porting note: these two goals were in the opposite order in Lean 3
   · convert lt_mul_of_one_lt_right hlts
-      (one_lt_pow 2 x two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
+      (one_lt_pow two_ne_zero (one_lt_iff_ne_zero_and_ne_one.mpr ⟨fun h => by simp_all, hx⟩))
       using 1
     rw [mul_pow]
   · simp_rw [S, hsa, Finset.mem_filter, Finset.mem_range]
@@ -376,7 +376,7 @@ and generalizes to arbitrary commutative monoids. See `Squarefree.of_mul_left` a
 theorem squarefree_mul {m n : ℕ} (hmn : m.Coprime n) :
     Squarefree (m * n) ↔ Squarefree m ∧ Squarefree n := by
   simp only [squarefree_iff_prime_squarefree, ← sq, ← forall_and]
-  refine' ball_congr fun p hp => _
+  refine' forall₂_congr fun p hp => _
   simp only [hmn.isPrimePow_dvd_mul (hp.isPrimePow.pow two_ne_zero), not_or]
 #align nat.squarefree_mul Nat.squarefree_mul
 

@@ -150,7 +150,7 @@ theorem card_eq_or_dvd : Nat.card G = 1 ∨ p ∣ Nat.card G := by
     rw [Nat.card_eq_fintype_card, hn]
     cases' n with n n
     · exact Or.inl rfl
-    · exact Or.inr ⟨p ^ n, by rw [pow_succ]⟩
+    · exact Or.inr ⟨p ^ n, by rw [pow_succ']⟩
   · rw [Nat.card_eq_zero_of_infinite]
     exact Or.inr ⟨0, rfl⟩
 #align is_p_group.card_eq_or_dvd IsPGroup.card_eq_or_dvd
@@ -187,7 +187,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
     calc
       card α = card (Σy : Quotient (orbitRel G α), { x // Quotient.mk'' x = y }) :=
         card_congr (Equiv.sigmaFiberEquiv (@Quotient.mk'' _ (orbitRel G α))).symm
-      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := (card_sigma _)
+      _ = ∑ a : Quotient (orbitRel G α), card { x // Quotient.mk'' x = a } := card_sigma _
       _ ≡ ∑ _a : fixedPoints G α, 1 [MOD p] := ?_
       _ = _ := by simp; rfl
     rw [← ZMod.eq_iff_modEq_nat p, Nat.cast_sum, Nat.cast_sum]
@@ -205,7 +205,7 @@ theorem card_modEq_card_fixedPoints [Fintype (fixedPoints G α)] :
           rw [key, mem_fixedPoints_iff_card_orbit_eq_one.mp a.2])
     obtain ⟨k, hk⟩ := hG.card_orbit b
     have : k = 0 :=
-      le_zero_iff.1
+      Nat.le_zero.1
         (Nat.le_of_lt_succ
           (lt_of_not_ge
             (mt (pow_dvd_pow p)

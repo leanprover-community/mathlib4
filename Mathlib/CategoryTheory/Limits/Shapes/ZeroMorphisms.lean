@@ -110,7 +110,7 @@ theorem ext (I J : HasZeroMorphisms C) : I = J := by
     apply I.zero_comp X (J.zero Y Y).zero
   have that : (I.zero X Y).zero ≫ (J.zero Y Y).zero = (J.zero X Y).zero := by
     apply J.comp_zero (I.zero X Y).zero Y
-  rw[← this, ← that]
+  rw [← this, ← that]
 #align category_theory.limits.has_zero_morphisms.ext CategoryTheory.Limits.HasZeroMorphisms.ext
 
 instance : Subsingleton (HasZeroMorphisms C) :=

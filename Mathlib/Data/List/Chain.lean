@@ -6,7 +6,6 @@ Authors: Mario Carneiro, Kenny Lau, Yury Kudryashov
 import Mathlib.Logic.Relation
 import Mathlib.Data.List.Forall2
 import Mathlib.Data.List.Lex
-import Mathlib.Data.Nat.Order.Basic
 
 #align_import data.list.chain from "leanprover-community/mathlib"@"dd71334db81d0bd444af1ee339a29298bef40734"
 
@@ -20,6 +19,8 @@ A graph-specialized version is in development and will hopefully be added under 
 sometime soon.
 -/
 
+-- Make sure we haven't imported `Data.Nat.Order.Basic`
+assert_not_exists OrderedSub
 
 universe u v
 
@@ -354,9 +355,10 @@ theorem chain'_iff_get {R} : ∀ {l : List α}, Chain' R l ↔
   | [a] => iff_of_true (by simp) (fun _ h => by simp at h)
   | a :: b :: t => by
     rw [← and_forall_succ, chain'_cons, chain'_iff_get]
-    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, zero_add, Fin.mk_one,
-      get_cons_cons_one, succ_sub_succ_eq_sub, nonpos_iff_eq_zero, add_eq_zero_iff, and_false,
-      tsub_zero, add_pos_iff, zero_lt_one, or_true, forall_true_left, and_congr_right_iff]
+    simp only [length_cons, get_cons_succ, Fin.zero_eta, get_cons_zero, Nat.zero_add, Fin.mk_one,
+      get_cons_cons_one, succ_sub_succ_eq_sub, Nat.le_zero, Nat.add_eq_zero_iff, and_false,
+      Nat.sub_zero, Nat.add_pos_iff_pos_or_pos, Nat.zero_lt_one, or_true, forall_true_left,
+      and_congr_right_iff]
     dsimp [succ_sub_one]
     exact fun _ => ⟨fun h i hi => h i (Nat.lt_of_succ_lt_succ hi),
                     fun h i hi => h i (Nat.succ_lt_succ hi)⟩
@@ -384,9 +386,9 @@ lemma chain'_join : ∀ {L : List (List α)}, [] ∉ L →
 | [], _ => by simp
 | [l], _ => by simp [join]
 | (l₁ :: l₂ :: L), hL => by
-    rw [mem_cons, not_or, ← Ne.def] at hL
+    rw [mem_cons, not_or, ← Ne] at hL
     rw [join, chain'_append, chain'_join hL.2, forall_mem_cons, chain'_cons]
-    rw [mem_cons, not_or, ← Ne.def] at hL
+    rw [mem_cons, not_or, ← Ne] at hL
     simp only [forall_mem_cons, and_assoc, join, head?_append_of_ne_nil _ hL.2.1.symm]
     exact Iff.rfl.and (Iff.rfl.and <| Iff.rfl.and and_comm)
 

@@ -203,12 +203,11 @@ theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h 
   simp [mapIdx_eq_enum_map, enum_eq_zip_range]
 #align list.nth_le_map_with_index List.nthLe_mapIdx
 
--- Porting note: Changed the type to use `List.get` instead of deprecated `List.nthLe`.
 theorem mapIdx_eq_ofFn {α β} (l : List α) (f : ℕ → α → β) :
     l.mapIdx f = ofFn fun i : Fin l.length ↦ f (i : ℕ) (l.get i) := by
-  induction' l with hd tl IH generalizing f
-  · rfl
-  · simp [IH]
+  induction l generalizing f with
+  | nil => rfl
+  | cons _ _ IH => simp [IH]
 #align list.map_with_index_eq_of_fn List.mapIdx_eq_ofFn
 
 end MapIdx
@@ -252,6 +251,73 @@ theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : 
     map_filter_eq_foldr, findIdxs, uncurry, foldrIdx_eq_foldr_enum, decide_eq_true_eq, comp_apply,
     Bool.cond_decide]
 #align list.find_indexes_eq_map_indexes_values List.findIdxs_eq_map_indexesValues
+
+section FindIdx -- TODO: upstream to Std
+
+theorem findIdx_eq_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p = xs.length ↔ ∀ x ∈ xs, ¬p x := by
+  induction xs with
+  | nil => simp_all
+  | cons x xs ih =>
+    rw [findIdx_cons, length_cons]
+    constructor <;> intro h
+    · have : ¬p x := by contrapose h; simp_all
+      simp_all
+    · simp_rw [h x (mem_cons_self x xs), cond_false, Nat.succ.injEq, ih]
+      exact fun y hy ↦ h y <| mem_cons.mpr (Or.inr hy)
+
+theorem findIdx_le_length (p : α → Bool) {xs : List α} : xs.findIdx p ≤ xs.length := by
+  by_cases e : ∃ x ∈ xs, p x
+  · exact (findIdx_lt_length_of_exists e).le
+  · push_neg at e; exact (findIdx_eq_length.mpr e).le
+
+theorem findIdx_lt_length {p : α → Bool} {xs : List α} :
+    xs.findIdx p < xs.length ↔ ∃ x ∈ xs, p x := by
+  rw [← not_iff_not, not_lt]
+  have := @le_antisymm_iff _ _ (xs.findIdx p) xs.length
+  simp only [findIdx_le_length, true_and] at this
+  rw [← this, findIdx_eq_length, not_exists]
+  simp only [Bool.not_eq_true, not_and]
+
+/-- `p` does not hold for elements with indices less than `xs.findIdx p`. -/
+theorem not_of_lt_findIdx {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.findIdx p) :
+    ¬p (xs.get ⟨i, h.trans_le (findIdx_le_length p)⟩) := by
+  revert i
+  induction xs with
+  | nil => intro i h; rw [findIdx_nil] at h; omega
+  | cons x xs ih =>
+    intro i h
+    have ho := h
+    rw [findIdx_cons] at h
+    have npx : ¬p x := by by_contra y; rw [y, cond_true] at h; omega
+    simp_rw [npx, cond_false] at h
+    cases' i.eq_zero_or_pos with e e
+    · simpa only [e, Fin.zero_eta, get_cons_zero]
+    · have ipm := Nat.succ_pred_eq_of_pos e
+      have ilt := ho.trans_le (findIdx_le_length p)
+      rw [(Fin.mk_eq_mk (h' := ipm ▸ ilt)).mpr ipm.symm, get_cons_succ]
+      rw [← ipm, Nat.succ_lt_succ_iff] at h
+      exact ih h
+
+theorem le_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩)) : i ≤ xs.findIdx p := by
+  by_contra! f
+  exact absurd (@findIdx_get _ p xs (f.trans h)) (h2 (xs.findIdx p) f)
+
+theorem lt_findIdx_of_not {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length)
+    (h2 : ∀ j (hji : j ≤ i), ¬p (xs.get ⟨j, hji.trans_lt h⟩)) : i < xs.findIdx p := by
+  by_contra! f
+  exact absurd (@findIdx_get _ p xs (f.trans_lt h)) (h2 (xs.findIdx p) f)
+
+theorem findIdx_eq {p : α → Bool} {xs : List α} {i : ℕ} (h : i < xs.length) :
+    xs.findIdx p = i ↔ p (xs.get ⟨i, h⟩) ∧ ∀ j (hji : j < i), ¬p (xs.get ⟨j, hji.trans h⟩) := by
+  refine' ⟨fun f ↦ ⟨f ▸ (@findIdx_get _ p xs (f ▸ h)), fun _ hji ↦ not_of_lt_findIdx (f ▸ hji)⟩,
+    fun ⟨h1, h2⟩ ↦ _⟩
+  apply Nat.le_antisymm _ (le_findIdx_of_not h h2)
+  contrapose! h1
+  exact not_of_lt_findIdx h1
+
+end FindIdx
 
 section FoldlIdx
 
