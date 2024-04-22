@@ -633,8 +633,8 @@ def erase (a : α) (f : α →₀ M) : α →₀ M where
     classical
     rw [mem_erase, mem_support_iff]; dsimp
     split_ifs with h
-    exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
-    exact and_iff_right h
+    · exact ⟨fun H _ => H.1 h, fun H => (H rfl).elim⟩
+    · exact and_iff_right h
 #align finsupp.erase Finsupp.erase
 
 @[simp]

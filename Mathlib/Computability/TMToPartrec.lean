@@ -649,7 +649,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       obtain ⟨v'', h₁, h₂⟩ := this
       rw [reaches_eval] at h₂
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       cases Part.mem_unique h₂ (mem_eval.2 ⟨ReflTransGen.refl, rfl⟩)
       refine' ⟨v', h₁, _⟩
       rw [stepRet] at h
@@ -657,7 +657,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       by_cases he : v'.headI = 0 <;> simp only [exists_prop, if_pos, if_false, he] <;> intro h
       · refine' ⟨_, Part.mem_some _, _⟩
         rw [reaches_eval]
-        exact h
+        · exact h
         exact ReflTransGen.single rfl
       · obtain ⟨k₀, v₀, e₀⟩ := stepNormal.is_ret f Cont.halt v'.tail
         have e₁ := stepNormal_then f Cont.halt (Cont.fix f k) v'.tail
@@ -674,7 +674,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
     swap
-    exact ReflTransGen.single rfl
+    · exact ReflTransGen.single rfl
     refine' PFun.fixInduction he fun v (he : v' ∈ f.fix.eval v) IH => _
     rw [fok, Part.bind_eq_bind, Part.mem_bind_iff]
     obtain he | ⟨v'', he₁', _⟩ := PFun.mem_fix_iff.1 he
@@ -683,7 +683,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       rwa [stepRet, if_pos h]
     · obtain ⟨v₁, he₁, he₂⟩ := (Part.mem_map_iff _).1 he₁'
       split_ifs at he₂ with h; cases he₂
@@ -691,7 +691,7 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
       refine' ⟨_, he₁, _⟩
       rw [reaches_eval]
       swap
-      exact ReflTransGen.single rfl
+      · exact ReflTransGen.single rfl
       rw [stepRet, if_neg h]
       exact IH v₁.tail ((Part.mem_map_iff _).2 ⟨_, he₁, if_neg h⟩)
 #align turing.to_partrec.cont_eval_fix Turing.ToPartrec.cont_eval_fix
@@ -701,13 +701,15 @@ theorem code_is_ok (c) : Code.Ok c := by
   | cons f fs IHf IHfs =>
     rw [Code.eval, IHf]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IHfs]; congr; funext v'
     refine' Eq.trans _ (Eq.symm _) <;> try exact reaches_eval (ReflTransGen.single rfl)
   | comp f g IHf IHg =>
     rw [Code.eval, IHg]
     simp only [bind_assoc, Cont.eval, pure_bind]; congr; funext v
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IHf]
   | case f g IHf IHg =>
     simp only [Code.eval]
@@ -728,13 +730,15 @@ theorem stepRet_eval {k v} : eval step (stepRet k v) = Cfg.halt <$> k.eval v := 
   | cons₁ fs as k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [stepRet, IH, bind_pure_comp]
   | cons₂ ns k IH => rw [Cont.eval, stepRet]; exact IH
   | comp f k IH =>
     rw [Cont.eval, stepRet, code_is_ok]
     simp only [← bind_pure_comp, bind_assoc]; congr; funext v'
-    rw [reaches_eval]; swap; exact ReflTransGen.single rfl
+    rw [reaches_eval]; swap
+    · exact ReflTransGen.single rfl
     rw [IH, bind_pure_comp]
   | fix f k IH =>
     rw [Cont.eval, stepRet]; simp only [bind_pure_comp]
@@ -1596,7 +1600,9 @@ theorem trNormal_respects (c k v s) :
   | succ => refine' ⟨_, ⟨none, rfl⟩, head_main_ok.trans succ_ok⟩
   | tail =>
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
-    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
+    refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2
+    · simp; rfl
+    swap
     refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
     cases v <;> simp [o]
   | cons f fs IHf _ =>
@@ -1632,8 +1638,10 @@ theorem tr_ret_respects (k v s) : ∃ b₂,
     refine' (move₂_ok (by decide) _ (splitAtPred_false _)).trans _; · rfl
     simp only [TM2.step, Option.mem_def, Option.elim, id_eq, elim_update_main, elim_main, elim_aux,
       List.append_nil, elim_update_aux]
-    refine' (move₂_ok (by decide) _ _).trans _; pick_goal 4; · rfl
-    pick_goal 4;
+    refine' (move₂_ok (by decide) _ _).trans _
+    pick_goal 4
+    · rfl
+    pick_goal 4
     · exact
         splitAtPred_eq _ _ _ (some Γ'.consₗ) _
           (fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)) ⟨rfl, rfl⟩
@@ -1726,7 +1734,7 @@ theorem trStmts₁_trans {q q'} : q' ∈ trStmts₁ q → trStmts₁ q' ⊆ trSt
   induction' q with _ _ _ q q_ih _ _ q q_ih q q_ih _ _ q q_ih q q_ih q q_ih q₁ q₂ q₁_ih q₂_ih _ <;>
     simp (config := { contextual := true }) only [trStmts₁, Finset.mem_insert, Finset.mem_union,
       or_imp, Finset.mem_singleton, Finset.Subset.refl, imp_true_iff, true_and_iff]
-  iterate 4 exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
+  repeat exact fun h => Finset.Subset.trans (q_ih h) (Finset.subset_insert _ _)
   · simp
     intro s h x h'
     simp only [Finset.mem_biUnion, Finset.mem_univ, true_and, Finset.mem_insert]
