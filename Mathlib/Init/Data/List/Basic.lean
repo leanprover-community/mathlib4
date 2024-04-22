@@ -19,20 +19,7 @@ universe u v w
 
 namespace List
 
-
-
-open Option Nat
-
 #align list.nth List.get?
-
-/-- nth element of a list `l` given `n < l.length`. -/
-@[deprecated get]
-def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
-#align list.nth_le List.nthLe
-
-set_option linter.deprecated false in
-@[deprecated]
-theorem nthLe_eq (l : List α) (n) (h : n < l.length) : nthLe l n h = get l ⟨n, h⟩ := rfl
 
 /-- The head of a list, or the default element of the type is the list is `nil`. -/
 def headI [Inhabited α] : List α → α

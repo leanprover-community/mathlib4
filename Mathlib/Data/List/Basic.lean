@@ -865,6 +865,11 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
 
+/-- nth element of a list `l` given `n < l.length`. -/
+@[deprecated get] -- 2023-01-05
+def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
+#align list.nth_le List.nthLe
+
 @[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
@@ -1458,15 +1463,9 @@ theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l
   rw [get?_eq_some]
   simp [n.2]
 
-@[deprecated get_eq_iff]
-theorem nthLe_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.get? n = some x :=
-  get_eq_iff
-#align list.nth_le_eq_iff List.nthLe_eq_iff
+#align list.nth_le_eq_iff List.get_eq_iff
 
-@[deprecated get?_eq_get]
-theorem some_nthLe_eq {l : List α} {n : ℕ} {h} : some (l.nthLe n h) = l.get? n :=
-  (get?_eq_get _).symm
-#align list.some_nth_le_eq List.some_nthLe_eq
+#align list.some_nth_le_eq List.get?_eq_get
 
 end deprecated
 
