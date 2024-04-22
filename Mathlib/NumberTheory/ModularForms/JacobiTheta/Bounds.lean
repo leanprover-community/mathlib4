@@ -142,7 +142,7 @@ lemma isBigO_atTop_F_nat_zero_sub {a : ℝ} (ha : 0 ≤ a) : ∃ p, 0 < p ∧
       apply Eventually.isBigO
       filter_upwards [eventually_gt_atTop 0] with t ht
       exact F_nat_zero_le ha ht
-    refine ⟨π * a ^ 2, mul_pos pi_pos (sq_pos_of_ne_zero _ h), this.trans ?_⟩
+    refine ⟨π * a ^ 2, mul_pos pi_pos (sq_pos_of_ne_zero h), this.trans ?_⟩
     simpa only [neg_mul π (a ^ 2), mul_one] using (isBigO_refl _ _).mul isBigO_one_aux
 
 end k_eq_zero
