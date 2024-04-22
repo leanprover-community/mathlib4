@@ -208,7 +208,7 @@ abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
 
 variable {n} {α}
 
-theorem mem_specialUnitaryGroup_iff:
+theorem mem_specialUnitaryGroup_iff :
     A ∈ specialUnitaryGroup n α ↔ A * star A = 1 ∧ A.det = 1:= by
   rw [← mem_unitaryGroup_iff]
   rfl
