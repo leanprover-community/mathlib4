@@ -31,7 +31,7 @@ variable {R : Type*} [Ring R] {Γ₀ : Type*} [LinearOrderedCommGroupWithZero Γ
 namespace Valuation
 
 /-- A valuation has rank one if it is nontrivial and its image is contained in `ℝ≥0`.
-  Note that this class includes the data of an inclusion morphismo `Γ₀ → ℝ≥0`. -/
+  Note that this class includes the data of an inclusion morphism `Γ₀ → ℝ≥0`. -/
 class RankOne (v : Valuation R Γ₀) where
   /-- The inclusion morphism from `Γ₀` to `ℝ≥0`. -/
   hom : Γ₀ →*₀ ℝ≥0
