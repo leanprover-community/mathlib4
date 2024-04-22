@@ -98,7 +98,7 @@ theorem cancel_factors_eq {α} [Field α] {a b ad bd a' b' gcd : α} (ha : ad * 
     refine' mul_left_cancel₀ (mul_ne_zero _ _) h
     apply mul_ne_zero
     apply div_ne_zero
-    exact one_ne_zero
+    · exact one_ne_zero
     all_goals assumption
 #align cancel_factors.cancel_factors_eq CancelDenoms.cancel_factors_eq
 
