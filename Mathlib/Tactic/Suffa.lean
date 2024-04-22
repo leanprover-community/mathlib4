@@ -5,6 +5,7 @@ Authors: Damiano Testa
 -/
 import Lean.Meta.Tactic.TryThis
 import Mathlib.Tactic.Convert
+import Mathlib.Tactic.Says
 
 /-!
 #  The `suffa` tactic
@@ -88,3 +89,66 @@ elab (name := suffaTac) "suffa " tk:"!"? tac:tacticSeq : tactic => do
 
 @[inherit_doc suffaTac]
 macro "suffa!" tac:tacticSeq : tactic => `(tactic| suffa ! $tac)
+
+variable (tac : TSyntax `Lean.Parser.Tactic.tacticSeq) in
+
+def repMsgs : CoreM (Array String) := do
+  let msgs := (← get).messages.msgs.toArray
+  msgs.mapM (·.data.toString)
+
+def cacheTacGoal (tacs : TSyntax `Lean.Parser.Tactic.tacticSeq) : IO Unit := do
+  IO.println f!"{tacs}"
+--#check Meta.Tactic.TryThis.TryThisInfo
+set_option pp.analyze true in
+elab "cache " tacs:tacticSeq " with " _tacs2:tacticSeq : tactic => do
+  let pat := "@@@"
+  let sep := "\n" ++ pat ++ "\n"
+  let sepsep := "\n" ++ pat ++ pat ++ "\n"
+  let fil : System.FilePath := "NewCache.txt"
+  let tgt0 ← getMainTarget
+  logInfo tacs
+  let tacString := (← repMsgs).back
+  dbg_trace tacString
+--  let _ ← match Says.parseAsTacticSeq (← getEnv) (s!"simp  ") with
+--            | .ok m => logInfo m
+--            | _ => logInfo "none"
+--evalTacticCapturingMessages
+  evalTactic tacs
+  let tgt1 ← getMainTarget
+--  let pt := Std.MessageData.pretty m!"{tacs}"
+  let toStore ← MessageData.toString m!"{← Meta.ppExpr tgt0}{sep}{tacString}{sep}{← Meta.ppExpr tgt1}"
+--  logInfo m!"{fil} exists? {← fil.pathExists}"
+--  let fil : System.FilePath := "NewCache.txt"
+  let contents ←  if ← fil.pathExists then IO.FS.readFile fil else pure ""
+  let found := contents.splitOn sepsep
+
+  if found.contains toStore then
+    logInfo m!"cache entry already found in '{fil}'"
+  else
+    logInfo m!"cache entry not found: updating '{fil}':\n{toStore}"
+    IO.FS.writeFile fil (contents ++ toStore ++ sepsep)
+  let oldEntry := (found.get? (found.length - 3)).getD default
+  let oldTac := oldEntry.splitOn sep
+  dbg_trace "old: '{oldTac[1]!}'"
+--  let mid := mkIdent oldTac[1]!
+  let tc := oldTac[1]!
+  let pat := Says.parseAsTacticSeq (← getEnv) tc
+  match pat with
+  | .ok stx => evalTactic stx
+  | .error err => throwError m!"Failed to parse tactic output: {tc}\n{err}"
+  --let mid : TSyntax `tacticSeq ← `(tacticSeq| $tc)
+  --evalTactic mid
+
+--  for t in toStore.splitOn sep do
+--    (logInfo m!"{t}" : TacticM Unit)
+
+#check quote
+--#check String.find
+example (h : False) {n : Nat} : n + 0 = n + 1 := by
+  cache
+    simp
+    skip;
+  with
+    simp only [Nat.add_zero]
+    skip;
+  cases h
