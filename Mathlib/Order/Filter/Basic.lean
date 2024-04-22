@@ -2298,6 +2298,38 @@ theorem _root_.Function.Commute.filter_comap {f g : α → α} (h : Function.Com
   h.semiconj.filter_comap
 #align function.commute.filter_comap Function.Commute.filter_comap
 
+section
+
+-- TODO(Anatole): refactor the surjectivity/injectivity of map/comap using the following
+open Filter
+
+theorem _root_.Function.LeftInverse.filter_map {f : α → β} {g : β → α} (hfg : LeftInverse g f) :
+    LeftInverse (map g) (map f) := fun F ↦ by
+  rw [map_map, hfg.comp_eq_id, map_id]
+
+theorem _root_.Function.LeftInverse.filter_comap {f : α → β} {g : β → α} (hfg : LeftInverse g f) :
+    RightInverse (comap g) (comap f) := fun F ↦ by
+  rw [comap_comap, hfg.comp_eq_id, comap_id]
+
+nonrec theorem _root_.Function.RightInverse.filter_map {f : α → β} {g : β → α}
+    (hfg : RightInverse g f) : RightInverse (map g) (map f) :=
+  hfg.filter_map
+
+nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β → α}
+    (hfg : RightInverse g f) : LeftInverse (comap g) (comap f) :=
+  hfg.filter_comap
+
+theorem _root_.Set.LeftInvOn.filter_map {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
+    LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
+  have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
+  rw [map_map, map_congr (this.filter_mono hF), map_id]
+
+nonrec theorem _root_.Set.RightInvOn.filter_map {f : α → β} {g : β → α} (hfg : RightInvOn g f t) :
+    RightInvOn (map g) (map f) (Iic <| 𝓟 t) :=
+  hfg.filter_map
+
+end
+
 @[simp]
 theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
   Filter.ext fun _ => ⟨fun ⟨_u, hu, b⟩ => (preimage_mono hu).trans b,
@@ -2509,6 +2541,32 @@ theorem map_inj {f g : Filter α} {m : α → β} (hm : Injective m) : map m f =
 theorem map_injective {m : α → β} (hm : Injective m) : Injective (map m) := fun _ _ =>
   (map_inj hm).1
 #align filter.map_injective Filter.map_injective
+
+section On
+
+-- TODO(Anatole): unify with the global case
+
+theorem _root_.Set.MapsTo.filter_map {m : α → β} (hm : MapsTo m s t) :
+    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) := fun F hF ↦ calc
+  map m F ≤ map m (𝓟 s) := map_mono hF
+  _ = 𝓟 (m '' s) := map_principal
+  _ ≤ 𝓟 t := principal_mono.mpr hm.image_subset
+
+theorem _root_.Set.SurjOn.filter_map {m : α → β} (hm : SurjOn m s t) :
+    SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) := by
+  rcases isEmpty_or_nonempty α with _|_
+  · have := Subsingleton.elim s ∅
+    rw [this, SurjOn, image_empty, subset_empty_iff] at hm
+    simp [this, hm]
+  exact RightInvOn.filter_map hm.rightInvOn_invFunOn |>.surjOn hm.mapsTo_invFunOn.filter_map
+
+theorem _root_.Set.InjOn.filter_map {m : α → β} (hm : InjOn m s) :
+    InjOn (map m) (Iic <| 𝓟 s) := by
+  rcases isEmpty_or_nonempty α with _|_
+  · exact Function.injective_of_subsingleton _ |>.injOn _
+  exact LeftInvOn.filter_map hm.leftInvOn_invFunOn |>.injOn
+
+end On
 
 theorem comap_neBot_iff {f : Filter β} {m : α → β} : NeBot (comap m f) ↔ ∀ t ∈ f, ∃ a, m a ∈ t := by
   simp only [← forall_mem_nonempty_iff_neBot, mem_comap, forall_exists_index, and_imp]
