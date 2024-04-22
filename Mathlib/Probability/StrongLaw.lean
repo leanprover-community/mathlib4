@@ -8,6 +8,7 @@ import Mathlib.MeasureTheory.Integral.DominatedConvergence
 import Mathlib.Analysis.SpecificLimits.FloorPow
 import Mathlib.Analysis.PSeries
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
+import Mathlib.adomaniLeanUtils.make_me_a_linter
 
 #align_import probability.strong_law from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -367,7 +368,7 @@ theorem sum_variance_truncation_le {X : Ω → ℝ} (hint : Integrable X) (hnonn
           ↑2 / (↑k + ↑1) * x ^ 2 = x / (k + 1) * (2 * x) := by ring
           _ ≤ 1 * (2 * x) :=
             (mul_le_mul_of_nonneg_right (by
-              convert (div_le_one _).2 hx.2; norm_cast
+              convert (div_le_one _).2 hx.2; · norm_cast
               simp only [Nat.cast_add, Nat.cast_one]
               linarith only [show (0 : ℝ) ≤ k from Nat.cast_nonneg k])
               (mul_nonneg zero_le_two ((Nat.cast_nonneg k).trans hx.1.le)))
