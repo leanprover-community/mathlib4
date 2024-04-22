@@ -272,6 +272,13 @@ theorem iterate_deriv (n : Nat) (f : α → α) (hf : Con f) :
   . simp[iterate]; fun_trans
 
 
+-- this used to cause crash
+example (f : α → β) :
+  (fun x => deriv f x)
+  =
+  (fun x => deriv f x) := by fun_trans
+
+
 #exit
 
 -- this breaks the following
