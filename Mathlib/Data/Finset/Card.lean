@@ -150,7 +150,7 @@ theorem card_pair (h : a ≠ b) : ({a, b} : Finset α).card = 2 := by
   rw [card_insert_of_not_mem (not_mem_singleton.2 h), card_singleton]
 #align finset.card_doubleton Finset.card_pair
 
-@[deprecated] alias card_doubleton := Finset.card_pair
+@[deprecated] alias card_doubleton := Finset.card_pair -- 2024-01-04
 
 /-- $\#(s \setminus \{a\}) = \#s - 1$ if $a \in s$. -/
 @[simp]
@@ -670,7 +670,7 @@ theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
     not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
-@[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
+@[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial -- 2024-02-05
 
 theorem exists_ne_of_one_lt_card (hs : 1 < s.card) (a : α) : ∃ b, b ∈ s ∧ b ≠ a := by
   obtain ⟨x, hx, y, hy, hxy⟩ := Finset.one_lt_card.mp hs

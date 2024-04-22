@@ -547,7 +547,7 @@ theorem maps_univ_to (f : α → β) (s : Set β) : MapsTo f univ s ↔ ∀ a, f
 lemma mapsTo_range_iff {g : ι → α} : MapsTo f (range g) t ↔ ∀ i, f (g i) ∈ t :=
   forall_mem_range
 
-@[deprecated mapsTo_range_iff]
+@[deprecated mapsTo_range_iff] -- 2023-12-25
 theorem maps_range_to (f : α → β) (g : γ → α) (s : Set β) :
     MapsTo f (range g) s ↔ MapsTo (f ∘ g) univ s := by rw [← image_univ, mapsTo_image_iff]
 #align set.maps_range_to Set.maps_range_to

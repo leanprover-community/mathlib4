@@ -208,7 +208,7 @@ lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_mul_self' Int.natAbs_mul_self'
 #align int.neg_succ_of_nat_eq' Int.negSucc_eq'
 
-@[deprecated natAbs_ne_zero]
+@[deprecated natAbs_ne_zero] -- 2022-11-14
 lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := natAbs_ne_zero.2
 #align int.nat_abs_ne_zero_of_ne_zero Int.natAbs_ne_zero_of_ne_zero
 
