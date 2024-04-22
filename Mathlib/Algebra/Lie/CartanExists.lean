@@ -10,31 +10,6 @@ import Mathlib.Algebra.Lie.Rank
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 
-namespace Matrix
-
-variable {K R m n : Type*}
-variable [DecidableEq m] [DecidableEq n] [DecidableEq (m ⊕ n)]
-variable [Fintype m] [Fintype n]
-variable [Field K] [CommRing R] [Nontrivial R]
-
-variable (A : Matrix m m R) (B : Matrix m n R) (C : Matrix n m R) (D : Matrix n n R)
-
-
-
-end Matrix
-
--- move to Mathlib.SetTheory.Cardinal.Basic
-open Cardinal in
-lemma exists_finset_le_card (α : Type*) (n : ℕ) (h : n ≤ #α) :
-    ∃ s : Finset α, n ≤ s.card := by
-  obtain hα|hα := finite_or_infinite α
-  · let hα := Fintype.ofFinite α
-    use Finset.univ
-    simpa only [ge_iff_le, mk_fintype, Nat.cast_le] using h
-  · obtain ⟨s, hs⟩ := Infinite.exists_subset_card_eq α n
-    exact ⟨s, hs.ge⟩
-
-
 -- move this
 namespace LinearMap
 
@@ -430,7 +405,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       apply lieCharpoly₁_coeff_natDegree
       suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
       apply Submodule.finrank_quotient_add_finrank
-    obtain ⟨s, hs⟩ := _root_.exists_finset_le_card K _ hLK
+    obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
     use s \ t
     refine ⟨?_, ?_⟩
     · refine le_trans ?_ (Finset.le_card_sdiff _ _)
