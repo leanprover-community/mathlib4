@@ -6,6 +6,7 @@ Authors: Jovan Gerbscheid
 import Lean.Meta.DiscrTree
 import Std.Data.List.Basic
 import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
+import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
 
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.
@@ -529,114 +530,6 @@ where
     | .strictImplicit => return !(← isType arg)
     | .default => isProof arg
 
-/-- Introduce new lambdas by η-expansion. -/
-@[specialize]
-def etaExpand (args : Array Expr) (type : Expr) (lambdas : List FVarId) (goalArity : Nat)
-    (k : Array Expr → List FVarId → MetaM α) : MetaM α  := do
-  if args.size < goalArity then
-    withLocalDeclD `_η type fun fvar =>
-      etaExpand (args.push fvar) type (fvar.fvarId! :: lambdas) goalArity k
-  else
-    k args lambdas
-termination_by goalArity - args.size
-
-
-/-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
-- (1) `f = fun x => f x` to increase the arity to 6
-- (2) `(f + g) a = f a + g a` to try to decrease the arity to 6
-- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
-def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
-    MetaM (Option (Expr × Expr × Expr × List FVarId)) := do
-  let some (mkApp2 (.const instH' _) type inst) := args[3]? | return none
-  unless (instH == instH') do return none
-  some <$> do
-  if args.size ≤ 6 then
-    -- (1)
-    etaExpand args type lambdas 6 fun args lambdas =>
-      distributeLambdas lambdas type args[4]! args[5]!
-  else
-  -- (2)
-  let mut type := type
-  let mut inst := inst
-  let mut lhs := args[4]!
-  let mut rhs := args[5]!
-  for arg in args[6:] do
-    let mkApp3 (.const i _) _ f inst' := inst | return (type, lhs, rhs, lambdas)
-    unless i == instPi do return (type, lhs, rhs, lambdas)
-    type := .app f arg
-    inst := inst'
-    lhs := .app lhs arg
-    rhs := .app rhs arg
-  distributeLambdas lambdas type lhs rhs
-where
-  /-- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
-  distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
-      MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
-    | fvarId :: lambdas => do
-      let decl ← fvarId.getDecl
-      let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
-      let lhs  := .lam     decl.userName decl.type (lhs.abstract  #[.fvar fvarId]) decl.binderInfo
-      let rhs  := .lam     decl.userName decl.type (rhs.abstract  #[.fvar fvarId]) decl.binderInfo
-      distributeLambdas lambdas type lhs rhs
-    | [] => return (type, lhs, rhs, [])
-
-/-- Normalize an application if the head is  `+`, `*`, `-` or `/`.
-Optionally return the `(type, lhs, rhs, lambdas)`. -/
-@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
-    MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
-  match n with
-  | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd `Pi.instAdd
-  | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul `Pi.instMul
-  | ``HSub.hSub => reduceHBinOpAux args lambdas ``instHSub `Pi.instSub
-  | ``HDiv.hDiv => reduceHBinOpAux args lambdas ``instHDiv `Pi.instDiv
-  | _ => return none
-
-/-- Normalize an application of a unary operator like `Inv.inv`, using:
-- (1) `Inv.inv => id⁻¹` to increase the arity to 3
-- (2) `f⁻¹ a = (f a)⁻¹` to try to decrease the arity to 3
-- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
-def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
-    MetaM (Option (Expr × Expr × List FVarId)) := do
-  unless args.size ≥ 2 do return none
-  let type := args[0]!
-  let inst := args[1]!
-  if args.size == 2 then
-    -- (1)
-    let arg  := .app (.const ``id [← getLevel type]) type
-    let type := .forallE `_a type type .default
-    distributeLambdas lambdas type arg
-  else
-  let mut type := type
-  let mut inst := inst
-  let mut arg  := args[2]!
-  -- (2)
-  for arg' in args[3:] do
-    let mkApp3 (.const i _) _ f inst' := inst | return (type, arg, lambdas)
-    unless i == instPi do return (type, arg, lambdas)
-    type := .app f arg'
-    inst := inst'
-    arg  := .app arg arg'
-  distributeLambdas lambdas type arg
-where
-  /-- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
-  distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
-      MetaM (Expr × Expr × List FVarId) := match lambdas with
-    | fvarId :: lambdas => do
-      let decl ← fvarId.getDecl
-      let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
-      let arg  := .lam     decl.userName decl.type (arg.abstract  #[.fvar fvarId]) decl.binderInfo
-      distributeLambdas lambdas type arg
-    | [] => return (type, arg, [])
-
-/-- Normalize an application if the head is `⁻¹` or `-`.
-Optionally return the `(type, arg, lambdas)`. -/
-@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
-    MetaM (Option (Expr × Expr × List FVarId)) :=
-  match n with
-  | ``Neg.neg => reduceUnOpAux args lambdas `Pi.instNeg
-  |  `Inv.inv => reduceUnOpAux args lambdas `Pi.instInv
-  | _ => return none
-
 @[specialize]
 private def withLams {m} [Monad m] [MonadWithReader Context m]
     (lambdas : List FVarId) (k : m DTExpr) : m DTExpr :=
@@ -674,7 +567,8 @@ partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadContr
 /-- Return the encoding of `e` as a `DTExpr`.
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr := do
-  lambdaTelescopeReduce e [] (← read).config fun e lambdas =>
+  lambdaTelescopeReduce e [] (← read).config fun e lambdas => do
+  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
   e.withApp fun fn args => do
 
   let argDTExpr (arg : Expr) (ignore : Bool) : ReaderT Context MetaM DTExpr :=
@@ -688,19 +582,6 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
   match fn with
   | .const n _ =>
     unless root do
-      if let some (type, lhs, rhs, lambdas') ← reduceHBinOp n args lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprAux type false
-          let lhs ← mkDTExprAux lhs false
-          let rhs ← mkDTExprAux rhs false
-          return .const n #[type, type, .star none, .star none, lhs, rhs]
-
-      if let some (type, arg, lambdas') ← reduceUnOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprAux type false
-          let arg ← mkDTExprAux arg false
-          return .const n #[type, .star none, arg]
-
       /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
       we don't index lambdas before literals -/
       if let some v := toNatLit? e then
@@ -798,21 +679,7 @@ If `root = false`, then `e` is a strict sub expression of the original expressio
 partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
   lambdaTelescopeReduce original [] (← read).config fun e lambdas => do
 
-  if !root then
-    if let .const n _ := e.getAppFn then
-      if let some (type, lhs, rhs, lambdas') ← reduceHBinOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprsAux type false
-          let lhs ← mkDTExprsAux lhs false
-          let rhs ← mkDTExprsAux rhs false
-          return .const n #[type, type, .star none, .star none, lhs, rhs]
-
-      if let some (type, arg, lambdas') ← reduceUnOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprsAux type false
-          let arg ← mkDTExprsAux arg false
-          return .const n #[type, .star none, arg]
-
+  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
   cacheEtaPossibilities e original lambdas fun e lambdas =>
   e.withApp fun fn args => do
 
@@ -895,7 +762,8 @@ def mkDTExpr (e : Expr) (config : WhnfCoreConfig)
   withReducible do (MkDTExpr.mkDTExprAux e true |>.run {config, fvarInContext})
 
 /-- Similar to `mkDTExpr`.
-Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account. -/
+Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account.
+If onlySpecific is `true`, then filter the encodings by whether they are specific. -/
 def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
   withReducible do
