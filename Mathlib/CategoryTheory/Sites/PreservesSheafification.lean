@@ -10,9 +10,15 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-! # Functors which preserves sheafification
 
-Under the assumptions `HasWeakSheafify J A`, `HasWeakSheafify J B`, we define
-a type class `PreservesSheafification J F` which expresses that sheafification
-commutes with the postcomposition with `F`.
+Given a Grothendieck topology `J` on `C` and `F : A ⥤ B`, we have define
+the type class `J.HasSheafCompose F` which says that the postcomposition
+with `F` induces a functor `sheafCompose J F : Sheaf J A ⥤ Sheaf J B`.
+In this file, assuming `HasWeakSheafify J A` and `HasWeakSheafify J B`,
+we define a type class `PreservesSheafification J F` which expresses
+that the sheafification commutes with the postcomposition with `F`.
+
+We obtain `PreservesSheafification J (forget D)` when `D` is a concrete
+category satisfying suitable conditions.
 
 -/
 
@@ -126,8 +132,8 @@ variable {D : Type*} [Category.{max v u} D]
 @[reassoc]
 lemma plusPlusIsoSheafify_hom_sheafifyCompose_forget (P : Cᵒᵖ ⥤ D) :
     (plusPlusIsoSheafify J _ (P ⋙ forget D)).hom ≫ sheafifyCompose J (forget D) P =
-        (sheafifyCompIso J (forget D) P).inv ≫
-          whiskerRight (plusPlusIsoSheafify J _ P).hom (forget D) := by
+      (sheafifyCompIso J (forget D) P).inv ≫
+        whiskerRight (plusPlusIsoSheafify J _ P).hom (forget D) := by
   sorry
 
 @[reassoc]
