@@ -10,9 +10,11 @@ import Mathlib.CategoryTheory.Sites.Whiskering
 
 /-! # Functors which preserves sheafification
 
-Given a Grothendieck topology `J` on `C` and `F : A ⥤ B`, we have define
-the type class `J.HasSheafCompose F` which says that the postcomposition
-with `F` induces a functor `sheafCompose J F : Sheaf J A ⥤ Sheaf J B`.
+Given a Grothendieck topology `J` on `C` and `F : A ⥤ B`, we have defined
+the type class `J.HasSheafCompose F` in the file `CategoryTheory.Sites.Whiskering`:
+it says that the postcomposition with `F` induces a
+functor `sheafCompose J F : Sheaf J A ⥤ Sheaf J B`.
+
 In this file, assuming `HasWeakSheafify J A` and `HasWeakSheafify J B`,
 we define a type class `PreservesSheafification J F` which expresses
 that the sheafification commutes with the postcomposition with `F`.
@@ -26,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-open Category Limits
+open CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category A] [Category B]
