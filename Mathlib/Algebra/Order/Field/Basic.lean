@@ -293,7 +293,7 @@ lemma div_lt_div_of_pos_left (ha : 0 < a) (hc : 0 < c) (h : c < b) : a / b < a /
 @[deprecated] alias div_le_div_of_le_left := div_le_div_of_nonneg_left
 @[deprecated] alias div_lt_div_of_lt_left := div_lt_div_of_pos_left
 
-@[deprecated div_le_div_of_nonneg_right]
+@[deprecated div_le_div_of_nonneg_right] -- 2024-02-16
 lemma div_le_div_of_le (hc : 0 ≤ c) (hab : a ≤ b) : a / c ≤ b / c :=
   div_le_div_of_nonneg_right hab hc
 #align div_le_div_of_le div_le_div_of_le

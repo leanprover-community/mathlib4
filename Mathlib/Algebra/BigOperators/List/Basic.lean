@@ -708,7 +708,7 @@ theorem map_list_prod {F : Type*} [FunLike F M N] [MonoidHomClass F M N] (f : F)
 namespace MonoidHom
 
 /-- Deprecated, use `_root_.map_list_prod` instead. -/
-@[to_additive "Deprecated, use `_root_.map_list_sum` instead."]
+@[to_additive (attr := deprecated) "Deprecated, use `_root_.map_list_sum` instead."] -- 2023-01-10
 protected theorem map_list_prod (f : M →* N) (l : List M) : f l.prod = (l.map f).prod :=
   map_list_prod f l
 #align monoid_hom.map_list_prod MonoidHom.map_list_prod
