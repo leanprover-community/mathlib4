@@ -1453,6 +1453,36 @@ universe uK uV₁ uV₂
 variable {K : Type uK} [Field K] {V₁ : Type uV₁} {V₂ : Type uV₂}
 variable [AddCommGroup V₁] [Module K V₁] [AddCommGroup V₂] [Module K V₂]
 
+namespace Module.Dual
+
+variable [FiniteDimensional K V₁] {f : Module.Dual K V₁} (hf : f ≠ 0)
+
+open FiniteDimensional
+
+lemma range_eq_top_of_ne_zero :
+    LinearMap.range f = ⊤ := by
+  obtain ⟨v, hv⟩ : ∃ v, f v ≠ 0 := by contrapose! hf; ext v; simpa using hf v
+  rw [eq_top_iff]
+  exact fun x _ ↦ ⟨x • (f v)⁻¹ • v, by simp [inv_mul_cancel hv]⟩
+
+lemma finrank_ker_add_one_of_ne_zero :
+    finrank K (LinearMap.ker f) + 1 = finrank K V₁ := by
+  suffices finrank K (LinearMap.range f) = 1 by
+    rw [← (LinearMap.ker f).finrank_quotient_add_finrank, add_comm, add_left_inj,
+    f.quotKerEquivRange.finrank_eq, this]
+  rw [range_eq_top_of_ne_zero hf, finrank_top, finrank_self]
+
+lemma isCompl_ker_of_disjoint_of_ne_bot {p : Submodule K V₁}
+    (hpf : Disjoint (LinearMap.ker f) p) (hp : p ≠ ⊥) :
+    IsCompl (LinearMap.ker f) p := by
+  refine ⟨hpf, codisjoint_iff.mpr <| eq_of_le_of_finrank_le le_top ?_⟩
+  have : finrank K ↑(LinearMap.ker f ⊔ p) = finrank K (LinearMap.ker f) + finrank K p := by
+    simp [← Submodule.finrank_sup_add_finrank_inf_eq (LinearMap.ker f) p, hpf.eq_bot]
+  rwa [finrank_top, this, ← finrank_ker_add_one_of_ne_zero hf, add_le_add_iff_left,
+    Submodule.one_le_finrank_iff]
+
+end Module.Dual
+
 namespace LinearMap
 
 theorem dualPairing_nondegenerate : (dualPairing K V₁).Nondegenerate :=
