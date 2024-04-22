@@ -988,6 +988,12 @@ theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
 #align norm_to_nnreal' norm_toNNReal'
 #align norm_to_nnreal norm_toNNReal
 
+/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive ofNNReal_toReal_nnnorm "The non negative norm seen as an `ENNReal` and
+then as a `Real` is equal to the norm."]
+theorem ofNNReal_toReal_nnnorm' [SeminormedGroup E] (a : E) :
+    (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
