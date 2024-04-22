@@ -125,8 +125,8 @@ def adj : Cat.free ⊣ Quiv.forget :=
       homEquiv_naturality_left_symm := fun {V _ _} f g => by
         change (show Paths V ⥤ _ from _) = _
         ext; swap
-        apply eq_conj_eqToHom
-        rfl }
+        · apply eq_conj_eqToHom
+        · rfl }
 set_option linter.uppercaseLean3 false in
 #align category_theory.Quiv.adj CategoryTheory.Quiv.adj
 
