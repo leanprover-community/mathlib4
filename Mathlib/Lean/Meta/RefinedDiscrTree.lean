@@ -218,7 +218,6 @@ def Key.arity : Key → Nat
   | .proj _ _ a => 1 + a
   | _           => 0
 
-variable {α : Type}
 /-- Discrimination tree trie. See `RefinedDiscrTree`. -/
 inductive Trie (α : Type) where
   /-- Map from `Key` to `Trie`. Children is an `Array` of size at least 2,
@@ -228,6 +227,9 @@ inductive Trie (α : Type) where
   | path (keys : Array Key) (child : Trie α)
   /-- Leaf of the Trie. `values` is an `Array` of size at least 1. -/
   | values (vs : Array α)
+
+variable {α : Type}
+
 instance : Inhabited (Trie α) := ⟨.node #[]⟩
 
 /-- `Trie.path` constructor that only inserts the path if it is non-empty. -/
@@ -908,8 +910,6 @@ def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
 
 /-! ### Inserting intro a RefinedDiscrTree -/
 
-variable {α : Type}
-
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.
 See issue #2155
@@ -985,18 +985,18 @@ def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
   let keys ← mkDTExprs e config onlySpecific fvarInContext
   return keys.foldl (insertDTExpr · · v) d
 
-/-- Insert the value `vLhs` at index `lhs`, and if `rhs` is indexed differently, then also
-insert the value `vRhs` at index `rhs`. -/
-def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : α)
+/-- Insert the value `vlhs` at index `lhs`, and if `rhs` is indexed differently, then also
+insert the value `vrhs` at index `rhs`. -/
+def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vlhs vrhs : α)
     (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
   let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
   let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
-  let d := keysLhs.foldl (insertDTExpr · · vLhs) d
+  let d := keysLhs.foldl (insertDTExpr · · vlhs) d
   if @List.beq _ ⟨DTExpr.eqv⟩ keysLhs keysRhs then
     return d
   else
-    return keysRhs.foldl (insertDTExpr · · vRhs) d
+    return keysRhs.foldl (insertDTExpr · · vrhs) d
 
 
 
@@ -1050,7 +1050,7 @@ private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
   | none =>
     modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
 
-/-- Return the possible `Trie α` that match with `n` metavariable. -/
+/-- Return the possible `Trie α` that match with `n` metavariables. -/
 partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array Key × Trie α)
   | 0      => pure (skipped, t)
   | skip+1 =>
