@@ -215,6 +215,11 @@ theorem symmDiff_triangle : a ∆ c ≤ a ∆ b ⊔ b ∆ c := by
   rw [sup_comm (c \ b), sup_sup_sup_comm, symmDiff, symmDiff]
 #align symm_diff_triangle symmDiff_triangle
 
+lemma le_symmDiff_sup {α : Type*} [GeneralizedCoheytingAlgebra α] (x y : α) : x ≤ (x ∆ y) ⊔ y := by
+  rw (config := {occs := .pos [1]}) [← symmDiff_bot x]
+  rw (config := {occs := .pos [2]}) [← symmDiff_bot y]
+  exact symmDiff_triangle ..
+
 end GeneralizedCoheytingAlgebra
 
 section GeneralizedHeytingAlgebra
