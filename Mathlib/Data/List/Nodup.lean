@@ -168,7 +168,7 @@ theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.leng
   nodup_iff_injective_get.1 H (by simp)
 
 set_option linter.deprecated false in
-@[simp, deprecated get_indexOf]
+@[simp, deprecated get_indexOf] -- 2023-01-10
 theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
     indexOf (nthLe l n h) l = n :=
   nodup_iff_nthLe_inj.1 H _ _ _ h <| indexOf_nthLe <| indexOf_lt_length.2 <| nthLe_mem _ _ _
