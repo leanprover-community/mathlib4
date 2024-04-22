@@ -493,7 +493,7 @@ theorem FiniteDimensional.of_isCompact_closedBall₀ {r : ℝ} (rpos : 0 < r)
     _ < ‖c‖ := hN (N + 1) (Nat.le_succ N)
 #align finite_dimensional_of_is_compact_closed_ball₀ FiniteDimensional.of_isCompact_closedBall₀
 
-@[deprecated] -- Since 2024-02-/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_isCompact_closedBall₀ := FiniteDimensional.of_isCompact_closedBall₀
 
 /-- **Riesz's theorem**: if a closed ball of positive radius is compact in a vector space, then the
