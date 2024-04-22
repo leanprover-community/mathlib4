@@ -811,7 +811,7 @@ theorem dist_pointReflection_self' (x y : P) : dist (pointReflection 𝕜 x y) y
 set_option linter.deprecated false in
 theorem dist_pointReflection_self (x y : P) :
     dist (pointReflection 𝕜 x y) y = ‖(2 : 𝕜)‖ * dist x y := by
-  rw [dist_pointReflection_self', ← two_smul 𝕜 (x -ᵥ y), norm_smul, ← dist_eq_norm_vsub V]
+  rw [dist_pointReflection_self', ← two_smul' 𝕜 (x -ᵥ y), norm_smul, ← dist_eq_norm_vsub V]
 #align affine_isometry_equiv.dist_point_reflection_self AffineIsometryEquiv.dist_pointReflection_self
 
 theorem pointReflection_fixed_iff [Invertible (2 : 𝕜)] {x y : P} :

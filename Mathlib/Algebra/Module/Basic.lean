@@ -103,7 +103,12 @@ variable (R)
 -- Porting note: this is the letter of the mathlib3 version, but not really the spirit
 theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_smul, one_smul]
 #align two_smul two_smul
-#align two_smul' two_smul
+
+set_option linter.deprecated false in
+@[deprecated] -- 2022-12-31
+theorem two_smul' : (2 : R) • x = bit0 x :=
+  two_smul R x
+#align two_smul' two_smul'
 
 @[simp]
 theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
