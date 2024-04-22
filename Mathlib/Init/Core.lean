@@ -129,7 +129,7 @@ def PProd.mk.injArrow {α : Type u} {β : Type v} {x₁ : α} {y₁ : β} {x₂ 
 #align has_lt.lt LT.lt
 #align has_append Append
 
-@[deprecated AndThen]
+@[deprecated AndThen] -- 2022-10-24
 class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
   andthen : α → β → σ
 #align has_andthen AndThen'
@@ -158,14 +158,14 @@ class AndThen' (α : Type u) (β : Type v) (σ : outParam <| Type w) where
 
 attribute [simp] insert_emptyc_eq
 
-@[deprecated] def Std.Priority.default : Nat := 1000
-@[deprecated] def Std.Priority.max : Nat := 4294967295
+@[deprecated] def Std.Priority.default : Nat := 1000 -- 2022-10-24
+@[deprecated] def Std.Priority.max : Nat := 4294967295 -- 2022-10-24
 set_option linter.deprecated false in
-@[deprecated] protected def Nat.prio := Std.Priority.default + 100
-@[deprecated] def Std.Prec.max : Nat := 1024
-@[deprecated] def Std.Prec.arrow : Nat := 25
+@[deprecated] protected def Nat.prio := Std.Priority.default + 100 -- 2022-10-24
+@[deprecated] def Std.Prec.max : Nat := 1024 -- 2022-10-24
+@[deprecated] def Std.Prec.arrow : Nat := 25 -- 2022-10-24
 set_option linter.deprecated false in
-@[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10
+@[deprecated] def Std.Prec.maxPlus : Nat := Std.Prec.max + 10 -- 2022-10-24
 
 #align has_sizeof SizeOf
 #align has_sizeof.sizeof SizeOf.sizeOf
@@ -182,7 +182,7 @@ def S (x : α → β → γ) (y : α → β) (z : α) := x z (y z)
 
 end Combinator
 
-@[deprecated] inductive BinTree (α : Type u)
+@[deprecated] inductive BinTree (α : Type u) -- 2022-10-24
   | Empty : BinTree α
   | leaf (val : α) : BinTree α
   | node (left right : BinTree α) : BinTree α
