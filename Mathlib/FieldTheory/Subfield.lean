@@ -321,8 +321,7 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
 protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
 #align subfield.coe_int_mem Subfield.intCast_mem
 
--- 2024-04-05
-@[deprecated] alias coe_int_mem := intCast_mem
+@[deprecated] alias coe_int_mem := intCast_mem -- 2024-04-05
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
