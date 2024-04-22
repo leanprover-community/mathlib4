@@ -35,3 +35,5 @@ lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] (X : D) (Y : C) (e : Y ≅ R.o
     IsIso (adj.unit.app Y) := by
   rw [NatTrans.isIso_app_iff_of_iso _ e]
   infer_instance
+
+end CategoryTheory.Adjunction
