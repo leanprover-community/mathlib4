@@ -86,7 +86,7 @@ def SpeedCenterAPI.RunResponse.instructions (response : SpeedCenterAPI.RunRespon
   return r
 
 def SpeedCenterAPI.getRunResponse (hash : String) : IO SpeedCenterAPI.RunResponse := do
-  let r ← SpeedCenterAPI.RunJson hash
+  let r ← SpeedCenterAPI.runJson hash
   match Json.parse r with
   | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
   | .ok j => match fromJson? j with
@@ -100,7 +100,7 @@ def SpeedCenterAPI.getRunResponse (hash : String) : IO SpeedCenterAPI.RunRespons
 
 def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
-def SpeedCenterAPI.Instructions (run : String) : IO (NameMap Float) :=
+def SpeedCenterAPI.instructions (run : String) : IO (NameMap Float) :=
   return (← SpeedCenterAPI.getRunResponse run).instructions
 
 partial def cumulativeInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
@@ -151,7 +151,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     IO.eprintln s!"Analyzing {to} at {<- sha}"
-    let instructions ← SpeedCenterAPI.Instructions (← sha)
+    let instructions ← SpeedCenterAPI.instructions (← sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
