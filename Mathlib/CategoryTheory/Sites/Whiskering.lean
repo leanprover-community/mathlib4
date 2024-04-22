@@ -25,7 +25,7 @@ Given a natural transformation `η : F ⟶ G`, we obtain a natural transformatio
 
 namespace CategoryTheory
 
-open CategoryTheory Category Limits
+open CategoryTheory.Limits
 
 universe v₁ v₂ v₃ u₁ u₂ u₃
 

@@ -28,7 +28,7 @@ universe v u
 
 namespace CategoryTheory
 
-open CategoryTheory.Limits
+open CategoryTheory Category Limits
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
   {A B : Type*} [Category A] [Category B]
