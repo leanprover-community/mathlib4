@@ -94,6 +94,7 @@ lemma sum_tmul_counit_eq_tmul_one (a : A) {ι : Type*} (s : Finset ι) (x y : ι
 
 
 end Coalgebra
+
 section CommSemiring
 
 open Coalgebra
