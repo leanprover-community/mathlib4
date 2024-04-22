@@ -80,7 +80,7 @@ theorem RespectsIso.basicOpen_iff_localization (hP : RespectsIso @P) {X Y : Sche
 #align ring_hom.respects_iso.basic_open_iff_localization RingHom.RespectsIso.basicOpen_iff_localization
 
 @[deprecated] alias RespectsIso.ofRestrict_morphismRestrict_iff_of_isAffine :=
-  RespectsIso.basicOpen_iff_localization --2024-03-02
+  RespectsIso.basicOpen_iff_localization -- 2024-03-02
 
 theorem RespectsIso.ofRestrict_morphismRestrict_iff (hP : RingHom.RespectsIso @P) {X Y : Scheme}
     [IsAffine Y] (f : X ⟶ Y) (r : Y.presheaf.obj (Opposite.op ⊤)) (U : Opens X.carrier)
