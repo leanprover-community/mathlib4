@@ -249,7 +249,7 @@ open BigOperators
 
 variable [NumberField K] {K}
 
-/-- The norm of `x` is `∏ w real, ‖x‖_w, ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
+/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
 the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
 over `ℚ`, see `norm_eq_norm`. -/
 protected def norm  : (E K) →*₀ ℝ where
@@ -265,12 +265,6 @@ protected def norm  : (E K) →*₀ ℝ where
     exact ne_of_gt finrank_pos this
   map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
       Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
-
-protected theorem norm_zero :
-    mixedEmbedding.norm (0 : E K) = 0 := mixedEmbedding.norm.map_zero'
-
-protected theorem norm_one :
-    mixedEmbedding.norm (1 : E K) = 1 := mixedEmbedding.norm.map_one'
 
 protected theorem norm_eq_zero_iff {x : E K} :
     mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
