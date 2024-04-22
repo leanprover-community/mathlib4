@@ -901,14 +901,8 @@ theorem finsetCongr_toEmbedding (e : α ≃ β) :
 
 end Equiv
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
 namespace Finset
 
-@[deprecated] alias image_filter := filter_image
+@[deprecated] alias image_filter := filter_image -- 2023-12-27
 
 end Finset
