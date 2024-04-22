@@ -629,8 +629,7 @@ theorem div_mul_eq_mul_div : a / b * c = a * c / b := by simp
 #align sub_add_eq_add_sub sub_add_eq_add_sub
 
 @[to_additive]
-theorem one_div_mul_eq_div : 1 / a * b = b / a := by
-  rw [div_mul_eq_mul_div, one_mul]
+theorem one_div_mul_eq_div : 1 / a * b = b / a := by simp
 
 @[to_additive]
 theorem mul_comm_div : a / b * c = a * (c / b) := by simp
