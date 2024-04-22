@@ -1051,10 +1051,4 @@ end Mathlib.Meta.NormNum
 
 end Tactics
 
-/-!
-### Deprecated lemmas
-
-These lemmas have been deprecated on 2024-01-07.
--/
-
-@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg
+@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg -- 2024-01-07

@@ -223,8 +223,7 @@ theorem _root_.fourierIntegral_gaussian (hb : 0 < b.re) (t : ℂ) :
     mul_neg, div_neg, neg_neg, mul_pow, I_sq, neg_one_mul, mul_comm]
 #align fourier_transform_gaussian fourierIntegral_gaussian
 
-@[deprecated] alias _root_.fourier_transform_gaussian :=
-  fourierIntegral_gaussian -- deprecated on 2024-02-21
+@[deprecated] alias _root_.fourier_transform_gaussian := fourierIntegral_gaussian -- 2024-02-21
 
 theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     (𝓕 fun x : ℝ => cexp (-π * b * x ^ 2 + 2 * π * c * x)) = fun t : ℝ =>
@@ -246,8 +245,8 @@ theorem _root_.fourierIntegral_gaussian_pi' (hb : 0 < b.re) (c : ℂ) :
     simp only [I_sq]
     ring
 
-@[deprecated] alias _root_.fourier_transform_gaussian_pi' :=
-  _root_.fourierIntegral_gaussian_pi' -- deprecated on 2024-02-21
+@[deprecated] -- deprecated on 2024-02-21
+alias _root_.fourier_transform_gaussian_pi' := _root_.fourierIntegral_gaussian_pi'
 
 theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
     (𝓕 fun (x : ℝ) ↦ cexp (-π * b * x ^ 2)) =
@@ -255,8 +254,8 @@ theorem _root_.fourierIntegral_gaussian_pi (hb : 0 < b.re) :
   simpa only [mul_zero, zero_mul, add_zero] using fourierIntegral_gaussian_pi' hb 0
 #align fourier_transform_gaussian_pi fourierIntegral_gaussian_pi
 
-@[deprecated] alias root_.fourier_transform_gaussian_pi :=
-  _root_.fourierIntegral_gaussian_pi   -- deprecated on 2024-02-21
+@[deprecated] -- 2024-02-21
+alias root_.fourier_transform_gaussian_pi := _root_.fourierIntegral_gaussian_pi
 
 section InnerProductSpace
 
