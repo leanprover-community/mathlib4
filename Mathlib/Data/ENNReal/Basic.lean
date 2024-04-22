@@ -286,7 +286,7 @@ theorem forall_ne_top {p : ℝ≥0∞ → Prop} : (∀ a, a ≠ ∞ → p a) ↔
   Option.ball_ne_none
 #align ennreal.forall_ne_top ENNReal.forall_ne_top
 
-@[deprecated]
+@[deprecated] -- 2023-02-27
 theorem exists_ne_top' {p : ℝ≥0∞ → Prop} : (∃ (a : ℝ≥0∞) (_ : a ≠ ∞), p a) ↔ ∃ r : ℝ≥0, p r :=
   Option.bex_ne_none
 #align ennreal.exists_ne_top ENNReal.exists_ne_top'

@@ -589,5 +589,5 @@ lemma abs_def (f : ∀ i, α i) : |f| = fun i ↦ |f i| := rfl
 
 end Pi
 
-@[deprecated] alias neg_le_abs_self := neg_le_abs
-@[deprecated] alias neg_abs_le_self := neg_abs_le
+@[deprecated] alias neg_le_abs_self := neg_le_abs -- 2024-01-13
+@[deprecated] alias neg_abs_le_self := neg_abs_le -- 2024-01-13

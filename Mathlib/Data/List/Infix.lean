@@ -325,7 +325,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap
+@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap -- 2024-03-26
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=

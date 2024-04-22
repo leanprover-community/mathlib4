@@ -1398,7 +1398,7 @@ theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
     get? l (indexOf a l) = some a := by rw [nthLe_get?, indexOf_nthLe (indexOf_lt_length.2 h)]
 #align list.index_of_nth List.indexOf_get?
 
-@[deprecated]
+@[deprecated] -- 2023-01-05
 theorem get_reverse_aux₁ :
     ∀ (l r : List α) (i h1 h2), get (reverseAux l r) ⟨i + length l, h1⟩ = get r ⟨i, h2⟩
   | [], r, i => fun h1 _ => rfl
@@ -3628,7 +3628,7 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
 #align list.last_reverse List.getLast_reverse
 
 set_option linter.deprecated false in
-@[deprecated]
+@[deprecated] -- 2023-01-05
 theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
   | a, [] => by simp [ilast']
   | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)

@@ -220,7 +220,7 @@ attribute [simp] mkRat_mul_mkRat
 lemma mul_def' (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
-@[deprecated] alias mul_num_den := mul_def'
+@[deprecated] alias mul_num_den := mul_def' -- 2024-04-15
 #align rat.mul_num_denom Rat.mul_def'
 
 #align rat.inv Rat.inv
@@ -243,7 +243,7 @@ lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', nu
 lemma div_def' (q r : ℚ) : q / r = (q.num * r.den) /. (q.den * r.num) := by
   rw [← divInt_div_divInt, num_divInt_den, num_divInt_den]
 
-@[deprecated] alias div_num_den := div_def'
+@[deprecated] alias div_num_den := div_def' -- 2024-04-15
 #align rat.div_num_denom Rat.div_def'
 
 variable (a b c : ℚ)

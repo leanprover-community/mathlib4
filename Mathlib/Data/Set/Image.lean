@@ -462,7 +462,7 @@ theorem image_nonempty {f : α → β} {s : Set α} : (f '' s).Nonempty ↔ s.No
   ⟨Nonempty.of_image, fun h => h.image f⟩
 #align set.nonempty_image_iff Set.image_nonempty
 
-@[deprecated] alias nonempty_image_iff := image_nonempty
+@[deprecated] alias nonempty_image_iff := image_nonempty -- 2024-01-06
 
 theorem Nonempty.preimage {s : Set β} (hs : s.Nonempty) {f : α → β} (hf : Surjective f) :
     (f ⁻¹' s).Nonempty :=
