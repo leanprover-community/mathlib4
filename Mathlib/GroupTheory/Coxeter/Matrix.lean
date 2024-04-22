@@ -30,10 +30,9 @@ a Coxeter matrix and the standard geometric representation of a Coxeter group.
 
 ## Main definitions
 
-* `CoxeterMatrix` : The type of symmetric matrices of natural numbers whose rows and columns are
-indexed by a type `B` whose diagonal entries are equal to 1 and whose off-diagonal entries are not
-equal to 1.
-* `CoxeterMatrix.of` : Constructs a Coxeter matrix from a `Matrix B B ℕ`.
+* `CoxeterMatrix` : The type of symmetric matrices of natural numbers, with rows and columns
+  indexed by a type `B`, whose diagonal entries are equal to 1 and whose off-diagonal entries are
+  not equal to 1.
 * `CoxeterMatrix.reindex` : Reindexes a Coxeter matrix by a bijection on the index type.
 * `CoxeterMatrix.Aₙ` : Coxeter matrix for the symmetry group of the regular n-simplex.
 * `CoxeterMatrix.Bₙ` : Coxeter matrix for the symmetry group of the regular n-hypercube
