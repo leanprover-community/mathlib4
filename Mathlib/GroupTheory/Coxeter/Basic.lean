@@ -156,7 +156,7 @@ def CoxeterMatrix.toCoxeterSystem : CoxeterSystem M M.Group := ⟨.refl _⟩
 
 end
 
-namespace CoxeterSystem
+variable {B : Type*} (M : CoxeterMatrix B)
 
 open CoxeterMatrix
 
