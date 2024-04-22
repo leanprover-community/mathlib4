@@ -267,10 +267,7 @@ lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n
   have k : ∀ (i : n), (0 : 𝕜) ≤ (RCLike.ofReal ∘ hA.eigenvalues) i := by
      intro i
      apply (RCLike.nonneg_iff).mpr
-     constructor
-     simp only [Function.comp_apply, RCLike.ofReal_re]
-     exact h i
-     simp only [Function.comp_apply, RCLike.ofReal_im]
+     simp only [Function.comp_apply, RCLike.ofReal_re, h, RCLike.ofReal_im, and_self]
   rw [hA.spectral_theorem2]
   refine (((posSemidef_diagonal_iff).mpr k).mul_mul_conjTranspose_same (m := n)
          (eigenvectorUnitary hA).1)
@@ -348,7 +345,7 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
 /-- The eigenvalues of a positive definite matrix are positive -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
-  rw [hA.1.eigenvalues_eq, hA.1.transpose_eigenvectorMatrix_apply]
+  rw [hA.1.eigenvalues_eq, hA.1.eigenvectorUnitary_apply]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
