@@ -1,4 +1,5 @@
 import Mathlib.Algebra.Homology.Embedding.StupidFiltration
+import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
 
@@ -484,5 +485,26 @@ noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (
         (by dsimp; omega) _ (by dsimp; omega)]
       obtain rfl : x' = -x := by omega
       simp))
+
+lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
+    [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
+    K.HasTotal (up ℤ) := fun n => by
+  obtain ⟨M, hM⟩ : ∃ (M : ℕ), y₀ < n - x₀ + M := by
+    by_cases h : y₀ < n - x₀
+    · exact ⟨0, by omega⟩
+    · simp only [not_lt] at h
+      obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le h
+      refine' ⟨k + 1, by omega⟩
+  apply hasCoproduct_of_isZero (J := Fin M) (ι := fun ⟨k, _⟩ => ⟨⟨x₀ - k, n - x₀ + k⟩, by simp⟩)
+  · rintro ⟨k, hk⟩ ⟨k', hk'⟩
+    simp
+  · rintro ⟨⟨x, y⟩, hxy : x + y = n⟩ h
+    by_cases hx : x ≤ x₀
+    · apply CochainComplex.isZero_of_isStrictlyLE (K.X x) y₀
+      by_contra!
+      obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hx
+      exact h ⟨⟨k, by omega⟩, by dsimp; simp only [Subtype.mk.injEq, Prod.mk.injEq]; omega⟩
+    · exact (CochainComplex.isZero_of_isStrictlyLE K x₀ x (by simpa using hx)).obj'
+        (HomologicalComplex.eval _ _ y)
 
 end HomologicalComplex₂
