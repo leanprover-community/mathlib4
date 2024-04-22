@@ -33,7 +33,7 @@ def runCurl (args : Array String) (throwFailure := true) : IO String := do
 
 def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 
-def SpeedCenterAPI.RunJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
+def SpeedCenterAPI.runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
   runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
 structure SpeedCenterAPI.CommitSource where
