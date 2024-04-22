@@ -26,7 +26,7 @@ is a Coxeter group (`IsCoxeterGroup`), and we may speak of the simple reflection
 (`CoxeterSystem.simple`). We state all of our results about Coxeter groups in terms of Coxeter
 systems where possible.
 
-Let $W$ be a group eqiupped with a Coxeter system. For all monoids $G$ and all functions
+Let $W$ be a group equipped with a Coxeter system. For all monoids $G$ and all functions
 $f \colon B \to G$ whose values satisfy the Coxeter relations, we may lift $f$ to a multiplicative
 homomorphism $W \to G$ (`CoxeterSystem.lift`) in a unique way.
 
