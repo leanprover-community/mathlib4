@@ -51,7 +51,7 @@ def noncommFoldr (s : Multiset α)
 @[simp]
 theorem noncommFoldr_coe (l : List α) (comm) (b : β) :
     noncommFoldr f (l : Multiset α) comm b = l.foldr f b := by
-  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, Function.comp]
+  simp only [noncommFoldr, coe_foldr, coe_attach, List.attach, List.attachWith, Function.comp]
   rw [← List.foldr_map]
   simp [List.map_pmap, List.pmap_eq_map]
 #align multiset.noncomm_foldr_coe Multiset.noncommFoldr_coe
@@ -462,7 +462,8 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
     (univ.noncommProd (fun i => Pi.mulSingle i (x i)) fun i _ j _ _ =>
         Pi.mulSingle_apply_commute x i j) = x := by
   ext i
-  apply (univ.noncommProd_map (fun i => MonoidHom.single M i (x i)) ?a (Pi.evalMonoidHom M i)).trans
+  apply (univ.noncommProd_map (fun i ↦ MonoidHom.mulSingle M i (x i)) ?a
+    (Pi.evalMonoidHom M i)).trans
   case a =>
     intro i _ j _ _
     exact Pi.mulSingle_apply_commute x i j
@@ -472,10 +473,10 @@ theorem noncommProd_mul_single [Fintype ι] [DecidableEq ι] (x : ∀ i, M i) :
   · intro j _; dsimp
   · rw [noncommProd_insert_of_not_mem _ _ _ _ (not_mem_erase _ _),
       noncommProd_eq_pow_card (univ.erase i), one_pow, mul_one]
-    simp only [MonoidHom.single_apply, ne_eq, Pi.mulSingle_eq_same]
+    simp only [MonoidHom.mulSingle_apply, ne_eq, Pi.mulSingle_eq_same]
     · intro j hj
       simp? at hj says simp only [mem_erase, ne_eq, mem_univ, and_true] at hj
-      simp only [MonoidHom.single_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
+      simp only [MonoidHom.mulSingle_apply, Pi.mulSingle, Function.update, Eq.ndrec, Pi.one_apply,
         ne_eq, dite_eq_right_iff]
       intro h
       simp [*] at *

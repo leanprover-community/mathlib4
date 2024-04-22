@@ -226,16 +226,16 @@ theorem natDegree_iterate_derivative (p : R[X]) (k : ℕ) :
       exact (natDegree_derivative_le _).trans <| Nat.sub_le_sub_right hd 1
 
 @[simp]
-theorem derivative_nat_cast {n : ℕ} : derivative (n : R[X]) = 0 := by
+theorem derivative_natCast {n : ℕ} : derivative (n : R[X]) = 0 := by
   rw [← map_natCast C n]
   exact derivative_C
-#align polynomial.derivative_nat_cast Polynomial.derivative_nat_cast
+#align polynomial.derivative_nat_cast Polynomial.derivative_natCast
 
 -- Porting note (#10756): new theorem
 @[simp]
 theorem derivative_ofNat (n : ℕ) [n.AtLeastTwo] :
     derivative (no_index (OfNat.ofNat n) : R[X]) = 0 :=
-  derivative_nat_cast
+  derivative_natCast
 
 theorem iterate_derivative_eq_zero {p : R[X]} {x : ℕ} (hx : p.natDegree < x) :
     Polynomial.derivative^[x] p = 0 := by
@@ -320,7 +320,7 @@ theorem derivative_map [Semiring S] (p : R[X]) (f : R →+* S) :
   rw [sum_over_range' _ _ (n + 1) ((le_max_left _ _).trans_lt (lt_add_one _))]
   rw [sum_over_range' _ _ (n + 1) ((le_max_right _ _).trans_lt (lt_add_one _))]
   simp only [Polynomial.map_sum, Polynomial.map_mul, Polynomial.map_C, map_mul, coeff_map,
-    map_natCast, Polynomial.map_nat_cast, Polynomial.map_pow, map_X]
+    map_natCast, Polynomial.map_natCast, Polynomial.map_pow, map_X]
   all_goals intro n; rw [zero_mul, C_0, zero_mul]
 #align polynomial.derivative_map Polynomial.derivative_map
 
@@ -332,16 +332,16 @@ theorem iterate_derivative_map [Semiring S] (p : R[X]) (f : R →+* S) (k : ℕ)
   · simp only [ih, Function.iterate_succ, Polynomial.derivative_map, Function.comp_apply]
 #align polynomial.iterate_derivative_map Polynomial.iterate_derivative_map
 
-theorem derivative_nat_cast_mul {n : ℕ} {f : R[X]} :
+theorem derivative_natCast_mul {n : ℕ} {f : R[X]} :
     derivative ((n : R[X]) * f) = n * derivative f := by
   simp
-#align polynomial.derivative_nat_cast_mul Polynomial.derivative_nat_cast_mul
+#align polynomial.derivative_nat_cast_mul Polynomial.derivative_natCast_mul
 
 @[simp]
-theorem iterate_derivative_nat_cast_mul {n k : ℕ} {f : R[X]} :
+theorem iterate_derivative_natCast_mul {n k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction' k with k ih generalizing f <;> simp [*]
-#align polynomial.iterate_derivative_nat_cast_mul Polynomial.iterate_derivative_nat_cast_mul
+#align polynomial.iterate_derivative_nat_cast_mul Polynomial.iterate_derivative_natCast_mul
 
 theorem mem_support_derivative [NoZeroSMulDivisors ℕ R] (p : R[X]) (n : ℕ) :
     n ∈ (derivative p).support ↔ n + 1 ∈ p.support := by
@@ -474,24 +474,24 @@ theorem pow_sub_dvd_iterate_derivative_pow (p : R[X]) (n m : ℕ) :
 theorem dvd_iterate_derivative_pow (f : R[X]) (n : ℕ) {m : ℕ} (c : R) (hm : m ≠ 0) :
     (n : R) ∣ eval c (derivative^[m] (f ^ n)) := by
   obtain ⟨m, rfl⟩ := Nat.exists_eq_succ_of_ne_zero hm
-  rw [Function.iterate_succ_apply, derivative_pow, mul_assoc, C_eq_nat_cast,
-    iterate_derivative_nat_cast_mul, eval_mul, eval_nat_cast]
+  rw [Function.iterate_succ_apply, derivative_pow, mul_assoc, C_eq_natCast,
+    iterate_derivative_natCast_mul, eval_mul, eval_natCast]
   exact dvd_mul_right _ _
 #align polynomial.dvd_iterate_derivative_pow Polynomial.dvd_iterate_derivative_pow
 
-theorem iterate_derivative_X_pow_eq_nat_cast_mul (n k : ℕ) :
+theorem iterate_derivative_X_pow_eq_natCast_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = ↑(Nat.descFactorial n k : R[X]) * X ^ (n - k) := by
   induction' k with k ih
   · erw [Function.iterate_zero_apply, tsub_zero, Nat.descFactorial_zero, Nat.cast_one, one_mul]
-  · rw [Function.iterate_succ_apply', ih, derivative_nat_cast_mul, derivative_X_pow, C_eq_nat_cast,
+  · rw [Function.iterate_succ_apply', ih, derivative_natCast_mul, derivative_X_pow, C_eq_natCast,
       Nat.succ_eq_add_one, Nat.descFactorial_succ, Nat.sub_sub, Nat.cast_mul];
     simp [mul_comm, mul_assoc, mul_left_comm]
 set_option linter.uppercaseLean3 false in
-#align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_nat_cast_mul
+#align polynomial.iterate_derivative_X_pow_eq_nat_cast_mul Polynomial.iterate_derivative_X_pow_eq_natCast_mul
 
 theorem iterate_derivative_X_pow_eq_C_mul (n k : ℕ) :
     derivative^[k] (X ^ n : R[X]) = C (Nat.descFactorial n k : R) * X ^ (n - k) := by
-  rw [iterate_derivative_X_pow_eq_nat_cast_mul n k, C_eq_nat_cast]
+  rw [iterate_derivative_X_pow_eq_natCast_mul n k, C_eq_natCast]
 set_option linter.uppercaseLean3 false in
 #align polynomial.iterate_derivative_X_pow_eq_C_mul Polynomial.iterate_derivative_X_pow_eq_C_mul
 
@@ -529,7 +529,7 @@ theorem derivative_comp (p q : R[X]) :
   induction p using Polynomial.induction_on'
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
-      zero_mul, C_eq_nat_cast, zero_add, RingHom.map_mul]
+      zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]
     ring
 #align polynomial.derivative_comp Polynomial.derivative_comp
 
@@ -594,21 +594,21 @@ theorem iterate_derivative_sub {k : ℕ} {f g : R[X]} :
 #align polynomial.iterate_derivative_sub Polynomial.iterate_derivative_sub
 
 @[simp]
-theorem derivative_int_cast {n : ℤ} : derivative (n : R[X]) = 0 := by
-  rw [← C_eq_int_cast n]
+theorem derivative_intCast {n : ℤ} : derivative (n : R[X]) = 0 := by
+  rw [← C_eq_intCast n]
   exact derivative_C
-#align polynomial.derivative_int_cast Polynomial.derivative_int_cast
+#align polynomial.derivative_int_cast Polynomial.derivative_intCast
 
-theorem derivative_int_cast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f) =
+theorem derivative_intCast_mul {n : ℤ} {f : R[X]} : derivative ((n : R[X]) * f) =
     n * derivative f := by
   simp
-#align polynomial.derivative_int_cast_mul Polynomial.derivative_int_cast_mul
+#align polynomial.derivative_int_cast_mul Polynomial.derivative_intCast_mul
 
 @[simp]
-theorem iterate_derivative_int_cast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
+theorem iterate_derivative_intCast_mul {n : ℤ} {k : ℕ} {f : R[X]} :
     derivative^[k] ((n : R[X]) * f) = n * derivative^[k] f := by
   induction' k with k ih generalizing f <;> simp [*]
-#align polynomial.iterate_derivative_int_cast_mul Polynomial.iterate_derivative_int_cast_mul
+#align polynomial.iterate_derivative_int_cast_mul Polynomial.iterate_derivative_intCast_mul
 
 end Ring
 

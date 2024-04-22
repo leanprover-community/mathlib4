@@ -6,7 +6,9 @@ Authors: Chris Hughes
 import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Data.Countable.Basic
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
+import Mathlib.Data.Int.Cast.Lemmas
+import Mathlib.GroupTheory.Subgroup.Centralizer
 
 #align_import group_theory.subgroup.zpowers from "leanprover-community/mathlib"@"4be589053caf347b899a494da75410deb55fb3ef"
 
@@ -143,14 +145,14 @@ section Ring
 variable {R : Type*} [Ring R] (r : R) (k : ℤ)
 
 @[simp]
-theorem int_cast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
+theorem intCast_mul_mem_zmultiples : ↑(k : ℤ) * r ∈ zmultiples r := by
   simpa only [← zsmul_eq_mul] using zsmul_mem_zmultiples r k
-#align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.int_cast_mul_mem_zmultiples
+#align add_subgroup.int_cast_mul_mem_zmultiples AddSubgroup.intCast_mul_mem_zmultiples
 
 @[simp]
-theorem int_cast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
+theorem intCast_mem_zmultiples_one : ↑(k : ℤ) ∈ zmultiples (1 : R) :=
   mem_zmultiples_iff.mp ⟨k, by simp⟩
-#align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.int_cast_mem_zmultiples_one
+#align add_subgroup.int_cast_mem_zmultiples_one AddSubgroup.intCast_mem_zmultiples_one
 
 end Ring
 

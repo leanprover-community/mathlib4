@@ -209,7 +209,7 @@ protected theorem Specializes.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpac
     [ContinuousMul G] [ContinuousInv G] {x y : G} (h : x ⤳ y) : ∀ m : ℤ, (x ^ m) ⤳ (y ^ m)
   | .ofNat n => by simpa using h.pow n
   | .negSucc n => by simpa using (h.pow (n + 1)).inv
-  
+
 @[to_additive]
 protected theorem Inseparable.zpow {G : Type*} [DivInvMonoid G] [TopologicalSpace G]
     [ContinuousMul G] [ContinuousInv G] {x y : G} (h : Inseparable x y) (m : ℤ) :
