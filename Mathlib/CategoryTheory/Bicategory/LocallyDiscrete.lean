@@ -6,6 +6,7 @@ Authors: Yuma Mizuno
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Bicategory.EqToHom
 
 #align_import category_theory.bicategory.locally_discrete from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -131,3 +132,26 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
 #align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
 end CategoryTheory
+
+open CategoryTheory Bicategory Discrete
+
+universe w₂ v v₁ v₂ u u₁ u₂
+
+variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
+variable {F : Pseudofunctor (LocallyDiscrete I) B}
+
+def toLoc (a : I) : LocallyDiscrete I := a
+
+def Quiver.Hom.toLoc {a b : I} (f : a ⟶ b) : toLoc a ⟶ toLoc b := ⟨f⟩
+
+-- Pseudofunctors from locally discrete categories to strict bicategories
+lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp ⟨𝟙 a⟩ ⟨f⟩).inv =
+    (F.mapId a).hom ▷ F.map ⟨f⟩ ≫ eqToHom (by simp; sorry) := by
+   -- (λ_ (F.map ⟨f⟩)).hom ≫ eqToHom (F.congr_map (Category.id_comp f.toLoc).symm) := by
+  have h := F.map₂_left_unitor ⟨f⟩
+  simp at h
+  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
+  simp at h
+  apply h
+
+    --(congrArg F.map (id_comp f).symm) := by
