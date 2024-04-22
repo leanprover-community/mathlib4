@@ -191,18 +191,12 @@ theorem lTensorOne'_apply
 `i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def lTensorOne : (1 : Submodule R S) ⊗[R] N ≃ₗ[R] N := by
-  refine LinearEquiv.ofLinear N.lTensorOne'
-    (TensorProduct.mk R (1 : Submodule R S) N ⟨1, one_le.1 (le_refl _)⟩) ?_ ?_
-  · ext; simp [lTensorOne']
-  · ext r n
-    obtain ⟨_, y, rfl⟩ := r
-    simp only [Algebra.linearMap_apply, TensorProduct.AlgebraTensorModule.curry_apply,
-      TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
-      Function.comp_apply, lTensorOne'_apply, map_smul, TensorProduct.mk_apply,
-      LinearMap.id_coe, id_eq]
-    rw [← TensorProduct.tmul_smul, ← TensorProduct.smul_tmul]
-    congr 1
-    exact Subtype.val_injective <| by simp [Algebra.smul_def]
+  refine LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (1 : Submodule R S) N
+    ⟨1, one_le.1 (le_refl _)⟩) (by ext; simp [lTensorOne']) (TensorProduct.ext' fun r n ↦ ?_)
+  change ⟨1, _⟩ ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
+  obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
+  simp_rw [← h, lTensorOne'_apply, ← TensorProduct.smul_tmul,
+    SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
 
 theorem lTensorOne_apply
     (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
@@ -226,19 +220,13 @@ theorem rTensorOne'_apply
 `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
 This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
 def rTensorOne : M ⊗[R] (1 : Submodule R S) ≃ₗ[R] M := by
-  refine LinearEquiv.ofLinear M.rTensorOne'
-    ((TensorProduct.comm R _ _).toLinearMap ∘ₗ TensorProduct.mk R
-      (1 : Submodule R S) M ⟨1, one_le.1 (le_refl _)⟩) ?_ ?_
-  · ext; simp [rTensorOne']
-  · ext m r
-    obtain ⟨_, y, rfl⟩ := r
-    simp only [TensorProduct.AlgebraTensorModule.curry_apply, Algebra.linearMap_apply,
-      TensorProduct.curry_apply, LinearMap.coe_restrictScalars, LinearMap.coe_comp,
-      LinearEquiv.coe_coe, Function.comp_apply, rTensorOne'_apply, map_smul, TensorProduct.mk_apply,
-      TensorProduct.comm_tmul, LinearMap.id_coe, id_eq]
-    rw [← TensorProduct.tmul_smul]
-    congr 1
-    exact Subtype.val_injective <| by simp [Algebra.smul_def]
+  refine LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
+    TensorProduct.mk R (1 : Submodule R S) M ⟨1, one_le.1 (le_refl _)⟩)
+      (by ext; simp [rTensorOne']) (TensorProduct.ext' fun n r ↦ ?_)
+  change rTensorOne' M _ ⊗ₜ[R] ⟨1, _⟩ = n ⊗ₜ[R] r
+  obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
+  simp_rw [← h, rTensorOne'_apply, TensorProduct.smul_tmul,
+    SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
 
 theorem rTensorOne_apply
     (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
