@@ -35,13 +35,13 @@ def SpeedCenterAPI.RunJson (hash : String) : IO String :=
   -- e7b27246-a3e6-496a-b552-ff4b45c7236e is the `repo_id` for the `mathlib4` repository.
   runCurl #["http://speed.lean-fro.org/mathlib4/api/run/e7b27246-a3e6-496a-b552-ff4b45c7236e?hash=" ++ hash]
 
-structure SpeedCenterAPI.Source_1 where
+structure SpeedCenterAPI.Source where
   repo_id : String
   hash : String
 deriving ToJson, FromJson
 
-structure SpeedCenterAPI.Source_2 where
-  source : SpeedCenterAPI.Source_1
+structure SpeedCenterAPI.CommitSource where
+  source : SpeedCenterAPI.Source
 deriving ToJson, FromJson
 
 structure SpeedCenterAPI.Dimension where
@@ -61,7 +61,7 @@ deriving ToJson, FromJson
 
 structure SpeedCenterAPI.Run where
   id : String
-  source : SpeedCenterAPI.Source_2
+  source : SpeedCenterAPI.CommitSource
   result : SpeedCenterAPI.Result
 deriving ToJson, FromJson
 
