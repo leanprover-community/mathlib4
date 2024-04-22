@@ -78,9 +78,7 @@ variable { s : IntervalWithMeasure }
 
 
 instance : NoAtoms s.μ where
-  measure_singleton := by
-    intro x
-    apply s.hna.measure_singleton
+  measure_singleton := s.hna.measure_singleton
 
 
 instance PolyL2.instInner : Inner ℝ (PolyL2 s) where
@@ -188,15 +186,13 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     apply intervalIntegral.integral_congr
     unfold EqOn
     simp only [eval_mul]
-    intro x
-    intro _
+    intro x _
     rw [mul_comm (q.eval _) (p.eval _)]
   nonneg_re := by
     intro p
     simp only [PolyL2.inner_def, IntervalWithMeasure.dot]
     apply intervalIntegral.integral_nonneg (le_of_lt s.hab)
-    intro x
-    intro _
+    intro x _
     rw [eval_mul]
     rw [← sq (p.eval x)]
     exact sq_nonneg (p.eval x)
@@ -226,8 +222,7 @@ def PolyL2.InnerProductSpaceCore : InnerProductSpace.Core ℝ (PolyL2 s) where
     apply intervalIntegral.integral_congr
     unfold EqOn
     simp only [eval_mul]
-    intro x
-    intro _
+    intro x _
     rw [Polynomial.eval_add]
     ring_nf
     apply s.hpi
@@ -251,15 +246,9 @@ instance PolyL2.instInnerProductSpace : InnerProductSpace ℝ (PolyL2 s) :=
   InnerProductSpace.ofCore PolyL2.InnerProductSpaceCore
 
 
-/-- powers of X -/
-def pows : ℕ → PolyL2 s := by
-  intro k
-  exact X^k
-
-
 /-- orthogonal polynomials on an interval with respect to a specified measure
 -/
-def OrthoPoly(s: IntervalWithMeasure) : ℕ → PolyL2 s := gramSchmidt ℝ pows
+def OrthoPoly(s: IntervalWithMeasure) : ℕ → PolyL2 s := gramSchmidt ℝ (fun k => X^k)
 
 
 /-- orthogonal polynomials are orthogonal
@@ -276,8 +265,7 @@ theorem OrthoPoly_span (s) (n : ℕ) :
     Submodule.span ℝ ((OrthoPoly s) '' (Finset.range (n + 1))) = Polynomial.degreeLE ℝ n := by
   unfold OrthoPoly
   simp only [coe_range]
-  rw [span_gramSchmidt_Iio ℝ pows]
-  unfold pows
+  rw [span_gramSchmidt_Iio ℝ (fun k => X^k)]
   rw [← coe_range]
   simp only [degreeLE_eq_span_X_pow]
   simp only [coe_range, coe_image]
@@ -370,7 +358,6 @@ theorem OrthoPoly_linearIndependent : LinearIndependent ℝ (OrthoPoly s) := by
   have := Basis.linearIndependent (Polynomial.basisMonomials ℝ)
   simp only [coe_basisMonomials] at this
   unfold monomial at this
-  unfold pows
   simp only [X_pow_eq_monomial]
   exact this
 
@@ -387,7 +374,6 @@ theorem OrthoPoly_deg (n : ℕ) : degree (OrthoPoly s n) = n := by
     rw [← bot_eq_zero]
     rw [gramSchmidt_zero]
     rw [bot_eq_zero]
-    unfold pows
     simp only [pow_zero, degree_one]
   | succ n =>
     rw [Nat.succ_eq_add_one n]
@@ -603,11 +589,11 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
   | inl hlt =>
     exfalso
     unfold OrthoPoly_internal_roots at hlt
-    let internal_roots : Multiset ℝ :=
+    let internal_roots_mul : Multiset ℝ :=
       Multiset.filter (fun r => r ∈ Ioo s.a s.b) (OrthoPoly s n).roots
-    have his : internal_roots ≤ (OrthoPoly s n).roots := by
+    have his : internal_roots_mul ≤ (OrthoPoly s n).roots := by
       apply Multiset.filter_le
-    have hd := ((Multiset.prod_X_sub_C_dvd_iff_le_roots OrthoPoly_ne_zero) internal_roots).mpr his
+    have hd := ((Multiset.prod_X_sub_C_dvd_iff_le_roots OrthoPoly_ne_zero) internal_roots_mul).mpr his
     have ⟨r, hf⟩ := dvd_def.mpr hd
 
     have hnir : Multiset.filter (fun μ => μ ∈ Ioo s.a s.b) r.roots = 0 := by
@@ -616,7 +602,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
       have hnir := roots_mul hnir
       rw [← hf] at hnir
       simp only [roots_multiset_prod_X_sub_C] at hnir
-      have := Multiset.filter_add (fun μ => μ ∈ Ioo s.a s.b) internal_roots r.roots
+      have := Multiset.filter_add (fun μ => μ ∈ Ioo s.a s.b) internal_roots_mul r.roots
       rw [← hnir] at this
       rw [Multiset.filter_filter] at this
       simp only [and_self, self_eq_add_right] at this
@@ -701,8 +687,8 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
       rw [PolyL2.inner_def, IntervalWithMeasure.dot]
 
       have ⟨q, hq2⟩ : ∃q : ℝ[X], q * q =
-          Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po := by
-        dsimp [po, internal_roots, odd_roots]
+          Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots_mul) * po := by
+        dsimp [po, internal_roots_mul, odd_roots]
         simp only [count_roots, Multiset.toFinset_filter]
         rw [Finset.prod_eq_multiset_prod]
         rw [← Multiset.prod_add]
@@ -748,7 +734,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
         rw [hq2]
         rw [← Multiset.prod_add, ← Multiset.map_add, ← Multiset.filter_add, two_smul]
 
-      have hne0 : po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) ≠ 0 := by
+      have hne0 : po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots_mul) ≠ 0 := by
         apply mul_ne_zero_iff.mpr
         constructor
         <;> apply Multiset.prod_ne_zero
@@ -759,7 +745,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
         <;> apply Polynomial.X_sub_C_ne_zero
 
       have hle : ∀x : ℝ,
-          (Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * po).eval x ≥ 0 := by
+          (Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots_mul) * po).eval x ≥ 0 := by
         intro x
         rw [← hq2]
         simp only [eval_mul, ge_iff_le]
@@ -774,9 +760,9 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
         rw [← intervalIntegral.integral_neg]
 
         have : ∫ (x : ℝ) in s.a..s.b, -eval x
-              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * r) ∂s.μ =
+              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots_mul) * r) ∂s.μ =
                ∫ (x : ℝ) in s.a..s.b, eval x
-              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots) * (-r)) ∂s.μ := by
+              (po * Multiset.prod (Multiset.map (fun a ↦ X - C a) internal_roots_mul) * (-r)) ∂s.μ := by
           apply intervalIntegral.integral_congr
           rw [Set.EqOn]
           intro x _
@@ -809,6 +795,7 @@ theorem OrthoPoly_internal_roots_eq (s : IntervalWithMeasure) (n : ℕ) :
     exact hipn0 hip0
   | inr heq =>
     exact heq
+
 
 theorem OrthoPoly_factorization (s : IntervalWithMeasure) (n : ℕ) : ∃a : ℝ, a ≠ 0 ∧
     (OrthoPoly s n) = a • Finset.prod (OrthoPoly_internal_roots s n) (fun μ ↦(X - C μ : ℝ[X])) := by
@@ -985,6 +972,7 @@ theorem Quadrature.is_interp (q : Quadrature) (s : IntervalWithMeasure)
   simp only [univ_eq_attach, mul_ite, mul_one, mul_zero,
     sum_ite_eq, Finset.mem_attach, ↓reduceIte] at this
   exact this
+
 
 /-- a quadrature formula on n nodes with exactness at least 2n - 2 has positive weights
 -/
