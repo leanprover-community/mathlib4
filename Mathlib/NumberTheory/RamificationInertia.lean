@@ -319,7 +319,7 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
       exact fun _ => zero_smul _ _
   choose A' hA'p hA' using fun i => exists_sum (a i)
   -- This gives us a(n invertible) matrix `A` such that `det A ∈ (M = span R b)`,
-  let A : Matrix (Fin n) (Fin n) R := Matrix.of A' - 1
+  let A : Mat[n, n][R] := Matrix.of A' - 1
   let B := A.adjugate
   have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
@@ -364,8 +364,8 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
         rw [RingHom.map_det]
       _ = Matrix.det ((Ideal.Quotient.mk p).mapMatrix (Matrix.of A' - 1)) := rfl
       _ = Matrix.det fun i j =>
-          (Ideal.Quotient.mk p) (A' i j) - (1 : Matrix (Fin n) (Fin n) (R ⧸ p)) i j := ?_
-      _ = Matrix.det (-1 : Matrix (Fin n) (Fin n) (R ⧸ p)) := ?_
+          (Ideal.Quotient.mk p) (A' i j) - (1 : Mat[n, n][R ⧸ p]) i j := ?_
+      _ = Matrix.det (-1 : Mat[n, n][R ⧸ p]) := ?_
       _ = (-1 : R ⧸ p) ^ n := by rw [Matrix.det_neg, Fintype.card_fin, Matrix.det_one, mul_one]
       _ ≠ 0 := IsUnit.ne_zero (isUnit_one.neg.pow _)
     · refine congr_arg Matrix.det (Matrix.ext fun i j => ?_)

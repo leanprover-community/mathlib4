@@ -196,7 +196,7 @@ lemma eval_det_add_X_smul (A : Matrix n n R[X]) (M : Matrix n n R) :
   simp only [Algebra.algebraMap_eq_smul_one, matPolyEquiv_smul_one, map_X, X_mul, eval_mul_X,
     mul_zero, add_zero]
 
-lemma derivative_det_one_add_X_smul_aux {n} (M : Matrix (Fin n) (Fin n) R) :
+lemma derivative_det_one_add_X_smul_aux {n} (M : Mat[n, n][R]) :
     (derivative <| det (1 + (X : R[X]) • M.map C)).eval 0 = trace M := by
   induction n with
   | zero => simp

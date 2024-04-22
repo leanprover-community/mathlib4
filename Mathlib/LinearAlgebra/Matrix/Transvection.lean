@@ -607,7 +607,7 @@ theorem exists_isTwoBlockDiagonal_list_transvec_mul_mul_list_transvec
 diagonal form by elementary operations, then one deduces it for matrices over `Fin r ⊕ Unit`. -/
 theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal_induction
     (IH :
-      ∀ M : Matrix (Fin r) (Fin r) 𝕜,
+      ∀ M : Mat[r, r][𝕜],
         ∃ (L₀ L₀' : List (TransvectionStruct (Fin r) 𝕜)) (D₀ : Fin r → 𝕜),
           (L₀.map toMatrix).prod * M * (L₀'.map toMatrix).prod = diagonal D₀)
     (M : Matrix (Sum (Fin r) Unit) (Sum (Fin r) Unit) 𝕜) :

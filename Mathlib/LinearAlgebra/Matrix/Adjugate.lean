@@ -389,23 +389,23 @@ theorem det_adjugate (A : Matrix n n α) : (adjugate A).det = A.det ^ (Fintype.c
 #align matrix.det_adjugate Matrix.det_adjugate
 
 @[simp]
-theorem adjugate_fin_zero (A : Matrix (Fin 0) (Fin 0) α) : adjugate A = 0 :=
+theorem adjugate_fin_zero (A : Mat[0, 0][α]) : adjugate A = 0 :=
   Subsingleton.elim _ _
 #align matrix.adjugate_fin_zero Matrix.adjugate_fin_zero
 
 @[simp]
-theorem adjugate_fin_one (A : Matrix (Fin 1) (Fin 1) α) : adjugate A = 1 :=
+theorem adjugate_fin_one (A : Mat[1, 1][α]) : adjugate A = 1 :=
   adjugate_subsingleton A
 #align matrix.adjugate_fin_one Matrix.adjugate_fin_one
 
-theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) α) (i j) :
+theorem adjugate_fin_succ_eq_det_submatrix {n : ℕ} (A : Mat[n.succ, n.succ][α]) (i j) :
     adjugate A i j = (-1) ^ (j + i : ℕ) * det (A.submatrix j.succAbove i.succAbove) := by
   simp_rw [adjugate_apply, det_succ_row _ j, updateRow_self, submatrix_updateRow_succAbove]
   rw [Fintype.sum_eq_single i fun h hjk => ?_, Pi.single_eq_same, mul_one]
   rw [Pi.single_eq_of_ne hjk, mul_zero, zero_mul]
 #align matrix.adjugate_fin_succ_eq_det_submatrix Matrix.adjugate_fin_succ_eq_det_submatrix
 
-theorem adjugate_fin_two (A : Matrix (Fin 2) (Fin 2) α) :
+theorem adjugate_fin_two (A : Mat[2, 2][α]) :
     adjugate A = !![A 1 1, -A 0 1; -A 1 0, A 0 0] := by
   ext i j
   rw [adjugate_fin_succ_eq_det_submatrix]
@@ -417,7 +417,7 @@ theorem adjugate_fin_two_of (a b c d : α) : adjugate !![a, b; c, d] = !![d, -b;
   adjugate_fin_two _
 #align matrix.adjugate_fin_two_of Matrix.adjugate_fin_two_of
 
-theorem adjugate_fin_three (A : Matrix (Fin 3) (Fin 3) α) :
+theorem adjugate_fin_three (A : Mat[3, 3][α]) :
     adjugate A =
     !![A 1 1 * A 2 2 - A 1 2 * A 2 1,
       -(A 0 1 * A 2 2) + A 0 2 * A 2 1,

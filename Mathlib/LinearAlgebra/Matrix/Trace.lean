@@ -190,7 +190,7 @@ theorem trace_col_mul_row [NonUnitalNonAssocSemiring R] (a b : n → R) :
 end Mul
 
 lemma trace_submatrix_succ {n : ℕ} [NonUnitalNonAssocSemiring R]
-    (M : Matrix (Fin n.succ) (Fin n.succ) R) :
+    (M : Mat[n.succ, n.succ][R]) :
     M 0 0 + trace (submatrix M Fin.succ Fin.succ) = trace M := by
   delta trace
   rw [← (finSuccEquiv n).symm.sum_comp]
@@ -207,19 +207,19 @@ with `Matrix.det_fin_two` etc.
 -/
 
 
-theorem trace_fin_zero (A : Matrix (Fin 0) (Fin 0) R) : trace A = 0 :=
+theorem trace_fin_zero (A : Mat[0, 0][R]) : trace A = 0 :=
   rfl
 #align matrix.trace_fin_zero Matrix.trace_fin_zero
 
-theorem trace_fin_one (A : Matrix (Fin 1) (Fin 1) R) : trace A = A 0 0 :=
+theorem trace_fin_one (A : Mat[1, 1][R]) : trace A = A 0 0 :=
   add_zero _
 #align matrix.trace_fin_one Matrix.trace_fin_one
 
-theorem trace_fin_two (A : Matrix (Fin 2) (Fin 2) R) : trace A = A 0 0 + A 1 1 :=
+theorem trace_fin_two (A : Mat[2, 2][R]) : trace A = A 0 0 + A 1 1 :=
   congr_arg (_ + ·) (add_zero (A 1 1))
 #align matrix.trace_fin_two Matrix.trace_fin_two
 
-theorem trace_fin_three (A : Matrix (Fin 3) (Fin 3) R) : trace A = A 0 0 + A 1 1 + A 2 2 := by
+theorem trace_fin_three (A : Mat[3, 3][R]) : trace A = A 0 0 + A 1 1 + A 2 2 := by
   rw [← add_zero (A 2 2), add_assoc]
   rfl
 #align matrix.trace_fin_three Matrix.trace_fin_three

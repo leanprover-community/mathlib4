@@ -63,7 +63,7 @@ theorem rank_le_card_width [StrongRankCondition R] (A : Matrix m n R) :
   exact A.mulVecLin.finrank_range_le.trans_eq (finrank_pi _)
 #align matrix.rank_le_card_width Matrix.rank_le_card_width
 
-theorem rank_le_width [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
+theorem rank_le_width [StrongRankCondition R] {m n : ℕ} (A : Mat[m, n][R]) :
     A.rank ≤ n :=
   A.rank_le_card_width.trans <| (Fintype.card_fin n).le
 #align matrix.rank_le_width Matrix.rank_le_width
@@ -170,7 +170,7 @@ theorem rank_le_card_height [Fintype m] [StrongRankCondition R] (A : Matrix m n 
   exact (Submodule.finrank_le _).trans (finrank_pi R).le
 #align matrix.rank_le_card_height Matrix.rank_le_card_height
 
-theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Matrix (Fin m) (Fin n) R) :
+theorem rank_le_height [StrongRankCondition R] {m n : ℕ} (A : Mat[m, n][R]) :
     A.rank ≤ m :=
   A.rank_le_card_height.trans <| (Fintype.card_fin m).le
 #align matrix.rank_le_height Matrix.rank_le_height
