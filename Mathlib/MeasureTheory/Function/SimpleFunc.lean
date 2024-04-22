@@ -91,8 +91,7 @@ def ofFinite [Finite α] [MeasurableSingletonClass α] (f : α → β) : α →�
   measurableSet_fiber' x := (toFinite (f ⁻¹' {x})).measurableSet
   finite_range' := Set.finite_range f
 
-@[deprecated] -- Since 2024/02/05
-alias ofFintype := ofFinite
+@[deprecated] alias ofFintype := ofFinite -- Since 2024-02-05
 
 /-- Simple function defined on the empty type. -/
 def ofIsEmpty [IsEmpty α] : α →ₛ β := ofFinite isEmptyElim

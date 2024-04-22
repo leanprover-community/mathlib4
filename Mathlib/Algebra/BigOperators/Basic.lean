@@ -2499,11 +2499,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
 
 end AddCommMonoid
 
-/-!
-### Deprecated lemmas
-
-Those lemmas were deprecated on the 2023/12/23.
--/
-
-@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv
-@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv
+@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv -- 2023-12-23
+@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv -- 2023-12-23
