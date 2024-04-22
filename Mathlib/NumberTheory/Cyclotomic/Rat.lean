@@ -26,9 +26,6 @@ integers of a `p ^ n`-th cyclotomic extension of `ℚ`.
 
 universe u
 
-set_option profiler true
-set_option profiler.threshold 50
-
 open Algebra IsCyclotomicExtension Polynomial NumberField
 
 open scoped Cyclotomic NumberField Nat
