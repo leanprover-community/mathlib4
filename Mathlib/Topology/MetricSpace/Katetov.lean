@@ -10,9 +10,7 @@ import Mathlib.Topology.UniformSpace.Cauchy
 /-!
 # Katetov Maps
 
-In this file we define Katetov maps (i.e. one point extensions of a metric) and establish
-basic properties of their space. We embed a metric space in its space of Katetov maps via
-the Kuratowski embedding.
+In this file we define Katetov maps.
 
 ## Notation
 
@@ -110,8 +108,6 @@ theorem copy_eq (f : E(α)) (f' : α → ℝ) (h : f' = f) : f.copy f' h = f :=
 
 variable {f g : E(α)}
 
-theorem katetov_set_coe (s : Set E(α)) (f : s) : IsKatetov (f : α → ℝ) :=
-  f.1.isKatetov
 
 theorem coe_injective : @Function.Injective E(α) (α → ℝ) (↑) :=
   fun f g h ↦ by cases f; cases g; congr
