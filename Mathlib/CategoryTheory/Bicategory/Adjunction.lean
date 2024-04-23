@@ -140,7 +140,7 @@ theorem comp_left_triangle_aux (adj₁ : f₁ ⊣ g₁) (adj₂ : f₂ ⊣ g₂)
           adj₁.unit ▷ (f₁ ≫ f₂) ⊗≫
             f₁ ◁ (adj₂.unit ▷ (g₁ ≫ f₁) ≫ (f₂ ≫ g₂) ◁ adj₁.counit) ▷ f₂ ⊗≫
               (f₁ ≫ f₂) ◁ adj₂.counit ⊗≫ 𝟙 _ := by
-      simp [bicategoricalComp]; coherence
+      simp? [bicategoricalComp]; coherence
     _ = 𝟙 _ ⊗≫
           (leftZigzag adj₁.unit adj₁.counit) ▷ f₂ ⊗≫
             f₁ ◁ (leftZigzag adj₂.unit adj₂.counit) ⊗≫ 𝟙 _ := by
