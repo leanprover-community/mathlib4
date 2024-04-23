@@ -233,8 +233,8 @@ theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
     rw [hc]
     exact one_ne_zero
   cases' Int.ne_zero_of_gcd hc' with hxz hyz
-  · apply lt_add_of_pos_of_le (sq_pos_of_ne_zero x hxz) (sq_nonneg y)
-  · apply lt_add_of_le_of_pos (sq_nonneg x) (sq_pos_of_ne_zero y hyz)
+  · apply lt_add_of_pos_of_le (sq_pos_of_ne_zero hxz) (sq_nonneg y)
+  · apply lt_add_of_le_of_pos (sq_nonneg x) (sq_pos_of_ne_zero hyz)
 #align pythagorean_triple.ne_zero_of_coprime PythagoreanTriple.ne_zero_of_coprime
 
 theorem isPrimitiveClassified_of_coprime_of_zero_left (hc : Int.gcd x y = 1) (hx : x = 0) :

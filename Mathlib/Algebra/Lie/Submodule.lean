@@ -547,7 +547,7 @@ theorem independent_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R 
     CompleteLattice.Independent N ↔ CompleteLattice.Independent fun i ↦ (N i : Submodule R M) := by
   simp [CompleteLattice.independent_def, disjoint_iff_coe_toSubmodule]
 
-theorem iSup_eq_top_iff_coe_toSubmodule {ι : Type*} {N : ι → LieSubmodule R L M} :
+theorem iSup_eq_top_iff_coe_toSubmodule {ι : Sort*} {N : ι → LieSubmodule R L M} :
     ⨆ i, N i = ⊤ ↔ ⨆ i, (N i : Submodule R M) = ⊤ := by
   rw [← iSup_coe_toSubmodule, ← top_coeSubmodule (L := L), coe_toSubmodule_eq_iff]
 

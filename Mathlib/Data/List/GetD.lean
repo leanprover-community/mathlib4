@@ -63,11 +63,7 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
     · rfl
     · simp [ih]
 
-set_option linter.deprecated false in
-@[deprecated getD_eq_get]
-theorem getD_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getD n d = l.nthLe n hn :=
-  getD_eq_get ..
-#align list.nthd_eq_nth_le List.getD_eq_nthLeₓ -- argument order
+#align list.nthd_eq_nth_le List.getD_eq_get
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   induction l generalizing n with
@@ -143,11 +139,7 @@ theorem getI_cons_succ : getI (x :: xs) (n + 1) = getI xs n :=
 
 theorem getI_eq_get {n : ℕ} (hn : n < l.length) : l.getI n = l.get ⟨n, hn⟩ :=
   getD_eq_get ..
-
-@[deprecated getI_eq_get]
-theorem getI_eq_nthLe {n : ℕ} (hn : n < l.length) : l.getI n = l.nthLe n hn :=
-  getI_eq_get ..
-#align list.inth_eq_nth_le List.getI_eq_nthLe
+#align list.inth_eq_nth_le List.getI_eq_get
 
 theorem getI_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getI n = default :=
   getD_eq_default _ _ hn
