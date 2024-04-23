@@ -409,13 +409,13 @@ lemma geomSum_ofColex_strictMono (hn : 2 ≤ n) : StrictMono fun s ↦ ∑ k in 
     mem_sdiff.2 ⟨hat, has⟩
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
-  `n`-ary expansion. -/
+`n`-ary expansion. -/
 lemma geomSum_le_geomSum_iff_toColex_le_toColex (hn : 2 ≤ n) :
     ∑ k in s, n ^ k ≤ ∑ k in t, n ^ k ↔ toColex s ≤ toColex t :=
   (geomSum_ofColex_strictMono hn).le_iff_le
 
 /-- For finsets of naturals, the colexicographic order is equivalent to the order induced by the
-  `n`-ary expansion. -/
+`n`-ary expansion. -/
 lemma geomSum_lt_geomSum_iff_toColex_lt_toColex (hn : 2 ≤ n) :
     ∑ i in s, n ^ i < ∑ i in t, n ^ i ↔ toColex s < toColex t :=
   (geomSum_ofColex_strictMono hn).lt_iff_lt
@@ -425,70 +425,6 @@ theorem geomSum_injective {n : ℕ} (hn : 2 ≤ n) :
   intro _ _ h
   rwa [le_antisymm_iff, geomSum_le_geomSum_iff_toColex_le_toColex hn,
     geomSum_le_geomSum_iff_toColex_le_toColex hn, ← le_antisymm_iff, Colex.toColex.injEq] at h
-
-/-- The function which maps the natural number `∑ i ∈ s, 2^i` to the Finset `s`.
-  This could also be defined using `Nat.bits`, but it seems easier to avoid the `List` api.  -/
-def Nat.bitSet (n : ℕ) : Finset ℕ := by
-  induction' n using Nat.binaryRec with b _ s
-  · exact ∅
-  cases b
-  · exact Finset.image (· + 1) s
-  · exact insert 0 (Finset.image (· + 1) s)
-
-theorem bitSet_bit_true (n : ℕ) : Nat.bitSet (Nat.bit true n) =
-    insert 0 (image (· + 1) (Nat.bitSet n)) :=
-  Nat.binaryRec_eq rfl _ _
-
-theorem bitSet_bit_false (n : ℕ) : Nat.bitSet (Nat.bit false n) =
-    (image (· + 1) (Nat.bitSet n)) :=
-  Nat.binaryRec_eq rfl _ _
-
-@[simp] theorem bitSet_two_mul_add (n : ℕ) : Nat.bitSet (2*n+1) =
-    insert 0 (image (· + 1) (Nat.bitSet n)) := by
-  rw [← bitSet_bit_true, Nat.bit_true, Nat.bit1_val]
-
-@[simp] theorem bitSet_two_mul (n : ℕ) : Nat.bitSet (2*n) =
-    image (· + 1) (Nat.bitSet n) := by
-  rw [← bitSet_bit_false, Nat.bit_false, Nat.bit0_val]
-
-@[simp] theorem bitSet_zero : Nat.bitSet 0 = ∅ := rfl
-
-@[simp] theorem bitSet_one : Nat.bitSet 1 = {0} := by
-  rw [(by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
-
-@[simp] theorem bitSet_two_pow (k : ℕ) : Nat.bitSet (2^k) = {k} := by
-  induction' k using Nat.recAux with k ih
-  · rw [pow_zero, (by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
-  rw [pow_add, pow_one, mul_comm, bitSet_two_mul, ih, image_singleton]
-
-theorem twoPowSum_bitset (n : ℕ) : ∑ i in Nat.bitSet n, 2 ^ i = n := by
-  induction' n using Nat.binaryRec with b n hs
-  · simp [Nat.bitSet]
-  cases b
-  · rw [bitSet_bit_false, sum_image (by simp), Nat.bit_false, Nat.bit0_val]
-    simp_rw [pow_add, pow_one, ← Finset.sum_mul, mul_comm 2]
-    simpa using hs
-  rw [bitSet_bit_true, Nat.bit_true, sum_insert (by simp), Nat.bit1_val, sum_image (by simp),
-    pow_zero, add_comm, add_left_inj]
-  simp_rw [pow_add, pow_one, ← Finset.sum_mul, mul_comm 2]
-  simpa using hs
-
-/-- The equivalence between `ℕ` and `Finset ℕ` that maps `∑ i in s, 2^i` to `s`.-/
-@[simps] def Nat.equivBitSet : ℕ ≃ Finset ℕ where
-  toFun := bitSet
-  invFun s := ∑ i in s, 2^i
-  left_inv := twoPowSum_bitset
-  right_inv := Function.LeftInverse.rightInverse_of_injective twoPowSum_bitset
-    (geomSum_injective rfl.le)
-
-/-- The equivalence `Nat.equivBitSet` enumerates `Finset ℕ` in colexicographic order. -/
-@[simps] def Nat.orderIsoColex : ℕ ≃o Colex ℕ where
-  toFun n := Colex.toColex (equivBitSet n)
-  invFun s := equivBitSet.symm s.ofColex
-  left_inv n := equivBitSet.symm_apply_apply n
-  right_inv s :=  Finset.toColex_inj.2 (equivBitSet.apply_symm_apply s.ofColex)
-  map_rel_iff' := by
-    simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le), twoPowSum_bitset]
 
 end Nat
 end Finset
