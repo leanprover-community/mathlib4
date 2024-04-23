@@ -42,4 +42,4 @@ def Field.ofMinimalAxioms (K : Type u)
   { exists_pair_ne := exists_pair_ne
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero
-    qsmul := qsmulRec _ }
+    qsmul := _ }
