@@ -293,7 +293,6 @@ namespace NNRat
 variable [DivisionSemiring α]
 
 instance (priority := 100) instDistribSMul : DistribSMul ℚ≥0 α where
-  smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 
@@ -306,7 +305,6 @@ namespace Rat
 variable [DivisionRing α]
 
 instance (priority := 100) instDistribSMul : DistribSMul ℚ α where
-  smul := (· • ·)
   smul_zero a := by rw [smul_def, mul_zero]
   smul_add a x y := by rw [smul_def, smul_def, smul_def, mul_add]
 #align rat.distrib_smul Rat.instDistribSMul
