@@ -167,7 +167,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
   obtain ⟨x, h_nz, h_bd⟩ := exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr K
-  have h_nm : (1 : ℝ) ≤ |(Algebra.norm ℚ) (algebraMap _ K x)| := by
+  have h_nm : (1 : ℝ) ≤ |Algebra.norm ℚ (algebraMap _ K x)| := by
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
@@ -316,7 +316,7 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
-theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(algebraMap _ K a)⟯ = ⊤) :
+theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮algebraMap _ K a⟯ = ⊤) :
     natDegree (minpoly ℤ (algebraMap _ K a)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
     minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,

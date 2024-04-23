@@ -59,9 +59,8 @@ theorem algebraMap_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
 #align ring_of_integers.coe_algebra_map_norm RingOfIntegers.algebraMap_algebraMap_norm
 
 theorem algebraMap_norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
-  algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
-    (Algebra.norm K (algebraMap K L (algebraMap _ _ x))) :=
-  rfl
+    algebraMap _ K (norm K (algebraMap (𝓞 K) (𝓞 L) x)) =
+      Algebra.norm K (algebraMap K L (algebraMap _ _ x)) := rfl
 #align ring_of_integers.coe_norm_algebra_map RingOfIntegers.algebraMap_norm_algebraMap
 
 theorem norm_algebraMap [IsSeparable K L] (x : 𝓞 K) :
@@ -90,7 +89,8 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
 `x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x)`. -/
 theorem dvd_norm [IsGalois K L] (x : 𝓞 L) : x ∣ algebraMap (𝓞 K) (𝓞 L) (norm K x) := by
   classical
-  have hint : IsIntegral ℤ (∏ σ : L ≃ₐ[K] L in univ.erase AlgEquiv.refl, σ (algebraMap (𝓞 L) L x)) :=
+  have hint :
+    IsIntegral ℤ (∏ σ : L ≃ₐ[K] L in univ.erase AlgEquiv.refl, σ (algebraMap (𝓞 L) L x)) :=
     IsIntegral.prod _ (fun σ _ =>
       ((RingOfIntegers.isIntegral_coe x).map σ))
   refine' ⟨⟨_, hint⟩, _⟩

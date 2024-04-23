@@ -88,7 +88,7 @@ variable {K}
 
 @[ext] theorem ext {x y : 𝓞 K} (h : algebraMap _ K x = algebraMap _ K y) : x = y :=
   Subtype.ext h
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ (algebraMap _ K x = algebraMap _ K y) :=
+theorem ext_iff {x y : 𝓞 K} : x = y ↔ algebraMap _ K x = algebraMap _ K y :=
   Subtype.ext_iff
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
@@ -196,7 +196,8 @@ variable {K} {M : Type*}
 def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
   ⟨f x, h x⟩
 
-def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) : M →+ 𝓞 K where
+def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
+    M →+ 𝓞 K where
   toFun := restrict f h
   map_zero' := by unfold restrict; rw [← mk_zero, mk_eq_mk, map_zero]
   map_add' x y := by unfold restrict; simp only [map_add]; rw [mk_add_mk]
@@ -221,7 +222,7 @@ theorem integralBasis_apply (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
 #align number_field.integral_basis_apply NumberField.integralBasis_apply
 
 @[simp]
-theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (𝓞 K)):
+theorem integralBasis_repr_apply (x : (𝓞 K)) (i : Free.ChooseBasisIndex ℤ (𝓞 K)) :
     (integralBasis K).repr (algebraMap _ _ x) i =
       (algebraMap ℤ ℚ) ((RingOfIntegers.basis K).repr x i) :=
   Basis.localizationLocalization_repr_algebraMap ℚ (nonZeroDivisors ℤ) K _ x i

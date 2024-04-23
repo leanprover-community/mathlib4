@@ -555,8 +555,8 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // Is
 
 theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : IsReal w₀) {B : ℝ≥0}
     (hB : minkowskiBound K ↑1 < convexBodyLTFactor K * B) :
-    ∃ a : 𝓞 K, ℚ⟮(algebraMap _ K a)⟯ = ⊤ ∧
-      (∀ w : InfinitePlace K, w (algebraMap _ K a) < max B 1) := by
+    ∃ a : 𝓞 K, ℚ⟮algebraMap _ K a⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w (algebraMap _ K a) < max B 1 := by
   have : minkowskiBound K ↑1 < volume (convexBodyLT K (fun w ↦ if w = w₀ then B else 1)) := by
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
@@ -571,8 +571,8 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
 
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
-    ∃ a : 𝓞 K, ℚ⟮(algebraMap _ K a)⟯ = ⊤ ∧
-      (∀ w : InfinitePlace K, w (algebraMap _ K a) < Real.sqrt (1 + B ^ 2)) := by
+    ∃ a : 𝓞 K, ℚ⟮algebraMap _ K a⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w (algebraMap _ K a) < Real.sqrt (1 + B ^ 2) := by
   have : minkowskiBound K ↑1 <
       volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
@@ -607,7 +607,7 @@ that `|Norm a| < (B / d) ^ d` where `d` is the degree of `K`. -/
 theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
     (h : (minkowskiBound K I) ≤ volume (convexBodySum K B)) :
     ∃ a ∈ (I : FractionalIdeal (𝓞 K)⁰ K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+      |Algebra.norm ℚ (a:K)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
   have hB : 0 ≤ B := by
     contrapose! h
     rw [convexBodySum_volume_eq_zero_of_le_zero K (le_of_lt h)]
@@ -639,7 +639,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K ↑1) ≤ volume (convexBodySum K B)) :
-    ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (algebraMap _ K a)| ≤ (B / (finrank ℚ K)) ^ (finrank ℚ K) := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (algebraMap _ K a)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_of_norm_le K ↑1 h
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, (_root_.map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ _)).mp h_nz, h_bd⟩
