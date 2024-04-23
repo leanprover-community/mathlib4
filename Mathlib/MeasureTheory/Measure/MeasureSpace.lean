@@ -86,7 +86,7 @@ open Set
 open Filter hiding map
 
 open Function MeasurableSpace
-open scoped Classical
+open scoped Classical symmDiff
 open Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
 
 variable {α β γ δ ι R R' : Type*}
@@ -137,12 +137,10 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
   rw [union_comm, inter_comm, measure_union_add_inter t hs, add_comm]
 #align measure_theory.measure_union_add_inter' MeasureTheory.measure_union_add_inter'
 
-open scoped symmDiff in
 lemma measure_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
   simpa only [symmDiff_def, sup_eq_union] using measure_union disjoint_sdiff_sdiff (ht.diff hs)
 
-open scoped symmDiff in
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
   le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
@@ -256,7 +254,6 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
-open scoped symmDiff in
 /-- If the measure of the symmetric difference of two null measurable sets is finite,
 then one has infinite measure if and only if the other does. -/
 theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
@@ -274,7 +271,6 @@ theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : Nu
     ∞ = μ u - μ v :=(WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
     _ ≤ μ (u \ v) := le_measure_diff
 
-open scoped symmDiff in
 /-- If the measure of the symmetric difference of two null measurable sets is finite,
 then one has finite measure if and only if the other does. -/
 theorem Ne.measure_ne_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
