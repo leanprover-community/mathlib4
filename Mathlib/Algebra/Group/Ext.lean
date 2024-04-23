@@ -50,7 +50,7 @@ theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.m
 
 
 @[to_additive]
-theorem CommSemigroup.toSemigroup_injective {M : Type u} [Semigroup M] :
+theorem CommSemigroup.toSemigroup_injective {M : Type u} :
     Function.Injective (@CommSemigroup.toSemigroup M) := by
   rintro ⟨⟩ ⟨⟩ h
   congr
