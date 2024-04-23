@@ -6,9 +6,13 @@ import Archive.PiBase.Properties
 open Topology TopologicalSpace Set
 
 universe u
-variable {X : Type u} [Xtop : TopologicalSpace X]
+variable (X : Type u) [TopologicalSpace X]
 
-theorem πBaseT119 : πBaseP2 X Xtop → πBaseP1 X Xtop := by
-  rw [πBaseP1, πBaseP2]
+namespace πBase
+
+theorem T119 : P2 X → P1 X := by
+  rw [P1, P2]
   intro h
   exact T1Space.t0Space
+
+end πBase
