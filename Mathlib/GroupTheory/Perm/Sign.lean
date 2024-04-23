@@ -594,11 +594,11 @@ theorem sign_sumCongr (σa : Perm α) (σb : Perm β) : sign (sumCongr σa σb) 
   suffices sign (sumCongr σa (1 : Perm β)) = sign σa ∧ sign (sumCongr (1 : Perm α) σb) = sign σb
     by rw [← this.1, ← this.2, ← sign_mul, sumCongr_mul, one_mul, mul_one]
   constructor
-  · refine' σa.swap_induction_on ?_ fun σa' a₁ a₂ ha ih => ?_
+  · refine σa.swap_induction_on ?_ fun σa' a₁ a₂ ha ih => ?_
     · simp
     · rw [← one_mul (1 : Perm β), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_swap_one,
         sign_swap ha, sign_swap (Sum.inl_injective.ne_iff.mpr ha)]
-  · refine' σb.swap_induction_on ?_ fun σb' b₁ b₂ hb ih => ?_
+  · refine σb.swap_induction_on ?_ fun σb' b₁ b₂ hb ih => ?_
     · simp
     · rw [← one_mul (1 : Perm α), ← sumCongr_mul, sign_mul, sign_mul, ih, sumCongr_one_swap,
         sign_swap hb, sign_swap (Sum.inr_injective.ne_iff.mpr hb)]

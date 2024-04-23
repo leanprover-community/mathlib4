@@ -1394,6 +1394,18 @@ theorem IsBigO.trans_tendsto_nhds (hfg : f =O[l] g') {y : F'} (hg : Tendsto g' l
   hfg.trans <| hg.isBigO_one F
 #align asymptotics.is_O.trans_tendsto_nhds Asymptotics.IsBigO.trans_tendsto_nhds
 
+/-- The condition `f = O[𝓝[≠] a] 1` is equivalent to `f = O[𝓝 a] 1`. -/
+lemma isBigO_one_nhds_ne_iff [TopologicalSpace α] {a : α} :
+    f =O[𝓝[≠] a] (fun _ ↦ 1 : α → F) ↔ f =O[𝓝 a] (fun _ ↦ 1 : α → F) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ h.mono nhdsWithin_le_nhds⟩
+  simp only [isBigO_one_iff, IsBoundedUnder, IsBounded, eventually_map] at h ⊢
+  obtain ⟨c, hc⟩ := h
+  use max c ‖f a‖
+  filter_upwards [eventually_nhdsWithin_iff.mp hc] with b hb
+  rcases eq_or_ne b a with rfl | hb'
+  · apply le_max_right
+  · exact (hb hb').trans (le_max_left ..)
+
 end
 
 theorem isLittleO_const_iff {c : F''} (hc : c ≠ 0) :

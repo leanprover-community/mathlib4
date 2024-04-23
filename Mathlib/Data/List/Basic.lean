@@ -307,14 +307,8 @@ instance : IsTrans (List α) Subset where
   trans := fun _ _ _ => List.Subset.trans
 
 #align list.subset_def List.subset_def
-
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
-
-@[deprecated subset_append_of_subset_right]
-theorem subset_append_of_subset_right' (l l₁ l₂ : List α) : l ⊆ l₂ → l ⊆ l₁ ++ l₂ :=
-  subset_append_of_subset_right _
-#align list.subset_append_of_subset_right List.subset_append_of_subset_right'
-
+#align list.subset_append_of_subset_right List.subset_append_of_subset_right
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
@@ -361,17 +355,13 @@ theorem append_eq_has_append {L₁ L₂ : List α} : List.append L₁ L₂ = L�
 -- Porting note: in Std
 #align list.nil_eq_append_iff List.nil_eq_append
 
-theorem append_eq_cons_iff {a b c : List α} {x : α} :
-    a ++ b = x :: c ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
-  cases a <;>
-    simp only [and_assoc, @eq_comm _ c, nil_append, cons_append, cons.injEq, true_and_iff,
-      false_and_iff, exists_false, false_or_iff, or_false_iff, exists_and_left, exists_eq_left']
-#align list.append_eq_cons_iff List.append_eq_cons_iff
+-- 2024-03-24
+@[deprecated] alias append_eq_cons_iff := append_eq_cons
+#align list.append_eq_cons_iff List.append_eq_cons
 
-theorem cons_eq_append_iff {a b c : List α} {x : α} :
-    (x :: c : List α) = a ++ b ↔ a = [] ∧ b = x :: c ∨ ∃ a', a = x :: a' ∧ c = a' ++ b := by
-  rw [eq_comm, append_eq_cons_iff]
-#align list.cons_eq_append_iff List.cons_eq_append_iff
+-- 2024-03-24
+@[deprecated] alias cons_eq_append_iff := cons_eq_append
+#align list.cons_eq_append_iff List.cons_eq_append
 
 #align list.append_eq_append_iff List.append_eq_append_iff
 
@@ -519,21 +509,12 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 #align list.concat_nil List.concat_nil
 #align list.concat_cons List.concat_cons
 
-@[deprecated concat_eq_append]
-theorem concat_eq_append' (a : α) (l : List α) : concat l a = l ++ [a] :=
-  concat_eq_append l a
-#align list.concat_eq_append List.concat_eq_append'
-
+#align list.concat_eq_append List.concat_eq_append
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 #align list.concat_ne_nil List.concat_ne_nil
 #align list.concat_append List.concat_append
-
-@[deprecated length_concat]
-theorem length_concat' (a : α) (l : List α) : length (concat l a) = succ (length l) := by
-  simp only [concat_eq_append, length_append, length]
-#align list.length_concat List.length_concat'
-
+#align list.length_concat List.length_concat
 #align list.append_concat List.append_concat
 
 /-! ### reverse -/
@@ -1346,11 +1327,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
   rw [drop_eq_get_cons h, take, take]
 
-@[deprecated take_one_drop_eq_of_lt_length]
-theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length) :
-    (l.drop n).take 1 = [l.nthLe n h] := take_one_drop_eq_of_lt_length h
-#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length'
-
+#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
 #align list.ext List.ext
 
 -- TODO one may rename ext in the standard library, and it is also not clear
@@ -2654,13 +2631,13 @@ theorem pmap_map {p : β → Prop} (g : ∀ b, p b → γ) (f : α → β) (l H)
 
 theorem pmap_eq_map_attach {p : α → Prop} (f : ∀ a, p a → β) (l H) :
     pmap f l H = l.attach.map fun x => f x.1 (H _ x.2) := by
-  rw [attach, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
+  rw [attach, attachWith, map_pmap]; exact pmap_congr l fun _ _ _ _ => rfl
 #align list.pmap_eq_map_attach List.pmap_eq_map_attach
 
 -- @[simp] -- Porting note (#10959): lean 4 simp can't rewrite with this
 theorem attach_map_coe' (l : List α) (f : α → β) :
     (l.attach.map fun (i : {i // i ∈ l}) => f i) = l.map f := by
-  rw [attach, map_pmap]; exact pmap_eq_map _ _ _ _
+  rw [attach, attachWith, map_pmap]; exact pmap_eq_map _ _ _ _
 #align list.attach_map_coe' List.attach_map_coe'
 
 theorem attach_map_val' (l : List α) (f : α → β) : (l.attach.map fun i => f i.val) = l.map f :=

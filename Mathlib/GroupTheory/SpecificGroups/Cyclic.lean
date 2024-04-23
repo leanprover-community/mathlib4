@@ -340,12 +340,17 @@ lemma IsCyclic.exists_ofOrder_eq_natCard [h : IsCyclic α] : ∃ g : α, orderOf
   exact Nat.card_congr (Equiv.Set.univ α)
 
 @[to_additive]
-lemma IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype [Fintype α] :
+lemma isCyclic_iff_exists_ofOrder_eq_natCard [Finite α] :
     IsCyclic α ↔ ∃ g : α, orderOf g = Nat.card α := by
   refine ⟨fun h ↦ h.exists_ofOrder_eq_natCard, fun h ↦ ?_⟩
   obtain ⟨g, hg⟩ := h
+  cases nonempty_fintype α
   refine isCyclic_of_orderOf_eq_card g ?_
   simp [hg]
+
+@[to_additive (attr := deprecated)] -- 2024-04-20
+protected alias IsCyclic.iff_exists_ofOrder_eq_natCard_of_Fintype :=
+  isCyclic_iff_exists_ofOrder_eq_natCard
 
 section
 

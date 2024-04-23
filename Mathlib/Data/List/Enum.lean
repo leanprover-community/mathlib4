@@ -48,11 +48,13 @@ theorem enum_map_snd (l : List α) : map Prod.snd (enum l) = l :=
 theorem get_enumFrom (l : List α) (n) (i : Fin (l.enumFrom n).length) :
     (l.enumFrom n).get i = (n + i, l.get (i.cast enumFrom_length)) := by
   simp [get_eq_get?]
+#align list.nth_le_enum_from List.get_enumFrom
 
 @[simp]
 theorem get_enum (l : List α) (i : Fin l.enum.length) :
     l.enum.get i = (i.1, l.get (i.cast enum_length)) := by
   simp [enum]
+#align list.nth_le_enum List.get_enum
 
 theorem mk_add_mem_enumFrom_iff_get? {n i : ℕ} {x : α} {l : List α} :
     (n + i, x) ∈ enumFrom n l ↔ l.get? i = x := by
@@ -162,21 +164,6 @@ theorem enumFrom_map (n : ℕ) (l : List α) (f : α → β) :
 theorem enum_map (l : List α) (f : α → β) : (l.map f).enum = l.enum.map (Prod.map id f) :=
   enumFrom_map _ _ _
 #align list.enum_map List.enum_map
-
-set_option linter.deprecated false in
-@[deprecated get_enumFrom]
-theorem nthLe_enumFrom (l : List α) (n i : ℕ) (hi' : i < (l.enumFrom n).length)
-    (hi : i < l.length := (by simpa using hi')) :
-    (l.enumFrom n).nthLe i hi' = (n + i, l.nthLe i hi) :=
-  get_enumFrom ..
-#align list.nth_le_enum_from List.nthLe_enumFrom
-
-set_option linter.deprecated false in
-@[deprecated get_enum]
-theorem nthLe_enum (l : List α) (i : ℕ) (hi' : i < l.enum.length)
-    (hi : i < l.length := (by simpa using hi')) :
-    l.enum.nthLe i hi' = (i, l.nthLe i hi) := get_enum ..
-#align list.nth_le_enum List.nthLe_enum
 
 @[simp]
 theorem enumFrom_eq_nil {n : ℕ} {l : List α} : List.enumFrom n l = [] ↔ l = [] := by
