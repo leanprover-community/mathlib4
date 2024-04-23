@@ -69,10 +69,6 @@ instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete
 variable [CategoryStruct.{v} C]
 
 @[simp]
-lemma Hom (a b : LocallyDiscrete C) : (a ⟶ b) = Discrete (a.as ⟶ b.as) :=
-  rfl
-
-@[simp]
 lemma id_as (a : LocallyDiscrete C) : (𝟙 a : Discrete (a.as ⟶ a.as)).as = 𝟙 a.as :=
   rfl
 
@@ -122,7 +118,7 @@ variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, 
 
 /--
 If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
-be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
+be promoted to a pseudofunctor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
 def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B
@@ -133,9 +129,18 @@ def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B
   mapId i := eqToIso (F.map_id i.as)
   mapComp f g := eqToIso (F.map_comp f.as g.as)
 
-@[simps!]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B :=
-  Functor.toPseudoFunctor F
+/--
+If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categories) `I ⥤ B` can
+be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
+-/
+@[simps]
+def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
+    where
+  obj i := F.obj i.as
+  map f := F.map f.as
+  map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
+  mapId i := eqToHom (F.map_id i.as)
+  mapComp f g := eqToHom (F.map_comp f.as g.as)
 #align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
 end CategoryTheory
