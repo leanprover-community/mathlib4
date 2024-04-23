@@ -8,7 +8,11 @@ import Mathlib.Data.Nat.Lattice
 #align_import ring_theory.nilpotent from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
 /-!
-# Nilpotent elements
+# Definition of nilpotent elements
+
+This file defines the notion of a nilpotent element and proves the immediate consequences.
+For results that require further theory, see `Mathlib.RingTheory.Nilpotent.Basic`
+and `Mathlib.RingTheory.Nilpotent.Lemmas`.
 
 ## Main definitions
 
