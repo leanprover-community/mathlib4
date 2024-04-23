@@ -12,7 +12,7 @@ import Mathlib.LinearAlgebra.TensorProduct.Tower
 
 A perfect pairing of two (left) modules may be defined either as:
  1. A bilinear map `M × N → R` such that the induced maps `M → Dual R N` and `N → Dual R M` are both
-    bijective. (It follows from this that both `M` and `N` are both reflexive modules.)
+    bijective. It follows from this that both `M` and `N` are reflexive modules.
  2. A linear equivalence `N ≃ Dual R M` for which `M` is reflexive. (It then follows that `N` is
     reflexive.)
 
@@ -23,6 +23,8 @@ to connect 1 and 2.
 
  * `PerfectPairing`
  * `PerfectPairing.flip`
+ * `PerfectPairing.toDualLeft`
+ * `PerfectPairing.toDualRight`
  * `LinearEquiv.flip`
  * `LinearEquiv.isReflexive_of_equiv_dual_of_isReflexive`
  * `LinearEquiv.toPerfectPairing`
@@ -62,36 +64,38 @@ protected def flip : PerfectPairing R N M where
 section reflexive
 
 /-- The linear equivalence from `M` to `Dual R N` induced by a perfect pairing. -/
-@[simps]
-noncomputable def toDualLeft : M ≃ₗ[R] Dual R N where
-  toFun := p.toLin
-  map_add' := LinearMap.map_add p.toLin
-  map_smul' := LinearMapClass.map_smul p.toLin
-  invFun f := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose f
-  left_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.1
-  right_inv := (bijective_iff_has_inverse.mp p.bijectiveLeft).choose_spec.2
+noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
+  LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
-theorem toDualLeft_invFun (f : Dual R N) (x : N) : p.toLin (p.toDualLeft.invFun f) x = f x := by
-  have h := p.toDualLeft.right_inv
-  rw [rightInverse_iff_comp, funext_iff] at h
-  specialize h f
-  simp_all
+@[simp]
+theorem toDualLeft_apply (a : M) : p.toDualLeft a = p.toLin a :=
+  rfl
+
+@[simp]
+theorem apply_toDualLeft_symm_apply (f : Dual R N) (x : N) : p (p.toDualLeft.symm f) x = f x := by
+  have h := LinearEquiv.apply_symm_apply p.toDualLeft f
+  rw [toDualLeft_apply] at h
+  exact congrFun (congrArg DFunLike.coe h) x
 
 /-- The linear equivalence from `N` to `Dual R M` induced by a perfect pairing. -/
 noncomputable def toDualRight : N ≃ₗ[R] Dual R M := toDualLeft p.flip
 
-theorem toDualRight_InvFun (x : M) (f : Dual R M) : (p.toLin x) (p.toDualRight.invFun f) = f x := by
-  have h := p.toDualRight.right_inv
-  rw [rightInverse_iff_comp, funext_iff] at h
-  specialize h f
-  simp_all [toDualLeft_invFun, toDualRight]
-  rw [LinearMap.ext_iff] at h
-  exact h x
+
+@[simp]
+theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip.toLin a :=
+  rfl
+
+@[simp]
+theorem apply_apply_toDualRight_symm (x : M) (f : Dual R M) :
+    (p x) (p.toDualRight.symm f) = f x := by
+  have h := LinearEquiv.apply_symm_apply p.toDualRight f
+  rw [toDualRight_apply] at h
+  exact congrFun (congrArg DFunLike.coe h) x
 
 theorem toDualLeft_of_toDualRightInvFun (x : M) (f : Dual R M) :
     (p.toDualLeft x) (p.toDualRight.invFun f) = f x := by
   rw [@toDualLeft_apply]
-  exact toDualRight_InvFun p x f
+  exact apply_apply_toDualRight_symm p x f
 
 theorem toDualRight_symm_toDualLeft (x : M) :
     p.toDualRight.symm.dualMap (p.toDualLeft x) = Dual.eval R M x := by
@@ -114,73 +118,9 @@ theorem reflexive_left : IsReflexive R M where
       simp_rw [← toDualRight_symm_toDualLeft p]
       apply (bijective_toDualRight_symm_toDualLeft p).2
 
-theorem reflexive_right : IsReflexive R N := reflexive_left (p := p.flip)
+theorem reflexive_right : IsReflexive R N := reflexive_left p.flip
 
 end reflexive
-
-section baseChange
-
-variable {S : Type*} [CommRing S] [Algebra R S] (P : PerfectPairing R M N)
-
-open TensorProduct
-/-!
-
-revision: I think this may fail for non-flat base change!
-also, it might be better to skip curry/uncurry - just base change via
-TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S) p.toLin to
-  S ⊗[R] M →ₗ[S] (S ⊗[R] (N →ₗ[R] R))
-and compose with the equiv ???
-  (S ⊗[R] (N →ₗ[R] R)) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S ⊗[R] R) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S)
-We may even have base change of duals already!
-
-TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
-
-/-- The base chage of a perfect pairing`. -/
-noncomputable def baseChange : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N)
-    where
-  toLin := TensorProduct.curry (TensorProduct.AlgebraTensorModule.rid R S S
-    ∘ₗ TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
-      ((TensorProduct.uncurry R M N R) P.toLin)
-    ∘ₗ ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N)
-    ≪≫ₗ (TensorProduct.AlgebraTensorModule.congr
-      (TensorProduct.rid S S) (LinearEquiv.refl R (M ⊗[R] N)))))
-  bijectiveLeft := sorry
-  bijectiveRight := sorry
-
-
-TensorProduct.AlgebraTensorModule.map (RingHom.id S) ((TensorProduct.uncurry R M N R) P.toLin) :
-  S ⊗[R] M ⊗[R] N →ₗ[S] S ⊗[R] R
-so compose on left with TensorProduct.AlgebraTensorModule.rid R S S :
-  S ⊗[R] R ≃ₗ[A] S,
-on the right with
-  (S ⊗[R] M) ⊗[S] (S ⊗[R] N) →ₗ[S] S) ≃ S ⊗[R] M ⊗[R] N
-which is TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N :
-  (S ⊗[R] M) ⊗[S] (S ⊗[R] N) ≃ₗ[S] (S ⊗[S] S) ⊗[R] (M ⊗[R] N)
-followed by
-  TensorProduct.AlgebraTensorModule.congr TensorProduct.lid (LinearEquiv.refl R (M ⊗[R] N)) :
-  (S ⊗[S] S) ⊗[R] (M ⊗[R] N) → S ⊗[R] M ⊗[R] N
-then curry
-
-/-- just copied -/
-def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
-  ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
-    ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm).toLinearMap
-  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
-  ∘ₗ (TensorProduct.AlgebraTensorModule.congr
-    (TensorProduct.lift.equiv A M₁ M₁ A)
-    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
-
-/-- just copied -/
-protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
-  tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
-
-/-- just copied -/
-protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
-  BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
-
--/
-
-end baseChange
 
 end PerfectPairing
 
@@ -262,3 +202,116 @@ lemma dualAnnihilator_map_linearEquiv_flip_symm (p : Submodule R (Dual R N)) :
   rw [← map_dualCoannihilator_linearEquiv_flip, flip_flip]
 
 end Submodule
+
+
+section baseChange
+/-!
+We have a correspondence between reflexive modules and perfect pairings.  Unfortunately, reflexivity
+is not preserved under arbitrary base change, so we need to assume the base change of `M` is
+reflexive.
+-/
+open TensorProduct
+
+variable {S : Type*} [CommRing S] [Algebra R S] (p : PerfectPairing R M N)
+(hSM : IsReflexive S (S ⊗[R] M))
+
+namespace PerfectPairing
+
+/-- The first step in a base change. -/
+noncomputable def baseChange1 : S ⊗[R] M ≃ₗ[S] (S ⊗[R] (N →ₗ[R] R)) :=
+  TensorProduct.AlgebraTensorModule.congr
+      (LinearEquiv.refl S S) p.toDualLeft
+
+/-- The second step in a base change. -/
+noncomputable def self_module_hom : (S →ₗ[S] S) ≃ₗ[S] S :=
+  LinearMap.ringLmapEquivSelf S S S
+  --((Module.moduleEndSelf S).toLinearEquiv xxx).symm ≪≫ₗ (MulOpposite.opLinearEquiv S).symm
+
+
+/-- The third step in a base change. -/
+noncomputable def baseChange3 : (S →ₗ[S] S) ⊗[R] (N →ₗ[R] R) →ₗ[S] (S ⊗[R] N →ₗ[S] S ⊗[R] R) :=
+  TensorProduct.AlgebraTensorModule.homTensorHomMap R S S S N S R
+
+
+/-!
+  TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
+
+(S ⊗[R] (N →ₗ[R] R)) ≃ₗ[S] ((S ⊗[R] N) →ₗ[S] (S ⊗[R] R))
+
+noncomputable def LinearEquiv.rTensor (e : M ≃ₗ[R] N)   :
+    M ⊗[R] P ≃ₗ[R] N ⊗[R] P := TensorProduct.congr e (refl R P)
+LinearEquiv.refl
+noncomputable def baseChange : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N)
+    where
+  toLin := TensorProduct.AlgebraTensorModule.homTensorHomMap R S S S N S R
+    ∘ₗ (TensorProduct.AlgebraTensorModule.map
+      (Module.moduleEndSelf S ∘ₗ MulOpposite.opLinearEquiv S) (LinearEquiv.refl R (N →ₗ[R] R)))
+    ∘ₗ (TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S) p.toLin)
+  bijectiveLeft := sorry
+  bijectiveRight := sorry
+
+LinearEquiv.smulOfUnit : inverse to (S →ₗ[S] S) ≃ₗ[S] S
+
+revision: I think this may fail for non-flat base change!
+also, it might be better to skip curry/uncurry - just base change via
+TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S) p.toLin to
+  S ⊗[R] M →ₗ[S] (S ⊗[R] (N →ₗ[R] R))
+and compose with the equiv ???
+  (S ⊗[R] (N →ₗ[R] R)) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S ⊗[R] R) ≃ₗ[S] (S ⊗[R] N →ₗ[S] S)
+We may even have base change of duals already!
+Hm. I don't have the left map, but I do have TensorProduct.AlgebraTensorModule.homTensorHomMap
+  (S →ₗ[S] S) ⊗[R] (N →ₗ[R] R)) →ₗ[S] (S ⊗[R] N →ₗ[S] S ⊗[R] R)
+so I left-compose with
+TensorProduct.AlgebraTensorModule.map ??? (LinearEquiv.refl R (N →ₗ[R] R))
+  (S ⊗[R] (N →ₗ[R] R)) ≃ₗ[S] (S →ₗ[S] S) ⊗[R] (N →ₗ[R] R))
+
+
+TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
+
+/-- The base chage of a perfect pairing`. -/
+noncomputable def baseChange : PerfectPairing S (S ⊗[R] M) (S ⊗[R] N)
+    where
+  toLin := TensorProduct.curry (TensorProduct.AlgebraTensorModule.rid R S S
+    ∘ₗ TensorProduct.AlgebraTensorModule.map (LinearEquiv.refl S S)
+      ((TensorProduct.uncurry R M N R) P.toLin)
+    ∘ₗ ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N)
+    ≪≫ₗ (TensorProduct.AlgebraTensorModule.congr
+      (TensorProduct.rid S S) (LinearEquiv.refl R (M ⊗[R] N)))))
+  bijectiveLeft := sorry
+  bijectiveRight := sorry
+
+
+TensorProduct.AlgebraTensorModule.map (RingHom.id S) ((TensorProduct.uncurry R M N R) P.toLin) :
+  S ⊗[R] M ⊗[R] N →ₗ[S] S ⊗[R] R
+so compose on left with TensorProduct.AlgebraTensorModule.rid R S S :
+  S ⊗[R] R ≃ₗ[A] S,
+on the right with
+  (S ⊗[R] M) ⊗[S] (S ⊗[R] N) →ₗ[S] S) ≃ S ⊗[R] M ⊗[R] N
+which is TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R S S M S N :
+  (S ⊗[R] M) ⊗[S] (S ⊗[R] N) ≃ₗ[S] (S ⊗[S] S) ⊗[R] (M ⊗[R] N)
+followed by
+  TensorProduct.AlgebraTensorModule.congr TensorProduct.lid (LinearEquiv.refl R (M ⊗[R] N)) :
+  (S ⊗[S] S) ⊗[R] (M ⊗[R] N) → S ⊗[R] M ⊗[R] N
+then curry
+
+/-- just copied -/
+def tensorDistrib : BilinForm A M₁ ⊗[R] BilinForm R M₂ →ₗ[A] BilinForm A (M₁ ⊗[R] M₂) :=
+  ((TensorProduct.AlgebraTensorModule.tensorTensorTensorComm R A M₁ M₂ M₁ M₂).dualMap
+    ≪≫ₗ (TensorProduct.lift.equiv A (M₁ ⊗[R] M₂) (M₁ ⊗[R] M₂) A).symm).toLinearMap
+  ∘ₗ TensorProduct.AlgebraTensorModule.dualDistrib R _ _ _
+  ∘ₗ (TensorProduct.AlgebraTensorModule.congr
+    (TensorProduct.lift.equiv A M₁ M₁ A)
+    (TensorProduct.lift.equiv R _ _ _)).toLinearMap
+
+/-- just copied -/
+protected def tmul (B₁ : BilinForm A M₁) (B₂ : BilinForm R M₂) : BilinForm A (M₁ ⊗[R] M₂) :=
+  tensorDistrib R A (B₁ ⊗ₜ[R] B₂)
+
+/-- just copied -/
+protected def baseChange (B : BilinForm R M₂) : BilinForm A (A ⊗[R] M₂) :=
+  BilinForm.tmul (R := R) (A := A) (M₁ := A) (M₂ := M₂) (LinearMap.mul A A) B
+
+-/
+end PerfectPairing
+
+end baseChange
