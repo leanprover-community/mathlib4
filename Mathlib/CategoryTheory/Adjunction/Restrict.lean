@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Adjunction.Basic
 
-namespace CategoryTheory
+namespace CategoryTheory.Adjunction
 
 universe v₁ v₂ u₁ u₂ v₃ v₄ u₃ u₄
 
@@ -28,7 +28,7 @@ The construction here is slightly more general, in that `C` is required only to 
 faithful "inclusion" functor `iC : C ⥤ C'` (and similarly `iD : D ⥤ D'`) which commute (up to
 natural isomorphism) with the proposed restrictions.
 -/
-def Adjunction.restrictFullyFaithful : L ⊣ R :=
+def restrictFullyFaithful : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
         calc
