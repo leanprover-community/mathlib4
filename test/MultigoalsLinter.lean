@@ -49,3 +49,8 @@ example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   refine Or.inl ⟨?_, ?_⟩
   rfl
   assumption
+
+example (p : Bool) : 0 = 0 := by
+  cases p
+  case' false => rfl
+  case' true => rfl
