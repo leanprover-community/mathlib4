@@ -41,10 +41,11 @@ set_option linter.multiGoal true in
 /--
 warning: 'rfl' leaves 1 goal 'Lean.Parser.Tactic.tacticRfl' [linter.multiGoal]
 -/
--- the linter allows `iterate`, but continues to lint.
+-- the linter allows `iterate` and `repeat'`, but continues to lint.
 #guard_msgs in
 example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
   iterate left; decide
+  repeat' left; decide
   refine Or.inl ⟨?_, ?_⟩
   rfl
   assumption
