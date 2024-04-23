@@ -68,29 +68,56 @@ syntax (name := dischargeConv) "discharge" (" => " tacticSeq)? : conv
 /-- Use `refine` in `conv` mode. -/
 macro "refine " e:term : conv => `(conv| tactic => refine $e)
 
-open Elab Tactic
+open Elab Term Tactic
 /--
-The command `#conv tac => e` will run a conv tactic `tac` on `e`, and display the resulting
+The term elaborator `conv% tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `#conv rw [true_and] => True ∧ False` displays `False`.
-There are also shorthand commands for several common conv tactics:
+For example, `conv% rw [true_and] => True ∧ False` elaborates to `False`.
 
-* `#whnf e` is short for `#conv whnf => e`
-* `#simp e` is short for `#conv simp => e`
-* `#norm_num e` is short for `#conv norm_num => e`
-* `#push_neg e` is short for `#conv push_neg => e`
+`conv%? tac => e` shows the resulting term.
+
+There are also shorthand term elaborators for several common conv tactics:
+
+* `simp% e` is short for `conv% simp => e`
+* `norm_num% e` is short for `conv% norm_num => e`
+* `push_neg% e` is short for `conv% push_neg => e`
 -/
-elab tk:"#conv " conv:conv " => " e:term : command =>
-  Command.runTermElabM fun _ ↦ do
-    let e ← Elab.Term.elabTermAndSynthesize e none
+syntax (name := convTerm) "conv% " term " => " conv : term
+
+/-- Elaborates syntax of the form `conv% $conv:conv => $e:term`. -/
+@[term_elab convTerm]
+def elabConvTerm : Term.TermElab
+  | `(term|conv% $e:term => $conv:conv), ty? => do
+    let e ← Elab.Term.elabTermAndSynthesize e ty?
     let (rhs, g) ← Conv.mkConvGoalFor e
-    _ ← Tactic.run g.mvarId! do
+    let gs ← Tactic.run g.mvarId! do
       evalTactic conv
       for mvarId in (← getGoals) do
         liftM <| mvarId.refl <|> mvarId.inferInstance <|> pure ()
       pruneSolvedGoals
-      let e' ← instantiateMVars rhs
-      logInfoAt tk e'
+    match gs with
+    | [] => instantiateMVars rhs
+    | gs => throwError "conv failed, there are unsolved goals\n{goalsToMessageData gs}"
+  | _, _ => throwUnsupportedSyntax
+
+@[inherit_doc convTerm]
+macro tk:"conv%? " e:term " => " conv:conv : term => `(term|show_term conv%%$tk $e => $conv)
+
+/--
+The command `#conv e => tac` will run a conv tactic `tac` on `e`, and display the resulting
+expression (discarding the proof).
+For example, `#conv True ∧ False => rw [true_and]` displays `False`.
+There are also shorthand commands for several common conv tactics:
+
+* `#whnf e` is short for `#conv e => whnf`
+* `#simp e` is short for `#conv e => simp`
+* `#norm_num e` is short for `#conv e => norm_num`
+* `#push_neg e` is short for `#conv e => push_neg`
+-/
+elab tk:"#conv " e:term " => " conv:conv : command =>
+  Command.runTermElabM fun _ ↦ do
+    let e' ← elabConvTerm (← `(term|conv% $e => $conv)) none
+    logInfoAt tk e'
 
 @[inherit_doc Parser.Tactic.withReducible]
 macro (name := withReducible) tk:"with_reducible " s:convSeq : conv =>
@@ -114,22 +141,42 @@ so we can see from this much that the list is not empty,
 but the subterms `Nat.succ 1` and `List.map Nat.succ (List.cons 2 (List.cons 3 List.nil))` are
 still unevaluated. `#reduce` is equivalent to using `#whnf` on every subexpression.
 -/
-macro tk:"#whnf " e:term : command => `(command| #conv%$tk whnf => $e)
+macro tk:"#whnf " e:term : command => `(command| #conv%$tk $e => whnf)
 
 /--
 The command `#whnfR e` evaluates `e` to Weak Head Normal Form with Reducible transparency,
 that is, it uses `whnf` but only unfolding reducible definitions.
 -/
-macro tk:"#whnfR " e:term : command => `(command| #conv%$tk with_reducible whnf => $e)
+macro tk:"#whnfR " e:term : command => `(command| #conv%$tk $e => with_reducible whnf)
 
 /--
-* `#simp => e` runs `simp` on the expression `e` and displays the resulting expression after
+* `simp% e` runs `simp` on the expression `e` and displays the resulting expression after
   simplification.
-* `#simp only [lems] => e` runs `simp only [lems]` on `e`.
-* The `=>` is optional, so `#simp e` and `#simp only [lems] e` have the same behavior.
+* `simp% only [lems] on e` runs `simp only [lems]` on `e`.
+* The `on` is optional, so `simp% only [lems] e` and `simp% only [lems] on e` have the same
+  behavior. It is mostly useful for disambiguating the expression `e` from the lemmas.
+* `simp%?` shows the simplified term via `show_term` (not the used `simp` lemmas).
+-/
+syntax (name := simpTerm) "simp%"  (&" only")? (simpArgs)? " on"? ppSpace term : term
+
+@[inherit_doc simpTerm]
+syntax "simp%?" (&" only")? (simpArgs)? " on"? ppSpace term : term
+
+macro_rules
+  | `(term|simp%%$tk $[only%$o]? $[[$args,*]]? $[on]? $e:term) =>
+    `(term|conv%%$tk $e => simp $[only%$o]? $[[$args,*]]?)
+  | `(term|simp%?%$tk $[only%$o]? $[[$args,*]]? $[on]? $e:term) =>
+    `(term|conv%?%$tk $e => simp $[only%$o]? $[[$args,*]]? )
+
+/--
+* `#simp on e` runs `simp` on the expression `e` and displays the resulting expression after
+  simplification.
+* `#simp only [lems] on e` runs `simp only [lems]` on `e`.
+* The `on` is optional, so `#simp e` and `#simp only [lems] e` have the same behavior.
   It is mostly useful for disambiguating the expression `e` from the lemmas.
 -/
-syntax "#simp" (&" only")? (simpArgs)? " =>"? ppSpace term : command
+syntax "#simp" (&" only")? (simpArgs)? " on"? ppSpace term : command
+
 macro_rules
-  | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[=>]? $e) =>
-    `(#conv%$tk simp $[only%$o]? $[[$args,*]]? => $e)
+  | `(#simp%$tk $[only%$o]? $[[$args,*]]? $[on]? $e) =>
+    `(#conv%$tk $e => simp $[only%$o]? $[[$args,*]]? )
