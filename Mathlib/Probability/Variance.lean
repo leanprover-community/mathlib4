@@ -226,13 +226,13 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
       exact le_rfl
     · rw [integral_undef]
       · exact integral_nonneg fun a => sq_nonneg _
-      · intro h
-        have A : Memℒp (X - fun ω : Ω => 𝔼[X]) 2 ℙ :=
-          (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
-        have B : Memℒp (fun _ : Ω => 𝔼[X]) 2 ℙ := memℒp_const _
-        apply hX
-        convert A.add B
-        simp
+      intro h
+      have A : Memℒp (X - fun ω : Ω => 𝔼[X]) 2 ℙ :=
+        (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
+      have B : Memℒp (fun _ : Ω => 𝔼[X]) 2 ℙ := memℒp_const _
+      apply hX
+      convert A.add B
+      simp
   · exact @ae_of_all _ (_) _ _ fun x => sq_nonneg _
   · exact (AEMeasurable.pow_const (hm.aemeasurable.sub_const _) _).aestronglyMeasurable
 #align probability_theory.variance_le_expectation_sq ProbabilityTheory.variance_le_expectation_sq

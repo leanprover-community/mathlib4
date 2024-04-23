@@ -207,7 +207,8 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
       Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
       LinearIsometryEquiv.norm_map]
     conv_rhs =>
-      rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs, abs_mul_abs_self]
+      rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs,
+        abs_mul_abs_self]
     ring
   · simpa using h.symm
 #align euclidean_geometry.sphere.dist_div_cos_oangle_center_div_two_eq_radius EuclideanGeometry.Sphere.dist_div_cos_oangle_center_div_two_eq_radius
