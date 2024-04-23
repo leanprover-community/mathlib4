@@ -60,6 +60,11 @@ lemma ad_ker_eq_center : (ad R L).ker = LieAlgebra.center R L := by
   rw [← LieAlgebra.self_module_ker_eq_center, LieHom.mem_ker, LieModule.mem_ker]
   simp [DFunLike.ext_iff]
 
+/-- If the center of a Lie algebra is trivial, then the adjoint action is injective. -/
+lemma injective_ad_of_center_eq_bot (h : LieAlgebra.center R L = ⊥) :
+    Function.Injective (ad R L) := by
+  rw [← LieHom.ker_eq_bot, ad_ker_eq_center, h]
+
 /-- The commutator of a derivation `D` and a derivation of the form `ad x` is `ad (D x)`. -/
 lemma lie_der_ad_eq_ad_der (D : LieDerivation R L L) (x : L) : ⁅D, ad R L x⁆ = ad R L (D x) := by
   ext a
