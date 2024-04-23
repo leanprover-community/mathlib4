@@ -10,10 +10,8 @@ import Mathlib.Data.Matroid.Restrict
 
 ## Main definitions
 
-* `indepMatroidDirectSum` constructs an `IndepMatroid` that is the direct sum of two `IndepMatroid`
-  instances on disjoint ground sets
-* `matroidDirectSum` constructs a `Matroid` that is the direct sum of two `Matroid` instances on
-  disjoint ground sets (a wrapper around `indepMatroidDirectSum`)
+* `Matroid.directSum` constructs a matroid that is the direct sum of two matroids on disjoint
+  ground sets of the same type
 -/
 
 variable {α : Type*}
@@ -165,7 +163,8 @@ lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
       · exact hB₂ hB.rightIndep (Set.inter_subset_inter_left M₂.E hIB)
 
 /-- Direct sum of matroids as a matroid defined by the independence axioms. -/
-def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) : IndepMatroid α :=
+private def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) :
+    IndepMatroid α :=
   IndepMatroid.mk
     (M₁.E ∪ M₂.E)
     (indepDirectSum hME)
@@ -271,6 +270,6 @@ def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E
     (fun _ => (·.ground))
 
 /-- Direct sum of matroids as a matroid. -/
-def matroidDirectSum {M₁ M₂ : Matroid α} (hME : M₁.E ∩ M₂.E = ∅) : Matroid α :=
+def Matroid.directSum {M₁ M₂ : Matroid α} (hME : M₁.E ∩ M₂.E = ∅) : Matroid α :=
   (indepMatroidDirectSum hME').matroid where
   hME' : (M₁.restrictIndepMatroid _).E ∩ (M₂.restrictIndepMatroid _).E = ∅ := hME
