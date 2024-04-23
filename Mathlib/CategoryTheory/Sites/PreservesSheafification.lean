@@ -3,6 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
+import Mathlib.CategoryTheory.Sites.Localization
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
 import Mathlib.CategoryTheory.Sites.LeftExact
 import Mathlib.CategoryTheory.Sites.Sheafification
@@ -31,7 +32,106 @@ namespace CategoryTheory
 open CategoryTheory Category Limits
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-  {A B : Type*} [Category A] [Category B]
+  {A B : Type*} [Category A] [Category B] (F : A ⥤ B)
+
+namespace GrothendieckTopology
+
+/-- A functor `F : A ⥤ B` preserves the sheafification for the Grothendieck
+topology `J` on a category `C` if whenever a morphism of presheaves `f : P₁ ⟶ P₂`
+in `Cᵒᵖ ⥤ A` is such that becomes an iso after sheafification, then it is
+also the case of `whiskerRight f F : P₁ ⋙ F ⟶ P₂ ⋙ F`. -/
+class PreservesSheafification : Prop where
+  le : J.W ⊆ J.W.inverseImage ((whiskeringRight Cᵒᵖ A B).obj F)
+
+variable [PreservesSheafification J F]
+
+lemma W_of_preservesSheafification
+    {P₁ P₂ : Cᵒᵖ ⥤ A} (f : P₁ ⟶ P₂) (hf : J.W f) :
+    J.W (whiskerRight f F) :=
+  PreservesSheafification.le _ hf
+
+variable [HasWeakSheafify J B]
+
+lemma W_isInvertedBy_whiskeringRight_presheafToSheaf :
+    J.W.IsInvertedBy (((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B) := by
+  intro P₁ P₂ f hf
+  dsimp
+  rw [← W_iff]
+  exact J.W_of_preservesSheafification F _ hf
+
+end GrothendieckTopology
+
+variable [HasWeakSheafify J A] [HasWeakSheafify J B]
+
+/-- The functor `Sheaf J A ⥤ Sheaf J B` induced by a functor `F : A ⥤ B` which
+preserves sheafification. -/
+noncomputable def sheafCompose' [J.PreservesSheafification F] : Sheaf J A ⥤ Sheaf J B :=
+  Localization.lift _ (J.W_isInvertedBy_whiskeringRight_presheafToSheaf F) (presheafToSheaf J A)
+
+/-- The canonical isomorphism between `presheafToSheaf J A ⋙ sheafCompose' J F`
+and `((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B` when `F : A ⥤ B`
+preserves sheafification. -/
+noncomputable def presheafToSheafCompSheafCompose' [J.PreservesSheafification F] :
+    presheafToSheaf J A ⋙ sheafCompose' J F ≅
+      ((whiskeringRight Cᵒᵖ A B).obj F) ⋙ presheafToSheaf J B :=
+  Localization.fac _ _ _
+
+variable {G₁ : (Cᵒᵖ ⥤ A) ⥤ Sheaf J A} (adj₁ : G₁ ⊣ sheafToPresheaf J A)
+  {G₂ : (Cᵒᵖ ⥤ B) ⥤ Sheaf J B} (adj₂ : G₂ ⊣ sheafToPresheaf J B)
+
+lemma GrothendieckTopology.preservesSheafification_iff_of_adjunctions :
+    J.PreservesSheafification F ↔ ∀ (P : Cᵒᵖ ⥤ A),
+      IsIso (G₂.map (whiskerRight (adj₁.unit.app P) F)) := by
+  simp only [← J.W_iff_isIso_map_of_adjunction adj₂]
+  constructor
+  · intro _ P
+    apply W_of_preservesSheafification
+    rw [J.W_iff_isIso_map_of_adjunction adj₁]
+    infer_instance
+  · intro h
+    constructor
+    intro P₁ P₂ f hf
+    rw [J.W_iff_isIso_map_of_adjunction adj₁] at hf
+    dsimp [MorphismProperty.inverseImage]
+    rw [← J.W_postcomp_iff _ _ (h P₂), ← whiskerRight_comp]
+    erw [adj₁.unit.naturality f]
+    dsimp only [Functor.comp_map]
+    rw [whiskerRight_comp, J.W_precomp_iff _ _ (h P₁)]
+    apply J.W_of_isIso
+
+section HasSheafCompose
+
+variable [J.HasSheafCompose F]
+
+end HasSheafCompose
+
+#exit
+
+/-- Given a Grothendieck topology `J` on `C`, and `F : A ⥤ B`, this is the natural
+transformation defined for any presheaf `P : Cᵒᵖ ⥤ A`, from the associated sheaf of `P ⋙ B`
+to the postcomposition with `F` of the associated sheaf of `P`. -/
+noncomputable def presheafToSheafCompose :
+    (whiskeringRight Cᵒᵖ A B).obj F ⋙ presheafToSheaf J B ⟶
+      presheafToSheaf J A ⋙ sheafCompose J F where
+  app P := ((sheafificationAdjunction J B).homEquiv _ _).symm (whiskerRight (toSheafify J P) F)
+  naturality {P Q} f := by
+    dsimp
+    erw [← Adjunction.homEquiv_naturality_left_symm,
+      ← Adjunction.homEquiv_naturality_right_symm]
+    dsimp
+    rw [← whiskerRight_comp, ← whiskerRight_comp, toSheafify_naturality]
+
+
+def sheafCompose'Iso : sheafCompose' J F ≅ sheafCompose J F :=
+  Localization.liftNatIso (presheafToSheaf J A) J.W
+    (presheafToSheaf J A ⋙ sheafCompose' J F) (presheafToSheaf J A ⋙ sheafCompose J F) _ _
+      (presheafToSheafCompSheafCompose' J F ≪≫ (by
+        sorry))
+
+end HasSheafCompose
+
+#exit
+
 
 section
 
