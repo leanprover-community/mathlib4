@@ -139,7 +139,7 @@ instance instHaveLebesgueDecompositionZeroRight : HaveLebesgueDecomposition μ 0
 instance instHaveLebesgueDecompositionSelf : HaveLebesgueDecomposition μ μ where
   lebesgue_decomposition := ⟨⟨0, 1⟩, measurable_const, MutuallySingular.zero_left, by simp⟩
 
-instance haveLebesgueDecompositionSmul' (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMul' (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0∞) : (r • μ).HaveLebesgueDecomposition ν where
   lebesgue_decomposition := by
     obtain ⟨hmeas, hsing, hadd⟩ := haveLebesgueDecomposition_spec μ ν
@@ -147,12 +147,12 @@ instance haveLebesgueDecompositionSmul' (μ ν : Measure α) [HaveLebesgueDecomp
     simp only [ENNReal.smul_def]
     rw [withDensity_smul _ hmeas, ← smul_add, ← hadd]
 
-instance haveLebesgueDecompositionSmul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMul (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) : (r • μ).HaveLebesgueDecomposition ν := by
   rw [ENNReal.smul_def]; infer_instance
-#align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecompositionSmul
+#align measure_theory.measure.have_lebesgue_decomposition_smul MeasureTheory.Measure.haveLebesgueDecompositionSMul
 
-instance haveLebesgueDecompositionSmulRight (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
+instance haveLebesgueDecompositionSMulRight (μ ν : Measure α) [HaveLebesgueDecomposition μ ν]
     (r : ℝ≥0) :
     μ.HaveLebesgueDecomposition (r • ν) where
   lebesgue_decomposition := by
