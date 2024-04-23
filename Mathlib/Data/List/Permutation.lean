@@ -103,7 +103,8 @@ theorem map_permutationsAux2' {α β α' β'} (g : α → α') (g' : β → β')
 /-- The `f` argument to `permutationsAux2` when `r = []` can be eliminated. -/
 theorem map_permutationsAux2 (t : α) (ts : List α) (ys : List α) (f : List α → β) :
     (permutationsAux2 t ts [] ys id).2.map f = (permutationsAux2 t ts [] ys f).2 := by
-  rw [map_permutationsAux2' id, map_id, map_id]; · rfl
+  rw [map_permutationsAux2' id, map_id, map_id]
+  · rfl
   simp
 #align list.map_permutations_aux2 List.map_permutationsAux2
 

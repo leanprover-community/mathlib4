@@ -129,7 +129,8 @@ def gluedScheme : Scheme := by
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
   refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
-  swap; · exact (D.U i).affineCover.map y
+  swap
+  · exact (D.U i).affineCover.map y
   constructor
   · dsimp [-Set.mem_range]
     rw [coe_comp, Set.range_comp]

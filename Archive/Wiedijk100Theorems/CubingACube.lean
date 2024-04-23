@@ -199,7 +199,9 @@ theorem w_ne_one [Nontrivial ι] (i : ι) : (cs i).w ≠ 1 := by
   have h2p : p ∈ (cs i).toSet := by
     intro j; constructor
     trans (0 : ℝ)
-    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h; (· rw [hi]); rw [zero_add]
+    · rw [← add_le_add_iff_right (1 : ℝ)]; convert b_add_w_le_one h
+      · rw [hi]
+      · rw [zero_add]
     · apply zero_le_b h
     · apply lt_of_lt_of_le (side_subset h <| (cs i').b_mem_side j).2
       simp [hi, zero_le_b h]
@@ -214,7 +216,9 @@ theorem shiftUp_bottom_subset_bottoms (hc : (cs i).xm ≠ 1) :
   have : p ∈ (unitCube : Cube (n + 1)).toSet := by
     simp only [toSet, forall_fin_succ, hp0, side_unitCube, mem_setOf_eq, mem_Ico, head_shiftUp]
     refine' ⟨⟨_, _⟩, _⟩
-    · rw [← zero_add (0 : ℝ)]; apply add_le_add; (· apply zero_le_b h); apply (cs i).hw'
+    · rw [← zero_add (0 : ℝ)]; apply add_le_add
+      · apply zero_le_b h
+      · apply (cs i).hw'
     · exact lt_of_le_of_ne (b_add_w_le_one h) hc
     intro j; exact side_subset h (hps j)
   rw [← h.2, mem_iUnion] at this; rcases this with ⟨i', hi'⟩
@@ -256,11 +260,15 @@ theorem valley_unitCube [Nontrivial ι] (h : Correct cs) : Valley cs unitCube :=
     intro h0 hv
     have : v ∈ (unitCube : Cube (n + 1)).toSet := by
       dsimp only [toSet, unitCube, mem_setOf_eq]
-      rw [forall_fin_succ, h0]; constructor; (· norm_num [side, unitCube]); exact hv
+      rw [forall_fin_succ, h0]; constructor
+      · norm_num [side, unitCube]
+      · exact hv
     rw [← h.2, mem_iUnion] at this; rcases this with ⟨i, hi⟩
     use i
     constructor
-    · apply le_antisymm; (· rw [h0]; exact h.zero_le_b); exact (hi 0).1
+    · apply le_antisymm
+      · rw [h0]; exact h.zero_le_b
+      · exact (hi 0).1
     intro j; exact hi _
   · intro i _ _; rw [toSet_subset]; intro j; convert h.side_subset using 1; simp [side_tail]
   · intro i _; exact h.w_ne_one i
@@ -291,7 +299,8 @@ theorem b_le_b (hi : i ∈ bcubes cs c) (j : Fin n) : c.b j.succ ≤ (cs i).b j.
 theorem t_le_t (hi : i ∈ bcubes cs c) (j : Fin n) :
     (cs i).b j.succ + (cs i).w ≤ c.b j.succ + c.w := by
   have h' := tail_sub hi j; dsimp only [side] at h'; rw [Ico_subset_Ico_iff] at h'
-  (· exact h'.2); simp [hw]
+  · exact h'.2
+  · simp [hw]
 #align theorems_100.«82».t_le_t Theorems100.«82».t_le_t
 
 /-- Every cube in the valley must be smaller than it -/
@@ -363,7 +372,9 @@ theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
 /-- The top of `mi` cannot be 1, since there is a larger cube in the valley -/
 theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   apply ne_of_lt; rcases (nontrivial_bcubes h v).exists_ne (mi h v) with ⟨i, hi, h2i⟩
-  · apply lt_of_lt_of_le _ h.b_add_w_le_one; (· exact i); (· exact 0)
+  · apply lt_of_lt_of_le _ h.b_add_w_le_one
+    · exact i
+    · exact 0
     rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
     exact mi_strict_minimal h2i.symm hi
 #align theorems_100.«82».mi_xm_ne_one Theorems100.«82».mi_xm_ne_one
@@ -430,7 +441,9 @@ theorem mi_not_onBoundary (j : Fin n) : ¬OnBoundary (mi_mem_bcubes : mi h v ∈
   have h2i' : i' ∈ bcubes cs c := ⟨hi'.1.symm, v.2.1 i' hi'.1.symm ⟨tail p, hi'.2, hp.2⟩⟩
   have i_i' : i ≠ i' := by rintro rfl; simpa [p, side_tail, h2x] using hi'.2 j
   have : Nonempty (↥((cs i').tail.side j' \ (cs i).tail.side j')) := by
-    apply nonempty_Ico_sdiff; (· apply mi_strict_minimal i_i' h2i'); apply hw
+    apply nonempty_Ico_sdiff
+    · apply mi_strict_minimal i_i' h2i'
+    · apply hw
   rcases this with ⟨⟨x', hx'⟩⟩
   let p' : Fin (n + 1) → ℝ := cons (c.b 0) fun j₂ => if j₂ = j' then x' else (cs i).b j₂.succ
   have hp' : p' ∈ c.bottom := by
@@ -476,9 +489,9 @@ theorem mi_not_onBoundary' (j : Fin n) :
   simp only [OnBoundary, not_or] at this; cases' this with h1 h2
   constructor
   · apply lt_of_le_of_ne (b_le_b mi_mem_bcubes _) h1
-  · apply lt_of_le_of_ne _ h2
-    apply ((Ico_subset_Ico_iff _).mp (tail_sub mi_mem_bcubes j)).2
-    simp [hw]
+  apply lt_of_le_of_ne _ h2
+  apply ((Ico_subset_Ico_iff _).mp (tail_sub mi_mem_bcubes j)).2
+  simp [hw]
 #align theorems_100.«82».mi_not_on_boundary' Theorems100.«82».mi_not_onBoundary'
 
 /-- The top of `mi` gives rise to a new valley, since the neighbouring cubes extend further upward
@@ -513,7 +526,9 @@ theorem valley_mi : Valley cs (cs (mi h v)).shiftUp := by
     rcases v.1 hp with ⟨_, ⟨i'', rfl⟩, hi''⟩
     have h2i'' : i'' ∈ bcubes cs c := by
       use hi''.1.symm; apply v.2.1 i'' hi''.1.symm
-      use tail p; constructor; (· exact hi''.2); rw [tail_cons]; exact h3p3
+      use tail p; constructor
+      · exact hi''.2
+      · rw [tail_cons]; exact h3p3
     have h3i'' : (cs i).w < (cs i'').w := by
       apply mi_strict_minimal _ h2i''; rintro rfl; apply h2p3; convert hi''.2
     let p' := @cons n (fun _ => ℝ) (cs i).xm p3

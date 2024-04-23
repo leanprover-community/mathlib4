@@ -539,8 +539,9 @@ theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2
 theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (2 ^ n : ℕ)
   | (m : ℕ), n => by rw [shiftRight_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
-    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; · rfl
-    exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
+    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]
+    · rfl
+    · exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=

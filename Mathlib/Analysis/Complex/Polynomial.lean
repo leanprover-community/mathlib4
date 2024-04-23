@@ -91,7 +91,10 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     · rintro ⟨w, hw, rfl⟩
       exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
     · rintro ⟨hz1, hz2⟩
-      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by ext; (· rfl); rw [hz2]; rfl
+      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by
+        ext
+        · rfl
+        · rw [hz2]; rfl
       exact ⟨z.re, inj (by rwa [← aeval_algHom_apply, key, AlgHom.map_zero]), key⟩
   have hc0 :
     ∀ w : p.rootSet ℂ, galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ)) w = w ↔
