@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Yury Kudryashov
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Prod
 import Mathlib.Data.Set.UnionLift
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.RingTheory.Ideal.Operations
@@ -985,7 +986,7 @@ instance : Unique (Subalgebra R R) :=
   { inferInstanceAs (Inhabited (Subalgebra R R)) with
     uniq := by
       intro S
-      refine' le_antisymm ?_ bot_le
+      refine le_antisymm ?_ bot_le
       intro _ _
       simp only [Set.mem_range, mem_bot, id.map_eq_self, exists_apply_eq_apply, default] }
 
