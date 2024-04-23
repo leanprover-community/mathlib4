@@ -32,7 +32,6 @@ Reasons for admitting a kind in `exclusions` include
 -/
 abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Term.cdot
---  |>.insert `focus
   |>.insert ``cdot
   |>.insert ``cdotTk
   |>.insert ``Lean.Parser.Tactic.case
@@ -50,6 +49,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
   |>.insert ``Lean.Parser.Tactic.constructor
   |>.insert ``Lean.Parser.Tactic.tacticSeqBracketed
+  |>.insert `Mathlib.Tactic.tacticAssumption'
   |>.insert ``Lean.Parser.Tactic.induction
   |>.insert ``Lean.Parser.Tactic.tacticTry_
   |>.insert ``Lean.Parser.Tactic.tacticSeq1Indented
@@ -76,6 +76,7 @@ abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.tacticIterate____
   |>.insert ``Lean.Parser.Tactic.anyGoals
   |>.insert ``Lean.Parser.Tactic.allGoals
+  |>.insert ``Lean.Parser.Tactic.focus
 
 /-- `getManyGoals` returns the syntax nodes where the tactic leaves at least one goal that
 was not present before it ran,

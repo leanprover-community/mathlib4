@@ -1,5 +1,6 @@
 import Mathlib.Tactic.MultigoalsLinter
 import Mathlib.Tactic.Conv
+import Mathlib.Tactic.Basic
 
 set_option linter.multiGoal false in
 set_option linter.multiGoal true in
@@ -54,3 +55,22 @@ example (p : Bool) : 0 = 0 := by
   cases p
   case' false => rfl
   case' true => rfl
+
+#guard_msgs in
+-- `assumption'` is allowed, as it is useful precisely when there are multiple active goals
+example (p : Bool) (f : False) {h : 0 = 0} : 0 = 0 ∧ 0 = 1 := by
+  cases p <;>
+  constructor
+  assumption'
+  any_goals cases f
+
+#guard_msgs in
+-- `focus` is ignored
+example : True ∧ True := by
+  constructor
+  focus
+    exact .intro
+  focus
+    exact .intro
+--    case' false => rfl
+--  case' true => rfl
