@@ -38,8 +38,8 @@ namespace Rat
 instance instField : Field ℚ where
   __ := commRing
   __ := commGroupWithZero
-  ratCast_def q := (num_div_den _).symm
   qsmul := _
+  ratCast_def q := (num_div_den _).symm
 
 -- Extra instances to short-circuit type class resolution
 instance instDivisionRing : DivisionRing ℚ := by infer_instance
