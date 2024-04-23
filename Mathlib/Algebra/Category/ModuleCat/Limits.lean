@@ -138,14 +138,13 @@ end HasLimits
 open HasLimits
 
 /-- If `(F ⋙ forget (ModuleCat R)).sections` is `u`-small, `F` has a limit. -/
-lemma hasLimit : HasLimit F := HasLimit.mk {
+instance hasLimit : HasLimit F := HasLimit.mk {
     cone := limitCone F
     isLimit := limitConeIsLimit F
   }
 
 /-- If `J` is `u`-small, the category of `R`-modules has limits of shape `J`. -/
 lemma hasLimitsOfShape [Small.{w} J] : HasLimitsOfShape J (ModuleCat.{w} R) where
-  has_limit F := hasLimit F
 
 -- Porting note: mathport translated this as `irreducible_def`, but as `HasLimitsOfSize`
 -- is a `Prop`, declaring this as `irreducible` should presumably have no effect
@@ -171,14 +170,22 @@ def forget₂AddCommGroupPreservesLimitsAux :
     (F ⋙ forget₂ (ModuleCat.{w} R) _ : J ⥤ AddCommGroupCat.{w})
 #align Module.forget₂_AddCommGroup_preserves_limits_aux ModuleCat.forget₂AddCommGroupPreservesLimitsAux
 
+/-- The forgetful functor from R-modules to abelian groups preserves all limits. -/
+instance forget₂AddCommGroupPreservesLimit :
+    PreservesLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  preservesLimitOfPreservesLimitCone (limitConeIsLimit F)
+    (forget₂AddCommGroupPreservesLimitsAux F)
+
+instance forget₂AddCommGroupReflectsLimit :
+    ReflectsLimit F (forget₂ (ModuleCat R) AddCommGroupCat) :=
+  reflectsLimitOfReflectsIsomorphisms _ _
+
 /-- The forgetful functor from R-modules to abelian groups preserves all limits.
 -/
 instance forget₂AddCommGroupPreservesLimitsOfSize [UnivLE.{v, w}] :
     PreservesLimitsOfSize.{t, v}
       (forget₂ (ModuleCat.{w} R) AddCommGroupCat.{w}) where
-  preservesLimitsOfShape :=
-    { preservesLimit := fun {K} ↦ preservesLimitOfPreservesLimitCone (limitConeIsLimit K)
-          (forget₂AddCommGroupPreservesLimitsAux K) }
+  preservesLimitsOfShape := { preservesLimit := inferInstance }
 #align Module.forget₂_AddCommGroup_preserves_limits_of_size ModuleCat.forget₂AddCommGroupPreservesLimitsOfSize
 
 instance forget₂AddCommGroupPreservesLimits :

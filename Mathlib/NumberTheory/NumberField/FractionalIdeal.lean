@@ -62,7 +62,7 @@ instance (I : (FractionalIdeal (𝓞 K)⁰ K)ˣ) :
       exact FractionalIdeal.num_eq_zero_iff.not.mpr <| Units.ne_zero I
     · simp_rw [LinearMap.coe_restrictScalars, Submodule.coeSubtype] at h ⊢
       rw [show (a : K) = algebraMap (𝓞 K) K a by rfl, ← h]
-      simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_ofNat, algebraMap_int_eq,
+      simp only [Submonoid.mk_smul, zsmul_eq_mul, Int.cast_mul, Int.cast_natCast, algebraMap_int_eq,
         eq_intCast, map_intCast]
       ring
   exists_of_eq h :=

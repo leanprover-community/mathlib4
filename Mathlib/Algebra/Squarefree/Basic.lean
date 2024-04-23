@@ -315,8 +315,11 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 #align int.squarefree_nat_abs Int.squarefree_natAbs
 
 @[simp]
-theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
+theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-#align int.squarefree_coe_nat Int.squarefree_coe_nat
+#align int.squarefree_coe_nat Int.squarefree_natCast
+
+-- 2024-04-05
+@[deprecated] alias squarefree_coe_nat := squarefree_natCast
 
 end Int

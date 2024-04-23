@@ -5,6 +5,7 @@ Authors: Anatole Dedecker
 -/
 import Mathlib.Algebra.Order.Floor
 import Mathlib.Topology.Algebra.Order.Group
+import Mathlib.Topology.Order.Basic
 
 #align_import topology.algebra.order.floor from "leanprover-community/mathlib"@"84dc0bd6619acaea625086d6f53cb35cdd554219"
 

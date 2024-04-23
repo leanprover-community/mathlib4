@@ -571,7 +571,7 @@ section BooleanAlgebra
 
 variable [BooleanAlgebra α] (a b c d : α)
 
-/- `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
+/-! `CogeneralizedBooleanAlgebra` isn't actually a typeclass, but the lemmas in here are dual to
 the `GeneralizedBooleanAlgebra` ones -/
 section CogeneralizedBooleanAlgebra
 

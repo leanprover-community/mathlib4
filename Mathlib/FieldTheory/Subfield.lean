@@ -86,31 +86,33 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 #align subfield_class.subfield_class.to_subgroup_class SubfieldClass.toSubgroupClass
 
-variable {S}
+variable {S} {x : K}
 
 @[aesop safe apply (rule_sets := [SetLike])]
-theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
-  simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
-#align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
+lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
+  simpa only [Rat.cast_def] using div_mem (intCast_mem s q.num) (natCast_mem s q.den)
+#align subfield_class.coe_rat_mem SubfieldClass.ratCast_mem
 
 instance (s : S) : RatCast s :=
-  ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
+  ⟨fun x => ⟨↑x, ratCast_mem s x⟩⟩
 
-@[simp]
-theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
-  rfl
-#align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
+@[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
+#align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
+
+-- 2024-04-05
+@[deprecated] alias coe_rat_cast := coe_ratCast
+@[deprecated] alias coe_rat_mem := ratCast_mem
 
 -- Porting note: Mistranslated: used to be (a • x : K) ∈ s
 @[aesop safe apply (rule_sets := [SetLike])]
 theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
-  simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
+  simpa only [Rat.smul_def] using mul_mem (ratCast_mem s a) x.prop
 #align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
-  SubfieldClass.coe_rat_mem ..
+  SubfieldClass.ratCast_mem ..
 
 instance (s : S) : SMul ℚ s :=
   ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
@@ -316,9 +318,11 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 #align subfield.zsmul_mem Subfield.zsmul_mem
 
-protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
-  coe_int_mem s n
-#align subfield.coe_int_mem Subfield.coe_int_mem
+protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
+#align subfield.coe_int_mem Subfield.intCast_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_int_mem := intCast_mem
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
@@ -555,7 +559,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype.-/
+Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype. -/
 instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange :=
   Set.fintypeRange f
 #align ring_hom.fintype_field_range RingHom.fintypeFieldRange

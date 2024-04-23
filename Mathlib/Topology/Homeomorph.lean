@@ -467,6 +467,13 @@ theorem locallyConnectedSpace [i : LocallyConnectedSpace Y] (h : X ≃ₜ Y) :
   refine locallyConnectedSpace_of_connected_bases _ _ this fun _ _ hs ↦ ?_
   exact hs.2.2.2.image _ h.symm.continuous.continuousOn
 
+/-- The codomain of a homeomorphism is a locally compact space if and only if
+the domain is a locally compact space. -/
+theorem locallyCompactSpace_iff (h : X ≃ₜ Y) :
+    LocallyCompactSpace X ↔ LocallyCompactSpace Y := by
+  exact ⟨fun _ => h.symm.openEmbedding.locallyCompactSpace,
+    fun _ => h.closedEmbedding.locallyCompactSpace⟩
+
 /-- If a bijective map `e : X ≃ Y` is continuous and open, then it is a homeomorphism. -/
 def homeomorphOfContinuousOpen (e : X ≃ Y) (h₁ : Continuous e) (h₂ : IsOpenMap e) : X ≃ₜ Y where
   continuous_toFun := h₁
@@ -758,7 +765,7 @@ section
 variable {ι : Type*}
 
 /-- The topological space `Π i, Y i` can be split as a product by separating the indices in ι
-  depending on whether they satisfy a predicate p or not.-/
+  depending on whether they satisfy a predicate p or not. -/
 @[simps!]
 def piEquivPiSubtypeProd (p : ι → Prop) (Y : ι → Type*) [∀ i, TopologicalSpace (Y i)]
     [DecidablePred p] : (∀ i, Y i) ≃ₜ (∀ i : { x // p x }, Y i) × ∀ i : { x // ¬p x }, Y i

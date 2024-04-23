@@ -926,7 +926,7 @@ theorem LipschitzOnWith.ae_differentiableWithinAt_real {C : ℝ≥0} {f : ℝ �
 
 /-- A real Lipschitz function into a finite dimensional real vector space is differentiable
 almost everywhere. For the general Rademacher theorem assuming
-that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`.-/
+that the source space is finite dimensional, see `LipschitzWith.ae_differentiableAt`. -/
 theorem LipschitzWith.ae_differentiableAt_real {C : ℝ≥0} {f : ℝ → V} (h : LipschitzWith C f) :
     ∀ᵐ x, DifferentiableAt ℝ f x :=
   (h.locallyBoundedVariationOn univ).ae_differentiableAt

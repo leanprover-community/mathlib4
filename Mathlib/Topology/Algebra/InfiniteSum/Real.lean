@@ -46,7 +46,7 @@ variable [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
-  -- Porting note (#11215): TODO: with `Topology/Instances/NNReal` we can use this:
+  -- Porting note (#11215): TODO: with `Topology.Instances.NNReal` we can use this:
   -- lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
   -- refine cauchySeq_of_edist_le_of_summable d ?_ ?_
   -- · exact_mod_cast hf

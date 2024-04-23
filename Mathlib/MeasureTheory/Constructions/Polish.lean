@@ -6,6 +6,7 @@ Authors: Sébastien Gouëzel, Felix Weilacher
 import Mathlib.Data.Real.Cardinality
 import Mathlib.Topology.MetricSpace.Perfect
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
+import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.polish from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -73,7 +74,7 @@ the natural topology in a space is non-Polish.
 
 To endow a standard Borel space `α` with a compatible Polish topology, use
 `letI := upgradeStandardBorel α`. One can then use `eq_borel_upgradeStandardBorel α` to
-rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology.-/
+rewrite the `MeasurableSpace α` instance to `borel α t`, where `t` is the new topology. -/
 class StandardBorelSpace [MeasurableSpace α] : Prop where
   /-- There exists a compatible Polish topology. -/
   polish : ∃ _ : TopologicalSpace α, BorelSpace α ∧ PolishSpace α
@@ -96,7 +97,7 @@ def upgradeStandardBorel [MeasurableSpace α] [h : StandardBorelSpace α] :
   constructor
 
 /-- The `MeasurableSpace α` instance on a `StandardBorelSpace` `α` is equal to
-the borel sets of `upgradeStandardBorel α`.-/
+the borel sets of `upgradeStandardBorel α`. -/
 theorem eq_borel_upgradeStandardBorel [MeasurableSpace α] [StandardBorelSpace α] :
     ‹MeasurableSpace α› = @borel _ (upgradeStandardBorel α).toTopologicalSpace :=
   @BorelSpace.measurable_eq _ (upgradeStandardBorel α).toTopologicalSpace _
@@ -313,7 +314,7 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
     hs.isClopenable
   have A := @IsClosed.analyticSet α t' t'_polish s s_closed
   convert @AnalyticSet.image_of_continuous α t' α t s A id (continuous_id_of_le t't)
-  simp only [id.def, image_id']
+  simp only [id, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
@@ -533,18 +534,20 @@ end MeasureTheory
 
 namespace Measurable
 
-variable {X Y β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
-  [TopologicalSpace Y] [T2Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
+variable {X Y Z β : Type*} [MeasurableSpace X] [StandardBorelSpace X]
+  [TopologicalSpace Y] [T0Space Y] [MeasurableSpace Y] [OpensMeasurableSpace Y] [MeasurableSpace β]
+  [MeasurableSpace Z]
 
-/-- If `f : X → Y` is a surjective Borel measurable map from a standard Borel space
-to a topological space with second countable topology, then the preimage of a set `s`
+/-- If `f : X → Z` is a surjective Borel measurable map from a standard Borel space
+to a countably separated measurable space, then the preimage of a set `s`
 is measurable if and only if the set is measurable.
 One implication is the definition of measurability, the other one heavily relies on `X` being a
 standard Borel space. -/
-theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
-    (hf : Measurable f) (hsurj : Surjective f) {s : Set Y} :
+theorem measurableSet_preimage_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f) (hsurj : Surjective f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet s := by
   refine ⟨fun h => ?_, fun h => hf h⟩
+  rcases exists_opensMeasurableSpace_of_hasCountableSeparatingOn Z with ⟨τ, _, _, _⟩
   apply AnalyticSet.measurableSet_of_compl
   · rw [← image_preimage_eq s hsurj]
     exact h.analyticSet_image hf
@@ -552,8 +555,9 @@ theorem measurableSet_preimage_iff_of_surjective [SecondCountableTopology Y] {f 
     exact h.compl.analyticSet_image hf
 #align measurable.measurable_set_preimage_iff_of_surjective Measurable.measurableSet_preimage_iff_of_surjective
 
-theorem map_measurableSpace_eq [SecondCountableTopology Y] {f : X → Y} (hf : Measurable f)
-    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Y› :=
+theorem map_measurableSpace_eq  [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f)
+    (hsurj : Surjective f) : MeasurableSpace.map f ‹MeasurableSpace X› = ‹MeasurableSpace Z› :=
   MeasurableSpace.ext fun _ => hf.measurableSet_preimage_iff_of_surjective hsurj
 #align measurable.map_measurable_space_eq Measurable.map_measurableSpace_eq
 
@@ -569,49 +573,53 @@ theorem borelSpace_codomain [SecondCountableTopology Y] {f : X → Y} (hf : Meas
   ⟨(hf.map_measurableSpace_eq hsurj).symm.trans <| hf.map_measurableSpace_eq_borel hsurj⟩
 #align measurable.borel_space_codomain Measurable.borelSpace_codomain
 
-/-- If `f : X → Y` is a Borel measurable map from a standard Borel space to a topological space
-with second countable topology, then the preimage of a set `s` is measurable if and only if
-the set is measurable in `Set.range f`. -/
-theorem measurableSet_preimage_iff_preimage_val {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) {s : Set Y} :
+/-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
+countably separated measurable space then the preimage of a set `s` is measurable
+if and only if the set is measurable in `Set.range f`. -/
+theorem measurableSet_preimage_iff_preimage_val {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet ((↑) ⁻¹' s : Set (range f)) :=
   have hf' : Measurable (rangeFactorization f) := hf.subtype_mk
   hf'.measurableSet_preimage_iff_of_surjective (s := Subtype.val ⁻¹' s) surjective_onto_range
 #align measurable.measurable_set_preimage_iff_preimage_coe Measurable.measurableSet_preimage_iff_preimage_val
 
-/-- If `f : X → Y` is a Borel measurable map from a standard Borel space to a
-topological space with second countable topology and the range of `f` is measurable,
+/-- If `f : X → Z` is a Borel measurable map from a standard Borel space to a
+countably separated measurable space and the range of `f` is measurable,
 then the preimage of a set `s` is measurable
 if and only if the intesection with `Set.range f` is measurable. -/
-theorem measurableSet_preimage_iff_inter_range {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Y} :
+theorem measurableSet_preimage_iff_inter_range {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) (hr : MeasurableSet (range f)) {s : Set Z} :
     MeasurableSet (f ⁻¹' s) ↔ MeasurableSet (s ∩ range f) := by
   rw [hf.measurableSet_preimage_iff_preimage_val, inter_comm,
     ← (MeasurableEmbedding.subtype_coe hr).measurableSet_image, Subtype.image_preimage_coe]
 #align measurable.measurable_set_preimage_iff_inter_range Measurable.measurableSet_preimage_iff_inter_range
 
-/-- If `f : X → Y` is a Borel measurable map from a standard Borel space
-to a topological space with second countable topology,
-then for any measurable space `β` and `g : Y → β`, the composition `g ∘ f` is
+/-- If `f : X → Z` is a Borel measurable map from a standard Borel space
+to a countably separated measurable space,
+then for any measurable space `β` and `g : Z → β`, the composition `g ∘ f` is
 measurable if and only if the restriction of `g` to the range of `f` is measurable. -/
-theorem measurable_comp_iff_restrict {f : X → Y} [SecondCountableTopology (range f)]
-    (hf : Measurable f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
+theorem measurable_comp_iff_restrict {f : X → Z}
+    [HasCountableSeparatingOn (range f) MeasurableSet univ]
+    (hf : Measurable f) {g : Z → β} : Measurable (g ∘ f) ↔ Measurable (restrict (range f) g) :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_preimage_val hf (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_restrict Measurable.measurable_comp_iff_restrict
 
-/-- If `f : X → Y` is a surjective Borel measurable map from a standard Borel space
-to a topological space with second countable topology,
-then for any measurable space `α` and `g : Y → α`, the composition
+/-- If `f : X → Z` is a surjective Borel measurable map from a standard Borel space
+to a countably separated measurable space,
+then for any measurable space `α` and `g : Z → α`, the composition
 `g ∘ f` is measurable if and only if `g` is measurable. -/
-theorem measurable_comp_iff_of_surjective [SecondCountableTopology Y] {f : X → Y}
-    (hf : Measurable f) (hsurj : Surjective f) {g : Y → β} : Measurable (g ∘ f) ↔ Measurable g :=
+theorem measurable_comp_iff_of_surjective [HasCountableSeparatingOn Z MeasurableSet univ]
+    {f : X → Z} (hf : Measurable f) (hsurj : Surjective f)
+    {g : Z → β} : Measurable (g ∘ f) ↔ Measurable g :=
   forall₂_congr fun s _ => measurableSet_preimage_iff_of_surjective hf hsurj (s := g ⁻¹' s)
 #align measurable.measurable_comp_iff_of_surjective Measurable.measurable_comp_iff_of_surjective
 
 end Measurable
 
 theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
-    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y]
+    [MeasurableSpace X] [BorelSpace X] [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y]
     {f : X → Y} (hf : Continuous f) (hsurj : Surjective f) :
     MeasurableSpace.map f ‹MeasurableSpace X› = borel Y := by
   borelize Y
@@ -619,17 +627,27 @@ theorem Continuous.map_eq_borel {X Y : Type*} [TopologicalSpace X] [PolishSpace 
 #align continuous.map_eq_borel Continuous.map_eq_borel
 
 theorem Continuous.map_borel_eq {X Y : Type*} [TopologicalSpace X] [PolishSpace X]
-    [TopologicalSpace Y] [T2Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
+    [TopologicalSpace Y] [T0Space Y] [SecondCountableTopology Y] {f : X → Y} (hf : Continuous f)
     (hsurj : Surjective f) : MeasurableSpace.map f (borel X) = borel Y := by
   borelize X
   exact hf.map_eq_borel hsurj
 #align continuous.map_borel_eq Continuous.map_borel_eq
 
 instance Quotient.borelSpace {X : Type*} [TopologicalSpace X] [PolishSpace X] [MeasurableSpace X]
-    [BorelSpace X] {s : Setoid X} [T2Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
+    [BorelSpace X] {s : Setoid X} [T0Space (Quotient s)] [SecondCountableTopology (Quotient s)] :
     BorelSpace (Quotient s) :=
   ⟨continuous_quotient_mk'.map_eq_borel (surjective_quotient_mk' _)⟩
 #align quotient.borel_space Quotient.borelSpace
+
+/-- When the subgroup `N < G` is not necessarily `Normal`, we have a `CosetSpace` as opposed
+to `QuotientGroup` (the next `instance`).
+TODO: typeclass inference should normally find this, but currently doesn't.
+E.g., `MeasurableSMul G (G ⧸ Γ)` fails to synthesize, even though `G ⧸ Γ` is the quotient
+of `G` by the action of `Γ`; it seems unable to pick up the `BorelSpace` instance. -/
+@[to_additive AddCosetSpace.borelSpace]
+instance CosetSpace.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
+    [MeasurableSpace G] [BorelSpace G] {N : Subgroup G} [T2Space (G ⧸ N)]
+    [SecondCountableTopology (G ⧸ N)] : BorelSpace (G ⧸ N) := Quotient.borelSpace
 
 @[to_additive]
 instance QuotientGroup.borelSpace {G : Type*} [TopologicalSpace G] [PolishSpace G] [Group G]
@@ -812,7 +830,8 @@ theorem _root_.IsClosed.measurableSet_image_of_continuousOn_injOn
   · rwa [injOn_iff_injective] at f_inj
 #align is_closed.measurable_set_image_of_continuous_on_inj_on IsClosed.measurableSet_image_of_continuousOn_injOn
 
-variable {β : Type*} [tβ : TopologicalSpace β] [T2Space β] [MeasurableSpace β]
+variable {α β : Type*} [tβ : TopologicalSpace β] [T2Space β] [MeasurableSpace β]
+  [MeasurableSpace α]
   {s : Set γ} {f : γ → β}
 
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a Polish space, then its image under
@@ -831,17 +850,19 @@ theorem _root_.MeasurableSet.image_of_continuousOn_injOn [OpensMeasurableSpace �
 
 /-- The Lusin-Souslin theorem: if `s` is Borel-measurable in a standard Borel space,
 then its image under a measurable injective map taking values in a
-second-countable topological space is also Borel-measurable. -/
-theorem _root_.MeasurableSet.image_of_measurable_injOn [OpensMeasurableSpace β]
-    [MeasurableSpace γ] [StandardBorelSpace γ] [SecondCountableTopology β]
+countably separate measurable space is also Borel-measurable. -/
+theorem _root_.MeasurableSet.image_of_measurable_injOn {f : γ → α}
+    [HasCountableSeparatingOn α MeasurableSet univ]
+    [MeasurableSpace γ] [StandardBorelSpace γ]
     (hs : MeasurableSet s) (f_meas : Measurable f) (f_inj : InjOn f s) :
     MeasurableSet (f '' s) := by
   letI := upgradeStandardBorel γ
   let tγ : TopologicalSpace γ := inferInstance
+  rcases exists_opensMeasurableSpace_of_hasCountableSeparatingOn α with ⟨τ, _, _, _⟩
   -- for a finer Polish topology, `f` is continuous. Therefore, one may apply the corresponding
   -- result for continuous maps.
   obtain ⟨t', t't, f_cont, t'_polish⟩ :
-      ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @Continuous γ β t' tβ f ∧ @PolishSpace γ t' :=
+      ∃ t' : TopologicalSpace γ, t' ≤ tγ ∧ @Continuous γ _ t' _ f ∧ @PolishSpace γ t' :=
     f_meas.exists_continuous
   have M : MeasurableSet[@borel γ t'] s :=
     @Continuous.measurable γ γ t' (@borel γ t')
@@ -849,8 +870,8 @@ theorem _root_.MeasurableSet.image_of_measurable_injOn [OpensMeasurableSpace β]
       tγ _ _ _ (continuous_id_of_le t't) s hs
   exact
     @MeasurableSet.image_of_continuousOn_injOn γ
-      β _ _ _  s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
-      M (@Continuous.continuousOn γ β t' tβ f s f_cont) f_inj
+      _ _ _ _  s f _ t' t'_polish (@borel γ t') (@BorelSpace.mk _ _ (borel γ) rfl)
+      M (@Continuous.continuousOn γ _ t' _ f s f_cont) f_inj
 #align measurable_set.image_of_measurable_inj_on MeasurableSet.image_of_measurable_injOn
 
 /-- An injective continuous function on a Polish space is a measurable embedding. -/
@@ -883,16 +904,17 @@ theorem _root_.ContinuousOn.measurableEmbedding [BorelSpace β]
 #align continuous_on.measurable_embedding ContinuousOn.measurableEmbedding
 
 /-- An injective measurable function from a standard Borel space to a
-second-countable topological space is a measurable embedding. -/
-theorem _root_.Measurable.measurableEmbedding [OpensMeasurableSpace β]
-    [MeasurableSpace γ] [StandardBorelSpace γ] [SecondCountableTopology β]
+countably separated measurable space is a measurable embedding. -/
+theorem _root_.Measurable.measurableEmbedding {f : γ → α}
+    [HasCountableSeparatingOn α MeasurableSet univ]
+    [MeasurableSpace γ] [StandardBorelSpace γ]
     (f_meas : Measurable f) (f_inj : Injective f) : MeasurableEmbedding f :=
   { injective := f_inj
     measurable := f_meas
     measurableSet_image' := fun _u hu => hu.image_of_measurable_injOn f_meas (f_inj.injOn _) }
 #align measurable.measurable_embedding Measurable.measurableEmbedding
 
-/-- If one Polish topology on a type refines another, they have the same Borel sets.-/
+/-- If one Polish topology on a type refines another, they have the same Borel sets. -/
 theorem borel_eq_borel_of_le {t t' : TopologicalSpace γ}
     (ht : PolishSpace (h := t)) (ht' : PolishSpace (h := t')) (hle : t ≤ t') :
     @borel _ t = @borel _ t' := by
@@ -992,7 +1014,7 @@ variable {β : Type*}
 variable [MeasurableSpace α] [MeasurableSpace β] [StandardBorelSpace α] [StandardBorelSpace β]
 
 /-- If two standard Borel spaces admit Borel measurable injections to one another,
-then they are Borel isomorphic.-/
+then they are Borel isomorphic. -/
 noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas : Measurable f)
     (finj : Function.Injective f) (gmeas : Measurable g) (ginj : Function.Injective g) : α ≃ᵐ β :=
   letI := upgradeStandardBorel α
@@ -1000,7 +1022,7 @@ noncomputable def borelSchroederBernstein {f : α → β} {g : β → α} (fmeas
   (fmeas.measurableEmbedding finj).schroederBernstein (gmeas.measurableEmbedding ginj)
 #align polish_space.borel_schroeder_bernstein PolishSpace.borelSchroederBernstein
 
-/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`.-/
+/-- Any uncountable standard Borel space is Borel isomorphic to the Cantor space `ℕ → Bool`. -/
 noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α ≃ᵐ (ℕ → Bool) := by
   apply Nonempty.some
   letI := upgradeStandardBorel α
@@ -1013,13 +1035,13 @@ noncomputable def measurableEquivNatBoolOfNotCountable (h : ¬Countable α) : α
 #align polish_space.measurable_equiv_nat_bool_of_not_countable PolishSpace.measurableEquivNatBoolOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: Any two uncountable standard Borel spaces are
-Borel isomorphic.-/
+Borel isomorphic. -/
 noncomputable def measurableEquivOfNotCountable (hα : ¬Countable α) (hβ : ¬Countable β) : α ≃ᵐ β :=
   (measurableEquivNatBoolOfNotCountable hα).trans (measurableEquivNatBoolOfNotCountable hβ).symm
 #align polish_space.measurable_equiv_of_not_countable PolishSpace.measurableEquivOfNotCountable
 
 /-- The **Borel Isomorphism Theorem**: If two standard Borel spaces have the same cardinality,
-they are Borel isomorphic.-/
+they are Borel isomorphic. -/
 noncomputable def Equiv.measurableEquiv (e : α ≃ β) : α ≃ᵐ β := by
   by_cases h : Countable α
   · letI := Countable.of_equiv α e
@@ -1080,5 +1102,14 @@ theorem exists_measurableEmbedding_real : ∃ f : α → ℝ, MeasurableEmbeddin
   obtain ⟨s, hs, ⟨e⟩⟩ := exists_subset_real_measurableEquiv α
   exact ⟨(↑) ∘ e, (MeasurableEmbedding.subtype_coe hs).comp e.measurableEmbedding⟩
 #align measure_theory.exists_measurable_embedding_real MeasureTheory.exists_measurableEmbedding_real
+
+/-- A measurable embedding of a standard Borel space into `ℝ`. -/
+noncomputable
+def embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] : Ω → ℝ :=
+  (exists_measurableEmbedding_real Ω).choose
+
+lemma measurableEmbedding_embeddingReal (Ω : Type*) [MeasurableSpace Ω] [StandardBorelSpace Ω] :
+    MeasurableEmbedding (embeddingReal Ω) :=
+  (exists_measurableEmbedding_real Ω).choose_spec
 
 end MeasureTheory

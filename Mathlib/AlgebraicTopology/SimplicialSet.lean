@@ -7,6 +7,7 @@ import Mathlib.AlgebraicTopology.SimplicialObject
 import Mathlib.CategoryTheory.Limits.Shapes.Types
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.Data.Fin.VecNotation
+import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.FinCases
 
 #align_import algebraic_topology.simplicial_set from "leanprover-community/mathlib"@"178a32653e369dce2da68dc6b2694e385d484ef1"
@@ -78,7 +79,6 @@ def standardSimplex : SimplexCategory ⥤ SSet.{u} :=
 set_option linter.uppercaseLean3 false in
 #align sSet.standard_simplex SSet.standardSimplex
 
--- mathport name: standard_simplex
 @[inherit_doc SSet.standardSimplex]
 scoped[Simplicial] notation3 "Δ[" n "]" => SSet.standardSimplex.obj (SimplexCategory.mk n)
 
@@ -173,7 +173,7 @@ def boundary (n : ℕ) : SSet.{u} where
 set_option linter.uppercaseLean3 false in
 #align sSet.boundary SSet.boundary
 
--- mathport name: sSet.boundary
+/-- The boundary `∂Δ[n]` of the `n`-th standard simplex -/
 scoped[Simplicial] notation3 "∂Δ[" n "]" => SSet.boundary n
 
 /-- The inclusion of the boundary of the `n`-th standard simplex into that standard simplex. -/
@@ -197,7 +197,7 @@ def horn (n : ℕ) (i : Fin (n + 1)) : SSet where
 set_option linter.uppercaseLean3 false in
 #align sSet.horn SSet.horn
 
--- mathport name: sSet.horn
+/-- The `i`-th horn `Λ[n, i]` of the standard `n`-simplex -/
 scoped[Simplicial] notation3 "Λ[" n ", " i "]" => SSet.horn (n : ℕ) i
 
 /-- The inclusion of the `i`-th horn of the `n`-th standard simplex into that standard simplex. -/

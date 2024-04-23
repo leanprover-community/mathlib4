@@ -103,6 +103,15 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
 #align quotient_group.mk'_eq_mk' QuotientGroup.mk'_eq_mk'
 #align quotient_add_group.mk'_eq_mk' QuotientAddGroup.mk'_eq_mk'
 
+open scoped Pointwise in
+@[to_additive]
+theorem sound (U : Set (G ⧸ N)) (g : N.op) :
+    g • (mk' N) ⁻¹' U = (mk' N) ⁻¹' U := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_smul_set_iff_inv_smul_mem]
+  congr! 1
+  exact Quotient.sound ⟨g⁻¹, rfl⟩
+
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.
 

@@ -300,7 +300,7 @@ variable [TopologicalSpace Z] [TopologicalSpace (TotalSpace F E)]
 `proj : Z → B` with fiber `F`, as a partial homeomorphism between `Z` and `B × F` defined between
 two sets of the form `proj ⁻¹' baseSet` and `baseSet × F`, acting trivially on the first coordinate.
 -/
--- Porting note (#11215): TODO: was @[nolint has_nonempty_instance]
+-- Porting note (#5171): was @[nolint has_nonempty_instance]
 structure Trivialization (proj : Z → B) extends PartialHomeomorph Z (B × F) where
   baseSet : Set B
   open_baseSet : IsOpen baseSet
@@ -785,10 +785,7 @@ noncomputable def piecewise (e e' : Trivialization F proj) (s : Set B)
   source_eq := by simp [source_eq]
   target_eq := by simp [target_eq, prod_univ]
   proj_toFun p := by
-    rintro (⟨he, hs⟩ | ⟨he, hs⟩)
-    -- Porting note: was `<;> simp [*]`
-    · simp [piecewise_eq_of_mem _ _ _ hs, *]
-    · simp [piecewise_eq_of_not_mem _ _ _ hs, *]
+    rintro (⟨he, hs⟩ | ⟨he, hs⟩) <;> simp [*]
 #align trivialization.piecewise Trivialization.piecewise
 
 /-- Given two bundle trivializations `e`, `e'` of a topological fiber bundle `proj : Z → B`

@@ -122,6 +122,19 @@ instance (priority := 100) [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
   [EquivLike F M M₂] [s : SemilinearEquivClass F σ M M₂] : SemilinearMapClass F σ M M₂ :=
   { s with }
 
+variable {F}
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+@[coe]
+def semilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] (f : F) : M ≃ₛₗ[σ] M₂ :=
+  { (f : M ≃+ M₂), (f : M →ₛₗ[σ] M₂) with }
+
+/-- Reinterpret an element of a type of semilinear equivalences as a semilinear equivalence. -/
+instance instCoeToSemilinearEquiv [RingHomInvPair σ σ'] [RingHomInvPair σ' σ]
+    [EquivLike F M M₂] [SemilinearEquivClass F σ M M₂] : CoeHead F (M ≃ₛₗ[σ] M₂) where
+  coe f := semilinearEquiv f
+
 end SemilinearEquivClass
 
 namespace LinearEquiv
@@ -315,7 +328,7 @@ variable [RingHomInvPair σ₁₃ σ₃₁] {re₂₁ : RingHomInvPair σ₂₁ 
 variable {re₃₂ : RingHomInvPair σ₃₂ σ₂₃} [RingHomInvPair σ₃₁ σ₁₃]
 variable (e₁₂ : M₁ ≃ₛₗ[σ₁₂] M₂) (e₂₃ : M₂ ≃ₛₗ[σ₂₃] M₃)
 
--- Porting note: Lean 4 aggressively removes unused variables declared using `variables`, so
+-- Porting note: Lean 4 aggressively removes unused variables declared using `variable`, so
 -- we have to list all the variables explicitly here in order to match the Lean 3 signature.
 set_option linter.unusedVariables false in
 /-- Linear equivalences are transitive. -/

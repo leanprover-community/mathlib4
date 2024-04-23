@@ -135,7 +135,7 @@ theorem cyclotomicRing_isIntegralClosure_of_prime_pow :
   have hζ := zeta_spec (p ^ k) ℚ (CyclotomicField (p ^ k) ℚ)
   refine ⟨IsFractionRing.injective _ _, @fun x => ⟨fun h => ⟨⟨x, ?_⟩, rfl⟩, ?_⟩⟩
 -- Porting note: having `.isIntegral_iff` inside the definition of `this` causes an error.
-  · have := (isIntegralClosure_adjoin_singleton_of_prime_pow hζ)
+  · have := isIntegralClosure_adjoin_singleton_of_prime_pow hζ
     obtain ⟨y, rfl⟩ := this.isIntegral_iff.1 h
     refine' adjoin_mono _ y.2
     simp only [PNat.pow_coe, Set.singleton_subset_iff, Set.mem_setOf_eq]
@@ -360,7 +360,7 @@ variable (K p k)
 theorem absdiscr_prime_pow [NumberField K] [IsCyclotomicExtension {p ^ k} ℚ K] :
     NumberField.discr K =
     (-1) ^ ((p ^ k : ℕ).totient / 2) * p ^ ((p : ℕ) ^ (k - 1) * ((p - 1) * k - 1)) := by
-  have hζ := (IsCyclotomicExtension.zeta_spec (p ^ k) ℚ K)
+  have hζ := IsCyclotomicExtension.zeta_spec (p ^ k) ℚ K
   let pB₁ := integralPowerBasis hζ
   apply (algebraMap ℤ ℚ).injective_int
   rw [← NumberField.discr_eq_discr _ pB₁.basis, ← Algebra.discr_localizationLocalization ℤ ℤ⁰ K]

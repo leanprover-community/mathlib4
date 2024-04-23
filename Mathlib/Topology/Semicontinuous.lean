@@ -87,7 +87,7 @@ def LowerSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
 
 /-- A real function `f` is lower semicontinuous on a set `s` if, for any `ε > 0`, for any `x ∈ s`,
 for all `x'` close enough to `x` in `s`, then `f x'` is at least `f x - ε`. We formulate this in
-a general preordered space, using an arbitrary `y < f x` instead of `f x - ε`.-/
+a general preordered space, using an arbitrary `y < f x` instead of `f x - ε`. -/
 def LowerSemicontinuousOn (f : α → β) (s : Set α) :=
   ∀ x ∈ s, LowerSemicontinuousWithinAt f s x
 #align lower_semicontinuous_on LowerSemicontinuousOn
@@ -115,7 +115,7 @@ def UpperSemicontinuousWithinAt (f : α → β) (s : Set α) (x : α) :=
 
 /-- A real function `f` is upper semicontinuous on a set `s` if, for any `ε > 0`, for any `x ∈ s`,
 for all `x'` close enough to `x` in `s`, then `f x'` is at most `f x + ε`. We formulate this in a
-general preordered space, using an arbitrary `y > f x` instead of `f x + ε`.-/
+general preordered space, using an arbitrary `y > f x` instead of `f x + ε`. -/
 def UpperSemicontinuousOn (f : α → β) (s : Set α) :=
   ∀ x ∈ s, UpperSemicontinuousWithinAt f s x
 #align upper_semicontinuous_on UpperSemicontinuousOn
@@ -129,7 +129,7 @@ def UpperSemicontinuousAt (f : α → β) (x : α) :=
 
 /-- A real function `f` is upper semicontinuous if, for any `ε > 0`, for any `x`, for all `x'`
 close enough to `x`, then `f x'` is at most `f x + ε`. We formulate this in a general preordered
-space, using an arbitrary `y > f x` instead of `f x + ε`.-/
+space, using an arbitrary `y > f x` instead of `f x + ε`. -/
 def UpperSemicontinuous (f : α → β) :=
   ∀ x, UpperSemicontinuousAt f x
 #align upper_semicontinuous UpperSemicontinuous
