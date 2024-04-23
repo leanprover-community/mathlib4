@@ -95,9 +95,10 @@ variable [Ring R] [IsDomain R] [Fintype R]
 /-- Every finite domain is a division ring. More generally, they are fields; this can be found in
 `Mathlib.RingTheory.LittleWedderburn`. -/
 def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableEq R] [Fintype R] :
-    DivisionRing R :=
-  { show GroupWithZero R from Fintype.groupWithZeroOfCancel R, ‹Ring R› with
-    qsmul := qsmulRec _}
+    DivisionRing R where
+  __ := Fintype.groupWithZeroOfCancel R
+  __ := ‹Ring R›
+  qsmul := _
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 
 /-- Every finite commutative domain is a field. More generally, commutativity is not required: this
