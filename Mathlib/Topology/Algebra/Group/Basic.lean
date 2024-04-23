@@ -511,7 +511,7 @@ end Conj
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
 
-instance [TopologicalSpace G] [Group G] [TopologicalGroup G] : TopologicalGroup (ULift G) where
+instance : TopologicalGroup (ULift G) where
 
 section ZPow
 
