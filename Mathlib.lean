@@ -3443,7 +3443,9 @@ import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Inverse
 import Mathlib.RingTheory.MvPowerSeries.Trunc
 import Mathlib.RingTheory.Nakayama
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Basic
+import Mathlib.RingTheory.Nilpotent.Defs
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.NonUnitalSubring.Basic
 import Mathlib.RingTheory.NonUnitalSubsemiring.Basic
@@ -3523,6 +3525,7 @@ import Mathlib.RingTheory.Valuation.Integral
 import Mathlib.RingTheory.Valuation.PrimeMultiplicity
 import Mathlib.RingTheory.Valuation.Quotient
 import Mathlib.RingTheory.Valuation.RamificationGroup
+import Mathlib.RingTheory.Valuation.RankOne
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Valuation.ValuationSubring
 import Mathlib.RingTheory.WittVector.Basic
