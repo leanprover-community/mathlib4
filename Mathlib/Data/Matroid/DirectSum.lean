@@ -163,7 +163,7 @@ lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
       · exact hB₂ hB.rightIndep (Set.inter_subset_inter_left M₂.E hIB)
 
 /-- Direct sum of matroids as a matroid. -/
-def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) : IndepMatroid α :=
+def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : Disjoint M₁.E M₂.E) : IndepMatroid α :=
   IndepMatroid.mk
     (M₁.E ∪ M₂.E)
     (indepDirectSum hME)
