@@ -1,7 +1,32 @@
+/-
+Copyright (c) 2024 Johan Commelin. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Johan Commelin
+-/
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
 import Mathlib.RingTheory.Artinian
+
+/-!
+# Results on the eigenvalue 0
+
+In this file we provide equivalent characterizations of properties related to the eigenvalue 0,
+such as being nilpotent, having determinant equal to 0, having a non-trivial kernel, etc...
+
+## Main results
+
+* `LinearMap.charpoly_nilpotent_tfae`:
+  equivalent characterizations of nilpotent endomorphisms
+* `LinearMap.hasEigenvalue_zero_tfae`:
+  equivalent characterizations of endomorphisms with eigenvalue 0
+* `LinearMap.not_hasEigenvalue_zero_tfae`:
+  endomorphisms without eigenvalue 0
+* `LinearMap.finrank_maximalGeneralizedEigenspace`:
+  the dimension of the maximal generalized eigenspace of an endomorphism
+  is the trailing degree of its characteristic polynomial
+
+-/
 
 variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M]
 variable (φ : Module.End K M)
