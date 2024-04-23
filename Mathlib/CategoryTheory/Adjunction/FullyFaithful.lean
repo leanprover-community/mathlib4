@@ -3,9 +3,10 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Conj
-import Mathlib.CategoryTheory.Yoneda
+import Mathlib.CategoryTheory.MorphismProperty
+
+#redundant_imports
 
 #align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
@@ -214,5 +215,21 @@ def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' �
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
+
+instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
+  isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
+
+lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] (X : D) (Y : C) (e : X ≅ L.obj Y) :
+    IsIso (h.counit.app X) := by
+  rw [NatTrans.isIso_app_iff_of_iso _ e]
+  infer_instance
+
+instance [R.Faithful] [R.Full] {Y : D} : IsIso (h.unit.app (R.obj Y)) :=
+  isIso_of_comp_hom_eq_id _ (h.right_triangle_components Y)
+
+lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] (X : D) (Y : C) (e : Y ≅ R.obj X) :
+    IsIso (h.unit.app Y) := by
+  rw [NatTrans.isIso_app_iff_of_iso _ e]
+  infer_instance
 
 end CategoryTheory
