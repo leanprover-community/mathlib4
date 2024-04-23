@@ -235,8 +235,8 @@ theorem ae_eq_const_or_exists_average_ne_compl [IsFiniteMeasure μ] (hfi : Integ
     f =ᵐ[μ] const α (⨍ x, f x ∂μ) ∨
       ∃ t, MeasurableSet t ∧ μ t ≠ 0 ∧ μ tᶜ ≠ 0 ∧ (⨍ x in t, f x ∂μ) ≠ ⨍ x in tᶜ, f x ∂μ := by
   refine' or_iff_not_imp_right.mpr fun H => _; push_neg at H
-  refine' hfi.ae_eq_of_forall_set_integral_eq _ _ (integrable_const _) fun t ht ht' => _; clear ht'
-  simp only [const_apply, set_integral_const]
+  refine' hfi.ae_eq_of_forall_setIntegral_eq _ _ (integrable_const _) fun t ht ht' => _; clear ht'
+  simp only [const_apply, setIntegral_const]
   by_cases h₀ : μ t = 0
   · rw [restrict_eq_zero.2 h₀, integral_zero_measure, h₀, ENNReal.zero_toReal, zero_smul]
   by_cases h₀' : μ tᶜ = 0
@@ -356,10 +356,14 @@ theorem ae_eq_const_or_norm_integral_lt_of_norm_le_const [StrictConvexSpace ℝ 
 /-- If `E` is a strictly convex normed space and `f : α → E` is a function such that `‖f x‖ ≤ C`
 a.e. on a set `t` of finite measure, then either this function is a.e. equal to its average value on
 `t`, or the norm of its integral over `t` is strictly less than `(μ t).toReal * C`. -/
-theorem ae_eq_const_or_norm_set_integral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
+theorem ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const [StrictConvexSpace ℝ E] (ht : μ t ≠ ∞)
     (h_le : ∀ᵐ x ∂μ.restrict t, ‖f x‖ ≤ C) :
     f =ᵐ[μ.restrict t] const α (⨍ x in t, f x ∂μ) ∨ ‖∫ x in t, f x ∂μ‖ < (μ t).toReal * C := by
   haveI := Fact.mk ht.lt_top
   rw [← restrict_apply_univ]
   exact ae_eq_const_or_norm_integral_lt_of_norm_le_const h_le
-#align ae_eq_const_or_norm_set_integral_lt_of_norm_le_const ae_eq_const_or_norm_set_integral_lt_of_norm_le_const
+#align ae_eq_const_or_norm_set_integral_lt_of_norm_le_const ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const
+
+@[deprecated]
+alias ae_eq_const_or_norm_set_integral_lt_of_norm_le_const :=
+  ae_eq_const_or_norm_setIntegral_lt_of_norm_le_const -- deprecated on 2024-04-17

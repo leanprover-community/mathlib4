@@ -1198,7 +1198,7 @@ def lTensorHom : (N →ₗ[R] P) →ₗ[R] M ⊗[R] N →ₗ[R] M ⊗[R] P where
     simp only [compr₂_apply, mk_apply, tmul_smul, smul_apply, lTensor_tmul]
 #align linear_map.ltensor_hom LinearMap.lTensorHom
 
-/-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `M ⊗ f`. -/
+/-- `rTensorHom M` is the natural linear map that sends a linear map `f : N →ₗ P` to `f ⊗ M`. -/
 def rTensorHom : (N →ₗ[R] P) →ₗ[R] N ⊗[R] M →ₗ[R] P ⊗[R] M where
   toFun f := f.rTensor M
   map_add' f g := by
@@ -1285,7 +1285,7 @@ theorem lTensor_id : (id : N →ₗ[R] N).lTensor M = id :=
 
 -- `simp` can prove this.
 theorem lTensor_id_apply (x : M ⊗[R] N) : (LinearMap.id : N →ₗ[R] N).lTensor M x = x := by
-  rw [lTensor_id, id_coe, id.def]
+  rw [lTensor_id, id_coe, _root_.id]
 #align linear_map.ltensor_id_apply LinearMap.lTensor_id_apply
 
 @[simp]
@@ -1295,7 +1295,7 @@ theorem rTensor_id : (id : N →ₗ[R] N).rTensor M = id :=
 
 -- `simp` can prove this.
 theorem rTensor_id_apply (x : N ⊗[R] M) : (LinearMap.id : N →ₗ[R] N).rTensor M x = x := by
-  rw [rTensor_id, id_coe, id.def]
+  rw [rTensor_id, id_coe, _root_.id]
 #align linear_map.rtensor_id_apply LinearMap.rTensor_id_apply
 
 variable {N}

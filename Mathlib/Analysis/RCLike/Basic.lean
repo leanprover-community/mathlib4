@@ -876,12 +876,25 @@ lemma nonpos_iff_exists_ofReal : z ≤ 0 ↔ ∃ x ≤ (0 : ℝ), x = z := by
 lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
   simp_rw [neg_iff (K := K), ext_iff (K := K)]; aesop
 
+@[simp]
+lemma ofReal_le_ofReal {x y : ℝ} : (x : K) ≤ (y : K) ↔ x ≤ y := by
+  rw [le_iff_re_im]
+  simp
+
+@[simp]
+lemma ofReal_nonneg {x : ℝ} : 0 ≤ (x : K) ↔ 0 ≤ x := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
+@[simp]
+lemma ofReal_nonpos {x : ℝ} : (x : K) ≤ 0 ↔ x ≤ 0 := by
+  rw [← ofReal_zero, ofReal_le_ofReal]
+
 /-- With `z ≤ w` iff `w - z` is real and nonnegative, `ℝ` and `ℂ` are star ordered rings.
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
 lemma toStarOrderedRing : StarOrderedRing K :=
-  StarOrderedRing.ofNonnegIff'
+  StarOrderedRing.of_nonneg_iff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *
       simpa [map_add, add_le_add_iff_left, add_right_inj] using hxy)
@@ -987,7 +1000,7 @@ theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 #align is_R_or_C.continuous_re RCLike.continuous_re
@@ -1019,7 +1032,7 @@ theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
-@[continuity]
+@[continuity, fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
 #align is_R_or_C.continuous_im RCLike.continuous_im

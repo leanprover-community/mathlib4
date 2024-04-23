@@ -164,7 +164,7 @@ theorem isBigO_cocompact_rpow [ProperSpace E] (s : ℝ) :
   simp_rw [Asymptotics.IsBigO, Asymptotics.IsBigOWith]
   refine' ⟨1, (Filter.eventually_ge_atTop 1).mono fun x hx => _⟩
   rw [one_mul, Real.norm_of_nonneg (Real.rpow_nonneg (zero_le_one.trans hx) _),
-    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_int_cast, Int.cast_neg,
+    Real.norm_of_nonneg (zpow_nonneg (zero_le_one.trans hx) _), ← Real.rpow_intCast, Int.cast_neg,
     Int.cast_natCast]
   exact Real.rpow_le_rpow_of_exponent_le hx hk
 set_option linter.uppercaseLean3 false in
@@ -172,7 +172,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem isBigO_cocompact_zpow [ProperSpace E] (k : ℤ) :
     f =O[cocompact E] fun x => ‖x‖ ^ k := by
-  simpa only [Real.rpow_int_cast] using isBigO_cocompact_rpow f k
+  simpa only [Real.rpow_intCast] using isBigO_cocompact_rpow f k
 set_option linter.uppercaseLean3 false in
 #align schwartz_map.is_O_cocompact_zpow SchwartzMap.isBigO_cocompact_zpow
 
@@ -1042,7 +1042,7 @@ lemma integrable_pow_mul (f : 𝓢(D, V))
     (eventually_of_forall (fun x ↦ ?_))
   conv_rhs => rw [norm_of_nonneg (by positivity), rpow_neg (by positivity), ← div_eq_mul_inv]
   rw [le_div_iff' (by positivity)]
-  simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_nat_cast]
+  simp only [id_eq, Pi.mul_apply, Pi.pow_apply, norm_mul, norm_pow, norm_norm, rpow_natCast]
   calc
     (1 + ‖x‖) ^ n * (‖x‖ ^ k * ‖f x‖)
       ≤ (1 + ‖x‖) ^ n * ((1 + ‖x‖) ^ k * ‖f x‖) := by gcongr; simp
@@ -1068,7 +1068,7 @@ def integralCLM : 𝓢(D, V) →L[𝕜] V :=
       have h' : ∀ x, ‖f x‖ ≤ (1 + ‖x‖) ^ (-(n : ℝ)) *
           (2 ^ n * ((Finset.Iic m).sup (fun m' => SchwartzMap.seminorm 𝕜 m'.1 m'.2) f)) := by
         intro x
-        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_nat_cast]
+        rw [rpow_neg (by positivity), ← div_eq_inv_mul, le_div_iff' (by positivity), rpow_natCast]
         simpa using one_add_le_sup_seminorm_apply (m := m) (k := n) (n := 0) le_rfl le_rfl f x
       apply (integral_mono (by simpa using f.integrable_pow_mul μ 0) _ h').trans
       · rw [integral_mul_right, ← mul_assoc, mul_comm (2 ^ n)]

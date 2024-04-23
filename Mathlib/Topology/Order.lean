@@ -682,7 +682,8 @@ theorem continuous_iff_le_induced {t₁ : TopologicalSpace α} {t₂ : Topologic
 
 lemma continuous_generateFrom_iff {t : TopologicalSpace α} {b : Set (Set β)} :
     Continuous[t, generateFrom b] f ↔ ∀ s ∈ b, IsOpen (f ⁻¹' s) := by
-  rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]; rfl
+  rw [continuous_iff_coinduced_le, le_generateFrom_iff_subset_isOpen]
+  simp only [isOpen_coinduced, preimage_id', subset_def, mem_setOf]
 
 @[deprecated] alias ⟨_, continuous_generateFrom⟩ := continuous_generateFrom_iff
 #align continuous_generated_from continuous_generateFrom
@@ -893,7 +894,7 @@ theorem nhds_true : 𝓝 True = pure True :=
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=
-  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
+  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _), iInter_and]
 #align nhds_false nhds_false
 
 theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :

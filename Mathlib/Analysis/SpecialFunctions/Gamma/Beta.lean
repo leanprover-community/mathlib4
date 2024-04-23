@@ -122,7 +122,7 @@ theorem betaIntegral_scaled (s t : ℂ) {a : ℝ} (ha : 0 < a) :
   rw [A, mul_assoc, ← intervalIntegral.integral_const_mul, ← real_smul, ← zero_div a, ←
     div_self ha.ne', ← intervalIntegral.integral_comp_div _ ha.ne', zero_div]
   simp_rw [intervalIntegral.integral_of_le ha.le]
-  refine' set_integral_congr measurableSet_Ioc fun x hx => _
+  refine' setIntegral_congr measurableSet_Ioc fun x hx => _
   rw [mul_mul_mul_comm]
   congr 1
   · rw [← mul_cpow_ofReal_nonneg ha.le (div_pos hx.1 ha).le, ofReal_div, mul_div_cancel₀ _ ha']
@@ -143,7 +143,7 @@ theorem Gamma_mul_Gamma_eq_betaIntegral {s t : ℂ} (hs : 0 < re s) (ht : 0 < re
   have hst : 0 < re (s + t) := by rw [add_re]; exact add_pos hs ht
   rw [Gamma_eq_integral hs, Gamma_eq_integral ht, Gamma_eq_integral hst, GammaIntegral,
     GammaIntegral, GammaIntegral, ← conv_int, ← integral_mul_right (betaIntegral _ _)]
-  refine' set_integral_congr measurableSet_Ioi fun x hx => _
+  refine' setIntegral_congr measurableSet_Ioi fun x hx => _
   rw [mul_assoc, ← betaIntegral_scaled s t hx, ← intervalIntegral.integral_const_mul]
   congr 1 with y : 1
   push_cast
@@ -216,7 +216,7 @@ theorem betaIntegral_eval_nat_add_one_right {u : ℂ} (hu : 0 < re u) (n : ℕ) 
   · rw [Nat.cast_zero, zero_add, betaIntegral_eval_one_right hu, Nat.factorial_zero, Nat.cast_one]
     simp
   · have := betaIntegral_recurrence hu (?_ : 0 < re n.succ)
-    swap; · rw [← ofReal_nat_cast, ofReal_re]; positivity
+    swap; · rw [← ofReal_natCast, ofReal_re]; positivity
     rw [mul_comm u _, ← eq_div_iff] at this
     swap; · contrapose! hu; rw [hu, zero_re]
     rw [this, Finset.prod_range_succ', Nat.cast_succ, IH]
@@ -274,16 +274,16 @@ theorem GammaSeq_eq_approx_Gamma_integral {s : ℂ} (hs : 0 < re s) {n : ℕ} (h
     ← intervalIntegral.integral_const_mul, ← intervalIntegral.integral_const_mul]
   swap; · exact Nat.cast_ne_zero.mpr hn
   simp_rw [intervalIntegral.integral_of_le zero_le_one]
-  refine' set_integral_congr measurableSet_Ioc fun x hx => _
+  refine' setIntegral_congr measurableSet_Ioc fun x hx => _
   push_cast
   have hn' : (n : ℂ) ≠ 0 := Nat.cast_ne_zero.mpr hn
   have A : (n : ℂ) ^ s = (n : ℂ) ^ (s - 1) * n := by
     conv_lhs => rw [(by ring : s = s - 1 + 1), cpow_add _ _ hn']
     simp
   have B : ((x : ℂ) * ↑n) ^ (s - 1) = (x : ℂ) ^ (s - 1) * (n : ℂ) ^ (s - 1) := by
-    rw [← ofReal_nat_cast,
+    rw [← ofReal_natCast,
       mul_cpow_ofReal_nonneg hx.1.le (Nat.cast_pos.mpr (Nat.pos_of_ne_zero hn)).le]
-  rw [A, B, cpow_nat_cast]; ring
+  rw [A, B, cpow_natCast]; ring
 #align complex.Gamma_seq_eq_approx_Gamma_integral Complex.GammaSeq_eq_approx_Gamma_integral
 
 /-- The main techical lemma for `GammaSeq_tendsto_Gamma`, expressing the integral defining the
@@ -456,12 +456,12 @@ theorem Gamma_ne_zero {s : ℂ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
     refine' Real.Gamma_ne_zero fun n => _
     specialize hs n
     contrapose! hs
-    rwa [this, ← ofReal_nat_cast, ← ofReal_neg, ofReal_inj]
+    rwa [this, ← ofReal_natCast, ← ofReal_neg, ofReal_inj]
   · have : sin (↑π * s) ≠ 0 := by
       rw [Complex.sin_ne_zero_iff]
       intro k
       apply_fun im
-      rw [im_ofReal_mul, ← ofReal_int_cast, ← ofReal_mul, ofReal_im]
+      rw [im_ofReal_mul, ← ofReal_intCast, ← ofReal_mul, ofReal_im]
       exact mul_ne_zero Real.pi_pos.ne' h_im
     have A := div_ne_zero (ofReal_ne_zero.mpr Real.pi_pos.ne') this
     rw [← Complex.Gamma_mul_Gamma_one_sub s, mul_ne_zero_iff] at A
@@ -478,7 +478,7 @@ theorem Gamma_eq_zero_iff (s : ℂ) : Gamma s = 0 ↔ ∃ m : ℕ, s = -m := by
 theorem Gamma_ne_zero_of_re_pos {s : ℂ} (hs : 0 < re s) : Gamma s ≠ 0 := by
   refine' Gamma_ne_zero fun m => _
   contrapose! hs
-  simpa only [hs, neg_re, ← ofReal_nat_cast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
+  simpa only [hs, neg_re, ← ofReal_natCast, ofReal_re, neg_nonpos] using Nat.cast_nonneg _
 #align complex.Gamma_ne_zero_of_re_pos Complex.Gamma_ne_zero_of_re_pos
 
 end Complex
@@ -499,7 +499,7 @@ theorem GammaSeq_tendsto_Gamma (s : ℝ) : Tendsto (GammaSeq s) atTop (𝓝 <| G
   ext1 n
   dsimp only [GammaSeq, Function.comp_apply, Complex.GammaSeq]
   push_cast
-  rw [Complex.ofReal_cpow n.cast_nonneg, Complex.ofReal_nat_cast]
+  rw [Complex.ofReal_cpow n.cast_nonneg, Complex.ofReal_natCast]
 #align real.Gamma_seq_tendsto_Gamma Real.GammaSeq_tendsto_Gamma
 
 /-- Euler's reflection formula for the real Gamma function. -/

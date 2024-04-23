@@ -952,6 +952,20 @@ def smulRightL : ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] Co
 @[simp] lemma smulRightL_apply (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
   smulRightL 𝕜 E G f z = f.smulRight z := rfl
 
+variable (𝕜 E G) in
+/-- An auxiliary instance to be able to just state the fact that the norm of `smulRightL` makes
+sense. This shouldn't be needed. See lean4#3927. -/
+def seminormedAddCommGroup_aux_for_smulRightL :
+    SeminormedAddCommGroup
+      (ContinuousMultilinearMap 𝕜 E 𝕜 →L[𝕜] G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) :=
+  ContinuousLinearMap.toSeminormedAddCommGroup
+    (F := G →L[𝕜] ContinuousMultilinearMap 𝕜 E G) (σ₁₂ := RingHom.id 𝕜)
+
+lemma norm_smulRightL_le :
+    letI := seminormedAddCommGroup_aux_for_smulRightL 𝕜 E G
+    ‖smulRightL 𝕜 E G‖ ≤ 1 :=
+  LinearMap.mkContinuous₂_norm_le _ zero_le_one _
+
 variable (𝕜 ι G)
 
 /-- Continuous multilinear maps on `𝕜^n` with values in `G` are in bijection with `G`, as such a
@@ -1344,16 +1358,6 @@ theorem compContinuousLinearMapEquivL_apply (g : ContinuousMultilinearMap 𝕜 E
 #align continuous_multilinear_map.comp_continuous_linear_map_equivL_apply ContinuousMultilinearMap.compContinuousLinearMapEquivL_apply
 
 end ContinuousMultilinearMap
-
-section SMul
-
-variable {R : Type*} [Semiring R] [Module R G] [SMulCommClass 𝕜 R G] [ContinuousConstSMul R G]
-
-instance continuousConstSMul : ContinuousConstSMul R (ContinuousMultilinearMap 𝕜 E G) :=
-  ⟨fun c =>
-    (ContinuousLinearMap.compContinuousMultilinearMapL 𝕜 _ G G (c • ContinuousLinearMap.id 𝕜 G)).2⟩
-
-end SMul
 
 end Seminorm
 
