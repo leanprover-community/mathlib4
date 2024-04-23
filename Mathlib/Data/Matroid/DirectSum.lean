@@ -3,7 +3,7 @@ Copyright (c) 2024 Martin Dvorak. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Martin Dvorak, Ivan Sergeev
 -/
-import Mathlib.Data.Matroid.IndepAxioms
+import Mathlib.Data.Matroid.Restrict
 
 /-!
 # Direct sum of matroids
@@ -12,6 +12,8 @@ import Mathlib.Data.Matroid.IndepAxioms
 
 * `indepMatroidDirectSum` constructs an `IndepMatroid` that is the direct sum of two `IndepMatroid`
   instances on disjoint ground sets
+* `matroidDirectSum` constructs a `Matroid` that is the direct sum of two `Matroid` instances on
+  disjoint ground sets (a wrapper around `indepMatroidDirectSum`)
 -/
 
 variable {α : Type*}
@@ -162,8 +164,8 @@ lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
       · exact hB₁ hB.leftIndep (Set.inter_subset_inter_left M₁.E hIB)
       · exact hB₂ hB.rightIndep (Set.inter_subset_inter_left M₂.E hIB)
 
-/-- Direct sum of matroids as a matroid. -/
-def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : Disjoint M₁.E M₂.E) : IndepMatroid α :=
+/-- Direct sum of matroids as a matroid defined by the independence axioms. -/
+def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) : IndepMatroid α :=
   IndepMatroid.mk
     (M₁.E ∪ M₂.E)
     (indepDirectSum hME)
@@ -267,3 +269,8 @@ def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : Disjoint M₁.E M
       exact hTX.trans hX
     )
     (fun _ => (·.ground))
+
+/-- Direct sum of matroids as a matroid. -/
+def matroidDirectSum {M₁ M₂ : Matroid α} (hME : M₁.E ∩ M₂.E = ∅) : Matroid α :=
+  have hME' : (M₁.restrictIndepMatroid M₁.E).E ∩ (M₂.restrictIndepMatroid M₂.E).E = ∅ := hME
+  (indepMatroidDirectSum hME').matroid
