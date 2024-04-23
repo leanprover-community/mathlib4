@@ -31,18 +31,16 @@ def bitSet (n : ℕ) : Finset ℕ := by
   induction' n using binaryRec with b _ s
   · exact ∅
   cases b
-  · exact Finset.image (· + 1) s
-  · exact insert 0 (Finset.image (· + 1) s)
+  · exact image (· + 1) s
+  · exact insert 0 (image (· + 1) s)
 
-theorem bitSet_bit_true (n : ℕ) : bitSet (bit true n) =
-    insert 0 (image (· + 1) (bitSet n)) :=
+theorem bitSet_bit_true (n : ℕ) : bitSet (bit true n) = insert 0 (image (· + 1) (bitSet n)) :=
   binaryRec_eq rfl _ _
 
-theorem bitSet_bit_false (n : ℕ) : bitSet (bit false n) =
-    (image (· + 1) (bitSet n)) :=
+theorem bitSet_bit_false (n : ℕ) : bitSet (bit false n) = image (· + 1) (bitSet n) :=
   binaryRec_eq rfl _ _
 
-@[simp] theorem bitSet_two_mul_add (n : ℕ) : bitSet (2*n+1) =
+@[simp] theorem bitSet_two_mul_add (n : ℕ) : bitSet (2*n + 1) =
     insert 0 (image (· + 1) (bitSet n)) := by
   rw [← bitSet_bit_true, bit_true, bit1_val]
 
@@ -55,13 +53,11 @@ theorem bitSet_bit_false (n : ℕ) : bitSet (bit false n) =
 @[simp] theorem bitSet_one : bitSet 1 = {0} := rfl
 
 @[simp] theorem bitSet_two_pow (k : ℕ) : bitSet (2^k) = {k} := by
-  induction' k using Nat.recAux with k ih
-  · rw [pow_zero, (by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
+  induction' k using Nat.recAux with k ih; rfl
   rw [pow_add, pow_one, mul_comm, bitSet_two_mul, ih, image_singleton]
 
 theorem twoPowSum_bitSet (n : ℕ) : ∑ i in n.bitSet, 2 ^ i = n := by
-  induction' n using binaryRec with b n hs
-  · simp [bitSet]
+  induction' n using binaryRec with b n hs; rfl
   cases b
   · rw [bitSet_bit_false, sum_image (by simp), bit_false, bit0_val]
     simp_rw [pow_add, pow_one, ← Finset.sum_mul, mul_comm 2]
