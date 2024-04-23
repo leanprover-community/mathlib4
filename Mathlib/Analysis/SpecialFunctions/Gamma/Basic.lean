@@ -323,7 +323,9 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; omega; linarith
+  · rw [Nat.floor_of_nonpos]
+    · omega
+    · linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -611,7 +613,8 @@ is mathematically undefined and we set it to `0` by convention). -/
 theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := by
   suffices ∀ {n : ℕ}, -(n : ℝ) < s → Gamma s ≠ 0 by
     apply this
-    swap; exact ⌊-s⌋₊ + 1
+    swap
+    · exact ⌊-s⌋₊ + 1
     rw [neg_lt, Nat.cast_add, Nat.cast_one]
     exact Nat.lt_floor_add_one _
   intro n
