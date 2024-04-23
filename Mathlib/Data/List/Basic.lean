@@ -1273,6 +1273,8 @@ theorem nthLe_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) 
     nthLe L i hi = nthLe L' i (h ▸ hi) := by congr
 #align list.nth_le_of_eq List.nthLe_of_eq
 
+@[simp, deprecated get_singleton]
+theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.get_singleton
 
 @[deprecated] -- FIXME: replacement -- it's not `get_zero` and it's not `get?_zero`

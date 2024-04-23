@@ -805,7 +805,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   apply insertNth_injective s.length x
   have hl : s.length = t.length := by simpa using congr_arg length h
   rw [← nthLe_permutations'Aux s x s.length (by simp),
-    ←nthLe_permutations'Aux t x s.length (by simp [hl])]
+    ← nthLe_permutations'Aux t x s.length (by simp [hl])]
   simp [h, hl]
 #align list.injective_permutations'_aux List.injective_permutations'Aux
 
