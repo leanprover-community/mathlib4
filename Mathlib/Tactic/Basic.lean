@@ -9,7 +9,6 @@ import Mathlib.Tactic.PPWithUniv
 import Mathlib.Tactic.ExtendDoc
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
-import Mathlib.Tactic.MultigoalsLinter
 
 set_option autoImplicit true
 

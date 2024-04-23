@@ -72,5 +72,3 @@ example : True ∧ True := by
     exact .intro
   focus
     exact .intro
---    case' false => rfl
---  case' true => rfl
