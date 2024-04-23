@@ -76,7 +76,7 @@ lemma Set.union_inter_eq_fst {S₁ S₂ E₁ E₂ X₁ X₂ : Set α}
   · symm
     rw [Set.left_eq_inter]
     exact hX₁.right
-  · rw [←Set.subset_empty_iff] at hE ⊢
+  · rw [← Set.subset_empty_iff] at hE ⊢
     apply (Set.inter_subset_inter_left E₁ hX₂.right).trans
     rwa [Set.inter_comm] at hE
 
