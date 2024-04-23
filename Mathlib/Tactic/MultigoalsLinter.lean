@@ -9,14 +9,21 @@ import Lean.Linter.Util
 /-!
 #  The "multiGoal" linter
 
-The "multiGoal" linter.
+The "multiGoal" linter emits a warning where there is more than a single goal in scope.
+There are a few tactics that are intended to work specifically in such a situation and the linter
+ignores them.
+
+Otherwise, whenever a tactic leaves multiple goals, the linter will emit a warning, unless
+some form of "focusing" tactic is used.
+Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `on_goal x` also
+serve a similar purpose.
 -/
 
 open Lean Elab
 
 namespace Mathlib.Linter
 
-/-- The "multiGoal" linter emits a warning on "multiGoal" syntax. -/
+/-- The "multiGoal" linter emits a warning when there are multiple active goals. -/
 register_option linter.multiGoal : Bool := {
   defValue := true
   descr := "enable the multiGoal linter"
@@ -107,7 +114,7 @@ namespace Mathlib.Linter.multiGoal
 /-- Gets the value of the `linter.multiGoal` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.multiGoal o
 
-/-- The main implementation of the multiGoal linter. -/
+@[inherit_doc Mathlib.Linter.linter.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
     unless getLinterHash (← getOptions) do
