@@ -1498,3 +1498,4 @@ theorem integral_posConvolution [CompleteSpace E] [CompleteSpace E']
 #align integral_pos_convolution MeasureTheory.integral_posConvolution
 
 end Nonneg
+end MeasureTheory
