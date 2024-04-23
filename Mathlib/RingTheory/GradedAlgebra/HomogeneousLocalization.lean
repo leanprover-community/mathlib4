@@ -5,6 +5,7 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
+import Mathlib.Tactic.Polyrith
 
 #align_import ring_theory.graded_algebra.homogeneous_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -476,6 +477,10 @@ instance homogeneousLocalizationAlgebra :
   smul_def' _ _ := rfl
 #align homogeneous_localization.homogeneous_localization_algebra HomogeneousLocalization.homogeneousLocalizationAlgebra
 
+lemma algebraMap_apply_eq_val (r : HomogeneousLocalization 𝒜 x) :
+    algebraMap (HomogeneousLocalization 𝒜 x) (Localization x) r = r.val :=
+  rfl
+
 end HomogeneousLocalization
 
 namespace HomogeneousLocalization
@@ -607,6 +612,89 @@ variable (𝒜) (f : A)
 abbrev Away :=
   HomogeneousLocalization 𝒜 (Submonoid.powers f)
 #align homogeneous_localization.away HomogeneousLocalization.Away
+
+end
+
+section
+
+variable (𝒜)
+variable (B C : Type*) [CommRing B] [Algebra R B]
+variable (ℬ : ι → Submodule R B) [GradedAlgebra ℬ]
+variable (P : Submonoid A) (Q : Submonoid B)
+variable [CommRing C]
+
+
+/--
+Homogeneous localization as a subring
+-/
+def asSubring : Subring (Localization P) where
+  carrier :=
+  { a : at P | ∃ b : HomogeneousLocalization 𝒜 P, a = b.val }
+  mul_mem' := by
+    rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩
+    exact ⟨a * b, mul_val a b |>.symm⟩
+  one_mem' := ⟨1, one_val |>.symm⟩
+  add_mem' := by
+    rintro _ _ ⟨a, rfl⟩ ⟨b, rfl⟩
+    exact ⟨a + b, add_val a b |>.symm⟩
+  zero_mem' := ⟨0, zero_val |>.symm⟩
+  neg_mem' := by
+    rintro _ ⟨a, rfl⟩
+    exact ⟨-a, neg_val a |>.symm⟩
+
+variable {C P}
+def lift (g : A →+* C) (is_unit : ∀ x : P, IsUnit (g x)) :
+    HomogeneousLocalization 𝒜 P →+* C :=
+  RingHom.comp (IsLocalization.lift (M := P) (S := Localization P) is_unit) <|
+    algebraMap _ _
+
+variable (P) in
+def equivSubring : HomogeneousLocalization 𝒜 P ≃+* asSubring 𝒜 P where
+  toFun x := ⟨x.val, ⟨_, rfl⟩⟩
+  invFun x := .mk''
+    ⟨x.2.choose.deg,
+      ⟨x.2.choose.num, x.2.choose.num_mem_deg⟩,
+      ⟨x.2.choose.den, x.2.choose.den_mem_deg⟩,
+      x.2.choose.den_mem⟩
+  left_inv x := by
+    rw [ext_iff_val, val_mk'', x.eq_num_div_den, Localization.mk_eq_mk_iff,
+      Localization.r_iff_exists]
+    dsimp only
+    generalize_proofs h
+    have eq : x = h.choose := by
+      rw [ext_iff_val]
+      exact h.choose_spec
+    rw [← eq]
+    simp only [exists_const]
+  right_inv := by
+    rintro ⟨_, ⟨x, rfl⟩⟩
+    simp only [val_mk'', Subtype.mk.injEq]
+    generalize_proofs h1 h2
+    dsimp only at h1 h2
+    have eq : x = h1.choose := by
+      rw [ext_iff_val]
+      exact h1.choose_spec
+    conv_rhs => rw [x.eq_num_div_den, eq]
+  map_mul' _ _ := by
+    simp only [mul_val]
+    rfl
+  map_add' _ _ := by
+    simp only [add_val]
+    rfl
+
+def map (g : A →+* B)
+  (comap_le : P ≤ Q.comap g) (preserves_deg : ∀ a : A, ∀ i : ι, a ∈ 𝒜 i ↔ g a ∈ ℬ i) :
+    HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q :=
+  RingHom.comp (equivSubring ℬ Q).symm <|
+    (IsLocalization.map (M := P) (S := Localization P) (T := Q) (Q := Localization Q) g
+      comap_le).comp (algebraMap (HomogeneousLocalization 𝒜 P) (Localization P)) |>.codRestrict
+      (asSubring ℬ Q) fun x =>
+      ⟨.mk'' ⟨x.deg,
+        ⟨g x.num, (preserves_deg x.num x.deg).mp x.num_mem_deg⟩,
+        ⟨g x.den, (preserves_deg x.den x.deg).mp x.den_mem_deg⟩,
+        comap_le x.den_mem⟩, by
+        simp only [RingHom.coe_comp, Function.comp_apply, algebraMap_apply_eq_val, val_mk'',
+          x.eq_num_div_den, Localization.mk_eq_mk', IsLocalization.map_mk']⟩
 
 end
 
