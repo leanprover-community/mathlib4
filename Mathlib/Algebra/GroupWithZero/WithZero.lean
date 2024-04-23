@@ -6,7 +6,9 @@ Authors: Mario Carneiro, Johan Commelin
 import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
+import Mathlib.Data.Nat.Cast.Defs
 import Mathlib.Data.Option.Basic
+import Mathlib.Data.Option.NAry
 
 /-!
 # Adjoining a zero to a group

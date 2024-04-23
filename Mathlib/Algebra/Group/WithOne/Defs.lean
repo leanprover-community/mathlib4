@@ -3,9 +3,8 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johan Commelin
 -/
-import Mathlib.Data.Nat.Cast.Defs
+import Mathlib.Algebra.Group.Defs
 import Mathlib.Data.Option.Defs
-import Mathlib.Data.Option.NAry
 import Mathlib.Logic.Nontrivial.Basic
 import Mathlib.Tactic.Common
 
