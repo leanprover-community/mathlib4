@@ -349,8 +349,9 @@ theorem _root_.HasCompactSupport.convolutionExists_right (hcg : HasCompactSuppor
   simp_rw [ht, (L _).map_zero]
 #align has_compact_support.convolution_exists_right HasCompactSupport.convolutionExists_right
 
-theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right (hcf : HasCompactSupport f)
-    (hf : LocallyIntegrable f μ) (hg : Continuous g) : ConvolutionExists f g L μ := by
+theorem _root_.HasCompactSupport.convolutionExists_left_of_continuous_right
+    (hcf : HasCompactSupport f) (hf : LocallyIntegrable f μ) (hg : Continuous g) :
+    ConvolutionExists f g L μ := by
   intro x₀
   refine' HasCompactSupport.convolutionExistsAt L _ hf hg
   refine' hcf.mono _
@@ -408,8 +409,8 @@ theorem convolutionExistsAt_iff_integrable_swap :
 
 end MeasurableGroup
 
-variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G] [IsAddLeftInvariant μ]
-  [IsNegInvariant μ]
+variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
+variable [IsAddLeftInvariant μ] [IsNegInvariant μ]
 
 theorem _root_.HasCompactSupport.convolutionExistsLeft (hcf : HasCompactSupport f) (hf : Continuous f)
     (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
