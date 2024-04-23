@@ -87,8 +87,8 @@ lemma Set.union_inter_eq_snd {S₁ S₂ E₁ E₂ X₁ X₂ : Set α}
   rw [Set.inter_comm] at hE
   exact Set.union_inter_eq_fst hE hX₂ hX₁
 
-set_option linter.unusedVariables false in
 /-- Direct sum of matroids as a set operation. -/
+@[nolint unusedArguments]
 def indepDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) (I : Set α) : Prop :=
   ∃ I₁ I₂ : Set α, I₁ ∪ I₂ = I ∧ M₁.Indep I₁ ∧ M₂.Indep I₂
 
@@ -117,7 +117,7 @@ lemma indepDirectSum_iff {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E 
     indepDirectSum hME I ↔ M₁.Indep (I ∩ M₁.E) ∧ M₂.Indep (I ∩ M₂.E) :=
   ⟨fun hid => ⟨hid.leftIndep, hid.rightIndep⟩, fun ⟨hM₁, hM₂⟩ => ⟨I ∩ M₁.E, I ∩ M₂.E, by aesop⟩⟩
 
-lemma indepDirectSum_iff_disjoint_maximals {M₁ M₂ : IndepMatroid α}
+lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
     (hME : M₁.E ∩ M₂.E = ∅) (I : Set α) :
     I ∈ maximals (· ⊆ ·) {I | indepDirectSum hME I} ↔
       I ⊆ M₁.E ∪ M₂.E ∧
@@ -178,10 +178,10 @@ def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E
     )
     (by
       intro I B hI I_not_max B_max
-      rw [indepDirectSum_iff_disjoint_maximals hME] at B_max
+      rw [maximals_indepDirectSum_iff hME] at B_max
       obtain ⟨- , hB₁, hB₂⟩ := B_max
       have I_grounded := hI.ground
-      rw [indepDirectSum_iff_disjoint_maximals hME] at I_not_max
+      rw [maximals_indepDirectSum_iff hME] at I_not_max
       rw [indepDirectSum_iff hME hI.ground] at hI
       simp only [I_grounded, not_true_eq_false, false_or, not_and_or] at I_not_max
       cases I_not_max with
