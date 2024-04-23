@@ -63,13 +63,12 @@ theorem not_isField_of_subsingleton (R : Type u) [Semiring R] [Subsingleton R] :
 open scoped Classical
 
 /-- Transferring from `IsField` to `Semifield`. -/
-noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R :=
-  { ‹Semiring R›, h with
-    inv := fun a => if ha : a = 0 then 0 else Classical.choose (IsField.mul_inv_cancel h ha),
-    inv_zero := dif_pos rfl,
-    mul_inv_cancel := fun a ha => by
-      convert Classical.choose_spec (IsField.mul_inv_cancel h ha)
-      exact dif_neg ha }
+noncomputable def IsField.toSemifield {R : Type u} [Semiring R] (h : IsField R) : Semifield R where
+  __ := ‹Semiring R›
+  __ := h
+  inv a := if ha : a = 0 then 0 else Classical.choose (h.mul_inv_cancel ha)
+  inv_zero := dif_pos rfl
+  mul_inv_cancel a ha := by convert Classical.choose_spec (h.mul_inv_cancel ha); exact dif_neg ha
 #align is_field.to_semifield IsField.toSemifield
 
 /-- Transferring from `IsField` to `Field`. -/

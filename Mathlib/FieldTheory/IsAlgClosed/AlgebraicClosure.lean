@@ -434,9 +434,9 @@ instance instField : Field (AlgebraicClosure k) where
   __ := instCommRing _
   __ := instGroupWithZero _
   ratCast q := algebraMap k _ q
+  qsmul := (· • ·)
   ratCast_def q := by
     change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  qsmul := (· • ·)
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 

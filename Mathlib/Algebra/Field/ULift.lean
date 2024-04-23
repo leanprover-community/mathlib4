@@ -21,16 +21,11 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance [RatCast α] : RatCast (ULift α) := ⟨(up ·)⟩
+instance instRatCast [RatCast α] : RatCast (ULift α) := ⟨fun a ↦ up a⟩
 
-@[simp, norm_cast]
-theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=
-  rfl
+@[simp, norm_cast] lemma up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q := rfl
+@[simp, norm_cast] lemma down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q := rfl
 #align ulift.up_rat_cast ULift.up_ratCast
-
-@[simp, norm_cast]
-theorem down_ratCast [RatCast α] (q : ℚ) : down (q : ULift α) = q :=
-  rfl
 #align ulift.down_rat_cast ULift.down_ratCast
 
 instance divisionSemiring [DivisionSemiring α] : DivisionSemiring (ULift α) := by
