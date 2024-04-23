@@ -130,7 +130,6 @@ instance locallyDiscreteBicategory.strict : Strict (LocallyDiscrete C)
   assoc f g h := LocallyDiscrete.assoc f g h
 #align category_theory.locally_discrete_bicategory.strict CategoryTheory.locallyDiscreteBicategory.strict
 
-
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 
 /--
