@@ -64,7 +64,11 @@ noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
   LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
 @[simp]
-theorem toDualLeft_apply (a : M) : p.toDualLeft a = p.toLin a :=
+theorem coe_toLin : ⇑p.toLin = ⇑p :=
+  rfl
+
+@[simp]
+theorem toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
   rfl
 
 @[simp]
@@ -78,7 +82,7 @@ noncomputable def toDualRight : N ≃ₗ[R] Dual R M :=
   toDualLeft p.flip
 
 @[simp]
-theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip.toLin a :=
+theorem toDualRight_apply (a : N) : p.toDualRight a = p.flip a :=
   rfl
 
 @[simp]
@@ -99,6 +103,11 @@ theorem toDualRight_symm_toDualLeft (x : M) :
   simp only [LinearEquiv.dualMap_apply, Dual.eval_apply]
   exact toDualLeft_of_toDualRight_symm p x f
 
+theorem toDualRight_symm_comp_toDualLeft :
+    p.toDualRight.symm.dualMap ∘ₗ (p.toDualLeft : M →ₗ[R] Dual R N) = Dual.eval R M := by
+  ext1 x
+  exact p.toDualRight_symm_toDualLeft x
+
 theorem bijective_toDualRight_symm_toDualLeft :
     Bijective (fun x => p.toDualRight.symm.dualMap (p.toDualLeft x)) :=
   Bijective.comp (LinearEquiv.bijective p.toDualRight.symm.dualMap)
@@ -106,13 +115,8 @@ theorem bijective_toDualRight_symm_toDualLeft :
 
 theorem reflexive_left : IsReflexive R M where
   bijective_dual_eval' := by
-    constructor
-    · intro a b h
-      rw [← toDualRight_symm_toDualLeft p a, ← toDualRight_symm_toDualLeft p b] at h
-      apply (bijective_toDualRight_symm_toDualLeft p).1 h
-    · intro a
-      simp_rw [← toDualRight_symm_toDualLeft p]
-      apply (bijective_toDualRight_symm_toDualLeft p).2
+    rw [← p.toDualRight_symm_comp_toDualLeft]
+    exact p.bijective_toDualRight_symm_toDualLeft
 
 theorem reflexive_right : IsReflexive R N :=
   reflexive_left (p := p.flip)
