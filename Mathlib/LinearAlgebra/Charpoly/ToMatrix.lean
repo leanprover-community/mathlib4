@@ -24,6 +24,8 @@ universe u v w
 
 variable {R M M₁ M₂ : Type*} [CommRing R] [Nontrivial R]
 variable [AddCommGroup M] [Module R M] [Module.Free R M] [Module.Finite R M]
+variable [AddCommGroup M₁] [Module R M₁] [Module.Finite R M₁] [Module.Free R M₁]
+variable [AddCommGroup M₂] [Module R M₂] [Module.Finite R M₂] [Module.Free R M₂]
 variable (f : M →ₗ[R] M)
 
 open Matrix
@@ -85,15 +87,25 @@ theorem charpoly_toMatrix {ι : Type w} [DecidableEq ι] [Fintype ι] (b : Basis
     _ = f.charpoly := rfl
 #align linear_map.charpoly_to_matrix LinearMap.charpoly_toMatrix
 
-lemma charpoly_prodMap [AddCommGroup M₁] [AddCommGroup M₂] [Module R M₁] [Module R M₂]
-    [Module.Finite R M₁] [Module.Finite R M₂] [Module.Free R M₁] [Module.Free R M₂]
-    (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
+lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂) :
     (f₁.prodMap f₂).charpoly = f₁.charpoly * f₂.charpoly := by
   let b₁ := chooseBasis R M₁
   let b₂ := chooseBasis R M₂
   let b := b₁.prod b₂
   rw [← charpoly_toMatrix f₁ b₁, ← charpoly_toMatrix f₂ b₂, ← charpoly_toMatrix (f₁.prodMap f₂) b,
     toMatrix_prodMap b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
+
+open Module.Free in
+lemma charpoly_eq_of_equiv (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) (e : M₁ ≃ₗ[R] M₂)
+    (H : (e.toLinearMap.comp <| φ₁.comp e.symm.toLinearMap) = φ₂) :
+    φ₁.charpoly = φ₂.charpoly := by
+  let b₁ := chooseBasis R M₁
+  let b₂ := b₁.map e
+  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂]
+  dsimp only [Matrix.charpoly, b₂]
+  congr 1
+  ext i j : 1
+  simp [Matrix.charmatrix, toMatrix, Matrix.diagonal, ← H]
 
 end Basic
 
