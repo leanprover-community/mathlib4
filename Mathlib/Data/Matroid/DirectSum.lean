@@ -22,13 +22,13 @@ lemma Set.union_inters_of_subset_union {A B C : Set α} (hA : A ⊆ B ∪ C) :
     A ∩ B ∪ A ∩ C = A := by
   aesop
 
-lemma Set.subset_inter_of_redundant_right {A B C D : Set α} (hAB : A ∪ D ⊆ B) (hBC : A ⊆ C) :
+lemma Set.subset_inter_of_redundant_right {A B C D : Set α} (hADB : A ∪ D ⊆ B) (hAC : A ⊆ C) :
     A ⊆ B ∩ C :=
-  Set.subset_inter ((Set.subset_union_left A D).trans hAB) hBC
+  Set.subset_inter ((Set.subset_union_left A D).trans hADB) hAC
 
-lemma Set.subset_inter_of_redundant_left {A B C D : Set α} (hAB : D ∪ A ⊆ B) (hBC : A ⊆ C) :
+lemma Set.subset_inter_of_redundant_left {A B C D : Set α} (hDAB : D ∪ A ⊆ B) (hAC : A ⊆ C) :
     A ⊆ B ∩ C :=
-  Set.subset_inter ((Set.subset_union_right D A).trans hAB) hBC
+  Set.subset_inter ((Set.subset_union_right D A).trans hDAB) hAC
 
 lemma Set.union_inter_aux {A B C D : Set α} (hAB : A ⊆ B) : A ∪ C ∩ D ⊆ B ∪ (A ∪ C ∩ D) ∩ D := by
   simp only [Set.subset_def, Set.mem_inter_iff, Set.mem_union]
@@ -272,5 +272,5 @@ def indepMatroidDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E
 
 /-- Direct sum of matroids as a matroid. -/
 def matroidDirectSum {M₁ M₂ : Matroid α} (hME : M₁.E ∩ M₂.E = ∅) : Matroid α :=
-  have hME' : (M₁.restrictIndepMatroid M₁.E).E ∩ (M₂.restrictIndepMatroid M₂.E).E = ∅ := hME
-  (indepMatroidDirectSum hME').matroid
+  (indepMatroidDirectSum hME').matroid where
+  hME' : (M₁.restrictIndepMatroid _).E ∩ (M₂.restrictIndepMatroid _).E = ∅ := hME
