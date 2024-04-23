@@ -250,7 +250,7 @@ def inclusion (B : Type u) [Quiver.{v + 1} B] :
     Pseudofunctor (LocallyDiscrete (Paths B)) (FreeBicategory B) :=
   { -- All the conditions for 2-morphisms are trivial thanks to the coherence theorem!
     preinclusion B with
-    mapId := fun a => eqToIso <| by aesop_cat
+    mapId := fun a => Iso.refl _
     mapComp := fun f g => inclusionMapCompAux f.as g.as }
 #align category_theory.free_bicategory.inclusion CategoryTheory.FreeBicategory.inclusion
 
