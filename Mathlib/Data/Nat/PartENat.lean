@@ -874,7 +874,7 @@ theorem lt_find_iff (n : ℕ) : (n : PartENat) < find P ↔ ∀ m ≤ n, ¬P m :
 
 theorem find_le (n : ℕ) (h : P n) : find P ≤ n := by
   rw [le_coe_iff]
-  exact ⟨⟨_, h⟩, @Nat.find_min' P _ ⟨n, h⟩ _ h⟩
+  exact ⟨⟨_, h⟩, @Nat.find_min' P _ _ _ h⟩
 #align part_enat.find_le PartENat.find_le
 
 theorem find_eq_top_iff : find P = ⊤ ↔ ∀ n, ¬P n :=

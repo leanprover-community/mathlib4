@@ -275,7 +275,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
-    neg_top := @inv_zero (G₀ := α) (_)
+    neg_top := @inv_zero (_)
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by

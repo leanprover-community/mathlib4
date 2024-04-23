@@ -222,7 +222,7 @@ theorem WellFounded.monotone_chain_condition' [Preorder α] :
     exact ⟨n, fun m _ => H _ (Set.mem_range_self _)⟩
   · refine' RelEmbedding.wellFounded_iff_no_descending_seq.2 ⟨fun a => _⟩
     obtain ⟨n, hn⟩ := h (a.swap : ((· < ·) : ℕ → ℕ → Prop) →r ((· < ·) : α → α → Prop)).toOrderHom
-    exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff a.swap).2 n.lt_succ_self)
+    exact hn n.succ n.lt_succ_self.le ((RelEmbedding.map_rel_iff _).2 n.lt_succ_self)
 #align well_founded.monotone_chain_condition' WellFounded.monotone_chain_condition'
 
 /-- The "monotone chain condition" below is sometimes a convenient form of well foundedness. -/

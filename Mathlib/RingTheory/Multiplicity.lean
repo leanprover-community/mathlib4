@@ -70,8 +70,7 @@ theorem Int.natCast_multiplicity (a b : ℕ) : multiplicity (a : ℤ) (b : ℤ) 
     norm_cast
   · intro h1 h2
     apply _root_.le_antisymm <;>
-      · dsimp [multiplicity]
-        apply Nat.find_mono
+      · apply Nat.find_mono
         norm_cast
         simp
 #align multiplicity.int.coe_nat_multiplicity multiplicity.Int.natCast_multiplicity
@@ -108,9 +107,7 @@ theorem pow_dvd_of_le_multiplicity {a b : α} {k : ℕ} :
       (fun _ => by
         rw [_root_.pow_zero]
         exact one_dvd _)
-      fun k ⟨_, h₂⟩ => by_contradiction fun hk => by
-        dsimp [multiplicity] at h₂
-        exact Nat.find_min _ (lt_of_succ_le (h₂ ⟨k, hk⟩)) hk
+      fun k ⟨_, h₂⟩ => by_contradiction fun hk => Nat.find_min _ (lt_of_succ_le (h₂ ⟨k, hk⟩)) hk
 #align multiplicity.pow_dvd_of_le_multiplicity multiplicity.pow_dvd_of_le_multiplicity
 
 theorem pow_multiplicity_dvd {a b : α} (h : Finite a b) : a ^ get (multiplicity a b) h ∣ b :=
@@ -137,7 +134,6 @@ theorem unique {a b : α} {k : ℕ} (hk : a ^ k ∣ b) (hsucc : ¬a ^ (k + 1) �
   le_antisymm (le_of_not_gt fun hk' => is_greatest hk' hk) <| by
     have : Finite a b := ⟨k, hsucc⟩
     rw [PartENat.le_coe_iff]
-    dsimp [multiplicity]
     exact ⟨this, Nat.find_min' _ hsucc⟩
 #align multiplicity.unique multiplicity.unique
 
