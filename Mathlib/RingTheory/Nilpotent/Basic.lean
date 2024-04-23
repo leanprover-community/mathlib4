@@ -17,7 +17,8 @@ import Mathlib.RingTheory.Nilpotent.Defs
 /-!
 # Nilpotent elements
 
-This file develops the basic theory of nilpotent elements. In particular it shows that the nilpotent elements are closed under many operations.
+This file develops the basic theory of nilpotent elements. In particular it shows that the
+nilpotent elements are closed under many operations.
 
 For the definition of `nilradical`, see `Mathlib.RingTheory.Nilpotent.Lemmas`.
 

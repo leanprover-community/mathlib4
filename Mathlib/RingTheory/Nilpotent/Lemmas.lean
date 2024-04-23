@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Nilpotent.Defs
 /-!
 # Nilpotent elements
 
+This file contains results about nilpotent elements that involve ring theory.
 -/
 
 universe u v
