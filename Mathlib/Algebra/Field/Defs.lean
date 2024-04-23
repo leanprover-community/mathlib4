@@ -76,23 +76,7 @@ better definitional properties). Instead, use the coercion. -/
 def Rat.castRec [NatCast K] [IntCast K] [Div K] (q : ℚ) : K := q.num / q.den
 #align rat.cast_rec Rat.castRec
 
-/-- The default definition of the scalar multiplication by `ℚ≥0` on a division semiring `K`.
-
-`q • x` is defined as `↑q * x`.
-
-Do not use directly (instances of `DivisionSemiring` are allowed to override that default for
-better definitional properties). Instead use the `•` notation. -/
-def nnqsmulRec (coe : ℚ≥0 → K) [Mul K] (a : ℚ≥0) (x : K) : K := coe a * x
-
-/-- The default definition of the scalar multiplication by `ℚ` on a division ring `K`.
-
-`q • x` is defined as `↑q * x`.
-
-Do not use directly (instances of `DivisionRing` are allowed to override that default for
-better definitional properties). Instead use the `•` notation. -/
-def qsmulRec (coe : ℚ → K) [Mul K] (a : ℚ) (x : K) : K :=
-  coe a * x
-#align qsmul_rec qsmulRec
+#noalign qsmul_rec
 
 /-- A `DivisionSemiring` is a `Semiring` with multiplicative inverses for nonzero elements.
 
@@ -111,7 +95,9 @@ class DivisionSemiring (α : Type*) extends Semiring α, GroupWithZero α, NNRat
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : α) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a nonnegative rational number.
 
-  Set this to `nnqsmulRec _` unless there is a risk of a `Module ℚ≥0 _` instance diamond.
+  Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
+  `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
+
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → α → α
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
@@ -143,7 +129,9 @@ class DivisionRing (α : Type*)
   protected nnratCast_def (q : ℚ≥0) : (NNRat.cast q : α) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a nonnegative rational number.
 
-  Set this to `nnqsmulRec _` unless there is a risk of a `Module ℚ≥0 _` instance diamond.
+  Unless there is a risk of a `Module ℚ≥0 _` instance diamond, write `nnqsmul := _`. This will set
+  `nnqsmul` to `(NNRat.cast · * ·)` thanks to unification in the default proof of `nnqsmul_def`.
+
   Do not use directly. Instead use the `•` notation. -/
   protected nnqsmul : ℚ≥0 → α → α
   /-- However `qsmul` is defined, it must be propositionally equal to multiplication by `Rat.cast`.
@@ -157,7 +145,8 @@ class DivisionRing (α : Type*)
   protected ratCast_def (q : ℚ) : (Rat.cast q : α) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a rational number.
 
-  Set this to `qsmulRec _` unless there is a risk of a `Module ℚ _` instance diamond.
+  Unless there is a risk of a `Module ℚ _` instance diamond, write `qsmul := _`. This will set
+  `qsmul` to `(Rat.cast · * ·)` thanks to unification in the default proof of `qsmul_def`.
 
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → α → α

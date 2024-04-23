@@ -177,6 +177,7 @@ import Mathlib.Algebra.GCDMonoid.Div
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.IntegrallyClosed
 import Mathlib.Algebra.GCDMonoid.Multiset
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GradedMonoid
 import Mathlib.Algebra.GradedMulAction
@@ -225,7 +226,6 @@ import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.Group.WithOne.Basic
 import Mathlib.Algebra.Group.WithOne.Defs
-import Mathlib.Algebra.Group.WithOne.Units
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Hom
@@ -251,6 +251,7 @@ import Mathlib.Algebra.GroupWithZero.Semiconj
 import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.HierarchyDesign
 import Mathlib.Algebra.Homology.Additive
 import Mathlib.Algebra.Homology.Augment
@@ -458,6 +459,7 @@ import Mathlib.Algebra.Order.Group.Prod
 import Mathlib.Algebra.Order.Group.TypeTags
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Group.WithTop
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Algebra.Order.Hom.Basic
 import Mathlib.Algebra.Order.Hom.Monoid
 import Mathlib.Algebra.Order.Hom.Ring
@@ -481,7 +483,6 @@ import Mathlib.Algebra.Order.Monoid.ToMulBot
 import Mathlib.Algebra.Order.Monoid.TypeTags
 import Mathlib.Algebra.Order.Monoid.Units
 import Mathlib.Algebra.Order.Monoid.WithTop
-import Mathlib.Algebra.Order.Monoid.WithZero
 import Mathlib.Algebra.Order.Monovary
 import Mathlib.Algebra.Order.Nonneg.Field
 import Mathlib.Algebra.Order.Nonneg.Floor
@@ -3390,6 +3391,7 @@ import Mathlib.RingTheory.Ideal.Basis
 import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.Ideal.IdempotentFG
+import Mathlib.RingTheory.Ideal.IsPrimary
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Ideal.MinimalPrime
 import Mathlib.RingTheory.Ideal.Norm

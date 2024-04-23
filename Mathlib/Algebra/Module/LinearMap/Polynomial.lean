@@ -381,7 +381,7 @@ lemma polyCharpoly_baseChange (A : Type*) [CommRing A] [Algebra R A] :
   apply polyCharpolyAux_basisIndep
 
 @[simp]
-lemma polyCharpoly_coeff_map (x : L) :
+lemma polyCharpoly_map_eq_charpoly (x : L) :
     (polyCharpoly φ b).map (MvPolynomial.eval (b.repr x)) = (φ x).charpoly := by
   rw [polyCharpoly, polyCharpolyAux_map_eq_charpoly]
 

@@ -203,8 +203,8 @@ section
 variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance instNNRatCast : NNRatCast (Cauchy abv) := ⟨fun q ↦ ofRat q⟩
-instance instRatCast : RatCast (Cauchy abv) := ⟨fun q ↦ ofRat q⟩
+instance instNNRatCast : NNRatCast (Cauchy abv) where nnratCast q := ofRat q
+instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 
 @[simp, norm_cast] lemma ofRat_nnratCast (q : ℚ≥0) : ofRat (q : β) = (q : Cauchy abv) := rfl
 @[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl

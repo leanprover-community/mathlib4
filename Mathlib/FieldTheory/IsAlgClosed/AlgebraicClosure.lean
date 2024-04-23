@@ -438,6 +438,7 @@ instance instField : Field (AlgebraicClosure k) where
   nnqsmul := (· • ·)
   qsmul := (· • ·)
   ratCast q := algebraMap k _ q
+  qsmul := (· • ·)
   ratCast_def q := by
     change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
   nnqsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by

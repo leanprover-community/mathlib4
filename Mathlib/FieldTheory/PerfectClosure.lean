@@ -500,7 +500,7 @@ theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
 -- Porting note: added to avoid "unknown free variable" error
 instance instDivisionRing : DivisionRing (PerfectClosure K p) where
   exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
-  mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H => by
+  mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by
     have := mt (eq_iff _ _ _ _).2 H
     rw [mk_inv, mk_mul_mk]
     refine (eq_iff K p _ _).2 ?_

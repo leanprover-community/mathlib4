@@ -43,4 +43,4 @@ def Field.ofMinimalAxioms (K : Type u)
     mul_inv_cancel := mul_inv_cancel
     inv_zero := inv_zero
     nnqsmul := _
-    qsmul := qsmulRec _ }
+    qsmul := _ }

@@ -135,10 +135,7 @@ See note [reducible non-instances]. -/
 noncomputable def toField : Field K where
   __ := IsFractionRing.isDomain A
   mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-  inv_zero := by
-    change IsFractionRing.inv A (0 : K) = 0
-    rw [IsFractionRing.inv]
-    exact dif_pos rfl
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
   nnqsmul := _
   qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField

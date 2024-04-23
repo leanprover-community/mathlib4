@@ -21,8 +21,8 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance instNNRatCast [NNRatCast α] : NNRatCast (ULift α) := ⟨fun a ↦ up a⟩
-instance instRatCast [RatCast α] : RatCast (ULift α) := ⟨fun a ↦ up a⟩
+instance instNNRatCast [NNRatCast α] : NNRatCast (ULift α) where nnratCast q := up q
+instance instRatCast [RatCast α] : RatCast (ULift α) where ratCast q := up q
 
 @[simp, norm_cast] lemma up_nnratCast [NNRatCast α] (q : ℚ≥0) : up (q : α) = q := rfl
 @[simp, norm_cast] lemma down_nnratCast [NNRatCast α] (q : ℚ≥0) : down (q : ULift α) = q := rfl
