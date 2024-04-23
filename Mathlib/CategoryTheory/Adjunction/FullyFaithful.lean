@@ -6,8 +6,6 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.MorphismProperty
 
-#redundant_imports
-
 #align_import category_theory.adjunction.fully_faithful from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
