@@ -2300,7 +2300,6 @@ theorem _root_.Function.Commute.filter_comap {f g : α → α} (h : Function.Com
 
 section
 
--- TODO(Anatole): refactor the surjectivity/injectivity of map/comap using the following
 open Filter
 
 theorem _root_.Function.LeftInverse.filter_map {f : α → β} {g : β → α} (hfg : LeftInverse g f) :
