@@ -72,7 +72,7 @@ open Elab Term Tactic
 /--
 The term elaborator `conv% tac => e` will run a conv tactic `tac` on `e`, and display the resulting
 expression (discarding the proof).
-For example, `conv% rw [true_and] => True ∧ False` elaborates to `False`.
+For example, `conv% True ∧ False => rw [true_and]` elaborates to `False`.
 
 `conv%? tac => e` shows the resulting term.
 
@@ -82,7 +82,7 @@ There are also shorthand term elaborators for several common conv tactics:
 * `norm_num% e` is short for `conv% norm_num => e`
 * `push_neg% e` is short for `conv% push_neg => e`
 -/
-syntax (name := convTerm) "conv% " term " => " conv : term
+syntax (name := convTerm) "conv% " term " => " colGt convSeq : term
 
 /-- Elaborates syntax of the form `conv% $conv:conv => $e:term`. -/
 @[term_elab convTerm]
@@ -101,7 +101,8 @@ def elabConvTerm : Term.TermElab
   | _, _ => throwUnsupportedSyntax
 
 @[inherit_doc convTerm]
-macro tk:"conv%? " e:term " => " conv:conv : term => `(term|show_term conv%%$tk $e => $conv)
+macro tk:"conv%? " e:term " => " colGt conv:convSeq : term =>
+  `(term|show_term conv%%$tk $e => $conv)
 
 /--
 The command `#conv e => tac` will run a conv tactic `tac` on `e`, and display the resulting
@@ -114,7 +115,7 @@ There are also shorthand commands for several common conv tactics:
 * `#norm_num e` is short for `#conv e => norm_num`
 * `#push_neg e` is short for `#conv e => push_neg`
 -/
-elab tk:"#conv " e:term " => " conv:conv : command =>
+elab tk:"#conv " e:term " => " colGt conv:convSeq : command =>
   Command.runTermElabM fun _ ↦ do
     let e' ← elabConvTerm (← `(term|conv% $e => $conv)) none
     logInfoAt tk e'
