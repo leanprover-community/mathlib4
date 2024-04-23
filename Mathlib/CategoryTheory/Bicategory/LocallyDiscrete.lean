@@ -6,7 +6,6 @@ Authors: Yuma Mizuno, Calle Sönne
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.Strict
-import Mathlib.CategoryTheory.Bicategory.EqToHom
 
 #align_import category_theory.bicategory.locally_discrete from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -31,11 +30,14 @@ universe w₂ v v₁ v₂ u u₁ u₂
 
 variable {C : Type u}
 
-/-- A type synonym for promoting any type to a category,
-with the only morphisms being equalities.
+/-- A wrapper for promoting any category to a bicategory,
+with the only 2-morphisms being equalities.
 -/
 @[ext]
 structure LocallyDiscrete (C : Type u) where
+  /-- A wrapper for promoting any category to a bicategory,
+  with the only 2-morphisms being equalities.
+  -/
   as : C
 
 namespace LocallyDiscrete
@@ -43,6 +45,7 @@ namespace LocallyDiscrete
 @[simp]
 theorem mk_as (a : LocallyDiscrete C) : mk a.as = a := rfl
 
+/-- `LocallyDiscrete C` is equivalent to the original type `C`. -/
 @[simps]
 def locallyDiscreteEquiv : LocallyDiscrete C ≃ C where
   toFun := LocallyDiscrete.as
@@ -53,10 +56,9 @@ def locallyDiscreteEquiv : LocallyDiscrete C ≃ C where
 instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
   locallyDiscreteEquiv.decidableEq
 
-instance [Inhabited C] : Inhabited (LocallyDiscrete C) := ⟨⟨default⟩⟩
+instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
+  ⟨⟨default⟩⟩
 
--- TODO: figure out how to name these lemmas manually
-@[simps]
 instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
     where
   Hom := fun a b => Discrete (a.as ⟶ b.as)
@@ -65,16 +67,17 @@ instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
 
 variable [CategoryStruct.{v} C]
 
--- TODO rename? Maybe dot notation with "toLoc" (I think dot notation is better)
-@[simps]
-def mkHom {a b : C} (f : a ⟶ b) : mk a ⟶ mk b := ⟨f⟩
+@[simp]
+lemma Hom (a b : LocallyDiscrete C) : (a ⟶ b) = Discrete (a.as ⟶ b.as) :=
+  rfl
 
 @[simp]
-lemma id_mk (a : C) : mkHom (𝟙 a) = 𝟙 (mk a) := rfl
+lemma id_as (a : LocallyDiscrete C) : (𝟙 a : Discrete (a.as ⟶ a.as)).as = 𝟙 a.as :=
+  rfl
 
 @[simp]
-lemma comp_mk {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
-    mkHom (f ≫ g) = mkHom f ≫ mkHom g := rfl
+lemma comp_as {a b c : LocallyDiscrete C} (f : a ⟶ b) (g : b ⟶ c) : (f ≫ g).as = f.as ≫ g.as :=
+  rfl
 
 instance (priority := 900) homSmallCategory (a b : LocallyDiscrete C) : SmallCategory (a ⟶ b) :=
   CategoryTheory.discreteCategory (a.as ⟶ b.as)
@@ -107,14 +110,12 @@ instance locallyDiscreteBicategory (C : Type u) [Category.{v} C] : Bicategory (L
 #align category_theory.locally_discrete_bicategory CategoryTheory.locallyDiscreteBicategory
 
 @[simp]
-lemma LocallyDiscrete.id_comp {a b : LocallyDiscrete C} (f : a ⟶ b) : 𝟙 a ≫ f = f := by
-  apply Discrete.ext
-  apply Category.id_comp
+lemma LocallyDiscrete.id_comp {a b : LocallyDiscrete C} (f : a ⟶ b) : 𝟙 a ≫ f = f :=
+  Discrete.ext _ _ (Category.id_comp _)
 
 @[simp]
-lemma LocallyDiscrete.comp_id {a b : LocallyDiscrete C} (f : a ⟶ b) : f ≫ 𝟙 b = f := by
-  apply Discrete.ext
-  apply Category.comp_id
+lemma LocallyDiscrete.comp_id {a b : LocallyDiscrete C} (f : a ⟶ b) : f ≫ 𝟙 b = f :=
+  Discrete.ext _ _ (Category.comp_id _)
 
 @[simp]
 lemma LocallyDiscrete.assoc {a b c d : LocallyDiscrete C} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
@@ -148,39 +149,26 @@ def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
 
 end CategoryTheory
 
-open CategoryTheory Bicategory Discrete LocallyDiscrete
+section Quiver
 
-universe w₂ v v₁ v₂ u u₁ u₂
+open CategoryTheory LocallyDiscrete
 
-variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
-variable {F : Pseudofunctor (LocallyDiscrete I) B}
+universe v u
 
--- These should be stated in terms of strict bicategories
+variable {C : Type u} [CategoryStruct.{v} C]
 
--- Pseudofunctors from locally discrete categories to strict bicategories
-lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (mkHom (𝟙 a)) (mkHom f)).inv =
-    (F.mapId ⟨a⟩).hom ▷ F.map (mkHom f) ≫ eqToHom (by simp) := by
-  have h := F.map₂_left_unitor (mkHom f)
-  simp at h
-  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
-  simp at h
-  apply h
+/-- The 1-morphism in `LocallyDiscrete C` associated to a given morphism `f : a ⟶ b` in `C` -/
+@[simps]
+def Quiver.Hom.toLoc {a b : C} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b :=
+  ⟨f⟩
 
-lemma map₂_right_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (mkHom f) (mkHom (𝟙 b))).inv =
-    F.map (mkHom f) ◁ (F.mapId ⟨b⟩).hom ≫ eqToHom (by simp) := by
-  have h := F.map₂_right_unitor (mkHom f)
-  simp at h
-  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
-  simp at h
-  apply h
+@[simp]
+lemma Quiver.Hom.id_toLoc (a : C) : (𝟙 a).toLoc = 𝟙 (LocallyDiscrete.mk a) :=
+  rfl
 
-lemma map₂_associator' {a b c d : I} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (F.mapComp (mkHom f) ((mkHom g) ≫ (mkHom h))).hom ≫ (F.map (mkHom f)) ◁ (F.mapComp (mkHom g) (mkHom h)).hom
-    = eqToHom (by simp) ≫ (F.mapComp ((mkHom f) ≫ (mkHom g)) (mkHom h)).hom ≫
-    (F.mapComp (mkHom f) (mkHom g)).hom ▷ F.map (mkHom h) ≫ eqToHom (by simp)
-    := by
-  have h := F.map₂_associator (mkHom f) (mkHom g) (mkHom h)
-  simp at h
-  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq] at h
-  -- TODO: rewrite thing as inv then move to LHS (+ restate lemma to use this notation instead!)
-  sorry
+@[simp]
+lemma Quiver.Hom.comp_toLoc {a b c : C} (f : a ⟶ b) (g : b ⟶ c) :
+    (f ≫ g).toLoc = f.toLoc ≫ g.toLoc :=
+  rfl
+
+end Quiver
