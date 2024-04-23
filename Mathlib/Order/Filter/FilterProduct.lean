@@ -47,6 +47,7 @@ instance instGroupWithZero [GroupWithZero β] : GroupWithZero β* where
 instance instDivisionSemiring [DivisionSemiring β] : DivisionSemiring β* where
   toSemiring := instSemiring
   __ := instGroupWithZero
+  nnqsmul := _
 
 instance instDivisionRing [DivisionRing β] : DivisionRing β* where
   __ := instRing
