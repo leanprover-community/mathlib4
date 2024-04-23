@@ -52,8 +52,7 @@ theorem bitSet_bit_false (n : ℕ) : bitSet (bit false n) =
 
 @[simp] theorem bitSet_zero : bitSet 0 = ∅ := rfl
 
-@[simp] theorem bitSet_one : bitSet 1 = {0} := by
-  rw [(by simp : 1 = 2 * 0 + 1), bitSet_two_mul_add]; simp
+@[simp] theorem bitSet_one : bitSet 1 = {0} := rfl
 
 @[simp] theorem bitSet_two_pow (k : ℕ) : bitSet (2^k) = {k} := by
   induction' k using Nat.recAux with k ih
