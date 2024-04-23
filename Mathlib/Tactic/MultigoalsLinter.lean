@@ -62,11 +62,15 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.intros
   |>.insert ``Lean.Parser.Tactic.tacticRepeat_
   |>.insert ``Lean.Parser.Tactic.injections
+  |>.insert ``Lean.Parser.Tactic.substVars
+  |>.insert `Std.Tactic.«tacticPick_goal-_»
 
 /-- these are `SyntaxNodeKind`s that block the linter. -/
 abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.Conv.conv
   |>.insert ``Lean.Parser.Tactic.first
+  |>.insert ``Lean.Parser.Tactic.anyGoals
+  |>.insert ``Lean.Parser.Tactic.allGoals
 
 /-- `getManyGoals` returns the syntax nodes where the tactic leaves at least one goal that
 was not present before it ran,
