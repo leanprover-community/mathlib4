@@ -412,7 +412,8 @@ end MeasurableGroup
 variable [TopologicalSpace G] [TopologicalAddGroup G] [BorelSpace G]
 variable [IsAddLeftInvariant μ] [IsNegInvariant μ]
 
-theorem _root_.HasCompactSupport.convolutionExistsLeft (hcf : HasCompactSupport f) (hf : Continuous f)
+theorem _root_.HasCompactSupport.convolutionExistsLeft
+    (hcf : HasCompactSupport f) (hf : Continuous f)
     (hg : LocallyIntegrable g μ) : ConvolutionExists f g L μ := fun x₀ =>
   convolutionExistsAt_flip.mp <| hcf.convolutionExists_right L.flip hg hf x₀
 #align has_compact_support.convolution_exists_left HasCompactSupport.convolutionExistsLeft
