@@ -59,7 +59,7 @@ instance [DecidableEq C] : DecidableEq (LocallyDiscrete C) :=
 instance [Inhabited C] : Inhabited (LocallyDiscrete C) :=
   ⟨⟨default⟩⟩
 
-instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
+instance categoryStruct [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
     where
   Hom := fun a b => Discrete (a.as ⟶ b.as)
   id := fun a => ⟨𝟙 a.as⟩
