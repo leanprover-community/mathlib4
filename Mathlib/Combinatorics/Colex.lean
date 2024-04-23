@@ -6,7 +6,6 @@ Authors: Bhavik Mehta, Alena Gusakov, Yaël Dillies
 import Mathlib.Algebra.GeomSum
 import Mathlib.Data.Finset.Slice
 import Mathlib.Order.SupClosed
-import Mathlib.Data.Nat.Bitwise
 
 #align_import combinatorics.colex from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
