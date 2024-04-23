@@ -1262,9 +1262,9 @@ section DivisionRing
 
 variable [DivisionRing R]
 
-theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+theorem qsmul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
   rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
-#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+#align polynomial.rat_smul_eq_C_mul Polynomial.qsmul_eq_C_mul
 
 end DivisionRing
 
