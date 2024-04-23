@@ -692,11 +692,12 @@ If `g : A ⟶ B` is a ring homomorphism preserving degree such that `g(P) ⊆ Q`
 there is a ring homomorphism `A⁰_P ⟶ B⁰_Q`.
 -/
 def map (g : A →+* B)
-  (comap_le : P ≤ Q.comap g) (preserves_deg : ∀ a : A, ∀ i : ι, a ∈ 𝒜 i ↔ g a ∈ ℬ i) :
+    (comap_le : P ≤ Q.comap g) (preserves_deg : ∀ a : A, ∀ i : ι, a ∈ 𝒜 i ↔ g a ∈ ℬ i) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q :=
   RingHom.comp (equivSubring ℬ Q).symm <|
-    (IsLocalization.map (M := P) (S := Localization P) (T := Q) (Q := Localization Q) g
-      comap_le).comp (algebraMap (HomogeneousLocalization 𝒜 P) (Localization P)) |>.codRestrict
+    (IsLocalization.map (M := P) (S := Localization P) (T := Q) (Q := Localization Q)
+      g comap_le).comp
+      (algebraMap (HomogeneousLocalization 𝒜 P) (Localization P)) |>.codRestrict
       (asSubring ℬ Q) fun x =>
       ⟨.mk'' ⟨x.deg,
         ⟨g x.num, (preserves_deg x.num x.deg).mp x.num_mem_deg⟩,

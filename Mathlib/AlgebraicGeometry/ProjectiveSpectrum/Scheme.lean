@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.AlgebraicGeometry.ProjectiveSpectrum.StructureSheaf
-import Mathlib.AlgebraicGeometry.Spec
 import Mathlib.RingTheory.GradedAlgebra.Radical
+import Mathlib.AlgebraicGeometry.GammaSpecAdjunction
 
 #align_import algebraic_geometry.projective_spectrum.scheme from "leanprover-community/mathlib"@"d39590fc8728fbf6743249802486f8c91ffe07bc"
 
@@ -859,15 +859,14 @@ lemma awayToAtPrime_mk
     Quotient.mk'' ⟨i, ⟨a, ha⟩, ⟨b, hb⟩, by
       rintro (r : b ∈ _)
       rw [← hb'.choose_spec] at r
-      exact x.2 <| x.1.2.mem_of_pow_mem _ r⟩ :=
-  by
-    simp only [awayToAtPrime, HomogeneousLocalization.map, RingHom.comp_apply]
-    apply_fun (HomogeneousLocalization.equivSubring 𝒜 x.1.1.toIdeal.primeCompl)
-    simp only [RingHom.coe_coe, RingEquiv.apply_symm_apply]
-    simp only [RingHom.codRestrict, RingHom.coe_comp, Function.comp_apply,
-      HomogeneousLocalization.algebraMap_apply_eq_val, RingHom.coe_mk, MonoidHom.coe_mk,
-      OneHom.coe_mk, HomogeneousLocalization.val_mk'', mk_eq_mk', IsLocalization.map_mk', map_pow,
-      RingHom.id_apply, HomogeneousLocalization.equivSubring, RingEquiv.coe_mk, Equiv.coe_fn_mk]
+      exact x.2 <| x.1.2.mem_of_pow_mem _ r⟩ := by
+  simp only [awayToAtPrime, HomogeneousLocalization.map, RingHom.comp_apply]
+  apply_fun (HomogeneousLocalization.equivSubring 𝒜 x.1.1.toIdeal.primeCompl)
+  simp only [RingHom.coe_coe, RingEquiv.apply_symm_apply]
+  simp only [RingHom.codRestrict, RingHom.coe_comp, Function.comp_apply,
+    HomogeneousLocalization.algebraMap_apply_eq_val, RingHom.coe_mk, MonoidHom.coe_mk,
+    OneHom.coe_mk, HomogeneousLocalization.val_mk'', mk_eq_mk', IsLocalization.map_mk', map_pow,
+    RingHom.id_apply, HomogeneousLocalization.equivSubring, RingEquiv.coe_mk, Equiv.coe_fn_mk]
 
 instance inst_algebra_away_atPrime :
     Algebra (A⁰_ f) (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) :=
@@ -940,8 +939,9 @@ lemma homogeneousLocalization_atPrime_isLocalization :
     rcases a with ⟨i, a, ⟨a', h1⟩, ⟨n1, (rfl : f^n1 = a')⟩⟩
     induction b using Quotient.inductionOn' with | h b => ?_
     rcases b with ⟨j, b, ⟨b', h2⟩, ⟨n2, (rfl : f^n2 = b')⟩⟩
-    rw [awayToAtPrime_mk, awayToAtPrime_mk, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.val_mk'',
-      HomogeneousLocalization.val_mk'', Localization.mk_eq_mk_iff, Localization.r_iff_exists] at h
+    rw [awayToAtPrime_mk, awayToAtPrime_mk, HomogeneousLocalization.ext_iff_val,
+      HomogeneousLocalization.val_mk'', HomogeneousLocalization.val_mk'', Localization.mk_eq_mk_iff,
+      Localization.r_iff_exists] at h
     obtain ⟨⟨c, hc⟩, h⟩ := h
     simp only at h
     obtain ⟨J, hJ⟩ : ∃ j, (DirectSum.decompose 𝒜 c j : A) ∉ x.1.1.toIdeal := by
@@ -967,7 +967,7 @@ lemma homogeneousLocalization_atPrime_isLocalization :
     refine ⟨1, Submonoid.one_mem _, ?_⟩
     linear_combination ((f^J)) * h
 
-variable {𝒜 x y}
+variable {𝒜}
 /--
 If `x : Proj|D(f)` and `y : Spec A⁰_f` are related by the homeomorphism `Proj|D(f) ≅ Spec A⁰_f`,
 then we have a ring isomorphism `A⁰ₓ ≅ (A⁰_f)_y`
@@ -984,16 +984,96 @@ def atPrimeEquiv :
     (RingEquiv.refl (A⁰_ f)) (by erw [Submonoid.map_id (y.asIdeal.primeCompl)])
 
 lemma atPrimeEquiv_mk_one (a : A⁰_ f) :
-    atPrimeEquiv f_deg hm hxy (Localization.mk a 1) =
+    atPrimeEquiv f_deg hm x y hxy (Localization.mk a 1) =
     algebraMap _ _ a := by
   letI := homogeneousLocalization_atPrime_isLocalization 𝒜 f_deg hm _ _ hxy
   apply IsLocalization.ringEquivOfRingEquiv_eq
 
 lemma atPrimeEquiv_mk_one' (a : A⁰_ f) :
-    atPrimeEquiv f_deg hm hxy (Localization.mk a 1) =
+    atPrimeEquiv f_deg hm x y hxy (Localization.mk a 1) =
     awayToAtPrime 𝒜 x a :=
-  atPrimeEquiv_mk_one f_deg hm hxy a
+  atPrimeEquiv_mk_one f_deg hm x y hxy a
 
+open LocallyRingedSpace
+
+def awayToGammaToFun :
+    (A⁰_ f) → Γ.obj (op <| Proj| pbo f) :=
+  fun a ↦ ⟨fun x ↦ atPrimeEquiv f_deg hm ⟨x.1, by simpa using x.2⟩ _ rfl
+    (Localization.mk a 1), by
+    rintro ⟨x, (hx : x ∈ _)⟩
+    simp only [Functor.op_obj, unop_op, forgetToSheafedSpace_obj,
+      SheafedSpace.forgetToPresheafedSpace_obj, restrict_carrier,
+      Opens.openEmbedding_obj_top] at hx
+    induction a using Quotient.inductionOn' with | h a => ?_
+    rcases a with ⟨i, a, ⟨b, h⟩, ⟨n, (rfl : f^n = b)⟩⟩
+    refine ⟨pbo f, hx, eqToHom (by simp), i, a, ⟨f^n, h⟩, ?_⟩
+    rintro ⟨c, (hc : c ∈ pbo f)⟩
+    refine ⟨fun r ↦ hc <| c.2.mem_of_pow_mem _ r, ?_⟩
+    dsimp
+    rw [atPrimeEquiv_mk_one', awayToAtPrime_mk]⟩
+
+lemma awayToGamma_map_one : awayToGammaToFun f_deg hm 1 = 1 := Subtype.ext <| funext fun x ↦ by
+  change atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ = 1
+  rw [← atPrimeEquiv f_deg hm ⟨x.1, by simpa using x.2⟩ _ rfl |>.map_one]
+  congr!
+  convert Localization.mk_self _
+  rfl
+
+lemma awayToGamma_map_mul (a a') :
+    awayToGammaToFun f_deg hm (a * a') =
+    awayToGammaToFun f_deg hm a * awayToGammaToFun f_deg hm a' :=
+  Subtype.ext <| funext fun x ↦ by
+    change atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ =
+      atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ *
+      atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _
+    rw [← atPrimeEquiv f_deg hm ⟨x.1, by simpa using x.2⟩ _ rfl |>.map_mul]
+    congr!
+    rw [Localization.mk_mul, one_mul]
+
+lemma awayToGamma_map_zero : awayToGammaToFun f_deg hm 0 = 0 := Subtype.ext <| funext fun x ↦ by
+  change atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ = 0
+  rw [← atPrimeEquiv f_deg hm ⟨x.1, by simpa using x.2⟩ _ rfl |>.map_zero]
+  congr!
+  convert Localization.mk_zero _
+
+lemma awayToGamma_map_add (a a') :
+    awayToGammaToFun f_deg hm (a + a') =
+    awayToGammaToFun f_deg hm a + awayToGammaToFun f_deg hm a' :=
+  Subtype.ext <| funext fun x ↦ by
+    change atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ =
+      atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ +
+      atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _
+    rw [← atPrimeEquiv f_deg hm ⟨x.1, by simpa using x.2⟩ _ rfl |>.map_add]
+    congr!
+    rw [Localization.add_mk, Submonoid.coe_one, one_mul, one_mul, one_mul, add_comm]
+
+/--
+We will use the gamma spec adjunction to turn the map `A⁰_f ⟶ Γ(Proj|D(f))` into a map of locally
+ringed space `Proj|D(f) ⟶ Spec A⁰_f`.
+-/
+def awayToGamma :
+    (A⁰_ f) →+* Γ.obj (op <| Proj| pbo f) where
+  toFun := awayToGammaToFun f_deg hm
+  map_one' := awayToGamma_map_one f_deg hm
+  map_mul' := awayToGamma_map_mul f_deg hm
+  map_zero' := awayToGamma_map_zero f_deg hm
+  map_add' := awayToGamma_map_add f_deg hm
+
+lemma awayToGamma_apply_apply (a : A⁰_ f) (x : Proj| pbo f) :
+    (awayToGamma f_deg hm a).1 ⟨x.1, by simp⟩ =
+    awayToAtPrime 𝒜 x a := by
+  change atPrimeEquiv f_deg hm ⟨x.1, _⟩ _ rfl _ = _
+  rw [atPrimeEquiv_mk_one']
+  rfl
+
+/--
+the morphism of locally ringed space from `Proj|D(f)` to `Spec A⁰_f` induced by the ring map
+`A⁰_f ⟶ Γ(Proj|D(f))` via the gamma spec adjunction.
+-/
+def ProjIsoSpecSheafComponent.toSpec :
+    (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
+  ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op <| .of <| A⁰_ f)
+    (op <| awayToGamma f_deg hm)
 
 end
 
