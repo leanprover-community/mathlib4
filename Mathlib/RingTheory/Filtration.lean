@@ -22,8 +22,9 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
 
 ## Main results
 
-- `Ideal.Filtration`: An `I`-filtration on the module `M` is a sequence of decreasing submodules
-  `N i` such that `I • N ≤ I (i + 1)`. Note that we do not require the filtration to start from `⊤`.
+- `Ideal.Filtration`:
+  An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
+  `∀ i, I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`.
 - `Ideal.Filtration.Stable`: An `I`-filtration is stable if `I • (N i) = N (i + 1)` for large
   enough `i`.
 - `Ideal.Filtration.submodule`: The associated module `⨁ Nᵢ` of a filtration, implemented as a

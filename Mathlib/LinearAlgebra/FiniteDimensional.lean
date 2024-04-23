@@ -509,6 +509,12 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   rfl
 #align submodule.eq_top_of_disjoint Submodule.eq_top_of_disjoint
 
+theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
+    {s t : Submodule K V} (hdisjoint : Disjoint s t) :
+    finrank K s + finrank K t ≤ finrank K V := by
+  rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
+  exact Submodule.finrank_le _
+
 end DivisionRing
 
 end Submodule
