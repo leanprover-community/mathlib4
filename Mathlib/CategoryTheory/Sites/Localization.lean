@@ -18,8 +18,7 @@ namespace CategoryTheory
 
 open Category
 
-variable {C : Type*} [Category C] (J : GrothendieckTopology C)
-  {A : Type*} [Category A]
+variable {C : Type*} [Category C] (J : GrothendieckTopology C) {A : Type*} [Category A]
 
 namespace GrothendieckTopology
 
@@ -111,10 +110,6 @@ lemma W_eq_inverseImage_isomorphisms :
   ext P₁ P₂ f
   rw [W_iff]
   rfl
-
-lemma W_isInvertedBy_presheafToSheaf :
-    J.W.IsInvertedBy (presheafToSheaf J A) :=
-  fun P₁ P₂ f hf => by simpa only [W_iff] using hf
 
 instance : (presheafToSheaf J A).IsLocalization J.W := by
   rw [W_eq_inverseImage_isomorphisms]

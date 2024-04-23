@@ -134,9 +134,8 @@ lemma isLocalization [F.Full] [F.Faithful] :
   have : ∀ (X : C₁), IsIso ((whiskerRight adj.unit W.Q).app X) := fun X =>
     Localization.inverts W.Q W _ (by
       change IsIso _
-      sorry)
+      infer_instance)
   have : IsIso (whiskerRight adj.unit W.Q) := NatIso.isIso_of_isIso_app _
-  let iso : W.Q ≅ G ⋙ F ⋙ W.Q := W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q)
   let e : W.Localization ≌ C₂ := Equivalence.mk (Localization.lift G hG W.Q) (F ⋙ W.Q)
     (liftNatIso W.Q W W.Q (G ⋙ F ⋙ W.Q) _ _
     (W.Q.leftUnitor.symm ≪≫ asIso (whiskerRight adj.unit W.Q)))
@@ -146,7 +145,5 @@ lemma isLocalization [F.Full] [F.Faithful] :
     (Localization.fac G hG W.Q)
 
 end Adjunction
-
-
 
 end CategoryTheory
