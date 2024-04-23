@@ -7,9 +7,7 @@ Authors: Johan Commelin
 import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
-import Mathlib.Algebra.Lie.scratch
-import Mathlib.LinearAlgebra.Determinant
-import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Existence of Cartan subalgebras
@@ -45,39 +43,30 @@ variable [Module.Finite R M] [Module.Free R M]
 
 open FiniteDimensional LieSubalgebra Module.Free Polynomial
 
-local notation "φ" => LieModule.toEndomorphism R L M
-
-variable (R)
-
--- move to `Mathlib.Algebra.Lie.EngelSubalgebra`
-@[simp]
-lemma engel_zero : engel R (0 : L) = ⊤ := by
-  rw [eq_top_iff]
-  rintro x -
-  rw [mem_engel_iff, LieHom.map_zero]
-  use 1
-  simp only [pow_one, LinearMap.zero_apply]
-
-lemma natTrailingDegree_charpoly_ad_le_finrank_engel (x : L) :
-    (ad K L x).charpoly.natTrailingDegree ≤ finrank K (engel K x) := by
-  erw [engel, (ad K L x).finrank_maximalGeneralizedEigenspace]
-
-lemma rank_le_finrank_engel (x : L) :
-    rank K L ≤ finrank K (engel K x) :=
-  (rank_le_natTrailingDegree_charpoly_ad K x).trans
-    (natTrailingDegree_charpoly_ad_le_finrank_engel x)
+variable (K)
 
 lemma finrank_engel (x : L) :
     finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
   (ad K L x).finrank_maximalGeneralizedEigenspace
 
+lemma rank_le_finrank_engel (x : L) :
+    rank K L ≤ finrank K (engel K x) :=
+  (rank_le_natTrailingDegree_charpoly_ad K x).trans
+    (finrank_engel K x).ge
+
 lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
     IsRegular K x ↔ finrank K (engel K x) = rank K L := by
   rw [isRegular_iff_natTrailingDegree_charpoly_eq_rank, finrank_engel]
 
-variable {R}
+variable {K}
 
 namespace engel_le_engel
+
+/-!
+## Implementation details for the proof of `LieAlgebra.engel_le_engel`
+
+We follow the proof strategy of Lemma 2 in [barnes1967].
+-/
 
 variable (x y : L)
 
@@ -85,11 +74,13 @@ variable (R M)
 
 open LieModule LinearMap
 
+local notation "φ" => LieModule.toEndomorphism R L M
+
 noncomputable
 def lieCharpoly₁ : Polynomial R[X] :=
   letI bL := chooseBasis R L
   letI bM := chooseBasis R M
-  (LinearMap.polyCharpoly (toEndomorphism R L M).toLinearMap bL).map <| RingHomClass.toRingHom <|
+  (LinearMap.polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
 lemma lieCharpoly₁_monic : (lieCharpoly₁ R M x y).Monic :=
@@ -102,8 +93,7 @@ lemma lieCharpoly₁_natDegree : (lieCharpoly₁ R M x y).natDegree = finrank R 
 lemma lieCharpoly₁_map_eval (r : R) :
     (lieCharpoly₁ R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
   rw [lieCharpoly₁, map_map]
-  -- TODO: rename `polyCharpoly_coeff_map`, since the `coeff` shouldn't be there
-  erw [← polyCharpoly_coeff_map (LieHom.toLinearMap φ) (chooseBasis R L) (r • y + x)]
+  erw [← polyCharpoly_map_eq_charpoly (LieHom.toLinearMap φ) (chooseBasis R L) (r • y + x)]
   congr 1
   apply MvPolynomial.ringHom_ext
   · intro;
@@ -121,7 +111,6 @@ lemma lieCharpoly₁_map_eval (r : R) :
 
 lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
-  -- rw [finrank_eq_card_chooseBasisIndex] at hij
   classical
   have := polyCharpoly_coeff_isHomogeneous (toEndomorphism R L M).toLinearMap (chooseBasis R L) _ _ hij
   rw [← mul_one j, lieCharpoly₁, coeff_map]
@@ -306,7 +295,7 @@ lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     apply LieSubalgebra.to_submodule_injective
     apply eq_of_le_of_finrank_le hyx this
-  rw [(isRegular_iff_finrank_engel_eq_rank x).mp hx]
+  rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
 lemma exists_IsCartanSubalgebra [Infinite K] :
