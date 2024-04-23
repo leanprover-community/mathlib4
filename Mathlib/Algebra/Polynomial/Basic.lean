@@ -290,15 +290,13 @@ instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 #align polynomial.inhabited Polynomial.inhabited
 
-instance natCast : NatCast R[X] :=
-  ⟨fun n => Polynomial.ofFinsupp n⟩
-#align polynomial.has_nat_cast Polynomial.natCast
+instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
+#align polynomial.has_nat_cast Polynomial.instNatCast
 
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
-    toNatCast := Polynomial.natCast
     toAdd := Polynomial.add'
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
@@ -1177,9 +1175,8 @@ section Ring
 
 variable [Ring R]
 
-instance intCast : IntCast R[X] :=
-  ⟨fun n => ofFinsupp n⟩
-#align polynomial.has_int_cast Polynomial.intCast
+instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+#align polynomial.has_int_cast Polynomial.instIntCast
 
 instance ring : Ring R[X] :=
   --TODO: add reference to library note in PR #7432
@@ -1188,7 +1185,6 @@ instance ring : Ring R[X] :=
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
       (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
     toSemiring := Polynomial.semiring,
-    toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
     zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
