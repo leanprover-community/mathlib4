@@ -216,7 +216,6 @@ def isModule [DecidableEq ιA] [DecidableEq ιM] [GradedRing 𝓐] : Module A (�
     smul := fun a b => DirectSum.decompose 𝓐 a • b }
 #align graded_module.is_module GradedModule.isModule
 
-set_option synthInstance.maxHeartbeats 25000 in
 /-- `⨁ i, 𝓜 i` and `M` are isomorphic as `A`-modules.
 "The internal version" and "the external version" are isomorphism as `A`-modules.
 -/

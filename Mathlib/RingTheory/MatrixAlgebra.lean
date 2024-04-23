@@ -121,7 +121,6 @@ theorem right_inv (M : Matrix n n A) : (toFunAlgHom R A n) (invFun R A n M) = M 
   split_ifs <;> aesop
 #align matrix_equiv_tensor.right_inv MatrixEquivTensor.right_inv
 
-set_option synthInstance.maxHeartbeats 30000 in
 theorem left_inv (M : A ⊗[R] Matrix n n R) : invFun R A n (toFunAlgHom R A n M) = M := by
   induction M using TensorProduct.induction_on with
   | zero => simp
