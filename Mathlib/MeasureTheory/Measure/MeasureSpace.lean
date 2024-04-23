@@ -143,10 +143,6 @@ lemma measure_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t) :
   simpa only [symmDiff_def, sup_eq_union] using measure_union disjoint_sdiff_sdiff (ht.diff hs)
 
 open scoped symmDiff in
-/-- The measure of the symmetric difference of a set with itself is `0`.-/
-lemma measure_symmDiff_self : μ (s ∆ s) = 0 := by simp
-
-open scoped symmDiff in
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
   le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))

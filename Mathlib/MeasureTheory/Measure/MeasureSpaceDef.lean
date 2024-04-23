@@ -332,6 +332,10 @@ theorem measure_union_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∪
 #align measure_theory.measure_union_ne_top MeasureTheory.measure_union_ne_top
 
 open scoped symmDiff in
+/-- The measure of the symmetric difference of a set with itself is `0`.-/
+theorem measure_symmDiff_self : μ (s ∆ s) = 0 := by simp
+
+open scoped symmDiff in
 theorem measure_symmDiff_ne_top (hs : μ s ≠ ∞) (ht : μ t ≠ ∞) : μ (s ∆ t) ≠ ∞ :=
   ne_top_of_le_ne_top (measure_union_ne_top hs ht) <| measure_mono symmDiff_subset_union
 
