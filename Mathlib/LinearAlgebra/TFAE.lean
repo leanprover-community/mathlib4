@@ -1,15 +1,21 @@
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
-import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Artinian
-
-namespace LinearMap
 
 variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M]
 variable (φ : Module.End K M)
 
-open FiniteDimensional Polynomial
+open FiniteDimensional Module.Free Polynomial
+
+lemma IsNilpotent.charpoly_eq_X_pow_finrank (h : IsNilpotent φ) :
+    φ.charpoly = X ^ finrank K M := by
+  rw [← sub_eq_zero]
+  apply IsNilpotent.eq_zero
+  rw [finrank_eq_card_chooseBasisIndex]
+  apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
+  exact h.map (LinearMap.toMatrixAlgEquiv (chooseBasis K M))
+namespace LinearMap
 
 open Module.Free in
 lemma charpoly_nilpotent_tfae :
@@ -19,12 +25,7 @@ lemma charpoly_nilpotent_tfae :
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
       natTrailingDegree φ.charpoly = finrank K M ] := by
   tfae_have 1 → 2
-  · intro h
-    rw [← sub_eq_zero]
-    apply IsNilpotent.eq_zero
-    rw [finrank_eq_card_chooseBasisIndex]
-    apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
-    exact h.map (toMatrixAlgEquiv (chooseBasis K M))
+  · apply IsNilpotent.charpoly_eq_X_pow_finrank
   tfae_have 2 → 3
   · intro h m
     use finrank K M
@@ -45,6 +46,10 @@ lemma charpoly_nilpotent_tfae :
     intro h
     rw [← natTrailingDegree_X_pow (R := K) φ.charpoly.natDegree, ← h]
   tfae_finish
+
+lemma charpoly_eq_X_pow_iff :
+    φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
+  (charpoly_nilpotent_tfae φ).out 1 2
 
 open Module.Free in
 lemma hasEigenvalue_zero_tfae :
@@ -80,6 +85,10 @@ lemma hasEigenvalue_zero_tfae :
     simpa only [Module.End.eigenspace_zero, mem_ker] using h2
   tfae_finish
 
+lemma charpoly_constantCoeff_eq_zero_iff :
+    constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
+  (hasEigenvalue_zero_tfae φ).out 2 5
+
 open Module.Free in
 lemma not_hasEigenvalue_zero_tfae :
     List.TFAE [
@@ -95,31 +104,6 @@ lemma not_hasEigenvalue_zero_tfae :
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
   have aux₂ : ker φ ≤ ⊥ ↔ ¬ ⊥ < ker φ := by rw [le_bot_iff, bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
-
-open Module.Free in
-lemma charpoly_eq_X_pow_iff :
-    φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
-  (charpoly_nilpotent_tfae φ).out 1 2
-
-lemma charpoly_constantCoeff_eq_zero_iff :
-    constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
-  (hasEigenvalue_zero_tfae φ).out 2 5
-
--- move to `Mathlib.LinearAlgebra.Charpoly.ToMatrix`
-open Module.Free in
-lemma charpoly_eq_of_equiv {M₁ M₂ : Type*} [AddCommGroup M₁] [AddCommGroup M₂]
-    [Module K M₁] [Module K M₂] [Module.Finite K M₁] [Module.Finite K M₂]
-    [Module.Free K M₁] [Module.Free K M₂]
-    (φ₁ : Module.End K M₁) (φ₂ : Module.End K M₂) (e : M₁ ≃ₗ[K] M₂)
-    (H : (e.toLinearMap.comp <| φ₁.comp e.symm.toLinearMap) = φ₂) :
-    φ₁.charpoly = φ₂.charpoly := by
-  let b₁ := chooseBasis K M₁
-  let b₂ := b₁.map e
-  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂]
-  dsimp only [Matrix.charpoly, b₂]
-  congr 1
-  ext i j : 1
-  simp [Matrix.charmatrix, toMatrix, Matrix.diagonal, ← H]
 
 open Module.Free in
 lemma finrank_maximalGeneralizedEigenspace :
@@ -150,28 +134,27 @@ lemma finrank_maximalGeneralizedEigenspace :
   let bV := chooseBasis K V
   let bW := chooseBasis K W
   let b := bV.prod bW
-  rw [charpoly_eq_of_equiv φ ψ e.symm, charpoly_prodMap]
-  swap
-  · dsimp only [e, V, W]
-    rw [LinearEquiv.symm_symm, LinearEquiv.toLinearMap_symm_comp_eq]
+  have hψ : ψ = e.symm.conj φ := by
     apply b.ext
-    simp only [Submodule.coe_prodEquivOfIsCompl, Basis.prod_apply, coe_inl, coe_inr, coe_comp,
-      Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, prodMap_apply,
-      restrict_coe_apply, Sum.forall, implies_true, and_self, e, V, W, b, ψ, F, G]
-  rw [natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
+    simp only [Basis.prod_apply, coe_inl, coe_inr, prodMap_apply, LinearEquiv.conj_apply,
+      LinearEquiv.symm_symm, Submodule.coe_prodEquivOfIsCompl, coe_comp, LinearEquiv.coe_coe,
+      Function.comp_apply, coprod_apply, Submodule.coeSubtype, map_add, Sum.forall, Sum.elim_inl,
+      map_zero, ZeroMemClass.coe_zero, add_zero, LinearEquiv.eq_symm_apply, and_self,
+      Submodule.coe_prodEquivOfIsCompl', restrict_coe_apply, implies_true, Sum.elim_inr, zero_add,
+      e, V, W, ψ, F, G, b]
+  rw [← e.symm.charpoly_conj φ, ← hψ, charpoly_prodMap,
+    natTrailingDegree_mul (charpoly_monic _).ne_zero (charpoly_monic _).ne_zero]
   have hG : natTrailingDegree (charpoly G) = 0 := by
     apply Polynomial.natTrailingDegree_eq_zero_of_constantCoeff_ne_zero
     apply ((not_hasEigenvalue_zero_tfae G).out 2 5).mpr
     intro x hx
-    suffices x.1 ∈ V ⊓ W by
-      rw [hVW.inf_eq_bot, Submodule.mem_bot] at this
-      rwa [Subtype.ext_iff]
-    have hxV : x.1 ∈ V := by
-      simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V]
-      use 1
-      rw [Subtype.ext_iff] at hx
-      rwa [pow_one]
-    exact ⟨hxV, x.2⟩
+    apply Subtype.ext
+    suffices x.1 ∈ V ⊓ W by rwa [hVW.inf_eq_bot, Submodule.mem_bot] at this
+    suffices x.1 ∈ V from ⟨this, x.2⟩
+    simp only [Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V]
+    use 1
+    rw [pow_one]
+    rwa [Subtype.ext_iff] at hx
   rw [hG, add_zero, eq_comm]
   apply ((charpoly_nilpotent_tfae F).out 2 3).mp
   simp only [Subtype.forall, Module.End.mem_maximalGeneralizedEigenspace, zero_smul, sub_zero, V, F]
