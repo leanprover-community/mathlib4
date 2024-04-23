@@ -203,12 +203,9 @@ section
 variable {α : Type*} [LinearOrderedField α]
 variable {β : Type*} [DivisionRing β] {abv : β → α} [IsAbsoluteValue abv]
 
-instance : RatCast (Cauchy abv) :=
-  ⟨fun q => ofRat q⟩
+instance instRatCast : RatCast (Cauchy abv) where ratCast q := ofRat q
 
-@[simp, coe]
-theorem ofRat_ratCast (q : ℚ) : ofRat (↑q : β) = (q : (Cauchy abv)) :=
-  rfl
+@[simp, norm_cast] lemma ofRat_ratCast (q : ℚ) : ofRat (q : β) = (q : Cauchy abv) := rfl
 #align cau_seq.completion.of_rat_rat_cast CauSeq.Completion.ofRat_ratCast
 
 noncomputable instance : Inv (Cauchy abv) :=
@@ -275,8 +272,8 @@ noncomputable instance Cauchy.divisionRing : DivisionRing (Cauchy abv) where
   exists_pair_ne := ⟨0, 1, zero_ne_one⟩
   inv_zero := inv_zero
   mul_inv_cancel x := CauSeq.Completion.mul_inv_cancel
-  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
   qsmul := (· • ·)
+  ratCast_def q := by rw [← ofRat_ratCast, Rat.cast_def, ofRat_div, ofRat_natCast, ofRat_intCast]
   qsmul_def q x := Quotient.inductionOn x fun f ↦ congr_arg mk <| ext fun i ↦ Rat.smul_def _ _
 
 /-- Show the first 10 items of a representative of this equivalence class of cauchy sequences.
