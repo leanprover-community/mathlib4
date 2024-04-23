@@ -117,11 +117,10 @@ theorem cycleType_formPerm (hl : Nodup l) (hn : 2 ≤ l.length) :
   · simp
 #align list.cycle_type_form_perm List.cycleType_formPerm
 
-set_option linter.deprecated false in
 theorem formPerm_apply_mem_eq_next (hl : Nodup l) (x : α) (hx : x ∈ l) :
     formPerm l x = next l x hx := by
-  obtain ⟨k, hk, rfl⟩ := nthLe_of_mem hx
-  rw [next_nthLe _ hl, formPerm_apply_nthLe _ hl]
+  obtain ⟨k, rfl⟩ := get_of_mem hx
+  rw [next_get _ hl, formPerm_apply_get _ hl]
 #align list.form_perm_apply_mem_eq_next List.formPerm_apply_mem_eq_next
 
 end List
