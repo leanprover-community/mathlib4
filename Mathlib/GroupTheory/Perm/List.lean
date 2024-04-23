@@ -327,20 +327,19 @@ theorem formPerm_reverse (l : List α) (h : Nodup l) : formPerm l.reverse = (for
     simpa using hx
 #align list.form_perm_reverse List.formPerm_reverse
 
-theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
-    (formPerm l ^ n) (l.nthLe k hk) =
-      l.nthLe ((k + n) % l.length) (Nat.mod_lt _ (k.zero_le.trans_lt hk)) := by
-  induction' n with n hn
-  · simp [Nat.mod_eq_of_lt hk]
-  · simp [pow_succ', mul_apply, hn, formPerm_apply_nthLe _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
-#align list.form_perm_pow_apply_nth_le List.formPerm_pow_apply_nthLe
-
--- TODO: prove these the other way around!
 theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
     (formPerm l ^ n) (l.get ⟨k, hk⟩) =
-      l.get ⟨((k + n) % l.length), (Nat.mod_lt _ (k.zero_le.trans_lt hk))⟩ :=
-  formPerm_pow_apply_nthLe l h n k hk
-attribute [deprecated formPerm_pow_apply_get] formPerm_pow_apply_nthLe -- 2024-04-23
+      l.get ⟨((k + n) % l.length), (Nat.mod_lt _ (k.zero_le.trans_lt hk))⟩ := by
+  induction' n with n hn
+  · simp [Nat.mod_eq_of_lt hk]
+  · simp [pow_succ', mul_apply, hn, formPerm_apply_get _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
+
+@[deprecated formPerm_pow_apply_get] -- 2024-04-23
+theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
+    (formPerm l ^ n) (l.nthLe k hk) =
+      l.nthLe ((k + n) % l.length) (Nat.mod_lt _ (k.zero_le.trans_lt hk)) :=
+  formPerm_pow_apply_get l h n k hk
+#align list.form_perm_pow_apply_nth_le List.formPerm_pow_apply_nthLe
 
 theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =
