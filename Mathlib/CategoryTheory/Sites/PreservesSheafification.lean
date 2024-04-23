@@ -19,8 +19,8 @@ In this file, assuming `HasWeakSheafify J A` and `HasWeakSheafify J B`,
 we define a type class `PreservesSheafification J F` which expresses
 that the sheafification commutes with the postcomposition with `F`.
 
-We obtain `PreservesSheafification J (forget D)` when `D` is a concrete
-category satisfying suitable conditions.
+We obtain `PreservesSheafification J F` when `F` is a functor between
+concrete categories satisfying suitable conditions.
 
 -/
 
@@ -121,36 +121,54 @@ lemma sheafifyComposeIso_inv_fac :
 
 end
 
+
 namespace GrothendieckTopology
 
-variable {D : Type*} [Category.{max v u} D]
+section
+
+variable {D E : Type*} [Category.{max v u} D] [Category.{max v u} E] (F : D ⥤ E)
+  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
+  [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
+  [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ E]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ F]
+  [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
+  [ConcreteCategory D] [ConcreteCategory E]
+  [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget D)]
+  [∀ X, PreservesColimitsOfShape (Cover J X)ᵒᵖ (forget E)]
+  [PreservesLimits (forget D)] [PreservesLimits (forget E)]
+  [(forget D).ReflectsIsomorphisms] [(forget E).ReflectsIsomorphisms]
+
+@[reassoc]
+lemma plusPlusIsoSheafify_hom_sheafifyCompose (P : Cᵒᵖ ⥤ D) :
+    (plusPlusIsoSheafify J _ (P ⋙ F)).hom ≫ sheafifyCompose J F P =
+      (sheafifyCompIso J F P).inv ≫
+        whiskerRight (plusPlusIsoSheafify J _ P).hom F := by
+  sorry
+
+@[reassoc]
+lemma sheafifyCompose_eq (P : Cᵒᵖ ⥤ D) :
+    sheafifyCompose J F P =
+      (plusPlusIsoSheafify J _ (P ⋙ F)).inv ≫
+        (sheafifyCompIso J F P).inv ≫
+          whiskerRight (plusPlusIsoSheafify J _ P).hom F := by
+  rw [← cancel_epi (plusPlusIsoSheafify J _ (P ⋙ F)).hom,
+    Iso.hom_inv_id_assoc, plusPlusIsoSheafify_hom_sheafifyCompose]
+
+instance : PreservesSheafification J F :=
+  PreservesSheafification.mk' _ _ (fun P => by
+    rw [J.sheafifyCompose_eq]
+    infer_instance)
+
+end
+
+example {D : Type*} [Category.{max v u} D]
   [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
   [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
   [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
   [∀ (α β : Type max u v) (fst snd : β → α),
       Limits.HasLimitsOfShape (Limits.WalkingMulticospan fst snd) D]
-  [(forget D).ReflectsIsomorphisms]
-
-@[reassoc]
-lemma plusPlusIsoSheafify_hom_sheafifyCompose_forget (P : Cᵒᵖ ⥤ D) :
-    (plusPlusIsoSheafify J _ (P ⋙ forget D)).hom ≫ sheafifyCompose J (forget D) P =
-      (sheafifyCompIso J (forget D) P).inv ≫
-        whiskerRight (plusPlusIsoSheafify J _ P).hom (forget D) := by
-  sorry
-
-@[reassoc]
-lemma sheafifyCompose_forget_eq (P : Cᵒᵖ ⥤ D) :
-    sheafifyCompose J (forget D) P =
-      (plusPlusIsoSheafify J _ (P ⋙ forget D)).inv ≫
-        (sheafifyCompIso J (forget D) P).inv ≫
-          whiskerRight (plusPlusIsoSheafify J _ P).hom (forget D) := by
-  rw [← cancel_epi (plusPlusIsoSheafify J _ (P ⋙ forget D)).hom,
-    Iso.hom_inv_id_assoc, plusPlusIsoSheafify_hom_sheafifyCompose_forget]
-
-instance : PreservesSheafification J (forget D) :=
-  PreservesSheafification.mk' _ _ (fun P => by
-    rw [J.sheafifyCompose_forget_eq]
-    infer_instance)
+  [(forget D).ReflectsIsomorphisms] : PreservesSheafification J (forget D) := inferInstance
 
 end GrothendieckTopology
 
