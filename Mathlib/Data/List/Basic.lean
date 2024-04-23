@@ -821,9 +821,9 @@ theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
 @[simp]
 theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
     head! (s ++ t) = head! s := by
-      induction s
-      · contradiction
-      · rfl
+  induction s
+  · contradiction
+  · rfl
 #align list.head_append List.head!_append
 
 theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
