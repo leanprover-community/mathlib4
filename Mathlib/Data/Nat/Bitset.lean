@@ -101,4 +101,4 @@ theorem bitSet_twoPowSum (s : Finset ℕ) : bitSet (∑ i in s, 2^i) = s := by
   map_rel_iff' := by
     simp [← (Finset.geomSum_le_geomSum_iff_toColex_le_toColex rfl.le), twoPowSum_bitSet]
 
-  end Nat
+end Nat
