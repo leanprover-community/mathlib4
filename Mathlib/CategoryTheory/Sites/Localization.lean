@@ -74,6 +74,15 @@ lemma W_iff_isIso (hP₁ : Presheaf.IsSheaf J P₁) (hP₂ : Presheaf.IsSheaf J 
   · intro
     exact W_of_isIso J f
 
+lemma W_sheafToPreheaf_map_iff_isIso {F₁ F₂ : Sheaf J A} (f : F₁ ⟶ F₂) :
+    J.W ((sheafToPresheaf J A).map f) ↔ IsIso f := by
+  rw [J.W_iff_isIso ((sheafToPresheaf J A).map f) F₁.cond F₂.cond]
+  constructor
+  · intro
+    exact isIso_of_reflects_iso _ (sheafToPresheaf J A)
+  · intro
+    infer_instance
+
 end
 
 section
