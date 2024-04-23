@@ -64,36 +64,51 @@ end SpeedCenterAPI
 
 def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` of the cumulative instructions taken in the longest pole
+of imports including that file. -/
 partial def cumulativeInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
   graph.fold (init := ∅) fun m n _ => go n m
 where
+  -- Helper which adds the entry for `n` to `m` if it's not already there.
   go (n : Name) (m : NameMap Float) : NameMap Float :=
     if m.contains n then
       m
     else
       let parents := graph.find! n
-      let m := parents.foldr (init := m) fun n' m => go n' m
-      let t := (parents.map fun n' => (m.find! n')).foldr max 0
+      -- Add all parents to the map first
+      let m := parents.foldr (init := m) fun parent m => go parent m
+      -- Determine the maximum cumulative instruction count among the parents
+      let t := (parents.map fun parent => (m.find! parent)).foldr max 0
       m.insert n ((instructions.find? n).getD 0 + t)
 
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` indicating the last of the parents of each file that would
+be built in a totally parallel setting. -/
 def slowestParents (cumulative : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Name :=
   graph.fold (init := ∅) fun m n parents =>
     match parents.toList with
+    -- If there are no parents, return the file itself
     | [] => m
     | h :: t => Id.run do
-      let mut r := h
-      for n' in t do
-        if cumulative.find! n' > cumulative.find! r then
-          r := n'
-      return m.insert n r
+      let mut slowestParent := h
+      for parent in t do
+        if cumulative.find! parent > cumulative.find! slowestParent then
+          slowestParent := parent
+      return m.insert n slowestParent
 
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` indicating the total instructions taken to compile the
+file, including all instructions in transitively imported files.
+-/
 def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
   let transitive := graph.transitiveClosure
-  transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
-    fun t n' => t + ((instructions.find? n').getD 0)
+  transitive.filterMap
+    fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
+      fun t n' => t + ((instructions.find? n').getD 0)
 
 /-- Convert a float to a string with a fixed number of decimal places. -/
 def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
