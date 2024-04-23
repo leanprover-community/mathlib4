@@ -278,9 +278,9 @@ instance instField : Field (SplittingField f) where
   __ := commRing _
   __ := instGroupWithZero _
   ratCast q := algebraMap K _ q
+  qsmul := (· • ·)
   ratCast_def q := by
     change algebraMap K _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
-  qsmul := (· • ·)
   qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
     ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
