@@ -531,8 +531,8 @@ theorem prod_eq_abs_norm (x : K) :
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
-    (h : ∀ ⦃z⦄, z ≠ w → z a < 1) : 1 ≤ w a := by
-  suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (a:K)| by
+    (h : ∀ ⦃z⦄, z ≠ w → z (algebraMap _ K a) < 1) : 1 ≤ w (algebraMap _ K a) := by
+  suffices (1:ℝ) ≤ |(Algebra.norm ℚ) (algebraMap _ K a)| by
     contrapose! this
     rw [← InfinitePlace.prod_eq_abs_norm, ← Finset.prod_const_one]
     refine Finset.prod_lt_prod_of_nonempty (fun _ _ ↦ ?_) (fun z _ ↦ ?_) Finset.univ_nonempty
@@ -546,11 +546,11 @@ theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
 
 open scoped IntermediateField in
 theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
-    {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1)
-    (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) : ℚ⟮(x:K)⟯ = ⊤ := by
+    {w : InfinitePlace K} (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' (algebraMap _ K x) < 1)
+    (h₃ : IsReal w ∨ |(w.embedding (algebraMap _ K x)).re| < 1) : ℚ⟮(algebraMap _ K x)⟯ = ⊤ := by
   rw [Field.primitive_element_iff_algHom_eq_of_eval ℚ ℂ ?_ _ w.embedding.toRatAlgHom]
   · intro ψ hψ
-    have h : 1 ≤ w x := one_le_of_lt_one h₁ h₂
+    have h : 1 ≤ w (algebraMap _ K x) := one_le_of_lt_one h₁ h₂
     have main : w = InfinitePlace.mk ψ.toRingHom := by
       erw [← norm_embedding_eq, hψ] at h
       contrapose! h
@@ -562,16 +562,17 @@ theorem _root_.NumberField.is_primitive_element_of_infinitePlace_lt {x : 𝓞 K}
       exact congr_arg RingHom.toRatAlgHom main
     | inr hw =>
       refine congr_arg RingHom.toRatAlgHom (main.resolve_right fun h' ↦ hw.not_le ?_)
-      have : (embedding w x).im = 0 := by
-        erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' x]
+      have : (embedding w (algebraMap _ K x)).im = 0 := by
+        erw [← Complex.conj_eq_iff_im, RingHom.congr_fun h' (algebraMap _ K x)]
         exact hψ.symm
-      rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w x), this, Complex.ofReal_zero,
-        zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
+      rwa [← norm_embedding_eq, ← Complex.re_add_im (embedding w (algebraMap _ K x)), this,
+        Complex.ofReal_zero, zero_mul, add_zero, Complex.norm_eq_abs, Complex.abs_ofReal] at h
   · exact fun x ↦ IsAlgClosed.splits_codomain (minpoly ℚ x)
 
 theorem _root_.NumberField.adjoin_eq_top_of_infinitePlace_lt {x : 𝓞 K} {w : InfinitePlace K}
-    (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' x < 1) (h₃ : IsReal w ∨ |(w.embedding x).re| < 1) :
-    Algebra.adjoin ℚ {(x:K)} = ⊤ := by
+    (h₁ : x ≠ 0) (h₂ : ∀ ⦃w'⦄, w' ≠ w → w' (algebraMap _ K x) < 1)
+    (h₃ : IsReal w ∨ |(w.embedding (algebraMap _ K x)).re| < 1) :
+    Algebra.adjoin ℚ {(algebraMap _ K x)} = ⊤ := by
   rw [← IntermediateField.adjoin_simple_toSubalgebra_of_integral (IsIntegral.of_finite ℚ _)]
   exact congr_arg IntermediateField.toSubalgebra <|
     NumberField.is_primitive_element_of_infinitePlace_lt h₁ h₂ h₃
