@@ -125,13 +125,22 @@ end Mathlib.Linter
 
 namespace Mathlib.Linter.multiGoal
 
+/-- The linter only considers files whose name begins with a component in `libraries`. -/
+abbrev libraries : HashSet Name := HashSet.empty
+  |>.insert `Mathlib
+  |>.insert `Archive
+  |>.insert `Counterexamples
+
 /-- Gets the value of the `linter.multiGoal` option. -/
 def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.multiGoal o
 
 @[inherit_doc Mathlib.Linter.linter.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
-    unless getLinterHash (← getOptions) do
+    let mod ← getMainModule
+    unless getLinterHash (← getOptions) &&
+           -- the linter only runs on `Mathlib`, `Archive`, `Counterexamples` and its own test file
+           (libraries.contains (mod.components.getD 0 default) || mod == `test.MultigoalsLinter) do
       return
     if (← MonadState.get).messages.hasErrors then
       return
