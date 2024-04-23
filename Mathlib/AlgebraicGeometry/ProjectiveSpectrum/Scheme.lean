@@ -797,9 +797,9 @@ variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 variable {x : Proj.T| pbo f} {y : Spec.T (A⁰_ f)} (hxy : ProjectiveSpectrum.IsRelated f_deg hm x y)
 
 lemma mem_iff (a : A) (i : ℕ) (ha : a ∈ 𝒜 i) :
-  a ∈ x.1.asHomogeneousIdeal ↔
-  Quotient.mk'' ⟨m * i, ⟨a ^ m, SetLike.pow_mem_graded m ha⟩,
-    ⟨f ^ i, mul_comm m i ▸ SetLike.pow_mem_graded i f_deg⟩, ⟨_, rfl⟩⟩ ∈ y.asIdeal := by
+    a ∈ x.1.asHomogeneousIdeal ↔
+    Quotient.mk'' ⟨m * i, ⟨a ^ m, SetLike.pow_mem_graded m ha⟩,
+      ⟨f ^ i, mul_comm m i ▸ SetLike.pow_mem_graded i f_deg⟩, ⟨_, rfl⟩⟩ ∈ y.asIdeal := by
   classical
   rw [← hxy]
   simp only [CommRingCat.coe_of, LocallyRingedSpace.restrict_carrier,
@@ -833,6 +833,10 @@ section
 variable {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m)
 variable (x : Proj.T| pbo f) (y : Spec.T (A⁰_ f)) (hxy : ProjectiveSpectrum.IsRelated f_deg hm x y)
 
+/--
+The ring map between homogeneous localizations of `A` away from `f` and at prime ideal `x` induced
+by `𝟙 : A ⟶ A` since `f ∉ x`.
+-/
 def awayToAtPrime :
     (A⁰_ f) →+*
     HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal :=
@@ -849,7 +853,8 @@ def awayToAtPrime :
       exact x.1.2.pow_mem_iff_mem n (by positivity) |>.not.mpr (x.2 : f ∉ x.1.1.1))
     fun _ _ ↦ Iff.rfl
 
-lemma awayToAtPrime_mk (a b : A) (i : ℕ) (ha : a ∈ 𝒜 i) (hb : b ∈ 𝒜 i) (hb' : b ∈ Submonoid.powers f):
+lemma awayToAtPrime_mk
+    (a b : A) (i : ℕ) (ha : a ∈ 𝒜 i) (hb : b ∈ 𝒜 i) (hb' : b ∈ Submonoid.powers f) :
     awayToAtPrime 𝒜 x (Quotient.mk'' ⟨i, ⟨a, ha⟩, ⟨b, hb⟩, hb'⟩) =
     Quotient.mk'' ⟨i, ⟨a, ha⟩, ⟨b, hb⟩, by
       rintro (r : b ∈ _)
@@ -874,14 +879,16 @@ instance inst_algebra_away_atPrime' :
   inferInstanceAs <|
     Algebra (A⁰_ f) (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)
 
-instance : IsLocalization y.asIdeal.primeCompl
-    (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) where
+lemma homogeneousLocalization_atPrime_isLocalization :
+    IsLocalization y.asIdeal.primeCompl
+      (HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal) where
   map_units' := by
     rintro ⟨x, hx⟩
     induction x using Quotient.inductionOn' with | h a => ?_
     rcases a with ⟨i, a, ⟨b, h⟩, ⟨n, (rfl : f ^ _ = b)⟩⟩
     change IsUnit (awayToAtPrime _ _ _)
-    rw [awayToAtPrime_mk, ← HomogeneousLocalization.isUnit_iff_isUnit_val, HomogeneousLocalization.val_mk'']
+    rw [awayToAtPrime_mk, ← HomogeneousLocalization.isUnit_iff_isUnit_val,
+      HomogeneousLocalization.val_mk'']
     dsimp
     suffices mem : a.1 ∉ x.1.asHomogeneousIdeal by
       refine ⟨⟨Localization.mk a _, Localization.mk (f^n) ⟨a, mem⟩, ?_, ?_⟩, rfl⟩ <;>
@@ -914,16 +921,15 @@ instance : IsLocalization y.asIdeal.primeCompl
     change ∃ _, z * awayToAtPrime _ _ _ = awayToAtPrime _ _ _
     induction z using Quotient.inductionOn' with | h a => ?_
     rcases a with ⟨i, a, ⟨b, hb⟩, (hb' : b ∉ x.1.1)⟩
-    have := ProjectiveSpectrum.IsRelated.mem_iff 𝒜 f_deg hm hxy b i hb |>.not.mp hb'
     refine ⟨⟨Quotient.mk''
       ⟨m * i, ⟨a * b^(m - 1), ?_⟩, ⟨f^i, mul_comm m i ▸ SetLike.pow_mem_graded i f_deg⟩, ⟨_, rfl⟩⟩,
       ⟨_, ProjectiveSpectrum.IsRelated.mem_iff 𝒜 f_deg hm hxy b i hb |>.not.mp hb'⟩⟩, ?_⟩
     · convert SetLike.mul_mem_graded a.2 (SetLike.pow_mem_graded (m - 1) hb) using 2
       conv_lhs => rw [show m = ((m - 1) + 1) by omega, add_mul, one_mul, add_comm, ← smul_eq_mul]
 
-    simp only [awayToAtPrime_mk, HomogeneousLocalization.ext_iff_val, HomogeneousLocalization.mul_val,
-      HomogeneousLocalization.val_mk'', mk_mul, Submonoid.mk_mul_mk, mk_eq_mk_iff, r_iff_exists,
-      Subtype.exists, exists_prop]
+    simp only [awayToAtPrime_mk, HomogeneousLocalization.ext_iff_val, mk_mul, mk_eq_mk_iff,
+      HomogeneousLocalization.mul_val, HomogeneousLocalization.val_mk'', Submonoid.mk_mul_mk,
+      r_iff_exists, Subtype.exists, exists_prop]
     refine ⟨1, Submonoid.one_mem _, ?_⟩
     conv_lhs => rw [show m = 1 + (m - 1) by omega]
     ring
@@ -960,6 +966,23 @@ instance : IsLocalization y.asIdeal.primeCompl
       ← mul_assoc ((decompose 𝒜 c J : A)^(m - 1)), ← pow_succ, show (m - 1 + 1) = m by omega] at h
     refine ⟨1, Submonoid.one_mem _, ?_⟩
     linear_combination ((f^J)) * h
+
+/--
+If `x : Proj|D(f)` and `y : Spec A⁰_f` are related by the homeomorphism `Proj|D(f) ≅ Spec A⁰_f`,
+then we have a ring isomorphism `A⁰ₓ ≅ (A⁰_f)_y`
+-/
+def atPrimeEquiv :
+    HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal ≃+*
+    Localization.AtPrime y.asIdeal :=
+  @IsLocalization.ringEquivOfRingEquiv
+    (M := y.asIdeal.primeCompl)
+    (T := y.asIdeal.primeCompl)
+    (S := HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)
+    (Q := Localization.AtPrime y.asIdeal)
+    _ _ _ (homogeneousLocalization_atPrime_isLocalization 𝒜 f_deg hm _ _ hxy)
+    _ _ _ (RingEquiv.refl (A⁰_ f))
+    (by erw [Submonoid.map_id (y.asIdeal.primeCompl)])
+
 
 end
 
