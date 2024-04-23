@@ -979,7 +979,6 @@ section
 
 variable [DecidableEq α] {l : List α}
 
-set_option linter.deprecated false in -- nthLe
 theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
     l.formPerm.IsCycleOn { a | a ∈ l } := by
   refine' ⟨l.formPerm.bijOn fun _ => List.formPerm_mem_iff_mem, fun a ha b hb => _⟩
@@ -987,7 +986,7 @@ theorem Nodup.isCycleOn_formPerm (h : l.Nodup) :
   rw [← List.indexOf_get ha, ← List.indexOf_get hb]
   refine' ⟨l.indexOf b - l.indexOf a, _⟩
   simp only [sub_eq_neg_add, zpow_add, zpow_neg, Equiv.Perm.inv_eq_iff_eq, zpow_natCast,
-    Equiv.Perm.coe_mul, ← List.nthLe_eq, List.formPerm_pow_apply_nthLe _ h, Function.comp]
+    Equiv.Perm.coe_mul, List.formPerm_pow_apply_get _ h, Function.comp]
   rw [add_comm]
 #align list.nodup.is_cycle_on_form_perm List.Nodup.isCycleOn_formPerm
 
