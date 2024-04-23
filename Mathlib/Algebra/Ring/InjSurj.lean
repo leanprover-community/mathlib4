@@ -221,8 +221,8 @@ theorem rightDistribClass [Mul α] [Add α] [RightDistribClass α] (add : ∀ x 
 @[reducible] -- See note [reducible non-instances]
 protected def distrib [Distrib α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib β where
-  left_distrib := (hf.leftDistribClass f add mul).1
-  right_distrib := (hf.rightDistribClass f add mul).1
+  __ := hf.leftDistribClass f add mul
+  __ := hf.rightDistribClass f add mul
 #align function.surjective.distrib Function.Surjective.distrib
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits a surjective map that
