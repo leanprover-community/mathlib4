@@ -15,7 +15,7 @@ import Mathlib.LinearAlgebra.Matrix.Basis
 ## Main result
 
 * `LinearMap.charpoly_toMatrix f` : `charpoly f` is the characteristic polynomial of the matrix
-of `f` in any basis.
+  of `f` in any basis.
 
 -/
 
@@ -36,10 +36,8 @@ open Module.Free Polynomial Matrix
 
 namespace LinearMap
 
-section Basic
-
+/- These attribute tweaks save ~ 2000 heartbeats in `LinearMap.charpoly_toMatrix`. -/
 attribute [-instance] instCoeOut
-
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
 attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
 
@@ -95,18 +93,13 @@ lemma charpoly_prodMap (f₁ : M₁ →ₗ[R] M₁) (f₂ : M₂ →ₗ[R] M₂)
   rw [← charpoly_toMatrix f₁ b₁, ← charpoly_toMatrix f₂ b₂, ← charpoly_toMatrix (f₁.prodMap f₂) b,
     toMatrix_prodMap b₁ b₂ f₁ f₂, Matrix.charpoly_fromBlocks_zero₁₂]
 
-open Module.Free in
-lemma charpoly_eq_of_equiv (φ₁ : Module.End R M₁) (φ₂ : Module.End R M₂) (e : M₁ ≃ₗ[R] M₂)
-    (H : (e.toLinearMap.comp <| φ₁.comp e.symm.toLinearMap) = φ₂) :
-    φ₁.charpoly = φ₂.charpoly := by
-  let b₁ := chooseBasis R M₁
-  let b₂ := b₁.map e
-  rw [← charpoly_toMatrix φ₁ b₁, ← charpoly_toMatrix φ₂ b₂]
-  dsimp only [Matrix.charpoly, b₂]
+end LinearMap
+
+@[simp]
+lemma LinearEquiv.charpoly_conj (e : M₁ ≃ₗ[R] M₂) (φ : Module.End R M₁) :
+    (e.conj φ).charpoly = φ.charpoly := by
+  let b := chooseBasis R M₁
+  rw [← LinearMap.charpoly_toMatrix φ b, ← LinearMap.charpoly_toMatrix (e.conj φ) (b.map e)]
   congr 1
   ext i j : 1
-  simp [Matrix.charmatrix, toMatrix, Matrix.diagonal, ← H]
-
-end Basic
-
-end LinearMap
+  simp [Matrix.charmatrix, LinearMap.toMatrix, Matrix.diagonal, LinearEquiv.conj_apply]
