@@ -6,6 +6,7 @@ Authors: Johan Commelin
 import Mathlib.LinearAlgebra.Charpoly.ToMatrix
 import Mathlib.LinearAlgebra.Determinant
 import Mathlib.LinearAlgebra.Eigenspace.Minpoly
+import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 import Mathlib.RingTheory.Artinian
 
 /-!
@@ -28,34 +29,35 @@ such as being nilpotent, having determinant equal to 0, having a non-trivial ker
 
 -/
 
-variable {K M : Type*} [Field K] [AddCommGroup M] [Module K M] [Module.Finite K M]
-variable (φ : Module.End K M)
+variable {R K M : Type*} [CommRing R] [IsDomain R] [Field K] [AddCommGroup M]
+variable [Module R M] [Module.Finite R M] [Module.Free R M]
+variable [Module K M] [Module.Finite K M]
 
 open FiniteDimensional Module.Free Polynomial
 
-lemma IsNilpotent.charpoly_eq_X_pow_finrank (h : IsNilpotent φ) :
-    φ.charpoly = X ^ finrank K M := by
+lemma IsNilpotent.charpoly_eq_X_pow_finrank (φ : Module.End R M) (h : IsNilpotent φ) :
+    φ.charpoly = X ^ finrank R M := by
   rw [← sub_eq_zero]
   apply IsNilpotent.eq_zero
   rw [finrank_eq_card_chooseBasisIndex]
   apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
-  exact h.map (LinearMap.toMatrixAlgEquiv (chooseBasis K M))
+  exact h.map (LinearMap.toMatrixAlgEquiv (chooseBasis R M))
 
 namespace LinearMap
 
 open Module.Free in
-lemma charpoly_nilpotent_tfae :
+lemma charpoly_nilpotent_tfae [IsNoetherian R M] (φ : Module.End R M) :
     List.TFAE [
       IsNilpotent φ,
-      φ.charpoly = X ^ finrank K M,
+      φ.charpoly = X ^ finrank R M,
       ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0,
-      natTrailingDegree φ.charpoly = finrank K M ] := by
+      natTrailingDegree φ.charpoly = finrank R M ] := by
   tfae_have 1 → 2
   · apply IsNilpotent.charpoly_eq_X_pow_finrank
   tfae_have 2 → 3
   · intro h m
-    use finrank K M
-    suffices φ ^ finrank K M = 0 by simp only [this, LinearMap.zero_apply]
+    use finrank R M
+    suffices φ ^ finrank R M = 0 by simp only [this, LinearMap.zero_apply]
     simpa only [h, map_pow, aeval_X] using φ.aeval_self_charpoly
   tfae_have 3 → 1
   · intro h
@@ -70,15 +72,15 @@ lemma charpoly_nilpotent_tfae :
   · rw [← φ.charpoly_natDegree]
     refine ⟨?_, φ.charpoly_monic.eq_X_pow_of_natTrailingDegree_eq_natDegree⟩
     intro h
-    rw [← natTrailingDegree_X_pow (R := K) φ.charpoly.natDegree, ← h]
+    rw [← natTrailingDegree_X_pow (R := R) φ.charpoly.natDegree, ← h]
   tfae_finish
 
-lemma charpoly_eq_X_pow_iff :
-    φ.charpoly = X ^ finrank K M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
+lemma charpoly_eq_X_pow_iff [IsNoetherian R M] (φ : Module.End R M) :
+    φ.charpoly = X ^ finrank R M ↔ ∀ m : M, ∃ (n : ℕ), (φ ^ n) m = 0 :=
   (charpoly_nilpotent_tfae φ).out 1 2
 
 open Module.Free in
-lemma hasEigenvalue_zero_tfae :
+lemma hasEigenvalue_zero_tfae (φ : Module.End K M) :
     List.TFAE [
       Module.End.HasEigenvalue φ 0,
       IsRoot (minpoly K φ) 0,
@@ -111,12 +113,12 @@ lemma hasEigenvalue_zero_tfae :
     simpa only [Module.End.eigenspace_zero, mem_ker] using h2
   tfae_finish
 
-lemma charpoly_constantCoeff_eq_zero_iff :
+lemma charpoly_constantCoeff_eq_zero_iff (φ : Module.End K M) :
     constantCoeff φ.charpoly = 0 ↔ ∃ (m : M), m ≠ 0 ∧ φ m = 0 :=
   (hasEigenvalue_zero_tfae φ).out 2 5
 
 open Module.Free in
-lemma not_hasEigenvalue_zero_tfae :
+lemma not_hasEigenvalue_zero_tfae (φ : Module.End K M) :
     List.TFAE [
       ¬ Module.End.HasEigenvalue φ 0,
       ¬ IsRoot (minpoly K φ) 0,
@@ -128,11 +130,11 @@ lemma not_hasEigenvalue_zero_tfae :
   dsimp only [List.map] at this
   push_neg at this
   have aux₁ : ∀ m, (m ≠ 0 → φ m ≠ 0) ↔ (φ m = 0 → m = 0) := by intro m; apply not_imp_not
-  have aux₂ : ker φ ≤ ⊥ ↔ ¬ ⊥ < ker φ := by rw [le_bot_iff, bot_lt_iff_ne_bot, not_not]
+  have aux₂ : ker φ = ⊥ ↔ ¬ ⊥ < ker φ := by rw [bot_lt_iff_ne_bot, not_not]
   simpa only [aux₁, aux₂] using this
 
 open Module.Free in
-lemma finrank_maximalGeneralizedEigenspace :
+lemma finrank_maximalGeneralizedEigenspace (φ : Module.End K M) :
     finrank K (φ.maximalGeneralizedEigenspace 0) = natTrailingDegree (φ.charpoly) := by
   set V := φ.maximalGeneralizedEigenspace 0
   have hV : V = ⨆ (n : ℕ), ker (φ ^ n) := by
