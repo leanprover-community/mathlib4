@@ -78,6 +78,7 @@ lemma killingForm_restrict_range_ad_nondegenerate : ((killingForm R 𝔻).restri
   killingForm_restrict_range_ad R L ▸ LieAlgebra.IsKilling.killingForm_nondegenerate R _
 
 /-- The range of the adjoint action on a finite-dimensional Killing Lie algebra is full. -/
+@[simp]
 lemma range_ad_eq_top : 𝕀 = ⊤ := by
   rw [← LieSubalgebra.coe_to_submodule_eq_iff]
   apply LinearMap.BilinForm.eq_top_of_restrict_nondegenerate_of_orthogonal_eq_bot
