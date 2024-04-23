@@ -257,29 +257,28 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
 open scoped symmDiff in
-/-- If the measure of the symmetric difference of two measurable sets is finite,
-then one has finite measure if and only if the other does. -/
-theorem Ne.measure_ne_top_iff_of_symmDiff (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμst : μ (s ∆ t) ≠ ⊤) : μ s ≠ ⊤ ↔ μ t ≠ ⊤ := by
-  suffices h : ∀ u v, MeasurableSet u → MeasurableSet v → μ (u ∆ v) ≠ ⊤ → μ u ≠ ⊤ → μ v ≠ ⊤
+/-- If the measure of the symmetric difference of two null measurable sets is finite,
+then one has infinite measure if and only if the other does. -/
+theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+    (hμst : μ (s ∆ t) ≠ ∞) : μ s = ∞ ↔ μ t = ∞ := by
+  suffices h : ∀ u v, NullMeasurableSet u μ → NullMeasurableSet v μ
+    → μ (u ∆ v) ≠ ∞ → μ u = ∞ → μ v = ∞
     from ⟨h s t hs ht hμst, h t s ht hs (symmDiff_comm s t ▸ hμst)⟩
   intro u v hu hv hμuv hμu
-  by_contra h
+  by_contra! hμv
   apply hμuv
-  rw [measure_symmDiff_eq hu hv, add_eq_top]
-  right
-  rw [eq_top_iff, ← sub_eq_top_iff.2 ⟨h, hμu⟩]
-  exact le_measure_diff
+  rw [Set.symmDiff_def, measure_union₀ (hv.diff hu) disjoint_sdiff_sdiff.aedisjoint, add_eq_top]
+  left
+  rw [eq_top_iff]
+  calc
+    ∞ = μ u - μ v :=(WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
+    _ ≤ μ (u \ v) := le_measure_diff
 
 open scoped symmDiff in
-theorem Ne.measure_ne_top_of_symmDiff_right (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμst : μ (s ∆ t) ≠ ⊤) (hμs : μ s ≠ ⊤) : μ t ≠ ⊤ :=
-  (Ne.measure_ne_top_iff_of_symmDiff hs ht hμst).1 hμs
-
-open scoped symmDiff in
-theorem Ne.measure_ne_top_of_symmDiff_left (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (hμst : μ (s ∆ t) ≠ ⊤) (hμt : μ t ≠ ⊤) : μ s ≠ ⊤ :=
-  (Ne.measure_ne_top_iff_of_symmDiff hs ht hμst).2 hμt
+/-- If the measure of the symmetric difference of two null measurable sets is finite,
+then one has finite measure if and only if the other does. -/
+theorem Ne.measure_ne_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+    (hμst : μ (s ∆ t) ≠ ∞) : μ s ≠ ∞ ↔ μ t ≠ ∞ := (measure_eq_top_iff_of_symmDiff hs ht hμst).ne
 
 theorem measure_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞}
     (h : μ t < μ s + ε) : μ (t \ s) < ε := by
