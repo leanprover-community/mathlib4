@@ -3,7 +3,6 @@ Copyright (c) 2021 Bryan Gin-ge Chen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bryan Gin-ge Chen, Yury Kudryashov
 -/
-import Mathlib.Algebra.Hom.Group
 import Mathlib.Algebra.Group.PPow
 import Mathlib.Algebra.Group.Hom.Defs
 
@@ -33,14 +32,14 @@ open Function
 
 universe u
 
-variable [Monoid M]
+variable {M : Type*} [Monoid M]
 
 @[to_additive (attr := ext)]
 theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.mul = m₂.mul) : m₁ = m₂ := by
   let f := @MulHom.mk _ _ m₁.toMul m₂.toMul id fun _ _ => congr_fun (congr_fun h_mul _) _
   have : m₁.ppow = m₂.ppow := by
     ext n hn x
-    exact @map_ppow _ M M m₁ m₂ _ f x ⟨n, hn⟩
+    exact @map_ppow _ M M m₁ m₂ _ _ f x ⟨n, hn⟩
   rcases m₁ with @⟨@⟨_⟩, _⟩
   rcases m₂ with @⟨@⟨_⟩, _⟩
   congr
@@ -49,11 +48,13 @@ theorem Semigroup.ext {M : Type u} ⦃m₁ m₂ : Semigroup M⦄ (h_mul : m₁.m
 #align add_semigroup.ext AddSemigroup.extₓ
 #noalign add_semigroup.ext_iff
 
+
 @[to_additive]
 theorem CommSemigroup.toSemigroup_injective {M : Type u} [Semigroup M] :
     Function.Injective (@CommSemigroup.toSemigroup M) := by
   rintro ⟨⟩ ⟨⟩ h
   congr
+
 
 @[to_additive (attr := ext)]
 theorem CommSemigroup.ext {M : Type _} ⦃m₁ m₂ : CommSemigroup M⦄ (h_mul : m₁.mul = m₂.mul) :
@@ -63,6 +64,7 @@ theorem CommSemigroup.ext {M : Type _} ⦃m₁ m₂ : CommSemigroup M⦄ (h_mul 
 #noalign comm_semigroup.ext_iff
 #align add_comm_semigroup.ext AddCommSemigroup.extₓ
 #noalign add_comm_semigroup.ext_iff
+
 
 @[to_additive (attr := ext)]
 theorem Monoid.ext {M : Type u} ⦃m₁ m₂ : Monoid M⦄

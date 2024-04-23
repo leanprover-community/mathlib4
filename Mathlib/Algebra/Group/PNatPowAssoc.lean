@@ -47,6 +47,8 @@ class PNatPowAssoc (M : Type*) [Mul M] [Pow M ℕ+] : Prop where
   /-- Exponent one is identity. -/
   protected ppow_one : ∀ (x : M), x ^ (1 : ℕ+) = x
 
+namespace Mul
+
 section Mul
 
 variable [Mul M] [Pow M ℕ+] [PNatPowAssoc M]

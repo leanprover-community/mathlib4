@@ -272,14 +272,14 @@ There are several important design decisions to mention here.
 -- definitional unfolding of `ppowRec` is blocked, to avoid deep recursion issues.
 /-- The fundamental power operation in a semigroup. `ppowRec n a = a*a*...*a` n times.
 Use instead `a ^ n`,  which has better definitional behavior. -/
-def ppowRec [Mul M] : ∀ n : ℕ, 0 < n → M → M
+def ppowRec {M : Type*} [Mul M] : ∀ n : ℕ, 0 < n → M → M
   | 0, h, _ => (Nat.ne_of_lt h rfl).elim
   | 1, _, a => a
   | n + 2, _, a => a * ppowRec (n + 1) n.succ_pos a
 
 /-- The fundamental scalar multipication in an additive semigroup. `psmulRec n a = a+a+...+a` n
 times.  Use instead `a ^ n`,  which has better definitional behavior. -/
-def psmulRec [Add M] : ∀ n : ℕ, 0 < n → M → M
+def psmulRec {M : Type*} [Add M] : ∀ n : ℕ, 0 < n → M → M
   | 0, h, _ => (Nat.ne_of_lt h rfl).elim
   | 1, _, a => a
   | n + 2, _, a => a + psmulRec (n + 1) n.succ_pos a
@@ -335,7 +335,6 @@ class CommMagma (G : Type u) extends Mul G where
 attribute [to_additive] CommMagma
 
 /-- A commutative semigroup is a type with an associative commutative `(*)`. -/
-@[ext]
 class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 #align comm_semigroup CommSemigroup
 
