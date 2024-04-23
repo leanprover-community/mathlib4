@@ -78,7 +78,7 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
   induction' n using Nat.strongRecOn with n hi
   intro X hn
   by_cases h : IsConnected X
-  exact has_decomp_connected_components_aux_conn X
+  · exact has_decomp_connected_components_aux_conn X
   by_cases nhi : (IsInitial X → False)
   · obtain ⟨Y, v, hni, hvmono, hvnoiso⟩ :=
       has_non_trivial_subobject_of_not_isConnected_of_not_initial X h nhi
@@ -100,7 +100,9 @@ private lemma has_decomp_connected_components_aux (F : C ⥤ FintypeCat.{w}) [Fi
       Cofan.combPairHoms (Cofan.mk Y g₁) (Cofan.mk Z g₂) (BinaryCofan.mk v u), ?_⟩
     use Cofan.combPairIsColimit hc₁ hc₂ c
     refine ⟨fun i ↦ ?_, inferInstance⟩
-    cases i; exact hf₁ _; exact hf₂ _
+    cases i
+    · exact hf₁ _
+    · exact hf₂ _
   · simp at nhi
     obtain ⟨hi⟩ := nhi
     exact has_decomp_connected_components_aux_initial X hi
