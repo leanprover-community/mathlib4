@@ -180,7 +180,7 @@ set_option linter.uppercaseLean3 false in
 instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
   isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
 
-lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] (X : D) :
+lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     IsIso (h.counit.app X) ↔ X ∈ L.essImage := by
   constructor
   · intro
@@ -189,10 +189,14 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] (X : D) :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
+lemma isIso_counit_app_of_iso [L.Faithful] [L.Full] {X : D} {Y : C} (e : X ≅ L.obj Y) :
+    IsIso (h.counit.app X) :=
+  (isIso_counit_app_iff_mem_essImage h).mpr ⟨Y, ⟨e.symm⟩⟩
+
 instance [R.Faithful] [R.Full] {Y : D} : IsIso (h.unit.app (R.obj Y)) :=
   isIso_of_comp_hom_eq_id _ (h.right_triangle_components Y)
 
-lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] (Y : C) :
+lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     IsIso (h.unit.app Y) ↔ Y ∈ R.essImage := by
   constructor
   · intro
