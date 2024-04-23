@@ -255,8 +255,8 @@ abbrev specialOrthogonalGroup := specialUnitaryGroup n β
 variable {n} {β} {A : Matrix n n β}
 
 theorem mem_specialOrthogonalGroup_iff :
-    A ∈ specialOrthogonalGroup n β ↔ A * star A = 1 ∧ A.det = 1 :=
-  mem_specialUnitaryGroup_iff
+    A ∈ specialOrthogonalGroup n β ↔ A ∈ orthogonalGroup n β ∧ A.det = 1 :=
+  Iff.rfl
 
 /-- Given an orthogonal Matrix with the determinant 1, we get an instance of
 `specialOrthogonalGroup n β` -/
