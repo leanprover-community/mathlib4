@@ -27,14 +27,13 @@ variable (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' ⥤ D'} {R' : D' ⥤ C'} (adj 
 variable {L : C ⥤ D} {R : D ⥤ C} (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
 variable [iC.Full] [iC.Faithful] [iD.Full] [iD.Faithful]
 
--- TODO: This needs some lemmas describing the produced adjunction, probably in terms of `adj`,
--- `iC` and `iD`.
 /-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
 an adjunction `L' ⊣ R'` where `L' : C' ⥤ D'` and `R' : D' ⥤ C'` to `C` and `D`.
 The construction here is slightly more general, in that `C` is required only to have a full and
 faithful "inclusion" functor `iC : C ⥤ C'` (and similarly `iD : D ⥤ D'`) which commute (up to
 natural isomorphism) with the proposed restrictions.
 -/
+@[simps! unit_app counit_app]
 def restrictFullyFaithful : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
