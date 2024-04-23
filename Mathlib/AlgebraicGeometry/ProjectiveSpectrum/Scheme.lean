@@ -967,21 +967,32 @@ lemma homogeneousLocalization_atPrime_isLocalization :
     refine ⟨1, Submonoid.one_mem _, ?_⟩
     linear_combination ((f^J)) * h
 
+variable {𝒜 x y}
 /--
 If `x : Proj|D(f)` and `y : Spec A⁰_f` are related by the homeomorphism `Proj|D(f) ≅ Spec A⁰_f`,
 then we have a ring isomorphism `A⁰ₓ ≅ (A⁰_f)_y`
 -/
 def atPrimeEquiv :
-    HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal ≃+*
-    Localization.AtPrime y.asIdeal :=
+    Localization.AtPrime y.asIdeal ≃+*
+    HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal  :=
   @IsLocalization.ringEquivOfRingEquiv
-    (M := y.asIdeal.primeCompl)
     (T := y.asIdeal.primeCompl)
-    (S := HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)
-    (Q := Localization.AtPrime y.asIdeal)
-    _ _ _ (homogeneousLocalization_atPrime_isLocalization 𝒜 f_deg hm _ _ hxy)
-    _ _ _ (RingEquiv.refl (A⁰_ f))
-    (by erw [Submonoid.map_id (y.asIdeal.primeCompl)])
+    (M := y.asIdeal.primeCompl)
+    (Q := HomogeneousLocalization.AtPrime 𝒜 x.1.asHomogeneousIdeal.toIdeal)
+    (S := Localization.AtPrime y.asIdeal)
+    _ _ _ _ _ _ _ (homogeneousLocalization_atPrime_isLocalization 𝒜 f_deg hm _ _ hxy)
+    (RingEquiv.refl (A⁰_ f)) (by erw [Submonoid.map_id (y.asIdeal.primeCompl)])
+
+lemma atPrimeEquiv_mk_one (a : A⁰_ f) :
+    atPrimeEquiv f_deg hm hxy (Localization.mk a 1) =
+    algebraMap _ _ a := by
+  letI := homogeneousLocalization_atPrime_isLocalization 𝒜 f_deg hm _ _ hxy
+  apply IsLocalization.ringEquivOfRingEquiv_eq
+
+lemma atPrimeEquiv_mk_one' (a : A⁰_ f) :
+    atPrimeEquiv f_deg hm hxy (Localization.mk a 1) =
+    awayToAtPrime 𝒜 x a :=
+  atPrimeEquiv_mk_one f_deg hm hxy a
 
 
 end

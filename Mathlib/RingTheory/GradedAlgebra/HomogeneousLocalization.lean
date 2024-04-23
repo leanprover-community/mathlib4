@@ -5,7 +5,6 @@ Authors: Jujian Zhang, Eric Wieser
 -/
 import Mathlib.RingTheory.Localization.AtPrime
 import Mathlib.RingTheory.GradedAlgebra.Basic
-import Mathlib.Tactic.Polyrith
 
 #align_import ring_theory.graded_algebra.homogeneous_localization from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -642,13 +641,9 @@ def asSubring : Subring (Localization P) where
     rintro _ ⟨a, rfl⟩
     exact ⟨-a, neg_val a |>.symm⟩
 
-variable {C P}
-def lift (g : A →+* C) (is_unit : ∀ x : P, IsUnit (g x)) :
-    HomogeneousLocalization 𝒜 P →+* C :=
-  RingHom.comp (IsLocalization.lift (M := P) (S := Localization P) is_unit) <|
-    algebraMap _ _
-
-variable (P) in
+/--
+Homogeneous localization as a subring of normal localization
+-/
 def equivSubring : HomogeneousLocalization 𝒜 P ≃+* asSubring 𝒜 P where
   toFun x := ⟨x.val, ⟨_, rfl⟩⟩
   invFun x := .mk''
@@ -682,6 +677,20 @@ def equivSubring : HomogeneousLocalization 𝒜 P ≃+* asSubring 𝒜 P where
     simp only [add_val]
     rfl
 
+variable {C P}
+/--
+If `g : A ⟶ C` is a ring homomorphism such that `g(P)` has only invertible elements,
+then we get a ring homomorphism `A⁰_P ⟶ C`
+-/
+def lift (g : A →+* C) (is_unit : ∀ x : P, IsUnit (g x)) :
+    HomogeneousLocalization 𝒜 P →+* C :=
+  RingHom.comp (IsLocalization.lift (M := P) (S := Localization P) is_unit) <|
+    algebraMap _ _
+
+/--
+If `g : A ⟶ B` is a ring homomorphism preserving degree such that `g(P) ⊆ Q`, then
+there is a ring homomorphism `A⁰_P ⟶ B⁰_Q`.
+-/
 def map (g : A →+* B)
   (comap_le : P ≤ Q.comap g) (preserves_deg : ∀ a : A, ∀ i : ι, a ∈ 𝒜 i ↔ g a ∈ ℬ i) :
     HomogeneousLocalization 𝒜 P →+* HomogeneousLocalization ℬ Q :=
