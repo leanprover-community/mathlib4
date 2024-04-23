@@ -561,8 +561,7 @@ noncomputable instance [Small.{v} α] [Ring α] [IsDomain α] : IsDomain (Shrink
   Equiv.isDomain  (Shrink.ringEquiv α)
 
 /-- Transfer `RatCast` across an `Equiv` -/
-@[reducible]
-protected def ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
+@[reducible] protected def ratCast [RatCast β] : RatCast α where ratCast n := e.symm n
 #align equiv.has_rat_cast Equiv.ratCast
 
 noncomputable instance _root_.Shrink.instRatCast [Small.{v} α] [RatCast α] :

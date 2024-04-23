@@ -821,8 +821,8 @@ lemma div_im (z w : ℂ) : (z / w).im = z.im * w.re / normSq w - z.re * w.im / n
 noncomputable instance instField : Field ℂ where
   mul_inv_cancel := @Complex.mul_inv_cancel
   inv_zero := Complex.inv_zero
-  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
   qsmul := (· • ·)
+  ratCast_def q := by ext <;> simp [Rat.cast_def, div_re, div_im, mul_div_mul_comm]
   qsmul_def n z := ext_iff.2 <| by simp [Rat.smul_def, smul_re, smul_im]
 #align complex.field Complex.instField
 

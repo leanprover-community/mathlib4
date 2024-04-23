@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 We define the constant `γ`, and give upper and lower bounds for it.
 
-## Main definitions and results
+## Main definitions and results
 
 * `Real.eulerMascheroniConstant`: the constant `γ`
 * `Real.tendsto_harmonic_sub_log`: the sequence `n ↦ harmonic n - log n` tends to `γ` as `n → ∞`
