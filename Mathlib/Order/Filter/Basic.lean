@@ -2305,6 +2305,17 @@ theorem comap_principal {t : Set β} : comap m (𝓟 t) = 𝓟 (m ⁻¹' t) :=
 #align filter.comap_principal Filter.comap_principal
 
 @[simp]
+theorem comap_bot : comap m ⊥ = ⊥ := by
+  rw [← principal_empty, comap_principal, preimage_empty, principal_empty]
+#align filter.comap_bot Filter.comap_bot
+
+theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
+  rw [neBot_iff] at *
+  contrapose! h
+  rw [h, comap_bot]
+#align filter.ne_bot_of_comap Filter.neBot_of_comap
+
+@[simp]
 theorem comap_pure {b : β} : comap m (pure b) = 𝓟 (m ⁻¹' {b}) := by
   rw [← principal_singleton, comap_principal]
 #align filter.comap_pure Filter.comap_pure
@@ -2383,22 +2394,8 @@ theorem le_comap_map : f ≤ comap m (map m f) :=
   (gc_map_comap m).le_u_l _
 #align filter.le_comap_map Filter.le_comap_map
 
-@[simp]
-theorem comap_bot : comap m ⊥ = ⊥ :=
-  bot_unique fun s _ => ⟨∅, mem_bot, by simp only [empty_subset, preimage_empty]⟩
-#align filter.comap_bot Filter.comap_bot
-
-theorem neBot_of_comap (h : (comap m g).NeBot) : g.NeBot := by
-  rw [neBot_iff] at *
-  contrapose! h
-  rw [h]
-  exact comap_bot
-#align filter.ne_bot_of_comap Filter.neBot_of_comap
-
--- Porting note: the proof was `by simp`. Lean 4 fails to use `le_top`
 theorem comap_inf_principal_range : comap m (g ⊓ 𝓟 (range m)) = comap m g := by
-  simpa only [le_principal_iff, comap_inf, comap_principal, preimage_range, principal_univ,
-    inf_eq_left] using le_top
+  simp
 #align filter.comap_inf_principal_range Filter.comap_inf_principal_range
 
 theorem disjoint_comap (h : Disjoint g₁ g₂) : Disjoint (comap m g₁) (comap m g₂) := by
@@ -2417,12 +2414,48 @@ theorem comap_sup : comap m (g₁ ⊔ g₂) = comap m g₁ ⊔ comap m g₂ := b
   rw [sup_eq_iSup, comap_iSup, iSup_bool_eq, Bool.cond_true, Bool.cond_false]
 #align filter.comap_sup Filter.comap_sup
 
-theorem map_comap (f : Filter β) (m : α → β) : (f.comap m).map m = f ⊓ 𝓟 (range m) := by
-  refine' le_antisymm (le_inf map_comap_le <| le_principal_iff.2 range_mem_map) _
-  rintro t' ⟨t, ht, sub⟩
-  refine' mem_inf_principal.2 (mem_of_superset ht _)
-  rintro _ hxt ⟨x, rfl⟩
-  exact sub hxt
+-- this is a generic rule for monotone functions:
+theorem map_iInf_le {f : ι → Filter α} {m : α → β} : map m (iInf f) ≤ ⨅ i, map m (f i) :=
+  map_mono.map_iInf_le
+#align filter.map_infi_le Filter.map_iInf_le
+
+theorem map_inf_le {f g : Filter α} {m : α → β} : map m (f ⊓ g) ≤ map m f ⊓ map m g :=
+  map_mono.map_inf_le f g
+#align filter.map_inf_le Filter.map_inf_le
+
+protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
+    map f (F ⊓ comap f G) = map f F ⊓ G := by
+  apply le_antisymm
+  · calc
+      map f (F ⊓ comap f G) ≤ map f F ⊓ (map f <| comap f G) := map_inf_le
+      _ ≤ map f F ⊓ G := inf_le_inf_left (map f F) map_comap_le
+
+  · rintro U ⟨V, V_in, W, ⟨Z, Z_in, hZ⟩, h⟩
+    apply mem_inf_of_inter (image_mem_map V_in) Z_in
+    calc
+      f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
+      _ ⊆ f '' (V ∩ W) := image_subset _ (inter_subset_inter_right _ ‹_›)
+      _ = f '' (f ⁻¹' U) := by rw [h]
+      _ ⊆ U := image_preimage_subset f U
+#align filter.push_pull Filter.push_pull
+
+protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
+    map f (comap f G ⊓ F) = G ⊓ map f F := by simp only [Filter.push_pull, inf_comm]
+#align filter.push_pull' Filter.push_pull'
+
+/-! #### Surjecivity and injectivity results -/
+
+section SurjInj
+
+variable {f : Filter α} {g : Filter β} {m : α → β}
+
+theorem surjOn_map_iff : SurjOn (map m) (Iic f) (Iic g) ↔ g ≤ map m f := by
+
+
+end SurjInj
+
+theorem map_comap (f : Filter β) (m : α → β) : map m (comap m f) = f ⊓ 𝓟 (range m) := by
+  rw [← image_univ, ← map_principal, ← Filter.push_pull', principal_univ, inf_top_eq]
 #align filter.map_comap Filter.map_comap
 
 theorem map_comap_setCoe_val (f : Filter β) (s : Set β) :
@@ -2657,11 +2690,6 @@ theorem sInter_comap_sets (f : α → β) (F : Filter β) : ⋂₀ (comap f F).s
 
 end Map
 
--- this is a generic rule for monotone functions:
-theorem map_iInf_le {f : ι → Filter α} {m : α → β} : map m (iInf f) ≤ ⨅ i, map m (f i) :=
-  le_iInf fun _ => map_mono <| iInf_le _ _
-#align filter.map_infi_le Filter.map_iInf_le
-
 theorem map_iInf_eq {f : ι → Filter α} {m : α → β} (hf : Directed (· ≥ ·) f) [Nonempty ι] :
     map m (iInf f) = ⨅ i, map m (f i) :=
   map_iInf_le.antisymm fun s (hs : m ⁻¹' s ∈ iInf f) =>
@@ -2680,10 +2708,6 @@ theorem map_biInf_eq {ι : Type w} {f : ι → Filter α} {m : α → β} {p : �
   simp only [iInf_subtype']
   exact map_iInf_eq h.directed_val
 #align filter.map_binfi_eq Filter.map_biInf_eq
-
-theorem map_inf_le {f g : Filter α} {m : α → β} : map m (f ⊓ g) ≤ map m f ⊓ map m g :=
-  (@map_mono _ _ m).map_inf_le f g
-#align filter.map_inf_le Filter.map_inf_le
 
 theorem map_inf {f g : Filter α} {m : α → β} (h : Injective m) :
     map m (f ⊓ g) = map m f ⊓ map m g := by
@@ -2741,26 +2765,6 @@ theorem le_map {f : Filter α} {m : α → β} {g : Filter β} (h : ∀ s ∈ f,
 theorem le_map_iff {f : Filter α} {m : α → β} {g : Filter β} : g ≤ f.map m ↔ ∀ s ∈ f, m '' s ∈ g :=
   ⟨fun h _ hs => h (image_mem_map hs), le_map⟩
 #align filter.le_map_iff Filter.le_map_iff
-
-protected theorem push_pull (f : α → β) (F : Filter α) (G : Filter β) :
-    map f (F ⊓ comap f G) = map f F ⊓ G := by
-  apply le_antisymm
-  · calc
-      map f (F ⊓ comap f G) ≤ map f F ⊓ (map f <| comap f G) := map_inf_le
-      _ ≤ map f F ⊓ G := inf_le_inf_left (map f F) map_comap_le
-
-  · rintro U ⟨V, V_in, W, ⟨Z, Z_in, hZ⟩, h⟩
-    apply mem_inf_of_inter (image_mem_map V_in) Z_in
-    calc
-      f '' V ∩ Z = f '' (V ∩ f ⁻¹' Z) := by rw [image_inter_preimage]
-      _ ⊆ f '' (V ∩ W) := image_subset _ (inter_subset_inter_right _ ‹_›)
-      _ = f '' (f ⁻¹' U) := by rw [h]
-      _ ⊆ U := image_preimage_subset f U
-#align filter.push_pull Filter.push_pull
-
-protected theorem push_pull' (f : α → β) (F : Filter α) (G : Filter β) :
-    map f (comap f G ⊓ F) = G ⊓ map f F := by simp only [Filter.push_pull, inf_comm]
-#align filter.push_pull' Filter.push_pull'
 
 theorem principal_eq_map_coe_top (s : Set α) : 𝓟 s = map ((↑) : s → α) ⊤ := by simp
 #align filter.principal_eq_map_coe_top Filter.principal_eq_map_coe_top
