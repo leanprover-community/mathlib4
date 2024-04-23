@@ -2,13 +2,10 @@
 Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module ring_theory.witt_vector.teichmuller
-! leanprover-community/mathlib commit c0a51cf2de54089d69301befc4c73bbc2f5c7342
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.WittVector.Basic
+
+#align_import ring_theory.witt_vector.teichmuller from "leanprover-community/mathlib"@"c0a51cf2de54089d69301befc4c73bbc2f5c7342"
 
 /-!
 # Teichmüller lifts
@@ -35,7 +32,7 @@ namespace WittVector
 
 open MvPolynomial
 
-variable (p : ℕ) {R S : Type _} [hp : Fact p.Prime] [CommRing R] [CommRing S]
+variable (p : ℕ) {R S : Type*} [hp : Fact p.Prime] [CommRing R] [CommRing S]
 
 local notation "𝕎" => WittVector p -- type as `\bbW`
 
@@ -66,13 +63,8 @@ private theorem ghostComponent_teichmullerFun (r : R) (n : ℕ) :
   rw [ghostComponent_apply, aeval_wittPolynomial, Finset.sum_eq_single 0, pow_zero, one_mul,
     tsub_zero]
   · rfl
-  · intro i hi h0
-    convert mul_zero (M₀ := R) _
-    convert zero_pow (M := R) _
-    · cases i
-      · contradiction
-      · rfl
-    · exact pow_pos hp.1.pos _
+  · intro i _ h0
+    simp [teichmullerFun, h0, hp.1.ne_zero]
   · rw [Finset.mem_range]; intro h; exact (h (Nat.succ_pos n)).elim
 
 private theorem map_teichmullerFun (f : R →+* S) (r : R) :

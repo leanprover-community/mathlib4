@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.box.subbox_induction
-! leanprover-community/mathlib commit f2ce6086713c78a7f880485f7917ea547a215982
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Box.Basic
 import Mathlib.Analysis.SpecificLimits.Basic
+
+#align_import analysis.box_integral.box.subbox_induction from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
 /-!
 # Induction on subboxes
@@ -40,7 +37,7 @@ namespace BoxIntegral
 
 namespace Box
 
-variable {ι : Type _} {I J : Box ι}
+variable {ι : Type*} {I J : Box ι}
 
 /-- For a box `I`, the hyperplanes passing through its center split `I` into `2 ^ card ι` boxes.
 `BoxIntegral.Box.splitCenterBox I s` is one of these boxes. See also
@@ -95,7 +92,7 @@ def splitCenterBoxEmb (I : Box ι) : Set ι ↪ Box ι :=
 #align box_integral.box.split_center_box_emb BoxIntegral.Box.splitCenterBoxEmb
 
 @[simp]
-theorem iUnion_coe_splitCenterBox (I : Box ι) : (⋃ s, (I.splitCenterBox s : Set (ι → ℝ))) = I := by
+theorem iUnion_coe_splitCenterBox (I : Box ι) : ⋃ s, (I.splitCenterBox s : Set (ι → ℝ)) = I := by
   ext x
   simp
 #align box_integral.box.Union_coe_split_center_box BoxIntegral.Box.iUnion_coe_splitCenterBox
@@ -132,7 +129,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   replace H_ind := fun J hJ ↦ not_imp_not.2 (H_ind J hJ)
   simp only [exists_imp, not_forall] at H_ind
   choose! s hs using H_ind
-  set J : ℕ → Box ι := fun m ↦ ((fun J ↦ splitCenterBox J (s J))^[m]) I
+  set J : ℕ → Box ι := fun m ↦ (fun J ↦ splitCenterBox J (s J))^[m] I
   have J_succ : ∀ m, J (m + 1) = splitCenterBox (J m) (s <| J m) :=
     fun m ↦ iterate_succ_apply' _ _ _
   -- Now we prove some properties of `J`
@@ -144,8 +141,8 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   have hJsub : ∀ m i, (J m).upper i - (J m).lower i = (I.upper i - I.lower i) / 2 ^ m := by
     intro m i
     induction' m with m ihm
-    · simp [Nat.zero_eq]
-    simp only [pow_succ', J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
+    · simp [J, Nat.zero_eq]
+    simp only [pow_succ, J_succ, upper_sub_lower_splitCenterBox, ihm, div_div]
   have h0 : J 0 = I := rfl
   clear_value J
   clear hpI hs J_succ s
@@ -153,7 +150,7 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
   -- sufficiently large `m`. This contradicts `hJp`.
   set z : ι → ℝ := ⨆ m, (J m).lower
   have hzJ : ∀ m, z ∈ Box.Icc (J m) :=
-    mem_iInter.1 (ciSup_mem_Inter_Icc_of_antitone_Icc
+    mem_iInter.1 (ciSup_mem_iInter_Icc_of_antitone_Icc
       ((@Box.Icc ι).monotone.comp_antitone hJmono) fun m ↦ (J m).lower_le_upper)
   have hJl_mem : ∀ m, (J m).lower ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).lower_mem_Icc
   have hJu_mem : ∀ m, (J m).upper ∈ Box.Icc I := fun m ↦ le_iff_Icc.1 (hJle m) (J m).upper_mem_Icc
@@ -164,14 +161,12 @@ theorem subbox_induction_on' {p : Box ι → Prop} (I : Box ι)
     refine' tendsto_pi_nhds.2 fun i ↦ _
     simpa [hJsub] using
       tendsto_const_nhds.div_atTop (tendsto_pow_atTop_atTop_of_one_lt _root_.one_lt_two)
-  replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z)
-  · exact
-      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
-  replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z)
-  · exact
-      tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
+  replace hJlz : Tendsto (fun m ↦ (J m).lower) atTop (𝓝[Icc I.lower I.upper] z) :=
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJlz (eventually_of_forall hJl_mem)
+  replace hJuz : Tendsto (fun m ↦ (J m).upper) atTop (𝓝[Icc I.lower I.upper] z) :=
+    tendsto_nhdsWithin_of_tendsto_nhds_of_eventually_within _ hJuz (eventually_of_forall hJu_mem)
   rcases H_nhds z (h0 ▸ hzJ 0) with ⟨U, hUz, hU⟩
-  rcases(tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
+  rcases (tendsto_lift'.1 (hJlz.Icc hJuz) U hUz).exists with ⟨m, hUm⟩
   exact hJp m (hU (J m) (hJle m) m (hzJ m) hUm (hJsub m))
 #align box_integral.box.subbox_induction_on' BoxIntegral.Box.subbox_induction_on'
 

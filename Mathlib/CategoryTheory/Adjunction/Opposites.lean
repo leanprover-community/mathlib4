@@ -2,15 +2,12 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Thomas Read, Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.adjunction.opposites
-! leanprover-community/mathlib commit 0148d455199ed64bf8eb2f493a1e7eb9211ce170
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Yoneda
 import Mathlib.CategoryTheory.Opposites
+
+#align_import category_theory.adjunction.opposites from "leanprover-community/mathlib"@"0148d455199ed64bf8eb2f493a1e7eb9211ce170"
 
 /-!
 # Opposite adjunctions
@@ -133,10 +130,10 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
 
 /-- If `F` and `F'` are both left adjoint to `G`, then they are naturally isomorphic. -/
 def leftAdjointUniq {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G) : F ≅ F' :=
-  NatIso.removeOp (fullyFaithfulCancelRight _ (leftAdjointsCoyonedaEquiv adj2 adj1))
+  NatIso.removeOp (Functor.fullyFaithfulCancelRight _ (leftAdjointsCoyonedaEquiv adj2 adj1))
 #align category_theory.adjunction.left_adjoint_uniq CategoryTheory.Adjunction.leftAdjointUniq
 
--- Porting note: removed simp as simp can prove this
+-- Porting note (#10618): removed simp as simp can prove this
 theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.homEquiv _ _ ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x := by
   apply (adj1.homEquiv _ _).symm.injective
@@ -144,8 +141,6 @@ theorem homEquiv_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : 
   apply coyoneda.map_injective
   --swap; infer_instance
   ext
-  -- Porting note: Why do I need this with the `ext` from the previous line?
-  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.hom_equiv_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.homEquiv_leftAdjointUniq_hom_app
 
@@ -160,7 +155,7 @@ theorem unit_leftAdjointUniq_hom {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G)
 @[reassoc (attr := simp)]
 theorem unit_leftAdjointUniq_hom_app {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' ⊣ G)
     (x : C) : adj1.unit.app x ≫ G.map ((leftAdjointUniq adj1 adj2).hom.app x) = adj2.unit.app x :=
-  by rw [← unit_leftAdjointUniq_hom adj1 adj2] ; rfl
+  by rw [← unit_leftAdjointUniq_hom adj1 adj2]; rfl
 #align category_theory.adjunction.unit_left_adjoint_uniq_hom_app CategoryTheory.Adjunction.unit_leftAdjointUniq_hom_app
 
 @[reassoc (attr := simp)]
@@ -170,7 +165,6 @@ theorem leftAdjointUniq_hom_counit {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ 
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointUniq, leftAdjointsCoyonedaEquiv]
 #align category_theory.adjunction.left_adjoint_uniq_hom_counit CategoryTheory.Adjunction.leftAdjointUniq_hom_counit
 
@@ -197,7 +191,6 @@ theorem leftAdjointUniq_trans {F F' F'' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
 #align category_theory.adjunction.left_adjoint_uniq_trans CategoryTheory.Adjunction.leftAdjointUniq_trans
 
@@ -217,7 +210,6 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext
-  funext
   simp [leftAdjointsCoyonedaEquiv, leftAdjointUniq]
 #align category_theory.adjunction.left_adjoint_uniq_refl CategoryTheory.Adjunction.leftAdjointUniq_refl
 
@@ -226,7 +218,7 @@ def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F �
   NatIso.removeOp (leftAdjointUniq (opAdjointOpOfAdjoint _ F adj2) (opAdjointOpOfAdjoint _ _ adj1))
 #align category_theory.adjunction.right_adjoint_uniq CategoryTheory.Adjunction.rightAdjointUniq
 
--- Porting note: simp can prove this
+-- Porting note (#10618): simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
     (adj2 : F ⊣ G') (x : D) :
     (adj2.homEquiv _ _).symm ((rightAdjointUniq adj1 adj2).hom.app x) = adj1.counit.app x := by

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.unoriented.conformal
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Calculus.Conformal.NormedSpace
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.Basic
+
+#align_import geometry.euclidean.angle.unoriented.conformal from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Angles and conformal maps
@@ -21,10 +18,8 @@ This file proves that conformal maps preserve angles.
 
 namespace InnerProductGeometry
 
-variable {E F : Type _}
-
+variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 theorem IsConformalMap.preserves_angle {f' : E →L[ℝ] F} (h : IsConformalMap f') (u v : E) :

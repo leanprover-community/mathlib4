@@ -2,14 +2,11 @@
 Copyright (c) 2023 David Loeffler. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Loeffler
-
-! This file was ported from Lean 3 source module analysis.special_functions.trigonometric.euler_sine_prod
-! leanprover-community/mathlib commit 2c1d8ca2812b64f88992a5294ea3dba144755cd1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Integrals
 import Mathlib.MeasureTheory.Integral.PeakFunction
+
+#align_import analysis.special_functions.trigonometric.euler_sine_prod from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 
 /-! # Euler's infinite product for the sine function
 
@@ -22,9 +19,6 @@ for any real or complex `z`. Our proof closely follows the article
 is to prove a recurrence relation for the integrals `∫ x in 0..π/2, cos 2 z x * cos x ^ (2 * n)`,
 generalising the arguments used to prove Wallis' limit formula for `π`.
 -/
-
-
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y) -- Porting note: See issue #2220
 
 open scoped Real Topology BigOperators
 
@@ -78,10 +72,9 @@ theorem integral_cos_mul_cos_pow_aux (hn : 2 ≤ n) (hz : z ≠ 0) :
   convert (config := { sameFun := true })
     integral_mul_deriv_eq_deriv_mul der1 (fun x _ => antideriv_cos_comp_const_mul hz x) _ _ using 2
   · ext1 x; rw [mul_comm]
-  · rw [Complex.ofReal_zero, MulZeroClass.mul_zero, Complex.sin_zero, zero_div,
-      MulZeroClass.mul_zero, sub_zero, cos_pi_div_two, Complex.ofReal_zero,
-      zero_pow (by positivity : 0 < n), MulZeroClass.zero_mul, zero_sub, ← integral_neg, ←
-      integral_const_mul]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.sin_zero, zero_div, mul_zero, sub_zero,
+      cos_pi_div_two, Complex.ofReal_zero, zero_pow (by positivity : n ≠ 0), zero_mul, zero_sub,
+      ← integral_neg, ← integral_const_mul]
     refine' integral_congr fun x _ => _
     field_simp; ring
   · apply Continuous.intervalIntegrable
@@ -109,7 +102,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     · simp only [Complex.ofReal_cos, Complex.ofReal_sin]
       rw [mul_neg, mul_neg, ← sub_eq_add_neg, Function.comp_apply]
       congr 1
-      · rw [← pow_succ, Nat.sub_add_cancel (by linarith : 1 ≤ n)]
+      · rw [← pow_succ', Nat.sub_add_cancel (by omega : 1 ≤ n)]
       · have : ((n - 1 : ℕ) : ℂ) = (n : ℂ) - 1 := by
           rw [Nat.cast_sub (one_le_two.trans hn), Nat.cast_one]
         rw [Nat.sub_sub, this]
@@ -120,8 +113,8 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
     ring_nf
   · -- now a tedious rearrangement of terms
     -- gather into a single integral, and deal with continuity subgoals:
-    rw [sin_zero, cos_pi_div_two, Complex.ofReal_zero, zero_pow, MulZeroClass.zero_mul,
-      MulZeroClass.mul_zero, MulZeroClass.zero_mul, MulZeroClass.zero_mul, sub_zero, zero_sub, ←
+    rw [sin_zero, cos_pi_div_two, Complex.ofReal_zero, zero_pow, zero_mul,
+      mul_zero, zero_mul, zero_mul, sub_zero, zero_sub, ←
       integral_neg, ← integral_const_mul, ← integral_const_mul, ← integral_sub]
     rotate_left
     · apply Continuous.intervalIntegrable
@@ -134,7 +127,7 @@ theorem integral_sin_mul_sin_mul_cos_pow_eq (hn : 2 ≤ n) (hz : z ≠ 0) :
         continuous_const.mul
           ((Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).mul
             ((Complex.continuous_ofReal.comp continuous_cos).pow (n - 2)))
-    · apply Nat.sub_pos_of_lt; exact one_lt_two.trans_le hn
+    · exact Nat.sub_ne_zero_of_lt hn
     refine' integral_congr fun x _ => _
     dsimp only
     -- get rid of real trig functions and divisions by 2 * z:
@@ -161,7 +154,7 @@ theorem integral_cos_mul_cos_pow (hn : 2 ≤ n) (hz : z ≠ 0) :
       (n - 1 : ℂ) / n *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (n - 2) := by
   have nne : (n : ℂ) ≠ 0 := by
-    contrapose! hn; rw [Nat.cast_eq_zero] at hn ; rw [hn]; exact zero_lt_two
+    contrapose! hn; rw [Nat.cast_eq_zero] at hn; rw [hn]; exact zero_lt_two
   have := integral_cos_mul_cos_pow_aux hn hz
   rw [integral_sin_mul_sin_mul_cos_pow_eq hn hz, sub_eq_neg_add, mul_add, ← sub_eq_iff_eq_add]
     at this
@@ -174,13 +167,13 @@ theorem integral_cos_mul_cos_pow_even (n : ℕ) (hz : z ≠ 0) :
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n + 2)) =
       (2 * n + 1 : ℂ) / (2 * n + 2) *
         ∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ (2 * n) := by
-  convert integral_cos_mul_cos_pow (by linarith : 2 ≤ 2 * n + 2) hz using 3
+  convert integral_cos_mul_cos_pow (by omega : 2 ≤ 2 * n + 2) hz using 3
   · simp only [Nat.cast_add, Nat.cast_mul, Nat.cast_two]
     nth_rw 2 [← mul_one (2 : ℂ)]
     rw [← mul_add, mul_pow, ← div_div]
     ring
-  · push_cast ; ring
-  · push_cast ; ring
+  · push_cast; ring
+  · push_cast; ring
 #align euler_sine.integral_cos_mul_cos_pow_even EulerSine.integral_cos_mul_cos_pow_even
 
 /-- Relate the integral `cos x ^ n` over `[0, π/2]` to the integral of `sin x ^ n` over `[0, π]`,
@@ -220,11 +213,11 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
   rcases eq_or_ne z 0 with (rfl | hz)
   · simp
   induction' n with n hn
-  · simp_rw [Nat.zero_eq, MulZeroClass.mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
+  · simp_rw [Nat.zero_eq, mul_zero, pow_zero, mul_one, Finset.prod_range_zero, mul_one,
       integral_one, sub_zero]
     rw [integral_cos_mul_complex (mul_ne_zero two_ne_zero hz), Complex.ofReal_zero,
-      MulZeroClass.mul_zero, Complex.sin_zero, zero_div, sub_zero,
-      (by push_cast ; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
+      mul_zero, Complex.sin_zero, zero_div, sub_zero,
+      (by push_cast; field_simp; ring : 2 * z * ↑(π / 2) = π * z)]
     field_simp [Complex.ofReal_ne_zero.mpr pi_pos.ne']
     ring
   · rw [hn, Finset.prod_range_succ]
@@ -234,9 +227,9 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
     have aux' : 2 * n.succ = 2 * n + 2 := by rw [Nat.succ_eq_add_one, mul_add, mul_one]
     have : (∫ x in (0 : ℝ)..π / 2, cos x ^ (2 * n.succ)) = (2 * (n : ℝ) + 1) / (2 * n + 2) * C := by
       rw [integral_cos_pow_eq]
-      dsimp only
-      rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ,
-        MulZeroClass.zero_mul, MulZeroClass.zero_mul, MulZeroClass.zero_mul, sub_zero, zero_div,
+      dsimp only [C]
+      rw [integral_cos_pow_eq, aux', integral_sin_pow, sin_zero, sin_pi, pow_succ',
+        zero_mul, zero_mul, zero_mul, sub_zero, zero_div,
         zero_add, ← mul_assoc, ← mul_assoc, mul_comm (1 / 2 : ℝ) _, Nat.cast_mul, Nat.cast_eq_ofNat]
     rw [this]
     change
@@ -265,7 +258,7 @@ theorem sin_pi_mul_eq (z : ℂ) (n : ℕ) :
         simp
       have : 2 * (n : ℂ) + 2 ≠ 0 := by
         convert (Nat.cast_add_one_ne_zero (2 * n + 1) : (↑(2 * n + 1) + 1 : ℂ) ≠ 0) using 1
-        push_cast ; ring
+        push_cast; ring
       field_simp; ring
     convert integral_cos_mul_cos_pow_even n hz
     rw [Nat.cast_succ]
@@ -279,7 +272,7 @@ The main theorem `Complex.tendsto_euler_sin_prod`, and its real variant
 `Real.tendsto_euler_sin_prod`, now follow by combining `sin_pi_mul_eq` with a lemma
 stating that the sequence of measures on `[0, π/2]` given by integration against `cos x ^ n`
 (suitably normalised) tends to the Dirac measure at 0, as a special case of the general result
-`tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
+`tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn`. -/
 
 
 theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f (Icc 0 (π / 2))) :
@@ -298,7 +291,7 @@ theorem tendsto_integral_cos_pow_mul_div {f : ℝ → ℂ} (hf : ContinuousOn f 
     rw [interior_Icc, closure_Ioo pi_div_two_pos.ne, left_mem_Icc]
     exact pi_div_two_pos.le
   exact
-    tendsto_set_integral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn isCompact_Icc
+    tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_continuousOn isCompact_Icc
       continuousOn_cos c_lt c_nonneg c_zero_pos zero_mem hf
 #align euler_sine.tendsto_integral_cos_pow_mul_div EulerSine.tendsto_integral_cos_pow_mul_div
 
@@ -317,18 +310,15 @@ theorem _root_.Complex.tendsto_euler_sin_prod (z : ℂ) :
   have : 𝓝 (Complex.sin (π * z)) = 𝓝 (Complex.sin (π * z) * 1) := by rw [mul_one]
   simp_rw [this, mul_div_assoc] at A
   convert (tendsto_mul_iff_of_ne_zero _ one_ne_zero).mp A
-  suffices :
-    Tendsto
-      (fun n : ℕ =>
+  suffices Tendsto (fun n : ℕ =>
         (∫ x in (0 : ℝ)..π / 2, Complex.cos (2 * z * x) * (cos x : ℂ) ^ n) /
-          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ))
-      atTop (𝓝 1)
-  exact this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
+          (∫ x in (0 : ℝ)..π / 2, cos x ^ n : ℝ)) atTop (𝓝 1) from
+    this.comp (tendsto_id.const_mul_atTop' zero_lt_two)
   have : ContinuousOn (fun x : ℝ => Complex.cos (2 * z * x)) (Icc 0 (π / 2)) :=
     (Complex.continuous_cos.comp (continuous_const.mul Complex.continuous_ofReal)).continuousOn
   convert tendsto_integral_cos_pow_mul_div this using 1
   · ext1 n; congr 2 with x : 1; rw [mul_comm]
-  · rw [Complex.ofReal_zero, MulZeroClass.mul_zero, Complex.cos_zero]
+  · rw [Complex.ofReal_zero, mul_zero, Complex.cos_zero]
 #align complex.tendsto_euler_sin_prod Complex.tendsto_euler_sin_prod
 
 /-- Euler's infinite product formula for the real sine function. -/
@@ -337,10 +327,10 @@ theorem _root_.Real.tendsto_euler_sin_prod (x : ℝ) :
       atTop (𝓝 <| sin (π * x)) := by
   convert (Complex.continuous_re.tendsto _).comp (Complex.tendsto_euler_sin_prod x) using 1
   · ext1 n
-    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.ofReal_mul_re]
+    rw [Function.comp_apply, ← Complex.ofReal_mul, Complex.re_ofReal_mul]
     suffices
-      (∏ j : ℕ in Finset.range n, ((1 : ℂ) - (x : ℂ) ^ 2 / ((j : ℂ) + 1) ^ 2)) =
-        (∏ j : ℕ in Finset.range n, ((1 : ℝ) - x ^ 2 / ((j : ℝ) + 1) ^ 2) : ℝ) by
+      (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℂ) =
+        (∏ j : ℕ in Finset.range n, (1 - x ^ 2 / (j + 1) ^ 2) : ℝ) by
       rw [this, Complex.ofReal_re]
     rw [Complex.ofReal_prod]
     refine' Finset.prod_congr (by rfl) fun n _ => _

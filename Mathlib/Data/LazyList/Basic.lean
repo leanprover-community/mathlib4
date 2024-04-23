@@ -2,15 +2,13 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module data.lazy_list.basic
-! leanprover-community/mathlib commit 1f0096e6caa61e9c849ec2adbd227e960e9dff58
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.Traversable.Equiv
 import Mathlib.Control.Traversable.Instances
-import Mathlib.Data.LazyList
+import Std.Data.LazyList
+import Mathlib.Lean.Thunk
+
+#align_import data.lazy_list.basic from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
 /-!
 ## Definitions on lazy lists
@@ -23,33 +21,12 @@ TODO: move the `LazyList.lean` file from core to mathlib.
 
 universe u
 
-namespace Thunk
-
--- Porting note: `Thunk.pure` appears to do the same thing.
-#align thunk.mk Thunk.pure
-
--- Porting note: Added `Thunk.ext` to get `ext` tactic to work.
-@[ext]
-theorem ext {α : Type u} {a b : Thunk α} (eq : a.get = b.get) : a = b := by
-  have ⟨_⟩ := a
-  have ⟨_⟩ := b
-  congr
-  exact funext fun _ ↦ eq
-
-instance {α : Type u} [DecidableEq α] : DecidableEq (Thunk α) := by
-  intro a b
-  have : a = b ↔ a.get = b.get := ⟨by intro x; rw [x], by intro; ext; assumption⟩
-  rw [this]
-  infer_instance
-
-end Thunk
-
 namespace LazyList
 
 open Function
 
 /-- Isomorphism between strict and lazy lists. -/
-def listEquivLazyList (α : Type _) : List α ≃ LazyList α where
+def listEquivLazyList (α : Type*) : List α ≃ LazyList α where
   toFun := LazyList.ofList
   invFun := LazyList.toList
   right_inv := by
@@ -89,7 +66,7 @@ instance : Traversable LazyList where
   map := @LazyList.traverse Id _
   traverse := @LazyList.traverse
 
-instance : IsLawfulTraversable LazyList := by
+instance : LawfulTraversable LazyList := by
   apply Equiv.isLawfulTraversable' listEquivLazyList <;> intros <;> ext <;> rename_i f xs
   · induction' xs using LazyList.rec with _ _ _ _ ih
     · rfl
@@ -105,7 +82,7 @@ instance : IsLawfulTraversable LazyList := by
   · simp only [traverse, Equiv.traverse, listEquivLazyList, Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk]
     induction' xs using LazyList.rec with _ tl ih _ ih
     · simp only [List.traverse, map_pure]; rfl
-    · have : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
+    · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
       simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
       · rfl
     · apply ih

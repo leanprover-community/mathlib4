@@ -2,26 +2,22 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module algebra.group.opposite
-! leanprover-community/mathlib commit 0372d31fb681ef40a687506bc5870fd55ebc8bb9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Group.Commute.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 import Mathlib.Algebra.Group.InjSurj
-import Mathlib.Algebra.Group.Commute
-import Mathlib.Algebra.Hom.Equiv.Basic
+import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Opposites
 import Mathlib.Data.Int.Cast.Defs
+import Mathlib.Tactic.Spread
+
+#align_import algebra.group.opposite from "leanprover-community/mathlib"@"0372d31fb681ef40a687506bc5870fd55ebc8bb9"
 
 /-!
 # Group structures on the multiplicative and additive opposites
 -/
 
-
-universe u v
-
-variable (α : Type u)
+variable {α : Type*}
 
 namespace MulOpposite
 
@@ -29,64 +25,63 @@ namespace MulOpposite
 ### Additive structures on `αᵐᵒᵖ`
 -/
 
-@[to_additive]
-instance natCast [NatCast α] : NatCast αᵐᵒᵖ :=
-  ⟨fun n => op n⟩
+@[to_additive] instance instNatCast [NatCast α] : NatCast αᵐᵒᵖ where natCast n := op n
+@[to_additive] instance instIntCast [IntCast α] : IntCast αᵐᵒᵖ where intCast n := op n
 
-@[to_additive]
-instance intCast [IntCast α] : IntCast αᵐᵒᵖ :=
-  ⟨fun n => op n⟩
-
-instance addSemigroup [AddSemigroup α] : AddSemigroup αᵐᵒᵖ :=
+instance instAddSemigroup [AddSemigroup α] : AddSemigroup αᵐᵒᵖ :=
   unop_injective.addSemigroup _ fun _ _ => rfl
 
-instance addLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelSemigroup αᵐᵒᵖ :=
+instance instAddLeftCancelSemigroup [AddLeftCancelSemigroup α] : AddLeftCancelSemigroup αᵐᵒᵖ :=
   unop_injective.addLeftCancelSemigroup _ fun _ _ => rfl
 
-instance addRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
+instance instAddRightCancelSemigroup [AddRightCancelSemigroup α] : AddRightCancelSemigroup αᵐᵒᵖ :=
   unop_injective.addRightCancelSemigroup _ fun _ _ => rfl
 
-instance addCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :=
+instance instAddCommSemigroup [AddCommSemigroup α] : AddCommSemigroup αᵐᵒᵖ :=
   unop_injective.addCommSemigroup _ fun _ _ => rfl
 
-instance addZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
+instance instAddZeroClass [AddZeroClass α] : AddZeroClass αᵐᵒᵖ :=
   unop_injective.addZeroClass _ (by exact rfl) fun _ _ => rfl
 
-instance addMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
+instance instAddMonoid [AddMonoid α] : AddMonoid αᵐᵒᵖ :=
   unop_injective.addMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance addCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
+instance instAddCommMonoid [AddCommMonoid α] : AddCommMonoid αᵐᵒᵖ :=
   unop_injective.addCommMonoid _ rfl (fun _ _ => rfl) fun _ _ => rfl
 
-instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ :=
-  { MulOpposite.addMonoid α, MulOpposite.one α, MulOpposite.natCast _ with
-    natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
-    natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp }
+instance instAddMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne αᵐᵒᵖ where
+  toNatCast := instNatCast
+  toAddMonoid := instAddMonoid
+  toOne := instOne
+  natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+  natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp
 
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵐᵒᵖ :=
-  { MulOpposite.addMonoidWithOne α, MulOpposite.addCommMonoid α with }
+instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵐᵒᵖ where
+  toAddMonoidWithOne := instAddMonoidWithOne
+  __ := instAddCommMonoid
 
-instance subNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
+instance instSubNegMonoid [SubNegMonoid α] : SubNegMonoid αᵐᵒᵖ :=
   unop_injective.subNegMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance addGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
+instance instAddGroup [AddGroup α] : AddGroup αᵐᵒᵖ :=
   unop_injective.addGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
   (fun _ _ => rfl) fun _ _ => rfl
 
-instance addCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
+instance instAddCommGroup [AddCommGroup α] : AddCommGroup αᵐᵒᵖ :=
   unop_injective.addCommGroup _ rfl (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance addGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ :=
-  { MulOpposite.addMonoidWithOne α, MulOpposite.addGroup α with
-    intCast := fun n => op n,
-    intCast_ofNat := fun n => show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_ofNat],
-    intCast_negSucc := fun n =>
-      show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp }
+instance instAddGroupWithOne [AddGroupWithOne α] : AddGroupWithOne αᵐᵒᵖ where
+  toAddMonoidWithOne := instAddMonoidWithOne
+  toIntCast := instIntCast
+  __ := instAddGroup
+  intCast_ofNat n := show op ((n : ℤ) : α) = op (n : α) by rw [Int.cast_natCast]
+  intCast_negSucc n := show op _ = op (-unop (op ((n + 1 : ℕ) : α))) by simp
 
-instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ :=
-  { MulOpposite.addGroupWithOne α, MulOpposite.addCommGroup α with }
+instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵐᵒᵖ where
+  toAddCommGroup := instAddCommGroup
+  __ := instAddGroupWithOne
 
 /-!
 ### Multiplicative structures on `αᵐᵒᵖ`
@@ -94,95 +89,136 @@ instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne α�
 We also generate additive structures on `αᵃᵒᵖ` using `to_additive`
 -/
 
+@[to_additive]
+instance instIsRightCancelMul [Mul α] [IsLeftCancelMul α] : IsRightCancelMul αᵐᵒᵖ where
+  mul_right_cancel _ _ _ h := unop_injective <| mul_left_cancel <| op_injective h
 
 @[to_additive]
-instance semigroup [Semigroup α] : Semigroup αᵐᵒᵖ :=
-  { MulOpposite.mul α with
-    mul_assoc := fun x y z => unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x) }
+instance instIsLeftCancelMul [Mul α] [IsRightCancelMul α] : IsLeftCancelMul αᵐᵒᵖ where
+  mul_left_cancel _ _ _ h := unop_injective <| mul_right_cancel <| op_injective h
 
 @[to_additive]
-instance leftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_left_cancel := fun _ _ _ H => unop_injective <| mul_right_cancel <| op_injective H }
+instance instSemigroup [Semigroup α] : Semigroup αᵐᵒᵖ where
+  mul_assoc x y z := unop_injective <| Eq.symm <| mul_assoc (unop z) (unop y) (unop x)
 
 @[to_additive]
-instance rightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_right_cancel := fun _ _ _ H => unop_injective <| mul_left_cancel <| op_injective H }
+instance instLeftCancelSemigroup [RightCancelSemigroup α] : LeftCancelSemigroup αᵐᵒᵖ where
+  mul_left_cancel _ _ _ := mul_left_cancel
 
 @[to_additive]
-instance commSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ :=
-  { MulOpposite.semigroup α with
-    mul_comm := fun x y => unop_injective <| mul_comm (unop y) (unop x) }
+instance instRightCancelSemigroup [LeftCancelSemigroup α] : RightCancelSemigroup αᵐᵒᵖ where
+  mul_right_cancel _ _ _ := mul_right_cancel
 
 @[to_additive]
-instance mulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ :=
-  { MulOpposite.mul α, MulOpposite.one α with
-    one_mul := fun x => unop_injective <| mul_one <| unop x,
-    mul_one := fun x => unop_injective <| one_mul <| unop x }
+instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵐᵒᵖ where
+  mul_comm x y := unop_injective <| mul_comm (unop y) (unop x)
 
 @[to_additive]
-instance monoid [Monoid α] : Monoid αᵐᵒᵖ :=
-  { MulOpposite.semigroup α, MulOpposite.mulOneClass α with
-    npow := fun n x => op <| x.unop ^ n,
-    npow_zero := fun x => unop_injective <| Monoid.npow_zero x.unop,
-    npow_succ := fun n x => unop_injective <| pow_succ' x.unop n }
+instance instMulOneClass [MulOneClass α] : MulOneClass αᵐᵒᵖ where
+  toMul := instMul
+  toOne := instOne
+  one_mul _ := unop_injective <| mul_one _
+  mul_one _ := unop_injective <| one_mul _
 
 @[to_additive]
-instance leftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ :=
-  { MulOpposite.leftCancelSemigroup α, MulOpposite.monoid α with }
+instance instMonoid [Monoid α] : Monoid αᵐᵒᵖ where
+  toSemigroup := instSemigroup
+  __ := instMulOneClass
+  npow n a := op <| a.unop ^ n
+  npow_zero _ := unop_injective <| pow_zero _
+  npow_succ _ _ := unop_injective <| pow_succ' _ _
 
 @[to_additive]
-instance rightCancelMonoid [LeftCancelMonoid α] : RightCancelMonoid αᵐᵒᵖ :=
-  { MulOpposite.rightCancelSemigroup α, MulOpposite.monoid α with }
+instance instLeftCancelMonoid [RightCancelMonoid α] : LeftCancelMonoid αᵐᵒᵖ where
+  toLeftCancelSemigroup := instLeftCancelSemigroup
+  __ := instMonoid
 
 @[to_additive]
-instance cancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ :=
-  { MulOpposite.rightCancelMonoid α, MulOpposite.leftCancelMonoid α with }
+instance instRightCancelMonoid [LeftCancelMonoid α] : RightCancelMonoid αᵐᵒᵖ where
+  toRightCancelSemigroup := instRightCancelSemigroup
+  __ := instMonoid
 
 @[to_additive]
-instance commMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ :=
-  { MulOpposite.monoid α, MulOpposite.commSemigroup α with }
+instance instCancelMonoid [CancelMonoid α] : CancelMonoid αᵐᵒᵖ where
+  toLeftCancelMonoid := instLeftCancelMonoid
+  __ := instRightCancelMonoid
 
 @[to_additive]
-instance cancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ :=
-  { MulOpposite.cancelMonoid α, MulOpposite.commMonoid α with }
-
-@[to_additive AddOpposite.subNegMonoid]
-instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ :=
-  { MulOpposite.monoid α, MulOpposite.inv α with
-    zpow := fun n x => op <| x.unop ^ n,
-    zpow_zero' := fun x => unop_injective <| DivInvMonoid.zpow_zero' x.unop,
-    zpow_succ' := fun n x => unop_injective <| by
-      simp only [Int.ofNat_eq_coe]
-      rw [unop_op, zpow_ofNat, pow_succ', unop_mul, unop_op, zpow_ofNat],
-    zpow_neg' := fun z x => unop_injective <| DivInvMonoid.zpow_neg' z x.unop }
-
-@[to_additive AddOpposite.subtractionMonoid]
-instance divisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ :=
-  { MulOpposite.divInvMonoid α, MulOpposite.involutiveInv α with
-    mul_inv_rev := fun _ _ => unop_injective <| mul_inv_rev _ _,
-    inv_eq_of_mul := fun _ _ h => unop_injective <| inv_eq_of_mul_eq_one_left <| congr_arg unop h }
-
-@[to_additive AddOpposite.subtractionCommMonoid]
-instance divisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid αᵐᵒᵖ :=
-  { MulOpposite.divisionMonoid α, MulOpposite.commSemigroup α with }
+instance instCommMonoid [CommMonoid α] : CommMonoid αᵐᵒᵖ where
+  toMonoid := instMonoid
+  __ := instCommSemigroup
 
 @[to_additive]
-instance group [Group α] : Group αᵐᵒᵖ :=
-  { MulOpposite.divInvMonoid α with
-    mul_left_inv := fun x => unop_injective <| mul_inv_self <| unop x }
+instance instCancelCommMonoid [CancelCommMonoid α] : CancelCommMonoid αᵐᵒᵖ where
+  toLeftCancelMonoid := instLeftCancelMonoid
+  __ := instCommMonoid
+
+@[to_additive AddOpposite.instSubNegMonoid]
+instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵐᵒᵖ where
+  toMonoid := instMonoid
+  toInv := instInv
+  zpow n a := op <| a.unop ^ n
+  zpow_zero' _ := unop_injective <| zpow_zero _
+  zpow_succ' _ _ := unop_injective <| by
+    simp only [Int.ofNat_eq_coe]
+    rw [unop_op, zpow_natCast, pow_succ', unop_mul, unop_op, zpow_natCast]
+  zpow_neg' _ _ := unop_injective <| DivInvMonoid.zpow_neg' _ _
+
+@[to_additive AddOpposite.instSubtractionMonoid]
+instance instDivisionMonoid [DivisionMonoid α] : DivisionMonoid αᵐᵒᵖ where
+  toDivInvMonoid := instDivInvMonoid
+  __ := instInvolutiveInv
+  mul_inv_rev _ _ := unop_injective <| mul_inv_rev _ _
+  inv_eq_of_mul _ _ h := unop_injective <| inv_eq_of_mul_eq_one_left <| congr_arg unop h
+
+@[to_additive AddOpposite.instSubtractionCommMonoid]
+instance instDivisionCommMonoid [DivisionCommMonoid α] : DivisionCommMonoid αᵐᵒᵖ where
+  toDivisionMonoid := instDivisionMonoid
+  __ := instCommSemigroup
 
 @[to_additive]
-instance commGroup [CommGroup α] : CommGroup αᵐᵒᵖ :=
-  { MulOpposite.group α, MulOpposite.commMonoid α with }
+instance instGroup [Group α] : Group αᵐᵒᵖ where
+  toDivInvMonoid := instDivInvMonoid
+  mul_left_inv _ := unop_injective <| mul_inv_self _
 
-variable {α}
+@[to_additive]
+instance instCommGroup [CommGroup α] : CommGroup αᵐᵒᵖ where
+  toGroup := instGroup
+  __ := instCommSemigroup
+
+section Monoid
+variable [Monoid α]
+
+@[simp] lemma op_pow (x : α) (n : ℕ) : op (x ^ n) = op x ^ n := rfl
+#align mul_opposite.op_pow MulOpposite.op_pow
+
+@[simp] lemma unop_pow (x : αᵐᵒᵖ) (n : ℕ) : unop (x ^ n) = unop x ^ n := rfl
+#align mul_opposite.unop_pow MulOpposite.unop_pow
+
+end Monoid
+
+section DivInvMonoid
+variable [DivInvMonoid α]
+
+@[simp] lemma op_zpow (x : α) (z : ℤ) : op (x ^ z) = op x ^ z := rfl
+#align mul_opposite.op_zpow MulOpposite.op_zpow
+
+@[simp] lemma unop_zpow (x : αᵐᵒᵖ) (z : ℤ) : unop (x ^ z) = unop x ^ z := rfl
+#align mul_opposite.unop_zpow MulOpposite.unop_zpow
+
+end DivInvMonoid
+
 @[to_additive (attr := simp, norm_cast)]
 theorem op_natCast [NatCast α] (n : ℕ) : op (n : α) = n :=
   rfl
 #align mul_opposite.op_nat_cast MulOpposite.op_natCast
 #align add_opposite.op_nat_cast AddOpposite.op_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive (attr := simp)]
+theorem op_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    op (no_index (OfNat.ofNat n : α)) = OfNat.ofNat n :=
+  rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem op_intCast [IntCast α] (n : ℤ) : op (n : α) = n :=
@@ -195,6 +231,12 @@ theorem unop_natCast [NatCast α] (n : ℕ) : unop (n : αᵐᵒᵖ) = n :=
   rfl
 #align mul_opposite.unop_nat_cast MulOpposite.unop_natCast
 #align add_opposite.unop_nat_cast AddOpposite.unop_natCast
+
+-- See note [no_index around OfNat.ofNat]
+@[to_additive (attr := simp)]
+theorem unop_ofNat [NatCast α] (n : ℕ) [n.AtLeastTwo] :
+    unop (no_index (OfNat.ofNat n : αᵐᵒᵖ)) = OfNat.ofNat n :=
+  rfl
 
 @[to_additive (attr := simp, norm_cast)]
 theorem unop_intCast [IntCast α] (n : ℤ) : unop (n : αᵐᵒᵖ) = n :=
@@ -217,16 +259,16 @@ theorem op_div [DivInvMonoid α] (x y : α) : op (x / y) = (op y)⁻¹ * op x :=
 theorem semiconjBy_op [Mul α] {a x y : α} : SemiconjBy (op a) (op y) (op x) ↔ SemiconjBy a x y :=
   by simp only [SemiconjBy, ← op_mul, op_inj, eq_comm]
 #align mul_opposite.semiconj_by_op MulOpposite.semiconjBy_op
-#align add_opposite.semiconj_by_op AddOpposite.semiconjBy_op
+#align add_opposite.semiconj_by_op AddOpposite.addSemiconjBy_op
 
 @[to_additive (attr := simp, nolint simpComm)]
 theorem semiconjBy_unop [Mul α] {a x y : αᵐᵒᵖ} :
     SemiconjBy (unop a) (unop y) (unop x) ↔ SemiconjBy a x y := by
   conv_rhs => rw [← op_unop a, ← op_unop x, ← op_unop y, semiconjBy_op]
 #align mul_opposite.semiconj_by_unop MulOpposite.semiconjBy_unop
-#align add_opposite.semiconj_by_unop AddOpposite.semiconjBy_unop
+#align add_opposite.semiconj_by_unop AddOpposite.addSemiconjBy_unop
 
-attribute [nolint simpComm] AddOpposite.semiconjBy_unop
+attribute [nolint simpComm] AddOpposite.addSemiconjBy_unop
 
 @[to_additive]
 theorem _root_.SemiconjBy.op [Mul α] {a x y : α} (h : SemiconjBy a x y) :
@@ -249,24 +291,25 @@ theorem _root_.Commute.op [Mul α] {x y : α} (h : Commute x y) : Commute (op x)
 #align add_commute.op AddCommute.op
 
 @[to_additive]
-theorem Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) : Commute (unop x) (unop y) :=
+nonrec theorem _root_.Commute.unop [Mul α] {x y : αᵐᵒᵖ} (h : Commute x y) :
+    Commute (unop x) (unop y) :=
   h.unop
-#align mul_opposite.commute.unop MulOpposite.Commute.unop
-#align add_opposite.commute.unop AddOpposite.Commute.unop
+#align mul_opposite.commute.unop Commute.unop
+#align add_opposite.commute.unop AddCommute.unop
 
 @[to_additive (attr := simp)]
 theorem commute_op [Mul α] {x y : α} : Commute (op x) (op y) ↔ Commute x y :=
   semiconjBy_op
 #align mul_opposite.commute_op MulOpposite.commute_op
-#align add_opposite.commute_op AddOpposite.commute_op
+#align add_opposite.commute_op AddOpposite.addCommute_op
 
 @[to_additive (attr := simp, nolint simpComm)]
 theorem commute_unop [Mul α] {x y : αᵐᵒᵖ} : Commute (unop x) (unop y) ↔ Commute x y :=
   semiconjBy_unop
 #align mul_opposite.commute_unop MulOpposite.commute_unop
-#align add_opposite.commute_unop AddOpposite.commute_unop
+#align add_opposite.commute_unop AddOpposite.addCommute_unop
 
-attribute [nolint simpComm] AddOpposite.commute_unop
+attribute [nolint simpComm] AddOpposite.addCommute_unop
 
 /-- The function `MulOpposite.op` is an additive equivalence. -/
 @[simps! (config := { fullyApplied := false, simpRhs := true }) apply symm_apply]
@@ -289,19 +332,18 @@ end MulOpposite
 
 namespace AddOpposite
 
-instance semigroup [Semigroup α] : Semigroup αᵃᵒᵖ :=
-  unop_injective.semigroup _ fun _ _ => rfl
+instance instSemigroup [Semigroup α] : Semigroup αᵃᵒᵖ := unop_injective.semigroup _ fun _ _ ↦ rfl
 
-instance leftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup αᵃᵒᵖ :=
+instance instLeftCancelSemigroup [LeftCancelSemigroup α] : LeftCancelSemigroup αᵃᵒᵖ :=
   unop_injective.leftCancelSemigroup _ fun _ _ => rfl
 
-instance rightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup αᵃᵒᵖ :=
+instance instRightCancelSemigroup [RightCancelSemigroup α] : RightCancelSemigroup αᵃᵒᵖ :=
   unop_injective.rightCancelSemigroup _ fun _ _ => rfl
 
-instance commSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
+instance instCommSemigroup [CommSemigroup α] : CommSemigroup αᵃᵒᵖ :=
   unop_injective.commSemigroup _ fun _ _ => rfl
 
-instance mulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
+instance instMulOneClass [MulOneClass α] : MulOneClass αᵃᵒᵖ :=
   unop_injective.mulOneClass _ (by exact rfl) fun _ _ => rfl
 
 instance pow {β} [Pow α β] : Pow αᵃᵒᵖ β where pow a b := op (unop a ^ b)
@@ -316,36 +358,38 @@ theorem unop_pow {β} [Pow α β] (a : αᵃᵒᵖ) (b : β) : unop (a ^ b) = un
   rfl
 #align add_opposite.unop_pow AddOpposite.unop_pow
 
-instance monoid [Monoid α] : Monoid αᵃᵒᵖ :=
+instance instMonoid [Monoid α] : Monoid αᵃᵒᵖ :=
   unop_injective.monoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance commMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
+instance instCommMonoid [CommMonoid α] : CommMonoid αᵃᵒᵖ :=
   unop_injective.commMonoid _ (by exact rfl) (fun _ _ => rfl) fun _ _ => rfl
 
-instance divInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
+instance instDivInvMonoid [DivInvMonoid α] : DivInvMonoid αᵃᵒᵖ :=
   unop_injective.divInvMonoid _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance group [Group α] : Group αᵃᵒᵖ :=
+instance instGroup [Group α] : Group αᵃᵒᵖ :=
   unop_injective.group _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance commGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
+instance instCommGroup [CommGroup α] : CommGroup αᵃᵒᵖ :=
   unop_injective.commGroup _ (by exact rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl)
     (fun _ _ => rfl) fun _ _ => rfl
 
 -- NOTE: `addMonoidWithOne α → addMonoidWithOne αᵃᵒᵖ` does not hold
-instance addCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ :=
-  { AddOpposite.addCommMonoid α, AddOpposite.one, AddOpposite.natCast α with
-    natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
-    natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm] }
+instance instAddCommMonoidWithOne [AddCommMonoidWithOne α] : AddCommMonoidWithOne αᵃᵒᵖ where
+  toNatCast := instNatCast
+  toOne := instOne
+  __ := instAddCommMonoid
+  natCast_zero := show op ((0 : ℕ) : α) = 0 by rw [Nat.cast_zero, op_zero]
+  natCast_succ := show ∀ n, op ((n + 1 : ℕ) : α) = op ↑(n : ℕ) + 1 by simp [add_comm]
 
-instance addCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ :=
-  { AddOpposite.addCommMonoidWithOne α, AddOpposite.addCommGroup α, AddOpposite.intCast α with
-    intCast_ofNat := λ _ ↦ congr_arg op $ Int.cast_ofNat _
-    intCast_negSucc := λ _ ↦ congr_arg op $ Int.cast_negSucc _ }
-
-variable {α}
+instance instAddCommGroupWithOne [AddCommGroupWithOne α] : AddCommGroupWithOne αᵃᵒᵖ where
+  toIntCast := instIntCast
+  toAddCommGroup := instAddCommGroup
+  __ := instAddCommMonoidWithOne
+  intCast_ofNat _ := congr_arg op <| Int.cast_natCast _
+  intCast_negSucc _ := congr_arg op <| Int.cast_negSucc _
 
 /-- The function `AddOpposite.op` is a multiplicative equivalence. -/
 @[simps! (config := { fullyApplied := false, simpRhs := true })]
@@ -368,7 +412,7 @@ open MulOpposite
 @[to_additive (attr := simps! (config := { fullyApplied := false, simpRhs := true }))
       "Negation on an additive group is an `AddEquiv` to the opposite group. When `G`
       is commutative, there is `AddEquiv.inv`."]
-def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
+def MulEquiv.inv' (G : Type*) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
   { (Equiv.inv G).trans opEquiv with map_mul' := fun x y => unop_injective <| mul_inv_rev x y }
 #align mul_equiv.inv' MulEquiv.inv'
 #align add_equiv.neg' AddEquiv.neg'
@@ -377,10 +421,10 @@ def MulEquiv.inv' (G : Type _) [DivisionMonoid G] : G ≃* Gᵐᵒᵖ :=
 
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism to `Nᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
       "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x, y` defines an additive semigroup homomorphism to `Sᵃᵒᵖ`."]
-def MulHom.toOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
+def MulHom.toOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
     (hf : ∀ x y, Commute (f x) (f y)) : M →ₙ* Nᵐᵒᵖ where
   toFun := op ∘ f
   map_mul' x y := by simp [(hf x y).eq]
@@ -391,10 +435,10 @@ def MulHom.toOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
 
 /-- A semigroup homomorphism `f : M →ₙ* N` such that `f x` commutes with `f y` for all `x, y`
 defines a semigroup homomorphism from `Mᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
       "An additive semigroup homomorphism `f : AddHom M N` such that `f x` additively
       commutes with `f y` for all `x`, `y` defines an additive semigroup homomorphism from `Mᵃᵒᵖ`."]
-def MulHom.fromOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
+def MulHom.fromOpposite {M N : Type*} [Mul M] [Mul N] (f : M →ₙ* N)
     (hf : ∀ x y, Commute (f x) (f y)) : Mᵐᵒᵖ →ₙ* N where
   toFun := f ∘ MulOpposite.unop
   map_mul' _ _ := (f.map_mul _ _).trans (hf _ _).eq
@@ -405,10 +449,10 @@ def MulHom.fromOpposite {M N : Type _} [Mul M] [Mul N] (f : M →ₙ* N)
 
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism to `Nᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
       "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x, y` defines an additive monoid homomorphism to `Sᵃᵒᵖ`."]
-def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
+def MonoidHom.toOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (hf : ∀ x y, Commute (f x) (f y)) : M →* Nᵐᵒᵖ where
   toFun := op ∘ f
   map_one' := congrArg op f.map_one
@@ -420,10 +464,10 @@ def MonoidHom.toOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M �
 
 /-- A monoid homomorphism `f : M →* N` such that `f x` commutes with `f y` for all `x, y` defines
 a monoid homomorphism from `Mᵐᵒᵖ`. -/
-@[to_additive (attr := simps (config := { fullyApplied := false }))
+@[to_additive (attr := simps (config := .asFn))
       "An additive monoid homomorphism `f : M →+ N` such that `f x` additively commutes
       with `f y` for all `x`, `y` defines an additive monoid homomorphism from `Mᵃᵒᵖ`."]
-def MonoidHom.fromOpposite {M N : Type _} [MulOneClass M] [MulOneClass N] (f : M →* N)
+def MonoidHom.fromOpposite {M N : Type*} [MulOneClass M] [MulOneClass N] (f : M →* N)
     (hf : ∀ x y, Commute (f x) (f y)) : Mᵐᵒᵖ →* N where
   toFun := f ∘ MulOpposite.unop
   map_one' := f.map_one
@@ -573,10 +617,17 @@ def MonoidHom.unop {M N} [MulOneClass M] [MulOneClass N] : (Mᵐᵒᵖ →* Nᵐ
 #align monoid_hom.unop MonoidHom.unop
 #align add_monoid_hom.unop AddMonoidHom.unop
 
+/-- A monoid is isomorphic to the opposite of its opposite. -/
+@[to_additive (attr := simps!)
+      "A additive monoid is isomorphic to the opposite of its opposite."]
+def MulEquiv.opOp (M : Type*) [Mul M] : M ≃* Mᵐᵒᵖᵐᵒᵖ where
+  __ := MulOpposite.opEquiv.trans MulOpposite.opEquiv
+  map_mul' _ _ := rfl
+
 /-- An additive homomorphism `M →+ N` can equivalently be viewed as an additive homomorphism
 `Mᵐᵒᵖ →+ Nᵐᵒᵖ`. This is the action of the (fully faithful) `ᵐᵒᵖ`-functor on morphisms. -/
 @[simps]
-def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ (Mᵐᵒᵖ →+  Nᵐᵒᵖ) where
+def AddMonoidHom.mulOp {M N} [AddZeroClass M] [AddZeroClass N] : (M →+ N) ≃ (Mᵐᵒᵖ →+ Nᵐᵒᵖ) where
   toFun f :=
     { toFun := MulOpposite.op ∘ f ∘ MulOpposite.unop, map_zero' := unop_injective f.map_zero,
       map_add' := fun x y => unop_injective (f.map_add x.unop y.unop) }
@@ -661,7 +712,7 @@ theorem AddMonoidHom.mul_op_ext {α β} [AddZeroClass α] [AddZeroClass β] (f g
       f.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom =
         g.comp (opAddEquiv : α ≃+ αᵐᵒᵖ).toAddMonoidHom) :
     f = g :=
-  AddMonoidHom.ext <| MulOpposite.rec' fun x => (FunLike.congr_fun h : _) x
+  AddMonoidHom.ext <| MulOpposite.rec' fun x => (DFunLike.congr_fun h : _) x
 #align add_monoid_hom.mul_op_ext AddMonoidHom.mul_op_ext
 
 end Ext

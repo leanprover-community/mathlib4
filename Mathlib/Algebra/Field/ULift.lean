@@ -2,14 +2,11 @@
 Copyright (c) 2023 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module algebra.field.ulift
-! leanprover-community/mathlib commit 13e18cfa070ea337ea960176414f5ae3a1534aae
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Field.Basic
-import Mathlib.Algebra.Ring.ULift
+import Mathlib.Algebra.Group.ULift
+
+#align_import algebra.field.ulift from "leanprover-community/mathlib"@"13e18cfa070ea337ea960176414f5ae3a1534aae"
 
 /-!
 # Field instances for `ULift`
@@ -24,7 +21,7 @@ variable {α : Type u} {x y : ULift.{v} α}
 
 namespace ULift
 
-instance [RatCast α] : RatCast (ULift α) := ⟨λ a ↦ up a⟩
+instance [RatCast α] : RatCast (ULift α) := ⟨(up ·)⟩
 
 @[simp, norm_cast]
 theorem up_ratCast [RatCast α] (q : ℚ) : up (q : α) = q :=

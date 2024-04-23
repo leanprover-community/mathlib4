@@ -2,15 +2,12 @@
 Copyright (c) 2020 Fox Thomson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
-
-! This file was ported from Lean 3 source module computability.DFA
-! leanprover-community/mathlib commit 32253a1a1071173b33dc7d6a218cf722c6feb514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Computability.Language
 import Mathlib.Tactic.NormNum
+
+#align_import computability.DFA from "leanprover-community/mathlib"@"32253a1a1071173b33dc7d6a218cf722c6feb514"
 
 /-!
 # Deterministic Finite Automata
@@ -95,7 +92,7 @@ theorem evalFrom_of_append (start : σ) (x y : List α) :
 #align DFA.eval_from_of_append DFA.evalFrom_of_append
 
 /-- `M.accepts` is the language of `x` such that `M.eval x` is an accept state. -/
-def accepts : Language α := fun x => M.eval x ∈ M.accept
+def accepts : Language α := {x | M.eval x ∈ M.accept}
 #align DFA.accepts DFA.accepts
 
 theorem mem_accepts (x : List α) : x ∈ M.accepts ↔ M.evalFrom M.start x ∈ M.accept := by rfl
@@ -113,7 +110,6 @@ theorem evalFrom_split [Fintype σ] {x : List α} {s t : σ} (hlen : Fintype.car
   wlog hle : (n : ℕ) ≤ m
   · exact this _ hlen hx _ _ hneq.symm heq.symm (le_of_not_le hle)
   have hm : (m : ℕ) ≤ Fintype.card σ := Fin.is_le m
-  dsimp at heq
   refine'
     ⟨M.evalFrom s ((x.take m).take n), (x.take m).take n, (x.take m).drop n, x.drop m, _, _, _, by
       rfl, _⟩
@@ -157,13 +153,13 @@ theorem pumping_lemma [Fintype σ] {x : List α} (hx : x ∈ M.accepts)
     ∃ a b c,
       x = a ++ b ++ c ∧
         a.length + b.length ≤ Fintype.card σ ∧ b ≠ [] ∧ {a} * {b}∗ * {c} ≤ M.accepts := by
-  obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split hlen rfl
+  obtain ⟨_, a, b, c, hx, hlen, hnil, rfl, hb, hc⟩ := M.evalFrom_split (s := M.start) hlen rfl
   use a, b, c, hx, hlen, hnil
   intro y hy
   rw [Language.mem_mul] at hy
-  rcases hy with ⟨ab, c', hab, hc', rfl⟩
+  rcases hy with ⟨ab, hab, c', hc', rfl⟩
   rw [Language.mem_mul] at hab
-  rcases hab with ⟨a', b', ha', hb', rfl⟩
+  rcases hab with ⟨a', ha', b', hb', rfl⟩
   rw [Set.mem_singleton_iff] at ha' hc'
   substs ha' hc'
   have h := M.evalFrom_of_pow hb hb'

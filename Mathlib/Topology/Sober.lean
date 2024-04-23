@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.sober
-! leanprover-community/mathlib commit 0a0ec35061ed9960bf0e7ffb0335f44447b58977
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Separation
+
+#align_import topology.sober from "leanprover-community/mathlib"@"0a0ec35061ed9960bf0e7ffb0335f44447b58977"
 
 /-!
 # Sober spaces
@@ -29,7 +26,7 @@ stated via `[QuasiSober α] [T0Space α]`.
 
 open Set
 
-variable {α β : Type _} [TopologicalSpace α] [TopologicalSpace β]
+variable {α β : Type*} [TopologicalSpace α] [TopologicalSpace β]
 
 section genericPoint
 
@@ -119,8 +116,8 @@ end genericPoint
 section Sober
 
 /-- A space is sober if every irreducible closed subset has a generic point. -/
-@[mk_iff quasiSober_iff]
-class QuasiSober (α : Type _) [TopologicalSpace α] : Prop where
+@[mk_iff]
+class QuasiSober (α : Type*) [TopologicalSpace α] : Prop where
   sober : ∀ {S : Set α}, IsIrreducible S → IsClosed S → ∃ x, IsGenericPoint x S
 #align quasi_sober QuasiSober
 
@@ -148,8 +145,9 @@ noncomputable def genericPoint [QuasiSober α] [IrreducibleSpace α] : α :=
   (IrreducibleSpace.isIrreducible_univ α).genericPoint
 #align generic_point genericPoint
 
-theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] : IsGenericPoint (genericPoint α) ⊤ :=
-  by simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
+theorem genericPoint_spec [QuasiSober α] [IrreducibleSpace α] :
+    IsGenericPoint (genericPoint α) ⊤ := by
+  simpa using (IrreducibleSpace.isIrreducible_univ α).genericPoint_spec
 #align generic_point_spec genericPoint_spec
 
 @[simp]
@@ -203,7 +201,7 @@ theorem OpenEmbedding.quasiSober {f : α → β} (hf : OpenEmbedding f) [QuasiSo
       rw [← hT.closure_eq]
       exact closure_mono (inter_subset_left _ _) hx.mem
     obtain ⟨y, rfl⟩ : x ∈ range f := by
-      rw [hx.mem_open_set_iff hf.open_range]
+      rw [hx.mem_open_set_iff hf.isOpen_range]
       refine' Nonempty.mono _ hS''.1
       simpa using subset_closure
     use y
@@ -238,7 +236,7 @@ theorem quasiSober_of_open_cover (S : Set (Set α)) (hS : ∀ s : S, IsOpen (s :
   rw [← image_singleton, ← closure_image_closure continuous_subtype_val, H.genericPoint_spec.def]
   refine' (subset_closure_inter_of_isPreirreducible_of_isOpen h.2 (hS ⟨U, hU⟩) ⟨x, hx, hU'⟩).trans
     (closure_mono _)
-  rw [← Subtype.image_preimage_coe]
+  rw [inter_comm t, ← Subtype.image_preimage_coe]
   exact Set.image_subset _ subset_closure
 #align quasi_sober_of_open_cover quasiSober_of_open_cover
 

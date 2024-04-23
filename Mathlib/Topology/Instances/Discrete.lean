@@ -2,15 +2,12 @@
 Copyright (c) 2022 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module topology.instances.discrete
-! leanprover-community/mathlib commit bcfa726826abd57587355b4b5b7e78ad6527b7e4
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.SuccPred.Basic
 import Mathlib.Topology.Order.Basic
-import Mathlib.Topology.MetricSpace.MetrizableUniformity
+import Mathlib.Topology.Metrizable.Uniformity
+
+#align_import topology.instances.discrete from "leanprover-community/mathlib"@"bcfa726826abd57587355b4b5b7e78ad6527b7e4"
 
 /-!
 # Instances related to the discrete topology
@@ -29,33 +26,39 @@ and `OrderTopology ℕ` become available.
 
 open Order Set TopologicalSpace Filter
 
-variable {α : Type _} [TopologicalSpace α]
+variable {α : Type*} [TopologicalSpace α]
 
 instance (priority := 100) DiscreteTopology.firstCountableTopology [DiscreteTopology α] :
     FirstCountableTopology α where
   nhds_generated_countable := by rw [nhds_discrete]; exact isCountablyGenerated_pure
 #align discrete_topology.first_countable_topology DiscreteTopology.firstCountableTopology
 
-instance (priority := 100) DiscreteTopology.secondCountableTopology_of_encodable
-    [hd : DiscreteTopology α] [Encodable α] : SecondCountableTopology α :=
+instance (priority := 100) DiscreteTopology.secondCountableTopology_of_countable
+    [hd : DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
   haveI : ∀ i : α, SecondCountableTopology (↥({i} : Set α)) := fun i =>
     { is_open_generated_countable :=
         ⟨{univ}, countable_singleton _, by simp only [eq_iff_true_of_subsingleton]⟩ }
   secondCountableTopology_of_countable_cover (singletons_open_iff_discrete.mpr hd)
     (iUnion_of_singleton α)
-#align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_encodable
+#align discrete_topology.second_countable_topology_of_encodable DiscreteTopology.secondCountableTopology_of_countable
+
+@[deprecated DiscreteTopology.secondCountableTopology_of_countable] -- 2024-03-11
+theorem DiscreteTopology.secondCountableTopology_of_encodable {α : Type*}
+    [TopologicalSpace α] [DiscreteTopology α] [Countable α] : SecondCountableTopology α :=
+  DiscreteTopology.secondCountableTopology_of_countable
+#align discrete_topology.second_countable_topology_of_countable DiscreteTopology.secondCountableTopology_of_countable
 
 theorem bot_topologicalSpace_eq_generateFrom_of_pred_succOrder [PartialOrder α] [PredOrder α]
     [SuccOrder α] [NoMinOrder α] [NoMaxOrder α] :
     (⊥ : TopologicalSpace α) = generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a } := by
   refine' (eq_bot_of_singletons_open fun a => _).symm
   have h_singleton_eq_inter : {a} = Iio (succ a) ∩ Ioi (pred a) := by
-    suffices h_singleton_eq_inter' : {a} = Iic a ∩ Ici a
-    · rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
+    suffices h_singleton_eq_inter' : {a} = Iic a ∩ Ici a by
+      rw [h_singleton_eq_inter', ← Ioi_pred, ← Iio_succ]
     rw [inter_comm, Ici_inter_Iic, Icc_self a]
   rw [h_singleton_eq_inter]
-  -- Porting note: Specified instance for `IsOpen.inter` explicitly to fix an error.
-  apply @IsOpen.inter _ _ _ (generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a })
+  letI := Preorder.topology α
+  apply IsOpen.inter
   · exact isOpen_generateFrom_of_mem ⟨succ a, Or.inr rfl⟩
   · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align bot_topological_space_eq_generate_from_of_pred_succ_order bot_topologicalSpace_eq_generateFrom_of_pred_succOrder
@@ -99,7 +102,8 @@ theorem LinearOrder.bot_topologicalSpace_eq_generateFrom [LinearOrder α] [PredO
       rw [← Ioi_pred_of_not_isMin ha_bot] at h_singleton_eq_inter
       rw [h_singleton_eq_inter]
       -- Porting note: Specified instance for `IsOpen.inter` explicitly to fix an error.
-      apply @IsOpen.inter _ _ _ (generateFrom { s | ∃ a, s = Ioi a ∨ s = Iio a })
+      letI := Preorder.topology α
+      apply IsOpen.inter
       · exact isOpen_generateFrom_of_mem ⟨succ a, Or.inr rfl⟩
       · exact isOpen_generateFrom_of_mem ⟨pred a, Or.inl rfl⟩
 #align linear_order.bot_topological_space_eq_generate_from LinearOrder.bot_topologicalSpace_eq_generateFrom

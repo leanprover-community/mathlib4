@@ -2,13 +2,10 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1960_q1
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Digits
+
+#align_import imo.imo1960_q1 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1960 Q1
@@ -97,7 +94,8 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
   have := searchUpTo_start
   iterate 82
     replace :=
-      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num1; rfl) (by norm_num)
+      searchUpTo_step this (by norm_num1; rfl) (by norm_num1; rfl) rfl
+        (by norm_num <;> decide)
   exact searchUpTo_end this
 #align imo1960_q1.right_direction Imo1960Q1.right_direction
 
@@ -105,8 +103,7 @@ theorem right_direction {n : ℕ} : ProblemPredicate n → SolutionPredicate n :
 Now we just need to prove the equivalence, for the precise problem statement.
 -/
 theorem left_direction (n : ℕ) (spn : SolutionPredicate n) : ProblemPredicate n := by
-  -- Porting note: This is very slow
-  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> rfl
+  rcases spn with (rfl | rfl) <;> refine' ⟨_, by decide, _⟩ <;> norm_num <;> rfl
 #align imo1960_q1.left_direction Imo1960Q1.left_direction
 
 end Imo1960Q1

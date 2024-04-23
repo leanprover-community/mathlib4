@@ -2,14 +2,11 @@
 Copyright (c) 2022 Justin Thomas. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Justin Thomas
-
-! This file was ported from Lean 3 source module linear_algebra.annihilating_polynomial
-! leanprover-community/mathlib commit d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.FieldTheory.Minpoly.Field
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import linear_algebra.annihilating_polynomial from "leanprover-community/mathlib"@"d3e8e0a0237c10c2627bf52c246b15ff8e7df4c0"
 
 /-!
 # Annihilating Ideal
@@ -43,8 +40,7 @@ namespace Polynomial
 
 section Semiring
 
-variable {R A : Type _} [CommSemiring R] [Semiring A] [Algebra R A]
-
+variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A]
 variable (R)
 
 /-- `annIdeal R a` is the *annihilating ideal* of all `p : R[X]` such that `p(a) = 0`.
@@ -69,13 +65,11 @@ end Semiring
 
 section Field
 
-variable {𝕜 A : Type _} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
-
+variable {𝕜 A : Type*} [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 variable (𝕜)
 
 open Submodule
 
-set_option synthInstance.maxHeartbeats 35000 in
 /-- `annIdealGenerator 𝕜 a` is the monic generator of `annIdeal 𝕜 a`
 if one exists, otherwise `0`.
 
@@ -180,6 +174,11 @@ theorem monic_generator_eq_minpoly (a : A) (p : 𝕜[X]) (p_monic : p.Monic)
     apply eq_of_monic_of_associated p_monic _ p_gen
     · apply monic_annIdealGenerator _ _ ((Associated.ne_zero_iff p_gen).mp h)
 #align polynomial.monic_generator_eq_minpoly Polynomial.monic_generator_eq_minpoly
+
+theorem span_minpoly_eq_annihilator {M} [AddCommGroup M] [Module 𝕜 M] (f : Module.End 𝕜 M) :
+    Ideal.span {minpoly 𝕜 f} = Module.annihilator 𝕜[X] (Module.AEval' f) := by
+  rw [← annIdealGenerator_eq_minpoly, span_singleton_annIdealGenerator]; ext
+  rw [mem_annIdeal_iff_aeval_eq_zero, DFunLike.ext_iff, Module.mem_annihilator]; rfl
 
 end Field
 

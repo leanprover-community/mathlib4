@@ -2,15 +2,12 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.fintype.sum
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Data.Finset.Sum
 import Mathlib.Logic.Embedding.Set
+
+#align_import data.fintype.sum from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 ## Instances
@@ -21,7 +18,7 @@ We provide the `Fintype` instance for the sum of two fintypes.
 
 universe u v
 
-variable {α β : Type _}
+variable {α β : Type*}
 
 open Finset
 
@@ -30,7 +27,7 @@ instance (α : Type u) (β : Type v) [Fintype α] [Fintype β] : Fintype (Sum α
   complete := by rintro (_ | _) <;> simp
 
 @[simp]
-theorem Finset.univ_disjSum_univ {α β : Type _} [Fintype α] [Fintype β] :
+theorem Finset.univ_disjSum_univ {α β : Type*} [Fintype α] [Fintype β] :
     univ.disjSum univ = (univ : Finset (Sum α β)) :=
   rfl
 #align finset.univ_disj_sum_univ Finset.univ_disjSum_univ
@@ -110,12 +107,12 @@ theorem Set.MapsTo.exists_equiv_extend_of_card_eq [Fintype α] {t : Finset β}
     (hfs : Set.InjOn f s) : ∃ g : α ≃ t, ∀ i ∈ s, (g i : β) = f i := by
   classical
     let s' : Finset α := s.toFinset
-    have hfst' : s'.image f ⊆ t := by simpa [← Finset.coe_subset] using hfst
-    have hfs' : Set.InjOn f s' := by simpa using hfs
+    have hfst' : s'.image f ⊆ t := by simpa [s', ← Finset.coe_subset] using hfst
+    have hfs' : Set.InjOn f s' := by simpa [s'] using hfs
     obtain ⟨g, hg⟩ := Finset.exists_equiv_extend_of_card_eq hαt hfst' hfs'
     refine' ⟨g, fun i hi => _⟩
     apply hg
-    simpa using hi
+    simpa [s'] using hi
 #align set.maps_to.exists_equiv_extend_of_card_eq Set.MapsTo.exists_equiv_extend_of_card_eq
 
 theorem Fintype.card_subtype_or (p q : α → Prop) [Fintype { x // p x }] [Fintype { x // q x }]
@@ -136,7 +133,7 @@ theorem Fintype.card_subtype_or_disjoint (p q : α → Prop) (h : Disjoint p q) 
 
 section
 
-open Classical
+open scoped Classical
 
 @[simp]
 theorem infinite_sum : Infinite (Sum α β) ↔ Infinite α ∨ Infinite β := by

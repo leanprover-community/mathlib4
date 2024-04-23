@@ -2,14 +2,10 @@
 Copyright (c) 2019 Zhouhang Zhou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Zhouhang Zhou, Yury Kudryashov, Sébastien Gouëzel, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.integral.bochner
-! leanprover-community/mathlib commit 8f9fea08977f7e450770933ee6abb20733b47c92
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Integral.SetToL1
-import Mathlib.MeasureTheory.Integral.IntegralSimps
+
+#align_import measure_theory.integral.bochner from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 
 /-!
 # Bochner integral
@@ -72,11 +68,13 @@ file `SetToL1`).
 3. Propositions connecting the Bochner integral with the integral on `ℝ≥0∞`-valued functions,
    which is called `lintegral` and has the notation `∫⁻`.
 
-  * `integral_eq_lintegral_max_sub_lintegral_min` : `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
+  * `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` :
+    `∫ x, f x ∂μ = ∫⁻ x, f⁺ x ∂μ - ∫⁻ x, f⁻ x ∂μ`,
     where `f⁺` is the positive part of `f` and `f⁻` is the negative part of `f`.
   * `integral_eq_lintegral_of_nonneg_ae`          : `0 ≤ᵐ[μ] f → ∫ x, f x ∂μ = ∫⁻ x, f x ∂μ`
 
-4. `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
+4. (In the file `DominatedConvergence`)
+  `tendsto_integral_of_dominated_convergence` : the Lebesgue dominated convergence theorem
 
 5. (In the file `SetIntegral`) integration commutes with continuous linear maps.
 
@@ -94,18 +92,18 @@ of the related results, like `Lp.induction` for functions in `Lp`), which allows
 something for an arbitrary integrable function.
 
 Another method is using the following steps.
-See `integral_eq_lintegral_max_sub_lintegral_min` for a complicated example, which proves that
-`∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
+See `integral_eq_lintegral_pos_part_sub_lintegral_neg_part` for a complicated example, which proves
+that `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, with the first integral sign being the Bochner integral of a real-valued
 function `f : α → ℝ`, and second and third integral sign being the integral on `ℝ≥0∞`-valued
-functions (called `lintegral`). The proof of `integral_eq_lintegral_max_sub_lintegral_min` is
-scattered in sections with the name `posPart`.
+functions (called `lintegral`). The proof of `integral_eq_lintegral_pos_part_sub_lintegral_neg_part`
+is scattered in sections with the name `posPart`.
 
 Here are the usual steps of proving that a property `p`, say `∫ f = ∫⁻ f⁺ - ∫⁻ f⁻`, holds for all
 functions :
 
 1. First go to the `L¹` space.
 
-   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal $ ‖f a‖)`, that is the norm of
+   For example, if you see `ENNReal.toReal (∫⁻ a, ENNReal.ofReal <| ‖f a‖)`, that is the norm of
    `f` in `L¹` space. Rewrite using `L1.norm_of_fun_eq_lintegral_norm`.
 
 2. Show that the set `{f ∈ L¹ | ∫ f = ∫⁻ f⁺ - ∫⁻ f⁻}` is closed in `L¹` using `isClosed_eq`.
@@ -156,9 +154,9 @@ open Set Filter TopologicalSpace ENNReal EMetric
 
 namespace MeasureTheory
 
-variable {α E F 𝕜 : Type _}
+variable {α E F 𝕜 : Type*}
 
-section WeightedSmul
+section WeightedSMul
 
 open ContinuousLinearMap
 
@@ -236,7 +234,7 @@ theorem weightedSMul_smul [NormedField 𝕜] [NormedSpace 𝕜 F] [SMulCommClass
 theorem norm_weightedSMul_le (s : Set α) : ‖(weightedSMul μ s : F →L[ℝ] F)‖ ≤ (μ s).toReal :=
   calc
     ‖(weightedSMul μ s : F →L[ℝ] F)‖ = ‖(μ s).toReal‖ * ‖ContinuousLinearMap.id ℝ F‖ :=
-      norm_smul _ _
+      norm_smul (μ s).toReal (ContinuousLinearMap.id ℝ F)
     _ ≤ ‖(μ s).toReal‖ :=
       ((mul_le_mul_of_nonneg_left norm_id_le (norm_nonneg _)).trans (mul_one _).le)
     _ = abs (μ s).toReal := Real.norm_eq_abs _
@@ -249,13 +247,12 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 #align measure_theory.dominated_fin_meas_additive_weighted_smul MeasureTheory.dominatedFinMeasAdditive_weightedSMul
 
 theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', id.def, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact mul_nonneg toReal_nonneg hx
 #align measure_theory.weighted_smul_nonneg MeasureTheory.weightedSMul_nonneg
 
-end WeightedSmul
+end WeightedSMul
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -303,7 +300,7 @@ and prove basic property of this integral.
 
 open Finset
 
-variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : ℝ≥0∞} {G F' : Type _}
+variable [NormedAddCommGroup E] [NormedAddCommGroup F] [NormedSpace ℝ F] {p : ℝ≥0∞} {G F' : Type*}
   [NormedAddCommGroup G] [NormedAddCommGroup F'] [NormedSpace ℝ F'] {m : MeasurableSpace α}
   {μ : Measure α}
 
@@ -333,7 +330,7 @@ theorem integral_eq_sum_of_subset [DecidablePred fun x : F => x ≠ 0] {f : α �
     (hs : (f.range.filter fun x => x ≠ 0) ⊆ s) :
     f.integral μ = ∑ x in s, (μ (f ⁻¹' {x})).toReal • x := by
   rw [SimpleFunc.integral_eq_sum_filter, Finset.sum_subset hs]
-  rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne.def, Classical.not_not] at hx
+  rintro x - hx; rw [Finset.mem_filter, not_and_or, Ne, Classical.not_not] at hx
   -- Porting note: reordered for clarity
   rcases hx.symm with (rfl | hx)
   · simp
@@ -391,7 +388,7 @@ theorem integral_eq_lintegral' {f : α →ₛ E} {g : E → ℝ≥0∞} (hf : In
     rw [smul_eq_mul, toReal_mul, mul_comm, Function.comp_apply]
   · rintro a -
     by_cases a0 : a = 0
-    · rw [a0, hg0, MulZeroClass.zero_mul]; exact WithTop.zero_ne_top
+    · rw [a0, hg0, zero_mul]; exact WithTop.zero_ne_top
     · apply mul_ne_top (ht a) (hf'.meas_preimage_singleton_ne_zero a0).ne
   · simp [hg0]
 #align measure_theory.simple_func.integral_eq_lintegral' MeasureTheory.SimpleFunc.integral_eq_lintegral'
@@ -512,7 +509,7 @@ Define the Bochner integral on `α →₁ₛ[μ] E` by extension from the simple
 and prove basic properties of this integral. -/
 
 
-variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type _}
+variable [NormedField 𝕜] [NormedSpace 𝕜 E] [NormedSpace ℝ E] [SMulCommClass ℝ 𝕜 E] {F' : Type*}
   [NormedAddCommGroup F'] [NormedSpace ℝ F']
 
 attribute [local instance] simpleFunc.normedSpace
@@ -542,12 +539,6 @@ theorem integral_add (f g : α →₁ₛ[μ] E) : integral (f + g) = integral f 
   setToL1S_add _ (fun _ _ => weightedSMul_null) weightedSMul_union _ _
 #align measure_theory.L1.simple_func.integral_add MeasureTheory.L1.SimpleFunc.integral_add
 
--- Porting note: finding `SMul 𝕜 (Lp.simpleFunc E 1 μ)` takes about twice the default
--- `synthInstance.maxHeartbeats 20000`, so we provide some shortcut instances to speed it up.
-instance : Module 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
-instance : MulActionWithZero 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance in
-instance : SMul 𝕜 (Lp.simpleFunc E 1 μ) := inferInstance
-
 theorem integral_smul (c : 𝕜) (f : α →₁ₛ[μ] E) : integral (c • f) = c • integral f :=
   setToL1S_smul _ (fun _ _ => weightedSMul_null) weightedSMul_union weightedSMul_smul c f
 #align measure_theory.L1.simple_func.integral_smul MeasureTheory.L1.SimpleFunc.integral_smul
@@ -557,8 +548,7 @@ theorem norm_integral_le_norm (f : α →₁ₛ[μ] E) : ‖integral f‖ ≤ �
   exact (toSimpleFunc f).norm_integral_le_integral_norm (SimpleFunc.integrable f)
 #align measure_theory.L1.simple_func.norm_integral_le_norm MeasureTheory.L1.SimpleFunc.norm_integral_le_norm
 
-variable {E' : Type _} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
-
+variable {E' : Type*} [NormedAddCommGroup E'] [NormedSpace ℝ E'] [NormedSpace 𝕜 E']
 variable (α E μ 𝕜)
 
 /-- The Bochner integral over simple functions in L1 space as a continuous linear map. -/
@@ -574,7 +564,6 @@ def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
 
 variable {α E μ 𝕜}
 
--- mathport name: simple_func.integral_clm
 local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
@@ -593,7 +582,7 @@ theorem posPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
   have eq : ∀ a, (toSimpleFunc f).posPart a = max ((toSimpleFunc f) a) 0 := fun a => rfl
   have ae_eq : ∀ᵐ a ∂μ, toSimpleFunc (posPart f) a = max ((toSimpleFunc f) a) 0 := by
     filter_upwards [toSimpleFunc_eq_toFun (posPart f), Lp.coeFn_posPart (f : α →₁[μ] ℝ),
-      toSimpleFunc_eq_toFun f]with _ _ h₂ h₃
+      toSimpleFunc_eq_toFun f] with _ _ h₂ h₃
     convert h₂ using 1
     -- Porting note: added
     rw [h₃]
@@ -615,19 +604,19 @@ theorem negPart_toSimpleFunc (f : α →₁ₛ[μ] ℝ) :
 theorem integral_eq_norm_posPart_sub (f : α →₁ₛ[μ] ℝ) : integral f = ‖posPart f‖ - ‖negPart f‖ := by
   -- Convert things in `L¹` to their `SimpleFunc` counterpart
   have ae_eq₁ : (toSimpleFunc f).posPart =ᵐ[μ] (toSimpleFunc (posPart f)).map norm := by
-    filter_upwards [posPart_toSimpleFunc f]with _ h
+    filter_upwards [posPart_toSimpleFunc f] with _ h
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.posPart_map_norm, SimpleFunc.map_apply]
   -- Convert things in `L¹` to their `SimpleFunc` counterpart
   have ae_eq₂ : (toSimpleFunc f).negPart =ᵐ[μ] (toSimpleFunc (negPart f)).map norm := by
-    filter_upwards [negPart_toSimpleFunc f]with _ h
+    filter_upwards [negPart_toSimpleFunc f] with _ h
     rw [SimpleFunc.map_apply, h]
     conv_lhs => rw [← SimpleFunc.negPart_map_norm, SimpleFunc.map_apply]
   rw [integral, norm_eq_integral, norm_eq_integral, ← SimpleFunc.integral_sub]
   · show (toSimpleFunc f).integral μ =
       ((toSimpleFunc (posPart f)).map norm - (toSimpleFunc (negPart f)).map norm).integral μ
     apply MeasureTheory.SimpleFunc.integral_congr (SimpleFunc.integrable f)
-    filter_upwards [ae_eq₁, ae_eq₂]with _ h₁ h₂
+    filter_upwards [ae_eq₁, ae_eq₂] with _ h₁ h₂
     show _ = _ - _
     rw [← h₁, ← h₂]
     have := (toSimpleFunc f).posPart_sub_negPart
@@ -702,44 +691,52 @@ theorem integral_zero : integral (0 : α →₁[μ] E) = 0 := by
 
 variable {α E}
 
+@[integral_simps]
 theorem integral_add (f g : α →₁[μ] E) : integral (f + g) = integral f + integral g := by
   simp only [integral]
   exact map_add integralCLM f g
 #align measure_theory.L1.integral_add MeasureTheory.L1.integral_add
 
+@[integral_simps]
 theorem integral_neg (f : α →₁[μ] E) : integral (-f) = -integral f := by
   simp only [integral]
   exact map_neg integralCLM f
 #align measure_theory.L1.integral_neg MeasureTheory.L1.integral_neg
 
+@[integral_simps]
 theorem integral_sub (f g : α →₁[μ] E) : integral (f - g) = integral f - integral g := by
   simp only [integral]
   exact map_sub integralCLM f g
 #align measure_theory.L1.integral_sub MeasureTheory.L1.integral_sub
 
+@[integral_simps]
 theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c • integral f := by
   simp only [integral]
   show (integralCLM' (E := E) 𝕜) (c • f) = c • (integralCLM' (E := E) 𝕜) f
   exact map_smul (integralCLM' (E := E) 𝕜) c f
 #align measure_theory.L1.integral_smul MeasureTheory.L1.integral_smul
 
--- mathport name: integral_clm
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
--- mathport name: simple_func.integral_clm'
 local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
-theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ (1 : ℝ) :=
+theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
   norm_setToL1_le (dominatedFinMeasAdditive_weightedSMul μ) zero_le_one
 #align measure_theory.L1.norm_Integral_le_one MeasureTheory.L1.norm_Integral_le_one
+
+theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖₊ ≤ 1 :=
+  norm_Integral_le_one
 
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM (E := E) f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_op_norm _ _)
-    _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
+    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
+    _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
+
+theorem nnnorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
+  norm_integral_le f
 
 @[continuity]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
@@ -776,20 +773,21 @@ end L1
 
 Define the Bochner integral on functions generally to be the `L1` Bochner integral, for integrable
 functions, and 0 otherwise; prove its basic properties.
-
 -/
 
-
-variable [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E] [NontriviallyNormedField 𝕜]
+variable [NormedAddCommGroup E] [NormedSpace ℝ E] [hE : CompleteSpace E] [NontriviallyNormedField 𝕜]
   [NormedSpace 𝕜 E] [SMulCommClass ℝ 𝕜 E] [NormedAddCommGroup F] [NormedSpace ℝ F] [CompleteSpace F]
+  {G : Type*} [NormedAddCommGroup G] [NormedSpace ℝ G]
 
 section
 
 open scoped Classical
 
 /-- The Bochner integral -/
-irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → E) : E :=
-  if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
+irreducible_def integral {_ : MeasurableSpace α} (μ : Measure α) (f : α → G) : G :=
+  if _ : CompleteSpace G then
+    if hf : Integrable f μ then L1.integral (hf.toL1 f) else 0
+  else 0
 #align measure_theory.integral MeasureTheory.integral
 
 end
@@ -797,7 +795,6 @@ end
 /-! In the notation for integrals, an expression like `∫ x, g ‖x‖ ∂μ` will not be parsed correctly,
   and needs parentheses. We do not set the binding power of `r` to `0`, because then
   `∫ x, f x = 0` will be parsed incorrectly. -/
-
 
 @[inherit_doc MeasureTheory.integral]
 notation3 "∫ "(...)", "r:60:(scoped f => f)" ∂"μ:70 => integral μ r
@@ -817,13 +814,13 @@ open ContinuousLinearMap MeasureTheory.SimpleFunc
 
 variable {f g : α → E} {m : MeasurableSpace α} {μ : Measure α}
 
-theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) :=
-  by rw [integral]; exact @dif_pos _ (id _) hf _ _ _
+theorem integral_eq (f : α → E) (hf : Integrable f μ) : ∫ a, f a ∂μ = L1.integral (hf.toL1 f) := by
+  simp [integral, hE, hf]
 #align measure_theory.integral_eq MeasureTheory.integral_eq
 
 theorem integral_eq_setToFun (f : α → E) :
     ∫ a, f a ∂μ = setToFun μ (weightedSMul μ) (dominatedFinMeasAdditive_weightedSMul μ) f := by
-  simp only [integral, L1.integral]; rfl
+  simp only [integral, hE, L1.integral]; rfl
 #align measure_theory.integral_eq_set_to_fun MeasureTheory.integral_eq_setToFun
 
 theorem L1.integral_eq_integral (f : α →₁[μ] E) : L1.integral f = ∫ a, f a ∂μ := by
@@ -832,130 +829,161 @@ theorem L1.integral_eq_integral (f : α →₁[μ] E) : L1.integral f = ∫ a, f
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.integral_eq_integral MeasureTheory.L1.integral_eq_integral
 
-theorem integral_undef (h : ¬Integrable f μ) : ∫ a, f a ∂μ = 0 := by
-  rw [integral]; exact @dif_neg _ (id _) h _ _ _
+theorem integral_undef {f : α → G} (h : ¬Integrable f μ) : ∫ a, f a ∂μ = 0 := by
+  by_cases hG : CompleteSpace G
+  · simp [integral, hG, h]
+  · simp [integral, hG]
 #align measure_theory.integral_undef MeasureTheory.integral_undef
 
-theorem integral_non_aestronglyMeasurable (h : ¬AEStronglyMeasurable f μ) : ∫ a, f a ∂μ = 0 :=
+theorem Integrable.of_integral_ne_zero {f : α → G} (h : ∫ a, f a ∂μ ≠ 0) : Integrable f μ :=
+  Not.imp_symm integral_undef h
+
+theorem integral_non_aestronglyMeasurable {f : α → G} (h : ¬AEStronglyMeasurable f μ) :
+    ∫ a, f a ∂μ = 0 :=
   integral_undef <| not_and_of_not_left _ h
 #align measure_theory.integral_non_ae_strongly_measurable MeasureTheory.integral_non_aestronglyMeasurable
 
-variable (α E)
+variable (α G)
 
-theorem integral_zero : ∫ _ : α, (0 : E) ∂μ = 0 := by
-  simp only [integral, L1.integral]
-  exact setToFun_zero (dominatedFinMeasAdditive_weightedSMul μ)
+@[simp]
+theorem integral_zero : ∫ _ : α, (0 : G) ∂μ = 0 := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_zero (dominatedFinMeasAdditive_weightedSMul μ)
+  · simp [integral, hG]
 #align measure_theory.integral_zero MeasureTheory.integral_zero
 
 @[simp]
-theorem integral_zero' : integral μ (0 : α → E) = 0 :=
-  integral_zero α E
+theorem integral_zero' : integral μ (0 : α → G) = 0 :=
+  integral_zero α G
 #align measure_theory.integral_zero' MeasureTheory.integral_zero'
 
-variable {α E}
+variable {α G}
 
-theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ := by
-  contrapose h; rw [integral_undef h]; exact zero_ne_one
+theorem integrable_of_integral_eq_one {f : α → ℝ} (h : ∫ x, f x ∂μ = 1) : Integrable f μ :=
+  .of_integral_ne_zero <| h ▸ one_ne_zero
 #align measure_theory.integrable_of_integral_eq_one MeasureTheory.integrable_of_integral_eq_one
 
-theorem integral_add (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem integral_add {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ a, f a + g a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_add (dominatedFinMeasAdditive_weightedSMul μ) hf hg
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_add (dominatedFinMeasAdditive_weightedSMul μ) hf hg
+  · simp [integral, hG]
 #align measure_theory.integral_add MeasureTheory.integral_add
 
-theorem integral_add' (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem integral_add' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ a, (f + g) a ∂μ = ∫ a, f a ∂μ + ∫ a, g a ∂μ :=
   integral_add hf hg
 #align measure_theory.integral_add' MeasureTheory.integral_add'
 
-theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → E} (hf : ∀ i ∈ s, Integrable (f i) μ) :
+theorem integral_finset_sum {ι} (s : Finset ι) {f : ι → α → G} (hf : ∀ i ∈ s, Integrable (f i) μ) :
     ∫ a, ∑ i in s, f i a ∂μ = ∑ i in s, ∫ a, f i a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_finset_sum (dominatedFinMeasAdditive_weightedSMul _) s hf
+  · simp [integral, hG]
 #align measure_theory.integral_finset_sum MeasureTheory.integral_finset_sum
 
-theorem integral_neg (f : α → E) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_neg (dominatedFinMeasAdditive_weightedSMul μ) f
+@[integral_simps]
+theorem integral_neg (f : α → G) : ∫ a, -f a ∂μ = -∫ a, f a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_neg (dominatedFinMeasAdditive_weightedSMul μ) f
+  · simp [integral, hG]
 #align measure_theory.integral_neg MeasureTheory.integral_neg
 
-theorem integral_neg' (f : α → E) : ∫ a, (-f) a ∂μ = -∫ a, f a ∂μ :=
+theorem integral_neg' (f : α → G) : ∫ a, (-f) a ∂μ = -∫ a, f a ∂μ :=
   integral_neg f
 #align measure_theory.integral_neg' MeasureTheory.integral_neg'
 
-theorem integral_sub (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem integral_sub {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ a, f a - g a ∂μ = ∫ a, f a ∂μ - ∫ a, g a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_sub (dominatedFinMeasAdditive_weightedSMul μ) hf hg
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_sub (dominatedFinMeasAdditive_weightedSMul μ) hf hg
+  · simp [integral, hG]
 #align measure_theory.integral_sub MeasureTheory.integral_sub
 
-theorem integral_sub' (hf : Integrable f μ) (hg : Integrable g μ) :
+theorem integral_sub' {f g : α → G} (hf : Integrable f μ) (hg : Integrable g μ) :
     ∫ a, (f - g) a ∂μ = ∫ a, f a ∂μ - ∫ a, g a ∂μ :=
   integral_sub hf hg
 #align measure_theory.integral_sub' MeasureTheory.integral_sub'
 
-theorem integral_smul (c : 𝕜) (f : α → E) : ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
+@[integral_simps]
+theorem integral_smul [NormedSpace 𝕜 G] [SMulCommClass ℝ 𝕜 G] (c : 𝕜) (f : α → G) :
+    ∫ a, c • f a ∂μ = c • ∫ a, f a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_smul (dominatedFinMeasAdditive_weightedSMul μ) weightedSMul_smul c f
+  · simp [integral, hG]
 #align measure_theory.integral_smul MeasureTheory.integral_smul
 
-theorem integral_mul_left {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_mul_left {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, r * f a ∂μ = r * ∫ a, f a ∂μ :=
   integral_smul r f
 #align measure_theory.integral_mul_left MeasureTheory.integral_mul_left
 
-theorem integral_mul_right {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_mul_right {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, f a * r ∂μ = (∫ a, f a ∂μ) * r := by
   simp only [mul_comm]; exact integral_mul_left r f
 #align measure_theory.integral_mul_right MeasureTheory.integral_mul_right
 
-theorem integral_div {L : Type _} [IsROrC L] (r : L) (f : α → L) :
+theorem integral_div {L : Type*} [RCLike L] (r : L) (f : α → L) :
     ∫ a, f a / r ∂μ = (∫ a, f a ∂μ) / r := by
   simpa only [← div_eq_mul_inv] using integral_mul_right r⁻¹ f
 #align measure_theory.integral_div MeasureTheory.integral_div
 
-theorem integral_congr_ae (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ = ∫ a, g a ∂μ := by
-  simp only [integral, L1.integral]
-  exact setToFun_congr_ae (dominatedFinMeasAdditive_weightedSMul μ) h
+theorem integral_congr_ae {f g : α → G} (h : f =ᵐ[μ] g) : ∫ a, f a ∂μ = ∫ a, g a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_congr_ae (dominatedFinMeasAdditive_weightedSMul μ) h
+  · simp [integral, hG]
 #align measure_theory.integral_congr_ae MeasureTheory.integral_congr_ae
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, nolint simpNF]
-theorem L1.integral_of_fun_eq_integral {f : α → E} (hf : Integrable f μ) :
+theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
     ∫ a, (hf.toL1 f) a ∂μ = ∫ a, f a ∂μ := by
-  simp only [MeasureTheory.integral, L1.integral]
-  exact setToFun_toL1 (dominatedFinMeasAdditive_weightedSMul μ) hf
+  by_cases hG : CompleteSpace G
+  · simp only [MeasureTheory.integral, hG, L1.integral]
+    exact setToFun_toL1 (dominatedFinMeasAdditive_weightedSMul μ) hf
+  · simp [MeasureTheory.integral, hG]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.integral_of_fun_eq_integral MeasureTheory.L1.integral_of_fun_eq_integral
 
 @[continuity]
-theorem continuous_integral : Continuous fun f : α →₁[μ] E => ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral]
-  exact continuous_setToFun (dominatedFinMeasAdditive_weightedSMul μ)
+theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a ∂μ := by
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact continuous_setToFun (dominatedFinMeasAdditive_weightedSMul μ)
+  · simp [integral, hG, continuous_const]
 #align measure_theory.continuous_integral MeasureTheory.continuous_integral
 
-theorem norm_integral_le_lintegral_norm (f : α → E) :
+theorem norm_integral_le_lintegral_norm (f : α → G) :
     ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) := by
-  by_cases hf : Integrable f μ
-  · rw [integral_eq f hf, ← Integrable.norm_toL1_eq_lintegral_norm f hf]
-    exact L1.norm_integral_le _
-  · rw [integral_undef hf, norm_zero]; exact toReal_nonneg
+  by_cases hG : CompleteSpace G
+  · by_cases hf : Integrable f μ
+    · rw [integral_eq f hf, ← Integrable.norm_toL1_eq_lintegral_norm f hf]
+      exact L1.norm_integral_le _
+    · rw [integral_undef hf, norm_zero]; exact toReal_nonneg
+  · simp [integral, hG]
 #align measure_theory.norm_integral_le_lintegral_norm MeasureTheory.norm_integral_le_lintegral_norm
 
-theorem ennnorm_integral_le_lintegral_ennnorm (f : α → E) :
+theorem ennnorm_integral_le_lintegral_ennnorm (f : α → G) :
     (‖∫ a, f a ∂μ‖₊ : ℝ≥0∞) ≤ ∫⁻ a, ‖f a‖₊ ∂μ := by
-  simp_rw [← ofReal_norm_eq_coe_nnnorm]; apply ENNReal.ofReal_le_of_le_toReal
+  simp_rw [← ofReal_norm_eq_coe_nnnorm]
+  apply ENNReal.ofReal_le_of_le_toReal
   exact norm_integral_le_lintegral_norm f
 #align measure_theory.ennnorm_integral_le_lintegral_ennnorm MeasureTheory.ennnorm_integral_le_lintegral_ennnorm
 
-theorem integral_eq_zero_of_ae {f : α → E} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
+theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a ∂μ = 0 := by
   simp [integral_congr_ae hf, integral_zero]
 #align measure_theory.integral_eq_zero_of_ae MeasureTheory.integral_eq_zero_of_ae
 
 /-- If `f` has finite integral, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
-theorem HasFiniteIntegral.tendsto_set_integral_nhds_zero {ι} {f : α → E}
+theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     (hf : HasFiniteIntegral f μ) {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -964,120 +992,121 @@ theorem HasFiniteIntegral.tendsto_set_integral_nhds_zero {ι} {f : α → E}
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_set_lintegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => ennnorm_integral_le_lintegral_ennnorm _
-#align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_set_integral_nhds_zero
+#align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
+
+@[deprecated]
+alias HasFiniteIntegral.tendsto_set_integral_nhds_zero :=
+  HasFiniteIntegral.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
 
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
-theorem Integrable.tendsto_set_integral_nhds_zero {ι} {f : α → E} (hf : Integrable f μ)
+theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
     {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) :=
-  hf.2.tendsto_set_integral_nhds_zero hs
-#align measure_theory.integrable.tendsto_set_integral_nhds_zero MeasureTheory.Integrable.tendsto_set_integral_nhds_zero
+  hf.2.tendsto_setIntegral_nhds_zero hs
+#align measure_theory.integrable.tendsto_set_integral_nhds_zero MeasureTheory.Integrable.tendsto_setIntegral_nhds_zero
+
+@[deprecated]
+alias Integrable.tendsto_set_integral_nhds_zero :=
+  Integrable.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
 
 /-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
-theorem tendsto_integral_of_L1 {ι} (f : α → E) (hfi : Integrable f μ) {F : ι → α → E} {l : Filter ι}
+theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
     (hFi : ∀ᶠ i in l, Integrable (F i) μ)
     (hF : Tendsto (fun i => ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0)) :
     Tendsto (fun i => ∫ x, F i x ∂μ) l (𝓝 <| ∫ x, f x ∂μ) := by
-  simp only [integral, L1.integral]
-  exact tendsto_setToFun_of_L1 (dominatedFinMeasAdditive_weightedSMul μ) f hfi hFi hF
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact tendsto_setToFun_of_L1 (dominatedFinMeasAdditive_weightedSMul μ) f hfi hFi hF
+  · simp [integral, hG, tendsto_const_nhds]
 set_option linter.uppercaseLean3 false in
 #align measure_theory.tendsto_integral_of_L1 MeasureTheory.tendsto_integral_of_L1
 
-/-- Lebesgue dominated convergence theorem provides sufficient conditions under which almost
-  everywhere convergence of a sequence of functions implies the convergence of their integrals.
-  We could weaken the condition `bound_integrable` to require `HasFiniteIntegral bound μ` instead
-  (i.e. not requiring that `bound` is measurable), but in all applications proving integrability
-  is easier. -/
-theorem tendsto_integral_of_dominated_convergence {F : ℕ → α → E} {f : α → E} (bound : α → ℝ)
-    (F_measurable : ∀ n, AEStronglyMeasurable (F n) μ) (bound_integrable : Integrable bound μ)
-    (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a)
-    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) atTop (𝓝 (f a))) :
-    Tendsto (fun n => ∫ a, F n a ∂μ) atTop (𝓝 <| ∫ a, f a ∂μ) := by
-  simp only [integral, L1.integral]
-  exact tendsto_setToFun_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
-    bound F_measurable bound_integrable h_bound h_lim
-#align measure_theory.tendsto_integral_of_dominated_convergence MeasureTheory.tendsto_integral_of_dominated_convergence
+/-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
+lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0)) :
+    Tendsto (fun i ↦ ∫ x, F i x ∂μ) l (𝓝 (∫ x, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi hFi ?_
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
 
-/-- Lebesgue dominated convergence theorem for filters with a countable basis -/
-theorem tendsto_integral_filter_of_dominated_convergence {ι} {l : Filter ι} [l.IsCountablyGenerated]
-    {F : ι → α → E} {f : α → E} (bound : α → ℝ) (hF_meas : ∀ᶠ n in l, AEStronglyMeasurable (F n) μ)
-    (h_bound : ∀ᶠ n in l, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
-    (h_lim : ∀ᵐ a ∂μ, Tendsto (fun n => F n a) l (𝓝 (f a))) :
-    Tendsto (fun n => ∫ a, F n a ∂μ) l (𝓝 <| ∫ a, f a ∂μ) := by
-  simp only [integral, L1.integral]
-  exact tendsto_setToFun_filter_of_dominated_convergence (dominatedFinMeasAdditive_weightedSMul μ)
-    bound hF_meas h_bound bound_integrable h_lim
-#align measure_theory.tendsto_integral_filter_of_dominated_convergence MeasureTheory.tendsto_integral_filter_of_dominated_convergence
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_integral_of_L1 f hfi.restrict ?_ ?_
+  · filter_upwards [hFi] with i hi using hi.restrict
+  · simp_rw [← snorm_one_eq_lintegral_nnnorm] at hF ⊢
+    exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
+      (fun _ ↦ snorm_mono_measure _ Measure.restrict_le_self)
 
-/-- Lebesgue dominated convergence theorem for series. -/
-theorem hasSum_integral_of_dominated_convergence {ι} [Countable ι] {F : ι → α → E} {f : α → E}
-    (bound : ι → α → ℝ) (hF_meas : ∀ n, AEStronglyMeasurable (F n) μ)
-    (h_bound : ∀ n, ∀ᵐ a ∂μ, ‖F n a‖ ≤ bound n a)
-    (bound_summable : ∀ᵐ a ∂μ, Summable fun n => bound n a)
-    (bound_integrable : Integrable (fun a => ∑' n, bound n a) μ)
-    (h_lim : ∀ᵐ a ∂μ, HasSum (fun n => F n a) (f a)) :
-    HasSum (fun n => ∫ a, F n a ∂μ) (∫ a, f a ∂μ) := by
-  have hb_nonneg : ∀ᵐ a ∂μ, ∀ n, 0 ≤ bound n a :=
-    eventually_countable_forall.2 fun n => (h_bound n).mono fun a => (norm_nonneg _).trans
-  have hb_le_tsum : ∀ n, bound n ≤ᵐ[μ] fun a => ∑' n, bound n a := by
-    intro n
-    filter_upwards [hb_nonneg, bound_summable]
-      with _ ha0 ha_sum using le_tsum ha_sum _ fun i _ => ha0 i
-  have hF_integrable : ∀ n, Integrable (F n) μ := by
-    refine' fun n => bound_integrable.mono' (hF_meas n) _
-    exact EventuallyLE.trans (h_bound n) (hb_le_tsum n)
-  simp only [HasSum, ← integral_finset_sum _ fun n _ => hF_integrable n]
-  refine' tendsto_integral_filter_of_dominated_convergence
-      (fun a => ∑' n, bound n a) _ _ bound_integrable h_lim
-  · exact eventually_of_forall fun s => s.aestronglyMeasurable_sum fun n _ => hF_meas n
-  · refine' eventually_of_forall fun s => _
-    filter_upwards [eventually_countable_forall.2 h_bound, hb_nonneg, bound_summable]
-      with a hFa ha0 has
-    calc
-      ‖∑ n in s, F n a‖ ≤ ∑ n in s, bound n a := norm_sum_le_of_le _ fun n _ => hFa n
-      _ ≤ ∑' n, bound n a := sum_le_tsum _ (fun n _ => ha0 n) has
-#align measure_theory.has_sum_integral_of_dominated_convergence MeasureTheory.hasSum_integral_of_dominated_convergence
+@[deprecated]
+alias tendsto_set_integral_of_L1 :=
+  tendsto_setIntegral_of_L1 -- deprecated on 2024-04-17
 
-variable {X : Type _} [TopologicalSpace X] [FirstCountableTopology X]
+/-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
+lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+    {l : Filter ι}
+    (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0))
+    (s : Set α) :
+    Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
+  refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
+  simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
+  exact hF
 
-theorem continuousWithinAt_of_dominated {F : X → α → E} {x₀ : X} {bound : α → ℝ} {s : Set X}
+@[deprecated]
+alias tendsto_set_integral_of_L1' :=
+  tendsto_setIntegral_of_L1' -- deprecated on 2024-04-17
+
+variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
+
+theorem continuousWithinAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α → ℝ} {s : Set X}
     (hF_meas : ∀ᶠ x in 𝓝[s] x₀, AEStronglyMeasurable (F x) μ)
     (h_bound : ∀ᶠ x in 𝓝[s] x₀, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, ContinuousWithinAt (fun x => F x a) s x₀) :
     ContinuousWithinAt (fun x => ∫ a, F x a ∂μ) s x₀ := by
-  simp only [integral, L1.integral]
-  exact continuousWithinAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
-    hF_meas h_bound bound_integrable h_cont
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact continuousWithinAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
+      hF_meas h_bound bound_integrable h_cont
+  · simp [integral, hG, continuousWithinAt_const]
 #align measure_theory.continuous_within_at_of_dominated MeasureTheory.continuousWithinAt_of_dominated
 
-theorem continuousAt_of_dominated {F : X → α → E} {x₀ : X} {bound : α → ℝ}
+theorem continuousAt_of_dominated {F : X → α → G} {x₀ : X} {bound : α → ℝ}
     (hF_meas : ∀ᶠ x in 𝓝 x₀, AEStronglyMeasurable (F x) μ)
     (h_bound : ∀ᶠ x in 𝓝 x₀, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, ContinuousAt (fun x => F x a) x₀) :
     ContinuousAt (fun x => ∫ a, F x a ∂μ) x₀ := by
-  simp only [integral, L1.integral]
-  exact continuousAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
-    hF_meas h_bound bound_integrable h_cont
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact continuousAt_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
+      hF_meas h_bound bound_integrable h_cont
+  · simp [integral, hG, continuousAt_const]
 #align measure_theory.continuous_at_of_dominated MeasureTheory.continuousAt_of_dominated
 
-theorem continuousOn_of_dominated {F : X → α → E} {bound : α → ℝ} {s : Set X}
+theorem continuousOn_of_dominated {F : X → α → G} {bound : α → ℝ} {s : Set X}
     (hF_meas : ∀ x ∈ s, AEStronglyMeasurable (F x) μ)
     (h_bound : ∀ x ∈ s, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a) (bound_integrable : Integrable bound μ)
     (h_cont : ∀ᵐ a ∂μ, ContinuousOn (fun x => F x a) s) :
     ContinuousOn (fun x => ∫ a, F x a ∂μ) s := by
-  simp only [integral, L1.integral]
-  exact continuousOn_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
-    hF_meas h_bound bound_integrable h_cont
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact continuousOn_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
+      hF_meas h_bound bound_integrable h_cont
+  · simp [integral, hG, continuousOn_const]
 #align measure_theory.continuous_on_of_dominated MeasureTheory.continuousOn_of_dominated
 
-theorem continuous_of_dominated {F : X → α → E} {bound : α → ℝ}
+theorem continuous_of_dominated {F : X → α → G} {bound : α → ℝ}
     (hF_meas : ∀ x, AEStronglyMeasurable (F x) μ) (h_bound : ∀ x, ∀ᵐ a ∂μ, ‖F x a‖ ≤ bound a)
     (bound_integrable : Integrable bound μ) (h_cont : ∀ᵐ a ∂μ, Continuous fun x => F x a) :
     Continuous fun x => ∫ a, F x a ∂μ := by
-  simp only [integral, L1.integral]
-  exact continuous_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
-    hF_meas h_bound bound_integrable h_cont
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact continuous_setToFun_of_dominated (dominatedFinMeasAdditive_weightedSMul μ)
+      hF_meas h_bound bound_integrable h_cont
+  · simp [integral, hG, continuous_const]
 #align measure_theory.continuous_of_dominated MeasureTheory.continuous_of_dominated
 
 /-- The Bochner integral of a real-valued function `f : α → ℝ` is the difference between the
@@ -1091,7 +1120,7 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [L1.norm_def]
     congr 1
     apply lintegral_congr_ae
-    filter_upwards [Lp.coeFn_posPart f₁, hf.coeFn_toL1]with _ h₁ h₂
+    filter_upwards [Lp.coeFn_posPart f₁, hf.coeFn_toL1] with _ h₁ h₂
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
@@ -1102,13 +1131,13 @@ theorem integral_eq_lintegral_pos_part_sub_lintegral_neg_part {f : α → ℝ} (
     rw [L1.norm_def]
     congr 1
     apply lintegral_congr_ae
-    filter_upwards [Lp.coeFn_negPart f₁, hf.coeFn_toL1]with _ h₁ h₂
+    filter_upwards [Lp.coeFn_negPart f₁, hf.coeFn_toL1] with _ h₁ h₂
     rw [h₁, h₂, ENNReal.ofReal]
     congr 1
     apply NNReal.eq
     simp only [Real.coe_toNNReal', coe_nnnorm, nnnorm_neg]
     rw [Real.norm_of_nonpos (min_le_right _ _), ← max_neg_neg, neg_zero]
-  rw [eq₁, eq₂, integral, dif_pos]
+  rw [eq₁, eq₂, integral, dif_pos, dif_pos]
   exact L1.integral_eq_norm_posPart_sub _
 #align measure_theory.integral_eq_lintegral_pos_part_sub_lintegral_neg_part MeasureTheory.integral_eq_lintegral_pos_part_sub_lintegral_neg_part
 
@@ -1126,7 +1155,7 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
       · exact measurable_ofReal.comp_aemeasurable hfm.aemeasurable.neg
     rw [h_min, zero_toReal, _root_.sub_zero]
   · rw [integral_undef hfi]
-    simp_rw [Integrable, hfm, hasFiniteIntegral_iff_norm, lt_top_iff_ne_top, Ne.def, true_and_iff,
+    simp_rw [Integrable, hfm, hasFiniteIntegral_iff_norm, lt_top_iff_ne_top, Ne, true_and_iff,
       Classical.not_not] at hfi
     have : ∫⁻ a : α, ENNReal.ofReal (f a) ∂μ = ∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ := by
       refine' lintegral_congr_ae (hf.mono fun a h => _)
@@ -1135,14 +1164,14 @@ theorem integral_eq_lintegral_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f
     rw [this, hfi]; rfl
 #align measure_theory.integral_eq_lintegral_of_nonneg_ae MeasureTheory.integral_eq_lintegral_of_nonneg_ae
 
-theorem integral_norm_eq_lintegral_nnnorm {G} [NormedAddCommGroup G] {f : α → G}
+theorem integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : AEStronglyMeasurable f μ) : ∫ x, ‖f x‖ ∂μ = ENNReal.toReal (∫⁻ x, ‖f x‖₊ ∂μ) := by
   rw [integral_eq_lintegral_of_nonneg_ae _ hf.norm]
   · simp_rw [ofReal_norm_eq_coe_nnnorm]
-  · refine' ae_of_all _ _; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
+  · filter_upwards; simp_rw [Pi.zero_apply, norm_nonneg, imp_true_iff]
 #align measure_theory.integral_norm_eq_lintegral_nnnorm MeasureTheory.integral_norm_eq_lintegral_nnnorm
 
-theorem ofReal_integral_norm_eq_lintegral_nnnorm {G} [NormedAddCommGroup G] {f : α → G}
+theorem ofReal_integral_norm_eq_lintegral_nnnorm {P : Type*} [NormedAddCommGroup P] {f : α → P}
     (hf : Integrable f μ) : ENNReal.ofReal (∫ x, ‖f x‖ ∂μ) = ∫⁻ x, ‖f x‖₊ ∂μ := by
   rw [integral_norm_eq_lintegral_nnnorm hf.aestronglyMeasurable,
     ENNReal.ofReal_toReal (lt_top_iff_ne_top.mp hf.2)]
@@ -1156,7 +1185,8 @@ theorem integral_eq_integral_pos_part_sub_integral_neg_part {f : α → ℝ} (hf
 #align measure_theory.integral_eq_integral_pos_part_sub_integral_neg_part MeasureTheory.integral_eq_integral_pos_part_sub_integral_neg_part
 
 theorem integral_nonneg_of_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) : 0 ≤ ∫ a, f a ∂μ := by
-  simp only [integral, L1.integral]
+  have A : CompleteSpace ℝ := by infer_instance
+  simp only [integral_def, A, L1.integral_def, dite_true, ge_iff_le]
   exact setToFun_nonneg (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf
 #align measure_theory.integral_nonneg_of_ae MeasureTheory.integral_nonneg_of_ae
@@ -1174,21 +1204,17 @@ theorem lintegral_coe_eq_integral (f : α → ℝ≥0) (hfi : Integrable (fun x 
 
 theorem ofReal_integral_eq_lintegral_ofReal {f : α → ℝ} (hfi : Integrable f μ) (f_nn : 0 ≤ᵐ[μ] f) :
     ENNReal.ofReal (∫ x, f x ∂μ) = ∫⁻ x, ENNReal.ofReal (f x) ∂μ := by
-  simp_rw [integral_congr_ae (show f =ᵐ[μ] fun x => ‖f x‖ by
-      filter_upwards [f_nn]with x hx
-      rw [Real.norm_eq_abs, abs_eq_self.mpr hx]),
-    ofReal_integral_norm_eq_lintegral_nnnorm hfi, ← ofReal_norm_eq_coe_nnnorm]
-  apply lintegral_congr_ae
-  filter_upwards [f_nn]with x hx
-  exact congr_arg ENNReal.ofReal (by rw [Real.norm_eq_abs, abs_eq_self.mpr hx])
+  have : f =ᵐ[μ] (‖f ·‖) := f_nn.mono fun _x hx ↦ (abs_of_nonneg hx).symm
+  simp_rw [integral_congr_ae this, ofReal_integral_norm_eq_lintegral_nnnorm hfi,
+    ← ofReal_norm_eq_coe_nnnorm]
+  exact lintegral_congr_ae (this.symm.fun_comp ENNReal.ofReal)
 #align measure_theory.of_real_integral_eq_lintegral_of_real MeasureTheory.ofReal_integral_eq_lintegral_ofReal
 
 theorem integral_toReal {f : α → ℝ≥0∞} (hfm : AEMeasurable f μ) (hf : ∀ᵐ x ∂μ, f x < ∞) :
     ∫ a, (f a).toReal ∂μ = (∫⁻ a, f a ∂μ).toReal := by
-  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable]
-  · rw [lintegral_congr_ae]; refine' hf.mp (eventually_of_forall _)
-    intro x hx; rw [lt_top_iff_ne_top] at hx ; simp [hx]
-  · exact eventually_of_forall fun x => ENNReal.toReal_nonneg
+  rw [integral_eq_lintegral_of_nonneg_ae _ hfm.ennreal_toReal.aestronglyMeasurable,
+    lintegral_congr_ae (ofReal_toReal_ae_eq hf)]
+  exact eventually_of_forall fun x => ENNReal.toReal_nonneg
 #align measure_theory.integral_to_real MeasureTheory.integral_toReal
 
 theorem lintegral_coe_le_coe_iff_integral_le {f : α → ℝ≥0} (hfi : Integrable (fun x => (f x : ℝ)) μ)
@@ -1221,13 +1247,12 @@ theorem integral_nonpos {f : α → ℝ} (hf : f ≤ 0) : ∫ a, f a ∂μ ≤ 0
 theorem integral_eq_zero_iff_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     ∫ x, f x ∂μ = 0 ↔ f =ᵐ[μ] 0 := by
   simp_rw [integral_eq_lintegral_of_nonneg_ae hf hfi.1, ENNReal.toReal_eq_zero_iff,
-    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true, or_false_iff]
+    ← ENNReal.not_lt_top, ← hasFiniteIntegral_iff_ofReal hf, hfi.2, not_true_eq_false, or_false_iff]
   -- Porting note: split into parts, to make `rw` and `simp` work
   rw [lintegral_eq_zero_iff']
   · rw [← hf.le_iff_eq, Filter.EventuallyEq, Filter.EventuallyLE]
     simp only [Pi.zero_apply, ofReal_eq_zero]
   · exact (ENNReal.measurable_ofReal.comp_aemeasurable hfi.1.aemeasurable)
-
 #align measure_theory.integral_eq_zero_iff_of_nonneg_ae MeasureTheory.integral_eq_zero_iff_of_nonneg_ae
 
 theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : Integrable f μ) :
@@ -1235,9 +1260,17 @@ theorem integral_eq_zero_iff_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi : In
   integral_eq_zero_iff_of_nonneg_ae (eventually_of_forall hf) hfi
 #align measure_theory.integral_eq_zero_iff_of_nonneg MeasureTheory.integral_eq_zero_iff_of_nonneg
 
+lemma integral_eq_iff_of_ae_le {f g : α → ℝ}
+    (hf : Integrable f μ) (hg : Integrable g μ) (hfg : f ≤ᵐ[μ] g) :
+    ∫ a, f a ∂μ = ∫ a, g a ∂μ ↔ f =ᵐ[μ] g := by
+  refine ⟨fun h_le ↦ EventuallyEq.symm ?_, fun h ↦ integral_congr_ae h⟩
+  rw [← sub_ae_eq_zero,
+    ← integral_eq_zero_iff_of_nonneg_ae ((sub_nonneg_ae _ _).mpr hfg) (hg.sub hf)]
+  simpa [Pi.sub_apply, integral_sub hg hf, sub_eq_zero, eq_comm]
+
 theorem integral_pos_iff_support_of_nonneg_ae {f : α → ℝ} (hf : 0 ≤ᵐ[μ] f) (hfi : Integrable f μ) :
     (0 < ∫ x, f x ∂μ) ↔ 0 < μ (Function.support f) := by
-  simp_rw [(integral_nonneg_of_ae hf).lt_iff_ne, pos_iff_ne_zero, Ne.def, @eq_comm ℝ 0,
+  simp_rw [(integral_nonneg_of_ae hf).lt_iff_ne, pos_iff_ne_zero, Ne, @eq_comm ℝ 0,
     integral_eq_zero_iff_of_nonneg_ae hf hfi, Filter.EventuallyEq, ae_iff, Pi.zero_apply,
     Function.support]
 #align measure_theory.integral_pos_iff_support_of_nonneg_ae MeasureTheory.integral_pos_iff_support_of_nonneg_ae
@@ -1247,9 +1280,151 @@ theorem integral_pos_iff_support_of_nonneg {f : α → ℝ} (hf : 0 ≤ f) (hfi 
   integral_pos_iff_support_of_nonneg_ae (eventually_of_forall hf) hfi
 #align measure_theory.integral_pos_iff_support_of_nonneg MeasureTheory.integral_pos_iff_support_of_nonneg
 
+lemma integral_exp_pos {μ : Measure α} {f : α → ℝ} [hμ : NeZero μ]
+    (hf : Integrable (fun x ↦ Real.exp (f x)) μ) :
+    0 < ∫ x, Real.exp (f x) ∂μ := by
+  rw [integral_pos_iff_support_of_nonneg (fun x ↦ (Real.exp_pos _).le) hf]
+  suffices (Function.support fun x ↦ Real.exp (f x)) = Set.univ by simp [this, hμ.out]
+  ext1 x
+  simp only [Function.mem_support, ne_eq, (Real.exp_pos _).ne', not_false_eq_true, Set.mem_univ]
+
+/-- Monotone convergence theorem for real-valued functions and Bochner integrals -/
+lemma integral_tendsto_of_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Monotone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  -- switch from the Bochner to the Lebesgue integral
+  let f' := fun n x ↦ f n x - f 0 x
+  have hf'_nonneg : ∀ᵐ x ∂μ, ∀ n, 0 ≤ f' n x := by
+    filter_upwards [h_mono] with a ha n
+    simp [f', ha (zero_le n)]
+  have hf'_meas : ∀ n, Integrable (f' n) μ := fun n ↦ (hf n).sub (hf 0)
+  suffices Tendsto (fun n ↦ ∫ x, f' n x ∂μ) atTop (𝓝 (∫ x, (F - f 0) x ∂μ)) by
+    simp_rw [integral_sub (hf _) (hf _), integral_sub' hF (hf 0), tendsto_sub_const_iff] at this
+    exact this
+  have hF_ge : 0 ≤ᵐ[μ] fun x ↦ (F - f 0) x := by
+    filter_upwards [h_tendsto, h_mono] with x hx_tendsto hx_mono
+    simp only [Pi.zero_apply, Pi.sub_apply, sub_nonneg]
+    exact ge_of_tendsto' hx_tendsto (fun n ↦ hx_mono (zero_le _))
+  rw [ae_all_iff] at hf'_nonneg
+  simp_rw [integral_eq_lintegral_of_nonneg_ae (hf'_nonneg _) (hf'_meas _).1]
+  rw [integral_eq_lintegral_of_nonneg_ae hF_ge (hF.1.sub (hf 0).1)]
+  have h_cont := ENNReal.continuousAt_toReal (x := ∫⁻ a, ENNReal.ofReal ((F - f 0) a) ∂μ) ?_
+  swap
+  · rw [← ofReal_integral_eq_lintegral_ofReal (hF.sub (hf 0)) hF_ge]
+    exact ENNReal.ofReal_ne_top
+  refine h_cont.tendsto.comp ?_
+  -- use the result for the Lebesgue integral
+  refine lintegral_tendsto_of_tendsto_of_monotone ?_ ?_ ?_
+  · exact fun n ↦ ((hf n).sub (hf 0)).aemeasurable.ennreal_ofReal
+  · filter_upwards [h_mono] with x hx n m hnm
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [f', tsub_le_iff_right, sub_add_cancel]
+    exact hx hnm
+  · filter_upwards [h_tendsto] with x hx
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    simp only [Pi.sub_apply]
+    exact Tendsto.sub hx tendsto_const_nhds
+
+/-- Monotone convergence theorem for real-valued functions and Bochner integrals -/
+lemma integral_tendsto_of_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf : ∀ n, Integrable (f n) μ) (hF : Integrable F μ) (h_mono : ∀ᵐ x ∂μ, Antitone fun n ↦ f n x)
+    (h_tendsto : ∀ᵐ x ∂μ, Tendsto (fun n ↦ f n x) atTop (𝓝 (F x))) :
+    Tendsto (fun n ↦ ∫ x, f n x ∂μ) atTop (𝓝 (∫ x, F x ∂μ)) := by
+  suffices Tendsto (fun n ↦ ∫ x, -f n x ∂μ) atTop (𝓝 (∫ x, -F x ∂μ)) by
+    suffices Tendsto (fun n ↦ ∫ x, - -f n x ∂μ) atTop (𝓝 (∫ x, - -F x ∂μ)) by
+      simpa [neg_neg] using this
+    convert this.neg <;> rw [integral_neg]
+  refine integral_tendsto_of_tendsto_of_monotone (fun n ↦ (hf n).neg) hF.neg ?_ ?_
+  · filter_upwards [h_mono] with x hx n m hnm using neg_le_neg_iff.mpr <| hx hnm
+  · filter_upwards [h_tendsto] with x hx using hx.neg
+
+/-- If a monotone sequence of functions has an upper bound and the sequence of integrals of these
+functions tends to the integral of the upper bound, then the sequence of functions converges
+almost everywhere to the upper bound. -/
+lemma tendsto_of_integral_tendsto_of_monotone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f i a))
+    (hf_bound : ∀ᵐ a ∂μ, ∀ i, f i a ≤ F a) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  -- reduce to the `ℝ≥0∞` case
+  let f' : ℕ → α → ℝ≥0∞ := fun n a ↦ ENNReal.ofReal (f n a - f 0 a)
+  let F' : α → ℝ≥0∞ := fun a ↦ ENNReal.ofReal (F a - f 0 a)
+  have hf'_int_eq : ∀ i, ∫⁻ a, f' i a ∂μ = ENNReal.ofReal (∫ a, f i a ∂μ - ∫ a, f 0 a ∂μ) := by
+    intro i
+    unfold_let f'
+    rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub (hf_int i) (hf_int 0)]
+    · exact (hf_int i).sub (hf_int 0)
+    · filter_upwards [hf_mono] with a h_mono
+      simp [h_mono (zero_le i)]
+  have hF'_int_eq : ∫⁻ a, F' a ∂μ = ENNReal.ofReal (∫ a, F a ∂μ - ∫ a, f 0 a ∂μ) := by
+    unfold_let F'
+    rw [← ofReal_integral_eq_lintegral_ofReal, integral_sub hF_int (hf_int 0)]
+    · exact hF_int.sub (hf_int 0)
+    · filter_upwards [hf_bound] with a h_bound
+      simp [h_bound 0]
+  have h_tendsto : Tendsto (fun i ↦ ∫⁻ a, f' i a ∂μ) atTop (𝓝 (∫⁻ a, F' a ∂μ)) := by
+    simp_rw [hf'_int_eq, hF'_int_eq]
+    refine (ENNReal.continuous_ofReal.tendsto _).comp ?_
+    rwa [tendsto_sub_const_iff]
+  have h_mono : ∀ᵐ a ∂μ, Monotone (fun i ↦ f' i a) := by
+    filter_upwards [hf_mono] with a ha_mono i j hij
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp [ha_mono hij]
+  have h_bound : ∀ᵐ a ∂μ, ∀ i, f' i a ≤ F' a := by
+    filter_upwards [hf_bound] with a ha_bound i
+    refine ENNReal.ofReal_le_ofReal ?_
+    simp only [tsub_le_iff_right, sub_add_cancel, ha_bound i]
+  -- use the corresponding lemma for `ℝ≥0∞`
+  have h := tendsto_of_lintegral_tendsto_of_monotone ?_ h_tendsto h_mono h_bound ?_
+  rotate_left
+  · exact (hF_int.1.aemeasurable.sub (hf_int 0).1.aemeasurable).ennreal_ofReal
+  · exact ((lintegral_ofReal_le_lintegral_nnnorm _).trans_lt (hF_int.sub (hf_int 0)).2).ne
+  filter_upwards [h, hf_mono, hf_bound] with a ha ha_mono ha_bound
+  have h1 : (fun i ↦ f i a) = fun i ↦ (f' i a).toReal + f 0 a := by
+    unfold_let f'
+    ext i
+    rw [ENNReal.toReal_ofReal]
+    · abel
+    · simp [ha_mono (zero_le i)]
+  have h2 : F a = (F' a).toReal + f 0 a := by
+    unfold_let F'
+    rw [ENNReal.toReal_ofReal]
+    · abel
+    · simp [ha_bound 0]
+  rw [h1, h2]
+  refine Filter.Tendsto.add ?_ tendsto_const_nhds
+  exact (ENNReal.continuousAt_toReal ENNReal.ofReal_ne_top).tendsto.comp ha
+
+/-- If an antitone sequence of functions has a lower bound and the sequence of integrals of these
+functions tends to the integral of the lower bound, then the sequence of functions converges
+almost everywhere to the lower bound. -/
+lemma tendsto_of_integral_tendsto_of_antitone {μ : Measure α} {f : ℕ → α → ℝ} {F : α → ℝ}
+    (hf_int : ∀ n, Integrable (f n) μ) (hF_int : Integrable F μ)
+    (hf_tendsto : Tendsto (fun i ↦ ∫ a, f i a ∂μ) atTop (𝓝 (∫ a, F a ∂μ)))
+    (hf_mono : ∀ᵐ a ∂μ, Antitone (fun i ↦ f i a))
+    (hf_bound : ∀ᵐ a ∂μ, ∀ i, F a ≤ f i a) :
+    ∀ᵐ a ∂μ, Tendsto (fun i ↦ f i a) atTop (𝓝 (F a)) := by
+  let f' : ℕ → α → ℝ := fun i a ↦ - f i a
+  let F' : α → ℝ := fun a ↦ - F a
+  suffices ∀ᵐ a ∂μ, Tendsto (fun i ↦ f' i a) atTop (𝓝 (F' a)) by
+    filter_upwards [this] with a ha_tendsto
+    convert ha_tendsto.neg
+    · simp [f']
+    · simp [F']
+  refine tendsto_of_integral_tendsto_of_monotone (fun n ↦ (hf_int n).neg) hF_int.neg ?_ ?_ ?_
+  · convert hf_tendsto.neg
+    · rw [integral_neg]
+    · rw [integral_neg]
+  · filter_upwards [hf_mono] with a ha i j hij
+    simp [f', ha hij]
+  · filter_upwards [hf_bound] with a ha i
+    simp [f', F', ha i]
+
 section NormedAddCommGroup
 
-variable {H : Type _} [NormedAddCommGroup H]
+variable {H : Type*} [NormedAddCommGroup H]
 
 theorem L1.norm_eq_integral_norm (f : α →₁[μ] H) : ‖f‖ = ∫ a, ‖f a‖ ∂μ := by
   simp only [snorm, snorm', ENNReal.one_toReal, ENNReal.rpow_one, Lp.norm_def, if_false,
@@ -1267,37 +1442,29 @@ theorem L1.dist_eq_integral_dist (f g : α →₁[μ] H) : dist f g = ∫ a, dis
 theorem L1.norm_of_fun_eq_integral_norm {f : α → H} (hf : Integrable f μ) :
     ‖hf.toL1 f‖ = ∫ a, ‖f a‖ ∂μ := by
   rw [L1.norm_eq_integral_norm]
-  refine' integral_congr_ae _
-  apply hf.coeFn_toL1.mono
-  intro a ha
-  simp_rw [ha]
+  exact integral_congr_ae <| hf.coeFn_toL1.fun_comp _
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.norm_of_fun_eq_integral_norm MeasureTheory.L1.norm_of_fun_eq_integral_norm
 
 theorem Memℒp.snorm_eq_integral_rpow_norm {f : α → H} {p : ℝ≥0∞} (hp1 : p ≠ 0) (hp2 : p ≠ ∞)
     (hf : Memℒp f p μ) :
     snorm f p μ = ENNReal.ofReal ((∫ a, ‖f a‖ ^ p.toReal ∂μ) ^ p.toReal⁻¹) := by
-  have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^  p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
-    apply lintegral_congr
-    intro x
-    rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm,
-      -- Porting note: Here and below `ENNReal.coe_rpow_of_nonneg` was not needed
-      ← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
+  have A : ∫⁻ a : α, ENNReal.ofReal (‖f a‖ ^ p.toReal) ∂μ = ∫⁻ a : α, ‖f a‖₊ ^ p.toReal ∂μ := by
+    simp_rw [← ofReal_rpow_of_nonneg (norm_nonneg _) toReal_nonneg, ofReal_norm_eq_coe_nnnorm]
   simp only [snorm_eq_lintegral_rpow_nnnorm hp1 hp2, one_div]
   rw [integral_eq_lintegral_of_nonneg_ae]; rotate_left
-  · exact eventually_of_forall fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  · exact ae_of_all _ fun x => by positivity
   · exact (hf.aestronglyMeasurable.norm.aemeasurable.pow_const _).aestronglyMeasurable
   rw [A, ← ofReal_rpow_of_nonneg toReal_nonneg (inv_nonneg.2 toReal_nonneg), ofReal_toReal]
-  · simp_rw [← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
-  · simp_rw [← ENNReal.coe_rpow_of_nonneg _ toReal_nonneg]
-    exact (lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp1 hp2 hf.2).ne
+  exact (lintegral_rpow_nnnorm_lt_top_of_snorm_lt_top hp1 hp2 hf.2).ne
 #align measure_theory.mem_ℒp.snorm_eq_integral_rpow_norm MeasureTheory.Memℒp.snorm_eq_integral_rpow_norm
 
 end NormedAddCommGroup
 
 theorem integral_mono_ae {f g : α → ℝ} (hf : Integrable f μ) (hg : Integrable g μ) (h : f ≤ᵐ[μ] g) :
     ∫ a, f a ∂μ ≤ ∫ a, g a ∂μ := by
-  simp only [integral, L1.integral]
+  have A : CompleteSpace ℝ := by infer_instance
+  simp only [integral, A, L1.integral]
   exact setToFun_mono (dominatedFinMeasAdditive_weightedSMul μ)
     (fun s _ _ => weightedSMul_nonneg s) hf hg h
 #align measure_theory.integral_mono_ae MeasureTheory.integral_mono_ae
@@ -1328,20 +1495,18 @@ theorem integral_mono_measure {f : α → ℝ} {ν} (hle : μ ≤ ν) (hf : 0 �
     ((hasFiniteIntegral_iff_ofReal hf).1 hfi.2).ne]
 #align measure_theory.integral_mono_measure MeasureTheory.integral_mono_measure
 
-theorem norm_integral_le_integral_norm (f : α → E) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ :=
+theorem norm_integral_le_integral_norm (f : α → G) : ‖∫ a, f a ∂μ‖ ≤ ∫ a, ‖f a‖ ∂μ := by
   have le_ae : ∀ᵐ a ∂μ, 0 ≤ ‖f a‖ := eventually_of_forall fun a => norm_nonneg _
-  by_cases
-    (fun h : AEStronglyMeasurable f μ =>
-      calc
-        ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
-          norm_integral_le_lintegral_norm _
-        _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm )
-    fun h : ¬AEStronglyMeasurable f μ => by
-      rw [integral_non_aestronglyMeasurable h, norm_zero]
-      exact integral_nonneg_of_ae le_ae
+  by_cases h : AEStronglyMeasurable f μ
+  · calc
+      ‖∫ a, f a ∂μ‖ ≤ ENNReal.toReal (∫⁻ a, ENNReal.ofReal ‖f a‖ ∂μ) :=
+        norm_integral_le_lintegral_norm _
+      _ = ∫ a, ‖f a‖ ∂μ := (integral_eq_lintegral_of_nonneg_ae le_ae <| h.norm).symm
+  · rw [integral_non_aestronglyMeasurable h, norm_zero]
+    exact integral_nonneg_of_ae le_ae
 #align measure_theory.norm_integral_le_integral_norm MeasureTheory.norm_integral_le_integral_norm
 
-theorem norm_integral_le_of_norm_le {f : α → E} {g : α → ℝ} (hg : Integrable g μ)
+theorem norm_integral_le_of_norm_le {f : α → G} {g : α → ℝ} (hg : Integrable g μ)
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ g x) : ‖∫ x, f x ∂μ‖ ≤ ∫ x, g x ∂μ :=
   calc
     ‖∫ x, f x ∂μ‖ ≤ ∫ x, ‖f x‖ ∂μ := norm_integral_le_integral_norm f
@@ -1364,7 +1529,7 @@ theorem SimpleFunc.integral_eq_sum (f : α →ₛ E) (hfi : Integrable f μ) :
 theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c := by
   cases' (@le_top _ _ _ (μ univ)).lt_or_eq with hμ hμ
   · haveI : IsFiniteMeasure μ := ⟨hμ⟩
-    simp only [integral, L1.integral]
+    simp only [integral, hE, L1.integral]
     exact setToFun_const (dominatedFinMeasAdditive_weightedSMul _) _
   · by_cases hc : c = 0
     · simp [hc, integral_zero]
@@ -1374,7 +1539,7 @@ theorem integral_const (c : E) : ∫ _ : α, c ∂μ = (μ univ).toReal • c :=
       simp [integral_undef, *]
 #align measure_theory.integral_const MeasureTheory.integral_const
 
-theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → E} {C : ℝ}
+theorem norm_integral_le_of_norm_le_const [IsFiniteMeasure μ] {f : α → G} {C : ℝ}
     (h : ∀ᵐ x ∂μ, ‖f x‖ ≤ C) : ‖∫ x, f x ∂μ‖ ≤ C * (μ univ).toReal :=
   calc
     ‖∫ x, f x ∂μ‖ ≤ ∫ _, C ∂μ := norm_integral_le_of_norm_le (integrable_const C) h
@@ -1387,7 +1552,7 @@ theorem tendsto_integral_approxOn_of_measurable [MeasurableSpace E] [BorelSpace 
     Tendsto (fun n => (SimpleFunc.approxOn f hfm s y₀ h₀ n).integral μ)
       atTop (𝓝 <| ∫ x, f x ∂μ) := by
   have hfi' := SimpleFunc.integrable_approxOn hfm hfi h₀ h₀i
-  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, L1.integral]
+  simp only [SimpleFunc.integral_eq_integral _ (hfi' _), integral, hE, L1.integral]
   exact tendsto_setToFun_approxOn_of_measurable (dominatedFinMeasAdditive_weightedSMul μ)
     hfi hfm hs h₀ h₀i
 #align measure_theory.tendsto_integral_approx_on_of_measurable MeasureTheory.tendsto_integral_approxOn_of_measurable
@@ -1401,34 +1566,50 @@ theorem tendsto_integral_approxOn_of_measurable_of_range_subset [MeasurableSpace
   exact eventually_of_forall fun x => subset_closure (hs (Set.mem_union_left _ (mem_range_self _)))
 #align measure_theory.tendsto_integral_approx_on_of_measurable_of_range_subset MeasureTheory.tendsto_integral_approxOn_of_measurable_of_range_subset
 
+theorem tendsto_integral_norm_approxOn_sub [MeasurableSpace E] [BorelSpace E] {f : α → E}
+    (fmeas : Measurable f) (hf : Integrable f μ) [SeparableSpace (range f ∪ {0} : Set E)] :
+    Tendsto (fun n ↦ ∫ x, ‖SimpleFunc.approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖ ∂μ)
+      atTop (𝓝 0) := by
+  convert (tendsto_toReal zero_ne_top).comp (tendsto_approxOn_range_L1_nnnorm fmeas hf) with n
+  rw [integral_norm_eq_lintegral_nnnorm]
+  · simp
+  · apply (SimpleFunc.aestronglyMeasurable _).sub
+    apply (stronglyMeasurable_iff_measurable_separable.2 ⟨fmeas, ?_⟩ ).aestronglyMeasurable
+    exact .mono (.of_subtype (range f ∪ {0})) (subset_union_left _ _)
+
 variable {ν : Measure α}
 
-theorem integral_add_measure {f : α → E} (hμ : Integrable f μ) (hν : Integrable f ν) :
+theorem integral_add_measure {f : α → G} (hμ : Integrable f μ) (hν : Integrable f ν) :
     ∫ x, f x ∂(μ + ν) = ∫ x, f x ∂μ + ∫ x, f x ∂ν := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
   have hfi := hμ.add_measure hν
   simp_rw [integral_eq_setToFun]
-  have hμ_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul μ : Set α → E →L[ℝ] E) 1 :=
+  have hμ_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul μ : Set α → G →L[ℝ] G) 1 :=
     DominatedFinMeasAdditive.add_measure_right μ ν (dominatedFinMeasAdditive_weightedSMul μ)
       zero_le_one
-  have hν_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul ν : Set α → E →L[ℝ] E) 1 :=
+  have hν_dfma : DominatedFinMeasAdditive (μ + ν) (weightedSMul ν : Set α → G →L[ℝ] G) 1 :=
     DominatedFinMeasAdditive.add_measure_left μ ν (dominatedFinMeasAdditive_weightedSMul ν)
       zero_le_one
-  rw [← setToFun_congr_measure_of_add_right hμ_dfma (dominatedFinMeasAdditive_weightedSMul μ) f hfi,
+  rw [← setToFun_congr_measure_of_add_right hμ_dfma
+        (dominatedFinMeasAdditive_weightedSMul μ) f hfi,
     ← setToFun_congr_measure_of_add_left hν_dfma (dominatedFinMeasAdditive_weightedSMul ν) f hfi]
   refine' setToFun_add_left' _ _ _ (fun s _ hμνs => _) f
   rw [Measure.coe_add, Pi.add_apply, add_lt_top] at hμνs
   rw [weightedSMul, weightedSMul, weightedSMul, ← add_smul, Measure.coe_add, Pi.add_apply,
-    toReal_add hμνs.1.ne hμνs.2.ne]
+  toReal_add hμνs.1.ne hμνs.2.ne]
 #align measure_theory.integral_add_measure MeasureTheory.integral_add_measure
 
 @[simp]
-theorem integral_zero_measure {m : MeasurableSpace α} (f : α → E) :
+theorem integral_zero_measure {m : MeasurableSpace α} (f : α → G) :
     (∫ x, f x ∂(0 : Measure α)) = 0 := by
-  simp only [integral, L1.integral]
-  exact setToFun_measure_zero (dominatedFinMeasAdditive_weightedSMul _) rfl
+  by_cases hG : CompleteSpace G
+  · simp only [integral, hG, L1.integral]
+    exact setToFun_measure_zero (dominatedFinMeasAdditive_weightedSMul _) rfl
+  · simp [integral, hG]
 #align measure_theory.integral_zero_measure MeasureTheory.integral_zero_measure
 
-theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
+theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     {s : Finset ι} (hf : ∀ i ∈ s, Integrable f (μ i)) :
     ∫ a, f a ∂(∑ i in s, μ i) = ∑ i in s, ∫ a, f a ∂μ i := by
   induction s using Finset.cons_induction_on with
@@ -1439,13 +1620,14 @@ theorem integral_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → E}
     exact integral_add_measure hf.1 (integrable_finset_sum_measure.2 hf.2)
 #align measure_theory.integral_finset_sum_measure MeasureTheory.integral_finset_sum_measure
 
-theorem nndist_integral_add_measure_le_lintegral (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
+theorem nndist_integral_add_measure_le_lintegral
+    {f : α → G} (h₁ : Integrable f μ) (h₂ : Integrable f ν) :
     (nndist (∫ x, f x ∂μ) (∫ x, f x ∂(μ + ν)) : ℝ≥0∞) ≤ ∫⁻ x, ‖f x‖₊ ∂ν := by
-  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel']
+  rw [integral_add_measure h₁ h₂, nndist_comm, nndist_eq_nnnorm, add_sub_cancel_left]
   exact ennnorm_integral_le_lintegral_ennnorm _
 #align measure_theory.nndist_integral_add_measure_le_lintegral MeasureTheory.nndist_integral_add_measure_le_lintegral
 
-theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
+theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
     (hf : Integrable f (Measure.sum μ)) :
     HasSum (fun i => ∫ a, f a ∂μ i) (∫ a, f a ∂Measure.sum μ) := by
   have hfi : ∀ i, Integrable f (μ i) := fun i => hf.mono_measure (Measure.le_sum _ _)
@@ -1467,64 +1649,42 @@ theorem hasSum_integral_measure {ι} {m : MeasurableSpace α} {f : α → E} {μ
   exact lt_of_add_lt_add_left hs
 #align measure_theory.has_sum_integral_measure MeasureTheory.hasSum_integral_measure
 
-theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → E} {μ : ι → Measure α}
-    (hf : Integrable f (Measure.sum μ)) : (∫ a, f a ∂Measure.sum μ) = ∑' i, ∫ a, f a ∂μ i :=
+theorem integral_sum_measure {ι} {_ : MeasurableSpace α} {f : α → G} {μ : ι → Measure α}
+    (hf : Integrable f (Measure.sum μ)) : ∫ a, f a ∂Measure.sum μ = ∑' i, ∫ a, f a ∂μ i :=
   (hasSum_integral_measure hf).tsum_eq.symm
 #align measure_theory.integral_sum_measure MeasureTheory.integral_sum_measure
 
-theorem integral_tsum {ι} [Countable ι] {f : ι → α → E} (hf : ∀ i, AEStronglyMeasurable (f i) μ)
-    (hf' : (∑' i, ∫⁻ a : α, ‖f i a‖₊ ∂μ) ≠ ∞) :
-    ∫ a : α, ∑' i, f i a ∂μ = ∑' i, ∫ a : α, f i a ∂μ := by
-  have hf'' : ∀ i, AEMeasurable (fun x => (‖f i x‖₊ : ℝ≥0∞)) μ := fun i => (hf i).ennnorm
-  have hhh : ∀ᵐ a : α ∂μ, Summable fun n => (‖f n a‖₊ : ℝ) := by
-    rw [← lintegral_tsum hf''] at hf'
-    refine' (ae_lt_top' (AEMeasurable.ennreal_tsum hf'') hf').mono _
-    intro x hx
-    rw [← ENNReal.tsum_coe_ne_top_iff_summable_coe]
-    exact hx.ne
-  convert (MeasureTheory.hasSum_integral_of_dominated_convergence (fun i a => ‖f i a‖₊) hf _ hhh
-          ⟨_, _⟩ _).tsum_eq.symm
-  · intro n
-    filter_upwards with x
-    rfl
-  · simp_rw [← coe_nnnorm, ← NNReal.coe_tsum]
-    rw [aestronglyMeasurable_iff_aemeasurable]
-    apply AEMeasurable.coe_nnreal_real
-    apply AEMeasurable.nnreal_tsum
-    exact fun i => (hf i).nnnorm.aemeasurable
-  · dsimp [HasFiniteIntegral]
-    have : ∫⁻ a, ∑' n, ‖f n a‖₊ ∂μ < ⊤ := by rwa [lintegral_tsum hf'', lt_top_iff_ne_top]
-    convert this using 1
-    apply lintegral_congr_ae
-    simp_rw [← coe_nnnorm, ← NNReal.coe_tsum, NNReal.nnnorm_eq]
-    filter_upwards [hhh]with a ha
-    exact ENNReal.coe_tsum (NNReal.summable_coe.mp ha)
-  · filter_upwards [hhh]with x hx
-    exact (summable_of_summable_norm hx).hasSum
-#align measure_theory.integral_tsum MeasureTheory.integral_tsum
-
 @[simp]
-theorem integral_smul_measure (f : α → E) (c : ℝ≥0∞) :
-    (∫ x, f x ∂c • μ) = c.toReal • ∫ x, f x ∂μ := by
+theorem integral_smul_measure (f : α → G) (c : ℝ≥0∞) :
+    ∫ x, f x ∂c • μ = c.toReal • ∫ x, f x ∂μ := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
   -- First we consider the “degenerate” case `c = ∞`
   rcases eq_or_ne c ∞ with (rfl | hc)
   · rw [ENNReal.top_toReal, zero_smul, integral_eq_setToFun, setToFun_top_smul_measure]
   -- Main case: `c ≠ ∞`
   simp_rw [integral_eq_setToFun, ← setToFun_smul_left]
-  have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set α → E →L[ℝ] E) c.toReal :=
+  have hdfma : DominatedFinMeasAdditive μ (weightedSMul (c • μ) : Set α → G →L[ℝ] G) c.toReal :=
     mul_one c.toReal ▸ (dominatedFinMeasAdditive_weightedSMul (c • μ)).of_smul_measure c hc
-  have hdfma_smul := dominatedFinMeasAdditive_weightedSMul (F := E) (c • μ)
+  have hdfma_smul := dominatedFinMeasAdditive_weightedSMul (F := G) (c • μ)
   rw [← setToFun_congr_smul_measure c hc hdfma hdfma_smul f]
   exact setToFun_congr_left' _ _ (fun s _ _ => weightedSMul_smul_measure μ c) f
 #align measure_theory.integral_smul_measure MeasureTheory.integral_smul_measure
 
+@[simp]
+theorem integral_smul_nnreal_measure (f : α → G) (c : ℝ≥0) :
+    ∫ x, f x ∂(c • μ) = c • ∫ x, f x ∂μ :=
+  integral_smul_measure f (c : ℝ≥0∞)
+
 theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α → β} (hφ : Measurable φ)
-    {f : β → E} (hfm : StronglyMeasurable f) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ := by
+    {f : β → G} (hfm : StronglyMeasurable f) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ := by
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
   by_cases hfi : Integrable f (Measure.map φ μ); swap
   · rw [integral_undef hfi, integral_undef]
     exact fun hfφ => hfi ((integrable_map_measure hfm.aestronglyMeasurable hφ.aemeasurable).2 hfφ)
-  borelize E
-  haveI : SeparableSpace (range f ∪ {0} : Set E) := hfm.separableSpace_range_union_singleton
+  borelize G
+  have : SeparableSpace (range f ∪ {0} : Set G) := hfm.separableSpace_range_union_singleton
   refine' tendsto_nhds_unique
     (tendsto_integral_approxOn_of_measurable_of_range_subset hfm.measurable hfi _ Subset.rfl) _
   convert tendsto_integral_approxOn_of_measurable_of_range_subset (hfm.measurable.comp hφ)
@@ -1539,129 +1699,131 @@ theorem integral_map_of_stronglyMeasurable {β} [MeasurableSpace β] {φ : α �
   simp
 #align measure_theory.integral_map_of_strongly_measurable MeasureTheory.integral_map_of_stronglyMeasurable
 
-theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasurable φ μ) {f : β → E}
+theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasurable φ μ) {f : β → G}
     (hfm : AEStronglyMeasurable f (Measure.map φ μ)) :
-    (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   let g := hfm.mk f
   calc
-    (∫ y, f y ∂Measure.map φ μ) = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
+    ∫ y, f y ∂Measure.map φ μ = ∫ y, g y ∂Measure.map φ μ := integral_congr_ae hfm.ae_eq_mk
     _ = ∫ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
     _ = ∫ x, g (hφ.mk φ x) ∂μ :=
       (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
-    _ = ∫ x, g (φ x) ∂μ := (integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _))
+    _ = ∫ x, g (φ x) ∂μ := integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _)
     _ = ∫ x, f (φ x) ∂μ := integral_congr_ae <| ae_eq_comp hφ hfm.ae_eq_mk.symm
 #align measure_theory.integral_map MeasureTheory.integral_map
 
 theorem _root_.MeasurableEmbedding.integral_map {β} {_ : MeasurableSpace β} {f : α → β}
-    (hf : MeasurableEmbedding f) (g : β → E) : (∫ y, g y ∂Measure.map f μ) = ∫ x, g (f x) ∂μ := by
+    (hf : MeasurableEmbedding f) (g : β → G) : ∫ y, g y ∂Measure.map f μ = ∫ x, g (f x) ∂μ := by
   by_cases hgm : AEStronglyMeasurable g (Measure.map f μ)
   · exact MeasureTheory.integral_map hf.measurable.aemeasurable hgm
   · rw [integral_non_aestronglyMeasurable hgm, integral_non_aestronglyMeasurable]
-    refine' fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
+    exact fun hgf => hgm (hf.aestronglyMeasurable_map_iff.2 hgf)
 #align measurable_embedding.integral_map MeasurableEmbedding.integral_map
 
 theorem _root_.ClosedEmbedding.integral_map {β} [TopologicalSpace α] [BorelSpace α]
     [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β] {φ : α → β} (hφ : ClosedEmbedding φ)
-    (f : β → E) : (∫ y, f y ∂Measure.map φ μ) = ∫ x, f (φ x) ∂μ :=
+    (f : β → G) : ∫ y, f y ∂Measure.map φ μ = ∫ x, f (φ x) ∂μ :=
   hφ.measurableEmbedding.integral_map _
 #align closed_embedding.integral_map ClosedEmbedding.integral_map
 
-theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → E) :
-    (∫ y, f y ∂Measure.map e μ) = ∫ x, f (e x) ∂μ :=
+theorem integral_map_equiv {β} [MeasurableSpace β] (e : α ≃ᵐ β) (f : β → G) :
+    ∫ y, f y ∂Measure.map e μ = ∫ x, f (e x) ∂μ :=
   e.measurableEmbedding.integral_map f
 #align measure_theory.integral_map_equiv MeasureTheory.integral_map_equiv
 
 theorem MeasurePreserving.integral_comp {β} {_ : MeasurableSpace β} {f : α → β} {ν}
-    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : β → E) :
+    (h₁ : MeasurePreserving f μ ν) (h₂ : MeasurableEmbedding f) (g : β → G) :
     ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν :=
   h₁.map_eq ▸ (h₂.integral_map g).symm
 #align measure_theory.measure_preserving.integral_comp MeasureTheory.MeasurePreserving.integral_comp
 
-theorem set_integral_eq_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s)
-    (f : α → E) : ∫ x in s, f x = ∫ x : s, f x := by
+theorem MeasurePreserving.integral_comp' {β} [MeasurableSpace β] {ν} {f : α ≃ᵐ β}
+    (h : MeasurePreserving f μ ν) (g : β → G) :
+    ∫ x, g (f x) ∂μ = ∫ y, g y ∂ν := MeasurePreserving.integral_comp h f.measurableEmbedding _
+
+theorem integral_subtype_comap {α} [MeasurableSpace α] {μ : Measure α} {s : Set α}
+    (hs : MeasurableSet s) (f : α → G) :
+    ∫ x : s, f (x : α) ∂(Measure.comap Subtype.val μ) = ∫ x in s, f x ∂μ := by
   rw [← map_comap_subtype_coe hs]
-  exact (MeasurableEmbedding.subtype_coe hs).integral_map _
-#align measure_theory.set_integral_eq_subtype MeasureTheory.set_integral_eq_subtype
+  exact ((MeasurableEmbedding.subtype_coe hs).integral_map _).symm
+
+attribute [local instance] Measure.Subtype.measureSpace in
+theorem integral_subtype {α} [MeasureSpace α] {s : Set α} (hs : MeasurableSet s) (f : α → G) :
+    ∫ x : s, f x = ∫ x in s, f x := integral_subtype_comap hs f
+#align measure_theory.set_integral_eq_subtype MeasureTheory.integral_subtype
 
 @[simp]
 theorem integral_dirac' [MeasurableSpace α] (f : α → E) (a : α) (hfm : StronglyMeasurable f) :
-    (∫ x, f x ∂Measure.dirac a) = f a := by
+    ∫ x, f x ∂Measure.dirac a = f a := by
   borelize E
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a :=
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a :=
       integral_congr_ae <| ae_eq_dirac' hfm.measurable
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac' MeasureTheory.integral_dirac'
 
 @[simp]
 theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α) :
-    (∫ x, f x ∂Measure.dirac a) = f a :=
+    ∫ x, f x ∂Measure.dirac a = f a :=
   calc
-    (∫ x, f x ∂Measure.dirac a) = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
+    ∫ x, f x ∂Measure.dirac a = ∫ _, f a ∂Measure.dirac a := integral_congr_ae <| ae_eq_dirac f
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac MeasureTheory.integral_dirac
 
-theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
+theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
     {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac' hs]
   split_ifs
   · exact integral_dirac' _ _ hf
   · exact integral_zero_measure _
-#align measure_theory.set_integral_dirac' MeasureTheory.set_integral_dirac'
+#align measure_theory.set_integral_dirac' MeasureTheory.setIntegral_dirac'
 
-theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
+@[deprecated]
+alias set_integral_dirac' :=
+  setIntegral_dirac' -- deprecated on 2024-04-17
+
+theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
-    (∫ x in s, f x ∂Measure.dirac a) = if a ∈ s then f a else 0 := by
+    ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac]
   split_ifs
   · exact integral_dirac _ _
   · exact integral_zero_measure _
-#align measure_theory.set_integral_dirac MeasureTheory.set_integral_dirac
+#align measure_theory.set_integral_dirac MeasureTheory.setIntegral_dirac
 
-theorem mul_meas_ge_le_integral_of_nonneg [IsFiniteMeasure μ] {f : α → ℝ} (hf_nonneg : 0 ≤ f)
+@[deprecated]
+alias set_integral_dirac :=
+  setIntegral_dirac -- deprecated on 2024-04-17
+
+/-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
+theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
     (hf_int : Integrable f μ) (ε : ℝ) : ε * (μ { x | ε ≤ f x }).toReal ≤ ∫ x, f x ∂μ := by
-  cases' lt_or_le ε 0 with hε hε
-  · exact
-      (mul_nonpos_of_nonpos_of_nonneg hε.le ENNReal.toReal_nonneg).trans (integral_nonneg hf_nonneg)
-  rw [integral_eq_lintegral_of_nonneg_ae (eventually_of_forall fun x => hf_nonneg x)
-      hf_int.aestronglyMeasurable,
-    ← ENNReal.toReal_ofReal hε, ← ENNReal.toReal_mul]
-  have : { x : α | (ENNReal.ofReal ε).toReal ≤ f x } =
-      { x : α | ENNReal.ofReal ε ≤ (fun x => ENNReal.ofReal (f x)) x } := by
-    ext1 x
-    rw [Set.mem_setOf_eq, Set.mem_setOf_eq, ← ENNReal.toReal_ofReal (hf_nonneg x)]
-    exact ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top ENNReal.ofReal_ne_top
-  rw [this]
-  have h_meas : AEMeasurable (fun x => ENNReal.ofReal (f x)) μ :=
-    measurable_id'.ennreal_ofReal.comp_aemeasurable hf_int.aemeasurable
-  have h_mul_meas_le := @mul_meas_ge_le_lintegral₀ _ _ μ _ h_meas (ENNReal.ofReal ε)
-  rw [ENNReal.toReal_le_toReal _ _]
-  · exact h_mul_meas_le
-  · simp only [Ne.def, ENNReal.mul_eq_top, ENNReal.ofReal_eq_zero, not_le,
-      ENNReal.ofReal_ne_top, false_and_iff, or_false_iff, not_and]
-    exact fun _ => measure_ne_top _ _
-  · have h_lt_top : ∫⁻ a, ‖f a‖₊ ∂μ < ∞ := hf_int.hasFiniteIntegral
-    simp_rw [← ofReal_norm_eq_coe_nnnorm, Real.norm_eq_abs] at h_lt_top
-    convert h_lt_top.ne
-    rename_i x
-    rw [abs_of_nonneg (hf_nonneg x)]
+  cases' eq_top_or_lt_top (μ {x | ε ≤ f x}) with hμ hμ
+  · simpa [hμ] using integral_nonneg_of_ae hf_nonneg
+  · have := Fact.mk hμ
+    calc
+      ε * (μ { x | ε ≤ f x }).toReal = ∫ _ in {x | ε ≤ f x}, ε ∂μ := by simp [mul_comm]
+      _ ≤ ∫ x in {x | ε ≤ f x}, f x ∂μ :=
+        integral_mono_ae (integrable_const _) (hf_int.mono_measure μ.restrict_le_self) <|
+          ae_restrict_mem₀ <| hf_int.aemeasurable.nullMeasurable measurableSet_Ici
+      _ ≤ _ := integral_mono_measure μ.restrict_le_self hf_nonneg hf_int
 #align measure_theory.mul_meas_ge_le_integral_of_nonneg MeasureTheory.mul_meas_ge_le_integral_of_nonneg
 
 /-- Hölder's inequality for the integral of a product of norms. The integral of the product of two
 norms of functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are
 conjugate exponents. -/
 theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → E} {p q : ℝ}
-    (hpq : p.IsConjugateExponent q) (hf : Memℒp f (ENNReal.ofReal p) μ)
+    (hpq : p.IsConjExponent q) (hf : Memℒp f (ENNReal.ofReal p) μ)
     (hg : Memℒp g (ENNReal.ofReal q) μ) :
     ∫ a, ‖f a‖ * ‖g a‖ ∂μ ≤ (∫ a, ‖f a‖ ^ p ∂μ) ^ (1 / p) * (∫ a, ‖g a‖ ^ q ∂μ) ^ (1 / q) := by
   -- translate the Bochner integrals into Lebesgue integrals.
   rw [integral_eq_lintegral_of_nonneg_ae, integral_eq_lintegral_of_nonneg_ae,
     integral_eq_lintegral_of_nonneg_ae]
   rotate_left
-  · exact eventually_of_forall fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  · exact eventually_of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
   · exact (hg.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
-  · exact eventually_of_forall fun x => Real.rpow_nonneg_of_nonneg (norm_nonneg _) _
+  · exact eventually_of_forall fun x => Real.rpow_nonneg (norm_nonneg _) _
   · exact (hf.1.norm.aemeasurable.pow aemeasurable_const).aestronglyMeasurable
   · exact eventually_of_forall fun x => mul_nonneg (norm_nonneg _) (norm_nonneg _)
   · exact hf.1.norm.mul hg.1.norm
@@ -1683,13 +1845,13 @@ theorem integral_mul_norm_le_Lp_mul_Lq {E} [NormedAddCommGroup E] {f g : α → 
     · convert hf.snorm_ne_top
       rw [snorm_eq_lintegral_rpow_nnnorm]
       · rw [ENNReal.toReal_ofReal hpq.nonneg]
-      · rw [Ne.def, ENNReal.ofReal_eq_zero, not_le]
+      · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.pos
       · exact ENNReal.coe_ne_top
     · convert hg.snorm_ne_top
       rw [snorm_eq_lintegral_rpow_nnnorm]
       · rw [ENNReal.toReal_ofReal hpq.symm.nonneg]
-      · rw [Ne.def, ENNReal.ofReal_eq_zero, not_le]
+      · rw [Ne, ENNReal.ofReal_eq_zero, not_le]
         exact hpq.symm.pos
       · exact ENNReal.coe_ne_top
   · exact ENNReal.lintegral_mul_le_Lp_mul_Lq μ hpq hf.1.nnnorm.aemeasurable.coe_nnreal_ennreal
@@ -1700,35 +1862,90 @@ set_option linter.uppercaseLean3 false in
 /-- Hölder's inequality for functions `α → ℝ`. The integral of the product of two nonnegative
 functions is bounded by the product of their `ℒp` and `ℒq` seminorms when `p` and `q` are conjugate
 exponents. -/
-theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.IsConjugateExponent q) {f g : α → ℝ}
+theorem integral_mul_le_Lp_mul_Lq_of_nonneg {p q : ℝ} (hpq : p.IsConjExponent q) {f g : α → ℝ}
     (hf_nonneg : 0 ≤ᵐ[μ] f) (hg_nonneg : 0 ≤ᵐ[μ] g) (hf : Memℒp f (ENNReal.ofReal p) μ)
     (hg : Memℒp g (ENNReal.ofReal q) μ) :
     ∫ a, f a * g a ∂μ ≤ (∫ a, f a ^ p ∂μ) ^ (1 / p) * (∫ a, g a ^ q ∂μ) ^ (1 / q) := by
   have h_left : ∫ a, f a * g a ∂μ = ∫ a, ‖f a‖ * ‖g a‖ ∂μ := by
     refine' integral_congr_ae _
-    filter_upwards [hf_nonneg, hg_nonneg]with x hxf hxg
+    filter_upwards [hf_nonneg, hg_nonneg] with x hxf hxg
     rw [Real.norm_of_nonneg hxf, Real.norm_of_nonneg hxg]
   have h_right_f : ∫ a, f a ^ p ∂μ = ∫ a, ‖f a‖ ^ p ∂μ := by
     refine' integral_congr_ae _
-    filter_upwards [hf_nonneg]with x hxf
+    filter_upwards [hf_nonneg] with x hxf
     rw [Real.norm_of_nonneg hxf]
   have h_right_g : ∫ a, g a ^ q ∂μ = ∫ a, ‖g a‖ ^ q ∂μ := by
     refine' integral_congr_ae _
-    filter_upwards [hg_nonneg]with x hxg
+    filter_upwards [hg_nonneg] with x hxg
     rw [Real.norm_of_nonneg hxg]
   rw [h_left, h_right_f, h_right_g]
   exact integral_mul_norm_le_Lp_mul_Lq hpq hf hg
 set_option linter.uppercaseLean3 false in
 #align measure_theory.integral_mul_le_Lp_mul_Lq_of_nonneg MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg
 
-end Properties
+theorem integral_countable' [Countable α] [MeasurableSingletonClass α] {μ : Measure α}
+    {f : α → E} (hf : Integrable f μ) :
+    ∫ a, f a ∂μ = ∑' a, (μ {a}).toReal • f a := by
+  rw [← Measure.sum_smul_dirac μ] at hf
+  rw [← Measure.sum_smul_dirac μ, integral_sum_measure hf]
+  congr 1 with a : 1
+  rw [integral_smul_measure, integral_dirac, Measure.sum_smul_dirac]
 
-attribute [integral_simps] integral_neg integral_smul L1.integral_add L1.integral_sub
-  L1.integral_smul L1.integral_neg
+theorem integral_singleton' {μ : Measure α} {f : α → E} (hf : StronglyMeasurable f) (a : α) :
+    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac' f a hf, smul_eq_mul,
+    mul_comm]
+
+theorem integral_singleton [MeasurableSingletonClass α] {μ : Measure α} (f : α → E) (a : α) :
+    ∫ a in {a}, f a ∂μ = (μ {a}).toReal • f a := by
+  simp only [Measure.restrict_singleton, integral_smul_measure, integral_dirac, smul_eq_mul,
+    mul_comm]
+
+theorem integral_countable [MeasurableSingletonClass α] (f : α → E) {s : Set α} (hs : s.Countable)
+    (hf : Integrable f (μ.restrict s)) :
+    ∫ a in s, f a ∂μ = ∑' a : s, (μ {(a : α)}).toReal • f a := by
+  have hi : Countable { x // x ∈ s } := Iff.mpr countable_coe_iff hs
+  have hf' : Integrable (fun (x : s) => f x) (Measure.comap Subtype.val μ) := by
+    rw [← map_comap_subtype_coe, integrable_map_measure] at hf
+    apply hf
+    · exact Integrable.aestronglyMeasurable hf
+    · exact Measurable.aemeasurable measurable_subtype_coe
+    · exact Countable.measurableSet hs
+  rw [← integral_subtype_comap hs.measurableSet, integral_countable' hf']
+  congr 1 with a : 1
+  rw [Measure.comap_apply Subtype.val Subtype.coe_injective
+    (fun s' hs' => MeasurableSet.subtype_image (Countable.measurableSet hs) hs') _
+    (MeasurableSet.singleton a)]
+  simp
+
+theorem integral_finset [MeasurableSingletonClass α] (s : Finset α) (f : α → E)
+    (hf : Integrable f (μ.restrict s)) :
+    ∫ x in s, f x ∂μ = ∑ x in s, (μ {x}).toReal • f x := by
+  rw [integral_countable _ s.countable_toSet hf, ← Finset.tsum_subtype']
+
+theorem integral_fintype [MeasurableSingletonClass α] [Fintype α] (f : α → E)
+    (hf : Integrable f μ) :
+    ∫ x, f x ∂μ = ∑ x, (μ {x}).toReal • f x := by
+  -- NB: Integrable f does not follow from Fintype, because the measure itself could be non-finite
+  rw [← integral_finset .univ, Finset.coe_univ, Measure.restrict_univ]
+  simp only [Finset.coe_univ, Measure.restrict_univ, hf]
+
+theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ).toReal • f default :=
+  calc
+    ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
+    _ = (μ univ).toReal • f default := by rw [integral_const]
+
+theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
+    {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
+    (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
+  (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
+    (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
+
+end Properties
 
 section IntegralTrim
 
-variable {H β γ : Type _} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
+variable {H β γ : Type*} [NormedAddCommGroup H] {m m0 : MeasurableSpace β} {μ : Measure β}
 
 /-- Simple function seen as simple function of a larger `MeasurableSpace`. -/
 def SimpleFunc.toLargerSpace (hm : m ≤ m0) (f : @SimpleFunc β m γ) : SimpleFunc β γ :=
@@ -1760,18 +1977,20 @@ theorem integral_trim_simpleFunc (hm : m ≤ m0) (f : @SimpleFunc β m F) (hf_in
   exact (trim_measurableSet_eq hm (@SimpleFunc.measurableSet_fiber β F m f x)).symm
 #align measure_theory.integral_trim_simple_func MeasureTheory.integral_trim_simpleFunc
 
-theorem integral_trim (hm : m ≤ m0) {f : β → F} (hf : StronglyMeasurable[m] f) :
+theorem integral_trim (hm : m ≤ m0) {f : β → G} (hf : StronglyMeasurable[m] f) :
     ∫ x, f x ∂μ = ∫ x, f x ∂μ.trim hm := by
-  borelize F
+  by_cases hG : CompleteSpace G; swap
+  · simp [integral, hG]
+  borelize G
   by_cases hf_int : Integrable f μ
   swap
   · have hf_int_m : ¬Integrable f (μ.trim hm) := fun hf_int_m =>
       hf_int (integrable_of_integrable_trim hm hf_int_m)
     rw [integral_undef hf_int, integral_undef hf_int_m]
-  haveI : SeparableSpace (range f ∪ {0} : Set F) := hf.separableSpace_range_union_singleton
-  let f_seq := @SimpleFunc.approxOn F β _ _ _ m _ hf.measurable (range f ∪ {0}) 0 (by simp) _
+  haveI : SeparableSpace (range f ∪ {0} : Set G) := hf.separableSpace_range_union_singleton
+  let f_seq := @SimpleFunc.approxOn G β _ _ _ m _ hf.measurable (range f ∪ {0}) 0 (by simp) _
   have hf_seq_meas : ∀ n, StronglyMeasurable[m] (f_seq n) := fun n =>
-    @SimpleFunc.stronglyMeasurable β F m _ (f_seq n)
+    @SimpleFunc.stronglyMeasurable β G m _ (f_seq n)
   have hf_seq_int : ∀ n, Integrable (f_seq n) μ :=
     SimpleFunc.integrable_approxOn_range (hf.mono hm).measurable hf_int
   have hf_seq_int_m : ∀ n, Integrable (f_seq n) (μ.trim hm) := fun n =>
@@ -1783,14 +2002,14 @@ theorem integral_trim (hm : m ≤ m0) {f : β → F} (hf : StronglyMeasurable[m]
     exact SimpleFunc.tendsto_approxOn_range_L1_nnnorm (hf.mono hm).measurable hf_int
   have h_lim_2 : atTop.Tendsto (fun n => ∫ x, f_seq n x ∂μ) (𝓝 (∫ x, f x ∂μ.trim hm)) := by
     simp_rw [hf_seq_eq]
-    refine' @tendsto_integral_of_L1 β F _ _ _ m (μ.trim hm) _ f (hf_int.trim hm hf) _ _
+    refine' @tendsto_integral_of_L1 β G _ _ m (μ.trim hm) _ f (hf_int.trim hm hf) _ _
       (eventually_of_forall hf_seq_int_m) _
-    exact @SimpleFunc.tendsto_approxOn_range_L1_nnnorm β F m _ _ _ f _ _ hf.measurable
+    exact @SimpleFunc.tendsto_approxOn_range_L1_nnnorm β G m _ _ _ f _ _ hf.measurable
       (hf_int.trim hm hf)
   exact tendsto_nhds_unique h_lim_1 h_lim_2
 #align measure_theory.integral_trim MeasureTheory.integral_trim
 
-theorem integral_trim_ae (hm : m ≤ m0) {f : β → F} (hf : AEStronglyMeasurable f (μ.trim hm)) :
+theorem integral_trim_ae (hm : m ≤ m0) {f : β → G} (hf : AEStronglyMeasurable f (μ.trim hm)) :
     ∫ x, f x ∂μ = ∫ x, f x ∂μ.trim hm := by
   rw [integral_congr_ae (ae_eq_of_ae_eq_trim hf.ae_eq_mk), integral_congr_ae hf.ae_eq_mk]
   exact integral_trim hm hf.stronglyMeasurable_mk
@@ -1833,7 +2052,7 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : snorm f 1 μ ≤ 2 * μ Set.univ * r := by
   by_cases hr : r = 0
   · suffices f =ᵐ[μ] 0 by
-      rw [snorm_congr_ae this, snorm_zero, hr, ENNReal.coe_zero, MulZeroClass.mul_zero]
+      rw [snorm_congr_ae this, snorm_zero, hr, ENNReal.coe_zero, mul_zero]
     rw [hr] at hf
     norm_cast at hf
     -- Porting note: two lines above were
@@ -1842,9 +2061,9 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
       rw [integral_neg, neg_eq_zero]
       exact le_antisymm (integral_nonpos_of_ae hf) hfint'
     have := (integral_eq_zero_iff_of_nonneg_ae ?_ hfint.neg).1 hnegf
-    · filter_upwards [this]with ω hω
+    · filter_upwards [this] with ω hω
       rwa [Pi.neg_apply, Pi.zero_apply, neg_eq_zero] at hω
-    · filter_upwards [hf]with ω hω
+    · filter_upwards [hf] with ω hω
       rwa [Pi.zero_apply, Pi.neg_apply, Right.nonneg_neg_iff]
   by_cases hμ : IsFiniteMeasure μ
   swap
@@ -1860,7 +2079,7 @@ theorem snorm_one_le_of_le {r : ℝ≥0} {f : α → ℝ} (hfint : Integrable f 
   have hposbdd : ∫ ω, max (f ω) 0 ∂μ ≤ (μ Set.univ).toReal • (r : ℝ) := by
     rw [← integral_const]
     refine' integral_mono_ae hfint.real_toNNReal (integrable_const (r : ℝ)) _
-    filter_upwards [hf]with ω hω using Real.toNNReal_le_iff_le_coe.2 hω
+    filter_upwards [hf] with ω hω using Real.toNNReal_le_iff_le_coe.2 hω
   rw [Memℒp.snorm_eq_integral_rpow_norm one_ne_zero ENNReal.one_ne_top
       (memℒp_one_iff_integrable.2 hfint),
     ENNReal.ofReal_le_iff_le_toReal
@@ -1880,9 +2099,32 @@ theorem snorm_one_le_of_le' {r : ℝ} {f : α → ℝ} (hfint : Integrable f μ)
     (hf : ∀ᵐ ω ∂μ, f ω ≤ r) : snorm f 1 μ ≤ 2 * μ Set.univ * ENNReal.ofReal r := by
   refine' snorm_one_le_of_le hfint hfint' _
   simp only [Real.coe_toNNReal', le_max_iff]
-  filter_upwards [hf]with ω hω using Or.inl hω
+  filter_upwards [hf] with ω hω using Or.inl hω
 #align measure_theory.snorm_one_le_of_le' MeasureTheory.snorm_one_le_of_le'
 
 end SnormBound
 
 end MeasureTheory
+
+namespace Mathlib.Meta.Positivity
+
+open Qq Lean Meta MeasureTheory
+
+/-- Positivity extension for integrals.
+
+This extension only proves non-negativity, strict positivity is more delicate for integration and
+requires more assumptions. -/
+@[positivity MeasureTheory.integral _ _]
+def evalIntegral : PositivityExt where eval {u α} zα pα e := do
+  match u, α, e with
+  | 0, ~q(ℝ), ~q(@MeasureTheory.integral $i ℝ _ $inst2 _ _ $f) =>
+    let i : Q($i) ← mkFreshExprMVarQ q($i) .syntheticOpaque
+    have body : Q(ℝ) := .betaRev f #[i]
+    let rbody ← core zα pα body
+    let pbody ← rbody.toNonneg
+    let pr : Q(∀ x, 0 ≤ $f x) ← mkLambdaFVars #[i] pbody
+    assertInstancesCommute
+    return .nonnegative q(integral_nonneg $pr)
+  | _ => throwError "not MeasureTheory.integral"
+
+end Mathlib.Meta.Positivity

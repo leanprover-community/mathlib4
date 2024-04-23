@@ -2,13 +2,10 @@
 Copyright (c) 2022 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.factorization
-! leanprover-community/mathlib commit 2f588be38bb5bec02f218ba14f82fc82eb663f87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
+
+#align_import ring_theory.dedekind_domain.factorization from "leanprover-community/mathlib"@"2f588be38bb5bec02f218ba14f82fc82eb663f87"
 
 /-!
 # Factorization of ideals of Dedekind domains
@@ -34,7 +31,7 @@ open Set Function UniqueFactorizationMonoid IsDedekindDomain IsDedekindDomain.He
 /-! ### Factorization of ideals of Dedekind domains -/
 
 
-variable {R : Type _} [CommRing R] [IsDomain R] [IsDedekindDomain R] {K : Type _} [Field K]
+variable {R : Type*} [CommRing R] [IsDedekindDomain R] {K : Type*} [Field K]
   [Algebra R K] [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- Given a maximal ideal `v` and an ideal `I` of `R`, `maxPowDividing` returns the maximal
@@ -51,7 +48,7 @@ theorem Ideal.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   refine'
     Finite.of_injective (fun v => (⟨(v : HeightOneSpectrum R).asIdeal, v.2⟩ : { x // x ∣ I })) _
   intro v w hvw
-  simp at hvw
+  simp? at hvw says simp only [Subtype.mk.injEq] at hvw
   exact Subtype.coe_injective ((HeightOneSpectrum.ext_iff (R := R) ↑v ↑w).mpr hvw)
 #align ideal.finite_factors Ideal.finite_factors
 
@@ -63,7 +60,7 @@ theorem Associates.finite_factors {I : Ideal R} (hI : I ≠ 0) :
   have h_supp : {v : HeightOneSpectrum R | ¬((Associates.mk v.asIdeal).count
       (Associates.mk I).factors : ℤ) = 0} = {v : HeightOneSpectrum R | v.asIdeal ∣ I} := by
     ext v
-    simp_rw [Int.coe_nat_eq_zero]
+    simp_rw [Int.natCast_eq_zero]
     exact Associates.count_ne_zero_iff_dvd hI v.irreducible
   rw [Filter.eventually_cofinite, h_supp]
   exact Ideal.finite_factors hI
@@ -80,7 +77,7 @@ theorem finite_mulSupport {I : Ideal R} (hI : I ≠ 0) :
         ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ) ≠ 0} := by
     intro v hv h_zero
     have hv' : v.maxPowDividing I = 1 := by
-      rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.coe_nat_eq_zero.mp h_zero,
+      rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, Int.natCast_eq_zero.mp h_zero,
         pow_zero _]
     exact hv hv'
   Finite.subset (Filter.eventually_cofinite.mp (Associates.finite_factors hI)) h_subset
@@ -92,7 +89,7 @@ theorem finite_mulSupport_coe {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       ((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ)).Finite := by
   rw [mulSupport]
-  simp_rw [Ne.def, zpow_ofNat, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
+  simp_rw [Ne, zpow_natCast, ← FractionalIdeal.coeIdeal_pow, FractionalIdeal.coeIdeal_eq_one]
   exact finite_mulSupport hI
 #align ideal.finite_mul_support_coe Ideal.finite_mulSupport_coe
 
@@ -102,7 +99,7 @@ theorem finite_mulSupport_inv {I : Ideal R} (hI : I ≠ 0) :
     (mulSupport fun v : HeightOneSpectrum R => (v.asIdeal : FractionalIdeal R⁰ K) ^
       (-((Associates.mk v.asIdeal).count (Associates.mk I).factors : ℤ))).Finite := by
   rw [mulSupport]
-  simp_rw [zpow_neg, Ne.def, inv_eq_one]
+  simp_rw [zpow_neg, Ne, inv_eq_one]
   exact finite_mulSupport_coe hI
 #align ideal.finite_mul_support_inv Ideal.finite_mulSupport_inv
 
@@ -155,7 +152,7 @@ theorem finprod_count (I : Ideal R) (hI : I ≠ 0) : (Associates.mk v.asIdeal).c
 
 /-- The ideal `I` equals the finprod `∏_v v^(val_v(I))`. -/
 theorem finprod_heightOneSpectrum_factorization (I : Ideal R) (hI : I ≠ 0) :
-    (∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I) = I := by
+    ∏ᶠ v : HeightOneSpectrum R, v.maxPowDividing I = I := by
   rw [← associated_iff_eq, ← Associates.mk_eq_mk_iff_associated]
   apply Associates.eq_of_eq_counts
   · apply Associates.finprod_ne_zero I
@@ -176,7 +173,7 @@ theorem finprod_heightOneSpectrum_factorization_coe (I : Ideal R) (hI : I ≠ 0)
   conv_rhs => rw [← Ideal.finprod_heightOneSpectrum_factorization I hI]
   rw [FractionalIdeal.coeIdeal_finprod R⁰ K (le_refl _)]
   simp_rw [IsDedekindDomain.HeightOneSpectrum.maxPowDividing, FractionalIdeal.coeIdeal_pow,
-    zpow_ofNat]
+    zpow_natCast]
 #align ideal.finprod_height_one_spectrum_factorization_coe Ideal.finprod_heightOneSpectrum_factorization_coe
 
 end Ideal

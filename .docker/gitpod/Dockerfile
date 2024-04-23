@@ -6,7 +6,7 @@ FROM ubuntu:jammy
 
 USER root
 
-RUN apt-get update && apt-get install sudo git curl git bash-completion python3 -y && apt-get clean
+RUN apt-get update && apt-get install sudo git curl git bash-completion python3 python3-requests -y && apt-get clean
 
 RUN useradd -l -u 33333 -G sudo -md /home/gitpod -s /bin/bash -p gitpod gitpod \
     # passwordless sudo for users in the 'sudo' group
@@ -25,7 +25,10 @@ RUN curl https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh -
 # install whichever toolchain mathlib is currently using
 RUN . ~/.profile && elan toolchain install $(curl https://raw.githubusercontent.com/leanprover-community/mathlib4/master/lean-toolchain)
 
-ENV PATH="/home/gitpod/.local/bin:/home/gitpod/.elan/bin:${PATH}"
+# install neovim (for any lean.nvim user), via tarball since the appimage doesn't work for some reason, and jammy's version is ancient
+RUN curl -s -L https://github.com/neovim/neovim/releases/download/stable/nvim-linux64.tar.gz | tar xzf - && sudo mv nvim-linux64 /opt/nvim
+
+ENV PATH="/home/gitpod/.local/bin:/home/gitpod/.elan/bin:/opt/nvim/bin:${PATH}"
 
 # fix the infoview when the container is used on gitpod:
 ENV VSCODE_API_VERSION="1.50.0"

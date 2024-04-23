@@ -2,11 +2,6 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.projective
-! leanprover-community/mathlib commit 201a3f4a0e59b5f836fe8a6c1a462ee674327211
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
 import Mathlib.Algebra.Module.Projective
@@ -14,11 +9,13 @@ import Mathlib.CategoryTheory.Preadditive.Projective
 import Mathlib.LinearAlgebra.FinsuppVectorSpace
 import Mathlib.Data.Finsupp.Basic
 
+#align_import algebra.category.Module.projective from "leanprover-community/mathlib"@"201a3f4a0e59b5f836fe8a6c1a462ee674327211"
+
 /-!
 # The category of `R`-modules has enough projectives.
 -/
 
-universe v u
+universe v u u'
 
 open CategoryTheory
 
@@ -70,7 +67,9 @@ instance moduleCat_enoughProjectives : EnoughProjectives (ModuleCat.{max u v} R)
               -- Porting note: simp [Finsupp.total_single] fails but rw succeeds
               dsimp [Basis.constr]
               simp only [Finsupp.lmapDomain_id, comp_id]
-              rw [Finsupp.total_single, one_smul]
+              -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+              erw [Finsupp.total_single]
+              rw [one_smul]
               rfl ⟩) }⟩
 set_option linter.uppercaseLean3 false in
 #align Module.Module_enough_projectives ModuleCat.moduleCat_enoughProjectives

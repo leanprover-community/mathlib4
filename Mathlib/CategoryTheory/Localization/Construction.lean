@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.localization.construction
-! leanprover-community/mathlib commit 1a5e56f2166e4e9d0964c71f4273b1d39227678d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.MorphismProperty
-import Mathlib.CategoryTheory.Category.QuivCat
+import Mathlib.CategoryTheory.Category.Quiv
+
+#align_import category_theory.localization.construction from "leanprover-community/mathlib"@"1a5e56f2166e4e9d0964c71f4273b1d39227678d"
 
 /-!
 
@@ -46,13 +43,15 @@ open CategoryTheory.Category
 
 namespace CategoryTheory
 
-variable {C : Type _} [Category C] (W : MorphismProperty C) {D : Type _} [Category D]
+-- category universes first for convenience
+universe uC' uD' uC uD
+variable {C : Type uC} [Category.{uC'} C] (W : MorphismProperty C) {D : Type uD} [Category.{uD'} D]
 
 namespace Localization
 
 namespace Construction
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- If `W : MorphismProperty C`, `LocQuiver W` is a quiver with the same objects
 as `C`, and whose morphisms are those in `C` and placeholders for formal
 inverses of the morphisms in `W`. -/
@@ -97,7 +96,7 @@ namespace MorphismProperty
 
 open Localization.Construction
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The localized category obtained by formally inverting the morphisms
 in `W : MorphismProperty C` -/
 def Localization :=
@@ -153,13 +152,13 @@ variable {W} (G : C ⥤ D) (hG : W.IsInvertedBy G)
 /-- The lifting of a functor to the path category of `LocQuiver W` -/
 @[simps!]
 def liftToPathCategory : Paths (LocQuiver W) ⥤ D :=
-  QuivCat.lift
+  Quiv.lift
     { obj := fun X => G.obj X.obj
       map := by
         intros X Y
         rintro (f | ⟨g, hg⟩)
-        . exact G.map f
-        . haveI := hG g hg
+        · exact G.map f
+        · haveI := hG g hg
           exact inv (G.map g) }
 #align category_theory.localization.construction.lift_to_path_category CategoryTheory.Localization.Construction.liftToPathCategory
 
@@ -169,10 +168,10 @@ def lift : W.Localization ⥤ D :=
   Quotient.lift (relations W) (liftToPathCategory G hG)
     (by
       rintro ⟨X⟩ ⟨Y⟩ f₁ f₂ r
-      --Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
+      -- Porting note: rest of proof was `rcases r with ⟨⟩; tidy`
       rcases r with (_|_|⟨f,hf⟩|⟨f,hf⟩)
-      . aesop_cat
-      . aesop_cat
+      · aesop_cat
+      · aesop_cat
       all_goals
         dsimp
         haveI := hG f hf
@@ -186,28 +185,28 @@ theorem fac : W.Q ⋙ lift G hG = G :=
     (by
       intro X Y f
       simp only [Functor.comp_map, eqToHom_refl, comp_id, id_comp]
-      dsimp [MorphismProperty.Q, Quot.liftOn]
+      dsimp [MorphismProperty.Q, Quot.liftOn, Quotient.functor]
       rw [composePath_toPath])
 #align category_theory.localization.construction.fac CategoryTheory.Localization.Construction.fac
 
 theorem uniq (G₁ G₂ : W.Localization ⥤ D) (h : W.Q ⋙ G₁ = W.Q ⋙ G₂) : G₁ = G₂ := by
-  suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂
-  · refine' Functor.ext _ _
+  suffices h' : Quotient.functor _ ⋙ G₁ = Quotient.functor _ ⋙ G₂ by
+    refine' Functor.ext _ _
     · rintro ⟨⟨X⟩⟩
       apply Functor.congr_obj h
     · rintro ⟨⟨X⟩⟩ ⟨⟨Y⟩⟩ ⟨f⟩
       apply Functor.congr_hom h'
-  · refine' Paths.ext_functor _ _
-    · ext X
-      cases X
-      apply Functor.congr_obj h
-    · rintro ⟨X⟩ ⟨Y⟩ (f | ⟨w, hw⟩)
-      · simpa only using Functor.congr_hom h f
-      · have hw : W.Q.map w = (wIso w hw).hom := rfl
-        have hw' := Functor.congr_hom h w
-        simp only [Functor.comp_map, hw] at hw'
-        refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
-        all_goals apply Functor.congr_obj h
+  refine' Paths.ext_functor _ _
+  · ext X
+    cases X
+    apply Functor.congr_obj h
+  · rintro ⟨X⟩ ⟨Y⟩ (f | ⟨w, hw⟩)
+    · simpa only using Functor.congr_hom h f
+    · have hw : W.Q.map w = (wIso w hw).hom := rfl
+      have hw' := Functor.congr_hom h w
+      simp only [Functor.comp_map, hw] at hw'
+      refine' Functor.congr_inv_of_congr_hom _ _ _ _ _ hw'
+      all_goals apply Functor.congr_obj h
 #align category_theory.localization.construction.uniq CategoryTheory.Localization.Construction.uniq
 
 variable (W)
@@ -237,11 +236,11 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
   funext X Y f
   ext
   constructor
-  . intro
+  · intro
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : Full G := Quotient.fullFunctor _
+    haveI : G.Full := Quotient.fullFunctor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
@@ -249,12 +248,12 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     intros X₁ X₂ p
     induction' p with X₂ X₃ p g hp
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)
-    . let p' : X₁ ⟶X₂ := p
+    · let p' : X₁ ⟶X₂ := p
       rw [show p'.cons g = p' ≫ Quiver.Hom.toPath g by rfl, G.map_comp]
       refine' hP₃ _ _ hp _
       rcases g with (g | ⟨g, hg⟩)
-      . apply hP₁
-      . apply hP₂
+      · apply hP₁
+      · apply hP₂
 #align category_theory.localization.construction.morphism_property_is_top CategoryTheory.Localization.Construction.morphismProperty_is_top
 
 /-- A `MorphismProperty` in `W.Localization` is satisfied by all
@@ -346,7 +345,7 @@ def inverse : W.FunctorsInverting D ⥤ W.Localization ⥤ D
         ext X
         simp only [NatTrans.comp_app, eqToHom_app, eqToHom_refl, comp_id, id_comp,
           NatTrans.hcomp_id_app, NatTrans.id_app, Functor.map_id]
-        rfl )
+        rfl)
   map_comp τ₁ τ₂ :=
     natTrans_hcomp_injective
       (by

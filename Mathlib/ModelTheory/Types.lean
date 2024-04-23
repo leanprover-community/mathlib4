@@ -2,13 +2,10 @@
 Copyright (c) 2022 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
-
-! This file was ported from Lean 3 source module model_theory.types
-! leanprover-community/mathlib commit 98bd247d933fb581ff37244a5998bd33d81dd46d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.ModelTheory.Satisfiability
+
+#align_import model_theory.types from "leanprover-community/mathlib"@"98bd247d933fb581ff37244a5998bd33d81dd46d"
 
 /-!
 # Type Spaces
@@ -44,7 +41,8 @@ universe u v w w'
 
 open Cardinal Set
 
-open Cardinal FirstOrder Classical
+open scoped Classical
+open Cardinal FirstOrder
 
 namespace FirstOrder
 
@@ -148,7 +146,7 @@ theorem setOf_subset_eq_univ_iff (S : L[[α]].Theory) :
 
 theorem nonempty_iff : Nonempty (T.CompleteType α) ↔ T.IsSatisfiable := by
   rw [← isSatisfiable_onTheory_iff (lhomWithConstants_injective L α)]
-  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne.def, not_iff_comm,
+  rw [nonempty_iff_univ_nonempty, nonempty_iff_ne_empty, Ne, not_iff_comm,
     ← union_empty ((L.lhomWithConstants α).onTheory T), ← setOf_subset_eq_empty_iff]
   simp
 #align first_order.language.Theory.complete_type.nonempty_iff FirstOrder.Language.Theory.CompleteType.nonempty_iff
@@ -157,9 +155,9 @@ instance instNonempty : Nonempty (CompleteType (∅ : L.Theory) α) :=
   nonempty_iff.2 (isSatisfiable_empty L)
 #align first_order.language.Theory.complete_type.nonempty FirstOrder.Language.Theory.CompleteType.instNonempty
 
-theorem iInter_setOf_subset {ι : Type _} (S : ι → L[[α]].Theory) :
-    (⋂ i : ι, { p : T.CompleteType α | S i ⊆ p }) =
-      { p : T.CompleteType α | (⋃ i : ι, S i) ⊆ p } := by
+theorem iInter_setOf_subset {ι : Type*} (S : ι → L[[α]].Theory) :
+    ⋂ i : ι, { p : T.CompleteType α | S i ⊆ p } =
+      { p : T.CompleteType α | ⋃ i : ι, S i ⊆ p } := by
   ext
   simp only [mem_iInter, mem_setOf_eq, iUnion_subset_iff]
 #align first_order.language.Theory.complete_type.Inter_set_of_subset FirstOrder.Language.Theory.CompleteType.iInter_setOf_subset

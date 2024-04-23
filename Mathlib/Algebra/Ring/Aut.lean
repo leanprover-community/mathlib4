@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.ring.aut
-! leanprover-community/mathlib commit 207cfac9fcd06138865b5d04f7091e46d9320432
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Group.Aut
 import Mathlib.Algebra.GroupRingAction.Basic
-import Mathlib.Algebra.Hom.Aut
 import Mathlib.Algebra.Ring.Equiv
+
+#align_import algebra.ring.aut from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
 /-!
 # Ring automorphisms
@@ -34,7 +31,7 @@ RingAut
 
 /-- The group of ring automorphisms. -/
 @[reducible]
-def RingAut (R : Type _) [Mul R] [Add R] :=
+def RingAut (R : Type*) [Mul R] [Add R] :=
   RingEquiv R R
 #align ring_aut RingAut
 
@@ -42,25 +39,20 @@ namespace RingAut
 
 section mul_add
 
-variable (R : Type _) [Mul R] [Add R]
+variable (R : Type*) [Mul R] [Add R]
 
 /-- The group operation on automorphisms of a ring is defined by
 `fun g h => RingEquiv.trans h g`.
 This means that multiplication agrees with composition, `(g*h)(x) = g (h x)`.
 -/
-instance : Group (RingAut R) :=
-  { mul := fun g h => RingEquiv.trans h g
-    one := RingEquiv.refl R
-    inv := RingEquiv.symm
-    div := _
-    npow := @npowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-    zpow :=
-      @zpowRec _ ⟨RingEquiv.refl R⟩ ⟨fun g h => RingEquiv.trans h g⟩
-        ⟨RingEquiv.symm⟩
-    mul_assoc := by intros; rfl
-    one_mul := by intros; rfl
-    mul_one := by intros; rfl
-    mul_left_inv := by intros; ext; apply Equiv.left_inv }
+instance : Group (RingAut R) where
+  mul g h := RingEquiv.trans h g
+  one := RingEquiv.refl R
+  inv := RingEquiv.symm
+  mul_assoc := by intros; rfl
+  one_mul := by intros; rfl
+  mul_one := by intros; rfl
+  mul_left_inv := RingEquiv.self_trans_symm
 /- Porting note: was by
   refine_struct
     { mul := fun g h => RingEquiv.trans h g
@@ -95,7 +87,7 @@ def toMulAut : RingAut R →* MulAut R := by
 #align ring_aut.to_mul_aut RingAut.toMulAut
 
 /-- Monoid homomorphism from ring automorphisms to permutations. -/
-def toPerm : RingAut R →* Equiv.Perm R :=by
+def toPerm : RingAut R →* Equiv.Perm R := by
   refine'
   { toFun := RingEquiv.toEquiv
     .. } <;> (intros; rfl)
@@ -105,9 +97,9 @@ end mul_add
 
 section Semiring
 
-variable {G R : Type _} [Group G] [Semiring R]
+variable {G R : Type*} [Group G] [Semiring R]
 
-/-- The tautological action by the group of automorphism of a ring `R` on `R`.-/
+/-- The tautological action by the group of automorphism of a ring `R` on `R`. -/
 instance applyMulSemiringAction :
     MulSemiringAction (RingAut R) R where
   smul := (· <| ·)

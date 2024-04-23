@@ -2,13 +2,10 @@
 Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
-
-! This file was ported from Lean 3 source module algebra.lie.ideal_operations
-! leanprover-community/mathlib commit 8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.Submodule
+
+#align_import algebra.lie.ideal_operations from "leanprover-community/mathlib"@"8983bec7cdf6cb2dd1f21315c8a34ab00d7b2f6d"
 
 /-!
 # Ideal operations for Lie algebras
@@ -42,13 +39,9 @@ universe u v w w₁ w₂
 namespace LieSubmodule
 
 variable {R : Type u} {L : Type v} {M : Type w} {M₂ : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
-
 variable [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L M₂] [LieModule R L M₂]
-
 variable (N N' : LieSubmodule R L M) (I J : LieIdeal R L) (N₂ : LieSubmodule R L M₂)
 
 section LieIdealOperations
@@ -142,7 +135,7 @@ theorem lie_bot : ⁅I, (⊥ : LieSubmodule R L M)⁆ = ⊥ := by rw [eq_bot_iff
 theorem bot_lie : ⁅(⊥ : LieIdeal R L), N⁆ = ⊥ := by
   suffices ⁅(⊥ : LieIdeal R L), N⁆ ≤ ⊥ by exact le_bot_iff.mp this
   rw [lieIdeal_oper_eq_span, lieSpan_le]; rintro m ⟨⟨x, hx⟩, n, hn⟩; rw [← hn]
-  change x ∈ (⊥ : LieIdeal R L) at hx ; rw [mem_bot] at hx ; simp [hx]
+  change x ∈ (⊥ : LieIdeal R L) at hx; rw [mem_bot] at hx; simp [hx]
 #align lie_submodule.bot_lie LieSubmodule.bot_lie
 
 theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : L), m⁆ = 0 := by
@@ -154,7 +147,7 @@ theorem lie_eq_bot_iff : ⁅I, N⁆ = ⊥ ↔ ∀ x ∈ I, ∀ m ∈ N, ⁅(x : 
 
 theorem mono_lie (h₁ : I ≤ J) (h₂ : N ≤ N') : ⁅I, N⁆ ≤ ⁅J, N'⁆ := by
   intro m h
-  rw [lieIdeal_oper_eq_span, mem_lieSpan] at h ; rw [lieIdeal_oper_eq_span, mem_lieSpan]
+  rw [lieIdeal_oper_eq_span, mem_lieSpan] at h; rw [lieIdeal_oper_eq_span, mem_lieSpan]
   intro N hN; apply h; rintro m' ⟨⟨x, hx⟩, ⟨n, hn⟩, hm⟩; rw [← hm]; apply hN
   use ⟨x, h₁ hx⟩, ⟨n, h₂ hn⟩
 #align lie_submodule.mono_lie LieSubmodule.mono_lie
@@ -174,7 +167,7 @@ theorem lie_sup : ⁅I, N ⊔ N'⁆ = ⁅I, N⁆ ⊔ ⁅I, N'⁆ := by
     apply mono_lie_right <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I, N ⊔ N'⁆ ≤ ⁅I, N⁆ ⊔ ⁅I, N'⁆ by exact le_antisymm this h
   rw [lieIdeal_oper_eq_span, lieSpan_le]; rintro m ⟨x, ⟨n, hn⟩, h⟩; erw [LieSubmodule.mem_sup]
-  erw [LieSubmodule.mem_sup] at hn ; rcases hn with ⟨n₁, hn₁, n₂, hn₂, hn'⟩
+  erw [LieSubmodule.mem_sup] at hn; rcases hn with ⟨n₁, hn₁, n₂, hn₂, hn'⟩
   use ⁅(x : L), (⟨n₁, hn₁⟩ : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅(x : L), (⟨n₂, hn₂⟩ : N')⁆; constructor; · apply lie_coe_mem_lie
   simp [← h, ← hn']
@@ -187,7 +180,7 @@ theorem sup_lie : ⁅I ⊔ J, N⁆ = ⁅I, N⁆ ⊔ ⁅J, N⁆ := by
     apply mono_lie_left <;> [exact le_sup_left; exact le_sup_right]
   suffices ⁅I ⊔ J, N⁆ ≤ ⁅I, N⁆ ⊔ ⁅J, N⁆ by exact le_antisymm this h
   rw [lieIdeal_oper_eq_span, lieSpan_le]; rintro m ⟨⟨x, hx⟩, n, h⟩; erw [LieSubmodule.mem_sup]
-  erw [LieSubmodule.mem_sup] at hx ; rcases hx with ⟨x₁, hx₁, x₂, hx₂, hx'⟩
+  erw [LieSubmodule.mem_sup] at hx; rcases hx with ⟨x₁, hx₁, x₂, hx₂, hx'⟩
   use ⁅((⟨x₁, hx₁⟩ : I) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   use ⁅((⟨x₂, hx₂⟩ : J) : L), (n : N)⁆; constructor; · apply lie_coe_mem_lie
   simp [← h, ← hx']
@@ -260,9 +253,7 @@ namespace LieIdeal
 open LieAlgebra
 
 variable {R : Type u} {L : Type v} {L' : Type w₂}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (f : L →ₗ⁅R⁆ L') (I : LieIdeal R L) (J : LieIdeal R L')
 
 /-- Note that the inequality can be strict; e.g., the inclusion of an Abelian subalgebra of a
@@ -319,9 +310,9 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     simp only [hz₁, hz₂, Submodule.coe_mk, LieHom.map_lie]
   · rintro ⟨x, ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hx⟩, hy⟩; rw [← hy, ← hx]
     have hz₁' : f z₁ ∈ f.idealRange ⊓ J₁ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₁⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₁, hz₁⟩
     have hz₂' : f z₂ ∈ f.idealRange ⊓ J₂ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₂⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₂, hz₂⟩
     use ⟨f z₁, hz₁'⟩, ⟨f z₂, hz₂'⟩; simp only [Submodule.coe_mk, LieHom.map_lie]
 #align lie_ideal.comap_bracket_eq LieIdeal.comap_bracket_eq
 
@@ -345,7 +336,7 @@ theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
 Lie bracket operation on ideals, subject to the conditions shown. -/
 theorem comap_bracket_incl_of_le {I₁ I₂ : LieIdeal R L} (h₁ : I₁ ≤ I) (h₂ : I₂ ≤ I) :
     ⁅comap I.incl I₁, comap I.incl I₂⁆ = comap I.incl ⁅I₁, I₂⁆ := by
-    rw [comap_bracket_incl]; rw [← inf_eq_right] at h₁ h₂ ; rw [h₁, h₂]
+    rw [comap_bracket_incl]; rw [← inf_eq_right] at h₁ h₂; rw [h₁, h₂]
 #align lie_ideal.comap_bracket_incl_of_le LieIdeal.comap_bracket_incl_of_le
 
 end LieIdeal

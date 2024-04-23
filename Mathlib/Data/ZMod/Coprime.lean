@@ -2,14 +2,11 @@
 Copyright (c) 2022 Michael Stoll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
-
-! This file was ported from Lean 3 source module data.zmod.coprime
-! leanprover-community/mathlib commit 4b4975cf92a1ffe2ddfeff6ff91b0c46a9162bf5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Int.Basic
+
+#align_import data.zmod.coprime from "leanprover-community/mathlib"@"4b4975cf92a1ffe2ddfeff6ff91b0c46a9162bf5"
 
 /-!
 # Coprimality and vanishing
@@ -27,7 +24,7 @@ theorem eq_zero_iff_gcd_ne_one {a : ℤ} {p : ℕ} [pp : Fact p.Prime] :
     (a : ZMod p) = 0 ↔ a.gcd p ≠ 1 := by
   rw [Ne, Int.gcd_comm, Int.gcd_eq_one_iff_coprime,
     (Nat.prime_iff_prime_int.1 pp.1).coprime_iff_not_dvd, Classical.not_not,
-    int_cast_zmod_eq_zero_iff_dvd]
+    intCast_zmod_eq_zero_iff_dvd]
 #align zmod.eq_zero_iff_gcd_ne_one ZMod.eq_zero_iff_gcd_ne_one
 
 /-- If an integer `a` and a prime `p` satisfy `gcd a p = 1`, then `a : ZMod p` is nonzero. -/

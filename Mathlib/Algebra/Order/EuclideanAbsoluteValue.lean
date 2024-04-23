@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.order.euclidean_absolute_value
-! leanprover-community/mathlib commit 422e70f7ce183d2900c586a8cda8381e788a0c62
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.EuclideanDomain.Instances
+
+#align_import algebra.order.euclidean_absolute_value from "leanprover-community/mathlib"@"422e70f7ce183d2900c586a8cda8381e788a0c62"
 
 /-!
 # Euclidean absolute values
@@ -33,8 +30,7 @@ namespace AbsoluteValue
 
 section OrderedSemiring
 
-variable {R S : Type _} [EuclideanDomain R] [OrderedSemiring S]
-
+variable {R S : Type*} [EuclideanDomain R] [OrderedSemiring S]
 variable (abv : AbsoluteValue R S)
 
 /-- An absolute value `abv : R → S` is Euclidean if it is compatible with the

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov, Heather Macbeth
-
-! This file was ported from Lean 3 source module analysis.normed_space.ball_action
-! leanprover-community/mathlib commit 3339976e2bcae9f1c81e620836d1eb736e3c4700
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.UnitBall
 import Mathlib.Analysis.NormedSpace.Basic
+
+#align_import analysis.normed_space.ball_action from "leanprover-community/mathlib"@"3339976e2bcae9f1c81e620836d1eb736e3c4700"
 
 /-!
 # Multiplicative actions of/on balls and spheres
@@ -24,7 +21,7 @@ multiplicative actions.
 
 open Metric Set
 
-variable {𝕜 𝕜' E : Type _} [NormedField 𝕜] [NormedField 𝕜'] [SeminormedAddCommGroup E]
+variable {𝕜 𝕜' E : Type*} [NormedField 𝕜] [NormedField 𝕜'] [SeminormedAddCommGroup E]
   [NormedSpace 𝕜 E] [NormedSpace 𝕜' E] {r : ℝ}
 
 section ClosedBall
@@ -200,7 +197,6 @@ instance instSMulCommClass_sphere_sphere_sphere :
 end SMulCommClass
 
 variable (𝕜)
-
 variable [CharZero 𝕜]
 
 theorem ne_neg_of_mem_sphere {r : ℝ} (hr : r ≠ 0) (x : sphere (0 : E) r) : x ≠ -x := fun h =>

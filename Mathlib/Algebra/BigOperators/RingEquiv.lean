@@ -2,14 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.big_operators.ring_equiv
-! leanprover-community/mathlib commit 008205aa645b3f194c1da47025c5f110c8406eab
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.Ring.Equiv
+import Mathlib.Algebra.Ring.Opposite
+
+#align_import algebra.big_operators.ring_equiv from "leanprover-community/mathlib"@"008205aa645b3f194c1da47025c5f110c8406eab"
 
 /-!
 # Results about mapping big operators across ring equivalences
@@ -20,7 +19,7 @@ namespace RingEquiv
 
 open BigOperators
 
-variable {α R S : Type _}
+variable {α R S : Type*}
 
 protected theorem map_list_prod [Semiring R] [Semiring S] (f : R ≃+* S) (l : List R) :
     f l.prod = (l.map f).prod := map_list_prod f l

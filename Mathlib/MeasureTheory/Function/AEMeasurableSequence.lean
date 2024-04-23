@@ -2,14 +2,11 @@
 Copyright (c) 2021 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.function.ae_measurable_sequence
-! leanprover-community/mathlib commit d003c55042c3cd08aefd1ae9a42ef89441cdaaf3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.MeasureTheory.MeasurableSpace
+import Mathlib.MeasureTheory.MeasurableSpace.Basic
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+
+#align_import measure_theory.function.ae_measurable_sequence from "leanprover-community/mathlib"@"d003c55042c3cd08aefd1ae9a42ef89441cdaaf3"
 
 /-!
 # Sequence of measurable functions associated to a sequence of a.e.-measurable functions
@@ -28,16 +25,16 @@ and a measurable set `aeSeqSet hf p`, such that
 
 open MeasureTheory
 
-open Classical
+open scoped Classical
 
-variable {ι : Sort _} {α β γ : Type _} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
+variable {ι : Sort*} {α β γ : Type*} [MeasurableSpace α] [MeasurableSpace β] {f : ι → α → β}
   {μ : Measure α} {p : α → (ι → β) → Prop}
 
 /-- If we have the additional hypothesis `∀ᵐ x ∂μ, p x (fun n ↦ f n x)`, this is a measurable set
 whose complement has measure 0 such that for all `x ∈ aeSeqSet`, `f i x` is equal to
 `(hf i).mk (f i) x` for all `i` and we have the pointwise property `p x (fun n ↦ f n x)`. -/
 def aeSeqSet (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) → Prop) : Set α :=
-  toMeasurable μ ({ x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
+  (toMeasurable μ { x | (∀ i, f i x = (hf i).mk (f i) x) ∧ p x fun n => f n x }ᶜ)ᶜ
 #align ae_seq_set aeSeqSet
 
 /-- A sequence of measurable functions that are equal to `f` and verify property `p` on the
@@ -101,7 +98,7 @@ theorem measurable (hf : ∀ i, AEMeasurable (f i) μ) (p : α → (ι → β) �
 #align ae_seq.measurable aeSeq.measurable
 
 theorem measure_compl_aeSeqSet_eq_zero [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
-    (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : μ (aeSeqSet hf pᶜ) = 0 := by
+    (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : μ (aeSeqSet hf p)ᶜ = 0 := by
   rw [aeSeqSet, compl_compl, measure_toMeasurable]
   have hf_eq := fun i => (hf i).ae_eq_mk
   simp_rw [Filter.EventuallyEq, ← ae_all_iff] at hf_eq
@@ -120,7 +117,7 @@ theorem aeSeq_eq_mk_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
 
 theorem aeSeq_eq_fun_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
     (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ∀ᵐ a : α ∂μ, ∀ i : ι, aeSeq hf p i a = f i a :=
-  haveI h_ss : { a : α | ¬∀ i : ι, aeSeq hf p i a = f i a } ⊆ aeSeqSet hf pᶜ := fun _ =>
+  haveI h_ss : { a : α | ¬∀ i : ι, aeSeq hf p i a = f i a } ⊆ (aeSeqSet hf p)ᶜ := fun _ =>
     mt fun hx i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   measure_mono_null h_ss (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.ae_seq_eq_fun_ae aeSeq.aeSeq_eq_fun_ae
@@ -131,13 +128,17 @@ theorem aeSeq_n_eq_fun_n_ae [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
 #align ae_seq.ae_seq_n_eq_fun_n_ae aeSeq.aeSeq_n_eq_fun_n_ae
 
 theorem iSup [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
-    (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : (⨆ n, aeSeq hf p n) =ᵐ[μ] ⨆ n, f n := by
+    (hp : ∀ᵐ x ∂μ, p x fun n => f n x) : ⨆ n, aeSeq hf p n =ᵐ[μ] ⨆ n, f n := by
   simp_rw [Filter.EventuallyEq, ae_iff, iSup_apply]
-  have h_ss : aeSeqSet hf p ⊆ { a : α | (⨆ i : ι, aeSeq hf p i a) = ⨆ i : ι, f i a } := by
+  have h_ss : aeSeqSet hf p ⊆ { a : α | ⨆ i : ι, aeSeq hf p i a = ⨆ i : ι, f i a } := by
     intro x hx
     congr
     exact funext fun i => aeSeq_eq_fun_of_mem_aeSeqSet hf hx i
   exact measure_mono_null (Set.compl_subset_compl.mpr h_ss) (measure_compl_aeSeqSet_eq_zero hf hp)
 #align ae_seq.supr aeSeq.iSup
+
+theorem iInf [CompleteLattice β] [Countable ι] (hf : ∀ i, AEMeasurable (f i) μ)
+    (hp : ∀ᵐ x ∂μ, p x fun n ↦ f n x) : ⨅ n, aeSeq hf p n =ᵐ[μ] ⨅ n, f n :=
+  iSup (β := βᵒᵈ) hf hp
 
 end aeSeq

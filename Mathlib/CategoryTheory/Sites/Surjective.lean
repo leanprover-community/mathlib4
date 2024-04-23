@@ -2,14 +2,11 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module category_theory.sites.surjective
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Subsheaf
 import Mathlib.CategoryTheory.Sites.CompatibleSheafification
+
+#align_import category_theory.sites.surjective from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 /-!
 
 # Locally surjective morphisms
@@ -35,7 +32,7 @@ namespace CategoryTheory
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 
-attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.funLike
+attribute [local instance] ConcreteCategory.hasCoeToSort ConcreteCategory.instFunLike
 
 variable {A : Type u'} [Category.{v'} A] [ConcreteCategory.{w'} A]
 
@@ -116,7 +113,7 @@ theorem isLocallySurjective_of_iso {F G : Cᵒᵖ ⥤ A} (f : F ⟶ G) [IsIso f]
   apply isLocallySurjective_of_surjective
   intro U
   apply Function.Bijective.surjective
-  rw [← isIso_iff_bijective, ←forget_map_eq_coe]
+  rw [← isIso_iff_bijective, ← forget_map_eq_coe]
   infer_instance
 #align category_theory.is_locally_surjective_of_iso CategoryTheory.isLocallySurjective_of_iso
 
@@ -147,7 +144,7 @@ noncomputable def sheafificationIsoImagePresheaf :
     J.sheafifyLift (toImagePresheafSheafify J _)
       ((isSheaf_iff_isSheaf_of_type J _).mpr <|
         Subpresheaf.sheafify_isSheaf _ <|
-          (isSheaf_iff_isSheaf_of_type J _).mp <| sheafify_isSheaf J _)
+          (isSheaf_iff_isSheaf_of_type J _).mp <| GrothendieckTopology.sheafify_isSheaf J _)
   inv := Subpresheaf.ι _
   hom_inv_id :=
     J.sheafify_hom_ext _ _ (J.sheafify_isSheaf _) (by simp [toImagePresheafSheafify])

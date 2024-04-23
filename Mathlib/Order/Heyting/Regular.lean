@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module order.heyting.regular
-! leanprover-community/mathlib commit 09597669f02422ed388036273d8848119699c22f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.GaloisConnection
+
+#align_import order.heyting.regular from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
 /-!
 # Heyting regular elements
@@ -33,7 +30,7 @@ by simply double-negating all propositions. This is practical for synthetic comp
 
 open Function
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Heyting
 
@@ -74,15 +71,15 @@ theorem IsRegular.himp (ha : IsRegular a) (hb : IsRegular b) : IsRegular (a ⇨ 
   rw [IsRegular, compl_compl_himp_distrib, ha.eq, hb.eq]
 #align heyting.is_regular.himp Heyting.IsRegular.himp
 
-theorem isRegular_compl (a : α) : IsRegular (aᶜ) :=
+theorem isRegular_compl (a : α) : IsRegular aᶜ :=
   compl_compl_compl _
 #align heyting.is_regular_compl Heyting.isRegular_compl
 
-protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint (aᶜ) b ↔ b ≤ a :=
+protected theorem IsRegular.disjoint_compl_left_iff (ha : IsRegular a) : Disjoint aᶜ b ↔ b ≤ a :=
   by rw [← le_compl_iff_disjoint_left, ha.eq]
 #align heyting.is_regular.disjoint_compl_left_iff Heyting.IsRegular.disjoint_compl_left_iff
 
-protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a (bᶜ) ↔ a ≤ b :=
+protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoint a bᶜ ↔ a ≤ b :=
   by rw [← le_compl_iff_disjoint_right, hb.eq]
 #align heyting.is_regular.disjoint_compl_right_iff Heyting.IsRegular.disjoint_compl_right_iff
 
@@ -90,13 +87,13 @@ protected theorem IsRegular.disjoint_compl_right_iff (hb : IsRegular b) : Disjoi
 /-- A Heyting algebra with regular excluded middle is a boolean algebra. -/
 @[reducible]
 def _root_.BooleanAlgebra.ofRegular (h : ∀ a : α, IsRegular (a ⊔ aᶜ)) : BooleanAlgebra α :=
-  have : ∀ a : α, IsCompl a (aᶜ) := fun a =>
+  have : ∀ a : α, IsCompl a aᶜ := fun a =>
     ⟨disjoint_compl_right,
       codisjoint_iff.2 <| by erw [← (h a), compl_sup, inf_compl_eq_bot, compl_bot]⟩
   { ‹HeytingAlgebra α›,
     GeneralizedHeytingAlgebra.toDistribLattice with
     himp_eq := fun a b =>
-      eq_of_forall_le_iff fun c => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
+      eq_of_forall_le_iff fun _ => le_himp_iff.trans (this _).le_sup_right_iff_inf_left_le.symm
     inf_compl_le_bot := fun a => (this _).1.le_bot
     top_le_sup_compl := fun a => (this _).2.top_le }
 #align boolean_algebra.of_regular BooleanAlgebra.ofRegular
@@ -112,14 +109,14 @@ variable {α}
 
 namespace Regular
 
---Porting note: `val` and `prop` are new
+-- Porting note: `val` and `prop` are new
 /-- The coercion `Regular α → α` -/
 @[coe] def val : Regular α → α :=
   Subtype.val
 
 theorem prop : ∀ a : Regular α, IsRegular a.val := Subtype.prop
 
-instance : Coe (Regular α) α := ⟨Regular.val⟩
+instance : CoeOut (Regular α) α := ⟨Regular.val⟩
 
 theorem coe_injective : Injective ((↑) : Regular α → α) :=
   Subtype.coe_injective
@@ -166,7 +163,7 @@ theorem coe_himp (a b : Regular α) : (↑(a ⇨ b) : α) = (a : α) ⇨ b :=
 #align heyting.regular.coe_himp Heyting.Regular.coe_himp
 
 @[simp, norm_cast]
-theorem coe_compl (a : Regular α) : (↑(aᶜ) : α) = (a : α)ᶜ :=
+theorem coe_compl (a : Regular α) : (↑aᶜ : α) = (a : α)ᶜ :=
   rfl
 #align heyting.regular.coe_compl Heyting.Regular.coe_compl
 
@@ -261,7 +258,7 @@ theorem isRegular_of_boolean : ∀ a : α, IsRegular a :=
 #align heyting.is_regular_of_boolean Heyting.isRegular_of_boolean
 
 /-- A decidable proposition is intuitionistically Heyting-regular. -/
---Porting note: removed @[nolint decidable_classical]
+-- Porting note: removed @[nolint decidable_classical]
 theorem isRegular_of_decidable (p : Prop) [Decidable p] : IsRegular p :=
   propext <| Decidable.not_not
 #align heyting.is_regular_of_decidable Heyting.isRegular_of_decidable

@@ -2,14 +2,11 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.wide_equalizers
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.HasLimits
 import Mathlib.CategoryTheory.Limits.Shapes.Equalizers
+
+#align_import category_theory.limits.shapes.wide_equalizers from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Wide equalizers and wide coequalizers
@@ -78,7 +75,7 @@ instance : Inhabited (WalkingParallelFamily J) :=
 inductive WalkingParallelFamily.Hom (J : Type w) :
   WalkingParallelFamily J → WalkingParallelFamily J → Type w
   | id : ∀ X : WalkingParallelFamily.{w} J, WalkingParallelFamily.Hom J X X
-  | line : ∀ _ : J, WalkingParallelFamily.Hom J zero one
+  | line : J → WalkingParallelFamily.Hom J zero one
   deriving DecidableEq
 #align
   category_theory.limits.walking_parallel_family.hom
@@ -120,7 +117,6 @@ theorem WalkingParallelFamily.hom_id (X : WalkingParallelFamily J) :
   CategoryTheory.Limits.WalkingParallelFamily.hom_id
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : C} (f : J → (X ⟶ Y))
 
 /-- `parallelFamily f` is the diagram in `C` consisting of the given family of morphisms, each with
@@ -133,7 +129,7 @@ def parallelFamily : WalkingParallelFamily J ⥤ C where
     | _, _, Hom.id _ => 𝟙 _
     | _, _, line j => f j
   map_comp := by
-    rintro _ _ _  ⟨⟩ ⟨⟩ <;>
+    rintro _ _ _ ⟨⟩ ⟨⟩ <;>
       · aesop_cat
 #align category_theory.limits.parallel_family CategoryTheory.Limits.parallelFamily
 
@@ -348,7 +344,7 @@ def Trident.IsLimit.mk [Nonempty J] (t : Trident f) (lift : ∀ s : Trident f, s
     only asks for a proof of facts that carry any mathematical content, and allows access to the
     same `s` for all parts. -/
 def Trident.IsLimit.mk' [Nonempty J] (t : Trident f)
-  (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
+    (create : ∀ s : Trident f, { l // l ≫ t.ι = s.ι ∧ ∀ {m}, m ≫ t.ι = s.ι → m = l }) :
     IsLimit t :=
   Trident.IsLimit.mk t (fun s => (create s).1) (fun s => (create s).2.1) fun s _ w =>
     (create s).2.2 (w zero)
@@ -432,8 +428,8 @@ theorem Cotrident.IsColimit.homIso_natural [Nonempty J] {t : Cotrident f} {Z Z' 
 
 /-- This is a helper construction that can be useful when verifying that a category has certain wide
     equalizers. Given `F : WalkingParallelFamily ⥤ C`, which is really the same as
-    `parallelFamily (λ j, F.map (line j))`, and a trident on `λ j, F.map (line j)`, we get a cone
-    on `F`.
+    `parallelFamily (fun j ↦ F.map (line j))`, and a trident on `fun j ↦ F.map (line j)`,
+    we get a cone on `F`.
 
     If you're thinking about using this, have a look at
     `hasWideEqualizers_of_hasLimit_parallelFamily`, which you may find to be an easier way of
@@ -514,7 +510,7 @@ theorem Cotrident.ofCocone_ι {F : WalkingParallelFamily J ⥤ C} (t : Cocone F)
 @[simps]
 def Trident.mkHom [Nonempty J] {s t : Trident f} (k : s.pt ⟶ t.pt)
     (w : k ≫ t.ι = s.ι := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · exact w
@@ -537,7 +533,7 @@ def Trident.ext [Nonempty J] {s t : Trident f} (i : s.pt ≅ t.pt)
 @[simps]
 def Cotrident.mkHom [Nonempty J] {s t : Cotrident f} (k : s.pt ⟶ t.pt)
     (w : s.π ≫ k = t.π := by aesop_cat) : s ⟶ t where
-  Hom := k
+  hom := k
   w := by
     rintro ⟨_ | _⟩
     · simpa using f (Classical.arbitrary J) ≫= w
@@ -549,7 +545,7 @@ it suffices to give an isomorphism between the cocone points
 and check that it commutes with the `π` morphisms.
 -/
 def Cotrident.ext [Nonempty J] {s t : Cotrident f} (i : s.pt ≅ t.pt)
-   (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
+    (w : s.π ≫ i.hom = t.π := by aesop_cat) : s ≅ t where
   hom := Cotrident.mkHom i.hom w
   inv := Cotrident.mkHom i.inv (by rw [Iso.comp_inv_eq, w])
 #align category_theory.limits.cotrident.ext CategoryTheory.Limits.Cotrident.ext
@@ -623,7 +619,7 @@ abbrev wideEqualizer.lift [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂,
 
 @[reassoc (attr := simp 1100)]
 theorem wideEqualizer.lift_ι [Nonempty J] {W : C} (k : W ⟶ X)
-  (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
+    (h : ∀ j₁ j₂, k ≫ f j₁ = k ≫ f j₂) :
     wideEqualizer.lift k h ≫ wideEqualizer.ι f = k :=
   limit.lift_π _ _
 #align category_theory.limits.wide_equalizer.lift_ι CategoryTheory.Limits.wideEqualizer.lift_ι
@@ -635,7 +631,7 @@ def wideEqualizer.lift' [Nonempty J] {W : C} (k : W ⟶ X) (h : ∀ j₁ j₂, k
   ⟨wideEqualizer.lift k h, wideEqualizer.lift_ι _ _⟩
 #align category_theory.limits.wide_equalizer.lift' CategoryTheory.Limits.wideEqualizer.lift'
 
-/-- Two maps into a wide equalizer are equal if they are are equal when composed with the wide
+/-- Two maps into a wide equalizer are equal if they are equal when composed with the wide
     equalizer map. -/
 @[ext]
 theorem wideEqualizer.hom_ext [Nonempty J] {W : C} {k l : W ⟶ wideEqualizer f}
@@ -737,7 +733,7 @@ abbrev wideCoequalizer.desc [Nonempty J] {W : C} (k : Y ⟶ W) (h : ∀ j₁ j�
 
 @[reassoc (attr := simp 1100)]
 theorem wideCoequalizer.π_desc [Nonempty J] {W : C} (k : Y ⟶ W)
-  (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
+    (h : ∀ j₁ j₂, f j₁ ≫ k = f j₂ ≫ k) :
     wideCoequalizer.π f ≫ wideCoequalizer.desc k h = k :=
   colimit.ι_desc _ _
 #align category_theory.limits.wide_coequalizer.π_desc CategoryTheory.Limits.wideCoequalizer.π_desc

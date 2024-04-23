@@ -2,25 +2,21 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.prod.basic
-! leanprover-community/mathlib commit bd9851ca476957ea4549eb19b40e7b5ade9428cc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Init.Core
-import Mathlib.Init.Data.Prod
 import Mathlib.Init.Function
 import Mathlib.Logic.Function.Basic
-import Mathlib.Tactic.Common
+import Mathlib.Tactic.Inhabit
+
+#align_import data.prod.basic from "leanprover-community/mathlib"@"d07245fd37786daa997af4f1a73a49fa3b748408"
 
 /-!
 # Extra facts about `Prod`
 
 This file defines `Prod.swap : α × β → β × α` and proves various simple lemmas about `Prod`.
+It also defines better delaborators for product projections.
 -/
 
-variable {α : Type _} {β : Type _} {γ : Type _} {δ : Type _}
+variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*}
 
 @[simp]
 theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p = (f p.1, g p.2) :=
@@ -28,6 +24,10 @@ theorem Prod_map (f : α → γ) (g : β → δ) (p : α × β) : Prod.map f g p
 #align prod_map Prod_map
 
 namespace Prod
+
+@[simp]
+theorem mk.eta : ∀ {p : α × β}, (p.1, p.2) = p
+  | (_, _) => rfl
 
 @[simp]
 theorem «forall» {p : α × β → Prop} : (∀ x, p x) ↔ ∀ a b, p (a, b) :=
@@ -57,7 +57,7 @@ theorem fst_comp_mk (x : α) : Prod.fst ∘ (Prod.mk x : β → α × β) = Func
   rfl
 #align prod.fst_comp_mk Prod.fst_comp_mk
 
-@[simp]
+@[simp, mfld_simps]
 theorem map_mk (f : α → γ) (g : β → δ) (a : α) (b : β) : map f g (a, b) = (f a, g b) :=
   rfl
 #align prod.map_mk Prod.map_mk
@@ -81,7 +81,7 @@ theorem map_snd' (f : α → γ) (g : β → δ) : Prod.snd ∘ map f g = g ∘ 
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions.
 -/
-theorem map_comp_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
+theorem map_comp_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) :
     Prod.map g g' ∘ Prod.map f f' = Prod.map (g ∘ f) (g' ∘ f') :=
   rfl
 #align prod.map_comp_map Prod.map_comp_map
@@ -89,7 +89,7 @@ theorem map_comp_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β �
 /-- Composing a `Prod.map` with another `Prod.map` is equal to
 a single `Prod.map` of composed functions, fully applied.
 -/
-theorem map_map {ε ζ : Type _} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
+theorem map_map {ε ζ : Type*} (f : α → β) (f' : γ → δ) (g : β → ε) (g' : δ → ζ) (x : α × γ) :
     Prod.map g g' (Prod.map f f' x) = Prod.map (g ∘ f) (g' ∘ f') x :=
   rfl
 #align prod.map_map Prod.map_map
@@ -101,30 +101,27 @@ theorem mk.inj_iff {a₁ a₂ : α} {b₁ b₂ : β} : (a₁, b₁) = (a₂, b�
   Iff.of_eq (mk.injEq _ _ _ _)
 #align prod.mk.inj_iff Prod.mk.inj_iff
 
-theorem mk.inj_left {α β : Type _} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
+theorem mk.inj_left {α β : Type*} (a : α) : Function.Injective (Prod.mk a : β → α × β) := by
   intro b₁ b₂ h
   simpa only [true_and, Prod.mk.inj_iff, eq_self_iff_true] using h
 #align prod.mk.inj_left Prod.mk.inj_left
 
-theorem mk.inj_right {α β : Type _} (b : β) :
+theorem mk.inj_right {α β : Type*} (b : β) :
     Function.Injective (fun a ↦ Prod.mk a b : α → α × β) := by
   intro b₁ b₂ h
   simpa only [and_true, eq_self_iff_true, mk.inj_iff] using h
 #align prod.mk.inj_right Prod.mk.inj_right
 
-lemma mk_inj_left : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
+lemma mk_inj_left {a : α} {b₁ b₂ : β} : (a, b₁) = (a, b₂) ↔ b₁ = b₂ := (mk.inj_left _).eq_iff
 #align prod.mk_inj_left Prod.mk_inj_left
 
-lemma mk_inj_right : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
+lemma mk_inj_right {a₁ a₂ : α} {b : β} : (a₁, b) = (a₂, b) ↔ a₁ = a₂ := (mk.inj_right _).eq_iff
 #align prod.mk_inj_right Prod.mk_inj_right
 
 theorem ext_iff {p q : α × β} : p = q ↔ p.1 = q.1 ∧ p.2 = q.2 := by
-  rw [← @mk.eta _ _ p, ← @mk.eta _ _ q, mk.inj_iff]
+  rw [mk.inj_iff]
 #align prod.ext_iff Prod.ext_iff
 
-@[ext]
-theorem ext {α β} {p q : α × β} (h₁ : p.1 = q.1) (h₂ : p.2 = q.2) : p = q :=
-  ext_iff.2 ⟨h₁, h₂⟩
 #align prod.ext Prod.ext
 
 theorem map_def {f : α → γ} {g : β → δ} : Prod.map f g = fun p : α × β ↦ (f p.1, g p.2) :=
@@ -135,6 +132,7 @@ theorem id_prod : (fun p : α × β ↦ (p.1, p.2)) = id :=
   rfl
 #align prod.id_prod Prod.id_prod
 
+@[simp]
 theorem map_id : Prod.map (@id α) (@id β) = id :=
   id_prod
 #align prod.map_id Prod.map_id
@@ -225,12 +223,6 @@ theorem snd_eq_iff : ∀ {p : α × β} {x : β}, p.2 = x ↔ p = (p.1, x)
 
 variable {r : α → α → Prop} {s : β → β → Prop} {x y : α × β}
 
-theorem lex_def (r : α → α → Prop) (s : β → β → Prop) {p q : α × β} :
-    Prod.Lex r s p q ↔ r p.1 q.1 ∨ p.1 = q.1 ∧ s p.2 q.2 :=
-  ⟨fun h ↦ by cases h <;> simp [*], fun h ↦
-    match p, q, h with
-    | (a, b), (c, d), Or.inl h => Lex.left _ _ h
-    | (a, b), (c, d), Or.inr ⟨e, h⟩ => by subst e; exact Lex.right _ h⟩
 #align prod.lex_def Prod.lex_def
 
 lemma lex_iff : Prod.Lex r s x y ↔ r x.1 y.1 ∨ x.1 = y.1 ∧ s x.2 y.2 := lex_def _ _
@@ -302,7 +294,7 @@ instance IsTrichotomous [IsTrichotomous α r] [IsTrichotomous β s] :
   obtain hij | rfl | hji := trichotomous_of r i j
   { exact Or.inl (Lex.left _ _ hij) }
   { exact (trichotomous_of (s) a b).imp3 (Lex.right _) (congr_arg _) (Lex.right _) }
-  { exact Or.inr (Or.inr $ Lex.left _ _ hji) }⟩
+  { exact Or.inr (Or.inr <| Lex.left _ _ hji) }⟩
 
 end Prod
 
@@ -382,7 +374,7 @@ theorem map_bijective [Nonempty α] [Nonempty β] {f : α → γ} {g : β → δ
     Bijective (map f g) ↔ Bijective f ∧ Bijective g := by
   haveI := Nonempty.map f ‹_›
   haveI := Nonempty.map g ‹_›
-  exact (map_injective.and map_surjective).trans (and_and_and_comm)
+  exact (map_injective.and map_surjective).trans and_and_and_comm
 #align prod.map_bijective Prod.map_bijective
 
 @[simp]
@@ -409,5 +401,22 @@ theorem map_involutive [Nonempty α] [Nonempty β] {f : α → α} {g : β → �
     Involutive (map f g) ↔ Involutive f ∧ Involutive g :=
   map_leftInverse
 #align prod.map_involutive Prod.map_involutive
+
+section delaborators
+open Lean PrettyPrinter Delaborator
+
+/-- Delaborator for `Prod.fst x` as `x.1`. -/
+@[delab app.Prod.fst]
+def delabProdFst : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).1)
+
+/-- Delaborator for `Prod.snd x` as `x.2`. -/
+@[delab app.Prod.snd]
+def delabProdSnd : Delab := withOverApp 3 do
+  let x ← SubExpr.withAppArg delab
+  `($(x).2)
+
+end delaborators
 
 end Prod

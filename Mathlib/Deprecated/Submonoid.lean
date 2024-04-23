@@ -2,15 +2,12 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard
-
-! This file was ported from Lean 3 source module deprecated.submonoid
-! leanprover-community/mathlib commit 509de852e1de55e1efa8eacfa11df0823f26f226
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.Algebra.BigOperators.Basic
 import Mathlib.Deprecated.Group
+
+#align_import deprecated.submonoid from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
 /-!
 # Unbundled submonoids (deprecated)
@@ -36,9 +33,8 @@ Submonoid, Submonoids, IsSubmonoid
 
 open BigOperators
 
-variable {M : Type _} [Monoid M] {s : Set M}
-
-variable {A : Type _} [AddMonoid A] {t : Set A}
+variable {M : Type*} [Monoid M] {s : Set M}
+variable {A : Type*} [AddMonoid A] {t : Set A}
 
 /-- `s` is an additive submonoid: a set containing 0 and closed under addition.
 Note that this structure is deprecated, and the bundled variant `AddSubmonoid A` should be
@@ -62,7 +58,7 @@ structure IsSubmonoid (s : Set M) : Prop where
 #align is_submonoid IsSubmonoid
 
 theorem Additive.isAddSubmonoid {s : Set M} :
-    ∀ _ : IsSubmonoid s, @IsAddSubmonoid (Additive M) _ s
+    IsSubmonoid s → @IsAddSubmonoid (Additive M) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align additive.is_add_submonoid Additive.isAddSubmonoid
 
@@ -72,7 +68,7 @@ theorem Additive.isAddSubmonoid_iff {s : Set M} :
 #align additive.is_add_submonoid_iff Additive.isAddSubmonoid_iff
 
 theorem Multiplicative.isSubmonoid {s : Set A} :
-    ∀ _ : IsAddSubmonoid s, @IsSubmonoid (Multiplicative A) _ s
+    IsAddSubmonoid s → @IsSubmonoid (Multiplicative A) _ s
   | ⟨h₁, h₂⟩ => ⟨h₁, @h₂⟩
 #align multiplicative.is_submonoid Multiplicative.isSubmonoid
 
@@ -95,7 +91,7 @@ theorem IsSubmonoid.inter {s₁ s₂ : Set M} (is₁ : IsSubmonoid s₁) (is₂ 
 @[to_additive
       "The intersection of an indexed set of `AddSubmonoid`s of an `AddMonoid` `M` is
       an `AddSubmonoid` of `M`."]
-theorem IsSubmonoid.iInter {ι : Sort _} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
+theorem IsSubmonoid.iInter {ι : Sort*} {s : ι → Set M} (h : ∀ y : ι, IsSubmonoid (s y)) :
     IsSubmonoid (Set.iInter s) :=
   { one_mem := Set.mem_iInter.2 fun y => (h y).one_mem
     mul_mem := fun h₁ h₂ =>
@@ -108,7 +104,7 @@ theorem IsSubmonoid.iInter {ι : Sort _} {s : ι → Set M} (h : ∀ y : ι, IsS
 @[to_additive
       "The union of an indexed, directed, nonempty set of `AddSubmonoid`s of an `AddMonoid` `M`
       is an `AddSubmonoid` of `M`. "]
-theorem isSubmonoid_iUnion_of_directed {ι : Type _} [hι : Nonempty ι] {s : ι → Set M}
+theorem isSubmonoid_iUnion_of_directed {ι : Type*} [hι : Nonempty ι] {s : ι → Set M}
     (hs : ∀ i, IsSubmonoid (s i)) (Directed : ∀ i j, ∃ k, s i ⊆ s k ∧ s j ⊆ s k) :
     IsSubmonoid (⋃ i, s i) :=
   { one_mem :=
@@ -125,7 +121,7 @@ theorem isSubmonoid_iUnion_of_directed {ι : Type _} [hι : Nonempty ι] {s : ι
 section powers
 
 /-- The set of natural number powers `1, x, x², ...` of an element `x` of a monoid. -/
-@[to_additive multiples
+@[to_additive
       "The set of natural number multiples `0, x, 2x, ...` of an element `x` of an `AddMonoid`."]
 def powers (x : M) : Set M :=
   { y | ∃ n : ℕ, x ^ n = y }
@@ -176,7 +172,7 @@ theorem Univ.isSubmonoid : IsSubmonoid (@Set.univ M) := by constructor <;> simp
 @[to_additive
       "The preimage of an `AddSubmonoid` under an `AddMonoid` hom is
       an `AddSubmonoid` of the domain."]
-theorem IsSubmonoid.preimage {N : Type _} [Monoid N] {f : M → N} (hf : IsMonoidHom f) {s : Set N}
+theorem IsSubmonoid.preimage {N : Type*} [Monoid N] {f : M → N} (hf : IsMonoidHom f) {s : Set N}
     (hs : IsSubmonoid s) : IsSubmonoid (f ⁻¹' s) :=
   { one_mem := show f 1 ∈ s by (rw [IsMonoidHom.map_one hf]; exact hs.one_mem)
     mul_mem := fun {a b} (ha : f a ∈ s) (hb : f b ∈ s) =>
@@ -188,7 +184,7 @@ theorem IsSubmonoid.preimage {N : Type _} [Monoid N] {f : M → N} (hf : IsMonoi
 @[to_additive
       "The image of an `AddSubmonoid` under an `AddMonoid` hom is an `AddSubmonoid` of the
       codomain."]
-theorem IsSubmonoid.image {γ : Type _} [Monoid γ] {f : M → γ} (hf : IsMonoidHom f) {s : Set M}
+theorem IsSubmonoid.image {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoidHom f) {s : Set M}
     (hs : IsSubmonoid s) : IsSubmonoid (f '' s) :=
   { one_mem := ⟨1, hs.one_mem, hf.map_one⟩
     mul_mem := @fun a b ⟨x, hx⟩ ⟨y, hy⟩ =>
@@ -198,7 +194,7 @@ theorem IsSubmonoid.image {γ : Type _} [Monoid γ] {f : M → γ} (hf : IsMonoi
 
 /-- The image of a monoid hom is a submonoid of the codomain. -/
 @[to_additive "The image of an `AddMonoid` hom is an `AddSubmonoid` of the codomain."]
-theorem Range.isSubmonoid {γ : Type _} [Monoid γ] {f : M → γ} (hf : IsMonoidHom f) :
+theorem Range.isSubmonoid {γ : Type*} [Monoid γ] {f : M → γ} (hf : IsMonoidHom f) :
     IsSubmonoid (Set.range f) := by
   rw [← Set.image_univ]
   exact Univ.isSubmonoid.image hf
@@ -214,17 +210,19 @@ theorem IsSubmonoid.pow_mem {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : ∀ {n 
     exact hs.one_mem
   | n + 1 => by
     rw [pow_succ]
-    exact hs.mul_mem h (IsSubmonoid.pow_mem hs h)
+    exact hs.mul_mem (IsSubmonoid.pow_mem hs h) h
 #align is_submonoid.pow_mem IsSubmonoid.pow_mem
 
-/-- The set of natural number powers of an element of a submonoid is a subset of the submonoid. -/
-@[to_additive IsAddSubmonoid.multiples_subset
+/-- The set of natural number powers of an element of a `Submonoid` is a subset of the
+`Submonoid`. -/
+@[to_additive
       "The set of natural number multiples of an element of an `AddSubmonoid` is a subset of
       the `AddSubmonoid`."]
-theorem IsSubmonoid.power_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
+theorem IsSubmonoid.powers_subset {a : M} (hs : IsSubmonoid s) (h : a ∈ s) : powers a ⊆ s :=
   fun _ ⟨_, hx⟩ => hx ▸ hs.pow_mem h
-#align is_submonoid.power_subset IsSubmonoid.power_subset
+#align is_submonoid.power_subset IsSubmonoid.powers_subset
 #align is_add_submonoid.multiples_subset IsAddSubmonoid.multiples_subset
+/- 2024-02-21 -/ @[deprecated] alias IsSubmonoid.power_subset := IsSubmonoid.powers_subset
 
 end powers
 
@@ -250,7 +248,7 @@ the submonoid. -/
 theorem multiset_prod_mem {M} [CommMonoid M] {s : Set M} (hs : IsSubmonoid s) (m : Multiset M) :
     (∀ a ∈ m, a ∈ s) → m.prod ∈ s := by
   refine' Quotient.inductionOn m fun l hl => _
-  rw [Multiset.quot_mk_to_coe, Multiset.coe_prod]
+  rw [Multiset.quot_mk_to_coe, Multiset.prod_coe]
   exact list_prod_mem hs hl
 #align is_submonoid.multiset_prod_mem IsSubmonoid.multiset_prod_mem
 #align is_add_submonoid.multiset_sum_mem IsAddSubmonoid.multiset_sum_mem
@@ -271,7 +269,7 @@ end IsSubmonoid
 namespace AddMonoid
 
 /-- The inductively defined membership predicate for the submonoid generated by a subset of a
-    monoid.-/
+    monoid. -/
 inductive InClosure (s : Set A) : A → Prop
   | basic {a : A} : a ∈ s → InClosure _ a
   | zero : InClosure _ 0
@@ -340,7 +338,7 @@ theorem closure_mono {s t : Set M} (h : s ⊆ t) : Closure s ⊆ Closure t :=
 theorem closure_singleton {x : M} : Closure ({x} : Set M) = powers x :=
   Set.eq_of_subset_of_subset
       (closure_subset (powers.isSubmonoid x) <| Set.singleton_subset_iff.2 <| powers.self_mem) <|
-    IsSubmonoid.power_subset (closure.isSubmonoid _) <|
+    IsSubmonoid.powers_subset (closure.isSubmonoid _) <|
       Set.singleton_subset_iff.1 <| subset_closure
 #align monoid.closure_singleton Monoid.closure_singleton
 #align add_monoid.closure_singleton AddMonoid.closure_singleton
@@ -350,7 +348,7 @@ theorem closure_singleton {x : M} : Closure ({x} : Set M) = powers x :=
 @[to_additive
       "The image under an `AddMonoid` hom of the `AddSubmonoid` generated by a set equals
       the `AddSubmonoid` generated by the image of the set under the `AddMonoid` hom."]
-theorem image_closure {A : Type _} [Monoid A] {f : M → A} (hf : IsMonoidHom f) (s : Set M) :
+theorem image_closure {A : Type*} [Monoid A] {f : M → A} (hf : IsMonoidHom f) (s : Set M) :
     f '' Closure s = Closure (f '' s) :=
   le_antisymm
     (by
@@ -373,14 +371,14 @@ a list of elements of `s` whose product is `a`. -/
       a set `s`, there exists a list of elements of `s` whose sum is `a`."]
 theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
     ∃ l : List M, (∀ x ∈ l, x ∈ s) ∧ l.prod = a := by
-  induction h
-  case basic a ha => exists [a]; simp [ha]
-  case one => exists []; simp
-  case mul a b _ _ ha hb =>
+  induction h with
+  | @basic a ha => exists [a]; simp [ha]
+  | one => exists []; simp
+  | mul _ _ ha hb =>
     rcases ha with ⟨la, ha, eqa⟩
     rcases hb with ⟨lb, hb, eqb⟩
     exists la ++ lb
-    simp [eqa.symm, eqb.symm, or_imp]
+    simp only [List.mem_append, or_imp, List.prod_append, eqa.symm, eqb.symm, and_true]
     exact fun a => ⟨ha a, hb a⟩
 #align monoid.exists_list_of_mem_closure Monoid.exists_list_of_mem_closure
 #align add_monoid.exists_list_of_mem_closure AddMonoid.exists_list_of_mem_closure
@@ -392,7 +390,7 @@ theorem exists_list_of_mem_closure {s : Set M} {a : M} (h : a ∈ Closure s) :
       "Given sets `s, t` of a commutative `AddMonoid M`, `x ∈ M` is in the `AddSubmonoid`
       of `M` generated by `s ∪ t` iff there exists an element of the `AddSubmonoid` generated by `s`
       and an element of the `AddSubmonoid` generated by `t` whose sum is `x`."]
-theorem mem_closure_union_iff {M : Type _} [CommMonoid M] {s t : Set M} {x : M} :
+theorem mem_closure_union_iff {M : Type*} [CommMonoid M] {s t : Set M} {x : M} :
     x ∈ Closure (s ∪ t) ↔ ∃ y ∈ Closure s, ∃ z ∈ Closure t, y * z = x :=
   ⟨fun hx =>
     let ⟨L, HL1, HL2⟩ := exists_list_of_mem_closure hx
@@ -428,6 +426,6 @@ def Submonoid.of {s : Set M} (h : IsSubmonoid s) : Submonoid M :=
 
 @[to_additive]
 theorem Submonoid.isSubmonoid (S : Submonoid M) : IsSubmonoid (S : Set M) := by
-  refine' ⟨S.2, S.1.2⟩
+  exact ⟨S.2, S.1.2⟩
 #align submonoid.is_submonoid Submonoid.isSubmonoid
 #align add_submonoid.is_add_submonoid AddSubmonoid.isAddSubmonoid

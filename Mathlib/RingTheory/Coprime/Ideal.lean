@@ -2,14 +2,11 @@
 Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
-
-! This file was ported from Lean 3 source module ring_theory.coprime.ideal
-! leanprover-community/mathlib commit 2bbc7e3884ba234309d2a43b19144105a753292e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.Dfinsupp
+import Mathlib.LinearAlgebra.DFinsupp
 import Mathlib.RingTheory.Ideal.Operations
+
+#align_import ring_theory.coprime.ideal from "leanprover-community/mathlib"@"2bbc7e3884ba234309d2a43b19144105a753292e"
 
 /-!
 # An additional lemma about coprime ideals
@@ -21,7 +18,7 @@ It is on a separate file due to import requirements.
 
 namespace Ideal
 
-variable {ι R : Type _} [CommSemiring R]
+variable {ι R : Type*} [CommSemiring R]
 
 /-- A finite family of ideals is pairwise coprime (that is, any two of them generate the whole ring)
 iff when taking all the possible intersections of all but one of these ideals, the resulting family
@@ -30,7 +27,7 @@ of ideals still generate the whole ring.
 For example with three ideals : `I ⊔ J = I ⊔ K = J ⊔ K = ⊤ ↔ (I ⊓ J) ⊔ (I ⊓ K) ⊔ (J ⊓ K) = ⊤`.
 
 When ideals are all of the form `I i = R ∙ s i`, this is equivalent to the
-`exists_sum_eq_one_iff_pairwise_coprime` lemma.-/
+`exists_sum_eq_one_iff_pairwise_coprime` lemma. -/
 theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι → Ideal R) :
     (⨆ i ∈ t, ⨅ (j) (_ : j ∈ t) (_ : j ≠ i), I j) = ⊤ ↔
       (t : Set ι).Pairwise fun i j => I i ⊔ I j = ⊤ := by
@@ -43,7 +40,7 @@ theorem iSup_iInf_eq_top_iff_pairwise {t : Finset ι} (h : t.Nonempty) (I : ι �
     · simp only [dif_pos, dif_ctx_congr, Submodule.coe_mk, eq_self_iff_true]
   intro a t hat h ih
   rw [Finset.coe_cons,
-    Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) => sup_comm.trans h]
+    Set.pairwise_insert_of_symmetric fun i j (h : I i ⊔ I j = ⊤) ↦ (sup_comm _ _).trans h]
   constructor
   · rintro ⟨μ, hμ⟩
     rw [Finset.sum_cons] at hμ

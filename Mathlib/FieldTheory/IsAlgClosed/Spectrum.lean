@@ -2,14 +2,11 @@
 Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
-
-! This file was ported from Lean 3 source module field_theory.is_alg_closed.spectrum
-! leanprover-community/mathlib commit 58a272265b5e05f258161260dd2c5d247213cbd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.FieldTheory.IsAlgClosed.Basic
+
+#align_import field_theory.is_alg_closed.spectrum from "leanprover-community/mathlib"@"58a272265b5e05f258161260dd2c5d247213cbd3"
 
 /-!
 # Spectrum mapping theorem
@@ -17,9 +14,9 @@ import Mathlib.FieldTheory.IsAlgClosed.Basic
 This file develops proves the spectral mapping theorem for polynomials over algebraically closed
 fields. In particular, if `a` is an element of a `𝕜`-algebra `A` where `𝕜` is a field, and
 `p : 𝕜[X]` is a polynomial, then the spectrum of `Polynomial.aeval a p` contains the image of the
-spectrum of `a` under `(λ k, Polynomial.eval k p)`. When `𝕜` is algebraically closed, these are in
-fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial has positive
-degree), which is the **spectral mapping theorem**.
+spectrum of `a` under `(fun k ↦ Polynomial.eval k p)`. When `𝕜` is algebraically closed,
+these are in fact equal (assuming either that the spectrum of `a` is nonempty or the polynomial
+has positive degree), which is the **spectral mapping theorem**.
 
 In addition, this file contains the fact that every element of a finite dimensional nontrivial
 algebra over an algebraically closed field has nonempty spectrum. In particular, this is used in
@@ -38,8 +35,6 @@ eigenvalue.
 * `σ a` : `spectrum R a` of `a : A`
 -/
 
-local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- Porting note: See issue #2220
-
 namespace spectrum
 
 open Set Polynomial
@@ -51,13 +46,12 @@ universe u v
 section ScalarRing
 
 variable {R : Type u} {A : Type v}
-
 variable [CommRing R] [Ring A] [Algebra R A]
 
 local notation "σ" => spectrum R
 local notation "↑ₐ" => algebraMap R A
 
--- porting note: removed an unneeded assumption `p ≠ 0`
+-- Porting note: removed an unneeded assumption `p ≠ 0`
 theorem exists_mem_of_not_isUnit_aeval_prod [IsDomain R] {p : R[X]} {a : A}
     (h : ¬IsUnit (aeval a (Multiset.map (fun x : R => X - C x) p.roots).prod)) :
     ∃ k : R, k ∈ σ a ∧ eval k p = 0 := by
@@ -74,7 +68,6 @@ end ScalarRing
 section ScalarField
 
 variable {𝕜 : Type u} {A : Type v}
-
 variable [Field 𝕜] [Ring A] [Algebra 𝕜 A]
 
 local notation "σ" => spectrum 𝕜
@@ -88,10 +81,10 @@ because it holds over any field, whereas `spectrum.map_polynomial_aeval_of_degre
 theorem subset_polynomial_aeval (a : A) (p : 𝕜[X]) : (eval · p) '' σ a ⊆ σ (aeval a p) := by
   rintro _ ⟨k, hk, rfl⟩
   let q := C (eval k p) - p
-  have hroot : IsRoot q k := by simp only [eval_C, eval_sub, sub_self, IsRoot.def]
+  have hroot : IsRoot q k := by simp only [q, eval_C, eval_sub, sub_self, IsRoot.def]
   rw [← mul_div_eq_iff_isRoot, ← neg_mul_neg, neg_sub] at hroot
   have aeval_q_eq : ↑ₐ (eval k p) - aeval a p = aeval a q := by
-    simp only [aeval_C, AlgHom.map_sub, sub_left_inj]
+    simp only [q, aeval_C, AlgHom.map_sub, sub_left_inj]
   rw [mem_iff, aeval_q_eq, ← hroot, aeval_mul]
   have hcomm := (Commute.all (C k - X) (-(q / (X - C k)))).map (aeval a : 𝕜[X] →ₐ[𝕜] A)
   apply mt fun h => (hcomm.isUnit_mul_iff.mp h).1
@@ -160,7 +153,7 @@ over an algebraically closed field `𝕜` has non-empty spectrum. -/
 theorem nonempty_of_isAlgClosed_of_finiteDimensional [IsAlgClosed 𝕜] [Nontrivial A]
     [I : FiniteDimensional 𝕜 A] (a : A) : (σ a).Nonempty := by
   obtain ⟨p, ⟨h_mon, h_eval_p⟩⟩ := isIntegral_of_noetherian (IsNoetherian.iff_fg.2 I) a
-  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p ; rw [h_eval_p]; simp
+  have nu : ¬IsUnit (aeval a p) := by rw [← aeval_def] at h_eval_p; rw [h_eval_p]; simp
   rw [eq_prod_roots_of_monic_of_splits_id h_mon (IsAlgClosed.splits p)] at nu
   obtain ⟨k, hk, _⟩ := exists_mem_of_not_isUnit_aeval_prod nu
   exact ⟨k, hk⟩

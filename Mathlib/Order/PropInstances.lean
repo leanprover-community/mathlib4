@@ -2,14 +2,10 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.prop_instances
-! leanprover-community/mathlib commit 6623e6af705e97002a9054c1c05a980180276fc1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Disjoint
-import Mathlib.Order.WithBot
+
+#align_import order.prop_instances from "leanprover-community/mathlib"@"6623e6af705e97002a9054c1c05a980180276fc1"
 
 /-!
 
@@ -19,9 +15,8 @@ Instances on `Prop` such as `DistribLattice`, `BoundedOrder`, `LinearOrder`.
 
 -/
 
-
 /-- Propositions form a distributive lattice. -/
-instance Prop.distribLattice : DistribLattice Prop where
+instance Prop.instDistribLattice : DistribLattice Prop where
   sup := Or
   le_sup_left := @Or.inl
   le_sup_right := @Or.inr
@@ -31,15 +26,15 @@ instance Prop.distribLattice : DistribLattice Prop where
   inf_le_right := @And.right
   le_inf := fun _ _ _ Hab Hac Ha => And.intro (Hab Ha) (Hac Ha)
   le_sup_inf := fun _ _ _ => or_and_left.2
-#align Prop.distrib_lattice Prop.distribLattice
+#align Prop.distrib_lattice Prop.instDistribLattice
 
 /-- Propositions form a bounded order. -/
-instance Prop.boundedOrder : BoundedOrder Prop where
+instance Prop.instBoundedOrder : BoundedOrder Prop where
   top := True
   le_top _ _ := True.intro
   bot := False
   bot_le := @False.elim
-#align Prop.bounded_order Prop.boundedOrder
+#align Prop.bounded_order Prop.instBoundedOrder
 
 theorem Prop.bot_eq_false : (⊥ : Prop) = False :=
   rfl
@@ -70,7 +65,7 @@ theorem inf_Prop_eq : (· ⊓ ·) = (· ∧ ·) :=
 
 namespace Pi
 
-variable {ι : Type _} {α' : ι → Type _} [∀ i, PartialOrder (α' i)]
+variable {ι : Type*} {α' : ι → Type*} [∀ i, PartialOrder (α' i)]
 
 theorem disjoint_iff [∀ i, OrderBot (α' i)] {f g : ∀ i, α' i} :
     Disjoint f g ↔ ∀ i, Disjoint (f i) (g i) := by
@@ -113,8 +108,10 @@ theorem Prop.isCompl_iff {P Q : Prop} : IsCompl P Q ↔ ¬(P ↔ Q) := by
   by_cases P <;> by_cases Q <;> simp [*]
 #align Prop.is_compl_iff Prop.isCompl_iff
 
--- porting note: Lean 3 would unfold these for us, but we need to do it manually now
+-- Porting note: Lean 3 would unfold these for us, but we need to do it manually now
 section decidable_instances
+
+universe u
 variable {α : Type u}
 
 instance Prop.decidablePredBot : DecidablePred (⊥ : α → Prop) := fun _ => instDecidableFalse

@@ -2,14 +2,11 @@
 Copyright (c) 2022 Sébastien Gouëzel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Sébastien Gouëzel
-
-! This file was ported from Lean 3 source module measure_theory.covering.one_dim
-! leanprover-community/mathlib commit fd5edc43dc4f10b85abfe544b88f82cf13c5f844
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Covering.DensityTheorem
 import Mathlib.MeasureTheory.Measure.Lebesgue.EqHaar
+
+#align_import measure_theory.covering.one_dim from "leanprover-community/mathlib"@"fd5edc43dc4f10b85abfe544b88f82cf13c5f844"
 
 /-!
 # Covering theorems for Lebesgue measure in one dimension

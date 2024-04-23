@@ -2,13 +2,10 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.sums.associator
-! leanprover-community/mathlib commit 590f43db91071eb3134fef935ec9d7cd2a3bd4ce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sums.Basic
+
+#align_import category_theory.sums.associator from "leanprover-community/mathlib"@"590f43db91071eb3134fef935ec9d7cd2a3bd4ce"
 
 /-!
 # Associator for binary disjoint union of categories.
@@ -136,19 +133,19 @@ theorem inverseAssociator_map_inr_inr {X Y : E} (f : inr (inr X) ⟶ inr (inr Y)
 def associativity : Sum (Sum C D) E ≌ Sum C (Sum D E) :=
   Equivalence.mk (associator C D E) (inverseAssociator C D E)
     (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting notes: aesop_cat fails
+      (by rcases X with ((_|_)|_) <;> rfl)) -- Porting note: aesop_cat fails
       (by rintro ((_|_)|_) ((_|_)|_) f <;> first | cases f | aesop_cat))
     (NatIso.ofComponents (fun X => eqToIso
-      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting notes: aesop_cat fails
+      (by rcases X with (_|(_|_)) <;> rfl)) -- Porting note: aesop_cat fails
       (by rintro (_|(_|_)) (_|(_|_)) f <;> first | cases f | aesop_cat))
 #align category_theory.sum.associativity CategoryTheory.sum.associativity
 
-instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).functor)
+instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).functor.IsEquivalence)
 #align category_theory.sum.associator_is_equivalence CategoryTheory.sum.associatorIsEquivalence
 
-instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).inverse)
+instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.sum.inverse_associator_is_equivalence CategoryTheory.sum.inverseAssociatorIsEquivalence
 
 -- TODO unitors?

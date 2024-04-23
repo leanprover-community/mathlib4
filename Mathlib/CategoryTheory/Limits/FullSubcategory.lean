@@ -2,13 +2,10 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.limits.full_subcategory
-! leanprover-community/mathlib commit fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Creates
+
+#align_import category_theory.limits.full_subcategory from "leanprover-community/mathlib"@"fe5e4ce6c72d96d77ad40ac832a6e7f8040990bc"
 
 /-!
 # Limits in full subcategories
@@ -104,21 +101,22 @@ def createsLimitFullSubcategoryInclusionOfClosed (h : ClosedUnderLimitsOfShape J
 
 /-- If `P` is closed under limits of shape `J`, then the inclusion creates such limits. -/
 def createsLimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderLimitsOfShape J P)
-    [HasLimitsOfShape J C] : CreatesLimitsOfShape J (fullSubcategoryInclusion P)
-    where CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed h F
+    [HasLimitsOfShape J C] : CreatesLimitsOfShape J (fullSubcategoryInclusion P) where
+  CreatesLimit := @fun F => createsLimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_limits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsLimitsOfShapeFullSubcategoryInclusion
 
-theorem hasLimit_of_closed_under_limits (h : ClosedUnderLimitsOfShape J P)
+theorem hasLimit_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasLimit (F ⋙ fullSubcategoryInclusion P)] : HasLimit F :=
   have : CreatesLimit F (fullSubcategoryInclusion P) :=
     createsLimitFullSubcategoryInclusionOfClosed h F
   hasLimit_of_created F (fullSubcategoryInclusion P)
-#align category_theory.limits.has_limit_of_closed_under_limits CategoryTheory.Limits.hasLimit_of_closed_under_limits
+#align category_theory.limits.has_limit_of_closed_under_limits CategoryTheory.Limits.hasLimit_of_closedUnderLimits
+@[deprecated] alias hasLimit_of_closed_under_limits := hasLimit_of_closedUnderLimits -- 2024-03-23
 
-theorem hasLimitsOfShape_of_closed_under_limits (h : ClosedUnderLimitsOfShape J P)
+theorem hasLimitsOfShape_of_closedUnderLimits (h : ClosedUnderLimitsOfShape J P)
     [HasLimitsOfShape J C] : HasLimitsOfShape J (FullSubcategory P) :=
-  { has_limit := fun F => hasLimit_of_closed_under_limits h F }
-#align category_theory.limits.has_limits_of_shape_of_closed_under_limits CategoryTheory.Limits.hasLimitsOfShape_of_closed_under_limits
+  { has_limit := fun F => hasLimit_of_closedUnderLimits h F }
+#align category_theory.limits.has_limits_of_shape_of_closed_under_limits CategoryTheory.Limits.hasLimitsOfShape_of_closedUnderLimits
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
 def createsColimitFullSubcategoryInclusionOfClosed (h : ClosedUnderColimitsOfShape J P)
@@ -129,21 +127,25 @@ def createsColimitFullSubcategoryInclusionOfClosed (h : ClosedUnderColimitsOfSha
 
 /-- If `P` is closed under colimits of shape `J`, then the inclusion creates such colimits. -/
 def createsColimitsOfShapeFullSubcategoryInclusion (h : ClosedUnderColimitsOfShape J P)
-    [HasColimitsOfShape J C] : CreatesColimitsOfShape J (fullSubcategoryInclusion P)
-    where CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed h F
+    [HasColimitsOfShape J C] : CreatesColimitsOfShape J (fullSubcategoryInclusion P) where
+  CreatesColimit := @fun F => createsColimitFullSubcategoryInclusionOfClosed h F
 #align category_theory.limits.creates_colimits_of_shape_full_subcategory_inclusion CategoryTheory.Limits.createsColimitsOfShapeFullSubcategoryInclusion
 
-theorem hasColimit_of_closed_under_colimits (h : ClosedUnderColimitsOfShape J P)
+theorem hasColimit_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
     (F : J ⥤ FullSubcategory P) [HasColimit (F ⋙ fullSubcategoryInclusion P)] : HasColimit F :=
   have : CreatesColimit F (fullSubcategoryInclusion P) :=
     createsColimitFullSubcategoryInclusionOfClosed h F
   hasColimit_of_created F (fullSubcategoryInclusion P)
-#align category_theory.limits.has_colimit_of_closed_under_colimits CategoryTheory.Limits.hasColimit_of_closed_under_colimits
+#align category_theory.limits.has_colimit_of_closed_under_colimits CategoryTheory.Limits.hasColimit_of_closedUnderColimits
+@[deprecated] alias hasColimit_of_closed_under_colimits :=
+  hasColimit_of_closedUnderColimits -- 2024-03-23
 
-theorem hasColimitsOfShape_of_closed_under_colimits (h : ClosedUnderColimitsOfShape J P)
+theorem hasColimitsOfShape_of_closedUnderColimits (h : ClosedUnderColimitsOfShape J P)
     [HasColimitsOfShape J C] : HasColimitsOfShape J (FullSubcategory P) :=
-  { has_colimit := fun F => hasColimit_of_closed_under_colimits h F }
-#align category_theory.limits.has_colimits_of_shape_of_closed_under_colimits CategoryTheory.Limits.hasColimitsOfShape_of_closed_under_colimits
+  { has_colimit := fun F => hasColimit_of_closedUnderColimits h F }
+#align category_theory.limits.has_colimits_of_shape_of_closed_under_colimits CategoryTheory.Limits.hasColimitsOfShape_of_closedUnderColimits
+@[deprecated] alias hasColimitsOfShape_of_closed_under_colimits :=
+  hasColimitsOfShape_of_closedUnderColimits -- 2024-03-23
 
 end
 

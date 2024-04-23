@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Eric Wieser
-
-! This file was ported from Lean 3 source module analysis.special_functions.exponential
-! leanprover-community/mathlib commit e1a18cad9cd462973d760af7de36b05776b8811c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Exponential
-import Mathlib.Analysis.Calculus.FDerivAnalytic
+import Mathlib.Analysis.Calculus.FDeriv.Analytic
 import Mathlib.Topology.MetricSpace.CauSeqFilter
+
+#align_import analysis.special_functions.exponential from "leanprover-community/mathlib"@"e1a18cad9cd462973d760af7de36b05776b8811c"
 
 /-!
 # Calculus results on exponential in a Banach algebra
@@ -56,13 +53,13 @@ We prove most results for an arbitrary field `𝕂`, and then specialize to `�
 -/
 
 
-open Filter IsROrC ContinuousMultilinearMap NormedField Asymptotics
+open Filter RCLike ContinuousMultilinearMap NormedField NormedSpace Asymptotics
 
 open scoped Nat Topology BigOperators ENNReal
 
 section AnyFieldAnyAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has strict Fréchet derivative
@@ -72,7 +69,7 @@ theorem hasStrictFDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝔸).
   convert (hasFPowerSeriesAt_exp_zero_of_radius_pos h).hasStrictFDerivAt
   ext x
   change x = expSeries 𝕂 𝔸 1 fun _ => x
-  simp [expSeries_apply_eq]
+  simp [expSeries_apply_eq, Nat.factorial]
 #align has_strict_fderiv_at_exp_zero_of_radius_pos hasStrictFDerivAt_exp_zero_of_radius_pos
 
 /-- The exponential in a Banach algebra `𝔸` over a normed field `𝕂` has Fréchet derivative
@@ -86,7 +83,7 @@ end AnyFieldAnyAlgebra
 
 section AnyFieldCommAlgebra
 
-variable {𝕂 𝔸 : Type _} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
+variable {𝕂 𝔸 : Type*} [NontriviallyNormedField 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸]
   [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over a normed field `𝕂` of
@@ -124,7 +121,7 @@ end AnyFieldCommAlgebra
 
 section deriv
 
-variable {𝕂 : Type _} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
+variable {𝕂 : Type*} [NontriviallyNormedField 𝕂] [CompleteSpace 𝕂]
 
 /-- The exponential map in a complete normed field `𝕂` of characteristic zero has strict derivative
 `exp 𝕂 x` at any point `x` in the disk of convergence. -/
@@ -156,9 +153,9 @@ theorem hasDerivAt_exp_zero_of_radius_pos (h : 0 < (expSeries 𝕂 𝕂).radius)
 
 end deriv
 
-section IsROrCAnyAlgebra
+section RCLikeAnyAlgebra
 
-variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential in a Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict Fréchet derivative
 `1 : 𝔸 →L[𝕂] 𝔸` at zero. -/
@@ -172,11 +169,11 @@ theorem hasFDerivAt_exp_zero : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸)
   hasStrictFDerivAt_exp_zero.hasFDerivAt
 #align has_fderiv_at_exp_zero hasFDerivAt_exp_zero
 
-end IsROrCAnyAlgebra
+end RCLikeAnyAlgebra
 
-section IsROrCCommAlgebra
+section RCLikeCommAlgebra
 
-variable {𝕂 𝔸 : Type _} [IsROrC 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
 
 /-- The exponential map in a commutative Banach algebra `𝔸` over `𝕂 = ℝ` or `𝕂 = ℂ` has strict
 Fréchet derivative `exp 𝕂 x • 1 : 𝔸 →L[𝕂] 𝔸` at any point `x`. -/
@@ -190,11 +187,11 @@ theorem hasFDerivAt_exp {x : 𝔸} : HasFDerivAt (exp 𝕂) (exp 𝕂 x • (1 :
   hasStrictFDerivAt_exp.hasFDerivAt
 #align has_fderiv_at_exp hasFDerivAt_exp
 
-end IsROrCCommAlgebra
+end RCLikeCommAlgebra
 
-section DerivROrC
+section DerivRCLike
 
-variable {𝕂 : Type _} [IsROrC 𝕂]
+variable {𝕂 : Type*} [RCLike 𝕂]
 
 /-- The exponential map in `𝕂 = ℝ` or `𝕂 = ℂ` has strict derivative `exp 𝕂 x` at any point
 `x`. -/
@@ -217,17 +214,17 @@ theorem hasDerivAt_exp_zero : HasDerivAt (exp 𝕂) (1 : 𝕂) 0 :=
   hasStrictDerivAt_exp_zero.hasDerivAt
 #align has_deriv_at_exp_zero hasDerivAt_exp_zero
 
-end DerivROrC
+end DerivRCLike
 
-theorem Complex.exp_eq_exp_ℂ : Complex.exp = _root_.exp ℂ := by
+theorem Complex.exp_eq_exp_ℂ : Complex.exp = NormedSpace.exp ℂ := by
   refine' funext fun x => _
   rw [Complex.exp, exp_eq_tsum_div]
   have : CauSeq.IsComplete ℂ norm := Complex.instIsComplete
   exact tendsto_nhds_unique x.exp'.tendsto_limit (expSeries_div_summable ℝ x).hasSum.tendsto_sum_nat
 #align complex.exp_eq_exp_ℂ Complex.exp_eq_exp_ℂ
 
-theorem Real.exp_eq_exp_ℝ : Real.exp = _root_.exp ℝ := by
-  ext x; exact_mod_cast congr_fun Complex.exp_eq_exp_ℂ x
+theorem Real.exp_eq_exp_ℝ : Real.exp = NormedSpace.exp ℝ := by
+  ext x; exact mod_cast congr_fun Complex.exp_eq_exp_ℂ x
 #align real.exp_eq_exp_ℝ Real.exp_eq_exp_ℝ
 
 /-! ### Derivative of $\exp (ux)$ by $u$
@@ -254,8 +251,7 @@ TODO: prove this result too!
 
 section exp_smul
 
-variable {𝕂 𝕊 𝔸 : Type _}
-
+variable {𝕂 𝕊 𝔸 : Type*}
 variable (𝕂)
 
 open scoped Topology
@@ -265,13 +261,9 @@ open Asymptotics Filter
 section MemBall
 
 variable [NontriviallyNormedField 𝕂] [CharZero 𝕂]
-
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-
 variable [NormedSpace 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
-
 variable [IsScalarTower 𝕂 𝕊 𝔸]
-
 variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
@@ -286,8 +278,8 @@ theorem hasFDerivAt_exp_smul_const_of_mem_ball (x : 𝔸) (t : 𝕊)
         fun h =>
           exp 𝕂 ((t + h) • x) - exp 𝕂 (t • x) - (exp 𝕂 (t • x) • (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) h by
     apply (IsLittleO.const_mul_left _ _).congr' this (EventuallyEq.refl _ _)
-    rw [← @hasFDerivAt_iff_isLittleO_nhds_zero _ _ _ _ _ _ _ _ (fun u => exp 𝕂 (u • x))
-      ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x) 0]
+    rw [← hasFDerivAt_iff_isLittleO_nhds_zero (f := fun u => exp 𝕂 (u • x))
+      (f' := (1 : 𝕊 →L[𝕂] 𝕊).smulRight x) (x := 0)]
     have : HasFDerivAt (exp 𝕂) (1 : 𝔸 →L[𝕂] 𝔸) ((1 : 𝕊 →L[𝕂] 𝕊).smulRight x 0) := by
       rw [ContinuousLinearMap.smulRight_apply, ContinuousLinearMap.one_apply, zero_smul]
       exact hasFDerivAt_exp_zero_of_radius_pos hpos
@@ -366,16 +358,12 @@ theorem hasDerivAt_exp_smul_const_of_mem_ball' (x : 𝔸) (t : 𝕂)
 
 end MemBall
 
-section IsROrC
+section RCLike
 
-variable [IsROrC 𝕂]
-
+variable [RCLike 𝕂]
 variable [NormedCommRing 𝕊] [NormedRing 𝔸]
-
 variable [NormedAlgebra 𝕂 𝕊] [NormedAlgebra 𝕂 𝔸] [Algebra 𝕊 𝔸] [ContinuousSMul 𝕊 𝔸]
-
 variable [IsScalarTower 𝕂 𝕊 𝔸]
-
 variable [CompleteSpace 𝔸]
 
 theorem hasFDerivAt_exp_smul_const (x : 𝔸) (t : 𝕊) :
@@ -430,6 +418,6 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
     (expSeries_radius_eq_top 𝕂 𝔸).symm ▸ edist_lt_top _ _
 #align has_deriv_at_exp_smul_const' hasDerivAt_exp_smul_const'
 
-end IsROrC
+end RCLike
 
 end exp_smul

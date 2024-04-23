@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.shapes.normal_mono.basic
-! leanprover-community/mathlib commit bbe25d4d92565a5fd773e52e041a90387eee3c93
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.shapes.normal_mono.basic from "leanprover-community/mathlib"@"bbe25d4d92565a5fd773e52e041a90387eee3c93"
 
 /-!
 # Definitions and basic properties of normal monomorphisms and epimorphisms.
@@ -38,7 +35,6 @@ open CategoryTheory.Limits
 universe v₁ v₂ u₁ u₂
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {X Y : C}
 
 section
@@ -58,17 +54,15 @@ attribute [inherit_doc NormalMono] NormalMono.Z NormalMono.g NormalMono.w Normal
 
 section
 
-attribute [local instance] fullyFaithfulReflectsLimits
-
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal mono, then `f` is a normal mono. -/
 def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
-    [IsEquivalence F] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
+    [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalMono (F.map f)) : NormalMono f where
   Z := F.objPreimage hf.Z
-  g := Full.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
+  g := F.preimage (hf.g ≫ (F.objObjPreimageIso hf.Z).inv)
   w := F.map_injective <| by
-    have reassoc' {W : D} (h : hf.Z ⟶  W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
+    have reassoc' {W : D} (h : hf.Z ⟶ W) : F.map f ≫ hf.g ≫ h = 0 ≫ h := by
       rw [← Category.assoc, eq_whisker hf.w]
     simp [reassoc']
   isLimit :=
@@ -77,7 +71,7 @@ def equivalenceReflectsNormalMono {D : Type u₂} [Category.{v₁} D] [HasZeroMo
         IsLimit.ofIsoLimit
           (IsLimit.ofIsoLimit
             (IsKernel.ofCompIso _ _ (F.objObjPreimageIso hf.Z) (by
-              simp only [Full.witness, Category.assoc, Iso.inv_hom_id, Category.comp_id])
+              simp only [Functor.image_preimage, Category.assoc, Iso.inv_hom_id, Category.comp_id])
             hf.isLimit)
             (ofιCongr (Category.comp_id _).symm))
         <| by apply Iso.symm; apply isoOfι  -- Porting note: very fiddly unification here
@@ -111,7 +105,7 @@ def normalOfIsPullbackSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h :
   Z := hn.Z
   g := k ≫ hn.g
   w := by
-    have reassoc' {W : C} (h' : S ⟶  W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
+    have reassoc' {W : C} (h' : S ⟶ W) : f ≫ h ≫ h' = g ≫ k ≫ h' := by
       simp only [← Category.assoc, eq_whisker comm]
     rw [← reassoc', hn.w, HasZeroMorphisms.comp_zero]
   isLimit := by
@@ -177,15 +171,13 @@ attribute [inherit_doc NormalEpi] NormalEpi.W NormalEpi.g NormalEpi.w NormalEpi.
 
 section
 
-attribute [local instance] fullyFaithfulReflectsColimits
-
 attribute [local instance] Equivalence.essSurj_of_equivalence
 
 /-- If `F` is an equivalence and `F.map f` is a normal epi, then `f` is a normal epi. -/
 def equivalenceReflectsNormalEpi {D : Type u₂} [Category.{v₁} D] [HasZeroMorphisms D] (F : C ⥤ D)
-    [IsEquivalence F] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
+    [F.IsEquivalence] {X Y : C} {f : X ⟶ Y} (hf : NormalEpi (F.map f)) : NormalEpi f where
   W := F.objPreimage hf.W
-  g := Full.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
+  g := F.preimage ((F.objObjPreimageIso hf.W).hom ≫ hf.g)
   w := F.map_injective <| by simp [hf.w]
   isColimit :=
     ReflectsColimit.reflects <|
@@ -207,7 +199,7 @@ instance (priority := 100) NormalEpi.regularEpi (f : X ⟶ Y) [I : NormalEpi f] 
     w := by simpa using I.w }
 #align category_theory.normal_epi.regular_epi CategoryTheory.NormalEpi.regularEpi
 
-/-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `normal_epi.g ≫ k = 0`
+/-- If `f` is a normal epi, then every morphism `k : X ⟶ W` satisfying `NormalEpi.g ≫ k = 0`
     induces `l : Y ⟶ W` such that `f ≫ l = k`. -/
 def NormalEpi.desc' {W : C} (f : X ⟶ Y) [nef : NormalEpi f] (k : X ⟶ W) (h : nef.g ≫ k = 0) :
     { l : Y ⟶ W // f ≫ l = k } :=
@@ -225,7 +217,7 @@ def normalOfIsPushoutSndOfNormal {P Q R S : C} {f : P ⟶ Q} {g : P ⟶ R} {h : 
   W := gn.W
   g := gn.g ≫ f
   w := by
-    have reassoc' {W : C} (h' : R ⟶  W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
+    have reassoc' {W : C} (h' : R ⟶ W) :  gn.g ≫ g ≫ h' = 0 ≫ h' := by
       rw [← Category.assoc, eq_whisker gn.w]
     rw [Category.assoc, comm, reassoc', zero_comp]
   isColimit := by

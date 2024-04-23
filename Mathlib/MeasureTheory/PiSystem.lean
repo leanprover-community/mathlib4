@@ -2,14 +2,11 @@
 Copyright (c) 2021 Martin Zinkevich. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Martin Zinkevich, Rémy Degenne
-
-! This file was ported from Lean 3 source module measure_theory.pi_system
-! leanprover-community/mathlib commit 98e83c3d541c77cdb7da20d79611a780ff8e7d90
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Encodable.Lattice
-import Mathlib.MeasureTheory.MeasurableSpaceDef
+import Mathlib.MeasureTheory.MeasurableSpace.Defs
+
+#align_import measure_theory.pi_system from "leanprover-community/mathlib"@"98e83c3d541c77cdb7da20d79611a780ff8e7d90"
 
 /-!
 # Induction principles for measurable sets, related to π-systems and λ-systems.
@@ -61,7 +58,8 @@ import Mathlib.MeasureTheory.MeasurableSpaceDef
 
 open MeasurableSpace Set
 
-open Classical MeasureTheory
+open scoped Classical
+open MeasureTheory
 
 /-- A π-system is a collection of subsets of `α` that is closed under binary intersection of
   non-disjoint sets. Usually it is also required that the collection is nonempty, but we don't do
@@ -72,7 +70,7 @@ def IsPiSystem {α} (C : Set (Set α)) : Prop :=
 
 namespace MeasurableSpace
 
-theorem isPiSystem_measurableSet {α : Type _} [MeasurableSpace α] :
+theorem isPiSystem_measurableSet {α : Type*} [MeasurableSpace α] :
     IsPiSystem { s : Set α | MeasurableSet s } := fun _ hs _ ht _ => hs.inter ht
 #align measurable_space.is_pi_system_measurable_set MeasurableSpace.isPiSystem_measurableSet
 
@@ -108,11 +106,7 @@ theorem IsPiSystem.comap {α β} {S : Set (Set β)} (h_pi : IsPiSystem S) (f : �
     IsPiSystem { s : Set α | ∃ t ∈ S, f ⁻¹' t = s } := by
   rintro _ ⟨s, hs_mem, rfl⟩ _ ⟨t, ht_mem, rfl⟩ hst
   rw [← Set.preimage_inter] at hst ⊢
-  refine' ⟨s ∩ t, h_pi s hs_mem t ht_mem _, rfl⟩
-  by_contra h
-  rw [Set.not_nonempty_iff_eq_empty] at h
-  rw [h] at hst
-  simp at hst
+  exact ⟨s ∩ t, h_pi s hs_mem t ht_mem (nonempty_of_nonempty_preimage hst), rfl⟩
 #align is_pi_system.comap IsPiSystem.comap
 
 theorem isPiSystem_iUnion_of_directed_le {α ι} (p : ι → Set (Set α))
@@ -133,7 +127,7 @@ theorem isPiSystem_iUnion_of_monotone {α ι} [SemilatticeSup ι] (p : ι → Se
 
 section Order
 
-variable {α : Type _} {ι ι' : Sort _} [LinearOrder α]
+variable {α : Type*} {ι ι' : Sort*} [LinearOrder α]
 
 theorem isPiSystem_image_Iio (s : Set α) : IsPiSystem (Iio '' s) := by
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
@@ -152,7 +146,21 @@ theorem isPiSystem_Ioi : IsPiSystem (range Ioi : Set (Set α)) :=
   @image_univ α _ Ioi ▸ isPiSystem_image_Ioi univ
 #align is_pi_system_Ioi isPiSystem_Ioi
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
+theorem isPiSystem_image_Iic (s : Set α) : IsPiSystem (Iic '' s) := by
+  rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ -
+  exact ⟨a ⊓ b, inf_ind a b ha hb, Iic_inter_Iic.symm⟩
+
+theorem isPiSystem_Iic : IsPiSystem (range Iic : Set (Set α)) :=
+  @image_univ α _ Iic ▸ isPiSystem_image_Iic univ
+#align is_pi_system_Iic isPiSystem_Iic
+
+theorem isPiSystem_image_Ici (s : Set α) : IsPiSystem (Ici '' s) :=
+  @isPiSystem_image_Iic αᵒᵈ _ s
+
+theorem isPiSystem_Ici : IsPiSystem (range Ici : Set (Set α)) :=
+  @image_univ α _ Ici ▸ isPiSystem_image_Ici univ
+#align is_pi_system_Ici isPiSystem_Ici
+
 theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (s t : Set α) :
@@ -162,7 +170,6 @@ theorem isPiSystem_Ixx_mem {Ixx : α → α → Set α} {p : α → α → Prop}
   exact fun H => ⟨l₁ ⊔ l₂, sup_ind l₁ l₂ hls₁ hls₂, u₁ ⊓ u₂, inf_ind u₁ u₂ hut₁ hut₂, Hne H, rfl⟩
 #align is_pi_system_Ixx_mem isPiSystem_Ixx_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
     (Hne : ∀ {a b}, (Ixx a b).Nonempty → p a b)
     (Hi : ∀ {a₁ b₁ a₂ b₂}, Ixx a₁ b₁ ∩ Ixx a₂ b₂ = Ixx (max a₁ a₂) (min b₁ b₂)) (f : ι → α)
@@ -170,49 +177,41 @@ theorem isPiSystem_Ixx {Ixx : α → α → Set α} {p : α → α → Prop}
   simpa only [exists_range_iff] using isPiSystem_Ixx_mem (@Hne) (@Hi) (range f) (range g)
 #align is_pi_system_Ixx isPiSystem_Ixx
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioo_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioo l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo s t
 #align is_pi_system_Ioo_mem isPiSystem_Ioo_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioo (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ l u, f l < g u ∧ Ioo (f l) (g u) = S } :=
   isPiSystem_Ixx (Ixx := Ioo) (fun ⟨_, hax, hxb⟩ => hax.trans hxb) Ioo_inter_Ioo f g
 #align is_pi_system_Ioo isPiSystem_Ioo
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ioc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc s t
 #align is_pi_system_Ioc_mem isPiSystem_Ioc_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ioc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i < g j ∧ Ioc (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Ioc) (fun ⟨_, hax, hxb⟩ => hax.trans_le hxb) Ioc_inter_Ioc f g
 #align is_pi_system_Ioc isPiSystem_Ioc
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ico_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l < u ∧ Ico l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico s t
 #align is_pi_system_Ico_mem isPiSystem_Ico_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Ico (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i < g j ∧ Ico (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Ico) (fun ⟨_, hax, hxb⟩ => hax.trans_lt hxb) Ico_inter_Ico f g
 #align is_pi_system_Ico isPiSystem_Ico
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc_mem (s t : Set α) :
     IsPiSystem { S | ∃ᵉ (l ∈ s) (u ∈ t), l ≤ u ∧ Icc l u = S } :=
   isPiSystem_Ixx_mem (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) s t
 #align is_pi_system_Icc_mem isPiSystem_Icc_mem
 
--- porting note: change `∃ (_ : p l u), _` to `_ ∧ _`
 theorem isPiSystem_Icc (f : ι → α) (g : ι' → α) :
     @IsPiSystem α { S | ∃ i j, f i ≤ g j ∧ Icc (f i) (g j) = S } :=
   isPiSystem_Ixx (Ixx := Icc) nonempty_Icc.1 (by exact Icc_inter_Icc) f g
@@ -275,7 +274,7 @@ theorem generateFrom_generatePiSystem_eq {α} {g : Set (Set α)} :
   · exact fun t h_t => measurableSet_generateFrom (generatePiSystem.base h_t)
 #align generate_from_generate_pi_system_eq generateFrom_generatePiSystem_eq
 
-/- Every element of the π-system generated by the union of a family of π-systems
+/-- Every element of the π-system generated by the union of a family of π-systems
 is a finite intersection of elements from the π-systems.
 For an indexed union version, see `mem_generatePiSystem_iUnion_elim'`. -/
 theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi : ∀ b, IsPiSystem (g b))
@@ -300,8 +299,6 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
           and_true_iff, true_and_iff] at h1 ⊢
       all_goals exact h1
     intro b h_b
-    -- Porting note: `simp only` required for a beta reduction
-    simp only []
     split_ifs with hbs hbt hbt
     · refine' h_pi b (f_s b) (h_s b hbs) (f_t' b) (h_t' b hbt) (Set.Nonempty.mono _ h_nonempty)
       exact Set.inter_subset_inter (Set.biInter_subset_of_mem hbs) (Set.biInter_subset_of_mem hbt)
@@ -311,15 +308,14 @@ theorem mem_generatePiSystem_iUnion_elim {α β} {g : β → Set (Set α)} (h_pi
       apply False.elim (h_b.elim hbs hbt)
 #align mem_generate_pi_system_Union_elim mem_generatePiSystem_iUnion_elim
 
-/- Every element of the π-system generated by an indexed union of a family of π-systems
+/-- Every element of the π-system generated by an indexed union of a family of π-systems
 is a finite intersection of elements from the π-systems.
 For a total union version, see `mem_generatePiSystem_iUnion_elim`. -/
 theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s : Set β}
     (h_pi : ∀ b ∈ s, IsPiSystem (g b)) (t : Set α) (h_t : t ∈ generatePiSystem (⋃ b ∈ s, g b)) :
     ∃ (T : Finset β) (f : β → Set α), ↑T ⊆ s ∧ (t = ⋂ b ∈ T, f b) ∧ ∀ b ∈ T, f b ∈ g b := by
   have : t ∈ generatePiSystem (⋃ b : Subtype s, (g ∘ Subtype.val) b) := by
-    suffices h1 : (⋃ b : Subtype s, (g ∘ Subtype.val) b) = ⋃ b ∈ s, g b
-    · rwa [h1]
+    suffices h1 : ⋃ b : Subtype s, (g ∘ Subtype.val) b = ⋃ b ∈ s, g b by rwa [h1]
     ext x
     simp only [exists_prop, Set.mem_iUnion, Function.comp_apply, Subtype.exists, Subtype.coe_mk]
     rfl
@@ -350,7 +346,7 @@ theorem mem_generatePiSystem_iUnion_elim' {α β} {g : β → Set (Set α)} {s :
 
 section UnionInter
 
-variable {α ι : Type _}
+variable {α ι : Type*}
 
 /-! ### π-system generated by finite intersections of sets of a π-system family -/
 
@@ -436,7 +432,7 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
     rw [ht1_eq, ht2_eq]
     simp_rw [← Set.inf_eq_inter]
     ext1 x
-    simp only [inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
+    simp only [g, inf_eq_inter, mem_inter_iff, mem_iInter, Finset.mem_union]
     refine' ⟨fun h i _ => _, fun h => ⟨fun i hi1 => _, fun i hi2 => _⟩⟩
     · split_ifs with h_1 h_2 h_2
       exacts [⟨h.1 i h_1, h.2 i h_2⟩, ⟨h.1 i h_1, Set.mem_univ _⟩, ⟨Set.mem_univ _, h.2 i h_2⟩,
@@ -448,15 +444,15 @@ theorem isPiSystem_piiUnionInter (π : ι → Set (Set α)) (hpi : ∀ x, IsPiSy
       rw [if_pos hi2] at h
       exact h.2
   refine' ⟨fun n hn => _, h_inter_eq⟩
-  simp only []
+  simp only [g]
   split_ifs with hn1 hn2 h
   · refine' hpi n (f1 n) (hf1m n hn1) (f2 n) (hf2m n hn2) (Set.nonempty_iff_ne_empty.2 fun h => _)
     rw [h_inter_eq] at h_nonempty
-    suffices h_empty : (⋂ i ∈ p1 ∪ p2, g i) = ∅
-    exact (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
+    suffices h_empty : ⋂ i ∈ p1 ∪ p2, g i = ∅ from
+      (Set.not_nonempty_iff_eq_empty.mpr h_empty) h_nonempty
     refine' le_antisymm (Set.iInter_subset_of_subset n _) (Set.empty_subset _)
     refine' Set.iInter_subset_of_subset hn _
-    simp_rw [if_pos hn1, if_pos hn2]
+    simp_rw [g, if_pos hn1, if_pos hn2]
     exact h.subset
   · simp [hf1m n hn1]
   · simp [hf2m n h]
@@ -508,7 +504,7 @@ theorem measurableSet_iSup_of_mem_piiUnionInter (m : ι → MeasurableSpace α) 
     MeasurableSet[⨆ i ∈ S, m i] t := by
   rcases ht with ⟨pt, hpt, ft, ht_m, rfl⟩
   refine' pt.measurableSet_biInter fun i hi => _
-  suffices h_le : m i ≤ ⨆ i ∈ S, m i; exact h_le (ft i) (ht_m i hi)
+  suffices h_le : m i ≤ ⨆ i ∈ S, m i from h_le (ft i) (ht_m i hi)
   have hi' : i ∈ S := hpt hi
   exact le_iSup₂ (f := fun i (_ : i ∈ S) => m i) i hi'
 #align measurable_set_supr_of_mem_pi_Union_Inter measurableSet_iSup_of_mem_piiUnionInter
@@ -527,7 +523,7 @@ end UnionInter
 
 namespace MeasurableSpace
 
-variable {α : Type _}
+variable {α : Type*}
 
 /-! ## Dynkin systems and Π-λ theorem -/
 
@@ -541,15 +537,15 @@ variable {α : Type _}
 
   A Dynkin system is also known as a "λ-system" or a "d-system".
 -/
-structure DynkinSystem (α : Type _) where
+structure DynkinSystem (α : Type*) where
   /-- Predicate saying that a given set is contained in the Dynkin system. -/
   Has : Set α → Prop
   /-- A Dynkin system contains the empty set. -/
   has_empty : Has ∅
   /-- A Dynkin system is closed under complementation. -/
-  has_compl : ∀ {a}, Has a → Has (aᶜ)
+  has_compl : ∀ {a}, Has a → Has aᶜ
   /-- A Dynkin system is closed under countable union of pairwise disjoint sets. Use a more general
-  `MeasurableSpace.DynkinSystem.has_iUnion` instead.-/
+  `MeasurableSpace.DynkinSystem.has_iUnion` instead. -/
   has_iUnion_nat : ∀ {f : ℕ → Set α}, Pairwise (Disjoint on f) → (∀ i, Has (f i)) → Has (⋃ i, f i)
 #align measurable_space.dynkin_system MeasurableSpace.DynkinSystem
 
@@ -565,7 +561,7 @@ theorem ext : ∀ {d₁ d₂ : DynkinSystem α}, (∀ s : Set α, d₁.Has s ↔
 
 variable (d : DynkinSystem α)
 
-theorem has_compl_iff {a} : d.Has (aᶜ) ↔ d.Has a :=
+theorem has_compl_iff {a} : d.Has aᶜ ↔ d.Has a :=
   ⟨fun h => by simpa using d.has_compl h, fun h => d.has_compl h⟩
 #align measurable_space.dynkin_system.has_compl_iff MeasurableSpace.DynkinSystem.has_compl_iff
 
@@ -590,11 +586,11 @@ theorem has_union {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (
 theorem has_diff {s₁ s₂ : Set α} (h₁ : d.Has s₁) (h₂ : d.Has s₂) (h : s₂ ⊆ s₁) :
     d.Has (s₁ \ s₂) := by
   apply d.has_compl_iff.1
-  simp [diff_eq, compl_inter]
+  simp only [diff_eq, compl_inter, compl_compl]
   exact d.has_union (d.has_compl h₁) h₂ (disjoint_compl_left.mono_right h)
 #align measurable_space.dynkin_system.has_diff MeasurableSpace.DynkinSystem.has_diff
 
-instance : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
+instance instLEDynkinSystem : LE (DynkinSystem α) where le m₁ m₂ := m₁.Has ≤ m₂.Has
 
 theorem le_def {α} {a b : DynkinSystem α} : a ≤ b ↔ a.Has ≤ b.Has :=
   Iff.rfl
@@ -625,12 +621,12 @@ theorem ofMeasurableSpace_le_ofMeasurableSpace_iff {m₁ m₂ : MeasurableSpace 
 inductive GenerateHas (s : Set (Set α)) : Set α → Prop
   | basic : ∀ t ∈ s, GenerateHas s t
   | empty : GenerateHas s ∅
-  | compl : ∀ {a}, GenerateHas s a → GenerateHas s (aᶜ)
+  | compl : ∀ {a}, GenerateHas s a → GenerateHas s aᶜ
   | iUnion : ∀ {f : ℕ → Set α},
     Pairwise (Disjoint on f) → (∀ i, GenerateHas s (f i)) → GenerateHas s (⋃ i, f i)
 #align measurable_space.dynkin_system.generate_has MeasurableSpace.DynkinSystem.GenerateHas
 
-theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C (sᶜ) ↔ GenerateHas C s := by
+theorem generateHas_compl {C : Set (Set α)} {s : Set α} : GenerateHas C sᶜ ↔ GenerateHas C s := by
   refine' ⟨_, GenerateHas.compl⟩
   intro h
   convert GenerateHas.compl h
@@ -674,11 +670,11 @@ theorem ofMeasurableSpace_toMeasurableSpace
 
 /-- If `s` is in a Dynkin system `d`, we can form the new Dynkin system `{s ∩ t | t ∈ d}`. -/
 def restrictOn {s : Set α} (h : d.Has s) : DynkinSystem α where
-  -- Porting note: `simp only []` required for a beta reduction
+  -- Porting note(#12129): additional beta reduction needed
   Has t := d.Has (t ∩ s)
   has_empty := by simp [d.has_empty]
   has_compl {t} hts := by
-    simp only []
+    beta_reduce
     have : tᶜ ∩ s = (t ∩ s)ᶜ \ sᶜ := Set.ext fun x => by by_cases h : x ∈ s <;> simp [h]
     rw [this]
     exact
@@ -734,7 +730,7 @@ end DynkinSystem
 
 theorem induction_on_inter {C : Set α → Prop} {s : Set (Set α)} [m : MeasurableSpace α]
     (h_eq : m = generateFrom s) (h_inter : IsPiSystem s) (h_empty : C ∅) (h_basic : ∀ t ∈ s, C t)
-    (h_compl : ∀ t, MeasurableSet t → C t → C (tᶜ))
+    (h_compl : ∀ t, MeasurableSet t → C t → C tᶜ)
     (h_union :
       ∀ f : ℕ → Set α,
         Pairwise (Disjoint on f) → (∀ i, MeasurableSet (f i)) → (∀ i, C (f i)) → C (⋃ i, f i)) :

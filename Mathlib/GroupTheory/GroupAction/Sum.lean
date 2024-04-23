@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module group_theory.group_action.sum
-! leanprover-community/mathlib commit f1a2caaf51ef593799107fe9a8d5e411599f3996
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.GroupAction.Defs
+
+#align_import group_theory.group_action.sum from "leanprover-community/mathlib"@"f1a2caaf51ef593799107fe9a8d5e411599f3996"
 
 /-!
 # Sum instances for additive and multiplicative actions
@@ -24,7 +21,7 @@ This file defines instances for additive and multiplicative actions on the binar
 -/
 
 
-variable {M N P α β γ : Type _}
+variable {M N P α β γ : Type*}
 
 namespace Sum
 
@@ -35,10 +32,10 @@ variable [SMul M α] [SMul M β] [SMul N α] [SMul N β] (a : M) (b : α) (c : �
 
 @[to_additive Sum.hasVAdd]
 instance : SMul M (Sum α β) :=
-  ⟨fun a => Sum.map ((· • ·) a) ((· • ·) a)⟩
+  ⟨fun a => Sum.map (a • ·) (a • ·)⟩
 
 @[to_additive]
-theorem smul_def : a • x = x.map ((· • ·) a) ((· • ·) a) :=
+theorem smul_def : a • x = x.map (a • ·) (a • ·) :=
   rfl
 #align sum.smul_def Sum.smul_def
 #align sum.vadd_def Sum.vadd_def

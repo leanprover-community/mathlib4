@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module combinatorics.simple_graph.regularity.uniform
-! leanprover-community/mathlib commit bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.SetTheory.Ordinal.Basic
+
+#align_import combinatorics.simple_graph.regularity.uniform from "leanprover-community/mathlib"@"bf7ef0e83e5b7e6c1169e97f055e58a2e4e9d52d"
 
 /-!
 # Graph uniformity and uniform partitions
@@ -44,7 +41,7 @@ is less than `ε`.
 
 open Finset
 
-variable {α 𝕜 : Type _} [LinearOrderedField 𝕜]
+variable {α 𝕜 : Type*} [LinearOrderedField 𝕜]
 
 /-! ###  Graph uniformity -/
 
@@ -112,7 +109,7 @@ theorem not_isUniform_iff :
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 #align simple_graph.not_is_uniform_iff SimpleGraph.not_isUniform_iff
 
-open Classical
+open scoped Classical
 
 variable (G)
 
@@ -200,7 +197,7 @@ variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph 
 
 namespace Finpartition
 
-open Classical
+open scoped Classical
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/
@@ -222,8 +219,8 @@ theorem nonUniforms_bot (hε : 0 < ε) : (⊥ : Finpartition A).nonUniforms G ε
   rintro ⟨u, v⟩
   simp only [Finpartition.mk_mem_nonUniforms_iff, Finpartition.parts_bot, mem_map, not_and,
     Classical.not_not, exists_imp]; dsimp
-  rintro x ⟨_,xu⟩  y ⟨_,yv⟩ _
-  rw [←xu, ←yv]
+  rintro x ⟨_,xu⟩ y ⟨_,yv⟩ _
+  rw [← xu, ← yv]
   exact G.isUniform_singleton hε
 #align finpartition.non_uniforms_bot Finpartition.nonUniforms_bot
 
@@ -249,7 +246,7 @@ theorem isUniformOne : P.IsUniform G (1 : 𝕜) := by
 variable {P G}
 
 theorem IsUniform.mono {ε ε' : 𝕜} (hP : P.IsUniform G ε) (h : ε ≤ ε') : P.IsUniform G ε' :=
-  ((Nat.cast_le.2 <| card_le_of_subset <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
+  ((Nat.cast_le.2 <| card_le_card <| P.nonUniforms_mono G h).trans hP).trans <| by gcongr
 #align finpartition.is_uniform.mono Finpartition.IsUniform.mono
 
 theorem isUniformOfEmpty (hP : P.parts = ∅) : P.IsUniform G ε := by

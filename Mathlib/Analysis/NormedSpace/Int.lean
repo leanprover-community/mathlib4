@@ -2,13 +2,10 @@
 Copyright (c) 2021 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
-
-! This file was ported from Lean 3 source module analysis.normed_space.int
-! leanprover-community/mathlib commit 5cc2dfdd3e92f340411acea4427d701dc7ed26f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Field.Basic
+
+#align_import analysis.normed_space.int from "leanprover-community/mathlib"@"5cc2dfdd3e92f340411acea4427d701dc7ed26f8"
 
 /-!
 # The integers as normed ring
@@ -22,8 +19,6 @@ The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
 
 
-open BigOperators
-
 namespace Int
 
 theorem nnnorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by
@@ -36,18 +31,21 @@ theorem norm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖ = 1 := by
 #align int.norm_coe_units Int.norm_coe_units
 
 @[simp]
-theorem nnnorm_coe_nat (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
-  Real.nnnorm_coe_nat _
-#align int.nnnorm_coe_nat Int.nnnorm_coe_nat
+theorem nnnorm_natCast (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
+  Real.nnnorm_natCast _
+#align int.nnnorm_coe_nat Int.nnnorm_natCast
+
+-- 2024-04-05
+@[deprecated] alias nnnorm_coe_nat := nnnorm_natCast
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
-  rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.coe_natAbs]
+  rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]
 #align int.to_nat_add_to_nat_neg_eq_nnnorm Int.toNat_add_toNat_neg_eq_nnnorm
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_norm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖ := by
-  simpa only [NNReal.coe_nat_cast, NNReal.coe_add] using
+  simpa only [NNReal.coe_natCast, NNReal.coe_add] using
     congrArg NNReal.toReal (toNat_add_toNat_neg_eq_nnnorm n)
 #align int.to_nat_add_to_nat_neg_eq_norm Int.toNat_add_toNat_neg_eq_norm
 

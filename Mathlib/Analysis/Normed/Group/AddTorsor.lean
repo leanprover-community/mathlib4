@@ -2,15 +2,12 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.normed.group.add_torsor
-! leanprover-community/mathlib commit 837f72de63ad6cd96519cde5f1ffd5ed8d280ad0
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Basic
 import Mathlib.LinearAlgebra.AffineSpace.AffineSubspace
 import Mathlib.LinearAlgebra.AffineSpace.Midpoint
+
+#align_import analysis.normed.group.add_torsor from "leanprover-community/mathlib"@"837f72de63ad6cd96519cde5f1ffd5ed8d280ad0"
 
 /-!
 # Torsors of additive normed group actions.
@@ -33,34 +30,34 @@ structure and require the distance to be the same as results from the
 norm (which in fact implies the distance yields a pseudometric space, but
 bundling just the distance and using an instance for the pseudometric space
 results in type class problems). -/
-class NormedAddTorsor (V : outParam <| Type _) (P : Type _) [outParam <| SeminormedAddCommGroup V]
+class NormedAddTorsor (V : outParam <| Type*) (P : Type*) [outParam <| SeminormedAddCommGroup V]
   [PseudoMetricSpace P] extends AddTorsor V P where
   dist_eq_norm' : ∀ x y : P, dist x y = ‖(x -ᵥ y : V)‖
 #align normed_add_torsor NormedAddTorsor
 
 /-- Shortcut instance to help typeclass inference out. -/
-instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type _} [NormedAddCommGroup V]
+instance (priority := 100) NormedAddTorsor.toAddTorsor' {V P : Type*} [NormedAddCommGroup V]
     [MetricSpace P] [NormedAddTorsor V P] : AddTorsor V P :=
   NormedAddTorsor.toAddTorsor
 #align normed_add_torsor.to_add_torsor' NormedAddTorsor.toAddTorsor'
 
-variable {α V P W Q : Type _} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
+variable {α V P W Q : Type*} [SeminormedAddCommGroup V] [PseudoMetricSpace P] [NormedAddTorsor V P]
   [NormedAddCommGroup W] [MetricSpace Q] [NormedAddTorsor W Q]
 
 instance (priority := 100) NormedAddTorsor.to_isometricVAdd : IsometricVAdd V P :=
   ⟨fun c => Isometry.of_dist_eq fun x y => by
-    -- Porting note: was `simp [NormedAddTorsor.dist_eq_norm']`
+    -- porting note (#10745): was `simp [NormedAddTorsor.dist_eq_norm']`
     rw [NormedAddTorsor.dist_eq_norm', NormedAddTorsor.dist_eq_norm', vadd_vsub_vadd_cancel_left]⟩
 #align normed_add_torsor.to_has_isometric_vadd NormedAddTorsor.to_isometricVAdd
 
 /-- A `SeminormedAddCommGroup` is a `NormedAddTorsor` over itself. -/
-instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V
-    where dist_eq_norm' := dist_eq_norm
+instance (priority := 100) SeminormedAddCommGroup.toNormedAddTorsor : NormedAddTorsor V V where
+  dist_eq_norm' := dist_eq_norm
 #align seminormed_add_comm_group.to_normed_add_torsor SeminormedAddCommGroup.toNormedAddTorsor
 
 -- Because of the AddTorsor.nonempty instance.
 /-- A nonempty affine subspace of a `NormedAddTorsor` is itself a `NormedAddTorsor`. -/
-instance AffineSubspace.toNormedAddTorsor {R : Type _} [Ring R] [Module R V]
+instance AffineSubspace.toNormedAddTorsor {R : Type*} [Ring R] [Module R V]
     (s : AffineSubspace R P) [Nonempty s] : NormedAddTorsor s.direction s :=
   { AffineSubspace.toAddTorsor s with
     dist_eq_norm' := fun x y => NormedAddTorsor.dist_eq_norm' x.val y.val }
@@ -99,7 +96,7 @@ theorem dist_vadd_cancel_left (v : V) (x y : P) : dist (v +ᵥ x) (v +ᵥ y) = d
   dist_vadd _ _ _
 #align dist_vadd_cancel_left dist_vadd_cancel_left
 
--- porting note: new
+-- Porting note (#10756): new theorem
 theorem nndist_vadd_cancel_left (v : V) (x y : P) : nndist (v +ᵥ x) (v +ᵥ y) = nndist x y :=
   NNReal.eq <| dist_vadd_cancel_left _ _ _
 
@@ -115,7 +112,7 @@ theorem nndist_vadd_cancel_right (v₁ v₂ : V) (x : P) : nndist (v₁ +ᵥ x) 
 
 @[simp]
 theorem dist_vadd_left (v : V) (x : P) : dist (v +ᵥ x) x = ‖v‖ := by
-  -- Porting note: was `simp [dist_eq_norm_vsub V _ x]`
+  -- porting note (#10745): was `simp [dist_eq_norm_vsub V _ x]`
   rw [dist_eq_norm_vsub V _ x, vadd_vsub]
 #align dist_vadd_left dist_vadd_left
 
@@ -146,7 +143,7 @@ theorem dist_vsub_cancel_left (x y z : P) : dist (x -ᵥ y) (x -ᵥ z) = dist y 
   rw [dist_eq_norm, vsub_sub_vsub_cancel_left, dist_comm, dist_eq_norm_vsub V]
 #align dist_vsub_cancel_left dist_vsub_cancel_left
 
--- porting note: new
+-- Porting note (#10756): new theorem
 @[simp]
 theorem nndist_vsub_cancel_left (x y z : P) : nndist (x -ᵥ y) (x -ᵥ z) = nndist y z :=
   NNReal.eq <| dist_vsub_cancel_left _ _ _
@@ -171,8 +168,7 @@ theorem nndist_vsub_cancel_right (x y z : P) : nndist (x -ᵥ z) (y -ᵥ z) = nn
 
 theorem dist_vadd_vadd_le (v v' : V) (p p' : P) :
     dist (v +ᵥ p) (v' +ᵥ p') ≤ dist v v' + dist p p' := by
-  -- porting note: added `()` and lemma name to help simp find a `@[simp]` lemma
-  simpa [(dist_vadd_cancel_right)] using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
+  simpa using dist_triangle (v +ᵥ p) (v' +ᵥ p) (v' +ᵥ p')
 #align dist_vadd_vadd_le dist_vadd_vadd_le
 
 theorem nndist_vadd_vadd_le (v v' : V) (p p' : P) :
@@ -188,31 +184,30 @@ theorem dist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
 
 theorem nndist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     nndist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ nndist p₁ p₃ + nndist p₂ p₄ := by
-  -- porting note: added `()` to help simp find a `@[simp]` lemma
-  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, (dist_vsub_vsub_le)]
+  simp only [← NNReal.coe_le_coe, NNReal.coe_add, ← dist_nndist, dist_vsub_vsub_le]
 #align nndist_vsub_vsub_le nndist_vsub_vsub_le
 
 theorem edist_vadd_vadd_le (v v' : V) (p p' : P) :
     edist (v +ᵥ p) (v' +ᵥ p') ≤ edist v v' + edist p p' := by
   simp only [edist_nndist]
-  norm_cast  -- porting note: was apply_mod_cast
+  norm_cast  -- Porting note: was apply_mod_cast
   apply dist_vadd_vadd_le
 #align edist_vadd_vadd_le edist_vadd_vadd_le
 
 theorem edist_vsub_vsub_le (p₁ p₂ p₃ p₄ : P) :
     edist (p₁ -ᵥ p₂) (p₃ -ᵥ p₄) ≤ edist p₁ p₃ + edist p₂ p₄ := by
   simp only [edist_nndist]
-  norm_cast  -- porting note: was apply_mod_cast
+  norm_cast  -- Porting note: was apply_mod_cast
   apply dist_vsub_vsub_le
 #align edist_vsub_vsub_le edist_vsub_vsub_le
 
 /-- The pseudodistance defines a pseudometric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedAddCommGroup V]
+def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [SeminormedAddCommGroup V]
     [AddTorsor V P] : PseudoMetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
-  -- porting note: `edist_dist` is no longer an `autoParam`
-  edist_dist _ _ := by simp only [←ENNReal.ofReal_eq_coe_nnreal]
+  -- Porting note: `edist_dist` is no longer an `autoParam`
+  edist_dist _ _ := by simp only [← ENNReal.ofReal_eq_coe_nnreal]
   dist_self x := by simp
   dist_comm x y := by simp only [← neg_vsub_eq_vsub_rev y x, norm_neg]
   dist_triangle x y z := by
@@ -223,7 +218,7 @@ def pseudoMetricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [SeminormedA
 
 /-- The distance defines a metric space structure on the torsor. This
 is not an instance because it depends on `V` to define a `MetricSpace P`. -/
-def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type _) [NormedAddCommGroup V]
+def metricSpaceOfNormedAddCommGroupOfAddTorsor (V P : Type*) [NormedAddCommGroup V]
     [AddTorsor V P] : MetricSpace P where
   dist x y := ‖(x -ᵥ y : V)‖
   edist_dist _ _ := by simp only; rw [ENNReal.ofReal_eq_coe_nnreal]
@@ -242,7 +237,7 @@ theorem LipschitzWith.vadd [PseudoEMetricSpace α] {f : α → V} {g : α → P}
   calc
     edist (f x +ᵥ g x) (f y +ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vadd_vadd_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
+    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vadd LipschitzWith.vadd
 
@@ -252,7 +247,7 @@ theorem LipschitzWith.vsub [PseudoEMetricSpace α] {f g : α → P} {Kf Kg : ℝ
   calc
     edist (f x -ᵥ g x) (f y -ᵥ g y) ≤ edist (f x) (f y) + edist (g x) (g y) :=
       edist_vsub_vsub_le _ _ _ _
-    _ ≤ Kf * edist x y + Kg * edist x y := (add_le_add (hf x y) (hg x y))
+    _ ≤ Kf * edist x y + Kg * edist x y := add_le_add (hf x y) (hg x y)
     _ = (Kf + Kg) * edist x y := (add_mul _ _ _).symm
 #align lipschitz_with.vsub LipschitzWith.vsub
 
@@ -287,22 +282,26 @@ theorem Continuous.vsub {f g : α → P} (hf : Continuous f) (hg : Continuous g)
 #align continuous.vsub Continuous.vsub
 
 nonrec theorem ContinuousAt.vsub {f g : α → P} {x : α} (hf : ContinuousAt f x)
-  (hg : ContinuousAt g x) :
+    (hg : ContinuousAt g x) :
     ContinuousAt (f -ᵥ g) x :=
   hf.vsub hg
 #align continuous_at.vsub ContinuousAt.vsub
 
 nonrec theorem ContinuousWithinAt.vsub {f g : α → P} {x : α} {s : Set α}
-  (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
+    (hf : ContinuousWithinAt f s x) (hg : ContinuousWithinAt g s x) :
     ContinuousWithinAt (f -ᵥ g) s x :=
   hf.vsub hg
 #align continuous_within_at.vsub ContinuousWithinAt.vsub
+
+theorem ContinuousOn.vsub {f g : α → P} {s : Set α} (hf : ContinuousOn f s)
+    (hg : ContinuousOn g s) : ContinuousOn (f -ᵥ g) s := fun x hx ↦
+  (hf x hx).vsub (hg x hx)
 
 end
 
 section
 
-variable {R : Type _} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
+variable {R : Type*} [Ring R] [TopologicalSpace R] [Module R V] [ContinuousSMul R V]
 
 theorem Filter.Tendsto.lineMap {l : Filter α} {f₁ f₂ : α → P} {g : α → R} {p₁ p₂ : P} {c : R}
     (h₁ : Tendsto f₁ l (𝓝 p₁)) (h₂ : Tendsto f₂ l (𝓝 p₂)) (hg : Tendsto g l (𝓝 c)) :
@@ -327,11 +326,11 @@ theorem IsClosed.vadd_right_of_isCompact {s : Set V} {t : Set P} (hs : IsClosed 
   -- This result is still true for any `AddTorsor` where `-ᵥ` is continuous,
   -- but we don't yet have a nice way to state it.
   refine IsSeqClosed.isClosed (fun u p husv hup ↦ ?_)
-  choose! a v hav using husv
-  rcases ht.isSeqCompact fun n ↦ (hav n).2.1 with ⟨q, hqt, φ, φ_mono, hφq⟩
-  refine ⟨p -ᵥ q, q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
-    (eventually_of_forall fun n ↦ ?_), hqt, vsub_vadd _ _⟩
-  convert (hav (φ n)).1 using 1
-  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).2.2.symm
+  choose! a ha v hv hav using husv
+  rcases ht.isSeqCompact hv with ⟨q, hqt, φ, φ_mono, hφq⟩
+  refine ⟨p -ᵥ q, hs.mem_of_tendsto ((hup.comp φ_mono.tendsto_atTop).vsub hφq)
+    (eventually_of_forall fun n ↦ ?_), q, hqt, vsub_vadd _ _⟩
+  convert ha (φ n) using 1
+  exact (eq_vadd_iff_vsub_eq _ _ _).mp (hav (φ n)).symm
 
 end Pointwise

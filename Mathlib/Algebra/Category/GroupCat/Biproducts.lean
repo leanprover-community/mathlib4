@@ -2,16 +2,14 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Group.biproducts
-! leanprover-community/mathlib commit 234ddfeaa5572bc13716dd215c6444410a679a8e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Pi
+import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.Algebra.Category.GroupCat.Preadditive
 import Mathlib.CategoryTheory.Preadditive.Biproducts
 import Mathlib.Algebra.Category.GroupCat.Limits
+import Mathlib.Tactic.CategoryTheory.Elementwise
+
+#align_import algebra.category.Group.biproducts from "leanprover-community/mathlib"@"234ddfeaa5572bc13716dd215c6444410a679a8e"
 
 /-!
 # The category of abelian groups has finite biproducts
@@ -21,8 +19,6 @@ import Mathlib.Algebra.Category.GroupCat.Limits
 open CategoryTheory
 
 open CategoryTheory.Limits
-
-open BigOperators
 
 universe w u
 
@@ -79,6 +75,9 @@ noncomputable def biprodIsoProd (G H : AddCommGroupCat.{u}) :
   IsLimit.conePointUniqueUpToIso (BinaryBiproduct.isLimit G H) (binaryProductLimitCone G H).isLimit
 #align AddCommGroup.biprod_iso_prod AddCommGroupCat.biprodIsoProd
 
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.biprodIsoProd_hom_apply
+
 @[simp, elementwise]
 theorem biprodIsoProd_inv_comp_fst (G H : AddCommGroupCat.{u}) :
     (biprodIsoProd G H).inv ≫ biprod.fst = AddMonoidHom.fst G H :=
@@ -130,7 +129,7 @@ end HasLimit
 
 open HasLimit
 
-variable {J : Type} [Fintype J]
+variable {J : Type} [Finite J]
 
 /-- We verify that the biproduct we've just defined is isomorphic to the `AddCommGroupCat` structure
 on the dependent function type.
@@ -140,6 +139,9 @@ noncomputable def biproductIsoPi (f : J → AddCommGroupCat.{u}) :
     (⨁ f : AddCommGroupCat) ≅ AddCommGroupCat.of (∀ j, f j) :=
   IsLimit.conePointUniqueUpToIso (biproduct.isLimit f) (productLimitCone f).isLimit
 #align AddCommGroup.biproduct_iso_pi AddCommGroupCat.biproductIsoPi
+
+-- These lemmas have always been bad (#7657), but lean4#2644 made `simp` start noticing
+attribute [nolint simpNF] AddCommGroupCat.biproductIsoPi_hom_apply
 
 @[simp, elementwise]
 theorem biproductIsoPi_inv_comp_π (f : J → AddCommGroupCat.{u}) (j : J) :

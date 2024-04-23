@@ -2,15 +2,12 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.matrix.mv_polynomial
-! leanprover-community/mathlib commit 3e068ece210655b7b9a9477c3aff38a492400aa1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.MvPolynomial.Basic
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.LinearAlgebra.Matrix.Determinant
-import Mathlib.Data.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.CommRing
+
+#align_import linear_algebra.matrix.mv_polynomial from "leanprover-community/mathlib"@"3e068ece210655b7b9a9477c3aff38a492400aa1"
 
 /-!
 # Matrices of multivariate polynomials
@@ -26,7 +23,7 @@ matrix determinant, multivariate polynomial
 
 set_option linter.uppercaseLean3 false
 
-variable {m n R S : Type _}
+variable {m n R S : Type*}
 
 namespace Matrix
 

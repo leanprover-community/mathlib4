@@ -2,13 +2,10 @@
 Copyright (c) 2021 Ivan Sadofschi Costa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ivan Sadofschi Costa
-
-! This file was ported from Lean 3 source module data.finsupp.fin
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.fin from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # `cons` and `tail` for maps `Fin n →₀ M`
@@ -27,7 +24,7 @@ noncomputable section
 
 namespace Finsupp
 
-variable {n : ℕ} (i : Fin n) {M : Type _} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
+variable {n : ℕ} (i : Fin n) {M : Type*} [Zero M] (y : M) (t : Fin (n + 1) →₀ M) (s : Fin n →₀ M)
 
 /-- `tail` for maps `Fin (n + 1) →₀ M`. See `Fin.tail` for more details. -/
 def tail (s : Fin (n + 1) →₀ M) : Fin n →₀ M :=
@@ -50,7 +47,7 @@ theorem cons_zero : cons y s 0 = y :=
 
 @[simp]
 theorem cons_succ : cons y s i.succ = s i :=
-  -- porting notes: was Fin.cons_succ _ _ _
+  -- Porting note: was Fin.cons_succ _ _ _
   rfl
 #align finsupp.cons_succ Finsupp.cons_succ
 
@@ -94,5 +91,12 @@ theorem cons_ne_zero_iff : cons y s ≠ 0 ↔ y ≠ 0 ∨ s ≠ 0 := by
   refine' imp_iff_not_or.1 fun h' c => h _
   rw [h', c, Finsupp.cons_zero_zero]
 #align finsupp.cons_ne_zero_iff Finsupp.cons_ne_zero_iff
+
+lemma cons_support : (s.cons y).support ⊆ insert 0 (s.support.map (Fin.succEmb n).toEmbedding) := by
+  intro i hi
+  suffices i = 0 ∨ ∃ a, ¬s a = 0 ∧ a.succ = i by simpa
+  apply (Fin.eq_zero_or_eq_succ i).imp id (Exists.imp _)
+  rintro i rfl
+  simpa [Finsupp.mem_support_iff] using hi
 
 end Finsupp

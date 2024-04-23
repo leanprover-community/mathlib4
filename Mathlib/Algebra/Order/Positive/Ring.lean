@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module algebra.order.positive.ring
-! leanprover-community/mathlib commit 655994e298904d7e5bbd1e18c95defd7b543eb94
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Order.Ring.Defs
 import Mathlib.Algebra.Ring.InjSurj
+
+#align_import algebra.order.positive.ring from "leanprover-community/mathlib"@"655994e298904d7e5bbd1e18c95defd7b543eb94"
 
 /-!
 # Algebraic structures on the set of positive numbers
@@ -24,7 +21,7 @@ open Function
 
 namespace Positive
 
-variable {M R K : Type _}
+variable {M R K : Type*}
 
 section AddBasic
 
@@ -42,17 +39,17 @@ instance addSemigroup : AddSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addSemigroup _ coe_add
 #align positive.subtype.add_semigroup Positive.addSemigroup
 
-instance addCommSemigroup {M : Type _} [AddCommMonoid M] [Preorder M]
+instance addCommSemigroup {M : Type*} [AddCommMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddCommSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addCommSemigroup _ coe_add
 #align positive.subtype.add_comm_semigroup Positive.addCommSemigroup
 
-instance addLeftCancelSemigroup {M : Type _} [AddLeftCancelMonoid M] [Preorder M]
+instance addLeftCancelSemigroup {M : Type*} [AddLeftCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddLeftCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addLeftCancelSemigroup _ coe_add
 #align positive.subtype.add_left_cancel_semigroup Positive.addLeftCancelSemigroup
 
-instance addRightCancelSemigroup {M : Type _} [AddRightCancelMonoid M] [Preorder M]
+instance addRightCancelSemigroup {M : Type*} [AddRightCancelMonoid M] [Preorder M]
     [CovariantClass M M (· + ·) (· < ·)] : AddRightCancelSemigroup { x : M // 0 < x } :=
   Subtype.coe_injective.addRightCancelSemigroup _ coe_add
 #align positive.subtype.add_right_cancel_semigroup Positive.addRightCancelSemigroup
@@ -112,7 +109,7 @@ instance : Pow { x : R // 0 < x } ℕ :=
 
 @[simp]
 theorem val_pow (x : { x : R // 0 < x }) (n : ℕ) :
-    (x ^ n : R) = (x : R) ^ n :=
+    ↑(x ^ n) = (x : R) ^ n :=
   rfl
 #align positive.coe_pow Positive.val_pow
 
@@ -149,7 +146,7 @@ instance orderedCommMonoid [StrictOrderedCommSemiring R] [Nontrivial R] :
 ordered cancellative commutative monoid. -/
 instance linearOrderedCancelCommMonoid [LinearOrderedCommSemiring R] :
     LinearOrderedCancelCommMonoid { x : R // 0 < x } :=
-  { Subtype.linearOrder _, Positive.orderedCommMonoid with
+  { Subtype.instLinearOrder _, Positive.orderedCommMonoid with
     le_of_mul_le_mul_left := fun a _ _ h => Subtype.coe_le_coe.1 <| (mul_le_mul_left a.2).1 h }
 #align positive.subtype.linear_ordered_cancel_comm_monoid Positive.linearOrderedCancelCommMonoid
 

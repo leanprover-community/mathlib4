@@ -2,13 +2,12 @@
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Abhimanyu Pallavi Sudhir, Jean Lo, Calle Sönne
-
-! This file was ported from Lean 3 source module analysis.special_functions.exp_deriv
-! leanprover-community/mathlib commit 6a5c85000ab93fe5dcfdf620676f614ba8e18c26
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Complex.RealDeriv
+import Mathlib.Analysis.Calculus.ContDiff.RCLike
+import Mathlib.Analysis.Calculus.IteratedDeriv.Lemmas
+
+#align_import analysis.special_functions.exp_deriv from "leanprover-community/mathlib"@"6a5c85000ab93fe5dcfdf620676f614ba8e18c26"
 
 /-!
 # Complex and real exponential
@@ -27,9 +26,11 @@ open Filter Asymptotics Set Function
 
 open scoped Classical Topology
 
+/-! ## `Complex.exp` -/
+
 namespace Complex
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ]
 
 /-- The complex exponential is everywhere differentiable, with the derivative `exp x`. -/
 theorem hasDerivAt_exp (x : ℂ) : HasDerivAt exp (exp x) x := by
@@ -55,14 +56,14 @@ theorem deriv_exp : deriv exp = exp :=
 #align complex.deriv_exp Complex.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align complex.iter_deriv_exp Complex.iter_deriv_exp
 
 theorem contDiff_exp : ∀ {n}, ContDiff 𝕜 n exp := by
-  -- porting note: added `@` due to `∀ {n}` weirdness above
-  refine' @(contDiff_all_iff_nat.2 fun n => ?_)
+  -- Porting note: added `@` due to `∀ {n}` weirdness above
+  refine @(contDiff_all_iff_nat.2 fun n => ?_)
   have : ContDiff ℂ (↑n) exp := by
     induction' n with n ihn
     · exact contDiff_zero.2 continuous_exp
@@ -84,7 +85,7 @@ end Complex
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {f : 𝕜 → ℂ} {f' : ℂ} {x : 𝕜}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {f : 𝕜 → ℂ} {f' : ℂ} {x : 𝕜}
   {s : Set 𝕜}
 
 theorem HasStrictDerivAt.cexp (hf : HasStrictDerivAt f f' x) :
@@ -117,7 +118,7 @@ end
 
 section
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type _}
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [NormedAlgebra 𝕜 ℂ] {E : Type*}
   [NormedAddCommGroup E] [NormedSpace 𝕜 E] {f : E → ℂ} {f' : E →L[𝕜] ℂ} {x : E} {s : Set E}
 
 theorem HasStrictFDerivAt.cexp (hf : HasStrictFDerivAt f f' x) :
@@ -176,6 +177,15 @@ theorem ContDiffWithinAt.cexp {n} (hf : ContDiffWithinAt 𝕜 n f s x) :
 
 end
 
+open Complex in
+@[simp]
+theorem iteratedDeriv_cexp_const_mul (n : ℕ) (c : ℂ) :
+    (iteratedDeriv n fun s : ℂ => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]
+
+
+/-! ## `Real.exp` -/
+
 namespace Real
 
 variable {x y z : ℝ}
@@ -205,7 +215,7 @@ theorem deriv_exp : deriv exp = exp :=
 #align real.deriv_exp Real.deriv_exp
 
 @[simp]
-theorem iter_deriv_exp : ∀ n : ℕ, (deriv^[n]) exp = exp
+theorem iter_deriv_exp : ∀ n : ℕ, deriv^[n] exp = exp
   | 0 => rfl
   | n + 1 => by rw [iterate_succ_apply, deriv_exp, iter_deriv_exp n]
 #align real.iter_deriv_exp Real.iter_deriv_exp
@@ -254,7 +264,7 @@ section
 function, for standalone use and use with `simp`. -/
 
 
-variable {E : Type _} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {f' : E →L[ℝ] ℝ} {x : E}
   {s : Set E}
 
 theorem ContDiff.exp {n} (hf : ContDiff ℝ n f) : ContDiff ℝ n fun x => Real.exp (f x) :=
@@ -321,3 +331,9 @@ theorem fderiv_exp (hc : DifferentiableAt ℝ f x) :
 #align fderiv_exp fderiv_exp
 
 end
+
+open Real in
+@[simp]
+theorem iteratedDeriv_exp_const_mul (n : ℕ) (c : ℝ) :
+    (iteratedDeriv n fun s => exp (c * s)) = fun s => c ^ n * exp (c * s) := by
+  rw [iteratedDeriv_const_mul contDiff_exp, iteratedDeriv_eq_iterate, iter_deriv_exp]

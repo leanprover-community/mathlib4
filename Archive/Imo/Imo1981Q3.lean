@@ -2,16 +2,13 @@
 Copyright (c) 2020 Kevin Lacker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Lacker
-
-! This file was ported from Lean 3 source module imo.imo1981_q3
-! leanprover-community/mathlib commit 2d6f88c296da8df484d7f5b9ee1d10910ab473a2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Int.Lemmas
-import Mathlib.Data.Nat.Fib
+import Mathlib.Data.Nat.Fib.Basic
 import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.LinearCombination
+
+#align_import imo.imo1981_q3 from "leanprover-community/mathlib"@"2d6f88c296da8df484d7f5b9ee1d10910ab473a2"
 
 /-!
 # IMO 1981 Q3
@@ -100,25 +97,25 @@ namespace NatPredicate
 
 variable {N}
 
-nonrec theorem m_le_n {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ n := by exact_mod_cast h1.m_le_n
+nonrec theorem m_le_n {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ n := mod_cast h1.m_le_n
 #align imo1981_q3.nat_predicate.m_le_n Imo1981Q3.NatPredicate.m_le_n
 
-nonrec theorem eq_imp_1 {n : ℕ} (h1 : NatPredicate N n n) : n = 1 := by exact_mod_cast h1.eq_imp_1
+nonrec theorem eq_imp_1 {n : ℕ} (h1 : NatPredicate N n n) : n = 1 := mod_cast h1.eq_imp_1
 #align imo1981_q3.nat_predicate.eq_imp_1 Imo1981Q3.NatPredicate.eq_imp_1
 
 nonrec theorem reduction {m n : ℕ} (h1 : NatPredicate N m n) (h2 : 1 < n) :
     NatPredicate N (n - m) m := by
   have : m ≤ n := h1.m_le_n
-  exact_mod_cast h1.reduction (by exact_mod_cast h2)
+  exact mod_cast h1.reduction (mod_cast h2)
 #align imo1981_q3.nat_predicate.reduction Imo1981Q3.NatPredicate.reduction
 
-theorem n_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < n := by exact_mod_cast h1.n_range.left
+theorem n_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < n := mod_cast h1.n_range.left
 #align imo1981_q3.nat_predicate.n_pos Imo1981Q3.NatPredicate.n_pos
 
-theorem m_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < m := by exact_mod_cast h1.m_range.left
+theorem m_pos {m n : ℕ} (h1 : NatPredicate N m n) : 0 < m := mod_cast h1.m_range.left
 #align imo1981_q3.nat_predicate.m_pos Imo1981Q3.NatPredicate.m_pos
 
-theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := by exact_mod_cast h1.n_range.right
+theorem n_le_N {m n : ℕ} (h1 : NatPredicate N m n) : n ≤ N := mod_cast h1.n_range.right
 set_option linter.uppercaseLean3 false in
 #align imo1981_q3.nat_predicate.n_le_N Imo1981Q3.NatPredicate.n_le_N
 
@@ -132,7 +129,7 @@ theorem imp_fib {n : ℕ} : ∀ m : ℕ, NatPredicate N m n → ∃ k : ℕ, m =
   obtain (rfl : 1 = n) | (h4 : 1 < n) := (succ_le_iff.mpr h2.n_pos).eq_or_lt
   · use 1
     have h5 : 1 ≤ m := succ_le_iff.mpr h2.m_pos
-    simpa [fib_one, fib_two] using (h3.antisymm h5 : m = 1)
+    simpa [fib_one, fib_two, (by decide : 1 + 1 = 2)] using (h3.antisymm h5 : m = 1)
   · obtain (rfl : m = n) | (h6 : m < n) := h3.eq_or_lt
     · exact absurd h2.eq_imp_1 (Nat.ne_of_gt h4)
     · have h7 : NatPredicate N (n - m) m := h2.reduction h4
@@ -152,7 +149,7 @@ variable {K : ℕ} (HK : N < fib K + fib (K + 1)) {N}
 theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤ fib (K + 1) := by
   obtain ⟨k : ℕ, hm : m = fib k, hn : n = fib (k + 1)⟩ := h1.imp_fib m
   by_cases h2 : k < K + 1
-  · have h3 : k ≤ K := lt_succ_iff.mp h2
+  · have h3 : k ≤ K := Nat.lt_succ_iff.mp h2
     constructor
     · calc
         m = fib k := hm
@@ -166,7 +163,7 @@ theorem m_n_bounds {m n : ℕ} (h1 : NatPredicate N m n) : m ≤ fib K ∧ n ≤
       rw [← fib_add_two] at HK
       calc
         N < fib (K + 2) := HK
-        _ ≤ fib (k + 1) := (fib_mono h8)
+        _ ≤ fib (k + 1) := fib_mono h8
         _ = n := hn.symm
     have h9 : n ≤ N := h1.n_le_N
     exact absurd h7 h9.not_lt
@@ -180,7 +177,7 @@ variable {M : ℕ} (HM : M = fib K ^ 2 + fib (K + 1) ^ 2)
 theorem k_bound {m n : ℤ} (h1 : ProblemPredicate N m n) : m ^ 2 + n ^ 2 ≤ M := by
   have h2 : 0 ≤ m := h1.m_range.left.le
   have h3 : 0 ≤ n := h1.n_range.left.le
-  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1 ; clear h2 h3
+  rw [← natAbs_of_nonneg h2, ← natAbs_of_nonneg h3] at h1; clear h2 h3
   obtain ⟨h4 : m.natAbs ≤ fib K, h5 : n.natAbs ≤ fib (K + 1)⟩ := m_n_bounds HK h1
   have h6 : m ^ 2 ≤ (fib K : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h4
   have h7 : n ^ 2 ≤ (fib (K + 1) : ℤ) ^ 2 := Int.natAbs_le_iff_sq_le.mp h5
@@ -206,8 +203,9 @@ numbers in this range, and thus provide the maximum of `specifiedSet`.
 -/
 theorem imo1981_q3 : IsGreatest (specifiedSet 1981) 3524578 := by
   have := fun h => @solution_greatest 1981 16 h 3524578
-  simp only [show fib (16 : ℕ) = 987 ∧ fib (16 + 1 : ℕ) = 1597 by norm_num [fib_add_two]] at this
-  apply_mod_cast this trivial trivial
-  rw [ProblemPredicate_iff]
-  norm_num
+  norm_num at this
+  apply this
+  · decide
+  · decide
+  · norm_num [problemPredicate_iff]; decide
 #align imo1981_q3 imo1981_q3

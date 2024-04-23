@@ -2,16 +2,13 @@
 Copyright (c) 2019 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module category_theory.category.Groupoid
-! leanprover-community/mathlib commit c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.SingleObj
 import Mathlib.CategoryTheory.Limits.Shapes.Products
 import Mathlib.CategoryTheory.Pi.Basic
 import Mathlib.CategoryTheory.Limits.IsLimit
+
+#align_import category_theory.category.Groupoid from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
 /-!
 # Category of groupoids
@@ -53,7 +50,7 @@ instance str' (C : Grpd.{v, u}) : Groupoid.{v, u} C.α :=
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.str CategoryTheory.Grpd.str'
 
-instance : CoeSort Grpd (Type _) :=
+instance : CoeSort Grpd (Type*) :=
   Bundled.coeSort
 
 /-- Construct a bundled `Grpd` from the underlying type and the typeclass `Groupoid`. -/
@@ -73,9 +70,9 @@ instance category : LargeCategory.{max v u} Grpd.{v, u} where
   Hom C D := C ⥤ D
   id C := 𝟭 C
   comp F G := F ⋙ G
-  id_comp _ := by rfl
-  comp_id _ := by rfl
-  assoc := by intros ; rfl
+  id_comp _ := rfl
+  comp_id _ := rfl
+  assoc := by intros; rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.category CategoryTheory.Grpd.category
 
@@ -94,11 +91,11 @@ def forgetToCat : Grpd.{v, u} ⥤ Cat.{v, u} where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat CategoryTheory.Grpd.forgetToCat
 
-instance forgetToCatFull : Full forgetToCat where preimage := id
+instance forgetToCatFull : forgetToCat.Full where preimage := id
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
 
-instance forgetToCat_faithful : Faithful forgetToCat where
+instance forgetToCat_faithful : forgetToCat.Faithful where
 set_option linter.uppercaseLean3 false in
 #align category_theory.Groupoid.forget_to_Cat_faithful CategoryTheory.Grpd.forgetToCat_faithful
 

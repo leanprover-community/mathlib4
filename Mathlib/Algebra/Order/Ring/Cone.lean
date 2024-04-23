@@ -2,13 +2,11 @@
 Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
-
-! This file was ported from Lean 3 source module algebra.order.ring.cone
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Order.Group.Cone
 import Mathlib.Algebra.Order.Ring.Defs
+
+#align_import algebra.order.ring.cone from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # Constructing an ordered ring from a ring with a specified positive cone.
@@ -19,13 +17,13 @@ import Mathlib.Algebra.Order.Ring.Defs
 /-! ### Positive cones -/
 
 
-variable {α : Type _} [Ring α] [Nontrivial α]
+variable {α : Type*} [Ring α] [Nontrivial α]
 
 namespace Ring
 
 /-- A positive cone in a ring consists of a positive cone in underlying `AddCommGroup`,
 which contains `1` and such that the positive elements are closed under multiplication. -/
-structure PositiveCone (α : Type _) [Ring α] extends AddCommGroup.PositiveCone α where
+structure PositiveCone (α : Type*) [Ring α] extends AddCommGroup.PositiveCone α where
   /-- In a positive cone, `1` is `nonneg` -/
   one_nonneg : nonneg 1
   /-- In a positive cone, if `a` and `b` are `pos` then so is `a * b` -/
@@ -37,7 +35,7 @@ add_decl_doc PositiveCone.toPositiveCone
 #align ring.positive_cone.to_positive_cone Ring.PositiveCone.toPositiveCone
 
 /-- A total positive cone in a nontrivial ring induces a linear order. -/
-structure TotalPositiveCone (α : Type _) [Ring α] extends PositiveCone α,
+structure TotalPositiveCone (α : Type*) [Ring α] extends PositiveCone α,
   AddCommGroup.TotalPositiveCone α
 #align ring.total_positive_cone Ring.TotalPositiveCone
 #align ring.total_positive_cone.to_positive_cone Ring.TotalPositiveCone.toPositiveCone_1
@@ -67,7 +65,7 @@ def StrictOrderedRing.mkOfPositiveCone (C : PositiveCone α) : StrictOrderedRing
       simp,
     mul_pos := fun x y xp yp => by
       change C.pos (x * y - 0)
-      -- porting note: used to be convert, but it relied on unfolding definitions
+      -- Porting note: used to be convert, but it relied on unfolding definitions
       rw [sub_zero]
       exact C.mul_pos x y (by rwa [← sub_zero x]) (by rwa [← sub_zero y]) }
 #align strict_ordered_ring.mk_of_positive_cone StrictOrderedRing.mkOfPositiveCone

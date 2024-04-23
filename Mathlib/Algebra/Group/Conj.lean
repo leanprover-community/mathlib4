@@ -2,16 +2,11 @@
 Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Chris Hughes, Michael Howes
-
-! This file was ported from Lean 3 source module algebra.group.conj
-! leanprover-community/mathlib commit 0743cc5d9d86bcd1bba10f480e948a257d65056f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Group.Semiconj
-import Mathlib.Algebra.GroupWithZero.Basic
-import Mathlib.Algebra.Hom.Aut
-import Mathlib.Algebra.Hom.Group
+import Mathlib.Algebra.Group.Aut
+import Mathlib.Algebra.Group.Semiconj.Units
+
+#align_import algebra.group.conj from "leanprover-community/mathlib"@"0743cc5d9d86bcd1bba10f480e948a257d65056f"
 
 /-!
 # Conjugacy of group elements
@@ -52,7 +47,7 @@ theorem IsConj.trans {a b c : α} : IsConj a b → IsConj b c → IsConj a c
 #align is_conj.trans IsConj.trans
 
 @[simp]
-theorem isConj_iff_eq {α : Type _} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
+theorem isConj_iff_eq {α : Type*} [CommMonoid α] {a b : α} : IsConj a b ↔ a = b :=
   ⟨fun ⟨c, hc⟩ => by
     rw [SemiconjBy, mul_comm, ← Units.mul_inv_eq_iff_eq_mul, mul_assoc, c.mul_inv, mul_one] at hc
     exact hc, fun h => by rw [h]⟩
@@ -118,10 +113,10 @@ theorem conj_pow {i : ℕ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻�
 theorem conj_zpow {i : ℤ} {a b : α} : (a * b * a⁻¹) ^ i = a * b ^ i * a⁻¹ := by
   induction' i
   · change (a * b * a⁻¹) ^ (_ : ℤ) = a * b ^ (_ : ℤ) * a⁻¹
-    simp [zpow_ofNat]
-  · simp [zpow_negSucc, conj_pow]
+    simp [zpow_natCast]
+  · simp only [zpow_negSucc, conj_pow, mul_inv_rev, inv_inv]
     rw [mul_assoc]
--- Porting note: Added `change`, `zpow_ofNat`, and `rw`.
+-- Porting note: Added `change`, `zpow_natCast`, and `rw`.
 #align conj_zpow conj_zpow
 
 theorem conj_injective {x : α} : Function.Injective fun g : α => x * g * x⁻¹ :=
@@ -147,7 +142,7 @@ namespace IsConj
 /- This small quotient API is largely copied from the API of `Associates`;
 where possible, try to keep them in sync -/
 /-- The setoid of the relation `IsConj` iff there is a unit `u` such that `u * x = y * u` -/
-protected def setoid (α : Type _) [Monoid α] : Setoid α where
+protected def setoid (α : Type*) [Monoid α] : Setoid α where
   r := IsConj
   iseqv := ⟨IsConj.refl, IsConj.symm, IsConj.trans⟩
 #align is_conj.setoid IsConj.setoid
@@ -157,7 +152,7 @@ end IsConj
 attribute [local instance] IsConj.setoid
 
 /-- The quotient type of conjugacy classes of a group. -/
-def ConjClasses (α : Type _) [Monoid α] : Type _ :=
+def ConjClasses (α : Type*) [Monoid α] : Type _ :=
   Quotient (IsConj.setoid α)
 #align conj_classes ConjClasses
 
@@ -168,7 +163,7 @@ section Monoid
 variable [Monoid α] [Monoid β]
 
 /-- The canonical quotient map from a monoid `α` into the `ConjClasses` of `α` -/
-protected def mk {α : Type _} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
+protected def mk {α : Type*} [Monoid α] (a : α) : ConjClasses α := ⟦a⟧
 #align conj_classes.mk ConjClasses.mk
 
 instance : Inhabited (ConjClasses α) := ⟨⟦1⟧⟩
@@ -249,7 +244,7 @@ the instance priority should be even lower, see Note [lower instance priority].
 
 -- see Note [slow-failing instance priority]
 instance (priority := 900) [DecidableRel (IsConj : α → α → Prop)] : DecidableEq (ConjClasses α) :=
-  instDecidableEqQuotient
+  inferInstanceAs <| DecidableEq <| Quotient (IsConj.setoid α)
 
 end Monoid
 
@@ -270,7 +265,7 @@ def mkEquiv : α ≃ ConjClasses α :=
   ⟨ConjClasses.mk, Quotient.lift id fun (a : α) b => isConj_iff_eq.1, Quotient.lift_mk _ _, by
     rw [Function.RightInverse, Function.LeftInverse, forall_isConj]
     intro x
-    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id.def]⟩
+    rw [← quotient_mk_eq_mk, ← quotient_mk_eq_mk, Quotient.lift_mk, id]⟩
 #align conj_classes.mk_equiv ConjClasses.mkEquiv
 
 end CommMonoid

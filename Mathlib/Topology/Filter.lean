@@ -2,15 +2,12 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module topology.filter
-! leanprover-community/mathlib commit 4c19a16e4b705bf135cf9a80ac18fcc99c438514
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Lift
 import Mathlib.Topology.Separation
 import Mathlib.Data.Set.Intervals.Monotone
+
+#align_import topology.filter from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
 /-!
 # Topology on the set of filters on a type
@@ -41,7 +38,7 @@ open Set Filter TopologicalSpace
 
 open Filter Topology
 
-variable {ι : Sort _} {α β X Y : Type _}
+variable {ι : Sort*} {α β X Y : Type*}
 
 namespace Filter
 
@@ -94,6 +91,11 @@ protected theorem HasBasis.nhds {l : Filter α} {p : ι → Prop} {s : ι → Se
   rw [nhds_eq]
   exact h.lift' monotone_principal.Iic
 #align filter.has_basis.nhds Filter.HasBasis.nhds
+
+protected theorem tendsto_pure_self (l : Filter X) :
+    Tendsto (pure : X → Filter X) l (𝓝 l) := by
+  rw [Filter.tendsto_nhds]
+  exact fun s hs ↦ Eventually.mono hs fun x ↦ id
 
 /-- Neighborhoods of a countably generated filter is a countably generated filter. -/
 instance {l : Filter α} [IsCountablyGenerated l] : IsCountablyGenerated (𝓝 l) :=
@@ -205,8 +207,9 @@ protected theorem tendsto_nhds_atBot_iff [Preorder β] {l : Filter α} {f : α �
 
 variable [TopologicalSpace X]
 
-theorem nhds_nhds (x : X) : 𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) :=
-  by simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
+theorem nhds_nhds (x : X) :
+    𝓝 (𝓝 x) = ⨅ (s : Set X) (_ : IsOpen s) (_ : x ∈ s), 𝓟 (Iic (𝓟 s)) := by
+  simp only [(nhds_basis_opens x).nhds.eq_biInf, iInf_and, @iInf_comm _ (_ ∈ _)]
 #align filter.nhds_nhds Filter.nhds_nhds
 
 theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=

@@ -2,13 +2,12 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.calculus.darboux
-! leanprover-community/mathlib commit 61b5e2755ccb464b68d05a9acf891ae04992d09d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Analysis.Calculus.LocalExtr
+import Mathlib.Analysis.Calculus.Deriv.Add
+import Mathlib.Analysis.Calculus.Deriv.Mul
+import Mathlib.Analysis.Calculus.LocalExtr.Basic
+
+#align_import analysis.calculus.darboux from "leanprover-community/mathlib"@"61b5e2755ccb464b68d05a9acf891ae04992d09d"
 
 /-!
 # Darboux's theorem
@@ -35,8 +34,7 @@ theorem exists_hasDerivWithinAt_eq_of_gt_of_lt (hab : a ≤ b)
   have hg : ∀ x ∈ Icc a b, HasDerivWithinAt g (f' x - m) (Icc a b) x := by
     intro x hx
     simpa using (hf x hx).sub ((hasDerivWithinAt_id x _).const_mul m)
-  obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c
-  exact
+  obtain ⟨c, cmem, hc⟩ : ∃ c ∈ Icc a b, IsMinOn g (Icc a b) c :=
     isCompact_Icc.exists_forall_le (nonempty_Icc.2 <| hab) fun x hx => (hg x hx).continuousWithinAt
   have cmem' : c ∈ Ioo a b := by
     rcases cmem.1.eq_or_lt with (rfl | hac)
@@ -79,7 +77,7 @@ theorem Set.OrdConnected.image_hasDerivWithinAt {s : Set ℝ} (hs : OrdConnected
     (hf : ∀ x ∈ s, HasDerivWithinAt f (f' x) s x) : OrdConnected (f' '' s) := by
   apply ordConnected_of_Ioo
   rintro _ ⟨a, ha, rfl⟩ _ ⟨b, hb, rfl⟩ - m ⟨hma, hmb⟩
-  cases' le_total a b with hab hab
+  rcases le_total a b with hab | hab
   · have : Icc a b ⊆ s := hs.out ha hb
     rcases exists_hasDerivWithinAt_eq_of_gt_of_lt hab (fun x hx => (hf x <| this hx).mono this) hma
         hmb with
@@ -155,4 +153,3 @@ theorem hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne {s : Set ℝ} (hs :
   exact (hs.ordConnected.image_hasDerivWithinAt hf).out (mem_image_of_mem f' ha)
     (mem_image_of_mem f' hb) ⟨hma, hmb⟩
 #align has_deriv_within_at_forall_lt_or_forall_gt_of_forall_ne hasDerivWithinAt_forall_lt_or_forall_gt_of_forall_ne
-

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module set_theory.cardinal.continuum
-! leanprover-community/mathlib commit e08a42b2dd544cf11eba72e5fc7bf199d4349925
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.SetTheory.Cardinal.Ordinal
+
+#align_import set_theory.cardinal.continuum from "leanprover-community/mathlib"@"e08a42b2dd544cf11eba72e5fc7bf199d4349925"
 
 /-!
 # Cardinality of continuum
@@ -30,10 +27,9 @@ open Cardinal
 
 /-- Cardinality of continuum. -/
 def continuum : Cardinal.{u} :=
-  2 ^ aleph0.{u}
+  2 ^ ℵ₀
 #align cardinal.continuum Cardinal.continuum
 
--- mathport name: Cardinal.continuum
 scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
@@ -48,25 +44,25 @@ theorem lift_continuum : lift.{v} 𝔠 = 𝔠 := by
 
 @[simp]
 theorem continuum_le_lift {c : Cardinal.{u}} : 𝔠 ≤ lift.{v} c ↔ 𝔠 ≤ c := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
 #align cardinal.continuum_le_lift Cardinal.continuum_le_lift
 
 @[simp]
 theorem lift_le_continuum {c : Cardinal.{u}} : lift.{v} c ≤ 𝔠 ↔ c ≤ 𝔠 := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
 #align cardinal.lift_le_continuum Cardinal.lift_le_continuum
 
 @[simp]
 theorem continuum_lt_lift {c : Cardinal.{u}} : 𝔠 < lift.{v} c ↔ 𝔠 < c := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
 #align cardinal.continuum_lt_lift Cardinal.continuum_lt_lift
 
 @[simp]
 theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
 #align cardinal.lift_lt_continuum Cardinal.lift_lt_continuum
 
@@ -91,7 +87,7 @@ theorem nat_lt_continuum (n : ℕ) : ↑n < 𝔠 :=
   (nat_lt_aleph0 n).trans aleph0_lt_continuum
 #align cardinal.nat_lt_continuum Cardinal.nat_lt_continuum
 
-theorem mk_set_nat : (#Set ℕ) = 𝔠 := by simp
+theorem mk_set_nat : #(Set ℕ) = 𝔠 := by simp
 #align cardinal.mk_set_nat Cardinal.mk_set_nat
 
 theorem continuum_pos : 0 < 𝔠 :=
@@ -134,18 +130,28 @@ theorem continuum_add_aleph0 : 𝔠 + ℵ₀ = 𝔠 :=
 
 @[simp]
 theorem continuum_add_self : 𝔠 + 𝔠 = 𝔠 :=
-  add_eq_right aleph0_le_continuum le_rfl
+  add_eq_self aleph0_le_continuum
 #align cardinal.continuum_add_self Cardinal.continuum_add_self
 
 @[simp]
 theorem nat_add_continuum (n : ℕ) : ↑n + 𝔠 = 𝔠 :=
-  add_eq_right aleph0_le_continuum (nat_lt_continuum n).le
+  nat_add_eq n aleph0_le_continuum
 #align cardinal.nat_add_continuum Cardinal.nat_add_continuum
 
 @[simp]
 theorem continuum_add_nat (n : ℕ) : 𝔠 + n = 𝔠 :=
   (add_comm _ _).trans (nat_add_continuum n)
 #align cardinal.continuum_add_nat Cardinal.continuum_add_nat
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_add_continuum {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) + 𝔠 = 𝔠 :=
+  nat_add_continuum n
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem continuum_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 + no_index (OfNat.ofNat n) = 𝔠 :=
+  continuum_add_nat n
 
 /-!
 ### Multiplication
@@ -176,6 +182,16 @@ theorem nat_mul_continuum {n : ℕ} (hn : n ≠ 0) : ↑n * 𝔠 = 𝔠 :=
 theorem continuum_mul_nat {n : ℕ} (hn : n ≠ 0) : 𝔠 * n = 𝔠 :=
   (mul_comm _ _).trans (nat_mul_continuum hn)
 #align cardinal.continuum_mul_nat Cardinal.continuum_mul_nat
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem ofNat_mul_continuum {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n) * 𝔠 = 𝔠 :=
+  nat_mul_continuum (OfNat.ofNat_ne_zero n)
+
+-- See note [no_index around OfNat.ofNat]
+@[simp]
+theorem continuum_mul_ofNat {n : ℕ} [Nat.AtLeastTwo n] : 𝔠 * no_index (OfNat.ofNat n) = 𝔠 :=
+  continuum_mul_nat (OfNat.ofNat_ne_zero n)
 
 /-!
 ### Power

@@ -2,15 +2,12 @@
 Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
-
-! This file was ported from Lean 3 source module algebra.module.projective
-! leanprover-community/mathlib commit 405ea5cee7a7070ff8fb8dcb4cfb003532e34bce
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
+
+#align_import algebra.module.projective from "leanprover-community/mathlib"@"405ea5cee7a7070ff8fb8dcb4cfb003532e34bce"
 
 /-!
 
@@ -74,7 +71,7 @@ open Finsupp
 /-- An R-module is projective if it is a direct summand of a free module, or equivalently
   if maps from the module lift along surjections. There are several other equivalent
   definitions. -/
-class Module.Projective (R : Type _) [Semiring R] (P : Type _) [AddCommMonoid P] [Module R P] :
+class Module.Projective (R : Type*) [Semiring R] (P : Type*) [AddCommMonoid P] [Module R P] :
     Prop where
   out : ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s
 #align module.projective Module.Projective
@@ -83,8 +80,8 @@ namespace Module
 
 section Semiring
 
-variable {R : Type _} [Semiring R] {P : Type _} [AddCommMonoid P] [Module R P] {M : Type _}
-  [AddCommMonoid M] [Module R M] {N : Type _} [AddCommMonoid N] [Module R N]
+variable {R : Type*} [Semiring R] {P : Type*} [AddCommMonoid P] [Module R P] {M : Type*}
+  [AddCommMonoid M] [Module R M] {N : Type*} [AddCommMonoid N] [Module R N]
 
 theorem projective_def :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Function.LeftInverse (Finsupp.total P P R id) s :=
@@ -93,7 +90,7 @@ theorem projective_def :
 
 theorem projective_def' :
     Projective R P ↔ ∃ s : P →ₗ[R] P →₀ R, Finsupp.total P P R id ∘ₗ s = .id :=
-  by simp_rw [projective_def, FunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
+  by simp_rw [projective_def, DFunLike.ext_iff, Function.LeftInverse, comp_apply, id_apply]
 #align module.projective_def' Module.projective_def'
 
 /-- A projective R-module has the property that maps from it lift along surjections. -/
@@ -115,7 +112,7 @@ theorem projective_lifting_property [h : Projective R P] (f : M →ₗ[R] N) (g 
   use φ.comp s
   ext p
   conv_rhs => rw [← hs p]
-  simp [Finsupp.total_apply, Function.surjInv_eq hf]
+  simp [φ, Finsupp.total_apply, Function.surjInv_eq hf, map_finsupp_sum]
 #align module.projective_lifting_property Module.projective_lifting_property
 
 /-- A module which satisfies the universal property is projective: If all surjections of
@@ -128,7 +125,7 @@ theorem Projective.of_lifting_property'' {R : Type u} [Semiring R] {P : Type v} 
   projective_def'.2 <| huniv (Finsupp.total P P R (id : P → P))
     (total_surjective _ Function.surjective_id)
 
-variable {Q : Type _} [AddCommMonoid Q] [Module R Q]
+variable {Q : Type*} [AddCommMonoid Q] [Module R Q]
 
 instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine .of_lifting_property'' fun f hf ↦ ?_
@@ -137,31 +134,31 @@ instance [Projective R P] [Projective R Q] : Projective R (P × Q) := by
   refine ⟨coprod g₁ g₂, ?_⟩
   rw [LinearMap.comp_coprod, hg₁, hg₂, LinearMap.coprod_inl_inr]
 
-variable {ι : Type _} (A : ι → Type _) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
+variable {ι : Type*} (A : ι → Type*) [∀ i : ι, AddCommMonoid (A i)] [∀ i : ι, Module R (A i)]
 
 instance [h : ∀ i : ι, Projective R (A i)] : Projective R (Π₀ i, A i) :=
   .of_lifting_property'' fun f hf ↦ by
     classical
-      choose g hg using fun i ↦ projective_lifting_property f (Dfinsupp.lsingle i) hf
-      replace hg : ∀ i x, f (g i x) = Dfinsupp.single i x := fun i ↦ FunLike.congr_fun (hg i)
-      refine ⟨Dfinsupp.coprodMap g, ?_⟩
+      choose g hg using fun i ↦ projective_lifting_property f (DFinsupp.lsingle i) hf
+      replace hg : ∀ i x, f (g i x) = DFinsupp.single i x := fun i ↦ DFunLike.congr_fun (hg i)
+      refine ⟨DFinsupp.coprodMap g, ?_⟩
       ext i x j
-      simp only [comp_apply, id_apply, Dfinsupp.lsingle_apply, Dfinsupp.coprodMap_apply_single, hg]
+      simp only [comp_apply, id_apply, DFinsupp.lsingle_apply, DFinsupp.coprodMap_apply_single, hg]
 
 end Semiring
 
 section Ring
 
-variable {R : Type _} [Ring R] {P : Type _} [AddCommGroup P] [Module R P]
+variable {R : Type*} [Ring R] {P : Type*} [AddCommGroup P] [Module R P]
 
 /-- Free modules are projective. -/
-theorem Projective.of_basis {ι : Type _} (b : Basis ι R P) : Projective R P := by
+theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := by
   -- need P →ₗ (P →₀ R) for definition of projective.
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
-  simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
-    LinearMap.map_finsupp_sum]
+  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
+    map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis
 
@@ -174,7 +171,7 @@ end Ring
 --This is in a different section because special universe restrictions are required.
 section OfLiftingProperty
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A module which satisfies the universal property is projective. Note that the universe variables
 in `huniv` are somewhat restricted. -/
 theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max u v}
@@ -188,7 +185,7 @@ theorem Projective.of_lifting_property' {R : Type u} [Semiring R] {P : Type max 
   .of_lifting_property'' (huniv · _)
 #align module.projective_of_lifting_property' Module.Projective.of_lifting_property'
 
--- porting note: todo: generalize to `P : Type v`?
+-- Porting note (#11215): TODO: generalize to `P : Type v`?
 /-- A variant of `of_lifting_property'` when we're working over a `[Ring R]`,
 which only requires quantifying over modules with an `AddCommGroup` instance. -/
 theorem Projective.of_lifting_property {R : Type u} [Ring R] {P : Type max u v} [AddCommGroup P]

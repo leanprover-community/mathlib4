@@ -3,15 +3,12 @@
 Copyright (c) 2022 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.is_adjoin_root
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.FieldTheory.Minpoly.IsIntegrallyClosed
 import Mathlib.RingTheory.PowerBasis
+
+#align_import ring_theory.is_adjoin_root from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # A predicate on adjoining roots of polynomial
@@ -86,7 +83,8 @@ and `AdjoinRoot` which constructs a new type.
 
 This is not a typeclass because the choice of root given `S` and `f` is not unique.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure IsAdjoinRoot {R : Type u} (S : Type v) [CommSemiring R] [Semiring S] [Algebra R S]
     (f : R[X]) : Type max u v where
   map : R[X] →+* S
@@ -157,7 +155,7 @@ theorem aeval_eq (h : IsAdjoinRoot S f) (p : R[X]) : aeval h.root p = h.map p :=
       RingHom.map_pow, map_X]
 #align is_adjoin_root.aeval_eq IsAdjoinRoot.aeval_eq
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem aeval_root (h : IsAdjoinRoot S f) : aeval h.root f = 0 := by rw [aeval_eq, map_self]
 #align is_adjoin_root.aeval_root IsAdjoinRoot.aeval_root
 
@@ -200,14 +198,14 @@ theorem ext (h h' : IsAdjoinRoot S f) (eq : h.root = h'.root) : h = h' :=
 
 section lift
 
-variable {T : Type _} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
+variable {T : Type*} [CommRing T] {i : R →+* T} {x : T} (hx : f.eval₂ i x = 0)
 
 /-- Auxiliary lemma for `IsAdjoinRoot.lift` -/
 theorem eval₂_repr_eq_eval₂_of_map_eq (h : IsAdjoinRoot S f) (z : S) (w : R[X])
     (hzw : h.map w = z) : (h.repr z).eval₂ i x = w.eval₂ i x := by
   rw [eq_comm, ← sub_eq_zero, ← h.map_repr z, ← map_sub, h.map_eq_zero_iff] at hzw
   obtain ⟨y, hy⟩ := hzw
-  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, MulZeroClass.zero_mul]
+  rw [← sub_eq_zero, ← eval₂_sub, hy, eval₂_mul, hx, zero_mul]
 #align is_adjoin_root.eval₂_repr_eq_eval₂_of_map_eq IsAdjoinRoot.eval₂_repr_eq_eval₂_of_map_eq
 
 variable (i x)
@@ -218,17 +216,17 @@ where `S` is given by adjoining a root of `f` to `R`. -/
 def lift (h : IsAdjoinRoot S f) : S →+* T where
   toFun z := (h.repr z).eval₂ i x
   map_zero' := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_zero _), eval₂_zero]
   map_add' z w := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z + h.repr w), eval₂_add]
     · rw [map_add, map_repr, map_repr]
   map_one' := by
-    dsimp only -- Porting note: added
+    beta_reduce -- Porting note (#12129): additional beta reduction needed
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ (map_one _), eval₂_one]
   map_mul' z w := by
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ (h.repr z * h.repr w), eval₂_mul]
     · rw [map_mul, map_repr, map_repr]
 #align is_adjoin_root.lift IsAdjoinRoot.lift
@@ -238,7 +236,7 @@ variable {i x}
 @[simp]
 theorem lift_map (h : IsAdjoinRoot S f) (z : R[X]) : h.lift i x hx (h.map z) = z.eval₂ i x := by
   rw [lift, RingHom.coe_mk]
-  dsimp -- Porting note: added
+  dsimp -- Porting note (#11227):added a `dsimp`
   rw [h.eval₂_repr_eq_eval₂_of_map_eq hx _ _ rfl]
 #align is_adjoin_root.lift_map IsAdjoinRoot.lift_map
 
@@ -267,7 +265,6 @@ theorem eq_lift (h : IsAdjoinRoot S f) (g : S →+* T) (hmap : ∀ a, g (algebra
 #align is_adjoin_root.eq_lift IsAdjoinRoot.eq_lift
 
 variable [Algebra R T] (hx' : aeval x f = 0)
-
 variable (x)
 
 -- To match `AdjoinRoot.liftHom`
@@ -374,11 +371,11 @@ def modByMonicHom (h : IsAdjoinRootMonic S f) : S →ₗ[R] R[X] where
   map_add' x y := by
     conv_lhs =>
       rw [← h.map_repr x, ← h.map_repr y, ← map_add]
-      dsimp only -- Porting note: added
+      beta_reduce -- Porting note (#12129): additional beta reduction needed
       rw [h.modByMonic_repr_map, add_modByMonic]
   map_smul' c x := by
     rw [RingHom.id_apply, ← h.map_repr x, Algebra.smul_def, h.algebraMap_apply, ← map_mul]
-    dsimp only -- Porting note: added
+    dsimp only -- Porting note (#10752): added `dsimp only`
     rw [h.modByMonic_repr_map, ← smul_eq_C_mul, smul_modByMonic, h.map_repr]
 #align is_adjoin_root_monic.mod_by_monic_hom IsAdjoinRootMonic.modByMonicHom
 
@@ -390,7 +387,7 @@ theorem modByMonicHom_map (h : IsAdjoinRootMonic S f) (g : R[X]) :
 @[simp]
 theorem map_modByMonicHom (h : IsAdjoinRootMonic S f) (x : S) : h.map (h.modByMonicHom x) = x := by
   rw [modByMonicHom, LinearMap.coe_mk]
-  dsimp -- Porting note: added
+  dsimp -- Porting note (#11227):added a `dsimp`
   rw [map_modByMonic, map_repr]
 #align is_adjoin_root_monic.map_mod_by_monic_hom IsAdjoinRootMonic.map_modByMonicHom
 
@@ -425,12 +422,12 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         intro i hi
         refine Set.mem_range.mpr ⟨⟨i, ?_⟩, rfl⟩
         contrapose! hi
-        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne.def,
+        simp only [Polynomial.toFinsupp_apply, Classical.not_not, Finsupp.mem_support_iff, Ne,
           modByMonicHom, LinearMap.coe_mk, Finset.mem_coe]
         by_cases hx : h.toIsAdjoinRoot.repr x %ₘ f = 0
         · simp [hx]
         refine coeff_eq_zero_of_natDegree_lt (lt_of_lt_of_le ?_ hi)
-        dsimp -- Porting note: added
+        dsimp -- Porting note (#11227):added a `dsimp`
         rw [natDegree_lt_natDegree_iff hx]
         · exact degree_modByMonic_lt _ h.Monic
       right_inv := fun g => by
@@ -438,24 +435,24 @@ def basis (h : IsAdjoinRootMonic S f) : Basis (Fin (natDegree f)) R S :=
         ext i
         simp only [h.modByMonicHom_map, Finsupp.comapDomain_apply, Polynomial.toFinsupp_apply]
         rw [(Polynomial.modByMonic_eq_self_iff h.Monic).mpr, Polynomial.coeff]
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_apply Fin.val_injective]
         rw [degree_eq_natDegree h.Monic.ne_zero, degree_lt_iff_coeff_zero]
         intro m hm
         rw [Polynomial.coeff]
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [Finsupp.mapDomain_notin_range]
         rw [Set.mem_range, not_exists]
         rintro i rfl
         exact i.prop.not_le hm
       map_add' := fun x y => by
-        dsimp only -- Porting note: added
+        beta_reduce -- Porting note (#12129): additional beta reduction needed
         rw [map_add, toFinsupp_add, Finsupp.comapDomain_add_of_injective Fin.val_injective]
       -- Porting note: the original simp proof with the same lemmas does not work
       -- See https://github.com/leanprover-community/mathlib4/issues/5026
       -- simp only [map_add, Finsupp.comapDomain_add_of_injective Fin.val_injective, toFinsupp_add]
       map_smul' := fun c x => by
-        dsimp only -- Porting note: added
+        dsimp only -- Porting note (#10752): added `dsimp only`
         rw [map_smul, toFinsupp_smul, Finsupp.comapDomain_smul_of_injective Fin.val_injective,
           RingHom.id_apply] }
       -- Porting note: the original simp proof with the same lemmas does not work
@@ -506,7 +503,7 @@ theorem basis_one (h : IsAdjoinRootMonic S f) (hdeg : 1 < natDegree f) :
 
 /-- `IsAdjoinRootMonic.liftPolyₗ` lifts a linear map on polynomials to a linear map on `S`. -/
 @[simps!]
-def liftPolyₗ {T : Type _} [AddCommGroup T] [Module R T] (h : IsAdjoinRootMonic S f)
+def liftPolyₗ {T : Type*} [AddCommGroup T] [Module R T] (h : IsAdjoinRootMonic S f)
     (g : R[X] →ₗ[R] T) : S →ₗ[R] T :=
   g.comp h.modByMonicHom
 #align is_adjoin_root_monic.lift_polyₗ IsAdjoinRootMonic.liftPolyₗ
@@ -560,7 +557,7 @@ theorem coeff_root_pow (h : IsAdjoinRootMonic S f) {n} (hn : n < natDegree f) :
         ↑(⟨i, _⟩ : Fin _) := by
         rw [h.basis.repr_self, ← Finsupp.single_eq_pi_single,
           Finsupp.single_apply_left Fin.val_injective]
-      _ = Pi.single (f:= fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
+      _ = Pi.single (f := fun _ => R) n 1 i := by rw [Fin.val_mk, Fin.val_mk]
   · refine (Pi.single_eq_of_ne (f := fun _ => R) ?_ (1 : (fun _ => R) n)).symm
     rintro rfl
     simp [hi] at hn
@@ -631,7 +628,7 @@ end lift
 
 section Equiv
 
-variable {T : Type _} [CommRing T] [Algebra R T]
+variable {T : Type*} [CommRing T] [Algebra R T]
 
 /-- Adjoining a root gives a unique ring up to algebra isomorphism.
 
@@ -667,26 +664,26 @@ theorem aequiv_symm (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f) :
 #align is_adjoin_root.aequiv_symm IsAdjoinRoot.aequiv_symm
 
 @[simp]
-theorem lift_aequiv {U : Type _} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
+theorem lift_aequiv {U : Type*} [CommRing U] (h : IsAdjoinRoot S f) (h' : IsAdjoinRoot T f)
     (i : R →+* U) (x hx z) : h'.lift i x hx (h.aequiv h' z) = h.lift i x hx z := by
   rw [← h.map_repr z, aequiv_map, lift_map, lift_map]
 #align is_adjoin_root.lift_aequiv IsAdjoinRoot.lift_aequiv
 
 @[simp]
-theorem liftHom_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem liftHom_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (x : U) (hx z) : h'.liftHom x hx (h.aequiv h' z) = h.liftHom x hx z :=
   h.lift_aequiv h' _ _ hx _
 #align is_adjoin_root.lift_hom_aequiv IsAdjoinRoot.liftHom_aequiv
 
 @[simp]
-theorem aequiv_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) (x) :
     (h'.aequiv h'') (h.aequiv h' x) = h.aequiv h'' x :=
   h.liftHom_aequiv _ _ h''.aeval_root _
 #align is_adjoin_root.aequiv_aequiv IsAdjoinRoot.aequiv_aequiv
 
 @[simp]
-theorem aequiv_trans {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_trans {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (h'' : IsAdjoinRoot U f) :
     (h.aequiv h').trans (h'.aequiv h'') = h.aequiv h'' := by ext z; exact h.aequiv_aequiv h' h'' z
 #align is_adjoin_root.aequiv_trans IsAdjoinRoot.aequiv_trans
@@ -713,13 +710,13 @@ theorem ofEquiv_root (h : IsAdjoinRoot S f) (e : S ≃ₐ[R] T) : (h.ofEquiv e).
 #align is_adjoin_root.of_equiv_root IsAdjoinRoot.ofEquiv_root
 
 @[simp]
-theorem aequiv_ofEquiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem aequiv_ofEquiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot T f) (e : T ≃ₐ[R] U) : h.aequiv (h'.ofEquiv e) = (h.aequiv h').trans e := by
-  ext a ; rw [← h.map_repr a, aequiv_map, AlgEquiv.trans_apply, aequiv_map, ofEquiv_map_apply]
+  ext a; rw [← h.map_repr a, aequiv_map, AlgEquiv.trans_apply, aequiv_map, ofEquiv_map_apply]
 #align is_adjoin_root.aequiv_of_equiv IsAdjoinRoot.aequiv_ofEquiv
 
 @[simp]
-theorem ofEquiv_aequiv {U : Type _} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
+theorem ofEquiv_aequiv {U : Type*} [CommRing U] [Algebra R U] (h : IsAdjoinRoot S f)
     (h' : IsAdjoinRoot U f) (e : S ≃ₐ[R] T) :
     (h.ofEquiv e).aequiv h' = e.symm.trans (h.aequiv h') := by
   ext a

@@ -2,11 +2,6 @@
 Copyright (c) 2022 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel
-
-! This file was ported from Lean 3 source module category_theory.generator
-! leanprover-community/mathlib commit f187f1074fa1857c94589cc653c786cadc4c35ff
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Balanced
 import Mathlib.CategoryTheory.Limits.EssentiallySmall
@@ -15,6 +10,9 @@ import Mathlib.CategoryTheory.Limits.Shapes.ZeroMorphisms
 import Mathlib.CategoryTheory.Subobject.Lattice
 import Mathlib.CategoryTheory.Subobject.WellPowered
 import Mathlib.Data.Set.Opposite
+import Mathlib.Data.Set.Subsingleton
+
+#align_import category_theory.generator from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
 
 /-!
 # Separating and detecting sets
@@ -294,7 +292,7 @@ theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C
     let t := Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))
     haveI : Mono t := (isCoseparating_iff_mono 𝒢).1 h𝒢 A
     exact Subobject.ofLEMk _ (pullback.fst : pullback s t ⟶ _) bot_le ≫ pullback.snd
-  · suffices ∀ (g : Subobject.underlying.obj ⊥ ⟶ A ), f = g by
+  · suffices ∀ (g : Subobject.underlying.obj ⊥ ⟶ A), f = g by
       apply this
     intro g
     suffices IsSplitEpi (equalizer.ι f g) by exact eq_of_epi_equalizer
@@ -340,7 +338,7 @@ theorem eq_of_isDetecting [HasPullbacks C] {𝒢 : Set C} (h𝒢 : IsDetecting �
     (P Q : Subobject X) (h : ∀ G ∈ 𝒢, ∀ {f : G ⟶ X}, P.Factors f ↔ Q.Factors f) : P = Q :=
   calc
     P = P ⊓ Q := Eq.symm <| inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).1 hf
-    _ = Q ⊓ P := inf_comm
+    _ = Q ⊓ P := inf_comm ..
     _ = Q := inf_eq_of_isDetecting h𝒢 _ _ fun G hG _ hf => (h G hG).2 hf
 
 #align category_theory.subobject.eq_of_is_detecting CategoryTheory.Subobject.eq_of_isDetecting
@@ -510,12 +508,12 @@ theorem IsCodetector.def {G : C} :
 #align category_theory.is_codetector.def CategoryTheory.IsCodetector.def
 
 theorem isSeparator_iff_faithful_coyoneda_obj (G : C) :
-    IsSeparator G ↔ Faithful (coyoneda.obj (op G)) :=
+    IsSeparator G ↔ (coyoneda.obj (op G)).Faithful :=
   ⟨fun hG => ⟨fun hfg => hG.def _ _ (congr_fun hfg)⟩, fun _ =>
     (isSeparator_def _).2 fun _ _ _ _ hfg => (coyoneda.obj (op G)).map_injective (funext hfg)⟩
 #align category_theory.is_separator_iff_faithful_coyoneda_obj CategoryTheory.isSeparator_iff_faithful_coyoneda_obj
 
-theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ Faithful (yoneda.obj G) :=
+theorem isCoseparator_iff_faithful_yoneda_obj (G : C) : IsCoseparator G ↔ (yoneda.obj G).Faithful :=
   ⟨fun hG => ⟨fun hfg => Quiver.Hom.unop_inj (hG.def _ _ (congr_fun hfg))⟩, fun _ =>
     (isCoseparator_def _).2 fun _ _ _ _ hfg =>
       Quiver.Hom.op_inj <| (yoneda.obj G).map_injective (funext hfg)⟩
@@ -628,7 +626,7 @@ theorem isCoseparator_pi_of_isCoseparator {β : Type w} (f : β → C) [HasProdu
 end ZeroMorphisms
 
 theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
-    IsDetector G ↔ ReflectsIsomorphisms (coyoneda.obj (op G)) := by
+    IsDetector G ↔ (coyoneda.obj (op G)).ReflectsIsomorphisms := by
   refine'
     ⟨fun hG => ⟨fun f hf => hG.def _ fun h => _⟩, fun h =>
       (isDetector_def _).2 fun X Y f hf => _⟩
@@ -640,7 +638,7 @@ theorem isDetector_iff_reflectsIsomorphisms_coyoneda_obj (G : C) :
 #align category_theory.is_detector_iff_reflects_isomorphisms_coyoneda_obj CategoryTheory.isDetector_iff_reflectsIsomorphisms_coyoneda_obj
 
 theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
-    IsCodetector G ↔ ReflectsIsomorphisms (yoneda.obj G) := by
+    IsCodetector G ↔ (yoneda.obj G).ReflectsIsomorphisms := by
   refine' ⟨fun hG => ⟨fun f hf => _⟩, fun h => (isCodetector_def _).2 fun X Y f hf => _⟩
   · refine' (isIso_unop_iff _).1 (hG.def _ _)
     rwa [isIso_iff_bijective, Function.bijective_iff_existsUnique] at hf
@@ -651,7 +649,7 @@ theorem isCodetector_iff_reflectsIsomorphisms_yoneda_obj (G : C) :
 #align category_theory.is_codetector_iff_reflects_isomorphisms_yoneda_obj CategoryTheory.isCodetector_iff_reflectsIsomorphisms_yoneda_obj
 
 theorem wellPowered_of_isDetector [HasPullbacks C] (G : C) (hG : IsDetector G) : WellPowered C :=
-  -- porting note: added the following `haveI` to prevent universe issues
+  -- Porting note: added the following `haveI` to prevent universe issues
   haveI := small_subsingleton ({G} : Set C)
   wellPowered_of_isDetecting hG
 #align category_theory.well_powered_of_is_detector CategoryTheory.wellPowered_of_isDetector

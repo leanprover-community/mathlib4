@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module analysis.convex.independent
-! leanprover-community/mathlib commit fefd8a38be7811574cd2ec2f77d3a393a407f112
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.Analysis.Convex.Extreme
+
+#align_import analysis.convex.independent from "leanprover-community/mathlib"@"fefd8a38be7811574cd2ec2f77d3a393a407f112"
 
 /-!
 # Convex independence
@@ -45,11 +42,12 @@ independence, convex position
 -/
 
 
-open Affine BigOperators Classical
+open scoped Classical
+open Affine BigOperators
 
 open Finset Function
 
-variable {𝕜 E ι : Type _}
+variable {𝕜 E ι : Type*}
 
 section OrderedSemiring
 
@@ -67,7 +65,7 @@ variable {𝕜}
 theorem Subsingleton.convexIndependent [Subsingleton ι] (p : ι → E) : ConvexIndependent 𝕜 p := by
   intro s x hx
   have : (convexHull 𝕜 (p '' s)).Nonempty := ⟨p x, hx⟩
-  rw [convexHull_nonempty_iff, Set.nonempty_image_iff] at this
+  rw [convexHull_nonempty_iff, Set.image_nonempty] at this
   rwa [Subsingleton.mem_iff_nonempty]
 #align subsingleton.convex_independent Subsingleton.convexIndependent
 
@@ -81,7 +79,7 @@ protected theorem ConvexIndependent.injective {p : ι → E} (hc : ConvexIndepen
 
 /-- If a family is convex independent, so is any subfamily given by composition of an embedding into
 index type with the original family. -/
-theorem ConvexIndependent.comp_embedding {ι' : Type _} (f : ι' ↪ ι) {p : ι → E}
+theorem ConvexIndependent.comp_embedding {ι' : Type*} (f : ι' ↪ ι) {p : ι → E}
     (hc : ConvexIndependent 𝕜 p) : ConvexIndependent 𝕜 (p ∘ f) := by
   intro s x hx
   rw [← f.injective.mem_set_image]

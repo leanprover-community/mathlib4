@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers, Manuel Candales
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.unoriented.basic
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecialFunctions.Trigonometric.Inverse
+
+#align_import geometry.euclidean.angle.unoriented.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Angles between vectors
@@ -20,6 +17,9 @@ This file defines unoriented angles in real inner product spaces.
 
 * `InnerProductGeometry.angle` is the undirected angle between two vectors.
 
+## TODO
+
+Prove the triangle inequality for the angle.
 -/
 
 
@@ -39,7 +39,7 @@ open RealInnerProductSpace
 
 namespace InnerProductGeometry
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] {x y : V}
 
 /-- The undirected angle between two vectors. If either vector is 0,
 this is π/2. See `Orientation.oangle` for the corresponding oriented angle
@@ -63,7 +63,7 @@ theorem angle_smul_smul {c : ℝ} (hc : c ≠ 0) (x y : V) : angle (c • x) (c 
 #align inner_product_geometry.angle_smul_smul InnerProductGeometry.angle_smul_smul
 
 @[simp]
-theorem _root_.LinearIsometry.angle_map {E F : Type _} [NormedAddCommGroup E] [NormedAddCommGroup F]
+theorem _root_.LinearIsometry.angle_map {E F : Type*} [NormedAddCommGroup E] [NormedAddCommGroup F]
     [InnerProductSpace ℝ E] [InnerProductSpace ℝ F] (f : E →ₗᵢ[ℝ] F) (u v : E) :
     angle (f u) (f v) = angle u v := by
   rw [angle, angle, f.inner_map_map, f.norm_map, f.norm_map]
@@ -114,6 +114,8 @@ theorem angle_neg_right (x y : V) : angle x (-y) = π - angle x y := by
 theorem angle_neg_left (x y : V) : angle (-x) y = π - angle x y := by
   rw [← angle_neg_neg, neg_neg, angle_neg_right]
 #align inner_product_geometry.angle_neg_left InnerProductGeometry.angle_neg_left
+
+proof_wanted angle_triangle (x y z : V) : angle x z ≤ angle x y + angle y z
 
 /-- The angle between the zero vector and a vector. -/
 @[simp]
@@ -188,20 +190,20 @@ theorem cos_angle_mul_norm_mul_norm (x y : V) : Real.cos (angle x y) * (‖x‖ 
 /-- The sine of the angle between two vectors, multiplied by the
 product of their norms. -/
 theorem sin_angle_mul_norm_mul_norm (x y : V) :
-    Real.sin (angle x y) * (‖x‖ * ‖y‖) = Real.sqrt (⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
+    Real.sin (angle x y) * (‖x‖ * ‖y‖) = √(⟪x, x⟫ * ⟪y, y⟫ - ⟪x, y⟫ * ⟪x, y⟫) := by
   unfold angle
   rw [Real.sin_arccos, ← Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     ← Real.sqrt_mul' _ (mul_self_nonneg _), sq,
     Real.sqrt_mul_self (mul_nonneg (norm_nonneg x) (norm_nonneg y)),
     real_inner_self_eq_norm_mul_norm, real_inner_self_eq_norm_mul_norm]
   by_cases h : ‖x‖ * ‖y‖ = 0
-  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, MulZeroClass.mul_zero,
-      MulZeroClass.mul_zero, zero_sub]
+  · rw [show ‖x‖ * ‖x‖ * (‖y‖ * ‖y‖) = ‖x‖ * ‖y‖ * (‖x‖ * ‖y‖) by ring, h, mul_zero,
+      mul_zero, zero_sub]
     cases' eq_zero_or_eq_zero_of_mul_eq_zero h with hx hy
     · rw [norm_eq_zero] at hx
-      rw [hx, inner_zero_left, MulZeroClass.zero_mul, neg_zero]
+      rw [hx, inner_zero_left, zero_mul, neg_zero]
     · rw [norm_eq_zero] at hy
-      rw [hy, inner_zero_right, MulZeroClass.zero_mul, neg_zero]
+      rw [hy, inner_zero_right, zero_mul, neg_zero]
   · field_simp [h]
     ring_nf
 #align inner_product_geometry.sin_angle_mul_norm_mul_norm InnerProductGeometry.sin_angle_mul_norm_mul_norm
@@ -226,7 +228,7 @@ vectors and a third vector add to π. -/
 theorem angle_add_angle_eq_pi_of_angle_eq_pi {x y : V} (z : V) (h : angle x y = π) :
     angle x z + angle y z = π := by
   rcases angle_eq_pi_iff.1 h with ⟨_, ⟨r, ⟨hr, rfl⟩⟩⟩
-  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel'_right]
+  rw [angle_smul_left_of_neg x z hr, angle_neg_left, add_sub_cancel]
 #align inner_product_geometry.angle_add_angle_eq_pi_of_angle_eq_pi InnerProductGeometry.angle_add_angle_eq_pi_of_angle_eq_pi
 
 /-- Two vectors have inner product 0 if and only if the angle between

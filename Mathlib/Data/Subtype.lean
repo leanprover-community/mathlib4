@@ -2,13 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.subtype
-! leanprover-community/mathlib commit c4658a649d216f57e99621708b09dcb3dcccbd23
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Logic.Function.Basic
+
+#align_import data.subtype from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
+#align_import init.data.subtype.basic from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"
 
 /-!
 # Subtypes
@@ -30,7 +28,14 @@ open Function
 
 namespace Subtype
 
-variable {α β γ : Sort _} {p q : α → Prop}
+variable {α β γ : Sort*} {p q : α → Prop}
+
+#align subtype.eq Subtype.eq
+#align subtype.eta Subtype.eta
+
+#noalign subtype.tag_irrelevant
+#noalign subtype.exists_of_subtype
+#align subtype.inhabited Subtype.instInhabitedSubtype
 
 attribute [coe] Subtype.val
 
@@ -75,8 +80,8 @@ theorem ext_iff {a1 a2 : { x // p x }} : a1 = a2 ↔ (a1 : α) = (a2 : α) :=
 
 theorem heq_iff_coe_eq (h : ∀ x, p x ↔ q x) {a1 : { x // p x }} {a2 : { x // q x }} :
     HEq a1 a2 ↔ (a1 : α) = (a2 : α) :=
-  Eq.rec (motive := λ (pp: (α → Prop)) _ => ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
-         (λ _ => heq_iff_eq.trans ext_iff) (funext $ λ x => propext (h x)) a2
+  Eq.rec (motive := fun (pp: (α → Prop)) _ ↦ ∀ a2' : {x // pp x}, HEq a1 a2' ↔ (a1 : α) = (a2' : α))
+         (fun _ ↦ heq_iff_eq.trans ext_iff) (funext <| fun x ↦ propext (h x)) a2
 #align subtype.heq_iff_coe_eq Subtype.heq_iff_coe_eq
 
 lemma heq_iff_coe_heq {α β : Sort _} {p : α → Prop} {q : β → Prop} {a : {x // p x}}
@@ -134,6 +139,12 @@ theorem val_inj {a b : Subtype p} : a.val = b.val ↔ a = b :=
   coe_inj
 #align subtype.val_inj Subtype.val_inj
 
+lemma coe_ne_coe {a b : Subtype p} : (a : α) ≠ b ↔ a ≠ b := coe_injective.ne_iff
+
+-- 2024-04-04
+@[deprecated] alias ⟨ne_of_val_ne, _⟩ := coe_ne_coe
+#align subtype.ne_of_val_ne Subtype.ne_of_val_ne
+
 -- Porting note: it is unclear why the linter doesn't like this.
 -- If you understand why, please replace this comment with an explanation, or resolve.
 @[simp, nolint simpNF]
@@ -151,17 +162,17 @@ theorem _root_.exists_subtype_mk_eq_iff {a : Subtype p} {b : α} :
 #align exists_subtype_mk_eq_iff exists_subtype_mk_eq_iff
 
 /-- Restrict a (dependent) function to a subtype -/
-def restrict {α} {β : α → Type _} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
+def restrict {α} {β : α → Type*} (p : α → Prop) (f : ∀ x, β x) (x : Subtype p) : β x.1 :=
   f x
 #align subtype.restrict Subtype.restrict
 
-theorem restrict_apply {α} {β : α → Type _} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
+theorem restrict_apply {α} {β : α → Type*} (f : ∀ x, β x) (p : α → Prop) (x : Subtype p) :
     restrict p f x = f x.1 := by
   rfl
 #align subtype.restrict_apply Subtype.restrict_apply
 
 theorem restrict_def {α β} (f : α → β) (p : α → Prop) :
-  restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
+    restrict p f = f ∘ (fun (a : Subtype p) ↦ a) := rfl
 #align subtype.restrict_def Subtype.restrict_def
 
 theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Injective f) :
@@ -169,7 +180,7 @@ theorem restrict_injective {α β} {f : α → β} (p : α → Prop) (h : Inject
   h.comp coe_injective
 #align subtype.restrict_injective Subtype.restrict_injective
 
-theorem surjective_restrict {α} {β : α → Type _} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
+theorem surjective_restrict {α} {β : α → Type*} [ne : ∀ a, Nonempty (β a)] (p : α → Prop) :
     Surjective fun f : ∀ x, β x ↦ restrict p f := by
   letI := Classical.decPred p
   refine' fun f ↦ ⟨fun x ↦ if h : p x then f ⟨x, h⟩ else Nonempty.some (ne x), funext <| _⟩
@@ -205,6 +216,11 @@ def map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → 
   fun x ↦ ⟨f x, h x x.prop⟩
 #align subtype.map Subtype.map
 #align subtype.map_coe Subtype.map_coe
+
+-- Adaptation note: nightly-2024-03-16: added to replace simp [Subtype.map]
+theorem map_def {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ a, p a → q (f a)) :
+    map f h = fun x ↦ ⟨f x, h x x.prop⟩ :=
+  rfl
 
 theorem map_comp {p : α → Prop} {q : β → Prop} {r : γ → Prop} {x : Subtype p}
     (f : α → β) (h : ∀ a, p a → q (f a)) (g : β → γ) (l : ∀ a, q a → r (g a)) :
@@ -259,7 +275,7 @@ end Subtype
 namespace Subtype
 
 /-! Some facts about sets, which require that `α` is a type. -/
-variable {α β γ : Type _} {p : α → Prop}
+variable {α β γ : Type*} {p : α → Prop}
 
 @[simp]
 theorem coe_prop {S : Set α} (a : { a // a ∈ S }) : ↑a ∈ S :=

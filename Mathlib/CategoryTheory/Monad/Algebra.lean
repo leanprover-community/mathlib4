@@ -2,15 +2,12 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.algebra
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Adjunction.Basic
 import Mathlib.CategoryTheory.Functor.EpiMono
+
+#align_import category_theory.monad.algebra from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Eilenberg-Moore (co)algebras for a (co)monad
@@ -202,7 +199,14 @@ def adj : T.free ⊣ T.forget :=
           right_inv := fun f => by
             dsimp only [forget_obj]
             rw [← T.η.naturality_assoc, Y.unit]
-            apply Category.comp_id } }
+            apply Category.comp_id },
+      -- This used to be automatic before leanprover/lean4#2644
+      homEquiv_naturality_right := by
+        intros
+        -- This doesn't look good:
+        simp? says simp only [forget_obj, free_obj_A, forget_map]
+        dsimp
+        simp }
 #align category_theory.monad.adj CategoryTheory.Monad.adj
 
 /-- Given an algebra morphism whose carrier part is an isomorphism, we get an algebra isomorphism.
@@ -215,12 +219,12 @@ theorem algebra_iso_of_iso {A B : Algebra T} (f : A ⟶ B) [IsIso f.f] : IsIso f
       by aesop_cat⟩⟩
 #align category_theory.monad.algebra_iso_of_iso CategoryTheory.Monad.algebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms T.forget
-    -- Porting note: Is this the right approach to introduce instances?
-    where reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
+instance forget_reflects_iso : T.forget.ReflectsIsomorphisms where
+  -- Porting note: Is this the right approach to introduce instances?
+  reflects {_ _} f := fun [IsIso f.f] => algebra_iso_of_iso T f
 #align category_theory.monad.forget_reflects_iso CategoryTheory.Monad.forget_reflects_iso
 
-instance forget_faithful : Faithful T.forget where
+instance forget_faithful : T.forget.Faithful where
 #align category_theory.monad.forget_faithful CategoryTheory.Monad.forget_faithful
 
 /-- Given an algebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.
@@ -320,8 +324,8 @@ end Monad
 namespace Comonad
 
 /-- An Eilenberg-Moore coalgebra for a comonad `T`. -/
--- Porting note: no need to nolint here.
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 structure Coalgebra (G : Comonad C) : Type max u₁ v₁ where
   /-- The underlying object associated to a coalgebra. -/
   A : C
@@ -355,6 +359,7 @@ namespace Coalgebra
 variable {G : Comonad C}
 
 /-- A morphism of Eilenberg-Moore coalgebras for the comonad `G`. -/
+-- Porting note(#5171): linter not ported yet
 --@[ext, nolint has_nonempty_instance]
 @[ext]
 structure Hom (A B : Coalgebra G) where
@@ -495,12 +500,12 @@ theorem coalgebra_iso_of_iso {A B : Coalgebra G} (f : A ⟶ B) [IsIso f.f] : IsI
       by aesop_cat⟩⟩
 #align category_theory.comonad.coalgebra_iso_of_iso CategoryTheory.Comonad.coalgebra_iso_of_iso
 
-instance forget_reflects_iso : ReflectsIsomorphisms G.forget
-    -- Porting note: Is this the right approach to introduce instances?
-    where reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
+instance forget_reflects_iso : G.forget.ReflectsIsomorphisms where
+  -- Porting note: Is this the right approach to introduce instances?
+  reflects {_ _} f := fun [IsIso f.f] => coalgebra_iso_of_iso G f
 #align category_theory.comonad.forget_reflects_iso CategoryTheory.Comonad.forget_reflects_iso
 
-instance forget_faithful : Faithful (forget G) where
+instance forget_faithful : (forget G).Faithful where
 #align category_theory.comonad.forget_faithful CategoryTheory.Comonad.forget_faithful
 
 /-- Given a coalgebra morphism whose carrier part is an epimorphism, we get an algebra epimorphism.

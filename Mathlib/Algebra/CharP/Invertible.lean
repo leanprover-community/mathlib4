@@ -2,14 +2,10 @@
 Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module algebra.char_p.invertible
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Algebra.Invertible
 import Mathlib.Algebra.CharP.Basic
+
+#align_import algebra.char_p.invertible from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Invertibility of elements given a characteristic
@@ -21,7 +17,7 @@ when needed. To construct instances for concrete numbers,
 -/
 
 
-variable {K : Type _}
+variable {K : Type*}
 
 section Field
 
@@ -34,7 +30,7 @@ def invertibleOfRingCharNotDvd {t : ℕ} (not_dvd : ¬ringChar K ∣ t) : Invert
 #align invertible_of_ring_char_not_dvd invertibleOfRingCharNotDvd
 
 theorem not_ringChar_dvd_of_invertible {t : ℕ} [Invertible (t : K)] : ¬ringChar K ∣ t := by
-  rw [← ringChar.spec, ← Ne.def]
+  rw [← ringChar.spec, ← Ne]
   exact nonzero_of_invertible (t : K)
 #align not_ring_char_dvd_of_invertible not_ringChar_dvd_of_invertible
 
@@ -67,11 +63,11 @@ number when you need its inverse.
 
 
 instance invertibleTwo : Invertible (2 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 2 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 2 ≠ 0))
 #align invertible_two invertibleTwo
 
 instance invertibleThree : Invertible (3 : K) :=
-  invertibleOfNonzero (by exact_mod_cast (by decide : 3 ≠ 0))
+  invertibleOfNonzero (mod_cast (by decide : 3 ≠ 0))
 #align invertible_three invertibleThree
 
 end DivisionRing

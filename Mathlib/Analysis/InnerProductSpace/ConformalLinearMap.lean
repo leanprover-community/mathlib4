@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
-
-! This file was ported from Lean 3 source module analysis.inner_product_space.conformal_linear_map
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.ConformalLinearMap
 import Mathlib.Analysis.InnerProductSpace.Basic
+
+#align_import analysis.inner_product_space.conformal_linear_map from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Conformal maps between inner product spaces
@@ -18,10 +15,8 @@ In an inner product space, a map is conformal iff it preserves inner products up
 -/
 
 
-variable {E F : Type _}
-
+variable {E F : Type*}
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable [InnerProductSpace ℝ E] [InnerProductSpace ℝ F]
 
 open LinearIsometry ContinuousLinearMap
@@ -39,8 +34,8 @@ theorem isConformalMap_iff (f : E →L[ℝ] F) :
     simp only [real_inner_smul_left, real_inner_smul_right, mul_assoc, coe_smul',
       coe_toContinuousLinearMap, Pi.smul_apply, inner_map_map]
   · rintro ⟨c₁, hc₁, huv⟩
-    obtain ⟨c, hc, rfl⟩ : ∃ c : ℝ, 0 < c ∧ c₁ = c * c
-    exact ⟨Real.sqrt c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
+    obtain ⟨c, hc, rfl⟩ : ∃ c : ℝ, 0 < c ∧ c₁ = c * c :=
+      ⟨√c₁, Real.sqrt_pos.2 hc₁, (Real.mul_self_sqrt hc₁.le).symm⟩
     refine' ⟨c, hc.ne', (c⁻¹ • f : E →ₗ[ℝ] F).isometryOfInner fun u v => _, _⟩
     · simp only [real_inner_smul_left, real_inner_smul_right, huv, mul_assoc, coe_smul,
         inv_mul_cancel_left₀ hc.ne', LinearMap.smul_apply, ContinuousLinearMap.coe_coe]

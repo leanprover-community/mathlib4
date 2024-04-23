@@ -2,16 +2,13 @@
 Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module topology.sheaves.operations
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Instances
 import Mathlib.Algebra.Category.Ring.FilteredColimits
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.Topology.Sheaves.Stalks
+
+#align_import topology.sheaves.operations from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -58,7 +55,7 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
   map_id U := by
     simp_rw [F.map_id]
     ext x
-    -- Porting note : `M` and `S` needs to be specified manually
+    -- Porting note: `M` and `S` needs to be specified manually
     exact IsLocalization.map_id (M := G.obj U) (S := Localization (G.obj U)) x
   map_comp {U V W} i j := by
     delta CommRingCat.ofHom CommRingCat.of Bundled.of
@@ -66,11 +63,11 @@ protected noncomputable def SubmonoidPresheaf.localizationPresheaf : X.Presheaf 
     rw [IsLocalization.map_comp_map]
 #align Top.presheaf.submonoid_presheaf.localization_presheaf TopCat.Presheaf.SubmonoidPresheaf.localizationPresheaf
 
--- Porting note : this is instance can't be synthesized
+-- Porting note: this instance can't be synthesized
 instance (U) : Algebra ((forget CommRingCat).obj (F.obj U)) (G.localizationPresheaf.obj U) :=
   show Algebra _ (Localization (G.obj U)) from inferInstance
 
--- Porting note : this is instance can't be synthesized
+-- Porting note: this instance can't be synthesized
 instance (U) : IsLocalization (G.obj U) (G.localizationPresheaf.obj U) :=
   show IsLocalization (G.obj U) (Localization (G.obj U)) from inferInstance
 
@@ -114,32 +111,32 @@ noncomputable def toTotalQuotientPresheaf : F ⟶ F.totalQuotientPresheaf :=
   SubmonoidPresheaf.toLocalizationPresheaf _
 #align Top.presheaf.to_total_quotient_presheaf TopCat.Presheaf.toTotalQuotientPresheaf
 
--- Porting note : deriving `Epi` failed
+-- Porting note: deriving `Epi` failed
 instance : Epi (toTotalQuotientPresheaf F) := epi_toLocalizationPresheaf _
 
 instance (F : X.Sheaf CommRingCat.{w}) : Mono F.presheaf.toTotalQuotientPresheaf := by
-  -- Porting note : was an `apply (config := { instances := false })`
+  -- Porting note: was an `apply (config := { instances := false })`
   -- See https://github.com/leanprover/lean4/issues/2273
-  suffices : ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U)
-  . apply NatTrans.mono_of_mono_app
+  suffices ∀ (U : (Opens ↑X)ᵒᵖ), Mono (F.presheaf.toTotalQuotientPresheaf.app U) from
+    NatTrans.mono_of_mono_app _
   intro U
   apply ConcreteCategory.mono_of_injective
   dsimp [toTotalQuotientPresheaf, CommRingCat.ofHom]
-  -- Porting note : this is a hack to make the `refine` below works
+  -- Porting note: this is a hack to make the `refine` below works
   set m := _
   change Function.Injective (algebraMap _ (Localization m))
   change Function.Injective (algebraMap (F.presheaf.obj U) _)
   haveI : IsLocalization _ (Localization m) := Localization.isLocalization
-  -- Porting note : `M` and `S` need to be specified manually, so used a hack to save some typing
+  -- Porting note: `M` and `S` need to be specified manually, so used a hack to save some typing
   refine IsLocalization.injective (M := m) (S := Localization m) ?_
   intro s hs t e
   apply section_ext F (unop U)
   intro x
   rw [map_zero]
   apply Submonoid.mem_iInf.mp hs x
-  -- Porting note : added `dsimp` to make `rw ←map_mul` work
+  -- Porting note: added `dsimp` to make `rw [← map_mul]` work
   dsimp
-  rw [←map_mul, e, map_zero]
+  rw [← map_mul, e, map_zero]
 
 end Presheaf
 

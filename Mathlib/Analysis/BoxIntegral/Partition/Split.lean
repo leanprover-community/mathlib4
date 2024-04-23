@@ -2,13 +2,10 @@
 Copyright (c) 2021 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.box_integral.partition.split
-! leanprover-community/mathlib commit 6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.BoxIntegral.Partition.Basic
+
+#align_import analysis.box_integral.partition.split from "leanprover-community/mathlib"@"6ca1a09bc9aa75824bf97388c9e3b441fc4ccf3f"
 
 /-!
 # Split a box along one or more hyperplanes
@@ -43,13 +40,14 @@ rectangular box, partition, hyperplane
 
 noncomputable section
 
-open Classical BigOperators Filter
+open scoped Classical
+open BigOperators Filter
 
 open Function Set Filter
 
 namespace BoxIntegral
 
-variable {ι M : Type _} {n : ℕ}
+variable {ι M : Type*} {n : ℕ}
 
 namespace Box
 
@@ -69,7 +67,7 @@ theorem coe_splitLower : (splitLower I i x : Set (ι → ℝ)) = ↑I ∩ { y | 
   ext y
   simp only [mem_univ_pi, mem_Ioc, mem_inter_iff, mem_coe, mem_setOf_eq, forall_and, ← Pi.le_def,
     le_update_iff, le_min_iff, and_assoc, and_forall_ne (p := fun j => y j ≤ upper I j) i, mem_def]
-  rw [and_comm (a := y i ≤ x), Pi.le_def]
+  rw [and_comm (a := y i ≤ x)]
 #align box_integral.box.coe_split_lower BoxIntegral.Box.coe_splitLower
 
 theorem splitLower_le : I.splitLower i x ≤ I :=
@@ -92,7 +90,8 @@ theorem splitLower_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.upper fun j y => I.lower j < y).2
         ⟨h.1, fun j _ => I.lower_lt_upper _⟩) :
     I.splitLower i x = (⟨I.lower, update I.upper i x, h'⟩ : Box ι) := by
-  simp only [splitLower, mk'_eq_coe, min_eq_left h.2.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitLower, mk'_eq_coe, min_eq_left h.2.le,
+    update, and_self]
 #align box_integral.box.split_lower_def BoxIntegral.Box.splitLower_def
 
 /-- Given a box `I` and `x ∈ (I.lower i, I.upper i)`, the hyperplane `{y : ι → ℝ | y i = x}` splits
@@ -133,7 +132,8 @@ theorem splitUpper_def [DecidableEq ι] {i x} (h : x ∈ Ioo (I.lower i) (I.uppe
       (forall_update_iff I.lower fun j y => y < I.upper j).2
         ⟨h.2, fun j _ => I.lower_lt_upper _⟩) :
     I.splitUpper i x = (⟨update I.lower i x, I.upper, h'⟩ : Box ι) := by
-  simp only [splitUpper, mk'_eq_coe, max_eq_left h.1.le, update]
+  simp (config := { unfoldPartialApp := true }) only [splitUpper, mk'_eq_coe, max_eq_left h.1.le,
+    update, and_self]
 #align box_integral.box.split_upper_def BoxIntegral.Box.splitUpper_def
 
 theorem disjoint_splitLower_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
@@ -150,7 +150,7 @@ theorem splitLower_ne_splitUpper (I : Box ι) (i : ι) (x : ℝ) :
   · rw [splitUpper_eq_self.2 h, splitLower_eq_bot.2 h]
     exact WithBot.bot_ne_coe
   · refine' (disjoint_splitLower_splitUpper I i x).ne _
-    rwa [Ne.def, splitLower_eq_bot, not_le]
+    rwa [Ne, splitLower_eq_bot, not_le]
 #align box_integral.box.split_lower_ne_split_upper BoxIntegral.Box.splitLower_ne_splitUpper
 
 end Box
@@ -194,7 +194,7 @@ theorem isPartitionSplit (I : Box ι) (i : ι) (x : ℝ) : IsPartition (split I 
 #align box_integral.prepartition.is_partition_split BoxIntegral.Prepartition.isPartitionSplit
 
 -- Porting note: In the type, changed `Option.elim` to `Option.elim'`
-theorem sum_split_boxes {M : Type _} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
+theorem sum_split_boxes {M : Type*} [AddCommMonoid M] (I : Box ι) (i : ι) (x : ℝ) (f : Box ι → M) :
     (∑ J in (split I i x).boxes, f J) =
       (I.splitLower i x).elim' 0 f + (I.splitUpper i x).elim' 0 f := by
   rw [split, sum_ofWithBot, Finset.sum_pair (I.splitLower_ne_splitUpper i x)]
@@ -298,7 +298,7 @@ theorem not_disjoint_imp_le_of_subset_of_mem_splitMany {I J Js : Box ι} {s : Fi
     exact (Hle hy).2
 #align box_integral.prepartition.not_disjoint_imp_le_of_subset_of_mem_split_many BoxIntegral.Prepartition.not_disjoint_imp_le_of_subset_of_mem_splitMany
 
-section Fintype
+section Finite
 
 variable [Finite ι]
 
@@ -387,7 +387,7 @@ theorem compl_top : (⊤ : Prepartition I).compl = ⊥ :=
   (isPartitionTop I).compl_eq_bot
 #align box_integral.prepartition.compl_top BoxIntegral.Prepartition.compl_top
 
-end Fintype
+end Finite
 
 end Prepartition
 

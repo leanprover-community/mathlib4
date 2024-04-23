@@ -2,14 +2,11 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ring_hom.finite_type
-! leanprover-community/mathlib commit 64fc7238fb41b1a4f12ff05e3d5edfa360dd768c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.LocalProperties
 import Mathlib.RingTheory.Localization.InvSubmonoid
+
+#align_import ring_theory.ring_hom.finite_type from "leanprover-community/mathlib"@"64fc7238fb41b1a4f12ff05e3d5edfa360dd768c"
 
 /-!
 
@@ -44,8 +41,8 @@ theorem finiteType_ofLocalizationSpanTarget : OfLocalizationSpanTarget @FiniteTy
   introv R hs H
   classical
   letI := f.toAlgebra
-  replace H : ∀ r : s, Algebra.FiniteType R (Localization.Away (r : S))
-  · intro r; simp_rw [RingHom.FiniteType] at H; convert H r; ext; simp_rw [Algebra.smul_def]; rfl
+  replace H : ∀ r : s, Algebra.FiniteType R (Localization.Away (r : S)) := by
+    intro r; simp_rw [RingHom.FiniteType] at H; convert H r; ext; simp_rw [Algebra.smul_def]; rfl
   replace H := fun r => (H r).1
   constructor
   -- Suppose `s : Finset S` spans `S`, and each `Sᵣ` is finitely generated as an `R`-algebra.

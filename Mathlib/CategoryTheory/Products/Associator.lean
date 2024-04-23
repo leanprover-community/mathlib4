@@ -2,13 +2,10 @@
 Copyright (c) 2017 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stephen Morgan, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.products.associator
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Products.Basic
+
+#align_import category_theory.products.associator from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 The associator functor `((C × D) × E) ⥤ (C × (D × E))` and its inverse form an equivalence.
@@ -50,12 +47,12 @@ def associativity : (C × D) × E ≌ C × D × E :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.associativity CategoryTheory.prod.associativity
 
-instance associatorIsEquivalence : IsEquivalence (associator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).functor)
+instance associatorIsEquivalence : (associator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).functor.IsEquivalence)
 #align category_theory.prod.associator_is_equivalence CategoryTheory.prod.associatorIsEquivalence
 
-instance inverseAssociatorIsEquivalence : IsEquivalence (inverseAssociator C D E) :=
-  (by infer_instance : IsEquivalence (associativity C D E).inverse)
+instance inverseAssociatorIsEquivalence : (inverseAssociator C D E).IsEquivalence :=
+  (by infer_instance : (associativity C D E).inverse.IsEquivalence)
 #align category_theory.prod.inverse_associator_is_equivalence CategoryTheory.prod.inverseAssociatorIsEquivalence
 
 -- TODO unitors?

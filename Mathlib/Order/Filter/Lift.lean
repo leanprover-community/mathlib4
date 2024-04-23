@@ -2,14 +2,11 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module order.filter.lift
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Bases
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
+
+#align_import order.filter.lift from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Lift filters along filter and set functions
@@ -19,7 +16,7 @@ open Set Classical Filter Function
 
 namespace Filter
 
-variable {α β γ : Type _} {ι : Sort _}
+variable {α β γ : Type*} {ι : Sort*}
 
 section lift
 
@@ -35,17 +32,18 @@ variable {f f₁ f₂ : Filter α} {g g₁ g₂ : Set α → Filter β}
 theorem lift_top (g : Set α → Filter β) : (⊤ : Filter α).lift g = g univ := by simp [Filter.lift]
 #align filter.lift_top Filter.lift_top
 
--- porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
+-- Porting note: use `∃ i, p i ∧ _` instead of `∃ i (hi : p i), _`
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
-is a basis of the filter `f.lift g`.
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)` is a basis
+of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `Filter.HasBasis` one has to use `Σ i, β i` as the index type, see `Filter.HasBasis.lift`.
 This lemma states the corresponding `mem_iff` statement without using a sigma type. -/
 theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α}
-    (hf : f.HasBasis p s) {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
+    (hf : f.HasBasis p s) {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ}
     {g : Set α → Filter γ} (hg : ∀ i, (g <| s i).HasBasis (pg i) (sg i)) (gm : Monotone g)
     {s : Set γ} : s ∈ f.lift g ↔ ∃ i, p i ∧ ∃ x, pg i x ∧ sg i x ⊆ s := by
   refine' (mem_biInf_of_directed _ ⟨univ, univ_sets _⟩).trans _
@@ -57,14 +55,15 @@ theorem HasBasis.mem_lift_iff {ι} {p : ι → Prop} {s : ι → Set α} {f : Fi
 
 /-- If `(p : ι → Prop, s : ι → Set α)` is a basis of a filter `f`, `g` is a monotone function
 `Set α → Filter γ`, and for each `i`, `(pg : β i → Prop, sg : β i → Set α)` is a basis
-of the filter `g (s i)`, then `(λ (i : ι) (x : β i), p i ∧ pg i x, λ (i : ι) (x : β i), sg i x)`
+of the filter `g (s i)`, then
+`(fun (i : ι) (x : β i) ↦ p i ∧ pg i x, fun (i : ι) (x : β i) ↦ sg i x)`
 is a basis of the filter `f.lift g`.
 
 This basis is parametrized by `i : ι` and `x : β i`, so in order to formulate this fact using
 `has_basis` one has to use `Σ i, β i` as the index type. See also `Filter.HasBasis.mem_lift_iff`
 for the corresponding `mem_iff` statement formulated without using a sigma type. -/
 theorem HasBasis.lift {ι} {p : ι → Prop} {s : ι → Set α} {f : Filter α} (hf : f.HasBasis p s)
-    {β : ι → Type _} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
+    {β : ι → Type*} {pg : ∀ i, β i → Prop} {sg : ∀ i, β i → Set γ} {g : Set α → Filter γ}
     (hg : ∀ i, (g (s i)).HasBasis (pg i) (sg i)) (gm : Monotone g) :
     (f.lift g).HasBasis (fun i : Σi, β i => p i.1 ∧ pg i.1 i.2) fun i : Σi, β i => sg i.1 i.2 := by
   refine' ⟨fun t => (hf.mem_lift_iff hg gm).trans _⟩
@@ -176,7 +175,7 @@ theorem monotone_lift [Preorder γ] {f : γ → Filter α} {g : γ → Set α �
 #align filter.monotone_lift Filter.monotone_lift
 
 theorem lift_neBot_iff (hm : Monotone g) : (NeBot (f.lift g)) ↔ ∀ s ∈ f, NeBot (g s) := by
-  simp only [neBot_iff, Ne.def, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
+  simp only [neBot_iff, Ne, ← empty_mem_iff_bot, mem_lift_sets hm, not_exists, not_and]
 #align filter.lift_ne_bot_iff Filter.lift_neBot_iff
 
 @[simp]
@@ -203,7 +202,7 @@ theorem lift_iInf_le {f : ι → Filter α} {g : Set α → Filter β} :
 theorem lift_iInf [Nonempty ι] {f : ι → Filter α} {g : Set α → Filter β}
     (hg : ∀ s t, g (s ∩ t) = g s ⊓ g t) : (iInf f).lift g = ⨅ i, (f i).lift g := by
   refine' lift_iInf_le.antisymm fun s => _
-  have H : ∀ t ∈ iInf f, (⨅ i, (f i).lift g) ≤ g t := by
+  have H : ∀ t ∈ iInf f, ⨅ i, (f i).lift g ≤ g t := by
     intro t ht
     refine' iInf_sets_induct ht _ fun hs ht => _
     · inhabit ι
@@ -426,7 +425,7 @@ theorem prod_def {f : Filter α} {g : Filter β} :
     iInf_prod, iInf_and] using iInf_congr fun i => iInf_comm
 #align filter.prod_def Filter.prod_def
 
-alias mem_prod_self_iff ← mem_prod_same_iff
+alias mem_prod_same_iff := mem_prod_self_iff
 #align filter.mem_prod_same_iff Filter.mem_prod_same_iff
 
 theorem prod_same_eq : f ×ˢ f = f.lift' fun t : Set α => t ×ˢ t :=
@@ -438,7 +437,7 @@ theorem tendsto_prod_self_iff {f : α × α → β} {x : Filter α} {y : Filter 
   simp only [tendsto_def, mem_prod_same_iff, prod_sub_preimage_iff, exists_prop, iff_self_iff]
 #align filter.tendsto_prod_self_iff Filter.tendsto_prod_self_iff
 
-variable {α₁ : Type _} {α₂ : Type _} {β₁ : Type _} {β₂ : Type _}
+variable {α₁ : Type*} {α₂ : Type*} {β₁ : Type*} {β₂ : Type*}
 
 theorem prod_lift_lift {f₁ : Filter α₁} {f₂ : Filter α₂} {g₁ : Set α₁ → Filter β₁}
     {g₂ : Set α₂ → Filter β₂} (hg₁ : Monotone g₁) (hg₂ : Monotone g₂) :

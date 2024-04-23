@@ -2,14 +2,11 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.tensor_algebra.grading
-! leanprover-community/mathlib commit 2a7ceb0e411e459553a303d48eecdbb8553bd7ed
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.TensorAlgebra.Basic
 import Mathlib.RingTheory.GradedAlgebra.Basic
+
+#align_import linear_algebra.tensor_algebra.grading from "leanprover-community/mathlib"@"2a7ceb0e411e459553a303d48eecdbb8553bd7ed"
 
 /-!
 # Results about the grading structure of the tensor algebra
@@ -21,7 +18,7 @@ The main result is `TensorAlgebra.gradedAlgebra`, which says that the tensor alg
 
 namespace TensorAlgebra
 
-variable {R M : Type _} [CommSemiring R] [AddCommMonoid M] [Module R M]
+variable {R M : Type*} [CommSemiring R] [AddCommMonoid M] [Module R M]
 
 open scoped DirectSum
 
@@ -55,13 +52,16 @@ instance gradedAlgebra :
     fun i x => by
     cases' x with x hx
     dsimp only [Subtype.coe_mk, DirectSum.lof_eq_of]
-    -- porting note: use new `induction using` support that failed in Lean 3
+    -- Porting note: use new `induction using` support that failed in Lean 3
     induction hx using Submodule.pow_induction_on_left' with
-    | hr r =>
+    | algebraMap r =>
       rw [AlgHom.commutes, DirectSum.algebraMap_apply]; rfl
-    | hadd x y i hx hy ihx ihy =>
-      rw [AlgHom.map_add, ihx, ihy, ← map_add]; rfl
-    | hmul m hm i x hx ih =>
+    | add x y i hx hy ihx ihy =>
+      -- Note: #8386 had to specialize `map_add` to avoid a timeout
+      -- (the extra typeclass search seems to have pushed this already slow proof over the edge)
+      rw [AlgHom.map_add, ihx, ihy, ← AddMonoidHom.map_add]
+      rfl
+    | mem_mul m hm i x hx ih =>
       obtain ⟨_, rfl⟩ := hm
       rw [AlgHom.map_mul, ih, lift_ι_apply, GradedAlgebra.ι_apply R M, DirectSum.of_mul_of]
       exact DirectSum.of_eq_of_gradedMonoid_eq (Sigma.subtype_ext (add_comm _ _) rfl)

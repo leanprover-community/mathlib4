@@ -2,14 +2,11 @@
 Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module algebra.regular.smul
-! leanprover-community/mathlib commit 550b58538991c8977703fdeb7c9d51a5aa27df11
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Algebra.Regular.Basic
+
+#align_import algebra.regular.smul from "leanprover-community/mathlib"@"550b58538991c8977703fdeb7c9d51a5aa27df11"
 
 /-!
 # Action of regular elements on a module
@@ -18,7 +15,7 @@ We introduce `M`-regular elements, in the context of an `R`-module `M`.  The cor
 predicate is called `IsSMulRegular`.
 
 There are very limited typeclass assumptions on `R` and `M`, but the "mathematical" case of interest
-is a commutative ring `R` acting an a module `M`. Since the properties are "multiplicative", there
+is a commutative ring `R` acting on a module `M`. Since the properties are "multiplicative", there
 is no actual requirement of having an addition, but there is a zero in both `R` and `M`.
 SMultiplications involving `0` are, of course, all trivial.
 
@@ -31,7 +28,7 @@ coincide.
 -/
 
 
-variable {R S : Type _} (M : Type _) {a b : R} {s : S}
+variable {R S : Type*} (M : Type*) {a b : R} {s : S}
 
 /-- An `M`-regular element is an element `c` such that multiplication on the left by `c` is an
 injective map `M → M`. -/
@@ -76,8 +73,8 @@ theorem smul (ra : IsSMulRegular M a) (rs : IsSMulRegular M s) : IsSMulRegular M
 element, then `b` is `M`-regular. -/
 theorem of_smul (a : R) (ab : IsSMulRegular M (a • s)) : IsSMulRegular M s :=
   @Function.Injective.of_comp _ _ _ (fun m : M => a • m) _ fun c d cd => by
-  dsimp only [Function.comp] at cd
-  rw [←smul_assoc, ←smul_assoc] at cd
+  dsimp only [Function.comp_def] at cd
+  rw [← smul_assoc, ← smul_assoc] at cd
   exact ab cd
 #align is_smul_regular.of_smul IsSMulRegular.of_smul
 
@@ -120,7 +117,7 @@ theorem mul_and_mul_iff [Mul R] [IsScalarTower R R M] :
     IsSMulRegular M (a * b) ∧ IsSMulRegular M (b * a) ↔ IsSMulRegular M a ∧ IsSMulRegular M b := by
   refine' ⟨_, _⟩
   · rintro ⟨ab, ba⟩
-    refine' ⟨ba.of_mul, ab.of_mul⟩
+    exact ⟨ba.of_mul, ab.of_mul⟩
   · rintro ⟨ha, hb⟩
     exact ⟨ha.mul hb, hb.mul ha⟩
 #align is_smul_regular.mul_and_mul_iff IsSMulRegular.mul_and_mul_iff
@@ -130,13 +127,12 @@ end SMul
 section Monoid
 
 variable [Monoid R] [MulAction R M]
-
 variable (M)
 
 /-- One is always `M`-regular. -/
 @[simp]
 theorem one : IsSMulRegular M (1 : R) := fun a b ab => by
-  dsimp only [Function.comp] at ab
+  dsimp only [Function.comp_def] at ab
   rw [one_smul, one_smul] at ab
   assumption
 #align is_smul_regular.one IsSMulRegular.one
@@ -155,14 +151,14 @@ theorem of_mul_eq_one (h : a * b = 1) : IsSMulRegular M b :=
 theorem pow (n : ℕ) (ra : IsSMulRegular M a) : IsSMulRegular M (a ^ n) := by
   induction' n with n hn
   · rw [pow_zero]; simp only [one]
-  · rw [pow_succ]
+  · rw [pow_succ']
     exact (ra.smul_iff (a ^ n)).mpr hn
 #align is_smul_regular.pow IsSMulRegular.pow
 
 /-- An element `a` is `M`-regular if and only if a positive power of `a` is `M`-regular. -/
 theorem pow_iff {n : ℕ} (n0 : 0 < n) : IsSMulRegular M (a ^ n) ↔ IsSMulRegular M a := by
   refine' ⟨_, pow n⟩
-  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ', ← smul_eq_mul]
+  rw [← Nat.succ_pred_eq_of_pos n0, pow_succ, ← smul_eq_mul]
   exact of_smul _
 #align is_smul_regular.pow_iff IsSMulRegular.pow_iff
 
@@ -189,12 +185,12 @@ variable [MonoidWithZero R] [MonoidWithZero S] [Zero M] [MulActionWithZero R M]
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 protected theorem subsingleton (h : IsSMulRegular M (0 : R)) : Subsingleton M :=
-  ⟨fun a b => h (by dsimp only [Function.comp]; repeat' rw [MulActionWithZero.zero_smul])⟩
+  ⟨fun a b => h (by dsimp only [Function.comp_def]; repeat' rw [MulActionWithZero.zero_smul])⟩
 #align is_smul_regular.subsingleton IsSMulRegular.subsingleton
 
 /-- The element `0` is `M`-regular if and only if `M` is trivial. -/
 theorem zero_iff_subsingleton : IsSMulRegular M (0 : R) ↔ Subsingleton M :=
-  ⟨fun h =>  h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
+  ⟨fun h => h.subsingleton, fun H a b _ => @Subsingleton.elim _ H a b⟩
 #align is_smul_regular.zero_iff_subsingleton IsSMulRegular.zero_iff_subsingleton
 
 /-- The `0` element is not `M`-regular, on a non-trivial module. -/
@@ -232,7 +228,7 @@ end IsSMulRegular
 
 section Group
 
-variable {G : Type _} [Group G]
+variable {G : Type*} [Group G]
 
 /-- An element of a group acting on a Type is regular. This relies on the availability
 of the inverse given by groups, since there is no `LeftCancelSMul` typeclass. -/

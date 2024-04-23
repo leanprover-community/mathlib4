@@ -2,13 +2,10 @@
 Copyright (c) 2022 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.measure.ae_disjoint
-! leanprover-community/mathlib commit bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.MeasureTheory.Measure.MeasureSpaceDef
+
+#align_import measure_theory.measure.ae_disjoint from "leanprover-community/mathlib"@"bc7d81beddb3d6c66f71449c5bc76c38cb77cf9e"
 
 /-!
 # Almost everywhere disjoint sets
@@ -23,7 +20,7 @@ open Set Function
 
 namespace MeasureTheory
 
-variable {ι α : Type _} {m : MeasurableSpace α} (μ : Measure α)
+variable {ι α : Type*} {m : MeasurableSpace α} (μ : Measure α)
 
 /-- Two sets are said to be `μ`-a.e. disjoint if their intersection has measure zero. -/
 def AEDisjoint (s t : Set α) :=
@@ -43,7 +40,8 @@ theorem exists_null_pairwise_disjoint_diff [Countable ι] {s : ι → Set α}
     exact (measure_biUnion_null_iff <| to_countable _).2 fun j hj => hd (Ne.symm hj)
   · simp only [Pairwise, disjoint_left, onFun, mem_diff, not_and, and_imp, Classical.not_not]
     intro i j hne x hi hU hj
-    replace hU : x ∉ s i ∩ iUnion λ j => iUnion λ _ => s j := λ h => hU (subset_toMeasurable _ _ h)
+    replace hU : x ∉ s i ∩ iUnion fun j ↦ iUnion fun _ ↦ s j :=
+      fun h ↦ hU (subset_toMeasurable _ _ h)
     simp only [mem_inter_iff, mem_iUnion, not_and, not_exists] at hU
     exact (hU hi j hne.symm hj).elim
 #align measure_theory.exists_null_pairwise_disjoint_diff MeasureTheory.exists_null_pairwise_disjoint_diff
@@ -157,11 +155,11 @@ theorem of_null_left (h : μ s = 0) : AEDisjoint μ s t :=
 
 end AEDisjoint
 
-theorem aedisjoint_compl_left : AEDisjoint μ (sᶜ) s :=
+theorem aedisjoint_compl_left : AEDisjoint μ sᶜ s :=
   (@disjoint_compl_left _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_left MeasureTheory.aedisjoint_compl_left
 
-theorem aedisjoint_compl_right : AEDisjoint μ s (sᶜ) :=
+theorem aedisjoint_compl_right : AEDisjoint μ s sᶜ :=
   (@disjoint_compl_right _ _ s).aedisjoint
 #align measure_theory.ae_disjoint_compl_right MeasureTheory.aedisjoint_compl_right
 

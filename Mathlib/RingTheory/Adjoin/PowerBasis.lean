@@ -2,15 +2,12 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
-
-! This file was ported from Lean 3 source module ring_theory.adjoin.power_basis
-! leanprover-community/mathlib commit 825edd3cd735e87495b0c2a2114fc3929eefce41
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.PowerBasis
 import Mathlib.LinearAlgebra.Matrix.Basis
+
+#align_import ring_theory.adjoin.power_basis from "leanprover-community/mathlib"@"825edd3cd735e87495b0c2a2114fc3929eefce41"
 
 /-!
 # Power basis for `Algebra.adjoin R {x}`
@@ -20,7 +17,7 @@ where `x` is an integral element over `R`.
 -/
 
 
-variable {K S : Type _} [Field K] [CommRing S] [Algebra K S]
+variable {K S : Type*} [Field K] [CommRing S] [Algebra K S]
 
 namespace Algebra
 
@@ -28,8 +25,6 @@ open BigOperators
 open Polynomial
 open PowerBasis
 
-
--- Porting note:
 
 /-- The elements `1, x, ..., x ^ (d - 1)` for a basis for the `K`-module `K[x]`,
 where `d` is the degree of the minimal polynomial of `x`. -/
@@ -40,16 +35,15 @@ noncomputable def adjoin.powerBasisAux {x : S} (hx : IsIntegral K x) :
     IsIntegral K (⟨x, subset_adjoin (Set.mem_singleton x)⟩ : adjoin K ({x} : Set S)) := by
     apply (isIntegral_algebraMap_iff hST).mp
     convert hx
-  have minpoly_eq := minpoly.eq_of_algebraMap_eq hST hx' rfl
   apply
     @Basis.mk (Fin (minpoly K x).natDegree) _ (adjoin K {x}) fun i =>
       ⟨x, subset_adjoin (Set.mem_singleton x)⟩ ^ (i : ℕ)
   · have : LinearIndependent K _ := linearIndependent_pow
       (⟨x, self_mem_adjoin_singleton _ _⟩ : adjoin K {x})
-    rwa [minpoly_eq] at this
+    rwa [← minpoly.algebraMap_eq hST] at this
   · rintro ⟨y, hy⟩ _
     have := hx'.mem_span_pow (y := ⟨y, hy⟩)
-    rw [minpoly_eq] at this
+    rw [← minpoly.algebraMap_eq hST] at this
     apply this
     · rw [adjoin_singleton_eq_range_aeval] at hy
       obtain ⟨f, rfl⟩ := (aeval x).mem_range.mp hy
@@ -92,10 +86,8 @@ open Polynomial
 
 open Polynomial
 
-variable {R : Type _} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
-
-variable {A : Type _} [CommRing A] [Algebra R A] [Algebra S A]
-
+variable {R : Type*} [CommRing R] [Algebra R S] [Algebra R K] [IsScalarTower R K S]
+variable {A : Type*} [CommRing A] [Algebra R A] [Algebra S A]
 variable [IsScalarTower R S A] {B : PowerBasis S A} (hB : IsIntegral R B.gen)
 
 /-- If `B : PowerBasis S A` is such that `IsIntegral R B.gen`, then
@@ -118,7 +110,7 @@ theorem repr_gen_pow_isIntegral [IsDomain S]
     letI : Nontrivial R := Nontrivial.of_polynomial_ne hQ
     exact degree_modByMonic_lt _ (minpoly.monic hB)
   rw [this, aeval_eq_sum_range' hlt]
-  simp only [LinearEquiv.map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
+  simp only [map_sum, LinearEquiv.map_smulₛₗ, RingHom.id_apply, Finset.sum_apply']
   refine' IsIntegral.sum _ fun j hj => _
   replace hj := Finset.mem_range.1 hj
   rw [← Fin.val_mk hj, ← B.basis_eq_pow, Algebra.smul_def, IsScalarTower.algebraMap_apply R S A, ←
@@ -140,17 +132,17 @@ theorem repr_mul_isIntegral [IsDomain S] {x y : A} (hx : ∀ i, IsIntegral R (B.
     (hmin : minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)) :
     ∀ i, IsIntegral R (B.basis.repr (x * y) i) := by
   intro i
-  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, LinearEquiv.map_sum,
-    Finset.sum_apply']
+  rw [← B.basis.sum_repr x, ← B.basis.sum_repr y, Finset.sum_mul_sum, ← Finset.sum_product',
+    map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun I _ => _
   simp only [Algebra.smul_mul_assoc, Algebra.mul_smul_comm, LinearEquiv.map_smulₛₗ,
     RingHom.id_apply, Finsupp.coe_smul, Pi.smul_apply, id.smul_eq_mul]
-  refine' isIntegral_mul (hy _) (isIntegral_mul (hx _) _)
+  refine (hy _).mul ((hx _).mul ?_)
   simp only [coe_basis, ← pow_add]
-  refine' repr_gen_pow_isIntegral hB hmin _ _
+  exact repr_gen_pow_isIntegral hB hmin _ _
 #align power_basis.repr_mul_is_integral PowerBasis.repr_mul_isIntegral
 
-/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be and element
+/-- Let `B : PowerBasis S A` be such that `IsIntegral R B.gen`, and let `x : A` be an element
 with integral coordinates in the base `B.basis`. Then `IsIntegral R ((B.basis.repr (x ^ n) i)` for
 all `i` and all `n` if `minpoly S B.gen = (minpoly R B.gen).map (algebraMap R S)`. This is the case
 if `R` is a GCD domain and `S` is its fraction ring. -/
@@ -171,7 +163,7 @@ theorem repr_pow_isIntegral [IsDomain S] {x : A} (hx : ∀ i, IsIntegral R (B.ba
     · exact isIntegral_zero
   · intro hx
     rw [pow_succ]
-    exact repr_mul_isIntegral hB hx (fun _ => hn _ le_rfl (fun _ => hx _) _) hmin
+    exact repr_mul_isIntegral hB (fun _ => hn _ le_rfl (fun _ => hx _) _) hx hmin
 #align power_basis.repr_pow_is_integral PowerBasis.repr_pow_isIntegral
 
 /-- Let `B B' : PowerBasis K S` be such that `IsIntegral R B.gen`, and let `P : R[X]` be such that
@@ -184,11 +176,11 @@ theorem toMatrix_isIntegral {B B' : PowerBasis K S} {P : R[X]} (h : aeval B.gen 
   intro i j
   rw [B.basis.toMatrix_apply, B'.coe_basis]
   refine' repr_pow_isIntegral hB (fun i => _) hmin _ _
-  rw [← h, aeval_eq_sum_range, LinearEquiv.map_sum, Finset.sum_apply']
+  rw [← h, aeval_eq_sum_range, map_sum, Finset.sum_apply']
   refine' IsIntegral.sum _ fun n _ => _
   rw [Algebra.smul_def, IsScalarTower.algebraMap_apply R K S, ← Algebra.smul_def,
     LinearEquiv.map_smul, algebraMap_smul]
-  exact isIntegral_smul _ (repr_gen_pow_isIntegral hB hmin _ _)
+  exact (repr_gen_pow_isIntegral hB hmin _ _).smul _
 #align power_basis.to_matrix_is_integral PowerBasis.toMatrix_isIntegral
 
 end PowerBasis

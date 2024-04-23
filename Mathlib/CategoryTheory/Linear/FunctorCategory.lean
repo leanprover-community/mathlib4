@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.linear.functor_category
-! leanprover-community/mathlib commit 829895f162a1f29d0133f4b3538f4cd1fb5bffd3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Preadditive.FunctorCategory
 import Mathlib.CategoryTheory.Linear.Basic
+
+#align_import category_theory.linear.functor_category from "leanprover-community/mathlib"@"829895f162a1f29d0133f4b3538f4cd1fb5bffd3"
 
 /-!
 # Linear structure on functor categories
@@ -19,16 +16,12 @@ then `C ⥤ D` is also `R`-linear.
 
 -/
 
-
-open BigOperators
-
 namespace CategoryTheory
 
 open CategoryTheory.Limits Linear
 
-variable {R : Type _} [Semiring R]
-
-variable {C D : Type _} [Category C] [Category D] [Preadditive D] [Linear R D]
+variable {R : Type*} [Semiring R]
+variable {C D : Type*} [Category C] [Category D] [Preadditive D] [Linear R D]
 
 instance functorCategoryLinear : Linear R (C ⥤ D)
     where

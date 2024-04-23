@@ -2,22 +2,19 @@
 Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Ring.colimits
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.Ring.Basic
 import Mathlib.CategoryTheory.Limits.HasLimits
-import Mathlib.CategoryTheory.ConcreteCategory.Elementwise
+
+#align_import algebra.category.Ring.colimits from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of commutative rings has all colimits.
 
-This file uses a "pre-automated" approach, just as for `Mon/colimits.lean`.
+This file uses a "pre-automated" approach, just as for
+`Mathlib/Algebra/Category/MonCat/Colimits.lean`.
 It is a very uniform approach, that conceivably could be synthesised directly
-by a tactic that analyses the shape of `comm_ring` and `ring_hom`.
+by a tactic that analyses the shape of `CommRing` and `RingHom`.
 -/
 
 
@@ -31,7 +28,7 @@ open CategoryTheory.Limits
 -- You should pretend for now that this file was automatically generated.
 -- It follows the same template as colimits in Mon.
 /-
-`#print comm_ring` says:
+`#print comm_ring` in Lean 3 used to say:
 
 structure comm_ring : Type u → Type u
 fields:
@@ -58,7 +55,7 @@ comm_ring.right_distrib : ∀ {α : Type u} [c : comm_ring α] (a b c_1 : α),
 namespace CommRingCat.Colimits
 
 /-!
-We build the colimit of a diagram in `CommRing` by constructing the
+We build the colimit of a diagram in `CommRingCat` by constructing the
 free commutative ring on the disjoint union of all the commutative rings in the diagram,
 then taking the quotient by the commutative ring laws within each commutative ring,
 and the identifications given by the morphisms in the diagram.
@@ -137,51 +134,37 @@ def colimitSetoid : Setoid (Prequotient F) where
 
 attribute [instance] colimitSetoid
 
-/-- The underlying type of the colimit of a diagram in `CommRing`.
+/-- The underlying type of the colimit of a diagram in `CommRingCat`.
 -/
 def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
--- Porting note : failed to derive `Inhabited` instance
-instance InhabitedColimitType : Inhabited <| ColimitType F where
-  default := Quot.mk _ zero
+instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
+
+instance ColimitType.instAdd : Add (ColimitType F) where
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
+    Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
+
+instance ColimitType.instNeg : Neg (ColimitType F) where
+  neg := Quotient.map neg Relation.neg_1
 
 instance ColimitType.AddGroup : AddGroup (ColimitType F) where
-  zero := Quot.mk _ zero
-  neg := by
-    fapply @Quot.lift
-    · intro x
-      exact Quot.mk _ (neg x)
-    · intro x x' r
-      apply Quot.sound
-      exact Relation.neg_1 _ _ r
-  add := by
-    fapply @Quot.lift _ _ (ColimitType F → ColimitType F)
-    · intro x
-      fapply @Quot.lift
-      · intro y
-        exact Quot.mk _ (add x y)
-      · intro y y' r
-        apply Quot.sound
-        exact Relation.add_2 _ _ _ r
-    · intro x x' r
-      funext y
-      refine Quot.inductionOn y ?_
-      exact fun _ => Quot.sound (Relation.add_1 _ _ _ r)
-  zero_add x := Quot.inductionOn x fun _ => Quot.sound (Relation.zero_add _)
-  add_zero x := Quot.inductionOn x fun _ => Quot.sound (Relation.add_zero _)
-  add_left_neg := Quot.ind fun x => by
-    simp only [(. + .)]
-    exact Quot.sound (Relation.add_left_neg x)
-  add_assoc x y z := by
-    refine Quot.induction_on₃ x y z (fun a b c => ?_)
-    simp only [(. + .)]
-    apply Quot.sound
-    apply Relation.add_assoc
+  neg := Quotient.map neg Relation.neg_1
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
+    Quotient.sound <| Relation.add_assoc _ _ _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
+
+-- Porting note: failed to derive `Inhabited` instance
+instance InhabitedColimitType : Inhabited <| ColimitType F where
+  default := 0
 
 instance ColimitType.AddGroupWithOne : AddGroupWithOne (ColimitType F) :=
-  { ColimitType.AddGroup F with one := Quot.mk _ one }
+  { ColimitType.AddGroup F with one := Quotient.mk _ one }
 
 instance : CommRing (ColimitType.{v} F) :=
   { ColimitType.AddGroupWithOne F with
@@ -190,19 +173,16 @@ instance : CommRing (ColimitType.{v} F) :=
     mul_one := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_one _
     add_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.add_comm _ _
     mul_comm := fun x y => Quot.induction_on₂ x y fun x y => Quot.sound <| Relation.mul_comm _ _
-    add_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), Add.add]
-      exact Quot.sound (Relation.add_assoc _ _ _)
     mul_assoc := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. * .)]
+      simp only [(· * ·)]
       exact Quot.sound (Relation.mul_assoc _ _ _)
     mul_zero := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.mul_zero _
     zero_mul := fun x => Quot.inductionOn x fun x => Quot.sound <| Relation.zero_mul _
     left_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.left_distrib _ _ _)
     right_distrib := fun x y z => Quot.induction_on₃ x y z fun x y z => by
-      simp only [(. + .), (. * .), Add.add]
+      simp only [(· + ·), (· * ·), Add.add]
       exact Quot.sound (Relation.right_distrib _ _ _) }
 
 @[simp]
@@ -217,25 +197,27 @@ theorem quot_one : Quot.mk Setoid.r one = (1 : ColimitType F) :=
 
 @[simp]
 theorem quot_neg (x : Prequotient F) :
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Neg.neg (α := ColimitType F)` to tell Lean negation happens inside `ColimitType F`.
-  (Quot.mk Setoid.r (neg x) : ColimitType F) = Neg.neg (α := ColimitType F) (Quot.mk Setoid.r x) :=
+    -- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type
+    -- annotation unless we use `by exact` to change the elaboration order.
+    (by exact Quot.mk Setoid.r (neg x) : ColimitType F) = -(by exact Quot.mk Setoid.r x) :=
   rfl
 #align CommRing.colimits.quot_neg CommRingCat.Colimits.quot_neg
 
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Add.add (α := ColimitType F)` to tell Lean addition happens inside `ColimitType F`.
+-- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_add (x y) :
-    Quot.mk Setoid.r (add x y) = Add.add (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (add x y) : ColimitType F) =
+      (by exact Quot.mk _ x) + (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_add CommRingCat.Colimits.quot_add
 
--- Porting note : Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
--- so use `Mul.mul (α := ColimitType F)` to tell Lean multiplication happens inside `ColimitType F`.
+-- Porting note: Lean can't see `Quot.mk Setoid.r x` is a `ColimitType F` even with type annotation
+-- unless we use `by exact` to change the elaboration order.
 @[simp]
 theorem quot_mul (x y) :
-    Quot.mk Setoid.r (mul x y) = Mul.mul (α := ColimitType F) (Quot.mk _ x) (Quot.mk _ y) :=
+    (by exact Quot.mk Setoid.r (mul x y) : ColimitType F) =
+      (by exact Quot.mk _ x) * (by exact Quot.mk _ y) :=
   rfl
 #align CommRing.colimits.quot_mul CommRingCat.Colimits.quot_mul
 
@@ -253,10 +235,10 @@ def coconeFun (j : J) (x : F.obj j) : ColimitType F :=
 ring. -/
 def coconeMorphism (j : J) : F.obj j ⟶ colimit F where
   toFun := coconeFun F j
-  map_one' := by apply Quot.sound ; apply Relation.one
-  map_mul' := by intros ; apply Quot.sound ; apply Relation.mul
-  map_zero' := by apply Quot.sound ; apply Relation.zero
-  map_add' := by intros ; apply Quot.sound ; apply Relation.add
+  map_one' := by apply Quot.sound; apply Relation.one
+  map_mul' := by intros; apply Quot.sound; apply Relation.mul
+  map_zero' := by apply Quot.sound; apply Relation.zero
+  map_add' := by intros; apply Quot.sound; apply Relation.add
 #align CommRing.colimits.cocone_morphism CommRingCat.Colimits.coconeMorphism
 
 @[simp]
@@ -270,8 +252,7 @@ theorem cocone_naturality {j j' : J} (f : j ⟶ j') :
 @[simp]
 theorem cocone_naturality_components (j j' : J) (f : j ⟶ j') (x : F.obj j) :
     (coconeMorphism F j') (F.map f x) = (coconeMorphism F j) x := by
-  rw [← cocone_naturality F f]
-  rfl
+  rw [← cocone_naturality F f, comp_apply]
 #align CommRing.colimits.cocone_naturality_components CommRingCat.Colimits.cocone_naturality_components
 
 /-- The cocone over the proposed colimit commutative ring. -/
@@ -335,8 +316,8 @@ def descMorphism (s : Cocone F) : colimit F ⟶ s.pt where
   map_zero' := rfl
   map_add' x y := by
     refine Quot.induction_on₂ x y fun a b => ?_
-    dsimp [descFun, (. + .)]
-    rw [←quot_add]
+    dsimp [descFun]
+    rw [← quot_add]
     rfl
   map_mul' x y := by exact Quot.induction_on₂ x y fun a b => rfl
 #align CommRing.colimits.desc_morphism CommRingCat.Colimits.descMorphism
@@ -351,20 +332,24 @@ def colimitIsColimit : IsColimit (colimitCocone F) where
     induction x with
     | zero => erw [quot_zero, map_zero (f := m), (descMorphism F s).map_zero]
     | one => erw [quot_one, map_one (f := m), (descMorphism F s).map_one]
-    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]
+    -- extra rfl with leanprover/lean4#2644
+    | neg x ih => erw [quot_neg, map_neg (f := m), (descMorphism F s).map_neg, ih]; rfl
     | of j x =>
       exact congr_fun (congr_arg (fun f : F.obj j ⟶ s.pt => (f : F.obj j → s.pt)) (w j)) x
-    | add x y ih_x ih_y => erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]
-    | mul x y ih_x ih_y => erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]
+    | add x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_add, map_add (f := m), (descMorphism F s).map_add, ih_x, ih_y]; rfl
+    | mul x y ih_x ih_y =>
+    -- extra rfl with leanprover/lean4#2644
+        erw [quot_mul, map_mul (f := m), (descMorphism F s).map_mul, ih_x, ih_y]; rfl
 #align CommRing.colimits.colimit_is_colimit CommRingCat.Colimits.colimitIsColimit
 
-instance hasColimits_commRingCat : HasColimits CommRingCat
-  where has_colimits_of_shape _ _ :=
-  {
-    has_colimit := fun F =>
-      HasColimit.mk
-        { cocone := colimitCocone F
-          isColimit := colimitIsColimit F } }
+instance hasColimits_commRingCat : HasColimits CommRingCat where
+  has_colimits_of_shape _ _ :=
+    { has_colimit := fun F =>
+        HasColimit.mk
+          { cocone := colimitCocone F
+            isColimit := colimitIsColimit F } }
 #align CommRing.colimits.has_colimits_CommRing CommRingCat.Colimits.hasColimits_commRingCat
 
 end CommRingCat.Colimits

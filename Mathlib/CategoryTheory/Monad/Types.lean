@@ -2,17 +2,14 @@
 Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.monad.types
-! leanprover-community/mathlib commit 7c77279eec0b350e1e15ebda7cc4f74ee3fd58fb
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Monad.Basic
 import Mathlib.CategoryTheory.Monad.Kleisli
 import Mathlib.CategoryTheory.Category.KleisliCat
 import Mathlib.CategoryTheory.Types
 import Mathlib.Control.Basic -- Porting note: Needed for `joinM_map_map`, etc.
+
+#align_import category_theory.monad.types from "leanprover-community/mathlib"@"7c77279eec0b350e1e15ebda7cc4f74ee3fd58fb"
 
 /-!
 
@@ -60,7 +57,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         funext t
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change _ = joinM (g <$> (f t))
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   inverse :=
     { obj := fun X => X
@@ -68,7 +65,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
       map_id := fun X => rfl
       map_comp := fun f g => by
         --unfold_projs
-        --Porting note: Need these instances for some lemmas below.
+        -- Porting note: Need these instances for some lemmas below.
         --Should they be added as actual instances elsewhere?
         letI : _root_.Monad (ofTypeMonad m).obj :=
           show _root_.Monad m from inferInstance
@@ -78,7 +75,7 @@ def eq : KleisliCat m ≌ Kleisli (ofTypeMonad m) where
         dsimp
         -- Porting note: missing tactic `unfold_projs`, using `change` instead.
         change joinM (g <$> (f t)) = _
-        simp only [joinM, seq_bind_eq, Function.comp.left_id]
+        simp only [joinM, seq_bind_eq, Function.id_comp]
         rfl }
   unitIso := by
     refine' NatIso.ofComponents (fun X => Iso.refl X) fun f => _

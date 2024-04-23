@@ -2,15 +2,14 @@
 Copyright (c) 2020 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa, Jujian Zhang
-
-! This file was ported from Lean 3 source module number_theory.liouville.basic
-! leanprover-community/mathlib commit 04e80bb7e8510958cd9aacd32fe2dc147af0b9f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.Polynomial.DenomsClearable
 import Mathlib.Analysis.Calculus.MeanValue
-import Mathlib.Data.Polynomial.DenomsClearable
+import Mathlib.Analysis.Calculus.Deriv.Polynomial
 import Mathlib.Data.Real.Irrational
+import Mathlib.Topology.Algebra.Polynomial
+
+#align_import number_theory.liouville.basic from "leanprover-community/mathlib"@"04e80bb7e8510958cd9aacd32fe2dc147af0b9f1"
 
 /-!
 
@@ -41,7 +40,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   -- By contradiction, `x = a / b`, with `a ∈ ℤ`, `0 < b ∈ ℕ` is a Liouville number,
   rintro ⟨⟨a, b, bN0, cop⟩, rfl⟩
   -- clear up the mess of constructions of rationals
-  rw [Rat.cast_mk', ← div_eq_mul_inv] at h
+  rw [Rat.cast_mk'] at h
   -- Since `a / b` is a Liouville number, there are `p, q ∈ ℤ`, with `q1 : 1 < q`,
   -- `a0 : a / b ≠ p / q` and `a1 : |a / b - p / q| < 1 / q ^ (b + 1)`
   rcases h (b + 1) with ⟨p, q, q1, a0, a1⟩
@@ -50,14 +49,14 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   have b0 : (b : ℝ) ≠ 0 := Nat.cast_ne_zero.mpr bN0
   have bq0 : (0 : ℝ) < b * q := mul_pos (Nat.cast_pos.mpr bN0.bot_lt) qR0
   -- At a1, clear denominators...
-  replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q
-  · rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
+  replace a1 : |a * q - b * p| * q ^ (b + 1) < b * q := by
+    rw [div_sub_div _ _ b0 qR0.ne', abs_div, div_lt_div_iff (abs_pos.mpr bq0.ne') (pow_pos qR0 _),
       abs_of_pos bq0, one_mul] at a1
-    exact_mod_cast a1
+    exact mod_cast a1
   -- At a0, clear denominators...
-  replace a0 : a * q - ↑b * p ≠ 0;
-  · rw [Ne.def, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
-    exact_mod_cast a0
+  replace a0 : a * q - ↑b * p ≠ 0 := by
+    rw [Ne, div_eq_div_iff b0 qR0.ne', mul_comm (p : ℝ), ← sub_eq_zero] at a0
+    exact mod_cast a0
   -- Actually, `q` is a natural number
   lift q to ℕ using (zero_lt_one.trans q1).le
   -- Looks innocuous, but we now have an integer with non-zero absolute value: this is at
@@ -69,7 +68,7 @@ protected theorem irrational {x : ℝ} (h : Liouville x) : Irrational x := by
   rw [← Int.ofNat_mul, ← Int.coe_nat_pow, ← Int.ofNat_mul, Int.ofNat_lt] at a1
   -- Recall this is by contradiction: we obtained the inequality `b * q ≤ x * q ^ (b + 1)`, so
   -- we are done.
-  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ (Int.coe_nat_pos.mp ap) (Int.ofNat_lt.mp q1)).le
+  exact not_le.mpr a1 (Nat.mul_lt_mul_pow_succ (Int.natCast_pos.mp ap) (Int.ofNat_lt.mp q1)).le
 #align liouville.irrational Liouville.irrational
 
 open Polynomial Metric Set Real RingHom
@@ -89,11 +88,11 @@ involving the cost function `d`.
 
 This lemma collects the properties used in the proof of `exists_pos_real_of_irrational_root`.
 It is stated in more general form than needed: in the intended application, `Z = ℤ`, `N = ℕ`,
-`R = ℝ`, `d a = (a + 1) ^ f.nat_degree`, `j z a  = z / (a + 1)`, `f ∈ ℤ[x]`, `α` is an irrational
+`R = ℝ`, `d a = (a + 1) ^ f.nat_degree`, `j z a = z / (a + 1)`, `f ∈ ℤ[x]`, `α` is an irrational
 root of `f`, `ε` is small, `M` is a bound on the Lipschitz constant of `f` near `α`, `n` is
 the degree of the polynomial `f`.
 -/
-theorem exists_one_le_pow_mul_dist {Z N R : Type _} [PseudoMetricSpace R] {d : N → ℝ}
+theorem exists_one_le_pow_mul_dist {Z N R : Type*} [PseudoMetricSpace R] {d : N → ℝ}
     {j : Z → N → R} {f : R → R} {α : R} {ε M : ℝ}
     -- denominators are positive
     (d0 : ∀ a : N, 1 ≤ d a)
@@ -146,7 +145,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
       (continuous_abs.comp fR.derivative.continuous_aeval).continuousOn
   -- Use the key lemma `exists_one_le_pow_mul_dist`: we are left to show that ...
   refine'
-    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ (|fR.derivative.eval xm|) _ z0
+    @exists_one_le_pow_mul_dist ℤ ℕ ℝ _ _ _ (fun y => fR.eval y) α ζ |fR.derivative.eval xm| _ z0
       (fun y hy => _) fun z a hq => _
   -- 1: the denominators are positive -- essentially by definition;
   · exact fun a => one_le_pow_of_one_le ((le_add_iff_nonneg_left 1).mpr a.cast_nonneg) _
@@ -164,7 +163,7 @@ theorem exists_pos_real_of_irrational_root {α : ℝ} (ha : Irrational α) {f : 
     rw [show (a + 1 : ℝ) = ((a + 1 : ℕ) : ℤ) by norm_cast] at hq ⊢
     -- key observation: the right-hand side of the inequality is an *integer*.  Therefore,
     -- if its absolute value is not at least one, then it vanishes.  Proceed by contradiction
-    refine' one_le_pow_mul_abs_eval_div (Int.coe_nat_succ_pos a) fun hy => _
+    refine' one_le_pow_mul_abs_eval_div (Int.natCast_succ_pos a) fun hy => _
     -- As the evaluation of the polynomial vanishes, we found a root of `fR` that is rational.
     -- We know that `α` is the only root of `fR` in our interval, and `α` is irrational:
     -- follow your nose.
@@ -180,8 +179,8 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
   -- non-zero (`f0`) polynomial `f`
   rintro ⟨f : ℤ[X], f0, ef0⟩
   -- Change `aeval x f = 0` to `eval (map _ f) = 0`, who knew.
-  replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0;
-  · rwa [aeval_def, ← eval_map] at ef0
+  replace ef0 : (f.map (algebraMap ℤ ℝ)).eval x = 0 := by
+    rwa [aeval_def, ← eval_map] at ef0
   -- There is a "large" real number `A` such that `(b + 1) ^ (deg f) * |f (x - a / (b + 1))| * A`
   -- is at least one.  This is obtained from lemma `exists_pos_real_of_irrational_root`.
   obtain ⟨A, hA, h⟩ : ∃ A : ℝ, 0 < A ∧ ∀ (a : ℤ) (b : ℕ),
@@ -189,7 +188,7 @@ protected theorem transcendental {x : ℝ} (lx : Liouville x) : Transcendental �
     exists_pos_real_of_irrational_root lx.irrational f0 ef0
   -- Since the real numbers are Archimedean, a power of `2` exceeds `A`: `hn : A < 2 ^ r`.
   rcases pow_unbounded_of_one_lt A (lt_add_one 1) with ⟨r, hn⟩
-  -- Use the Liouville property, with exponent `r +  deg f`.
+  -- Use the Liouville property, with exponent `r + deg f`.
   obtain ⟨a, b, b1, -, a1⟩ : ∃ a b : ℤ, 1 < b ∧ x ≠ a / b ∧
       |x - a / b| < 1 / (b : ℝ) ^ (r + f.natDegree) :=
     lx (r + f.natDegree)

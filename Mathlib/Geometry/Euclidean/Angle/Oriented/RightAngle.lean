@@ -2,14 +2,11 @@
 Copyright (c) 2022 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.angle.oriented.right_angle
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Geometry.Euclidean.Angle.Oriented.Affine
 import Mathlib.Geometry.Euclidean.Angle.Unoriented.RightAngle
+
+#align_import geometry.euclidean.angle.oriented.right_angle from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Oriented angles in right-angled triangles.
@@ -32,8 +29,7 @@ namespace Orientation
 
 open FiniteDimensional
 
-variable {V : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
-
+variable {V : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V]
 variable [hd2 : Fact (finrank ℝ V = 2)] (o : Orientation ℝ V (Fin 2))
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/
@@ -581,7 +577,7 @@ namespace EuclideanGeometry
 
 open FiniteDimensional
 
-variable {V : Type _} {P : Type _} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
+variable {V : Type*} {P : Type*} [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace P]
   [NormedAddTorsor V P] [hd2 : Fact (finrank ℝ V = 2)] [Module.Oriented ℝ V (Fin 2)]
 
 /-- An angle in a right-angled triangle expressed using `arccos`. -/

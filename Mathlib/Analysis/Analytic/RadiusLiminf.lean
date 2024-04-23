@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module analysis.analytic.radius_liminf
-! leanprover-community/mathlib commit 0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Analytic.Basic
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
+
+#align_import analysis.analytic.radius_liminf from "leanprover-community/mathlib"@"0b9eaaa7686280fad8cce467f5c3c57ee6ce77f8"
 
 /-!
 # Representation of `FormalMultilinearSeries.radius` as a `liminf`
@@ -21,8 +18,8 @@ because this would create a circular dependency once we redefine `exp` using
 -/
 
 
-variable {𝕜 : Type _} [NontriviallyNormedField 𝕜] {E : Type _} [NormedAddCommGroup E]
-  [NormedSpace 𝕜 E] {F : Type _} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
+  [NormedSpace 𝕜 E] {F : Type*} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 open scoped Topology Classical BigOperators NNReal ENNReal
 
@@ -30,17 +27,14 @@ open Filter Asymptotics
 
 namespace FormalMultilinearSeries
 
-local macro_rules | `($x ^ $y)   => `(HPow.hPow $x $y)
--- porting note: see lean4#2220
-
 variable (p : FormalMultilinearSeries 𝕜 E F)
 
 /-- The radius of a formal multilinear series is equal to
 $\liminf_{n\to\infty} \frac{1}{\sqrt[n]{‖p n‖}}$. The actual statement uses `ℝ≥0` and some
 coercions. -/
 theorem radius_eq_liminf :
-  p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
-  -- porting note: added type ascription to make elaborated statement match Lean 3 version
+    p.radius = liminf (fun n => (1 / (‖p n‖₊ ^ (1 / (n : ℝ)) : ℝ≥0) : ℝ≥0∞)) atTop := by
+  -- Porting note: added type ascription to make elaborated statement match Lean 3 version
   have :
     ∀ (r : ℝ≥0) {n : ℕ},
       0 < n → ((r : ℝ≥0∞) ≤ 1 / ↑(‖p n‖₊ ^ (1 / (n : ℝ))) ↔ ‖p n‖₊ * r ^ n ≤ 1) := by
@@ -50,14 +44,14 @@ theorem radius_eq_liminf :
       rw [one_div, ENNReal.le_inv_iff_mul_le, ← ENNReal.coe_mul, ENNReal.coe_le_one_iff, one_div, ←
         NNReal.rpow_one r, ← mul_inv_cancel this.ne', NNReal.rpow_mul, ← NNReal.mul_rpow, ←
         NNReal.one_rpow n⁻¹, NNReal.rpow_le_rpow_iff (inv_pos.2 this), mul_comm,
-        NNReal.rpow_nat_cast]
+        NNReal.rpow_natCast]
   apply le_antisymm <;> refine' ENNReal.le_of_forall_nnreal_lt fun r hr => _
   · have := ((TFAE_exists_lt_isLittleO_pow (fun n => ‖p n‖ * r ^ n) 1).out 1 7).1
       (p.isLittleO_of_lt_radius hr)
     obtain ⟨a, ha, H⟩ := this
     apply le_liminf_of_le
     · infer_param
-    · rw [←eventually_map]
+    · rw [← eventually_map]
       refine'
         H.mp ((eventually_gt_atTop 0).mono fun n hn₀ hn => (this _ hn₀).2 (NNReal.coe_le_coe.1 _))
       push_cast

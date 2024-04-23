@@ -2,14 +2,11 @@
 Copyright (c) 2018 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Mario Carneiro, Eric Wieser
-
-! This file was ported from Lean 3 source module linear_algebra.direct_sum.tensor_product
-! leanprover-community/mathlib commit 9b9d125b7be0930f564a68f1d73ace10cf46064d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 import Mathlib.Algebra.DirectSum.Module
+
+#align_import linear_algebra.direct_sum.tensor_product from "leanprover-community/mathlib"@"9b9d125b7be0930f564a68f1d73ace10cf46064d"
 /-!
 # Tensor products of direct sums
 
@@ -21,6 +18,8 @@ This file shows that taking `TensorProduct`s commutes with taking `DirectSum`s i
 * `TensorProduct.directSumLeft`
 * `TensorProduct.directSumRight`
 -/
+
+suppress_compilation
 
 universe u v₁ v₂ w₁ w₁' w₂ w₂'
 
@@ -36,18 +35,12 @@ open LinearMap
 
 attribute [local ext] TensorProduct.ext
 
-variable (R : Type u) [CommRing R]
-
+variable (R : Type u) [CommSemiring R]
 variable {ι₁ : Type v₁} {ι₂ : Type v₂}
-
 variable [DecidableEq ι₁] [DecidableEq ι₂]
-
 variable (M₁ : ι₁ → Type w₁) (M₁' : Type w₁') (M₂ : ι₂ → Type w₂) (M₂' : Type w₂')
-
-variable [∀ i₁, AddCommGroup (M₁ i₁)] [AddCommGroup M₁']
-
-variable [∀ i₂, AddCommGroup (M₂ i₂)] [AddCommGroup M₂']
-
+variable [∀ i₁, AddCommMonoid (M₁ i₁)] [AddCommMonoid M₁']
+variable [∀ i₂, AddCommMonoid (M₂ i₂)] [AddCommMonoid M₂']
 variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (M₂ i₂)] [Module R M₂']
 
 
@@ -55,11 +48,11 @@ variable [∀ i₁, Module R (M₁ i₁)] [Module R M₁'] [∀ i₂, Module R (
 "tensor product distributes over direct sum". -/
 protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
-  -- porting note: entirely rewritten to allow unification to happen one step at a time
+  -- Porting note: entirely rewritten to allow unification to happen one step at a time
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
   · refine lift ?_
     refine DirectSum.toModule R _ _ fun i₁ => ?_
-    refine @LinearMap.flip R _ R _ R _ R _ _ _ _ _ _ _ _ _ _ _ _ _ _ ?_
+    refine LinearMap.flip ?_
     refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
     refine curry ?_
     exact DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
@@ -68,17 +61,17 @@ protected def directSum :
   · refine DirectSum.linearMap_ext R fun ⟨i₁, i₂⟩ => ?_
     refine TensorProduct.ext ?_
     refine LinearMap.ext₂ fun m₁ m₂ => ?_
-    -- porting note: seems much nicer than the `repeat` lean 3 proof.
+    -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul,
         lift.tmul, flip_apply, curry_apply]
   · -- `(_)` prevents typeclass search timing out on problems that can be solved immediately by
     -- unification
     refine TensorProduct.ext ?_
-    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₁ => ?_
-    refine @LinearMap.ext _ _ _ _ _ _ _ _ (_) (_) _ _ _ fun x₁ => ?_
-    refine @DirectSum.linearMap_ext R _ _ _ _ _ _ _ _ (_) _ _ fun i₂ => ?_
+    refine DirectSum.linearMap_ext _ fun i₁ => ?_
+    refine LinearMap.ext fun x₁ => ?_
+    refine DirectSum.linearMap_ext _ fun i₂ => ?_
     refine LinearMap.ext fun x₂ => ?_
-    -- porting note: seems much nicer than the `repeat` lean 3 proof.
+    -- Porting note: seems much nicer than the `repeat` lean 3 proof.
     simp only [compr₂_apply, comp_apply, id_apply, mk_apply, DirectSum.toModule_lof, map_tmul,
         lift.tmul, flip_apply, curry_apply]
   /- was:
@@ -146,7 +139,7 @@ def directSumLeft : (⨁ i₁, M₁ i₁) ⊗[R] M₂' ≃ₗ[R] ⨁ i, M₁ i �
 /-- Tensor products distribute over a direct sum on the right. -/
 def directSumRight : (M₁' ⊗[R] ⨁ i, M₂ i) ≃ₗ[R] ⨁ i, M₁' ⊗[R] M₂ i :=
   TensorProduct.comm R _ _ ≪≫ₗ directSumLeft R M₂ M₁' ≪≫ₗ
-    Dfinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
+    DFinsupp.mapRange.linearEquiv fun _ => TensorProduct.comm R _ _
 #align tensor_product.direct_sum_right TensorProduct.directSumRight
 
 variable {M₁ M₁' M₂ M₂'}
@@ -157,6 +150,13 @@ theorem directSum_lof_tmul_lof (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) 
       DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂) := by
   simp [TensorProduct.directSum]
 #align tensor_product.direct_sum_lof_tmul_lof TensorProduct.directSum_lof_tmul_lof
+
+@[simp]
+theorem directSum_symm_lof_tmul (i₁ : ι₁) (m₁ : M₁ i₁) (i₂ : ι₂) (m₂ : M₂ i₂) :
+    (TensorProduct.directSum R M₁ M₂).symm
+      (DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂) (m₁ ⊗ₜ m₂)) =
+      (DirectSum.lof R ι₁ M₁ i₁ m₁ ⊗ₜ DirectSum.lof R ι₂ M₂ i₂ m₂) := by
+  rw [LinearEquiv.symm_apply_eq, directSum_lof_tmul_lof]
 
 @[simp]
 theorem directSumLeft_tmul_lof (i : ι₁) (x : M₁ i) (y : M₂') :
@@ -180,7 +180,7 @@ theorem directSumRight_tmul_lof (x : M₁') (i : ι₂) (y : M₂ i) :
     DirectSum.lof R _ _ i (x ⊗ₜ[R] y) := by
   dsimp only [directSumRight, LinearEquiv.trans_apply, TensorProduct.comm_tmul]
   rw [directSumLeft_tmul_lof]
-  exact Dfinsupp.mapRange_single (hf := fun _ => rfl)
+  exact DFinsupp.mapRange_single (hf := fun _ => rfl)
 #align tensor_product.direct_sum_right_tmul_lof TensorProduct.directSumRight_tmul_lof
 
 @[simp]

@@ -2,14 +2,11 @@
 Copyright (c) 2019 Reid Barton. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Reid Barton, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.epi_mono
-! leanprover-community/mathlib commit 48085f140e684306f9e7da907cd5932056d1aded
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Opposites
 import Mathlib.CategoryTheory.Groupoid
+
+#align_import category_theory.epi_mono from "leanprover-community/mathlib"@"48085f140e684306f9e7da907cd5932056d1aded"
 
 /-!
 # Facts about epimorphisms and monomorphisms.
@@ -46,9 +43,9 @@ such that `f ≫ retraction f = 𝟙 X`.
 
 Every split monomorphism is a monomorphism.
 -/
-/- Porting note: @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitMono {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   retraction : Y ⟶ X
@@ -76,9 +73,9 @@ such that `section_ f ≫ f = 𝟙 Y`.
 
 Every split epimorphism is an epimorphism.
 -/
-/- Porting note: @[nolint has_nonempty_instance] -/
+/- Porting note(#5171): removed @[nolint has_nonempty_instance] -/
 /- Porting note: `@[ext]` used to accept lemmas like this. Now we add an aesop rule -/
-@[aesop apply safe (rule_sets [CategoryTheory])]
+@[aesop apply safe (rule_sets := [CategoryTheory])]
 structure SplitEpi {X Y : C} (f : X ⟶ Y) where
   /-- The map splitting `f` -/
   section_ : Y ⟶ X
@@ -111,8 +108,8 @@ theorem IsSplitMono.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitMono f] : f ≫ retr
 #align category_theory.is_split_mono.id CategoryTheory.IsSplitMono.id
 
 /-- The retraction of a split monomorphism has an obvious section. -/
-def SplitMono.splitEpi {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi sm.retraction
-    where section_ := f
+def SplitMono.splitEpi {X Y : C} {f : X ⟶ Y} (sm : SplitMono f) : SplitEpi sm.retraction where
+  section_ := f
 #align category_theory.split_mono.split_epi CategoryTheory.SplitMono.splitEpi
 
 /-- The retraction of a split monomorphism is itself a split epimorphism. -/
@@ -139,8 +136,8 @@ theorem IsSplitEpi.id {X Y : C} (f : X ⟶ Y) [hf : IsSplitEpi f] : section_ f �
 #align category_theory.is_split_epi.id CategoryTheory.IsSplitEpi.id
 
 /-- The section of a split epimorphism has an obvious retraction. -/
-def SplitEpi.splitMono {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : SplitMono se.section_
-    where retraction := f
+def SplitEpi.splitMono {X Y : C} {f : X ⟶ Y} (se : SplitEpi f) : SplitMono se.section_ where
+  retraction := f
 #align category_theory.split_epi.split_mono CategoryTheory.SplitEpi.splitMono
 
 /-- The section of a split epimorphism is itself a split monomorphism. -/
@@ -221,14 +218,14 @@ section
 variable (C)
 
 /-- A split mono category is a category in which every monomorphism is split. -/
-class SplitMonoCategory where
+class SplitMonoCategory : Prop where
   /-- All monos are split -/
   isSplitMono_of_mono : ∀ {X Y : C} (f : X ⟶ Y) [Mono f], IsSplitMono f
 #align category_theory.split_mono_category CategoryTheory.SplitMonoCategory
 #align category_theory.split_mono_category.is_split_mono_of_mono CategoryTheory.SplitMonoCategory.isSplitMono_of_mono
 
 /-- A split epi category is a category in which every epimorphism is split. -/
-class SplitEpiCategory where
+class SplitEpiCategory : Prop where
   /-- All epis are split -/
   isSplitEpi_of_epi : ∀ {X Y : C} (f : X ⟶ Y) [Epi f], IsSplitEpi f
 #align category_theory.split_epi_category CategoryTheory.SplitEpiCategory

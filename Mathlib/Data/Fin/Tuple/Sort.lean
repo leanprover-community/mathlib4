@@ -2,16 +2,14 @@
 Copyright (c) 2021 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
-
-! This file was ported from Lean 3 source module data.fin.tuple.sort
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Sort
 import Mathlib.Data.List.FinRange
 import Mathlib.Data.Prod.Lex
 import Mathlib.GroupTheory.Perm.Basic
+import Mathlib.Data.Fin.Interval
+
+#align_import data.fin.tuple.sort from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 
@@ -33,8 +31,7 @@ This file provides an API for doing so, with the sorted `n`-tuple given by
 namespace Tuple
 
 variable {n : ℕ}
-
-variable {α : Type _} [LinearOrder α]
+variable {α : Type*} [LinearOrder α]
 
 /-- `graph f` produces the finset of pairs `(f i, i)`
 equipped with the lexicographic order.
@@ -54,7 +51,7 @@ theorem graph.card (f : Fin n → α) : (graph f).card = n := by
   rw [graph, Finset.card_image_of_injective]
   · exact Finset.card_fin _
   · intro _ _
-    -- Porting note: was `simp`
+    -- porting note (#10745): was `simp`
     dsimp only
     rw [Prod.ext_iff]
     simp
@@ -116,7 +113,41 @@ namespace Tuple
 
 open List
 
-variable {n : ℕ} {α : Type _}
+variable {n : ℕ} {α : Type*}
+
+/-- If `f₀ ≤ f₁ ≤ f₂ ≤ ⋯` is a sorted `m`-tuple of elements of `α`, then for any `j : Fin m` and
+`a : α` we have `j < #{i | fᵢ ≤ a}` iff `fⱼ ≤ a`. -/
+theorem lt_card_le_iff_apply_le_of_monotone [PartialOrder α] [DecidableRel (α := α) LE.le]
+    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Monotone f) (j : Fin m) :
+    j < Fintype.card {i // f i ≤ a} ↔ f j ≤ a := by
+  suffices h1 : ∀ k : Fin m, (k < Fintype.card {i // f i ≤ a}) → f k ≤ a by
+    refine ⟨h1 j, fun h ↦ ?_⟩
+    by_contra! hc
+    let p : Fin m → Prop := fun x ↦ f x ≤ a
+    let q : Fin m → Prop := fun x ↦ x < Fintype.card {i // f i ≤ a}
+    let q' : {i // f i ≤ a} → Prop := fun x ↦ q x
+    have hw : 0 < Fintype.card {j : {x : Fin m // f x ≤ a} // ¬ q' j} :=
+      Fintype.card_pos_iff.2 ⟨⟨⟨j, h⟩, not_lt.2 hc⟩⟩
+    apply hw.ne'
+    have he := Fintype.card_congr <| Equiv.sumCompl <| q'
+    have h4 := (Fintype.card_congr (@Equiv.subtypeSubtypeEquivSubtype _ p q (h1 _)))
+    have h_le : Fintype.card { i // f i ≤ a } ≤ m := by
+      conv_rhs => rw [← Fintype.card_fin m]
+      exact Fintype.card_subtype_le _
+    rwa [Fintype.card_sum, h4, Fintype.card_fin_lt_of_le h_le, add_right_eq_self] at he
+  intro _ h
+  contrapose! h
+  rw [← Fin.card_Iio, Fintype.card_subtype]
+  refine Finset.card_mono (fun i => Function.mtr ?_)
+  simp_rw [Finset.mem_filter, Finset.mem_univ, true_and, Finset.mem_Iio]
+  intro hij hia
+  apply h
+  exact (h_sorted (le_of_not_lt hij)).trans hia
+
+theorem lt_card_ge_iff_apply_ge_of_antitone [PartialOrder α] [DecidableRel (α := α) LE.le]
+    {m : ℕ} (f : Fin m → α) (a : α) (h_sorted : Antitone f) (j : Fin m) :
+    j < Fintype.card {i // a ≤ f i} ↔ a ≤ f j :=
+  lt_card_le_iff_apply_le_of_monotone _ (OrderDual.toDual a) h_sorted.dual_right j
 
 /-- If two permutations of a tuple `f` are both monotone, then they are equal. -/
 theorem unique_monotone [PartialOrder α] {f : Fin n → α} {σ τ : Equiv.Perm (Fin n)}
@@ -136,7 +167,7 @@ theorem eq_sort_iff' : σ = sort f ↔ StrictMono (σ.trans <| graphEquiv₁ f) 
     exact (graphEquiv₂ f).strictMono
   · have := Subsingleton.elim (graphEquiv₂ f) (h.orderIsoOfSurjective _ <| Equiv.surjective _)
     ext1 x
-    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (FunLike.congr_fun this x).symm
+    exact (graphEquiv₁ f).apply_eq_iff_eq_symm_apply.1 (DFunLike.congr_fun this x).symm
 #align tuple.eq_sort_iff' Tuple.eq_sort_iff'
 
 /-- A permutation `σ` equals `sort f` if and only if `f ∘ σ` is monotone and whenever `i < j`
@@ -153,8 +184,8 @@ theorem eq_sort_iff :
 
 /-- The permutation that sorts `f` is the identity if and only if `f` is monotone. -/
 theorem sort_eq_refl_iff_monotone : sort f = Equiv.refl _ ↔ Monotone f := by
-  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp.right_id]
-  simp only [id.def, and_iff_left_iff_imp]
+  rw [eq_comm, eq_sort_iff, Equiv.coe_refl, Function.comp_id]
+  simp only [id, and_iff_left_iff_imp]
   exact fun _ _ _ hij _ => hij
 #align tuple.sort_eq_refl_iff_monotone Tuple.sort_eq_refl_iff_monotone
 

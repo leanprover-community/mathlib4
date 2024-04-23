@@ -2,14 +2,11 @@
 Copyright © 2020 Nicolò Cavalleri. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nicolò Cavalleri, Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.derivation.lie
-! leanprover-community/mathlib commit b608348ffaeb7f557f2fd46876037abafd326ff3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.RingTheory.Derivation.Basic
+
+#align_import ring_theory.derivation.lie from "leanprover-community/mathlib"@"b608348ffaeb7f557f2fd46876037abafd326ff3"
 
 /-!
 # Results
@@ -21,10 +18,8 @@ import Mathlib.RingTheory.Derivation.Basic
 
 namespace Derivation
 
-variable {R : Type _} [CommRing R]
-
-variable {A : Type _} [CommRing A] [Algebra R A]
-
+variable {R : Type*} [CommRing R]
+variable {A : Type*} [CommRing A] [Algebra R A]
 variable (D : Derivation R A A) {D1 D2 : Derivation R A A} (a : A)
 
 section LieStructures
@@ -55,7 +50,7 @@ instance : LieRing (Derivation R A A) where
   lie_self d := by ext a; simp only [commutator_apply, add_apply, map_add]; ring_nf; simp
   leibniz_lie d e f := by ext a; simp only [commutator_apply, add_apply, sub_apply, map_sub]; ring
 
-instance instLieAlgebra: LieAlgebra R (Derivation R A A) :=
+instance instLieAlgebra : LieAlgebra R (Derivation R A A) :=
   { Derivation.instModule with
     lie_smul := fun r d e => by
       ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply] }

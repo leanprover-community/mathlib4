@@ -2,14 +2,11 @@
 Copyright (c) 2021 Noam Atar. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Noam Atar
-
-! This file was ported from Lean 3 source module order.prime_ideal
-! leanprover-community/mathlib commit 740acc0e6f9adf4423f92a485d0456fc271482da
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Ideal
 import Mathlib.Order.PFilter
+
+#align_import order.prime_ideal from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 
 /-!
 # Prime ideals
@@ -40,14 +37,15 @@ open Order.PFilter
 
 namespace Order
 
-variable {P : Type _}
+variable {P : Type*}
 
 namespace Ideal
 
 /-- A pair of an `Order.Ideal` and an `Order.PFilter` which form a partition of `P`.
 -/
--- porting note: no attr @[nolint has_nonempty_instance]
-structure PrimePair (P : Type _) [Preorder P] where
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
+structure PrimePair (P : Type*) [Preorder P] where
   I : Ideal P
   F : PFilter P
   isCompl_I_F : IsCompl (I : Set P) F
@@ -94,7 +92,7 @@ end PrimePair
 -/
 @[mk_iff]
 class IsPrime [Preorder P] (I : Ideal P) extends IsProper I : Prop where
-  compl_filter : IsPFilter ((I : Set P)ᶜ)
+  compl_filter : IsPFilter (I : Set P)ᶜ
 #align order.ideal.is_prime Order.Ideal.IsPrime
 
 section Preorder
@@ -132,10 +130,10 @@ theorem IsPrime.mem_or_mem (hI : IsPrime I) {x y : P} : x ⊓ y ∈ I → x ∈ 
 
 theorem IsPrime.of_mem_or_mem [IsProper I] (hI : ∀ {x y : P}, x ⊓ y ∈ I → x ∈ I ∨ y ∈ I) :
     IsPrime I := by
-  rw [IsPrime_iff]
+  rw [isPrime_iff]
   use ‹_›
   refine .of_def ?_ ?_ ?_
-  · exact Set.nonempty_compl.2 (I.IsProper_iff.1 ‹_›)
+  · exact Set.nonempty_compl.2 (I.isProper_iff.1 ‹_›)
   · intro x hx y hy
     exact ⟨x ⊓ y, fun h => (hI h).elim hx hy, inf_le_left, inf_le_right⟩
   · exact @mem_compl_of_ge _ _ _
@@ -198,11 +196,10 @@ theorem isPrime_iff_mem_or_compl_mem [IsProper I] : IsPrime I ↔ ∀ {x : P}, x
 #align order.ideal.is_prime_iff_mem_or_compl_mem Order.Ideal.isPrime_iff_mem_or_compl_mem
 
 instance (priority := 100) IsPrime.isMaximal [IsPrime I] : IsMaximal I := by
-  simp only [IsMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
+  simp only [isMaximal_iff, Set.eq_univ_iff_forall, IsPrime.toIsProper, true_and]
   intro J hIJ x
   rcases Set.exists_of_ssubset hIJ with ⟨y, hyJ, hyI⟩
-  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J
-  · rwa [sup_inf_inf_compl] at ass
+  suffices ass : x ⊓ y ⊔ x ⊓ yᶜ ∈ J by rwa [sup_inf_inf_compl] at ass
   exact
     sup_mem (J.lower inf_le_right hyJ)
       (hIJ.le <| I.lower inf_le_right <| IsPrime.mem_compl_of_not_mem ‹_› hyI)
@@ -220,7 +217,7 @@ variable [Preorder P]
 -/
 @[mk_iff]
 class IsPrime (F : PFilter P) : Prop where
-  compl_ideal : IsIdeal ((F : Set P)ᶜ)
+  compl_ideal : IsIdeal (F : Set P)ᶜ
 #align order.pfilter.is_prime Order.PFilter.IsPrime
 
 /-- Create an element of type `Order.Ideal.PrimePair` from a filter satisfying the predicate

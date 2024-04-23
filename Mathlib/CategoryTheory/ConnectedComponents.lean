@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.connected_components
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Chain
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Sigma.Basic
 import Mathlib.CategoryTheory.FullSubcategory
+
+#align_import category_theory.connected_components from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Connected components of a category
@@ -25,7 +22,6 @@ particular `Decomposed J` is the category (definitionally) given by the sigma-ty
 components of `J`, and it is shown that this is equivalent to `J`.
 -/
 
-
 universe v₁ v₂ v₃ u₁ u₂
 
 noncomputable section
@@ -37,7 +33,6 @@ namespace CategoryTheory
 attribute [instance 100] IsConnected.is_nonempty
 
 variable {J : Type u₁} [Category.{v₁} J]
-
 variable {C : Type u₂} [Category.{u₁} C]
 
 /-- This type indexes the connected components of the category `J`. -/
@@ -53,20 +48,20 @@ def Component (j : ConnectedComponents J) : Type u₁ :=
   FullSubcategory fun k => Quotient.mk'' k = j
 #align category_theory.component CategoryTheory.Component
 
-instance : Category (Component (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Category (Component j) :=
   FullSubcategory.category _
 
---porting note : it was originally @[simps (config := { rhsMd := semireducible })]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The inclusion functor from a connected component to the whole category. -/
 @[simps!]
 def Component.ι (j : ConnectedComponents J) : Component j ⥤ J :=
   fullSubcategoryInclusion _
 #align category_theory.component.ι CategoryTheory.Component.ι
 
-instance : Full (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Full (Component.ι j) :=
   FullSubcategory.full _
 
-instance : Faithful (Component.ι (j : ConnectedComponents J)) :=
+instance {j : ConnectedComponents J} : Functor.Faithful (Component.ι j) :=
   FullSubcategory.faithful _
 
 /-- Each connected component of the category is nonempty. -/
@@ -119,7 +114,7 @@ abbrev inclusion (j : ConnectedComponents J) : Component j ⥤ Decomposed J :=
   Sigma.incl _
 #align category_theory.inclusion CategoryTheory.inclusion
 
---porting note : it was originally @[simps (config := { rhsMd := semireducible })]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible })]
 /-- The forward direction of the equivalence between the decomposed category and the original. -/
 @[simps!]
 def decomposedTo (J : Type u₁) [Category.{v₁} J] : Decomposed J ⥤ J :=
@@ -132,14 +127,14 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
   rfl
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
-instance : Full (decomposedTo J)
+instance : (decomposedTo J).Full
     where
   preimage := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
-    have : j' = k'
-    rw [← hX, ← hY, Quotient.eq'']
-    exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
+    have : j' = k' := by
+      rw [← hX, ← hY, Quotient.eq'']
+      exact Relation.ReflTransGen.single (Or.inl ⟨f⟩)
     subst this
     exact Sigma.SigmaHom.mk f
   witness := by
@@ -150,17 +145,17 @@ instance : Full (decomposedTo J)
     subst this
     rfl
 
-instance : Faithful (decomposedTo J) where
+instance : (decomposedTo J).Faithful where
   map_injective := by
     rintro ⟨_, j, rfl⟩ ⟨_, k, hY⟩ ⟨f⟩ ⟨_⟩ rfl
     rfl
 
-instance : EssSurj (decomposedTo J) where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
+instance : (decomposedTo J).EssSurj where mem_essImage j := ⟨⟨_, j, rfl⟩, ⟨Iso.refl _⟩⟩
 
-instance : IsEquivalence (decomposedTo J) :=
-  Equivalence.ofFullyFaithfullyEssSurj _
+instance : (decomposedTo J).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
 
--- porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
+-- Porting note: it was originally @[simps (config := { rhsMd := semireducible }) Functor]
 /-- This gives that any category is equivalent to a disjoint union of connected categories. -/
 @[simps! functor]
 def decomposedEquiv : Decomposed J ≌ J :=

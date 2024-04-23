@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.bicategory.single_obj
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Bicategory.End
 import Mathlib.CategoryTheory.Monoidal.Functor
+
+#align_import category_theory.bicategory.single_obj from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Promoting a monoidal category to a single object bicategory.
@@ -33,7 +30,7 @@ is equivalent to the bicategory consisting of
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C] [MonoidalCategory C]
+variable (C : Type*) [Category C] [MonoidalCategory C]
 
 /-- Promote a monoidal category to a bicategory with a single object.
 (The objects of the monoidal category become the 1-morphisms,
@@ -41,7 +38,7 @@ with composition given by tensor product,
 and the morphisms of the monoidal category become the 2-morphisms.)
 -/
 @[nolint unusedArguments]
-def MonoidalSingleObj (C : Type _) [Category C] [MonoidalCategory C] :=
+def MonoidalSingleObj (C : Type*) [Category C] [MonoidalCategory C] :=
   PUnit --deriving Inhabited
 #align category_theory.monoidal_single_obj CategoryTheory.MonoidalSingleObj
 
@@ -56,18 +53,12 @@ instance : Bicategory (MonoidalSingleObj C) where
   Hom _ _ := C
   id _ := 𝟙_ C
   comp X Y := tensorObj X Y
-  whiskerLeft X Y Z f := tensorHom (𝟙 X) f
-  whiskerRight f Z := tensorHom f (𝟙 Z)
+  whiskerLeft X Y Z f := X ◁ f
+  whiskerRight f Z := f ▷ Z
   associator X Y Z := α_ X Y Z
   leftUnitor X := λ_ X
   rightUnitor X := ρ_ X
-  comp_whiskerLeft _ _ _ _ _ := by
-    simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc, tensor_id]
-  whisker_assoc _ _ _ _ _ := by simp_rw [associator_inv_naturality, Iso.hom_inv_id_assoc]
-  whiskerRight_comp _ _ _ := by simp_rw [← tensor_id, associator_naturality, Iso.inv_hom_id_assoc]
-  id_whiskerLeft _ := by simp_rw [leftUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-  whiskerRight_id _ := by simp_rw [rightUnitor_inv_naturality, Iso.hom_inv_id_assoc]
-  pentagon _ _ _ _ := by simp_rw [pentagon]
+  whisker_exchange := whisker_exchange
 
 namespace MonoidalSingleObj
 
@@ -89,10 +80,6 @@ def endMonoidalStarFunctor : MonoidalFunctor (EndMonoidal (MonoidalSingleObj.sta
   map f := f
   ε := 𝟙 _
   μ X Y := 𝟙 _
-  μ_natural f g := by
-    simp_rw [Category.id_comp, Category.comp_id]
-    -- Should we provide further simp lemmas so this goal becomes visible?
-    exact (tensor_id_comp_id_tensor _ _).symm
 #align category_theory.monoidal_single_obj.End_monoidal_star_functor CategoryTheory.MonoidalSingleObj.endMonoidalStarFunctor
 
 /-- The equivalence between the endomorphisms of the single object
@@ -100,7 +87,7 @@ when we promote a monoidal category to a single object bicategory,
 and the original monoidal category.
 -/
 noncomputable def endMonoidalStarFunctorIsEquivalence :
-    IsEquivalence (endMonoidalStarFunctor C).toFunctor where
+    (endMonoidalStarFunctor C).IsEquivalence where
   inverse :=
     { obj := fun X => X
       map := fun f => f }

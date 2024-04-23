@@ -2,13 +2,10 @@
 Copyright (c) 2020 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module deprecated.ring
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Deprecated.Group
+
+#align_import deprecated.ring from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Unbundled semiring and ring homomorphisms (deprecated)
@@ -51,7 +48,6 @@ structure IsSemiringHom {α : Type u} {β : Type v} [Semiring α] [Semiring β] 
 namespace IsSemiringHom
 
 variable {β : Type v} [Semiring α] [Semiring β]
-
 variable {f : α → β} (hf : IsSemiringHom f) {x y : α}
 
 /-- The identity map is a semiring homomorphism. -/
@@ -126,9 +122,9 @@ theorem id : IsRingHom (@id α) := by refine' { .. } <;> intros <;> rfl
 -- see Note [no instance on morphisms]
 /-- The composition of two ring homomorphisms is a ring homomorphism. -/
 theorem comp (hf : IsRingHom f) {γ} [Ring γ] {g : β → γ} (hg : IsRingHom g) : IsRingHom (g ∘ f) :=
-  { map_add := fun x y => by simp [map_add hf]; rw [map_add hg]
-    map_mul := fun x y => by simp [map_mul hf]; rw [map_mul hg]
-    map_one := by simp [map_one hf]; exact map_one hg }
+  { map_add := fun x y => by simp only [Function.comp_apply, map_add hf, map_add hg]
+    map_mul := fun x y => by simp only [Function.comp_apply, map_mul hf, map_mul hg]
+    map_one := by simp only [Function.comp_apply, map_one hf, map_one hg] }
 #align is_ring_hom.comp IsRingHom.comp
 
 /-- A ring homomorphism is also a semiring homomorphism. -/

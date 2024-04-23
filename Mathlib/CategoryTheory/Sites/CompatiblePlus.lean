@@ -2,14 +2,11 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.compatible_plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Whiskering
 import Mathlib.CategoryTheory.Sites.Plus
+
+#align_import category_theory.sites.compatible_plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -33,7 +30,6 @@ variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
 variable {D : Type w₁} [Category.{max v u} D]
 variable {E : Type w₂} [Category.{max v u} E]
 variable (F : D ⥤ E)
-
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) D]
 variable [∀ (α β : Type max v u) (fst snd : β → α), HasLimitsOfShape (WalkingMulticospan fst snd) E]
 variable [∀ (X : C) (W : J.Cover X) (P : Cᵒᵖ ⥤ D), PreservesLimit (W.index P).multicospan F]
@@ -49,7 +45,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
         (isLimitOfPreserves F (limit.isLimit _)).conePointUniqueUpToIso (limit.isLimit _))
     (by
       intro A B f
-      -- porting note: this used to work with `ext`
+      -- Porting note: this used to work with `ext`
       -- See https://github.com/leanprover-community/mathlib4/issues/5229
       apply Multiequalizer.hom_ext
       dsimp
@@ -63,7 +59,7 @@ def diagramCompIso (X : C) : J.diagram P X ⋙ F ≅ J.diagram (P ⋙ F) X :=
 
 @[reassoc (attr := simp)]
 theorem diagramCompIso_hom_ι (X : C) (W : (J.Cover X)ᵒᵖ) (i : W.unop.Arrow) :
-  (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
+    (J.diagramCompIso F P X).hom.app W ≫ Multiequalizer.ι ((unop W).index (P ⋙ F)) i =
   F.map (Multiequalizer.ι _ _) := by
   delta diagramCompIso
   dsimp
@@ -120,7 +116,7 @@ theorem ι_plusCompIso_hom (X) (W) :
     F.map (colimit.ι _ W) ≫ (J.plusCompIso F P).hom.app X =
       (J.diagramCompIso F P X.unop).hom.app W ≫ colimit.ι _ W := by
   delta diagramCompIso plusCompIso
-  simp only [IsColimit.descCoconeMorphism_Hom, IsColimit.uniqueUpToIso_hom,
+  simp only [IsColimit.descCoconeMorphism_hom, IsColimit.uniqueUpToIso_hom,
     Cocones.forget_map, Iso.trans_hom, NatIso.ofComponents_hom_app, Functor.mapIso_hom, ←
     Category.assoc]
   erw [(isColimitOfPreserves F (colimit.isColimit (J.diagram P (unop X)))).fac]
@@ -148,7 +144,7 @@ theorem plusCompIso_whiskerLeft {F G : D ⥤ E} (η : F ⟶ G) (P : Cᵒᵖ ⥤ 
     NatTrans.naturality_assoc, GrothendieckTopology.diagramNatTrans_app]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
@@ -185,7 +181,7 @@ theorem plusCompIso_whiskerRight {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [Functor.map_comp, Category.assoc, ι_plusCompIso_hom]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   intro a
@@ -211,12 +207,12 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [ι_plusCompIso_hom, Functor.map_comp, Category.assoc]
   simp only [← Category.assoc]
   congr 1
-  -- porting note: this used to work with `ext`
+  -- Porting note: this used to work with `ext`
   -- See https://github.com/leanprover-community/mathlib4/issues/5229
   apply Multiequalizer.hom_ext
   delta Cover.toMultiequalizer
   simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]
-  simp only [unop_op, limit.lift_π,  Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
+  simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
     implies_true]
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 

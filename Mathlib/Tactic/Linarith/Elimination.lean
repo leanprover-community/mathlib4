@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 import Mathlib.Tactic.Linarith.Datatypes
 
@@ -107,11 +106,11 @@ structure PComp : Type where
   /-- The set of original assumptions which have been used in constructing this comparison. -/
   history : RBSet ℕ Ord.compare
   /-- The variables which have been *effectively eliminated*,
-  i.e. the by running the elimination algorithm on that variable. -/
+  i.e. by running the elimination algorithm on that variable. -/
   effective : RBSet ℕ Ord.compare
   /-- The variables which have been *implicitly eliminated*.
   These are variables that appear in the historical set,
-  do not appear in `c` itself, and are not in `effective.-/
+  do not appear in `c` itself, and are not in `effective. -/
   implicit : RBSet ℕ Ord.compare
   /-- The union of all variables appearing in those original assumptions
   which appear in the `history` set. -/
@@ -322,13 +321,13 @@ def elimAllVarsM : LinarithM Unit := do
 those hypotheses. It produces an initial state for the elimination monad.
 -/
 def mkLinarithData (hyps : List Comp) (maxVar : ℕ) : LinarithData :=
-  ⟨maxVar, .ofList (hyps.enum.map $ fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
+  ⟨maxVar, .ofList (hyps.enum.map fun ⟨n, cmp⟩ => PComp.assump cmp n) _⟩
 
 /--
 `produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
 by eliminating all variables ≤ `maxVar`.
 If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum  `∑ (coeff i) * hyps[i]`.
+This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 -/
 def FourierMotzkin.produceCertificate : CertificateOracle :=
   fun hyps maxVar => match ExceptT.run

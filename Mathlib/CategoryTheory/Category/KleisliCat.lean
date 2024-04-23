@@ -2,14 +2,11 @@
 Copyright (c) 2018 Simon Hudon. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Simon Hudon
-
-! This file was ported from Lean 3 source module category_theory.category.Kleisli
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 
 import Mathlib.CategoryTheory.Category.Basic
+
+#align_import category_theory.category.Kleisli from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # The Kleisli construction on the Type category
@@ -54,8 +51,9 @@ instance KleisliCat.category {m} [Monad.{u, v} m] [LawfulMonad m] : Category (Kl
   -- Porting note: was
   -- refine' { id_comp' := _, comp_id' := _, assoc' := _ } <;> intros <;> ext <;> unfold_projs <;>
   --  simp only [(· >=> ·), functor_norm]
-  refine' { id_comp := _, comp_id := _, assoc := _ } <;> intros <;> refine funext (fun x => ?_) <;>
-  simp [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
+  refine { id_comp := ?_, comp_id := ?_, assoc := ?_ } <;> intros <;>
+  refine funext (fun x => ?_) <;>
+  simp (config := { unfoldPartialApp := true }) [CategoryStruct.id, CategoryStruct.comp, (· >=> ·)]
 #align category_theory.Kleisli.category CategoryTheory.KleisliCat.category
 
 @[simp]

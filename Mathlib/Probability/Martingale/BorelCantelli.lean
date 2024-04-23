@@ -2,15 +2,12 @@
 Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
-
-! This file was ported from Lean 3 source module probability.martingale.borel_cantelli
-! leanprover-community/mathlib commit 2196ab363eb097c008d4497125e0dde23fb36db2
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Probability.Martingale.Convergence
 import Mathlib.Probability.Martingale.OptionalStopping
 import Mathlib.Probability.Martingale.Centering
+
+#align_import probability.martingale.borel_cantelli from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
 
 /-!
 
@@ -20,6 +17,10 @@ This file proves Lévy's generalized Borel-Cantelli lemma which is a generalizat
 Borel-Cantelli lemmas. With this generalization, one can easily deduce the Borel-Cantelli lemmas
 by choosing appropriate filtrations. This file also contains the one sided martingale bound which
 is required to prove the generalized Borel-Cantelli.
+
+**Note**: the usual Borel-Cantelli lemmas are not in this file. See
+`MeasureTheory.measure_limsup_eq_zero` for the first (which does not depend on the results here),
+and `ProbabilityTheory.measure_limsup_eq_one` for the second (which does).
 
 ## Main results
 
@@ -39,7 +40,7 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 
 namespace MeasureTheory
 
-variable {Ω : Type _} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
+variable {Ω : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0} {f : ℕ → Ω → ℝ}
   {ω : Ω}
 
 /-!
@@ -92,7 +93,9 @@ theorem leastGE_eq_min (π : Ω → ℕ) (r : ℝ) (ω : Ω) {n : ℕ} (hπn : �
 theorem stoppedValue_stoppedValue_leastGE (f : ℕ → Ω → ℝ) (π : Ω → ℕ) (r : ℝ) {n : ℕ}
     (hπn : ∀ ω, π ω ≤ n) : stoppedValue (fun i => stoppedValue f (leastGE f r i)) π =
       stoppedValue (stoppedProcess f (leastGE f r n)) π := by
-  ext1 ω; simp_rw [stoppedProcess, stoppedValue]; rw [leastGE_eq_min _ _ _ hπn]
+  ext1 ω
+  simp (config := { unfoldPartialApp := true }) only [stoppedProcess, stoppedValue]
+  rw [leastGE_eq_min _ _ _ hπn]
 #align measure_theory.stopped_value_stopped_value_least_ge MeasureTheory.stoppedValue_stoppedValue_leastGE
 
 theorem Submartingale.stoppedValue_leastGE [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ) (r : ℝ) :
@@ -135,7 +138,7 @@ theorem Submartingale.stoppedValue_leastGE_snorm_le [IsFiniteMeasure μ] (hf : S
   refine' snorm_one_le_of_le' ((hf.stoppedValue_leastGE r).integrable _) _
     (norm_stoppedValue_leastGE_le hr hf0 hbdd i)
   rw [← integral_univ]
-  refine' le_trans _ ((hf.stoppedValue_leastGE r).set_integral_le (zero_le _) MeasurableSet.univ)
+  refine' le_trans _ ((hf.stoppedValue_leastGE r).setIntegral_le (zero_le _) MeasurableSet.univ)
   simp_rw [stoppedValue, leastGE, hitting_of_le le_rfl, hf0, integral_zero', le_rfl]
 #align measure_theory.submartingale.stopped_value_least_ge_snorm_le MeasureTheory.Submartingale.stoppedValue_leastGE_snorm_le
 
@@ -165,7 +168,6 @@ theorem Submartingale.exists_tendsto_of_abs_bddAbove_aux [IsFiniteMeasure μ]
   have heq : ∀ n, stoppedValue f (leastGE f i n) ω = f n ω := by
     intro n
     rw [leastGE]; unfold hitting; rw [stoppedValue]
-    simp only
     rw [if_neg]
     simp only [Set.mem_Icc, Set.mem_union, Set.mem_Ici]
     push_neg
@@ -190,21 +192,21 @@ theorem Submartingale.bddAbove_iff_exists_tendsto [IsFiniteMeasure μ] (hf : Sub
     hf.sub_martingale (martingale_const_fun _ _ (hf.adapted 0) (hf.integrable 0))
   have hg0 : g 0 = 0 := by
     ext ω
-    simp only [sub_self, Pi.zero_apply]
+    simp only [g, sub_self, Pi.zero_apply]
   have hgbdd : ∀ᵐ ω ∂μ, ∀ i : ℕ, |g (i + 1) ω - g i ω| ≤ ↑R := by
-    simpa only [sub_sub_sub_cancel_right]
+    simpa only [g, sub_sub_sub_cancel_right]
   filter_upwards [hg.bddAbove_iff_exists_tendsto_aux hg0 hgbdd] with ω hω
-  convert hω using 1 <;> simp_rw [eq_iff_iff]
+  convert hω using 1
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨b, hb⟩ := h <;>
     refine' ⟨b + |f 0 ω|, fun y hy => _⟩ <;> obtain ⟨n, rfl⟩ := hy
-    · simp_rw [sub_eq_add_neg]
-      exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs_self _)
+    · simp_rw [g, sub_eq_add_neg]
+      exact add_le_add (hb ⟨n, rfl⟩) (neg_le_abs _)
     · exact sub_le_iff_le_add.1 (le_trans (sub_le_sub_left (le_abs_self _) _) (hb ⟨n, rfl⟩))
   · refine' ⟨fun h => _, fun h => _⟩ <;> obtain ⟨c, hc⟩ := h
     · exact ⟨c - f 0 ω, hc.sub_const _⟩
     · refine' ⟨c + f 0 ω, _⟩
       have := hc.add_const (f 0 ω)
-      simpa only [sub_add_cancel]
+      simpa only [g, sub_add_cancel]
 #align measure_theory.submartingale.bdd_above_iff_exists_tendsto MeasureTheory.Submartingale.bddAbove_iff_exists_tendsto
 
 /-!
@@ -344,7 +346,7 @@ theorem tendsto_sum_indicator_atTop_iff [IsFiniteMeasure μ]
   · refine' tendsto_atTop_atTop_of_monotone' _ _
     · intro n m hnm
       simp only [predictablePart, Finset.sum_apply]
-      refine' Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
+      exact Finset.sum_mono_set_of_nonneg hω₃ (Finset.range_mono hnm)
     rintro ⟨b, hbdd⟩
     rw [← tendsto_neg_atBot_iff] at ht
     simp only [martingalePart, sub_eq_add_neg] at hω₁

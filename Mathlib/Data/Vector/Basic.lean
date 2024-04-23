@@ -2,23 +2,24 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.vector.basic
-! leanprover-community/mathlib commit f694c7dead66f5d4c80f446c796a5aad14707f0e
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
+import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.InsertNth
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
+
+#align_import data.vector.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
 /-!
 # Additional theorems and definitions about the `Vector` type
 
 This file introduces the infix notation `::ᵥ` for `Vector.cons`.
 -/
+
+set_option autoImplicit true
 
 
 universe u
@@ -27,7 +28,7 @@ variable {n : ℕ}
 
 namespace Vector
 
-variable {α : Type _}
+variable {α : Type*}
 
 @[inherit_doc]
 infixr:67 " ::ᵥ " => Vector.cons
@@ -68,7 +69,7 @@ theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
 #align vector.eq_cons_iff Vector.eq_cons_iff
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
-    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne.def, eq_cons_iff a v v', not_and_or]
+    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne, eq_cons_iff a v v', not_and_or]
 #align vector.ne_cons_iff Vector.ne_cons_iff
 
 theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n), v = a ::ᵥ as :=
@@ -89,7 +90,7 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 
 @[simp] theorem length_val (v : Vector α n) : v.val.length = n := v.2
 
--- porting notes: not used in mathlib and coercions done differently in Lean 4
+-- Porting note: not used in mathlib and coercions done differently in Lean 4
 -- @[simp]
 -- theorem length_coe (v : Vector α n) :
 --     ((coe : { l : List α // l.length = n } → List α) v).length = n :=
@@ -97,18 +98,18 @@ theorem mk_toList : ∀ (v : Vector α n) (h), (⟨toList v, h⟩ : Vector α n)
 #noalign vector.length_coe
 
 @[simp]
-theorem toList_map {β : Type _} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
-  by cases v ; rfl
+theorem toList_map {β : Type*} (v : Vector α n) (f : α → β) : (v.map f).toList = v.toList.map f :=
+  by cases v; rfl
 #align vector.to_list_map Vector.toList_map
 
 @[simp]
-theorem head_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
+theorem head_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) : (v.map f).head = f v.head := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, head_cons, head_cons]
 #align vector.head_map Vector.head_map
 
 @[simp]
-theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
+theorem tail_map {β : Type*} (v : Vector α (n + 1)) (f : α → β) :
     (v.map f).tail = v.tail.map f := by
   obtain ⟨a, v', h⟩ := Vector.exists_eq_cons v
   rw [h, map_cons, tail_cons, tail_cons]
@@ -117,13 +118,7 @@ theorem tail_map {β : Type _} (v : Vector α (n + 1)) (f : α → β) :
 theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
-#align vector.nth_eq_nth_le Vector.get_eq_get
-
--- porting notes: `nthLe` deprecated for `get`
-@[deprecated get_eq_get]
-theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length] ; exact i.2)
-  | ⟨_, _⟩, _ => rfl
+#align vector.nth_eq_nth_le Vector.get_eq_getₓ
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -131,7 +126,7 @@ theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a :=
 #align vector.nth_repeat Vector.get_replicate
 
 @[simp]
-theorem get_map {β : Type _} (v : Vector α n) (f : α → β) (i : Fin n) :
+theorem get_map {β : Type*} (v : Vector α n) (f : α → β) (i : Fin n) :
     (v.map f).get i = f (v.get i) := by
   cases v; simp [Vector.map, get_eq_get]; rfl
 #align vector.nth_map Vector.get_map
@@ -161,22 +156,22 @@ theorem ofFn_get (v : Vector α n) : ofFn (get v) = v := by
 #align vector.of_fn_nth Vector.ofFn_get
 
 /-- The natural equivalence between length-`n` vectors and functions from `Fin n`. -/
-def _root_.Equiv.vectorEquivFin (α : Type _) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
+def _root_.Equiv.vectorEquivFin (α : Type*) (n : ℕ) : Vector α n ≃ (Fin n → α) :=
   ⟨Vector.get, Vector.ofFn, Vector.ofFn_get, fun f => funext <| Vector.get_ofFn f⟩
 #align equiv.vector_equiv_fin Equiv.vectorEquivFin
 
 theorem get_tail (x : Vector α n) (i) :
     x.tail.get i = x.get ⟨i.1 + 1, lt_tsub_iff_right.mp i.2⟩ := by
-  cases' i with i ih ; dsimp
+  cases' i with i ih; dsimp
   rcases x with ⟨_ | _, h⟩ <;> try rfl
   rw [List.length] at h
-  rw [←h] at ih
+  rw [← h] at ih
   contradiction
 #align vector.nth_tail Vector.get_tail
 
 @[simp]
 theorem get_tail_succ : ∀ (v : Vector α n.succ) (i : Fin n), get (tail v) i = get v i.succ
-  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get] ; rfl
+  | ⟨a :: l, e⟩, ⟨i, h⟩ => by simp [get_eq_get]; rfl
 #align vector.nth_tail_succ Vector.get_tail_succ
 
 @[simp]
@@ -271,7 +266,7 @@ theorem head_ofFn {n : ℕ} (f : Fin n.succ → α) : head (ofFn f) = f 0 := by
   rw [← get_zero, get_ofFn]
 #align vector.head_of_fn Vector.head_ofFn
 
---@[simp] Porting note: simp can prove it
+--@[simp] Porting note (#10618): simp can prove it
 theorem get_cons_zero (a : α) (v : Vector α n) : get (a ::ᵥ v) 0 = a := by simp [get_zero]
 #align vector.nth_cons_zero Vector.get_cons_zero
 
@@ -301,7 +296,8 @@ theorem last_def {v : Vector α (n + 1)} : v.last = v.get (Fin.last n) :=
 theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
   rw [← get_zero, last_def, get_eq_get, get_eq_get]
   simp_rw [toList_reverse]
-  rw [← Option.some_inj, ← List.get?_eq_get, ← List.get?_eq_get, List.get?_reverse]
+  rw [← Option.some_inj, Fin.cast, Fin.cast, ← List.get?_eq_get, ← List.get?_eq_get,
+    List.get?_reverse]
   · congr
     simp
   · simp
@@ -309,10 +305,8 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 
 section Scan
 
-variable {β : Type _}
-
+variable {β : Type*}
 variable (f : β → α → β) (b : β)
-
 variable (v : Vector α n)
 
 /-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
@@ -393,7 +387,7 @@ theorem scanl_get (i : Fin n) :
   · exact i.elim0
   induction' n with n hn generalizing b
   · have i0 : i = 0 := Fin.eq_zero _
-    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get]
+    simp [scanl_singleton, i0, get_zero]; simp [get_eq_get, List.get]
   · rw [← cons_head_tail v, scanl_cons, get_cons_succ]
     refine' Fin.cases _ _ i
     · simp only [get_zero, scanl_head, Fin.castSucc_zero, head_cons]
@@ -453,9 +447,9 @@ and `h_cons` defines the inductive step using `∀ x : α, C w → C (x ::ᵥ w)
 
 This can be used as `induction v using Vector.inductionOn`. -/
 @[elab_as_elim]
-def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vector α n)
+def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort*} {n : ℕ} (v : Vector α n)
     (h_nil : C nil) (h_cons : ∀ {n : ℕ} {x : α} {w : Vector α n}, C w → C (x ::ᵥ w)) : C v := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     exact h_nil
@@ -468,15 +462,15 @@ def inductionOn {C : ∀ {n : ℕ}, Vector α n → Sort _} {n : ℕ} (v : Vecto
 -- check that the above works with `induction ... using`
 example (v : Vector α n) : True := by induction v using Vector.inductionOn <;> trivial
 
-variable {β γ : Type _}
+variable {β γ : Type*}
 
 /-- Define `C v w` by induction on a pair of vectors `v : Vector α n` and `w : Vector β n`. -/
 @[elab_as_elim]
-def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
+def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort*}
     (v : Vector α n) (w : Vector β n)
     (nil : C nil nil) (cons : ∀ {n a b} {x : Vector α n} {y}, C x y → C (a ::ᵥ x) (b ::ᵥ y)) :
     C v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases w with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -492,11 +486,11 @@ def inductionOn₂ {C : ∀ {n}, Vector α n → Vector β n → Sort _}
 /-- Define `C u v w` by induction on a triplet of vectors
 `u : Vector α n`, `v : Vector β n`, and `w : Vector γ b`. -/
 @[elab_as_elim]
-def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort _}
+def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n → Sort*}
     (u : Vector α n) (v : Vector β n) (w : Vector γ n) (nil : C nil nil nil)
     (cons : ∀ {n a b c} {x : Vector α n} {y z}, C x y z → C (a ::ᵥ x) (b ::ᵥ y) (c ::ᵥ z)) :
     C u v w := by
-  -- porting notes: removed `generalizing`: already generalized
+  -- Porting note: removed `generalizing`: already generalized
   induction' n with n ih
   · rcases u with ⟨_ | ⟨-, -⟩, - | -⟩
     rcases v with ⟨_ | ⟨-, -⟩, - | -⟩
@@ -515,27 +509,28 @@ def inductionOn₃ {C : ∀ {n}, Vector α n → Vector β n → Vector γ n →
 #align vector.induction_on₃ Vector.inductionOn₃
 
 /-- Define `motive v` by case-analysis on `v : Vector α n` -/
-def casesOn {motive : ∀ {n}, Vector α n → Sort _} (v : Vector α m)
-    (nil : motive nil) (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
+def casesOn {motive : ∀ {n}, Vector α n → Sort*} (v : Vector α m)
+    (nil : motive nil)
+    (cons : ∀ {n}, (hd : α) → (tl : Vector α n) → motive (Vector.cons hd tl)) :
     motive v :=
   inductionOn (C := motive) v nil @fun _ hd tl _ => cons hd tl
 
 /-- Define `motive v₁ v₂` by case-analysis on `v₁ : Vector α n` and `v₂ : Vector β n` -/
-def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort _} (v₁ : Vector α m) (v₂ : Vector β m)
-              (nil : motive nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
-                      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
-              motive v₁ v₂ :=
-    inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
+def casesOn₂  {motive : ∀{n}, Vector α n → Vector β n → Sort*} (v₁ : Vector α m) (v₂ : Vector β m)
+    (nil : motive nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (xs : Vector α n) → (ys : Vector β n)
+      → motive (x ::ᵥ xs) (y ::ᵥ ys)) :
+    motive v₁ v₂ :=
+  inductionOn₂ (C := motive) v₁ v₂ nil @fun _ x y xs ys _ => cons x y xs ys
 
 /-- Define `motive v₁ v₂ v₃` by case-analysis on `v₁ : Vector α n`, `v₂ : Vector β n`, and
     `v₃ : Vector γ n` -/
-def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort _} (v₁ : Vector α m)
-              (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
-              (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
-                        → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
-              motive v₁ v₂ v₃ :=
-    inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
+def casesOn₃  {motive : ∀{n}, Vector α n → Vector β n → Vector γ n → Sort*} (v₁ : Vector α m)
+    (v₂ : Vector β m) (v₃ : Vector γ m) (nil : motive nil nil nil)
+    (cons : ∀{n}, (x : α) → (y : β) → (z : γ) → (xs : Vector α n) → (ys : Vector β n)
+      → (zs : Vector γ n) → motive (x ::ᵥ xs) (y ::ᵥ ys) (z ::ᵥ zs)) :
+    motive v₁ v₂ v₃ :=
+  inductionOn₃ (C := motive) v₁ v₂ v₃ nil @fun _ x y z xs ys zs _ => cons x y z xs ys zs
 
 /-- Cast a vector to an array. -/
 def toArray : Vector α n → Array α
@@ -581,14 +576,14 @@ theorem removeNth_insertNth' {v : Vector α (n + 1)} :
     · rcases Nat.exists_eq_succ_of_ne_zero
         (Nat.pos_iff_ne_zero.1 (lt_of_le_of_lt (Nat.zero_le _) hij)) with ⟨j, rfl⟩
       rw [← List.insertNth_removeNth_of_ge]
-      . simp; rfl
-      . simpa
-      . simpa [Nat.lt_succ_iff] using hij
+      · simp; rfl
+      · simpa
+      · simpa [Nat.lt_succ_iff] using hij
     · dsimp
       rw [← List.insertNth_removeNth_of_le i j _ _ _]
-      . rfl
-      . simpa
-      . simpa [not_lt] using hij
+      · rfl
+      · simpa
+      · simpa [not_lt] using hij
 #align vector.remove_nth_insert_nth' Vector.removeNth_insertNth'
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
@@ -605,7 +600,7 @@ theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
 
 end InsertNth
 
--- porting notes: renamed to `set` from `updateNth` to align with `List`
+-- Porting note: renamed to `set` from `updateNth` to align with `List`
 section ModifyNth
 
 /-- `set v n a` replaces the `n`th element of `v` with `a` -/
@@ -622,22 +617,19 @@ theorem toList_set (v : Vector α n) (i : Fin n) (a : α) :
 @[simp]
 theorem get_set_same (v : Vector α n) (i : Fin n) (a : α) : (v.set i a).get i = a := by
   cases v; cases i; simp [Vector.set, get_eq_get]
-  dsimp
-  exact List.get_set_eq _ _ _ _
 #align vector.nth_update_nth_same Vector.get_set_same
 
 theorem get_set_of_ne {v : Vector α n} {i j : Fin n} (h : i ≠ j) (a : α) :
     (v.set i a).get j = v.get j := by
   cases v; cases i; cases j
-  simp [Vector.set, Vector.get_eq_get, List.get_set_of_ne (Fin.vne_of_ne h)]
+  simp only [set, get_eq_get, toList_mk, Fin.cast_mk, ne_eq]
   rw [List.get_set_of_ne]
-  . rfl
-  . simpa using h
+  · simpa using h
 #align vector.nth_update_nth_of_ne Vector.get_set_of_ne
 
 theorem get_set_eq_if {v : Vector α n} {i j : Fin n} (a : α) :
     (v.set i a).get j = if i = j then a else v.get j := by
-  split_ifs <;> try simp [*] <;> try rw [get_set_of_ne] ; assumption
+  split_ifs <;> (try simp [*]); rwa [get_set_of_ne]
 #align vector.nth_update_nth_eq_if Vector.get_set_eq_if
 
 @[to_additive]
@@ -663,7 +655,6 @@ namespace Vector
 section Traverse
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor
@@ -688,7 +679,7 @@ variable {α β : Type u}
 @[simp]
 protected theorem traverse_def (f : α → F β) (x : α) :
     ∀ xs : Vector α n, (x ::ᵥ xs).traverse f = cons <$> f x <*> xs.traverse f := by
-  rintro ⟨xs, rfl⟩ ; rfl
+  rintro ⟨xs, rfl⟩; rfl
 #align vector.traverse_def Vector.traverse_def
 
 protected theorem id_traverse : ∀ x : Vector α n, x.traverse (pure : _ → Id _) = x := by
@@ -702,34 +693,33 @@ end
 open Function
 
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
--- the `IsLawfulTraversable` instance below expects a particular signature.
+-- the `LawfulTraversable` instance below expects a particular signature.
 @[nolint unusedArguments]
 protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector α n) :
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
   simp! [cast, *, functor_norm]
-  . rfl
-  . rw [Vector.traverse_def, ih]
-    simp [functor_norm, (. ∘ .)]
+  · rfl
+  · rw [Vector.traverse_def, ih]
+    simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse
 
 protected theorem traverse_eq_map_id {α β} (f : α → β) :
     ∀ x : Vector α n, x.traverse ((pure: _ → Id _) ∘ f) = (pure: _ → Id _) (map f x) := by
-  rintro ⟨x, rfl⟩ ; simp! ; induction x <;> simp! [*, functor_norm] <;> rfl
+  rintro ⟨x, rfl⟩; simp!; induction x <;> simp! [*, functor_norm] <;> rfl
 #align vector.traverse_eq_map_id Vector.traverse_eq_map_id
 
 variable (η : ApplicativeTransformation F G)
 
-protected theorem naturality {α β : Type _} (f : α → F β) (x : Vector α n) :
+protected theorem naturality {α β : Type u} (f : α → F β) (x : Vector α n) :
     η (x.traverse f) = x.traverse (@η _ ∘ f) := by
   induction' x using Vector.inductionOn with n x xs ih
-  . simp! [functor_norm, cast, η.preserves_pure]
-  . rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
+  · simp! [functor_norm, cast, η.preserves_pure]
+  · rw [Vector.traverse_def, Vector.traverse_def, ← ih, η.preserves_seq, η.preserves_map]
     rfl
 #align vector.naturality Vector.naturality
 
@@ -739,7 +729,7 @@ instance : Traversable.{u} (flip Vector n) where
   traverse := @Vector.traverse n
   map {α β} := @Vector.map.{u, u} α β n
 
-instance : IsLawfulTraversable.{u} (flip Vector n) where
+instance : LawfulTraversable.{u} (flip Vector n) where
   id_traverse := @Vector.id_traverse n
   comp_traverse := Vector.comp_traverse
   traverse_eq_map_id := @Vector.traverse_eq_map_id n
@@ -748,7 +738,7 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
   comp_map := by intro _ _ _ _ _ x; cases x; simp! [(· <$> ·)]
   map_const := rfl
 
---Porting note: not porting meta instances
+-- Porting note: not porting meta instances
 -- unsafe instance reflect [reflected_univ.{u}] {α : Type u} [has_reflect α]
 --     [reflected _ α] {n : ℕ} : has_reflect (Vector α n) := fun v =>
 --   @Vector.inductionOn α (fun n => reflected _) n v
@@ -770,12 +760,15 @@ instance : IsLawfulTraversable.{u} (flip Vector n) where
 
 section Simp
 
-variable (xs : Vector α n) (ys : Vector α m)
+variable (xs : Vector α n)
 
 @[simp]
 theorem replicate_succ (val : α) :
     replicate (n+1) val = val ::ᵥ (replicate n val) :=
   rfl
+
+section Append
+variable (ys : Vector α m)
 
 @[simp]
 theorem get_append_cons_zero : get (append (x ::ᵥ xs) ys) ⟨0, by simp⟩ = x :=
@@ -790,18 +783,38 @@ theorem get_append_cons_succ {i : Fin (n + m)} {h} :
 theorem append_nil : append xs nil = xs := by
   cases xs; simp [append]
 
+end Append
+
+variable (ys : Vector β n)
+
 @[simp]
 theorem get_map₂ (v₁ : Vector α n) (v₂ : Vector β n) (f : α → β → γ) (i : Fin n) :
     get (map₂ f v₁ v₂) i = f (get v₁ i) (get v₂ i) := by
   clear * - v₁ v₂
-  induction v₁, v₂ using inductionOn₂
-  case nil =>
+  induction v₁, v₂ using inductionOn₂ with
+  | nil =>
     exact Fin.elim0 i
-  case cons x xs y ys ih =>
+  | cons ih =>
     rw [map₂_cons]
     cases i using Fin.cases
-    . simp only [get_zero, head_cons]
-    . simp only [get_cons_succ, ih]
+    · simp only [get_zero, head_cons]
+    · simp only [get_cons_succ, ih]
+
+@[simp]
+theorem mapAccumr_cons :
+    mapAccumr f (x ::ᵥ xs) s
+    = let r := mapAccumr f xs s
+      let q := f x r.1
+      (q.1, q.2 ::ᵥ r.2) :=
+  rfl
+
+@[simp]
+theorem mapAccumr₂_cons :
+    mapAccumr₂ f (x ::ᵥ xs) (y ::ᵥ ys) s
+    = let r := mapAccumr₂ f xs ys s
+      let q := f x y r.1
+      (q.1, q.2 ::ᵥ r.2) :=
+  rfl
 
 end Simp
 

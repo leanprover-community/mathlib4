@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
-
-! This file was ported from Lean 3 source module data.set.pairwise.lattice
-! leanprover-community/mathlib commit c4c2ed622f43768eff32608d4a0f8a6cec1c047d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Set.Lattice
 import Mathlib.Data.Set.Pairwise.Basic
+
+#align_import data.set.pairwise.lattice from "leanprover-community/mathlib"@"c4c2ed622f43768eff32608d4a0f8a6cec1c047d"
 
 /-!
 # Relations holding pairwise
@@ -20,7 +17,7 @@ In this file we prove many facts about `Pairwise` and the set lattice.
 
 open Function Set Order
 
-variable {α β γ ι ι' : Type _} {κ : Sort _} {r p q : α → α → Prop}
+variable {α β γ ι ι' : Type*} {κ : Sort*} {r p q : α → α → Prop}
 section Pairwise
 
 variable {f g : ι → α} {s t u : Set α} {a b : α}
@@ -148,7 +145,7 @@ section
 variable {f : ι → Set α} {s t : Set ι}
 
 theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).PairwiseDisjoint f)
-    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
+    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t := by
   rintro i hi
   obtain ⟨a, hai⟩ := h₁ i hi
   obtain ⟨j, hj, haj⟩ := mem_iUnion₂.1 (h <| mem_iUnion₂_of_mem hi hai)
@@ -157,7 +154,7 @@ theorem Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀ : (s ∪ t).
 #align set.pairwise_disjoint.subset_of_bUnion_subset_bUnion Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion
 
 theorem Pairwise.subset_of_biUnion_subset_biUnion (h₀ : Pairwise (Disjoint on f))
-    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : (⋃ i ∈ s, f i) ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=
+    (h₁ : ∀ i ∈ s, (f i).Nonempty) (h : ⋃ i ∈ s, f i ⊆ ⋃ i ∈ t, f i) : s ⊆ t :=
   Set.PairwiseDisjoint.subset_of_biUnion_subset_biUnion (h₀.set_pairwise _) h₁ h
 #align pairwise.subset_of_bUnion_subset_bUnion Pairwise.subset_of_biUnion_subset_biUnion
 
@@ -166,5 +163,14 @@ theorem Pairwise.biUnion_injective (h₀ : Pairwise (Disjoint on f)) (h₁ : ∀
   ((h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.subset).antisymm <|
     (h₀.subset_of_biUnion_subset_biUnion fun _ _ => h₁ _) <| h.superset
 #align pairwise.bUnion_injective Pairwise.biUnion_injective
+
+/-- In a disjoint union we can identify the unique set an element belongs to. -/
+theorem pairwiseDisjoint_unique {y : α}
+    (h_disjoint : PairwiseDisjoint s f)
+    (hy : y ∈ (⋃ i ∈ s, f i)) : ∃! i, i ∈ s ∧ y ∈ f i := by
+  refine exists_unique_of_exists_of_unique ?ex ?unique
+  · simpa only [mem_iUnion, exists_prop] using hy
+  · rintro i j ⟨his, hi⟩ ⟨hjs, hj⟩
+    exact h_disjoint.elim his hjs <| not_disjoint_iff.mpr ⟨y, ⟨hi, hj⟩⟩
 
 end

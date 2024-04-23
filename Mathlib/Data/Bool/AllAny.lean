@@ -2,13 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.bool.all_any
-! leanprover-community/mathlib commit 5a3e819569b0f12cbec59d740a2613018e7b8eec
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.List.Basic
+import Mathlib.Init.Data.Bool.Lemmas
+
+#align_import data.bool.all_any from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
 /-!
 # Boolean quantifiers
@@ -18,7 +16,7 @@ existential quantifiers. Their definitions are in core Lean.
 -/
 
 
-variable {α : Type _} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
+variable {α : Type*} {p : α → Prop} [DecidablePred p] {l : List α} {a : α}
 
 namespace List
 
@@ -30,7 +28,7 @@ namespace List
 theorem all_iff_forall {p : α → Bool} : all l p ↔ ∀ a ∈ l, p a := by
   induction' l with a l ih
   · exact iff_of_true rfl (forall_mem_nil _)
-  simp only [all_cons, Bool.and_coe_iff, ih, forall_mem_cons]
+  simp only [all_cons, Bool.coe_and_iff, ih, forall_mem_cons]
 #align list.all_iff_forall List.all_iff_forall
 
 theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
@@ -45,7 +43,7 @@ theorem all_iff_forall_prop : (all l fun a => p a) ↔ ∀ a ∈ l, p a := by
 theorem any_iff_exists {p : α → Bool} : any l p ↔ ∃ a ∈ l, p a := by
   induction' l with a l ih
   · exact iff_of_false Bool.not_false' (not_exists_mem_nil _)
-  simp only [any_cons, Bool.or_coe_iff, ih, exists_mem_cons_iff]
+  simp only [any_cons, Bool.coe_or_iff, ih, exists_mem_cons_iff]
 #align list.any_iff_exists List.any_iff_exists
 
 theorem any_iff_exists_prop : (any l fun a => p a) ↔ ∃ a ∈ l, p a := by simp [any_iff_exists]

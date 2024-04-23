@@ -2,13 +2,10 @@
 Copyright (c) 2019 Minchao Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Minchao Wu, Mario Carneiro
-
-! This file was ported from Lean 3 source module computability.reduce
-! leanprover-community/mathlib commit d13b3a4a392ea7273dfa4727dbd1892e26cfd518
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Computability.Halting
+
+#align_import computability.reduce from "leanprover-community/mathlib"@"d13b3a4a392ea7273dfa4727dbd1892e26cfd518"
 
 /-!
 # Strong reducibility and degrees.
@@ -43,7 +40,6 @@ def ManyOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop)
   ∃ f, Computable f ∧ ∀ a, p a ↔ q (f a)
 #align many_one_reducible ManyOneReducible
 
--- mathport name: «expr ≤₀ »
 @[inherit_doc ManyOneReducible]
 infixl:1000 " ≤₀ " => ManyOneReducible
 
@@ -81,7 +77,6 @@ def OneOneReducible {α β} [Primcodable α] [Primcodable β] (p : α → Prop) 
   ∃ f, Computable f ∧ Injective f ∧ ∀ a, p a ↔ q (f a)
 #align one_one_reducible OneOneReducible
 
--- mathport name: «expr ≤₁ »
 @[inherit_doc OneOneReducible]
 infixl:1000 " ≤₁ " => OneOneReducible
 
@@ -128,8 +123,7 @@ theorem transitive_oneOneReducible {α} [Primcodable α] : Transitive (@OneOneRe
 
 namespace ComputablePred
 
-variable {α : Type _} {β : Type _} {σ : Type _}
-
+variable {α : Type*} {β : Type*} {σ : Type*}
 variable [Primcodable α] [Primcodable β] [Primcodable σ]
 
 open Computable
@@ -293,7 +287,6 @@ theorem manyOneEquiv_up {α} [Primcodable α] {p : α → Prop} : ManyOneEquiv (
   ManyOneEquiv.of_equiv ULower.down_computable.symm
 #align many_one_equiv_up manyOneEquiv_up
 
--- mathport name: «expr ⊕' »
 local infixl:1001 " ⊕' " => Sum.elim
 
 open Nat.Primrec
@@ -325,9 +318,7 @@ theorem disjoin_le {α β γ} [Primcodable α] [Primcodable β] [Primcodable γ]
 #align disjoin_le disjoin_le
 
 variable {α : Type u} [Primcodable α] [Inhabited α]
-
 variable {β : Type v} [Primcodable β] [Inhabited β]
-
 variable {γ : Type w} [Primcodable γ] [Inhabited γ]
 
 /-- Computable and injective mapping of predicates to sets of natural numbers.

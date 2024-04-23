@@ -2,15 +2,12 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.karoubi
-! leanprover-community/mathlib commit 200eda15d8ff5669854ff6bcc10aaf37cb70498f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Basic
 import Mathlib.CategoryTheory.Preadditive.AdditiveFunctor
 import Mathlib.CategoryTheory.Equivalence
+
+#align_import category_theory.idempotents.karoubi from "leanprover-community/mathlib"@"200eda15d8ff5669854ff6bcc10aaf37cb70498f"
 
 /-!
 # The Karoubi envelope of a category
@@ -22,7 +19,7 @@ In this file, we define the Karoubi envelope `Karoubi C` of a category `C`.
 - `Karoubi C` is the Karoubi envelope of a category `C`: it is an idempotent
 complete category. It is also preadditive when `C` is preadditive.
 - `toKaroubi C : C ⥤ Karoubi C` is a fully faithful functor, which is an equivalence
-(`toKaroubi_isEquivalence`) when `C` is idempotent complete.
+(`toKaroubiIsEquivalence`) when `C` is idempotent complete.
 
 -/
 
@@ -33,11 +30,11 @@ open CategoryTheory.Category CategoryTheory.Preadditive CategoryTheory.Limits Bi
 
 namespace CategoryTheory
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
 namespace Idempotents
 
--- porting note: removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- In a preadditive category `C`, when an object `X` decomposes as `X ≅ P ⨿ Q`, one may
 consider `P` as a direct factor of `X` and up to unique isomorphism, it is determined by the
 obvious idempotent `X ⟶ P ⟶ X` which is the projection onto `P` with kernel `Q`. More generally,
@@ -115,17 +112,17 @@ theorem hom_ext_iff {P Q : Karoubi C} {f g : P ⟶ Q} : f = g ↔ f.f = g.f := b
   · apply Hom.ext
 #align category_theory.idempotents.karoubi.hom_ext CategoryTheory.Idempotents.Karoubi.hom_ext_iff
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 theorem hom_ext {P Q : Karoubi C} (f g : P ⟶ Q) (h : f.f = g.f) : f = g := by
   simpa [hom_ext_iff] using h
 
 @[simp]
-theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f.f ≫ g.f := by rfl
+theorem comp_f {P Q R : Karoubi C} (f : P ⟶ Q) (g : Q ⟶ R) : (f ≫ g).f = f.f ≫ g.f := rfl
 #align category_theory.idempotents.karoubi.comp_f CategoryTheory.Idempotents.Karoubi.comp_f
 
 @[simp]
-theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := by rfl
+theorem id_eq {P : Karoubi C} : 𝟙 P = ⟨P.p, by repeat' rw [P.idem]⟩ := rfl
 #align category_theory.idempotents.karoubi.id_eq CategoryTheory.Idempotents.Karoubi.id_eq
 
 /-- It is possible to coerce an object of `C` into an object of `Karoubi C`.
@@ -134,13 +131,13 @@ instance coe : CoeTC C (Karoubi C) :=
   ⟨fun X => ⟨X, 𝟙 X, by rw [comp_id]⟩⟩
 #align category_theory.idempotents.karoubi.coe CategoryTheory.Idempotents.Karoubi.coe
 
--- porting note: removed @[simp] as the linter complains
-theorem coe_X (X : C) : (X : Karoubi C).X = X := by rfl
+-- Porting note: removed @[simp] as the linter complains
+theorem coe_X (X : C) : (X : Karoubi C).X = X := rfl
 set_option linter.uppercaseLean3 false in
 #align category_theory.idempotents.karoubi.coe_X CategoryTheory.Idempotents.Karoubi.coe_X
 
 @[simp]
-theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := by rfl
+theorem coe_p (X : C) : (X : Karoubi C).p = 𝟙 X := rfl
 #align category_theory.idempotents.karoubi.coe_p CategoryTheory.Idempotents.Karoubi.coe_p
 
 @[simp]
@@ -160,18 +157,26 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : Full (toKaroubi C) where preimage f := f.f
+instance : (toKaroubi C).Full where preimage f := f.f
 
-instance : Faithful (toKaroubi C) where
+instance : (toKaroubi C).Faithful where
   map_injective := fun h => congr_arg Karoubi.Hom.f h
 
 variable {C}
 
-@[simps add zero neg]
-instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
-  add f g :=
-    ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+@[simps add]
+instance instAdd [Preadditive C] {P Q : Karoubi C} : Add (P ⟶ Q) where
+  add f g := ⟨f.f + g.f, by rw [add_comp, comp_add, ← f.comm, ← g.comm]⟩
+
+@[simps neg]
+instance instNeg [Preadditive C] {P Q : Karoubi C} : Neg (P ⟶ Q) where
+  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
+
+@[simps zero]
+instance instZero [Preadditive C] {P Q : Karoubi C} : Zero (P ⟶ Q) where
   zero := ⟨0, by simp only [comp_zero, zero_comp]⟩
+
+instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P ⟶ Q) where
   zero_add f := by
     ext
     apply zero_add
@@ -184,10 +189,11 @@ instance instAddCommGroupHom [Preadditive C] {P Q : Karoubi C} : AddCommGroup (P
   add_comm f g := by
     ext
     apply add_comm
-  neg f := ⟨-f.f, by simpa only [neg_comp, comp_neg, neg_inj] using f.comm⟩
   add_left_neg f := by
     ext
     apply add_left_neg
+  zsmul := zsmulRec
+  nsmul := nsmulRec
 
 namespace Karoubi
 
@@ -204,7 +210,7 @@ def inclusionHom [Preadditive C] (P Q : Karoubi C) : AddMonoidHom (P ⟶ Q) (P.X
 #align category_theory.idempotents.karoubi.inclusion_hom CategoryTheory.Idempotents.Karoubi.inclusionHom
 
 @[simp]
-theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type _} (s : Finset α) (f : α → (P ⟶ Q)) :
+theorem sum_hom [Preadditive C] {P Q : Karoubi C} {α : Type*} (s : Finset α) (f : α → (P ⟶ Q)) :
     (∑ x in s, f x).f = ∑ x in s, (f x).f :=
   map_sum (inclusionHom P Q) f s
 #align category_theory.idempotents.karoubi.sum_hom CategoryTheory.Idempotents.Karoubi.sum_hom
@@ -230,7 +236,7 @@ instance : IsIdempotentComplete (Karoubi C) := by
   use ⟨p.f, by rw [hp, p_comp p]⟩
   simp [hp]
 
-instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
+instance [IsIdempotentComplete C] : (toKaroubi C).EssSurj :=
   ⟨fun P => by
     rcases IsIdempotentComplete.idempotents_split P.X P.p P.idem with ⟨Y, i, e, ⟨h₁, h₂⟩⟩
     use Y
@@ -240,20 +246,20 @@ instance [IsIdempotentComplete C] : EssSurj (toKaroubi C) :=
           inv := ⟨e, by erw [comp_id, ← h₂, assoc, h₁, comp_id]⟩ }⟩
 
 /-- If `C` is idempotent complete, the functor `toKaroubi : C ⥤ Karoubi C` is an equivalence. -/
-def toKaroubi_isEquivalence [IsIdempotentComplete C] : IsEquivalence (toKaroubi C) :=
-  Equivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubi_isEquivalence
+def toKaroubiIsEquivalence [IsIdempotentComplete C] : (toKaroubi C).IsEquivalence :=
+  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (toKaroubi C)
+#align category_theory.idempotents.to_karoubi_is_equivalence CategoryTheory.Idempotents.toKaroubiIsEquivalence
 
 /-- The equivalence `C ≅ Karoubi C` when `C` is idempotent complete. -/
-def toKaroubi_equivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
-  haveI := toKaroubi_isEquivalence C
+def toKaroubiEquivalence [IsIdempotentComplete C] : C ≌ Karoubi C :=
+  haveI := toKaroubiIsEquivalence C
   Functor.asEquivalence (toKaroubi C)
-#align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubi_equivalence
+#align category_theory.idempotents.to_karoubi_equivalence CategoryTheory.Idempotents.toKaroubiEquivalence
 
-instance toKaroubi_equivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
-    (toKaroubi_equivalence C).functor.Additive :=
+instance toKaroubiEquivalence_functor_additive [Preadditive C] [IsIdempotentComplete C] :
+    (toKaroubiEquivalence C).functor.Additive :=
   (inferInstance : (toKaroubi C).Additive)
-#align category_theory.idempotents.to_karoubi_equivalence_functor_additive CategoryTheory.Idempotents.toKaroubi_equivalence_functor_additive
+#align category_theory.idempotents.to_karoubi_equivalence_functor_additive CategoryTheory.Idempotents.toKaroubiEquivalence_functor_additive
 
 namespace Karoubi
 

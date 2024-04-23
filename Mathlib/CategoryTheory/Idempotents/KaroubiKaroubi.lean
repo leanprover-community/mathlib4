@@ -2,13 +2,10 @@
 Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
-
-! This file was ported from Lean 3 source module category_theory.idempotents.karoubi_karoubi
-! leanprover-community/mathlib commit 31019c2504b17f85af7e0577585fad996935a317
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Idempotents.Karoubi
+
+#align_import category_theory.idempotents.karoubi_karoubi from "leanprover-community/mathlib"@"31019c2504b17f85af7e0577585fad996935a317"
 
 /-!
 # Idempotence of the Karoubi envelope
@@ -29,16 +26,15 @@ namespace Idempotents
 
 namespace KaroubiKaroubi
 
-variable (C : Type _) [Category C]
+variable (C : Type*) [Category C]
 
--- porting note: added to ease automation
+-- Porting note (#10688): added to ease automation
 @[reassoc (attr := simp)]
 lemma idem_f (P : Karoubi (Karoubi C)) : P.p.f ≫ P.p.f = P.p.f := by
   simpa only [hom_ext_iff, comp_f] using P.idem
 
 @[reassoc]
-lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) :
-  P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
+lemma p_comm_f {P Q : Karoubi (Karoubi C)} (f : P ⟶ Q) : P.p.f ≫ f.f.f = f.f.f ≫ Q.p.f := by
   simpa only [hom_ext_iff, comp_f] using p_comm f
 
 attribute [local simp] p_comm_f

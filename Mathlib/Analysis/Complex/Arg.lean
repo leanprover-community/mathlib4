@@ -2,14 +2,11 @@
 Copyright (c) 2022 Eric Rodriguez. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Rodriguez
-
-! This file was ported from Lean 3 source module analysis.complex.arg
-! leanprover-community/mathlib commit 45a46f4f03f8ae41491bf3605e8e0e363ba192fd
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
 import Mathlib.Analysis.SpecialFunctions.Complex.Arg
+
+#align_import analysis.complex.arg from "leanprover-community/mathlib"@"45a46f4f03f8ae41491bf3605e8e0e363ba192fd"
 
 /-!
 # Rays in the complex numbers

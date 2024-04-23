@@ -2,16 +2,13 @@
 Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
-
-! This file was ported from Lean 3 source module ring_theory.int.basic
-! leanprover-community/mathlib commit e655e4ea5c6d02854696f97494997ba4c31be802
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.EuclideanDomain.Basic
 import Mathlib.Data.Nat.Factors
 import Mathlib.RingTheory.Coprime.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
+
+#align_import ring_theory.int.basic from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
 
 /-!
 # Divisibility over ℕ and ℤ
@@ -38,10 +35,8 @@ namespace Nat
 
 instance : WfDvdMonoid ℕ :=
   ⟨by
-    refine'
-      RelHomClass.wellFounded
-        (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, _⟩ : DvdNotUnit →r (· < ·))
-        (WithTop.wellFounded_lt Nat.lt_wfRel.wf)
+    refine RelHomClass.wellFounded
+      (⟨fun x : ℕ => if x = 0 then (⊤ : ℕ∞) else x, ?_⟩ : DvdNotUnit →r (· < ·)) wellFounded_lt
     intro a b h
     cases' a with a
     · exfalso
@@ -140,14 +135,14 @@ section GCDMonoid
 instance : GCDMonoid ℤ where
   gcd a b := Int.gcd a b
   lcm a b := Int.lcm a b
-  gcd_dvd_left a b := Int.gcd_dvd_left _ _
-  gcd_dvd_right a b := Int.gcd_dvd_right _ _
+  gcd_dvd_left a b := Int.gcd_dvd_left
+  gcd_dvd_right a b := Int.gcd_dvd_right
   dvd_gcd := dvd_gcd
   gcd_mul_lcm a b := by
-    rw [← Int.ofNat_mul, gcd_mul_lcm, coe_natAbs, abs_eq_normalize]
+    rw [← Int.ofNat_mul, gcd_mul_lcm, natCast_natAbs, abs_eq_normalize]
     exact normalize_associated (a * b)
-  lcm_zero_left a := coe_nat_eq_zero.2 <| Nat.lcm_zero_left _
-  lcm_zero_right a := coe_nat_eq_zero.2 <| Nat.lcm_zero_right _
+  lcm_zero_left a := natCast_eq_zero.2 <| Nat.lcm_zero_left _
+  lcm_zero_right a := natCast_eq_zero.2 <| Nat.lcm_zero_right _
 
 instance : NormalizedGCDMonoid ℤ :=
   { Int.normalizationMonoid,
@@ -198,11 +193,11 @@ theorem gcd_eq_one_iff_coprime {a b : ℤ} : Int.gcd a b = 1 ↔ IsCoprime a b :
     by_contra hg
     obtain ⟨p, ⟨hp, ha, hb⟩⟩ := Nat.Prime.not_coprime_iff_dvd.mp hg
     apply Nat.Prime.not_dvd_one hp
-    rw [← coe_nat_dvd, Int.ofNat_one, ← h]
-    exact dvd_add ((coe_nat_dvd_left.mpr ha).mul_left _) ((coe_nat_dvd_left.mpr hb).mul_left _)
+    rw [← natCast_dvd_natCast, Int.ofNat_one, ← h]
+    exact dvd_add ((natCast_dvd.mpr ha).mul_left _) ((natCast_dvd.mpr hb).mul_left _)
 #align int.gcd_eq_one_iff_coprime Int.gcd_eq_one_iff_coprime
 
-theorem coprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.coprime a.natAbs b.natAbs := by
+theorem coprime_iff_nat_coprime {a b : ℤ} : IsCoprime a b ↔ Nat.Coprime a.natAbs b.natAbs := by
   rw [← gcd_eq_one_iff_coprime, Nat.coprime_iff_gcd_eq_one, gcd_eq_natAbs]
 #align int.coprime_iff_nat_coprime Int.coprime_iff_nat_coprime
 
@@ -246,47 +241,45 @@ theorem sq_of_coprime {a b c : ℤ} (h : IsCoprime a b) (heq : a * b = c ^ 2) :
 
 theorem natAbs_euclideanDomain_gcd (a b : ℤ) :
     Int.natAbs (EuclideanDomain.gcd a b) = Int.gcd a b := by
-  apply Nat.dvd_antisymm <;> rw [← Int.coe_nat_dvd]
+  apply Nat.dvd_antisymm <;> rw [← Int.natCast_dvd_natCast]
   · rw [Int.natAbs_dvd]
     exact Int.dvd_gcd (EuclideanDomain.gcd_dvd_left _ _) (EuclideanDomain.gcd_dvd_right _ _)
   · rw [Int.dvd_natAbs]
-    exact EuclideanDomain.dvd_gcd (Int.gcd_dvd_left _ _) (Int.gcd_dvd_right _ _)
+    exact EuclideanDomain.dvd_gcd Int.gcd_dvd_left Int.gcd_dvd_right
 #align int.nat_abs_euclidean_domain_gcd Int.natAbs_euclideanDomain_gcd
 
 end Int
 
 /-- Maps an associate class of integers consisting of `-n, n` to `n : ℕ` -/
 def associatesIntEquivNat : Associates ℤ ≃ ℕ := by
-  refine' ⟨fun z => z.out.natAbs, fun n => Associates.mk n, _, _⟩
-  · refine' fun a =>
-      Quotient.inductionOn a fun a =>
-        Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, _⟩
+  refine ⟨(·.out.natAbs), (Associates.mk ·), ?_, fun n ↦ ?_⟩
+  · refine Associates.forall_associated.2 fun a ↦ ?_
+    refine Associates.mk_eq_mk_iff_associated.2 <| Associated.symm <| ⟨normUnit a, ?_⟩
     simp [Int.abs_eq_normalize]
-  · intro n
-    dsimp
-    rw [← normalize_apply, ← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
+  · dsimp only [Associates.out_mk]
+    rw [← Int.abs_eq_normalize, Int.natAbs_abs, Int.natAbs_ofNat]
 #align associates_int_equiv_nat associatesIntEquivNat
 
 theorem Int.Prime.dvd_mul {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     p ∣ m.natAbs ∨ p ∣ n.natAbs := by
-  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ←Int.coe_nat_dvd_left]
+  rwa [← hp.dvd_mul, ← Int.natAbs_mul, ← Int.natCast_dvd]
 #align int.prime.dvd_mul Int.Prime.dvd_mul
 
 theorem Int.Prime.dvd_mul' {m n : ℤ} {p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ m * n) :
     (p : ℤ) ∣ m ∨ (p : ℤ) ∣ n := by
-  rw [Int.coe_nat_dvd_left, Int.coe_nat_dvd_left]
+  rw [Int.natCast_dvd, Int.natCast_dvd]
   exact Int.Prime.dvd_mul hp h
 #align int.prime.dvd_mul' Int.Prime.dvd_mul'
 
 theorem Int.Prime.dvd_pow {n : ℤ} {k p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ n ^ k) :
     p ∣ n.natAbs := by
-  rw [Int.coe_nat_dvd_left, Int.natAbs_pow] at h
+  rw [Int.natCast_dvd, Int.natAbs_pow] at h
   exact hp.dvd_of_dvd_pow h
 #align int.prime.dvd_pow Int.Prime.dvd_pow
 
 theorem Int.Prime.dvd_pow' {n : ℤ} {k p : ℕ} (hp : Nat.Prime p) (h : (p : ℤ) ∣ n ^ k) :
     (p : ℤ) ∣ n := by
-  rw [Int.coe_nat_dvd_left]
+  rw [Int.natCast_dvd]
   exact Int.Prime.dvd_pow hp h
 #align int.prime.dvd_pow' Int.Prime.dvd_pow'
 
@@ -297,23 +290,23 @@ theorem prime_two_or_dvd_of_dvd_two_mul_pow_self_two {m : ℤ} {p : ℕ} (hp : N
     exact le_antisymm (Nat.le_of_dvd zero_lt_two hp2) (Nat.Prime.two_le hp)
   · apply Or.intro_right
     rw [sq, Int.natAbs_mul] at hpp
-    exact (or_self_iff _).mp ((Nat.Prime.dvd_mul hp).mp hpp)
+    exact or_self_iff.mp ((Nat.Prime.dvd_mul hp).mp hpp)
 #align prime_two_or_dvd_of_dvd_two_mul_pow_self_two prime_two_or_dvd_of_dvd_two_mul_pow_self_two
 
 theorem Int.exists_prime_and_dvd {n : ℤ} (hn : n.natAbs ≠ 1) : ∃ p, Prime p ∧ p ∣ n := by
   obtain ⟨p, pp, pd⟩ := Nat.exists_prime_and_dvd hn
-  exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.coe_nat_dvd_left.mpr pd⟩
+  exact ⟨p, Nat.prime_iff_prime_int.mp pp, Int.natCast_dvd.mpr pd⟩
 #align int.exists_prime_and_dvd Int.exists_prime_and_dvd
 
 open UniqueFactorizationMonoid
 
 theorem Nat.factors_eq {n : ℕ} : normalizedFactors n = n.factors := by
-  cases n
-  case zero => simp
-  case succ n =>
+  cases n with
+  | zero => simp
+  | succ n =>
     rw [← Multiset.rel_eq, ← associated_eq_eq]
     apply UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor _
-    · rw [Multiset.coe_prod, Nat.prod_factors n.succ_ne_zero]
+    · rw [Multiset.prod_coe, Nat.prod_factors n.succ_ne_zero]
       apply normalizedFactors_prod (Nat.succ_ne_zero _)
     · intro x hx
       rw [Nat.irreducible_iff_prime, ← Nat.prime_iff]
@@ -326,30 +319,10 @@ theorem Nat.factors_multiset_prod_of_irreducible {s : Multiset ℕ}
   apply
     UniqueFactorizationMonoid.factors_unique irreducible_of_normalized_factor h
       (normalizedFactors_prod _)
-  rw [Ne.def, Multiset.prod_eq_zero_iff]
+  rw [Ne, Multiset.prod_eq_zero_iff]
   intro con
   exact not_irreducible_zero (h 0 con)
 #align nat.factors_multiset_prod_of_irreducible Nat.factors_multiset_prod_of_irreducible
-
-namespace multiplicity
-
-theorem finite_int_iff_natAbs_finite {a b : ℤ} : Finite a b ↔ Finite a.natAbs b.natAbs := by
-  simp only [finite_def, ← Int.natAbs_dvd_natAbs, Int.natAbs_pow]
-#align multiplicity.finite_int_iff_nat_abs_finite multiplicity.finite_int_iff_natAbs_finite
-
-theorem finite_int_iff {a b : ℤ} : Finite a b ↔ a.natAbs ≠ 1 ∧ b ≠ 0 := by
-  rw [finite_int_iff_natAbs_finite, finite_nat_iff, pos_iff_ne_zero, Int.natAbs_ne_zero]
-#align multiplicity.finite_int_iff multiplicity.finite_int_iff
-
-instance decidableNat : DecidableRel fun a b : ℕ => (multiplicity a b).Dom := fun _ _ =>
-  decidable_of_iff _ finite_nat_iff.symm
-#align multiplicity.decidable_nat multiplicity.decidableNat
-
-instance decidableInt : DecidableRel fun a b : ℤ => (multiplicity a b).Dom := fun _ _ =>
-  decidable_of_iff _ finite_int_iff.symm
-#align multiplicity.decidable_int multiplicity.decidableInt
-
-end multiplicity
 
 theorem induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
     (h : ∀ p a : ℕ, p.Prime → P a → P (p * a)) (n : ℕ) : P n := by
@@ -363,7 +336,7 @@ theorem induction_on_primes {P : ℕ → Prop} (h₀ : P 0) (h₁ : P 1)
 #align induction_on_primes induction_on_primes
 
 theorem Int.associated_natAbs (k : ℤ) : Associated k k.natAbs :=
-  associated_of_dvd_dvd (Int.coe_nat_dvd_right.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
+  associated_of_dvd_dvd (Int.dvd_natCast.mpr dvd_rfl) (Int.natAbs_dvd.mpr dvd_rfl)
 #align int.associated_nat_abs Int.associated_natAbs
 
 theorem Int.prime_iff_natAbs_prime {k : ℤ} : Prime k ↔ Nat.Prime k.natAbs :=

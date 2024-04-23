@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Joseph Myers
-
-! This file was ported from Lean 3 source module data.complex.exponential_bounds
-! leanprover-community/mathlib commit 402f8982dddc1864bd703da2d6e2ee304a866973
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Exponential
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
+
+#align_import data.complex.exponential_bounds from "leanprover-community/mathlib"@"402f8982dddc1864bd703da2d6e2ee304a866973"
 
 /-!
 # Bounds on specific values of the exponential
@@ -56,6 +53,7 @@ theorem exp_neg_one_lt_d9 : exp (-1) < 0.3678794412 := by
   all_goals norm_num
 #align real.exp_neg_one_lt_d9 Real.exp_neg_one_lt_d9
 
+set_option tactic.skipAssignedInstances false in
 theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by
     norm_num1 at *

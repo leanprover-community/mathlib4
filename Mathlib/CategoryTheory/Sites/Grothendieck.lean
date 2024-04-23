@@ -2,17 +2,15 @@
 Copyright (c) 2020 Bhavik Mehta, E. W. Ayers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, E. W. Ayers
-
-! This file was ported from Lean 3 source module category_theory.sites.grothendieck
-! leanprover-community/mathlib commit 14b69e9f3c16630440a2cbd46f1ddad0d561dee7
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sieves
 import Mathlib.CategoryTheory.Limits.Shapes.Pullbacks
 import Mathlib.CategoryTheory.Limits.Shapes.Multiequalizer
 import Mathlib.CategoryTheory.Category.Preorder
 import Mathlib.Order.Copy
+import Mathlib.Data.Set.Subsingleton
+
+#align_import category_theory.sites.grothendieck from "leanprover-community/mathlib"@"14b69e9f3c16630440a2cbd46f1ddad0d561dee7"
 
 /-!
 # Grothendieck topologies
@@ -28,8 +26,9 @@ Two explicit examples of Grothendieck topologies are given:
 as well as the complete lattice structure on Grothendieck topologies (which gives two additional
 explicit topologies: the discrete and trivial topologies.)
 
-A pretopology, or a basis for a topology is defined in `Pretopology.lean`. The topology associated
-to a topological space is defined in `Spaces.lean`.
+A pretopology, or a basis for a topology is defined in
+`Mathlib/CategoryTheory/Sites/Pretopology.lean`. The topology associated
+to a topological space is defined in `Mathlib/CategoryTheory/Sites/Spaces.lean`.
 
 ## Tags
 
@@ -53,7 +52,7 @@ between Grothendieck topoi and left exact reflective subcategories of presheaf t
 -/
 
 
-universe w v u
+universe v₁ u₁ v u
 
 namespace CategoryTheory
 
@@ -96,7 +95,6 @@ instance : CoeFun (GrothendieckTopology C) fun _ => ∀ X : C, Set (Sieve X) :=
 
 variable {C}
 variable {X Y : C} {S R : Sieve X}
-
 variable (J : GrothendieckTopology C)
 
 /-- An extensionality lemma in terms of the coercion to a pi-type.
@@ -119,13 +117,13 @@ theorem mem_sieves_iff_coe : S ∈ J.sieves X ↔ S ∈ J X :=
 #align category_theory.grothendieck_topology.mem_sieves_iff_coe CategoryTheory.GrothendieckTopology.mem_sieves_iff_coe
 -/
 
--- Also known as the maximality axiom.
+/-- Also known as the maximality axiom. -/
 @[simp]
 theorem top_mem (X : C) : ⊤ ∈ J X :=
   J.top_mem' X
 #align category_theory.grothendieck_topology.top_mem CategoryTheory.GrothendieckTopology.top_mem
 
--- Also known as the stability axiom.
+/-- Also known as the stability axiom. -/
 @[simp]
 theorem pullback_stable (f : Y ⟶ X) (hS : S ∈ J X) : S.pullback f ∈ J Y :=
   J.pullback_stable' f hS
@@ -256,8 +254,8 @@ theorem trivial_covering : S ∈ trivial C X ↔ S = ⊤ :=
 #align category_theory.grothendieck_topology.trivial_covering CategoryTheory.GrothendieckTopology.trivial_covering
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z6> -/
-instance : LE (GrothendieckTopology C)
-    where le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
+instance instLEGrothendieckTopology : LE (GrothendieckTopology C) where
+  le J₁ J₂ := (J₁ : ∀ X : C, Set (Sieve X)) ≤ (J₂ : ∀ X : C, Set (Sieve X))
 
 theorem le_def {J₁ J₂ : GrothendieckTopology C} : J₁ ≤ J₂ ↔ (J₁ : ∀ X : C, Set (Sieve X)) ≤ J₂ :=
   Iff.rfl
@@ -271,8 +269,8 @@ instance : PartialOrder (GrothendieckTopology C) :=
     le_antisymm := fun J₁ J₂ h₁₂ h₂₁ => GrothendieckTopology.ext (le_antisymm h₁₂ h₂₁) }
 
 /-- See <https://stacks.math.columbia.edu/tag/00Z7> -/
-instance : InfSet (GrothendieckTopology C)
-    where sInf T :=
+instance : InfSet (GrothendieckTopology C) where
+  sInf T :=
     { sieves := sInf (sieves '' T)
       top_mem' := by
         rintro X S ⟨⟨_, J, hJ, rfl⟩, rfl⟩
@@ -309,7 +307,7 @@ instance : CompleteLattice (GrothendieckTopology C) :=
       · intro X S hS
         rw [trivial_covering] at hS
         apply covering_of_eq_top _ hS
-      · refine' @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
+      · exact @CompleteLattice.bot_le _ (completeLatticeOfInf _ isGLB_sInf) (trivial C))
     _ rfl _ rfl _ rfl sInf rfl
 
 instance : Inhabited (GrothendieckTopology C) :=
@@ -403,7 +401,8 @@ def atomic (hro : RightOreCondition C) : GrothendieckTopology C
 
 /-- `J.Cover X` denotes the poset of covers of `X` with respect to the
 Grothendieck topology `J`. -/
-def Cover (X : C) :=
+-- Porting note: Lean 3 inferred `Type max u v`, Lean 4 by default gives `Type (max 0 u v)`
+def Cover (X : C) : Type max u v :=
   { S : Sieve X // S ∈ J X } -- deriving Preorder
 #align category_theory.grothendieck_topology.cover CategoryTheory.GrothendieckTopology.Cover
 
@@ -425,9 +424,9 @@ instance : Coe (J.Cover X) (Sieve X) :=
 -/
 
 /-
-Porting note: Added this def as a replacement for the "dangerous" `Coe` above.
+Porting note (#11445): Added this def as a replacement for the "dangerous" `Coe` above.
 -/
-/-- The sieve associated to a term of `J.Cover X`.-/
+/-- The sieve associated to a term of `J.Cover X`. -/
 def sieve (S : J.Cover X) : Sieve X := S.1
 
 /-
@@ -479,7 +478,8 @@ instance : Inhabited (J.Cover X) :=
   ⟨⊤⟩
 
 /-- An auxiliary structure, used to define `S.index`. -/
---@[nolint has_nonempty_instance, ext]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 @[ext]
 structure Arrow (S : J.Cover X) where
   /-- The source of the arrow. -/
@@ -491,7 +491,8 @@ structure Arrow (S : J.Cover X) where
 #align category_theory.grothendieck_topology.cover.arrow CategoryTheory.GrothendieckTopology.Cover.Arrow
 
 /-- An auxiliary structure, used to define `S.index`. -/
---@[nolint has_nonempty_instance, ext]
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance, ext]
 @[ext]
 structure Relation (S : J.Cover X) where
   /-- The source of the first arrow. -/
@@ -608,7 +609,7 @@ def bind {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : J.Cover X 
     J.bind_covering S.condition fun _ _ _ => (T _).condition⟩
 #align category_theory.grothendieck_topology.cover.bind CategoryTheory.GrothendieckTopology.Cover.bind
 
-/-- The canonical moprhism from `S.bind T` to `T`. -/
+/-- The canonical morphism from `S.bind T` to `T`. -/
 def bindToBase {X : C} (S : J.Cover X) (T : ∀ I : S.Arrow, J.Cover I.Y) : S.bind T ⟶ S :=
   homOfLE <| by
     rintro Y f ⟨Z, e1, e2, h1, _, h3⟩
@@ -670,7 +671,7 @@ theorem Arrow.middle_spec {X : C} {S : J.Cover X} {T : ∀ I : S.Arrow, J.Cover 
 -- This is used extensively in `Plus.lean`, etc.
 -- We place this definition here as it will be used in `Sheaf.lean` as well.
 /-- To every `S : J.Cover X` and presheaf `P`, associate a `MulticospanIndex`. -/
-def index {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
+def index {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.MulticospanIndex D where
   L := S.Arrow
   R := S.Relation
@@ -687,7 +688,7 @@ Saying that this multifork is a limit is essentially equivalent to the sheaf con
 given object for the given covering sieve. See `Sheaf.lean` for an equivalent sheaf condition
 using this.
 -/
-abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
+abbrev multifork {D : Type u₁} [Category.{v₁} D] (S : J.Cover X) (P : Cᵒᵖ ⥤ D) :
     Limits.Multifork (S.index P) :=
   Limits.Multifork.ofι _ (P.obj (Opposite.op X)) (fun I => P.map I.f.op)
     (by
@@ -699,7 +700,7 @@ abbrev multifork {D : Type w} [Category.{max v u} D] (S : J.Cover X) (P : Cᵒ�
 /-- The canonical map from `P.obj (op X)` to the multiequalizer associated to a covering sieve,
 assuming such a multiequalizer exists. This will be used in `Sheaf.lean` to provide an equivalent
 sheaf condition in terms of multiequalizers. -/
-noncomputable abbrev toMultiequalizer {D : Type w} [Category.{max v u} D] (S : J.Cover X)
+noncomputable abbrev toMultiequalizer {D : Type u₁} [Category.{v₁} D] (S : J.Cover X)
     (P : Cᵒᵖ ⥤ D) [Limits.HasMultiequalizer (S.index P)] :
     P.obj (Opposite.op X) ⟶ Limits.multiequalizer (S.index P) :=
   Limits.Multiequalizer.lift _ _ (fun I => P.map I.f.op)

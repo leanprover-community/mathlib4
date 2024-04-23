@@ -2,14 +2,11 @@
 Copyright (c) 2022 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module algebra.category.Module.images
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.Category.ModuleCat.Abelian
 import Mathlib.CategoryTheory.Limits.Shapes.Images
+
+#align_import algebra.category.Module.images from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The category of R-modules has images.
@@ -29,7 +26,6 @@ namespace ModuleCat
 set_option linter.uppercaseLean3 false -- `Module`
 
 variable {R : Type u} [Ring R]
-
 variable {G H : ModuleCat.{v} R} (f : G ⟶ H)
 
 attribute [local ext] Subtype.ext_val

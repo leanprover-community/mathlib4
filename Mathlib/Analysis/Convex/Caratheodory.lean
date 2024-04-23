@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin, Scott Morrison
-
-! This file was ported from Lean 3 source module analysis.convex.caratheodory
-! leanprover-community/mathlib commit e6fab1dc073396d45da082c644642c4f8bff2264
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.Combination
 import Mathlib.LinearAlgebra.AffineSpace.Independent
 import Mathlib.Tactic.FieldSimp
+
+#align_import analysis.convex.caratheodory from "leanprover-community/mathlib"@"e6fab1dc073396d45da082c644642c4f8bff2264"
 
 /-!
 # Carathéodory's convexity theorem
@@ -48,7 +45,7 @@ open BigOperators
 
 universe u
 
-variable {𝕜 : Type _} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
+variable {𝕜 : Type*} {E : Type u} [LinearOrderedField 𝕜] [AddCommGroup E] [Module 𝕜 E]
 
 namespace Caratheodory
 
@@ -72,15 +69,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
     exact mem.2
   have hi₀ : i₀ ∈ t := filter_subset _ _ mem
   let k : E → 𝕜 := fun z => f z - f i₀ / g i₀ * g z
-  have hk : k i₀ = 0 := by field_simp [ne_of_gt hg]
-  have ksum : (∑ e in t.erase i₀, k e) = 1 := by
+  have hk : k i₀ = 0 := by field_simp [k, ne_of_gt hg]
+  have ksum : ∑ e in t.erase i₀, k e = 1 := by
     calc
-      (∑ e in t.erase i₀, k e) = ∑ e in t, k e := by
+      ∑ e in t.erase i₀, k e = ∑ e in t, k e := by
         conv_rhs => rw [← insert_erase hi₀, sum_insert (not_mem_erase i₀ t), hk, zero_add]
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) := rfl
-      _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, MulZeroClass.mul_zero, sub_zero]
+      _ = 1 := by rw [sum_sub_distrib, fsum, ← mul_sum, gsum, mul_zero, sub_zero]
   refine' ⟨⟨i₀, hi₀⟩, k, _, by convert ksum, _⟩
-  · simp only [and_imp, sub_nonneg, mem_erase, Ne.def, Subtype.coe_mk]
+  · simp only [k, and_imp, sub_nonneg, mem_erase, Ne, Subtype.coe_mk]
     intro e _ het
     by_cases hes : e ∈ s
     · have hge : 0 < g e := by
@@ -92,15 +89,15 @@ theorem mem_convexHull_erase [DecidableEq E] {t : Finset E} (h : ¬AffineIndepen
         _ ≤ 0 := by
           apply mul_nonpos_of_nonneg_of_nonpos
           · apply div_nonneg (fpos i₀ (mem_of_subset (filter_subset _ t) mem)) (le_of_lt hg)
-          · simpa only [mem_filter, het, true_and_iff, not_lt] using hes
+          · simpa only [s, mem_filter, het, true_and_iff, not_lt] using hes
         _ ≤ f e := fpos e het
   · rw [Subtype.coe_mk, centerMass_eq_of_sum_1 _ id ksum]
     calc
-      (∑ e in t.erase i₀, k e • e) = ∑ e in t, k e • e := sum_erase _ (by rw [hk, zero_smul])
+      ∑ e in t.erase i₀, k e • e = ∑ e in t, k e • e := sum_erase _ (by rw [hk, zero_smul])
       _ = ∑ e in t, (f e - f i₀ / g i₀ * g e) • e := rfl
       _ = t.centerMass f id := by
         simp only [sub_smul, mul_smul, sum_sub_distrib, ← smul_sum, gcombo, smul_zero, sub_zero,
-          centerMass, fsum, inv_one, one_smul, id.def]
+          centerMass, fsum, inv_one, one_smul, id]
 #align caratheodory.mem_convex_hull_erase Caratheodory.mem_convexHull_erase
 
 variable {s : Set E} {x : E} (hx : x ∈ convexHull 𝕜 s)
@@ -169,8 +166,8 @@ theorem convexHull_eq_union : convexHull 𝕜 s =
 /-- A more explicit version of `convexHull_eq_union`. -/
 theorem eq_pos_convex_span_of_mem_convexHull {x : E} (hx : x ∈ convexHull 𝕜 s) :
     ∃ (ι : Sort (u + 1)) (_ : Fintype ι),
-      ∃ (z : ι → E) (w : ι → 𝕜) (_ : Set.range z ⊆ s) (_ : AffineIndependent 𝕜 z)
-        (_ : ∀ i, 0 < w i), (∑ i, w i) = 1 ∧ (∑ i, w i • z i) = x := by
+      ∃ (z : ι → E) (w : ι → 𝕜), Set.range z ⊆ s ∧ AffineIndependent 𝕜 z ∧ (∀ i, 0 < w i) ∧
+        ∑ i, w i = 1 ∧ ∑ i, w i • z i = x := by
   rw [convexHull_eq_union] at hx
   simp only [exists_prop, Set.mem_iUnion] at hx
   obtain ⟨t, ht₁, ht₂, ht₃⟩ := hx

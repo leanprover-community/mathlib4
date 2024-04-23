@@ -2,13 +2,10 @@
 Copyright (c) 2021 Adam Topaz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
-
-! This file was ported from Lean 3 source module category_theory.sites.plus
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Sites.Sheaf
+
+#align_import category_theory.sites.plus from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 
@@ -33,13 +30,11 @@ open Opposite
 universe w v u
 
 variable {C : Type u} [Category.{v} C] (J : GrothendieckTopology C)
-
 variable {D : Type w} [Category.{max v u} D]
 
 noncomputable section
 
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
-
 variable (P : Cᵒᵖ ⥤ D)
 
 /-- The diagram whose colimit defines the values of `plus`. -/
@@ -57,7 +52,7 @@ def diagramPullback {X Y : C} (f : X ⟶ Y) : J.diagram P Y ⟶ (J.pullback f).o
   app S :=
     Multiequalizer.lift _ _ (fun I => Multiequalizer.ι (S.unop.index P) I.base) fun I =>
       Multiequalizer.condition (S.unop.index P) I.base
-  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp ; rfl)
+  naturality S T f := Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp; rfl)
 #align category_theory.grothendieck_topology.diagram_pullback CategoryTheory.GrothendieckTopology.diagramPullback
 
 /-- A natural transformation `P ⟶ Q` induces a natural transformation
@@ -110,7 +105,6 @@ def diagramFunctor (X : C) : (Cᵒᵖ ⥤ D) ⥤ (J.Cover X)ᵒᵖ ⥤ D where
 #align category_theory.grothendieck_topology.diagram_functor CategoryTheory.GrothendieckTopology.diagramFunctor
 
 variable {D}
-
 variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 
 /-- The plus construction, associating a presheaf to any presheaf.
@@ -164,7 +158,7 @@ def plusMap {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) : J.plusObj P ⟶ J.plusObj Q w
       ι_colimMap_assoc, Category.assoc]
     simp_rw [← Category.assoc]
     congr 1
-    exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp)
+    exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 #align category_theory.grothendieck_topology.plus_map CategoryTheory.GrothendieckTopology.plusMap
 
 @[simp]
@@ -231,7 +225,7 @@ theorem toPlus_naturality {P Q : Cᵒᵖ ⥤ D} (η : P ⟶ Q) :
   simp only [ι_colimMap, Category.assoc]
   simp_rw [← Category.assoc]
   congr 1
-  exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp ; simp)
+  exact Multiequalizer.hom_ext _ _ _ (fun I => by dsimp; simp)
 #align category_theory.grothendieck_topology.to_plus_naturality CategoryTheory.GrothendieckTopology.toPlus_naturality
 
 variable (D)
@@ -265,12 +259,12 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
   convert (Multiequalizer.condition (S.unop.index P)
       ⟨_, _, _, II.f, 𝟙 _, I.f, II.f ≫ I.f, I.hf,
         Sieve.downward_closed _ I.hf _, by simp⟩) using 1
-  . dsimp [diagram]
+  · dsimp [diagram]
     cases I
     simp only [Category.assoc, limit.lift_π, Multifork.ofι_pt, Multifork.ofι_π_app,
       Cover.Arrow.map_Y, Cover.Arrow.map_f]
     rfl
-  . erw [Multiequalizer.lift_ι]
+  · erw [Multiequalizer.lift_ι]
     dsimp [Cover.index]
     simp only [Functor.map_id, Category.comp_id]
     rfl
@@ -278,17 +272,14 @@ theorem plusMap_toPlus : J.plusMap (J.toPlus P) = J.toPlus (J.plusObj P) := by
 
 theorem isIso_toPlus_of_isSheaf (hP : Presheaf.IsSheaf J P) : IsIso (J.toPlus P) := by
   rw [Presheaf.isSheaf_iff_multiequalizer] at hP
-  suffices : ∀ X, IsIso ((J.toPlus P).app X)
-  · apply NatIso.isIso_of_isIso_app
+  suffices ∀ X, IsIso ((J.toPlus P).app X) from NatIso.isIso_of_isIso_app _
   intro X
-  dsimp
-  suffices : IsIso (colimit.ι (J.diagram P X.unop) (op ⊤))
-  · apply IsIso.comp_isIso
-  suffices : ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f)
-  · apply isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop)
+  suffices IsIso (colimit.ι (J.diagram P X.unop) (op ⊤)) from IsIso.comp_isIso
+  suffices ∀ (S T : (J.Cover X.unop)ᵒᵖ) (f : S ⟶ T), IsIso ((J.diagram P X.unop).map f) from
+    isIso_ι_of_isInitial (initialOpOfTerminal isTerminalTop) _
   intro S T e
   have : S.unop.toMultiequalizer P ≫ (J.diagram P X.unop).map e = T.unop.toMultiequalizer P :=
-    Multiequalizer.hom_ext _ _ _ (fun II => by dsimp ; simp)
+    Multiequalizer.hom_ext _ _ _ (fun II => by dsimp; simp)
   have :
     (J.diagram P X.unop).map e = inv (S.unop.toMultiequalizer P) ≫ T.unop.toMultiequalizer P := by
     simp [← this]

@@ -2,13 +2,10 @@
 Copyright (c) 2023 María Inés de Frutos-Fernández. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: María Inés de Frutos-Fernández
-
-! This file was ported from Lean 3 source module ring_theory.dedekind_domain.finite_adele_ring
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.AdicValuation
+
+#align_import ring_theory.dedekind_domain.finite_adele_ring from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"
 
 /-!
 # The finite adèle ring of a Dedekind domain
@@ -40,7 +37,7 @@ open Function Set IsDedekindDomain IsDedekindDomain.HeightOneSpectrum
 
 namespace DedekindDomain
 
-variable (R K : Type _) [CommRing R] [IsDomain R] [IsDedekindDomain R] [Field K] [Algebra R K]
+variable (R K : Type*) [CommRing R] [IsDedekindDomain R] [Field K] [Algebra R K]
   [IsFractionRing R K] (v : HeightOneSpectrum R)
 
 /-- The product of all `adicCompletionIntegers`, where `v` runs over the maximal ideals of `R`. -/
@@ -213,11 +210,10 @@ theorem zero : (0 : K_hat R K).IsFiniteAdele := by
   have h_empty :
     {v : HeightOneSpectrum R | ¬(0 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
-    rw [mem_setOf] at hv ; apply hv; rw [mem_adicCompletionIntegers]
+    rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     have h_zero : (Valued.v (0 : v.adicCompletion K) : WithZero (Multiplicative ℤ)) = 0 :=
       Valued.v.map_zero'
     rw [h_zero]; exact zero_le_one' _
-  simp_rw [Pi.zero_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.zero DedekindDomain.ProdAdicCompletions.IsFiniteAdele.zero
@@ -251,9 +247,7 @@ theorem mul {x y : K_hat R K} (hx : x.IsFiniteAdele) (hy : y.IsFiniteAdele) :
     have h_mul : Valued.v (x v * y v) = Valued.v (x v) * Valued.v (y v) :=
       Valued.v.map_mul' (x v) (y v)
     rw [mem_adicCompletionIntegers, Pi.mul_apply, h_mul]
-    exact
-      @mul_le_one' (WithZero (Multiplicative ℤ)) _ _ (OrderedCommMonoid.to_covariantClass_left _) _
-        _ hv.left hv.right
+    exact mul_le_one' hv.left hv.right
   exact (hx.union hy).subset h_subset
 #align dedekind_domain.prod_adic_completions.is_finite_adele.mul DedekindDomain.ProdAdicCompletions.IsFiniteAdele.mul
 
@@ -263,9 +257,8 @@ theorem one : (1 : K_hat R K).IsFiniteAdele := by
   have h_empty :
     {v : HeightOneSpectrum R | ¬(1 : v.adicCompletion K) ∈ v.adicCompletionIntegers K} = ∅ := by
     ext v; rw [mem_empty_iff_false, iff_false_iff]; intro hv
-    rw [mem_setOf] at hv ; apply hv; rw [mem_adicCompletionIntegers]
+    rw [mem_setOf] at hv; apply hv; rw [mem_adicCompletionIntegers]
     exact le_of_eq Valued.v.map_one'
-  simp_rw [Pi.one_apply, h_empty]
   -- Porting note: was `exact`, but `OfNat` got in the way.
   convert finite_empty
 #align dedekind_domain.prod_adic_completions.is_finite_adele.one DedekindDomain.ProdAdicCompletions.IsFiniteAdele.one

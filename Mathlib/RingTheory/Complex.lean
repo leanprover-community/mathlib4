@@ -2,15 +2,12 @@
 Copyright (c) 2023 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module ring_theory.complex
-! leanprover-community/mathlib commit 9015c511549dc77a0f8d6eba021d8ac4bba20c82
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Complex.Module
 import Mathlib.RingTheory.Norm
 import Mathlib.RingTheory.Trace
+
+#align_import ring_theory.complex from "leanprover-community/mathlib"@"9015c511549dc77a0f8d6eba021d8ac4bba20c82"
 
 /-! # Lemmas about `Algebra.trace` and `Algebra.norm` on `ℂ` -/
 

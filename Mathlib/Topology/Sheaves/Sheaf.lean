@@ -2,15 +2,12 @@
 Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
-
-! This file was ported from Lean 3 source module topology.sheaves.sheaf
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Sheaves.Presheaf
 import Mathlib.CategoryTheory.Sites.Sheaf
 import Mathlib.CategoryTheory.Sites.Spaces
+
+#align_import topology.sheaves.sheaf from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # Sheaves
@@ -26,7 +23,7 @@ See the docstring of `TopCat.Presheaf.IsSheaf` for an explanation on the design 
 of equivalent conditions.
 
 We provide the instance `CategoryTheory.Category (TopCat.Sheaf C X)` as the full subcategory of
-presheaves, and the fully faithful functor `sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
+presheaves, and the fully faithful functor `Sheaf.forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X`.
 
 -/
 
@@ -40,7 +37,6 @@ open CategoryTheory CategoryTheory.Limits TopologicalSpace Opposite TopologicalS
 namespace TopCat
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X : TopCat.{w}} (F : Presheaf C X) {ι : Type v} (U : ι → Opens X)
 
 namespace Presheaf
@@ -120,7 +116,7 @@ nonrec def Sheaf : Type max u v w :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf TopCat.Sheaf
 
--- Porting Note : `deriving Cat` failed
+-- Porting note: `deriving Cat` failed
 instance SheafCat : Category (Sheaf C X) :=
   show Category (CategoryTheory.Sheaf (Opens.grothendieckTopology X) C) from inferInstance
 
@@ -149,12 +145,12 @@ def forget : TopCat.Sheaf C X ⥤ TopCat.Presheaf C X :=
 set_option linter.uppercaseLean3 false in
 #align Top.sheaf.forget TopCat.Sheaf.forget
 
--- Porting note : `deriving Full` failed
-instance forgetFull : Full (forget C X) where
+-- Porting note: `deriving Full` failed
+instance forgetFull : (forget C X).Full where
   preimage := Sheaf.Hom.mk
 
--- Porting note : `deriving Faithful` failed
-instance forgetFaithful : Faithful (forget C X) where
+-- Porting note: `deriving Faithful` failed
+instance forgetFaithful : (forget C X).Faithful where
   map_injective := Sheaf.Hom.ext _ _
 
 -- Note: These can be proved by simp.

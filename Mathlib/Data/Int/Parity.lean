@@ -2,14 +2,13 @@
 Copyright (c) 2019 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Benjamin Davidson
-
-! This file was ported from Lean 3 source module data.int.parity
-! leanprover-community/mathlib commit e3d9ab8faa9dea8f78155c6c27d62a621f4c152d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Nat.Parity
+import Mathlib.Algebra.Group.Int
+import Mathlib.Data.Int.Sqrt
 import Mathlib.Tactic.Abel
+
+#align_import data.int.parity from "leanprover-community/mathlib"@"e3d9ab8faa9dea8f78155c6c27d62a621f4c152d"
 
 /-!
 # Parity of integers
@@ -30,8 +29,10 @@ theorem emod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
 #align int.mod_two_ne_one Int.emod_two_ne_one
 
--- Porting note: This comment from mathlib3 refers to a future file, revisit it once ported:
--- euclidean_domain.mod_eq_zero uses (2 ∣ n) as normal form
+@[simp]
+theorem one_emod_two : (1 : Int) % 2 = 1 := rfl
+
+-- `EuclideanDomain.mod_eq_zero` uses (2 ∣ n) as normal form
 @[local simp]
 theorem emod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
   cases' emod_two_eq_zero_or_one n with h h <;> simp [h]
@@ -95,6 +96,11 @@ instance : DecidablePred (Even : ℤ → Prop) := fun _ => decidable_of_iff _ ev
 
 instance : DecidablePred (Odd : ℤ → Prop) := fun _ => decidable_of_iff _ odd_iff_not_even.symm
 
+/-- `IsSquare` can be decided on `ℤ` by checking against the square root. -/
+instance : DecidablePred (IsSquare : ℤ → Prop) :=
+  fun m ↦ decidable_of_iff' (sqrt m * sqrt m = m) <| by
+    simp_rw [← exists_mul_self m, IsSquare, eq_comm]
+
 @[simp]
 theorem not_even_one : ¬Even (1 : ℤ) := by
   rw [even_iff]
@@ -105,7 +111,7 @@ theorem not_even_one : ¬Even (1 : ℤ) := by
 theorem even_add : Even (m + n) ↔ (Even m ↔ Even n) := by
   cases' emod_two_eq_zero_or_one m with h₁ h₁ <;>
   cases' emod_two_eq_zero_or_one n with h₂ h₂ <;>
-  simp [even_iff, h₁, h₂, Int.add_emod]
+  simp [even_iff, h₁, h₂, Int.add_emod, one_add_one_eq_two, emod_self]
 #align int.even_add Int.even_add
 
 theorem even_add' : Even (m + n) ↔ (Odd m ↔ Odd n) := by
@@ -135,6 +141,10 @@ theorem even_sub' : Even (m - n) ↔ (Odd m ↔ Odd n) := by
 theorem even_add_one : Even (n + 1) ↔ ¬Even n := by
   simp [even_add]
 #align int.even_add_one Int.even_add_one
+
+@[parity_simps]
+theorem even_sub_one : Even (n - 1) ↔ ¬Even n := by
+  simp [even_sub]
 
 @[parity_simps]
 theorem even_mul : Even (m * n) ↔ Even m ∨ Even n := by
@@ -197,12 +207,15 @@ theorem even_mul_succ_self (n : ℤ) : Even (n * (n + 1)) := by
   simpa [even_mul, parity_simps] using n.even_or_odd
 #align int.even_mul_succ_self Int.even_mul_succ_self
 
+theorem even_mul_pred_self (n : ℤ) : Even (n * (n - 1)) := by
+  simpa [even_mul, parity_simps] using n.even_or_odd
+
 @[simp, norm_cast]
 theorem even_coe_nat (n : ℕ) : Even (n : ℤ) ↔ Even n := by
   rw_mod_cast [even_iff, Nat.even_iff]
 #align int.even_coe_nat Int.even_coe_nat
 
--- Porting note: was simp. simp can prove this.
+-- Porting note (#10618): was simp. simp can prove this.
 @[norm_cast]
 theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, even_coe_nat]
@@ -210,19 +223,19 @@ theorem odd_coe_nat (n : ℕ) : Odd (n : ℤ) ↔ Odd n := by
 
 @[simp]
 theorem natAbs_even : Even n.natAbs ↔ Even n := by
-  simp [even_iff_two_dvd, dvd_natAbs, coe_nat_dvd_left.symm]
+  simp [even_iff_two_dvd, dvd_natAbs, natCast_dvd.symm]
 #align int.nat_abs_even Int.natAbs_even
 
--- Porting note: was simp. simp can prove this.
+-- Porting note (#10618): was simp. simp can prove this.
 --@[simp]
 theorem natAbs_odd : Odd n.natAbs ↔ Odd n := by
   rw [odd_iff_not_even, Nat.odd_iff_not_even, natAbs_even]
 #align int.nat_abs_odd Int.natAbs_odd
 
-alias natAbs_even ↔ _ _root_.Even.natAbs
+alias ⟨_, _root_.Even.natAbs⟩ := natAbs_even
 #align even.nat_abs Even.natAbs
 
-alias natAbs_odd ↔ _ _root_.Odd.natAbs
+alias ⟨_, _root_.Odd.natAbs⟩ := natAbs_odd
 #align odd.nat_abs Odd.natAbs
 
 -- Porting note: "protected"-attribute not implemented yet.
@@ -238,7 +251,7 @@ theorem four_dvd_add_or_sub_of_odd {a b : ℤ} (ha : Odd a) (hb : Odd b) :
     rw [Int.even_add, ← Int.even_sub] at h
     obtain ⟨k, hk⟩ := h
     convert dvd_mul_right 4 k using 1
-    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel, ← two_mul, ← mul_assoc]
+    rw [eq_add_of_sub_eq hk, mul_add, add_assoc, add_sub_cancel_right, ← two_mul, ← mul_assoc]
     rfl
   · left
     obtain ⟨k, hk⟩ := h
@@ -281,10 +294,10 @@ theorem two_mul_ediv_two_of_odd (h : Odd n) : 2 * (n / 2) = n - 1 :=
   eq_sub_of_add_eq (two_mul_ediv_two_add_one_of_odd h)
 #align int.two_mul_div_two_of_odd Int.two_mul_ediv_two_of_odd
 
--- Here are examples of how `parity_simps` can be used with `int`.
+-- Here are examples of how `parity_simps` can be used with `Int`.
 example (m n : ℤ) (h : Even m) : ¬Even (n + 3) ↔ Even (m ^ 2 + m + n) := by
-  simp [*, (by decide : ¬2 = 0), parity_simps]
+  simp (config := {decide := true}) [*, (by decide : ¬2 = 0), parity_simps]
 
-example : ¬Even (25394535 : ℤ) := by simp
+example : ¬Even (25394535 : ℤ) := by decide
 
 end Int

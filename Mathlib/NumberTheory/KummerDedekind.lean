@@ -2,14 +2,11 @@
 Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen, Paul Lezeau
-
-! This file was ported from Lean 3 source module number_theory.kummer_dedekind
-! leanprover-community/mathlib commit f0c8bf9245297a541f468be517f1bde6195105e9
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
 import Mathlib.RingTheory.IsAdjoinRoot
+
+#align_import number_theory.kummer_dedekind from "leanprover-community/mathlib"@"65a1391a0106c9204fe45bc73a039f056558cb83"
 
 /-!
 # Kummer-Dedekind theorem
@@ -56,7 +53,7 @@ kummer, dedekind, kummer dedekind, dedekind-kummer, dedekind kummer
 -/
 
 
-variable (R : Type _) {S : Type _} [CommRing R] [CommRing S] [Algebra R S]
+variable (R : Type*) {S : Type*} [CommRing R] [CommRing S] [Algebra R S]
 
 open Ideal Polynomial DoubleQuot UniqueFactorizationMonoid Algebra RingHom
 
@@ -66,7 +63,7 @@ local notation:max R "<" x:max ">" => adjoin R ({x} : Set S)
     biggest ideal of `S` contained in `R<x>`. -/
 def conductor (x : S) : Ideal S where
   carrier := {a | ∀ b : S, a * b ∈ R<x>}
-  zero_mem' b := by simpa only [MulZeroClass.zero_mul] using Subalgebra.zero_mem _
+  zero_mem' b := by simpa only [zero_mul] using Subalgebra.zero_mem _
   add_mem' ha hb c := by simpa only [add_mul] using Subalgebra.add_mem _ (ha c) (hb c)
   smul_mem' c a ha b := by simpa only [smul_eq_mul, mul_left_comm, mul_assoc] using ha (c * b)
 #align conductor conductor
@@ -93,6 +90,28 @@ theorem conductor_eq_top_of_powerBasis (pb : PowerBasis R S) : conductor R pb.ge
   conductor_eq_top_of_adjoin_eq_top pb.adjoin_gen_eq_top
 #align conductor_eq_top_of_power_basis conductor_eq_top_of_powerBasis
 
+open IsLocalization in
+lemma mem_coeSubmodule_conductor {L} [CommRing L] [Algebra S L] [Algebra R L]
+    [IsScalarTower R S L] [NoZeroSMulDivisors S L] {x : S} {y : L} :
+    y ∈ coeSubmodule L (conductor R x) ↔ ∀ z : S,
+      y * (algebraMap S L) z ∈ Algebra.adjoin R {algebraMap S L x} := by
+  cases subsingleton_or_nontrivial L
+  · rw [Subsingleton.elim (coeSubmodule L _) ⊤, Subsingleton.elim (Algebra.adjoin R _) ⊤]; simp
+  trans ∀ z, y * (algebraMap S L) z ∈ (Algebra.adjoin R {x}).map (IsScalarTower.toAlgHom R S L)
+  · simp only [coeSubmodule, Submodule.mem_map, Algebra.linearMap_apply, Subalgebra.mem_map,
+      IsScalarTower.coe_toAlgHom']
+    constructor
+    · rintro ⟨y, hy, rfl⟩ z
+      exact ⟨_, hy z, map_mul _ _ _⟩
+    · intro H
+      obtain ⟨y, _, e⟩ := H 1
+      rw [_root_.map_one, mul_one] at e
+      subst e
+      simp only [← _root_.map_mul, (NoZeroSMulDivisors.algebraMap_injective S L).eq_iff,
+        exists_eq_right] at H
+      exact ⟨_, H, rfl⟩
+  · rw [AlgHom.map_adjoin, Set.image_singleton]; rfl
+
 variable {I : Ideal R}
 
 /-- This technical lemma tell us that if `C` is the conductor of `R<x>` and `I` is an ideal of `R`
@@ -110,10 +129,11 @@ theorem prod_mem_ideal_map_of_mem_conductor {p : R} {z : S}
     rw [Algebra.id.smul_eq_mul, mul_assoc, mul_comm, mul_assoc, Set.mem_image]
     refine Exists.intro
         (algebraMap R R<x> a * ⟨l a * algebraMap R S p,
-          show l a * algebraMap R S p ∈ R<x> from ?_⟩) ?_
+          show l a * algebraMap R S p ∈ R<x> from ?h⟩) ?_
+    case h =>
+      rw [mul_comm]
+      exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
     · refine ⟨?_, ?_⟩
-      · rw [mul_comm]
-        exact mem_conductor_iff.mp (Ideal.mem_comap.mp hp) _
       · rw [mul_comm]
         apply Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ ha)
       · simp only [RingHom.map_mul, mul_comm (algebraMap R S p) (l a)]
@@ -146,7 +166,7 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
         (⟨z, hz⟩ : R<x>) ∈ I.map (algebraMap R R<x>) by
       rw [← this, ← temp]
       obtain ⟨a, ha⟩ := (Set.mem_image _ _ _).mp (prod_mem_ideal_map_of_mem_conductor hp
-          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy ))
+          (show z ∈ I.map (algebraMap R S) by rwa [Ideal.mem_comap] at hy))
       use a + algebraMap R R<x> q * ⟨z, hz⟩
       refine ⟨Ideal.add_mem (I.map (algebraMap R R<x>)) ha.left ?_, by
           simp only [ha.right, map_add, AlgHom.map_mul, add_right_inj]; rfl⟩
@@ -218,16 +238,14 @@ namespace KummerDedekind
 open scoped BigOperators Polynomial Classical
 
 variable [IsDomain R] [IsIntegrallyClosed R]
-
-variable [IsDomain S] [IsDedekindDomain S]
-
+variable [IsDedekindDomain S]
 variable [NoZeroSMulDivisors R S]
 
 attribute [local instance] Ideal.Quotient.field
 
 /-- The first half of the **Kummer-Dedekind Theorem** in the monogenic case, stating that the prime
     factors of `I*S` are in bijection with those of the minimal polynomial of the generator of `S`
-    over `R`, taken `mod I`.-/
+    over `R`, taken `mod I`. -/
 noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMaximal I)
     (hI' : I ≠ ⊥) (hx : (conductor R x).comap (algebraMap R S) ⊔ I = ⊤) (hx' : IsIntegral R x) :
     {J : Ideal S | J ∈ normalizedFactors (I.map (algebraMap R S))} ≃
@@ -243,12 +261,11 @@ noncomputable def normalizedFactorsMapEquivNormalizedFactorsMinPolyMk (hI : IsMa
     · exact NoZeroSMulDivisors.algebraMap_injective (Algebra.adjoin R {x}) S
     · rw [Algebra.adjoin.powerBasis'_minpoly_gen hx']
   refine (normalizedFactorsEquivOfQuotEquiv f ?_ ?_).trans ?_
-  · rwa [Ne.def, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S),
-      ← Ne.def]
+  · rwa [Ne, map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S), ← Ne]
   · by_contra h
     exact (show Polynomial.map (Ideal.Quotient.mk I) (minpoly R x) ≠ 0 from
       Polynomial.map_monic_ne_zero (minpoly.monic hx')) (span_singleton_eq_bot.mp h)
-  · refine (normalizedFactorsEquivSpanNormalizedFactors  ?_).symm
+  · refine (normalizedFactorsEquivSpanNormalizedFactors ?_).symm
     exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
 #align kummer_dedekind.normalized_factors_map_equiv_normalized_factors_min_poly_mk KummerDedekind.normalizedFactorsMapEquivNormalizedFactorsMinPolyMk
 
@@ -299,14 +316,14 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
   rw [Multiset.count_map_eq_count' fun f =>
       ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
         Ideal S),
-    Multiset.attach_count_eq_count_coe]
+    Multiset.count_attach]
   · exact Subtype.coe_injective.comp (Equiv.injective _)
   · exact (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact irreducible_of_normalized_factor _
         (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact Polynomial.map_monic_ne_zero (minpoly.monic hx')
   · exact irreducible_of_normalized_factor _ hJ
-  · rwa [← bot_eq_zero, Ne.def,
+  · rwa [← bot_eq_zero, Ne,
       map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)]
 #align kummer_dedekind.normalized_factors_ideal_map_eq_normalized_factors_min_poly_mk_map KummerDedekind.normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map
 
@@ -320,7 +337,7 @@ theorem Ideal.irreducible_map_of_irreducible_minpoly (hI : IsMaximal I) (hI' : I
   suffices ∃ y, normalizedFactors (I.map (algebraMap R S)) = {y} by
     obtain ⟨y, hy⟩ := this
     have h := normalizedFactors_prod (show I.map (algebraMap R S) ≠ 0 by
-          rwa [← bot_eq_zero, Ne.def,
+          rwa [← bot_eq_zero, Ne,
             map_eq_bot_iff_of_injective (NoZeroSMulDivisors.algebraMap_injective R S)])
     rw [associated_iff_eq, hy, Multiset.prod_singleton] at h
     rw [← h]

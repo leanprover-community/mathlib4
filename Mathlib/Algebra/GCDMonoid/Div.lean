@@ -2,16 +2,13 @@
 Copyright (c) 2022 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
-
-! This file was ported from Lean 3 source module algebra.gcd_monoid.div
-! leanprover-community/mathlib commit b537794f8409bc9598febb79cd510b1df5f4539d
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.Content
+
+#align_import algebra.gcd_monoid.div from "leanprover-community/mathlib"@"b537794f8409bc9598febb79cd510b1df5f4539d"
 
 /-!
 # Basic results about setwise gcds on normalized gcd monoid with a division.
@@ -37,7 +34,7 @@ namespace Nat
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → ℕ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
@@ -56,7 +53,7 @@ namespace Int
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `ℤ`, if `d = s.gcd`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → ℤ} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg
@@ -73,15 +70,15 @@ end Int
 
 namespace Polynomial
 
-open Polynomial Classical
+open Polynomial
 
 noncomputable section
 
-variable {K : Type _} [Field K]
+variable {K : Type*} [Field K] [DecidableEq K]
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/
-theorem gcd_div_eq_one {β : Type _} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
+theorem gcd_div_eq_one {β : Type*} {f : β → Polynomial K} (s : Finset β) {x : β} (hx : x ∈ s)
     (hfz : f x ≠ 0) : (s.gcd fun b => f b / s.gcd f) = 1 := by
   obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨x, hx⟩
   refine' (Finset.gcd_congr rfl fun a ha => _).trans hg

@@ -1,14 +1,12 @@
 /-
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Aurélien Saue, Tim Baanen
+Authors: Mario Carneiro, Aurélien Saue, Anne Baanen
 -/
-import Lean.Elab.Tactic.Basic
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Algebra.Ring.Basic
-import Mathlib.Tactic.NormNum
-import Mathlib.Tactic.Clear!
+import Mathlib.Tactic.NormNum.Inv
+import Mathlib.Tactic.NormNum.Pow
 import Mathlib.Util.AtomM
+import Mathlib.Data.Rat.Order
 
 /-!
 # `ring` tactic
@@ -76,6 +74,8 @@ This feature wasn't needed yet, so it's not implemented yet.
 
 ring, semiring, exponent, power
 -/
+
+set_option autoImplicit true
 
 namespace Mathlib.Tactic
 namespace Ring
@@ -254,7 +254,7 @@ variable {sα}
 
 /-- Embed an exponent (an `ExBase, ExProd` pair) as an `ExProd` by multiplying by 1. -/
 def ExBase.toProd (va : ExBase sα a) (vb : ExProd sℕ b) :
-  ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
+    ExProd sα q($a ^ $b * (nat_lit 1).rawCast) := .mul va vb (.const 1 none)
 
 /-- Embed `ExProd` in `ExSum` by adding 0. -/
 def ExProd.toSum (v : ExProd sα e) : ExSum sα q($e + 0) := .add v .zero
@@ -294,7 +294,7 @@ def evalAddOverlap (va : ExProd sα a) (vb : ExProd sα b) : Option (Overlap sα
   match va, vb with
   | .const za ha, .const zb hb => do
     let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
-    let res ← NormNum.evalAdd.core q($a + $b) q(Add.add) _ _ ra rb
+    let res ← NormNum.evalAdd.core q($a + $b) q(HAdd.hAdd) a b ra rb
     match res with
     | .isNat _ (.lit (.natVal 0)) p => pure <| .zero p
     | rc =>
@@ -328,8 +328,8 @@ theorem add_pf_add_gt (b₁ : R) (_ : a + b₂ = c) : a + (b₁ + b₂) = b₁ +
 
 /-- Adds two polynomials `va, vb` together to get a normalized result polynomial.
 
-* `0 + b = 0`
-* `a + 0 = 0`
+* `0 + b = b`
+* `a + 0 = a`
 * `a * x + a * y = a * (x + y)` (for `x`, `y` coefficients; uses `evalAddOverlap`)
 * `(a₁ + a₂) + (b₁ + b₂) = a₁ + (a₂ + (b₁ + b₂))` (if `a₁.lt b₁`)
 * `(a₁ + a₂) + (b₁ + b₂) = b₁ + ((a₁ + a₂) + b₂)` (if not `a₁.lt b₁`)
@@ -388,9 +388,9 @@ partial def evalMulProd (va : ExProd sα a) (vb : ExProd sα b) : Result (ExProd
     else
       let ra := Result.ofRawRat za a ha; let rb := Result.ofRawRat zb b hb
       let rc := (NormNum.evalMul.core q($a * $b) q(HMul.hMul) _ _
-        q(CommSemiring.toSemiring) ra rb).get!
+          q(CommSemiring.toSemiring) ra rb).get!
       let ⟨zc, hc⟩ := rc.toRatNZ.get!
-      let ⟨c, pc⟩ :=  rc.toRawEq
+      let ⟨c, pc⟩ := rc.toRawEq
       ⟨c, .const zc hc, pc⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃, .const _ _ =>
     let ⟨_, vc, pc⟩ := evalMulProd va₃ vb
@@ -547,7 +547,7 @@ def evalNegProd (rα : Q(Ring $α)) (va : ExProd sα a) : Result (ExProd sα) q(
     let rb := (NormNum.evalMul.core q($m1 * $a) q(HMul.hMul) _ _
       q(CommSemiring.toSemiring) rm ra).get!
     let ⟨zb, hb⟩ := rb.toRatNZ.get!
-    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ :=  rb.toRawEq
+    let ⟨b, (pb : Q((Int.negOfNat (nat_lit 1)).rawCast * $a = $b))⟩ := rb.toRawEq
     ⟨b, .const zb hb, (q(neg_one_mul (R := $α) $pb) : Expr)⟩
   | .mul (x := a₁) (e := a₂) va₁ va₂ va₃ =>
     let ⟨_, vb, pb⟩ := evalNegProd rα va₃
@@ -637,8 +637,9 @@ partial def ExProd.evalPos (va : ExProd sℕ a) : Option Q(0 < $a) :=
   | .const _ _ =>
     -- it must be positive because it is a nonzero nat literal
     have lit : Q(ℕ) := a.appArg!
-    let p : Q(Nat.ble 1 $lit = true) := (q(Eq.refl true) : Expr)
-    some (q(const_pos $lit $p) : Expr)
+    haveI : $a =Q Nat.rawCast $lit := ⟨⟩
+    haveI p : Nat.ble 1 $lit =Q true := ⟨⟩
+    some q(const_pos $lit $p)
   | .mul (e := ea₁) vxa₁ _ va₂ => do
     let pa₁ ← vxa₁.evalPos
     let pa₂ ← va₂.evalPos
@@ -716,7 +717,8 @@ def evalPowProd (va : ExProd sα a) (vb : ExProd sℕ b) : Result (ExProd sα) q
       let ra := Result.ofRawRat za a ha
       have lit : Q(ℕ) := b.appArg!
       let rb := (q(IsNat.of_raw ℕ $lit) : Expr)
-      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) _ b lit rb q(CommSemiring.toSemiring) ra
+      let rc ← NormNum.evalPow.core q($a ^ $b) q(HPow.hPow) q($a) q($b) lit rb
+        q(CommSemiring.toSemiring) ra
       let ⟨zc, hc⟩ ← rc.toRatNZ
       let ⟨c, pc⟩ := rc.toRawEq
       some ⟨c, .const zc hc, pc⟩
@@ -781,7 +783,9 @@ Otherwise `a ^ b` is just encoded as `a ^ b * 1 + 0` using `evalPowAtom`.
 -/
 partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum sα) q($a ^ $b) :=
   match va, vb with
-  | _, .const 1 => ⟨_, va, (q(pow_one_cast $a) : Expr)⟩
+  | va, .const 1 =>
+    haveI : $b =Q Nat.rawCast (nat_lit 1) := ⟨⟩
+    ⟨_, va, q(pow_one_cast $a)⟩
   | .zero, vb => match vb.evalPos with
     | some p => ⟨_, .zero, q(zero_pow (R := $α) $p)⟩
     | none => evalPowAtom sα (.sum .zero) vb
@@ -799,7 +803,7 @@ partial def evalPow₁ (va : ExSum sα a) (vb : ExProd sℕ b) : Result (ExSum s
 theorem pow_zero (a : R) : a ^ 0 = (nat_lit 1).rawCast + 0 := by simp
 
 theorem pow_add (_ : a ^ b₁ = c₁) (_ : a ^ b₂ = c₂) (_ : c₁ * c₂ = d) :
-  (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
+    (a : R) ^ (b₁ + b₂) = d := by subst_vars; simp [_root_.pow_add]
 
 /-- Exponentiates two polynomials `va, vb`.
 
@@ -827,9 +831,9 @@ structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
-    rα := (← trySynthInstanceQ (q(Ring $α) : Q(Type u))).toOption
-    dα := (← trySynthInstanceQ (q(DivisionRing $α) : Q(Type u))).toOption
-    czα := (← trySynthInstanceQ (q(CharZero $α) : Q(Prop))).toOption }
+    rα := (← trySynthInstanceQ q(Ring $α)).toOption
+    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
   | ⟨e⟩ => by simp [e]
@@ -1082,6 +1086,29 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     | _ => els
   | _, _, _ => els
 
+/-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`
+(which is not a commutative semiring) into a commutative semiring `β` by using an injective map
+`lift : α → β`. -/
+class CSLift (α : Type u) (β : outParam (Type u)) where
+  /-- `lift` is the "canonical injection" from `α` to `β` -/
+  lift : α → β
+  /-- `lift` is an injective function -/
+  inj : Function.Injective lift
+
+/-- `CSLiftVal a b` means that `b = lift a`. This is used by `ring` to construct an expression `b`
+from the input expression `a`, and then run the usual ring algorithm on `b`. -/
+class CSLiftVal {α} {β : outParam (Type u)} [CSLift α β] (a : α) (b : outParam β) : Prop where
+  /-- The output value `b` is equal to the lift of `a`. This can be supplied by the default
+  instance which sets `b := lift a`, but `ring` will treat this as an atom so it is more useful
+  when there are other instances which distribute addition or multiplication. -/
+  eq : b = CSLift.lift a
+
+instance (priority := low) {α β} [CSLift α β] (a : α) : CSLiftVal a (CSLift.lift a) := ⟨rfl⟩
+
+theorem of_lift {α β} [inst : CSLift α β] {a b : α} {a' b' : β}
+    [h1 : CSLiftVal a a'] [h2 : CSLiftVal b b'] (h : a' = b') : a = b :=
+  inst.2 <| by rwa [← h1.1, ← h2.1]
+
 open Lean Parser.Tactic Elab Command Elab.Tactic Meta Qq
 
 theorem of_eq (_ : (a : R) = c) (_ : b = c) : a = b := by subst_vars; rfl
@@ -1100,17 +1127,39 @@ def proveEq (g : MVarId) : AtomM Unit := do
   let .sort u ← whnf (← inferType α) | unreachable!
   let v ← try u.dec catch _ => throwError "not a type{indentExpr α}"
   have α : Q(Type v) := α
+  let sα ←
+    try Except.ok <$> synthInstanceQ q(CommSemiring $α)
+    catch e => pure (.error e)
   have e₁ : Q($α) := e₁; have e₂ : Q($α) := e₂
-  let sα ← synthInstanceQ (q(CommSemiring $α) : Q(Type v))
-  let c ← mkCache sα
-  profileitM Exception "ring" (← getOptions) do
-    let ⟨a, va, pa⟩ ← eval sα c e₁
-    let ⟨b, vb, pb⟩ ← eval sα c e₂
-    unless va.eq vb do
-      let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
-      throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
-    let pb : Q($e₂ = $a) := pb
-    g.assign q(of_eq $pa $pb)
+  let eq ← match sα with
+  | .ok sα => ringCore sα e₁ e₂
+  | .error e =>
+    let β ← mkFreshExprMVarQ q(Type v)
+    let e₁' ← mkFreshExprMVarQ q($β)
+    let e₂' ← mkFreshExprMVarQ q($β)
+    let (sβ, (pf : Q($e₁' = $e₂' → $e₁ = $e₂))) ← try
+      let _l ← synthInstanceQ q(CSLift $α $β)
+      let sβ ← synthInstanceQ q(CommSemiring $β)
+      let _ ← synthInstanceQ q(CSLiftVal $e₁ $e₁')
+      let _ ← synthInstanceQ q(CSLiftVal $e₂ $e₂')
+      pure (sβ, q(of_lift (a := $e₁) (b := $e₂)))
+    catch _ => throw e
+    pure q($pf $(← ringCore sβ e₁' e₂'))
+  g.assign eq
+where
+  /-- The core of `proveEq` takes expressions `e₁ e₂ : α` where `α` is a `CommSemiring`,
+  and returns a proof that they are equal (or fails). -/
+  ringCore {v : Level} {α : Q(Type v)} (sα : Q(CommSemiring $α))
+      (e₁ e₂ : Q($α)) : AtomM Q($e₁ = $e₂) := do
+    let c ← mkCache sα
+    profileitM Exception "ring" (← getOptions) do
+      let ⟨a, va, pa⟩ ← eval sα c e₁
+      let ⟨b, vb, pb⟩ ← eval sα c e₂
+      unless va.eq vb do
+        let g ← mkFreshExprMVar (← (← ringCleanupRef.get) q($a = $b))
+        throwError "ring failed, ring expressions not equal\n{g.mvarId!}"
+      let pb : Q($e₂ = $a) := pb
+      return q(of_eq $pa $pb)
 
 /--
 Tactic for solving equations of *commutative* (semi)rings,

@@ -2,13 +2,10 @@
 Copyright (c) 2021 Shing Tak Lam. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Shing Tak Lam
-
-! This file was ported from Lean 3 source module topology.homotopy.equiv
-! leanprover-community/mathlib commit 3d7987cda72abc473c7cdbbb075170e9ac620042
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.Homotopy.Basic
+
+#align_import topology.homotopy.equiv from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
 /-!
 
@@ -32,7 +29,6 @@ locale.
 universe u v w x
 
 variable {X : Type u} {Y : Type v} {Z : Type w} {Z' : Type x}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] [TopologicalSpace Z']
 
 namespace ContinuousMap
@@ -49,7 +45,6 @@ structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [Topologi
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
 #align continuous_map.homotopy_equiv ContinuousMap.HomotopyEquiv
 
--- mathport name: continuous_map.homotopy_equiv
 scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
 
 namespace HomotopyEquiv
@@ -57,7 +52,7 @@ namespace HomotopyEquiv
 /-- Coercion of a `HomotopyEquiv` to function. While the Lean 4 way is to unfold coercions, this
 auxiliary definition will make porting of Lean 3 code easier.
 
-Porting note: TODO: drop this definition. -/
+Porting note (#11215): TODO: drop this definition. -/
 @[coe] def toFun' (e : X ≃ₕ Y) : X → Y := e.toFun
 
 instance : CoeFun (X ≃ₕ Y) fun _ => X → Y := ⟨toFun'⟩
@@ -172,7 +167,7 @@ def prodCongr (h₁ : X ≃ₕ Y) (h₂ : Z ≃ₕ Z') : (X × Z) ≃ₕ (Y × Z
 
 /-- If `X i` is homotopy equivalent to `Y i` for each `i`, then the space of functions (a.k.a. the
 indexed product) `∀ i, X i` is homotopy equivalent to `∀ i, Y i`. -/
-def piCongrRight {ι : Type _} {X Y : ι → Type _} [∀ i, TopologicalSpace (X i)]
+def piCongrRight {ι : Type*} {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
     [∀ i, TopologicalSpace (Y i)] (h : ∀ i, X i ≃ₕ Y i) :
     (∀ i, X i) ≃ₕ (∀ i, Y i) where
   toFun := .piMap fun i ↦ (h i).toFun

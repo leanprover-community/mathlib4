@@ -2,15 +2,11 @@
 Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module logic.equiv.array
-! leanprover-community/mathlib commit 1126441d6bccf98c81214a0780c73d499f6721fe
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Vector.Basic
 import Mathlib.Logic.Equiv.List
-import Mathlib.Control.Traversable.Equiv
+
+#align_import logic.equiv.array from "leanprover-community/mathlib"@"1126441d6bccf98c81214a0780c73d499f6721fe"
 
 /-!
 # Equivalences involving `Array`
@@ -35,28 +31,28 @@ namespace Equiv
 
 -- /-- The natural equivalence between length-`n` heterogeneous arrays
 -- and dependent functions from `fin n`. -/
--- def darrayEquivFin {n : ℕ} (α : Fin n → Type _) : DArray n α ≃ ∀ i, α i :=
+-- def darrayEquivFin {n : ℕ} (α : Fin n → Type*) : DArray n α ≃ ∀ i, α i :=
 --   ⟨DArray.read, DArray.mk, fun ⟨f⟩ => rfl, fun f => rfl⟩
 #noalign equiv.d_array_equiv_fin
 
 -- /-- The natural equivalence between length-`n` arrays and functions from `fin n`. -/
--- def array'EquivFin (n : ℕ) (α : Type _) : Array' n α ≃ (Fin n → α) :=
+-- def array'EquivFin (n : ℕ) (α : Type*) : Array' n α ≃ (Fin n → α) :=
 --   darrayEquivFin _
 #noalign equiv.array_equiv_fin
 
 -- /-- The natural equivalence between length-`n` vectors and length-`n` arrays. -/
--- def vectorEquivArray' (α : Type _) (n : ℕ) : Vector α n ≃ Array' n α :=
+-- def vectorEquivArray' (α : Type*) (n : ℕ) : Vector α n ≃ Array' n α :=
 --   (vectorEquivFin _ _).trans (array'EquivFin _ _).symm
 #noalign equiv.vector_equiv_array
 
 /-- The natural equivalence between arrays and lists. -/
-def arrayEquivList (α : Type _) : Array α ≃ List α :=
+def arrayEquivList (α : Type*) : Array α ≃ List α :=
   ⟨Array.data, Array.mk, fun _ => rfl, fun _ => rfl⟩
 
 end Equiv
 
 /- Porting note: removed instances for what would be ported as `Traversable (Array α)` and
-`IsLawfulTraversable (Array α)`. These would
+`LawfulTraversable (Array α)`. These would
 
 1. be implemented directly in terms of `Array` functionality for efficiency, rather than being the
 traversal of some other type transported along an equivalence to `Array α` (as the traversable
@@ -73,7 +69,7 @@ instance for `array` was)
 -- instance : Traversable (Array' n) :=
 --   @Equiv.traversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _
 
--- instance : IsLawfulTraversable (Array' n) :=
+-- instance : LawfulTraversable (Array' n) :=
 --   @Equiv.isLawfulTraversable (flip Vector n) _ (fun α => Equiv.vectorEquivArray α n) _ _
 
 -- end Array'
@@ -81,9 +77,9 @@ instance for `array` was)
 /-- If `α` is encodable, then so is `Array α`. -/
 instance Array.encodable {α} [Encodable α] : Encodable (Array α) :=
   Encodable.ofEquiv _ (Equiv.arrayEquivList _)
-#align array.encodable Array.encodable
+#noalign array.encodable
 
 /-- If `α` is countable, then so is `Array α`. -/
 instance Array.countable {α} [Countable α] : Countable (Array α) :=
   Countable.of_equiv _ (Equiv.arrayEquivList α).symm
-#align array.countable Array.countable
+#noalign array.countable

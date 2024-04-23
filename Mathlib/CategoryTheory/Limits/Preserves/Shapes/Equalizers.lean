@@ -2,14 +2,11 @@
 Copyright (c) 2020 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.limits.preserves.shapes.equalizers
-! leanprover-community/mathlib commit 4698e35ca56a0d4fa53aa5639c3364e0a77f4eba
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.SplitCoequalizer
 import Mathlib.CategoryTheory.Limits.Preserves.Basic
+
+#align_import category_theory.limits.preserves.shapes.equalizers from "leanprover-community/mathlib"@"4698e35ca56a0d4fa53aa5639c3364e0a77f4eba"
 
 /-!
 # Preserving (co)equalizers
@@ -29,9 +26,7 @@ universe w v₁ v₂ u₁ u₂
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (G : C ⥤ D)
 
 namespace CategoryTheory.Limits

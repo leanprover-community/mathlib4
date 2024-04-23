@@ -2,13 +2,10 @@
 Copyright (c) 2022 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
-
-! This file was ported from Lean 3 source module data.finsupp.ne_locus
-! leanprover-community/mathlib commit f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finsupp.Defs
+
+#align_import data.finsupp.ne_locus from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
 /-!
 # Locus of unequal values of finitely supported functions
@@ -25,7 +22,7 @@ In the case in which `N` is an additive group, `Finsupp.neLocus f g` coincides w
 -/
 
 
-variable {α M N P : Type _}
+variable {α M N P : Type*}
 
 namespace Finsupp
 
@@ -61,7 +58,7 @@ theorem coe_neLocus : ↑(f.neLocus g) = { x | f x ≠ g x } := by
 theorem neLocus_eq_empty {f g : α →₀ N} : f.neLocus g = ∅ ↔ f = g :=
   ⟨fun h =>
     ext fun a => not_not.mp (mem_neLocus.not.mp (Finset.eq_empty_iff_forall_not_mem.mp h a)),
-    fun h => h ▸ by simp only [neLocus, Ne.def, eq_self_iff_true, not_true, Finset.filter_False]⟩
+    fun h => h ▸ by simp only [neLocus, Ne, eq_self_iff_true, not_true, Finset.filter_False]⟩
 #align finsupp.ne_locus_eq_empty Finsupp.neLocus_eq_empty
 
 @[simp]

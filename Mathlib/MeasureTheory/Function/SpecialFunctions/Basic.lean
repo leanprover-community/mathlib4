@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module measure_theory.function.special_functions.basic
-! leanprover-community/mathlib commit 83a66c8775fa14ee5180c85cab98e970956401ad
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.SpecialFunctions.Pow.NNReal
 import Mathlib.MeasureTheory.Constructions.BorelSpace.Complex
+
+#align_import measure_theory.function.special_functions.basic from "leanprover-community/mathlib"@"83a66c8775fa14ee5180c85cab98e970956401ad"
 
 /-!
 # Measurability of real and complex functions
@@ -38,6 +35,20 @@ theorem measurable_log : Measurable log :=
   measurable_of_measurable_on_compl_singleton 0 <|
     Continuous.measurable <| continuousOn_iff_continuous_restrict.1 continuousOn_log
 #align real.measurable_log Real.measurable_log
+
+lemma measurable_of_measurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
+    (hf : Measurable (fun x ↦ exp (f x))) :
+    Measurable f := by
+  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
+  rw [this]
+  exact measurable_log.comp hf
+
+lemma aemeasurable_of_aemeasurable_exp {α : Type*} {_ : MeasurableSpace α} {f : α → ℝ}
+    {μ : MeasureTheory.Measure α} (hf : AEMeasurable (fun x ↦ exp (f x)) μ) :
+    AEMeasurable f μ := by
+  have : f = fun x ↦ log (exp (f x)) := by ext; rw [log_exp]
+  rw [this]
+  exact measurable_log.comp_aemeasurable hf
 
 @[measurability]
 theorem measurable_sin : Measurable sin :=
@@ -136,7 +147,7 @@ section RealComposition
 
 open Real
 
-variable {α : Type _} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
+variable {α : Type*} {m : MeasurableSpace α} {f : α → ℝ} (hf : Measurable f)
 
 @[measurability]
 theorem Measurable.exp : Measurable fun x => Real.exp (f x) :=
@@ -169,7 +180,7 @@ theorem Measurable.sinh : Measurable fun x => Real.sinh (f x) :=
 #align measurable.sinh Measurable.sinh
 
 @[measurability]
-theorem Measurable.sqrt : Measurable fun x => sqrt (f x) :=
+theorem Measurable.sqrt : Measurable fun x => √(f x) :=
   continuous_sqrt.measurable.comp hf
 #align measurable.sqrt Measurable.sqrt
 
@@ -179,7 +190,7 @@ section ComplexComposition
 
 open Complex
 
-variable {α : Type _} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
+variable {α : Type*} {m : MeasurableSpace α} {f : α → ℂ} (hf : Measurable f)
 
 @[measurability]
 theorem Measurable.cexp : Measurable fun x => Complex.exp (f x) :=

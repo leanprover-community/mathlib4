@@ -2,16 +2,14 @@
 Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
-
-! This file was ported from Lean 3 source module logic.equiv.option
-! leanprover-community/mathlib commit 70d50ecfd4900dd6d328da39ab7ebd516abe4025
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Control.EquivFunctor
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.Subtype
 import Mathlib.Logic.Equiv.Defs
+import Mathlib.Tactic.Cases
+
+#align_import logic.equiv.option from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
 /-!
 # Equivalences for `Option α`
@@ -24,12 +22,13 @@ We define
   both sides.
 -/
 
+universe u
 
 namespace Equiv
 
 open Option
 
-variable {α β γ : Type _}
+variable {α β γ : Type*}
 
 section OptionCongr
 
@@ -61,7 +60,7 @@ theorem optionCongr_trans (e₁ : α ≃ β) (e₂ : β ≃ γ) :
 
 /-- When `α` and `β` are in the same universe, this is the same as the result of
 `EquivFunctor.mapEquiv`. -/
-theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type _} (e : α ≃ β) :
+theorem optionCongr_eq_equivFunctor_mapEquiv {α β : Type u} (e : α ≃ β) :
     optionCongr e = EquivFunctor.mapEquiv Option e :=
   rfl
 #align equiv.option_congr_eq_equiv_function_map_equiv Equiv.optionCongr_eq_equivFunctor_mapEquiv
@@ -114,8 +113,7 @@ theorem removeNone_aux_inv (x : α) : removeNone_aux e.symm (removeNone_aux e x)
 
       · rw [removeNone_aux_some _ ⟨_, h1⟩]
         rw [removeNone_aux_some _ ⟨_, h2⟩]
-        simp
-        )
+        simp)
 -- Porting note: private
 -- #align equiv.remove_none_aux_inv Equiv.removeNone_aux_inv
 
@@ -267,5 +265,19 @@ theorem optionSubtype_symm_apply_symm_apply [DecidableEq β] (x : β) (e : α �
              Subtype.coe_eta, dite_eq_ite, ite_eq_right_iff]
   exact fun h => False.elim (b.property h)
 #align equiv.option_subtype_symm_apply_symm_apply Equiv.optionSubtype_symm_apply_symm_apply
+
+variable [DecidableEq α] {a b : α}
+
+/-- Any type with a distinguished element is equivalent to an `Option` type on the subtype excluding
+that element. -/
+@[simps!]
+def optionSubtypeNe (a : α) : Option {b // b ≠ a} ≃ α := optionSubtype a |>.symm (.refl _) |>.1
+
+lemma optionSubtypeNe_symm_self (a : α) : (optionSubtypeNe a).symm a = none := by simp
+lemma optionSubtypeNe_symm_of_ne (hba : b ≠ a) : (optionSubtypeNe a).symm b = some ⟨b, hba⟩ := by
+  simp [hba]
+
+@[simp] lemma optionSubtypeNe_none (a : α) : optionSubtypeNe a none = a := rfl
+@[simp] lemma optionSubtypeNe_some (a : α) (b) : optionSubtypeNe a (some b) = b := rfl
 
 end Equiv

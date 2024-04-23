@@ -2,14 +2,11 @@
 Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov
-
-! This file was ported from Lean 3 source module order.filter.ultrafilter
-! leanprover-community/mathlib commit 8631e2d5ea77f6c13054d9151d82b83069680cb1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.ZornAtoms
+
+#align_import order.filter.ultrafilter from "leanprover-community/mathlib"@"8631e2d5ea77f6c13054d9151d82b83069680cb1"
 
 /-!
 # Ultrafilters
@@ -27,11 +24,12 @@ In this file we define
 
 universe u v
 
-variable {α : Type u} {β : Type v} {γ : Type _}
+variable {α : Type u} {β : Type v} {γ : Type*}
 
 open Set Filter Function
 
-open Classical Filter
+open scoped Classical
+open Filter
 
 /-- `Filter α` is an atomic type: for every filter there exists an ultrafilter that is less than or
 equal to this filter. -/
@@ -41,7 +39,7 @@ instance : IsAtomic (Filter α) :=
       fun _ hx => sInf_le hx⟩
 
 /-- An ultrafilter is a minimal (maximal in the set order) proper filter. -/
-structure Ultrafilter (α : Type _) extends Filter α where
+structure Ultrafilter (α : Type*) extends Filter α where
   /-- An ultrafilter is nontrivial. -/
   protected neBot' : NeBot toFilter
   /-- If `g` is a nontrivial filter that is less than or equal to an ultrafilter, then it is greater
@@ -115,7 +113,7 @@ theorem inf_neBot_iff {f : Ultrafilter α} {g : Filter α} : NeBot (↑f ⊓ g) 
 #align ultrafilter.inf_ne_bot_iff Ultrafilter.inf_neBot_iff
 
 theorem disjoint_iff_not_le {f : Ultrafilter α} {g : Filter α} : Disjoint (↑f) g ↔ ¬↑f ≤ g := by
-  rw [← inf_neBot_iff, neBot_iff, Ne.def, not_not, disjoint_iff]
+  rw [← inf_neBot_iff, neBot_iff, Ne, not_not, disjoint_iff]
 #align ultrafilter.disjoint_iff_not_le Ultrafilter.disjoint_iff_not_le
 
 @[simp]
@@ -131,7 +129,7 @@ theorem frequently_iff_eventually : (∃ᶠ x in f, p x) ↔ ∀ᶠ x in f, p x 
   compl_not_mem_iff
 #align ultrafilter.frequently_iff_eventually Ultrafilter.frequently_iff_eventually
 
-alias frequently_iff_eventually ↔ _root_.Filter.Frequently.eventually _
+alias ⟨_root_.Filter.Frequently.eventually, _⟩ := frequently_iff_eventually
 #align filter.frequently.eventually Filter.Frequently.eventually
 
 theorem compl_mem_iff_not_mem : sᶜ ∈ f ↔ s ∉ f := by rw [← compl_not_mem_iff, compl_compl]
@@ -153,7 +151,7 @@ def ofComplNotMemIff (f : Filter α) (h : ∀ s, sᶜ ∉ f ↔ s ∈ f) : Ultra
 def ofAtom (f : Filter α) (hf : IsAtom f) : Ultrafilter α where
   toFilter := f
   neBot' := ⟨hf.1⟩
-  le_of_le g hg := (isAtom_iff.1 hf).2 g hg.ne
+  le_of_le g hg := (isAtom_iff_le_of_ge.1 hf).2 g hg.ne
 #align ultrafilter.of_atom Ultrafilter.ofAtom
 
 theorem nonempty_of_mem (hs : s ∈ f) : s.Nonempty :=
@@ -206,7 +204,7 @@ theorem finite_sUnion_mem_iff {s : Set (Set α)} (hs : s.Finite) : ⋃₀ s ∈ 
 
 theorem finite_biUnion_mem_iff {is : Set β} {s : β → Set α} (his : is.Finite) :
     (⋃ i ∈ is, s i) ∈ f ↔ ∃ i ∈ is, s i ∈ f := by
-  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), bex_image_iff]
+  simp only [← sUnion_image, finite_sUnion_mem_iff (his.image s), exists_mem_image]
 #align ultrafilter.finite_bUnion_mem_iff Ultrafilter.finite_biUnion_mem_iff
 
 /-- Pushforward for ultrafilters. -/
@@ -318,7 +316,7 @@ instance [Nonempty α] : Nonempty (Ultrafilter α) :=
 
 theorem eq_pure_of_finite_mem (h : s.Finite) (h' : s ∈ f) : ∃ x ∈ s, f = pure x := by
   rw [← biUnion_of_singleton s] at h'
-  rcases(Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
+  rcases (Ultrafilter.finite_biUnion_mem_iff h).mp h' with ⟨a, has, haf⟩
   exact ⟨a, has, eq_of_le (Filter.le_pure_iff.2 haf)⟩
 #align ultrafilter.eq_pure_of_finite_mem Ultrafilter.eq_pure_of_finite_mem
 
@@ -334,7 +332,7 @@ theorem le_cofinite_or_eq_pure (f : Ultrafilter α) : (f : Filter α) ≤ cofini
 #align ultrafilter.le_cofinite_or_eq_pure Ultrafilter.le_cofinite_or_eq_pure
 
 /-- Monadic bind for ultrafilters, coming from the one on filters
-defined in terms of map and join.-/
+defined in terms of map and join. -/
 def bind (f : Ultrafilter α) (m : α → Ultrafilter β) : Ultrafilter β :=
   ofComplNotMemIff (Filter.bind ↑f fun x => ↑(m x)) fun s => by
     simp only [mem_bind', mem_coe, ← compl_mem_iff_not_mem, compl_setOf, compl_compl]
@@ -374,7 +372,7 @@ theorem exists_le (f : Filter α) [h : NeBot f] : ∃ u : Ultrafilter α, ↑u �
   ⟨ofAtom u hu, huf⟩
 #align ultrafilter.exists_le Ultrafilter.exists_le
 
-alias exists_le ← _root_.Filter.exists_ultrafilter_le
+alias _root_.Filter.exists_ultrafilter_le := exists_le
 #align filter.exists_ultrafilter_le Filter.exists_ultrafilter_le
 
 /-- Construct an ultrafilter extending a given filter.
@@ -417,6 +415,21 @@ protected theorem NeBot.le_pure_iff (hf : f.NeBot) : f ≤ pure a ↔ f = pure a
   ⟨Ultrafilter.unique (pure a), le_of_eq⟩
 #align filter.ne_bot.le_pure_iff Filter.NeBot.le_pure_iff
 
+protected theorem NeBot.eq_pure_iff (hf : f.NeBot) {x : α} :
+    f = pure x ↔ {x} ∈ f := by
+  rw [← hf.le_pure_iff, le_pure_iff]
+
+lemma atTop_eq_pure_of_isTop [LinearOrder α] {x : α} (hx : IsTop x) :
+    (atTop : Filter α) = pure x := by
+  have : Nonempty α := ⟨x⟩
+  apply atTop_neBot.eq_pure_iff.2
+  convert Ici_mem_atTop x using 1
+  exact (Ici_eq_singleton_iff_isTop.2 hx).symm
+
+lemma atBot_eq_pure_of_isBot [LinearOrder α] {x : α} (hx : IsBot x) :
+    (atBot : Filter α) = pure x :=
+  @atTop_eq_pure_of_isTop αᵒᵈ _ _ hx
+
 @[simp]
 theorem lt_pure_iff : f < pure a ↔ f = ⊥ :=
   isAtom_pure.lt_iff
@@ -444,7 +457,7 @@ theorem le_iff_ultrafilter {f₁ f₂ : Filter α} : f₁ ≤ f₂ ↔ ∀ g : U
 
 /-- A filter equals the intersection of all the ultrafilters which contain it. -/
 theorem iSup_ultrafilter_le_eq (f : Filter α) :
-    (⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α)) = f :=
+    ⨆ (g : Ultrafilter α) (_ : g ≤ f), (g : Filter α) = f :=
   eq_of_forall_ge_iff fun f' => by simp only [iSup_le_iff, ← le_iff_ultrafilter]
 #align filter.supr_ultrafilter_le_eq Filter.iSup_ultrafilter_le_eq
 
@@ -492,17 +505,17 @@ theorem nmem_hyperfilter_of_finite {s : Set α} (hf : s.Finite) : s ∉ hyperfil
   compl_not_mem hy <| hyperfilter_le_cofinite hf.compl_mem_cofinite
 #align filter.nmem_hyperfilter_of_finite Filter.nmem_hyperfilter_of_finite
 
-alias nmem_hyperfilter_of_finite ← _root_.Set.Finite.nmem_hyperfilter
+alias _root_.Set.Finite.nmem_hyperfilter := nmem_hyperfilter_of_finite
 #align set.finite.nmem_hyperfilter Set.Finite.nmem_hyperfilter
 
 theorem compl_mem_hyperfilter_of_finite {s : Set α} (hf : Set.Finite s) : sᶜ ∈ hyperfilter α :=
   compl_mem_iff_not_mem.2 hf.nmem_hyperfilter
 #align filter.compl_mem_hyperfilter_of_finite Filter.compl_mem_hyperfilter_of_finite
 
-alias compl_mem_hyperfilter_of_finite ← _root_.Set.Finite.compl_mem_hyperfilter
+alias _root_.Set.Finite.compl_mem_hyperfilter := compl_mem_hyperfilter_of_finite
 #align set.finite.compl_mem_hyperfilter Set.Finite.compl_mem_hyperfilter
 
-theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite (sᶜ)) : s ∈ hyperfilter α :=
+theorem mem_hyperfilter_of_finite_compl {s : Set α} (hf : Set.Finite sᶜ) : s ∈ hyperfilter α :=
   compl_compl s ▸ hf.compl_mem_hyperfilter
 #align filter.mem_hyperfilter_of_finite_compl Filter.mem_hyperfilter_of_finite_compl
 

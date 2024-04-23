@@ -2,17 +2,14 @@
 Copyright (c) 2021 Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
-
-! This file was ported from Lean 3 source module category_theory.adjunction.adjoint_functor_theorems
-! leanprover-community/mathlib commit 361aa777b4d262212c31d7c4a245ccb23645c156
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Generator
 import Mathlib.CategoryTheory.Limits.ConeCategory
 import Mathlib.CategoryTheory.Limits.Constructions.WeaklyInitial
 import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Subobject.Comma
+
+#align_import category_theory.adjunction.adjoint_functor_theorems from "leanprover-community/mathlib"@"361aa777b4d262212c31d7c4a245ccb23645c156"
 
 /-!
 # Adjoint functor theorem
@@ -47,7 +44,6 @@ namespace CategoryTheory
 open Limits
 
 variable {J : Type v}
-
 variable {C : Type u} [Category.{v} C]
 
 /-- The functor `G : D ⥤ C` satisfies the *solution set condition* if for every `A : C`, there is a
@@ -67,7 +63,6 @@ def SolutionSetCondition {D : Type u} [Category.{v} D] (G : D ⥤ C) : Prop :=
 section GeneralAdjointFunctorTheorem
 
 variable {D : Type u} [Category.{v} D]
-
 variable (G : D ⥤ C)
 
 /-- If `G : D ⥤ C` is a right adjoint it satisfies the solution set condition.  -/
@@ -85,7 +80,7 @@ if `G` satisfies the solution set condition then `G` is a right adjoint.
 -/
 noncomputable def isRightAdjointOfPreservesLimitsOfSolutionSetCondition [HasLimits D]
     [PreservesLimits G] (hG : SolutionSetCondition G) : IsRightAdjoint G := by
-  refine' @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
+  refine @isRightAdjointOfStructuredArrowInitials _ _ _ _ G ?_
   intro A
   specialize hG A
   choose ι B f g using hG

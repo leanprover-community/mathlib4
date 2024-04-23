@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module ring_theory.valuation.integral
-! leanprover-community/mathlib commit 9b2660e1b25419042c8da10bf411aa3c67f14383
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.IntegrallyClosed
 import Mathlib.RingTheory.Valuation.Integers
+
+#align_import ring_theory.valuation.integral from "leanprover-community/mathlib"@"9b2660e1b25419042c8da10bf411aa3c67f14383"
 
 /-!
 # Integral elements over the ring of integers of a valuation
@@ -29,7 +26,6 @@ namespace Integers
 section CommRing
 
 variable {R : Type u} {Γ₀ : Type v} [CommRing R] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable {v : Valuation R Γ₀} {O : Type w} [CommRing O] [Algebra O R] (hv : Integers v O)
 
 open Polynomial
@@ -44,8 +40,8 @@ theorem mem_of_integral {x : R} (hx : IsIntegral O x) : x ∈ v.integer :=
     rw [eval₂_mul, eval₂_pow, eval₂_C, eval₂_X, v.map_mul, v.map_pow, ←
       one_mul (v x ^ p.natDegree)]
     cases' (hv.2 <| p.coeff i).lt_or_eq with hvpi hvpi
-    · exact mul_lt_mul₀ hvpi (pow_lt_pow₀ hvx <| Finset.mem_range.1 hi)
-    · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow₀ hvx (Finset.mem_range.1 hi)
+    · exact mul_lt_mul₀ hvpi (pow_lt_pow_right₀ hvx <| Finset.mem_range.1 hi)
+    · erw [hvpi]; rw [one_mul, one_mul]; exact pow_lt_pow_right₀ hvx (Finset.mem_range.1 hi)
 #align valuation.integers.mem_of_integral Valuation.Integers.mem_of_integral
 
 protected theorem integralClosure : integralClosure O R = ⊥ :=
@@ -59,11 +55,8 @@ end CommRing
 section FractionField
 
 variable {K : Type u} {Γ₀ : Type v} [Field K] [LinearOrderedCommGroupWithZero Γ₀]
-
 variable {v : Valuation K Γ₀} {O : Type w} [CommRing O] [IsDomain O]
-
 variable [Algebra O K] [IsFractionRing O K]
-
 variable (hv : Integers v O)
 
 theorem integrallyClosed : IsIntegrallyClosed O :=

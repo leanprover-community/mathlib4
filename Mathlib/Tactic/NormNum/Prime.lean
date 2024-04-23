@@ -2,15 +2,11 @@
 Copyright (c) 2015 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Jeremy Avigad, Mario Carneiro
-
-! This file was ported from Lean 3 source module data.nat.prime_norm_num
-! leanprover-community/mathlib commit 10b4e499f43088dd3bb7b5796184ad5216648ab1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Nat.Factors
 import Mathlib.Data.Nat.Prime
 import Mathlib.Tactic.NormNum.Basic
+
+#align_import data.nat.prime_norm_num from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"
 
 /-!
 # `norm_num` extensions on natural numbers
@@ -36,7 +32,7 @@ namespace Mathlib.Meta.NormNum
 
 theorem not_prime_mul_of_ble (a b n : ℕ) (h : a * b = n) (h₁ : a.ble 1 = false)
     (h₂ : b.ble 1 = false) : ¬ n.Prime :=
-  not_prime_mul' h (ble_eq_false.mp h₁) (ble_eq_false.mp h₂)
+  not_prime_mul' h (ble_eq_false.mp h₁).ne' (ble_eq_false.mp h₂).ne'
 
 /-- Produce a proof that `n` is not prime from a factor `1 < d < n`. `en` should be the expression
   that is the natural number literal `n`. -/
@@ -53,7 +49,7 @@ def MinFacHelper (n k : ℕ) : Prop :=
 
 theorem MinFacHelper.one_lt {n k : ℕ} (h : MinFacHelper n k) : 1 < n := by
   have : 2 < minFac n := h.1.trans_le h.2.2
-  rcases eq_zero_or_pos n with rfl|h
+  obtain rfl | h := n.eq_zero_or_pos
   · contradiction
   rcases (succ_le_of_lt h).eq_or_lt with rfl|h
   · contradiction
@@ -69,18 +65,17 @@ theorem minFacHelper_0 (n : ℕ)
   · exact h
 
 theorem minFacHelper_1 {n k k' : ℕ} (e : k + 2 = k') (h : MinFacHelper n k)
-  (np : minFac n ≠ k) : MinFacHelper n k' := by
+    (np : minFac n ≠ k) : MinFacHelper n k' := by
   rw [← e]
-  refine ⟨Nat.lt_add_right _ _ _ h.1, ?_, ?_⟩
+  refine ⟨Nat.lt_add_right _ h.1, ?_, ?_⟩
   · rw [add_mod, mod_self, add_zero, mod_mod]
     exact h.2.1
   rcases h.2.2.eq_or_lt with rfl|h2
   · exact (np rfl).elim
   rcases (succ_le_of_lt h2).eq_or_lt with h2|h2
   · refine ((h.1.trans_le h.2.2).ne ?_).elim
-    have h3 : 2 ∣ minFac n
-    · rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
-      norm_num
+    have h3 : 2 ∣ minFac n := by
+      rw [Nat.dvd_iff_mod_eq_zero, ← h2, succ_eq_add_one, add_mod, h.2.1]
     rw [dvd_prime <| minFac_prime h.one_lt.ne'] at h3
     norm_num at h3
     exact h3
@@ -184,15 +179,14 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
 /-- The `norm_num` extension which identifies expressions of the form `Nat.Prime n`. -/
 @[norm_num Nat.Prime _] def evalNatPrime : NormNumExt where eval {u α} e := do
   let .app (.const `Nat.Prime _) (n : Q(ℕ)) ← whnfR e | failure
-  let sℕ : Q(AddMonoidWithOne ℕ) := q(instAddMonoidWithOneNat)
-  let ⟨nn, pn⟩ ← deriveNat n sℕ
+  let ⟨nn, pn⟩ ← deriveNat n _
   let n' := nn.natLit!
   -- note: if `n` is not prime, we don't have to verify the calculation of `n.minFac`, we just have
   -- to compute it, which is a lot quicker
   let rec core : MetaM (Result q(Nat.Prime $n)) := do
     match n' with
-    | 0 => let pn : Q(IsNat $n 0) := pn; return .isFalse q(isNat_prime_0 $pn)
-    | 1 => let pn : Q(IsNat $n 1) := pn; return .isFalse q(isNat_prime_1 $pn)
+    | 0 => haveI' : $nn =Q 0 := ⟨⟩; return .isFalse q(isNat_prime_0 $pn)
+    | 1 => haveI' : $nn =Q 1 := ⟨⟩; return .isFalse q(isNat_prime_1 $pn)
     | _ =>
       let d := n'.minFac
       if d < n' then
@@ -200,7 +194,7 @@ theorem isNat_not_prime {n n' : ℕ} (h : IsNat n n') : ¬n'.Prime → ¬n.Prime
         return .isFalse q(isNat_not_prime $pn $prf)
       let r : Q(Nat.ble 2 $nn = true) := (q(Eq.refl true) : Expr)
       let .isNat _ _lit (p2n : Q(IsNat (minFac $nn) $nn)) ←
-        evalMinFac.core nn nn q(.raw_refl _) nn.natLit! | failure
+        evalMinFac.core nn _ nn q(.raw_refl _) nn.natLit! | failure
       return .isTrue q(isNat_prime_2 $pn $r $p2n)
   core
 

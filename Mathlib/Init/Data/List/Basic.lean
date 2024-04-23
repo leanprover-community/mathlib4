@@ -5,11 +5,12 @@ Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
 import Mathlib.Init.Data.Nat.Notation
-import Std.Data.Nat.Lemmas
 import Std.Data.List.Basic
 /-!
 Definitions for `List` not (yet) in `Std`
 -/
+
+set_option autoImplicit true
 
 
 open Decidable List
@@ -72,14 +73,11 @@ def getLastI [Inhabited α] : List α → α
 #align list.init List.dropLast
 
 /-- List with a single given element. -/
-@[inline] protected def ret {α : Type u} (a : α) : List α := [a]
-#align list.ret List.ret
+@[inline, deprecated List.pure] protected def ret {α : Type u} (a : α) : List α := [a] -- 2024-03-24
+#align list.ret List.pure
 
 /-- `≤` implies not `>` for lists. -/
 theorem le_eq_not_gt [LT α] : ∀ l₁ l₂ : List α, (l₁ ≤ l₂) = ¬l₂ < l₁ := fun _ _ => rfl
 #align list.le_eq_not_gt List.le_eq_not_gt
 
 end List
-
-#align list.replicate List.replicate
-#align list.length_replicate List.length_replicate

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
-
-! This file was ported from Lean 3 source module linear_algebra.smodeq
-! leanprover-community/mathlib commit 146d3d1fa59c091fedaad8a4afa09d6802886d24
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Eval
 import Mathlib.RingTheory.Ideal.Quotient
+
+#align_import linear_algebra.smodeq from "leanprover-community/mathlib"@"146d3d1fa59c091fedaad8a4afa09d6802886d24"
 
 /-!
 # modular equivalence for submodule
@@ -20,20 +17,16 @@ open Submodule
 
 open Polynomial
 
-variable {R : Type _} [Ring R]
-
-variable {M : Type _} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
-
+variable {R : Type*} [Ring R]
+variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
-
-variable {N : Type _} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
+variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
 #align smodeq SModEq
 
--- mathport name: «expr ≡ [SMOD ]»
 notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
@@ -85,6 +78,9 @@ nonrec theorem trans (hxy : x ≡ y [SMOD U]) (hyz : y ≡ z [SMOD U]) : x ≡ z
   hxy.trans hyz
 #align smodeq.trans SModEq.trans
 
+instance instTrans : Trans (SModEq U) (SModEq U) (SModEq U) where
+  trans := trans
+
 theorem add (hxy₁ : x₁ ≡ y₁ [SMOD U]) (hxy₂ : x₂ ≡ y₂ [SMOD U]) : x₁ + x₂ ≡ y₁ + y₂ [SMOD U] := by
   rw [SModEq.def] at hxy₁ hxy₂ ⊢
   simp_rw [Quotient.mk_add, hxy₁, hxy₂]
@@ -107,7 +103,7 @@ theorem comap {f : M →ₗ[R] N} (hxy : f x ≡ f y [SMOD V]) : x ≡ y [SMOD V
     show f (x - y) ∈ V from (f.map_sub x y).symm ▸ (Submodule.Quotient.eq _).1 hxy
 #align smodeq.comap SModEq.comap
 
-theorem eval {R : Type _} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
+theorem eval {R : Type*} [CommRing R] {I : Ideal R} {x y : R} (h : x ≡ y [SMOD I]) (f : R[X]) :
     f.eval x ≡ f.eval y [SMOD I] := by
   rw [SModEq.def] at h ⊢
   show Ideal.Quotient.mk I (f.eval x) = Ideal.Quotient.mk I (f.eval y)

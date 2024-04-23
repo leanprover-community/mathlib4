@@ -2,14 +2,11 @@
 Copyright (c) 2020 Joseph Myers. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
-
-! This file was ported from Lean 3 source module geometry.euclidean.sphere.basic
-! leanprover-community/mathlib commit 46b633fd842bef9469441c0209906f6dddd2b4f5
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Convex.StrictConvexBetween
 import Mathlib.Geometry.Euclidean.Basic
+
+#align_import geometry.euclidean.sphere.basic from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 
 /-!
 # Spheres
@@ -36,7 +33,7 @@ open RealInnerProductSpace
 
 namespace EuclideanGeometry
 
-variable {V : Type _} (P : Type _)
+variable {V : Type*} (P : Type*)
 
 open FiniteDimensional
 
@@ -245,7 +242,7 @@ theorem Cospherical.affineIndependent {s : Set P} (hs : Cospherical s) {p : Fin 
   intro hc
   rw [collinear_iff_of_mem (Set.mem_range_self (0 : Fin 3))] at hc
   rcases hc with ⟨v, hv⟩
-  rw [Set.forall_range_iff] at hv
+  rw [Set.forall_mem_range] at hv
   have hv0 : v ≠ 0 := by
     intro h
     have he : p 1 = p 0 := by simpa [h] using hv 1
@@ -283,7 +280,7 @@ theorem Cospherical.affineIndependent_of_mem_of_ne {s : Set P} (hs : Cospherical
   refine' hs.affineIndependent _ _
   · simp [h₁, h₂, h₃, Set.insert_subset_iff]
   · erw [Fin.cons_injective_iff, Fin.cons_injective_iff]
-    simp [h₁₂, h₁₃, h₂₃, Function.Injective]
+    simp [h₁₂, h₁₃, h₂₃, Function.Injective, eq_iff_true_of_subsingleton]
 #align euclidean_geometry.cospherical.affine_independent_of_mem_of_ne EuclideanGeometry.Cospherical.affineIndependent_of_mem_of_ne
 
 /-- The three points of a cospherical set are affinely independent. -/
@@ -349,8 +346,8 @@ theorem inner_pos_or_eq_of_dist_le_radius {s : Sphere P} {p₁ p₂ : P} (hp₁ 
         simpa using hp₂'
     · rw [← hp₁, @dist_eq_norm_vsub V, @dist_eq_norm_vsub V] at hp₂'
       nth_rw 1 [← hp₂']
-      rw [Ne.def, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
-        vsub_sub_vsub_cancel_right, ← Ne.def, smul_ne_zero_iff, vsub_ne_zero,
+      rw [Ne, inner_eq_norm_mul_iff_real, hp₂', ← sub_eq_zero, ← smul_sub,
+        vsub_sub_vsub_cancel_right, ← Ne, smul_ne_zero_iff, vsub_ne_zero,
         and_iff_left (Ne.symm h), norm_ne_zero_iff, vsub_ne_zero]
       rintro rfl
       refine' h (Eq.symm _)

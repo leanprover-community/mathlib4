@@ -2,13 +2,10 @@
 Copyright (c) 2020 Markus Himmel. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Markus Himmel, Scott Morrison
-
-! This file was ported from Lean 3 source module category_theory.abelian.images
-! leanprover-community/mathlib commit 9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.CategoryTheory.Limits.Shapes.Kernels
+
+#align_import category_theory.abelian.images from "leanprover-community/mathlib"@"9e7c80f638149bfb3504ba8ff48dfdbfc949fb1a"
 
 /-!
 # The abelian image and coimage.
@@ -38,7 +35,6 @@ open CategoryTheory.Limits
 namespace CategoryTheory.Abelian
 
 variable {C : Type u} [Category.{v} C] [HasZeroMorphisms C] [HasKernels C] [HasCokernels C]
-
 variable {P Q : C} (f : P ⟶ Q)
 
 section Image
@@ -58,7 +54,7 @@ protected abbrev factorThruImage : P ⟶ Abelian.image f :=
   kernel.lift (cokernel.π f) f <| cokernel.condition f
 #align category_theory.abelian.factor_thru_image CategoryTheory.Abelian.factorThruImage
 
--- Porting note: simp can prove this and reassoc version, removed tags
+-- Porting note (#10618): simp can prove this and reassoc version, removed tags
 /-- `f` factors through its image via the canonical morphism `p`. -/
 protected theorem image.fac : Abelian.factorThruImage f ≫ image.ι f = f :=
   kernel.lift_ι _ _ _

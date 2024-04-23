@@ -2,17 +2,15 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
-
-! This file was ported from Lean 3 source module data.option.basic
-! leanprover-community/mathlib commit f340f229b1f461aa1c8ee11e0a172d0a3b301a4a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Init.Control.Combinators
 import Mathlib.Data.Option.Defs
 import Mathlib.Logic.IsEmpty
 import Mathlib.Logic.Relator
-import Mathlib.Tactic.Common
+import Mathlib.Util.CompileInductive
+import Aesop
+
+#align_import data.option.basic from "leanprover-community/mathlib"@"f340f229b1f461aa1c8ee11e0a172d0a3b301a4a"
 
 /-!
 # Option of a type
@@ -35,20 +33,34 @@ along with a term `a : α` if the value is `True`.
 
 -/
 
+universe u
+
 namespace Option
 
-variable {α β γ δ : Type _}
+variable {α β γ δ : Type*}
 
 theorem coe_def : (fun a ↦ ↑a : α → Option α) = some :=
   rfl
 #align option.coe_def Option.coe_def
 
-#align option.get_or_else Option.getD
+theorem mem_map {f : α → β} {y : β} {o : Option α} : y ∈ o.map f ↔ ∃ x ∈ o, f x = y := by simp
+#align option.mem_map Option.mem_map
 
-@[simp]
-theorem getD_coe (x y : α) : Option.getD (↑x) y = x :=
-  rfl
-#align option.get_or_else_coe Option.getD_coe
+-- The simpNF linter says that the LHS can be simplified via `Option.mem_def`.
+-- However this is a higher priority lemma.
+-- https://github.com/leanprover/std4/issues/207
+@[simp 1100, nolint simpNF]
+theorem mem_map_of_injective {f : α → β} (H : Function.Injective f) {a : α} {o : Option α} :
+    f a ∈ o.map f ↔ a ∈ o := by
+  aesop
+
+theorem forall_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∀ y ∈ o.map f, p y) ↔ ∀ x ∈ o, p (f x) := by simp
+#align option.forall_mem_map Option.forall_mem_map
+
+theorem exists_mem_map {f : α → β} {o : Option α} {p : β → Prop} :
+    (∃ y ∈ o.map f, p y) ↔ ∃ x ∈ o, p (f x) := by simp
+#align option.exists_mem_map Option.exists_mem_map
 
 theorem coe_get {o : Option α} (h : o.isSome) : ((Option.get _ h : α) : Option α) = o :=
   Option.some_get h
@@ -62,7 +74,7 @@ theorem Mem.leftUnique : Relator.LeftUnique ((· ∈ ·) : α → Option α → 
   fun _ _ _=> mem_unique
 #align option.mem.left_unique Option.Mem.leftUnique
 
-theorem some_injective (α : Type _) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
+theorem some_injective (α : Type*) : Function.Injective (@some α) := fun _ _ ↦ some_inj.mp
 #align option.some_injective Option.some_injective
 
 /-- `Option.map f` is injective if `f` is injective. -/
@@ -91,18 +103,15 @@ theorem bind_eq_some' {x : Option α} {f : α → Option β} {b : β} :
   by cases x <;> simp
 #align option.bind_eq_some' Option.bind_eq_some'
 
-theorem bind_eq_none' {o : Option α} {f : α → Option β} :
-    o.bind f = none ↔ ∀ b a, a ∈ o → b ∉ f a := by
-  simp only [eq_none_iff_forall_not_mem, mem_def, bind_eq_some, not_exists, not_and]
 #align option.bind_eq_none' Option.bind_eq_none'
 
 theorem joinM_eq_join : joinM = @join α :=
   funext fun _ ↦ rfl
 #align option.join_eq_join Option.joinM_eq_join
 
-theorem bind_eq_bind {α β : Type _} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
+theorem bind_eq_bind' {α β : Type u} {f : α → Option β} {x : Option α} : x >>= f = x.bind f :=
   rfl
-#align option.bind_eq_bind Option.bind_eq_bind
+#align option.bind_eq_bind Option.bind_eq_bind'
 
 theorem map_coe {α β} {a : α} {f : α → β} : f <$> (a : Option α) = ↑(f a) :=
   rfl
@@ -131,7 +140,7 @@ theorem map_eq_id {f : α → α} : Option.map f = id ↔ f = id :=
 #align option.map_eq_id Option.map_eq_id
 
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ} (h : g₁ ∘ f₁ = g₂ ∘ f₂)
-  (a : α) :
+    (a : α) :
     (Option.map f₁ a).map g₁ = (Option.map f₂ a).map g₂ := by rw [map_map, h, ← map_map]
 #align option.map_comm Option.map_comm
 
@@ -226,7 +235,7 @@ theorem pbind_eq_some {f : ∀ a : α, a ∈ x → Option β} {y : β} :
     intro z h
     simp at h
   · simp only [pbind]
-    refine ⟨λ h => ⟨x, rfl, h⟩, ?_⟩
+    refine ⟨fun h ↦ ⟨x, rfl, h⟩, ?_⟩
     rintro ⟨z, H, hz⟩
     simp only [mem_def, Option.some_inj] at H
     simpa [H] using hz
@@ -246,7 +255,7 @@ theorem pmap_eq_some_iff {hf} {y : β} :
   · constructor
     · intro h
       simp only [pmap, Option.some_inj] at h
-      refine ⟨x, rfl, h⟩
+      exact ⟨x, rfl, h⟩
     · rintro ⟨a, H, rfl⟩
       simp only [mem_def, Option.some_inj] at H
       simp only [H, pmap]
@@ -300,6 +309,15 @@ theorem orElse_none' (x : Option α) : x.orElse (fun _ ↦ none) = x := by cases
 #align option.not_is_some_iff_eq_none Option.not_isSome_iff_eq_none
 
 #align option.ne_none_iff_is_some Option.ne_none_iff_isSome
+
+@[simp]
+theorem isSome_map (f : α → β) (o : Option α) : isSome (o.map f) = isSome o := by
+  cases o <;> rfl
+
+@[simp]
+theorem get_map (f : α → β) {o : Option α} (h : isSome (o.map f)) :
+    (o.map f).get h = f (o.get (by rwa [← isSome_map])) := by
+  cases o <;> [simp at h; rfl]
 
 theorem iget_mem [Inhabited α] : ∀ {o : Option α}, isSome o → o.iget ∈ o
   | some _, _ => rfl
@@ -361,6 +379,9 @@ theorem casesOn'_none_coe (f : Option α → β) (o : Option α) :
     casesOn' o (f none) (f ∘ (fun a ↦ ↑a)) = f o := by cases o <;> rfl
 #align option.cases_on'_none_coe Option.casesOn'_none_coe
 
+lemma casesOn'_eq_elim (b : β) (f : α → β) (a : Option α) :
+    Option.casesOn' a b f = Option.elim a b f := by cases a <;> rfl
+
 -- porting note: workaround for leanprover/lean4#2049
 compile_inductive% Option
 
@@ -391,9 +412,9 @@ theorem orElse_eq_none' (o o' : Option α) : o.orElse (fun _ ↦ o') = none ↔ 
 
 section
 
-open Classical
+open scoped Classical
 
-theorem choice_eq_none (α : Type _) [IsEmpty α] : choice α = none :=
+theorem choice_eq_none (α : Type*) [IsEmpty α] : choice α = none :=
   dif_neg (not_nonempty_iff_imp_false.mpr isEmptyElim)
 #align option.choice_eq_none Option.choice_eq_none
 
@@ -406,5 +427,15 @@ end
 theorem elim_none_some (f : Option α → β) : (fun x ↦ Option.elim x (f none) (f ∘ some)) = f :=
   funext fun o ↦ by cases o <;> rfl
 #align option.elim_none_some Option.elim_none_some
+
+theorem elim_comp (h : α → β) {f : γ → α} {x : α} {i : Option γ} :
+    (i.elim (h x) fun j => h (f j)) = h (i.elim x f) := by cases i <;> rfl
+
+theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ → β} {y : β}
+    {i : Option γ} : (i.elim (h x y) fun j => h (f j) (g j)) = h (i.elim x f) (i.elim y g) := by
+  cases i <;> rfl
+
+theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
+    i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
 end Option

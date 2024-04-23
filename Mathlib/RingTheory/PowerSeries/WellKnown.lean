@@ -2,15 +2,12 @@
 Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
-
-! This file was ported from Lean 3 source module ring_theory.power_series.well_known
-! leanprover-community/mathlib commit 8199f6717c150a7fe91c4534175f4cf99725978f
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.PowerSeries.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Algebra.BigOperators.NatAntidiagonal
+
+#align_import ring_theory.power_series.well_known from "leanprover-community/mathlib"@"8199f6717c150a7fe91c4534175f4cf99725978f"
 
 /-!
 # Definition of well-known power series
@@ -29,7 +26,7 @@ namespace PowerSeries
 
 section Ring
 
-variable {R S : Type _} [Ring R] [Ring S]
+variable {R S : Type*} [Ring R] [Ring S]
 
 /-- The power series for `1 / (u - x)`. -/
 def invUnitsSub (u : Rˣ) : PowerSeries R :=
@@ -50,7 +47,7 @@ theorem constantCoeff_invUnitsSub (u : Rˣ) : constantCoeff R (invUnitsSub u) = 
 theorem invUnitsSub_mul_X (u : Rˣ) : invUnitsSub u * X = invUnitsSub u * C R u - 1 := by
   ext (_ | n)
   · simp
-  · simp [n.succ_ne_zero, pow_succ]
+  · simp [n.succ_ne_zero, pow_succ']
 set_option linter.uppercaseLean3 false in
 #align power_series.inv_units_sub_mul_X PowerSeries.invUnitsSub_mul_X
 
@@ -71,7 +68,7 @@ end Ring
 
 section Field
 
-variable (A A' : Type _) [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A']
+variable (A A' : Type*) [Ring A] [Ring A'] [Algebra ℚ A] [Algebra ℚ A']
 
 open Nat
 
@@ -153,7 +150,7 @@ open RingHom
 
 open Finset Nat
 
-variable {A : Type _} [CommRing A]
+variable {A : Type*} [CommRing A]
 
 /-- Shows that $e^{aX} * e^{bX} = e^{(a + b)X}$ -/
 theorem exp_mul_exp_eq_exp_add [Algebra ℚ A] (a b : A) :
@@ -194,7 +191,7 @@ theorem exp_pow_eq_rescale_exp [Algebra ℚ A] (k : ℕ) : exp A ^ k = rescale (
   · simp only [rescale_zero, constantCoeff_exp, Function.comp_apply, map_one, cast_zero, zero_eq,
       pow_zero (exp A), coe_comp]
   · simpa only [succ_eq_add_one, cast_add, ← exp_mul_exp_eq_exp_add (k : A), ← h, cast_one,
-    id_apply, rescale_one] using pow_succ' (exp A) k
+    id_apply, rescale_one] using pow_succ (exp A) k
 #align power_series.exp_pow_eq_rescale_exp PowerSeries.exp_pow_eq_rescale_exp
 
 /-- Shows that
@@ -206,7 +203,7 @@ theorem exp_pow_sum [Algebra ℚ A] (n : ℕ) :
   simp only [exp_pow_eq_rescale_exp, rescale]
   ext
   simp only [one_div, coeff_mk, cast_pow, coe_mk, MonoidHom.coe_mk, OneHom.coe_mk,
-    coeff_exp, factorial, LinearMap.map_sum]
+    coeff_exp, factorial, map_sum]
 #align power_series.exp_pow_sum PowerSeries.exp_pow_sum
 
 end PowerSeries

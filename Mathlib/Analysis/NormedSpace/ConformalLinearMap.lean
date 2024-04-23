@@ -2,14 +2,11 @@
 Copyright (c) 2021 Yourong Zang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yourong Zang
-
-! This file was ported from Lean 3 source module analysis.normed_space.conformal_linear_map
-! leanprover-community/mathlib commit d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.NormedSpace.Basic
 import Mathlib.Analysis.NormedSpace.LinearIsometry
+
+#align_import analysis.normed_space.conformal_linear_map from "leanprover-community/mathlib"@"d1bd9c5df2867c1cb463bc6364446d57bdd9f7f1"
 
 /-!
 # Conformal Linear Maps
@@ -49,12 +46,12 @@ open Function LinearIsometry ContinuousLinearMap
 
 /-- A continuous linear map `f'` is said to be conformal if it's
     a nonzero multiple of a linear isometry. -/
-def IsConformalMap {R : Type _} {X Y : Type _} [NormedField R] [SeminormedAddCommGroup X]
+def IsConformalMap {R : Type*} {X Y : Type*} [NormedField R] [SeminormedAddCommGroup X]
     [SeminormedAddCommGroup Y] [NormedSpace R X] [NormedSpace R Y] (f' : X →L[R] Y) :=
-  ∃ (c : R) (_ : c ≠ 0) (li : X →ₗᵢ[R] Y), f' = c • li.toContinuousLinearMap
+  ∃ c ≠ (0 : R), ∃ li : X →ₗᵢ[R] Y, f' = c • li.toContinuousLinearMap
 #align is_conformal_map IsConformalMap
 
-variable {R M N G M' : Type _} [NormedField R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
+variable {R M N G M' : Type*} [NormedField R] [SeminormedAddCommGroup M] [SeminormedAddCommGroup N]
   [SeminormedAddCommGroup G] [NormedSpace R M] [NormedSpace R N] [NormedSpace R G]
   [NormedAddCommGroup M'] [NormedSpace R M'] {f : M →L[R] N} {g : N →L[R] G} {c : R}
 

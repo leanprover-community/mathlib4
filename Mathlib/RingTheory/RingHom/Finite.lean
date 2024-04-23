@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module ring_theory.ring_hom.finite
-! leanprover-community/mathlib commit b5aecf07a179c60b6b37c1ac9da952f3b565c785
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.RingTheory.RingHomProperties
+
+#align_import ring_theory.ring_hom.finite from "leanprover-community/mathlib"@"b5aecf07a179c60b6b37c1ac9da952f3b565c785"
 
 /-!
 
@@ -39,9 +36,9 @@ theorem finite_stableUnderBaseChange : StableUnderBaseChange @Finite := by
   classical
   introv h
   replace h : Module.Finite R T := by
-    rw [RingHom.Finite] at h; convert h; ext; intros; simp_rw [Algebra.smul_def]; rfl
+    rw [RingHom.Finite] at h; convert h; ext; simp_rw [Algebra.smul_def]; rfl
   suffices Module.Finite S (S ⊗[R] T) by
-    rw [RingHom.Finite]; convert this; congr; ext; intros; simp_rw [Algebra.smul_def]; rfl
+    rw [RingHom.Finite]; convert this; congr; ext; simp_rw [Algebra.smul_def]; rfl
   exact inferInstance
 #align ring_hom.finite_stable_under_base_change RingHom.finite_stableUnderBaseChange
 

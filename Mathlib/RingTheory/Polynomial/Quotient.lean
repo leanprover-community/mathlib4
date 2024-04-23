@@ -2,15 +2,12 @@
 Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, David Kurniadi Angdinata, Devon Tuma, Riccardo Brasca
-
-! This file was ported from Lean 3 source module ring_theory.polynomial.quotient
-! leanprover-community/mathlib commit 4f840b8d28320b20c87db17b3a6eef3d325fca87
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
-import Mathlib.Data.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Div
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.Ideal.QuotientOperations
+
+#align_import ring_theory.polynomial.quotient from "leanprover-community/mathlib"@"4f840b8d28320b20c87db17b3a6eef3d325fca87"
 
 /-!
 # Quotients of polynomial rings
@@ -23,7 +20,7 @@ open Polynomial
 
 namespace Polynomial
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 noncomputable def quotientSpanXSubCAlgEquivAux2 (x : R) :
     (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) ≃ₐ[R] R :=
@@ -35,7 +32,7 @@ noncomputable def quotientSpanXSubCAlgEquivAux1 (x : R) :
     (R[X] ⧸ Ideal.span {X - C x}) ≃ₐ[R] (R[X] ⧸ (RingHom.ker (aeval x).toRingHom : Ideal R[X])) :=
   @Ideal.quotientEquivAlgOfEq R R[X] _ _ _ _ _ (ker_evalRingHom x).symm
 
--- porting note: need to split this definition into two sub-definitions to prevent time out
+-- Porting note: need to split this definition into two sub-definitions to prevent time out
 /-- For a commutative ring $R$, evaluating a polynomial at an element $x \in R$ induces an
 isomorphism of $R$-algebras $R[X] / \langle X - x \rangle \cong R$. -/
 noncomputable def quotientSpanXSubCAlgEquiv (x : R) :
@@ -66,7 +63,6 @@ noncomputable def quotientSpanCXSubCAlgEquiv (x y : R) :
           simp only [Ideal.map_span, Set.image_singleton]; congr 2; exact eval_C
 #align polynomial.quotient_span_C_X_sub_C_alg_equiv Polynomial.quotientSpanCXSubCAlgEquiv
 
-set_option maxHeartbeats 350000 in
 /-- For a commutative ring $R$, evaluating a polynomial at elements $y(X) \in R[X]$ and $x \in R$
 induces an isomorphism of $R$-algebras $R[X, Y] / \langle X - x, Y - y(X) \rangle \cong R$. -/
 noncomputable def quotientSpanCXSubCXSubCAlgEquiv {x : R} {y : R[X]} :
@@ -82,7 +78,7 @@ noncomputable section
 
 open Polynomial
 
-variable {R : Type _} [CommRing R]
+variable {R : Type*} [CommRing R]
 
 theorem quotient_map_C_eq_zero {I : Ideal R} :
     ∀ a ∈ I, ((Quotient.mk (map (C : R →+* R[X]) I : Ideal R[X])).comp C) a = 0 := by
@@ -165,7 +161,7 @@ theorem polynomialQuotientEquivQuotientPolynomial_map_mk (I : Ideal R) (f : R[X]
 /-- If `P` is a prime ideal of `R`, then `R[x]/(P)` is an integral domain. -/
 theorem isDomain_map_C_quotient {P : Ideal R} (_ : IsPrime P) :
     IsDomain (R[X] ⧸ (map (C : R →+* R[X]) P : Ideal R[X])) :=
-  RingEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
+  MulEquiv.isDomain (Polynomial (R ⧸ P)) (polynomialQuotientEquivQuotientPolynomial P).symm
 #align ideal.is_domain_map_C_quotient Ideal.isDomain_map_C_quotient
 
 /-- Given any ring `R` and an ideal `I` of `R[X]`, we get a map `R → R[x] → R[x]/I`.
@@ -200,7 +196,7 @@ end Ideal
 
 namespace MvPolynomial
 
-variable {R : Type _} {σ : Type _} [CommRing R] {r : R}
+variable {R : Type*} {σ : Type*} [CommRing R] {r : R}
 
 theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
     (Ideal.Quotient.mk (Ideal.map (C : R →+* MvPolynomial σ R) I :
@@ -209,7 +205,6 @@ theorem quotient_map_C_eq_zero {I : Ideal R} {i : R} (hi : i ∈ I) :
   exact Ideal.mem_map_of_mem _ hi
 #align mv_polynomial.quotient_map_C_eq_zero MvPolynomial.quotient_map_C_eq_zero
 
-set_option synthInstance.maxHeartbeats 20100 in
 theorem eval₂_C_mk_eq_zero {I : Ideal R} {a : MvPolynomial σ R}
     (ha : a ∈ (Ideal.map (C : R →+* MvPolynomial σ R) I : Ideal (MvPolynomial σ R))) :
     eval₂Hom (C.comp (Ideal.Quotient.mk I)) X a = 0 := by

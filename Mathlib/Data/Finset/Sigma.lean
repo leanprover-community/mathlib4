@@ -2,14 +2,11 @@
 Copyright (c) 2017 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Yaël Dillies, Bhavik Mehta
-
-! This file was ported from Lean 3 source module data.finset.sigma
-! leanprover-community/mathlib commit 9003f28797c0664a49e4179487267c494477d853
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Finset.Lattice
 import Mathlib.Data.Set.Sigma
+
+#align_import data.finset.sigma from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 
 /-!
 # Finite sets in a sigma type
@@ -33,13 +30,13 @@ is computable and universe-polymorphic.
 
 open Function Multiset
 
-variable {ι : Type _}
+variable {ι : Type*}
 
 namespace Finset
 
 section Sigma
 
-variable {α : ι → Type _} {β : Type _} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
+variable {α : ι → Type*} {β : Type*} (s s₁ s₂ : Finset ι) (t t₁ t₂ : ∀ i, Finset (α i))
 
 /-- `s.sigma t` is the finset of dependent pairs `⟨i, a⟩` such that `i ∈ s` and `a ∈ t i`. -/
 protected def sigma : Finset (Σi, α i) :=
@@ -55,11 +52,11 @@ theorem mem_sigma {a : Σi, α i} : a ∈ s.sigma t ↔ a.1 ∈ s ∧ a.2 ∈ t 
 
 @[simp, norm_cast]
 theorem coe_sigma (s : Finset ι) (t : ∀ i, Finset (α i)) :
-    (s.sigma t : Set (Σi, α i)) = (s : Set ι).Sigma fun i => (t i : Set (α i)) :=
+    (s.sigma t : Set (Σ i, α i)) = (s : Set ι).sigma fun i ↦ (t i : Set (α i)) :=
   Set.ext fun _ => mem_sigma
 #align finset.coe_sigma Finset.coe_sigma
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem sigma_nonempty : (s.sigma t).Nonempty ↔ ∃ i ∈ s, (t i).Nonempty := by simp [Finset.Nonempty]
 #align finset.sigma_nonempty Finset.sigma_nonempty
 
@@ -112,11 +109,43 @@ theorem inf_sigma [SemilatticeInf β] [OrderTop β] :
   @sup_sigma _ _ βᵒᵈ _ _ _ _ _
 #align finset.inf_sigma Finset.inf_sigma
 
+theorem _root_.biSup_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨆ ij ∈ s.sigma t, f ij = ⨆ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  by simp_rw [← Finset.iSup_coe, Finset.coe_sigma, biSup_sigma]
+
+theorem _root_.biSup_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨆ (i ∈ s) (j ∈ t i), f i j = ⨆ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biSup_finsetSigma _ _ _)
+
+theorem _root_.biInf_finsetSigma [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → β) : ⨅ ij ∈ s.sigma t, f ij = ⨅ (i ∈ s) (j ∈ t i), f ⟨i, j⟩ :=
+  biSup_finsetSigma (β := βᵒᵈ) _ _ _
+
+theorem _root_.biInf_finsetSigma' [CompleteLattice β] (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → β) : ⨅ (i ∈ s) (j ∈ t i), f i j = ⨅ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  Eq.symm (biInf_finsetSigma _ _ _)
+
+theorem _root_.Set.biUnion_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋃ ij ∈ s.sigma t, f ij = ⋃ i ∈ s, ⋃ j ∈ t i, f ⟨i, j⟩ :=
+  biSup_finsetSigma _ _ _
+
+theorem _root_.Set.biUnion_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋃ i ∈ s, ⋃ j ∈ t i, f i j = ⋃ ij ∈ s.sigma t, f ij.fst ij.snd :=
+  biSup_finsetSigma' _ _ _
+
+theorem _root_.Set.biInter_finsetSigma (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : Sigma α → Set β) : ⋂ ij ∈ s.sigma t, f ij = ⋂ i ∈ s, ⋂ j ∈ t i, f ⟨i, j⟩ :=
+  biInf_finsetSigma _ _ _
+
+theorem _root_.Set.biInter_finsetSigma' (s : Finset ι) (t : ∀ i, Finset (α i))
+    (f : ∀ i, α i → Set β) : ⋂ i ∈ s, ⋂ j ∈ t i, f i j = ⋂ ij ∈ s.sigma t, f ij.1 ij.2 :=
+  biInf_finsetSigma' _ _ _
+
 end Sigma
 
 section SigmaLift
 
-variable {α β γ : ι → Type _} [DecidableEq ι]
+variable {α β γ : ι → Type*} [DecidableEq ι]
 
 /-- Lifts maps `α i → β i → Finset (γ i)` to a map `Σ i, α i → Σ i, β i → Finset (Σ i, γ i)`. -/
 def sigmaLift (f : ∀ ⦃i⦄, α i → β i → Finset (γ i)) (a : Sigma α) (b : Sigma β) :
@@ -175,8 +204,8 @@ theorem sigmaLift_nonempty :
 theorem sigmaLift_eq_empty : sigmaLift f a b = ∅ ↔ ∀ h : a.1 = b.1, f (h ▸ a.2) b.2 = ∅ := by
   simp_rw [sigmaLift]
   split_ifs with h
-  . simp [h, forall_prop_of_true h]
-  . simp [h, forall_prop_of_false h]
+  · simp [h, forall_prop_of_true h]
+  · simp [h, forall_prop_of_false h]
 #align finset.sigma_lift_eq_empty Finset.sigmaLift_eq_empty
 
 theorem sigmaLift_mono (h : ∀ ⦃i⦄ ⦃a : α i⦄ ⦃b : β i⦄, f a b ⊆ g a b) (a : Σi, α i) (b : Σi, β i) :

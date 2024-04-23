@@ -2,13 +2,10 @@
 Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
-
-! This file was ported from Lean 3 source module group_theory.submonoid.inverses
-! leanprover-community/mathlib commit 59694bd07f0a39c5beccba34bd9f413a160782bf
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.GroupTheory.Submonoid.Pointwise
+
+#align_import group_theory.submonoid.inverses from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
 /-!
 
@@ -22,6 +19,10 @@ the pointwise inverse of `N`, and we may define `leftInvEquiv : S.leftInv ≃* S
 For the pointwise inverse of submonoids of groups, please refer to
 `GroupTheory.Submonoid.Pointwise`.
 
+`N.leftInv` is distinct from `N.units`, which is the subgroup of `Mˣ` containing all units that
+are in `N`. See the implementation notes of `GroupTheory/Submonoid/Units` for more details on
+related constructions.
+
 ## TODO
 
 Define the submonoid of right inverses and two-sided inverses.
@@ -30,7 +31,7 @@ See the comments of #10679 for a possible implementation.
 -/
 
 
-variable {M : Type _}
+variable {M : Type*}
 
 namespace Submonoid
 
@@ -155,9 +156,6 @@ noncomputable def fromCommLeftInv : S.leftInv →* S where
 
 variable (hS : S ≤ IsUnit.submonoid M)
 
--- Porting note: commented out next line
- -- include hS
-
 /-- The submonoid of pointwise inverse of `S` is `MulEquiv` to `S`. -/
 @[to_additive (attr := simps apply) "The additive submonoid of pointwise additive inverse of `S` is
 `AddEquiv` to `S`."]
@@ -169,7 +167,7 @@ noncomputable def leftInvEquiv : S.leftInv ≃* S :=
     left_inv := fun x ↦
       Subtype.eq <| by
         dsimp only; generalize_proofs h; rw [← h.choose.mul_left_inj]
-        conv => rhs ; rw [h.choose_spec]
+        conv => rhs; rw [h.choose_spec]
         exact h.choose.inv_val.trans (S.mul_fromLeftInv x).symm
     right_inv := fun x ↦ by
       dsimp only [fromCommLeftInv]

@@ -2,14 +2,11 @@
 Copyright (c) 2020 Yury Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
-
-! This file was ported from Lean 3 source module linear_algebra.projection
-! leanprover-community/mathlib commit 6d584f1709bedbed9175bd9350df46599bdd7213
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.Prod
+
+#align_import linear_algebra.projection from "leanprover-community/mathlib"@"6d584f1709bedbed9175bd9350df46599bdd7213"
 
 /-!
 # Projection to a subspace
@@ -30,10 +27,10 @@ projection, complement subspace
 
 noncomputable section Ring
 
-variable {R : Type _} [Ring R] {E : Type _} [AddCommGroup E] [Module R E]
-variable {F : Type _} [AddCommGroup F] [Module R F] {G : Type _} [AddCommGroup G] [Module R G]
+variable {R : Type*} [Ring R] {E : Type*} [AddCommGroup E] [Module R E]
+variable {F : Type*} [AddCommGroup F] [Module R F] {G : Type*} [AddCommGroup G] [Module R G]
 variable (p q : Submodule R E)
-variable {S : Type _} [Semiring S] {M : Type _} [AddCommMonoid M] [Module S M] (m : Submodule S M)
+variable {S : Type*} [Semiring S] {M : Type*} [AddCommMonoid M] [Module S M] (m : Submodule S M)
 
 namespace LinearMap
 
@@ -61,7 +58,7 @@ theorem isCompl_of_proj {f : E →ₗ[R] p} (hf : ∀ x : p, f x = x) : IsCompl 
   · rw [codisjoint_iff_le_sup]
     intro x _
     rw [mem_sup']
-    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel'_right _ _⟩
+    refine' ⟨f x, ⟨x - f x, _⟩, add_sub_cancel _ _⟩
     rw [mem_ker, LinearMap.map_sub, hf, sub_self]
 #align linear_map.is_compl_of_proj LinearMap.isCompl_of_proj
 
@@ -266,15 +263,15 @@ theorem ofIsCompl_add (h : IsCompl p q) {φ₁ φ₂ : p →ₗ[R] F} {ψ₁ ψ�
 #align linear_map.of_is_compl_add LinearMap.ofIsCompl_add
 
 @[simp]
-theorem ofIsCompl_smul {R : Type _} [CommRing R] {E : Type _} [AddCommGroup E] [Module R E]
-    {F : Type _} [AddCommGroup F] [Module R F] {p q : Submodule R E} (h : IsCompl p q)
+theorem ofIsCompl_smul {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E]
+    {F : Type*} [AddCommGroup F] [Module R F] {p q : Submodule R E} (h : IsCompl p q)
     {φ : p →ₗ[R] F} {ψ : q →ₗ[R] F} (c : R) : ofIsCompl h (c • φ) (c • ψ) = c • ofIsCompl h φ ψ :=
   ofIsCompl_eq _ (by simp) (by simp)
 #align linear_map.of_is_compl_smul LinearMap.ofIsCompl_smul
 
 section
 
-variable {R₁ : Type _} [CommRing R₁] [Module R₁ E] [Module R₁ F]
+variable {R₁ : Type*} [CommRing R₁] [Module R₁ E] [Module R₁ F]
 
 /-- The linear map from `(p →ₗ[R₁] F) × (q →ₗ[R₁] F)` to `E →ₗ[R₁] F`. -/
 def ofIsComplProd {p q : Submodule R₁ E} (h : IsCompl p q) :
@@ -364,6 +361,21 @@ theorem coe_isComplEquivProj_symm_apply (f : { f : E →ₗ[R] p // ∀ x : p, f
     (p.isComplEquivProj.symm f : Submodule R E) = ker (f : E →ₗ[R] p) := rfl
 #align submodule.coe_is_compl_equiv_proj_symm_apply Submodule.coe_isComplEquivProj_symm_apply
 
+/-- The idempotent endomorphisms of a module with range equal to a submodule are in 1-1
+correspondence with linear maps to the submodule that restrict to the identity on the submodule. -/
+@[simps] def isIdempotentElemEquiv :
+    { f : Module.End R E // IsIdempotentElem f ∧ range f = p } ≃
+    { f : E →ₗ[R] p // ∀ x : p, f x = x } where
+  toFun f := ⟨f.1.codRestrict _ fun x ↦ by simp_rw [← f.2.2]; exact mem_range_self f.1 x,
+    fun ⟨x, hx⟩ ↦ Subtype.ext <| by
+      obtain ⟨x, rfl⟩ := f.2.2.symm ▸ hx
+      exact DFunLike.congr_fun f.2.1 x⟩
+  invFun f := ⟨p.subtype ∘ₗ f.1, LinearMap.ext fun x ↦ by simp [f.2], le_antisymm
+    ((range_comp_le_range _ _).trans_eq p.range_subtype)
+    fun x hx ↦ ⟨x, Subtype.ext_iff.1 <| f.2 ⟨x, hx⟩⟩⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end Submodule
 
 namespace LinearMap
@@ -376,7 +388,7 @@ of `E` to `p` and fixes every element of `p`.
 The definition allow more generally any `FunLike` type and not just linear maps, so that it can be
 used for example with `ContinuousLinearMap` or `Matrix`.
 -/
-structure IsProj {F : Type _} [FunLike F M fun _ => M] (f : F) : Prop where
+structure IsProj {F : Type*} [FunLike F M M] (f : F) : Prop where
   map_mem : ∀ x, f x ∈ m
   map_id : ∀ x ∈ m, f x = x
 #align linear_map.is_proj LinearMap.IsProj
@@ -451,7 +463,7 @@ section CommRing
 
 namespace LinearMap
 
-variable {R : Type _} [CommRing R] {E : Type _} [AddCommGroup E] [Module R E] {p : Submodule R E}
+variable {R : Type*} [CommRing R] {E : Type*} [AddCommGroup E] [Module R E] {p : Submodule R E}
 
 theorem IsProj.eq_conj_prodMap {f : E →ₗ[R] E} (h : IsProj p f) :
     f = (p.prodEquivOfIsCompl (ker f) h.isCompl).conj (prodMap id 0) := by

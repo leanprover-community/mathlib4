@@ -2,21 +2,18 @@
 Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module analysis.normed.group.hom_completion
-! leanprover-community/mathlib commit 17ef379e997badd73e5eabb4d38f11919ab3c4b3
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Analysis.Normed.Group.Hom
 import Mathlib.Analysis.Normed.Group.Completion
+
+#align_import analysis.normed.group.hom_completion from "leanprover-community/mathlib"@"17ef379e997badd73e5eabb4d38f11919ab3c4b3"
 
 /-!
 # Completion of normed group homs
 
 Given two (semi) normed groups `G` and `H` and a normed group hom `f : NormedAddGroupHom G H`,
 we build and study a normed group hom
-`f.completion  : NormedAddGroupHom (completion G) (completion H)` such that the diagram
+`f.completion : NormedAddGroupHom (completion G) (completion H)` such that the diagram
 
 ```
                    f
@@ -58,8 +55,8 @@ open Set NormedAddGroupHom UniformSpace
 
 section Completion
 
-variable {G : Type _} [SeminormedAddCommGroup G] {H : Type _} [SeminormedAddCommGroup H]
-  {K : Type _} [SeminormedAddCommGroup K]
+variable {G : Type*} [SeminormedAddCommGroup G] {H : Type*} [SeminormedAddCommGroup H]
+  {K : Type*} [SeminormedAddCommGroup K]
 
 /-- The normed group hom induced between completions. -/
 def NormedAddGroupHom.completion (f : NormedAddGroupHom G H) :
@@ -77,7 +74,7 @@ theorem NormedAddGroupHom.completion_coe_to_fun (f : NormedAddGroupHom G H) :
     (f.completion : Completion G → Completion H) = Completion.map f := rfl
 #align normed_add_group_hom.completion_coe_to_fun NormedAddGroupHom.completion_coe_to_fun
 
--- porting note: `@[simp]` moved to the next lemma
+-- Porting note: `@[simp]` moved to the next lemma
 theorem NormedAddGroupHom.completion_coe (f : NormedAddGroupHom G H) (g : G) :
     f.completion g = f g :=
   Completion.map_coe f.uniformContinuous _
@@ -137,7 +134,7 @@ theorem NormedAddGroupHom.zero_completion : (0 : NormedAddGroupHom G H).completi
 #align normed_add_group_hom.zero_completion NormedAddGroupHom.zero_completion
 
 /-- The map from a normed group to its completion, as a normed group hom. -/
-@[simps] -- porting note: added `@[simps]`
+@[simps] -- Porting note: added `@[simps]`
 def NormedAddCommGroup.toCompl : NormedAddGroupHom G (Completion G) where
   toFun := (↑)
   map_add' := Completion.toCompl.map_add
@@ -185,8 +182,8 @@ theorem NormedAddGroupHom.ker_completion {f : NormedAddGroupHom G H} {C : ℝ}
   obtain ⟨g' : G, hgg' : f g' = f g, hfg : ‖g'‖ ≤ C' * ‖f g‖⟩ := hC' (f g) (mem_range_self _ g)
   have mem_ker : g - g' ∈ f.ker := by rw [f.mem_ker, map_sub, sub_eq_zero.mpr hgg'.symm]
   refine ⟨_, ⟨⟨g - g', mem_ker⟩, rfl⟩, ?_⟩
-  have : ‖f g‖ ≤ ‖f‖ * δ
-  calc ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
+  have : ‖f g‖ ≤ ‖f‖ * δ := calc
+    ‖f g‖ ≤ ‖f‖ * ‖hatg - g‖ := by simpa [hatg_in] using f.completion.le_opNorm (hatg - g)
     _ ≤ ‖f‖ * δ := by gcongr
   calc ‖hatg - ↑(g - g')‖ = ‖hatg - g + g'‖ := by rw [Completion.coe_sub, sub_add]
     _ ≤ ‖hatg - g‖ + ‖(g' : Completion G)‖ := norm_add_le _ _
@@ -200,9 +197,8 @@ end Completion
 
 section Extension
 
-variable {G : Type _} [SeminormedAddCommGroup G]
-
-variable {H : Type _} [SeminormedAddCommGroup H] [SeparatedSpace H] [CompleteSpace H]
+variable {G : Type*} [SeminormedAddCommGroup G]
+variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a
 `NormedAddGroupHom (completion G) H`. -/

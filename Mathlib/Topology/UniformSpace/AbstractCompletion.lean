@@ -2,14 +2,11 @@
 Copyright (c) 2019 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
-
-! This file was ported from Lean 3 source module topology.uniform_space.abstract_completion
-! leanprover-community/mathlib commit dc6c365e751e34d100e80fe6e314c3c3e0fd2988
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Topology.UniformSpace.UniformEmbedding
 import Mathlib.Topology.UniformSpace.Equiv
+
+#align_import topology.uniform_space.abstract_completion from "leanprover-community/mathlib"@"dc6c365e751e34d100e80fe6e314c3c3e0fd2988"
 
 /-!
 # Abstract theory of Hausdorff completions of uniform spaces
@@ -68,8 +65,8 @@ structure AbstractCompletion (α : Type u) [UniformSpace α] where
   uniformStruct : UniformSpace space
   /-- The completion is complete. -/
   complete : CompleteSpace space
-  /-- The completion is a separated space. -/
-  separation : SeparatedSpace space
+  /-- The completion is a T₀ space. -/
+  separation : T0Space space
   /-- The map into the completion is uniform-inducing. -/
   uniformInducing : UniformInducing coe
   /-- The map into the completion has dense range. -/
@@ -81,14 +78,14 @@ attribute [local instance]
 
 namespace AbstractCompletion
 
-variable {α : Type _} [UniformSpace α] (pkg : AbstractCompletion α)
+variable {α : Type*} [UniformSpace α] (pkg : AbstractCompletion α)
 
 local notation "hatα" => pkg.space
 
 local notation "ι" => pkg.coe
 
 /-- If `α` is complete, then it is an abstract completion of itself. -/
-def ofComplete [SeparatedSpace α] [CompleteSpace α] : AbstractCompletion α :=
+def ofComplete [T0Space α] [CompleteSpace α] : AbstractCompletion α :=
   mk α id inferInstance inferInstance inferInstance uniformInducing_id denseRange_id
 #align abstract_completion.of_complete AbstractCompletion.ofComplete
 
@@ -114,7 +111,7 @@ theorem induction_on {p : hatα → Prop} (a : hatα) (hp : IsClosed { a | p a }
   isClosed_property pkg.dense hp ih a
 #align abstract_completion.induction_on AbstractCompletion.induction_on
 
-variable {β : Type _}
+variable {β : Type*}
 
 protected theorem funext [TopologicalSpace β] [T2Space β] {f g : hatα → β} (hf : Continuous f)
     (hg : Continuous g) (h : ∀ a, f (ι a) = g (ι a)) : f = g :=
@@ -156,7 +153,7 @@ theorem continuous_extend : Continuous (pkg.extend f) :=
   pkg.uniformContinuous_extend.continuous
 #align abstract_completion.continuous_extend AbstractCompletion.continuous_extend
 
-variable [SeparatedSpace β]
+variable [T0Space β]
 
 theorem extend_unique (hf : UniformContinuous f) {g : hatα → β} (hg : UniformContinuous g)
     (h : ∀ a : α, f a = g (ι a)) : pkg.extend f = g := by
@@ -211,7 +208,7 @@ theorem map_unique {f : α → β} {g : hatα → hatβ} (hg : UniformContinuous
   pkg.funext (pkg.continuous_map _ _) hg.continuous <| by
     intro a
     change pkg.extend (ι' ∘ f) _ = _
-    simp only [(· ∘ ·), h, ←comp_apply (f := g)]
+    simp_rw [(· ∘ ·), h, ← comp_apply (f := g)]
     rw [pkg.extend_coe (hg.comp pkg.uniformContinuous_coe)]
 #align abstract_completion.map_unique AbstractCompletion.map_unique
 
@@ -220,9 +217,9 @@ theorem map_id : pkg.map pkg id = id :=
   pkg.map_unique pkg uniformContinuous_id fun _ => rfl
 #align abstract_completion.map_id AbstractCompletion.map_id
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
-theorem extend_map [CompleteSpace γ] [SeparatedSpace γ] {f : β → γ} {g : α → β}
+theorem extend_map [CompleteSpace γ] [T0Space γ] {f : β → γ} {g : α → β}
     (hf : UniformContinuous f) (hg : UniformContinuous g) :
     pkg'.extend f ∘ map g = pkg.extend (f ∘ g) :=
   pkg.funext (pkg'.continuous_extend.comp (pkg.continuous_map pkg' _)) pkg.continuous_extend
@@ -318,7 +315,7 @@ local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type _} [UniformSpace γ]
+variable {γ : Type*} [UniformSpace γ]
 
 open Function
 
@@ -327,9 +324,9 @@ protected def extend₂ (f : α → β → γ) : hatα → hatβ → γ :=
   curry <| (pkg.prod pkg').extend (uncurry f)
 #align abstract_completion.extend₂ AbstractCompletion.extend₂
 
-section SeparatedSpace
+section T0Space
 
-variable [SeparatedSpace γ] {f : α → β → γ}
+variable [T0Space γ] {f : α → β → γ}
 
 theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b : β) :
     pkg.extend₂ pkg' f (ι a) (ι' b) = f a b :=
@@ -337,10 +334,9 @@ theorem extension₂_coe_coe (hf : UniformContinuous <| uncurry f) (a : α) (b :
     (pkg.prod pkg').extend_coe hf _
 #align abstract_completion.extension₂_coe_coe AbstractCompletion.extension₂_coe_coe
 
-end SeparatedSpace
+end T0Space
 
 variable {f : α → β → γ}
-
 variable [CompleteSpace γ] (f)
 
 theorem uniformContinuous_extension₂ : UniformContinuous₂ (pkg.extend₂ pkg' f) := by
@@ -358,7 +354,7 @@ local notation "hatβ" => pkg'.space
 
 local notation "ι'" => pkg'.coe
 
-variable {γ : Type _} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
+variable {γ : Type*} [UniformSpace γ] (pkg'' : AbstractCompletion γ)
 
 local notation "hatγ" => pkg''.space
 

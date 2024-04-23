@@ -2,7 +2,6 @@
 Copyright (c) 2020 Robert Y. Lewis. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
-Ported by: Scott Morrison
 -/
 
 import Mathlib.Tactic.Linarith.Elimination
@@ -21,6 +20,8 @@ This file implements the reconstruction.
 The public facing declaration in this file is `proveFalseByLinarith`.
 -/
 
+set_option autoImplicit true
+
 open Lean Elab Tactic Meta
 
 namespace Qq
@@ -32,9 +33,8 @@ def ofNatQ (α : Q(Type $u)) (_ : Q(Semiring $α)) (n : ℕ) : Q($α) :=
   | 1 => q(1 : $α)
   | k+2 =>
     have lit : Q(ℕ) := mkRawNatLit n
-    let k : Q(ℕ) := mkRawNatLit k
-    let _x : Q(Nat.AtLeastTwo $lit) :=
-      (q(instAtLeastTwoHAddNatInstHAddInstAddNatOfNat (n := $k)) : Expr)
+    have k : Q(ℕ) := mkRawNatLit k
+    haveI : $lit =Q $k + 2 := ⟨⟩
     q(OfNat.ofNat $lit)
 
 end Qq
@@ -109,7 +109,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
       return t
   | ((h, c)::t) => do
       let (iq, h') ← mkSingleCompZeroOf c h
-      let (_, t) ← t.foldlM (λ pr ce => step pr.1 pr.2 ce.1 ce.2) (iq, h')
+      let (_, t) ← t.foldlM (fun pr ce ↦ step pr.1 pr.2 ce.1 ce.2) (iq, h')
       return t
   where
     /--
@@ -120,7 +120,7 @@ def mkLTZeroProof : List (Expr × ℕ) → MetaM Expr
     step (c : Ineq) (pf npf : Expr) (coeff : ℕ) : MetaM (Ineq × Expr) := do
       let (iq, h') ← mkSingleCompZeroOf coeff npf
       let (nm, niq) := addIneq c iq
-      return (niq, ←mkAppM nm #[pf, h'])
+      return (niq, ← mkAppM nm #[pf, h'])
 
 /-- If `prf` is a proof of `t R s`, `leftOfIneqProof prf` returns `t`. -/
 def leftOfIneqProof (prf : Expr) : MetaM Expr := do
@@ -174,7 +174,7 @@ In the current implementation, this is the Fourier Motzkin elimination routine i
 `Elimination.lean`, but other oracles could easily be swapped in.
 
 The returned certificate is a map `m` from hypothesis indices to natural number coefficients.
-If our set of hypotheses has the form  `{tᵢ Rᵢ 0}`,
+If our set of hypotheses has the form `{tᵢ Rᵢ 0}`,
 then the elimination process should have guaranteed that
 1.\ `∑ (m i)*tᵢ = 0`,
 with at least one `i` such that `m i > 0` and `Rᵢ` is `<`.

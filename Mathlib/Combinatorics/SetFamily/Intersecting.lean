@@ -2,14 +2,11 @@
 Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
-
-! This file was ported from Lean 3 source module combinatorics.set_family.intersecting
-! leanprover-community/mathlib commit d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Card
 import Mathlib.Order.UpperLower.Basic
+
+#align_import combinatorics.set_family.intersecting from "leanprover-community/mathlib"@"d90e4e186f1d18e375dcd4e5b5f6364b01cb3e46"
 
 /-!
 # Intersecting families
@@ -32,7 +29,7 @@ This file defines intersecting families and proves their basic properties.
 
 open Finset
 
-variable {α : Type _}
+variable {α : Type*}
 
 namespace Set
 
@@ -64,8 +61,8 @@ theorem intersecting_empty : (∅ : Set α).Intersecting := fun _ => False.elim
 theorem intersecting_singleton : ({a} : Set α).Intersecting ↔ a ≠ ⊥ := by simp [Intersecting]
 #align set.intersecting_singleton Set.intersecting_singleton
 
-theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥) (h : ∀ b ∈ s, ¬Disjoint a b) :
-    (insert a s).Intersecting := by
+protected theorem Intersecting.insert (hs : s.Intersecting) (ha : a ≠ ⊥)
+    (h : ∀ b ∈ s, ¬Disjoint a b) : (insert a s).Intersecting := by
   rintro b (rfl | hb) c (rfl | hc)
   · rwa [disjoint_self]
   · exact h _ hc
@@ -186,7 +183,7 @@ theorem Intersecting.is_max_iff_card_eq (hs : (s : Set α).Intersecting) :
       image_eq_preimage_of_inverse compl_compl compl_compl]
     refine' eq_univ_of_forall fun a => _
     simp_rw [mem_union, mem_preimage]
-    by_contra' ha
+    by_contra! ha
     refine' s.ne_insert_of_not_mem _ ha.1 (h _ _ <| s.subset_insert _)
     rw [coe_insert]
     refine' hs.insert _ fun b hb hab => ha.2 <| (hs.isUpperSet' h) hab.le_compl_left hb

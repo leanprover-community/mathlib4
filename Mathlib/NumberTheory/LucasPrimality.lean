@@ -2,16 +2,13 @@
 Copyright (c) 2020 Bolton Bailey. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bolton Bailey
-
-! This file was ported from Lean 3 source module number_theory.lucas_primality
-! leanprover-community/mathlib commit 70fd9563a21e7b963887c9360bd29b2393e6225a
-! Please do not edit these lines, except to modify the commit id
-! if you have ported upstream changes.
 -/
 import Mathlib.Data.Fintype.Basic
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Tactic.Zify
 import Mathlib.Data.Nat.Totient
+
+#align_import number_theory.lucas_primality from "leanprover-community/mathlib"@"70fd9563a21e7b963887c9360bd29b2393e6225a"
 
 /-!
 # The Lucas test for primes.
@@ -59,7 +56,7 @@ theorem lucas_primality (p : ℕ) (a : ZMod p) (ha : a ^ (p - 1) = 1)
   -- Prove cardinality of `Units` of `ZMod p` is both `≤ p-1` and `≥ p-1`
   refine' le_antisymm (Nat.card_units_zmod_lt_sub_one hp1) _
   have hp' : p - 2 + 1 = p - 1 := tsub_add_eq_add_tsub hp1
-  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ, hp', ha])
+  let a' : (ZMod p)ˣ := Units.mkOfMulEqOne a (a ^ (p - 2)) (by rw [← pow_succ', hp', ha])
   calc
     p - 1 = orderOf a := order_of_a.symm
     _ = orderOf a' := (orderOf_injective (Units.coeHom (ZMod p)) Units.ext a')
