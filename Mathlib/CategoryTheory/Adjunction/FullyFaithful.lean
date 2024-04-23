@@ -193,7 +193,7 @@ lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
 instance [R.Faithful] [R.Full] {Y : D} : IsIso (h.unit.app (R.obj Y)) :=
   isIso_of_comp_hom_eq_id _ (h.right_triangle_components Y)
 
-lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] (Y : C) :
+lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     IsIso (h.unit.app Y) ↔ Y ∈ R.essImage := by
   constructor
   · intro
