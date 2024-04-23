@@ -82,7 +82,8 @@ lemma mul_ppow (x y : M) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n :=
 
 variable (M)
 
-@[to_additive (attr := simps)]
+/-- `(· ^ (n : ℕ+))` as a `MulHom`. -/
+@[to_additive (attr := simps) "`((n : ℕ+) • ·)` as an `AddHom`."]
 def ppowMulHom (n : ℕ+) : M →ₙ* M where
   toFun x := x ^ n
   map_mul' := mul_ppow (n := n)

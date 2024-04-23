@@ -290,6 +290,7 @@ attribute [to_additive existing] ppowRec
 class Semigroup (G : Type u) extends Mul G where
   /-- Multiplication is associative -/
   protected mul_assoc : ∀ a b c : G, a * b * c = a * (b * c)
+  /-- Positive integer power operation -/
   ppow : ∀ n : ℕ, 0 < n → G → G := ppowRec
   ppow_one : ∀ g, ppow 1 Nat.one_pos g = g := by intros; rfl
   ppow_succ : ∀ g n, ppow (n + 2) (n + 1).succ_pos g = g * ppow (n + 1) n.succ_pos g :=
@@ -300,6 +301,7 @@ class Semigroup (G : Type u) extends Mul G where
 class AddSemigroup (G : Type u) extends Add G where
   /-- Addition is associative -/
   protected add_assoc : ∀ a b c : G, a + b + c = a + (b + c)
+  /-- Positive integer scalar multiplication -/
   psmul : ∀ n : ℕ, 0 < n → G → G := psmulRec
   psmul_one : ∀ g, psmul 1 Nat.one_pos g = g := by intros; rfl
   psmul_succ : ∀ g n, psmul (n + 2) (n + 1).succ_pos g = g + psmul (n + 1) n.succ_pos g :=
