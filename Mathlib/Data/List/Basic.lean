@@ -1801,11 +1801,7 @@ theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_get_cons n.2).symm
-
-@[deprecated cons_get_drop_succ]
-theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
-    l.nthLe n hn :: l.drop (n + 1) = l.drop n := cons_get_drop_succ
-#align list.cons_nth_le_drop_succ List.cons_nthLe_drop_succ
+#align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 
 #align list.drop_nil List.drop_nil
 #align list.drop_one List.drop_one
@@ -1820,22 +1816,8 @@ theorem cons_nthLe_drop_succ {l : List α} {n : ℕ} (hn : n < l.length) :
 #align list.drop_append List.drop_append
 #align list.drop_sizeof_le List.drop_sizeOf_le
 
-set_option linter.deprecated false in
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the big list to the small list. -/
-@[deprecated get_drop]
-theorem nthLe_drop (L : List α) {i j : ℕ} (h : i + j < L.length) :
-    nthLe L (i + j) h = nthLe (L.drop i) j (by rw [length_drop]; omega) := get_drop ..
-#align list.nth_le_drop List.nthLe_drop
-
-set_option linter.deprecated false in
-/-- The `i + j`-th element of a list coincides with the `j`-th element of the list obtained by
-dropping the first `i` elements. Version designed to rewrite from the small list to the big list. -/
-@[deprecated get_drop']
-theorem nthLe_drop' (L : List α) {i j : ℕ} (h : j < (L.drop i).length) :
-    nthLe (L.drop i) j h = nthLe L (i + j) (have := length_drop i L; by omega) :=
-  get_drop' ..
-#align list.nth_le_drop' List.nthLe_drop'
+#align list.nth_le_drop List.get_drop
+#align list.nth_le_drop' List.get_drop'
 
 #align list.nth_drop List.get?_drop
 #align list.drop_drop List.drop_drop
@@ -3606,12 +3588,7 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
-set_option linter.deprecated false in
-@[deprecated]
-theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
-  | a, [] => by simp [ilast']
-  | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
-#align list.ilast'_mem List.ilast'_mem
+#noalign list.ilast'_mem --List.ilast'_mem
 
 @[simp]
 theorem get_attach (L : List α) (i) :
