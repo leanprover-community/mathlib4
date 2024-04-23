@@ -457,11 +457,25 @@ lemma IsStrictlySupportedOutside.isSupportedOutside (h : K.IsStrictlySupportedOu
     exact ShortComplex.exact_of_isZero_X₂ _ (h.isZero i)
 
 instance [HasZeroObject C] : (0 : HomologicalComplex C c').IsStrictlySupported e where
-  isZero i _ := by
-    rw [IsZero.iff_id_eq_zero]
-    change (eval C c' i).map (𝟙 0) = 0
-    rw [id_zero, eval_map, zero_f]
+  isZero i _ := (eval _ _ i).map_isZero (Limits.isZero_zero _)
 
+lemma isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside :
+    IsZero K ↔ K.IsStrictlySupported e ∧ K.IsStrictlySupportedOutside e := by
+  constructor
+  · intro hK
+    constructor
+    all_goals
+      constructor
+      intros
+      exact (eval _ _ _).map_isZero hK
+  · rintro ⟨h₁, h₂⟩
+    rw [IsZero.iff_id_eq_zero]
+    ext n
+    apply IsZero.eq_of_src
+    by_cases hn : ∃ i, e.f i = n
+    · obtain ⟨i, rfl⟩ := hn
+      exact h₂.isZero i
+    · exact K.isZero_X_of_isStrictlySupported e _ (by simpa using hn)
 
 instance [K.IsStrictlySupported e] : K.op.IsStrictlySupported e.op where
   isZero j hj' := (K.isZero_X_of_isStrictlySupported e j hj').op

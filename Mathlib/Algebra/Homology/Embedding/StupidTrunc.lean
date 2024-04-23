@@ -29,6 +29,21 @@ lemma isZero_stupidTrunc_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.stupidTrunc e).X i') :=
   isZero_extend_X _ _ _ hi'
 
+lemma isZero_stupidTrunc_iff :
+    IsZero (K.stupidTrunc e) ↔ K.IsStrictlySupportedOutside e := by
+  constructor
+  · intro h
+    constructor
+    intro i
+    exact ((eval _ _ (e.f i)).map_isZero h).of_iso (K.stupidTruncXIso e rfl).symm
+  · intro h
+    rw [isZero_iff_isStrictlySupported_and_isStrictlySupportedOutside _ e]
+    constructor
+    · infer_instance
+    · constructor
+      intro i
+      exact (h.isZero i).of_iso (K.stupidTruncXIso e rfl)
+
 variable {K L M}
 
 noncomputable def stupidTruncMap : K.stupidTrunc e ⟶ L.stupidTrunc e :=
@@ -54,6 +69,13 @@ lemma stupidTruncMap_comp_f (i' : ι') :
 @[simp, reassoc]
 lemma stupidTruncMap_comp :
     stupidTruncMap (φ ≫ φ') e = stupidTruncMap φ e ≫ stupidTruncMap φ' e := by aesop_cat
+
+@[reassoc (attr := simp)]
+lemma stupidTruncMap_stupidTruncXIso_hom {i : ι} {i' : ι'} (hi : e.f i = i') :
+    (stupidTruncMap φ e).f i' ≫ (L.stupidTruncXIso e hi).hom =
+      (K.stupidTruncXIso e hi).hom ≫ φ.f i' := by
+  subst hi
+  simp [stupidTruncMap, stupidTruncXIso, extendMap_f _ _ rfl]
 
 end
 
@@ -112,6 +134,27 @@ instance (i' : ι') : Mono ((K.ιStupidTrunc e).f i') := by
     simpa using hi'
 
 instance : Mono (K.ιStupidTrunc e) := mono_of_mono_f _ inferInstance
+
+lemma isIso_ιStupidTrunc_iff :
+    IsIso (K.ιStupidTrunc e) ↔ K.IsStrictlySupported e := by
+  constructor
+  · intro
+    apply isStrictlySupported_of_iso (asIso (K.ιStupidTrunc e))
+  · intro
+    have : ∀ i', IsIso ((K.ιStupidTrunc e).f i') := fun i' => by
+      by_cases hi' : ∃ i, e.f i = i'
+      · obtain ⟨i, rfl⟩ := hi'
+        infer_instance
+      · refine' ⟨0, _, _⟩
+        all_goals
+          apply IsZero.eq_of_src
+          apply isZero_X_of_isStrictlySupported _ e
+          simpa using hi'
+    apply Hom.isIso_of_components
+
+instance [K.IsStrictlySupported e] : IsIso (K.ιStupidTrunc e) := by
+  rw [isIso_ιStupidTrunc_iff]
+  infer_instance
 
 variable {K L}
 
@@ -181,6 +224,27 @@ instance (i' : ι') : Epi ((K.πStupidTrunc e).f i') := by
     simpa using hi'
 
 instance : Epi (K.πStupidTrunc e) := epi_of_epi_f _ inferInstance
+
+lemma isIso_πStupidTrunc_iff :
+    IsIso (K.πStupidTrunc e) ↔ K.IsStrictlySupported e := by
+  constructor
+  · intro
+    apply isStrictlySupported_of_iso (asIso (K.πStupidTrunc e)).symm
+  · intro
+    have : ∀ i', IsIso ((K.πStupidTrunc e).f i') := fun i' => by
+      by_cases hi' : ∃ i, e.f i = i'
+      · obtain ⟨i, rfl⟩ := hi'
+        infer_instance
+      · refine' ⟨0, _, _⟩
+        all_goals
+          apply IsZero.eq_of_src
+          apply isZero_X_of_isStrictlySupported _ e
+          simpa using hi'
+    apply Hom.isIso_of_components
+
+instance [K.IsStrictlySupported e] : IsIso (K.πStupidTrunc e) := by
+  rw [isIso_πStupidTrunc_iff]
+  infer_instance
 
 variable {K L}
 

@@ -64,11 +64,6 @@ end GradedObject
 
 namespace Limits
 
-lemma IsZero.obj' {X : C} (hX : IsZero X) {D : Type*} [Category D]
-    (F : C ⥤ D) [HasZeroMorphisms C] [HasZeroMorphisms D]
-    [F.PreservesZeroMorphisms] : IsZero (F.obj X) := by
-  rw [IsZero.iff_id_eq_zero, ← F.map_id, hX.eq_of_src (𝟙 _) 0, F.map_zero]
-
 section
 
 variable [IsIdempotentComplete C] {I : Type*}
@@ -197,9 +192,10 @@ section
 
 instance : (toGradedObjectFunctor C c₁ c₂).Additive where
 
-variable (S : ShortComplex (HomologicalComplex₂ C c₁ c₂))
+variable (S S' : ShortComplex (HomologicalComplex₂ C c₁ c₂)) (φ : S ⟶ S')
   (c : ComplexShape ι) [DecidableEq ι] [TotalComplexShape c₁ c₂ c]
   [S.X₁.HasTotal c] [S.X₂.HasTotal c] [S.X₃.HasTotal c]
+  [S'.X₁.HasTotal c] [S'.X₂.HasTotal c] [S'.X₃.HasTotal c]
 
 @[simps]
 noncomputable def total.shortComplex : ShortComplex (HomologicalComplex C c) where
@@ -221,6 +217,20 @@ noncomputable def total.shortComplexSplitting
     infer_instance
   exact GradedObject.shortComplexSplittingEquiv _
     (GradedObject.mapShortComplexSplitting _ _ σ) i
+
+variable {S S'}
+
+@[simps]
+noncomputable def total.mapShortComplex : total.shortComplex S c ⟶ total.shortComplex S' c where
+  τ₁ := total.map φ.τ₁ _
+  τ₂ := total.map φ.τ₂ _
+  τ₃ := total.map φ.τ₃ _
+  comm₁₂ := by
+    dsimp
+    simp only [← total.map_comp, φ.comm₁₂]
+  comm₂₃ := by
+    dsimp
+    simp only [← total.map_comp, φ.comm₂₃]
 
 end
 
@@ -291,11 +301,23 @@ lemma isIso_stupidFiltrationGE_map_f (n₀ n₁ : ℤ) (h : n₀ ≤ n₁) (k : 
     exact Or.inl ⟨j, by dsimp; omega⟩
   · exact Or.inr (fun i₂ => by dsimp; omega)
 
+variable {K L} in
+@[simps]
+noncomputable def mapShortComplexStupidFiltrationGE (φ : K ⟶ L) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    K.shortComplexStupidFiltrationGE n₀ n₁ h ⟶ L.shortComplexStupidFiltrationGE n₀ n₁ h where
+  τ₁ := ((stupidFiltrationGEFunctor C).obj ⟨n₁⟩).map φ
+  τ₂ := ((stupidFiltrationGEFunctor C).obj ⟨n₀⟩).map φ
+  τ₃ := (HomologicalComplex.single C (up ℤ) n₀).map (φ.f n₀)
+  comm₁₂ := by dsimp; simp
+  comm₂₃ := by
+    apply HomologicalComplex.to_single_hom_ext
+    simp [stupidFiltrationGEObjToSingle, HomologicalComplex.single_map_f_self]
+
 end
 
 section
 
-variable (C : Type*) [Category C] [Preadditive C] [HasZeroObject C]
+variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
   (K L : CochainComplex C ℤ) (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁)
 
 noncomputable def shortComplexStupidFiltrationGESplitting (k : ℤ) :
@@ -339,7 +361,7 @@ section
 variable (C : Type*) [Category C] [HasZeroMorphisms C] [HasZeroObject C]
   {ι₁ ι₂ : Type*} [DecidableEq ι₁] (c₁ : ComplexShape ι₁) (c₂ : ComplexShape ι₂)
 
-noncomputable def singleColumn (i₁ : ι₁) :
+noncomputable abbrev singleColumn (i₁ : ι₁) :
     HomologicalComplex C c₂ ⥤ HomologicalComplex₂ C c₁ c₂ :=
   HomologicalComplex.single (HomologicalComplex C c₂) c₁ i₁
 
@@ -353,7 +375,7 @@ lemma isZero_singleColumn_X (K : HomologicalComplex C c₂)
 lemma isZero_singleColumn_X_X (K : HomologicalComplex C c₂)
     (i₁ i₁' : ι₁) (h : i₁' ≠ i₁) (i₂ : ι₂) :
     IsZero ((((singleColumn C c₁ c₂ i₁).obj K).X i₁').X i₂) :=
-  (isZero_singleColumn_X c₁ K i₁ i₁' h).obj' (HomologicalComplex.eval C c₂ i₂)
+  (HomologicalComplex.eval C c₂ i₂).map_isZero (isZero_singleColumn_X c₁ K i₁ i₁' h)
 
 noncomputable def singleColumnXIso (K : HomologicalComplex C c₂) (i₁ : ι₁) :
     ((singleColumn C c₁ c₂ i₁).obj K).X i₁ ≅ K := by
@@ -474,6 +496,13 @@ lemma singleColumnObjTotalXIso_inv
         ((singleColumn C (up ℤ) (up ℤ) x).obj L).ιTotal (up ℤ) x y n h := by
   rfl
 
+@[reassoc]
+lemma singleColumn_ιTotal
+    (L : CochainComplex C ℤ) (x y n : ℤ) (h : x + y = n) :
+    ((singleColumn C (up ℤ) (up ℤ) x).obj L).ιTotal (up ℤ) x y n h =
+      (singleColumnXXIso (up ℤ) L x y).hom ≫(singleColumnObjTotalXIso L x y n h).inv := by
+  rw [singleColumnObjTotalXIso_inv, Iso.hom_inv_id_assoc]
+
 noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (h : x + x' = 0) :
     ((singleColumn C (up ℤ) (up ℤ) x).obj L).total (up ℤ) ≅ L⟦x'⟧ :=
   Iso.symm (HomologicalComplex.Hom.isoOfComponents
@@ -485,6 +514,28 @@ noncomputable def singleColumnObjTotal (L : CochainComplex C ℤ) (x x' : ℤ) (
         (by dsimp; omega) _ (by dsimp; omega)]
       obtain rfl : x' = -x := by omega
       simp))
+
+@[reassoc (attr := simp)]
+noncomputable def singleColumnObjTotal_inv_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+    (x x' : ℤ) (h : x + x' = 0) :
+    (singleColumnObjTotal K x x' h).inv ≫
+      total.map ((HomologicalComplex.single _ (up ℤ) x).map φ) (up ℤ) =
+      φ⟦x'⟧' ≫ (singleColumnObjTotal L x x' h).inv := by
+  ext n
+  dsimp [singleColumnObjTotal]
+  rw [singleColumnObjTotalXIso_inv, singleColumnObjTotalXIso_inv, assoc, ιTotal_map,
+    HomologicalComplex.single_map_f_self]
+  simp [singleColumnXXIso, singleColumnXIso, HomologicalComplex.singleObjXSelf,
+    HomologicalComplex.singleObjXIsoOfEq]
+
+@[reassoc (attr := simp)]
+noncomputable def singleColumnObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L)
+    (x x' : ℤ) (h : x + x' = 0) :
+    total.map ((HomologicalComplex.single _ (up ℤ) x).map φ) (up ℤ) ≫
+      (singleColumnObjTotal L x x' h).hom =
+      (singleColumnObjTotal K x x' h).hom ≫ φ⟦x'⟧' := by
+  rw [← cancel_epi (singleColumnObjTotal K x x' h).inv,
+    singleColumnObjTotal_inv_naturality_assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc]
 
 lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
     [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
@@ -504,8 +555,8 @@ lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) (
       by_contra!
       obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hx
       exact h ⟨⟨k, by omega⟩, by simp only [Subtype.mk.injEq, Prod.mk.injEq]; omega⟩
-    · exact (CochainComplex.isZero_of_isStrictlyLE K x₀ x (by simpa using hx)).obj'
-        (HomologicalComplex.eval _ _ y)
+    · exact (HomologicalComplex.eval _ _ y).map_isZero
+        (CochainComplex.isZero_of_isStrictlyLE K x₀ x (by simpa using hx))
 
 lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
     (x₀ x₁ : ℤ)
@@ -523,30 +574,28 @@ lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up 
   · rintro ⟨⟨x, y⟩, hxy : x + y = n⟩ h
     by_cases hx : x₀ ≤ x
     · obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hx
-      refine (CochainComplex.isZero_of_isStrictlyLE K x₁ x ?_).obj'
-          (HomologicalComplex.eval _ _ y)
+      refine (HomologicalComplex.eval _ _ y).map_isZero
+        (CochainComplex.isZero_of_isStrictlyLE K x₁ x ?_)
       by_contra!
       exact h ⟨⟨k, by omega⟩, by simp only [Subtype.mk.injEq, Prod.mk.injEq]; omega⟩
-    · exact (CochainComplex.isZero_of_isStrictlyGE K x₀ x (by simpa using hx)).obj'
-        (HomologicalComplex.eval _ _ y)
+    · exact (HomologicalComplex.eval _ _ y).map_isZero
+        (CochainComplex.isZero_of_isStrictlyGE K x₀ x (by simpa using hx))
 
-/-lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
+lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
     (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ x₁ : ℤ)
     [CochainComplex.IsStrictlyGE K x₀] [CochainComplex.IsStrictlyLE K x₁]
     [CochainComplex.IsStrictlyGE L x₀] [CochainComplex.IsStrictlyLE L x₁]
     (hφ : ∀ (i : ℤ), x₀ ≤ i → i ≤ x₁ → QuasiIso (φ.f i)) :
     QuasiIso (total.map φ (up ℤ)) := by
-  suffices hφ' : ∀ (k : ℕ) (x : ℤ) (hx : x₁ + 1 - k = x),
+  suffices hφ' : ∀ (k : ℕ) (x : ℤ) (_ : x₁ + 1 - k = x),
       QuasiIso (total.map ((rowFiltrationGEMap φ).app ⟨x⟩) (up ℤ)) by
-    obtain ⟨k, x, hx, hx'⟩ : ∃ (k : ℕ) (x : ℤ) (hx : x₁ + 1 - k = x), x ≤ x₀ := by
+    obtain ⟨k, x, hx, hx'⟩ : ∃ (k : ℕ) (x : ℤ) (_ : x₁ + 1 - k = x), x ≤ x₀ := by
       by_cases h : x₀ ≤ x₁
       · obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le h
         exact ⟨k + 1, _, rfl, by omega⟩
       · exact ⟨0, _, rfl, by omega⟩
     have := CochainComplex.isStrictlyGE_of_GE K _ _ hx'
     have := CochainComplex.isStrictlyGE_of_GE L _ _ hx'
-    have : IsIso (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) := sorry
-    have : IsIso (HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x)) := sorry
     refine (quasiIso_iff_of_arrow_mk_iso _ _ ?_).1 (hφ' k x hx)
     refine' Arrow.isoMk
       (total.mapIso (asIso (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x))) _)
@@ -560,12 +609,52 @@ lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up 
       obtain rfl : x₁ + 1 = x := by simpa using hx
       dsimp
       rw [quasiIso_iff_acyclic]
-      · apply HomologicalComplex.acyclic_of_isZero
+      all_goals
+        apply HomologicalComplex.acyclic_of_isZero
         apply total.isZero
-        sorry
-      · apply HomologicalComplex.acyclic_of_isZero
-        apply total.isZero
-        sorry
-  | succ k => sorry-/
+        apply (Embedding.embeddingUpInt_areComplementary x₁ (x₁ + 1) rfl).symm.isZero_stupidTrunc
+  | succ k hk =>
+      intro x hx
+      replace hx : x₁ = x + k := by omega
+      replace hk := hk (x + 1) (by omega)
+      let S₁ := CochainComplex.shortComplexStupidFiltrationGE K x _ rfl
+      let S₂ := CochainComplex.shortComplexStupidFiltrationGE L x _ rfl
+      have : HasTotal S₁.X₁ (up ℤ) := by dsimp [S₁]; infer_instance
+      have : HasTotal S₁.X₂ (up ℤ) := by dsimp [S₁]; infer_instance
+      have : HasTotal S₁.X₃ (up ℤ) := by dsimp [S₁]; infer_instance
+      have : HasTotal S₂.X₁ (up ℤ) := by dsimp [S₂]; infer_instance
+      have : HasTotal S₂.X₂ (up ℤ) := by dsimp [S₂]; infer_instance
+      have : HasTotal S₂.X₃ (up ℤ) := by dsimp [S₂]; infer_instance
+      let ψ : S₁ ⟶ S₂ := CochainComplex.mapShortComplexStupidFiltrationGE φ x _ rfl
+      apply HomologicalComplex.HomologySequence.quasiIso_τ₂ (total.mapShortComplex ψ (up ℤ))
+      · apply HomologicalComplex.shortExact_of_degreewise_shortExact
+        intro i
+        apply ShortComplex.Splitting.shortExact
+        apply total.shortComplexSplitting
+        refine (GradedObject.shortComplexSplittingEquiv _).symm ?_
+        rintro ⟨a, b⟩
+        exact (CochainComplex.shortComplexStupidFiltrationGESplitting K x _ rfl a).map
+          (HomologicalComplex.eval _ _ b)
+      · apply HomologicalComplex.shortExact_of_degreewise_shortExact
+        intro i
+        apply ShortComplex.Splitting.shortExact
+        apply total.shortComplexSplitting
+        refine (GradedObject.shortComplexSplittingEquiv _).symm ?_
+        rintro ⟨a, b⟩
+        exact (CochainComplex.shortComplexStupidFiltrationGESplitting L x _ rfl a).map
+          (HomologicalComplex.eval _ _ b)
+      · exact hk
+      · have : QuasiIso (φ.f x) := by
+          by_cases hx : x₀ ≤ x
+          · exact hφ x hx (by omega)
+          · simp only [not_le] at hx
+            rw [quasiIso_iff_acyclic]
+            all_goals
+              apply HomologicalComplex.acyclic_of_isZero
+              exact CochainComplex.isZero_of_isStrictlyGE _ x₀ _ hx
+        dsimp [ψ]
+        refine (quasiIso_iff_of_arrow_mk_iso _ _ ?_).2 (inferInstance : QuasiIso ((φ.f x)⟦-x⟧'))
+        exact Arrow.isoMk (singleColumnObjTotal _ _ _ (by simp))
+          (singleColumnObjTotal _ _ _ (by simp))
 
 end HomologicalComplex₂

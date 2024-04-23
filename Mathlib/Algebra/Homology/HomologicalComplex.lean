@@ -359,6 +359,8 @@ def eval (i : ι) : HomologicalComplex V c ⥤ V where
   map f := f.f i
 #align homological_complex.eval HomologicalComplex.eval
 
+instance (i : ι) : (eval V c i).PreservesZeroMorphisms where
+
 /-- The functor forgetting the differential in a complex, obtaining a graded object. -/
 @[simps]
 def forget : HomologicalComplex V c ⥤ GradedObject ι V where

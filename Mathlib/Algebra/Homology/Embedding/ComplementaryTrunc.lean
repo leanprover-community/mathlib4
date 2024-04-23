@@ -333,6 +333,25 @@ noncomputable def shortComplexStupidTruncSplitting (n : ι) :
   apply ac.desc (K.shortComplexStupidTruncSplitting₁ ac)
     (K.shortComplexStupidTruncSplitting₂ ac) n
 
+
 end
 
 end HomologicalComplex
+
+namespace ComplexShape.Embedding.AreComplementary
+
+variable {C : Type*} [Category C] [Preadditive C] [HasZeroObject C]
+
+variable {e₁ : c₁.Embedding c} {e₂ : c₂.Embedding c} (ac : e₁.AreComplementary e₂)
+variable (K : HomologicalComplex C c)
+
+lemma isZero_stupidTrunc_iff [e₁.IsRelIff] :
+    IsZero (K.stupidTrunc e₁) ↔ K.IsStrictlySupported e₂ := by
+  rw [K.isZero_stupidTrunc_iff, ac.isStrictlySupportedOutside₁_iff]
+
+lemma isZero_stupidTrunc [e₁.IsRelIff] [K.IsStrictlySupported e₂] :
+    IsZero (K.stupidTrunc e₁) := by
+  rw [ac.isZero_stupidTrunc_iff]
+  infer_instance
+
+end ComplexShape.Embedding.AreComplementary
