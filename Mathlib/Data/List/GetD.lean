@@ -63,7 +63,7 @@ theorem getD_map {n : ℕ} (f : α → β) : (map f l).getD n (f d) = f (l.getD 
     · rfl
     · simp [ih]
 
-#align list.nthd_eq_nth_le List.getD_eq_get -- argument order
+#align list.nthd_eq_nth_le List.getD_eq_get
 
 theorem getD_eq_default {n : ℕ} (hn : l.length ≤ n) : l.getD n d = d := by
   induction l generalizing n with

@@ -307,7 +307,6 @@ instance : IsTrans (List α) Subset where
   trans := fun _ _ _ => List.Subset.trans
 
 #align list.subset_def List.subset_def
-
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
 
 #align list.subset_append_of_subset_right List.subset_append_of_subset_right
@@ -1338,11 +1337,7 @@ theorem take_one_drop_eq_of_lt_length {l : List α} {n : ℕ} (h : n < l.length)
     (l.drop n).take 1 = [l.get ⟨n, h⟩] := by
   rw [drop_eq_get_cons h, take, take]
 
-@[deprecated take_one_drop_eq_of_lt_length]
-theorem take_one_drop_eq_of_lt_length' {l : List α} {n : ℕ} (h : n < l.length) :
-    (l.drop n).take 1 = [l.nthLe n h] := take_one_drop_eq_of_lt_length h
-#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length'
-
+#align list.take_one_drop_eq_of_lt_length List.take_one_drop_eq_of_lt_length
 #align list.ext List.ext
 
 -- TODO one may rename ext in the standard library, and it is also not clear
