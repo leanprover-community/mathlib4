@@ -113,7 +113,7 @@ class DivisionRing (α : Type*)
   protected ratCast_def (q : ℚ) : (Rat.cast q : α) = q.num / q.den := by intros; rfl
   /-- Scalar multiplication by a rational number.
 
-  Set this to `qsmulRec _` unless there is a risk of a `Module ℚ _` instance diamond.
+  Write `qsmul := _` unless there is a risk of a `Module ℚ _` instance diamond.
 
   Do not use directly. Instead use the `•` notation. -/
   protected qsmul : ℚ → α → α
