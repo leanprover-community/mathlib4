@@ -146,5 +146,3 @@ end
 end GrothendieckTopology
 
 end CategoryTheory
-
-#lint
