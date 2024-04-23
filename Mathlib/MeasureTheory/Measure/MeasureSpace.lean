@@ -256,6 +256,18 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
+open scoped symmDiff in
+/-- If the measure of the symmetric difference of two measurable sets `s` and `t` is finite and
+`s` has finite measure, then so does `t`. -/
+lemma Ne.measure_ne_top_of_symmDiff (hs : MeasurableSet s) (ht : MeasurableSet t)
+    (hμt : μ s ≠ ∞) (hμst : μ (s ∆ t) ≠ ∞) : μ t ≠ ∞ := by
+  by_contra h
+  apply hμst
+  rw [measure_symmDiff_eq hs ht, add_eq_top]
+  right
+  rw [eq_top_iff, ← sub_eq_top_iff.2 ⟨h, hμt⟩]
+  exact le_measure_diff
+
 theorem measure_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞}
     (h : μ t < μ s + ε) : μ (t \ s) < ε := by
   rw [measure_diff hst hs hs']; rw [add_comm] at h
