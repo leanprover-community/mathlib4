@@ -3,13 +3,12 @@ Copyright (c) 2024 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.GroupPower.Basic
+import Mathlib.Data.PNat.Basic
 
 /-!
 # TODO : Fill in module docstring
 -/
-
-import Mathlib.Algebra.GroupPower.Basic
-import Mathlib.Data.PNat.Basic
 
 local macro_rules | `($x ^ $y) => `(HPow.hPow $x $y) -- See issue #2220
 
