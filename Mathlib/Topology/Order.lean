@@ -894,7 +894,7 @@ theorem nhds_true : 𝓝 True = pure True :=
 
 @[simp]
 theorem nhds_false : 𝓝 False = ⊤ :=
-  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _)]
+  TopologicalSpace.nhds_generateFrom.trans <| by simp [@and_comm (_ ∈ _), iInter_and]
 #align nhds_false nhds_false
 
 theorem tendsto_nhds_true {l : Filter α} {p : α → Prop} :

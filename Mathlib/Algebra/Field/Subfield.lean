@@ -93,34 +93,30 @@ lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
   simpa only [Rat.cast_def] using div_mem (intCast_mem s q.num) (natCast_mem s q.den)
 #align subfield_class.coe_rat_mem SubfieldClass.ratCast_mem
 
-instance (s : S) : RatCast s :=
-  ⟨fun x => ⟨↑x, ratCast_mem s x⟩⟩
+instance instRatCast (s : S) : RatCast s where ratCast q := ⟨q, ratCast_mem s q⟩
 
 @[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
 #align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
 
+@[aesop safe apply (rule_sets := [SetLike])]
+lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
+  simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
+#align subfield_class.rat_smul_mem SubfieldClass.qsmul_mem
+
 -- 2024-04-05
 @[deprecated] alias coe_rat_cast := coe_ratCast
 @[deprecated] alias coe_rat_mem := ratCast_mem
-
--- Porting note: Mistranslated: used to be (a • x : K) ∈ s
-@[aesop safe apply (rule_sets := [SetLike])]
-theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
-  simpa only [Rat.smul_def] using mul_mem (ratCast_mem s a) x.prop
-#align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
+@[deprecated] alias rat_smul_mem := qsmul_mem
 
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
   SubfieldClass.ratCast_mem ..
 
-instance (s : S) : SMul ℚ s :=
-  ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
+instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_mem s q x.2⟩
 
-@[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
-  rfl
-#align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
+@[simp, norm_cast] lemma coe_qsmul (s : S) (q : ℚ) (x : s) : ↑(q • x) = q • (x : K) := rfl
+#align subfield_class.coe_rat_smul SubfieldClass.coe_qsmul
 
 variable (S)
 
@@ -342,6 +338,7 @@ instance : Inv s :=
 instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
+-- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
 instance toDivisionRing (s : Subfield K) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
