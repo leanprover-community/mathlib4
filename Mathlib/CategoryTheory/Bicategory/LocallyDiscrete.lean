@@ -65,7 +65,7 @@ instance [CategoryStruct.{v} C] : CategoryStruct (LocallyDiscrete C)
 
 variable [CategoryStruct.{v} C]
 
--- TODO rename? Maybe dot notation with "toLoc"
+-- TODO rename? Maybe dot notation with "toLoc" (I think dot notation is better)
 @[simps]
 def mkHom {a b : C} (f : a ⟶ b) : mk a ⟶ mk b := ⟨f⟩
 
@@ -155,15 +155,12 @@ universe w₂ v v₁ v₂ u u₁ u₂
 variable {I : Type u₁} [Category.{v₁} I] {B : Type u₂} [Bicategory.{w₂, v₂} B] [Strict B]
 variable {F : Pseudofunctor (LocallyDiscrete I) B}
 
-def Quiver.Hom.toLoc {a b : I} (f : a ⟶ b) : LocallyDiscrete.mk a ⟶ LocallyDiscrete.mk b := ⟨f⟩
-
--- TODO: these should be stated with {a b : LocallyDiscrete I}
--- have left them like this cuz they test the API going from I -> LocallyDiscrete I
+-- These should be stated in terms of strict bicategories
 
 -- Pseudofunctors from locally discrete categories to strict bicategories
 lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (mkHom (𝟙 a)) (mkHom f)).inv =
     (F.mapId ⟨a⟩).hom ▷ F.map (mkHom f) ≫ eqToHom (by simp) := by
-  have h := F.map₂_left_unitor f.toLoc
+  have h := F.map₂_left_unitor (mkHom f)
   simp at h
   rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
   simp at h
@@ -171,18 +168,19 @@ lemma map₂_left_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (mkHom (𝟙 a)) 
 
 lemma map₂_right_unitor' {a b : I} (f : a ⟶ b) : (F.mapComp (mkHom f) (mkHom (𝟙 b))).inv =
     F.map (mkHom f) ◁ (F.mapId ⟨b⟩).hom ≫ eqToHom (by simp) := by
-  have h := F.map₂_right_unitor f.toLoc
+  have h := F.map₂_right_unitor (mkHom f)
   simp at h
   rw [F.map₂_eqToHom, ←Iso.inv_comp_eq, comp_eqToHom_iff] at h
   simp at h
   apply h
 
 lemma map₂_associator' {a b c d : I} (f : a ⟶ b) (g : b ⟶ c) (h : c ⟶ d) :
-    (F.mapComp f.toLoc (g.toLoc ≫ h.toLoc)).hom ≫ (F.map f.toLoc) ◁ (F.mapComp g.toLoc h.toLoc).hom
-    = eqToHom (by simp) ≫ (F.mapComp (f.toLoc ≫ g.toLoc) h.toLoc).hom ≫
-    (F.mapComp f.toLoc g.toLoc).hom ▷ F.map h.toLoc ≫ eqToHom (by simp)
+    (F.mapComp (mkHom f) ((mkHom g) ≫ (mkHom h))).hom ≫ (F.map (mkHom f)) ◁ (F.mapComp (mkHom g) (mkHom h)).hom
+    = eqToHom (by simp) ≫ (F.mapComp ((mkHom f) ≫ (mkHom g)) (mkHom h)).hom ≫
+    (F.mapComp (mkHom f) (mkHom g)).hom ▷ F.map (mkHom h) ≫ eqToHom (by simp)
     := by
-  have h := F.map₂_associator f.toLoc g.toLoc h.toLoc
+  have h := F.map₂_associator (mkHom f) (mkHom g) (mkHom h)
   simp at h
+  rw [F.map₂_eqToHom, ←Iso.inv_comp_eq] at h
+  -- TODO: rewrite thing as inv then move to LHS (+ restate lemma to use this notation instead!)
   sorry
-  -- rw [F.map₂_eqToHom, Iso.eq_comp_inv, comp_eqToHom_iff] at h
