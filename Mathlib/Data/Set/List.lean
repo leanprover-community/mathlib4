@@ -41,7 +41,7 @@ theorem range_list_get : (range fun k : Fin l.length => l.get ⟨k, k.2⟩) = { 
   rw [mem_setOf_eq, mem_iff_get]
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
 #align set.range_list_nth_le Set.range_list_get
-@[deprecated] alias Set.range_list_nthLe := Set.range_list_get -- 2024-04-22
+@[deprecated] alias range_list_nthLe := range_list_get -- 2024-04-22
 
 theorem range_list_get? : range l.get? = insert none (some '' { x | x ∈ l }) := by
   rw [← range_list_get, ← range_comp]
