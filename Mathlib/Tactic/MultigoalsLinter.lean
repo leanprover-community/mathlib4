@@ -17,6 +17,20 @@ Otherwise, whenever a tactic leaves multiple goals, the linter will emit a warni
 some form of "focusing" tactic is used.
 Typically, the focusing is achieved by the `cdot`: `·`, but, e.g., `focus` or `on_goal x` also
 serve a similar purpose.
+
+TODO:
+* Should the linter flag unnecessary scoping as well?
+  For instance, should
+  ```lean
+  example : True := by
+    · · exact .intro
+  ```
+  raise a warning?
+* Custom support for "accumulating side-goals", so that once they are all in scope
+  they can be solved in bulk via `all_goals` or a similar tactic.
+* In development, `on_goal` has been partly used as a way of silencing the linter
+  precisely to allow the accumulation referred to in the previous item.
+  Maybe revisit usages of `on_goal` and also nested `induction` and `cases`.
 -/
 
 open Lean Elab
