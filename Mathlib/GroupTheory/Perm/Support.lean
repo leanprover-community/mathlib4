@@ -701,8 +701,7 @@ variable {α : Type*} [Fintype α] [DecidableEq α] {σ τ : Perm α}
 theorem support_conj : (σ * τ * σ⁻¹).support = τ.support.map σ.toEmbedding := by
   ext
   simp only [mem_map_equiv, Perm.coe_mul, Function.comp_apply, Ne, Perm.mem_support,
-    Equiv.eq_symm_apply]
-  rfl
+    Equiv.eq_symm_apply, inv_def]
 #align equiv.perm.support_conj Equiv.Perm.support_conj
 
 theorem card_support_conj : (σ * τ * σ⁻¹).support.card = τ.support.card := by simp
