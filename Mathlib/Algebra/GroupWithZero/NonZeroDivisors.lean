@@ -187,7 +187,7 @@ theorem isUnit_of_mem_nonZeroDivisors {G₀ : Type*} [GroupWithZero G₀] {x : G
     inv_mul_cancel (nonZeroDivisors.ne_zero hx)⟩, rfl⟩
 #align is_unit_of_mem_non_zero_divisors isUnit_of_mem_nonZeroDivisors
 
-lemma mem_nonZeroDivisors_of_isUnit {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
+lemma IsUnit.mem_nonZeroDivisors {a : M} (ha : IsUnit a) : a ∈ M⁰ :=
   fun _ h ↦ ha.mul_left_eq_zero.mp h
 
 theorem eq_zero_of_ne_zero_of_mul_right_eq_zero [NoZeroDivisors M] {x y : M} (hnx : x ≠ 0)
@@ -248,7 +248,7 @@ theorem nonZeroDivisors_le_comap_nonZeroDivisors_of_injective [NoZeroDivisors M'
 /-- In a finite ring, an element is a unit iff it is a non-zero-divisor. -/
 lemma isUnit_iff_mem_nonZeroDivisors_of_finite [Finite R] {a : R} :
     IsUnit a ↔ a ∈ nonZeroDivisors R := by
-  refine ⟨mem_nonZeroDivisors_of_isUnit, fun ha ↦ ?_⟩
+  refine ⟨IsUnit.mem_nonZeroDivisors, fun ha ↦ ?_⟩
   rw [IsUnit.isUnit_iff_mulRight_bijective, ← Finite.injective_iff_bijective]
   intro b c hbc
   rw [← sub_eq_zero, ← sub_mul] at hbc
