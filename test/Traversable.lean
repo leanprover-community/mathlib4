@@ -9,6 +9,7 @@ structure MyStruct (α : Type) where
   y : ℤ
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable MyStruct
 
 inductive Either (α : Type u)
@@ -16,6 +17,7 @@ inductive Either (α : Type u)
   | right : α → Either α
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable Either
 
 structure MyStruct2 (α : Type u) : Type u where
@@ -25,6 +27,7 @@ structure MyStruct2 (α : Type u) : Type u where
   k : List (List α)
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable MyStruct2
 
 inductive RecData (α : Type u) : Type u
@@ -32,6 +35,7 @@ inductive RecData (α : Type u) : Type u
   | cons : ℕ → α → RecData α → RecData α → RecData α
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable RecData
 
 unsafe structure MetaStruct (α : Type u) : Type u :=
@@ -42,6 +46,7 @@ unsafe structure MetaStruct (α : Type u) : Type u :=
   w : Lean.Expr
   deriving Traversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth Traversable MetaStruct
 
 inductive MyTree (α : Type)
@@ -49,6 +54,7 @@ inductive MyTree (α : Type)
   | node : MyTree α → MyTree α → α → MyTree α
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable MyTree
 
 inductive MyTree' (α : Type)
@@ -56,6 +62,7 @@ inductive MyTree' (α : Type)
   | node : MyTree' α → α → MyTree' α → MyTree' α
   deriving LawfulTraversable
 
+set_option linter.hashCommand false in
 #guard_msgs (drop info) in #synth LawfulTraversable MyTree'
 
 section

@@ -119,6 +119,7 @@ instance : FunLike (α -o β) α β where
   coe := fun f => f.toFun
   coe_injective' := silentSorry
 
+set_option linter.hashCommand false in
 #eval Lean.Elab.Command.liftTermElabM do
   Lean.Meta.registerCoercion ``ConHom.toFun
     (some { numArgs := 5, coercee := 4, type := .coeFun })

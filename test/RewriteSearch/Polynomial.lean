@@ -4,6 +4,7 @@ import Mathlib.Init.Core
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
+set_option linter.hashCommand false
 
 open Polynomial
 

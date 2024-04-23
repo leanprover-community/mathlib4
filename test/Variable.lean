@@ -32,6 +32,7 @@ example : Module R M := inferInstance
 end
 
 section
+set_option linter.hashCommand false
 #guard_msgs in
 variable? [Module R M] =>
   [Semiring R] [AddCommMonoid M] [Module R M]
@@ -158,6 +159,7 @@ example : Module R M := inferInstance
 end
 
 section
+set_option linter.hashCommand false
 /--
 info: Try this: variable? [VectorSpace k V] [Algebra k V] => [Field k] [AddCommGroup V] [Module k V] [Semiring V]
   [Algebra k V]
@@ -173,6 +175,7 @@ example : Algebra k V := inferInstance
 end
 
 section
+set_option linter.hashCommand false in
 #guard_msgs in
 variable? [VectorSpace k V] [Algebra k V] =>
   [Field k] [AddCommGroup V] [Module k V] [Semiring V] [Algebra k V]
@@ -220,6 +223,7 @@ variable? [UniqueFactorizationDomain R]
 end
 
 section
+set_option linter.hashCommand false in
 #guard_msgs in
 variable? [UniqueFactorizationDomain R] => [CommRing R] [IsDomain R] [UniqueFactorizationMonoid R]
 end

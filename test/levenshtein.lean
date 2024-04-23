@@ -1,6 +1,8 @@
 import Mathlib.Data.List.EditDistance.Defs
 import Mathlib.Algebra.Group.Nat
 
+set_option linter.hashCommand false
+
 #guard
   (suffixLevenshtein Levenshtein.defaultCost "kitten".toList "sitting".toList).1 =
     [3, 3, 4, 5, 6, 6, 7]

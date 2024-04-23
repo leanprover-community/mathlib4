@@ -52,11 +52,13 @@ info: Try this: rw [← @Nat.prime_iff]
 lemma prime_of_prime (n : ℕ) : Prime n ↔ Nat.Prime n := by
   rw?
 
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example [Group G] (h : G) (hyp : g * 1 = h) : g = h := by
   rw? at hyp
   assumption
 
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example : ∀ (x y : ℕ), x ≤ y := by
   intros x y
@@ -73,6 +75,7 @@ axiom K : Type
 
 noncomputable def foo : K → K := test_sorry
 
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example : foo x = 1 ↔ ∃ k : ℤ, x = k := by
   rw? -- Used to panic, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/panic.20and.20error.20with.20rw.3F/near/370598036
@@ -82,12 +85,14 @@ lemma six_eq_seven : 6 = 7 := test_sorry
 
 -- This test also verifies that we are removing duplicate results;
 -- it previously also reported `Nat.cast_ofNat`
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ), x ≤ 6 := by
   rw?
   guard_target = ∀ (x : ℕ), x ≤ 7
   exact test_sorry
 
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   rw?
@@ -95,6 +100,7 @@ example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   exact test_sorry
 
 -- check we can look inside let expressions
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?
@@ -107,6 +113,7 @@ axiom f_eq (n) : f n = z
 -- Check that the same lemma isn't used multiple times.
 -- This used to report two redundant copies of `f_eq`.
 -- It be lovely if `rw?` could produce two *different* rewrites by `f_eq` here!
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 lemma test : f n = f m := by
   fail_if_success rw? [-f_eq] -- Check that we can forbid lemmas.
@@ -114,6 +121,7 @@ lemma test : f n = f m := by
   rw [f_eq]
 
 -- Check that we can rewrite by local hypotheses.
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example (h : 1 = 2) : 2 = 1 := by
   rw?
@@ -122,6 +130,7 @@ def zero : Nat := 0
 
 -- This used to (incorrectly!) succeed because `rw?` would try `rfl`,
 -- rather than `withReducible` `rfl`.
+set_option linter.hashCommand false in
 #guard_msgs(drop info) in
 example : zero = 0 := by
   rw?
