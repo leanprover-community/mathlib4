@@ -205,4 +205,8 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
     rw [NatTrans.isIso_app_iff_of_iso _ i.symm]
     infer_instance
 
+lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
+    IsIso (h.unit.app Y) :=
+  (isIso_unit_app_iff_mem_essImage h).mpr ⟨X, ⟨e.symm⟩⟩
+
 end CategoryTheory
