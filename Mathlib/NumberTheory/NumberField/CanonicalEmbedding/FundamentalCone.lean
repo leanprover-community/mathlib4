@@ -64,9 +64,6 @@ instance : SMulZeroClass (𝓞 K)ˣ (E K) where
 
 variable [NumberField K]
 
--- Lean needs to be reminded of this instance so that the next result does not timeout
-instance : SMul (𝓞 K) (𝓞 K) := Algebra.toSMul
-
 theorem unitSMul_eq_iff_mul_eq {x y : (𝓞 K)} {u : (𝓞 K)ˣ} :
     u • mixedEmbedding K x = mixedEmbedding K y ↔ u * x = y := by
   rw [unitSMul_smul, ← map_mul, Function.Injective.eq_iff, ← Submonoid.coe_mul, Subtype.mk_eq_mk]
