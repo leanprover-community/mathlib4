@@ -308,9 +308,7 @@ instance : IsTrans (List α) Subset where
 
 #align list.subset_def List.subset_def
 #align list.subset_append_of_subset_left List.subset_append_of_subset_left
-
 #align list.subset_append_of_subset_right List.subset_append_of_subset_right
-
 #align list.cons_subset List.cons_subset
 
 theorem cons_subset_of_subset_of_mem {a : α} {l m : List α}
@@ -510,16 +508,12 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 
 #align list.concat_nil List.concat_nil
 #align list.concat_cons List.concat_cons
-
 #align list.concat_eq_append List.concat_eq_append
-
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
 #align list.concat_ne_nil List.concat_ne_nil
 #align list.concat_append List.concat_append
-
 #align list.length_concat List.length_concat
-
 #align list.append_concat List.append_concat
 
 /-! ### reverse -/

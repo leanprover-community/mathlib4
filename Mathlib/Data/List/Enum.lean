@@ -141,7 +141,6 @@ theorem get_enum (l : List α) (i : Fin l.enum.length)
     l.enum.get i = (i.1, l.get ⟨i, hi⟩) := by
   convert get_enumFrom _ _ i
   exact (Nat.zero_add _).symm
-
 #align list.nth_le_enum List.get_enum
 
 @[simp]
