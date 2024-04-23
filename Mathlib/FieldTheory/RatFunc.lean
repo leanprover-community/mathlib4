@@ -1777,7 +1777,7 @@ set_option linter.uppercaseLean3 false in
 theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
-  · simp only [Nat.zero_eq, Int.ofNat_eq_coe, zpow_zero]
+  · simp only [Nat.cast_zero, pow_zero]
     rfl
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
