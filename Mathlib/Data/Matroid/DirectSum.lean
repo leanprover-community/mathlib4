@@ -10,7 +10,7 @@ import Mathlib.Data.Matroid.IndepAxioms
 
 ## Main definitions
 
-* `indepMatroidDirectSum` custructs an `IndepMatroid` that is the direct sum of two `IndepMatroid`
+* `indepMatroidDirectSum` constructs an `IndepMatroid` that is the direct sum of two `IndepMatroid`
   instances on disjoint ground sets
 -/
 
