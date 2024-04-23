@@ -339,7 +339,6 @@ class CommSemigroup (G : Type u) extends Semigroup G, CommMagma G where
 #align comm_semigroup CommSemigroup
 
 /-- A commutative additive semigroup is a type with an associative commutative `(+)`. -/
-@[ext]
 class AddCommSemigroup (G : Type u) extends AddSemigroup G, AddCommMagma G where
 #align add_comm_semigroup AddCommSemigroup
 
