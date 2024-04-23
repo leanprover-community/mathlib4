@@ -269,7 +269,7 @@ theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = �
     _ ≤ μ (u \ v ∪ v \ u) := measure_mono <| subset_union_left ..
 
 /-- If the measure of the symmetric difference of two sets is finite,
-then one has finite measure if and only if the other does. -/
+then one has finite measure if and only if the other one does. -/
 theorem measure_ne_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s ≠ ∞ ↔ μ t ≠ ∞ :=
     (measure_eq_top_iff_of_symmDiff hμst).ne
 
