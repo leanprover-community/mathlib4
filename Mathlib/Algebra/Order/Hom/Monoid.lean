@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Algebra.Group.Hom.Basic
+import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Algebra.Order.Monoid.WithZero.Defs
+import Mathlib.Algebra.Order.Monoid.WithZero
 import Mathlib.Order.Hom.Basic
 
 #align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"

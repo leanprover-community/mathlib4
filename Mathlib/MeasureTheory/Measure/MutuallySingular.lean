@@ -40,7 +40,6 @@ def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν sᶜ = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
--- mathport name: measure.mutually_singular
 @[inherit_doc MeasureTheory.Measure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ₘ " => MeasureTheory.Measure.MutuallySingular
 
@@ -152,7 +151,18 @@ theorem smul_nnreal (r : ℝ≥0) (h : ν ⟂ₘ μ) : r • ν ⟂ₘ μ :=
   h.smul r
 #align measure_theory.measure.mutually_singular.smul_nnreal MeasureTheory.Measure.MutuallySingular.smul_nnreal
 
+lemma restrict (h : μ ⟂ₘ ν) (s : Set α) : μ.restrict s ⟂ₘ ν := by
+  refine ⟨h.nullSet, h.measurableSet_nullSet, ?_, h.measure_compl_nullSet⟩
+  rw [Measure.restrict_apply h.measurableSet_nullSet]
+  exact measure_mono_null (Set.inter_subset_left _ _) h.measure_nullSet
+
 end MutuallySingular
+
+lemma eq_zero_of_absolutelyContinuous_of_mutuallySingular {μ ν : Measure α}
+    (h_ac : μ ≪ ν) (h_ms : μ ⟂ₘ ν) :
+    μ = 0 := by
+  rw [← Measure.MutuallySingular.self_iff]
+  exact h_ms.mono_ac Measure.AbsolutelyContinuous.rfl h_ac
 
 end Measure
 

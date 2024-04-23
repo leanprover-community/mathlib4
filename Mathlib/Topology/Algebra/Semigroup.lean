@@ -36,7 +36,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
   rsuffices ⟨N, ⟨N_closed, ⟨m, hm⟩, N_mul⟩, N_minimal⟩ : ∃ N ∈ S, ∀ N' ∈ S, N' ⊆ N → N' = N
   · use m
     /- We now have an element `m : M` of a minimal subsemigroup `N`, and want to show `m + m = m`.
-    We first show that every element of `N` is of the form `m' + m`.-/
+    We first show that every element of `N` is of the form `m' + m`. -/
     have scaling_eq_self : (· * m) '' N = N := by
       apply N_minimal
       · refine' ⟨(continuous_mul_left m).isClosedMap _ N_closed, ⟨_, ⟨m, hm, rfl⟩⟩, _⟩
@@ -65,7 +65,7 @@ theorem exists_idempotent_of_compact_t2_of_continuous_mul_left {M} [Nonempty M] 
     · rw [Set.sInter_empty]
       apply Set.univ_nonempty
     convert
-      @IsCompact.nonempty_iInter_of_directed_nonempty_compact_closed _ _ _ hcnemp.coe_sort
+      @IsCompact.nonempty_iInter_of_directed_nonempty_isCompact_isClosed _ _ _ hcnemp.coe_sort
         ((↑) : c → Set M) ?_ ?_ ?_ ?_
     · exact Set.sInter_eq_iInter
     · refine' DirectedOn.directed_val (IsChain.directedOn hc.symm)

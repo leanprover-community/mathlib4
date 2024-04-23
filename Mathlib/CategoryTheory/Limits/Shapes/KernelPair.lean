@@ -40,7 +40,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {R X Y Z : C} (f : X ⟶ Y) (a b : R ⟶ X)
 
 /-- `IsKernelPair f a b` expresses that `(a, b)` is a kernel pair for `f`, i.e. `a ≫ f = b ≫ f`
@@ -74,7 +73,7 @@ instance [Mono f] : Inhabited (IsKernelPair f (𝟙 _) (𝟙 _)) :=
 
 variable {f a b}
 
--- porting note: `lift` and the two following simp lemmas were introduced to ease the port
+-- Porting note: `lift` and the two following simp lemmas were introduced to ease the port
 /--
 Given a pair of morphisms `p`, `q` to `X` which factor through `f`, they factor through any kernel
 pair of `f`.

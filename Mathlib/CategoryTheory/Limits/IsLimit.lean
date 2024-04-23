@@ -43,9 +43,7 @@ namespace CategoryTheory.Limits
 universe v₁ v₂ v₃ v₄ u₁ u₂ u₃ u₄
 
 variable {J : Type u₁} [Category.{v₁} J] {K : Type u₂} [Category.{v₂} K]
-
 variable {C : Type u₃} [Category.{v₃} C]
-
 variable {F : J ⥤ C}
 
 /-- A cone `t` on `F` is a limit cone if each cone on `F` admits a unique
@@ -53,7 +51,7 @@ cone morphism to `t`.
 
 See <https://stacks.math.columbia.edu/tag/002E>.
   -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -89,6 +87,7 @@ theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : 
   fac _ _ _
 #align category_theory.limits.is_limit.map_π CategoryTheory.Limits.IsLimit.map_π
 
+@[simp]
 theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
   (t.uniq _ _ fun _ => id_comp _).symm
 #align category_theory.limits.is_limit.lift_self CategoryTheory.Limits.IsLimit.lift_self
@@ -111,7 +110,7 @@ theorem existsUnique {t : Cone F} (h : IsLimit t) (s : Cone F) :
   ⟨h.lift s, h.fac s, h.uniq s⟩
 #align category_theory.limits.is_limit.exists_unique CategoryTheory.Limits.IsLimit.existsUnique
 
-/-- Noncomputably make a colimit cocone from the existence of unique factorizations. -/
+/-- Noncomputably make a limit cone from the existence of unique factorizations. -/
 def ofExistsUnique {t : Cone F}
     (ht : ∀ s : Cone F, ∃! l : s.pt ⟶ t.pt, ∀ j, l ≫ t.π.app j = s.π.app j) : IsLimit t := by
   choose s hs hs' using ht
@@ -357,6 +356,21 @@ def whiskerEquivalenceEquiv {s : Cone F} (e : K ≌ J) : IsLimit s ≃ IsLimit (
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_limit.whisker_equivalence_equiv CategoryTheory.Limits.IsLimit.whiskerEquivalenceEquiv
 
+/-- A limit cone extended by an isomorphism is a limit cone. -/
+def extendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit s) :
+    IsLimit (s.extend i) :=
+  IsLimit.ofIsoLimit hs (Cones.extendIso s (asIso i)).symm
+
+/-- A cone is a limit cone if its extension by an isomorphism is. -/
+def ofExtendIso {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] (hs : IsLimit (s.extend i)) :
+    IsLimit s :=
+  IsLimit.ofIsoLimit hs (Cones.extendIso s (asIso i))
+
+/-- A cone is a limit cone iff its extension by an isomorphism is. -/
+def extendIsoEquiv {s : Cone F} {X : C} (i : X ⟶ s.pt) [IsIso i] :
+    IsLimit s ≃ IsLimit (s.extend i) :=
+  equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
+
 /-- We can prove two cone points `(s : Cone F).pt` and `(t : Cone G).pt` are isomorphic if
 * both cones are limit cones
 * their indexing categories are equivalent via some `e : J ≌ K`,
@@ -429,7 +443,7 @@ def homIso' (h : IsLimit t) (W : C) :
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
-def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
+def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
   { lift
@@ -552,7 +566,7 @@ cocone morphism from `t`.
 
 See <https://stacks.math.columbia.edu/tag/002F>.
 -/
--- Porting note: remove @[nolint has_nonempty_instance]
+-- Porting note(#5171): removed @[nolint has_nonempty_instance]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
@@ -871,6 +885,21 @@ def whiskerEquivalenceEquiv {s : Cocone F} (e : K ≌ J) :
   ⟨fun h => h.whiskerEquivalence e, ofWhiskerEquivalence e, by aesop_cat, by aesop_cat⟩
 #align category_theory.limits.is_colimit.whisker_equivalence_equiv CategoryTheory.Limits.IsColimit.whiskerEquivalenceEquiv
 
+/-- A colimit cocone extended by an isomorphism is a colimit cocone. -/
+def extendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit s) :
+    IsColimit (s.extend i) :=
+  IsColimit.ofIsoColimit hs (Cocones.extendIso s (asIso i))
+
+/-- A cocone is a colimit cocone if its extension by an isomorphism is. -/
+def ofExtendIso {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] (hs : IsColimit (s.extend i)) :
+    IsColimit s :=
+  IsColimit.ofIsoColimit hs (Cocones.extendIso s (asIso i)).symm
+
+/-- A cocone is a colimit cocone iff its extension by an isomorphism is. -/
+def extendIsoEquiv {s : Cocone F} {X : C} (i : s.pt ⟶ X) [IsIso i] :
+    IsColimit s ≃ IsColimit (s.extend i) :=
+  equivOfSubsingletonOfSubsingleton (extendIso i) (ofExtendIso i)
+
 /-- We can prove two cocone points `(s : Cocone F).pt` and `(t : Cocone G).pt` are isomorphic if
 * both cocones are colimit cocones
 * their indexing categories are equivalent via some `e : J ≌ K`,
@@ -943,7 +972,7 @@ def homIso' (h : IsColimit t) (W : C) :
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
-def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
+def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.pt ⟶ s.pt)
     (h : ∀ s, G.map (desc s) = ht.desc (mapCocone G s)) : IsColimit t :=
   { desc

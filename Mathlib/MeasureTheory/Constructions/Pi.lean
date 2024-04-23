@@ -113,7 +113,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
       ext; simp_rw [mem_univ_pi]; apply forall_congr'; intro i'
       by_cases h : i' = i
       · subst h; simp
-      · rw [← Ne.def] at h; simp [h]
+      · rw [← Ne] at h; simp [h]
     rw [this, ← iUnion_univ_pi]
     apply MeasurableSet.iUnion
     intro n; apply measurableSet_generateFrom
@@ -300,7 +300,7 @@ protected irreducible_def pi : Measure (∀ i, α i) :=
   toMeasure (OuterMeasure.pi fun i => (μ i).toOuterMeasure) (pi_caratheodory μ)
 #align measure_theory.measure.pi MeasureTheory.Measure.pi
 
--- porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
+-- Porting note: moved from below so that instances about `Measure.pi` and `MeasureSpace.pi`
 -- go together
 instance _root_.MeasureTheory.MeasureSpace.pi {α : ι → Type*} [∀ i, MeasureSpace (α i)] :
     MeasureSpace (∀ i, α i) :=

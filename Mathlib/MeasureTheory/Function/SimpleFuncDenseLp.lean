@@ -54,7 +54,6 @@ variable {α β ι E F 𝕜 : Type*}
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -155,8 +154,7 @@ theorem memℒp_approxOn [BorelSpace E] {f : β → E} {μ : Measure β} (fmeas 
     convert snorm_add_lt_top hf hi₀.neg with x
     simp [sub_eq_add_neg]
   have : ∀ᵐ x ∂μ, ‖approxOn f fmeas s y₀ h₀ n x - y₀‖ ≤ ‖‖f x - y₀‖ + ‖f x - y₀‖‖ := by
-    refine' eventually_of_forall _
-    intro x
+    filter_upwards with x
     convert norm_approxOn_y₀_le fmeas h₀ x n using 1
     rw [Real.norm_eq_abs, abs_of_nonneg]
     positivity
@@ -173,10 +171,7 @@ theorem tendsto_approxOn_range_Lp_snorm [BorelSpace E] {f : β → E} (hp_ne_top
     Tendsto (fun n => snorm (⇑(approxOn f fmeas (range f ∪ {0}) 0 (by simp) n) - f) p μ)
       atTop (𝓝 0) := by
   refine' tendsto_approxOn_Lp_snorm fmeas _ hp_ne_top _ _
-  · apply eventually_of_forall
-    intro x
-    apply subset_closure
-    simp
+  · filter_upwards with x using subset_closure (by simp)
   · simpa using hf
 #align measure_theory.simple_func.tendsto_approx_on_range_Lp_snorm MeasureTheory.SimpleFunc.tendsto_approxOn_range_Lp_snorm
 
@@ -227,7 +222,6 @@ end Lp
 section Integrable
 
 variable [MeasurableSpace β]
-
 variable [MeasurableSpace E] [NormedAddCommGroup E]
 
 theorem tendsto_approxOn_L1_nnnorm [OpensMeasurableSpace E] {f : β → E} (hf : Measurable f)
@@ -251,10 +245,7 @@ theorem tendsto_approxOn_range_L1_nnnorm [OpensMeasurableSpace E] {f : β → E}
     Tendsto (fun n => ∫⁻ x, ‖approxOn f fmeas (range f ∪ {0}) 0 (by simp) n x - f x‖₊ ∂μ) atTop
       (𝓝 0) := by
   apply tendsto_approxOn_L1_nnnorm fmeas
-  · apply eventually_of_forall
-    intro x
-    apply subset_closure
-    simp
+  · filter_upwards with x using subset_closure (by simp)
   · simpa using hf.2
 #align measure_theory.simple_func.tendsto_approx_on_range_L1_nnnorm MeasureTheory.SimpleFunc.tendsto_approxOn_range_L1_nnnorm
 
@@ -269,9 +260,7 @@ end Integrable
 section SimpleFuncProperties
 
 variable [MeasurableSpace α]
-
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
-
 variable {μ : Measure α} {p : ℝ≥0∞}
 
 /-!
@@ -789,7 +778,6 @@ protected theorem denseRange (hp_ne_top : p ≠ ∞) :
 #align measure_theory.Lp.simple_func.dense_range MeasureTheory.Lp.simpleFunc.denseRange
 
 variable [NormedRing 𝕜] [Module 𝕜 E] [BoundedSMul 𝕜 E]
-
 variable (α E 𝕜)
 
 /-- The embedding of Lp simple functions into Lp functions, as a continuous linear map. -/
@@ -1028,7 +1016,6 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
 
 section Integrable
 
--- mathport name: «expr →₁ₛ[ ] »
 @[inherit_doc MeasureTheory.Lp.simpleFunc]
 notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
 

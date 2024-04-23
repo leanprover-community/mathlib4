@@ -41,7 +41,7 @@ alias ⟨UniqueMDiffOn.uniqueDiffOn, UniqueDiffOn.uniqueMDiffOn⟩ := uniqueMDif
 #align unique_mdiff_on.unique_diff_on UniqueMDiffOn.uniqueDiffOn
 #align unique_diff_on.unique_mdiff_on UniqueDiffOn.uniqueMDiffOn
 
--- porting note: was `@[simp, mfld_simps]` but `simp` can prove it
+-- Porting note (#10618): was `@[simp, mfld_simps]` but `simp` can prove it
 theorem writtenInExtChartAt_model_space : writtenInExtChartAt 𝓘(𝕜, E) 𝓘(𝕜, E') x f = f :=
   rfl
 #align written_in_ext_chart_model_space writtenInExtChartAt_model_space

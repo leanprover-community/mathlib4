@@ -183,11 +183,11 @@ variable (n : ℕ)
 /-! `V n` is a real vector space whose equality relation is computable. -/
 
 
-instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : DecidableEq (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : AddCommGroup (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
-instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; skip; infer_instance
+instance : Module ℝ (V n) := by induction n <;> · dsimp only [V]; infer_instance
 
 end V
 
@@ -436,8 +436,8 @@ theorem huang_degree_theorem (H : Set (Q m.succ)) (hH : Card H ≥ 2 ^ m + 1) :
     rw [Finsupp.mem_support_iff] at p_in
     rw [Set.mem_toFinset]
     exact (dualBases_e_ε _).mem_of_mem_span y_mem_H p p_in
-  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y|
-  exact Finite.exists_max _
+  obtain ⟨q, H_max⟩ : ∃ q : Q m.succ, ∀ q' : Q m.succ, |(ε q' : _) y| ≤ |ε q y| :=
+    Finite.exists_max _
   have H_q_pos : 0 < |ε q y| := by
     contrapose! y_ne
     exact epsilon_total fun p => abs_nonpos_iff.mp (le_trans (H_max p) y_ne)

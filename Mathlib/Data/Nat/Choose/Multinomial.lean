@@ -127,7 +127,7 @@ theorem binomial_succ_succ [DecidableEq α] (h : a ≠ b) :
       multinomial {a, b} (Function.update f a (f a).succ) +
       multinomial {a, b} (Function.update f b (f b).succ) := by
   simp only [binomial_eq_choose, Function.update_apply,
-    h, Ne.def, ite_true, ite_false, not_false_eq_true]
+    h, Ne, ite_true, ite_false, not_false_eq_true]
   rw [if_neg h.symm]
   rw [add_succ, choose_succ_succ, succ_add_eq_add_succ]
   ring
@@ -214,6 +214,9 @@ theorem multinomial_filter_ne [DecidableEq α] (a : α) (m : Multiset α) :
     · rw [not_ne_iff.1 h, Function.update_same]
 #align multiset.multinomial_filter_ne Multiset.multinomial_filter_ne
 
+@[simp]
+theorem multinomial_zero [DecidableEq α] : multinomial (0 : Multiset α) = 1 := rfl
+
 end Multiset
 
 namespace Finset
@@ -247,7 +250,7 @@ theorem sum_pow_of_commute [Semiring R] (x : α → R)
       convert (@one_mul R _ _).symm
       dsimp only
       convert @Nat.cast_one R _
-    · rw [_root_.pow_succ, zero_mul]
+    · rw [_root_.pow_succ, mul_zero]
       -- Porting note: Lean cannot infer this instance by itself
       haveI : IsEmpty (Finset.sym (∅ : Finset α) n.succ) := Finset.instIsEmpty
       apply (Fintype.sum_empty _).symm
@@ -274,3 +277,23 @@ theorem sum_pow [CommSemiring R] (x : α → R) (n : ℕ) :
 #align finset.sum_pow Finset.sum_pow
 
 end Finset
+
+namespace Sym
+
+variable {n : ℕ} {α : Type*} [DecidableEq α]
+
+theorem multinomial_coe_fill_of_not_mem {m : Fin (n + 1)} {s : Sym α (n - m)} {x : α} (hx : x ∉ s) :
+    (fill x m s : Multiset α).multinomial = n.choose m * (s : Multiset α).multinomial := by
+  rw [Multiset.multinomial_filter_ne x]
+  rw [← mem_coe] at hx
+  refine congrArg₂ _ ?_ ?_
+  · rw [card_coe, count_coe_fill_self_of_not_mem hx]
+  · refine congrArg _ ?_
+    rw [coe_fill, coe_replicate, Multiset.filter_add]
+    rw [Multiset.filter_eq_self.mpr]
+    · rw [add_right_eq_self]
+      rw [Multiset.filter_eq_nil]
+      exact fun j hj ↦ by simp [Multiset.mem_replicate.mp hj]
+    · exact fun j hj h ↦ hx <| by simpa [h] using hj
+
+end Sym

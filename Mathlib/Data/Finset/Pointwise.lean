@@ -850,7 +850,7 @@ protected def zsmul [Zero α] [Add α] [Neg α] : SMul ℤ (Finset α) :=
 multiplication/division!) of a `Finset`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def zpow [One α] [Mul α] [Inv α] : Pow (Finset α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align finset.has_zpow Finset.zpow
 
 scoped[Pointwise] attribute [instance] Finset.nsmul Finset.npow Finset.zsmul Finset.zpow
@@ -991,7 +991,7 @@ theorem pow_mem_pow (ha : a ∈ s) : ∀ n : ℕ, a ^ n ∈ s ^ n
     exact one_mem_one
   | n + 1 => by
     rw [pow_succ]
-    exact mul_mem_mul ha (pow_mem_pow ha n)
+    exact mul_mem_mul (pow_mem_pow ha n) ha
 #align finset.pow_mem_pow Finset.pow_mem_pow
 #align finset.nsmul_mem_nsmul Finset.nsmul_mem_nsmul
 
@@ -1001,7 +1001,7 @@ theorem pow_subset_pow (hst : s ⊆ t) : ∀ n : ℕ, s ^ n ⊆ t ^ n
     simp [pow_zero]
   | n + 1 => by
     rw [pow_succ]
-    exact mul_subset_mul hst (pow_subset_pow hst n)
+    exact mul_subset_mul (pow_subset_pow hst n) hst
 #align finset.pow_subset_pow Finset.pow_subset_pow
 #align finset.nsmul_subset_nsmul Finset.nsmul_subset_nsmul
 
@@ -1011,7 +1011,7 @@ theorem pow_subset_pow_of_one_mem (hs : (1 : α) ∈ s) : m ≤ n → s ^ m ⊆ 
   · exact fun _ hn => hn
   · intro n _ hmn
     rw [pow_succ]
-    exact hmn.trans (subset_mul_right (s ^ n) hs)
+    exact hmn.trans (subset_mul_left (s ^ n) hs)
 #align finset.pow_subset_pow_of_one_mem Finset.pow_subset_pow_of_one_mem
 #align finset.nsmul_subset_nsmul_of_zero_mem Finset.nsmul_subset_nsmul_of_zero_mem
 
@@ -1032,13 +1032,14 @@ theorem mem_prod_list_ofFn {a : α} {s : Fin n → Finset α} :
 @[to_additive]
 theorem mem_pow {a : α} {n : ℕ} :
     a ∈ s ^ n ↔ ∃ f : Fin n → s, (List.ofFn fun i => ↑(f i)).prod = a := by
+  set_option tactic.skipAssignedInstances false in
   simp [← mem_coe, coe_pow, Set.mem_pow]
 #align finset.mem_pow Finset.mem_pow
 #align finset.mem_nsmul Finset.mem_nsmul
 
 @[to_additive (attr := simp)]
 theorem empty_pow (hn : n ≠ 0) : (∅ : Finset α) ^ n = ∅ := by
-  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ, empty_mul]
+  rw [← tsub_add_cancel_of_le (Nat.succ_le_of_lt <| Nat.pos_of_ne_zero hn), pow_succ', empty_mul]
 #align finset.empty_pow Finset.empty_pow
 #align finset.empty_nsmul Finset.empty_nsmul
 

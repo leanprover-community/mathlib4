@@ -19,8 +19,8 @@ Given a list `l`,
   sending `⟨x, hx⟩` to `⟨indexOf x l, _⟩`;
 
 * if `l` has no duplicates and contains every element of a type `α`, then
-  `List.Nodup.getEquivOfForallMemList` defines an equivalence between
-  `Fin (length l)` and `α`;  if `α` does not have decidable equality, then
+  `List.Nodup.getEquivOfForallMemList` defines an equivalence between `Fin (length l)` and `α`;
+  if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
 * if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted

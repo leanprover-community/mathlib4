@@ -127,7 +127,7 @@ theorem pairwise_pmap {p : β → Prop} {f : ∀ b, p b → α} {l : List β} (h
   induction' l with a l ihl
   · simp
   obtain ⟨_, hl⟩ : p a ∧ ∀ b, b ∈ l → p b := by simpa using h
-  simp only [ihl hl, pairwise_cons, bex_imp, pmap, and_congr_left_iff, mem_pmap]
+  simp only [ihl hl, pairwise_cons, exists₂_imp, pmap, and_congr_left_iff, mem_pmap]
   refine' fun _ => ⟨fun H b hb _ hpb => H _ _ hb rfl, _⟩
   rintro H _ b hb rfl
   exact H b hb _ _
@@ -151,14 +151,14 @@ theorem Pairwise.pmap {l : List α} (hl : Pairwise R l) {p : α → Prop} {f : �
 
 theorem pairwise_of_forall_mem_list {l : List α} {r : α → α → Prop} (h : ∀ a ∈ l, ∀ b ∈ l, r a b) :
     l.Pairwise r := by
-  apply pairwise_iff_forall_sublist.mpr
+  rw [pairwise_iff_forall_sublist]
   intro a b hab
   apply h <;> (apply hab.subset; simp)
 #align list.pairwise_of_forall_mem_list List.pairwise_of_forall_mem_list
 
 theorem pairwise_of_reflexive_of_forall_ne {l : List α} {r : α → α → Prop} (hr : Reflexive r)
     (h : ∀ a ∈ l, ∀ b ∈ l, a ≠ b → r a b) : l.Pairwise r := by
-  apply pairwise_iff_forall_sublist.mpr
+  rw [pairwise_iff_forall_sublist]
   intro a b hab
   if heq : a = b then
     cases heq; apply hr

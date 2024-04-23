@@ -215,6 +215,16 @@ theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vec
   rfl
 
 @[simp]
+lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
+    vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
+  rfl
+
+@[simp]
+lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
+    vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
+  rfl
+
+@[simp]
 theorem cons_val_fin_one (x : α) (u : Fin 0 → α) : ∀ (i : Fin 1), vecCons x u i = x := by
   rw [Fin.forall_fin_one]
   rfl
@@ -242,7 +252,7 @@ protected instance _root_.PiFin.toExpr [ToLevel.{u}] [ToExpr α] (n : ℕ) : ToE
 
 -- Porting note: the next decl is commented out. TODO(eric-wieser)
 
--- /-- Convert a vector of pexprs to the pexpr constructing that vector.-/
+-- /-- Convert a vector of pexprs to the pexpr constructing that vector. -/
 -- unsafe def _root_.pi_fin.to_pexpr : ∀ {n}, (Fin n → pexpr) → pexpr
 --   | 0, v => ``(![])
 --   | n + 1, v => ``(vecCons $(v 0) $(_root_.pi_fin.to_pexpr <| vecTail v))
@@ -566,7 +576,7 @@ theorem cons_eq_zero_iff {v : Fin n → α} {x : α} : vecCons x v = 0 ↔ x = 0
     fun ⟨hx, hv⟩ => by simp [hx, hv]⟩
 #align matrix.cons_eq_zero_iff Matrix.cons_eq_zero_iff
 
-open Classical
+open scoped Classical
 
 theorem cons_nonzero_iff {v : Fin n → α} {x : α} : vecCons x v ≠ 0 ↔ x ≠ 0 ∨ v ≠ 0 :=
   ⟨fun h => not_and_or.mp (h ∘ cons_eq_zero_iff.mpr), fun h =>

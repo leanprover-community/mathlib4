@@ -6,7 +6,7 @@ Authors: Yury G. Kudryashov
 import Mathlib.Analysis.Complex.CauchyIntegral
 import Mathlib.Analysis.NormedSpace.Completion
 import Mathlib.Analysis.NormedSpace.Extr
-import Mathlib.Topology.Algebra.Order.ExtrClosure
+import Mathlib.Topology.Order.ExtrClosure
 
 #align_import analysis.complex.abs_max from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -120,7 +120,7 @@ theorem norm_max_aux₁ [CompleteSpace F] {f : ℂ → F} {z w : ℂ}
       hd.circleIntegral_sub_inv_smul (mem_ball_self hr)
     simp [A, norm_smul, Real.pi_pos.le]
   suffices ‖∮ ζ in C(z, r), (ζ - z)⁻¹ • f ζ‖ < 2 * π * r * (‖f z‖ / r) by
-    rwa [mul_assoc, mul_div_cancel' _ hr.ne'] at this
+    rwa [mul_assoc, mul_div_cancel₀ _ hr.ne'] at this
   /- This inequality is true because `‖(ζ - z)⁻¹ • f ζ‖ ≤ ‖f z‖ / r` for all `ζ` on the circle and
     this inequality is strict at `ζ = w`. -/
   have hsub : sphere z r ⊆ closedBall z r := sphere_subset_closedBall
@@ -370,8 +370,8 @@ theorem exists_mem_frontier_isMaxOn_norm [FiniteDimensional ℂ E] {f : E → F}
     (hb : IsBounded U) (hne : U.Nonempty) (hd : DiffContOnCl ℂ f U) :
     ∃ z ∈ frontier U, IsMaxOn (norm ∘ f) (closure U) z := by
   have hc : IsCompact (closure U) := hb.isCompact_closure
-  obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w
-  exact hc.exists_forall_ge hne.closure hd.continuousOn.norm
+  obtain ⟨w, hwU, hle⟩ : ∃ w ∈ closure U, IsMaxOn (norm ∘ f) (closure U) w :=
+    hc.exists_forall_ge hne.closure hd.continuousOn.norm
   rw [closure_eq_interior_union_frontier, mem_union] at hwU
   cases' hwU with hwU hwU; rotate_left; · exact ⟨w, hwU, hle⟩
   have : interior U ≠ univ := ne_top_of_le_ne_top hc.ne_univ interior_subset_closure
@@ -402,7 +402,7 @@ theorem norm_le_of_forall_mem_frontier_norm_le {f : E → F} {U : Set E} (hU : I
   rcases exists_mem_frontier_isMaxOn_norm (hL.isBounded_preimage hU) ⟨0, h₀⟩ hd with ⟨ζ, hζU, hζ⟩
   calc
     ‖f z‖ = ‖f (e 0)‖ := by simp only [e, lineMap_apply_zero]
-    _ ≤ ‖f (e ζ)‖ := (hζ (subset_closure h₀))
+    _ ≤ ‖f (e ζ)‖ := hζ (subset_closure h₀)
     _ ≤ C := hC _ (hde.continuous.frontier_preimage_subset _ hζU)
 #align complex.norm_le_of_forall_mem_frontier_norm_le Complex.norm_le_of_forall_mem_frontier_norm_le
 

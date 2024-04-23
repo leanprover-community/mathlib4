@@ -51,7 +51,7 @@ variable {X X' : Type*} {Y Y' : Type*} {Z Z' : Type*}
   [TopologicalSpace Z] [TopologicalSpace Z']
 
 /-- Partial homeomorphisms, defined on open subsets of the space -/
--- porting note: commented @[nolint has_nonempty_instance]
+-- Porting note(#5171): this linter isn't ported yet. @[nolint has_nonempty_instance]
 structure PartialHomeomorph (X : Type*) (Y : Type*) [TopologicalSpace X]
   [TopologicalSpace Y] extends PartialEquiv X Y where
   open_source : IsOpen source
@@ -64,7 +64,7 @@ namespace PartialHomeomorph
 
 variable (e : PartialHomeomorph X Y)
 
-/- Basic properties; inverse (symm instance) -/
+/-! Basic properties; inverse (symm instance) -/
 section Basic
 /-- Coercion of a partial homeomorphisms to a function. We don't use `e.toFun` because it is
 actually `e.toPartialEquiv.toFun`, so `simp` will apply lemmas about `toPartialEquiv`.
@@ -789,7 +789,7 @@ theorem refl_symm : (PartialHomeomorph.refl X).symm = PartialHomeomorph.refl X :
   rfl
 #align local_homeomorph.refl_symm PartialHomeomorph.refl_symm
 
-/- ofSet: the identity on a set `s` -/
+/-! ofSet: the identity on a set `s` -/
 section ofSet
 
 variable {s : Set X} (hs : IsOpen s)
@@ -820,7 +820,7 @@ theorem ofSet_univ_eq_refl : ofSet univ isOpen_univ = PartialHomeomorph.refl X :
 
 end ofSet
 
-/- `trans`: composition of two partial homeomorphisms -/
+/-! `trans`: composition of two partial homeomorphisms -/
 section trans
 
 variable (e' : PartialHomeomorph Y Z)
@@ -948,7 +948,7 @@ theorem restr_trans (s : Set X) : (e.restr s).trans e' = (e.trans e').restr s :=
 
 end trans
 
-/- `EqOnSource`: equivalence on their source -/
+/-! `EqOnSource`: equivalence on their source -/
 section EqOnSource
 
 /-- `EqOnSource e e'` means that `e` and `e'` have the same source, and coincide there. They
@@ -1007,7 +1007,7 @@ theorem EqOnSource.restr {e e' : PartialHomeomorph X Y} (he : e ≈ e') (s : Set
   PartialEquiv.EqOnSource.restr he _
 #align local_homeomorph.eq_on_source.restr PartialHomeomorph.EqOnSource.restr
 
-/- Two equivalent partial homeomorphisms are equal when the source and target are `univ`. -/
+/-- Two equivalent partial homeomorphisms are equal when the source and target are `univ`. -/
 theorem Set.EqOn.restr_eqOn_source {e e' : PartialHomeomorph X Y}
     (h : EqOn e e' (e.source ∩ e'.source)) : e.restr e'.source ≈ e'.restr e.source := by
   constructor
@@ -1035,7 +1035,7 @@ theorem eq_of_eqOnSource_univ {e e' : PartialHomeomorph X Y} (h : e ≈ e') (s :
 
 end EqOnSource
 
-/- product of two partial homeomorphisms -/
+/-! product of two partial homeomorphisms -/
 section Prod
 
 /-- The product of two partial homeomorphisms, as a partial homeomorphism on the product space. -/
@@ -1089,7 +1089,7 @@ theorem prod_eq_prod_of_nonempty'
 
 end Prod
 
-/- finite product of partial homeomorphisms -/
+/-! finite product of partial homeomorphisms -/
 section Pi
 
 variable {ι : Type*} [Finite ι] {X Y : ι → Type*} [∀ i, TopologicalSpace (X i)]
@@ -1109,7 +1109,7 @@ def pi : PartialHomeomorph (∀ i, X i) (∀ i, Y i) where
 
 end Pi
 
-/- combining two partial homeomorphisms using `Set.piecewise` -/
+/-! combining two partial homeomorphisms using `Set.piecewise` -/
 section Piecewise
 
 /-- Combine two `PartialHomeomorph`s using `Set.piecewise`. The source of the new
@@ -1189,7 +1189,7 @@ theorem continuousAt_iff_continuousAt_comp_right {f : Y → Z} {x : Y} (h : x �
 on the right is continuous on the corresponding set. -/
 theorem continuousOn_iff_continuousOn_comp_right {f : Y → Z} {s : Set Y} (h : s ⊆ e.target) :
     ContinuousOn f s ↔ ContinuousOn (f ∘ e) (e.source ∩ e ⁻¹' s) := by
-  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, ball_image_iff]
+  simp only [← e.symm_image_eq_source_inter_preimage h, ContinuousOn, forall_mem_image]
   refine' forall₂_congr fun x hx => _
   rw [e.continuousWithinAt_iff_continuousWithinAt_comp_right (h hx),
     e.symm_image_eq_source_inter_preimage h, inter_comm, continuousWithinAt_inter]
@@ -1246,7 +1246,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
     s ≃ₜ t :=
   have h₁ : MapsTo e s t := mapsTo'.2 ht.subset
   have h₂ : t ⊆ e.target := ht ▸ e.image_source_eq_target ▸ image_subset e hs
-  have h₃ : MapsTo e.symm t s := ht ▸ ball_image_iff.2 fun _x hx =>
+  have h₃ : MapsTo e.symm t s := ht ▸ forall_mem_image.2 fun _x hx =>
       (e.left_inv (hs hx)).symm ▸ hx
   { toFun := MapsTo.restrict e s t h₁
     invFun := MapsTo.restrict e.symm t s h₃
@@ -1257,7 +1257,7 @@ def homeomorphOfImageSubsetSource {s : Set X} {t : Set Y} (hs : s ⊆ e.source) 
 #align local_homeomorph.homeomorph_of_image_subset_source PartialHomeomorph.homeomorphOfImageSubsetSource
 
 /-- A partial homeomorphism defines a homeomorphism between its source and target. -/
-@[simps!] -- porting note: new `simps`
+@[simps!] -- Porting note: new `simps`
 def toHomeomorphSourceTarget : e.source ≃ₜ e.target :=
   e.homeomorphOfImageSubsetSource subset_rfl e.image_source_eq_target
 #align local_homeomorph.to_homeomorph_source_target PartialHomeomorph.toHomeomorphSourceTarget
@@ -1276,7 +1276,8 @@ theorem nhds_eq_comap_inf_principal {x} (hx : x ∈ e.source) :
 
 /-- If a partial homeomorphism has source and target equal to univ, then it induces a homeomorphism
 between the whole spaces, expressed in this definition. -/
-@[simps (config := mfld_cfg) apply symm_apply] -- porting note: todo: add a `PartialEquiv` version
+@[simps (config := mfld_cfg) apply symm_apply]
+-- Porting note (#11215): TODO: add a `PartialEquiv` version
 def toHomeomorphOfSourceEqUnivTargetEqUniv (h : e.source = (univ : Set X)) (h' : e.target = univ) :
     X ≃ₜ Y where
   toFun := e
@@ -1391,7 +1392,7 @@ lemma toPartialHomeomorph_right_inv {x : Y} (hx : x ∈ Set.range f) :
 
 end OpenEmbedding
 
-/- inclusion of an open set in a topological space -/
+/-! inclusion of an open set in a topological space -/
 namespace TopologicalSpace.Opens
 
 /- `Nonempty s` is not a type class argument because `s`, being a subset, rarely comes with a type
@@ -1457,13 +1458,12 @@ theorem trans_transHomeomorph (e : PartialHomeomorph X Y) (e' : PartialHomeomorp
 
 end transHomeomorph
 
-/- `subtypeRestr`: restriction to a subtype -/
+/-! `subtypeRestr`: restriction to a subtype -/
 section subtypeRestr
 
 open TopologicalSpace
 
 variable (e : PartialHomeomorph X Y)
-
 variable {s : Opens X} (hs : Nonempty s)
 
 /-- The restriction of a partial homeomorphism `e` to an open subset `s` of the domain type
@@ -1494,7 +1494,7 @@ theorem map_subtype_source {x : s} (hxe : (x : X) ∈ e.source) :
   exact x.prop
 #align local_homeomorph.map_subtype_source PartialHomeomorph.map_subtype_source
 
-/- This lemma characterizes the transition functions of an open subset in terms of the transition
+/-- This lemma characterizes the transition functions of an open subset in terms of the transition
 functions of the original space. -/
 theorem subtypeRestr_symm_trans_subtypeRestr (f f' : PartialHomeomorph X Y) :
     (f.subtypeRestr hs).symm.trans (f'.subtypeRestr hs) ≈

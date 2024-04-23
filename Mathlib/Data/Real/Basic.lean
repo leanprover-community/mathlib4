@@ -170,38 +170,24 @@ theorem cauchy_inv : ∀ f, (f⁻¹ : ℝ).cauchy = f.cauchy⁻¹
   | ⟨f⟩ => show (inv' _).cauchy = _ by rw [inv']
 #align real.cauchy_inv Real.cauchy_inv
 
-instance natCast : NatCast ℝ where natCast n := ⟨n⟩
+instance instNatCast : NatCast ℝ where natCast n := ⟨n⟩
+instance instIntCast : IntCast ℝ where intCast z := ⟨z⟩
+instance instRatCast : RatCast ℝ where ratCast q := ⟨q⟩
 
-instance intCast : IntCast ℝ where intCast z := ⟨z⟩
-
-instance ratCast : RatCast ℝ where ratCast q := ⟨q⟩
-
-theorem ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n :=
-  rfl
+lemma ofCauchy_natCast (n : ℕ) : (⟨n⟩ : ℝ) = n := rfl
+lemma ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z := rfl
+lemma ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q := rfl
 #align real.of_cauchy_nat_cast Real.ofCauchy_natCast
-
-theorem ofCauchy_intCast (z : ℤ) : (⟨z⟩ : ℝ) = z :=
-  rfl
 #align real.of_cauchy_int_cast Real.ofCauchy_intCast
-
-theorem ofCauchy_ratCast (q : ℚ) : (⟨q⟩ : ℝ) = q :=
-  rfl
 #align real.of_cauchy_rat_cast Real.ofCauchy_ratCast
 
-theorem cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n :=
-  rfl
+lemma cauchy_natCast (n : ℕ) : (n : ℝ).cauchy = n := rfl
+lemma cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z := rfl
+lemma cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q := rfl
 #align real.cauchy_nat_cast Real.cauchy_natCast
-
-theorem cauchy_intCast (z : ℤ) : (z : ℝ).cauchy = z :=
-  rfl
 #align real.cauchy_int_cast Real.cauchy_intCast
-
-theorem cauchy_ratCast (q : ℚ) : (q : ℝ).cauchy = q :=
-  rfl
 #align real.cauchy_rat_cast Real.cauchy_ratCast
 
--- TODO: variables `x y` should be not included in this definition;
--- not sure how to exclude them
 instance commRing : CommRing ℝ := by
   refine' { natCast := fun n => ⟨n⟩
             intCast := fun z => ⟨z⟩
@@ -213,7 +199,7 @@ instance commRing : CommRing ℝ := by
             sub := @Sub.sub ℝ _
             npow := @npowRec ℝ ⟨1⟩ ⟨(· * ·)⟩
             nsmul := @nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩
-            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩,
+            zsmul := @zsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩ ⟨@Neg.neg ℝ _⟩ (@nsmulRec ℝ ⟨0⟩ ⟨(· + ·)⟩),
             .. }
   all_goals
     intros
@@ -355,7 +341,8 @@ private theorem le_def' {x y : ℝ} : x ≤ y ↔ x < y ∨ x = y :=
   show le _ _ ↔ _ by rw [le_def]
 
 @[simp]
-theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by simp [le_def', mk_eq]; rfl
+theorem mk_le {f g : CauSeq ℚ abs} : mk f ≤ mk g ↔ f ≤ g := by
+  simp only [le_def', mk_lt, mk_eq]; rfl
 #align real.mk_le Real.mk_le
 
 @[elab_as_elim]
@@ -549,7 +536,7 @@ instance : SemilatticeInf ℝ :=
 instance : SemilatticeSup ℝ :=
   inferInstance
 
-open Classical
+open scoped Classical
 
 instance : IsTotal ℝ (· ≤ ·) :=
   ⟨by
@@ -572,20 +559,23 @@ noncomputable instance : LinearOrderedSemiring ℝ := by infer_instance
 instance : IsDomain ℝ :=
   { Real.nontrivial, Real.commRing, LinearOrderedRing.isDomain with }
 
-noncomputable instance : LinearOrderedField ℝ :=
-  { Real.linearOrderedCommRing with
-    inv := Inv.inv
-    mul_inv_cancel := by
-      rintro ⟨a⟩ h
-      rw [mul_comm]
-      simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
-        Ne.def, ofCauchy.injEq] at *
-      exact CauSeq.Completion.inv_mul_cancel h
-    inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
-    ratCast := (↑)
-    ratCast_mk := fun n d hd h2 => by
-      rw [← ofCauchy_ratCast, Rat.cast_mk', ofCauchy_mul, ofCauchy_inv, ofCauchy_natCast,
-        ofCauchy_intCast] }
+noncomputable instance instDivInvMonoid : DivInvMonoid ℝ where
+
+lemma ofCauchy_div (f g) : (⟨f / g⟩ : ℝ) = (⟨f⟩ : ℝ) / (⟨g⟩ : ℝ) := by
+  simp_rw [div_eq_mul_inv, ofCauchy_mul, ofCauchy_inv]
+
+noncomputable instance instLinearOrderedField : LinearOrderedField ℝ where
+  toLinearOrderedCommRing := linearOrderedCommRing
+  mul_inv_cancel := by
+    rintro ⟨a⟩ h
+    rw [mul_comm]
+    simp only [← ofCauchy_inv, ← ofCauchy_mul, ← ofCauchy_one, ← ofCauchy_zero,
+      Ne, ofCauchy.injEq] at *
+    exact CauSeq.Completion.inv_mul_cancel h
+  inv_zero := by simp [← ofCauchy_zero, ← ofCauchy_inv]
+  ratCast_def q := by
+    rw [← ofCauchy_ratCast, Rat.cast_def, ofCauchy_div, ofCauchy_natCast, ofCauchy_intCast]
+  qsmul := _
 
 -- Extra instances to short-circuit type class resolution
 noncomputable instance : LinearOrderedAddCommGroup ℝ := by infer_instance

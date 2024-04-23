@@ -573,7 +573,7 @@ instance [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivisors α β] :
   ⟨fun {s t} h ↦ by
     by_contra! H
     have hst : (s • t).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, ← hst.of_smul_left.subset_zero_iff, Ne.def,
+    rw [Ne, ← hst.of_smul_left.subset_zero_iff, Ne,
       ← hst.of_smul_right.subset_zero_iff] at H
     simp only [not_subset, mem_zero] at H
     obtain ⟨⟨a, hs, ha⟩, b, ht, hb⟩ := H
@@ -584,7 +584,7 @@ instance noZeroSMulDivisors_set [Zero α] [Zero β] [SMul α β] [NoZeroSMulDivi
   ⟨fun {a s} h ↦ by
     by_contra! H
     have hst : (a • s).Nonempty := h.symm.subst zero_nonempty
-    rw [Ne.def, Ne.def, ← hst.of_image.subset_zero_iff, not_subset] at H
+    rw [Ne, Ne, ← hst.of_image.subset_zero_iff, not_subset] at H
     obtain ⟨ha, b, ht, hb⟩ := H
     exact (eq_zero_or_eq_zero_of_smul_eq_zero <| h.subset <| smul_mem_smul_set ht).elim ha hb⟩
 #align set.no_zero_smul_divisors_set Set.noZeroSMulDivisors_set
@@ -1135,7 +1135,7 @@ section Semiring
 
 variable [Semiring α] [AddCommMonoid β] [Module α β]
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem add_smul_subset (a b : α) (s : Set β) : (a + b) • s ⊆ a • s + b • s := by
   rintro _ ⟨x, hx, rfl⟩
   simpa only [add_smul] using add_mem_add (smul_mem_smul_set hx) (smul_mem_smul_set hx)

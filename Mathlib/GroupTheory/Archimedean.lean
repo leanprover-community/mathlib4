@@ -66,7 +66,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
     lift m to ℕ
     · rw [← Int.lt_add_one_iff, ← zsmul_lt_zsmul_iff h₀, zero_zsmul]
       exact hg.trans_le hm
-    · simp only [← Nat.cast_succ, coe_nat_zsmul] at hm hm'
+    · simp only [← Nat.cast_succ, natCast_zsmul] at hm hm'
       exact ⟨m, hm', hm⟩
   have : ∃ n : ℕ, Set.Nonempty (H ∩ Ioc (n • a) ((n + 1) • a)) := by
     rcases (bot_or_exists_ne_zero H).resolve_left hbot with ⟨g, hgH, hg₀⟩
@@ -83,7 +83,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
   · refine disjoint_left.1 hd (sub_mem hxH hyH) ⟨sub_pos.2 hxy, sub_lt_iff_lt_add'.2 ?_⟩
     calc x ≤ (n + 1) • a := hxn
     _ ≤ (m + 1) • a := nsmul_le_nsmul_left h₀.le (add_le_add_right hnm _)
-    _ = m • a + a := succ_nsmul' _ _
+    _ = m • a + a := succ_nsmul _ _
     _ < y + a := add_lt_add_right hm.1 _
 
 /-- If an additive subgroup of a linear ordered additive commutative group is disjoint with the

@@ -87,7 +87,7 @@ namespace Pretriangulated
 
 variable [∀ n : ℤ, Functor.Additive (CategoryTheory.shiftFunctor C n)] [hC : Pretriangulated C]
 
--- porting note: increased the priority so that we can write `T ∈ distTriang C`, and
+-- Porting note: increased the priority so that we can write `T ∈ distTriang C`, and
 -- not just `T ∈ (distTriang C)`
 /-- distinguished triangles in a pretriangulated category -/
 notation:60 "distTriang " C => @distinguishedTriangles C _ _ _ _ _ _
@@ -446,7 +446,7 @@ lemma isIso₂_of_isIso₁₃ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ di
     obtain ⟨x₁, hx₁⟩ : ∃ (x₁ : A ⟶ T.obj₁), x₁ ≫ φ.hom₁ = y₁ := ⟨y₁ ≫ inv φ.hom₁, by simp⟩
     refine' ⟨x₂ + x₁ ≫ T.mor₁, _⟩
     dsimp
-    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel'_right]
+    rw [add_comp, assoc, φ.comm₁, reassoc_of% hx₁, ← hy₁, add_sub_cancel]
 
 lemma isIso₃_of_isIso₁₂ {T T' : Triangle C} (φ : T ⟶ T') (hT : T ∈ distTriang C)
     (hT' : T' ∈ distTriang C) (h₁ : IsIso φ.hom₁) (h₂ : IsIso φ.hom₂) : IsIso φ.hom₃ :=
@@ -469,7 +469,7 @@ def binaryBiproductData (T : Triangle C) (hT : T ∈ distTriang C) (hT₀ : T.mo
     (total : fst ≫ T.mor₁ + T.mor₂ ≫ inr = 𝟙 T.obj₂) :
     BinaryBiproductData T.obj₁ T.obj₃ := by
   have : Mono T.mor₁ := T.mono₁ hT hT₀
-  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel]
+  have eq : fst ≫ T.mor₁ = 𝟙 T.obj₂ - T.mor₂ ≫ inr := by rw [← total, add_sub_cancel_right]
   exact
     { bicone :=
       { pt := T.obj₂
@@ -612,7 +612,7 @@ lemma productTriangle_distinguished {J : Type*} (T : J → Triangle C)
     have hb' : a - a' ≫ φ'.hom₃ = Pi.lift b ≫ (productTriangle T).mor₂ :=
       Limits.Pi.hom_ext _ _ (fun j => by rw [hb]; simp)
     have : (a' + (by exact Pi.lift b) ≫ T'.mor₂) ≫ φ'.hom₃ = a := by
-      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel'_right]
+      rw [add_comp, assoc, φ'.comm₂, h₂, id_comp, ← hb', add_sub_cancel]
     exact ⟨_, this⟩
 
 lemma exists_iso_of_arrow_iso (T₁ T₂ : Triangle C) (hT₁ : T₁ ∈ distTriang C)

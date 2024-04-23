@@ -3,7 +3,7 @@ Copyright (c) 2019 Yury Kudriashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudriashov
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Analysis.Convex.Hull
 import Mathlib.LinearAlgebra.AffineSpace.Basis
 
@@ -28,7 +28,8 @@ lemmas unconditional on the sum of the weights being `1`.
 
 open Set Function
 
-open BigOperators Classical Pointwise
+open scoped Classical
+open BigOperators Pointwise
 
 universe u u'
 
@@ -135,7 +136,7 @@ theorem Finset.centerMass_subset {t' : Finset ι} (ht : t ⊆ t') (h : ∀ i ∈
 theorem Finset.centerMass_filter_ne_zero :
     (t.filter fun i => w i ≠ 0).centerMass w z = t.centerMass w z :=
   Finset.centerMass_subset z (filter_subset _ _) fun i hit hit' => by
-    simpa only [hit, mem_filter, true_and_iff, Ne.def, Classical.not_not] using hit'
+    simpa only [hit, mem_filter, true_and_iff, Ne, Classical.not_not] using hit'
 #align finset.center_mass_filter_ne_zero Finset.centerMass_filter_ne_zero
 
 namespace Finset
@@ -241,7 +242,7 @@ theorem Finset.centerMass_mem_convexHull (t : Finset ι) {w : ι → R} (hw₀ :
 lemma Finset.centerMass_mem_convexHull_of_nonpos (t : Finset ι) (hw₀ : ∀ i ∈ t, w i ≤ 0)
     (hws : ∑ i in t, w i < 0) (hz : ∀ i ∈ t, z i ∈ s) : t.centerMass w z ∈ convexHull R s := by
   rw [← centerMass_neg_left]
-  exact Finset.centerMass_mem_convexHull _ (λ _i hi ↦ neg_nonneg.2 <| hw₀ _ hi) (by simpa) hz
+  exact Finset.centerMass_mem_convexHull _ (fun _i hi ↦ neg_nonneg.2 <| hw₀ _ hi) (by simpa) hz
 
 /-- A refinement of `Finset.centerMass_mem_convexHull` when the indexed family is a `Finset` of
 the space. -/
@@ -285,7 +286,7 @@ theorem Finset.centroid_mem_convexHull (s : Finset E) (hs : s.Nonempty) :
   apply s.centerMass_id_mem_convexHull
   · simp only [inv_nonneg, imp_true_iff, Nat.cast_nonneg, Finset.centroidWeights_apply]
   · have hs_card : (s.card : R) ≠ 0 := by simp [Finset.nonempty_iff_ne_empty.mp hs]
-    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel, Ne.def, not_false_iff,
+    simp only [hs_card, Finset.sum_const, nsmul_eq_mul, mul_inv_cancel, Ne, not_false_iff,
       Finset.centroidWeights_apply, zero_lt_one]
 #align finset.centroid_mem_convex_hull Finset.centroid_mem_convexHull
 
@@ -458,16 +459,15 @@ theorem convexHull_prod (s : Set E) (t : Set F) :
 #align convex_hull_prod convexHull_prod
 
 theorem convexHull_add (s t : Set E) : convexHull R (s + t) = convexHull R s + convexHull R t := by
-  simp_rw [← image2_add, ← image_prod, IsLinearMap.isLinearMap_add.convexHull_image,
+  simp_rw [← image2_add, ← image_prod, ← IsLinearMap.isLinearMap_add.image_convexHull,
     convexHull_prod]
 #align convex_hull_add convexHull_add
 
 variable (R E)
 
--- porting note: needs `noncomputable` due to `OrderHom.toFun`!?
 /-- `convexHull` is an additive monoid morphism under pointwise addition. -/
 @[simps]
-noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
+def convexHullAddMonoidHom : Set E →+ Set E where
   toFun := convexHull R
   map_add' := convexHull_add
   map_zero' := convexHull_zero
@@ -476,7 +476,7 @@ noncomputable def convexHullAddMonoidHom : Set E →+ Set E where
 variable {R E}
 
 theorem convexHull_sub (s t : Set E) : convexHull R (s - t) = convexHull R s - convexHull R t := by
-  simp_rw [sub_eq_add_neg, convexHull_add, convexHull_neg]
+  simp_rw [sub_eq_add_neg, convexHull_add, ← convexHull_neg]
 #align convex_hull_sub convexHull_sub
 
 theorem convexHull_list_sum (l : List (Set E)) : convexHull R l.sum = (l.map <| convexHull R).sum :=
@@ -522,12 +522,11 @@ theorem Set.Finite.convexHull_eq_image {s : Set E} (hs : s.Finite) : convexHull 
     haveI := hs.fintype
     (⇑(∑ x : s, (@LinearMap.proj R s _ (fun _ => R) _ _ x).smulRight x.1)) '' stdSimplex R s := by
   letI := hs.fintype
-  rw [← convexHull_basis_eq_stdSimplex, ← LinearMap.convexHull_image, ← Set.range_comp]
+  rw [← convexHull_basis_eq_stdSimplex, LinearMap.image_convexHull, ← Set.range_comp]
   apply congr_arg
   simp_rw [Function.comp]
   convert Subtype.range_coe.symm
-  -- Porting note: Original proof didn't need to specify `(1 : R)`
-  simp [LinearMap.sum_apply, ite_smul _ _ (1 : R), Finset.filter_eq, Finset.mem_univ]
+  simp [LinearMap.sum_apply, ite_smul, Finset.filter_eq, Finset.mem_univ]
 #align set.finite.convex_hull_eq_image Set.Finite.convexHull_eq_image
 
 /-- All values of a function `f ∈ stdSimplex 𝕜 ι` belong to `[0, 1]`. -/

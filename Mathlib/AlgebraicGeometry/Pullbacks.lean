@@ -38,9 +38,7 @@ namespace AlgebraicGeometry.Scheme
 namespace Pullback
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y Z : Scheme.{u}} (𝒰 : OpenCover.{u} X) (f : X ⟶ Z) (g : Y ⟶ Z)
-
 variable [∀ i, HasPullback (𝒰.map i ≫ f) g]
 
 /-- The intersection of `Uᵢ ×[Z] Y` and `Uⱼ ×[Z] Y` is given by (Uᵢ ×[Z] Y) ×[X] Uⱼ -/
@@ -73,7 +71,7 @@ theorem t_fst_fst (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.fst ≫ pullback.
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [Category.assoc, id.def, pullbackSymmetry_hom_comp_fst_assoc,
+  simp only [Category.assoc, id, pullbackSymmetry_hom_comp_fst_assoc,
     pullbackAssoc_hom_snd_fst, pullback.lift_fst_assoc, pullbackSymmetry_hom_comp_snd,
     pullbackAssoc_inv_fst_fst, pullbackSymmetry_hom_comp_fst]
 #align algebraic_geometry.Scheme.pullback.t_fst_fst AlgebraicGeometry.Scheme.Pullback.t_fst_fst
@@ -87,7 +85,7 @@ theorem t_fst_snd (i j : 𝒰.J) :
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.comp_id, Category.assoc, id.def,
+  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.comp_id, Category.assoc, id,
     pullbackSymmetry_hom_comp_fst_assoc, pullbackAssoc_hom_snd_snd, pullback.lift_snd,
     pullbackAssoc_inv_snd]
 #align algebraic_geometry.Scheme.pullback.t_fst_snd AlgebraicGeometry.Scheme.Pullback.t_fst_snd
@@ -100,7 +98,7 @@ theorem t_snd (i j : 𝒰.J) : t 𝒰 f g i j ≫ pullback.snd = pullback.fst �
     hasPullback_assoc_symm (𝒰.map j) (𝒰.map i) (𝒰.map i ≫ f) g
   haveI : HasPullback (pullback.snd ≫ 𝒰.map j ≫ f) g :=
     hasPullback_assoc_symm (𝒰.map i) (𝒰.map j) (𝒰.map j ≫ f) g
-  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.assoc, id.def,
+  simp only [pullbackSymmetry_hom_comp_snd_assoc, Category.assoc, id,
     pullbackSymmetry_hom_comp_snd, pullbackAssoc_hom_fst, pullback.lift_fst_assoc,
     pullbackSymmetry_hom_comp_fst, pullbackAssoc_inv_fst_snd]
 #align algebraic_geometry.Scheme.pullback.t_snd AlgebraicGeometry.Scheme.Pullback.t_snd
@@ -272,7 +270,7 @@ def p1 : (gluing 𝒰 f g).glued ⟶ X := by
   exact fun i => pullback.fst ≫ 𝒰.map i
   rintro ⟨i, j⟩
   change pullback.fst ≫ _ ≫ 𝒰.map i = (_ ≫ _) ≫ _ ≫ 𝒰.map j
-  -- Porting note: change `rw` to `erw`
+  -- Porting note (#11224): change `rw` to `erw`
   erw [pullback.condition]
   rw [← Category.assoc]
   congr 1
@@ -671,7 +669,7 @@ def openCoverOfBase' (𝒰 : OpenCover Z) (f : X ⟶ Z) (g : Y ⟶ Z) : OpenCove
     -- Porting note: `simpa` failed, but this is indeed `rfl`
     rfl
   · simp only [Category.comp_id, Category.id_comp]
-  -- Porting note: this `IsIso` instance was `inferInstance`
+  -- Porting note: this `IsIso` instance was `infer_instance`
   · apply IsIso.comp_isIso
 #align algebraic_geometry.Scheme.pullback.open_cover_of_base' AlgebraicGeometry.Scheme.Pullback.openCoverOfBase'
 

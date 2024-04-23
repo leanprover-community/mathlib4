@@ -33,7 +33,7 @@ open Pointwise
 
 variable {α G A S : Type*}
 
-@[to_additive (attr := simp)]
+@[to_additive (attr := simp, norm_cast)]
 theorem inv_coe_set [InvolutiveInv G] [SetLike S G] [InvMemClass S G] {H : S} : (H : Set G)⁻¹ = H :=
   Set.ext fun _ => inv_mem_iff
 #align inv_coe_set inv_coe_set
@@ -48,6 +48,14 @@ lemma smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (
 lemma op_smul_coe_set [Group G] [SetLike S G] [SubgroupClass S G] {s : S} {a : G} (ha : a ∈ s) :
     MulOpposite.op a • (s : Set G) = s := by
   ext; simp [Set.mem_smul_set_iff_inv_smul_mem, mul_mem_cancel_right, ha]
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_mul_coe [SetLike S G] [DivInvMonoid G] [SubgroupClass S G] (H : S) :
+    H * H = (H : Set G) := by aesop (add simp mem_mul)
+
+@[to_additive (attr := simp, norm_cast)]
+lemma coe_div_coe [SetLike S G] [DivisionMonoid G] [SubgroupClass S G] (H : S) :
+    H / H = (H : Set G) := by simp [div_eq_mul_inv]
 
 variable [Group G] [AddGroup A] {s : Set G}
 
@@ -126,13 +134,13 @@ the closure of `k`. -/
   elements of `k` and their negation, and is preserved under addition, then `p` holds for all
   elements of the additive closure of `k`."]
 theorem closure_induction'' {p : (g : G) → g ∈ closure s → Prop}
-    (Hk : ∀ x (hx : x ∈ s), p x (subset_closure hx))
-    (Hk_inv : ∀ x (hx : x ∈ s), p x⁻¹ (inv_mem (subset_closure hx)))
-    (H1 : p 1 (one_mem _))
-    (Hmul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
+    (mem : ∀ x (hx : x ∈ s), p x (subset_closure hx))
+    (inv_mem : ∀ x (hx : x ∈ s), p x⁻¹ (inv_mem (subset_closure hx)))
+    (one : p 1 (one_mem _))
+    (mul : ∀ x y hx hy, p x hx → p y hy → p (x * y) (mul_mem hx hy))
     {x} (h : x ∈ closure s) : p x h :=
-  closure_induction_left H1 (fun x hx y _ hy => Hmul x y _ _ (Hk x hx) hy)
-    (fun x hx y _ => Hmul x⁻¹ y _ _ <| Hk_inv x hx) h
+  closure_induction_left one (fun x hx y _ hy => mul x y _ _ (mem x hx) hy)
+    (fun x hx y _ => mul x⁻¹ y _ _ <| inv_mem x hx) h
 #align subgroup.closure_induction'' Subgroup.closure_induction''
 #align add_subgroup.closure_induction'' AddSubgroup.closure_induction''
 
@@ -143,17 +151,17 @@ then it holds for all elements of the supremum of `S`. -/
 If `C` holds for `0` and all elements of `S i` for all `i`, and is preserved under addition,
 then it holds for all elements of the supremum of `S`. "]
 theorem iSup_induction {ι : Sort*} (S : ι → Subgroup G) {C : G → Prop} {x : G} (hx : x ∈ ⨆ i, S i)
-    (hp : ∀ (i), ∀ x ∈ S i, C x) (h1 : C 1) (hmul : ∀ x y, C x → C y → C (x * y)) : C x := by
+    (mem : ∀ (i), ∀ x ∈ S i, C x) (one : C 1) (mul : ∀ x y, C x → C y → C (x * y)) : C x := by
   rw [iSup_eq_closure] at hx
   induction hx using closure_induction'' with
-  | H1 => exact h1
-  | Hk x hx =>
+  | one => exact one
+  | mem x hx =>
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
-    exact hp _ _ hi
-  | Hk_inv x hx =>
+    exact mem _ _ hi
+  | inv_mem x hx =>
     obtain ⟨i, hi⟩ := Set.mem_iUnion.mp hx
-    exact hp _ _ (inv_mem hi)
-  | Hmul x y _ _ ihx ihy => exact hmul x y ihx ihy
+    exact mem _ _ (inv_mem hi)
+  | mul x y _ _ ihx ihy => exact mul x y ihx ihy
 #align subgroup.supr_induction Subgroup.iSup_induction
 #align add_subgroup.supr_induction AddSubgroup.iSup_induction
 
@@ -202,13 +210,13 @@ theorem mul_normal (H N : Subgroup G) [hN : N.Normal] : (↑(H ⊔ N) : Set G) =
   rw [sup_eq_closure_mul]
   refine Set.Subset.antisymm (fun x hx => ?_) subset_closure
   induction hx using closure_induction'' with
-  | H1 => exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
-  | Hk _ hx => exact hx
-  | Hk_inv x hx =>
+  | one => exact ⟨1, one_mem _, 1, one_mem _, mul_one 1⟩
+  | mem _ hx => exact hx
+  | inv_mem x hx =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     simpa only [mul_inv_rev, mul_assoc, inv_inv, inv_mul_cancel_left]
       using mul_mem_mul (inv_mem hx) (hN.conj_mem _ (inv_mem hy) x)
-  | Hmul x' x' _ _ hx hx' =>
+  | mul x' x' _ _ hx hx' =>
     obtain ⟨x, hx, y, hy, rfl⟩ := hx
     obtain ⟨x', hx', y', hy', rfl⟩ := hx'
     refine ⟨x * x', mul_mem hx hx', x'⁻¹ * y * x' * y', mul_mem ?_ hy', ?_⟩
@@ -266,13 +274,13 @@ instance sup_normal (H K : Subgroup G) [hH : H.Normal] [hK : K.Normal] : (H ⊔ 
     simp only [mul_assoc, inv_mul_cancel_left]
 #align subgroup.sup_normal Subgroup.sup_normal
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[to_additive]
 theorem smul_opposite_image_mul_preimage' (g : G) (h : Gᵐᵒᵖ) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) := by
   simp [preimage_preimage, mul_assoc]
 
--- porting note: deprecate?
+-- Porting note: deprecate?
 @[to_additive]
 theorem smul_opposite_image_mul_preimage {H : Subgroup G} (g : G) (h : H.op) (s : Set G) :
     (fun y => h • y) '' ((g * ·) ⁻¹' s) = (g * ·) ⁻¹' ((fun y => h • y) '' s) :=
@@ -321,6 +329,9 @@ theorem pointwise_smul_toSubmonoid (a : α) (S : Subgroup G) :
 theorem smul_mem_pointwise_smul (m : G) (a : α) (S : Subgroup G) : m ∈ S → a • m ∈ a • S :=
   (Set.smul_mem_smul_set : _ → _ ∈ a • (S : Set G))
 #align subgroup.smul_mem_pointwise_smul Subgroup.smul_mem_pointwise_smul
+
+instance : CovariantClass α (Subgroup G) HSMul.hSMul LE.le :=
+  ⟨fun _ _ => image_subset _⟩
 
 theorem mem_smul_pointwise_iff_exists (m : G) (a : α) (S : Subgroup G) :
     m ∈ a • S ↔ ∃ s : G, s ∈ S ∧ a • s = m :=

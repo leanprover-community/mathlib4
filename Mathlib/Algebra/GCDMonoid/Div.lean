@@ -70,11 +70,11 @@ end Int
 
 namespace Polynomial
 
-open Polynomial Classical
+open Polynomial
 
 noncomputable section
 
-variable {K : Type*} [Field K]
+variable {K : Type*} [Field K] [DecidableEq K]
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/

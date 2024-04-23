@@ -21,7 +21,7 @@ In particular, we construct an instance of `TotalComplexShape c c c` when `c : C
 and `I` is an additive monoid equipped with a group homomorphism `ε' : Multiplicative I → ℤˣ`
 satisfying certain properties (see `ComplexShape.TensorSigns`).
 
-TODO @joelriou: add more classes for the symmetry of the total complex, the associativity, etc.
+TODO @joelriou: add more classes for the associativity of the total complex, etc.
 
 -/
 
@@ -68,6 +68,10 @@ lemma next_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) :
     c₁₂.next (π c₁ c₂ c₁₂ ⟨i₁, i₂⟩) = π c₁ c₂ c₁₂ ⟨i₁', i₂⟩ :=
   c₁₂.next_eq' (rel_π₁ c₂ c₁₂ h i₂)
 
+lemma prev_π₁ {i₁ i₁' : I₁} (h : c₁.Rel i₁ i₁') (i₂ : I₂) :
+    c₁₂.prev (π c₁ c₂ c₁₂ ⟨i₁', i₂⟩) = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ :=
+  c₁₂.prev_eq' (rel_π₁ c₂ c₁₂ h i₂)
+
 variable (c₁) {c₂}
 
 lemma rel_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') :
@@ -78,12 +82,27 @@ lemma next_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') :
     c₁₂.next (π c₁ c₂ c₁₂ ⟨i₁, i₂⟩) = π c₁ c₂ c₁₂ ⟨i₁, i₂'⟩ :=
   c₁₂.next_eq' (rel_π₂ c₁ c₁₂ i₁ h)
 
+lemma prev_π₂ (i₁ : I₁) {i₂ i₂' : I₂} (h : c₂.Rel i₂ i₂') :
+    c₁₂.prev (π c₁ c₂ c₁₂ ⟨i₁, i₂'⟩) = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ :=
+  c₁₂.prev_eq' (rel_π₂ c₁ c₁₂ i₁ h)
+
 variable {c₁}
 
 lemma ε₂_ε₁ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
     ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ * ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂'⟩ =
       - ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ * ε₂ c₁ c₂ c₁₂ ⟨i₁', i₂⟩ :=
   TotalComplexShape.ε₂_ε₁ h₁ h₂
+
+lemma ε₁_ε₂ {i₁ i₁' : I₁} {i₂ i₂' : I₂} (h₁ : c₁.Rel i₁ i₁') (h₂ : c₂.Rel i₂ i₂') :
+    ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ * ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ =
+      - ε₂ c₁ c₂ c₁₂ ⟨i₁', i₂⟩ * ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂'⟩ :=
+  Eq.trans (mul_one _).symm (by
+    rw [← Int.units_mul_self (ComplexShape.ε₁ c₁ c₂ c₁₂ (i₁, i₂')), mul_assoc]
+    conv_lhs =>
+      arg 2
+      rw [← mul_assoc, ε₂_ε₁ c₁₂ h₁ h₂]
+    rw [neg_mul, neg_mul, neg_mul, mul_neg, neg_inj, ← mul_assoc, ← mul_assoc,
+      Int.units_mul_self, one_mul])
 
 section
 
@@ -140,8 +159,8 @@ instance : TotalComplexShape c c c where
 
 instance : TensorSigns (ComplexShape.down ℕ) where
   ε' := MonoidHom.mk' (fun (i : ℕ) => (-1 : ℤˣ) ^ i) (pow_add (-1 : ℤˣ))
-  rel_add p q r (hpq : q + 1 = p) := by dsimp; linarith
-  add_rel p q r (hpq : q + 1 = p) := by dsimp; linarith
+  rel_add p q r (hpq : q + 1 = p) := by dsimp; omega
+  add_rel p q r (hpq : q + 1 = p) := by dsimp; omega
   ε'_succ := by
     rintro _ q rfl
     dsimp
@@ -152,8 +171,8 @@ lemma ε_down_ℕ (n : ℕ) : (ComplexShape.down ℕ).ε n = (-1 : ℤˣ) ^ n :=
 
 instance : TensorSigns (ComplexShape.up ℤ) where
   ε' := MonoidHom.mk' Int.negOnePow Int.negOnePow_add
-  rel_add p q r (hpq : p + 1 = q) := by dsimp; linarith
-  add_rel p q r (hpq : p + 1 = q) := by dsimp; linarith
+  rel_add p q r (hpq : p + 1 = q) := by dsimp; omega
+  add_rel p q r (hpq : p + 1 = q) := by dsimp; omega
   ε'_succ := by
     rintro p _ rfl
     dsimp
@@ -163,5 +182,77 @@ instance : TensorSigns (ComplexShape.up ℤ) where
 lemma ε_up_ℤ (n : ℤ) : (ComplexShape.up ℤ).ε n = n.negOnePow := rfl
 
 end
+
+end ComplexShape
+
+/-- A total complex shape symmetry contains the data and properties which allow the
+identification of the two total complex functors
+`HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex C c₁₂`
+and `HomologicalComplex₂ C c₂ c₁ ⥤ HomologicalComplex C c₁₂` via the flip. -/
+class TotalComplexShapeSymmetry [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₂ c₁ c₁₂] where
+  symm (i₁ : I₁) (i₂ : I₂) : ComplexShape.π c₂ c₁ c₁₂ ⟨i₂, i₁⟩ = ComplexShape.π c₁ c₂ c₁₂ ⟨i₁, i₂⟩
+  /-- the signs involved in the symmetry isomorphism of the total complex -/
+  σ (i₁ : I₁) (i₂ : I₂) : ℤˣ
+  σ_ε₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
+    σ i₁ i₂ * ComplexShape.ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₂ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁' i₂
+  σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
+    σ i₁ i₂ * ComplexShape.ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ComplexShape.ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ i₁ i₂'
+
+namespace ComplexShape
+
+variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₂ c₁ c₁₂]
+  [TotalComplexShapeSymmetry c₁ c₂ c₁₂]
+
+/-- The signs involved in the symmetry isomorphism of the total complex. -/
+abbrev σ (i₁ : I₁) (i₂ : I₂) : ℤˣ := TotalComplexShapeSymmetry.σ c₁ c₂ c₁₂ i₁ i₂
+
+lemma π_symm (i₁ : I₁) (i₂ : I₂) :
+    π c₂ c₁ c₁₂ ⟨i₂, i₁⟩ = π c₁ c₂ c₁₂ ⟨i₁, i₂⟩ := by
+  apply TotalComplexShapeSymmetry.symm
+
+variable {c₁}
+
+lemma σ_ε₁ {i₁ i₁' : I₁} (h₁ : c₁.Rel i₁ i₁') (i₂ : I₂) :
+    σ c₁ c₂ c₁₂ i₁ i₂ * ε₁ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ε₂ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ c₁ c₂ c₁₂ i₁' i₂ :=
+  TotalComplexShapeSymmetry.σ_ε₁ h₁ i₂
+
+variable (c₁) {c₂}
+
+lemma σ_ε₂ (i₁ : I₁) {i₂ i₂' : I₂} (h₂ : c₂.Rel i₂ i₂') :
+    σ c₁ c₂ c₁₂ i₁ i₂ * ε₂ c₁ c₂ c₁₂ ⟨i₁, i₂⟩ = ε₁ c₂ c₁ c₁₂ ⟨i₂, i₁⟩ * σ c₁ c₂ c₁₂ i₁ i₂' :=
+  TotalComplexShapeSymmetry.σ_ε₂ i₁ h₂
+
+@[simps]
+instance : TotalComplexShapeSymmetry (up ℤ) (up ℤ) (up ℤ) where
+  symm p q := add_comm q p
+  σ p q := (p * q).negOnePow
+  σ_ε₁ := by
+    rintro p _ rfl q
+    dsimp
+    rw [mul_one, ← Int.negOnePow_add, add_comm q, add_mul, one_mul, Int.negOnePow_add,
+      Int.negOnePow_add, mul_assoc, Int.units_mul_self, mul_one]
+  σ_ε₂ := by
+    rintro p q _ rfl
+    dsimp
+    rw [one_mul, ← Int.negOnePow_add, mul_add, mul_one]
+
+end ComplexShape
+
+/-- This typeclass expresses that the signs given by `[TotalComplexShapeSymmetry c₁ c₂ c₁₂]`
+and by `[TotalComplexShapeSymmetry c₂ c₁ c₁₂]` are compatible. -/
+class TotalComplexShapeSymmetrySymmetry [TotalComplexShape c₁ c₂ c₁₂]
+    [TotalComplexShape c₂ c₁ c₁₂] [TotalComplexShapeSymmetry c₁ c₂ c₁₂]
+    [TotalComplexShapeSymmetry c₂ c₁ c₁₂] : Prop where
+  σ_symm i₁ i₂ : ComplexShape.σ c₂ c₁ c₁₂ i₂ i₁ = ComplexShape.σ c₁ c₂ c₁₂ i₁ i₂
+
+namespace ComplexShape
+
+variable [TotalComplexShape c₁ c₂ c₁₂] [TotalComplexShape c₂ c₁ c₁₂]
+  [TotalComplexShapeSymmetry c₁ c₂ c₁₂] [TotalComplexShapeSymmetry c₂ c₁ c₁₂]
+  [TotalComplexShapeSymmetrySymmetry c₁ c₂ c₁₂]
+
+lemma σ_symm (i₁ : I₁) (i₂ : I₂) :
+    σ c₂ c₁ c₁₂ i₂ i₁ = σ c₁ c₂ c₁₂ i₁ i₂ := by
+  apply TotalComplexShapeSymmetrySymmetry.σ_symm
 
 end ComplexShape

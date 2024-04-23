@@ -259,7 +259,7 @@ instance Step.scalar_tower (n) : IsScalarTower k (Step k n) (Step k (n + 1)) :=
     @Nat.leRecOn_succ (Step k) 0 n n.zero_le (n + 1).zero_le (@fun n => toStepSucc k n) z
 #align algebraic_closure.step.scalar_tower AlgebraicClosure.Step.scalar_tower
 
---Porting Note: Added to make `Step.isIntegral` faster
+-- Porting note: Added to make `Step.isIntegral` faster
 private theorem toStepOfLE.succ (n : ℕ) (h : 0 ≤ n) :
     toStepOfLE k 0 (n + 1) (h.trans n.le_succ) =
     (toStepSucc k n).comp (toStepOfLE k 0 n h) := by
@@ -289,7 +289,7 @@ theorem Step.isIntegral (n) : ∀ z : Step k n, IsIntegral k z := by
     · intro z
       have := AdjoinMonic.isIntegral (Step k a) (z : Step k (a + 1))
       convert this
-    · convert h --Porting Note: This times out at 500000
+    · convert h -- Porting note: This times out at 500000
 #align algebraic_closure.step.is_integral AlgebraicClosure.Step.isIntegral
 
 instance toStepOfLE.directedSystem : DirectedSystem (Step k) fun i j h => toStepOfLE k i j h :=
@@ -371,7 +371,7 @@ local instance instAlgebra : Algebra k (AlgebraicClosureAux k) :=
 def ofStepHom (n) : Step k n →ₐ[k] AlgebraicClosureAux k :=
   { ofStep k n with
     commutes' := by
-    --Porting Note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
+    -- Porting note: Originally `(fun x => Ring.DirectLimit.of_f n.zero_le x)`
     -- I think one problem was in recognizing that we want `toStepOfLE` in `of_f`
       intro x
       simp only [RingHom.toMonoidHom_eq_coe, OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe,
@@ -401,11 +401,8 @@ def AlgebraicClosure : Type u :=
 
 namespace AlgebraicClosure
 
-instance commRing : CommRing (AlgebraicClosure k) :=
-  Ideal.Quotient.commRing _
-
-instance inhabited : Inhabited (AlgebraicClosure k) :=
-  ⟨37⟩
+instance instCommRing : CommRing (AlgebraicClosure k) := Ideal.Quotient.commRing _
+instance instInhabited : Inhabited (AlgebraicClosure k) := ⟨37⟩
 
 instance {S : Type*} [DistribSMul S k] [IsScalarTower S k k] : SMul S (AlgebraicClosure k) :=
   Submodule.Quotient.instSMul' _
@@ -425,28 +422,23 @@ def algEquivAlgebraicClosureAux :
   exact Ideal.quotientKerAlgEquivOfSurjective
     (fun x => ⟨MvPolynomial.X x, by simp⟩)
 
--- This instance is basically copied from the `Field` instance on `SplittingField`
-instance : Field (AlgebraicClosure k) :=
-  letI e := algEquivAlgebraicClosureAux k
-  { toCommRing := AlgebraicClosure.commRing k
-    ratCast := fun a => algebraMap k _ (a : k)
-    inv := fun a => e.symm (e a)⁻¹
-    qsmul := (· • ·)
-    qsmul_eq_mul' := fun a x =>
-      Quotient.inductionOn x (fun p => congr_arg Quotient.mk''
-        (by ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]))
-    ratCast_mk := fun a b h1 h2 => by
-      apply_fun e
-      change e (algebraMap k _ _) = _
-      simp only [map_ratCast, map_natCast, map_mul, map_intCast, AlgEquiv.commutes,
-        AlgEquiv.apply_symm_apply]
-      apply Field.ratCast_mk
-    exists_pair_ne := ⟨e.symm 0, e.symm 1, fun w => zero_ne_one ((e.symm).injective w)⟩
-    mul_inv_cancel := fun a w => by
-      apply_fun e
-      simp_rw [map_mul, e.apply_symm_apply, map_one]
-      exact mul_inv_cancel ((AddEquivClass.map_ne_zero_iff e).mpr w)
-    inv_zero := by simp }
+-- Those two instances are copy-pasta from the analogous instances for `SplittingField`
+instance instGroupWithZero : GroupWithZero (AlgebraicClosure k) :=
+  let e := algEquivAlgebraicClosureAux k
+  { inv := fun a ↦ e.symm (e a)⁻¹
+    inv_zero := by simp
+    mul_inv_cancel := fun a ha ↦ e.injective $ by simp [(AddEquivClass.map_ne_zero_iff _).2 ha]
+    __ := e.surjective.nontrivial }
+
+instance instField : Field (AlgebraicClosure k) where
+  __ := instCommRing _
+  __ := instGroupWithZero _
+  ratCast q := algebraMap k _ q
+  ratCast_def q := by
+    change algebraMap k _ _ = _; rw [Rat.cast_def, map_div₀, map_intCast, map_natCast]
+  qsmul := (· • ·)
+  qsmul_def q x := Quotient.inductionOn x fun p ↦ congr_arg Quotient.mk'' $ by
+    ext; simp [MvPolynomial.algebraMap_eq, Rat.smul_def]
 
 instance isAlgClosed : IsAlgClosed (AlgebraicClosure k) :=
   IsAlgClosed.of_ringEquiv _ _ (algEquivAlgebraicClosureAux k).symm.toRingEquiv

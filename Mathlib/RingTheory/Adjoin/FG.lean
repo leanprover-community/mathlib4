@@ -3,9 +3,9 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
+import Mathlib.Algebra.MvPolynomial.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
-import Mathlib.Data.MvPolynomial.Basic
 
 #align_import ring_theory.adjoin.fg from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 
@@ -85,7 +85,6 @@ end Algebra
 namespace Subalgebra
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [Semiring A] [Algebra R A] [Semiring B] [Algebra R B]
 
 /-- A subalgebra `S` is finitely generated if there exists `t : Finset A` such that
@@ -140,7 +139,7 @@ theorem FG.prod {S : Subalgebra R A} {T : Subalgebra R B} (hS : S.FG) (hT : T.FG
 
 section
 
-open Classical
+open scoped Classical
 
 theorem FG.map {S : Subalgebra R A} (f : A →ₐ[R] B) (hs : S.FG) : (S.map f).FG :=
   let ⟨s, hs⟩ := hs
@@ -185,7 +184,6 @@ end Subalgebra
 section Semiring
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommSemiring R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 /-- The image of a Noetherian R-algebra under an R-algebra map is a Noetherian ring. -/
@@ -199,7 +197,6 @@ end Semiring
 section Ring
 
 variable {R : Type u} {A : Type v} {B : Type w}
-
 variable [CommRing R] [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 
 theorem isNoetherianRing_of_fg {S : Subalgebra R A} (HS : S.FG) [IsNoetherianRing R] :

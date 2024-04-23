@@ -14,7 +14,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: install Python
         uses: actions/setup-python@v4
@@ -27,6 +27,8 @@ jobs:
           ./scripts/lint-style.sh --fix
 
       - name: suggester / lint-style
+        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-style
@@ -42,6 +44,8 @@ jobs:
           ./scripts/lint-bib.sh
 
       - name: suggester / lint-bib
+        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: lint-bib
@@ -55,7 +59,7 @@ jobs:
         run: |
           find . -name . -o -prune -exec rm -rf -- {} +
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: update Mathlib.lean
         run: |
@@ -78,6 +82,8 @@ jobs:
           git ls-files 'Archive/*.lean' | LC_ALL=C sort | sed 's/\.lean//;s,/,.,g;s/^/import /' > Archive.lean
 
       - name: suggester / import list
+        # temporary fix for https://github.com/reviewdog/reviewdog/issues/1696#issue-2206596164
+        if: ${{ github.event.pull_request.changed_files < 301 }}
         uses: reviewdog/action-suggester@v1
         with:
           tool_name: imports

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Logic.Equiv.TransferInstance
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.Ring.Ideal
 
@@ -35,9 +36,10 @@ TODO: Generalise the results here from the concrete `Completion` to any `Abstrac
 -/
 
 
-open Classical Set Filter TopologicalSpace AddCommGroup
+open scoped Classical
+open Set Filter TopologicalSpace AddCommGroup
 
-open Classical
+open scoped Classical
 
 noncomputable section
 
@@ -151,7 +153,7 @@ variable {β : Type u} [UniformSpace β] [Ring β] [UniformAddGroup β] [Topolog
   (f : α →+* β) (hf : Continuous f)
 
 /-- The completion extension as a ring morphism. -/
-def extensionHom [CompleteSpace β] [SeparatedSpace β] : Completion α →+* β :=
+def extensionHom [CompleteSpace β] [T0Space β] : Completion α →+* β :=
   have hf' : Continuous (f : α →+ β) := hf
   -- helping the elaborator
   have hf : UniformContinuous f := uniformContinuous_addMonoidHom_of_continuous hf'
@@ -236,38 +238,56 @@ namespace UniformSpace
 
 variable {α : Type*}
 
-theorem ring_sep_rel (α) [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
-    separationSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
+-- TODO: move (some of) these results to the file about topological rings
+theorem inseparableSetoid_ring (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    inseparableSetoid α = Submodule.quotientRel (Ideal.closure ⊥) :=
   Setoid.ext fun x y =>
-    (addGroup_separationRel x y).trans <| Iff.trans (by rfl) (Submodule.quotientRel_r_def _).symm
-#align uniform_space.ring_sep_rel UniformSpace.ring_sep_rel
+    addGroup_inseparable_iff.trans <| .trans (by rfl) (Submodule.quotientRel_r_def _).symm
+#align uniform_space.ring_sep_rel UniformSpace.inseparableSetoid_ring
 
-theorem ring_sep_quot (α : Type u) [r : CommRing α] [UniformSpace α] [UniformAddGroup α]
-    [TopologicalRing α] : Quotient (separationSetoid α) = (α ⧸ (⊥ : Ideal α).closure) := by
-  rw [@ring_sep_rel α r]
+@[deprecated] -- 2024-03-09
+alias ring_sep_rel := inseparableSetoid_ring
+
+@[deprecated UniformSpace.inseparableSetoid_ring] -- 2024-02-16 Equality of types is evil
+theorem ring_sep_quot (α : Type u) [r : CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    SeparationQuotient α = (α ⧸ (⊥ : Ideal α).closure) := by
+  rw [SeparationQuotient, @inseparableSetoid_ring α r]
   rfl
 #align uniform_space.ring_sep_quot UniformSpace.ring_sep_quot
 
 /-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
-continuous, get an equivalence between the separated quotient of `α` and the quotient ring
+continuous, get an homeomorphism between the separated quotient of `α` and the quotient ring
 corresponding to the closure of zero. -/
-def sepQuotEquivRingQuot (α) [r : CommRing α] [UniformSpace α] [UniformAddGroup α]
-    [TopologicalRing α] : Quotient (separationSetoid α) ≃ α ⧸ (⊥ : Ideal α).closure :=
-  Quotient.congrRight fun x y =>
-    (addGroup_separationRel x y).trans <| Iff.trans (by rfl) (Submodule.quotientRel_r_def _).symm
-#align uniform_space.sep_quot_equiv_ring_quot UniformSpace.sepQuotEquivRingQuot
+def sepQuotHomeomorphRingQuot (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    SeparationQuotient α ≃ₜ α ⧸ (⊥ : Ideal α).closure where
+  toEquiv := Quotient.congrRight fun x y => by rw [inseparableSetoid_ring]
+  continuous_toFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
+  continuous_invFun := continuous_id.quotient_map' <| by
+    rw [inseparableSetoid_ring]; exact fun _ _ ↦ id
+#align uniform_space.sep_quot_equiv_ring_quot UniformSpace.sepQuotHomeomorphRingQuot
 
--- TODO: use a form of transport a.k.a. lift definition a.k.a. transfer
-instance commRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
-    CommRing (Quotient (separationSetoid α)) := by
-  rw [ring_sep_quot α]; infer_instance
+instance commRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    CommRing (SeparationQuotient α) :=
+  (sepQuotHomeomorphRingQuot _).commRing
 #align uniform_space.comm_ring UniformSpace.commRing
 
-instance topologicalRing [CommRing α] [UniformSpace α] [UniformAddGroup α] [TopologicalRing α] :
-    TopologicalRing (Quotient (separationSetoid α)) := by
-  convert topologicalRing_quotient (⊥ : Ideal α).closure
-  <;> (try congr; apply ring_sep_rel)
-  simp [commRing]
+/-- Given a topological ring `α` equipped with a uniform structure that makes subtraction uniformly
+continuous, get an equivalence between the separated quotient of `α` and the quotient ring
+corresponding to the closure of zero. -/
+def sepQuotRingEquivRingQuot (α) [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    SeparationQuotient α ≃+* α ⧸ (⊥ : Ideal α).closure :=
+  (sepQuotHomeomorphRingQuot _).ringEquiv
+
+instance topologicalRing [CommRing α] [TopologicalSpace α] [TopologicalRing α] :
+    TopologicalRing (SeparationQuotient α) where
+  toContinuousAdd :=
+    Inducing.continuousAdd (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+  toContinuousMul :=
+    Inducing.continuousMul (sepQuotRingEquivRingQuot α) (sepQuotHomeomorphRingQuot α).inducing
+  toContinuousNeg :=
+    Inducing.continuousNeg (sepQuotHomeomorphRingQuot α).inducing <|
+      map_neg (sepQuotRingEquivRingQuot α)
 #align uniform_space.topological_ring UniformSpace.topologicalRing
 
 end UniformSpace
@@ -275,11 +295,8 @@ end UniformSpace
 section UniformExtension
 
 variable {α : Type*} [UniformSpace α] [Semiring α]
-
 variable {β : Type*} [UniformSpace β] [Semiring β] [TopologicalSemiring β]
-
 variable {γ : Type*} [UniformSpace γ] [Semiring γ] [TopologicalSemiring γ]
-
 variable [T2Space γ] [CompleteSpace γ]
 
 /-- The dense inducing extension as a ring homomorphism. -/

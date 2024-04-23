@@ -139,9 +139,9 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
     | _ => []
 
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
-def mk_coe_nat_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
+def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
   match p with
-  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``nat_cast_nonneg #[target, e])
+  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
     catch e => do
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
@@ -185,7 +185,7 @@ def natToInt : GlobalBranchingPreprocessor where
         let (a, b) ← getRelSides (← inferType h)
         pure <| (es.insertList (getNatComparisons a)).insertList (getNatComparisons b)
       catch _ => pure es
-    pure [(g, ((← nonnegs.toList.filterMapM mk_coe_nat_nonneg_prf) ++ l : List Expr))]
+    pure [(g, ((← nonnegs.toList.filterMapM mk_natCast_nonneg_prf) ++ l : List Expr))]
 
 end natToInt
 

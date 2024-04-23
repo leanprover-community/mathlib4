@@ -51,7 +51,6 @@ open scoped NNReal ENNReal MeasureTheory ProbabilityTheory BigOperators Topology
 namespace MeasureTheory
 
 variable {Ω ι : Type*} {m0 : MeasurableSpace Ω} {μ : Measure Ω} {ℱ : Filtration ℕ m0}
-
 variable {a b : ℝ} {f : ℕ → Ω → ℝ} {ω : Ω} {R : ℝ≥0}
 
 section AeConvergence
@@ -178,10 +177,10 @@ theorem Submartingale.upcrossings_ae_lt_top' [IsFiniteMeasure μ] (hf : Submarti
       · rw [posPart_eq_self.2 hnonneg, Real.norm_eq_abs, abs_of_nonneg hnonneg]
       · rw [posPart_eq_zero.2 (not_le.1 hnonneg).le]
         exact norm_nonneg _
-      · simp only [Ne.def, ENNReal.coe_ne_top, not_false_iff]
-    · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
-  · simp only [hab, Ne.def, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
-  · simp only [Ne.def, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
+      · simp only [Ne, ENNReal.coe_ne_top, not_false_iff]
+    · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le]
+  · simp only [hab, Ne, ENNReal.ofReal_eq_zero, sub_nonpos, not_le, true_or_iff]
+  · simp only [Ne, ENNReal.ofReal_ne_top, not_false_iff, true_or_iff]
 #align measure_theory.submartingale.upcrossings_ae_lt_top' MeasureTheory.Submartingale.upcrossings_ae_lt_top'
 
 theorem Submartingale.upcrossings_ae_lt_top [IsFiniteMeasure μ] (hf : Submartingale f ℱ μ)
@@ -224,7 +223,7 @@ theorem Submartingale.ae_tendsto_limitProcess [IsFiniteMeasure μ] (hf : Submart
   have hle : ⨆ n, ℱ n ≤ m0 := sSup_le fun m ⟨n, hn⟩ => hn ▸ ℱ.le _
   have hg' : ∀ᵐ ω ∂μ.trim hle, Tendsto (fun n => f n ω) atTop (𝓝 (g' ω)) := by
     filter_upwards [hf.exists_ae_trim_tendsto_of_bdd hbdd] with ω hω
-    simp_rw [dif_pos hω]
+    simp_rw [g', dif_pos hω]
     exact hω.choose_spec
   have hg'm : @AEStronglyMeasurable _ _ _ (⨆ n, ℱ n) g' (μ.trim hle) :=
     (@aemeasurable_of_tendsto_metrizable_ae' _ _ (⨆ n, ℱ n) _ _ _ _ _ _ _
@@ -385,11 +384,11 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
   have : ∀ n s, MeasurableSet[ℱ n] s →
       ∫ x in s, g x ∂μ = ∫ x in s, ℱ.limitProcess (fun n x => (μ[g|ℱ n]) x) μ x ∂μ := by
     intro n s hs
-    rw [← set_integral_condexp (ℱ.le n) hg hs, ← set_integral_condexp (ℱ.le n) hlimint hs]
-    refine' set_integral_congr_ae (ℱ.le _ _ hs) _
+    rw [← setIntegral_condexp (ℱ.le n) hg hs, ← setIntegral_condexp (ℱ.le n) hlimint hs]
+    refine' setIntegral_congr_ae (ℱ.le _ _ hs) _
     filter_upwards [(martingale_condexp g ℱ μ).ae_eq_condexp_limitProcess hunif n] with x hx _
     rw [hx]
-  refine' ae_eq_of_forall_set_integral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
+  refine' ae_eq_of_forall_setIntegral_eq_of_sigmaFinite' hle (fun s _ _ => hg.integrableOn)
     (fun s _ _ => hlimint.integrableOn) (fun s hs => _) hgmeas.aeStronglyMeasurable'
     stronglyMeasurable_limitProcess.aeStronglyMeasurable'
   apply @MeasurableSpace.induction_on_inter _ _ _ (⨆ n, ℱ n)
@@ -407,10 +406,10 @@ theorem Integrable.tendsto_ae_condexp (hg : Integrable g μ)
     have hheq := @integral_add_compl _ _ (⨆ n, ℱ n) _ _ _ _ _ htmeas
       (hlimint.trim hle stronglyMeasurable_limitProcess)
     rw [add_comm, ← eq_sub_iff_add_eq] at hgeq hheq
-    rw [set_integral_trim hle hgmeas htmeas.compl,
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
-      set_integral_trim hle hgmeas htmeas, ←
-      set_integral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
+    rw [setIntegral_trim hle hgmeas htmeas.compl,
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas.compl, hgeq, hheq, ←
+      setIntegral_trim hle hgmeas htmeas, ←
+      setIntegral_trim hle stronglyMeasurable_limitProcess htmeas, ← integral_trim hle hgmeas, ←
       integral_trim hle stronglyMeasurable_limitProcess, ← integral_univ,
       this 0 _ MeasurableSet.univ, integral_univ, ht (measure_lt_top _ _)]
   · rintro f hf hfmeas heq -

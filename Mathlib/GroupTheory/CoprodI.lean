@@ -97,7 +97,7 @@ inductive Monoid.CoprodI.Rel : FreeMonoid (Σi, M i) → FreeMonoid (Σi, M i) �
 def Monoid.CoprodI : Type _ := (conGen (Monoid.CoprodI.Rel M)).Quotient
 #align free_product Monoid.CoprodI
 
---Porting note: could not de derived
+-- Porting note: could not de derived
 instance : Monoid (Monoid.CoprodI M) :=
   by delta Monoid.CoprodI; infer_instance
 
@@ -135,7 +135,7 @@ theorem of_apply {i} (m : M i) : of m = Con.mk' _ (FreeMonoid.of <| Sigma.mk i m
 variable {N : Type*} [Monoid N]
 
 /-- See note [partially-applied ext lemmas]. -/
---Porting note: higher `ext` priority
+-- Porting note: higher `ext` priority
 @[ext 1100]
 theorem ext_hom (f g : CoprodI M →* N) (h : ∀ i, f.comp (of : M i →* _) = g.comp of) : f = g :=
   (MonoidHom.cancel_right Con.mk'_surjective).mp <|
@@ -322,7 +322,6 @@ instance (i : ι) : Inhabited (Pair M i) :=
   ⟨⟨1, empty, by tauto⟩⟩
 
 variable {M}
-
 variable [∀ i, DecidableEq (M i)]
 
 /-- Construct a new `Word` without any reduction. The underlying list of
@@ -642,7 +641,7 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note: commented out
+--@[nolint has_nonempty_instance] Porting note(#5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -859,11 +858,8 @@ open Pointwise
 open Cardinal
 
 variable [hnontriv : Nontrivial ι]
-
 variable {G : Type*} [Group G]
-
 variable {H : ι → Type*} [∀ i, Group (H i)]
-
 variable (f : ∀ i, H i →* G)
 
 -- We need many groups or one group with many elements
@@ -871,13 +867,9 @@ variable (hcard : 3 ≤ #ι ∨ ∃ i, 3 ≤ #(H i))
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type*} [MulAction G α]
-
 variable (X : ι → Set α)
-
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-
 variable (hpp : Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X j ⊆ X i)
 
 theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
@@ -887,7 +879,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   · calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
-      _ ⊆ lift f w₁.prod • X _ := (set_smul_subset_set_smul_iff.mpr (hIw₂ hk))
+      _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 #align free_product.lift_word_ping_pong Monoid.CoprodI.lift_word_ping_pong
 
@@ -1019,24 +1011,16 @@ section PingPongLemma
 open Pointwise Cardinal
 
 variable [Nontrivial ι]
-
 variable {G : Type u_1} [Group G] (a : ι → G)
 
 -- A group action on α, and the ping-pong sets
 variable {α : Type*} [MulAction G α]
-
 variable (X Y : ι → Set α)
-
 variable (hXnonempty : ∀ i, (X i).Nonempty)
-
 variable (hXdisj : Pairwise fun i j => Disjoint (X i) (X j))
-
 variable (hYdisj : Pairwise fun i j => Disjoint (Y i) (Y j))
-
 variable (hXYdisj : ∀ i j, Disjoint (X i) (Y j))
-
 variable (hX : ∀ i, a i • (Y i)ᶜ ⊆ X i)
-
 variable (hY : ∀ i, a⁻¹ i • (X i)ᶜ ⊆ Y i)
 
 /-- The Ping-Pong-Lemma.
@@ -1106,9 +1090,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
             intro n _hle hi
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • (Y i)ᶜ := (MulAction.mul_smul _ _ _)
-              _ ⊆ a i ^ n • X i := (smul_set_mono <| hX i)
-              _ ⊆ a i ^ n • (Y i)ᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
+              _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
+              _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
+              _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
         _ ⊆ X' i := Set.subset_union_left _ _
     · have h1n : n ≤ -1 := by
@@ -1126,9 +1110,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
             intro n _ hi
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := (MulAction.mul_smul _ _ _)
-              _ ⊆ a i ^ n • Y i := (smul_set_mono <| hY i)
-              _ ⊆ a i ^ n • (X i)ᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _
+              _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
+              _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ #(H i)

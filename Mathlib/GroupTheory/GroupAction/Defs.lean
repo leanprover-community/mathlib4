@@ -226,12 +226,14 @@ theorem SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommCla
 because this would cause a loop in the instance search graph. -/
 add_decl_doc VAddCommClass.symm
 
+@[to_additive]
 theorem Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N β] {f : α → β} (hf : Function.Injective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
     SMulCommClass M N α where
   smul_comm c₁ c₂ x := hf <| by simp only [h₁, h₂, smul_comm c₁ c₂ (f x)]
 
+@[to_additive]
 theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N α] {f : α → β} (hf : Function.Surjective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
@@ -377,7 +379,8 @@ are still metavariables.
        are still metavariables."]
 theorem comp.isScalarTower [SMul M β] [SMul α β] [IsScalarTower M α β] (g : N → M) : by
     haveI := comp α g; haveI := comp β g; exact IsScalarTower N α β :=
-  { comp α g, comp β g with
+  { __ := comp α g
+    __ := comp β g
     smul_assoc := fun n => smul_assoc (g n) }
 #align has_smul.comp.is_scalar_tower SMul.comp.isScalarTower
 #align has_vadd.comp.vadd_assoc_class VAdd.comp.isScalarTower
@@ -391,7 +394,7 @@ are still metavariables.
 theorem comp.smulCommClass [SMul β α] [SMulCommClass M β α] (g : N → M) :
     haveI := comp α g
     SMulCommClass N β α :=
-  { comp α g with
+  { __ := comp α g
     smul_comm := fun n => smul_comm (g n) }
 #align has_smul.comp.smul_comm_class SMul.comp.smulCommClass
 #align has_vadd.comp.vadd_comm_class VAdd.comp.vaddCommClass
@@ -405,7 +408,7 @@ are still metavariables.
 theorem comp.smulCommClass' [SMul β α] [SMulCommClass β M α] (g : N → M) :
     haveI := comp α g
     SMulCommClass β N α :=
-  { comp α g with
+  { __ := comp α g
     smul_comm := fun _ n => smul_comm _ (g n) }
 #align has_smul.comp.smul_comm_class' SMul.comp.smulCommClass'
 #align has_vadd.comp.vadd_comm_class' VAdd.comp.vaddCommClass'
@@ -627,9 +630,9 @@ def compHom [Monoid N] (g : N →* M) :
     MulAction N α where
   smul := SMul.comp.smul g
   -- Porting note: was `by simp [g.map_one, MulAction.one_smul]`
-  one_smul _ := by simp [(· • ·)]; apply MulAction.one_smul
+  one_smul _ := by simpa [(· • ·)] using MulAction.one_smul ..
   -- Porting note: was `by simp [g.map_mul, MulAction.mul_smul]`
-  mul_smul _ _ _ := by simp [(· • ·)]; apply MulAction.mul_smul
+  mul_smul _ _ _ := by simpa [(· • ·)] using MulAction.mul_smul ..
 #align mul_action.comp_hom MulAction.compHom
 #align add_action.comp_hom AddAction.compHom
 
@@ -845,7 +848,7 @@ theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a 
 
 instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
   smul r f :=
-    { toFun := (fun a => r • (f a))
+    { toFun := fun a => r • (f a)
       map_zero' := by simp only [map_zero, smul_zero]
       map_add' := fun x y => by simp only [map_add, smul_add] }
   smul_zero r := ext fun _ => smul_zero _

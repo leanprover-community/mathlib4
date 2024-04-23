@@ -13,10 +13,10 @@ set_option autoImplicit true
 example (xs ys : List α) : (xs ++ ys).length = ys.length + xs.length := by
   rw_search
 
-/--
+/-
 info: Try this: rw [← @add_assoc, @add_right_comm, @add_assoc, @add_add_add_comm, ← @add_assoc, @add_right_comm]
 -/
-#guard_msgs in
+#guard_msgs (drop info) in
 example [AddCommMonoid α] {a b c d : α} : (a + b) + (c + d) = a + d + c + b := by
   rw_search
 
@@ -26,16 +26,18 @@ example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
   rw_search
 
-/--
-info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, Nat.add_assoc, @add_rotate', Nat.add_assoc]
+/-
+info: Try this: rw [@List.length_append, @List.length_append, Nat.two_mul, Nat.add_assoc, Nat.add_left_comm, Nat.add_right_comm, Nat.add_assoc]
 -/
-#guard_msgs in
+#guard_msgs (drop info) in
 example (xs ys : List α) :
     (xs ++ ys ++ ys).length = 2 * ys.length + xs.length := by
   rw_search [-add_rotate]
 
-/-- info: Try this: rw [Int.add_right_comm, @add_right_cancel_iff, @add_sub, @add_sub_cancel'] -/
-#guard_msgs in
+/-
+info: Try this: rw [Int.add_right_comm, @add_right_cancel_iff, @add_sub_left_comm, @add_sub, Int.add_sub_cancel]
+-/
+#guard_msgs (drop info) in
 example {a b c : Int} : a + b = c + b + (a - c) := by
   rw_search
 

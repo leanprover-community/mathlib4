@@ -30,7 +30,6 @@ def continuum : Cardinal.{u} :=
   2 ^ ℵ₀
 #align cardinal.continuum Cardinal.continuum
 
--- mathport name: Cardinal.continuum
 scoped notation "𝔠" => Cardinal.continuum
 
 @[simp]
@@ -45,25 +44,25 @@ theorem lift_continuum : lift.{v} 𝔠 = 𝔠 := by
 
 @[simp]
 theorem continuum_le_lift {c : Cardinal.{u}} : 𝔠 ≤ lift.{v} c ↔ 𝔠 ≤ c := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
 #align cardinal.continuum_le_lift Cardinal.continuum_le_lift
 
 @[simp]
 theorem lift_le_continuum {c : Cardinal.{u}} : lift.{v} c ≤ 𝔠 ↔ c ≤ 𝔠 := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_le]
 #align cardinal.lift_le_continuum Cardinal.lift_le_continuum
 
 @[simp]
 theorem continuum_lt_lift {c : Cardinal.{u}} : 𝔠 < lift.{v} c ↔ 𝔠 < c := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
 #align cardinal.continuum_lt_lift Cardinal.continuum_lt_lift
 
 @[simp]
 theorem lift_lt_continuum {c : Cardinal.{u}} : lift.{v} c < 𝔠 ↔ c < 𝔠 := by
-  -- porting note: added explicit universes
+  -- Porting note: added explicit universes
   rw [← lift_continuum.{u,v}, lift_lt]
 #align cardinal.lift_lt_continuum Cardinal.lift_lt_continuum
 

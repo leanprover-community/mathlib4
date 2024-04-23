@@ -3,9 +3,9 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Order
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Rat.BigOperators
 
@@ -51,7 +51,7 @@ theorem energy_le_one : P.energy G ≤ 1 :=
       ∑ uv in P.parts.offDiag, G.edgeDensity uv.1 uv.2 ^ 2 ≤ P.parts.offDiag.card • (1 : ℚ) :=
         sum_le_card_nsmul _ _ 1 fun uv _ =>
           (sq_le_one_iff <| G.edgeDensity_nonneg _ _).2 <| G.edgeDensity_le_one _ _
-      _ = P.parts.offDiag.card := (Nat.smul_one_eq_coe _)
+      _ = P.parts.offDiag.card := Nat.smul_one_eq_coe _
       _ ≤ _ := by
         rw [offDiag_card, one_mul]
         norm_cast

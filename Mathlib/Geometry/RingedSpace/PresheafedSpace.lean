@@ -38,7 +38,7 @@ variable (C : Type*) [Category C]
 
 namespace AlgebraicGeometry
 
--- porting note: `PresheafSpace.{w} C` is the type of topological spaces in `Type w` equipped
+-- Porting note: `PresheafSpace.{w} C` is the type of topological spaces in `Type w` equipped
 -- with a presheaf with values in `C`; then there is a total of three universe parameters
 -- in `PresheafSpace.{w, v, u} C`, where `C : Type u` and `Category.{v} C`.
 -- In mathlib3, some definitions in this file unnecessarily assumed `w=v`. This restriction
@@ -55,7 +55,7 @@ variable {C}
 
 namespace PresheafedSpace
 
--- porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
+-- Porting note: using `Coe` here triggers an error, `CoeOut` seems an acceptable alternative
 instance coeCarrier : CoeOut (PresheafedSpace C) TopCat where coe X := X.carrier
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.coe_carrier AlgebraicGeometry.PresheafedSpace.coeCarrier
@@ -66,14 +66,14 @@ attribute [coe] PresheafedSpace.carrier
 -- in downstream files.
 instance : CoeSort (PresheafedSpace C) (Type*) where coe := fun X => X.carrier
 
--- porting note: the following lemma is removed because it is a syntactic tauto
+-- Porting note: the following lemma is removed because it is a syntactic tauto
 /-@[simp]
 theorem as_coe (X : PresheafedSpace.{w, v, u} C) : X.carrier = (X : TopCat.{w}) :=
   rfl-/
 set_option linter.uppercaseLean3 false in
 #noalign algebraic_geometry.PresheafedSpace.as_coe
 
--- porting note: removed @[simp] as the `simpVarHead` linter complains
+-- Porting note: removed @[simp] as the `simpVarHead` linter complains
 -- @[simp]
 theorem mk_coe (carrier) (presheaf) :
     (({ carrier
@@ -104,7 +104,7 @@ structure Hom (X Y : PresheafedSpace C) where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hom AlgebraicGeometry.PresheafedSpace.Hom
 
--- porting note: eventually, the ext lemma shall be applied to terms in `X ⟶ Y`
+-- Porting note: eventually, the ext lemma shall be applied to terms in `X ⟶ Y`
 -- rather than `Hom X Y`, this one was renamed `Hom.ext` instead of `ext`,
 -- and the more practical lemma `ext` is defined just after the definition
 -- of the `Category` instance
@@ -131,7 +131,7 @@ theorem hext {X Y : PresheafedSpace C} (α β : Hom X Y) (w : α.base = β.base)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.hext AlgebraicGeometry.PresheafedSpace.hext
 
--- porting note: `eqToHom` is no longer necessary in the definition of `c`
+-- Porting note: `eqToHom` is no longer necessary in the definition of `c`
 /-- The identity morphism of a `PresheafedSpace`. -/
 def id (X : PresheafedSpace C) : Hom X X where
   base := 𝟙 (X : TopCat)
@@ -163,7 +163,7 @@ section
 
 attribute [local simp] id comp
 
--- porting note: in mathlib3, `tidy` could (almost) prove the category axioms, but proofs
+-- Porting note: in mathlib3, `tidy` could (almost) prove the category axioms, but proofs
 -- were included because `tidy` was slow. Here, `aesop_cat` succeeds reasonably quickly
 -- for `comp_id` and `assoc`
 /-- The category of PresheafedSpaces. Morphisms are pairs, a continuous map and a presheaf map
@@ -204,7 +204,7 @@ theorem id_base (X : PresheafedSpace C) : (𝟙 X : X ⟶ X).base = 𝟙 (X : To
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.PresheafedSpace.id_base AlgebraicGeometry.PresheafedSpace.id_base
 
--- porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
+-- Porting note: `eqToHom` is no longer needed in the statements of `id_c` and `id_c_app`
 theorem id_c (X : PresheafedSpace C) :
     (𝟙 X : X ⟶ X).c = 𝟙 X.presheaf :=
   rfl
@@ -229,14 +229,14 @@ set_option linter.uppercaseLean3 false in
 instance (X Y : PresheafedSpace C) : CoeFun (X ⟶ Y) fun _ => (↑X → ↑Y) :=
   ⟨fun f => f.base⟩
 
--- porting note: removed as this is a syntactic tauto
+-- Porting note: removed as this is a syntactic tauto
 --theorem coe_to_fun_eq {X Y : PresheafedSpace.{v, v, u} C} (f : X ⟶ Y) : (f : ↑X → ↑Y) = f.base :=
 --  rfl
 #noalign algebraic_geometry.PresheafedSpace.coe_to_fun_eq
 
 -- The `reassoc` attribute was added despite the LHS not being a composition of two homs,
 -- for the reasons explained in the docstring.
--- porting note: as there is no composition in the LHS it is purposely `@[reassoc, simp]` rather
+-- Porting note: as there is no composition in the LHS it is purposely `@[reassoc, simp]` rather
 -- than `@[reassoc (attr := simp)]`
 /-- Sometimes rewriting with `comp_c_app` doesn't work because of dependent type issues.
 In that case, `erw comp_c_app_assoc` might make progress.
@@ -513,7 +513,7 @@ def mapPresheaf (F : C ⥤ D) : PresheafedSpace C ⥤ PresheafedSpace D where
   map f :=
     { base := f.base
       c := whiskerRight f.c F }
-  -- porting note: these proofs were automatic in mathlib3
+  -- Porting note: these proofs were automatic in mathlib3
   map_id X := by
     ext U
     rfl

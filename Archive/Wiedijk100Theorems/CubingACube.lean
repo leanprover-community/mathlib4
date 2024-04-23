@@ -307,7 +307,7 @@ theorem nontrivial_bcubes : (bcubes cs c).Nontrivial := by
   have h2i : i ∈ bcubes cs c :=
     ⟨hi.1.symm, v.2.1 i hi.1.symm ⟨tail c.b, hi.2, fun j => c.b_mem_side j.succ⟩⟩
   let j : Fin (n + 1) := ⟨2, h.three_le⟩
-  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne.def]; norm_num
+  have hj : 0 ≠ j := by simp only [Fin.ext_iff, Ne]; norm_num
   let p : Fin (n + 1) → ℝ := fun j' => if j' = j then c.b j + (cs i).w else c.b j'
   have hp : p ∈ c.bottom := by
     constructor
@@ -573,7 +573,7 @@ theorem cannot_cube_a_cube :
     ∀ {s : Set (Cube n)}, s.Finite →           -- given a finite collection of (hyper)cubes
     s.Nontrivial →                             -- containing at least two elements
     s.PairwiseDisjoint Cube.toSet →            -- which is pairwise disjoint
-    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet → -- whose union is the unit cube
+    ⋃ c ∈ s, Cube.toSet c = unitCube.toSet →   -- whose union is the unit cube
     InjOn Cube.w s →                           -- such that the widths of all cubes are different
     False := by                                -- then we can derive a contradiction
   intro n hn s hfin h2 hd hU hinj

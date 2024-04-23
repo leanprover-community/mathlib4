@@ -104,11 +104,11 @@ theorem mem_jacobson_iff {x : R} : x ∈ jacobson I ↔ ∀ y, ∃ z, z * y * x 
         let ⟨r, hr⟩ := mem_span_singleton'.1 hq
         ⟨r, by
           -- Porting note: supply `mul_add_one` with explicit variables
-          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel]
+          rw [mul_assoc, ← mul_add_one r (y * x), hr, ← hpq, ← neg_sub, add_sub_cancel_right]
           exact I.neg_mem hpi⟩)
       fun hxy : I ⊔ span {y * x + 1} ≠ ⊤ => let ⟨M, hm1, hm2⟩ := exists_le_maximal _ hxy
       suffices x ∉ M from (this <| mem_sInf.1 hx ⟨le_trans le_sup_left hm2, hm1⟩).elim
-      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel' (y * x) 1 ▸
+      fun hxm => hm1.1.1 <| (eq_top_iff_one _).2 <| add_sub_cancel_left (y * x) 1 ▸
         M.sub_mem (le_sup_right.trans hm2 <| subset_span rfl) (M.mul_mem_left _ hxm),
     fun hx => mem_sInf.2 fun M ⟨him, hm⟩ => by_contradiction fun hxm =>
       let ⟨y, i, hi, df⟩ := hm.exists_inv hxm
@@ -210,19 +210,18 @@ theorem comap_jacobson_of_surjective {f : R →+* S} (hf : Function.Surjective f
     comap f K.jacobson = (comap f K).jacobson := by
   unfold Ideal.jacobson
   refine' le_antisymm _ _
-  · refine le_trans (comap_mono (le_of_eq (Trans.trans top_inf_eq.symm sInf_insert.symm))) ?_
-    rw [comap_sInf', sInf_eq_iInf]
+  · rw [← top_inf_eq (sInf _), ← sInf_insert, comap_sInf', sInf_eq_iInf]
     refine' iInf_le_iInf_of_subset fun J hJ => _
     have : comap f (map f J) = J :=
       Trans.trans (comap_map_of_surjective f hf J)
         (le_antisymm (sup_le_iff.2 ⟨le_of_eq rfl, le_trans (comap_mono bot_le) hJ.left⟩)
           le_sup_left)
     cases' map_eq_top_or_isMaximal_of_surjective _ hf hJ.right with htop hmax
-    · exact ⟨⊤, ⟨Set.mem_insert ⊤ _, htop ▸ this⟩⟩
-    · exact ⟨map f J, ⟨Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
-        this⟩⟩
-  · rw [comap_sInf]
-    refine' le_iInf_iff.2 fun J => le_iInf_iff.2 fun hJ => _
+    · exact ⟨⊤, Set.mem_insert ⊤ _, htop ▸ this⟩
+    · exact ⟨map f J, Set.mem_insert_of_mem _ ⟨le_map_of_comap_le_of_surjective f hf hJ.1, hmax⟩,
+        this⟩
+  · simp_rw [comap_sInf, le_iInf_iff]
+    intros J hJ
     haveI : J.IsMaximal := hJ.right
     exact sInf_le ⟨comap_mono hJ.left, comap_isMaximal_of_surjective _ hf⟩
 #align ideal.comap_jacobson_of_surjective Ideal.comap_jacobson_of_surjective
@@ -387,7 +386,8 @@ theorem IsLocal.mem_jacobson_or_exists_inv {I : Ideal R} (hi : IsLocal I) (x : R
     (fun h : I ⊔ span {x} = ⊤ =>
       let ⟨p, hpi, q, hq, hpq⟩ := Submodule.mem_sup.1 ((eq_top_iff_one _).1 h)
       let ⟨r, hr⟩ := mem_span_singleton.1 hq
-      Or.inr ⟨r, by rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel]; exact I.neg_mem hpi⟩)
+      Or.inr ⟨r, by
+        rw [← hpq, mul_comm, ← hr, ← neg_sub, add_sub_cancel_right]; exact I.neg_mem hpi⟩)
     fun h : I ⊔ span {x} ≠ ⊤ =>
     Or.inl <|
       le_trans le_sup_right (hi.le_jacobson le_sup_left h) <| mem_span_singleton.2 <| dvd_refl x

@@ -15,10 +15,10 @@ In this file we prove the Schur-Zassenhaus theorem.
 
 ## Main results
 
-- `exists_right_complement'_of_coprime` : The **Schur-Zassenhaus** theorem:
+- `exists_right_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (right) complement of `H`.
-- `exists_left_complement'_of_coprime` : The **Schur-Zassenhaus** theorem:
+- `exists_left_complement'_of_coprime`: The **Schur-Zassenhaus** theorem:
   If `H : Subgroup G` is normal and has order coprime to its index,
   then there exists a subgroup `K` which is a (left) complement of `H`.
 -/
@@ -44,7 +44,7 @@ def QuotientDiff :=
 #align subgroup.quotient_diff Subgroup.QuotientDiff
 
 instance : Inhabited H.QuotientDiff := by
-  dsimp [QuotientDiff] -- porting note: Added `dsimp`
+  dsimp [QuotientDiff] -- Porting note: Added `dsimp`
   infer_instance
 
 theorem smul_diff_smul' [hH : Normal H] (g : Gᵐᵒᵖ) :
@@ -122,7 +122,8 @@ theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.card H) H.index) :
     ∃ K : Subgroup G, IsComplement' H K :=
-  instNonempty.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
+  have ne : Nonempty (QuotientDiff H) := inferInstance
+  ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
 

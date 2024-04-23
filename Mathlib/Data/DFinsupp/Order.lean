@@ -87,7 +87,7 @@ instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem
+    inf := zipWith (fun _ ↦ (· ⊓ ·)) fun _ ↦ inf_idem _
     inf_le_left := fun _ _ _ ↦ inf_le_left
     inf_le_right := fun _ _ _ ↦ inf_le_right
     le_inf := fun _ _ _ hf hg i ↦ le_inf (hf i) (hg i) }
@@ -101,7 +101,7 @@ theorem inf_apply [∀ i, SemilatticeInf (α i)] (f g : Π₀ i, α i) (i : ι) 
 
 instance [∀ i, SemilatticeSup (α i)] : SemilatticeSup (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
-    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem
+    sup := zipWith (fun _ ↦ (· ⊔ ·)) fun _ ↦ sup_idem _
     le_sup_left := fun _ _ _ ↦ le_sup_left
     le_sup_right := fun _ _ _ ↦ le_sup_right
     sup_le := fun _ _ _ hf hg i ↦ sup_le (hf i) (hg i) }
@@ -189,7 +189,7 @@ end Module
 
 section CanonicallyOrderedAddCommMonoid
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, CanonicallyOrderedAddCommMonoid (α i)]
 
@@ -247,7 +247,7 @@ theorem single_le_iff {f : Π₀ i, α i} {i : ι} {a : α i} : single i a ≤ f
 
 end LE
 
--- porting note: Split into 2 lines to satisfy the unusedVariables linter.
+-- Porting note: Split into 2 lines to satisfy the unusedVariables linter.
 variable (α)
 variable [∀ i, Sub (α i)] [∀ i, OrderedSub (α i)] {f g : Π₀ i, α i} {i : ι} {a b : α i}
 
@@ -298,7 +298,7 @@ variable [∀ (i) (x : α i), Decidable (x ≠ 0)]
 
 theorem support_tsub : (f - g).support ⊆ f.support := by
   simp (config := { contextual := true }) only [subset_iff, tsub_eq_zero_iff_le, mem_support_iff,
-    Ne.def, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
+    Ne, coe_tsub, Pi.sub_apply, not_imp_not, zero_le, imp_true_iff]
 #align dfinsupp.support_tsub DFinsupp.support_tsub
 
 theorem subset_support_tsub : f.support \ g.support ⊆ (f - g).support := by
@@ -314,14 +314,14 @@ variable [∀ i, CanonicallyLinearOrderedAddCommMonoid (α i)] [DecidableEq ι] 
 @[simp]
 theorem support_inf : (f ⊓ g).support = f.support ∩ g.support := by
   ext
-  simp only [inf_apply, mem_support_iff, Ne.def, Finset.mem_inter]
+  simp only [inf_apply, mem_support_iff, Ne, Finset.mem_inter]
   simp only [inf_eq_min, ← nonpos_iff_eq_zero, min_le_iff, not_or]
 #align dfinsupp.support_inf DFinsupp.support_inf
 
 @[simp]
 theorem support_sup : (f ⊔ g).support = f.support ∪ g.support := by
   ext
-  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne.def, ← bot_eq_zero]
+  simp only [Finset.mem_union, mem_support_iff, sup_apply, Ne, ← bot_eq_zero]
   rw [_root_.sup_eq_bot_iff, not_and_or]
 #align dfinsupp.support_sup DFinsupp.support_sup
 

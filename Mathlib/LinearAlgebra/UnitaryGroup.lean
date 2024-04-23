@@ -145,10 +145,10 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
--- porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
+-- Porting note (#11215): TODO: redefine `toGL`/`embeddingGL` as in this example:
 example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
--- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
+-- Porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
@@ -202,7 +202,7 @@ section OrthogonalGroup
 
 variable (n) (β : Type v) [CommRing β]
 
--- Porting note: todo: will lemmas about `Matrix.orthogonalGroup` work without making
+-- Porting note (#11215): TODO: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
 -- at the same time?
 attribute [local instance] starRingOfComm

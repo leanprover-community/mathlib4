@@ -53,7 +53,6 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-
 variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)
@@ -128,14 +127,13 @@ noncomputable def auxEquiv : (𝒜 ᵍ⊗[R] ℬ) ≃ₗ[R] (⨁ i, 𝒜 i) ⊗[
   let fB := (decomposeAlgEquiv ℬ).toLinearEquiv
   (of R 𝒜 ℬ).symm.trans (TensorProduct.congr fA fB)
 
-@[simp] theorem auxEquiv_tmul (a : A) (b : B) :
+theorem auxEquiv_tmul (a : A) (b : B) :
     auxEquiv R 𝒜 ℬ (a ᵍ⊗ₜ b) = decompose 𝒜 a ⊗ₜ decompose ℬ b := rfl
 
-@[simp] theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
+theorem auxEquiv_one : auxEquiv R 𝒜 ℬ 1 = 1 := by
   rw [← of_one, Algebra.TensorProduct.one_def, auxEquiv_tmul 𝒜 ℬ, DirectSum.decompose_one,
     DirectSum.decompose_one, Algebra.TensorProduct.one_def]
 
-@[simp, nolint simpNF]  -- simpNF linter crashes
 theorem auxEquiv_symm_one : (auxEquiv R 𝒜 ℬ).symm 1 = 1 :=
   (LinearEquiv.symm_apply_eq _).mpr (auxEquiv_one _ _).symm
 
@@ -370,7 +368,7 @@ def comm : (𝒜 ᵍ⊗[R] ℬ) ≃ₐ[R] (ℬ ᵍ⊗[R] 𝒜) :=
       simp_rw [auxEquiv_mul, gradedComm_gradedMul, LinearEquiv.symm_apply_eq,
         ← gradedComm_gradedMul, auxEquiv_mul, LinearEquiv.apply_symm_apply, gradedComm_gradedMul])
 
-@[simp] lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
+lemma auxEquiv_comm (x : 𝒜 ᵍ⊗[R] ℬ) :
     auxEquiv R ℬ 𝒜 (comm 𝒜 ℬ x) = gradedComm R (𝒜 ·) (ℬ ·) (auxEquiv R 𝒜 ℬ x) :=
   LinearEquiv.eq_symm_apply _ |>.mp rfl
 

@@ -53,6 +53,7 @@ theorem exp_neg_one_lt_d9 : exp (-1) < 0.3678794412 := by
   all_goals norm_num
 #align real.exp_neg_one_lt_d9 Real.exp_neg_one_lt_d9
 
+set_option tactic.skipAssignedInstances false in
 theorem log_two_near_10 : |log 2 - 287209 / 414355| ≤ 1 / 10 ^ 10 := by
   suffices |log 2 - 287209 / 414355| ≤ 1 / 17179869184 + (1 / 10 ^ 10 - 1 / 2 ^ 34) by
     norm_num1 at *

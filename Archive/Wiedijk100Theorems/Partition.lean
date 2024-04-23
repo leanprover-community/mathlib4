@@ -3,8 +3,9 @@ Copyright (c) 2020 Bhavik Mehta, Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta, Aaron Anderson
 -/
-import Mathlib.RingTheory.PowerSeries.Basic
-import Mathlib.Combinatorics.Partition
+import Mathlib.RingTheory.PowerSeries.Inverse
+import Mathlib.RingTheory.PowerSeries.Order
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
@@ -202,8 +203,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
         simp only [Multiset.mem_toFinset, not_not, mem_filter] }
   refine' Finset.card_congr φ _ _ _
   · intro a  ha
-    unfold_let
-    simp only [not_forall, not_exists, not_and, exists_prop, mem_filter]
+    simp only [φ, not_forall, not_exists, not_and, exists_prop, mem_filter]
     rw [mem_piAntidiagonal']
     dsimp only [ne_eq, smul_eq_mul, id_eq, eq_mpr_eq_cast, le_eq_subset, Finsupp.coe_mk]
     simp only [mem_univ, forall_true_left, not_and, not_forall, exists_prop,
@@ -306,7 +306,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
-  apply ball_congr
+  apply forall₂_congr
   intro i hi
   have hin : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi

@@ -74,7 +74,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open Classical ENNReal Topology
+open scoped Classical
+open ENNReal Topology
 
 open Set Filter TopologicalSpace ENNReal EMetric MeasureTheory Function
 
@@ -85,7 +86,6 @@ namespace MeasureTheory
 section MeasurableSpace
 
 variable [TopologicalSpace β]
-
 variable (β)
 
 /-- The equivalence relation of being almost everywhere equal for almost everywhere strongly
@@ -106,7 +106,6 @@ def AEEqFun (μ : Measure α) : Type _ :=
 
 variable {α β}
 
--- mathport name: «expr →ₘ[ ] »
 @[inherit_doc MeasureTheory.AEEqFun]
 notation:25 α " →ₘ[" μ "] " β => AEEqFun α β μ
 
@@ -651,9 +650,7 @@ theorem one_toGerm [One β] : (1 : α →ₘ[μ] β).toGerm = 1 :=
 section SMul
 
 variable {𝕜 𝕜' : Type*}
-
 variable [SMul 𝕜 γ] [ContinuousConstSMul 𝕜 γ]
-
 variable [SMul 𝕜' γ] [ContinuousConstSMul 𝕜' γ]
 
 instance instSMul : SMul 𝕜 (α →ₘ[μ] γ) :=
@@ -978,7 +975,6 @@ namespace ContinuousMap
 open MeasureTheory
 
 variable [TopologicalSpace α] [BorelSpace α] (μ)
-
 variable [TopologicalSpace β] [SecondCountableTopologyEither α β] [PseudoMetrizableSpace β]
 
 /-- The equivalence class of `μ`-almost-everywhere measurable functions associated to a continuous
@@ -1006,7 +1002,6 @@ def toAEEqFunMulHom : C(α, β) →* α →ₘ[μ] β where
 #align continuous_map.to_ae_eq_fun_add_hom ContinuousMap.toAEEqFunAddHom
 
 variable {𝕜 : Type*} [Semiring 𝕜]
-
 variable [TopologicalSpace γ] [PseudoMetrizableSpace γ] [AddCommGroup γ] [Module 𝕜 γ]
   [TopologicalAddGroup γ] [ContinuousConstSMul 𝕜 γ] [SecondCountableTopologyEither α γ]
 
