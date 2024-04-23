@@ -434,7 +434,7 @@ def evalRatNum : PositivityExt where eval {u α} _ _ e := do
     match ← core zα pα a with
     | .positive pa => pure $ .positive q(num_pos_of_pos $pa)
     | .nonnegative pa => pure $ .nonnegative q(num_nonneg_of_nonneg $pa)
-    | .nonzero pa => pure $ .nonzero q(num_ne_zero.2 $pa)
+    | .nonzero pa => pure $ .nonzero q(num_ne_zero_of_ne_zero $pa)
     | .none => pure .none
   | _, _ => throwError "not Rat.num"
 
