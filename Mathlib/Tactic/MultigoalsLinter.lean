@@ -71,6 +71,7 @@ abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Mathlib.Tactic.Conv.convLHS
   |>.insert `Mathlib.Tactic.Conv.convRHS
   |>.insert ``Lean.Parser.Tactic.first
+  |>.insert ``Lean.Parser.Tactic.tacticIterate____
   |>.insert ``Lean.Parser.Tactic.anyGoals
   |>.insert ``Lean.Parser.Tactic.allGoals
 

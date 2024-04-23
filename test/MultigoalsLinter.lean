@@ -35,3 +35,16 @@ example {n : Nat} (hn : n = 0) : n + 0 = 0 := by
   by_cases 0 = 0
   assumption
   assumption
+
+set_option linter.multiGoal false in
+set_option linter.multiGoal true in
+/--
+warning: 'rfl' leaves 1 goal 'Lean.Parser.Tactic.tacticRfl' [linter.multiGoal]
+-/
+-- the linter allows `iterate`, but continues to lint.
+#guard_msgs in
+example (p : Prop) (hp : p) : (0 = 0 ∧ p) ∨ 0 = 0 := by
+  iterate left; decide
+  refine Or.inl ⟨?_, ?_⟩
+  rfl
+  assumption
