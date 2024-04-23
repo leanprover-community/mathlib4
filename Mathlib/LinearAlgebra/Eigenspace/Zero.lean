@@ -40,6 +40,7 @@ lemma IsNilpotent.charpoly_eq_X_pow_finrank (h : IsNilpotent φ) :
   rw [finrank_eq_card_chooseBasisIndex]
   apply Matrix.isNilpotent_charpoly_sub_pow_of_isNilpotent
   exact h.map (LinearMap.toMatrixAlgEquiv (chooseBasis K M))
+
 namespace LinearMap
 
 open Module.Free in
@@ -121,7 +122,7 @@ lemma not_hasEigenvalue_zero_tfae :
       ¬ IsRoot (minpoly K φ) 0,
       constantCoeff φ.charpoly ≠ 0,
       LinearMap.det φ ≠ 0,
-      ker φ ≤ ⊥,
+      ker φ = ⊥,
       ∀ (m : M), φ m = 0 → m = 0 ] := by
   have := (hasEigenvalue_zero_tfae φ).not
   dsimp only [List.map] at this
