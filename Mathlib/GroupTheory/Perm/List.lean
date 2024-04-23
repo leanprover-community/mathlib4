@@ -237,6 +237,13 @@ theorem formPerm_apply_nthLe (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < x
       rw [Nat.mod_eq_of_lt]; simpa [Nat.succ_eq_add_one]
 #align list.form_perm_apply_nth_le List.formPerm_apply_nthLe
 
+-- TODO: prove these the other way around!
+theorem formPerm_apply_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.length) :
+    formPerm xs (xs.get ⟨n, hn⟩) =
+      xs.get ⟨((n + 1) % xs.length), (Nat.mod_lt _ (n.zero_le.trans_lt hn))⟩ :=
+  formPerm_apply_nthLe xs h n hn
+attribute [deprecated] formPerm_apply_get -- 2024-04-23
+
 set_option linter.deprecated false in
 theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
     { x | formPerm l x ≠ x } = l.toFinset := by
@@ -328,10 +335,17 @@ theorem formPerm_pow_apply_nthLe (l : List α) (h : Nodup l) (n k : ℕ) (hk : k
   · simp [pow_succ', mul_apply, hn, formPerm_apply_nthLe _ h, Nat.succ_eq_add_one, ← Nat.add_assoc]
 #align list.form_perm_pow_apply_nth_le List.formPerm_pow_apply_nthLe
 
+-- TODO: prove these the other way around!
+theorem formPerm_pow_apply_get (l : List α) (h : Nodup l) (n k : ℕ) (hk : k < l.length) :
+    (formPerm l ^ n) (l.get ⟨k, hk⟩) =
+      l.get ⟨((k + n) % l.length), (Nat.mod_lt _ (k.zero_le.trans_lt hk))⟩ :=
+  formPerm_pow_apply_nthLe l h n k hk
+attribute [deprecated formPerm_pow_apply_get] formPerm_pow_apply_nthLe -- 2024-04-23
+
 theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n : ℕ) :
     (formPerm (x :: l) ^ n) x =
-      (x :: l).nthLe (n % (x :: l).length) (Nat.mod_lt _ (Nat.zero_lt_succ _)) := by
-  convert formPerm_pow_apply_nthLe _ h n 0 (Nat.succ_pos _)
+      (x :: l).get ⟨(n % (x :: l).length), (Nat.mod_lt _ (Nat.zero_lt_succ _))⟩ := by
+  convert formPerm_pow_apply_get _ h n 0 (Nat.succ_pos _)
   simp
 #align list.form_perm_pow_apply_head List.formPerm_pow_apply_head
 
