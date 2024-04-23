@@ -1,3 +1,13 @@
+/-
+Copyright (c) 2024 Jireh Loreaux. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jireh Loreaux
+-/
+
+/-!
+# TODO : Fill in module docstring
+-/
+
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Data.PNat.Basic
 
@@ -31,11 +41,11 @@ lemma ppow_succ (x : M) (n : ℕ+) : x ^ (n + 1) = x ^ n * x :=
 @[to_additive add_psmul]
 lemma ppow_add (x : M) (n m : ℕ+) : x ^ (n + m) = x ^ n * x ^ m :=
   m.recOn (by simp [ppow_succ, add_comm]) fun k hk => by
-    rw [←add_assoc, ppow_succ, ppow_succ, hk, mul_assoc]
+    rw [← add_assoc, ppow_succ, ppow_succ, hk, mul_assoc]
 
 @[to_additive mul_comm_psmul]
 lemma ppow_mul_comm (x : M) (n m : ℕ+) : x ^ n * x ^ m = x ^ m * x ^ n := by
-  simp only [←ppow_add, add_comm]
+  simp only [← ppow_add, add_comm]
 
 @[to_additive mul_comm_psmul']
 lemma ppow_mul_comm' (x : M) (n : ℕ+) : x ^ n * x = x * x ^ n := by
@@ -57,7 +67,7 @@ lemma Commute.ppow_right {x y : M} (h : Commute x y) (n : ℕ+) : Commute x (y ^
 lemma Commute.mul_ppow {x y : M} (h : Commute x y) (n : ℕ+) : (x * y) ^ n = x ^ n * y ^ n :=
   n.recOn (by simp) fun k hk => by
     simp only [ppow_succ, hk, mul_assoc]
-    rw [←mul_assoc x, ←mul_assoc (y ^ k)]
+    rw [← mul_assoc x, ← mul_assoc (y ^ k)]
     congr 2
     exact (h.symm.ppow_left k).eq
 

@@ -131,9 +131,9 @@ theorem mul_to_nat (m) : ∀ n, ((m * n : PosNum) : ℕ) = m * n
 
 @[norm_cast]
 theorem ppowRec_to_nat (m : PosNum) : ∀ n : ℕ, (hn : 0 < n) → ppowRec n hn (m : ℕ) = ppowRec n hn m
-| 0, h => (Nat.not_lt_zero 0 h).elim
-| 1, _ => rfl
-| n + 2, _ => by rw [ppowRec, ppowRec_to_nat m (n + 1)]; norm_cast
+  | 0, h => (Nat.not_lt_zero 0 h).elim
+  | 1, _ => rfl
+  | n + 2, _ => by rw [ppowRec, ppowRec_to_nat m (n + 1)]; norm_cast
 
 @[norm_cast]
 theorem psmulRec_to_nat (m : PosNum) :
@@ -621,7 +621,7 @@ instance commMonoid : CommMonoid PosNum := by
       one := (1 : PosNum)
       ppow := @ppowRec PosNum ⟨(· * ·)⟩
       npow := @npowRec PosNum ⟨1⟩ ⟨(· * ·)⟩ ,.. } <;>
-  try { intros ; rfl } <;>
+  try { intros; rfl } <;>
   transfer
 #align pos_num.comm_monoid PosNum.commMonoid
 
