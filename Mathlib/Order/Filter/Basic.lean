@@ -2541,32 +2541,6 @@ theorem map_injective {m : α → β} (hm : Injective m) : Injective (map m) := 
   (map_inj hm).1
 #align filter.map_injective Filter.map_injective
 
-section On
-
--- TODO(Anatole): unify with the global case
-
-theorem _root_.Set.MapsTo.filter_map {m : α → β} (hm : MapsTo m s t) :
-    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) := fun F hF ↦ calc
-  map m F ≤ map m (𝓟 s) := map_mono hF
-  _ = 𝓟 (m '' s) := map_principal
-  _ ≤ 𝓟 t := principal_mono.mpr hm.image_subset
-
-theorem _root_.Set.SurjOn.filter_map {m : α → β} (hm : SurjOn m s t) :
-    SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) := by
-  rcases isEmpty_or_nonempty α with _|_
-  · have := Subsingleton.elim s ∅
-    rw [this, SurjOn, image_empty, subset_empty_iff] at hm
-    simp [this, hm]
-  exact RightInvOn.filter_map hm.rightInvOn_invFunOn |>.surjOn hm.mapsTo_invFunOn.filter_map
-
-theorem _root_.Set.InjOn.filter_map {m : α → β} (hm : InjOn m s) :
-    InjOn (map m) (Iic <| 𝓟 s) := by
-  rcases isEmpty_or_nonempty α with _|_
-  · exact Function.injective_of_subsingleton _ |>.injOn _
-  exact LeftInvOn.filter_map hm.leftInvOn_invFunOn |>.injOn
-
-end On
-
 theorem comap_neBot_iff {f : Filter β} {m : α → β} : NeBot (comap m f) ↔ ∀ t ∈ f, ∃ a, m a ∈ t := by
   simp only [← forall_mem_nonempty_iff_neBot, mem_comap, forall_exists_index, and_imp]
   exact ⟨fun h t t_in => h (m ⁻¹' t) t t_in Subset.rfl, fun h s t ht hst => (h t ht).imp hst⟩
@@ -3352,6 +3326,30 @@ theorem Filter.EventuallyEq.comp_tendsto {f' : α → β} (H : f =ᶠ[l] f') {g 
     (hg : Tendsto g lc l) : f ∘ g =ᶠ[lc] f' ∘ g :=
   hg.eventually H
 #align filter.eventually_eq.comp_tendsto Filter.EventuallyEq.comp_tendsto
+
+theorem Filter.Tendsto.map_mapsTo_Iic {m : α → β} (hm : Tendsto m F G) :
+    MapsTo (map m) (Iic F) (Iic G) :=
+  fun _ ↦ hm.mono_left
+
+theorem Set.MapsTo.filter_map {m : α → β} (hm : MapsTo m s t) :
+    MapsTo (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) :=
+  hm.tendsto.map_mapsTo_Iic
+
+-- TODO(Anatole): unify with the global case
+
+theorem Filter.map_surjOn_Iic_of_le_map {m : α → β} (hm : G ≤ map m F) :
+    SurjOn (map m) (Iic F) (Iic G) := by
+  have : RightInvOn (F ⊓ comap m ·) (map m) (Iic G) :=
+    fun H (hHG : H ≤ G) ↦ by simpa [Filter.push_pull] using hHG.trans hm
+  exact this.surjOn fun H _ ↦ mem_Iic.mpr inf_le_left
+
+theorem _root_.Set.SurjOn.filter_map {m : α → β} (hm : SurjOn m s t) :
+    SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) :=
+  map_surjOn_Iic_of_le_map <| by simpa
+
+theorem _root_.Set.InjOn.filter_map {m : α → β} (hm : InjOn m s) :
+    InjOn (map m) (Iic <| 𝓟 s) := fun F hF G hG ↦ by
+  simp [map_eq_map_iff_of_injOn (le_principal_iff.mp hF) (le_principal_iff.mp hG) hm]
 
 namespace Filter
 
