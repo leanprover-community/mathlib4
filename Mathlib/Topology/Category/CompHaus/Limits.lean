@@ -176,26 +176,17 @@ lemma finiteCoproduct.hom_ext {B : CompHausMax.{u, w}} (f g : finiteCoproduct X 
   apply_fun (fun q => q x) at h
   exact h
 
-/--
-The coproduct cocone associated to the explicit finite coproduct.
--/
-@[simps]
-def finiteCoproduct.cocone : Limits.Cocone (Discrete.functor X) where
-  pt := finiteCoproduct X
-  ι := Discrete.natTrans fun ⟨a⟩ => finiteCoproduct.ι X a
+/-- The coproduct cocone associated to the explicit finite coproduct. -/
+abbrev finiteCoproduct.cofan : Limits.Cofan X :=
+  Cofan.mk (finiteCoproduct X) (finiteCoproduct.ι X)
 
-/--
-The explicit finite coproduct cocone is a colimit cocone.
--/
-@[simps]
-def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cocone X) where
-  desc := fun s => finiteCoproduct.desc _ fun a => s.ι.app ⟨a⟩
-  fac := fun s ⟨a⟩ => finiteCoproduct.ι_desc _ _ _
-  uniq := fun s m hm => finiteCoproduct.hom_ext _ _ _ fun a => by
-    specialize hm ⟨a⟩
-    ext t
-    apply_fun (fun q => q t) at hm
-    exact hm
+/-- The explicit finite coproduct cocone is a colimit cocone. -/
+def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
+  mkCofanColimit _
+    (fun s ↦ desc _ fun a ↦ s.inj a)
+    (fun s a ↦ ι_desc _ _ _)
+    fun s m hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (by ext t; exact congrFun (congrArg DFunLike.coe (hm a)) t)
 
 section Iso
 
@@ -207,9 +198,7 @@ def coproductIsoCoproduct : finiteCoproduct X ≅ ∐ X :=
 
 theorem Sigma.ι_comp_toFiniteCoproduct (a : α) :
     (Limits.Sigma.ι X a) ≫ (coproductIsoCoproduct X).inv = finiteCoproduct.ι X a := by
-  dsimp [coproductIsoCoproduct]
-  simp only [Limits.colimit.comp_coconePointUniqueUpToIso_inv, finiteCoproduct.cocone_pt,
-    finiteCoproduct.cocone_ι, Discrete.natTrans_app]
+  simp [coproductIsoCoproduct]
 
 /-- The homeomorphism from the explicit finite coproducts to the abstract coproduct. -/
 noncomputable
