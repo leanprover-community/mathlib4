@@ -64,10 +64,6 @@ noncomputable def toDualLeft : M ≃ₗ[R] Dual R N :=
   LinearEquiv.ofBijective p.toLin p.bijectiveLeft
 
 @[simp]
-theorem coe_toLin : ⇑p.toLin = ⇑p :=
-  rfl
-
-@[simp]
 theorem toDualLeft_apply (a : M) : p.toDualLeft a = p a :=
   rfl
 
