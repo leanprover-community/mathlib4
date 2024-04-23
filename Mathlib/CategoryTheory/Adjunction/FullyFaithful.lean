@@ -181,7 +181,7 @@ set_option linter.uppercaseLean3 false in
 instance [L.Faithful] [L.Full] {Y : C} : IsIso (h.counit.app (L.obj Y)) :=
   isIso_of_hom_comp_eq_id _ (h.left_triangle_components Y)
 
-lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] (X : D) :
+lemma isIso_counit_app_iff_mem_essImage [L.Faithful] [L.Full] {X : D} :
     IsIso (h.counit.app X) ↔ X ∈ L.essImage := by
   constructor
   · intro
