@@ -268,13 +268,13 @@ theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E
 instance : (whiskeringLeftFunctor' L W E).Full := by
   rw [whiskeringLeftFunctor'_eq]
   apply @Functor.Full.comp _ _ _ _ _ _ _ _ ?_ ?_
-  infer_instance
+  · infer_instance
   apply InducedCategory.full -- why is it not found automatically ???
 
 instance : (whiskeringLeftFunctor' L W E).Faithful := by
   rw [whiskeringLeftFunctor'_eq]
   apply @Functor.Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
-  infer_instance
+  · infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
 
 theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)

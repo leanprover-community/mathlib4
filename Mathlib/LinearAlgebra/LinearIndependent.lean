@@ -835,10 +835,10 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
   apply LinearIndependent.of_subtype_range
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
     by_cases h_cases : x₁ = y₁
-    subst h_cases
-    · apply Sigma.eq
-      rw [LinearIndependent.injective (hindep _) hxy]
-      rfl
+    · subst h_cases
+      apply Sigma.eq
+      · rw [LinearIndependent.injective (hindep _) hxy]
+        rfl
     · have h0 : f x₁ x₂ = 0 := by
         apply
           disjoint_def.1 (hd x₁ {y₁} (finite_singleton y₁) fun h => h_cases (eq_of_mem_singleton h))
