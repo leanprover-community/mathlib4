@@ -68,6 +68,8 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
 /-- these are `SyntaxNodeKind`s that block the linter. -/
 abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.Conv.conv
+  |>.insert `Mathlib.Tactic.Conv.convLHS
+  |>.insert `Mathlib.Tactic.Conv.convRHS
   |>.insert ``Lean.Parser.Tactic.first
   |>.insert ``Lean.Parser.Tactic.anyGoals
   |>.insert ``Lean.Parser.Tactic.allGoals
