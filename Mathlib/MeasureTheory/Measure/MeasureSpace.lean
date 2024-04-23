@@ -271,7 +271,7 @@ theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : Nu
   left
   rw [eq_top_iff]
   calc
-    ∞ = μ u - μ v :=(WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
+    ∞ = μ u - μ v := (WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
     _ ≤ μ (u \ v) := le_measure_diff
 
 open scoped symmDiff in
