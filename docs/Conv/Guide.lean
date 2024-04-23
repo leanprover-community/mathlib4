@@ -228,9 +228,13 @@ and expands all local variables).
 * `conv' ... => ...` is like `conv` but assumes the goal is already annotated as a `conv` goal.
   Used internally to go back and forth between tactic mode and conv mode.
 
-* `#conv convTactic => e` is a command to apply the `convTactic` to the expression `e`, yielding
-  the converted expression (and dropping the generated proof).
-  This is used to implement `#simp`, `#whnf`, `#norm_num`, and `#push_neg`. (Mathlib)
+* `conv% e => convTactic` is a term elaborator which applies `convTactic` to the expression `e`,
+  yielding the converted expresion (and dropping the generated proof).
+  This is used to implement `simp%`, `norm_num%`, and `push_neg%`.
+  `conv%?` shows the resulting term using `show_term`. (Mathlib)
+
+* `#conv e => convTactic` elaborates `conv% e => convTactic` and displays the resulting expression.
+  (Mathlib)
 
 
 -/
