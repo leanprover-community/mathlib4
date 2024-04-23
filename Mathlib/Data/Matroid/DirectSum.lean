@@ -87,6 +87,7 @@ lemma Set.union_inter_eq_snd {S₁ S₂ E₁ E₂ X₁ X₂ : Set α}
   rw [Set.inter_comm] at hE
   exact Set.union_inter_eq_fst hE hX₂ hX₁
 
+set_option linter.unusedVariables false in
 /-- Direct sum of matroids as a set operation. -/
 @[nolint unusedArguments]
 def indepDirectSum {M₁ M₂ : IndepMatroid α} (hME : M₁.E ∩ M₂.E = ∅) (I : Set α) : Prop :=
