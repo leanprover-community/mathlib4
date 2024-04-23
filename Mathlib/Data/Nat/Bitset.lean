@@ -26,7 +26,7 @@ namespace Nat
 variable {a n : ℕ} {s : Finset ℕ}
 
 /-- The function which maps the natural number `∑ i in s, 2^i` to the Finset `s`.
-This could also be defined using `bits`, but it seems easier to avoid the `List` api.  -/
+This could also be defined using `Nat.bits`, but it seems easier to avoid the `List` api.  -/
 def bitSet (n : ℕ) : Finset ℕ := by
   induction' n using binaryRec with b _ s
   · exact ∅
