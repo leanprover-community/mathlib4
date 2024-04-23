@@ -255,7 +255,7 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
 
 /-- If the measure of the symmetric difference of two sets is finite,
-then one has infinite measure if and only if the other does. -/
+then one has infinite measure if and only if the other one does. -/
 theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = ∞ ↔ μ t = ∞ := by
   suffices h : ∀ u v, μ (u ∆ v) ≠ ∞ → μ u = ∞ → μ v = ∞
     from ⟨h s t hμst, h t s (symmDiff_comm s t ▸ hμst)⟩
