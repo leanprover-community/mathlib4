@@ -722,6 +722,9 @@ theorem toNNReal_lt_toNNReal_iff {r p : ℝ} (h : 0 < p) :
   toNNReal_lt_toNNReal_iff'.trans (and_iff_left h)
 #align real.to_nnreal_lt_to_nnreal_iff Real.toNNReal_lt_toNNReal_iff
 
+theorem lt_of_toNNReal_lt {r p : ℝ} (h : r.toNNReal < p.toNNReal) : r < p :=
+  (Real.toNNReal_lt_toNNReal_iff <| Real.toNNReal_pos.1 (ne_bot_of_gt h).bot_lt).1 h
+
 theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
   toNNReal_lt_toNNReal_iff'.trans ⟨And.left, fun h => ⟨h, lt_of_le_of_lt hr h⟩⟩
