@@ -552,12 +552,6 @@ noncomputable def mkOfOplax' (F : OplaxFunctor B C) [∀ a, IsIso (F.mapId a)]
       simp only [assoc, F.map₂_associator] }
 #align category_theory.pseudofunctor.mk_of_oplax' CategoryTheory.Pseudofunctor.mkOfOplax'
 
-lemma congr_map {a b : B} {f g : a ⟶ b} (h : f = g) : F.map f = F.map g := by
-  rw [h]
-
-lemma congr_map₂ {a b : B} {f g : a ⟶ b} {η θ : f ⟶ g} (h : η = θ) : F.map₂ η = F.map₂ θ := by
-  rw [h]
-
 end
 
 end Pseudofunctor
