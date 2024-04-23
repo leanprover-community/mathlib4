@@ -259,7 +259,7 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 open scoped symmDiff in
 /-- If the measure of the symmetric difference of two measurable sets `s` and `t` is finite and
 `s` has finite measure, then so does `t`. -/
-lemma Ne.measure_ne_top_of_symmDiff (hs : MeasurableSet s) (ht : MeasurableSet t)
+theorem Ne.measure_ne_top_of_symmDiff (hs : MeasurableSet s) (ht : MeasurableSet t)
     (hμt : μ s ≠ ∞) (hμst : μ (s ∆ t) ≠ ∞) : μ t ≠ ∞ := by
   by_contra h
   apply hμst
