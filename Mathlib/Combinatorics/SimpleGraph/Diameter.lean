@@ -108,14 +108,9 @@ lemma diam_le (h : G.diam ≠ 0) : ∀ u v, G.dist u v ≤ G.diam := by
 
 lemma diam_le_subgraph_diam [Nonempty α] (hg: G.Connected) (hz : G.diam ≠ 0) (h : G ≤ G') :
     G'.diam ≤ G.diam := by
-  obtain ⟨u', v', huv'⟩ := G'.diam_exists
-  have : G'.dist u' v' ≤ G.dist u' v' := by
-    apply dist_le_subgraph_dist h
-    rw [connected_iff_exists_forall_reachable] at hg
-    obtain ⟨_, hx⟩ := hg
-    exact Reachable.trans (hx u').symm (hx v')
-  rw [← huv']
-  exact LE.le.trans this (G.diam_le hz u' v')
+  obtain ⟨u, v, huv⟩ := G'.diam_exists
+  rw [← huv]
+  exact LE.le.trans (dist_le_subgraph_dist h (hg u v)) (G.diam_le hz u v)
 
 /-- The extended diameter is the greatest distance between any two vertices, with the value `⊤` in
 case the distances are not bounded above. -/
