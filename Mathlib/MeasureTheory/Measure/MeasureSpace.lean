@@ -256,7 +256,7 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
 
 /-- If the measure of the symmetric difference of two null measurable sets is finite,
 then one has infinite measure if and only if the other does. -/
-theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+theorem measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hμst : μ (s ∆ t) ≠ ∞) : μ s = ∞ ↔ μ t = ∞ := by
   suffices h : ∀ u v, NullMeasurableSet u μ → NullMeasurableSet v μ
     → μ (u ∆ v) ≠ ∞ → μ u = ∞ → μ v = ∞
@@ -273,7 +273,7 @@ theorem Ne.measure_eq_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : Nu
 
 /-- If the measure of the symmetric difference of two null measurable sets is finite,
 then one has finite measure if and only if the other does. -/
-theorem Ne.measure_ne_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
+theorem measure_ne_top_iff_of_symmDiff (hs : NullMeasurableSet s μ) (ht : NullMeasurableSet t μ)
     (hμst : μ (s ∆ t) ≠ ∞) : μ s ≠ ∞ ↔ μ t ≠ ∞ := (measure_eq_top_iff_of_symmDiff hs ht hμst).ne
 
 theorem measure_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞}
