@@ -13,9 +13,6 @@ import Mathlib.CategoryTheory.MorphismProperty
 A left adjoint is fully faithful, if and only if the unit is an isomorphism
 (and similarly for right adjoints and the counit).
 
-`Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
-inclusions.
-
 ## Future work
 
 The statements from Riehl 4.5.13 for adjoints which are either full, or faithful.

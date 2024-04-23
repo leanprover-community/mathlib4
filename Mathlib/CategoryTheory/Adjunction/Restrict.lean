@@ -5,6 +5,13 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Adjunction.Basic
+/-!
+
+# Restricting adjunctions
+
+`Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
+inclusions.
+-/
 
 namespace CategoryTheory.Adjunction
 
