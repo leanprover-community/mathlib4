@@ -6,6 +6,7 @@ Authors: Yuma Mizuno, Calle Sönne
 import Mathlib.CategoryTheory.DiscreteCategory
 import Mathlib.CategoryTheory.Bicategory.Functor
 import Mathlib.CategoryTheory.Bicategory.Strict
+import Mathlib.CategoryTheory.Sums.Basic
 
 #align_import category_theory.bicategory.locally_discrete from "leanprover-community/mathlib"@"c9c9fa15fec7ca18e9ec97306fb8764bfe988a7e"
 
@@ -137,13 +138,17 @@ If `B` is a strict bicategory and `I` is a (1-)category, any functor (of 1-categ
 be promoted to an oplax functor from `LocallyDiscrete I` to `B`.
 -/
 @[simps]
-def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B
+def Functor.toPseudoFunctor (F : I ⥤ B) : Pseudofunctor (LocallyDiscrete I) B
     where
   obj i := F.obj i.as
   map f := F.map f.as
   map₂ η := eqToHom (congr_arg _ (LocallyDiscrete.eq_of_hom η))
-  mapId i := eqToHom (F.map_id i.as)
-  mapComp f g := eqToHom (F.map_comp f.as g.as)
+  mapId i := eqToIso (F.map_id i.as)
+  mapComp f g := eqToIso (F.map_comp f.as g.as)
+
+@[simps!]
+def Functor.toOplaxFunctor (F : I ⥤ B) : OplaxFunctor (LocallyDiscrete I) B :=
+  Functor.toPseudoFunctor F
 #align category_theory.functor.to_oplax_functor CategoryTheory.Functor.toOplaxFunctor
 
 end CategoryTheory
