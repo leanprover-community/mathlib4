@@ -341,7 +341,7 @@ Analysis:
     fundamental theorem of calculus, part 2: 'intervalIntegral.integral_eq_sub_of_hasDeriv_right_of_le'
     Fubini's theorem: 'MeasureTheory.integral_prod'
     product of finitely many measures: 'MeasureTheory.Measure.pi'
-    convolution: 'convolution'
+    convolution: 'MeasureTheory.convolution'
     approximation by convolution: 'ContDiffBump.convolution_tendsto_right'
     regularization by convolution: 'HasCompactSupport.contDiff_convolution_left'
     change of variables formula: 'MeasureTheory.integral_image_eq_integral_abs_det_fderiv_smul'
