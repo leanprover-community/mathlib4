@@ -148,10 +148,11 @@ theorem tendsto_pow_atTop_nhds_zero_of_lt_one {𝕜 : Type*} [LinearOrderedField
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
-      refine (pow_right_strictMono <| lt_of_le_of_ne (le_of_not_lt hr_le)
-        hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
-      obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
-      exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
+      · refine (pow_right_strictMono <| lt_of_le_of_ne (le_of_not_lt hr_le)
+          hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
+        obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
+        exact ⟨n, le_of_lt hn⟩
+      · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 @[deprecated] alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff
 

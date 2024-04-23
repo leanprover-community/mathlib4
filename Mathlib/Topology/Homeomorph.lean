@@ -793,8 +793,9 @@ def piSplitAt (Y : ι → Type*) [∀ j, TopologicalSpace (Y j)] :
     continuous_pi fun j => by
       dsimp only [Equiv.piSplitAt]
       split_ifs with h
-      subst h
-      exacts [continuous_fst, (continuous_apply _).comp continuous_snd]
+      · subst h
+        exact continuous_fst
+      · exact (continuous_apply _).comp continuous_snd
 #align homeomorph.pi_split_at Homeomorph.piSplitAt
 
 variable (Y)
