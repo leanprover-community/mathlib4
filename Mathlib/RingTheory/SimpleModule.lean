@@ -405,7 +405,8 @@ noncomputable instance _root_.Module.End.divisionRing
     simp_rw [dif_neg a0]; ext
     exact (LinearEquiv.ofBijective _ <| bijective_of_ne_zero a0).right_inv _
   inv_zero := dif_pos rfl
-  qsmul := qsmulRec _
+  nnqsmul := _
+  qsmul := _
 #align module.End.division_ring Module.End.divisionRing
 
 end LinearMap
