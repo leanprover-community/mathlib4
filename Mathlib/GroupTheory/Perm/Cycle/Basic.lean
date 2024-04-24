@@ -1001,7 +1001,7 @@ variable [DecidableEq α] [Fintype α]
 theorem exists_cycleOn (s : Finset α) :
     ∃ f : Perm α, f.IsCycleOn s ∧ f.support ⊆ s := by
   refine ⟨s.toList.formPerm, ?_, fun x hx => by
-    simpa using List.mem_of_formPerm_apply_ne _ _ (Perm.mem_support.1 hx)⟩
+    simpa using List.mem_of_formPerm_apply_ne (Perm.mem_support.1 hx)⟩
   convert s.nodup_toList.isCycleOn_formPerm
   simp
 #align finset.exists_cycle_on Finset.exists_cycleOn
@@ -1017,7 +1017,7 @@ theorem Countable.exists_cycleOn (hs : s.Countable) :
   classical
   obtain hs' | hs' := s.finite_or_infinite
   · refine ⟨hs'.toFinset.toList.formPerm, ?_, fun x hx => by
-      simpa using List.mem_of_formPerm_apply_ne _ _ hx⟩
+      simpa using List.mem_of_formPerm_apply_ne hx⟩
     convert hs'.toFinset.nodup_toList.isCycleOn_formPerm
     simp
   · haveI := hs.to_subtype
