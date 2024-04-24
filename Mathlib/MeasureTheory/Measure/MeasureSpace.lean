@@ -1637,7 +1637,7 @@ lemma ac_zero_iff : μ ≪ 0 ↔ μ = 0 :=
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
 #align measure_theory.measure.absolutely_continuous.trans MeasureTheory.Measure.AbsolutelyContinuous.trans
-#lint
+
 @[mono]
 protected theorem map (h : μ ≪ ν) {f : α → β} (hf : Measurable f) : μ.map f ≪ ν.map f :=
   AbsolutelyContinuous.mk fun s hs => by simpa [hf, hs] using @h _
