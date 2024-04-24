@@ -71,6 +71,8 @@ def RingOfIntegers : Type _ :=
 
 @[inherit_doc] scoped notation "𝓞" => NumberField.RingOfIntegers
 
+#noalign number_field.mem_ring_of_integers
+
 namespace RingOfIntegers
 
 instance : CommRing (𝓞 K) :=
