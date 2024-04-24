@@ -179,14 +179,15 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     apply LieSubalgebra.to_submodule_injective
     apply Submodule.eq_top_of_finrank _ hr
   -- So from now on, we assume that `r < finrank K L`.
-  -- We denote by `χ u r` the characteristic polynomial of `⁅r • u + x, _⁆`
-  --   viewed as endomorphism of `E`. Note that `χ u` is polynomial in its argument `r`.
-  -- Similarly: `ψ u r` is the characteristic polynomial of `⁅r • u + x, _⁆`
-  --   viewed as endomorphism of `Q`. Note that `ψ u` is polynomial in its argument `r`.
-  let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K E x u₁
-  let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K Q x u₁
-  suffices ∀ u, χ u = X ^ r by -- sorry
-    specialize this (y - x)
+  -- Let `u : U` denote `y - x`.
+  let u : U := y - x
+  -- We denote by `χ r` the characteristic polynomial of `⁅r • u + x, _⁆`
+  --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
+  -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
+  --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
+  let χ : Polynomial (K[X]) := lieCharpoly K E x u
+  let ψ : Polynomial (K[X]) := lieCharpoly K Q x u
+  suffices χ = X ^ r by -- sorry
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
     simp only [lieCharpoly_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
       Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
@@ -195,10 +196,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     obtain ⟨n, hn⟩ := this ⟨z, hz⟩
     rw [mem_engel_iff]
     use n
-    simpa only [ZeroMemClass.coe_zero] using hn
-  suffices ∀ u, ∀ i < r, (χ u).coeff i = 0 by -- sorry
-    intro u
-    specialize this u
+    simpa only [u, ZeroMemClass.coe_zero, sub_add_cancel] using hn
+  suffices ∀ i < r, χ.coeff i = 0 by -- sorry
     ext i : 1
     obtain hi|rfl|hi := lt_trichotomy i r
     · rw [this i hi, coeff_X_pow, if_neg hi.ne]
@@ -207,7 +206,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       rwa [leadingCoeff] at this
     · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
       rwa [lieCharpoly_natDegree K E x u]
-  intro u i hi
+  intro i hi
   obtain rfl|hi0 := eq_or_ne i 0
   · -- sorry
     apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
@@ -231,8 +230,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     · show ⁅z, _⁆ = (0 : E)
       ext
       exact lie_self z.1
-  have hψ : ∀ u, constantCoeff (ψ u) ≠ 0 := by -- sorry
-    intro u H
+  have hψ : constantCoeff ψ ≠ 0 := by -- sorry
+    intro H
     obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
       apply_fun (evalRingHom 0) at H
       rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
@@ -246,10 +245,9 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     obtain ⟨n, hn⟩ := this
     use n+1
     rwa [pow_succ]
-  obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff (ψ u)).eval α ≠ 0 := by
-    specialize hψ u
+  obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff ψ).eval α ≠ 0 := by
     classical
-    let t := (constantCoeff (ψ u)).roots.toFinset
+    let t := (constantCoeff ψ).roots.toFinset
     have ht : t.card ≤ finrank K L - r := by
       refine (Multiset.toFinset_card_le _).trans ?_
       refine (card_roots' _).trans ?_
@@ -266,7 +264,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
       exact hα.2 hψ
   -- sorry -- the proof below works
-  have hcard : natDegree (coeff (χ u) i) < s.card := by
+  have hcard : natDegree (coeff χ i) < s.card := by
     apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
     · omega
     · dsimp only [r] at hi ⊢
