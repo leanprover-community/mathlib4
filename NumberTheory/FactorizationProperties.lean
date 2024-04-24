@@ -3,11 +3,12 @@ Copyright (c) 2024 Colin Jones. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Author: Colin Jones
 -/
-import Mathlib
+import Mathlib.NumberTheory.Divisors
+import Mathlib.Tactic.NormNum.Prime
+import Mathlib.Analysis.Normed.Field.Basic
 
 /-!
-## MyProject.lean
-
+## FactorisationProperties.lean
 This file defines abundant, semi-perfect, deficient, and weird numbers and formalizes their
   relations with prime and perfect numbers.
 
@@ -37,9 +38,6 @@ Let `n : ℕ`. All the following definitions are in the Nat namespace.
 * Prielipp, Robert W. “PERFECT NUMBERS, ABUNDANT NUMBERS, AND DEFICIENT NUMBERS.”
   The Mathematics Teacher, vol. 63, no. 8, 1970, pp. 692–96. JSTOR,
   http://www.jstor.org/stable/27958492. Accessed 21 Feb. 2024.
-* Special thanks to Ruben Van de Velde and Timo Carlin-Burns on Zulip for help on the
-  `prime_pow_deficient` proof.
-
 
 ## Tags
 abundant deficient weird Pseudoperfect
