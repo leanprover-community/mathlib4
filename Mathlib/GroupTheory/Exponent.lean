@@ -7,6 +7,7 @@ import Mathlib.Data.ZMod.Quotient
 import Mathlib.GroupTheory.NoncommPiCoprod
 import Mathlib.GroupTheory.OrderOfElement
 import Mathlib.Algebra.GCDMonoid.Finset
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Data.Nat.Factorization.Basic
 import Mathlib.Tactic.ByContra
 import Mathlib.Tactic.Peel
@@ -93,7 +94,7 @@ open MulOpposite in
 theorem _root_.MulOpposite.exponent : exponent (MulOpposite G) = exponent G := by
   simp only [Monoid.exponent, ExponentExists]
   congr!
-  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| . <| unop .)⟩
+  all_goals exact ⟨(op_injective <| · <| op ·), (unop_injective <| · <| unop ·)⟩
 
 @[to_additive]
 theorem ExponentExists.isOfFinOrder (h : ExponentExists G) {g : G} : IsOfFinOrder g :=

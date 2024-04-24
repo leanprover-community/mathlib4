@@ -256,7 +256,7 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
   toFun := f.1.comp p
-  step := (f.2 <| p.step .)
+  step := (f.2 <| p.step ·)
 
 @[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
     p.map f i = f (p i) := rfl
@@ -479,7 +479,7 @@ end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
 
 instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
     FiniteDimensionalOrder γ where
@@ -489,7 +489,7 @@ instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] 
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.InfiniteDimensional ((· < ·) : γ → γ → Prop)
 
 section LTSeries
 
@@ -497,7 +497,7 @@ variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
-abbrev LTSeries := RelSeries ((. < .) : Rel α α)
+abbrev LTSeries := RelSeries ((· < ·) : Rel α α)
 
 namespace LTSeries
 

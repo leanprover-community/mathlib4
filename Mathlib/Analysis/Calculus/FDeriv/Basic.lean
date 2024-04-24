@@ -342,7 +342,7 @@ theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (h
   rw [add_sub_cancel_left] at hyC
   calc
     ‖f' y‖ ≤ ‖f (x₀ + y) - f x₀‖ + ‖f (x₀ + y) - f x₀ - f' y‖ := norm_le_insert _ _
-    _ ≤ C * ‖y‖ + ε * ‖y‖ := (add_le_add hyC hy)
+    _ ≤ C * ‖y‖ + ε * ‖y‖ := add_le_add hyC hy
     _ = (C + ε) * ‖y‖ := (add_mul _ _ _).symm
 
 #align has_fderiv_at.le_of_lip' HasFDerivAt.le_of_lip'

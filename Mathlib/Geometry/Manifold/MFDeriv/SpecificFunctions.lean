@@ -166,7 +166,7 @@ theorem tangentMap_id : tangentMap I I (id : M → M) = id := by ext1 ⟨x, v⟩
 
 theorem tangentMapWithin_id {p : TangentBundle I M} (hs : UniqueMDiffWithinAt I s p.proj) :
     tangentMapWithin I I (id : M → M) s p = p := by
-  simp only [tangentMapWithin, id.def]
+  simp only [tangentMapWithin, id]
   rw [mfderivWithin_id]
   · rcases p with ⟨⟩; rfl
   · exact hs

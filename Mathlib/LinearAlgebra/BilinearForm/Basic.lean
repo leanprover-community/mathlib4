@@ -64,16 +64,15 @@ namespace BilinForm
 
 #noalign bilin_form.coe_fn_mk
 
+@[deprecated]
 theorem coeFn_congr : ∀ {x x' y y' : M}, x = x' → y = y' → B x y = B x' y'
   | _, _, _, _, rfl, rfl => rfl
 #align bilin_form.coe_fn_congr LinearMap.BilinForm.coeFn_congr
 
-theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := by
-  simp only [map_add, LinearMap.add_apply]
+theorem add_left (x y z : M) : B (x + y) z = B x z + B y z := map_add₂ _ _ _ _
 #align bilin_form.add_left LinearMap.BilinForm.add_left
 
-theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := by
-  simp only [map_smul, LinearMap.smul_apply, smul_eq_mul]
+theorem smul_left (a : R) (x y : M) : B (a • x) y = a * B x y := map_smul₂ _ _ _ _
 #align bilin_form.smul_left LinearMap.BilinForm.smul_left
 
 theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
@@ -82,28 +81,22 @@ theorem add_right (x y z : M) : B x (y + z) = B x y + B x z := map_add _ _ _
 theorem smul_right (a : R) (x y : M) : B x (a • y) = a * B x y := map_smul _ _ _
 #align bilin_form.smul_right LinearMap.BilinForm.smul_right
 
-theorem zero_left (x : M) : B 0 x = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_left, zero_mul]
+theorem zero_left (x : M) : B 0 x = 0 := map_zero₂ _ _
 #align bilin_form.zero_left LinearMap.BilinForm.zero_left
 
-theorem zero_right (x : M) : B x 0 = 0 := by
-  rw [← @zero_smul R _ _ _ _ (0 : M), smul_right, zero_mul]
+theorem zero_right (x : M) : B x 0 = 0 := map_zero _
 #align bilin_form.zero_right LinearMap.BilinForm.zero_right
 
-theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := by
-  rw [← @neg_one_smul R₁ _ _, smul_left, neg_one_mul]
+theorem neg_left (x y : M₁) : B₁ (-x) y = -B₁ x y := map_neg₂ _ _ _
 #align bilin_form.neg_left LinearMap.BilinForm.neg_left
 
-theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := by
-  rw [← @neg_one_smul R₁ _ _, smul_right, neg_one_mul]
+theorem neg_right (x y : M₁) : B₁ x (-y) = -B₁ x y := map_neg _ _
 #align bilin_form.neg_right LinearMap.BilinForm.neg_right
 
-theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, add_left, neg_left]
+theorem sub_left (x y z : M₁) : B₁ (x - y) z = B₁ x z - B₁ y z := map_sub₂ _ _ _ _
 #align bilin_form.sub_left LinearMap.BilinForm.sub_left
 
-theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := by
-  rw [sub_eq_add_neg, sub_eq_add_neg, add_right, neg_right]
+theorem sub_right (x y z : M₁) : B₁ x (y - z) = B₁ x y - B₁ x z := map_sub _ _ _
 #align bilin_form.sub_right LinearMap.BilinForm.sub_right
 
 lemma smul_left_of_tower (r : S) (x y : M) : B (r • x) y = r • B x y := by
@@ -122,22 +115,16 @@ theorem coe_injective : Function.Injective ((fun B x y => B x y) : BilinForm R M
 #align bilin_form.coe_injective LinearMap.BilinForm.coe_injective
 
 @[ext]
-theorem ext (H : ∀ x y : M, B x y = D x y) : B = D :=
-  coe_injective <| by
-    funext
-    exact H _ _
+theorem ext (H : ∀ x y : M, B x y = D x y) : B = D := ext₂ H
 #align bilin_form.ext LinearMap.BilinForm.ext
 
-theorem congr_fun (h : B = D) (x y : M) : B x y = D x y :=
-  h ▸ rfl
+theorem congr_fun (h : B = D) (x y : M) : B x y = D x y := congr_fun₂ h _ _
 #align bilin_form.congr_fun LinearMap.BilinForm.congr_fun
 
-theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y :=
-  ⟨congr_fun, ext₂⟩
+theorem ext_iff : B = D ↔ ∀ x y, B x y = D x y := ext_iff₂
 #align bilin_form.ext_iff LinearMap.BilinForm.ext_iff
 
-instance : Zero (BilinForm R M) := inferInstance
-
+@[deprecated]
 theorem coe_zero : ⇑(0 : BilinForm R M) = 0 :=
   rfl
 #align bilin_form.coe_zero LinearMap.BilinForm.coe_zero
@@ -149,8 +136,7 @@ theorem zero_apply (x y : M) : (0 : BilinForm R M) x y = 0 :=
 
 variable (B D B₁ D₁)
 
-instance : Add (BilinForm R M) := inferInstance
-
+@[deprecated]
 theorem coe_add : ⇑(B + D) = B + D :=
   rfl
 #align bilin_form.coe_add LinearMap.BilinForm.coe_add
@@ -160,32 +146,10 @@ theorem add_apply (x y : M) : (B + D) x y = B x y + D x y :=
   rfl
 #align bilin_form.add_apply LinearMap.BilinForm.add_apply
 
-/-- `BilinForm R M` inherits the scalar action by `α` on `R` if this is compatible with
-multiplication.
-
-When `R` itself is commutative, this provides an `R`-action via `Algebra.id`. -/
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] : SMul α (BilinForm R M) :=
-  inferInstance
-
 #noalign bilin_form.coe_smul
 #noalign bilin_form.smul_apply
 
-instance {α β} [Monoid α] [Monoid β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass R α R] [SMulCommClass R β R] [SMulCommClass α β R] :
-    SMulCommClass α β (BilinForm R M) := inferInstance
-
-instance {α β} [Monoid α] [Monoid β] [SMul α β] [DistribMulAction α R] [DistribMulAction β R]
-    [SMulCommClass R α R] [SMulCommClass R β R] [IsScalarTower α β R] :
-    IsScalarTower α β (BilinForm R M) := inferInstance
-
-instance {α} [Monoid α] [DistribMulAction α R] [DistribMulAction αᵐᵒᵖ R]
-    [SMulCommClass R α R] [IsCentralScalar α R] :
-    IsCentralScalar α (BilinForm R M) := inferInstance
-
-instance : AddCommMonoid (BilinForm R M) := inferInstance
-
-instance : Neg (BilinForm R₁ M₁) := inferInstance
-
+@[deprecated]
 theorem coe_neg : ⇑(-B₁) = -B₁ :=
   rfl
 #align bilin_form.coe_neg LinearMap.BilinForm.coe_neg
@@ -195,8 +159,7 @@ theorem neg_apply (x y : M₁) : (-B₁) x y = -B₁ x y :=
   rfl
 #align bilin_form.neg_apply LinearMap.BilinForm.neg_apply
 
-instance : Sub (BilinForm R₁ M₁) := inferInstance
-
+@[deprecated]
 theorem coe_sub : ⇑(B₁ - D₁) = B₁ - D₁ :=
   rfl
 #align bilin_form.coe_sub LinearMap.BilinForm.coe_sub
@@ -206,22 +169,12 @@ theorem sub_apply (x y : M₁) : (B₁ - D₁) x y = B₁ x y - D₁ x y :=
   rfl
 #align bilin_form.sub_apply LinearMap.BilinForm.sub_apply
 
-instance : AddCommGroup (BilinForm R₁ M₁) := inferInstance
-
-instance : Inhabited (BilinForm R M) := inferInstance
-
 /-- `coeFn` as an `AddMonoidHom` -/
 def coeFnAddMonoidHom : BilinForm R M →+ M → M → R where
-  toFun := (fun B x y => B x y)
+  toFun := fun B x y => B x y
   map_zero' := rfl
   map_add' _ _ := rfl
 #align bilin_form.coe_fn_add_monoid_hom LinearMap.BilinForm.coeFnAddMonoidHom
-
-instance {α} [Monoid α] [DistribMulAction α R] [SMulCommClass R α R] :
-    DistribMulAction α (BilinForm R M) := inferInstance
-
-instance {α} [CommSemiring α] [Module α R] [SMulCommClass R α R] : Module α (BilinForm R M) :=
-  inferInstance
 
 section flip
 
@@ -265,8 +218,8 @@ theorem flip_flip :
 
 /-- The `flip` of a bilinear form over a commutative ring, obtained by exchanging the left and
 right arguments. -/
-abbrev flip : BilinForm R M ≃ₗ[R] BilinForm R M :=
-  flipHom
+abbrev flip (B : BilinForm R M) :=
+  flipHom B
 #align bilin_form.flip LinearMap.BilinForm.flip
 
 end flip

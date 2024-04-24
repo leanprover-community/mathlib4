@@ -3,6 +3,7 @@ Copyright (c) 2016 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
+import Mathlib.Algebra.CharZero.Defs
 import Mathlib.Algebra.Group.Int
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Basic
@@ -19,9 +20,9 @@ See note [foundational algebra order theory].
 
 namespace Int
 
-instance instCommRingInt : CommRing ℤ where
+instance instCommRing : CommRing ℤ where
   __ := instAddCommGroup
-  __ := instCommSemigroupInt
+  __ := instCommSemigroup
   zero_mul := Int.zero_mul
   mul_zero := Int.mul_zero
   left_distrib := Int.mul_add
@@ -61,16 +62,13 @@ These also prevent non-computable instances like `Int.normedCommRing` being used
 these instances non-computably.
 -/
 
-instance instCommSemiring : CommSemiring ℤ := by infer_instance
-instance instSemiring     : Semiring ℤ     := by infer_instance
-instance instRingInt      : Ring ℤ         := by infer_instance
-instance instDistrib      : Distrib ℤ      := by infer_instance
+instance instCommSemiring : CommSemiring ℤ := inferInstance
+instance instSemiring     : Semiring ℤ     := inferInstance
+instance instRing         : Ring ℤ         := inferInstance
+instance instDistrib      : Distrib ℤ      := inferInstance
 
-/-! ### Miscellaneous lemmas -/
-
-lemma cast_Nat_cast {n : ℕ} {R : Type*} [AddGroupWithOne R] :
-    (Int.cast (Nat.cast n) : R) = Nat.cast n :=
-  Int.cast_natCast _
+instance instCharZero : CharZero ℤ where
+  cast_injective _ _ := ofNat.inj
 
 end Int
 

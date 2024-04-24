@@ -544,7 +544,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
   have hB : ‖B‖ ≤ 1 := by
     simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
     refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
-    simp only [ContinuousLinearMap.coe_id', id.def, one_mul]
+    simp only [ContinuousLinearMap.coe_id', id, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
 #align norm_iterated_fderiv_within_clm_apply norm_iteratedFDerivWithin_clm_apply

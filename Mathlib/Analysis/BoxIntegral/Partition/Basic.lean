@@ -742,7 +742,7 @@ theorem iUnion_subset (h : π.IsPartition) (π₁ : Prepartition I) : π₁.iUni
 #align box_integral.prepartition.is_partition.Union_subset BoxIntegral.Prepartition.IsPartition.iUnion_subset
 
 protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
-    ∃! (J : _) (_ : J ∈ π), x ∈ J := by
+    ∃! J, ∃! _ : J ∈ π, x ∈ J := by
   rcases h x hx with ⟨J, h, hx⟩
   exact ExistsUnique.intro₂ J h hx fun J' h' hx' => π.eq_of_mem_of_mem h' h hx' hx
 #align box_integral.prepartition.is_partition.exists_unique BoxIntegral.Prepartition.IsPartition.existsUnique
