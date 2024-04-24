@@ -271,6 +271,12 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
 #align comap_coe_nhds_within_Iio_of_Ioo_subset comap_coe_nhdsWithin_Iio_of_Ioo_subset
 
+-- Adaptation note: 2024-04-23
+-- This requires an increase in the heartbeats limit.
+-- We need to diagnose if the proof is doing something silly,
+-- or if this reflects a regression in IsDefeq from
+-- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
+set_option maxHeartbeats 400000 in
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
     (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by

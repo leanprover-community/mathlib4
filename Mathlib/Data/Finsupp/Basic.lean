@@ -1647,7 +1647,11 @@ instance noZeroSMulDivisors [Semiring R] [AddCommMonoid M] [Module R M] {ι : Ty
     [NoZeroSMulDivisors R M] : NoZeroSMulDivisors R (ι →₀ M) :=
   ⟨fun h =>
     or_iff_not_imp_left.mpr fun hc =>
-      Finsupp.ext fun i => (smul_eq_zero.mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
+      -- Adaptation note: 2024-04-23
+      -- Prior to https://github.com/leanprover/lean4/pull/3965, we didn't need the `R := R` below.
+      -- Hopefully a fix to https://github.com/leanprover/lean4/pull/3982
+      -- will also address this one.
+      Finsupp.ext fun i => ((smul_eq_zero (R := R)).mp (DFunLike.ext_iff.mp h i)).resolve_left hc⟩
 #align finsupp.no_zero_smul_divisors Finsupp.noZeroSMulDivisors
 
 section DistribMulActionSemiHom

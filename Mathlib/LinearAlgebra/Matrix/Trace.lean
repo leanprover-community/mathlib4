@@ -67,7 +67,11 @@ theorem trace_add (A B : Matrix n n R) : trace (A + B) = trace A + trace B :=
 @[simp]
 theorem trace_smul [Monoid α] [DistribMulAction α R] (r : α) (A : Matrix n n R) :
     trace (r • A) = r • trace A :=
-  Finset.smul_sum.symm
+  -- Adaptation note: 2024-04-23
+  -- Prior to https://github.com/leanprover/lean4/pull/3965, we didn't need the `(α := α)` below.
+  -- Hopefully a fix to https://github.com/leanprover/lean4/pull/3982
+  -- will also address this one.
+  (Finset.smul_sum (α := α)).symm
 #align matrix.trace_smul Matrix.trace_smul
 
 @[simp]

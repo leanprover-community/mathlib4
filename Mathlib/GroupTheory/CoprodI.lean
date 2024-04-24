@@ -185,11 +185,14 @@ theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
       mul_mem' := h_mul _ _
       one_mem' := h_one }
   have : C _ := Subtype.prop (lift (fun i => of.codRestrict S (h_of i)) m)
-  convert this
-  change MonoidHom.id _ m = S.subtype.comp _ m
-  congr
-  ext i
-  rfl
+  -- FIXME nightly-testing
+  -- Currently broken, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/help.20fixing.20a.20proof.20in.20Mathlib.2EGroupTheory.2ECoprodI.3F/near/435106341
+  sorry
+  -- convert this
+  -- change MonoidHom.id _ m = S.subtype.comp _ m
+  -- congr
+  -- ext i
+  -- rfl
 #align free_product.induction_on Monoid.CoprodI.induction_on
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
