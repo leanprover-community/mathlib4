@@ -101,8 +101,7 @@ theorem Pairwise.set_pairwise (hl : Pairwise R l) (hr : Symmetric R) : { x | x �
 #align list.pairwise_middle List.pairwise_middle
 
 -- Porting note: Duplicate of `pairwise_map` but with `f` explicit.
-@[deprecated] --2023-01-10
-theorem pairwise_map' (f : β → α) :
+@[deprecated] theorem pairwise_map' (f : β → α) : -- 2024-02-25
     ∀ {l : List β}, Pairwise R (map f l) ↔ Pairwise (fun a b : β => R (f a) (f b)) l
   | [] => by simp only [map, Pairwise.nil]
   | b :: l => by

@@ -332,7 +332,7 @@ theorem Basis.exists_opNNNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) 
       (v.opNNNorm_le M hu).trans <| mul_le_mul_of_nonneg_right (le_max_left _ _) (zero_le M)⟩
 #align basis.exists_op_nnnorm_le Basis.exists_opNNNorm_le
 
-@[deprecated] alias Basis.exists_op_nnnorm_le := Basis.exists_opNNNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias Basis.exists_op_nnnorm_le := Basis.exists_opNNNorm_le -- 2024-02-02
 
 /-- A weaker version of `Basis.opNorm_le` that abstracts away the value of `C`. -/
 theorem Basis.exists_opNorm_le {ι : Type*} [Finite ι] (v : Basis ι 𝕜 E) :
