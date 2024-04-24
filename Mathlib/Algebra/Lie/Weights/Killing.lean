@@ -115,13 +115,13 @@ lemma mem_ker_killingForm_of_mem_rootSpace_of_forall_rootSpace_neg
   rw [LinearMap.mem_ker]
   ext y
   have hy : y ∈ ⨆ β, rootSpace H β := by simp [iSup_weightSpace_eq_top K H L]
-  induction hy using LieSubmodule.iSup_induction'
-  · next β y hy =>
+  induction hy using LieSubmodule.iSup_induction' with
+  | hN β y hy =>
     by_cases hαβ : α + β = 0
     · exact hx' _ (add_eq_zero_iff_neg_eq.mp hαβ ▸ hy)
     · exact killingForm_apply_eq_zero_of_mem_rootSpace_of_add_ne_zero K L H hx hy hαβ
-  · simp
-  · simp_all
+  | h0 => simp
+  | hadd => simp_all
 
 namespace IsKilling
 

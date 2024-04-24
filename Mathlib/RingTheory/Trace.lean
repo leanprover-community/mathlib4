@@ -372,7 +372,7 @@ theorem trace_eq_sum_embeddings_gen (pb : PowerBasis K L)
       (@Finset.univ _ (PowerBasis.AlgHom.fintype pb)).sum fun σ => σ pb.gen := by
   letI := Classical.decEq E
   -- Porting note: the following `letI` was not needed.
-  letI : Fintype (L →ₐ[K] E) := (PowerBasis.AlgHom.fintype pb)
+  letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
   rw [pb.trace_gen_eq_sum_roots hE, Fintype.sum_equiv pb.liftEquiv', Finset.sum_mem_multiset,
     Finset.sum_eq_multiset_sum, Multiset.toFinset_val, Multiset.dedup_eq_self.mpr _,
     Multiset.map_id]

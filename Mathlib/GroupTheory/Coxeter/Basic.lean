@@ -116,17 +116,19 @@ theorem reindex_relationsSet :
       apply congrArg Set.range
       ext ⟨i, i'⟩
       simp [relation, reindex_apply, M']
-  _ = _ := by simp [Set.range_comp]; rfl
+  _ = _ := by simp [Set.range_comp, relationsSet]
 
 /-- The isomorphism between the Coxeter group associated to the reindexed matrix `M.reindex e` and
 the Coxeter group associated to `M`. -/
 def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
-  (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
+  .symm <| QuotientGroup.congr
+    (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
-    (FreeGroup.freeGroupCongr e) (by
+    (FreeGroup.freeGroupCongr e)
+    (by
       rw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
-        MonoidHom.coe_coe])).symm
+        MonoidHom.coe_coe])
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
