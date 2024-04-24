@@ -93,6 +93,9 @@ variable (A B : Subalgebra R S)
 `A ⊗[R] B →ₐ[R] S` induced by multiplication in `S`. -/
 def mulMap := Algebra.TensorProduct.productMap A.val B.val
 
+@[simp]
+theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
+
 variable {A B}
 
 /-- Linearly disjoint is symmetric in a commutative ring. -/
@@ -102,9 +105,6 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 /-- Linearly disjoint is symmetric in a commutative ring. -/
 theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
-
-@[simp]
-theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
 
 variable (A B)
 
@@ -122,6 +122,9 @@ theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by
 which is surjective (`Subalgebra.mulMap'_surjective`). -/
 def mulMap' := (equivOfEq _ _ (mulMap_range A B)).toAlgHom.comp (mulMap A B).rangeRestrict
 
+@[simp]
+theorem coe_mulMap'_tmul (a : A) (b : B) : (mulMap A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
+
 theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
   simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
     EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
@@ -135,7 +138,8 @@ variable (H : A.LinearDisjoint B)
 /-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, and if they are
 linearly disjoint, then there is the natural isomorphism
 `A ⊗[R] B ≃ₐ[R] A ⊔ B` induced by multiplication in `S`. -/
-def mulMap := (AlgEquiv.ofInjective (A.mulMap B) H).trans (equivOfEq _ _ (mulMap_range A B))
+protected def mulMap :=
+  (AlgEquiv.ofInjective (A.mulMap B) H).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]
 theorem coe_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
@@ -199,15 +203,13 @@ def _root_.Subalgebra.opAlgEquiv' (S : Subalgebra R A) : Sᵐᵒᵖ ≃ₐ[R] eq
 end TODO
 
 lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A) :
-    LinearMap.ker (Submodule.LinearDisjoint.mulLeftMap
-      (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
+    LinearMap.ker (Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a) = ⊥ ↔
     LinearIndependent (equivOpposite.symm B) (MulOpposite.op ∘ A.val ∘ a) := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
   letI : AddCommGroup (ι →₀ toSubmodule B) := Finsupp.instAddCommGroup
   letI : AddCommGroup (ι →₀ equivOpposite.symm B) := Finsupp.instAddCommGroup
   simp_rw [LinearIndependent, LinearMap.ker_eq_bot]
-  let i : (ι →₀ B) →ₗ[R] S :=
-    Submodule.LinearDisjoint.mulLeftMap (M := toSubmodule A) (toSubmodule B) a
+  let i : (ι →₀ B) →ₗ[R] S := Submodule.mulLeftMap (M := toSubmodule A) (toSubmodule B) a
   let j : (ι →₀ B) →ₗ[R] S := (MulOpposite.opLinearEquiv _).symm.toLinearMap ∘ₗ
     (Finsupp.total ι Sᵐᵒᵖ (equivOpposite.symm B) (MulOpposite.op ∘ A.val ∘ a)).restrictScalars R ∘ₗ
     (Finsupp.mapRange.linearEquiv (opLinearEquiv B)).toLinearMap
@@ -222,7 +224,7 @@ lemma mulLeftMap_ker_eq_bot_iff_linearIndependent_op {ι : Type*} (a : ι → A)
     MulOpposite.coe_opLinearEquiv_symm, LinearMap.coe_restrictScalars,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Finsupp.total_single,
     MulOpposite.unop_smul, MulOpposite.unop_op, i, j]
-  exact Submodule.LinearDisjoint.mulLeftMap_apply_single _ _ _
+  exact Submodule.mulLeftMap_apply_single _ _ _
 
 variable {A B} in
 theorem map_linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.Flat R B]
@@ -239,20 +241,18 @@ theorem of_map_linearIndependent_left_op {ι : Type*} (a : Basis ι R A)
   exact Submodule.LinearDisjoint.of_map_linearIndependent_left _ _ a H
 
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
-    LinearMap.ker (Submodule.LinearDisjoint.mulRightMap
-      (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
+    LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
     LinearIndependent A (B.val ∘ b) := by
   -- need this instance otherwise `LinearMap.ker_eq_bot` does not work
   letI : AddCommGroup (ι →₀ toSubmodule A) := Finsupp.instAddCommGroup
   simp_rw [LinearIndependent, LinearMap.ker_eq_bot]
-  let i : (ι →₀ A) →ₗ[R] S :=
-    Submodule.LinearDisjoint.mulRightMap (toSubmodule A) (N := toSubmodule B) b
+  let i : (ι →₀ A) →ₗ[R] S := Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b
   let j : (ι →₀ A) →ₗ[R] S := (Finsupp.total ι S A (B.val ∘ b)).restrictScalars R
   suffices i = j by change Function.Injective i ↔ Function.Injective j; rw [this]
   ext
   simp only [LinearMap.coe_comp, Function.comp_apply, Finsupp.lsingle_apply, coe_val,
     LinearMap.coe_restrictScalars, Finsupp.total_single, i, j]
-  exact Submodule.LinearDisjoint.mulRightMap_apply_single _ _ _
+  exact Submodule.mulRightMap_apply_single _ _ _
 
 variable {A B} in
 theorem map_linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Flat R A]

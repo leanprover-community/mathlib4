@@ -31,7 +31,7 @@ The following is the first equivalent characterization of linearly disjointness:
   if `M` and `N` are linearly disjoint, if `N` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ m_i }` of `M`, they are also `N`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }`
-  to the sum of `m_i * n_i` (`Submodule.LinearDisjoint.mulLeftMap N m`) is injective.
+  to the sum of `m_i * n_i` (`Submodule.mulLeftMap N m`) is injective.
 
 - `Submodule.LinearDisjoint.of_map_linearIndependent_left`:
   conversely, if `{ m_i }` is an `R`-basis of `M`, which is also `N`-linearly independent,
@@ -43,7 +43,7 @@ Dually, we have:
   if `M` and `N` are linearly disjoint, if `M` is a flat `R`-module, then for any family of
   `R`-linearly independent elements `{ n_i }` of `N`, they are also `M`-linearly independent,
   in the sense that the `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }`
-  to the sum of `m_i * n_i` (`Submodule.LinearDisjoint.mulRightMap M n`) is injective.
+  to the sum of `m_i * n_i` (`Submodule.mulRightMap M n`) is injective.
 
 - `Submodule.LinearDisjoint.of_map_linearIndependent_right`:
   conversely, if `{ n_i }` is an `R`-basis of `N`, which is also `M`-linearly independent,
@@ -177,6 +177,18 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
   | tmul a b => exact mul_mem_mul a.2 b.2
   | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
 
+/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
+`M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,
+which is surjective (`Submodule.mulMap'_surjective`). -/
+def mulMap' := (LinearEquiv.ofEq _ _ (mulMap_range M N)).toLinearMap ∘ₗ (mulMap M N).rangeRestrict
+
+@[simp]
+theorem coe_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
+
+theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
+  simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
+    LinearMap.surjective_rangeRestrict]
+
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
 `i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
 def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N :=
@@ -236,8 +248,6 @@ theorem rTensorOne_apply
 theorem rTensorOne_symm_apply (m : M) :
     M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, one_le.1 (le_refl _)⟩ := rfl
 
-namespace LinearDisjoint
-
 variable {M} in
 /-- If `m : ι → M` is a family of elements, then there is an `R`-linear map from `ι →₀ N` to
 `S` which maps `{ n_i }` to the sum of `m_i * n_i`. -/
@@ -284,8 +294,6 @@ theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
     mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 :=
   congr($(mulRightMap_def' M n) m)
 
-end LinearDisjoint
-
 end mulMap
 
 /-- Two submodules `M` and `N` in an algebra `S` over `R` are linearly disjoint if the natural map
@@ -293,6 +301,15 @@ end mulMap
 protected def LinearDisjoint : Prop := Function.Injective (mulMap M N)
 
 variable {M N}
+
+/-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
+`M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
+protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) :=
+  LinearEquiv.ofInjective (M.mulMap N) H ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
+
+@[simp]
+theorem LinearDisjoint.coe_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
+    (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 theorem LinearDisjoint.injective (H : M.LinearDisjoint N) : Function.Injective (mulMap M N) := H
 
