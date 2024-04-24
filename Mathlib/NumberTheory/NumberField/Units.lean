@@ -442,12 +442,12 @@ theorem unitLattice_span_eq_top :
   simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
-  refine add_pos_of_nonneg_of_pos ?_ ?_
-  · rw [sub_nonneg]
-    exact le_abs_self _
-  · rw [sum_logEmbedding_component (exists_unit K w).choose]
-    refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
-    rw [mult]; split_ifs <;> norm_num
+  · refine add_pos_of_nonneg_of_pos ?_ ?_
+    · rw [sub_nonneg]
+      exact le_abs_self _
+    · rw [sum_logEmbedding_component (exists_unit K w).choose]
+      refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
+      rw [mult]; split_ifs <;> norm_num
   · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
     · rw [mult]; split_ifs <;> norm_num
     · exact Subtype.ext_iff_val.not.mp (ne_of_mem_erase hx)

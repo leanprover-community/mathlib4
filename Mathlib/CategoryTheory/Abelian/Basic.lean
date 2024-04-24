@@ -201,8 +201,8 @@ def normalMonoCategory : NormalMonoCategory C where
         have aux : ∀ (s : KernelFork (cokernel.π f)), (limit.lift (parallelPair (cokernel.π f) 0) s
           ≫ inv (imageMonoFactorisation f).e) ≫ Fork.ι (KernelFork.ofι f (by simp))
             = Fork.ι s := ?_
-        refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
-        · intro A g hg
+        · refine' isLimitAux _ (fun A => limit.lift _ _ ≫ inv (imageMonoFactorisation f).e) aux _
+          intro A g hg
           rw [KernelFork.ι_ofι] at hg
           rw [← cancel_mono f, hg, ← aux, KernelFork.ι_ofι]
         · intro A
@@ -227,9 +227,9 @@ def normalEpiCategory : NormalEpiCategory C where
         have aux : ∀ (s : CokernelCofork (kernel.ι f)), Cofork.π (CokernelCofork.ofπ f (by simp)) ≫
           inv (imageMonoFactorisation f).m ≫ inv (Abelian.coimageImageComparison f) ≫
           colimit.desc (parallelPair (kernel.ι f) 0) s = Cofork.π s := ?_
-        refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
-                inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
-        · intro A g hg
+        · refine' isColimitAux _ (fun A => inv (imageMonoFactorisation f).m ≫
+                  inv (Abelian.coimageImageComparison f) ≫ colimit.desc _ _) aux _
+          intro A g hg
           rw [CokernelCofork.π_ofπ] at hg
           rw [← cancel_epi f, hg, ← aux, CokernelCofork.π_ofπ]
         · intro A

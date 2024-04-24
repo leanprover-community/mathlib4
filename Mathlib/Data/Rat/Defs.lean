@@ -493,7 +493,7 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
 theorem intCast_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
-  repeat' rw [intCast_eq_divInt]
+  repeat rw [intCast_eq_divInt]
   exact divInt_div_divInt_cancel_left one_ne_zero n d
 #align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
 

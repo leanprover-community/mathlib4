@@ -968,8 +968,8 @@ def cokernelCoforkBiproductFromSubtype (p : Set K) :
         simp only [Category.assoc, Pi.compl_apply, biproduct.ι_fromSubtype_assoc,
           biproduct.ι_toSubtype_assoc, comp_zero, zero_comp]
         rw [dif_neg]
-        simp only [zero_comp]
-        exact not_not.mpr k.2)
+        · simp only [zero_comp]
+        · exact not_not.mpr k.2)
   isColimit :=
     CokernelCofork.IsColimit.ofπ _ _ (fun {W} g _ => biproduct.fromSubtype f pᶜ ≫ g)
       (by
