@@ -232,7 +232,7 @@ theorem isReduced_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsRe
   (isReduced_take_and_drop _ rω _).2
 
 theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
-    ¬ cs.IsReduced (alternatingWord i i' m) := by
+    ¬cs.IsReduced (alternatingWord i i' m) := by
   induction' hm with m _ ih
   · -- Base case; m = M i i' + 1
     suffices h : ℓ (π (alternatingWord i i' (M i i' + 1))) < M i i' + 1 by
@@ -332,12 +332,12 @@ theorem not_isRightDescent_iff (w : W) (i : B) :
     linarith
 
 theorem isLeftDescent_iff_not_isLeftDescent_mul (w : W) (i : B) :
-    cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent ((s i) * w) i := by
+    cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by
   rw [isLeftDescent_iff, not_isLeftDescent_iff, simple_mul_simple_cancel_left]
   tauto
 
 theorem isRightDescent_iff_not_isRightDescent_mul (w : W) (i : B) :
-    cs.IsRightDescent w i ↔ ¬cs.IsRightDescent (w * (s i)) i := by
+    cs.IsRightDescent w i ↔ ¬cs.IsRightDescent (w * s i) i := by
   rw [isRightDescent_iff, not_isRightDescent_iff, simple_mul_simple_cancel_right]
   tauto
 
