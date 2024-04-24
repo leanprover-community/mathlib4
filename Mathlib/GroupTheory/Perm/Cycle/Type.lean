@@ -8,7 +8,7 @@ import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.List.Rotate
 import Mathlib.GroupTheory.Perm.Cycle.Factors
 import Mathlib.GroupTheory.Perm.Closure
-import Mathlib.RingTheory.Int.Basic
+import Mathlib.Algebra.GCDMonoid.Nat
 import Mathlib.Tactic.NormNum.GCD
 
 #align_import group_theory.perm.cycle.type from "leanprover-community/mathlib"@"47adfab39a11a072db552f47594bf8ed2cf8a722"
