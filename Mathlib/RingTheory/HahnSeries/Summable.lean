@@ -588,6 +588,7 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
         (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
+  nnqsmul := _
   qsmul := _
 
 end Inversion

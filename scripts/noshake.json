@@ -315,6 +315,7 @@
   "Mathlib.Lean.Expr.Basic": ["Std.Logic"],
   "Mathlib.Init.Data.Nat.Lemmas": ["Std.WF"],
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
+  "Mathlib.Init.Data.List.Basic": ["Std.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
   "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],

@@ -342,26 +342,20 @@ theorem isLeast_opNorm : IsLeast {c : ℝ | 0 ≤ c ∧ ∀ m, ‖f m‖ ≤ c *
   exact isClosed_Ici.inter (isClosed_iInter fun m ↦
     isClosed_le continuous_const (continuous_id.mul continuous_const))
 
-@[deprecated]
-alias isLeast_op_norm :=
-  isLeast_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias isLeast_op_norm := isLeast_opNorm -- deprecated on 2024-02-02
 
 theorem opNorm_nonneg : 0 ≤ ‖f‖ :=
   Real.sInf_nonneg _ fun _ ⟨hx, _⟩ => hx
 #align continuous_multilinear_map.op_norm_nonneg ContinuousMultilinearMap.opNorm_nonneg
 
-@[deprecated]
-alias op_norm_nonneg :=
-  opNorm_nonneg -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_nonneg := opNorm_nonneg -- deprecated on 2024-02-02
 
 /-- The fundamental property of the operator norm of a continuous multilinear map:
 `‖f m‖` is bounded by `‖f‖` times the product of the `‖m i‖`. -/
 theorem le_opNorm : ‖f m‖ ≤ ‖f‖ * ∏ i, ‖m i‖ := f.isLeast_opNorm.1.2 m
 #align continuous_multilinear_map.le_op_norm ContinuousMultilinearMap.le_opNorm
 
-@[deprecated]
-alias le_op_norm :=
-  le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm := le_opNorm -- deprecated on 2024-02-02
 
 variable {f m}
 
@@ -370,9 +364,7 @@ theorem le_mul_prod_of_le_opNorm_of_le {C : ℝ} {b : ι → ℝ} (hC : ‖f‖ 
   (f.le_opNorm m).trans <| mul_le_mul hC (prod_le_prod (fun _ _ ↦ norm_nonneg _) fun _ _ ↦ hm _)
     (prod_nonneg fun _ _ ↦ norm_nonneg _) ((opNorm_nonneg _).trans hC)
 
-@[deprecated]
-alias le_mul_prod_of_le_op_norm_of_le :=
-  le_mul_prod_of_le_opNorm_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_mul_prod_of_le_op_norm_of_le := le_mul_prod_of_le_opNorm_of_le -- 2024-02-02
 
 variable (f)
 
@@ -380,18 +372,14 @@ theorem le_opNorm_mul_prod_of_le {b : ι → ℝ} (hm : ∀ i, ‖m i‖ ≤ b i
   le_mul_prod_of_le_opNorm_of_le le_rfl hm
 #align continuous_multilinear_map.le_op_norm_mul_prod_of_le ContinuousMultilinearMap.le_opNorm_mul_prod_of_le
 
-@[deprecated]
-alias le_op_norm_mul_prod_of_le :=
-  le_opNorm_mul_prod_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm_mul_prod_of_le := le_opNorm_mul_prod_of_le -- 2024-02-02
 
 theorem le_opNorm_mul_pow_card_of_le {b : ℝ} (hm : ‖m‖ ≤ b) :
     ‖f m‖ ≤ ‖f‖ * b ^ Fintype.card ι := by
   simpa only [prod_const] using f.le_opNorm_mul_prod_of_le fun i => (norm_le_pi_norm m i).trans hm
 #align continuous_multilinear_map.le_op_norm_mul_pow_card_of_le ContinuousMultilinearMap.le_opNorm_mul_pow_card_of_le
 
-@[deprecated]
-alias le_op_norm_mul_pow_card_of_le :=
-  le_opNorm_mul_pow_card_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm_mul_pow_card_of_le := le_opNorm_mul_pow_card_of_le -- 2024-02-02
 
 theorem le_opNorm_mul_pow_of_le {Ei : Fin n → Type*} [∀ i, NormedAddCommGroup (Ei i)]
     [∀ i, NormedSpace 𝕜 (Ei i)] (f : ContinuousMultilinearMap 𝕜 Ei G) {m : ∀ i, Ei i} {b : ℝ}
@@ -399,9 +387,7 @@ theorem le_opNorm_mul_pow_of_le {Ei : Fin n → Type*} [∀ i, NormedAddCommGrou
   simpa only [Fintype.card_fin] using f.le_opNorm_mul_pow_card_of_le hm
 #align continuous_multilinear_map.le_op_norm_mul_pow_of_le ContinuousMultilinearMap.le_opNorm_mul_pow_of_le
 
-@[deprecated]
-alias le_op_norm_mul_pow_of_le :=
-  le_opNorm_mul_pow_of_le -- deprecated on 2024-02-02
+@[deprecated] alias le_op_norm_mul_pow_of_le := le_opNorm_mul_pow_of_le -- 2024-02-02
 
 variable {f} (m)
 
@@ -409,9 +395,7 @@ theorem le_of_opNorm_le {C : ℝ} (h : ‖f‖ ≤ C) : ‖f m‖ ≤ C * ∏ i,
   le_mul_prod_of_le_opNorm_of_le h fun _ ↦ le_rfl
 #align continuous_multilinear_map.le_of_op_norm_le ContinuousMultilinearMap.le_of_opNorm_le
 
-@[deprecated]
-alias le_of_op_norm_le :=
-  le_of_opNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias le_of_op_norm_le := le_of_opNorm_le -- deprecated on 2024-02-02
 
 variable (f)
 
@@ -420,34 +404,26 @@ theorem ratio_le_opNorm : (‖f m‖ / ∏ i, ‖m i‖) ≤ ‖f‖ :=
     (f.le_opNorm m)
 #align continuous_multilinear_map.ratio_le_op_norm ContinuousMultilinearMap.ratio_le_opNorm
 
-@[deprecated]
-alias ratio_le_op_norm :=
-  ratio_le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias ratio_le_op_norm := ratio_le_opNorm -- deprecated on 2024-02-02
 
 /-- The image of the unit ball under a continuous multilinear map is bounded. -/
 theorem unit_le_opNorm (h : ‖m‖ ≤ 1) : ‖f m‖ ≤ ‖f‖ :=
   (le_opNorm_mul_pow_card_of_le f h).trans <| by simp
 #align continuous_multilinear_map.unit_le_op_norm ContinuousMultilinearMap.unit_le_opNorm
 
-@[deprecated]
-alias unit_le_op_norm :=
-  unit_le_opNorm -- deprecated on 2024-02-02
+@[deprecated] alias unit_le_op_norm := unit_le_opNorm -- deprecated on 2024-02-02
 
 /-- If one controls the norm of every `f x`, then one controls the norm of `f`. -/
 theorem opNorm_le_bound {M : ℝ} (hMp : 0 ≤ M) (hM : ∀ m, ‖f m‖ ≤ M * ∏ i, ‖m i‖) : ‖f‖ ≤ M :=
   csInf_le bounds_bddBelow ⟨hMp, hM⟩
 #align continuous_multilinear_map.op_norm_le_bound ContinuousMultilinearMap.opNorm_le_bound
 
-@[deprecated]
-alias op_norm_le_bound :=
-  opNorm_le_bound -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_bound := opNorm_le_bound -- deprecated on 2024-02-02
 
 theorem opNorm_le_iff {C : ℝ} (hC : 0 ≤ C) : ‖f‖ ≤ C ↔ ∀ m, ‖f m‖ ≤ C * ∏ i, ‖m i‖ :=
   ⟨fun h _ ↦ le_of_opNorm_le _ h, opNorm_le_bound _ hC⟩
 
-@[deprecated]
-alias op_norm_le_iff :=
-  opNorm_le_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_le_iff := opNorm_le_iff -- deprecated on 2024-02-02
 
 /-- The operator norm satisfies the triangle inequality. -/
 theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
@@ -456,17 +432,13 @@ theorem opNorm_add_le : ‖f + g‖ ≤ ‖f‖ + ‖g‖ :=
     exact norm_add_le_of_le (le_opNorm _ _) (le_opNorm _ _)
 #align continuous_multilinear_map.op_norm_add_le ContinuousMultilinearMap.opNorm_add_le
 
-@[deprecated]
-alias op_norm_add_le :=
-  opNorm_add_le -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_add_le := opNorm_add_le -- deprecated on 2024-02-02
 
 theorem opNorm_zero : ‖(0 : ContinuousMultilinearMap 𝕜 E G)‖ = 0 :=
   (opNorm_nonneg _).antisymm' <| opNorm_le_bound 0 le_rfl fun m => by simp
 #align continuous_multilinear_map.op_norm_zero ContinuousMultilinearMap.opNorm_zero
 
-@[deprecated]
-alias op_norm_zero :=
-  opNorm_zero -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero := opNorm_zero -- deprecated on 2024-02-02
 
 section
 
@@ -478,9 +450,7 @@ theorem opNorm_smul_le (c : 𝕜') : ‖c • f‖ ≤ ‖c‖ * ‖f‖ :=
     exact mul_le_mul_of_nonneg_left (le_opNorm _ _) (norm_nonneg _)
 #align continuous_multilinear_map.op_norm_smul_le ContinuousMultilinearMap.opNorm_smul_le
 
-@[deprecated]
-alias op_norm_smul_le :=
-  opNorm_smul_le -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_smul_le := opNorm_smul_le -- deprecated on 2024-02-02
 
 theorem opNorm_neg : ‖-f‖ = ‖f‖ := by
   rw [norm_def]
@@ -489,9 +459,7 @@ theorem opNorm_neg : ‖-f‖ = ‖f‖ := by
   simp
 #align continuous_multilinear_map.op_norm_neg ContinuousMultilinearMap.opNorm_neg
 
-@[deprecated]
-alias op_norm_neg :=
-  opNorm_neg -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_neg := opNorm_neg -- deprecated on 2024-02-02
 
 variable (𝕜 E G) in
 /-- Operator seminorm on the space of continuous multilinear maps, as `Seminorm`.
@@ -568,49 +536,37 @@ theorem le_opNNNorm : ‖f m‖₊ ≤ ‖f‖₊ * ∏ i, ‖m i‖₊ :=
     exact f.le_opNorm m
 #align continuous_multilinear_map.le_op_nnnorm ContinuousMultilinearMap.le_opNNNorm
 
-@[deprecated]
-alias le_op_nnnorm :=
-  le_opNNNorm -- deprecated on 2024-02-02
+@[deprecated] alias le_op_nnnorm := le_opNNNorm -- deprecated on 2024-02-02
 
 theorem le_of_opNNNorm_le {C : ℝ≥0} (h : ‖f‖₊ ≤ C) : ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ :=
   (f.le_opNNNorm m).trans <| mul_le_mul' h le_rfl
 #align continuous_multilinear_map.le_of_op_nnnorm_le ContinuousMultilinearMap.le_of_opNNNorm_le
 
-@[deprecated]
-alias le_of_op_nnnorm_le :=
-  le_of_opNNNorm_le -- deprecated on 2024-02-02
+@[deprecated] alias le_of_op_nnnorm_le := le_of_opNNNorm_le -- deprecated on 2024-02-02
 
 theorem opNNNorm_le_iff {C : ℝ≥0} : ‖f‖₊ ≤ C ↔ ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊ := by
   simp only [← NNReal.coe_le_coe]; simp [opNorm_le_iff _ C.coe_nonneg, NNReal.coe_prod]
 
-@[deprecated]
-alias op_nnnorm_le_iff :=
-  opNNNorm_le_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_nnnorm_le_iff := opNNNorm_le_iff -- deprecated on 2024-02-02
 
 theorem isLeast_opNNNorm : IsLeast {C : ℝ≥0 | ∀ m, ‖f m‖₊ ≤ C * ∏ i, ‖m i‖₊} ‖f‖₊ := by
   simpa only [← opNNNorm_le_iff] using isLeast_Ici
 
-@[deprecated]
-alias isLeast_op_nnnorm :=
-  isLeast_opNNNorm -- deprecated on 2024-02-02
+@[deprecated] alias isLeast_op_nnnorm := isLeast_opNNNorm -- deprecated on 2024-02-02
 
 theorem opNNNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖₊ = max ‖f‖₊ ‖g‖₊ :=
   eq_of_forall_ge_iff fun _ ↦ by
     simp only [opNNNorm_le_iff, prod_apply, Prod.nnnorm_def', max_le_iff, forall_and]
 
-@[deprecated]
-alias op_nnnorm_prod :=
-  opNNNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_nnnorm_prod := opNNNorm_prod -- deprecated on 2024-02-02
 
 theorem opNorm_prod (f : ContinuousMultilinearMap 𝕜 E G) (g : ContinuousMultilinearMap 𝕜 E G') :
     ‖f.prod g‖ = max ‖f‖ ‖g‖ :=
   congr_arg NNReal.toReal (opNNNorm_prod f g)
 #align continuous_multilinear_map.op_norm_prod ContinuousMultilinearMap.opNorm_prod
 
-@[deprecated]
-alias op_norm_prod :=
-  opNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_prod := opNorm_prod -- deprecated on 2024-02-02
 
 theorem opNNNorm_pi
     [∀ i', SeminormedAddCommGroup (E' i')] [∀ i', NormedSpace 𝕜 (E' i')]
@@ -624,9 +580,7 @@ theorem opNorm_pi {ι' : Type v'} [Fintype ι'] {E' : ι' → Type wE'}
   congr_arg NNReal.toReal (opNNNorm_pi f)
 #align continuous_multilinear_map.norm_pi ContinuousMultilinearMap.opNorm_pi
 
-@[deprecated]
-alias op_norm_pi :=
-  opNorm_pi -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_pi := opNorm_pi -- deprecated on 2024-02-02
 
 section
 
@@ -1379,9 +1333,7 @@ theorem opNorm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
   simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ext_iff]
 #align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.opNorm_zero_iff
 
-@[deprecated]
-alias op_norm_zero_iff :=
-  opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/

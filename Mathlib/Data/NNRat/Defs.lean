@@ -25,6 +25,11 @@ of `x` with `↑x`. This tactic also works for a function `f : α → ℚ` with 
 ## Notation
 
 `ℚ≥0` is notation for `NNRat` in locale `NNRat`.
+
+## Huge warning
+
+Whenever you state a lemma about the coercion `ℚ≥0 → ℚ`, check that Lean inserts `NNRat.cast`, not
+`Subtype.val`. Else your lemma will never apply.
 -/
 
 
@@ -42,7 +47,8 @@ namespace NNRat
 
 variable {α : Type*} {p q : ℚ≥0}
 
-#noalign nnrat.val_eq_coe
+@[simp] lemma val_eq_cast (q : ℚ≥0) : q.1 = q := rfl
+#align nnrat.val_eq_coe NNRat.val_eq_cast
 
 instance canLift : CanLift ℚ ℚ≥0 (↑) fun q ↦ 0 ≤ q where
   prf q hq := ⟨⟨q, hq⟩, rfl⟩
@@ -70,9 +76,8 @@ theorem ne_iff {x y : ℚ≥0} : (x : ℚ) ≠ (y : ℚ) ↔ x ≠ y :=
   NNRat.coe_inj.not
 #align nnrat.ne_iff NNRat.ne_iff
 
-@[norm_cast]
-theorem coe_mk (q : ℚ) (hq) : ((⟨q, hq⟩ : ℚ≥0) : ℚ) = q :=
-  rfl
+-- TODO: We have to write `NNRat.cast` explicitly, else the statement picks up `Subtype.val` instead
+@[simp, norm_cast] lemma coe_mk (q : ℚ) (hq) : NNRat.cast ⟨q, hq⟩ = q := rfl
 #align nnrat.coe_mk NNRat.coe_mk
 
 lemma «forall» {p : ℚ≥0 → Prop} : (∀ q, p q) ↔ ∀ q hq, p ⟨q, hq⟩ := Subtype.forall
@@ -98,14 +103,12 @@ theorem coe_nonneg (q : ℚ≥0) : (0 : ℚ) ≤ q :=
   q.2
 #align nnrat.coe_nonneg NNRat.coe_nonneg
 
-@[simp, norm_cast]
-theorem coe_zero : ((0 : ℚ≥0) : ℚ) = 0 :=
-  rfl
+-- eligible for dsimp
+@[simp, nolint simpNF, norm_cast] lemma coe_zero : ((0 : ℚ≥0) : ℚ) = 0 := rfl
 #align nnrat.coe_zero NNRat.coe_zero
 
-@[simp, norm_cast]
-theorem coe_one : ((1 : ℚ≥0) : ℚ) = 1 :=
-  rfl
+-- eligible for dsimp
+@[simp, nolint simpNF, norm_cast] lemma coe_one : ((1 : ℚ≥0) : ℚ) = 1 := rfl
 #align nnrat.coe_one NNRat.coe_one
 
 @[simp, norm_cast]
@@ -182,9 +185,8 @@ def coeHom : ℚ≥0 →+* ℚ where
   map_add' := coe_add
 #align nnrat.coe_hom NNRat.coeHom
 
-@[simp, norm_cast]
-theorem coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n :=
-  rfl
+-- eligible for dsimp
+@[simp, nolint simpNF, norm_cast] lemma coe_natCast (n : ℕ) : (↑(↑n : ℚ≥0) : ℚ) = n := rfl
 #align nnrat.coe_nat_cast NNRat.coe_natCast
 
 -- See note [no_index around OfNat.ofNat]
@@ -193,8 +195,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℚ≥0 (⟨(n : ℚ), n.cast_nonneg⟩ : ℚ
   rfl
 #align nnrat.mk_coe_nat NNRat.mk_natCast
 
--- 2024-04-05
-@[deprecated] alias mk_coe_nat := mk_natCast
+@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
 
 @[simp]
 theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=

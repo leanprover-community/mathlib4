@@ -1462,7 +1462,7 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 #align associates.factors_0 Associates.factors_zero
 
-@[deprecated] alias factors_0 := factors_zero -- 2024/03/16
+@[deprecated] alias factors_0 := factors_zero -- 2024-03-16
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
