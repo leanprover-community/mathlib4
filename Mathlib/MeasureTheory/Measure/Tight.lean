@@ -64,8 +64,8 @@ lemma aux2 [IsFiniteMeasure μ] [TopologicalSpace α] [OpensMeasurableSpace α]
   rw [measure_compl hK2.measurableSet (measure_ne_top μ _)]
   exact tsub_le_iff_tsub_le.mp hn
 
-lemma aux3 {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
-    {s : Set α} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+lemma aux3 {α : Type*} [PseudoMetricSpace α] {s : Set α} (h : TotallyBounded s) :
+    TopologicalSpace.IsSeparable s:= by
   rw [Metric.totallyBounded_iff] at h
   have := fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat
   choose! f hf hfb using this
