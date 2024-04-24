@@ -65,7 +65,7 @@ abbrev exclusions : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert `Std.Tactic.tacticSwap
   |>.insert ``Lean.Parser.Tactic.rotateLeft
   |>.insert ``Lean.Parser.Tactic.rotateRight
-  |>.insert ``Lean.Parser.Tactic.skip
+--  |>.insert ``Lean.Parser.Tactic.skip
   |>.insert `Std.Tactic.«tacticOn_goal-_=>_»
   |>.insert `Mathlib.Tactic.«tacticSwap_var__,,»
   |>.insert ``Lean.Parser.Tactic.constructor
