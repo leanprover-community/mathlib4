@@ -158,6 +158,10 @@ theorem orderTop_binomial {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
   exact orderTop_add_eq (lt_of_eq_of_lt (orderTop_single ha)
     (lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le))
 
+theorem leadingCoeff_binomial {g g' : Γ} (hgg' : g < g') {a b : R} (ha : a ≠ 0) :
+    (single g a + single g' b).leadingCoeff = a := by
+  rw [leadingCoeff, orderTop_binomial hgg' ha, coeffTop_eq, single_add_single_coeff hgg']
+
 theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
     IsUnit (single g a.val + single g' b) := by
   refine isUnit_of_isUnit_leadingCoeff ?_

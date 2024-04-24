@@ -3,6 +3,7 @@ Copyright (c) 2021 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
+import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.RingTheory.HahnSeries.Multiplication
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -562,13 +563,13 @@ instance instField [Field R] : Field (HahnSeries Γ R) where
   inv x :=
     if x0 : x = 0 then 0
     else
-      C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
-        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
+      (single (-x.order)) (x.leadingCoeff)⁻¹ *
+        (SummableFamily.powers (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))).hsum
   inv_zero := dif_pos rfl
   mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
     have h :=
       SummableFamily.one_sub_self_mul_hsum_powers
-        (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
+        (unit_aux x (inv_mul_cancel (leadingCoeff_ne_iff.mp x0)))
     rw [sub_sub_cancel] at h
     rw [← mul_assoc, mul_comm x, h]
   nnqsmul := _

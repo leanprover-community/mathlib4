@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
-import Mathlib.Algebra.BigOperators.Finprod
 import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.RingTheory.HahnSeries.Addition
 import Mathlib.Data.Finset.MulAntidiagonal
