@@ -1895,9 +1895,8 @@ lemma TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
     rw [Metric.mem_closure_iff]
     intro ε hε
     obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
-    have := hfb n hx
     have : ∃ b ∈ f n, dist x b < ε := by
-      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp this
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hfb n hx)
       simp only [one_div, Set.mem_iUnion, Metric.mem_ball, exists_prop] at hi
       use i, hi.1
       apply lt_trans hi.2 ?_
