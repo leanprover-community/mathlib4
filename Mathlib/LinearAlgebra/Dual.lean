@@ -1012,12 +1012,12 @@ theorem dualCoannihilator_sup_eq (U V : Submodule R (Module.Dual R M)) :
   (dualAnnihilator_gc R M).u_inf
 #align submodule.dual_coannihilator_sup_eq Submodule.dualCoannihilator_sup_eq
 
-theorem dualAnnihilator_iSup_eq {ι : Type*} (U : ι → Submodule R M) :
+theorem dualAnnihilator_iSup_eq {ι : Sort*} (U : ι → Submodule R M) :
     (⨆ i : ι, U i).dualAnnihilator = ⨅ i : ι, (U i).dualAnnihilator :=
   (dualAnnihilator_gc R M).l_iSup
 #align submodule.dual_annihilator_supr_eq Submodule.dualAnnihilator_iSup_eq
 
-theorem dualCoannihilator_iSup_eq {ι : Type*} (U : ι → Submodule R (Module.Dual R M)) :
+theorem dualCoannihilator_iSup_eq {ι : Sort*} (U : ι → Submodule R (Module.Dual R M)) :
     (⨆ i : ι, U i).dualCoannihilator = ⨅ i : ι, (U i).dualCoannihilator :=
   (dualAnnihilator_gc R M).u_iInf
 #align submodule.dual_coannihilator_supr_eq Submodule.dualCoannihilator_iSup_eq
@@ -1030,7 +1030,7 @@ theorem sup_dualAnnihilator_le_inf (U V : Submodule R M) :
 #align submodule.sup_dual_annihilator_le_inf Submodule.sup_dualAnnihilator_le_inf
 
 /-- See also `Subspace.dualAnnihilator_iInf_eq` for vector subspaces when `ι` is finite. -/
-theorem iSup_dualAnnihilator_le_iInf {ι : Type*} (U : ι → Submodule R M) :
+theorem iSup_dualAnnihilator_le_iInf {ι : Sort*} (U : ι → Submodule R M) :
     ⨆ i : ι, (U i).dualAnnihilator ≤ (⨅ i : ι, U i).dualAnnihilator := by
   rw [le_dualAnnihilator_iff_le_dualCoannihilator, dualCoannihilator_iSup_eq]
   apply iInf_mono
@@ -1571,6 +1571,7 @@ theorem dualAnnihilator_inf_eq (W W' : Subspace K V₁) :
 -- for `Module.Dual R (Π (i : ι), V ⧸ W i) ≃ₗ[K] Π (i : ι), Module.Dual R (V ⧸ W i)`, which is not
 -- true for infinite `ι`. One would need to add additional hypothesis on `W` (for example, it might
 -- be true when the family is inf-closed).
+-- TODO: generalize to `Sort`
 theorem dualAnnihilator_iInf_eq {ι : Type*} [Finite ι] (W : ι → Subspace K V₁) :
     (⨅ i : ι, W i).dualAnnihilator = ⨆ i : ι, (W i).dualAnnihilator := by
   revert ι
