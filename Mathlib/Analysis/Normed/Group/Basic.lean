@@ -988,11 +988,6 @@ theorem norm_toNNReal' : ‖a‖.toNNReal = ‖a‖₊ :=
 #align norm_to_nnreal' norm_toNNReal'
 #align norm_to_nnreal norm_toNNReal
 
-/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
-@[to_additive ofNNReal_toReal_nnnorm "The non negative norm seen as an `ENNReal` and
-then as a `Real` is equal to the norm."]
-theorem ofNNReal_toReal_nnnorm' : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
-
 @[to_additive]
 theorem nndist_eq_nnnorm_div (a b : E) : nndist a b = ‖a / b‖₊ :=
   NNReal.eq <| dist_eq_norm_div _ _
@@ -1075,6 +1070,11 @@ theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊
   ENNReal.ofReal_eq_coe_nnreal _
 #align of_real_norm_eq_coe_nnnorm' ofReal_norm_eq_coe_nnnorm'
 #align of_real_norm_eq_coe_nnnorm ofReal_norm_eq_coe_nnnorm
+
+/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive toReal_coe_nnnorm "The non negative norm seen as an `ENNReal` and
+then as a `Real` is equal to the norm."]
+theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
 
 @[to_additive]
 theorem edist_eq_coe_nnnorm_div (a b : E) : edist a b = ‖a / b‖₊ := by
