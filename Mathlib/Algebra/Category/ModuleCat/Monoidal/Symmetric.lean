@@ -105,4 +105,12 @@ set_option linter.uppercaseLean3 false in
 
 end MonoidalCategory
 
+instance (M : ModuleCat R) : Limits.PreservesFiniteColimits (tensorRight M) where
+  preservesFiniteColimits J _ _ :=
+  { preservesColimit := fun {K} => by
+      letI : Limits.PreservesColimit K (tensorLeft M) := inferInstance
+      apply Limits.preservesColimitOfNatIso (F := tensorLeft M)
+      exact ⟨⟨fun X => β_ _ _ |>.hom, by aesop_cat⟩, ⟨fun X => β_ _ _ |>.inv, by aesop_cat⟩,
+        by aesop_cat, by aesop_cat⟩ }
+
 end ModuleCat
