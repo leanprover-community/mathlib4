@@ -298,31 +298,31 @@ end mulMap
 
 /-- Two submodules `M` and `N` in an algebra `S` over `R` are linearly disjoint if the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S` is injective. -/
-protected def LinearDisjoint : Prop := Function.Injective (mulMap M N)
+@[mk_iff]
+protected structure LinearDisjoint : Prop where
+  injective : Function.Injective (mulMap M N)
 
 variable {M N}
 
 /-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
 `M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
 protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) :=
-  LinearEquiv.ofInjective (M.mulMap N) H ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
+  LinearEquiv.ofInjective (M.mulMap N) H.injective ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
 
 @[simp]
 theorem LinearDisjoint.coe_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
-theorem LinearDisjoint.injective (H : M.LinearDisjoint N) : Function.Injective (mulMap M N) := H
-
 @[nontriviality]
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : M.LinearDisjoint N := by
   haveI : Subsingleton S := Module.subsingleton R S
-  exact Function.injective_of_subsingleton _
+  exact ⟨Function.injective_of_subsingleton _⟩
 
 /-- Linearly disjoint is preserved by taking multiplicative opposite. -/
 theorem linearDisjoint_op :
     M.LinearDisjoint N ↔ (equivOpposite.symm (MulOpposite.op N)).LinearDisjoint
       (equivOpposite.symm (MulOpposite.op M)) := by
-  simp only [Submodule.LinearDisjoint, mulMap_op, LinearMap.coe_comp,
+  simp only [linearDisjoint_iff, mulMap_op, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.comp_injective, EquivLike.injective_comp]
 
 alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
@@ -330,8 +330,8 @@ alias ⟨LinearDisjoint.op, LinearDisjoint.of_op⟩ := linearDisjoint_op
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : M.LinearDisjoint N)
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : N.LinearDisjoint M := by
-  rw [Submodule.LinearDisjoint, mulMap_comm_of_commute M N hc]
-  exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H
+  rw [linearDisjoint_iff, mulMap_comm_of_commute M N hc]
+  exact ((TensorProduct.comm R N M).toEquiv.injective_comp _).2 H.injective
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem linearDisjoint_symm_of_commute
@@ -361,14 +361,14 @@ theorem of_map_linearIndependent_left' {ι : Type*} (m : Basis ι R M)
   simp_rw [mulLeftMap, ← Basis.coe_repr_symm,
     ← TensorProduct.coe_congr_right_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
-  exact H
+  exact ⟨H⟩
 
 theorem of_map_linearIndependent_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   simp_rw [mulRightMap, ← Basis.coe_repr_symm,
     ← TensorProduct.coe_congr_left_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
-  exact H
+  exact ⟨H⟩
 
 theorem of_map_linearIndependent_mul' {κ ι : Type*} (m : Basis κ R M) (n : Basis ι R N)
     (H : Function.Injective (Finsupp.total (κ × ι) S R fun i ↦ m i.1 * n i.2)) :
@@ -380,43 +380,45 @@ theorem of_map_linearIndependent_mul' {κ ι : Type*} (m : Basis κ R M) (n : Ba
     ext x
     simp [i, i0, i1, finsuppTensorFinsupp'_symm_single_eq_single_one_tmul]
   simp_rw [← this, i, LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.injective_comp] at H
-  exact H
+  exact ⟨H⟩
 
-theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N := Function.injective_of_subsingleton _
+theorem of_bot_left : (⊥ : Submodule R S).LinearDisjoint N :=
+  ⟨Function.injective_of_subsingleton _⟩
 
-theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) := Function.injective_of_subsingleton _
+theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
+  ⟨Function.injective_of_subsingleton _⟩
 
 theorem of_one_left : (1 : Submodule R S).LinearDisjoint N := by
   have : N.subtype ∘ₗ N.lTensorOne.toLinearMap = mulMap 1 N := TensorProduct.ext' fun _ _ ↦ rfl
   have h : Function.Injective (N.subtype ∘ₗ N.lTensorOne.toLinearMap) :=
     N.injective_subtype.comp N.lTensorOne.injective
-  rwa [this] at h
+  exact ⟨this ▸ h⟩
 
 theorem of_one_right : M.LinearDisjoint (1 : Submodule R S) := by
   have : M.subtype ∘ₗ M.rTensorOne.toLinearMap = mulMap M 1 := TensorProduct.ext' fun _ _ ↦ rfl
   have h : Function.Injective (M.subtype ∘ₗ M.rTensorOne.toLinearMap) :=
     M.injective_subtype.comp M.rTensorOne.injective
-  rwa [this] at h
+  exact ⟨this ▸ h⟩
 
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
-    M.LinearDisjoint N := fun x y hxy ↦ by
+    M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨M', hM, _, h⟩ :=
     TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact H M' hM (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hy', hxy])
+  exact (H M' hM).injective (by simp [← mulMap_comp_rTensor _ _ _ hM, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite_right
     (H : ∀ N' : Submodule R S, N' ≤ N → [Module.Finite R N'] → M.LinearDisjoint N') :
-    M.LinearDisjoint N := fun x y hxy ↦ by
+    M.LinearDisjoint N := (linearDisjoint_iff _ _).2 fun x y hxy ↦ by
   obtain ⟨N', hN, _, h⟩ :=
     TensorProduct.exists_finite_submodule_right_of_finite' {x, y} (Set.toFinite _)
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact H N' hN (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hy', hxy])
+  exact (H N' hN).injective (by simp [← mulMap_comp_lTensor _ _ _ hN, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite
     (H : ∀ (M' N' : Submodule R S), M' ≤ M → N' ≤ N →
@@ -543,7 +545,7 @@ theorem of_le_left_of_flat (H : M.LinearDisjoint N) {M' : Submodule R S}
   have hi : Function.Injective i := H.injective.comp <|
     Module.Flat.rTensor_preserves_injective_linearMap _ <| inclusion_injective h
   have : i = mulMap M' N := by ext; simp [i]
-  rwa [this] at hi
+  exact ⟨this ▸ hi⟩
 
 variable {M N} in
 theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
@@ -552,7 +554,7 @@ theorem of_le_right_of_flat (H : M.LinearDisjoint N) {N' : Submodule R S}
   have hi : Function.Injective i := H.injective.comp <|
     Module.Flat.lTensor_preserves_injective_linearMap _ <| inclusion_injective h
   have : i = mulMap M N' := by ext; simp [i]
-  rwa [this] at hi
+  exact ⟨this ▸ hi⟩
 
 variable {M N} in
 theorem of_le_of_flat_right (H : M.LinearDisjoint N) {M' N' : Submodule R S}

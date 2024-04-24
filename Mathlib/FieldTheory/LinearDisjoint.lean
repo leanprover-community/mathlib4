@@ -73,20 +73,21 @@ variable (L : Type w) [Field L] [Algebra F L] [Algebra L E] [IsScalarTower F L E
 
 /-- If `A` is an intermediate field of `E / F`, and `E / L / F` is a field extension tower,
 then `A` and `L` are linearly disjoint, if they are linearly disjoint as subalgebras of `E`. -/
-protected def LinearDisjoint : Prop :=
-  A.toSubalgebra.LinearDisjoint (IsScalarTower.toAlgHom F L E).range
+@[mk_iff]
+protected structure LinearDisjoint : Prop where
+  subalgebra : A.toSubalgebra.LinearDisjoint (IsScalarTower.toAlgHom F L E).range
 
 variable {A B L}
 
-theorem linearDisjoint_def' :
+theorem linearDisjoint_iff' :
     A.LinearDisjoint B ↔ A.toSubalgebra.LinearDisjoint B.toSubalgebra := by
-  rw [IntermediateField.LinearDisjoint]
+  rw [linearDisjoint_iff]
   congr!
   ext; simp
 
 /-- Linearly disjoint is symmetric. -/
 theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
-  linearDisjoint_def'.2 (linearDisjoint_def'.1 H).symm
+  linearDisjoint_iff'.2 (linearDisjoint_iff'.1 H).symm
 
 /-- Linearly disjoint is symmetric. -/
 theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
@@ -269,15 +270,15 @@ theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
 
 variable (A) in
 theorem LinearDisjoint.of_self_right : A.LinearDisjoint F :=
-  Subalgebra.LinearDisjoint.of_bot_right _
+  ⟨.of_bot_right _⟩
 
 variable (A) in
 theorem LinearDisjoint.of_bot_right : A.LinearDisjoint (⊥ : IntermediateField F E) :=
-  linearDisjoint_def'.2 (Subalgebra.LinearDisjoint.of_bot_right _)
+  linearDisjoint_iff'.2 (.of_bot_right _)
 
 variable (F E L) in
 theorem LinearDisjoint.of_bot_left : (⊥ : IntermediateField F E).LinearDisjoint L :=
-  Subalgebra.LinearDisjoint.of_bot_left _
+  ⟨.of_bot_left _⟩
 
 -- theorem LinearDisjoint.of_le_right {B' : IntermediateField F E} (H : A.LinearDisjoint B)
 --     (h : B' ≤ B) : A.LinearDisjoint B' := fun a ha ↦

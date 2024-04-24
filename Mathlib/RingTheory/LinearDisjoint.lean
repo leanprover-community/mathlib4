@@ -51,18 +51,20 @@ variable (A B : Subalgebra R S)
 
 /-- If `A` and `B` are subalgebras of `S / R`,
 then `A` and `B` are linearly disjoint, if they are linearly disjoint as submodules of `S`. -/
-protected def LinearDisjoint : Prop := (toSubmodule A).LinearDisjoint (toSubmodule B)
+@[mk_iff]
+protected structure LinearDisjoint : Prop where
+  submodule : (toSubmodule A).LinearDisjoint (toSubmodule B)
 
 variable {A B}
 
 @[nontriviality]
 theorem LinearDisjoint.of_subsingleton [Subsingleton R] : A.LinearDisjoint B :=
-  Submodule.LinearDisjoint.of_subsingleton
+  ⟨.of_subsingleton⟩
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem LinearDisjoint.symm_of_commute (H : A.LinearDisjoint B)
     (hc : ∀ (a : A) (b : B), Commute a.1 b.1) : B.LinearDisjoint A :=
-  Submodule.LinearDisjoint.symm_of_commute H hc
+  ⟨H.1.symm_of_commute hc⟩
 
 /-- Linearly disjoint is symmetric if elements in the module commute. -/
 theorem linearDisjoint_symm_of_commute
@@ -73,11 +75,9 @@ namespace LinearDisjoint
 
 variable (A B)
 
-theorem of_bot_left : (⊥ : Subalgebra R S).LinearDisjoint B :=
-  Submodule.LinearDisjoint.of_one_left _
+theorem of_bot_left : (⊥ : Subalgebra R S).LinearDisjoint B := ⟨.of_one_left _⟩
 
-theorem of_bot_right : A.LinearDisjoint ⊥ :=
-  Submodule.LinearDisjoint.of_one_right _
+theorem of_bot_right : A.LinearDisjoint ⊥ := ⟨.of_one_right _⟩
 
 end LinearDisjoint
 
@@ -139,7 +139,7 @@ variable (H : A.LinearDisjoint B)
 linearly disjoint, then there is the natural isomorphism
 `A ⊗[R] B ≃ₐ[R] A ⊔ B` induced by multiplication in `S`. -/
 protected def mulMap :=
-  (AlgEquiv.ofInjective (A.mulMap B) H).trans (equivOfEq _ _ (mulMap_range A B))
+  (AlgEquiv.ofInjective (A.mulMap B) H.1.1).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]
 theorem coe_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
@@ -231,14 +231,14 @@ theorem map_linearIndependent_left_op_of_flat (H : A.LinearDisjoint B) [Module.F
     {ι : Type*} {a : ι → A} (ha : LinearIndependent R a) :
     LinearIndependent (equivOpposite.symm B) (MulOpposite.op ∘ A.val ∘ a) := by
   haveI : Module.Flat R (toSubmodule B) := ‹_›
-  have h := Submodule.LinearDisjoint.map_linearIndependent_left_of_flat H ha
+  have h := H.1.map_linearIndependent_left_of_flat ha
   rwa [mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at h
 
 theorem of_map_linearIndependent_left_op {ι : Type*} (a : Basis ι R A)
     (H : LinearIndependent (equivOpposite.symm B) (MulOpposite.op ∘ A.val ∘ a)) :
     A.LinearDisjoint B := by
   rw [← mulLeftMap_ker_eq_bot_iff_linearIndependent_op] at H
-  exact Submodule.LinearDisjoint.of_map_linearIndependent_left _ _ a H
+  exact ⟨.of_map_linearIndependent_left _ _ a H⟩
 
 lemma mulRightMap_ker_eq_bot_iff_linearIndependent {ι : Type*} (b : ι → B) :
     LinearMap.ker (Submodule.mulRightMap (toSubmodule A) (N := toSubmodule B) b) = ⊥ ↔
@@ -259,13 +259,13 @@ theorem map_linearIndependent_right_of_flat (H : A.LinearDisjoint B) [Module.Fla
     {ι : Type*} {b : ι → B} (hb : LinearIndependent R b) :
     LinearIndependent A (B.val ∘ b) := by
   haveI : Module.Flat R (toSubmodule A) := ‹_›
-  have h := Submodule.LinearDisjoint.map_linearIndependent_right_of_flat H hb
+  have h := H.1.map_linearIndependent_right_of_flat hb
   rwa [mulRightMap_ker_eq_bot_iff_linearIndependent] at h
 
 theorem of_map_linearIndependent_right {ι : Type*} (b : Basis ι R B)
     (H : LinearIndependent A (B.val ∘ b)) : A.LinearDisjoint B := by
   rw [← mulRightMap_ker_eq_bot_iff_linearIndependent] at H
-  exact Submodule.LinearDisjoint.of_map_linearIndependent_right _ _ b H
+  exact ⟨.of_map_linearIndependent_right _ _ b H⟩
 
 variable {A B} in
 theorem map_linearIndependent_left_of_flat_of_commute (H : A.LinearDisjoint B) [Module.Flat R B]
@@ -283,25 +283,25 @@ theorem map_linearIndependent_mul_of_flat_left (H : A.LinearDisjoint B) [Module.
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
   haveI : Module.Flat R (toSubmodule A) := ‹_›
-  exact Submodule.LinearDisjoint.map_linearIndependent_mul_of_flat_left H ha hb
+  exact H.1.map_linearIndependent_mul_of_flat_left ha hb
 
 variable {A B} in
 theorem map_linearIndependent_mul_of_flat_right (H : A.LinearDisjoint B) [Module.Flat R B]
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 := by
   haveI : Module.Flat R (toSubmodule B) := ‹_›
-  exact Submodule.LinearDisjoint.map_linearIndependent_mul_of_flat_right H ha hb
+  exact H.1.map_linearIndependent_mul_of_flat_right ha hb
 
 variable {A B} in
 theorem map_linearIndependent_mul_of_flat (H : A.LinearDisjoint B)
     (hf : Module.Flat R A ∨ Module.Flat R B)
     {κ ι : Type*} {a : κ → A} {b : ι → B} (ha : LinearIndependent R a)
     (hb : LinearIndependent R b) : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1 :=
-  Submodule.LinearDisjoint.map_linearIndependent_mul_of_flat H hf ha hb
+  H.1.map_linearIndependent_mul_of_flat hf ha hb
 
 theorem of_map_linearIndependent_mul {κ ι : Type*} (a : Basis κ R A) (b : Basis ι R B)
     (H : LinearIndependent R fun (i : κ × ι) ↦ (a i.1).1 * (b i.2).1) : A.LinearDisjoint B :=
-  Submodule.LinearDisjoint.of_map_linearIndependent_mul _ _ a b H
+  ⟨.of_map_linearIndependent_mul _ _ a b H⟩
 
 variable {A B}
 
@@ -310,12 +310,12 @@ variable (H : A.LinearDisjoint B)
 theorem of_le_left_of_flat {A' : Subalgebra R S}
     (h : A' ≤ A) [Module.Flat R B] : A'.LinearDisjoint B := by
   haveI : Module.Flat R (toSubmodule B) := ‹_›
-  exact Submodule.LinearDisjoint.of_le_left_of_flat H h
+  exact ⟨H.1.of_le_left_of_flat h⟩
 
 theorem of_le_right_of_flat {B' : Subalgebra R S}
     (h : B' ≤ B) [Module.Flat R A] : A.LinearDisjoint B' := by
   haveI : Module.Flat R (toSubmodule A) := ‹_›
-  exact Submodule.LinearDisjoint.of_le_right_of_flat H h
+  exact ⟨H.1.of_le_right_of_flat h⟩
 
 theorem of_le_of_flat_right {A' B' : Subalgebra R S}
     (ha : A' ≤ A) (hb : B' ≤ B) [Module.Flat R B] [Module.Flat R A'] :
@@ -329,7 +329,7 @@ theorem rank_inf_eq_one_of_commute_of_flat_of_inj (hf : Module.Flat R A ∨ Modu
     (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1)
     (hinj : Function.Injective (algebraMap R S)) : Module.rank R ↥(A ⊓ B) = 1 := by
   nontriviality R
-  refine le_antisymm (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat H hf hc) ?_
+  refine le_antisymm (H.1.rank_inf_le_one_of_commute_of_flat hf hc) ?_
   have : 1 ≤ Module.rank R (⊥ : Subalgebra R S) := by
     let s : Set (⊥ : Subalgebra R S) := {1}
     have : LinearIndependent R fun x : s ↦ x.1 := by
@@ -448,6 +448,7 @@ theorem of_finrank_sup_of_free [Module.Free R A] [Module.Free R B]
   replace hj : Function.Injective j' := by simpa [j']
   have hf : Function.Surjective (mulMap' A B).toLinearMap := mulMap'_surjective A B
   haveI := Subalgebra.finite_sup A B
+  rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
   exact Subtype.val_injective.comp (Module.Finite.injective_of_surjective_of_injective j' _ hj hf)
 
 /-- If `A` and `B` are linearly disjoint, if `A` is free and `B` is flat,
@@ -574,7 +575,9 @@ variable (A B)
 
 theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
     (H : ∀ A' : Subalgebra R S, A' ≤ A → [Module.Finite R A'] → A'.LinearDisjoint B) :
-    A.LinearDisjoint B := fun x y hxy ↦ by
+    A.LinearDisjoint B := by
+  rw [linearDisjoint_iff, Submodule.linearDisjoint_iff]
+  intro x y hxy
   obtain ⟨M', hM, hf, h⟩ :=
     TensorProduct.exists_finite_submodule_left_of_finite' {x, y} (Set.toFinite _)
   obtain ⟨s, hs⟩ := Module.Finite.iff_fg.1 hf
@@ -594,7 +597,7 @@ theorem of_linearDisjoint_finite_left (hi : Algebra.IsIntegral R A)
   obtain ⟨x', hx'⟩ := h (show x ∈ {x, y} by simp)
   obtain ⟨y', hy'⟩ := h (show y ∈ {x, y} by simp)
   rw [← hx', ← hy']; congr
-  exact H A' hA (by simp [← Submodule.mulMap_comp_rTensor _ _ _ hA, hx', hy', hxy])
+  exact (H A' hA).1.1 (by simp [← Submodule.mulMap_comp_rTensor _ _ _ hA, hx', hy', hxy])
 
 theorem of_linearDisjoint_finite_right (hi : Algebra.IsIntegral R B)
     (H : ∀ B' : Subalgebra R S, B' ≤ B → [Module.Finite R B'] → A.LinearDisjoint B') :
@@ -624,7 +627,7 @@ variable [Field R] [Ring S] [Algebra R S]
 variable {A B : Subalgebra R S} (H : A.LinearDisjoint B)
 
 theorem inf_eq_bot_of_commute (hc : ∀ (a b : ↥(A ⊓ B)), Commute a.1 b.1) : A ⊓ B = ⊥ :=
-  eq_bot_of_rank_le_one (Submodule.LinearDisjoint.rank_inf_le_one_of_commute_of_flat_left H hc)
+  eq_bot_of_rank_le_one (H.1.rank_inf_le_one_of_commute_of_flat_left hc)
 
 theorem eq_bot_of_commute_of_self (H : A.LinearDisjoint A)
     (hc : ∀ (a b : A), Commute a.1 b.1) : A = ⊥ := by
