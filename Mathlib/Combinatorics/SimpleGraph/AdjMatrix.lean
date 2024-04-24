@@ -248,11 +248,11 @@ theorem adjMatrix_mul_self_apply_self [NonAssocSemiring α] (i : V) :
 variable {G}
 
 -- @[simp] -- Porting note (#10618): simp can prove this
-theorem adjMatrix_mulVec_const_apply [Semiring α] {a : α} {v : V} :
+theorem adjMatrix_mulVec_const_apply [NonAssocSemiring α] {a : α} {v : V} :
     (G.adjMatrix α *ᵥ Function.const _ a) v = G.degree v * a := by simp
 #align simple_graph.adj_matrix_mul_vec_const_apply SimpleGraph.adjMatrix_mulVec_const_apply
 
-theorem adjMatrix_mulVec_const_apply_of_regular [Semiring α] {d : ℕ} {a : α}
+theorem adjMatrix_mulVec_const_apply_of_regular [NonAssocSemiring α] {d : ℕ} {a : α}
     (hd : G.IsRegularOfDegree d) {v : V} : (G.adjMatrix α *ᵥ Function.const _ a) v = d * a :=
   by simp [hd v]
 #align simple_graph.adj_matrix_mul_vec_const_apply_of_regular SimpleGraph.adjMatrix_mulVec_const_apply_of_regular
