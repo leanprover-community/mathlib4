@@ -1011,6 +1011,7 @@ protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
   inv := inv G fun i j h => f' i j h
   mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
   inv_zero := dif_pos rfl
+  nnqsmul := _
   qsmul := _
 #align field.direct_limit.field Field.DirectLimit.field
 

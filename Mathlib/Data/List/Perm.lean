@@ -559,11 +559,6 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     apply h d hd c hc
 #align list.perm_lookmap List.perm_lookmap
 
-@[deprecated Perm.eraseP]
-theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => f a → f b → False) l₁) (p : l₁ ~ l₂) :
-    List.eraseP f l₁ ~ List.eraseP f l₂ :=
-  p.eraseP f (by simp [H])
 #align list.perm.erasep List.Perm.eraseP
 
 theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)

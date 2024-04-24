@@ -1248,6 +1248,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
 instance : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
+  nnqsmul := _
   qsmul := _
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
