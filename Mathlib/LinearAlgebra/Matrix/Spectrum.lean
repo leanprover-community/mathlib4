@@ -64,7 +64,7 @@ lemma mulVec_eigenvectorBasis (j : n) :
      finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
 theorem eigenvalues_eq (i : n) :
-  (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
+    (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
     simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
     inner_self_eq_norm_sq_to_K, RCLike.smul_re,
