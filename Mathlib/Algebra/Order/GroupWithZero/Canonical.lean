@@ -288,8 +288,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow_right₀
 
--- 2023-12-23
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀ -- 2023-12-23
 
 end LinearOrderedCommGroupWithZero
 
