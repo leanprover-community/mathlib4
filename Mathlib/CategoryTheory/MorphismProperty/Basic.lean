@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.CategoryTheory.Comma.Arrow
-import Mathlib.CategoryTheory.ConcreteCategory.Basic
-import Mathlib.CategoryTheory.Limits.Shapes.CommSq
-import Mathlib.CategoryTheory.Limits.Shapes.Diagonal
+import Mathlib.CategoryTheory.Pi.Basic
+import Mathlib.Order.CompleteLattice
 
 #align_import category_theory.morphism_property from "leanprover-community/mathlib"@"7f963633766aaa3ebc8253100a5229dd463040c7"
 
@@ -24,7 +23,7 @@ The following meta-property is defined
 
 universe w v v' u u'
 
-open CategoryTheory CategoryTheory.Limits Opposite
+open CategoryTheory Opposite
 
 noncomputable section
 
