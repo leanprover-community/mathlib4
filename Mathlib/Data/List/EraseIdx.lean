@@ -26,10 +26,35 @@ theorem length_eraseIdx {k} {l : List α} (h : k < length l) :
 
 theorem eraseIdx_sublist (l : List α) (k : ℕ) : eraseIdx l k <+ l := calc
   eraseIdx l k = take k l ++ drop (k + 1) l := eraseIdx_eq_take_drop_succ ..
-  _ <+ take k l ++ drop k l := _
-  _ = l := _
+  _ <+ take k l ++ drop k l := by gcongr; simp
+  _ = l := take_append_drop ..
 
 theorem eraseIdx_subset (l : List α) (k : ℕ) : eraseIdx l k ⊆ l := (eraseIdx_sublist l k).subset
+
+theorem eraseIdx_of_length_le {l : List α} {k : ℕ} (h : length l ≤ k) : eraseIdx l k = l := by
+  simp [eraseIdx_eq_take_drop_succ, take_all_of_le h, drop_eq_nil_iff_le, h.trans k.le_succ]
+
+theorem eraseIdx_append_of_lt_length {l : List α} {k : ℕ} (hk : k < length l) (l' : List α) :
+    eraseIdx (l ++ l') k = eraseIdx l k ++ l' := by
+  rw [eraseIdx_eq_take_drop_succ, take_append_of_le_length, drop_append_of_le_length,
+    eraseIdx_eq_take_drop_succ, append_assoc]
+  all_goals omega
+
+theorem eraseIdx_append_of_length_le {l : List α} {k : ℕ} (hk : length l ≤ k) (l' : List α) :
+    eraseIdx (l ++ l') k = l ++ eraseIdx l' (k - length l) := by
+  rw [eraseIdx_eq_take_drop_succ, eraseIdx_eq_take_drop_succ,
+    take_append_eq_append_take, drop_append_eq_append_drop,
+    take_all_of_le hk, drop_eq_nil_of_le (by omega), nil_append, append_assoc]
+  congr
+  omega
+
+@[gcongr]
+protected theorem IsPrefix.eraseIdx {l l' : List α} (h : l <+: l') (k : ℕ) :
+    eraseIdx l k <+: eraseIdx l' k := by
+  rcases h with ⟨t, rfl⟩
+  rcases lt_or_le k (length l) with hkl|hkl
+  case inl => simp [eraseIdx_append_of_lt_length hkl]
+  case inr => simp [eraseIdx_append_of_length_le hkl, eraseIdx_of_length_le hkl]
 
 theorem mem_eraseIdx_iff_get {x : α} :
     ∀ {l} {k}, x ∈ eraseIdx l k ↔ ∃ i : Fin l.length, ↑i ≠ k ∧ l.get i = x

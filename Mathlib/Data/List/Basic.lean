@@ -1063,6 +1063,8 @@ attribute [simp] cons_sublist_cons
 
 #align list.singleton_sublist List.singleton_sublist
 
+attribute [gcongr] Sublist.append Sublist.append_left Sublist.append_right Sublist.reverse
+
 theorem eq_nil_of_sublist_nil {l : List α} (s : l <+ []) : l = [] :=
   eq_nil_of_subset_nil <| s.subset
 #align list.eq_nil_of_sublist_nil List.eq_nil_of_sublist_nil
