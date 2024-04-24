@@ -6,6 +6,7 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -342,7 +343,7 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-  rw [← coe_mul (b := c), ← coe_mul, coe_le_coe]
+  rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
