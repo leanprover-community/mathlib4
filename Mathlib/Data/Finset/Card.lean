@@ -668,7 +668,7 @@ theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ 
 
 theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
-      not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe]; rfl
+    not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
 @[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 

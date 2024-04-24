@@ -111,6 +111,7 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
   map_div₀ sqrtHom x y
 #align nnreal.sqrt_div NNReal.sqrt_div
 
+@[continuity, fun_prop]
 theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 

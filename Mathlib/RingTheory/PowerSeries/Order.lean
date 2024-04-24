@@ -20,6 +20,10 @@ We prove that if the commutative ring `R` of coefficients is an integral domain,
 then the ring `R⟦X⟧` of formal power series in one variable over `R`
 is an integral domain.
 
+Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
+dividing out the largest power of X that divides `f`, that is its order. This is useful when
+proving that `R⟦X⟧` is a normalization monoid, which is done in `PowerSeries.Inverse`.
+
 -/
 noncomputable section
 
@@ -293,6 +297,16 @@ theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧
 set_option linter.uppercaseLean3 false in
 #align power_series.order_eq_multiplicity_X PowerSeries.order_eq_multiplicity_X
 
+/-- Given a non-zero power series `f`, `divided_by_X_pow_order f` is the power series obtained by
+  dividing out the largest power of X that divides `f`, that is its order-/
+def divided_by_X_pow_order {f : PowerSeries R} (hf : f ≠ 0) : R⟦X⟧ :=
+  (exists_eq_mul_right_of_dvd (X_pow_order_dvd (order_finite_iff_ne_zero.2 hf))).choose
+
+theorem self_eq_X_pow_order_mul_divided_by_X_pow_order {f : R⟦X⟧} (hf : f ≠ 0) :
+    X ^ f.order.get (order_finite_iff_ne_zero.mpr hf) * divided_by_X_pow_order hf = f :=
+  haveI dvd := X_pow_order_dvd (order_finite_iff_ne_zero.mpr hf)
+  (exists_eq_mul_right_of_dvd dvd).choose_spec.symm
+
 end OrderBasic
 
 section OrderZeroNeOne
@@ -304,6 +318,13 @@ variable [Semiring R] [Nontrivial R]
 theorem order_one : order (1 : R⟦X⟧) = 0 := by
   simpa using order_monomial_of_ne_zero 0 (1 : R) one_ne_zero
 #align power_series.order_one PowerSeries.order_one
+
+/-- The order of an invertible power series is `0`. -/
+theorem order_zero_of_unit {f : PowerSeries R} : IsUnit f → f.order = 0 := by
+  rintro ⟨⟨u, v, hu, hv⟩, hf⟩
+  apply And.left
+  rw [← add_eq_zero_iff, ← hf, ← nonpos_iff_eq_zero, ← @order_one R _ _, ← hu]
+  exact order_mul_ge _ _
 
 /-- The order of the formal power series `X` is `1`. -/
 @[simp]
@@ -334,6 +355,35 @@ theorem order_mul (φ ψ : R⟦X⟧) : order (φ * ψ) = order φ + order ψ := 
   simp_rw [order_eq_multiplicity_X]
   exact multiplicity.mul X_prime
 #align power_series.order_mul PowerSeries.order_mul
+
+-- Dividing `X` by the maximal power of `X` dividing it leaves `1`.
+@[simp]
+theorem divided_by_X_pow_order_of_X_eq_one : divided_by_X_pow_order X_ne_zero = (1 : R⟦X⟧) := by
+  rw [← mul_eq_left₀ X_ne_zero]
+  simpa only [order_X, X_ne_zero, PartENat.get_one, pow_one, Ne.def,
+    not_false_iff] using self_eq_X_pow_order_mul_divided_by_X_pow_order (@X_ne_zero R _ _)
+
+-- Dividing a power series by the maximal power of `X` dividing it, respects multiplication.
+theorem divided_by_X_pow_orderMul {f g : R⟦X⟧} (hf : f ≠ 0) (hg : g ≠ 0) :
+    divided_by_X_pow_order hf * divided_by_X_pow_order hg =
+      divided_by_X_pow_order (mul_ne_zero hf hg) := by
+  set df := f.order.get (order_finite_iff_ne_zero.mpr hf)
+  set dg := g.order.get (order_finite_iff_ne_zero.mpr hg)
+  set dfg := (f * g).order.get (order_finite_iff_ne_zero.mpr (mul_ne_zero hf hg)) with hdfg
+  have H_add_d : df + dg = dfg := by simp_all only [PartENat.get_add, order_mul f g]
+  have H := self_eq_X_pow_order_mul_divided_by_X_pow_order (mul_ne_zero hf hg)
+  have : f * g = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by
+    calc
+      f * g = X ^ df * divided_by_X_pow_order hf * (X ^ dg * divided_by_X_pow_order hg) := by
+        rw [self_eq_X_pow_order_mul_divided_by_X_pow_order,
+          self_eq_X_pow_order_mul_divided_by_X_pow_order]
+      _ = X ^ df * X ^ dg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by ring
+      _ = X ^ (df + dg) * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [pow_add]
+      _ = X ^ dfg * divided_by_X_pow_order hf * divided_by_X_pow_order hg := by rw [H_add_d]
+      _ = X ^ dfg * (divided_by_X_pow_order hf * divided_by_X_pow_order hg) := by rw [mul_assoc]
+  simp [← hdfg, this] at H
+  refine' (IsLeftCancelMulZero.mul_left_cancel_of_ne_zero (pow_ne_zero dfg X_ne_zero) _).symm
+  convert H
 
 end OrderIsDomain
 
