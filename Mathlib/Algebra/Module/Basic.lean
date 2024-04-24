@@ -482,11 +482,6 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
   map_ratCast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
 
-
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
-  Module.compHom α NNRat.coeHom
-
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
   ⟨fun P Q => (Module.ext' P Q) fun r x =>
