@@ -49,11 +49,11 @@ variable {S : Type v} [CommRing S] (f : R →+* S)
 variable (p : Ideal R) (P : Ideal S)
 
 -- local instances to speed things up
-@[instance] private def instAlg [Algebra (R ⧸ p) (S ⧸ P)] : SMul (R ⧸ p) (S ⧸ P) :=
+@[local instance] private def instAlg [Algebra (R ⧸ p) (S ⧸ P)] : SMul (R ⧸ p) (S ⧸ P) :=
   Algebra.toSMul
-@[instance] private def instAlg' [Algebra (R ⧸ p) (S ⧸ P)] : Module (R ⧸ p) (S ⧸ P) :=
+@[local instance] private def instAlg' [Algebra (R ⧸ p) (S ⧸ P)] : Module (R ⧸ p) (S ⧸ P) :=
   Algebra.toModule
-@[instance] private def instAMHC (n : ℕ) :
+@[local instance] private def instAMHC (n : ℕ) :
     AddMonoidHomClass (Matrix (Fin n) (Fin n) R →+* Matrix (Fin n) (Fin n) (R ⧸ p))
       (Matrix (Fin n) (Fin n) R)
       (Matrix (Fin n) (Fin n) (R ⧸ p)) := RingHomClass.toAddMonoidHomClass
@@ -183,7 +183,7 @@ end IsDedekindDomain
 
 variable (f p P)
 
-attribute [instance] Ideal.Quotient.field
+attribute [local instance] Ideal.Quotient.field
 
 /-- The inertia degree of `P : Ideal S` lying over `p : Ideal R` is the degree of the
 extension `(S / P) : (R / p)`.
@@ -527,24 +527,24 @@ theorem powQuotSuccInclusion_injective (i : ℕ) :
 #align ideal.pow_quot_succ_inclusion_injective Ideal.powQuotSuccInclusion_injective
 
 -- local instances to speed things up
-@[instance] private def instMHC : MulHomClass (S →+* S ⧸ P ^ e) S (S ⧸ P ^ e) :=
+@[local instance] private def instMHC : MulHomClass (S →+* S ⧸ P ^ e) S (S ⧸ P ^ e) :=
   NonUnitalRingHomClass.toMulHomClass
-@[instance] private def instAMHC' : AddMonoidHomClass (S →+* S ⧸ P ^ e) S (S ⧸ P ^ e) :=
+@[local instance] private def instAMHC' : AddMonoidHomClass (S →+* S ⧸ P ^ e) S (S ⧸ P ^ e) :=
   RingHomClass.toAddMonoidHomClass
-@[instance] private noncomputable def instACG (i : ℕ) :
+@[local instance] private noncomputable def instACG (i : ℕ) :
     AddCommGroup (↥(Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) ⧸
                     LinearMap.range (Ideal.powQuotSuccInclusion f p P i)) :=
   Submodule.Quotient.addCommGroup (LinearMap.range (powQuotSuccInclusion f p P i))
-@[instance] private noncomputable def instACM (i : ℕ) :
+@[local instance] private noncomputable def instACM (i : ℕ) :
     AddCommMonoid (↥(Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) ⧸
                        LinearMap.range (Ideal.powQuotSuccInclusion f p P i)) :=
   AddCommGroup.toAddCommMonoid
-@[instance] private noncomputable def instModule_R_p (i : ℕ) :
+@[local instance] private noncomputable def instModule_R_p (i : ℕ) :
     Module (R ⧸ p)
       (↥(Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) ⧸
           LinearMap.range (Ideal.powQuotSuccInclusion f p P i)) :=
   Submodule.Quotient.module (LinearMap.range (powQuotSuccInclusion f p P i))
-@[instance] private noncomputable def instAdd (i : ℕ) :
+@[local instance] private noncomputable def instAdd (i : ℕ) :
     Add (↥(Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) ⧸
            LinearMap.range (Ideal.powQuotSuccInclusion f p P i)) :=
   AddCommMagma.toAdd
@@ -771,9 +771,9 @@ instance Factors.fact_ramificationIdx_neZero (P : (factors (map (algebraMap R S)
   ⟨Factors.ramificationIdx_ne_zero p P⟩
 #align ideal.factors.fact_ramification_idx_ne_zero Ideal.Factors.fact_ramificationIdx_neZero
 
-set_option synthInstance.checkSynthOrder false
+set_option synthInstance.checkSynthOrder false in
 -- Porting note: this is okay since, as noted above, in this file the value of `f` can be inferred
-attribute [instance] Quotient.algebraQuotientOfRamificationIdxNeZero
+attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
 instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
@@ -781,7 +781,7 @@ instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset)
     Quotient.algebraMap_quotient_of_ramificationIdx_neZero, Quotient.mk_algebraMap]
 #align ideal.factors.is_scalar_tower Ideal.Factors.isScalarTower
 
-attribute [instance] Ideal.Quotient.field
+attribute [local instance] Ideal.Quotient.field
 
 theorem Factors.finrank_pow_ramificationIdx [p.IsMaximal]
     (P : (factors (map (algebraMap R S) p)).toFinset) :
