@@ -6,6 +6,7 @@ Authors: Kenny Lau, Johan Commelin, Patrick Massot
 import Mathlib.Algebra.Group.WithOne.Defs
 import Mathlib.Algebra.GroupWithZero.InjSurj
 import Mathlib.Algebra.GroupWithZero.Units.Equiv
+import Mathlib.Algebra.GroupWithZero.WithZero
 import Mathlib.Algebra.Order.Group.Units
 import Mathlib.Algebra.Order.Monoid.Basic
 import Mathlib.Algebra.Order.Monoid.OrderDual
@@ -338,7 +339,7 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
   rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-  refine le_trans ?_ (le_of_eq <| coe_mul)
+  refine le_trans ?_ (le_of_eq <| coe_mul _ _)
   -- rw [← coe_mul, ← coe_mul, coe_le_coe]
   -- Porting note: rewriting `coe_mul` here doesn't work because of some difference between
   -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`

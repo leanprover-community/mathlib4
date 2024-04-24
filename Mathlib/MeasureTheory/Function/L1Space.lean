@@ -1537,6 +1537,17 @@ theorem ContinuousLinearMap.integrable_comp {φ : α → H} (L : H →L[𝕜] E)
     (eventually_of_forall fun a => L.le_opNorm (φ a))
 #align continuous_linear_map.integrable_comp ContinuousLinearMap.integrable_comp
 
+@[simp]
+theorem ContinuousLinearEquiv.integrable_comp_iff {φ : α → H} (L : H ≃L[𝕜] E) :
+    Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
+  ⟨fun h ↦ by simpa using ContinuousLinearMap.integrable_comp (L.symm : E →L[𝕜] H) h,
+  fun h ↦ ContinuousLinearMap.integrable_comp (L : H →L[𝕜] E) h⟩
+
+@[simp]
+theorem LinearIsometryEquiv.integrable_comp_iff {φ : α → H} (L : H ≃ₗᵢ[𝕜] E) :
+    Integrable (fun a : α ↦ L (φ a)) μ ↔ Integrable φ μ :=
+  ContinuousLinearEquiv.integrable_comp_iff (L : H ≃L[𝕜] E)
+
 theorem MeasureTheory.Integrable.apply_continuousLinearMap {φ : α → H →L[𝕜] E}
     (φ_int : Integrable φ μ) (v : H) : Integrable (fun a => φ a v) μ :=
   (ContinuousLinearMap.apply 𝕜 _ v).integrable_comp φ_int
