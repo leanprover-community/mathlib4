@@ -238,9 +238,6 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
     pow_one]
 #align is_primitive_root.power_basis_int'_dim IsPrimitiveRoot.power_basis_int'_dim
 
-instance : NoZeroSMulDivisors ℤ (𝓞 K) :=
-  inferInstanceAs (NoZeroSMulDivisors ℤ (integralClosure _ _))
-
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
