@@ -128,12 +128,10 @@ end RingOfIntegers
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L (algebraMap _ K k), IsIntegral.algebraMap k.2⟩
-      map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
-      map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, map_one]
-      map_add' := fun x y =>
-        Subtype.ext <| by simp only; rw [map_add, map_add, RingOfIntegers.mk_add_mk]
-      map_mul' := fun x y =>
-        Subtype.ext <| by simp only; rw [map_mul, map_mul, RingOfIntegers.mk_mul_mk] }
+      map_zero' := by ext; simp only [RingOfIntegers.map_mk, map_zero]
+      map_one' := by ext; simp only [RingOfIntegers.map_mk, map_one]
+      map_add' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_add]
+      map_mul' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_mul] }
 #align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
 
 -- diamond at `reducible_and_instances` #10906
@@ -228,16 +226,16 @@ def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
     M →+ 𝓞 K where
   toFun := restrict f h
-  map_zero' := by unfold restrict; rw [← mk_zero, mk_eq_mk, map_zero]
-  map_add' x y := by unfold restrict; simp only [map_add]; rw [mk_add_mk]
+  map_zero' := by simp only [restrict, map_zero, mk_zero]
+  map_add' x y := by simp only [restrict, map_add, mk_add_mk _]
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
 @[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
-  map_one' := by unfold restrict; rw [← mk_one, mk_eq_mk, map_one]
-  map_mul' x y := by unfold restrict; simp only [map_mul]; rw [mk_mul_mk]
+  map_one' := by simp only [restrict, map_one, mk_one]
+  map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
 
 end RingOfIntegers
 
