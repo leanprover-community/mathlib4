@@ -69,6 +69,15 @@ def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
 def IsTight [TopologicalSpace α] (μ : Measure α) : Prop :=
   ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ ε
 
+instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFiniteMeasureOnCompacts μ]
+    [h : Fact (IsTight μ)] : IsFiniteMeasure μ := by
+  obtain ⟨K, hK, hμ⟩ := h.out 1 (zero_lt_one)
+  have := (MeasureTheory.measure_add_measure_compl (μ := μ) hK.isClosed.measurableSet).symm
+  have : μ Set.univ < ∞ := by
+    rw [this, WithTop.add_lt_top]
+    exact ⟨hk.lt_top_of_isCompact hK, lt_of_le_of_lt hμ ENNReal.one_lt_top⟩
+  exact ⟨this⟩
+
 /-- Every tight measure is pre-tight-/
 lemma Tight.of_pretight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
   intro ε hε
@@ -126,7 +135,7 @@ lemma of_innerRegular [T2Space α] [OpensMeasurableSpace α] (μ : Measure α) [
       rw [Set.compl_empty]
       exact hεr
 
-lemma countable_compact_cover [IsFiniteMeasure μ] (h : IsTight μ) :
+lemma countable_compact_cover (h : IsTight μ) :
     ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
   choose! K hK using h.has_compact_nat
   use ⋃ n, K n
@@ -152,7 +161,7 @@ lemma of_countable_compact_cover [IsFiniteMeasure μ] [T2Space α] [OpensMeasura
   obtain ⟨n, hn⟩ := aux2 K (fun n => (hK n).isClosed) hMμ ε hε
   exact ⟨Set.Accumulate K n, hAKc n, hn⟩
 
-lemma countable_compact_cover_iff [IsFiniteMeasure μ]  [T2Space α] [OpensMeasurableSpace α]:
+lemma countable_compact_cover_iff [IsFiniteMeasure μ] [T2Space α] [OpensMeasurableSpace α]:
     IsTight μ ↔ ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ :=
   ⟨countable_compact_cover, of_countable_compact_cover⟩
 
