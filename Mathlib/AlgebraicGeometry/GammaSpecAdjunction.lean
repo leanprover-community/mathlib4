@@ -371,6 +371,11 @@ lemma locallyRingedSpaceAdjunction_counit :
     locallyRingedSpaceAdjunction.counit = (NatIso.op SpecΓIdentity.{u}).inv := rfl
 #align algebraic_geometry.Γ_Spec.LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.locallyRingedSpaceAdjunction_counit
 
+lemma locallyRingedSpaceAdjunction_homEquiv_apply {X : LocallyRingedSpace} {R : CommRingCat}
+    (f : R ⟶ Γ.obj <| op X) :
+    locallyRingedSpaceAdjunction.homEquiv X (op R) (op f) =
+    identityToΓSpec.app X ≫ Spec.locallyRingedSpaceMap f := rfl
+
 -- Porting Note: Commented
 --attribute [local semireducible] Spec.toLocallyRingedSpace
 

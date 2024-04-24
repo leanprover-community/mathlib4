@@ -1070,10 +1070,38 @@ lemma awayToGamma_apply_apply (a : A⁰_ f) (x : Proj| pbo f) :
 the morphism of locally ringed space from `Proj|D(f)` to `Spec A⁰_f` induced by the ring map
 `A⁰_f ⟶ Γ(Proj|D(f))` via the gamma spec adjunction.
 -/
-def ProjIsoSpecSheafComponent.toSpec :
+def ProjIsoSpec.toSpec :
     (Proj| pbo f) ⟶ Spec (A⁰_ f) :=
   ΓSpec.locallyRingedSpaceAdjunction.homEquiv (Proj| pbo f) (op <| .of <| A⁰_ f)
     (op <| awayToGamma f_deg hm)
+
+instance : IsIso (ProjIsoSpec.toSpec f_deg hm).1.base := sorry
+
+instance (x : Spec A⁰_ f) :
+    IsIso <| Presheaf.stalkFunctor _ x |>.map (ProjIsoSpec.toSpec f_deg hm).1.c := by
+  sorry
+
+instance : IsIso (ProjIsoSpec.toSpec f_deg hm) := by
+  letI i1 := @Presheaf.isIso_of_stalkFunctor_map_iso
+    (F := (Spec A⁰_ f).sheaf)
+    (G := Sheaf.pushforward _ (ProjIsoSpec.toSpec f_deg hm).1.base |>.obj (Proj| pbo f).sheaf)
+    (f := ⟨(ProjIsoSpec.toSpec f_deg hm).1.c⟩) _ _ _ _ _ _ _ _
+
+  letI i2 : IsIso (ProjIsoSpec.toSpec f_deg hm).val.c :=
+    ⟨i1.out.choose.1, Sheaf.Hom.ext_iff _ _ |>.mp i1.out.choose_spec.1,
+      Sheaf.Hom.ext_iff _ _ |>.mp i1.out.choose_spec.2⟩
+  letI i3 : IsIso (forgetToSheafedSpace.map (ProjIsoSpec.toSpec f_deg hm)) := by
+    change IsIso
+      ((ProjIsoSpec.toSpec f_deg hm).1 :
+        (Proj| pbo f).toPresheafedSpace ⟶ (Spec A⁰_ f).toPresheafedSpace)
+    letI := @PresheafedSpace.isIso_of_components (f := (ProjIsoSpec.toSpec f_deg hm).1) _ _ _
+
+    exact @isIso_of_reflects_iso (f := ProjIsoSpec.toSpec f_deg hm |>.1)
+      (F := SheafedSpace.forgetToPresheafedSpace)
+      (@PresheafedSpace.isIso_of_components (f := (ProjIsoSpec.toSpec f_deg hm).1) _ _ _) _
+
+  apply isIso_of_reflects_iso (f := ProjIsoSpec.toSpec f_deg hm)
+      (LocallyRingedSpace.forgetToSheafedSpace)
 
 end
 
