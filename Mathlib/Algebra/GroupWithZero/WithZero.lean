@@ -202,7 +202,7 @@ instance addMonoidWithOne [AddMonoidWithOne α] : AddMonoidWithOne (WithZero α)
   natCast_zero := rfl
   natCast_succ n := by
     cases n with
-    | zero => show (((1 : ℕ) : α) : WithZero α) = 0 + 1; · rw [Nat.cast_one, coe_one, zero_add]
+    | zero => show (((1 : ℕ) : α) : WithZero α) = 0 + 1; rw [Nat.cast_one, coe_one, zero_add]
     | succ n =>
         show (((n + 2 : ℕ) : α) : WithZero α) = ((n + 1 : ℕ) : α) + 1
         rw [Nat.cast_succ, coe_add, coe_one]
