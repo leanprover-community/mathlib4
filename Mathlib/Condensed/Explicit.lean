@@ -173,6 +173,17 @@ noncomputable instance (X : CondensedSet) : PreservesFiniteProducts X.val :=
   CompHaus.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) X.val |>.mp
     X.cond |>.1.some
 
+/-- A condensed set regarded as a sheaf on `Profinite` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Profinite.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Profinite.isSheaf_iff_preservesFiniteProducts_and_equalizerCondition' (𝟭 _) Y.val |>.mp
+    Y.cond |>.1.some
+
+/-- A condensed set regarded as a sheaf on `Stonean` preserves finite products. -/
+noncomputable instance (Y : Sheaf (coherentTopology Stonean.{u}) (Type (u+1))) :
+    PreservesFiniteProducts Y.val :=
+  Stonean.isSheaf_iff_preservesFiniteProducts Y.val |>.mp Y.cond |>.some
+
 end CondensedSet
 
 namespace CondensedAb

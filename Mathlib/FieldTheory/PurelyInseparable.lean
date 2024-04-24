@@ -647,7 +647,7 @@ instance isPurelyInseparable_sup (L1 L2 : IntermediateField F E)
   exact sup_le h1 h2
 
 /-- A compositum of purely inseparable extensions is purely inseparable. -/
-instance isPurelyInseparable_iSup {ι : Type*} {t : ι → IntermediateField F E}
+instance isPurelyInseparable_iSup {ι : Sort*} {t : ι → IntermediateField F E}
     [h : ∀ i, IsPurelyInseparable F (t i)] :
     IsPurelyInseparable F (⨆ i, t i : IntermediateField F E) := by
   simp_rw [← le_perfectClosure_iff] at h ⊢
