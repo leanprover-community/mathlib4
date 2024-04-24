@@ -1,8 +1,10 @@
 import Mathlib.Topology.Basic
 import Mathlib.Data.Set.Basic
 import Mathlib.Order.Filter.Basic
+import Mathlib.Logic.Nontrivial.Defs
+import Mathlib.Data.Fintype.Card
 import Archive.PiBase.Properties
-open Topology Set Filter
+open Topology Set Filter Nontrivial Fintype
 
 universe u
 variable (X : Type u) [TopologicalSpace X]
@@ -42,5 +44,10 @@ theorem T226 (p99: P99 X): P2 X := by
     rw [this]
     exact yinN
   · exact tendsto_const_nhds
+
+theorem T250 (np78: ¬ P78 X): P125 X := by
+  rw [P78, P125] at *
+  simp at np78
+  apply Infinite.instNontrivial
 
 end πBase
