@@ -6,16 +6,20 @@ Authors: Rémy Degenne, Josha Dekker
 import Mathlib.MeasureTheory.Measure.Regular
 
 /-!
-# Characteristic function of a measure
+# (Pre-)tight measures
 
 ## Main definitions
 
-* `Tight`: A set `S` of measures is tight if for all `0 < ε`, there exists `K` compact such that
-  for all `μ` in `S`, `μ Kᶜ ≤ ε`.
+* `IsPretight`: A measure `μ` is pre-tight if for all `0 < ε`, there exists `K` totally bounded such
+  that `μ Kᶜ ≤ ε`.
+* `IsTight`: A measure `μ` is tight if for all `0 < ε`, there exists `K` compact such that
+  `μ Kᶜ ≤ ε`.
+* `IsTightSet`: A set of measures `S` is tight if for all `0 < ε`, there exists `K` compact such
+  that for all `μ` in `S`, `μ Kᶜ ≤ ε`.
 
 ## Main statements
 
-* `fooBar_unique`
+*
 
 ## Notation
 
