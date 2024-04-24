@@ -236,7 +236,6 @@ theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
   induction m using CoprodI.induction_left with
   | one => exact h_one
   | mul m x hx => exact h_mul _ _ (h_of _ _) hx
-
 #align free_product.induction_on Monoid.CoprodI.induction_on
 
 section Group
