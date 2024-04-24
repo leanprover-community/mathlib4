@@ -8,7 +8,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Data.Set.Intervals.Infinite
+import Mathlib.Order.Interval.Set.Infinite
 import Mathlib.Dynamics.PeriodicPts
 import Mathlib.GroupTheory.Index
 
@@ -174,8 +174,7 @@ protected lemma IsOfFinOrder.orderOf_pos (h : IsOfFinOrder x) : 0 < orderOf x :=
 
 @[to_additive addOrderOf_nsmul_eq_zero]
 theorem pow_orderOf_eq_one (x : G) : x ^ orderOf x = 1 := by
-  -- Porting note: was `convert`, but the `1` in the lemma is equal only after unfolding
-  refine Eq.trans ?_ (isPeriodicPt_minimalPeriod (x * ·) 1)
+  convert Eq.trans _ (isPeriodicPt_minimalPeriod (x * ·) 1)
   -- Porting note(#12129): additional beta reduction needed in the middle of the rewrite
   rw [orderOf, mul_left_iterate]; beta_reduce; rw [mul_one]
 #align pow_order_of_eq_one pow_orderOf_eq_one

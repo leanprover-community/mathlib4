@@ -686,6 +686,10 @@ instance _root_.MeasureTheory.Measure.IsAddHaarMeasure.instHasTemperateGrowth {�
     [h : μ.IsAddHaarMeasure] : μ.HasTemperateGrowth :=
   ⟨⟨finrank ℝ D + 1, by apply integrable_one_add_norm; norm_num⟩⟩
 
+/-- Pointwise inequality to control `x ^ k * f` in terms of `1 / (1 + x) ^ l` if one controls both
+`f` (with a bound `C₁`) and `x ^ (k + l) * f` (with a bound `C₂`). This will be used to check
+integrability of `x ^ k * f x` when `f` is a Schwartz function, and to control explicitly its
+integral in terms of suitable seminorms of `f`. -/
 lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (hx : 0 ≤ x) (hf : 0 ≤ f)
     (h₁ : f ≤ C₁) (h₂ : x ^ (k + l) * f ≤ C₂) :
     x ^ k * f ≤ 2 ^ l * (C₁ + C₂) * (1 + x) ^ (- (l : ℝ)) := by
@@ -713,6 +717,10 @@ lemma pow_mul_le_of_le_of_pow_mul_le {C₁ C₂ : ℝ} {k l : ℕ} {x f : ℝ} (
       · exact Real.rpow_le_rpow_of_nonpos (by linarith) (by linarith) (by simp)
       · exact h₂.trans (by linarith)
 
+/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
+`x ^ k * f` is integrable. The bounds are not relevant for the integrability conclusion, but they
+are relevant for bounding the integral in `integral_pow_mul_le_of_le_of_pow_mul_le`. We formulate
+the two lemmas with the same set of assumptions for ease of applications. -/
 lemma integrable_of_le_of_pow_mul_le
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂)
@@ -724,6 +732,8 @@ lemma integrable_of_le_of_pow_mul_le
     simp only [norm_mul, norm_pow, norm_norm]
     apply pow_mul_le_of_le_of_pow_mul_le (norm_nonneg _) (norm_nonneg _) (hf v) (h'f v)
 
+/-- Given a function such that `f` and `x ^ (k + l) * f` are bounded for a suitable `l`, then
+one can bound explicitly the integral of `x ^ k * f`. -/
 lemma integral_pow_mul_le_of_le_of_pow_mul_le
     {μ : Measure D} [μ.HasTemperateGrowth] {f : D → E} {C₁ C₂ : ℝ} {k : ℕ}
     (hf : ∀ x, ‖f x‖ ≤ C₁) (h'f : ∀ x, ‖x‖ ^ (k + μ.integrablePower) * ‖f x‖ ≤ C₂) :

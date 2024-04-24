@@ -87,7 +87,7 @@ theorem surjective (f : α → β) (hf : Surjective f) : Surjective (mapFun f : 
 variable (f : R →+* S) (x y : WittVector p R)
 
 /-- Auxiliary tactic for showing that `mapFun` respects the ring operations. -/
---  porting note: a very crude port.
+-- porting note: a very crude port.
 macro "map_fun_tac" : tactic => `(tactic| (
   ext n
   simp only [mapFun, mk, comp_apply, zero_coeff, map_zero,
@@ -154,8 +154,7 @@ private def ghostFun : 𝕎 R → ℕ → R := fun x n => aeval x.coeff (W_ ℤ 
 section Tactic
 open Lean Elab Tactic
 
---  porting note: removed mathport output related to meta code.
---  I do not know what to do with `#align`
+-- porting note: removed mathport output related to meta code.
 /-- An auxiliary tactic for proving that `ghostFun` respects the ring operations. -/
 elab "ghost_fun_tac" φ:term "," fn:term : tactic => do
   evalTactic (← `(tactic| (
@@ -210,13 +209,13 @@ private theorem ghostFun_intCast (i : ℤ) : ghostFun (i : 𝕎 R) = i :=
       -Pi.intCast_def]
 
 private lemma ghostFun_nsmul (m : ℕ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.
-  --  This could very well be due to my poor tactic writing!
+  -- porting note: I had to add the explicit type ascription.
+  -- This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private lemma ghostFun_zsmul (m : ℤ) (x : WittVector p R) : ghostFun (m • x) = m • ghostFun x := by
-  --  porting note: I had to add the explicit type ascription.
-  --  This could very well be due to my poor tactic writing!
+  -- porting note: I had to add the explicit type ascription.
+  -- This could very well be due to my poor tactic writing!
   ghost_fun_tac m • (X 0 : MvPolynomial _ ℤ), ![x.coeff]
 
 private theorem ghostFun_pow (m : ℕ) : ghostFun (x ^ m) = ghostFun x ^ m := by

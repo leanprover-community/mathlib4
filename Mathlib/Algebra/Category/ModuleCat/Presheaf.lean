@@ -195,7 +195,7 @@ variable (R)
 to presheaves of abelian groups.
 -/
 @[simps obj]
-def toPresheaf : PresheafOfModules R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat) where
+def toPresheaf : PresheafOfModules.{v} R ⥤ (Cᵒᵖ ⥤ AddCommGroupCat.{v}) where
   obj P := P.presheaf
   map f := f.hom
 
@@ -251,13 +251,20 @@ noncomputable def restriction {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 
 variable {R}
 
+@[reassoc (attr := simp)]
+lemma restrictionApp_naturality {X Y : Cᵒᵖ} (f : X ⟶ Y)
+    {M N : PresheafOfModules R} (φ : M ⟶ N) :
+    restrictionApp f M ≫ (ModuleCat.restrictScalars (R.map f)).map (Hom.app φ Y) =
+      ModuleCat.ofHom (Hom.app φ X) ≫ restrictionApp f N :=
+  ((restriction R f).naturality φ).symm
+
 attribute [local simp] restrictionApp_apply
 
-lemma restriction_app_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
+lemma restrictionApp_id (M : PresheafOfModules R) (X : Cᵒᵖ) :
     restrictionApp (𝟙 X) M =
       (ModuleCat.restrictScalarsId' (R.map (𝟙 X)) (R.map_id X)).inv.app (M.obj X) := by aesop
 
-lemma restriction_app_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
+lemma restrictionApp_comp (M : PresheafOfModules R) {X Y Z : Cᵒᵖ} (f : X ⟶ Y) (g : Y ⟶ Z) :
     restrictionApp (f ≫ g) M =
       restrictionApp f M ≫
         (ModuleCat.restrictScalars (R.map f)).map (restrictionApp g M) ≫
