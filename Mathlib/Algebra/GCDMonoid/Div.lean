@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.Algebra.GCDMonoid.Nat
 
 #align_import algebra.gcd_monoid.div from "leanprover-community/mathlib"@"b537794f8409bc9598febb79cd510b1df5f4539d"
 
