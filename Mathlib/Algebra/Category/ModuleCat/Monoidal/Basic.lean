@@ -343,19 +343,31 @@ instance (M : ModuleCat R) {X Y : ModuleCat R} (f : X ⟶ Y) :
       constructor
       intro Z g h H
       let c' : Limits.Cocone (Limits.parallelPair f 0) :=
-        ⟨Z, ⟨fun x => match x with | .zero => 0 | .one => π ≫ h,
+        ⟨Z, ⟨fun x => match x with
+          | .zero => 0
+          | .one => π ≫ h,
           fun _ _ l => match l with
-          | .left => by simp [π] | .right => by simp [π] | .id x => by simp⟩⟩
-      rw [hc.uniq c' g (fun x => match x with | .zero => by simp | .one => by simpa [π] using H),
-        hc.uniq c' h fun x => match x with | .zero => by simp | .one => by simp [π]]
+          | .left => by simp [π]
+          | .right => by simp [π]
+          | .id x => by simp⟩⟩
+      rw [hc.uniq c' g (fun x => match x with
+        | .zero => by simp
+        | .one => by simpa [π] using H),
+        hc.uniq c' h fun x => match x with
+        | .zero => by simp
+        | .one => by simp [π]]
     have surj0 : Function.Surjective π := by rwa [← ModuleCat.epi_iff_surjective]
     have exact0 : Exact f π := by
       refine Abelian.exact_of_is_cokernel (w := by simp [π]) (h := ?_)
       refine Limits.IsColimit.equivOfNatIsoOfIso (Iso.refl _) _ _
         ⟨(Limits.Cocones.precomposeId (F := Limits.parallelPair f 0) |>.hom.app c) ≫
           ⟨hc.desc (Limits.CokernelCofork.ofπ π (by simp [π])),
-          fun x => match x with | .zero => by simp [π] | .one => by simp⟩,
-          ⟨𝟙 c.pt, fun x => match x with | .zero => by simp [π] | .one => by simp [π]⟩ ≫
+          fun x => match x with
+          | .zero => by simp [π]
+          | .one => by simp⟩,
+          ⟨𝟙 c.pt, fun x => match x with
+            | .zero => by simp [π]
+            | .one => by simp [π]⟩ ≫
             (Limits.Cocones.precomposeId (F := Limits.parallelPair f 0) |>.inv.app c),
         ?_, ?_⟩ hc <;>
       ext : 1 <;>
@@ -366,7 +378,8 @@ instance (M : ModuleCat R) {X Y : ModuleCat R} (f : X ⟶ Y) :
         Limits.Cocones.ext_inv_hom, Category.comp_id, Category.id_comp,
         Limits.Cocone.category_id_hom] <;>
       exact hc.uniq (Limits.CokernelCofork.ofπ π (by simp [π])) (𝟙 c.pt) (fun x => match x with
-          | .zero => by simp [π] | .one => by simp [π]) |>.symm
+          | .zero => by simp [π]
+          | .one => by simp [π]) |>.symm
     let f' : M ⊗ X ⟶ M ⊗ Y := M ◁ f
     let π' : M ⊗ Y ⟶ M ⊗ c.pt := M ◁ π
     letI exact1 : Exact f' π' := by

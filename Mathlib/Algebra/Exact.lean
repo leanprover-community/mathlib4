@@ -28,11 +28,11 @@ import Mathlib.LinearAlgebra.Basic
 
 namespace Function
 
-variable {M N P : Type*}
+variable {M N P Q : Type*}
 
 section Function
 
-variable (f : M → N) (g : N → P)
+variable (f : M → N) (g : N → P) (h : P → Q)
 
 /-- The maps `f` and `g` form an exact pair :
   `g y = 0` iff `y` belongs to the image of `f` -/
@@ -40,6 +40,14 @@ def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
 
 lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
   funext fun _ => (h _).mpr <| Set.mem_range_self _
+
+lemma Exact.comp_injective [Zero P] [Zero Q] (exact : Exact f g)
+    (inj : Function.Injective h) (h0 : h 0 = 0) :
+    Exact f (h ∘ g) := by
+  intro x
+  refine ⟨fun H => exact x |>.mp <| inj <| h0 ▸ H, ?_⟩
+  intro H
+  rw [Function.comp_apply, exact x |>.mpr H, h0]
 
 end Function
 

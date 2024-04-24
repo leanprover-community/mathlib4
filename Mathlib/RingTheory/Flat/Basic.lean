@@ -12,6 +12,7 @@ import Mathlib.Algebra.Module.CharacterModule
 import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Module.Projective
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -272,6 +273,49 @@ lemma iff_lTensor_preserves_injective_linearMap [Small.{v} R] :
     ∀ ⦃N N' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [Module R N] [Module R N']
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMap, LinearMap.lTensor_inj_iff_rTensor_inj]
+
+lemma lTensor_exact [Small.{v} R] (flat : Flat R M) ⦃N N' N'' : Type v⦄
+    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    [Module R N] [Module R N'] [Module R N'']
+    (f : N →ₗ[R] N') (g : N' →ₗ[R] N'')
+    (exact : Function.Exact f g) :
+    Function.Exact (f.lTensor M) (g.lTensor M) := by
+  let π : N' →ₗ[R] N' ⧸ LinearMap.range f :=
+  { toFun := Submodule.Quotient.mk
+    map_add' := by simp
+    map_smul' := by simp }
+  have exact0 : Function.Exact f π := by
+    intro x; simp [π]
+  have surj0 : Function.Surjective π := Quotient.surjective_Quotient_mk''
+
+  let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
+    Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
+      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
+        (Function.LinearMap.exact_iff.mp exact).symm
+  have inj0 : Function.Injective ι := by
+    simpa [ι] using Subtype.val_injective
+  have eq0 : g = ι.comp π := by aesop
+
+  suffices exact1 : Function.Exact (f.lTensor M) (π.lTensor M) by
+    rw [eq0, lTensor_comp]
+    apply Function.Exact.comp_injective (exact := exact1)
+      (inj := iff_lTensor_preserves_injective_linearMap R M |>.mp flat _ inj0)
+      (h0 := map_zero _)
+
+  exact _root_.lTensor_exact _ exact0 surj0
+
+lemma iff_lTensor_exact [Small.{v} R] :
+    Flat R M ↔
+    ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+      [Module R N] [Module R N'] [Module R N'']
+      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''), Function.Exact f g →
+      Function.Exact (f.lTensor M) (g.lTensor M) := by
+  refine ⟨lTensor_exact, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
+    fun N' N'' _ _ _ _ L hL => ?_⟩
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  rintro x (hx : _ = 0)
+  simpa [Eq.comm] using
+    @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
 
 end Flat
 
