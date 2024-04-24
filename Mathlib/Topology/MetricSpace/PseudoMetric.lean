@@ -1883,6 +1883,29 @@ theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
   .of_subtype s
 #align is_compact.is_separable IsCompact.isSeparable
 
+lemma TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
+    TopologicalSpace.IsSeparable s:= by
+  rw [Metric.totallyBounded_iff] at h
+  have := fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat
+  choose! f hf hfb using this
+  use ⋃ n, f n
+  constructor
+  · apply Set.countable_iUnion
+    exact fun i => (hf i).countable
+  · intro x hx
+    rw [Metric.mem_closure_iff]
+    intro ε hε
+    obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
+    have := hfb n hx
+    have : ∃ b ∈ f n, dist x b < ε := by
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp this
+      simp only [one_div, Set.mem_iUnion, Metric.mem_ball, exists_prop] at hi
+      use i, hi.1
+      apply lt_trans hi.2 ?_
+      rw [inv_eq_one_div]
+      exact hn
+    aesop
+
 section Pi
 
 open Finset
