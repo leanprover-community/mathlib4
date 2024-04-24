@@ -831,7 +831,7 @@ theorem degree_pow_le (p : R[X]) : ∀ n : ℕ, degree (p ^ n) ≤ n • degree 
     calc
       degree (p ^ (n + 1)) ≤ degree (p ^ n) + degree p := by
         rw [pow_succ]; exact degree_mul_le _ _
-      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add (degree_pow_le _ _) le_rfl
+      _ ≤ _ := by rw [succ_nsmul]; exact add_le_add_right (degree_pow_le _ _) _
 #align polynomial.degree_pow_le Polynomial.degree_pow_le
 
 theorem degree_pow_le_of_le {a : WithBot ℕ} (b : ℕ) (hp : degree p ≤ a) :

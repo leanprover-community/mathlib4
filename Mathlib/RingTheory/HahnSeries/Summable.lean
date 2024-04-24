@@ -574,23 +574,22 @@ theorem isUnit_iff {x : HahnSeries Γ R} : IsUnit x ↔ IsUnit (x.coeff x.order)
 
 end IsDomain
 
-instance [Field R] : Field (HahnSeries Γ R) :=
-  { inferInstanceAs (IsDomain (HahnSeries Γ R)),
-    inferInstanceAs (CommRing (HahnSeries Γ R)) with
-    inv := fun x =>
-      if x0 : x = 0 then 0
-      else
-        C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
-          (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
-    inv_zero := dif_pos rfl
-    mul_inv_cancel := fun x x0 => by
-      refine' (congr rfl (dif_neg x0)).trans _
-      have h :=
-        SummableFamily.one_sub_self_mul_hsum_powers
-          (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
-      rw [sub_sub_cancel] at h
-      rw [← mul_assoc, mul_comm x, h]
-    qsmul := qsmulRec _ }
+instance instField [Field R] : Field (HahnSeries Γ R) where
+  __ : IsDomain (HahnSeries Γ R) := inferInstance
+  inv x :=
+    if x0 : x = 0 then 0
+    else
+      C (x.coeff x.order)⁻¹ * (single (-x.order)) 1 *
+        (SummableFamily.powers _ (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))).hsum
+  inv_zero := dif_pos rfl
+  mul_inv_cancel x x0 := (congr rfl (dif_neg x0)).trans $ by
+    have h :=
+      SummableFamily.one_sub_self_mul_hsum_powers
+        (unit_aux x (inv_mul_cancel (coeff_order_ne_zero x0)))
+    rw [sub_sub_cancel] at h
+    rw [← mul_assoc, mul_comm x, h]
+  nnqsmul := _
+  qsmul := _
 
 end Inversion
 
