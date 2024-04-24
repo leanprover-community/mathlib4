@@ -1097,13 +1097,25 @@ theorem sublist_cons_of_sublist (a : α) (h : l₁ <+ l₂) : l₁ <+ a :: l₂ 
 #align list.sublist_append_of_sublist_left List.sublist_append_of_sublist_left
 #align list.sublist_append_of_sublist_right List.sublist_append_of_sublist_right
 
-theorem sublist_of_cons_sublist_cons {l₁ l₂ : List α} : ∀ {a : α}, a :: l₁ <+ a :: l₂ → l₁ <+ l₂
-  | _, Sublist.cons _ s => sublist_of_cons_sublist s
-  | _, Sublist.cons₂ _ s => s
-#align list.sublist_of_cons_sublist_cons List.sublist_of_cons_sublist_cons
+theorem tail_sublist : ∀ l : List α, tail l <+ l
+  | [] => .slnil
+  | a::l => sublist_cons a l
+#align list.tail_sublist List.tail_sublist
 
-theorem cons_sublist_cons_iff {l₁ l₂ : List α} {a : α} : a :: l₁ <+ a :: l₂ ↔ l₁ <+ l₂ :=
-  ⟨sublist_of_cons_sublist_cons, Sublist.cons_cons _⟩
+@[gcongr] protected theorem Sublist.tail : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → tail l₁ <+ tail l₂
+  | _, _, slnil => .slnil
+  | _, _, Sublist.cons _ h => (tail_sublist _).trans h
+  | _, _, Sublist.cons₂ _ h => h
+
+theorem Sublist.of_cons_cons {l₁ l₂ : List α} {a b : α} (h : a :: l₁ <+ b :: l₂) : l₁ <+ l₂ :=
+  h.tail
+#align list.sublist_of_cons_sublist_cons List.Sublist.of_cons_cons
+
+@[deprecated] -- 2024-04-07
+theorem sublist_of_cons_sublist_cons {a} (h : a :: l₁ <+ a :: l₂) : l₁ <+ l₂ := h.of_cons_cons
+
+attribute [simp] cons_sublist_cons
+@[deprecated] alias cons_sublist_cons_iff := cons_sublist_cons -- 2024-04-07
 #align list.cons_sublist_cons_iff List.cons_sublist_cons_iff
 
 #align list.append_sublist_append_left List.append_sublist_append_left
