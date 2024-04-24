@@ -41,7 +41,7 @@ theorem mem_cocardinal {s : Set α} :
     s ∈ @cocardinal α c hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
 
 @[simp] lemma cocardinal_aleph0_eq_cofinite :
-    cocardinal isRegular_aleph0 = cofinite (α := α) := by
+    cocardinal (α := α) isRegular_aleph0 = cofinite := by
   aesop
 
 instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (α := α) hreg) c where
