@@ -47,7 +47,7 @@ Foobars, barfoos
 -/
 
 
-
+open Filter Topology Set
 
 /-- Additive version of proper action in the sense of Bourbaki:
 the map `G×X→ X×X` is a proper map `isProperMap`
@@ -78,8 +78,6 @@ lemma isProperMap_smul_pair (G X : Type*) [Group G] [MulAction G X]
     IsProperMap (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) :=
   ProperSMul.isProperMap_smul_pair'
 
-open Filter Topology
-
 variable {G X Y Z W : Type*} [Group G] [MulAction G X] [MulAction G Y]
 variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
 variable [TopologicalSpace Z] [TopologicalSpace W]
@@ -100,11 +98,11 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ C
     Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
     ∃ g : G, g • x₂ = x₁ ∧ Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
   constructor
-  · refine' fun h ↦ ⟨by infer_instance, fun 𝒰 x₁ x₂ h' ↦ _⟩
+  · refine' fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ _⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
-    have ⟨(g, x), hgx1, hgx2⟩ := h.2 h'
-    refine' ⟨g, _, le_trans (map_mono hgx2) (continuous_fst.tendsto (g, x))⟩
-    simp at hgx1
+    rcases h.2 h' with ⟨gx, hgx1, hgx2⟩
+    refine' ⟨gx.1, _, (continuous_fst.tendsto gx).mono_left hgx2⟩
+    simp only [Prod.mk.injEq] at hgx1
     rw [← hgx1.2, hgx1.1]
   · rintro ⟨cont, h⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter]
@@ -122,19 +120,11 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : Prope
     (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
     Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
     ∃ g : G, Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
-  constructor
-  · intro h
-    have ⟨cont, h'⟩ := properSMul_iff_continuousSMul_ultrafilter_tendsto.1 h
-    refine' ⟨cont, fun 𝒰 x₁ x₂ h'' ↦ _⟩
-    rcases h' 𝒰 x₁ x₂ h'' with ⟨g, _, hg⟩
-    exact ⟨g, hg⟩
-  · rintro ⟨cont, h⟩
-    rw [properSMul_iff, isProperMap_iff_ultrafilter_of_t2]
-    refine' ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ _⟩
-    rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg⟩
-    refine' ⟨(g, x₂), _⟩
-    rw [nhds_prod_eq, 𝒰.le_prod]
-    exact ⟨hg, (continuous_snd.tendsto _).comp hxx⟩
+  rw [properSMul_iff_continuousSMul_ultrafilter_tendsto]
+  refine and_congr_right fun hc ↦ ?_
+  congrm ∀ 𝒰 x₁ x₂ hxx, ∃ g, ?_
+  exact and_iff_right_of_imp fun hg ↦ tendsto_nhds_unique
+    (hg.smul ((continuous_snd.tendsto _).comp hxx)) ((continuous_fst.tendsto _).comp hxx)
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
@@ -155,14 +145,14 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
   have pipipquotient := -- π × π is q QuotientMap because open, continuous and surj
     IsOpenMap.to_quotientMap pipiopen (Continuous.prod_map picont picont) pipisurj
   rw [<-QuotientMap.isClosed_preimage pipipquotient] -- closed iff preimage closed
-  set gr' := pipi ⁻¹' Set.diagonal (Quotient R) -- preimage of the diag
+  set gr' := pipi ⁻¹' diagonal (Quotient R) -- preimage of the diag
   set m : G × X → X × X := fun (g,x) => (g • x, x)
-  set gr := Set.range m -- graph of the orbit relation
+  set gr := range m -- graph of the orbit relation
   have r_eq_r' : gr' = gr := by -- the preimage of the diag is the graph of the relation
     ext ⟨x,y⟩
     conv_lhs => -- we work only on the left hand side for now
-      rw [Set.mem_preimage]
-      rw [Set.mem_diagonal_iff]
+      rw [mem_preimage]
+      rw [mem_diagonal_iff]
       change (π x = π y)  --↔ (x, y) ∈ gr
       rw [Quotient.eq']
       change ((MulAction.orbitRel G X).Rel x y)-- ↔ (x, y) ∈ gr
@@ -170,7 +160,7 @@ theorem t2Space_of_ProperSMul (hproper:ProperSMul G X) :
       rw [MulAction.orbit]
       change (∃ g : G, g • y = x)
     conv_rhs =>
-      rw [Set.mem_range]
+      rw [mem_range]
       simp
     simp [m]
   rw [r_eq_r']
@@ -188,14 +178,14 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
     · let g := fun gx : G × X ↦ gx.2
       have : Function.LeftInverse g f := by intro x; simp
       exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
-    · have : Set.range f = ({1} ×ˢ Set.univ) := by simp
+    · have : range f = ({1} ×ˢ univ) := by simp
       rw [this]
       exact IsClosed.prod isClosed_singleton isClosed_univ
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
   have : g ∘ f = fun x ↦ (x, x) := by ext x <;> simp
-  have range_gf : Set.range (g ∘ f) = Set.diagonal X := by simp [this]
+  have range_gf : range (g ∘ f) = diagonal X := by simp [this]
   rw [← range_gf]
   exact (proper_f.comp proper_g).closed_range
 
@@ -221,16 +211,9 @@ lemma properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [Topo
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
-instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X where
-  isProperMap_smul_pair' := by
-    have : IsProperMap (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)) := by
-      change IsProperMap (Prod.map ((↑) : H → G) (fun x ↦ x))
-      exact IsProperMap.prod_map (isProperMap_subtype_val_of_closed H_closed) isProperMap_id
-    have : IsProperMap (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) := by
-      change IsProperMap ((fun gx ↦ (gx.1 • gx.2, gx.2)) ∘
-        (fun hx : H × X ↦ ((hx.1, hx.2) : G × X)))
-      exact this.comp (isProperMap_smul_pair G X)
-    assumption
+instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
+  properSMul_of_closed_embedding (Subgroup.subtype H)
+    H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
 
 /-
 Some suggestions of things to prove,
@@ -251,8 +234,29 @@ lemma tendsTo_comp_continuous
     {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
     (H : Tendsto f lx (𝓝 y)) (hg: Continuous g) :
     Tendsto (g ∘ f) lx (𝓝 (g y)) := by
-  apply Filter.Tendsto.comp _ H
+  apply Tendsto.comp _ H
   exact hg.tendsto y
+
+theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
+    (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K))
+    {f : X → Y} (hf : Continuous f)
+    (h : ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K)) : IsProperMap f :=
+  isProperMap_iff_isClosedMap_and_compact_fibers.2 ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
+    fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
+    fun _ ↦ h isCompact_singleton⟩
+
+lemma compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
+    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed,
+    fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
+    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup _)⟩
+  simp only [mem_inter_iff, mem_insert_iff, mem_range, exists_apply_eq_apply, or_true, and_true,
+    eventually_atTop, ge_iff_le]
+  exact ⟨0, fun n _ ↦ hu n⟩
+
+theorem isProperMap_iff_isCompact_preimage'' [T2Space Y] [SequentialSpace Y] {f : X → Y}
+    (hf : Continuous f) (h : ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K)) : IsProperMap f :=
+  isProperMap_iff_isCompact_preimage' (fun _ ↦ compactlyGenerated_of_sequentialSpace) hf h
 
 /-
 If `X` and `Y` are T2 and first countable,
@@ -260,14 +264,14 @@ then the naive definition
 of proper map is equivalent to the good definition
 -/
 theorem properMap_of_naiveProper_T2_FirstCountable
-    [T2Space X] [FirstCountableTopology X]
-    [T2Space Y] [FirstCountableTopology Y]
+    [FirstCountableTopology X]
+    [T2Space Y] [SequentialSpace Y]
     (f : X → Y) (hcont: Continuous f)
     (h : ∀ (K : Set Y), (IsCompact K → IsCompact (f ⁻¹' K))) : IsProperMap f := by
   --intro h
   -- a map is proper iff it is closed and the fibers are compacts
   rw [isProperMap_iff_isClosedMap_and_compact_fibers]
-  refine ⟨(by assumption), ?_, ?_ ⟩
+  refine ⟨hcont, ?_, ?_ ⟩
   · rw [IsClosedMap]
     intro U closed_U
     -- in a first countable space, a set is closed iff sequentially closed
@@ -283,9 +287,9 @@ theorem properMap_of_naiveProper_T2_FirstCountable
       rw [<-(hs n).2]
       rfl
     -- the sequence and its limit is compact, so is its preimage by properness
-    set cluster_seq := (insert y (Set.range seq))
+    set cluster_seq := (insert y (range seq))
     have preim_comp := h cluster_seq (Tendsto.isCompact_insert_range seq_conv)
-    have s'_im : ∀ n, s' n ∈ (Set.preimage f cluster_seq) := by
+    have s'_im : ∀ n, s' n ∈ (preimage f cluster_seq) := by
       intro n
       --simp
       change (f ∘ s') n ∈ cluster_seq
