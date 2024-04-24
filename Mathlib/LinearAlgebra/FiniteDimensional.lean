@@ -368,21 +368,21 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
   Module.finite_of_rank_eq_nat h
 #align finite_dimensional_of_rank_eq_nat FiniteDimensional.of_rank_eq_nat
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
 
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 #align finite_dimensional_of_rank_eq_zero FiniteDimensional.of_rank_eq_zero
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
 
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
 #align finite_dimensional_of_rank_eq_one FiniteDimensional.of_rank_eq_one
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
