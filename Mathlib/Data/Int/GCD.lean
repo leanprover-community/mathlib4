@@ -340,6 +340,17 @@ theorem gcd_dvd_gcd_mul_right_right (i j k : ℤ) : gcd i j ∣ gcd i (j * k) :=
   gcd_dvd_gcd_of_dvd_right _ (dvd_mul_right _ _)
 #align int.gcd_dvd_gcd_mul_right_right Int.gcd_dvd_gcd_mul_right_right
 
+/-- If `gcd a (m * n) = 1`, then `gcd a m = 1`. -/
+theorem gcd_eq_one_of_gcd_mul_right_eq_one_left {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
+    a.gcd m = 1 :=
+  Nat.dvd_one.mp <| h ▸ gcd_dvd_gcd_mul_right_right a m n
+#align int.gcd_eq_one_of_gcd_mul_right_eq_one_left Int.gcd_eq_one_of_gcd_mul_right_eq_one_left
+
+/-- If `gcd a (m * n) = 1`, then `gcd a n = 1`. -/
+theorem gcd_eq_one_of_gcd_mul_right_eq_one_right {a : ℤ} {m n : ℕ} (h : a.gcd (m * n) = 1) :
+    a.gcd n = 1 :=
+  Nat.dvd_one.mp <| h ▸ gcd_dvd_gcd_mul_left_right a n m
+
 theorem gcd_eq_left {i j : ℤ} (H : i ∣ j) : gcd i j = natAbs i :=
   Nat.dvd_antisymm (Nat.gcd_dvd_left _ _) (Nat.dvd_gcd dvd_rfl (natAbs_dvd_natAbs.mpr H))
 #align int.gcd_eq_left Int.gcd_eq_left
