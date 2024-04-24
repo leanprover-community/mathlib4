@@ -29,6 +29,18 @@ following [barnes1967].
 
 -/
 
+-- move this to `Mathlib.Algebra.MvPolynomial.Basic`
+lemma MvPolynomial.coe_aeval_eq_eval {R σ : Type*} [CommRing R] (x : σ → R) :
+  RingHomClass.toRingHom (MvPolynomial.aeval x) = MvPolynomial.eval x := rfl
+
+-- move this to `Mathlib.LinearAlgebra.FiniteDimensional`
+open FiniteDimensional in
+lemma _root_.Submodule.eq_top_of_finrank
+    {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
+    (W : Submodule K V) (h : finrank K W = finrank K V) :
+    W = ⊤ :=
+  eq_of_le_of_finrank_le le_top <| by rw [finrank_top, h]
+
 namespace LieAlgebra
 
 section CommRing
@@ -65,56 +77,61 @@ namespace engel_le_engel
 /-!
 ## Implementation details for the proof of `LieAlgebra.engel_le_engel`
 
+In this section we provide some auxiliary definitions and lemmas
+that are used in the proof of `LieAlgebra.engel_le_engel`,
+which is the following statement:
+
+Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
+Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
+Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
+Then `engel K x ≤ engel K y` for all `y ∈ U`.
+
 We follow the proof strategy of Lemma 2 in [barnes1967].
 -/
 
-variable (x y : L)
-
 variable (R M)
+
+variable (x y : L)
 
 open LieModule LinearMap
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
-noncomputable
-def lieCharpoly₁ : Polynomial R[X] :=
+/-- Let `x` and `y` be elements of a Lie `R`-algebra `L`, and `M` a Lie module over `M`.
+Then the characteristic polynomials of the family of endomorphisms `⁅r • y + x, _⁆` of `M`
+have coefficients that are polynomial in `r : R`.
+In other words, we obtain a polynomial over `R[X]`
+that specializes to the characteristic polynomial of `⁅r • y + x, _⁆` under the map `X ↦ r`.
+This polynomial is captured in `lieCharpoly R M x y`. -/
+private noncomputable
+def lieCharpoly : Polynomial R[X] :=
   letI bL := chooseBasis R L
   letI bM := chooseBasis R M
   (LinearMap.polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
-lemma lieCharpoly₁_monic : (lieCharpoly₁ R M x y).Monic :=
+lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
   (polyCharpoly_monic _ _).map _
 
-lemma lieCharpoly₁_natDegree : (lieCharpoly₁ R M x y).natDegree = finrank R M := by
-    rw [lieCharpoly₁, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree,
-      finrank_eq_card_chooseBasisIndex]
+lemma lieCharpoly_natDegree : (lieCharpoly R M x y).natDegree = finrank R M := by
+  rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
-lemma lieCharpoly₁_map_eval (r : R) :
-    (lieCharpoly₁ R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
-  rw [lieCharpoly₁, map_map]
-  erw [← polyCharpoly_map_eq_charpoly (LieHom.toLinearMap φ) (chooseBasis R L) (r • y + x)]
-  congr 1
-  apply MvPolynomial.ringHom_ext
-  · intro;
-    simp? [algebraMap_apply] says
-      simp only [RingHom.coe_comp, coe_evalRingHom, RingHom.coe_coe,
-        Function.comp_apply, MvPolynomial.aeval_C, algebraMap_apply, Algebra.id.map_eq_id,
-        RingHom.id_apply, eval_C, map_add, map_smul, Finsupp.coe_add, Finsupp.coe_smul,
-        MvPolynomial.eval_C]
-  · intro;
-    simp? [mul_comm r] says
-      simp only [RingHom.coe_comp, coe_evalRingHom, RingHom.coe_coe,
-        Function.comp_apply, MvPolynomial.aeval_X, eval_add, eval_mul, eval_C, eval_X, map_add,
-        map_smul, Finsupp.coe_add, Finsupp.coe_smul, MvPolynomial.eval_X, Pi.add_apply,
-        Pi.smul_apply, smul_eq_mul, mul_comm r]
+lemma lieCharpoly_map_eval (r : R) :
+    (lieCharpoly R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
+  rw [lieCharpoly, map_map]
+  set b := chooseBasis R L
+  have aux : (fun i ↦ (b.repr y) i * r + (b.repr x) i) = b.repr (r • y + x) := by
+    ext i; simp [mul_comm r]
+  simp_rw [← coe_aeval_eq_evalRingHom, ← AlgHom.comp_toRingHom, MvPolynomial.comp_aeval,
+    map_add, map_mul, aeval_C, Algebra.id.map_eq_id, RingHom.id_apply, aeval_X, aux,
+    MvPolynomial.coe_aeval_eq_eval, polyCharpoly_map_eq_charpoly, LieHom.coe_toLinearMap]
 
-lemma lieCharpoly₁_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
-    ((lieCharpoly₁ R M x y).coeff i).natDegree ≤ j := by
+lemma lieCharpoly_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
+    ((lieCharpoly R M x y).coeff i).natDegree ≤ j := by
   classical
-  have := polyCharpoly_coeff_isHomogeneous (toEndomorphism R L M).toLinearMap (chooseBasis R L) _ _ hij
-  rw [← mul_one j, lieCharpoly₁, coeff_map]
-  apply MvPolynomial.aeval_natDegree_le _ this.totalDegree_le _ _
+  rw [← mul_one j, lieCharpoly, coeff_map]
+  apply MvPolynomial.aeval_natDegree_le
+  · apply (polyCharpoly_coeff_isHomogeneous φ (chooseBasis R L) _ _ hij).totalDegree_le
   intro k
   apply Polynomial.natDegree_add_le_of_degree_le
   · apply (Polynomial.natDegree_C_mul_le _ _).trans
@@ -133,34 +150,46 @@ variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 open FiniteDimensional LieSubalgebra Module.Free Polynomial
 
 open Cardinal LieModule LieSubalgebra Polynomial engel_le_engel in
+/-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
+Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
+Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
+Then `engel K x ≤ engel K y` for all `y ∈ U`.
+
+Lemma 2 in [barnes1967]. -/
 lemma engel_le_engel (hLK : finrank K L ≤ #K)
     (U : LieSubalgebra K L) (x : L) (hx : x ∈ U) (hUx : U ≤ engel K x)
     (hmin : ∀ y : L, y ∈ U → engel K y ≤ engel K x → engel K y = engel K x)
     (y : L) (hy : y ∈ U) :
     engel K x ≤ engel K y := by
+  -- We denote by `E` the Engel subalgebra `engel K x`
+  -- viewed as Lie submodule of `L` over the Lie algebra `U`.
   let E : LieSubmodule K U L :=
   { engel K x with
     lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUx hu) hy }
+  -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
   obtain rfl|hx₀ := eq_or_ne x 0
   · simp only [engel_zero] at hmin ⊢
     rw [hmin y hy le_top]
+  -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
   let r := finrank K E
+  -- If `r = finrank K L`, then `E = L`, and the statement is trivial.
   obtain hr|hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
   · rw [hmin y hy]
-    have : engel K x = ⊤ := by
-      apply LieSubalgebra.to_submodule_injective
-      apply eq_of_le_of_finrank_le le_top _
-      dsimp only [r] at hr
-      simp_rw [finrank_top, hr, le_refl]
-    rw [this]
-    exact le_top
-  let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly₁ K E ⟨x, hx⟩ u₁
-  let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly₁ K Q ⟨x, hx⟩ u₁
+    suffices engel K x = ⊤ by simp_rw [this, le_top]
+    apply LieSubalgebra.to_submodule_injective
+    apply Submodule.eq_top_of_finrank _ hr
+  -- So from now on, we assume that `r < finrank K L`.
+  -- We denote by `χ u r` the characteristic polynomial of `⁅r • u + x, _⁆`
+  --   viewed as endomorphism of `E`. Note that `χ u` is polynomial in its argument `r`.
+  -- Similarly: `ψ u r` is the characteristic polynomial of `⁅r • u + x, _⁆`
+  --   viewed as endomorphism of `Q`. Note that `ψ u` is polynomial in its argument `r`.
+  let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K E ⟨x, hx⟩ u₁
+  let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K Q ⟨x, hx⟩ u₁
   suffices ∀ u, χ u = X ^ r by -- sorry
     specialize this (⟨y, hy⟩ - ⟨x, hx⟩)
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    simp only [lieCharpoly₁_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
+    simp only [lieCharpoly_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
       Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
       LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk, χ, r] at this
     intro z hz
@@ -174,11 +203,11 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     ext i : 1
     obtain hi|rfl|hi := lt_trichotomy i r
     · rw [this i hi, coeff_X_pow, if_neg hi.ne]
-    · simp_rw [coeff_X_pow, if_true, r, ← lieCharpoly₁_natDegree K E ⟨x, hx⟩ u]
-      have := (lieCharpoly₁_monic K E ⟨x, hx⟩ u).leadingCoeff
+    · simp_rw [coeff_X_pow, if_true, r, ← lieCharpoly_natDegree K E ⟨x, hx⟩ u]
+      have := (lieCharpoly_monic K E ⟨x, hx⟩ u).leadingCoeff
       rwa [leadingCoeff] at this
     · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
-      rwa [lieCharpoly₁_natDegree K E ⟨x, hx⟩ u]
+      rwa [lieCharpoly_natDegree K E ⟨x, hx⟩ u]
   intro u i hi
   obtain rfl|hi0 := eq_or_ne i 0
   · -- sorry
@@ -187,10 +216,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       apply lt_of_lt_of_le _ hLK
       rw [Nat.cast_lt]
       apply lt_of_le_of_lt _ hr
-      apply lieCharpoly₁_coeff_natDegree _ _ _ _ 0 r (zero_add r)
+      apply lieCharpoly_coeff_natDegree _ _ _ _ 0 r (zero_add r)
     intro α
     -- extract the following idiom, it is also used in the proof of `hψ` below, and more
-    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval,
+    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
       ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
     let z := α • u + ⟨x, hx⟩
     obtain hz₀|hz₀ := eq_or_ne z 0
@@ -207,7 +236,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     intro u H
     obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅(⟨x, hx⟩ : U), z⁆ = 0 := by
       apply_fun (evalRingHom 0) at H
-      rw [constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
+      rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
         ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
       simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add,
         LieModule.toEndomorphism_apply_apply] using H
@@ -226,7 +255,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       refine (Multiset.toFinset_card_le _).trans ?_
       refine (card_roots' _).trans ?_
       rw [constantCoeff_apply]
-      apply lieCharpoly₁_coeff_natDegree
+      apply lieCharpoly_coeff_natDegree
       suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
       apply Submodule.finrank_quotient_add_finrank
     obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
@@ -239,7 +268,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       exact hα.2 hψ
   -- sorry -- the proof below works
   have hcard : natDegree (coeff (χ u) i) < s.card := by
-    apply lt_of_le_of_lt (lieCharpoly₁_coeff_natDegree _ _ _ _ i (r - i) _)
+    apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
     · omega
     · dsimp only [r] at hi ⊢
       -- omega fails???
@@ -248,7 +277,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   intro α hα
   let y := α • u + ⟨x, hx⟩
   suffices engel K (y : L) ≤ engel K x by -- sorry
-    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly₁_map_eval,
+    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
       (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
     specialize hmin y y.2 this
     intro z
@@ -275,7 +304,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
   specialize hsψ α hα
-  rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly₁_map_eval,
+  rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
     ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
   contrapose! hsψ
   use ((LieModule.toEndomorphism K U Q) y ^ k) (LieSubmodule.Quotient.mk' E z)
