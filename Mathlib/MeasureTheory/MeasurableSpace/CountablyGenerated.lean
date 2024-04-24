@@ -166,9 +166,38 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
+class CountablySeparated (α : Type*) [MeasurableSpace α] : Prop where
+  countably_separated : HasCountableSeparatingOn α MeasurableSet univ
+
+instance [MeasurableSpace α] [h : HasCountableSeparatingOn α MeasurableSet univ] :
+    CountablySeparated α := ⟨h⟩
+
+instance [MeasurableSpace α] [h : CountablySeparated α] :
+    HasCountableSeparatingOn α MeasurableSet univ := h.countably_separated
+
+theorem countablySeparated_def [MeasurableSpace α] :
+    CountablySeparated α ↔ HasCountableSeparatingOn α MeasurableSet univ :=
+  ⟨fun h => h.countably_separated, fun h => ⟨h⟩⟩
+
+theorem CountablySeparated.mono {m m' : MeasurableSpace α} [hsep : @CountablySeparated _ m]
+    (h : m ≤ m') : @CountablySeparated _ m' := by
+  simp_rw[countablySeparated_def] at *
+  rcases hsep with ⟨S, Sct, Smeas, hS⟩
+  use S, Sct, (fun s hs => h _ <| Smeas _ hs), hS
+
+theorem CountablySeparated.subtype_iff [MeasurableSpace α] {s : Set α} :
+    CountablySeparated s ↔ HasCountableSeparatingOn α MeasurableSet s := by
+  rw [countablySeparated_def]
+  exact HasCountableSeparatingOn.subtype_iff
+
 instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : SeparatesPoints α]
     {s : Set α} : SeparatesPoints s :=
   ⟨fun _ _ hxy ↦ Subtype.val_injective $ h.1 _ _ fun _ ht ↦ hxy _ $ measurable_subtype_coe ht⟩
+
+instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
+    [h :CountablySeparated α] {s : Set α} : CountablySeparated s := by
+  rw [CountablySeparated.subtype_iff]
+  exact h.countably_separated.mono (fun s => id) $ subset_univ _
 
 instance (priority := 100) separatesPoints_of_measurableSingletonClass [MeasurableSpace α]
     [MeasurableSingletonClass α] : SeparatesPoints α := by
@@ -176,6 +205,14 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   specialize h _ (MeasurableSet.singleton x)
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
+
+/-
+instance [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
+    HasCountableSeparatingOn _ MeasurableSet s := CountablySeparated.subtype_iff.mp h
+
+instance [MeasurableSpace α] {s : Set α} [h : HasCountableSeparatingOn α MeasurableSet s] :
+    CountablySeparated s := inferInstance
+  -/
 
 instance (priority := 100) [MeasurableSpace α] {s : Set α}
     [h : CountablyGenerated s] [SeparatesPoints s] :
@@ -191,10 +228,10 @@ variable (α)
 
 /-- If a measurable space admits a countable separating family of measurable sets,
 there is a countably generated coarser space which still separates points. -/
-theorem exists_countablyGenerated_le_of_hasCountableSeparatingOn [m : MeasurableSpace α]
-    [h : HasCountableSeparatingOn α MeasurableSet univ] :
+theorem exists_countablyGenerated_le_of_countablySeparated [m : MeasurableSpace α]
+    [h : CountablySeparated α] :
     ∃ m' : MeasurableSpace α, @CountablyGenerated _ m' ∧ @SeparatesPoints _ m' ∧ m' ≤ m := by
-  rcases h.1 with ⟨b, bct, hbm, hb⟩
+  rcases h with ⟨b, bct, hbm, hb⟩
   refine ⟨generateFrom b, ?_, ?_, generateFrom_le hbm⟩
   · use b
   rw [@separatesPoints_iff]
@@ -248,20 +285,19 @@ theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
 /-- If a measurable space admits a countable sequence of measurable sets separating points,
 it admits a measurable injection into the Cantor space `ℕ → Bool`
 (equipped with the product sigma algebra). -/
-theorem measurable_injection_nat_bool_of_hasCountableSeparatingOn [MeasurableSpace α]
-    [HasCountableSeparatingOn α MeasurableSet univ] :
-    ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f := by
-  rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+theorem measurable_injection_nat_bool_of_countablySeparated [MeasurableSpace α]
+    [CountablySeparated α] : ∃ f : α → ℕ → Bool, Measurable f ∧ Injective f := by
+  rcases exists_countablyGenerated_le_of_countablySeparated α with ⟨m', _, _, m'le⟩
   refine ⟨mapNatBool α, ?_, injective_mapNatBool _⟩
   exact (measurable_mapNatBool _).mono m'le le_rfl
 
 variable {α}
 
 --TODO: Make this an instance
-theorem measurableSingletonClass_of_hasCountableSeparatingOn
-    [MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+theorem measurableSingletonClass_of_countablySeparated
+    [MeasurableSpace α] [CountablySeparated α] :
     MeasurableSingletonClass α := by
-  rcases measurable_injection_nat_bool_of_hasCountableSeparatingOn α with ⟨f, fmeas, finj⟩
+  rcases measurable_injection_nat_bool_of_countablySeparated α with ⟨f, fmeas, finj⟩
   refine ⟨fun x ↦ ?_⟩
   rw [← finj.preimage_image {x}, image_singleton]
   exact fmeas $ MeasurableSet.singleton _
