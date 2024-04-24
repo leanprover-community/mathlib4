@@ -150,7 +150,6 @@ theorem not_nodup_of_get_eq_of_ne (xs : List α) (n m : Fin xs.length)
     (h : xs.get n = xs.get m) (hne : n ≠ m) : ¬Nodup xs := by
   rw [nodup_iff_injective_get]
   exact fun hinj => hne (hinj h)
-
 #align list.nth_le_eq_of_ne_imp_not_nodup List.not_nodup_of_get_eq_of_ne
 
 -- Porting note (#10756): new theorem

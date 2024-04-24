@@ -36,10 +36,7 @@ def headI [Inhabited α] : List α → α
 
 #align list.map_with_index List.mapIdx
 
-/-- Find index of element with given property. -/
-@[deprecated findIdx]
-def findIndex (p : α → Prop) [DecidablePred p] : List α → ℕ := List.findIdx p
-#align list.find_index List.findIndex
+#align list.find_index List.findIdx
 
 #align list.update_nth List.set
 
