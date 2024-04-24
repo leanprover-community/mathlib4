@@ -345,7 +345,7 @@ theorem toQuadraticForm' [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) :
 /-- The eigenvalues of a positive definite matrix are positive -/
 lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : Matrix.PosDef A) (i : n) : 0 < hA.1.eigenvalues i := by
-  rw [hA.1.eigenvalues_eq, hA.1.eigenvectorUnitary_apply]
+  simp only [hA.1.eigenvalues_eq]
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
@@ -354,12 +354,11 @@ theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M
   intro i _
   rw [hM.isHermitian.eigenvalues_eq]
   refine hM.2 _ fun h => ?_
-  have h_det : (hM.isHermitian.eigenvectorUnitary.1)ᵀ.det = 0 :=
-    Matrix.det_eq_zero_of_row_eq_zero i fun j => congr_fun h j
-  simpa only [h_det, not_isUnit_zero] using
-    isUnit_det_of_invertible (hM.isHermitian.eigenvectorUnitary)ᵀ
+  have h_det : hM.isHermitian.eigenvectorUnitary.1.det = 0 :=
+    Matrix.det_eq_zero_of_column_eq_zero i fun j => congr_fun h j
+  simpa only [h_det, not_isUnit_zero]
+     using isUnit_det_of_right_inverse ((hM.isHermitian.eigenvectorUnitary.2).2)
 #align matrix.pos_def.det_pos Matrix.PosDef.det_pos
---Matrix.isUnit_iff_isUnit_det
 end PosDef
 
 end Matrix
