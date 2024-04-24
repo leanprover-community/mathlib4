@@ -88,43 +88,31 @@ variable [TopologicalSpace Z] [TopologicalSpace W]
 instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
-/-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters`𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
+/-- A group `G` acts properly on a topological space `X` if and only if for all ultrafilters
+`𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
 then there exists `g : G` such that `g • x₂ = x₁` and `𝒰.fst` converges to `g`. -/
 @[to_additive "A group acts `G` properly on a topological space `X` if and only if
 for all ultrafilters `𝒰` on `X`, if `𝒰` converges to `(x₁, x₂)`
 along the map `(g, x) ↦ (g • x, x)`, then there exists `g : G` such that `g • x₂ = x₁`
 and `𝒰.fst` converges to `g`."]
-theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ ContinuousSMul G X
-    ∧ (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
+theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ ContinuousSMul G X ∧
+    (∀ 𝒰 : Ultrafilter (G × X), ∀ x₁ x₂ : X,
     Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
     ∃ g : G, g • x₂ = x₁ ∧ Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
   constructor
-  · intro h
-    refine ⟨by infer_instance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
+  · refine' fun h ↦ ⟨by infer_instance, fun 𝒰 x₁ x₂ h' ↦ _⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
     have ⟨(g, x), hgx1, hgx2⟩ := h.2 h'
-    use g
-    constructor
-    · simp at hgx1
-      rw [← hgx1.2, hgx1.1]
-    · have := continuous_fst.tendsto (g, x)
-      rw [Tendsto] at *
-      calc
-        map Prod.fst ↑𝒰 ≤ map Prod.fst (𝓝 (g, x)) := map_mono hgx2
-        _               ≤ 𝓝 (g, x).1 := this
+    refine' ⟨g, _, le_trans (map_mono hgx2) (continuous_fst.tendsto (g, x))⟩
+    simp at hgx1
+    rw [← hgx1.2, hgx1.1]
   · rintro ⟨cont, h⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter]
-    refine ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ ?_⟩
+    refine' ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ _⟩
     rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg1, hg2⟩
-    use (g, x₂)
-    refine ⟨by rw [hg1], ?_⟩
+    refine' ⟨(g, x₂), by rw [hg1], _⟩
     rw [nhds_prod_eq, 𝒰.le_prod]
-    refine ⟨hg2, ?_⟩
-    change Tendsto (Prod.snd ∘ (fun gx : G × X ↦ (gx.1 • gx.2, gx.2))) ↑𝒰 (𝓝 (Prod.snd (x₁, x₂)))
-    apply Filter.Tendsto.comp
-    apply Continuous.tendsto
-    exact continuous_snd
-    assumption
+    exact ⟨hg2, (continuous_snd.tendsto _).comp hxx⟩
 
 /-- A group `G` acts properly on a T2 topological space `X` if and only if for all ultrafilters
 `𝒰` on `X × G`, if `𝒰` converges to `(x₁, x₂)` along the map `(g, x) ↦ (g • x, x)`,
@@ -136,22 +124,17 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto_t2 [T2Space X] : Prope
     ∃ g : G, Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
   constructor
   · intro h
-    have := properSMul_iff_continuousSMul_ultrafilter_tendsto.1 h
-    refine ⟨this.1, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
-    rcases this.2 𝒰 x₁ x₂ h' with ⟨g, _, hg⟩
+    have ⟨cont, h'⟩ := properSMul_iff_continuousSMul_ultrafilter_tendsto.1 h
+    refine' ⟨cont, fun 𝒰 x₁ x₂ h'' ↦ _⟩
+    rcases h' 𝒰 x₁ x₂ h'' with ⟨g, _, hg⟩
     exact ⟨g, hg⟩
   · rintro ⟨cont, h⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter_of_t2]
-    refine ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ ?_⟩
+    refine' ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ _⟩
     rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg⟩
-    use (g, x₂)
+    refine' ⟨(g, x₂), _⟩
     rw [nhds_prod_eq, 𝒰.le_prod]
-    refine ⟨by assumption, ?_⟩
-    change Tendsto (Prod.snd ∘ (fun gx : G × X ↦ (gx.1 • gx.2, gx.2))) ↑𝒰 (𝓝 (Prod.snd (x₁, x₂)))
-    apply Filter.Tendsto.comp
-    apply Continuous.tendsto
-    exact continuous_snd
-    assumption
+    exact ⟨hg, (continuous_snd.tendsto _).comp hxx⟩
 
 /-- If `G` acts properly on `X`, then the quotient space is Hausdorff (T2). -/
 @[to_additive "If `G` acts properly on `X`, then the quotient space is Hausdorff (T2)."]
@@ -262,8 +245,7 @@ of proper action is equivalent to the good definition
 -/
 theorem naiveProper_iff_ProperSMul_T2_FirstCountable
     [T2Space X] [FirstCountableTopology X] :
-    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X
-    := by sorry
+    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by sorry
 
 lemma tendsTo_comp_continuous
     {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
