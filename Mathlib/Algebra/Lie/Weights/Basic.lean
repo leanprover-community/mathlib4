@@ -249,12 +249,21 @@ lemma isNonZero_iff_ne_zero [Nontrivial (weightSpace M (0 : L → R))] {χ : Wei
     χ.IsNonZero ↔ χ ≠ 0 := isZero_iff_eq_zero.not
 
 variable (R L M) in
-/-- The set of weights is equivalent to a subtype. -/
+/-- The set of weights is equivalent to a subset. -/
 def equivSetOf : Weight R L M ≃ {χ : L → R | weightSpace M χ ≠ ⊥} where
-  toFun w := ⟨w.1, w.2⟩
-  invFun w := ⟨w.1, w.2⟩
-  left_inv w := by simp
-  right_inv w := by simp
+  toFun w := ⟨w, w.2⟩
+  invFun w := ⟨w, w.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+variable (R L M) in
+/-- The set of weights is equivalent to a subtype. -/
+@[simps apply symm_apply]
+def equivSubtype : Weight R L M ≃ { f : L → R //  weightSpace M f ≠ ⊥ } where
+  toFun w := ⟨w, w.2⟩
+  invFun w := ⟨w, w.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 lemma weightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     weightSpaceOf M (χ x) x ≠ ⊥ := by
@@ -792,8 +801,8 @@ lemma iSup_weightSpace_eq_top [IsTriangularizable K L M] :
 lemma iSup_weightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, weightSpace M χ = ⊤ := by
   have := iSup_weightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
-  exact this
+  rw [← iSup_ne_bot_subtype, ← (Weight.equivSubtype K L M).iSup_comp] at this
+  simpa only [Weight.equivSubtype_apply]
 
 end field
 
