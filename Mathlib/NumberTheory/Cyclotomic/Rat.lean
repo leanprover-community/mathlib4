@@ -32,30 +32,6 @@ open scoped Cyclotomic NumberField Nat
 
 variable {p : ℕ+} {k : ℕ} {K : Type u} [Field K] [CharZero K] {ζ : K} [hp : Fact (p : ℕ).Prime]
 
--- These are to speed up instance searches
-@[local instance] private def instAlg : Algebra ℤ (adjoin ℤ ({ζ} : Set K)) :=
-  Subalgebra.algebra (adjoin ℤ {ζ})
-@[local instance] private def instAlg' : Algebra (adjoin ℤ ({ζ} : Set K)) K :=
-  Subalgebra.toAlgebra (adjoin ℤ {ζ})
-@[local instance] private def instFinite : Finite ({p ^ k} : Set ℕ+) := Finite.of_fintype _
-@[local instance] private def instNontrivial_K : Nontrivial K := ⟨0, 1, zero_ne_one⟩
-@[local instance] private noncomputable def instModule_cyc :
-    Module (CyclotomicRing (p ^ k) ℤ ℚ) (CyclotomicField (p ^ k) ℚ) := toModule
-@[local instance] private def instAlg'' : Algebra ℤ (𝓞 K) := Subalgebra.algebra (𝓞 K)
-@[local instance] private def instAlg''' : Algebra (𝓞 K) K := Subalgebra.toAlgebra _
-@[local instance] private lemma instPID_Int : IsPrincipalIdealRing ℤ :=
-  EuclideanDomain.to_principal_ideal_domain
-@[local instance] private lemma instIntegrallyClosed_Int : IsIntegrallyClosed ℤ :=
-  UniqueFactorizationMonoid.instIsIntegrallyClosed
-@[local instance] private def instAddCommGroup [NumberField K] : AddCommGroup ↥(𝓞 K) :=
-  Ring.toAddCommGroup
-@[local instance] private def instModFin [NumberField K] : Module.Finite ℤ ↥(𝓞 K) :=
-  Module.IsNoetherian.finite ℤ ↥(𝓞 K)
-@[local instance] private def instAMHC : AddMonoidHomClass (↥(𝓞 K) →+* K) (↥(𝓞 K)) K :=
-  RingHomClass.toAddMonoidHomClass
-@[local instance] private def instMHC : MonoidHomClass (↥(𝓞 K) →+* K) (↥(𝓞 K)) K :=
-  RingHomClass.toMonoidHomClass
-
 namespace IsCyclotomicExtension.Rat
 
 /-- The discriminant of the power basis given by `ζ - 1`. -/
@@ -180,9 +156,6 @@ section PowerBasis
 open IsCyclotomicExtension.Rat
 
 namespace IsPrimitiveRoot
-
-instance : Algebra ℤ (𝓞 K) := Subalgebra.algebra (𝓞 K)
-instance : Algebra (𝓞 K) K := Subalgebra.toAlgebra _
 
 /-- The algebra isomorphism `adjoin ℤ {ζ} ≃ₐ[ℤ] (𝓞 K)`, where `ζ` is a primitive `p ^ k`-th root of
 unity and `K` is a `p ^ k`-th cyclotomic extension of `ℚ`. -/
