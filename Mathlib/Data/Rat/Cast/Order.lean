@@ -3,9 +3,9 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Rat.Cast.CharZero
 import Mathlib.Data.Rat.Order
+import Mathlib.Tactic.Positivity.Core
 
 #align_import data.rat.cast from "leanprover-community/mathlib"@"acebd8d49928f6ed8920e502a6c90674e75bd441"
 
@@ -30,7 +30,7 @@ variable {K : Type*} [LinearOrderedField K]
 
 theorem cast_pos_of_pos {r : ℚ} (hr : 0 < r) : (0 : K) < r := by
   rw [Rat.cast_def]
-  exact div_pos (Int.cast_pos.2 <| num_pos_iff_pos.2 hr) (Nat.cast_pos.2 r.pos)
+  exact div_pos (Int.cast_pos.2 <| num_pos.2 hr) (Nat.cast_pos.2 r.pos)
 #align rat.cast_pos_of_pos Rat.cast_pos_of_pos
 
 @[mono]

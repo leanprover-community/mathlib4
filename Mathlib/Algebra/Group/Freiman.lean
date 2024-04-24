@@ -166,7 +166,7 @@ instance freimanHomClass : FreimanHomClass (A →*[n] β) A β n where
 #align freiman_hom.freiman_hom_class FreimanHom.freimanHomClass
 #align add_freiman_hom.freiman_hom_class AddFreimanHom.addFreimanHomClass
 
--- porting note: not helpful in lean4
+-- Porting note: not helpful in lean4
 -- /-- Helper instance for when there's too many metavariables to apply `DFunLike.hasCoeToFun`
 -- directly. -/
 -- @[to_additive
@@ -505,7 +505,7 @@ theorem map_prod_eq_map_prod_of_le [FreimanHomClass F A β n] (f : F) {s t : Mul
     exact mul_right_cancel this
   replace ha := hsA _ ha
   apply map_prod_eq_map_prod f (A := A) (β := β) (n := n) (fun x hx => _) (fun x hx => _) _ _ _
-  -- porting note: below could be golfed when wlog is available
+  -- Porting note: below could be golfed when wlog is available
   · intro x hx
     rw [mem_add] at hx
     cases' hx with hx hx

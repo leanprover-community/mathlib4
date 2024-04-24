@@ -3,7 +3,7 @@ Copyright (c) 2020 Hanting Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hanting Zhang
 -/
-import Mathlib.Data.Polynomial.Splits
+import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.MvPolynomial.Symmetric
 
 #align_import ring_theory.polynomial.vieta from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
@@ -37,7 +37,7 @@ variable {R : Type*} [CommSemiring R]
 
 /-- A sum version of **Vieta's formula** for `Multiset`: the product of the linear terms `X + λ`
 where `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
-`esymm s` of the `λ`'s .-/
+`esymm s` of the `λ`'s . -/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
       ∑ j in Finset.range (Multiset.card s + 1), (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
@@ -174,7 +174,7 @@ theorem MvPolynomial.prod_C_add_X_eq_sum_esymm :
     rw [Multiset.card_map, ← Finset.card_univ, Finset.card_def]
   simp_rw [this, MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_eq_sum_esymm s
-  simp_rw [Multiset.map_map, Function.comp_apply]
+  simp_rw [s, Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_C_add_X_eq_sum_esymm MvPolynomial.prod_C_add_X_eq_sum_esymm
 
@@ -188,7 +188,7 @@ theorem MvPolynomial.prod_X_add_C_coeff (k : ℕ) (h : k ≤ card σ) :
   rw [MvPolynomial.esymm_eq_multiset_esymm σ R, Finset.prod_eq_multiset_prod]
   convert Multiset.prod_X_add_C_coeff s h
   dsimp
-  simp_rw [Multiset.map_map, Function.comp_apply]
+  simp_rw [s, Multiset.map_map, Function.comp_apply]
 set_option linter.uppercaseLean3 false in
 #align mv_polynomial.prod_X_add_C_coeff MvPolynomial.prod_X_add_C_coeff
 

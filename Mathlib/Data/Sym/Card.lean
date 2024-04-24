@@ -93,7 +93,7 @@ protected def e2 {n k : ℕ} : { s : Sym (Fin n.succ.succ) k // ↑0 ∉ s } ≃
 set_option linter.uppercaseLean3 false in
 #align sym.E2 Sym.e2
 
--- porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
+-- Porting note: use eqn compiler instead of `pincerRecursion` to make cases more readable
 theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = multichoose n k
   | n, 0 => by simp
   | 0, k + 1 => by rw [multichoose_zero_succ]; exact card_eq_zero
@@ -104,7 +104,6 @@ theorem card_sym_fin_eq_multichoose : ∀ n k : ℕ, card (Sym (Fin n) k) = mult
     refine Fintype.card_congr (Equiv.symm ?_)
     apply (Sym.e1.symm.sumCongr Sym.e2.symm).trans
     apply Equiv.sumCompl
-  termination_by n k => n + k
 #align sym.card_sym_fin_eq_multichoose Sym.card_sym_fin_eq_multichoose
 
 /-- For any fintype `α` of cardinality `n`, `card (Sym α k) = multichoose (card α) k`. -/

@@ -16,6 +16,8 @@ We show several results related to the (path)-connectedness of subsets of real v
 * `isPathConnected_compl_singleton_of_one_lt_rank` is the special case of the complement of a
   singleton.
 * `isPathConnected_sphere` shows that any sphere is path-connected in dimension `> 1`.
+* `isPathConnected_compl_of_one_lt_codim` shows that the complement of a subspace
+  of codimension `> 1` is path-connected.
 
 Statements with connectedness instead of path-connectedness are also given.
 -/
@@ -25,7 +27,7 @@ open Convex Set Metric
 section TopologicalVectorSpace
 
 variable {E : Type*} [AddCommGroup E] [Module ℝ E]
-[TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
+  [TopologicalSpace E] [ContinuousAdd E] [ContinuousSMul ℝ E]
 
 /-- In a real vector space of dimension `> 1`, the complement of any countable set is path
 connected. -/
@@ -50,14 +52,14 @@ theorem Set.Countable.isPathConnected_compl_of_one_lt_rank
   let c := (2 : ℝ)⁻¹ • (a + b)
   let x := (2 : ℝ)⁻¹ • (b - a)
   have Ia : c - x = a := by
-    simp only [smul_add, smul_sub]
+    simp only [c, x, smul_add, smul_sub]
     abel_nf
     simp [zsmul_eq_smul_cast ℝ 2]
   have Ib : c + x = b := by
-    simp only [smul_add, smul_sub]
+    simp only [c, x, smul_add, smul_sub]
     abel_nf
     simp [zsmul_eq_smul_cast ℝ 2]
-  have x_ne_zero : x ≠ 0 := by simpa using sub_ne_zero.2 hab.symm
+  have x_ne_zero : x ≠ 0 := by simpa [x] using sub_ne_zero.2 hab.symm
   obtain ⟨y, hy⟩ : ∃ y, LinearIndependent ℝ ![x, y] :=
     exists_linearIndependent_pair_of_one_lt_rank h x_ne_zero
   have A : Set.Countable {t : ℝ | ([c + x -[ℝ] c + t • y] ∩ s).Nonempty} := by
@@ -106,14 +108,12 @@ theorem Set.Countable.isConnected_compl_of_one_lt_rank (h : 1 < Module.rank ℝ 
     (hs : s.Countable) : IsConnected sᶜ :=
   (hs.isPathConnected_compl_of_one_lt_rank h).isConnected
 
-/-- In a real vector space of dimension `> 1`, the complement of a singleton is path
-connected. -/
+/-- In a real vector space of dimension `> 1`, the complement of any singleton is path-connected. -/
 theorem isPathConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsPathConnected {x}ᶜ :=
   Set.Countable.isPathConnected_compl_of_one_lt_rank h (countable_singleton x)
 
-/-- In a real vector space of dimension `> 1`, the complement of a singleton is
-connected. -/
+/-- In a real vector space of dimension `> 1`, the complement of a singleton is connected. -/
 theorem isConnected_compl_singleton_of_one_lt_rank (h : 1 < Module.rank ℝ E) (x : E) :
     IsConnected {x}ᶜ :=
   (isPathConnected_compl_singleton_of_one_lt_rank h x).isConnected
@@ -145,14 +145,14 @@ theorem isPathConnected_sphere (h : 1 < Module.rank ℝ E) (x : E) {r : ℝ} (hr
     apply Subset.antisymm
     · rintro - ⟨y, hy, rfl⟩
       have : ‖y‖ ≠ 0 := by simpa using hy
-      simp [norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel this]
+      simp [f, norm_smul, abs_of_nonneg hr, mul_assoc, inv_mul_cancel this]
     · intro y hy
       refine ⟨y - x, ?_, ?_⟩
       · intro H
         simp only [mem_singleton_iff, sub_eq_zero] at H
         simp only [H, mem_sphere_iff_norm, sub_self, norm_zero] at hy
         exact rpos.ne hy
-      · simp [mem_sphere_iff_norm.1 hy, mul_inv_cancel rpos.ne']
+      · simp [f, mem_sphere_iff_norm.1 hy, mul_inv_cancel rpos.ne']
   rwa [this] at C
 
 /-- In a real vector space of dimension `> 1`, any sphere of nonnegative radius is connected. -/
@@ -168,3 +168,30 @@ theorem isPreconnected_sphere (h : 1 < Module.rank ℝ E) (x : E) (r : ℝ) :
   · simpa [hr] using isPreconnected_empty
 
 end NormedSpace
+
+section
+
+variable {F : Type*} [AddCommGroup F] [Module ℝ F] [TopologicalSpace F]
+  [TopologicalAddGroup F] [ContinuousSMul ℝ F]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is path-connected. -/
+theorem isPathConnected_compl_of_one_lt_codim {E : Submodule ℝ F}
+    (hcodim : 1 < Module.rank ℝ (F ⧸ E)) : IsPathConnected (Eᶜ : Set F) := by
+  rcases E.exists_isCompl with ⟨E', hE'⟩
+  refine isPathConnected_compl_of_isPathConnected_compl_zero hE'.symm
+    (isPathConnected_compl_singleton_of_one_lt_rank ?_ 0)
+  rwa [← (E.quotientEquivOfIsCompl E' hE').rank_eq]
+
+/-- Let `E` be a linear subspace in a real vector space.
+If `E` has codimension at least two, its complement is connected. -/
+theorem isConnected_compl_of_one_lt_codim {E : Submodule ℝ F} (hcodim : 1 < Module.rank ℝ (F ⧸ E)) :
+    IsConnected (Eᶜ : Set F) :=
+  (isPathConnected_compl_of_one_lt_codim hcodim).isConnected
+
+theorem Submodule.connectedComponentIn_eq_self_of_one_lt_codim (E : Submodule ℝ F)
+    (hcodim : 1 < Module.rank ℝ (F ⧸ E)) {x : F} (hx : x ∉ E) :
+    connectedComponentIn ((E : Set F)ᶜ) x = (E : Set F)ᶜ :=
+  (isConnected_compl_of_one_lt_codim hcodim).2.connectedComponentIn hx
+
+end

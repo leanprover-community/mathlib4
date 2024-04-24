@@ -97,7 +97,7 @@ theorem sym2_eq_empty : s.sym2 = ∅ ↔ s = ∅ := by
   rw [← val_eq_zero, sym2_val, Multiset.sym2_eq_zero_iff, val_eq_zero]
 #align finset.sym2_eq_empty Finset.sym2_eq_empty
 
-@[simp]
+@[simp, aesop safe apply (rule_sets := [finsetNonempty])]
 theorem sym2_nonempty : s.sym2.Nonempty ↔ s.Nonempty := by
   rw [← not_iff_not]
   simp_rw [not_nonempty_iff_eq_empty, sym2_eq_empty]
@@ -168,7 +168,8 @@ section Sym
 variable {n : ℕ}
 
 -- Porting note: instance needed
-instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance : DecidableEq (Sym α n) :=
+  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/

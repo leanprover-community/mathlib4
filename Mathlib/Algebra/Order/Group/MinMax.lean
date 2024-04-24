@@ -26,6 +26,11 @@ theorem max_one_div_max_inv_one_eq_self (a : α) : max a 1 / max a⁻¹ 1 = a :=
 alias max_zero_sub_eq_self := max_zero_sub_max_neg_zero_eq_self
 #align max_zero_sub_eq_self max_zero_sub_eq_self
 
+@[to_additive]
+lemma max_inv_one (a : α) : max a⁻¹ 1 = a⁻¹ * max a 1 := by
+  have := congr($(max_one_div_max_inv_one_eq_self a)⁻¹)
+  rwa [inv_div, div_eq_iff_eq_mul] at this
+
 end
 
 section LinearOrderedCommGroup

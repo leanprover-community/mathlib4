@@ -44,13 +44,9 @@ See also `Algebra.trace`, which is defined similarly as the trace of
 universe u v w
 
 variable {R S T : Type*} [CommRing R] [Ring S]
-
 variable [Algebra R S]
-
 variable {K L F : Type*} [Field K] [Field L] [Field F]
-
 variable [Algebra K L] [Algebra K F]
-
 variable {ι : Type w}
 
 open FiniteDimensional

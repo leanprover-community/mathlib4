@@ -148,7 +148,7 @@ lemma isEverywherePos_everywherePosSubset
 of a measurable set of finite measure is itself everywhere positive. This is not obvious as
 `μ.everywherePosSubset s` is defined as the points whose neighborhoods intersect `s` along positive
 measure subsets, but this does not say they also intersect `μ.everywherePosSubset s` along positive
-measure subsets.-/
+measure subsets. -/
 lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.IsEverywherePos (μ.everywherePosSubset s) := by
@@ -232,7 +232,7 @@ lemma IsEverywherePos.IsGdelta_of_isMulLeftInvariant
   suffices ⋂ n, V n * k ⊆ k by
     replace : k = ⋂ n, V n * k := by
       apply Subset.antisymm (subset_iInter_iff.2 (fun n ↦ ?_)) this
-      exact subset_mul_right k (by simp [mem_W])
+      exact subset_mul_right k (by simp [V, mem_W])
     rw [this]
     refine .iInter_of_isOpen fun n ↦ ?_
     exact .mul_right (isOpen_biInter_finset (fun i _hi ↦ W_open i))

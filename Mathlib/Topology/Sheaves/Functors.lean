@@ -37,9 +37,7 @@ open CategoryTheory.Limits
 open TopologicalSpace
 
 variable {C : Type u} [Category.{v} C]
-
 variable {X Y : TopCat.{w}} (f : X ⟶ Y)
-
 variable ⦃ι : Type w⦄ {U : ι → Opens Y}
 
 namespace TopCat
@@ -84,7 +82,7 @@ variable {C}
 variable (A : Type*) [Category.{w} A] [ConcreteCategory.{w} A] [HasColimits A] [HasLimits A]
 variable [PreservesLimits (CategoryTheory.forget A)]
 variable [PreservesFilteredColimits (CategoryTheory.forget A)]
-variable [ReflectsIsomorphisms (CategoryTheory.forget A)]
+variable [(CategoryTheory.forget A).ReflectsIsomorphisms]
 
 /--
 The pullback functor.

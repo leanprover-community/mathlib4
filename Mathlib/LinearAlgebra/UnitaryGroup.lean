@@ -145,10 +145,10 @@ theorem toLin'_one : toLin' (1 : unitaryGroup n α) = LinearMap.id :=
 
 end CoeLemmas
 
--- porting note: todo: redefine `toGL`/`embeddingGL` as in this example:
+-- Porting note (#11215): TODO: redefine `toGL`/`embeddingGL` as in this example:
 example : unitaryGroup n α →* GeneralLinearGroup α (n → α) :=
   .toHomUnits ⟨⟨toLin', toLin'_one⟩, toLin'_mul⟩
--- porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
+-- Porting note: then we can get `toLinearEquiv` from `GeneralLinearGroup.toLinearEquiv`
 
 /-- `Matrix.unitaryGroup.toLinearEquiv A` is matrix multiplication of vectors by `A`, as a linear
 equivalence. -/
@@ -198,11 +198,27 @@ set_option linter.uppercaseLean3 false in
 
 end UnitaryGroup
 
+section specialUnitaryGroup
+
+variable (n) (α)
+
+/--`Matrix.specialUnitaryGroup` is the group of unitary `n` by `n` matrices where the determinant
+is 1. (This definition is only correct if 2 is invertible.)-/
+abbrev specialUnitaryGroup := unitaryGroup n α ⊓ MonoidHom.mker detMonoidHom
+
+variable {n} {α}
+
+theorem mem_specialUnitaryGroup_iff :
+    A ∈ specialUnitaryGroup n α ↔ A ∈ unitaryGroup n α ∧ A.det = 1 :=
+  Iff.rfl
+
+end specialUnitaryGroup
+
 section OrthogonalGroup
 
 variable (n) (β : Type v) [CommRing β]
 
--- Porting note: todo: will lemmas about `Matrix.orthogonalGroup` work without making
+-- Porting note (#11215): TODO: will lemmas about `Matrix.orthogonalGroup` work without making
 -- `starRingOfComm` a local instance? E.g., can we talk about unitary group and orthogonal group
 -- at the same time?
 attribute [local instance] starRingOfComm
@@ -225,5 +241,23 @@ theorem mem_orthogonalGroup_iff' {A : Matrix n n β} :
 #align matrix.mem_orthogonal_group_iff' Matrix.mem_orthogonalGroup_iff'
 
 end OrthogonalGroup
+
+section specialOrthogonalGroup
+
+variable (n) (β : Type v) [CommRing β]
+
+attribute [local instance] starRingOfComm
+
+/-- `Matrix.specialOrthogonalGroup n` is the group of orthogonal `n` by `n` where the determinant
+is one. (This definition is only correct if 2 is invertible.)-/
+abbrev specialOrthogonalGroup := specialUnitaryGroup n β
+
+variable {n} {β} {A : Matrix n n β}
+
+theorem mem_specialOrthogonalGroup_iff :
+    A ∈ specialOrthogonalGroup n β ↔ A ∈ orthogonalGroup n β ∧ A.det = 1 :=
+  Iff.rfl
+
+end specialOrthogonalGroup
 
 end Matrix

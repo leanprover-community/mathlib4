@@ -203,10 +203,11 @@ theorem induction₂ {P : EReal → EReal → Prop} (top_top : P ⊤ ⊤) (top_p
 /-- Induct on two `EReal`s by performing case splits on the sign of one whenever the other is
 infinite. This version eliminates some cases by assuming that the relation is symmetric. -/
 @[elab_as_elim]
-theorem induction₂_symm {P : EReal → EReal → Prop} (symm : Symmetric P) (top_top : P ⊤ ⊤)
-    (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x)
-    (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥) (coe_coe : ∀ x y : ℝ, P x y)
-    (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥) (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
+theorem induction₂_symm {P : EReal → EReal → Prop} (symm : ∀ {x y}, P x y → P y x)
+    (top_top : P ⊤ ⊤) (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0)
+    (top_neg : ∀ x : ℝ, x < 0 → P ⊤ x) (top_bot : P ⊤ ⊥) (pos_bot : ∀ x : ℝ, 0 < x → P x ⊥)
+    (coe_coe : ∀ x y : ℝ, P x y) (zero_bot : P 0 ⊥) (neg_bot : ∀ x : ℝ, x < 0 → P x ⊥)
+    (bot_bot : P ⊥ ⊥) : ∀ x y, P x y :=
   @induction₂ P top_top top_pos top_zero top_neg top_bot (fun _ h => symm <| top_pos _ h)
     pos_bot (symm top_zero) coe_coe zero_bot (fun _ h => symm <| top_neg _ h) neg_bot (symm top_bot)
     (fun _ h => symm <| pos_bot _ h) (symm zero_bot) (fun _ h => symm <| neg_bot _ h) bot_bot
@@ -449,10 +450,10 @@ theorem eq_bot_iff_forall_lt (x : EReal) : x = ⊥ ↔ ∀ y : ℝ, x < (y : ERe
 
 lemma exists_between_coe_real {x z : EReal} (h : x < z) : ∃ y : ℝ, x < y ∧ y < z := by
   obtain ⟨a, ha₁, ha₂⟩ := exists_between h
-  induction' a using EReal.rec with a₀
-  · exact (not_lt_bot ha₁).elim
-  · exact ⟨a₀, by exact_mod_cast ha₁, by exact_mod_cast ha₂⟩
-  · exact (not_top_lt ha₂).elim
+  induction a using EReal.rec with
+  | h_bot => exact (not_lt_bot ha₁).elim
+  | h_real a₀ => exact ⟨a₀, ha₁, ha₂⟩
+  | h_top => exact (not_top_lt ha₂).elim
 
 @[simp]
 lemma image_coe_Icc (x y : ℝ) : Real.toEReal '' Icc x y = Icc ↑x ↑y := by
@@ -822,7 +823,7 @@ theorem addLECancellable_coe (x : ℝ) : AddLECancellable (x : EReal)
   | (y : ℝ), (z : ℝ), h => by
     simpa only [← coe_add, EReal.coe_le_coe_iff, add_le_add_iff_left] using h
 
--- porting note: todo: add `MulLECancellable.strictMono*` etc
+-- Porting note (#11215): TODO: add `MulLECancellable.strictMono*` etc
 theorem add_lt_add_right_coe {x y : EReal} (h : x < y) (z : ℝ) : x + z < y + z :=
   not_le.1 <| mt (addLECancellable_coe z).add_le_add_iff_right.1 h.not_le
 #align ereal.add_lt_add_right_coe EReal.add_lt_add_right_coe
@@ -883,6 +884,7 @@ instance : Neg EReal := ⟨EReal.neg⟩
 
 instance : SubNegZeroMonoid EReal where
   neg_zero := congr_arg Real.toEReal neg_zero
+  zsmul := zsmulRec
 
 @[simp]
 theorem neg_top : -(⊤ : EReal) = ⊥ :=
@@ -943,7 +945,7 @@ theorem neg_strictAnti : StrictAnti (- · : EReal → EReal) :=
 @[simp] theorem neg_le_neg_iff {a b : EReal} : -a ≤ -b ↔ b ≤ a := neg_strictAnti.le_iff_le
 #align ereal.neg_le_neg_iff EReal.neg_le_neg_iff
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem neg_lt_neg_iff {a b : EReal} : -a < -b ↔ b < a := neg_strictAnti.lt_iff_lt
 
 /-- `-a ≤ b ↔ -b ≤ a` on `EReal`. -/
@@ -1159,7 +1161,8 @@ infinite. This version eliminates some cases by assuming that `P` is symmetric a
 `P (-x) y` for all `x`, `y`. -/
 @[elab_as_elim]
 theorem induction₂_symm_neg {P : EReal → EReal → Prop}
-    (symm : Symmetric P) (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
+    (symm : ∀ {x y}, P x y → P y x)
+    (neg_left : ∀ {x y}, P x y → P (-x) y) (top_top : P ⊤ ⊤)
     (top_pos : ∀ x : ℝ, 0 < x → P ⊤ x) (top_zero : P ⊤ 0) (coe_coe : ∀ x y : ℝ, P x y) :
     ∀ x y, P x y :=
   have neg_right : ∀ {x y}, P x y → P x (-y) := fun h => symm <| neg_left <| symm h
@@ -1191,7 +1194,7 @@ instance : HasDistribNeg EReal where
 
 /-! ### Absolute value -/
 
--- porting note: todo: use `Real.nnabs` for the case `(x : ℝ)`
+-- Porting note (#11215): TODO: use `Real.nnabs` for the case `(x : ℝ)`
 /-- The absolute value from `EReal` to `ℝ≥0∞`, mapping `⊥` and `⊤` to `⊤` and
 a real `x` to `|x|`. -/
 protected def abs : EReal → ℝ≥0∞
@@ -1245,7 +1248,7 @@ theorem abs_mul (x y : EReal) : (x * y).abs = x.abs * y.abs := by
   | coe_coe => simp only [← coe_mul, abs_def, _root_.abs_mul, ENNReal.ofReal_mul (abs_nonneg _)]
   | top_pos _ h =>
     rw [top_mul_coe_of_pos h, abs_top, ENNReal.top_mul]
-    rw [Ne.def, abs_eq_zero_iff, coe_eq_zero]
+    rw [Ne, abs_eq_zero_iff, coe_eq_zero]
     exact h.ne'
   | neg_left h => rwa [neg_mul, EReal.abs_neg, EReal.abs_neg]
 #align ereal.abs_mul EReal.abs_mul

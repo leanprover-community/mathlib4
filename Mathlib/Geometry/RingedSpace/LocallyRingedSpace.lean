@@ -99,8 +99,8 @@ noncomputable def stalk (X : LocallyRingedSpace) (x : X) : CommRingCat :=
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.stalk AlgebraicGeometry.LocallyRingedSpace.stalk
 
--- Porting note : added this instance to help Lean realize stalks are local (so that `0 ≠ 1`
--- works below)
+-- Porting note (#10754): added this instance to help Lean realize stalks are local
+-- (so that `0 ≠ 1` works below)
 instance stalkLocal (x : X) : LocalRing <| X.stalk x := X.localRing x
 
 /-- A morphism of locally ringed spaces `f : X ⟶ Y` induces
@@ -154,7 +154,7 @@ def forgetToSheafedSpace : LocallyRingedSpace ⥤ SheafedSpace CommRingCat where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.forget_to_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.forgetToSheafedSpace
 
-instance : Faithful forgetToSheafedSpace where
+instance : forgetToSheafedSpace.Faithful where
   map_injective {_ _} _ _ h := Hom.ext _ _ h
 
 /-- The forgetful functor from `LocallyRingedSpace` to `Top`. -/
@@ -171,7 +171,7 @@ theorem comp_val {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.comp_val AlgebraicGeometry.LocallyRingedSpace.comp_val
 
--- Porting note : complains that `(f ≫ g).val.c` can be further simplified
+-- Porting note: complains that `(f ≫ g).val.c` can be further simplified
 -- so changed to its simp normal form `(f.val ≫ g.val).c`
 @[simp]
 theorem comp_val_c {X Y Z : LocallyRingedSpace} (f : X ⟶ Y) (g : Y ⟶ Z) :
@@ -219,7 +219,7 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace} (f : X.toSheafedSpace ≅ Y.
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.iso_of_SheafedSpace_iso AlgebraicGeometry.LocallyRingedSpace.isoOfSheafedSpaceIso
 
-instance : ReflectsIsomorphisms forgetToSheafedSpace where reflects {_ _} f i :=
+instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
   { out :=
       ⟨homOfSheafedSpaceHomOfIsIso (CategoryTheory.inv (forgetToSheafedSpace.map f)),
         Hom.ext _ _ (IsIso.hom_inv_id (I := i)), Hom.ext _ _ (IsIso.inv_hom_id (I := i))⟩ }

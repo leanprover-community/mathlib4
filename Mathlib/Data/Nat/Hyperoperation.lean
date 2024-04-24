@@ -32,14 +32,12 @@ hyperoperation
 /-- Implementation of the hyperoperation sequence
 where `hyperoperation n m k` is the `n`th hyperoperation between `m` and `k`.
 -/
--- porting note: termination_by was not required before port
 def hyperoperation : ℕ → ℕ → ℕ → ℕ
   | 0, _, k => k + 1
   | 1, m, 0 => m
   | 2, _, 0 => 0
   | _ + 3, _, 0 => 1
   | n + 1, m, k + 1 => hyperoperation n m (hyperoperation (n + 1) m k)
-  termination_by a b c => (a, b, c)
 #align hyperoperation hyperoperation
 
 -- Basic hyperoperation lemmas
@@ -74,7 +72,7 @@ theorem hyperoperation_two : hyperoperation 2 = (· * ·) := by
   · rw [hyperoperation]
     exact (Nat.mul_zero m).symm
   · rw [hyperoperation_recursion, hyperoperation_one, bih]
-    -- porting note: was `ring`
+    -- Porting note: was `ring`
     dsimp only
     nth_rewrite 1 [← mul_one m]
     rw [← mul_add, add_comm, Nat.succ_eq_add_one]
@@ -87,7 +85,7 @@ theorem hyperoperation_three : hyperoperation 3 = (· ^ ·) := by
   · rw [hyperoperation_ge_three_eq_one]
     exact (pow_zero m).symm
   · rw [hyperoperation_recursion, hyperoperation_two, bih]
-    exact (pow_succ m bn).symm
+    exact (pow_succ' m bn).symm
 #align hyperoperation_three hyperoperation_three
 
 theorem hyperoperation_ge_two_eq_self (n m : ℕ) : hyperoperation (n + 2) m 1 = m := by

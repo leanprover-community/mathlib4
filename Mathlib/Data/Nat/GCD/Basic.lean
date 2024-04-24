@@ -5,7 +5,8 @@ Authors: Jeremy Avigad, Leonardo de Moura
 -/
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Data.Nat.Order.Lemmas
+import Mathlib.Algebra.Order.Ring.Nat
+import Mathlib.Data.Nat.Units
 import Mathlib.Tactic.NthRewrite
 
 #align_import data.nat.gcd.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
@@ -243,7 +244,7 @@ theorem coprime_self_sub_right {m n : ℕ} (h : m ≤ n) : Coprime n (n - m) ↔
 theorem coprime_pow_left_iff {n : ℕ} (hn : 0 < n) (a b : ℕ) :
     Nat.Coprime (a ^ n) b ↔ Nat.Coprime a b := by
   obtain ⟨n, rfl⟩ := exists_eq_succ_of_ne_zero hn.ne'
-  rw [pow_succ, Nat.coprime_mul_iff_left]
+  rw [Nat.pow_succ, Nat.coprime_mul_iff_left]
   exact ⟨And.right, fun hab => ⟨hab.pow_left _, hab⟩⟩
 #align nat.coprime_pow_left_iff Nat.coprime_pow_left_iff
 
@@ -306,14 +307,14 @@ theorem dvd_mul {x m n : ℕ} : x ∣ m * n ↔ ∃ y z, y ∣ m ∧ z ∣ n ∧
     exact mul_dvd_mul hy hz
 #align nat.dvd_mul Nat.dvd_mul
 
-theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : 0 < n) : a ^ n ∣ b ^ n ↔ a ∣ b := by
+theorem pow_dvd_pow_iff {a b n : ℕ} (n0 : n ≠ 0) : a ^ n ∣ b ^ n ↔ a ∣ b := by
   refine' ⟨fun h => _, fun h => pow_dvd_pow_of_dvd h _⟩
   rcases Nat.eq_zero_or_pos (gcd a b) with g0 | g0
   · simp [eq_zero_of_gcd_eq_zero_right g0]
   rcases exists_coprime' g0 with ⟨g, a', b', g0', co, rfl, rfl⟩
   rw [mul_pow, mul_pow] at h
   replace h := Nat.dvd_of_mul_dvd_mul_right (pow_pos g0' _) h
-  have := pow_dvd_pow a' n0
+  have := pow_dvd_pow a' <| Nat.pos_of_ne_zero n0
   rw [pow_one, (co.pow n n).eq_one_of_dvd h] at this
   simp [eq_one_of_dvd_one this]
 #align nat.pow_dvd_pow_iff Nat.pow_dvd_pow_iff

@@ -37,8 +37,7 @@ below proof is free, then the proof works nearly verbatim.
 open scoped BigOperators Polynomial
 open Fintype
 
-/- Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
-
+/-! Everything in this namespace is internal to the proof of Wedderburn's little theorem. -/
 namespace LittleWedderburn
 
 variable (D : Type*) [DivisionRing D]
@@ -113,14 +112,14 @@ private theorem center_eq_top [Finite D] (hD : InductionHyp D) : Subring.center 
   have hZx : Zx ≠ ⊤ := by
     by_contra! hZx
     refine (ConjClasses.mk_bijOn (Dˣ)).mapsTo (Set.subset_center_units ?_) hx
-    refine Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
+    exact Subring.centralizer_eq_top_iff_subset.mp hZx <| Set.mem_singleton _
   letI : Field Zx := hD.field hZx.lt_top
   letI : Algebra Z Zx := (Subring.inclusion <| Subring.center_le_centralizer {(x : D)}).toAlgebra
   let d := finrank Z Zx
   have card_Zx : card Zx = q ^ d := card_eq_pow_finrank
   have h1qd : 1 ≤ q ^ d := by rw [← card_Zx]; exact card_pos
   haveI : IsScalarTower Z Zx D := ⟨fun x y z ↦ mul_assoc _ _ _⟩
-  rw [card_units, card_Zx, Int.coe_nat_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
+  rw [card_units, card_Zx, Int.natCast_div, Nat.cast_sub h1qd, Nat.cast_sub h1qn, Nat.cast_one,
       Nat.cast_pow, Nat.cast_pow]
   apply Int.dvd_div_of_mul_dvd
   have aux : ∀ {k : ℕ}, ((X : ℤ[X]) ^ k - 1).eval ↑q = (q : ℤ) ^ k - 1 := by

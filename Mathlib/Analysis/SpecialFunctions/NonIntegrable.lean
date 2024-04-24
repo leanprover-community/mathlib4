@@ -90,9 +90,9 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter_aux
     _ = ‖∫ x in Ι c d, deriv f x‖ := norm_integral_eq_norm_integral_Ioc _
     _ ≤ ∫ x in Ι c d, ‖deriv f x‖ := norm_integral_le_integral_norm _
     _ ≤ ∫ x in Ι c d, C * ‖g x‖ :=
-      set_integral_mono_on hfi.norm.def (hgi.mono_set hsub') measurableSet_uIoc hg
+      setIntegral_mono_on hfi.norm.def' (hgi.mono_set hsub') measurableSet_uIoc hg
     _ ≤ ∫ x in k, C * ‖g x‖ := by
-      apply set_integral_mono_set hgi
+      apply setIntegral_mono_set hgi
         (ae_of_all _ fun x => mul_nonneg hC₀ (norm_nonneg _)) hsub'.eventuallyLE
 
 theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
@@ -104,7 +104,7 @@ theorem not_integrableOn_of_tendsto_norm_atTop_of_deriv_isBigO_filter
   let f' := a ∘ f
   have h'd : ∀ᶠ x in l, DifferentiableAt ℝ f' x := by
     filter_upwards [hd] with x hx using a.toContinuousLinearMap.differentiableAt.comp x hx
-  have h'f : Tendsto (fun x => ‖f' x‖) l atTop := hf.congr (fun x ↦ by simp)
+  have h'f : Tendsto (fun x => ‖f' x‖) l atTop := hf.congr (fun x ↦ by simp [f'])
   have h'fg : deriv f' =O[l] g := by
     apply IsBigO.trans _ hfg
     rw [← isBigO_norm_norm]

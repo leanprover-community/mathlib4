@@ -169,7 +169,7 @@ lemma irreducible_polynomial [IsDomain R] : Irreducible W.polynomial := by
   rw [Cubic.degree_of_a_ne_zero' <| neg_ne_zero.mpr <| one_ne_zero' R, degree_mul] at h0
   apply (h1.symm.le.trans Cubic.degree_of_b_eq_zero').not_lt
   rcases Nat.WithBot.add_eq_three_iff.mp h0.symm with h | h | h | h
-  -- porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
+  -- Porting note: replaced two `any_goals` proofs with two `iterate 2` proofs
   iterate 2 rw [degree_add_eq_right_of_degree_lt] <;> simp only [h] <;> decide
   iterate 2 rw [degree_add_eq_left_of_degree_lt] <;> simp only [h] <;> decide
 #align weierstrass_curve.irreducible_polynomial WeierstrassCurve.Affine.irreducible_polynomial
@@ -480,7 +480,7 @@ section Field
 
 /-! ### Group operation polynomials over a field -/
 
-open Classical
+open scoped Classical
 
 /-- The slope of the line through two affine points $(x_1, y_1)$ and $(x_2, y_2)$ in `W`.
 If $x_1 \ne x_2$, then this line is the secant of `W` through $(x_1, y_1)$ and $(x_2, y_2)$,
@@ -613,7 +613,7 @@ lemma nonsingular_add' {x₁ x₂ y₁ y₂ : F} (h₁ : W.nonsingular x₁ y₁
       · subst hx
         contradiction
       · rwa [addY', ← neg_sub, mul_neg, hx₂, slope_of_Xne hx,
-          div_mul_cancel _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
+          div_mul_cancel₀ _ <| sub_ne_zero_of_ne hx, neg_sub, sub_add_cancel]
     · apply nonsingular_add_of_eval_derivative_ne_zero <| equation_add' h₁.1 h₂.1 hxy
       rw [derivative_addPolynomial_slope h₁.left h₂.left hxy]
       eval_simp
@@ -691,7 +691,7 @@ lemma neg_some {x y : R} (h : W.nonsingular x y) : -some h = some (nonsingular_n
 instance : InvolutiveNeg W.Point :=
   ⟨by rintro (_ | _) <;> simp [zero_def]; ring1⟩
 
-open Classical
+open scoped Classical
 
 variable {F : Type u} [Field F] {W : Affine F}
 

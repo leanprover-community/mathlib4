@@ -38,12 +38,11 @@ structure ContinuousOrderHom (α β : Type*) [Preorder α] [Preorder β] [Topolo
   continuous_toFun : Continuous toFun
 #align continuous_order_hom ContinuousOrderHom
 
--- mathport name: «expr →Co »
 infixr:25 " →Co " => ContinuousOrderHom
 
 section
 
--- porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
+-- Porting note: extending `ContinuousMapClass` instead of `OrderHomClass`
 /-- `ContinuousOrderHomClass F α β` states that `F` is a type of continuous monotone maps.
 
 You should extend this class when you extend `ContinuousOrderHom`. -/
@@ -109,7 +108,7 @@ instance : ContinuousOrderHomClass (α →Co β) α β where
   map_monotone f := f.monotone'
   map_continuous f := f.continuous_toFun
 
--- porting note: new lemma
+-- Porting note (#10756): new lemma
 @[simp] theorem coe_toOrderHom (f : α →Co β) : ⇑f.toOrderHom = f := rfl
 
 theorem toFun_eq_coe {f : α →Co β} : f.toFun = (f : α → β) := rfl

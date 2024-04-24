@@ -109,7 +109,7 @@ theorem not_isUniform_iff :
   simp only [not_forall, not_lt, exists_prop, exists_and_left, Rat.cast_abs, Rat.cast_sub]
 #align simple_graph.not_is_uniform_iff SimpleGraph.not_isUniform_iff
 
-open Classical
+open scoped Classical
 
 variable (G)
 
@@ -197,7 +197,7 @@ variable [DecidableEq α] {A : Finset α} (P : Finpartition A) (G : SimpleGraph 
 
 namespace Finpartition
 
-open Classical
+open scoped Classical
 
 /-- The pairs of parts of a partition `P` which are not `ε`-uniform in a graph `G`. Note that we
 dismiss the diagonal. We do not care whether `s` is `ε`-uniform with itself. -/

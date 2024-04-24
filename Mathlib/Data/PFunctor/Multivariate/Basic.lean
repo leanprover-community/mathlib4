@@ -210,7 +210,7 @@ theorem supp_eq {α : TypeVec n} (a : P.A) (f : P.B a ⟹ α) (i) :
   · apply @h fun i x => ∃ y : P.B a i, f i y = x
     rw [liftP_iff']
     intros
-    refine' ⟨_, rfl⟩
+    exact ⟨_, rfl⟩
   · simp only [liftP_iff']
     cases h
     subst x

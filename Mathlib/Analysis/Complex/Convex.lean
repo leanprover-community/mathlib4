@@ -19,9 +19,9 @@ namespace Complex
 lemma convexHull_reProdIm (s t : Set ℝ) :
     convexHull ℝ (s ×ℂ t) = convexHull ℝ s ×ℂ convexHull ℝ t :=
   calc
-    convexHull ℝ (equivRealProdLm ⁻¹' (s ×ˢ t)) = equivRealProdLm ⁻¹' (convexHull ℝ (s ×ˢ t)) := by
+    convexHull ℝ (equivRealProdLm ⁻¹' (s ×ˢ t)) = equivRealProdLm ⁻¹' convexHull ℝ (s ×ˢ t) := by
       simpa only [← LinearEquiv.image_symm_eq_preimage]
-        using equivRealProdLm.symm.toLinearMap.convexHull_image (s ×ˢ t)
+        using ((equivRealProdLm.symm.toLinearMap).image_convexHull (s ×ˢ t)).symm
     _ = convexHull ℝ s ×ℂ convexHull ℝ t := by rw [convexHull_prod]; rfl
 
 /-- The slit plane is star-convex at a positive number. -/

@@ -43,7 +43,6 @@ noncomputable section
 universe u v w w'
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {ι : Type w} {ι' : Type w'}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -455,7 +454,7 @@ theorem FiniteDimensional.finrank_self : finrank R R = 1 :=
 noncomputable def Basis.unique {ι : Type*} (b : Basis ι R R) : Unique ι := by
   have A : Cardinal.mk ι = ↑(FiniteDimensional.finrank R R) :=
     (Module.mk_finrank_eq_card_basis b).symm
-  -- porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
+  -- Porting note: replace `algebraMap.coe_one` with `Nat.cast_one`
   simp only [Cardinal.eq_one_iff_unique, FiniteDimensional.finrank_self, Nat.cast_one] at A
   exact Nonempty.some ((unique_iff_subsingleton_and_nonempty _).2 A)
 #align basis.unique Basis.unique
@@ -465,7 +464,7 @@ variable (M)
 /-- The rank of a finite module is finite. -/
 theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   simp only [Module.rank_def]
-  -- porting note: can't use `‹_›` as that pulls the unused `N` into the context
+  -- Porting note: can't use `‹_›` as that pulls the unused `N` into the context
   obtain ⟨S, hS⟩ := Module.finite_def.mp ‹Module.Finite R M›
   refine' (ciSup_le' fun i => _).trans_lt (nat_lt_aleph0 S.card)
   exact linearIndependent_le_span_finset _ i.prop S hS

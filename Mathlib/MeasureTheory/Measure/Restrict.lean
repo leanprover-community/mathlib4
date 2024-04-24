@@ -26,7 +26,6 @@ variable {R α β δ γ ι : Type*}
 namespace MeasureTheory
 
 variable {m0 : MeasurableSpace α} [MeasurableSpace β] [MeasurableSpace γ]
-
 variable {μ μ₁ μ₂ μ₃ ν ν' ν₁ ν₂ : Measure α} {s s' t : Set α}
 
 namespace Measure
@@ -42,6 +41,7 @@ noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure �
 #align measure_theory.measure.restrictₗ MeasureTheory.Measure.restrictₗ
 
 /-- Restrict a measure `μ` to a set `s`. -/
+@[pp_dot]
 noncomputable def restrict {_m0 : MeasurableSpace α} (μ : Measure α) (s : Set α) : Measure α :=
   restrictₗ s μ
 #align measure_theory.measure.restrict MeasureTheory.Measure.restrict
@@ -82,7 +82,7 @@ theorem restrict_mono' {_m0 : MeasurableSpace α} ⦃s s' : Set α⦄ ⦃μ ν :
   Measure.le_iff.2 fun t ht => calc
     μ.restrict s t = μ (t ∩ s) := restrict_apply ht
     _ ≤ μ (t ∩ s') := (measure_mono_ae <| hs.mono fun _x hx ⟨hxt, hxs⟩ => ⟨hxt, hx hxs⟩)
-    _ ≤ ν (t ∩ s') := (le_iff'.1 hμν (t ∩ s'))
+    _ ≤ ν (t ∩ s') := le_iff'.1 hμν (t ∩ s')
     _ = ν.restrict s' t := (restrict_apply ht).symm
 #align measure_theory.measure.restrict_mono' MeasureTheory.Measure.restrict_mono'
 
@@ -381,7 +381,7 @@ theorem restrict_union_congr :
     _ = restrict ν s u + restrict ν t (u \ US) := by rw [hs, ht]
     _ = ν US + ν ((u ∩ t) \ US) := by
       simp only [restrict_apply, hu, hu.diff hm, hν, ← inter_comm t, inter_diff_assoc]
-    _ = ν (US ∪ u ∩ t) := (measure_add_diff hm _)
+    _ = ν (US ∪ u ∩ t) := measure_add_diff hm _
     _ = ν (u ∩ s ∪ u ∩ t) := Eq.symm <| measure_union_congr_of_subset hsub hν.le Subset.rfl le_rfl
 #align measure_theory.measure.restrict_union_congr MeasureTheory.Measure.restrict_union_congr
 
@@ -672,7 +672,7 @@ theorem ae_of_ae_restrict_of_ae_restrict_compl (t : Set α) {p : α → Prop}
     calc
       μ { x | ¬p x } = μ ({ x | ¬p x } ∩ t ∪ { x | ¬p x } ∩ tᶜ) := by
         rw [← inter_union_distrib_left, union_compl_self, inter_univ]
-      _ ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) := (measure_union_le _ _)
+      _ ≤ μ ({ x | ¬p x } ∩ t) + μ ({ x | ¬p x } ∩ tᶜ) := measure_union_le _ _
       _ ≤ μ.restrict t { x | ¬p x } + μ.restrict tᶜ { x | ¬p x } :=
         (add_le_add (le_restrict_apply _ _) (le_restrict_apply _ _))
       _ = 0 := by rw [ae_iff.1 ht, ae_iff.1 htc, zero_add]
@@ -708,11 +708,20 @@ theorem ae_eq_comp {f : α → β} {g g' : β → δ} (hf : AEMeasurable f μ) (
   ae_eq_comp' hf h AbsolutelyContinuous.rfl
 #align measure_theory.ae_eq_comp MeasureTheory.ae_eq_comp
 
-theorem sub_ae_eq_zero {β} [AddGroup β] (f g : α → β) : f - g =ᵐ[μ] 0 ↔ f =ᵐ[μ] g := by
-  refine' ⟨fun h => h.mono fun x hx => _, fun h => h.mono fun x hx => _⟩
-  · rwa [Pi.sub_apply, Pi.zero_apply, sub_eq_zero] at hx
-  · rwa [Pi.sub_apply, Pi.zero_apply, sub_eq_zero]
+@[to_additive]
+theorem div_ae_eq_one {β} [Group β] (f g : α → β) : f / g =ᵐ[μ] 1 ↔ f =ᵐ[μ] g := by
+  refine ⟨fun h ↦ h.mono fun x hx ↦ ?_, fun h ↦ h.mono fun x hx ↦ ?_⟩
+  · rwa [Pi.div_apply, Pi.one_apply, div_eq_one] at hx
+  · rwa [Pi.div_apply, Pi.one_apply, div_eq_one]
 #align measure_theory.sub_ae_eq_zero MeasureTheory.sub_ae_eq_zero
+
+@[to_additive sub_nonneg_ae]
+lemma one_le_div_ae {β : Type*} [Group β] [LE β]
+    [CovariantClass β β (Function.swap (· * ·)) (· ≤ ·)] (f g : α → β) :
+    1 ≤ᵐ[μ] g / f ↔ f ≤ᵐ[μ] g := by
+  refine ⟨fun h ↦ h.mono fun a ha ↦ ?_, fun h ↦ h.mono fun a ha ↦ ?_⟩
+  · rwa [Pi.one_apply, Pi.div_apply, one_le_div'] at ha
+  · rwa [Pi.one_apply, Pi.div_apply, one_le_div']
 
 theorem le_ae_restrict : μ.ae ⊓ 𝓟 s ≤ (μ.restrict s).ae := fun _s hs =>
   eventually_inf_principal.2 (ae_imp_of_ae_restrict hs)

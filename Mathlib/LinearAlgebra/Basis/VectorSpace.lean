@@ -40,7 +40,6 @@ variable {ι : Type*} {ι' : Type*} {K : Type*} {V : Type*} {V' : Type*}
 section DivisionRing
 
 variable [DivisionRing K] [AddCommGroup V] [AddCommGroup V'] [Module K V] [Module K V']
-
 variable {v : ι → V} {s t : Set V} {x y z : V}
 
 open Submodule
@@ -245,7 +244,7 @@ theorem LinearMap.exists_rightInverse_of_surjective (f : V →ₗ[K] V') (hf_sur
   haveI : Inhabited V := ⟨0⟩
   refine' ⟨(hC.constr ℕ : _ → _) (C.restrict (invFun f)), hC.ext fun c => _⟩
   rw [LinearMap.comp_apply, hC.constr_basis]
-  simp [rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
+  simp [hC, rightInverse_invFun (LinearMap.range_eq_top.1 hf_surj) c]
 #align linear_map.exists_right_inverse_of_surjective LinearMap.exists_rightInverse_of_surjective
 
 /-- Any linear map `f : p →ₗ[K] V'` defined on a subspace `p` can be extended to the whole

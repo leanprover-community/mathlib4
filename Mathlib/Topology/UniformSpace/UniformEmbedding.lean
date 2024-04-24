@@ -124,6 +124,9 @@ theorem UniformInducing.denseInducing {f : α → β} (h : UniformInducing f) (h
     induced := h.inducing.induced }
 #align uniform_inducing.dense_inducing UniformInducing.denseInducing
 
+theorem SeparationQuotient.uniformInducing_mk : UniformInducing (mk : α → SeparationQuotient α) :=
+  ⟨comap_mk_uniformity⟩
+
 protected theorem UniformInducing.injective [T0Space α] {f : α → β} (h : UniformInducing f) :
     Injective f :=
   h.inducing.injective
@@ -241,12 +244,12 @@ theorem UniformEmbedding.denseEmbedding {f : α → β} (h : UniformEmbedding f)
 #align uniform_embedding.dense_embedding UniformEmbedding.denseEmbedding
 
 theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopology α]
-    [SeparatedSpace β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
+    [T0Space β] {f : α → β} {s : Set (β × β)} (hs : s ∈ 𝓤 β)
     (hf : Pairwise fun x y => (f x, f y) ∉ s) : ClosedEmbedding f := by
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
     { (uniformEmbedding_of_spaced_out hs hf).embedding with
-      closed_range := isClosed_range_of_spaced_out hs hf }
+      isClosed_range := isClosed_range_of_spaced_out hs hf }
 #align closed_embedding_of_spaced_out closedEmbedding_of_spaced_out
 
 theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
@@ -319,6 +322,16 @@ theorem UniformInducing.isComplete_range [CompleteSpace α] {f : α → β} (hf 
     IsComplete (range f) :=
   (completeSpace_iff_isComplete_range hf).1 ‹_›
 #align uniform_inducing.is_complete_range UniformInducing.isComplete_range
+
+theorem SeparationQuotient.completeSpace_iff :
+    CompleteSpace (SeparationQuotient α) ↔ CompleteSpace α := by
+  rw [completeSpace_iff_isComplete_univ, ← range_mk,
+    ← completeSpace_iff_isComplete_range uniformInducing_mk]
+
+instance SeparationQuotient.instCompleteSpace [CompleteSpace α] :
+    CompleteSpace (SeparationQuotient α) :=
+  completeSpace_iff.2 ‹_›
+#align uniform_space.complete_space_separation SeparationQuotient.instCompleteSpace
 
 theorem completeSpace_congr {e : α ≃ β} (he : UniformEmbedding e) :
     CompleteSpace α ↔ CompleteSpace β := by
@@ -496,7 +509,7 @@ theorem uniformContinuous_uniformly_extend [CompleteSpace γ] : UniformContinuou
       exact hs_comp ⟨f a, ha₂, ⟨f b, this, hb₂⟩⟩
 #align uniform_continuous_uniformly_extend uniformContinuous_uniformly_extend
 
-variable [SeparatedSpace γ]
+variable [T0Space γ]
 
 theorem uniformly_extend_of_ind (b : β) : ψ (e b) = f b :=
   DenseInducing.extend_eq_at _ h_f.continuous.continuousAt

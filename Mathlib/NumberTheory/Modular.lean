@@ -99,9 +99,9 @@ theorem bottom_row_surj {R : Type*} [CommRing R] :
   have det_A_1 : det A = 1 := by
     convert gcd_eqn
     rw [det_fin_two]
-    simp [(by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
+    simp [A, (by ring : a * cd 1 + b₀ * cd 0 = b₀ * cd 0 + a * cd 1)]
   refine' ⟨⟨A, det_A_1⟩, Set.mem_univ _, _⟩
-  ext; simp
+  ext; simp [A]
 #align modular_group.bottom_row_surj ModularGroup.bottom_row_surj
 
 end BottomRow
@@ -124,7 +124,8 @@ theorem tendsto_normSq_coprime_pair :
   let f : (Fin 2 → ℝ) →ₗ[ℝ] ℂ := π₀.smulRight (z : ℂ) + π₁.smulRight 1
   have f_def : ⇑f = fun p : Fin 2 → ℝ => (p 0 : ℂ) * ↑z + p 1 := by
     ext1
-    dsimp only [LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight, LinearMap.add_apply]
+    dsimp only [π₀, π₁, f, LinearMap.coe_proj, real_smul, LinearMap.coe_smulRight,
+      LinearMap.add_apply]
     rw [mul_one]
   have :
     (fun p : Fin 2 → ℤ => normSq ((p 0 : ℂ) * ↑z + ↑(p 1))) =
@@ -132,7 +133,7 @@ theorem tendsto_normSq_coprime_pair :
     ext1
     rw [f_def]
     dsimp only [Function.comp_def]
-    rw [ofReal_int_cast, ofReal_int_cast]
+    rw [ofReal_intCast, ofReal_intCast]
   rw [this]
   have hf : LinearMap.ker f = ⊥ := by
     let g : ℂ →ₗ[ℝ] Fin 2 → ℝ :=
@@ -190,15 +191,18 @@ def lcRow0Extend {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       exact hcd.sq_add_sq_ne_zero, LinearEquiv.refl ℝ (Fin 2 → ℝ)]
 #align modular_group.lc_row0_extend ModularGroup.lcRow0Extend
 
+-- `simpNF` times out, but only in CI where all of `Mathlib` is imported
+attribute [nolint simpNF] lcRow0Extend_apply lcRow0Extend_symm_apply
+
 /-- The map `lcRow0` is proper, that is, preimages of cocompact sets are finite in
-`[[* , *], [c, d]]`.-/
+`[[* , *], [c, d]]`. -/
 theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
     Tendsto (fun g : { g : SL(2, ℤ) // (↑ₘg) 1 = cd } => lcRow0 cd ↑(↑g : SL(2, ℝ))) cofinite
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
     refine' continuous_matrix _
-    simp only [Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
+    simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)
   let f₁ : SL(2, ℤ) → Matrix (Fin 2) (Fin 2) ℝ := fun g =>
@@ -217,13 +221,13 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
   ext ⟨g, rfl⟩ i j : 3
   fin_cases i <;> [fin_cases j; skip]
   -- the following are proved by `simp`, but it is replaced by `simp only` to avoid timeouts.
-  · simp only [mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
+  · simp only [mB, mulVec, dotProduct, Fin.sum_univ_two, coe_matrix_coe,
       Int.coe_castRingHom, lcRow0_apply, Function.comp_apply, cons_val_zero, lcRow0Extend_apply,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       val_planeConformalMatrix, neg_neg, mulVecLin_apply, cons_val_one, head_cons, of_apply,
       Fin.mk_zero, Fin.mk_one]
   · convert congr_arg (fun n : ℤ => (-n : ℝ)) g.det_coe.symm using 1
-    simp only [mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
+    simp only [f₁, mulVec, dotProduct, Fin.sum_univ_two, Matrix.det_fin_two, Function.comp_apply,
       Subtype.coe_mk, lcRow0Extend_apply, cons_val_zero,
       LinearMap.GeneralLinearGroup.coeFn_generalLinearEquiv, GeneralLinearGroup.coe_toLinear,
       val_planeConformalMatrix, mulVecLin_apply, cons_val_one, head_cons, map_apply, neg_mul,
@@ -246,7 +250,7 @@ theorem smul_eq_lcRow0_add {p : Fin 2 → ℤ} (hp : IsCoprime (p 0) (p 1)) (hg 
   rw [(by simp :
     (p 1 : ℂ) * z - p 0 = (p 1 * z - p 0) * ↑(Matrix.det (↑g : Matrix (Fin 2) (Fin 2) ℤ)))]
   rw [← hg, det_fin_two]
-  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_int_cast, map_apply, denom,
+  simp only [Int.coe_castRingHom, coe_matrix_coe, Int.cast_mul, ofReal_intCast, map_apply, denom,
     Int.cast_sub, coe_GLPos_coe_GL_coe_matrix, coe'_apply_complex]
   ring
 #align modular_group.smul_eq_lc_row0_add ModularGroup.smul_eq_lcRow0_add
@@ -320,11 +324,11 @@ theorem coe_T_zpow_smul_eq {n : ℤ} : (↑(T ^ n • z) : ℂ) = z + n := by
 #align modular_group.coe_T_zpow_smul_eq ModularGroup.coe_T_zpow_smul_eq
 
 theorem re_T_zpow_smul (n : ℤ) : (T ^ n • z).re = z.re + n := by
-  rw [← coe_re, coe_T_zpow_smul_eq, add_re, int_cast_re, coe_re]
+  rw [← coe_re, coe_T_zpow_smul_eq, add_re, intCast_re, coe_re]
 #align modular_group.re_T_zpow_smul ModularGroup.re_T_zpow_smul
 
 theorem im_T_zpow_smul (n : ℤ) : (T ^ n • z).im = z.im := by
-  rw [← coe_im, coe_T_zpow_smul_eq, add_im, int_cast_im, add_zero, coe_im]
+  rw [← coe_im, coe_T_zpow_smul_eq, add_im, intCast_im, add_zero, coe_im]
 #align modular_group.im_T_zpow_smul ModularGroup.im_T_zpow_smul
 
 theorem re_T_smul : (T • z).re = z.re + 1 := by simpa using re_T_zpow_smul z 1
@@ -430,7 +434,7 @@ theorem eq_zero_of_mem_fdo_of_T_zpow_mem_fdo {n : ℤ} (hz : z ∈ 𝒟ᵒ) (hg 
   rw [re_T_zpow_smul] at h₂
   calc
     |(n : ℝ)| ≤ |z.re| + |z.re + (n : ℝ)| := abs_add' (n : ℝ) z.re
-    _ < 1 / 2 + 1 / 2 := (add_lt_add h₁ h₂)
+    _ < 1 / 2 + 1 / 2 := add_lt_add h₁ h₂
     _ = 1 := add_halves 1
 #align modular_group.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo ModularGroup.eq_zero_of_mem_fdo_of_T_zpow_mem_fdo
 
@@ -486,7 +490,7 @@ theorem abs_c_le_one (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : |(↑ₘg
       linarith
   intro hc
   replace hc : 0 < c ^ 4 := by
-    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero _ hc)
+    change 0 < c ^ (2 * 2); rw [pow_mul]; apply sq_pos_of_pos (sq_pos_of_ne_zero hc)
   have h₁ :=
     mul_lt_mul_of_pos_right
       (mul_lt_mul'' (three_lt_four_mul_im_sq_of_mem_fdo hg) (three_lt_four_mul_im_sq_of_mem_fdo hz)
@@ -514,7 +518,7 @@ theorem c_eq_zero (hz : z ∈ 𝒟ᵒ) (hg : g • z ∈ 𝒟ᵒ) : (↑ₘg) 1 
     let d := (↑ₘg') 1 1
     have had : T ^ (-a) * g' = S * T ^ d := by rw [g_eq_of_c_eq_one hc]; group
     let w := T ^ (-a) • g' • z
-    have h₁ : w = S • T ^ d • z := by simp only [← mul_smul, had]
+    have h₁ : w = S • T ^ d • z := by simp only [w, ← mul_smul, had]
     replace h₁ : normSq w < 1 := h₁.symm ▸ normSq_S_smul_lt_one (one_lt_normSq_T_zpow_smul hz d)
     have h₂ : 1 < normSq w := one_lt_normSq_T_zpow_smul hg' (-a)
     linarith

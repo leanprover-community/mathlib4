@@ -7,6 +7,7 @@ import Mathlib.Algebra.GCDMonoid.Finset
 import Mathlib.Algebra.GCDMonoid.Basic
 import Mathlib.RingTheory.Int.Basic
 import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.Algebra.GCDMonoid.Nat
 
 #align_import algebra.gcd_monoid.div from "leanprover-community/mathlib"@"b537794f8409bc9598febb79cd510b1df5f4539d"
 
@@ -70,11 +71,11 @@ end Int
 
 namespace Polynomial
 
-open Polynomial Classical
+open Polynomial
 
 noncomputable section
 
-variable {K : Type*} [Field K]
+variable {K : Type*} [Field K] [DecidableEq K]
 
 /-- Given a nonempty Finset `s` and a function `f` from `s` to `K[X]`, if `d = s.gcd f`,
 then the `gcd` of `(f i) / d` is equal to `1`. -/

@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Shing Tak Lam, Mario Carneiro
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.BigOperators.List.Lemmas
 import Mathlib.Algebra.Parity
 import Mathlib.Data.Int.ModEq
 import Mathlib.Data.Nat.Bits
 import Mathlib.Data.Nat.Log
-import Mathlib.Data.List.BigOperators.Lemmas
 import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Palindrome
 import Mathlib.Tactic.IntervalCases
@@ -25,12 +25,13 @@ and reconstructing numbers from their digits.
 We also prove some divisibility tests based on digits, in particular completing
 Theorem #85 from https://www.cs.ru.nl/~freek/100/.
 
-A basic `norm_digits` tactic is also provided for proving goals of the form
-`Nat.digits a b = l` where `a` and `b` are numerals.
+Also included is a bound on the length of `Nat.toDigits` from core.
+
+## TODO
+
+A basic `norm_digits` tactic for proving goals of the form `Nat.digits a b = l` where `a` and `b`
+are numerals is not yet ported.
 -/
-
-set_option autoImplicit true
-
 
 namespace Nat
 
@@ -266,7 +267,7 @@ theorem ofDigits_digits (b n : ℕ) : ofDigits b (digits b n) = n := by
   · cases' b with b
     · induction' n with n ih
       · rfl
-      · rw[show succ zero = 1 by rfl] at ih ⊢
+      · rw [show succ zero = 1 by rfl] at ih ⊢
         simp only [ih, add_comm 1, ofDigits_one_cons, Nat.cast_id, digits_one_succ]
     · apply Nat.strongInductionOn n _
       clear n
@@ -403,7 +404,6 @@ theorem ofDigits_lt_base_pow_length' {b : ℕ} {l : List ℕ} (hl : ∀ x ∈ l,
       mul_le_mul (IH fun x hx => hl _ (List.mem_cons_of_mem _ hx)) (by rfl) (by simp only [zero_le])
         (Nat.zero_le _)
     suffices ↑hd < b + 2 by linarith
-    norm_cast
     exact hl hd (List.mem_cons_self _ _)
 #align nat.of_digits_lt_base_pow_length' Nat.ofDigits_lt_base_pow_length'
 
@@ -464,7 +464,7 @@ theorem ofDigits_monotone {p q : ℕ} (L : List ℕ) (h : p ≤ q) : ofDigits p 
   · simp only [ofDigits, cast_id, add_le_add_iff_left]
     exact Nat.mul_le_mul h hi
 
-theorem sum_le_ofDigits (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
+theorem sum_le_ofDigits {p : ℕ} (L : List ℕ) (h : 1 ≤ p) : L.sum ≤ ofDigits p L :=
   (ofDigits_one L).symm ▸ ofDigits_monotone L h
 
 theorem digit_sum_le (p n : ℕ) : List.sum (digits p n) ≤ n := by
@@ -510,7 +510,7 @@ theorem base_pow_length_digits_le (b m : ℕ) (hb : 1 < b) :
 
 /-- Interpreting as a base `p` number and dividing by `p` is the same as interpreting the tail.
 -/
-lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
+lemma ofDigits_div_eq_ofDigits_tail {p : ℕ} (hpos : 0 < p) (digits : List ℕ)
     (w₁ : ∀ l ∈ digits, l < p) : ofDigits p digits / p = ofDigits p digits.tail := by
   induction' digits with hd tl
   · simp [ofDigits]
@@ -521,7 +521,7 @@ lemma ofDigits_div_eq_ofDigits_tail (hpos : 0 < p) (digits : List ℕ)
 /-- Interpreting as a base `p` number and dividing by `p^i` is the same as dropping `i`.
 -/
 lemma ofDigits_div_pow_eq_ofDigits_drop
-    (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
+    {p : ℕ} (i : ℕ) (hpos : 0 < p) (digits : List ℕ) (w₁ : ∀ l ∈ digits, l < p) :
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
   induction' i with i hi
   · simp
@@ -531,7 +531,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
 
 /-- Dividing `n` by `p^i` is like truncating the first `i` digits of `n` in base `p`.
 -/
-lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
+lemma self_div_pow_eq_ofDigits_drop {p : ℕ} (i n : ℕ) (h : 2 ≤ p):
     n / p ^ i = ofDigits p ((p.digits n).drop i) := by
   convert ofDigits_div_pow_eq_ofDigits_drop i (zero_lt_of_lt h) (p.digits n)
     (fun l hl ↦ digits_lt_base h hl)
@@ -539,7 +539,7 @@ lemma self_div_pow_eq_ofDigits_drop (i n : ℕ) (h : 2 ≤ p):
 
 open BigOperators Finset
 
-theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
+theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits {p : ℕ}
     (L : List ℕ) {h_nonempty} (h_ne_zero : L.getLast h_nonempty ≠ 0) (h_lt : ∀ l ∈ L, l < p) :
     (p - 1) * ∑ i in range L.length, (ofDigits p L) / p ^ i.succ = (ofDigits p L) - L.sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
@@ -573,7 +573,7 @@ theorem sub_one_mul_sum_div_pow_eq_sub_sum_digits
     · rfl
     · simp [ofDigits]
 
-theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits (n : ℕ) :
+theorem sub_one_mul_sum_log_div_pow_eq_sub_sum_digits {p : ℕ} (n : ℕ) :
     (p - 1) * ∑ i in range (log p n).succ, n / p ^ i.succ = n - (p.digits n).sum := by
   obtain h | rfl | h : 1 < p ∨ 1 = p ∨ p < 1 := trichotomous 1 p
   · rcases eq_or_ne n 0 with rfl | hn
@@ -598,7 +598,7 @@ theorem digits_two_eq_bits (n : ℕ) : digits 2 n = n.bits.map fun b => cond b 1
   cases b
   · rw [digits_def' one_lt_two]
     · simpa [Nat.bit, Nat.bit0_val n]
-    · simpa [pos_iff_ne_zero, bit_eq_zero_iff]
+    · simpa [pos_iff_ne_zero, Nat.bit0_eq_zero]
   · simpa [Nat.bit, Nat.bit1_val n, add_comm, digits_add 2 one_lt_two 1 n, Nat.add_mul_div_left]
 #align nat.digits_two_eq_bits Nat.digits_two_eq_bits
 
@@ -715,7 +715,7 @@ theorem nine_dvd_iff (n : ℕ) : 9 ∣ n ↔ 9 ∣ (digits 10 n).sum :=
 
 theorem dvd_iff_dvd_ofDigits (b b' : ℕ) (c : ℤ) (h : (b : ℤ) ∣ (b' : ℤ) - c) (n : ℕ) :
     b ∣ n ↔ (b : ℤ) ∣ ofDigits c (digits b' n) := by
-  rw [← Int.coe_nat_dvd]
+  rw [← Int.natCast_dvd_natCast]
   exact
     dvd_iff_dvd_of_dvd_sub (zmodeq_ofDigits_digits b b' c (Int.modEq_iff_dvd.2 h).symm _).symm.dvd
 #align nat.dvd_iff_dvd_of_digits Nat.dvd_iff_dvd_ofDigits
@@ -729,13 +729,91 @@ theorem eleven_dvd_iff :
 
 theorem eleven_dvd_of_palindrome (p : (digits 10 n).Palindrome) (h : Even (digits 10 n).length) :
     11 ∣ n := by
-  let dig := (digits 10 n).map (Coe.coe : ℕ → ℤ)
+  let dig := (digits 10 n).map fun n : ℕ => (n : ℤ)
   replace h : Even dig.length := by rwa [List.length_map]
   refine' eleven_dvd_iff.2 ⟨0, (_ : dig.alternatingSum = 0)⟩
   have := dig.alternatingSum_reverse
-  rw [(p.map _).reverse_eq, _root_.pow_succ, h.neg_one_pow, mul_one, neg_one_zsmul] at this
+  rw [(p.map _).reverse_eq, _root_.pow_succ', h.neg_one_pow, mul_one, neg_one_zsmul] at this
   exact eq_zero_of_neg_eq this.symm
 #align nat.eleven_dvd_of_palindrome Nat.eleven_dvd_of_palindrome
+
+/-! ### `Nat.toDigits` length -/
+
+lemma toDigitsCore_lens_eq_aux (b f : Nat) :
+    ∀ (n : Nat) (l1 l2 : List Char), l1.length = l2.length →
+    (Nat.toDigitsCore b f n l1).length = (Nat.toDigitsCore b f n l2).length := by
+  induction f with (simp only [Nat.toDigitsCore, List.length]; intro n l1 l2 hlen)
+  | zero => assumption
+  | succ f ih =>
+    if hx : n / b = 0 then
+      simp only [hx, if_true, List.length, congrArg (fun l ↦ l + 1) hlen]
+    else
+      simp only [hx, if_false]
+      specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
+      simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
+      exact ih trivial
+@[deprecated] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux -- 2024-02-19
+
+lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
+    (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
+  induction f with (intro n c tl; simp only [Nat.toDigitsCore, List.length])
+  | succ f ih =>
+    if hnb : (n / b) = 0 then
+      simp only [hnb, if_true, List.length]
+    else
+      generalize hx: Nat.digitChar (n % b) = x
+      simp only [hx, hnb, if_false] at ih
+      simp only [hnb, if_false]
+      specialize ih (n / b) c (x :: tl)
+      rw [← ih]
+      have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
+      apply toDigitsCore_lens_eq_aux
+      exact lens_eq
+@[deprecated] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq -- 2024-02-19
+
+lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
+  simp only [Nat.pow_succ]
+  exact (@Nat.div_lt_iff_lt_mul b n (b ^ e) h_b_pos).mpr
+
+/-- The String representation produced by toDigitsCore has the proper length relative to
+the number of digits in `n < e` for some base `b`. Since this works with any base greater
+than one, it can be used for binary, decimal, and hex. -/
+lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
+    (hlt : n < b ^ e) (h_e_pos: 0 < e) : (Nat.toDigitsCore b f n []).length <= e := by
+  induction f generalizing n e hlt h_e_pos with
+    simp only [Nat.toDigitsCore, List.length, Nat.zero_le]
+  | succ f ih =>
+    cases e with
+    | zero => exact False.elim (Nat.lt_irrefl 0 h_e_pos)
+    | succ e =>
+      if h_pred_pos : 0 < e then
+        have _ : 0 < b := Nat.lt_trans (by decide) h
+        specialize ih (n / b) e (nat_repr_len_aux n b e ‹0 < b› hlt) h_pred_pos
+        if hdiv_ten : n / b = 0 then
+          simp only [hdiv_ten]; exact Nat.le.step h_pred_pos
+        else
+          simp only [hdiv_ten,
+            toDigitsCore_lens_eq b f (n / b) (Nat.digitChar <| n % b), if_false]
+          exact Nat.succ_le_succ ih
+      else
+        obtain rfl : e = 0 := Nat.eq_zero_of_not_pos h_pred_pos
+        have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
+        have _ : n < b := ‹b ^ 1 = b› ▸ hlt
+        simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
+@[deprecated] alias to_digits_core_length := toDigitsCore_length -- 2024-02-19
+
+/-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
+number of digits in the decimal number (represented by `e`). For example, the decimal string
+representation of any number less than 1000 (10 ^ 3) has a length less than or equal to 3. -/
+lemma repr_length (n e : Nat) : 0 < e → n < 10 ^ e → (Nat.repr n).length <= e := by
+  cases n with
+    (intro e0 he; simp only [Nat.repr, Nat.toDigits, String.length, List.asString])
+  | zero => assumption
+  | succ n =>
+    if hterm : n.succ / 10 = 0 then
+      simp only [hterm, Nat.toDigitsCore]; assumption
+    else
+      exact toDigitsCore_length 10 (by decide) (Nat.succ n + 1) (Nat.succ n) e he e0
 
 /-! ### `norm_digits` tactic -/
 
@@ -745,7 +823,7 @@ namespace NormDigits
 theorem digits_succ (b n m r l) (e : r + b * m = n) (hr : r < b)
     (h : Nat.digits b m = l ∧ 1 < b ∧ 0 < m) : (Nat.digits b n = r :: l) ∧ 1 < b ∧ 0 < n := by
   rcases h with ⟨h, b2, m0⟩
-  have b0 : 0 < b := by linarith
+  have b0 : 0 < b := by omega
   have n0 : 0 < n := by linarith [mul_pos b0 m0]
   refine' ⟨_, b2, n0⟩
   obtain ⟨rfl, rfl⟩ := (Nat.div_mod_unique b0).2 ⟨e, hr⟩

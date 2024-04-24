@@ -34,7 +34,6 @@ namespace Matrix
 open Equiv Finset
 
 variable {R S : Type*} [CommRing R] [Nontrivial R] [LinearOrderedCommRing S]
-
 variable {n : Type*} [Fintype n] [DecidableEq n]
 
 theorem det_le {A : Matrix n n R} {abv : AbsoluteValue R S} {x : S} (hx : ∀ i j, abv (A i j) ≤ x) :
@@ -59,8 +58,8 @@ theorem det_sum_le {ι : Type*} (s : Finset ι) {A : ι → Matrix n n R} {abv :
   det_le fun i j =>
     calc
       abv ((∑ k in s, A k) i j) = abv (∑ k in s, A k i j) := by simp only [sum_apply]
-      _ ≤ ∑ k in s, abv (A k i j) := (abv.sum_le _ _)
-      _ ≤ ∑ _k in s, x := (sum_le_sum fun k _ => hx k i j)
+      _ ≤ ∑ k in s, abv (A k i j) := abv.sum_le _ _
+      _ ≤ ∑ _k in s, x := sum_le_sum fun k _ => hx k i j
       _ = s.card • x := sum_const _
 #align matrix.det_sum_le Matrix.det_sum_le
 

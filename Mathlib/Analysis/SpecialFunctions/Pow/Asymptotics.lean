@@ -20,7 +20,8 @@ set_option linter.uppercaseLean3 false
 
 noncomputable section
 
-open Classical Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
+open scoped Classical
+open Real Topology NNReal ENNReal Filter BigOperators ComplexConjugate Finset Set
 
 /-!
 ## Limits at `+∞`
@@ -56,7 +57,7 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     Tendsto (rpow b) atTop (𝓝 (0:ℝ)) := by
   show Tendsto (fun z => b^z) atTop (𝓝 0)
   rcases lt_trichotomy b 0 with hb|rfl|hb
-  case inl =>   -- b < 0
+  case inl => -- b < 0
     simp_rw [Real.rpow_def_of_nonpos hb.le, hb.ne, ite_false]
     rw [← isLittleO_const_iff (c := (1:ℝ)) one_ne_zero, (one_mul (1 : ℝ)).symm]
     refine IsLittleO.mul_isBigO ?exp ?cos
@@ -68,12 +69,12 @@ lemma tendsto_rpow_atTop_of_base_lt_one (b : ℝ) (hb₀ : -1 < b) (hb₁ : b < 
     case cos =>
       rw [isBigO_iff]
       exact ⟨1, eventually_of_forall fun x => by simp [Real.abs_cos_le_one]⟩
-  case inr.inl =>  -- b = 0
+  case inr.inl => -- b = 0
     refine Tendsto.mono_right ?_ (Iff.mpr pure_le_nhds_iff rfl)
     rw [tendsto_pure]
     filter_upwards [eventually_ne_atTop 0] with _ hx
     simp [hx]
-  case inr.inr =>   -- b > 0
+  case inr.inr => -- b > 0
     simp_rw [Real.rpow_def_of_pos hb]
     refine tendsto_exp_atBot.comp <| (tendsto_const_mul_atBot_of_neg ?_).mpr tendsto_id
     exact (log_neg_iff hb).mpr hb₁
@@ -121,16 +122,12 @@ theorem tendsto_rpow_div_mul_add (a b c : ℝ) (hb : 0 ≠ b) :
 /-- The function `x ^ (1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_div : Tendsto (fun x => x ^ ((1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (1 : ℝ) _ (0 : ℝ) zero_ne_one
-  funext
-  congr 2
   ring
 #align tendsto_rpow_div tendsto_rpow_div
 
 /-- The function `x ^ (-1 / x)` tends to `1` at `+∞`. -/
 theorem tendsto_rpow_neg_div : Tendsto (fun x => x ^ (-(1 : ℝ) / x)) atTop (𝓝 1) := by
   convert tendsto_rpow_div_mul_add (-(1 : ℝ)) _ (0 : ℝ) zero_ne_one
-  funext
-  congr 2
   ring
 #align tendsto_rpow_neg_div tendsto_rpow_neg_div
 
@@ -139,7 +136,7 @@ theorem tendsto_exp_div_rpow_atTop (s : ℝ) : Tendsto (fun x : ℝ => exp x / x
   cases' archimedean_iff_nat_lt.1 Real.instArchimedean s with n hn
   refine' tendsto_atTop_mono' _ _ (tendsto_exp_div_pow_atTop n)
   filter_upwards [eventually_gt_atTop (0 : ℝ), eventually_ge_atTop (1 : ℝ)] with x hx₀ hx₁
-  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_nat_cast]
+  rw [div_le_div_left (exp_pos _) (pow_pos hx₀ _) (rpow_pos_of_pos hx₀ _), ← Real.rpow_natCast]
   exact rpow_le_rpow_of_exponent_le hx₁ hn.le
 #align tendsto_exp_div_rpow_at_top tendsto_exp_div_rpow_atTop
 
@@ -158,8 +155,8 @@ theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
 #align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
-@[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
-  tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+@[deprecated] --2024-01-31
+alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
@@ -178,8 +175,7 @@ theorem ENNReal.tendsto_rpow_at_top {y : ℝ} (hy : 0 < y) :
   obtain ⟨c, _, hc⟩ :=
     (atTop_basis_Ioi.tendsto_iff atTop_basis_Ioi).mp (NNReal.tendsto_rpow_atTop hy) x trivial
   have hc' : Set.Ioi ↑c ∈ 𝓝 (⊤ : ℝ≥0∞) := Ioi_mem_nhds ENNReal.coe_lt_top
-  refine' eventually_of_mem hc' _
-  intro a ha
+  filter_upwards [hc'] with a ha
   by_cases ha' : a = ⊤
   · simp [ha', hy]
   lift a to ℝ≥0 using ha'
@@ -269,7 +265,7 @@ theorem IsBigOWith.rpow (h : IsBigOWith c l f g) (hc : 0 ≤ c) (hr : 0 ≤ r) (
   filter_upwards [hg, h.bound] with x hgx hx
   calc
     |f x ^ r| ≤ |f x| ^ r := abs_rpow_le_abs_rpow _ _
-    _ ≤ (c * |g x|) ^ r := (rpow_le_rpow (abs_nonneg _) hx hr)
+    _ ≤ (c * |g x|) ^ r := rpow_le_rpow (abs_nonneg _) hx hr
     _ = c ^ r * |g x ^ r| := by rw [mul_rpow hc (abs_nonneg _), abs_rpow_of_nonneg hgx]
 #align asymptotics.is_O_with.rpow Asymptotics.IsBigOWith.rpow
 
@@ -302,7 +298,7 @@ theorem isLittleO_rpow_exp_pos_mul_atTop (s : ℝ) {b : ℝ} (hb : 0 < b) :
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any integer `k` and positive `b`. -/
 theorem isLittleO_zpow_exp_pos_mul_atTop (k : ℤ) {b : ℝ} (hb : 0 < b) :
     (fun x : ℝ => x ^ k) =o[atTop] fun x => exp (b * x) := by
-  simpa only [Real.rpow_int_cast] using isLittleO_rpow_exp_pos_mul_atTop k hb
+  simpa only [Real.rpow_intCast] using isLittleO_rpow_exp_pos_mul_atTop k hb
 #align is_o_zpow_exp_pos_mul_at_top isLittleO_zpow_exp_pos_mul_atTop
 
 /-- `x ^ k = o(exp(b * x))` as `x → ∞` for any natural `k` and positive `b`. -/
@@ -347,13 +343,13 @@ theorem isLittleO_log_rpow_rpow_atTop {s : ℝ} (r : ℝ) (hs : 0 < s) :
       IsBigO.of_bound 1 <|
         (tendsto_log_atTop.eventually_ge_atTop 1).mono fun x hx => by
           have hx₀ : 0 ≤ log x := zero_le_one.trans hx
-          simp [norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
+          simp [r', norm_eq_abs, abs_rpow_of_nonneg, abs_rpow_of_nonneg hx₀,
             rpow_le_rpow_of_exponent_le (hx.trans (le_abs_self _))]
     _ =o[atTop] fun x => (x ^ (s / r')) ^ r' :=
       ((isLittleO_log_rpow_atTop H).rpow hr <|
         (_root_.tendsto_rpow_atTop H).eventually <| eventually_ge_atTop 0)
     _ =ᶠ[atTop] fun x => x ^ s :=
-      (eventually_ge_atTop 0).mono fun x hx => by simp only [← rpow_mul hx, div_mul_cancel _ hr.ne']
+      (eventually_ge_atTop 0).mono fun x hx ↦ by simp only [← rpow_mul hx, div_mul_cancel₀ _ hr.ne']
 #align is_o_log_rpow_rpow_at_top isLittleO_log_rpow_rpow_atTop
 
 theorem isLittleO_abs_log_rpow_rpow_nhds_zero {s : ℝ} (r : ℝ) (hs : s < 0) :

@@ -164,7 +164,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
       (𝓝 <| -c ^ (a + 1) / (a + 1)) by
     refine' this.congr' ((eventually_gt_atTop 0).mp (eventually_of_forall fun x hx => _))
     dsimp only
-    rw [integral_cpow, id.def]
+    rw [integral_cpow, id]
     refine' Or.inr ⟨_, not_mem_uIcc_of_lt hc hx⟩
     apply_fun Complex.re
     rw [Complex.neg_re, Complex.one_re]
@@ -181,7 +181,7 @@ theorem integral_Ioi_cpow_of_lt {a : ℂ} (ha : a.re < -1) {c : ℝ} (hc : 0 < c
 
 theorem integrable_inv_one_add_sq : Integrable fun (x : ℝ) ↦ (1 + x ^ 2)⁻¹ := by
   suffices Integrable fun (x : ℝ) ↦ (1 + ‖x‖ ^ 2) ^ ((-2 : ℝ) / 2) by simpa [rpow_neg_one]
-  exact integrable_rpow_neg_one_add_norm_sq (by simpa using by norm_num)
+  exact integrable_rpow_neg_one_add_norm_sq (by simp)
 
 @[simp]
 theorem integral_Iic_inv_one_add_sq {i : ℝ} :

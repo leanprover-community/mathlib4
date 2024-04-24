@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Field.Equiv
 
 #align_import ring_theory.localization.fraction_ring from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -33,9 +34,7 @@ commutative ring, field of fractions
 
 
 variable (R : Type*) [CommRing R] {M : Submonoid R} (S : Type*) [CommRing S]
-
 variable [Algebra R S] {P : Type*} [CommRing P]
-
 variable {A : Type*} [CommRing A] [IsDomain A] (K : Type*)
 
 -- TODO: should this extend `Algebra` instead of assuming it?
@@ -52,11 +51,11 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   map_units' := by
     rintro ⟨x, hx⟩
     rw [mem_nonZeroDivisors_iff_ne_zero] at hx
-    simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne.def, Subtype.coe_mk] using hx
+    simpa only [eq_intCast, isUnit_iff_ne_zero, Int.cast_eq_zero, Ne, Subtype.coe_mk] using hx
   surj' := by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
-    rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
     rw [eq_intCast, eq_intCast, Int.cast_inj]
@@ -109,7 +108,7 @@ protected theorem isDomain : IsDomain K :=
 #align is_fraction_ring.is_domain IsFractionRing.isDomain
 
 /-- The inverse of an element in the field of fractions of an integral domain. -/
-protected noncomputable irreducible_def inv (z : K) : K := open Classical in
+protected noncomputable irreducible_def inv (z : K) : K := open scoped Classical in
   if h : z = 0 then 0
   else
     mk' K ↑(sec (nonZeroDivisors A) z).2
@@ -133,14 +132,12 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
-noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
-    inv := IsFractionRing.inv A
-    mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-    inv_zero := by
-      change IsFractionRing.inv A (0 : K) = 0
-      rw [IsFractionRing.inv]
-      exact dif_pos rfl }
+noncomputable def toField : Field K where
+  __ := IsFractionRing.isDomain A
+  mul_inv_cancel := IsFractionRing.mul_inv_cancel A
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
@@ -159,7 +156,7 @@ variable {B : Type*} [CommRing B] [IsDomain B] [Field K] {L : Type*} [Field L] [
 theorem mk'_mk_eq_div {r s} (hs : s ∈ nonZeroDivisors A) :
     mk' K r ⟨s, hs⟩ = algebraMap A K r / algebraMap A K s :=
   mk'_eq_iff_eq_mul.2 <|
-    (div_mul_cancel (algebraMap A K r)
+    (div_mul_cancel₀ (algebraMap A K r)
         (IsFractionRing.to_map_ne_zero_of_mem_nonZeroDivisors hs)).symm
 #align is_fraction_ring.mk'_mk_eq_div IsFractionRing.mk'_mk_eq_div
 

@@ -22,7 +22,7 @@ open Set
 
 namespace Nat
 
-open Classical
+open scoped Classical
 
 noncomputable instance : InfSet ℕ :=
   ⟨fun s ↦ if h : ∃ n, n ∈ s then @Nat.find (fun n ↦ n ∈ s) _ h else 0⟩
@@ -149,7 +149,7 @@ noncomputable instance : ConditionallyCompleteLinearOrderBot ℕ :=
 
 theorem sSup_mem {s : Set ℕ} (h₁ : s.Nonempty) (h₂ : BddAbove s) : sSup s ∈ s :=
   let ⟨k, hk⟩ := h₂
-  h₁.cSup_mem ((finite_le_nat k).subset hk)
+  h₁.csSup_mem ((finite_le_nat k).subset hk)
 #align nat.Sup_mem Nat.sSup_mem
 
 theorem sInf_add {n : ℕ} {p : ℕ → Prop} (hn : n ≤ sInf { m | p m }) :

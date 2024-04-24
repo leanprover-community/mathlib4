@@ -98,7 +98,7 @@ theorem mem_posTangentConeAt_of_segment_subset {s : Set E} {x y : E} (h : segmen
 
 theorem mem_posTangentConeAt_of_segment_subset' {s : Set E} {x y : E}
     (h : segment ℝ x (x + y) ⊆ s) : y ∈ posTangentConeAt s x := by
-  simpa only [add_sub_cancel'] using mem_posTangentConeAt_of_segment_subset h
+  simpa only [add_sub_cancel_left] using mem_posTangentConeAt_of_segment_subset h
 #align mem_pos_tangent_cone_at_of_segment_subset' mem_posTangentConeAt_of_segment_subset'
 
 theorem posTangentConeAt_univ : posTangentConeAt univ a = univ :=

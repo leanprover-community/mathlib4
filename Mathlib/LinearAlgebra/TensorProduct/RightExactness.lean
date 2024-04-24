@@ -5,29 +5,33 @@ Authors: Antoine Chambetr-Loir
 -/
 
 import Mathlib.Algebra.Exact
-import Mathlib.RingTheory.TensorProduct
+import Mathlib.RingTheory.TensorProduct.Basic
 
 /-! # Right-exactness properties of tensor product
 
 ## Modules
 
-* `TensorProduct.rTensor.surjective` asserts that when one tensors
+* `LinearMap.rTensor_surjective` asserts that when one tensors
   a surjective map on the right, one still gets a surjective linear map.
+  More generally, `LinearMap.rTensor_range`  computes the range of
+  `LinearMap.rTensor`
 
-* `TensorProduct.lTensor.surjective` asserts that when one tensors
+* `LinearMap.lTensor_surjective` asserts that when one tensors
   a surjective map on the left, one still gets a surjective linear map.
+  More generally, `LinearMap.lTensor_range`  computes the range of
+  `LinearMap.lTensor`
 
 * `TensorProduct.rTensor_exact` says that when one tensors a short exact
   sequence on the right, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`),
   and `rTensor.equiv` gives the LinearEquiv that follows from this
-  combined with `TensorProduct.rTensor.surjective`.
+  combined with `LinearMap.rTensor_surjective`.
 
 * `TensorProduct.lTensor_exact` says that when one tensors a short exact
   sequence on the left, one still gets a short exact sequence
   (right-exactness of `TensorProduct.rTensor`)
   and `lTensor.equiv` gives the LinearEquiv that follows from this
-  combined with `TensorProduct.lTensor.surjective`.
+  combined with `LinearMap.lTensor_surjective`.
 
 * For `N : Submodule R M`, `LinearMap.exact_subtype_mkQ N` says that
   the inclusion of the submodule and the quotient map form an exact pair,
@@ -85,7 +89,7 @@ open TensorProduct LinearMap
 section Semiring
 
 variable {R : Type*} [CommSemiring R] {M N P Q: Type*}
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommGroup P] [AddCommMonoid Q]
+    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P] [AddCommMonoid Q]
     [Module R M] [Module R N] [Module R P] [Module R Q]
     {f : M →ₗ[R] N} (g : N →ₗ[R] P)
 
@@ -102,8 +106,9 @@ lemma le_comap_range_rTensor (q : Q) :
 
 variable (Q) {g}
 
+
 /-- If `g` is surjective, then `lTensor Q g` is surjective -/
-theorem lTensor.surjective (hg : Function.Surjective g) :
+theorem LinearMap.lTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (lTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
@@ -116,8 +121,19 @@ theorem lTensor.surjective (hg : Function.Surjective g) :
     obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, map_add _ _ _⟩
 
+theorem LinearMap.lTensor_range :
+    range (lTensor Q g) =
+      range (lTensor Q (Submodule.subtype (range g))) := by
+  have : g = (Submodule.subtype _).comp g.rangeRestrict := rfl
+  nth_rewrite 1 [this]
+  rw [lTensor_comp]
+  apply range_comp_of_range_eq_top
+  rw [range_eq_top]
+  apply lTensor_surjective
+  rw [← range_eq_top, range_rangeRestrict]
+
 /-- If `g` is surjective, then `rTensor Q g` is surjective -/
-theorem rTensor.surjective (hg : Function.Surjective g) :
+theorem LinearMap.rTensor_surjective (hg : Function.Surjective g) :
     Function.Surjective (rTensor Q g) := by
   intro z
   induction z using TensorProduct.induction_on with
@@ -129,6 +145,17 @@ theorem rTensor.surjective (hg : Function.Surjective g) :
     obtain ⟨x, rfl⟩ := hx
     obtain ⟨y, rfl⟩ := hy
     exact ⟨x + y, map_add _ _ _⟩
+
+theorem LinearMap.rTensor_range :
+    range (rTensor Q g) =
+      range (rTensor Q (Submodule.subtype (range g))) := by
+  have : g = (Submodule.subtype _).comp g.rangeRestrict := rfl
+  nth_rewrite 1 [this]
+  rw [rTensor_comp]
+  apply range_comp_of_range_eq_top
+  rw [range_eq_top]
+  apply rTensor_surjective
+  rw [← range_eq_top, range_rangeRestrict]
 
 end Semiring
 
@@ -234,7 +261,7 @@ def lTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, lTensor.inverse_of_rightInverse_apply]
   right_inv := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
-    obtain ⟨y, rfl⟩ := lTensor.surjective Q (hgh.surjective) z
+    obtain ⟨y, rfl⟩ := lTensor_surjective Q (hgh.surjective) z
     rw [lTensor.inverse_of_rightInverse_apply]
     simp only [lTensor.toFun, Submodule.liftQ_apply] }
 
@@ -339,7 +366,7 @@ def rTensor.linearEquiv_of_rightInverse {h : P → N} (hgh : Function.RightInver
     simp only [Submodule.mkQ_apply, Submodule.liftQ_apply, rTensor.inverse_of_rightInverse_apply]
   right_inv   := fun z ↦ by
     simp only [AddHom.toFun_eq_coe, coe_toAddHom]
-    obtain ⟨y, rfl⟩ := rTensor.surjective Q hgh.surjective z
+    obtain ⟨y, rfl⟩ := rTensor_surjective Q hgh.surjective z
     rw [rTensor.inverse_of_rightInverse_apply]
     simp only [rTensor.toFun, Submodule.liftQ_apply] }
 
@@ -372,7 +399,7 @@ variable {M' N' P' : Type*}
 
 theorem TensorProduct.map_surjective : Function.Surjective (TensorProduct.map g g') := by
   rw [← lTensor_comp_rTensor, coe_comp]
-  exact Function.Surjective.comp (lTensor.surjective _ hg') (rTensor.surjective _ hg)
+  exact Function.Surjective.comp (lTensor_surjective _ hg') (rTensor_surjective _ hg)
 
 /-- Kernel of a product map (right-exactness of tensor product) -/
 theorem TensorProduct.map_ker :
@@ -386,7 +413,7 @@ theorem TensorProduct.map_ker :
     Submodule.map_top]
   rw [← lTensor_comp_rTensor, range_eq_map, Submodule.map_comp,
     Submodule.map_top]
-  rw [range_eq_top.mpr (rTensor.surjective M' hg), Submodule.map_top]
+  rw [range_eq_top.mpr (rTensor_surjective M' hg), Submodule.map_top]
   rw [Exact.linearMap_ker_eq (lTensor_exact P hfg' hg')]
 
 end Modules
@@ -582,7 +609,7 @@ theorem Algebra.TensorProduct.map_ker (hf : Function.Surjective f) (hg : Functio
   simp only [← AlgHom.coe_ker]
   -- apply one step of exactness
   rw [← Algebra.TensorProduct.lTensor_ker _ hg, RingHom.ker_eq_comap_bot (map (AlgHom.id R A) g)]
-  rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (lTensor.surjective A hg)]
+  rw [← Ideal.comap_map_of_surjective (map (AlgHom.id R A) g) (LinearMap.lTensor_surjective A hg)]
   -- apply the other step of exactness
   rw [Algebra.TensorProduct.rTensor_ker _ hf]
   apply congr_arg₂ _ rfl

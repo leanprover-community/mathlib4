@@ -19,8 +19,8 @@ Given a list `l`,
   sending `⟨x, hx⟩` to `⟨indexOf x l, _⟩`;
 
 * if `l` has no duplicates and contains every element of a type `α`, then
-  `List.Nodup.getEquivOfForallMemList` defines an equivalence between
-  `Fin (length l)` and `α`;  if `α` does not have decidable equality, then
+  `List.Nodup.getEquivOfForallMemList` defines an equivalence between `Fin (length l)` and `α`;
+  if `α` does not have decidable equality, then
   there is a bijection `List.Nodup.getBijectionOfForallMemList`;
 
 * if `l` is sorted w.r.t. `(<)`, then `List.Sorted.getIso` is the same bijection reinterpreted
@@ -237,7 +237,7 @@ theorem duplicate_iff_exists_distinct_get {l : List α} {x : α} :
 /-- An element `x : α` of `l : List α` is a duplicate iff it can be found
 at two distinct indices `n m : ℕ` inside the list `l`.
 -/
-@[deprecated duplicate_iff_exists_distinct_get]
+@[deprecated duplicate_iff_exists_distinct_get] -- 2023-01-19
 theorem duplicate_iff_exists_distinct_nthLe {l : List α} {x : α} :
     l.Duplicate x ↔
       ∃ (n : ℕ) (hn : n < l.length) (m : ℕ) (hm : m < l.length) (_ : n < m),

@@ -6,6 +6,7 @@ Authors: Kenny Lau
 import Mathlib.Algebra.GroupWithZero.Units.Lemmas
 import Mathlib.Algebra.Ring.Equiv
 import Mathlib.GroupTheory.GroupAction.Group
+import Mathlib.Algebra.Field.Defs
 
 #align_import algebra.group_ring_action.basic from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
 
@@ -45,8 +46,7 @@ class MulSemiringAction (M : Type u) (R : Type v) [Monoid M] [Semiring R] extend
 section Semiring
 
 variable (M N G : Type*) [Monoid M] [Monoid N] [Group G]
-
-variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S] [DivisionRing F]
+variable (A R S F : Type v) [AddMonoid A] [Semiring R] [CommSemiring S]
 
 -- note we could not use `extends` since these typeclasses are made with `old_structure_cmd`
 instance (priority := 100) MulSemiringAction.toMulDistribMulAction [h : MulSemiringAction M R] :
@@ -115,6 +115,8 @@ section SimpLemmas
 variable {M G A R F}
 
 attribute [simp] smul_one smul_mul' smul_zero smul_add
+
+variable [DivisionRing F]
 
 /-- Note that `smul_inv'` refers to the group case, and `smul_inv` has an additional inverse
 on `x`. -/
