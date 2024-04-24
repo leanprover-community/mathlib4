@@ -167,7 +167,7 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
 
 variable (K)
 
-instance : CharZero (𝓞 K) :=
+instance [CharZero K] : CharZero (𝓞 K) :=
   CharZero.of_module _ K
 
 instance : IsNoetherian ℤ (𝓞 K) :=
