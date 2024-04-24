@@ -520,3 +520,17 @@ example (a b c : String) : a = c → a = "hello" → c = "world" → c = b → F
   cc
 
 end CCValue
+
+section Config
+
+/-! Tests for the configuration options -/
+
+/-- `ignoreInstances := false` means instances won't be unified. -/
+example {G : Type*} [AddCommMonoid G] (a b : G) :
+    @HAdd.hAdd _ _ _ (@instHAdd _ (@AddSemigroup.toAdd _ AddCommSemigroup.toAddSemigroup)) a b =
+      @HAdd.hAdd _ _ _ (@instHAdd _ (@AddSemigroup.toAdd _ AddMonoid.toAddSemigroup)) a b := by
+  success_if_fail_with_msg "cc tactic failed"
+    cc (config := { ignoreInstances := false, ac := false })
+  cc (config := { ac := false })
+
+end Config
