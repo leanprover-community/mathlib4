@@ -64,10 +64,95 @@ lemma aux2 [IsFiniteMeasure μ] [TopologicalSpace α] [OpensMeasurableSpace α]
   rw [measure_compl hK2.measurableSet (measure_ne_top μ _)]
   exact tsub_le_iff_tsub_le.mp hn
 
+lemma aux3 {α : Type*} [PseudoMetricSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
+    {s : Set α} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+  rw [Metric.totallyBounded_iff] at h
+  have := fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat
+  choose! f hf hfb using this
+  use ⋃ n, f n
+  constructor
+  · apply Set.countable_iUnion
+    exact fun i => (hf i).countable
+  · intro x hx
+    rw [Metric.mem_closure_iff]
+    intro ε hε
+    obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
+    have := hfb n hx
+    have : ∃ b ∈ f n, dist x b < ε := by
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp this
+      simp only [one_div, Set.mem_iUnion, Metric.mem_ball, exists_prop] at hi
+      use i, hi.1
+      apply lt_trans hi.2 ?_
+      rw [inv_eq_one_div]
+      exact hn
+    aesop
+
+/-- A measure `μ` is separable if there is a separable set `S` such that `μ S = μ Set.univ`. -/
+ def IsSeparable [TopologicalSpace α] (μ : Measure α) : Prop :=
+   ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ S = μ Set.univ
+
 /-- A measure `μ` is pre-tight if for all `0 < ε`, there exists `K` totally bounded such that
   `μ Kᶜ ≤ ε`. -/
 def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
   ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ ε
+
+namespace IsPretight
+
+lemma has_totally_bounded_nat [UniformSpace α] (h : IsPretight μ) :
+    ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n := by
+  intro n
+  apply h
+  simp
+
+lemma of_totally_bounded_nat [UniformSpace α] (h : ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n) :
+    IsPretight μ:= by
+  intro ε hε
+  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne'
+  obtain ⟨K, hK, hKe⟩ := h n
+  refine ⟨K, hK, ?_⟩
+  apply le_trans hKe (le_trans ?_ hn.le)
+  rw [one_div, ENNReal.inv_le_inv]
+
+lemma totally_bounded_nat_iff [UniformSpace α] :
+    IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n :=
+  ⟨has_totally_bounded_nat, of_totally_bounded_nat⟩
+
+lemma has_countable_totally_bounded_union [UniformSpace α] [OpensMeasurableSpace α]
+    (h : IsPretight μ):
+    ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
+  choose! K hKa hKb using h.has_totally_bounded_nat
+  use K, hKa
+  rw [← Set.iUnion_accumulate, measure_congr]
+  rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
+  refine le_of_forall_lt' (fun ε hε ↦ ?_)
+  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
+  rw [← one_div] at hn
+  have : μ ((Set.Accumulate K n)ᶜ) ≤ μ ((K n)ᶜ) := by
+    apply measure_mono
+    rw [Set.compl_subset_compl]
+    exact Set.subset_accumulate
+  have : μ ((Set.Accumulate K n)ᶜ) < ε := by
+    apply lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn)
+  exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n) this
+
+lemma to_separable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α] (h : IsPretight μ) :
+    IsSeparable μ := by
+  obtain ⟨K, hKa, hKb⟩ := has_countable_totally_bounded_union h
+  use ⋃ n, K n, ?_, hKb
+  rw [TopologicalSpace.isSeparable_iUnion]
+  exact fun i => aux3 (hKa i)
+
+--lemma of_separable_on_metric [Nonempty α] [UniformSpace α] [OpensMeasurableSpace α]
+--    (h : IsSeparable μ) : IsPretight μ := by
+--  obtain ⟨S, hSa, hSb⟩ := h
+--  let S₀ := closure S
+--  have : Nonempty S := by sorry
+--  have : Nonempty S₀ := by sorry
+--  have hS₀a := TopologicalSpace.IsSeparable.closure hSa
+--  have : TopologicalSpace.SeparableSpace S₀ := by sorry
+--  obtain ⟨n, hn⟩ := TopologicalSpace.exists_countable_dense S₀
+--  sorry
+end IsPretight
 
 /-- A measure `μ` is tight if for all `0 < ε`, there exists `K` compact such that `μ Kᶜ ≤ ε`. -/
 def IsTight [TopologicalSpace α] (μ : Measure α) : Prop :=
