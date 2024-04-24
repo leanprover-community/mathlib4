@@ -1639,7 +1639,7 @@ theorem comp_smulₛₗ [SMulCommClass R₂ R₂ M₂] [SMulCommClass R₃ R₃ 
 
 instance distribMulAction [ContinuousAdd M₂] : DistribMulAction S₃ (M →SL[σ₁₂] M₂) where
   smul_add a f g := ext fun x => smul_add a (f x) (g x)
-  smul_zero _a := ext fun _x => smul_zero _
+  smul_zero a := ext fun _ => smul_zero a
 #align continuous_linear_map.distrib_mul_action ContinuousLinearMap.distribMulAction
 
 end SMulMonoid
@@ -1682,7 +1682,7 @@ theorem prod_ext {f g : M × N₂ →L[R] N₃} (hl : f.comp (inl _ _ _) = g.com
 variable [ContinuousAdd M₂] [ContinuousAdd M₃] [ContinuousAdd N₂]
 
 instance module : Module S₃ (M →SL[σ₁₃] M₃) where
-  zero_smul _ := ext fun _ => zero_smul _ _
+  zero_smul _ := ext fun _ => zero_smul S₃ _
   add_smul _ _ _ := ext fun _ => add_smul _ _ _
 #align continuous_linear_map.module ContinuousLinearMap.module
 
@@ -1738,7 +1738,7 @@ def smulRightₗ (c : M →L[R] S) : M₂ →ₗ[T] M →L[R] M₂ where
   toFun := c.smulRight
   map_add' x y := by
     ext e
-    apply smul_add
+    apply smul_add (c e)
   map_smul' a x := by
     ext e
     dsimp

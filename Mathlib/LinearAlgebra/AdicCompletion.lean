@@ -83,6 +83,12 @@ def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
+-- Adaptation note: 2024-04-23
+-- This requires a massive increase in the heartbeats limit.
+-- We need to diagnose if the proof is doing something silly,
+-- or if this reflects a regression in IsDefeq from
+-- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
+set_option maxHeartbeats 800000 in
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -210,6 +216,12 @@ def of : M →ₗ[R] adicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of adicCompletion.of
 
+-- Adaptation note: 2024-04-23
+-- This requires a massive increase in the heartbeats limit.
+-- We need to diagnose if the proof is doing something silly,
+-- or if this reflects a regression in IsDefeq from
+-- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
+set_option maxHeartbeats 800000 in
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl
