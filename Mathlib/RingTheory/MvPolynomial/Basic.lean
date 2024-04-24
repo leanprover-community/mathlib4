@@ -135,6 +135,10 @@ def basisMonomials : Basis (σ →₀ ℕ) R (MvPolynomial σ R) :=
   Finsupp.basisSingleOne
 #align mv_polynomial.basis_monomials MvPolynomial.basisMonomials
 
+/-- The `R`-module `MvPolynomial σ R` is free. -/
+instance : Module.Free R (MvPolynomial σ R) :=
+  Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
+
 @[simp]
 theorem coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
