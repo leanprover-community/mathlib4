@@ -333,7 +333,7 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 @[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
-theorem coe_le_iff : ∀ {x : WithZero α}, (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
+theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
   WithBot.coe_le_iff
 
 instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
