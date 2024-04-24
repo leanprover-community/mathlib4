@@ -80,7 +80,7 @@ instance : CoeHTC (𝓞 K)ˣ K :=
   ⟨fun x => algebraMap _ K (Units.val x)⟩
 
 theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
-  (NoZeroSMulDivisors.algebraMap_injective _ _).comp Units.ext
+  RingOfIntegers.coe_injective.comp Units.ext
 
 variable {K}
 
@@ -98,7 +98,7 @@ theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
 theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
 
 theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
-  Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
+  mt RingOfIntegers.coe_eq_zero_iff.mp (_root_.Units.ne_zero x)
 
 end coe
 
@@ -331,7 +331,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
       (∀ w, w ≠ w₁ → w (algebraMap _ _ y) < w (algebraMap _ _ x)) ∧
       |Algebra.norm ℚ (algebraMap _ K y)| ≤ B := by
-  have hx' := ((map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ K)).mpr hx)
+  have hx' := mt RingOfIntegers.coe_eq_zero_iff.mp hx
   let f : InfinitePlace K → ℝ≥0 :=
     fun w => ⟨(w (algebraMap _ _ x)) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
@@ -366,9 +366,8 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
 /-- The terms of the sequence are nonzero. -/
-theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 := by
-  refine (map_ne_zero_iff (algebraMap (𝓞 K) K) ?_).mpr (seq K w₁ hB n).prop
-  exact IsFractionRing.injective _ K
+theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
+  mt (RingOfIntegers.coe_eq_zero_iff).mp (seq K w₁ hB n).prop
 
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
@@ -416,8 +415,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · exact pos_iff.mpr ((map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ K)).mpr
-        (ne_zero _))
+    · exact pos_iff.mpr (coe_ne_zero _)
     · calc
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),

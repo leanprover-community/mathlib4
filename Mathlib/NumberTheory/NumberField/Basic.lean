@@ -134,14 +134,30 @@ namespace RingOfIntegers
 
 variable {K}
 
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
+-/
+lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
+  NoZeroSMulDivisors.algebraMap_injective _ _
+
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `map_eq_zero_iff` applied to
+`NoZeroSMulDivisors.algebraMap_injective`.
+-/
+@[simp] lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
+  map_eq_zero_iff _  coe_injective
+
+theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
+  x.2
+#align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
+
 theorem isIntegral {K : Type*} [Field K] (x : 𝓞 K) :
     IsIntegral ℤ x := by
-  obtain ⟨P, hPm, hP⟩ := x.2
+  obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
   refine' ⟨P, hPm, _⟩
-  have : algebraMap _ K x = x.1 := rfl
-  rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← this, ← Polynomial.hom_eval₂, map_eq_zero_iff]
-    at hP
-  · apply NoZeroSMulDivisors.algebraMap_injective
+  rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.RingOfIntegers.isIntegral
 
 instance [NumberField K] : IsFractionRing (𝓞 K) K :=
@@ -152,10 +168,6 @@ instance : IsIntegralClosure (𝓞 K) ℤ K :=
 
 instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
-
-theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
-  x.2
-#align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
 
 #noalign number_field.ring_of_integers.map_mem
 
