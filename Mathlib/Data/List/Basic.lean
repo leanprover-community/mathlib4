@@ -908,9 +908,6 @@ theorem head_reverse_of_ne_nil {l : List α} (hl : l.reverse ≠ []) :
   rw [this, getLast_reverse]
   exact (get_zero_eq_head_of_ne_nil _).symm
 
-theorem head?_reverse (l : List α) : l.reverse.head? = l.getLast? := by
-  rw [← getLast?_reverse, reverse_reverse]
-
 theorem head!_reverse [Inhabited α] (l : List α) : l.reverse.head! = l.getLast! := by
   rw [← getLast!_reverse, reverse_reverse]
 
@@ -923,6 +920,13 @@ theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) : l = [] ∨
 
 theorem length_le_one_of_tail_eq_nil {l : List α} (h : l.tail = []) :
     l.length ≤ 1 := by obtain rfl | ⟨x, rfl⟩ := subsingleton_of_tail_eq_nil h <;> simp
+
+theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
+  simp [get?_eq_some]
+
+theorem get_eq_get? (l : List α) (i : Fin l.length) :
+    l.get i = (l.get? i).get (by simp [get?_eq_get]) := by
+  simp [get_eq_iff]
 
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
@@ -1523,10 +1527,6 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
   congr
   omega
 #align list.eq_cons_of_length_one List.eq_cons_of_length_one
-
-theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
-  rw [get?_eq_some]
-  simp [n.2]
 
 @[deprecated get_eq_iff] -- 2023-01-05
 theorem nthLe_eq_iff {l : List α} {n : ℕ} {x : α} {h} : l.nthLe n h = x ↔ l.get? n = some x :=
