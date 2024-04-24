@@ -99,18 +99,44 @@ abbrev ignoreBranch : HashSet SyntaxNodeKind := HashSet.empty
   |>.insert ``Lean.Parser.Tactic.allGoals
   |>.insert ``Lean.Parser.Tactic.focus
 
+/-- extracts the position of the syntax nodes whose `SyntaxNodeKind` is `cdot`
+and that are not preceded by a `cdot`s.  These are candidates for unnecessary uses of `cdot`:
+if there is only one active goal before placing `·`, then they will be flagged. -/
+partial
+def getNonTerminalCdots : Syntax → Array String.Pos
+  | .node _ _ args =>
+    Id.run do
+    let mut nonCDotFollowers := #[]
+    let mut wasCDot? := false
+    for i in [:args.size] do
+      if i % 2 == 1 then continue
+      let argi := args[i]!
+      if (! wasCDot?) && argi.isOfKind `cdot then
+        nonCDotFollowers := nonCDotFollowers.push (argi.getPos?.getD default)
+      wasCDot? := argi.isOfKind `cdot
+    return nonCDotFollowers ++ (args.map getNonTerminalCdots).flatten
+  | _ => default
+
+variable (unCDots : Array String.Pos) in
 /-- `getManyGoals` returns the syntax nodes where the tactic leaves at least one goal that
 was not present before it ran,
 unless its `SyntaxNodeKind` is either in `exclusions` or in `ignoreBranch`.
+
+The `Option Nat` value is `none` if the linter should flag the node as an unnecessary `·`.
+Otherwise, it is `some n`, where `n` is the number of active goals after applying the
+tactic that were not also goals before applying the tactic.
 -/
 partial
-def getManyGoals : InfoTree → Array (Syntax × Nat)
+def getManyGoals : InfoTree → Array (Syntax × Option Nat)
   | .node k args =>
     let kargs := (args.map getManyGoals).foldl (· ++ ·) #[]
     if let .ofTacticInfo i := k then
       if ignoreBranch.contains i.stx.getKind then #[] else
       if let  .original .. := i.stx.getHeadInfo then
         let newGoals := i.goalsAfter.filter (i.goalsBefore.contains ·)
+        -- record unnecessary uses of `·`
+        if unCDots.contains (i.stx.getPos?.getD default) && i.goalsBefore.length == 1 then
+          kargs.push (i.stx, none) else
         if newGoals.length != 0 && !exclusions.contains i.stx.getKind then
           kargs.push (i.stx, newGoals.length)
         else kargs
@@ -137,6 +163,7 @@ def getLinterHash (o : Options) : Bool := Linter.getLinterValue linter.multiGoal
 @[inherit_doc Mathlib.Linter.linter.multiGoal]
 def multiGoalLinter : Linter where
   run := withSetOptionIn fun _stx => do
+    let poss := getNonTerminalCdots _stx
     let mod ← getMainModule
     unless getLinterHash (← getOptions) &&
            -- the linter only runs on `Mathlib`, `Archive`, `Counterexamples` and its own test file
@@ -146,8 +173,10 @@ def multiGoalLinter : Linter where
       return
     let trees ← getInfoTrees
     for t in trees.toArray do
-      for (s, n) in getManyGoals t do
-        let gl := if n == 1 then "goal" else "goals"
-        Linter.logLint linter.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
+      for (s, n) in getManyGoals poss t do
+        let gl := if n == some 1 then "goal" else "goals"
+        match n with
+          | none => logInfoAt s m!"unnecessary `·`? '{s.getKind}'"
+          | some n => Linter.logLint linter.multiGoal s (m!"'{s}' leaves {n} {gl} '{s.getKind}'")
 
 initialize addLinter multiGoalLinter
