@@ -93,19 +93,23 @@ theorem ext_iff {x y : 𝓞 K} : x = y ↔ algebraMap _ K x = algebraMap _ K y :
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
 
-@[simp] lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y :=
-  Subtype.ext_iff
+lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y := by simp
+
 @[simp] lemma mk_one : (⟨1, one_mem _⟩ : 𝓞 K) = 1 :=
   rfl
+
 @[simp] lemma mk_zero : (⟨0, zero_mem _⟩ : 𝓞 K) = 0 :=
   rfl
 -- TODO: these lemmas don't seem to fire?
 @[simp] lemma mk_add_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) + ⟨y, hy⟩ = ⟨x + y, add_mem hx hy⟩ :=
   rfl
+
 @[simp] lemma mk_mul_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) * ⟨y, hy⟩ = ⟨x * y, mul_mem hx hy⟩ :=
   rfl
+
 @[simp] lemma mk_sub_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) - ⟨y, hy⟩ = ⟨x - y, sub_mem hx hy⟩ :=
   rfl
+
 @[simp] lemma neg_mk (x : K) (hx) : (-⟨x, hx⟩ : 𝓞 K) = ⟨-x, neg_mem hx⟩ :=
   rfl
 
@@ -193,15 +197,21 @@ noncomputable def basis : Basis (Free.ChooseBasisIndex ℤ (𝓞 K)) ℤ (𝓞 K
 
 variable {K} {M : Type*}
 
+/-- Given `f : M → K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
+`M → 𝓞 K`. -/
 def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
   ⟨f x, h x⟩
 
+/-- Given `f : M →+ K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
+`M →+ 𝓞 K`. -/
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
     M →+ 𝓞 K where
   toFun := restrict f h
   map_zero' := by unfold restrict; rw [← mk_zero, mk_eq_mk, map_zero]
   map_add' x y := by unfold restrict; simp only [map_add]; rw [mk_add_mk]
 
+/-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
+`M →* 𝓞 K`. -/
 @[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
