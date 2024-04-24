@@ -23,9 +23,8 @@ abbrev P99 (X : Type u) [TopologicalSpace X] :=
 
 abbrev P125 (X : Type u) [TopologicalSpace X] := Nontrivial X
 
--- def P171 (X : Type u) [TopologicalSpace X] :=
---   ∀ K, CompHaus K →
---     ∀ f : K → X, ∀ k l : K, f k ≠ f l →
---     ∃ N_k : 𝓝 k, ∃ N_l : 𝓝 l, f'' N_k ∩ f'' N_l = ∅
+abbrev P171 (X : Type u) [TopologicalSpace X] :=
+  ∀ K : CompHaus.{u}, ∀ f : K → X, ∀ k l : K, f k ≠ f l →
+    ∃ N_k ∈ 𝓝 k, ∃ N_l ∈ 𝓝 l, f '' N_k ∩ f '' N_l = ∅
 
 end πBase
