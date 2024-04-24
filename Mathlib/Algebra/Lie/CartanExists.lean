@@ -157,26 +157,25 @@ Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
 Lemma 2 in [barnes1967]. -/
 lemma engel_le_engel (hLK : finrank K L ≤ #K)
-    (U : LieSubalgebra K L) (x : L) (hx : x ∈ U) (hUx : U ≤ engel K x)
-    (hmin : ∀ y : L, y ∈ U → engel K y ≤ engel K x → engel K y = engel K x)
-    (y : L) (hy : y ∈ U) :
-    engel K x ≤ engel K y := by
+    (U : LieSubalgebra K L) (x : U) (hUx : U ≤ engel K (x : L))
+    (hmin : ∀ y : U, engel K (y : L) ≤ engel K (x : L) → engel K (y : L) = engel K (x : L))
+    (y : U) :
+    engel K (x : L) ≤ engel K (y : L) := by
   -- We denote by `E` the Engel subalgebra `engel K x`
   -- viewed as Lie submodule of `L` over the Lie algebra `U`.
   let E : LieSubmodule K U L :=
-  { engel K x with
-    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUx hu) hy }
+  { engel K (x : L) with
+    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K (x : L)).lie_mem (hUx hu) hy }
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
   obtain rfl|hx₀ := eq_or_ne x 0
-  · simp only [engel_zero] at hmin ⊢
-    rw [hmin y hy le_top]
+  · simpa using hmin y
   -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
   let r := finrank K E
   -- If `r = finrank K L`, then `E = L`, and the statement is trivial.
   obtain hr|hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
-  · rw [hmin y hy]
-    suffices engel K x = ⊤ by simp_rw [this, le_top]
+  · rw [hmin y]
+    suffices engel K (x : L) = ⊤ by simp_rw [this, le_top]
     apply LieSubalgebra.to_submodule_injective
     apply Submodule.eq_top_of_finrank _ hr
   -- So from now on, we assume that `r < finrank K L`.
@@ -184,10 +183,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   --   viewed as endomorphism of `E`. Note that `χ u` is polynomial in its argument `r`.
   -- Similarly: `ψ u r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ u` is polynomial in its argument `r`.
-  let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K E ⟨x, hx⟩ u₁
-  let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K Q ⟨x, hx⟩ u₁
+  let χ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K E x u₁
+  let ψ : U → Polynomial (K[X]) := fun u₁ ↦ lieCharpoly K Q x u₁
   suffices ∀ u, χ u = X ^ r by -- sorry
-    specialize this (⟨y, hy⟩ - ⟨x, hx⟩)
+    specialize this (y - x)
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
     simp only [lieCharpoly_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
       Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
@@ -203,11 +202,11 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     ext i : 1
     obtain hi|rfl|hi := lt_trichotomy i r
     · rw [this i hi, coeff_X_pow, if_neg hi.ne]
-    · simp_rw [coeff_X_pow, if_true, r, ← lieCharpoly_natDegree K E ⟨x, hx⟩ u]
-      have := (lieCharpoly_monic K E ⟨x, hx⟩ u).leadingCoeff
+    · simp_rw [coeff_X_pow, if_true, r, ← lieCharpoly_natDegree K E x u]
+      have := (lieCharpoly_monic K E x u).leadingCoeff
       rwa [leadingCoeff] at this
     · rw [coeff_eq_zero_of_natDegree_lt, coeff_X_pow, if_neg hi.ne']
-      rwa [lieCharpoly_natDegree K E ⟨x, hx⟩ u]
+      rwa [lieCharpoly_natDegree K E x u]
   intro u i hi
   obtain rfl|hi0 := eq_or_ne i 0
   · -- sorry
@@ -221,10 +220,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     -- extract the following idiom, it is also used in the proof of `hψ` below, and more
     rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
       ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
-    let z := α • u + ⟨x, hx⟩
+    let z := α • u + x
     obtain hz₀|hz₀ := eq_or_ne z 0
-    · refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
-      · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+    · refine ⟨⟨x, self_mem_engel K (x : L)⟩, ?_, ?_⟩
+      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
@@ -234,7 +233,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       exact lie_self z.1
   have hψ : ∀ u, constantCoeff (ψ u) ≠ 0 := by -- sorry
     intro u H
-    obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅(⟨x, hx⟩ : U), z⁆ = 0 := by
+    obtain ⟨z, hz0, hxz⟩ : ∃ z : L ⧸ E, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
       apply_fun (evalRingHom 0) at H
       rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
         ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
@@ -242,7 +241,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
         LieModule.toEndomorphism_apply_apply] using H
     apply hz0
     obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
-    have : ⁅(⟨x, hx⟩ : U), z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
+    have : ⁅x, z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
     simp [mem_engel_iff, E] at this ⊢
     obtain ⟨n, hn⟩ := this
     use n+1
@@ -275,11 +274,11 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
       rw [Nat.add_sub_cancel' hi.le]
   apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ hcard
   intro α hα
-  let y := α • u + ⟨x, hx⟩
-  suffices engel K (y : L) ≤ engel K x by -- sorry
+  let y := α • u + x
+  suffices engel K (y : L) ≤ engel K (x : L) by -- sorry
     rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
       (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
-    specialize hmin y y.2 this
+    specialize hmin y this
     intro z
     simpa only [mem_engel_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow]
       using hmin.ge z.2
@@ -319,8 +318,9 @@ lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   use engel K x
   refine ⟨?_, normalizer_engel _ _⟩
   apply isNilpotent_of_forall_le_engel
-  apply engel_le_engel h _ x (self_mem_engel _ _) le_rfl
-  rintro y - hyx
+  intro y hy
+  apply engel_le_engel h (engel K x) ⟨x, self_mem_engel _ _⟩ le_rfl _ ⟨y, hy⟩
+  rintro ⟨y, hy⟩ hyx
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     apply LieSubalgebra.to_submodule_injective
     apply eq_of_le_of_finrank_le hyx this
