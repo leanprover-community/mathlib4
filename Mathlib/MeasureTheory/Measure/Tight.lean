@@ -117,8 +117,7 @@ lemma totally_bounded_nat_iff [UniformSpace α] :
     IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n :=
   ⟨has_totally_bounded_nat, of_totally_bounded_nat⟩
 
-lemma has_countable_totally_bounded_union [UniformSpace α] [OpensMeasurableSpace α]
-    (h : IsPretight μ):
+lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
   choose! K hKa hKb using h.has_totally_bounded_nat
   use K, hKa
@@ -135,8 +134,7 @@ lemma has_countable_totally_bounded_union [UniformSpace α] [OpensMeasurableSpac
     apply lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn)
   exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n) this
 
-lemma to_separable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α] (h : IsPretight μ) :
-    IsSeparable μ := by
+lemma to_separable_on_metric [PseudoMetricSpace α] (h : IsPretight μ) : IsSeparable μ := by
   obtain ⟨K, hKa, hKb⟩ := has_countable_totally_bounded_union h
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
@@ -224,8 +222,7 @@ lemma of_innerRegular [T2Space α] [OpensMeasurableSpace α] (μ : Measure α) [
       rw [Set.compl_empty]
       exact hεr
 
-lemma countable_compact_cover (h : IsTight μ) :
-    ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
+lemma countable_compact_cover (h : IsTight μ) : ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
   choose! K hK using h.has_compact_nat
   use ⋃ n, K n
   constructor
