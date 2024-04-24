@@ -695,9 +695,9 @@ theorem getLast_replicate_succ (m : ℕ) (a : α) :
   exact getLast_append_singleton _
 #align list.last_replicate_succ List.getLast_replicate_succ
 
-theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
-    (hl' : 0 < l.length := (by simpa [length_pos] using hl)) :
-    l.reverse.getLast hl = l.get ⟨0, hl'⟩ := by
+@[simp]
+theorem getLast_reverse {l : List α} (hl : l.reverse ≠ []) :
+    l.reverse.getLast hl = l.get ⟨0, by simpa [length_pos] using hl⟩ := by
   match l with
   | [] => contradiction
   | a :: as => simp
@@ -921,16 +921,17 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
   · simp
 #align list.tail_append_of_ne_nil List.tail_append_of_ne_nil
 
-theorem head_reverse_of_ne_nil {l : List α} (hl : l ≠ []) :
-    l.reverse.head ((not_congr List.reverse_eq_nil_iff).mpr hl) = l.getLast hl := by
-  have : l.getLast hl = l.reverse.reverse.getLast (by simpa) := by
+@[simp]
+theorem head_reverse_of_ne_nil {l : List α} (hl : l.reverse ≠ []) :
+    l.reverse.head hl = l.getLast (by simpa [length_pos] using hl) := by
+  have : l.getLast (by simpa [length_pos] using hl) =
+      l.reverse.reverse.getLast (by simpa [length_pos] using hl) := by
     simp only [reverse_reverse]
   rw [this, getLast_reverse]
   exact (get_zero_eq_head_of_ne_nil _).symm
 
 theorem head?_reverse (l : List α) : l.reverse.head? = l.getLast? := by
-  nth_rewrite 2 [← reverse_reverse l]
-  rw [getLast?_reverse]
+  rw [← getLast?_reverse, reverse_reverse]
 
 theorem head!_reverse [Inhabited α] (l : List α) : l.reverse.head! = l.getLast! := by
   rw [← getLast!_reverse, reverse_reverse]
@@ -943,7 +944,7 @@ theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) : l = [] ∨
     simp [h]
 
 theorem length_le_one_of_tail_eq_nil {l : List α} (h : l.tail = []) :
-    l.length ≤ 1 := by rcases subsingleton_of_tail_eq_nil h with rfl | ⟨x, rfl⟩ <;> simp
+    l.length ≤ 1 := by obtain rfl | ⟨x, rfl⟩ := subsingleton_of_tail_eq_nil h <;> simp
 
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
