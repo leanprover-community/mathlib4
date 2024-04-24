@@ -141,7 +141,7 @@ theorem ae_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f : α �
 theorem lintegral_mul_eq_zero_of_lintegral_rpow_eq_zero {p : ℝ} (hp0 : 0 ≤ p) {f g : α → ℝ≥0∞}
     (hf : AEMeasurable f μ) (hf_zero : ∫⁻ a, f a ^ p ∂μ = 0) : (∫⁻ a, (f * g) a ∂μ) = 0 := by
   rw [← @lintegral_zero_fun α _ μ]
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   suffices h_mul_zero : f * g =ᵐ[μ] 0 * g by rwa [zero_mul] at h_mul_zero
   have hf_eq_zero : f =ᵐ[μ] 0 := ae_eq_zero_of_lintegral_rpow_eq_zero hp0 hf hf_zero
   exact hf_eq_zero.mul (ae_eq_refl g)
@@ -355,7 +355,7 @@ theorem lintegral_mul_rpow_le_lintegral_rpow_mul_lintegral_rpow {p q : ℝ}
     exact zero_le _
   have hf_top_rpow : (∫⁻ a : α, f a ^ p ∂μ) ^ (1 / p) ≠ ⊤ := by
     by_contra h
-    refine' hf_top _
+    apply hf_top
     have hp_not_neg : ¬p < 0 := by simp [hpq.nonneg]
     simpa [hpq.pos, hp_not_neg] using h
   refine' (ENNReal.mul_le_mul_left hf_zero_rpow hf_top_rpow).mpr (le_of_eq _)
@@ -379,7 +379,7 @@ theorem lintegral_rpow_add_le_add_snorm_mul_lintegral_rpow_add {p q : ℝ}
       by_cases h_top : (f + g) a = ⊤
       · rw [h_top, ENNReal.top_rpow_of_pos hpq.sub_one_pos, ENNReal.top_mul_top]
         exact le_top
-      refine' le_of_eq _
+      apply le_of_eq
       nth_rw 2 [← ENNReal.rpow_one ((f + g) a)]
       rw [← ENNReal.rpow_add _ _ h_zero h_top, add_sub_cancel]
     _ = (∫⁻ a : α, f a * (f + g) a ^ (p - 1) ∂μ) + ∫⁻ a : α, g a * (f + g) a ^ (p - 1) ∂μ := by
@@ -444,7 +444,7 @@ theorem lintegral_Lp_add_le {p : ℝ} {f g : α → ℝ≥0∞} (hf : AEMeasurab
   by_cases hg_top : ∫⁻ a, g a ^ p ∂μ = ⊤
   · simp [hg_top, hp_pos]
   by_cases h1 : p = 1
-  · refine' le_of_eq _
+  · apply le_of_eq
     simp_rw [h1, one_div_one, ENNReal.rpow_one]
     exact lintegral_add_left' hf _
   have hp1_lt : 1 < p := by

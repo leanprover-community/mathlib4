@@ -208,7 +208,7 @@ private theorem step2 (K : Subgroup G) [K.Normal] (hK : K ≤ N) : K = ⊥ ∨ K
   obtain ⟨H, hH⟩ := h2 (G ⧸ K) h5 h6
   refine' ⟨H.comap (QuotientGroup.mk' K), _, _⟩
   · have key : (N.map (QuotientGroup.mk' K)).comap (QuotientGroup.mk' K) = N := by
-      refine' comap_map_eq_self _
+      apply comap_map_eq_self
       rwa [QuotientGroup.ker_mk']
     rwa [← key, comap_sup_eq, hH.symm.sup_eq_top, comap_top]
   · rw [← comap_top (QuotientGroup.mk' K)]

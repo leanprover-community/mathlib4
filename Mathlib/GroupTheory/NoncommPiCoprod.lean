@@ -168,7 +168,7 @@ theorem noncommPiCoprod_mrange :
     apply Submonoid.mem_sSup_of_mem
     · use i
     simp
-  · refine' iSup_le _
+  · apply iSup_le
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_mrange MonoidHom.noncommPiCoprod_mrange
@@ -202,7 +202,7 @@ theorem noncommPiCoprod_range : (noncommPiCoprod ϕ hcomm).range = ⨆ i : ι, (
     apply Subgroup.mem_sSup_of_mem
     · use i
     simp
-  · refine' iSup_le _
+  · apply iSup_le
     rintro i x ⟨y, rfl⟩
     exact ⟨Pi.mulSingle i y, noncommPiCoprod_mulSingle _ _ _⟩
 #align monoid_hom.noncomm_pi_coprod_range MonoidHom.noncommPiCoprod_range

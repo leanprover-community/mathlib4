@@ -235,7 +235,7 @@ theorem multiplicity_le_multiplicity_choose_add {p : ℕ} (hp : p.Prime) :
   | 0, _ + 1 => by simp
   | n + 1, k + 1 => by
     rw [← hp.multiplicity_mul]
-    refine' multiplicity_le_multiplicity_of_dvd_right _
+    apply multiplicity_le_multiplicity_of_dvd_right
     rw [← succ_mul_choose_eq]
     exact dvd_mul_right _ _
 #align nat.prime.multiplicity_le_multiplicity_choose_add Nat.Prime.multiplicity_le_multiplicity_choose_add

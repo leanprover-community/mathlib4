@@ -508,7 +508,7 @@ theorem adjoin_gen_eq_top (B : PowerBasis R S) : adjoin R ({B.gen} : Set S) = �
 theorem adjoin_eq_top_of_gen_mem_adjoin {B : PowerBasis R S} {x : S}
     (hx : B.gen ∈ adjoin R ({x} : Set S)) : adjoin R ({x} : Set S) = ⊤ := by
   rw [_root_.eq_top_iff, ← B.adjoin_gen_eq_top]
-  refine' adjoin_le _
+  apply adjoin_le
   simp [hx]
 #align power_basis.adjoin_eq_top_of_gen_mem_adjoin PowerBasis.adjoin_eq_top_of_gen_mem_adjoin
 

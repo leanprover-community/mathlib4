@@ -356,7 +356,7 @@ theorem integral_fn_integral_add ⦃f g : α × β → E⦄ (F : E → E') (hf :
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) + g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) + ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' integral_congr_ae _
+  apply integral_congr_ae
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_add h2f h2g]
 #align measure_theory.integral_fn_integral_add MeasureTheory.integral_fn_integral_add
@@ -367,7 +367,7 @@ theorem integral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → E') (hf :
     (hg : Integrable g (μ.prod ν)) :
     (∫ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' integral_congr_ae _
+  apply integral_congr_ae
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align measure_theory.integral_fn_integral_sub MeasureTheory.integral_fn_integral_sub
@@ -378,7 +378,7 @@ theorem lintegral_fn_integral_sub ⦃f g : α × β → E⦄ (F : E → ℝ≥0�
     (hg : Integrable g (μ.prod ν)) :
     (∫⁻ x, F (∫ y, f (x, y) - g (x, y) ∂ν) ∂μ) =
       ∫⁻ x, F ((∫ y, f (x, y) ∂ν) - ∫ y, g (x, y) ∂ν) ∂μ := by
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   filter_upwards [hf.prod_right_ae, hg.prod_right_ae] with _ h2f h2g
   simp [integral_sub h2f h2g]
 #align measure_theory.lintegral_fn_integral_sub MeasureTheory.lintegral_fn_integral_sub

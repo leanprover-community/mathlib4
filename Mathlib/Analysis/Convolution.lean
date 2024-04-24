@@ -946,7 +946,7 @@ theorem convolution_assoc' (hL : ∀ (x : E) (y : E') (z : E''), L₂ (L x y) z 
       rw [eq_comm, ← integral_sub_right_eq_self _ t]
       simp_rw [sub_sub_sub_cancel_right]
     _ = ∫ s, L₃ (f s) (∫ u, L₄ (g u) (k (x₀ - s - u)) ∂μ) ∂ν := by
-      refine' integral_congr_ae _
+      apply integral_congr_ae
       refine' ((quasiMeasurePreserving_sub_left_of_right_invariant ν x₀).ae hgk).mono fun t ht => _
       exact (L₃ (f t)).integral_comp_comm ht
     _ = (f ⋆[L₃, ν] g ⋆[L₄, μ] k) x₀ := rfl

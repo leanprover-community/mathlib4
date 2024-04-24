@@ -590,7 +590,7 @@ theorem inv_smul' (k : αˣ) (h : IsUnit A.det) : (k • A)⁻¹ = k⁻¹ • A�
 #align matrix.inv_smul' Matrix.inv_smul'
 
 theorem inv_adjugate (A : Matrix n n α) (h : IsUnit A.det) : (adjugate A)⁻¹ = h.unit⁻¹ • A := by
-  refine' inv_eq_left_inv _
+  apply inv_eq_left_inv
   rw [smul_mul, mul_adjugate, Units.smul_def, smul_smul, h.val_inv_mul, one_smul]
 #align matrix.inv_adjugate Matrix.inv_adjugate
 

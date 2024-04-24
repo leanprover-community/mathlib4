@@ -421,7 +421,7 @@ theorem affineSpan_pair_eq_altitude_iff {n : ℕ} (s : Simplex ℝ P (n + 1)) (i
       simpa using h
     · rw [finrank_direction_altitude, finrank_span_set_eq_card]
       · simp
-      · refine' linearIndependent_singleton _
+      · apply linearIndependent_singleton
         simpa using hne
 #align affine.simplex.affine_span_pair_eq_altitude_iff Affine.Simplex.affineSpan_pair_eq_altitude_iff
 
@@ -563,7 +563,7 @@ theorem dist_orthocenter_reflection_circumcenter_finset (t : Triangle ℝ P) {i�
 the altitude. -/
 theorem affineSpan_orthocenter_point_le_altitude (t : Triangle ℝ P) (i : Fin 3) :
     line[ℝ, t.orthocenter, t.points i] ≤ t.altitude i := by
-  refine' spanPoints_subset_coe_of_subset_coe _
+  apply spanPoints_subset_coe_of_subset_coe
   rw [Set.insert_subset_iff, Set.singleton_subset_iff]
   exact ⟨t.orthocenter_mem_altitude, t.mem_altitude i⟩
 #align affine.triangle.affine_span_orthocenter_point_le_altitude Affine.Triangle.affineSpan_orthocenter_point_le_altitude

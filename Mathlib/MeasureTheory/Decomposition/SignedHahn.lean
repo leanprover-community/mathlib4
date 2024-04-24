@@ -242,7 +242,7 @@ private theorem exists_subset_restrict_nonpos' (hi₁ : MeasurableSet i) (hi₂ 
     suffices 0 ≤ ∑' l : ℕ, s (⋃ _ : l < k, restrictNonposSeq s i l) by
       rw [sub_neg]
       exact lt_of_lt_of_le hi₂ this
-    refine' tsum_nonneg _
+    apply tsum_nonneg
     intro l; by_cases h : l < k
     · convert h₁ _ h
       ext x
@@ -355,7 +355,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
     refine' le_trans _ (le_of_lt (h_lt _))
     rw [hA, ← Set.diff_union_of_subset (Set.subset_iUnion _ n),
       of_union Set.disjoint_sdiff_left _ (hmeas n)]
-    · refine' add_le_of_nonpos_left _
+    · apply add_le_of_nonpos_left
       have : s ≤[A] 0 := restrict_le_restrict_iUnion _ _ hmeas hr
       refine' nonpos_of_restrict_le_zero _ (restrict_le_zero_subset _ _ (Set.diff_subset _ _) this)
       exact MeasurableSet.iUnion hmeas
@@ -381,7 +381,7 @@ theorem exists_compl_positive_negative (s : SignedMeasure α) :
     · refine' le_of_tendsto_of_tendsto tendsto_const_nhds hf₂ (eventually_of_forall fun n => _)
       rw [← (hB n).2, hA, ← Set.diff_union_of_subset (Set.subset_iUnion _ n),
         of_union Set.disjoint_sdiff_left _ (hB₁ n)]
-      · refine' add_le_of_nonpos_left _
+      · apply add_le_of_nonpos_left
         have : s ≤[A] 0 :=
           restrict_le_restrict_iUnion _ _ hB₁ fun m =>
             let ⟨_, h⟩ := (hB m).1

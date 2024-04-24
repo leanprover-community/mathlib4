@@ -131,7 +131,7 @@ variable [Semiring R] [NoZeroDivisors R] {p q : R[X]}
 instance : NoZeroDivisors R[X] where
   eq_zero_or_eq_zero_of_mul_eq_zero h := by
     rw [← leadingCoeff_eq_zero, ← leadingCoeff_eq_zero]
-    refine' eq_zero_or_eq_zero_of_mul_eq_zero _
+    apply eq_zero_or_eq_zero_of_mul_eq_zero
     rw [← leadingCoeff_zero, ← leadingCoeff_mul, h]
 
 theorem natDegree_mul (hp : p ≠ 0) (hq : q ≠ 0) : (p*q).natDegree = p.natDegree + q.natDegree := by

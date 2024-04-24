@@ -131,7 +131,7 @@ lemma rnDeriv_withDensity_left_of_absolutelyContinuous {ν : Measure α} [SigmaF
     · congr with x
       rw [mul_comm]
       simp only [Pi.mul_apply]
-    · refine ae_restrict_of_ae ?_
+    · apply ae_restrict_of_ae
       exact Measure.rnDeriv_lt_top _ _
     · exact (Measure.measurable_rnDeriv _ _).aemeasurable
 
@@ -168,7 +168,7 @@ lemma rnDeriv_withDensity_right_of_absolutelyContinuous {ν : Measure α} [Sigma
         filter_upwards [hf_ne_zero, hf_ne_top] with x hx1 hx2
         simp [← mul_assoc, ENNReal.mul_inv_cancel, hx1, hx2]
       rw [lintegral_congr_ae (ae_restrict_of_ae this)]
-    · refine ae_restrict_of_ae ?_
+    · apply ae_restrict_of_ae
       filter_upwards [hf_ne_top] with x hx using hx.lt_top
     · exact hf.restrict
 

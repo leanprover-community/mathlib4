@@ -67,7 +67,7 @@ theorem card_mul_le_card_shadow_mul (h𝒜 : (𝒜 : Set (Finset α)).Sized r) :
   let i : DecidableRel ((· ⊆ ·) : Finset α → Finset α → Prop) := fun _ _ => Classical.dec _
   refine' card_mul_le_card_mul' (· ⊆ ·) (fun s hs => _) (fun s hs => _)
   · rw [← h𝒜 hs, ← card_image_of_injOn s.erase_injOn]
-    refine' card_le_card _
+    apply card_le_card
     simp_rw [image_subset_iff, mem_bipartiteBelow]
     exact fun a ha => ⟨erase_mem_shadow hs ha, erase_subset _ _⟩
   refine' le_trans _ tsub_tsub_le_tsub_add

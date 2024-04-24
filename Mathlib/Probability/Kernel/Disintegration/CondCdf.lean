@@ -205,7 +205,7 @@ lemma setIntegral_preCDF_fst (ρ : Measure (α × ℝ)) (r : ℚ) {s : Set α} (
   rw [integral_toReal]
   · rw [set_lintegral_preCDF_fst _ _ hs]
   · exact measurable_preCDF.aemeasurable
-  · refine ae_restrict_of_ae ?_
+  · apply ae_restrict_of_ae
     filter_upwards [preCDF_le_one ρ] with a ha
     exact (ha r).trans_lt ENNReal.one_lt_top
 

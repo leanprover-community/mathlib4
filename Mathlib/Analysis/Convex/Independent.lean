@@ -188,7 +188,7 @@ theorem convexIndependent_iff_finset {p : ι → E} :
   simp_rw [Set.mem_iUnion] at hx
   obtain ⟨t, ht, hx⟩ := hx
   rw [← hp.mem_set_image]
-  refine' ht _
+  apply ht
   suffices x ∈ t.preimage p (hp.injOn _) by rwa [mem_preimage, ← mem_coe] at this
   refine' h _ x _
   rwa [t.image_preimage p (hp.injOn _), filter_true_of_mem]

@@ -421,7 +421,7 @@ theorem _root_.IsPrimitiveRoot.adjoin_isCyclotomicExtension {ζ : B} {n : ℕ+}
           (x := x) (fun b hb => ?_) (fun a => ?_) (fun b₁ b₂ hb₁ hb₂ => ?_)
           (fun b₁ b₂ hb₁ hb₂ => ?_)
       · rw [Set.mem_singleton_iff] at hb
-        refine' subset_adjoin _
+        apply subset_adjoin
         simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq, hb]
         rw [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
         exact ((IsPrimitiveRoot.iff_def ζ n).1 h).1
@@ -659,7 +659,7 @@ instance isCyclotomicExtension [NeZero ((n : ℕ) : A)] :
   adjoin_roots x := by
     refine'
       adjoin_induction' (fun y hy => _) (fun a => _) (fun y z hy hz => _) (fun y z hy hz => _) x
-    · refine' subset_adjoin _
+    · apply subset_adjoin
       simp only [mem_singleton_iff, exists_eq_left, mem_setOf_eq]
       rwa [← Subalgebra.coe_eq_one, Subalgebra.coe_pow, Subtype.coe_mk]
     · exact Subalgebra.algebraMap_mem _ a

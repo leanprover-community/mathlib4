@@ -46,7 +46,7 @@ lemma tilted_of_not_integrable (hf : ¬ Integrable (fun x ↦ exp (f x)) μ) : �
 
 @[simp]
 lemma tilted_of_not_aemeasurable (hf : ¬ AEMeasurable f μ) : μ.tilted f = 0 := by
-  refine tilted_of_not_integrable ?_
+  apply tilted_of_not_integrable
   suffices ¬ AEMeasurable (fun x ↦ exp (f x)) μ by exact fun h ↦ this h.1.aemeasurable
   exact fun h ↦ hf (aemeasurable_of_aemeasurable_exp h)
 
@@ -81,10 +81,10 @@ lemma tilted_zero (μ : Measure α) [IsProbabilityMeasure μ] : μ.tilted 0 = μ
 lemma tilted_congr {g : α → ℝ} (hfg : f =ᵐ[μ] g) :
     μ.tilted f = μ.tilted g := by
   have h_int_eq : ∫ x, exp (f x) ∂μ = ∫ x, exp (g x) ∂μ := by
-    refine integral_congr_ae ?_
+    apply integral_congr_ae
     filter_upwards [hfg] with x hx
     rw [hx]
-  refine withDensity_congr_ae ?_
+  apply withDensity_congr_ae
   filter_upwards [hfg] with x hx
   rw [h_int_eq, hx]
 
@@ -125,7 +125,7 @@ lemma tilted_apply_eq_ofReal_integral [SFinite μ] (f : α → ℝ) (s : Set α)
 
 instance isFiniteMeasure_tilted : IsFiniteMeasure (μ.tilted f) := by
   by_cases hf : Integrable (fun x ↦ exp (f x)) μ
-  · refine isFiniteMeasure_withDensity_ofReal ?_
+  · apply isFiniteMeasure_withDensity_ofReal
     suffices Integrable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by exact this.2
     exact hf.div_const _
   · simp only [hf, not_false_eq_true, tilted_of_not_integrable]

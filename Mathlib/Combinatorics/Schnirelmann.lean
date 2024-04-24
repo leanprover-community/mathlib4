@@ -220,7 +220,7 @@ lemma schnirelmannDensity_setOf_mod_eq_one {m : ℕ} (hm : m ≠ 1) :
     schnirelmannDensity {n | n % m = 1} = (m⁻¹ : ℝ) := by
   rcases m.eq_zero_or_pos with rfl | hm'
   · simp only [Nat.cast_zero, inv_zero]
-    refine schnirelmannDensity_finite ?_
+    apply schnirelmannDensity_finite
     simp
   apply le_antisymm (schnirelmannDensity_le_of_le m hm'.ne' _) _
   · rw [← one_div, ← @Nat.cast_one ℝ]

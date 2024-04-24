@@ -1774,7 +1774,7 @@ open scoped Classical in
 theorem Nobeling.embedding : ClosedEmbedding (Nobeling.ι S) := by
   apply Continuous.closedEmbedding
   · dsimp (config := { unfoldPartialApp := true }) [ι]
-    refine continuous_pi ?_
+    apply continuous_pi
     intro C
     rw [← IsLocallyConstant.iff_continuous]
     refine ((IsLocallyConstant.tfae _).out 0 3).mpr ?_

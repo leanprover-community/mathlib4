@@ -208,7 +208,7 @@ theorem upperCentralSeries_isAscendingCentralSeries :
 #align upper_central_series_is_ascending_central_series upperCentralSeries_isAscendingCentralSeries
 
 theorem upperCentralSeries_mono : Monotone (upperCentralSeries G) := by
-  refine' monotone_nat_of_le_succ _
+  apply monotone_nat_of_le_succ
   intro n x hx y
   rw [mul_assoc, mul_assoc, ← mul_assoc y x⁻¹ y⁻¹]
   exact mul_mem hx (Normal.conj_mem (upperCentralSeries_normal G n) x⁻¹ (inv_mem hx) y)

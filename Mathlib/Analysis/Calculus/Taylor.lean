@@ -132,7 +132,7 @@ theorem continuousOn_taylorWithinEval {f : ℝ → E} {x : ℝ} {n : ℕ} {s : S
   cases' hf with hf_left
   specialize hf_left i
   simp only [Finset.mem_range] at hi
-  refine' hf_left _
+  apply hf_left
   simp only [WithTop.coe_le_coe, Nat.cast_le, Nat.lt_succ_iff.mp hi]
 #align continuous_on_taylor_within_eval continuousOn_taylorWithinEval
 

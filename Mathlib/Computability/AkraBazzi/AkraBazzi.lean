@@ -1021,7 +1021,7 @@ lemma rpow_p_mul_one_sub_smoothingFn_le :
                 h_main_norm
          _ =ᶠ[atTop] fun (n:ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
                 filter_upwards [eventually_gt_atTop ⌈(b i)⁻¹⌉₊, eventually_gt_atTop 1] with n hn hn'
-                refine norm_of_nonneg ?_
+                apply norm_of_nonneg
                 have h₁ := R.b_pos i
                 have h₂ : 0 ≤ ε (b i * n) - ε n := by
                   refine sub_nonneg_of_le <|
@@ -1115,7 +1115,7 @@ lemma rpow_p_mul_one_add_smoothingFn_ge :
               h_main_norm
          _ =ᶠ[atTop] fun (n:ℕ) => (b i) ^ (p a b) * n ^ (p a b) * (ε (b i * n) - ε n) := by
               filter_upwards [eventually_gt_atTop ⌈(b i)⁻¹⌉₊, eventually_gt_atTop 1] with n hn hn'
-              refine norm_of_nonneg ?_
+              apply norm_of_nonneg
               have h₁ := R.b_pos i
               have h₂ : 0 ≤ ε (b i * n) - ε n := by
                 refine sub_nonneg_of_le <|
@@ -1248,7 +1248,7 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
                 * ((1 + ((∑ u in range n, g u / u ^ ((p a b) + 1))
                 - (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))) + g n := by
             congr; ext i; congr
-            refine eq_sub_of_add_eq ?_
+            apply eq_sub_of_add_eq
             rw [add_comm]
             exact add_eq_of_eq_sub <| Finset.sum_Ico_eq_sub _
               <| le_of_lt <| R.r_lt_n i n <| n₀_ge_Rn₀.trans hn
@@ -1393,7 +1393,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
                   * ((1 + ((∑ u in range n, g u / u ^ ((p a b) + 1))
                   - (∑ u in Finset.Ico (r i n) n, g u / u ^ ((p a b) + 1))))))) + g n := by
               congr; ext i; congr
-              refine eq_sub_of_add_eq ?_
+              apply eq_sub_of_add_eq
               rw [add_comm]
               exact add_eq_of_eq_sub <| Finset.sum_Ico_eq_sub _
                 <| le_of_lt <| R.r_lt_n i n <| n₀_ge_Rn₀.trans hn
@@ -1424,7 +1424,7 @@ lemma smoothingFn_mul_asympBound_isBigO_T :
               rw [sub_nonneg]
               calc C * c₁ * (1 + ε n) ≤ C * c₁ * 2 := by
                         gcongr
-                        refine one_add_smoothingFn_le_two ?_
+                        apply one_add_smoothingFn_le_two
                         calc exp 1 ≤ ⌈exp 1⌉₊ := by exact Nat.le_ceil _
                                  _ ≤ n := by exact_mod_cast h_exp n hn
                     _ = C * (2 * c₁) := by ring

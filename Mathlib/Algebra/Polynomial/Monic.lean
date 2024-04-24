@@ -329,7 +329,7 @@ theorem Monic.degree_map [Semiring S] [Nontrivial S] {P : R[X]} (hmo : P.Monic) 
   · simp [hP]
   · refine' le_antisymm (degree_map_le _ _) _
     rw [degree_eq_natDegree hP]
-    refine' le_degree_of_ne_zero _
+    apply le_degree_of_ne_zero
     rw [coeff_map, Monic.coeff_natDegree hmo, RingHom.map_one]
     exact one_ne_zero
 #align polynomial.monic.degree_map Polynomial.Monic.degree_map
@@ -503,7 +503,7 @@ theorem degree_smul_of_smul_regular {S : Type*} [Monoid S] [DistribMulAction S R
   · rw [degree_le_iff_coeff_zero]
     intro m hm
     rw [degree_lt_iff_coeff_zero] at hm
-    refine' h _
+    apply h
     simpa using hm m le_rfl
 #align polynomial.degree_smul_of_smul_regular Polynomial.degree_smul_of_smul_regular
 
@@ -555,7 +555,7 @@ theorem isUnit_leadingCoeff_mul_left_eq_zero_iff (h : IsUnit p.leadingCoeff) {q 
     replace hp := congr_arg (· * C ↑h.unit⁻¹) hp
     simp only [zero_mul] at hp
     rwa [mul_assoc, Monic.mul_left_eq_zero_iff] at hp
-    refine' monic_mul_C_of_leadingCoeff_mul_eq_one _
+    apply monic_mul_C_of_leadingCoeff_mul_eq_one
     simp [Units.mul_inv_eq_iff_eq_mul, IsUnit.unit_spec]
   · rintro rfl
     rw [zero_mul]

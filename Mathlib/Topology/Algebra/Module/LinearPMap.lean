@@ -118,7 +118,7 @@ theorem IsClosable.graph_closure_eq_closure_graph {f : E →ₗ.[R] F} (hf : f.I
 /-- A `LinearPMap` is contained in its closure. -/
 theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
   by_cases hf : f.IsClosable
-  · refine' le_of_le_graph _
+  · apply le_of_le_graph
     rw [← hf.graph_closure_eq_closure_graph]
     exact (graph f).le_topologicalClosure
   rw [closure_def' hf]
@@ -126,7 +126,7 @@ theorem le_closure (f : E →ₗ.[R] F) : f ≤ f.closure := by
 
 theorem IsClosable.closure_mono {f g : E →ₗ.[R] F} (hg : g.IsClosable) (h : f ≤ g) :
     f.closure ≤ g.closure := by
-  refine' le_of_le_graph _
+  apply le_of_le_graph
   rw [← (hg.leIsClosable h).graph_closure_eq_closure_graph]
   rw [← hg.graph_closure_eq_closure_graph]
   exact Submodule.topologicalClosure_mono (le_graph_of_le h)

@@ -1608,7 +1608,7 @@ open Classical in
 theorem sup_mul_inf (a b : Associates α) : (a ⊔ b) * (a ⊓ b) = a * b :=
   show (a.factors ⊔ b.factors).prod * (a.factors ⊓ b.factors).prod = a * b by
     nontriviality α
-    refine' eq_of_factors_eq_factors _
+    apply eq_of_factors_eq_factors
     rw [← prod_add, prod_factors, factors_mul, FactorSet.sup_add_inf_eq_add]
 #align associates.sup_mul_inf Associates.sup_mul_inf
 

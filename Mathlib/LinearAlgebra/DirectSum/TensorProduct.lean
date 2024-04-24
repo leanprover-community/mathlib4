@@ -50,11 +50,11 @@ protected def directSum :
     ((⨁ i₁, M₁ i₁) ⊗[R] ⨁ i₂, M₂ i₂) ≃ₗ[R] ⨁ i : ι₁ × ι₂, M₁ i.1 ⊗[R] M₂ i.2 := by
   -- Porting note: entirely rewritten to allow unification to happen one step at a time
   refine LinearEquiv.ofLinear (R := R) (R₂ := R) ?toFun ?invFun ?left ?right
-  · refine lift ?_
+  · apply lift
     refine DirectSum.toModule R _ _ fun i₁ => ?_
     refine LinearMap.flip ?_
     refine DirectSum.toModule R _ _ fun i₂ => LinearMap.flip <| ?_
-    refine curry ?_
+    apply curry
     exact DirectSum.lof R (ι₁ × ι₂) (fun i => M₁ i.1 ⊗[R] M₂ i.2) (i₁, i₂)
   · refine DirectSum.toModule R _ _ fun i => ?_
     exact map (DirectSum.lof R _ M₁ i.1) (DirectSum.lof R _ M₂ i.2)

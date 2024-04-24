@@ -116,7 +116,7 @@ noncomputable def projectiveSeminorm : Seminorm 𝕜 (⨂[𝕜] i, E i) := by
   · intro a x
     letI := nonempty_subtype.mpr (nonempty_lifts x)
     rw [Real.mul_iInf_of_nonneg (norm_nonneg _)]
-    refine le_ciInf ?_
+    apply le_ciInf
     intro p
     rw [← projectiveSeminormAux_smul]
     exact ciInf_le_of_le (bddBelow_projectiveSemiNormAux _)
@@ -138,7 +138,7 @@ theorem norm_eval_le_projectiveSeminorm (x : ⨂[𝕜] i, E i) (G : Type*) [Semi
     ‖lift f.toMultilinearMap x‖ ≤ projectiveSeminorm x * ‖f‖ := by
   letI := nonempty_subtype.mpr (nonempty_lifts x)
   rw [projectiveSeminorm_apply, Real.iInf_mul_of_nonneg (norm_nonneg _), projectiveSeminormAux]
-  refine le_ciInf ?_
+  apply le_ciInf
   intro ⟨p, hp⟩
   rw [mem_lifts_iff] at hp
   conv_lhs => rw [← hp, ← List.sum_map_hom, ← Multiset.sum_coe]

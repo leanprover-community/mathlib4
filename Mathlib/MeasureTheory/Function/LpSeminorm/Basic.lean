@@ -1021,7 +1021,7 @@ theorem snorm_indicator_ge_of_bdd_below (hp : p ≠ 0) (hp' : p ≠ ∞) {f : α
     ENNReal.mul_rpow_of_nonneg _ _ ENNReal.toReal_nonneg, ← ENNReal.rpow_mul,
     one_div_mul_cancel (ENNReal.toReal_pos hp hp').ne.symm, ENNReal.rpow_one, ← set_lintegral_const,
     ← lintegral_indicator _ hs]
-  refine' lintegral_mono_ae _
+  apply lintegral_mono_ae
   filter_upwards [hf] with x hx
   rw [nnnorm_indicator_eq_indicator_nnnorm]
   by_cases hxs : x ∈ s

@@ -95,7 +95,7 @@ def K : Type _ := _ ⧸ kIdeal
 instance : CommRing K := Ideal.Quotient.commRing _
 
 theorem comap_C_kIdeal : kIdeal.comap (C : ZMod 2 →+* MvPolynomial (Fin 3) (ZMod 2)) = ⊥ := by
-  refine bot_unique ?_
+  apply bot_unique
   refine (Ideal.comap_le_map_of_inverse _ _ _ (constantCoeff_C _)).trans ?_
   rw [kIdeal, Ideal.map_span]
   refine (Ideal.span_le).2 ?_

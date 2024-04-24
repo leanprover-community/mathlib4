@@ -201,7 +201,7 @@ theorem tendsto_lcRow0 {cd : Fin 2 → ℤ} (hcd : IsCoprime (cd 0) (cd 1)) :
       (cocompact ℝ) := by
   let mB : ℝ → Matrix (Fin 2) (Fin 2) ℝ := fun t => of ![![t, (-(1 : ℤ) : ℝ)], (↑) ∘ cd]
   have hmB : Continuous mB := by
-    refine' continuous_matrix _
+    apply continuous_matrix
     simp only [mB, Fin.forall_fin_two, continuous_const, continuous_id', of_apply, cons_val_zero,
       cons_val_one, and_self_iff]
   refine' Filter.Tendsto.of_tendsto_comp _ (comap_cocompact_le hmB)

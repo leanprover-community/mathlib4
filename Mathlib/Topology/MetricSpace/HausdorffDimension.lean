@@ -174,7 +174,7 @@ set_option linter.uppercaseLean3 false in
 theorem dimH_subsingleton {s : Set X} (h : s.Subsingleton) : dimH s = 0 := by
   borelize X
   apply le_antisymm _ (zero_le _)
-  refine dimH_le_of_hausdorffMeasure_ne_top ?_
+  apply dimH_le_of_hausdorffMeasure_ne_top
   exact ((hausdorffMeasure_le_one_of_subsingleton h le_rfl).trans_lt ENNReal.one_lt_top).ne
 set_option linter.uppercaseLean3 false in
 #align dimH_subsingleton dimH_subsingleton

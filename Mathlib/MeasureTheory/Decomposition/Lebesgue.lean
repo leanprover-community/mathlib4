@@ -221,7 +221,7 @@ lemma absolutelyContinuous_withDensity_rnDeriv [HaveLebesgueDecomposition ν μ]
   refine le_antisymm ((measure_union_le (s ∩ t) (s ∩ tᶜ)).trans ?_) (zero_le _)
   simp only [nonpos_iff_eq_zero, add_eq_zero]
   constructor
-  · refine hμν ?_
+  · apply hμν
     simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero]
     constructor
     · exact measure_mono_null (Set.inter_subset_right _ _) ht1
@@ -708,7 +708,7 @@ theorem exists_positive_of_not_mutuallySingular (μ ν : Measure α) [IsFiniteMe
         exact h' (not_le.2 (NNReal.half_lt_self h))
       intro c hc
       have : ∃ n : ℕ, 1 / (n + 1 : ℝ) < c * (νA : ℝ)⁻¹ := by
-        refine exists_nat_one_div_lt ?_
+        apply exists_nat_one_div_lt
         positivity
       rcases this with ⟨n, hn⟩
       have hb₁ : (0 : ℝ) < (νA : ℝ)⁻¹ := by rw [_root_.inv_pos]; exact hb
@@ -874,7 +874,7 @@ theorem haveLebesgueDecomposition_of_finiteMeasure [IsFiniteMeasure μ] [IsFinit
       rw [lintegral_iSup (fun i ↦ (iSup_mem_measurableLE _ hf₁ i).1) (iSup_monotone _)]
       exact iSup_le fun i ↦ (iSup_mem_measurableLE _ hf₁ i).2 B hB
     have : IsFiniteMeasure (ν.withDensity ξ) := by
-      refine isFiniteMeasure_withDensity ?_
+      apply isFiniteMeasure_withDensity
       have hle' := hle univ
       rw [withDensity_apply _ MeasurableSet.univ, Measure.restrict_univ] at hle'
       exact ne_top_of_le_ne_top (measure_ne_top _ _) hle'

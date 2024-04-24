@@ -585,7 +585,7 @@ theorem exists_lub_Iio (i : γ) : ∃ j, IsLUB (Iio i) j := by
   · refine' ⟨i, fun j hj => le_of_lt hj, _⟩
     rw [mem_lowerBounds]
     by_contra h
-    refine' h_exists_lt _
+    apply h_exists_lt
     push_neg at h
     exact h
 #align exists_lub_Iio exists_lub_Iio

@@ -111,7 +111,7 @@ lemma measurable_densityProcess_countableFiltration_aux (κ : kernel α (γ × �
     refine Measurable.div ?_ ?_
     · refine measurable_from_prod_countable (fun t ↦ ?_)
       exact kernel.measurable_coe _ ((measurableSet_countablePartition _ t.prop).prod hs)
-    · refine measurable_from_prod_countable ?_
+    · apply measurable_from_prod_countable
       rintro ⟨t, ht⟩
       exact kernel.measurable_coe _ (measurableSet_countablePartition _ ht)
   refine h1.comp (measurable_fst.prod_mk ?_)
@@ -531,7 +531,7 @@ lemma tendsto_setIntegral_densityProcess (hκν : fst κ ≤ ν)
     (integrable_density hκν a hs) (F := fun i x ↦ densityProcess κ ν i a x s) (l := atTop)
     (eventually_of_forall (fun n ↦ integrable_densityProcess hκν _ _ hs)) ?_ A
   refine (tendsto_congr fun n ↦ ?_).mp (tendsto_snorm_one_densityProcess_limitProcess hκν a hs)
-  refine snorm_congr_ae ?_
+  apply snorm_congr_ae
   exact EventuallyEq.rfl.sub (density_ae_eq_limitProcess hκν a hs).symm
 
 @[deprecated]

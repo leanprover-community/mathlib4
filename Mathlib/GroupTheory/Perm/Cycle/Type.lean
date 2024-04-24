@@ -185,7 +185,7 @@ theorem orderOf_cycleOf_dvd_orderOf (f : Perm α) (x : α) : orderOf (cycleOf f 
   by_cases hx : f x = x
   · rw [← cycleOf_eq_one_iff] at hx
     simp [hx]
-  · refine dvd_of_mem_cycleType ?_
+  · apply dvd_of_mem_cycleType
     rw [cycleType, Multiset.mem_map]
     refine' ⟨f.cycleOf x, _, _⟩
     · rwa [← Finset.mem_def, cycleOf_mem_cycleFactorsFinset_iff, mem_support]
@@ -223,7 +223,7 @@ theorem cycleType_le_of_mem_cycleFactorsFinset {f g : Perm α} (hf : f ∈ g.cyc
     f.cycleType ≤ g.cycleType := by
   have hf' := mem_cycleFactorsFinset_iff.1 hf
   rw [cycleType_def, cycleType_def, hf'.left.cycleFactorsFinset_eq_singleton]
-  refine map_le_map ?_
+  apply map_le_map
   simpa only [Finset.singleton_val, singleton_le, Finset.mem_val] using hf
 #align equiv.perm.cycle_type_le_of_mem_cycle_factors_finset Equiv.Perm.cycleType_le_of_mem_cycleFactorsFinset
 

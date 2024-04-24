@@ -112,7 +112,7 @@ theorem opNorm_zero_iff [RingHomIsometric σ₁₂] : ‖f‖ = 0 ↔ f = 0 :=
 /-- If a normed space is non-trivial, then the norm of the identity equals `1`. -/
 @[simp]
 theorem norm_id [Nontrivial E] : ‖id 𝕜 E‖ = 1 := by
-  refine' norm_id_of_nontrivial_seminorm _
+  apply norm_id_of_nontrivial_seminorm
   obtain ⟨x, hx⟩ := exists_ne (0 : E)
   exact ⟨x, ne_of_gt (norm_pos_iff.2 hx)⟩
 #align continuous_linear_map.norm_id ContinuousLinearMap.norm_id

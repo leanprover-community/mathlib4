@@ -83,7 +83,7 @@ theorem volume_iUnion_setOf_liouvilleWith :
   generalize hr : (2 + 1 / n : ℝ) = r
   replace hr : 2 < r := by simp [← hr, zero_lt_one.trans_le hn]
   clear hn n
-  refine' measure_setOf_frequently_eq_zero _
+  apply measure_setOf_frequently_eq_zero
   simp only [setOf_exists, ← exists_prop, ← Real.dist_eq, ← mem_ball, setOf_mem_eq]
   set B : ℤ → ℕ → Set ℝ := fun a b => ball (a / b) (1 / (b : ℝ) ^ r)
   have hB : ∀ a b, volume (B a b) = ↑((2 : ℝ≥0) / (b : ℝ≥0) ^ r) := fun a b ↦ by

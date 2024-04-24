@@ -118,7 +118,7 @@ theorem smul_le_stoppedValue_hitting [IsFiniteMeasure μ] (hsub : Submartingale 
       (ε : ℝ) ≤ stoppedValue f (hitting f {y : ℝ | ↑ε ≤ y} 0 n) ω := by
     intro x hx
     simp_rw [le_sup'_iff, mem_range, Nat.lt_succ_iff] at hx
-    refine' stoppedValue_hitting_mem _
+    apply stoppedValue_hitting_mem
     simp only [Set.mem_setOf_eq, exists_prop, hn]
     exact
       let ⟨j, hj₁, hj₂⟩ := hx

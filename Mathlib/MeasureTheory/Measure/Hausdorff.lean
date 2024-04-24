@@ -325,7 +325,7 @@ theorem mkMetric'_isMetric (m : Set X → ℝ≥0∞) : (mkMetric' m).IsMetric :
   rw [← pos_iff_ne_zero] at r0
   filter_upwards [Ioo_mem_nhdsWithin_Ioi ⟨le_rfl, r0⟩]
   rintro ε ⟨_, εr⟩
-  refine' boundedBy_union_of_top_of_nonempty_inter _
+  apply boundedBy_union_of_top_of_nonempty_inter
   rintro u ⟨x, hxs, hxu⟩ ⟨y, hyt, hyu⟩
   have : ε < diam u := εr.trans_le ((hr x hxs y hyt).trans <| edist_le_diam_of_mem hxu hyu)
   exact iInf_eq_top.2 fun h => (this.not_le h).elim

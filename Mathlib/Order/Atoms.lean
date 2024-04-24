@@ -1070,7 +1070,7 @@ instance isAtomistic [∀ i, CompleteLattice (π i)] [∀ i, IsAtomistic (π i)]
       refine le_sSup ⟨⟨_, ⟨_, _, ha, rfl⟩, fun j => ?_⟩, by simp⟩
       if hij : j = i then subst hij; simpa else simp [hij]
     case ge =>
-      refine sSup_le ?_
+      apply sSup_le
       rintro _ ⟨⟨_, ⟨j, a, ha, rfl⟩, hle⟩, rfl⟩
       if hij : i = j then ?_ else simp [Function.update_noteq hij]
       subst hij; simp only [Function.update_same]

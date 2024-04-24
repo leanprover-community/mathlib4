@@ -330,7 +330,7 @@ theorem setIntegral_eq_zero_of_ae_eq_zero (ht_eq : ∀ᵐ x ∂μ, x ∈ t → f
     contrapose! hf
     exact hf.1
   have : ∫ x in t, hf.mk f x ∂μ = 0 := by
-    refine' integral_eq_zero_of_ae _
+    apply integral_eq_zero_of_ae
     rw [EventuallyEq,
       ae_restrict_iff (hf.stronglyMeasurable_mk.measurableSet_eq_fun stronglyMeasurable_zero)]
     filter_upwards [ae_imp_of_ae_restrict hf.ae_eq_mk, ht_eq] with x hx h'x h''x
@@ -502,7 +502,7 @@ theorem setIntegral_neg_eq_setIntegral_nonpos [LinearOrder E] {f : X → E}
   have B : NullMeasurableSet {x | f x = 0} μ :=
     hf.nullMeasurableSet_eq_fun aestronglyMeasurable_zero
   symm
-  refine' integral_union_eq_left_of_ae _
+  apply integral_union_eq_left_of_ae
   filter_upwards [ae_restrict_mem₀ B] with x hx using hx
 #align measure_theory.set_integral_neg_eq_set_integral_nonpos MeasureTheory.setIntegral_neg_eq_setIntegral_nonpos
 

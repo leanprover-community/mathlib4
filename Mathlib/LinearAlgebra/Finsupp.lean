@@ -805,7 +805,7 @@ theorem span_image_eq_map_total (s : Set α) :
       · simp [(Finsupp.mem_supported' R _).1 hz _ h]
     -- Porting note: `rw` is required to infer metavariables in `sum_mem`.
     rw [mem_comap, total_apply]
-    refine' sum_mem _
+    apply sum_mem
     simp [this]
 #align finsupp.span_image_eq_map_total Finsupp.span_image_eq_map_total
 

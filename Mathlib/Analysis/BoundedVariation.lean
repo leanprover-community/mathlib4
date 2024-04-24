@@ -517,7 +517,7 @@ theorem comp_le_of_monotoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
 
 theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β → α) (hφ : AntitoneOn φ t)
     (φst : MapsTo φ t s) : eVariationOn (f ∘ φ) t ≤ eVariationOn f s := by
-  refine' iSup_le _
+  apply iSup_le
   rintro ⟨n, u, hu, ut⟩
   rw [← Finset.sum_range_reflect]
   refine' (Finset.sum_congr rfl fun x hx => _).trans_le <| le_iSup_of_le

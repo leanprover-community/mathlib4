@@ -65,7 +65,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
   swap; · rw [condexp_of_not_sigmaFinite hm hsig, snorm_zero]; exact zero_le _
   calc
     snorm (μ[f|m]) 1 μ ≤ snorm (μ[(|f|)|m]) 1 μ := by
-      refine' snorm_mono_ae _
+      apply snorm_mono_ae
       filter_upwards [condexp_mono hf hf.abs
         (ae_of_all μ (fun x => le_abs_self (f x) : ∀ x, f x ≤ |f x|)),
         EventuallyLE.trans (condexp_neg f).symm.le
@@ -80,7 +80,7 @@ theorem snorm_one_condexp_le_snorm (f : α → ℝ) : snorm (μ[f|m]) 1 μ ≤ s
         ← integral_norm_eq_lintegral_nnnorm hf.1]
       simp_rw [Real.norm_eq_abs]
       rw [← integral_condexp hm hf.abs]
-      refine' integral_congr_ae _
+      apply integral_congr_ae
       have : 0 ≤ᵐ[μ] μ[(|f|)|m] := by
         rw [← condexp_zero]
         exact condexp_mono (integrable_zero _ _ _) hf.abs
@@ -126,7 +126,7 @@ theorem setIntegral_abs_condexp_le {s : Set α} (hs : MeasurableSet[m] s) (f : �
     positivity
   have : ∫ x in s, |(μ[f|m]) x| ∂μ = ∫ x, |(μ[s.indicator f|m]) x| ∂μ := by
     rw [← integral_indicator (hnm _ hs)]
-    refine' integral_congr_ae _
+    apply integral_congr_ae
     have : (fun x => |(μ[s.indicator f|m]) x|) =ᵐ[μ] fun x => |s.indicator (μ[f|m]) x| :=
       (condexp_indicator hfint hs).fun_comp abs
     refine' EventuallyEq.trans (eventually_of_forall fun x => _) this.symm

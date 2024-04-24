@@ -329,7 +329,7 @@ theorem measure_lintegral_div_measure [IsMulLeftInvariant ν] (sm : MeasurableSe
   have hg : Measurable g :=
     (hf.comp measurable_inv).div ((measurable_measure_mul_right ν sm).comp measurable_inv)
   simp_rw [measure_mul_lintegral_eq μ ν sm g hg, g, inv_inv]
-  refine' lintegral_congr_ae _
+  apply lintegral_congr_ae
   refine' (ae_measure_preimage_mul_right_lt_top_of_ne_zero μ ν sm h2s h3s).mono fun x hx => _
   simp_rw [ENNReal.mul_div_cancel' (measure_mul_right_ne_zero ν h2s _) hx.ne]
 #align measure_theory.measure_lintegral_div_measure MeasureTheory.measure_lintegral_div_measure
