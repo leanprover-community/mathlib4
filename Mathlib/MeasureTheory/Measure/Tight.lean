@@ -104,8 +104,8 @@ lemma has_totally_bounded_nat [UniformSpace α] (h : IsPretight μ) :
   apply h
   simp
 
-lemma of_totally_bounded_nat [UniformSpace α] (h : ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n) :
-    IsPretight μ:= by
+lemma of_totally_bounded_nat [UniformSpace α]
+    (h : ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n) : IsPretight μ := by
   intro ε hε
   obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne'
   obtain ⟨K, hK, hKe⟩ := h n
