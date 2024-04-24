@@ -5,7 +5,8 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.SMulWithZero
-import Mathlib.Algebra.Ring.Int
+import Mathlib.Algebra.Group.Hom.End
+import Mathlib.Algebra.Group.Int
 import Mathlib.Data.NNRat.Defs
 import Mathlib.GroupTheory.GroupAction.Group
 import Mathlib.GroupTheory.GroupAction.Pi
@@ -480,11 +481,6 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
     (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_ratCast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
-
-
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
-  Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
