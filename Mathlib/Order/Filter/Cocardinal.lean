@@ -3,6 +3,7 @@ Copyright (c) 2024 Josha Dekker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Josha Dekker
 -/
+import Mathlib.Order.Filter.Cofinite
 import Mathlib.Order.Filter.CountableInter
 import Mathlib.Order.Filter.CardinalInter
 import Mathlib.SetTheory.Cardinal.Ordinal
@@ -22,44 +23,35 @@ open Set Filter Cardinal
 
 universe u
 variable {ι : Type u} {α β : Type u}
-variable {c : Cardinal.{u}} {hreg : Cardinal.IsRegular c}
+variable {c : Cardinal.{u}} {hreg : c.IsRegular}
 variable {l : Filter α}
 
 namespace Filter
 
 /-- The filter defined by all sets that have a complement with at most cardinality `c`. For a union
 of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular cardinal. -/
-def cocardinal (hreg : Cardinal.IsRegular c) : Filter α := by
-  have hc : Cardinal.aleph0 ≤ c := Cardinal.IsRegular.aleph0_le hreg
-  apply ofCardinalUnion (fun s ↦ Cardinal.mk s < c) (lt_of_lt_of_le (Cardinal.nat_lt_aleph0 2) hc)
-  · intro s hS hSc
-    apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
-    apply Cardinal.mul_lt_of_lt hc hS
-    apply Cardinal.iSup_lt_of_isRegular hreg hS
-    intro i
-    apply hSc i
-    exact Subtype.coe_prop i
-  · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (Cardinal.mk_le_mk_of_subset ht) hSc
+def cocardinal (hreg : c.IsRegular) : Filter α := by
+  apply ofCardinalUnion {s | Cardinal.mk s < c} (lt_of_lt_of_le (nat_lt_aleph0 2) hreg.aleph0_le)
+  · refine fun s hS hSc ↦ lt_of_le_of_lt (mk_sUnion_le _) <| mul_lt_of_lt hreg.aleph0_le hS ?_
+    exact iSup_lt_of_isRegular hreg hS fun i ↦ hSc i i.property
+  · exact fun _ hSc _ ht ↦ lt_of_le_of_lt (mk_le_mk_of_subset ht) hSc
 
 @[simp]
 theorem mem_cocardinal {s : Set α} :
     s ∈ @cocardinal α c hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
 
-instance cardinalInter_ofCocardinal :
-    CardinalInterFilter (@cocardinal α c hreg) c where
-  cardinal_sInter_mem := by
-    have hc : Cardinal.aleph0 ≤ c := Cardinal.IsRegular.aleph0_le hreg
-    intro S hS hSs
-    rw [mem_cocardinal]
-    have := fun s hs => mem_cocardinal.1 (hSs s hs)
-    rw [Set.compl_sInter]
-    apply lt_of_le_of_lt (Cardinal.mk_sUnion_le _)
-    apply Cardinal.mul_lt_of_lt hc
-    · apply lt_of_le_of_lt Cardinal.mk_image_le hS
-    · apply Cardinal.iSup_lt_of_isRegular hreg
-      apply lt_of_le_of_lt Cardinal.mk_image_le hS
-      intro i
-      aesop
+@[simp] lemma cocardinal_aleph0_eq_cofinite :
+    cocardinal isRegular_aleph0 = cofinite (α := α) := by
+  aesop
+
+instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (α := α) hreg) c where
+  cardinal_sInter_mem S hS hSs := by
+    rw [mem_cocardinal, Set.compl_sInter]
+    apply lt_of_le_of_lt (mk_sUnion_le _)
+    apply mul_lt_of_lt hreg.aleph0_le (lt_of_le_of_lt mk_image_le hS)
+    apply iSup_lt_of_isRegular hreg <| lt_of_le_of_lt mk_image_le hS
+    intro i
+    aesop
 
 @[simp]
 theorem eventually_cocardinal {p : α → Prop} :
@@ -94,7 +86,7 @@ theorem _root_.Set.compl_mem_cocardinal {s : Set α} (hs : #s < c) :
 
 theorem _root_.Set.Finite.compl_mem_cocardinal {s : Set α} (hs : s.Finite) :
     sᶜ ∈ @cocardinal α c hreg := by
-  have : #s < c := lt_of_lt_of_le (Finite.lt_aleph0 hs) (Cardinal.IsRegular.aleph0_le hreg)
+  have : #s < c := lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
   exact Set.compl_mem_cocardinal this
 
 theorem _root_.Set.eventually_cocardinal_nmem {s : Set α} (hs : #s < c) :
@@ -103,7 +95,7 @@ theorem _root_.Set.eventually_cocardinal_nmem {s : Set α} (hs : #s < c) :
 
 theorem _root_.Finset.eventually_cocardinal_nmem (s : Finset α) :
     ∀ᶠ x in cocardinal hreg, x ∉ s := by
-  have : #s < c := lt_of_lt_of_le (finset_card_lt_aleph0 s) (Cardinal.IsRegular.aleph0_le hreg)
+  have : #s < c := lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
   exact Set.eventually_cocardinal_nmem this
 
 theorem _root_.Set.cardinal_iff_frequently_cocardinal {s : Set α} :
@@ -112,7 +104,7 @@ theorem _root_.Set.cardinal_iff_frequently_cocardinal {s : Set α} :
 
 theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal hreg, a ≠ x := by
   simp [Set.finite_singleton x]
-  exact IsRegular.nat_lt hreg 1
+  exact hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
 abbrev cocountable : Filter α := cocardinal Cardinal.isRegular_aleph_one
