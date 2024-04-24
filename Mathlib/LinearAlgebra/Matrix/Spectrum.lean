@@ -124,16 +124,15 @@ simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, m
 replaced by a diagonal matrix sandwiched between the eigenvector unitaries. This alternate form
 allows direct rewriting of A since: <| A = V D V⁻¹$ -/
 theorem spectral_theorem2 :
-   A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
+    A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
         * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
-   rw [← spectral_theorem1, mul_assoc, mul_assoc,
+    rw [← spectral_theorem1, mul_assoc, mul_assoc,
       (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
       ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 
 theorem spectral_theorem3 :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A =
-    diagonal (RCLike.ofReal ∘ hA.eigenvalues) * (star (eigenvectorUnitary hA : Matrix n n 𝕜))
-    := by
+    diagonal (RCLike.ofReal ∘ hA.eigenvalues) * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
   nth_rw 2 [hA.spectral_theorem2]
   simp [← mul_assoc]
 
