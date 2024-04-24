@@ -158,6 +158,7 @@ instance instField : Field (hat K) where
   mul_inv_cancel := fun x x_ne => by simp only [Inv.inv, if_neg x_ne, mul_hatInv_cancel x_ne]
   inv_zero := by simp only [Inv.inv, ite_true]
   -- TODO: use a better defeq
+  nnqsmul := _
   qsmul := _
 #align uniform_space.completion.field UniformSpace.Completion.instField
 
