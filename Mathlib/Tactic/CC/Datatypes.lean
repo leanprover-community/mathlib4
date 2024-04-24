@@ -115,7 +115,10 @@ abbrev CCCongrTheoremCache := Std.HashMap CCCongrTheoremKey (Option CCCongrTheor
 
 /-- Configs used in congruence closure modules. -/
 structure CCConfig where
-  /-- If `true`, congruence closure will treat implicit instance arguments as constants. -/
+  /-- If `true`, congruence closure will treat implicit instance arguments as constants.
+
+  This means that setting `ignoreInstances := false` will fail to unify two definitionally equal
+  instances of the same class. -/
   ignoreInstances : Bool := true
   /-- If `true`, congruence closure modulo Associativity and Commutativity. -/
   ac : Bool := true
