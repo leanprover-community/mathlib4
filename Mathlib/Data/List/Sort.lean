@@ -177,7 +177,7 @@ strictly monotone. -/
   sorted_ofFn_iff.trans monotone_iff_forall_lt.symm
 
 /-- A tuple is monotone if and only if the list obtained from it is sorted. -/
-@[deprecated sorted_le_ofFn_iff]
+@[deprecated sorted_le_ofFn_iff] -- 2023-01-10
 theorem monotone_iff_ofFn_sorted : Monotone f ↔ (ofFn f).Sorted (· ≤ ·) := sorted_le_ofFn_iff.symm
 #align list.monotone_iff_of_fn_sorted List.monotone_iff_ofFn_sorted
 

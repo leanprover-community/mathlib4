@@ -258,7 +258,7 @@ theorem head?_rotate {l : List α} {n : ℕ} (h : n < l.length) : head? (l.rotat
 -- Porting note: moved down from its original location below `get_rotate` so that the
 -- non-deprecated lemma does not use the deprecated version
 set_option linter.deprecated false in
-@[deprecated get_rotate]
+@[deprecated get_rotate] -- 2023-01-13
 theorem nthLe_rotate (l : List α) (n k : ℕ) (hk : k < (l.rotate n).length) :
     (l.rotate n).nthLe k hk =
       l.nthLe ((k + n) % l.length) (mod_lt _ (length_rotate l n ▸ k.zero_le.trans_lt hk)) :=
