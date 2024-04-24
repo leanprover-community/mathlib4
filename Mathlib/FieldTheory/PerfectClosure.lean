@@ -498,20 +498,17 @@ theorem mk_inv (x : ℕ × K) : (mk K p x)⁻¹ = mk K p (x.1, x.2⁻¹) :=
   rfl
 
 -- Porting note: added to avoid "unknown free variable" error
-instance instDivisionRing : DivisionRing (PerfectClosure K p) :=
-  { (inferInstance : Inv (PerfectClosure K p)) with
-    exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
-    mul_inv_cancel := fun e =>
-      induction_on e fun ⟨m, x⟩ H => by
-        -- Porting note: restructured
-        have := mt (eq_iff _ _ _ _).2 H
-        rw [mk_inv, mk_mul_mk]
-        refine (eq_iff K p _ _).2 ?_
-        simp only [iterate_map_one, iterate_map_zero,
-            iterate_zero_apply, ← iterate_map_mul] at this ⊢
-        rw [mul_inv_cancel this, iterate_map_one]
-    inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
-    qsmul := qsmulRec _ }
+instance instDivisionRing : DivisionRing (PerfectClosure K p) where
+  exists_pair_ne := ⟨0, 1, fun H => zero_ne_one ((eq_iff _ _ _ _).1 H)⟩
+  mul_inv_cancel e := induction_on e fun ⟨m, x⟩ H ↦ by
+    have := mt (eq_iff _ _ _ _).2 H
+    rw [mk_inv, mk_mul_mk]
+    refine (eq_iff K p _ _).2 ?_
+    simp only [iterate_map_one, iterate_map_zero, iterate_zero_apply, ← iterate_map_mul] at this ⊢
+    rw [mul_inv_cancel this, iterate_map_one]
+  inv_zero := congr_arg (Quot.mk (R K p)) (by rw [inv_zero])
+  nnqsmul := _
+  qsmul := _
 
 instance instField : Field (PerfectClosure K p) :=
   { (inferInstance : DivisionRing (PerfectClosure K p)),
