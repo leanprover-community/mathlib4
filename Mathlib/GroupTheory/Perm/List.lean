@@ -242,7 +242,7 @@ theorem formPerm_apply_get (xs : List α) (h : Nodup xs) (n : ℕ) (hn : n < xs.
     formPerm xs (xs.get ⟨n, hn⟩) =
       xs.get ⟨((n + 1) % xs.length), (Nat.mod_lt _ (n.zero_le.trans_lt hn))⟩ :=
   formPerm_apply_nthLe xs h n hn
-attribute [deprecated] formPerm_apply_get -- 2024-04-23
+attribute [deprecated formPerm_apply_get] formPerm_apply_nthLe -- 2024-04-23
 
 set_option linter.deprecated false in
 theorem support_formPerm_of_nodup' (l : List α) (h : Nodup l) (h' : ∀ x : α, l ≠ [x]) :
