@@ -53,7 +53,19 @@ variable {K : Type*} [NormedLinearOrderedField K]
 variable [NormedAddCommGroup E] [NormedSpace K E]
 variable (b : Basis ι K E)
 
+section misc
+
+open scoped Pointwise
+
 theorem span_top : span K (span ℤ (Set.range b) : Set E) = ⊤ := by simp [span_span_of_tower]
+
+theorem smul {c : K} (hc : c ≠ 0) :
+    c • span ℤ (Set.range b) = span ℤ (Set.range (b.isUnitSMul (fun _ ↦ Ne.isUnit hc))) := by
+  rw [smul_span, Set.smul_set_range]
+  congr!
+  rw [Basis.isUnitSMul_apply]
+
+end misc
 
 /-- The fundamental domain of the ℤ-lattice spanned by `b`. See `Zspan.isAddFundamentalDomain`
 for the proof that it is a fundamental domain. -/
@@ -318,6 +330,12 @@ instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)) := by
 instance [Finite ι] : DiscreteTopology (span ℤ (Set.range b)).toAddSubgroup :=
   inferInstanceAs <| DiscreteTopology (span ℤ (Set.range b))
 
+theorem setFinite_inter [ProperSpace E] [Finite ι] {s : Set E} (hs : Bornology.IsBounded s) :
+    Set.Finite (s ∩ (span ℤ (Set.range b))) := by
+  refine Metric.finite_isBounded_inter_isClosed hs ?_
+  change IsClosed (span ℤ (Set.range b)).toAddSubgroup
+  exact inferInstance
+
 @[measurability]
 theorem fundamentalDomain_measurableSet [MeasurableSpace E] [OpensMeasurableSpace E] [Finite ι] :
     MeasurableSet (fundamentalDomain b) := by
@@ -418,7 +436,7 @@ variable (K : Type*) [NormedLinearOrderedField K] [HasSolidNorm K] [FloorRing K]
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace K E] [FiniteDimensional K E]
 variable [ProperSpace E] (L : AddSubgroup E) [DiscreteTopology L]
 
-theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
+theorem Zlattice.FG [hL : IsZlattice K L] : AddSubgroup.FG L := by
   suffices (AddSubgroup.toIntSubmodule L).FG by exact (fg_iff_add_subgroup_fg _).mp this
   obtain ⟨s, ⟨h_incl, ⟨h_span, h_lind⟩⟩⟩ := exists_linearIndependent K (L : Set E)
   -- Let `s` be a maximal `K`-linear independent family of elements of `L`. We show that
@@ -430,7 +448,7 @@ theorem Zlattice.FG [hs : IsZlattice K L] : AddSubgroup.FG L := by
     -- so there are finitely many since `fundamentalDomain b` is bounded.
     refine fg_def.mpr ⟨map (span ℤ s).mkQ (AddSubgroup.toIntSubmodule L), ?_, span_eq _⟩
     let b := Basis.mk h_lind (by
-      rw [← hs.span_top, ← h_span]
+      rw [← hL.span_top, ← h_span]
       exact span_mono (by simp only [Subtype.range_coe_subtype, Set.setOf_mem_eq, subset_rfl]))
     rw [show span ℤ s = span ℤ (Set.range b) by simp [b, Basis.coe_mk, Subtype.range_coe_subtype]]
     have : Fintype s := h_lind.setFinite.fintype
@@ -496,7 +514,7 @@ instance instModuleFree_of_discrete_addSubgroup {E : Type*} [NormedAddCommGroup 
     exact noZeroSMulDivisors _
   infer_instance
 
-theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
+theorem Zlattice.rank [hL : IsZlattice K L] : finrank ℤ L = finrank K E := by
   classical
   have : Module.Finite ℤ L := module_finite K L
   have : Module.Free ℤ L := module_free K L
@@ -514,7 +532,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
     · exact (map_subtype_top _).symm
   have h_spanE : span K (Set.range b) = ⊤ := by
     rw [← span_span_of_tower (R := ℤ), h_spanL]
-    exact hs.span_top
+    exact hL.span_top
   have h_card : Fintype.card (Module.Free.ChooseBasisIndex ℤ L) =
       (Set.range b).toFinset.card := by
     rw [Set.toFinset_range, Finset.univ.card_image_of_injective]
@@ -580,7 +598,7 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
 
 open Module
 
-variable {ι : Type*} [hs : IsZlattice K L] (b : Basis ι ℤ L)
+variable {ι : Type*} [hL : IsZlattice K L] (b : Basis ι ℤ L)
 /-- Any `ℤ`-basis of `L` is also a `K`-basis of `E`. -/
 def Basis.ofZlatticeBasis :
     Basis ι K E := by
@@ -591,7 +609,7 @@ def Basis.ofZlatticeBasis :
   refine basisOfTopLeSpanOfCardEqFinrank (L.subtype.toIntLinearMap ∘ b) ?_ ?_
   · rw [← span_span_of_tower ℤ, Set.range_comp, ← map_span, Basis.span_eq, Submodule.map_top,
       top_le_iff, AddMonoidHom.coe_toIntLinearMap_range, AddSubgroup.subtype_range,
-      AddSubgroup.coe_toIntSubmodule, hs.span_top]
+      AddSubgroup.coe_toIntSubmodule, hL.span_top]
   · rw [← Fintype.card_congr e, ← finrank_eq_card_chooseBasisIndex, Zlattice.rank K L]
 
 @[simp]

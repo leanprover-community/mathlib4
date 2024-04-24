@@ -237,6 +237,13 @@ theorem coe_subset_Icc : ↑I ⊆ Box.Icc I :=
   fun _ hx ↦ ⟨fun i ↦ (hx i).1.le, fun i ↦ (hx i).2⟩
 #align box_integral.box.coe_subset_Icc BoxIntegral.Box.coe_subset_Icc
 
+theorem isBounded_Icc [Finite ι] (I : Box ι) : Bornology.IsBounded (Box.Icc I) := by
+  cases nonempty_fintype ι
+  exact Metric.isBounded_Icc _ _
+
+theorem isBounded [Finite ι] (I : Box ι) : Bornology.IsBounded I.toSet :=
+  Bornology.IsBounded.subset I.isBounded_Icc coe_subset_Icc
+
 /-!
 ### Supremum of two boxes
 -/
