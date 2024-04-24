@@ -64,7 +64,14 @@ instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
-is the integral closure of ℤ in the number field. -/
+is the integral closure of ℤ in the number field.
+
+This is defined as its own type, rather than a `Subalgebra`, for performance reasons:
+looking for instances of the form `SMul (RingOfIntegers _) (RingOfIntegers _)` makes
+much more effective use of the discrimination tree than instances of the form
+`SMul (Subtype _) (Subtype _)`.
+The drawback is we have to copy over instances manually.
+-/
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 #align number_field.ring_of_integers NumberField.RingOfIntegers
