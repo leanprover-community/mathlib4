@@ -667,7 +667,46 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
         exact Arrow.isoMk (singleColumnObjTotal _ _ _ (by simp))
           (singleColumnObjTotal _ _ _ (by simp))
 
-/-lemma total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE
+lemma total.isIso_ιStupidTrunc_map_f
+    (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) [K.HasTotal (up ℤ)] (y₀ x n : ℤ) (hn : x + y₀ ≤ n)
+    [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
+    IsIso ((total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)).f n) := by
+  apply GradedObject.isIso_mapMap_apply
+  rintro ⟨p, q⟩ (hpq : p + q = n)
+  dsimp
+  by_cases hp : x ≤ p
+  · obtain ⟨j, hj⟩ : ∃ j, (embeddingUpIntGE x).f j = p := by
+      obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le hp
+      exact ⟨k, rfl⟩
+    have := HomologicalComplex.isIso_ιStupidTrunc_f K (embeddingUpIntGE x) hj
+    change IsIso ((HomologicalComplex.eval _ _ q).map _)
+    infer_instance
+  · simp only [not_le] at hp
+    refine' ⟨0, _, _⟩
+    · apply IsZero.eq_of_src
+      apply (HomologicalComplex.eval _ _ q).map_isZero
+      apply HomologicalComplex.isZero_stupidTrunc_X
+      intro i hi
+      dsimp at hi
+      omega
+    · apply IsZero.eq_of_src
+      dsimp
+      apply CochainComplex.isZero_of_isStrictlyLE _ y₀
+      omega
+
+lemma total.quasiIsoAt_ιStupidTrunc_map
+    (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) [K.HasTotal (up ℤ)] (y₀ x n : ℤ) (hn : x + y₀ < n)
+    [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
+    QuasiIsoAt (total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)) n := by
+  rw [quasiIsoAt_iff' _ (n - 1) n (n + 1) (by simp) (by simp)]
+  have : IsIso ((HomologicalComplex.shortComplexFunctor' C (up ℤ) (n - 1) n (n + 1)).map
+      (map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ))) := by
+    rw [ShortComplex.isIso_iff]
+    refine' ⟨_, _, _⟩
+    all_goals exact total.isIso_ιStupidTrunc_map_f K y₀ x _ (by omega)
+  apply ShortComplex.quasiIso_of_isIso
+
+lemma total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE
     {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
     (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ y₀ : ℤ)
     [CochainComplex.IsStrictlyLE K x₀] [CochainComplex.IsStrictlyLE L x₀]
@@ -675,7 +714,7 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
     [∀ x, CochainComplex.IsStrictlyLE (L.X x) y₀]
     (hφ : ∀ (i : ℤ), QuasiIso (φ.f i)) :
     QuasiIso (total.map φ (up ℤ)) := by
-  have : ∀ x, QuasiIso (total.map ((rowFiltrationGEMap φ).app ⟨x⟩) (up ℤ)) := fun x =>
+  have hφ' : ∀ x, QuasiIso (total.map ((rowFiltrationGEMap φ).app ⟨x⟩) (up ℤ)) := fun x =>
     total.quasiIso_map_of_finitely_many_columns ((rowFiltrationGEMap φ).app ⟨x⟩) x x₀ (by
       intro i hi₁ hi₂
       obtain ⟨j, hj⟩ : ∃ j, (embeddingUpIntGE x).f j = i := by
@@ -688,15 +727,14 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
         (asIso ((HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x)).f i)))
   rw [quasiIso_iff]
   intro n
-  obtain ⟨x, _, _⟩ : ∃ (x : ℤ),
-    QuasiIsoAt (total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)) n ∧
-    QuasiIsoAt (total.map (HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x)) (up ℤ)) n := by
-    sorry
+  let x := n - y₀ - 1
+  have := total.quasiIsoAt_ιStupidTrunc_map K y₀ x n (by omega)
+  have := total.quasiIsoAt_ιStupidTrunc_map L y₀ x n (by omega)
   rw [← quasiIsoAt_iff_comp_left
     (total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)),
     ← map_comp, ← HomologicalComplex.ιStupidTrunc_naturality, map_comp,
     quasiIsoAt_iff_comp_right]
-  dsimp at this
-  infer_instance-/
+  dsimp at hφ'
+  infer_instance
 
 end HomologicalComplex₂

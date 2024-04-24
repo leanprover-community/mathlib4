@@ -434,6 +434,11 @@ lemma mapMap_zero [HasZeroMorphisms C] : mapMap (0 : X ⟶ Y) p = 0 := by aesop_
 @[simp]
 lemma mapMap_add [Preadditive C] : mapMap (φ + φ') p = mapMap φ p + mapMap φ' p := by aesop_cat
 
+lemma isIso_mapMap_apply (j : J) (h : ∀ (i : I) (_ : p i = j), IsIso (φ i)) :
+    IsIso (mapMap φ p j) :=
+  ⟨Y.descMapObj p (fun i hi => (letI := h i hi; inv (φ i)) ≫ X.ιMapObj p i j hi),
+    by aesop_cat, by aesop_cat⟩
+
 variable (C)
 
 /-- Given a map `p : I → J`, this is the functor `GradedObject I C ⥤ GradedObject J C` which
