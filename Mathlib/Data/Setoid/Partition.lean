@@ -69,9 +69,23 @@ def classes (r : Setoid α) : Set (Set α) :=
   { s | ∃ y, s = { x | r.Rel x y } }
 #align setoid.classes Setoid.classes
 
-theorem mem_classes (r : Setoid α) (y) : { x | r.Rel x y } ∈ r.classes :=
+/-- Sends an element to its equivalence class under an equivalence relation. -/
+abbrev classOf (r : Setoid α) (y : α) := { x | r.Rel x y }
+
+lemma classes_eq_range_classOf (r : Setoid α) :
+    r.classes = Set.range r.classOf :=
+  funext $ fun _ => propext $ exists_congr $ fun _ => eq_comm
+
+theorem mem_classes (r : Setoid α) (y : α) : { x | r.Rel x y } ∈ r.classes :=
   ⟨y, rfl⟩
 #align setoid.mem_classes Setoid.mem_classes
+
+theorem classOf_mem_classes (r : Setoid α) (y : α) : r.classOf y ∈ r.classes :=
+  r.mem_classes y
+
+theorem mem_classOf_iff {r : Setoid α} {x y} : x ∈ r.classOf y ↔ r.Rel x y := Iff.rfl
+
+theorem mem_classOf_self (r : Setoid α) (y : α) : y ∈ r.classOf y := refl y
 
 theorem classes_ker_subset_fiber_set {β : Type*} (f : α → β) :
     (Setoid.ker f).classes ⊆ Set.range fun y => { x | f x = y } := by
@@ -95,6 +109,13 @@ theorem eq_iff_classes_eq {r₁ r₂ : Setoid α} :
     r₁ = r₂ ↔ ∀ x, { y | r₁.Rel x y } = { y | r₂.Rel x y } :=
   ⟨fun h _x => h ▸ rfl, fun h => ext' fun x => Set.ext_iff.1 <| h x⟩
 #align setoid.eq_iff_classes_eq Setoid.eq_iff_classes_eq
+
+theorem rel_iff_classOf_eq (r : Setoid α) {x y} :
+    r.Rel x y ↔ r.classOf x = r.classOf y :=
+  Iff.symm (Iff.trans Set.ext_iff equiv_iff_equiv_cancel_left)
+
+theorem classOf_eq_of_rel {r : Setoid α} {x y} (h : r.Rel x y) :
+    r.classOf x = r.classOf y := r.rel_iff_classOf_eq.mp h
 
 theorem rel_iff_exists_classes (r : Setoid α) {x y} : r.Rel x y ↔ ∃ c ∈ r.classes, x ∈ c ∧ y ∈ c :=
   ⟨fun h => ⟨_, r.mem_classes y, h, r.refl' y⟩, fun ⟨c, ⟨z, hz⟩, hx, hy⟩ => by
@@ -127,6 +148,10 @@ theorem eq_of_mem_classes {r : Setoid α} {x b} (hc : b ∈ r.classes) (hb : x �
     (hc' : b' ∈ r.classes) (hb' : x ∈ b') : b = b' :=
   eq_of_mem_eqv_class classes_eqv_classes hc hb hc' hb'
 #align setoid.eq_of_mem_classes Setoid.eq_of_mem_classes
+
+theorem eq_classOf_of_mem {r : Setoid α} {x b} (h : b ∈ r.classes)
+    (hb : x ∈ b) : b = r.classOf x :=
+  eq_of_mem_classes h hb (r.classOf_mem_classes x) (r.mem_classOf_self x)
 
 /- ./././Mathport/Syntax/Translate/Basic.lean:628:2:
 -- warning: expanding binder collection (b «expr ∈ » c) -/
@@ -194,6 +219,38 @@ theorem mkClasses_classes (r : Setoid α) : mkClasses r.classes classes_eqv_clas
 theorem sUnion_classes (r : Setoid α) : ⋃₀ r.classes = Set.univ :=
   Set.eq_univ_of_forall fun x => Set.mem_sUnion.2 ⟨{ y | r.Rel y x }, ⟨x, rfl⟩, Setoid.refl _⟩
 #align setoid.sUnion_classes Setoid.sUnion_classes
+
+lemma classOf_eq_saturate_singleton (r : Setoid α) (x : α) :
+    r.classOf x = r.saturate {x} :=
+  funext $ fun _ => propext $ Iff.trans r.comm' $ Iff.symm $ exists_eq_left
+
+lemma isSaturated_classOf (r : Setoid α) (x : α) : r.isSaturated (r.classOf x) :=
+  (r.classOf_eq_saturate_singleton x).substr (r.saturate.isClosed_closure {x})
+
+lemma saturate_eq_biUnion_classOf (r : Setoid α) (S : Set α) :
+    r.saturate S = ⋃ x ∈ S, r.classOf x :=
+  Eq.trans (congrArg _ (Set.biUnion_of_singleton S).symm)
+  $ Eq.trans (r.saturate_biUnion _)
+  $ Set.iUnion₂_congr (fun _ _ => (r.classOf_eq_saturate_singleton _).symm)
+
+lemma isSaturated_of_mem_classes (r : Setoid α) (S : Set α)
+    (h : S ∈ r.classes) : r.isSaturated S := by
+  obtain ⟨x, rfl⟩ := r.classes_eq_range_classOf.subst h
+  exact r.isSaturated_classOf x
+
+lemma isSaturated_iff_biUnion_classOf_eq (r : Setoid α) (S : Set α) :
+    r.isSaturated S ↔ (⋃ x ∈ S, r.classOf x = S) :=
+  Iff.trans r.saturate.isClosed_iff
+  $ eq_iff_eq_cancel_right.mpr (saturate_eq_biUnion_classOf r S)
+
+lemma isSaturated_iff_exists_sub_classes_sUnion (r : Setoid α) (S : Set α) :
+    r.isSaturated S ↔ (∃ Cs ⊆ r.classes, ⋃₀ Cs = S) where
+  mp h := have H := subset_of_subset_of_eq (S.image_subset_range _)
+                                           (r.classes_eq_range_classOf.symm)
+          have H' := (isSaturated_iff_biUnion_classOf_eq r S).mp h
+          ⟨r.classOf '' S, H, Eq.trans (S.sUnion_image _) H'⟩
+  mpr := fun ⟨_, h1, h2⟩ => h2.subst $ r.isSaturated_sUnion $ fun _ h3 =>
+         r.isSaturated_of_mem_classes _ (h1 h3)
 
 /-- The equivalence between the quotient by an equivalence relation and its
 type of equivalence classes. -/

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston, Bryan Gin-ge Chen
 -/
 import Mathlib.Logic.Relation
-import Mathlib.Order.GaloisConnection
+import Mathlib.Order.Closure
 
 #align_import data.setoid.basic from "leanprover-community/mathlib"@"bbeb185db4ccee8ed07dc48449414ebfa39cb821"
 
@@ -288,7 +288,7 @@ theorem ker_iff_mem_preimage {f : α → β} {x y} : (ker f).Rel x y ↔ x ∈ f
 #align setoid.ker_iff_mem_preimage Setoid.ker_iff_mem_preimage
 
 /-- Equivalence between functions `α → β` such that `r x y → f x = f y` and functions
-`quotient r → β`. -/
+`Quotient r → β`. -/
 def liftEquiv (r : Setoid α) : { f : α → β // r ≤ ker f } ≃ (Quotient r → β) where
   toFun f := Quotient.lift (f : α → β) f.2
   invFun f := ⟨f ∘ Quotient.mk'', fun x y h => by simp [ker_def, Quotient.sound' h]⟩
@@ -451,6 +451,110 @@ def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
   .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
       (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
     (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
+
+lemma equiv_iff_equiv_cancel_left {b c} : (∀ {a : α}, a ≈ b ↔ a ≈ c) ↔ b ≈ c :=
+   ⟨(fun h => h.mp (refl b)), (fun h => ⟨(trans . h), (trans . (symm h))⟩)⟩
+
+lemma equiv_iff_equiv_cancel_right {a b} : (∀ {c : α}, a ≈ c ↔ b ≈ c) ↔ a ≈ b :=
+   ⟨(fun h => h.mpr (refl b)), (fun h => ⟨trans (symm h), (trans h)⟩)⟩
+
+/-- The proposition that a set is closed under swapping elements with
+equivalent elements. -/
+def isSaturated (r : Setoid α) (S : Set α) := r ≤ .ker S
+
+lemma isSaturated_def (r : Setoid α) (S : Set α) :
+    isSaturated r S = (r ≤ .ker (. ∈ S)) := rfl
+
+-- basically `(Set.image_preimage (f := Quotient.mk r)).closureOperator`
+-- but it's nicer to have `isSaturated` as the `IsClosed` predicate and to have
+-- `r.Rel x y` instead of `⟦x⟧ = ⟦y⟧` in the closure operator
+/-- The closure operator closing a set under adding in elements equivalent to
+existing elements of that set.-/
+@[simps! apply]
+def saturate (r : Setoid α) :=
+  ClosureOperator.ofPred (fun S => { y | ∃ x ∈ S, r.Rel x y }) r.isSaturated
+    (fun _ x h => ⟨x, h, r.refl' x⟩)
+    (fun _ _ _ h => propext (exists_congr (fun _ =>
+                      and_congr_right' (equiv_iff_equiv_cancel_left.mpr h))))
+    (fun _ _ h1 h2 _ ⟨_, h3, h4⟩ => (h2 h4).mp (h1 h3))
+
+lemma saturate_eq_preim_im (r : Setoid α) (S : Set α) :
+    r.saturate S = .mk _ ⁻¹' (Quotient.mk r '' S) :=
+  funext $ fun _ => propext $ exists_congr $ fun _ => and_congr_right' eq.symm
+
+lemma saturate_eq_preim_im_closure_op (r : Setoid α) :
+    r.saturate = (Set.image_preimage (f := Quotient.mk r)).closureOperator :=
+  ClosureOperator.ext' _ _ r.saturate_eq_preim_im
+
+lemma saturate_sUnion (r : Setoid α) (S : Set (Set α)) :
+    r.saturate (⋃₀ S) = ⋃₀ (r.saturate '' S) :=
+  Eq.trans (r.saturate_eq_preim_im _)
+  $ Eq.trans (congrArg _ Set.image_sUnion)
+  $ Eq.trans Set.preimage_sUnion
+  $ Eq.trans Set.biUnion_image
+  $ Eq.trans (Set.iUnion₂_congr (fun _ _ => (r.saturate_eq_preim_im _).symm))
+  $ (S.sUnion_image _).symm
+
+lemma saturate_iUnion {ι} (r : Setoid α) (s : ι → Set α) :
+    r.saturate (⋃ i, s i) = ⋃ i, r.saturate (s i) :=
+  Eq.trans (r.saturate_sUnion _) (congrArg _ (Set.range_comp _ _).symm)
+
+lemma saturate_iUnion₂ {ι} {κ : ι → Sort*} (r : Setoid α)
+    (s : (i : ι) → κ i → Set α) :
+    r.saturate (⋃ (i) (j), s i j) = ⋃ (i) (j), r.saturate (s i j) :=
+  Eq.trans (r.saturate_iUnion _) (Set.iUnion_congr (fun _ => r.saturate_iUnion _))
+
+lemma saturate_biUnion {ι} {s : Set ι} (r : Setoid α)
+    (t : (i : ι) → i ∈ s → Set α) :
+    r.saturate (⋃ i ∈ s, t i ‹_›) = ⋃ i ∈ s, r.saturate (t i ‹_›) :=
+  saturate_iUnion₂ r t
+
+lemma isSaturated_sUnion {r : Setoid α} {S : Set (Set α)}
+    (h : ∀ s ∈ S, r.isSaturated s) : r.isSaturated (⋃₀ S) :=
+  r.saturate.isClosed_iff.mpr $ Eq.trans (saturate_sUnion _ _) $ congrArg _
+  $ Eq.trans (S.image_congr (r.saturate.isClosed_iff.mp $ h . .)) S.image_id
+
+lemma isSaturated_iUnion {ι} (r : Setoid α) (s : ι → Set α)
+    (h : ∀ i, r.isSaturated (s i)) : r.isSaturated (⋃ i, s i) :=
+  isSaturated_sUnion (Set.forall_range_iff.mpr h)
+
+lemma isSaturated_iUnion₂ {ι} {κ : ι → Sort*} (r : Setoid α)
+    (s : (i : ι) → κ i → Set α) (h : ∀ i j, r.isSaturated (s i j)) :
+    r.isSaturated (⋃ (i) (j), s i j) :=
+  r.saturate.isClosed_iff.mpr $ Eq.trans (saturate_sUnion _ _) $ congrArg _
+  $ Eq.trans (Set.range_comp _ _).symm $ congrArg _
+  $ funext (fun i => r.saturate.isClosed_iff.mp (r.isSaturated_iUnion _ (h i)))
+
+lemma isSaturated_biUnion {ι} {s : Set ι} (r : Setoid α)
+    (t : (i : ι) → i ∈ s → Set α) (h : ∀ i hi, r.isSaturated (t i hi)) :
+    r.isSaturated (⋃ i ∈ s, t i ‹_›) := isSaturated_iUnion₂ r t h
+
+lemma isSaturated.preim_im_cancel {r : Setoid α} {S : Set α}
+    (h : r.isSaturated S) :
+    Quotient.mk r ⁻¹' (Quotient.mk r '' S) = S :=
+  Eq.trans (r.saturate_eq_preim_im S).symm
+           (ClosureOperator.IsClosed.closure_eq h)
+
+lemma isSaturated_iff_preim_im_eq (r : Setoid α) (S : Set α) :
+    r.isSaturated S ↔ Quotient.mk r ⁻¹' (Quotient.mk r '' S) = S :=
+  Iff.trans r.saturate.isClosed_iff
+            (eq_iff_eq_cancel_right.mpr (r.saturate_eq_preim_im S))
+
+lemma isSaturated_iff_equiv_imp_mem_iff_mem (r : Setoid α) (S : Set α) :
+    r.isSaturated S ↔ (∀ {x y}, r.Rel x y → (x ∈ S ↔ y ∈ S)) :=
+  forall₃_congr (fun _ _ _ => eq_iff_iff)
+
+lemma isSaturated_iff_equiv_imp_mem_imp_mem (r : Setoid α) (S : Set α) :
+    r.isSaturated S ↔ (∀ {x y}, r.Rel x y → x ∈ S → y ∈ S) :=
+  Iff.trans (r.isSaturated_iff_equiv_imp_mem_iff_mem S)
+            ⟨(fun h1 _ _ h2 => (h1 h2).mp), (fun h _ _ h2 => ⟨h h2, h (symm h2)⟩)⟩
+
+lemma isSaturated.mem_of_equiv_of_mem {r : Setoid α} {S} (h1 : r.isSaturated S)
+    {x y} (h2 : r.Rel x y) (h3 : x ∈ S) : y ∈ S := (h1 h2).mp h3
+
+/-- Equivalence between `r`-saturated subsets of `α` and subsets of `Quotient r` -/
+def liftSetEquiv (r : Setoid α) : { S // r.isSaturated S } ≃ Set (Quotient r) :=
+  liftEquiv r
 
 end Setoid
 

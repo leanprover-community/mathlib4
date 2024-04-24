@@ -127,6 +127,11 @@ variable {α} [PartialOrder α] (c : ClosureOperator α)
 theorem ext : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
   DFunLike.ext
 
+-- this should probably be the defautlt?
+@[ext]
+theorem ext' : ∀ c₁ c₂ : ClosureOperator α, (∀ x, c₁ x = c₂ x) → c₁ = c₂ :=
+  DFunLike.ext
+
 /-- Constructor for a closure operator using the weaker idempotency axiom: `f (f x) ≤ f x`. -/
 @[simps]
 def mk' (f : α → α) (hf₁ : Monotone f) (hf₂ : ∀ x, x ≤ f x) (hf₃ : ∀ x, f (f x) ≤ f x) :
