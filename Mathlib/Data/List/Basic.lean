@@ -703,6 +703,7 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   | a :: as => simp
 #align list.last_reverse List.getLast_reverse
 
+@[simp]
 theorem getLast_tail_eq_getLast {l : List α} (h : l.tail ≠ []) :
     l.tail.getLast h = l.getLast (ne_nil_of_drop_ne_nil ((drop_one l).symm ▸ h)) := by
   match l with
@@ -932,8 +933,7 @@ theorem head?_reverse (l : List α) : l.reverse.head? = l.getLast? := by
   rw [getLast?_reverse]
 
 theorem head!_reverse [Inhabited α] (l : List α) : l.reverse.head! = l.getLast! := by
-  nth_rewrite 2 [← reverse_reverse l]
-  rw [getLast!_reverse]
+  rw [← getLast!_reverse, reverse_reverse]
 
 theorem subsingleton_of_tail_eq_nil {l : List α} (h : l.tail = []) : l = [] ∨ ∃ x, l = [x] := by
   match l with
