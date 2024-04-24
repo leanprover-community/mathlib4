@@ -100,6 +100,7 @@ theorem rank_of_isUnit [StrongRankCondition R] [DecidableEq n] (A : Matrix n n R
 #align matrix.rank_of_is_unit Matrix.rank_of_isUnit
 
 /-- Right multiplying by an invertible matrix does not change the rank -/
+@[simp]
 lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
     (A : Matrix n n R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (B * A).rank = B.rank := by
@@ -110,6 +111,7 @@ lemma rank_mul_eq_left_of_isUnit_det [DecidableEq n]
   exact ⟨(A⁻¹).mulVecLin v, by simp [mul_nonsing_inv _ hA]⟩
 
 /-- Left multiplying by an invertible matrix does not change the rank -/
+@[simp]
 lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
     (A : Matrix m m R) (B : Matrix m n R) (hA : IsUnit A.det) :
     (A * B).rank = B.rank := by
@@ -118,16 +120,6 @@ lemma rank_mul_eq_right_of_isUnit_det [Fintype m] [DecidableEq m]
     convert hA; rw [← LinearEquiv.eq_symm_apply]; rfl
   have hAB : mulVecLin (A * B) = (LinearEquiv.ofIsUnitDet hA).comp (mulVecLin B) := by ext; simp
   rw [rank, rank, hAB, LinearMap.range_comp, LinearEquiv.finrank_map_eq]
-
-@[simp]
-theorem rank_mul_units [DecidableEq n] (A : (Matrix n n R)ˣ) (B : Matrix m n R) :
-    rank (B * (A : Matrix n n R)) = rank B :=
-  rank_mul_eq_left_of_isUnit_det _ _ <| A.isUnit.map detMonoidHom
-
-@[simp]
-theorem rank_units_mul [Fintype m] [DecidableEq n] (A : (Matrix n n R)ˣ) (B : Matrix n m R) :
-    rank ((A : Matrix n n R) * B) = rank B :=
-  rank_mul_eq_right_of_isUnit_det _ _ <| A.isUnit.map detMonoidHom
 
 /-- Taking a subset of the rows and permuting the columns reduces the rank. -/
 theorem rank_submatrix_le [StrongRankCondition R] [Fintype m] (f : n → m) (e : n ≃ m)
