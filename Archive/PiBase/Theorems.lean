@@ -9,22 +9,20 @@ variable (X : Type u) [TopologicalSpace X]
 
 namespace πBase
 
-theorem T119 : P2 X → P1 X := by
-  rw [P1, P2]
-  intro h
+theorem T119 (p2: P2 X): P1 X := by
+  rw [P1, P2] at *
   exact T1Space.t0Space
 
-theorem T226 : P99 X → P2 X := by
-  rw [P99, P2]
-  intro h
+theorem T226 (p99: P99 X): P2 X := by
+  rw [P99, P2] at *
   rw [t1Space_iff_exists_open]
   intro x y
   contrapose; simp at *
   intro hyp
   let f : ℕ → X := fun _ ↦ y
-  replace h : Tendsto f atTop (𝓝 x) →
+  have h : Tendsto f atTop (𝓝 x) →
       Tendsto f atTop (𝓝 y) → x = y := by
-    apply h
+    apply p99
   apply h
   · intro N NNx
     have yinN : y ∈ N := by
