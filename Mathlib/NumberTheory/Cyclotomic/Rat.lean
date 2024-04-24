@@ -238,13 +238,14 @@ theorem power_basis_int'_dim [hcycl : IsCyclotomicExtension {p} ℚ K] (hζ : Is
     pow_one]
 #align is_primitive_root.power_basis_int'_dim IsPrimitiveRoot.power_basis_int'_dim
 
+instance : NoZeroSMulDivisors ℤ (𝓞 K) :=
+  inferInstanceAs (NoZeroSMulDivisors ℤ (integralClosure _ _))
+
 /-- The integral `PowerBasis` of `𝓞 K` given by `ζ - 1`, where `K` is a `p ^ k` cyclotomic
 extension of `ℚ`. -/
 noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ k)) : PowerBasis ℤ (𝓞 K) :=
-  PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis
-    (isIntegral_of_mem_ringOfIntegers <|
-      Subalgebra.sub_mem _ (hζ.isIntegral (p ^ k).pos) (Subalgebra.one_mem _))
+  PowerBasis.ofGenMemAdjoin' hζ.integralPowerBasis (RingOfIntegers.isIntegral _)
     (by
       simp only [integralPowerBasis_gen, toInteger]
       convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K))
@@ -285,13 +286,13 @@ theorem zeta_sub_one_prime_of_ne_two [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
   letI := IsCyclotomicExtension.numberField {p ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow hp.out.one_lt (by simp))
-    rw [← Subalgebra.coe_eq_zero] at h
-    simpa [sub_eq_zero] using h
+    rw [sub_eq_zero] at h
+    simpa using (congrArg (fun (x : 𝓞 K) => x.val) h)
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   convert Nat.prime_iff_prime_int.1 hp.out
   apply RingHom.injective_int (algebraMap ℤ ℚ)
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
   exact hζ.sub_one_norm_prime_ne_two (Polynomial.cyclotomic.irreducible_rat (PNat.pos _)) hodd
@@ -304,20 +305,20 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
   letI := IsCyclotomicExtension.numberField {(2 : ℕ+) ^ (k + 1)} ℚ K
   refine Ideal.prime_of_irreducible_absNorm_span (fun h ↦ ?_) ?_
   · apply hζ.pow_ne_one_of_pos_of_lt zero_lt_one (one_lt_pow (by decide) (by simp))
-    rw [← Subalgebra.coe_eq_zero] at h
-    simpa [sub_eq_zero] using h
+    rw [sub_eq_zero] at h
+    simpa using (congrArg (fun (x : 𝓞 K) => x.val) h)
   rw [Nat.irreducible_iff_prime, Ideal.absNorm_span_singleton, ← Nat.prime_iff,
     ← Int.prime_iff_natAbs_prime]
   cases k
   · convert Prime.neg Int.prime_two
     apply RingHom.injective_int (algebraMap ℤ ℚ)
-    rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
+    rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
     simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
       Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
     simpa using hζ.pow_sub_one_norm_two (cyclotomic.irreducible_rat (by simp))
   convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ), Subalgebra.algebraMap_eq]
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
   exact hζ.sub_one_norm_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
