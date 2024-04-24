@@ -280,7 +280,7 @@ theorem adjMatrix_pow_apply_eq_card_walk [DecidableEq V] [Semiring α] (n : ℕ)
 
 /-- The sum of the identity, the adjacency matrix, and its complement is the all-ones matrix. -/
 theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [DecidableEq α]
-    [Semiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
+    [NonAssocSemiring α] : 1 + G.adjMatrix α + (G.adjMatrix α).compl = Matrix.of fun _ _ ↦ 1 := by
   ext i j
   unfold Matrix.compl
   rw [of_apply, add_apply, adjMatrix_apply, add_apply, adjMatrix_apply, one_apply]
@@ -291,7 +291,7 @@ theorem one_add_adjMatrix_add_compl_adjMatrix_eq_allOnes [DecidableEq V] [Decida
     · repeat rw [if_pos heq, add_zero]
     · rw [if_neg heq, if_neg heq, zero_add, zero_add, if_pos (refl 0)]
 
-theorem dotProduct_mulVec_adjMatrix [Semiring α] (vec : V → α) :
+theorem dotProduct_mulVec_adjMatrix [NonAssocSemiring α] (vec : V → α) :
     vec ⬝ᵥ (G.adjMatrix α).mulVec vec =
     ∑ i : V, ∑ j : V, if G.Adj i j then vec i * vec j else 0 := by
   simp only [dotProduct, mulVec, adjMatrix_apply, ite_mul, one_mul, zero_mul, mul_sum, mul_ite,
