@@ -126,7 +126,7 @@ Ring Theory:
     ring: 'Ring'
     subrings: 'Subring'
     ring morphisms: 'RingHom'
-    ring structure $\Z$: 'Int.instCommRingInt'
+    ring structure $\Z$: 'Int.instCommRing'
     product of rings: 'Pi.ring'
   Ideals and Quotients:
     ideal of a commutative ring: 'Ideal'
