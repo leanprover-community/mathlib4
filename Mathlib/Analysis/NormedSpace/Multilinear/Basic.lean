@@ -1379,9 +1379,7 @@ theorem opNorm_zero_iff : ‖f‖ = 0 ↔ f = 0 := by
   simp [← (opNorm_nonneg f).le_iff_eq, opNorm_le_iff f le_rfl, ext_iff]
 #align continuous_multilinear_map.op_norm_zero_iff ContinuousMultilinearMap.opNorm_zero_iff
 
-@[deprecated]
-alias op_norm_zero_iff :=
-  opNorm_zero_iff -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_zero_iff := opNorm_zero_iff -- deprecated on 2024-02-02
 
 /-- Continuous multilinear maps themselves form a normed group with respect to
     the operator norm. -/
