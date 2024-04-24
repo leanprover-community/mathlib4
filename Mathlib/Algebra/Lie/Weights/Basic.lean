@@ -273,8 +273,17 @@ variable (R L M) in
 def equivSetOf : Weight R L M ≃ {χ : L → R | genWeightSpace M χ ≠ ⊥} where
   toFun w := ⟨w.1, w.2⟩
   invFun w := ⟨w.1, w.2⟩
-  left_inv w := by simp
-  right_inv w := by simp
+  left_inv _ := rfl
+  right_inv _ := rfl
+
+variable (R L M) in
+/-- The set of weights is equivalent to a subtype. -/
+@[simps apply symm_apply]
+def equivSubtype : Weight R L M ≃ { f : L → R // genWeightSpace M f ≠ ⊥ } where
+  toFun w := ⟨w, w.2⟩
+  invFun w := ⟨w, w.2⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
 
 lemma genWeightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
     genWeightSpaceOf M (χ x) x ≠ ⊥ := by
@@ -762,8 +771,8 @@ lemma iSup_genWeightSpace_eq_top [IsTriangularizable K L M] :
 lemma iSup_genWeightSpace_eq_top' [IsTriangularizable K L M] :
     ⨆ χ : Weight K L M, genWeightSpace M χ = ⊤ := by
   have := iSup_genWeightSpace_eq_top K L M
-  erw [← iSup_ne_bot_subtype, ← (Weight.equivSetOf K L M).iSup_comp] at this
-  exact this
+  erw [← iSup_ne_bot_subtype, ← (Weight.equivSubtype K L M).iSup_comp] at this
+  simpa only [Weight.equivSubtype_apply]
 
 end field
 
