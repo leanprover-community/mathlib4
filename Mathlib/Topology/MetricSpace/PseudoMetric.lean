@@ -1886,8 +1886,7 @@ theorem IsCompact.isSeparable {s : Set α} (hs : IsCompact s) : IsSeparable s :=
 lemma TotallyBounded.isSeparable {s : Set α} (h : TotallyBounded s) :
     TopologicalSpace.IsSeparable s:= by
   rw [Metric.totallyBounded_iff] at h
-  have := fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat
-  choose! f hf hfb using this
+  choose! f hf hfb using (fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat)
   use ⋃ n, f n
   constructor
   · apply Set.countable_iUnion
