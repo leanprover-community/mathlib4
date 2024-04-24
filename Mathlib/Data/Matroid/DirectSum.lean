@@ -130,7 +130,8 @@ lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
     have I_grounded : I ⊆ M₁.E ∪ M₂.E := hyp.left.ground
     rw [indepDirectSum_iff hME I_grounded] at hyp
     obtain ⟨⟨hM₁, hM₂⟩, hB⟩ := hyp
-    have I_as : I = I ∩ M₁.E ∪ I ∩ M₂.E := (Set.union_inters_of_subset_union I_grounded).symm
+    have I_as : I = I ∩ M₁.E ∪ I ∩ M₂.E := by
+      simp_rw [← Set.inter_union_distrib_left, left_eq_inter, I_grounded]
     constructor
     · exact I_grounded
     constructor
