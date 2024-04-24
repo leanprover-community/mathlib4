@@ -347,47 +347,21 @@ theorem Coprime.mul_add_mul_ne_mul {m n a b : ℕ} (cop : Coprime m n) (ha : a �
 
 variable {x n m : ℕ}
 
-theorem dvd_gcd_mul_of_dvd_mul  (h : x ∣ n * m) : x ∣ gcd x n * m := by
-  obtain ⟨y, hy⟩ := h
+theorem dvd_gcd_mul_iff_dvd_mul : x ∣ gcd x n * m ↔ x ∣ n * m := by
+  refine ⟨(·.trans <| mul_dvd_mul_right (x.gcd_dvd_right n) m), fun ⟨y, hy⟩ ↦ ?_⟩
   rw [← gcd_mul_right, hy, gcd_mul_left]
   exact dvd_mul_right x (gcd m y)
 
-theorem dvd_mul_of_dvd_gcd_mul (h : x ∣ gcd x n * m) : x ∣ n * m := by
-  obtain ⟨y, hy⟩ := h
-  use y * (n / gcd x n)
-  rw [← mul_assoc, ← hy, mul_comm (_ * m), ← mul_assoc, Nat.div_mul_cancel (gcd_dvd_right x n)]
-
-theorem dvd_gcd_mul_iff_dvd_gcd : x ∣ gcd x n * m ↔ x ∣ n * m :=
-  ⟨dvd_mul_of_dvd_gcd_mul, dvd_gcd_mul_of_dvd_mul⟩
-
-theorem dvd_mul_gcd_of_dvd_mul (h : x ∣ n * m) : x ∣ n * gcd x m := by
-  obtain ⟨y, hy⟩ := h
-  rw [← gcd_mul_left, hy, mul_comm, gcd_mul_left]
-  exact dvd_mul_right x (gcd n y)
-
-theorem dvd_mul_of_dvd_mul_gcd (h : x ∣ n * gcd x m) : x ∣ n * m := by
-  obtain ⟨y, hy⟩ := h
-  use y * (m / gcd x m)
-  rw [← mul_assoc, ← hy, mul_assoc, mul_comm (gcd x m), Nat.div_mul_cancel (gcd_dvd_right x m)]
-
-theorem dvd_mul_gcd_iff_dvd_gcd : x ∣ n * gcd x m ↔ x ∣ n * m :=
-  ⟨dvd_mul_of_dvd_mul_gcd, dvd_mul_gcd_of_dvd_mul⟩
+theorem dvd_mul_gcd_iff_dvd_mul : x ∣ n * gcd x m ↔ x ∣ n * m := by
+  rw [mul_comm, dvd_gcd_mul_iff_dvd_mul, mul_comm]
 
 theorem dvd_gcd_mul_gcd_iff_dvd_mul : x ∣ gcd x n * gcd x m ↔ x ∣ n * m := by
-  rw [dvd_gcd_mul_iff_dvd_gcd, dvd_mul_gcd_iff_dvd_gcd]
-
-theorem gcd_mul_gcd_eq_of_dvd_mul_of_coprime (hcop : Coprime n m) (h : x ∣ n * m) :
-    gcd x n * gcd x m = x := by
-  apply dvd_antisymm
-  · apply (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd <;> exact gcd_dvd_left x _
-  · exact dvd_gcd_mul_gcd_iff_dvd_mul.mpr h
-
-theorem dvd_mul_of_gcd_mul_gcd_eq (h : gcd x n * gcd x m = x) : x ∣ n * m := by
-  rw [← h]
-  apply Nat.mul_dvd_mul <;> exact gcd_dvd_right _ _
+  rw [dvd_gcd_mul_iff_dvd_mul, dvd_mul_gcd_iff_dvd_mul]
 
 theorem gcd_mul_gcd_eq_iff_dvd_mul_of_coprime (hcop : Coprime n m) :
-    gcd x n * gcd x m = x ↔ x ∣ n * m :=
-  ⟨dvd_mul_of_gcd_mul_gcd_eq, gcd_mul_gcd_eq_of_dvd_mul_of_coprime hcop⟩
+    gcd x n * gcd x m = x ↔ x ∣ n * m := by
+  refine ⟨fun h ↦ ?_, (dvd_antisymm ?_ <| dvd_gcd_mul_gcd_iff_dvd_mul.mpr ·)⟩
+  refine h ▸ Nat.mul_dvd_mul ?_ ?_ <;> exact x.gcd_dvd_right _
+  refine (hcop.gcd_both x x).mul_dvd_of_dvd_of_dvd ?_ ?_ <;> exact x.gcd_dvd_left _
 
 end Nat
