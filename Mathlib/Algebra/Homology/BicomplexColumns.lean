@@ -449,6 +449,16 @@ noncomputable abbrev rowFiltrationGE (K : HomologicalComplex₂ C (up ℤ) c) :
     ℤᵒᵖ ⥤ HomologicalComplex₂ C (up ℤ) c :=
   rowFiltrationGEFunctor C c ⋙ ((evaluation _ _).obj K)
 
+instance (K : HomologicalComplex₂ C (up ℤ) c) (n : ℤ):
+    CochainComplex.IsStrictlyGE ((rowFiltrationGE K).obj ⟨n⟩) n := by
+  dsimp
+  infer_instance
+
+instance (K : HomologicalComplex₂ C (up ℤ) c) (n x : ℤ) [CochainComplex.IsStrictlyLE K x] :
+    CochainComplex.IsStrictlyLE ((rowFiltrationGE K).obj ⟨n⟩) x := by
+  dsimp
+  infer_instance
+
 noncomputable abbrev rowFiltrationGEMap {K L : HomologicalComplex₂ C (up ℤ) c} (φ : K ⟶ L) :
     K.rowFiltrationGE ⟶ L.rowFiltrationGE :=
   whiskerLeft _ ((evaluation _ _).map φ)
@@ -601,7 +611,7 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
       (total.mapIso (asIso (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x))) _)
       (total.mapIso (asIso (HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x))) _) ?_
     dsimp
-    simp only [← map_comp, HomologicalComplex.ιStupicTrunc_naturality]
+    simp only [← map_comp, HomologicalComplex.ιStupidTrunc_naturality]
   intro k
   induction k with
   | zero =>
@@ -656,5 +666,37 @@ lemma total.quasiIso_map_of_finitely_many_columns {K L : HomologicalComplex₂ C
         refine (quasiIso_iff_of_arrow_mk_iso _ _ ?_).2 (inferInstance : QuasiIso ((φ.f x)⟦-x⟧'))
         exact Arrow.isoMk (singleColumnObjTotal _ _ _ (by simp))
           (singleColumnObjTotal _ _ _ (by simp))
+
+/-lemma total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE
+    {K L : HomologicalComplex₂ C (up ℤ) (up ℤ)}
+    (φ : K ⟶ L) [K.HasTotal (up ℤ)] [L.HasTotal (up ℤ)] (x₀ y₀ : ℤ)
+    [CochainComplex.IsStrictlyLE K x₀] [CochainComplex.IsStrictlyLE L x₀]
+    [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀]
+    [∀ x, CochainComplex.IsStrictlyLE (L.X x) y₀]
+    (hφ : ∀ (i : ℤ), QuasiIso (φ.f i)) :
+    QuasiIso (total.map φ (up ℤ)) := by
+  have : ∀ x, QuasiIso (total.map ((rowFiltrationGEMap φ).app ⟨x⟩) (up ℤ)) := fun x =>
+    total.quasiIso_map_of_finitely_many_columns ((rowFiltrationGEMap φ).app ⟨x⟩) x x₀ (by
+      intro i hi₁ hi₂
+      obtain ⟨j, hj⟩ : ∃ j, (embeddingUpIntGE x).f j = i := by
+        obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le hi₁
+        exact ⟨k, rfl⟩
+      have := fun (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) =>
+        HomologicalComplex.isIso_ιStupidTrunc_f K (embeddingUpIntGE x) hj
+      apply (quasiIso_iff_of_arrow_mk_iso _ _ _).2 (hφ i)
+      exact Arrow.isoMk (asIso ((HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)).f i))
+        (asIso ((HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x)).f i)))
+  rw [quasiIso_iff]
+  intro n
+  obtain ⟨x, _, _⟩ : ∃ (x : ℤ),
+    QuasiIsoAt (total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)) n ∧
+    QuasiIsoAt (total.map (HomologicalComplex.ιStupidTrunc L (embeddingUpIntGE x)) (up ℤ)) n := by
+    sorry
+  rw [← quasiIsoAt_iff_comp_left
+    (total.map (HomologicalComplex.ιStupidTrunc K (embeddingUpIntGE x)) (up ℤ)),
+    ← map_comp, ← HomologicalComplex.ιStupidTrunc_naturality, map_comp,
+    quasiIsoAt_iff_comp_right]
+  dsimp at this
+  infer_instance-/
 
 end HomologicalComplex₂

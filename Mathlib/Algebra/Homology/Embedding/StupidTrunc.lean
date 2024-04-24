@@ -29,6 +29,16 @@ lemma isZero_stupidTrunc_X (i' : ι') (hi' : ∀ i, e.f i ≠ i') :
     IsZero ((K.stupidTrunc e).X i') :=
   isZero_extend_X _ _ _ hi'
 
+instance {ι'' : Type*} {c'' : ComplexShape ι''} (e' : c''.Embedding c')
+    [K.IsStrictlySupported e'] :
+    IsStrictlySupported (K.stupidTrunc e) e' where
+  isZero i' hi' := by
+    by_cases hi'' : ∃ i, e.f i = i'
+    · obtain ⟨i, hi⟩ := hi''
+      exact (K.isZero_X_of_isStrictlySupported e' i' hi').of_iso (K.stupidTruncXIso e hi)
+    · apply isZero_stupidTrunc_X
+      simpa using hi''
+
 lemma isZero_stupidTrunc_iff :
     IsZero (K.stupidTrunc e) ↔ K.IsStrictlySupportedOutside e := by
   constructor
@@ -159,13 +169,18 @@ instance [K.IsStrictlySupported e] : IsIso (K.ιStupidTrunc e) := by
 variable {K L}
 
 @[reassoc (attr := simp)]
-lemma ιStupicTrunc_naturality :
+lemma ιStupidTrunc_naturality :
     stupidTruncMap φ e ≫ L.ιStupidTrunc e = K.ιStupidTrunc e ≫ φ := by
   ext i'
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, rfl⟩ := hi'
     simp [ιStupidTrunc, ιStupidTruncf_eq, stupidTruncMap, extendMap_f _ e rfl]
   · apply (K.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_src
+
+@[reassoc (attr := simp)]
+lemma ιStupidTrunc_f_naturality (i' : ι') :
+    (stupidTruncMap φ e).f i' ≫ (L.ιStupidTrunc e).f i' = (K.ιStupidTrunc e).f i' ≫ φ.f i' := by
+  simp only [← comp_f, ιStupidTrunc_naturality]
 
 end
 
@@ -249,13 +264,18 @@ instance [K.IsStrictlySupported e] : IsIso (K.πStupidTrunc e) := by
 variable {K L}
 
 @[reassoc (attr := simp)]
-lemma πStupicTrunc_naturality :
+lemma πStupidTrunc_naturality :
     K.πStupidTrunc e ≫ stupidTruncMap φ e = φ ≫ L.πStupidTrunc e := by
   ext i'
   by_cases hi' : ∃ i, e.f i = i'
   · obtain ⟨i, rfl⟩ := hi'
     simp [πStupidTrunc, πStupidTruncf_eq, stupidTruncMap, extendMap_f _ e rfl]
   · apply (L.isZero_stupidTrunc_X e i' (fun i hi => hi' ⟨i, hi⟩)).eq_of_tgt
+
+@[reassoc (attr := simp)]
+lemma πStupidTrunc_f_naturality (i' : ι') :
+    (K.πStupidTrunc e).f i' ≫ (stupidTruncMap φ e).f i' = φ.f i' ≫ (L.πStupidTrunc e).f i' := by
+  simp only [← comp_f, πStupidTrunc_naturality]
 
 end
 
