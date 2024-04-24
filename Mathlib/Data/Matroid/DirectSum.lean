@@ -137,11 +137,12 @@ lemma maximals_indepDirectSum_iff {M₁ M₂ : IndepMatroid α}
     · constructor
       · exact hM₁
       · intro B₁ hB₁ hI₁
-        rw [I_as, Set.union_inter_distrib_right, Set.inter_assoc, Set.inter_assoc,
-            Set.inter_comm M₂.E, hME, Set.inter_empty, Set.union_empty, Set.inter_self]
-        exact Set.subset_inter_of_redundant_right
-          (hB ⟨B₁, I ∩ M₂.E, rfl, hB₁, hM₂⟩ (I_as ▸ Set.union_inter_aux hI₁))
-          (M₁.subset_ground _ hB₁)
+        rw [subset_inter_iff]
+        specialize hB ⟨B₁, I ∩ M₂.E, rfl, hB₁, hM₂⟩
+          (subset_inter subset_rfl I_grounded |>.trans ?_)
+        · rw [inter_union_distrib_left]
+          exact union_subset_union hI₁ subset_rfl
+        exact ⟨subset_union_left _ _ |>.trans hB, M₁.subset_ground _ hB₁⟩
     · constructor
       · exact hM₂
       · intro B₂ hB₂ hI₂
