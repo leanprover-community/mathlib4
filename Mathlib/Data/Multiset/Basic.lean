@@ -3208,13 +3208,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias card_le_of_le := card_le_card
-@[deprecated] alias card_lt_of_lt := card_lt_card
+@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
+@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
 
 end Multiset
