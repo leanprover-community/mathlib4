@@ -155,8 +155,8 @@ theorem tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero (s : ℝ) (b : ℝ) (hb : 0
   refine' (tendsto_exp_mul_div_rpow_atTop s b hb).inv_tendsto_atTop.congr' _
   filter_upwards with x using by simp [exp_neg, inv_div, div_eq_mul_inv _ (exp _)]
 #align tendsto_rpow_mul_exp_neg_mul_at_top_nhds_0 tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
-@[deprecated] alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 :=
-  tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
+@[deprecated] --2024-01-31
+alias tendsto_rpow_mul_exp_neg_mul_atTop_nhds_0 := tendsto_rpow_mul_exp_neg_mul_atTop_nhds_zero
 
 nonrec theorem NNReal.tendsto_rpow_atTop {y : ℝ} (hy : 0 < y) :
     Tendsto (fun x : ℝ≥0 => x ^ y) atTop atTop := by
