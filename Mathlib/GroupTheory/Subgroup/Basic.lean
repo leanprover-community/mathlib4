@@ -206,8 +206,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
--- deprecated since 15 January 2024
-@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv
+@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv -- 2024-01-15
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -1897,8 +1896,8 @@ theorem pi_eq_bot_iff (H : ∀ i, Subgroup (f i)) : pi Set.univ H = ⊥ ↔ ∀ 
     simp only [eq_bot_iff_forall]
     constructor
     · intro h i x hx
-      have : MonoidHom.single f i x = 1 :=
-        h (MonoidHom.single f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
+      have : MonoidHom.mulSingle f i x = 1 :=
+        h (MonoidHom.mulSingle f i x) ((mulSingle_mem_pi i x).mpr fun _ => hx)
       simpa using congr_fun this i
     · exact fun h x hx => funext fun i => h _ _ (hx i trivial)
 #align subgroup.pi_eq_bot_iff Subgroup.pi_eq_bot_iff
