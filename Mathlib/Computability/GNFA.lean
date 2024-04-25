@@ -93,10 +93,10 @@ instance : Inhabited (GNFA α σ) :=
 /-- A `trace` of a string and an internal state of a GNFA represents a way to get to the state via
 transitions of the GNFA that match parts of the string.
 -/
-inductive Trace (M : GNFA α σ) : List α → σ → Prop
-  | start : ∀ {x q}, x ∈ (M.step none (some q)).matches' → trace x q
+inductive trace (M : GNFA α σ) : List α → σ → Prop
+  | start : ∀ {x q}, x ∈ (M.step none (some q)).matches' → M.trace x q
   |
-  step : ∀ {x y z p q}, trace y p → z ∈ (M.step (some p) (some q)).matches' → x = y ++ z → trace x q
+  step : ∀ {x y z p q}, M.trace y p → z ∈ (M.step (some p) (some q)).matches' → x = y ++ z → M.trace x q
 
 /--
 An `accepts` of a string represents a way to get to the accepting state of a GNFA via transitions
@@ -106,8 +106,8 @@ a string, this also is how the accepting language of a GNFA is described.
 TODO: make description clearer
 -/
 inductive accepts (M : GNFA α σ) : Language α
-  | start : ∀ {x}, x ∈ (M.step none none).matches' → accepts x
-  | step : ∀ {x y z} (q), M.trace y q → z ∈ (M.step (some q) none).matches' → x = y ++ z → accepts x
+  | start : ∀ {x}, x ∈ (M.step none none).matches' → M.accepts x
+  | step : ∀ {x y z} (q), M.trace y q → z ∈ (M.step (some q) none).matches' → x = y ++ z → M.accepts x
 
 /-- "Rips" an internal state out of a GNFA, making it smaller by one without changing its accepting
 language.
@@ -117,7 +117,7 @@ def rip (M : GNFA α (Option σ)) : GNFA α σ :=
     let p := p.map some
     let q := q.map some
     let r : Option (Option σ) := some none
-    M.step p q + M.step p r * (M.step r r).unit * M.step r q⟩
+    M.step p q + M.step p r * (M.step r r).star * M.step r q⟩
 
 theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
     (∃ p, q = some p ∧ M.rip.trace x p) ∨
