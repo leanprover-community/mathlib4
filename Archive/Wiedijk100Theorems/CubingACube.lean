@@ -372,11 +372,11 @@ theorem mi_strict_minimal (hii' : mi h v ≠ i) (hi : i ∈ bcubes cs c) :
 /-- The top of `mi` cannot be 1, since there is a larger cube in the valley -/
 theorem mi_xm_ne_one : (cs <| mi h v).xm ≠ 1 := by
   apply ne_of_lt; rcases (nontrivial_bcubes h v).exists_ne (mi h v) with ⟨i, hi, h2i⟩
-  · apply lt_of_lt_of_le _ h.b_add_w_le_one
-    · exact i
-    · exact 0
-    rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
-    exact mi_strict_minimal h2i.symm hi
+  apply lt_of_lt_of_le _ h.b_add_w_le_one
+  · exact i
+  · exact 0
+  rw [xm, mi_mem_bcubes.1, hi.1, _root_.add_lt_add_iff_left]
+  exact mi_strict_minimal h2i.symm hi
 #align theorems_100.«82».mi_xm_ne_one Theorems100.«82».mi_xm_ne_one
 
 /-- If `mi` lies on the boundary of the valley in dimension j, then this lemma expresses that all
