@@ -47,21 +47,8 @@ set_option linter.deprecated false
 section
 variable {f : Bool → Bool → Bool}
 
-@[simp]
-lemma bitwise_zero_left (m : Nat) : bitwise f 0 m = if f false true then m else 0 :=
-  rfl
 #align nat.bitwise_zero_left Nat.bitwise_zero_left
-
-@[simp]
-lemma bitwise_zero_right (n : Nat) : bitwise f n 0 = if f true false then n else 0 := by
-  unfold bitwise
-  simp only [ite_self, decide_False, Nat.zero_div, ite_true, ite_eq_right_iff]
-  rintro ⟨⟩
-  split_ifs <;> rfl
 #align nat.bitwise_zero_right Nat.bitwise_zero_right
-
-lemma bitwise_zero : bitwise f 0 0 = 0 := by
-  simp only [bitwise_zero_right, ite_self]
 #align nat.bitwise_zero Nat.bitwise_zero
 
 lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
@@ -71,14 +58,6 @@ lemma bitwise_of_ne_zero {n m : Nat} (hn : n ≠ 0) (hm : m ≠ 0) :
     simp only [mod_two_of_bodd, cond]; cases bodd x <;> rfl
   simp only [hn, hm, mod_two_iff_bod, ite_false, bit, bit1, bit0, Bool.cond_eq_ite]
   split_ifs <;> rfl
-
-theorem binaryRec_of_ne_zero {C : Nat → Sort*} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
-    (h : n ≠ 0) :
-    binaryRec z f n = bit_decomp n ▸ f (bodd n) (div2 n) (binaryRec z f (div2 n)) := by
-  rw [Eq.rec_eq_cast]
-  rw [binaryRec]
-  dsimp only
-  rw [dif_neg h, eq_mpr_eq_cast]
 
 @[simp]
 lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by rfl) (a m b n) :
@@ -94,14 +73,6 @@ lemma bitwise_bit {f : Bool → Bool → Bool} (h : f false false = false := by 
   cases a <;> cases b <;> simp [h1, h2, h3, h4] <;> split_ifs
     <;> simp_all (config := {decide := true})
 #align nat.bitwise_bit Nat.bitwise_bit
-
-lemma bit_mod_two (a : Bool) (x : ℕ) :
-    bit a x % 2 = if a then 1 else 0 := by
-  -- Adaptation note: nightly-2024-03-16: simp was
-  -- simp (config := { unfoldPartialApp := true }) only [bit, bit1, bit0, ← mul_two,
-  --   Bool.cond_eq_ite]
-  simp only [bit, ite_apply, bit1, bit0, ← mul_two, Bool.cond_eq_ite]
-  split_ifs <;> simp [Nat.add_mod]
 
 @[simp]
 lemma bit_mod_two_eq_zero_iff (a x) :
@@ -217,7 +188,7 @@ theorem testBit_eq_false_of_lt {n i} (h : n < 2 ^ i) : n.testBit i = false := by
 /-- The ith bit is the ith element of `n.bits`. -/
 theorem testBit_eq_inth (n i : ℕ) : n.testBit i = n.bits.getI i := by
   induction' i with i ih generalizing n
-  · simp only [testBit, zero_eq, shiftRight_zero, and_one_is_mod, mod_two_of_bodd,
+  · simp only [testBit, zero_eq, shiftRight_zero, land_one_eq_mod_two, mod_two_of_bodd,
       bodd_eq_bits_head, List.getI_zero_eq_headI]
     cases List.headI (bits n) <;> rfl
   conv_lhs => rw [← bit_decomp n]
@@ -291,7 +262,7 @@ theorem testBit_two_pow_of_ne {n m : ℕ} (hm : n ≠ m) : testBit (2 ^ n) m = f
   · rw [Nat.pow_div hm.le Nat.two_pos, ← Nat.sub_add_cancel (succ_le_of_lt <| Nat.sub_pos_of_lt hm)]
     -- Porting note: XXX why does this make it work?
     rw [(rfl : succ 0 = 1)]
-    simp [pow_succ, and_one_is_mod, mul_mod_left]
+    simp [pow_succ, land_one_eq_mod_two, mul_mod_left]
 #align nat.test_bit_two_pow_of_ne Nat.testBit_two_pow_of_ne
 
 theorem testBit_two_pow (n m : ℕ) : testBit (2 ^ n) m = (n = m) := by
