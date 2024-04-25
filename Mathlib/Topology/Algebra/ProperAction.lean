@@ -251,6 +251,15 @@ theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s
     eventually_atTop, ge_iff_le]
   exact ⟨0, fun n _ ↦ hu n⟩
 
+theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
+  {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ _⟩
+  rw [isClosed_iff_forall_filter]
+  intro x ℱ hℱ₁ hℱ₂ hℱ₃
+  rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
+  exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
+    (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
+
 theorem continuous_of_partial_of_discrete [DiscreteTopology X] (f : X × Y → Z)
     (h : ∀ x, Continuous fun y ↦ f (x, y)) : Continuous f := by
   rw [continuous_def]
