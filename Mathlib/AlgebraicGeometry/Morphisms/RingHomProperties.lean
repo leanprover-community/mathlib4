@@ -272,8 +272,8 @@ theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsI
     (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq (Y.ofRestrict _) f _).hom.op),
     ← Functor.map_comp, ← op_comp]
   · convert h₂ ⟨_, rangeIsAffineOpenOfOpenImmersion f⟩ using 3
-    · rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
-      exact Subtype.range_coe
+    rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
+    exact Subtype.range_coe
 #align algebraic_geometry.is_open_immersion_comp_of_source_affine_locally AlgebraicGeometry.isOpenImmersionCat_comp_of_sourceAffineLocally
 
 end AlgebraicGeometry

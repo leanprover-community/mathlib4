@@ -257,8 +257,8 @@ theorem support_esymm'' (n : ℕ) [DecidableEq σ] [Nontrivial R] :
     have hs := biUnion_congr (of_eq_true (eq_self s)) (hsingle s)
     have ht := biUnion_congr (of_eq_true (eq_self t)) (hsingle t)
     rw [hs, ht] at this
-    · simp only [biUnion_singleton_eq_self] at this
-      exact absurd this hst.symm
+    simp only [biUnion_singleton_eq_self] at this
+    exact absurd this hst.symm
   all_goals intro x y; simp [Finsupp.support_single_disjoint]
 #align mv_polynomial.support_esymm'' MvPolynomial.support_esymm''
 

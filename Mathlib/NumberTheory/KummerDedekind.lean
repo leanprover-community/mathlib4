@@ -174,12 +174,12 @@ theorem comap_map_eq_map_adjoin_of_coprime_conductor
       exact Ideal.mul_mem_left (I.map (algebraMap R R<x>)) _ (Ideal.mem_map_of_mem _ hq)
     refine ⟨fun h => ?_,
       fun h => (Set.mem_image _ _ _).mpr (Exists.intro ⟨z, hz⟩ ⟨by simp [h], rfl⟩)⟩
-    · obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
-      have : x₁ = ⟨z, hz⟩ := by
-        apply h_alg
-        simp [hx₂]
-        rfl
-      rwa [← this]
+    obtain ⟨x₁, hx₁, hx₂⟩ := (Set.mem_image _ _ _).mp h
+    have : x₁ = ⟨z, hz⟩ := by
+      apply h_alg
+      simp [hx₂]
+      rfl
+    rwa [← this]
   · -- The converse inclusion is trivial
     have : algebraMap R S = (algebraMap _ S).comp (algebraMap R R<x>) := by ext; rfl
     rw [this, ← Ideal.map_map]
@@ -317,7 +317,7 @@ theorem normalizedFactors_ideal_map_eq_normalizedFactors_min_poly_mk_map (hI : I
         ((normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx').symm f :
           Ideal S),
       Multiset.count_attach]
-    · exact Subtype.coe_injective.comp (Equiv.injective _)
+    exact Subtype.coe_injective.comp (Equiv.injective _)
   · exact (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
   · exact irreducible_of_normalized_factor _
         (normalizedFactorsMapEquivNormalizedFactorsMinPolyMk hI hI' hx hx' _).prop
