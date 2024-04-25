@@ -12,6 +12,7 @@ import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
+import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -320,9 +321,10 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
 
-instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
-    HasCountableSeparatingOn α MeasurableSet s :=
-  .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
+instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
+    CountablySeparated s := by
+    rw[CountablySeparated.subtype_iff]
+    exact .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
