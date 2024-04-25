@@ -134,13 +134,13 @@ lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     apply lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn)
   exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n) this
 
-lemma to_separable_on_metric [PseudoMetricSpace α] (h : IsPretight μ) : IsSeparable μ := by
+lemma to_isSeparable_on_metric [PseudoMetricSpace α] (h : IsPretight μ) : IsSeparable μ := by
   obtain ⟨K, hKa, hKb⟩ := has_countable_totally_bounded_union h
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
   exact fun i => aux3 (hKa i)
 
---lemma of_separable_on_metric [Nonempty α] [UniformSpace α] [OpensMeasurableSpace α]
+--lemma of_isSeparable_on_metric [Nonempty α] [UniformSpace α] [OpensMeasurableSpace α]
 --    (h : IsSeparable μ) : IsPretight μ := by
 --  obtain ⟨S, hSa, hSb⟩ := h
 --  let S₀ := closure S
@@ -166,7 +166,7 @@ instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFin
   exact ⟨this⟩
 
 /-- Every tight measure is pre-tight-/
-lemma Pretight.of_tight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
+lemma Pretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
   intro ε hε
   obtain ⟨K, hK_compact, hKμ⟩ := h ε hε
   use K
@@ -249,7 +249,7 @@ lemma countable_compact_cover_iff [TopologicalSpace α] [T2Space α] [OpensMeasu
     [IsFiniteMeasure μ] : IsTight μ ↔ ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ :=
   ⟨countable_compact_cover, of_countable_compact_cover⟩
 
-lemma of_pretight [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : IsTight μ := by
+lemma of_isPretight [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : IsTight μ := by
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := h ε hε
   refine ⟨closure K, isCompact_of_totallyBounded_isClosed hK.closure isClosed_closure, ?_⟩
