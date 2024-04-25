@@ -299,17 +299,15 @@ end ChainComplex
 
 namespace CategoryTheory
 
-namespace Functor
-
 variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroMorphisms C]
-  [HasZeroMorphisms D] [HasCokernels D] (F : C ⥤ D)
+  [HasZeroMorphisms D] [HasCokernels D]
 
 @[simps]
-noncomputable def modCokernelFromZero : C ⥤ D where
+noncomputable def Functor.modCokernelFromZero (F : C ⥤ D) : C ⥤ D where
   obj X := cokernel (F.map (0 : 0 ⟶ X))
   map φ := cokernel.map _ _ (𝟙 _) (F.map φ) (by rw [id_comp, ← F.map_comp, zero_comp])
 
-instance : F.modCokernelFromZero.PreservesZeroMorphisms where
+instance (F : C ⥤ D) : F.modCokernelFromZero.PreservesZeroMorphisms where
   map_zero X Y := by
     dsimp
     ext
@@ -317,6 +315,18 @@ instance : F.modCokernelFromZero.PreservesZeroMorphisms where
       ← F.map_comp_assoc, zero_comp]
       using (F.map (0 : X ⟶ 0)) ≫= cokernel.condition (F.map (0 : 0 ⟶ Y))
 
-end Functor
+namespace NatTrans
+
+variable [HasZeroObject D] {F : D ⥤ D} (ε : F ⟶ 𝟭 _)
+
+noncomputable def fromModCokernelFromZero : F.modCokernelFromZero ⟶ 𝟭 _ where
+  app X := cokernel.desc _ (ε.app X) (by rw [ε.naturality, Functor.id_map, comp_zero])
+
+instance (X : D) [Epi (ε.app X)] : Epi ((fromModCokernelFromZero ε).app X) := by
+  have h : cokernel.π _ ≫ (fromModCokernelFromZero ε).app X = ε.app X :=
+    by simp [fromModCokernelFromZero]
+  exact epi_of_epi_fac h
+
+end NatTrans
 
 end CategoryTheory
