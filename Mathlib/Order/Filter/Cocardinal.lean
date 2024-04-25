@@ -28,6 +28,7 @@ variable {l : Filter α}
 
 namespace Filter
 
+variable (α) in
 /-- The filter defined by all sets that have a complement with at most cardinality `c`. For a union
 of `c` sets of `c` elements to have `c` elements, we need that `c` is a regular cardinal. -/
 def cocardinal (hreg : c.IsRegular) : Filter α := by
@@ -38,7 +39,7 @@ def cocardinal (hreg : c.IsRegular) : Filter α := by
 
 @[simp]
 theorem mem_cocardinal {s : Set α} :
-    s ∈ @cocardinal α c hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
+    s ∈ cocardinal α hreg ↔ Cardinal.mk (sᶜ : Set α) < c := Iff.rfl
 
 @[simp] lemma cocardinal_aleph0_eq_cofinite :
     cocardinal (α := α) isRegular_aleph0 = cofinite := by
@@ -55,10 +56,9 @@ instance instCardinalInterFilter_cocardinal : CardinalInterFilter (cocardinal (�
 
 @[simp]
 theorem eventually_cocardinal {p : α → Prop} :
-    (∀ᶠ x in cocardinal hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
+    (∀ᶠ x in cocardinal α hreg, p x) ↔ #{ x | ¬p x } < c := Iff.rfl
 
-theorem hasBasis_cocardinal : HasBasis (cocardinal hreg)
-    (fun s : Set α => (#s < c)) compl :=
+theorem hasBasis_cocardinal : HasBasis (cocardinal α hreg) {s : Set α | #s < c} compl :=
   ⟨fun s =>
     ⟨fun h => ⟨sᶜ, h, (compl_compl s).subset⟩, fun ⟨_t, htf, hts⟩ => by
       have : #↑sᶜ < c := by
@@ -67,48 +67,43 @@ theorem hasBasis_cocardinal : HasBasis (cocardinal hreg)
         apply Cardinal.mk_le_mk_of_subset hts
       simp_all only [mem_cocardinal] ⟩⟩
 
-theorem frequently_cocardinal_iff_cardinal_le {p : α → Prop} :
-    (∃ᶠ x in cocardinal hreg, p x) ↔ c ≤ # { x | p x }  := by
-  simp only [Filter.Frequently, eventually_cocardinal, not_not,coe_setOf,
-    not_lt]
+theorem frequently_cocardinal {p : α → Prop} :
+    (∃ᶠ x in cocardinal α hreg, p x) ↔ c ≤ # { x | p x } := by
+  simp only [Filter.Frequently, eventually_cocardinal, not_not,coe_setOf, not_lt]
 
-lemma frequently_cocardinal_mem_iff_cardinal_le {s : Set α} :
-    (∃ᶠ x in cocardinal hreg, x ∈ s) ↔ c ≤ #s := frequently_cocardinal_iff_cardinal_le
+lemma frequently_cocardinal_mem {s : Set α} :
+    (∃ᶠ x in cocardinal α hreg, x ∈ s) ↔ c ≤ #s := frequently_cocardinal
 
 @[simp]
 lemma cocardinal_inf_principal_neBot_iff {s : Set α} :
-    (cocardinal hreg ⊓ 𝓟 s).NeBot ↔ c ≤ #s :=
-  frequently_mem_iff_neBot.symm.trans frequently_cocardinal_iff_cardinal_le
+    (cocardinal α hreg ⊓ 𝓟 s).NeBot ↔ c ≤ #s :=
+  frequently_mem_iff_neBot.symm.trans frequently_cocardinal
 
-theorem _root_.Set.compl_mem_cocardinal {s : Set α} (hs : #s < c) :
-    sᶜ ∈ @cocardinal α c hreg :=
+theorem compl_mem_cocardinal_of_card_lt {s : Set α} (hs : #s < c) :
+    sᶜ ∈ cocardinal α hreg :=
   mem_cocardinal.2 <| (compl_compl s).symm ▸ hs
 
 theorem _root_.Set.Finite.compl_mem_cocardinal {s : Set α} (hs : s.Finite) :
-    sᶜ ∈ @cocardinal α c hreg := by
-  have : #s < c := lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
-  exact Set.compl_mem_cocardinal this
+    sᶜ ∈ cocardinal α hreg :=
+  compl_mem_cocardinal_of_card_lt <| lt_of_lt_of_le (Finite.lt_aleph0 hs) (hreg.aleph0_le)
 
-theorem _root_.Set.eventually_cocardinal_nmem {s : Set α} (hs : #s < c) :
-    ∀ᶠ x in cocardinal hreg, x ∉ s :=
-  s.compl_mem_cocardinal hs
+theorem eventually_cocardinal_nmem_of_card_lt  {s : Set α} (hs : #s < c) :
+    ∀ᶠ x in cocardinal α hreg, x ∉ s :=
+  compl_mem_cocardinal_of_card_lt hs
 
 theorem _root_.Finset.eventually_cocardinal_nmem (s : Finset α) :
-    ∀ᶠ x in cocardinal hreg, x ∉ s := by
-  have : #s < c := lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
-  exact Set.eventually_cocardinal_nmem this
+    ∀ᶠ x in cocardinal α hreg, x ∉ s :=
+  eventually_cocardinal_nmem_of_card_lt <| lt_of_lt_of_le (finset_card_lt_aleph0 s) (hreg.aleph0_le)
 
-theorem _root_.Set.cardinal_iff_frequently_cocardinal {s : Set α} :
-    c ≤ #s ↔ ∃ᶠ x in cocardinal hreg, x ∈ s :=
-  frequently_cocardinal_iff_cardinal_le.symm
-
-theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal hreg, a ≠ x := by
+theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a ≠ x := by
   simp [Set.finite_singleton x]
   exact hreg.nat_lt 1
 
 /-- The filter defined by all sets that have countable complements. -/
-abbrev cocountable : Filter α := cocardinal Cardinal.isRegular_aleph_one
+abbrev cocountable : Filter α := cocardinal α Cardinal.isRegular_aleph_one
 
 theorem mem_cocountable {s : Set α} :
-    s ∈ @cocountable α ↔ (sᶜ : Set α).Countable := by
+    s ∈ cocountable ↔ (sᶜ : Set α).Countable := by
   rw [Cardinal.countable_iff_lt_aleph_one, mem_cocardinal]
+
+end Filter
