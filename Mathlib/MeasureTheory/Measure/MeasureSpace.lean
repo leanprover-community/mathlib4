@@ -1628,11 +1628,9 @@ instance instIsRefl [MeasurableSpace α] : IsRefl (Measure α) (· ≪ ·) :=
 @[simp]
 protected lemma zero (μ : Measure α) : 0 ≪ μ := fun s _ ↦ by simp
 
-lemma eq_zero_of_ac_zero (h : μ ≪ 0) : μ = 0 := measure_univ_eq_zero.mp (h rfl)
-
 @[simp]
-lemma ac_zero_iff : μ ≪ 0 ↔ μ = 0 :=
-  ⟨eq_zero_of_ac_zero, fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
+lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
+  ⟨measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
 
 @[trans]
 protected theorem trans (h1 : μ₁ ≪ μ₂) (h2 : μ₂ ≪ μ₃) : μ₁ ≪ μ₃ := fun _s hs => h1 <| h2 hs
