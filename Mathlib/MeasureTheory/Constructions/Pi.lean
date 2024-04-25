@@ -413,21 +413,19 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (v
   pi.sigmaFinite _
 
 instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
-    IsFiniteMeasure (Measure.pi μ) := by
-  constructor
-  rw [Measure.pi_univ]
-  exact ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)
+    IsFiniteMeasure (Measure.pi μ) :=
+  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)⟩
 
 instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasure (volume : Measure (α i))] :
     IsFiniteMeasure (volume : Measure (∀ i, α i)) :=
   pi.instIsFiniteMeasure _
 
 instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
-    IsProbabilityMeasure (Measure.pi μ) := by
-  constructor
-  simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]
+    IsProbabilityMeasure (Measure.pi μ) :=
+  ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
 
-instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
+    [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
     IsProbabilityMeasure (volume : Measure (∀ i, α i)) :=
   pi.instIsProbabilityMeasure _
 
