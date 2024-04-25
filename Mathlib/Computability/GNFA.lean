@@ -146,32 +146,35 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       exact trace.start (Or.inl mat)
   case step x y z p q t mat eq ih =>
     rw [eq]; clear eq x
-    revert ih mat
+    revert mat
+    revert ih
     cases' p with p <;> cases' q with q
     case none.none =>
       intro ih mat
       right
       refine' ⟨rfl, _⟩
       cases ih
-      case inl =>
+      case inl ih =>
         rcases ih with ⟨p, eq, t⟩
         cases eq
+      case inr ih =>
       rcases ih with ⟨_, y, z', xs, p, t', matches', x_matches, eq⟩
       rw [eq]; clear eq
       refine' ⟨y, z', xs ++ [z], p, t', matches', _, by simp⟩
       intro x mem
       simp at mem
       cases mem
-      case inl => exact x_matches x mem
-      case inr => rw [mem]; exact mat
+      case inl mem => exact x_matches x mem
+      case inr mem => rw [mem]; exact mat
     case none.some =>
       intro ih mat
       left
       refine' ⟨q, rfl, _⟩
       cases ih
-      case inl =>
+      case inl ih =>
         rcases ih with ⟨p, eq, t⟩
         cases eq
+      case inr ih =>
       rcases ih with ⟨_, y, z', xs, p, t', matches', x_matches, eq⟩
       rw [eq]; clear eq
       cases p
@@ -198,24 +201,24 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       right
       refine' ⟨rfl, _⟩
       cases ih
-      case inl =>
+      case inl ih =>
         rcases ih with ⟨p', eq, t⟩
         simp at eq; rw [← eq] at t; clear eq p'
         refine' ⟨y, z, [], some p, by simp [t], mat, _, by simp⟩
         intro x mem
         cases mem
-      case inr =>
+      case inr ih =>
         rcases ih with ⟨eq, _⟩
         cases eq
     · intro ih mat
       cases ih
-      case inl =>
+      case inl ih =>
         rcases ih with ⟨p', eq, t⟩
         simp at eq; rw [← eq] at t; clear eq p'
         left
         refine' ⟨q, rfl, _⟩
         exact trace.step t (Or.inl mat) rfl
-      case inr =>
+      case inr ih =>
         rcases ih with ⟨eq, _⟩
         cases eq
 
@@ -374,10 +377,11 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
     case step x y z q t mat eq =>
       rw [eq]; clear eq x
       cases M.rip_trace_aux t
-      case inl =>
+      case inl h =>
         rcases h with ⟨q, eq, t⟩
         rw [eq] at mat; clear eq
         exact accepts.step _ t (Or.inl mat) rfl
+      case inr h =>
       rcases h with ⟨eq, h⟩
       rw [eq] at *; clear eq
       rcases h with ⟨y, w, xs, p, t, w_matches, x_matches, eq⟩
@@ -527,7 +531,7 @@ def toGNFA : GNFA α σ :=
 -- TODO: maybe mark as @simp
 theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).accepts :=
   by
-  ext
+  ext x
   constructor
   · rintro ⟨q, accept, eval⟩
     refine' GNFA.accepts.step q _ _ x.append_nil.symm
