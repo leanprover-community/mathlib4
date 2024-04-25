@@ -261,21 +261,6 @@ theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocal
   exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
     (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
 
-/-- If `X` is a discrete topological space and `f : X × Y → Z` is such that for all `x : X`,
-`y ↦ f (x, y)` is continuous, then `f` is continuous. -/
-theorem continuous_of_partial_of_discrete [DiscreteTopology X] (f : X × Y → Z)
-    (h : ∀ x, Continuous fun y ↦ f (x, y)) : Continuous f := by
-  rw [continuous_def]
-  intro s hs
-  have : f ⁻¹' s = ⋃ x, {x} ×ˢ ((fun y : Y ↦ f (x, y)) ⁻¹' s) := by
-    ext xy; constructor
-    · exact fun hxy ↦ mem_iUnion.2 ⟨xy.1, mem_prod.2 ⟨mem_singleton _, hxy⟩⟩
-    · intro hxy
-      rcases mem_iUnion.1 hxy with ⟨x', hx'⟩
-      rw [mem_prod, ← hx'.1] at hx'
-      exact hx'.2
-  exact this ▸ isOpen_iUnion fun x ↦ (isOpen_discrete _).prod <| (h x).isOpen_preimage s hs
-
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly generated,
 then the action is properly discontinuous if and only if it is continuous in the second variable
 and proper. -/
@@ -293,7 +278,7 @@ theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G
     -- it is enough to show that the preimage of a compact set `K` is compact.
     refine' (isProperMap_iff_isCompact_preimage' compactlyGenerated).2
       ⟨(continuous_prod_mk.2
-      ⟨continuous_of_partial_of_discrete _ continuous_const_smul, by fun_prop⟩),
+      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩),
       fun K hK ↦ _⟩
     -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
     -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
@@ -327,7 +312,7 @@ theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G
     -- We conclude as explained above.
     exact this.of_isClosed_subset (hK.isClosed.preimage <|
       continuous_prod_mk.2
-      ⟨continuous_of_partial_of_discrete _ continuous_const_smul, by fun_prop⟩) <|
+      ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩) <|
       preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
   · intro h; constructor
     intro K L hK hL
