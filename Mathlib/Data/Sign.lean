@@ -361,7 +361,7 @@ theorem sign_eq_neg_one_iff : sign a = -1 ↔ a < 0 := by
   refine' ⟨fun h => _, fun h => sign_neg h⟩
   rw [sign_apply] at h
   split_ifs at h
-  · assumption
+  assumption
 #align sign_eq_neg_one_iff sign_eq_neg_one_iff
 
 end Preorder
