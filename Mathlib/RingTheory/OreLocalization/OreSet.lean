@@ -120,4 +120,22 @@ def oreSetOfNoZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R] {S : Submonoi
   oreSetOfCancelMonoidWithZero oreNum oreDenom ore_eq
 #align ore_localization.ore_set_of_no_zero_divisors OreLocalization.oreSetOfNoZeroDivisors
 
+lemma nonempty_oreSet_iff {R : Type*} [Ring R] {S : Submonoid R} :
+    Nonempty (OreSet S) ↔ (∀ (r₁ r₂ : R) (s : S), ↑s * r₁ = s * r₂ → ∃ s' : S, r₁ * s' = r₂ * s') ∧
+      (∀ (r : R) (s : S), ∃ (r' : R) (s' : S), r * s' = s * r') := by
+  constructor
+  · exact fun ⟨_⟩ ↦ ⟨ore_left_cancel, fun r s ↦ ⟨oreNum r s, oreDenom r s, ore_eq r s⟩⟩
+  · intro ⟨H, H'⟩
+    choose r' s' h using H'
+    exact ⟨H, r', s', h⟩
+
+lemma nonempty_oreSet_iff_of_noZeroDivisors {R : Type*} [Ring R] [NoZeroDivisors R]
+    {S : Submonoid R} :
+    Nonempty (OreSet S) ↔ ∀ (r : R) (s : S), ∃ (r' : R) (s' : S), r * s' = s * r' := by
+  constructor
+  · exact fun ⟨_⟩ ↦ fun r s ↦ ⟨oreNum r s, oreDenom r s, ore_eq r s⟩
+  · intro H
+    choose r' s' h using H
+    exact ⟨oreSetOfNoZeroDivisors r' s' h⟩
+
 end OreLocalization

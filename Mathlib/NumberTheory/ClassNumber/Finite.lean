@@ -69,8 +69,8 @@ theorem normBound_pos : 0 < normBound abv bS := by
     ext j k
     simp [h, DMatrix.zero_apply]
   simp only [normBound, Algebra.smul_def, eq_natCast]
-  refine' mul_pos (Int.coe_nat_pos.mpr (Nat.factorial_pos _)) _
-  refine' pow_pos (mul_pos (Int.coe_nat_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
+  refine' mul_pos (Int.natCast_pos.mpr (Nat.factorial_pos _)) _
+  refine' pow_pos (mul_pos (Int.natCast_pos.mpr (Fintype.card_pos_iff.mpr ⟨i⟩)) _) _
   refine' lt_of_lt_of_le (abv.pos hijk) (Finset.le_max' _ _ _)
   exact Finset.mem_image.mpr ⟨⟨i, j, k⟩, Finset.mem_univ _, rfl⟩
 #align class_group.norm_bound_pos ClassGroup.normBound_pos
@@ -210,7 +210,7 @@ theorem exists_mem_finsetApprox (a : S) {b} (hb : b ≠ (0 : R)) :
     have := normBound_pos abv bS
     have := abv.nonneg b
     rw [ε_eq, Algebra.smul_def, eq_intCast, mul_rpow, ← rpow_mul, div_mul_cancel₀, rpow_neg_one,
-      mul_left_comm, mul_inv_cancel, mul_one, rpow_nat_cast] <;>
+      mul_left_comm, mul_inv_cancel, mul_one, rpow_natCast] <;>
       try norm_cast; omega
     · exact Iff.mpr Int.cast_nonneg this
     · linarith

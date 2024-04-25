@@ -106,7 +106,7 @@ variable {ι R M N}
 variable (P : RootPairing ι R M N) (i : ι)
 
 /-- A root pairing is said to be crystallographic if the pairing between a root and coroot is
-always an integer.-/
+always an integer. -/
 def IsCrystallographic : Prop :=
   ∀ i, MapsTo (P.toLin (P.root i)) (range P.coroot) (zmultiples (1 : R))
 

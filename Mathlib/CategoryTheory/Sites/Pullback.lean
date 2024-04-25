@@ -44,7 +44,7 @@ instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
 
 -- The assumptions so that we have sheafification
 variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
-variable [PreservesFilteredColimits (forget A)] [ReflectsIsomorphisms (forget A)]
+variable [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
 
 attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
 

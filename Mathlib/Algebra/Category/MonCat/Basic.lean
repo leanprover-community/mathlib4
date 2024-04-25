@@ -240,7 +240,7 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align AddCommMon.of AddCommMonCat.of
 
-/-- Construct a bundled `AddCommMon` from the underlying type and typeclass. -/
+/-- Construct a bundled `AddCommMonCat` from the underlying type and typeclass. -/
 add_decl_doc AddCommMonCat.of
 
 @[to_additive]
@@ -283,28 +283,6 @@ lemma ofHom_apply {X Y : Type u} [CommMonoid X] [CommMonoid Y] (f : X →* Y) (x
     (ofHom f) x = f x := rfl
 
 end CommMonCat
-
--- We verify that the coercions of morphisms to functions work correctly:
-example {R S : MonCat} (f : R ⟶ S) : ↑R → ↑S := f
-
--- Porting note: it's essential that simp lemmas for `→*` apply to morphisms.
-example {R S : MonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
-
-example {R S : CommMonCat} (f : R ⟶ S) : ↑R → ↑S := f
-
-example {R S : CommMonCat} (i : R ⟶ S) (r : R) (h : r = 1) : i r = 1 := by simp [h]
-
--- We verify that when constructing a morphism in `CommMonCat`,
--- when we construct the `toFun` field, the types are presented as `↑R`.
-example (R : CommMonCat.{u}) : R ⟶ R :=
-  { toFun := fun x => by
-      match_target (R : Type u)
-      guard_hyp x : (R : Type u)
-      exact x * x
-    map_one' := by simp
-    map_mul' := fun x y => by
-      dsimp
-      rw [mul_assoc x y (x * y), ← mul_assoc y x y, mul_comm y x, mul_assoc, mul_assoc] }
 
 variable {X Y : Type u}
 
@@ -402,7 +380,7 @@ the same as (isomorphic to) isomorphisms in `AddCommMonCat` -/
 add_decl_doc addEquivIsoAddCommMonCatIso
 
 @[to_additive]
-instance MonCat.forget_reflects_isos : ReflectsIsomorphisms (forget MonCat.{u}) where
+instance MonCat.forget_reflects_isos : (forget MonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget MonCat).map f)
     -- Again a problem that exists already creeps into other things leanprover/lean4#2644
@@ -415,7 +393,7 @@ set_option linter.uppercaseLean3 false in
 #align AddMon.forget_reflects_isos AddMonCat.forget_reflects_isos
 
 @[to_additive]
-instance CommMonCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommMonCat.{u}) where
+instance CommMonCat.forget_reflects_isos : (forget CommMonCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommMonCat).map f)
     let e : X ≃* Y := MulEquiv.mk i.toEquiv
@@ -431,6 +409,6 @@ set_option linter.uppercaseLean3 false in
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance CommMonCat.forget₂Full : Full (forget₂ CommMonCat MonCat) where preimage f := f
+instance CommMonCat.forget₂Full : (forget₂ CommMonCat MonCat).Full where preimage f := f
 
-example : ReflectsIsomorphisms (forget₂ CommMonCat MonCat) := inferInstance
+example : (forget₂ CommMonCat MonCat).ReflectsIsomorphisms := inferInstance

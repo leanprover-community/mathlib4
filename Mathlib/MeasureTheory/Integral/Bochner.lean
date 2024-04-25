@@ -247,13 +247,12 @@ theorem dominatedFinMeasAdditive_weightedSMul {_ : MeasurableSpace α} (μ : Mea
 #align measure_theory.dominated_fin_meas_additive_weighted_smul MeasureTheory.dominatedFinMeasAdditive_weightedSMul
 
 theorem weightedSMul_nonneg (s : Set α) (x : ℝ) (hx : 0 ≤ x) : 0 ≤ weightedSMul μ s x := by
-  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', id.def, coe_id', Pi.smul_apply]
+  simp only [weightedSMul, Algebra.id.smul_eq_mul, coe_smul', _root_.id, coe_id', Pi.smul_apply]
   exact mul_nonneg toReal_nonneg hx
 #align measure_theory.weighted_smul_nonneg MeasureTheory.weightedSMul_nonneg
 
 end WeightedSMul
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -565,7 +564,6 @@ def integralCLM : (α →₁ₛ[μ] E) →L[ℝ] E :=
 
 variable {α E μ 𝕜}
 
--- mathport name: simple_func.integral_clm
 local notation "Integral" => integralCLM α E μ
 
 open ContinuousLinearMap
@@ -718,10 +716,8 @@ theorem integral_smul (c : 𝕜) (f : α →₁[μ] E) : integral (c • f) = c 
   exact map_smul (integralCLM' (E := E) 𝕜) c f
 #align measure_theory.L1.integral_smul MeasureTheory.L1.integral_smul
 
--- mathport name: integral_clm
 local notation "Integral" => @integralCLM α E _ _ μ _ _
 
--- mathport name: simple_func.integral_clm'
 local notation "sIntegral" => @SimpleFunc.integralCLM α E _ _ μ _
 
 theorem norm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)‖ ≤ 1 :=
@@ -734,8 +730,8 @@ theorem nnnorm_Integral_le_one : ‖integralCLM (α := α) (E := E) (μ := μ)�
 theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
   calc
     ‖integral f‖ = ‖integralCLM (E := E) f‖ := by simp only [integral]
-    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := (le_opNorm _ _)
-    _ ≤ 1 * ‖f‖ := (mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _)
+    _ ≤ ‖integralCLM (α := α) (E := E) (μ := μ)‖ * ‖f‖ := le_opNorm _ _
+    _ ≤ 1 * ‖f‖ := mul_le_mul_of_nonneg_right norm_Integral_le_one <| norm_nonneg _
     _ = ‖f‖ := one_mul _
 #align measure_theory.L1.norm_integral_le MeasureTheory.L1.norm_integral_le
 
@@ -987,7 +983,7 @@ theorem integral_eq_zero_of_ae {f : α → G} (hf : f =ᵐ[μ] 0) : ∫ a, f a �
 
 /-- If `f` has finite integral, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
-theorem HasFiniteIntegral.tendsto_set_integral_nhds_zero {ι} {f : α → G}
+theorem HasFiniteIntegral.tendsto_setIntegral_nhds_zero {ι} {f : α → G}
     (hf : HasFiniteIntegral f μ) {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) := by
   rw [tendsto_zero_iff_norm_tendsto_zero]
@@ -996,15 +992,23 @@ theorem HasFiniteIntegral.tendsto_set_integral_nhds_zero {ι} {f : α → G}
   exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds
     (tendsto_set_lintegral_zero (ne_of_lt hf) hs) (fun i => zero_le _)
     fun i => ennnorm_integral_le_lintegral_ennnorm _
-#align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_set_integral_nhds_zero
+#align measure_theory.has_finite_integral.tendsto_set_integral_nhds_zero MeasureTheory.HasFiniteIntegral.tendsto_setIntegral_nhds_zero
+
+@[deprecated]
+alias HasFiniteIntegral.tendsto_set_integral_nhds_zero :=
+  HasFiniteIntegral.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
 
 /-- If `f` is integrable, then `∫ x in s, f x ∂μ` is absolutely continuous in `s`: it tends
 to zero as `μ s` tends to zero. -/
-theorem Integrable.tendsto_set_integral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
+theorem Integrable.tendsto_setIntegral_nhds_zero {ι} {f : α → G} (hf : Integrable f μ)
     {l : Filter ι} {s : ι → Set α} (hs : Tendsto (μ ∘ s) l (𝓝 0)) :
     Tendsto (fun i => ∫ x in s i, f x ∂μ) l (𝓝 0) :=
-  hf.2.tendsto_set_integral_nhds_zero hs
-#align measure_theory.integrable.tendsto_set_integral_nhds_zero MeasureTheory.Integrable.tendsto_set_integral_nhds_zero
+  hf.2.tendsto_setIntegral_nhds_zero hs
+#align measure_theory.integrable.tendsto_set_integral_nhds_zero MeasureTheory.Integrable.tendsto_setIntegral_nhds_zero
+
+@[deprecated]
+alias Integrable.tendsto_set_integral_nhds_zero :=
+  Integrable.tendsto_setIntegral_nhds_zero -- deprecated on 2024-04-17
 
 /-- If `F i → f` in `L1`, then `∫ x, F i x ∂μ → ∫ x, f x ∂μ`. -/
 theorem tendsto_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G} {l : Filter ι}
@@ -1027,7 +1031,7 @@ lemma tendsto_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : �
   exact hF
 
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
-lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+lemma tendsto_setIntegral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
     {l : Filter ι}
     (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ ∫⁻ x, ‖F i x - f x‖₊ ∂μ) l (𝓝 0))
     (s : Set α) :
@@ -1038,15 +1042,23 @@ lemma tendsto_set_integral_of_L1 {ι} (f : α → G) (hfi : Integrable f μ) {F 
     exact tendsto_of_tendsto_of_tendsto_of_le_of_le tendsto_const_nhds hF (fun _ ↦ zero_le')
       (fun _ ↦ snorm_mono_measure _ Measure.restrict_le_self)
 
+@[deprecated]
+alias tendsto_set_integral_of_L1 :=
+  tendsto_setIntegral_of_L1 -- deprecated on 2024-04-17
+
 /-- If `F i → f` in `L1`, then `∫ x in s, F i x ∂μ → ∫ x in s, f x ∂μ`. -/
-lemma tendsto_set_integral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
+lemma tendsto_setIntegral_of_L1' {ι} (f : α → G) (hfi : Integrable f μ) {F : ι → α → G}
     {l : Filter ι}
     (hFi : ∀ᶠ i in l, Integrable (F i) μ) (hF : Tendsto (fun i ↦ snorm (F i - f) 1 μ) l (𝓝 0))
     (s : Set α) :
     Tendsto (fun i ↦ ∫ x in s, F i x ∂μ) l (𝓝 (∫ x in s, f x ∂μ)) := by
-  refine tendsto_set_integral_of_L1 f hfi hFi ?_ s
+  refine tendsto_setIntegral_of_L1 f hfi hFi ?_ s
   simp_rw [snorm_one_eq_lintegral_nnnorm, Pi.sub_apply] at hF
   exact hF
+
+@[deprecated]
+alias tendsto_set_integral_of_L1' :=
+  tendsto_setIntegral_of_L1' -- deprecated on 2024-04-17
 
 variable {X : Type*} [TopologicalSpace X] [FirstCountableTopology X]
 
@@ -1696,7 +1708,7 @@ theorem integral_map {β} [MeasurableSpace β] {φ : α → β} (hφ : AEMeasura
     _ = ∫ y, g y ∂Measure.map (hφ.mk φ) μ := by congr 1; exact Measure.map_congr hφ.ae_eq_mk
     _ = ∫ x, g (hφ.mk φ x) ∂μ :=
       (integral_map_of_stronglyMeasurable hφ.measurable_mk hfm.stronglyMeasurable_mk)
-    _ = ∫ x, g (φ x) ∂μ := (integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _))
+    _ = ∫ x, g (φ x) ∂μ := integral_congr_ae (hφ.ae_eq_mk.symm.fun_comp _)
     _ = ∫ x, f (φ x) ∂μ := integral_congr_ae <| ae_eq_comp hφ hfm.ae_eq_mk.symm
 #align measure_theory.integral_map MeasureTheory.integral_map
 
@@ -1758,23 +1770,31 @@ theorem integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : �
     _ = f a := by simp [Measure.dirac_apply_of_mem]
 #align measure_theory.integral_dirac MeasureTheory.integral_dirac
 
-theorem set_integral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
+theorem setIntegral_dirac' {mα : MeasurableSpace α} {f : α → E} (hf : StronglyMeasurable f) (a : α)
     {s : Set α} (hs : MeasurableSet s) [Decidable (a ∈ s)] :
     ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac' hs]
   split_ifs
   · exact integral_dirac' _ _ hf
   · exact integral_zero_measure _
-#align measure_theory.set_integral_dirac' MeasureTheory.set_integral_dirac'
+#align measure_theory.set_integral_dirac' MeasureTheory.setIntegral_dirac'
 
-theorem set_integral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
+@[deprecated]
+alias set_integral_dirac' :=
+  setIntegral_dirac' -- deprecated on 2024-04-17
+
+theorem setIntegral_dirac [MeasurableSpace α] [MeasurableSingletonClass α] (f : α → E) (a : α)
     (s : Set α) [Decidable (a ∈ s)] :
     ∫ x in s, f x ∂Measure.dirac a = if a ∈ s then f a else 0 := by
   rw [restrict_dirac]
   split_ifs
   · exact integral_dirac _ _
   · exact integral_zero_measure _
-#align measure_theory.set_integral_dirac MeasureTheory.set_integral_dirac
+#align measure_theory.set_integral_dirac MeasureTheory.setIntegral_dirac
+
+@[deprecated]
+alias set_integral_dirac :=
+  setIntegral_dirac -- deprecated on 2024-04-17
 
 /-- **Markov's inequality** also known as **Chebyshev's first inequality**. -/
 theorem mul_meas_ge_le_integral_of_nonneg {f : α → ℝ} (hf_nonneg : 0 ≤ᵐ[μ] f)
@@ -1914,6 +1934,12 @@ theorem integral_unique [Unique α] (f : α → E) : ∫ x, f x ∂μ = (μ univ
   calc
     ∫ x, f x ∂μ = ∫ _, f default ∂μ := by congr with x; congr; exact Unique.uniq _ x
     _ = (μ univ).toReal • f default := by rw [integral_const]
+
+theorem integral_pos_of_integrable_nonneg_nonzero [TopologicalSpace α] [Measure.IsOpenPosMeasure μ]
+    {f : α → ℝ} {x : α} (f_cont : Continuous f) (f_int : Integrable f μ) (f_nonneg : 0 ≤ f)
+    (f_x : f x ≠ 0) : 0 < ∫ x, f x ∂μ :=
+  (integral_pos_iff_support_of_nonneg f_nonneg f_int).2
+    (IsOpen.measure_pos μ f_cont.isOpen_support ⟨x, f_x⟩)
 
 end Properties
 

@@ -451,7 +451,7 @@ theorem support_swap_iff (x y : α) : support (swap x y) = {x, y} ↔ x ≠ y :=
   have : x ∈ ∅ := by
     rw [h]
     exact mem_singleton.mpr rfl
-  have := (Finset.ne_empty_of_mem this)
+  have := Finset.ne_empty_of_mem this
   exact this rfl
 #align equiv.perm.support_swap_iff Equiv.Perm.support_swap_iff
 

@@ -381,13 +381,13 @@ instance : NatCast (CentroidHom α) where natCast n := n • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_nat_cast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
+theorem coe_natCast (n : ℕ) : ⇑(n : CentroidHom α) = n • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_nat_cast CentroidHom.coe_nat_cast
+#align centroid_hom.coe_nat_cast CentroidHom.coe_natCast
 
-theorem nat_cast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
+theorem natCast_apply (n : ℕ) (m : α) : (n : CentroidHom α) m = n • m :=
   rfl
-#align centroid_hom.nat_cast_apply CentroidHom.nat_cast_apply
+#align centroid_hom.nat_cast_apply CentroidHom.natCast_apply
 
 @[simp]
 theorem toEnd_one : (1 : CentroidHom α).toEnd = 1 :=
@@ -405,14 +405,14 @@ theorem toEnd_pow (x : CentroidHom α) (n : ℕ) : (x ^ n).toEnd = x.toEnd ^ n :
 #align centroid_hom.to_End_pow CentroidHom.toEnd_pow
 
 @[simp, norm_cast]
-theorem toEnd_nat_cast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
+theorem toEnd_natCast (n : ℕ) : (n : CentroidHom α).toEnd = ↑n :=
   rfl
-#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_nat_cast
+#align centroid_hom.to_End_nat_cast CentroidHom.toEnd_natCast
 
 -- cf `add_monoid.End.semiring`
 instance : Semiring (CentroidHom α) :=
-  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul (swap toEnd_smul) toEnd_pow
-    toEnd_nat_cast
+  toEnd_injective.semiring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_smul toEnd_pow
+    toEnd_natCast
 
 variable (α) in
 /-- `CentroidHom.toEnd` as a `RingHom`. -/
@@ -596,13 +596,13 @@ instance : IntCast (CentroidHom α) where intCast z := z • (1 : CentroidHom α
 
 -- Porting note: `nolint simpNF` added because simplify fails on left-hand side
 @[simp, norm_cast, nolint simpNF]
-theorem coe_int_cast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
+theorem coe_intCast (z : ℤ) : ⇑(z : CentroidHom α) = z • (CentroidHom.id α) :=
   rfl
-#align centroid_hom.coe_int_cast CentroidHom.coe_int_cast
+#align centroid_hom.coe_int_cast CentroidHom.coe_intCast
 
-theorem int_cast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
+theorem intCast_apply (z : ℤ) (m : α) : (z : CentroidHom α) m = z • m :=
   rfl
-#align centroid_hom.int_cast_apply CentroidHom.int_cast_apply
+#align centroid_hom.int_cast_apply CentroidHom.intCast_apply
 
 @[simp]
 theorem toEnd_neg (x : CentroidHom α) : (-x).toEnd = -x.toEnd :=
@@ -641,13 +641,13 @@ theorem sub_apply (f g : CentroidHom α) (a : α) : (f - g) a = f a - g a :=
 #align centroid_hom.sub_apply CentroidHom.sub_apply
 
 @[simp, norm_cast]
-theorem toEnd_int_cast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
+theorem toEnd_intCast (z : ℤ) : (z : CentroidHom α).toEnd = ↑z :=
   rfl
-#align centroid_hom.to_End_int_cast CentroidHom.toEnd_int_cast
+#align centroid_hom.to_End_int_cast CentroidHom.toEnd_intCast
 
 instance instRing : Ring (CentroidHom α) :=
   toEnd_injective.ring _ toEnd_zero toEnd_one toEnd_add toEnd_mul toEnd_neg toEnd_sub
-    (swap toEnd_smul) (swap toEnd_smul) toEnd_pow toEnd_nat_cast toEnd_int_cast
+    toEnd_smul toEnd_smul toEnd_pow toEnd_natCast toEnd_intCast
 
 end NonUnitalNonAssocRing
 

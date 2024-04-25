@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 
 #align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -479,7 +480,7 @@ theorem pos_finrank_generalizedEigenspace_of_hasEigenvalue [FiniteDimensional K 
     0 < finrank K (f.generalizedEigenspace μ k) :=
   calc
     0 = finrank K (⊥ : Submodule K V) := by rw [finrank_bot]
-    _ < finrank K (f.eigenspace μ) := (Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx))
+    _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
     _ ≤ finrank K (f.generalizedEigenspace μ k) :=
       Submodule.finrank_mono ((f.generalizedEigenspace μ).monotone (Nat.succ_le_of_lt hk))
 
@@ -530,7 +531,7 @@ lemma iSup_generalizedEigenspace_inf_le_add
   · rw [LinearMap.mul_apply, LinearMap.pow_map_zero_of_le hj hk₂, LinearMap.map_zero]
 
 lemma map_smul_of_iInf_generalizedEigenspace_ne_bot [NoZeroSMulDivisors R M]
-    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [SMulHomClass F R L (End R M)] (f : F)
+    {L F : Type*} [SMul R L] [FunLike F L (End R M)] [MulActionHomClass F R L (End R M)] (f : F)
     (μ : L → R) (h_ne : ⨅ x, ⨆ k, (f x).generalizedEigenspace (μ x) k ≠ ⊥)
     (t : R) (x : L) :
     μ (t • x) = t • μ x := by

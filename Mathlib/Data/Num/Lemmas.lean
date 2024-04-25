@@ -66,7 +66,7 @@ theorem to_nat_to_int (n : PosNum) : ((n : ℕ) : ℤ) = n :=
 
 @[simp, norm_cast]
 theorem cast_to_int [AddGroupWithOne α] (n : PosNum) : ((n : ℤ) : α) = n := by
-  rw [← to_nat_to_int, Int.cast_ofNat, cast_to_nat]
+  rw [← to_nat_to_int, Int.cast_natCast, cast_to_nat]
 #align pos_num.cast_to_int PosNum.cast_to_int
 
 theorem succ_to_nat : ∀ n, (succ n : ℕ) = n + 1
@@ -467,7 +467,7 @@ theorem to_nat_to_int (n : Num) : ((n : ℕ) : ℤ) = n :=
 
 @[simp, norm_cast]
 theorem cast_to_int {α} [AddGroupWithOne α] (n : Num) : ((n : ℤ) : α) = n := by
-  rw [← to_nat_to_int, Int.cast_ofNat, cast_to_nat]
+  rw [← to_nat_to_int, Int.cast_natCast, cast_to_nat]
 #align num.cast_to_int Num.cast_to_int
 
 theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
@@ -476,9 +476,9 @@ theorem to_of_nat : ∀ n : ℕ, ((n : Num) : ℕ) = n
 #align num.to_of_nat Num.to_of_nat
 
 @[simp, norm_cast]
-theorem of_nat_cast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
+theorem of_natCast {α} [AddMonoidWithOne α] (n : ℕ) : ((n : Num) : α) = n := by
   rw [← cast_to_nat, to_of_nat]
-#align num.of_nat_cast Num.of_nat_cast
+#align num.of_nat_cast Num.of_natCast
 
 @[norm_cast] -- @[simp] -- Porting note (#10618): simp can prove this
 theorem of_nat_inj {m n : ℕ} : (m : Num) = n ↔ m = n :=
@@ -810,7 +810,7 @@ theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
 #align pos_num.lt_iff_cmp PosNum.lt_iff_cmp
 
 theorem le_iff_cmp {m n} : m ≤ n ↔ cmp m n ≠ Ordering.gt :=
-  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> exact by decide
+  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> decide
 #align pos_num.le_iff_cmp PosNum.le_iff_cmp
 
 end PosNum
@@ -865,7 +865,7 @@ theorem lt_iff_cmp {m n} : m < n ↔ cmp m n = Ordering.lt :=
 #align num.lt_iff_cmp Num.lt_iff_cmp
 
 theorem le_iff_cmp {m n} : m ≤ n ↔ cmp m n ≠ Ordering.gt :=
-  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> exact by decide
+  not_congr <| lt_iff_cmp.trans <| by rw [← cmp_swap]; cases cmp m n <;> decide
 #align num.le_iff_cmp Num.le_iff_cmp
 
 theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool}
@@ -1530,14 +1530,14 @@ theorem of_nat_toZNumNeg (n : ℕ) : Num.toZNumNeg n = -n := by rw [← of_nat_t
 #align znum.of_nat_to_znum_neg ZNum.of_nat_toZNumNeg
 
 @[simp, norm_cast]
-theorem of_int_cast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
+theorem of_intCast [AddGroupWithOne α] (n : ℤ) : ((n : ZNum) : α) = n := by
   rw [← cast_to_int, to_of_int]
-#align znum.of_int_cast ZNum.of_int_cast
+#align znum.of_int_cast ZNum.of_intCast
 
 @[simp, norm_cast]
-theorem of_nat_cast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
-  rw [← Int.cast_ofNat, of_int_cast, Int.cast_ofNat]
-#align znum.of_nat_cast ZNum.of_nat_cast
+theorem of_natCast [AddGroupWithOne α] (n : ℕ) : ((n : ZNum) : α) = n := by
+  rw [← Int.cast_natCast, of_intCast, Int.cast_natCast]
+#align znum.of_nat_cast ZNum.of_natCast
 
 @[simp, norm_cast]
 theorem dvd_to_int (m n : ZNum) : (m : ℤ) ∣ n ↔ m ∣ n :=

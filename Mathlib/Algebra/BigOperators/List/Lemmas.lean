@@ -8,7 +8,6 @@ import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Commute
 import Mathlib.Algebra.GroupWithZero.Divisibility
-import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Ring.Basic
 import Mathlib.Algebra.Ring.Commute
 import Mathlib.Algebra.Ring.Divisibility.Basic
@@ -42,22 +41,6 @@ end Commute
 
 namespace List
 
-@[to_additive card_nsmul_le_sum]
-theorem pow_card_le_prod [Monoid M] [Preorder M]
-    [CovariantClass M M (Function.swap (· * ·)) (· ≤ ·)] [CovariantClass M M (· * ·) (· ≤ ·)]
-    (l : List M) (n : M) (h : ∀ x ∈ l, n ≤ x) : n ^ l.length ≤ l.prod :=
-  @prod_le_pow_card Mᵒᵈ _ _ _ _ l n h
-#align list.pow_card_le_prod List.pow_card_le_prod
-#align list.card_nsmul_le_sum List.card_nsmul_le_sum
-
-@[to_additive]
-theorem prod_eq_one_iff [CanonicallyOrderedCommMonoid M] (l : List M) :
-    l.prod = 1 ↔ ∀ x ∈ l, x = (1 : M) :=
-  ⟨all_one_of_le_one_le_of_prod_eq_one fun _ _ => one_le _, fun h => by
-    rw [List.eq_replicate.2 ⟨_, h⟩, prod_replicate, one_pow]; exact (length l); rfl⟩
-#align list.prod_eq_one_iff List.prod_eq_one_iff
-#align list.sum_eq_zero_iff List.sum_eq_zero_iff
-
 /-- If a product of integers is `-1`, then at least one factor must be `-1`. -/
 theorem neg_one_mem_of_prod_eq_neg_one {l : List ℤ} (h : l.prod = -1) : (-1 : ℤ) ∈ l := by
   obtain ⟨x, h₁, h₂⟩ := exists_mem_ne_one_of_prod_ne_one (ne_of_eq_of_ne h (by decide))
@@ -74,7 +57,7 @@ by the sum of the elements. -/
 theorem length_le_sum_of_one_le (L : List ℕ) (h : ∀ i ∈ L, 1 ≤ i) : L.length ≤ L.sum := by
   induction' L with j L IH h; · simp
   rw [sum_cons, length, add_comm]
-  exact add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
+  exact Nat.add_le_add (h _ (mem_cons_self _ _)) (IH fun i hi => h i (mem_cons.2 (Or.inr hi)))
 #align list.length_le_sum_of_one_le List.length_le_sum_of_one_le
 
 theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod := by
@@ -82,6 +65,37 @@ theorem dvd_prod [CommMonoid M] {a} {l : List M} (ha : a ∈ l) : a ∣ l.prod :
   rw [h, prod_append, prod_cons, mul_left_comm]
   exact dvd_mul_right _ _
 #align list.dvd_prod List.dvd_prod
+
+section MonoidWithZero
+variable [MonoidWithZero M₀]
+
+/-- If zero is an element of a list `L`, then `List.prod L = 0`. If the domain is a nontrivial
+monoid with zero with no divisors, then this implication becomes an `iff`, see
+`List.prod_eq_zero_iff`. -/
+lemma prod_eq_zero {L : List M₀} (h : (0 : M₀) ∈ L) : L.prod = 0 := by
+  induction' L with a L ihL
+  · exact absurd h (not_mem_nil _)
+  · rw [prod_cons]
+    cases' mem_cons.1 h with ha hL
+    exacts [mul_eq_zero_of_left ha.symm _, mul_eq_zero_of_right _ (ihL hL)]
+#align list.prod_eq_zero List.prod_eq_zero
+
+/-- Product of elements of a list `L` equals zero if and only if `0 ∈ L`. See also
+`List.prod_eq_zero` for an implication that needs weaker typeclass assumptions. -/
+@[simp]
+lemma prod_eq_zero_iff [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} :
+    L.prod = 0 ↔ (0 : M₀) ∈ L := by
+  induction' L with a L ihL
+  · simp
+  · rw [prod_cons, mul_eq_zero, ihL, mem_cons, eq_comm]
+#align list.prod_eq_zero_iff List.prod_eq_zero_iff
+
+lemma prod_ne_zero [Nontrivial M₀] [NoZeroDivisors M₀] {L : List M₀} (hL : (0 : M₀) ∉ L) :
+    L.prod ≠ 0 :=
+  mt prod_eq_zero_iff.1 hL
+#align list.prod_ne_zero List.prod_ne_zero
+
+end MonoidWithZero
 
 theorem dvd_sum [NonUnitalSemiring R] {a} {l : List R} (h : ∀ x ∈ l, a ∣ x) : a ∣ l.sum := by
   induction' l with x l ih

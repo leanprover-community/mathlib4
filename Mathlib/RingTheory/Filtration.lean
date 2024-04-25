@@ -3,12 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Polynomial.Module.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
 
@@ -22,8 +22,9 @@ This file contains the definitions and basic results around (stable) `I`-filtrat
 
 ## Main results
 
-- `Ideal.Filtration`: An `I`-filtration on the module `M` is a sequence of decreasing submodules
-  `N i` such that `I • N ≤ I (i + 1)`. Note that we do not require the filtration to start from `⊤`.
+- `Ideal.Filtration`:
+  An `I`-filtration on the module `M` is a sequence of decreasing submodules `N i` such that
+  `∀ i, I • (N i) ≤ N (i + 1)`. Note that we do not require the filtration to start from `⊤`.
 - `Ideal.Filtration.Stable`: An `I`-filtration is stable if `I • (N i) = N (i + 1)` for large
   enough `i`.
 - `Ideal.Filtration.submodule`: The associated module `⨁ Nᵢ` of a filtration, implemented as a

@@ -134,7 +134,7 @@ def List.dropUntil {α} [DecidableEq α] : List α → List α → List α
 open Lean Elab in
 /-- `guard_decl na mod` makes sure that the declaration with name `na` is in the module `mod`.
 ```lean
-guard_decl Nat.nontrivial Mathlib.Data.Nat.Basic -- does nothing
+guard_decl Nat.nontrivial Mathlib.Algebra.Ring.Nat -- does nothing
 
 guard_decl Nat.nontrivial Not.In.Here
 -- the module Not.In.Here is not imported!

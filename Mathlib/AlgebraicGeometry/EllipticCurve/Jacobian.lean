@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Kurniadi Angdinata
 -/
 import Mathlib.AlgebraicGeometry.EllipticCurve.Affine
-import Mathlib.Data.MvPolynomial.CommRing
-import Mathlib.Data.MvPolynomial.PDeriv
+import Mathlib.Algebra.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.PDeriv
 
 /-!
 # Jacobian coordinates for Weierstrass curves

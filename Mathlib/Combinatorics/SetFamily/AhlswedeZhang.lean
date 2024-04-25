@@ -4,10 +4,12 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Vladimir Ivanov
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
+import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Finset.Sups
 import Mathlib.Tactic.FieldSimp
+import Mathlib.Tactic.Positivity.Basic
 import Mathlib.Tactic.Ring
 
 /-!
@@ -134,7 +136,7 @@ lemma map_truncatedSup (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedSup, apply_dite e, map_finset_sup', map_top, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def]
+    OrderIso.le_iff_le, id]
   rw [sup'_map]
   -- TODO: Why can't `simp` use `Finset.sup'_map`?
   simp only [sup'_map, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv, Function.comp_apply]
@@ -206,7 +208,7 @@ lemma map_truncatedInf (e : α ≃o β) (s : Finset α) (a : α) :
   simp_rw [truncatedInf, apply_dite e, map_finset_inf', map_bot, this]
   congr with h
   simp only [filter_map, Function.comp, Equiv.coe_toEmbedding, RelIso.coe_fn_toEquiv,
-    OrderIso.le_iff_le, id.def, inf'_map]
+    OrderIso.le_iff_le, id, inf'_map]
 
 variable [DecidableEq α]
 

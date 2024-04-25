@@ -507,7 +507,7 @@ end
 variable {W X Y Z : C}
 
 /-- A pullback cone is just a cone on the cospan formed by two morphisms `f : X ⟶ Z` and
-    `g : Y ⟶ Z`.-/
+    `g : Y ⟶ Z`. -/
 abbrev PullbackCone (f : X ⟶ Z) (g : Y ⟶ Z) :=
   Cone (cospan f g)
 #align category_theory.limits.pullback_cone CategoryTheory.Limits.PullbackCone
@@ -780,7 +780,7 @@ def isLimitOfCompMono (f : X ⟶ W) (g : Y ⟶ W) (i : W ⟶ Z) [Mono i] (s : Pu
 end PullbackCone
 
 /-- A pushout cocone is just a cocone on the span formed by two morphisms `f : X ⟶ Y` and
-    `g : X ⟶ Z`.-/
+    `g : X ⟶ Z`. -/
 abbrev PushoutCocone (f : X ⟶ Y) (g : X ⟶ Z) :=
   Cocone (span f g)
 #align category_theory.limits.pushout_cocone CategoryTheory.Limits.PushoutCocone

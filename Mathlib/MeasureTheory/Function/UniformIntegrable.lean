@@ -443,8 +443,7 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
-      -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
-      ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
+      simp [← le_antisymm hi' hi]
 #align measure_theory.unif_integrable_fin MeasureTheory.unifIntegrable_fin
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
@@ -929,7 +928,7 @@ theorem uniformIntegrable_average
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
       fun i ↦ indicator_const_smul _ _ _
-    simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
+    simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_natCast]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * n • ENNReal.ofReal ε ≤ ENNReal.ofReal ε)
@@ -937,13 +936,13 @@ theorem uniformIntegrable_average
       conv_rhs => rw [← Finset.card_range n]
       exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hδ₂ _ _ hs hle
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
-        ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_natCast,
+        ENNReal.inv_mul_cancel _ (ENNReal.natCast_ne_top _), one_mul]
       all_goals simpa only [Ne, Nat.cast_eq_zero]
   · obtain ⟨C, hC⟩ := hf₃
     simp_rw [Finset.smul_sum]
     refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).const_smul _) hp).trans _⟩
-    simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
+    simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_natCast]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
@@ -951,8 +950,8 @@ theorem uniformIntegrable_average
       conv_rhs => rw [← Finset.card_range n]
       exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
-        ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_natCast,
+        ENNReal.inv_mul_cancel _ (ENNReal.natCast_ne_top _), one_mul]
       all_goals simpa only [Ne, Nat.cast_eq_zero]
 
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/

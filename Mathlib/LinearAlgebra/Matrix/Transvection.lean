@@ -148,7 +148,7 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -234,7 +234,7 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
     simp_rw [IH, Matrix.mul_one, t.mul_inv]
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
 
-/-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
+/-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix). -/
 theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}
     (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
     M ∈ Set.range (Matrix.scalar n) := by
@@ -373,8 +373,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   refine' Nat.decreasingInduction' _ hk _
   · intro n hn _ IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     simpa [listTransvecCol, Matrix.mul_assoc]
   · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
@@ -402,8 +401,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
   · intro n hn hk IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     have A :
       (listTransvecCol M).get ⟨n, hn'⟩ =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
@@ -690,7 +688,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix n n �
 #align matrix.pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal Matrix.Pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal
 
 /-- Any matrix can be written as the product of transvections, a diagonal matrix, and
-transvections.-/
+transvections. -/
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : Matrix n n 𝕜) :
     ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       M = (L.map toMatrix).prod * diagonal D * (L'.map toMatrix).prod := by

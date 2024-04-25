@@ -97,7 +97,7 @@ theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
     simp_arith only [sublists'_cons, length_append, length_sublists' l,
-      length_map, length, Nat.pow_succ', mul_succ, mul_zero, zero_add, npow_eq_pow, pow_eq]
+      length_map, length, Nat.pow_succ']
 #align list.length_sublists' List.length_sublists'
 
 @[simp]
@@ -289,7 +289,7 @@ theorem length_sublistsLen {α : Type*} :
   | _ + 1, [] => by simp
   | n + 1, a :: l => by
     rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n+1) l,
-      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, add_comm]
+      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, Nat.add_comm]
 #align list.length_sublists_len List.length_sublistsLen
 
 theorem sublistsLen_sublist_sublists' {α : Type*} :
@@ -443,8 +443,8 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
         mem_singleton, Prod.mk.injEq] at h
     simp [h]
   · intro l₁ l₂ h
-    rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
-      zip_map_left] at * <;> [skip; simp]
+    rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
+      zip_map_left] at *
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]

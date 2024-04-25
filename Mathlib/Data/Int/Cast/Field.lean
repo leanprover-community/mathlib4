@@ -5,7 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.GroupWithZero.Units.Basic
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 
 #align_import data.int.cast.field from "leanprover-community/mathlib"@"acee671f47b8e7972a1eb6f4eed74b4b3abce829"
 

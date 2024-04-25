@@ -226,7 +226,7 @@ theorem Int.pow_add_pow {x y : ℤ} (hxy : ↑p ∣ x + y) (hx : ¬↑p ∣ x) {
 theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : ℕ) :
     multiplicity p (x ^ n - y ^ n) = multiplicity p (x - y) + multiplicity p n := by
   obtain hyx | hyx := le_total y x
-  · iterate 2 rw [← Int.coe_nat_multiplicity]
+  · iterate 2 rw [← Int.natCast_multiplicity]
     rw [Int.ofNat_sub (Nat.pow_le_pow_left hyx n)]
     rw [← Int.natCast_dvd_natCast] at hxy hx
     rw [Int.natCast_sub hyx] at *
@@ -239,7 +239,7 @@ theorem Nat.pow_sub_pow {x y : ℕ} (hxy : p ∣ x - y) (hx : ¬p ∣ x) (n : �
 
 theorem Nat.pow_add_pow {x y : ℕ} (hxy : p ∣ x + y) (hx : ¬p ∣ x) {n : ℕ} (hn : Odd n) :
     multiplicity p (x ^ n + y ^ n) = multiplicity p (x + y) + multiplicity p n := by
-  iterate 2 rw [← Int.coe_nat_multiplicity]
+  iterate 2 rw [← Int.natCast_multiplicity]
   rw [← Int.natCast_dvd_natCast] at hxy hx
   push_cast at *
   exact Int.pow_add_pow hp hp1 hxy hx hn
@@ -360,13 +360,13 @@ theorem Nat.two_pow_sub_pow {x y : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 ∣ x) {n 
     multiplicity 2 (x ^ n - y ^ n) + 1 =
       multiplicity 2 (x + y) + multiplicity 2 (x - y) + multiplicity 2 n := by
   obtain hyx | hyx := le_total y x
-  · iterate 3 rw [← multiplicity.Int.coe_nat_multiplicity]
+  · iterate 3 rw [← multiplicity.Int.natCast_multiplicity]
     simp only [Int.ofNat_sub hyx, Int.ofNat_sub (pow_le_pow_left' hyx _), Int.ofNat_add,
       Int.coe_nat_pow]
     rw [← Int.natCast_dvd_natCast] at hx
     rw [← Int.natCast_dvd_natCast, Int.ofNat_sub hyx] at hxy
     convert Int.two_pow_sub_pow hxy hx hn using 2
-    rw [← multiplicity.Int.coe_nat_multiplicity]
+    rw [← multiplicity.Int.natCast_multiplicity]
     rfl
   · simp only [Nat.sub_eq_zero_iff_le.mpr hyx,
       Nat.sub_eq_zero_iff_le.mpr (pow_le_pow_left' hyx n), multiplicity.zero,

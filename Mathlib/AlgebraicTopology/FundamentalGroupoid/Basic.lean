@@ -7,7 +7,7 @@ import Mathlib.CategoryTheory.Category.Grpd
 import Mathlib.CategoryTheory.Groupoid
 import Mathlib.Topology.Category.TopCat.Basic
 import Mathlib.Topology.Homotopy.Path
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import algebraic_topology.fundamental_groupoid.basic from "leanprover-community/mathlib"@"3d7987cda72abc473c7cdbbb075170e9ac620042"
 
@@ -271,7 +271,7 @@ end Path
 subsequently put a `CategoryTheory.Groupoid` structure on it. -/
 @[ext]
 structure FundamentalGroupoid (X : Type u) where
-  /-- View a term of `FundamentalGroupoid X` as a term of `X`.-/
+  /-- View a term of `FundamentalGroupoid X` as a term of `X`. -/
   as : X
 #align fundamental_groupoid FundamentalGroupoid
 
