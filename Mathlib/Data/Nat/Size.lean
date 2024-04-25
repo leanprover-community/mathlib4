@@ -58,8 +58,7 @@ theorem size_bit {b n} (h : bit b n ≠ 0) : size (bit b n) = succ (size n) := b
     lhs
     rw [binaryRec]
     simp [h]
-  rw [bit_shiftRight_one]
-  rfl
+  rw [div2_bit]
 #align nat.size_bit Nat.size_bit
 
 section
