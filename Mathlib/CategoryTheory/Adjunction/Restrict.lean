@@ -53,3 +53,5 @@ def restrictFullyFaithful : L ⊣ R :=
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
+
+end CategoryTheory.Adjunction
