@@ -55,7 +55,8 @@ theorem natDegree_multiset_sum_le (l : Multiset S[X]) :
 
 theorem natDegree_sum_le (f : ι → S[X]) :
     natDegree (∑ i in s, f i) ≤ s.fold max 0 (natDegree ∘ f) := by
-  simpa using natDegree_multiset_sum_le (s.val.map f)#align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
+  simpa using natDegree_multiset_sum_le (s.val.map f)
+#align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
 
 lemma natDegree_sum_le_of_forall_le {n : ℕ} (f : ι → S[X]) (h : ∀ i ∈ s, natDegree (f i) ≤ n) :
     natDegree (∑ i in s, f i) ≤ n :=
