@@ -3,8 +3,8 @@ Copyright (c) 2022 Russell Emerine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Russell Emerine
 -/
-import Computability.RegularExpressionToNFA.Defs
-import Computability.RegularExpressionToNFA.Star
+import Mathlib.Computability.RegularExpressionToNFA.Defs
+import Mathlib.Computability.RegularExpressionToNFA.Star
 
 #align_import computability.regular_expression_to_NFA.basic
 

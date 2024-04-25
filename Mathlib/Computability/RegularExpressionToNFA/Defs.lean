@@ -3,10 +3,10 @@ Copyright (c) 2022 Russell Emerine. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Russell Emerine
 -/
-import Computability.RegularExpressions
-import Computability.NFA
-import Data.Fintype.Sum
-import Data.Fintype.Option
+import Mathlib.Computability.RegularExpressions
+import Mathlib.Computability.NFA
+import Mathlib.Data.Fintype.Sum
+import Mathlib.Data.Fintype.Option
 
 #align_import computability.regular_expression_to_NFA.defs
 
