@@ -377,7 +377,7 @@ def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.sim
     · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
     · exact M.off_diagonal i i' ne⟩
 
-noncomputable abbrev SGR := cs.standardGeometricRepresentation
+noncomputable alias SGR := cs.standardGeometricRepresentation
 
 local prefix:100 "ρ" => cs.SGR
 
@@ -656,7 +656,10 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     right descent of `w`. -/
     have h₂₁ : ¬ (m = M i i' ∧ M i i' ≠ 0) := by
       rintro ⟨m_eq, _⟩
-      have : aw m = π (alternatingWord i' i m) := m_eq ▸ cs.prod_alternatingWord_matrix_apply i i'
+      have : aw m = π (alternatingWord i' i m) := by
+        rw [m_eq]
+        nth_rw 2 [M.symmetric i i']
+        exact cs.wordProd_braidWord_eq i i'
       rw [this] at h₄
       have := calc
         ℓ (w * s i)
