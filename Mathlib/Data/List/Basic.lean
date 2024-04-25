@@ -1214,9 +1214,7 @@ theorem nthLe_of_mem {a} {l : List α} (h : a ∈ l) : ∃ n h, nthLe l n h = a 
   let ⟨i, h⟩ := get_of_mem h; ⟨i.1, i.2, h⟩
 #align list.nth_le_of_mem List.nthLe_of_mem
 
-@[deprecated get?_eq_get] -- 2023-01-05
-theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?_eq_get _
-#align list.nth_le_nth List.nthLe_get?
+#align list.nth_le_nth List.get?_eq_get
 
 #align list.nth_len_le List.get?_len_le
 
@@ -1224,9 +1222,7 @@ theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?
 theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 #align list.nth_length List.get?_length
 
-@[deprecated get?_eq_some] -- 2023-01-05
-theorem get?_eq_some' {l : List α} {n a} : get? l n = some a ↔ ∃ h, nthLe l n h = a := get?_eq_some
-#align list.nth_eq_some List.get?_eq_some'
+#align list.nth_eq_some List.get?_eq_some
 
 #align list.nth_eq_none_iff List.get?_eq_none
 #align list.nth_of_mem List.get?_of_mem
@@ -1237,10 +1233,7 @@ theorem nthLe_mem (l : List α) (n h) : nthLe l n h ∈ l := get_mem ..
 
 #align list.nth_mem List.get?_mem
 
-@[deprecated mem_iff_get] -- 2023-01-05
-theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :=
-  mem_iff_get.trans ⟨fun ⟨⟨n, h⟩, e⟩ => ⟨n, h, e⟩, fun ⟨n, h, e⟩ => ⟨⟨n, h⟩, e⟩⟩
-#align list.mem_iff_nth_le List.mem_iff_nthLe
+#align list.mem_iff_nth_le List.mem_iff_get
 
 #align list.mem_iff_nth List.mem_iff_get?
 #align list.nth_zero List.get?_zero
@@ -1263,25 +1256,14 @@ theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.l
 
 #align list.nth_map List.get?_map
 
-@[deprecated get_map] -- 2023-01-05
-theorem nthLe_map (f : α → β) {l n} (H1 H2) : nthLe (map f l) n H1 = f (nthLe l n H2) := get_map ..
-#align list.nth_le_map List.nthLe_map
+#align list.nth_le_map List.get_map
 
 /-- A version of `get_map` that can be used for rewriting. -/
 theorem get_map_rev (f : α → β) {l n} :
     f (get l n) = get (map f l) ⟨n.1, (l.length_map f).symm ▸ n.2⟩ := Eq.symm (get_map _)
+#align list.nth_le_map_rev List.get_map_rev
 
-/-- A version of `nthLe_map` that can be used for rewriting. -/
-@[deprecated get_map_rev] -- 2023-01-05
-theorem nthLe_map_rev (f : α → β) {l n} (H) :
-    f (nthLe l n H) = nthLe (map f l) n ((l.length_map f).symm ▸ H) :=
-  (nthLe_map f _ _).symm
-#align list.nth_le_map_rev List.nthLe_map_rev
-
-@[simp, deprecated get_map] -- 2023-01-05
-theorem nthLe_map' (f : α → β) {l n} (H) :
-    nthLe (map f l) n H = f (nthLe l n (l.length_map f ▸ H)) := nthLe_map f _ _
-#align list.nth_le_map' List.nthLe_map'
+#align list.nth_le_map' List.get_map
 
 /-- If one has `nthLe L i hi` in a formula and `h : L = L'`, one can not `rw h` in the formula as
 `hi` gives `i < L.length` and not `i < L'.length`. The lemma `nth_le_of_eq` can be used to make
