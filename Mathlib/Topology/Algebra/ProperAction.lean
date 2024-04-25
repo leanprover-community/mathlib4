@@ -200,14 +200,11 @@ theorem properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [To
     (f_compat : ∀ (h : H) (x : X), f h • x = h • x) : ProperSMul H X where
   isProperMap_smul_pair' := by
     have := isProperMap_of_closedEmbedding f_clemb
-    have : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
+    have h : IsProperMap (Prod.map f (fun x : X ↦ x)) := IsProperMap.prod_map this isProperMap_id
     have : (fun hx : H × X ↦ (hx.1 • hx.2, hx.2)) = (fun hx ↦ (f hx.1 • hx.2, hx.2)) := by
       simp [f_compat]
     rw [this]
-    change IsProperMap ((fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ∘ (Prod.map f (fun x ↦ x)))
-    apply IsProperMap.comp
-    assumption
-    exact isProperMap_smul_pair G X
+    exact h.comp <| isProperMap_smul_pair G X
 
 /-- If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`. -/
 @[to_additive "If `H` is a closed subgroup of `G` and `G` acts properly on X then so does `H`."]
