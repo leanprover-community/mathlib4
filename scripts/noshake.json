@@ -344,6 +344,8 @@
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Basic"],
+  "Mathlib.Algebra.Polynomial.Degree.Definitions":
+  ["Mathlib.Tactic.ToNatDegree"],
   "Mathlib.Algebra.Module.Submodule.Order":
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],
