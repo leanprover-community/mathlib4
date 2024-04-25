@@ -92,6 +92,8 @@ instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 instance : NoZeroSMulDivisors (𝓞 K) K :=
   inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
+instance : Nontrivial (𝓞 K) :=
+  inferInstanceAs (Nontrivial (integralClosure _ _))
 
 variable {K}
 
