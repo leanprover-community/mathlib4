@@ -25,14 +25,7 @@ namespace Nat
 
 variable {m n : ℕ}
 
-@[simp]
-theorem mod_two_ne_one : ¬n % 2 = 1 ↔ n % 2 = 0 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_one Nat.mod_two_ne_one
-
-@[simp]
-theorem mod_two_ne_zero : ¬n % 2 = 0 ↔ n % 2 = 1 := by
-  cases' mod_two_eq_zero_or_one n with h h <;> simp [h]
 #align nat.mod_two_ne_zero Nat.mod_two_ne_zero
 
 theorem even_iff : Even n ↔ n % 2 = 0 :=

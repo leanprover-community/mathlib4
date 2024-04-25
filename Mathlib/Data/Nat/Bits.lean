@@ -37,23 +37,24 @@ namespace Nat
 universe u
 variable {m n : ℕ}
 
-/-- `boddDiv2 n` returns a 2-tuple of type `(Bool, Nat)` where the `Bool` value indicates whether
-`n` is odd or not and the `Nat` value returns `⌊n/2⌋` -/
-def boddDiv2 : ℕ → Bool × ℕ
-  | 0 => (false, 0)
-  | succ n =>
-    match boddDiv2 n with
-    | (false, m) => (true, m)
-    | (true, m) => (false, succ m)
-#align nat.bodd_div2 Nat.boddDiv2
-
 /-- `div2 n = ⌊n/2⌋` the greatest integer smaller than `n/2`-/
-def div2 (n : ℕ) : ℕ := (boddDiv2 n).2
+def div2 (n : ℕ) : ℕ := n >>> 1
 #align nat.div2 Nat.div2
 
+theorem div2_val (n) : div2 n = n / 2 := rfl
+#align nat.div2_val Nat.div2_val
+
 /-- `bodd n` returns `true` if `n` is odd-/
-def bodd (n : ℕ) : Bool := (boddDiv2 n).1
+def bodd (n : ℕ) : Bool := 1 &&& n != 0
 #align nat.bodd Nat.bodd
+
+theorem bit_decomp (n : Nat) : bit n.bodd n.div2 = n :=
+  n.bit_testBit_zero_shiftRight_one
+
+theorem binaryRec_of_ne_zero {C : Nat → Sort u} (z : C 0) (f : ∀ b n, C n → C (bit b n)) {n}
+    (h : n ≠ 0) :
+    binaryRec z f n = n.bit_decomp ▸ f n.bodd n.div2 (binaryRec z f n.div2) := by
+  rw [binaryRec, dif_neg h, eqRec_eq_cast, eqRec_eq_cast]; rfl
 
 @[simp] lemma bodd_zero : bodd 0 = false := rfl
 #align nat.bodd_zero Nat.bodd_zero
@@ -66,9 +67,8 @@ lemma bodd_two : bodd 2 = false := rfl
 
 @[simp]
 lemma bodd_succ (n : ℕ) : bodd (succ n) = not (bodd n) := by
-  simp only [bodd, boddDiv2]
-  let ⟨b,m⟩ := boddDiv2 n
-  cases b <;> rfl
+  simp only [bodd, succ_eq_add_one, one_land_eq_mod_two]
+  cases mod_two_eq_zero_or_one n with | _ h => simp [h, add_mod]
 #align nat.bodd_succ Nat.bodd_succ
 
 @[simp]
@@ -101,6 +101,9 @@ lemma mod_two_of_bodd (n : ℕ) : n % 2 = cond (bodd n) 1 0 := by
   cases' mod_two_eq_zero_or_one n with h h <;> rw [h] <;> rfl
 #align nat.mod_two_of_bodd Nat.mod_two_of_bodd
 
+theorem div2_add_bodd (n : Nat) : 2 * div2 n + cond (bodd n) 1 0 = n := by
+  rw [← mod_two_of_bodd, div2_val, Nat.div_add_mod]
+
 @[simp] lemma div2_zero : div2 0 = 0 := rfl
 #align nat.div2_zero Nat.div2_zero
 
@@ -112,8 +115,10 @@ lemma div2_two : div2 2 = 1 := rfl
 
 @[simp]
 lemma div2_succ (n : ℕ) : div2 (succ n) = cond (bodd n) (succ (div2 n)) (div2 n) := by
-  simp only [bodd, boddDiv2, div2]
-  rcases boddDiv2 n with ⟨_|_, _⟩ <;> simp
+  apply Nat.eq_of_mul_eq_mul_left (by decide : 0 < 2)
+  apply Nat.add_right_cancel (m := cond (bodd (succ n)) 1 0)
+  rw (config := {occs := .pos [1]}) [div2_add_bodd, bodd_succ, ← div2_add_bodd n]
+  cases bodd n <;> simp [succ_eq_add_one, Nat.add_comm 1, Nat.mul_add]
 #align nat.div2_succ Nat.div2_succ
 
 attribute [local simp] Nat.add_comm Nat.add_assoc Nat.add_left_comm Nat.mul_comm Nat.mul_assoc
@@ -127,12 +132,6 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     · simp
     · simp; omega
 #align nat.bodd_add_div2 Nat.bodd_add_div2
-
-lemma div2_val (n) : div2 n = n / 2 := by
-  refine Nat.eq_of_mul_eq_mul_left (by decide)
-    (Nat.add_left_cancel (Eq.trans ?_ (Nat.mod_add_div n 2).symm))
-  rw [mod_two_of_bodd, bodd_add_div2]
-#align nat.div2_val Nat.div2_val
 
 #align nat.bit Nat.bit
 
@@ -268,10 +267,6 @@ lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
 
 /-! ### `boddDiv2_eq` and `bodd` -/
 
-
-@[simp]
-theorem boddDiv2_eq (n : ℕ) : boddDiv2 n = (bodd n, div2 n) := rfl
-#align nat.bodd_div2_eq Nat.boddDiv2_eq
 
 @[simp]
 theorem bodd_bit0 (n) : bodd (bit0 n) = false :=
