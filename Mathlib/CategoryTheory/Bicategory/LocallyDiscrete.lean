@@ -90,13 +90,14 @@ theorem eq_of_hom {X Y : LocallyDiscrete C} {f g : X ⟶ Y} (η : f ⟶ g) : f =
 
 end LocallyDiscrete
 
-variable {C : Type u} [Category.{v} C]
+variable (C)
+variable [Category.{v} C]
 
 /-- The locally discrete bicategory on a category is a bicategory in which the objects and the
 1-morphisms are the same as those in the underlying category, and the 2-morphisms are the
 equalities between 1-morphisms.
 -/
-instance locallyDiscreteBicategory (C : Type u) [Category.{v} C] : Bicategory (LocallyDiscrete C)
+instance locallyDiscreteBicategory : Bicategory (LocallyDiscrete C)
     where
   whiskerLeft f g h η := eqToHom (congr_arg₂ (· ≫ ·) rfl (LocallyDiscrete.eq_of_hom η))
   whiskerRight η h := eqToHom (congr_arg₂ (· ≫ ·) (LocallyDiscrete.eq_of_hom η) rfl)
