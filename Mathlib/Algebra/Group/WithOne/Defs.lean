@@ -15,11 +15,12 @@ import Mathlib.Tactic.Common
 
 This file contains different results about adjoining an element to an algebraic structure which then
 behaves like a zero or a one. An example is adjoining a one to a semigroup to obtain a monoid. That
-this provides an example of an adjunction is proved in `Algebra.Category.MonCat.Adjunctions`.
+this provides an example of an adjunction is proved in
+`Mathlib.Algebra.Category.MonCat.Adjunctions`.
 
 Another result says that adjoining to a group an element `zero` gives a `GroupWithZero`. For more
 information about these structures (which are not that standard in informal mathematics, see
-`Algebra.GroupWithZero.Basic`)
+`Mathlib.Algebra.GroupWithZero.Basic`)
 
 ## Porting notes
 

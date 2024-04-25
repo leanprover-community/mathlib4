@@ -280,7 +280,7 @@ instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
     add_neg_cancel := fun a ha ↦ mul_inv_cancel (G₀ := α) (id ha : Additive.toMul a ≠ 0) }
 
 lemma pow_lt_pow_succ (ha : 1 < a) : a ^ n < a ^ n.succ := by
-  rw [← one_mul (a ^ n), pow_succ'];
+  rw [← one_mul (a ^ n), pow_succ']
   exact mul_lt_right₀ _ ha (pow_ne_zero _ (zero_lt_one.trans ha).ne')
 #align pow_lt_pow_succ pow_lt_pow_succ
 
@@ -288,8 +288,7 @@ lemma pow_lt_pow_right₀ (ha : 1 < a) (hmn : m < n) : a ^ m < a ^ n := by
   induction' hmn with n _ ih; exacts [pow_lt_pow_succ ha, lt_trans ih (pow_lt_pow_succ ha)]
 #align pow_lt_pow₀ pow_lt_pow_right₀
 
--- 2023-12-23
-@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀
+@[deprecated] alias pow_lt_pow₀ := pow_lt_pow_right₀ -- 2023-12-23
 
 end LinearOrderedCommGroupWithZero
 
@@ -334,17 +333,16 @@ lemma zero_eq_bot : (0 : WithZero α) = ⊥ := rfl
 @[simp, norm_cast] lemma coe_le_coe : (a : WithZero α) ≤ b ↔ a ≤ b := WithBot.coe_le_coe
 #align with_zero.coe_le_coe WithZero.coe_le_coe
 
+theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x = b ∧ a ≤ b :=
+  WithBot.coe_le_iff
+
 instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
   induction a using WithZero.recZeroCoe; · exact zero_le _
   induction b using WithZero.recZeroCoe; · exact zero_le _
-  rcases WithBot.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
-  refine le_trans ?_ (le_of_eq <| coe_mul _ _)
-  -- rw [← coe_mul, ← coe_mul, coe_le_coe]
-  -- Porting note: rewriting `coe_mul` here doesn't work because of some difference between
-  -- `coe` and `WithBot.some`, even though they're definitionally equal as shown by the `refine'`
-  rw [← coe_mul, coe_le_coe]
+  rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
+  rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
 #align with_zero.covariant_class_mul_le WithZero.covariantClass_mul_le
 
