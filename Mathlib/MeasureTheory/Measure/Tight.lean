@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne, Josha Dekker
 -/
 import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+
 
 /-!
 # (Pre-)tight measures
@@ -28,7 +30,7 @@ import Mathlib.MeasureTheory.Measure.Regular
 
 
 -/
-
+open Topology
 open scoped ENNReal
 
 namespace MeasureTheory
@@ -64,7 +66,7 @@ lemma aux2 [IsFiniteMeasure μ] [TopologicalSpace α] [OpensMeasurableSpace α]
   rw [measure_compl hK2.measurableSet (measure_ne_top μ _)]
   exact tsub_le_iff_tsub_le.mp hn
 
-lemma aux3 {α : Type*} [PseudoMetricSpace α] {s : Set α} (h : TotallyBounded s) :
+lemma aux3 [PseudoMetricSpace α] {s : Set α} (h : TotallyBounded s) :
     TopologicalSpace.IsSeparable s:= by
   rw [Metric.totallyBounded_iff] at h
   have := fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat
@@ -166,7 +168,7 @@ instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFin
   exact ⟨this⟩
 
 /-- Every tight measure is pre-tight-/
-lemma Pretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
+lemma IsPretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
   intro ε hε
   obtain ⟨K, hK_compact, hKμ⟩ := h ε hε
   use K
@@ -258,6 +260,9 @@ lemma of_isPretight [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : I
     simp only [Set.compl_subset_compl, subset_closure]
   exact le_trans this hKe
 
+lemma isPretight_iff_uniform_complete [UniformSpace α] [CompleteSpace α] :
+    IsTight μ ↔ IsPretight μ := ⟨IsPretight.of_isTight, of_isPretight⟩
+
 end IsTight
 
 /-- A set `S` of measures is tight if for all `0 < ε`, there exists `K` compact such that for all
@@ -265,10 +270,31 @@ end IsTight
 def IsTightSet [TopologicalSpace α] (S : Set (Measure α)) : Prop :=
   ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, IsCompact K ∧ ∀ μ ∈ S, μ Kᶜ ≤ ε
 
+lemma tight_of_isTightSet [TopologicalSpace α] (S : Set (Measure α)) (h : IsTightSet S) :
+    ∀ μ ∈ S, IsTight μ := by
+  intro μ hμ ε hε
+  obtain ⟨K, hK, hKμ⟩ := h ε hε
+  exact ⟨K, hK, hKμ μ hμ⟩
+
+lemma isTightSet_of_finite_tight [TopologicalSpace α] (S : Set (Measure α)) (h : Set.Finite S) :
+    (∀ μ ∈ S, IsTight μ) → IsTightSet S := by
+  intro hTight ε hε
+  choose! K hKc hKε using fun ν hν => hTight ν hν ε hε
+  use ⋃ ν ∈ S, K ν, h.isCompact_biUnion hKc
+  rintro μ hμ
+  apply le_trans (μ.mono ?_) (hKε μ hμ)
+  simp only [Set.compl_subset_compl]
+  exact Set.subset_biUnion_of_mem hμ
+
 lemma tight_singleton [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] (μ : Measure α)
-    [IsFiniteMeasure μ] [μ.InnerRegular] :IsTightSet {μ} := by
+    [IsFiniteMeasure μ] [μ.InnerRegular] : IsTightSet {μ} := by
   unfold IsTightSet
   intro ε hε
   simp_all only [IsTight.of_innerRegular μ ε hε, Set.mem_singleton_iff, forall_eq]
+
+lemma tight_prob_of_converging_isTightSet_prob [TopologicalSpace α] [OpensMeasurableSpace α]
+    {μs : ℕ → FiniteMeasure α} {μ : FiniteMeasure α} (h : Filter.Tendsto μs Filter.atTop (𝓝 μ)) (hγ : IsTightSet (Set.range fun n => FiniteMeasure.toMeasure (μs n))) :
+    IsTight (α := α) μ := by
+  sorry
 
 end MeasureTheory
