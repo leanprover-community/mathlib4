@@ -12,7 +12,6 @@ import Mathlib.Topology.MetricSpace.Thickening
 import Mathlib.Topology.GDelta
 import Mathlib.Topology.Order.Lattice
 import Mathlib.Topology.Semicontinuous
-import Mathlib.Topology.CountableSeparatingOn
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
