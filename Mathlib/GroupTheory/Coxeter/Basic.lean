@@ -330,8 +330,9 @@ def lift {G : Type*} [Monoid G] : {f : B → G | IsLiftable M f} ≃ (W →* G) 
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
     rfl
 
-theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) :
-    ∀ i, cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩))
+@[simp]
+theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
+    cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩)) i
 
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/

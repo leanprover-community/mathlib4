@@ -244,7 +244,7 @@ theorem exponent_dvd {n : ℕ} : exponent G ∣ n ↔ ∀ g : G, orderOf g ∣ n
 
 variable (G)
 
-@[to_additive (attr := deprecated)]
+@[to_additive (attr := deprecated)] -- 2024-02-17
 theorem exponent_dvd_of_forall_orderOf_dvd (n : ℕ) (h : ∀ g : G, orderOf g ∣ n) : exponent G ∣ n :=
   exponent_dvd.mpr h
 
@@ -551,8 +551,7 @@ section Group
 
 variable [Group G]
 
--- Deprecated: 2024-02-17
-@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent]
+@[to_additive (attr := deprecated Monoid.one_lt_exponent) AddGroup.one_lt_exponent] -- 2024-02-17
 lemma Group.one_lt_exponent [Finite G] [Nontrivial G] : 1 < Monoid.exponent G :=
   Monoid.one_lt_exponent
 
@@ -719,7 +718,7 @@ lemma inv_eq_self_of_orderOf_eq_two {x : G} (hx : orderOf x = 2) :
     x⁻¹ = x :=
   inv_eq_of_mul_eq_one_left <| pow_two (a := x) ▸ hx ▸ pow_orderOf_eq_one x
 
--- TODO: Delete
+-- TODO: Delete; deprecated on 2024-02-17
 /-- Any group of exponent two is abelian. -/
 @[to_additive (attr := reducible, deprecated) "Any additive group of exponent two is abelian."]
 def instCommGroupOfExponentTwo (hG : Monoid.exponent G = 2) : CommGroup G where
