@@ -66,6 +66,10 @@ theorem pow_two_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 
   rcases rt with ⟨w, i, rfl⟩
   simp
 
+theorem mul_self_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t * t = 1 := by
+  rcases rt with ⟨w, i, rfl⟩
+  simp
+
 theorem inv_reflection_eq {t : W} (rt : cs.IsReflection t) : t⁻¹ = t := by
   rcases rt with ⟨w, i, rfl⟩
   group
@@ -80,6 +84,22 @@ theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := 
   norm_num
 
 alias odd_length_of_isReflection := length_reflection_odd
+
+theorem length_mul_reflection_ne (w : W) {t : W} (rt : cs.IsReflection t) : ℓ (w * t) ≠ ℓ w := by
+  apply_fun (· % 2)
+  dsimp only
+  rw [length_mul_mod_two]
+  intro h
+  have := h ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd rt)
+  exact Nat.add_self_ne_one _ this
+
+theorem length_reflection_mul_ne (w : W) {t : W} (rt : cs.IsReflection t) : ℓ (t * w) ≠ ℓ w := by
+  apply_fun (· % 2)
+  dsimp only
+  rw [length_mul_mod_two]
+  intro h
+  have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd rt)
+  exact Nat.add_self_ne_one _ (add_comm (ℓ t) _ ▸ this)
 
 theorem isReflection_conjugate_iff (w t : W) :
     cs.IsReflection (w * t * w⁻¹) ↔ cs.IsReflection t := by
@@ -101,6 +121,32 @@ def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ
 /-- The proposition that `t` is a left inversion of `w`; i.e., `t` is a reflection and
 $\ell (t w) < \ell(w)$. -/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
+
+theorem isRightInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+    cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
+  unfold IsRightInversion
+  simp only [mul_assoc, cs.mul_self_eq_one_of_isReflection ht, mul_one, ht, true_and,
+    not_lt]
+  constructor
+  · exact le_of_lt
+  · exact (lt_of_le_of_ne' · (cs.length_mul_reflection_ne w ht))
+
+theorem not_isRightInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+    ¬cs.IsRightInversion (w * t) t ↔ cs.IsRightInversion w t :=
+  (iff_not_comm.mp (cs.isRightInversion_mul_iff_of_isReflection ht)).symm
+
+theorem isLeftInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+    cs.IsLeftInversion (t * w) t ↔ ¬cs.IsLeftInversion w t := by
+  unfold IsLeftInversion
+  simp only [← mul_assoc, cs.mul_self_eq_one_of_isReflection ht, one_mul, ht, true_and,
+    not_lt]
+  constructor
+  · exact le_of_lt
+  · exact (lt_of_le_of_ne' · (cs.length_reflection_mul_ne w ht))
+
+theorem not_isLeftInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
+    ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
+  (iff_not_comm.mp (cs.isLeftInversion_mul_iff_of_isReflection ht)).symm
 
 theorem isRightInversion_simple_iff_isRightDescent (w : W) (i : B) :
     cs.IsRightInversion w (s i) ↔ cs.IsRightDescent w i := by
@@ -254,7 +300,7 @@ theorem leftInvSeq_take (ω : List B) (j : ℕ) :
   · have : ω.length ≤ j := by linarith
     rw [take_length_le this, take_length_le (by simpa)]
 
-theorem isReflection_of_mem_rightInvSeq (ω : List B) (t : W) (ht : t ∈ ris ω) :
+theorem isReflection_of_mem_rightInvSeq (ω : List B) {t : W} (ht : t ∈ ris ω) :
     cs.IsReflection t := by
   induction' ω with i ω ih
   · simp at ht
@@ -264,10 +310,10 @@ theorem isReflection_of_mem_rightInvSeq (ω : List B) (t : W) (ht : t ∈ ris ω
       group
     · exact ih mem
 
-theorem isReflection_of_mem_leftInvSeq (ω : List B) (t : W) (ht : t ∈ lis ω) :
+theorem isReflection_of_mem_leftInvSeq (ω : List B) {t : W} (ht : t ∈ lis ω) :
     cs.IsReflection t := by
   simp only [leftInvSeq_eq_reverse_rightInvSeq_reverse, mem_reverse] at ht
-  exact cs.isReflection_of_mem_rightInvSeq ω.reverse t ht
+  exact cs.isReflection_of_mem_rightInvSeq ω.reverse ht
 
 theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
     π ω * ((ris ω).getD j 1) = π (ω.eraseIdx j) := by
@@ -291,6 +337,32 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   · rw [get?_eq_none.mpr (by linarith)]
     simp
 
+theorem isRightInversion_of_mem_rightInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
+    (ht : t ∈ ris ω) : cs.IsRightInversion (π ω) t := by
+  constructor
+  · exact cs.isReflection_of_mem_rightInvSeq ω ht
+  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
+    rw [← List.getD_eq_get _ 1 hj, wordProd_mul_getD_rightInvSeq]
+    rw [cs.length_rightInvSeq] at hj
+    calc
+      ℓ (π (ω.eraseIdx j))
+      _ ≤ (ω.eraseIdx j).length   := cs.length_wordProd_le _
+      _ < ω.length                := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
+      _ = ℓ (π ω)                 := hω.symm
+
+theorem isLeftInversion_of_mem_leftInvSeq {ω : List B} (hω : cs.IsReduced ω) {t : W}
+    (ht : t ∈ lis ω) : cs.IsLeftInversion (π ω) t := by
+  constructor
+  · exact cs.isReflection_of_mem_leftInvSeq ω ht
+  · obtain ⟨⟨j, hj⟩, rfl⟩ := List.mem_iff_get.mp ht
+    rw [← List.getD_eq_get _ 1 hj, getD_leftInvSeq_mul_wordProd]
+    rw [cs.length_leftInvSeq] at hj
+    calc
+      ℓ (π (ω.eraseIdx j))
+      _ ≤ (ω.eraseIdx j).length   := cs.length_wordProd_le _
+      _ < ω.length                := by rw [← List.length_eraseIdx_add_one hj]; exact lt_add_one _
+      _ = ℓ (π ω)                 := hω.symm
+
 theorem prod_rightInvSeq (ω : List B) : prod (ris ω) = (π ω)⁻¹ := by
   induction' ω with i ω ih
   · simp
@@ -303,7 +375,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
     _ = List.map id (ris ω.reverse)             := by
         apply List.map_congr
         intro t ht
-        exact cs.inv_reflection_eq (cs.isReflection_of_mem_rightInvSeq _ t ht)
+        exact cs.inv_reflection_eq (cs.isReflection_of_mem_rightInvSeq _ ht)
     _ = ris ω.reverse                           := map_id _
   rw [this]
   nth_rw 2 [← reverse_reverse ω]
