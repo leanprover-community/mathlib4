@@ -13,6 +13,10 @@ import Mathlib.LinearAlgebra.DirectSum.TensorProduct
 import Mathlib.LinearAlgebra.FreeModule.Basic
 import Mathlib.Algebra.Module.Projective
 import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Algebra.Category.ModuleCat.Monoidal.Symmetric
+import Mathlib.CategoryTheory.Limits.Constructions.EpiMono
+import Mathlib.CategoryTheory.Monoidal.Tor
+import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 
 #align_import ring_theory.flat from "leanprover-community/mathlib"@"62c0a4ef1441edb463095ea02a06e87f3dfe135c"
 
@@ -274,7 +278,8 @@ lemma iff_lTensor_preserves_injective_linearMap [Small.{v} R] :
       (L : N →ₗ[R] N'), Function.Injective L → Function.Injective (L.lTensor M) := by
   simp_rw [iff_rTensor_preserves_injective_linearMap, LinearMap.lTensor_inj_iff_rTensor_inj]
 
-lemma lTensor_exact [Small.{v} R] (flat : Flat R M) ⦃N N' N'' : Type v⦄
+variable (R M) in
+lemma lTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
     [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
     [Module R N] [Module R N'] [Module R N'']
     (f : N →ₗ[R] N') (g : N' →ₗ[R] N'')
@@ -304,18 +309,349 @@ lemma lTensor_exact [Small.{v} R] (flat : Flat R M) ⦃N N' N'' : Type v⦄
 
   exact _root_.lTensor_exact _ exact0 surj0
 
+variable (R M) in
+lemma rTensor_exact [Small.{v} R] [flat : Flat R M] ⦃N N' N'' : Type v⦄
+    [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+    [Module R N] [Module R N'] [Module R N'']
+    (f : N →ₗ[R] N') (g : N' →ₗ[R] N'')
+    (exact : Function.Exact f g) :
+    Function.Exact (f.rTensor M) (g.rTensor M) := by
+  let π : N' →ₗ[R] N' ⧸ LinearMap.range f :=
+  { toFun := Submodule.Quotient.mk
+    map_add' := by simp
+    map_smul' := by simp }
+  have exact0 : Function.Exact f π := by
+    intro x; simp [π]
+  have surj0 : Function.Surjective π := Quotient.surjective_Quotient_mk''
+
+  let ι : N' ⧸ LinearMap.range f →ₗ[R] N'' :=
+    Submodule.subtype _ ∘ₗ (LinearMap.quotKerEquivRange g).toLinearMap ∘ₗ
+      Submodule.quotEquivOfEq (LinearMap.range f) (LinearMap.ker g)
+        (Function.LinearMap.exact_iff.mp exact).symm
+  have inj0 : Function.Injective ι := by
+    simpa [ι] using Subtype.val_injective
+  have eq0 : g = ι.comp π := by aesop
+
+  suffices exact1 : Function.Exact (f.rTensor M) (π.rTensor M) by
+    rw [eq0, rTensor_comp]
+    apply Function.Exact.comp_injective (exact := exact1)
+      (inj := iff_rTensor_preserves_injective_linearMap R M |>.mp flat _ inj0)
+      (h0 := map_zero _)
+
+  exact _root_.rTensor_exact _ exact0 surj0
+
+variable (R M) in
 lemma iff_lTensor_exact [Small.{v} R] :
     Flat R M ↔
     ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
       [Module R N] [Module R N'] [Module R N'']
       (f : N →ₗ[R] N') (g : N' →ₗ[R] N''), Function.Exact f g →
       Function.Exact (f.lTensor M) (g.lTensor M) := by
-  refine ⟨lTensor_exact, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
+  refine ⟨fun _ => lTensor_exact R M, fun H => iff_lTensor_preserves_injective_linearMap R M |>.mpr
     fun N' N'' _ _ _ _ L hL => ?_⟩
   rw [← LinearMap.ker_eq_bot, eq_bot_iff]
   rintro x (hx : _ = 0)
   simpa [Eq.comm] using
     @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
+
+variable (R M) in
+lemma iff_rTensor_exact [Small.{v} R] :
+    Flat R M ↔
+    ∀ ⦃N N' N'' : Type v⦄ [AddCommGroup N] [AddCommGroup N'] [AddCommGroup N'']
+      [Module R N] [Module R N'] [Module R N'']
+      (f : N →ₗ[R] N') (g : N' →ₗ[R] N''), Function.Exact f g →
+      Function.Exact (f.rTensor M) (g.rTensor M) := by
+  refine ⟨fun _ => rTensor_exact R M, fun H => iff_rTensor_preserves_injective_linearMap R M |>.mpr
+    fun N' N'' _ _ _ _ L hL => ?_⟩
+  rw [← LinearMap.ker_eq_bot, eq_bot_iff]
+  rintro x (hx : _ = 0)
+  simpa [Eq.comm] using
+    @H PUnit N' N'' _ _ _ _ _ _ 0 L (by intro x; simpa [hL] using Eq.comm) x |>.mp hx
+
+noncomputable section categorical_characterisations
+
+open CategoryTheory MonoidalCategory ModuleCat
+
+variable (M : ModuleCat.{u} R)
+
+open scoped MonoidalCategory in
+set_option maxHeartbeats 400000 in
+-- In two goals, we need to use `simpa` in one; and `simp` in the other.
+set_option linter.unnecessarySimpa false in
+instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
+    Limits.PreservesLimit (Limits.parallelPair f 0) (tensorLeft M) where
+  preserves {c} hc := by
+    let ι : c.pt ⟶ X := c.π.app .zero
+    have mono0 : Mono ι := by
+      constructor
+      intro Z g h H
+      let c' : Limits.Cone (Limits.parallelPair f 0) :=
+        ⟨Z, ⟨fun x => match x with
+        | .zero => h ≫ ι
+        | .one => 0,
+        fun _ _ l => match l with
+          | .left => by simp [ι]
+          | .right => by simp [ι]
+          | .id x => by simp⟩⟩
+      rw [hc.uniq c' g fun x => match x with
+        | .zero => by simpa [ι] using H
+        | .one => by simp, hc.uniq c' h fun x => match x with
+        | .zero => by simp [ι]
+        | .one => by simp]
+    have exact0 : Exact ι f := by
+      refine Abelian.exact_of_is_kernel (w := by simp [ι]) (h := ?_)
+      refine Limits.IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _
+        ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ hc
+      · exact 𝟙 c.pt
+      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+      · exact 𝟙 c.pt
+      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+      · rfl
+      · rfl
+
+    let f' := M ◁ f; let ι' := M ◁ ι
+
+    have exact1 : Exact ι' f' := by
+      rw [exact_iff, Eq.comm, ← Function.LinearMap.exact_iff] at exact0 ⊢
+      exact lTensor_exact R M ι f exact0
+    have mono1 : Mono ι' := by
+      rw [ModuleCat.mono_iff_injective] at mono0 ⊢
+      letI : Flat R (of R M) := inferInstanceAs <| Flat R M
+      exact lTensor_preserves_injective_linearMap _ mono0
+    letI ic1 := Abelian.isLimitOfExactOfMono ι' f' exact1
+
+    refine Limits.IsLimit.equivOfNatIsoOfIso ⟨⟨fun x => match x with
+      | .zero => 𝟙 _
+      | .one => 𝟙 _, ?_⟩, ⟨fun x => match x with
+      | .zero => 𝟙 _
+      | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ ic1
+    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    · ext (⟨⟩|⟨⟩) <;> simp
+    · ext (⟨⟩|⟨⟩) <;> simp
+    · exact 𝟙 _
+    · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
+    · exact 𝟙 _
+    · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
+    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+
+instance tensorLeft_preservesFiniteLimits [Flat R M] :
+    Limits.PreservesFiniteLimits (tensorLeft M) :=
+  (tensorLeft M).preservesFiniteLimitsOfPreservesKernels
+
+open scoped MonoidalCategory in
+instance tensorRight_preservesFiniteLimits [Flat R M] :
+    Limits.PreservesFiniteLimits (tensorRight M) where
+  preservesFiniteLimits J _ _ :=
+  { preservesLimit := fun {K} => by
+      letI : Limits.PreservesLimit K (tensorLeft M) := inferInstance
+      apply Limits.preservesLimitOfNatIso (F := tensorLeft M)
+      exact ⟨⟨fun X => β_ _ _ |>.hom, by aesop_cat⟩, ⟨fun X => β_ _ _ |>.inv, by aesop_cat⟩,
+        by aesop_cat, by aesop_cat⟩ }
+
+lemma iff_tensorLeft_preservesFiniteLimits :
+    Flat R M ↔
+    Nonempty (Limits.PreservesFiniteLimits (tensorLeft M)) := by
+  refine ⟨fun _ => ⟨inferInstance⟩, ?_⟩
+  rintro ⟨_⟩
+  rw [iff_lTensor_preserves_injective_linearMap]
+  intro N N' _ _ _ _ L hL
+  haveI : Mono (ofHom L) := by rwa [ModuleCat.mono_iff_injective]
+  have inj : Mono <| (tensorLeft M).map (ofHom L) :=
+    preserves_mono_of_preservesLimit (tensorLeft M) (ofHom L)
+  rwa [ModuleCat.mono_iff_injective] at inj
+
+lemma iff_tensorRight_preservesFiniteLimits :
+    Flat R M ↔
+    Nonempty (Limits.PreservesFiniteLimits (tensorRight M)) := by
+  refine ⟨fun _ => ⟨inferInstance⟩, ?_⟩
+  rintro ⟨_⟩
+  rw [iff_rTensor_preserves_injective_linearMap]
+  intro N N' _ _ _ _ L hL
+  haveI : Mono (ofHom L) := by rwa [ModuleCat.mono_iff_injective]
+  have inj : Mono <| (tensorRight M).map (ofHom L) :=
+    preserves_mono_of_preservesLimit (tensorRight M) (ofHom L)
+  rwa [ModuleCat.mono_iff_injective] at inj
+
+namespace tor_related_constructions
+
+open Classical
+open ShortComplex HomologicalComplex
+
+variable (M) in
+/-- For any `R`-module `M`, we associated with a free module `⨁ (_ : M), R` -/
+private def _root_.ModuleCat.free : ModuleCat.{u} R := of R <| ⨁ (_ : M), R
+
+instance : Free R M.free := Module.Free.dfinsupp _ _
+
+instance [Module.Free R M] : Projective R M :=
+  Module.Projective.of_free
+
+instance [Module.Free R M] : CategoryTheory.Projective M where
+  factors {E X} f e _ :=
+    projective_lifting_property e f (by rwa [← ModuleCat.epi_iff_surjective])
+
+/-- `⨁ (m : M), R ⟶ M` defined by `(_ · m)` at `m`-th coordinate -/
+private def _root_.ModuleCat.fromFree : M.free ⟶ M :=
+DirectSum.toModule _ _ _ fun i => LinearMap.lsmul R M |>.flip i
+
+lemma surjective_fromFree : Surjective M.fromFree := by
+  intro x
+  use DirectSum.of _ x 1
+  erw [toModule_lof, LinearMap.lsmul_apply, one_smul]
+
+instance : Epi M.fromFree := by
+  rw [ModuleCat.epi_iff_surjective]; apply surjective_fromFree
+
+variable (R) in
+structure ARROW :=
+  prev : ModuleCat.{u} R
+  next : ModuleCat.{u} R
+  free_prev : Free R prev
+  free_next : Free R next
+  hom : next ⟶ prev
+
+attribute [instance] ARROW.free_prev ARROW.free_next
+
+open Limits
+def complexAux :
+    ℕ → ARROW R :=
+  Nat.rec
+    ⟨M.free, kernel M.fromFree |>.free,
+      inferInstance, inferInstance,
+      ModuleCat.fromFree _ ≫ kernel.ι _⟩
+    fun _ P =>
+      ⟨P.next, kernel P.hom |>.free,
+        inferInstance, inferInstance,
+        ModuleCat.fromFree _ ≫ kernel.ι _⟩
+
+
+lemma complexAux_exact (n : ℕ) : Exact (complexAux M (n + 1)).hom (complexAux M n).hom := by
+  change Exact (_ ≫ _) _
+  apply exact_epi_comp (hgh := exact_kernel_ι)
+
+def complex : ChainComplex (ModuleCat.{u} R) ℕ where
+  X n := complexAux M n |>.prev
+  d i j :=
+    if h : j + 1 = i
+    then eqToHom (by subst (h : j.succ = i); simp [complexAux]) ≫ (complexAux M _).hom
+    else 0
+  d_comp_d' := by rintro _ _ i ⟨rfl⟩ ⟨rfl⟩; simp [complexAux]
+
+instance (n : ℕ) : Free R <| (complex M).X n := by
+  dsimp [complex]
+  infer_instance
+
+instance (n : ℕ) : HomologicalComplex.HasHomology (complex M) n := by
+  dsimp [complex]
+  infer_instance
+
+lemma complex_exact (n : ℕ) : Exact ((complex M).d (n + 2) (n + 1)) ((complex M).d (n + 1) n) := by
+  simpa [complex] using complexAux_exact M n
+
+abbrev π : complex M ⟶ (ChainComplex.single₀ _).obj M :=
+  (ChainComplex.toSingle₀Equiv _ _).symm ⟨M.fromFree, by simp [complex, complexAux]⟩
+
+instance : QuasiIsoAt (π M) 0 := by
+  rw [ChainComplex.quasiIsoAt₀_iff, ShortComplex.quasiIso_iff_of_zeros'] <;> try rfl
+  simpa only [complex, complexAux, shortComplexFunctor'_obj_X₁, Nat.rec_add_one, Nat.rec_zero,
+    shortComplexFunctor'_obj_X₂, ChainComplex.single₀_obj_zero, shortComplexFunctor'_obj_f,
+    zero_add, ↓reduceDite, eqToHom_refl, Category.id_comp, shortComplexFunctor'_map_τ₂,
+    ChainComplex.toSingle₀Equiv_symm_apply_f_zero] using
+    ⟨exact_iff_shortComplex_exact _ |>.mp <| CategoryTheory.exact_epi_comp
+      (hgh := exact_kernel_ι), inferInstance⟩
+
+open scoped ZeroObject in
+instance (n : ℕ) : QuasiIsoAt (π M) (n + 1) := by
+  rw [quasiIsoAt_iff_isIso_homologyMap]
+  have z1 : IsZero <| ((ChainComplex.single₀ (ModuleCat R)).obj M).homology (n + 1) := by
+    apply isZero_single_obj_homology
+    simp
+
+  have z2 : IsZero <| HomologicalComplex.homology (complex M) (n + 1) := by
+    suffices e : HomologicalComplex.homology (complex M) (n + 1) ≅ 0 from
+      e.isZero_iff.mpr (isZero_zero _)
+
+    refine exact_iff_homology_iso_zero _ |>.mp ?_ |>.some
+    rw [← exact_iff_shortComplex_exact]
+    simp only [complex, shortComplexFunctor_obj_X₁, shortComplexFunctor_obj_X₂,
+      shortComplexFunctor_obj_X₃, shortComplexFunctor_obj_f, ChainComplex.prev, ↓reduceDite,
+      shortComplexFunctor_obj_g, ChainComplex.next_nat_succ, exact_iso_comp]
+    set g := _; change Exact _ g
+    suffices g = (complexAux M n).hom ≫ eqToHom (by simp [complex]) by
+      rw [this, exact_comp_iso]
+      apply complexAux_exact M n
+    simp [g]
+
+
+  suffices HomologicalComplex.homologyMap (π M) (n + 1) = (z2.iso z1).hom by
+    rw [this]
+    exact IsIso.of_iso _
+  exact IsZero.eq_of_tgt z1 _ _
+
+instance : _root_.QuasiIso (π M) where
+  quasiIsoAt n := by
+    cases n <;> infer_instance
+
+def _root_.ModuleCat.freeResolution : ProjectiveResolution M where
+  complex := complex M
+  π := π M
+
+instance : HasProjectiveResolutions (ModuleCat.{u} R) where
+  out M := ⟨⟨M.freeResolution⟩⟩
+
+
+def _root_.Ideal.shortComplex (I : Ideal R) : ShortComplex (ModuleCat.{u} R) where
+  X₁ := of R I
+  X₂ := of R R
+  X₃ := of R (R ⧸ I)
+  f := ofHom I.subtype
+  g := ofHom <| Algebra.linearMap _ _
+  zero := by
+    ext x
+    simp only [ModuleCat.coe_comp, Function.comp_apply, ofHom_apply, Submodule.coeSubtype,
+      Algebra.linearMap_apply, Ideal.Quotient.algebraMap_eq]
+    change Ideal.Quotient.mk I x.1 = 0
+    rw [Ideal.Quotient.eq_zero_iff_mem]
+    exact x.2
+
+
+end tor_related_constructions
+
+open scoped ZeroObject
+
+open tor_related_constructions in
+def higherTorIsoZero [flat : Flat R M] (n : ℕ) (N : ModuleCat.{u} R) :
+    ((Tor' _ (n + 1)).obj N).obj M ≅ 0 := by
+  dsimp [Tor', Functor.flip]
+  refine' N.freeResolution.isoLeftDerivedObj (tensorRight M) (n + 1) ≪≫ ?_
+  refine Limits.IsZero.isoZero ?_
+  dsimp only [HomologicalComplex.homologyFunctor_obj]
+  rw [← HomologicalComplex.exactAt_iff_isZero_homology]
+  dsimp [HomologicalComplex.ExactAt]
+  rw [← exact_iff_shortComplex_exact]
+  dsimp
+  rw [ModuleCat.exact_iff, Eq.comm, ← Function.LinearMap.exact_iff]
+  rw [iff_rTensor_exact] at flat
+  refine flat _ _ ?_
+  rw [Function.LinearMap.exact_iff, Eq.comm, ← ModuleCat.exact_iff]
+  simp [ModuleCat.freeResolution]
+  convert complex_exact N n using 1
+  · congr! 1; simp only [ChainComplex.prev]; rfl
+  · congr! 1; simp
+  · congr! 1; simp only [ChainComplex.prev]; rfl
+  · congr! 1; simp
+
+def firstTorIsoZero [Flat R M] (N : ModuleCat.{u} R) :
+    ((Tor' _ 1).obj N).obj M ≅ 0 :=
+  higherTorIsoZero M 0 N
+
+def firstTorOfIdealIsoZero [Flat R M] (I : Ideal R) :
+    ((Tor' _ 1).obj (ModuleCat.of R I)).obj M ≅ 0 :=
+  firstTorIsoZero M (ModuleCat.of R I)
+
+end categorical_characterisations
 
 end Flat
 
