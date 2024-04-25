@@ -907,6 +907,10 @@ theorem isOpenMap_sum {f : X ⊕ Y → Z} :
     IsOpenMap f ↔ (IsOpenMap fun a => f (inl a)) ∧ IsOpenMap fun b => f (inr b) := by
   simp only [isOpenMap_iff_nhds_le, Sum.forall, nhds_inl, nhds_inr, Filter.map_map, comp]
 
+theorem IsOpenMap.sum_map {f : X → Y} {g : Z → W} (hf : IsOpenMap f) (hg : IsOpenMap g) :
+    IsOpenMap (Sum.map f g) := by
+  exact isOpenMap_sum.2 ⟨isOpenMap_inl.comp hf,isOpenMap_inr.comp hg⟩
+
 @[simp]
 theorem isOpenMap_sum_elim {f : X → Z} {g : Y → Z} :
     IsOpenMap (Sum.elim f g) ↔ IsOpenMap f ∧ IsOpenMap g := by
@@ -1383,10 +1387,9 @@ theorem inducing_iInf_to_pi {X : Type*} (f : ∀ i, X → π i) :
     @Inducing X (∀ i, π i) (⨅ i, induced (f i) inferInstance) _ fun x i => f i x :=
   letI := ⨅ i, induced (f i) inferInstance; ⟨(induced_to_pi _).symm⟩
 
-variable [Finite ι] [∀ i, DiscreteTopology (π i)]
-
 /-- A finite product of discrete spaces is discrete. -/
-instance Pi.discreteTopology : DiscreteTopology (∀ i, π i) :=
+instance Pi.discreteTopology [Finite ι] [∀ i, DiscreteTopology (π i)] :
+    DiscreteTopology (∀ i, π i) :=
   singletons_open_iff_discrete.mp fun x => by
     rw [← univ_pi_singleton]
     exact isOpen_set_pi finite_univ fun i _ => (isOpen_discrete {x i})
