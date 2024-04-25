@@ -167,7 +167,6 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
   suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
-    change (C * E * (star C)) * (C * E * (star C)) = A
     simpa only [← mul_assoc] using this
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
