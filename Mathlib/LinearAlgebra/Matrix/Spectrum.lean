@@ -50,36 +50,27 @@ noncomputable def eigenvectorBasis : OrthonormalBasis n 𝕜 (EuclideanSpace �
     (Fintype.equivOfCardEq (Fintype.card_fin _))
 #align matrix.is_hermitian.eigenvector_basis Matrix.IsHermitian.eigenvectorBasis
 
-variable (m: Type*) [Fintype m]
-@[simp]
-theorem toEuclideanLin_apply (M : Matrix m n 𝕜) (v : EuclideanSpace 𝕜 n) :
-    toEuclideanLin M v =
-    (WithLp.equiv 2 (m → 𝕜)).symm (M *ᵥ (WithLp.equiv 2 (n → 𝕜)) v) := rfl
-
 lemma mulVec_eigenvectorBasis (j : n) :
     A *ᵥ ⇑(hA.eigenvectorBasis j) = (hA.eigenvalues j) • ⇑(hA.eigenvectorBasis j) := by
-    simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toEuclideanLin_apply,
+  simpa only [eigenvectorBasis, OrthonormalBasis.reindex_apply, toEuclideanLin_apply,
     RCLike.real_smul_eq_coe_smul (K := 𝕜)] using
-    congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
-     finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
+      congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
+        finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
 theorem eigenvalues_eq (i : n) :
     (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
     (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
-    simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
-    inner_self_eq_norm_sq_to_K, RCLike.smul_re,
-    (OrthonormalBasis.orthonormal (hA.eigenvectorBasis)).1 i, mul_one, algebraMap.coe_one, one_pow,
-    RCLike.one_re]
+  simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
+    inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
+    mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 
 /--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     Matrix.unitaryGroup n 𝕜 :=
-    ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
-    OrthonormalBasis.toMatrix_orthonormalBasis_mem_unitary
-    (EuclideanSpace.basisFun n 𝕜) (eigenvectorBasis hA)⟩
+  ⟨(EuclideanSpace.basisFun n 𝕜).toBasis.toMatrix (hA.eigenvectorBasis).toBasis,
+    (EuclideanSpace.basisFun n 𝕜).toMatrix_orthonormalBasis_mem_unitary (eigenvectorBasis hA)⟩
 
-/--The coercion from the subtype eigenvectorUnitary to the underlying matrix-/
 lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
     {A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     eigenvectorUnitary hA =
@@ -110,12 +101,11 @@ theorem star_mul_self_mul_eq_diagonal :
 apply Matrix.toEuclideanLin.injective
 apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
 intro i
-rw [toEuclideanLin_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
-  EuclideanSpace.basisFun_apply, WithLp.equiv_single, ← mulVec_mulVec,
-  eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
-  Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
-  RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul, WithLp.equiv_symm_single,
-  Function.comp_apply, mul_one, WithLp.equiv_symm_single]
+simp only [toEuclideanLin_apply, OrthonormalBasis.coe_toBasis, EuclideanSpace.basisFun_apply,
+ WithLp.equiv_single, ← mulVec_mulVec, eigenvectorUnitary_mulVec, ← mulVec_mulVec,
+ mulVec_eigenvectorBasis, Matrix.diagonal_mulVec_single, mulVec_smul,
+ star_eigenvectorUnitary_mulVec, RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul,
+ WithLp.equiv_symm_single, Function.comp_apply, mul_one, WithLp.equiv_symm_single]
 apply PiLp.ext
 intro j
 simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
