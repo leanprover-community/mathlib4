@@ -104,37 +104,31 @@ diagonalized by a change of basis.
 
 For the spectral theorem on linear maps, see
 `LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
-theorem spectral_theorem1 :
+theorem star_mul_self_mul_eq_diagonal :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
-     = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
+      = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
 apply Matrix.toEuclideanLin.injective
 apply Basis.ext (EuclideanSpace.basisFun n 𝕜).toBasis
 intro i
 rw [toEuclideanLin_apply, toEuclideanLin_apply, OrthonormalBasis.coe_toBasis,
-    EuclideanSpace.basisFun_apply, WithLp.equiv_single, ← mulVec_mulVec,
-    eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
-    Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
-    RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul, WithLp.equiv_symm_single,
-    Function.comp_apply, mul_one, WithLp.equiv_symm_single]
+  EuclideanSpace.basisFun_apply, WithLp.equiv_single, ← mulVec_mulVec,
+  eigenvectorUnitary_mulVec, ← mulVec_mulVec, mulVec_eigenvectorBasis,
+  Matrix.diagonal_mulVec_single, mulVec_smul, star_eigenvectorUnitary_mulVec,
+  RCLike.real_smul_eq_coe_smul (K := 𝕜), WithLp.equiv_symm_smul, WithLp.equiv_symm_single,
+  Function.comp_apply, mul_one, WithLp.equiv_symm_single]
 apply PiLp.ext
 intro j
 simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
 
-/-- *spectral theorem* (Alternate form for convenience) A hermitian matrix can be can be
+/-- *spectral theorem* A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector unitaries. This alternate form
 allows direct rewriting of A since: <| A = V D V⁻¹$ -/
-theorem spectral_theorem2 :
+theorem spectral_theorem :
     A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
-        * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
-    rw [← spectral_theorem1, mul_assoc, mul_assoc,
-      (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
-      ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
-
-theorem spectral_theorem3 :
-    (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A =
-    diagonal (RCLike.ofReal ∘ hA.eigenvalues) * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
-  nth_rw 2 [hA.spectral_theorem2]
-  simp [← mul_assoc]
+      * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
+  rw [← star_mul_self_mul_eq_diagonal, mul_assoc, mul_assoc,
+    (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
+    ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
 lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
@@ -142,7 +136,7 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
   classical
   have : hA.eigenvalues ≠ 0 := by
     contrapose! h_ne
-    have := hA.spectral_theorem2
+    have := hA.spectral_theorem
     rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
       diagonal_zero, mul_zero, zero_mul] at this
   obtain ⟨i, hi⟩ := Function.ne_iff.mp this
@@ -150,10 +144,11 @@ lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
-  convert congr_arg det hA.spectral_theorem2
+  convert congr_arg det hA.spectral_theorem
   rw [det_mul_right_comm]
   simp
 
+/--The lemmas `rank_mul_units` and `rank_units_mul` below  are waiting on #12244-/
 @[simp]
 theorem rank_mul_units (A : (Matrix n n 𝕜)ˣ) (B : Matrix n n 𝕜) :
     rank (B * (A : Matrix n n 𝕜)) = rank B := by
@@ -176,7 +171,7 @@ theorem rank_mul_unitary (A : unitaryGroup n 𝕜)(B : Matrix n n 𝕜) :
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
-  conv_lhs => rw [hA.spectral_theorem2, ← unitary.coe_star]
+  conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
   simp [-unitary.coe_star, rank_diagonal]
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
