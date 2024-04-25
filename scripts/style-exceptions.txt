@@ -43,7 +43,7 @@ Mathlib/Data/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2638 lin
 Mathlib/Data/Set/Finite.lean : line 1 : ERR_NUM_LIN : 1900 file contains 1768 lines, try to split it up
 Mathlib/Data/Set/Function.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1858 lines, try to split it up
 Mathlib/Data/Set/Image.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1613 lines, try to split it up
-Mathlib/Data/Set/Intervals/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
+Mathlib/Order/Interval/Set/Basic.lean : line 1 : ERR_NUM_LIN : 2100 file contains 1970 lines, try to split it up
 Mathlib/Data/Set/Lattice.lean : line 1 : ERR_NUM_LIN : 2400 file contains 2275 lines, try to split it up
 Mathlib/Data/String/Lemmas.lean : line 10 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Data/UInt.lean : line 13 : ERR_MOD : Module docstring missing, or too late
