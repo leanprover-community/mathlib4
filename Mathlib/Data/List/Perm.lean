@@ -799,14 +799,13 @@ theorem permutations'Aux_get_zero (s : List α) (x : α)
   get_permutations'Aux _ _ _ _
 #align list.permutations'_aux_nth_le_zero List.permutations'Aux_get_zero
 
-set_option linter.deprecated false in
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
   apply insertNth_injective s.length x
   have hl : s.length = t.length := by simpa using congr_arg length h
-  rw [← nthLe_permutations'Aux s x s.length (by simp),
-    ← nthLe_permutations'Aux t x s.length (by simp [hl])]
-  simp [h, hl]
+  rw [← get_permutations'Aux s x s.length (by simp),
+    ← get_permutations'Aux t x s.length (by simp [hl])]
+  simp only [← List.getElem_eq_get, h, hl]
 #align list.injective_permutations'_aux List.injective_permutations'Aux
 
 theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :
