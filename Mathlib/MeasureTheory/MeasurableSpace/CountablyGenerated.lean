@@ -281,9 +281,10 @@ the Cantor Space. -/
 theorem measurableEquiv_nat_bool_of_countablyGenerated [MeasurableSpace α]
     [CountablyGenerated α] [SeparatesPoints α] :
     ∃ s : Set (ℕ → Bool), Nonempty (α ≃ᵐ s) := by
-  use range (mapNatBool α), Equiv.ofInjective _ <|
-    injective_mapNatBool _,
-    Measurable.subtype_mk <| measurable_mapNatBool _
+  refine ⟨range (mapNatBool α),
+    ⟨Equiv.ofInjective _ <| injective_mapNatBool _,
+     Measurable.subtype_mk <| measurable_mapNatBool _,
+     ?_⟩⟩
   simp_rw [← generateFrom_natGeneratingSequence α]
   apply measurable_generateFrom
   rintro _ ⟨n, rfl⟩
