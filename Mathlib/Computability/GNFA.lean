@@ -185,7 +185,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
         simp
         rw [← List.append_assoc]
         refine' ⟨_, _, _, mat, rfl⟩
-        refine' ⟨_, _, matches', _, rfl⟩
+        refine' ⟨_, matches', _, _, rfl⟩
         exact ⟨_, rfl, x_matches⟩
       case some =>
         simp at t'
@@ -195,7 +195,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
         right
         rw [← List.append_assoc]
         refine' ⟨_, _, _, mat, rfl⟩
-        refine' ⟨_, _, matches', _, rfl⟩
+        refine' ⟨_, matches', _, _, rfl⟩
         exact ⟨_, rfl, x_matches⟩
     · intro ih mat
       right
@@ -241,11 +241,11 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       cases mat
       case inl mat => exact trace.start mat
       case inr mat =>
-      rcases mat with ⟨y, z, hy, hz, eq⟩
+      rcases mat with ⟨y, hy, z, hz, eq⟩
       rw [← eq]; clear eq x
       refine' trace.step _ hz rfl
       clear hz z
-      rcases hy with ⟨y, z, hy, hz, eq⟩
+      rcases hy with ⟨y, hy, z, hz, eq⟩
       rw [← eq]; clear eq
       rcases hz with ⟨xs, join, mat⟩
       rw [join]; clear join
@@ -268,11 +268,11 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       case inl mat => exact trace.step ih mat eq
       case inr mat =>
       rw [eq]; clear eq x
-      rcases mat with ⟨w, x, hw, hx, eq⟩
+      rcases mat with ⟨w, hw, x, hx, eq⟩
       rw [← eq]; clear eq z
       rw [← List.append_assoc]
       refine' trace.step _ hx rfl
-      rcases hw with ⟨w, x, hw, hx, eq⟩
+      rcases hw with ⟨w, hw, x, hx, eq⟩
       rw [← eq]; clear eq
       rw [← List.append_assoc]
       rcases hx with ⟨xs, join, mat⟩
@@ -307,7 +307,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       cases mat
       case inl mat => exact accepts.start mat
       case inr mat =>
-      rcases mat with ⟨y, z, y_matches, z_matches, eq⟩
+      rcases mat with ⟨y, y_matches, z, z_matches, eq⟩
       rw [← eq]; clear eq x
       refine' accepts.step _ _ z_matches rfl; clear z_matches z
       rcases y_matches with ⟨y, z, y_matches, z_matches, eq⟩
@@ -340,11 +340,11 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         rw [rip_trace_correct]
         exact t
       case inr mat =>
-      rcases mat with ⟨z, x, z_matches, x_matches, eq⟩
+      rcases mat with ⟨z, z_matches, x, x_matches, eq⟩
       rw [← eq]; clear eq
       rw [← List.append_assoc]
       refine' accepts.step _ _ x_matches rfl; clear x_matches x
-      rcases z_matches with ⟨z, x, z_matches, x_matches, eq⟩
+      rcases z_matches with ⟨z, z_matches, x, x_matches, eq⟩
       rw [← eq]; clear eq
       rw [← List.append_assoc]
       rcases x_matches with ⟨xs, join, x_matches⟩
@@ -383,7 +383,8 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         exact accepts.step _ t (Or.inl mat) rfl
       case inr h =>
       rcases h with ⟨eq, h⟩
-      rw [eq] at *; clear eq
+      -- Porting note: rw[eq] at * didn't catch every occurence of q
+      subst eq
       rcases h with ⟨y, w, xs, p, t, w_matches, x_matches, eq⟩
       rw [eq]; clear eq
       cases p
@@ -393,7 +394,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         refine' accepts.start _
         right
         refine' ⟨_, _, _, mat, rfl⟩
-        refine' ⟨_, _, w_matches, _, rfl⟩
+        refine' ⟨_, w_matches, _, _, rfl⟩
         exact ⟨xs, rfl, x_matches⟩
       case some =>
         rw [Option.map_some', Option.getD_some] at t
@@ -402,7 +403,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         right
         rw [← List.append_assoc]
         refine' ⟨_, _, _, mat, rfl⟩
-        refine' ⟨_, _, w_matches, _, rfl⟩
+        refine' ⟨_, w_matches, _, _, rfl⟩
         exact ⟨xs, rfl, x_matches⟩
 
 /-- Maps a GNFA's states across an equivalence.
