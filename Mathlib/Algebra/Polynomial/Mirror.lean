@@ -63,14 +63,6 @@ theorem mirror_X : X.mirror = (X : R[X]) :=
 set_option linter.uppercaseLean3 false in
 #align polynomial.mirror_X Polynomial.mirror_X
 
-theorem mirror_degree : p.mirror.degree = p.degree := by
-  by_cases hp : p = 0
-  · rw [hp, mirror_zero]
-  nontriviality R
-  rw [mirror, degree_mul', reverse_degree, degree_X_pow,
-    tsub_add_cancel_of_le p.natTrailingDegree_le_degree]
-  rwa [leadingCoeff_X_pow, mul_one, reverse_leadingCoeff, Ne, trailingCoeff_eq_zero]
-
 theorem mirror_natDegree : p.mirror.natDegree = p.natDegree := by
   by_cases hp : p = 0
   · rw [hp, mirror_zero]
