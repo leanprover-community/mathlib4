@@ -137,9 +137,9 @@ protected theorem mem_uniformity_dist (s : Set (Completion α × Completion α))
           Completion.dist_comm, zero_sub, abs_neg, r] at I
       exact lt_of_le_of_lt (le_abs_self _) I
     show t1 ⊆ s
-    · rintro ⟨a, b⟩ hp
-      have : dist a b < ε := A a b hp
-      exact hε this
+    rintro ⟨a, b⟩ hp
+    have : dist a b < ε := A a b hp
+    exact hε this
 #align uniform_space.completion.mem_uniformity_dist UniformSpace.Completion.mem_uniformity_dist
 
 /-- Reformulate `Completion.mem_uniformity_dist` in terms that are suitable for the definition
