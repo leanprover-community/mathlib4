@@ -163,22 +163,18 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
-  let C := hA.1.eigenvectorUnitary.1
+  let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary.1
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
-  suffices C * (E * (Cᴴ * C) * E) * Cᴴ = A by
+  suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
-    change (C * E * Cᴴ) * (C * E * Cᴴ) = A
+    change (C * E * (star C)) * (C * E * (star C)) = A
     simpa only [← mul_assoc] using this
-  have : Cᴴ * C = 1 := by
-    simp only [(hA.1.eigenvectorUnitary.2).1, mul_eq_one_comm]
-    exact (hA.1.eigenvectorUnitary.2).2
-  rw [this, mul_one]
+  rw [(hA.1.eigenvectorUnitary.2).1 , mul_one]
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
-    refine congr_arg _ (funext fun v ↦ ?_) -- why doesn't "congr with v" work?
+    refine congr_arg _ (funext fun v ↦ ?_)
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
-  rw [this]
-  convert hA.1.spectral_theorem2.symm
+  simpa [this] using hA.1.spectral_theorem2.symm
 
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
@@ -263,10 +259,10 @@ lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
   rw [hA.posSemidef_sqrt.1]
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
-    (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A :=
-  hA.spectral_theorem2 ▸
-    (posSemidef_diagonal_iff.mpr
-    (by simpa [RCLike.ofReal_nonneg] using h)).mul_mul_conjTranspose_same _
+    (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
+  rw [hA.spectral_theorem2]
+  refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
+  simpa using h
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
 theorem PosSemidef.dotProduct_mulVec_zero_iff
@@ -345,16 +341,11 @@ lemma eigenvalues_pos [DecidableEq n] {A : Matrix n n 𝕜}
   exact hA.re_dotProduct_pos <| hA.1.eigenvectorBasis.orthonormal.ne_zero i
 
 theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M := by
-  rw [hM.isHermitian.det_eq_prod_eigenvalues]
-  apply Finset.prod_pos
-  intro i _
-  rw [hM.isHermitian.eigenvalues_eq]
-  refine hM.2 _ fun h => ?_
-  have h_det : hM.isHermitian.eigenvectorUnitary.1.det = 0 :=
-    Matrix.det_eq_zero_of_column_eq_zero i fun j => congr_fun h j
-  simpa only [h_det, not_isUnit_zero]
-     using isUnit_det_of_right_inverse ((hM.isHermitian.eigenvectorUnitary.2).2)
-#align matrix.pos_def.det_pos Matrix.PosDef.det_pos
+   rw [hM.isHermitian.det_eq_prod_eigenvalues]
+   apply Finset.prod_pos
+   intro i _
+   exact hM.eigenvalues_pos i
+
 end PosDef
 
 end Matrix
