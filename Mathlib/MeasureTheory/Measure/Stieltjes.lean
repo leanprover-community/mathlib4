@@ -355,7 +355,6 @@ theorem measure_Ioc (a b : ℝ) : f.measure (Ioc a b) = ofReal (f b - f a) := by
   exact f.outer_Ioc a b
 #align stieltjes_function.measure_Ioc StieltjesFunction.measure_Ioc
 
-@[simp]
 theorem measure_singleton (a : ℝ) : f.measure {a} = ofReal (f a - leftLim f a) := by
   obtain ⟨u, u_mono, u_lt_a, u_lim⟩ :
     ∃ u : ℕ → ℝ, StrictMono u ∧ (∀ n : ℕ, u n < a) ∧ Tendsto u atTop (𝓝 a) :=
@@ -387,7 +386,7 @@ theorem measure_Icc (a b : ℝ) : f.measure (Icc a b) = ofReal (f b - leftLim f 
   rcases le_or_lt a b with (hab | hab)
   · have A : Disjoint {a} (Ioc a b) := by simp
     simp [← Icc_union_Ioc_eq_Icc le_rfl hab, -singleton_union, ← ENNReal.ofReal_add,
-      f.mono.leftLim_le, measure_union A measurableSet_Ioc, f.mono hab]
+      f.mono.leftLim_le, measure_union A measurableSet_Ioc, f.mono hab, measure_singleton]
   · simp only [hab, measure_empty, Icc_eq_empty, not_le]
     symm
     simp [ENNReal.ofReal_eq_zero, f.mono.le_leftLim hab]
@@ -418,7 +417,8 @@ theorem measure_Ico (a b : ℝ) : f.measure (Ico a b) = ofReal (leftLim f b - le
     simp [ENNReal.ofReal_eq_zero, f.mono.leftLim hab]
   · have A : Disjoint {a} (Ioo a b) := by simp
     simp [← Icc_union_Ioo_eq_Ico le_rfl hab, -singleton_union, hab.ne, f.mono.leftLim_le,
-      measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add]
+      measure_union A measurableSet_Ioo, f.mono.le_leftLim hab, ← ENNReal.ofReal_add,
+      measure_singleton]
 #align stieltjes_function.measure_Ico StieltjesFunction.measure_Ico
 
 theorem measure_Iic {l : ℝ} (hf : Tendsto f atBot (𝓝 l)) (x : ℝ) :

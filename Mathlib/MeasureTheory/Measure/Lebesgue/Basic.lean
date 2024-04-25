@@ -88,7 +88,8 @@ theorem volume_Ioo {a b : ℝ} : volume (Ioo a b) = ofReal (b - a) := by simp [v
 #align real.volume_Ioo Real.volume_Ioo
 
 @[simp]
-theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val]
+theorem volume_Ioc {a b : ℝ} : volume (Ioc a b) = ofReal (b - a) := by simp [volume_val,
+  StieltjesFunction.measure_singleton]
 #align real.volume_Ioc Real.volume_Ioc
 
 -- @[simp] -- Porting note (#10618): simp can prove this
