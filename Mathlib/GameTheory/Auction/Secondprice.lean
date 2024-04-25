@@ -6,7 +6,7 @@ Author: Wang Haocheng.
 
 import Mathlib.Data.Real.EReal
 import Mathlib.Data.Fintype.Basic
-import Mathlib.Data.Fintype.Latticegit push
+import Mathlib.Data.Fintype.Lattice
 
 /-!
 # Auction Theory
@@ -113,9 +113,9 @@ noncomputable def utility  (i : a.I) : ℝ := if i = winner b then a.v i - secon
 
 
 /-! ### Proofs and Lemmas -/
-
+variable {i: a.I}
 /-- If `i` is the winner, then their utility is their valuation minus the second highest bid. -/
-lemma utility_winner (H: i = winner b) : utility b i = a.v i - secondprice b:= by
+lemma utility_winner  (H: i = winner b) : utility b i = a.v i - secondprice b:= by
   rw [utility]; simp only [ite_true, H]
 
 /-- If `i` is not the winner, then their utility is 0. -/
@@ -212,6 +212,7 @@ lemma utility_nneg (i: a.I) : (b i = a.v i) → utility b i ≥ 0 := by
   rw [maxb]
   simp only [Finset.le_sup'_iff, Finset.mem_univ, true_and]
   use j
+  sorry
 
 /-- Proves that the strategy of bidding one's valuation is a dominant strategy for `i`. -/
 theorem valuation_is_dominant (i : a.I ) : dominant i (a.v i) := by
@@ -281,7 +282,8 @@ theorem first_price_has_no_dominant_strategy (i : a.I) (bi :  ℝ) : ¬ (Dominan
    let b' := fun j => if j = i then (bi-1:ℝ) else bi-2
    use b, b'
    simp only [ne_eq, exists_prop, ite_true, exists_const]
-   simp only [true_and]
+   simp
+   sorry
    constructor
    intro j hj
    simp only [if_false, hj]
