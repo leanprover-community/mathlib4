@@ -238,7 +238,7 @@ theorem ofNat'_zero : Num.ofNat' 0 = 0 := by simp [Num.ofNat']
 #align num.of_nat'_zero Num.ofNat'_zero
 
 theorem ofNat'_bit (b n) : ofNat' (Nat.bit b n) = cond b Num.bit1 Num.bit0 (ofNat' n) :=
-  Nat.binaryRec_eq rfl _ _
+  Nat.binaryRec_eq _ _ (.inl rfl)
 #align num.of_nat'_bit Num.ofNat'_bit
 
 @[simp]

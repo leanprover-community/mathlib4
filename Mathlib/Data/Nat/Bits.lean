@@ -241,6 +241,9 @@ lemma shiftLeft_sub : ∀ (m : Nat) {n k}, k ≤ n → m <<< (n - k) = (m <<< n)
 alias testBit_bit_zero := bit_testBit_zero
 #align nat.test_bit_zero Nat.testBit_zero
 
+@[simp] theorem land_one_eq_mod_two (n : Nat) : n &&& 1 = n % 2 := by
+  simp [Nat.land_comm]
+
 lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 0 => rfl
   | 1 => rfl
@@ -469,28 +472,7 @@ theorem bit_le_bit1_iff : ∀ {b : Bool}, bit b m ≤ bit1 n ↔ m ≤ n
 #align nat.bit_le_bit1_iff Nat.bit_le_bit1_iff
 -/
 
-/--
-The same as `binaryRec_eq`,
-but that one unfortunately requires `f` to be the identity when appending `false` to `0`.
-Here, we allow you to explicitly say that that case is not happening,
-i.e. supplying `n = 0 → b = true`. -/
-theorem binaryRec_eq' {C : ℕ → Sort*} {z : C 0} {f : ∀ b n, C n → C (bit b n)} (b n)
-    (h : f false 0 z = z ∨ (n = 0 → b = true)) :
-    binaryRec z f (bit b n) = f b n (binaryRec z f n) := by
-  rw [binaryRec]
-  split_ifs with h'
-  · rcases bit_eq_zero_iff.mp h' with ⟨rfl, rfl⟩
-    rw [binaryRec_zero]
-    simp only [imp_false, or_false_iff, eq_self_iff_true, not_true] at h
-    exact h.symm
-  · dsimp only []
-    generalize_proofs e
-    revert e
-    rw [bodd_bit, div2_bit]
-    intros
-    rfl
-#align nat.binary_rec_eq' Nat.binaryRec_eq'
-
+#align nat.binary_rec_eq' Nat.binaryRec_eq
 #align nat.binary_rec' Nat.binaryRec'
 #align nat.binary_rec_from_one Nat.binaryRecFromOne
 
@@ -501,7 +483,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq']
+  rw [Nat.bits, binaryRec_eq]
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 
