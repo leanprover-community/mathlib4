@@ -551,6 +551,13 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
+instance instSFiniteAdd [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
+  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
+  ext s hs
+  simp only [Measure.add_apply, sum_apply _ hs]
+  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
+    sum_sFiniteSeq, sum_sFiniteSeq]
+
 instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
     SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))

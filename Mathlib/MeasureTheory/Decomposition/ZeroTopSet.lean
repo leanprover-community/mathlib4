@@ -3,7 +3,7 @@ Copyright (c) 2024 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.MeasureTheory.Decomposition.RadonNikodym
+import Mathlib.MeasureTheory.Decomposition.WithDensityFinite
 
 /-!
 # ZeroTopSet
@@ -33,11 +33,13 @@ import Mathlib.MeasureTheory.Decomposition.RadonNikodym
 Foobars, barfoos
 -/
 
-open scoped ENNReal
+open scoped NNReal ENNReal Topology
+
+open Filter
 
 namespace MeasureTheory
 
-variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {s : Set α}
+variable {α : Type*} {mα : MeasurableSpace α} {μ : Measure α} {s t : Set α}
 
 namespace Measure
 
@@ -52,219 +54,86 @@ theorem iSup_restrict_spanningSets' [SigmaFinite μ] (s : Set α) :
     ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
     restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
 
-lemma absolutelyContinuous_sum_left {ι : Type*} {ν : Measure α} {μs : ι → Measure α}
-    (hμs : ∀ i, μs i ≪ ν) :
-    Measure.sum μs ≪ ν :=
-  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [sum_apply _ hs, fun i ↦ hμs i hs0]
-
-lemma absolutelyContinuous_sum_right {ι : Type*} {ν : Measure α} {μs : ι → Measure α} (i : ι)
-    (hνμ : ν ≪ μs i) :
-    ν ≪ Measure.sum μs := by
-  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
-  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
-  exact hνμ (hs0 i)
-
 instance instSFiniteRestrict (μ : Measure α) [SFinite μ] (s : Set α) :
     SFinite (μ.restrict s) := by
   refine ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance, ?_⟩
   rw [← restrict_sum_of_countable, sum_sFiniteSeq]
 
-/-! ### SFinite measures can be written as withDensity of a finite measure -/
+lemma ae_lt_top_of_sigmaFinite [SigmaFinite μ] {f : α → ℝ≥0∞} (hf : Measurable f)
+    (h2f : ∀ s, MeasurableSet s → μ s < ∞ → ∫⁻ x in s, f x ∂μ ≠ ∞) :
+    ∀ᵐ x ∂μ, f x < ∞ := by
+  refine ae_of_forall_measure_lt_top_ae_restrict _ (fun s hs hμs ↦ ?_)
+  specialize h2f s hs hμs
+  exact ae_lt_top hf h2f
 
-open Classical in
-noncomputable
-def toFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  Measure.sum (fun n ↦ if sFiniteSeq μ n ≠ 0
-    then (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ • sFiniteSeq μ n
-    else 0)
+/-! ### IsSigmaFiniteSet -/
 
-lemma toFinite_apply (μ : Measure α) [SFinite μ] [∀ n, Decidable (sFiniteSeq μ n ≠ 0)]
-    (hs : MeasurableSet s) :
-    toFinite μ s
-      = ∑' n, if sFiniteSeq μ n ≠ 0
-        then (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n s else 0 := by
-  rw [toFinite, sum_apply _ hs]
-  congr with n
-  split_ifs with h <;> congr
+def IsSigmaFiniteSet (s : Set α) (μ : Measure α) : Prop :=
+  ∃ seq : ℕ → Set α, (∀ n, MeasurableSet (seq n) ∧ μ (seq n) < ∞ ∧ seq n ⊆ s)
+    ∧ Monotone seq ∧ ⋃ n, seq n = s
 
-lemma sFiniteSet_absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] (n : ℕ) :
-    sFiniteSeq μ n ≪ toFinite μ := by
-  refine absolutelyContinuous_sum_right n ?_
-  split_ifs with h0
-  · refine absolutelyContinuous_smul ?_
-    simp only [ne_eq, ENNReal.inv_eq_zero]
-    exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
-  · rw [ne_eq, not_not] at h0
-    simp [h0]
+lemma isSigmaFiniteSet_of_measure_ne_top (h : μ s ≠ ∞) (hs : MeasurableSet s) :
+    IsSigmaFiniteSet s μ :=
+  ⟨fun _ ↦ s, fun _ ↦ ⟨hs, h.lt_top, subset_rfl⟩, monotone_const, Set.iUnion_const _⟩
 
-lemma absolutelyContinuous_toFinite (μ : Measure α) [SFinite μ] :
-    μ ≪ toFinite μ := by
-  conv_lhs => rw [← sum_sFiniteSeq μ]
-  exact absolutelyContinuous_sum_left (sFiniteSet_absolutelyContinuous_toFinite μ)
+lemma isSigmaFiniteSet_empty (μ : Measure α) : IsSigmaFiniteSet ∅ μ :=
+  isSigmaFiniteSet_of_measure_ne_top (by simp) MeasurableSet.empty
 
-lemma toFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] :
-    toFinite μ ≪ μ := by
-  conv_rhs => rw [← sum_sFiniteSeq μ]
-  refine AbsolutelyContinuous.mk (fun s hs hs0 ↦ ?_)
-  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
-  classical
-  simp [toFinite_apply _ hs, hs0]
+def IsSigmaFiniteSet.spanningSets (hsσ : IsSigmaFiniteSet s μ) (n : ℕ) : Set α :=
+  hsσ.choose n
 
-lemma toFinite_univ_le_one (μ : Measure α) [SFinite μ] :
-    toFinite μ Set.univ ≤ 1 := by
-  classical
-  rw [toFinite_apply _ MeasurableSet.univ]
-  have h_le_pow : ∀ n, (if sFiniteSeq μ n ≠ 0
-        then (2 ^ (n + 1) * sFiniteSeq μ n Set.univ)⁻¹ * sFiniteSeq μ n Set.univ else 0)
-      ≤ (2 ^ (n + 1))⁻¹ := by
-    intro n
-    split_ifs with h
-    · simp only [ENNReal.le_inv_iff_mul_le]
-      rw [mul_assoc, mul_comm (sFiniteSeq μ n Set.univ), ENNReal.inv_mul_cancel]
-      · simp [h]
-      · exact ENNReal.mul_ne_top (by simp) (measure_ne_top _ _)
-    · exact zero_le'
-  refine (tsum_le_tsum h_le_pow ENNReal.summable ENNReal.summable).trans ?_
-  simp_rw [pow_add, pow_one]
-  calc ∑' i, ((2 : ℝ≥0∞) ^ i * 2)⁻¹
-  _ = ∑' i, (2⁻¹ ^ i) * 2⁻¹ := by
-        congr with i
-        rw [ENNReal.mul_inv (by simp) (by simp), ENNReal.inv_pow]
-  _ = (∑' i, 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_right]
-  _ = (1 - 2⁻¹)⁻¹ * 2⁻¹ := by rw [ENNReal.tsum_geometric]
-  _ ≤ 1 := by simp [ENNReal.one_sub_inv_two, inv_inv, ENNReal.mul_inv_cancel]
+lemma IsSigmaFiniteSet.measurableSet_spanningSets (hsσ : IsSigmaFiniteSet s μ) (n : ℕ) :
+    MeasurableSet (hsσ.spanningSets n) := (hsσ.choose_spec.1 n).1
 
-instance instIsFiniteMeasureToFinite [SFinite μ] : IsFiniteMeasure (toFinite μ) :=
-  ⟨(toFinite_univ_le_one μ).trans_lt ENNReal.one_lt_top⟩
+lemma IsSigmaFiniteSet.measure_spanningSets_lt_top (hsσ : IsSigmaFiniteSet s μ) (n : ℕ) :
+    μ (hsσ.spanningSets n) < ∞ := (hsσ.choose_spec.1 n).2.1
 
-noncomputable
-def densityToFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  ∑' n, (sFiniteSeq μ n).rnDeriv (toFinite μ) a
+lemma IsSigmaFiniteSet.spanningSets_subset (hsσ : IsSigmaFiniteSet s μ) (n : ℕ) :
+    hsσ.spanningSets n ⊆ s := (hsσ.choose_spec.1 n).2.2
 
-lemma densityToFinite_def (μ : Measure α) [SFinite μ] :
-    densityToFinite μ = fun a ↦ ∑' n, (sFiniteSeq μ n).rnDeriv (toFinite μ) a := rfl
+lemma IsSigmaFiniteSet.monotone_spanningSets (hsσ : IsSigmaFiniteSet s μ) :
+    Monotone hsσ.spanningSets := hsσ.choose_spec.2.1
 
-lemma measurable_densityToFinite (μ : Measure α) [SFinite μ] :
-    Measurable (densityToFinite μ) := by
-  rw [densityToFinite_def]
-  exact Measurable.ennreal_tsum (fun n ↦ measurable_rnDeriv _ _)
+lemma IsSigmaFiniteSet.iUnion_spanningSets (hsσ : IsSigmaFiniteSet s μ) :
+    ⋃ n, hsσ.spanningSets n = s := hsσ.choose_spec.2.2
 
-theorem withDensity_densitytoFinite (μ : Measure α) [SFinite μ] :
-    (toFinite μ).withDensity (densityToFinite μ) = μ := by
-  rw [densityToFinite_def]
-  have : ((toFinite μ).withDensity
-        fun a ↦ ∑' n, (sFiniteSeq μ n).rnDeriv (toFinite μ) a)
-      = (toFinite μ).withDensity (∑' n, (sFiniteSeq μ n).rnDeriv (toFinite μ)) := by
-    congr with a
-    rw [ENNReal.tsum_apply]
-  rw [this, withDensity_tsum (fun i ↦ measurable_rnDeriv _ _)]
-  conv_rhs => rw [← sum_sFiniteSeq μ]
-  congr with n
-  rw [withDensity_rnDeriv_eq]
-  exact sFiniteSet_absolutelyContinuous_toFinite μ n
+lemma isSigmaFiniteSet_iff_sigmaFinite_restrict (hs : MeasurableSet s) :
+    IsSigmaFiniteSet s μ ↔ SigmaFinite (μ.restrict s) := by
+  refine ⟨fun h ↦ ?_, fun h ↦ ?_⟩
+  · constructor
+    refine ⟨fun n ↦ sᶜ ∪ h.spanningSets n, by simp, fun n ↦ ?_, ?_⟩
+    · rw [restrict_apply' hs]
+      simp only [Set.union_inter_distrib_right, Set.compl_inter_self, Set.empty_union]
+      refine (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+      exact h.measure_spanningSets_lt_top n
+    · simp only
+      rw [← Set.union_iUnion, h.iUnion_spanningSets, Set.compl_union_self]
+  · refine ⟨fun n ↦ s ∩ spanningSets (μ.restrict s) n, fun n ↦ ⟨?_, ?_, ?_⟩, ?_, ?_⟩
+    · exact hs.inter (measurable_spanningSets _ _)
+    · simp only
+      rw [Set.inter_comm, ← restrict_apply' hs]
+      exact measure_spanningSets_lt_top _ _
+    · exact Set.inter_subset_left _ _
+    · exact fun _ _ hnm ↦ Set.inter_subset_inter subset_rfl (monotone_spanningSets _ hnm)
+    · simp only
+      rw [← Set.inter_iUnion, iUnion_spanningSets, Set.inter_univ]
 
-noncomputable
-def densityToSigmaFinite (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  if densityToFinite μ a = ∞ then densityToFinite μ a else 1
+lemma isSigmaFiniteSet_of_sigmaFinite [SigmaFinite μ] (hs : MeasurableSet s) :
+    IsSigmaFiniteSet s μ := by
+  rw [isSigmaFiniteSet_iff_sigmaFinite_restrict hs]
+  infer_instance
 
-lemma densityToSigmaFinite_def (μ : Measure α) [SFinite μ] :
-    densityToSigmaFinite μ = fun a ↦ if densityToFinite μ a = ∞ then densityToFinite μ a else 1 :=
-  rfl
-
-lemma measurable_densityToSigmaFinite (μ : Measure α) [SFinite μ] :
-    Measurable (densityToSigmaFinite μ) := by
-  rw [densityToSigmaFinite_def]
-  exact Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _))
-    (measurable_densityToFinite μ) measurable_const
-
-lemma densityToSigmaFinite_eq_one_or_top (μ : Measure α) [SFinite μ] (a : α) :
-    densityToSigmaFinite μ a = 1 ∨ densityToSigmaFinite μ a = ∞ := by
-  rw [densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
-
-lemma densityToSigmaFinite_eq_top_iff (μ : Measure α) [SFinite μ] (a : α) :
-    densityToSigmaFinite μ a = ∞ ↔ densityToFinite μ a = ∞ := by
-  rw [densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
-
-lemma densityToSigmaFinite_eq_one_iff (μ : Measure α) [SFinite μ] (a : α) :
-    densityToSigmaFinite μ a = 1 ↔ densityToFinite μ a ≠ ∞ := by
-  rw [densityToSigmaFinite]
-  split_ifs with h <;> simp [h]
-
-noncomputable
-def toSigmaFiniteAuxFun (μ : Measure α) [SFinite μ] (a : α) : ℝ≥0∞ :=
-  if densityToFinite μ a ≠ ∞ then densityToFinite μ a else 1
-
-lemma toSigmaFiniteAuxFun_def (μ : Measure α) [SFinite μ] :
-    toSigmaFiniteAuxFun μ = fun a ↦ if densityToFinite μ a ≠ ∞ then densityToFinite μ a else 1 :=
-  rfl
-
-lemma measurable_toSigmaFiniteAuxFun (μ : Measure α) [SFinite μ] :
-    Measurable (toSigmaFiniteAuxFun μ) := by
-  rw [toSigmaFiniteAuxFun_def]
-  exact Measurable.ite (measurable_densityToFinite μ (measurableSet_singleton _)).compl
-    (measurable_densityToFinite μ) measurable_const
-
-lemma toSigmaFiniteAuxFun_lt_top (μ : Measure α) [SFinite μ] (a : α) :
-    toSigmaFiniteAuxFun μ a < ∞ := by
-  rw [toSigmaFiniteAuxFun]
-  split_ifs with h <;> simp [lt_top_iff_ne_top, h]
-
-lemma toSigmaFiniteAuxFun_ne_top (μ : Measure α) [SFinite μ] (a : α) :
-    toSigmaFiniteAuxFun μ a ≠ ∞ := (toSigmaFiniteAuxFun_lt_top μ a).ne
-
-lemma toSigmaFiniteAuxFun_mul_densityToSigmaFinite (μ : Measure α) [SFinite μ] (a : α) :
-    toSigmaFiniteAuxFun μ a * densityToSigmaFinite μ a = densityToFinite μ a := by
-  rw [toSigmaFiniteAuxFun, densityToSigmaFinite]
-  split_ifs with h1 h2
-  · rw [mul_one]
-  · rw [one_mul]
-  · rw [← ne_eq] at h2
-    exact absurd h2 h1
-
-lemma toSigmaFiniteAuxFun_mul_densityToSigmaFinite' (μ : Measure α) [SFinite μ] :
-    toSigmaFiniteAuxFun μ * densityToSigmaFinite μ = densityToFinite μ := by
-    ext a
-    rw [Pi.mul_apply]
-    exact toSigmaFiniteAuxFun_mul_densityToSigmaFinite μ a
-
-@[pp_dot]
-noncomputable
-def toSigmaFinite (μ : Measure α) [SFinite μ] : Measure α :=
-  (toFinite μ).withDensity (toSigmaFiniteAuxFun μ)
-
-instance instSigmaFiniteToSigmaFinite (μ : Measure α) [SFinite μ] :
-    SigmaFinite μ.toSigmaFinite :=
-  SigmaFinite.withDensity_of_ne_top' (measurable_toSigmaFiniteAuxFun μ).aemeasurable
-    (toSigmaFiniteAuxFun_ne_top μ)
-
-lemma withDensity_densityToSigmaFinite (μ : Measure α) [SFinite μ] :
-    μ.toSigmaFinite.withDensity (densityToSigmaFinite μ) = μ := by
-  rw [toSigmaFinite, ← withDensity_mul]
-  · rw [toSigmaFiniteAuxFun_mul_densityToSigmaFinite', withDensity_densitytoFinite]
-  · exact measurable_toSigmaFiniteAuxFun μ
-  · exact measurable_densityToSigmaFinite μ
-
-lemma absolutelyContinuous_toSigmaFinite (μ : Measure α) [SFinite μ] :
-    μ ≪ μ.toSigmaFinite := by
-  nth_rewrite 1 [← withDensity_densityToSigmaFinite μ]
-  exact withDensity_absolutelyContinuous _ _
-
-lemma toSigmaFinite_absolutelyContinuous (μ : Measure α) [SFinite μ] :
-    μ.toSigmaFinite ≪ μ :=
-  (withDensity_absolutelyContinuous _ _).trans (toFinite_absolutelyContinuous μ)
-
-/-! ### IsZeroTopSet -/
-
-def IsZeroTopSet (s : Set α) (μ : Measure α) : Prop :=
-  ∀ t, MeasurableSet t → t ⊆ s → μ t = 0 ∨ μ t = ∞
-
-lemma isZeroTopSet_of_null (hs_zero : μ s = 0) : IsZeroTopSet s μ :=
-  fun _ _ ht_subset ↦ Or.inl <| measure_mono_null ht_subset hs_zero
-
-lemma measure_isZeroTopSet (hs0 : IsZeroTopSet s μ) (hs : MeasurableSet s) : μ s = 0 ∨ μ s = ⊤ :=
-  hs0 s hs subset_rfl
+lemma IsSigmaFiniteSet.union (hsσ : IsSigmaFiniteSet s μ) (htσ : IsSigmaFiniteSet t μ) :
+    IsSigmaFiniteSet (s ∪ t) μ := by
+  refine ⟨fun n ↦ hsσ.spanningSets n ∪ htσ.spanningSets n, fun n ↦ ⟨?_, ?_, ?_⟩, ?_, ?_⟩
+  · exact (hsσ.measurableSet_spanningSets n).union (htσ.measurableSet_spanningSets n)
+  · exact measure_union_lt_top (hsσ.measure_spanningSets_lt_top n)
+      (htσ.measure_spanningSets_lt_top n)
+  · exact Set.union_subset_union (hsσ.spanningSets_subset n) (htσ.spanningSets_subset n)
+  · intro n m hnm
+    exact Set.union_subset_union (hsσ.monotone_spanningSets hnm) (htσ.monotone_spanningSets hnm)
+  · simp only
+    rw [Set.iUnion_union_distrib, hsσ.iUnion_spanningSets, htσ.iUnion_spanningSets]
 
 lemma measure_eq_iSup_measure_subset [SigmaFinite μ] (hs : MeasurableSet s) :
     μ s = ⨆ (t : Set α) (_ht : MeasurableSet t) (_hμt : μ t ≠ ∞) (_hts : t ⊆ s), μ t := by
@@ -279,6 +148,177 @@ lemma measure_eq_iSup_measure_subset [SigmaFinite μ] (hs : MeasurableSet s) :
       not_false_eq_true, Set.inter_subset_left, iSup_pos, le_refl]
   · simp only [ne_eq, iSup_le_iff]
     exact fun _ _ _ hts ↦ measure_mono hts
+
+/-! ### Method of exhaustion -/
+
+/-!
+If `μ, ν` are two measures with `ν` finite, then there exists a set `s` such that
+`μ` is sigma-finite on `s`, and for all sets `t ⊆ sᶜ`, either `ν t = 0` or `μ t = ∞`. -/
+
+lemma exists_isSigmaFiniteSet_measure_ge (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
+    ∃ t, MeasurableSet t ∧ IsSigmaFiniteSet t μ
+      ∧ (⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s) - 1/n ≤ ν t := by
+  by_cases hC_lt : 1/n < ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s
+  · have h_lt_top : ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s < ∞ := by
+      refine (?_ : ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s ≤ ν Set.univ).trans_lt
+        (measure_lt_top _ _)
+      refine iSup_le (fun s ↦ ?_)
+      exact iSup_le (fun _ ↦ iSup_le (fun _ ↦ measure_mono (Set.subset_univ s)))
+    obtain ⟨t, ht⟩ := exists_lt_of_lt_ciSup
+      (ENNReal.sub_lt_self h_lt_top.ne (ne_zero_of_lt hC_lt) (by simp) :
+          (⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s) - 1/n
+        < ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s)
+    have ht_meas : MeasurableSet t := by
+      by_contra h_not_mem
+      simp only [h_not_mem] at ht
+      simp at ht
+    have ht_mem : IsSigmaFiniteSet t μ := by
+      by_contra h_not_mem
+      simp only [h_not_mem] at ht
+      simp at ht
+    refine ⟨t, ht_meas, ht_mem, ?_⟩
+    simp only [ht_meas, ht_mem, iSup_true] at ht
+    exact ht.le
+  · refine ⟨∅, MeasurableSet.empty, isSigmaFiniteSet_empty μ, ?_⟩
+    rw [tsub_eq_zero_of_le (not_lt.mp hC_lt)]
+    exact zero_le'
+
+def sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) : Set α :=
+  (exists_isSigmaFiniteSet_measure_ge μ ν n).choose
+
+lemma measurableSet_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
+    MeasurableSet (sigmaFiniteSetGE μ ν n) :=
+  (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.1
+
+lemma isSigmaFiniteSet_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
+    IsSigmaFiniteSet (sigmaFiniteSetGE μ ν n) μ :=
+  (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.2.1
+
+lemma measure_sigmaFiniteSetGE_le (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
+    ν (sigmaFiniteSetGE μ ν n) ≤ ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s := by
+  refine (le_iSup (f := fun s ↦ _) (isSigmaFiniteSet_sigmaFiniteSetGE μ ν n)).trans ?_
+  exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : IsSigmaFiniteSet s μ), ν s) (sigmaFiniteSetGE μ ν n)
+    (measurableSet_sigmaFiniteSetGE μ ν n)
+
+lemma measure_sigmaFiniteSetGE_ge (μ ν : Measure α) [IsFiniteMeasure ν] (n : ℕ) :
+    (⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s) - 1/n
+      ≤ ν (sigmaFiniteSetGE μ ν n) :=
+  (exists_isSigmaFiniteSet_measure_ge μ ν n).choose_spec.2.2
+
+lemma tendsto_measure_sigmaFiniteSetGE (μ ν : Measure α) [IsFiniteMeasure ν] :
+    Tendsto (fun n ↦ ν (sigmaFiniteSetGE μ ν n)) atTop
+      (𝓝 (⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s)) := by
+  refine tendsto_of_tendsto_of_tendsto_of_le_of_le ?_
+    tendsto_const_nhds (measure_sigmaFiniteSetGE_ge μ ν) (measure_sigmaFiniteSetGE_le μ ν)
+  nth_rewrite 2 [← tsub_zero (⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s)]
+  refine ENNReal.Tendsto.sub tendsto_const_nhds ?_ (Or.inr ENNReal.zero_ne_top)
+  simp only [one_div]
+  exact ENNReal.tendsto_inv_nat_nhds_zero
+
+def sigmaFiniteSetWRT (μ ν : Measure α) [IsFiniteMeasure ν] : Set α := ⋃ n, sigmaFiniteSetGE μ ν n
+
+lemma measurableSet_sigmaFiniteSetWRT (μ ν : Measure α) [IsFiniteMeasure ν] :
+    MeasurableSet (sigmaFiniteSetWRT μ ν) :=
+  MeasurableSet.iUnion (measurableSet_sigmaFiniteSetGE _ _)
+
+lemma isSigmaFiniteSet_sigmaFiniteSetWRT (μ ν : Measure α) [IsFiniteMeasure ν] :
+    IsSigmaFiniteSet (sigmaFiniteSetWRT μ ν) μ := by
+  let f : ℕ × ℕ → Set α := fun p : ℕ × ℕ ↦ (sigmaFiniteSetWRT μ ν)ᶜ
+    ∪ (isSigmaFiniteSet_sigmaFiniteSetGE μ ν p.1).spanningSets p.2
+  suffices (μ.restrict (sigmaFiniteSetWRT μ ν)).FiniteSpanningSetsIn (Set.range f) by
+    rw [isSigmaFiniteSet_iff_sigmaFinite_restrict (measurableSet_sigmaFiniteSetWRT _ _)]
+    exact this.sigmaFinite
+  let e : ℕ ≃ ℕ × ℕ := Nat.pairEquiv.symm
+  refine ⟨fun n ↦ f (e n), fun _ ↦ by simp, fun n ↦ ?_, ?_⟩
+  · simp only [Nat.pairEquiv_symm_apply, gt_iff_lt, measure_union_lt_top_iff, f, e]
+    rw [restrict_apply' (measurableSet_sigmaFiniteSetWRT _ _), Set.compl_inter_self,
+      restrict_apply' (measurableSet_sigmaFiniteSetWRT _ _)]
+    simp only [OuterMeasure.empty', ENNReal.zero_lt_top, true_and]
+    refine (measure_mono (Set.inter_subset_left _ _)).trans_lt ?_
+    exact (isSigmaFiniteSet_sigmaFiniteSetGE _ _ _).measure_spanningSets_lt_top _
+  · simp only [Nat.pairEquiv_symm_apply, f, e]
+    rw [← Set.union_iUnion]
+    suffices ⋃ n, (isSigmaFiniteSet_sigmaFiniteSetGE μ ν (Nat.unpair n).1).spanningSets
+        (Nat.unpair n).2 = sigmaFiniteSetWRT μ ν by
+      rw [this, Set.compl_union_self]
+    calc ⋃ n, (isSigmaFiniteSet_sigmaFiniteSetGE μ ν (Nat.unpair n).1).spanningSets (Nat.unpair n).2
+      = ⋃ n, ⋃ m, (isSigmaFiniteSet_sigmaFiniteSetGE μ ν n).spanningSets m :=
+          Set.iUnion_unpair (fun n m ↦ (isSigmaFiniteSet_sigmaFiniteSetGE μ ν n).spanningSets m)
+    _ = ⋃ n, sigmaFiniteSetGE μ ν n := by
+        refine Set.iUnion_congr (fun n ↦ ?_)
+        exact (isSigmaFiniteSet_sigmaFiniteSetGE μ ν n).iUnion_spanningSets
+    _ = sigmaFiniteSetWRT μ ν := rfl
+
+lemma measure_sigmaFiniteSetWRT (μ ν : Measure α) [IsFiniteMeasure ν] :
+    ν (sigmaFiniteSetWRT μ ν) = ⨆ (s) (_ : MeasurableSet s) (_ : IsSigmaFiniteSet s μ), ν s := by
+  rw [sigmaFiniteSetWRT]
+  apply le_antisymm
+  · refine (le_iSup (f := fun s ↦ _) (isSigmaFiniteSet_sigmaFiniteSetWRT μ ν)).trans ?_
+    exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : IsSigmaFiniteSet s μ), ν s) (sigmaFiniteSetWRT μ ν)
+      (measurableSet_sigmaFiniteSetWRT μ ν)
+  · exact le_of_tendsto' (tendsto_measure_sigmaFiniteSetGE μ ν)
+      (fun _ ↦ measure_mono (Set.subset_iUnion _ _))
+
+lemma measure_eq_top_of_subset_compl_sigmaFiniteSetWRT {ν : Measure α} [IsFiniteMeasure ν]
+    (hs : MeasurableSet s) (hs_subset_compl : s ⊆ (sigmaFiniteSetWRT μ ν)ᶜ) (hμs : ν s ≠ 0) :
+    μ s = ∞ := by
+  suffices ¬ IsSigmaFiniteSet s μ by
+    by_contra h
+    exact this (isSigmaFiniteSet_of_measure_ne_top h hs)
+  intro hsσ
+  have h_lt : ν (sigmaFiniteSetWRT μ ν) < ν (sigmaFiniteSetWRT μ ν ∪ s) := by
+    rw [measure_union _ hs]
+    · exact ENNReal.lt_add_right (measure_ne_top _ _) hμs
+    · exact disjoint_compl_right.mono_right hs_subset_compl
+  have h_le : ν (sigmaFiniteSetWRT μ ν ∪ s) ≤ ν (sigmaFiniteSetWRT μ ν) := by
+    conv_rhs => rw [measure_sigmaFiniteSetWRT]
+    refine (le_iSup (f := fun s ↦ _) ((isSigmaFiniteSet_sigmaFiniteSetWRT μ ν).union hsσ)).trans ?_
+    exact le_iSup₂ (f := fun s _ ↦ ⨆ (_ : IsSigmaFiniteSet _ μ), ν s) (sigmaFiniteSetWRT μ ν ∪ s)
+      ((measurableSet_sigmaFiniteSetWRT μ ν).union hs)
+  exact h_lt.not_le h_le
+
+lemma sFinite_of_absolutelyContinuous_aux {ν : Measure α} [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) (h : ∀ s, MeasurableSet s → ν s ≠ 0 → μ s = ∞) :
+    SFinite μ := by
+  let f : α → ℝ≥0∞ := fun _ ↦ ∞
+  have hf : Measurable f := measurable_const
+  suffices μ = ν.withDensity f by rw [this]; exact sFinite_withDensity' _ hf
+  ext s hs
+  simp only [withDensity_const, Measure.smul_apply, smul_eq_mul, f]
+  by_cases hνs : ν s = 0
+  · simp [hνs, hμν hνs]
+  · simp [h s hs hνs, hνs]
+
+lemma sFinite_of_absolutelyContinuous_of_isFiniteMeasure {ν : Measure α} [IsFiniteMeasure ν]
+    (hμν : μ ≪ ν) :
+    SFinite μ := by
+  let s := sigmaFiniteSetWRT μ ν
+  have hs : MeasurableSet s := measurableSet_sigmaFiniteSetWRT μ ν
+  rw [← restrict_add_restrict_compl (μ := μ) hs]
+  have : SigmaFinite (μ.restrict s) := by
+    rw [← isSigmaFiniteSet_iff_sigmaFinite_restrict hs]
+    exact isSigmaFiniteSet_sigmaFiniteSetWRT _ _
+  have : SFinite (μ.restrict sᶜ) := by
+    refine sFinite_of_absolutelyContinuous_aux (hμν.restrict sᶜ) (fun t ht hνt ↦ ?_)
+    rw [restrict_apply ht] at hνt ⊢
+    refine measure_eq_top_of_subset_compl_sigmaFiniteSetWRT (ht.inter hs.compl) ?_ hνt
+    exact Set.inter_subset_right _ _
+  infer_instance
+
+lemma sFinite_of_absolutelyContinuous {ν : Measure α} [SFinite ν] (hμν : μ ≪ ν) :
+    SFinite μ :=
+  sFinite_of_absolutelyContinuous_of_isFiniteMeasure (hμν.trans (absolutelyContinuous_toFinite ν))
+
+/-! ### IsZeroTopSet -/
+
+def IsZeroTopSet (s : Set α) (μ : Measure α) : Prop :=
+  ∀ t, MeasurableSet t → t ⊆ s → μ t = 0 ∨ μ t = ∞
+
+lemma isZeroTopSet_of_null (hs_zero : μ s = 0) : IsZeroTopSet s μ :=
+  fun _ _ ht_subset ↦ Or.inl <| measure_mono_null ht_subset hs_zero
+
+lemma measure_isZeroTopSet (hs0 : IsZeroTopSet s μ) (hs : MeasurableSet s) : μ s = 0 ∨ μ s = ⊤ :=
+  hs0 s hs subset_rfl
 
 lemma measure_eq_iSup_measure_subset_toMeasurable [SigmaFinite μ] (s : Set α) :
     μ s = ⨆ (t : Set α) (_ht : MeasurableSet t) (_hμt : μ t ≠ ∞) (_hts : t ⊆ toMeasurable μ s),
