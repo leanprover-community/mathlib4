@@ -635,7 +635,7 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
   have : CauchySeq L0 := by
     rw [Metric.cauchySeq_iff']
     intro ε εpos
-    obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=mul_div_cancel_left₀
+    obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
     refine' ⟨e, fun e' he' => _⟩
     rw [dist_comm, dist_eq_norm]
