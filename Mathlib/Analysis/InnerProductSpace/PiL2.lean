@@ -548,7 +548,6 @@ protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η]
       · rw [Pi.single_eq_of_ne hj, inner_zero_right]
     · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
 
-@[simp]
 theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
