@@ -430,6 +430,10 @@ theorem embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) 
     ((embedding_of_isReal hw) x : ℂ) = (embedding w) x :=
   ComplexEmbedding.IsReal.coe_embedding_apply (isReal_iff.mp hw) x
 
+theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
+    ‖embedding_of_isReal hw x‖ = w x := by
+  rw [← norm_embedding_eq, ← embedding_of_isReal_apply hw, Complex.norm_real]
+
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
@@ -523,7 +527,7 @@ theorem prod_eq_abs_norm (x : K) :
       rw [← (Finset.mem_filter.mp hφ).2]
       rfl
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
-  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
+  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_ratCast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)

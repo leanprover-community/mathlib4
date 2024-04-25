@@ -4,10 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.CategoryTheory.Sites.Limits
-import Mathlib.CategoryTheory.Limits.FunctorCategory
 import Mathlib.CategoryTheory.Limits.FilteredColimitCommutesFiniteLimit
 import Mathlib.CategoryTheory.Adhesive
-import Mathlib.CategoryTheory.Sites.Sheafification
+import Mathlib.CategoryTheory.Sites.ConcreteSheafification
 
 #align_import category_theory.sites.left_exact from "leanprover-community/mathlib"@"59382264386afdbaf1727e617f5fdda511992eb9"
 
@@ -21,8 +20,6 @@ open CategoryTheory Limits Opposite
 
 universe w' w v u
 
--- Porting note: was `C : Type max v u` which made most instances non automatically applicable
--- it seems to me it is better to declare `C : Type u`: it works better, and it is more general
 variable {C : Type u} [Category.{v} C] {J : GrothendieckTopology C}
 variable {D : Type w} [Category.{max v u} D]
 variable [∀ (P : Cᵒᵖ ⥤ D) (X : C) (S : J.Cover X), HasMultiequalizer (S.index P)]
@@ -202,7 +199,7 @@ instance preservesLimitsOfShape_plusFunctor
     rfl
 
 instance preserveFiniteLimits_plusFunctor
-    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.plusFunctor D) := by
   apply preservesFiniteLimitsOfPreservesFiniteLimitsOfSize.{max v u}
   intro K _ _
@@ -216,7 +213,7 @@ instance preservesLimitsOfShape_sheafification
   Limits.compPreservesLimitsOfShape _ _
 
 instance preservesFiniteLimits_sheafification
-    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [ReflectsIsomorphisms (forget D)] :
+    [HasFiniteLimits D] [PreservesFiniteLimits (forget D)] [(forget D).ReflectsIsomorphisms] :
     PreservesFiniteLimits (J.sheafification D) :=
   Limits.compPreservesFiniteLimits _ _
 
@@ -228,7 +225,7 @@ variable [∀ X : C, HasColimitsOfShape (J.Cover X)ᵒᵖ D]
 variable [ConcreteCategory.{max v u} D]
 variable [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)]
 variable [PreservesLimits (forget D)]
-variable [ReflectsIsomorphisms (forget D)]
+variable [(forget D).ReflectsIsomorphisms]
 variable (K : Type w')
 variable [SmallCategory K] [FinCategory K] [HasLimitsOfShape K D]
 
