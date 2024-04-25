@@ -590,7 +590,7 @@ theorem Function.Injective.preimage_pullbackDiagonal {f : X → Y} {g : Z → X}
   ext fun _ ↦ inj.eq_iff
 
 theorem image_toPullbackDiag (f : X → Y) (s : Set X) :
-    toPullbackDiag f '' s = pullbackDiagonal f ∩ Subtype.val ⁻¹' s ×ˢ s := by
+    toPullbackDiag f '' s = pullbackDiagonal f ∩ { x | f _ = f _ } ↓∩ s ×ˢ s := by
   ext x
   constructor
   · rintro ⟨x, hx, rfl⟩

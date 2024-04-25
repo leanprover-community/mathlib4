@@ -40,6 +40,15 @@ variable {α β γ : Type*} {ι ι' : Sort*}
 
 /-! ### Inverse image -/
 
+/--
+Given two sets `A` and `B`, `A ↓∩ B` denotes the intersection of `A` and `B` as a set in `Set A`.
+
+The notation is short for `((↑) ⁻¹' B : Set A)`, while giving hints to the elaborator
+that both `A` and `B` are terms of `Set α` for the same `α`.
+This set is the same as `{x : ↑A | ↑x ∈ B}`.
+-/
+notation3 A:67 " ↓∩ " B:67 => (Subtype.val ⁻¹' (B : type_of% A) : Set (A : Set _))
+
 
 section Preimage
 
@@ -165,7 +174,7 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
 #align set.preimage_preimage Set.preimage_preimage
 
 theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
-    s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t :=
+    s = {x | p x} ↓∩ t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t :=
   ⟨fun s_eq x h => by
     rw [s_eq]
     simp, fun h => ext fun ⟨x, hx⟩ => by simp [h]⟩
@@ -184,7 +193,7 @@ theorem nonempty_of_nonempty_preimage {s : Set β} {f : α → β} (hf : (f ⁻�
 #align set.preimage_singleton_false Set.preimage_singleton_false
 
 theorem preimage_subtype_coe_eq_compl {s u v : Set α} (hsuv : s ⊆ u ∪ v)
-    (H : s ∩ (u ∩ v) = ∅) : ((↑) : s → α) ⁻¹' u = ((↑) ⁻¹' v)ᶜ := by
+    (H : s ∩ (u ∩ v) = ∅) : s ↓∩ u = (s ↓∩ v)ᶜ := by
   ext ⟨x, x_in_s⟩
   constructor
   · intro x_in_u x_in_v
@@ -998,7 +1007,7 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 #align set.range_const Set.range_const
 
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
-    range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
+    range (Subtype.map f h) = { x | q x } ↓∩ (f '' { x | p x }) := by
   ext ⟨x, hx⟩
   rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
   apply Iff.intro
@@ -1387,7 +1396,7 @@ theorem range_coe_subtype {p : α → Prop} : range ((↑) : Subtype p → α) =
 #align subtype.range_coe_subtype Subtype.range_coe_subtype
 
 @[simp]
-theorem coe_preimage_self (s : Set α) : ((↑) : s → α) ⁻¹' s = univ := by
+theorem coe_preimage_self (s : Set α) : s ↓∩ s = univ := by
   rw [← preimage_range, range_coe]
 #align subtype.coe_preimage_self Subtype.coe_preimage_self
 
@@ -1405,37 +1414,37 @@ theorem coe_image_univ (s : Set α) : ((↑) : s → α) '' Set.univ = s :=
 #align subtype.coe_image_univ Subtype.coe_image_univ
 
 @[simp]
-theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s → α) ⁻¹' t) = s ∩ t :=
+theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (s ↓∩ t) = s ∩ t :=
   image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
 #align subtype.image_preimage_coe Subtype.image_preimage_coe
 
-theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' (Subtype.val ⁻¹' t) = s ∩ t :=
+theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' (s ↓∩ t) = s ∩ t :=
   image_preimage_coe s t
 #align subtype.image_preimage_val Subtype.image_preimage_val
 
 theorem preimage_coe_eq_preimage_coe_iff {s t u : Set α} :
-    ((↑) : s → α) ⁻¹' t = ((↑) : s → α) ⁻¹' u ↔ s ∩ t = s ∩ u := by
+    s ↓∩ t = s ↓∩ u ↔ s ∩ t = s ∩ u := by
   rw [← image_preimage_coe, ← image_preimage_coe, coe_injective.image_injective.eq_iff]
 #align subtype.preimage_coe_eq_preimage_coe_iff Subtype.preimage_coe_eq_preimage_coe_iff
 
 theorem preimage_coe_self_inter (s t : Set α) :
-    ((↑) : s → α) ⁻¹' (s ∩ t) = ((↑) : s → α) ⁻¹' t := by
+    s ↓∩ (s ∩ t) = s ↓∩ t := by
   rw [preimage_coe_eq_preimage_coe_iff, ← inter_assoc, inter_self]
 
 -- Porting note:
 -- @[simp] `simp` can prove this
 theorem preimage_coe_inter_self (s t : Set α) :
-    ((↑) : s → α) ⁻¹' (t ∩ s) = ((↑) : s → α) ⁻¹' t := by
+    s ↓∩ (t ∩ s) = s ↓∩ t := by
   rw [inter_comm, preimage_coe_self_inter]
 #align subtype.preimage_coe_inter_self Subtype.preimage_coe_inter_self
 
 theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
-    (Subtype.val : s → α) ⁻¹' t = Subtype.val ⁻¹' u ↔ s ∩ t = s ∩ u :=
+    s ↓∩ t = s ↓∩ u ↔ s ∩ t = s ∩ u :=
   preimage_coe_eq_preimage_coe_iff
 #align subtype.preimage_val_eq_preimage_val_iff Subtype.preimage_val_eq_preimage_val_iff
 
 lemma preimage_val_subset_preimage_val_iff (s t u : Set α) :
-    (Subtype.val ⁻¹' t : Set s) ⊆ Subtype.val ⁻¹' u ↔ s ∩ t ⊆ s ∩ u := by
+    s ↓∩ t ⊆ s ↓∩ u ↔ s ∩ t ⊆ s ∩ u := by
   constructor
   · rw [← image_preimage_coe, ← image_preimage_coe]
     exact image_subset _
@@ -1452,17 +1461,17 @@ theorem forall_set_subtype {t : Set α} (p : Set α → Prop) :
   rw [← forall_subset_range_iff, range_coe]
 
 theorem preimage_coe_nonempty {s t : Set α} :
-    (((↑) : s → α) ⁻¹' t).Nonempty ↔ (s ∩ t).Nonempty := by
+    (s ↓∩ t).Nonempty ↔ (s ∩ t).Nonempty := by
   rw [← image_preimage_coe, image_nonempty]
 #align subtype.preimage_coe_nonempty Subtype.preimage_coe_nonempty
 
-theorem preimage_coe_eq_empty {s t : Set α} : ((↑) : s → α) ⁻¹' t = ∅ ↔ s ∩ t = ∅ := by
+theorem preimage_coe_eq_empty {s t : Set α} : s ↓∩ t = ∅ ↔ s ∩ t = ∅ := by
   simp [← not_nonempty_iff_eq_empty, preimage_coe_nonempty]
 #align subtype.preimage_coe_eq_empty Subtype.preimage_coe_eq_empty
 
 -- Porting note:
 -- @[simp] `simp` can prove this
-theorem preimage_coe_compl (s : Set α) : ((↑) : s → α) ⁻¹' sᶜ = ∅ :=
+theorem preimage_coe_compl (s : Set α) : s ↓∩ sᶜ = ∅ :=
   preimage_coe_eq_empty.2 (inter_compl_self s)
 #align subtype.preimage_coe_compl Subtype.preimage_coe_compl
 
