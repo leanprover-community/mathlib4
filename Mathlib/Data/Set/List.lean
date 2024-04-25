@@ -36,7 +36,7 @@ theorem range_list_map_coe (s : Set α) : range (map ((↑) : s → α)) = { l |
 #align set.range_list_map_coe Set.range_list_map_coe
 
 @[simp]
-theorem range_list_get : (range fun k : Fin l.length => l.get ⟨k, k.2⟩) = { x | x ∈ l } := by
+theorem range_list_get : range l.get = { x | x ∈ l } := by
   ext x
   rw [mem_setOf_eq, mem_iff_get]
   exact ⟨fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩, fun ⟨⟨n, h₁⟩, h₂⟩ => ⟨⟨n, h₁⟩, h₂⟩⟩
