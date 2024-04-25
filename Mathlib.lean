@@ -252,6 +252,7 @@ import Mathlib.Algebra.Homology.Bifunctor
 import Mathlib.Algebra.Homology.BifunctorHomotopy
 import Mathlib.Algebra.Homology.BifunctorShift
 import Mathlib.Algebra.Homology.CategoryWithHomology
+import Mathlib.Algebra.Homology.CochainComplexMinus
 import Mathlib.Algebra.Homology.ComplexExtend
 import Mathlib.Algebra.Homology.ComplexShape
 import Mathlib.Algebra.Homology.ComplexShapeSigns
