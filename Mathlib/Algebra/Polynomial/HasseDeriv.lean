@@ -92,11 +92,12 @@ theorem hasseDeriv_zero : @hasseDeriv R _ 0 = LinearMap.id :=
   LinearMap.ext <| hasseDeriv_zero'
 #align polynomial.hasse_deriv_zero Polynomial.hasseDeriv_zero
 
-theorem hasseDeriv_eq_zero_of_lt_natDegree (p : R[X]) (n : ℕ) (h : p.natDegree < n) :
+toND
+theorem hasseDeriv_eq_zero_of_lt_degree (p : R[X]) (n : ℕ) (h : p.degree < n) :
     hasseDeriv n p = 0 := by
   rw [hasseDeriv_apply, sum_def]
   refine' Finset.sum_eq_zero fun x hx => _
-  simp [Nat.choose_eq_zero_of_lt ((le_natDegree_of_mem_supp _ hx).trans_lt h)]
+  simp [Nat.choose_eq_zero_of_lt (by exact_mod_cast (le_degree_of_mem_supp _ hx).trans_lt h)]
 #align polynomial.hasse_deriv_eq_zero_of_lt_nat_degree Polynomial.hasseDeriv_eq_zero_of_lt_natDegree
 
 theorem hasseDeriv_one' : hasseDeriv 1 f = derivative f := by

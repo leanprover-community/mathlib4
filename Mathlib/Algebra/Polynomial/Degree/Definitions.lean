@@ -100,14 +100,11 @@ theorem Monic.coeff_natDegree {p : R[X]} (hp : p.Monic) : p.coeff p.natDegree = 
   hp
 #align polynomial.monic.coeff_nat_degree Polynomial.Monic.coeff_natDegree
 
+toND
 @[simp]
 theorem degree_zero : degree (0 : R[X]) = ⊥ :=
   rfl
 #align polynomial.degree_zero Polynomial.degree_zero
-
-@[simp]
-theorem natDegree_zero : natDegree (0 : R[X]) = 0 :=
-  rfl
 #align polynomial.nat_degree_zero Polynomial.natDegree_zero
 
 @[simp]
@@ -120,14 +117,11 @@ theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
   ⟨fun h => support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h => h.symm ▸ rfl⟩
 #align polynomial.degree_eq_bot Polynomial.degree_eq_bot
 
+toND
 @[nontriviality]
 theorem degree_of_subsingleton [Subsingleton R] : degree p = ⊥ := by
   rw [Subsingleton.elim p 0, degree_zero]
 #align polynomial.degree_of_subsingleton Polynomial.degree_of_subsingleton
-
-@[nontriviality]
-theorem natDegree_of_subsingleton [Subsingleton R] : natDegree p = 0 := by
-  rw [Subsingleton.elim p 0, natDegree_zero]
 #align polynomial.nat_degree_of_subsingleton Polynomial.natDegree_of_subsingleton
 
 theorem degree_eq_natDegree (hp : p ≠ 0) : degree p = (natDegree p : WithBot ℕ) := by
@@ -185,8 +179,9 @@ theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
     exact h rfl
 #align polynomial.le_nat_degree_of_ne_zero Polynomial.le_natDegree_of_ne_zero
 
-theorem le_natDegree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ natDegree p :=
-  le_natDegree_of_ne_zero ∘ mem_support_iff.mp
+toND
+theorem le_degree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ degree p :=
+  le_degree_of_ne_zero ∘ mem_support_iff.mp
 #align polynomial.le_nat_degree_of_mem_supp Polynomial.le_natDegree_of_mem_supp
 
 toND
@@ -323,19 +318,13 @@ theorem degree_C_mul_X_le (a : R) : degree (C a * X) ≤ 1 := by
   simpa only [pow_one] using degree_C_mul_X_pow_le 1 a
 #align polynomial.degree_C_mul_X_le Polynomial.degree_C_mul_X_le
 
+toND
 @[simp]
 theorem degree_monomial_ite [DecidableEq R] (i : ℕ) (r : R) :
     degree (monomial i r) = if r = 0 then (⊥ : WithBot ℕ) else i := by
   split_ifs with hr
   · simp [hr]
   · rw [← C_mul_X_pow_eq_monomial, degree_C_mul_X_pow i hr]
-
-@[simp]
-theorem natDegree_monomial_ite [DecidableEq R] (i : ℕ) (r : R) :
-    natDegree (monomial i r) = if r = 0 then 0 else i := by
-  split_ifs with hr
-  · simp [hr]
-  · rw [← C_mul_X_pow_eq_monomial, natDegree_C_mul_X_pow i hr]
 #align polynomial.nat_degree_monomial Polynomial.natDegree_monomial
 
 toND
@@ -505,14 +494,11 @@ theorem degree_one : degree (1 : R[X]) = (0 : WithBot ℕ) :=
   degree_C one_ne_zero
 #align polynomial.degree_one Polynomial.degree_one
 
+toND
 @[simp]
 theorem degree_X : degree (X : R[X]) = 1 :=
   degree_monomial _ one_ne_zero
 #align polynomial.degree_X Polynomial.degree_X
-
-@[simp]
-theorem natDegree_X : (X : R[X]).natDegree = 1 :=
-  natDegree_eq_of_degree_eq_some degree_X
 #align polynomial.nat_degree_X Polynomial.natDegree_X
 
 end NonzeroSemiring
@@ -529,15 +515,13 @@ theorem coeff_mul_X_sub_C {p : R[X]} {r : R} {a : ℕ} :
 theorem degree_neg (p : R[X]) : degree (-p) = degree p := by unfold degree; rw [support_neg]
 #align polynomial.degree_neg Polynomial.degree_neg
 
-theorem degree_neg_le_of_le {a : WithBot ℕ} {p : R[X]} (hp : degree p ≤ a) : degree (-p) ≤ a :=
-  p.degree_neg.le.trans hp
-
 @[simp]
 theorem natDegree_neg (p : R[X]) : natDegree (-p) = natDegree p := by simp [natDegree]
 #align polynomial.nat_degree_neg Polynomial.natDegree_neg
 
-theorem natDegree_neg_le_of_le {p : R[X]} (hp : natDegree p ≤ m) : natDegree (-p) ≤ m :=
-  (natDegree_neg p).le.trans hp
+toND
+theorem degree_neg_le_of_le {a : WithBot ℕ} {p : R[X]} (hp : degree p ≤ a) : degree (-p) ≤ a :=
+  p.degree_neg.le.trans hp
 
 @[simp]
 theorem natDegree_intCast (n : ℤ) : natDegree (n : R[X]) = 0 := by
@@ -638,27 +622,33 @@ theorem degree_add_le (p q : R[X]) : degree (p + q) ≤ max (degree p) (degree q
     using AddMonoidAlgebra.sup_support_add_le _ _ _
 #align polynomial.degree_add_le Polynomial.degree_add_le
 
+theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
+  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
+#align polynomial.nat_degree_add_le Polynomial.natDegree_add_le
+
+toND
 theorem degree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : degree p ≤ n) (hq : degree q ≤ n) :
     degree (p + q) ≤ n :=
   (degree_add_le p q).trans <| max_le hp hq
 #align polynomial.degree_add_le_of_degree_le Polynomial.degree_add_le_of_degree_le
 
+--toND
 theorem degree_add_le_of_le {a b : WithBot ℕ} (hp : degree p ≤ a) (hq : degree q ≤ b) :
     degree (p + q) ≤ max a b :=
   (p.degree_add_le q).trans <| max_le_max ‹_› ‹_›
 
-theorem natDegree_add_le (p q : R[X]) : natDegree (p + q) ≤ max (natDegree p) (natDegree q) := by
-  cases' le_max_iff.1 (degree_add_le p q) with h h <;> simp [natDegree_le_natDegree h]
-#align polynomial.nat_degree_add_le Polynomial.natDegree_add_le
+theorem natDegree_add_le_of_le {a b : ℕ} (hp : natDegree p ≤ a) (hq : natDegree q ≤ b) :
+    natDegree (p + q) ≤ max a b :=
+  (p.natDegree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 theorem natDegree_add_le_of_degree_le {p q : R[X]} {n : ℕ} (hp : natDegree p ≤ n)
     (hq : natDegree q ≤ n) : natDegree (p + q) ≤ n :=
   (natDegree_add_le p q).trans <| max_le hp hq
 #align polynomial.nat_degree_add_le_of_degree_le Polynomial.natDegree_add_le_of_degree_le
 
-theorem natDegree_add_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n) :
-    natDegree (p + q) ≤ max m n :=
-  (p.natDegree_add_le q).trans <| max_le_max ‹_› ‹_›
+--theorem natDegree_add_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n) :
+--    natDegree (p + q) ≤ max m n :=
+--  (p.natDegree_add_le q).trans <| max_le_max ‹_› ‹_›
 
 @[simp]
 theorem leadingCoeff_zero : leadingCoeff (0 : R[X]) = 0 :=
@@ -795,15 +785,17 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
     exact le_rfl
 #align polynomial.degree_update_le Polynomial.degree_update_le
 
+toND
 theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
     degree (∑ i in s, f i) ≤ s.sup fun b => degree (f b) :=
-  Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
+  Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl] <;> rfl)
     fun a s has ih =>
     calc
       degree (∑ i in cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
         rw [Finset.sum_cons]; exact degree_add_le _ _
       _ ≤ _ := by rw [sup_cons, sup_eq_max]; exact max_le_max le_rfl ih
 #align polynomial.degree_sum_le Polynomial.degree_sum_le
+#align polynomial.nat_degree_sum_le Polynomial.natDegree_sum_le
 
 theorem degree_mul_le (p q : R[X]) : degree (p * q) ≤ degree p + degree q := by
   simpa only [degree, ← support_toFinsupp, toFinsupp_mul]
@@ -1146,6 +1138,11 @@ theorem degree_le_iff_coeff_zero (f : R[X]) (n : WithBot ℕ) :
   simp only [degree, Finset.max, Finset.sup_le_iff, mem_support_iff, Ne, ← not_le,
     not_imp_comm, Nat.cast_withBot]
 #align polynomial.degree_le_iff_coeff_zero Polynomial.degree_le_iff_coeff_zero
+
+theorem natDegree_le_iff_coeff_zero (f : R[X]) (n : ℕ) :
+    natDegree f ≤ n ↔ ∀ m : ℕ, n < m → coeff f m = 0 := by
+  rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
+  norm_cast
 
 theorem degree_lt_iff_coeff_zero (f : R[X]) (n : ℕ) :
     degree f < n ↔ ∀ m : ℕ, n ≤ m → coeff f m = 0 := by

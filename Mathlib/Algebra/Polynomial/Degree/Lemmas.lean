@@ -61,6 +61,7 @@ theorem natDegree_comp_le : natDegree (p.comp q) ≤ natDegree p * natDegree q :
                     (Nat.zero_le _)
 #align polynomial.nat_degree_comp_le Polynomial.natDegree_comp_le
 
+toND
 theorem degree_pos_of_root {p : R[X]} (hp : p ≠ 0) (h : IsRoot p a) : 0 < degree p :=
   lt_of_not_ge fun hlt => by
     have := eq_C_of_degree_le_zero hlt
@@ -214,7 +215,7 @@ theorem degree_sum_eq_of_disjoint (f : S → R[X]) (s : Finset S)
       · simp [hx0, IH]
       have hy0 : f y ≠ 0 := by
         contrapose! H
-        simpa [H, degree_eq_bot] using hx0
+        simp [H, hx0]
       refine' absurd H (h _ _ fun H => hx _)
       · simp [hx0]
       · simp [hy, hy0]
@@ -267,19 +268,16 @@ theorem natDegree_bit1 (a : R[X]) : (bit1 a).natDegree ≤ a.natDegree :=
 
 variable [Semiring S]
 
-theorem natDegree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
-    (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < natDegree p :=
+toND
+theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
+    (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < degree p :=
   lt_of_not_ge fun hlt => by
-    have A : p = C (p.coeff 0) := eq_C_of_natDegree_le_zero hlt
+    have A : p = C (p.coeff 0) := eq_C_of_degree_le_zero hlt
     rw [A, eval₂_C] at hz
     simp only [inj (p.coeff 0) hz, RingHom.map_zero] at A
     exact hp A
-#align polynomial.nat_degree_pos_of_eval₂_root Polynomial.natDegree_pos_of_eval₂_root
-
-theorem degree_pos_of_eval₂_root {p : R[X]} (hp : p ≠ 0) (f : R →+* S) {z : S}
-    (hz : eval₂ f z p = 0) (inj : ∀ x : R, f x = 0 → x = 0) : 0 < degree p :=
-  natDegree_pos_iff_degree_pos.mp (natDegree_pos_of_eval₂_root hp f hz inj)
 #align polynomial.degree_pos_of_eval₂_root Polynomial.degree_pos_of_eval₂_root
+#align polynomial.nat_degree_pos_of_eval₂_root Polynomial.natDegree_pos_of_eval₂_root
 
 @[simp]
 theorem coe_lt_degree {p : R[X]} {n : ℕ} : (n : WithBot ℕ) < degree p ↔ n < natDegree p := by

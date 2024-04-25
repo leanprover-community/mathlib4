@@ -270,6 +270,15 @@ theorem reverse_zero : reverse (0 : R[X]) = 0 :=
 theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 #align polynomial.reverse_eq_zero Polynomial.reverse_eq_zero
 
+theorem reverse_degree_le (f : R[X]) : f.reverse.degree ≤ f.degree := by
+  by_cases f0 : f = 0
+  · simp [f0]
+  rw [degree_le_iff_coeff_zero]
+  intro n hn
+  rw [← natDegree_lt_iff_degree_lt] at hn
+  rwa [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
+    coeff_eq_zero_of_degree_lt ((natDegree_lt_iff_degree_lt f0).mp hn)]
+
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]
   intro n hn
