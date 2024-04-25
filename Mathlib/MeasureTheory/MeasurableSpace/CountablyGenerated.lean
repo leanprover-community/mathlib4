@@ -166,14 +166,17 @@ theorem SeparatesPoints.mono {m m' : MeasurableSpace α} [hsep : @SeparatesPoint
     @SeparatesPoints _ m' := @SeparatesPoints.mk _ m' fun _ _ hxy ↦
     @SeparatesPoints.separates _ m hsep _ _ fun _ hs ↦ hxy _ (h _ hs)
 
+/-- We say that a measurable space is countably separated if there is a
+countable sequence of measurable sets separating points. -/
 class CountablySeparated (α : Type*) [MeasurableSpace α] : Prop where
   countably_separated : HasCountableSeparatingOn α MeasurableSet univ
 
-instance [MeasurableSpace α] [h : HasCountableSeparatingOn α MeasurableSet univ] :
-    CountablySeparated α := ⟨h⟩
+instance countablySeparated_of_hasCountableSeparatingOn [MeasurableSpace α]
+    [h : HasCountableSeparatingOn α MeasurableSet univ] : CountablySeparated α := ⟨h⟩
 
-instance [MeasurableSpace α] [h : CountablySeparated α] :
-    HasCountableSeparatingOn α MeasurableSet univ := h.countably_separated
+instance hasCountableSeparatingOn_of_countablySeparated [MeasurableSpace α]
+    [h : CountablySeparated α] : HasCountableSeparatingOn α MeasurableSet univ :=
+  h.countably_separated
 
 theorem countablySeparated_def [MeasurableSpace α] :
     CountablySeparated α ↔ HasCountableSeparatingOn α MeasurableSet univ :=
@@ -206,21 +209,19 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
 
-/-
-instance [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
+instance countablySeparated_subtype_of_hasCountableSeparatingOn
+    [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
     HasCountableSeparatingOn _ MeasurableSet s := CountablySeparated.subtype_iff.mp h
 
-instance [MeasurableSpace α] {s : Set α} [h : HasCountableSeparatingOn α MeasurableSet s] :
-    CountablySeparated s := inferInstance
-  -/
+instance hasCountableSeparatingPn_of_countablySeparated_subtype
+    [MeasurableSpace α] {s : Set α} [h : HasCountableSeparatingOn _ MeasurableSet s] :
+    CountablySeparated s := CountablySeparated.subtype_iff.mpr h
 
-instance (priority := 100) [MeasurableSpace α] {s : Set α}
-    [h : CountablyGenerated s] [SeparatesPoints s] :
-    HasCountableSeparatingOn α MeasurableSet s := by
-  suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
-  rcases h.1 with ⟨b, hbc, hb⟩
+instance countablySeparated_of_separatesPoints [MeasurableSpace α]
+    [h : CountablyGenerated α] [SeparatesPoints α] : CountablySeparated α := by
+  rcases h with ⟨b, hbc, hb⟩
   refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, ?_⟩⟩
-  rw [hb] at ‹SeparatesPoints s›
+  rw [hb] at ‹SeparatesPoints _›
   convert separating_of_generateFrom b
   simp
 
@@ -303,14 +304,6 @@ theorem measurableSingletonClass_of_countablySeparated
   exact fmeas $ MeasurableSet.singleton _
 
 end SeparatesPoints
-
-instance [MeasurableSpace α] {s : Set α} [h : CountablyGenerated s] [MeasurableSingletonClass s] :
-    HasCountableSeparatingOn α MeasurableSet s := by
-  suffices HasCountableSeparatingOn s MeasurableSet univ from this.of_subtype fun _ ↦ id
-  rcases h.1 with ⟨b, hbc, hb⟩
-  refine ⟨⟨b, hbc, fun t ht ↦ hb.symm ▸ .basic t ht, fun x _ y _ h ↦ ?_⟩⟩
-  rw [← forall_generateFrom_mem_iff_mem_iff, ← hb] at h
-  simpa using h {y}
 
 section MeasurableMemPartition
 

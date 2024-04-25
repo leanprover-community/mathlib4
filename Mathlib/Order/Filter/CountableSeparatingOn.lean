@@ -126,12 +126,13 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
   exact h _ (mem_image_of_mem _ hU)
 
 theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} {t : Set α} :
-    HasCountableSeparatingOn t (fun u => ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔ HasCountableSeparatingOn α p t := by
+    HasCountableSeparatingOn t (fun u => ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔
+    HasCountableSeparatingOn α p t := by
   constructor <;> intro h
-  . exact h.of_subtype $ fun s => id
+  · exact h.of_subtype $ fun s => id
   rcases h with ⟨S, Sct, Sp, hS⟩
   use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
-  . rintro u ⟨t, tS, rfl⟩
+  · rintro u ⟨t, tS, rfl⟩
     exact ⟨t, Sp _ tS, rfl⟩
   rintro x - y - hxy
   exact Subtype.val_injective $ hS _ (Subtype.coe_prop _) _ (Subtype.coe_prop _)
