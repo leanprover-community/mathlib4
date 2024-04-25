@@ -187,11 +187,14 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
   let χ : Polynomial (K[X]) := lieCharpoly K E x u
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x u
-  suffices χ = X ^ r by -- sorry
+  -- It suffices to show that `χ` is the monomial `X ^ r`.
+  suffices χ = X ^ r by
+    -- Indeed, by evaluating the coefficients at `1`
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    simp only [lieCharpoly_map_eval, coe_bracket_of_module, one_smul, sub_add_cancel,
-      Polynomial.map_pow, map_X, LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff,
-      LieSubmodule.coe_toEndomorphism_pow, toEndomorphism_mk, χ, r] at this
+    -- we find that the characteristic polynomial `χ 1` of `⁅y - x + x, _⁆` is
+    simp only [lieCharpoly_map_eval, one_smul, sub_add_cancel, Polynomial.map_pow, map_X,
+      LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow,
+      χ, u, r] at this
     intro z hz
     obtain ⟨n, hn⟩ := this ⟨z, hz⟩
     rw [mem_engel_iff]
