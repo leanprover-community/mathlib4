@@ -475,11 +475,11 @@ theorem exists_toRegularExpression :
     ∀ M : GNFA α σ, ∃ r : RegularExpression α, M.accepts = r.matches' :=
   by
   refine' Fintype.induction_empty_option _ _ _ σ
-  · clear _inst_1 σ
+  ·
     intro σ τ
     intro
     intro e h M
-    let this.1 : Fintype σ := Fintype.ofEquiv _ e.symm
+    letI _ : Fintype σ := Fintype.ofEquiv _ e.symm
     specialize h (M.mapEquiv e.symm)
     rcases h with ⟨r, hr⟩
     use r
@@ -492,10 +492,10 @@ theorem exists_toRegularExpression :
     · intro t
       induction t
       case start x mat => exact mat
-      case step _ _ _ empty => cases Empty
+      case step empty _ _ _ => cases empty
     · intro mat
       exact accepts.start mat
-  · clear _inst_1 σ
+  ·
     intro σ
     intro
     intro h M
