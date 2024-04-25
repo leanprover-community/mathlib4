@@ -299,3 +299,5 @@ theorem iSup_eq_iUnion (s : ι → Set α) : iSup s = iUnion s :=
 theorem iInf_eq_iInter (s : ι → Set α) : iInf s = iInter s :=
   rfl
 #align set.infi_eq_Inter Set.iInf_eq_iInter
+
+end Set

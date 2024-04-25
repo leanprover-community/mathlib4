@@ -185,7 +185,7 @@ theorem formPerm_apply_mem_eq_next (s : Cycle α) (h : Nodup s) (x : α) (hx : x
 nonrec theorem formPerm_reverse (s : Cycle α) (h : Nodup s) :
     formPerm s.reverse (nodup_reverse_iff.mpr h) = (formPerm s h)⁻¹ := by
   induction s using Quot.inductionOn
-  simpa using formPerm_reverse _ h
+  simpa using formPerm_reverse _
 #align cycle.form_perm_reverse Cycle.formPerm_reverse
 
 nonrec theorem formPerm_eq_formPerm_iff {α : Type*} [DecidableEq α] {s s' : Cycle α} {hs : s.Nodup}
