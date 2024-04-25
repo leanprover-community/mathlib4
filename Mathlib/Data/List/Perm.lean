@@ -805,7 +805,7 @@ theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'A
   have hl : s.length = t.length := by simpa using congr_arg length h
   rw [← get_permutations'Aux s x s.length (by simp),
     ← get_permutations'Aux t x s.length (by simp [hl])]
-  simp only [← List.getElem_eq_get, h, hl]
+  simp only [← getElem_eq_get, h, hl]
 #align list.injective_permutations'_aux List.injective_permutations'Aux
 
 theorem nodup_permutations'Aux_of_not_mem (s : List α) (x : α) (hx : x ∉ s) :
