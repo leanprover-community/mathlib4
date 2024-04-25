@@ -86,7 +86,7 @@ lemma rpow_eq_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y = 0 ↔ x = 0 := by
   simp [rpow_eq_zero_iff_of_nonneg, *]
 
 @[simp]
-lemma  rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
+lemma rpow_ne_zero (hx : 0 ≤ x) (hy : y ≠ 0) : x ^ y ≠ 0 ↔ x ≠ 0 := by
   rw [not_iff_not]
   exact Real.rpow_eq_zero hx hy
 
