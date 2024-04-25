@@ -33,6 +33,7 @@ def syntaxRulesHeaderImpl : ToSyntaxRulesData
       type := ``ToSyntaxRulesData
       attrName := `syntax_rules_header_impl
       termOfAlts := fun alts => `(term|fun $alts:matchAlt*)
+      fallbackTerm := `(term|throwUnsupportedSyntax)
       cmdName := "syntax_rules_header"
       auxDefName := `syntaxRulesHeaderImpl
     }

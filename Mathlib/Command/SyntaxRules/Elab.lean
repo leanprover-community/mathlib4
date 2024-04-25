@@ -58,7 +58,7 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
     (attrs? : Option (TSepArray ``attrInstance ",")) (attrKind : TSyntax ``attrKind)
     (k : SyntaxNodeKind) (alts : Array (TSyntax ``matchAlt)) :
     SyntaxRulesData → CommandElabM Syntax
-  | { type, termOfAlts, attrName, mkAttr, cmdName, auxDefName, unfoldTypeAbbrev } => do
+| { type, termOfAlts, attrName, fallbackTerm, mkAttr, cmdName, auxDefName, unfoldTypeAbbrev } => do
     let alts ← alts.mapM fun (alt : TSyntax ``matchAlt) => match alt with
       | `(matchAltExpr| | $pats,* => $rhs) => do
         let pat := pats.elemsAndSeps[0]!
@@ -80,7 +80,7 @@ def elabSyntaxRulesAux (doc? : Option (TSyntax ``docComment))
           throwErrorAt alt
             "invalid {cmdName} alternative, unexpected syntax node kind '{k'}'"
       | _ => throwUnsupportedSyntax
-    let alts := alts.push (← `(matchAltExpr| | _ => no_error_if_unused% throwUnsupportedSyntax))
+    let alts := alts.push <|← `(matchAltExpr| | _ => no_error_if_unused% $(← fallbackTerm))
     let attrs : (TSyntaxArray ``attrInstance) ← do
       let attr ← if let some mkAttr := mkAttr then
           `(attrInstance| $attrKind:attrKind $(← mkAttr attrName k):attr)

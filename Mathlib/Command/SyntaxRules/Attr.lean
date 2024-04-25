@@ -31,6 +31,10 @@ structure SyntaxRulesData where
   attribute syntax. This allows greater control over the parameters passed to the attribute if
   necessary. -/
   mkAttr : Option ((attr node : Name) → CommandElabM (TSyntax `attr)) := none
+  /-- e.g. `` `(term|throwUnsupportedSyntax) ``. This will be the value for the universal fallback
+  (`_`) branch, and will be wrapped in `no_error_if_unused%`. Note that `throwUnsupportedSyntax` is
+  valid in any monad `m` with an instance of `MonadExceptOf Exception m`. -/
+  fallbackTerm : CommandElabM Term
   /-- e.g. "elab_rules"; used for error messages. -/
   cmdName : String
   /-- e.g. `elabRules`; just helps keep things legible if you look at internals, no real effect. -/
@@ -38,15 +42,15 @@ structure SyntaxRulesData where
   /-- Whether to unfold `type` if it's an `abbrev`. Usually this will be `true`. -/
   unfoldTypeAbbrev := true
 
-end data
-
-section attr
-
 --TODO: should `Syntax` be `TSyntax`?
 /-- An abbreviation for `Syntax → CommandElabM SyntaxRulesData`. The input is the syntax of the
 header of a `syntax_rules`-based command (e.g. the syntax `linting_rules : deprecation`), and the
 output is the data necessary for implementing it in terms of `syntax_rules`. -/
 abbrev ToSyntaxRulesData := Syntax → CommandElabM SyntaxRulesData
+
+end data
+
+section attr
 
 -- TODO: this is not an elaborator, so the message constructed by `mkElabAttribute` using
 -- `"syntax rules header data"` is not quite right
