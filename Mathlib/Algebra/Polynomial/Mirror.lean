@@ -48,7 +48,7 @@ theorem mirror_monomial (n : ℕ) (a : R) : (monomial n a).mirror = monomial n a
   classical
     by_cases ha : a = 0
     · rw [ha, monomial_zero_right, mirror_zero]
-    · rw [mirror, reverse, natDegree_monomial n a, if_neg ha, natTrailingDegree_monomial ha, ←
+    · rw [mirror, reverse, natDegree_monomial_ite n a, if_neg ha, natTrailingDegree_monomial ha, ←
         C_mul_X_pow_eq_monomial, reflect_C_mul_X_pow, revAt_le (le_refl n), tsub_self, pow_zero,
         mul_one]
 #align polynomial.mirror_monomial Polynomial.mirror_monomial
