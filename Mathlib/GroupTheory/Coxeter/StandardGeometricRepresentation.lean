@@ -367,8 +367,7 @@ local notation "V" => B →₀ ℝ
 private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
-acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
--/
+acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`. -/
 def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.simpleOrthoReflection, by
   intro i i'
   rcases em (i = i') with rfl | ne
@@ -377,7 +376,9 @@ def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.sim
     · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
     · exact M.off_diagonal i i' ne⟩
 
-noncomputable alias SGR := cs.standardGeometricRepresentation
+/-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
+acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`. -/
+noncomputable abbrev SGR := cs.standardGeometricRepresentation
 
 local prefix:100 "ρ" => cs.SGR
 
