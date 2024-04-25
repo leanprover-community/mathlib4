@@ -247,7 +247,7 @@ alias testBit_bit_zero := bit_testBit_zero
   | isFalse n0 =>
     simp only [HAnd.hAnd, AndOp.and, land]
     unfold bitwise
-    cases mod_two_eq_zero_or_one n with | _ h => simp [n0, h]; rfl
+    cases mod_two_eq_zero_or_one n with | _ h => simp [n0, h, bitwise]
 
 lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 0 => rfl
