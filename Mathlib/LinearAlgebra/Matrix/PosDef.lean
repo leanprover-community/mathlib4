@@ -163,7 +163,7 @@ lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
 
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
-  let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary.1
+  let C : Matrix n n 𝕜 := hA.1.eigenvectorUnitary
   let E := diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues : n → 𝕜)
   suffices C * (E * (star C * C) * E) * star C = A by
     rw [Matrix.PosSemidef.sqrt, pow_two]
@@ -174,7 +174,7 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
     rw [diagonal_mul_diagonal]
     refine congr_arg _ (funext fun v ↦ ?_)
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
-  simpa [this] using hA.1.spectral_theorem2.symm
+  simpa [this] using hA.1.spectral_theorem.symm
 
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
@@ -260,7 +260,7 @@ lemma posSemidef_iff_eq_transpose_mul_self {A : Matrix n n 𝕜} :
 
 lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n n 𝕜}
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
-  rw [hA.spectral_theorem2]
+  rw [hA.spectral_theorem]
   refine (posSemidef_diagonal_iff.mpr ?_).mul_mul_conjTranspose_same _
   simpa using h
 
