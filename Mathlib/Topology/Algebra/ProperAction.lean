@@ -9,6 +9,7 @@ import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
+import  Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Proper Action
@@ -47,7 +48,7 @@ Foobars, barfoos
 -/
 
 
-open Filter Topology Set
+open Filter Topology Set Prod
 
 /-- Additive version of proper action in the sense of Bourbaki:
 the map `G×X→ X×X` is a proper map `isProperMap`
@@ -180,7 +181,7 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
       exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
     · have : range f = ({1} ×ˢ univ) := by simp
       rw [this]
-      exact IsClosed.prod isClosed_singleton isClosed_univ
+      exact isClosed_singleton.prod isClosed_univ
   rw [t2_iff_isClosed_diagonal]
   let g := fun gx : G × X ↦ (gx.1 • gx.2, gx.2)
   have proper_g : IsProperMap g := (properSMul_iff G X).1 h_proper
@@ -220,15 +221,7 @@ Some suggestions of things to prove,
 taken from Kapovich
 -/
 
-/-
-If `X` is T2 and first countable,
-then the naive definition
-of proper action is equivalent to the good definition
-(Kapovich Th 11)
--/
-theorem naiveProper_iff_ProperSMul_T2_FirstCountable
-    [T2Space X] [FirstCountableTopology X] :
-    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by sorry
+
 
 lemma tendsTo_comp_continuous
     {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
@@ -237,15 +230,19 @@ lemma tendsTo_comp_continuous
   apply Tendsto.comp _ H
   exact hg.tendsto y
 
+/-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
+continuous maps such that the preimage of any compact set is compact. -/
 theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
     (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K))
-    {f : X → Y} (hf : Continuous f)
-    (h : ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K)) : IsProperMap f :=
-  isProperMap_iff_isClosedMap_and_compact_fibers.2 ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
+    {f : X → Y} :
+    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
+  ⟨fun hf ↦ ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩,
+    fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
+    ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
     fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
-    fun _ ↦ h isCompact_singleton⟩
+    fun _ ↦ h isCompact_singleton⟩⟩
 
-lemma compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
+theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
     IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed,
     fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
@@ -254,15 +251,97 @@ lemma compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s :
     eventually_atTop, ge_iff_le]
   exact ⟨0, fun n _ ↦ hu n⟩
 
-theorem isProperMap_iff_isCompact_preimage'' [T2Space Y] [SequentialSpace Y] {f : X → Y}
-    (hf : Continuous f) (h : ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K)) : IsProperMap f :=
-  isProperMap_iff_isCompact_preimage' (fun _ ↦ compactlyGenerated_of_sequentialSpace) hf h
+theorem continuous_of_partial_of_discrete [DiscreteTopology X] (f : X × Y → Z)
+    (h : ∀ x, Continuous fun y ↦ f (x, y)) : Continuous f := by
+  rw [continuous_def]
+  intro s hs
+  have : f ⁻¹' s = ⋃ x, {x} ×ˢ ((fun y : Y ↦ f (x, y)) ⁻¹' s) := by
+    ext xy; constructor
+    · exact fun hxy ↦ mem_iUnion.2 ⟨xy.1, mem_prod.2 ⟨mem_singleton _, hxy⟩⟩
+    · intro hxy
+      rcases mem_iUnion.1 hxy with ⟨x', hx'⟩
+      rw [mem_prod, ← hx'.1] at hx'
+      exact hx'.2
+  exact this ▸ isOpen_iUnion fun x ↦ (isOpen_discrete _).prod <| (h x).isOpen_preimage s hs
 
-/-
-If `X` and `Y` are T2 and first countable,
-then the naive definition
-of proper map is equivalent to the good definition
+/--
+If `X` is T2, `G` is discrete, `X × X` is compactly generated
+and the action is constantly continuous,
+then the naive definition of proper action is equivalent to the good definition.
 -/
+theorem naiveProper_iff_ProperSMul_of_t2_of_compactlyGenerated [T2Space X] [DiscreteTopology G]
+    [ContinuousConstSMul G X]
+    (compactlyGenerated : ∀ s : Set (X × X), IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
+    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
+  constructor
+  · intro h
+    rw [properSMul_iff]
+    -- We have to show that `f : (g, x) ↦ (g • x, x)` is proper.
+    -- Continuity follows from continuity of `g • ·` and the fact that `G` has the
+    -- discrete topology, thanks to `continuous_of_partial_of_discrete`.
+    -- Because `X × X` is compactly generated, to show that f is proper
+    -- it is enough to show that the preimage of a compact set `K` is compact.
+    refine' (isProperMap_iff_isCompact_preimage' compactlyGenerated).2
+      ⟨(continuous_prod_mk.2
+      ⟨continuous_of_partial_of_discrete _ continuous_const_smul, by fun_prop⟩),
+      fun K hK ↦ _⟩
+    -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
+    -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
+    -- Therefore `f ⁻¹ (K)` is also closed and `f ⁻¹ (K) ⊆ f ⁻¹ (K' × K')`, thus it suffices to
+    -- show that `f ⁻¹ (K' × K')` is compact.
+    let K' := fst '' K ∪ snd '' K
+    have hK' : IsCompact K' := (hK.image continuous_fst).union (hK.image continuous_snd)
+    let E := {g : G | Set.Nonempty ((g • ·) '' K' ∩ K')}
+    -- The set `E` is finite because the action is properly discontinuous.
+    have fin : Set.Finite E := by
+      simp_rw [E, nonempty_iff_ne_empty]
+      exact h.finite_disjoint_inter_image hK' hK'
+    -- Therefore we can rewrite `f ⁻¹ (K' × K')` as a finite union of compact sets.
+    have : (fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ⁻¹' (K' ×ˢ K') =
+        ⋃ g ∈ E, {g} ×ˢ ((g⁻¹ • ·) '' K' ∩ K') := by
+      ext gx
+      simp only [mem_preimage, mem_prod, nonempty_def, mem_inter_iff, mem_image,
+        exists_exists_and_eq_and, mem_setOf_eq, singleton_prod, iUnion_exists, biUnion_and',
+        mem_iUnion, exists_prop, E]
+      constructor
+      · exact fun ⟨gx_mem, x_mem⟩ ↦ ⟨gx.2, x_mem, gx.1, gx_mem,
+          ⟨gx.2, ⟨⟨gx.1 • gx.2, gx_mem, by simp⟩, x_mem⟩, rfl⟩⟩
+      · rintro ⟨x, -, g, -, ⟨-, ⟨⟨x', x'_mem, rfl⟩, ginvx'_mem⟩, rfl⟩⟩
+        exact ⟨by simpa, by simpa⟩
+    -- Indeed each set in this finite union is the product of a singleton and
+    -- the intersection of the compact `K'` with its image by some element `g`, and this image is
+    -- compact because `g • ·` is continuous.
+    have : IsCompact ((fun gx : G × X ↦ (gx.1 • gx.2, gx.2)) ⁻¹' (K' ×ˢ K')) :=
+      this ▸ fin.isCompact_biUnion fun g hg ↦
+        isCompact_singleton.prod <| (hK'.image <| continuous_const_smul _).inter hK'
+    -- We conclude as explained above.
+    exact this.of_isClosed_subset (hK.isClosed.preimage <|
+      continuous_prod_mk.2
+      ⟨continuous_of_partial_of_discrete _ continuous_const_smul, by fun_prop⟩) <|
+      preimage_mono fun x hx ↦ ⟨Or.inl ⟨x, hx, rfl⟩, Or.inr ⟨x, hx, rfl⟩⟩
+  · intro h; constructor
+    intro K L hK hL
+    simp_rw [← nonempty_iff_ne_empty]
+    -- We want to show that a subset of `G` is finite, but as `G` has the discrete topology it
+    -- is enough to show that this subset is compact.
+    apply IsCompact.finite_of_discrete
+    -- Now set `h : (g, x) ↦ (g⁻¹ • x, x)`, because `f` is proper by hypothesis, so is `h`.
+    have : IsProperMap (fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) :=
+      (IsProperMap.prod_map (Homeomorph.isProperMap (Homeomorph.inv G)) isProperMap_id).comp <|
+        isProperMap_smul_pair ..
+    --But we also have that `{g | Set.Nonempty ((g • ·) '' K ∩ L)} = h ⁻¹ (K × L)`, which
+    -- concludes the proof.
+    have eq : {g | Set.Nonempty ((g • ·) '' K ∩ L)} =
+        fst '' ((fun gx : G × X ↦ (gx.1⁻¹ • gx.2, gx.2)) ⁻¹' (K ×ˢ L)) := by
+      simp_rw [nonempty_def]
+      ext g; constructor
+      · exact fun ⟨_, ⟨x, x_mem, rfl⟩, hx⟩ ↦ ⟨(g, g • x), ⟨by simpa, hx⟩, rfl⟩
+      · rintro ⟨gx, hgx, rfl⟩
+        exact ⟨gx.2, ⟨gx.1⁻¹ • gx.2, hgx.1, by simp⟩, hgx.2⟩
+    exact eq ▸ IsCompact.image (this.isCompact_preimage <| hK.prod hL) continuous_fst
+
+/-- If `X` and `Y` are T2 and first countable, then the naive definition
+of proper map is equivalent to the good definition. -/
 theorem properMap_of_naiveProper_T2_FirstCountable
     [FirstCountableTopology X]
     [T2Space Y] [SequentialSpace Y]
