@@ -272,4 +272,3 @@ theorem span_natAbs (a : ℤ) : Ideal.span ({(a.natAbs : ℤ)} : Set ℤ) = Idea
 #align int.span_nat_abs Int.span_natAbs
 
 end Int
-#minimize_imports
