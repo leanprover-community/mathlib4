@@ -573,20 +573,26 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
     revert t
     rw [← x.reverse_reverse]
     induction x.reverse generalizing q
-    case nil =>
+    /- Porting note: To fix error
+      Case tag 'nil' not found.
+
+      Available tags:
+        'pos.refl.refl.nil._@.Mathlib.Computability.GNFA._hyg.4615',
+        'pos.refl.refl.cons._@.Mathlib.Computability.GNFA._hyg.4615'
+    -/
+    case pos.refl.refl.nil =>
       intro hx
       rw [List.reverse_nil] at *
       rw [NFA.eval_nil]
       cases hx
       case start x step =>
         unfold toGNFA at step; simp only at step
-        by_cases M.start x
+        by_cases h : M.start q
         · exact h
         · simp [h] at step
-          contradiction
-      case step x y z p t step eq =>
+      case step x y z p t eq step =>
         rw [List.nil_eq_append] at eq
-        cases eq.2; clear eq _x t x x
+        cases eq.2; clear eq t x
         unfold toGNFA at step; simp only at step
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
         rcases step with ⟨r, mem, mat⟩
@@ -594,22 +600,27 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
         rcases mem with ⟨a, _, eq⟩
         rw [← eq] at mat
         cases mat
-    case cons a as ih =>
+    /- Porting note: To fix error
+      Case tag 'cons' not found.
+
+      The only available case tag is 'pos.refl.refl.cons._@.Mathlib.Computability.GNFA._hyg.4615'.
+    -/
+    case pos.refl.refl.cons a as ih =>
       intro hx
       simp at *
       rw [NFA.mem_stepSet]
       cases hx
       case start q step =>
         unfold toGNFA at step; simp only at step
-        by_cases M.start q
+        by_cases h : M.start q
         · rw [if_pos h, RegularExpression.matches'_epsilon, Language.mem_one] at step
           replace step : as.reverse ++ [a] = List.nil := step
           rw [List.append_eq_nil] at step
           cases step.2
         · rw [if_neg h] at step
           cases step
-      case step y z p q t step eq =>
-        unfold toGNFA at step; simp at step
+      case step y z p t eq step =>
+        unfold toGNFA at step; simp only at step
         replace eq : as.reverse ++ [a] = y ++ z := eq
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
         rcases step with ⟨r, mem, mat⟩
@@ -619,10 +630,11 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
         cases mat
         rw [← List.reverse_inj] at eq
         simp only [List.reverse_append, List.reverse_singleton, List.reverse_reverse,
-          List.singleton_append] at eq
-        cases eq.1; clear _x
-        cases eq.2; clear eq _x
-        refine' ⟨p, _, step⟩
+          List.singleton_append, List.cons_eq_cons] at eq
+        cases eq.1
+        cases eq.2
+        conv in q ∈ _ => rw[Set.mem_def]
+        refine' ⟨p, _, Bool.of_decide_true step⟩
         rw [← y.reverse_reverse] at t
         exact ih p t
 
