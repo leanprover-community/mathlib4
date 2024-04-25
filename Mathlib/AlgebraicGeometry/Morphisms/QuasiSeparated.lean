@@ -261,12 +261,12 @@ instance quasiSeparatedSpace_of_isAffine (X : Scheme) [IsAffine X] :
   rw [e, e', Set.iUnion₂_inter]
   simp_rw [Set.inter_iUnion₂]
   apply hs.isCompact_biUnion
-  · intro i _
-    apply hs'.isCompact_biUnion
-    intro i' _
-    change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
-    rw [← Scheme.basicOpen_mul]
-    exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
+  intro i _
+  apply hs'.isCompact_biUnion
+  intro i' _
+  change IsCompact (X.basicOpen i ⊓ X.basicOpen i').1
+  rw [← Scheme.basicOpen_mul]
+  exact ((topIsAffineOpen _).basicOpenIsAffine _).isCompact
 #align algebraic_geometry.quasi_separated_space_of_is_affine AlgebraicGeometry.quasiSeparatedSpace_of_isAffine
 
 theorem IsAffineOpen.isQuasiSeparated {X : Scheme} {U : Opens X.carrier} (hU : IsAffineOpen U) :

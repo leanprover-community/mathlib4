@@ -421,17 +421,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
             -- I wonder if it would be a good idea to
             -- make `map_comp` a simp lemma the other way round
-        · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfNatIso this.symm
-          have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfComp e.inverse _
-          have :
-            (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
-              prod.functor.obj X := by
-            apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
-            change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
-            apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          apply Adjunction.leftAdjointOfNatIso this }
+        have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfNatIso this.symm
+        have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfComp e.inverse _
+        have :
+          (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
+            prod.functor.obj X := by
+          apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
+          change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
+          apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
+        apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor
