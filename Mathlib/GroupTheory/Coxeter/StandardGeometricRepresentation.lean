@@ -27,7 +27,7 @@ group, although we do not prove that in this file.
 Then, we have a representation $\rho \colon W \to GL(V)$, called the
 *standard geometric representation* (`CoxeterSystem.standardGeometricRepresentation`), given by
 $$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$
-We prove that this representation is well defined and faithful.
+We prove that this representation is well defined and faithful (`CoxeterSystem.injective_SGR`).
 
 We prove for all $w$ and $i$ that $\ell(w s_i) + 1 = \ell(w)$ if and only if $\rho(w) \alpha_i$ is a
 nonpositive linear combination of the simple roots, and that $\ell(w s_i) = \ell(w) + 1$ if and only
@@ -53,7 +53,7 @@ yields U₋₁ = 0 if n = 0.
 -/
 @[local simp]
 private def Polynomial.Chebyshev.USubOne (R : Type) [CommRing R] (n : ℕ) :=
-    U R (n + 1) - 2 * (T R (n + 1))
+    U R (n + 1) - 2 * T R (n + 1)
 
 private lemma Polynomial.Chebyshev.USubOne_add_one (R : Type) [CommRing R] (n : ℕ) :
     USubOne R (n + 1) = U R n := by
@@ -62,7 +62,6 @@ private lemma Polynomial.Chebyshev.USubOne_add_one (R : Type) [CommRing R] (n : 
   ring
 
 private lemma Polynomial.Chebyshev.sin_pi_div_m_ne_zero {m : ℕ} (hm : m > 1) : sin (π / m) ≠ 0 := by
-  intro eq0
   have h₀ : 0 < π / m := by positivity
   have h₁ := calc
     π / m ≤ π / 2                   := by
@@ -70,7 +69,7 @@ private lemma Polynomial.Chebyshev.sin_pi_div_m_ne_zero {m : ℕ} (hm : m > 1) :
       apply Nat.cast_le.mpr
       linarith
     _     ≤ 2                       := by linarith [Real.pi_le_four]
-  linarith [Real.sin_pos_of_pos_of_le_two h₀ h₁]
+  exact ne_of_gt (Real.sin_pos_of_pos_of_le_two h₀ h₁)
 
 private lemma Polynomial.Chebyshev.USubOne_real_cos (θ : ℝ) (n : ℕ) :
     eval (cos θ) (USubOne ℝ n) * sin θ = sin (n * θ) := by
@@ -80,7 +79,7 @@ private lemma Polynomial.Chebyshev.USubOne_real_cos (θ : ℝ) (n : ℕ) :
     exact U_real_cos _ _
 
 private lemma Polynomial.Chebyshev.USubOne_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m > 1) :
-    eval (- cos (π / m)) (USubOne ℝ n) = -((-1) ^ n * sin (π * (n / m)) / sin (π / m)) := by
+    eval (-cos (π / m)) (USubOne ℝ n) = -((-1) ^ n * sin (π * (n / m)) / sin (π / m)) := by
   rw [← Real.cos_add_pi (π / m)]
   have sin_ne_zero : sin (π / m) ≠ 0 := sin_pi_div_m_ne_zero hm
   have sin_ne_zero' : sin (π / m + π) ≠ 0 := by rw [sin_add_pi]; simpa
@@ -90,7 +89,7 @@ private lemma Polynomial.Chebyshev.USubOne_real_neg_cos_eq {m : ℕ} (n : ℕ) (
   ring_nf
 
 private lemma Polynomial.Chebyshev.U_real_neg_cos_eq {m : ℕ} (n : ℕ) (hm : m > 1) :
-    eval (- cos (π / m)) (U ℝ n) = (-1) ^ n * sin (π * ((n + 1) / m)) / sin (π / m) := by
+    eval (-cos (π / m)) (U ℝ n) = (-1) ^ n * sin (π * ((n + 1) / m)) / sin (π / m) := by
   rw [← USubOne_add_one, USubOne_real_neg_cos_eq _ hm, pow_succ']
   simp [neg_mul, neg_div]
 
@@ -370,17 +369,15 @@ private local instance : AddCommMonoid V := Finsupp.instAddCommMonoid
 /-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
 acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`.
 -/
-def standardGeometricRepresentation : Representation ℝ W V := cs.lift (
-    show M.IsLiftable (fun i ↦ σ i) by
-      intro i i'
-      rcases em (i = i') with rfl | ne
-      · simp [simpleOrthoReflection, orthoReflection_sq, ← LinearMap.one_eq_id]
-      · apply M.orthoReflection_mul_orthoReflection_pow_order
-        · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
-        · exact M.off_diagonal i i' ne
-  )
+def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.simpleOrthoReflection, by
+  intro i i'
+  rcases em (i = i') with rfl | ne
+  · simp [simpleOrthoReflection, orthoReflection_sq, ← LinearMap.one_eq_id]
+  · apply M.orthoReflection_mul_orthoReflection_pow_order
+    · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
+    · exact M.off_diagonal i i' ne⟩
 
-noncomputable alias SGR := standardGeometricRepresentation
+noncomputable abbrev SGR := cs.standardGeometricRepresentation
 
 local prefix:100 "ρ" => cs.SGR
 
@@ -703,7 +700,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
 
 /-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has all
 nonnegative coordinates and it is nonzero. -/
-theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬ cs.IsRightDescent w i) :
+theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
     0 < (ρ w) (α i) := by
   apply lt_of_le_of_ne
   · exact cs.SGR_apply_simpleRoot_nonneg_of h
