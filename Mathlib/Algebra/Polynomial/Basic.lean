@@ -290,15 +290,13 @@ instance inhabited : Inhabited R[X] :=
   ⟨0⟩
 #align polynomial.inhabited Polynomial.inhabited
 
-instance natCast : NatCast R[X] :=
-  ⟨fun n => Polynomial.ofFinsupp n⟩
-#align polynomial.has_nat_cast Polynomial.natCast
+instance instNatCast : NatCast R[X] where natCast n := ofFinsupp n
+#align polynomial.has_nat_cast Polynomial.instNatCast
 
 instance semiring : Semiring R[X] :=
   --TODO: add reference to library note in PR #7432
   { Function.Injective.semiring toFinsupp toFinsupp_injective toFinsupp_zero toFinsupp_one
       toFinsupp_add toFinsupp_mul (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow fun _ => rfl with
-    toNatCast := Polynomial.natCast
     toAdd := Polynomial.add'
     toMul := Polynomial.mul'
     toZero := Polynomial.zero
@@ -1178,9 +1176,8 @@ section Ring
 
 variable [Ring R]
 
-instance intCast : IntCast R[X] :=
-  ⟨fun n => ofFinsupp n⟩
-#align polynomial.has_int_cast Polynomial.intCast
+instance instIntCast : IntCast R[X] where intCast n := ofFinsupp n
+#align polynomial.has_int_cast Polynomial.instIntCast
 
 instance ring : Ring R[X] :=
   --TODO: add reference to library note in PR #7432
@@ -1189,7 +1186,6 @@ instance ring : Ring R[X] :=
       toFinsupp_mul toFinsupp_neg toFinsupp_sub (fun _ _ => toFinsupp_smul _ _)
       (fun _ _ => toFinsupp_smul _ _) toFinsupp_pow (fun _ => rfl) fun _ => rfl with
     toSemiring := Polynomial.semiring,
-    toIntCast := Polynomial.intCast
     toNeg := Polynomial.neg'
     toSub := Polynomial.sub
     zsmul := ((· • ·) : ℤ → R[X] → R[X]) }
@@ -1263,13 +1259,21 @@ theorem X_ne_zero : (X : R[X]) ≠ 0 :=
 
 end NonzeroSemiring
 
+section DivisionSemiring
+variable [DivisionSemiring R]
+
+lemma nnqsmul_eq_C_mul (q : ℚ≥0) (f : R[X]) : q • f = Polynomial.C (q : R) * f := by
+  rw [← NNRat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+
+end DivisionSemiring
+
 section DivisionRing
 
 variable [DivisionRing R]
 
-theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+theorem qsmul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
   rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
-#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+#align polynomial.rat_smul_eq_C_mul Polynomial.qsmul_eq_C_mul
 
 end DivisionRing
 
