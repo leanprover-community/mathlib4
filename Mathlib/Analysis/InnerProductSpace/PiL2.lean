@@ -534,7 +534,7 @@ open Classical in
 protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
-    OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) :=
+    OrthonormalBasis ((i : η) × ι i) 𝕜 (PiLp 2 E) :=
   Basis.toOrthonormalBasis
     ((Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm) <| by
     refine ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ _h ↦ ?_⟩
