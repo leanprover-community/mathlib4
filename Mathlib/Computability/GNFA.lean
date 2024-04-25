@@ -61,7 +61,7 @@ theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) 
       simp only [List.reverse_cons, RegularExpression.matches'_add, List.foldl_append,
         List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
       cases hx
-      case inl => rcases ih hx with ⟨r, mem, matches⟩; exact ⟨r, Or.inl mem, matches⟩
+      case inl => rcases ih hx with ⟨r, mem, mat⟩; exact ⟨r, Or.inl mem, mat⟩
       case inr => exact ⟨r, Or.inr rfl, hx⟩
   · rw [← rs.reverse_reverse]
     induction' rs.reverse with r rs ih
@@ -73,15 +73,15 @@ theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) 
     unfold List.sum
     simp only [List.reverse_cons, RegularExpression.matches'_add, forall_exists_index,
       List.foldl_append, List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
-    rcases hx with ⟨r', hr', matches⟩
+    rcases hx with ⟨r', hr', mat⟩
     cases hr'
     case inl =>
       left
-      exact ih r' ⟨hr', matches⟩
+      exact ih r' ⟨hr', mat⟩
     case inr =>
       right
-      rw [hr'] at matches
-      exact matches
+      rw [hr'] at mat
+      exact mat
 
 end RegularExpression
 
@@ -128,27 +128,27 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
               (∀ x ∈ xs, x ∈ (M.step (some none) (some none)).matches') ∧ x = y ++ z ++ xs.join :=
   by
   induction t
-  case start x q matches =>
-    revert matches
+  case start x q mat =>
+    revert mat
     cases q
     case none =>
-      intro matches
+      intro mat
       right
       refine' ⟨rfl, _⟩
-      refine' ⟨[], x, [], none, by dsimp <;> rfl, matches, _, by simp⟩
+      refine' ⟨[], x, [], none, by dsimp <;> rfl, mat, _, by simp⟩
       intro x mem
       cases mem
     case some q =>
-      intro matches
+      intro mat
       left
       refine' ⟨q, rfl, _⟩
-      exact trace.start (Or.inl matches)
-  case step x y z p q t matches eq ih =>
+      exact trace.start (Or.inl mat)
+  case step x y z p q t mat eq ih =>
     rw [Eq]; clear eq x
-    revert ih matches
+    revert ih mat
     cases' p with p <;> cases' q with q
     case none.none =>
-      intro ih matches
+      intro ih mat
       right
       refine' ⟨rfl, _⟩
       cases ih
@@ -162,9 +162,9 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       simp at mem
       cases mem
       case inl => exact x_matches x mem
-      case inr => rw [mem]; exact matches
+      case inr => rw [mem]; exact mat
     case none.some =>
-      intro ih matches
+      intro ih mat
       left
       refine' ⟨q, rfl, _⟩
       cases ih
@@ -180,7 +180,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
         refine' trace.start (Or.inr _)
         simp
         rw [← List.append_assoc]
-        refine' ⟨_, _, _, matches, rfl⟩
+        refine' ⟨_, _, _, mat, rfl⟩
         refine' ⟨_, _, matches', _, rfl⟩
         exact ⟨_, rfl, x_matches⟩
       case some =>
@@ -190,30 +190,30 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
         refine' trace.step t' _ rfl
         right
         rw [← List.append_assoc]
-        refine' ⟨_, _, _, matches, rfl⟩
+        refine' ⟨_, _, _, mat, rfl⟩
         refine' ⟨_, _, matches', _, rfl⟩
         exact ⟨_, rfl, x_matches⟩
-    · intro ih matches
+    · intro ih mat
       right
       refine' ⟨rfl, _⟩
       cases ih
       case inl =>
         rcases ih with ⟨p', eq, t⟩
         simp at eq; rw [← Eq] at t; clear eq p'
-        refine' ⟨y, z, [], some p, by simp [t], matches, _, by simp⟩
+        refine' ⟨y, z, [], some p, by simp [t], mat, _, by simp⟩
         intro x mem
         cases mem
       case inr =>
         rcases ih with ⟨eq, _⟩
         cases Eq
-    · intro ih matches
+    · intro ih mat
       cases ih
       case inl =>
         rcases ih with ⟨p', eq, t⟩
         simp at eq; rw [← Eq] at t; clear eq p'
         left
         refine' ⟨q, rfl, _⟩
-        exact trace.step t (Or.inl matches) rfl
+        exact trace.step t (Or.inl mat) rfl
       case inr =>
         rcases ih with ⟨eq, _⟩
         cases Eq
@@ -233,62 +233,62 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       cases Eq
   · intro t
     induction t
-    case start x q matches =>
-      cases matches
-      case inl => exact trace.start matches
-      rcases matches with ⟨y, z, hy, hz, eq⟩
+    case start x q mat =>
+      cases mat
+      case inl => exact trace.start mat
+      rcases mat with ⟨y, z, hy, hz, eq⟩
       rw [← Eq]; clear eq x
       refine' trace.step _ hz rfl
       clear hz z
       rcases hy with ⟨y, z, hy, hz, eq⟩
       rw [← Eq]; clear eq
-      rcases hz with ⟨xs, join, matches⟩
+      rcases hz with ⟨xs, join, mat⟩
       rw [join]; clear join
-      revert matches
+      revert mat
       rw [← xs.reverse_reverse]
       induction xs.reverse
       case nil => simp [trace.start hy]
       case cons x xs ih =>
-        intro matches
+        intro mat
         rw [List.reverse_cons, List.join_append]
         unfold List.join
         rw [List.append_nil, ← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at matches
-        refine' trace.step (ih _) (matches x (Or.inl rfl)) rfl
+        simp only [List.mem_reverse, List.mem_cons] at mat
+        refine' trace.step (ih _) (mat x (Or.inl rfl)) rfl
         intro y mem
         rw [List.mem_reverse] at mem
-        exact matches y (Or.inr mem)
-    case step x y z p q t matches eq ih =>
-      cases matches
-      case inl => exact trace.step ih matches Eq
+        exact mat y (Or.inr mem)
+    case step x y z p q t mat eq ih =>
+      cases mat
+      case inl => exact trace.step ih mat Eq
       rw [Eq]; clear eq x
-      rcases matches with ⟨w, x, hw, hx, eq⟩
+      rcases mat with ⟨w, x, hw, hx, eq⟩
       rw [← Eq]; clear eq z
       rw [← List.append_assoc]
       refine' trace.step _ hx rfl
       rcases hw with ⟨w, x, hw, hx, eq⟩
       rw [← Eq]; clear eq
       rw [← List.append_assoc]
-      rcases hx with ⟨xs, join, matches⟩
+      rcases hx with ⟨xs, join, mat⟩
       rw [join]; clear join x
-      revert matches
+      revert mat
       rw [← xs.reverse_reverse]
       induction xs.reverse
       case nil =>
-        intro matches
+        intro mat
         simp at *
         exact trace.step ih hw rfl
       case cons x xs ih =>
-        intro matches
+        intro mat
         rw [List.reverse_cons, List.join_append]
         unfold List.join
         rw [List.append_nil, ← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at matches
-        refine' trace.step _ (matches x (Or.inl rfl)) rfl
+        simp only [List.mem_reverse, List.mem_cons] at mat
+        refine' trace.step _ (mat x (Or.inl rfl)) rfl
         apply ih
         intro y mem
         rw [List.mem_reverse] at mem
-        exact matches y (Or.inr mem)
+        exact mat y (Or.inr mem)
 
 -- TODO: maybe mark as @simp
 theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
@@ -297,10 +297,10 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
   constructor
   · intro t
     cases t
-    case start x matches =>
-      cases matches
-      case inl => exact accepts.start matches
-      rcases matches with ⟨y, z, y_matches, z_matches, eq⟩
+    case start x mat =>
+      cases mat
+      case inl => exact accepts.start mat
+      rcases mat with ⟨y, z, y_matches, z_matches, eq⟩
       rw [← Eq]; clear eq x
       refine' accepts.step _ _ z_matches rfl; clear z_matches z
       rcases y_matches with ⟨y, z, y_matches, z_matches, eq⟩
@@ -325,14 +325,14 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         intro x mem
         rw [List.mem_reverse] at mem
         exact x_matches x (Or.inr mem)
-    case step x y z q t matches eq =>
+    case step x y z q t mat eq =>
       rw [Eq]; clear eq x
-      cases matches
+      cases mat
       case inl =>
-        refine' accepts.step _ _ matches rfl
+        refine' accepts.step _ _ mat rfl
         rw [rip_trace_correct]
         exact t
-      rcases matches with ⟨z, x, z_matches, x_matches, eq⟩
+      rcases mat with ⟨z, x, z_matches, x_matches, eq⟩
       rw [← Eq]; clear eq
       rw [← List.append_assoc]
       refine' accepts.step _ _ x_matches rfl; clear x_matches x
@@ -345,7 +345,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       rw [← xs.reverse_reverse]
       induction xs.reverse
       case nil =>
-        intro matches
+        intro mat
         rw [List.reverse_nil]
         unfold List.join
         rw [List.append_nil]
@@ -353,26 +353,26 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         rw [rip_trace_correct]
         exact t
       case cons x xs ih =>
-        intro matches
+        intro mat
         rw [List.reverse_cons, List.join_append]
         unfold List.join
         rw [List.append_nil, ← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at matches
-        refine' trace.step _ (matches x (Or.inl rfl)) rfl
+        simp only [List.mem_reverse, List.mem_cons] at mat
+        refine' trace.step _ (mat x (Or.inl rfl)) rfl
         apply ih
         intro x mem
         rw [List.mem_reverse] at mem
-        exact matches x (Or.inr mem)
+        exact mat x (Or.inr mem)
   · intro t
     cases t
-    case start x matches => exact accepts.start (Or.inl matches)
-    case step x y z q t matches eq =>
+    case start x mat => exact accepts.start (Or.inl mat)
+    case step x y z q t mat eq =>
       rw [Eq]; clear eq x
       cases M.rip_trace_aux t
       case inl =>
         rcases h with ⟨q, eq, t⟩
-        rw [Eq] at matches; clear eq
-        exact accepts.step _ t (Or.inl matches) rfl
+        rw [Eq] at mat; clear eq
+        exact accepts.step _ t (Or.inl mat) rfl
       rcases h with ⟨eq, h⟩
       rw [Eq] at *; clear eq
       rcases h with ⟨y, w, xs, p, t, w_matches, x_matches, eq⟩
@@ -383,7 +383,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         rw [t]; clear t y
         refine' accepts.start _
         right
-        refine' ⟨_, _, _, matches, rfl⟩
+        refine' ⟨_, _, _, mat, rfl⟩
         refine' ⟨_, _, w_matches, _, rfl⟩
         exact ⟨xs, rfl, x_matches⟩
       case some =>
@@ -392,7 +392,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         refine' accepts.step _ t _ rfl
         right
         rw [← List.append_assoc]
-        refine' ⟨_, _, _, matches, rfl⟩
+        refine' ⟨_, _, _, mat, rfl⟩
         refine' ⟨_, _, w_matches, _, rfl⟩
         exact ⟨xs, rfl, x_matches⟩
 
@@ -406,19 +406,19 @@ theorem mapEquiv_trace_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e
   by
   intro q x t
   induction t
-  case start x q matches =>
+  case start x q mat =>
     apply trace.start
     unfold map_equiv
     dsimp
     rw [Equiv.symm_apply_apply]
-    exact matches
-  case step x y z p q t matches eq
+    exact mat
+  case step x y z p q t mat eq
     ih =>
     refine' trace.step ih _ Eq
     unfold map_equiv
     dsimp
     rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply]
-    exact matches
+    exact mat
 
 theorem mapEquiv_trace {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : σ ≃ τ) :
     ∀ q x, M.trace x q ↔ (M.mapEquiv e).trace x (e q) :=
@@ -439,8 +439,8 @@ theorem mapEquiv_correct_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) 
     M.accepts ≤ (M.mapEquiv e).accepts := by
   intro x t
   cases t
-  case start x matches => exact accepts.start matches
-  case step x y z q t matches eq =>
+  case start x mat => exact accepts.start mat
+  case step x y z q t mat eq =>
     refine' accepts.step _ _ _ Eq
     exact e q
     rw [M.map_equiv_trace e] at t
@@ -481,10 +481,10 @@ theorem exists_to_regularExpression :
     constructor
     · intro t
       induction t
-      case start x matches => exact matches
+      case start x mat => exact mat
       case step _ _ _ empty => cases Empty
-    · intro matches
-      exact accepts.start matches
+    · intro mat
+      exact accepts.start mat
   · clear _inst_1 σ
     intro σ
     intro
@@ -579,11 +579,11 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
         cases Eq.2; clear eq _x t x x
         unfold to_GNFA at step; simp only at step; unfold to_GNFA._match_1 at step
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
-        rcases step with ⟨r, mem, matches⟩
+        rcases step with ⟨r, mem, mat⟩
         rw [List.mem_map] at mem
         rcases mem with ⟨a, _, eq⟩
-        rw [← Eq] at matches
-        cases matches
+        rw [← Eq] at mat
+        cases mat
     case cons a as ih =>
       intro hx
       simp at *
@@ -602,11 +602,11 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
         unfold to_GNFA at step; simp at step; unfold to_GNFA._match_1 at step
         replace eq : as.reverse ++ [a] = y ++ z := Eq
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
-        rcases step with ⟨r, mem, matches⟩
+        rcases step with ⟨r, mem, mat⟩
         simp only [List.mem_map, List.mem_filter] at mem
         rcases mem with ⟨b, ⟨_, step⟩, eq⟩
-        rw [← Eq] at matches
-        cases matches
+        rw [← Eq] at mat
+        cases mat
         rw [← List.reverse_inj] at eq
         simp only [List.reverse_append, List.reverse_singleton, List.reverse_reverse,
           List.singleton_append] at eq
