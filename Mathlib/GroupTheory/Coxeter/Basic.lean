@@ -275,13 +275,18 @@ theorem simple_induction_right {p : W → Prop} (w : W) (one : p 1)
 
 /-! ### Homomorphisms from a Coxeter group -/
 
+/-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
+theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
+    φ₁ = φ₂ :=
+  MonoidHom.eq_of_eqOn_denseM cs.submonoid_closure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
+
 /-- The proposition that the values of the function `f : B → G` satisfy the Coxeter relations
 corresponding to the matrix `M`. -/
 def _root_.CoxeterMatrix.IsLiftable {G : Type*} [Monoid G] (M : CoxeterMatrix B) (f : B → G) :
     Prop := ∀ i i', (f i * f i') ^ M i i' = 1
 
 private theorem relations_liftable {G : Type*} [Group G] {f : B → G} (hf : IsLiftable M f)
-  (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
+    (r : FreeGroup B) (hr : r ∈ M.relationsSet) : (FreeGroup.lift f) r = 1 := by
   rcases hr with ⟨⟨i, i'⟩, rfl⟩
   rw [uncurry, relation, map_pow, _root_.map_mul, FreeGroup.lift.of, FreeGroup.lift.of]
   exact hf i i'
@@ -296,30 +301,37 @@ private def restrictUnit {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M
   val_inv := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
   inv_val := pow_one (f i * f i) ▸ M.diagonal i ▸ hf i i
 
-/-- Extend the function `f : B → G` to a monoid homomorphism `f' : W → G` satisfying
-`f' (cs.simple i) = f i` for all `i`. -/
-def lift {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) : W →* G :=
-  MonoidHom.comp (Units.coeHom G) (cs.groupLift
-    (show ∀ i i', ((restrictUnit hf) i * (restrictUnit hf) i') ^ M i i' = 1 from
-      fun i i' ↦ Units.ext (hf i i')))
-
 private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet)):
     (MulEquiv.toMonoidHom cs.mulEquiv : W →* PresentedGroup (M.relationsSet))
     ((MulEquiv.symm cs.mulEquiv) a) = a := calc
   _ = cs.mulEquiv ((MulEquiv.symm cs.mulEquiv) a) := by rfl
   _ = _                                           := by rw [MulEquiv.apply_symm_apply]
 
-theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
-    cs.lift hf (s i) = f i := by
-  dsimp only [simple, lift, groupLift, MonoidHom.comp_apply]
-  rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply]
-  simp
-  rfl
+/-- The universal mapping property of Coxeter systems. For any monoid `G`,
+functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
+monoid homomorphisms `f' : W → G`. -/
+def lift {G : Type*} [Monoid G] : {f : B → G | IsLiftable M f} ≃ (W →* G) where
+  toFun f := MonoidHom.comp (Units.coeHom G) (cs.groupLift
+    (show ∀ i i', ((restrictUnit f.property) i * (restrictUnit f.property) i') ^ M i i' = 1 from
+      fun i i' ↦ Units.ext (f.property i i')))
+  invFun ι := ⟨ι ∘ cs.simple, fun i i' ↦ by
+    rw [comp_apply, comp_apply, ← map_mul, ← map_pow, simple_mul_simple_pow, map_one]⟩
+  left_inv f := by
+    ext i
+    simp only [MonoidHom.comp_apply, comp_apply, mem_setOf_eq, groupLift, simple]
+    rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply]
+    rfl
+  right_inv ι := by
+    apply cs.ext_simple
+    intro i
+    dsimp only
+    rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
+      PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
+    rfl
 
-/-- If two homomorphisms with domain `W` agree on all simple reflections, then they are equal. -/
-theorem ext_simple {G : Type*} [Monoid G] {φ₁ φ₂ : W →* G} (h : ∀ i : B, φ₁ (s i) = φ₂ (s i)) :
-    φ₁ = φ₂ :=
-  MonoidHom.eq_of_eqOn_denseM cs.submonoid_closure_range_simple (fun _ ⟨i, hi⟩ ↦ hi ▸ h i)
+theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) :
+    ∀ i, cs.lift ⟨f, hf⟩ (s i) = f i := congrFun (congrArg Subtype.val (cs.lift.left_inv ⟨f, hf⟩))
 
 /-- If two Coxeter systems on the same group `W` have the same Coxeter matrix `M : Matrix B B ℕ`
 and the same simple reflection map `B → W`, then they are identical. -/

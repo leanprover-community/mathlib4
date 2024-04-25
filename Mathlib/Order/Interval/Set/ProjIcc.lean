@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
 import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 
 #align_import data.set.intervals.proj_Icc from "leanprover-community/mathlib"@"4e24c4bfcff371c71f7ba22050308aa17815626c"
 

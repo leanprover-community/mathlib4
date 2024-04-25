@@ -121,11 +121,9 @@ theorem length_mul_ge_max (w₁ w₂ : W) :
   max_le_iff.mpr ⟨length_mul_ge_length_sub_length _ _ _, length_mul_ge_length_sub_length' _ _ _⟩
 
 /-- The homomorphism that sends each element `w : W` to the parity of the length of `w`. -/
-def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift (
-    show M.IsLiftable (fun _ ↦ Multiplicative.ofAdd 1) by
-      simp_rw [CoxeterMatrix.IsLiftable, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
-      simp
-  )
+def lengthParity : W →* Multiplicative (ZMod 2) := cs.lift ⟨fun _ ↦ Multiplicative.ofAdd 1, by
+  simp_rw [CoxeterMatrix.IsLiftable, Set.mem_setOf, ← ofAdd_add, (by decide : (1 + 1 : ZMod 2) = 0)]
+  simp⟩
 
 theorem lengthParity_simple (i : B):
     cs.lengthParity (s i) = Multiplicative.ofAdd 1 := cs.lift_apply_simple _ _
