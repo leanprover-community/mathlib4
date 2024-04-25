@@ -12,11 +12,14 @@ import Mathlib.Topology.Sequences
 import  Mathlib.Topology.Algebra.Group.Basic
 
 /-!
-# Proper Action
+# Proper group action
 
 In this file we define proper action of a group on a topological space, and we prove that in this
 case the quotient space is T2. We also give equivalent definitions of proper action using
 ultrafilters and show the transfer of proper action to a closed subgroup.
+We give sufficent conditions on the toplogical space such that the action is properly discontinuous
+(see `ProperlyDiscontinuousSMul`) if and only if it is continuous in
+the first variable (see `ContinuousConstSMul`) and proper in the sense defined here.
 
 ## Main definitions
 
@@ -29,61 +32,57 @@ ultrafilters and show the transfer of proper action to a closed subgroup.
   then the quotient space is Hausdorff (T2).
 * `t2Space_of_properSMul_of_t2Group`: If a T2 group acts properly on a topological space,
   then this topological space is T2.
-
-## Notation
-
-
-
-## Implementation details
-
-
+* `ProperlyDiscontinuousSMul_iff_ProperSMul`: If a discrete group acts on a T2 space `X` such that
+  `X × X` is compactly generated, then the action is properly discontinuous if and only if it is
+  continuous in the second variable and proper.
 
 ## References
 
-* [F. Bar, *Quuxes*][bibkey]
+* [N. Bourbaki, *General Topology*][bourbaki1966]
 
 ## Tags
 
-Foobars, barfoos
+Hausdorff, group action, proper action
 -/
 
 
 open Filter Topology Set Prod
 
-/-- Additive version of proper action in the sense of Bourbaki:
-the map `G×X→ X×X` is a proper map `isProperMap`
--/
+/-- Proper group action in the sense of Bourbaki:
+the map `G × X → X × X` is a proper map (see `isProperMap`). -/
 @[mk_iff]
 class ProperVAdd (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [AddGroup G]
     [AddAction G X] : Prop where
-  /-- Additive version of proper action in the sense of Bourbaki:
-the map `G×X→ X×X` is a proper map `isProperMap`  -/
+  /-- Proper group action in the sense of Bourbaki:
+  the map `G × X → X × X` is a proper map (see `isProperMap`). -/
   isProperMap_vadd_pair' : IsProperMap (fun gx ↦ ⟨gx.1 +ᵥ gx.2, gx.2⟩ : G × X → X × X)
 
-/-- Proper action in the sense of Bourbaki:
-the map `G×X→ X×X` is a proper map `isProperMap`
--/
+/-- Proper group action in the sense of Bourbaki:
+the map `G × X → X × X` is a proper map (see `isProperMap`). -/
 @[to_additive existing, mk_iff]
 class ProperSMul (G X : Type*) [TopologicalSpace G] [TopologicalSpace X] [Group G]
     [MulAction G X] : Prop where
+  /-- Proper group action in the sense of Bourbaki:
+  the map `G × X → X × X` is a proper map (see `isProperMap`). -/
   isProperMap_smul_pair' : IsProperMap (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X)
 
 attribute [to_additive existing] properSMul_iff
 
-/-- By definition, if G acts properly on X
-the map `G×X→ X×X` is a proper map `isProperMap`
--/
-@[to_additive]
+/-- By definition, if G acts properly on X then
+the map `G × X → X × X` is a proper map. -/
+@[to_additive "By definition, if G acts properly on X then
+the map `G × X → X × X` is a proper map."]
 lemma isProperMap_smul_pair (G X : Type*) [Group G] [MulAction G X]
     [TopologicalSpace G] [TopologicalSpace X] [ProperSMul G X] :
     IsProperMap (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) :=
   ProperSMul.isProperMap_smul_pair'
 
-variable {G X Y Z W : Type*} [Group G] [MulAction G X] [MulAction G Y]
+variable {G X Y Z : Type*} [Group G] [MulAction G X] [MulAction G Y]
 variable [TopologicalSpace G] [TopologicalSpace X] [TopologicalSpace Y]
-variable [TopologicalSpace Z] [TopologicalSpace W]
+variable [TopologicalSpace Z]
 
-@[to_additive]
+/-- If a group acts properly then in particularl it acts continuously. -/
+@[to_additive "If a group acts properly then in particularl it acts continuously."]
 instance continuousSmul_of_properSMul [ProperSMul G X] : ContinuousSMul G X where
   continuous_smul := (isProperMap_smul_pair G X).continuous.fst
 
@@ -177,7 +176,7 @@ theorem t2Space_of_properSMul_of_t2Group [h_proper : ProperSMul G X] [T2Space G]
     rw [closedEmbedding_iff]
     constructor
     · let g := fun gx : G × X ↦ gx.2
-      have : Function.LeftInverse g f := by intro x; simp
+      have : Function.LeftInverse g f := fun x ↦ by simp
       exact Function.LeftInverse.embedding this (by fun_prop) (by fun_prop)
     · have : range f = ({1} ×ˢ univ) := by simp
       rw [this]
@@ -242,6 +241,7 @@ theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
     fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
     fun _ ↦ h isCompact_singleton⟩⟩
 
+/-- A sequential space is compactly generated. -/
 theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
     IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed,
@@ -251,6 +251,7 @@ theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s
     eventually_atTop, ge_iff_le]
   exact ⟨0, fun n _ ↦ hu n⟩
 
+/-- A weakly locally compact space is compactly generated. -/
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ _⟩
@@ -260,6 +261,8 @@ theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocal
   exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
     (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
 
+/-- If `X` is a discrete topological space and `f : X × Y → Z` is such that for all `x : X`,
+`y ↦ f (x, y)` is continuous, then `f` is continuous. -/
 theorem continuous_of_partial_of_discrete [DiscreteTopology X] (f : X × Y → Z)
     (h : ∀ x, Continuous fun y ↦ f (x, y)) : Continuous f := by
   rw [continuous_def]
@@ -273,12 +276,10 @@ theorem continuous_of_partial_of_discrete [DiscreteTopology X] (f : X × Y → Z
       exact hx'.2
   exact this ▸ isOpen_iUnion fun x ↦ (isOpen_discrete _).prod <| (h x).isOpen_preimage s hs
 
-/--
-If `X` is T2, `G` is discrete, `X × X` is compactly generated
-and the action is constantly continuous,
-then the naive definition of proper action is equivalent to the good definition.
--/
-theorem naiveProper_iff_ProperSMul_of_t2_of_compactlyGenerated [T2Space X] [DiscreteTopology G]
+/-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly generated,
+then the action is properly discontinuous if and only if it is continuous in the second variable
+and proper. -/
+theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G]
     [ContinuousConstSMul G X]
     (compactlyGenerated : ∀ s : Set (X × X), IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
     ProperlyDiscontinuousSMul G X ↔ ProperSMul G X := by
