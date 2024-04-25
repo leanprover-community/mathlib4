@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Data.Sigma.Order
-import Mathlib.Order.LocallyFinite
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import data.sigma.interval from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
