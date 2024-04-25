@@ -2330,8 +2330,8 @@ theorem pow_inv_eq_inv_pow (φ : PowerSeries k) (d : ℕ) : (φ ^ d)⁻¹ = φ�
   induction d with
   | zero => rw [inv_eq_iff_mul_eq_one]; simp only [Nat.zero_eq, pow_zero, mul_one]
             exact ne_zero_of_eq_one rfl
-  | succ d hd => rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd, ← PowerSeries.mul_inv_rev,
-                 pow_succ']
+  | succ d hd => rw [show φ⁻¹ ^ (d + 1) = φ⁻¹ * (φ⁻¹ ^ d) by rfl, ← hd,
+                 ← PowerSeries.mul_inv_rev, pow_succ']
 
 instance : InvOneClass (PowerSeries k) :=
   { inferInstanceAs <| InvOneClass <| MvPowerSeries Unit k with }

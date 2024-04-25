@@ -236,7 +236,7 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
-    (Finset.sum (antidiagonal n) fun ij ↦ (d + ij.2).choose d) =
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
     (d + n).choose d + (d + n).choose (succ d) := by
   induction n with
   | zero => simp only [zero_eq, antidiagonal_zero, sum_singleton, add_zero, choose_self,

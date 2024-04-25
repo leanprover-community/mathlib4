@@ -18,6 +18,9 @@ In this file we define the following power series:
 * `PowerSeries.invUnitsSub`: given `u : Rˣ`, this is the series for `1 / (u - x)`.
   It is given by `∑ n, x ^ n /ₚ u ^ (n + 1)`.
 
+* `PowerSeries.invOneSubPow`: given a commutative ring `S` and a natural number `d`,
+  `PowerSeries.invOneSubPow d : S⟦X⟧ˣ` is the series for `1 / ((1 - X) ^ (d + 1))`.
+
 * `PowerSeries.sin`, `PowerSeries.cos`, `PowerSeries.exp` : power series for sin, cosine, and
   exponential functions.
 -/
@@ -70,17 +73,17 @@ section invOneSubPow
 variable {S : Type _} [CommRing S] (d : ℕ)
 
 theorem mk_one_pow_eq_mk_choose_add :
-    (@mk S 1) ^ (d + 1) = @mk S fun n ↦ Nat.choose (d + n) d := by
+    (@mk S 1) ^ (d + 1) = @mk S fun n => Nat.choose (d + n) d := by
   induction d with
   | zero => simp only [Nat.zero_eq, zero_add, pow_one, Nat.choose_zero_right, Nat.cast_one]; rfl
   | succ d hd =>
-      rw [pow_add, pow_one, mul_comm, show Nat.succ d = d + 1 by rfl, ext_iff]; exact λ n ↦ by
+      rw [pow_add, pow_one, mul_comm, show Nat.succ d = d + 1 by rfl, ext_iff]; exact fun n => by
         rw [hd, coeff_mul]; simp only [coeff_mk, one_mul]; rw [Nat.succ_add, Nat.choose_succ_succ,
-        ← Finset.sum_antidiagonal_choose_add]; simp
+        ← Finset.sum_antidiagonal_choose_add]; simp only [Pi.one_apply, one_mul, Nat.cast_sum]
 
 /--
-The power series `mk fun n => Nat.choose (d + n) d`,
-whose multiplicative inverse is `(1 - X) ^ (d + 1)`.
+The power series `mk fun n => Nat.choose (d + n) d`, whose multiplicative inverse is
+`(1 - X) ^ (d + 1)`.
 -/
 noncomputable def invOneSubPow : S⟦X⟧ˣ where
   val := mk fun n => Nat.choose (d + n) d
@@ -88,7 +91,7 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
   val_inv := by
     rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow,
       show (mk 1) * (1 - (X : S⟦X⟧)) = 1 by
-      rw [mul_comm, PowerSeries.ext_iff]; exact λ n ↦ by
+      rw [mul_comm, ext_iff]; exact fun n => by
         by_cases hn : n = 0
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
           constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
@@ -99,12 +102,12 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
   inv_val := by
     rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow,
       show (1 - (X : S⟦X⟧)) * (mk 1) = 1 by
-      rw [PowerSeries.ext_iff]; exact λ n ↦ by
+      rw [ext_iff]; exact fun n => by
         by_cases hn : n = 0
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
           constantCoeff_X, sub_zero, one_mul, coeff_one, ↓reduceIte]; rfl
         · rw [sub_mul]; simp only [one_mul, map_sub, coeff_mk, coeff_one, hn, ↓reduceIte];
-          rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, PowerSeries.coeff_succ_X_mul];
+          rw [show n = n - 1 + 1 by exact (Nat.succ_pred hn).symm, coeff_succ_X_mul];
           simp only [Pi.one_apply, coeff_mk, sub_self]]
     exact one_pow (d + 1)
 
