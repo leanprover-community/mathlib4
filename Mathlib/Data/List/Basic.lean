@@ -855,10 +855,12 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
   simp [get?_eq_some]
+#align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
     l.get i = (l.get? i).get (by simp [get?_eq_get]) := by
   simp [get_eq_iff]
+#align list.some_nth_le_eq List.get?_eq_get
 
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
@@ -1439,13 +1441,6 @@ theorem eq_cons_of_length_one {l : List α} (h : l.length = 1) :
   congr
   omega
 #align list.eq_cons_of_length_one List.eq_cons_of_length_one
-
-theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
-  rw [get?_eq_some]
-  simp [n.2]
-
-#align list.nth_le_eq_iff List.get_eq_iff
-#align list.some_nth_le_eq List.get?_eq_get
 
 end deprecated
 
