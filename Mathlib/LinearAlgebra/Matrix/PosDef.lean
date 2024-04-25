@@ -169,12 +169,11 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
     rw [Matrix.PosSemidef.sqrt, pow_two]
     change (C * E * (star C)) * (C * E * (star C)) = A
     simpa only [← mul_assoc] using this
-  rw [(hA.1.eigenvectorUnitary.2).1 , mul_one]
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
     congr! with v
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
-  simpa [this] using hA.1.spectral_theorem.symm
+  simpa [C, this] using hA.1.spectral_theorem.symm
 
 @[simp]
 lemma sqrt_mul_self : hA.sqrt * hA.sqrt = A := by rw [← pow_two, sq_sqrt]
