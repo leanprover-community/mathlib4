@@ -151,15 +151,18 @@ end Basics
 
 /-! ### Algebraic structure
 
-Whenever `β` has suitable algebraic structure and a compatible topological structure, then
-`C_c(α, β)` inherits a corresponding algebraic structure. The primary exception to this is that
+Whenever `β` has the structore of continuous addtive monoid and a compatible topological structure,
+then `C_c(α, β)` inherits a corresponding algebraic structure. The primary exception to this is that
 `C_c(α, β)` will not have a multiplicative identity.
 -/
 
 
-section AlgebraicStructure
+section AddMonoid
 
 variable [TopologicalSpace β] (x : α)
+
+variable [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
+
 
 lemma hasCompactSupport_zero [Zero β]: HasCompactSupport (0 : C(α, β)) := by
   rw [HasCompactSupport, tsupport]
@@ -195,41 +198,41 @@ instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C_c(α, β) :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
-instance instAdd [AddZeroClass β] [ContinuousAdd β] : Add C_c(α, β) :=
+instance instAdd [AddMonoid β] [ContinuousAdd β] : Add C_c(α, β) :=
   ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
 
 @[simp]
-theorem coe_add [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
+theorem coe_add [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β)) : ⇑(f + g) = f + g :=
   rfl
 
-theorem add_apply [AddZeroClass β] [ContinuousAdd β] (f g : C_c(α, β)) : (f + g) x = f x + g x :=
+theorem add_apply [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β)) : (f + g) x = f x + g x :=
   rfl
 
-instance instAddZeroClass [AddZeroClass β] [ContinuousAdd β] : AddZeroClass C_c(α, β) :=
+instance instAddZeroClass [AddMonoid β] [ContinuousAdd β] : AddZeroClass C_c(α, β) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
-instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
+instance instSMul {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) :=
   -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
-  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left f.2⟩⟩
+  ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left' f.2⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
+theorem coe_smul {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
     (f : C_c(α, β)) : ⇑(r • f) = r • ⇑f :=
   rfl
 
-theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
+theorem smul_apply {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β]
     (r : R) (f : C_c(α, β)) (x : α) : (r • f) x = r • f x :=
   rfl
-
-section AddMonoid
-
-variable [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
 
 instance instAddMonoid : AddMonoid C_c(α, β) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
+
+variable [TopologicalSpace β] (x : α)
+
+variable [AddCommMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
 
 instance instAddCommMonoid [AddCommMonoid β] [ContinuousAdd β] : AddCommMonoid C_c(α, β) :=
   DFunLike.coe_injective.addCommMonoid _ coe_zero coe_add fun _ _ => rfl
