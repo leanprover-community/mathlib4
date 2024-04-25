@@ -31,54 +31,71 @@ universe u
 variable {α : Type u} [dec : DecidableEq α]
 
 namespace RegularExpression
+def rec'
+    {α : Type u}
+    {motive : RegularExpression α → Type _}
+    (zero : motive zero)
+    (epsilon : motive epsilon)
+    (char : (a : α) → motive (char a))
+    (plus : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (plus a a_1))
+    (comp : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (comp a a_1))
+    (star : (a : RegularExpression α) → motive a → motive (star a)) :
+      (t : RegularExpression α) → motive t
+  | .zero => zero
+  | .epsilon => epsilon
+  | .char a => char a
+  | .plus l r => plus l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
+  | .comp l r => comp l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
+  | .star r => star r (rec' zero epsilon char plus comp star r)
+
 
 /-- The NFA state type for a particular regular expression.
 -/
 def State : RegularExpression α → Type _
   | zero => Unit
   | epsilon => Unit
-  | Char _ => Bool
-  | plus r₁ r₂ => Sum (StateM r₁) (StateM r₂)
-  | comp r₁ r₂ => Sum (StateM r₁) (StateM r₂)
-  | star r => Option (StateM r)
+  | char _ => Bool
+  | plus r₁ r₂ => Sum (State r₁) (State r₂)
+  | comp r₁ r₂ => Sum (State r₁) (State r₂)
+  | star r => Option (State r)
 
-instance {r : RegularExpression α} : Inhabited r.StateM :=
-  by
-  induction r
-  case zero => exact PUnit.inhabited
-  case epsilon => exact PUnit.inhabited
-  case char a => exact Bool.inhabited
-  case plus r₁ r₂ hr₁ hr₂ => exact Sum.inhabitedLeft
-  case comp r₁ r₂ hr₁ hr₂ => exact Sum.inhabitedLeft
-  case star r hr => exact Option.inhabited _
+instance {r : RegularExpression α} : Inhabited r.State :=
+  @rec' α (Inhabited ∘ State)
+    (instInhabitedPUnit)
+    (instInhabitedPUnit)
+    (λ a => instInhabitedBool)
+    (λ r₁ r₂ hr₁ hr₂ => @Sum.inhabitedLeft r₁.State r₂.State hr₁)
+    (λ r₁ r₂ hr₁ hr₂ => @Sum.inhabitedLeft r₁.State r₂.State hr₁)
+    (λ r hr => instInhabitedOption)
+    r
 
 -- NFAs are only real NFAs when the states are fintypes, and the instance is needed for the proofs
-instance {r : RegularExpression α} : Fintype r.StateM :=
-  by
-  induction r
-  case zero => exact Unit.fintype
-  case epsilon => exact Unit.fintype
-  case char a => exact Bool.fintype
-  case plus r₁ r₂ hr₁ hr₂ => exact Sum.fintype r₁.state r₂.state
-  case comp r₁ r₂ hr₁ hr₂ => exact Sum.fintype r₁.state r₂.state
-  case star r hr => exact Option.fintype
+instance {r : RegularExpression α} : Fintype r.State :=
+  @rec' α (Fintype ∘ State)
+    (Unit.fintype)
+    (Unit.fintype)
+    (λ a => Bool.fintype)
+    (λ r₁ r₂ hr₁ hr₂ => @instFintypeSum r₁.State r₂.State hr₁ hr₂)
+    (λ r₁ r₂ hr₁ hr₂ => @instFintypeSum r₁.State r₂.State hr₁ hr₂)
+    (λ r hr => @instFintypeOption r.State hr)
+    r
 
-instance {r : RegularExpression α} : DecidableEq r.StateM :=
-  by
-  induction r
-  case zero => exact PUnit.decidableEq
-  case epsilon => exact PUnit.decidableEq
-  case char => exact Bool.decidableEq
-  case plus r₁ r₂ hr₂ hr₂ => exact Sum.decidableEq r₁.state r₂.state
-  case comp r₁ r₂ hr₂ hr₂ => exact Sum.decidableEq r₁.state r₂.state
-  case star r hr => exact Option.decidableEq
+instance {r : RegularExpression α} : DecidableEq r.State :=
+  @rec' α (DecidableEq ∘ State)
+    (instDecidableEqPUnit)
+    (instDecidableEqPUnit)
+    (λ a => instDecidableEqBool)
+    (λ r₁ r₂ hr₁ hr₂ => @instDecidableEqSum r₁.State r₂.State hr₁ hr₂)
+    (λ r₁ r₂ hr₁ hr₂ => @instDecidableEqSum r₁.State r₂.State hr₁ hr₂)
+    (λ r hr => @Option.instDecidableEqOption r.State hr)
+    r
 
 /-- Recursively converts a regular expression to its corresponding NFA.
 -/
-def toNFA : ∀ r : RegularExpression α, NFA α r.StateM
+def toNFA : ∀ r : RegularExpression α, NFA α r.State
   | zero => ⟨fun _ _ _ => False, fun _ => False, fun _ => False⟩
   | epsilon => ⟨fun _ _ _ => False, fun _ => True, fun _ => True⟩
-  | Char a => ⟨fun p c q => p = false ∧ a = c ∧ q = true, fun q => q = false, fun q => q = true⟩
+  | char a => ⟨fun p c q => p = false ∧ a = c ∧ q = true, fun q => q = false, fun q => q = true⟩
   | plus r₁ r₂ =>
     let P₁ := r₁.toNFA
     let P₂ := r₂.toNFA
@@ -131,14 +148,14 @@ def toNFA : ∀ r : RegularExpression α, NFA α r.StateM
       | none => True⟩
 
 /--
-All three functions in an NFA constructed from `to_NFA` are decidable. Since the functions rely on
+All three functions in an NFA constructed from `toNFA` are decidable. Since the functions rely on
 each other, the class is proven here, and the instance declarations use this.
 -/
 def regularExpressionToNFADecidable {r : RegularExpression α} :
     (∀ p a q, Decidable (q ∈ r.toNFA.step p a)) ×
       DecidablePred r.toNFA.start × DecidablePred r.toNFA.accept :=
   by
-  induction r
+  apply r.rec'
   case zero =>
     refine' ⟨_, _, _⟩
     · intro _ _ _; exact decidableFalse
@@ -149,84 +166,88 @@ def regularExpressionToNFADecidable {r : RegularExpression α} :
     · intro p a q; exact decidableFalse
     · intro q; exact decidableTrue
     · intro q; exact decidableTrue
-  case char a =>
+  case char =>
+    intro a
     refine' ⟨_, _, _⟩
     · intro p c q; exact And.decidable
-    · intro q; exact Set.decidableSetOf ff (Eq q)
-    · intro q; exact Set.decidableSetOf tt (Eq q)
-  case plus r₁ r₂ hr₁ hr₂ =>
+    · intro q; exact Set.decidableSetOf false (Eq q)
+    · intro q; exact Set.decidableSetOf true (Eq q)
+  case plus =>
+    intro r₁ r₂ hr₁ hr₂
     rcases hr₁ with ⟨hr₁_step, hr₁_start, hr₁_accept⟩
     rcases hr₂ with ⟨hr₂_step, hr₂_start, hr₂_accept⟩
     refine' ⟨_, _, _⟩
     · intro p a q
-      cases p <;> cases q
+      rcases p with p | p <;> rcases q with q | q
       case inl.inl => exact hr₁_step p a q
       case inl.inr => exact decidableFalse
       case inr.inl => exact decidableFalse
       case inr.inr => exact hr₂_step p a q
     · intro q
-      cases q
+      rcases q with q | q
       case inl => exact hr₁_start q
       case inr => exact hr₂_start q
     · intro q
-      cases q
+      rcases q with q | q
       case inl => exact hr₁_accept q
       case inr => exact hr₂_accept q
-  case comp r₁ r₂ hr₁ hr₂ =>
+  case comp =>
+    intro r₁ r₂ hr₁ hr₂
     rcases hr₁ with ⟨hr₁_step, hr₁_start, hr₁_accept⟩
     rcases hr₂ with ⟨hr₂_step, hr₂_start, hr₂_accept⟩
     refine' ⟨_, _, _⟩
     · intro p a q
-      cases p <;> cases q
+      rcases p with p | p <;> rcases q with q | q
       case inl.inl => exact hr₁_step p a q
       case
         inl.inr =>
-        have : Decidable (∃ r : r₁.state, r₁.to_NFA.accept r ∧ r₁.to_NFA.step p a r) :=
-          haveI : DecidablePred fun r : r₁.state => r₁.to_NFA.accept r ∧ r₁.to_NFA.step p a r :=
+        have : Decidable (∃ r : r₁.State, r₁.toNFA.accept r ∧ r₁.toNFA.step p a r) :=
+          haveI : DecidablePred fun r : r₁.State => r₁.toNFA.accept r ∧ r₁.toNFA.step p a r :=
             by
             intro r
-            have : Decidable (r₁.to_NFA.step p a r) := hr₁_step p a r
+            have : Decidable (r₁.toNFA.step p a r) := hr₁_step p a r
             exact And.decidable
           Fintype.decidableExistsFintype
         exact And.decidable
       case inr.inl => exact decidableFalse
       case inr.inr => exact hr₂_step p a q
     · intro q
-      cases q
+      rcases q with q | q
       case inl => exact hr₁_start q
       case inr => exact And.decidable
     · intro q
-      cases q
+      rcases q with q | q
       case inl => exact And.decidable
       case inr => exact hr₂_accept q
-  case star r hr =>
+  case star =>
+    intro r hr
     rcases hr with ⟨hr_step, hr_start, hr_accept⟩
     refine' ⟨_, _, _⟩
     · intro p a q
-      cases p <;> cases q
+      rcases p with p | p <;> rcases q with q | q
       case some.some =>
-        have : Decidable (r.to_NFA.step p a q) := hr_step p a q
+        have : Decidable (r.toNFA.step p a q) := hr_step p a q
         have :
           Decidable
-            (∃ r_1 : r.state, r.to_NFA.accept r_1 ∧ r.to_NFA.step p a r_1 ∧ r.to_NFA.start q) :=
+            (∃ r_1 : r.State, r.toNFA.accept r_1 ∧ r.toNFA.step p a r_1 ∧ r.toNFA.start q) :=
           haveI :
-            DecidablePred fun r_1 : r.state =>
-              r.to_NFA.accept r_1 ∧ r.to_NFA.step p a r_1 ∧ r.to_NFA.start q :=
+            DecidablePred fun r_1 : r.State =>
+              r.toNFA.accept r_1 ∧ r.toNFA.step p a r_1 ∧ r.toNFA.start q :=
             by
             intro s
-            have : Decidable (r.to_NFA.step p a s ∧ r.to_NFA.start q) :=
-              haveI : Decidable (r.to_NFA.step p a s) := hr_step p a s
+            have : Decidable (r.toNFA.step p a s ∧ r.toNFA.start q) :=
+              haveI : Decidable (r.toNFA.step p a s) := hr_step p a s
               And.decidable
             exact And.decidable
           Fintype.decidableExistsFintype
         exact Or.decidable
       all_goals exact decidableFalse
     · intro q
-      cases q
+      rcases q with q | q
       case none => exact decidableTrue
       case some => exact hr_start q
     · intro q
-      cases q
+      rcases q with q | q
       case none => exact decidableTrue
       case some => exact hr_accept q
 
