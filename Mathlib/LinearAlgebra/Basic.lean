@@ -1170,12 +1170,12 @@ theorem funLeft_surjective_of_injective (f : m → n) (hf : Injective f) :
   classical
     intro g
     refine' ⟨fun x => if h : ∃ y, f y = x then g h.choose else 0, _⟩
-    · ext
-      dsimp only [funLeft_apply]
-      split_ifs with w
-      · congr
-        exact hf w.choose_spec
-      · simp only [not_true, exists_apply_eq_apply] at w
+    ext
+    dsimp only [funLeft_apply]
+    split_ifs with w
+    · congr
+      exact hf w.choose_spec
+    · simp only [not_true, exists_apply_eq_apply] at w
 #align linear_map.fun_left_surjective_of_injective LinearMap.funLeft_surjective_of_injective
 
 theorem funLeft_injective_of_surjective (f : m → n) (hf : Surjective f) :

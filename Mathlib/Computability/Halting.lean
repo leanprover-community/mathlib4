@@ -252,11 +252,11 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
           simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
             and_true, exists_const] at hx hy
           cases hy.1 hx.1)
-      · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
-        rw [hk]
-        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
-        apply Decidable.em⟩⟩
+      refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
+      rw [hk]
+      simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+        true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
+      apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
 theorem computable_iff_re_compl_re' {p : α → Prop} :

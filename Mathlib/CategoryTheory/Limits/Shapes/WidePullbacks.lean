@@ -241,7 +241,7 @@ def wideSpan (B : C) (objs : J → C) (arrows : ∀ j : J, B ⟶ objs j) : WideP
     cases f
     · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.id_comp]; congr
     · cases g
-      · simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
+      simp only [Eq.ndrec, hom_id, eq_rec_constant, Category.comp_id]; congr
 #align category_theory.limits.wide_pushout_shape.wide_span CategoryTheory.Limits.WidePushoutShape.wideSpan
 
 /-- Every diagram is naturally isomorphic (actually, equal) to a `wideSpan` -/
