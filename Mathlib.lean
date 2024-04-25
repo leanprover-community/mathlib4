@@ -3779,6 +3779,7 @@ import Mathlib.Tactic.TermCongr
 import Mathlib.Tactic.ToAdditive
 import Mathlib.Tactic.ToExpr
 import Mathlib.Tactic.ToLevel
+import Mathlib.Tactic.ToNatDegree
 import Mathlib.Tactic.Trace
 import Mathlib.Tactic.TryThis
 import Mathlib.Tactic.TypeCheck
