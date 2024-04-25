@@ -10,7 +10,7 @@ import Mathlib.Data.Set.Lattice
 /-!
 # Extra lemmas about intervals
 
-This file contains lemmas about intervals that cannot be included into `Data.Set.Intervals.Basic`
+This file contains lemmas about intervals that cannot be included into `Order.Interval.Set.Basic`
 because this would create an `import` cycle. Namely, lemmas in this file can use definitions
 from `Data.Set.Lattice`, including `Disjoint`.
 

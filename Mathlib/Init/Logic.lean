@@ -230,6 +230,18 @@ However, it does *not* merge binders.
   | `($(_) fun ($x:ident : $t) ↦ $b)               => `(∃! $x:ident : $t, $b)
   | _                                               => throw ()
 
+/--
+`∃! x ∈ s, p x` means `∃! x, x ∈ s ∧ p x`, which is to say that there exists a unique `x ∈ s`
+such that `p x`.
+Similarly, notations such as `∃! x ≤ n, p n` are supported,
+using any relation defined using the `binder_predicate` command.
+-/
+syntax "∃! " binderIdent binderPred ", " term : term
+
+macro_rules
+  | `(∃! $x:ident $p:binderPred, $b) => `(∃! $x:ident, satisfies_binder_pred% $x $p ∧ $b)
+  | `(∃! _ $p:binderPred, $b) => `(∃! x, satisfies_binder_pred% x $p ∧ $b)
+
 end Mathlib.Notation
 
 -- @[intro] -- TODO
