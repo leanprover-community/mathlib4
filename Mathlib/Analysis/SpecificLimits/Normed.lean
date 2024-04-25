@@ -140,18 +140,18 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
   have B : Ioo 0 R ⊆ Ioo (-R) R := Subset.trans Ioo_subset_Ico_self A
   -- First we prove that 1-4 are equivalent using 2 → 3 → 4, 1 → 3, and 2 → 1
   tfae_have 1 → 3
-  exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
   tfae_have 2 → 1
-  exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   tfae_have 3 → 2
   · rintro ⟨a, ha, H⟩
     rcases exists_between (abs_lt.2 ha) with ⟨b, hab, hbR⟩
     exact ⟨b, ⟨(abs_nonneg a).trans_lt hab, hbR⟩,
       H.trans_isLittleO (isLittleO_pow_pow_of_abs_lt_left (hab.trans_le (le_abs_self b)))⟩
   tfae_have 2 → 4
-  exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
+  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha, H.isBigO⟩
   tfae_have 4 → 3
-  exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
+  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, B ha, H⟩
   -- Add 5 and 6 using 4 → 6 → 5 → 3
   tfae_have 4 → 6
   · rintro ⟨a, ha, H⟩
@@ -159,7 +159,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     refine' ⟨a, ha, C, hC₀, fun n ↦ _⟩
     simpa only [Real.norm_eq_abs, abs_pow, abs_of_nonneg ha.1.le] using hC (pow_ne_zero n ha.1.ne')
   tfae_have 6 → 5
-  exact fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
+  · exact fun ⟨a, ha, C, H₀, H⟩ ↦ ⟨a, ha.2, C, Or.inl H₀, H⟩
   tfae_have 5 → 3
   · rintro ⟨a, ha, C, h₀, H⟩
     rcases sign_cases_of_C_mul_pow_nonneg fun n ↦ (abs_nonneg _).trans (H n) with (rfl | ⟨hC₀, ha₀⟩)
@@ -176,7 +176,7 @@ theorem TFAE_exists_lt_isLittleO_pow (f : ℕ → ℝ) (R : ℝ) :
     refine' ⟨a, ha, (H.def zero_lt_one).mono fun n hn ↦ _⟩
     rwa [Real.norm_eq_abs, Real.norm_eq_abs, one_mul, abs_pow, abs_of_pos ha.1] at hn
   tfae_have 8 → 7
-  exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
+  · exact fun ⟨a, ha, H⟩ ↦ ⟨a, ha.2, H⟩
   tfae_have 7 → 3
   · rintro ⟨a, ha, H⟩
     have : 0 ≤ a := nonneg_of_eventually_pow_nonneg (H.mono fun n ↦ (abs_nonneg _).trans)

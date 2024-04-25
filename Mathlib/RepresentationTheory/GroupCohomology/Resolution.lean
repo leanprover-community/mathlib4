@@ -380,14 +380,14 @@ theorem diagonalHomEquiv_symm_apply (f : (Fin n → G) → A) (x : Fin (n + 1) �
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [diagonalSucc_hom_single]
   erw [TensorProduct.uncurry_apply, Finsupp.lift_apply, Finsupp.sum_single_index]
-  simp only [one_smul]
-  erw [Representation.linHom_apply]
-  simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
-  erw [Finsupp.llift_apply]
-  rw [Finsupp.lift_apply]
-  erw [Finsupp.sum_single_index]
-  rw [one_smul]
-  · rw [zero_smul]
+  · simp only [one_smul]
+    erw [Representation.linHom_apply]
+    simp only [LinearMap.comp_apply, MonoidHom.one_apply, LinearMap.one_apply]
+    erw [Finsupp.llift_apply]
+    rw [Finsupp.lift_apply]
+    erw [Finsupp.sum_single_index]
+    · rw [one_smul]
+    · rw [zero_smul]
   · rw [zero_smul]
 set_option linter.uppercaseLean3 false in
 #align Rep.diagonal_hom_equiv_symm_apply Rep.diagonalHomEquiv_symm_apply

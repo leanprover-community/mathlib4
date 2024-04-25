@@ -517,12 +517,12 @@ def isIsoZeroEquivIsoZero (X Y : C) : IsIso (0 : X ⟶ Y) ≃ (X ≅ 0) × (Y �
   fconstructor
   · rintro ⟨eX, eY⟩
     fconstructor
-    exact (idZeroEquivIsoZero X).symm eX
-    exact (idZeroEquivIsoZero Y).symm eY
+    · exact (idZeroEquivIsoZero X).symm eX
+    · exact (idZeroEquivIsoZero Y).symm eY
   · rintro ⟨hX, hY⟩
     fconstructor
-    exact (idZeroEquivIsoZero X) hX
-    exact (idZeroEquivIsoZero Y) hY
+    · exact (idZeroEquivIsoZero X) hX
+    · exact (idZeroEquivIsoZero Y) hY
   · aesop_cat
   · aesop_cat
 #align category_theory.limits.is_iso_zero_equiv_iso_zero CategoryTheory.Limits.isIsoZeroEquivIsoZero

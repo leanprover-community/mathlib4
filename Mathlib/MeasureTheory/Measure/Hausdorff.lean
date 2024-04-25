@@ -519,7 +519,7 @@ theorem mkMetric_apply (m : ℝ≥0∞ → ℝ≥0∞) (s : Set X) :
     push_neg at htr; rcases htr with ⟨n, hn⟩
     refine' ENNReal.tsum_eq_top_of_eq_top ⟨n, _⟩
     rw [iSup_eq_if, if_pos, iInf_eq_if, if_neg]
-    exact hn.not_le
+    · exact hn.not_le
     rcases diam_pos_iff.1 ((zero_le r).trans_lt hn) with ⟨x, hx, -⟩
     exact ⟨x, hx⟩
 #align measure_theory.measure.mk_metric_apply MeasureTheory.Measure.mkMetric_apply
@@ -799,10 +799,10 @@ theorem MeasureTheory.Measure.hausdorffMeasure_smul₀ {𝕜 E : Type*} [NormedA
   suffices ∀ {r : 𝕜}, r ≠ 0 → ∀ s : Set E, μH[d] (r • s) ≤ ‖r‖₊ ^ d • μH[d] s by
     refine' le_antisymm (this hr s) _
     rw [← le_inv_smul_iff_of_pos]
-    dsimp
-    rw [← NNReal.inv_rpow, ← nnnorm_inv]
-    · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
-      rw [inv_smul_smul₀ hr]
+    · dsimp
+      rw [← NNReal.inv_rpow, ← nnnorm_inv]
+      · refine' Eq.trans_le _ (this (inv_ne_zero hr) (r • s))
+        rw [inv_smul_smul₀ hr]
     · simp [pos_iff_ne_zero, hr]
   intro r _ s
   simp only [NNReal.rpow_eq_pow, ENNReal.smul_def, ← ENNReal.coe_rpow_of_nonneg _ hd, smul_eq_mul]

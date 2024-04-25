@@ -65,7 +65,7 @@ theorem formPerm_disjoint_iff (hl : Nodup l) (hl' : Nodup l') (hn : 2 ≤ l.leng
     omega
   · intro h x
     by_cases hx : x ∈ l
-    by_cases hx' : x ∈ l'
+    on_goal 1 => by_cases hx' : x ∈ l'
     · exact (h hx hx').elim
     all_goals have := formPerm_eq_self_of_not_mem _ _ ‹_›; tauto
 #align list.form_perm_disjoint_iff List.formPerm_disjoint_iff
@@ -135,8 +135,8 @@ where each element in the list is permuted to the next one, defined as `formPerm
 def formPerm : ∀ s : Cycle α, Nodup s → Equiv.Perm α :=
   fun s => Quotient.hrecOn s (fun l _ => List.formPerm l) fun l₁ l₂ (h : l₁ ~r l₂) => by
     apply Function.hfunext
-    ext
-    · exact h.nodup_iff
+    · ext
+      exact h.nodup_iff
     · intro h₁ h₂ _
       exact heq_of_eq (formPerm_eq_of_isRotated h₁ h)
 #align cycle.form_perm Cycle.formPerm

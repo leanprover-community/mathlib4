@@ -139,8 +139,8 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
   rw [lintegral_mul_const'' _ hf.1.aemeasurable.ennreal_ofReal,
     ← ofReal_integral_eq_lintegral_ofReal hf (ae_of_all _ fun _ ↦ (exp_pos _).le),
     ENNReal.mul_inv_cancel]
-  simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
-  · exact integral_exp_pos hf
+  · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
+    exact integral_exp_pos hf
   · simp
 
 section lintegral
