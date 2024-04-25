@@ -310,7 +310,7 @@ private theorem toMonoidHom_apply_symm_apply (a : PresentedGroup (M.relationsSet
 /-- The universal mapping property of Coxeter systems. For any monoid `G`,
 functions `f : B → G` whose values satisfy the Coxeter relations are equivalent to
 monoid homomorphisms `f' : W → G`. -/
-def lift {G : Type*} [Monoid G] : {f : B → G | IsLiftable M f} ≃ (W →* G) where
+def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G) where
   toFun f := MonoidHom.comp (Units.coeHom G) (cs.groupLift
     (show ∀ i i', ((restrictUnit f.property) i * (restrictUnit f.property) i') ^ M i i' = 1 from
       fun i i' ↦ Units.ext (f.property i i')))
