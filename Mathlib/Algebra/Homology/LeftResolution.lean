@@ -1,6 +1,7 @@
 import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
+import Mathlib.Algebra.Homology.BicomplexColumns
 
 open CategoryTheory Category Limits Preadditive
 

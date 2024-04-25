@@ -309,6 +309,7 @@ import Mathlib.Algebra.Homology.HomotopyCategory.HomComplexTriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.HomologicalFunctor
 import Mathlib.Algebra.Homology.HomotopyCategory.KInjective
 import Mathlib.Algebra.Homology.HomotopyCategory.MappingCone
+import Mathlib.Algebra.Homology.HomotopyCategory.Minus
 import Mathlib.Algebra.Homology.HomotopyCategory.Plus
 import Mathlib.Algebra.Homology.HomotopyCategory.Pretriangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.Shift
@@ -321,6 +322,7 @@ import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.HomotopyFiber
 import Mathlib.Algebra.Homology.ImageToKernel
 import Mathlib.Algebra.Homology.LeftResolution
+import Mathlib.Algebra.Homology.LeftResolutionDerivabilityStructure
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
