@@ -528,25 +528,26 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
     _ = (v : ι → E) := by simp
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
+open Classical in
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
 protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
-    OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) := by
-  classical
-  refine Basis.toOrthonormalBasis ?_ ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ _h ↦ ?_⟩
-  · exact (Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm
-  · simp [LinearMap.stdBasis, (B j.fst).orthonormal.1 j.snd]
-  · simp_rw [Basis.map_apply, Pi.basis_apply, LinearMap.stdBasis, WithLp.linearEquiv_symm_apply,
-      PiLp.inner_apply, OrthonormalBasis.coe_toBasis, LinearMap.coe_single,
-      WithLp.equiv_symm_pi_apply, ← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j)]
-    rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add, Pi.single_eq_same]
-    · obtain rfl | hj := eq_or_ne j j'
-      · rw [Pi.single_eq_same]
-        exact (B j).orthonormal.2 (ne_of_apply_ne _ _h)
-      · rw [Pi.single_eq_of_ne hj, inner_zero_right]
-    · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
+    OrthonormalBasis ((i : η) × (ι i)) 𝕜 (PiLp 2 fun i : η ↦ (E i)) :=
+  Basis.toOrthonormalBasis 
+    ((Pi.basis (fun i : η ↦ (B i).toBasis)).map (WithLp.linearEquiv 2 _ _).symm) <| by
+    refine ⟨fun j ↦ ?_, fun ⟨j, k⟩ ⟨j', k'⟩ _h ↦ ?_⟩
+    · simp [LinearMap.stdBasis, (B j.fst).orthonormal.1 j.snd]
+    · simp_rw [Basis.map_apply, Pi.basis_apply, LinearMap.stdBasis, WithLp.linearEquiv_symm_apply,
+        PiLp.inner_apply, OrthonormalBasis.coe_toBasis, LinearMap.coe_single,
+        WithLp.equiv_symm_pi_apply, ← Finset.sum_erase_add Finset.univ _ (Finset.mem_univ j)]
+      rw [Finset.sum_eq_zero (fun _ h ↦ ?_), zero_add, Pi.single_eq_same]
+      · obtain rfl | hj := eq_or_ne j j'
+        · rw [Pi.single_eq_same]
+          exact (B j).orthonormal.2 (ne_of_apply_ne _ _h)
+        · rw [Pi.single_eq_of_ne hj, inner_zero_right]
+      · rw [Pi.single_eq_of_ne (Finset.ne_of_mem_erase h), inner_zero_left]
 
 theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
