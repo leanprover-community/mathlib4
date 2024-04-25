@@ -973,12 +973,14 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
-  simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
+  simp only [mem_inf, mem_span_singleton, iSup_subtype'] at hm
+  rw [← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
   -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by rwa [this]
+  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
+    rwa [this]
   ext
   simp
 #align linear_independent.independent_span_singleton LinearIndependent.independent_span_singleton

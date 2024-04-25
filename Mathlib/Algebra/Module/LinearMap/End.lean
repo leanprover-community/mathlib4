@@ -67,6 +67,10 @@ theorem coe_one : ⇑(1 : Module.End R M) = _root_.id := rfl
 theorem coe_mul (f g : Module.End R M) : ⇑(f * g) = f ∘ g := rfl
 #align linear_map.coe_mul LinearMap.coe_mul
 
+instance _root_.Module.End.instNontrivial [Nontrivial M] : Nontrivial (Module.End R M) := by
+  obtain ⟨m, ne⟩ := exists_ne (0 : M)
+  exact nontrivial_of_ne 1 0 fun p => ne (LinearMap.congr_fun p m)
+
 instance _root_.Module.End.monoid : Monoid (Module.End R M) where
   mul := (· * ·)
   one := (1 : M →ₗ[R] M)
