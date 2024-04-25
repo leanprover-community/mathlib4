@@ -246,6 +246,7 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       refine' trace.step _ hz rfl
       clear hz z
       rcases hy with ⟨y, hy, z, hz, eq⟩
+      simp only at eq
       rw [← eq]; clear eq
       rcases hz with ⟨xs, join, mat⟩
       rw [join]; clear join
@@ -255,9 +256,8 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       case nil => simp [trace.start hy]
       case cons x xs ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append]
-        unfold List.join
-        rw [List.append_nil, ← List.append_assoc]
+        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [← List.append_assoc]
         simp only [List.mem_reverse, List.mem_cons] at mat
         refine' trace.step (ih _) (mat x (Or.inl rfl)) rfl
         intro y mem
@@ -286,9 +286,8 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
         exact trace.step ih hw rfl
       case cons x xs ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append]
-        unfold List.join
-        rw [List.append_nil, ← List.append_assoc]
+        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [← List.append_assoc]
         simp only [List.mem_reverse, List.mem_cons] at mat
         refine' trace.step _ (mat x (Or.inl rfl)) rfl
         apply ih
@@ -311,6 +310,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       rw [← eq]; clear eq x
       refine' accepts.step _ _ z_matches rfl; clear z_matches z
       rcases y_matches with ⟨y, z, y_matches, z_matches, eq⟩
+      simp only at eq
       rw [← eq]; clear eq
       rcases z_matches with ⟨xs, join, x_matches⟩
       rw [join]; clear join z
@@ -323,9 +323,8 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         simpa
       case cons x xs ih =>
         intro x_matches
-        rw [List.reverse_cons, List.join_append]
-        unfold List.join
-        rw [List.append_nil, ← List.append_assoc]
+        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [← List.append_assoc]
         simp only [List.mem_reverse, List.mem_cons] at x_matches
         refine' trace.step _ (x_matches x (Or.inl rfl)) rfl
         apply ih
@@ -362,9 +361,8 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
         exact t
       case cons x xs ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append]
-        unfold List.join
-        rw [List.append_nil, ← List.append_assoc]
+        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [← List.append_assoc]
         simp only [List.mem_reverse, List.mem_cons] at mat
         refine' trace.step _ (mat x (Or.inl rfl)) rfl
         apply ih
