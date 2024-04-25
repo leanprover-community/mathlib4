@@ -941,15 +941,13 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
-
 /-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
 
 Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
 numbers are represented.
 -/
-unsafe instance repr : Repr Complex where
-  reprPrec f p := Repr.addAppParen (_root_.repr f.re ++ " + " ++ _root_.repr f.im ++ "*I") p
-#align complex.has_repr Complex.repr
+unsafe instance instRepr : Repr ℂ where
+  reprPrec f p := Repr.addAppParen (repr f.re ++ " + " ++ repr f.im ++ "*I") p
 
 end Complex
 
