@@ -785,9 +785,9 @@ theorem degree_update_le (p : R[X]) (n : ℕ) (a : R) : degree (p.update n a) �
     exact le_rfl
 #align polynomial.degree_update_le Polynomial.degree_update_le
 
-theorem degree_sum_le (s : Finset ι) (f : ι → R[X]) :
+theorem degree_sum_le {S} [Semiring S] (s : Finset ι) (f : ι → S[X]) :
     degree (∑ i in s, f i) ≤ s.sup fun b => degree (f b) :=
-  Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl] <;> rfl)
+  Finset.cons_induction_on s (by simp only [sum_empty, sup_empty, degree_zero, le_refl])
     fun a s has ih =>
     calc
       degree (∑ i in cons a s has, f i) ≤ max (degree (f a)) (degree (∑ i in s, f i)) := by
