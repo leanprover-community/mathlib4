@@ -377,11 +377,14 @@ theorem wordProd_surjective : Surjective cs.wordProd := by
     use i :: ω
     rw [wordProd_cons]
 
-/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`.-/
+/-- The word of length `m` that alternates between `i` and `i'`, ending with `i'`. -/
 def alternatingWord (i i' : B) (m : ℕ) : List B :=
   match m with
   | 0    => []
   | m+1  => (alternatingWord i' i m).concat i'
+
+/-- The word of length `M i i'` that alternates between `i` and `i'`, ending with `i'`. -/
+abbrev braidWord (M : CoxeterMatrix B) (i i' : B) : List B := alternatingWord i i' (M i i')
 
 theorem alternatingWord_succ (i i' : B) (m : ℕ) :
     alternatingWord i i' (m + 1) = (alternatingWord i' i m).concat i' := rfl
@@ -456,10 +459,12 @@ theorem prod_alternatingWord_eq_prod_alternatingWord_sub (i i' : B) (m : ℕ) (h
 
 /-- The two words of length `M i i'` that alternate between `i` and `i'` have the same product.
 This is known as the "braid relation" or "Artin-Tits relation". -/
-theorem prod_alternatingWord_matrix_apply (i i' : B) :
-    π (alternatingWord i i' (M i i')) = π (alternatingWord i' i (M i i')) := by
+theorem wordProd_braidWord_eq (i i' : B) :
+    π (braidWord M i i') = π (braidWord M i' i) := by
   have := cs.prod_alternatingWord_eq_prod_alternatingWord_sub i i' (M i i')
     (Nat.le_mul_of_pos_right _ (by norm_num))
-  simpa [tsub_eq_of_eq_add (mul_two (M i i'))]
+  rw [tsub_eq_of_eq_add (mul_two (M i i'))] at this
+  nth_rw 2 [M.symmetric i i'] at this
+  exact this
 
 end CoxeterSystem
