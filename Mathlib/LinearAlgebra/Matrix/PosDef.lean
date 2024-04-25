@@ -172,7 +172,7 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   rw [(hA.1.eigenvectorUnitary.2).1 , mul_one]
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
-    refine congr_arg _ (funext fun v ↦ ?_)
+    congr! with v
     simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
   simpa [this] using hA.1.spectral_theorem.symm
 
