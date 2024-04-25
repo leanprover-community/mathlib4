@@ -191,12 +191,16 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   suffices χ = X ^ r by
     -- Indeed, by evaluating the coefficients at `1`
     apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    -- we find that the characteristic polynomial `χ 1` of `⁅y - x + x, _⁆` is
-    simp only [lieCharpoly_map_eval, one_smul, sub_add_cancel, Polynomial.map_pow, map_X,
-      LinearMap.charpoly_eq_X_pow_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow,
-      χ, u, r] at this
+    -- we find that the characteristic polynomial `χ 1` of `⁅y, _⁆` is equal to `X ^ r`
+    simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
+      -- and therefore the endomorphism `⁅y, _⁆` is nilpotent.
+      r, LinearMap.charpoly_eq_X_pow_iff,
+      Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow] at this
+    simp only [ZeroMemClass.coe_zero, Subtype.forall, mem_coe_submodule] at this
+    simp? [toEndomorphism] at this
+    show engel K (x : L) ≤ engel K (y : L)
     intro z hz
-    obtain ⟨n, hn⟩ := this ⟨z, hz⟩
+    obtain ⟨n, hn⟩ : ∃ n : ℕ, ((toEndomorphism K U L) y ^ n) z = 0 := this ⟨z, hz⟩
     rw [mem_engel_iff]
     use n
     simpa only [u, ZeroMemClass.coe_zero, sub_add_cancel] using hn
