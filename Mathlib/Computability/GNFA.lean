@@ -408,14 +408,14 @@ theorem mapEquiv_trace_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e
   induction t
   case start x q mat =>
     apply trace.start
-    unfold map_equiv
+    unfold mapEquiv
     dsimp
     rw [Equiv.symm_apply_apply]
     exact mat
   case step x y z p q t mat eq
     ih =>
     refine' trace.step ih _ Eq
-    unfold map_equiv
+    unfold mapEquiv
     dsimp
     rw [Equiv.symm_apply_apply, Equiv.symm_apply_apply]
     exact mat
@@ -426,11 +426,11 @@ theorem mapEquiv_trace {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : �
   intro q x
   constructor
   · intro t
-    exact M.map_equiv_trace_aux e q x t
+    exact M.mapEquiv_trace_aux e q x t
   · intro t
-    have := (M.map_equiv e).mapEquiv_trace_aux e.symm (e q) x t
+    have := (M.mapEquiv e).mapEquiv_trace_aux e.symm (e q) x t
     rw [Equiv.symm_apply_apply] at this
-    unfold map_equiv at this
+    unfold mapEquiv at this
     simp at this
     cases M
     exact this
@@ -443,9 +443,9 @@ theorem mapEquiv_correct_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) 
   case step x y z q t mat eq =>
     refine' accepts.step _ _ _ Eq
     exact e q
-    rw [M.map_equiv_trace e] at t
+    rw [M.mapEquiv_trace e] at t
     exact t
-    unfold map_equiv
+    unfold mapEquiv
     simpa
 
 theorem mapEquiv_correct {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : σ ≃ τ) :
@@ -453,15 +453,15 @@ theorem mapEquiv_correct {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e :
   ext
   constructor
   · intro h
-    exact M.map_equiv_correct_aux e h
+    exact M.mapEquiv_correct_aux e h
   · intro h
-    have := (M.map_equiv e).mapEquiv_correct_aux e.symm h
-    unfold map_equiv at this
+    have := (M.mapEquiv e).mapEquiv_correct_aux e.symm h
+    unfold mapEquiv at this
     simp at this
     cases M
     exact this
 
-theorem exists_to_regularExpression :
+theorem exists_toRegularExpression :
     ∀ M : GNFA α σ, ∃ r : RegularExpression α, M.accepts = r.matches' :=
   by
   refine' Fintype.induction_empty_option _ _ _ σ
@@ -470,11 +470,11 @@ theorem exists_to_regularExpression :
     intro
     intro e h M
     let this.1 : Fintype σ := Fintype.ofEquiv _ e.symm
-    specialize h (M.map_equiv e.symm)
+    specialize h (M.mapEquiv e.symm)
     rcases h with ⟨r, hr⟩
     use r
     rw [← hr]
-    exact M.map_equiv_correct e.symm
+    exact M.mapEquiv_correct e.symm
   · intro M
     use M.step none none
     ext
@@ -527,7 +527,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
   · rintro ⟨q, accept, eval⟩
     refine' GNFA.accepts.step q _ _ x.append_nil.symm
     swap
-    · unfold to_GNFA; simp only; unfold to_GNFA._match_1
+    · unfold toGNFA; simp only; unfold toGNFA._match_1
       rw [Set.mem_def] at accept
       simp [accept]
     clear accept
@@ -537,7 +537,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
     case nil =>
       intro hx
       refine' GNFA.Trace.start _
-      unfold to_GNFA; simp only; unfold to_GNFA._match_1
+      unfold toGNFA; simp only; unfold toGNFA._match_1
       rw [Set.mem_def, List.reverse_nil, NFA.eval_nil] at hx
       simp [hx]
     case cons a as ih =>
@@ -547,14 +547,14 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       rcases hx with ⟨p, mem, step⟩
       refine' GNFA.Trace.step (ih p mem) _ rfl
       rw [Set.mem_def]
-      unfold to_GNFA; simp only; unfold to_GNFA._match_1
+      unfold toGNFA; simp only; unfold toGNFA._match_1
       rw [RegularExpression.mem_sum_iff_exists_mem]
       refine' ⟨RegularExpression.char a, _, rfl⟩
       simpa [univ]
   · intro hx
     cases' hx with x step x y z q t step eq
     case start => cases step
-    unfold to_GNFA at step; simp only at step; unfold to_GNFA._match_1 at step
+    unfold toGNFA at step; simp only at step; unfold toGNFA._match_1 at step
     by_cases M.accept q; swap; simp [h] at step; contradiction
     simp [h] at step
     cases step; clear step
@@ -569,7 +569,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       rw [NFA.eval_nil]
       cases hx
       case start x step =>
-        unfold to_GNFA at step; simp only at step; unfold to_GNFA._match_1 at step
+        unfold toGNFA at step; simp only at step; unfold toGNFA._match_1 at step
         by_cases M.start x
         · exact h
         · simp [h] at step
@@ -577,7 +577,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       case step x y z p t step eq =>
         rw [List.nil_eq_append] at eq
         cases Eq.2; clear eq _x t x x
-        unfold to_GNFA at step; simp only at step; unfold to_GNFA._match_1 at step
+        unfold toGNFA at step; simp only at step; unfold toGNFA._match_1 at step
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
         rcases step with ⟨r, mem, mat⟩
         rw [List.mem_map] at mem
@@ -590,7 +590,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       rw [NFA.mem_stepSet]
       cases hx
       case start q step =>
-        unfold to_GNFA at step; simp only at step; unfold to_GNFA._match_1 at step
+        unfold toGNFA at step; simp only at step; unfold toGNFA._match_1 at step
         by_cases M.start q
         · rw [if_pos h, RegularExpression.matches'_epsilon, Language.mem_one] at step
           replace step : as.reverse ++ [a] = List.nil := step
@@ -599,7 +599,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
         · rw [if_neg h] at step
           cases step
       case step y z p q t step eq =>
-        unfold to_GNFA at step; simp at step; unfold to_GNFA._match_1 at step
+        unfold toGNFA at step; simp at step; unfold toGNFA._match_1 at step
         replace eq : as.reverse ++ [a] = y ++ z := Eq
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
         rcases step with ⟨r, mem, mat⟩
@@ -619,24 +619,24 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
 /--
 Given an NFA with a `fintype` state, there is a regular expression that matches the same language.
 -/
-theorem exists_to_regularExpression {σ} [Finite α] [Finite σ] (M : NFA α σ) :
+theorem exists_toRegularExpression {σ} [Finite α] [Finite σ] (M : NFA α σ) :
     ∃ r : RegularExpression α, M.accepts = r.matches' := by
   classical
   rcases Finite.exists_univ_list α with ⟨as, _, univ⟩
   cases nonempty_fintype σ
-  rcases(M.to_GNFA as).exists_to_regularExpression with ⟨r, hr⟩
+  rcases(M.toGNFA as).exists_toRegularExpression with ⟨r, hr⟩
   use r
   rw [← hr]
-  exact M.to_GNFA_correct as univ
+  exact M.toGNFA_correct as univ
 
 /-- Noncomputably finds the regular expression equivalent to the NFA.
 -/
 noncomputable def toRegularExpression [Fintype α] (M : NFA α σ) : RegularExpression α :=
-  Classical.choose M.exists_to_regularExpression
+  Classical.choose M.exists_toRegularExpression
 
 theorem toRegularExpression_correct [Fintype α] (M : NFA α σ) :
     M.accepts = M.toRegularExpression.matches' :=
-  Classical.choose_spec M.exists_to_regularExpression
+  Classical.choose_spec M.exists_toRegularExpression
 
 end NFA
 
