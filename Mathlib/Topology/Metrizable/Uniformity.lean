@@ -279,3 +279,24 @@ theorem UniformSpace.metrizableSpace [UniformSpace X] [IsCountablyGenerated (�
   letI := UniformSpace.metricSpace X
   infer_instance
 #align uniform_space.metrizable_space UniformSpace.metrizableSpace
+
+lemma TotallyBounded.isSeparable {α : Type*} [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
+    {s : Set α} (h : TotallyBounded s) : TopologicalSpace.IsSeparable s:= by
+  letI := UniformSpace.pseudoMetricSpace (X := α)
+  rw [Metric.totallyBounded_iff] at h
+  choose! f hf hfb using (fun n : ℕ => h (1/(n+1)) Nat.one_div_pos_of_nat)
+  use ⋃ n, f n
+  constructor
+  · exact Set.countable_iUnion (fun i => (hf i).countable)
+  · intro x hx
+    rw [Metric.mem_closure_iff]
+    intro ε hε
+    obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
+    have : ∃ b ∈ f n, dist x b < ε := by
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hfb n hx)
+      simp only [one_div, Set.mem_iUnion, Metric.mem_ball, exists_prop] at hi
+      use i, hi.1
+      apply lt_trans hi.2 ?_
+      rw [inv_eq_one_div]
+      exact hn
+    aesop
