@@ -69,7 +69,7 @@ theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) 
     case nil =>
       rintro ⟨r, mem, _⟩
       exfalso
-      simpa
+      contradiction
     intro hx
     unfold List.sum
     simp only [List.reverse_cons, RegularExpression.matches'_add, forall_exists_index,
@@ -309,7 +309,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       rcases mat with ⟨y, y_matches, z, z_matches, eq⟩
       rw [← eq]; clear eq x
       refine' accepts.step _ _ z_matches rfl; clear z_matches z
-      rcases y_matches with ⟨y, z, y_matches, z_matches, eq⟩
+      rcases y_matches with ⟨y, y_matches, z, z_matches, eq⟩
       simp only at eq
       rw [← eq]; clear eq
       rcases z_matches with ⟨xs, join, x_matches⟩
@@ -558,7 +558,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       unfold toGNFA; simp only
       rw [RegularExpression.mem_sum_iff_exists_mem]
       refine' ⟨RegularExpression.char a, _, rfl⟩
-      simpa [univ]
+      simpa [univ,List.mem_filter]
   · intro hx
     cases' hx with x step x y z q t step eq
     case start => cases step
