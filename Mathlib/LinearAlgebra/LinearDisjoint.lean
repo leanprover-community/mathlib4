@@ -338,20 +338,6 @@ theorem linearDisjoint_symm_of_commute
     (hc : ∀ (m : M) (n : N), Commute m.1 n.1) : M.LinearDisjoint N ↔ N.LinearDisjoint M :=
   ⟨fun H ↦ H.symm_of_commute hc, fun H ↦ H.symm_of_commute fun _ _ ↦ (hc _ _).symm⟩
 
--- TODO: remove once #11731 is merged
-lemma _root_.TensorProduct.coe_congr_right_refl {R : Type*} [CommSemiring R] {M N P : Type*}
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid P]
-    [Module R M] [Module R N] [Module R P] (f : M ≃ₗ[R] P) :
-    (TensorProduct.congr f (LinearEquiv.refl R N)).toLinearMap = LinearMap.rTensor N f :=
-  rfl
-
--- TODO: remove once #11731 is merged
-lemma _root_.TensorProduct.coe_congr_left_refl {R : Type*} [CommSemiring R] {M N Q : Type*}
-    [AddCommMonoid M] [AddCommMonoid N] [AddCommMonoid Q]
-    [Module R M] [Module R N] [Module R Q] (g : N ≃ₗ[R] Q) :
-    (TensorProduct.congr (LinearEquiv.refl R M) g).toLinearMap = LinearMap.lTensor M g :=
-  rfl
-
 namespace LinearDisjoint
 
 variable (M N)
@@ -359,14 +345,14 @@ variable (M N)
 theorem of_map_linearIndependent_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
   simp_rw [mulLeftMap, ← Basis.coe_repr_symm,
-    ← TensorProduct.coe_congr_right_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
+    ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 theorem of_map_linearIndependent_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
   simp_rw [mulRightMap, ← Basis.coe_repr_symm,
-    ← TensorProduct.coe_congr_left_refl, LinearEquiv.comp_coe, LinearMap.coe_comp,
+    ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
