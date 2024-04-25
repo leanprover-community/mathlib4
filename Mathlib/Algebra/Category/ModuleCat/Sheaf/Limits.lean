@@ -103,4 +103,10 @@ end Finite
 
 instance hasLimitsOfSize : HasLimitsOfSize.{v₂, v} (SheafOfModules.{v} R) where
 
+noncomputable instance evaluationPreservesLimitsOfSize (X : Cᵒᵖ) :
+    PreservesLimitsOfSize.{v₂, v} (evaluation R X : SheafOfModules.{v} R ⥤ _) where
+
+noncomputable instance forgetPreservesLimitsOfSize :
+    PreservesLimitsOfSize.{v₂, v} (forget.{v} R) where
+
 end SheafOfModules
