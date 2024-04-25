@@ -6,6 +6,7 @@ Authors: Chris Hughes, Yakov Pechersky
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.Zip
 import Mathlib.Data.Nat.Defs
+import Mathlib.Data.List.Infix
 
 #align_import data.list.rotate from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
