@@ -235,6 +235,8 @@ theorem ofReal_eq_coe_nnreal {x : ℝ} (h : 0 ≤ x) :
   (coe_nnreal_eq ⟨x, h⟩).symm
 #align ennreal.of_real_eq_coe_nnreal ENNReal.ofReal_eq_coe_nnreal
 
+theorem ofNNReal_toNNReal (x : ℝ) : (Real.toNNReal x : ℝ≥0∞) = ENNReal.ofReal x := rfl
+
 @[simp] theorem ofReal_coe_nnreal : ENNReal.ofReal p = p := (coe_nnreal_eq p).symm
 #align ennreal.of_real_coe_nnreal ENNReal.ofReal_coe_nnreal
 
