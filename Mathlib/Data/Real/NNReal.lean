@@ -165,8 +165,7 @@ protected theorem coe_injective : Injective ((↑) : ℝ≥0 → ℝ) := Subtype
   NNReal.coe_injective.eq_iff
 #align nnreal.coe_eq NNReal.coe_inj
 
--- 2024-02-03
-@[deprecated] protected alias coe_eq := coe_inj
+@[deprecated] protected alias coe_eq := coe_inj -- 2024-02-03
 
 @[simp, norm_cast] lemma coe_zero : ((0 : ℝ≥0) : ℝ) = 0 := rfl
 #align nnreal.coe_zero NNReal.coe_zero
@@ -401,8 +400,7 @@ theorem mk_natCast (n : ℕ) : @Eq ℝ≥0 (⟨(n : ℝ), n.cast_nonneg⟩ : ℝ
   NNReal.eq (NNReal.coe_natCast n).symm
 #align nnreal.mk_coe_nat NNReal.mk_natCast
 
--- 2024-04-05
-@[deprecated] alias mk_coe_nat := mk_natCast
+@[deprecated] alias mk_coe_nat := mk_natCast -- 2024-04-05
 
 -- Porting note: place this in the `Real` namespace
 @[simp]
@@ -721,6 +719,9 @@ theorem toNNReal_lt_toNNReal_iff {r p : ℝ} (h : 0 < p) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=
   toNNReal_lt_toNNReal_iff'.trans (and_iff_left h)
 #align real.to_nnreal_lt_to_nnreal_iff Real.toNNReal_lt_toNNReal_iff
+
+theorem lt_of_toNNReal_lt {r p : ℝ} (h : r.toNNReal < p.toNNReal) : r < p :=
+  (Real.toNNReal_lt_toNNReal_iff <| Real.toNNReal_pos.1 (ne_bot_of_gt h).bot_lt).1 h
 
 theorem toNNReal_lt_toNNReal_iff_of_nonneg {r p : ℝ} (hr : 0 ≤ r) :
     Real.toNNReal r < Real.toNNReal p ↔ r < p :=

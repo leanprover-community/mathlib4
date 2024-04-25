@@ -922,13 +922,14 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] :=
-  { OreLocalization.nontrivial,
-    OreLocalization.inv',
-    OreLocalization.ring with
-    mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero
-    qsmul := qsmulRec _ }
+instance divisionRing : DivisionRing R[R⁰⁻¹] where
+  __ := ring
+  __ := nontrivial
+  __ := inv'
+  mul_inv_cancel := OreLocalization.mul_inv_cancel
+  inv_zero := OreLocalization.inv_zero
+  nnqsmul := _
+  qsmul := _
 
 end DivisionRing
 
