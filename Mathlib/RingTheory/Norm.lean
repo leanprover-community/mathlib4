@@ -274,17 +274,16 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
   haveI : FiniteDimensional L F := FiniteDimensional.right K L F
   haveI : IsSeparable L F := isSeparable_tower_top_of_isSeparable K L F
   letI : Fintype (L →ₐ[K] E) := PowerBasis.AlgHom.fintype pb
-  letI : ∀ f : L →ₐ[K] E, Fintype (@AlgHom L F E _ _ _ _ f.toRingHom.toAlgebra) := ?_
-  · rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
-      ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
-    · refine Finset.prod_congr rfl fun σ _ => ?_
-      · letI : Algebra L E := σ.toRingHom.toAlgebra
-        simp_rw [Finset.prod_const]
-        congr
-        exact AlgHom.card L F E
-    · intro σ
-      simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
-        IsScalarTower.coe_toAlgHom']
+  rw [Fintype.prod_equiv algHomEquivSigma (fun σ : F →ₐ[K] E => _) fun σ => σ.1 pb.gen,
+    ← Finset.univ_sigma_univ, Finset.prod_sigma, ← Finset.prod_pow]
+  · refine Finset.prod_congr rfl fun σ _ => ?_
+    letI : Algebra L E := σ.toRingHom.toAlgebra
+    simp_rw [Finset.prod_const]
+    congr
+    exact AlgHom.card L F E
+  · intro σ
+    simp only [algHomEquivSigma, Equiv.coe_fn_mk, AlgHom.restrictDomain, AlgHom.comp_apply,
+      IsScalarTower.coe_toAlgHom']
 #align algebra.prod_embeddings_eq_finrank_pow Algebra.prod_embeddings_eq_finrank_pow
 
 variable (K)
