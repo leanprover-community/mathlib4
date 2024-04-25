@@ -249,17 +249,17 @@ alias testBit_bit_zero := bit_testBit_zero
     unfold bitwise
     cases mod_two_eq_zero_or_one n with | _ h => simp [n0, h, bitwise]
 
-lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
+lemma bodd_eq_one_and_ne_zero : ∀ n, bodd n = (1 &&& n != 0)
   | 0 => rfl
   | 1 => rfl
-  | n + 2 => by simpa using bodd_eq_and_one_ne_zero n
+  | n + 2 => by simpa using bodd_eq_one_and_ne_zero n
 
 lemma testBit_bit_succ (m b n) : testBit (bit b n) (succ m) = testBit n m := by
   have : bodd (((bit b n) >>> 1) >>> m) = bodd (n >>> m) := by
     simp only [shiftRight_eq_div_pow]
     simp [← div2_val, div2_bit]
   rw [← shiftRight_add, Nat.add_comm] at this
-  simp only [bodd_eq_and_one_ne_zero] at this
+  simp only [bodd_eq_one_and_ne_zero] at this
   exact this
 #align nat.test_bit_succ Nat.testBit_succ
 
@@ -350,10 +350,6 @@ theorem pos_of_bit0_pos {n : ℕ} (h : 0 < bit0 n) : 0 < n := by
   · apply succ_pos
 #align nat.pos_of_bit0_pos Nat.pos_of_bit0_pos
 
-@[simp]
-theorem bitCasesOn_bit {C : ℕ → Sort u} (H : ∀ b n, C (bit b n)) (b : Bool) (n : ℕ) :
-    bitCasesOn (bit b n) H = H b n :=
-  eq_of_heq <| (eq_rec_heq _ _).trans <| by rw [bodd_bit, div2_bit]
 #align nat.bit_cases_on_bit Nat.bitCasesOn_bit
 
 @[simp]
@@ -488,7 +484,7 @@ theorem zero_bits : bits 0 = [] := by simp [Nat.bits]
 @[simp]
 theorem bits_append_bit (n : ℕ) (b : Bool) (hn : n = 0 → b = true) :
     (bit b n).bits = b :: n.bits := by
-  rw [Nat.bits, binaryRec_eq]
+  rw [Nat.bits, Nat.bits, binaryRec_eq]
   simpa
 #align nat.bits_append_bit Nat.bits_append_bit
 
