@@ -310,6 +310,9 @@ lemma singularPart_compl_mutuallySingularSetSlice (κ η : kernel α γ) [IsSFin
     simp [hx.le]
   · simp only [sub_pos]
     exact not_le.mp hx
+  -- · rwa [mutuallySingularSetSlice, mem_setOf_eq, eq_comm, ← sub_eq_zero, ← Ne] at hx
+  -- · simp [rnDerivAux_le_one (le_add_of_nonneg_right bot_le)]
+  -- · simp [lt_of_le_of_ne (rnDerivAux_le_one (le_add_of_nonneg_right bot_le)) hx]
 
 lemma singularPart_of_subset_compl_mutuallySingularSetSlice [IsFiniteKernel κ]
     [IsFiniteKernel η] {a : α} {s : Set γ} (hs : s ⊆ (mutuallySingularSetSlice κ η a)ᶜ) :
