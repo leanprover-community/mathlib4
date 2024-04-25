@@ -3,7 +3,8 @@ import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.BicomplexColumns
 
-open CategoryTheory Category Limits Preadditive
+open CategoryTheory Category Limits Preadditive ZeroObject
+
 
 @[simp]
 lemma CategoryTheory.Limits.kernel.map_id {C : Type*} [Category C] [HasZeroMorphisms C]
@@ -295,3 +296,27 @@ instance [∀ X, Epi (π.app X)] : QuasiIso ((leftResolutionFunctorπ π).app X)
     · exact (leftResolutionFunctorπ₀_obj_exactAt π X n)
 
 end ChainComplex
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C D : Type*} [Category C] [Category D] [HasZeroObject C] [HasZeroMorphisms C]
+  [HasZeroMorphisms D] [HasCokernels D] (F : C ⥤ D)
+
+@[simps]
+noncomputable def modCokernelFromZero : C ⥤ D where
+  obj X := cokernel (F.map (0 : 0 ⟶ X))
+  map φ := cokernel.map _ _ (𝟙 _) (F.map φ) (by rw [id_comp, ← F.map_comp, zero_comp])
+
+instance : F.modCokernelFromZero.PreservesZeroMorphisms where
+  map_zero X Y := by
+    dsimp
+    ext
+    simpa only [coequalizer_as_cokernel, cokernel.π_desc, comp_zero,
+      ← F.map_comp_assoc, zero_comp]
+      using (F.map (0 : X ⟶ 0)) ≫= cokernel.condition (F.map (0 : 0 ⟶ Y))
+
+end Functor
+
+end CategoryTheory

@@ -274,7 +274,7 @@ end Embedding
 @[simps!]
 def embeddingUpNat : Embedding (up ℕ) (up ℤ) :=
   Embedding.mk' _ _ (fun n => n)
-    (fun _ _ h => by simpa using h)
+    (fun _ _ h => by simpa? using h)
     (by dsimp; omega)
 
 instance : embeddingUpNat.IsRelIff := by dsimp [embeddingUpNat]; infer_instance
