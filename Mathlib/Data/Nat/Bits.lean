@@ -242,7 +242,12 @@ alias testBit_bit_zero := bit_testBit_zero
 #align nat.test_bit_zero Nat.testBit_zero
 
 @[simp] theorem land_one_eq_mod_two (n : Nat) : n &&& 1 = n % 2 := by
-  simp [Nat.land_comm]
+  match Nat.decEq n 0 with
+  | isTrue n0 => subst n0; decide
+  | isFalse n0 =>
+    simp only [HAnd.hAnd, AndOp.and, land]
+    unfold bitwise
+    cases mod_two_eq_zero_or_one n with | _ h => simp [n0, h]; rfl
 
 lemma bodd_eq_and_one_ne_zero : ∀ n, bodd n = (n &&& 1 != 0)
   | 0 => rfl
