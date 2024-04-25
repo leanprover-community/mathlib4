@@ -174,7 +174,7 @@ theorem preimage_preimage {g : β → γ} {f : α → β} {s : Set γ} :
 #align set.preimage_preimage Set.preimage_preimage
 
 theorem eq_preimage_subtype_val_iff {p : α → Prop} {s : Set (Subtype p)} {t : Set α} :
-    s = _ ↓∩ t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t :=
+    s = Subtype.val ⁻¹' t ↔ ∀ (x) (h : p x), (⟨x, h⟩ : Subtype p) ∈ s ↔ x ∈ t :=
   ⟨fun s_eq x h => by
     rw [s_eq]
     simp, fun h => ext fun ⟨x, hx⟩ => by simp [h]⟩
@@ -1007,7 +1007,7 @@ theorem range_const : ∀ [Nonempty ι] {c : α}, (range fun _ : ι => c) = {c}
 #align set.range_const Set.range_const
 
 theorem range_subtype_map {p : α → Prop} {q : β → Prop} (f : α → β) (h : ∀ x, p x → q (f x)) :
-    range (Subtype.map f h) = _ ↓∩ (f '' { x | p x }) := by
+    range (Subtype.map f h) = (↑) ⁻¹' (f '' { x | p x }) := by
   ext ⟨x, hx⟩
   rw [mem_preimage, mem_range, mem_image, Subtype.exists, Subtype.coe_mk]
   apply Iff.intro
