@@ -556,7 +556,7 @@ theorem _root_.Pi.orthonormalBasis.toBasis {η : Type*} [Fintype η] {ι : η �
       ((Pi.basis fun i : η ↦ (B i).toBasis).map (WithLp.linearEquiv 2 _ _).symm) := by ext; rfl
 
 @[simp]
-theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η]  [DecidableEq η] {ι : η → Type*}
+theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
