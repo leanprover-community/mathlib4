@@ -252,7 +252,7 @@ theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s
   exact ⟨0, fun n _ ↦ hu n⟩
 
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
-  {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
+    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
   refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ _⟩
   rw [isClosed_iff_forall_filter]
   intro x ℱ hℱ₁ hℱ₂ hℱ₃
