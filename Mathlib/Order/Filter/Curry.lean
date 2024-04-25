@@ -81,7 +81,7 @@ theorem Tendsto.curry {f : α → β → γ} {la : Filter α} {lb : Filter β} {
 theorem frequently_curry_prod_iff {α β : Type*} {l : Filter α} {m : Filter β}
     (s : Set α) (t : Set β) : (∃ᶠ x in l.curry m, x ∈ s ×ˢ t) ↔ sᶜ ∉ l ∧ tᶜ ∉ m := by
   refine ⟨fun h => ?_, fun ⟨hs, ht⟩ => ?_⟩
-  . exact frequently_prod_and.mp (Frequently.filter_mono h curry_le_prod)
+  · exact frequently_prod_and.mp (Frequently.filter_mono h curry_le_prod)
   rw [frequently_curry_iff]
   exact Frequently.mono hs $ fun x hx => Frequently.mono ht (by simp[hx])
 
