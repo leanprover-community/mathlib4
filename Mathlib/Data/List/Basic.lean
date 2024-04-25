@@ -1265,29 +1265,15 @@ theorem get_map_rev (f : α → β) {l n} :
 
 #align list.nth_le_map' List.get_map
 
-/-- If one has `nthLe L i hi` in a formula and `h : L = L'`, one can not `rw h` in the formula as
-`hi` gives `i < L.length` and not `i < L'.length`. The lemma `nth_le_of_eq` can be used to make
-such a rewrite, with `rw (nth_le_of_eq h)`. -/
-@[deprecated get_of_eq] -- 2023-01-05
-theorem nthLe_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) :
-    nthLe L i hi = nthLe L' i (h ▸ hi) := by congr
-#align list.nth_le_of_eq List.nthLe_of_eq
+#align list.nth_le_of_eq List.get_of_eq
 
 @[simp, deprecated get_singleton] -- 2023-01-05
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.get_singleton
 
-@[deprecated] -- 2023-01-05 -- FIXME: replacement -- it's not `get_zero` and it's not `get?_zero`
-theorem nthLe_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head! := by
-  cases L
-  cases h
-  simp [nthLe]
-#align list.nth_le_zero List.nthLe_zero
+#noalign list.nth_le_zero -- List.nthLe_zero
 
-@[deprecated get_append] -- 2023-01-05
-theorem nthLe_append {l₁ l₂ : List α} {n : ℕ} (hn₁) (hn₂) :
-    (l₁ ++ l₂).nthLe n hn₁ = l₁.nthLe n hn₂ := get_append _ hn₂
-#align list.nth_le_append List.nthLe_append
+#align list.nth_le_append List.get_append
 
 @[deprecated get_append_right'] -- 2023-01-05
 theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length ≤ n) (h₂) :
@@ -1731,14 +1717,7 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 
 #align list.nth_le_take List.get_take
 
-set_option linter.deprecated false in
-/-- The `i`-th element of a list coincides with the `i`-th element of any of its prefixes of
-length `> i`. Version designed to rewrite from the small list to the big list. -/
-@[deprecated get_take'] -- 2023-01-05
-theorem nthLe_take' (L : List α) {i j : ℕ} (hi : i < (L.take j).length) :
-    nthLe (L.take j) i hi = nthLe L i (lt_of_lt_of_le hi (by simp only [length_take]; omega)) :=
-  get_take' _
-#align list.nth_le_take' List.nthLe_take'
+#align list.nth_le_take' List.get_take'
 
 #align list.nth_take List.get?_take
 #align list.nth_take_of_succ List.nth_take_of_succ
