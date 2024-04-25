@@ -288,7 +288,7 @@ theorem D_subset_differentiable_set {K : Set (E →L[𝕜] F)} (hK : IsComplete 
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * ‖c‖ * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * ‖c‖ * (ε / (12 * ‖c‖)) := by gcongr
-      _ = ε := by field_simp; ring
+      _ = ε := by field_simp
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=
     cauchySeq_tendsto_of_isComplete hK (fun e => (hn e (n e) (n e) le_rfl le_rfl).1) this
@@ -635,14 +635,14 @@ theorem D_subset_differentiable_set {K : Set F} (hK : IsComplete K) :
   have : CauchySeq L0 := by
     rw [Metric.cauchySeq_iff']
     intro ε εpos
-    obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=
+    obtain ⟨e, he⟩ : ∃ e : ℕ, (1 / 2) ^ e < ε / 12 :=mul_div_cancel_left₀
       exists_pow_lt_of_lt_one (div_pos εpos (by norm_num)) (by norm_num)
     refine' ⟨e, fun e' he' => _⟩
     rw [dist_comm, dist_eq_norm]
     calc
       ‖L0 e - L0 e'‖ ≤ 12 * (1 / 2) ^ e := M _ _ _ _ _ _ le_rfl le_rfl le_rfl le_rfl he'
       _ < 12 * (ε / 12) := mul_lt_mul' le_rfl he (le_of_lt P) (by norm_num)
-      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]; ring
+      _ = ε := by field_simp [(by norm_num : (12 : ℝ) ≠ 0)]
 
   -- As it is Cauchy, the sequence `L0` converges, to a limit `f'` in `K`.
   obtain ⟨f', f'K, hf'⟩ : ∃ f' ∈ K, Tendsto L0 atTop (𝓝 f') :=

@@ -430,7 +430,7 @@ instance (priority := 100) of_field : ValuationRing K := by
   intro a b
   by_cases h : b = 0
   · use 0; left; simp [h]
-  · use a * b⁻¹; right; field_simp; rw [mul_comm]
+  · use a * b⁻¹; right; field_simp
 #align valuation_ring.of_field ValuationRing.of_field
 
 end
