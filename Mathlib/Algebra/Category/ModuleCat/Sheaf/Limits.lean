@@ -101,4 +101,6 @@ noncomputable instance forgetPreservesFiniteLimits :
 
 end Finite
 
+instance hasLimitsOfSize : HasLimitsOfSize.{v₂, v} (SheafOfModules.{v} R) where
+
 end SheafOfModules
