@@ -35,7 +35,8 @@ combinations, in the form of a regular expression. When following a transition, 
 prefix of the input string is taken. "No transition" can be simulated by using the regular
 expression `0`, which accepts no strings.
 -/
-structure GNFA (α : Type u) (σ : Type v) [Fintype σ] where
+-- Porting note: removed Fintype instance for σ as an argument
+structure GNFA (α : Type u) (σ : Type v) where
   step : Option σ → Option σ → RegularExpression α
 
 variable {α : Type u} {σ : Type v} [Fintype σ]
