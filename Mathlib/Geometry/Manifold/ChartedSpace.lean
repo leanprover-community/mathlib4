@@ -342,12 +342,19 @@ both the function and its inverse have some property. If this property is stable
 one gets a groupoid. `Pregroupoid` bundles the properties needed for this construction, with the
 groupoid of smooth functions with smooth inverses as an application. -/
 structure Pregroupoid (H : Type*) [TopologicalSpace H] where
+  /-- Property describing membership in this groupoid: the pregroupoid "contains"
+    all functions `H → H` having the pregroupoid property on some `s : Set H` -/
   property : (H → H) → Set H → Prop
+  /-- The pregroupoid property is stable under composition -/
   comp : ∀ {f g u v}, property f u → property g v →
     IsOpen u → IsOpen v → IsOpen (u ∩ f ⁻¹' v) → property (g ∘ f) (u ∩ f ⁻¹' v)
+  /-- Pregroupoids contain the identity map (on `univ`) -/
   id_mem : property id univ
+  /-- The pregroupoid property is "local", in the sense that `f` has the pregroupoid property on `u`
+  iff its restriction to each open subset of `u` has it -/
   locality :
     ∀ {f u}, IsOpen u → (∀ x ∈ u, ∃ v, IsOpen v ∧ x ∈ v ∧ property f (u ∩ v)) → property f u
+  /-- If `f = g` on `u` and `property f u`, then `property g u` -/
   congr : ∀ {f g : H → H} {u}, IsOpen u → (∀ x ∈ u, g x = f x) → property f u → property g u
 #align pregroupoid Pregroupoid
 

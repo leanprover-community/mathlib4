@@ -7,8 +7,9 @@ import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Algebra.Polynomial.Div
 import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.RingTheory.Polynomial.Tower
+import Mathlib.RingTheory.Nilpotent.Basic
 
 /-!
 # Nilpotency in polynomial rings.
