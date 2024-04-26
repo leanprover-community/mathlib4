@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jon Bannon, Jireh Loreaux
 -/
 
-import Mathlib.LinearAlgebra.Matrix.PosDef
+import Mathlib.LinearAlgebra.Matrix.Spectrum
 
 /-
 This file provides the functional calculus for Hermitian matrices over an RCLike field 𝕜. Given a
@@ -19,7 +19,7 @@ spectral theorem, diagonalization theorem, functional calculus
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
+variable {A : Matrix n n 𝕜} (f : 𝕜 → 𝕜)
 
 open scoped BigOperators
 
@@ -29,3 +29,8 @@ section DecidableEq
 
 variable [DecidableEq n]
 variable (hA : A.IsHermitian)
+
+/--This is the basic definition of how to apply a function to a Hermitian matrix-/
+noncomputable def IsHermitian_fun_apply :=
+    (hA.eigenvectorUnitary : Matrix n n 𝕜) * diagonal (f ∘ RCLike.ofReal ∘ hA.eigenvalues)
+     * star (hA.eigenvectorUnitary : Matrix n n 𝕜)
