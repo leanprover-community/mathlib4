@@ -131,10 +131,173 @@ end CommRing
 
 section Field
 
-variable {K L : Type*}
+variable (K L : Type*)
 variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra Module.Free Polynomial
+open FiniteDimensional LieSubalgebra Module.Free Polynomial Cardinal
+
+structure engel_le_engel.Package where
+  hLK : finrank K L ≤ #K
+  U : LieSubalgebra K L
+  x : U
+  y : U
+  hUx : U ≤ engel K (x : L)
+  hmin : ∀ y : U, engel K (y : L) ≤ engel K (x : L) → engel K (y : L) = engel K (x : L)
+
+variable {K L}
+
+namespace engel_le_engel.Package
+noncomputable section
+
+variable (P : engel_le_engel.Package K L)
+
+abbrev E : LieSubmodule K P.U L :=
+  { engel K (P.x : L) with
+    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K (P.x : L)).lie_mem (P.hUx hu) hy }
+
+abbrev Q := L ⧸ P.E
+
+abbrev r := finrank K P.E
+
+abbrev u : P.U := P.y - P.x
+
+abbrev χ : Polynomial (K[X]) := lieCharpoly K P.E P.x P.u
+
+abbrev ψ : Polynomial (K[X]) := lieCharpoly K P.Q P.x P.u
+
+set_option hygiene false in
+macro "setup_notation" : tactic => `(tactic|(let hLK := P.hLK; let x := P.x; let y := P.y; let U := P.U; let hUx := P.hUx; let E := P.E; let Q := P.Q; let r := P.r; let u := P.u; let χ := P.χ; let ψ := P.ψ))
+
+lemma reduction₁ (h : P.χ = X ^ P.r) : engel K (P.x : L) ≤ engel K (P.y : L) := by
+  setup_notation
+  -- Indeed, by evaluating the coefficients at `1`
+  apply_fun (fun p ↦ p.map (evalRingHom 1)) at h
+  -- we find that the characteristic polynomial `χ 1` of `⁅y, _⁆` is equal to `X ^ r`
+  simp_rw [Polynomial.map_pow, map_X, lieCharpoly_map_eval, one_smul, sub_add_cancel,
+    -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
+    LinearMap.charpoly_eq_X_pow_iff,
+    Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow, ZeroMemClass.coe_zero] at h
+  -- We ultimately want to show `engel K x ≤ engel K y`
+  intro z hz
+  -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
+  rw [mem_engel_iff]
+  exact h ⟨z, hz⟩
+
+lemma reduction₂ (h : ∀ i < P.r, coeff P.χ i = 0) : P.χ = X ^ P.r := by
+  setup_notation
+  simp_rw [← lieCharpoly_natDegree K E x u] at h ⊢
+  rw [(lieCharpoly_monic K E x u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
+  exact le_natTrailingDegree (lieCharpoly_monic K E x u).ne_zero h
+
+lemma coeff_zero_case (hr : P.r < finrank K L) (hx₀ : P.x ≠ 0) : coeff P.χ 0 = 0 := by
+  setup_notation
+-- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
+  -- provided that its degree is stictly less than `#K`.
+  apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
+  case deg =>
+    -- We need to show `(natDegree (coeff P.χ 0)) < #K` and know that `finrank K L ≤ #K`
+    apply lt_of_lt_of_le _ hLK
+    rw [Nat.cast_lt]
+    -- So we are left with showing `natDegree (coeff χ 0) < finrank K L`
+    apply lt_of_le_of_lt _ hr
+    apply lieCharpoly_coeff_natDegree _ _ _ _ 0 r (zero_add r)
+  -- Fix an element of `K`.
+  intro α
+  -- We want to show that `α` is a root of `coeff χ 0`.
+  -- So we need to show that there is a `z ≠ 0` in `E` satisfying `⁅α • u + x, z⁆ = 0`.
+  rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
+    ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
+  -- We consider `z = α • u + x`, and split into the cases `z = 0` and `z ≠ 0`.
+  let z := α • u + x
+  obtain hz₀|hz₀ := eq_or_ne z 0
+  · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
+    refine ⟨⟨x, self_mem_engel K (x : L)⟩, ?_, ?_⟩
+    · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
+    · dsimp only [z] at hz₀
+      simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
+  -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
+  refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
+  · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
+  · show ⁅z, _⁆ = (0 : E)
+    ext
+    exact lie_self z.1
+
+lemma constant_coeff_psi  : constantCoeff P.ψ ≠ 0 := by
+  setup_notation
+  -- Suppose that `ψ` in fact has trivial constant coefficient.
+  intro H
+  -- Then there exists a `z ≠ 0` in `Q` such that `⁅x, z⁆ = 0`.
+  obtain ⟨z, hz0, hxz⟩ : ∃ z : Q, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
+    -- Indeed, if the constant coefficient of `ψ` is trivial,
+    -- then `0` is a root of the characteristic polynomial of `⁅0 • u + x, _⁆` acting on `Q`,
+    -- and hence we find an eigenvector `z` as desired.
+    apply_fun (evalRingHom 0) at H
+    rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
+      ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
+    simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add,
+      LieModule.toEndomorphism_apply_apply] using H
+  -- It suffices to show `z = 0` (in `Q`) to obtain a contradiction.
+  apply hz0
+  -- We replace `z : Q` by a representative in `L`.
+  obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
+  -- The assumption `⁅x, z⁆ = 0` is equivalent to `⁅x, z⁆ ∈ E`.
+  have : ⁅x, z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
+  -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
+  -- On the other hand, our goal is to show `z = 0` in `Q`,
+  -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
+  simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', mem_coe_submodule, mem_engel_iff,
+    LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
+  -- Hence we win.
+  obtain ⟨n, hn⟩ := this
+  use n+1
+  rwa [pow_succ]
+
+lemma exists_s_psi (hr : P.r < finrank K L) :
+    ∃ s : Finset K, P.r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff P.ψ).eval α ≠ 0 := by
+  setup_notation
+  -- We start by observing that `ψ` has non-trivial constant coefficient.
+  have hψ : constantCoeff ψ ≠ 0 := P.constant_coeff_psi
+  classical
+  -- Let `t` denote the set of roots of `constantCoeff ψ`.
+  let t := (constantCoeff ψ).roots.toFinset
+  -- We show that `t` has cardinality at most `finrank K L - r`.
+  have ht : t.card ≤ finrank K L - r := by
+    refine (Multiset.toFinset_card_le _).trans ?_
+    refine (card_roots' _).trans ?_
+    rw [constantCoeff_apply]
+    -- Indeed, `constantCoeff ψ` has degree at most `finrank K Q = finrank K L - r`.
+    apply lieCharpoly_coeff_natDegree
+    suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
+    apply Submodule.finrank_quotient_add_finrank
+  -- Hence there exists a subset of size `≥ r` in the complement of `t`,
+  -- and `constantCoeff ψ` takes non-zero values on all of this subset.
+  obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
+  use s \ t
+  refine ⟨?_, ?_⟩
+  · refine le_trans ?_ (Finset.le_card_sdiff _ _)
+    -- The next two lines are needed because the main proof was split into lemmas
+    change r ≤ _
+    change r < finrank K L at hr
+    omega
+  · intro α hα
+    simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
+    exact hα.2 hψ
+
+lemma degree_coeff_chi {i : ℕ} (hi : i < P.r) (hi0 : i ≠ 0) {s : Finset K}
+  (hs : P.r ≤ s.card) : natDegree (coeff P.χ i) < s.card := by
+  setup_notation
+  -- We need to show that `natDegree (coeff χ i) < s.card`
+  -- Which follows from our assumptions `i < r` and `r ≤ s.card`
+  -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
+  apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
+  · change r ≤ _ at hs
+    change i < r at hi
+    omega
+  · dsimp only [r] at hi ⊢
+    rw [Nat.add_sub_cancel' hi.le]
+
+end
+end engel_le_engel.Package
 
 open Cardinal LieModule LieSubalgebra Polynomial engel_le_engel in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
@@ -148,11 +311,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     (hmin : ∀ y : U, engel K (y : L) ≤ engel K (x : L) → engel K (y : L) = engel K (x : L))
     (y : U) :
     engel K (x : L) ≤ engel K (y : L) := by
+  let P : engel_le_engel.Package K L := ⟨hLK, U, x, y, hUx, hmin⟩
   -- We denote by `E` the Engel subalgebra `engel K x`
   -- viewed as Lie submodule of `L` over the Lie algebra `U`.
-  let E : LieSubmodule K U L :=
-  { engel K (x : L) with
-    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K (x : L)).lie_mem (hUx hu) hy }
+  let E : LieSubmodule K U L := P.E
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
   obtain rfl|hx₀ := eq_or_ne x 0
   · simpa using hmin y
@@ -167,7 +329,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     apply Submodule.eq_top_of_finrank_eq hr
   -- So from now on, we assume that `r < finrank K L`.
   -- Let `u : U` denote `y - x`.
-  let u : U := y - x
+  let u : U := P.u
   -- We denote by `χ r` the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
@@ -175,127 +337,25 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   let χ : Polynomial (K[X]) := lieCharpoly K E x u
   let ψ : Polynomial (K[X]) := lieCharpoly K Q x u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
-  suffices χ = X ^ r by
-    -- Indeed, by evaluating the coefficients at `1`
-    apply_fun (fun p ↦ p.map (evalRingHom 1)) at this
-    -- we find that the characteristic polynomial `χ 1` of `⁅y, _⁆` is equal to `X ^ r`
-    simp_rw [Polynomial.map_pow, map_X, χ, lieCharpoly_map_eval, one_smul, u, sub_add_cancel,
-      -- and therefore the endomorphism `⁅y, _⁆` acts nilpotently on `E`.
-      r, LinearMap.charpoly_eq_X_pow_iff,
-      Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow, ZeroMemClass.coe_zero] at this
-    -- We ultimately want to show `engel K x ≤ engel K y`
-    intro z hz
-    -- which holds by definition of Engel subalgebra and the nilpotency that we just established.
-    rw [mem_engel_iff]
-    exact this ⟨z, hz⟩
+  suffices χ = X ^ r from P.reduction₁ this
   -- To show that `χ = X ^ r`, it suffices to show that all coefficients in degrees `< r` are `0`.
-  suffices ∀ i < r, χ.coeff i = 0 by
-    simp_rw [r, ← lieCharpoly_natDegree K E x u] at this ⊢
-    rw [(lieCharpoly_monic K E x u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
-    exact le_natTrailingDegree (lieCharpoly_monic K E x u).ne_zero this
+  suffices ∀ i < r, χ.coeff i = 0 from P.reduction₂ this
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
   obtain rfl|hi0 := eq_or_ne i 0
-  · -- `The polynomial `coeff χ 0` is zero if it evaluates to zero on all elements of `K`,
-    -- provided that its degree is stictly less than `#K`.
-    apply eq_zero_of_forall_eval_zero_of_natDegree_lt_card _ _ ?deg
-    case deg =>
-      -- We need to show `(natDegree (coeff χ 0)) < #K` and know that `finrank K L ≤ #K`
-      apply lt_of_lt_of_le _ hLK
-      rw [Nat.cast_lt]
-      -- So we are left with showing `natDegree (coeff χ 0) < finrank K L`
-      apply lt_of_le_of_lt _ hr
-      apply lieCharpoly_coeff_natDegree _ _ _ _ 0 r (zero_add r)
-    -- Fix an element of `K`.
-    intro α
-    -- We want to show that `α` is a root of `coeff χ 0`.
-    -- So we need to show that there is a `z ≠ 0` in `E` satisfying `⁅α • u + x, z⁆ = 0`.
-    rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
-      ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
-    -- We consider `z = α • u + x`, and split into the cases `z = 0` and `z ≠ 0`.
-    let z := α • u + x
-    obtain hz₀|hz₀ := eq_or_ne z 0
-    · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
-      refine ⟨⟨x, self_mem_engel K (x : L)⟩, ?_, ?_⟩
-      · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
-      · dsimp only [z] at hz₀
-        simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
-    -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
-    refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
-    · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
-    · show ⁅z, _⁆ = (0 : E)
-      ext
-      exact lie_self z.1
+  · exact P.coeff_zero_case hr hx₀
   -- We are left with the case `i ≠ 0`, and want to show `coeff χ i = 0`.
   -- We will do this once again by showing that `coeff χ i` vanishes
   -- on a sufficiently large subset `s` of `K`.
   -- But we first need to get our hands on that subset `s`.
-  -- We start by observing that `ψ` has non-trivial constant coefficient.
-  have hψ : constantCoeff ψ ≠ 0 := by
-    -- Suppose that `ψ` in fact has trivial constant coefficient.
-    intro H
-    -- Then there exists a `z ≠ 0` in `Q` such that `⁅x, z⁆ = 0`.
-    obtain ⟨z, hz0, hxz⟩ : ∃ z : Q, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
-      -- Indeed, if the constant coefficient of `ψ` is trivial,
-      -- then `0` is a root of the characteristic polynomial of `⁅0 • u + x, _⁆` acting on `Q`,
-      -- and hence we find an eigenvector `z` as desired.
-      apply_fun (evalRingHom 0) at H
-      rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
-        ← constantCoeff_apply, map_zero, LinearMap.charpoly_constantCoeff_eq_zero_iff] at H
-      simpa only [coe_bracket_of_module, ne_eq, zero_smul, zero_add,
-        LieModule.toEndomorphism_apply_apply] using H
-    -- It suffices to show `z = 0` (in `Q`) to obtain a contradiction.
-    apply hz0
-    -- We replace `z : Q` by a representative in `L`.
-    obtain ⟨z, rfl⟩ := LieSubmodule.Quotient.surjective_mk' E z
-    -- The assumption `⁅x, z⁆ = 0` is equivalent to `⁅x, z⁆ ∈ E`.
-    have : ⁅x, z⁆ ∈ E := by rwa [← LieSubmodule.Quotient.mk_eq_zero']
-    -- From this we deduce that there exists an `n` such that `⁅x, _⁆ ^ n` vanishes on `⁅x, z⁆`.
-    -- On the other hand, our goal is to show `z = 0` in `Q`,
-    -- which is equivalent to showing that `⁅x, _⁆ ^ n` vanishes on `z`, for some `n`.
-    simp only [coe_bracket_of_module, LieSubmodule.mem_mk_iff', mem_coe_submodule, mem_engel_iff,
-      LieSubmodule.Quotient.mk'_apply, LieSubmodule.Quotient.mk_eq_zero', E, Q] at this ⊢
-    -- Hence we win.
-    obtain ⟨n, hn⟩ := this
-    use n+1
-    rwa [pow_succ]
   -- Now we find a subset `s` of `K` of size `≥ r`
   -- such that `constantCoeff ψ` takes non-zero values on all of `s`.
   -- This turns out to be the subset that we alluded to earlier.
-  obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff ψ).eval α ≠ 0 := by
-    classical
-    -- Let `t` denote the set of roots of `constantCoeff ψ`.
-    let t := (constantCoeff ψ).roots.toFinset
-    -- We show that `t` has cardinality at most `finrank K L - r`.
-    have ht : t.card ≤ finrank K L - r := by
-      refine (Multiset.toFinset_card_le _).trans ?_
-      refine (card_roots' _).trans ?_
-      rw [constantCoeff_apply]
-      -- Indeed, `constantCoeff ψ` has degree at most `finrank K Q = finrank K L - r`.
-      apply lieCharpoly_coeff_natDegree
-      suffices finrank K Q + r = finrank K L by rw [← this, zero_add, Nat.add_sub_cancel]
-      apply Submodule.finrank_quotient_add_finrank
-    -- Hence there exists a subset of size `≥ r` in the complement of `t`,
-    -- and `constantCoeff ψ` takes non-zero values on all of this subset.
-    obtain ⟨s, hs⟩ := exists_finset_le_card K _ hLK
-    use s \ t
-    refine ⟨?_, ?_⟩
-    · refine le_trans ?_ (Finset.le_card_sdiff _ _)
-      omega
-    · intro α hα
-      simp only [Finset.mem_sdiff, Multiset.mem_toFinset, mem_roots', IsRoot.def, not_and, t] at hα
-      exact hα.2 hψ
+  obtain ⟨s, hs, hsψ⟩ : ∃ s : Finset K, r ≤ s.card ∧ ∀ α ∈ s, (constantCoeff ψ).eval α ≠ 0 :=
+    P.exists_s_psi hr
   -- So finally we can continue our proof strategy by showing that `coeff χ i` vanishes on `s`.
-  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ ?hcard
-  case hcard =>
-    -- We need to show that `natDegree (coeff χ i) < s.card`
-    -- Which follows from our assumptions `i < r` and `r ≤ s.card`
-    -- and the fact that the degree of `coeff χ i` is less than or equal to `r - i`.
-    apply lt_of_le_of_lt (lieCharpoly_coeff_natDegree _ _ _ _ i (r - i) _)
-    · omega
-    · dsimp only [r] at hi ⊢
-      rw [Nat.add_sub_cancel' hi.le]
+  apply eq_zero_of_natDegree_lt_card_of_eval_eq_zero' _ s _ <| P.degree_coeff_chi hi hi0 hs
   -- We need to show that for all `α ∈ s`, the polynomial `coeff χ i` evaluates to zero at `α`.
   intro α hα
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
