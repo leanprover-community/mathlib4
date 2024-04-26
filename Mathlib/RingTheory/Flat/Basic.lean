@@ -699,7 +699,7 @@ end categorical_characterisations
 open ZeroObject in
 open CategoryTheory MonoidalCategory ModuleCat in
 lemma tfae (M : Type u) [AddCommGroup M] [Module R M] : List.TFAE
-  [ Flat R M,
+    [ Flat R M,
     ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (rTensor M I.subtype),
     ∀ I : Ideal R, Function.Injective (rTensor M I.subtype),
     ∀ ⦃I : Ideal R⦄ (_ : I.FG), Function.Injective (lTensor M I.subtype),
