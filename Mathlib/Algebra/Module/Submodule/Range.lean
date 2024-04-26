@@ -11,7 +11,12 @@ import Mathlib.Algebra.Module.Submodule.Ker
 /-!
 # Range of linear maps
 
-The range of a linear map `f : M → M₂` is a submodule of `M₂`.
+The range `LinearMap.range` of a (semi)linear map `f : M → M₂` is a submodule of `M₂`.
+
+More specifically, `LinearMap.range` applies to any `SemilinearMapClass` over a `RingHomSurjective`
+ring homomorphism.
+
+Note that this also means that dot notation (i.e. `f.range` for a linear map `f`) does not work.
 
 ## Notations
 
