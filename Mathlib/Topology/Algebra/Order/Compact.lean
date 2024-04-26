@@ -78,7 +78,7 @@ instance [TopologicalSpace α] [Preorder α] [CompactIccSpace α] : CompactIccSp
 instance (priority := 100) ConditionallyCompleteLinearOrder.toCompactIccSpace (α : Type*)
     [ConditionallyCompleteLinearOrder α] [TopologicalSpace α] [OrderTopology α] :
     CompactIccSpace α := by
-  refine' .mk'' fun {a b} hlt => ?_
+  refine .mk'' fun {a b} hlt => ?_
   rcases le_or_lt a b with hab | hab
   swap
   · simp [hab]

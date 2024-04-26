@@ -90,13 +90,13 @@ theorem prefix_concat_iff {l₁ l₂ : List α} {a : α} :
 #align list.reverse_prefix List.reverse_prefix
 #align list.reverse_infix List.reverse_infix
 
-alias ⟨_, isSuffix.reverse⟩ := reverse_prefix
+protected alias ⟨_, isSuffix.reverse⟩ := reverse_prefix
 #align list.is_suffix.reverse List.isSuffix.reverse
 
-alias ⟨_, isPrefix.reverse⟩ := reverse_suffix
+protected alias ⟨_, isPrefix.reverse⟩ := reverse_suffix
 #align list.is_prefix.reverse List.isPrefix.reverse
 
-alias ⟨_, isInfix.reverse⟩ := reverse_infix
+protected alias ⟨_, isInfix.reverse⟩ := reverse_infix
 #align list.is_infix.reverse List.isInfix.reverse
 
 #align list.is_infix.length_le List.IsInfix.length_le
@@ -182,9 +182,10 @@ theorem dropLast_sublist (l : List α) : l.dropLast <+ l :=
   (dropLast_prefix l).sublist
 #align list.init_sublist List.dropLast_sublist
 
-theorem tail_sublist (l : List α) : l.tail <+ l :=
-  (tail_suffix l).sublist
-#align list.tail_sublist List.tail_sublist
+@[gcongr]
+theorem drop_sublist_drop_left (l : List α) {m n : ℕ} (h : m ≤ n) : drop n l <+ drop m l := by
+  rw [← Nat.sub_add_cancel h, drop_add]
+  apply drop_sublist
 
 theorem dropLast_subset (l : List α) : l.dropLast ⊆ l :=
   (dropLast_sublist l).subset
@@ -201,6 +202,11 @@ theorem mem_of_mem_dropLast (h : a ∈ l.dropLast) : a ∈ l :=
 theorem mem_of_mem_tail (h : a ∈ l.tail) : a ∈ l :=
   tail_subset l h
 #align list.mem_of_mem_tail List.mem_of_mem_tail
+
+@[gcongr]
+protected theorem Sublist.drop : ∀ {l₁ l₂ : List α}, l₁ <+ l₂ → ∀ n, l₁.drop n <+ l₂.drop n
+  | _, _, h, 0 => h
+  | _, _, h, n + 1 => by rw [← drop_tail, ← drop_tail]; exact h.tail.drop n
 
 theorem prefix_iff_eq_append : l₁ <+: l₂ ↔ l₁ ++ drop (length l₁) l₂ = l₂ :=
   ⟨by rintro ⟨r, rfl⟩; rw [drop_left], fun e => ⟨_, e⟩⟩
@@ -325,7 +331,7 @@ protected theorem IsPrefix.filterMap (h : l₁ <+: l₂) (f : α → Option β) 
       exact hl h.right
 #align list.is_prefix.filter_map List.IsPrefix.filterMap
 
-@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap
+@[deprecated] alias IsPrefix.filter_map := IsPrefix.filterMap -- 2024-03-26
 
 protected theorem IsPrefix.reduceOption {l₁ l₂ : List (Option α)} (h : l₁ <+: l₂) :
     l₁.reduceOption <+: l₂.reduceOption :=
