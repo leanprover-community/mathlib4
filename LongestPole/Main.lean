@@ -122,7 +122,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
   | some to => pure <| to.as! ModuleName
   | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
-  let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
+  unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
     let sha ← headSha
     IO.eprintln s!"Analyzing {to} at {sha}"
