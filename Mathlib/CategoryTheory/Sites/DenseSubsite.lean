@@ -195,13 +195,13 @@ theorem pushforwardFamily_compatible {X} (x : ℱ.obj (op X)) :
   intro Y f
   simp only [pushforwardFamily, ← FunctorToTypes.map_comp_apply, ← op_comp]
   change (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _ = (ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _) _
-  rw [← G.image_preimage (f ≫ g₁ ≫ _)]
-  rw [← G.image_preimage (f ≫ g₂ ≫ _)]
+  rw [← G.map_preimage (f ≫ g₁ ≫ _)]
+  rw [← G.map_preimage (f ≫ g₂ ≫ _)]
   erw [← α.naturality (G.preimage _).op]
   erw [← α.naturality (G.preimage _).op]
   refine' congr_fun _ x
   simp only [Functor.comp_map, ← Category.assoc, Functor.op_map, Quiver.Hom.unop_op,
-    ← ℱ.map_comp, ← op_comp, G.image_preimage]
+    ← ℱ.map_comp, ← op_comp, G.map_preimage]
   congr 3
   simp [e]
 #align category_theory.cover_dense.types.pushforward_family_compatible CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_compatible
@@ -224,10 +224,10 @@ theorem pushforwardFamily_apply {X} (x : ℱ.obj (op X)) {Y : C} (f : G.obj Y �
       (α.app (op (Nonempty.some (_ : coverByImage G X f)).1)
         (ℱ.map ((Nonempty.some (_ : coverByImage G X f)).map.op) t))) =
     (fun t => α.app (op Y) (ℱ.map (f.op) t))) x
-  rw [← G.image_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
+  rw [← G.map_preimage (Nonempty.some _ : Presieve.CoverByImageStructure _ _).lift]
   change ℱ.map _ ≫ α.app (op _) ≫ ℱ'.val.map _ = ℱ.map f.op ≫ α.app (op Y)
   erw [← α.naturality (G.preimage _).op]
-  simp only [← Functor.map_comp, ← Category.assoc, Functor.comp_map, G.image_preimage, G.op_map,
+  simp only [← Functor.map_comp, ← Category.assoc, Functor.comp_map, G.map_preimage, G.op_map,
     Quiver.Hom.unop_op, ← op_comp, Presieve.CoverByImageStructure.fac]
 #align category_theory.cover_dense.types.pushforward_family_apply CategoryTheory.Functor.IsCoverDense.Types.pushforwardFamily_apply
 
@@ -383,7 +383,7 @@ noncomputable def presheafIso {ℱ ℱ' : Sheaf K A} (i : G.op ⋙ ℱ.val ≅ G
       apply isIso_of_reflects_iso _ yoneda
     use (sheafYonedaHom i.inv).app X
     constructor <;> ext x : 2 <;>
-      simp only [sheafHom, NatTrans.comp_app, NatTrans.id_app, Functor.image_preimage]
+      simp only [sheafHom, NatTrans.comp_app, NatTrans.id_app, Functor.map_preimage]
     · exact ((Types.presheafIso (isoOver i (unop x))).app X).hom_inv_id
     · exact ((Types.presheafIso (isoOver i (unop x))).app X).inv_hom_id
     -- Porting note: Lean 4 proof is finished, Lean 3 needed `inferInstance`
@@ -414,8 +414,8 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   ext X
   apply yoneda.map_injective
   ext U
-  -- Porting note: didn't need to provide the input to `image_preimage` in Lean 3
-  erw [yoneda.image_preimage ((sheafYonedaHom α).app (G.op.obj X))]
+  -- Porting note: didn't need to provide the input to `map_preimage` in Lean 3
+  erw [yoneda.map_preimage ((sheafYonedaHom α).app (G.op.obj X))]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (G.obj (unop X))) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
@@ -428,7 +428,7 @@ theorem sheafHom_restrict_eq (α : G.op ⋙ ℱ ⟶ G.op ⋙ ℱ'.val) :
   congr 1
   simp only [Category.assoc]
   congr 1
-  rw [← G.image_preimage hf.some.map]
+  rw [← G.map_preimage hf.some.map]
   symm
   apply α.naturality (G.preimage hf.some.map).op
   -- porting note; Lean 3 needed a random `inferInstance` for cleanup here; not necessary in lean 4
@@ -444,8 +444,8 @@ theorem sheafHom_eq (α : ℱ ⟶ ℱ'.val) : sheafHom (whiskerLeft G.op α) = �
   apply yoneda.map_injective
   -- Porting note: deleted next line as it's not needed in Lean 4
   ext U
-  -- Porting note: Lean 3 didn't need to be told the explicit input to image_preimage
-  erw [yoneda.image_preimage ((sheafYonedaHom (whiskerLeft G.op α)).app X)]
+  -- Porting note: Lean 3 didn't need to be told the explicit input to map_preimage
+  erw [yoneda.map_preimage ((sheafYonedaHom (whiskerLeft G.op α)).app X)]
   symm
   change (show (ℱ'.val ⋙ coyoneda.obj (op (unop U))).obj (op (unop X)) from _) = _
   apply sheaf_eq_amalgamation ℱ' (G.is_cover_of_isCoverDense _ _)
@@ -488,8 +488,8 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
   apply Functor.IsCoverDense.ext G
   intro W i
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
-  rw [← G.image_preimage (i ≫ f₁)]
-  rw [← G.image_preimage (i ≫ f₂)]
+  rw [← G.map_preimage (i ≫ f₁)]
+  rw [← G.map_preimage (i ≫ f₂)]
   apply hx (G.preimage (i ≫ f₁)) ((G.preimage (i ≫ f₂))) hg₁ hg₂
   apply G.map_injective
   simp [eq]

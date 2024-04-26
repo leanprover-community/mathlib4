@@ -168,7 +168,7 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     let g₀ := F.effectiveEpiOver Y
     refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
-      simp only [image_preimage]
+      simp only [map_preimage]
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]

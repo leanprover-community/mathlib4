@@ -57,13 +57,13 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₁)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₁)
       comm₂ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₂)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₂)
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          image_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
+          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
 
 section Additive
 

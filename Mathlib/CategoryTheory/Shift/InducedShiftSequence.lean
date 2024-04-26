@@ -49,7 +49,7 @@ noncomputable def isoZero : F' 0 ≅ F :=
 lemma isoZero_hom_app_obj (X : C) :
     (isoZero e M F' e').hom.app (L.obj X) =
       (e' 0).hom.app X ≫ (isoShiftZero G M).hom.app X ≫ e.inv.app X :=
-  NatTrans.congr_app (((whiskeringLeft C D A).obj L).image_preimage _) X
+  NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X
 
 variable (L G)
 
@@ -65,7 +65,7 @@ lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
     (shiftIso L G M F' e' n a a' ha').hom.app (L.obj X) =
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
         (e' a).hom.app (X⟦n⟧) ≫ (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X :=
-  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).image_preimage _) X).trans (by simp)
+  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X).trans (by simp)
 
 attribute [irreducible] isoZero shiftIso
 

@@ -81,10 +81,10 @@ noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X 
 #align category_theory.functor.preimage CategoryTheory.Functor.preimage
 
 @[simp]
-theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
+theorem map_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y) :
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
-#align category_theory.functor.image_preimage CategoryTheory.Functor.image_preimage
+#align category_theory.functor.image_preimage CategoryTheory.Functor.map_preimage
 
 variable {F : C ⥤ D} [Full F] [F.Faithful] {X Y Z : C}
 
@@ -353,7 +353,7 @@ instance Full.comp [Full F] [Full G] : Full (F ⋙ G) where
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
 lemma Full.of_comp_faithful [Full <| F ⋙ G] [G.Faithful] : Full F where
-  map_surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).image_preimage _)⟩
+  map_surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).map_preimage _)⟩
 #align category_theory.full.of_comp_faithful CategoryTheory.Functor.Full.of_comp_faithful
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
@@ -407,5 +407,8 @@ end Functor
 @[deprecated] alias fullyFaithfulCancelRight := Functor.fullyFaithfulCancelRight
 @[deprecated] alias fullyFaithfulCancelRight_hom_app := Functor.fullyFaithfulCancelRight_hom_app
 @[deprecated] alias fullyFaithfulCancelRight_inv_app := Functor.fullyFaithfulCancelRight_inv_app
+
+-- deprecated on 2024-04-26
+@[deprecated] alias Functor.image_preimage := Functor.map_preimage
 
 end CategoryTheory

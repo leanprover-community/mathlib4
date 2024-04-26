@@ -52,7 +52,7 @@ lemma zero_hom_app_obj (X : C) :
     (zero F s i).hom.app (F.obj X) =
       (i 0).hom.app X ≫ F.map ((shiftFunctorZero C A).hom.app X) := by
   have h : whiskerLeft F (zero F s i).hom = _ :=
-    ((whiskeringLeft C D D).obj F).image_preimage _
+    ((whiskeringLeft C D D).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 @[simp]
@@ -60,7 +60,7 @@ lemma zero_inv_app_obj (X : C) :
     (zero F s i).inv.app (F.obj X) =
       F.map ((shiftFunctorZero C A).inv.app X) ≫ (i 0).inv.app X := by
   have h : whiskerLeft F (zero F s i).inv = _ :=
-    ((whiskeringLeft C D D).obj F).image_preimage _
+    ((whiskeringLeft C D D).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 @[simp]
@@ -69,7 +69,7 @@ lemma add_hom_app_obj (a b : A) (X : C) :
       (i (a + b)).hom.app X ≫ F.map ((shiftFunctorAdd C a b).hom.app X) ≫
         (i b).inv.app ((shiftFunctor C a).obj X) ≫ (s b).map ((i a).inv.app X) := by
   have h : whiskerLeft F (add F s i a b).hom = _ :=
-    ((whiskeringLeft C D D).obj F).image_preimage _
+    ((whiskeringLeft C D D).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 @[simp]
@@ -78,7 +78,7 @@ lemma add_inv_app_obj (a b : A) (X : C) :
       (s b).map ((i a).hom.app X) ≫ (i b).hom.app ((shiftFunctor C a).obj X) ≫
         F.map ((shiftFunctorAdd C a b).inv.app X) ≫ (i (a + b)).inv.app X := by
   have h : whiskerLeft F (add F s i a b).inv = _ :=
-    ((whiskeringLeft C D D).obj F).image_preimage _
+    ((whiskeringLeft C D D).obj F).map_preimage _
   exact (NatTrans.congr_app h X).trans (by simp)
 
 end Induced

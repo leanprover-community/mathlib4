@@ -349,7 +349,7 @@ theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting 
     (τ : F₁ ⟶ F₂) (X : C) :
     (liftNatTrans L W F₁ F₂ F₁' F₂' τ).app (L.obj X) =
       (Lifting.iso L W F₁ F₁').hom.app X ≫ τ.app X ≫ (Lifting.iso L W F₂ F₂').inv.app X :=
-  congr_app (Functor.image_preimage (whiskeringLeftFunctor' L W E) _) X
+  congr_app (Functor.map_preimage (whiskeringLeftFunctor' L W E) _) X
 #align category_theory.localization.lift_nat_trans_app CategoryTheory.Localization.liftNatTrans_app
 
 @[reassoc (attr := simp)]

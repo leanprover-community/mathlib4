@@ -226,7 +226,7 @@ noncomputable def splitEpiEquiv [Full F] [Faithful F] : SplitEpi f ≃ SplitEpi 
   toFun f := f.map F
   invFun s := ⟨F.preimage s.section_, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
+    simp only [map_comp, map_preimage, map_id]
     apply SplitEpi.id⟩
   left_inv := by aesop_cat
   right_inv x := by aesop_cat
@@ -247,7 +247,7 @@ noncomputable def splitMonoEquiv [Full F] [Faithful F] : SplitMono f ≃ SplitMo
   toFun f := f.map F
   invFun s := ⟨F.preimage s.retraction, by
     apply F.map_injective
-    simp only [map_comp, image_preimage, map_id]
+    simp only [map_comp, map_preimage, map_id]
     apply SplitMono.id⟩
   left_inv := by aesop_cat
   right_inv x := by aesop_cat
