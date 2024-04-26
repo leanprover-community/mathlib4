@@ -460,19 +460,18 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
 /-- A variation of Urysohn's lemma. In a `LocallyCompactSpace T2Space X`, for a closed set `t` and
 an open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`, `f x = 1`
 on `t` and `0 ≤ f x ≤ 1`. -/
-lemma exists_tsupport_one_of_isOpen_isClosed [LocallyCompactSpace X] [T2Space X] {s t : Set X}
+lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
     tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
-  obtain ⟨u, v, huv⟩ := locallyCompact_t2_separation hs hscp ht hst
-  have hDisjoint : Disjoint (closure u) t := by
-    apply le_compl_iff_disjoint_right.mp
-    apply _root_.subset_trans _ (Set.compl_subset_compl.mpr huv.2.2.2.1)
-    apply (IsClosed.closure_subset_iff (IsOpen.isClosed_compl huv.2.1)).mpr
-    exact Set.subset_compl_iff_disjoint_right.mpr huv.2.2.2.2
+-- separate `sᶜ` and `t` by `u` and `v`.
+  obtain ⟨u, v, huv⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset hs hscp ht hst
   rw [← Set.subset_compl_iff_disjoint_right] at huv
   have huvc : closure u ⊆ vᶜ := by
     rw [← IsClosed.closure_eq (isClosed_compl_iff.mpr huv.2.1)]
     exact closure_mono huv.2.2.2.2
+-- although `sᶜ` is not compact, `closure s` is compact and we can apply
+-- `t2_separation_IsOpen_IsCompact_closure_IsClosed_subset`. To apply the condition recursively,
+-- we need to make sure that `sᶜ ⊆ C`.
   let P : Set X → Prop := fun C => sᶜ ⊆ C
   set c : Urysohns.CU P :=
   { C := closure u
@@ -480,11 +479,12 @@ lemma exists_tsupport_one_of_isOpen_isClosed [LocallyCompactSpace X] [T2Space X]
     P_C := Set.Subset.trans huv.2.2.1 subset_closure
     closed_C := isClosed_closure
     open_U := ht.isOpen_compl
-    subset := Set.subset_compl_comm.mp (Set.Subset.trans huv.2.2.2.1 (Set.subset_compl_comm.mp huvc))
+    subset := Set.subset_compl_comm.mp
+      (Set.Subset.trans huv.2.2.2.1 (Set.subset_compl_comm.mp huvc))
     hP := by
       intro c u cIsClosed Pc uIsOpen csubu
-      obtain ⟨u1, hu1⟩ := locallyCompact_t2_separation (isOpen_compl_iff.mpr cIsClosed)
-        (IsCompact.of_isClosed_subset hscp isClosed_closure
+      obtain ⟨u1, hu1⟩ := t2_separation_IsOpen_IsCompact_closure_IsClosed_subset
+        (isOpen_compl_iff.mpr cIsClosed) (IsCompact.of_isClosed_subset hscp isClosed_closure
         (closure_mono (Set.compl_subset_comm.mp Pc)))
         (isClosed_compl_iff.mpr uIsOpen) (Set.compl_subset_compl_of_subset csubu)
       obtain ⟨v1, hv1⟩ := hu1
@@ -501,6 +501,7 @@ lemma exists_tsupport_one_of_isOpen_isClosed [LocallyCompactSpace X] [T2Space X]
         exact closure_mono hv1.2.2.2.2
       · exact Set.Subset.trans (Set.Subset.trans Pc hv1.2.2.1) subset_closure
   }
+-- `c.lim = 0` on `closure u` and `c.lim = 1` on `t`, so that `tsupport c.lim ⊆ s`.
   use ⟨c.lim, c.continuous_lim⟩
   simp only [ContinuousMap.coe_mk]
   constructor
