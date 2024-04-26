@@ -118,9 +118,9 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
 
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
-  let to := match args.flag? "to" with
-  | some to => to.as! ModuleName
-  | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
+  let to ← match args.flag? "to" with
+  | some to => pure <| to.as! ModuleName
+  | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
   let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
