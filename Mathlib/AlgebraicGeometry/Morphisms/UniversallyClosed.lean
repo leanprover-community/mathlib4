@@ -58,7 +58,8 @@ instance isClosedMap_isStableUnderComposition :
     IsStableUnderComposition (topologically @IsClosedMap) where
   comp_mem f g hf hg := IsClosedMap.comp (f := f.1.base) (g := g.1.base) hg hf
 
-instance universallyClosed_isStableUnderComposition : IsStableUnderComposition @UniversallyClosed := by
+instance universallyClosed_isStableUnderComposition :
+    IsStableUnderComposition @UniversallyClosed := by
   rw [universallyClosed_eq]
   infer_instance
 #align algebraic_geometry.universally_closed_stable_under_composition AlgebraicGeometry.universallyClosed_isStableUnderComposition
