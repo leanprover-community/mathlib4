@@ -74,7 +74,7 @@ theorem map_surjective (F : C ⥤ D) [Full F] :
   Full.map_surjective
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
-/-- The specified preimage of a morphism under a full functor. -/
+/-- The choice of a preimage of a morphism under a full functor. -/
 @[pp_dot]
 noncomputable def preimage (F : C ⥤ D) [Full F] (f : F.obj X ⟶ F.obj Y) : X ⟶ Y :=
   (F.map_surjective f).choose
