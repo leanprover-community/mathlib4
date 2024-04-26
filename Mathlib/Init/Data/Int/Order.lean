@@ -43,7 +43,7 @@ alias ⟨lt_of_ofNat_lt_ofNat, ofNat_lt_ofNat_of_lt⟩ := ofNat_lt
 #align int.lt_of_coe_nat_lt_coe_nat Int.lt_of_ofNat_lt_ofNat
 #align int.coe_nat_lt_coe_nat_of_lt Int.ofNat_lt_ofNat_of_lt
 
-instance instLinearOrderInt : LinearOrder ℤ where
+instance instLinearOrder : LinearOrder ℤ where
   le := (·≤·)
   le_refl := Int.le_refl
   le_trans := @Int.le_trans

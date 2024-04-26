@@ -19,12 +19,22 @@ variable {α β : Type*} [Zero β] [One β] [Add β] [Mul β] [Neg β] [Sub β] 
 namespace Function.Injective
 variable (f : β → α) (hf : Injective f)
 
+/-- Pullback a `LeftDistribClass` instance along an injective function. -/
+theorem leftDistribClass [Mul α] [Add α] [LeftDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
+    (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass β where
+  left_distrib x y z := hf <| by simp only [*, left_distrib]
+
+/-- Pullback a `RightDistribClass` instance along an injective function. -/
+theorem rightDistribClass [Mul α] [Add α] [RightDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
+    (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass β where
+  right_distrib x y z := hf <| by simp only [*, right_distrib]
+
 /-- Pullback a `Distrib` instance along an injective function. -/
 @[reducible] -- See note [reducible non-instances]
 protected def distrib [Distrib α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib β where
-  left_distrib x y z := hf <| by simp only [*, left_distrib]
-  right_distrib x y z := hf <| by simp only [*, right_distrib]
+  __ := hf.leftDistribClass f add mul
+  __ := hf.rightDistribClass f add mul
 #align function.injective.distrib Function.Injective.distrib
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits an injective map that
@@ -197,12 +207,22 @@ end Function.Injective
 namespace Function.Surjective
 variable (f : α → β) (hf : Surjective f)
 
+/-- Pushforward a `LeftDistribClass` instance along a surjective function. -/
+theorem leftDistribClass [Mul α] [Add α] [LeftDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
+    (mul : ∀ x y, f (x * y) = f x * f y) : LeftDistribClass β where
+  left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
+
+/-- Pushforward a `RightDistribClass` instance along a surjective function. -/
+theorem rightDistribClass [Mul α] [Add α] [RightDistribClass α] (add : ∀ x y, f (x + y) = f x + f y)
+    (mul : ∀ x y, f (x * y) = f x * f y) : RightDistribClass β where
+  right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
+
 /-- Pushforward a `Distrib` instance along a surjective function. -/
 @[reducible] -- See note [reducible non-instances]
 protected def distrib [Distrib α] (add : ∀ x y, f (x + y) = f x + f y)
     (mul : ∀ x y, f (x * y) = f x * f y) : Distrib β where
-  left_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, left_distrib]
-  right_distrib := hf.forall₃.2 fun x y z => by simp only [← add, ← mul, right_distrib]
+  __ := hf.leftDistribClass f add mul
+  __ := hf.rightDistribClass f add mul
 #align function.surjective.distrib Function.Surjective.distrib
 
 /-- A type endowed with `-` and `*` has distributive negation, if it admits a surjective map that
