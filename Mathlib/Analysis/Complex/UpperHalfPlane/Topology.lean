@@ -76,7 +76,8 @@ instance : LocallyCompactSpace ℍ :=
 
 section strips
 
-/-- The vertical strip of width A and height B. -/
+/-- The vertical strip of width `A` and height `B`, defined by elements whose real part has absolute
+value less than `A` and the imaginary part is at least `B`. -/
 def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
 
 theorem strip_mem_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
