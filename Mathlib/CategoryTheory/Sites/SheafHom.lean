@@ -218,7 +218,7 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
     exact congr_fun ((presheafHom F.1 G.1).map_comp f g) φ.1
 
 /-- The canonical isomorphism `sheafHom' F G ≅ presheafHom F.1 G.1`. -/
-noncomputable def sheafHom'Iso (F G : Sheaf J A) :
+def sheafHom'Iso (F G : Sheaf J A) :
     sheafHom' F G ≅ presheafHom F.1 G.1 :=
   NatIso.ofComponents
     (fun _ => Sheaf.homEquiv.toIso) (fun _ => rfl)
