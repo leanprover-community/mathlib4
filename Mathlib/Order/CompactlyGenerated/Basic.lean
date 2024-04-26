@@ -10,7 +10,7 @@ import Mathlib.Order.SupClosed
 import Mathlib.Order.SupIndep
 import Mathlib.Order.Zorn
 import Mathlib.Data.Finset.Order
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Data.Finite.Set
 import Mathlib.Tactic.TFAE
 
@@ -90,10 +90,10 @@ theorem isCompactElement_iff.{u} {α : Type u} [CompleteLattice α] (k : α) :
       have : ∀ x : t, ∃ i, s i = x := fun x => ht x.prop
       choose f hf using this
       refine' ⟨Finset.univ.image f, ht'.trans _⟩
-      · rw [Finset.sup_le_iff]
-        intro b hb
-        rw [← show s (f ⟨b, hb⟩) = id b from hf _]
-        exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
+      rw [Finset.sup_le_iff]
+      intro b hb
+      rw [← show s (f ⟨b, hb⟩) = id b from hf _]
+      exact Finset.le_sup (Finset.mem_image_of_mem f <| Finset.mem_univ (Subtype.mk b hb))
     · intro H s hs
       obtain ⟨t, ht⟩ :=
         H s Subtype.val
