@@ -115,7 +115,7 @@ def functor : C ⥤ Quotient r where
   map := @fun _ _ f ↦ Quot.mk _ f
 #align category_theory.quotient.functor CategoryTheory.Quotient.functor
 
-noncomputable instance fullFunctor : (functor r).Full where
+instance full_functor : (functor r).Full where
   map_surjective f:= ⟨Quot.out f, by simp [functor]⟩
 
 instance essSurj_functor : (functor r).EssSurj where
