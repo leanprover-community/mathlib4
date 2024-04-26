@@ -228,12 +228,12 @@ theorem RespectsIso.diagonal (hP : P.RespectsIso) : P.diagonal.RespectsIso := by
     rwa [pullback.diagonal_comp, hP.cancel_right_isIso]
 #align category_theory.morphism_property.respects_iso.diagonal CategoryTheory.MorphismProperty.RespectsIso.diagonal
 
-theorem StableUnderComposition.diagonal [P.IsStableUnderComposition] (hP' : RespectsIso P)
+theorem diagonal_isStableUnderComposition [P.IsStableUnderComposition] (hP' : RespectsIso P)
     (hP'' : StableUnderBaseChange P) : P.diagonal.IsStableUnderComposition where
   comp_mem _ _ h₁ h₂ := by
     rw [diagonal_iff, pullback.diagonal_comp]
     exact P.comp_mem _ _ h₁ (by simpa [hP'.cancel_left_isIso] using hP''.snd _ _ h₂)
-#align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.StableUnderComposition.diagonal
+#align category_theory.morphism_property.stable_under_composition.diagonal CategoryTheory.MorphismProperty.diagonal_isStableUnderComposition
 
 theorem StableUnderBaseChange.diagonal (hP : StableUnderBaseChange P) (hP' : RespectsIso P) :
     P.diagonal.StableUnderBaseChange :=
