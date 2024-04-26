@@ -90,7 +90,7 @@ def pullback_of_mono {X Y Z : C} (a : X ⟶ Z) (b : Y ⟶ Z) [Mono a] [Mono b] :
                 congr
                 exact ha'.symm
               _ = PullbackCone.fst s ≫ a := by rw [← Category.assoc, h₁]
-              _ = PullbackCone.snd s ≫ b := (PullbackCone.condition s)
+              _ = PullbackCone.snd s ≫ b := PullbackCone.condition s
               _ =
                   kernel.lift (prod.lift f g) (PullbackCone.snd s ≫ b) _ ≫
                     kernel.ι (prod.lift f g) :=
@@ -254,7 +254,7 @@ def pushout_of_epi {X Y Z : C} (a : X ⟶ Y) (b : X ⟶ Z) [Epi a] [Epi b] :
                 congr
                 exact ha'.symm
               _ = a ≫ PushoutCocone.inl s := by rw [Category.assoc, h₁]
-              _ = b ≫ PushoutCocone.inr s := (PushoutCocone.condition s)
+              _ = b ≫ PushoutCocone.inr s := PushoutCocone.condition s
               _ =
                   cokernel.π (coprod.desc f g) ≫
                     cokernel.desc (coprod.desc f g) (b ≫ PushoutCocone.inr s) _ :=

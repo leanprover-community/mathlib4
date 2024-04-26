@@ -405,7 +405,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     apply Subset.antisymm hsub
     rw [← sdiff_eq_empty_iff_subset]
     contrapose h
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at h
+    rw [← Ne, ← nonempty_iff_ne_empty] at h
     apply ne_of_lt
     rw [← zero_add (∑ x in s, x), ← add_assoc, add_zero]
     apply add_lt_add_right
