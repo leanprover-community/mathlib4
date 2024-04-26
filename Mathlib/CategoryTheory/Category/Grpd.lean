@@ -93,7 +93,7 @@ set_option linter.uppercaseLean3 false in
 
 instance forgetToCat_full : forgetToCat.Full where map_surjective f := ⟨f, rfl⟩
 set_option linter.uppercaseLean3 false in
-#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCatFull
+#align category_theory.Groupoid.forget_to_Cat_full CategoryTheory.Grpd.forgetToCat_full
 
 instance forgetToCat_faithful : forgetToCat.Faithful where
 set_option linter.uppercaseLean3 false in
