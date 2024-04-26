@@ -895,44 +895,39 @@ variable {D : Type*} [Category D] [HasShift C ℤ] [HasShift D ℤ]
 
 variable (F : C ⥤ D) [F.CommShift ℤ]
 
-/-lemma commShift_op_hom_app (n m : ℤ) (hnm : n + m = 0) (X : Cᵒᵖ) :
+lemma commShift_op_hom_app (n m : ℤ) (hnm : n + m = 0) (X : Cᵒᵖ) :
     (F.op.commShiftIso n).hom.app X =
       (F.map ((shiftFunctorOpIso C n m hnm).hom.app X).unop).op ≫
         ((F.commShiftIso m).inv.app X.unop).op ≫
         (shiftFunctorOpIso D n m hnm).inv.app (Opposite.op (F.obj X.unop)) := by
-  sorry-/
+  obtain rfl : m = -n := by omega
+  change _ = (F.map (𝟙 _)).op ≫ _ ≫ 𝟙 _
+  rw [F.map_id, op_id, comp_id, id_comp]
+  rfl
+
+/-def triangleOpEquivalenceFunctorCompMapTriangleIso :
+    (triangleOpEquivalence C).functor.rightOp ⋙ F.op.mapTriangle.op ≅
+      F.mapTriangle ⋙ (triangleOpEquivalence D).functor.rightOp :=
+  NatIso.ofComponents (fun K => Iso.op (by
+    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _)
+      (by simp) (by simp) ?_
+    dsimp
+    simp [F.commShift_op_hom_app 1 (-1) (add_neg_self 1)]
+    sorry))
+    (fun {K L} φ => Quiver.Hom.unop_inj (by dsimp; aesop_cat))-/
 
 variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
   [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
   [Pretriangulated C][Pretriangulated D]
 
-/-instance [F.IsTriangulated] :
-    F.op.IsTriangulated where
+/-instance [F.IsTriangulated] : F.op.IsTriangulated where
   map_distinguished T hT := by
-    refine Pretriangulated.isomorphic_distinguished _
-      (op_distinguished _ (F.map_distinguished _ (unop_distinguished _ hT))) _ ?_
-    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) sorry sorry ?_
-    · dsimp
-      simp [F.commShift_op_hom_app 1 (-1) (add_neg_self 1)]
-      rw [← Functor.map_comp, ← Functor.map_comp,
-        shiftFunctor_op_map 1 (-1) (add_neg_self 1)]
-      dsimp
-      simp only [assoc, commShiftIso_hom_naturality, comp_obj, map_comp, op_comp]
-      erw [← NatTrans.naturality_assoc]
-      dsimp
-      erw [← NatTrans.naturality_assoc]
-      dsimp
-      congr 1
-      erw [← NatTrans.naturality_assoc]
-      erw [← NatTrans.naturality_assoc]
-      erw [Iso.hom_inv_id_app]
-      erw [comp_id]
-      erw [comp_id]
-      rw [← Functor.map_comp]
-      apply Quiver.Hom.unop_inj
-      dsimp
-      simp only [map_comp, unop_comp, assoc]
-      sorry-/
+    rw [mem_distTriang_op_iff'] at hT
+    obtain ⟨T', hT', ⟨e⟩⟩ := hT
+    refine' Pretriangulated.isomorphic_distinguished _
+      (op_distinguished _ (F.map_distinguished _ hT')) _ _
+    exact F.op.mapTriangle.mapIso e ≪≫
+      Iso.unop (F.triangleOpEquivalenceFunctorCompMapTriangleIso.symm.app T')-/
 
 end
 
