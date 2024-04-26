@@ -1117,8 +1117,9 @@ theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef 
 theorem linMulLinSelfPosDef {R} {N' : Type*} [LinearOrderedCommRing R] [Module R M]
     [LinearOrderedCommSemiring N'] [ExistsAddOfLE N'] [Module R N'] [SMulCommClass R N' N']
     [IsScalarTower R N' N']
-    (f : M →ₗ[R] N') (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (R := R) (N := N') f f) := fun _x hx =>
-  mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
+    (f : M →ₗ[R] N') (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (R := R) (N := N') f f) :=
+  fun _x hx =>
+    mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
 #align quadratic_form.lin_mul_lin_self_pos_def QuadraticMap.linMulLinSelfPosDef
 
 end PosDef
