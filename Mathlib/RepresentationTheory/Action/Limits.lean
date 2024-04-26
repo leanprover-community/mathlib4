@@ -206,20 +206,20 @@ section HasZeroMorphisms
 variable [HasZeroMorphisms V]
 
 -- porting note (#10688): in order to ease automation, the `Zero` instance is introduced separately,
--- and the lemma `ZeroHom` was moved just below
+-- and the lemma `Action.zero_hom` was moved just below
 instance {X Y : Action V G} : Zero (X ⟶ Y) := ⟨0, by aesop_cat⟩
 
 @[simp]
 theorem zero_hom {X Y : Action V G} : (0 : X ⟶ Y).hom = 0 :=
   rfl
 set_option linter.uppercaseLean3 false in
---#align Action.zero_hom Action.zero_hom
+#align Action.zero_hom Action.zero_hom
 
 instance : HasZeroMorphisms (Action V G) where
 
 instance forget_preservesZeroMorphisms : Functor.PreservesZeroMorphisms (forget V G) where
 set_option linter.uppercaseLean3 false in
---#align Action.forget_preserves_zero_morphisms Action.forget_preservesZeroMorphisms
+#align Action.forget_preserves_zero_morphisms Action.forget_preservesZeroMorphisms
 
 instance forget₂_preservesZeroMorphisms [ConcreteCategory V] :
     Functor.PreservesZeroMorphisms (forget₂ (Action V G) V) where

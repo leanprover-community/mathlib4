@@ -107,7 +107,7 @@ protected def encoding : Encoding (L.Term α) where
   decode_encode t := by
     have h := listDecode_encode_list [t]
     rw [bind_singleton] at h
-    simp only [h, Option.join, head?, List.map, Option.some_bind, id.def]
+    simp only [h, Option.join, head?, List.map, Option.some_bind, id]
 #align first_order.language.term.encoding FirstOrder.Language.Term.encoding
 
 theorem listEncode_injective :
@@ -155,7 +155,7 @@ instance [Encodable α] [Encodable (Σi, L.Functions i)] : Encodable (L.Term α)
   Encodable.ofLeftInjection listEncode (fun l => (listDecode l).head?.join) fun t => by
     simp only
     rw [← bind_singleton listEncode, listDecode_encode_list]
-    simp only [Option.join, head?, List.map, Option.some_bind, id.def]
+    simp only [Option.join, head?, List.map, Option.some_bind, id]
 
 instance [h1 : Countable α] [h2 : Countable (Σl, L.Functions l)] : Countable (L.Term α) := by
   refine' mk_le_aleph0_iff.1 (card_le.trans (max_le_iff.2 _))
@@ -252,7 +252,7 @@ theorem listDecode_encode_list (l : List (Σn, L.BoundedFormula α n)) :
         Sum.inl (⟨(⟨φ_n, rel φ_R ts⟩ : Σn, L.BoundedFormula α n).fst, ts i⟩ :
           Σn, L.Term (Sum α (Fin n)))) (finRange φ_l) ++ l)).get? ↑i).join = some ⟨_, ts i⟩ := by
         intro i
-        simp only [Option.join, map_append, map_map, Option.bind_eq_some, id.def, exists_eq_right,
+        simp only [Option.join, map_append, map_map, Option.bind_eq_some, id, exists_eq_right,
           get?_eq_some, length_append, length_map, length_finRange]
         refine' ⟨lt_of_lt_of_le i.2 le_self_add, _⟩
         rw [get_append, get_map]

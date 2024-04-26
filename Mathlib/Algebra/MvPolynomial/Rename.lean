@@ -238,14 +238,14 @@ theorem exists_finset_rename (p : MvPolynomial σ R) :
   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
     refine' ⟨s ∪ t, ⟨_, _⟩⟩
     · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
-        simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
+        simp (config := { contextual := true }) only [id, true_or_iff, or_true_iff,
           Finset.mem_union, forall_true_iff]
     · simp only [rename_rename, AlgHom.map_add]
       rfl
   · rintro p n ⟨s, p, rfl⟩
     refine' ⟨insert n s, ⟨_, _⟩⟩
     · refine' rename (Subtype.map id _) p * X ⟨n, s.mem_insert_self n⟩
-      simp (config := { contextual := true }) only [id.def, or_true_iff, Finset.mem_insert,
+      simp (config := { contextual := true }) only [id, or_true_iff, Finset.mem_insert,
         forall_true_iff]
     · simp only [rename_rename, rename_X, Subtype.coe_mk, AlgHom.map_mul]
       rfl

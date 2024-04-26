@@ -122,7 +122,8 @@ theorem isComplement'_stabilizer_of_coprime {α : H.QuotientDiff}
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem exists_right_complement'_of_coprime_aux (hH : Nat.Coprime (Nat.card H) H.index) :
     ∃ K : Subgroup G, IsComplement' H K :=
-  instNonempty.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
+  have ne : Nonempty (QuotientDiff H) := inferInstance
+  ne.elim fun α => ⟨stabilizer G α, isComplement'_stabilizer_of_coprime hH⟩
 
 end SchurZassenhausAbelian
 

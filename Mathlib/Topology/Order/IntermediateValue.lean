@@ -3,7 +3,7 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Data.Set.Intervals.Image
+import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
 import Mathlib.Topology.Order.DenselyOrdered
 import Mathlib.Topology.Order.Monotone
@@ -516,6 +516,19 @@ theorem setOf_isPreconnected_eq_of_ordered :
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
 #align set_of_is_preconnected_eq_of_ordered setOf_isPreconnected_eq_of_ordered
+
+/-- This lemmas characterizes when a subset `s` of a densely ordered conditionally complete linear
+order is totally disconnected with respect to the order topology: between any two distinct points
+of `s` must lie a point not in `s`. -/
+lemma isTotallyDisconnected_iff_lt {s : Set α} :
+    IsTotallyDisconnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x < y → ∃ z ∉ s, z ∈ Ioo x y := by
+  simp only [IsTotallyDisconnected, isPreconnected_iff_ordConnected, ← not_nontrivial_iff,
+    nontrivial_iff_exists_lt, not_exists, not_and]
+  refine ⟨fun h x hx y hy hxy ↦ ?_, fun h t hts ht x hx y hy hxy ↦ ?_⟩
+  · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
+    exact fun hs ↦ h _ (inter_subset_left _ _) hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
+  · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
+    exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 
 /-!
 ### Intermediate Value Theorem on an interval

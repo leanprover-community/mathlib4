@@ -1214,7 +1214,7 @@ noncomputable def commGroupOfIsUnit [hM : CommMonoid M] (h : ∀ a : M, IsUnit a
 
 end NoncomputableDefs
 
--- 2024--03-20
+-- 2024-03-20
 attribute [deprecated div_mul_cancel_right] IsUnit.div_mul_left
 attribute [deprecated sub_add_cancel_right] IsAddUnit.sub_add_left
 attribute [deprecated div_mul_cancel_left] IsUnit.div_mul_right

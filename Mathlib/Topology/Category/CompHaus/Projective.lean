@@ -46,7 +46,7 @@ instance projective_ultrafilter (X : Type*) : Projective (of <| Ultrafilter X)
     let h : Ultrafilter X → Y := Ultrafilter.extend t
     have hh : Continuous h := continuous_ultrafilter_extend _
     use ⟨h, hh⟩
-    apply Faithful.map_injective (F := forget CompHaus)
+    apply (forget CompHaus).map_injective
     simp only [Functor.map_comp, ContinuousMap.coe_mk, coe_comp]
     convert denseRange_pure.equalizer (g.continuous.comp hh) f.continuous _
     -- Porting note: We need to get the coercions to functions under control.

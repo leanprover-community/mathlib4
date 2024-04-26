@@ -2957,7 +2957,7 @@ lemma filter_attach' (s : Multiset α) (p : {a // a ∈ s} → Prop) [DecidableE
   refine' Multiset.map_injective Subtype.val_injective _
   rw [map_filter' _ Subtype.val_injective]
   simp only [Function.comp, Subtype.exists, coe_mk, Subtype.map,
-    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id.def]
+    exists_and_right, exists_eq_right, attach_map_val, map_map, map_coe, id]
 #align multiset.filter_attach' Multiset.filter_attach'
 
 end Map
@@ -3208,13 +3208,7 @@ theorem coe_subsingletonEquiv [Subsingleton α] :
   rfl
 #align multiset.coe_subsingleton_equiv Multiset.coe_subsingletonEquiv
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias card_le_of_le := card_le_card
-@[deprecated] alias card_lt_of_lt := card_lt_card
+@[deprecated] alias card_le_of_le := card_le_card -- 2023-12-27
+@[deprecated] alias card_lt_of_lt := card_lt_card -- 2023-12-27
 
 end Multiset

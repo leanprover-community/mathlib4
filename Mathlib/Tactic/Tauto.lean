@@ -15,7 +15,7 @@ The `tauto` tactic.
 
 namespace Mathlib.Tactic.Tauto
 
-open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId
+open Lean Elab.Tactic Parser.Tactic Lean.Meta MVarId Std.Tactic
 open Qq
 
 initialize registerTraceClass `tauto
@@ -186,12 +186,12 @@ def finishingConstructorMatcher (e : Q(Prop)) : MetaM Bool :=
 
 /-- Implementation of the `tauto` tactic. -/
 def tautology : TacticM Unit := focusAndDoneWithScope "tauto" do
-  evalTactic (← `(tactic| classical!))
-  tautoCore
-  allGoals (iterateUntilFailure
-    (evalTactic (← `(tactic| rfl)) <|>
-     evalTactic (← `(tactic| solve_by_elim)) <|>
-     liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
+  classical do
+    tautoCore
+    allGoals (iterateUntilFailure
+      (evalTactic (← `(tactic| rfl)) <|>
+      evalTactic (← `(tactic| solve_by_elim)) <|>
+      liftMetaTactic (constructorMatching · finishingConstructorMatcher)))
 
 /--
 `tauto` breaks down assumptions of the form `_ ∧ _`, `_ ∨ _`, `_ ↔ _` and `∃ _, _`

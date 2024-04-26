@@ -79,7 +79,7 @@ theorem IsAtom.of_isAtom_coe_Iic {a : Set.Iic x} (ha : IsAtom a) : IsAtom (a : �
 
 theorem isAtom_iff_le_of_ge : IsAtom a ↔ a ≠ ⊥ ∧ ∀ b ≠ ⊥, b ≤ a → a ≤ b :=
   and_congr Iff.rfl <|
-    forall_congr' fun b => by simp only [Ne.def, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
+    forall_congr' fun b => by simp only [Ne, @not_imp_comm (b = ⊥), not_imp, lt_iff_le_not_le]
 #align is_atom_iff isAtom_iff_le_of_ge
 
 end Preorder
