@@ -641,7 +641,7 @@ noncomputable def piecewise' {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     (h₂ : IsClosed C₂) (f₁ : LocallyConstant C₁ Z) (f₂ : LocallyConstant C₂ Z)
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩) :
     LocallyConstant C₀ Z :=
-  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  letI : ∀ j : C₀, Decidable (j ∈ C₀ ↓∩ C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   piecewise (h₁.preimage continuous_subtype_val) (h₂.preimage continuous_subtype_val)
     (by simpa [eq_univ_iff_forall] using h₀)
     (f₁.comap ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩)
@@ -655,7 +655,7 @@ lemma piecewise'_apply_left {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ C
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₁) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₁ ⟨x.val, hx⟩ := by
-  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  letI : ∀ j : C₀, Decidable (j ∈ C₀ ↓∩ C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_left (f := (f₁.comap
     ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
     (hx := hx)]
@@ -667,7 +667,7 @@ lemma piecewise'_apply_right {C₀ C₁ C₂ : Set X} (h₀ : C₀ ⊆ C₁ ∪ 
     [DecidablePred (· ∈ C₁)] (hf : ∀ x (hx : x ∈ C₁ ∩ C₂), f₁ ⟨x, hx.1⟩ = f₂ ⟨x, hx.2⟩)
     (x : C₀) (hx : x.val ∈ C₂) :
     piecewise' h₀ h₁ h₂ f₁ f₂ hf x = f₂ ⟨x.val, hx⟩ := by
-  letI : ∀ j : C₀, Decidable (j ∈ Subtype.val ⁻¹' C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
+  letI : ∀ j : C₀, Decidable (j ∈ C₀ ↓∩ C₁) := fun j ↦ decidable_of_iff (↑j ∈ C₁) Iff.rfl
   rw [piecewise', piecewise_apply_right (f := (f₁.comap
     ⟨(restrictPreimage C₁ ((↑) : C₀ → X)), continuous_subtype_val.restrictPreimage⟩))
     (hx := hx)]

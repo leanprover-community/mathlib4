@@ -149,7 +149,7 @@ theorem continuous_boolIndicator_iff_isClopen (U : Set X) :
 #align continuous_bool_indicator_iff_clopen continuous_boolIndicator_iff_isClopen
 
 theorem continuousOn_boolIndicator_iff_isClopen (s U : Set X) :
-    ContinuousOn U.boolIndicator s ↔ IsClopen (((↑) : s → X) ⁻¹' U) := by
+    ContinuousOn U.boolIndicator s ↔ IsClopen (s ↓∩ U) := by
   rw [continuousOn_iff_continuous_restrict, ← continuous_boolIndicator_iff_isClopen]
   rfl
 #align continuous_on_indicator_iff_clopen continuousOn_boolIndicator_iff_isClopen

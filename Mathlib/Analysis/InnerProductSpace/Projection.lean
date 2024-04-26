@@ -1422,9 +1422,9 @@ theorem maximal_orthonormal_iff_orthogonalComplement_eq_bot (hv : Orthonormal �
     intro x hxu
     refine' ((mt (h x)) (hu.ne_zero ⟨x, hxu⟩)).imp_symm _
     intro hxv y hy
-    have hxv' : (⟨x, hxu⟩ : u) ∉ ((↑) ⁻¹' v : Set u) := by simp [huv, hxv]
+    have hxv' : ⟨x, hxu⟩ ∉ u ↓∩ v := by simp [huv, hxv]
     obtain ⟨l, hl, rfl⟩ :
-      ∃ l ∈ Finsupp.supported 𝕜 𝕜 ((↑) ⁻¹' v : Set u), (Finsupp.total (↥u) E 𝕜 (↑)) l = y := by
+      ∃ l ∈ Finsupp.supported 𝕜 𝕜 (u ↓∩ v), (Finsupp.total (↥u) E 𝕜 (↑)) l = y := by
       rw [← Finsupp.mem_span_image_iff_total]
       simp [huv, inter_eq_self_of_subset_right, hy]
     exact hu.inner_finsupp_eq_zero hxv' hl

@@ -202,10 +202,10 @@ alias ⟨_, IsLowerSet.ofDual⟩ := isUpperSet_preimage_toDual_iff
 #align is_lower_set.of_dual IsLowerSet.ofDual
 
 lemma IsUpperSet.isLowerSet_preimage_coe (hs : IsUpperSet s) :
-    IsLowerSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t := by aesop
+    IsLowerSet (s ↓∩ t) ↔ ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t := by aesop
 
 lemma IsLowerSet.isUpperSet_preimage_coe (hs : IsLowerSet s) :
-    IsUpperSet ((↑) ⁻¹' t : Set s) ↔ ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t := by aesop
+    IsUpperSet (s ↓∩ t) ↔ ∀ b ∈ s, ∀ c ∈ t, c ≤ b → b ∈ t := by aesop
 
 lemma IsUpperSet.sdiff (hs : IsUpperSet s) (ht : ∀ b ∈ s, ∀ c ∈ t, b ≤ c → b ∈ t) :
     IsUpperSet (s \ t) :=

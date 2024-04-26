@@ -641,7 +641,7 @@ theorem measurable_inclusion {s t : Set α} (h : s ⊆ t) : Measurable (inclusio
   measurable_id.subtype_map h
 
 theorem MeasurableSet.image_inclusion' {s t : Set α} (h : s ⊆ t) {u : Set s}
-    (hs : MeasurableSet (Subtype.val ⁻¹' s : Set t)) (hu : MeasurableSet u) :
+    (hs : MeasurableSet (t ↓∩ s)) (hu : MeasurableSet u) :
     MeasurableSet (inclusion h '' u) := by
   rcases hu with ⟨u, hu, rfl⟩
   convert (measurable_subtype_coe hu).inter hs
@@ -654,8 +654,8 @@ theorem MeasurableSet.image_inclusion {s t : Set α} (h : s ⊆ t) {u : Set s}
   (measurable_subtype_coe hs).image_inclusion' h hu
 
 theorem MeasurableSet.of_union_cover {s t u : Set α} (hs : MeasurableSet s) (ht : MeasurableSet t)
-    (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (((↑) : s → α) ⁻¹' u))
-    (htu : MeasurableSet (((↑) : t → α) ⁻¹' u)) : MeasurableSet u := by
+    (h : univ ⊆ s ∪ t) (hsu : MeasurableSet (s ↓∩ u))
+    (htu : MeasurableSet (t ↓∩ u)) : MeasurableSet u := by
   convert (hs.subtype_image hsu).union (ht.subtype_image htu)
   simp [image_preimage_eq_inter_range, ← inter_union_distrib_left, univ_subset_iff.1 h]
 

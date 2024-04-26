@@ -811,7 +811,7 @@ theorem MeasurableSet.nullMeasurableSet_subtype_coe {t : Set s} (hs : NullMeasur
   rw [Subtype.instMeasurableSpace, comap_eq_generateFrom] at ht
   refine'
     generateFrom_induction (p := fun t : Set s => NullMeasurableSet ((↑) '' t) μ)
-      { t : Set s | ∃ s' : Set α, MeasurableSet s' ∧ (↑) ⁻¹' s' = t } _ _ _ _ ht
+      { t | ∃ s' : Set α, MeasurableSet s' ∧ s ↓∩ s' = t } _ _ _ _ ht
   · rintro t' ⟨s', hs', rfl⟩
     rw [Subtype.image_preimage_coe]
     exact hs.inter (hs'.nullMeasurableSet)
@@ -989,7 +989,7 @@ theorem volume_image_subtype_coe {s : Set α} (hs : MeasurableSet s) (t : Set s)
 
 @[simp]
 theorem volume_preimage_coe (hs : NullMeasurableSet s) (ht : MeasurableSet t) :
-    volume (((↑) : s → α) ⁻¹' t) = volume (t ∩ s) := by
+    volume (s ↓∩ t) = volume (t ∩ s) := by
   rw [volume_set_coe_def,
     comap_apply₀ _ _ Subtype.coe_injective
       (fun h => MeasurableSet.nullMeasurableSet_subtype_coe hs)

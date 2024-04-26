@@ -500,7 +500,7 @@ theorem mem_nhds_subtype_iff_nhdsWithin {s : Set α} {a : s} {t : Set s} :
   rw [← map_nhds_subtype_val, image_mem_map_iff Subtype.val_injective]
 #align mem_nhds_subtype_iff_nhds_within mem_nhds_subtype_iff_nhdsWithin
 
-theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : (↑) ⁻¹' t ∈ 𝓝 a ↔ t ∈ 𝓝[s] ↑a := by
+theorem preimage_coe_mem_nhds_subtype {s t : Set α} {a : s} : s ↓∩ t ∈ 𝓝 a ↔ t ∈ 𝓝[s] ↑a := by
   rw [← map_nhds_subtype_val, mem_map]
 #align preimage_coe_mem_nhds_subtype preimage_coe_mem_nhds_subtype
 

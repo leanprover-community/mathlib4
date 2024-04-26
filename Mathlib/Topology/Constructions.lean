@@ -225,7 +225,7 @@ variable [TopologicalSpace X]
 The 𝓝 filter and the subspace topology.
 -/
 theorem mem_nhds_subtype (s : Set X) (x : { x // x ∈ s }) (t : Set { x // x ∈ s }) :
-    t ∈ 𝓝 x ↔ ∃ u ∈ 𝓝 (x : X), Subtype.val ⁻¹' u ⊆ t :=
+    t ∈ 𝓝 x ↔ ∃ u ∈ 𝓝 (x : X), s ↓∩ u ⊆ t :=
   mem_nhds_induced _ x t
 #align mem_nhds_subtype mem_nhds_subtype
 
@@ -234,7 +234,7 @@ theorem nhds_subtype (s : Set X) (x : { x // x ∈ s }) : 𝓝 x = comap (↑) (
 #align nhds_subtype nhds_subtype
 
 theorem nhdsWithin_subtype_eq_bot_iff {s t : Set X} {x : s} :
-    𝓝[((↑) : s → X) ⁻¹' t] x = ⊥ ↔ 𝓝[t] (x : X) ⊓ 𝓟 s = ⊥ := by
+    𝓝[s ↓∩ t] x = ⊥ ↔ 𝓝[t] (x : X) ⊓ 𝓟 s = ⊥ := by
   rw [inf_principal_eq_bot_iff_comap, nhdsWithin, nhdsWithin, comap_inf, comap_principal,
     nhds_induced]
 #align nhds_within_subtype_eq_bot_iff nhdsWithin_subtype_eq_bot_iff

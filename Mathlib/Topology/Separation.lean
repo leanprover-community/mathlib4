@@ -2445,14 +2445,14 @@ theorem loc_compact_Haus_tot_disc_of_zero_dim [TotallyDisconnectedSpace H] :
     IsTopologicalBasis { s : Set H | IsClopen s } := by
   refine isTopologicalBasis_of_isOpen_of_nhds (fun u hu => hu.2) fun x U memU hU => ?_
   obtain ⟨s, comp, xs, sU⟩ := exists_compact_subset hU memU
-  let u : Set s := ((↑) : s → H) ⁻¹' interior s
+  let u : Set s := s ↓∩ interior s
   have u_open_in_s : IsOpen u := isOpen_interior.preimage continuous_subtype_val
   lift x to s using interior_subset xs
   haveI : CompactSpace s := isCompact_iff_compactSpace.1 comp
   obtain ⟨V : Set s, VisClopen, Vx, V_sub⟩ := compact_exists_isClopen_in_isOpen u_open_in_s xs
   have VisClopen' : IsClopen (((↑) : s → H) '' V) := by
     refine' ⟨comp.isClosed.closedEmbedding_subtype_val.closed_iff_image_closed.1 VisClopen.1, _⟩
-    let v : Set u := ((↑) : u → s) ⁻¹' V
+    let v : Set u := u ↓∩ V
     have : ((↑) : u → H) = ((↑) : s → H) ∘ ((↑) : u → s) := rfl
     have f0 : Embedding ((↑) : u → H) := embedding_subtype_val.comp embedding_subtype_val
     have f1 : OpenEmbedding ((↑) : u → H) := by
