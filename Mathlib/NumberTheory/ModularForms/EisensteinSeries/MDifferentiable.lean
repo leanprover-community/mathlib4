@@ -87,19 +87,15 @@ theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (h
   simp only [MDifferentiable, MDifferentiableAt, differentiableWithinAt_univ, mfld_simps]
   intro z
   have ha : UpperHalfPlane.coe '' ⊤ ∈ 𝓝 ↑z := by
-    apply IsOpen.mem_nhds
-    rw [← OpenEmbedding.open_iff_image_open]
-    · simp only [top_eq_univ, isOpen_univ]
-    · exact openEmbedding_coe
-    · simp only [top_eq_univ, image_univ, mem_range, exists_apply_eq_apply]
+    exact IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe) (by simp)
   constructor
   rw [PartialHomeomorph.continuousAt_iff_continuousAt_comp_right
     (e := (PartialHomeomorph.symm (OpenEmbedding.toPartialHomeomorph
     UpperHalfPlane.coe openEmbedding_coe)))]
-  apply ContinuousOn.continuousAt
-    ((eisensteinSeries_SIF_complex_differentiableOn k a hk).continuousOn)
-      (s := (UpperHalfPlane.coe '' ⊤)) (x := z) ha
+  . exact ContinuousOn.continuousAt
+      ((eisensteinSeries_SIF_complex_differentiableOn k a hk).continuousOn)
+        (s := (UpperHalfPlane.coe '' ⊤)) (x := z) ha
   · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_target,
     OpenEmbedding.toPartialHomeomorph_source, mem_univ]
   · apply DifferentiableOn.differentiableAt (s := UpperHalfPlane.coe '' ⊤) _ ha
-    apply eisensteinSeries_SIF_complex_differentiableOn k a hk
+    exact eisensteinSeries_SIF_complex_differentiableOn k a hk
