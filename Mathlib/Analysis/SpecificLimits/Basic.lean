@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Masso
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Algebra
 
 #align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
