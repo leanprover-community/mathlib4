@@ -948,7 +948,11 @@ Note that the Real numbers used for x and y will show as cauchy sequences due to
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
-  reprPrec f _p := Format.bracket "(" (repr f.re ++ " + " ++ repr f.im ++ "*I") ")"
+  reprPrec f p := 
+    if p > 65 then 
+      Format.bracket "(" (reprPrec f.re 65 ++ " + " ++ reprPrec f.im 66 ++ "*I") ")"
+    else
+      reprPrec f.re 65 ++ " + " ++ reprPrec f.im 66 ++ "*I"
 
 end Complex
 
