@@ -239,7 +239,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     -- Then there exists a `z ≠ 0` in `Q` such that `⁅x, z⁆ = 0`.
     obtain ⟨z, hz0, hxz⟩ : ∃ z : Q, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
       -- Indeed, if the constant coefficient of `ψ` is trivial,
-      -- then `0` is a root of -- the characteristic polynomial of `⁅0 • u + x, _⁆` acting on `Q`,
+      -- then `0` is a root of the characteristic polynomial of `⁅0 • u + x, _⁆` acting on `Q`,
       -- and hence we find an eigenvector `z` as desired.
       apply_fun (evalRingHom 0) at H
       rw [constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
