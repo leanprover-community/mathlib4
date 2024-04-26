@@ -42,10 +42,10 @@ lemma UpperHalfPlane.coe_linear_ne_zero (a : Fin 2 → ℤ) (x : UpperHalfPlane.
   obtain ⟨y, hy⟩ := hx
   rw [← hy]
   apply UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) y
-      ((Function.comp_inj_ne_zero _ _ Int.cast_injective Int.cast_zero).mpr ha)
+      ((Function.comp_ne_zero_iff _ Int.cast_injective Int.cast_zero ).mpr ha)
 
 lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
-    DifferentiableOn ℂ (fun z : ℂ => 1/(a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
+    DifferentiableOn ℂ (fun z : ℂ => 1 / (a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
   by_cases ha : a ≠ 0
   · apply DifferentiableOn.div (differentiableOn_const 1)
     intro z hz
@@ -89,7 +89,7 @@ lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMo
     simp only [top_eq_univ, isOpen_univ]
     exact openEmbedding_coe
 
-theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a: Fin 2 → ZMod N) (hk : 3 ≤ k) :
+theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (eisensteinSeries_SIF a k).toFun := by
   simp only [MDifferentiable, MDifferentiableAt, differentiableWithinAt_univ, mfld_simps]
   intro z

@@ -100,7 +100,6 @@ lemma existsUnique_mem_box (x : ℤ × ℤ) : ∃! n : ℕ, x ∈ box n := by
   use max x.1.natAbs x.2.natAbs; simp only [mem_box, and_self_iff, forall_eq']
 
 end Int
-<<<<<<< HEAD
 
 lemma Finset.fun_ne_zero_cases {G : Type*} [OfNat G 0] (x : Fin 2 → G) :
     x ≠ 0 ↔ x 0 ≠ 0 ∨ x 1 ≠ 0 := by
@@ -115,5 +114,3 @@ lemma Finset.mem_box_ne_zero_iff_ne_zero (n : ℕ) (x : Fin 2 → ℤ) (hx : (x 
   · simp at h
   rintro hn rfl
   simp only [Pi.zero_apply, Int.mem_box, Int.natAbs_zero, max_self, eq_comm, hn] at hx
-=======
->>>>>>> origin/eisensteinSeries_Uniform_convergence
