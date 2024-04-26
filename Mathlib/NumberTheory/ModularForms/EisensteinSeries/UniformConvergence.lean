@@ -176,7 +176,7 @@ theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x
   simp only [map_pow, zpow_natCast, H]
   simpa using this
 
-lemma r_lower_bound_on_slice {A B : ℝ} (h : 0 < B) (z : upperHalfPlaneSlice A B) :
+lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
   simp only [slice_mem_iff, abs_ofReal, ge_iff_le] at hz
@@ -252,7 +252,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     (by simp only [Set.top_eq_univ, isOpen_univ]), eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
-  obtain ⟨A, B, hB, HABK⟩ := subset_slice_of_isCompact hK
+  obtain ⟨A, B, hB, HABK⟩ := subset_strip_of_isCompact hK
   have hu : Summable fun x : (gammaSet N a) =>
     (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
     apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
@@ -272,7 +272,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   rw [inv_le_inv]
   · apply pow_le_pow_left (r_pos _).le
     rw [abs_of_pos (r_pos _)]
-    · exact r_lower_bound_on_slice hB ⟨x, HABK hx⟩
+    · exact r_lower_bound_on_strip hB ⟨x, HABK hx⟩
   · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
   · apply pow_pos (r_pos _)
 
