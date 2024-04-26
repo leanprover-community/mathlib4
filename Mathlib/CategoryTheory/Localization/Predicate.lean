@@ -277,7 +277,7 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   apply InducedCategory.faithful -- why is it not found automatically ???
 
 lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
-  (inferInstance : (whiskeringLeftFunctor' L W E).Full)
+  inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
 lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
   (inferInstance : (whiskeringLeftFunctor' L W E).Faithful)
