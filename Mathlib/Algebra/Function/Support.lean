@@ -83,6 +83,28 @@ theorem mulSupport_eq_iff {f : α → M} {s : Set α} :
 #align function.support_eq_iff Function.support_eq_iff
 
 @[to_additive]
+theorem ext_iff_mulSupport {f g : α → M} :
+    f = g ↔ f.mulSupport = g.mulSupport ∧ ∀ x ∈ f.mulSupport, f x = g x :=
+  ⟨fun h ↦ h ▸ ⟨rfl, fun _ _ ↦ rfl⟩, fun ⟨h₁, h₂⟩ ↦ funext fun x ↦ by
+    if hx : x ∈ f.mulSupport then exact h₂ x hx
+    else rw [nmem_mulSupport.1 hx, nmem_mulSupport.1 (mt (Set.ext_iff.1 h₁ x).2 hx)]⟩
+
+@[to_additive]
+theorem mulSupport_update_of_ne_one [DecidableEq α] (f : α → M) (x : α) {y : M} (hy : y ≠ 1) :
+    mulSupport (update f x y) = insert x (mulSupport f) := by
+  ext a; rcases eq_or_ne a x with rfl | hne <;> simp [*]
+
+@[to_additive]
+theorem mulSupport_update_one [DecidableEq α] (f : α → M) (x : α) :
+    mulSupport (update f x 1) = mulSupport f \ {x} := by
+  ext a; rcases eq_or_ne a x with rfl | hne <;> simp [*]
+
+@[to_additive]
+theorem mulSupport_update_eq_ite [DecidableEq α] [DecidableEq M] (f : α → M) (x : α) (y : M) :
+    mulSupport (update f x y) = if y = 1 then mulSupport f \ {x} else insert x (mulSupport f) := by
+  rcases eq_or_ne y 1 with rfl | hy <;> simp [mulSupport_update_one, mulSupport_update_of_ne_one, *]
+
+@[to_additive]
 theorem mulSupport_extend_one_subset {f : α → M} {g : α → N} :
     mulSupport (f.extend g 1) ⊆ f '' mulSupport g :=
   mulSupport_subset_iff'.mpr fun x hfg ↦ by
@@ -122,7 +144,7 @@ theorem mulSupport_eq_empty_iff {f : α → M} : mulSupport f = ∅ ↔ f = 1 :=
 
 @[to_additive (attr := simp)]
 theorem mulSupport_nonempty_iff {f : α → M} : (mulSupport f).Nonempty ↔ f ≠ 1 := by
-  rw [nonempty_iff_ne_empty, Ne.def, mulSupport_eq_empty_iff]
+  rw [nonempty_iff_ne_empty, Ne, mulSupport_eq_empty_iff]
 #align function.mul_support_nonempty_iff Function.mulSupport_nonempty_iff
 #align function.support_nonempty_iff Function.support_nonempty_iff
 
@@ -202,7 +224,7 @@ theorem mulSupport_comp_eq_preimage (g : β → M) (f : α → β) :
 theorem mulSupport_prod_mk (f : α → M) (g : α → N) :
     (mulSupport fun x => (f x, g x)) = mulSupport f ∪ mulSupport g :=
   Set.ext fun x => by
-    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne.def]
+    simp only [mulSupport, not_and_or, mem_union, mem_setOf_eq, Prod.mk_eq_one, Ne]
 #align function.mul_support_prod_mk Function.mulSupport_prod_mk
 #align function.support_prod_mk Function.support_prod_mk
 
@@ -234,7 +256,7 @@ theorem mulSupport_pow [Monoid M] (f : α → M) (n : ℕ) :
     (mulSupport fun x => f x ^ n) ⊆ mulSupport f := by
   induction' n with n hfn
   · simp [pow_zero, mulSupport_one]
-  · simpa only [pow_succ] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
+  · simpa only [pow_succ'] using (mulSupport_mul f _).trans (union_subset Subset.rfl hfn)
 #align function.mul_support_pow Function.mulSupport_pow
 #align function.support_nsmul Function.support_nsmul
 

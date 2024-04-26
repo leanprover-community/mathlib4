@@ -132,7 +132,7 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
 end CantorInjMetric
 
 /-- Any closed uncountable subset of a Polish space admits a continuous injection
-from the Cantor space `ℕ → Bool`.-/
+from the Cantor space `ℕ → Bool`. -/
 theorem IsClosed.exists_nat_bool_injection_of_not_countable {α : Type*} [TopologicalSpace α]
     [PolishSpace α] {C : Set α} (hC : IsClosed C) (hunc : ¬C.Countable) :
     ∃ f : (ℕ → Bool) → α, range f ⊆ C ∧ Continuous f ∧ Function.Injective f := by

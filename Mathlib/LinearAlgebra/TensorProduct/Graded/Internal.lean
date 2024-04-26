@@ -53,7 +53,6 @@ suppress_compilation
 open scoped TensorProduct
 
 variable {R ι A B : Type*}
-
 variable [CommSemiring ι] [Module ι (Additive ℤˣ)] [DecidableEq ι]
 variable [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
 variable (𝒜 : ι → Submodule R A) (ℬ : ι → Submodule R B)

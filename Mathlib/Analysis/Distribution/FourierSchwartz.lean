@@ -29,22 +29,21 @@ variable {D : Type*} [NormedAddCommGroup D] [NormedSpace ℝ D]
 /-- Multiplication by a linear map on Schwartz space: for `f : D → V` a Schwartz function and `L` a
 bilinear map from `D × E` to `ℝ`, we define a new Schwartz function on `D` taking values in the
 space of linear maps from `E` to `V`, given by
-`(VectorFourier.mul_L_schwartz L f) (v) = -(2 * π * I) • L (v, ⬝) • f v`.
+`(VectorFourier.fourierSMulRightSchwartz L f) (v) = -(2 * π * I) • L (v, ⬝) • f v`.
 The point of this definition is that the derivative of the Fourier transform of `f` is the
-Fourier transform of `VectorFourier.mul_L_schwartz L f`. -/
-def VectorFourier.mul_L_schwartz : 𝓢(D, V) →L[ℝ] 𝓢(D, E →L[ℝ] V) :=
+Fourier transform of `VectorFourier.fourierSMulRightSchwartz L f`. -/
+def VectorFourier.fourierSMulRightSchwartz : 𝓢(D, V) →L[ℝ] 𝓢(D, E →L[ℝ] V) :=
   -(2 * π * I) • (bilinLeftCLM (ContinuousLinearMap.smulRightL ℝ E V).flip L.hasTemperateGrowth)
 
-lemma VectorFourier.mul_L_schwartz_apply (f : 𝓢(D, V)) (d : D) :
-    VectorFourier.mul_L_schwartz L f d = VectorFourier.mul_L L f d := rfl
-
-attribute [local instance 200] secondCountableTopologyEither_of_left
+@[simp]
+lemma VectorFourier.fourierSMulRightSchwartz_apply (f : 𝓢(D, V)) (d : D) :
+    VectorFourier.fourierSMulRightSchwartz L f d = -(2 * π * I) • (L d).smulRight (f d) := rfl
 
 /-- The Fourier transform of a Schwartz map `f` has a Fréchet derivative (everywhere in its domain)
 and its derivative is the Fourier transform of the Schwartz map `mul_L_schwartz L f`. -/
-theorem SchwartzMap.hasFDerivAt_fourier [CompleteSpace V] [MeasurableSpace D] [BorelSpace D]
-    {μ : Measure D} [FiniteDimensional ℝ D] [IsAddHaarMeasure μ] (f : 𝓢(D, V)) (w : E) :
+theorem SchwartzMap.hasFDerivAt_fourierIntegral [MeasurableSpace D] [BorelSpace D]
+    {μ : Measure D} [SecondCountableTopology D] [HasTemperateGrowth μ] (f : 𝓢(D, V)) (w : E) :
     HasFDerivAt (fourierIntegral fourierChar μ L.toLinearMap₂ f)
-      (fourierIntegral fourierChar μ L.toLinearMap₂ (mul_L_schwartz L f) w) w :=
-  VectorFourier.hasFDerivAt_fourier L f.integrable
-    (by simpa using f.integrable_pow_mul (μ := μ) 1) w
+      (fourierIntegral fourierChar μ L.toLinearMap₂ (fourierSMulRightSchwartz L f) w) w :=
+  VectorFourier.hasFDerivAt_fourierIntegral L f.integrable
+    (by simpa using f.integrable_pow_mul μ 1) w

@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Dagur Asgeirsson
 -/
 import Mathlib.CategoryTheory.Sites.Coherent.Basic
+import Mathlib.CategoryTheory.EffectiveEpi.Comp
+import Mathlib.CategoryTheory.EffectiveEpi.Extensive
 /-!
 
 # Connections between the regular, extensive and coherent topologies
@@ -33,13 +35,6 @@ instance [Precoherent C] [HasFiniteCoproducts C] : Preregular C where
     refine ⟨∐ X₂, Sigma.desc π₂, inferInstance, Sigma.desc ι, ?_⟩
     ext b
     simpa using hι b
-
-theorem effectiveEpi_desc_iff_effectiveEpiFamily [FinitaryPreExtensive C] {α : Type} [Finite α]
-    {B : C} (X : α → C) (π : (a : α) → X a ⟶ B) :
-    EffectiveEpi (Sigma.desc π) ↔ EffectiveEpiFamily X π := by
-  exact ⟨fun h ↦ ⟨⟨@effectiveEpiFamilyStructOfEffectiveEpiDesc _ _ _ _ X π _ h _ _ (fun g ↦
-    (FinitaryPreExtensive.sigma_desc_iso (fun a ↦ Sigma.ι X a) g inferInstance).epi_of_iso)⟩⟩,
-    fun _ ↦ inferInstance⟩
 
 instance [FinitaryPreExtensive C] [Preregular C] : Precoherent C where
   pullback {B₁ B₂} f α _ X₁ π₁ h := by

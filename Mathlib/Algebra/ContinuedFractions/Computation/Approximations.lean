@@ -349,7 +349,7 @@ theorem determinant_aux (hyp : n = 0 ∨ ¬(of v).TerminatedAt (n - 1)) :
       _ = pA * ppB - pB * ppA := by ring
       _ = (-1) ^ (n + 1) := by assumption
     suffices ppA * pB - ppB * pA = (-1) ^ n by
-      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ (-1) n
+      have pow_succ_n : (-1 : K) ^ (n + 1) = -1 * (-1) ^ n := pow_succ' (-1) n
       rw [pow_succ_n, ← this]
       ring
     exact IH <| Or.inr <| mt (terminated_stable <| n.sub_le 1) not_terminated_at_n

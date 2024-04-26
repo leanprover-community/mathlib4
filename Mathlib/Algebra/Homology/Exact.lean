@@ -48,7 +48,6 @@ universe v v₂ u u₂
 open CategoryTheory CategoryTheory.Limits
 
 variable {V : Type u} [Category.{v} V]
-
 variable [HasImages V]
 
 namespace CategoryTheory
@@ -224,7 +223,7 @@ theorem exact_comp_iso [IsIso h] : Exact f (g ≫ h) ↔ Exact f g :=
 
 theorem exact_kernelSubobject_arrow : Exact (kernelSubobject f).arrow f := by
   refine' ⟨by simp, _⟩
-  refine' @IsIso.epi_of_iso _ _ _ _ _ ?_
+  refine @IsIso.epi_of_iso _ _ _ _ _ ?_
   exact ⟨⟨factorThruImageSubobject _, by aesop_cat, by aesop_cat⟩⟩
 #align category_theory.exact_kernel_subobject_arrow CategoryTheory.exact_kernelSubobject_arrow
 
@@ -353,7 +352,6 @@ end
 namespace Functor
 
 variable [HasZeroMorphisms V] [HasKernels V] {W : Type u₂} [Category.{v₂} W]
-
 variable [HasImages W] [HasZeroMorphisms W] [HasKernels W]
 
 /-- A functor reflects exact sequences if any composable pair of morphisms that is mapped to an

@@ -122,7 +122,7 @@ theorem preimage_subset {α β} (e : α ≃ β) (s t : Set β) : e ⁻¹' s ⊆ 
   e.surjective.preimage_subset_preimage_iff
 #align equiv.preimage_subset Equiv.preimage_subset
 
--- Porting note (#11119): removed `simp` attribute. `simp` can prove it.
+-- Porting note (#10618): removed `simp` attribute. `simp` can prove it.
 theorem image_subset {α β} (e : α ≃ β) (s t : Set α) : e '' s ⊆ e '' t ↔ s ⊆ t :=
   image_subset_image_iff e.injective
 #align equiv.image_subset Equiv.image_subset
@@ -139,6 +139,10 @@ theorem preimage_eq_iff_eq_image {α β} (e : α ≃ β) (s t) : e ⁻¹' s = t 
 theorem eq_preimage_iff_image_eq {α β} (e : α ≃ β) (s t) : s = e ⁻¹' t ↔ e '' s = t :=
   Set.eq_preimage_iff_image_eq e.bijective
 #align equiv.eq_preimage_iff_image_eq Equiv.eq_preimage_iff_image_eq
+
+lemma setOf_apply_symm_eq_image_setOf {α β} (e : α ≃ β) (p : α → Prop) :
+    {b | p (e.symm b)} = e '' {a | p a} := by
+  rw [Equiv.image_eq_preimage, preimage_setOf_eq]
 
 @[simp]
 theorem prod_assoc_preimage {α β γ} {s : Set α} {t : Set β} {u : Set γ} :
@@ -174,14 +178,6 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   left_inv := fun ⟨⟨x, y⟩, h⟩ => rfl
   right_inv := fun ⟨x, y, h⟩ => rfl
 #align equiv.set_prod_equiv_sigma Equiv.setProdEquivSigma
-
-/-- Equivalence between the sigma of a family of finsets of `β` and `β`. -/
-noncomputable def sigmaEquiv {ι κ : Type*} (s : κ → Set ι) (hs : ∀ i, ∃! j, i ∈ s j) :
-    (Σ j, s j) ≃ ι where
-  toFun x := x.2
-  invFun x := ⟨(hs x).choose, x, (hs x).choose_spec.1⟩
-  left_inv x := by ext; exacts [((hs x.2).choose_spec.2 x.1 x.2.2).symm, rfl]
-  right_inv x := by rfl
 
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply]

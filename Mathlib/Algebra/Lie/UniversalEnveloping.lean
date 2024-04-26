@@ -39,7 +39,6 @@ lie algebra, universal enveloping algebra, tensor algebra
 universe u₁ u₂ u₃
 
 variable (R : Type u₁) (L : Type u₂)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L]
 
 local notation "ιₜ" => TensorAlgebra.ι R
@@ -89,7 +88,7 @@ def mkAlgHom : TensorAlgebra R L →ₐ[R] UniversalEnvelopingAlgebra R L :=
 variable {L}
 
 /-- The natural Lie algebra morphism from a Lie algebra to its universal enveloping algebra. -/
-@[simps!] -- Porting note: added
+@[simps!] -- Porting note (#11445): added
 def ι : L →ₗ⁅R⁆ UniversalEnvelopingAlgebra R L :=
   { (mkAlgHom R L).toLinearMap.comp ιₜ with
     map_lie' := fun {x y} => by

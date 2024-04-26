@@ -1,7 +1,7 @@
 import Mathlib.Tactic.Rewrites
 import Mathlib.Data.Nat.Prime
 import Mathlib.CategoryTheory.Category.Basic
-import Mathlib.Data.List.Basic
+import Mathlib.Data.List.InsertNth
 import Mathlib.Algebra.Group.Basic
 
 private axiom test_sorry : ∀ {α}, α

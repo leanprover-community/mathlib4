@@ -21,7 +21,6 @@ the canonical `volume` from the `MeasureSpace` instance.
 open FiniteDimensional MeasureTheory MeasureTheory.Measure Set
 
 variable {ι E F : Type*}
-
 variable [Fintype ι] [NormedAddCommGroup F] [InnerProductSpace ℝ F] [FiniteDimensional ℝ F]
   [MeasurableSpace F] [BorelSpace F]
 

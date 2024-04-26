@@ -80,7 +80,6 @@ namespace OreLocalization
 section Monoid
 
 variable {R : Type*} [Monoid R] {S : Submonoid R}
-
 variable (R S) [OreSet S]
 
 @[inherit_doc OreLocalization]
@@ -96,7 +95,6 @@ def oreDiv (r : R) (s : S) : R[S⁻¹] :=
   Quotient.mk' (r, s)
 #align ore_localization.ore_div OreLocalization.oreDiv
 
--- mathport name: «expr /ₒ »
 @[inherit_doc]
 infixl:70 " /ₒ " => oreDiv
 
@@ -375,28 +373,27 @@ theorem numerator_isUnit (s : S) : IsUnit (numeratorHom (s : R) : R[S⁻¹]) :=
 section UMP
 
 variable {T : Type*} [Monoid T]
-
 variable (f : R →* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a morphism `R →* T`, which maps elements of `S` to units of `T`,
 to a morphism `R[S⁻¹] →* T`. -/
-def universalMulHom : R[S⁻¹] →* T
-    where
-  -- Porting note: `simp only []` required for beta reductions
+def universalMulHom : R[S⁻¹] →* T where
+  -- Porting note(#12129): additional beta reduction needed
   toFun x :=
     x.liftExpand (fun r s => f r * ((fS s)⁻¹ : Units T)) fun r t s ht => by
-      simp only []
+      beta_reduce
       have : (fS ⟨s * t, ht⟩ : T) = fS s * f t := by
         simp only [← hf, MonoidHom.map_mul]
       conv_rhs =>
         rw [MonoidHom.map_mul, ← mul_one (f r), ← Units.val_one, ← mul_left_inv (fS s)]
         rw [Units.val_mul, ← mul_assoc, mul_assoc _ (fS s : T), ← this, mul_assoc]
       simp only [mul_one, Units.mul_inv]
-  map_one' := by simp only []; rw [OreLocalization.one_def, liftExpand_of]; simp
+  map_one' := by beta_reduce; rw [OreLocalization.one_def, liftExpand_of]; simp
   map_mul' x y := by
-    simp only []
+    -- Porting note: `simp only []` required, not just for beta reductions
+    beta_reduce
+    simp only [] -- TODO more!
     induction' x using OreLocalization.ind with r₁ s₁
     induction' y using OreLocalization.ind with r₂ s₂
     rcases oreDivMulChar' r₁ r₂ s₁ s₂ with ⟨ra, sa, ha, ha'⟩; rw [ha']; clear ha'
@@ -746,9 +743,7 @@ instance instSemiringOreLocalization : Semiring R[S⁻¹] :=
 section UMP
 
 variable {T : Type*} [Semiring T]
-
 variable (f : R →+* T) (fS : S →* Units T)
-
 variable (hf : ∀ s : S, f s = fS s)
 
 /-- The universal lift from a ring homomorphism `f : R →+* T`, which maps elements in `S` to
@@ -828,8 +823,8 @@ variable {R : Type*} [Ring R] {S : Submonoid R} [OreSet S]
 /-- Negation on the Ore localization is defined via negation on the numerator. -/
 protected def neg : R[S⁻¹] → R[S⁻¹] :=
   liftExpand (fun (r : R) (s : S) => -r /ₒ s) fun r t s ht => by
-    -- Porting note: `simp only []` required for beta reductions
-    simp only []
+    -- Porting note(#12129): additional beta reduction needed
+    beta_reduce
     rw [neg_mul_eq_neg_mul, ← OreLocalization.expand]
 #align ore_localization.neg OreLocalization.neg
 
@@ -927,13 +922,14 @@ protected theorem inv_zero : (0 : R[R⁰⁻¹])⁻¹ = 0 := by
   simp
 #align ore_localization.inv_zero OreLocalization.inv_zero
 
-instance divisionRing : DivisionRing R[R⁰⁻¹] :=
-  { OreLocalization.nontrivial,
-    OreLocalization.inv',
-    OreLocalization.ring with
-    mul_inv_cancel := OreLocalization.mul_inv_cancel
-    inv_zero := OreLocalization.inv_zero
-    qsmul := qsmulRec _ }
+instance divisionRing : DivisionRing R[R⁰⁻¹] where
+  __ := ring
+  __ := nontrivial
+  __ := inv'
+  mul_inv_cancel := OreLocalization.mul_inv_cancel
+  inv_zero := OreLocalization.inv_zero
+  nnqsmul := _
+  qsmul := _
 
 end DivisionRing
 

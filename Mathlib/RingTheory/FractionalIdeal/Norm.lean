@@ -31,7 +31,6 @@ namespace FractionalIdeal
 open scoped Pointwise nonZeroDivisors
 
 variable {R : Type*} [CommRing R] [IsDedekindDomain R] [Module.Free ℤ R] [Module.Finite ℤ R]
-
 variable {K : Type*} [CommRing K] [Algebra R K] [IsFractionRing R K]
 
 theorem absNorm_div_norm_eq_absNorm_div_norm {I : FractionalIdeal R⁰ K} (a : R⁰) (I₀ : Ideal R)
@@ -124,7 +123,7 @@ theorem abs_det_basis_change [NoZeroDivisors K] {ι : Type*} [Fintype ι]
     rfl]
   rw [Basis.toMatrix_smul, Matrix.det_mul, abs_mul, ← Algebra.norm_eq_matrix_det,
     Algebra.norm_localization ℤ ℤ⁰, show (Algebra.norm ℤ (den I: R) : ℚ) =
-    algebraMap ℤ ℚ (Algebra.norm ℤ (den I: R)) by rfl, mul_div_assoc, mul_div_cancel' _ (by
+    algebraMap ℤ ℚ (Algebra.norm ℤ (den I: R)) by rfl, mul_div_assoc, mul_div_cancel₀ _ (by
     rw [ne_eq, abs_eq_zero, IsFractionRing.to_map_eq_zero_iff, Algebra.norm_eq_zero_iff_of_basis b]
     exact nonZeroDivisors.coe_ne_zero _)]
 
@@ -138,7 +137,7 @@ theorem absNorm_span_singleton [Module.Finite ℚ K] (x : K) :
   · rw [Ideal.absNorm_span_singleton]
     simp_rw [Int.cast_natAbs, Int.cast_abs, show ((Algebra.norm ℤ _) : ℚ) = algebraMap ℤ ℚ
       (Algebra.norm ℤ _) by rfl, ← Algebra.norm_localization ℤ ℤ⁰ (Sₘ := K) _]
-    rw [hr, Algebra.smul_def, _root_.map_mul, abs_mul, mul_div_assoc, mul_div_cancel' _ (by
+    rw [hr, Algebra.smul_def, _root_.map_mul, abs_mul, mul_div_assoc, mul_div_cancel₀ _ (by
       rw [ne_eq, abs_eq_zero, Algebra.norm_eq_zero_iff, IsFractionRing.to_map_eq_zero_iff]
       exact nonZeroDivisors.coe_ne_zero _)]
   · ext

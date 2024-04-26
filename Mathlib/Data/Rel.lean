@@ -32,9 +32,6 @@ Relations are also known as set-valued functions, or partial multifunctions.
 * `Function.graph`: Graph of a function as a relation.
 -/
 
-set_option autoImplicit true
-
-
 variable {α β γ : Type*}
 
 /-- A relation on `α` and `β`, aka a set-valued function, aka a partial multifunction -/
@@ -97,7 +94,8 @@ def comp (r : Rel α β) (s : Rel β γ) : Rel α γ := fun x z => ∃ y, r x y 
 /-- Local syntax for composition of relations. -/
 local infixr:90 " • " => Rel.comp
 
-theorem comp_assoc (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) : (r • s) • t = r • (s • t) := by
+theorem comp_assoc {δ : Type*} (r : Rel α β) (s : Rel β γ) (t : Rel γ δ) :
+    (r • s) • t = r • (s • t) := by
   unfold comp; ext (x w); constructor
   · rintro ⟨z, ⟨y, rxy, syz⟩, tzw⟩; exact ⟨y, rxy, z, syz, tzw⟩
   · rintro ⟨y, rxy, z, syz, tzw⟩; exact ⟨z, ⟨y, rxy, syz⟩, tzw⟩
@@ -149,11 +147,15 @@ theorem inv_comp (r : Rel α β) (s : Rel β γ) : inv (r • s) = inv s • inv
 
 @[simp]
 theorem inv_bot : (⊥ : Rel α β).inv = (⊥ : Rel β α) := by
-  simp [Bot.bot, inv, flip]
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp [Bot.bot, inv, flip]
+  simp [Bot.bot, inv, Function.flip_def]
 
 @[simp]
 theorem inv_top : (⊤ : Rel α β).inv = (⊤ : Rel β α) := by
-  simp [Top.top, inv, flip]
+  -- Adaptation note: nightly-2024-03-16: simp was
+  -- simp [Top.top, inv, flip]
+  simp [Top.top, inv, Function.flip_def]
 
 /-- Image of a set under a relation -/
 def image (s : Set α) : Set β := { y | ∃ x ∈ s, r x y }

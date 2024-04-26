@@ -316,7 +316,7 @@ end Normed
 
 section
 
-variable [IsROrC 𝕜] [NormedRing R] [NormedAddCommGroup M]
+variable [RCLike 𝕜] [NormedRing R] [NormedAddCommGroup M]
 variable [NormedAlgebra 𝕜 R] [NormedSpace 𝕜 M] [Module R M] [Module Rᵐᵒᵖ M]
 variable [BoundedSMul R M] [BoundedSMul Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
 variable [IsScalarTower 𝕜 R M] [IsScalarTower 𝕜 Rᵐᵒᵖ M]

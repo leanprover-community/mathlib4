@@ -770,7 +770,6 @@ end Right
 section Left
 
 variable [CovariantClass α α (· * ·) (· ≤ ·)]
-
 variable [CovariantClass α α (swap (· * ·)) (· ≤ ·)] {a b c : α}
 
 @[to_additive]
@@ -1037,7 +1036,7 @@ variable [Group α] [LinearOrder α]
 
 @[to_additive (attr := simp) cmp_sub_zero]
 theorem cmp_div_one' [CovariantClass α α (swap (· * ·)) (· ≤ ·)] (a b : α) :
-    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel']
+    cmp (a / b) 1 = cmp a b := by rw [← cmp_mul_right' _ _ b, one_mul, div_mul_cancel]
 #align cmp_div_one' cmp_div_one'
 #align cmp_sub_zero cmp_sub_zero
 

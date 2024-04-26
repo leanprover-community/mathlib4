@@ -64,13 +64,12 @@ variable {C : Type*} [Category C] {D : Type*} [Category D] {E : Type*} [Category
   (G' : D ⥤ E)
 
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology E}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is called cocontinuous (SGA 4 III 2.1)
 if for all covering sieves `R` in `D`, `R.pullback G` is a covering sieve in `C`.
 -/
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 class Functor.IsCocontinuous : Prop where
   cover_lift : ∀ {U : C} {S : Sieve (G.obj U)} (_ : S ∈ K (G.obj U)), S.functorPullback G ∈ J U
 #align category_theory.cover_lifting CategoryTheory.Functor.IsCocontinuous
@@ -116,9 +115,7 @@ A `X ⟶ 𝒢(U)`. The remaining work is to verify that this is indeed the amalg
 
 
 variable {C D : Type u} [Category.{v} C] [Category.{v} D] (G : C ⥤ D)
-
 variable {A : Type w} [Category.{max u v} A] [HasLimits A]
-
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
   [G.IsCocontinuous J K]
 
@@ -126,7 +123,6 @@ namespace RanIsSheafOfIsCocontinuous
 
 variable {G}
 variable (ℱ : Sheaf J A)
-
 variable {X : A} {U : D} (S : Sieve U) (hS : S ∈ K U)
 
 instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
@@ -134,7 +130,6 @@ instance (X : Dᵒᵖ) : HasLimitsOfShape (StructuredArrow X G.op) A :=
   HasLimitsOfSize.has_limits_of_shape _
 
 variable (x : S.arrows.FamilyOfElements ((ran G.op).obj ℱ.val ⋙ coyoneda.obj (op X)))
-
 variable (hx : x.Compatible)
 
 /-- The family of morphisms `X ⟶ 𝒢(G(Y')) ⟶ ℱ(Y')` defined on `{ Y' ⊆ Y : G(Y') ⊆ U ∈ S}`. -/

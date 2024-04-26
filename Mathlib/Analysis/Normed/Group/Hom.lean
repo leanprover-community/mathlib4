@@ -869,11 +869,8 @@ variable {W₁ W₂ W₃ : Type*} [SeminormedAddCommGroup W₁] [SeminormedAddCo
   [SeminormedAddCommGroup W₃]
 
 variable (f) (g : NormedAddGroupHom V W)
-
 variable {f₁ g₁ : NormedAddGroupHom V₁ W₁}
-
 variable {f₂ g₂ : NormedAddGroupHom V₂ W₂}
-
 variable {f₃ g₃ : NormedAddGroupHom V₃ W₃}
 
 /-- The equalizer of two morphisms `f g : NormedAddGroupHom V W`. -/
@@ -945,7 +942,6 @@ def map (φ : NormedAddGroupHom V₁ V₂) (ψ : NormedAddGroupHom W₁ W₂) (h
 #align normed_add_group_hom.equalizer.map NormedAddGroupHom.Equalizer.map
 
 variable {φ : NormedAddGroupHom V₁ V₂} {ψ : NormedAddGroupHom W₁ W₂}
-
 variable {φ' : NormedAddGroupHom V₂ V₃} {ψ' : NormedAddGroupHom W₂ W₃}
 
 @[simp]

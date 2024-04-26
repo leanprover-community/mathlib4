@@ -22,13 +22,9 @@ open Set
 namespace AffineSubspace
 
 variable {k : Type*} [Ring k]
-
 variable {V P V₁ P₁ V₂ P₂ : Type*}
-
 variable [AddCommGroup V] [Module k V] [AffineSpace V P]
-
 variable [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁]
-
 variable [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂]
 
 /-- The additive action on an affine subspace corresponding to applying the action to every element.

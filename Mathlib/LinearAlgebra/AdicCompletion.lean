@@ -31,9 +31,7 @@ with respect to an ideal `I`:
 open Submodule
 
 variable {R : Type*} [CommRing R] (I : Ideal R)
-
 variable (M : Type*) [AddCommGroup M] [Module R M]
-
 variable {N : Type*} [AddCommGroup N] [Module R N]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/

@@ -128,7 +128,6 @@ instance AddGroup.intSMulWithZero [AddGroup M] : SMulWithZero ℤ M where
 section MonoidWithZero
 
 variable [MonoidWithZero R] [MonoidWithZero R'] [Zero M]
-
 variable (R M)
 
 /-- An action of a monoid with zero `R` on a Type `M`, also with `0`, extends `MulAction` and
@@ -156,7 +155,7 @@ instance MonoidWithZero.toMulActionWithZero : MulActionWithZero R R :=
 /-- Like `MonoidWithZero.toMulActionWithZero`, but multiplies on the right. See also
 `Semiring.toOppositeModule` -/
 instance MonoidWithZero.toOppositeMulActionWithZero : MulActionWithZero Rᵐᵒᵖ R :=
-  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction R with }
+  { MulZeroClass.toOppositeSMulWithZero R, Monoid.toOppositeMulAction with }
 #align monoid_with_zero.to_opposite_mul_action_with_zero MonoidWithZero.toOppositeMulActionWithZero
 
 protected lemma MulActionWithZero.subsingleton

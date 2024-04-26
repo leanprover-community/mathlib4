@@ -97,7 +97,7 @@ theorem length_sublists' : ∀ l : List α, length (sublists' l) = 2 ^ length l
   | [] => rfl
   | a :: l => by
     simp_arith only [sublists'_cons, length_append, length_sublists' l,
-      length_map, length, Nat.pow_succ', mul_succ, mul_zero, zero_add, npow_eq_pow, pow_eq]
+      length_map, length, Nat.pow_succ']
 #align list.length_sublists' List.length_sublists'
 
 @[simp]
@@ -210,17 +210,20 @@ theorem length_sublists (l : List α) : length (sublists l) = 2 ^ length l := by
   simp only [sublists_eq_sublists', length_map, length_sublists', length_reverse]
 #align list.length_sublists List.length_sublists
 
-theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l := by
-  induction' l using reverseRecOn with l a ih <;>
-  simp only [map, map_append, sublists_concat]
+theorem map_pure_sublist_sublists (l : List α) : map pure l <+ sublists l := by
+  induction' l using reverseRecOn with l a ih <;> simp only [map, map_append, sublists_concat]
   · simp only [sublists_nil, sublist_cons]
   exact ((append_sublist_append_left _).2 <|
               singleton_sublist.2 <| mem_map.2 ⟨[], mem_sublists.2 (nil_sublist _), by rfl⟩).trans
           ((append_sublist_append_right _).2 ih)
-#align list.map_ret_sublist_sublists List.map_ret_sublist_sublists
+#align list.map_ret_sublist_sublists List.map_pure_sublist_sublists
+
+set_option linter.deprecated false in
+@[deprecated map_pure_sublist_sublists] -- 2024-03-24
+theorem map_ret_sublist_sublists (l : List α) : map List.ret l <+ sublists l :=
+  map_pure_sublist_sublists l
 
 /-! ### sublistsLen -/
-
 
 /-- Auxiliary function to construct the list of all sublists of a given length. Given an
 integer `n`, a list `l`, a function `f` and an auxiliary list `L`, it returns the list made of
@@ -286,7 +289,7 @@ theorem length_sublistsLen {α : Type*} :
   | _ + 1, [] => by simp
   | n + 1, a :: l => by
     rw [sublistsLen_succ_cons, length_append, length_sublistsLen (n+1) l,
-      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, add_comm]
+      length_map, length_sublistsLen n l, length_cons, Nat.choose_succ_succ, Nat.add_comm]
 #align list.length_sublists_len List.length_sublistsLen
 
 theorem sublistsLen_sublist_sublists' {α : Type*} :
@@ -373,7 +376,7 @@ theorem pairwise_sublists {R} {l : List α} (H : Pairwise R l) :
 
 @[simp]
 theorem nodup_sublists {l : List α} : Nodup (sublists l) ↔ Nodup l :=
-  ⟨fun h => (h.sublist (map_ret_sublist_sublists _)).of_map _, fun h =>
+  ⟨fun h => (h.sublist (map_pure_sublist_sublists _)).of_map _, fun h =>
     (pairwise_sublists h).imp @fun l₁ l₂ h => by simpa using h.to_ne⟩
 #align list.nodup_sublists List.nodup_sublists
 
@@ -440,8 +443,8 @@ theorem revzip_sublists (l : List α) : ∀ l₁ l₂, (l₁, l₂) ∈ revzip l
         mem_singleton, Prod.mk.injEq] at h
     simp [h]
   · intro l₁ l₂ h
-    rw [sublists_concat, reverse_append, zip_append, ← map_reverse, zip_map_right,
-      zip_map_left] at * <;> [skip; simp]
+    rw [sublists_concat, reverse_append, zip_append (by simp), ← map_reverse, zip_map_right,
+      zip_map_left] at *
     simp only [Prod.mk.inj_iff, mem_map, mem_append, Prod.map_mk, Prod.exists] at h
     rcases h with (⟨l₁, l₂', h, rfl, rfl⟩ | ⟨l₁', l₂, h, rfl, rfl⟩)
     · rw [← append_assoc]

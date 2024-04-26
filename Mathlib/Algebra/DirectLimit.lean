@@ -6,6 +6,7 @@ Authors: Kenny Lau, Chris Hughes, Jujian Zhang
 import Mathlib.Data.Finset.Order
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.RingTheory.FreeCommRing
+import Mathlib.RingTheory.Ideal.Operations
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.Tactic.SuppressCompilation
 
@@ -39,11 +40,8 @@ universe u v v' v'' w u₁
 open Submodule
 
 variable {R : Type u} [Ring R]
-
 variable {ι : Type v}
-
 variable [Preorder ι]
-
 variable (G : ι → Type w)
 
 /-- A directed system is a functor from a category (directed poset) to another category. -/
@@ -66,7 +64,6 @@ end
 namespace Module
 
 variable [∀ i, AddCommGroup (G i)] [∀ i, Module R (G i)]
-
 variable {G} (f : ∀ i j, i ≤ j → G i →ₗ[R] G j)
 
 /-- A copy of `DirectedSystem.map_self` specialized to linear maps, as otherwise the
@@ -145,9 +142,7 @@ protected theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : Di
 #align module.direct_limit.induction_on Module.DirectLimit.induction_on
 
 variable {P : Type u₁} [AddCommGroup P] [Module R P] (g : ∀ i, G i →ₗ[R] P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (R ι G f)
 
 /-- The universal property of the direct limit: maps from the components to another module
@@ -190,7 +185,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)] [∀ i, Module R (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →ₗ[R] G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)] [∀ i, Module R (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →ₗ[R] G'' j}
 
@@ -417,11 +411,8 @@ theorem of.zero_exact [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h =>
 #align add_comm_group.direct_limit.of.zero_exact AddCommGroup.DirectLimit.of.zero_exact
 
 variable (P : Type u₁) [AddCommGroup P]
-
 variable (g : ∀ i, G i →+ P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
-
 variable (G f)
 
 /-- The universal property of the direct limit: maps from the components to another abelian group
@@ -466,7 +457,6 @@ section functorial
 
 variable {G' : ι → Type v'} [∀ i, AddCommGroup (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+ G' j}
-
 variable {G'' : ι → Type v''} [∀ i, AddCommGroup (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+ G'' j}
 
@@ -668,9 +658,7 @@ theorem induction_on [Nonempty ι] [IsDirected ι (· ≤ ·)] {C : DirectLimit 
 section OfZeroExact
 
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
-
 variable [DirectedSystem G fun i j h => f' i j h]
-
 variable (G f)
 
 theorem of.zero_exact_aux2 {x : FreeCommRing (Σi, G i)} {s t} [DecidablePred (· ∈ s)]
@@ -832,9 +820,7 @@ theorem of_injective [IsDirected ι (· ≤ ·)] [DirectedSystem G fun i j h => 
 #align ring.direct_limit.of_injective Ring.DirectLimit.of_injective
 
 variable (P : Type u₁) [CommRing P]
-
 variable (g : ∀ i, G i →+* P)
-
 variable (Hg : ∀ i j hij x, g j (f i j hij x) = g i x)
 
 open FreeCommRing
@@ -892,10 +878,8 @@ section functorial
 variable {f : ∀ i j, i ≤ j → G i →+* G j}
 variable {G' : ι → Type v'} [∀ i, CommRing (G' i)]
 variable {f' : ∀ i j, i ≤ j → G' i →+* G' j}
-
 variable {G'' : ι → Type v''} [∀ i, CommRing (G'' i)]
 variable {f'' : ∀ i j, i ≤ j → G'' i →+* G'' j}
-
 variable [Nonempty ι]
 /--
 Consider direct limits `lim G` and `lim G'` with direct system `f` and `f'` respectively, any
@@ -976,9 +960,7 @@ end Ring
 namespace Field
 
 variable [Nonempty ι] [IsDirected ι (· ≤ ·)] [∀ i, Field (G i)]
-
 variable (f : ∀ i j, i ≤ j → G i → G j)
-
 variable (f' : ∀ i j, i ≤ j → G i →+* G j)
 
 namespace DirectLimit
@@ -1023,13 +1005,14 @@ protected theorem inv_mul_cancel {p : Ring.DirectLimit G f} (hp : p ≠ 0) : inv
 See note [reducible non-instances]. -/
 @[reducible]
 protected noncomputable def field [DirectedSystem G fun i j h => f' i j h] :
-    Field (Ring.DirectLimit G fun i j h => f' i j h) :=
+    Field (Ring.DirectLimit G fun i j h => f' i j h) where
   -- This used to include the parent CommRing and Nontrivial instances,
   -- but leaving them implicit avoids a very expensive (2-3 minutes!) eta expansion.
-  { inv := inv G fun i j h => f' i j h
-    mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
-    inv_zero := dif_pos rfl
-    qsmul := qsmulRec _ }
+  inv := inv G fun i j h => f' i j h
+  mul_inv_cancel := fun p => DirectLimit.mul_inv_cancel G fun i j h => f' i j h
+  inv_zero := dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align field.direct_limit.field Field.DirectLimit.field
 
 end

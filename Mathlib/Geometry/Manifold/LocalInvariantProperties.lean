@@ -53,11 +53,8 @@ open Manifold Topology
 open Set Filter TopologicalSpace
 
 variable {H M H' M' X : Type*}
-
 variable [TopologicalSpace H] [TopologicalSpace M] [ChartedSpace H M]
-
 variable [TopologicalSpace H'] [TopologicalSpace M'] [ChartedSpace H' M']
-
 variable [TopologicalSpace X]
 
 namespace StructureGroupoid
@@ -78,7 +75,6 @@ structure LocalInvariantProp (P : (H → H') → Set H → H → Prop) : Prop wh
 #align structure_groupoid.local_invariant_prop StructureGroupoid.LocalInvariantProp
 
 variable {G G'} {P : (H → H') → Set H → H → Prop} {s t u : Set H} {x : H}
-
 variable (hG : G.LocalInvariantProp G' P)
 
 namespace LocalInvariantProp

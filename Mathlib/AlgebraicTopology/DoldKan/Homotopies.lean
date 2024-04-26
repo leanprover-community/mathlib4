@@ -68,7 +68,6 @@ namespace AlgebraicTopology
 namespace DoldKan
 
 variable {C : Type*} [Category C] [Preadditive C]
-
 variable {X : SimplicialObject C}
 
 /-- As we are using chain complexes indexed by `ℕ`, we shall need the relation
