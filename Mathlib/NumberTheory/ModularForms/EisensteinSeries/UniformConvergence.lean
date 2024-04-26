@@ -82,8 +82,7 @@ lemma auxbound2 (z : ℍ) (δ : ℝ) {ε : ℝ} (hε : 1 ≤ ε ^ 2) : r z ≤ C
     nlinarith
   right
   simp only [ne_eq, coe_re, coe_im, normSq_apply, AbsoluteValue.coe_mk, MulHom.coe_mk, add_re,
-    mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero, int_cast_re, add_im, mul_im, add_zero,
-    int_cast_im] at *
+    mul_re, ofReal_re, ofReal_im, zero_mul, sub_zero, add_im, mul_im, add_zero] at *
   exact H1
 
 lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
@@ -120,7 +119,7 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
         (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
         have : (n : ℂ) ≠ 0 := by norm_cast
         field_simp [this]
-    simp only [Nat.cast_max, h11, ofReal_int_cast, map_mul, abs_ofReal, ge_iff_le]
+    simp only [Nat.cast_max, h11, map_mul, abs_ofReal, ge_iff_le]
     rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
     cases' (div_max_sq_ge_one x hx) with H1 H2
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
@@ -179,12 +178,11 @@ theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x
 lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
-  simp only [slice_mem_iff, abs_ofReal, ge_iff_le] at hz
+  simp only [strip_mem_iff, abs_ofReal, ge_iff_le] at hz
   simp_rw [r]
   apply min_le_min
   · dsimp only
     convert hz.2
-    apply (abs_eq_self.mpr (UpperHalfPlane.im_pos z.1).le).symm
   · rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
     simp only [r1', div_pow, one_div]
     rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
