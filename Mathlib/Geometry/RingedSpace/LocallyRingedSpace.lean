@@ -252,7 +252,8 @@ set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a locally ringed space `X` to the top subspace is isomorphic to `X` itself.
 -/
-def restrictTopIso (X : LocallyRingedSpace) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+noncomputable def restrictTopIso (X : LocallyRingedSpace) :
+    X.restrict (Opens.openEmbedding ⊤) ≅ X :=
   @isoOfSheafedSpaceIso (X.restrict (Opens.openEmbedding ⊤)) X X.toSheafedSpace.restrictTopIso
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.restrict_top_iso AlgebraicGeometry.LocallyRingedSpace.restrictTopIso
