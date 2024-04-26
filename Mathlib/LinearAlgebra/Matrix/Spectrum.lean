@@ -112,7 +112,7 @@ theorem star_mul_self_mul_eq_diagonal :
 
 /-- *spectral theorem* A hermitian matrix can be can be
 replaced by a diagonal matrix sandwiched between the eigenvector unitaries. This alternate form
-allows direct rewriting of A since: <| A = V D V⁻¹$ -/
+allows direct rewriting of A since: <| A = V D (star V)$ -/
 theorem spectral_theorem :
     A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
       * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
