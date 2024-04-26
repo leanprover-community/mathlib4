@@ -29,18 +29,6 @@ following [barnes1967].
 
 -/
 
--- move this to `Mathlib.Algebra.MvPolynomial.Basic`
-lemma MvPolynomial.coe_aeval_eq_eval {R σ : Type*} [CommRing R] (x : σ → R) :
-    RingHomClass.toRingHom (MvPolynomial.aeval x) = MvPolynomial.eval x := rfl
-
--- move this to `Mathlib.LinearAlgebra.FiniteDimensional`
-open FiniteDimensional in
-lemma _root_.Submodule.eq_top_of_finrank
-    {K V : Type*} [DivisionRing K] [AddCommGroup V] [Module K V] [FiniteDimensional K V]
-    (W : Submodule K V) (h : finrank K W = finrank K V) :
-    W = ⊤ :=
-  eq_of_le_of_finrank_le le_top <| by rw [finrank_top, h]
-
 namespace LieAlgebra
 
 section CommRing
@@ -69,8 +57,6 @@ lemma rank_le_finrank_engel (x : L) :
 lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
     IsRegular K x ↔ finrank K (engel K x) = rank K L := by
   rw [isRegular_iff_natTrailingDegree_charpoly_eq_rank, finrank_engel]
-
-variable {K}
 
 namespace engel_le_engel
 
@@ -116,6 +102,7 @@ lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
 lemma lieCharpoly_natDegree : (lieCharpoly R M x y).natDegree = finrank R M := by
   rw [lieCharpoly, (polyCharpoly_monic _ _).natDegree_map, polyCharpoly_natDegree]
 
+variable {R} in
 lemma lieCharpoly_map_eval (r : R) :
     (lieCharpoly R M x y).map (evalRingHom r) = (φ (r • y + x)).charpoly := by
   rw [lieCharpoly, map_map]
@@ -177,7 +164,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   · rw [hmin y]
     suffices engel K (x : L) = ⊤ by simp_rw [this, le_top]
     apply LieSubalgebra.to_submodule_injective
-    apply Submodule.eq_top_of_finrank _ hr
+    apply Submodule.eq_top_of_finrank_eq hr
   -- So from now on, we assume that `r < finrank K L`.
   -- Let `u : U` denote `y - x`.
   let u : U := y - x
@@ -365,6 +352,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   · -- And `⁅y, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
   · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
+
+variable (K L)
 
 open Cardinal in
 lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
