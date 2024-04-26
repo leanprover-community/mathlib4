@@ -34,7 +34,8 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
   then this topological space is T2.
 * `ProperlyDiscontinuousSMul_iff_ProperSMul`: If a discrete group acts on a T2 space `X` such that
   `X × X` is compactly generated, then the action is properly discontinuous if and only if it is
-  continuous in the second variable and proper.
+  continuous in the second variable and proper. This in particular true if `X` is locally compact
+  or first-countable.
 
 ## References
 
