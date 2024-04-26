@@ -8,6 +8,12 @@ import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
 
+/-!
+# The degree of rational functions
+
+-/
+
+
 noncomputable section
 
 universe u

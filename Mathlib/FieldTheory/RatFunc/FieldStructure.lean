@@ -8,6 +8,11 @@ import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
 import Mathlib.RingTheory.Polynomial.Content
 
+/-!
+# The field structure of rational functions
+
+-/
+
 universe u v
 
 noncomputable section
