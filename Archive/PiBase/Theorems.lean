@@ -3,8 +3,8 @@ import Mathlib.Data.Set.Basic
 import Mathlib.Order.Filter.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Data.Fintype.Card
+import Mathlib.Topology.Compactification.OnePoint
 import Archive.PiBase.Properties
-import Archive.PiBase.Spaces
 open Topology Set Filter Nontrivial Fintype
 
 universe u
@@ -58,7 +58,7 @@ theorem T425 (X : Type u) [TopologicalSpace X]
   rw [P171, P99] at *
   intro x y f ftox ftoy
   by_contra xnoty
-  let K := S20 ⊕ S20 -- OnePoint ℕ ⊕ OnePoint ℕ
+  let K := OnePoint ℕ ⊕ OnePoint ℕ
   let k : K := sorry -- K.inl ∞
   let l : K := sorry -- K.inr ∞
   let f₂ : K → X := λ z ↦ sorry
@@ -66,7 +66,7 @@ theorem T425 (X : Type u) [TopologicalSpace X]
     -- else if z = k then x else y
   have disjoint_images : ∃ N_k ∈ 𝓝 k, ∃ N_l ∈ 𝓝 l,
       f₂ '' N_k ∩ f₂ '' N_l = ∅ := sorry
-    -- p171 using K f₂ k l
+  --   -- p171 using K f₂ k l
   rcases disjoint_images with
     ⟨ N_k , N_k_nhd, N_l, N_l_nhd, disjoint⟩
   -- contradiction: pick sufficiently large n,

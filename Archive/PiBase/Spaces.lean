@@ -4,7 +4,6 @@ import Mathlib.Order.Filter.Basic
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Data.Fintype.Card
 import Mathlib.Topology.Compactification.OnePoint
-import Archive.PiBase.Properties
 open Topology Set Filter Nontrivial Fintype
 
 universe u
