@@ -24,11 +24,29 @@ class IsRightLocalizing : Prop where
     ∃ (Y' : A) (_ : B.P (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
       a ≫ F.map b = φ
 
+class IsLeftLocalizing : Prop where
+  fac {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B.P Y) :
+    ∃ (Y' : A) (_ : B.P (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
+      F.map b ≫ a = φ
+
 lemma fac_of_isRightLocalizing [IsRightLocalizing F B]
     {Y : C} {X : A} (φ : Y ⟶ F.obj X) (hY : B.P Y) :
     ∃ (Y' : A) (_ : B.P (F.obj Y')) (a : Y ⟶ F.obj Y') (b : Y' ⟶ X),
       a ≫ F.map b = φ :=
   IsRightLocalizing.fac φ hY
+
+lemma fac_of_isLeftLocalizing [IsLeftLocalizing F B]
+    {X : A} {Y : C} (φ : F.obj X ⟶ Y) (hY : B.P Y) :
+    ∃ (Y' : A) (_ : B.P (F.obj Y')) (a : F.obj Y' ⟶ Y) (b : X ⟶ Y'),
+      F.map b ≫ a = φ :=
+  IsLeftLocalizing.fac φ hY
+
+open CategoryTheory.Pretriangulated.Opposite
+
+instance [IsLeftLocalizing F B] : IsRightLocalizing F.op B.op where
+  fac {Y X} φ hY := by
+    obtain ⟨Y', hY', a, b, fac⟩ := fac_of_isLeftLocalizing F B φ.unop hY
+    exact ⟨Opposite.op Y', hY', a.op, b.op, Quiver.Hom.unop_inj fac⟩
 
 lemma fac_of_isRightLocalizing' [IsRightLocalizing F B]
     {X : A} {Y : C} (s : F.obj X ⟶ Y) (hs : B.W s) :
@@ -37,7 +55,7 @@ lemma fac_of_isRightLocalizing' [IsRightLocalizing F B]
   rw [Subcategory.W_iff'] at hs
   obtain ⟨W, a, b, hT, hW⟩ := hs
   obtain ⟨W', hW', c, d, fac⟩ := fac_of_isRightLocalizing F B a hW
-  obtain ⟨U, e, f, hT'⟩ := distinguished_cocone_triangle d
+  obtain ⟨U, e, f, hT'⟩ := Pretriangulated.distinguished_cocone_triangle d
   obtain ⟨β, hβ, _⟩ := complete_distinguished_triangle_morphism _ _ hT (F.map_distinguished _ hT')
     c (𝟙 _) (by simpa using fac.symm)
   dsimp at β hβ
@@ -45,13 +63,22 @@ lemma fac_of_isRightLocalizing' [IsRightLocalizing F B]
   rw [Subcategory.W_iff']
   exact ⟨_, _, _, hT', hW'⟩
 
+/-lemma fac_of_isLeftLocalizing' [IsLeftLocalizing F B]
+    {X : A} {Y : C} (s : Y ⟶ F.obj X) (hs : B.W s) :
+    ∃ (X' : A) (s' : X' ⟶ X) (_ : (B.inverseImage F).W s') (b : F.obj X' ⟶ Y),
+      b ≫ s = F.map s' := by
+  have : F.op.IsTriangulated := sorry
+  obtain ⟨X', s', hs', b, fac⟩ := fac_of_isRightLocalizing' F.op B.op s.op (by
+    sorry)
+  refine' ⟨X'.unop, s'.unop, sorry, b.unop, Quiver.Hom.op_inj fac⟩-/
+
 lemma IsRightLocalizing.mk'
     (h : ∀ ⦃X : A⦄ ⦃Y : C⦄ (s : F.obj X ⟶ Y) (_ : B.W s),
       ∃ (X' : A) (s' : X ⟶ X') (_ : (B.inverseImage F).W s')
         (b : Y ⟶ F.obj X'), s ≫ b = F.map s') :
     IsRightLocalizing F B where
   fac {Y X} φ hY := by
-    obtain ⟨Z, s, b, hT⟩ := distinguished_cocone_triangle φ
+    obtain ⟨Z, s, b, hT⟩ := Pretriangulated.distinguished_cocone_triangle φ
     have hs : B.W s := by
       rw [Subcategory.W_iff']
       exact ⟨_, _, _, hT, hY⟩

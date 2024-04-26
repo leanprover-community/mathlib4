@@ -3,7 +3,7 @@ Copyright (c) 2023 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.Shift.Basic
+import Mathlib.CategoryTheory.Shift.CommShift
 import Mathlib.CategoryTheory.Preadditive.Opposite
 
 /-!
@@ -26,7 +26,8 @@ namespace CategoryTheory
 
 open Limits
 
-variable (C : Type*) [Category C] (A : Type*) [AddMonoid A] [HasShift C A]
+variable (C D : Type*) [Category C] [Category D] (F : C ⥤ D)
+  (A : Type*) [AddMonoid A] [HasShift C A] [HasShift D A]
 
 namespace HasShift
 
@@ -109,5 +110,30 @@ lemma oppositeShiftFunctorAdd'_hom_app :
       ((shiftFunctorAdd' C a b c h).inv.app X.unop).op := by
   subst h
   simp only [shiftFunctorAdd'_eq_shiftFunctorAdd, oppositeShiftFunctorAdd_hom_app]
+
+namespace Functor
+
+variable {D} (A)
+variable [F.CommShift A]
+
+def opShift : OppositeShift C A ⥤ OppositeShift D A := F.op
+
+instance : (F.opShift A).CommShift A where
+  iso a := (NatIso.op (F.commShiftIso a)).symm
+  zero := by
+    ext X
+    dsimp
+    simp only [F.commShiftIso_zero, CommShift.isoZero_inv_app, op_comp, opShift,
+      CommShift.isoZero_hom_app, op_obj, op_map]
+    erw [oppositeShiftFunctorZero_hom_app]
+    rfl
+  add a b := by
+    ext X
+    dsimp
+    simp [F.commShiftIso_add]
+    erw [oppositeShiftFunctorAdd_hom_app]
+    rfl
+
+end Functor
 
 end CategoryTheory

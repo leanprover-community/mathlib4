@@ -226,7 +226,7 @@ lemma isIso_πTruncGE_iff :
   · intro
     infer_instance
 
-lemma isIso_ιTruncGE_iff :
+lemma isIso_ιTruncLE_iff :
     IsIso (K.ιTruncLE n) ↔ K.IsStrictlyLE n := by
   constructor
   · intro
@@ -364,6 +364,12 @@ noncomputable abbrev shortComplexTruncLEX₃ToTruncGE :
 lemma g_shortComplexTruncLEX₃ToTruncGE :
     (K.shortComplexTruncLE n₀).g ≫ K.shortComplexTruncLEX₃ToTruncGE n₀ n₁ h = K.πTruncGE n₁ := by
   apply HomologicalComplex.g_shortComplexTruncLEX₃ToTruncGE
+
+lemma acyclic_truncLE_iff (n₀ n₁ : ℤ) (h : n₀ + 1 = n₁) :
+    (K.truncLE n₀).Acyclic ↔ K.IsGE n₁ := by
+  dsimp [truncLE]
+  rw [acyclic_truncLE_iff_isSupportedOutside,
+    (Embedding.embeddingUpInt_areComplementary n₀ n₁ h).isSupportedOutside₁_iff K]
 
 end Abelian
 

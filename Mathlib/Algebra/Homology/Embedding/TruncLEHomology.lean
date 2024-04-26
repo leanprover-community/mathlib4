@@ -129,6 +129,17 @@ lemma acyclic_ιTruncLE_iff_isSupportedOutside :
       simpa only [exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK.exactAt i
     · exact exactAt_of_isSupported _ e i' (by simpa using hi')
 
+lemma acyclic_truncLE_iff_isSupportedOutside :
+    (K.truncLE e).Acyclic ↔ K.IsSupportedOutside e := by
+  constructor
+  · intro hK
+    exact ⟨fun i => by simpa only [← exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK (e.f i)⟩
+  · intro hK i'
+    by_cases hi' : ∃ i, e.f i = i'
+    · obtain ⟨i, rfl⟩ := hi'
+      simpa only [exactAt_iff_of_quasiIsoAt (K.ιTruncLE e)] using hK.exactAt i
+    · exact exactAt_of_isSupported _ e i' (by simpa using hi')
+
 variable {K L}
 
 lemma quasiIso_truncLEMap_iff (φ : K ⟶ L) :

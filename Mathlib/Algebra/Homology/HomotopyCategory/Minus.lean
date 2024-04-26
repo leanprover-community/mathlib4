@@ -1,3 +1,4 @@
+import Mathlib.Algebra.Homology.CochainComplexMinus
 import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCategory.SingleFunctors
 import Mathlib.Algebra.Homology.DerivedCategory.Basic
@@ -76,7 +77,18 @@ instance : (quasiIso A).IsCompatibleWithShift ℤ where
     exact (quasiIso_respectsIso A).arrow_mk_iso_iff
       (Arrow.isoOfNatIso ((ι A).commShiftIso a) (Arrow.mk f))
 
-noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
+def quotient : CochainComplex.Minus C ⥤ Minus C :=
+  FullSubcategory.lift _
+    (CochainComplex.Minus.ι C ⋙ HomotopyCategory.quotient C (ComplexShape.up ℤ)) (by
+      rintro ⟨K, n, hn⟩
+      exact ⟨n, hn⟩)
+
+def quotientCompι :
+  quotient C ⋙ ι C ≅
+    CochainComplex.Minus.ι C ⋙ HomotopyCategory.quotient C (ComplexShape.up ℤ) := by
+  apply FullSubcategory.lift_comp_inclusion
+
+/-noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
     (fun n => (subcategoryMinus C).lift (singleFunctor C n) (fun X => by
       refine' ⟨n, _⟩
@@ -92,7 +104,7 @@ noncomputable def singleFunctorιIso (n : ℤ) :
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
-  infer_instance
+  infer_instance-/
 
 end Minus
 

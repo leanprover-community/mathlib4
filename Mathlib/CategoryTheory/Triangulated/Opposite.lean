@@ -88,6 +88,12 @@ instance [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive] (n : ℤ) 
     (shiftFunctor Cᵒᵖ n).Additive :=
   (inferInstance : (shiftFunctor (OppositeShiftAux C) n).Additive)
 
+noncomputable scoped instance {D : Type*} [Category D] [HasShift D ℤ] (F : C ⥤ D) [F.CommShift ℤ] :
+    F.op.CommShift ℤ := by
+  change ((F.opShift ℤ).pullbackShift
+    (AddMonoidHom.mk' (fun (n : ℤ) => -n) (by intros; dsimp; omega))).CommShift ℤ
+  infer_instance
+
 end Opposite
 
 open Opposite
@@ -874,14 +880,62 @@ namespace Functor
 open Pretriangulated.Opposite Pretriangulated
 
 variable {C}
-variable [HasShift C ℤ] [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
-  [Pretriangulated C]
 
-lemma map_distinguished_op_exact {A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
+lemma map_distinguished_op_exact [HasShift C ℤ] [HasZeroObject C] [Preadditive C]
+  [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [Pretriangulated C]{A : Type*} [Category A] [Abelian A] (F : Cᵒᵖ ⥤ A)
     [F.PreservesZeroMorphisms]
     [F.IsHomological] (T : Triangle C) (hT : T ∈ distTriang C) :
     ((shortComplexOfDistTriangle T hT).op.map F).Exact :=
   F.map_distinguished_exact _ (op_distinguished T hT)
+
+section
+
+variable {D : Type*} [Category D] [HasShift C ℤ] [HasShift D ℤ]
+
+variable (F : C ⥤ D) [F.CommShift ℤ]
+
+/-lemma commShift_op_hom_app (n m : ℤ) (hnm : n + m = 0) (X : Cᵒᵖ) :
+    (F.op.commShiftIso n).hom.app X =
+      (F.map ((shiftFunctorOpIso C n m hnm).hom.app X).unop).op ≫
+        ((F.commShiftIso m).inv.app X.unop).op ≫
+        (shiftFunctorOpIso D n m hnm).inv.app (Opposite.op (F.obj X.unop)) := by
+  sorry-/
+
+variable [HasZeroObject C] [Preadditive C] [∀ (n : ℤ), (shiftFunctor C n).Additive]
+  [HasZeroObject D] [Preadditive D] [∀ (n : ℤ), (shiftFunctor D n).Additive]
+  [Pretriangulated C][Pretriangulated D]
+
+/-instance [F.IsTriangulated] :
+    F.op.IsTriangulated where
+  map_distinguished T hT := by
+    refine Pretriangulated.isomorphic_distinguished _
+      (op_distinguished _ (F.map_distinguished _ (unop_distinguished _ hT))) _ ?_
+    refine Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _) (Iso.refl _) sorry sorry ?_
+    · dsimp
+      simp [F.commShift_op_hom_app 1 (-1) (add_neg_self 1)]
+      rw [← Functor.map_comp, ← Functor.map_comp,
+        shiftFunctor_op_map 1 (-1) (add_neg_self 1)]
+      dsimp
+      simp only [assoc, commShiftIso_hom_naturality, comp_obj, map_comp, op_comp]
+      erw [← NatTrans.naturality_assoc]
+      dsimp
+      erw [← NatTrans.naturality_assoc]
+      dsimp
+      congr 1
+      erw [← NatTrans.naturality_assoc]
+      erw [← NatTrans.naturality_assoc]
+      erw [Iso.hom_inv_id_app]
+      erw [comp_id]
+      erw [comp_id]
+      rw [← Functor.map_comp]
+      apply Quiver.Hom.unop_inj
+      dsimp
+      simp only [map_comp, unop_comp, assoc]
+      sorry-/
+
+end
+
 
 end Functor
 
