@@ -323,13 +323,13 @@ theorem le_iff_eq_or_le_sub_one {a b : ℕ+} : a = b ∨ a ≤ b - 1 ↔ a ≤ b
   constructor
   · intro h
     rcases h with h | h
-    · rw [le_iff_lt_or_eq] ; exact Or.inr h
-    · apply PNat.le_of_le_sub_one at h ; exact h
+    · rw [le_iff_lt_or_eq]; exact Or.inr h
+    · apply PNat.le_of_le_sub_one at h; exact h
   · intro h'
     rw [le_iff_lt_or_eq, or_comm] at h'
     rcases h' with h₁ | h₂
-    left ; exact h₁
-    right ; exact PNat.le_sub_one_of_lt h₂
+    left; exact h₁
+    right; exact PNat.le_sub_one_of_lt h₂
 #align pnat.le_iff_eq_or_le_sub_one PNat.le_iff_eq_or_le_sub_one
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
