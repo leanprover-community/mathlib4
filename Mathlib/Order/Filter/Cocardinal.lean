@@ -102,8 +102,8 @@ theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a �
 /-- The coproduct of the cocardinal filters on two types is the cocardinal filter on their product.
 -/
 theorem coprod_cocardinal :
-    (cocardinal α hreg : Filter α).coprod (cocardinal β hreg : Filter β) = cocardinal (α × β) hreg
-    :=
+    (cocardinal α hreg : Filter α).coprod (cocardinal β hreg : Filter β) =
+    cocardinal (α × β) hreg :=
   Filter.coext fun s => by
     simp only [compl_mem_coprod, mem_cofinite, compl_compl, finite_image_fst_and_snd_iff]
     constructor
