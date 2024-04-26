@@ -334,16 +334,16 @@ def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
   refine H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
-
+--set_option trace.Tactic.generalize_proofs true
+set_option pp.proofs true
 theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
     (H : ∀ a', b ∈ f.fix a' → (∀ a'', Sum.inr a'' ∈ f a' → C a'') → C a') :
     @fixInduction _ _ C _ _ _ h H = H a h fun a' h' => fixInduction (fix_fwd h h') H := by
   unfold fixInduction
-  dsimp -- TODO(kmill)
   generalize_proofs
   -- Porting note: `generalize` required to address `generalize_proofs` bug
   --generalize @fixInduction.proof_1 α β f b a h = ha
-  induction ha
+  induction ‹Acc _ _›
   rfl
 #align pfun.fix_induction_spec PFun.fixInduction_spec
 

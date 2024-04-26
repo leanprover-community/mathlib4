@@ -95,7 +95,7 @@ where
       checkCache e fun _ ↦ do
         let ty ← ty?.getDM (inferType e)
         if ← isProof e then
-          visitProof e ty fvars [] hasLet
+          visitProof e ty fvars hasLet
         else
           match e with
           | .forallE n t b i =>
@@ -136,20 +136,16 @@ where
           -- Giving up propagating expected types for `.proj`, which we shouldn't see anyway
           | .proj _ _ b => return e.updateProj! (← visit b none fvars hasLet)
           | _           => unreachable!
+  /-- Removes any mdata that appears in an application. -/
+  stripMData : Expr → Expr
+  | .mdata _ e => stripMData e
+  | .app f x => .app (stripMData f).headBeta x
+  | e => e
   /--
   Core implementation of abstracting a proof.
-  The `ty` argument is the type of `mkAppN e appliedFVars`.
   -/
-  visitProof (e ty : Expr) (fvars : Array Expr) (appliedFVars : List Expr) (hasLet : Bool) :
-      MAbs Expr := do
-    -- 0. eliminate mdata
-    if let .mdata _ e' := e then
-      return ← visitProof e' ty fvars appliedFVars hasLet
-    -- 1. peel off fvars corresponding to bound variables.
-    if let .app f x := e then
-      if fvars.contains x then
-        return ← visitProof f ty fvars (x :: appliedFVars) hasLet
-    -- 2. zeta reduce to ensure that there are no dependencies on lets from `fvars`.
+  visitProof (e ty : Expr) (fvars : Array Expr) (hasLet : Bool) : MAbs Expr := do
+    -- 1. zeta reduce to ensure that there are no dependencies on lets from `fvars`.
     let e ←
       if hasLet then
         Meta.transform (usedLetOnly := true) e fun node => do
@@ -162,21 +158,23 @@ where
           | _ => return .continue
       else
         pure e
-    -- 3. if atomic, then no use in abstracting
-    if e.isAtomic then
-      trace[Tactic.generalize_proofs] "3 atomic"
-      return appliedFVars.foldl .app e
+    -- 2. do some simplifications of e
+    let e := e.withApp' fun f args => f.beta args
+    -- 3. if head is atomic and arguments are bound variables, then no use in abstracting
+    if e.withApp' fun f args => f.isAtomic && args.all fvars.contains then
+      return e
     -- 4. abstract `fvars` out of `e` to make the abstracted proof `pf`
-    let usedFVars := (collectFVars {} e).fvarSet
-    let fvars' := fvars.filter (fun fvar => usedFVars.contains fvar.fvarId!)
+    let e ← mkExpectedTypeHint e ty
+    --let usedFVars := (collectFVars {} e).fvarSet -- this might not be right
+    --let fvars' := fvars.filter (fun fvar => usedFVars.contains fvar.fvarId!)
+    let fvars' ← fvars.filterM fun fvar => return !(← fvar.fvarId!.getDecl).isLet
     let pf ← mkLambdaFVars fvars' e
-    -- this is a big approximation for type propagation:
-    let pfTy ← if appliedFVars.isEmpty then pure ty else instantiateMVars (← inferType pf)
+    let pfTy ← instantiateMVars (← inferType pf)
     -- 5. check if there is already a recorded proof for this proposition.
     trace[Tactic.generalize_proofs] "finding {pfTy}"
     if let some pf' := (← get).propToProof.find? pfTy then
       trace[Tactic.generalize_proofs] "5 found proof"
-      return appliedFVars.foldl .app (mkAppN pf' fvars')
+      return mkAppN pf' fvars'
     -- 6. record the proof in the state and return the proof.
     let name ← (← nextName?).getDM (mkFreshUserName `h)
     modify fun s =>
@@ -184,7 +182,7 @@ where
         propToProof := s.propToProof.insert pfTy pf
         generalizations := s.generalizations.push (name, pfTy, pf) }
     trace[Tactic.generalize_proofs] "6 added"
-    return appliedFVars.foldl .app (mkAppN pf fvars')
+    return mkAppN pf fvars'
 
 /--
 Create a mapping of all propositions in the local context to their fvars.
