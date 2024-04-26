@@ -769,7 +769,7 @@ protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗ�
         LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map]
 
 @[simp]
-theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α):
+theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α) :
     LinearIsometryEquiv.piLpCongrRight p e x =
       (WithLp.equiv p _).symm (fun i => e i (x i)) :=
   rfl
