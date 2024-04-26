@@ -317,11 +317,11 @@ theorem Continuous.isProperMap [CompactSpace X] [T2Space Y] (hf : Continuous f) 
   isProperMap_iff_isClosedMap_and_tendsto_cofinite.2 ⟨hf, hf.isClosedMap, by simp⟩
 
 /-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
-continuous maps such that the preimage of any compact set is compact. -/
--- This result should be the only one needed, but the notion of compactly generated space
--- is not yet in Mathlib so we use it as an intermediate result to prove
--- `WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
--- `SequentialSpace.isProperMap_iff_isCompact_preimage`.
+continuous maps such that the preimage of any compact set is compact.
+This result should be the only one needed, but the notion of compactly generated space
+is not yet in Mathlib so we use it as an intermediate result to prove
+`WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
+`SequentialSpace.isProperMap_iff_isCompact_preimage`. -/
 theorem isProperMap_iff_isCompact_preimage [T2Space Y]
     (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K)) :
     IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
