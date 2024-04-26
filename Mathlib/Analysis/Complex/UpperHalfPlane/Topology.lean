@@ -87,8 +87,8 @@ lemma subset_strip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
     ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
   rcases K.eq_empty_or_nonempty with rfl | hne
   · exact ⟨1, 1, Real.zero_lt_one, empty_subset _⟩
-  obtain ⟨v, _, hv⟩ := hK.exists_isMinOn hne continuous_im.continuousOn
   obtain ⟨u, _, hu⟩ := hK.exists_isMaxOn hne (_root_.continuous_abs.comp continuous_re).continuousOn
+  obtain ⟨v, _, hv⟩ := hK.exists_isMinOn hne continuous_im.continuousOn
   exact ⟨|re u|, im v, v.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hu _ hk, isMinOn_iff.mp hv _ hk⟩⟩
 
 end strips
