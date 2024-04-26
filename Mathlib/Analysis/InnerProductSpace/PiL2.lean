@@ -528,6 +528,14 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
     _ = (v : ι → E) := by simp
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
+def LinearEquiv.piCurry {ι : Type*} {κ : ι → Type*}
+    (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module 𝕜 (α i k)] :
+    (Π i : Sigma κ, α i.1 i.2) ≃ₗ[𝕜] Π i j, α i j where
+  __ := Equiv.piCurry α
+  map_add' := fun _ _ => rfl
+  map_smul' := fun _ _ => rfl
+
 variable (𝕜) in
 /-- `Equiv.piCurry` for `PiLp` -/
 def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [Fact (1 ≤ p)]
@@ -536,34 +544,27 @@ def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [F
     PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
   toLinearEquiv :=
     WithLp.linearEquiv _ _ _
-      ≪≫ₗ
-        -- this should be `LinearEquiv.piCurry`
-        { Equiv.piCurry α with
-          map_add' := fun _ _ => rfl
-          map_smul' := fun _ _ => rfl }
+      ≪≫ₗ LinearEquiv.piCurry α
       ≪≫ₗ (LinearEquiv.piCongrRight fun i => (WithLp.linearEquiv _ _ _).symm)
       ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
   norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
-    by_cases hp : p = ⊤
-    · simp_rw [hp.symm ▸ PiLp.norm_eq_ciSup, LinearEquiv.trans_apply,
-        WithLp.linearEquiv_apply, Equiv.apply_symm_apply, LinearEquiv.coe_mk,
-        WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_pi_apply,
-        LinearEquiv.piCongrRight_apply, WithLp.linearEquiv_symm_apply, Equiv.toFun_as_coe,
-        WithLp.equiv_symm_pi_apply]
-      -- iSup_sigma does not apply here because ℝ is not a CompleteLattice
-      sorry
-    · have : 0 < p.toReal := (toReal_pos_iff_ne_top p).mpr hp
-      simp_rw [PiLp.norm_eq_sum this]
+    -- simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
+    --   Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
+    obtain rfl | hp := p.dichotomy
+    · simp_rw [← PiLp.norm_equiv, Pi.norm_def, ← PiLp.nnnorm_equiv, Pi.nnnorm_def]
+      dsimp [LinearEquiv.piCurry, Equiv.piCurry, Sigma.curry]
+      rw [← Finset.univ_sigma_univ, Finset.sup_sigma]
+    · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
+      simp_rw [PiLp.norm_eq_sum this, WithLp.equiv_symm_pi_apply]
       conv =>
         enter [1, 1, 2, x]
         rw [one_div, Real.rpow_inv_rpow (Finset.sum_nonneg fun _ _ ↦ by positivity) (ne_of_gt this)]
       rw [Finset.sum_sigma', Finset.univ_sigma_univ]
       rfl
 
-open Classical in
 /-- `Pi.orthonormalBasis (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))` is the
 `Σ i, ι i`-indexed orthonormal basis on `Π i, E i` given by `B i` on each component. -/
-protected noncomputable def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
+protected def _root_.Pi.orthonormalBasis {η : Type*} [Fintype η] {ι : η → Type*}
     [∀ i, Fintype (ι i)] {𝕜 : Type*} [RCLike 𝕜] {E : η → Type*} [∀ i, NormedAddCommGroup (E i)]
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i)) :
     OrthonormalBasis ((i : η) × ι i) 𝕜 (PiLp 2 E) where
