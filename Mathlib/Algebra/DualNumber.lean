@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
+import Init.Data.Format.Basic
 
 #align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
@@ -56,7 +57,7 @@ scoped[DualNumber] notation "ε" => DualNumber.eps
 @[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
-open DualNumber
+open DualNumber Std
 
 namespace DualNumber
 
@@ -189,4 +190,9 @@ theorem lift_inlAlgHom_eps :
   lift.apply_symm_apply <| AlgHom.id R A[ε]
 #align dual_number.lift_eps DualNumber.lift_inlAlgHom_epsₓ
 
+/-- Show DualNumber with values x and y as an "x + y*ε" string -/
+instance instRepr [Repr R] : Repr (DualNumber R) where
+  reprPrec f _p := Format.bracket "(" (repr f.fst ++ " + " ++ repr f.snd ++ "*ε") ")"
+
 end DualNumber
+

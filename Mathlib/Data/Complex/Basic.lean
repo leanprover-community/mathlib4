@@ -8,6 +8,7 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
+import Init.Data.Format.Basic
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -19,7 +20,7 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-open Set Function
+open Set Function Std
 
 /-! ### Definition and basic arithmetic -/
 
@@ -947,7 +948,7 @@ Note that the Real numbers used for x and y will show as cauchy sequences due to
 numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
-  reprPrec f p := Repr.addAppParen (repr f.re ++ " + " ++ repr f.im ++ "*I") p
+  reprPrec f _p := Format.bracket "(" (repr f.re ++ " + " ++ repr f.im ++ "*I") ")"
 
 end Complex
 
