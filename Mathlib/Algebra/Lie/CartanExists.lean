@@ -17,10 +17,10 @@ following [barnes1967].
 
 ## Main results
 
-* `exists_IsCartanSubalgebra_of_finrank_le_card`:
+* `exists_isCartanSubalgebra_of_finrank_le_card`:
   A Lie algebra `L` over a field `K` has a Cartan subalgebra,
   provided that the dimension of `L` over `K` is less than or equal to the cardinality of `K`.
-* `exists_IsCartanSubalgebra`:
+* `exists_isCartanSubalgebra`:
   A finite-dimensional Lie algebra `L` over an infinite field `K` has a Cartan subalgebra.
 
 ## References
@@ -356,7 +356,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
 variable (K L)
 
 open Cardinal in
-lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
+lemma exists_isCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
     ∃ H : LieSubalgebra K L, IsCartanSubalgebra H := by
   obtain ⟨x, hx⟩ := exists_isRegular_of_finrank_le_card K L h
   use engel K x
@@ -371,9 +371,9 @@ lemma exists_IsCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
-lemma exists_IsCartanSubalgebra [Infinite K] :
+lemma exists_isCartanSubalgebra [Infinite K] :
     ∃ H : LieSubalgebra K L, IsCartanSubalgebra H := by
-  apply exists_IsCartanSubalgebra_of_finrank_le_card
+  apply exists_isCartanSubalgebra_of_finrank_le_card
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
 
 end Field
