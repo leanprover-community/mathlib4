@@ -137,6 +137,7 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
+/-- Define √-1 as an element on the upper half plane.-/
 def I : ℍ := ⟨Complex.I, by simp⟩
 
 @[simp]
