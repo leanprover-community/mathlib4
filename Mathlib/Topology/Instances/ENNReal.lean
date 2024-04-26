@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Topology.Order.MonotoneContinuity
-import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Topology.Algebra.Order.LiminfLimsup
 import Mathlib.Topology.Instances.NNReal
 import Mathlib.Topology.EMetricSpace.Lipschitz
@@ -1449,6 +1448,27 @@ theorem Filter.Tendsto.edist {f g : β → α} {x : Filter β} {a b : α} (hf : 
     (hg : Tendsto g x (𝓝 b)) : Tendsto (fun x => edist (f x) (g x)) x (𝓝 (edist a b)) :=
   (continuous_edist.tendsto (a, b)).comp (hf.prod_mk_nhds hg)
 #align filter.tendsto.edist Filter.Tendsto.edist
+
+/-- If the extended distance between consecutive points of a sequence is estimated
+by a summable series of `NNReal`s, then the original sequence is a Cauchy sequence. -/
+theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
+    (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
+  refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
+  -- Actually we need partial sums of `d` to be a Cauchy sequence
+  replace hd : CauchySeq fun n : ℕ ↦ ∑ x in Finset.range n, d x :=
+    let ⟨_, H⟩ := hd
+    H.tendsto_sum_nat.cauchySeq
+  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence
+  refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
+  specialize hN n hn
+  -- We simplify the known inequality
+  rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
+    NNReal.coe_lt_coe, max_lt_iff] at hN
+  rw [edist_comm]
+  -- Then use `hf` to simplify the goal to the same form
+  refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
+  exact mod_cast hN.1
+#align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
 
 theorem cauchySeq_of_edist_le_of_tsum_ne_top {f : ℕ → α} (d : ℕ → ℝ≥0∞)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : tsum d ≠ ∞) : CauchySeq f := by
