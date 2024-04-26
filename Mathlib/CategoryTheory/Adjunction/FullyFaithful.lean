@@ -16,9 +16,6 @@ import Mathlib.CategoryTheory.Yoneda
 A left adjoint is fully faithful, if and only if the unit is an isomorphism
 (and similarly for right adjoints and the counit).
 
-`Adjunction.restrictFullyFaithful` shows that an adjunction can be restricted along fully faithful
-inclusions.
-
 ## Future work
 
 The statements from Riehl 4.5.13 for adjoints which are either full, or faithful.
@@ -211,41 +208,5 @@ lemma isIso_unit_app_iff_mem_essImage [R.Faithful] [R.Full] {Y : C} :
 lemma isIso_unit_app_of_iso [R.Faithful] [R.Full] {X : D} {Y : C} (e : Y ≅ R.obj X) :
     IsIso (h.unit.app Y) :=
   (isIso_unit_app_iff_mem_essImage h).mpr ⟨X, ⟨e.symm⟩⟩
-
--- TODO also do the statements from Riehl 4.5.13 for full and faithful separately?
-universe v₃ v₄ u₃ u₄
-
-variable {C' : Type u₃} [Category.{v₃} C']
-variable {D' : Type u₄} [Category.{v₄} D']
-
--- TODO: This needs some lemmas describing the produced adjunction, probably in terms of `adj`,
--- `iC` and `iD`.
-/-- If `C` is a full subcategory of `C'` and `D` is a full subcategory of `D'`, then we can restrict
-an adjunction `L' ⊣ R'` where `L' : C' ⥤ D'` and `R' : D' ⥤ C'` to `C` and `D`.
-The construction here is slightly more general, in that `C` is required only to have a full and
-faithful "inclusion" functor `iC : C ⥤ C'` (and similarly `iD : D ⥤ D'`) which commute (up to
-natural isomorphism) with the proposed restrictions.
--/
-def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' ⥤ D'} {R' : D' ⥤ C'}
-    (adj : L' ⊣ R') {L : C ⥤ D} {R : D ⥤ C} (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
-    [iC.Full] [iC.Faithful] [iD.Full] [iD.Faithful] : L ⊣ R :=
-  Adjunction.mkOfHomEquiv
-    { homEquiv := fun X Y =>
-        calc
-          (L.obj X ⟶ Y) ≃ (iD.obj (L.obj X) ⟶ iD.obj Y) := equivOfFullyFaithful iD
-          _ ≃ (L'.obj (iC.obj X) ⟶ iD.obj Y) := Iso.homCongr (comm1.symm.app X) (Iso.refl _)
-          _ ≃ (iC.obj X ⟶ R'.obj (iD.obj Y)) := adj.homEquiv _ _
-          _ ≃ (iC.obj X ⟶ iC.obj (R.obj Y)) := Iso.homCongr (Iso.refl _) (comm2.app Y)
-          _ ≃ (X ⟶ R.obj Y) := (equivOfFullyFaithful iC).symm
-
-      homEquiv_naturality_left_symm := fun {X' X Y} f g => by
-        apply iD.map_injective
-        simpa [Trans.trans] using (comm1.inv.naturality_assoc f _).symm
-      homEquiv_naturality_right := fun {X Y' Y} f g => by
-        apply iC.map_injective
-        suffices R'.map (iD.map g) ≫ comm2.hom.app Y = comm2.hom.app Y' ≫ iC.map (R.map g) by
-          simp [Trans.trans, this]
-        apply comm2.hom.naturality g }
-#align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
 
 end CategoryTheory

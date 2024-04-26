@@ -196,7 +196,7 @@ theorem length_mapIdx {α β} (l : List α) (f : ℕ → α → β) : (l.mapIdx 
 theorem mapIdx_eq_nil {α β} {f : ℕ → α → β} {l : List α} : List.mapIdx f l = [] ↔ l = [] := by
   rw [List.mapIdx_eq_enum_map, List.map_eq_nil, List.enum_eq_nil]
 
-@[simp, deprecated]
+@[simp, deprecated] -- 2023-02-11
 theorem nthLe_mapIdx {α β} (l : List α) (f : ℕ → α → β) (i : ℕ) (h : i < l.length)
     (h' : i < (l.mapIdx f).length := h.trans_le (l.length_mapIdx f).ge) :
     (l.mapIdx f).nthLe i h' = f i (l.nthLe i h) := by

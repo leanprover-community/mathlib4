@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.SpecificLimits.Basic
-import Mathlib.Data.Set.Intervals.IsoIoo
+import Mathlib.Order.Interval.Set.IsoIoo
 import Mathlib.Topology.Order.MonotoneContinuity
 import Mathlib.Topology.UrysohnsBounded
 
