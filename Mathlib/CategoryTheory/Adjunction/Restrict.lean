@@ -33,7 +33,7 @@ The construction here is slightly more general, in that `C` is required only to 
 faithful "inclusion" functor `iC : C ⥤ C'` (and similarly `iD : D ⥤ D'`) which commute (up to
 natural isomorphism) with the proposed restrictions.
 -/
-@[simps! unit_app counit_app]
+@[simps!? homEquiv_apply]
 def restrictFullyFaithful : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>
@@ -53,5 +53,24 @@ def restrictFullyFaithful : L ⊣ R :=
           simp [Trans.trans, this]
         apply comm2.hom.naturality g }
 #align category_theory.adjunction.restrict_fully_faithful CategoryTheory.Adjunction.restrictFullyFaithful
+
+@[simp, reassoc]
+lemma map_restrictFullyFaithful_unit_app (X : C) :
+    iC.map ((restrictFullyFaithful iC iD adj comm1 comm2).unit.app X) =
+    adj.unit.app (iC.obj X) ≫ R'.map (comm1.hom.app X) ≫ comm2.hom.app (L.obj X) := by
+  simp [restrictFullyFaithful]
+
+@[simp, reassoc]
+lemma map_restrictFullyFaithful_counit_app (X : D) :
+    iD.map ((restrictFullyFaithful iC iD adj comm1 comm2).counit.app X) =
+    comm1.inv.app (R.obj X) ≫ L'.map (comm2.inv.app X) ≫ adj.counit.app (iD.obj X) := by
+  simp only [Functor.comp_obj, Functor.id_obj, restrictFullyFaithful, equivOfFullyFaithful,
+    Equiv.instTransSortSortSortEquivEquivEquiv_trans, mkOfHomEquiv_counit_app, Equiv.invFun_as_coe,
+    Equiv.symm_trans_apply, Equiv.symm_symm, Iso.homCongr_symm, Iso.refl_symm, Iso.homCongr_apply,
+    Iso.refl_inv, Iso.symm_hom, Iso.app_inv, id_comp, homEquiv_counit, Functor.map_comp, assoc,
+    Iso.symm_inv, Iso.app_hom, Iso.refl_hom, comp_id, Equiv.coe_fn_symm_mk, Functor.image_preimage,
+    NatIso.cancel_natIso_inv_left]
+  change L'.map (iC.map (𝟙 _)) ≫ _ = _
+  simp
 
 end CategoryTheory.Adjunction
