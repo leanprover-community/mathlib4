@@ -556,7 +556,6 @@ def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [F
       conv =>
         enter [1, 1, 2, x]
         rw [one_div, Real.rpow_inv_rpow (Finset.sum_nonneg fun _ _ ↦ by positivity) (ne_of_gt this)]
-      simp
       rw [Finset.sum_sigma', Finset.univ_sigma_univ]
       rfl
 
