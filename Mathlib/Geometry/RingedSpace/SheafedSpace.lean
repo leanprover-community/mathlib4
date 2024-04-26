@@ -106,7 +106,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
-  preimage f := f
+  surjective f := ⟨f, rfl⟩
 
 -- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
@@ -189,7 +189,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
-def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+noncomputable def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
   forgetToPresheafedSpace.preimageIso X.toPresheafedSpace.restrictTopIso
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict_top_iso AlgebraicGeometry.SheafedSpace.restrictTopIso
