@@ -192,8 +192,8 @@ theorem lift_inlAlgHom_eps :
 
 /-- Show DualNumber with values x and y as an "x + y*ε" string -/
 instance instRepr [Repr R] : Repr (DualNumber R) where
-  reprPrec f p := 
-    if p > 65 then 
+  reprPrec f p :=
+    if p > 65 then
       Format.bracket "(" (reprPrec f.fst 65 ++ " + " ++ reprPrec f.snd 81 ++ "*ε") ")"
     else
       reprPrec f.fst 65 ++ " + " ++ reprPrec f.snd 81 ++ "*ε"
