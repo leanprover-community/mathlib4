@@ -322,7 +322,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   apply mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
   rw [← le_div_iff']
   · exact log_two_lt_d9.le.trans (by norm_num1)
-  exact sq_pos_of_ne_zero _ (by norm_num1)
+  exact sq_pos_of_ne_zero (by norm_num1)
 #align behrend.le_sqrt_log Behrend.le_sqrt_log
 
 theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x⌉₊) / ⌈x⌉₊ := by

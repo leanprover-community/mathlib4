@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.GroupWithZero.Hom
 import Mathlib.Algebra.Order.Group.Instances
-import Mathlib.Algebra.Order.Monoid.WithZero
+import Mathlib.Algebra.Order.GroupWithZero.Canonical
 import Mathlib.Order.Hom.Basic
 
 #align_import algebra.order.hom.monoid from "leanprover-community/mathlib"@"3342d1b2178381196f818146ff79bc0e7ccd9e2d"

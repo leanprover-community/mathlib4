@@ -1222,7 +1222,7 @@ theorem endTensorEndAlgHom_apply (f : End A M) (g : End R N) :
 
 end Module
 
-theorem Subalgebra.finite_sup {K L : Type*} [CommRing K] [CommRing L] [Algebra K L]
+theorem Subalgebra.finite_sup {K L : Type*} [CommSemiring K] [CommSemiring L] [Algebra K L]
     (E1 E2 : Subalgebra K L) [Module.Finite K E1] [Module.Finite K E2] :
     Module.Finite K ↥(E1 ⊔ E2) := by
   rw [← E1.range_val, ← E2.range_val, ← Algebra.TensorProduct.productMap_range]
