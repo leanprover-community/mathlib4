@@ -6,6 +6,7 @@ Authors: David Wärn, Joachim Breitner
 import Mathlib.Algebra.FreeMonoid.Basic
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
+import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
@@ -173,24 +174,22 @@ def lift : (∀ i, M i →* N) ≃ (CoprodI M →* N) where
 #align free_product.lift Monoid.CoprodI.lift
 
 @[simp]
-theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m := by
-  conv_rhs => rw [← lift.symm_apply_apply fi, lift_symm_apply, MonoidHom.comp_apply]
+theorem lift_comp_of {N} [Monoid N] (fi : ∀ i, M i →* N) i : (lift fi).comp of = fi i :=
+  congr_fun (lift.symm_apply_apply fi) i
+
+@[simp]
+theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi (of m) = fi i m :=
+  DFunLike.congr_fun (lift_comp_of ..) m
 #align free_product.lift_of Monoid.CoprodI.lift_of
 
-@[elab_as_elim]
-theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
-    (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
-  let S : Submonoid (CoprodI M) :=
-    { carrier := setOf C
-      mul_mem' := h_mul _ _
-      one_mem' := h_one }
-  have : C _ := Subtype.prop (lift (fun i => of.codRestrict S (h_of i)) m)
-  convert this
-  change MonoidHom.id _ m = S.subtype.comp _ m
-  congr
-  ext i
-  rfl
-#align free_product.induction_on Monoid.CoprodI.induction_on
+@[simp]
+theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
+    lift (fun i ↦ f.comp (of (i := i))) = f :=
+  lift.apply_symm_apply f
+
+@[simp]
+theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) :=
+  lift_comp_of' (.id _)
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
@@ -201,24 +200,43 @@ theorem of_injective (i : ι) : Function.Injective (of : M i →* _) := by
   classical exact (of_leftInverse i).injective
 #align free_product.of_injective Monoid.CoprodI.of_injective
 
-theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N}
-    (h : ∀ i, MonoidHom.mrange (f i) ≤ s) : MonoidHom.mrange (lift f) ≤ s := by
-  rintro _ ⟨x, rfl⟩
-  induction' x using CoprodI.induction_on with i x x y hx hy
-  · exact s.one_mem
-  · simp only [lift_of, SetLike.mem_coe]
-    exact h i (Set.mem_range_self x)
-  · simp only [map_mul, SetLike.mem_coe]
-    exact s.mul_mem hx hy
-#align free_product.lift_mrange_le Monoid.CoprodI.lift_mrange_le
-
 theorem mrange_eq_iSup {N} [Monoid N] (f : ∀ i, M i →* N) :
     MonoidHom.mrange (lift f) = ⨆ i, MonoidHom.mrange (f i) := by
-  apply le_antisymm (lift_mrange_le f fun i => le_iSup (fun i => MonoidHom.mrange (f i)) i)
-  apply iSup_le _
-  rintro i _ ⟨x, rfl⟩
-  exact ⟨of x, by simp only [lift_of]⟩
+  rw [lift, Equiv.coe_fn_mk, Con.lift_range, FreeMonoid.mrange_lift,
+    range_sigma_eq_iUnion_range, Submonoid.closure_iUnion]
+  simp only [MonoidHom.mclosure_range]
 #align free_product.mrange_eq_supr Monoid.CoprodI.mrange_eq_iSup
+
+theorem lift_mrange_le {N} [Monoid N] (f : ∀ i, M i →* N) {s : Submonoid N} :
+    MonoidHom.mrange (lift f) ≤ s ↔ ∀ i, MonoidHom.mrange (f i) ≤ s := by
+  simp [mrange_eq_iSup]
+#align free_product.lift_mrange_le Monoid.CoprodI.lift_mrange_le
+
+@[simp]
+theorem iSup_mrange_of : ⨆ i, MonoidHom.mrange (of : M i →* CoprodI M) = ⊤ := by
+  simp [← mrange_eq_iSup]
+
+@[simp]
+theorem mclosure_iUnion_range_of :
+    Submonoid.closure (⋃ i, Set.range (of : M i →* CoprodI M)) = ⊤ := by
+  simp [Submonoid.closure_iUnion]
+
+@[elab_as_elim]
+theorem induction_left {C : CoprodI M → Prop} (m : CoprodI M) (one : C 1)
+    (mul : ∀ {i} (m : M i) x, C x → C (of m * x)) : C m := by
+  induction m using Submonoid.induction_of_closure_eq_top_left mclosure_iUnion_range_of with
+  | one => exact one
+  | mul x hx y ihy =>
+    obtain ⟨i, m, rfl⟩ : ∃ (i : ι) (m : M i), of m = x := by simpa using hx
+    exact mul m y ihy
+
+@[elab_as_elim]
+theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
+    (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
+  induction m using CoprodI.induction_left with
+  | one => exact h_one
+  | mul m x hx => exact h_mul _ _ (h_of _ _) hx
+#align free_product.induction_on Monoid.CoprodI.induction_on
 
 section Group
 
@@ -641,7 +659,7 @@ variable (M)
 /-- A `NeWord M i j` is a representation of a non-empty reduced words where the first letter comes
 from `M i` and the last letter comes from `M j`. It can be constructed from singletons and via
 concatenation, and thus provides a useful induction principle. -/
---@[nolint has_nonempty_instance] Porting note: commented out
+--@[nolint has_nonempty_instance] Porting note(#5171): commented out
 inductive NeWord : ι → ι → Type _
   | singleton : ∀ {i : ι} (x : M i), x ≠ 1 → NeWord i i
   | append : ∀ {i j k l} (_w₁ : NeWord i j) (_hne : j ≠ k) (_w₂ : NeWord k l), NeWord i l
@@ -879,7 +897,7 @@ theorem lift_word_ping_pong {i j k} (w : NeWord H i j) (hk : j ≠ k) :
   · calc
       lift f (NeWord.append w₁ hne w₂).prod • X k = lift f w₁.prod • lift f w₂.prod • X k := by
         simp [MulAction.mul_smul]
-      _ ⊆ lift f w₁.prod • X _ := (set_smul_subset_set_smul_iff.mpr (hIw₂ hk))
+      _ ⊆ lift f w₁.prod • X _ := set_smul_subset_set_smul_iff.mpr (hIw₂ hk)
       _ ⊆ X i := hIw₁ hne
 #align free_product.lift_word_ping_pong Monoid.CoprodI.lift_word_ping_pong
 
@@ -1090,9 +1108,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
             intro n _hle hi
             calc
               a i ^ (n + 1) • (Y i)ᶜ = (a i ^ n * a i) • (Y i)ᶜ := by rw [zpow_add, zpow_one]
-              _ = a i ^ n • a i • (Y i)ᶜ := (MulAction.mul_smul _ _ _)
-              _ ⊆ a i ^ n • X i := (smul_set_mono <| hX i)
-              _ ⊆ a i ^ n • (Y i)ᶜ := (smul_set_mono (hXYdisj i i).subset_compl_right)
+              _ = a i ^ n • a i • (Y i)ᶜ := MulAction.mul_smul _ _ _
+              _ ⊆ a i ^ n • X i := smul_set_mono <| hX i
+              _ ⊆ a i ^ n • (Y i)ᶜ := smul_set_mono (hXYdisj i i).subset_compl_right
               _ ⊆ X i := hi
         _ ⊆ X' i := Set.subset_union_left _ _
     · have h1n : n ≤ -1 := by
@@ -1110,9 +1128,9 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
             intro n _ hi
             calc
               a i ^ (n - 1) • (X i)ᶜ = (a i ^ n * (a i)⁻¹) • (X i)ᶜ := by rw [zpow_sub, zpow_one]
-              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := (MulAction.mul_smul _ _ _)
-              _ ⊆ a i ^ n • Y i := (smul_set_mono <| hY i)
-              _ ⊆ a i ^ n • (X i)ᶜ := (smul_set_mono (hXYdisj i i).symm.subset_compl_right)
+              _ = a i ^ n • (a i)⁻¹ • (X i)ᶜ := MulAction.mul_smul _ _ _
+              _ ⊆ a i ^ n • Y i := smul_set_mono <| hY i
+              _ ⊆ a i ^ n • (X i)ᶜ := smul_set_mono (hXYdisj i i).symm.subset_compl_right
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ #(H i)

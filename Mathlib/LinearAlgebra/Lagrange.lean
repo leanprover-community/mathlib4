@@ -534,7 +534,7 @@ rcases s.eq_empty_or_nonempty with (rfl | h)
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = s.card := by
-  simp_rw [degree_eq_natDegree (nodal_ne_zero), natDegree_nodal]
+  simp_rw [degree_eq_natDegree nodal_ne_zero, natDegree_nodal]
 #align lagrange.degree_nodal Lagrange.degree_nodal
 
 theorem nodal_monic : (nodal s v).Monic :=

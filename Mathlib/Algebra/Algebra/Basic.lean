@@ -105,7 +105,7 @@ section Prio
 
 See the implementation notes in this file for discussion of the details of this definition.
 -/
--- Porting note: unsupported @[nolint has_nonempty_instance]
+-- Porting note(#5171): unsupported @[nolint has_nonempty_instance]
 class Algebra (R : Type u) (A : Type v) [CommSemiring R] [Semiring A] extends SMul R A,
   R →+* A where
   commutes' : ∀ r x, toRingHom r * x = x * toRingHom r
@@ -434,7 +434,7 @@ theorem coe_linearMap : ⇑(Algebra.linearMap R A) = algebraMap R A :=
   rfl
 #align algebra.coe_linear_map Algebra.coe_linearMap
 
-/- The identity map inducing an `Algebra` structure. -/
+/-- The identity map inducing an `Algebra` structure. -/
 instance id : Algebra R R where
   -- We override `toFun` and `toSMul` because `RingHom.id` is not reducible and cannot
   -- be made so without a significant performance hit.

@@ -122,6 +122,30 @@ where
       | some i => deps ||| (1 <<< i.toNat)
       | none => deps
 
+/-- Calculates the same as `calcNeeds` but tracing each module to a specific constant. -/
+def getExplanations (constToIdx : HashMap Name USize) (mod : ModuleData) :
+    HashMap USize (Name × Name) :=
+  mod.constants.foldl (init := {}) fun deps ci =>
+    if isBlacklisted ci.name then deps else
+    let deps := visitExpr ci.name ci.type deps
+    match ci.value? with
+    | some e => visitExpr ci.name e deps
+    | none => deps
+where
+  /-- Accumulate the results from expression `e` into `deps`. -/
+  visitExpr name e deps :=
+    Lean.Expr.foldConsts e deps fun c deps => match constToIdx.find? c with
+      | some i =>
+        if
+          if let some (name', _) := deps.find? i then
+            decide (name.toString.length < name'.toString.length)
+          else true
+        then
+          deps.insert i (name, c)
+        else
+          deps
+      | none => deps
+
 /-- Load all the modules in `imports` into the `State`, as well as their transitive dependencies.
 Returns a pair `(imps, transImps)` where:
 
@@ -212,7 +236,7 @@ def parseHeader (srcSearchPath : SearchPath) (mod : Name) :
  -/
 def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
     (i : Nat) (needs : Bitset) (edits : Edits)
-    (downstream := true) (githubStyle := false) : IO Edits := do
+    (downstream := true) (githubStyle := false) (explain := false) : IO Edits := do
   -- Do transitive reduction of `needs` in `deps` and transitive closure in `transDeps`.
   -- Include the `ignoreImps` in `transDeps`
   let mut deps := needs
@@ -322,6 +346,17 @@ def visitModule (s : State) (srcSearchPath : SearchPath) (ignoreImps : Bitset)
       println! "  instead"
       for (j, reAddArr) in reAdded do
         println! "    import {reAddArr.map (s.modNames[·]!)} in {s.modNames[j]!}"
+
+  if explain then
+    let explanation := getExplanations s.constToIdx s.mods[i]!
+    let sanitize n := if n.hasMacroScopes then (sanitizeName n).run' { options := {} } else n
+    let run j := do
+      if let some (n, c) := explanation.find? j then
+        println! "  note: {s.modNames[i]!} requires {s.modNames[j]!}\
+          \n    because {sanitize n} refers to {sanitize c}"
+    for imp in s.mods[i]!.imports do run <| s.toIdx.find! imp.module
+    for i in toAdd do run i.toUSize
+
   return edits
 
 /-- Convert a list of module names to a bitset of module indexes -/
@@ -339,6 +374,8 @@ structure Args where
   downstream : Bool := true
   /-- `--gh-style`: output messages that can be parsed by `gh-problem-matcher-wrap` -/
   githubStyle : Bool := false
+  /-- `--explain`: give constants explaining why each module is needed -/
+  explain : Bool := false
   /-- `--fix`: apply the fixes directly -/
   fix : Bool := false
   /-- `--update`: update the config file -/
@@ -377,6 +414,7 @@ def main (args : List String) : IO UInt32 := do
     | "--help" :: rest => parseArgs { args with help := true } rest
     | "--no-downstream" :: rest => parseArgs { args with downstream := false } rest
     | "--fix" :: rest => parseArgs { args with fix := true } rest
+    | "--explain" :: rest => parseArgs { args with explain := true } rest
     | "--gh-style" :: rest => parseArgs { args with githubStyle := true } rest
     | "--update" :: rest => parseArgs { args with update := true } rest
     | "--global" :: rest => parseArgs { args with global := true } rest
@@ -451,7 +489,7 @@ def main (args : List String) : IO UInt32 := do
       if noIgnore i then
         let ignoreImps := ignoreImps ||| ignore.findD s.modNames[i]! 0
         edits ← visitModule s srcSearchPath ignoreImps i t.get edits
-          args.downstream args.githubStyle
+          args.downstream args.githubStyle args.explain
 
   -- Write the config file
   if args.update then
