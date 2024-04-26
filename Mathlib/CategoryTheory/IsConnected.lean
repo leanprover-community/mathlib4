@@ -461,7 +461,7 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
 #align category_theory.nat_trans_from_is_connected CategoryTheory.nat_trans_from_is_connected
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
-  surjective f := ⟨f.app (Classical.arbitrary J), by
+  map_surjective f := ⟨f.app (Classical.arbitrary J), by
     ext j
     apply nat_trans_from_is_connected f (Classical.arbitrary J) j⟩
 

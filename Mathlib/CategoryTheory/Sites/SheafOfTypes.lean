@@ -265,7 +265,7 @@ def sheafOfTypesToPresheaf : SheafOfTypes J ⥤ Cᵒᵖ ⥤ Type w where
 set_option linter.uppercaseLean3 false in
 #align category_theory.SheafOfTypes_to_presheaf CategoryTheory.sheafOfTypesToPresheaf
 
-instance : (sheafOfTypesToPresheaf J).Full where surjective f := ⟨⟨f⟩, rfl⟩
+instance : (sheafOfTypesToPresheaf J).Full where map_surjective f := ⟨⟨f⟩, rfl⟩
 
 instance : (sheafOfTypesToPresheaf J).Faithful where
 

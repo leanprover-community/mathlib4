@@ -276,7 +276,7 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
 #align category_theory.mono_over.map_obj_arrow CategoryTheory.MonoOver.map_obj_arrow
 
 instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
-  surjective {g h} e := by
+  map_surjective {g h} e := by
     refine' ⟨homMk e.left _, rfl⟩
     · rw [← cancel_mono f, assoc]
       apply w e

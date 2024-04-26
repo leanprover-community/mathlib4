@@ -52,7 +52,7 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₃ h
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
-  surjective {X Y} f :=
+  map_surjective {X Y} f :=
    ⟨{ hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃

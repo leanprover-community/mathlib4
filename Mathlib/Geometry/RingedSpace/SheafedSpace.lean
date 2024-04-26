@@ -106,7 +106,7 @@ set_option linter.uppercaseLean3 false in
 
 -- Porting note: can't derive `Full` functor automatically
 instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
-  surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨f, rfl⟩
 
 -- Porting note: can't derive `Faithful` functor automatically
 instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where

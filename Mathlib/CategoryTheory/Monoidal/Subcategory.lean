@@ -131,7 +131,7 @@ def fullMonoidalSubcategory.map (h : ∀ ⦃X⦄, P X → P' X) :
 
 instance fullMonoidalSubcategory.map_full (h : ∀ ⦃X⦄, P X → P' X) :
     (fullMonoidalSubcategory.map h).Full where
-  surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨f, rfl⟩
 #align category_theory.monoidal_category.full_monoidal_subcategory.map_full CategoryTheory.MonoidalCategory.fullMonoidalSubcategory.map_full
 
 instance fullMonoidalSubcategory.map_faithful (h : ∀ ⦃X⦄, P X → P' X) :

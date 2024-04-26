@@ -73,7 +73,7 @@ theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full where
-  surjective {X} {Y} f := ⟨f.app (op X) (𝟙 X), by aesop_cat⟩
+  map_surjective {X} {Y} f := ⟨f.app (op X) (𝟙 X), by aesop_cat⟩
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yoneda_full
 
 /-- The Yoneda embedding is faithful.
@@ -131,7 +131,7 @@ lemma map_preimage {X Y : Cᵒᵖ} (f : coyoneda.obj X ⟶ coyoneda.obj Y) :
   aesop_cat
 
 instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full where
-  surjective f := ⟨preimage f, by simp⟩
+  map_surjective f := ⟨preimage f, by simp⟩
 #align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyoneda_full
 
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful where

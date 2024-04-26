@@ -109,4 +109,4 @@ instance : preordToCat.{u}.Faithful where
   map_injective h := by ext x; exact Functor.congr_obj h x
 
 instance : preordToCat.{u}.Full where
-  surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩
+  map_surjective {X Y} f := ⟨⟨f.obj, @CategoryTheory.Functor.monotone X Y _ _ f⟩, rfl⟩

@@ -720,7 +720,7 @@ instance (priority := 100) faithfulOfEquivalence (F : C ⥤ D) [IsEquivalence F]
 See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
 instance (priority := 100) full_of_equivalence (F : C ⥤ D) [IsEquivalence F] : F.Full where
-  surjective {X Y} f :=
+  map_surjective {X Y} f :=
     ⟨F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y,
       F.inv.map_injective <| by
         simpa only [IsEquivalence.inv_fun_map, assoc, Iso.inv_hom_id_app_assoc,

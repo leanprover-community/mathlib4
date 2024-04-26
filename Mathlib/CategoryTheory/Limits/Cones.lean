@@ -455,7 +455,7 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
 instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
-  surjective t :=
+  map_surjective t :=
     ⟨{ hom := G.preimage t.hom
        w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
 #align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
@@ -674,7 +674,7 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
 instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
-  surjective t :=
+  map_surjective t :=
     ⟨{ hom := G.preimage t.hom
        w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
 #align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull

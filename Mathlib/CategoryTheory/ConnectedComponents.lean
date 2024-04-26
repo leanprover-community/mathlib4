@@ -128,7 +128,7 @@ theorem inclusion_comp_decomposedTo (j : ConnectedComponents J) :
 #align category_theory.inclusion_comp_decomposed_to CategoryTheory.inclusion_comp_decomposedTo
 
 instance : (decomposedTo J).Full where
-  surjective := by
+  map_surjective := by
     rintro ⟨j', X, hX⟩ ⟨k', Y, hY⟩ f
     dsimp at f
     have : j' = k' := by

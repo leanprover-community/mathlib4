@@ -41,7 +41,7 @@ namespace Functor
 See <https://stacks.math.columbia.edu/tag/001C>.
 -/
 class Full (F : C ⥤ D) : Prop where
-  surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
+  map_surjective {X Y : C} : Function.Surjective (F.map (X := X) (Y := Y))
 #align category_theory.full CategoryTheory.Functor.Full
 
 /- ./././Mathport/Syntax/Translate/Command.lean:379:30: infer kinds are unsupported in Lean 4:
@@ -71,7 +71,7 @@ theorem mapIso_injective (F : C ⥤ D) [Faithful F] :
 
 theorem map_surjective (F : C ⥤ D) [Full F] :
     Function.Surjective (F.map : (X ⟶ Y) → (F.obj X ⟶ F.obj Y)) :=
-  Full.surjective
+  Full.map_surjective
 #align category_theory.functor.map_surjective CategoryTheory.Functor.map_surjective
 
 /-- The specified preimage of a morphism under a full functor. -/
@@ -85,33 +85,6 @@ theorem image_preimage (F : C ⥤ D) [Full F] {X Y : C} (f : F.obj X ⟶ F.obj Y
     F.map (preimage F f) = f :=
   (F.map_surjective f).choose_spec
 #align category_theory.functor.image_preimage CategoryTheory.Functor.image_preimage
-
-
-/-- Auxiliary structure in order to prove that a functor `F` is full. It carries
-the data of the preimage for any morphism `F.obj X ⟶ F.obj Y`.
-See also the lemma `CoreFull.preimage_eq` which allows to compute `F.preimage`
-using the field `CoreFull.preimage` when `F` is also faithful. -/
-structure CoreFull (F : C ⥤ D) where
-  /-- The data of a preimage for every `f : F.obj X ⟶ F.obj Y`. -/
-  preimage : ∀ {X Y : C} (_ : F.obj X ⟶ F.obj Y), X ⟶ Y
-  /-- The property that `Full.preimage f` of maps to `f` via `F.map`. -/
-  witness : ∀ {X Y : C} (f : F.obj X ⟶ F.obj Y), F.map (preimage f) = f := by aesop_cat
-
-namespace CoreFull
-
-attribute [simp] witness
-
-variable {F : C ⥤ D} (h : CoreFull F)
-
-lemma full : F.Full where
-  surjective f := ⟨_, h.witness f⟩
-
-lemma preimage_eq {X Y : C} (f : F.obj X ⟶ F.obj Y) [F.Faithful]:
-    letI := h.full
-    F.preimage f = h.preimage f :=
-  F.map_injective (by simp)
-
-end CoreFull
 
 variable {F : C ⥤ D} [Full F] [F.Faithful] {X Y Z : C}
 
@@ -269,7 +242,7 @@ namespace Functor
 
 variable {C : Type u₁} [Category.{v₁} C]
 
-instance Full.id : Full (𝟭 C) where surjective := Function.surjective_id
+instance Full.id : Full (𝟭 C) where map_surjective := Function.surjective_id
 #align category_theory.full.id CategoryTheory.Functor.Full.id
 
 instance Faithful.id : Functor.Faithful (𝟭 C) := { }
@@ -295,7 +268,7 @@ variable {F F'}
 
 /-- If `F` is full, and naturally isomorphic to some `F'`, then `F'` is also full. -/
 def Full.of_iso [Full F] (α : F ≅ F') : Full F' where
-  surjective {X Y} f :=
+  map_surjective {X Y} f :=
     ⟨F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv), by simp [← NatIso.naturality_1 α]⟩
 #align category_theory.full.of_iso CategoryTheory.Functor.Full.of_iso
 
@@ -375,12 +348,12 @@ theorem Faithful.div_faithful (F : C ⥤ E) [F.Faithful] (G : D ⥤ E) [G.Faithf
 #align category_theory.faithful.div_faithful CategoryTheory.Functor.Faithful.div_faithful
 
 instance Full.comp [Full F] [Full G] : Full (F ⋙ G) where
-  surjective f := ⟨F.preimage (G.preimage f), by simp⟩
+  map_surjective f := ⟨F.preimage (G.preimage f), by simp⟩
 #align category_theory.full.comp CategoryTheory.Functor.Full.comp
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
 lemma Full.of_comp_faithful [Full <| F ⋙ G] [G.Faithful] : Full F where
-  surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).image_preimage _)⟩
+  map_surjective f := ⟨(F ⋙ G).preimage (G.map f), G.map_injective ((F ⋙ G).image_preimage _)⟩
 #align category_theory.full.of_comp_faithful CategoryTheory.Functor.Full.of_comp_faithful
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/

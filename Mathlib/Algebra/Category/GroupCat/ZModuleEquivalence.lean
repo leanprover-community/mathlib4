@@ -27,7 +27,7 @@ namespace ModuleCat
 
 /-- The forgetful functor from `ℤ` modules to `AddCommGroup` is full. -/
 instance forget₂_addCommGroup_full : (forget₂ (ModuleCat ℤ) AddCommGroupCat.{u}).Full where
-  surjective {A B}
+  map_surjective {A B}
     -- `AddMonoidHom.toIntLinearMap` doesn't work here because `A` and `B` are not
     -- definitionally equal to the canonical `AddCommGroup.intModule` module
     -- instances it expects.

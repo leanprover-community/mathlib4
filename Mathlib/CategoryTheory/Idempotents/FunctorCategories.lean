@@ -119,7 +119,7 @@ def karoubiFunctorCategoryEmbedding : Karoubi (J ⥤ C) ⥤ J ⥤ Karoubi C wher
 #align category_theory.idempotents.karoubi_functor_category_embedding CategoryTheory.Idempotents.karoubiFunctorCategoryEmbedding
 
 instance : (karoubiFunctorCategoryEmbedding J C).Full where
-  surjective {P Q} f :=
+  map_surjective {P Q} f :=
    ⟨{ f :=
         { app := fun j => (f.app j).f
           naturality := fun j j' φ => by

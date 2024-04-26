@@ -161,7 +161,7 @@ variable (G : C ⥤ D)
 
 instance functorialityFull [G.PreservesZeroMorphisms] [G.Full] [G.Faithful] :
     (functoriality F G).Full where
-  surjective t :=
+  map_surjective t :=
    ⟨{ hom := G.preimage t.hom
       wι := fun j => G.map_injective (by simpa using t.wι j)
       wπ := fun j => G.map_injective (by simpa using t.wπ j) }, by aesop_cat⟩
@@ -1253,7 +1253,7 @@ def functoriality : BinaryBicone P Q ⥤ BinaryBicone (F.obj P) (F.obj Q) where
       winr := by simp [-BinaryBiconeMorphism.winr, ← f.winr] }
 
 instance functoriality_full [F.Full] [F.Faithful] : (functoriality P Q F).Full where
-  surjective t :=
+  map_surjective t :=
    ⟨{ hom := F.preimage t.hom
       winl := F.map_injective (by simpa using t.winl)
       winr := F.map_injective (by simpa using t.winr)

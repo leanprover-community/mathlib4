@@ -127,7 +127,7 @@ instance [R.Faithful] (h : L ⊣ R) : (Monad.comparison h).Faithful where
   map_injective {_ _} _ _ w := R.map_injective (congr_arg Monad.Algebra.Hom.f w : _)
 
 instance (T : Monad C) : (Monad.comparison T.adj).Full where
-  surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective {_ _} f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
 
 instance (T : Monad C) : (Monad.comparison T.adj).EssSurj where
   mem_essImage X :=
@@ -177,7 +177,7 @@ instance Comonad.comparison_faithful_of_faithful [L.Faithful] (h : L ⊣ R) :
 #align category_theory.comonad.comparison_faithful_of_faithful CategoryTheory.Comonad.comparison_faithful_of_faithful
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).Full where
-  surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
+  map_surjective f := ⟨⟨f.f, by simpa using f.h⟩, rfl⟩
 
 instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
   mem_essImage X :=
@@ -247,7 +247,7 @@ instance comparison_essSurj [Reflective R] :
 
 instance comparison_full [R.Full] [IsRightAdjoint R] :
     (Monad.comparison (Adjunction.ofRightAdjoint R)).Full where
-  surjective f := ⟨R.preimage f.f, by aesop_cat⟩
+  map_surjective f := ⟨R.preimage f.f, by aesop_cat⟩
 #align category_theory.reflective.comparison_full CategoryTheory.Reflective.comparison_full
 
 end Reflective

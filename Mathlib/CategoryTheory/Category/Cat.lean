@@ -162,7 +162,7 @@ instance : Functor.Faithful typeToCat.{u} where
     funext fun x => congr_arg Discrete.as (Functor.congr_obj h ⟨x⟩)
 
 instance : Functor.Full typeToCat.{u} where
-  surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
+  map_surjective F := ⟨Discrete.as ∘ F.obj ∘ Discrete.mk, by
     apply Functor.ext
     · intro x y f
       dsimp

@@ -79,7 +79,7 @@ def inducedFunctor : InducedCategory D F ⥤ D where
 #align category_theory.induced_functor_map CategoryTheory.inducedFunctor_map
 #align category_theory.induced_functor_obj CategoryTheory.inducedFunctor_obj
 
-instance InducedCategory.full : (inducedFunctor F).Full where surjective f := ⟨f, rfl⟩
+instance InducedCategory.full : (inducedFunctor F).Full where map_surjective f := ⟨f, rfl⟩
 #align category_theory.induced_category.full CategoryTheory.InducedCategory.full
 
 instance InducedCategory.faithful : (inducedFunctor F).Faithful where
@@ -157,7 +157,7 @@ def FullSubcategory.map (h : ∀ ⦃X⦄, Z X → Z' X) : FullSubcategory Z ⥤ 
 #align category_theory.full_subcategory.map_map CategoryTheory.FullSubcategory.map_map
 
 instance FullSubcategory.full_map (h : ∀ ⦃X⦄, Z X → Z' X) :
-  (FullSubcategory.map h).Full where surjective f := ⟨f, rfl⟩
+  (FullSubcategory.map h).Full where map_surjective f := ⟨f, rfl⟩
 
 instance FullSubcategory.faithful_map (h : ∀ ⦃X⦄, Z X → Z' X) :
   (FullSubcategory.map h).Faithful where

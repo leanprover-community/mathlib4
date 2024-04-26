@@ -115,10 +115,10 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.whisker_left_R_unit_iso_of_is_iso_counit CategoryTheory.whiskerLeftRUnitIsoOfIsIsoCounit
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
-noncomputable def lFullOfUnitIsIso [IsIso h.unit] : L.Full where
-  surjective {X Y} f := ⟨h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y), by simp⟩
+lemma L_full_of_unit_isIso [IsIso h.unit] : L.Full where
+  map_surjective {X Y} f := ⟨h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y), by simp⟩
 set_option linter.uppercaseLean3 false in
-#align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
+#align category_theory.L_full_of_unit_is_iso CategoryTheory.L_full_of_unit_isIso
 
 /-- If the unit is an isomorphism, then the left adjoint is faithful-/
 theorem L_faithful_of_unit_isIso [IsIso h.unit] : L.Faithful :=
@@ -129,10 +129,10 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
-noncomputable def rFullOfCounitIsIso [IsIso h.counit] : R.Full where
-  surjective {X Y} f := ⟨inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f, by simp⟩
+noncomputable def R_full_of_counit_isIso [IsIso h.counit] : R.Full where
+  map_surjective {X Y} f := ⟨inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f, by simp⟩
 set_option linter.uppercaseLean3 false in
-#align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
+#align category_theory.R_full_of_counit_is_iso CategoryTheory.R_full_of_counit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is faithful-/
 theorem R_faithful_of_counit_isIso [IsIso h.counit] : R.Faithful :=

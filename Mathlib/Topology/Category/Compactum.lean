@@ -442,7 +442,7 @@ namespace compactumToCompHaus
 
 /-- The functor `compactumToCompHaus` is full. -/
 instance full : compactumToCompHaus.{u}.Full where
-  surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
+  map_surjective f := ⟨Compactum.homOfContinuous f.1 f.2, rfl⟩
 #align Compactum_to_CompHaus.full compactumToCompHaus.full
 
 /-- The functor `compactumToCompHaus` is faithful. -/
