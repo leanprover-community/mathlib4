@@ -767,7 +767,7 @@ theorem of_word (w : Word M) (h : w ≠ empty) : ∃ (i j : _) (w' : NeWord M i 
       obtain ⟨i, j, w', hw' : w'.toList = y::l⟩ := hi
       obtain rfl : y = ⟨i, w'.head⟩ := by simpa [hw'] using w'.toList_head?
       refine' ⟨x.1, j, append (singleton x.2 hnot1.1) hchain.1 w', _⟩
-      · simpa [toWord] using hw'
+      simpa [toWord] using hw'
 #align free_product.neword.of_word Monoid.CoprodI.NeWord.of_word
 
 /-- A non-empty reduced word determines an element of the free product, given by multiplication. -/
@@ -995,10 +995,10 @@ theorem lift_injective_of_ping_pong : Function.Injective (lift f) := by
   classical
     apply (injective_iff_map_eq_one (lift f)).mpr
     rw [(CoprodI.Word.equiv).forall_congr_left']
-    · intro w Heq
-      dsimp [Word.equiv] at *
-      · rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
-        rfl
+    intro w Heq
+    dsimp [Word.equiv] at *
+    rw [empty_of_word_prod_eq_one f hcard X hXnonempty hXdisj hpp Heq]
+    rfl
 #align free_product.lift_injective_of_ping_pong Monoid.CoprodI.lift_injective_of_ping_pong
 
 end PingPongLemma
@@ -1143,13 +1143,13 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
               _ ⊆ Y i := hi
         _ ⊆ X' i := Set.subset_union_right _ _
   show _ ∨ ∃ i, 3 ≤ #(H i)
-  · inhabit ι
-    right
-    use Inhabited.default
-    simp only [H]
-    rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
-    apply le_of_lt
-    exact nat_lt_aleph0 3
+  inhabit ι
+  right
+  use Inhabited.default
+  simp only [H]
+  rw [FreeGroup.freeGroupUnitEquivInt.cardinal_eq, Cardinal.mk_denumerable]
+  apply le_of_lt
+  exact nat_lt_aleph0 3
 #align free_group.injective_lift_of_ping_pong FreeGroup.injective_lift_of_ping_pong
 
 end PingPongLemma
