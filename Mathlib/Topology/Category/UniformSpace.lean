@@ -238,7 +238,7 @@ noncomputable instance : IsRightAdjoint (forget₂ CpltSepUniformSpace UniformSp
   ⟨completionFunctor, adj⟩
 
 noncomputable instance : Reflective (forget₂ CpltSepUniformSpace UniformSpaceCat) where
-  surjective f := ⟨f, rfl⟩
+  map_surjective f := ⟨f, rfl⟩
 
 open CategoryTheory.Limits
 

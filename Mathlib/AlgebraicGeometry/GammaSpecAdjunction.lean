@@ -483,7 +483,7 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 
 /-- Spec is a full functor. -/
 instance : Spec.toLocallyRingedSpace.Full  :=
-  rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
+  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
 instance Spec.full : Scheme.Spec.Full  :=
   rFullOfCounitIsIso ΓSpec.adjunction
