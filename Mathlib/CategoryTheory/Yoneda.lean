@@ -431,8 +431,6 @@ lemma yonedaEquiv_comp' {X : Cᵒᵖ} {F G : Cᵒᵖ ⥤ Type v₁} (α : yoneda
     yonedaEquiv (α ≫ β) = β.app X (yonedaEquiv α) :=
   rfl
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma yonedaEquiv_yoneda_map {X Y : C} (f : X ⟶ Y) : yonedaEquiv (yoneda.map f) = f := by
   rw [yonedaEquiv_apply]
   simp
@@ -629,8 +627,6 @@ lemma coyonedaEquiv_comp' {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op
     coyonedaEquiv (α ≫ β) = β.app X (coyonedaEquiv α) :=
   rfl
 
--- This lemma has always been bad, but leanprover/lean4#2644 made `simp` start noticing
-@[simp, nolint simpNF]
 lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
     coyonedaEquiv (coyoneda.map f) = f.unop := by
   rw [coyonedaEquiv_apply]
