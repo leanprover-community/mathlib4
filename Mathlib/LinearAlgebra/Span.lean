@@ -335,7 +335,7 @@ theorem span_eq_iSup_of_singleton_spans (s : Set M) : span R s = ⨆ x ∈ s, R 
   simp only [← span_iUnion, Set.biUnion_of_singleton s]
 #align submodule.span_eq_supr_of_singleton_spans Submodule.span_eq_iSup_of_singleton_spans
 
-theorem span_range_eq_iSup {ι : Type*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
+theorem span_range_eq_iSup {ι : Sort*} {v : ι → M} : span R (range v) = ⨆ i, R ∙ v i := by
   rw [span_eq_iSup_of_singleton_spans, iSup_range]
 #align submodule.span_range_eq_supr Submodule.span_range_eq_iSup
 
@@ -1097,7 +1097,7 @@ theorem ext_on {s : Set M} {f g : F} (hv : span R s = ⊤) (h : Set.EqOn f g s) 
 
 /-- If the range of `v : ι → M` generates the whole module and linear maps `f`, `g` are equal at
 each `v i`, then they are equal. -/
-theorem ext_on_range {ι : Type*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
+theorem ext_on_range {ι : Sort*} {v : ι → M} {f g : F} (hv : span R (Set.range v) = ⊤)
     (h : ∀ i, f (v i) = g (v i)) : f = g :=
   ext_on hv (Set.forall_mem_range.2 h)
 #align linear_map.ext_on_range LinearMap.ext_on_range

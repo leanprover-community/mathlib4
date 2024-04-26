@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import ring_theory.finiteness from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
@@ -193,10 +194,10 @@ theorem fg_biSup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : �
     (⨆ i ∈ s, N i).FG := by simpa only [Finset.sup_eq_iSup] using fg_finset_sup s N h
 #align submodule.fg_bsupr Submodule.fg_biSup
 
-theorem fg_iSup {ι : Type*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
+theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
     (iSup N).FG := by
-  cases nonempty_fintype ι
-  simpa using fg_biSup Finset.univ N fun i _ => h i
+  cases nonempty_fintype (PLift ι)
+  simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 #align submodule.fg_supr Submodule.fg_iSup
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]

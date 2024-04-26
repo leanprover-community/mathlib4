@@ -266,7 +266,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
       -- z ∈ s is above x and y
       obtain ⟨z, hzs, ⟨hxz, hyz⟩⟩ := hdir x hxs y hys
       use z, hzs
-      rw [sup_insert, id.def, sup_le_iff]
+      rw [sup_insert, id, sup_le_iff]
       exact ⟨le_trans hay hyz, le_trans hsx_sup hxz⟩
 #align finset.sup_le_of_le_directed Finset.sup_le_of_le_directed
 
@@ -1241,7 +1241,7 @@ variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (
 
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
     a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
-  refine' hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
+  refine hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]

@@ -157,7 +157,7 @@ theorem Projective.of_basis {ι : Type*} (b : Basis ι R P) : Projective R P := 
   -- get it from `ι → (P →₀ R)` coming from `b`.
   use b.constr ℕ fun i => Finsupp.single (b i) (1 : R)
   intro m
-  simp only [b.constr_apply, mul_one, id.def, Finsupp.smul_single', Finsupp.total_single,
+  simp only [b.constr_apply, mul_one, id, Finsupp.smul_single', Finsupp.total_single,
     map_finsupp_sum]
   exact b.total_repr m
 #align module.projective_of_basis Module.Projective.of_basis

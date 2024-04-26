@@ -114,6 +114,10 @@ theorem prod_top : f ×ˢ (⊤ : Filter β) = f.comap Prod.fst := by
   rw [Filter.prod, comap_top, inf_top_eq]
 #align filter.prod_top Filter.prod_top
 
+theorem top_prod : (⊤ : Filter α) ×ˢ g = g.comap Prod.snd := by
+  dsimp only [SProd.sprod]
+  rw [Filter.prod, comap_top, top_inf_eq]
+
 theorem sup_prod (f₁ f₂ : Filter α) (g : Filter β) : (f₁ ⊔ f₂) ×ˢ g = (f₁ ×ˢ g) ⊔ (f₂ ×ˢ g) := by
   dsimp only [SProd.sprod]
   rw [Filter.prod, comap_sup, inf_sup_right, ← Filter.prod, ← Filter.prod]
@@ -493,6 +497,11 @@ variable {f : Filter α} {g : Filter β}
 protected def coprod (f : Filter α) (g : Filter β) : Filter (α × β) :=
   f.comap Prod.fst ⊔ g.comap Prod.snd
 #align filter.coprod Filter.coprod
+
+theorem coprod_eq_prod_top_sup_top_prod (f : Filter α) (g : Filter β) :
+    Filter.coprod f g = f ×ˢ ⊤ ⊔ ⊤ ×ˢ g := by
+  rw [prod_top, top_prod]
+  rfl
 
 theorem mem_coprod_iff {s : Set (α × β)} {f : Filter α} {g : Filter β} :
     s ∈ f.coprod g ↔ (∃ t₁ ∈ f, Prod.fst ⁻¹' t₁ ⊆ s) ∧ ∃ t₂ ∈ g, Prod.snd ⁻¹' t₂ ⊆ s := by

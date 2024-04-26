@@ -91,8 +91,8 @@ theorem partOfVertex_mem (v : V) : P.partOfVertex v ∈ P.parts := by
 #align simple_graph.partition.part_of_vertex_mem SimpleGraph.Partition.partOfVertex_mem
 
 theorem mem_partOfVertex (v : V) : v ∈ P.partOfVertex v := by
-  obtain ⟨⟨h1, h2⟩, _h3⟩ := (P.isPartition.2 v).choose_spec
-  exact h2.1
+  obtain ⟨⟨_, h⟩, _⟩ := (P.isPartition.2 v).choose_spec
+  exact h
 #align simple_graph.partition.mem_part_of_vertex SimpleGraph.Partition.mem_partOfVertex
 
 theorem partOfVertex_ne_of_adj {v w : V} (h : G.Adj v w) : P.partOfVertex v ≠ P.partOfVertex w := by

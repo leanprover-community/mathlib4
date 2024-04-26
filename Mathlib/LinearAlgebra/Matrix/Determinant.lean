@@ -714,7 +714,7 @@ theorem det_succ_column_zero {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) 
   refine' Finset.sum_congr rfl fun i _ => Fin.cases _ (fun i => _) i
   · simp only [Fin.prod_univ_succ, Matrix.det_apply, Finset.mul_sum,
       Equiv.Perm.decomposeFin_symm_apply_zero, Fin.val_zero, one_mul,
-      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id.def, eq_self_iff_true,
+      Equiv.Perm.decomposeFin.symm_sign, Equiv.swap_self, if_true, id, eq_self_iff_true,
       Equiv.Perm.decomposeFin_symm_apply_succ, Fin.succAbove_zero, Equiv.coe_refl, pow_zero,
       mul_smul_comm, of_apply]
   -- `univ_perm_fin_succ` gives a different embedding of `Perm (Fin n)` into
@@ -760,7 +760,7 @@ theorem det_succ_row {n : ℕ} (A : Matrix (Fin n.succ) (Fin n.succ) R) (i : Fin
   congr
   rw [← det_permute, det_succ_row_zero]
   refine' Finset.sum_congr rfl fun j _ => _
-  rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id.def]
+  rw [mul_assoc, Matrix.submatrix_apply, submatrix_submatrix, id_comp, Function.comp_def, id]
   congr
   · rw [Equiv.Perm.inv_def, Fin.cycleRange_symm_zero]
   · ext i' j'
