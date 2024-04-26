@@ -498,10 +498,10 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
 lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J K :=
   isContinuous_of_coverPreserving (compatiblePreserving K G) Hp
 
-noncomputable instance fullSheafPushforwardContinuous [G.IsContinuous J K] :
+instance full_sheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
   map_surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val⟩
-#align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.fullSheafPushforwardContinuous
+#align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.full_sheafPushforwardContinuous
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :
     Faithful (G.sheafPushforwardContinuous A J K) where

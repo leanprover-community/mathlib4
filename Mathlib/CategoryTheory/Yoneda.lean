@@ -68,12 +68,23 @@ theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f 
   (FunctorToTypes.naturality _ _ α f.op h).symm
 #align category_theory.yoneda.naturality CategoryTheory.Yoneda.naturality
 
+/-- The morphism `X ⟶ Y` corresponding to a natural transformation
+`yoneda.obj X ⟶ yoneda.obj Y`. -/
+def preimage {X Y : C} (f : yoneda.obj X ⟶ yoneda.obj Y) : X ⟶ Y :=
+  f.app (op X) (𝟙 X)
+
+@[simp]
+lemma map_preimage {X Y : C} (f : yoneda.obj X ⟶ yoneda.obj Y) :
+    yoneda.map (preimage f) = f := by
+  dsimp only [preimage]
+  aesop_cat
+
 /-- The Yoneda embedding is full.
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
 instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full where
-  map_surjective {X} {Y} f := ⟨f.app (op X) (𝟙 X), by aesop_cat⟩
+  map_surjective f := ⟨preimage f, by simp⟩
 #align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yoneda_full
 
 /-- The Yoneda embedding is faithful.
@@ -85,6 +96,15 @@ instance yoneda_faithful : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Faithful where
     convert congr_fun (congr_app p (op X)) (𝟙 X) using 1 <;> dsimp <;> simp
 #align category_theory.yoneda.yoneda_faithful CategoryTheory.Yoneda.yoneda_faithful
 
+/-- The isomorphism `X ≅ Y` corresponding to a natural isomorphism
+`yoneda.obj X ≅ yoneda.obj Y`. -/
+@[simps]
+def preimageIso {X Y : C} (e : yoneda.obj X ≅ yoneda.obj Y) : X ≅ Y where
+  hom := preimage e.hom
+  inv := preimage e.inv
+  hom_inv_id := yoneda.map_injective (by simp)
+  inv_hom_id := yoneda.map_injective (by simp)
+
 /-- Extensionality via Yoneda. The typical usage would be
 ```
 -- Goal is `X ≅ Y`
@@ -93,11 +113,11 @@ apply yoneda.ext,
 -- functions are inverses and natural in `Z`.
 ```
 -/
-noncomputable def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
+def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
     (q : ∀ {Z : C}, (Z ⟶ Y) → (Z ⟶ X))
     (h₁ : ∀ {Z : C} (f : Z ⟶ X), q (p f) = f) (h₂ : ∀ {Z : C} (f : Z ⟶ Y), p (q f) = f)
     (n : ∀ {Z Z' : C} (f : Z' ⟶ Z) (g : Z ⟶ X), p (f ≫ g) = f ≫ p g) : X ≅ Y :=
-  yoneda.preimageIso
+  preimageIso
     (NatIso.ofComponents fun Z =>
       { hom := p
         inv := q })

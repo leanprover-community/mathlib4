@@ -231,7 +231,7 @@ def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
   cond := (Presheaf.isSheaf_of_iso_iff (sheafHom'Iso F G)).2 (G.2.hom F.1)
 
 /-- The sections of the sheaf `sheafHom F G` identify to morphisms `F ⟶ G`. -/
-noncomputable def sheafHomSectionsEquiv (F G : Sheaf J A) :
+def sheafHomSectionsEquiv (F G : Sheaf J A) :
     (sheafHom F G).1.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
     ((presheafHomSectionsEquiv F.1 G.1).trans Sheaf.homEquiv.symm)
