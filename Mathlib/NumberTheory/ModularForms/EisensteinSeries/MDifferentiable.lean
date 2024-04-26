@@ -37,41 +37,35 @@ theorem complex_denom_HasDerivAt (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
 
 lemma UpperHalfPlane.coe_linear_ne_zero (a : Fin 2 → ℤ) (x : UpperHalfPlane.coe '' ⊤) (ha : a ≠ 0) :
     ((a 0 : ℂ) * x + a 1) ≠ 0 := by
-  have hx := x.2
-  simp only [ne_eq, Set.top_eq_univ, Set.image_univ, Set.mem_range] at *
-  obtain ⟨y, hy⟩ := hx
+  obtain ⟨y, _, hy⟩ := x.2
   rw [← hy]
   apply UpperHalfPlane.linear_ne_zero ((Int.cast (R := ℝ)) ∘ a) y
       ((Function.comp_ne_zero_iff _ Int.cast_injective Int.cast_zero ).mpr ha)
 
-lemma complex_eisSummand_differentiableOn (hk : k ≠ 0) :
+lemma complex_eisSummand_differentiableOn :
     DifferentiableOn ℂ (fun z : ℂ => 1 / (a 0 * z + a 1) ^ k) (UpperHalfPlane.coe '' ⊤) := by
   by_cases ha : a ≠ 0
   · apply DifferentiableOn.div (differentiableOn_const 1)
-    intro z hz
-    apply DifferentiableAt.differentiableWithinAt
-      (complex_denom_HasDerivAt k a z ?_).differentiableAt
-    apply UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha
-    intro z hz
-    apply zpow_ne_zero k (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)
+    · intro z hz
+      apply DifferentiableAt.differentiableWithinAt (complex_denom_HasDerivAt k a z
+        (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)).differentiableAt
+    · intro z hz
+      apply zpow_ne_zero k (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)
   · simp only [ne_eq, not_not] at ha
     rw [ha]
-    have : ((0 : ℂ) ^ k)⁻¹ = 0 := by
-      simp only [inv_eq_zero]
-      rw [zpow_eq_zero_iff hk]
-    simp only [Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div, this, top_eq_univ,
+    simp only [Fin.isValue, Pi.zero_apply, Int.cast_zero, zero_mul, add_zero, one_div, top_eq_univ,
       image_univ]
-    exact differentiableOn_const 0
+    fun_prop
 
-lemma eisSummad_complex_extension_differentiableOn (hk : k ≠ 0) :
+lemma eisSummad_complex_extension_differentiableOn :
     DifferentiableOn ℂ (↑ₕeisSummand k a) (UpperHalfPlane.coe '' ⊤) := by
-  apply DifferentiableOn.congr (complex_eisSummand_differentiableOn k a hk)
+  apply DifferentiableOn.congr (complex_eisSummand_differentiableOn k a)
   intro z hz
   simp only [eisSummand, one_div, comp_apply, inv_inj]
   have := PartialHomeomorph.left_inv (PartialHomeomorph.symm
     (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe)) hz
   simp only [ne_eq, top_eq_univ, image_univ, mem_range, PartialHomeomorph.symm_symm,
-    OpenEmbedding.toPartialHomeomorph_apply, UpperHalfPlane.coe] at *
+    OpenEmbedding.toPartialHomeomorph_apply, UpperHalfPlane.coe] at this
   rw [this]
 
 lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
@@ -84,7 +78,6 @@ lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMo
   · apply DifferentiableOn.sum
     intro v _
     apply eisSummad_complex_extension_differentiableOn
-    linarith
   · rw [← OpenEmbedding.open_iff_image_open]
     simp only [top_eq_univ, isOpen_univ]
     exact openEmbedding_coe
