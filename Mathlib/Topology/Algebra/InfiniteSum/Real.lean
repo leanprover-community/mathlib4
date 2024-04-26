@@ -25,23 +25,11 @@ variable {α β : Type*} [PseudoMetricSpace α] {f : ℕ → α} {a : α}
 then the original sequence is a Cauchy sequence. -/
 theorem cauchySeq_of_dist_le_of_summable (d : ℕ → ℝ) (hf : ∀ n, dist (f n) (f n.succ) ≤ d n)
     (hd : Summable d) : CauchySeq f := by
-  -- Porting note (#11215): TODO: with `Topology.Instances.NNReal` we can use this:
-  -- lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
-  -- refine cauchySeq_of_edist_le_of_summable d ?_ ?_
-  -- · exact_mod_cast hf
-  -- · exact_mod_cast hd
-  refine' Metric.cauchySeq_iff'.2 fun ε εpos ↦ _
-  replace hd : CauchySeq fun n : ℕ ↦ ∑ x in range n, d x :=
-    let ⟨_, H⟩ := hd
-    H.tendsto_sum_nat.cauchySeq
-  refine' (Metric.cauchySeq_iff'.1 hd ε εpos).imp fun N hN n hn ↦ _
-  have hsum := hN n hn
-  rw [Real.dist_eq, ← sum_Ico_eq_sub _ hn] at hsum
-  calc
-    dist (f n) (f N) = dist (f N) (f n) := dist_comm _ _
-    _ ≤ ∑ x in Ico N n, d x := dist_le_Ico_sum_of_dist_le hn fun _ _ ↦ hf _
-    _ ≤ |∑ x in Ico N n, d x| := le_abs_self _
-    _ < ε := hsum
+  lift d to ℕ → ℝ≥0 using fun n ↦ dist_nonneg.trans (hf n)
+  apply cauchySeq_of_edist_le_of_summable d (α := α) (f := f)
+  · exact_mod_cast hf
+  · exact_mod_cast hd
+
 #align cauchy_seq_of_dist_le_of_summable cauchySeq_of_dist_le_of_summable
 
 theorem cauchySeq_of_summable_dist (h : Summable fun n ↦ dist (f n) (f n.succ)) : CauchySeq f :=
