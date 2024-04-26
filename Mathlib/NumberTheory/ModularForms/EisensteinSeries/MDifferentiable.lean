@@ -11,7 +11,7 @@ import Mathlib.Analysis.Complex.LocallyUniformLimit
 /-!
 # Holomorphicity of Eisenstein series
 
-We show that  Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
+We show that Eisenstein series of weight `k` and level `Γ(N)` with congruence condition
 `a : Fin 2 → ZMod N` are holomorphic on the upper half plane.
 -/
 
@@ -92,7 +92,7 @@ theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (h
   rw [PartialHomeomorph.continuousAt_iff_continuousAt_comp_right
     (e := (PartialHomeomorph.symm (OpenEmbedding.toPartialHomeomorph
     UpperHalfPlane.coe openEmbedding_coe)))]
-  . exact ContinuousOn.continuousAt
+  ·  exact ContinuousOn.continuousAt
       ((eisensteinSeries_SIF_complex_differentiableOn k a hk).continuousOn)
         (s := (UpperHalfPlane.coe '' ⊤)) (x := z) ha
   · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_target,
