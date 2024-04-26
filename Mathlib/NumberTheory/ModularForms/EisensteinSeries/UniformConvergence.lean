@@ -7,7 +7,7 @@ Authors: Chris Birkbeck
 import Mathlib.Analysis.Complex.UpperHalfPlane.Metric
 import Mathlib.Analysis.NormedSpace.FunctionSeries
 import Mathlib.Analysis.PSeries
-import Mathlib.Data.Finset.LocallyFinite.Box
+import Mathlib.Order.Interval.Finset.Box
 import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 
 /-!
