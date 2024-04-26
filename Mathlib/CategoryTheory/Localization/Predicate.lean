@@ -280,7 +280,7 @@ lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
   inferInstanceAs (whiskeringLeftFunctor' L W E).Full
 
 lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
-  (inferInstance : (whiskeringLeftFunctor' L W E).Faithful)
+  inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
 
 variable {E}
 
