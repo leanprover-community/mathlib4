@@ -62,6 +62,7 @@ lemma map_restrictFullyFaithful_unit_app (X : C) :
 @[simp, reassoc]
 lemma map_restrictFullyFaithful_counit_app (X : D) :
     iD.map ((restrictFullyFaithful iC iD adj comm1 comm2).counit.app X) =
+    comm1.inv.app (R.obj X) ≫ L'.map (comm2.inv.app X) ≫ adj.counit.app (iD.obj X) := by
   dsimp [restrictFullyFaithful]
   simp
 
