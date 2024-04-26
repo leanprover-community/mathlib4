@@ -596,7 +596,7 @@ theorem tendsto_measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)] [Counta
 /-- Continuity from below: the measure of the union of a sequence of (not necessarily measurable)
 sets is the limit of the measures of the partial unions. -/
 theorem tendsto_measure_iUnion' [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)] {f : ι → Set α} :
-    Tendsto (fun i ↦ μ (⋃ j ∈ {j | j ≤ i}, f j)) atTop (𝓝 (μ (⋃ i, f i))) := by
+    Tendsto (fun i ↦ μ (⋃ j ≤ i, f j)) atTop (𝓝 (μ (⋃ i, f i))) := by
   rw [measure_iUnion_eq_iSup' (· ≤ ·) transitive_le]
   exact tendsto_atTop_iSup
     fun i j hij ↦ measure_mono <| biUnion_subset_biUnion_left fun k hki ↦ le_trans hki hij
@@ -614,7 +614,7 @@ theorem tendsto_measure_iInter [Countable ι] [Preorder ι] [IsDirected ι (· �
 sets such that one has finite measure is the limit of the measures of the partial intersections. -/
 theorem tendsto_measure_iInter' [Countable ι] [Preorder ι] [IsDirected ι (· ≤ ·)]
     {f : ι → Set α} (hm : ∀ i, MeasurableSet (f i)) (hf : ∃ i, μ (f i) ≠ ∞) :
-    Tendsto (fun i ↦ μ (⋂ j ∈ {j | j ≤ i}, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
+    Tendsto (fun i ↦ μ (⋂ j ≤ i, f j)) atTop (𝓝 (μ (⋂ i, f i))) := by
   rw [measure_iInter_eq_iInf' (· ≤ ·) transitive_le hm hf]
   exact tendsto_atTop_iInf
     fun i j hij ↦ measure_mono <| biInter_subset_biInter_left fun k hki ↦ le_trans hki hij
