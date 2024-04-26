@@ -312,6 +312,13 @@ instance (X : Sheaf J A) : Inhabited (Hom X X) :=
 lemma hom_ext {X Y : Sheaf J A} (x y : X ⟶ Y) (h : x.val = y.val) : x = y :=
   Sheaf.Hom.ext _ _ h
 
+@[simps]
+def homEquiv {X Y : Sheaf J A} : (X ⟶ Y) ≃ (X.val ⟶ Y.val) where
+  toFun f := f.val
+  invFun f := ⟨f⟩
+  left_inv _ := rfl
+  right_inv _ := rfl
+
 end Sheaf
 
 /-- The inclusion functor from sheaves to presheaves. -/
@@ -327,7 +334,7 @@ set_option linter.uppercaseLean3 false in
 /-- The sections of a sheaf (i.e. evaluation as a presheaf on `C`). -/
 abbrev sheafSections : Cᵒᵖ ⥤ Sheaf J A ⥤ A := (sheafToPresheaf J A).flip
 
-instance : (sheafToPresheaf J A).Full where preimage f := ⟨f⟩
+instance : (sheafToPresheaf J A).Full where surjective f := ⟨⟨f⟩, rfl⟩
 
 instance : (sheafToPresheaf J A).Faithful where
 

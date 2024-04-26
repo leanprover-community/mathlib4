@@ -490,7 +490,7 @@ lemma compatiblePreserving [Faithful G] : CompatiblePreserving K G := by
   simp only [← FunctorToTypes.map_comp_apply, ← op_comp]
   rw [← G.image_preimage (i ≫ f₁)]
   rw [← G.image_preimage (i ≫ f₂)]
-  apply hx
+  apply hx (G.preimage (i ≫ f₁)) ((G.preimage (i ≫ f₂))) hg₁ hg₂
   apply G.map_injective
   simp [eq]
 #align category_theory.cover_dense.compatible_preserving CategoryTheory.Functor.IsCoverDense.compatiblePreserving
@@ -500,8 +500,7 @@ lemma isContinuous [Faithful G] (Hp : CoverPreserving J K G) : G.IsContinuous J 
 
 noncomputable instance fullSheafPushforwardContinuous [G.IsContinuous J K] :
     Full (G.sheafPushforwardContinuous A J K) where
-  preimage α := ⟨sheafHom α.val⟩
-  witness α := Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val
+  surjective α := ⟨⟨sheafHom α.val⟩, Sheaf.Hom.ext _ _ <| sheafHom_restrict_eq α.val⟩
 #align category_theory.cover_dense.sites.pullback.full CategoryTheory.Functor.IsCoverDense.fullSheafPushforwardContinuous
 
 instance faithful_sheafPushforwardContinuous [G.IsContinuous J K] :

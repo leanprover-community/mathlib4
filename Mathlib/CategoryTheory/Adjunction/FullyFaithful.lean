@@ -116,7 +116,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If the unit is an isomorphism, then the left adjoint is full-/
 noncomputable def lFullOfUnitIsIso [IsIso h.unit] : L.Full where
-  preimage {X Y} f := h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y)
+  surjective {X Y} f := ⟨h.homEquiv _ (L.obj Y) f ≫ inv (h.unit.app Y), by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.L_full_of_unit_is_iso CategoryTheory.lFullOfUnitIsIso
 
@@ -130,7 +130,7 @@ set_option linter.uppercaseLean3 false in
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
 noncomputable def rFullOfCounitIsIso [IsIso h.counit] : R.Full where
-  preimage {X Y} f := inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f
+  surjective {X Y} f := ⟨inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f, by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.rFullOfCounitIsIso
 
@@ -224,8 +224,9 @@ The construction here is slightly more general, in that `C` is required only to 
 faithful "inclusion" functor `iC : C ⥤ C'` (and similarly `iD : D ⥤ D'`) which commute (up to
 natural isomorphism) with the proposed restrictions.
 -/
-def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D') {L' : C' ⥤ D'} {R' : D' ⥤ C'}
-    (adj : L' ⊣ R') {L : C ⥤ D} {R : D ⥤ C} (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
+noncomputable def Adjunction.restrictFullyFaithful (iC : C ⥤ C') (iD : D ⥤ D')
+    {L' : C' ⥤ D'} {R' : D' ⥤ C'} (adj : L' ⊣ R') {L : C ⥤ D} {R : D ⥤ C}
+    (comm1 : iC ⋙ L' ≅ L ⋙ iD) (comm2 : iD ⋙ R' ≅ R ⋙ iC)
     [iC.Full] [iC.Faithful] [iD.Full] [iD.Faithful] : L ⊣ R :=
   Adjunction.mkOfHomEquiv
     { homEquiv := fun X Y =>

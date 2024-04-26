@@ -464,7 +464,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  preimage f := SimplexCategory.Hom.mk f
+  surjective f := ⟨SimplexCategory.Hom.mk f, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by

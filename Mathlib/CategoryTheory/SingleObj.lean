@@ -277,8 +277,7 @@ set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat MonCat.toCat
 
 instance toCatFull : toCat.Full  where
-  preimage := (SingleObj.mapHom _ _).invFun
-  witness _ := rfl
+  surjective := (SingleObj.mapHom _ _).surjective
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat_full MonCat.toCatFull
 

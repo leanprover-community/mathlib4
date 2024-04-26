@@ -258,8 +258,7 @@ theorem whiskeringLeftFunctor'_eq :
   rfl
 #align category_theory.localization.whiskering_left_functor'_eq CategoryTheory.Localization.whiskeringLeftFunctor'_eq
 
-variable {E}
-
+variable {E} in
 @[simp]
 theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E).obj F = L ⋙ F :=
   rfl
@@ -276,6 +275,14 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   apply @Functor.Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
+
+lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
+  (inferInstance : (whiskeringLeftFunctor' L W E).Full)
+
+lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
+  (inferInstance : (whiskeringLeftFunctor' L W E).Faithful)
+
+variable {E}
 
 theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by

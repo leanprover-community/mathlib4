@@ -316,7 +316,7 @@ namespace Embedding
 instance : (embedding C).Faithful where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : (embedding C).Full where preimage f := f PUnit.unit PUnit.unit
+instance : (embedding C).Full where surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
 instance : Functor.Additive (embedding C) where
 
@@ -644,7 +644,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
     exact congr_fun (congr_fun w _) _
 
 instance : (equivalenceSingleObjInverse R).Full where
-  preimage f i j := MulOpposite.op (f i j)
+  surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=

@@ -461,10 +461,9 @@ theorem nat_trans_from_is_connected [IsPreconnected J] {X Y : C}
 #align category_theory.nat_trans_from_is_connected CategoryTheory.nat_trans_from_is_connected
 
 instance [IsConnected J] : (Functor.const J : C ⥤ J ⥤ C).Full where
-  preimage f := f.app (Classical.arbitrary J)
-  witness f := by
+  surjective f := ⟨f.app (Classical.arbitrary J), by
     ext j
-    apply nat_trans_from_is_connected f (Classical.arbitrary J) j
+    apply nat_trans_from_is_connected f (Classical.arbitrary J) j⟩
 
 theorem nonempty_hom_of_preconnected_groupoid {G} [Groupoid G] [IsPreconnected G] :
     ∀ x y : G, Nonempty (x ⟶ y) := by

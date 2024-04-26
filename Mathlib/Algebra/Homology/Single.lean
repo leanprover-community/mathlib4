@@ -118,10 +118,10 @@ instance (j : ι) : (single V c j).Faithful where
       ← single_map_f_self, w]
 
 noncomputable instance (j : ι) : (single V c j).Full where
-  preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
-  witness f := by
-    ext
-    simp [single_map_f_self]
+  surjective {A B} f :=
+    ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
+      ext
+      simp [single_map_f_self]⟩
 
 variable {c}
 

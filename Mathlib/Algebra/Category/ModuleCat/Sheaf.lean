@@ -73,6 +73,6 @@ instance : (forget R).Faithful where
   map_injective h := by ext1; exact h
 
 instance : (forget R).Full where
-  preimage φ := ⟨φ⟩
+  surjective φ := ⟨⟨φ⟩, rfl⟩
 
 end SheafOfModules

@@ -95,7 +95,7 @@ def of (X : Type*) [TopologicalSpace X] [CompactSpace X] [T2Space X]
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is full. -/
 instance : toCompHaus.Full where
-  preimage := fun f => f
+  surjective f := ⟨f, rfl⟩
 
 /-- The forgetful functor `Stonean ⥤ CompHaus` is faithful. -/
 instance : toCompHaus.Faithful := {}
@@ -132,7 +132,7 @@ def toProfinite : Stonean.{u} ⥤ Profinite.{u} where
 
 /-- The functor from Stonean spaces to profinite spaces is full. -/
 instance : toProfinite.Full where
-  preimage f := f
+  surjective f := ⟨f, rfl⟩
 
 /-- The functor from Stonean spaces to profinite spaces is faithful. -/
 instance : toProfinite.Faithful := {}

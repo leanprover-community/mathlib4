@@ -52,8 +52,8 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₃ h
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
-  preimage {X Y} f :=
-    { hom₁ := F.preimage f.hom₁
+  surjective {X Y} f :=
+   ⟨{ hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
@@ -63,7 +63,7 @@ instance [Full F] [Faithful F] : Full F.mapTriangle where
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          image_preimage, Triangle.mk_mor₃] using f.comm₃) }
+          image_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
 
 section Additive
 

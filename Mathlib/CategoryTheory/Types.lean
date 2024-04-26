@@ -226,7 +226,7 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
 
 instance uliftFunctorFull : Functor.Full.{u} uliftFunctor where
-  preimage f x := (f (ULift.up x)).down
+  surjective f := ⟨fun x => (f (ULift.up x)).down, rfl⟩
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
 instance uliftFunctor_faithful : uliftFunctor.Faithful where

@@ -151,7 +151,7 @@ def lift {Y : D} (F : Over Y ⥤ Over X)
     (h : ∀ f : MonoOver Y, Mono (F.obj ((MonoOver.forget Y).obj f)).hom) :
     MonoOver Y ⥤ MonoOver X where
   obj f := ⟨_, h f⟩
-  map k := (MonoOver.forget X).preimage ((MonoOver.forget Y ⋙ F).map k)
+  map k := (MonoOver.forget Y ⋙ F).map k
 #align category_theory.mono_over.lift CategoryTheory.MonoOver.lift
 
 /-- Isomorphic functors `Over Y ⥤ Over X` lift to isomorphic functors `MonoOver Y ⥤ MonoOver X`.
@@ -275,12 +275,12 @@ theorem map_obj_arrow (f : X ⟶ Y) [Mono f] (g : MonoOver X) : ((map f).obj g).
   rfl
 #align category_theory.mono_over.map_obj_arrow CategoryTheory.MonoOver.map_obj_arrow
 
-instance fullMap (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
-  preimage {g h} e := by
-    refine' homMk e.left _
-    rw [← cancel_mono f, assoc]
-    apply w e
-#align category_theory.mono_over.full_map CategoryTheory.MonoOver.fullMap
+instance full_map (f : X ⟶ Y) [Mono f] : Functor.Full (map f) where
+  surjective {g h} e := by
+    refine' ⟨homMk e.left _, rfl⟩
+    · rw [← cancel_mono f, assoc]
+      apply w e
+#align category_theory.mono_over.full_map CategoryTheory.MonoOver.full_map
 
 instance faithful_map (f : X ⟶ Y) [Mono f] : Functor.Faithful (map f) where
 #align category_theory.mono_over.faithful_map CategoryTheory.MonoOver.faithful_map

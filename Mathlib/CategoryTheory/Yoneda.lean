@@ -72,9 +72,9 @@ theorem naturality {X Y : C} (α : yoneda.obj X ⟶ yoneda.obj Y) {Z Z' : C} (f 
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-instance yonedaFull : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full where
-  preimage {X} {Y} f := f.app (op X) (𝟙 X)
-#align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yonedaFull
+instance yoneda_full : (yoneda : C ⥤ Cᵒᵖ ⥤ Type v₁).Full where
+  surjective {X} {Y} f := ⟨f.app (op X) (𝟙 X), by aesop_cat⟩
+#align category_theory.yoneda.yoneda_full CategoryTheory.Yoneda.yoneda_full
 
 /-- The Yoneda embedding is faithful.
 
@@ -93,7 +93,8 @@ apply yoneda.ext,
 -- functions are inverses and natural in `Z`.
 ```
 -/
-def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y)) (q : ∀ {Z : C}, (Z ⟶ Y) → (Z ⟶ X))
+noncomputable def ext (X Y : C) (p : ∀ {Z : C}, (Z ⟶ X) → (Z ⟶ Y))
+    (q : ∀ {Z : C}, (Z ⟶ Y) → (Z ⟶ X))
     (h₁ : ∀ {Z : C} (f : Z ⟶ X), q (p f) = f) (h₂ : ∀ {Z : C} (f : Z ⟶ Y), p (q f) = f)
     (n : ∀ {Z Z' : C} (f : Z' ⟶ Z) (g : Z ⟶ X), p (f ≫ g) = f ≫ p g) : X ≅ Y :=
   yoneda.preimageIso
@@ -118,16 +119,59 @@ theorem naturality {X Y : Cᵒᵖ} (α : coyoneda.obj X ⟶ coyoneda.obj Y) {Z Z
   (FunctorToTypes.naturality _ _ α f h).symm
 #align category_theory.coyoneda.naturality CategoryTheory.Coyoneda.naturality
 
-instance coyonedaFull : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full where
-  preimage {X} _ f := (f.app _ (𝟙 X.unop)).op
-  witness {X} {Y} f := by simp only [coyoneda]; aesop_cat
-#align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyonedaFull
+/-- The morphism `X ⟶ Y` corresponding to a natural transformation
+`coyoneda.obj X ⟶ coyoneda.obj Y`. -/
+def preimage {X Y : Cᵒᵖ} (f : coyoneda.obj X ⟶ coyoneda.obj Y) : X ⟶ Y :=
+  (f.app _ (𝟙 X.unop)).op
+
+@[simp]
+lemma map_preimage {X Y : Cᵒᵖ} (f : coyoneda.obj X ⟶ coyoneda.obj Y) :
+    coyoneda.map (preimage f) = f := by
+  dsimp [preimage]
+  aesop_cat
+
+instance coyoneda_full : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Full where
+  surjective f := ⟨preimage f, by simp⟩
+#align category_theory.coyoneda.coyoneda_full CategoryTheory.Coyoneda.coyoneda_full
 
 instance coyoneda_faithful : (coyoneda : Cᵒᵖ ⥤ C ⥤ Type v₁).Faithful where
   map_injective {X} _ _ _ p := by
     have t := congr_fun (congr_app p X.unop) (𝟙 _)
     simpa using congr_arg Quiver.Hom.op t
 #align category_theory.coyoneda.coyoneda_faithful CategoryTheory.Coyoneda.coyoneda_faithful
+
+/-- The isomorphism `X ≅ Y` corresponding to a natural isomorphism
+`coyoneda.obj X ≅ coyoneda.obj Y`. -/
+@[simps]
+def preimageIso {X Y : Cᵒᵖ} (e : coyoneda.obj X ≅ coyoneda.obj Y) : X ≅ Y where
+  hom := preimage e.hom
+  inv := preimage e.inv
+  hom_inv_id := coyoneda.map_injective (by simp)
+  inv_hom_id := coyoneda.map_injective (by simp)
+
+section
+
+variable {D : Type*} [Category D] {F G : D ⥤ Cᵒᵖ}
+
+/-- The natural transformation `F ⟶ G` corresponding to a natural transformation
+`F ⋙ coyoneda ⟶ G ⋙ coyoneda`. -/
+@[simps]
+def preimageNatTrans (f : F ⋙ coyoneda ⟶ G ⋙ coyoneda) : F ⟶ G where
+  app X := preimage (f.app X)
+  naturality X Y g := coyoneda.map_injective (by
+    simp only [Functor.map_comp, map_preimage]
+    exact f.naturality g)
+
+/-- The natural isomorphism `F ≅ G` corresponding to a natural transformation
+`F ⋙ coyoneda ≅ G ⋙ coyoneda`. -/
+@[simps]
+def preimageNatIso (e : F ⋙ coyoneda ≅ G ⋙ coyoneda) : F ≅ G where
+  hom := preimageNatTrans e.hom
+  inv := preimageNatTrans e.inv
+  hom_inv_id := by ext X; apply coyoneda.map_injective; simp
+  inv_hom_id := by ext X; apply coyoneda.map_injective; simp
+
+end
 
 /-- If `coyoneda.map f` is an isomorphism, so was `f`.
 -/
