@@ -1847,7 +1847,7 @@ theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, Measurable
 /-- The measurable equivalence for (dependent) functions on an Option type
   `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
 def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
-    (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none := by
+    (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
   let e : Option δ ≃ δ ⊕ PUnit := Equiv.optionEquivSumPUnit δ
   let em1 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
     MeasurableEquiv.piCongrLeft α e.symm
@@ -1858,7 +1858,7 @@ def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, Measurable
       ≃ᵐ ((i : δ) → α (some i)) × α none :=
     MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
       (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))
-  exact em1.symm.trans <| em2.trans em3
+  em1.symm.trans <| em2.trans em3
 
 /-- The measurable equivalence `(∀ i : s, π i) × (∀ i : t, π i) ≃ᵐ (∀ i : s ∪ t, π i)`
   for disjoint finsets `s` and `t`. `Equiv.piFinsetUnion` as a measurable equivalence. -/
