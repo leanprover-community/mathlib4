@@ -9,7 +9,7 @@ import Mathlib.GroupTheory.Subgroup.Actions
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Defs.Sequences
 import Mathlib.Topology.Sequences
-import  Mathlib.Topology.Algebra.Group.Basic
+import Mathlib.Topology.Algebra.Group.Basic
 
 /-!
 # Proper group action
@@ -44,7 +44,6 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
 
 Hausdorff, group action, proper action
 -/
-
 
 open Filter Topology Set Prod
 
@@ -211,52 +210,6 @@ theorem properSMul_of_closed_embedding {H : Type*} [Group H] [MulAction H X] [To
 instance {H : Subgroup G} [ProperSMul G X] [H_closed : IsClosed (H : Set G)] : ProperSMul H X :=
   properSMul_of_closed_embedding H.subtype H_closed.closedEmbedding_subtype_val fun _ _ ↦ rfl
 
-/-
-Some suggestions of things to prove,
-taken from Kapovich
--/
-
-
-
-lemma tendsTo_comp_continuous
-    {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
-    (H : Tendsto f lx (𝓝 y)) (hg: Continuous g) :
-    Tendsto (g ∘ f) lx (𝓝 (g y)) := by
-  apply Tendsto.comp _ H
-  exact hg.tendsto y
-
-/-- If `Y` is Hausdorff and compactly generated, then proper maps `X → Y` are exactly
-continuous maps such that the preimage of any compact set is compact. -/
-theorem isProperMap_iff_isCompact_preimage' [T2Space Y]
-    (compactlyGenerated : ∀ s : Set Y, IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K))
-    {f : X → Y} :
-    IsProperMap f ↔ Continuous f ∧ ∀ ⦃K⦄, IsCompact K → IsCompact (f ⁻¹' K) :=
-  ⟨fun hf ↦ ⟨hf.continuous, fun _ ↦ hf.isCompact_preimage⟩,
-    fun ⟨hf, h⟩ ↦ isProperMap_iff_isClosedMap_and_compact_fibers.2
-    ⟨hf, fun _ hs ↦ (compactlyGenerated _).2
-    fun _ hK ↦ image_inter_preimage .. ▸ (((h hK).inter_left hs).image hf).isClosed,
-    fun _ ↦ h isCompact_singleton⟩⟩
-
-/-- A sequential space is compactly generated. -/
-theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
-    IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed,
-    fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
-    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup _)⟩
-  simp only [mem_inter_iff, mem_insert_iff, mem_range, exists_apply_eq_apply, or_true, and_true,
-    eventually_atTop, ge_iff_le]
-  exact ⟨0, fun n _ ↦ hu n⟩
-
-/-- A weakly locally compact space is compactly generated. -/
-theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
-    {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ _⟩
-  rw [isClosed_iff_forall_filter]
-  intro x ℱ hℱ₁ hℱ₂ hℱ₃
-  rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
-  exact mem_of_mem_inter_left <| isClosed_iff_forall_filter.1 (h hK) x ℱ hℱ₁
-    (inf_principal ▸ le_inf hℱ₂ (le_trans hℱ₃ <| le_principal_iff.2 K_mem)) hℱ₃
-
 /-- If a discrete group acts on a T2 space `X` such that `X × X` is compactly generated,
 then the action is properly discontinuous if and only if it is continuous in the second variable
 and proper. -/
@@ -272,7 +225,7 @@ theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G
     -- discrete topology, thanks to `continuous_of_partial_of_discrete`.
     -- Because `X × X` is compactly generated, to show that f is proper
     -- it is enough to show that the preimage of a compact set `K` is compact.
-    refine' (isProperMap_iff_isCompact_preimage' compactlyGenerated).2
+    refine' (isProperMap_iff_isCompact_preimage compactlyGenerated).2
       ⟨(continuous_prod_mk.2
       ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩),
       fun K hK ↦ _⟩
@@ -330,6 +283,30 @@ theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G
       · rintro ⟨gx, hgx, rfl⟩
         exact ⟨gx.2, ⟨gx.1⁻¹ • gx.2, hgx.1, by simp⟩, hgx.2⟩
     exact eq ▸ IsCompact.image (this.isCompact_preimage <| hK.prod hL) continuous_fst
+
+/-- If a discrete group acts on a T2 and locally compact space `X`,
+then the action is properly discontinuous if and only if it is continuous in the second variable
+and proper. -/
+theorem WeaklyLocallyCompactSpace.ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X]
+    [WeaklyLocallyCompactSpace X] [DiscreteTopology G] [ContinuousConstSMul G X] :
+    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
+  _root_.ProperlyDiscontinuousSMul_iff_ProperSMul
+    (fun _ ↦ compactlyGenerated_of_weaklyLocallyCompactSpace)
+
+/-- If a discrete group acts on a T2 and first-countable space `X`,
+then the action is properly discontinuous if and only if it is continuous in the second variable
+and proper. -/
+theorem FirstCountableTopology.ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X]
+    [FirstCountableTopology X] [DiscreteTopology G] [ContinuousConstSMul G X] :
+    ProperlyDiscontinuousSMul G X ↔ ProperSMul G X :=
+  _root_.ProperlyDiscontinuousSMul_iff_ProperSMul (fun _ ↦ compactlyGenerated_of_sequentialSpace)
+
+lemma tendsTo_comp_continuous
+    {lx: Filter X} {f : X → Y} {g : Y → Z} {y : Y}
+    (H : Tendsto f lx (𝓝 y)) (hg: Continuous g) :
+    Tendsto (g ∘ f) lx (𝓝 (g y)) := by
+  apply Tendsto.comp _ H
+  exact hg.tendsto y
 
 /-- If `X` and `Y` are T2 and first countable, then the naive definition
 of proper map is equivalent to the good definition. -/
