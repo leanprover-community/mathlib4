@@ -74,4 +74,22 @@ instance : NoncompactSpace ℍ := by
 instance : LocallyCompactSpace ℍ :=
   openEmbedding_coe.locallyCompactSpace
 
+section slices
+
+/-- The vertical strip of width A and height B. -/
+def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
+
+theorem slice_mem_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
+  Iff.rfl
+
+lemma subset_slice_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
+    ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
+  rcases K.eq_empty_or_nonempty with rfl | hne
+  · exact ⟨1, 1, Real.zero_lt_one, empty_subset _⟩
+  obtain ⟨u, _, hu⟩ := hK.exists_isMinOn hne continuous_im.continuousOn
+  obtain ⟨v, _, hv⟩ := hK.exists_isMaxOn hne (_root_.continuous_abs.comp continuous_re).continuousOn
+  exact ⟨|re v|, im u, u.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hv _ hk, isMinOn_iff.mp hu _ hk⟩⟩
+
+end slices
+
 end UpperHalfPlane
