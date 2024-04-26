@@ -191,8 +191,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   -- To show that `χ = X ^ r`, it suffices to show that all coefficients in degrees `< r` are `0`.
   suffices ∀ i < r, χ.coeff i = 0 by
     simp_rw [r, ← lieCharpoly_natDegree K E x u] at this ⊢
-    apply (lieCharpoly_monic K E x u).eq_X_pow_of_natTrailingDegree_eq_natDegree
-    apply le_antisymm (natTrailingDegree_le_natDegree _)
+    rw [(lieCharpoly_monic K E x u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
     exact le_natTrailingDegree (lieCharpoly_monic K E x u).ne_zero this
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
