@@ -332,7 +332,7 @@ def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
 /-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
 adjoints.
 -/
-noncomputable def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
+def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
   leftAdjointUniq adj1 (adj2.ofNatIsoRight r.symm)
 #align category_theory.adjunction.nat_iso_of_right_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfRightAdjointNatIso
