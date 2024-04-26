@@ -13,8 +13,8 @@ import Mathlib.NumberTheory.ModularForms.EisensteinSeries.Basic
 /-!
 # Uniform convergence of Eisenstein series
 
-We show that `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein series of weight `k`
-and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
+We show that the sum of `eisSummand` converges locally uniformly on `ℍ` to the Eisenstein series
+of weight `k` and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`.
 -/
 
 noncomputable section
