@@ -27,7 +27,7 @@ group, although we do not prove that in this file.
 Then, we have a representation $\rho \colon W \to GL(V)$, called the
 *standard geometric representation* (`CoxeterSystem.standardGeometricRepresentation`), given by
 $$\rho(s_i) v = v - \langle \alpha_i, v\rangle \alpha_i.$$
-We prove that this representation is well defined and faithful (`CoxeterSystem.injective_SGR`).
+We prove that this representation is well defined and faithful (`CoxeterSystem.injective_sgr`).
 
 We prove for all $w$ and $i$ that $\ell(w s_i) + 1 = \ell(w)$ if and only if $\rho(w) \alpha_i$ is a
 nonpositive linear combination of the simple roots, and that $\ell(w s_i) = \ell(w) + 1$ if and only
@@ -376,33 +376,31 @@ def standardGeometricRepresentation : Representation ℝ W V := cs.lift ⟨M.sim
     · exact M.standardBilinForm_simpleRoot_simpleRoot i i'
     · exact M.off_diagonal i i' ne⟩
 
-/-- The standard geometric representation on `B →₀ ℝ`. For `i : B`, the simple reflection `sᵢ`
-acts by `sᵢ v = v - 2 ⟪αᵢ, v⟫ * αᵢ`, where {αᵢ} is the standard basis of `B →₀ ℝ`. -/
-noncomputable abbrev SGR := cs.standardGeometricRepresentation
+noncomputable alias sgr := standardGeometricRepresentation
 
-local prefix:100 "ρ" => cs.SGR
+local prefix:100 "ρ" => cs.sgr
 
-theorem SGR_simple (i : B) : ρ (s i) = σ i := cs.lift_apply_simple _ i
+theorem sgr_simple (i : B) : ρ (s i) = σ i := cs.lift_apply_simple _ i
 
 /-- The standard geometric representation preserves the standard bilinear form. -/
-theorem standardBilinForm_compl₁₂_SGR_apply (w : W) :
+theorem standardBilinForm_compl₁₂_sgr_apply (w : W) :
     M.standardBilinForm.compl₁₂ (ρ w) (ρ w) = M.standardBilinForm := by
   apply cs.simple_induction w
   · intro i
-    rw [SGR_simple, simpleOrthoReflection, standardBilinForm_compl₁₂_orthoReflection]
+    rw [sgr_simple, simpleOrthoReflection, standardBilinForm_compl₁₂_orthoReflection]
   · rw [map_one, LinearMap.one_eq_id, LinearMap.compl₁₂_id_id]
   · intro w w' hw hw'
     rw [map_mul, mul_eq_comp, LinearMap.compl₁₂_comp_comp, hw, hw']
 
-theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
+theorem sgr_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
     (ρ (π (alternatingWord i i' m))) (α i) = if Even m
       then (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i)
         + (sin (m * π / M i i') / sin (π / M i i')) • (α i')
       else (sin (m * π / M i i') / sin (π / M i i')) • (α i)
         + (sin ((m + 1) * π / M i i') / sin (π / M i i')) • (α i') := by
-  rw [prod_alternatingWord_eq_mul_pow, map_mul, map_pow, map_mul, apply_ite cs.SGR, map_one,
+  rw [prod_alternatingWord_eq_mul_pow, map_mul, map_pow, map_mul, apply_ite cs.sgr, map_one,
     mul_apply]
-  simp only [SGR_simple]
+  simp only [sgr_simple]
   nth_rw 3 [simpleOrthoReflection]
   nth_rw 2 [simpleOrthoReflection]
   rw [orthoReflection_mul_orthoReflection_pow_apply]
@@ -441,7 +439,7 @@ theorem SGR_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' >
       rw [M.symmetric i i']
       ring_nf
 
-theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
+theorem sgr_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' = 0) :
     (ρ (π (alternatingWord i i' m))) (α i) = if Even m
       then (m + 1 : ℝ) • (α i) + (m : ℝ) • (α i')
       else (m : ℝ) • (α i) + (m + 1 : ℝ) • (α i') := by
@@ -459,18 +457,18 @@ theorem SGR_alternatingWord_apply_simpleRoot' (i i' : B) (m : ℕ) (hM : M i i' 
     rcases em (Even m) with even | not_even
     · have succ_not_even : ¬ Even (Nat.succ m) := by tauto
       simp only [if_pos even, if_neg succ_not_even]
-      simp only [SGR_simple, map_add, map_smul, h₁, simpleOrthoReflection_simpleRoot_self]
+      simp only [sgr_simple, map_add, map_smul, h₁, simpleOrthoReflection_simpleRoot_self]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, add_assoc, ← add_smul]
       congr 2
       ring
     · have succ_even : Even (Nat.succ m) := by tauto
       simp only [if_neg not_even, if_pos succ_even]
-      simp only [SGR_simple, map_add, map_smul, h₂, simpleOrthoReflection_simpleRoot_self]
+      simp only [sgr_simple, map_add, map_smul, h₂, simpleOrthoReflection_simpleRoot_self]
       rw [Nat.cast_succ, smul_add, smul_smul, smul_neg, ← neg_smul, ← add_assoc, ← add_smul]
       congr 2
       ring
 
-theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
+theorem sgr_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
     (i i' : B) (m : ℕ) (hm : m < M i i' ∨ M i i' = 0) :
     ∃ (μ μ' : ℝ), μ ≥ 0 ∧ μ' ≥ 0 ∧
       (ρ (π (alternatingWord i i' m))) (α i) = μ • (α i) + μ' • (α i') := by
@@ -518,20 +516,20 @@ theorem SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul
         · apply sin_nonneg_of_nonneg_of_le_pi
           · positivity
           · exact h₁
-      rw [cs.SGR_alternatingWord_apply_simpleRoot i i' m M_gt_one]
+      rw [cs.sgr_alternatingWord_apply_simpleRoot i i' m M_gt_one]
       rcases em (Even m) with even | not_even
       · rw [if_pos even]
         use μ₂, μ₁, μ₂_nonneg, μ₁_nonneg
       · rw [if_neg not_even]
         use μ₁, μ₂, μ₁_nonneg, μ₂_nonneg
-  · rw [cs.SGR_alternatingWord_apply_simpleRoot' i i' m M_eq_zero]
+  · rw [cs.sgr_alternatingWord_apply_simpleRoot' i i' m M_eq_zero]
     rcases em (Even m) with even | not_even
     · rw [if_pos even]
       use m + 1, m, by linarith, by linarith
     · rw [if_neg not_even]
       use m, m + 1, by linarith, by linarith
 
-private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
+private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
     (ρ w) (α i) ≥ 0 := by
   classical
   -- We use induction on the length of `w`.
@@ -635,7 +633,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     have h₁₇ := ih (ℓ (w * (aw m)⁻¹)) h₁₄ h₁₃ rfl
     clear h₇ h₁₀ h₁₁ h₁₂ h₁₃ h₁₄
     /- Now we must prove the condition `hm : m < M i i' ∨ M i i' = 0` of
-    `SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul`. First, we show
+    `sgr_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul`. First, we show
     that `alternatingWord i i' m` is reduced. -/
     have h₁₈ := calc
       ℓ (w * (aw m)⁻¹) + ℓ (aw m)
@@ -695,7 +693,7 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     rw [(by group : w = w * (aw m)⁻¹ * (aw m)), map_mul, mul_apply]
     /- Now, we write `((ρ (aw m)) (α i))` as a nonnegative linear combination of `α i` and `α i'`.
     Then expand everything out and use `h₁₆`, `h₁₇`. -/
-    rcases cs.SGR_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul i i' m h₂₂ with
+    rcases cs.sgr_alternatingWord_apply_simpleRoot_eq_nonneg_smul_add_nonneg_smul i i' m h₂₂ with
       ⟨μ, μ', μ_nonneg, μ'_nonneg, h₂₃⟩
     nth_rw 2 [haw]
     dsimp only
@@ -704,10 +702,10 @@ private theorem SGR_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
 
 /-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has all
 nonnegative coordinates and it is nonzero. -/
-theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
+theorem sgr_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
     0 < (ρ w) (α i) := by
   apply lt_of_le_of_ne
-  · exact cs.SGR_apply_simpleRoot_nonneg_of h
+  · exact cs.sgr_apply_simpleRoot_nonneg_of h
   · intro h'
     have := congrArg (ρ (w⁻¹)) h'
     rw [← mul_apply, ← map_mul, inv_mul_self, map_one, one_apply, map_zero] at this
@@ -715,43 +713,43 @@ theorem SGR_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i
 
 /-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is negative; that is, it has all
 nonpositive coordinates and it is nonzero. -/
-theorem SGR_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
+theorem sgr_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
     (ρ w) (α i) < 0 := by
   apply (cs.isRightDescent_iff_not_isRightDescent_mul _ _).mp at h
-  apply SGR_apply_simpleRoot_pos_of at h
-  rw [map_mul, mul_apply, SGR_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
+  apply sgr_apply_simpleRoot_pos_of at h
+  rw [map_mul, mul_apply, sgr_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
   exact neg_pos.mp h
 
-theorem SGR_apply_simpleRoot_pos_iff (w : W) (i : B) :
+theorem sgr_apply_simpleRoot_pos_iff (w : W) (i : B) :
     0 < (ρ w) (α i) ↔ ¬ cs.IsRightDescent w i := by
   constructor
   · intro h h'
-    exact lt_asymm (cs.SGR_apply_simpleRoot_neg_of h') h
+    exact lt_asymm (cs.sgr_apply_simpleRoot_neg_of h') h
   · intro h
-    exact cs.SGR_apply_simpleRoot_pos_of h
+    exact cs.sgr_apply_simpleRoot_pos_of h
 
-theorem SGR_apply_simpleRoot_neg_iff (w : W) (i : B) :
+theorem sgr_apply_simpleRoot_neg_iff (w : W) (i : B) :
     (ρ w) (α i) < 0 ↔ cs.IsRightDescent w i := by
   constructor
   · intro h
     by_contra h'
-    exact lt_asymm (cs.SGR_apply_simpleRoot_pos_of h') h
+    exact lt_asymm (cs.sgr_apply_simpleRoot_pos_of h') h
   · intro h
-    exact cs.SGR_apply_simpleRoot_neg_of h
+    exact cs.sgr_apply_simpleRoot_neg_of h
 
-theorem injective_SGR : Function.Injective cs.SGR := by
+theorem injective_sgr : Function.Injective cs.sgr := by
   classical
   apply (injective_iff_map_eq_one _).mpr
   intro w hw
   by_contra! w_ne_one
   rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i, hi⟩
-  have := cs.SGR_apply_simpleRoot_neg_of hi
+  have := cs.sgr_apply_simpleRoot_neg_of hi
   rw [hw, one_apply] at this
   have := Finsupp.le_def.mp (le_of_lt this) i
   rw [Finsupp.zero_apply, simpleRoot, Finsupp.single_apply, if_pos (rfl : i = i)] at this
   norm_num at this
 
-alias faithful_SGR := injective_SGR
+alias faithful_sgr := injective_sgr
 
 end CoxeterSystem
 
