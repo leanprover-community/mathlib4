@@ -125,7 +125,7 @@ theorem Fintype.piFinset_univ {α : Type*} {β : α → Type*} [DecidableEq α] 
 -- but those don't work with subsingletons in lean4 as-is so we cannot do this here.
 noncomputable instance _root_.Function.Embedding.fintype {α β} [Fintype α] [Fintype β] :
   Fintype (α ↪ β) :=
-  by classical. exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
+  by classical exact Fintype.ofEquiv _ (Equiv.subtypeInjectiveEquivEmbedding α β)
 #align function.embedding.fintype Function.Embedding.fintype
 
 @[simp]

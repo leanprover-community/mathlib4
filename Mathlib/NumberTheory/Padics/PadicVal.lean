@@ -480,8 +480,8 @@ theorem sum_pos_of_pos {n : ℕ} {F : ℕ → ℚ} (hF : ∀ i, i < n → 0 < pa
     · rw [h, zero_add]
       exact hF d (lt_add_one _)
     · refine' lt_of_lt_of_le _ (min_le_padicValRat_add hn0)
-      · refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
-        exact hF _ (lt_trans hi (lt_add_one _))
+      refine' lt_min (hd (fun i hi => _) h) (hF d (lt_add_one _))
+      exact hF _ (lt_trans hi (lt_add_one _))
 #align padic_val_rat.sum_pos_of_pos padicValRat.sum_pos_of_pos
 
 /-- If the p-adic valuation of a finite set of positive rationals is greater than a given rational
