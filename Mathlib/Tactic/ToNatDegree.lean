@@ -28,7 +28,9 @@ def WithBotToNat (stx : Syntax) : Syntax := Id.run do
 
 /-- converts a name involving `degree` to a name involving `natDegree`. -/
 def nameToNatDegree : Name → Name
-  | .str a b => .str (nameToNatDegree a) (if b.splitOn "natDegree" == [b] then b.replace "degree" "natDegree" else b)
+  | .str a b =>
+      let repl := if b.splitOn "natDegree" == [b] then b.replace "degree" "natDegree" else b
+      .str (nameToNatDegree a) repl
   | _ => default
 
 /-- converts a statement involving `degree` to a name involving `natDegree`. -/
