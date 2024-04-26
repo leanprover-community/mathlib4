@@ -129,7 +129,7 @@ set_option linter.uppercaseLean3 false in
 #align category_theory.L_faithful_of_unit_is_iso CategoryTheory.L_faithful_of_unit_isIso
 
 /-- If the counit is an isomorphism, then the right adjoint is full-/
-noncomputable def R_full_of_counit_isIso [IsIso h.counit] : R.Full where
+lemma R_full_of_counit_isIso [IsIso h.counit] : R.Full where
   map_surjective {X Y} f := ⟨inv (h.counit.app X) ≫ (h.homEquiv (R.obj X) Y).symm f, by simp⟩
 set_option linter.uppercaseLean3 false in
 #align category_theory.R_full_of_counit_is_iso CategoryTheory.R_full_of_counit_isIso

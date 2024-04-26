@@ -267,7 +267,7 @@ section
 variable {F F'}
 
 /-- If `F` is full, and naturally isomorphic to some `F'`, then `F'` is also full. -/
-def Full.of_iso [Full F] (α : F ≅ F') : Full F' where
+lemma Full.of_iso [Full F] (α : F ≅ F') : Full F' where
   map_surjective {X Y} f :=
     ⟨F.preimage ((α.app X).hom ≫ f ≫ (α.app Y).inv), by simp [← NatIso.naturality_1 α]⟩
 #align category_theory.full.of_iso CategoryTheory.Functor.Full.of_iso
@@ -357,7 +357,7 @@ lemma Full.of_comp_faithful [Full <| F ⋙ G] [G.Faithful] : Full F where
 #align category_theory.full.of_comp_faithful CategoryTheory.Functor.Full.of_comp_faithful
 
 /-- If `F ⋙ G` is full and `G` is faithful, then `F` is full. -/
-def Full.of_comp_faithful_iso {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} [Full H] [G.Faithful]
+lemma Full.of_comp_faithful_iso {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} [Full H] [G.Faithful]
     (h : F ⋙ G ≅ H) : Full F := by
   have := Full.of_iso h.symm
   exact Full.of_comp_faithful F G
