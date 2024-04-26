@@ -94,7 +94,7 @@ theorem mul_mem_cancel_left {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hf : f ∈ 
   · rintro h
     suffices Groupoid.inv f ≫ f ≫ g ∈ S.arrows d e by
       simpa only [inv_eq_inv, IsIso.inv_hom_id_assoc] using this
-    · apply S.mul (S.inv hf) h
+    apply S.mul (S.inv hf) h
   · apply S.mul hf
 #align category_theory.subgroupoid.mul_mem_cancel_left CategoryTheory.Subgroupoid.mul_mem_cancel_left
 
@@ -104,7 +104,7 @@ theorem mul_mem_cancel_right {c d e : C} {f : c ⟶ d} {g : d ⟶ e} (hg : g ∈
   · rintro h
     suffices (f ≫ g) ≫ Groupoid.inv g ∈ S.arrows c d by
       simpa only [inv_eq_inv, IsIso.hom_inv_id, Category.comp_id, Category.assoc] using this
-    · apply S.mul h (S.inv hg)
+    apply S.mul h (S.inv hg)
   · exact fun hf => S.mul hf hg
 #align category_theory.subgroupoid.mul_mem_cancel_right CategoryTheory.Subgroupoid.mul_mem_cancel_right
 
@@ -590,7 +590,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by
         simp only [inv_eq_inv, Functor.map_comp, Functor.map_inv] at this; exact this
-      · constructor; apply Sn.conj f γS }
+      constructor; apply Sn.conj f γS }
 #align category_theory.subgroupoid.is_normal_map CategoryTheory.Subgroupoid.isNormal_map
 
 end Hom
