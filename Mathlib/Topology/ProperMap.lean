@@ -9,7 +9,6 @@ import Mathlib.Topology.StoneCech
 import Mathlib.Topology.Filter
 import Mathlib.Order.Filter.Cofinite
 import Mathlib.Topology.Defs.Sequences
-import Mathlib.Topology.Sequences
 
 /-!
 # Proper maps between topological spaces
