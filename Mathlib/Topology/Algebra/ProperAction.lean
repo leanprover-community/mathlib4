@@ -37,6 +37,14 @@ the first variable (see `ContinuousConstSMul`) and proper in the sense defined h
   continuous in the second variable and proper. This in particular true if `X` is locally compact
   or first-countable.
 
+## Implementation notes
+
+Concerning `ProperlyDiscontinuousSMul_iff_ProperSMul`, this result should be the only one needed
+to link properly discontinuous and proper actions, however the notion of compactly generated space
+is not yet in Mathlib so it is used as an intermediate result to prove
+`WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
+`SequentialSpace.isProperMap_iff_isCompact_preimage`.
+
 ## References
 
 * [N. Bourbaki, *General Topology*][bourbaki1966]

@@ -49,6 +49,13 @@ particular for the theory of proper group actions. That means that our terminolo
 align with that of [Stacks: Characterizing proper maps](https://stacks.math.columbia.edu/tag/005M),
 instead our definition of `IsProperMap` coincides with what they call "Bourbaki-proper".
 
+Concerning `isProperMap_iff_isCompact_preimage`, this result should be the only one needed to link
+the definition of a proper map and the criteria "preimage of compact sets are compact", however
+the notion of compactly generated space is not yet in Mathlib so it is used as an intermediate
+result to prove
+`WeaklyLocallyCompactSpace.isProperMap_iff_isCompact_preimage` and
+`SequentialSpace.isProperMap_iff_isCompact_preimage`.
+
 Regarding the proofs, we don't really follow Bourbaki and go for more filter-heavy proofs,
 as usual. In particular, their arguments rely heavily on restriction of closed maps (see
 `IsClosedMap.restrictPreimage`), which makes them somehow annoying to formalize in type theory.
