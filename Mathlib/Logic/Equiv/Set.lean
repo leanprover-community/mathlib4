@@ -179,14 +179,6 @@ def setProdEquivSigma {α β : Type*} (s : Set (α × β)) :
   right_inv := fun ⟨x, y, h⟩ => rfl
 #align equiv.set_prod_equiv_sigma Equiv.setProdEquivSigma
 
-/-- Equivalence between the sigma of a family of finsets of `β` and `β`. -/
-noncomputable def sigmaEquiv {ι κ : Type*} (s : κ → Set ι) (hs : ∀ i, ∃! j, i ∈ s j) :
-    (Σ j, s j) ≃ ι where
-  toFun x := x.2
-  invFun x := ⟨(hs x).choose, x, (hs x).choose_spec.1⟩
-  left_inv x := by ext; exacts [((hs x.2).choose_spec.2 x.1 x.2.2).symm, rfl]
-  right_inv x := by rfl
-
 /-- The subtypes corresponding to equal sets are equivalent. -/
 @[simps! apply]
 def setCongr {α : Type*} {s t : Set α} (h : s = t) : s ≃ t :=

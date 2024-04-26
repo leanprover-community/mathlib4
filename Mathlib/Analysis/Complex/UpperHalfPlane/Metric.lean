@@ -385,6 +385,4 @@ instance : IsometricSMul SL(2, ℝ) ℍ :=
       exact
         (isometry_real_vadd w).comp (h₀.comp <| (isometry_real_vadd v).comp <| isometry_pos_mul u)⟩
 
-section slices
-
 end UpperHalfPlane
