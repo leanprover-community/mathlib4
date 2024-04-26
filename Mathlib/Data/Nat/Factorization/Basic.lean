@@ -221,7 +221,7 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
-    refine' Finset.induction_on' S ?_ ?_
+    refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)

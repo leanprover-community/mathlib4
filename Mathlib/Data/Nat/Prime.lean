@@ -656,7 +656,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
     exact ⟨rfl, rfl⟩
-  · refine' (hy ?_).elim
+  · refine (hy ?_).elim
     subst hap
     subst ha
     rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h

@@ -282,6 +282,8 @@ theorem Faithful.of_comp [(F ⋙ G).Faithful] : F.Faithful :=
   { map_injective := fun {_ _} => Function.Injective.of_comp (F ⋙ G).map_injective }
 #align category_theory.faithful.of_comp CategoryTheory.Functor.Faithful.of_comp
 
+instance (priority := 100) [Quiver.IsThin C] : F.Faithful where
+
 section
 
 variable {F F'}

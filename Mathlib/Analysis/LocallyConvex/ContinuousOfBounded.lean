@@ -100,7 +100,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   -- We use a decreasing balanced basis for 0 : E and a balanced basis for 0 : F
   -- and reformulate non-continuity in terms of these bases
   rcases (nhds_basis_balanced 𝕜 E).exists_antitone_subbasis with ⟨b, bE1, bE⟩
-  simp only [id.def] at bE
+  simp only [_root_.id] at bE
   have bE' : (𝓝 (0 : E)).HasBasis (fun x : ℕ => x ≠ 0) fun n : ℕ => (n : 𝕜)⁻¹ • b n := by
     refine' bE.1.to_hasBasis _ _
     · intro n _
@@ -129,7 +129,7 @@ theorem LinearMap.continuousAt_zero_of_locally_bounded (f : E →ₛₗ[σ] F)
   rw [ContinuousAt, map_zero, bE'.tendsto_iff (nhds_basis_balanced 𝕜' F)] at h
   push_neg at h
   rcases h with ⟨V, ⟨hV, -⟩, h⟩
-  simp only [id.def, forall_true_left] at h
+  simp only [_root_.id, forall_true_left] at h
   -- There exists `u : ℕ → E` such that for all `n : ℕ` we have `u n ∈ n⁻¹ • b n` and `f (u n) ∉ V`
   choose! u hu hu' using h
   -- The sequence `(fun n ↦ n • u n)` converges to `0`

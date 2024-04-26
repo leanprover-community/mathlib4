@@ -3,7 +3,7 @@ Copyright (c) 2022 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice
+import Mathlib.Algebra.Module.Zlattice.Basic
 import Mathlib.NumberTheory.NumberField.Embeddings
 import Mathlib.NumberTheory.NumberField.FractionalIdeal
 
@@ -241,9 +241,76 @@ theorem disjoint_span_commMap_ker [NumberField K] :
 
 end commMap
 
+noncomputable section norm
+
+open scoped Classical
+
+open BigOperators
+
+variable [NumberField K] {K}
+
+/-- The norm of `x` is `∏ w real, ‖x‖_w * ∏ w complex, ‖x‖_w ^ 2`. It is defined such that
+the norm of `mixedEmbedding K a` for `a : K` is equal to the absolute value of the norm of `a`
+over `ℚ`, see `norm_eq_norm`. -/
+protected def norm  : (E K) →*₀ ℝ where
+  toFun := fun x ↦ (∏ w, ‖x.1 w‖) * ∏ w, ‖x.2 w‖ ^ 2
+  map_one' := by simp only [Prod.fst_one, Pi.one_apply, norm_one, Finset.prod_const_one,
+    Prod.snd_one, one_pow, mul_one]
+  map_zero' := by
+    simp_rw [Prod.fst_zero, Prod.snd_zero, Pi.zero_apply, norm_zero, zero_pow (two_ne_zero),
+      mul_eq_zero, Finset.prod_const, pow_eq_zero_iff', true_and, Finset.card_univ]
+    by_contra!
+    have : finrank ℚ K = 0 := by
+      rw [← card_add_two_mul_card_eq_rank, NrRealPlaces, NrComplexPlaces, this.1, this.2]
+    exact ne_of_gt finrank_pos this
+  map_mul' _ _ := by simp only [Prod.fst_mul, Pi.mul_apply, norm_mul, Real.norm_eq_abs,
+      Finset.prod_mul_distrib, Prod.snd_mul, Complex.norm_eq_abs, mul_pow]; ring
+
+protected theorem norm_eq_zero_iff {x : E K} :
+    mixedEmbedding.norm x = 0 ↔ (∃ w, x.1 w = 0) ∨ (∃ w, x.2 w = 0) := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, mul_eq_zero,
+    Finset.prod_eq_zero_iff, Finset.mem_univ, true_and, pow_eq_zero_iff two_ne_zero, norm_eq_zero]
+
+protected theorem norm_ne_zero_iff {x : E K} :
+    mixedEmbedding.norm x ≠ 0 ↔ (∀ w, x.1 w ≠ 0) ∧ (∀ w, x.2 w ≠ 0) := by
+  rw [← not_iff_not]
+  simp_rw [ne_eq, mixedEmbedding.norm_eq_zero_iff, not_and_or, not_forall, not_not]
+
+theorem norm_real (c : ℝ) :
+    mixedEmbedding.norm ((fun _ ↦ c, fun _ ↦ c) : (E K)) = |c| ^ finrank ℚ K := by
+  simp_rw [mixedEmbedding.norm, MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Real.norm_eq_abs,
+    Complex.norm_eq_abs, Complex.abs_ofReal, Finset.prod_const, ← pow_mul,
+    ← card_add_two_mul_card_eq_rank, Finset.card_univ, pow_add]
+
+theorem norm_smul (c : ℝ) (x : E K) :
+    mixedEmbedding.norm (c • x) = |c| ^ finrank ℚ K * (mixedEmbedding.norm x) := by
+  rw [show c • x = ((fun _ ↦ c, fun _ ↦ c) : (E K)) * x by rfl, map_mul, norm_real]
+
+@[simp]
+theorem norm_eq_norm (x : K) :
+    mixedEmbedding.norm (mixedEmbedding K x) = |Algebra.norm ℚ x| := by
+  simp_rw [← prod_eq_abs_norm, mixedEmbedding.norm, mixedEmbedding, RingHom.prod_apply,
+    MonoidWithZeroHom.coe_mk, ZeroHom.coe_mk, Pi.ringHom_apply, norm_embedding_eq,
+    norm_embedding_of_isReal]
+  rw [← Fintype.prod_subtype_mul_prod_subtype (fun w : InfinitePlace K ↦ IsReal w)]
+  congr 1
+  · exact Finset.prod_congr rfl (fun w _ ↦ by rw [mult, if_pos w.prop, pow_one])
+  · refine (Fintype.prod_equiv (Equiv.subtypeEquivRight ?_) _ _ (fun w ↦ ?_)).symm
+    · exact fun _ ↦ not_isReal_iff_isComplex
+    · rw [Equiv.subtypeEquivRight_apply_coe, mult, if_neg w.prop]
+
+theorem norm_eq_zero_iff' {x : E K} (hx : x ∈ Set.range (mixedEmbedding K)) :
+    mixedEmbedding.norm x = 0 ↔ x = 0 := by
+  obtain ⟨a, rfl⟩ := hx
+  rw [norm_eq_norm, Rat.cast_abs, abs_eq_zero, Rat.cast_eq_zero, Algebra.norm_eq_zero_iff,
+    map_eq_zero]
+
+end norm
+
 noncomputable section stdBasis
 
 open scoped Classical
+
 open Complex MeasureTheory MeasureTheory.Measure Zspan Matrix BigOperators
   ComplexConjugate
 
