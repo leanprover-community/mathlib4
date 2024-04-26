@@ -1352,53 +1352,6 @@ theorem ENNReal.ofReal_tsum_of_nonneg {f : α → ℝ} (hf_nonneg : ∀ n, 0 ≤
   simp_rw [ENNReal.ofReal, ENNReal.tsum_coe_eq (NNReal.hasSum_real_toNNReal_of_nonneg hf_nonneg hf)]
 #align ennreal.of_real_tsum_of_nonneg ENNReal.ofReal_tsum_of_nonneg
 
-theorem not_summable_iff_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    ¬Summable f ↔ Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
-  lift f to ℕ → ℝ≥0 using hf
-  exact mod_cast NNReal.not_summable_iff_tendsto_nat_atTop
-#align not_summable_iff_tendsto_nat_at_top_of_nonneg not_summable_iff_tendsto_nat_atTop_of_nonneg
-
-theorem summable_iff_not_tendsto_nat_atTop_of_nonneg {f : ℕ → ℝ} (hf : ∀ n, 0 ≤ f n) :
-    Summable f ↔ ¬Tendsto (fun n : ℕ => ∑ i in Finset.range n, f i) atTop atTop := by
-  rw [← not_iff_not, Classical.not_not, not_summable_iff_tendsto_nat_atTop_of_nonneg hf]
-#align summable_iff_not_tendsto_nat_at_top_of_nonneg summable_iff_not_tendsto_nat_atTop_of_nonneg
-
-theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} (hf : ∀ x, 0 ≤ f x) :
-    Summable f ↔ (∀ x, Summable fun y => f ⟨x, y⟩) ∧ Summable fun x => ∑' y, f ⟨x, y⟩ := by
-  lift f to (Σx, β x) → ℝ≥0 using hf
-  exact mod_cast NNReal.summable_sigma
-#align summable_sigma_of_nonneg summable_sigma_of_nonneg
-
-theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
-    Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
-  (Equiv.sigmaEquivProd _ _).summable_iff.symm.trans <| summable_sigma_of_nonneg fun _ ↦ hf _
-
-theorem summable_of_sum_le {ι : Type*} {f : ι → ℝ} {c : ℝ} (hf : 0 ≤ f)
-    (h : ∀ u : Finset ι, ∑ x in u, f x ≤ c) : Summable f :=
-  ⟨⨆ u : Finset ι, ∑ x in u, f x,
-    tendsto_atTop_ciSup (Finset.sum_mono_set_of_nonneg hf) ⟨c, fun _ ⟨u, hu⟩ => hu ▸ h u⟩⟩
-#align summable_of_sum_le summable_of_sum_le
-
-theorem summable_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : Summable f := by
-  refine (summable_iff_not_tendsto_nat_atTop_of_nonneg hf).2 fun H => ?_
-  rcases exists_lt_of_tendsto_atTop H 0 c with ⟨n, -, hn⟩
-  exact lt_irrefl _ (hn.trans_le (h n))
-#align summable_of_sum_range_le summable_of_sum_range_le
-
-theorem Real.tsum_le_of_sum_range_le {f : ℕ → ℝ} {c : ℝ} (hf : ∀ n, 0 ≤ f n)
-    (h : ∀ n, ∑ i in Finset.range n, f i ≤ c) : ∑' n, f n ≤ c :=
-  _root_.tsum_le_of_sum_range_le (summable_of_sum_range_le hf h) h
-#align real.tsum_le_of_sum_range_le Real.tsum_le_of_sum_range_le
-
-/-- If a sequence `f` with non-negative terms is dominated by a sequence `g` with summable
-series and at least one term of `f` is strictly smaller than the corresponding term in `g`,
-then the series of `f` is strictly smaller than the series of `g`. -/
-theorem tsum_lt_tsum_of_nonneg {i : ℕ} {f g : ℕ → ℝ} (h0 : ∀ b : ℕ, 0 ≤ f b)
-    (h : ∀ b : ℕ, f b ≤ g b) (hi : f i < g i) (hg : Summable g) : ∑' n, f n < ∑' n, g n :=
-  tsum_lt_tsum h hi (.of_nonneg_of_le h0 h hg) hg
-#align tsum_lt_tsum_of_nonneg tsum_lt_tsum_of_nonneg
-
 section
 
 variable [EMetricSpace β]
