@@ -81,7 +81,7 @@ where
       let m := parents.foldr (init := m) fun parent m => go parent m
       -- Determine the maximum cumulative instruction count among the parents
       let t := (parents.map fun parent => (m.find! parent)).foldr max 0
-      m.insert n ((instructions.find? n).getD 0 + t)
+      m.insert n (instructions.findD n 0 + t)
 
 /-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
 by which others, returns a new `NameMap` indicating the last of the parents of each file that would
