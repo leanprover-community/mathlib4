@@ -486,7 +486,7 @@ instance : Spec.toLocallyRingedSpace.Full  :=
   R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
 instance Spec.full : Scheme.Spec.Full  :=
-  rFullOfCounitIsIso ΓSpec.adjunction
+  R_full_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
