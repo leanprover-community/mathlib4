@@ -117,7 +117,7 @@ instance (j : ι) : (single V c j).Faithful where
       ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
       ← single_map_f_self, w]
 
-noncomputable instance (j : ι) : (single V c j).Full where
+instance (j : ι) : (single V c j).Full where
   map_surjective {A B} f :=
     ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
       ext
