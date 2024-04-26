@@ -585,8 +585,8 @@ theorem measure_iInter_eq_iInf' (r : ι → ι → Prop) (r_trans : Transitive r
     exact ⟨j, ne_top_of_le_ne_top hi <| measure_mono <| biInter_subset_of_mem rij⟩
   exact iInter_eq ▸ measure_iInter_eq_iInf ms hd hfin'
 
-/-- Continuity from below: the measure of the union of an increasing sequence of measurable sets
-is the limit of the measures. -/
+/-- Continuity from below: the measure of the union of an increasing sequence of (not necessarily
+measurable) sets is the limit of the measures. -/
 theorem tendsto_measure_iUnion [Preorder ι] [IsDirected ι (· ≤ ·)] [Countable ι]
     {s : ι → Set α} (hm : Monotone s) : Tendsto (μ ∘ s) atTop (𝓝 (μ (⋃ n, s n))) := by
   rw [measure_iUnion_eq_iSup hm.directed_le]
