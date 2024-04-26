@@ -377,16 +377,15 @@ lemma locallyRingedSpaceAdjunction_counit :
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
   locallyRingedSpaceAdjunction.restrictFullyFaithful Scheme.forgetToLocallyRingedSpace (𝟭 _)
-    (NatIso.ofComponents (fun X => Iso.refl _) )
-    (NatIso.ofComponents (fun X => Iso.refl _) )
+    (NatIso.ofComponents (fun X => Iso.refl _))
+    (NatIso.ofComponents (fun X => Iso.refl _))
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp [adjunction, Adjunction.restrictFullyFaithful]
-  simp only [Category.comp_id, Category.id_comp]
-  rfl -- Porting note: Added
+  dsimp [adjunction, Adjunction.restrictFullyFaithful, equivOfFullyFaithful]
+  simp
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
