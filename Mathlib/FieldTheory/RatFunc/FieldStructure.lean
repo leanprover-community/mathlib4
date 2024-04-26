@@ -10,7 +10,6 @@ import Mathlib.RingTheory.Polynomial.Content
 
 universe u v
 
-
 noncomputable section
 
 open scoped Classical
