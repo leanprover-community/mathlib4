@@ -154,7 +154,7 @@ instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
 instance forget₂_full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
     Functor.Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where
   map_surjective f := ⟨f, rfl⟩
-#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂Full
+#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂_full
 
 end BundledHom
 
