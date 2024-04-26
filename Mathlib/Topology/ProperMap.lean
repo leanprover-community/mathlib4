@@ -34,8 +34,9 @@ Hausdorff space as continuous maps such that preimages of compact sets are compa
 * `IsProperMap.pi_map`: any product of proper maps is proper.
 * `isProperMap_iff_isClosedMap_and_compact_fibers`: a map is proper if and only if it is
   continuous, closed, and has compact fibers
-* `isProperMap_iff_isCompact_preimage`: a map to a locally compact Hausdorff space is proper if
-  and only if it is continuous and preimages of compact sets are compact.
+* `isProperMap_iff_isCompact_preimage`: a map to a compactly generated space is proper if
+  and only if it is continuous and preimages of compact sets are compact. This is in particular
+  true if the space is locally compact or sequential.
 * `isProperMap_iff_universally_closed`: a map is proper if and only if it is continuous and
   universally closed, in the sense of condition 2. above.
 
