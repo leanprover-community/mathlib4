@@ -108,7 +108,7 @@ def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Nam
   let transitive := graph.transitiveClosure
   transitive.filterMap
     fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
-      fun t n' => t + ((instructions.find? n').getD 0)
+      fun t n' => t + (instructions.findD n' 0)
 
 /-- Convert a float to a string with a fixed number of decimal places. -/
 def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
