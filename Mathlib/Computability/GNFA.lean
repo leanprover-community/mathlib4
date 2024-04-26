@@ -6,6 +6,7 @@ Authors: Russell Emerine
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.NFA
 import Mathlib.Data.Fintype.Option
+import Mathlib.Data.List.Indexes
 
 #align_import computability.GNFA
 
@@ -53,26 +54,26 @@ theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) 
     (List.sum rs).matches' x ↔ ∃ r : RegularExpression α, r ∈ rs ∧ r.matches' x :=
   by
   constructor
-  · rw [← rs.reverse_reverse]
-    induction rs.reverse
-    case nil => rintro ⟨⟩
-    case cons r rs ih =>
+  ·
+    induction rs using List.list_reverse_induction
+    case base => rintro ⟨⟩
+    case ind rs r ih =>
       intro hx
       unfold List.sum at hx
-      simp only [List.reverse_cons, RegularExpression.matches'_add, List.foldl_append,
+      simp only [RegularExpression.matches'_add, List.foldl_append,
         List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
       cases hx
       case inl hx => rcases ih hx with ⟨r, mem, mat⟩; exact ⟨r, Or.inl mem, mat⟩
       case inr hx => exact ⟨r, Or.inr rfl, hx⟩
-  · rw [← rs.reverse_reverse]
-    induction' rs.reverse with r rs ih
-    case nil =>
+  ·
+    induction' rs using List.list_reverse_induction with rs r ih
+    case base =>
       rintro ⟨r, mem, _⟩
       exfalso
       contradiction
     intro hx
     unfold List.sum
-    simp only [List.reverse_cons, RegularExpression.matches'_add, forall_exists_index,
+    simp only [RegularExpression.matches'_add, forall_exists_index,
       List.foldl_append, List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
     rcases hx with ⟨r', hr', mat⟩
     cases hr'
@@ -251,18 +252,15 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       rcases hz with ⟨xs, join, mat⟩
       rw [join]; clear join
       revert mat
-      rw [← xs.reverse_reverse]
-      induction xs.reverse
-      case nil => simp [trace.start hy]
-      case cons x xs ih =>
+      induction xs using List.list_reverse_induction
+      case base => simp [trace.start hy]
+      case ind xs x ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [List.join_append, List.join_singleton]
         rw [← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at mat
-        refine' trace.step (ih _) (mat x (Or.inl rfl)) rfl
+        refine' trace.step (ih _) (mat x (by simp)) rfl
         intro y mem
-        rw [List.mem_reverse] at mem
-        exact mat y (Or.inr mem)
+        exact mat y (by simp[mem])
     case step x y z p q t mat eq ih =>
       cases mat
       case inl mat => exact trace.step ih mat eq
@@ -278,22 +276,19 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
       rcases hx with ⟨xs, join, mat⟩
       rw [join]; clear join x
       revert mat
-      rw [← xs.reverse_reverse]
-      induction xs.reverse
-      case nil =>
+      induction xs using List.list_reverse_induction
+      case base =>
         intro mat
         simp at *
         exact trace.step ih hw rfl
-      case cons x xs ih =>
+      case ind xs x ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [List.join_append, List.join_singleton]
         rw [← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at mat
-        refine' trace.step _ (mat x (Or.inl rfl)) rfl
+        refine' trace.step _ (mat x (by simp)) rfl
         apply ih
         intro y mem
-        rw [List.mem_reverse] at mem
-        exact mat y (Or.inr mem)
+        exact mat y (by simp[mem])
 
 -- TODO: maybe mark as @simp
 theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
@@ -315,22 +310,19 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       rcases z_matches with ⟨xs, join, x_matches⟩
       rw [join]; clear join z
       revert x_matches
-      rw [← xs.reverse_reverse]
-      induction xs.reverse
-      case nil =>
+      induction xs using List.list_reverse_induction
+      case base =>
         intro x_matches
         refine' trace.start _
         simpa
-      case cons x xs ih =>
+      case ind xs x ih =>
         intro x_matches
-        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [List.join_append, List.join_singleton]
         rw [← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at x_matches
-        refine' trace.step _ (x_matches x (Or.inl rfl)) rfl
+        refine' trace.step _ (x_matches x (by simp)) rfl
         apply ih
         intro x mem
-        rw [List.mem_reverse] at mem
-        exact x_matches x (Or.inr mem)
+        exact x_matches x (by simp[mem])
     case step x y z q t mat eq =>
       rw [eq]; clear eq x
       cases mat
@@ -349,26 +341,23 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
       rcases x_matches with ⟨xs, join, x_matches⟩
       rw [join]; clear join x
       revert x_matches
-      rw [← xs.reverse_reverse]
-      induction xs.reverse
-      case nil =>
+      induction xs using List.list_reverse_induction
+      case base =>
         intro mat
-        rw [List.reverse_nil]
         unfold List.join
         rw [List.append_nil]
         refine' trace.step _ z_matches rfl
         rw [rip_trace_correct]
         exact t
-      case cons x xs ih =>
+      case ind xs x ih =>
         intro mat
-        rw [List.reverse_cons, List.join_append, List.join_singleton]
+        rw [List.join_append, List.join_singleton]
         rw [← List.append_assoc]
-        simp only [List.mem_reverse, List.mem_cons] at mat
-        refine' trace.step _ (mat x (Or.inl rfl)) rfl
+        simp only [List.mem_append] at mat
+        refine' trace.step _ (mat x (by simp)) rfl
         apply ih
         intro x mem
-        rw [List.mem_reverse] at mem
-        exact mat x (Or.inr mem)
+        exact mat x (Or.inl mem)
   · intro t
     cases t
     case start x mat => exact accepts.start (Or.inl mat)
@@ -508,7 +497,7 @@ end GNFA
 namespace NFA
 
 variable (M : NFA α σ) [dec_start : DecidablePred M.start] [dec_accept : DecidablePred M.accept]
-  [dec_step : ∀ p a q, Decidable (M.step p a q)] (as : List α)
+  [dec_step : ∀ p a , DecidablePred (· ∈ M.step p a)] (as : List α)
 
 /-- Convert an NFA to the corresponding GNFA.
 
@@ -525,7 +514,7 @@ def toGNFA : GNFA α σ :=
     | (some p, none) => if M.accept p then 1 else 0
     | (some p, some q) =>
       List.sum <|
-        (List.map fun a => RegularExpression.char a) <| List.filter (fun a => M.step p a q) as⟩
+        (List.map fun a => RegularExpression.char a) <| List.filter (fun a => q ∈ M.step p a) as⟩
 
 -- TODO: maybe mark as @simp
 theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).accepts :=
@@ -540,17 +529,15 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       simp [accept]
     clear accept
     revert eval
-    rw [← x.reverse_reverse]
-    induction x.reverse generalizing q
-    case nil =>
+    induction x using List.list_reverse_induction generalizing q
+    case base =>
       intro hx
       refine' GNFA.trace.start _
       unfold toGNFA; simp only
-      rw [Set.mem_def, List.reverse_nil, NFA.eval_nil] at hx
+      rw [Set.mem_def, NFA.eval_nil] at hx
       simp [hx]
-    case cons a as ih =>
+    case ind as a ih =>
       intro hx
-      rw [List.reverse_cons] at *
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at hx
       rcases hx with ⟨p, mem, step⟩
       refine' GNFA.trace.step (ih p mem) _ rfl
@@ -569,18 +556,16 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
     refine' ⟨q, h, _⟩
     rw [List.append_nil] at eq; cases eq; clear h
     revert t
-    rw [← x.reverse_reverse]
-    induction x.reverse generalizing q
+    induction x using List.list_reverse_induction generalizing q
     /- Porting note: To fix error
-      Case tag 'nil' not found.
+      Case tag 'base' not found.
 
       Available tags:
-        'pos.refl.refl.nil._@.Mathlib.Computability.GNFA._hyg.4615',
-        'pos.refl.refl.cons._@.Mathlib.Computability.GNFA._hyg.4615'
+        'pos.refl.refl.base._@.Mathlib.Computability.GNFA._hyg.4859',
+        'pos.refl.refl.ind._@.Mathlib.Computability.GNFA._hyg.4859'
     -/
-    case pos.refl.refl.nil =>
+    case pos.refl.refl.base =>
       intro hx
-      rw [List.reverse_nil] at *
       rw [NFA.eval_nil]
       cases hx
       case start x step =>
@@ -603,38 +588,32 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
 
       The only available case tag is 'pos.refl.refl.cons._@.Mathlib.Computability.GNFA._hyg.4615'.
     -/
-    case pos.refl.refl.cons a as ih =>
+    case pos.refl.refl.ind as a ih =>
       intro hx
-      simp at *
-      rw [NFA.mem_stepSet]
+      rw [NFA.eval_append_singleton]
       cases hx
       case start q step =>
         unfold toGNFA at step; simp only at step
         by_cases h : M.start q
         · rw [if_pos h, RegularExpression.matches'_epsilon, Language.mem_one] at step
-          replace step : as.reverse ++ [a] = List.nil := step
           rw [List.append_eq_nil] at step
           cases step.2
         · rw [if_neg h] at step
           cases step
       case step y z p t eq step =>
         unfold toGNFA at step; simp only at step
-        replace eq : as.reverse ++ [a] = y ++ z := eq
         rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
         rcases step with ⟨r, mem, mat⟩
         simp only [List.mem_map, List.mem_filter] at mem
         rcases mem with ⟨b, ⟨_, step⟩, eq⟩
         rw [← eq] at mat
         cases mat
-        rw [← List.reverse_inj] at eq
-        simp only [List.reverse_append, List.reverse_singleton, List.reverse_reverse,
-          List.singleton_append, List.cons_eq_cons] at eq
-        cases eq.1
-        cases eq.2
-        conv in q ∈ _ => rw[Set.mem_def]
-        refine' ⟨p, _, Bool.of_decide_true step⟩
-        rw [← y.reverse_reverse] at t
-        exact ih p t
+        have ⟨aseqy, aeqb⟩ := List.append_inj' eq rfl
+        injection aeqb with aeqb
+        subst aseqy
+        subst aeqb
+        rw [NFA.mem_stepSet]
+        exact ⟨p, ih p t, Bool.of_decide_true step⟩
 
 /--
 Given an NFA with a `fintype` state, there is a regular expression that matches the same language.

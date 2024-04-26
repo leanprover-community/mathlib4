@@ -61,12 +61,12 @@ theorem star_iff_pow {r : RegularExpression α} {x} :
       specialize ih y_matches
       rcases ih with ⟨ys, join, all_match⟩
       rw [← append]; clear append x
-      refine' ⟨ys.concat z, by simp [join], _⟩
+      refine' ⟨ys ++ [z], by simp [join], _⟩
       intro w h
-      rw[← List.mem_reverse,List.reverse_concat,List.mem_cons] at h
+      rw[List.mem_append,List.mem_singleton] at h
       rcases h with h | h
-      case inl => rw [h]; exact z_matches
-      case inr => exact all_match w $ List.mem_reverse.mp h
+      case inr => rw [h]; exact z_matches
+      case inl => exact all_match w h
 
 section Star
 
@@ -85,15 +85,15 @@ theorem star_eval (x : List α) (q : r.State) :
     some q ∈ r.star.toNFA.eval x ↔ ∃ n, r.trace x.reverse q n :=
   by
   constructor
-  · rw [← x.reverse_reverse]
-    rw [x.reverse.reverse_reverse]
-    induction x.reverse generalizing q
-    case nil =>
+  · 
+    induction x using List.list_reverse_induction generalizing q
+    case base =>
       intro h
       exact ⟨0, trace.nil h⟩
-    case cons a as ih =>
+    case ind as a ih =>
       intro h
-      rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at h
+      rw [NFA.eval_append_singleton, NFA.mem_stepSet] at h
+      simp
       rcases h with ⟨p, mem, step⟩
       rcases p with p | p; rcases step with step | step
       rcases ih p mem with ⟨n, t⟩
@@ -148,15 +148,15 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
       rw [hr] at z_matches
       rcases z_matches with ⟨q, accept, eval⟩
       refine' ⟨q, accept, _⟩; clear accept
-      rw [← z.reverse_reverse] at eval
       revert eval
-      induction z.reverse generalizing q
-      case nil =>
+      induction z using List.list_reverse_induction generalizing q
+      case base =>
         intro h
         exact trace.nil h
-      case cons a as ih =>
+      case ind as a ih =>
         intro h
-        rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at h
+        rw [NFA.eval_append_singleton, NFA.mem_stepSet] at h
+        rw [← List.concat_eq_append, List.reverse_concat]
         rcases h with ⟨p, mem, step⟩
         exact trace.step step (ih p mem)
     · intro h
@@ -164,16 +164,16 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
       rcases h with ⟨q, accept, t⟩
       rw [hr]; clear hr
       refine' ⟨q, accept, _⟩; clear accept
-      rw [← x.reverse_reverse]
       revert t
-      induction x.reverse generalizing q
-      case nil =>
+      induction x using List.list_reverse_induction generalizing q
+      case base =>
         intro t
         cases' t with _ start
         exact start
-      case cons a as ih=>
+      case ind as a ih=>
         intro t
-        rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet]
+        rw [NFA.eval_append_singleton, NFA.mem_stepSet]
+        rw [← List.concat_eq_append, List.reverse_concat] at t
         cases' t with _ _ p _ _ _ _ step t
         exact ⟨p, ih p t, step⟩
   case succ n ih =>
@@ -186,18 +186,19 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
       rw [ih y] at hy; clear ih
       rcases hz with ⟨q, accept, eval⟩
       refine' ⟨q, accept, _⟩; clear accept
-      rw [← z.reverse_reverse] at eval
-      rw [List.reverse_append]
       revert eval
-      induction z.reverse generalizing q
-      case nil =>
+      induction z using List.list_reverse_induction generalizing q
+      case base =>
         intro eval
         rcases hy with ⟨p, accept, t⟩
+        simp only [List.append_nil]
         exact trace.reset accept eval t
-      case cons a as ih =>
+      case ind as a ih =>
         intro eval
-        rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at eval
+        rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
         rcases eval with ⟨p, mem, step⟩
+        simp only [← List.append_assoc]
+        rw [← List.concat_eq_append, List.reverse_concat]
         exact trace.step step (ih p mem)
     · rintro ⟨q, accept, t⟩
       rw [matches'_pow, Nat.succ_eq_add_one, pow_add, ← matches'_pow, pow_one]
@@ -208,17 +209,17 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
         rw [hr]
         exact ⟨q, accept, eval⟩
       clear accept
-      rw [← x.reverse_reverse]
       revert t
-      induction x.reverse generalizing q
-      case nil =>
+      induction x using List.list_reverse_induction generalizing q
+      case base =>
         intro t
         cases' t with _ _ _ _ _ _ _ _ _ p _ _ _ p_accept start t
         refine' ⟨[], [], _, start, by simp⟩
         rw [ih []]
         exact ⟨p, p_accept, t⟩
-      case cons a as x_ih =>
+      case ind as a x_ih =>
         intro t
+        rw [← List.concat_eq_append, List.reverse_concat] at t
         cases t
         case step p step
           t =>
@@ -228,9 +229,9 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
           exact ⟨p, eval, step⟩
         case reset p accept start
           t =>
-          refine' ⟨(a :: as).reverse, [], _, start, by simp⟩
-          rw [ih (a :: as).reverse]
-          rw [(a :: as).reverse_reverse]
+          rw [← List.reverse_concat] at t
+          refine' ⟨as.concat a, [], _, start, by simp⟩
+          rw [ih (as.concat a)]
           exact ⟨p, accept, t⟩
 
 end Star

@@ -44,14 +44,12 @@ theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsi
   · rintro ⟨q, accept, eval⟩
     cases accept
     revert eval
-    rw [← x.reverse_reverse]
-    induction x.reverse
-    case nil => simp
-    case cons a as ih =>
-      intro hx
-      rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at hx
-      rcases hx with ⟨q, mem, step⟩
-      cases step
+    rcases x.eq_nil_or_concat with eq | ⟨as, a, eq⟩ <;> subst eq
+    case inl => simp
+    intro hx
+    rw [NFA.eval_append_singleton, NFA.mem_stepSet] at hx
+    rcases hx with ⟨q, mem, step⟩
+    cases step
 
 theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts :=
   by
@@ -67,9 +65,8 @@ theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts
     case false => contradiction
     clear accept
     revert eval
-    rw [← x.reverse_reverse]
-    cases' x.reverse with c as
-    case nil => intro hx; contradiction
+    rcases x.eq_nil_or_concat with eq | ⟨as, c, eq⟩ <;> subst eq
+    case inl => intro hx; contradiction
     intro hx
     unfold NFA.eval NFA.evalFrom at hx
     simp only [List.reverse_cons, List.foldl_append, List.foldl_cons, Set.mem_singleton_iff,
@@ -79,8 +76,8 @@ theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts
     cases p
     case true => rcases step with ⟨_, _, _⟩; contradiction
     revert mem
-    cases' as with b as
-    case nil =>
+    rcases as.eq_nil_or_concat with eq | ⟨as, b, eq⟩ <;> subst eq
+    case inl =>
       intro _
       rcases step with ⟨_, eq, _⟩
       rw [eq]
@@ -108,11 +105,11 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       rcases hx with ⟨q, accept, eval⟩
       refine' ⟨Sum.inl q, accept, _⟩; clear accept
       revert eval
-      rw [← x.reverse_reverse]
-      induction' x.reverse with a as ih generalizing q
-      case nil => exact id
+      induction x using List.list_reverse_induction generalizing q
+      case base => exact id
+      rename_i as a ih
       intro mem
-      rw [List.reverse_cons, List.foldl_append, List.foldl_cons, List.foldl_nil] at *
+      rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at *
       rcases mem with ⟨S, ⟨p, range⟩, mem⟩
       rw [← range, Set.mem_iUnion, exists_prop] at mem
       rcases mem with ⟨mem, step⟩
@@ -125,11 +122,11 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       rcases hx with ⟨q, accept, eval⟩
       refine' ⟨Sum.inr q, accept, _⟩; clear accept
       revert eval
-      rw [← x.reverse_reverse]
-      induction' x.reverse with a as ih generalizing q
-      case nil => exact id
+      induction x using List.list_reverse_induction generalizing q
+      case base => exact id
+      rename_i as a ih
       intro mem
-      rw [List.reverse_cons, List.foldl_append, List.foldl_cons, List.foldl_nil] at *
+      rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at *
       rcases mem with ⟨S, ⟨p, range⟩, mem⟩
       rw [← range, Set.mem_iUnion, exists_prop] at mem
       rcases mem with ⟨mem, step⟩
@@ -142,12 +139,12 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       rw [hr₁]; clear hr₁ hr₂
       refine' ⟨q, accept, _⟩; clear accept
       revert eval
-      rw [← x.reverse_reverse]
-      induction' x.reverse with a as ih generalizing q
-      case nil => exact id
+      induction x using List.list_reverse_induction generalizing q
+      case base => exact id
+      rename_i as a ih
       intro h
       unfold NFA.eval NFA.evalFrom at *
-      rw [List.reverse_cons, List.foldl_append, List.foldl_cons, List.foldl_nil] at *
+      rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at *
       rcases h with ⟨S, ⟨p, range⟩, mem⟩
       rw [← range] at mem
       rw [Set.mem_iUnion, exists_prop] at mem
@@ -161,12 +158,12 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       rw [hr₂]; clear hr₁ hr₂
       refine' ⟨q, accept, _⟩; clear accept
       revert eval
-      rw [← x.reverse_reverse]
-      induction' x.reverse with a as ih generalizing q
-      case nil => exact id
+      induction x using List.list_reverse_induction generalizing q
+      case base => exact id
+      rename_i as a ih
       intro h
       unfold NFA.eval NFA.evalFrom at *
-      rw [List.reverse_cons, List.foldl_append, List.foldl_cons, List.foldl_nil] at *
+      rw [List.foldl_append, List.foldl_cons, List.foldl_nil] at *
       rcases h with ⟨S, ⟨p, range⟩, mem⟩
       rw [← range] at mem
       rw [Set.mem_iUnion, exists_prop] at mem
@@ -179,17 +176,17 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
 theorem comp_toNFA_eval₁ {r₁ r₂ : RegularExpression α} {x : List α} (q : r₁.State) :
     q ∈ r₁.toNFA.eval x ↔ Sum.inl q ∈ (r₁.comp r₂).toNFA.eval x :=
   by
-  rw [← x.reverse_reverse]
-  induction' x.reverse with a as ih generalizing q
-  case nil => exact ⟨id, id⟩
+  induction x using List.list_reverse_induction generalizing q
+  case base => exact ⟨id, id⟩
+  rename_i as a ih
   constructor
   · intro h
-    rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at *
+    rw [NFA.eval_append_singleton, NFA.mem_stepSet] at *
     rcases h with ⟨p, eval, step⟩
     rw [ih p] at eval
     exact ⟨Sum.inl p, eval, step⟩
   · intro h
-    rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at *
+    rw [NFA.eval_append_singleton, NFA.mem_stepSet] at *
     rcases h with ⟨p, eval, step⟩
     rcases p with p | p
     case inl => rw [← ih p] at eval; exact ⟨p, eval, step⟩
@@ -199,27 +196,25 @@ theorem comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q
     (accepts : r₁.toNFA.accepts x) :
     q ∈ r₂.toNFA.eval y → Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y :=
   by
-  rw [← y.reverse_reverse]
-  induction y.reverse generalizing q
-  case nil =>
+  induction y using List.list_reverse_induction generalizing q
+  case base =>
     intro h
     rcases accepts with ⟨p, accept, eval⟩
     rw [@comp_toNFA_eval₁ _ _ r₂ _ p] at eval
     revert eval
-    rw [← x.reverse_reverse] at *
-    cases' x.reverse with a as
-    case nil => intro eval; exact ⟨h, p, accept, eval⟩
+    rcases x.eq_nil_or_concat with eq | ⟨as, a, eq⟩ <;> subst eq
+    case inl => intro eval; exact ⟨h, p, accept, eval⟩
     intro eval
-    rw [List.reverse_nil, NFA.evalFrom_nil]
-    rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at *
+    rw [NFA.evalFrom_nil]
+    rw [NFA.eval_append_singleton, NFA.mem_stepSet] at *
     rcases eval with ⟨r, mem, step⟩
     refine' ⟨r, mem, _⟩
     cases r
     case inl => exact ⟨h, p, accept, step⟩
     case inr => cases step
-  case cons b bs ih =>
+  case ind bs b ih =>
     intro h
-    simp only [List.reverse_cons, NFA.eval_append_singleton, NFA.evalFrom_append_singleton,
+    simp only [NFA.eval_append_singleton, NFA.evalFrom_append_singleton,
       NFA.mem_stepSet] at *
     rcases h with ⟨p, mem, step⟩
     refine' ⟨Sum.inr p, ih p mem, step⟩
@@ -235,12 +230,8 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
     rw [← comp]
     clear hr₁ hr₂ comp x
     rw [Set.mem_def] at *
-    rw [← z.reverse_reverse] at *
-    have ⟨ zr, zreq ⟩ : ∃ _, _ := ⟨z.reverse, rfl⟩
-    rw[zreq] at hz
-    rw[zreq]
-    cases' zr with b bs
-    case nil =>
+    rcases z.eq_nil_or_concat with eq | ⟨bs, b, eq⟩ <;> subst eq
+    case inl =>
       rcases hy with ⟨q, q_accept, q_eval⟩
       rcases hz with ⟨p, p_accept, p_eval⟩
       simp only [List.append_nil, NFA.eval_nil, List.reverse_nil] at *
@@ -248,7 +239,6 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       exact ⟨Sum.inl q, ⟨q_accept, p, p_accept, p_eval⟩, q_eval⟩
     rcases hz with ⟨q, accept, eval⟩
     refine' ⟨Sum.inr q, accept, _⟩
-    rw [List.reverse_cons] at *
     simp only [← List.append_assoc]
     rw [NFA.eval_append_singleton, NFA.mem_stepSet] at *
     rcases eval with ⟨p, mem, step⟩
@@ -264,12 +254,12 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       · rw [hr₁]
         refine' ⟨q, accept, _⟩; clear accept
         revert eval
-        rw [← x.reverse_reverse]
-        induction' x.reverse with a as ih generalizing q
-        case nil => exact id
+        induction x using List.list_reverse_induction generalizing q
+        case base => exact id
+        rename_i as a ih
         intro h
         unfold NFA.eval NFA.evalFrom at *
-        rw [List.reverse_cons, List.foldl_append, List.foldl_cons, List.foldl_nil,
+        rw [List.foldl_append, List.foldl_cons, List.foldl_nil,
           NFA.mem_stepSet] at *
         rcases h with ⟨p, mem, step⟩
         rcases p with p | p
@@ -292,22 +282,21 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
         exact ⟨q, accept, z_eval⟩
       clear accept eval q hr₁ hr₂
       intro x q
-      rw [← x.reverse_reverse]
-      induction' x.reverse with a as ih generalizing q
-      case nil =>
+      induction x using List.list_reverse_induction generalizing q
+      case base =>
         rintro ⟨start, nil⟩
         refine' ⟨[], [], _, start, by simp⟩
         unfold NFA.accepts at *
         simpa
+      rename_i as a ih
       intro h
       unfold NFA.eval NFA.evalFrom
-      rw [List.reverse_cons] at *
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at h
       rcases h with ⟨p, mem, step⟩
       rcases p with p | p
       case inl =>
         rcases step with ⟨start, r, accept, step⟩
-        refine' ⟨as.reverse ++ [a], [], _, start, by simp⟩
+        refine' ⟨as ++ [a], [], _, start, by simp⟩
         refine' ⟨r, accept, _⟩
         rw [NFA.eval_append_singleton, NFA.mem_stepSet]
         rw [← comp_toNFA_eval₁ p] at mem
@@ -337,13 +326,9 @@ theorem star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA
     rcases q with q | q
     case none =>
       use 0
-      rw [← x.reverse_reverse] at *
-      have ⟨xr, xreq⟩ : ∃ _, _ := ⟨x.reverse, rfl⟩
-      rw[xreq] at eval
-      rw[xreq]
-      cases' xr with a as
-      case nil => exact rfl
-      rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at eval
+      rcases x.eq_nil_or_concat with eq | ⟨as, a, eq⟩ <;> subst eq
+      case inl => exact rfl
+      rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
       rcases eval with ⟨q, mem, step⟩
       cases q <;> cases step
     case some =>
