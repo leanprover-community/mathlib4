@@ -528,16 +528,18 @@ theorem _root_.Basis.coe_toOrthonormalBasis (v : Basis ι 𝕜 E) (hv : Orthonor
     _ = (v : ι → E) := by simp
 #align basis.coe_to_orthonormal_basis Basis.coe_toOrthonormalBasis
 
+-- TODO: move this to another file and add simp lemmas
+/-- `Equiv.piCurry` as a `LinearEquiv`. -/
 def LinearEquiv.piCurry {ι : Type*} {κ : ι → Type*}
     (α : ∀ i, κ i → Type*)
     [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module 𝕜 (α i k)] :
     (Π i : Sigma κ, α i.1 i.2) ≃ₗ[𝕜] Π i j, α i j where
   __ := Equiv.piCurry α
-  map_add' := fun _ _ => rfl
-  map_smul' := fun _ _ => rfl
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
 
 variable (𝕜) in
-/-- `Equiv.piCurry` for `PiLp` -/
+/-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
 def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [Fact (1 ≤ p)]
     [Fintype ι] [∀ i, Fintype (κ i)]
     (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)] :
