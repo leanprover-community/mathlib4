@@ -134,7 +134,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
     let mut n := some to
     while hn : n.isSome do
       let n' := n.get hn
-      let i := instructions.find! n'
+      let i := instructions.findD n' 0
       let c := cumulative.find! n'
       let t := total.find! n'
       let r := (t / c).toStringDecimals 2
