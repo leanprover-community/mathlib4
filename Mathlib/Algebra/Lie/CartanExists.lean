@@ -31,7 +31,7 @@ following [barnes1967].
 
 -- move this to `Mathlib.Algebra.MvPolynomial.Basic`
 lemma MvPolynomial.coe_aeval_eq_eval {R σ : Type*} [CommRing R] (x : σ → R) :
-  RingHomClass.toRingHom (MvPolynomial.aeval x) = MvPolynomial.eval x := rfl
+    RingHomClass.toRingHom (MvPolynomial.aeval x) = MvPolynomial.eval x := rfl
 
 -- move this to `Mathlib.LinearAlgebra.FiniteDimensional`
 open FiniteDimensional in
