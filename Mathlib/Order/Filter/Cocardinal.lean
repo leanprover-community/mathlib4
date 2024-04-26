@@ -99,7 +99,8 @@ theorem eventually_cocardinal_ne (x : α) : ∀ᶠ a in cocardinal α hreg, a �
   simp [Set.finite_singleton x]
   exact hreg.nat_lt 1
 
-/-- The coproduct of the cocardinal filters on two types is the cocardinal filter on their product.-/
+/-- The coproduct of the cocardinal filters on two types is the cocardinal filter on their product.
+-/
 theorem coprod_cocardinal :
     (cocardinal α hreg : Filter α).coprod (cocardinal β hreg : Filter β) = cocardinal (α × β) hreg
     :=
@@ -130,7 +131,8 @@ theorem coprod_cocardinal :
         exact lt_of_le_of_lt Cardinal.mk_image_le h
 
 theorem coprodᵢ_cocardinal {α : ι → Type u} [Finite ι] :
-    (Filter.coprodᵢ fun i => (cocardinal (α i) hreg : Filter (α i))) = cocardinal ((i : ι) → α i) hreg :=
+    (Filter.coprodᵢ fun i => (cocardinal (α i) hreg : Filter (α i)))
+    = cocardinal ((i : ι) → α i) hreg :=
   Filter.coext fun s => by
     simp only [compl_mem_coprodᵢ, mem_cocardinal, compl_compl]
     constructor
