@@ -548,7 +548,8 @@ def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [F
     · simp_rw [hp.symm ▸ PiLp.norm_eq_ciSup, LinearEquiv.trans_apply,
         WithLp.linearEquiv_apply, Equiv.apply_symm_apply, LinearEquiv.coe_mk,
         WithLp.linearEquiv_symm_apply, WithLp.equiv_symm_pi_apply,
-          LinearEquiv.piCongrRight_apply, WithLp.linearEquiv_symm_apply, Equiv.toFun_as_coe, WithLp.equiv_symm_pi_apply]
+        LinearEquiv.piCongrRight_apply, WithLp.linearEquiv_symm_apply, Equiv.toFun_as_coe,
+        WithLp.equiv_symm_pi_apply]
       -- iSup_sigma does not apply here because ℝ is not a CompleteLattice
       sorry
     · have : 0 < p.toReal := (toReal_pos_iff_ne_top p).mpr hp
