@@ -254,7 +254,7 @@ lemma rdrop_add {l : List α} (i j : ℕ) :
            drop_drop, Nat.add_comm]
 
 @[simp]
-lemma rdrop_append_length.{u} {α : Type u} {l₁ l₂ : List α} :
+lemma rdrop_append_length {l₁ l₂ : List α} :
     List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁:= by
   rw [List.rdrop_eq_reverse_drop_reverse, ← length_reverse l₂,
       reverse_append, drop_left, reverse_reverse]
