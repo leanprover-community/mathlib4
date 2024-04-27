@@ -28,6 +28,20 @@ section DecidableEq
 
 variable [DecidableEq n]
 
+variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
+
+instance:
+StarAlgHomClass (C(spectrum 𝕜 A, 𝕜) →⋆ₐ[𝕜] Matrix n n 𝕜) 𝕜 C(spectrum 𝕜 A, 𝕜) (Matrix n n 𝕜)
+    where
+  coe f := f.toFun
+  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
+  map_mul f := f.map_mul'
+  map_one f := f.map_one'
+  map_add f := f.map_add'
+  map_zero f := f.map_zero'
+  commutes f := f.commutes'
+  map_star f := f.map_star'
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate a ha := by
