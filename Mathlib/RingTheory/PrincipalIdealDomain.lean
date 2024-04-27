@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Morenikeji Neri
 -/
 import Mathlib.Algebra.EuclideanDomain.Instances
+import Mathlib.RingTheory.Ideal.Colon
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import ring_theory.principal_ideal_domain from "leanprover-community/mathlib"@"6010cf523816335f7bae7f8584cb2edaace73940"

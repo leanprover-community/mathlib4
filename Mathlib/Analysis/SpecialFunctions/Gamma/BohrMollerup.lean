@@ -122,7 +122,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> · field_simp [hc.ne']; ring
+    congr 2 <;> field_simp [hc.ne']; ring
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -149,7 +149,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     MeasureTheory.integral_mul_le_Lp_mul_Lq_of_nonneg e (posf' a s) (posf' b t) (f_mem_Lp ha hs)
       (f_mem_Lp hb ht) using
     1
-  · refine' set_integral_congr measurableSet_Ioi fun x hx => _
+  · refine' setIntegral_congr measurableSet_Ioi fun x hx => _
     dsimp only
     have A : exp (-x) = exp (-a * x) * exp (-b * x) := by
       rw [← exp_add, ← add_mul, ← neg_add, hab, neg_one_mul]
@@ -158,7 +158,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     rw [A, B]
     ring
   · rw [one_div_one_div, one_div_one_div]
-    congr 2 <;> exact set_integral_congr measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
+    congr 2 <;> exact setIntegral_congr measurableSet_Ioi fun x hx => fpow (by assumption) _ hx
 #align real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma Real.Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma
 
 theorem convexOn_log_Gamma : ConvexOn ℝ (Ioi 0) (log ∘ Gamma) := by

@@ -132,7 +132,7 @@ theorem Finite.exists_encard_eq_coe (h : s.Finite) : ∃ (n : ℕ), s.encard = n
   ⟨fun h ↦ by_contra fun h' ↦ h.ne (Infinite.encard_eq h'), Finite.encard_lt_top⟩
 
 @[simp] theorem encard_eq_top_iff : s.encard = ⊤ ↔ s.Infinite := by
-  rw [← not_iff_not, ← Ne.def, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
+  rw [← not_iff_not, ← Ne, ← lt_top_iff_ne_top, encard_lt_top_iff, not_infinite]
 
 theorem encard_ne_top_iff : s.encard ≠ ⊤ ↔ s.Finite := by
   simp
@@ -297,7 +297,7 @@ theorem encard_le_one_iff_eq : s.encard ≤ 1 ↔ s = ∅ ∨ ∃ x, s = {x} := 
     encard_eq_one]
 
 theorem encard_le_one_iff : s.encard ≤ 1 ↔ ∀ a b, a ∈ s → b ∈ s → a = b := by
-  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne.def, ← nonempty_iff_ne_empty]
+  rw [encard_le_one_iff_eq, or_iff_not_imp_left, ← Ne, ← nonempty_iff_ne_empty]
   refine' ⟨fun h a b has hbs ↦ _,
     fun h ⟨x, hx⟩ ↦ ⟨x, ((singleton_subset_iff.2 hx).antisymm' (fun y hy ↦ h _ _ hy hx))⟩⟩
   obtain ⟨x, rfl⟩ := h ⟨_, has⟩
@@ -738,12 +738,16 @@ theorem ncard_strictMono [Finite α] : @StrictMono (Set α) _ _ _ ncard :=
 
 theorem ncard_eq_of_bijective {n : ℕ} (f : ∀ i, i < n → α)
     (hf : ∀ a ∈ s, ∃ i, ∃ h : i < n, f i h = a) (hf' : ∀ (i) (h : i < n), f i h ∈ s)
-    (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j)
-    (hs : s.Finite := by toFinite_tac) :
-    s.ncard = n := by
-  rw [ncard_eq_toFinset_card _ hs]
-  apply Finset.card_eq_of_bijective
-  all_goals simpa
+    (f_inj : ∀ (i j) (hi : i < n) (hj : j < n), f i hi = f j hj → i = j) : s.ncard = n := by
+  let f' : Fin n → α := fun i ↦ f i.val i.is_lt
+  suffices himage : s = f' '' Set.univ by
+    rw [← Fintype.card_fin n, ← Nat.card_eq_fintype_card, ← Set.ncard_univ, himage]
+    exact ncard_image_of_injOn <| fun i _hi j _hj h ↦ Fin.ext <| f_inj i.val j.val i.is_lt j.is_lt h
+  ext x
+  simp only [image_univ, mem_range]
+  refine ⟨fun hx ↦ ?_, fun ⟨⟨i, hi⟩, hx⟩ ↦ hx ▸ hf' i hi⟩
+  obtain ⟨i, hi, rfl⟩ := hf x hx
+  use ⟨i, hi⟩
 #align set.ncard_eq_of_bijective Set.ncard_eq_of_bijective
 
 theorem ncard_congr {t : Set β} (f : ∀ a ∈ s, β) (h₁ : ∀ a ha, f a ha ∈ t)
@@ -1116,10 +1120,4 @@ theorem ncard_eq_three : s.ncard = 3 ↔ ∃ x y z, x ≠ y ∧ x ≠ z ∧ y �
 
 end ncard
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias ncard_le_of_subset := ncard_le_ncard
+@[deprecated] alias ncard_le_of_subset := ncard_le_ncard -- 2023-12-27

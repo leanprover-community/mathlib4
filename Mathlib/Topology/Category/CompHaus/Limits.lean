@@ -244,4 +244,18 @@ instance : FinitaryExtensive CompHaus :=
 
 end FiniteCoproducts
 
+section Terminal
+
+/-- A one-element space is terminal in `CompHaus` -/
+def isTerminalPUnit : IsTerminal (CompHaus.of PUnit.{u + 1}) :=
+  haveI : ∀ X, Unique (X ⟶ CompHaus.of PUnit.{u + 1}) := fun X =>
+    ⟨⟨⟨fun _ => PUnit.unit, continuous_const⟩⟩, fun f => by ext; aesop⟩
+  Limits.IsTerminal.ofUnique _
+
+/-- The isomorphism from an arbitrary terminal object of `CompHaus` to a one-element space. -/
+noncomputable def terminalIsoPUnit : ⊤_ CompHaus.{u} ≅ CompHaus.of PUnit :=
+  terminalIsTerminal.uniqueUpToIso CompHaus.isTerminalPUnit
+
+end Terminal
+
 end CompHaus

@@ -459,6 +459,14 @@ theorem totalDegree_monomial (s : σ →₀ ℕ) {c : R} (hc : c ≠ 0) :
   classical simp [totalDegree, support_monomial, if_neg hc]
 #align mv_polynomial.total_degree_monomial MvPolynomial.totalDegree_monomial
 
+theorem totalDegree_monomial_le (s : σ →₀ ℕ) (c : R) :
+    (monomial s c).totalDegree ≤ s.sum fun _ ↦ id := by
+  if hc : c = 0 then
+    simp only [hc, map_zero, totalDegree_zero, zero_le]
+  else
+    rw [totalDegree_monomial _ hc]
+    exact le_rfl
+
 @[simp]
 theorem totalDegree_X_pow [Nontrivial R] (s : σ) (n : ℕ) :
     (X s ^ n : MvPolynomial σ R).totalDegree = n := by simp [X_pow_eq_monomial, one_ne_zero]

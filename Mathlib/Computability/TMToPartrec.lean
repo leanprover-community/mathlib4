@@ -666,10 +666,10 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
-        · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
-          simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
-            exact Or.inr ⟨_, rfl, hv₂⟩]
+        refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
+        simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
+        split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
+          exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
@@ -1340,8 +1340,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · simp only [e]
-      rfl
+    simp only [e]
+    rfl
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq, List.reverseAux_cons]
     cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
@@ -1398,8 +1398,8 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · rcases e with ⟨e₁, e₂⟩
-      rw [e₁, e₂]
+    rcases e with ⟨e₁, e₂⟩
+    rw [e₁, e₂]
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e

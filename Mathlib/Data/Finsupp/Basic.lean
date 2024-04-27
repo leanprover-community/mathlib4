@@ -8,7 +8,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
@@ -481,7 +481,7 @@ theorem mapDomain_comp {f : α → β} {g : β → γ} :
   · intro
     exact single_add _
   refine' sum_congr fun _ _ => sum_single_index _
-  · exact single_zero _
+  exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
 @[simp]
@@ -1858,11 +1858,11 @@ def splitSupport (l : (Σi, αs i) →₀ M) : Finset ι :=
 #align finsupp.split_support Finsupp.splitSupport
 
 theorem mem_splitSupport_iff_nonzero (i : ι) : i ∈ splitSupport l ↔ split l i ≠ 0 := by
-  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne.def, ← support_eq_empty, ← Ne.def, ←
+  rw [splitSupport, @mem_image _ _ (Classical.decEq _), Ne, ← support_eq_empty, ← Ne, ←
     Finset.nonempty_iff_ne_empty, split, comapDomain, Finset.Nonempty]
   -- porting note (#10754): had to add the `Classical.decEq` instance manually
   simp only [exists_prop, Finset.mem_preimage, exists_and_right, exists_eq_right, mem_support_iff,
-    Sigma.exists, Ne.def]
+    Sigma.exists, Ne]
 #align finsupp.mem_split_support_iff_nonzero Finsupp.mem_splitSupport_iff_nonzero
 
 /-- Given `l`, a finitely supported function from the sigma type `Σ i, αs i` to `β` and
