@@ -116,7 +116,7 @@ theorem exists_continuous_snorm_sub_le_of_closed [μ.OuterRegular] (hp : p ≠ �
     refine' Function.support_subset_iff'.2 fun x hx => _
     simp only [hgv hx, Pi.zero_apply, zero_smul]
   have gc_mem : Memℒp (fun x => g x • c) p μ := by
-    refine' Memℒp.smul_of_top_left (memℒp_top_const _) _
+    refine' Memℒp.smul_of_top_left (φ := g) (memℒp_top_const c) _
     refine' ⟨g.continuous.aestronglyMeasurable, _⟩
     have : snorm (v.indicator fun _x => (1 : ℝ)) p μ < ⊤ := by
       refine' (snorm_indicator_const_le _ _).trans_lt _
