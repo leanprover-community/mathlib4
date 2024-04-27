@@ -620,4 +620,10 @@ theorem curry_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, O
     Sigma.curry (Pi.mulSingle i x) = Pi.mulSingle i.1 (Pi.mulSingle i.2 x) := by
   simp only [Pi.mulSingle, Sigma.curry_update, Sigma.curry_one, Pi.one_apply]
 
+@[to_additive (attr := simp)]
+theorem uncurry_mulSingle_mulSingle [DecidableEq α] [∀ a, DecidableEq (β a)] [∀ a b, One (γ a b)]
+    (a : α) (b : β a) (x : γ a b) :
+    Sigma.uncurry (Pi.mulSingle a (Pi.mulSingle b x)) = Pi.mulSingle (Sigma.mk a b) x := by
+  rw [← curry_mulSingle ⟨a, b⟩, uncurry_curry]
+
 end Sigma
