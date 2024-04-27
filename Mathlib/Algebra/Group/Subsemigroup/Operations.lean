@@ -625,7 +625,7 @@ theorem closure_closure_coe_preimage {s : Set M} :
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
       refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx
-      · exact Subsemigroup.mul_mem _
+      exact Subsemigroup.mul_mem _
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 #align add_subsemigroup.closure_closure_coe_preimage AddSubsemigroup.closure_closure_coe_preimage
 

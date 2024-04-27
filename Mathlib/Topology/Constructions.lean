@@ -796,8 +796,8 @@ theorem isOpen_prod_iff' {s : Set X} {t : Set Y} :
       show IsOpen s
       · rw [← fst_image_prod s st.2]
         exact isOpenMap_fst _ H
-      show IsOpen t
-      · rw [← snd_image_prod st.1 t]
+      · show IsOpen t
+        rw [← snd_image_prod st.1 t]
         exact isOpenMap_snd _ H
     · intro H
       simp only [st.1.ne_empty, st.2.ne_empty, not_false_iff, or_false_iff] at H

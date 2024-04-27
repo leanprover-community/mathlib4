@@ -1192,9 +1192,9 @@ theorem map_comp : (f.map hy k).comp f.toMap = k.toMap.comp g :=
 @[to_additive]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
-  · show k.toMap (g x) = k.toMap (g y) * _
-    rw [mul_mk'_eq_mk'_of_mul]
-    exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
+  show k.toMap (g x) = k.toMap (g y) * _
+  rw [mul_mk'_eq_mk'_of_mul]
+  exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
 #align submonoid.localization_map.map_mk' Submonoid.LocalizationMap.map_mk'
 #align add_submonoid.localization_map.map_mk' AddSubmonoid.LocalizationMap.map_mk'
 

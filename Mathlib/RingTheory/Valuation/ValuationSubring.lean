@@ -127,13 +127,11 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-      ring
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
       use ⟨b / a, hh⟩;
       left
       ext
       field_simp
-      ring
 
 instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
