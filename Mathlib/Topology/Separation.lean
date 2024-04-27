@@ -388,7 +388,7 @@ theorem T0Space.of_open_cover (h : ∀ x, ∃ s : Set X, x ∈ s ∧ IsOpen s �
 /-- A topological space is called an R₀ space, if `Specializes` relation is symmetric.
 
 In other words, given two points `x y : X`,
-if every neighborhood of `y` contains `x`, then every neighborhood of `x` containx `y`. -/
+if every neighborhood of `y` contains `x`, then every neighborhood of `x` contains `y`. -/
 @[mk_iff]
 class R0Space (X : Type u) [TopologicalSpace X] : Prop where
   /-- In an R₀ space, the `Specializes` relation is symmetric. -/
@@ -910,6 +910,9 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   replace contra := nonempty_inter isOpen_compl_singleton
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
+
+theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X :=
+  sorry
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
@@ -2307,14 +2310,15 @@ instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
 
 open SeparationQuotient
 
-/-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space.
-We don't have typeclasses for completely normal spaces (without T₁ assumption) and R₀ spaces,
-so we use `T5Space` for assumption and for conclusion.
-
-One can prove this using a homeomorphism between `X` and `SeparationQuotient X`.
-We give an alternative proof of the `completely_normal` axiom
-that works without assuming that `X` is a T₁ space. -/
-instance [T5Space X] : T5Space (SeparationQuotient X) where
+/-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
+instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) where
+  t1 := by
+    have : T1Space (SeparationQuotient X) := by
+      apply SeparationQuotient.t1Space_iff.mpr
+      assumption
+    have := (t1Space_TFAE (SeparationQuotient X)).out 0 1
+    rw [← this]
+    assumption
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
     apply completely_normal <;> rw [← preimage_mk_closure]
