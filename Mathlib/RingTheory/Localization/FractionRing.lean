@@ -132,15 +132,12 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
-noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
-    inv := IsFractionRing.inv A
-    mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-    inv_zero := by
-      change IsFractionRing.inv A (0 : K) = 0
-      rw [IsFractionRing.inv]
-      exact dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def toField : Field K where
+  __ := IsFractionRing.isDomain A
+  mul_inv_cancel := IsFractionRing.mul_inv_cancel A
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where

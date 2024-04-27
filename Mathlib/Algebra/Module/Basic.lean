@@ -105,7 +105,8 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 #align two_smul two_smul
 
 set_option linter.deprecated false in
-@[deprecated] theorem two_smul' : (2 : R) • x = bit0 x :=
+@[deprecated]
+theorem two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
 
@@ -481,11 +482,6 @@ theorem map_rat_smul [AddCommGroup M] [AddCommGroup M₂]
     (f : F) (c : ℚ) (x : M) : f (c • x) = c • f x :=
   map_ratCast_smul f ℚ ℚ c x
 #align map_rat_smul map_rat_smul
-
-
-/-- A `Module` over `ℚ` restricts to a `Module` over `ℚ≥0`. -/
-instance [AddCommMonoid α] [Module ℚ α] : Module NNRat α :=
-  Module.compHom α NNRat.coeHom
 
 /-- There can be at most one `Module ℚ E` structure on an additive commutative group. -/
 instance subsingleton_rat_module (E : Type*) [AddCommGroup E] : Subsingleton (Module ℚ E) :=
