@@ -520,7 +520,7 @@ theorem measure_iUnion_eq_iSup' (r : ι → ι → Prop) (r_trans : Transitive r
     μ (⋃ i, f i) = ⨆ i, μ (⋃ j ∈ {j | r j i}, f j) := by
   let s := fun i ↦ ⋃ j ∈ {j | r j i}, f j
   have iUnion_eq : ⋃ i, f i = ⋃ i, s i := by
-    refine' le_antisymm (iUnion_subset <| fun i ↦ _)
+    refine le_antisymm (iUnion_subset <| fun i ↦ ?_)
       (iUnion_subset <| biUnion_univ f ▸ fun i ↦ biUnion_subset_biUnion_left <| subset_univ _)
     rcases directed_of r i i with ⟨j, hj, -⟩
     exact subset_iUnion_of_subset j <| le_biSup f hj
