@@ -22,9 +22,9 @@ We provide various useful constructors:
 * `adjunctionOfEquivLeft` / `adjunctionOfEquivRight` witness that these constructions
   give adjunctions.
 
-There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, carrying data witnessing
-that a given functor is a left or right adjoint.
-Given `[IsLeftAdjoint F]`, a right adjoint of `F` can be constructed as `rightAdjoint F`.
+There are also typeclasses `IsLeftAdjoint` / `IsRightAdjoint`, which asserts the
+existence of a adjoint functor. Given `[F.IsLeftAdjoint]`, a chosen right
+adjoint can be obtained as `F.rightAdjoint`.
 
 `Adjunction.comp` composes adjunctions.
 
@@ -81,43 +81,41 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 
-/-- A class giving a chosen right adjoint to the functor `left`. -/
-class IsLeftAdjoint (left : C ⥤ D) where
-  /-- The right adjoint to `left` -/
-  right : D ⥤ C
-  /-- The adjunction between `left` and `right` -/
-  adj : left ⊣ right
-#align category_theory.is_left_adjoint CategoryTheory.IsLeftAdjoint
+namespace Functor
 
-/-- A class giving a chosen left adjoint to the functor `right`. -/
-class IsRightAdjoint (right : D ⥤ C) where
-  /-- The left adjoint to `right` -/
-  left : C ⥤ D
-  /-- The adjunction between `left` and `right` -/
-  adj : left ⊣ right
-#align category_theory.is_right_adjoint CategoryTheory.IsRightAdjoint
+/-- A class asserting the existence of a right adjoint. -/
+class IsLeftAdjoint (left : C ⥤ D) : Prop where
+  exists_rightAdjoint : ∃ (right : D ⥤ C), Nonempty (left ⊣ right)
+#align category_theory.is_left_adjoint CategoryTheory.Functor.IsLeftAdjoint
 
-/-- Extract the left adjoint from the instance giving the chosen adjoint. -/
-def leftAdjoint (R : D ⥤ C) [IsRightAdjoint R] : C ⥤ D :=
-  IsRightAdjoint.left R
-#align category_theory.left_adjoint CategoryTheory.leftAdjoint
+/-- A class asserting the existence of a left adjoint. -/
+class IsRightAdjoint (right : D ⥤ C) : Prop where
+  exists_leftAdjoint : ∃ (left : C ⥤ D), Nonempty (left ⊣ right)
+#align category_theory.is_right_adjoint CategoryTheory.Functor.IsRightAdjoint
 
-/-- Extract the right adjoint from the instance giving the chosen adjoint. -/
-def rightAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : D ⥤ C :=
-  IsLeftAdjoint.right L
-#align category_theory.right_adjoint CategoryTheory.rightAdjoint
+/-- A chosen left adjoint to a functor that is a right adjoint. -/
+noncomputable def leftAdjoint (R : D ⥤ C) [IsRightAdjoint R] : C ⥤ D :=
+  (IsRightAdjoint.exists_leftAdjoint (right := R)).choose
+#align category_theory.left_adjoint CategoryTheory.Functor.leftAdjoint
+
+/-- A chosen right adjoint to a functor that is a left adjoint. -/
+noncomputable def rightAdjoint (L : C ⥤ D) [IsLeftAdjoint L] : D ⥤ C :=
+  (IsLeftAdjoint.exists_rightAdjoint (left := L)).choose
+#align category_theory.right_adjoint CategoryTheory.Functor.rightAdjoint
+
+end Functor
 
 /-- The adjunction associated to a functor known to be a left adjoint. -/
-def Adjunction.ofLeftAdjoint (left : C ⥤ D) [IsLeftAdjoint left] :
-    Adjunction left (rightAdjoint left) :=
-  IsLeftAdjoint.adj
-#align category_theory.adjunction.of_left_adjoint CategoryTheory.Adjunction.ofLeftAdjoint
+noncomputable def Adjunction.ofIsLeftAdjoint (left : C ⥤ D) [left.IsLeftAdjoint] :
+    left ⊣ left.rightAdjoint :=
+  Functor.IsLeftAdjoint.exists_rightAdjoint.choose_spec.some
+#align category_theory.adjunction.of_left_adjoint CategoryTheory.Adjunction.ofIsLeftAdjoint
 
 /-- The adjunction associated to a functor known to be a right adjoint. -/
-def Adjunction.ofRightAdjoint (right : C ⥤ D) [IsRightAdjoint right] :
-    Adjunction (leftAdjoint right) right :=
-  IsRightAdjoint.adj
-#align category_theory.adjunction.of_right_adjoint CategoryTheory.Adjunction.ofRightAdjoint
+noncomputable def Adjunction.ofIsRightAdjoint (right : C ⥤ D) [right.IsRightAdjoint] :
+    right.leftAdjoint ⊣ right :=
+  Functor.IsRightAdjoint.exists_leftAdjoint.choose_spec.some
+#align category_theory.adjunction.of_right_adjoint CategoryTheory.Adjunction.ofIsRightAdjoint
 
 namespace Adjunction
 
@@ -437,20 +435,6 @@ def ofNatIsoRight {F : C ⥤ D} {G H : D ⥤ C} (adj : F ⊣ G) (iso : G ≅ H) 
     { homEquiv := fun X Y => (adj.homEquiv X Y).trans (equivHomsetRightOfNatIso iso) }
 #align category_theory.adjunction.of_nat_iso_right CategoryTheory.Adjunction.ofNatIsoRight
 
-/-- Transport being a right adjoint along a natural isomorphism. -/
-def rightAdjointOfNatIso {F G : C ⥤ D} (h : F ≅ G) [r : IsRightAdjoint F] : IsRightAdjoint G
-    where
-  left := r.left
-  adj := ofNatIsoRight r.adj h
-#align category_theory.adjunction.right_adjoint_of_nat_iso CategoryTheory.Adjunction.rightAdjointOfNatIso
-
-/-- Transport being a left adjoint along a natural isomorphism. -/
-def leftAdjointOfNatIso {F G : C ⥤ D} (h : F ≅ G) [r : IsLeftAdjoint F] : IsLeftAdjoint G
-    where
-  right := r.right
-  adj := ofNatIsoLeft r.adj h
-#align category_theory.adjunction.left_adjoint_of_nat_iso CategoryTheory.Adjunction.leftAdjointOfNatIso
-
 section
 
 variable {E : Type u₃} [ℰ : Category.{v₃} E] {H : D ⥤ E} {I : E ⥤ D}
@@ -466,22 +450,6 @@ def comp (adj₁ : F ⊣ G) (adj₂ : H ⊣ I) : F ⋙ H ⊣ I ⋙ G
   counit :=
     (Functor.associator _ _ _).hom ≫ (whiskerLeft I <| whiskerRight adj₁.counit H) ≫ adj₂.counit
 #align category_theory.adjunction.comp CategoryTheory.Adjunction.comp
-
-/-- If `F` and `G` are left adjoints then `F ⋙ G` is a left adjoint too. -/
-instance leftAdjointOfComp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
-    [Fl : IsLeftAdjoint F] [Gl : IsLeftAdjoint G] : IsLeftAdjoint (F ⋙ G)
-    where
-  right := Gl.right ⋙ Fl.right
-  adj := Fl.adj.comp Gl.adj
-#align category_theory.adjunction.left_adjoint_of_comp CategoryTheory.Adjunction.leftAdjointOfComp
-
-/-- If `F` and `G` are right adjoints then `F ⋙ G` is a right adjoint too. -/
-instance rightAdjointOfComp {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
-    [Fr : IsRightAdjoint F] [Gr : IsRightAdjoint G] : IsRightAdjoint (F ⋙ G)
-    where
-  left := Gr.left ⋙ Fr.left
-  adj := Gr.adj.comp Fr.adj
-#align category_theory.adjunction.right_adjoint_of_comp CategoryTheory.Adjunction.rightAdjointOfComp
 
 end
 
@@ -590,27 +558,28 @@ noncomputable def toEquivalence (adj : F ⊣ G) [∀ X, IsIso (adj.unit.app X)]
   counitIso := NatIso.ofComponents fun Y => asIso (adj.counit.app Y)
 #align category_theory.adjunction.to_equivalence CategoryTheory.Adjunction.toEquivalence
 
-/--
-If the unit and counit for the adjunction corresponding to a right adjoint functor are (pointwise)
-isomorphisms, then the functor is an equivalence of categories.
--/
-@[simps!]
-noncomputable def isRightAdjointToIsEquivalence [IsRightAdjoint G]
-    [∀ X, IsIso ((Adjunction.ofRightAdjoint G).unit.app X)]
-    [∀ Y, IsIso ((Adjunction.ofRightAdjoint G).counit.app Y)] : G.IsEquivalence :=
-  Functor.IsEquivalence.ofEquivalenceInverse (Adjunction.ofRightAdjoint G).toEquivalence
-#align category_theory.adjunction.is_right_adjoint_to_is_equivalence CategoryTheory.Adjunction.isRightAdjointToIsEquivalence
-
 end Adjunction
 
 open Adjunction
 
+/--
+If the unit and counit for the adjunction corresponding to a right adjoint functor are (pointwise)
+isomorphisms, then the functor is an equivalence of categories.
+-/
+lemma Functor.isEquivalence_of_isRightAdjoint (G : C ⥤ D) [IsRightAdjoint G]
+    [∀ X, IsIso ((Adjunction.ofIsRightAdjoint G).unit.app X)]
+    [∀ Y, IsIso ((Adjunction.ofIsRightAdjoint G).counit.app Y)] : G.IsEquivalence :=
+  (Adjunction.ofIsRightAdjoint G).toEquivalence.isEquivalence_inverse
+#align category_theory.adjunction.is_right_adjoint_to_is_equivalence CategoryTheory.Functor.isEquivalence_of_isRightAdjoint
+
 namespace Equivalence
+
+variable (e : C ≌ D)
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
 @[pp_dot, simps! unit counit]
-def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
+def toAdjunction : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by
       ext
@@ -622,42 +591,68 @@ def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
       simp only [id_comp]
       exact e.unit_inverse_comp _⟩
 #align category_theory.equivalence.to_adjunction CategoryTheory.Equivalence.toAdjunction
-
 #align category_theory.equivalence.as_equivalence_to_adjunction_unit CategoryTheory.Equivalence.toAdjunction_unitₓ
 #align category_theory.equivalence.as_equivalence_to_adjunction_counit CategoryTheory.Equivalence.toAdjunction_counitₓ
+
+lemma isLeftAdjoint_functor : e.functor.IsLeftAdjoint where
+  exists_rightAdjoint := ⟨_, ⟨e.toAdjunction⟩⟩
+
+lemma isRightAdjoint_inverse : e.inverse.IsRightAdjoint where
+  exists_leftAdjoint := ⟨_, ⟨e.toAdjunction⟩⟩
+
+lemma isLeftAdjoint_inverse : e.inverse.IsLeftAdjoint :=
+  e.symm.isLeftAdjoint_functor
+
+lemma isRightAdjoint_functor : e.functor.IsRightAdjoint :=
+  e.symm.isRightAdjoint_inverse
 
 end Equivalence
 
 namespace Functor
 
+/-- If `F` and `G` are left adjoints then `F ⋙ G` is a left adjoint too. -/
+instance isLeftAdjoint_comp {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
+    [F.IsLeftAdjoint] [G.IsLeftAdjoint] : (F ⋙ G).IsLeftAdjoint where
+  exists_rightAdjoint :=
+    ⟨_, ⟨(Adjunction.ofIsLeftAdjoint F).comp (Adjunction.ofIsLeftAdjoint G)⟩⟩
+#align category_theory.adjunction.left_adjoint_of_comp CategoryTheory.Functor.isLeftAdjoint_comp
+
+/-- If `F` and `G` are right adjoints then `F ⋙ G` is a right adjoint too. -/
+instance isRightAdjoint_comp {E : Type u₃} [Category.{v₃} E] {F : C ⥤ D} {G : D ⥤ E}
+    [IsRightAdjoint F] [IsRightAdjoint G] : IsRightAdjoint (F ⋙ G) where
+  exists_leftAdjoint :=
+    ⟨_, ⟨(Adjunction.ofIsRightAdjoint G).comp (Adjunction.ofIsRightAdjoint F)⟩⟩
+#align category_theory.adjunction.right_adjoint_of_comp CategoryTheory.Functor.isRightAdjoint_comp
+
+/-- Transport being a right adjoint along a natural isomorphism. -/
+lemma isRightAdjoint_of_iso {F G : C ⥤ D} (h : F ≅ G) [F.IsRightAdjoint] :
+    IsRightAdjoint G where
+  exists_leftAdjoint := ⟨_, ⟨(Adjunction.ofIsRightAdjoint F).ofNatIsoRight h⟩⟩
+#align category_theory.adjunction.right_adjoint_of_nat_iso CategoryTheory.Functor.isRightAdjoint_of_iso
+
+/-- Transport being a left adjoint along a natural isomorphism. -/
+lemma isLeftAdjoint_of_iso {F G : C ⥤ D} (h : F ≅ G) [IsLeftAdjoint F] :
+    IsLeftAdjoint G where
+  exists_rightAdjoint := ⟨_, ⟨(Adjunction.ofIsLeftAdjoint F).ofNatIsoLeft h⟩⟩
+#align category_theory.adjunction.left_adjoint_of_nat_iso CategoryTheory.Functor.isLeftAdjoint_of_iso
+
+
 /-- An equivalence `E` is left adjoint to its inverse. -/
-def adjunction (E : C ⥤ D) [IsEquivalence E] : E ⊣ E.inv :=
+noncomputable def adjunction (E : C ⥤ D) [IsEquivalence E] : E ⊣ E.inv :=
   E.asEquivalence.toAdjunction
 #align category_theory.functor.adjunction CategoryTheory.Functor.adjunction
 
 /-- If `F` is an equivalence, it's a left adjoint. -/
-instance (priority := 10) leftAdjointOfEquivalence {F : C ⥤ D} [IsEquivalence F] : IsLeftAdjoint F
-    where
-  right := _
-  adj := Functor.adjunction F
-#align category_theory.functor.left_adjoint_of_equivalence CategoryTheory.Functor.leftAdjointOfEquivalence
-
-@[simp]
-theorem rightAdjoint_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] : rightAdjoint F = inv F :=
-  rfl
-#align category_theory.functor.right_adjoint_of_is_equivalence CategoryTheory.Functor.rightAdjoint_of_isEquivalence
+instance (priority := 10) isLeftAdjoint_of_isEquivalence {F : C ⥤ D} [F.IsEquivalence] :
+    IsLeftAdjoint F :=
+  F.asEquivalence.isLeftAdjoint_functor
+#align category_theory.functor.left_adjoint_of_equivalence CategoryTheory.Functor.isLeftAdjoint_of_isEquivalence
 
 /-- If `F` is an equivalence, it's a right adjoint. -/
-instance (priority := 10) rightAdjointOfEquivalence {F : C ⥤ D} [IsEquivalence F] : IsRightAdjoint F
-    where
-  left := _
-  adj := Functor.adjunction F.inv
-#align category_theory.functor.right_adjoint_of_equivalence CategoryTheory.Functor.rightAdjointOfEquivalence
-
-@[simp]
-theorem leftAdjoint_of_isEquivalence {F : C ⥤ D} [IsEquivalence F] : leftAdjoint F = inv F :=
-  rfl
-#align category_theory.functor.left_adjoint_of_is_equivalence CategoryTheory.Functor.leftAdjoint_of_isEquivalence
+instance (priority := 10) isRightAdjoint_of_isEquivalence {F : C ⥤ D} [F.IsEquivalence] :
+    IsRightAdjoint F :=
+  F.asEquivalence.isRightAdjoint_functor
+#align category_theory.functor.right_adjoint_of_equivalence CategoryTheory.Functor.isRightAdjoint_of_isEquivalence
 
 end Functor
 

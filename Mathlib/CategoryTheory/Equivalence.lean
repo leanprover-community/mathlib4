@@ -521,6 +521,18 @@ theorem changeFunctor_refl (e : C ≌ D) : e.changeFunctor (Iso.refl _) = e := b
 theorem changeFunctor_trans (e : C ≌ D) {G G' : C ⥤ D} (iso₁ : e.functor ≅ G) (iso₂ : G ≅ G') :
     (e.changeFunctor iso₁).changeFunctor iso₂ = e.changeFunctor (iso₁ ≪≫ iso₂) := by aesop_cat
 
+/-- If `e : C ≌ D` is an equivalence of categories, and `iso : e.functor ≅ G` is
+an isomorphism, then there is an equivalence of categories whose inverse is `G`. -/
+@[simps!]
+def changeInverse (e : C ≌ D) {G : D ⥤ C} (iso : e.inverse ≅ G) : C ≌ D where
+  functor := e.functor
+  inverse := G
+  unitIso := e.unitIso ≪≫ isoWhiskerLeft _ iso
+  counitIso := isoWhiskerRight iso.symm _ ≪≫ e.counitIso
+  functor_unitIso_comp X := by
+    dsimp
+    rw [← map_comp_assoc, assoc, iso.hom_inv_id_app, comp_id, functor_unit_comp]
+
 end Equivalence
 
 /-- A functor is an equivalence of categories if it is faithful, full and
