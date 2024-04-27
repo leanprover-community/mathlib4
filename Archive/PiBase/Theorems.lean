@@ -47,6 +47,116 @@ theorem T226 (X : Type u) [TopologicalSpace X]
     exact yinN
   · exact tendsto_const_nhds
 
+lemma wh_h_image (X : Type u) [TopologicalSpace X]
+    (p143: P143 X): ∀ K : CompHaus.{u}, ∀ f : K → X,
+    Continuous f →
+    ∀ x ∈ f '' univ, ∀ y ∈ f '' univ, x ≠ y →
+    ∃ Nx ∈ 𝓝 x, ∃ Ny ∈ 𝓝 y, Nx ∩ Ny = ∅ := by
+  intro K f fcont x ximf y yimf xney
+  have : T1Space X := by sorry
+  have : SeparatedNhds (f ⁻¹' {x}) (f ⁻¹' {y}) := by
+    apply normal_separation
+    apply IsClosed.preimage fcont
+    apply isClosed_singleton
+    apply IsClosed.preimage fcont
+    apply isClosed_singleton
+    intro S
+    simp
+    intro SsubX SsubY
+    intro z zinS
+    simp
+    apply xney
+    have : f z = x := by
+      apply SsubX at zinS
+      apply zinS
+    rw [← this]
+    have : f z = y := by
+      apply SsubY at zinS
+      apply zinS
+    rw [← this]
+  rw [separatedNhds_iff_disjoint, disjoint_iff] at this
+  have : ∃ Nxi ∈ 𝓝ˢ (f ⁻¹' {x}), ∃ Nyi ∈ 𝓝ˢ (f ⁻¹' {y}),
+      Nxi ∩ Nyi = ∅ := sorry
+  rcases this with ⟨ Nxi, Nxiof, Nyi, Nyiof, NxyiDisjoint ⟩
+  sorry
+
+
+theorem T229 (X : Type u) [TopologicalSpace X]
+    (p143: P143 X): P171 X := by
+  rw [P171] at *
+  intro K f fcont k l fk_not_fl
+  have : ∃ Nfk ∈ 𝓝 (f k), ∃ Nfl ∈ 𝓝 (f l), Nfk ∩ Nfl = ∅ := by
+    apply wh_h_image
+    · exact p143
+    · exact fcont
+    use k
+    constructor <;> trivial
+    use l
+    constructor <;> trivial
+    exact fk_not_fl
+  rcases this with ⟨ Nfk, NfkNhd, Nfl, NflNhd, NfKNflDisjoint⟩
+  use f ⁻¹' Nfk
+  constructor
+  · apply ContinuousAt.preimage_mem_nhds
+    apply Continuous.continuousAt fcont
+    exact NfkNhd
+  use f ⁻¹' Nfl
+  constructor
+  · apply ContinuousAt.preimage_mem_nhds
+    apply Continuous.continuousAt fcont
+    exact NflNhd
+  repeat rw [Set.image, Set.preimage]
+  simp
+  have : {x | ∃ a, f a ∈ Nfk ∧ f a = x} ⊆ Nfk := by
+    intro x
+    simp
+    intro y fy eq
+    rw [← eq]
+    exact fy
+  have : {x | ∃ a, f a ∈ Nfl ∧ f a = x} ⊆ Nfl := by
+    intro x
+    simp
+    intro y fy eq
+    rw [← eq]
+    exact fy
+  rw [← subset_empty_iff]
+  have : {x | ∃ a, f a ∈ Nfk ∧ f a = x} ∩
+      {x | ∃ a, f a ∈ Nfl ∧ f a = x} ⊆ Nfk ∩ Nfl := by
+    apply Set.inter_subset_inter
+    · intro x
+      simp
+      intro y fy eq
+      rw [← eq]
+      exact fy
+    · intro x
+      simp
+      intro y fy eq
+      rw [← eq]
+      exact fy
+  apply Set.Subset.trans this
+  rw [subset_empty_iff]
+  exact NfKNflDisjoint
+
+
+  -- have : IsCompact ({k' | f k' = f k}) := by
+  --   sorry
+  -- have : IsCompact ({l' | f l' = f l}) := by
+  --   sorry
+  -- have : SeparatedNhds
+  --     {k' | f k' = f k} {l' | f l' = f l} := by
+  --   sorry
+  -- rw [SeparatedNhds] at this
+  -- rcases this with ⟨ U, V, ⟨ Uopen, Vopen, ksubU, lsubV, UVdis ⟩ ⟩
+  -- use U
+  -- constructor
+  -- · sorry
+  -- use V
+  -- constructor
+  -- · sorry
+
+
+
+
 theorem T250 (X : Type u) [TopologicalSpace X]
     (np78: ¬ P78 X): P125 X := by
   rw [P78, P125] at *
