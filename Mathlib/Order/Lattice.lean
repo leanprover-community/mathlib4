@@ -8,6 +8,7 @@ import Mathlib.Init.Order.Defs
 import Mathlib.Order.Monotone.Basic
 import Mathlib.Order.ULift
 import Mathlib.Tactic.GCongr.Core
+import Mathlib.Tactic.MinMax
 
 #align_import order.lattice from "leanprover-community/mathlib"@"3ba15165bd6927679be7c22d6091a87337e3cd0c"
 
@@ -66,6 +67,7 @@ variable {α : Type u} {β : Type v}
 ### Join-semilattices
 -/
 
+toMin
 -- TODO: automatic construction of dual definitions / theorems
 /-- A `SemilatticeSup` is a join-semilattice, that is, a partial order
   with a join (a.k.a. lub / least upper bound, sup / supremum) operation
@@ -79,6 +81,13 @@ class SemilatticeSup (α : Type u) extends Sup α, PartialOrder α where
   protected sup_le : ∀ a b c : α, a ≤ c → b ≤ c → a ⊔ b ≤ c
 #align semilattice_sup SemilatticeSup
 
+/- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
+  with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
+  `⊓` which is the greatest element smaller than both factors. -/
+#align semilattice_inf SemilatticeInf
+
+
+--toMin?
 /--
 A type with a commutative, associative and idempotent binary `sup` operation has the structure of a
 join-semilattice.
@@ -106,67 +115,79 @@ instance OrderDual.instInf (α : Type*) [Sup α] : Inf αᵒᵈ :=
 
 section SemilatticeSup
 
-variable [SemilatticeSup α] {a b c d : α}
-
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem le_sup_left : a ≤ a ⊔ b :=
   SemilatticeSup.le_sup_left a b
 #align le_sup_left le_sup_left
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem le_sup_left' : a ≤ a ⊔ b :=
   le_sup_left
 #align le_sup_left' le_sup_left'
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem le_sup_right : b ≤ a ⊔ b :=
   SemilatticeSup.le_sup_right a b
 #align le_sup_right le_sup_right
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem le_sup_right' : b ≤ a ⊔ b :=
   le_sup_right
 #align le_sup_right' le_sup_right'
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem le_sup_of_le_left (h : c ≤ a) : c ≤ a ⊔ b :=
   le_trans h le_sup_left
 #align le_sup_of_le_left le_sup_of_le_left
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem le_sup_of_le_right (h : c ≤ b) : c ≤ a ⊔ b :=
   le_trans h le_sup_right
 #align le_sup_of_le_right le_sup_of_le_right
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem lt_sup_of_lt_left (h : c < a) : c < a ⊔ b :=
   h.trans_le le_sup_left
 #align lt_sup_of_lt_left lt_sup_of_lt_left
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem lt_sup_of_lt_right (h : c < b) : c < a ⊔ b :=
   h.trans_le le_sup_right
 #align lt_sup_of_lt_right lt_sup_of_lt_right
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 theorem sup_le : a ≤ c → b ≤ c → a ⊔ b ≤ c :=
   SemilatticeSup.sup_le a b c
 #align sup_le sup_le
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem sup_le_iff : a ⊔ b ≤ c ↔ a ≤ c ∧ b ≤ c :=
   ⟨fun h : a ⊔ b ≤ c => ⟨le_trans le_sup_left h, le_trans le_sup_right h⟩,
    fun ⟨h₁, h₂⟩ => sup_le h₁ h₂⟩
 #align sup_le_iff sup_le_iff
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem sup_eq_left : a ⊔ b = a ↔ b ≤ a :=
   le_antisymm_iff.trans <| by simp [le_rfl]
 #align sup_eq_left sup_eq_left
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem sup_eq_right : a ⊔ b = b ↔ a ≤ b :=
   le_antisymm_iff.trans <| by simp [le_rfl]
 #align sup_eq_right sup_eq_right
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem left_eq_sup : a = a ⊔ b ↔ b ≤ a :=
   eq_comm.trans sup_eq_left
 #align left_eq_sup left_eq_sup
 
+toMin variable [SemilatticeSup α] {a b c d : α} in
 @[simp]
 theorem right_eq_sup : b = a ⊔ b ↔ a ≤ b :=
   eq_comm.trans sup_eq_right
@@ -181,6 +202,7 @@ alias ⟨le_of_sup_eq, sup_of_le_right⟩ := sup_eq_right
 
 attribute [simp] sup_of_le_left sup_of_le_right
 
+variable [SemilatticeSup α] {a b c d : α}
 @[simp]
 theorem left_lt_sup : a < a ⊔ b ↔ ¬b ≤ a :=
   le_sup_left.lt_iff_ne.trans <| not_congr left_eq_sup
@@ -320,19 +342,6 @@ end SemilatticeSup
 ### Meet-semilattices
 -/
 
-
-/-- A `SemilatticeInf` is a meet-semilattice, that is, a partial order
-  with a meet (a.k.a. glb / greatest lower bound, inf / infimum) operation
-  `⊓` which is the greatest element smaller than both factors. -/
-class SemilatticeInf (α : Type u) extends Inf α, PartialOrder α where
-  /-- The infimum is a lower bound on the first argument -/
-  protected inf_le_left : ∀ a b : α, a ⊓ b ≤ a
-  /-- The infimum is a lower bound on the second argument -/
-  protected inf_le_right : ∀ a b : α, a ⊓ b ≤ b
-  /-- The infimum is the *greatest* lower bound -/
-  protected le_inf : ∀ a b c : α, a ≤ b → a ≤ c → a ≤ b ⊓ c
-#align semilattice_inf SemilatticeInf
-
 instance OrderDual.instSemilatticeSup (α) [SemilatticeInf α] : SemilatticeSup αᵒᵈ where
   __ := inferInstanceAs (PartialOrder αᵒᵈ)
   __ := inferInstanceAs (Sup αᵒᵈ)
@@ -356,67 +365,67 @@ section SemilatticeInf
 
 variable [SemilatticeInf α] {a b c d : α}
 
-@[simp]
-theorem inf_le_left : a ⊓ b ≤ a :=
-  SemilatticeInf.inf_le_left a b
+--@[simp]
+--theorem inf_le_left : a ⊓ b ≤ a :=
+--  SemilatticeInf.inf_le_left a b
 #align inf_le_left inf_le_left
 
-theorem inf_le_left' : a ⊓ b ≤ a :=
-  SemilatticeInf.inf_le_left a b
+--theorem inf_le_left' : a ⊓ b ≤ a :=
+--  SemilatticeInf.inf_le_left a b
 #align inf_le_left' inf_le_left'
 
-@[simp]
-theorem inf_le_right : a ⊓ b ≤ b :=
-  SemilatticeInf.inf_le_right a b
+--@[simp]
+--theorem inf_le_right : a ⊓ b ≤ b :=
+--  SemilatticeInf.inf_le_right a b
 #align inf_le_right inf_le_right
 
-theorem inf_le_right' : a ⊓ b ≤ b :=
-  SemilatticeInf.inf_le_right a b
+--theorem inf_le_right' : a ⊓ b ≤ b :=
+--  SemilatticeInf.inf_le_right a b
 #align inf_le_right' inf_le_right'
 
-theorem le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
-  SemilatticeInf.le_inf a b c
+--theorem le_inf : a ≤ b → a ≤ c → a ≤ b ⊓ c :=
+--  SemilatticeInf.le_inf b c a
 #align le_inf le_inf
 
-theorem inf_le_of_left_le (h : a ≤ c) : a ⊓ b ≤ c :=
-  le_trans inf_le_left h
+--theorem inf_le_of_left_le (h : a ≤ c) : a ⊓ b ≤ c :=
+--  le_trans inf_le_left h
 #align inf_le_of_left_le inf_le_of_left_le
 
-theorem inf_le_of_right_le (h : b ≤ c) : a ⊓ b ≤ c :=
-  le_trans inf_le_right h
+--theorem inf_le_of_right_le (h : b ≤ c) : a ⊓ b ≤ c :=
+--  le_trans inf_le_right h
 #align inf_le_of_right_le inf_le_of_right_le
 
-theorem inf_lt_of_left_lt (h : a < c) : a ⊓ b < c :=
-  lt_of_le_of_lt inf_le_left h
+--theorem inf_lt_of_left_lt (h : a < c) : a ⊓ b < c :=
+--  lt_of_le_of_lt inf_le_left h
 #align inf_lt_of_left_lt inf_lt_of_left_lt
 
-theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
-  lt_of_le_of_lt inf_le_right h
+--theorem inf_lt_of_right_lt (h : b < c) : a ⊓ b < c :=
+--  lt_of_le_of_lt inf_le_right h
 #align inf_lt_of_right_lt inf_lt_of_right_lt
 
-@[simp]
-theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
-  @sup_le_iff αᵒᵈ _ _ _ _
+--@[simp]
+--theorem le_inf_iff : a ≤ b ⊓ c ↔ a ≤ b ∧ a ≤ c :=
+--  @sup_le_iff αᵒᵈ _ _ _ _
 #align le_inf_iff le_inf_iff
 
-@[simp]
-theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+--@[simp]
+--theorem inf_eq_left : a ⊓ b = a ↔ a ≤ b :=
+--  le_antisymm_iff.trans <| by simp [le_rfl]
 #align inf_eq_left inf_eq_left
 
-@[simp]
-theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
-  le_antisymm_iff.trans <| by simp [le_rfl]
+--@[simp]
+--theorem inf_eq_right : a ⊓ b = b ↔ b ≤ a :=
+--  le_antisymm_iff.trans <| by simp [le_rfl]
 #align inf_eq_right inf_eq_right
 
-@[simp]
-theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
-  eq_comm.trans inf_eq_left
+--@[simp]
+--theorem left_eq_inf : a = a ⊓ b ↔ a ≤ b :=
+--  eq_comm.trans inf_eq_left
 #align left_eq_inf left_eq_inf
 
-@[simp]
-theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
-  eq_comm.trans inf_eq_right
+--@[simp]
+--theorem right_eq_inf : b = a ⊓ b ↔ b ≤ a :=
+--  eq_comm.trans inf_eq_right
 #align right_eq_inf right_eq_inf
 
 alias ⟨le_of_inf_eq, inf_of_le_left⟩ := inf_eq_left
@@ -1452,7 +1461,8 @@ protected def Function.Injective.semilatticeInf [Inf α] [SemilatticeInf β] (f 
     rw [map_inf]
     exact inf_le_right
   le_inf a b c ha hb := by
-    change f a ≤ f (b ⊓ c)
+--    change f a ≤ f (b ⊓ c)  -- TODO: would like this
+    change f c ≤ f (a ⊓ b)
     rw [map_inf]
     exact le_inf ha hb
 #align function.injective.semilattice_inf Function.Injective.semilatticeInf
