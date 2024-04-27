@@ -753,6 +753,7 @@ def piCurry {β : α → Type*} (γ : ∀ a, β a → Type*) :
   right_inv := Sigma.curry_uncurry
 #align equiv.Pi_curry Equiv.piCurry
 
+-- `simps` overapplies these but `simps (config := .asFn)` under-applies them
 @[simp] theorem piCurry_apply {β : α → Type*} (γ : ∀ a, β a → Type*)
     (f : ∀ x : Σ i, β i, γ x.1 x.2) :
     piCurry γ f = Sigma.curry f :=
