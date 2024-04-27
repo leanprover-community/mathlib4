@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Yury Kudryashov
 -/
-import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -223,3 +223,58 @@ theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
   rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
+
+
+section NormedAddCommGroup
+
+variable [MeasurableSpace α] [NormedAddCommGroup α] [OpensMeasurableSpace α] [MeasurableSpace β]
+
+@[measurability]
+theorem measurable_norm : Measurable (norm : α → ℝ) :=
+  continuous_norm.measurable
+#align measurable_norm measurable_norm
+
+@[measurability]
+theorem Measurable.norm {f : β → α} (hf : Measurable f) : Measurable fun a => norm (f a) :=
+  measurable_norm.comp hf
+#align measurable.norm Measurable.norm
+
+@[measurability]
+theorem AEMeasurable.norm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun a => norm (f a)) μ :=
+  measurable_norm.comp_aemeasurable hf
+#align ae_measurable.norm AEMeasurable.norm
+
+@[measurability]
+theorem measurable_nnnorm : Measurable (nnnorm : α → ℝ≥0) :=
+  continuous_nnnorm.measurable
+#align measurable_nnnorm measurable_nnnorm
+
+@[measurability]
+theorem Measurable.nnnorm {f : β → α} (hf : Measurable f) : Measurable fun a => ‖f a‖₊ :=
+  measurable_nnnorm.comp hf
+#align measurable.nnnorm Measurable.nnnorm
+
+@[measurability]
+theorem AEMeasurable.nnnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun a => ‖f a‖₊) μ :=
+  measurable_nnnorm.comp_aemeasurable hf
+#align ae_measurable.nnnorm AEMeasurable.nnnorm
+
+@[measurability]
+theorem measurable_ennnorm : Measurable fun x : α => (‖x‖₊ : ℝ≥0∞) :=
+  measurable_nnnorm.coe_nnreal_ennreal
+#align measurable_ennnorm measurable_ennnorm
+
+@[measurability]
+theorem Measurable.ennnorm {f : β → α} (hf : Measurable f) : Measurable fun a => (‖f a‖₊ : ℝ≥0∞) :=
+  hf.nnnorm.coe_nnreal_ennreal
+#align measurable.ennnorm Measurable.ennnorm
+
+@[measurability]
+theorem AEMeasurable.ennnorm {f : β → α} {μ : Measure β} (hf : AEMeasurable f μ) :
+    AEMeasurable (fun a => (‖f a‖₊ : ℝ≥0∞)) μ :=
+  measurable_ennnorm.comp_aemeasurable hf
+#align ae_measurable.ennnorm AEMeasurable.ennnorm
+
+end NormedAddCommGroup
