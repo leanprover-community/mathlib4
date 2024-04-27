@@ -60,11 +60,11 @@ noncomputable def diracProba (x : X) : ProbabilityMeasure X :=
   ⟨Measure.dirac x, Measure.dirac.isProbabilityMeasure⟩
 
 /-- The assignment `x ↦ diracProba x` is injective if all singletons are measurable. -/
-lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSingletonClass X] :
+lemma injective_diracProba {X : Type*} [MeasurableSpace X] [MeasurableSpace.SeparatesPoints X] :
     Function.Injective (fun (x : X) ↦ diracProba x) := by
-  intro x y x_ne_y
-  by_contra con
-  exact dirac_ne_dirac con <| congr_arg Subtype.val x_ne_y
+  intro x y x_eq_y
+  rw [← dirac_eq_dirac_iff]
+  rwa [Subtype.ext_iff] at x_eq_y
 
 @[simp] lemma diracProba_toMeasure_apply' (x : X) {A : Set X} (A_mble : MeasurableSet A) :
     (diracProba x).toMeasure A = A.indicator 1 x := Measure.dirac_apply' x A_mble

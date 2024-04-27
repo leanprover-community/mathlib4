@@ -194,7 +194,7 @@ lemma dirac_eq_dirac_iff_forall_mem_iff_mem {x y : α} :
 
 /-- Dirac delta measures at two points are different if and only if there is a measurable set
 containing one of the points but not the other. -/
-lemma dirac_ne_dirac_iff {x y : α} :
+lemma dirac_ne_dirac_iff_exists_measurableSet {x y : α} :
     Measure.dirac x ≠ Measure.dirac y ↔ ∃ A, MeasurableSet A ∧ x ∈ A ∧ y ∉ A := by
   apply not_iff_not.mp
   simp only [ne_eq, not_not, not_exists, not_and, dirac_eq_dirac_iff_forall_mem_iff_mem]
@@ -203,12 +203,27 @@ lemma dirac_ne_dirac_iff {x y : α} :
   · simp only [x_in_A, h A A_mble x_in_A]
   · simpa only [x_in_A, false_iff] using h Aᶜ (MeasurableSet.compl_iff.mpr A_mble) x_in_A
 
-open MeasurableSpace in
+open MeasurableSpace
 /-- Dirac delta measures at two different points are different, assuming the measurable space
 separates points. -/
 lemma dirac_ne_dirac [SeparatesPoints α] {x y : α} (x_ne_y : x ≠ y) :
     Measure.dirac x ≠ Measure.dirac y := by
   obtain ⟨A, A_mble, x_in_A, y_notin_A⟩ := exists_measurableSet_of_ne x_ne_y
-  exact dirac_ne_dirac_iff.mpr ⟨A, A_mble, x_in_A, y_notin_A⟩
+  exact dirac_ne_dirac_iff_exists_measurableSet.mpr ⟨A, A_mble, x_in_A, y_notin_A⟩
+
+/-- Dirac delta measures at two points are different if and only if the two points are different,
+assuming the measurable space separates points. -/
+lemma dirac_ne_dirac_iff [SeparatesPoints α] {x y : α} :
+    Measure.dirac x ≠ Measure.dirac y ↔ x ≠ y :=
+  ⟨fun h x_eq_y ↦ h <| congrArg dirac x_eq_y, fun h ↦ dirac_ne_dirac h⟩
+
+/-- Dirac delta measures at two points are equal if and only if the two points are equal,
+assuming the measurable space separates points. -/
+lemma dirac_eq_dirac_iff [SeparatesPoints α] {x y : α} :
+    Measure.dirac x = Measure.dirac y ↔ x = y := not_iff_not.mp dirac_ne_dirac_iff
+
+/-- The assignment `x ↦ dirac x` is injective, assuming the measurable space separates points. -/
+lemma injective_dirac [SeparatesPoints α] :
+    Function.Injective (fun (x : α) ↦ dirac x) := fun x y x_ne_y ↦ by rwa [← dirac_eq_dirac_iff]
 
 end dirac_injective
