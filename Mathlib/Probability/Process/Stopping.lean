@@ -4,6 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Adapted
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Metric
+import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 
 #align_import probability.process.stopping from "leanprover-community/mathlib"@"ba074af83b6cf54c3104e59402b39410ddbd6dca"
 
@@ -32,6 +34,7 @@ stopping time, stochastic process
 
 -/
 
+#check measurable_of_Iic
 
 open Filter Order TopologicalSpace
 
@@ -574,7 +577,7 @@ end Countable
 protected theorem measurable [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]
     [OrderTopology ι] [SecondCountableTopology ι] (hτ : IsStoppingTime f τ) :
     Measurable[hτ.measurableSpace] τ :=
-  @measurable_of_Iic ι Ω _ _ _ hτ.measurableSpace _ _ _ _ fun i => hτ.measurableSet_le' i
+  @measurable_of_Iic Ω ι _ _ _ hτ.measurableSpace _ _ _ _ fun i => hτ.measurableSet_le' i
 #align measure_theory.is_stopping_time.measurable MeasureTheory.IsStoppingTime.measurable
 
 protected theorem measurable_of_le [TopologicalSpace ι] [MeasurableSpace ι] [BorelSpace ι]

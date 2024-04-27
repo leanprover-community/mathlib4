@@ -22,6 +22,8 @@ open scoped Classical BigOperators Topology NNReal ENNReal MeasureTheory
 
 universe u v w x y
 
+section Orders
+
 variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
 variable [TopologicalSpace α] [MeasurableSpace α] [OpensMeasurableSpace α]
 variable [TopologicalSpace β] [MeasurableSpace β] [OpensMeasurableSpace β]
@@ -459,12 +461,15 @@ instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopolo
 
 end Lattice
 
+end Orders
 
 section BorelSpace
 
+variable {α β γ δ : Type*} {ι : Sort y} {s t u : Set α}
 variable [TopologicalSpace α] [MeasurableSpace α] [BorelSpace α]
 variable [TopologicalSpace β] [MeasurableSpace β] [BorelSpace β]
 variable [TopologicalSpace γ] [MeasurableSpace γ] [BorelSpace γ]
+variable [MeasurableSpace δ]
 
 section LinearOrder
 
@@ -970,7 +975,7 @@ instance EReal.borelSpace : BorelSpace EReal :=
 /-- One can cut out `ℝ≥0∞` into the sets `{0}`, `Ico (t^n) (t^(n+1))` for `n : ℤ` and `{∞}`. This
 gives a way to compute the measure of a set in terms of sets on which a given function `f` does not
 fluctuate by more than `t`. -/
-theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow [MeasurableSpace α] (μ : Measure α)
+theorem measure_eq_measure_preimage_add_measure_tsum_Ico_zpow {α : Type*} [MeasurableSpace α] (μ : Measure α)
     {f : α → ℝ≥0∞} (hf : Measurable f) {s : Set α} (hs : MeasurableSet s) {t : ℝ≥0} (ht : 1 < t) :
     μ s =
       μ (s ∩ f ⁻¹' {0}) + μ (s ∩ f ⁻¹' {∞}) +
