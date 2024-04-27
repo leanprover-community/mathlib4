@@ -1156,6 +1156,7 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                                  _ ≤ 1 * n        := by gcongr; norm_num
                                  _ = n             := by simp
 
+set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
 /-- The main proof of the upper bound part of the Akra-Bazzi theorem. The factor
 `1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/

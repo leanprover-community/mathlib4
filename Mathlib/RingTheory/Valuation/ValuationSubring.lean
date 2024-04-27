@@ -727,6 +727,7 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
+set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =

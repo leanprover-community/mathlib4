@@ -323,6 +323,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
+set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
@@ -399,6 +400,7 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
+set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
@@ -416,7 +418,7 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
-set_option maxHeartbeats 400000 in
+set_option maxHeartbeats 1600000 in -- Adaptation note: 2024-04-23
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit

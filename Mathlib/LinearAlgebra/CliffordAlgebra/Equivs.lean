@@ -421,7 +421,8 @@ protected def equiv : CliffordAlgebra (0 : QuadraticForm R R) ≃ₐ[R] R[ε] :=
     -- This used to be a single `simp` before leanprover/lean4#2644
     (by
       ext : 2
-      simp
+      simp only [QuadraticForm.zero_apply, AlgHom.comp_toLinearMap, LinearMap.coe_comp,
+        Function.comp_apply, AlgHom.toLinearMap_apply, AlgHom.toLinearMap_id, LinearMap.id_comp]
       erw [lift_ι_apply]
       -- Adaptation note: 2024-04-23: increased synthInstance.maxHeartbeats
       set_option synthInstance.maxHeartbeats 40000 in
