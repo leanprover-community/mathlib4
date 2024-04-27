@@ -105,17 +105,17 @@ theorem properSMul_iff_continuousSMul_ultrafilter_tendsto : ProperSMul G X ↔ C
     Tendsto (fun gx ↦ ⟨gx.1 • gx.2, gx.2⟩ : G × X → X × X) 𝒰 (𝓝 (x₁, x₂)) →
     ∃ g : G, g • x₂ = x₁ ∧ Tendsto Prod.fst (𝒰 : Filter (G × X)) (𝓝 g)) := by
   constructor
-  · refine' fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ _⟩
+  · refine fun h ↦ ⟨inferInstance, fun 𝒰 x₁ x₂ h' ↦ ?_⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter] at h
     rcases h.2 h' with ⟨gx, hgx1, hgx2⟩
-    refine' ⟨gx.1, _, (continuous_fst.tendsto gx).mono_left hgx2⟩
+    refine ⟨gx.1, ?_, (continuous_fst.tendsto gx).mono_left hgx2⟩
     simp only [Prod.mk.injEq] at hgx1
     rw [← hgx1.2, hgx1.1]
   · rintro ⟨cont, h⟩
     rw [properSMul_iff, isProperMap_iff_ultrafilter]
-    refine' ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ _⟩
+    refine ⟨by fun_prop, fun 𝒰 (x₁, x₂) hxx ↦ ?_⟩
     rcases h 𝒰 x₁ x₂ hxx with ⟨g, hg1, hg2⟩
-    refine' ⟨(g, x₂), by rw [hg1], _⟩
+    refine ⟨(g, x₂), by rw [hg1], ?_⟩
     rw [nhds_prod_eq, 𝒰.le_prod]
     exact ⟨hg2, (continuous_snd.tendsto _).comp hxx⟩
 
@@ -233,10 +233,10 @@ theorem ProperlyDiscontinuousSMul_iff_ProperSMul [T2Space X] [DiscreteTopology G
     -- discrete topology, thanks to `continuous_of_partial_of_discrete`.
     -- Because `X × X` is compactly generated, to show that f is proper
     -- it is enough to show that the preimage of a compact set `K` is compact.
-    refine' (isProperMap_iff_isCompact_preimage compactlyGenerated).2
+    refine (isProperMap_iff_isCompact_preimage compactlyGenerated).2
       ⟨(continuous_prod_mk.2
       ⟨continuous_prod_of_discrete_left.2 continuous_const_smul, by fun_prop⟩),
-      fun K hK ↦ _⟩
+      fun K hK ↦ ?_⟩
     -- We set `K' := pr₁(K) ∪ pr₂(K)`, which is compact because `K` is compact and `pr₁` and
     -- `pr₂` are continuous. We halso have that `K ⊆ K' × K'`, and `K` is closed because `X` is T2.
     -- Therefore `f ⁻¹ (K)` is also closed and `f ⁻¹ (K) ⊆ f ⁻¹ (K' × K')`, thus it suffices to

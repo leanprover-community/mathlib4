@@ -332,7 +332,7 @@ theorem isProperMap_iff_isCompact_preimage [T2Space Y]
 /-- A locally compact space is compactly generated. -/
 theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocallyCompactSpace X]
     {s : Set X} : IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ _⟩
+  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed, fun h ↦ ?_⟩
   rw [isClosed_iff_forall_filter]
   intro x ℱ hℱ₁ hℱ₂ hℱ₃
   rcases exists_compact_mem_nhds x with ⟨K, hK, K_mem⟩
@@ -342,9 +342,9 @@ theorem compactlyGenerated_of_weaklyLocallyCompactSpace [T2Space X] [WeaklyLocal
 /-- A sequential space is compactly generated. -/
 theorem compactlyGenerated_of_sequentialSpace [T2Space X] [SequentialSpace X] {s : Set X} :
     IsClosed s ↔ ∀ ⦃K⦄, IsCompact K → IsClosed (s ∩ K) := by
-  refine' ⟨fun hs K hK ↦ hs.inter hK.isClosed,
+  refine ⟨fun hs K hK ↦ hs.inter hK.isClosed,
     fun h ↦ SequentialSpace.isClosed_of_seq _ fun u p hu hup ↦
-    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup _)⟩
+    mem_of_mem_inter_left ((h hup.isCompact_insert_range).mem_of_tendsto hup ?_)⟩
   simp only [mem_inter_iff, mem_insert_iff, mem_range, exists_apply_eq_apply, or_true, and_true,
     eventually_atTop, ge_iff_le]
   exact ⟨0, fun n _ ↦ hu n⟩
