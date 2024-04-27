@@ -3,6 +3,7 @@ Copyright (c) 2021 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
+import Mathlib.Algebra.Algebra.Quasispectrum
 import Mathlib.FieldTheory.IsAlgClosed.Spectrum
 import Mathlib.Analysis.Complex.Liouville
 import Mathlib.Analysis.Complex.Polynomial
@@ -47,12 +48,12 @@ This file contains the basic theory for the resolvent and spectrum of a Banach a
 
 open scoped ENNReal NNReal
 
-open NormedSpace -- For `exp`.
+open NormedSpace -- For `NormedSpace.exp`.
 
 /-- The *spectral radius* is the supremum of the `nnnorm` (`‖·‖₊`) of elements in the spectrum,
     coerced into an element of `ℝ≥0∞`. Note that it is possible for `spectrum 𝕜 a = ∅`. In this
     case, `spectralRadius a = 0`. It is also possible that `spectrum 𝕜 a` be unbounded (though
-    not for Banach algebras, see `spectrum.is_bounded`, below).  In this case,
+    not for Banach algebras, see `spectrum.isBounded`, below).  In this case,
     `spectralRadius a = ∞`. -/
 noncomputable def spectralRadius (𝕜 : Type*) {A : Type*} [NormedField 𝕜] [Ring A] [Algebra 𝕜 A]
     (a : A) : ℝ≥0∞ :=
@@ -282,7 +283,7 @@ theorem hasFPowerSeriesOnBall_inverse_one_sub_smul [CompleteSpace A] (a : A) :
           le_trans (le_trans (mul_le_mul_right' (nnnorm_pow_le' a n.succ_pos) (r ^ n.succ)) _)
             (le_max_left _ _)
         · by_cases h : ‖a‖₊ = 0
-          · simp only [h, zero_mul, zero_le', pow_succ]
+          · simp only [h, zero_mul, zero_le', pow_succ']
           · rw [← coe_inv h, coe_lt_coe, NNReal.lt_inv_iff_mul_lt h] at hr
             simpa only [← mul_pow, mul_comm] using pow_le_one' hr.le n.succ
     r_pos := ENNReal.inv_pos.mpr coe_ne_top
@@ -469,8 +470,8 @@ section ExpMapping
 local notation "↑ₐ" => algebraMap 𝕜 A
 
 /-- For `𝕜 = ℝ` or `𝕜 = ℂ`, `exp 𝕜` maps the spectrum of `a` into the spectrum of `exp 𝕜 a`. -/
-theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A) {z : 𝕜}
-    (hz : z ∈ spectrum 𝕜 a) : exp 𝕜 z ∈ spectrum 𝕜 (exp 𝕜 a) := by
+theorem exp_mem_exp [RCLike 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [CompleteSpace A] (a : A)
+    {z : 𝕜} (hz : z ∈ spectrum 𝕜 a) : exp 𝕜 z ∈ spectrum 𝕜 (exp 𝕜 a) := by
   have hexpmul : exp 𝕜 a = exp 𝕜 (a - ↑ₐ z) * ↑ₐ (exp 𝕜 z) := by
     rw [algebraMap_exp_comm z, ← exp_add_of_commute (Algebra.commutes z (a - ↑ₐ z)).symm,
       sub_add_cancel]
@@ -478,13 +479,13 @@ theorem exp_mem_exp [IsROrC 𝕜] [NormedRing A] [NormedAlgebra 𝕜 A] [Complet
   have hb : Summable fun n : ℕ => ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ n := by
     refine' .of_norm_bounded_eventually _ (Real.summable_pow_div_factorial ‖a - ↑ₐ z‖) _
     filter_upwards [Filter.eventually_cofinite_ne 0] with n hn
-    rw [norm_smul, mul_comm, norm_inv, IsROrC.norm_natCast, ← div_eq_mul_inv]
+    rw [norm_smul, mul_comm, norm_inv, RCLike.norm_natCast, ← div_eq_mul_inv]
     exact div_le_div (pow_nonneg (norm_nonneg _) n) (norm_pow_le' (a - ↑ₐ z) (zero_lt_iff.mpr hn))
       (mod_cast Nat.factorial_pos n) (mod_cast Nat.factorial_le (lt_add_one n).le)
   have h₀ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = (a - ↑ₐ z) * b := by
-    simpa only [mul_smul_comm, pow_succ] using hb.tsum_mul_left (a - ↑ₐ z)
+    simpa only [mul_smul_comm, pow_succ'] using hb.tsum_mul_left (a - ↑ₐ z)
   have h₁ : (∑' n : ℕ, ((n + 1).factorial⁻¹ : 𝕜) • (a - ↑ₐ z) ^ (n + 1)) = b * (a - ↑ₐ z) := by
-    simpa only [pow_succ', Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
+    simpa only [pow_succ, Algebra.smul_mul_assoc] using hb.tsum_mul_right (a - ↑ₐ z)
   have h₃ : exp 𝕜 (a - ↑ₐ z) = 1 + (a - ↑ₐ z) * b := by
     rw [exp_eq_tsum]
     convert tsum_eq_zero_add (expSeries_summable' (𝕂 := 𝕜) (a - ↑ₐ z))
@@ -617,6 +618,11 @@ lemma nnreal_iff [Algebra ℝ A] {a : A} :
     exact coe_nonneg x
   · exact .of_subset_range_algebraMap _ _ (fun _ ↦ Real.toNNReal_coe)
       fun x hx ↦ ⟨⟨x, h x hx⟩, rfl⟩
+
+lemma nnreal_of_nonneg {A : Type*} [Ring A] [PartialOrder A] [Algebra ℝ A]
+    [NonnegSpectrumClass ℝ A] {a : A} (ha : 0 ≤ a) :
+    SpectrumRestricts a ContinuousMap.realToNNReal :=
+  nnreal_iff.mpr <| spectrum_nonneg_of_nonneg ha
 
 lemma real_iff [Algebra ℂ A] {a : A} :
     SpectrumRestricts a Complex.reCLM ↔ ∀ x ∈ spectrum ℂ a, x = x.re := by

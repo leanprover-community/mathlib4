@@ -773,7 +773,7 @@ theorem Finset.card_eq_of_equiv_fintype {s : Finset α} [Fintype β] (i : s ≃ 
     s.card = Fintype.card β := card_eq_of_equiv_fin <| i.trans <| Fintype.equivFin β
 
 /-- Noncomputable equivalence between two finsets `s` and `t` as fintypes when there is a proof
-that `s.card = t.card`.-/
+that `s.card = t.card`. -/
 noncomputable def Finset.equivOfCardEq {s : Finset α} {t : Finset β} (h : s.card = t.card) :
     s ≃ t := Fintype.equivOfCardEq ((Fintype.card_coe _).trans (h.trans (Fintype.card_coe _).symm))
 #align finset.equiv_of_card_eq Finset.equivOfCardEq
@@ -1251,13 +1251,13 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     exact ranges_nodup hu
   · -- pairwise disjoint
     refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
-    · -- List.Pairwise List.disjoint l
-      apply Pairwise.pmap (List.ranges_disjoint c)
-      intro u hu v hv huv
-      apply disjoint_pmap
-      · intro a a' ha ha' h
-        simpa only [klift, Fin.mk_eq_mk] using h
-      exact huv
+    -- List.Pairwise List.disjoint l
+    apply Pairwise.pmap (List.ranges_disjoint c)
+    intro u hu v hv huv
+    apply disjoint_pmap
+    · intro a a' ha ha' h
+      simpa only [klift, Fin.mk_eq_mk] using h
+    exact huv
 
 end Ranges
 

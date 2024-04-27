@@ -68,7 +68,7 @@ theorem ghostComponent_verschiebungFun (x : 𝕎 R) (n : ℕ) :
   rw [Finset.sum_range_succ', verschiebungFun_coeff, if_pos rfl,
     zero_pow (pow_ne_zero _ hp.1.ne_zero), mul_zero, add_zero, Finset.mul_sum, Finset.sum_congr rfl]
   rintro i -
-  simp only [pow_succ, mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
+  simp only [pow_succ', mul_assoc, verschiebungFun_coeff, if_neg (Nat.succ_ne_zero i),
     Nat.succ_sub_succ, tsub_zero]
 #align witt_vector.ghost_component_verschiebung_fun WittVector.ghostComponent_verschiebungFun
 

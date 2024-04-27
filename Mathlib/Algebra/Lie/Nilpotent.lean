@@ -10,7 +10,7 @@ import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
@@ -134,7 +134,7 @@ variable (R L M)
 theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
   intro l k
   induction' k with k ih generalizing l <;> intro h
-  · exact (le_zero_iff.mp h).symm ▸ le_rfl
+  · exact (Nat.le_zero.mp h).symm ▸ le_rfl
   · rcases Nat.of_le_succ h with (hk | hk)
     · rw [lowerCentralSeries_succ]
       exact (LieSubmodule.mono_lie_right _ _ ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)

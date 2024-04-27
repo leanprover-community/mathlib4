@@ -96,21 +96,14 @@ theorem exists_approx_aux (n : ℕ) (h : abv.IsAdmissible) :
     -- there must be a subset that contains more than `M^n` elements.
     obtain ⟨s, hs⟩ :=
       Fintype.exists_lt_card_fiber_of_mul_lt_card (f := t)
-        (by simpa only [Fintype.card_fin, pow_succ] using Nat.lt_succ_self (M ^ n.succ))
-    refine'
-      ⟨fun i ↦ (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i _, _, fun i₀ i₁ ↦ ht _ _ _⟩
-    · refine' i.2.trans_le _
-      rwa [Finset.length_toList]
-    · intro i j h
-      ext
-      exact Fin.mk.inj_iff.mp (List.nodup_iff_injective_get.mp (Finset.nodup_toList _) h)
-    have : ∀ i h, (Finset.univ.filter fun x ↦ t x = s).toList.nthLe i h ∈
-        Finset.univ.filter fun x ↦ t x = s := by
-      intro i h
-      exact Finset.mem_toList.mp (List.get_mem _ i h)
-    obtain ⟨_, h₀⟩ := Finset.mem_filter.mp (this i₀ _)
-    obtain ⟨_, h₁⟩ := Finset.mem_filter.mp (this i₁ _)
-    exact h₀.trans h₁.symm
+        (by simpa only [Fintype.card_fin, pow_succ'] using Nat.lt_succ_self (M ^ n.succ))
+    refine ⟨fun i ↦ (Finset.univ.filter fun x ↦ t x = s).toList.get <| i.castLE ?_, fun i j h ↦ ?_,
+      fun i₀ i₁ ↦ ht _ _ ?_⟩
+    · rwa [Finset.length_toList]
+    · simpa [(Finset.nodup_toList _).get_inj_iff] using h
+    · have : ∀ i, t ((Finset.univ.filter fun x ↦ t x = s).toList.get i) = s := fun i ↦
+        (Finset.mem_filter.mp (Finset.mem_toList.mp (List.get_mem _ i i.2))).2
+      simp [this]
   -- Since `s` is large enough, there are two elements of `A ∘ s`
   -- where the second components lie close together.
   obtain ⟨k₀, k₁, hk, h⟩ := ih hε hb fun x ↦ Fin.tail (A (s x))

@@ -60,7 +60,7 @@ We define cardinal numbers as a quotient of types under the equivalence relation
   `Cardinal.{u} : Type (u + 1)` is the quotient of types in `Type u`.
   The operation `Cardinal.lift` lifts cardinal numbers to a higher level.
 * Cardinal arithmetic specifically for infinite cardinals (like `κ * κ = κ`) is in the file
-  `SetTheory/Cardinal/Ordinal.lean`.
+  `Mathlib/SetTheory/Cardinal/Ordinal.lean`.
 * There is an instance `Pow Cardinal`, but this will only fire if Lean already knows that both
   the base and the exponent live in the same universe. As a workaround, you can add
   ```
@@ -533,7 +533,7 @@ instance commSemiring : CommSemiring Cardinal.{u} where
   nsmul := nsmulRec
   npow n c := c ^ (n : Cardinal)
   npow_zero := @power_zero
-  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c * c ^ (↑n : Cardinal)
+  npow_succ n c := show c ^ (↑(n + 1) : Cardinal) = c ^ (↑n : Cardinal) * c
     by rw [Cardinal.cast_succ, power_add, power_one, mul_comm']
   natCast := (fun n => lift.{u} #(Fin n) : ℕ → Cardinal.{u})
   natCast_zero := rfl
@@ -1267,7 +1267,6 @@ def aleph0 : Cardinal.{u} :=
   lift #ℕ
 #align cardinal.aleph_0 Cardinal.aleph0
 
--- mathport name: cardinal.aleph_0
 @[inherit_doc]
 scoped notation "ℵ₀" => Cardinal.aleph0
 
@@ -1309,6 +1308,7 @@ theorem lift_lt_aleph0 {c : Cardinal.{u}} : lift.{v} c < ℵ₀ ↔ c < ℵ₀ :
 #align cardinal.lift_lt_aleph_0 Cardinal.lift_lt_aleph0
 
 /-! ### Properties about the cast from `ℕ` -/
+section castFromN
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -1450,7 +1450,7 @@ theorem card_le_of_finset {α} (s : Finset α) : (s.card : Cardinal) ≤ #α :=
 -- @[simp, norm_cast]
 @[norm_cast]
 theorem natCast_pow {m n : ℕ} : (↑(m ^ n) : Cardinal) = (↑m : Cardinal) ^ (↑n : Cardinal) := by
-  induction n <;> simp [pow_succ', power_add, *, Pow.pow]
+  induction n <;> simp [pow_succ, power_add, *, Pow.pow]
 #align cardinal.nat_cast_pow Cardinal.natCast_pow
 
 -- porting note (#10618): simp can prove this
@@ -1667,8 +1667,8 @@ theorem add_lt_aleph0 {a b : Cardinal} (ha : a < ℵ₀) (hb : b < ℵ₀) : a +
 #align cardinal.add_lt_aleph_0 Cardinal.add_lt_aleph0
 
 theorem add_lt_aleph0_iff {a b : Cardinal} : a + b < ℵ₀ ↔ a < ℵ₀ ∧ b < ℵ₀ :=
-  ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩, fun ⟨h1, h2⟩ =>
-    add_lt_aleph0 h1 h2⟩
+  ⟨fun h => ⟨(self_le_add_right _ _).trans_lt h, (self_le_add_left _ _).trans_lt h⟩,
+   fun ⟨h1, h2⟩ => add_lt_aleph0 h1 h2⟩
 #align cardinal.add_lt_aleph_0_iff Cardinal.add_lt_aleph0_iff
 
 theorem aleph0_le_add_iff {a b : Cardinal} : ℵ₀ ≤ a + b ↔ ℵ₀ ≤ a ∨ ℵ₀ ≤ b := by
@@ -1771,6 +1771,10 @@ theorem mk_denumerable (α : Type u) [Denumerable α] : #α = ℵ₀ :=
   denumerable_iff.1 ⟨‹_›⟩
 #align cardinal.mk_denumerable Cardinal.mk_denumerable
 
+theorem _root_.Set.countable_infinite_iff_nonempty_denumerable {α : Type*} {s : Set α} :
+    s.Countable ∧ s.Infinite ↔ Nonempty (Denumerable s) := by
+  rw [nonempty_denumerable_iff, ← Set.infinite_coe_iff, countable_coe_iff]
+
 @[simp]
 theorem aleph0_add_aleph0 : ℵ₀ + ℵ₀ = ℵ₀ :=
   mk_denumerable _
@@ -1826,8 +1830,6 @@ theorem ofNat_add_aleph0 {n : ℕ} [Nat.AtLeastTwo n] : no_index (OfNat.ofNat n)
 theorem aleph0_add_ofNat {n : ℕ} [Nat.AtLeastTwo n] : ℵ₀ + no_index (OfNat.ofNat n) = ℵ₀ :=
   aleph0_add_nat n
 
-variable {c : Cardinal}
-
 theorem exists_nat_eq_of_le_nat {c : Cardinal} {n : ℕ} (h : c ≤ n) : ∃ m, m ≤ n ∧ c = m := by
   lift c to ℕ using h.trans_lt (nat_lt_aleph0 _)
   exact ⟨c, mod_cast h, rfl⟩
@@ -1840,6 +1842,10 @@ theorem mk_int : #ℤ = ℵ₀ :=
 theorem mk_pNat : #ℕ+ = ℵ₀ :=
   mk_denumerable ℕ+
 #align cardinal.mk_pnat Cardinal.mk_pNat
+
+end castFromN
+
+variable {c : Cardinal}
 
 /-- **König's theorem** -/
 theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f < prod g :=
@@ -1860,6 +1866,9 @@ theorem sum_lt_prod {ι} (f g : ι → Cardinal) (H : ∀ i, f i < g i) : sum f 
     let ⟨⟨i, a⟩, h⟩ := sG C
     exact hc i a (congr_fun h _)
 #align cardinal.sum_lt_prod Cardinal.sum_lt_prod
+
+/-! Cardinalities of sets: cardinality of empty, finite sets, unions, subsets etc. -/
+section sets
 
 -- porting note (#10618): simp can prove this
 -- @[simp]
@@ -2104,6 +2113,11 @@ theorem mk_insert {α : Type u} {s : Set α} {a : α} (h : a ∉ s) :
   simpa
 #align cardinal.mk_insert Cardinal.mk_insert
 
+theorem mk_insert_le {α : Type u} {s : Set α} {a : α} : #(insert a s : Set α) ≤ #s + 1 := by
+  by_cases h : a ∈ s
+  · simp only [insert_eq_of_mem h, self_le_add_right]
+  · rw [mk_insert h]
+
 theorem mk_sum_compl {α} (s : Set α) : #s + #(sᶜ : Set α) = #α :=
   mk_congr (Equiv.Set.sumCompl s)
 #align cardinal.mk_sum_compl Cardinal.mk_sum_compl
@@ -2142,7 +2156,6 @@ theorem mk_union_le_aleph0 {α} {P Q : Set α} :
   simp only [le_aleph0_iff_subtype_countable, mem_union, setOf_mem_eq, Set.union_def,
     ← countable_union]
 #align cardinal.mk_union_le_aleph_0 Cardinal.mk_union_le_aleph0
-
 
 theorem mk_subtype_of_equiv {α β : Type u} (p : β → Prop) (e : α ≃ β) :
     #{ a : α // p (e a) } = #{ b : β // p b } :=
@@ -2262,6 +2275,10 @@ theorem three_le {α : Type*} (h : 3 ≤ #α) (x : α) (y : α) : ∃ z : α, z 
   simpa [not_or] using this
 #align cardinal.three_le Cardinal.three_le
 
+end sets
+
+section powerlt
+
 /-- The function `a ^< b`, defined as the supremum of `a ^ c` for `c < b`. -/
 def powerlt (a b : Cardinal.{u}) : Cardinal.{u} :=
   ⨆ c : Iio b, a ^ (c : Cardinal)
@@ -2314,6 +2331,8 @@ theorem powerlt_zero {a : Cardinal} : a ^< 0 = 0 := by
   convert Cardinal.iSup_of_empty _
   exact Subtype.isEmpty_of_false fun x => mem_Iio.not.mpr (Cardinal.zero_le x).not_lt
 #align cardinal.powerlt_zero Cardinal.powerlt_zero
+
+end powerlt
 
 /-- The cardinality of a nontrivial module over a ring is at least the cardinality of the ring if
 there are no zero divisors (for instance if the ring is a field) -/

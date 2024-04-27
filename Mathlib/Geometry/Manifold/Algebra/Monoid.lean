@@ -256,7 +256,7 @@ variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [TopologicalS
 @[to_additive]
 theorem smooth_pow : ∀ n : ℕ, Smooth I I fun a : G => a ^ n
   | 0 => by simp only [pow_zero]; exact smooth_const
-  | k + 1 => by simpa [pow_succ] using smooth_id.mul (smooth_pow _)
+  | k + 1 => by simpa [pow_succ] using (smooth_pow _).mul smooth_id
 #align smooth_pow smooth_pow
 
 /-- Morphism of additive smooth monoids. -/

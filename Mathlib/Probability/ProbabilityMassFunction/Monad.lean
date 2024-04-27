@@ -172,10 +172,10 @@ theorem toOuterMeasure_bind_apply :
   calc
     (p.bind f).toOuterMeasure s = ∑' b, if b ∈ s then ∑' a, p a * f a b else 0 := by
       simp [toOuterMeasure_apply, Set.indicator_apply]
-    _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := (tsum_congr fun b => by split_ifs <;> simp)
+    _ = ∑' (b) (a), p a * if b ∈ s then f a b else 0 := tsum_congr fun b => by split_ifs <;> simp
     _ = ∑' (a) (b), p a * if b ∈ s then f a b else 0 :=
       (tsum_comm' ENNReal.summable (fun _ => ENNReal.summable) fun _ => ENNReal.summable)
-    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := (tsum_congr fun a => ENNReal.tsum_mul_left)
+    _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 := tsum_congr fun a => ENNReal.tsum_mul_left
     _ = ∑' a, p a * ∑' b, if b ∈ s then f a b else 0 :=
       (tsum_congr fun a => (congr_arg fun x => p a * x) <| tsum_congr fun b => by split_ifs <;> rfl)
     _ = ∑' a, p a * (f a).toOuterMeasure s :=
@@ -225,7 +225,7 @@ theorem bindOnSupport_apply (b : β) :
 theorem support_bindOnSupport :
     (p.bindOnSupport f).support = ⋃ (a : α) (h : a ∈ p.support), (f a h).support := by
   refine' Set.ext fun b => _
-  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne.def, not_forall,
+  simp only [ENNReal.tsum_eq_zero, not_or, mem_support_iff, bindOnSupport_apply, Ne, not_forall,
     mul_eq_zero, Set.mem_iUnion]
   exact
     ⟨fun hb =>

@@ -86,7 +86,7 @@ open Set
 open Filter hiding map
 
 open Function MeasurableSpace
-open scoped Classical
+open scoped Classical symmDiff
 open Topology BigOperators Filter ENNReal NNReal Interval MeasureTheory
 
 variable {α β γ δ ι R R' : Type*}
@@ -137,12 +137,10 @@ theorem measure_union_add_inter' (hs : MeasurableSet s) (t : Set α) :
   rw [union_comm, inter_comm, measure_union_add_inter t hs, add_comm]
 #align measure_theory.measure_union_add_inter' MeasureTheory.measure_union_add_inter'
 
-open scoped symmDiff in
 lemma measure_symmDiff_eq (hs : MeasurableSet s) (ht : MeasurableSet t) :
     μ (s ∆ t) = μ (s \ t) + μ (t \ s) := by
   simpa only [symmDiff_def, sup_eq_union] using measure_union disjoint_sdiff_sdiff (ht.diff hs)
 
-open scoped symmDiff in
 lemma measure_symmDiff_le (s t u : Set α) :
     μ (s ∆ u) ≤ μ (s ∆ t) + μ (t ∆ u) :=
   le_trans (μ.mono <| symmDiff_triangle s t u) (measure_union_le (s ∆ t) (t ∆ u))
@@ -251,10 +249,29 @@ theorem le_measure_diff : μ s₁ - μ s₂ ≤ μ (s₁ \ s₂) :=
   tsub_le_iff_left.2 <|
     calc
       μ s₁ ≤ μ (s₂ ∪ s₁) := measure_mono (subset_union_right _ _)
-      _ = μ (s₂ ∪ s₁ \ s₂) := (congr_arg μ union_diff_self.symm)
+      _ = μ (s₂ ∪ s₁ \ s₂) := congr_arg μ union_diff_self.symm
       _ ≤ μ s₂ + μ (s₁ \ s₂) := measure_union_le _ _
 
 #align measure_theory.le_measure_diff MeasureTheory.le_measure_diff
+
+/-- If the measure of the symmetric difference of two sets is finite,
+then one has infinite measure if and only if the other one does. -/
+theorem measure_eq_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s = ∞ ↔ μ t = ∞ := by
+  suffices h : ∀ u v, μ (u ∆ v) ≠ ∞ → μ u = ∞ → μ v = ∞
+    from ⟨h s t hμst, h t s (symmDiff_comm s t ▸ hμst)⟩
+  intro u v hμuv hμu
+  by_contra! hμv
+  apply hμuv
+  rw [Set.symmDiff_def, eq_top_iff]
+  calc
+    ∞ = μ u - μ v := (WithTop.sub_eq_top_iff.2 ⟨hμu, hμv⟩).symm
+    _ ≤ μ (u \ v) := le_measure_diff
+    _ ≤ μ (u \ v ∪ v \ u) := measure_mono <| subset_union_left ..
+
+/-- If the measure of the symmetric difference of two sets is finite,
+then one has finite measure if and only if the other one does. -/
+theorem measure_ne_top_iff_of_symmDiff (hμst : μ (s ∆ t) ≠ ∞) : μ s ≠ ∞ ↔ μ t ≠ ∞ :=
+    (measure_eq_top_iff_of_symmDiff hμst).ne
 
 theorem measure_diff_lt_of_lt_add (hs : MeasurableSet s) (hst : s ⊆ t) (hs' : μ s ≠ ∞) {ε : ℝ≥0∞}
     (h : μ t < μ s + ε) : μ (t \ s) < ε := by
@@ -278,7 +295,7 @@ theorem measure_eq_measure_of_between_null_diff {s₁ s₂ s₃ : Set α} (h12 :
   have key : μ s₃ ≤ μ s₁ :=
     calc
       μ s₃ = μ (s₃ \ s₁ ∪ s₁) := by rw [diff_union_of_subset (h12.trans h23)]
-      _ ≤ μ (s₃ \ s₁) + μ s₁ := (measure_union_le _ _)
+      _ ≤ μ (s₃ \ s₁) + μ s₁ := measure_union_le _ _
       _ = μ s₁ := by simp only [h_nulldiff, zero_add]
 
   exact ⟨le12.antisymm (le23.trans key), le23.antisymm (key.trans le12)⟩
@@ -350,7 +367,7 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
     refine' fun b => ae_eq_of_subset_of_measure_ge (inter_subset_left _ _) _ _ _
     · calc
         μ (M (t b)) = μ (t b) := measure_toMeasurable _
-        _ ≤ μ (s b) := (h_le b)
+        _ ≤ μ (s b) := h_le b
         _ ≤ μ (M (t b) ∩ M (⋃ b, s b)) :=
           measure_mono <|
             subset_inter ((hsub b).trans <| subset_toMeasurable _ _)
@@ -360,8 +377,8 @@ theorem measure_iUnion_congr_of_subset [Countable β] {s : β → Set α} {t : �
       exact htop b
   calc
     μ (⋃ b, t b) ≤ μ (⋃ b, M (t b)) := measure_mono (iUnion_mono fun b => subset_toMeasurable _ _)
-    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := (measure_congr (EventuallyEq.countable_iUnion H).symm)
-    _ ≤ μ (M (⋃ b, s b)) := (measure_mono (iUnion_subset fun b => inter_subset_right _ _))
+    _ = μ (⋃ b, M (t b) ∩ M (⋃ b, s b)) := measure_congr (EventuallyEq.countable_iUnion H).symm
+    _ ≤ μ (M (⋃ b, s b)) := measure_mono (iUnion_subset fun b => inter_subset_right _ _)
     _ = μ (⋃ b, s b) := measure_toMeasurable _
 #align measure_theory.measure_Union_congr_of_subset MeasureTheory.measure_iUnion_congr_of_subset
 
@@ -483,16 +500,16 @@ theorem measure_iUnion_eq_iSup [Countable ι] {s : ι → Set α} (hd : Directed
   calc
     μ (⋃ n, t n) ≤ μ (⋃ n, T n) := measure_mono (iUnion_mono fun i => subset_toMeasurable _ _)
     _ = μ (⋃ n, Td n) := by rw [iUnion_disjointed]
-    _ ≤ ∑' n, μ (Td n) := (measure_iUnion_le _)
+    _ ≤ ∑' n, μ (Td n) := measure_iUnion_le _
     _ = ⨆ I : Finset ℕ, ∑ n in I, μ (Td n) := ENNReal.tsum_eq_iSup_sum
     _ ≤ ⨆ n, μ (t n) := iSup_le fun I => by
       rcases hd.finset_le I with ⟨N, hN⟩
       calc
         (∑ n in I, μ (Td n)) = μ (⋃ n ∈ I, Td n) :=
           (measure_biUnion_finset ((disjoint_disjointed T).set_pairwise I) fun n _ => hm n).symm
-        _ ≤ μ (⋃ n ∈ I, T n) := (measure_mono (iUnion₂_mono fun n _hn => disjointed_subset _ _))
-        _ = μ (⋃ n ∈ I, t n) := (measure_biUnion_toMeasurable I.countable_toSet _)
-        _ ≤ μ (t N) := (measure_mono (iUnion₂_subset hN))
+        _ ≤ μ (⋃ n ∈ I, T n) := measure_mono (iUnion₂_mono fun n _hn => disjointed_subset _ _)
+        _ = μ (⋃ n ∈ I, t n) := measure_biUnion_toMeasurable I.countable_toSet _
+        _ ≤ μ (t N) := measure_mono (iUnion₂_subset hN)
         _ ≤ ⨆ n, μ (t n) := le_iSup (μ ∘ t) N
 #align measure_theory.measure_Union_eq_supr MeasureTheory.measure_iUnion_eq_iSup
 
@@ -691,7 +708,7 @@ theorem toMeasure_apply₀ (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s 
   rcases hs.exists_measurable_subset_ae_eq with ⟨t, hts, htm, heq⟩
   calc
     m.toMeasure h s = m.toMeasure h t := measure_congr heq.symm
-    _ = m t := (toMeasure_apply m h htm)
+    _ = m t := toMeasure_apply m h htm
     _ ≤ m s := m.mono hts
 
 #align measure_theory.to_measure_apply₀ MeasureTheory.toMeasure_apply₀
@@ -868,7 +885,7 @@ end SMul
 
 instance instNoZeroSMulDivisors [Zero R] [SMulWithZero R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [NoZeroSMulDivisors R ℝ≥0∞] : NoZeroSMulDivisors R (Measure α) where
-  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne.def, ext_iff', forall_or_left] using h
+  eq_zero_or_eq_zero_of_smul_eq_zero h := by simpa [Ne, ext_iff', forall_or_left] using h
 
 instance instMulAction [Monoid R] [MulAction R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
     [MeasurableSpace α] : MulAction R (Measure α) :=
@@ -936,7 +953,7 @@ theorem measure_eq_left_of_subset_of_measure_add_eq {s t : Set α} (h : (μ + ν
       μ t + ν t = μ s + ν s := h''.symm
       _ ≤ μ s + ν t := add_le_add le_rfl (measure_mono h')
   apply ENNReal.le_of_add_le_add_right _ this
-  simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne.def, coe_add] at h
+  simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at h
   exact h.2
 #align measure_theory.measure.measure_eq_left_of_subset_of_measure_add_eq MeasureTheory.Measure.measure_eq_left_of_subset_of_measure_add_eq
 
@@ -953,7 +970,7 @@ theorem measure_toMeasurable_add_inter_left {s t : Set α} (hs : MeasurableSet s
       measure_eq_left_of_subset_of_measure_add_eq _ (subset_toMeasurable _ _)
         (measure_toMeasurable t).symm
     rwa [measure_toMeasurable t]
-  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne.def, coe_add] at ht
+  · simp only [not_or, ENNReal.add_eq_top, Pi.add_apply, Ne, coe_add] at ht
     exact ht.1
 #align measure_theory.measure.measure_to_measurable_add_inter_left MeasureTheory.Measure.measure_toMeasurable_add_inter_left
 
@@ -1571,7 +1588,6 @@ def AbsolutelyContinuous {_m0 : MeasurableSpace α} (μ ν : Measure α) : Prop 
   ∀ ⦃s : Set α⦄, ν s = 0 → μ s = 0
 #align measure_theory.measure.absolutely_continuous MeasureTheory.Measure.AbsolutelyContinuous
 
--- mathport name: measure.absolutely_continuous
 @[inherit_doc MeasureTheory.Measure.AbsolutelyContinuous]
 scoped[MeasureTheory] infixl:50 " ≪ " => MeasureTheory.Measure.AbsolutelyContinuous
 
@@ -1646,6 +1662,10 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   exact h1 hs.1
 
 end AbsolutelyContinuous
+
+@[simp]
+lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
+  ⟨fun h ↦ measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
 
 alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
 alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
@@ -1866,7 +1886,7 @@ theorem pairwise_aedisjoint_of_aedisjoint_forall_ne_one {G α : Type*} [Group G]
   intro g₁ g₂ hg
   let g := g₂⁻¹ * g₁
   replace hg : g ≠ 1 := by
-    rw [Ne.def, inv_mul_eq_one]
+    rw [Ne, inv_mul_eq_one]
     exact hg.symm
   have : (g₂⁻¹ • ·) ⁻¹' (g • s ∩ s) = g₁ • s ∩ g₂ • s := by
     rw [preimage_eq_iff_eq_image (MulAction.bijective g₂⁻¹), image_smul, smul_set_inter, smul_smul,

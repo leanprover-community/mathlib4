@@ -377,16 +377,15 @@ lemma locallyRingedSpaceAdjunction_counit :
 /-- The adjunction `Γ ⊣ Spec` from `CommRingᵒᵖ` to `Scheme`. -/
 def adjunction : Scheme.Γ.rightOp ⊣ Scheme.Spec :=
   locallyRingedSpaceAdjunction.restrictFullyFaithful Scheme.forgetToLocallyRingedSpace (𝟭 _)
-    (NatIso.ofComponents (fun X => Iso.refl _) )
-    (NatIso.ofComponents (fun X => Iso.refl _) )
+    (NatIso.ofComponents (fun X => Iso.refl _))
+    (NatIso.ofComponents (fun X => Iso.refl _))
 #align algebraic_geometry.Γ_Spec.adjunction AlgebraicGeometry.ΓSpec.adjunction
 
 theorem adjunction_homEquiv_apply {X : Scheme} {R : CommRingCatᵒᵖ}
     (f : (op <| Scheme.Γ.obj <| op X) ⟶ R) :
     ΓSpec.adjunction.homEquiv X R f = locallyRingedSpaceAdjunction.homEquiv X.1 R f := by
-  dsimp [adjunction, Adjunction.restrictFullyFaithful]
-  simp only [Category.comp_id, Category.id_comp]
-  rfl -- Porting note: Added
+  dsimp [adjunction, Adjunction.restrictFullyFaithful, equivOfFullyFaithful]
+  simp
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_apply
 
 theorem adjunction_homEquiv (X : Scheme) (R : CommRingCatᵒᵖ) :
@@ -417,6 +416,7 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
+set_option maxHeartbeats 400000 in
 instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
   dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
   -- Porting Note: `dsimp` was unnecessary and had to make this explicit
@@ -482,18 +482,18 @@ instance Spec.preservesLimits : Limits.PreservesLimits Scheme.Spec :=
 #align algebraic_geometry.Spec.preserves_limits AlgebraicGeometry.Spec.preservesLimits
 
 /-- Spec is a full functor. -/
-instance : Full Spec.toLocallyRingedSpace :=
-  rFullOfCounitIsIso ΓSpec.locallyRingedSpaceAdjunction
+instance : Spec.toLocallyRingedSpace.Full  :=
+  R_full_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.full : Full Scheme.Spec :=
-  rFullOfCounitIsIso ΓSpec.adjunction
+instance Spec.full : Scheme.Spec.Full  :=
+  R_full_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.full AlgebraicGeometry.Spec.full
 
 /-- Spec is a faithful functor. -/
-instance : Faithful Spec.toLocallyRingedSpace :=
+instance : Spec.toLocallyRingedSpace.Faithful :=
   R_faithful_of_counit_isIso ΓSpec.locallyRingedSpaceAdjunction
 
-instance Spec.faithful : Faithful Scheme.Spec :=
+instance Spec.faithful : Scheme.Spec.Faithful :=
   R_faithful_of_counit_isIso ΓSpec.adjunction
 #align algebraic_geometry.Spec.faithful AlgebraicGeometry.Spec.faithful
 

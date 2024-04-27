@@ -692,10 +692,28 @@ def Fork.ext {s t : Fork f g} (i : s.pt ≅ t.pt) (w : i.hom ≫ t.ι = s.ι := 
   inv := Fork.mkHom i.inv (by rw [← w, Iso.inv_hom_id_assoc])
 #align category_theory.limits.fork.ext CategoryTheory.Limits.Fork.ext
 
+/-- Two forks of the form `ofι` are isomorphic whenever their `ι`'s are equal. -/
+def ForkOfι.ext {P : C} {ι ι' : P ⟶ X} (w : ι ≫ f = ι ≫ g) (w' : ι' ≫ f = ι' ≫ g) (h : ι = ι') :
+    Fork.ofι ι w ≅ Fork.ofι ι' w' :=
+  Fork.ext (Iso.refl _) (by simp [h])
+
 /-- Every fork is isomorphic to one of the form `Fork.of_ι _ _`. -/
 def Fork.isoForkOfι (c : Fork f g) : c ≅ Fork.ofι c.ι c.condition :=
   Fork.ext (by simp only [Fork.ofι_pt, Functor.const_obj_obj]; rfl) (by simp)
 #align category_theory.limits.fork.iso_fork_of_ι CategoryTheory.Limits.Fork.isoForkOfι
+
+/--
+Given two forks with isomorphic components in such a way that the natural diagrams commute, then if
+one is a limit, then the other one is as well.
+-/
+def Fork.isLimitOfIsos {X' Y' : C} (c : Fork f g) (hc : IsLimit c)
+    {f' g' : X' ⟶ Y'} (c' : Fork f' g')
+    (e₀ : X ≅ X') (e₁ : Y ≅ Y') (e : c.pt ≅ c'.pt)
+    (comm₁ : e₀.hom ≫ f' = f ≫ e₁.hom := by aesop_cat)
+    (comm₂ : e₀.hom ≫ g' = g ≫ e₁.hom := by aesop_cat)
+    (comm₃ : e.hom ≫ c'.ι = c.ι ≫ e₀.hom := by aesop_cat) : IsLimit c' :=
+  let i : parallelPair f g ≅ parallelPair f' g' := parallelPair.ext e₀ e₁ comm₁.symm comm₂.symm
+  (IsLimit.equivOfNatIsoOfIso i c c' (Fork.ext e comm₃)) hc
 
 /-- Helper function for constructing morphisms between coequalizer coforks.
 -/

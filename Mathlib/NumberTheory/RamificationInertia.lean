@@ -496,19 +496,19 @@ and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
 noncomputable def quotientToQuotientRangePowQuotSuccAux {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
     S ⧸ P →
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) :=
-  Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_left _ x a_mem)⟩)
+  Quotient.map' (fun x : S => ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩)
     fun x y h => by
     rw [Submodule.quotientRel_r_def] at h ⊢
     simp only [_root_.map_mul, LinearMap.mem_range]
-    refine' ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul h a_mem)⟩, _⟩
+    refine' ⟨⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_mul a_mem h)⟩, _⟩
     ext
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.coe_sub, Subtype.coe_mk,
-      Subtype.coe_mk, _root_.map_mul, map_sub, sub_mul]
+      Subtype.coe_mk, _root_.map_mul, map_sub, mul_sub]
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux Ideal.quotientToQuotientRangePowQuotSuccAux
 
 theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSuccAux f p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_left _ x a_mem)⟩ :=
+      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   by apply Quotient.map'_mk''
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux_mk Ideal.quotientToQuotientRangePowQuotSuccAux_mk
 
@@ -520,7 +520,7 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
   map_add' := by
     intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
-      quotientToQuotientRangePowQuotSuccAux_mk, add_mul]
+      quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
     exact congr_arg Submodule.Quotient.mk rfl
   map_smul' := by
     intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
@@ -530,11 +530,12 @@ noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : 
     ext
     simp only [mul_assoc, _root_.map_mul, Quotient.mk_eq_mk, Submodule.coe_smul_of_tower,
       Algebra.smul_def, Quotient.algebraMap_quotient_pow_ramificationIdx]
+    ring
 #align ideal.quotient_to_quotient_range_pow_quot_succ Ideal.quotientToQuotientRangePowQuotSucc
 
 theorem quotientToQuotientRangePowQuotSucc_mk {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) (x : S) :
     quotientToQuotientRangePowQuotSucc f p P a_mem (Submodule.Quotient.mk x) =
-      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_left _ x a_mem)⟩ :=
+      Submodule.Quotient.mk ⟨_, Ideal.mem_map_of_mem _ (Ideal.mul_mem_right x _ a_mem)⟩ :=
   quotientToQuotientRangePowQuotSuccAux_mk f p P a_mem x
 #align ideal.quotient_to_quotient_range_pow_quot_succ_mk Ideal.quotientToQuotientRangePowQuotSucc_mk
 
@@ -551,10 +552,10 @@ theorem quotientToQuotientRangePowQuotSucc_injective [IsDedekindDomain S] [P.IsP
       rw [Submodule.Quotient.quot_mk_eq_mk, Ideal.Quotient.mk_eq_mk, Ideal.mem_quotient_iff_mem_sup,
         sup_eq_left.mpr Pe_le_Pi1] at hz
       rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Submodule.Quotient.quot_mk_eq_mk,
-        Ideal.Quotient.mk_eq_mk, ← map_sub, Ideal.Quotient.eq, ← sub_mul] at h
+        Ideal.Quotient.mk_eq_mk, ← map_sub, Ideal.Quotient.eq, ← mul_sub] at h
       exact
-        (Ideal.IsPrime.mul_mem_pow _
-              ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_right
+        (Ideal.IsPrime.mem_pow_mul _
+              ((Submodule.sub_mem_iff_right _ hz).mp (Pe_le_Pi1 h))).resolve_left
           a_not_mem
 #align ideal.quotient_to_quotient_range_pow_quot_succ_injective Ideal.quotientToQuotientRangePowQuotSucc_injective
 
@@ -575,7 +576,7 @@ theorem quotientToQuotientRangePowQuotSucc_surjective [IsDedekindDomain S]
       Submodule.coe_sub]
     refine ⟨⟨_, Ideal.mem_map_of_mem _ (Submodule.neg_mem _ hz)⟩, ?_⟩
     rw [powQuotSuccInclusion_apply_coe, Subtype.coe_mk, Ideal.Quotient.mk_eq_mk, map_add,
-      mul_comm y a, sub_add_cancel_left, map_neg]
+      sub_add_cancel_left, map_neg]
   letI := Classical.decEq (Ideal S)
   rw [sup_eq_prod_inf_factors _ (pow_ne_zero _ hP0), normalizedFactors_pow,
     normalizedFactors_irreducible ((Ideal.prime_iff_isPrime hP0).mpr hP).irreducible, normalize_eq,
@@ -624,9 +625,9 @@ theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P �
   let Q : ℕ → Prop :=
     fun i => Module.rank (R ⧸ p) { x // x ∈ map (Quotient.mk (P ^ e)) (P ^ i) }
       = (e - i) • Module.rank (R ⧸ p) (S ⧸ P)
-  refine @Nat.decreasingInduction' Q i e (fun j lt_e _le_j ih => ?_) hi ?_
+  refine Nat.decreasingInduction' (P := Q) (fun j lt_e _le_j ih => ?_) hi ?_
   · dsimp only [Q]
-    rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul, Nat.sub_succ, ← Nat.succ_eq_add_one,
+    rw [rank_pow_quot_aux f p P _ lt_e, ih, ← succ_nsmul', Nat.sub_succ, ← Nat.succ_eq_add_one,
       Nat.succ_pred_eq_of_pos (Nat.sub_pos_of_lt lt_e)]
     assumption
   · dsimp only [Q]
@@ -829,7 +830,7 @@ theorem sum_ramification_inertia (K L : Type*) [Field K] [Field L] [IsDedekindDo
     refine Finset.sum_congr rfl fun P _ => ?_
     rw [Factors.finrank_pow_ramificationIdx]
   · refine LinearEquiv.finrank_eq (Factors.piQuotientLinearEquiv S p ?_).symm
-    rwa [Ne.def, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
+    rwa [Ne, Ideal.map_eq_bot_iff_le_ker, (RingHom.injective_iff_ker_eq_bot _).mp inj_RS,
       le_bot_iff]
   · exact finrank_quotient_map p K L
 #align ideal.sum_ramification_inertia Ideal.sum_ramification_inertia

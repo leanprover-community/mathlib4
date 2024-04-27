@@ -299,7 +299,7 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   congr
   ext i
   have hb : b i = ‖v i‖⁻¹ • v i := gramSchmidtOrthonormalBasis_apply_of_orthogonal hdim hv (h i)
-  simp only [hb, inner_smul_left, real_inner_self_eq_norm_mul_norm, IsROrC.conj_to_real]
+  simp only [hb, inner_smul_left, real_inner_self_eq_norm_mul_norm, RCLike.conj_to_real]
   rw [abs_of_nonneg]
   · field_simp
   · positivity
