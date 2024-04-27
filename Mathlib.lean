@@ -2280,7 +2280,6 @@ import Mathlib.FieldTheory.RatFunc.FieldStructure
 import Mathlib.FieldTheory.RatFunc.FunLike
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SeparableClosure
-import Mathlib.FieldTheory.SeparableDegree
 import Mathlib.FieldTheory.SplittingField.Construction
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
 import Mathlib.FieldTheory.Subfield
