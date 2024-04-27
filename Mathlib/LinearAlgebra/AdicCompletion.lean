@@ -244,7 +244,10 @@ theorem eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
   rfl
 #align adic_completion.eval_apply adicCompletion.eval_apply
 
-theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ _ x :=
+-- Adaptation note: 2024-04-23
+-- Previously the right hand side was just `mkQ (I ^ n • (⊤ : Submodule R M)) x`.
+-- After nightly-2024-04-23, that times out.
+theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ (I ^ n • (⊤ : Submodule R M)) x :=
   rfl
 #align adic_completion.eval_of adicCompletion.eval_of
 

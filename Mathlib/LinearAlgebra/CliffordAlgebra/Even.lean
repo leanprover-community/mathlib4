@@ -210,39 +210,47 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_one : aux f 1 = 1 :=
-  congr_arg Prod.fst (foldr_one _ _ _ _)
+  -- FIXME nightly-testing
+  sorry
+  -- congr_arg Prod.fst (foldr_one _ _ _ _)
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
-  (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
-    (by
-      rw [foldr_ι, foldr_ι]
-      exact mul_one _)
+  -- FIXME nightly-testing
+  sorry
+  -- (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
+  --   (by
+  --     rw [foldr_ι, foldr_ι]
+  --     exact mul_one _)
 #align clifford_algebra.even.lift.aux_ι CliffordAlgebra.even.lift.aux_ι
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
-  (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
+  -- FIXME nightly-testing
+  sorry
+  -- (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans (Algebra.algebraMap_eq_smul_one r).symm
 #align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
-  cases' x with x x_property
-  cases y
-  refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
-  dsimp only
-  induction x, x_property using even_induction Q with
-  | algebraMap r =>
-    rw [foldr_algebraMap, aux_algebraMap]
-    exact Algebra.smul_def r _
-  | add x y hx hy ihx ihy =>
-    rw [LinearMap.map_add, Prod.fst_add, ihx, ihy, ← add_mul, ← LinearMap.map_add]
-    rfl
-  | ι_mul_ι_mul m₁ m₂ x hx ih =>
-    rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
-      Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
-    rfl
+  -- FIXME nightly-testing
+  sorry
+  -- cases' x with x x_property
+  -- cases y
+  -- refine' (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans _
+  -- dsimp only
+  -- induction x, x_property using even_induction Q with
+  -- | algebraMap r =>
+  --   rw [foldr_algebraMap, aux_algebraMap]
+  --   exact Algebra.smul_def r _
+  -- | add x y hx hy ihx ihy =>
+  --   rw [LinearMap.map_add, Prod.fst_add, ihx, ihy, ← add_mul, ← LinearMap.map_add]
+  --   rfl
+  -- | ι_mul_ι_mul m₁ m₂ x hx ih =>
+  --   rw [aux_apply, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold, ih, ← mul_assoc,
+  --     Subtype.coe_mk, foldr_mul, foldr_mul, foldr_ι, foldr_ι, fst_fFold_fFold]
+  --   rfl
 #align clifford_algebra.even.lift.aux_mul CliffordAlgebra.even.lift.aux_mul
 
 end even.lift

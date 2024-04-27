@@ -182,23 +182,14 @@ theorem lift_of {N} [Monoid N] (fi : ∀ i, M i →* N) {i} (m : M i) : lift fi 
   DFunLike.congr_fun (lift_comp_of ..) m
 #align free_product.lift_of Monoid.CoprodI.lift_of
 
-@[elab_as_elim]
-theorem induction_on {C : CoprodI M → Prop} (m : CoprodI M) (h_one : C 1)
-    (h_of : ∀ (i) (m : M i), C (of m)) (h_mul : ∀ x y, C x → C y → C (x * y)) : C m := by
-  let S : Submonoid (CoprodI M) :=
-    { carrier := setOf C
-      mul_mem' := h_mul _ _
-      one_mem' := h_one }
-  have : C _ := Subtype.prop (lift (fun i => of.codRestrict S (h_of i)) m)
-  -- FIXME nightly-testing
-  -- Currently broken, see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/help.20fixing.20a.20proof.20in.20Mathlib.2EGroupTheory.2ECoprodI.3F/near/435106341
-  sorry
-  -- convert this
-  -- change MonoidHom.id _ m = S.subtype.comp _ m
-  -- congr
-  -- ext i
-  -- rfl
-#align free_product.induction_on Monoid.CoprodI.induction_on
+@[simp]
+theorem lift_comp_of' {N} [Monoid N] (f : CoprodI M →* N) :
+    lift (fun i ↦ f.comp (of (i := i))) = f :=
+  lift.apply_symm_apply f
+
+@[simp]
+theorem lift_of' : lift (fun i ↦ (of : M i →* CoprodI M)) = .id (CoprodI M) :=
+  lift_comp_of' (.id _)
 
 theorem of_leftInverse [DecidableEq ι] (i : ι) :
     Function.LeftInverse (lift <| Pi.mulSingle i (MonoidHom.id (M i))) of := fun x => by
@@ -403,7 +394,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp only [rcons.eq_1, cons.eq_1, ne_eq]
+  simp only [rcons, cons, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head

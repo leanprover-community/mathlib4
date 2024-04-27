@@ -114,7 +114,9 @@ theorem Unitization.norm_splitMul_snd_sq (x : Unitization 𝕜 E) :
     refine (norm_add_le _ _).trans ?_
     gcongr
     · rw [Algebra.algebraMap_eq_smul_one]
-      refine (norm_smul _ _).trans_le ?_
+      -- Adaptation note: 2024-04-23:
+      -- Previously this was just `refine (norm_smul _ _).trans_le ?_`
+      refine (norm_smul (fst (x⋆ * x)) _).trans_le ?_
       simpa only [mul_one] using
         mul_le_mul_of_nonneg_left (mem_closedBall_zero_iff.1 hy) (norm_nonneg (star x * x).fst)
     · exact (unit_le_opNorm _ y <| mem_closedBall_zero_iff.1 hy).trans (opNorm_mul_apply_le _ _ _)
