@@ -21,23 +21,21 @@ spectral theorem, diagonalization theorem, continuous functional calculus
 namespace Matrix
 
 variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
-variable {A : Matrix n n 𝕜}
 
 open scoped BigOperators
-
 namespace IsHermitian
-
 section DecidableEq
 
 variable [DecidableEq n]
-variable (hA : A.IsHermitian)
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate a ha := by
   use fun (f : C(spectrum 𝕜 a, 𝕜)) =>
-  (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal ( RCLike.ofReal ∘ f ∘ hA.eigenvalues)
-      * (star (eigenvectorUnitary hA : Matrix n n 𝕜))
+  (eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (f ∘ RCLike.ofReal ∘ ha.eigenvalues)
+      * (star (eigenvectorUnitary ha : Matrix n n 𝕜))
+  constructor
+  constructor
 
 
 --
