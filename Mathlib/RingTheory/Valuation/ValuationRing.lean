@@ -70,14 +70,9 @@ instance : LE (ValueGroup A K) :=
           apply_fun fun t => c⁻¹ • t at he
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
-          use (d⁻¹ : Aˣ) * c * e
-          -- FIXME nightly-testing
-          -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/RingTheory.2FValuation.2FValuationRing.2Elean
-          sorry
-          -- erw [← he, ← mul_smul, ← mul_smul]
-          -- congr 1
-          -- rw [mul_comm]
-          -- simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul]
+          use c * e * (d⁻¹ : Aˣ)
+          simp_rw [Units.smul_def, ← he, mul_smul]
+          rw [← mul_smul _ _ b, Units.inv_mul, one_smul]
         )
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
