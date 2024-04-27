@@ -8,7 +8,7 @@ import Mathlib.Algebra.Polynomial.BigOperators
 import Mathlib.Algebra.Polynomial.Lifts
 import Mathlib.Algebra.Polynomial.Splits
 import Mathlib.RingTheory.RootsOfUnity.Complex
-import Mathlib.FieldTheory.RatFunc
+import Mathlib.FieldTheory.RatFunc.Degree
 import Mathlib.NumberTheory.ArithmeticFunction
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
