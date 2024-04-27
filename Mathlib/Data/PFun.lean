@@ -332,7 +332,7 @@ def fixInduction {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h
   clear h
   induction' ‹Acc _ _› with a ha IH
   have h : b ∈ f.fix a := Part.mem_assert_iff.2 ⟨⟨a, ha⟩, h₂⟩
-  refine H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
+  exact H a h fun a' fa' => IH a' fa' (Part.mem_assert_iff.1 (fix_fwd h fa')).snd
 #align pfun.fix_induction PFun.fixInduction
 
 theorem fixInduction_spec {C : α → Sort*} {f : α →. Sum β α} {b : β} {a : α} (h : b ∈ f.fix a)
