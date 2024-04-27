@@ -5,7 +5,7 @@ Authors: Yoh Tanimoto
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
-import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+-- import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
 
 /-!
 # Compactly supported continuous functions
@@ -306,17 +306,18 @@ instance instModule [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring 
     [ContinuousConstSMul R β] : Module R C_c(α, β) :=
   Function.Injective.module R ⟨⟨_, coe_zero⟩, coe_add⟩ DFunLike.coe_injective coe_smul
 
-instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] :
-    NonUnitalNonAssocSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+-- TODO: solve type class instance problem
+-- instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] :
+--     NonUnitalNonAssocSemiring C_c(α, β) :=
+--   DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance instNonUnitalSemiring [NonUnitalSemiring β] [TopologicalSemiring β] :
-    NonUnitalSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+-- instance instNonUnitalSemiring [NonUnitalSemiring β] [TopologicalSemiring β] :
+--     NonUnitalSemiring C_c(α, β) :=
+--   DFunLike.coe_injective.nonUnitalSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
-instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [TopologicalSemiring β] :
-    NonUnitalCommSemiring C_c(α, β) :=
-  DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
+-- instance instNonUnitalCommSemiring [NonUnitalCommSemiring β] [TopologicalSemiring β] :
+--     NonUnitalCommSemiring C_c(α, β) :=
+--   DFunLike.coe_injective.nonUnitalCommSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
 
 instance instNonUnitalNonAssocRing [NonUnitalNonAssocRing β] [TopologicalRing β] :
     NonUnitalNonAssocRing C_c(α, β) :=
@@ -381,9 +382,9 @@ end Uniform
 /-! ### Metric structure
 
 When `β` is a metric space, then every element of `C_c(α, β)` is bounded, and so there is a natural
-inclusion map `CompactlySupportedContinuousMap.toBCF : C_c(α, β) → (α →ᵇ β)`. Via this map `C_c(α, β)`
-inherits a metric as the pullback of the metric on `α →ᵇ β`. Moreover, this map has closed range
-in `α →ᵇ β` and consequently `C_c(α, β)` is a complete space whenever `β` is complete.
+inclusion map `CompactlySupportedContinuousMap.toBCF : C_c(α, β) → (α →ᵇ β)`. Via this map
+`C_c(α, β)` inherits a metric as the pullback of the metric on `α →ᵇ β`. Moreover, this map has
+closed range in `α →ᵇ β` and consequently `C_c(α, β)` is a complete space whenever `β` is complete.
 -/
 
 
@@ -446,8 +447,8 @@ theorem dist_toBCF_eq_dist {f g : C_c(α, β)} : dist f.toBCF g.toBCF = dist f g
 open BoundedContinuousFunction
 
 /-- Convergence in the metric on `C_c(α, β)` is uniform convergence. -/
-theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C_c(α, β)} {f : C_c(α, β)} {l : Filter ι} :
-    Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l := by
+theorem tendsto_iff_tendstoUniformly {ι : Type*} {F : ι → C_c(α, β)} {f : C_c(α, β)}
+    {l : Filter ι} : Tendsto F l (𝓝 f) ↔ TendstoUniformly (fun i => F i) f l := by
   simpa only [Metric.tendsto_nhds] using
     @BoundedContinuousFunction.tendsto_iff_tendstoUniformly _ _ _ _ _ (fun i => (F i).toBCF)
       f.toBCF l
@@ -460,9 +461,9 @@ section Norm
 
 /-! ### Normed space
 
-The norm structure on `C_c(α, β)` is the one induced by the inclusion `toBCF : C_c(α, β) → (α →ᵇ b)`,
-viewed as an additive monoid homomorphism. Then `C_c(α, β)` is naturally a normed space over a normed
-field `𝕜` whenever `β` is as well.
+The norm structure on `C_c(α, β)` is the one induced by the inclusion
+`toBCF : C_c(α, β) → (α →ᵇ b)`, viewed as an additive monoid homomorphism. Then `C_c(α, β)` is
+naturally a normed space over a normed field `𝕜` whenever `β` is as well.
 -/
 
 
@@ -570,8 +571,8 @@ variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β
   [ContinuousAdd β] [ContinuousStar β] [MonoidWithZero 𝕜] [SMulWithZero 𝕜 β]
   [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
-instance instStarModule : StarModule 𝕜 C_c(α, β) where
-  star_smul k f := ext fun x => star_smul k (f x)
+-- instance instStarModule : StarModule 𝕜 C_c(α, β) where
+--   star_smul k f := ext fun x => star_smul k (f x)
 
 end StarModule
 
@@ -580,16 +581,17 @@ section StarRing
 variable [NonUnitalSemiring β] [StarRing β] [TopologicalSpace β] [ContinuousStar β]
   [TopologicalSemiring β]
 
-instance instStarRing : StarRing C_c(α, β) :=
-  { CompactlySupportedContinuousMap.instStarAddMonoid with
-    star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
+-- instance instStarRing : StarRing C_c(α, β) :=
+--   { CompactlySupportedContinuousMap.instStarAddMonoid with
+--     star_mul := fun f g => ext fun x => star_mul (f x) (g x) }
 
 end StarRing
 
 section CstarRing
 
-instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] : CstarRing C_c(α, β) where
-  norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
+-- instance instCstarRing [NonUnitalNormedRing β] [StarRing β] [CstarRing β] :
+--     CstarRing C_c(α, β) where
+--   norm_star_mul_self {f} := CstarRing.norm_star_mul_self (x := f.toBCF)
 
 end CstarRing
 
@@ -672,14 +674,14 @@ def compLinearMap [AddCommMonoid δ] [ContinuousAdd δ] {R : Type*} [Semiring R]
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 
-/-- Composition as a non-unital algebra homomorphism. -/
-def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
-    [TopologicalSemiring δ] [Module R δ] [ContinuousConstSMul R δ] (g : β →co γ) :
-    C_c(γ, δ) →ₙₐ[R] C_c(β, δ) where
-  toFun f := f.comp g
-  map_smul' _ _ := rfl
-  map_zero' := rfl
-  map_add' _ _ := rfl
-  map_mul' _ _ := rfl
+-- /-- Composition as a non-unital algebra homomorphism. -/
+-- def compNonUnitalAlgHom {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring δ]
+--     [TopologicalSemiring δ] [Module R δ] [ContinuousConstSMul R δ] (g : β →co γ) :
+--     C_c(γ, δ) →ₙₐ[R] C_c(β, δ) where
+--   toFun f := f.comp g
+--   map_smul' _ _ := rfl
+--   map_zero' := rfl
+--   map_add' _ _ := rfl
+--   map_mul' _ _ := rfl
 
 end CompactlySupportedContinuousMap
