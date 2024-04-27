@@ -944,7 +944,7 @@ containing it. -/
 theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 ((↑) : s → E)) :
     ∃ w ⊇ s, Orthonormal 𝕜 ((↑) : w → E) ∧
       ∀ u ⊇ w, Orthonormal 𝕜 ((↑) : u → E) → u = w := by
-  have := zorn_subset_nonempty { b | Orthonormal 𝕜 ((↑) : b → E) } ?_ _ hs
+  have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
   · obtain ⟨b, bi, sb, h⟩ := this
     refine' ⟨b, sb, bi, _⟩
     exact fun u hus hu => h u hu hus
