@@ -995,7 +995,7 @@ protected def uniformEquivPiComm : (α →ᵤ[𝔖] ((i:ι) → δ i)) ≃ᵤ ((
 Then the set of continuous functions is closed
 in the topology of uniform convergence on the sets of `𝔖`. -/
 theorem isClosed_setOf_continuous_of_le [t : TopologicalSpace α]
-    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced (Subtype.val : s → α) inferInstance) :
+    (h : t ≤ ⨆ s ∈ 𝔖, .coinduced ((↑) : s → α) inferInstance) :
     IsClosed {f : α →ᵤ[𝔖] β | Continuous (toFun 𝔖 f)} := by
   refine isClosed_iff_forall_filter.2 fun f u _ hu huf ↦ ?_
   rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn] at huf

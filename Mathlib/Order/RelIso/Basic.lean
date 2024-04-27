@@ -208,7 +208,7 @@ infixl:25 " ↪r " => RelEmbedding
 
 /-- The induced relation on a subtype is an embedding under the natural inclusion. -/
 def Subtype.relEmbedding {X : Type*} (r : X → X → Prop) (p : X → Prop) :
-    (Subtype.val : Subtype p → X) ⁻¹'o r ↪r r :=
+    ((↑) : Subtype p → X) ⁻¹'o r ↪r r :=
   ⟨Embedding.subtype p, Iff.rfl⟩
 #align subtype.rel_embedding Subtype.relEmbedding
 

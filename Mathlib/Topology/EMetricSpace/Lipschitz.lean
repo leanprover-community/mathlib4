@@ -191,7 +191,7 @@ protected theorem id : LipschitzWith 1 (@id α) :=
 #align lipschitz_with.id LipschitzWith.id
 
 /-- The inclusion of a subset is 1-Lipschitz. -/
-protected theorem subtype_val (s : Set α) : LipschitzWith 1 (Subtype.val : s → α) :=
+protected theorem subtype_val (s : Set α) : LipschitzWith 1 ((↑) : s → α) :=
   LipschitzWith.of_edist_le fun _ _ => le_rfl
 #align lipschitz_with.subtype_val LipschitzWith.subtype_val
 #align lipschitz_with.subtype_coe LipschitzWith.subtype_val

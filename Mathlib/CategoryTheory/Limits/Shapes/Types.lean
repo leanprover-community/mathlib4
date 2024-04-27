@@ -358,7 +358,7 @@ theorem binaryCofan_isColimit_iff {X Y : Type u} (c : BinaryCofan X Y) :
 
 /-- Any monomorphism in `Type` is a coproduct injection. -/
 noncomputable def isCoprodOfMono {X Y : Type u} (f : X ⟶ Y) [Mono f] :
-    IsColimit (BinaryCofan.mk f (Subtype.val : ↑(Set.range f)ᶜ → Y)) := by
+    IsColimit (BinaryCofan.mk f ((↑) : ↑(Set.range f)ᶜ → Y)) := by
   apply Nonempty.some
   rw [binaryCofan_isColimit_iff]
   refine' ⟨(mono_iff_injective f).mp inferInstance, Subtype.val_injective, _⟩
@@ -524,7 +524,7 @@ theorem type_equalizer_iff_unique :
 
 /-- Show that the subtype `{x : Y // g x = h x}` is an equalizer for the pair `(g,h)`. -/
 def equalizerLimit : Limits.LimitCone (parallelPair g h) where
-  cone := Fork.ofι (Subtype.val : { x : Y // g x = h x } → Y) (funext Subtype.prop)
+  cone := Fork.ofι ((↑) : { x : Y // g x = h x } → Y) (funext Subtype.prop)
   isLimit :=
     Fork.IsLimit.mk' _ fun s =>
       ⟨fun i => ⟨s.ι i, by apply congr_fun s.condition i⟩, rfl, fun hm =>

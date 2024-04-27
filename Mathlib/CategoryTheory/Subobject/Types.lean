@@ -30,7 +30,7 @@ open CategoryTheory
 
 open CategoryTheory.Subobject
 
-theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾(Subtype.val : s → α)) :=
+theorem subtype_val_mono {α : Type u} (s : Set α) : Mono (↾((↑) : s → α)) :=
   (mono_iff_injective _).mpr Subtype.val_injective
 #align subtype_val_mono subtype_val_mono
 
@@ -48,7 +48,7 @@ noncomputable def Types.monoOverEquivalenceSet (α : Type u) : MonoOver α ≌ S
             rintro a ⟨x, rfl⟩
             exact ⟨t.1 x, congr_fun t.w x⟩) }
   inverse :=
-    { obj := fun s => MonoOver.mk' (Subtype.val : s → α)
+    { obj := fun s => MonoOver.mk' ((↑) : s → α)
       map := fun {s t} b => MonoOver.homMk (fun w => ⟨w.1, Set.mem_of_mem_of_subset w.2 b.le⟩) }
   unitIso :=
     NatIso.ofComponents fun f =>

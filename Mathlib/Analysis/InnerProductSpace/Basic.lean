@@ -760,7 +760,7 @@ theorem orthonormal_iff_ite [DecidableEq ι] {v : ι → E} :
 /-- `if ... then ... else` characterization of a set of vectors being orthonormal.  (Inner product
 equals Kronecker delta.) -/
 theorem orthonormal_subtype_iff_ite [DecidableEq E] {s : Set E} :
-    Orthonormal 𝕜 (Subtype.val : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by
+    Orthonormal 𝕜 ((↑) : s → E) ↔ ∀ v ∈ s, ∀ w ∈ s, ⟪v, w⟫ = if v = w then 1 else 0 := by
   rw [orthonormal_iff_ite]
   constructor
   · intro h v hv w hw
@@ -873,7 +873,7 @@ theorem Orthonormal.comp {ι' : Type*} {v : ι → E} (hv : Orthonormal 𝕜 v) 
 /-- An injective family `v : ι → E` is orthonormal if and only if `Subtype.val : (range v) → E` is
 orthonormal. -/
 theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
-    Orthonormal 𝕜 (Subtype.val : Set.range v → E) ↔ Orthonormal 𝕜 v := by
+    Orthonormal 𝕜 ((↑) : Set.range v → E) ↔ Orthonormal 𝕜 v := by
   let f : ι ≃ Set.range v := Equiv.ofInjective v hv
   refine' ⟨fun h => h.comp f f.injective, fun h => _⟩
   rw [← Equiv.self_comp_ofInjective_symm hv]
@@ -883,7 +883,7 @@ theorem orthonormal_subtype_range {v : ι → E} (hv : Function.Injective v) :
 /-- If `v : ι → E` is an orthonormal family, then `Subtype.val : (range v) → E` is an orthonormal
 family. -/
 theorem Orthonormal.toSubtypeRange {v : ι → E} (hv : Orthonormal 𝕜 v) :
-    Orthonormal 𝕜 (Subtype.val : Set.range v → E) :=
+    Orthonormal 𝕜 ((↑) : Set.range v → E) :=
   (orthonormal_subtype_range hv.linearIndependent.injective).2 hv
 #align orthonormal.to_subtype_range Orthonormal.toSubtypeRange
 
@@ -941,10 +941,10 @@ theorem orthonormal_sUnion_of_directed {s : Set (Set E)} (hs : DirectedOn (· �
 
 /-- Given an orthonormal set `v` of vectors in `E`, there exists a maximal orthonormal set
 containing it. -/
-theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 (Subtype.val : s → E)) :
-    ∃ w ⊇ s, Orthonormal 𝕜 (Subtype.val : w → E) ∧
-      ∀ u ⊇ w, Orthonormal 𝕜 (Subtype.val : u → E) → u = w := by
-  have := zorn_subset_nonempty { b | Orthonormal 𝕜 (Subtype.val : b → E) } ?_ _ hs
+theorem exists_maximal_orthonormal {s : Set E} (hs : Orthonormal 𝕜 ((↑) : s → E)) :
+    ∃ w ⊇ s, Orthonormal 𝕜 ((↑) : w → E) ∧
+      ∀ u ⊇ w, Orthonormal 𝕜 ((↑) : u → E) → u = w := by
+  have := zorn_subset_nonempty { b | Orthonormal 𝕜 ((↑) : b → E) } ?_ _ hs
   · obtain ⟨b, bi, sb, h⟩ := this
     refine' ⟨b, sb, bi, _⟩
     exact fun u hus hu => h u hu hus
