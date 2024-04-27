@@ -106,6 +106,7 @@ instance functionField_isScalarTower [IrreducibleSpace X.carrier] (U : Opens X.c
   rw [X.presheaf.germ_stalkSpecializes]
 #align algebraic_geometry.function_field_is_scalar_tower AlgebraicGeometry.functionField_isScalarTower
 
+-- Adaptation note: 2024-04-23
 noncomputable instance (R : CommRingCat.{u}) [IsDomain R] :
     Algebra R (Scheme.Spec.obj <| op R).functionField :=
   RingHom.toAlgebra <| by change CommRingCat.of R ⟶ _; apply StructureSheaf.toStalk
