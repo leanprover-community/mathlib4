@@ -35,38 +35,141 @@ initialize registerTraceClass `Tactic.generalize_proofs
 
 namespace GeneralizeProofs
 
-/--
-State for the generalize proofs tactic.
-Contains the remaining names to be used and the list of generalizations so far.
--/
+/-- State for the `MGen` monad. -/
 structure GState where
-  /-- Source of names to use for generalized proofs,
-  where `none` means to generate an inaccessible name. -/
-  nextNames : List (Option Name)
-  /-- Mapping from propositions to proofs, used to merge proofs.
-  These should all be valid with respect to the local context outside `abstractProofs`. -/
-  propToProof : ExprMap Expr
-  /-- The fvar/prop/proof triples to add to the local context. -/
-  generalizations : Array (Name × Expr × Expr) := #[]
+  /-- Mapping from propositions to an fvar in the local context with that type. -/
+  propToFVar : ExprMap Expr
 
-/--
-Monad used to generalize proofs.
-Carries a state (`Mathlib.Tactic.GeneralizeProofs.State`) keeping track of current generalizations.
--/
+/-- Monad used to generalize proofs. Carries `Mathlib.Tactic.GeneralizeProofs.State`. -/
 abbrev MGen := StateRefT GState MetaM
 
-/-- Gets the next name from `State.nextNames`. Returns `none` if a name should be generated. -/
-def nextName? : MGen (Option Name) := do
-  let n? := (← get).nextNames.headD none
-  modify fun s ↦ { s with nextNames := s.nextNames.tail }
-  return n?
+/-- Inserts a prop/fvar pair into the `propToFVar` map. -/
+def MGen.insertFVar (prop fvar : Expr) : MGen Unit :=
+  modify fun s ↦ { s with propToFVar := s.propToFVar.insert prop fvar }
+
+/-- Context for the `MAbs` monad. -/
+structure AContext where
+  /-- The local fvars corresponding to bound variables.
+  Abstraction needs to be sure that these variables do not appear in abstracted terms. -/
+  fvars : Array Expr := #[]
+  /-- A copy of `propToFVar` from `GState`. -/
+  propToFVar : ExprMap Expr
+  /-- The recursion depth, for how many times `visit` is called from within `visitProof. -/
+  depth : Nat := 0
+  /-- The max allowed recursion depth. -/
+  maxDepth : Nat := 8
+  /-- The initial local context, for resetting when recursing. -/
+  initLCtx : LocalContext
+
+/-- State for the `MAbs` monad. -/
+structure AState where
+  /-- The prop/proof triples to add to the local context.
+  The proofs must not refer to fvars in `fvars`. -/
+  generalizations : Array (Expr × Expr) := #[]
+  /-- Map version of `generalizations`. Use `MAbs.findProof?` and `MAbs.insertProof`. -/
+  propToProof : ExprMap Expr := {}
 
 /--
 Monad used to abstract proofs, to prepare for generalization.
-Wraps the `MGen` monad and has a cache mapping expressions
-to expressions that have had their proofs abstracted.
+Has a cache, and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
+and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
 -/
-abbrev MAbs := MonadCacheT Expr Expr <| MGen
+abbrev MAbs := ReaderT AContext <| MonadCacheT Expr Expr <| StateRefT AState MetaM
+
+/-- Runs `MAbs` in `MGen`. Returns the value and the `generalizations`. -/
+def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) := do
+  let s ← get
+  let (x, s') ← mx |>.run { initLCtx := ← getLCtx, propToFVar := s.propToFVar } |>.run |>.run {}
+  return (x, s'.generalizations)
+
+/--
+Finds a proof of `prop` by looking at `propToFVar` and `propToProof`.
+-/
+def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
+  if let some pf := (← read).propToFVar.find? prop then
+    return pf
+  else
+    return (← get).propToProof.find? prop
+
+/--
+Generalize `prop`, where `proof` is its proof.
+-/
+def MAbs.insertProof (prop pf : Expr) : MAbs Unit := do
+  unless ← isDefEq prop (← inferType pf) do
+    throwError "insertProof: proof{indentD pf}does not have type{indentD prop}"
+  unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
+    throwError "insertProof: proof{indentD pf}\nis not well-formed in the initial context\n\
+      fvars: {(← read).fvars}"
+  unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx prop do
+    throwError "insertProof: proof{indentD prop}\nis not well-formed in the initial context\n\
+      fvars: {(← read).fvars}"
+  modify fun s ↦
+    { s with
+      generalizations := s.generalizations.push (prop, pf)
+      propToProof := s.propToProof.insert prop pf }
+
+/-- Runs `x` with an additional local variable. -/
+def MAbs.withLocal {α : Type} (fvar : Expr) (x : MAbs α) : MAbs α :=
+  withReader (fun r => {r with fvars := r.fvars.push fvar}) x
+
+/-- Runs `x` with an increased recursion depth and the initial local context, clearing `fvars`. -/
+def MAbs.withRecurse {α : Type} (x : MAbs α) : MAbs α := do
+  withLCtx (← read).initLCtx (← getLocalInstances) do
+    withReader (fun r => {r with fvars := #[], depth := r.depth + 1}) x
+
+/--
+Computes expected types for each argument to `f`,
+given that the type of `mkAppN f args` is supposed to be `ty?`
+(where if `ty?` is none, there's no type to propagate inwards).
+-/
+def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
+    MetaM (Array (Option Expr)) := withTransparency .all <| withNewMCtxDepth do
+  -- Metavariables for each argument to `f`:
+  let mut margs := #[]
+  -- The current type of `mAppN f margs`:
+  let mut fty ← inferType f
+  -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
+  let mut unifiedFTy := false
+  for i in [0 : args.size] do
+    unless i < margs.size do
+      let (margs', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
+      if margs'.isEmpty then panic! "could not make progress at argument {i}"
+      fty := fty'
+      margs := margs ++ margs'
+    let arg := args[i]!
+    let marg := margs[i]!
+    if let some ty := ty? then
+      if !unifiedFTy && margs.size == args.size then
+        unifiedFTy := (← observing? <| isDefEq fty ty).getD false
+    unless ← isDefEq (← inferType marg) (← inferType arg) do
+      panic! s!"failed isDefEq types {i}, {← ppExpr marg}, {← ppExpr arg}"
+    unless ← isDefEq marg arg do
+      panic! s!"failed isDefEq values {i}, {← ppExpr marg}, {← ppExpr arg}"
+    unless ← marg.mvarId!.isAssigned do
+      marg.mvarId!.assign arg
+  margs.mapM fun marg => do
+    -- Note: all mvars introduced by `appArgExpectedTypes` are assigned by this point
+    -- so there is no mvar leak.
+    return (← instantiateMVars (← inferType marg)).cleanupAnnotations
+
+/--
+Does `mkLambdaFVars fvars e` but
+1. zeta reduces let bindings
+2. only includes used fvars
+3. returns the list of fvars that were actually abstracted
+-/
+def mkLambdaFVarsUsedOnly (fvars : Array Expr) (e : Expr) : MetaM (Array Expr × Expr) := do
+  let mut e := e
+  let mut fvars' : List Expr := []
+  for i' in [0:fvars.size] do
+    let i := fvars.size - i' - 1
+    let fvar := fvars[i]!
+    e ← mkLambdaFVars #[fvar] e
+    match e with
+    | .letE _ _ v b _ => e := b.instantiate1 v
+    | .lam ..         => fvars' := fvar :: fvars'
+    | _               => unreachable!
+  return (fvars'.toArray, e)
 
 /--
 Abstract proofs occurring in the expression.
@@ -82,126 +185,100 @@ For example, `(by simp : 1 < [1, 2].length)` has `1 < Nat.succ 1` as the inferre
 but from knowing it's an argument to `List.nthLe` we can deduce `1 < [1, 2].length`.
 -/
 partial def abstractProofs (e : Expr) (ty? : Option Expr) : MAbs Expr := do
-  visit (← instantiateMVars e) ty? #[]
+  if (← read).depth < (← read).maxDepth then
+    MAbs.withRecurse <| visit (← instantiateMVars e) ty?
+  else
+    return e
 where
   /--
   Core implementation of `abstractProofs`.
-  - `fvars` is the current list of bound variables.
   -/
-  visit (e : Expr) (ty? : Option Expr) (fvars : Array Expr) : MAbs Expr := do
+  visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+    if let some ty := ty? then
+      unless ← isDefEq (← inferType e) ty do
+        throwError "visit: type of{indentD e}\nis not{indentD ty}"
     if e.isAtomic then
       return e
     else
       checkCache e fun _ ↦ do
-        let ty ← ty?.getDM (inferType e)
         if ← isProof e then
-          visitProof e ty fvars
+          visitProof e ty?
         else
           match e with
           | .forallE n t b i =>
-            withLocalDecl n i (← visit t none fvars) fun x ↦ do
-              mkForallFVars #[x] (← visit (b.instantiate1 x) none (fvars.push x))
+            withLocalDecl n i (← visit t none) fun x ↦ MAbs.withLocal x do
+              mkForallFVars #[x] (← visit (b.instantiate1 x) none)
           | .lam n t b i => do
-            withLocalDecl n i (← visit t none fvars) fun x ↦ do
-              let ty ← whnfD ty
-              if !ty.isForall then panic! "Expecting forall in abstractProofs .lam"
-              let ty' := ty.instantiate1 x
-              mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty' (fvars.push x))
+            withLocalDecl n i (← visit t none) fun x ↦ MAbs.withLocal x do
+              let ty'? ←
+                if let some ty := ty? then
+                  let .forallE _ _ tyB _ ← whnfD ty
+                    | throwError "Expecting forall in abstractProofs .lam"
+                  pure <| some <| tyB.instantiate1 x
+                else
+                  pure none
+              mkLambdaFVars #[x] (← visit (b.instantiate1 x) ty'?)
           | .letE n t v b _ =>
-            let t' ← visit t none fvars
-            withLetDecl n t' (← visit v t' fvars) fun x ↦ do
-              mkLetFVars #[x] (← visit (b.instantiate1 x) ty (fvars.push x))
+            let t' ← visit t none
+            withLetDecl n t' (← visit v t') fun x ↦ MAbs.withLocal x do
+              mkLetFVars #[x] (← visit (b.instantiate1 x) ty?)
           | .app .. =>
             e.withApp fun f args ↦ do
-              -- For simplicity, don't try to propagate the type into the function.
-              let f' ← visit f none fvars
-              let mut fty ← inferType f'
+              let f' ← visit f none
+              let argTys ← appArgExpectedTypes f' args ty?
               let mut args' := #[]
-              let mut unifiedTy := false
-              for i in [0:args.size] do
-                if args'.size ≤ i then
-                  let (args'', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
-                  if args''.isEmpty then panic! "Could not make progress in abstractProofs .app"
-                  fty := fty'
-                  args' := args' ++ args''
-                if !unifiedTy && args'.size == args.size then
-                  unifiedTy := (← liftMetaM <| observing? <| isDefEq fty ty).getD false
-                let argTy := (← instantiateMVars <| ← inferType args'[i]!).cleanupAnnotations
-                let arg' ← visit args[i]! argTy fvars
-                unless ← isDefEq argTy (← inferType arg') do
-                  panic! s!"failed isDefEq for .app {i}, {← ppExpr args'[i]!}, {← ppExpr args[i]!}"
-                args'[i]!.mvarId!.assign arg'
-              instantiateMVars <| mkAppN f' args'
-          | .mdata _ b  => return e.updateMData! (← visit b ty fvars)
+              for arg in args, argTy in argTys do
+                args' := args'.push <| ← visit arg argTy
+              return mkAppN f' args'
+          | .mdata _ b  => return e.updateMData! (← visit b ty?)
           -- Giving up propagating expected types for `.proj`, which we shouldn't see anyway
-          | .proj _ _ b => return e.updateProj! (← visit b none fvars)
+          | .proj _ _ b => return e.updateProj! (← visit b none)
           | _           => unreachable!
-  /-- Removes any mdata that appears in an application. -/
-  stripMData : Expr → Expr
-  | .mdata _ e => stripMData e
-  | .app f x => .app (stripMData f).headBeta x
-  | e => e
-  /-- If `e` is the result of `mkLambdaFVars args ...`,
-  returns `e'` and `args'` where variables from `e` have been eliminated and `args'`
-  is a sublist of `args`, such that `mkAppN e' args'` is well-typed. -/
-  elimUnusedArgs (e : Expr) (args : List Expr) : MetaM (Expr × List Expr) := do
-    match args with
-    | [] => return (e, [])
-    | arg :: args =>
-      match e with
-      | .letE _ _ v b _ => elimUnusedArgs (b.instantiate1 v) args
-      | .lam n t b i =>
-        if b.hasLooseBVars then
-          withLocalDecl n i t fun x => do
-            let (b', args') ← elimUnusedArgs (b.instantiate1 x) args
-            return (← mkLambdaFVars #[x] b', arg :: args')
-        else
-          elimUnusedArgs b args
-      | _ => unreachable!
   /--
   Core implementation of abstracting a proof.
   -/
-  visitProof (e ty : Expr) (fvars : Array Expr) : MAbs Expr := do
-    -- -- 1. zeta reduce to ensure that there are no dependencies on lets from `fvars`.
-    -- let e ←
-    --     Meta.transform (usedLetOnly := true) e fun node => do
-    --       match node with
-    --       | .fvar fvarId =>
-    --         if fvars.contains node then
-    --           if let some val ← fvarId.getValue? then
-    --             return .visit val
-    --         return .done node
-    --       | _ => return .continue
-    -- 2. do some simplifications of e
+  visitProof (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+    let fvars := (← read).fvars
+    -- Strip metadata and beta reduce, in case there are some false dependencies
     let e := e.withApp' fun f args => f.beta args
-    -- 3. if head is atomic and arguments are bound variables, then no use in abstracting
+    -- If head is atomic and arguments are bound variables, then it's already abstracted.
     if e.withApp' fun f args => f.isAtomic && args.all fvars.contains then
       return e
-    -- 4. abstract `fvars` out of `e` to make the abstracted proof `pf`
-    let e ← mkExpectedTypeHint e ty
-    --let usedFVars := (collectFVars {} e).fvarSet -- this might not be right
-    --let fvars' := fvars.filter (fun fvar => usedFVars.contains fvar.fvarId!)
---    let fvars' ← fvars.filterM fun fvar => return !(← fvar.fvarId!.getDecl).isLet
-    let (pf, fvars') ← elimUnusedArgs (← mkLambdaFVars fvars e) fvars.toList
+    -- Abstract `fvars` out of `e` to make the abstracted proof `pf`
+    let e ←
+      if let some ty := ty? then
+        unless ← isDefEq ty (← inferType e) do
+          throwError m!"visitProof: incorrectly propagated type{indentD ty}\nfor{indentD e}"
+        mkExpectedTypeHint e ty
+      else pure e
+    trace[Tactic.generalize_proofs] "before mkLambdaFVarsUsedOnly, e = {e}\nfvars={fvars}"
+    unless ← Lean.MetavarContext.isWellFormed (← getLCtx) e do
+      throwError m!"visitProof: proof{indentD e}\nis not well-formed in the current context\n\
+        fvars: {fvars}"
+    let (fvars', pf) ← mkLambdaFVarsUsedOnly fvars e
+    -- let fvars' := fvars
+    -- let pf ← mkLambdaFVars fvars e
+    trace[Tactic.generalize_proofs] "after mkLambdaFVarsUsedOnly, pf = {pf}\nfvars'={fvars'}"
+    unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
+      throwError m!"visitProof: proof{indentD pf}\nis not well-formed in the initial context\n\
+        fvars: {fvars}\n{(← mkFreshExprMVar none).mvarId!}"
     let pfTy ← instantiateMVars (← inferType pf)
-    -- 5. check if there is already a recorded proof for this proposition.
+    -- Visit the proof type to normalize it and abstract more proofs
+    let pfTy ← abstractProofs pfTy none
+    -- Check if there is already a recorded proof for this proposition.
     trace[Tactic.generalize_proofs] "finding {pfTy}"
-    if let some pf' := (← get).propToProof.find? pfTy then
-      trace[Tactic.generalize_proofs] "5 found proof"
-      return mkAppN pf' fvars'.toArray
-    -- 6. record the proof in the state and return the proof.
-    let name ← (← nextName?).getDM (mkFreshUserName `h)
-    modify fun s =>
-      { s with
-        propToProof := s.propToProof.insert pfTy pf
-        generalizations := s.generalizations.push (name, pfTy, pf) }
-    trace[Tactic.generalize_proofs] "6 added"
-    return mkAppN pf fvars'.toArray
+    if let some pf' ← MAbs.findProof? pfTy then
+      trace[Tactic.generalize_proofs] "found proof"
+      return mkAppN pf' fvars'
+    -- Record the proof in the state and return the proof.
+    MAbs.insertProof pfTy pf
+    trace[Tactic.generalize_proofs] "added proof"
+    return mkAppN pf fvars'
 
 /--
 Create a mapping of all propositions in the local context to their fvars.
 -/
-def initialPropToProof : MetaM (ExprMap Expr) := do
+def initialPropToFVar : MetaM (ExprMap Expr) := do
   -- Visit decls in reverse order so that in case there are duplicates,
   -- earlier proofs are preferred
   (← getLCtx).foldrM (init := {}) fun decl m => do
@@ -218,37 +295,34 @@ This continuation `k` is passed
 2. an array of proof terms (extracted from `e`) that prove these propositions
 3. the generalized `e`, which refers to these fvars
 
-The `generalizations` array in the `MGen` is completely managed by this function.
-The `propToProof` map is updated with the new proposition fvars.
+The `propToFVar` map is updated with the new proposition fvars.
 -/
 partial def withGeneralizedProofs {α : Type} [Inhabited α] (e : Expr) (ty? : Option Expr)
     (k : Array Expr → Array Expr → Expr → MGen α) :
     MGen α := do
-  let propToProof := (← get).propToProof
-  modify fun s => { s with generalizations := #[] }
-  trace[Tactic.generalize_proofs] "pre-abstracted{indentD e}\npropToProof: {propToProof.toArray}"
-  let e ← abstractProofs e ty? |>.run
-  trace[Tactic.generalize_proofs] "post-abstracted{indentD e}"
-  let generalizations := (← get).generalizations
-  trace[Tactic.generalize_proofs] "new generalizations: {generalizations}"
+  let propToFVar := (← get).propToFVar
+  trace[Tactic.generalize_proofs] "pre-abstracted{indentD e}\npropToFVar: {propToFVar.toArray}"
+  let (e, generalizations) ← MGen.runMAbs <| abstractProofs e ty?
+  trace[Tactic.generalize_proofs] "\
+    post-abstracted{indentD e}\nnew generalizations: {generalizations}"
   let rec
     /-- Core loop for `withGeneralizedProofs`, adds generalizations one at a time. -/
     go [Inhabited α] (i : Nat) (fvars pfs : Array Expr)
-        (proofToFVar propToProof : ExprMap Expr) : MGen α := do
+        (proofToFVar propToFVar : ExprMap Expr) : MGen α := do
       if h : i < generalizations.size then
-        let (name, ty, pf) := generalizations[i]
+        let (ty, pf) := generalizations[i]
         let ty := (← instantiateMVars (ty.replace proofToFVar.find?)).cleanupAnnotations
-        withLocalDeclD name ty fun fvar => do
+        withLocalDeclD (← mkFreshUserName `pf) ty fun fvar => do
           go (i + 1) (fvars := fvars.push fvar) (pfs := pfs.push pf)
             (proofToFVar := proofToFVar.insert pf fvar)
-            (propToProof := propToProof.insert ty fvar)
+            (propToFVar := propToFVar.insert ty fvar)
       else
         withNewLocalInstances fvars 0 do
           let e' := e.replace proofToFVar.find?
           trace[Tactic.generalize_proofs] "after: e' = {e}"
-          modify fun s => { s with propToProof }
+          modify fun s => { s with propToFVar }
           k fvars pfs e'
-  go 0 #[] #[] (proofToFVar := {}) (propToProof := propToProof)
+  go 0 #[] #[] (proofToFVar := {}) (propToFVar := propToFVar)
 
 /--
 Main loop for `Lean.MVarId.generalizeProofs`.
@@ -265,7 +339,7 @@ where
   go (g : MVarId) (i : Nat) (hs : Array Expr) : MGen (Array Expr × MVarId) := g.withContext do
     let tag ← g.getTag
     if h : i < rfvars.size then
-      trace[Tactic.generalize_proofs] "generalizeProofsCore {i}{g}\n{(← get).propToProof.toArray}"
+      trace[Tactic.generalize_proofs] "generalizeProofsCore {i}{g}\n{(← get).propToFVar.toArray}"
       let fvar := rfvars[i]
       if fvars.contains fvar then
         -- This is one of the hypotheses that was intentionally reverted.
@@ -277,7 +351,7 @@ where
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
           g.assign <| .app g' tgt.letValue!
           return ← go g'.mvarId! i hs
-        if let some pf := (← get).propToProof.find? ty then
+        if let some pf := (← get).propToFVar.find? ty then
           -- Eliminate this local hypothesis using the pre-existing proof, using proof irrelevance
           let tgt' := tgt.bindingBody!.instantiate1 pf
           let g' ← mkFreshExprSyntheticOpaqueMVar tgt' tag
@@ -297,7 +371,7 @@ where
               .ofFVarAliasInfo { id := fvar', baseId := fvar, userName := ← fvar'.getUserName }
             if prop then
               -- Make this prop available as a proof
-              modify fun s => { s with propToProof := s.propToProof.insert t' (.fvar fvar') }
+              MGen.insertFVar t' (.fvar fvar')
             go g' (i + 1) (hs ++ hs')
         | .letE n t v b _ =>
           withGeneralizedProofs t none fun hs' pfs' t' => do
@@ -318,7 +392,7 @@ where
         go g' (i + 1) hs
     else if target then
       trace[Tactic.generalize_proofs] "\
-        generalizeProofsCore target{g}\n{(← get).propToProof.toArray}"
+        generalizeProofsCore target{g}\n{(← get).propToFVar.toArray}"
       withGeneralizedProofs (← g.getType) none fun hs' pfs' ty' => do
         let g' ← mkFreshExprSyntheticOpaqueMVar ty' tag
         g.assign <| mkAppN (← mkLambdaFVars hs' g') pfs'
@@ -331,7 +405,6 @@ end GeneralizeProofs
 
 /--
 Generalize proofs in the hypotheses `fvars` and, if `target` is true, the target.
-Uses `names` for the names of the proofs that are generalized.
 Returns the fvars for the generalized proofs and the new goal.
 
 If a hypothesis is a proposition and a `let` binding, this will clear the value of the let binding.
@@ -344,11 +417,11 @@ These sorts of proofs cannot be meaningfully generalized, and also these are the
 that are left in a term after generalization.
 -/
 partial def _root_.Lean.MVarId.generalizeProofs
-    (g : MVarId) (fvars : Array FVarId) (target : Bool) (names : List (Option Name)) :
+    (g : MVarId) (fvars : Array FVarId) (target : Bool) :
     MetaM (Array Expr × MVarId) := do
   let (rfvars, g) ← g.revert fvars (clearAuxDeclsInsteadOfRevert := true)
   g.withContext do
-    let s := { nextNames := names, propToProof := ← GeneralizeProofs.initialPropToProof }
+    let s := { propToFVar := ← GeneralizeProofs.initialPropToFVar }
     GeneralizeProofs.generalizeProofsCore g fvars rfvars target |>.run' s
 
 /--
@@ -378,13 +451,20 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
 -/
 elab (name := generalizeProofsElab) "generalize_proofs"
     hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
-  let names := hs |>.map (fun | `(binderIdent| $s:ident) => some s.getId | _ => none) |>.toList
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)
     | .targets t target => pure (← getFVarIds t, target)
   liftMetaTactic1 fun g => do
-    let (pfs, g) ← g.generalizeProofs fvars target names
-    for h in hs, fvar in pfs do
-      g.withContext <| Expr.addLocalVarInfoForBinderIdent fvar h
-    return g
+    let (pfs, g) ← g.generalizeProofs fvars target
+    -- Rename the proofs using `hs` and record info
+    g.withContext do
+      let mut lctx ← getLCtx
+      for h in hs, fvar in pfs do
+        if let `(binderIdent| $s:ident) := h then
+          lctx := lctx.setUserName fvar.fvarId! s.getId
+        Expr.addLocalVarInfoForBinderIdent fvar h
+      withLCtx lctx (← getLocalInstances) do
+        let g' ← mkFreshExprSyntheticOpaqueMVar (← g.getType) (← g.getTag)
+        g.assign g'
+        return g'.mvarId!
