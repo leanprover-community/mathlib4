@@ -377,6 +377,9 @@ theorem Subalgebra.SeparatesPoints.rclike_to_real {A : StarSubalgebra 𝕜 C(X, 
 
 variable [CompactSpace X]
 
+-- Adaptation note: 2024-04-23
+-- This `synthInstance.maxHeartbeats` was not previously required.
+set_option synthInstance.maxHeartbeats 40000 in
 /-- The Stone-Weierstrass approximation theorem, `RCLike` version, that a star subalgebra `A` of
 `C(X, 𝕜)`, where `X` is a compact topological space and `RCLike 𝕜`, is dense if it separates
 points. -/

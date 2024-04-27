@@ -303,6 +303,9 @@ section SpecΓ
 
 open AlgebraicGeometry.LocallyRingedSpace
 
+-- Adaptation note: 2024-04-23
+-- This `maxHeartbeats` was not previously required.
+set_option maxHeartbeats 400000 in
 /-- The counit morphism `R ⟶ Γ(Spec R)` given by `AlgebraicGeometry.StructureSheaf.toOpen`.  -/
 @[simps!]
 def toSpecΓ (R : CommRingCat) : R ⟶ Γ.obj (op (Spec.toLocallyRingedSpace.obj (op R))) :=
@@ -327,6 +330,9 @@ theorem Spec_Γ_naturality {R S : CommRingCat} (f : R ⟶ S) :
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.Spec_Γ_naturality AlgebraicGeometry.Spec_Γ_naturality
 
+-- Adaptation note: 2024-04-23
+-- This `maxHeartbeats` was not previously required. It's massive!
+set_option maxHeartbeats 1600000 in
 /-- The counit (`SpecΓIdentity.inv.op`) of the adjunction `Γ ⊣ Spec` is an isomorphism. -/
 @[simps! hom_app inv_app]
 def SpecΓIdentity : Spec.toLocallyRingedSpace.rightOp ⋙ Γ ≅ 𝟭 _ :=

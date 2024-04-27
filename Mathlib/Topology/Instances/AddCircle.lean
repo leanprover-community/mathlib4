@@ -385,6 +385,12 @@ theorem coe_equivIco_mk_apply (x : 𝕜) :
   toIcoMod_eq_fract_mul _ x
 #align add_circle.coe_equiv_Ico_mk_apply AddCircle.coe_equivIco_mk_apply
 
+-- Adaptation note: 2024-04-23
+-- This requires a large increase in the heartbeats limit.
+-- We need to diagnose if the proof is doing something silly,
+-- or if this reflects a regression in IsDefeq from
+-- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
+set_option maxHeartbeats 800000 in
 instance : DivisibleBy (AddCircle p) ℤ where
   div x n := (↑((n : 𝕜)⁻¹ * (equivIco p 0 x : 𝕜)) : AddCircle p)
   div_zero x := by

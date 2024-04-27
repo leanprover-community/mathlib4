@@ -59,8 +59,10 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   infer_instance
 
 -- Adaptation note: 2024-04-21
--- This `maxHeartbeats` was not previously required.
-set_option maxHeartbeats 400000 in
+-- This `maxHeartbeats` was not previously required. Now we need 400000.
+-- Adaptation note: 2024-04-23
+-- Now we need 800000!
+set_option maxHeartbeats 800000 in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
 corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]

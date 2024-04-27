@@ -71,10 +71,14 @@ instance : LE (ValueGroup A K) :=
           simpa [mul_smul] using he
         · rintro ⟨e, he⟩; dsimp
           use (d⁻¹ : Aˣ) * c * e
-          erw [← he, ← mul_smul, ← mul_smul]
-          congr 1
-          rw [mul_comm]
-          simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul])
+          -- FIXME nightly-testing
+          -- See https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/RingTheory.2FValuation.2FValuationRing.2Elean
+          sorry
+          -- erw [← he, ← mul_smul, ← mul_smul]
+          -- congr 1
+          -- rw [mul_comm]
+          -- simp only [← mul_assoc, ← Units.val_mul, mul_inv_self, one_mul]
+        )
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 

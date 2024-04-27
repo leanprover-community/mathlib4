@@ -447,6 +447,9 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
   Quotient.algebraQuotientOfLEComap (Ideal.map_le_iff_le_comap.mp le_pow_ramificationIdx)
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
+-- Adaptation note: 2024-04-23
+-- This `maxHeartbeats` was not previously required. Now we need 400000.
+set_option maxHeartbeats 400000 in
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
