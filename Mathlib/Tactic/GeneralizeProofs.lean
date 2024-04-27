@@ -26,6 +26,10 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- h : 1 < [1, 2].length
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
+
+The tactic is similar in spirit to `Lean.Meta.AbstractNestedProofs` in core.
+One difference is that it the tactic tries to propagate expected types so that
+we get `1 < [1, 2].length` in the above example rather than `1 < Nat.succ 1`.
 -/
 
 namespace Mathlib.Tactic
@@ -34,6 +38,9 @@ open Lean Meta Elab Parser.Tactic Elab.Tactic
 initialize registerTraceClass `Tactic.generalize_proofs
 
 namespace GeneralizeProofs
+
+/-- Flag to set to `true` when debugging. Enables consistency checks. -/
+def debug : Bool := true
 
 /-- State for the `MGen` monad. -/
 structure GState where
@@ -71,10 +78,11 @@ structure AState where
 
 /--
 Monad used to abstract proofs, to prepare for generalization.
-Has a cache, and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
+Has a cache (of expr/type? pairs),
+and it also has a reader context `Mathlib.Tactic.GeneralizeProofs.AContext`
 and a state `Mathlib.Tactic.GeneralizeProofs.AState`.
 -/
-abbrev MAbs := ReaderT AContext <| MonadCacheT Expr Expr <| StateRefT AState MetaM
+abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| StateRefT AState MetaM
 
 /-- Runs `MAbs` in `MGen`. Returns the value and the `generalizations`. -/
 def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) := do
@@ -95,14 +103,15 @@ def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
 Generalize `prop`, where `proof` is its proof.
 -/
 def MAbs.insertProof (prop pf : Expr) : MAbs Unit := do
-  unless ← isDefEq prop (← inferType pf) do
-    throwError "insertProof: proof{indentD pf}does not have type{indentD prop}"
-  unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
-    throwError "insertProof: proof{indentD pf}\nis not well-formed in the initial context\n\
-      fvars: {(← read).fvars}"
-  unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx prop do
-    throwError "insertProof: proof{indentD prop}\nis not well-formed in the initial context\n\
-      fvars: {(← read).fvars}"
+  if debug then
+    unless ← isDefEq prop (← inferType pf) do
+      throwError "insertProof: proof{indentD pf}does not have type{indentD prop}"
+    unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
+      throwError "insertProof: proof{indentD pf}\nis not well-formed in the initial context\n\
+        fvars: {(← read).fvars}"
+    unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx prop do
+      throwError "insertProof: proof{indentD prop}\nis not well-formed in the initial context\n\
+        fvars: {(← read).fvars}"
   modify fun s ↦
     { s with
       generalizations := s.generalizations.push (prop, pf)
@@ -166,9 +175,14 @@ def mkLambdaFVarsUsedOnly (fvars : Array Expr) (e : Expr) : MetaM (Array Expr ×
     let fvar := fvars[i]!
     e ← mkLambdaFVars #[fvar] e
     match e with
-    | .letE _ _ v b _ => e := b.instantiate1 v
-    | .lam ..         => fvars' := fvar :: fvars'
-    | _               => unreachable!
+    | .letE _ _ v b _ =>
+      e := b.instantiate1 v
+    | .lam _ _ b _ =>
+      if b.hasLooseBVars then
+        fvars' := fvar :: fvars'
+      else
+        e := b
+    | _ => unreachable!
   return (fvars'.toArray, e)
 
 /--
@@ -194,13 +208,15 @@ where
   Core implementation of `abstractProofs`.
   -/
   visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
-    if let some ty := ty? then
-      unless ← isDefEq (← inferType e) ty do
-        throwError "visit: type of{indentD e}\nis not{indentD ty}"
+    trace[Tactic.generalize_proofs] "visit (fvars := {(← read).fvars}) e is {e}"
+    if debug then
+      if let some ty := ty? then
+        unless ← isDefEq (← inferType e) ty do
+          throwError "visit: type of{indentD e}\nis not{indentD ty}"
     if e.isAtomic then
       return e
     else
-      checkCache e fun _ ↦ do
+      checkCache (e, ty?) fun _ ↦ do
         if ← isProof e then
           visitProof e ty?
         else
@@ -231,7 +247,7 @@ where
                 args' := args'.push <| ← visit arg argTy
               return mkAppN f' args'
           | .mdata _ b  => return e.updateMData! (← visit b ty?)
-          -- Giving up propagating expected types for `.proj`, which we shouldn't see anyway
+          -- Giving up propagating expected types for `.proj`, which we shouldn't see anyway:
           | .proj _ _ b => return e.updateProj! (← visit b none)
           | _           => unreachable!
   /--
@@ -245,23 +261,26 @@ where
     if e.withApp' fun f args => f.isAtomic && args.all fvars.contains then
       return e
     -- Abstract `fvars` out of `e` to make the abstracted proof `pf`
+    -- The use of `mkLambdaFVarsUsedOnly` is *key* to make sure that the fvars in `fvars`
+    -- don't leak into the expression, since that would poison the cache in `MonadCacheT`.
     let e ←
       if let some ty := ty? then
-        unless ← isDefEq ty (← inferType e) do
-          throwError m!"visitProof: incorrectly propagated type{indentD ty}\nfor{indentD e}"
+        if debug then
+          unless ← isDefEq ty (← inferType e) do
+            throwError m!"visitProof: incorrectly propagated type{indentD ty}\nfor{indentD e}"
         mkExpectedTypeHint e ty
       else pure e
     trace[Tactic.generalize_proofs] "before mkLambdaFVarsUsedOnly, e = {e}\nfvars={fvars}"
-    unless ← Lean.MetavarContext.isWellFormed (← getLCtx) e do
-      throwError m!"visitProof: proof{indentD e}\nis not well-formed in the current context\n\
-        fvars: {fvars}"
+    if debug then
+      unless ← Lean.MetavarContext.isWellFormed (← getLCtx) e do
+        throwError m!"visitProof: proof{indentD e}\nis not well-formed in the current context\n\
+          fvars: {fvars}"
     let (fvars', pf) ← mkLambdaFVarsUsedOnly fvars e
-    -- let fvars' := fvars
-    -- let pf ← mkLambdaFVars fvars e
     trace[Tactic.generalize_proofs] "after mkLambdaFVarsUsedOnly, pf = {pf}\nfvars'={fvars'}"
-    unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
-      throwError m!"visitProof: proof{indentD pf}\nis not well-formed in the initial context\n\
-        fvars: {fvars}\n{(← mkFreshExprMVar none).mvarId!}"
+    if debug then
+      unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
+        throwError m!"visitProof: proof{indentD pf}\nis not well-formed in the initial context\n\
+          fvars: {fvars}\n{(← mkFreshExprMVar none).mvarId!}"
     let pfTy ← instantiateMVars (← inferType pf)
     -- Visit the proof type to normalize it and abstract more proofs
     let pfTy ← abstractProofs pfTy none
