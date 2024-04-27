@@ -557,4 +557,11 @@ theorem ofComapInfPrincipal_eq_of_map (h : m '' s ∈ g) : (ofComapInfPrincipal 
     _ = ↑g := inf_of_le_left (le_principal_iff.mpr h)
 #align ultrafilter.of_comap_inf_principal_eq_of_map Ultrafilter.ofComapInfPrincipal_eq_of_map
 
+/-- The constant to which a non-empty Cauchy filter in a discrete uniform space converges is
+unique (the uniformity is not needed for the equality, and hence is removed from the assumptions,
+but the discrete uniform one is the typical  use-case).-/
+theorem DiscreteUnif.cauchy_const_unique {X : Type _} {α : Filter X} (hα : α.NeBot) {x y : X}
+    (hx : α ≤ pure x) (hy : α ≤ pure y) : x = y :=
+  Filter.pure_injective (hα.le_pure_iff.mp hx ▸ hα.le_pure_iff.mp hy)
+
 end Ultrafilter
