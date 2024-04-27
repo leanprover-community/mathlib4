@@ -794,7 +794,32 @@ theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗ
 
 end piLpCongrRight
 
-section Single
+variable (𝕜) in
+/-- `LinearEquiv.piCurry` for `PiLp`, as an isometry. -/
+def _root_.LinearIsometryEquiv.piLpCurry {ι : Type*} {κ : ι → Type*} (p) [Fact (1 ≤ p)]
+    [Fintype ι] [∀ i, Fintype (κ i)]
+    (α : ∀ i, κ i → Type*) [∀ i k, SeminormedAddCommGroup (α i k)] [∀ i k, Module 𝕜 (α i k)] :
+    PiLp p (fun i : Sigma _ => α i.1 i.2) ≃ₗᵢ[𝕜] PiLp p (fun i => PiLp p (α i)) where
+  toLinearEquiv :=
+    WithLp.linearEquiv _ _ _
+      ≪≫ₗ LinearEquiv.piCurry α
+      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (WithLp.linearEquiv _ _ _).symm)
+      ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
+  norm_map' := (WithLp.equiv p _).symm.surjective.forall.2 fun x => by
+    -- simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
+    --   Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
+    obtain rfl | hp := p.dichotomy
+    · simp_rw [← PiLp.norm_equiv, Pi.norm_def, ← PiLp.nnnorm_equiv, Pi.nnnorm_def]
+      dsimp [LinearEquiv.piCurry, Equiv.piCurry, Sigma.curry]
+      rw [← Finset.univ_sigma_univ, Finset.sup_sigma]
+    · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
+      simp_rw [PiLp.norm_eq_sum this, WithLp.equiv_symm_pi_apply]
+      conv =>
+        enter [1, 1, 2, x]
+        rw [one_div, Real.rpow_inv_rpow (Finset.sum_nonneg fun _ _ ↦ by positivity) (ne_of_gt this)]
+      rw [Finset.sum_sigma', Finset.univ_sigma_univ]
+      rfl
+#exit
 
 variable (p)
 variable [DecidableEq ι]
