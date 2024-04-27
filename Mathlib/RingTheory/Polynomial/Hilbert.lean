@@ -132,14 +132,14 @@ theorem coeff_mul_invOneSubPow_eq_hilbert_eval (p : ℤ[X]) (d n : ℕ) (hn : p.
   rw [hilbert]; by_cases h : p = 0
   · simp only [h, coe_zero, zero_mul, ↓reduceDite, eval_zero, Int.cast_eq_zero]; rfl
   · simp only [h, ↓reduceDite, zsmul_eq_mul]
-    have coe_one_sub : (1 - X : ℤ[X]).ToPowerSeries = 1 - (PowerSeries.X : ℤ⟦X⟧) := by
-      rw [PowerSeries.ext_iff]; exact fun i => by_cases (fun (hi : i = 0) => by
-        simp only [hi, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero, sub_zero,
-        map_sub, PowerSeries.coeff_one, ↓reduceIte, coeff_zero_X]) (fun hi => by
-        simp only [coeff_coe, coeff_sub, map_sub, PowerSeries.coeff_one, hi, ↓reduceIte,
-        zero_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj];
-        rw [Polynomial.coeff_X, PowerSeries.coeff_X]; exact by_cases (fun (hi : i = 1) => by
-        simp only [hi]) (fun hi => by simp only [hi]; exact if_neg <| Ne.symm hi))
+    have coe_one_sub : (1 - X : ℤ[X]).ToPowerSeries = 1 - (PowerSeries.X : ℤ⟦X⟧) :=
+      PowerSeries.ext_iff.2 fun i => by_cases (fun (hi : i = 0) => by
+      simp only [hi, coeff_coe, coeff_sub, coeff_one_zero, coeff_X_zero, sub_zero,
+      map_sub, PowerSeries.coeff_one, ↓reduceIte, coeff_zero_X]) (fun hi => by
+      simp only [coeff_coe, coeff_sub, map_sub, PowerSeries.coeff_one, hi, ↓reduceIte,
+      zero_sub]; rw [Polynomial.coeff_one]; simp only [hi, ↓reduceIte, zero_sub, neg_inj];
+      rw [Polynomial.coeff_X, PowerSeries.coeff_X]; exact by_cases (fun (hi : i = 1) => by
+      simp only [hi]) (fun hi => by simp only [hi]; exact if_neg <| Ne.symm hi))
     by_cases h1 : d + 1 ≤ p.rootMultiplicity 1
     · simp only [h1, ↓reduceIte, eval_zero, Int.cast_eq_zero]
       rw [← pow_rootMultiplicity_mul_greatestFactorOneSubNotDvd_eq p h, mul_comm, coe_mul,

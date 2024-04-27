@@ -90,7 +90,7 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
   inv := (1 - X) ^ (d + 1)
   val_inv := by
     rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow,
-      show (mk 1) * (1 - (X : S⟦X⟧)) = 1 by
+      show (mk 1) * (1 - X : S⟦X⟧) = 1 by
       rw [mul_comm, ext_iff]; exact fun n => by
         by_cases hn : n = 0
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
@@ -101,7 +101,7 @@ noncomputable def invOneSubPow : S⟦X⟧ˣ where
     exact one_pow (d + 1)
   inv_val := by
     rw [← mk_one_pow_eq_mk_choose_add, ← mul_pow,
-      show (1 - (X : S⟦X⟧)) * (mk 1) = 1 by
+      show (1 - X : S⟦X⟧) * (mk 1) = 1 by
       rw [ext_iff]; exact fun n => by
         by_cases hn : n = 0
         · subst hn; simp only [coeff_zero_eq_constantCoeff, map_mul, map_sub, map_one,
