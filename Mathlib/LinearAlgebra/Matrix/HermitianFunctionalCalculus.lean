@@ -30,17 +30,14 @@ variable [DecidableEq n]
 
 variable {A : Matrix n n 𝕜} (hA : IsHermitian A)
 
-instance:
-StarAlgHomClass (C(spectrum 𝕜 A, 𝕜) →⋆ₐ[𝕜] Matrix n n 𝕜) 𝕜 C(spectrum 𝕜 A, 𝕜) (Matrix n n 𝕜)
-    where
-  coe f := f.toFun
-  coe_injective' := by rintro ⟨⟨⟨⟨⟨f, _⟩, _⟩, _⟩, _⟩, _⟩ ⟨⟨⟨⟨⟨g, _⟩, _⟩, _⟩, _⟩, _⟩ h; congr
-  map_mul f := f.map_mul'
-  map_one f := f.map_one'
-  map_add f := f.map_add'
-  map_zero f := f.map_zero'
-  commutes f := f.commutes'
-  map_star f := f.map_star'
+/-To do:
+
+1) Somehow make this natural map defined in terms of the diagonal into a *-alg hom,
+so I have to learn how to specify all of this data.
+
+2) Use the resulting * algebra hom as the φ in the instance of the CFC.
+
+-/
 
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
