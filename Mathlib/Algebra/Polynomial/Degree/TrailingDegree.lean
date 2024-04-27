@@ -38,19 +38,6 @@ section Semiring
 
 variable [Semiring R] {p q r : R[X]}
 
-/-- `trailingDegree p` is the multiplicity of `x` in the polynomial `p`, i.e. the smallest
-`X`-exponent in `p`.
-`trailingDegree p = some n` when `p ≠ 0` and `n` is the smallest power of `X` that appears
-in `p`, otherwise
-`trailingDegree 0 = ⊤`. -/
-def trailingDegree (p : R[X]) : ℕ∞ :=
-  p.support.min
-#align polynomial.trailing_degree Polynomial.trailingDegree
-
-theorem trailingDegree_lt_wf : WellFounded fun p q : R[X] => trailingDegree p < trailingDegree q :=
-  InvImage.wf trailingDegree wellFounded_lt
-#align polynomial.trailing_degree_lt_wf Polynomial.trailingDegree_lt_wf
-
 /-- `natTrailingDegree p` forces `trailingDegree p` to `ℕ`, by defining
 `natTrailingDegree ⊤ = 0`. -/
 def natTrailingDegree (p : R[X]) : ℕ :=
@@ -81,11 +68,6 @@ theorem TrailingMonic.trailingCoeff {p : R[X]} (hp : p.TrailingMonic) : trailing
 #align polynomial.trailing_monic.trailing_coeff Polynomial.TrailingMonic.trailingCoeff
 
 @[simp]
-theorem trailingDegree_zero : trailingDegree (0 : R[X]) = ⊤ :=
-  rfl
-#align polynomial.trailing_degree_zero Polynomial.trailingDegree_zero
-
-@[simp]
 theorem trailingCoeff_zero : trailingCoeff (0 : R[X]) = 0 :=
   rfl
 #align polynomial.trailing_coeff_zero Polynomial.trailingCoeff_zero
@@ -94,10 +76,6 @@ theorem trailingCoeff_zero : trailingCoeff (0 : R[X]) = 0 :=
 theorem natTrailingDegree_zero : natTrailingDegree (0 : R[X]) = 0 :=
   rfl
 #align polynomial.nat_trailing_degree_zero Polynomial.natTrailingDegree_zero
-
-theorem trailingDegree_eq_top : trailingDegree p = ⊤ ↔ p = 0 :=
-  ⟨fun h => support_eq_empty.1 (Finset.min_eq_top.1 h), fun h => by simp [h]⟩
-#align polynomial.trailing_degree_eq_top Polynomial.trailingDegree_eq_top
 
 theorem trailingDegree_eq_natTrailingDegree (hp : p ≠ 0) :
     trailingDegree p = (natTrailingDegree p : ℕ∞) := by
@@ -150,10 +128,6 @@ theorem natTrailingDegree_eq_of_trailingDegree_eq [Semiring S] {q : S[X]}
   unfold natTrailingDegree
   rw [h]
 #align polynomial.nat_trailing_degree_eq_of_trailing_degree_eq Polynomial.natTrailingDegree_eq_of_trailingDegree_eq
-
-theorem trailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : trailingDegree p ≤ n :=
-  show @LE.le ℕ∞ _ p.support.min n from min_le (mem_support_iff.2 h)
-#align polynomial.le_trailing_degree_of_ne_zero Polynomial.trailingDegree_le_of_ne_zero
 
 theorem natTrailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : natTrailingDegree p ≤ n := by
   have : WithTop.some (natTrailingDegree p) = Nat.cast (natTrailingDegree p) := rfl

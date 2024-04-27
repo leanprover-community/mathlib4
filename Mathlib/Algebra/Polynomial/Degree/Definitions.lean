@@ -10,6 +10,7 @@ import Mathlib.Data.Fintype.BigOperators
 import Mathlib.Data.Nat.WithBot
 import Mathlib.Data.Nat.Cast.WithTop
 import Mathlib.Data.Nat.SuccPred
+import Mathlib.Tactic.ToNatDegree
 
 #align_import data.polynomial.degree.definitions from "leanprover-community/mathlib"@"808ea4ebfabeb599f21ec4ae87d6dc969597887f"
 
@@ -46,19 +47,28 @@ section Semiring
 
 variable [Semiring R] {p q r : R[X]}
 
+toTD
 /-- `degree p` is the degree of the polynomial `p`, i.e. the largest `X`-exponent in `p`.
 `degree p = some n` when `p ≠ 0` and `n` is the highest power of `X` that appears in `p`, otherwise
 `degree 0 = ⊥`. -/
 def degree (p : R[X]) : WithBot ℕ :=
   p.support.max
 #align polynomial.degree Polynomial.degree
+/- `trailingDegree p` is the multiplicity of `x` in the polynomial `p`, i.e. the smallest
+`X`-exponent in `p`.
+`trailingDegree p = some n` when `p ≠ 0` and `n` is the smallest power of `X` that appears
+in `p`, otherwise
+`trailingDegree 0 = ⊤`. -/
+#align polynomial.trailing_degree Polynomial.trailingDegree
 
 theorem supDegree_eq_degree (p : R[X]) : p.toFinsupp.supDegree WithBot.some = p.degree :=
   max_eq_sup_coe
 
+toTD
 theorem degree_lt_wf : WellFounded fun p q : R[X] => degree p < degree q :=
   InvImage.wf degree wellFounded_lt
 #align polynomial.degree_lt_wf Polynomial.degree_lt_wf
+#align polynomial.trailing_degree_lt_wf Polynomial.trailingDegree_lt_wf
 
 instance : WellFoundedRelation R[X] :=
   ⟨_, degree_lt_wf⟩
@@ -99,10 +109,12 @@ theorem Monic.coeff_natDegree {p : R[X]} (hp : p.Monic) : p.coeff p.natDegree = 
   hp
 #align polynomial.monic.coeff_nat_degree Polynomial.Monic.coeff_natDegree
 
+toTD
 @[simp]
 theorem degree_zero : degree (0 : R[X]) = ⊥ :=
   rfl
 #align polynomial.degree_zero Polynomial.degree_zero
+#align polynomial.trailing_degree_zero Polynomial.trailingDegree_zero
 
 @[simp]
 theorem natDegree_zero : natDegree (0 : R[X]) = 0 :=
@@ -114,10 +126,12 @@ theorem coeff_natDegree : coeff p (natDegree p) = leadingCoeff p :=
   rfl
 #align polynomial.coeff_nat_degree Polynomial.coeff_natDegree
 
+toTD
 @[simp]
 theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
   ⟨fun h => support_eq_empty.1 (Finset.max_eq_bot.1 h), fun h => h.symm ▸ rfl⟩
 #align polynomial.degree_eq_bot Polynomial.degree_eq_bot
+#align polynomial.trailing_degree_eq_top Polynomial.trailingDegree_eq_top
 
 @[nontriviality]
 theorem degree_of_subsingleton [Subsingleton R] : degree p = ⊥ := by
@@ -172,10 +186,15 @@ theorem natDegree_eq_of_degree_eq [Semiring S] {q : S[X]} (h : degree p = degree
     natDegree p = natDegree q := by unfold natDegree; rw [h]
 #align polynomial.nat_degree_eq_of_degree_eq Polynomial.natDegree_eq_of_degree_eq
 
+theorem trailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : trailingDegree p ≤ (n : ℕ∞) := by
+  rw [Nat.cast_withTop]
+  exact (Finset.inf_le (mem_support_iff.2 h))
+
 theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degree p := by
   rw [Nat.cast_withBot]
   exact Finset.le_sup (mem_support_iff.2 h)
 #align polynomial.le_degree_of_ne_zero Polynomial.le_degree_of_ne_zero
+#align polynomial.le_trailing_degree_of_ne_zero Polynomial.trailingDegree_le_of_ne_zero
 
 theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
   rw [← Nat.cast_le (α := WithBot ℕ), ← degree_eq_natDegree]
@@ -196,6 +215,10 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero (pn : p.natDegree ≤ n) (p1 : p.coe
     p.natDegree = n :=
   pn.antisymm (le_natDegree_of_ne_zero p1)
 #align polynomial.nat_degree_eq_of_le_of_coeff_ne_zero Polynomial.natDegree_eq_of_le_of_coeff_ne_zero
+
+theorem trailingDegree_mono [Semiring S] {f : R[X]} {g : S[X]} (h : f.support ⊆ g.support) :
+    g.trailingDegree ≤ f.trailingDegree :=
+  Finset.inf_mono h
 
 theorem degree_mono [Semiring S] {f : R[X]} {g : S[X]} (h : f.support ⊆ g.support) :
     f.degree ≤ g.degree :=
