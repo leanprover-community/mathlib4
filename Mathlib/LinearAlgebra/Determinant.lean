@@ -608,6 +608,15 @@ theorem Basis.det_comp_basis [Module A M'] (b : Basis ι A M) (b' : Basis ι A M
   rw [Basis.toMatrix_apply, LinearMap.toMatrix_apply, Function.comp_apply]
 #align basis.det_comp_basis Basis.det_comp_basis
 
+theorem Basis.det_basis (b : Basis ι A M) (b' : Basis ι A M) :
+    b'.det b = LinearMap.det (b'.equiv b (Equiv.refl ι)).toLinearMap :=
+  b.det_comp_basis b' (LinearMap.id)
+
+theorem Basis.det_inv (b : Basis ι A M) (b' : Basis ι A M) :
+    (b.isUnit_det b').unit⁻¹ = b'.det b := by
+  rw [← Units.mul_eq_one_iff_inv_eq, IsUnit.unit_spec, Basis.det_basis, Basis.det_basis]
+  exact LinearEquiv.det_mul_det_symm _
+
 theorem Basis.det_reindex {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (b : Basis ι R M) (v : ι' → M)
     (e : ι ≃ ι') : (b.reindex e).det v = b.det (v ∘ e) := by
   rw [Basis.det_apply, Basis.toMatrix_reindex', det_reindexAlgEquiv, Basis.det_apply]
