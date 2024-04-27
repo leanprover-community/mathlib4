@@ -247,4 +247,20 @@ theorem rtakeWhile_idempotent : rtakeWhile p (rtakeWhile p l) = rtakeWhile p l :
   rtakeWhile_eq_self_iff.mpr fun _ => mem_rtakeWhile_imp
 #align list.rtake_while_idempotent List.rtakeWhile_idempotent
 
+
+lemma rdrop_add.{u} {α : Type u} {l : List α} (i j : ℕ) : l.rdrop (i + j)  = (l.rdrop i).rdrop j  :=
+  by
+  simp_rw [List.rdrop_eq_reverse_drop_reverse, reverse_reverse, drop_drop, Nat.add_comm]
+
+@[simp]
+lemma rdrop_append_length.{u} {α : Type u} {l₁ l₂ : List α} :
+    List.rdrop (l₁ ++ l₂) (List.length l₂) = l₁:= by
+  rw [List.rdrop_eq_reverse_drop_reverse, ← length_reverse l₂, reverse_append, drop_left, reverse_reverse]
+
+@[simp]
+lemma rdrop_append.{u} {α : Type u} {l₁ l₂ : List α} (i : ℕ) : List.rdrop (l₁ ++ l₂) (List.length l₂ + i)  = List.rdrop l₁ i:=
+  by
+  rw [rdrop_add, rdrop_append_length]
+
+
 end List
