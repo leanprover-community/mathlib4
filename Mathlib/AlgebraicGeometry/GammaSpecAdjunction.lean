@@ -268,7 +268,7 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f 
   intro r U
   -- Porting note: changed `rw` to `erw`
   rw [LocallyRingedSpace.comp_val_c_app]
-  erw [toOpen_comp_comap_assoc.{u}]
+  erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
   exact h r
