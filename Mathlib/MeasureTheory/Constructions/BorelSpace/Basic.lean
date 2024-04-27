@@ -37,7 +37,6 @@ import Mathlib.Topology.Semicontinuous
 * `Measurable.add` etc : dot notation for arithmetic operations on `Measurable` predicates,
   and similarly for `dist` and `edist`;
 * `AEMeasurable.add` : similar dot notation for almost everywhere measurable functions;
-* `Measurable.ennreal*` : special cases for arithmetic operations on `ℝ≥0∞`.
 -/
 
 
@@ -544,7 +543,7 @@ theorem measure_closure_of_null_frontier {μ : Measure α'} {s : Set α'} (h : �
   measure_congr (closure_ae_eq_of_null_frontier h)
 #align measure_closure_of_null_frontier measure_closure_of_null_frontier
 
-section Preorder
+/- section Preorder
 
 variable [Preorder α] [OrderClosedTopology α] {a b x : α}
 
@@ -943,7 +942,7 @@ nonrec theorem AEMeasurable.min {f g : δ → α} {μ : Measure δ} (hf : AEMeas
 #align ae_measurable.min AEMeasurable.min
 
 end LinearOrder
-
+ -/
 /-- A continuous function from an `OpensMeasurableSpace` to a `BorelSpace`
 is measurable. -/
 theorem Continuous.measurable {f : α → γ} (hf : Continuous f) : Measurable f :=
@@ -1003,7 +1002,7 @@ instance (priority := 100) ContinuousSMul.measurableSMul {M α} [TopologicalSpac
   ⟨fun _ => (continuous_const_smul _).measurable, fun _ =>
     (continuous_id.smul continuous_const).measurable⟩
 #align has_continuous_smul.has_measurable_smul ContinuousSMul.measurableSMul
-
+/-
 section Lattice
 
 instance (priority := 100) ContinuousSup.measurableSup [Sup γ] [ContinuousSup γ] :
@@ -1029,7 +1028,7 @@ instance (priority := 100) ContinuousInf.measurableInf₂ [SecondCountableTopolo
 #align has_continuous_inf.has_measurable_inf₂ ContinuousInf.measurableInf₂
 
 end Lattice
-
+ -/
 section Homeomorph
 
 @[measurability]
@@ -1176,6 +1175,15 @@ protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmb
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
+
+
+
+
+
+
+
+
+#exit
 
 section LinearOrder
 
@@ -1923,6 +1931,16 @@ theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
   rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
+
+
+
+
+
+
+
+
+
+#exit
 
 namespace Real
 
