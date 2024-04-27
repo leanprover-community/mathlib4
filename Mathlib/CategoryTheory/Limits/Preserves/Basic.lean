@@ -811,7 +811,7 @@ instance fullyFaithfulReflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSiz
                 (Cones.functoriality K F).preimage (t.liftConeMorphism _)) <| by
               apply fun s m => (Cones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cone_morphism } }
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
@@ -825,7 +825,7 @@ instance fullyFaithfulReflectsColimits [F.Full] [F.Faithful] :
                 (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cocone_morphism }}
 #align category_theory.limits.fully_faithful_reflects_colimits CategoryTheory.Limits.fullyFaithfulReflectsColimits
 
