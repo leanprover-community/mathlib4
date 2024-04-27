@@ -458,8 +458,8 @@ theorem exists_continuous_one_zero_of_isCompact_of_isGδ [RegularSpace X] [Local
     exact tsum_le_tsum (fun n ↦ I n x) (S x) u_sum
 
 /-- A variation of Urysohn's lemma. In a `LocallyCompactSpace T2Space X`, for a closed set `t` and
-a relatively compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported in `s`, `f x = 1`
-on `t` and `0 ≤ f x ≤ 1`. -/
+a relatively compact open set `s` such that `t ⊆ s`, there is a continuous function `f` supported
+in `s`, `f x = 1` on `t` and `0 ≤ f x ≤ 1`. -/
 lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     (hs : IsOpen s) (hscp : IsCompact (closure s)) (ht : IsClosed t) (hst : t ⊆ s) : ∃ f : C(X, ℝ),
     tsupport f ⊆ s ∧ EqOn f 1 t ∧ ∀ x, f x ∈ Icc (0 : ℝ) 1 := by
@@ -521,7 +521,6 @@ lemma exists_tsupport_one_of_isOpen_isClosed [T2Space X] {s t : Set X}
     apply Urysohns.CU.lim_of_nmem_U
     exact Set.not_mem_compl_iff.mpr hx
   · exact Urysohns.CU.lim_mem_Icc c
-
 
 theorem exists_continuous_nonneg_pos [RegularSpace X] [LocallyCompactSpace X] (x : X) :
     ∃ f : C(X, ℝ), HasCompactSupport f ∧ 0 ≤ (f : X → ℝ) ∧ f x ≠ 0 := by
