@@ -5,8 +5,9 @@ Authors: Russell Emerine
 -/
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.NFA
-import Mathlib.Data.Fintype.Option
+import Mathlib.Data.FinEnum
 import Mathlib.Data.List.Indexes
+import Mathlib.Data.FinEnum.Option
 
 #align_import computability.GNFA
 
@@ -458,15 +459,18 @@ theorem mapEquiv_correct {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e :
     cases M
     exact this
 
-theorem exists_toRegularExpression :
-    ∀ M : GNFA α σ, ∃ r : RegularExpression α, M.accepts = r.matches' :=
+def sigma_toRegularExpression [FinEnum σ] (M : GNFA α σ) :
+    (r : RegularExpression α) ×' M.accepts = r.matches' :=
   by
-  refine' Fintype.induction_empty_option _ _ _ σ
+  revert M
+  refine' @FinEnum.recEmptyOption
+    (λ (t : Type v) [FinEnum t] ↦
+      ∀ (M : GNFA α t), ((r : RegularExpression α) ×' M.accepts = r.matches'))
+    _ _ _ σ _
   ·
     intro σ τ
-    intro
+    intro _ _
     intro e h M
-    letI _ : Fintype σ := Fintype.ofEquiv _ e.symm
     specialize h (M.mapEquiv e.symm)
     rcases h with ⟨r, hr⟩
     use r
@@ -484,7 +488,7 @@ theorem exists_toRegularExpression :
       exact accepts.start mat
   ·
     intro σ
-    intro
+    intro _
     intro h M
     specialize h M.rip
     rcases h with ⟨r, hr⟩
@@ -506,7 +510,7 @@ alphabet.
 
 TODO: would it be a good idea to make a separate "decidable NFA" structure?
 -/
-def toGNFA : GNFA α σ :=
+def toGNFA [enum : FinEnum α] : GNFA α σ :=
   ⟨fun p q =>
     match (p, q) with
     | (none, none) => 0
@@ -514,10 +518,10 @@ def toGNFA : GNFA α σ :=
     | (some p, none) => if M.accept p then 1 else 0
     | (some p, some q) =>
       List.sum <|
-        (List.map fun a => RegularExpression.char a) <| List.filter (fun a => q ∈ M.step p a) as⟩
+        (List.map fun a => RegularExpression.char a) <| List.filter (fun a => q ∈ M.step p a) enum.toList⟩
 
 -- TODO: maybe mark as @simp
-theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).accepts :=
+theorem toGNFA_correct [enum : FinEnum α] : M.accepts = M.toGNFA.accepts :=
   by
   ext x
   constructor
@@ -545,7 +549,7 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
       unfold toGNFA; simp only
       rw [RegularExpression.mem_sum_iff_exists_mem]
       refine' ⟨RegularExpression.char a, _, rfl⟩
-      simpa [univ,List.mem_filter]
+      simpa [enum.mem_toList,List.mem_filter]
   · intro hx
     cases' hx with x step x y z q t step eq
     case start => cases step
@@ -618,24 +622,33 @@ theorem toGNFA_correct (univ : ∀ a, a ∈ as) : M.accepts = (M.toGNFA as).acce
 /--
 Given an NFA with a `fintype` state, there is a regular expression that matches the same language.
 -/
-theorem exists_toRegularExpression {σ} [Finite α] [Finite σ] (M : NFA α σ) :
-    ∃ r : RegularExpression α, M.accepts = r.matches' := by
-  classical
-  rcases Finite.exists_univ_list α with ⟨as, _, univ⟩
-  cases nonempty_fintype σ
-  rcases(M.toGNFA as).exists_toRegularExpression with ⟨r, hr⟩
-  use r
-  rw [← hr]
-  exact M.toGNFA_correct as univ
+def sigma_toRegularExpression [FinEnum α] [FinEnum σ] :
+    (r : RegularExpression α) ×' M.accepts = r.matches' :=
+  let ⟨r, hr⟩ := (M.toGNFA).sigma_toRegularExpression 
+  ⟨r, hr ▸ M.toGNFA_correct⟩
 
 /-- Noncomputably finds the regular expression equivalent to the NFA.
 -/
-noncomputable def toRegularExpression [Fintype α] (M : NFA α σ) : RegularExpression α :=
-  Classical.choose M.exists_toRegularExpression
+def toRegularExpression [FinEnum α] [FinEnum σ] : RegularExpression α :=
+  M.sigma_toRegularExpression.fst
 
-theorem toRegularExpression_correct [Fintype α] (M : NFA α σ) :
+theorem toRegularExpression_correct [FinEnum α] [FinEnum σ] :
     M.accepts = M.toRegularExpression.matches' :=
-  Classical.choose_spec M.exists_toRegularExpression
+  M.sigma_toRegularExpression.snd
+
+theorem exists_toRegularExpression [Fintype α] (M : NFA α σ) :
+    ∃ r : RegularExpression α, M.accepts = r.matches' := by
+  classical
+  have := FinEnum.ofNodupList
+    Fintype.elems.toList
+    (λ x : α ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
+    (Fintype.elems.nodup_toList)
+  have := FinEnum.ofNodupList
+    Fintype.elems.toList
+    (λ x : σ ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
+    (Fintype.elems.nodup_toList)
+  have := M.sigma_toRegularExpression
+  exact ⟨this.fst, this.snd⟩
 
 end NFA
 
