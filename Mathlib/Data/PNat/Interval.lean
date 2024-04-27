@@ -136,10 +136,11 @@ theorem mem_insert_Icc_sub_one {a b x : ℕ+} (hab : a < b) (hins: x ∈ insert 
   rw [mem_insert, mem_Icc] at hins
   apply le_of_lt at hab
   rcases hins with hh | hh
-  · rw [hh] ; exact ⟨ hab, Eq.le rfl ⟩
+  · rw [hh]; exact ⟨ hab, Eq.le rfl ⟩
   · exact ⟨ hh.1, PNat.le_of_le_sub_one hh.2 ⟩
+#align pnat.mem_insert_Icc_sub_one PNat.mem_insert_Icc_sub_one
 
-theorem insert_Icc_sub_one_right (hab : a < b) : insert b (Icc a (b - 1)) = Icc a b := by
+theorem insert_Icc_sub_one_right {a b : ℕ+} (hab : a < b) : insert b (Icc a (b - 1)) = Icc a b := by
   ext x
   constructor
   · intro h
@@ -157,5 +158,6 @@ theorem insert_Icc_sub_one_right (hab : a < b) : insert b (Icc a (b - 1)) = Icc 
     · exact Or.inr hh.1
     · rw [PNat.le_iff_eq_or_le_sub_one]
       exact hh.2
+#align pnat.insert_Icc_sub_one_right PNat.insert_Icc_sub_one_right
 
 end PNat
