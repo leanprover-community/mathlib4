@@ -23,8 +23,8 @@ TODO: Show that the character is continuous.
 ## Main Declarations
 
 * `modularCharacter_fun`: Given a measure μ, define the modular character associated with this
-measure, using the (noncomputable) `haarScalarFactor`. The result that this does not depend on the
-measure chosen (as long as it is inner regular) is `modularCharacter_fun_eq`.
+  measure, using the (noncomputable) `haarScalarFactor`. The result that this does not depend on the
+  measure chosen (as long as it is inner regular) is `modularCharacter_fun_eq`.
 * `modularCharacter`: The homomorphism G →* ℝ≥0 whose toFun is `modularCharacter_fun`.
 -/
 
