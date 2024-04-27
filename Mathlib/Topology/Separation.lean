@@ -1341,8 +1341,8 @@ lemma separation_of_isCompact_not_mem' {X : Type u_1} [TopologicalSpace X] [T2Sp
     · apply (IsOpen.mem_nhdsSet hV.2.1).mpr hV.2.2.2.1
     · exact hV.2.2.2.2
 
-/-- In a `T2Space X`, for compact sets `s` and `t`, there are neighbourhoods `U`, `V` that separate
-`s` and `t`.-/
+/-- In a `T2Space X`, for disjoint compact sets `s` and `t`, there are neighbourhoods `U`, `V` that
+separate `s` and `t`.-/
 lemma separation_of_isCompact_isCompact_disjoint {X : Type u_1} [TopologicalSpace X] [T2Space X]
     {s : Set X} {t : Set X} (H1 : IsCompact s) (H2 : IsCompact t) (H3 : Disjoint s t) :
     SeparatedNhds s t := by
