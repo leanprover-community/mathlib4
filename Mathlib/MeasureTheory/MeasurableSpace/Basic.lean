@@ -1854,7 +1854,7 @@ def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, Measurable
   let em2 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
       × ((i' : PUnit) → α (e.symm (Sum.inr i'))) :=
     MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
-  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : PUnit.{u_3 + 1}) → α (e.symm (Sum.inr i')))
+  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : PUnit.{u_8 + 1}) → α (e.symm (Sum.inr i')))
       ≃ᵐ ((i : δ) → α (some i)) × α none :=
     MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
       (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))
