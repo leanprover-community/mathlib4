@@ -449,20 +449,24 @@ variable {R M : Type*} [Semiring R] [AddCommMonoid M] [Module R M] {N : Submodul
 
 open scoped Classical in
 /-- Zero extension of `f` to `M → M`. -/
-private noncomputable def fext (x : M) : M := if h : x ∈ N then f ⟨x, h⟩ else 0
+private noncomputable def fext : M → M := extend N.subtype f (const M 0)
+
+private theorem fext_apply (x : N) : fext f x.1 = f x :=
+  N.injective_subtype.extend_apply f (const M 0) x
 
 private theorem fext_zero : fext f 0 = 0 := by
-  rw [fext, dif_pos (zero_mem N)]; exact _root_.map_zero _
+  simpa using fext_apply f 0
 
-/-- Define `D'_n` to be `(f⁻¹ ∘ ⋯ ∘ f⁻¹)(N)` (`n` times`). -/
-private def D' (f : N →ₗ[R] M) : (n : ℕ) → Submodule R M
-  | 0 => N
-  | n + 1 => ((D' f n).comap f).map N.subtype
+/-- Define `D'_n` to be `(f⁻¹ ∘ ⋯ ∘ f⁻¹)(N)` (`n` times). -/
+private def D' (f : N →ₗ[R] M) (n : ℕ) : Submodule R M :=
+  (fun L : Submodule R M ↦ (L.comap f).map N.subtype)^[n] N
 
 private theorem map_comap_D'_le : ((D' f (n + 1)).comap N.subtype).map f ≤ D' f n := by
-  rw [D', comap_map_eq_of_injective N.injective_subtype]
+  rw [D', iterate_succ_apply', comap_map_eq_of_injective N.injective_subtype]
   exact map_comap_le _ _
 
+-- It's possible to use `Finset.inf (Finset.range n) (D' f)`,
+-- but it's not convenient due to lacking of simp lemmas.
 /-- Define `D_n` to be the intersection of `D'_j` for `j < n`. -/
 private def D (f : N →ₗ[R] M) : (n : ℕ) → Submodule R M
   | 0 => ⊤
@@ -486,7 +490,7 @@ private def f' : D f (n + 1) →ₗ[R] D f n :=
     (comapSubtypeEquivOfLe (D_le_N f n)).symm.toLinearMap
 
 private theorem coe_f'_apply (x : D f (n + 1)) : (f' f n x).1 = fext f x.1 := by
-  rw [fext, dif_pos (D_le_N f _ x.2)]; rfl
+  rw [show fext f x.1 = _ from fext_apply f ⟨x.1, D_le_N f _ x.2⟩]; rfl
 
 /-- The map `f ^ n : D_n → M`. -/
 private def fn (f : N →ₗ[R] M) : (n : ℕ) → D f n →ₗ[R] M
@@ -503,7 +507,7 @@ private theorem map_comap_N_le_D' : (N.comap (fn f n)).map (D f n).subtype ≤ D
   induction n with
   | zero => exact Submodule.map_comap_le _ _
   | succ n ih =>
-    rw [D', fn, comap_comp]
+    rw [D', iterate_succ_apply', ← D', fn, comap_comp]
     intro x hx
     rw [Submodule.mem_map] at hx ⊢
     obtain ⟨y, hy, rfl⟩ := hx
@@ -511,7 +515,7 @@ private theorem map_comap_N_le_D' : (N.comap (fn f n)).map (D f n).subtype ≤ D
     replace hy : (f' f n y).1 ∈ _ := ih (mem_map_of_mem hy)
     refine ⟨⟨y.1, D_le_N f _ y.2⟩, ?_, rfl⟩
     rw [Submodule.mem_comap]
-    rwa [coe_f'_apply, fext, dif_pos (D_le_N f _ y.2)] at hy
+    rwa [coe_f'_apply, show fext f y.1 = _ from fext_apply f ⟨y.1, D_le_N f _ y.2⟩] at hy
 
 /-- Define `K_n` to be the kernel of `f ^ n`. -/
 private def K : Submodule R M := (LinearMap.ker (fn f n)).map (D f n).subtype
@@ -532,20 +536,24 @@ private def Kmono : ℕ →o Submodule R M where
 private theorem map_comap_D_eq : ((D f (n + 1)).comap N.subtype).map f = D f n := by
   induction n with
   | zero =>
-    simpa only [D, D', inf_of_le_right le_top, comap_subtype_self,
+    simpa only [D, D', iterate_zero_apply, inf_of_le_right le_top, comap_subtype_self,
       Submodule.map_top, LinearMap.range_eq_top]
   | succ n ih =>
     refine (map_comap_D_le f _).antisymm fun x hx ↦ ?_
     obtain ⟨y, hy, rfl⟩ := ih.ge ((inf_le_left : _ ≤ D f n) hx)
     refine mem_map_of_mem ?_
-    rw [D, Submodule.comap_inf, D', comap_map_eq_of_injective N.injective_subtype]
+    rw [D, Submodule.comap_inf, D', iterate_succ_apply',
+      comap_map_eq_of_injective N.injective_subtype]
     exact ⟨hy, mem_comap.2 hx.2⟩
 
 private theorem f'_surjective : Surjective (f' f n) := fun x ↦ by
   have hx := (map_comap_D_eq f hf n).ge x.2
   simp_rw [Submodule.mem_map, Submodule.mem_comap] at hx
   obtain ⟨y, hy, hx⟩ := hx
-  exact ⟨⟨y.1, hy⟩, Subtype.val_injective (by rw [coe_f'_apply, fext, dif_pos y.2, hx])⟩
+  refine ⟨⟨y.1, hy⟩, Subtype.val_injective ?_⟩
+  rw [coe_f'_apply]
+  change fext f y.1 = x.1
+  rw [fext_apply, hx]
 
 private theorem fn_surjective : Surjective (fn f n) := by
   induction n with
@@ -562,7 +570,7 @@ private theorem ker_eq_bot_of_surjective_of_K_eq
     exact ⟨y, hy.symm ▸ x.2, rfl⟩
   rw [fn_apply] at hy
   have hy' : fn f (n + 1) ⟨y.1, hysucc⟩ = 0 := by
-    rw [fn_apply, iterate_succ_apply', hy, fext, dif_pos x.2, hx]
+    rw [fn_apply, iterate_succ_apply', hy, fext_apply, hx]
   replace hy' : y.1 ∈ K f (n + 1) := mem_map_of_mem (LinearMap.mem_ker.2 hy')
   rw [← H, K, Submodule.mem_map] at hy'
   obtain ⟨z, h1, h2 : z.1 = y.1⟩ := hy'
