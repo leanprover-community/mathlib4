@@ -911,8 +911,37 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
     contra (compl_union_self _) (Set.nonempty_compl_of_nontrivial _) (singleton_nonempty _)
   simp [compl_inter_self {x}] at contra
 
-theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X :=
-  sorry
+theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
+  rw [r0Space_iff, Symmetric]
+  have : ∀ x y : X, x ⤳ y → mk x ⤳ mk y := by
+    intro x y h
+    apply (Inducing.specializes_iff ?hf).mpr h
+    exact SeparationQuotient.inducing_mk
+  have := (t1Space_TFAE (SeparationQuotient X)).out 0 9
+  rw [this]
+  constructor
+  · intro h
+    intro x y xspecy
+    have : mk x ⤳ mk y := (Inducing.specializes_iff ?hf).mpr xspecy
+    have : mk x = mk y := h this
+    apply (Inducing.specializes_iff ?hf).mp
+    rw [this]
+  · intro h sx sy sxspecsy
+    rcases Quotient.exists_rep sx with ⟨ x, hx ⟩
+    rcases Quotient.exists_rep sy with ⟨ y, hy ⟩
+    replace hx : mk x = sx := hx
+    replace hy : mk y = sy := hy
+    rw [← hx, ← hy] at sxspecsy
+    have xspecy : x ⤳ y := (Inducing.specializes_iff ?hf).mp sxspecsy
+    have yspecx : y ⤳ x := h xspecy
+    have : Inseparable x y := by
+      rw [inseparable_iff_specializes_and]
+      exact ⟨ xspecy, yspecx ⟩
+    have : mk x = mk y := by
+      rw [mk_eq_mk]
+      exact this
+    rw [← hx, ← hy]
+    exact this
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
