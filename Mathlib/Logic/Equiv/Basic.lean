@@ -753,6 +753,15 @@ def piCurry {β : α → Sort _} (γ : ∀ a, β a → Sort _) :
   right_inv := Sigma.curry_uncurry
 #align equiv.Pi_curry Equiv.piCurry
 
+@[simp] theorem piCurry_apply {β : α → Sort _} (γ : ∀ a, β a → Sort _)
+    (f : ∀ x : Σ i, β i, γ x.1 x.2) :
+    piCurry γ f = Sigma.curry f :=
+  rfl
+
+@[simp] theorem piCurry_symm_apply {β : α → Sort _} (γ : ∀ a, β a → Sort _) (f : ∀ a b, γ a b) :
+    (piCurry γ).symm f = Sigma.uncurry f :=
+  rfl
+
 end
 
 section prodCongr
