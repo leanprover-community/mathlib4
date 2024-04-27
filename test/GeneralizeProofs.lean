@@ -20,14 +20,16 @@ example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) < 2
   guard_target =ₛ Classical.choose a < 2
   exact Classical.choose_spec a
 
-example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2) := by
+example (x : ℕ) (h : x < 2) :
+    Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2) := by
   generalize_proofs a
   guard_hyp a :ₛ ∃ x, x < 2
   guard_target =ₛ Classical.choose a = Classical.choose a
   rfl
 
 example (x : ℕ) (h : x < 2) (h' : x < 1) :
-    Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, (by clear h; omega)⟩ : ∃ x, x < 2) := by
+    Classical.choose (⟨x, h⟩ : ∃ x, x < 2)
+      = Classical.choose (⟨x, (by clear h; omega)⟩ : ∃ x, x < 2) := by
   generalize_proofs a
   guard_hyp a :ₛ ∃ x, x < 2
   guard_target =ₛ Classical.choose a = Classical.choose a
@@ -36,7 +38,8 @@ example (x : ℕ) (h : x < 2) (h' : x < 1) :
 example (x : ℕ) (h h' : x < 2) :
     Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h'⟩ : ∃ x, x < 2) := by
   change _ at h'
-  fail_if_success guard_target =ₛ Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2)
+  fail_if_success guard_target =ₛ
+    Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2)
   generalize_proofs at h'
   fail_if_success change _ at h'
   guard_target =ₛ Classical.choose (⟨x, h⟩ : ∃ x, x < 2) = Classical.choose (⟨x, h⟩ : ∃ x, x < 2)
@@ -44,8 +47,9 @@ example (x : ℕ) (h h' : x < 2) :
   guard_target =ₛ Classical.choose a = Classical.choose a
   rfl
 
-example (x : ℕ) (h : x < 2) : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) =
-  Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
+example (x : ℕ) (h : x < 2) :
+    Classical.choose (⟨x, h⟩ : ∃ x, x < 2)
+      = Classical.choose (⟨x, Nat.lt_succ_of_lt h⟩ : ∃ x, x < 3) := by
   generalize_proofs a a'
   guard_hyp a :ₛ ∃ x, x < 2
   guard_hyp a' :ₛ ∃ x, x < 3
@@ -84,8 +88,18 @@ example (x : ℕ) (h : x < 2) (H : Classical.choose (⟨x, h⟩ : ∃ x, x < 2) 
   exact H
 
 example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y) :
-  ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
+    ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
+  generalize_proofs (config := { abstract := false })
+  guard_target =ₛ ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y
   generalize_proofs a at H ⊢
+  guard_hyp a :ₛ ∀ (y w : ℕ), w < y → ∃ x, x < y
+  guard_hyp H :ₛ ∀ (y : ℕ), ∃ x h, Classical.choose (a y x h) < y
+  guard_target =ₛ ∀ (y : ℕ), ∃ x h, Classical.choose (a y x h) < y
+  exact H
+
+example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y) :
+    ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : ∃ x, x < y) < y := by
+  generalize_proofs a at *
   guard_hyp a :ₛ ∀ (y w : ℕ), w < y → ∃ x, x < y
   guard_hyp H :ₛ ∀ (y : ℕ), ∃ x h, Classical.choose (a y x h) < y
   guard_target =ₛ ∀ (y : ℕ), ∃ x h, Classical.choose (a y x h) < y
@@ -96,6 +110,7 @@ attribute [local instance] Classical.propDecidable
 example (H : ∀ x, x = 1) : (if h : ∃ (k : ℕ), k = 1 then Classical.choose h else 0) = 1 := by
   rw [dif_pos ?hc]
   case hc => exact ⟨1, rfl⟩
-  generalize_proofs h g
+  generalize_proofs h
+  guard_hyp h :ₛ ∃ x, x = 1
   guard_target =ₛ Classical.choose h = 1
   apply H

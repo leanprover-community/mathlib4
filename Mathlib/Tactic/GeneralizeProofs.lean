@@ -3,9 +3,7 @@ Copyright (c) 2022 Alex J. Best. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Alex J. Best, Kyle Miller
 -/
-import Lean.Meta.AbstractNestedProofs
-import Lean.Meta.CollectFVars
-import Lean.Meta.Tactic.Generalize
+import Lean.Elab.Tactic.Config
 import Lean.Elab.Tactic.Location
 import Mathlib.Lean.Expr.Basic
 
@@ -39,16 +37,27 @@ initialize registerTraceClass `Tactic.generalize_proofs
 
 namespace GeneralizeProofs
 
-/-- Flag to set to `true` when debugging. Enables consistency checks. -/
-def debug : Bool := true
+structure Config where
+  /-- The maximum recursion depth when generalizing proofs.
+  When `maxDepth > 0`, then proofs are generalized from the types of the generalized proofs too. -/
+  maxDepth : Nat := 8
+  /-- When `abstract` is `true`, then the tactic will create universally quantified proofs
+  to account for bound variables.
+  When it is `false` then such proofs are left alone. -/
+  abstract : Bool := true
+  /-- (Debugging) When `true`, enables consistency checks. -/
+  debug : Bool := true
+
+declare_config_elab elabConfig Config
 
 /-- State for the `MGen` monad. -/
 structure GState where
   /-- Mapping from propositions to an fvar in the local context with that type. -/
   propToFVar : ExprMap Expr
 
-/-- Monad used to generalize proofs. Carries `Mathlib.Tactic.GeneralizeProofs.State`. -/
-abbrev MGen := StateRefT GState MetaM
+/-- Monad used to generalize proofs.
+Carries `Mathlib.Tactic.GeneralizeProofs.Config` and `Mathlib.Tactic.GeneralizeProofs.State`. -/
+abbrev MGen := ReaderT Config <| StateRefT GState MetaM
 
 /-- Inserts a prop/fvar pair into the `propToFVar` map. -/
 def MGen.insertFVar (prop fvar : Expr) : MGen Unit :=
@@ -63,10 +72,10 @@ structure AContext where
   propToFVar : ExprMap Expr
   /-- The recursion depth, for how many times `visit` is called from within `visitProof. -/
   depth : Nat := 0
-  /-- The max allowed recursion depth. -/
-  maxDepth : Nat := 8
   /-- The initial local context, for resetting when recursing. -/
   initLCtx : LocalContext
+  /-- The tactic configuration. -/
+  config : Config
 
 /-- State for the `MAbs` monad. -/
 structure AState where
@@ -87,7 +96,9 @@ abbrev MAbs := ReaderT AContext <| MonadCacheT (Expr × Option Expr) Expr <| Sta
 /-- Runs `MAbs` in `MGen`. Returns the value and the `generalizations`. -/
 def MGen.runMAbs {α : Type} (mx : MAbs α) : MGen (α × Array (Expr × Expr)) := do
   let s ← get
-  let (x, s') ← mx |>.run { initLCtx := ← getLCtx, propToFVar := s.propToFVar } |>.run |>.run {}
+  let (x, s') ← mx
+    |>.run { initLCtx := ← getLCtx, propToFVar := s.propToFVar, config := (← read) }
+    |>.run |>.run {}
   return (x, s'.generalizations)
 
 /--
@@ -103,7 +114,7 @@ def MAbs.findProof? (prop : Expr) : MAbs (Option Expr) := do
 Generalize `prop`, where `proof` is its proof.
 -/
 def MAbs.insertProof (prop pf : Expr) : MAbs Unit := do
-  if debug then
+  if (← read).config.debug then
     unless ← isDefEq prop (← inferType pf) do
       throwError "insertProof: proof{indentD pf}does not have type{indentD prop}"
     unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
@@ -199,7 +210,7 @@ For example, `(by simp : 1 < [1, 2].length)` has `1 < Nat.succ 1` as the inferre
 but from knowing it's an argument to `List.nthLe` we can deduce `1 < [1, 2].length`.
 -/
 partial def abstractProofs (e : Expr) (ty? : Option Expr) : MAbs Expr := do
-  if (← read).depth < (← read).maxDepth then
+  if (← read).depth ≤ (← read).config.maxDepth then
     MAbs.withRecurse <| visit (← instantiateMVars e) ty?
   else
     return e
@@ -209,7 +220,7 @@ where
   -/
   visit (e : Expr) (ty? : Option Expr) : MAbs Expr := do
     trace[Tactic.generalize_proofs] "visit (fvars := {(← read).fvars}) e is {e}"
-    if debug then
+    if (← read).config.debug then
       if let some ty := ty? then
         unless ← isDefEq (← inferType e) ty do
           throwError "visit: type of{indentD e}\nis not{indentD ty}"
@@ -254,6 +265,7 @@ where
   Core implementation of abstracting a proof.
   -/
   visitProof (e : Expr) (ty? : Option Expr) : MAbs Expr := do
+    let eOrig := e
     let fvars := (← read).fvars
     -- Strip metadata and beta reduce, in case there are some false dependencies
     let e := e.withApp' fun f args => f.beta args
@@ -265,19 +277,22 @@ where
     -- don't leak into the expression, since that would poison the cache in `MonadCacheT`.
     let e ←
       if let some ty := ty? then
-        if debug then
+        if (← read).config.debug then
           unless ← isDefEq ty (← inferType e) do
             throwError m!"visitProof: incorrectly propagated type{indentD ty}\nfor{indentD e}"
         mkExpectedTypeHint e ty
       else pure e
     trace[Tactic.generalize_proofs] "before mkLambdaFVarsUsedOnly, e = {e}\nfvars={fvars}"
-    if debug then
+    if (← read).config.debug then
       unless ← Lean.MetavarContext.isWellFormed (← getLCtx) e do
         throwError m!"visitProof: proof{indentD e}\nis not well-formed in the current context\n\
           fvars: {fvars}"
     let (fvars', pf) ← mkLambdaFVarsUsedOnly fvars e
+    if !(← read).config.abstract && !fvars'.isEmpty then
+      trace[Tactic.generalize_proofs] "'abstract' is false and proof uses fvars, not abstracting"
+      return eOrig
     trace[Tactic.generalize_proofs] "after mkLambdaFVarsUsedOnly, pf = {pf}\nfvars'={fvars'}"
-    if debug then
+    if (← read).config.debug then
       unless ← Lean.MetavarContext.isWellFormed (← read).initLCtx pf do
         throwError m!"visitProof: proof{indentD pf}\nis not well-formed in the initial context\n\
           fvars: {fvars}\n{(← mkFreshExprMVar none).mvarId!}"
@@ -436,12 +451,12 @@ These sorts of proofs cannot be meaningfully generalized, and also these are the
 that are left in a term after generalization.
 -/
 partial def _root_.Lean.MVarId.generalizeProofs
-    (g : MVarId) (fvars : Array FVarId) (target : Bool) :
+    (g : MVarId) (fvars : Array FVarId) (target : Bool) (config : GeneralizeProofs.Config := {}) :
     MetaM (Array Expr × MVarId) := do
   let (rfvars, g) ← g.revert fvars (clearAuxDeclsInsteadOfRevert := true)
   g.withContext do
     let s := { propToFVar := ← GeneralizeProofs.initialPropToFVar }
-    GeneralizeProofs.generalizeProofsCore g fvars rfvars target |>.run' s
+    GeneralizeProofs.generalizeProofsCore g fvars rfvars target |>.run config |>.run' s
 
 /--
 `generalize_proofs ids* [at locs]?` generalizes proofs in the current goal,
@@ -459,6 +474,13 @@ local hypothesis.
 When doing `generalize_proofs at h`, if `h` is a let binding, its value is cleared,
 and furthermore if `h` duplicates a preceding local hypothesis then it is eliminated.
 
+The tactic is able to abstract proofs from under binders, creating universally quantified
+proofs in the local context.
+To disable this, use `generalize_proofs (config := { abstract := false })`.
+The tactic is also set to recursively abstract proofs from the types of the generalized proofs.
+This can be controlled with the `maxDepth` configuration option,
+with `generalize_proofs (config := { maxDepth := 0 })` turning this feature off.
+
 For example:
 ```lean
 example : List.nthLe [1, 2] 1 (by simp) = 2 := by
@@ -468,14 +490,15 @@ example : List.nthLe [1, 2] 1 (by simp) = 2 := by
   -- ⊢ [1, 2].nthLe 1 h = 2
 ```
 -/
-elab (name := generalizeProofsElab) "generalize_proofs"
+elab (name := generalizeProofsElab) "generalize_proofs" config?:(Parser.Tactic.config)?
     hs:(ppSpace colGt binderIdent)* loc?:(location)? : tactic => withMainContext do
+  let config ← GeneralizeProofs.elabConfig (mkOptionalNode config?)
   let (fvars, target) ←
     match expandOptLocation (Lean.mkOptionalNode loc?) with
     | .wildcard => pure ((← getLCtx).getFVarIds, true)
     | .targets t target => pure (← getFVarIds t, target)
   liftMetaTactic1 fun g => do
-    let (pfs, g) ← g.generalizeProofs fvars target
+    let (pfs, g) ← g.generalizeProofs fvars target config
     -- Rename the proofs using `hs` and record info
     g.withContext do
       let mut lctx ← getLCtx
