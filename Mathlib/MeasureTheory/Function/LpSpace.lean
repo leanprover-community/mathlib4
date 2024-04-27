@@ -762,6 +762,24 @@ def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ �
   Memℒp.toLp (s.indicator fun _ => c) (memℒp_indicator_const p hs c (Or.inr hμs))
 #align measure_theory.indicator_const_Lp MeasureTheory.indicatorConstLp
 
+/-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`.-/
+theorem indicatorConstLp_add (hμs : μ s ≠ ∞) (c' : E) :
+    indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
+    indicatorConstLp p hs hμs (c + c') := by
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_add]
+  congr
+  rw [indicator_add]
+  rfl
+
+/-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
+theorem indicatorConstLp_sub (hμs : μ s ≠ ∞) (c' : E) :
+    indicatorConstLp p hs hμs c - indicatorConstLp p hs hμs c' =
+    indicatorConstLp p hs hμs (c - c') := by
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_sub]
+  congr
+  rw [indicator_sub]
+  rfl
+
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
   Memℒp.coeFn_toLp (memℒp_indicator_const p hs c (Or.inr hμs))
 #align measure_theory.indicator_const_Lp_coe_fn MeasureTheory.indicatorConstLp_coeFn
@@ -787,6 +805,18 @@ theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
     snorm_indicator_const' hs hμs_ne_zero ENNReal.top_ne_zero, ENNReal.top_toReal, _root_.div_zero,
     ENNReal.rpow_zero, mul_one, ENNReal.coe_toReal, coe_nnnorm]
 #align measure_theory.norm_indicator_const_Lp_top MeasureTheory.norm_indicatorConstLp_top
+
+open scoped symmDiff in
+/-- Compute the `ℒᵖ` norm of the difference of two constant indicators of sets with finite measure
+and same constant using symmetric difference. -/
+theorem norm_indicatorConstLp_sub {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ⊤)
+    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
+    ‖indicatorConstLp p hs hμs c - indicatorConstLp p ht hμt c‖ =
+    ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal) := by
+  rw [indicatorConstLp, indicatorConstLp, ← Memℒp.toLp_sub, Lp.norm_toLp,
+    ← snorm_norm, ← norm_indicator_symmDiff, snorm_norm,
+    snorm_indicator_const (hs.symmDiff ht) hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
+    toReal_coe_nnnorm, ← ENNReal.toReal_rpow]
 
 theorem norm_indicatorConstLp' (hp_pos : p ≠ 0) (hμs_pos : μ s ≠ 0) :
     ‖indicatorConstLp p hs hμs c‖ = ‖c‖ * (μ s).toReal ^ (1 / p.toReal) := by
