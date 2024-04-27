@@ -48,7 +48,7 @@ structure IsSkeletonOf (F : D ⥤ C) where
   /-- The category `D` has isomorphic objects equal -/
   skel : Skeletal D
   /-- The functor `F` is an equivalence -/
-  eqv : F.IsEquivalence
+  eqv : F.IsEquivalence := by infer_instance
 #align category_theory.is_skeleton_of CategoryTheory.IsSkeletonOf
 
 attribute [local instance] isIsomorphicSetoid
@@ -98,8 +98,7 @@ noncomputable instance : (fromSkeleton C).Faithful := by
 instance : (fromSkeleton C).EssSurj where mem_essImage X := ⟨Quotient.mk' X, Quotient.mk_out X⟩
 
 -- Porting note: named this instance
-noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj (fromSkeleton C)
+noncomputable instance fromSkeleton.isEquivalence : (fromSkeleton C).IsEquivalence where
 
 /-- The equivalence between the skeleton and the category itself. -/
 noncomputable def skeletonEquivalence : Skeleton C ≌ C :=
@@ -266,12 +265,16 @@ noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
       (Nonempty.some (Quotient.mk_out X)).hom ≫ f.le.some ≫ (Nonempty.some (Quotient.mk_out Y)).inv
 #align category_theory.thin_skeleton.from_thin_skeleton CategoryTheory.ThinSkeleton.fromThinSkeleton
 
-noncomputable instance fromThinSkeletonEquivalence : (fromThinSkeleton C).IsEquivalence where
+noncomputable def fromThinSkeletonEquivalence : ThinSkeleton C ≌ C where
+  functor := fromThinSkeleton C
   inverse := toThinSkeleton C
   counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
   unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
     eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
-#align category_theory.thin_skeleton.from_thin_skeleton_equivalence CategoryTheory.ThinSkeleton.fromThinSkeletonEquivalence
+
+noncomputable instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
+  (fromThinSkeletonEquivalence C).isEquivalence_functor
+#align category_theory.thin_skeleton.from_thin_skeleton_equivalence CategoryTheory.ThinSkeleton.fromThinSkeleton_isEquivalence
 
 /-- The equivalence between the thin skeleton and the category itself. -/
 noncomputable def equivalence : ThinSkeleton C ≌ C :=
@@ -317,7 +320,6 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
 noncomputable def thinSkeletonIsSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)
     where
   skel := skeletal
-  eqv := ThinSkeleton.fromThinSkeletonEquivalence C
 #align category_theory.thin_skeleton.thin_skeleton_is_skeleton CategoryTheory.ThinSkeleton.thinSkeletonIsSkeleton
 
 noncomputable instance isSkeletonOfInhabited :
