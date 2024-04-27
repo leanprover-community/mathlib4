@@ -9,11 +9,17 @@ import Mathlib.CategoryTheory.IsConnected
 /-!
 # Colimits of connected index categories
 
-This file proves that a category $\mathsf{C}$ is connected if and only if `colim F` is a singleton,
-where `F.obj _ = PUnit` (in a `Type _` category).
+This file proves that a category `C` is connected if and only if `colim F` is a singleton,
+where `F : C ⥤ Type w` and `F.obj _ = PUnit` (for arbitrary `w`).
 
-See `connected_iff_colimit_const_pUnit_iso_pUnit` for the proof of this characterization and
-`unitValuedFunctor` for the definition of the constant functor used in the statement.
+See `isConnected_iff_colimit_constPUnitFunctor_iso_pUnit` for the proof of this characterization and
+`constPUnitFunctor` for the definition of the constant functor used in the statement. A formulation
+based on `IsColimit` instead of `colimit` is given in `isConnected_iff_isColimit_pUnitCocone`.
+
+The `if` direction is also available directly in several formulations:
+For connected index categories `C`, `PUnit.{w}` is a colimit of the `constPUnitFunctor`, where `w`
+is arbitrary. See `instHasColimitConstPUnitFunctor`, `isColimitPUnitCocone` and
+`colimitConstPUnitIsoPUnit`.
 
 ## Tags
 
@@ -48,7 +54,7 @@ noncomputable def isColimitPUnitCocone [IsConnected C] : IsColimit (pUnitCocone.
     ext ⟨⟩
     simp [← h Classical.ofNonempty]
 
-instance [IsConnected C] : HasColimit (constPUnitFunctor.{w} C) :=
+instance instHasColimitConstPUnitFunctor [IsConnected C] : HasColimit (constPUnitFunctor.{w} C) :=
   ⟨_, isColimitPUnitCocone _⟩
 
 instance instSubsingletonColimitPUnit
