@@ -557,14 +557,14 @@ instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
 
-instance instSFiniteAdd [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
+instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
   refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
   ext s hs
   simp only [Measure.add_apply, sum_apply _ hs]
   rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
     sum_sFiniteSeq, sum_sFiniteSeq]
 
-instance instSFiniteRestrict [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
+instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
   ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
     by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
