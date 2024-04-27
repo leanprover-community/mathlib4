@@ -450,7 +450,7 @@ theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
 end ΓSpec
 
 @[reassoc]
-theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
       SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
 
