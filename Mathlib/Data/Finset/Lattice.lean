@@ -1435,6 +1435,9 @@ protected def min (s : Finset α) : WithTop α :=
   inf s (↑)
 #align finset.min Finset.min
 
+theorem min_eq_inf_coe {s : Finset α} : s.min = s.inf (↑) :=
+  rfl
+
 theorem min_eq_inf_withTop (s : Finset α) : s.min = inf s (↑) :=
   rfl
 #align finset.min_eq_inf_with_top Finset.min_eq_inf_withTop

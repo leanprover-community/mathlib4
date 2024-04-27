@@ -133,6 +133,7 @@ theorem degree_eq_bot : degree p = ⊥ ↔ p = 0 :=
 #align polynomial.degree_eq_bot Polynomial.degree_eq_bot
 #align polynomial.trailing_degree_eq_top Polynomial.trailingDegree_eq_top
 
+toTD
 @[nontriviality]
 theorem degree_of_subsingleton [Subsingleton R] : degree p = ⊥ := by
   rw [Subsingleton.elim p 0, degree_zero]
@@ -186,10 +187,7 @@ theorem natDegree_eq_of_degree_eq [Semiring S] {q : S[X]} (h : degree p = degree
     natDegree p = natDegree q := by unfold natDegree; rw [h]
 #align polynomial.nat_degree_eq_of_degree_eq Polynomial.natDegree_eq_of_degree_eq
 
-theorem trailingDegree_le_of_ne_zero (h : coeff p n ≠ 0) : trailingDegree p ≤ (n : ℕ∞) := by
-  rw [Nat.cast_withTop]
-  exact (Finset.inf_le (mem_support_iff.2 h))
-
+toTD
 theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degree p := by
   rw [Nat.cast_withBot]
   exact Finset.le_sup (mem_support_iff.2 h)
@@ -207,6 +205,10 @@ theorem le_natDegree_of_mem_supp (a : ℕ) : a ∈ p.support → a ≤ natDegree
   le_natDegree_of_ne_zero ∘ mem_support_iff.mp
 #align polynomial.le_nat_degree_of_mem_supp Polynomial.le_natDegree_of_mem_supp
 
+theorem trailingDegree_eq_of_le_of_coeff_ne_zer' (pn : n ≤ p.trailingDegree) (p1 : p.coeff n ≠ 0) : p.trailingDegree = n :=
+  (trailingDegree_le_of_ne_zero p1).antisymm pn
+
+toTD
 theorem degree_eq_of_le_of_coeff_ne_zero (pn : p.degree ≤ n) (p1 : p.coeff n ≠ 0) : p.degree = n :=
   pn.antisymm (le_degree_of_ne_zero p1)
 #align polynomial.degree_eq_of_le_of_coeff_ne_zero Polynomial.degree_eq_of_le_of_coeff_ne_zero
@@ -216,10 +218,7 @@ theorem natDegree_eq_of_le_of_coeff_ne_zero (pn : p.natDegree ≤ n) (p1 : p.coe
   pn.antisymm (le_natDegree_of_ne_zero p1)
 #align polynomial.nat_degree_eq_of_le_of_coeff_ne_zero Polynomial.natDegree_eq_of_le_of_coeff_ne_zero
 
-theorem trailingDegree_mono [Semiring S] {f : R[X]} {g : S[X]} (h : f.support ⊆ g.support) :
-    g.trailingDegree ≤ f.trailingDegree :=
-  Finset.inf_mono h
-
+toTD
 theorem degree_mono [Semiring S] {f : R[X]} {g : S[X]} (h : f.support ⊆ g.support) :
     f.degree ≤ g.degree :=
   Finset.sup_mono h
@@ -266,7 +265,7 @@ theorem natDegree_lt_natDegree {p q : R[X]} (hp : p ≠ 0) (hpq : p.degree < q.d
 #align polynomial.nat_degree_lt_nat_degree Polynomial.natDegree_lt_natDegree
 
 @[simp]
-theorem degree_C (ha : a ≠ 0) : degree (C a) = (0 : WithBot ℕ) := by
+theorem degree_C (ha : a ≠ 0) : degree (C a) = 0 := by
   rw [degree, ← monomial_zero_left, support_monomial 0 ha, max_eq_sup_coe, sup_singleton,
     WithBot.coe_zero]
 #align polynomial.degree_C Polynomial.degree_C
