@@ -115,7 +115,8 @@ instance (priority := 100) isEquivalenceReflectsColimits (E : D ⥤ C) [E.IsEqui
 #align category_theory.adjunction.is_equivalence_reflects_colimits CategoryTheory.Adjunction.isEquivalenceReflectsColimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C) [H.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalenceCreatesColimits (H : D ⥤ C)
+    [H.IsEquivalence] :
     CreatesColimitsOfSize.{v, u} H where
   CreatesColimitsOfShape :=
     { CreatesColimit :=
@@ -229,7 +230,7 @@ instance (priority := 100) isEquivalenceReflectsLimits (E : D ⥤ C) [E.IsEquiva
 #align category_theory.adjunction.is_equivalence_reflects_limits CategoryTheory.Adjunction.isEquivalenceReflectsLimits
 
 -- see Note [lower instance priority]
-instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [H.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalenceCreatesLimits (H : D ⥤ C) [H.IsEquivalence] :
     CreatesLimitsOfSize.{v, u} H where
   CreatesLimitsOfShape :=
     { CreatesLimit :=

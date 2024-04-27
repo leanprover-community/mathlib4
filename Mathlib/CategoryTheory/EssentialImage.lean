@@ -159,8 +159,7 @@ instance Faithful.toEssImage (F : C ⥤ D) [Faithful F] : Faithful F.toEssImage 
 
 /-- The induced functor of a full functor is full. -/
 instance Full.toEssImage (F : C ⥤ D) [Full F] : Full F.toEssImage :=
-  haveI := Full.ofIso F.toEssImageCompEssentialImageInclusion.symm
-  Full.ofCompFaithful F.toEssImage F.essImageInclusion
+  Full.of_comp_faithful_iso F.toEssImageCompEssentialImageInclusion
 #align category_theory.full.to_ess_image CategoryTheory.Functor.Full.toEssImage
 
 instance instEssSurjId : EssSurj (𝟭 C) where
