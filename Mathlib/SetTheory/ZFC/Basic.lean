@@ -1495,9 +1495,9 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
       refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    · refine' fun A => ⟨A, _⟩
-      rintro B ⟨x, rfl, _⟩
-      exact H x⟩
+    refine' fun A => ⟨A, _⟩
+    rintro B ⟨x, rfl, _⟩
+    exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=

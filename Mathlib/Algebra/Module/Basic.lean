@@ -105,7 +105,8 @@ theorem two_smul : (2 : R) • x = x + x := by rw [← one_add_one_eq_two, add_s
 #align two_smul two_smul
 
 set_option linter.deprecated false in
-@[deprecated] theorem two_smul' : (2 : R) • x = bit0 x :=
+@[deprecated]
+theorem two_smul' : (2 : R) • x = bit0 x :=
   two_smul R x
 #align two_smul' two_smul'
 
