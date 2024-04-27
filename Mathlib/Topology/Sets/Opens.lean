@@ -260,7 +260,7 @@ instance : Frame (Opens α) :=
     inf_sSup_le_iSup_inf := fun a s =>
       (ext <| by simp only [coe_inf, coe_iSup, coe_sSup, Set.inter_iUnion₂]).le }
 
-theorem openEmbedding' (U : Opens α) : OpenEmbedding ((↑) : U → α) :=
+theorem openEmbedding' (U : Opens α) : OpenEmbedding (Subtype.val : U → α) :=
   U.isOpen.openEmbedding_subtype_val
 
 theorem openEmbedding_of_le {U V : Opens α} (i : U ≤ V) :
