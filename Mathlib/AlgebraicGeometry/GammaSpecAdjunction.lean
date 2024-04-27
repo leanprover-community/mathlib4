@@ -455,9 +455,8 @@ theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
 
 end ΓSpec
 
-set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
 @[reassoc]
-theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
       SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
 
