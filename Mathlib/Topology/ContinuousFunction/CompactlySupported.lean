@@ -334,7 +334,7 @@ instance instNonUnitalCommRing [NonUnitalCommRing β] [TopologicalRing β] :
     (fun _ _ => rfl) fun _ _ => rfl
 
 instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocRing β]
-    [TopologicalSemiring β] [Module R β] [MonoidWithZero R] [SMulWithZero R β]
+    [TopologicalSemiring β][MonoidWithZero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] [IsScalarTower R β β] :
     IsScalarTower R C_c(α, β) C_c(α, β) where
   smul_assoc r f g := by
@@ -343,7 +343,7 @@ instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocRing β]
     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
 instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocRing β]
-    [TopologicalSemiring β] [Module R β] [MonoidWithZero R] [SMulWithZero R β]
+    [TopologicalSemiring β] [MonoidWithZero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] [SMulCommClass R β β] :
     SMulCommClass R C_c(α, β) C_c(α, β) where
   smul_comm r f g := by
