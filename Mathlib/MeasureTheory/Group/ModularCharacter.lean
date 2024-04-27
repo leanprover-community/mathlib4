@@ -54,9 +54,9 @@ lemma map_right_mul_eq_modularCharacter_smul (μ : Measure G) [IsHaarMeasure μ]
 lemma modularCharacter_pos (μ : Measure G) [IsHaarMeasure μ] (g : G) :
     0 < modularCharacter_fun μ g := haarScalarFactor_pos_of_isHaarMeasure _ μ
 
-/-- The modular character does not depend on the choice of the haar measure. -/
+/-- The modular character does not depend on the choice of the Haar measure. -/
 @[to_additive addModularCharacter_eq "The additive modular character does not depend on the choice
-of the additive haar measure."]
+of the additive Haar measure."]
 theorem modularCharacter_eq (μ μ': Measure G) [IsHaarMeasure μ] [IsHaarMeasure μ']
     [InnerRegular μ] [InnerRegular μ'] : modularCharacter_fun μ' = modularCharacter_fun μ := by
   ext g
@@ -72,7 +72,7 @@ theorem modularCharacter_eq (μ μ': Measure G) [IsHaarMeasure μ] [IsHaarMeasur
       _ = modularCharacter_fun μ g • μ' := by rw [← isMulLeftInvariant_eq_smul_of_innerRegular]
   simp [this]
 
-/-- The homomorphism modular character. -/
+/-- The modular character homomorphism. -/
 noncomputable def modularCharacter (μ : Measure G) [IsHaarMeasure μ] [InnerRegular μ] :
     G →* ℝ≥0 where
   toFun := modularCharacter_fun μ
