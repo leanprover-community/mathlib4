@@ -550,7 +550,13 @@ theorem _root_.Pi.orthonormalBasis_apply {η : Type*} [Fintype η] [DecidableEq 
     [∀ i, InnerProductSpace 𝕜 (E i)] (B : ∀ i, OrthonormalBasis (ι i) 𝕜 (E i))
     (j : (i : η) × (ι i)) :
     Pi.orthonormalBasis B j = (WithLp.equiv _ _).symm (Pi.single _ (B j.fst j.snd)) := by
-  simp [Pi.orthonormalBasis, LinearMap.stdBasis]
+  classical
+  ext k
+  simp only [Pi.orthonormalBasis, coe_ofRepr, LinearIsometryEquiv.symm_trans,
+    LinearIsometryEquiv.symm_symm, LinearIsometryEquiv.piLpCongrRight_symm,
+    LinearIsometryEquiv.trans_apply, LinearIsometryEquiv.piLpCongrRight_apply]
+  simp [LinearIsometryEquiv.piLpCurry, Sigma.curry]
+  sorry
 
 @[simp]
 theorem _root_.Pi.orthonormalBasis_repr {η : Type*} [Fintype η] {ι : η → Type*}
