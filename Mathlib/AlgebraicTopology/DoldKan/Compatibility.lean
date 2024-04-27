@@ -161,7 +161,7 @@ variable {eB}
 
 /-- The equivalence `A ≅ B` whose functor is `F ⋙ eB.inverse` and
 whose inverse is `G : B ≅ A`. -/
---@[simps! inverse]
+@[simps! inverse]
 def equivalence : A ≌ B :=
   ((equivalence₂ eB hF).changeInverse
     (calc eB.functor ⋙ e'.inverse ⋙ eA.inverse ≅
