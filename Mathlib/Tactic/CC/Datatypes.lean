@@ -3,12 +3,12 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
-import Lean.Elab.Tactic.Rfl
 import Lean.Meta.CongrTheorems
 import Std.Data.HashMap.Basic
 import Std.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Mathport.Rename
+import Lean.Meta.Tactic.Rfl
 
 /-!
 # Datatypes for `cc`
