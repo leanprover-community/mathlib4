@@ -36,7 +36,7 @@ instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
 exists_cfc_of_predicate a ha := by
   use fun (f : C(spectrum 𝕜 a, 𝕜)) =>
-  (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal ( f ∘ RCLike.ofReal ∘ hA.eigenvalues)
+  (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal ( RCLike.ofReal ∘ f ∘ hA.eigenvalues)
       * (star (eigenvectorUnitary hA : Matrix n n 𝕜))
 
 
