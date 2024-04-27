@@ -75,7 +75,6 @@ theorem antideriv_bernoulliFun (k : ℕ) (x : ℝ) :
     HasDerivAt (fun x => bernoulliFun (k + 1) x / (k + 1)) (bernoulliFun k x) x := by
   convert (hasDerivAt_bernoulliFun (k + 1) x).div_const _ using 1
   field_simp [Nat.cast_add_one_ne_zero k]
-  ring
 #align antideriv_bernoulli_fun antideriv_bernoulliFun
 
 theorem integral_bernoulliFun_eq_zero {k : ℕ} (hk : k ≠ 0) :

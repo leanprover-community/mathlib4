@@ -80,7 +80,7 @@ theorem intervalIntegrable_rpow' {r : ℝ} (h : -1 < r) :
     have hderiv : ∀ x ∈ Ioo 0 c, HasDerivAt (fun x : ℝ => x ^ (r + 1) / (r + 1)) (x ^ r) x := by
       intro x hx
       convert (Real.hasDerivAt_rpow_const (p := r + 1) (Or.inl hx.1.ne')).div_const (r + 1) using 1
-      field_simp [(by linarith : r + 1 ≠ 0)]; ring
+      field_simp [(by linarith : r + 1 ≠ 0)]
     apply integrableOn_deriv_of_nonneg _ hderiv
     · intro x hx; apply rpow_nonneg hx.1.le
     · refine' (continuousOn_id.rpow_const _).div_const _; intro x _; right; linarith
