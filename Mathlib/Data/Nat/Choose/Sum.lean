@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Chris Hughes, Patrick Stevens, Fangming Li
+Authors: Chris Hughes, Patrick Stevens
 -/
 import Mathlib.Data.Nat.Choose.Basic
 import Mathlib.Tactic.Ring
@@ -236,10 +236,11 @@ theorem sum_antidiagonal_choose_succ_mul (f : ℕ → ℕ → R) (n : ℕ) :
 #align finset.sum_antidiagonal_choose_succ_mul Finset.sum_antidiagonal_choose_succ_mul
 
 theorem sum_antidiagonal_choose_add (d n : ℕ) :
-    (Finset.sum (antidiagonal n) fun ij ↦ (Nat.choose (d + ij.2) d)) =
-    Nat.choose (d + n) d + Nat.choose (d + n) (succ d) := by
-  induction' n with n hn
-  · simp only [zero_eq, antidiagonal_zero, sum_singleton, add_zero, choose_self, choose_succ_self]
-  · rw [Nat.sum_antidiagonal_succ]; simp only [add_right_inj]; exact hn
+    (Finset.sum (antidiagonal n) fun ij => (d + ij.2).choose d) =
+    (d + n).choose d + (d + n).choose (succ d) := by
+  induction n with
+  | zero => simp only [zero_eq, antidiagonal_zero, sum_singleton, add_zero, choose_self,
+              choose_succ_self]
+  | succ n hn => rw [Nat.sum_antidiagonal_succ]; simp only [add_right_inj]; exact hn
 
 end Finset
