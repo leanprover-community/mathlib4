@@ -304,7 +304,7 @@ instance (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.EssSurj] : (pre S F G).EssSurj :
 /-- If `F` is an equivalence, then so is the functor `(S, F ⋙ G) ⥤ (S, G)`. -/
 noncomputable def isEquivalencePre (S : D) (F : B ⥤ C) (G : C ⥤ D) [F.IsEquivalence] :
     (pre S F G).IsEquivalence :=
-  Comma.isEquivalencePreRight _ _ _
+  Comma.isEquivalence_preRight _ _ _
 
 /-- The functor `(S, F) ⥤ (G(S), F ⋙ G)`. -/
 @[simps]
@@ -325,8 +325,7 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] : (post S F G).EssSurj whe
 
 /-- If `G` is fully faithful, then `post S F G : (S, F) ⥤ (G(S), F ⋙ G)` is an equivalence. -/
 noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post S F G).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+    (post S F G).IsEquivalence where
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
@@ -642,7 +641,7 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.EssSurj] : (pre F G S).EssSurj :
 /-- If `F` is an equivalence, then so is the functor `(F ⋙ G, S) ⥤ (G, S)`. -/
 noncomputable def isEquivalencePre (F : B ⥤ C) (G : C ⥤ D) (S : D) [F.IsEquivalence] :
     (pre F G S).IsEquivalence :=
-  Comma.isEquivalencePreLeft _ _ _
+  Comma.isEquivalence_preLeft _ _ _
 
 /-- The functor `(F, S) ⥤ (F ⋙ G, G(S))`. -/
 @[simps]
@@ -663,8 +662,7 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj whe
 
 /-- If `G` is fully faithful, then `post F G S : (F, S) ⥤ (F ⋙ G, G(S))` is an equivalence. -/
 noncomputable def isEquivalencePost (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] [G.Faithful] :
-    (post F G S).IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+    (post F G S).IsEquivalence where
 
 instance small_proj_preimage_of_locallySmall {𝒢 : Set C} [Small.{v₁} 𝒢] [LocallySmall.{v₁} D] :
     Small.{v₁} ((proj S T).obj ⁻¹' 𝒢) := by
