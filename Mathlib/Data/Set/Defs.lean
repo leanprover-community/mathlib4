@@ -346,3 +346,5 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
 #align set.mem_seq_iff Set.mem_seq_iff
 
 lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
+
+end Set

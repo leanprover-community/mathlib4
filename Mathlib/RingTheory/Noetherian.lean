@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Kevin Buzzard
 -/
 import Mathlib.Order.Filter.EventuallyConst
 import Mathlib.RingTheory.Finiteness
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 
 #align_import ring_theory.noetherian from "leanprover-community/mathlib"@"210657c4ea4a4a7b234392f70a3a2a83346dfa90"
 
@@ -118,6 +118,14 @@ theorem isNoetherian_of_surjective (f : M →ₗ[R] P) (hf : LinearMap.range f =
 #align is_noetherian_of_surjective isNoetherian_of_surjective
 
 variable {M}
+
+instance isNoetherian_quotient {R} [Ring R] {M} [AddCommGroup M] [Module R M]
+    (N : Submodule R M) [IsNoetherian R M] : IsNoetherian R (M ⧸ N) :=
+  isNoetherian_of_surjective _ _ (LinearMap.range_eq_top.mpr N.mkQ_surjective)
+#align submodule.quotient.is_noetherian isNoetherian_quotient
+
+-- deprecated on 2024-04-27
+@[deprecated, nolint defLemma] alias Submodule.Quotient.isNoetherian := isNoetherian_quotient
 
 theorem isNoetherian_of_linearEquiv (f : M ≃ₗ[R] P) [IsNoetherian R M] : IsNoetherian R P :=
   isNoetherian_of_surjective _ f.toLinearMap f.range
@@ -404,17 +412,23 @@ theorem LinearIndependent.set_finite_of_isNoetherian [Nontrivial R] {s : Set M}
 alias finite_of_linearIndependent := LinearIndependent.set_finite_of_isNoetherian
 #align finite_of_linear_independent LinearIndependent.set_finite_of_isNoetherian
 
-/-- If the first and final modules in a short exact sequence are Noetherian,
+/-- If the first and final modules in an exact sequence are Noetherian,
   then the middle module is also Noetherian. -/
-theorem isNoetherian_of_range_eq_ker [IsNoetherian R P] (f : M →ₗ[R] N)
-    (g : N →ₗ[R] P) (hf : Function.Injective f) (hg : Function.Surjective g)
-    (h : LinearMap.range f = LinearMap.ker g) :
+theorem isNoetherian_of_range_eq_ker [IsNoetherian R P]
+    (f : M →ₗ[R] N) (g : N →ₗ[R] P) (h : LinearMap.range f = LinearMap.ker g) :
     IsNoetherian R N :=
   isNoetherian_iff_wellFounded.2 <|
-    wellFounded_gt_exact_sequence (wellFounded_submodule_gt R M) (wellFounded_submodule_gt R P)
-      (LinearMap.range f) (Submodule.map f) (Submodule.comap f) (Submodule.comap g)
-      (Submodule.map g) (Submodule.gciMapComap hf) (Submodule.giMapComap hg)
-      (by simp [Submodule.map_comap_eq, inf_comm]) (by simp [Submodule.comap_map_eq, h])
+    wellFounded_gt_exact_sequence
+      (wellFounded_submodule_gt R _) (wellFounded_submodule_gt R _)
+      (LinearMap.range f)
+      (Submodule.map (f.ker.liftQ f <| le_rfl))
+      (Submodule.comap (f.ker.liftQ f <| le_rfl))
+      (Submodule.comap g.rangeRestrict) (Submodule.map g.rangeRestrict)
+      (Submodule.gciMapComap <| LinearMap.ker_eq_bot.mp <|
+        Submodule.ker_liftQ_eq_bot _ _ _ (le_refl _))
+      (Submodule.giMapComap g.surjective_rangeRestrict)
+      (by simp [Submodule.map_comap_eq, inf_comm, Submodule.range_liftQ])
+      (by simp [Submodule.comap_map_eq, h])
 #align is_noetherian_of_range_eq_ker isNoetherian_of_range_eq_ker
 
 /-- For an endomorphism of a Noetherian module, any sufficiently large iterate has disjoint kernel
@@ -533,12 +547,6 @@ theorem isNoetherian_of_submodule_of_noetherian (R M) [Semiring R] [AddCommMonoi
   rw [isNoetherian_iff_wellFounded] at h ⊢
   exact OrderEmbedding.wellFounded (Submodule.MapSubtype.orderEmbedding N).dual h
 #align is_noetherian_of_submodule_of_noetherian isNoetherian_of_submodule_of_noetherian
-
-instance Submodule.Quotient.isNoetherian {R} [Ring R] {M} [AddCommGroup M] [Module R M]
-    (N : Submodule R M) [h : IsNoetherian R M] : IsNoetherian R (M ⧸ N) := by
-  rw [isNoetherian_iff_wellFounded] at h ⊢
-  exact OrderEmbedding.wellFounded (Submodule.comapMkQOrderEmbedding N).dual h
-#align submodule.quotient.is_noetherian Submodule.Quotient.isNoetherian
 
 /-- If `M / S / R` is a scalar tower, and `M / R` is Noetherian, then `M / S` is
 also noetherian. -/
