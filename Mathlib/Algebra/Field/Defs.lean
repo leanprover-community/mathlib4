@@ -230,6 +230,11 @@ end Rat
 instance RatCast.toOfScientific [RatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
 
+/-- Make `OfScientific.ofScientific` the simp-normal form. -/
+@[simp]
+theorem Rat.ofScientific_eq_ofScientific :
+    Rat.ofScientific = OfScientific.ofScientific := rfl
+
 @[simp, norm_cast]
 theorem Rat.cast_ofScientific [RatCast K] (m : ℕ) (b : Bool) (d : ℕ) :
     (OfScientific.ofScientific m b d : ℚ) = (OfScientific.ofScientific m b d : K) := rfl
