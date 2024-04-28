@@ -215,9 +215,7 @@
   "Mathlib.Tactic.TermCongr": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.Tauto": ["Mathlib.Logic.Basic"],
   "Mathlib.Tactic.TFAE": ["Mathlib.Data.List.TFAE"],
-  "Mathlib.Tactic.Rewrites": ["Mathlib.Init.Core"],
-  "Mathlib.Tactic.ReduceModChar":
-  ["Mathlib.Data.ZMod.Basic", "Mathlib.RingTheory.Polynomial.Basic"],
+  "Mathlib.Tactic.ReduceModChar": ["Mathlib.RingTheory.Polynomial.Basic"],
   "Mathlib.Tactic.ProxyType": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.ProdAssoc": ["Mathlib.Logic.Equiv.Defs"],
   "Mathlib.Tactic.Positivity.Finset": ["Mathlib.Data.Fintype.Card"],
@@ -272,7 +270,6 @@
    "Mathlib.MeasureTheory.Measure.Haar.OfBasis",
    "Mathlib.Tactic.FunProp",
    "Mathlib.Tactic.FunProp.Measurable"],
-  "Mathlib.Tactic.FinCases": ["Mathlib.Data.Fintype.Basic"],
   "Mathlib.Tactic.Eval": ["Qq.Macro"],
   "Mathlib.Tactic.DeriveFintype":
   ["Mathlib.Data.Fintype.Basic",
@@ -317,7 +314,6 @@
   "Mathlib.Init.Data.Nat.GCD": ["Std.Data.Nat.Gcd"],
   "Mathlib.Init.Data.List.Basic": ["Std.Data.List.Basic"],
   "Mathlib.Init.Data.Int.Basic": ["Std.Data.Int.Order"],
-  "Mathlib.Init.Core": ["Std.Classes.Dvd"],
   "Mathlib.GroupTheory.Subgroup.Order": ["Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.GroupTheory.MonoidLocalization": ["Mathlib.Init.Data.Prod"],
   "Mathlib.Geometry.Manifold.Sheaf.Smooth":
@@ -330,7 +326,6 @@
   "Mathlib.Data.List.TFAE": ["Std.Tactic.Classical"],
   "Mathlib.Data.List.Lemmas": ["Mathlib.Data.List.InsertNth"],
   "Mathlib.Data.List.EditDistance.Defs": ["Mathlib.Algebra.Ring.Nat"],
-  "Mathlib.Data.List.Basic": ["Mathlib.Data.Option.Basic", "Mathlib.Init.Core"],
   "Mathlib.Data.FunLike.Basic": ["Mathlib.Logic.Function.Basic"],
   "Mathlib.Data.Finset.Basic": ["Mathlib.Data.Finset.Attr"],
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
