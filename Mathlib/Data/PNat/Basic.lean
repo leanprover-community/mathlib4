@@ -300,37 +300,33 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
 #align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
 theorem sub_le {a b : ℕ+} : a - b ≤ a := by
-  rw [← coe_le_coe, PNat.sub_coe]
+  rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.sub_le a b
   · exact a.2
-#align pnat.sub_le PNat.sub_le
 
 theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
-  rw [← PNat.coe_le_coe, PNat.sub_coe]
+  rw [← coe_le_coe, PNat.sub_coe]
   split_ifs with h
   · apply Nat.le_pred_of_lt hab
   · apply not_lt.mp at h
-    simp_all only [PNat.le_one_iff, PNat.not_lt_one]
-#align pnat.le_sub_one_of_lt PNat.le_sub_one_of_lt
+    simp_all only [le_one_iff, not_lt_one]
 
 theorem le_of_le_sub_one {a b : ℕ+} (hab: a ≤ b - 1): a ≤ b := by
   apply LE.le.trans hab (a := a) (c := b) (b := b - 1)
-  exact PNat.sub_le
-#align pnat.le_of_le_sub_one PNat.le_of_le_sub_one
+  exact sub_le
 
 theorem le_iff_eq_or_le_sub_one {a b : ℕ+} : a = b ∨ a ≤ b - 1 ↔ a ≤ b := by
   constructor
   · intro h
     rcases h with h | h
     · rw [le_iff_lt_or_eq]; exact Or.inr h
-    · apply PNat.le_of_le_sub_one at h; exact h
+    · apply le_of_le_sub_one at h; exact h
   · intro h'
     rw [le_iff_lt_or_eq, or_comm] at h'
     rcases h' with h₁ | h₂
     left; exact h₁
-    right; exact PNat.le_sub_one_of_lt h₂
-#align pnat.le_iff_eq_or_le_sub_one PNat.le_iff_eq_or_le_sub_one
+    right; exact le_sub_one_of_lt h₂
 
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
