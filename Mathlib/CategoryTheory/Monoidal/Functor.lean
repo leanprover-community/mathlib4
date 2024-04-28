@@ -524,6 +524,13 @@ end MonoidalFunctor
 
 section
 
+-- TODO: The definitions below would be slightly better phrased if, in addition to
+-- `MonoidalFunctor` (which extends `Functor`), we had a data valued type class
+-- `Functor.Monoidal` (resp. `Functor.LaxMonoidal`) so that the definitions below
+-- could be phrased in terms of `F : C ⥤ D`, `G : D ⥤ D`, `h : F ⊣ G` and `[F.Monoidal]`.
+-- Then, in the case of an equivalence (see `monoidalInverse`), we could just take as
+-- input an equivalence of categories `e : C ≌ D` and the data `[e.functor.Monoidal]`.
+
 variable (F : MonoidalFunctor C D) {G : D ⥤ C} (h : F.toFunctor ⊣ G)
 
 /-- If we have a right adjoint functor `G` to a monoidal functor `F`, then `G` has a lax monoidal
