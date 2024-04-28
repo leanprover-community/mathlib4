@@ -898,7 +898,7 @@ lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
   nth_rewrite 2 [← Nat.div_add_mod s n]
   rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy, smul_zero]
 
-instance moduleZModTorsionBy : Module (ZMod n) A[n] :=
+def moduleZModTorsionBy : Module (ZMod n) A[n] :=
   AddCommGroup.zmodModule nsmul_torsionBy
 
 end AddSubgroup
