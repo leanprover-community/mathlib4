@@ -343,7 +343,7 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
 #align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
 theorem add_sub_cancel {a b : ℕ+} : (a + b) - b = a := by
-  rw [←coe_inj, sub_coe]
+  rw [← coe_inj, sub_coe]
   split_ifs with h
   · exact Nat.sub_eq_of_eq_add rfl
   · have : b < a + b := lt_add_left b a
