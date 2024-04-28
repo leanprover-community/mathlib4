@@ -520,7 +520,6 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     refine equalizer.hom_ext ?_
     ext x
     dsimp
-    generalize_proofs
     apply DFunLike.congr_fun (kernel.lift_ι f _ _)
   inv_hom_id := by
     apply AddCommGroupCat.ext
@@ -528,7 +527,6 @@ def kernelIsoKer {G H : AddCommGroupCat.{u}} (f : G ⟶ H) :
     rintro ⟨x, mem⟩
     refine Subtype.ext ?_
     simp only [ZeroHom.coe_mk, Function.comp_apply, id_eq]
-    generalize_proofs
     apply DFunLike.congr_fun (kernel.lift_ι f _ _)
 set_option linter.uppercaseLean3 false in
 #align AddCommGroup.kernel_iso_ker AddCommGroupCat.kernelIsoKer
