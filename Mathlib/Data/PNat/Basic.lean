@@ -279,12 +279,7 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
 #align pnat.pow_coe PNat.pow_coe
 
 /-- b is greater one if any a is less than b -/
-theorem one_lt_of_lt {a b: ℕ+} (hab: a < b): 1 < b := by
-  by_contra! hle
-  rw [le_one_iff] at hle
-  subst hle
-  have : ¬a < 1 := not_lt_one a
-  contradiction
+theorem one_lt_of_lt {a b: ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
 #align pnat.one_lt_of_lt PNat.one_lt_of_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
