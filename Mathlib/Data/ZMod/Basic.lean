@@ -297,6 +297,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   cases n;
   · rw [Nat.dvd_one] at h
     subst m
+    have : Subsingleton R := CharP.CharOne.subsingleton
     apply Subsingleton.elim
   rw [Nat.mod_eq_of_lt]
   · exact Nat.cast_one
