@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.TrivSqZeroExt
-import Init.Data.Format.Basic
 
 #align_import algebra.dual_number from "leanprover-community/mathlib"@"b8d2eaa69d69ce8f03179a5cda774fc0cde984e4"
 
@@ -57,7 +56,7 @@ scoped[DualNumber] notation "ε" => DualNumber.eps
 @[inherit_doc]
 scoped[DualNumber] postfix:1024 "[ε]" => DualNumber
 
-open DualNumber Std
+open DualNumber
 
 namespace DualNumber
 
