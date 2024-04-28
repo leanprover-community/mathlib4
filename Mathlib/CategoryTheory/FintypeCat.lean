@@ -199,8 +199,7 @@ instance : incl.EssSurj :=
         { hom := F.symm ∘ ULift.down
           inv := ULift.up ∘ F }⟩
 
-noncomputable instance : incl.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+noncomputable instance : incl.IsEquivalence where
 
 /-- The equivalence between `Fintype.Skeleton` and `Fintype`. -/
 noncomputable def equivalence : Skeleton ≌ FintypeCat :=

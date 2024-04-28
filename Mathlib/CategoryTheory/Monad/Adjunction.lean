@@ -190,19 +190,31 @@ instance (G : Comonad C) : (Comonad.comparison G.adj).EssSurj where
 /-- A right adjoint functor `R : D ⥤ C` is *monadic* if the comparison functor `Monad.comparison R`
 from `D` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
-class MonadicRightAdjoint (R : D ⥤ C) extends IsRightAdjoint R where
-  eqv : (Monad.comparison (Adjunction.ofRightAdjoint R)).IsEquivalence
+class MonadicRightAdjoint (R : D ⥤ C) extends R.IsRightAdjoint where
+  /-- a choice of left adjoint for `R` -/
+  L : C ⥤ D
+  /-- `R` is a right adjoint -/
+  adj : L ⊣ R
+  eqv : (Monad.comparison adj).IsEquivalence
 #align category_theory.monadic_right_adjoint CategoryTheory.MonadicRightAdjoint
 
 /--
 A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
 -/
-class ComonadicLeftAdjoint (L : C ⥤ D) extends IsLeftAdjoint L where
-  eqv : (Comonad.comparison (Adjunction.ofLeftAdjoint L)).IsEquivalence
+class ComonadicLeftAdjoint (L : C ⥤ D) where
+  /-- a choice of right adjoint for `L` -/
+  R : D ⥤ C
+  /-- `L` is a right adjoint -/
+  adj : L ⊣ R
+  eqv : (Comonad.comparison adj).IsEquivalence
 #align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
 
-noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget :=
+noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
+  eqv := by
+    have : (Monad.comparison T.adj).IsEquivalence := sorry
+    sorry
+  #exit
   ⟨Functor.IsEquivalence.ofFullyFaithfullyEssSurj (Monad.comparison T.adj)⟩
 
 noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget :=
