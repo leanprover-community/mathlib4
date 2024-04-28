@@ -5,7 +5,7 @@ Authors: Colin Jones
 -/
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.NormNum.Prime
-import Mathlib.Analysis.Normed.Field.Basic
+import Mathlib.Algebra.GeomSum
 
 /-!
 ## FactorisationProperties.lean
@@ -69,24 +69,24 @@ def Pseudoperfect (n : ℕ) : Prop :=
 def WeirdNumber (n : ℕ) : Prop := Abundant n ∧ ¬ Pseudoperfect n
 
 theorem not_pseudoperfect_iff_forall :
-  ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ (s : Finset ℕ), s ∈ powerset (properDivisors n)
-    → ∑ i in s, i ≠ n := by
-  have hn : (¬ 0 < n) ↔ n = 0 := by simp only [not_lt, nonpos_iff_eq_zero]
-  dsimp [Pseudoperfect]
-  rw [not_and_or, not_exists, hn]
-  constructor
-  · rintro (h1 | h2)
-    · tauto
-    · right
-      intro s
-      have hs : ¬(s ∈ powerset (properDivisors n) ∧ ∑ i in s, i = n) := by exact h2 s
-      rw [not_and] at hs
-      exact hs
-  · rintro (h1 | h2)
-    · tauto
-    · right
-      simp_rw [not_and]
-      exact h2
+    ¬ Pseudoperfect n ↔ n = 0 ∨ ∀ (s : Finset ℕ), s ∈ powerset (properDivisors n)
+      → ∑ i in s, i ≠ n := by
+    have hn : (¬ 0 < n) ↔ n = 0 := by simp only [not_lt, nonpos_iff_eq_zero]
+    dsimp [Pseudoperfect]
+    rw [not_and_or, not_exists, hn]
+    constructor
+    · rintro (h1 | h2)
+      · tauto
+      · right
+        intro s
+        have hs : ¬(s ∈ powerset (properDivisors n) ∧ ∑ i in s, i = n) := by exact h2 s
+        rw [not_and] at hs
+        exact hs
+    · rintro (h1 | h2)
+      · tauto
+      · right
+        simp_rw [not_and]
+        exact h2
 
 theorem one_deficient : Nat.Deficient 1 := by
   dsimp [Nat.Deficient]
@@ -131,61 +131,61 @@ theorem divisor_subseteq_mul (hn : 0 < n) (hm : 0 < m) :
   · exact ⟨dvd_trans hm1.1 ⟨n, mul_comm ..⟩, by positivity⟩
 
 theorem prop_divisors_subseteq_mul (hn : 0 < n) (hm : 0 < m) :
-  Nat.properDivisors n ∪ Nat.properDivisors m ⊆ Nat.properDivisors (n*m) := by
-  refine subset_iff.mpr ?_
-  rintro a ha
-  have ha' : a ∈ properDivisors n ∨ a ∈ properDivisors m := by
-    simp_all only [gt_iff_lt, le_mul_iff_one_le_right,
-      le_mul_iff_one_le_left, mem_union, mem_properDivisors]
-  rcases ha' with hn1 | hm1
-  · have han : a ∣ n := by
-      simp_all only [mem_properDivisors, and_self]
-    refine mem_properDivisors.mpr ?_
-    constructor
-    exact Dvd.dvd.mul_right han m
-    refine lt_mul_of_lt_of_one_le ?_ hm
-    simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors, true_and, ne_eq]
-  · have ham : a ∣ m := by
-      simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors]
-    refine mem_properDivisors.mpr ?_
-    constructor
-    exact Dvd.dvd.mul_left ham n
-    refine lt_mul_of_one_le_of_lt hn ?_
-    simp_all only [gt_iff_lt, le_mul_iff_one_le_right, le_mul_iff_one_le_left, mem_properDivisors,
-       true_and, ne_eq]
+    properDivisors n ∪ properDivisors m ⊆ properDivisors (n*m) := by
+      refine subset_iff.mpr ?_
+      rintro a ha
+      have ha' : a ∈ properDivisors n ∨ a ∈ properDivisors m := by
+        simp_all only [gt_iff_lt, le_mul_iff_one_le_right,
+          le_mul_iff_one_le_left, mem_union, mem_properDivisors]
+      rcases ha' with hn1 | hm1
+      · have han : a ∣ n := by
+          simp_all only [mem_properDivisors, and_self]
+        refine mem_properDivisors.mpr ?_
+        constructor
+        exact Dvd.dvd.mul_right han m
+        refine lt_mul_of_lt_of_one_le ?_ hm
+        simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors, true_and, ne_eq]
+      · have ham : a ∣ m := by
+          simp_all only [gt_iff_lt, le_mul_iff_one_le_right, mem_properDivisors]
+        refine mem_properDivisors.mpr ?_
+        constructor
+        exact Dvd.dvd.mul_left ham n
+        refine lt_mul_of_one_le_of_lt hn ?_
+        simp_all only [gt_iff_lt, le_mul_iff_one_le_right, le_mul_iff_one_le_left, mem_properDivisors,
+           true_and, ne_eq]
 
 lemma divisors_eq_proper_union_self (hn : 0 < n) :
-  Nat.divisors n = Nat.properDivisors n ∪ {n} := by
-    dsimp [divisors, properDivisors]
-    ext a
-    simp [*]
-    constructor
-    <;> rintro ⟨⟨h1, h2⟩, h3⟩
-    · omega
-    · omega
-    · simp only [*, lt_add_iff_pos_right, zero_lt_one, and_true, dvd_refl]
-      omega
+    divisors n = properDivisors n ∪ {n} := by
+      dsimp [divisors, properDivisors]
+      ext a
+      simp [*]
+      constructor
+      <;> rintro ⟨⟨h1, h2⟩, h3⟩
+      · omega
+      · omega
+      · simp only [*, lt_add_iff_pos_right, zero_lt_one, and_true, dvd_refl]
+        omega
 
 lemma deficient_not_abundant_or_perfect (hn : 0 < n) :
-  Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
-    dsimp [Perfect, Abundant, Deficient]
-    omega
+    Deficient n ↔ ¬ Abundant n ∧ ¬ Perfect n := by
+      dsimp [Perfect, Abundant, Deficient]
+      omega
 
 lemma perfect_not_abundant_or_deficient (hn : 0 < n) :
-  Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
-    dsimp [Perfect, Abundant, Deficient]
-    omega
+    Perfect n ↔ ¬ Abundant n ∧ ¬ Deficient n := by
+      dsimp [Perfect, Abundant, Deficient]
+      omega
 
 lemma abundant_not_perfect_or_deficient (hn : 0 < n) :
-  Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
-    dsimp [Perfect, Abundant, Deficient]
-    omega
+    Abundant n ↔ ¬ Perfect n ∧ ¬ Deficient n := by
+      dsimp [Perfect, Abundant, Deficient]
+      omega
 
 /- All numbers are either deficient, perfect, or abundant -/
 theorem deficient_or_perfect_or_abundant (hn : 0 < n) :
-  Deficient n ∨ Abundant n ∨ Perfect n := by
-    dsimp [Perfect, Abundant, Deficient]
-    omega
+    Deficient n ∨ Abundant n ∨ Perfect n := by
+      dsimp [Perfect, Abundant, Deficient]
+      omega
 
 theorem perfect_pseudoperfect (h : Perfect n) : Pseudoperfect n := by
   rcases h with ⟨h1, h2⟩
