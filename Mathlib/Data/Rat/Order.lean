@@ -49,6 +49,26 @@ variable {a b c : ℚ}
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha b.cast_nonneg
 
+
+/-- An `NNRat` version of `Rat.ofScientific` -/
+def _root_.NNRat.ofScientific (m : ℕ) (s : Bool) (e : ℕ) : ℚ≥0 :=
+  ⟨.ofScientific m s e, by
+    rw [Rat.ofScientific]
+    cases s
+    · rw [if_neg (by decide)]
+      refine num_nonneg.mp ?_
+      rw [num_natCast]
+      exact Nat.cast_nonneg _
+    · rw [if_pos rfl, normalize_eq_mkRat]
+      exact Rat.mkRat_nonneg (Nat.cast_nonneg _) _⟩
+
+theorem _root_.NNRat.coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    NNRat.ofScientific m s e = Rat.ofScientific m s e :=
+  rfl
+
+instance NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
+  ofScientific (m : ℕ) (b : Bool) (d : ℕ) := NNRat.ofScientific m b d
+
 protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
     have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt
