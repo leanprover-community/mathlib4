@@ -42,7 +42,9 @@ variable [∀ x : M, TopologicalSpace (V x)] [FiberBundle F V] [VectorBundle �
 
 /-- Bundled `n` times continuously differentiable sections of a vector bundle. -/
 structure ContMDiffSection where
+  /-- the underlying function of this section -/
   protected toFun : ∀ x, V x
+  /-- proof that this section is `C^n` -/
   protected contMDiff_toFun : ContMDiff I (I.prod 𝓘(𝕜, F)) n fun x ↦
     TotalSpace.mk' F x (toFun x)
 #align cont_mdiff_section ContMDiffSection
