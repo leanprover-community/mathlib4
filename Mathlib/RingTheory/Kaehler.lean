@@ -6,6 +6,7 @@ Authors: Nicolò Cavalleri, Andrew Yang
 import Mathlib.RingTheory.Derivation.ToSquareZero
 import Mathlib.RingTheory.Ideal.Cotangent
 import Mathlib.RingTheory.IsTensorProduct
+import Mathlib.Algebra.Exact
 
 #align_import ring_theory.kaehler from "leanprover-community/mathlib"@"4b92a463033b5587bb011657e25e4710bfca7364"
 
@@ -26,8 +27,12 @@ import Mathlib.RingTheory.IsTensorProduct
   1. `dx + dy = d(x + y)`
   2. `x dy + y dx = d(x * y)`
   3. `dr = 0` for `r ∈ R`
-- `KaehlerDifferential.map`: Given a map between the arrows `R → A` and `S → B`, we have an
+- `KaehlerDifferential.map`: Given a map between the arrows `R →+* A` and `S →+* B`, we have an
   `A`-linear map `Ω[A⁄R] → Ω[B⁄S]`.
+- `KaehlerDifferential.map_surjective`:
+  The sequence `Ω[B⁄R] → Ω[B⁄A] → 0` is exact.
+- `KaehlerDifferential.exact_mapBaseChange_map`:
+  The sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A]` is exact.
 
 ## Future project
 
@@ -590,8 +595,18 @@ theorem KaehlerDifferential.quotKerTotalEquiv_symm_comp_D :
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.quot_ker_total_equiv_symm_comp_D KaehlerDifferential.quotKerTotalEquiv_symm_comp_D
 
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra S B] [Algebra R B]
-variable [Algebra A B] [IsScalarTower R S B] [IsScalarTower R A B]
+end Presentation
+
+section ExactSequence
+
+/- We have the commutative diagram
+A --→ B
+↑     ↑
+|     |
+R --→ S -/
+variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
+variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
+variable [SMulCommClass S A B]
 
 unsuppress_compilation in
 -- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
@@ -599,9 +614,19 @@ local macro "finsupp_map" : term =>
   `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
     (Finsupp.lmapDomain A A (algebraMap A B)))
 
+/--
+Given the commutative diagram
+A --→ B
+↑     ↑
+|     |
+R --→ S
+The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
+kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
+See `kerTotal_map'` for the special case where `R = S`.
+-/
 theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A).map finsupp_map ⊔
-        Submodule.span A (Set.range fun x : S => single (algebraMap S B x) (1 : B)) =
+        Submodule.span A (Set.range fun x : S => .single (algebraMap S B x) (1 : B)) =
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
@@ -619,30 +644,23 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
   rw [sup_eq_right]
   apply Submodule.span_mono
   simp_rw [IsScalarTower.algebraMap_apply R S B]
-  exact Set.range_comp_subset_range (algebraMap R S) fun x => single (algebraMap S B x) (1 : B)
+  exact Set.range_comp_subset_range (algebraMap R S)
+    fun x => Finsupp.single (algebraMap S B x) (1 : B)
 #align kaehler_differential.ker_total_map KaehlerDifferential.kerTotal_map
 
+/--
+This is a special case of `kerTotal_map` where `R = S`.
+The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/R}` is spanned by the image of the
+kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `da` with `a : A`.
+-/
 theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A B)) :
     (KaehlerDifferential.kerTotal R A ⊔
-      Submodule.span A (Set.range fun x ↦ single (algebraMap R A x) 1)).map finsupp_map =
+      Submodule.span A (Set.range fun x ↦ .single (algebraMap R A x) 1)).map finsupp_map =
       (KaehlerDifferential.kerTotal R B).restrictScalars _ := by
   rw [Submodule.map_sup, ← kerTotal_map R R A B h, Submodule.map_span, ← Set.range_comp]
   congr
   refine congr_arg Set.range ?_
   ext; simp [IsScalarTower.algebraMap_eq R A B]
-
-end Presentation
-
-section ExactSequence
-
-/- We have the commutative diagram
-A --→ B
-↑     ↑
-|     |
-R --→ S -/
-variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
-variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
-variable [SMulCommClass S A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
 A --→ B
@@ -667,12 +685,6 @@ theorem KaehlerDifferential.map_D (x : A) :
   Derivation.congr_fun (KaehlerDifferential.map_compDer R S A B) x
 set_option linter.uppercaseLean3 false in
 #align kaehler_differential.map_D KaehlerDifferential.map_D
-
-unsuppress_compilation in
--- The map `(A →₀ A) →ₗ[A] (B →₀ B)`
-local macro "finsupp_map" : term =>
-  `((Finsupp.mapRange.linearMap (Algebra.linearMap A B)).comp
-    (Finsupp.lmapDomain A A (algebraMap A B)))
 
 theorem KaehlerDifferential.ker_map :
     LinearMap.ker (KaehlerDifferential.map R S A B) =
@@ -704,6 +716,10 @@ theorem KaehlerDifferential.map_surjective_of_surjective
   rw [← KaehlerDifferential.map_D R S A B]
   exact ⟨_, rfl⟩
 #align kaehler_differential.map_surjective_of_surjective KaehlerDifferential.map_surjective_of_surjective
+
+theorem KaehlerDifferential.map_surjective :
+    Function.Surjective (KaehlerDifferential.map R S B B) :=
+  map_surjective_of_surjective R S B B Function.surjective_id
 
 /-- The lift of the map `Ω[A⁄R] →ₗ[A] Ω[B⁄R]` to the base change along `A → B`.
 This is the first map in the exact sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0`. -/
@@ -742,6 +758,12 @@ lemma KaehlerDifferential.range_mapBaseChange :
     · use 0; simp
     · use 0; simp
     · use 1 ⊗ₜ D _ _ x; simp
+
+/-- The sequence `B ⊗[A] Ω[A⁄R] → Ω[B⁄R] → Ω[B⁄A] → 0` is exact.
+Also see `KaehlerDifferential.map_surjective`. -/
+lemma KaehlerDifferential.exact_mapBaseChange_map :
+    Function.Exact (mapBaseChange R A B) (map R A B B) :=
+  SetLike.ext_iff.mp (range_mapBaseChange R A B).symm
 
 end ExactSequence
 
