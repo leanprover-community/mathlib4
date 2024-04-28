@@ -146,7 +146,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
     rintro (_|_) <;> simp
-    · cases j <;> simp
+    cases j <;> simp
 end
 
 instance : FinCategory WalkingParallelPair where

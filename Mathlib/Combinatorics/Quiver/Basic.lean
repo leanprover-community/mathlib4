@@ -135,6 +135,10 @@ infixl:60 " ⋙q " => Prefunctor.comp
 /-- Notation for the identity prefunctor on a quiver. -/
 notation "𝟭q" => id
 
+theorem congr_map {U V : Type*} [Quiver U] [Quiver V] (F : U ⥤q V) {X Y : U} {f g : X ⟶ Y}
+    (h : f = g) : F.map f = F.map g := by
+  rw [h]
+
 end Prefunctor
 
 namespace Quiver
