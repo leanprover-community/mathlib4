@@ -210,18 +210,12 @@ def aux (f : EvenHom Q A) : CliffordAlgebra.even Q →ₗ[R] A := by
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_one : aux f 1 = 1 :=
-  -- Adaptation note: 2024-04-23
-  -- We've added the `letI`, and filled in some `_` holes to make the proof go through.
-  letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
-  congr_arg Prod.fst (foldr_one _ _ (CliffordAlgebra.even.lift.fFold_fFold f) _)
+  congr_arg Prod.fst (foldr_one _ _ _ _)
 #align clifford_algebra.even.lift.aux_one CliffordAlgebra.even.lift.aux_one
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m₁ m₂ :=
-  -- Adaptation note: 2024-04-23
-  -- We've added the `letI`, and filled in some `_` holes to make the proof go through.
-  letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
-  (congr_arg Prod.fst (foldr_mul _ _ (CliffordAlgebra.even.lift.fFold_fFold f) _ _ _)).trans
+  (congr_arg Prod.fst (foldr_mul _ _ _ _ _ _)).trans
     (by
       rw [foldr_ι, foldr_ι]
       exact mul_one _)
@@ -229,22 +223,16 @@ theorem aux_ι (m₁ m₂ : M) : aux f ((even.ι Q).bilin m₁ m₂) = f.bilin m
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_algebraMap (r) (hr) : aux f ⟨algebraMap R _ r, hr⟩ = algebraMap R _ r :=
-  -- Adaptation note: 2024-04-23
-  -- We've added the `letI`, and filled in some `_` holes to make the proof go through.
-  letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
-  (congr_arg Prod.fst (foldr_algebraMap _ _ (CliffordAlgebra.even.lift.fFold_fFold f) _ _)).trans
+  (congr_arg Prod.fst (foldr_algebraMap _ _ _ _ _)).trans
     (Algebra.algebraMap_eq_smul_one r).symm
 #align clifford_algebra.even.lift.aux_algebra_map CliffordAlgebra.even.lift.aux_algebraMap
 
 @[simp, nolint simpNF] -- Added `nolint simpNF` to avoid a timeout #8386
 theorem aux_mul (x y : even Q) : aux f (x * y) = aux f x * aux f y := by
-  -- Adaptation note: 2024-04-23
-  -- We've added the `letI`, and filled in some `_` holes to make the proof go through.
-  letI : AddCommGroup (S f) := AddSubgroupClass.toAddCommGroup _
   cases' x with x x_property
   cases y
   refine' (congr_arg Prod.fst
-    (foldr_mul _ _ (CliffordAlgebra.even.lift.fFold_fFold f) _ _ _)).trans _
+    (foldr_mul _ _ _ _ _ _)).trans _
   dsimp only
   induction x, x_property using even_induction Q with
   | algebraMap r =>

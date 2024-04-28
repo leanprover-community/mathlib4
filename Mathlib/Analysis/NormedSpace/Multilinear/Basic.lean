@@ -869,10 +869,7 @@ end
 theorem nnnorm_smulRight (f : ContinuousMultilinearMap 𝕜 E 𝕜) (z : G) :
     ‖f.smulRight z‖₊ = ‖f‖₊ * ‖z‖₊ := by
   refine le_antisymm ?_ ?_
-  · -- Adaptation note: 2024-04-23
-    -- Previously this line was:
-    -- `refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)`
-    refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le (id (f.toMultilinearMap m)) _).trans ?_)
+  · refine (opNNNorm_le_iff _ |>.2 fun m => (nnnorm_smul_le _ _).trans ?_)
     rw [mul_right_comm]
     gcongr
     exact le_opNNNorm _ _
