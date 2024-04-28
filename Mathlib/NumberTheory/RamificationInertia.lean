@@ -39,7 +39,6 @@ leaving `p` and `P` implicit.
 
 -/
 
-
 namespace Ideal
 
 universe u v
@@ -452,10 +451,11 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
 -- Adaptation note: 2024-04-28
 -- Now we need even more.
 -- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+-- Adaptation note: 2024-04-28
+-- replacing the `_` by `(P ^e)` makes it fast (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk (P ^ e) (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_pow_ramification_idx Ideal.Quotient.algebraMap_quotient_pow_ramificationIdx
 
 variable [hfp : NeZero (ramificationIdx f p P)]
@@ -476,10 +476,11 @@ attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 -- This maxHeartbeats increase appears to have been provoked by
 -- https://github.com/leanprover/lean4/pull/4003
 -- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+-- Adaptation note: 2024-04-28
+-- replacing the `_` by `P` makes it fast (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
-    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
+    algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
