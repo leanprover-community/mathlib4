@@ -279,14 +279,11 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
 #align pnat.pow_coe PNat.pow_coe
 
 /-- b is greater one if any a is less than b -/
-theorem one_lt_of_lt {a b: ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
-#align pnat.one_lt_of_lt PNat.one_lt_of_lt
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
-#align pnat.add_one PNat.add_one
 
 theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
-#align pnat.lt_succ_self PNat.lt_succ_self
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
