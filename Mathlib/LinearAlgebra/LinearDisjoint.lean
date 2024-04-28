@@ -134,7 +134,8 @@ section mulMap
 
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
-def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
+def mulMap : M ⊗[R] N →ₗ[R] S :=
+  TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
 
 @[simp]
 theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
@@ -180,17 +181,19 @@ theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
 /-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,
 which is surjective (`Submodule.mulMap'_surjective`). -/
-def mulMap' := (LinearEquiv.ofEq _ _ (mulMap_range M N)).toLinearMap ∘ₗ (mulMap M N).rangeRestrict
+def mulMap' : M ⊗[R] N →ₗ[R] ↥(M * N) :=
+  (LinearEquiv.ofEq _ _ (mulMap_range M N)).toLinearMap ∘ₗ (mulMap M N).rangeRestrict
 
 @[simp]
-theorem coe_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
+theorem val_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
   simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
     LinearMap.surjective_rangeRestrict]
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
-`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This is promoted to an isomorphism as `Submodule.lTensorOne`. Use that instead. -/
 def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N :=
   (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
 
@@ -219,7 +222,8 @@ theorem lTensorOne_symm_apply (n : N) :
     N.lTensorOne.symm n = ⟨1, one_le.1 (le_refl _)⟩ ⊗ₜ[R] n := rfl
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
-`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
+`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
+This is promoted to an isomorphism as `Submodule.rTensorOne`. Use that instead. -/
 def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M :=
   (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
 
@@ -306,11 +310,11 @@ variable {M N}
 
 /-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
 `M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
-protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) :=
+protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] ↥(M * N) :=
   LinearEquiv.ofInjective (M.mulMap N) H.injective ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
 
 @[simp]
-theorem LinearDisjoint.coe_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
+theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
