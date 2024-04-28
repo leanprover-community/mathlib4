@@ -153,7 +153,7 @@ def orthogonal (B : BilinForm R M) (N : Submodule R M) : Submodule R M where
     rw [IsOrtho, smul_right, show B n x = 0 from hx n hn, mul_zero]
 #align bilin_form.orthogonal LinearMap.BilinForm.orthogonal
 
-variable {N L : Submodule R M} {N₂ : Submodule R M}
+variable {N L : Submodule R M}
 
 @[simp]
 theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
@@ -166,7 +166,7 @@ theorem mem_orthogonal_iff {N : Submodule R M} {m : M} :
 theorem orthogonal_le (h : N ≤ L) : B.orthogonal L ≤ B.orthogonal N := fun _ hn l hl => hn l (h hl)
 #align bilin_form.orthogonal_le LinearMap.BilinForm.orthogonal_le
 
-theorem le_orthogonal_orthogonal (b : B.IsRefl) : N₂ ≤ B.orthogonal (B.orthogonal N₂) :=
+theorem le_orthogonal_orthogonal (b : B.IsRefl) : N ≤ B.orthogonal (B.orthogonal N) :=
   fun n hn _ hm => b _ _ (hm n hn)
 #align bilin_form.le_orthogonal_orthogonal LinearMap.BilinForm.le_orthogonal_orthogonal
 
