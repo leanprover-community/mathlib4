@@ -365,7 +365,7 @@ protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
   rfl
 
 @[simp, norm_cast]
-protected theorem coe_ofScientific (m s e) :
+protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
     ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
 

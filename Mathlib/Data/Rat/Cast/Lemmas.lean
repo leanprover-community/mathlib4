@@ -52,10 +52,12 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
 
 /-- Casting a scientific literal via `ℚ` is the same as casting directly. -/
 @[simp, norm_cast]
-theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (b : Bool) (d : ℕ) :
-    (OfScientific.ofScientific m b d : ℚ) = (OfScientific.ofScientific m b d : K) := by
+theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℚ) = (OfScientific.ofScientific m s e : K) := by
   rw [← NNRat.cast_ofScientific (K := K), ← NNRat.cast_ofScientific, cast_nnratCast]
 
+end Rat
+
 open OfScientific in
-theorem Nonneg.val_ofScientific {K} [LinearOrderedField K] (m s e) :
+theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
