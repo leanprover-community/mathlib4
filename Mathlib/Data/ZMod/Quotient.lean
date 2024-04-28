@@ -195,34 +195,3 @@ instance minimalPeriod_pos [Finite <| orbit (zpowers a) b] :
 #align add_action.minimal_period_pos AddAction.minimalPeriod_pos
 
 end MulAction
-
-section Group
-
-open Subgroup
-
-variable {α : Type*} [Group α] (a : α)
-
-/-- See also `Fintype.card_zpowers`. -/
-@[to_additive (attr := simp) "See also `Fintype.card_zmultiples`."]
-theorem Nat.card_zpowers : Nat.card (zpowers a) = orderOf a := by
-  have := Nat.card_congr (MulAction.orbitZPowersEquiv a (1 : α))
-  rwa [Nat.card_zmod, orbit_subgroup_one_eq_self] at this
-#align order_eq_card_zpowers' Nat.card_zpowersₓ
-#align add_order_eq_card_zmultiples' Nat.card_zmultiplesₓ
-
-variable {a}
-
-@[to_additive (attr := simp)]
-lemma finite_zpowers : (zpowers a : Set α).Finite ↔ IsOfFinOrder a := by
-  simp only [← orderOf_pos_iff, ← Nat.card_zpowers, Nat.card_pos_iff, ← SetLike.coe_sort_coe,
-    nonempty_coe_sort, Nat.card_pos_iff, Set.finite_coe_iff, Subgroup.coe_nonempty, true_and]
-
-@[to_additive (attr := simp)]
-lemma infinite_zpowers : (zpowers a : Set α).Infinite ↔ ¬IsOfFinOrder a := finite_zpowers.not
-
-@[to_additive]
-protected alias ⟨_, IsOfFinOrder.finite_zpowers⟩ := finite_zpowers
-#align is_of_fin_order.finite_zpowers IsOfFinOrder.finite_zpowers
-#align is_of_fin_add_order.finite_zmultiples IsOfFinAddOrder.finite_zmultiples
-
-end Group
