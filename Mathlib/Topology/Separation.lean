@@ -917,8 +917,7 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     intro x y h
     apply (Inducing.specializes_iff ?hf).mpr h
     exact SeparationQuotient.inducing_mk
-  have := (t1Space_TFAE (SeparationQuotient X)).out 0 9
-  rw [this]
+  rw [((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
   constructor
   · intro h
     intro x y xspecy
