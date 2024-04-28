@@ -1663,6 +1663,10 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
 
 end AbsolutelyContinuous
 
+@[simp]
+lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
+  ⟨fun h ↦ measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
+
 alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
 alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
 

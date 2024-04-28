@@ -271,8 +271,8 @@ def preservesLimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : J 
         have := (isLimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsLimit.postcomposeHomEquiv equ _).symm this).ofIsoLimit
         refine' Cones.ext (Iso.refl _) fun j => _
-        · dsimp
-          simp [equ, ← Functor.map_comp] }
+        dsimp
+        simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_limits_of_shape_of_equiv CategoryTheory.Limits.preservesLimitsOfShapeOfEquiv
 
 /-- A functor preserving larger limits also preserves smaller limits. -/
@@ -340,8 +340,8 @@ def preservesColimitsOfShapeOfEquiv {J' : Type w₂} [Category.{w₂'} J'] (e : 
         have := (isColimitOfPreserves F (t.whiskerEquivalence e)).whiskerEquivalence e.symm
         apply ((IsColimit.precomposeInvEquiv equ _).symm this).ofIsoColimit
         refine' Cocones.ext (Iso.refl _) fun j => _
-        · dsimp
-          simp [equ, ← Functor.map_comp] }
+        dsimp
+        simp [equ, ← Functor.map_comp] }
 #align category_theory.limits.preserves_colimits_of_shape_of_equiv CategoryTheory.Limits.preservesColimitsOfShapeOfEquiv
 
 /-- A functor preserving larger colimits also preserves smaller colimits. -/
@@ -811,7 +811,7 @@ instance fullyFaithfulReflectsLimits [F.Full] [F.Faithful] : ReflectsLimitsOfSiz
                 (Cones.functoriality K F).preimage (t.liftConeMorphism _)) <| by
               apply fun s m => (Cones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cone_morphism } }
 #align category_theory.limits.fully_faithful_reflects_limits CategoryTheory.Limits.fullyFaithfulReflectsLimits
 
@@ -825,7 +825,7 @@ instance fullyFaithfulReflectsColimits [F.Full] [F.Faithful] :
                 (Cocones.functoriality K F).preimage (t.descCoconeMorphism _)) <| by
               apply fun s m => (Cocones.functoriality K F).map_injective _
               intro s m
-              rw [Functor.image_preimage]
+              rw [Functor.map_preimage]
               apply t.uniq_cocone_morphism }}
 #align category_theory.limits.fully_faithful_reflects_colimits CategoryTheory.Limits.fullyFaithfulReflectsColimits
 
