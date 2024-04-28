@@ -33,8 +33,6 @@ stopping time, stochastic process
 
 -/
 
-#check measurable_of_Iic
-
 open Filter Order TopologicalSpace
 
 open scoped Classical MeasureTheory NNReal ENNReal Topology BigOperators
