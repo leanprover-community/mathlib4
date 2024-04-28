@@ -2,21 +2,21 @@ import Mathlib.Algebra.DualNumber
 
 open DualNumber
 
-/-- info: true -/
+/-- info: 0 + 0*ε -/
 #guard_msgs in
-#eval toString (repr (0 : ℕ[ε])) = "0 + 0*ε"
+#eval (0 : ℕ[ε])
 
 
-/-- info: true -/
+/-- info: 2 + 0*ε -/
 #guard_msgs in
-#eval toString (repr (2 : ℕ[ε])) = "2 + 0*ε"
+#eval (2 : ℕ[ε])
 
 
-/-- info: true -/
+/-- info: 6 + 0*ε -/
 #guard_msgs in
-#eval toString (repr (2 + 4 : ℕ[ε])) = "6 + 0*ε"
+#eval (2 + 4 : ℕ[ε])
 
 
-/-- info: true -/
+/-- info: 2 + 0*ε + (0 + 0*ε)*ε -/
 #guard_msgs in
-#eval toString (repr (2 : (ℕ[ε])[ε])) = "2 + 0*ε + (0 + 0*ε)*ε"
+#eval (2 : (ℕ[ε])[ε])
