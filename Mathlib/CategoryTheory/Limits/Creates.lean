@@ -302,7 +302,7 @@ def createsLimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.F
     { liftedCone := c
       validLift := i ≪≫ IsLimit.uniqueUpToIso hl t
       makesLimit :=
-        IsLimit.ofFaithful F (IsLimit.ofIsoLimit hl i.symm) _ fun _ => F.image_preimage _ }
+        IsLimit.ofFaithful F (IsLimit.ofIsoLimit hl i.symm) _ fun _ => F.map_preimage _ }
 #align category_theory.creates_limit_of_fully_faithful_of_lift' CategoryTheory.createsLimitOfFullyFaithfulOfLift'
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -334,7 +334,7 @@ def createsLimitOfFullyFaithfulOfIso' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F.Fa
             F.map_injective <| by
               dsimp
               simpa using (l.w f).symm } }
-    (Cones.ext i fun j => by simp only [Functor.image_preimage, Functor.mapCone_π_app])
+    (Cones.ext i fun j => by simp only [Functor.map_preimage, Functor.mapCone_π_app])
 #align category_theory.creates_limit_of_fully_faithful_of_iso' CategoryTheory.createsLimitOfFullyFaithfulOfIso'
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
@@ -424,7 +424,7 @@ def createsColimitOfFullyFaithfulOfLift' {K : J ⥤ C} {F : C ⥤ D} [F.Full] [F
     { liftedCocone := c
       validLift := i ≪≫ IsColimit.uniqueUpToIso hl t
       makesColimit :=
-        IsColimit.ofFaithful F (IsColimit.ofIsoColimit hl i.symm) _ fun _ => F.image_preimage _ }
+        IsColimit.ofFaithful F (IsColimit.ofIsoColimit hl i.symm) _ fun _ => F.map_preimage _ }
 #align category_theory.creates_colimit_of_fully_faithful_of_lift' CategoryTheory.createsColimitOfFullyFaithfulOfLift'
 
 -- Notice however that even if the isomorphism is `Iso.refl _`,
