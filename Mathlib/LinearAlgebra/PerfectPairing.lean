@@ -115,7 +115,7 @@ theorem reflexive_left : IsReflexive R M where
     exact p.bijective_toDualRight_symm_toDualLeft
 
 theorem reflexive_right : IsReflexive R N :=
-  reflexive_left (p := p.flip)
+  p.flip.reflexive_left
 
 end PerfectPairing
 
