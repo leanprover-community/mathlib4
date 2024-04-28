@@ -6,6 +6,7 @@ Authors: Scott Morrison
 import Mathlib.CategoryTheory.Functor.Hom
 import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Products.Basic
+import Mathlib.Data.ULift
 
 #align_import category_theory.yoneda from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 
@@ -22,7 +23,6 @@ Also the Yoneda lemma, `yonedaLemma : (yoneda_pairing C) ≅ (yoneda_evaluation 
 -/
 
 set_option autoImplicit true
-
 
 namespace CategoryTheory
 
@@ -508,6 +508,61 @@ end YonedaLemma
 
 section CoyonedaLemma
 
+variable {C}
+
+/-- We have a type-level equivalence between natural transformations from the coyoneda embedding
+and elements of `F.obj X.unop`, without any universe switching.
+-/
+def coyonedaEquiv {X : C} {F : C ⥤ Type v₁} : (coyoneda.obj (op X) ⟶ F) ≃ F.obj X where
+  toFun η := η.app X (𝟙 X)
+  invFun ξ := { app := fun Y x ↦ F.map x ξ }
+  left_inv := fun η ↦ by
+    ext Y (x : X ⟶ Y)
+    dsimp
+    rw [← FunctorToTypes.naturality]
+    simp
+  right_inv := by intro ξ; simp
+
+theorem coyonedaEquiv_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F) :
+    coyonedaEquiv f = f.app X.unop (𝟙 X.unop) :=
+  rfl
+
+@[simp]
+theorem coyonedaEquiv_symm_app_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (x : F.obj X.unop) (Y : C)
+    (f : X.unop ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
+  rfl
+
+theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F)
+    (g : Y ⟶ X) : F.map g.unop (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g ≫ f) := by
+  change (f.app X.unop ≫ F.map g.unop) (𝟙 X.unop) = f.app Y.unop (g.unop ≫ 𝟙 Y.unop)
+  rw [← f.naturality]
+  dsimp
+  simp
+
+lemma coyonedaEquiv_naturality' {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g.op ≫ f) :=
+  coyonedaEquiv_naturality _ _
+
+lemma coyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ Type v₁} (α : coyoneda.obj X ⟶ F) (β : F ⟶ G) :
+    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) :=
+  rfl
+
+lemma coyonedaEquiv_comp' {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :
+    coyonedaEquiv (α ≫ β) = β.app X (coyonedaEquiv α) :=
+  rfl
+
+lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
+    coyonedaEquiv (coyoneda.map f) = f.unop := by
+  rw [coyonedaEquiv_apply]
+  simp
+
+lemma coyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type v₁} (t : F.obj X) :
+    coyonedaEquiv.symm (F.map f t) = coyoneda.map f.op ≫ coyonedaEquiv.symm t := by
+  obtain ⟨u, rfl⟩ := coyonedaEquiv.surjective t
+  simp [coyonedaEquiv_naturality' u f]
+
+variable (C)
+
 /-- The "Coyoneda evaluation" functor, which sends `X : C` and `F : C ⥤ Type`
 to `F.obj X`, functorially in both `X` and `F`.
 -/
@@ -561,26 +616,15 @@ is naturally isomorphic to the evaluation `(X, F) ↦ F.obj X`.
 
 See <https://stacks.math.columbia.edu/tag/001P>.
 -/
-def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C where
-  hom :=
-    { app := fun F x => ULift.up ((x.app F.1) (𝟙 F.1))
-      naturality := by
-        intro X Y f
-        ext
-        simp [coyonedaEvaluation, ← FunctorToTypes.naturality] }
-  inv :=
-    { app := fun F x =>
-        { app := fun X a => (F.2.map a) x.down }
-      naturality := by
-        intro X Y f
-        ext
-        simp [yoneda, ← FunctorToTypes.naturality] }
-  hom_inv_id := by
-    ext
-    simp [← FunctorToTypes.naturality]
-  inv_hom_id := by
-    ext
-    simp [ULift.up_down]
+def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
+  NatIso.ofComponents
+    (fun X ↦ Equiv.toIso (coyonedaEquiv.trans Equiv.ulift.{u₁, v₁}.symm))
+    (by intro (X, F) (Y, G) f
+        ext (a : coyoneda.obj (op X) ⟶ F)
+        apply ULift.ext.{u₁, v₁}
+        simp only [Functor.prod_obj, Functor.id_obj, types_comp_apply, coyonedaEvaluation_map_down]
+        erw [Equiv.ulift_symm_down, Equiv.ulift_symm_down]
+        simp [coyonedaEquiv, ← FunctorToTypes.naturality])
 
 variable {C}
 
@@ -592,50 +636,6 @@ given by the Coyoneda lemma.
 def coyonedaSections (X : Cᵒᵖ) (F : C ⥤ Type v₁) :
     (coyoneda.obj X ⟶ F) ≅ ULift.{u₁} (F.obj X.unop) :=
   (coyonedaLemma C).app (X.unop, F)
-
-/-- We have a type-level equivalence between natural transformations from the coyoneda embedding
-and elements of `F.obj X.unop`, without any universe switching.
--/
-def coyonedaEquiv {X : Cᵒᵖ} {F : C ⥤ Type v₁} : (coyoneda.obj X ⟶ F) ≃ F.obj X.unop :=
-  (coyonedaSections X F).toEquiv.trans Equiv.ulift
-
-theorem coyonedaEquiv_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F) :
-    coyonedaEquiv f = f.app X.unop (𝟙 X.unop) :=
-  rfl
-
-@[simp]
-theorem coyonedaEquiv_symm_app_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (x : F.obj X.unop) (Y : C)
-    (f : X.unop ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
-  rfl
-
-theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F)
-    (g : Y ⟶ X) : F.map g.unop (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g ≫ f) := by
-  change (f.app X.unop ≫ F.map g.unop) (𝟙 X.unop) = f.app Y.unop (g.unop ≫ 𝟙 Y.unop)
-  rw [← f.naturality]
-  dsimp
-  simp
-
-lemma coyonedaEquiv_naturality' {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
-    (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g.op ≫ f) :=
-  coyonedaEquiv_naturality _ _
-
-lemma coyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ Type v₁} (α : coyoneda.obj X ⟶ F) (β : F ⟶ G) :
-    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) :=
-  rfl
-
-lemma coyonedaEquiv_comp' {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :
-    coyonedaEquiv (α ≫ β) = β.app X (coyonedaEquiv α) :=
-  rfl
-
-lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    coyonedaEquiv (coyoneda.map f) = f.unop := by
-  rw [coyonedaEquiv_apply]
-  simp
-
-lemma coyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type v₁} (t : F.obj X) :
-    coyonedaEquiv.symm (F.map f t) = coyoneda.map f.op ≫ coyonedaEquiv.symm t := by
-  obtain ⟨u, rfl⟩ := coyonedaEquiv.surjective t
-  erw [coyonedaEquiv_naturality', Equiv.symm_apply_apply, Equiv.symm_apply_apply]
 
 /-- When `C` is a small category, we can restate the isomorphism from `coyonedaSections`
 without having to change universes.
