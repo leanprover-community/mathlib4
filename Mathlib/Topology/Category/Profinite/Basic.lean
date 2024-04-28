@@ -240,8 +240,7 @@ instance : FintypeCat.toProfinite.Faithful where
   map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
 
 instance : FintypeCat.toProfinite.Full where
-  preimage f := fun x ↦ f x
-  witness _ := rfl
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
 
 end DiscreteTopology
 
