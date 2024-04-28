@@ -128,7 +128,13 @@ attribute [simp] homEquiv_unit homEquiv_counit
 
 section
 
-variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G) {X' X : C} {Y Y' : D}
+variable {F : C ⥤ D} {G : D ⥤ C} (adj : F ⊣ G)
+
+lemma isLeftAdjoint : F.IsLeftAdjoint := ⟨_, ⟨adj⟩⟩
+
+lemma isRightAdjoint : G.IsRightAdjoint := ⟨_, ⟨adj⟩⟩
+
+variable {X' X : C} {Y Y' : D}
 
 theorem homEquiv_id (X : C) : adj.homEquiv X _ (𝟙 _) = adj.unit.app X := by simp
 #align category_theory.adjunction.hom_equiv_id CategoryTheory.Adjunction.homEquiv_id

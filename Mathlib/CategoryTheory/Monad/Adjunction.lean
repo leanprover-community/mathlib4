@@ -211,6 +211,13 @@ instance (R : D ⥤ C) [MonadicRightAdjoint R] :
     (Monad.comparison (monadicAdjunction R)).IsEquivalence :=
   MonadicRightAdjoint.eqv
 
+instance (R : D ⥤ C) [MonadicRightAdjoint R] : R.IsRightAdjoint :=
+  (monadicAdjunction R).isRightAdjoint
+
+noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
+  adj := T.adj
+  eqv := { }
+
 /--
 A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
@@ -236,9 +243,8 @@ instance (L : C ⥤ D) [ComonadicLeftAdjoint L] :
     (Comonad.comparison (comonadicAdjunction L)).IsEquivalence :=
   ComonadicLeftAdjoint.eqv
 
-noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
-  adj := T.adj
-  eqv := { }
+instance (L : C ⥤ D) [ComonadicLeftAdjoint L] : L.IsLeftAdjoint :=
+  (comonadicAdjunction L).isLeftAdjoint
 
 noncomputable instance (G : Comonad C) : ComonadicLeftAdjoint G.forget where
   adj := G.adj
