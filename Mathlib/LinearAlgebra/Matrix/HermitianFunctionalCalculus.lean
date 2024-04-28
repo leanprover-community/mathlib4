@@ -39,14 +39,35 @@ so I have to learn how to specify all of this data.
 
 -/
 
+
+theorem eigenvalue_mem_toEuclideanLin_spectrum (i : n) :
+    hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
+    have H0 : Module.End.HasEigenvalue (toEuclideanLin A) (hA.eigenvalues i) := by sorry
+    have H1 := Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
+    sorry
+
+
+#exit
+def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
+  toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
+  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ hA.eigenvalues)
+      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
+  map_one' := sorry
+  map_mul' := sorry
+  map_zero' := sorry
+  map_add' := sorry
+  commutes' := sorry
+  map_star' := fun
+    | .mk toFun continuous_toFun => sorry
+
+
+
 instance instContinuousFunctionalCalculus :
     ContinuousFunctionalCalculus 𝕜 (IsHermitian : Matrix n n 𝕜 → Prop) where
-exists_cfc_of_predicate a ha := by
-  use fun (f : C(spectrum 𝕜 a, 𝕜)) =>
-  (eigenvectorUnitary ha : Matrix n n 𝕜) * diagonal (f ∘ RCLike.ofReal ∘ ha.eigenvalues)
-      * (star (eigenvectorUnitary ha : Matrix n n 𝕜))
-  constructor
-  constructor
+exists_cfc_of_predicate
 
+sorry
+
+-/
 
 --
