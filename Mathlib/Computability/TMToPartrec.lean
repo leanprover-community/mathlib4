@@ -666,10 +666,10 @@ theorem cont_eval_fix {f k v} (fok : Code.Ok f) :
         obtain ⟨v₁, hv₁, v₂, hv₂, h₃⟩ :=
           IH (stepRet (k₀.then (Cont.fix f k)) v₀) (by rw [stepRet, if_neg he, e₁]; rfl)
             v'.tail _ stepRet_then (by apply ReflTransGen.single; rw [e₀]; rfl)
-        · refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
-          simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
-          split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
-            exact Or.inr ⟨_, rfl, hv₂⟩]
+        refine' ⟨_, PFun.mem_fix_iff.2 _, h₃⟩
+        simp only [Part.eq_some_iff.2 hv₁, Part.map_some, Part.mem_some_iff]
+        split_ifs at hv₂ ⊢ <;> [exact Or.inl (congr_arg Sum.inl (Part.mem_some_iff.1 hv₂));
+          exact Or.inr ⟨_, rfl, hv₂⟩]
     · exact IH _ rfl _ _ stepRet_then (ReflTransGen.tail hr rfl)
   · rintro ⟨v', he, hr⟩
     rw [reaches_eval] at hr
@@ -1240,8 +1240,7 @@ def K'.elim (a b c d : List Γ') : K' → List Γ'
   | K'.stack => d
 #align turing.partrec_to_TM2.K'.elim Turing.PartrecToTM2.K'.elim
 
-/- Porting note: The equation lemma of `elim` simplifies to `match` structures. To prevent this,
-we replace equation lemmas of `elim`. -/
+-- The equation lemma of `elim` simplifies to `match` structures.
 
 theorem K'.elim_main (a b c d) : K'.elim a b c d K'.main = a := rfl
 
@@ -1251,7 +1250,6 @@ theorem K'.elim_aux (a b c d) : K'.elim a b c d K'.aux = c := rfl
 
 theorem K'.elim_stack (a b c d) : K'.elim a b c d K'.stack = d := rfl
 
-attribute [eqns K'.elim_main K'.elim_rev K'.elim_aux K'.elim_stack] K'.elim
 attribute [simp] K'.elim
 
 @[simp]
@@ -1342,8 +1340,8 @@ theorem move_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k₁
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons, Option.iget_some] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · simp only [e]
-      rfl
+    simp only [e]
+    rfl
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim, ne_eq, List.reverseAux_cons]
     cases' e₁ : S k₁ with a' Sk <;> rw [e₁, splitAtPred] at e
@@ -1372,7 +1370,7 @@ theorem move₂_ok {p k₁ k₂ q s L₁ o L₂} {S : K' → List Γ'} (h₁ : k
       ⟨some q, none, update (update S k₁ (o.elim id List.cons L₂)) k₂ (L₁ ++ S k₂)⟩ := by
   refine' (move_ok h₁.1 e).trans (TransGen.head rfl _)
   simp only [TM2.step, Option.mem_def, TM2.stepAux, id_eq, ne_eq, Option.elim]
-  cases o <;> simp only [Option.elim, id.def]
+  cases o <;> simp only [Option.elim, id]
   · simp only [TM2.stepAux, Option.isSome, cond_false]
     convert move_ok h₁.2.1.symm (splitAtPred_false _) using 2
     simp only [Function.update_comm h₁.1, Function.update_idem]
@@ -1400,8 +1398,8 @@ theorem clear_ok {p k q s L₁ o L₂} {S : K' → List Γ'} (e : splitAtPred p 
     simp only [splitAtPred, Option.elim, List.head?, List.tail_cons] at e ⊢
     revert e; cases p a <;> intro e <;>
       simp only [cond_false, cond_true, Prod.mk.injEq, true_and, false_and] at e ⊢
-    · rcases e with ⟨e₁, e₂⟩
-      rw [e₁, e₂]
+    rcases e with ⟨e₁, e₂⟩
+    rw [e₁, e₂]
   · refine' TransGen.head rfl _
     simp only [TM2.step, Option.mem_def, TM2.stepAux, Option.elim]
     cases' e₁ : S k with a' Sk <;> rw [e₁, splitAtPred] at e
@@ -1463,10 +1461,10 @@ theorem head_main_ok {q s L} {c d : List Γ'} :
     (move_ok (by decide)
           (splitAtPred_eq _ _ (trNat L.headI) o (trList L.tail) (trNat_natEnd _) _)).trans
       (TransGen.head rfl (TransGen.head rfl _))
-  · cases L <;> simp
+  · cases L <;> simp [o]
   simp only [TM2.step, Option.mem_def, TM2.stepAux, elim_update_main, elim_rev, elim_update_rev,
     Function.update_same, trList]
-  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp)]
+  rw [if_neg (show o ≠ some Γ'.consₗ by cases L <;> simp [o])]
   refine' (clear_ok (splitAtPred_eq _ _ _ none [] _ ⟨rfl, rfl⟩)).trans _
   · exact fun x h => Bool.decide_false (trList_ne_consₗ _ _ h)
   convert unrev_ok using 2; simp [List.reverseAux_eq]
@@ -1600,7 +1598,7 @@ theorem trNormal_respects (c k v s) :
     let o : Option Γ' := List.casesOn v none fun _ _ => some Γ'.cons
     refine' ⟨_, ⟨o, rfl⟩, _⟩; convert clear_ok _ using 2; simp; rfl; swap
     refine' splitAtPred_eq _ _ (trNat v.headI) _ _ (trNat_natEnd _) _
-    cases v <;> simp
+    cases v <;> simp [o]
   | cons f fs IHf _ =>
     obtain ⟨c, h₁, h₂⟩ := IHf (Cont.cons₁ fs v k) v none
     refine' ⟨c, h₁, TransGen.head rfl <| (move_ok (by decide) (splitAtPred_false _)).trans _⟩

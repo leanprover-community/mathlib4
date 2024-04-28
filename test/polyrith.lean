@@ -97,19 +97,15 @@ A full test suite is provided at the bottom of the file.
 -- -/
 
 -- example (x y : ℚ) (h1 : x*y + 2*x = 1) (h2 : x = y) :
---   x*y = -2*y + 1 :=
--- begin
---   test_sage_output "{\"data\":[\"(poly.const 1/1)\",\"(poly.const -2/1)\"],\"success\":true}",
+--     x*y = -2*y + 1 := by
+--   test_sage_output "{\"data\":[\"(poly.const 1/1)\",\"(poly.const -2/1)\"],\"success\":true}"
 --   linear_combination h1 - 2 * h2
--- end
 
 -- example (w x y z : ℝ) (h1 : x + 2.1*y + 2*z = 2) (h2 : x + 8*z + 5*w = -6.5)
 --     (h3 : x + y + 5*z + 5*w = 3) :
---   x + 2.2*y + 2*z - 5*w = -8.5 :=
--- begin
---   test_sage_output "{\"data\":[\"(poly.const 2/1)\",\"(poly.const 1/1)\",\"(poly.const -2/1)\"],\"success\":true}",
+--   x + 2.2*y + 2*z - 5*w = -8.5 := by
+--   test_sage_output "{\"data\":[\"(poly.const 2/1)\",\"(poly.const 1/1)\",\"(poly.const -2/1)\"],\"success\":true}"
 --   linear_combination 2 * h1 + h2 - 2 * h3
--- end
 
 
 
@@ -314,7 +310,7 @@ A full test suite is provided at the bottom of the file.
 
 -- /-! ### Case over arbitrary field/ring -/
 
--- example {α} [h : comm_ring α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e*d) :
+-- example {α} [h : CommRing α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e*d) :
 --   c * (a*f - b*e) = 0 :=
 -- by test_polyrith
 --   "{\"data\":[\"(poly.var 4)\",\"(poly.var 1)\"],\"success\":true}"
@@ -325,14 +321,13 @@ A full test suite is provided at the bottom of the file.
 --   "((var0 * ((var1 * var2) - (var3 * var4))) - 0)"]
 --   "linear_combination e * h1 + a * h2"
 
--- example {K : Type _} [field K] [invertible 2] [invertible 3]
+-- example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
 --   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
 --   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
 --   x ^ 3 + 3 * p * x - 2 * q =
---     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) :=
--- begin
---   have hs_nonzero : s ≠ 0,
---   { contrapose! hp_nonzero with hs_nonzero,
+--     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
+--   have hs_nonzero : s ≠ 0 := by
+--     contrapose! hp_nonzero with hs_nonzero
 --     test_polyrith
 --   "{\"data\":[\"(poly.const 0/1)\",\"(poly.const 0/1)\",\"(poly.const -1/1)\",\"(poly.const 0/1)\",\"(poly.var 4)\"],\"success\":true}"
 --   ["ff",
@@ -340,9 +335,9 @@ A full test suite is provided at the bottom of the file.
 --   "6",
 --   "[((var1 ^ 2) - ((var2 ^ 2) + (var0 ^ 3))), ((var3 ^ 3) - (var2 + var1)), ((var4 * var3) - var0), (((1 + var5) + (var5 ^ 2)) - 0), (var3 - 0)]",
 --   "(var0 - 0)"]
---   "linear_combination -ht + t * hs_nonzero"},
---   have H' : 2 * q = s ^ 3 - t ^ 3,
---   { rw ← mul_left_inj' (pow_ne_zero 3 hs_nonzero),
+--   "linear_combination -ht + t * hs_nonzero"}
+--   have H' : 2 * q = s ^ 3 - t ^ 3 := by
+--     rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
 --     test_polyrith
 --   "{\"data\":[\"(poly.const -1/1)\",\"(poly.sub (poly.add (poly.neg (poly.pow (poly.var 1) 3)) (poly.var 0)) (poly.var 3))\",\"(poly.add (poly.add (poly.mul (poly.pow (poly.var 1) 2) (poly.pow (poly.var 2) 2)) (poly.mul (poly.mul (poly.var 1) (poly.var 2)) (poly.var 4))) (poly.pow (poly.var 4) 2))\",\"(poly.const 0/1)\"],\"success\":true}"
 --   ["ff",
@@ -350,7 +345,7 @@ A full test suite is provided at the bottom of the file.
 --   "6",
 --   "[((var3 ^ 2) - ((var0 ^ 2) + (var4 ^ 3))), ((var1 ^ 3) - (var0 + var3)), ((var2 * var1) - var4), (((1 + var5) + (var5 ^ 2)) - 0)]",
 --   "(((2 * var0) * (var1 ^ 3)) - (((var1 ^ 3) - (var2 ^ 3)) * (var1 ^ 3)))"]
---   "linear_combination -hr + (-s ^ 3 + q - r) * hs3 + (s ^ 2 * t ^ 2 + s * t * p + p ^ 2) * ht"},
+--   "linear_combination -hr + (-s ^ 3 + q - r) * hs3 + (s ^ 2 * t ^ 2 + s * t * p + p ^ 2) * ht"}
 --   test_polyrith
 --   "{\"data\":[\"(poly.const 0/1)\",\"(poly.const 0/1)\",\"(poly.add (poly.add (poly.sub (poly.add (poly.add (poly.sub (poly.add (poly.sub (poly.mul (poly.var 0) (poly.pow (poly.var 5) 4)) (poly.mul (poly.var 3) (poly.pow (poly.var 5) 4))) (poly.mul (poly.var 4) (poly.pow (poly.var 5) 4))) (poly.mul (poly.var 3) (poly.pow (poly.var 5) 3))) (poly.mul (poly.var 4) (poly.pow (poly.var 5) 3))) (poly.mul (poly.mul (poly.const 3/1) (poly.var 0)) (poly.pow (poly.var 5) 2))) (poly.mul (poly.var 3) (poly.pow (poly.var 5) 2))) (poly.mul (poly.var 4) (poly.pow (poly.var 5) 2))) (poly.mul (poly.mul (poly.const 2/1) (poly.var 0)) (poly.var 5)))\",\"(poly.add (poly.sub (poly.add (poly.sub (poly.sub (poly.add (poly.add (poly.sub (poly.add (poly.sub (poly.sub (poly.add (poly.neg (poly.mul (poly.mul (poly.var 0) (poly.pow (poly.var 3) 2)) (poly.var 5))) (poly.mul (poly.pow (poly.var 3) 3) (poly.var 5))) (poly.mul (poly.mul (poly.var 0) (poly.pow (poly.var 4) 2)) (poly.var 5))) (poly.mul (poly.pow (poly.var 4) 3) (poly.var 5))) (poly.mul (poly.mul (poly.var 0) (poly.var 1)) (poly.pow (poly.var 5) 2))) (poly.mul (poly.mul (poly.var 1) (poly.var 3)) (poly.pow (poly.var 5) 2))) (poly.mul (poly.mul (poly.var 1) (poly.var 4)) (poly.pow (poly.var 5) 2))) (poly.mul (poly.pow (poly.var 0) 2) (poly.var 3))) (poly.pow (poly.var 3) 3)) (poly.mul (poly.pow (poly.var 0) 2) (poly.var 4))) (poly.pow (poly.var 4) 3)) (poly.mul (poly.mul (poly.var 0) (poly.var 1)) (poly.var 5))) (poly.mul (poly.mul (poly.const 3/1) (poly.var 0)) (poly.var 1)))\",\"(poly.const -1/1)\"],\"success\":true}"
 --   ["ff",
@@ -368,13 +363,12 @@ A full test suite is provided at the bottom of the file.
 --         t ^ 3 -
 --       x * p * ω +
 --     3 * x * p) * H - H'"
--- end
 
 
 -- /-! ## Degenerate cases -/
 
--- example {K : Type _} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
--- by test_polyrith
+-- example {K : Type*} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 := by
+--   test_polyrith
 --   "{\"data\":[\"(poly.const 1/3)\"],\"success\":true}"
 --   ["ff",
 --   "K",
@@ -545,21 +539,18 @@ example {α} [h : CommRing α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e
   c * (a*f - b*e) = 0 :=
 by polyrith
 
--- example {K : Type _} [Field K] [Invertible 2] [Invertible 3]
+-- example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
 --   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
 --   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
 --   x ^ 3 + 3 * p * x - 2 * q =
---     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) :=
--- begin
---   have hs_nonzero : s ≠ 0,
---   { contrapose! hp_nonzero with hs_nonzero,
---     polyrith,
---      },
---   have H' : 2 * q = s ^ 3 - t ^ 3,
---   { rw ← mul_left_inj' (pow_ne_zero 3 hs_nonzero),
---     polyrith,},
---   polyrith,
--- end
+--     (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
+--   have hs_nonzero : s ≠ 0 := by
+--     contrapose! hp_nonzero with hs_nonzero
+--     polyrith
+--   have H' : 2 * q = s ^ 3 - t ^ 3 := by
+--     rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
+--     polyrith
+--   polyrith
 
 /-
 
@@ -695,30 +686,28 @@ by create_polyrith_test [bad a, bad (b^2)]
 
 /-! ### Case over arbitrary field/ring -/
 
-example {α} [h : comm_ring α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e*d) :
-  c * (a*f - b*e) = 0 :=
-by create_polyrith_test
+example {α} [h : CommRing α] {a b c d e f : α} (h1 : a*d = b*c) (h2 : c*f = e*d) :
+    c * (a*f - b*e) = 0 := by
+  create_polyrith_test
 
-example {K : Type _} [field K] [invertible 2] [invertible 3]
+example {K : Type*} [Field K] [Invertible 2] [Invertible 3]
   {ω p q r s t x: K} (hp_nonzero : p ≠ 0) (hr : r ^ 2 = q ^ 2 + p ^ 3) (hs3 : s ^ 3 = q + r)
   (ht : t * s = p) (x : K) (H : 1 + ω + ω ^ 2 = 0) :
   x ^ 3 + 3 * p * x - 2 * q =
-    (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) :=
-begin
-  have hs_nonzero : s ≠ 0,
-  { contrapose! hp_nonzero with hs_nonzero,
-    create_polyrith_test },
-  have H' : 2 * q = s ^ 3 - t ^ 3,
-  { rw ← mul_left_inj' (pow_ne_zero 3 hs_nonzero),
-    create_polyrith_test },
+    (x - (s - t)) * (x - (s * ω - t * ω ^ 2)) * (x - (s * ω ^ 2 - t * ω)) := by
+  have hs_nonzero : s ≠ 0 := by
+    contrapose! hp_nonzero with hs_nonzero
+    create_polyrith_test
+  have H' : 2 * q = s ^ 3 - t ^ 3 := by
+    rw [← mul_left_inj' (pow_ne_zero 3 hs_nonzero)]
+    create_polyrith_test
   create_polyrith_test
-end
 
 
 /-! ## Degenerate cases -/
 
-example {K : Type _} [field K] [char_zero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 :=
-by create_polyrith_test
+example {K : Type*} [Field K] [CharZero K] {s : K} (hs : 3 * s + 1 = 4) : s = 1 := by
+  create_polyrith_test
 
 example {x : ℤ} (h1 : x + 4 = 2) : x = -2 :=
 by create_polyrith_test

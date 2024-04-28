@@ -46,7 +46,6 @@ namespace ProperCone
 section Module
 
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]
-
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [Module 𝕜 E]
 
 /-- A `PointedCone` is defined as an alias of submodule. We replicate the abbreviation here and
@@ -86,7 +85,7 @@ theorem mem_coe {x : E} {K : ProperCone 𝕜 E} : x ∈ (K : PointedCone 𝕜 E)
 instance instZero (K : ProperCone 𝕜 E) : Zero K := PointedCone.instZero (K.toSubmodule)
 
 protected theorem nonempty (K : ProperCone 𝕜 E) : (K : Set E).Nonempty :=
-  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] } ⟩
+  ⟨0, by { simp_rw [SetLike.mem_coe, ← ProperCone.mem_coe, Submodule.zero_mem] }⟩
 #align proper_cone.nonempty ProperCone.nonempty
 
 protected theorem isClosed (K : ProperCone 𝕜 E) : IsClosed (K : Set E) :=
@@ -120,7 +119,6 @@ end PositiveCone
 section Module
 
 variable {𝕜 : Type*} [OrderedSemiring 𝕜]
-
 variable {E : Type*} [AddCommMonoid E] [TopologicalSpace E] [T1Space E] [Module 𝕜 E]
 
 instance : Zero (ProperCone 𝕜 E) :=
@@ -149,9 +147,7 @@ end Module
 section InnerProductSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E]
-
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F]
-
 variable {G : Type*} [NormedAddCommGroup G] [InnerProductSpace ℝ G]
 
 protected theorem pointed (K : ProperCone ℝ E) : (K : ConvexCone ℝ E).Pointed :=
@@ -231,7 +227,6 @@ end InnerProductSpace
 section CompleteSpace
 
 variable {E : Type*} [NormedAddCommGroup E] [InnerProductSpace ℝ E] [CompleteSpace E]
-
 variable {F : Type*} [NormedAddCommGroup F] [InnerProductSpace ℝ F] [CompleteSpace F]
 
 /-- The dual of the dual of a proper cone is itself. -/
@@ -281,7 +276,7 @@ theorem hyperplane_separation (K : ProperCone ℝ E) {f : E →L[ℝ] F} {b : F}
       simp_rw [ProperCone.mem_dual, adjoint_inner_right]
       intro x hxK
       apply hxy (f x)
-      simp_rw [coe_map]
+      simp_rw [C, coe_map]
       apply subset_closure
       simp_rw [PointedCone.toConvexCone_map, ConvexCone.coe_map, coe_coe, mem_image,
         SetLike.mem_coe]

@@ -48,15 +48,14 @@ noncomputable instance [IrreducibleSpace X.carrier] (U : Opens X.carrier) [Nonem
   (X.germToFunctionField U).toAlgebra
 
 noncomputable instance [IsIntegral X] : Field X.functionField := by
-  apply fieldOfIsUnitOrEqZero
-  intro a
+  refine .ofIsUnitOrEqZero fun a ↦ ?_
   obtain ⟨U, m, s, rfl⟩ := TopCat.Presheaf.germ_exist _ _ a
   rw [or_iff_not_imp_right, ← (X.presheaf.germ ⟨_, m⟩).map_zero]
   intro ha
   replace ha := ne_of_apply_ne _ ha
   have hs : genericPoint X.carrier ∈ RingedSpace.basicOpen _ s := by
     rw [← SetLike.mem_coe, (genericPoint_spec X.carrier).mem_open_set_iff, Set.top_eq_univ,
-      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne.def, ← Opens.coe_bot, ← SetLike.ext'_iff]
+      Set.univ_inter, Set.nonempty_iff_ne_empty, Ne, ← Opens.coe_bot, ← SetLike.ext'_iff]
     erw [basicOpen_eq_bot_iff]
     exacts [ha, (RingedSpace.basicOpen _ _).isOpen]
   have := (X.presheaf.germ ⟨_, hs⟩).isUnit_map (RingedSpace.isUnit_res_basicOpen _ s)
@@ -87,7 +86,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm
   rw [eq_top_iff, Set.top_eq_univ, Set.top_eq_univ]
-  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.open_range _
+  convert subset_closure_inter_of_isPreirreducible_of_isOpen _ H.base_open.isOpen_range _
   rw [Set.univ_inter, Set.image_univ]
   apply PreirreducibleSpace.isPreirreducible_univ (X := Y.carrier)
   exact ⟨_, trivial, Set.mem_range_self hX.2.some⟩
@@ -176,7 +175,7 @@ instance [IsIntegral X] (x : X.carrier) :
     IsFractionRing (X.presheaf.stalk x) X.functionField :=
   let U : Opens X.carrier :=
     ⟨Set.range (X.affineCover.map x).1.base,
-      PresheafedSpace.IsOpenImmersion.base_open.open_range⟩
+      PresheafedSpace.IsOpenImmersion.base_open.isOpen_range⟩
   have hU : IsAffineOpen U := rangeIsAffineOpenOfOpenImmersion (X.affineCover.map x)
   let x : U := ⟨x, X.affineCover.Covers x⟩
   have : Nonempty U := ⟨x⟩

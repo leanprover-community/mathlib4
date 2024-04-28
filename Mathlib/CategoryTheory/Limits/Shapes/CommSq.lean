@@ -451,7 +451,7 @@ namespace IsPullback
 variable {P X Y Z : C} {fst : P ⟶ X} {snd : P ⟶ Y} {f : X ⟶ Z} {g : Y ⟶ Z}
 
 theorem flip (h : IsPullback fst snd f g) : IsPullback snd fst g f :=
-  of_isLimit (PullbackCone.flipIsLimit (comm := h.w.symm) h.isLimit)
+  of_isLimit (PullbackCone.flipIsLimit h.isLimit)
 #align category_theory.is_pullback.flip CategoryTheory.IsPullback.flip
 
 theorem flip_iff : IsPullback fst snd f g ↔ IsPullback snd fst g f :=
@@ -661,7 +661,7 @@ namespace IsPushout
 variable {Z X Y P : C} {f : Z ⟶ X} {g : Z ⟶ Y} {inl : X ⟶ P} {inr : Y ⟶ P}
 
 theorem flip (h : IsPushout f g inl inr) : IsPushout g f inr inl :=
-  of_isColimit (PushoutCocone.flipIsColimit (comm := h.w.symm) h.isColimit)
+  of_isColimit (PushoutCocone.flipIsColimit h.isColimit)
 #align category_theory.is_pushout.flip CategoryTheory.IsPushout.flip
 
 theorem flip_iff : IsPushout f g inl inr ↔ IsPushout g f inr inl :=
@@ -989,7 +989,6 @@ end BicartesianSq
 section Functor
 
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable (F : C ⥤ D) {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 theorem Functor.map_isPullback [PreservesLimit (cospan h i) F] (s : IsPullback f g h i) :
@@ -1032,7 +1031,7 @@ theorem IsPullback.of_map [ReflectsLimit (cospan h i) F] (e : f ≫ h = g ≫ i)
     (Category.comp_id _).trans (Category.id_comp _).symm]
 #align category_theory.is_pullback.of_map CategoryTheory.IsPullback.of_map
 
-theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [Faithful F]
+theorem IsPullback.of_map_of_faithful [ReflectsLimit (cospan h i) F] [F.Faithful]
     (H : IsPullback (F.map f) (F.map g) (F.map h) (F.map i)) : IsPullback f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pullback.of_map_of_faithful CategoryTheory.IsPullback.of_map_of_faithful
@@ -1053,7 +1052,7 @@ theorem IsPushout.of_map [ReflectsColimit (span f g) F] (e : f ≫ h = g ≫ i)
     (Category.comp_id _).trans (Category.id_comp _)]
 #align category_theory.is_pushout.of_map CategoryTheory.IsPushout.of_map
 
-theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [Faithful F]
+theorem IsPushout.of_map_of_faithful [ReflectsColimit (span f g) F] [F.Faithful]
     (H : IsPushout (F.map f) (F.map g) (F.map h) (F.map i)) : IsPushout f g h i :=
   H.of_map F (F.map_injective <| by simpa only [F.map_comp] using H.w)
 #align category_theory.is_pushout.of_map_of_faithful CategoryTheory.IsPushout.of_map_of_faithful

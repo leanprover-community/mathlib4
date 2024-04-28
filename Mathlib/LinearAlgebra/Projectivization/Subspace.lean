@@ -133,12 +133,11 @@ instance instInfSet : InfSet (Subspace K V) :=
 
 /-- The subspaces of a projective space form a complete lattice. -/
 instance : CompleteLattice (Subspace K V) :=
-  { (inferInstance : Inf (Subspace K V)),
-    completeLatticeOfInf (Subspace K V)
+  { __ := completeLatticeOfInf (Subspace K V)
       (by
         refine fun s => ⟨fun a ha x hx => hx _ ⟨a, ha, rfl⟩, fun a ha x hx E => ?_⟩
         rintro ⟨E, hE, rfl⟩
-        exact ha hE hx) with
+        exact ha hE hx)
     inf_le_left := fun A B _ hx => (@inf_le_left _ _ A B) hx
     inf_le_right := fun A B _ hx => (@inf_le_right _ _ A B) hx
     le_inf := fun A B _ h1 h2 _ hx => (le_inf h1 h2) hx }

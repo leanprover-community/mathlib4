@@ -55,8 +55,8 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
     obtain ⟨δ, δ_pos, hδ⟩ : ∃ δ > 0, ∀ y ∈ s, dist y x < δ → ‖fderiv ℝ f y - f'‖ < ε := by
       simpa [dist_zero_right] using tendsto_nhdsWithin_nhds.1 h ε ε_pos
     set B := ball x δ
-    suffices : ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖
-    exact mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
+    suffices ∀ y ∈ B ∩ closure s, ‖f y - f x - (f' y - f' x)‖ ≤ ε * ‖y - x‖ from
+      mem_nhdsWithin_iff.2 ⟨δ, δ_pos, fun y hy => by simpa using this y hy⟩
     suffices
       ∀ p : E × E,
         p ∈ closure ((B ∩ s) ×ˢ (B ∩ s)) → ‖f p.2 - f p.1 - (f' p.2 - f' p.1)‖ ≤ ε * ‖p.2 - p.1‖ by
@@ -78,7 +78,7 @@ theorem has_fderiv_at_boundary_of_tendsto_fderiv {f : E → F} {s : Set E} {x : 
           rw [DifferentiableAt.fderivWithin _ (op.uniqueDiffOn z z_in)]
           exact (diff z z_in).differentiableAt (IsOpen.mem_nhds op z_in)
         rw [← this] at h
-        exact (le_of_lt (h z_in.2 z_in.1))
+        exact le_of_lt (h z_in.2 z_in.1)
       simpa using conv.norm_image_sub_le_of_norm_fderivWithin_le' diff bound u_in v_in
     rintro ⟨u, v⟩ uv_in
     refine' ContinuousWithinAt.closure_le uv_in _ _ key

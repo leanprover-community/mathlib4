@@ -58,7 +58,6 @@ def lctxIsDefEq : (l₁ l₂ : List (Option LocalDecl)) → MetaM Bool
     lctxIsDefEq l₁ l₂
   | [], [] => return true
   | _, _ => return false
-termination_by _ l₁ l₂ => l₁.length + l₂.length
 
 /-- Run `tacs : TacticM Unit` on `goal`, and fail if no progress is made. -/
 def runAndFailIfNoProgress (goal : MVarId) (tacs : TacticM Unit) : TacticM (List MVarId) := do

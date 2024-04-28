@@ -3,7 +3,7 @@ Copyright (c) 2019 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Simon Hudon
 -/
-import Mathlib.CategoryTheory.Monoidal.Braided
+import Mathlib.CategoryTheory.Monoidal.Braided.Basic
 import Mathlib.CategoryTheory.Limits.Shapes.BinaryProducts
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
 
@@ -81,6 +81,14 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨯ Y) :=
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.prod.map f g :=
   rfl
 #align category_theory.monoidal_of_has_finite_products.tensor_hom CategoryTheory.monoidalOfHasFiniteProducts.tensorHom
+
+@[simp]
+theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.prod.map (𝟙 X) f :=
+  rfl
+
+@[simp]
+theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.prod.map f (𝟙 Z) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = Limits.prod.snd :=
@@ -178,6 +186,14 @@ theorem tensorObj (X Y : C) : X ⊗ Y = (X ⨿ Y) :=
 theorem tensorHom {W X Y Z : C} (f : W ⟶ X) (g : Y ⟶ Z) : f ⊗ g = Limits.coprod.map f g :=
   rfl
 #align category_theory.monoidal_of_has_finite_coproducts.tensor_hom CategoryTheory.monoidalOfHasFiniteCoproducts.tensorHom
+
+@[simp]
+theorem whiskerLeft (X : C) {Y Z : C} (f : Y ⟶ Z) : X ◁ f = Limits.coprod.map (𝟙 X) f :=
+  rfl
+
+@[simp]
+theorem whiskerRight {X Y : C} (f : X ⟶ Y) (Z : C) : f ▷ Z = Limits.coprod.map f (𝟙 Z) :=
+  rfl
 
 @[simp]
 theorem leftUnitor_hom (X : C) : (λ_ X).hom = coprod.desc (initial.to X) (𝟙 _) :=

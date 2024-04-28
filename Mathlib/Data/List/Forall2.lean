@@ -3,7 +3,7 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Johannes Hölzl
 -/
-import Mathlib.Data.List.Infix
+import Mathlib.Data.List.Basic
 
 #align_import data.list.forall2 from "leanprover-community/mathlib"@"5a3e819569b0f12cbec59d740a2613018e7b8eec"
 
@@ -29,11 +29,6 @@ mk_iff_of_inductive_prop List.Forall₂ List.forall₂_iff
 
 #align list.forall₂.nil List.Forall₂.nil
 #align list.forall₂.cons List.Forall₂.cons
-
-@[simp]
-theorem forall₂_cons {a b l₁ l₂} : Forall₂ R (a :: l₁) (b :: l₂) ↔ R a b ∧ Forall₂ R l₁ l₂ :=
-  ⟨fun h => by cases' h with h₁ h₂; constructor <;> assumption, fun ⟨h₁, h₂⟩ =>
-    Forall₂.cons h₁ h₂⟩
 #align list.forall₂_cons List.forall₂_cons
 
 theorem Forall₂.imp (H : ∀ a b, R a b → S a b) {l₁ l₂} (h : Forall₂ R l₁ l₂) : Forall₂ S l₁ l₂ := by
@@ -326,7 +321,7 @@ theorem sublistForall₂_iff {l₁ : List α} {l₂ : List β} :
   · induction' h with _ a b l1 l2 rab _ ih b l1 l2 _ ih
     · exact ⟨nil, Forall₂.nil, nil_sublist _⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
-      refine' ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
+      exact ⟨b :: l, Forall₂.cons rab hl1, hl2.cons_cons b⟩
     · obtain ⟨l, hl1, hl2⟩ := ih
       exact ⟨l, hl1, hl2.trans (Sublist.cons _ (Sublist.refl _))⟩
   · obtain ⟨l, hl1, hl2⟩ := h

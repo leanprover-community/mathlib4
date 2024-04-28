@@ -374,8 +374,6 @@ section GaloisCoinsertion
 
 variable {ι : Type*} {f : M →ₙ* N} (hf : Function.Injective f)
 
---include hf
-
 /-- `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. -/
 @[to_additive " `map f` and `comap f` form a `GaloisCoinsertion` when `f` is injective. "]
 def gciMapComap : GaloisCoinsertion (map f) (comap f) :=
@@ -627,7 +625,7 @@ theorem closure_closure_coe_preimage {s : Set M} :
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
       refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx
-      · exact Subsemigroup.mul_mem _
+      exact Subsemigroup.mul_mem _
 #align subsemigroup.closure_closure_coe_preimage Subsemigroup.closure_closure_coe_preimage
 #align add_subsemigroup.closure_closure_coe_preimage AddSubsemigroup.closure_closure_coe_preimage
 
@@ -873,7 +871,7 @@ theorem prod_map_comap_prod' {M' : Type*} {N' : Type*} [Mul M'] [Mul N'] (f : M 
 def subsemigroupComap (f : M →ₙ* N) (N' : Subsemigroup N) :
     N'.comap f →ₙ* N' where
   toFun x := ⟨f x, x.prop⟩
-  map_mul' x y := Subtype.eq (@map_mul M N _ _ _ _ f x y)
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_comap MulHom.subsemigroupComap
 #align add_hom.subsemigroup_comap AddHom.subsemigroupComap
 #align mul_hom.subsemigroup_comap_apply_coe MulHom.subsemigroupComap_apply_coe
@@ -887,7 +885,7 @@ See `MulEquiv.subsemigroupMap` for a variant for `MulEquiv`s. -/
 def subsemigroupMap (f : M →ₙ* N) (M' : Subsemigroup M) :
     M' →ₙ* M'.map f where
   toFun x := ⟨f x, ⟨x, x.prop, rfl⟩⟩
-  map_mul' x y := Subtype.eq <| @map_mul M N _ _ _ _ f x y
+  map_mul' x y := Subtype.eq <| map_mul (M := M) (N := N) f x y
 #align mul_hom.subsemigroup_map MulHom.subsemigroupMap
 #align add_hom.subsemigroup_map AddHom.subsemigroupMap
 #align mul_hom.subsemigroup_map_apply_coe MulHom.subsemigroupMap_apply_coe

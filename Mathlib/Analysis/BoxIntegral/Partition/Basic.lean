@@ -41,7 +41,8 @@ rectangular box, partition
 
 open Set Finset Function
 
-open Classical NNReal BigOperators
+open scoped Classical
+open NNReal BigOperators
 
 noncomputable section
 
@@ -134,8 +135,8 @@ instance partialOrder : PartialOrder (Prepartition I) where
     let ⟨I₃, hI₃, hI₂₃⟩ := h₂₃ hI₂
     ⟨I₃, hI₃, hI₁₂.trans hI₂₃⟩
   le_antisymm := by
-    suffices : ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes
-    exact fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
+    suffices ∀ {π₁ π₂ : Prepartition I}, π₁ ≤ π₂ → π₂ ≤ π₁ → π₁.boxes ⊆ π₂.boxes from
+      fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
     intro π₁ π₂ h₁ h₂ J hJ
     rcases h₁ hJ with ⟨J', hJ', hle⟩; rcases h₂ hJ' with ⟨J'', hJ'', hle'⟩
     obtain rfl : J = J''; exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
@@ -741,9 +742,9 @@ theorem iUnion_subset (h : π.IsPartition) (π₁ : Prepartition I) : π₁.iUni
 #align box_integral.prepartition.is_partition.Union_subset BoxIntegral.Prepartition.IsPartition.iUnion_subset
 
 protected theorem existsUnique (h : π.IsPartition) (hx : x ∈ I) :
-    ∃! (J : _) (_ : J ∈ π), x ∈ J := by
+    ∃! J ∈ π, x ∈ J := by
   rcases h x hx with ⟨J, h, hx⟩
-  exact ExistsUnique.intro₂ J h hx fun J' h' hx' => π.eq_of_mem_of_mem h' h hx' hx
+  exact ExistsUnique.intro J ⟨h, hx⟩ fun J' ⟨h', hx'⟩ => π.eq_of_mem_of_mem h' h hx' hx
 #align box_integral.prepartition.is_partition.exists_unique BoxIntegral.Prepartition.IsPartition.existsUnique
 
 theorem nonempty_boxes (h : π.IsPartition) : π.boxes.Nonempty :=

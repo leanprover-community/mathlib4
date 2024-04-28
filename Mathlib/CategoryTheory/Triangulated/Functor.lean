@@ -52,18 +52,18 @@ instance [Faithful F] : Faithful F.mapTriangle where
     · exact congr_arg TriangleMorphism.hom₃ h
 
 instance [Full F] [Faithful F] : Full F.mapTriangle where
-  preimage {X Y} f :=
-    { hom₁ := F.preimage f.hom₁
+  map_surjective {X Y} f :=
+   ⟨{ hom₁ := F.preimage f.hom₁
       hom₂ := F.preimage f.hom₂
       hom₃ := F.preimage f.hom₃
       comm₁ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₁)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₁)
       comm₂ := F.map_injective
-        (by simpa only [mapTriangle_obj, map_comp, image_preimage] using f.comm₂)
+        (by simpa only [mapTriangle_obj, map_comp, map_preimage] using f.comm₂)
       comm₃ := F.map_injective (by
         rw [← cancel_mono ((F.commShiftIso (1 : ℤ)).hom.app Y.obj₁)]
         simpa only [mapTriangle_obj, map_comp, assoc, commShiftIso_hom_naturality,
-          image_preimage, Triangle.mk_mor₃] using f.comm₃) }
+          map_preimage, Triangle.mk_mor₃] using f.comm₃) }, by aesop_cat⟩
 
 section Additive
 
@@ -90,6 +90,16 @@ set_option maxHeartbeats 400000 in
 noncomputable instance [∀ (n : ℤ), (shiftFunctor C n).Additive]
     [∀ (n : ℤ), (shiftFunctor D n).Additive] : (F.mapTriangle).CommShift ℤ where
   iso := F.mapTriangleCommShiftIso
+
+/-- `F.mapTriangle` commutes with the rotation of triangles. -/
+@[simps!]
+def mapTriangleRotateIso :
+    F.mapTriangle ⋙ Pretriangulated.rotate D ≅
+      Pretriangulated.rotate C ⋙ F.mapTriangle :=
+  NatIso.ofComponents
+    (fun T => Triangle.isoMk _ _ (Iso.refl _) (Iso.refl _)
+      ((F.commShiftIso (1 : ℤ)).symm.app _)
+      (by aesop_cat) (by aesop_cat) (by aesop_cat)) (by aesop_cat)
 
 end Additive
 

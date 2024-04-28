@@ -72,7 +72,7 @@ section Basic
 
 variable [Add R] [Mul R] (c : RingCon R)
 
---Porting note: upgrade to `FunLike`
+-- Porting note: upgrade to `FunLike`
 /-- A coercion from a congruence relation to its underlying binary relation. -/
 instance : FunLike (RingCon R) R (R → Prop) :=
   { coe := fun c => c.r,
@@ -301,9 +301,9 @@ instance : NatCast c.Quotient :=
   ⟨fun n => ↑(n : R)⟩
 
 @[simp, norm_cast]
-theorem coe_nat_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_natCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_nat_cast RingCon.coe_nat_cast
+#align ring_con.coe_nat_cast RingCon.coe_natCast
 
 end NatCast
 
@@ -315,9 +315,9 @@ instance : IntCast c.Quotient :=
   ⟨fun z => ↑(z : R)⟩
 
 @[simp, norm_cast]
-theorem coe_int_cast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
+theorem coe_intCast (n : ℕ) : (↑(n : R) : c.Quotient) = n :=
   rfl
-#align ring_con.coe_int_cast RingCon.coe_int_cast
+#align ring_con.coe_int_cast RingCon.coe_intCast
 
 end IntCast
 

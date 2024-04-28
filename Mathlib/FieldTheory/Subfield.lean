@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.Algebra.Algebra.Basic
-import Mathlib.Algebra.Order.Field.InjSurj
 
 #align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -87,71 +86,70 @@ instance (priority := 100) toSubgroupClass : SubgroupClass S K :=
   { h with }
 #align subfield_class.subfield_class.to_subgroup_class SubfieldClass.toSubgroupClass
 
-variable {S}
+variable {S} {x : K}
 
-@[aesop safe apply (rule_sets [SetLike])]
-theorem coe_rat_mem (s : S) (x : ℚ) : (x : K) ∈ s := by
-  simpa only [Rat.cast_def] using div_mem (coe_int_mem s x.num) (coe_nat_mem s x.den)
-#align subfield_class.coe_rat_mem SubfieldClass.coe_rat_mem
+@[aesop safe apply (rule_sets := [SetLike])]
+lemma nnratCast_mem (s : S) (q : ℚ≥0) : (q : K) ∈ s := by
+  simpa only [NNRat.cast_def] using div_mem (natCast_mem s q.num) (natCast_mem s q.den)
 
-instance (s : S) : RatCast s :=
-  ⟨fun x => ⟨↑x, coe_rat_mem s x⟩⟩
+@[aesop safe apply (rule_sets := [SetLike])]
+lemma ratCast_mem (s : S) (q : ℚ) : (q : K) ∈ s := by
+  simpa only [Rat.cast_def] using div_mem (intCast_mem s q.num) (natCast_mem s q.den)
+#align subfield_class.coe_rat_mem SubfieldClass.ratCast_mem
 
-@[simp]
-theorem coe_rat_cast (s : S) (x : ℚ) : ((x : s) : K) = x :=
-  rfl
-#align subfield_class.coe_rat_cast SubfieldClass.coe_rat_cast
+instance instNNRatCast (s : S) : NNRatCast s where nnratCast q := ⟨q, nnratCast_mem s q⟩
+instance instRatCast (s : S) : RatCast s where ratCast q := ⟨q, ratCast_mem s q⟩
 
--- Porting note: Mistranslated: used to be (a • x : K) ∈ s
-@[aesop safe apply (rule_sets [SetLike])]
-theorem rat_smul_mem (s : S) (a : ℚ) (x : s) : a • (x : K) ∈ s := by
-  simpa only [Rat.smul_def] using mul_mem (coe_rat_mem s a) x.prop
-#align subfield_class.rat_smul_mem SubfieldClass.rat_smul_mem
+@[simp, norm_cast] lemma coe_nnratCast (s : S) (q : ℚ≥0) : ((q : s) : K) = q := rfl
+@[simp, norm_cast] lemma coe_ratCast (s : S) (x : ℚ) : ((x : s) : K) = x := rfl
+#align subfield_class.coe_rat_cast SubfieldClass.coe_ratCast
 
-@[aesop safe apply (rule_sets [SetLike])]
+@[aesop safe apply (rule_sets := [SetLike])]
+lemma nnqsmul_mem (s : S) (q : ℚ≥0) (hx : x ∈ s) : q • x ∈ s := by
+  simpa only [NNRat.smul_def] using mul_mem (nnratCast_mem _ _) hx
+
+@[aesop safe apply (rule_sets := [SetLike])]
+lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
+  simpa only [Rat.smul_def] using mul_mem (ratCast_mem _ _) hx
+#align subfield_class.rat_smul_mem SubfieldClass.qsmul_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_rat_cast := coe_ratCast
+@[deprecated] alias coe_rat_mem := ratCast_mem
+@[deprecated] alias rat_smul_mem := qsmul_mem
+
+@[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
-  SubfieldClass.coe_rat_mem ..
+  SubfieldClass.ratCast_mem ..
 
-instance (s : S) : SMul ℚ s :=
-  ⟨fun a x => ⟨a • (x : K), rat_smul_mem s a x⟩⟩
+instance instSMulNNRat (s : S) : SMul ℚ≥0 s where smul q x := ⟨q • x, nnqsmul_mem s q x.2⟩
+instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_mem s q x.2⟩
 
-@[simp]
-theorem coe_rat_smul (s : S) (a : ℚ) (x : s) : ↑(a • x) = a • (x : K) :=
-  rfl
-#align subfield_class.coe_rat_smul SubfieldClass.coe_rat_smul
+@[simp, norm_cast] lemma coe_nnqsmul (s : S) (q : ℚ≥0) (x : s) : ↑(q • x) = q • (x : K) := rfl
+@[simp, norm_cast] lemma coe_qsmul (s : S) (q : ℚ) (x : s) : ↑(q • x) = q • (x : K) := rfl
+#align subfield_class.coe_rat_smul SubfieldClass.coe_qsmul
 
 variable (S)
 
 /-- A subfield inherits a division ring structure -/
 instance (priority := 75) toDivisionRing (s : S) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
-    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    (by intros; rfl) (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl)
+    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
 
 -- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
 /-- A subfield of a field inherits a field structure -/
 instance (priority := 75) toField {K} [Field K] [SetLike S K] [SubfieldClass S K] (s : S) :
     Field s :=
   Subtype.coe_injective.field ((↑) : s → K)
-    (by rfl) (by rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _; rfl)
-    (by intros _ _; rfl) (by intros _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl) (by intros _ _; rfl)
-    (by intros _; rfl) (by intros _; rfl) (by intros _; rfl)
+    (by rfl) (by rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    (coe_nnqsmul _) (coe_qsmul _) (by intros; rfl) (by intros; rfl) (by intros; rfl)
+    (by intros; rfl) (by intros; rfl) (by intros; rfl)
 #align subfield_class.to_field SubfieldClass.toField
-
--- Prefer subclasses of `Field` over subclasses of `SubfieldClass`.
-/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance (priority := 75) toLinearOrderedField {K} [LinearOrderedField K] [SetLike S K]
-    [SubfieldClass S K] (s : S) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl)
-    (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield_class.to_linear_ordered_field SubfieldClass.toLinearOrderedField
 
 end SubfieldClass
 
@@ -191,7 +189,7 @@ instance : SubfieldClass (Subfield K) K where
   one_mem s := s.one_mem'
   inv_mem {s} := s.inv_mem' _
 
--- @[simp] -- Porting note: simp can prove this (with `coe_toSubring`, which comes later)
+-- @[simp] -- Porting note (#10618): simp can prove this (with `coe_toSubring`, which comes later)
 theorem mem_carrier {s : Subfield K} {x : K} : x ∈ s.carrier ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_carrier Subfield.mem_carrier
@@ -328,14 +326,16 @@ protected theorem zsmul_mem {x : K} (hx : x ∈ s) (n : ℤ) : n • x ∈ s :=
   zsmul_mem hx n
 #align subfield.zsmul_mem Subfield.zsmul_mem
 
-protected theorem coe_int_mem (n : ℤ) : (n : K) ∈ s :=
-  coe_int_mem s n
-#align subfield.coe_int_mem Subfield.coe_int_mem
+protected theorem intCast_mem (n : ℤ) : (n : K) ∈ s := intCast_mem s n
+#align subfield.coe_int_mem Subfield.intCast_mem
+
+-- 2024-04-05
+@[deprecated] alias coe_int_mem := intCast_mem
 
 theorem zpow_mem {x : K} (hx : x ∈ s) (n : ℤ) : x ^ n ∈ s := by
   cases n
   · simpa using s.pow_mem hx _
-  · simpa [pow_succ] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
+  · simpa [pow_succ'] using s.inv_mem (s.mul_mem hx (s.pow_mem hx _))
 #align subfield.zpow_mem Subfield.zpow_mem
 
 instance : Ring s :=
@@ -350,25 +350,20 @@ instance : Inv s :=
 instance : Pow s ℤ :=
   ⟨fun x z => ⟨x ^ z, s.zpow_mem x.2 z⟩⟩
 
+-- TODO: Those are just special cases of `SubfieldClass.toDivisionRing`/`SubfieldClass.toField`
 instance toDivisionRing (s : Subfield K) : DivisionRing s :=
   Subtype.coe_injective.divisionRing ((↑) : s → K) rfl rfl (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl)
-    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ ↦ rfl) fun _ ↦ rfl
+    (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (fun _ _ ↦ rfl) (by intros; rfl) (fun _ ↦ rfl) (fun _ ↦ rfl)
+    (by intros; rfl) fun _ ↦ rfl
 
 /-- A subfield inherits a field structure -/
 instance toField {K} [Field K] (s : Subfield K) : Field s :=
   Subtype.coe_injective.field ((↑) : s → K) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
     (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ => rfl) fun _ => rfl
+    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (by intros; rfl)  (fun _ => rfl)
+    (fun _ => rfl) (by intros; rfl) fun _ => rfl
 #align subfield.to_field Subfield.toField
-
-/-- A subfield of a `LinearOrderedField` is a `LinearOrderedField`. -/
-instance toLinearOrderedField {K} [LinearOrderedField K] (s : Subfield K) : LinearOrderedField s :=
-  Subtype.coe_injective.linearOrderedField (↑) rfl rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ => rfl) (fun _ _ => rfl) (fun _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ _ => rfl) (fun _ => rfl)
-    (fun _ => rfl) (fun _ => rfl) (fun _ _ => rfl) fun _ _ => rfl
-#align subfield.to_linear_ordered_field Subfield.toLinearOrderedField
 
 @[simp, norm_cast]
 theorem coe_add (x y : s) : (↑(x + y) : K) = ↑x + ↑y :=
@@ -431,7 +426,7 @@ theorem toSubring_subtype_eq_subtype (S : Subfield K) :
 /-! # Partial order -/
 
 
---@[simp] -- Porting note: simp can prove this
+--@[simp] -- Porting note (#10618): simp can prove this
 theorem mem_toSubmonoid {s : Subfield K} {x : K} : x ∈ s.toSubmonoid ↔ x ∈ s :=
   Iff.rfl
 #align subfield.mem_to_submonoid Subfield.mem_toSubmonoid
@@ -472,7 +467,6 @@ theorem coe_top : ((⊤ : Subfield K) : Set K) = Set.univ :=
 #align subfield.coe_top Subfield.coe_top
 
 /-- The ring equiv between the top element of `Subfield K` and `K`. -/
-@[simps!]
 def topEquiv : (⊤ : Subfield K) ≃+* K :=
   Subsemiring.topEquiv
 #align subfield.top_equiv Subfield.topEquiv
@@ -576,7 +570,7 @@ theorem map_fieldRange : f.fieldRange.map g = (g.comp f).fieldRange := by
 
 /-- The range of a morphism of fields is a fintype, if the domain is a fintype.
 
-Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype.-/
+Note that this instance can cause a diamond with `Subtype.Fintype` if `L` is also a fintype. -/
 instance fintypeFieldRange [Fintype K] [DecidableEq L] (f : K →+* L) : Fintype f.fieldRange :=
   Set.fintypeRange f
 #align ring_hom.fintype_field_range RingHom.fintypeFieldRange
@@ -674,7 +668,7 @@ theorem mem_closure {x : K} {s : Set K} : x ∈ closure s ↔ ∀ S : Subfield K
 #align subfield.mem_closure Subfield.mem_closure
 
 /-- The subfield generated by a set includes the set. -/
-@[simp, aesop safe 20 apply (rule_sets [SetLike])]
+@[simp, aesop safe 20 apply (rule_sets := [SetLike])]
 theorem subset_closure {s : Set K} : s ⊆ closure s := fun _ hx => mem_closure.2 fun _ hS => hS hx
 #align subfield.subset_closure Subfield.subset_closure
 
@@ -707,14 +701,14 @@ theorem closure_eq_of_le {s : Set K} {t : Subfield K} (h₁ : s ⊆ t) (h₂ : t
 of `s`, and is preserved under addition, negation, and multiplication, then `p` holds for all
 elements of the closure of `s`. -/
 @[elab_as_elim]
-theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s) (Hs : ∀ x ∈ s, p x)
-    (H1 : p 1) (Hadd : ∀ x y, p x → p y → p (x + y)) (Hneg : ∀ x, p x → p (-x))
-    (Hinv : ∀ x, p x → p x⁻¹) (Hmul : ∀ x y, p x → p y → p (x * y)) : p x := by
+theorem closure_induction {s : Set K} {p : K → Prop} {x} (h : x ∈ closure s) (mem : ∀ x ∈ s, p x)
+    (one : p 1) (add : ∀ x y, p x → p y → p (x + y)) (neg : ∀ x, p x → p (-x))
+    (inv : ∀ x, p x → p x⁻¹) (mul : ∀ x y, p x → p y → p (x * y)) : p x := by
     letI : Subfield K :=
-      ⟨⟨⟨⟨⟨p, by intro _ _; exact Hmul _ _⟩, H1⟩,
-        by intro _ _; exact Hadd _ _, @add_neg_self K _ 1 ▸ Hadd _ _ H1 (Hneg _ H1)⟩,
-          by intro _; exact Hneg _⟩, Hinv⟩
-    exact (closure_le (t := this)).2 Hs h
+      ⟨⟨⟨⟨⟨p, by intro _ _; exact mul _ _⟩, one⟩,
+        by intro _ _; exact add _ _, @add_neg_self K _ 1 ▸ add _ _ one (neg _ one)⟩,
+          by intro _; exact neg _⟩, inv⟩
+    exact (closure_le (t := this)).2 mem h
 #align subfield.closure_induction Subfield.closure_induction
 
 variable (K)
@@ -942,7 +936,7 @@ private def commClosure (s : Set K) : Subfield K where
   neg_mem' {x} := by
     rintro ⟨y, hy, z, hz, x_eq⟩
     exact ⟨-y, Subring.neg_mem _ hy, z, hz, x_eq ▸ neg_div _ _⟩
-  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm ⟩
+  inv_mem' x := by rintro ⟨y, hy, z, hz, x_eq⟩; exact ⟨z, hz, y, hy, x_eq ▸ (inv_div _ _).symm⟩
   add_mem' x_mem y_mem := by
     -- Use `id` in the next 2 `obtain`s so that assumptions stay there for the `rwa`s below
     obtain ⟨nx, hnx, dx, hdx, rfl⟩ := id x_mem

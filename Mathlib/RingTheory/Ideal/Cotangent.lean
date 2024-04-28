@@ -31,7 +31,6 @@ namespace Ideal
 universe u v w
 
 variable {R : Type u} {S : Type v} {S' : Type w} [CommRing R] [CommSemiring S] [Algebra S R]
-
 variable [CommSemiring S'] [Algebra S' R] [Algebra S S'] [IsScalarTower S S' R] (I : Ideal R)
 
 -- Porting note: instances that were derived automatically need to be proved by hand (see below)
@@ -54,10 +53,10 @@ instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  Submodule.Quotient.isNoetherian _
+  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
-@[simps!] --  (config := lemmasOnly) apply -- Porting note: this option does not exist anymore
+@[simps! (config := .lemmasOnly) apply]
 def toCotangent : I →ₗ[R] I.Cotangent := Submodule.mkQ _
 #align ideal.to_cotangent Ideal.toCotangent
 
@@ -110,7 +109,7 @@ theorem to_quotient_square_comp_toCotangent :
   LinearMap.ext fun _ => rfl
 #align ideal.to_quotient_square_comp_to_cotangent Ideal.to_quotient_square_comp_toCotangent
 
--- @[simp] -- Porting note: not in simpNF
+@[simp]
 theorem toCotangent_to_quotient_square (x : I) :
     I.cotangentToQuotientSquare (I.toCotangent x) = (I ^ 2).mkQ x := rfl
 #align ideal.to_cotangent_to_quotient_square Ideal.toCotangent_to_quotient_square
@@ -160,7 +159,8 @@ theorem cotangentEquivIdeal_apply (x : I.Cotangent) :
 #align ideal.cotangent_equiv_ideal_apply Ideal.cotangentEquivIdeal_apply
 
 theorem cotangentEquivIdeal_symm_apply (x : R) (hx : x ∈ I) :
-    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem hx⟩ =
+    -- Note: #8386 had to specify `(R₂ := R)` because `I.toCotangent` suggested `R ⧸ I^2` instead
+    I.cotangentEquivIdeal.symm ⟨(I ^ 2).mkQ x, Submodule.mem_map_of_mem (R₂ := R) hx⟩ =
       I.toCotangent ⟨x, hx⟩ := by
   apply I.cotangentEquivIdeal.injective
   rw [I.cotangentEquivIdeal.apply_symm_apply]

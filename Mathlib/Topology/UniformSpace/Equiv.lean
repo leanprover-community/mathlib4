@@ -32,7 +32,7 @@ variable {α : Type u} {β : Type*} {γ : Type*} {δ : Type*}
 
 -- not all spaces are homeomorphic to each other
 /-- Uniform isomorphism between `α` and `β` -/
---@[nolint has_nonempty_instance] -- Porting note: missing linter?
+--@[nolint has_nonempty_instance] -- Porting note(#5171): linter not yet ported
 structure UniformEquiv (α : Type*) (β : Type*) [UniformSpace α] [UniformSpace β] extends
   α ≃ β where
   /-- Uniform continuity of the function -/
@@ -212,7 +212,7 @@ theorem self_comp_symm (h : α ≃ᵤ β) : (h : α → β) ∘ h.symm = id :=
   funext h.apply_symm_apply
 #align uniform_equiv.self_comp_symm UniformEquiv.self_comp_symm
 
--- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.range_eq_univ]`
+-- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.range_eq_univ]`
 theorem range_coe (h : α ≃ᵤ β) : range h = univ :=
   h.surjective.range_eq
 #align uniform_equiv.range_coe UniformEquiv.range_coe
@@ -225,12 +225,12 @@ theorem preimage_symm (h : α ≃ᵤ β) : preimage h.symm = image h :=
   (funext h.toEquiv.image_eq_preimage).symm
 #align uniform_equiv.preimage_symm UniformEquiv.preimage_symm
 
--- @[simp] -- Porting note: `simp` can prove this `simp only [Equiv.image_preimage]`
+-- @[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.image_preimage]`
 theorem image_preimage (h : α ≃ᵤ β) (s : Set β) : h '' (h ⁻¹' s) = s :=
   h.toEquiv.image_preimage s
 #align uniform_equiv.image_preimage UniformEquiv.image_preimage
 
---@[simp] -- Porting note: `simp` can prove this `simp only [Equiv.preimage_image]`
+--@[simp] -- Porting note (#10618): `simp` can prove this `simp only [Equiv.preimage_image]`
 theorem preimage_image (h : α ≃ᵤ β) (s : Set α) : h ⁻¹' (h '' s) = s :=
   h.toEquiv.preimage_image s
 #align uniform_equiv.preimage_image UniformEquiv.preimage_image

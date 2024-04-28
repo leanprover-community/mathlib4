@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Antisymmetrization
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"
@@ -132,7 +132,8 @@ theorem Set.OrdConnected.apply_wcovBy_apply_iff (f : α ↪o β) (h : (range f).
 #align set.ord_connected.apply_wcovby_apply_iff Set.OrdConnected.apply_wcovBy_apply_iff
 
 @[simp]
-theorem apply_wcovBy_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⩿ e b ↔ a ⩿ b :=
+theorem apply_wcovBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    e a ⩿ e b ↔ a ⩿ b :=
   (ordConnected_range (e : α ≃o β)).apply_wcovBy_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_wcovby_apply_iff apply_wcovBy_apply_iff
 
@@ -244,10 +245,12 @@ theorem not_covBy [DenselyOrdered α] : ¬a ⋖ b := fun h =>
   h.2 hc.1 hc.2
 #align not_covby not_covBy
 
-theorem densely_ordered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
+theorem denselyOrdered_iff_forall_not_covBy : DenselyOrdered α ↔ ∀ a b : α, ¬a ⋖ b :=
   ⟨fun h _ _ => @not_covBy _ _ _ _ h, fun h =>
     ⟨fun _ _ hab => exists_lt_lt_of_not_covBy hab <| h _ _⟩⟩
-#align densely_ordered_iff_forall_not_covby densely_ordered_iff_forall_not_covBy
+@[deprecated] alias densely_ordered_iff_forall_not_covBy :=
+  denselyOrdered_iff_forall_not_covBy -- 2024-04-04
+#align densely_ordered_iff_forall_not_covby denselyOrdered_iff_forall_not_covBy
 
 @[simp]
 theorem toDual_covBy_toDual_iff : toDual b ⋖ toDual a ↔ a ⋖ b :=
@@ -364,7 +367,8 @@ theorem Set.OrdConnected.apply_covBy_apply_iff (f : α ↪o β) (h : (range f).O
 #align set.ord_connected.apply_covby_apply_iff Set.OrdConnected.apply_covBy_apply_iff
 
 @[simp]
-theorem apply_covBy_apply_iff {E : Type*} [OrderIsoClass E α β] (e : E) : e a ⋖ e b ↔ a ⋖ b :=
+theorem apply_covBy_apply_iff {E : Type*} [EquivLike E α β] [OrderIsoClass E α β] (e : E) :
+    e a ⋖ e b ↔ a ⋖ b :=
   (ordConnected_range (e : α ≃o β)).apply_covBy_apply_iff ((e : α ≃o β) : α ↪o β)
 #align apply_covby_apply_iff apply_covBy_apply_iff
 

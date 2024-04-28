@@ -26,14 +26,14 @@ An instance is defined for `Part`.
 
 universe u v
 
-open Classical
+open scoped Classical
 
 variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type*) where
-  /-- `fix f` represents the computation of a fixed point for `f`.-/
+  /-- `fix f` represents the computation of a fixed point for `f`. -/
   fix : (α → α) → α
 #align has_fix Fix
 

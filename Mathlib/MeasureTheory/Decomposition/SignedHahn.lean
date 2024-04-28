@@ -42,7 +42,6 @@ noncomputable section
 open scoped Classical BigOperators NNReal ENNReal MeasureTheory
 
 variable {α β : Type*} [MeasurableSpace α]
-
 variable {M : Type*} [AddCommMonoid M] [TopologicalSpace M] [OrderedAddCommMonoid M]
 
 namespace MeasureTheory
@@ -208,7 +207,7 @@ private theorem restrictNonposSeq_disjoint' {n m : ℕ} (h : n < m) :
     restrictNonposSeq s i n ∩ restrictNonposSeq s i m = ∅ := by
   rw [Set.eq_empty_iff_forall_not_mem]
   rintro x ⟨hx₁, hx₂⟩
-  cases m; · rw [Nat.zero_eq] at h; linarith
+  cases m; · rw [Nat.zero_eq] at h; omega
   · rw [restrictNonposSeq] at hx₂
     exact
       (someExistsOneDivLT_subset hx₂).2
@@ -365,7 +364,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   exact lt_irrefl _ ((neg_lt.1 hn).trans_le (hfalse n))
 #align measure_theory.signed_measure.bdd_below_measure_of_negatives MeasureTheory.SignedMeasure.bddBelow_measureOfNegatives
 
-/-- Alternative formulation of `measure_theory.signed_measure.exists_is_compl_positive_negative`
+/-- Alternative formulation of `MeasureTheory.SignedMeasure.exists_isCompl_positive_negative`
 (the Hahn decomposition theorem) using set complements. -/
 theorem exists_compl_positive_negative (s : SignedMeasure α) :
     ∃ i : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ s ≤[iᶜ] 0 := by

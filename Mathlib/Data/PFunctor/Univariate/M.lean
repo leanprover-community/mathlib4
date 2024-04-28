@@ -23,7 +23,7 @@ open List
 
 variable (F : PFunctor.{u})
 
--- porting note: the ♯ tactic is never used
+-- Porting note: the ♯ tactic is never used
 -- local prefix:0 "♯" => cast (by first |simp [*]|cc|solve_by_elim)
 
 namespace PFunctor
@@ -105,10 +105,10 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
   · -- cases' h with _ _ _ _ _ h₀ h₁
     cases h
     simp only [truncate, Function.comp, true_and_iff, eq_self_iff_true, heq_iff_eq]
-    -- porting note: used to be `ext y`
+    -- Porting note: used to be `ext y`
     rename_i n_ih a f y h₁
     suffices (fun x => truncate (y x)) = f
-      by simp [this]; try (exact HEq.rfl;)
+      by simp [this]
     funext y
 
     apply n_ih
@@ -116,7 +116,6 @@ theorem truncate_eq_of_agree {n : ℕ} (x : CofixA F n) (y : CofixA F (succ n)) 
 #align pfunctor.approx.truncate_eq_of_agree PFunctor.Approx.truncate_eq_of_agree
 
 variable {X : Type w}
-
 variable (f : X → F X)
 
 /-- `sCorec f i n` creates an approximation of height `n`
@@ -224,9 +223,7 @@ set_option linter.uppercaseLean3 false in
 #align pfunctor.M.ext' PFunctor.M.ext'
 
 variable {X : Type*}
-
 variable (f : X → F X)
-
 variable {F}
 
 /-- Corecursor for the M-type defined by `F`. -/
@@ -350,15 +347,15 @@ theorem mk_dest (x : M F) : M.mk (dest x) = x := by
   rw [h']
   intros ch h
   congr
-  · ext a
-    dsimp only [children]
-    generalize hh : cast _ a = a''
-    rw [cast_eq_iff_heq] at hh
-    revert a''
-    rw [h]
-    intros _ hh
-    cases hh
-    rfl
+  ext a
+  dsimp only [children]
+  generalize hh : cast _ a = a''
+  rw [cast_eq_iff_heq] at hh
+  revert a''
+  rw [h]
+  intros _ hh
+  cases hh
+  rfl
 set_option linter.uppercaseLean3 false in
 #align pfunctor.M.mk_dest PFunctor.M.mk_dest
 
@@ -407,7 +404,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
     Agree (x.approx n) (y.approx <| n + 1) ↔ Agree' n x y := by
   constructor <;> intro h
   · induction' n with _ n_ih generalizing x y
-    constructor
+    · constructor
     · induction x using PFunctor.M.casesOn'
       induction y using PFunctor.M.casesOn'
       simp only [approx_mk] at h
@@ -417,7 +414,7 @@ theorem agree_iff_agree' {n : ℕ} (x y : M F) :
       apply n_ih
       apply hagree
   · induction' n with _ n_ih generalizing x y
-    constructor
+    · constructor
     · cases' h with _ _ _ a x' y'
       induction' x using PFunctor.M.casesOn' with x_a x_f
       induction' y using PFunctor.M.casesOn' with y_a y_f

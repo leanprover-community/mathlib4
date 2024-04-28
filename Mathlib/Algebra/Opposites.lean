@@ -11,7 +11,6 @@ import Mathlib.Logic.IsEmpty
 #align_import algebra.opposites from "leanprover-community/mathlib"@"7a89b1aed52bcacbcc4a8ad515e72c5c07268940"
 
 /-!
-
 # Multiplicative opposite and algebraic operations on it
 
 In this file we define `MulOpposite α = αᵐᵒᵖ` to be the multiplicative opposite of `α`. It inherits
@@ -41,34 +40,31 @@ definitional eta reduction for structures (Lean 3 does not).
 multiplicative opposite, additive opposite
 -/
 
-universe u v
-
-variable {α : Type*}
+variable {α β : Type*}
 
 open Function
 
 /-- Auxiliary type to implement `MulOpposite` and `AddOpposite`.
 
-It turns out to be convenient to have `MulOpposite α= AddOpposite α` true by definition, in the
+It turns out to be convenient to have `MulOpposite α = AddOpposite α` true by definition, in the
 same way that it is convenient to have `Additive α = α`; this means that we also get the defeq
 `AddOpposite (Additive α) = MulOpposite α`, which is convenient when working with quotients.
 
 This is a compromise between making `MulOpposite α = AddOpposite α = α` (what we had in Lean 3) and
 having no defeqs within those three types (which we had as of mathlib4#1036). -/
-structure PreOpposite (α : Type u) : Type u where
+structure PreOpposite (α : Type*) : Type _ where
   /-- The element of `PreOpposite α` that represents `x : α`. -/ op' ::
   /-- The element of `α` represented by `x : PreOpposite α`. -/ unop' : α
 
 /-- Multiplicative opposite of a type. This type inherits all additive structures on `α` and
-reverses left and right in multiplication.-/
+reverses left and right in multiplication. -/
 @[to_additive
       "Additive opposite of a type. This type inherits all multiplicative structures on `α` and
       reverses left and right in addition."]
-def MulOpposite (α : Type u) : Type u :=
-  PreOpposite α
+def MulOpposite (α : Type*) : Type _ := PreOpposite α
 #align mul_opposite MulOpposite
 #align add_opposite AddOpposite
--- porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
+-- Porting note: the attribute `pp_nodot` does not exist yet; `op` and `unop` were
 -- both tagged with it in mathlib3
 
 
@@ -120,7 +116,7 @@ theorem unop_comp_op : (unop : αᵐᵒᵖ → α) ∘ op = id :=
 /-- A recursor for `MulOpposite`. Use as `induction x using MulOpposite.rec'`. -/
 @[to_additive (attr := simp, elab_as_elim)
   "A recursor for `AddOpposite`. Use as `induction x using AddOpposite.rec'`."]
-protected def rec' {F : αᵐᵒᵖ → Sort v} (h : ∀ X, F (op X)) : ∀ X, F X := fun X => h (unop X)
+protected def rec' {F : αᵐᵒᵖ → Sort*} (h : ∀ X, F (op X)) : ∀ X, F X := fun X ↦ h (unop X)
 #align mul_opposite.rec MulOpposite.rec'
 #align add_opposite.rec AddOpposite.rec'
 
@@ -183,153 +179,98 @@ theorem unop_inj {x y : αᵐᵒᵖ} : unop x = unop y ↔ x = y :=
 
 attribute [nolint simpComm] AddOpposite.unop_inj
 
-variable (α)
+@[to_additive] instance instNontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ := op_injective.nontrivial
+
+@[to_additive] instance instInhabited [Inhabited α] : Inhabited αᵐᵒᵖ := ⟨op default⟩
 
 @[to_additive]
-instance nontrivial [Nontrivial α] : Nontrivial αᵐᵒᵖ :=
-  op_injective.nontrivial
+instance instSubsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ := unop_injective.subsingleton
 
-@[to_additive]
-instance inhabited [Inhabited α] : Inhabited αᵐᵒᵖ :=
-  ⟨op default⟩
+@[to_additive] instance instUnique [Unique α] : Unique αᵐᵒᵖ := Unique.mk' _
 
-@[to_additive]
-instance subsingleton [Subsingleton α] : Subsingleton αᵐᵒᵖ :=
-  unop_injective.subsingleton
-
-@[to_additive]
-instance unique [Unique α] : Unique αᵐᵒᵖ :=
-  Unique.mk' _
-
-@[to_additive]
-instance isEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ :=
-  Function.isEmpty unop
+@[to_additive] instance instIsEmpty [IsEmpty α] : IsEmpty αᵐᵒᵖ := Function.isEmpty unop
 
 @[to_additive]
 instance instDecidableEq [DecidableEq α] : DecidableEq αᵐᵒᵖ := unop_injective.decidableEq
 
-instance zero [Zero α] : Zero αᵐᵒᵖ where zero := op 0
+instance instZero [Zero α] : Zero αᵐᵒᵖ where zero := op 0
+
+@[to_additive] instance instOne [One α] : One αᵐᵒᵖ where one := op 1
+
+instance instAdd [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
+instance instSub [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
+instance instNeg [Neg α] : Neg αᵐᵒᵖ where neg x := op <| -unop x
+
+instance instInvolutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ where
+  neg_neg _ := unop_injective <| neg_neg _
+
+@[to_additive] instance instMul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
+@[to_additive] instance instInv [Inv α] : Inv αᵐᵒᵖ where inv x := op <| (unop x)⁻¹
 
 @[to_additive]
-instance one [One α] : One αᵐᵒᵖ where one := op 1
+instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ where
+  inv_inv _ := unop_injective <| inv_inv _
 
-instance add [Add α] : Add αᵐᵒᵖ where add x y := op (unop x + unop y)
+@[to_additive] instance instSMul [SMul α β] : SMul α βᵐᵒᵖ where smul c x := op (c • unop x)
 
-instance sub [Sub α] : Sub αᵐᵒᵖ where sub x y := op (unop x - unop y)
-
-instance neg [Neg α] : Neg αᵐᵒᵖ where neg x := op <| -unop x
-
-instance involutiveNeg [InvolutiveNeg α] : InvolutiveNeg αᵐᵒᵖ :=
-  { MulOpposite.neg α with neg_neg := fun _ => unop_injective <| neg_neg _ }
-
-@[to_additive]
-instance mul [Mul α] : Mul αᵐᵒᵖ where mul x y := op (unop y * unop x)
-
-@[to_additive]
-instance inv [Inv α] : Inv αᵐᵒᵖ where inv x := op <| (unop x)⁻¹
-
-@[to_additive]
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵐᵒᵖ :=
-  { MulOpposite.inv α with inv_inv := fun _ => unop_injective <| inv_inv _ }
-
-@[to_additive]
-instance smul (R : Type*) [SMul R α] : SMul R αᵐᵒᵖ where smul c x := op (c • unop x)
-
-section
-
-@[simp]
-theorem op_zero [Zero α] : op (0 : α) = 0 :=
-  rfl
+@[simp] lemma op_zero [Zero α] : op (0 : α) = 0 := rfl
 #align mul_opposite.op_zero MulOpposite.op_zero
 
-@[simp]
-theorem unop_zero [Zero α] : unop (0 : αᵐᵒᵖ) = 0 :=
-  rfl
+@[simp] lemma unop_zero [Zero α] : unop (0 : αᵐᵒᵖ) = 0 := rfl
 #align mul_opposite.unop_zero MulOpposite.unop_zero
 
-@[to_additive (attr := simp)]
-theorem op_one [One α] : op (1 : α) = 1 :=
-  rfl
+@[to_additive (attr := simp)] lemma op_one [One α] : op (1 : α) = 1 := rfl
 #align mul_opposite.op_one MulOpposite.op_one
 #align add_opposite.op_zero AddOpposite.op_zero
 
-@[to_additive (attr := simp)]
-theorem unop_one [One α] : unop (1 : αᵐᵒᵖ) = 1 :=
-  rfl
+@[to_additive (attr := simp)] lemma unop_one [One α] : unop (1 : αᵐᵒᵖ) = 1 := rfl
 #align mul_opposite.unop_one MulOpposite.unop_one
 #align add_opposite.unop_zero AddOpposite.unop_zero
 
-variable {α}
-
-@[simp]
-theorem op_add [Add α] (x y : α) : op (x + y) = op x + op y :=
-  rfl
+@[simp] lemma op_add [Add α] (x y : α) : op (x + y) = op x + op y := rfl
 #align mul_opposite.op_add MulOpposite.op_add
 
-@[simp]
-theorem unop_add [Add α] (x y : αᵐᵒᵖ) : unop (x + y) = unop x + unop y :=
-  rfl
+@[simp] lemma unop_add [Add α] (x y : αᵐᵒᵖ) : unop (x + y) = unop x + unop y := rfl
 #align mul_opposite.unop_add MulOpposite.unop_add
 
-@[simp]
-theorem op_neg [Neg α] (x : α) : op (-x) = -op x :=
-  rfl
+@[simp] lemma op_neg [Neg α] (x : α) : op (-x) = -op x := rfl
 #align mul_opposite.op_neg MulOpposite.op_neg
 
-@[simp]
-theorem unop_neg [Neg α] (x : αᵐᵒᵖ) : unop (-x) = -unop x :=
-  rfl
+@[simp] lemma unop_neg [Neg α] (x : αᵐᵒᵖ) : unop (-x) = -unop x := rfl
 #align mul_opposite.unop_neg MulOpposite.unop_neg
 
-@[to_additive (attr := simp)]
-theorem op_mul [Mul α] (x y : α) : op (x * y) = op y * op x :=
-  rfl
+@[to_additive (attr := simp)] lemma op_mul [Mul α] (x y : α) : op (x * y) = op y * op x := rfl
 #align mul_opposite.op_mul MulOpposite.op_mul
 #align add_opposite.op_add AddOpposite.op_add
 
 @[to_additive (attr := simp)]
-theorem unop_mul [Mul α] (x y : αᵐᵒᵖ) : unop (x * y) = unop y * unop x :=
-  rfl
+lemma unop_mul [Mul α] (x y : αᵐᵒᵖ) : unop (x * y) = unop y * unop x := rfl
 #align mul_opposite.unop_mul MulOpposite.unop_mul
 #align add_opposite.unop_add AddOpposite.unop_add
 
-@[to_additive (attr := simp)]
-theorem op_inv [Inv α] (x : α) : op x⁻¹ = (op x)⁻¹ :=
-  rfl
+@[to_additive (attr := simp)] lemma op_inv [Inv α] (x : α) : op x⁻¹ = (op x)⁻¹ := rfl
 #align mul_opposite.op_inv MulOpposite.op_inv
 #align add_opposite.op_neg AddOpposite.op_neg
 
-@[to_additive (attr := simp)]
-theorem unop_inv [Inv α] (x : αᵐᵒᵖ) : unop x⁻¹ = (unop x)⁻¹ :=
-  rfl
+@[to_additive (attr := simp)] lemma unop_inv [Inv α] (x : αᵐᵒᵖ) : unop x⁻¹ = (unop x)⁻¹ := rfl
 #align mul_opposite.unop_inv MulOpposite.unop_inv
 #align add_opposite.unop_neg AddOpposite.unop_neg
 
-@[simp]
-theorem op_sub [Sub α] (x y : α) : op (x - y) = op x - op y :=
-  rfl
+@[simp] lemma op_sub [Sub α] (x y : α) : op (x - y) = op x - op y := rfl
 #align mul_opposite.op_sub MulOpposite.op_sub
 
-@[simp]
-theorem unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y :=
-  rfl
+@[simp] lemma unop_sub [Sub α] (x y : αᵐᵒᵖ) : unop (x - y) = unop x - unop y := rfl
 #align mul_opposite.unop_sub MulOpposite.unop_sub
 
 @[to_additive (attr := simp)]
-theorem op_smul {R : Type*} [SMul R α] (c : R) (a : α) : op (c • a) = c • op a :=
-  rfl
+lemma op_smul [SMul α β] (a : α) (b : β) : op (a • b) = a • op b := rfl
 #align mul_opposite.op_smul MulOpposite.op_smul
 #align add_opposite.op_vadd AddOpposite.op_vadd
 
 @[to_additive (attr := simp)]
-theorem unop_smul {R : Type*} [SMul R α] (c : R) (a : αᵐᵒᵖ) : unop (c • a) = c • unop a :=
-  rfl
+lemma unop_smul [SMul α β] (a : α) (b : βᵐᵒᵖ) : unop (a • b) = a • unop b := rfl
 #align mul_opposite.unop_smul MulOpposite.unop_smul
 #align add_opposite.unop_vadd AddOpposite.unop_vadd
-
-end
-
-variable {α}
 
 @[simp, nolint simpComm]
 theorem unop_eq_zero_iff [Zero α] (a : αᵐᵒᵖ) : a.unop = (0 : α) ↔ a = (0 : αᵐᵒᵖ) :=
@@ -358,8 +299,7 @@ theorem unop_eq_one_iff [One α] (a : αᵐᵒᵖ) : a.unop = 1 ↔ a = 1 :=
 attribute [nolint simpComm] AddOpposite.unop_eq_zero_iff
 
 @[to_additive (attr := simp)]
-theorem op_eq_one_iff [One α] (a : α) : op a = 1 ↔ a = 1 :=
-  op_injective.eq_iff' rfl
+lemma op_eq_one_iff [One α] (a : α) : op a = 1 ↔ a = 1 := op_injective.eq_iff
 #align mul_opposite.op_eq_one_iff MulOpposite.op_eq_one_iff
 #align add_opposite.op_eq_zero_iff AddOpposite.op_eq_zero_iff
 
@@ -367,67 +307,47 @@ end MulOpposite
 
 namespace AddOpposite
 
-instance one [One α] : One αᵃᵒᵖ where one := op 1
+instance instOne [One α] : One αᵃᵒᵖ where one := op 1
 
-@[simp]
-theorem op_one [One α] : op (1 : α) = 1 :=
-  rfl
+@[simp] lemma op_one [One α] : op (1 : α) = 1 := rfl
 #align add_opposite.op_one AddOpposite.op_one
 
-@[simp]
-theorem unop_one [One α] : unop 1 = (1 : α) :=
-  rfl
+@[simp] lemma unop_one [One α] : unop 1 = (1 : α) := rfl
 #align add_opposite.unop_one AddOpposite.unop_one
 
-@[simp]
-theorem op_eq_one_iff [One α] {a : α} : op a = 1 ↔ a = 1 :=
-  op_injective.eq_iff' op_one
+@[simp] lemma op_eq_one_iff [One α] {a : α} : op a = 1 ↔ a = 1 := op_injective.eq_iff
 #align add_opposite.op_eq_one_iff AddOpposite.op_eq_one_iff
 
-@[simp]
-theorem unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 :=
-  unop_injective.eq_iff' unop_one
+@[simp] lemma unop_eq_one_iff [One α] {a : αᵃᵒᵖ} : unop a = 1 ↔ a = 1 := unop_injective.eq_iff
 #align add_opposite.unop_eq_one_iff AddOpposite.unop_eq_one_iff
 
 attribute [nolint simpComm] unop_eq_one_iff
 
-instance mul [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
+instance instMul [Mul α] : Mul αᵃᵒᵖ where mul a b := op (unop a * unop b)
 
-@[simp]
-theorem op_mul [Mul α] (a b : α) : op (a * b) = op a * op b :=
-  rfl
+@[simp] lemma op_mul [Mul α] (a b : α) : op (a * b) = op a * op b := rfl
 #align add_opposite.op_mul AddOpposite.op_mul
 
-@[simp]
-theorem unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b :=
-  rfl
+@[simp] lemma unop_mul [Mul α] (a b : αᵃᵒᵖ) : unop (a * b) = unop a * unop b := rfl
 #align add_opposite.unop_mul AddOpposite.unop_mul
 
-instance inv [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
+instance instInv [Inv α] : Inv αᵃᵒᵖ where inv a := op (unop a)⁻¹
 
-instance involutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ :=
-  { AddOpposite.inv with inv_inv := fun _ => unop_injective <| inv_inv _ }
+instance instInvolutiveInv [InvolutiveInv α] : InvolutiveInv αᵃᵒᵖ where
+  inv_inv _ := unop_injective <| inv_inv _
 
-@[simp]
-theorem op_inv [Inv α] (a : α) : op a⁻¹ = (op a)⁻¹ :=
-  rfl
+@[simp] lemma op_inv [Inv α] (a : α) : op a⁻¹ = (op a)⁻¹ := rfl
 #align add_opposite.op_inv AddOpposite.op_inv
 
-@[simp]
-theorem unop_inv [Inv α] (a : αᵃᵒᵖ) : unop a⁻¹ = (unop a)⁻¹ :=
-  rfl
+@[simp] lemma unop_inv [Inv α] (a : αᵃᵒᵖ) : unop a⁻¹ = (unop a)⁻¹ := rfl
 #align add_opposite.unop_inv AddOpposite.unop_inv
 
-instance div [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
+instance instDiv [Div α] : Div αᵃᵒᵖ where div a b := op (unop a / unop b)
 
-@[simp]
-theorem op_div [Div α] (a b : α) : op (a / b) = op a / op b :=
-  rfl
+@[simp] lemma op_div [Div α] (a b : α) : op (a / b) = op a / op b := rfl
 #align add_opposite.op_div AddOpposite.op_div
 
-@[simp]
-theorem unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b :=
-  rfl
+@[simp] lemma unop_div [Div α] (a b : αᵃᵒᵖ) : unop (a / b) = unop a / unop b := rfl
 #align add_opposite.unop_div AddOpposite.unop_div
 
 end AddOpposite

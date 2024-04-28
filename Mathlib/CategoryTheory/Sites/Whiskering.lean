@@ -30,15 +30,10 @@ open CategoryTheory.Limits
 universe v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {A : Type u₂} [Category.{v₂} A]
-
 variable {B : Type u₃} [Category.{v₃} B]
-
 variable (J : GrothendieckTopology C)
-
 variable {U : C} (R : Presieve U)
-
 variable (F G H : A ⥤ B) (η : F ⟶ G) (γ : G ⟶ H)
 
 /-- Describes the property of a functor to "preserve sheaves". -/
@@ -77,7 +72,6 @@ lemma sheafCompose_comp :
 namespace GrothendieckTopology.Cover
 
 variable (F G) {J}
-
 variable (P : Cᵒᵖ ⥤ A) {X : C} (S : J.Cover X)
 
 /-- The multicospan associated to a cover `S : J.Cover X` and a presheaf of the form `P ⋙ F`

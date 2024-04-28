@@ -82,7 +82,7 @@ theorem card_box : (box n d).card = d ^ n := by simp [box]
 theorem box_zero : box (n + 1) 0 = ∅ := by simp [box]
 #align behrend.box_zero Behrend.box_zero
 
-/-- The intersection of the sphere of radius `sqrt k` with the integer points in the positive
+/-- The intersection of the sphere of radius `√k` with the integer points in the positive
 quadrant. -/
 def sphere (n d k : ℕ) : Finset (Fin n → ℕ) :=
   (box n d).filter fun x => ∑ i, x i ^ 2 = k
@@ -100,7 +100,7 @@ theorem sphere_subset_box : sphere n d k ⊆ box n d :=
 #align behrend.sphere_subset_box Behrend.sphere_subset_box
 
 theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
-    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = Real.sqrt k := by
+    ‖(WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)‖ = √↑k := by
   rw [EuclideanSpace.norm_eq]
   dsimp
   simp_rw [abs_cast, ← cast_pow, ← cast_sum, (mem_filter.1 hx).2]
@@ -108,7 +108,7 @@ theorem norm_of_mem_sphere {x : Fin n → ℕ} (hx : x ∈ sphere n d k) :
 
 theorem sphere_subset_preimage_metric_sphere : (sphere n d k : Set (Fin n → ℕ)) ⊆
     (fun x : Fin n → ℕ => (WithLp.equiv 2 _).symm ((↑) ∘ x : Fin n → ℝ)) ⁻¹'
-      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (Real.sqrt k) :=
+      Metric.sphere (0 : PiLp 2 fun _ : Fin n => ℝ) (√↑k) :=
   fun x hx => by rw [Set.mem_preimage, mem_sphere_zero_iff_norm, norm_of_mem_sphere hx]
 #align behrend.sphere_subset_preimage_metric_sphere Behrend.sphere_subset_preimage_metric_sphere
 
@@ -120,13 +120,13 @@ def map (d : ℕ) : (Fin n → ℕ) →+ ℕ where
   map_add' a b := by simp_rw [Pi.add_apply, add_mul, sum_add_distrib]
 #align behrend.map Behrend.map
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem map_zero (d : ℕ) (a : Fin 0 → ℕ) : map d a = 0 := by simp [map]
 #align behrend.map_zero Behrend.map_zero
 
 theorem map_succ (a : Fin (n + 1) → ℕ) :
     map d a = a 0 + (∑ x : Fin n, a x.succ * d ^ (x : ℕ)) * d := by
-  simp [map, Fin.sum_univ_succ, _root_.pow_succ', ← mul_assoc, ← sum_mul]
+  simp [map, Fin.sum_univ_succ, _root_.pow_succ, ← mul_assoc, ← sum_mul]
 #align behrend.map_succ Behrend.map_succ
 
 theorem map_succ' (a : Fin (n + 1) → ℕ) : map d a = a 0 + map d (a ∘ Fin.succ) * d :=
@@ -174,7 +174,7 @@ nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
   refine' AddSalemSpencer.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
   · exact cast_injective.comp_left.injOn _
-  refine' (addSalemSpencer_sphere 0 <| Real.sqrt k).mono (Set.image_subset_iff.2 fun x => _)
+  refine' (addSalemSpencer_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
 #align behrend.add_salem_spencer_sphere Behrend.addSalemSpencer_sphere
@@ -182,7 +182,7 @@ nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin
 theorem addSalemSpencer_image_sphere :
     AddSalemSpencer ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' @AddSalemSpencer.image _ (Fin n → ℕ) ℕ _ _ (sphere n d k) _ (map (2 * d - 1))
+  refine' AddSalemSpencer.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) addSalemSpencer_sphere
   · exact x
   rw [Set.add_subset_iff]
@@ -241,9 +241,9 @@ that we then optimize by tweaking the parameters. The (almost) optimal parameter
 theorem exists_large_sphere_aux (n d : ℕ) : ∃ k ∈ range (n * (d - 1) ^ 2 + 1),
     (↑(d ^ n) / ((n * (d - 1) ^ 2 :) + 1) : ℝ) ≤ (sphere n d k).card := by
   refine' exists_le_card_fiber_of_nsmul_le_card_of_maps_to (fun x hx => _) nonempty_range_succ _
-  · rw [mem_range, lt_succ_iff]
+  · rw [mem_range, Nat.lt_succ_iff]
     exact sum_sq_le_of_mem_box hx
-  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left,
+  · rw [card_range, _root_.nsmul_eq_mul, mul_div_assoc', cast_add_one, mul_div_cancel_left₀,
       card_box]
     exact (cast_add_one_pos _).ne'
 #align behrend.exists_large_sphere_aux Behrend.exists_large_sphere_aux
@@ -256,7 +256,7 @@ theorem exists_large_sphere (n d : ℕ) :
   · simp
   obtain rfl | hd := d.eq_zero_or_pos
   · simp
-  refine' (div_le_div_of_le_left _ _ _).trans hk
+  refine' (div_le_div_of_nonneg_left _ _ _).trans hk
   · exact cast_nonneg _
   · exact cast_add_one_pos _
   simp only [← le_sub_iff_add_le', cast_mul, ← mul_sub, cast_pow, cast_sub hd, sub_sq, one_pow,
@@ -264,7 +264,7 @@ theorem exists_large_sphere (n d : ℕ) :
   apply one_le_mul_of_one_le_of_one_le
   · rwa [one_le_cast]
   rw [_root_.le_sub_iff_add_le]
-  norm_num
+  set_option tactic.skipAssignedInstances false in norm_num
   exact one_le_cast.2 hd
 #align behrend.exists_large_sphere Behrend.exists_large_sphere
 
@@ -286,8 +286,8 @@ open Real
 
 section NumericalBounds
 
-theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ sqrt (log 8) := by
-  have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_nat_cast]; norm_num
+theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
+  have : (8 : ℝ) = 2 ^ ((3 : ℕ) : ℝ) := by rw [rpow_natCast]; norm_num
   rw [this, log_rpow zero_lt_two (3 : ℕ)]
   apply le_sqrt_of_sq_le
   rw [mul_pow, sq (log 2), mul_assoc, mul_comm]
@@ -304,9 +304,9 @@ theorem two_div_one_sub_two_div_e_le_eight : 2 / (1 - 2 / exp 1) ≤ 8 := by
   rw [sub_pos, div_lt_one] <;> exact exp_one_gt_d9.trans' (by norm_num)
 #align behrend.two_div_one_sub_two_div_e_le_eight Behrend.two_div_one_sub_two_div_e_le_eight
 
-theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ sqrt (log ↑N) := by
+theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) ≤ √(log ↑N) := by
   have : (12 : ℕ) * log 2 ≤ log N := by
-    rw [← log_rpow zero_lt_two, rpow_nat_cast]
+    rw [← log_rpow zero_lt_two, rpow_natCast]
     exact log_le_log (by positivity) (mod_cast hN)
   refine (mul_le_mul_of_nonneg_right (log_le_log ?_ two_div_one_sub_two_div_e_le_eight) <| by
     norm_num1).trans ?_
@@ -314,7 +314,7 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
     rw [sub_pos, div_lt_one (exp_pos _)]
     exact exp_one_gt_d9.trans_le' (by norm_num1)
   have l8 : log 8 = (3 : ℕ) * log 2 := by
-    rw [← log_rpow zero_lt_two, rpow_nat_cast]
+    rw [← log_rpow zero_lt_two, rpow_natCast]
     norm_num
   rw [l8]
   apply le_sqrt_of_sq_le (le_trans _ this)
@@ -322,18 +322,16 @@ theorem le_sqrt_log (hN : 4096 ≤ N) : log (2 / (1 - 2 / exp 1)) * (69 / 50) �
   apply mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
   rw [← le_div_iff']
   · exact log_two_lt_d9.le.trans (by norm_num1)
-  exact sq_pos_of_ne_zero _ (by norm_num1)
+  exact sq_pos_of_ne_zero (by norm_num1)
 #align behrend.le_sqrt_log Behrend.le_sqrt_log
 
 theorem exp_neg_two_mul_le {x : ℝ} (hx : 0 < x) : exp (-2 * x) < exp (2 - ⌈x⌉₊) / ⌈x⌉₊ := by
   have h₁ := ceil_lt_add_one hx.le
-  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by
-    rw [_root_.le_sub_iff_add_le]
-    apply (add_le_add_left h₁.le _).trans_eq
-    rw [← add_assoc, sub_add_cancel]
-    linarith
-  refine' lt_of_le_of_lt _ (div_lt_div_of_lt_left (exp_pos _) (cast_pos.2 <| ceil_pos.2 hx) h₁)
-  refine' le_trans _ (div_le_div_of_le (add_nonneg hx.le zero_le_one) (exp_le_exp.2 h₂))
+  have h₂ : 1 - x ≤ 2 - ⌈x⌉₊ := by linarith
+  calc
+    _ ≤ exp (1 - x) / (x + 1) := ?_
+    _ ≤ exp (2 - ⌈x⌉₊) / (x + 1) := by gcongr
+    _ < _ := by gcongr
   rw [le_div_iff (add_pos hx zero_lt_one), ← le_div_iff' (exp_pos _), ← exp_sub, neg_mul,
     sub_neg_eq_add, two_mul, sub_add_add_cancel, add_comm _ x]
   exact le_trans (le_add_of_nonneg_right zero_le_one) (add_one_le_exp _)
@@ -363,7 +361,7 @@ end NumericalBounds
 
 /-- The (almost) optimal value of `n` in `Behrend.bound_aux`. -/
 noncomputable def nValue (N : ℕ) : ℕ :=
-  ⌈sqrt (log N)⌉₊
+  ⌈√(log N)⌉₊
 #align behrend.n_value Behrend.nValue
 
 /-- The (almost) optimal value of `d` in `Behrend.bound_aux`. -/
@@ -380,7 +378,7 @@ theorem three_le_nValue (hN : 64 ≤ N) : 3 ≤ nValue N := by
   rw [nValue, ← lt_iff_add_one_le, lt_ceil, cast_two]
   apply lt_sqrt_of_sq_lt
   have : (2 : ℝ) ^ ((6 : ℕ) : ℝ) ≤ N := by
-    rw [rpow_nat_cast]
+    rw [rpow_natCast]
     exact (cast_le.2 hN).trans' (by norm_num1)
   apply lt_of_lt_of_le _ (log_le_log (rpow_pos_of_pos zero_lt_two _) this)
   rw [log_rpow zero_lt_two, ← div_lt_iff']
@@ -392,7 +390,7 @@ theorem dValue_pos (hN₃ : 8 ≤ N) : 0 < dValue N := by
   have hN₀ : 0 < (N : ℝ) := cast_pos.2 (succ_pos'.trans_le hN₃)
   rw [dValue, floor_pos, ← log_le_log_iff zero_lt_one, log_one, log_div _ two_ne_zero, log_rpow hN₀,
     inv_mul_eq_div, sub_nonneg, le_div_iff]
-  · have : (nValue N : ℝ) ≤ 2 * sqrt (log N) := by
+  · have : (nValue N : ℝ) ≤ 2 * √(log N) := by
       apply (ceil_lt_add_one <| sqrt_nonneg _).le.trans
       rw [two_mul, add_le_add_iff_left]
       apply le_sqrt_of_sq_le
@@ -414,8 +412,8 @@ theorem le_N (hN : 2 ≤ N) : (2 * dValue N - 1) ^ nValue N ≤ N := by
     Nat.pow_le_pow_left (Nat.sub_le _ _) _
   apply this.trans
   suffices ((2 * dValue N) ^ nValue N : ℝ) ≤ N from mod_cast this
-  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹
-  · rw [← rpow_nat_cast]
+  suffices i : (2 * dValue N : ℝ) ≤ (N : ℝ) ^ (nValue N : ℝ)⁻¹ by
+    rw [← rpow_natCast]
     apply (rpow_le_rpow (mul_nonneg zero_le_two (cast_nonneg _)) i (cast_nonneg _)).trans
     rw [← rpow_mul (cast_nonneg _), inv_mul_cancel, rpow_one]
     rw [cast_ne_zero]
@@ -429,9 +427,9 @@ set_option linter.uppercaseLean3 false in
 theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dValue N := by
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
-  · apply le_trans _ (div_le_div_of_le_left _ _ (ceil_lt_mul _).le)
+  · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
     rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · norm_num; exact le_sqrt_log hN
+    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
     · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
@@ -442,7 +440,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
       exact hN.trans_lt' (by norm_num1)
     apply le_sqrt_of_sq_le
     have : (12 : ℕ) * log 2 ≤ log N := by
-      rw [← log_rpow zero_lt_two, rpow_nat_cast]
+      rw [← log_rpow zero_lt_two, rpow_natCast]
       exact log_le_log (by positivity) (mod_cast hN)
     refine' le_trans _ this
     rw [← div_le_iff']
@@ -457,7 +455,7 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
 #align behrend.bound Behrend.bound
 
 theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) < rothNumberNat N := by
+    (N : ℝ) * exp (-4 * √(log N)) < rothNumberNat N := by
   let n := nValue N
   have hn : 0 < (n : ℝ) := cast_pos.2 (nValue_pos <| hN.trans' <| by norm_num1)
   have hd : 0 < dValue N := dValue_pos (hN.trans' <| by norm_num1)
@@ -469,12 +467,12 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
     _ < _ := by gcongr; exacts [(tsub_pos_of_lt hn₂).ne', bound hN]
     _ ≤ rothNumberNat ((2 * dValue N - 1) ^ n) := bound_aux hd.ne' hn₂.le
     _ ≤ rothNumberNat N := mod_cast rothNumberNat.mono this
-  rw [← rpow_nat_cast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
+  rw [← rpow_natCast, div_rpow (rpow_nonneg hN₀.le _) (exp_pos _).le, ← rpow_mul hN₀.le,
     inv_mul_eq_div, cast_sub hn₂.le, cast_two, same_sub_div hn.ne', exp_one_rpow,
     div_div, rpow_sub hN₀, rpow_one, div_div, div_eq_mul_inv]
   refine' mul_le_mul_of_nonneg_left _ (cast_nonneg _)
   rw [mul_inv, mul_inv, ← exp_neg, ← rpow_neg (cast_nonneg _), neg_sub, ← div_eq_mul_inv]
-  have : exp (-4 * sqrt (log N)) = exp (-2 * sqrt (log N)) * exp (-2 * sqrt (log N)) := by
+  have : exp (-4 * √(log N)) = exp (-2 * √(log N)) * exp (-2 * √(log N)) := by
     rw [← exp_add, ← add_mul]
     norm_num
   rw [this]
@@ -491,7 +489,7 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 #align behrend.roth_lower_bound_explicit Behrend.roth_lower_bound_explicit
 
 theorem exp_four_lt : exp 4 < 64 := by
-  rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_nat_cast]; norm_num1,
+  rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
     ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
   exact log_two_gt_d9.trans_le' (by norm_num1)
   norm_num
@@ -499,13 +497,13 @@ theorem exp_four_lt : exp 4 < 64 := by
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
   rw [← log_lt_iff_lt_exp (show (0 : ℝ) < 4096 by norm_num), show (4096 : ℝ) = 2 ^ 12 by norm_cast,
-    ← rpow_nat_cast, log_rpow zero_lt_two, cast_ofNat]
+    ← rpow_natCast, log_rpow zero_lt_two, cast_ofNat]
   have : 12 * (0.6931471808 : ℝ) < 16 := by norm_num
   linarith [log_two_lt_d9]
 #align behrend.four_zero_nine_six_lt_exp_sixteen Behrend.four_zero_nine_six_lt_exp_sixteen
 
 theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
+    (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
   rw [← log_le_log_iff (mul_pos (cast_pos.2 (zero_lt_two.trans_le hN)) (exp_pos _)) zero_lt_one,
     log_one, log_mul (cast_pos.2 (zero_lt_two.trans_le hN)).ne' (exp_pos _).ne', log_exp, neg_mul, ←
     sub_eq_add_neg, sub_nonpos, ←
@@ -517,13 +515,13 @@ theorem lower_bound_le_one' (hN : 2 ≤ N) (hN' : N ≤ 4096) :
 #align behrend.lower_bound_le_one' Behrend.lower_bound_le_one'
 
 theorem lower_bound_le_one (hN : 1 ≤ N) (hN' : N ≤ 4096) :
-    (N : ℝ) * exp (-4 * sqrt (log N)) ≤ 1 := by
+    (N : ℝ) * exp (-4 * √(log N)) ≤ 1 := by
   obtain rfl | hN := hN.eq_or_lt
   · norm_num
   · exact lower_bound_le_one' hN hN'
 #align behrend.lower_bound_le_one Behrend.lower_bound_le_one
 
-theorem roth_lower_bound : (N : ℝ) * exp (-4 * sqrt (log N)) ≤ rothNumberNat N := by
+theorem roth_lower_bound : (N : ℝ) * exp (-4 * √(log N)) ≤ rothNumberNat N := by
   obtain rfl | hN := Nat.eq_zero_or_pos N
   · norm_num
   obtain h₁ | h₁ := le_or_lt 4096 N

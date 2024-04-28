@@ -89,7 +89,7 @@ def normalized (e : IfExpr) : Bool :=
   !e.hasNestedIf && !e.hasConstantIf && !e.hasRedundantIf && e.disjoint
 
 /--
-The evaluation of an if expresssion at some assignment of variables.
+The evaluation of an if expression at some assignment of variables.
 -/
 def eval (f : Nat → Bool) : IfExpr → Bool
   | lit b => b

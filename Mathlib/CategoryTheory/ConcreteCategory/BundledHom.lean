@@ -54,9 +54,6 @@ namespace BundledHom
 
 variable [𝒞 : BundledHom hom]
 
--- porting note: include not needed
--- include 𝒞
-
 set_option synthInstance.checkSynthOrder false in
 /-- Every `@BundledHom c _` defines a category with objects in `Bundled c`.
 
@@ -100,13 +97,9 @@ def mkHasForget₂ {d : Type u → Type u} {hom_d : ∀ ⦃α β : Type u⦄ (_ 
 #align category_theory.bundled_hom.mk_has_forget₂ CategoryTheory.BundledHom.mkHasForget₂
 
 variable {d : Type u → Type u}
-
 variable (hom)
 
 section
-
--- porting note: commented out
--- omit 𝒞
 
 /-- The `hom` corresponding to first forgetting along `F`, then taking the `hom` associated to `c`.
 
@@ -131,9 +124,6 @@ def map (F : ∀ {α}, d α → c α) : BundledHom (MapHom hom @F)
 #align category_theory.bundled_hom.map CategoryTheory.BundledHom.map
 
 section
-
--- porting note: commented out
---omit 𝒞
 
 /-- We use the empty `ParentProjection` class to label functions like `CommMonoid.toMonoid`,
 which we would like to use to automatically construct `BundledHom` instances from.
@@ -161,9 +151,10 @@ instance forget₂ (F : ∀ {α}, d α → c α) [ParentProjection @F] :
       map := @fun X Y f => f }
 #align category_theory.bundled_hom.forget₂ CategoryTheory.BundledHom.forget₂
 
-instance forget₂Full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
-    Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where preimage X Y {f} := f
-#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂Full
+instance forget₂_full (F : ∀ {α}, d α → c α) [ParentProjection @F] :
+    Functor.Full (CategoryTheory.forget₂ (Bundled d) (Bundled c)) where
+  map_surjective f := ⟨f, rfl⟩
+#align category_theory.bundled_hom.forget₂_full CategoryTheory.BundledHom.forget₂_full
 
 end BundledHom
 

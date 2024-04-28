@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
-import Mathlib.MeasureTheory.Measure.OuterMeasure
+import Mathlib.MeasureTheory.OuterMeasure.Basic
 import Mathlib.Order.Filter.CountableInter
 
 #align_import measure_theory.measure.measure_space_def from "leanprover-community/mathlib"@"c14c8fcde993801fca8946b0d80131a1a81d1520"
@@ -28,6 +28,10 @@ measurable sets, with the additional assumption that the outer measure is the ca
 extension of the restricted measure.
 
 Measures on `α` form a complete lattice, and are closed under scalar multiplication with `ℝ≥0∞`.
+
+## Notation
+
+TODO add this!
 
 ## Implementation notes
 
@@ -56,13 +60,15 @@ measure, almost everywhere, measure space
 
 noncomputable section
 
-open Classical Set
+open scoped Classical
+open Set
 
 open Filter hiding map
 
 open Function MeasurableSpace
 
-open Classical Topology BigOperators Filter ENNReal NNReal
+open scoped Classical
+open Topology BigOperators Filter ENNReal NNReal
 
 variable {α β γ δ : Type*} {ι : Sort*}
 
@@ -181,7 +187,7 @@ theorem measure_eq_extend (hs : MeasurableSet s) :
     exact hs
 #align measure_theory.measure_eq_extend MeasureTheory.measure_eq_extend
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem measure_empty : μ ∅ = 0 :=
   μ.empty
 #align measure_theory.measure_empty MeasureTheory.measure_empty
@@ -271,7 +277,7 @@ theorem measure_iUnion_null [Countable ι] {s : ι → Set α} : (∀ i, μ (s i
   μ.toOuterMeasure.iUnion_null
 #align measure_theory.measure_Union_null MeasureTheory.measure_iUnion_null
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem measure_iUnion_null_iff [Countable ι] {s : ι → Set α} :
     μ (⋃ i, s i) = 0 ↔ ∀ i, μ (s i) = 0 :=
   μ.toOuterMeasure.iUnion_null_iff
@@ -360,6 +366,7 @@ theorem measure_inter_null_of_null_left {S : Set α} (T : Set α) (h : μ S = 0)
 #align measure_theory.measure_inter_null_of_null_left MeasureTheory.measure_inter_null_of_null_left
 
 /-! ### The almost everywhere filter -/
+section ae
 
 /-- The “almost everywhere” filter of co-null sets. -/
 def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter α :=
@@ -367,16 +374,27 @@ def Measure.ae {α : Type*} {_m : MeasurableSpace α} (μ : Measure α) : Filter
     measure_mono_null hs ht
 #align measure_theory.measure.ae MeasureTheory.Measure.ae
 
--- mathport name: «expr∀ᵐ ∂ , »
+/-- `∀ᵐ a ∂μ, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually p (Measure.ae μ)`. -/
 notation3 "∀ᵐ "(...)" ∂"μ", "r:(scoped p => Filter.Eventually p <| Measure.ae μ) => r
 
--- mathport name: «expr∃ᵐ ∂ , »
+/-- `∃ᵐ a ∂μ, p a` means that `p` holds `∂μ`-frequently,
+i.e. `p` holds on a set of positive measure.
+
+This is notation for `Filter.Frequently p (Measure.ae μ)`. -/
 notation3 "∃ᵐ "(...)" ∂"μ", "r:(scoped P => Filter.Frequently P <| Measure.ae μ) => r
 
--- mathport name: «expr =ᵐ[ ] »
+/-- `f =ᵐ[μ] g` means `f` and `g` are eventually equal along the a.e. filter,
+i.e. `f=g` away from a null set.
+
+This is notation for `Filter.EventuallyEq (Measure.ae μ) f g`. -/
 notation:50 f " =ᵐ[" μ:50 "] " g:50 => Filter.EventuallyEq (Measure.ae μ) f g
 
--- mathport name: «expr ≤ᵐ[ ] »
+/-- `f ≤ᵐ[μ] g` means `f` is eventually less than `g` along the a.e. filter,
+i.e. `f ≤ g` away from a null set.
+
+This is notation for `Filter.EventuallyLE (Measure.ae μ) f g`. -/
 notation:50 f " ≤ᵐ[" μ:50 "] " g:50 => Filter.EventuallyLE (Measure.ae μ) f g
 
 theorem mem_ae_iff {s : Set α} : s ∈ μ.ae ↔ μ sᶜ = 0 :=
@@ -593,7 +611,7 @@ theorem measure_mono_ae (H : s ≤ᵐ[μ] t) : μ s ≤ μ t :=
   calc
     μ s ≤ μ (s ∪ t) := measure_mono <| subset_union_left s t
     _ = μ (t ∪ s \ t) := by rw [union_diff_self, Set.union_comm]
-    _ ≤ μ t + μ (s \ t) := (measure_union_le _ _)
+    _ ≤ μ t + μ (s \ t) := measure_union_le _ _
     _ = μ t := by rw [ae_le_set.1 H, add_zero]
 #align measure_theory.measure_mono_ae MeasureTheory.measure_mono_ae
 
@@ -611,6 +629,8 @@ alias _root_.Filter.EventuallyEq.measure_eq := measure_congr
 theorem measure_mono_null_ae (H : s ≤ᵐ[μ] t) (ht : μ t = 0) : μ s = 0 :=
   nonpos_iff_eq_zero.1 <| ht ▸ H.measure_le
 #align measure_theory.measure_mono_null_ae MeasureTheory.measure_mono_null_ae
+
+end ae
 
 /-- A measurable set `t ⊇ s` such that `μ t = μ s`. It even satisfies `μ (t ∩ u) = μ (s ∩ u)` for
 any measurable set `u` if `μ s ≠ ∞`, see `measure_toMeasurable_inter`.
@@ -666,11 +686,16 @@ add_decl_doc volume
 
 section MeasureSpace
 
--- mathport name: «expr∀ᵐ , »
+/-- `∀ᵐ a, p a` means that `p a` for a.e. `a`, i.e. `p` holds true away from a null set.
+
+This is notation for `Filter.Eventually P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∀ᵐ "(...)", "r:(scoped P =>
   Filter.Eventually P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
--- mathport name: «expr∃ᵐ , »
+/-- `∃ᵐ a, p a` means that `p` holds frequently, i.e. on a set of positive measure,
+w.r.t. the volume measure.
+
+This is notation for `Filter.Frequently P (Measure.ae MeasureSpace.volume)`. -/
 notation3 "∃ᵐ "(...)", "r:(scoped P =>
   Filter.Frequently P <| MeasureTheory.Measure.ae MeasureTheory.MeasureSpace.volume) => r
 
@@ -705,7 +730,7 @@ def AEMeasurable {_m : MeasurableSpace α} (f : α → β) (μ : Measure α := b
   ∃ g : α → β, Measurable g ∧ f =ᵐ[μ] g
 #align ae_measurable AEMeasurable
 
-@[aesop unsafe 30% apply (rule_sets [Measurable])]
+@[aesop unsafe 30% apply (rule_sets := [Measurable])]
 theorem Measurable.aemeasurable (h : Measurable f) : AEMeasurable f μ :=
   ⟨f, h, ae_eq_refl f⟩
 #align measurable.ae_measurable Measurable.aemeasurable

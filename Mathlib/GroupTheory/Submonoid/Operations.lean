@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Order.Monoid.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -167,7 +167,7 @@ end
 
 namespace Submonoid
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Set
 
@@ -231,9 +231,7 @@ theorem coe_map (f : F) (S : Submonoid M) : (S.map f : Set N) = f '' S :=
 #align add_submonoid.coe_map AddSubmonoid.coe_map
 
 @[to_additive (attr := simp)]
-theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := by
-  rw [← bex_def]
-  exact mem_image_iff_bex
+theorem mem_map {f : F} {S : Submonoid M} {y : N} : y ∈ S.map f ↔ ∃ x ∈ S, f x = y := Iff.rfl
 #align submonoid.mem_map Submonoid.mem_map
 #align add_submonoid.mem_map AddSubmonoid.mem_map
 
@@ -600,49 +598,6 @@ instance (priority := 75) toCommMonoid {M} [CommMonoid M] {A : Type*} [SetLike A
 #align submonoid_class.to_comm_monoid SubmonoidClass.toCommMonoid
 #align add_submonoid_class.to_add_comm_monoid AddSubmonoidClass.toAddCommMonoid
 
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
-@[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
-instance (priority := 75) toOrderedCommMonoid {M} [OrderedCommMonoid M] {A : Type*} [SetLike A M]
-    [SubmonoidClass A M] (S : A) : OrderedCommMonoid S :=
-  Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid_class.to_ordered_comm_monoid SubmonoidClass.toOrderedCommMonoid
-#align add_submonoid_class.to_ordered_add_comm_monoid AddSubmonoidClass.toOrderedAddCommMonoid
-
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of a `LinearOrderedCommMonoid` is a `LinearOrderedCommMonoid`. -/
-@[to_additive
-      "An `AddSubmonoid` of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`."]
-instance (priority := 75) toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid M] {A : Type*}
-    [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid_class.to_linear_ordered_comm_monoid SubmonoidClass.toLinearOrderedCommMonoid
-#align add_submonoid_class.to_linear_ordered_add_comm_monoid AddSubmonoidClass.toLinearOrderedAddCommMonoid
-
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of an `OrderedCancelCommMonoid` is an `OrderedCancelCommMonoid`. -/
-@[to_additive AddSubmonoidClass.toOrderedCancelAddCommMonoid
-      "An `AddSubmonoid` of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`."]
-instance (priority := 75) toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid M] {A : Type*}
-    [SetLike A M] [SubmonoidClass A M] (S : A) : OrderedCancelCommMonoid S :=
-  Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid_class.to_ordered_cancel_comm_monoid SubmonoidClass.toOrderedCancelCommMonoid
-#align add_submonoid_class.to_ordered_cancel_add_comm_monoid AddSubmonoidClass.toOrderedCancelAddCommMonoid
-
--- Prefer subclasses of `Monoid` over subclasses of `SubmonoidClass`.
-/-- A submonoid of a `LinearOrderedCancelCommMonoid` is a `LinearOrderedCancelCommMonoid`.
--/
-@[to_additive AddSubmonoidClass.toLinearOrderedCancelAddCommMonoid
-      "An `AddSubmonoid` of a `LinearOrderedCancelAddCommMonoid` is
-      a `LinearOrderedCancelAddCommMonoid`."]
-instance (priority := 75) toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M]
-    {A : Type*} [SetLike A M] [SubmonoidClass A M] (S : A) : LinearOrderedCancelCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid_class.to_linear_ordered_cancel_comm_monoid SubmonoidClass.toLinearOrderedCancelCommMonoid
-#align add_submonoid_class.to_linear_ordered_cancel_add_comm_monoid AddSubmonoidClass.toLinearOrderedCancelAddCommMonoid
-
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
 def subtype : S' →* M where
@@ -687,6 +642,9 @@ theorem coe_one : ((1 : S) : M) = 1 :=
 #align add_submonoid.coe_zero AddSubmonoid.coe_zero
 
 @[to_additive (attr := simp)]
+lemma mk_eq_one {a : M} {ha} : (⟨a, ha⟩ : S) = 1 ↔ a = 1 := by simp [← SetLike.coe_eq_coe]
+
+@[to_additive (attr := simp)]
 theorem mk_mul_mk (x y : M) (hx : x ∈ S) (hy : y ∈ S) :
     (⟨x, hx⟩ : S) * ⟨y, hy⟩ = ⟨x * y, S.mul_mem hx hy⟩ :=
   rfl
@@ -720,7 +678,7 @@ protected theorem pow_mem {M : Type*} [Monoid M] (S : Submonoid M) {x : M} (hx :
 #align submonoid.pow_mem Submonoid.pow_mem
 #align add_submonoid.nsmul_mem AddSubmonoid.nsmul_mem
 
--- porting note: coe_pow removed, syntactic tautology
+-- Porting note: coe_pow removed, syntactic tautology
 #noalign submonoid.coe_pow
 #noalign add_submonoid.coe_smul
 
@@ -737,44 +695,6 @@ instance toCommMonoid {M} [CommMonoid M] (S : Submonoid M) : CommMonoid S :=
   Subtype.coe_injective.commMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
 #align submonoid.to_comm_monoid Submonoid.toCommMonoid
 #align add_submonoid.to_add_comm_monoid AddSubmonoid.toAddCommMonoid
-
-/-- A submonoid of an `OrderedCommMonoid` is an `OrderedCommMonoid`. -/
-@[to_additive "An `AddSubmonoid` of an `OrderedAddCommMonoid` is an `OrderedAddCommMonoid`."]
-instance toOrderedCommMonoid {M} [OrderedCommMonoid M] (S : Submonoid M) : OrderedCommMonoid S :=
-  Subtype.coe_injective.orderedCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid.to_ordered_comm_monoid Submonoid.toOrderedCommMonoid
-#align add_submonoid.to_ordered_add_comm_monoid AddSubmonoid.toOrderedAddCommMonoid
-
-/-- A submonoid of a `LinearOrderedCommMonoid` is a `LinearOrderedCommMonoid`. -/
-@[to_additive
-      "An `AddSubmonoid` of a `LinearOrderedAddCommMonoid` is a `LinearOrderedAddCommMonoid`."]
-instance toLinearOrderedCommMonoid {M} [LinearOrderedCommMonoid M] (S : Submonoid M) :
-    LinearOrderedCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid.to_linear_ordered_comm_monoid Submonoid.toLinearOrderedCommMonoid
-#align add_submonoid.to_linear_ordered_add_comm_monoid AddSubmonoid.toLinearOrderedAddCommMonoid
-
-/-- A submonoid of an `OrderedCancelCommMonoid` is an `OrderedCancelCommMonoid`. -/
-@[to_additive AddSubmonoid.toOrderedCancelAddCommMonoid
-      "An `AddSubmonoid` of an `OrderedCancelAddCommMonoid` is an `OrderedCancelAddCommMonoid`."]
-instance toOrderedCancelCommMonoid {M} [OrderedCancelCommMonoid M] (S : Submonoid M) :
-    OrderedCancelCommMonoid S :=
-  Subtype.coe_injective.orderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid.to_ordered_cancel_comm_monoid Submonoid.toOrderedCancelCommMonoid
-#align add_submonoid.to_ordered_cancel_add_comm_monoid AddSubmonoid.toOrderedCancelAddCommMonoid
-
-/-- A submonoid of a `LinearOrderedCancelCommMonoid` is a `LinearOrderedCancelCommMonoid`.
--/
-@[to_additive AddSubmonoid.toLinearOrderedCancelAddCommMonoid
-      "An `AddSubmonoid` of a `LinearOrderedCancelAddCommMonoid` is
-      a `LinearOrderedCancelAddCommMonoid`."]
-instance toLinearOrderedCancelCommMonoid {M} [LinearOrderedCancelCommMonoid M] (S : Submonoid M) :
-    LinearOrderedCancelCommMonoid S :=
-  Subtype.coe_injective.linearOrderedCancelCommMonoid (↑) rfl (fun _ _ => rfl) (fun _ _ => rfl)
-    (fun _ _ => rfl) fun _ _ => rfl
-#align submonoid.to_linear_ordered_cancel_comm_monoid Submonoid.toLinearOrderedCancelCommMonoid
-#align add_submonoid.to_linear_ordered_cancel_add_comm_monoid AddSubmonoid.toLinearOrderedCancelAddCommMonoid
 
 /-- The natural monoid hom from a submonoid of monoid `M` to `M`. -/
 @[to_additive "The natural monoid hom from an `AddSubmonoid` of `AddMonoid` `M` to `M`."]
@@ -999,7 +919,7 @@ end Submonoid
 
 namespace MonoidHom
 
-variable {F : Type*} [mc : MonoidHomClass F M N]
+variable {F : Type*} [FunLike F M N] [mc : MonoidHomClass F M N]
 
 open Submonoid
 
@@ -1059,6 +979,10 @@ theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
 #align monoid_hom.mrange_eq_map MonoidHom.mrange_eq_map
 #align add_monoid_hom.mrange_eq_map AddMonoidHom.mrange_eq_map
 
+@[to_additive (attr := simp)]
+theorem mrange_id : mrange (MonoidHom.id M) = ⊤ := by
+  simp [mrange_eq_map]
+
 @[to_additive]
 theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
@@ -1098,6 +1022,10 @@ theorem map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) 
     (closure_le.2 <| Set.image_subset _ subset_closure)
 #align monoid_hom.map_mclosure MonoidHom.map_mclosure
 #align add_monoid_hom.map_mclosure AddMonoidHom.map_mclosure
+
+@[to_additive (attr := simp)]
+theorem mclosure_range (f : F) : closure (Set.range f) = mrange f := by
+  rw [← Set.image_univ, ← map_mclosure, mrange_eq_map, closure_univ]
 
 /-- Restriction of a monoid hom to a submonoid of the domain. -/
 @[to_additive "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the domain."]
@@ -1383,7 +1311,7 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
   calc
     Nontrivial S ↔ ∃ x : S, x ≠ 1 := nontrivial_iff_exists_ne 1
     _ ↔ ∃ (x : _) (hx : x ∈ S), (⟨x, hx⟩ : S) ≠ ⟨1, S.one_mem⟩ := Subtype.exists
-    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne.def]
+    _ ↔ ∃ x ∈ S, x ≠ (1 : M) := by simp [Ne]
 #align submonoid.nontrivial_iff_exists_ne_one Submonoid.nontrivial_iff_exists_ne_one
 #align add_submonoid.nontrivial_iff_exists_ne_zero AddSubmonoid.nontrivial_iff_exists_ne_zero
 
@@ -1559,3 +1487,38 @@ instance mulDistribMulAction [Monoid α] [MulDistribMulAction M' α] (S : Submon
   MulDistribMulAction.compHom _ S.subtype
 
 example {S : Submonoid M'} : IsScalarTower S M' M' := by infer_instance
+
+
+end Submonoid
+
+end Actions
+
+section Units
+
+namespace Submonoid
+
+/-- The multiplicative equivalence between the type of units of `M` and the submonoid of unit
+elements of `M`. -/
+@[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
+  and the additive submonoid whose elements are the additive units of `M`. "]
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
+  toFun x := ⟨x, Units.isUnit x⟩
+  invFun x := x.prop.unit
+  left_inv x := IsUnit.unit_of_val_units _
+  right_inv x := by simp_rw [IsUnit.unit_spec]
+  map_mul' x y := by simp_rw [Units.val_mul]; rfl
+
+end Submonoid
+
+end Units
+
+open AddSubmonoid Set
+
+namespace Nat
+
+@[simp] lemma addSubmonoid_closure_one : closure ({1} : Set ℕ) = ⊤ := by
+  refine (eq_top_iff' _).2 <| Nat.rec (zero_mem _) ?_
+  simp_rw [Nat.succ_eq_add_one]
+  exact fun n hn ↦ AddSubmonoid.add_mem _ hn <| subset_closure <| Set.mem_singleton _
+
+end Nat

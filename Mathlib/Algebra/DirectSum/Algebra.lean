@@ -36,9 +36,7 @@ namespace DirectSum
 open DirectSum
 
 variable (R : Type uR) (A : ι → Type uA) {B : Type uB} [DecidableEq ι]
-
 variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
-
 variable [AddMonoid ι] [GSemiring A]
 
 section
@@ -68,7 +66,7 @@ instance _root_.GradedMonoid.isScalarTower_right :
     IsScalarTower R (GradedMonoid A) (GradedMonoid A) where
   smul_assoc s x y := by
     dsimp
-    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc, GAlgebra.commutes, mul_assoc]
+    rw [GAlgebra.smul_def, GAlgebra.smul_def, ← mul_assoc]
 
 instance : Algebra R (⨁ i, A i) where
   toFun := (DirectSum.of A 0).comp GAlgebra.toFun

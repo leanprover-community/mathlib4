@@ -79,7 +79,7 @@ instance hasForget₂ : HasForget₂ Profinite TopCat :=
 instance : CoeSort Profinite (Type*) :=
   ⟨fun X => X.toCompHaus⟩
 
--- Porting note: This lemma was not needed in mathlib3
+-- Porting note (#10688): This lemma was not needed in mathlib3
 @[simp]
 lemma forget_ContinuousMap_mk {X Y : Profinite} (f : X → Y) (hf : Continuous f) :
     (forget Profinite).map (ContinuousMap.mk f hf) = f :=
@@ -141,11 +141,11 @@ def profiniteToCompHaus : Profinite ⥤ CompHaus :=
 -- deriving Full, Faithful
 #align Profinite_to_CompHaus profiniteToCompHaus
 
-instance : Full profiniteToCompHaus :=
-show Full <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful profiniteToCompHaus :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : profiniteToCompHaus.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 -- Porting note: added, as it is not found otherwise.
 instance {X : Profinite} : TotallyDisconnectedSpace (profiniteToCompHaus.obj X) :=
@@ -160,11 +160,11 @@ def Profinite.toTopCat : Profinite ⥤ TopCat :=
 -- deriving Full, Faithful
 #align Profinite.to_Top Profinite.toTopCat
 
-instance : Full Profinite.toTopCat :=
-show Full <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Full :=
+  show (inducedFunctor _).Full from inferInstance
 
-instance : Faithful Profinite.toTopCat :=
-show Faithful <| inducedFunctor _ from inferInstance
+instance : Profinite.toTopCat.Faithful :=
+  show (inducedFunctor _).Faithful from inferInstance
 
 @[simp]
 theorem Profinite.to_compHausToTopCat :
@@ -235,6 +235,12 @@ def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
   map f := ⟨f, by continuity⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
+
+instance : FintypeCat.toProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : FintypeCat.toProfinite.Full where
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
 
 end DiscreteTopology
 
@@ -334,7 +340,7 @@ noncomputable def isoOfBijective (bij : Function.Bijective f) : X ≅ Y :=
   asIso f
 #align Profinite.iso_of_bijective Profinite.isoOfBijective
 
-instance forget_reflectsIsomorphisms : ReflectsIsomorphisms (forget Profinite) := by
+instance forget_reflectsIsomorphisms : (forget Profinite).ReflectsIsomorphisms := by
   constructor
   intro A B f hf
   exact Profinite.isIso_of_bijective _ ((isIso_iff_bijective f).mp hf)
@@ -370,7 +376,6 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
     dsimp [Function.Surjective]
     contrapose!
     rintro ⟨y, hy⟩ hf
-    skip
     let C := Set.range f
     have hC : IsClosed C := (isCompact_range f.continuous).isClosed
     let U := Cᶜ
@@ -388,14 +393,14 @@ theorem epi_iff_surjective {X Y : Profinite.{u}} (f : X ⟶ Y) : Epi f ↔ Funct
         rw [← cancel_epi f]
         ext x
         apply ULift.ext
-        dsimp [LocallyConstant.ofIsClopen]
+        dsimp [g, LocallyConstant.ofIsClopen]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [comp_apply, ContinuousMap.coe_mk, comp_apply, ContinuousMap.coe_mk,
           Function.comp_apply, if_neg]
         refine' mt (fun α => hVU α) _
-        simp only [Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
+        simp only [U, C, Set.mem_range_self, not_true, not_false_iff, Set.mem_compl_iff]
       apply_fun fun e => (e y).down at H
-      dsimp [LocallyConstant.ofIsClopen] at H
+      dsimp [g, LocallyConstant.ofIsClopen] at H
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [ContinuousMap.coe_mk, ContinuousMap.coe_mk, Function.comp_apply, if_pos hyV] at H
       exact top_ne_bot H

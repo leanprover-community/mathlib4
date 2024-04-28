@@ -36,7 +36,10 @@ theorem isNat_ofScientific_of_false [DivisionRing α] (σα : OfScientific α) :
     @OfScientific.ofScientific α σα = (fun m s e ↦ (Rat.ofScientific m s e : α)) →
     IsNat m nm → IsNat e ne → n = Nat.mul nm ((10 : ℕ) ^ ne) →
     IsNat (@OfScientific.ofScientific α σα m false e : α) n
-  | _, _, _, _, _, σh, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by simp [σh, Rat.ofScientific_false_def, h]; norm_cast⟩
+  | _, _, _, _, _, σh, ⟨rfl⟩, ⟨rfl⟩, h => ⟨by
+    simp only [Nat.cast_id, σh, Rat.ofScientific_false_def, Nat.cast_mul, Nat.cast_pow,
+      Nat.cast_ofNat, h, Nat.mul_eq]
+    norm_cast⟩
 
 /-- The `norm_num` extension which identifies expressions in scientific notation, normalizing them
 to rat casts if the scientific notation is inherited from the one for rationals. -/
