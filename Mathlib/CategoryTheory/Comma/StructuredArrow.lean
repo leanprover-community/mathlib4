@@ -275,7 +275,7 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity structured arrow is initial. -/
-def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
+noncomputable def mkIdInitial [T.Full] [T.Faithful] : IsInitial (mk (𝟙 (T.obj Y))) where
   desc c := homMk (T.preimage c.pt.hom)
   uniq c m _ := by
     apply CommaMorphism.ext
@@ -318,7 +318,7 @@ instance (S : C) (F : B ⥤ C) (G : C ⥤ D) : (post S F G).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Faithful] : (post S F G).Full where
-  preimage {_ _} f := homMk f.right (G.map_injective (by simpa using f.w.symm))
+  map_surjective f := ⟨homMk f.right (G.map_injective (by simpa using f.w.symm)), by aesop_cat⟩
 
 instance (S : C) (F : B ⥤ C) (G : C ⥤ D) [G.Full] : (post S F G).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
@@ -613,7 +613,7 @@ instance proj_reflectsIsomorphisms : (proj S T).ReflectsIsomorphisms where
 open CategoryTheory.Limits
 
 /-- The identity costructured arrow is terminal. -/
-def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
+noncomputable def mkIdTerminal [S.Full] [S.Faithful] : IsTerminal (mk (𝟙 (S.obj Y))) where
   lift c := homMk (S.preimage c.pt.hom)
   uniq := by
     rintro c m -
@@ -656,7 +656,7 @@ instance (F : B ⥤ C) (G : C ⥤ D) (S : C) : (post F G S).Faithful where
   map_injective {_ _} _ _ h := by simpa [ext_iff] using h
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Faithful] : (post F G S).Full where
-  preimage {_ _} f := homMk f.left (G.map_injective (by simpa using f.w))
+  map_surjective f := ⟨homMk f.left (G.map_injective (by simpa using f.w)), by aesop_cat⟩
 
 instance (F : B ⥤ C) (G : C ⥤ D) (S : C) [G.Full] : (post F G S).EssSurj where
   mem_essImage h := ⟨mk (G.preimage h.hom), ⟨isoMk (Iso.refl _) (by simp)⟩⟩
