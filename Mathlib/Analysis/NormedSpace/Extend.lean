@@ -3,8 +3,9 @@ Copyright (c) 2020 Ruben Van de Velde. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Ruben Van de Velde
 -/
-import Mathlib.Data.IsROrC.Basic
+import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
+import Mathlib.Analysis.RCLike.Basic
 
 #align_import analysis.normed_space.extend from "leanprover-community/mathlib"@"3f655f5297b030a87d641ad4e825af8d9679eb0b"
 
@@ -13,7 +14,7 @@ import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 
 In this file we provide a way to extend a continuous `ℝ`-linear map to a continuous `𝕜`-linear map
 in a way that bounds the norm by the norm of the original map, when `𝕜` is either `ℝ` (the
-extension is trivial) or `ℂ`. We formulate the extension uniformly, by assuming `IsROrC 𝕜`.
+extension is trivial) or `ℂ`. We formulate the extension uniformly, by assuming `RCLike 𝕜`.
 
 We motivate the form of the extension as follows. Note that `fc : F →ₗ[𝕜] 𝕜` is determined fully by
 `re fc`: for all `x : F`, `fc (I • x) = I * fc x`, so `im (fc x) = -re (fc (I • x))`. Therefore,
@@ -32,11 +33,11 @@ Alternate forms which operate on `[IsScalarTower ℝ 𝕜 F]` instead are provid
 -/
 
 
-open IsROrC
+open RCLike
 
 open ComplexConjugate
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
+variable {𝕜 : Type*} [RCLike 𝕜] {F : Type*} [SeminormedAddCommGroup F] [NormedSpace 𝕜 F]
 
 namespace LinearMap
 
@@ -55,7 +56,7 @@ noncomputable def extendTo𝕜' (fr : F →ₗ[ℝ] ℝ) : F →ₗ[𝕜] 𝕜 :
     intro c x
     rw [← ofReal_mul]
     congr 1
-    rw [IsROrC.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
+    rw [RCLike.ofReal_alg, smul_assoc, fr.map_smul, Algebra.id.smul_eq_mul, one_smul]
   have smul_ℝ : ∀ (c : ℝ) (x : F), fc ((c : 𝕜) • x) = (c : 𝕜) * fc x := by
     intro c x
     dsimp only [fc]
@@ -86,14 +87,14 @@ theorem extendTo𝕜'_apply (fr : F →ₗ[ℝ] ℝ) (x : F) :
 @[simp]
 theorem extendTo𝕜'_apply_re (fr : F →ₗ[ℝ] ℝ) (x : F) : re (fr.extendTo𝕜' x : 𝕜) = fr x := by
   simp only [extendTo𝕜'_apply, map_sub, zero_mul, mul_zero, sub_zero,
-    isROrC_simps]
+    rclike_simps]
 #align linear_map.extend_to_𝕜'_apply_re LinearMap.extendTo𝕜'_apply_re
 
 theorem norm_extendTo𝕜'_apply_sq (fr : F →ₗ[ℝ] ℝ) (x : F) :
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) :=
   calc
     ‖(fr.extendTo𝕜' x : 𝕜)‖ ^ 2 = re (conj (fr.extendTo𝕜' x) * fr.extendTo𝕜' x : 𝕜) := by
-      rw [IsROrC.conj_mul, ← ofReal_pow, ofReal_re]
+      rw [RCLike.conj_mul, ← ofReal_pow, ofReal_re]
     _ = fr (conj (fr.extendTo𝕜' x : 𝕜) • x) := by
       rw [← smul_eq_mul, ← map_smul, extendTo𝕜'_apply_re]
 #align linear_map.norm_extend_to_𝕜'_apply_sq LinearMap.norm_extendTo𝕜'_apply_sq
@@ -114,8 +115,8 @@ theorem norm_extendTo𝕜'_bound (fr : F →L[ℝ] ℝ) (x : F) :
   rw [← mul_le_mul_left (norm_pos_iff.2 h), ← sq]
   calc
     ‖lm x‖ ^ 2 = fr (conj (lm x : 𝕜) • x) := fr.toLinearMap.norm_extendTo𝕜'_apply_sq x
-    _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := (le_abs_self _)
-    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := (le_opNorm _ _)
+    _ ≤ ‖fr (conj (lm x : 𝕜) • x)‖ := le_abs_self _
+    _ ≤ ‖fr‖ * ‖conj (lm x : 𝕜) • x‖ := le_opNorm _ _
     _ = ‖(lm x : 𝕜)‖ * (‖fr‖ * ‖x‖) := by rw [norm_smul, norm_conj, mul_left_comm]
 #align continuous_linear_map.norm_extend_to_𝕜'_bound ContinuousLinearMap.norm_extendTo𝕜'_bound
 
@@ -134,7 +135,7 @@ theorem norm_extendTo𝕜' (fr : F →L[ℝ] ℝ) : ‖(fr.extendTo𝕜' : F →
     opNorm_le_bound _ (norm_nonneg _) fun x =>
       calc
         ‖fr x‖ = ‖re (fr.extendTo𝕜' x : 𝕜)‖ := congr_arg norm (fr.extendTo𝕜'_apply_re x).symm
-        _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := (abs_re_le_norm _)
+        _ ≤ ‖(fr.extendTo𝕜' x : 𝕜)‖ := abs_re_le_norm _
         _ ≤ ‖(fr.extendTo𝕜' : F →L[𝕜] 𝕜)‖ * ‖x‖ := le_opNorm _ _
 #align continuous_linear_map.norm_extend_to_𝕜' ContinuousLinearMap.norm_extendTo𝕜'
 

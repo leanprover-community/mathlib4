@@ -542,15 +542,11 @@ theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
 #align function.nodup_periodic_orbit Function.nodup_periodicOrbit
 
-set_option linter.deprecated false in
 theorem periodicOrbit_apply_iterate_eq (hx : x ∈ periodicPts f) (n : ℕ) :
     periodicOrbit f (f^[n] x) = periodicOrbit f x :=
-  Eq.symm <|
-    Cycle.coe_eq_coe.2 <|
-      ⟨n, by
-        apply List.ext_nthLe _ fun m _ _ => _
-        · simp [minimalPeriod_apply_iterate hx]
-        · simp [List.nthLe_rotate, iterate_add_apply]⟩
+  Eq.symm <| Cycle.coe_eq_coe.2 <| .intro n <|
+    List.ext_get (by simp [minimalPeriod_apply_iterate hx]) fun m _ _ ↦ by
+      simp [List.get_rotate, iterate_add_apply]
 #align function.periodic_orbit_apply_iterate_eq Function.periodicOrbit_apply_iterate_eq
 
 theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :
@@ -676,9 +672,9 @@ theorem pow_smul_eq_iff_period_dvd {n : ℕ} {m : M} {a : α} :
 theorem zpow_smul_eq_iff_period_dvd {j : ℤ} {g : G} {a : α} :
     g ^ j • a = a ↔ (period g a : ℤ) ∣ j := by
   rcases j with n | n
-  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.coe_nat_dvd, pow_smul_eq_iff_period_dvd]
-  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, dvd_neg, Int.coe_nat_dvd,
-      pow_smul_eq_iff_period_dvd]
+  · rw [Int.ofNat_eq_coe, zpow_natCast, Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
+  · rw [Int.negSucc_coe, zpow_neg, zpow_natCast, inv_smul_eq_iff, eq_comm, dvd_neg,
+      Int.natCast_dvd_natCast, pow_smul_eq_iff_period_dvd]
 
 @[to_additive (attr := simp)]
 theorem pow_mod_period_smul (n : ℕ) {m : M} {a : α} :

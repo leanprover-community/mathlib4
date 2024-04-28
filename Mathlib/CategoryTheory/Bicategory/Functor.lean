@@ -313,8 +313,8 @@ def comp (F : OplaxFunctor B C) (G : OplaxFunctor C D) : OplaxFunctor B D :=
 /-- A structure on an oplax functor that promotes an oplax functor to a pseudofunctor.
 See `Pseudofunctor.mkOfOplax`.
 -/
--- Porting note: removing no lint for nonempty_instance
---@[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet
+-- @[nolint has_nonempty_instance]
 -- Porting note: removing primes in structure name because
 -- my understanding is that they're no longer needed
 structure PseudoCore (F : OplaxFunctor B C) where

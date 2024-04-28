@@ -44,7 +44,7 @@ def rotationAux (θ : Real.Angle) : V →ₗᵢ[ℝ] V :=
       Real.Angle.sin θ • (LinearIsometryEquiv.toLinearEquiv J).toLinearMap)
     (by
       intro x y
-      simp only [IsROrC.conj_to_real, id.def, LinearMap.smul_apply, LinearMap.add_apply,
+      simp only [RCLike.conj_to_real, id, LinearMap.smul_apply, LinearMap.add_apply,
         LinearMap.id_coe, LinearEquiv.coe_coe, LinearIsometryEquiv.coe_toLinearEquiv,
         Orientation.areaForm_rightAngleRotation_left, Orientation.inner_rightAngleRotation_left,
         Orientation.inner_rightAngleRotation_right, inner_add_left, inner_smul_left,
@@ -67,7 +67,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_smul, map_sub, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply, ← mul_smul, add_smul,
           smul_add, smul_neg, smul_sub, mul_comm, sq]
@@ -77,7 +77,7 @@ def rotation (θ : Real.Angle) : V ≃ₗᵢ[ℝ] V :=
       ext x
       convert congr_arg (fun t : ℝ => t • x) θ.cos_sq_add_sin_sq using 1
       · simp only [o.rightAngleRotation_rightAngleRotation, o.rotationAux_apply,
-          Function.comp_apply, id.def, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
+          Function.comp_apply, id, LinearEquiv.coe_coe, LinearIsometry.coe_toLinearMap,
           LinearIsometryEquiv.coe_toLinearEquiv, map_add, map_smul, LinearMap.coe_comp,
           LinearMap.id_coe, LinearMap.smul_apply, LinearMap.sub_apply,
           add_smul, smul_neg, smul_sub, smul_smul]
@@ -179,7 +179,7 @@ theorem rotation_trans (θ₁ θ₂ : Real.Angle) :
 @[simp]
 theorem kahler_rotation_left (x y : V) (θ : Real.Angle) :
     o.kahler (o.rotation θ x) y = conj (θ.expMapCircle : ℂ) * o.kahler x y := by
-  -- Porting note: this needed the `Complex.conj_ofReal` instead of `IsROrC.conj_ofReal`;
+  -- Porting note: this needed the `Complex.conj_ofReal` instead of `RCLike.conj_ofReal`;
   -- I believe this is because the respective coercions are no longer defeq, and
   -- `Real.Angle.coe_expMapCircle` uses the `Complex` version.
   simp only [o.rotation_apply, map_add, map_mul, LinearMap.map_smulₛₗ, RingHom.id_apply,

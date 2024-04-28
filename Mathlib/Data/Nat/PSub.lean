@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Data.Nat.Basic
 
 #align_import data.nat.psub from "leanprover-community/mathlib"@"70d50ecfd4900dd6d328da39ab7ebd516abe4025"
 
@@ -23,9 +23,6 @@ wrap the result in an `Option` type instead:
 
 -/
 
-set_option autoImplicit true
-
-
 namespace Nat
 
 /-- Partial predecessor operation. Returns `ppred n = some m`
@@ -39,7 +36,7 @@ def ppred : ℕ → Option ℕ
 theorem ppred_zero : ppred 0 = none := rfl
 
 @[simp]
-theorem ppred_succ : ppred (succ n) = some n := rfl
+theorem ppred_succ {n : ℕ} : ppred (succ n) = some n := rfl
 
 /-- Partial subtraction operation. Returns `psub m n = some k`
   if `m = n + k`, otherwise `none`. -/
@@ -49,10 +46,10 @@ def psub (m : ℕ) : ℕ → Option ℕ
 #align nat.psub Nat.psub
 
 @[simp]
-theorem psub_zero : psub m 0 = some m := rfl
+theorem psub_zero {m : ℕ} : psub m 0 = some m := rfl
 
 @[simp]
-theorem psub_succ : psub m (succ n) = psub m n >>= ppred := rfl
+theorem psub_succ {m n : ℕ} : psub m (succ n) = psub m n >>= ppred := rfl
 
 theorem pred_eq_ppred (n : ℕ) : pred n = (ppred n).getD 0 := by cases n <;> rfl
 #align nat.pred_eq_ppred Nat.pred_eq_ppred

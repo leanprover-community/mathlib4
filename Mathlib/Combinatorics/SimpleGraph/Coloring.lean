@@ -260,7 +260,7 @@ theorem colorable_iff_exists_bdd_nat_coloring (n : ℕ) :
     refine' ⟨Coloring.mk _ _⟩
     · exact fun v => ⟨C v, Cf v⟩
     · rintro v w hvw
-      simp only [Fin.mk_eq_mk, Ne.def]
+      simp only [Fin.mk_eq_mk, Ne]
       exact C.valid hvw
 #align simple_graph.colorable_iff_exists_bdd_nat_coloring SimpleGraph.colorable_iff_exists_bdd_nat_coloring
 
@@ -432,7 +432,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
   by_contra hc
-  rw [← Ne.def, chromaticNumber_ne_top_iff_exists] at hc
+  rw [← Ne, chromaticNumber_ne_top_iff_exists] at hc
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 #align simple_graph.chromatic_number_top_eq_zero_of_infinite SimpleGraph.chromaticNumber_top_eq_top_of_infinite

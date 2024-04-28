@@ -17,8 +17,6 @@ files under `Mathlib.Data.Option`.
 Other basic operations on `Option` are defined in the core library.
 -/
 
-set_option autoImplicit true
-
 namespace Option
 
 #align option.lift_or_get Option.liftOrGet
@@ -36,6 +34,7 @@ protected def traverse.{u, v}
 #align option.mmap Option.mapM
 #align option.melim Option.elimM
 
+set_option autoImplicit true in
 @[deprecated getDM]
 protected def getDM' [Monad m] (x : m (Option α)) (y : m α) : m α := do
   (← x).getDM y
@@ -55,7 +54,7 @@ protected def elim' (b : β) (f : α → β) : Option α → β
 @[simp]
 theorem elim'_none (b : β) (f : α → β) : Option.elim' b f none = b := rfl
 @[simp]
-theorem elim'_some (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
+theorem elim'_some {a : α} (b : β) (f : α → β) : Option.elim' b f (some a) = f a := rfl
 
 -- Porting note: this lemma was introduced because it is necessary
 -- in `CategoryTheory.Category.PartialFun`

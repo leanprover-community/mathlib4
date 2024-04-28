@@ -2,7 +2,7 @@ import Std.Data.List.Basic
 import Mathlib.Tactic.Propose
 import Mathlib.Tactic.GuardHypNums
 import Mathlib.Algebra.Associated
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 -- For debugging, you may find these options useful:
 -- set_option trace.Tactic.propose true
@@ -99,7 +99,7 @@ theorem dvd_of_dvd_pow (hp : Prime p) {a : α} {n : ℕ} (h : p ∣ a ^ n) : p �
     have?! using hp
     guard_hyp Prime.not_unit : ¬IsUnit p := not_unit hp
     contradiction
-  rw [pow_succ] at h
+  rw [pow_succ'] at h
   cases' dvd_or_dvd hp h with dvd_a dvd_pow
   · assumption
   exact ih dvd_pow

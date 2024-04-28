@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Adam Topaz
 -/
 import Mathlib.Data.Finset.Basic
+import Mathlib.Data.Set.Lattice
 
 #align_import data.set.constructions from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
 

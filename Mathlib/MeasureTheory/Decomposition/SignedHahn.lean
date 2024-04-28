@@ -364,7 +364,7 @@ theorem bddBelow_measureOfNegatives : BddBelow s.measureOfNegatives := by
   exact lt_irrefl _ ((neg_lt.1 hn).trans_le (hfalse n))
 #align measure_theory.signed_measure.bdd_below_measure_of_negatives MeasureTheory.SignedMeasure.bddBelow_measureOfNegatives
 
-/-- Alternative formulation of `measure_theory.signed_measure.exists_is_compl_positive_negative`
+/-- Alternative formulation of `MeasureTheory.SignedMeasure.exists_isCompl_positive_negative`
 (the Hahn decomposition theorem) using set complements. -/
 theorem exists_compl_positive_negative (s : SignedMeasure α) :
     ∃ i : Set α, MeasurableSet i ∧ 0 ≤[i] s ∧ s ≤[iᶜ] 0 := by

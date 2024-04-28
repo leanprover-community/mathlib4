@@ -271,8 +271,8 @@ lemma LieModule.toEndomorphism_pow_lie (x y : L) (z : M) (n : ℕ) :
   | succ n ih =>
     rw [Finset.sum_antidiagonal_choose_succ_nsmul
       (fun i j ↦ ⁅((ad R L x) ^ i) y, ((φ x) ^ j) z⁆) n]
-    simp only [pow_succ, LinearMap.mul_apply, ih, map_sum, map_nsmul, toEndomorphism_lie, nsmul_add,
-      sum_add_distrib]
+    simp only [pow_succ', LinearMap.mul_apply, ih, map_sum, map_nsmul,
+      toEndomorphism_lie, nsmul_add, sum_add_distrib]
     rw [add_comm, add_left_cancel_iff, sum_congr rfl]
     rintro ⟨i, j⟩ hij
     rw [mem_antidiagonal] at hij
@@ -418,3 +418,21 @@ theorem toLieEquiv_symm_apply (x : A₂) : e.toLieEquiv.symm x = e.symm x :=
 #align alg_equiv.to_lie_equiv_symm_apply AlgEquiv.toLieEquiv_symm_apply
 
 end AlgEquiv
+
+namespace LieAlgebra
+
+variable {R L L' : Type*} [CommRing R]
+  [LieRing L] [LieAlgebra R L]
+  [LieRing L'] [LieAlgebra R L']
+
+open LieEquiv
+
+/-- Given an equivalence `e` of Lie algebras from `L` to `L'`, and an element `x : L`, the conjugate
+of the endomorphism `ad(x)` of `L` by `e` is the endomorphism `ad(e x)` of `L'`. -/
+@[simp]
+lemma conj_ad_apply (e : L ≃ₗ⁅R⁆ L') (x : L) : LinearEquiv.conj e (ad R L x) = ad R L' (e x) := by
+  ext y'
+  rw [LinearEquiv.conj_apply_apply, ad_apply, ad_apply, coe_to_linearEquiv, map_lie,
+    ← coe_to_linearEquiv, LinearEquiv.apply_symm_apply]
+
+end LieAlgebra

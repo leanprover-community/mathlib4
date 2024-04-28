@@ -155,36 +155,14 @@ theorem ContinuousLinearMap.norm_iteratedFDerivWithin_le_of_bilinear (B : E →L
       (ContinuousLinearMap.compL 𝕜 Fu G Gu (isoG.symm : G →L[𝕜] Gu)) Bu₀ := rfl
   have Bu_eq : (fun y => Bu (fu y) (gu y)) = isoG.symm ∘ (fun y => B (f y) (g y)) ∘ isoD := by
     ext1 y
-    -- Porting note: the two blocks of `rw`s below were
-    -- ```
-    -- simp only [ContinuousLinearMap.compL_apply, Function.comp_apply,
-    --   ContinuousLinearMap.coe_comp', LinearIsometryEquiv.coe_coe'',
-    --   ContinuousLinearMap.flip_apply, LinearIsometryEquiv.apply_symm_apply]
-    -- ```
-    rw [hBu]
-    iterate 2 rw [ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
-      Function.comp_apply]
-    rw [hBu₀]
-    iterate 2 rw [ContinuousLinearMap.flip_apply, ContinuousLinearMap.coe_comp',
-      Function.comp_apply]
-    rw [hfu, Function.comp_apply, LinearIsometryEquiv.coe_coe'', LinearIsometryEquiv.coe_coe'',
-      LinearIsometryEquiv.apply_symm_apply isoE, Function.comp_apply,
-      hgu, LinearIsometryEquiv.coe_coe'', Function.comp_apply,
-      LinearIsometryEquiv.apply_symm_apply isoF]
-    simp only [Function.comp_apply]
+    simp [hBu, hBu₀, hfu, hgu]
   -- All norms are preserved by the lifting process.
   have Bu_le : ‖Bu‖ ≤ ‖B‖ := by
     refine' ContinuousLinearMap.opNorm_le_bound _ (norm_nonneg _) fun y => _
     refine' ContinuousLinearMap.opNorm_le_bound _ (by positivity) fun x => _
-    set_option tactic.skipAssignedInstances false in
-    simp only [Bu, ContinuousLinearMap.compL_apply, ContinuousLinearMap.coe_comp',
-      Function.comp_apply, LinearIsometryEquiv.coe_coe'', ContinuousLinearMap.flip_apply,
+    simp only [hBu, hBu₀, compL_apply, coe_comp', Function.comp_apply,
+      ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe, flip_apply,
       LinearIsometryEquiv.norm_map]
-    rw [ContinuousLinearMap.coe_comp', Function.comp_apply, ContinuousLinearMap.compL_apply,
-      ContinuousLinearMap.coe_comp', Function.comp_apply]
-    iterate 2 rw [ContinuousLinearMap.flip_apply, ContinuousLinearMap.coe_comp',
-      Function.comp_apply]
-    simp only [LinearIsometryEquiv.coe_coe'', LinearIsometryEquiv.norm_map]
     calc
       ‖B (isoE y) (isoF x)‖ ≤ ‖B (isoE y)‖ * ‖isoF x‖ := ContinuousLinearMap.le_opNorm _ _
       _ ≤ ‖B‖ * ‖isoE y‖ * ‖isoF x‖ := by gcongr; apply ContinuousLinearMap.le_opNorm
@@ -476,7 +454,7 @@ theorem norm_iteratedFDerivWithin_comp_le_aux {Fu Gu : Type u} [NormedAddCommGro
     _ = ∑ i in Finset.range (n + 1), (n ! : ℝ) * 1 * C * D ^ (n + 1) * ((n - i)! : ℝ)⁻¹ := by
       congr! with i hi
       · apply inv_mul_cancel
-        simpa only [Ne.def, Nat.cast_eq_zero] using i.factorial_ne_zero
+        simpa only [Ne, Nat.cast_eq_zero] using i.factorial_ne_zero
       · rw [← pow_add]
         congr 1
         rw [Nat.add_succ, Nat.succ_inj']
@@ -566,7 +544,7 @@ theorem norm_iteratedFDerivWithin_clm_apply {f : E → F →L[𝕜] G} {g : E �
   have hB : ‖B‖ ≤ 1 := by
     simp only [B, ContinuousLinearMap.opNorm_flip, ContinuousLinearMap.apply]
     refine' ContinuousLinearMap.opNorm_le_bound _ zero_le_one fun f => _
-    simp only [ContinuousLinearMap.coe_id', id.def, one_mul]
+    simp only [ContinuousLinearMap.coe_id', id, one_mul]
     rfl
   exact B.norm_iteratedFDerivWithin_le_of_bilinear_of_le_one hf hg hs hx hn hB
 #align norm_iterated_fderiv_within_clm_apply norm_iteratedFDerivWithin_clm_apply

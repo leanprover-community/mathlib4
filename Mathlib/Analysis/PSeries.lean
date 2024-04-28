@@ -32,7 +32,7 @@ p-series, Cauchy condensation test
 /-!
 ### Cauchy condensation test
 
-In this section we prove the Cauchy condensation test: for `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`,
+In this section we prove the Cauchy condensation test: for an antitone `f : ℕ → ℝ≥0` or `f : ℕ → ℝ`,
 `∑ k, f k` converges if and only if so does `∑ k, 2 ^ k f (2 ^ k)`. Instead of giving a monolithic
 proof, we split it into a series of lemmas with explicit estimates of partial sums of each series in
 terms of the partial sums of the other series.
@@ -56,7 +56,7 @@ theorem le_sum_condensed' (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m
   have : ∀ k ∈ Ico (2 ^ n) (2 ^ (n + 1)), f k ≤ f (2 ^ n) := fun k hk =>
     hf (pow_pos zero_lt_two _) (mem_Ico.mp hk).1
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 #align finset.le_sum_condensed' Finset.le_sum_condensed'
 
 theorem le_sum_condensed (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
@@ -81,13 +81,13 @@ theorem sum_condensed_le' (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m
     exact hf (Nat.one_le_two_pow.trans_lt <| (Nat.lt_succ_of_le le_rfl).trans_le (mem_Ico.mp hk).1)
       (Nat.le_of_lt_succ <| (mem_Ico.mp hk).2)
   convert sum_le_sum this
-  simp [pow_succ, two_mul]
+  simp [pow_succ, mul_two]
 #align finset.sum_condensed_le' Finset.sum_condensed_le'
 
 theorem sum_condensed_le (hf : ∀ ⦃m n⦄, 1 < m → m ≤ n → f n ≤ f m) (n : ℕ) :
     (∑ k in range (n + 1), 2 ^ k • f (2 ^ k)) ≤ f 1 + 2 • ∑ k in Ico 2 (2 ^ n + 1), f k := by
   convert add_le_add_left (nsmul_le_nsmul_right (sum_condensed_le' hf n) 2) (f 1)
-  simp [sum_range_succ', add_comm, pow_succ, mul_nsmul', sum_nsmul]
+  simp [sum_range_succ', add_comm, pow_succ', mul_nsmul', sum_nsmul]
 #align finset.sum_condensed_le Finset.sum_condensed_le
 
 end Finset
@@ -125,7 +125,7 @@ open ENNReal in
 /-- Cauchy condensation test for a series of `NNReal` version. -/
 theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ≥0) ^ k * f (2 ^ k)) ↔ Summable f := by
-  simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne.def, not_iff_not, ENNReal.coe_mul,
+  simp only [← ENNReal.tsum_coe_ne_top_iff_summable, Ne, not_iff_not, ENNReal.coe_mul,
     ENNReal.coe_pow, ENNReal.coe_two]
   constructor <;> intro h
   · replace hf : ∀ m n, 1 < m → m ≤ n → (f n : ℝ≥0∞) ≤ f m := fun m n hm hmn =>
@@ -139,7 +139,7 @@ theorem summable_condensed_iff {f : ℕ → ℝ≥0} (hf : ∀ ⦃m n⦄, 0 < m 
 end NNReal
 
 open NNReal in
-/-- Cauchy condensation test for series of nonnegative real numbers. -/
+/-- Cauchy condensation test for antitone series of nonnegative real numbers. -/
 theorem summable_condensed_iff_of_nonneg {f : ℕ → ℝ} (h_nonneg : ∀ n, 0 ≤ f n)
     (h_mono : ∀ ⦃m n⦄, 0 < m → m ≤ n → f n ≤ f m) :
     (Summable fun k : ℕ => (2 : ℝ) ^ k * f (2 ^ k)) ↔ Summable f := by
@@ -172,8 +172,8 @@ theorem summable_nat_rpow_inv {p : ℝ} :
   /- Cauchy condensation test applies only to antitone sequences, so we consider the
     cases `0 ≤ p` and `p < 0` separately. -/
   · rw [← summable_condensed_iff_of_nonneg]
-    · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_nat_cast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
-        rpow_mul zero_lt_two.le, rpow_nat_cast, ← inv_pow, ← mul_pow,
+    · simp_rw [Nat.cast_pow, Nat.cast_two, ← rpow_natCast, ← rpow_mul zero_lt_two.le, mul_comm _ p,
+        rpow_mul zero_lt_two.le, rpow_natCast, ← inv_pow, ← mul_pow,
         summable_geometric_iff_norm_lt_one]
       nth_rw 1 [← rpow_one 2]
       rw [← division_def, ← rpow_sub zero_lt_two, norm_eq_abs,
@@ -216,14 +216,14 @@ if and only if `1 < p`. -/
 -- see https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/looping.20in.20.60simp.60.20set/near/361134234
 theorem summable_nat_pow_inv {p : ℕ} :
     Summable (fun n => ((n : ℝ) ^ p)⁻¹ : ℕ → ℝ) ↔ 1 < p := by
-  simp only [← rpow_nat_cast, summable_nat_rpow_inv, Nat.one_lt_cast]
+  simp only [← rpow_natCast, summable_nat_rpow_inv, Nat.one_lt_cast]
 #align real.summable_nat_pow_inv Real.summable_nat_pow_inv
 
 /-- Test for convergence of the `p`-series: the real-valued series `∑' n : ℕ, 1 / n ^ p` converges
 if and only if `1 < p`. -/
 theorem summable_one_div_nat_pow {p : ℕ} :
     Summable (fun n => 1 / (n : ℝ) ^ p : ℕ → ℝ) ↔ 1 < p := by
-  -- porting note (#10745): was `simp`
+  -- porting note (#10745): explicitly supplied two simp lemmas
   simp only [one_div, Real.summable_nat_pow_inv]
 #align real.summable_one_div_nat_pow Real.summable_one_div_nat_pow
 
@@ -233,7 +233,7 @@ theorem summable_one_div_int_pow {p : ℕ} :
   refine ⟨fun h ↦ summable_one_div_nat_pow.mp (h.comp_injective Nat.cast_injective),
     fun h ↦ .of_nat_of_neg (summable_one_div_nat_pow.mpr h)
       (((summable_one_div_nat_pow.mpr h).mul_left <| 1 / (-1 : ℝ) ^ p).congr fun n ↦ ?_)⟩
-  rw [Int.cast_neg, Int.cast_ofNat, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
+  rw [Int.cast_neg, Int.cast_natCast, neg_eq_neg_one_mul (n : ℝ), mul_pow, mul_one_div, div_div]
 #align real.summable_one_div_int_pow Real.summable_one_div_int_pow
 
 theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
@@ -241,27 +241,27 @@ theorem summable_abs_int_rpow {b : ℝ} (hb : 1 < b) :
   apply Summable.of_nat_of_neg
   on_goal 2 => simp_rw [Int.cast_neg, abs_neg]
   all_goals
-    simp_rw [Int.cast_ofNat, fun n : ℕ => abs_of_nonneg (n.cast_nonneg : 0 ≤ (n : ℝ))]
+    simp_rw [Int.cast_natCast, fun n : ℕ => abs_of_nonneg (n.cast_nonneg : 0 ≤ (n : ℝ))]
     rwa [summable_nat_rpow, neg_lt_neg_iff]
 #align real.summable_abs_int_rpow Real.summable_abs_int_rpow
 
 /-- Harmonic series is not unconditionally summable. -/
-theorem not_summable_nat_cast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) := by
+theorem not_summable_natCast_inv : ¬Summable (fun n => n⁻¹ : ℕ → ℝ) := by
   have : ¬Summable (fun n => ((n : ℝ) ^ 1)⁻¹ : ℕ → ℝ) :=
     mt (summable_nat_pow_inv (p := 1)).1 (lt_irrefl 1)
   simpa
-#align real.not_summable_nat_cast_inv Real.not_summable_nat_cast_inv
+#align real.not_summable_nat_cast_inv Real.not_summable_natCast_inv
 
 /-- Harmonic series is not unconditionally summable. -/
-theorem not_summable_one_div_nat_cast : ¬Summable (fun n => 1 / n : ℕ → ℝ) := by
-  simpa only [inv_eq_one_div] using not_summable_nat_cast_inv
-#align real.not_summable_one_div_nat_cast Real.not_summable_one_div_nat_cast
+theorem not_summable_one_div_natCast : ¬Summable (fun n => 1 / n : ℕ → ℝ) := by
+  simpa only [inv_eq_one_div] using not_summable_natCast_inv
+#align real.not_summable_one_div_nat_cast Real.not_summable_one_div_natCast
 
 /-- **Divergence of the Harmonic Series** -/
 theorem tendsto_sum_range_one_div_nat_succ_atTop :
     Tendsto (fun n => ∑ i in Finset.range n, (1 / (i + 1) : ℝ)) atTop atTop := by
   rw [← not_summable_iff_tendsto_nat_atTop_of_nonneg]
-  · exact_mod_cast mt (_root_.summable_nat_add_iff 1).1 not_summable_one_div_nat_cast
+  · exact_mod_cast mt (_root_.summable_nat_add_iff 1).1 not_summable_one_div_natCast
   · exact fun i => by positivity
 #align real.tendsto_sum_range_one_div_nat_succ_at_top Real.tendsto_sum_range_one_div_nat_succ_atTop
 
@@ -331,7 +331,7 @@ theorem sum_Ioo_inv_sq_le (k n : ℕ) : (∑ i in Ioo k n, (i ^ 2 : α)⁻¹) �
       rw [Nat.Ico_succ_right, Nat.Icc_succ_left, Nat.cast_succ]
     _ ≤ ((k + 1 : α) ^ 2)⁻¹ + (k + 1 : α)⁻¹ := by
       refine' add_le_add le_rfl ((sum_Ioc_inv_sq_le_sub _ (le_max_left _ _)).trans _)
-      · simp only [Ne.def, Nat.succ_ne_zero, not_false_iff]
+      · simp only [Ne, Nat.succ_ne_zero, not_false_iff]
       · simp only [Nat.cast_succ, one_div, sub_le_self_iff, inv_nonneg, Nat.cast_nonneg]
     _ ≤ 1 / (k + 1) + 1 / (k + 1) := by
       have A : (1 : α) ≤ k + 1 := by simp only [le_add_iff_nonneg_left, Nat.cast_nonneg]
@@ -354,7 +354,7 @@ lemma Real.not_summable_indicator_one_div_natCast {m : ℕ} (hm : m ≠ 0) (k : 
     simp only [indicator_apply, mem_setOf_eq, cast_add, cast_one]
   simp_rw [indicator_apply, mem_setOf, cast_add, cast_one, ← eq_sub_iff_add_eq, ← h]
   rw [summable_indicator_mod_iff (fun n₁ n₂ h ↦ by gcongr) (k - 1)]
-  exact mt (summable_nat_add_iff (f := fun n : ℕ ↦ 1 / (n : ℝ)) 1).mp not_summable_one_div_nat_cast
+  exact mt (summable_nat_add_iff (f := fun n : ℕ ↦ 1 / (n : ℝ)) 1).mp not_summable_one_div_natCast
 
 /-!
 ## Translating the `p`-series by a real number
@@ -376,7 +376,7 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
     positivity
   · simp_rw [Pi.div_def, div_div, mul_one_div, one_div_div]
     refine (?_ : Tendsto (fun x : ℝ ↦ |x + b| ^ s / |x + c| ^ s) atTop (𝓝 1)).comp
-      tendsto_nat_cast_atTop_atTop
+      tendsto_natCast_atTop_atTop
     have : Tendsto (fun x : ℝ ↦ 1 + (b - c) / x) atTop (𝓝 1) := by
       simpa using tendsto_const_nhds.add ((tendsto_const_nhds (X := ℝ)).div_atTop tendsto_id)
     have : Tendsto (fun x ↦ (x + b) / (x + c)) atTop (𝓝 1) := by
@@ -391,6 +391,6 @@ lemma Real.summable_one_div_nat_add_rpow (a : ℝ) (s : ℝ) :
 lemma Real.summable_one_div_int_add_rpow (a : ℝ) (s : ℝ) :
     Summable (fun n : ℤ ↦ 1 / |n + a| ^ s) ↔ 1 < s := by
   simp_rw [summable_int_iff_summable_nat_and_neg, ← abs_neg (↑(-_ : ℤ) + a), neg_add,
-    Int.cast_neg, neg_neg, Int.cast_ofNat, summable_one_div_nat_add_rpow, and_self]
+    Int.cast_neg, neg_neg, Int.cast_natCast, summable_one_div_nat_add_rpow, and_self]
 
 end shifted

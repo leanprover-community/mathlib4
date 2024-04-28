@@ -218,7 +218,7 @@ theorem fderivWithin_zero_of_isolated (h : 𝓝[s \ {x}] x = ⊥) : fderivWithin
 
 theorem fderivWithin_zero_of_nmem_closure (h : x ∉ closure s) : fderivWithin 𝕜 f s x = 0 := by
   apply fderivWithin_zero_of_isolated
-  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne.def, Classical.not_not] at h
+  simp only [mem_closure_iff_nhdsWithin_neBot, neBot_iff, Ne, Classical.not_not] at h
   rw [eq_bot_iff, ← h]
   exact nhdsWithin_mono _ (diff_subset s {x})
 
@@ -342,7 +342,7 @@ theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (h
   rw [add_sub_cancel_left] at hyC
   calc
     ‖f' y‖ ≤ ‖f (x₀ + y) - f x₀‖ + ‖f (x₀ + y) - f x₀ - f' y‖ := norm_le_insert _ _
-    _ ≤ C * ‖y‖ + ε * ‖y‖ := (add_le_add hyC hy)
+    _ ≤ C * ‖y‖ + ε * ‖y‖ := add_le_add hyC hy
     _ = (C + ε) * ‖y‖ := (add_mul _ _ _).symm
 
 #align has_fderiv_at.le_of_lip' HasFDerivAt.le_of_lip'

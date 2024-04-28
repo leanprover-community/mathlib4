@@ -5,7 +5,7 @@ Authors: Violeta Hernández Palacios
 -/
 import Mathlib.SetTheory.Ordinal.Arithmetic
 import Mathlib.Tactic.TFAE
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.Monotone
 
 #align_import set_theory.ordinal.topology from "leanprover-community/mathlib"@"740acc0e6f9adf4423f92a485d0456fc271482da"
 

@@ -168,7 +168,8 @@ section Sym
 variable {n : ℕ}
 
 -- Porting note: instance needed
-instance : DecidableEq (Sym α n) := Subtype.instDecidableEqSubtype
+instance : DecidableEq (Sym α n) :=
+  inferInstanceAs <| DecidableEq <| Subtype _
 
 /-- Lifts a finset to `Sym α n`. `s.sym n` is the finset of all unordered tuples of cardinality `n`
 with elements in `s`. -/

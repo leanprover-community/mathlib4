@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura, Mario Carneiro
 -/
 import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.CharZero
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Cast.Order
 
 #align_import algebra.order.ring.abs from "leanprover-community/mathlib"@"10b4e499f43088dd3bb7b5796184ad5216648ab1"

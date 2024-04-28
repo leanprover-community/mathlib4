@@ -505,7 +505,7 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
   mul_left_inv y := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := y
     simp only [coe_one, coe_mul, SubmonoidClass.coe_pow]
-    rw [← pow_succ', Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
+    rw [← pow_succ, Nat.sub_add_cancel hpos, ← pow_mul, mul_comm, pow_mul, hx, one_pow]
   zpow z x := x ^ z.natMod n
   zpow_zero' z := by simp only [Int.natMod, Int.zero_emod, Int.toNat_zero, pow_zero]
   zpow_neg' m x := Subtype.ext <| by
@@ -513,15 +513,15 @@ abbrev groupPowers {x : M} {n : ℕ} (hpos : 0 < n) (hx : x ^ n = 1) : Group (po
     simp only [← pow_mul, Int.natMod, SubmonoidClass.coe_pow]
     rw [Int.negSucc_coe, ← Int.add_mul_emod_self (b := (m + 1 : ℕ))]
     nth_rw 1 [← mul_one ((m + 1 : ℕ) : ℤ)]
-    rw [← sub_eq_neg_add, ← mul_sub, ← Int.coe_pred_of_pos hpos]; norm_cast
-    simp only [Int.toNat_coe_nat]
+    rw [← sub_eq_neg_add, ← mul_sub, ← Int.natCast_pred_of_pos hpos]; norm_cast
+    simp only [Int.toNat_natCast]
     rw [mul_comm, pow_mul, ← pow_eq_pow_mod _ hx, mul_comm k, mul_assoc, pow_mul _ (_ % _),
       ← pow_eq_pow_mod _ hx, pow_mul, pow_mul]
   zpow_succ' m x := Subtype.ext <| by
     obtain ⟨_, k, rfl⟩ := x
     simp only [← pow_mul, Int.natMod, Int.ofNat_eq_coe, SubmonoidClass.coe_pow, coe_mul]
     norm_cast
-    iterate 2 rw [Int.toNat_coe_nat, mul_comm, pow_mul, ← pow_eq_pow_mod _ hx]
+    iterate 2 rw [Int.toNat_natCast, mul_comm, pow_mul, ← pow_eq_pow_mod _ hx]
     rw [← pow_mul _ m, mul_comm, pow_mul, ← pow_succ, ← pow_mul, mul_comm, pow_mul]
 
 /-- Exponentiation map from natural numbers to powers. -/

@@ -148,7 +148,7 @@ lemma isEverywherePos_everywherePosSubset
 of a measurable set of finite measure is itself everywhere positive. This is not obvious as
 `μ.everywherePosSubset s` is defined as the points whose neighborhoods intersect `s` along positive
 measure subsets, but this does not say they also intersect `μ.everywherePosSubset s` along positive
-measure subsets.-/
+measure subsets. -/
 lemma isEverywherePos_everywherePosSubset_of_measure_ne_top
     [OpensMeasurableSpace α] [InnerRegularCompactLTTop μ] (hs : MeasurableSet s) (h's : μ s ≠ ∞) :
     μ.IsEverywherePos (μ.everywherePosSubset s) := by

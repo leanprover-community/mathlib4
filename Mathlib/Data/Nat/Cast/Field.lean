@@ -55,7 +55,7 @@ theorem cast_div_le {m n : ℕ} : ((m / n : ℕ) : α) ≤ m / n := by
   cases n
   · rw [cast_zero, div_zero, Nat.div_zero, cast_zero]
   rw [le_div_iff, ← Nat.cast_mul, @Nat.cast_le]
-  exact (Nat.div_mul_le_self m _)
+  exact Nat.div_mul_le_self m _
   · exact Nat.cast_pos.2 (Nat.succ_pos _)
 #align nat.cast_div_le Nat.cast_div_le
 

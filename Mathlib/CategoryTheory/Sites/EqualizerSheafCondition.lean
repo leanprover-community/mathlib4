@@ -159,7 +159,7 @@ theorem equalizer_sheaf_condition :
     ← Equiv.forall_congr_left (firstObjEqFamily P (S : Presieve X)).toEquiv.symm]
   simp_rw [← compatible_iff]
   simp only [inv_hom_id_apply, Iso.toEquiv_symm_fun]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -247,7 +247,7 @@ theorem sheaf_condition : R.IsSheafFor P ↔ Nonempty (IsLimit (Fork.ofι _ (w P
   rw [Types.type_equalizer_iff_unique]
   erw [← Equiv.forall_congr_left (firstObjEqFamily P R).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t
@@ -344,7 +344,7 @@ theorem sheaf_condition : (Presieve.ofArrows X π).IsSheafFor P ↔
   rw [Types.type_equalizer_iff_unique, isSheafFor_arrows_iff]
   erw [← Equiv.forall_congr_left (Types.productIso _).toEquiv.symm]
   simp_rw [← compatible_iff, ← Iso.toEquiv_fun, Equiv.apply_symm_apply]
-  apply ball_congr
+  apply forall₂_congr
   intro x _
   apply exists_unique_congr
   intro t

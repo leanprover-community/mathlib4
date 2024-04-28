@@ -58,8 +58,7 @@ theorem toTensorAlgebra_gMul {i j} (a : (⨂[R]^i) M) (b : (⨂[R]^j) M) :
     TensorPower.tprod_mul_tprod, TensorPower.toTensorAlgebra_tprod, TensorAlgebra.tprod_apply, ←
     gMul_eq_coe_linearMap]
   refine' Eq.trans _ List.prod_append
-  -- Porting note: was `congr`
-  apply congr_arg
+  congr
   -- Porting note: `erw` for `Function.comp`
   erw [← List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_ofFn _ (TensorAlgebra.ι R), ←
     List.map_ofFn _ (TensorAlgebra.ι R), ← List.map_append, List.ofFn_fin_append]

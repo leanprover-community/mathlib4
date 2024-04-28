@@ -111,17 +111,17 @@ lemma to_single_hom_ext {K : HomologicalComplex V c} {j : ι} {A : V}
     exact hfg
   · apply (isZero_single_obj_X c j A i h).eq_of_tgt
 
-instance (j : ι) : Faithful (single V c j) where
+instance (j : ι) : (single V c j).Faithful where
   map_injective {A B f g} w := by
     rw [← cancel_mono (singleObjXSelf c j B).inv,
       ← cancel_epi (singleObjXSelf c j A).hom, ← single_map_f_self,
       ← single_map_f_self, w]
 
-noncomputable instance (j : ι) : Full (single V c j) where
-  preimage {A B} f := (singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom
-  witness f := by
-    ext
-    simp [single_map_f_self]
+instance (j : ι) : (single V c j).Full where
+  map_surjective {A B} f :=
+    ⟨(singleObjXSelf c j A).inv ≫ f.f j ≫ (singleObjXSelf c j B).hom, by
+      ext
+      simp [single_map_f_self]⟩
 
 variable {c}
 

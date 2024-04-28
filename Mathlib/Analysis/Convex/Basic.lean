@@ -187,10 +187,8 @@ theorem convex_segment (x y : E) : Convex 𝕜 [x -[𝕜] y] := by
 #align convex_segment convex_segment
 
 theorem Convex.linear_image (hs : Convex 𝕜 s) (f : E →ₗ[𝕜] F) : Convex 𝕜 (f '' s) := by
-  intro x hx y hy a b ha hb hab
-  obtain ⟨x', hx', rfl⟩ := mem_image_iff_bex.1 hx
-  obtain ⟨y', hy', rfl⟩ := mem_image_iff_bex.1 hy
-  exact ⟨a • x' + b • y', hs hx' hy' ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
+  rintro _ ⟨x, hx, rfl⟩ _ ⟨y, hy, rfl⟩ a b ha hb hab
+  exact ⟨a • x + b • y, hs hx hy ha hb hab, by rw [f.map_add, f.map_smul, f.map_smul]⟩
 #align convex.linear_image Convex.linear_image
 
 theorem Convex.is_linear_image (hs : Convex 𝕜 s) {f : E → F} (hf : IsLinearMap 𝕜 f) :

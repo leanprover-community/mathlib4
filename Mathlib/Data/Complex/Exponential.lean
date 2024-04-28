@@ -29,7 +29,7 @@ theorem isCauSeq_abs_exp (z : ℂ) :
   have hn0 : (0 : ℝ) < n := lt_of_le_of_lt (abs.nonneg _) hn
   IsCauSeq.series_ratio_test n (abs z / n) (div_nonneg (abs.nonneg _) (le_of_lt hn0))
     (by rwa [div_lt_iff hn0, one_mul]) fun m hm => by
-      rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ, mul_comm m.succ, Nat.cast_mul, ← div_div,
+      rw [abs_abs, abs_abs, Nat.factorial_succ, pow_succ', mul_comm m.succ, Nat.cast_mul, ← div_div,
         mul_div_assoc, mul_div_right_comm, map_mul, map_div₀, abs_natCast]
       gcongr
       exact le_trans hm (Nat.le_succ _)
@@ -220,7 +220,7 @@ lemma exp_nsmul (x : ℂ) (n : ℕ) : exp (n • x) = exp x ^ n :=
 
 theorem exp_nat_mul (x : ℂ) : ∀ n : ℕ, exp (n * x) = exp x ^ n
   | 0 => by rw [Nat.cast_zero, zero_mul, exp_zero, pow_zero]
-  | Nat.succ n => by rw [pow_succ', Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
+  | Nat.succ n => by rw [pow_succ, Nat.cast_add_one, add_mul, exp_add, ← exp_nat_mul _ n, one_mul]
 #align complex.exp_nat_mul Complex.exp_nat_mul
 
 theorem exp_ne_zero : exp x ≠ 0 := fun h =>
@@ -249,7 +249,7 @@ theorem exp_conj : exp (conj x) = conj (exp x) := by
   dsimp [exp', Function.comp_def, cauSeqConj]
   rw [map_sum (starRingEnd _)]
   refine' sum_congr rfl fun n _ => _
-  rw [map_div₀, map_pow, ← ofReal_nat_cast, conj_ofReal]
+  rw [map_div₀, map_pow, ← ofReal_natCast, conj_ofReal]
 #align complex.exp_conj Complex.exp_conj
 
 @[simp]
@@ -797,7 +797,7 @@ theorem cos_add_sin_mul_I_pow (n : ℕ) (z : ℂ) :
   rw [← exp_mul_I, ← exp_mul_I]
   induction' n with n ih
   · rw [pow_zero, Nat.cast_zero, zero_mul, zero_mul, exp_zero]
-  · rw [pow_succ', ih, Nat.cast_succ, add_mul, add_mul, one_mul, exp_add]
+  · rw [pow_succ, ih, Nat.cast_succ, add_mul, add_mul, one_mul, exp_add]
 set_option linter.uppercaseLean3 false in
 #align complex.cos_add_sin_mul_I_pow Complex.cos_add_sin_mul_I_pow
 
@@ -987,11 +987,11 @@ theorem sin_sq : sin x ^ 2 = 1 - cos x ^ 2 :=
 lemma sin_sq_eq_half_sub : sin x ^ 2 = 1 / 2 - cos (2 * x) / 2 := by
   rw [sin_sq, cos_sq, ← sub_sub, sub_half]
 
-theorem abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = sqrt (1 - cos x ^ 2) := by
+theorem abs_sin_eq_sqrt_one_sub_cos_sq (x : ℝ) : |sin x| = √(1 - cos x ^ 2) := by
   rw [← sin_sq, sqrt_sq_eq_abs]
 #align real.abs_sin_eq_sqrt_one_sub_cos_sq Real.abs_sin_eq_sqrt_one_sub_cos_sq
 
-theorem abs_cos_eq_sqrt_one_sub_sin_sq (x : ℝ) : |cos x| = sqrt (1 - sin x ^ 2) := by
+theorem abs_cos_eq_sqrt_one_sub_sin_sq (x : ℝ) : |cos x| = √(1 - sin x ^ 2) := by
   rw [← cos_sq', sqrt_sq_eq_abs]
 #align real.abs_cos_eq_sqrt_one_sub_sin_sq Real.abs_cos_eq_sqrt_one_sub_sin_sq
 
@@ -1005,12 +1005,12 @@ theorem tan_sq_div_one_add_tan_sq {x : ℝ} (hx : cos x ≠ 0) :
   simp only [← tan_mul_cos hx, mul_pow, ← inv_one_add_tan_sq hx, div_eq_mul_inv, one_mul]
 #align real.tan_sq_div_one_add_tan_sq Real.tan_sq_div_one_add_tan_sq
 
-theorem inv_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) : (sqrt (1 + tan x ^ 2))⁻¹ = cos x := by
+theorem inv_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) : (√(1 + tan x ^ 2))⁻¹ = cos x := by
   rw [← sqrt_sq hx.le, ← sqrt_inv, inv_one_add_tan_sq hx.ne']
 #align real.inv_sqrt_one_add_tan_sq Real.inv_sqrt_one_add_tan_sq
 
 theorem tan_div_sqrt_one_add_tan_sq {x : ℝ} (hx : 0 < cos x) :
-    tan x / sqrt (1 + tan x ^ 2) = sin x := by
+    tan x / √(1 + tan x ^ 2) = sin x := by
   rw [← tan_mul_cos hx.ne', ← inv_sqrt_one_add_tan_sq hx, div_eq_mul_inv]
 #align real.tan_div_sqrt_one_add_tan_sq Real.tan_div_sqrt_one_add_tan_sq
 
@@ -1397,7 +1397,7 @@ nonrec theorem exp_bound {x : ℝ} (hx : |x| ≤ 1) {n : ℕ} (hn : 0 < n) :
   convert exp_bound hxc hn using 2 <;>
   -- Porting note: was `norm_cast`
   simp only [← abs_ofReal, ← ofReal_sub, ← ofReal_exp, ← ofReal_sum, ← ofReal_pow,
-    ← ofReal_div, ← ofReal_nat_cast]
+    ← ofReal_div, ← ofReal_natCast]
 #align real.exp_bound Real.exp_bound
 
 theorem exp_bound' {x : ℝ} (h1 : 0 ≤ x) (h2 : x ≤ 1) {n : ℕ} (hn : 0 < n) :
@@ -1614,7 +1614,7 @@ theorem cos_one_pos : 0 < cos 1 :=
 
 theorem cos_two_neg : cos 2 < 0 :=
   calc cos 2 = cos (2 * 1) := congr_arg cos (mul_one _).symm
-    _ = _ := (Real.cos_two_mul 1)
+    _ = _ := Real.cos_two_mul 1
     _ ≤ 2 * (2 / 3) ^ 2 - 1 := by
       gcongr
       · exact cos_one_pos.le

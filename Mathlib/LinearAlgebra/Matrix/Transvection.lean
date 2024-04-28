@@ -100,10 +100,10 @@ theorem updateRow_eq_transvection [Finite n] (c : R) :
   · simp only [updateRow_self, transvection, ha, hb, Pi.add_apply, StdBasisMatrix.apply_same,
       one_apply_eq, Pi.smul_apply, mul_one, Algebra.id.smul_eq_mul, add_apply]
   · simp only [updateRow_self, transvection, ha, hb, StdBasisMatrix.apply_of_ne, Pi.add_apply,
-      Ne.def, not_false_iff, Pi.smul_apply, and_false_iff, one_apply_ne, Algebra.id.smul_eq_mul,
+      Ne, not_false_iff, Pi.smul_apply, and_false_iff, one_apply_ne, Algebra.id.smul_eq_mul,
       mul_zero, add_apply]
   · simp only [updateRow_ne, transvection, ha, Ne.symm ha, StdBasisMatrix.apply_of_ne, add_zero,
-      Algebra.id.smul_eq_mul, Ne.def, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
+      Algebra.id.smul_eq_mul, Ne, not_false_iff, DMatrix.add_apply, Pi.smul_apply,
       mul_zero, false_and_iff, add_apply]
 #align matrix.update_row_eq_transvection Matrix.updateRow_eq_transvection
 
@@ -148,7 +148,7 @@ variable (R n)
 /-- A structure containing all the information from which one can build a nontrivial transvection.
 This structure is easier to manipulate than transvections as one has a direct access to all the
 relevant fields. -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure TransvectionStruct where
   (i j : n)
   hij : i ≠ j
@@ -234,7 +234,7 @@ theorem prod_mul_reverse_inv_prod (L : List (TransvectionStruct n R)) :
     simp_rw [IH, Matrix.mul_one, t.mul_inv]
 #align matrix.transvection_struct.prod_mul_reverse_inv_prod Matrix.TransvectionStruct.prod_mul_reverse_inv_prod
 
-/-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix).-/
+/-- `M` is a scalar matrix if it commutes with every nontrivial transvection (elementary matrix). -/
 theorem _root_.Matrix.mem_range_scalar_of_commute_transvectionStruct {M : Matrix n n R}
     (hM : ∀ t : TransvectionStruct n R, Commute t.toMatrix M) :
     M ∈ Set.range (Matrix.scalar n) := by
@@ -373,8 +373,7 @@ theorem listTransvecCol_mul_last_row_drop (i : Sum (Fin r) Unit) {k : ℕ} (hk :
   refine' Nat.decreasingInduction' _ hk _
   · intro n hn _ IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     simpa [listTransvecCol, Matrix.mul_assoc]
   · simp only [listTransvecCol, List.length_ofFn, le_refl, List.drop_eq_nil_of_le, List.prod_nil,
       Matrix.one_mul]
@@ -402,8 +401,7 @@ theorem listTransvecCol_mul_last_col (hM : M (inr unit) (inr unit) ≠ 0) (i : F
   · intro n hn hk IH
     have hn' : n < (listTransvecCol M).length := by simpa [listTransvecCol] using hn
     let n' : Fin r := ⟨n, hn⟩
-    -- Porting note: after changing from `nthLe` to `get`, we need to provide all arguments
-    rw [← @List.cons_get_drop_succ _ _ ⟨n, hn'⟩]
+    rw [List.drop_eq_get_cons hn']
     have A :
       (listTransvecCol M).get ⟨n, hn'⟩ =
         transvection (inl n') (inr unit) (-M (inl n') (inr unit) / M (inr unit) (inr unit)) :=
@@ -449,7 +447,7 @@ theorem mul_listTransvecRow_last_col_take (i : Sum (Fin r) Unit) {k : ℕ} (hk :
     simp only [List.take_succ, ← Matrix.mul_assoc, this, List.prod_append, Matrix.mul_one,
       List.prod_cons, List.prod_nil, Option.toList_some]
     rw [mul_transvection_apply_of_ne, IH hkr.le]
-    simp only [Ne.def, not_false_iff]
+    simp only [Ne, not_false_iff]
 #align matrix.pivot.mul_list_transvec_row_last_col_take Matrix.Pivot.mul_listTransvecRow_last_col_take
 
 /-- Multiplying by all the matrices in `listTransvecRow M` does not change the last column. -/
@@ -498,7 +496,7 @@ theorem mul_listTransvecRow_last_row (hM : M (inr unit) (inr unit) ≠ 0) (i : F
         rintro rfl
         cases i
         tauto
-      simp only [IH hnr.le, Ne.def, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
+      simp only [IH hnr.le, Ne, mul_transvection_apply_of_ne, Ne.symm h, inl.injEq,
         not_false_eq_true]
       rcases le_or_lt (n + 1) i with (hi | hi)
       · simp [hi, n.le_succ.trans hi, if_true]
@@ -690,7 +688,7 @@ theorem exists_list_transvec_mul_mul_list_transvec_eq_diagonal (M : Matrix n n �
 #align matrix.pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal Matrix.Pivot.exists_list_transvec_mul_mul_list_transvec_eq_diagonal
 
 /-- Any matrix can be written as the product of transvections, a diagonal matrix, and
-transvections.-/
+transvections. -/
 theorem exists_list_transvec_mul_diagonal_mul_list_transvec (M : Matrix n n 𝕜) :
     ∃ (L L' : List (TransvectionStruct n 𝕜)) (D : n → 𝕜),
       M = (L.map toMatrix).prod * diagonal D * (L'.map toMatrix).prod := by
