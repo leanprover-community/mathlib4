@@ -135,6 +135,11 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
+-- Adaptation note: 2024-04-28
+-- This maxHeartbeats increase appears to have been provoked by
+-- https://github.com/leanprover/lean4/pull/4003
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 400000 in
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl
@@ -152,7 +157,7 @@ instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _.
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
 
 end SMul

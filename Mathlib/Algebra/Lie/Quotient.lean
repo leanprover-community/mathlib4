@@ -128,11 +128,14 @@ instance lieQuotientHasBracket : Bracket (L ⧸ I) (L ⧸ I) :=
 #align lie_submodule.quotient.lie_quotient_has_bracket LieSubmodule.Quotient.lieQuotientHasBracket
 
 -- Adaptation note: 2024-04-23
--- This requires an increase in the heartbeats limit.
+-- This requires an increase in the heartbeats limit to 400000.
 -- We need to diagnose if the proof is doing something silly,
 -- or if this reflects a regression in IsDefeq from
 -- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
-set_option maxHeartbeats 400000 in
+-- Adaptation note: 2024-04-28
+-- Now we need even more.
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 1600000 in
 @[simp]
 theorem mk_bracket (x y : L) : mk ⁅x, y⁆ = ⁅(mk x : L ⧸ I), (mk y : L ⧸ I)⁆ :=
   rfl

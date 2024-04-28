@@ -227,6 +227,11 @@ lemma SpectrumRestricts.smul_of_nonneg {A : Type*} [Ring A] [Algebra ℝ A] {a :
     refine le_of_smul_le_smul_left ?_ (inv_pos.mpr <| lt_of_le_of_ne hr <| ne_comm.mpr hr')
     simpa [Units.smul_def] using ha _ hx
 
+-- Adaptation note: 2024-04-28
+-- This maxHeartbeats increase appears to have been provoked by
+-- https://github.com/leanprover/lean4/pull/4003
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 400000 in
 lemma spectrum_star_mul_self_nonneg {b : A} : ∀ x ∈ spectrum ℝ (star b * b), 0 ≤ x := by
   set a := star b * b
   have a_def : a = star b * b := rfl

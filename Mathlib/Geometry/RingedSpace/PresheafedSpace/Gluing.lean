@@ -178,6 +178,11 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   rfl
 #align algebraic_geometry.PresheafedSpace.glue_data.f_inv_app_f_app AlgebraicGeometry.PresheafedSpace.GlueData.f_invApp_f_app
 
+-- Adaptation note: 2024-04-28
+-- This maxHeartbeats increase appears to have been provoked by
+-- https://github.com/leanprover/lean4/pull/4003
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 400000 in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
 -/

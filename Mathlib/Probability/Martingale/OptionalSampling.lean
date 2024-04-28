@@ -183,6 +183,15 @@ theorem condexp_stoppedValue_stopping_time_ae_eq_restrict_le (h : Martingale f �
   exact condexp_of_aestronglyMeasurable' hσ.measurableSpace_le h_meas h_int
 #align measure_theory.martingale.condexp_stopped_value_stopping_time_ae_eq_restrict_le MeasureTheory.Martingale.condexp_stoppedValue_stopping_time_ae_eq_restrict_le
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- **Optional Sampling theorem**. If `τ` is a bounded stopping time and `σ` is another stopping
 time, then the value of a martingale `f` at the stopping time `min τ σ` is almost everywhere equal
 to the conditional expectation of `f` stopped at `τ` with respect to the σ-algebra generated

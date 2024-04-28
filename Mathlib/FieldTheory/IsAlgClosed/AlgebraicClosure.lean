@@ -130,6 +130,11 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
+-- Adaptation note: 2024-04-28
+-- This maxHeartbeats increase appears to have been provoked by
+-- https://github.com/leanprover/lean4/pull/4003
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 400000 in
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl

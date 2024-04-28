@@ -449,7 +449,10 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
 
 -- Adaptation note: 2024-04-23
 -- This `maxHeartbeats` was not previously required. Now we need 400000.
-set_option maxHeartbeats 400000 in
+-- Adaptation note: 2024-04-28
+-- Now we need even more.
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 1600000 in
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl
@@ -469,6 +472,11 @@ set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by 
 -- In this file, the value for `f` can be inferred.
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
+-- Adaptation note: 2024-04-28
+-- This maxHeartbeats increase appears to have been provoked by
+-- https://github.com/leanprover/lean4/pull/4003
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 400000 in
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk _ (f x) := rfl

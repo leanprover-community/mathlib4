@@ -62,7 +62,10 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
 -- This `maxHeartbeats` was not previously required. Now we need 400000.
 -- Adaptation note: 2024-04-23
 -- Now we need 800000!
-set_option maxHeartbeats 800000 in
+-- Adaptation note: 2024-04-28
+-- Now we need even more,
+-- and `set_option backward.synthInstance.canonInstances false` doesn't help.
+set_option maxHeartbeats 1600000 in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
 corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]
