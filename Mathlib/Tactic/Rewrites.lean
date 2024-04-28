@@ -11,6 +11,7 @@ import Std.Util.Pickle
 import Std.Util.Cache
 import Mathlib.Control.Basic
 import Mathlib.Data.MLList.Dedup
+import Mathlib.Init.Core -- deliberate import; removing this changes results because ...
 import Mathlib.Lean.Expr.Basic
 import Mathlib.Lean.Meta.DiscrTree
 import Lean.Meta.Tactic.TryThis
