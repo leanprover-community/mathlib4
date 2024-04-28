@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Neil Strickland
+Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
@@ -334,6 +334,23 @@ theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ
   · rw [tsub_eq_zero_iff_le.mpr (le_of_not_gt h : (a : ℕ) ≤ b)]
     rfl
 #align pnat.sub_coe PNat.sub_coe
+
+theorem sub_le {a b : ℕ+} : a - b ≤ a := by
+  rw [← coe_le_coe, sub_coe]
+  split_ifs with h
+  · exact Nat.sub_le a b
+  · exact a.2
+
+theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
+  rw [← coe_le_coe, PNat.sub_coe]
+  split_ifs with h
+  · apply Nat.le_pred_of_lt hab
+  · apply not_lt.mp at h
+    simp_all only [le_one_iff, not_lt_one]
+
+theorem le_of_le_sub_one {a b : ℕ+} (hab: a ≤ b - 1): a ≤ b := by
+  apply LE.le.trans hab (a := a) (c := b) (b := b - 1)
+  exact sub_le
 
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
