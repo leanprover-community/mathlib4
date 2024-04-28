@@ -10,11 +10,7 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Order
 /-!
 # Borel (measurable) spaces ℝ, ℝ≥0, ℝ≥0∞
 
-Note: No dependency on `Mathlib.MeasureTheory.Constructions.BorelSpace.Metric`.
-
 ## Main definitions
-
-* `MeasurableSpace` and `BorelSpace` instances on `ℝ`, `ℝ≥0`, `ℝ≥0∞`.
 
 ## Main statements
 

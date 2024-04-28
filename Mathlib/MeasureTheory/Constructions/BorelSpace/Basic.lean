@@ -5,6 +5,8 @@ Authors: Johannes Hölzl, Yury Kudryashov
 -/
 import Mathlib.Topology.GDelta
 import Mathlib.MeasureTheory.Group.Arithmetic
+import Mathlib.Topology.Instances.EReal
+import Mathlib.Analysis.Normed.Group.Basic
 
 #align_import measure_theory.constructions.borel_space.basic from "leanprover-community/mathlib"@"9f55d0d4363ae59948c33864cbc52e0b12e0e8ce"
 
@@ -106,58 +108,6 @@ theorem borel_eq_generateFrom_isClosed [TopologicalSpace α] :
     (generateFrom_le fun _t ht =>
       @MeasurableSet.of_compl α _ (borel α) (GenerateMeasurable.basic _ <| isOpen_compl_iff.2 ht))
 #align borel_eq_generate_from_is_closed borel_eq_generateFrom_isClosed
-
-section OrderTopology
-
-variable (α)
-variable [TopologicalSpace α] [SecondCountableTopology α] [LinearOrder α] [OrderTopology α]
-
-theorem borel_eq_generateFrom_Iio : borel α = .generateFrom (range Iio) := by
-  refine' le_antisymm _ (generateFrom_le _)
-  · rw [borel_eq_generateFrom_of_subbasis (@OrderTopology.topology_eq_generate_intervals α _ _ _)]
-    letI : MeasurableSpace α := MeasurableSpace.generateFrom (range Iio)
-    have H : ∀ a : α, MeasurableSet (Iio a) := fun a => GenerateMeasurable.basic _ ⟨_, rfl⟩
-    refine' generateFrom_le _
-    rintro _ ⟨a, rfl | rfl⟩
-    · rcases em (∃ b, a ⋖ b) with ⟨b, hb⟩ | hcovBy
-      · rw [hb.Ioi_eq, ← compl_Iio]
-        exact (H _).compl
-      · rcases isOpen_biUnion_countable (Ioi a) Ioi fun _ _ ↦ isOpen_Ioi with ⟨t, hat, htc, htU⟩
-        have : Ioi a = ⋃ b ∈ t, Ici b := by
-          refine Subset.antisymm ?_ <| iUnion₂_subset fun b hb ↦ Ici_subset_Ioi.2 (hat hb)
-          refine Subset.trans ?_ <| iUnion₂_mono fun _ _ ↦ Ioi_subset_Ici_self
-          simpa [CovBy, htU, subset_def] using hcovBy
-        simp only [this, ← compl_Iio]
-        exact .biUnion htc <| fun _ _ ↦ (H _).compl
-    · apply H
-  · rw [forall_mem_range]
-    intro a
-    exact GenerateMeasurable.basic _ isOpen_Iio
-#align borel_eq_generate_from_Iio borel_eq_generateFrom_Iio
-
-theorem borel_eq_generateFrom_Ioi : borel α = .generateFrom (range Ioi) :=
-  @borel_eq_generateFrom_Iio αᵒᵈ _ (by infer_instance : SecondCountableTopology α) _ _
-#align borel_eq_generate_from_Ioi borel_eq_generateFrom_Ioi
-
-theorem borel_eq_generateFrom_Iic :
-    borel α = MeasurableSpace.generateFrom (range Iic) := by
-  rw [borel_eq_generateFrom_Ioi]
-  refine' le_antisymm _ _
-  · refine' MeasurableSpace.generateFrom_le fun t ht => _
-    obtain ⟨u, rfl⟩ := ht
-    rw [← compl_Iic]
-    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
-  · refine' MeasurableSpace.generateFrom_le fun t ht => _
-    obtain ⟨u, rfl⟩ := ht
-    rw [← compl_Ioi]
-    exact (MeasurableSpace.measurableSet_generateFrom (mem_range.mpr ⟨u, rfl⟩)).compl
-#align borel_eq_generate_from_Iic borel_eq_generateFrom_Iic
-
-theorem borel_eq_generateFrom_Ici : borel α = MeasurableSpace.generateFrom (range Ici) :=
-  @borel_eq_generateFrom_Iic αᵒᵈ _ _ _ _
-#align borel_eq_generate_from_Ici borel_eq_generateFrom_Ici
-
-end OrderTopology
 
 theorem borel_comap {f : α → β} {t : TopologicalSpace β} :
     @borel α (t.induced f) = (@borel β t).comap f :=
@@ -742,3 +692,63 @@ protected theorem OpenEmbedding.measurableEmbedding {f : α → β} (h : OpenEmb
     MeasurableEmbedding f :=
   h.toEmbedding.measurableEmbedding h.isOpen_range.measurableSet
 #align open_embedding.measurable_embedding OpenEmbedding.measurableEmbedding
+
+instance Empty.borelSpace : BorelSpace Empty :=
+  ⟨borel_eq_top_of_discrete.symm⟩
+#align empty.borel_space Empty.borelSpace
+
+instance Unit.borelSpace : BorelSpace Unit :=
+  ⟨borel_eq_top_of_discrete.symm⟩
+#align unit.borel_space Unit.borelSpace
+
+instance Bool.borelSpace : BorelSpace Bool :=
+  ⟨borel_eq_top_of_discrete.symm⟩
+#align bool.borel_space Bool.borelSpace
+
+instance Nat.borelSpace : BorelSpace ℕ :=
+  ⟨borel_eq_top_of_discrete.symm⟩
+#align nat.borel_space Nat.borelSpace
+
+instance Int.borelSpace : BorelSpace ℤ :=
+  ⟨borel_eq_top_of_discrete.symm⟩
+#align int.borel_space Int.borelSpace
+
+instance Rat.borelSpace : BorelSpace ℚ :=
+  ⟨borel_eq_top_of_countable.symm⟩
+#align rat.borel_space Rat.borelSpace
+
+/- Instances on `Real` and `Complex` are special cases of `RCLike` but without these instances,
+Lean fails to prove `BorelSpace (ι → ℝ)`, so we leave them here. -/
+instance Real.measurableSpace : MeasurableSpace ℝ :=
+  borel ℝ
+#align real.measurable_space Real.measurableSpace
+
+instance Real.borelSpace : BorelSpace ℝ :=
+  ⟨rfl⟩
+#align real.borel_space Real.borelSpace
+
+instance NNReal.measurableSpace : MeasurableSpace ℝ≥0 :=
+  Subtype.instMeasurableSpace
+#align nnreal.measurable_space NNReal.measurableSpace
+
+instance NNReal.borelSpace : BorelSpace ℝ≥0 :=
+  Subtype.borelSpace _
+#align nnreal.borel_space NNReal.borelSpace
+
+instance ENNReal.measurableSpace : MeasurableSpace ℝ≥0∞ :=
+  borel ℝ≥0∞
+#align ennreal.measurable_space ENNReal.measurableSpace
+
+instance ENNReal.borelSpace : BorelSpace ℝ≥0∞ :=
+  ⟨rfl⟩
+#align ennreal.borel_space ENNReal.borelSpace
+
+instance EReal.measurableSpace : MeasurableSpace EReal :=
+  borel EReal
+#align ereal.measurable_space EReal.measurableSpace
+
+instance EReal.borelSpace : BorelSpace EReal :=
+  ⟨rfl⟩
+#align ereal.borel_space EReal.borelSpace
+
+end BorelSpace
