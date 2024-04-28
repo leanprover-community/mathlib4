@@ -89,7 +89,6 @@ lemma hasDerivAt_logTaylor (n : ℕ) (z : ℂ) :
       simp_rw [div_eq_mul_inv]
       convert HasDerivAt.mul_const (hasDerivAt_pow (n + 1) z) (((n : ℂ) + 1)⁻¹) using 1
       field_simp [Nat.cast_add_one_ne_zero n]
-      ring
     convert HasDerivAt.const_mul _ this using 2
     ring
 

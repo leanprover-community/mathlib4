@@ -66,6 +66,7 @@ Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 164
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1819 lines, try to split it up
+Mathlib/LinearAlgebra/TensorProduct/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1660 lines, try to split it up
 Mathlib/Logic/Equiv/Basic.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2065 lines, try to split it up
 Mathlib/Mathport/Attributes.lean : line 8 : ERR_MOD : Module docstring missing, or too late
 Mathlib/Mathport/Rename.lean : line 9 : ERR_MOD : Module docstring missing, or too late

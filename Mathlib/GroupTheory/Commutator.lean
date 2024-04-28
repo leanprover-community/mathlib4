@@ -227,17 +227,17 @@ theorem commutator_pi_pi_of_finite {η : Type*} [Finite η] {Gs : η → Type*} 
     Subgroup.pi Set.univ fun i => ⁅H i, K i⁆ := by
   classical
     apply le_antisymm (commutator_pi_pi_le H K)
-    · rw [pi_le_iff]
-      intro i hi
-      rw [map_commutator]
-      apply commutator_mono <;>
-        · rw [le_pi_iff]
-          intro j _hj
-          rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
-          by_cases h : j = i
-          · subst h
-            simpa using hx
-          · simp [h, one_mem]
+    rw [pi_le_iff]
+    intro i hi
+    rw [map_commutator]
+    apply commutator_mono <;>
+      · rw [le_pi_iff]
+        intro j _hj
+        rintro _ ⟨_, ⟨x, hx, rfl⟩, rfl⟩
+        by_cases h : j = i
+        · subst h
+          simpa using hx
+        · simp [h, one_mem]
 #align subgroup.commutator_pi_pi_of_finite Subgroup.commutator_pi_pi_of_finite
 
 end Subgroup
