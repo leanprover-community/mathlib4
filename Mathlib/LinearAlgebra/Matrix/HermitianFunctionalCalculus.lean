@@ -39,6 +39,10 @@ so I have to learn how to specify all of this data.
 
 -/
 
+theorem RCLike_mem_spectrum_iff_mem_spectrum (t : ℝ) :
+    (RCLike.ofReal t) ∈ spectrum 𝕜 (toEuclideanLin A) ↔ t ∈ spectrum ℝ (toEuclideanLin A) :=
+spectrum.algebraMap_mem_iff
+
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
