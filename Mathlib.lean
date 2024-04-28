@@ -1733,6 +1733,7 @@ import Mathlib.Data.Countable.Small
 import Mathlib.Data.DFinsupp.Basic
 import Mathlib.Data.DFinsupp.Encodable
 import Mathlib.Data.DFinsupp.Interval
+import Mathlib.Data.DFinsupp.Lemmas
 import Mathlib.Data.DFinsupp.Lex
 import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.DFinsupp.NeLocus

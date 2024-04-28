@@ -3,6 +3,7 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
+import Mathlib.Data.DFinsupp.Lemmas
 import Mathlib.Data.DFinsupp.Order
 
 #align_import data.dfinsupp.multiset from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"

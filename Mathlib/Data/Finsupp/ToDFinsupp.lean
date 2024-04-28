@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
 import Mathlib.Algebra.Module.Equiv
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Lemmas
 import Mathlib.Data.Finsupp.Basic
 
 #align_import data.finsupp.to_dfinsupp from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"

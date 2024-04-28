@@ -3,7 +3,7 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.DFinsupp.Basic
+import Mathlib.Data.DFinsupp.Lemmas
 import Mathlib.GroupTheory.Submonoid.Operations
 
 #align_import algebra.direct_sum.basic from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
