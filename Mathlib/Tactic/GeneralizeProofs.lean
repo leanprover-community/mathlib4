@@ -37,6 +37,9 @@ initialize registerTraceClass `Tactic.generalize_proofs
 
 namespace GeneralizeProofs
 
+/--
+Configuration for the `generalize_proofs` tactic.
+-/
 structure Config where
   /-- The maximum recursion depth when generalizing proofs.
   When `maxDepth > 0`, then proofs are generalized from the types of the generalized proofs too. -/
@@ -48,6 +51,7 @@ structure Config where
   /-- (Debugging) When `true`, enables consistency checks. -/
   debug : Bool := true
 
+/-- Elaborates a `Parser.Tactic.config` for `generalize_proofs`. -/
 declare_config_elab elabConfig Config
 
 /-- State for the `MGen` monad. -/
@@ -148,6 +152,7 @@ def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
     -- Try using the expected type, but (*) below might find a bad solution
     (guard ty?.isSome *> go f args ty?) <|> go f args none
 where
+  /-- Core implementation for `appArgExpectedTypes`.  -/
   go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
     -- Metavariables for each argument to `f`:
     let mut margs := #[]
