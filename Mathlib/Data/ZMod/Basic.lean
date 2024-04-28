@@ -1286,11 +1286,13 @@ theorem ringHom_map_cast [Ring R] (f : R →+* ZMod n) (k : ZMod n) : f (cast k)
     erw [map_natCast, Fin.cast_val_eq_self]
 #align zmod.ring_hom_map_cast ZMod.ringHom_map_cast
 
+/-- Any ring homomorphism into `ZMod n` has a right inverse. -/
 theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :
     Function.RightInverse (cast : ZMod n → R) f :=
   ringHom_map_cast f
 #align zmod.ring_hom_right_inverse ZMod.ringHom_rightInverse
 
+/-- Any ring homomorphism into `ZMod n` is surjective. -/
 theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f :=
   (ringHom_rightInverse f).surjective
 #align zmod.ring_hom_surjective ZMod.ringHom_surjective
