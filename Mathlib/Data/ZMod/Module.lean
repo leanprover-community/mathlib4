@@ -3,8 +3,9 @@ Copyright (c) 2023 Lawrence Wu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Lawrence Wu
 -/
+import Mathlib.Order.OmegaCompletePartialOrder
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Module.LinearMap.Basic
+import Mathlib.Algebra.Module.Submodule.Lattice
 
 /-!
 # The `ZMod n`-module structure on Abelian groups whose elements have order dividing `n`

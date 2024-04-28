@@ -9,8 +9,6 @@ import Mathlib.Tactic.FinCases
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
 
-assert_not_exists Submodule
-
 /-!
 # Integers mod `n`
 
@@ -31,6 +29,8 @@ Definition of the integers mod n, and the field structure on the integers mod p.
 This is a ring hom if the ring has characteristic dividing `n`
 
 -/
+
+assert_not_exists Submodule
 
 open Function
 
@@ -598,12 +598,6 @@ theorem ker_intCastAddHom (n : ℕ) :
   rw [Int.mem_zmultiples_iff, AddMonoidHom.mem_ker, Int.coe_castAddHom,
     intCast_zmod_eq_zero_iff_dvd]
 #align zmod.ker_int_cast_add_hom ZMod.ker_intCastAddHom
-
--- theorem ker_intCastRingHom (n : ℕ) :
---     RingHom.ker (Int.castRingHom (ZMod n)) = Ideal.span ({(n : ℤ)} : Set ℤ) := by
---   ext
---   rw [Ideal.mem_span_singleton, RingHom.mem_ker, Int.coe_castRingHom, intCast_zmod_eq_zero_iff_dvd]
--- #align zmod.ker_int_cast_ring_hom ZMod.ker_intCastRingHom
 
 theorem cast_injective_of_le {m n : ℕ} [nzm : NeZero m] (h : m ≤ n) :
     Function.Injective (@cast (ZMod n) _ m) := by
@@ -1300,13 +1294,6 @@ theorem ringHom_rightInverse [Ring R] (f : R →+* ZMod n) :
 theorem ringHom_surjective [Ring R] (f : R →+* ZMod n) : Function.Surjective f :=
   (ringHom_rightInverse f).surjective
 #align zmod.ring_hom_surjective ZMod.ringHom_surjective
-
--- theorem ringHom_eq_of_ker_eq [CommRing R] (f g : R →+* ZMod n)
---     (h : RingHom.ker f = RingHom.ker g) : f = g := by
---   have := f.liftOfRightInverse_comp _ (ZMod.ringHom_rightInverse f) ⟨g, le_of_eq h⟩
---   rw [Subtype.coe_mk] at this
---   rw [← this, RingHom.ext_zmod (f.liftOfRightInverse _ _ ⟨g, _⟩) _, RingHom.id_comp]
--- #align zmod.ring_hom_eq_of_ker_eq ZMod.ringHom_eq_of_ker_eq
 
 @[simp]
 lemma castHom_self : ZMod.castHom dvd_rfl (ZMod n) = RingHom.id (ZMod n) :=
