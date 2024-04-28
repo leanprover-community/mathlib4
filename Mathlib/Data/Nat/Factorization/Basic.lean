@@ -10,6 +10,11 @@ import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
+#align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
+
+/-!
+# Prime factorizations
+
  `n.factorization` is the finitely supported function `ℕ →₀ ℕ`
  mapping each prime factor of `n` to its multiplicity in `n`.  For example, since 2000 = 2^4 * 5^3,
   * `factorization 2000 2` is 4
