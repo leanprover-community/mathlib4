@@ -8,7 +8,6 @@ import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.GroupWithZero.Bitwise
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.Set.Image
-import Init.Data.Format.Basic
 
 #align_import data.complex.basic from "leanprover-community/mathlib"@"31c24aa72e7b3e5ed97a8412470e904f82b81004"
 
@@ -20,7 +19,7 @@ of characteristic zero. The result that the complex numbers are algebraically cl
 `FieldTheory.AlgebraicClosure`.
 -/
 
-open Set Function Std
+open Set Function
 
 /-! ### Definition and basic arithmetic -/
 
@@ -949,10 +948,8 @@ numbers are represented.
 -/
 unsafe instance instRepr : Repr ℂ where
   reprPrec f p :=
-    if p > 65 then
-      Format.bracket "(" (reprPrec f.re 65 ++ " + " ++ reprPrec f.im 66 ++ "*I") ")"
-    else
-      reprPrec f.re 65 ++ " + " ++ reprPrec f.im 66 ++ "*I"
+    (if p > 65 then (Format.bracket "(" . ")") else (·)) <|
+      reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
 
 end Complex
 
