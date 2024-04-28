@@ -151,8 +151,8 @@ theorem prop_divisors_subseteq_mul (hn : 0 < n) (hm : 0 < m) :
         constructor
         exact Dvd.dvd.mul_left ham n
         refine lt_mul_of_one_le_of_lt hn ?_
-        simp_all only [gt_iff_lt, le_mul_iff_one_le_right, le_mul_iff_one_le_left, mem_properDivisors,
-           true_and, ne_eq]
+        simp_all only [gt_iff_lt, le_mul_iff_one_le_right, le_mul_iff_one_le_left,
+          mem_properDivisors, true_and, ne_eq]
 
 lemma divisors_eq_proper_union_self (hn : 0 < n) :
     divisors n = properDivisors n ∪ {n} := by
