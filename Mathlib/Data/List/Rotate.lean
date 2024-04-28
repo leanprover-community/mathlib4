@@ -596,7 +596,6 @@ theorem head_cyclicPermutations (l : List α) :
     (cyclicPermutations l).head (cyclicPermutations_ne_nil l) = l := by
   have h : 0 < length (cyclicPermutations l) := length_pos_of_ne_nil (cyclicPermutations_ne_nil _)
   rw [← get_mk_zero h, get_cyclicPermutations, Fin.val_mk, rotate_zero]
-  -- rw [← Option.some_inj, ← head?_eq_head, head?_cyclicPermutations]
 
 @[simp]
 theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
