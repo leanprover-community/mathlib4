@@ -164,7 +164,6 @@
  ["docBlame", "Equiv.toFun"],
  ["docBlame", "EsakiaHom.toPseudoEpimorphism"],
  ["docBlame", "EuclideanDomain.wellFoundedRelation"],
- ["docBlame", "EuclideanGeometry.o"],
  ["docBlame", "ExceptT.callCC"],
  ["docBlame", "ExceptT.mkLabel"],
  ["docBlame", "FBinopElab.elabBinOp"],
