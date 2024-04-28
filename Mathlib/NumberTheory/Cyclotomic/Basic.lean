@@ -265,7 +265,7 @@ variable {A B}
 theorem singleton_one_of_bot_eq_top (h : (⊥ : Subalgebra A B) = ⊤) :
     IsCyclotomicExtension {1} A B := by
   convert (iff_union_singleton_one _ A _).1 (singleton_zero_of_bot_eq_top h)
-  simp
+  simp [insert_emptyc_eq]
 #align is_cyclotomic_extension.singleton_one_of_bot_eq_top IsCyclotomicExtension.singleton_one_of_bot_eq_top
 
 /-- If `Function.Surjective (algebraMap A B)`, then `IsCyclotomicExtension {1} A B`. -/
