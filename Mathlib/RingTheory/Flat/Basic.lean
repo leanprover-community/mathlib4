@@ -380,61 +380,61 @@ set_option maxHeartbeats 400000 in
 set_option linter.unnecessarySimpa false in
 instance [flat : Flat R M] {X Y : ModuleCat.{u} R} (f : X ⟶ Y) :
     Limits.PreservesLimit (Limits.parallelPair f 0) (tensorLeft M) where
-  preserves {c} hc := by
-    let ι : c.pt ⟶ X := c.π.app .zero
-    have mono0 : Mono ι := by
-      constructor
-      intro Z g h H
-      let c' : Limits.Cone (Limits.parallelPair f 0) :=
-        ⟨Z, ⟨fun x => match x with
-        | .zero => h ≫ ι
-        | .one => 0,
-        fun _ _ l => match l with
-          | .left => by simp [ι]
-          | .right => by simp [ι]
-          | .id x => by simp⟩⟩
-      rw [hc.uniq c' g fun x => match x with
-        | .zero => by simpa [ι] using H
-        | .one => by simp, hc.uniq c' h fun x => match x with
-        | .zero => by simp [ι]
-        | .one => by simp]
-    have exact0 : Exact ι f := by
-      refine Abelian.exact_of_is_kernel (w := by simp [ι]) (h := ?_)
-      refine Limits.IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _
-        ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ hc
-      · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
-      · exact 𝟙 c.pt
-      · rintro (⟨⟩|⟨⟩) <;> simp [ι]
-      · rfl
-      · rfl
+  preserves {c} hc := by sorry
+    -- let ι : c.pt ⟶ X := c.π.app .zero
+    -- have mono0 : Mono ι := by
+    --   constructor
+    --   intro Z g h H
+    --   let c' : Limits.Cone (Limits.parallelPair f 0) :=
+    --     ⟨Z, ⟨fun x => match x with
+    --     | .zero => h ≫ ι
+    --     | .one => 0,
+    --     fun _ _ l => match l with
+    --       | .left => by simp [ι]
+    --       | .right => by simp [ι]
+    --       | .id x => by simp⟩⟩
+    --   rw [hc.uniq c' g fun x => match x with
+    --     | .zero => by simpa [ι] using H
+    --     | .one => by simp, hc.uniq c' h fun x => match x with
+    --     | .zero => by simp [ι]
+    --     | .one => by simp]
+    -- have exact0 : Exact ι f := by
+    --   refine Abelian.exact_of_is_kernel (w := by simp [ι]) (h := ?_)
+    --   refine Limits.IsLimit.equivOfNatIsoOfIso (Iso.refl _) _ _
+    --     ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ hc
+    --   · exact 𝟙 c.pt
+    --   · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+    --   · exact 𝟙 c.pt
+    --   · rintro (⟨⟩|⟨⟩) <;> simp [ι]
+    --   · rfl
+    --   · rfl
 
-    let f' := M ◁ f; let ι' := M ◁ ι
+    -- let f' := M ◁ f; let ι' := M ◁ ι
 
-    have exact1 : Exact ι' f' := by
-      rw [exact_iff, Eq.comm, ← Function.LinearMap.exact_iff] at exact0 ⊢
-      exact lTensor_exact R M ι f exact0
-    have mono1 : Mono ι' := by
-      rw [ModuleCat.mono_iff_injective] at mono0 ⊢
-      letI : Flat R (of R M) := inferInstanceAs <| Flat R M
-      exact lTensor_preserves_injective_linearMap _ mono0
-    letI ic1 := Abelian.isLimitOfExactOfMono ι' f' exact1
+    -- have exact1 : Exact ι' f' := by
+    --   rw [exact_iff, Eq.comm, ← Function.LinearMap.exact_iff] at exact0 ⊢
+    --   exact lTensor_exact R M ι f exact0
+    -- have mono1 : Mono ι' := by
+    --   rw [ModuleCat.mono_iff_injective] at mono0 ⊢
+    --   letI : Flat R (of R M) := inferInstanceAs <| Flat R M
+    --   exact lTensor_preserves_injective_linearMap _ mono0
+    -- letI ic1 := Abelian.isLimitOfExactOfMono ι' f' exact1
 
-    refine Limits.IsLimit.equivOfNatIsoOfIso ⟨⟨fun x => match x with
-      | .zero => 𝟙 _
-      | .one => 𝟙 _, ?_⟩, ⟨fun x => match x with
-      | .zero => 𝟙 _
-      | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ ic1
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
-    · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
-    · ext (⟨⟩|⟨⟩) <;> simp
-    · ext (⟨⟩|⟨⟩) <;> simp
-    · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
-    · exact 𝟙 _
-    · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
-    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
-    · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    -- refine Limits.IsLimit.equivOfNatIsoOfIso ⟨⟨fun x => match x with
+    --   | .zero => 𝟙 _
+    --   | .one => 𝟙 _, ?_⟩, ⟨fun x => match x with
+    --   | .zero => 𝟙 _
+    --   | .one => 𝟙 _, ?_⟩, ?_, ?_⟩ _ _ ⟨⟨?_, ?_⟩, ⟨?_, ?_⟩, ?_, ?_⟩ ic1
+    -- · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    -- · rintro _ _ (⟨⟩ | ⟨⟩ | ⟨_⟩) <;> simp
+    -- · ext (⟨⟩|⟨⟩) <;> simp
+    -- · ext (⟨⟩|⟨⟩) <;> simp
+    -- · exact 𝟙 _
+    -- · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
+    -- · exact 𝟙 _
+    -- · rintro (⟨⟩ | ⟨⟩) <;> simpa [ι', ι, f', Eq.comm] using exact1.w
+    -- · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
+    -- · ext (⟨⟩ | ⟨⟩); simp [ι', ι, f']
 
 instance tensorLeft_preservesFiniteLimits [Flat R M] :
     Limits.PreservesFiniteLimits (tensorLeft M) :=
@@ -656,43 +656,107 @@ def firstTorIsoZero [Flat R M] (N : ModuleCat.{u} R) :
 For a flat module `M`, the first tor group vanishes for all ideals.
 -/
 def firstTorOfIdealIsoZero [Flat R M] (I : Ideal R) :
-    ((Tor' _ 1).obj (ModuleCat.of R I)).obj M ≅ 0 :=
-  firstTorIsoZero M (ModuleCat.of R I)
+    ((Tor' _ 1).obj (ModuleCat.of R (R ⧸ I))).obj M ≅ 0 :=
+  firstTorIsoZero M (ModuleCat.of R (R ⧸ I))
+
+instance : EnoughProjectives (ModuleCat.{u} R) where
+  presentation X := ⟨⟨X.free, X.fromFree⟩⟩
 
 open scoped MonoidalCategory in
 /--
 If the first tor group vanishes for all ideals, then `M` is flat.
 -/
-lemma of_first_tor_is_zero (tor1 : ∀ (I : Ideal R), ((Tor' _ 1).obj (ModuleCat.of R I)).obj M ≅ 0) :
+lemma of_first_tor_is_zero
+    (tor1 : ∀ (I : Ideal R) (_ : I.FG), ((Tor' _ 1).obj (ModuleCat.of R (R ⧸ I))).obj M ≅ 0) :
     Flat R M := by
-  rw [iff_lTensor_injective]
+  rw [iff_rTensor_injective]
   intro I hI
-  specialize tor1 I
-  change Function.Injective (M ◁ (ofHom I.subtype))
+  specialize tor1 I hI
+  change Function.Injective ((ofHom I.subtype) ▷ M)
   rw [← ModuleCat.mono_iff_injective, mono_iff_exact_zero_left]
-  let tor0 : ((Tor' (ModuleCat R) 0).obj (of R I)).obj M ≅ M ⊗ (of R I) :=
-    ⟨(tensorRight M).leftDerivedZeroIsoSelf.hom.app (of R I),
-      (tensorRight M).leftDerivedZeroIsoSelf.inv.app (of R I),
-      by aesop_cat, by aesop_cat⟩ ≪≫ β_ _ _
 
-  -- these `sorries` are hard, we need long exact sequence of Tor.
-  -- So we need horseshoe lemma.
+  let sc : ShortComplex (ModuleCat.{u} R) :=
+  { X₁ := of R I
+    X₂ := of R R
+    X₃ := of R (R ⧸ I)
+    f := Submodule.subtype I
+    g := Algebra.linearMap R (R ⧸ I)
+    zero := by
+      ext x
+      simp only [ModuleCat.coe_comp, Function.comp_apply]
+      erw [Ideal.Quotient.eq_zero_iff_mem]
+      exact x.2 }
+
+  have : Mono sc.f := by
+    rw [ModuleCat.mono_iff_injective]
+    exact Subtype.val_injective
+  have : Epi sc.g := by
+    rw [ModuleCat.epi_iff_surjective]
+    exact Quotient.surjective_Quotient_mk''
+  have : Fact (sc.ShortExact) := by
+    refine ⟨⟨?_⟩⟩
+    rw [← exact_iff_shortComplex_exact, ModuleCat.exact_iff, Eq.comm,
+      ← Function.LinearMap.exact_iff]
+    rintro x
+    erw [Set.mem_range, Ideal.Quotient.eq_zero_iff_mem]
+    fconstructor
+    · rintro h; exact ⟨⟨x, h⟩, rfl⟩
+    · rintro ⟨y, rfl⟩; exact y.2
+
   let s : ShortComplex (ModuleCat.{u} R) :=
   { X₁ := 0
-    X₂ := M ⊗ (of R I)
-    X₃ := M ⊗ (of R R)
-    f := tor1.inv ≫ sorry ≫ tor0.hom
-    g := M ◁ I.subtype
-    zero := sorry }
+    X₂ := (of R I) ⊗ M
+    X₃ := (of R R) ⊗ M
+    f := 0
+    g := ofHom I.subtype ▷ M
+    zero := by simp }
 
-  have hs : s.Exact := sorry
+  let s' : ShortComplex (ModuleCat.{u} R) :=
+  .mk _ _ ((tensorRight M).exact_δ sc 0).w
 
-  suffices Exact (tor1.hom ≫ 0) (M ◁ ofHom (Submodule.subtype I)) by
-    rwa [Abelian.exact_epi_comp_iff] at this
+  let e : s ≅ s' :=
+  { hom :=
+    { τ₁ := tor1.inv
+      τ₂ := (tensorRight M).leftDerivedZeroIsoSelf.inv.app (of R I)
+      τ₃ := (tensorRight M).leftDerivedZeroIsoSelf.inv.app (of R R)
+      comm₁₂ := by
+        simp only [Tor'_obj_obj, Limits.zero_comp, Preadditive.IsIso.comp_left_eq_zero]
+        exact (Limits.IsZero.of_iso (Limits.isZero_zero _) tor1).eq_of_src _ _
+      comm₂₃ := by
+        simp only
+        have eq0 :
+            (Functor.leftDerivedZeroIsoSelf (tensorRight M)).inv.app (ModuleCat.of R I) =
+            inv ((Functor.leftDerivedZeroIsoSelf (tensorRight M)).hom.app (ModuleCat.of R I)) := by
+          aesop_cat
+        have eq1 :
+            (Functor.leftDerivedZeroIsoSelf (tensorRight M)).inv.app (ModuleCat.of R R) =
+            inv ((Functor.leftDerivedZeroIsoSelf (tensorRight M)).hom.app (ModuleCat.of R R)) := by
+          aesop_cat
+        rw [eq0, eq1]
+        simp only [tensorRight_obj, Functor.leftDerivedZeroIsoSelf_hom, IsIso.eq_comp_inv,
+          Category.assoc, NatTrans.naturality, tensorRight_map, IsIso.inv_hom_id_assoc]
+        rfl }
+    inv :=
+    { τ₁ := tor1.hom
+      τ₂ := (tensorRight M).leftDerivedZeroIsoSelf.hom.app (of R I)
+      τ₃ := (tensorRight M).leftDerivedZeroIsoSelf.hom.app (of R R)
+      comm₁₂ := by
+        simp only [Tor'_obj_obj, Limits.comp_zero, Functor.leftDerivedZeroIsoSelf_hom]
+        exact (Limits.IsZero.of_iso (Limits.isZero_zero _) tor1).eq_of_src _ _
+      comm₂₃ := by
+        simp only [Functor.leftDerivedZeroIsoSelf_hom, NatTrans.naturality, tensorRight_obj,
+          tensorRight_map]
+        rfl }
+    hom_inv_id := by ext <;> simp
+    inv_hom_id := by ext <;> simp }
+
+  have hs : s.Exact := by
+    apply ShortComplex.exact_of_iso e.symm
+    rw [← exact_iff_shortComplex_exact]
+    exact (tensorRight M).exact_δ _ _
 
   simp only [← exact_iff_shortComplex_exact, Tor'_obj_obj, exact_iso_comp] at hs
-  convert hs using 1
-  exact (Limits.IsZero.of_iso (Limits.isZero_zero _) tor1).eq_of_src _ _
+  exact hs
 
 end categorical_characterisations
 
@@ -718,7 +782,7 @@ lemma tfae (M : Type u) [AddCommGroup M] [Module R M] : List.TFAE
       Nonempty <| ((Tor' _ (n + 1)).obj (of R N)).obj (of R M) ≅ 0,
     ∀ (N : Type u) [AddCommGroup N] [Module R N],
       Nonempty <| ((Tor' _ 1).obj (of R N)).obj (of R M) ≅ 0,
-    ∀ (I : Ideal R), Nonempty <| ((Tor' _ 1).obj (of R I)).obj (of R M) ≅ 0 ] := by
+    ∀ (I : Ideal R) (_ : I.FG), Nonempty <| ((Tor' _ 1).obj (of R (R ⧸ I))).obj (of R M) ≅ 0 ] := by
   tfae_have 1 ↔ 2
   · apply iff_rTensor_injective
   tfae_have 1 ↔ 3
@@ -747,14 +811,14 @@ lemma tfae (M : Type u) [AddCommGroup M] [Module R M] : List.TFAE
   · rintro h N _ _
     exact h 0 N
   tfae_have 1 → 13
-  · rintro (h : Flat R (of R M)) I
+  · rintro (h : Flat R (of R M)) I _
     exact ⟨firstTorOfIdealIsoZero (M := of R M) I⟩
   tfae_have 12 → 13
-  · rintro h I
-    exact h (of R I)
+  · rintro h I _
+    exact h (of R (R ⧸ I))
   tfae_have 13 → 1
   · intro h
-    exact of_first_tor_is_zero (M := of R M) fun I => (h I).some
+    exact of_first_tor_is_zero (M := of R M) fun I hI => (h I hI).some
 
   tfae_finish
 

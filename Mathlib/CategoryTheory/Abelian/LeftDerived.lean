@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Riccardo Brasca, Adam Topaz, Jujian Zhang, Joël Riou
 -/
 import Mathlib.CategoryTheory.Abelian.Homology
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Horseshoe
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.Algebra.Homology.Additive
 
@@ -357,6 +358,89 @@ lemma leftDerivedZeroIsoSelf_hom_inv_id_app (X : C) :
 lemma leftDerivedZeroIsoSelf_inv_hom_id_app (X : C) :
     F.leftDerivedZeroIsoSelf.inv.app X ≫ F.fromLeftDerivedZero.app X = 𝟙 _ :=
   F.leftDerivedZeroIsoSelf.inv_hom_id_app X
+
+instance : PreservesZeroMorphisms (ShortComplex.π₁ ⋙ F) := by
+  constructor; intros; simp
+
+instance : PreservesZeroMorphisms (ShortComplex.π₂ ⋙ F) := by
+  constructor; intros; simp
+
+instance : PreservesZeroMorphisms (ShortComplex.π₃ ⋙ F) := by
+  constructor; intros; simp
+
+private abbrev α :
+  (ShortComplex.π₁ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) ⟶
+  (ShortComplex.π₂ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) :=
+  NatTrans.mapHomologicalComplex (whiskerRight ShortComplex.π₁Toπ₂ F) _
+
+private abbrev β :
+  (ShortComplex.π₂ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) ⟶
+  (ShortComplex.π₃ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) :=
+  NatTrans.mapHomologicalComplex (whiskerRight ShortComplex.π₂Toπ₃ F) _
+
+private noncomputable abbrev sc [EnoughProjectives C]
+    (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] : ShortComplex D :=
+  (ShortComplex.mk
+  ((α F |>.app (ShortComplex.horseshoe A)).f n)
+  ((β F |>.app (ShortComplex.horseshoe A)).f n)
+  (show F.map (ShortComplex.horseshoeObj A n).f ≫ F.map (ShortComplex.horseshoeObj A n).g = 0 by
+    rw [← F.map_comp, (ShortComplex.horseshoeObj A n).zero,
+      Functor.map_zero]))
+
+private lemma shortExact_α_β_horseshoe [EnoughProjectives C]
+    (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
+    (sc F A n).ShortExact := by
+  apply ShortComplex.Splitting.shortExact
+  apply ShortComplex.Splitting.map
+  apply ShortComplex.horseshoe_splitting
+
+@[simps]
+noncomputable def sc' [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
+    ShortComplex (ChainComplex D ℕ) where
+  X₁ := (ShortComplex.π₁ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
+    (ShortComplex.horseshoe A)
+  X₂ := (ShortComplex.π₂ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
+    (ShortComplex.horseshoe A)
+  X₃ := (ShortComplex.π₃ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
+    (ShortComplex.horseshoe A)
+  f := α F |>.app _
+  g := β F |>.app _
+  zero := by
+    ext n
+    exact (exact_iff_shortComplex_exact _ |>.mpr (shortExact_α_β_horseshoe F A n).exact).w
+
+lemma sc'_shortExact [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
+    (sc' F A).ShortExact := sorry
+
+noncomputable def δ [EnoughProjectives C] (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
+    (F.leftDerived (n + 1)).obj A.X₃ ⟶ (F.leftDerived n).obj A.X₁ :=
+  let e1 := (ShortComplex.horseshoeProjectiveResolution₁ A).isoLeftDerivedObj F n
+  let e3 := (ShortComplex.horseshoeProjectiveResolution₃ A).isoLeftDerivedObj F (n + 1)
+  e3.hom ≫ (ShortComplex.ShortExact.δ (hS := sc'_shortExact F A) (n + 1) n rfl) ≫ e1.inv
+
+open scoped ZeroObject in
+lemma exact_δ [EnoughProjectives C] (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
+    CategoryTheory.Exact (δ F A n) ((F.leftDerived n).map A.f) := by
+  have := ShortComplex.ShortExact.homology_exact₁ (hS := sc'_shortExact F A) (n + 1) n rfl
+  rw [← exact_iff_shortComplex_exact] at this
+  simp only [sc'_X₃, sc'_X₁, sc'_X₂, sc'_f] at this
+  rw [Functor.leftDerived_map_eq]
+  pick_goal 2
+  · exact (ShortComplex.horseshoeProjectiveResolution₁ A)
+  pick_goal 2
+  · exact (ShortComplex.horseshoeProjectiveResolution₂ A)
+  pick_goal 2
+  · exact NatTrans.mapHomologicalComplex ShortComplex.π₁Toπ₂ _ |>.app _
+  pick_goal 2
+  · ext
+    simp [ShortComplex.horseshoeObj, ShortComplex.horseshoeStep,
+      ShortComplex.horseshoeProjectiveResolution₁, ShortComplex.horseshoeProjectiveResolution₂]
+  simp only [δ, HomologicalComplex.homologyFunctor_obj, sc'_X₁, comp_obj, comp_map,
+    HomologicalComplex.homologyFunctor_map, exact_iso_comp]
+  refine exact_comp_inv_hom_comp
+    (i := (ShortComplex.horseshoeProjectiveResolution₁ A).isoLeftDerivedObj F n) ?_
+  rw [exact_comp_iso]
+  exact this
 
 end Functor
 
