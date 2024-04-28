@@ -266,7 +266,7 @@ theorem prime_pow_deficient (h : Prime n) : Deficient (n^m) := by
           exact (Nat.pow_lt_pow_iff_right n_geTwo).mpr hx1
     have hw : ∑ i in image (fun x => n ^ x) (range m), i = ∑ i in range m, n^i := by
       rw [Finset.sum_image]
-      rintro x hx y hy hnxy
+      rintro x _ y _ hnxy
       by_contra hc
       have hxy : x < y ∨ x > y := by exact Ne.lt_or_lt hc
       rcases hxy with hxy1 | hxy2
