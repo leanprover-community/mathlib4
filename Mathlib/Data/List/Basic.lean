@@ -624,12 +624,16 @@ theorem map_reverseAux (f : α → β) (l₁ l₂ : List α) :
 
 theorem disjoint_reverse_iff_disjoint (l₁ l₂: List α) :
     Disjoint l₁.reverse l₂.reverse ↔ Disjoint l₁ l₂ := by
-  rw [disjoint_left]
+  simp_rw [disjoint_left]
   aesop
 
 theorem Perm.disjoint_left {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
     Disjoint l₁ l ↔ Disjoint l₂ l := by
   simp_rw [List.disjoint_left, p.mem_iff]
+
+theorem Perm.disjoint_right {l₁ l₂ l : List α} (p : List.Perm l₁ l₂) :
+    Disjoint l l₁ ↔ Disjoint l l₂ := by
+  simp_rw [List.disjoint_right, p.mem_iff]
 
 /-! ### empty -/
 
