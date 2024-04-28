@@ -554,10 +554,10 @@ end RingOperators
 section Comp
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
-variable {N' : Type v} [AddCommMonoid N'] [Module R N']
+variable {M' : Type v} [AddCommMonoid M'] [Module R M']
 
 /-- Compose the quadratic map with a linear function on the right. -/
-def comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') : QuadraticMap R M N where
+def comp (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') : QuadraticMap R M N where
   toFun x := Q (f x)
   toFun_smul a x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
@@ -566,15 +566,15 @@ def comp (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') : QuadraticMap R M N whe
 #align quadratic_form.comp QuadraticMap.comp
 
 @[simp]
-theorem comp_apply (Q : QuadraticMap R N' N) (f : M →ₗ[R] N') (x : M) : (Q.comp f) x = Q (f x) :=
+theorem comp_apply (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') (x : M) : (Q.comp f) x = Q (f x) :=
   rfl
 #align quadratic_form.comp_apply QuadraticMap.comp_apply
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
 def _root_.LinearMap.compQuadraticMap [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
-    [IsScalarTower S R N] [IsScalarTower S R M] [Module S N']
-    (f : N →ₗ[S] N') (Q : QuadraticMap R M N) : QuadraticMap S M N' where
+    [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
+    (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' where
   toFun x := f (Q x)
   toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
   exists_companion' :=
