@@ -285,10 +285,13 @@ theorem one_lt_of_lt {a b: ℕ+} (hab: a < b): 1 < b := by
   subst hle
   have : ¬a < 1 := not_lt_one a
   contradiction
+#align pnat.one_lt_of_lt PNat.one_lt_of_lt
 
 theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
+#align pnat.add_one PNat.add_one
 
 theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+#align pnat.lt_succ_self PNat.lt_succ_self
 
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
