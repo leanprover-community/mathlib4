@@ -13,6 +13,15 @@ macro "#" e:term : command => `(command| #eval format <$> mkDTExprs q($e) {} fal
 #guard_msgs in
 # fun x => Int.succ x
 
+-- potential eta reduction:
+/--
+info: [Function.Bijective (Int, Int, λ Int.succ (*)), Function.Bijective (Int, Int, Int.succ)]
+-/
+#guard_msgs in
+#eval format <$> do
+  let m ← mkFreshExprMVarQ q(ℤ → ℤ)
+  mkDTExprs q(Function.Bijective fun x : Int => Int.succ ($m x)) {} false
+
 /-- info: [OfNat.ofNat (Nat, 2, *)] -/
 #guard_msgs in
 # let x := 2; x
@@ -111,3 +120,28 @@ info: [Function.Bijective (Nat, Nat, HAdd.hAdd (Nat → Nat, Nat → Nat, *, *, 
 /-- info: [Function.Bijective (Nat, Nat, λ HVAdd.hVAdd (Nat, Nat, *, *, #0, #0))] -/
 #guard_msgs in
 # Function.Bijective fun x : Nat => x+ᵥx
+
+
+-- index constant number literal functions as just the number literal:
+/-- info: [Function.Bijective (Nat, Nat, 4)] -/
+#guard_msgs in
+# Function.Bijective fun _ : Nat => 4
+
+-- but not at the root:
+/-- info: [λ OfNat.ofNat (Nat, 4, *)] -/
+#guard_msgs in
+# fun _ : Nat => 4
+
+-- index constant functions as just a star pattern:
+/-- info: [Function.Bijective (Nat, Nat, *)] -/
+#guard_msgs in
+#eval format <$> do
+  let m ← mkFreshExprMVarQ q(ℕ)
+  mkDTExprs q(Function.Bijective fun _ : Nat => $m) {} false
+
+-- but not at the root:
+/-- info: [λ *] -/
+#guard_msgs in
+#eval format <$> do
+  let m ← mkFreshExprMVarQ q(ℕ)
+  mkDTExprs q(fun _ : Nat => $m) {} false

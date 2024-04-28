@@ -75,9 +75,10 @@ I document here what features are not in the original:
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
-  - lambdas in front of number literals have been removed.
-  - Any expression with head constant `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
-    in front and to always have the default amount of arguments.
+  - Lambdas in front of number literals are removed. This is because usually `n : α → β` is
+    defined to be `fun _ : α => n` for a number literal `n`. So instead of `[λ, n]` we store `[n]`.
+  - Any expression with head constant `+`, `*`, `-`, `/`, `⁻¹`, `+ᵥ`, `•` or `^` is normalized to
+    not have a lambda in front and to always have the default amount of arguments.
     e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
     - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
@@ -512,7 +513,7 @@ def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
   let mut result := Array.mkEmpty args.size
   let mut j := 0
   for i in [:args.size] do
-    unless fnType matches .forallE .. do
+    unless fnType.isForall do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
     let .forallE _ d b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
@@ -607,10 +608,10 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
       else
         return .opaque
   | .mvar mvarId =>
-    /- When the mvarId has arguments, index it with `[*]` instead of `[λ,*]`,
-    because the star could depend on the bound variables. As a result,
-    something indexed `[λ,*]` has that the `*` cannot depend on the λ-bound variables -/
-    if args.isEmpty then
+    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
+    When not at the root, don't index the lambdas, as it should be able to match with
+    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
+    if args.isEmpty && (root || lambdas.isEmpty) then
       withLams lambdas do return .star (some mvarId)
     else
       return .star none
@@ -721,10 +722,10 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
       else
         return .opaque
   | .mvar mvarId =>
-    /- When the mvarId has arguments, index it with `[*]` instead of `[λ,*]`,
-    because the star could depend on the bound variables. As a result,
-    something indexed `[λ,*]` has that the `*` cannot depend on the λ-bound variables -/
-    if args.isEmpty then
+    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
+    When not at the root, don't index the lambdas, as it should be able to match with
+    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
+    if args.isEmpty && (root || lambdas.isEmpty) then
       withLams lambdas do return .star (some mvarId)
     else
       return .star none
