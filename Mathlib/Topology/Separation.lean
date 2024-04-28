@@ -2321,11 +2321,7 @@ open SeparationQuotient
 /-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
 instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) where
   t1 := by
-    have : T1Space (SeparationQuotient X) := by
-      apply SeparationQuotient.t1Space_iff.mpr
-      assumption
-    have := (t1Space_TFAE (SeparationQuotient X)).out 0 1
-    rw [← this]
+    rw [((t1Space_TFAE (SeparationQuotient X)).out 1 0 :), SeparationQuotient.t1Space_iff]
     assumption
   completely_normal s t hd₁ hd₂ := by
     rw [← disjoint_comap_iff surjective_mk, comap_mk_nhdsSet, comap_mk_nhdsSet]
