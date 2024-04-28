@@ -3,13 +3,9 @@ Copyright (c) 2022 Pierre-Alexandre Bazin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Pierre-Alexandre Bazin
 -/
-import Mathlib.Algebra.DirectSum.Module
-import Mathlib.Algebra.Module.BigOperators
 import Mathlib.LinearAlgebra.Isomorphisms
 import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
-import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Set.Lattice
 import Mathlib.Data.ZMod.Module
 
 #align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
