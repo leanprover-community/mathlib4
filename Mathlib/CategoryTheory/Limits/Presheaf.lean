@@ -411,23 +411,20 @@ noncomputable def uniqueExtensionAlongYoneda (L : (Cᵒᵖ ⥤ Type u₁) ⥤ �
   natIsoOfNatIsoOnRepresentables _ _ (hL ≪≫ (isExtensionAlongYoneda _).symm)
 #align category_theory.unique_extension_along_yoneda CategoryTheory.uniqueExtensionAlongYoneda
 
-/-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. This is a special case of
-`isLeftAdjointOfPreservesColimits` used to prove that.
--/
-noncomputable def isLeftAdjointOfPreservesColimitsAux (L : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
-    [PreservesColimits L] : IsLeftAdjoint L where
-  right := restrictedYoneda (yoneda ⋙ L)
-  adj := (yonedaAdjunction _).ofNatIsoLeft (uniqueExtensionAlongYoneda _ L (Iso.refl _)).symm
-#align category_theory.is_left_adjoint_of_preserves_colimits_aux CategoryTheory.isLeftAdjointOfPreservesColimitsAux
+/-- Auxiliary definition for `isLeftAdjointOfPreservesColimits`. -/
+noncomputable def adjunctionOfPreservesColimitsAux (L : (Cᵒᵖ ⥤ Type u₁) ⥤ ℰ)
+    [PreservesColimits L] : L ⊣ restrictedYoneda (yoneda ⋙ L) :=
+  (yonedaAdjunction _).ofNatIsoLeft (uniqueExtensionAlongYoneda _ L (Iso.refl _)).symm
+#align category_theory.is_left_adjoint_of_preserves_colimits_aux CategoryTheory.adjunctionOfPreservesColimitsAux
 
 /-- If `L` preserves colimits and `ℰ` has them, then it is a left adjoint. Note this is a (partial)
 converse to `leftAdjointPreservesColimits`.
 -/
-noncomputable def isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L] :
-    IsLeftAdjoint L :=
-  let e : _ ⥤ Type u₁ ≌ _ ⥤ Type u₁ := (opOpEquivalence C).congrLeft
-  let _ := isLeftAdjointOfPreservesColimitsAux (e.functor ⋙ L : _)
-  Adjunction.leftAdjointOfNatIso (e.invFunIdAssoc _)
+lemma isLeftAdjointOfPreservesColimits (L : (C ⥤ Type u₁) ⥤ ℰ) [PreservesColimits L] :
+    L.IsLeftAdjoint :=
+  ⟨_, ⟨((opOpEquivalence C).congrLeft.symm.toAdjunction.comp
+    (adjunctionOfPreservesColimitsAux ((opOpEquivalence C).congrLeft.functor ⋙ L))).ofNatIsoLeft
+        ((opOpEquivalence C).congrLeft.invFunIdAssoc L)⟩⟩
 #align category_theory.is_left_adjoint_of_preserves_colimits CategoryTheory.isLeftAdjointOfPreservesColimits
 
 end SmallCategory

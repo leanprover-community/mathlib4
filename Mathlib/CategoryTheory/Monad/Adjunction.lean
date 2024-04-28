@@ -198,6 +198,19 @@ class MonadicRightAdjoint (R : D ⥤ C) where
   eqv : (Monad.comparison adj).IsEquivalence
 #align category_theory.monadic_right_adjoint CategoryTheory.MonadicRightAdjoint
 
+/-- The left adjoint functor to `R` given by `[MonadicRightAdjoint R]`. -/
+def monadicLeftAdjoint (R : D ⥤ C) [MonadicRightAdjoint R] : C ⥤ D :=
+  MonadicRightAdjoint.L (R := R)
+
+/-- The adjunction `monadicLeftAdjoint R ⊣ R` given by `[MonadicRightAdjoint R]`. -/
+def monadicAdjunction (R : D ⥤ C) [MonadicRightAdjoint R] :
+    monadicLeftAdjoint R ⊣ R :=
+  MonadicRightAdjoint.adj
+
+instance (R : D ⥤ C) [MonadicRightAdjoint R] :
+    (Monad.comparison (monadicAdjunction R)).IsEquivalence :=
+  MonadicRightAdjoint.eqv
+
 /--
 A left adjoint functor `L : C ⥤ D` is *comonadic* if the comparison functor `Comonad.comparison L`
 from `C` to the category of Eilenberg-Moore algebras for the adjunction is an equivalence.
@@ -209,6 +222,19 @@ class ComonadicLeftAdjoint (L : C ⥤ D) where
   adj : L ⊣ R
   eqv : (Comonad.comparison adj).IsEquivalence
 #align category_theory.comonadic_left_adjoint CategoryTheory.ComonadicLeftAdjoint
+
+/-- The right adjoint functor to `L` given by `[ComonadicLeftAdjoint L]`. -/
+def comonadicRightAdjoint (L : C ⥤ D) [ComonadicLeftAdjoint L] : D ⥤ C :=
+  ComonadicLeftAdjoint.R (L := L)
+
+/-- The adjunction `L ⊣ comonadicRightAdjoint L` given by `[ComonadicLeftAdjoint L]`. -/
+def comonadicAdjunction (L : C ⥤ D) [ComonadicLeftAdjoint L] :
+    L ⊣ comonadicRightAdjoint L :=
+  ComonadicLeftAdjoint.adj
+
+instance (L : C ⥤ D) [ComonadicLeftAdjoint L] :
+    (Comonad.comparison (comonadicAdjunction L)).IsEquivalence :=
+  ComonadicLeftAdjoint.eqv
 
 noncomputable instance (T : Monad C) : MonadicRightAdjoint T.forget where
   adj := T.adj

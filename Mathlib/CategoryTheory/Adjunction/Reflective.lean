@@ -46,6 +46,10 @@ def reflector [Reflective i] : C ⥤ D := Reflective.L (R := i)
 
 def reflectorAdjunction [Reflective i] : reflector i ⊣ i := Reflective.adj
 
+instance [Reflective i] : i.IsRightAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
+
+instance [Reflective i] : (reflector i).IsLeftAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
+
 -- TODO: This holds more generally for idempotent adjunctions, not just reflective adjunctions.
 /-- For a reflective functor `i` (with left adjoint `L`), with unit `η`, we have `η_iL = iL η`.
 -/

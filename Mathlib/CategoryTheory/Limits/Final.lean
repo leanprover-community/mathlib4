@@ -152,12 +152,12 @@ theorem initial_of_adjunction {L : C ⥤ D} {R : D ⥤ C} (adj : L ⊣ R) : Init
               Or.inr ⟨CostructuredArrow.homMk (adj.homEquiv g.left d g.hom) (by simp [u])⟩)) }
 #align category_theory.functor.initial_of_adjunction CategoryTheory.Functor.initial_of_adjunction
 
-instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [h : IsRightAdjoint F] : Final F :=
-  final_of_adjunction h.adj
+instance (priority := 100) final_of_isRightAdjoint (F : C ⥤ D) [IsRightAdjoint F] : Final F :=
+  final_of_adjunction (Adjunction.ofIsRightAdjoint F)
 #align category_theory.functor.final_of_is_right_adjoint CategoryTheory.Functor.final_of_isRightAdjoint
 
-instance (priority := 100) initial_of_isLeftAdjoint (F : C ⥤ D) [h : IsLeftAdjoint F] : Initial F :=
-  initial_of_adjunction h.adj
+instance (priority := 100) initial_of_isLeftAdjoint (F : C ⥤ D) [IsLeftAdjoint F] : Initial F :=
+  initial_of_adjunction (Adjunction.ofIsLeftAdjoint F)
 #align category_theory.functor.initial_of_is_left_adjoint CategoryTheory.Functor.initial_of_isLeftAdjoint
 
 theorem final_of_natIso {F F' : C ⥤ D} [Final F] (i : F ≅ F') : Final F' where
@@ -689,13 +689,13 @@ theorem initial_of_comp_full_faithful [Full G] [Faithful G] [Initial (F ⋙ G)] 
 
 /-- See also the strictly more general `final_comp` below. -/
 theorem final_comp_equivalence [Final F] [IsEquivalence G] : Final (F ⋙ G) :=
-  let i : F ≅ (F ⋙ G) ⋙ G.inv := isoWhiskerLeft F IsEquivalence.unitIso
+  let i : F ≅ (F ⋙ G) ⋙ G.inv := isoWhiskerLeft F G.asEquivalence.unitIso
   have : Final ((F ⋙ G) ⋙ G.inv) := final_of_natIso i
   final_of_comp_full_faithful (F ⋙ G) G.inv
 
 /-- See also the strictly more general `initial_comp` below. -/
 theorem initial_comp_equivalence [Initial F] [IsEquivalence G] : Initial (F ⋙ G) :=
-  let i : F ≅ (F ⋙ G) ⋙ G.inv := isoWhiskerLeft F IsEquivalence.unitIso
+  let i : F ≅ (F ⋙ G) ⋙ G.inv := isoWhiskerLeft F G.asEquivalence.unitIso
   have : Initial ((F ⋙ G) ⋙ G.inv) := initial_of_natIso i
   initial_of_comp_full_faithful (F ⋙ G) G.inv
 
