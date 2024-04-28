@@ -24,8 +24,7 @@ Let `n : ℕ`. All the following definitions are in the Nat namespace.
 * `WeirdNumber` a natural number is weird if it is both abundant and not semi-perfect
 
 ## Main Results
-* `divisors_eq_proper_union_self` the `Finset` that is `Nat.divisors` is equal to the union of
-  `Nat.properDivisors` and the number itself
+* `Nat.divisors_eq_proper_union_self`: `Nat.divisors n` is the union of `Nat.properDivisors` and `{n}`
 * `deficient_or_perfect_or_abundant` any natural number greater than zero is either deficient,
   perfect, or abundant
 * `prime_deficient` all prime natural numbers are deficient
