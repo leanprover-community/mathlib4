@@ -1768,7 +1768,7 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
   apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
-  · ext; simp only [mem_map_equiv]; exact Iff.rfl
+  ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :

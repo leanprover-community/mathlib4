@@ -7,6 +7,7 @@ import Mathlib.Data.Finset.Fold
 import Mathlib.Algebra.GCDMonoid.Multiset
 
 #align_import algebra.gcd_monoid.finset from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
+#align_import algebra.gcd_monoid.div from "leanprover-community/mathlib"@"b537794f8409bc9598febb79cd510b1df5f4539d"
 
 /-!
 # GCD and LCM operations on finsets
@@ -28,8 +29,7 @@ TODO: simplify with a tactic and `Data.Finset.Lattice`
 finset, gcd
 -/
 
-
-variable {α β γ : Type*}
+variable {ι α β γ : Type*}
 
 namespace Finset
 
@@ -278,6 +278,25 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
       simp only [hb, hg, dite_true]
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd
+
+variable [Div α] [MulDivCancelClass α] {f : ι → α} {s : Finset ι} {i : ι}
+
+/-- Given a nonempty Finset `s` and a function `f` from `s` to `ℕ`, if `d = s.gcd`,
+then the `gcd` of `(f i) / d` is equal to `1`. -/
+lemma gcd_div_eq_one (his : i ∈ s) (hfi : f i ≠ 0) : s.gcd (fun j ↦ f j / s.gcd f) = 1 := by
+  obtain ⟨g, he, hg⟩ := Finset.extract_gcd f ⟨i, his⟩
+  refine' (Finset.gcd_congr rfl fun a ha ↦ _).trans hg
+  rw [he a ha, mul_div_cancel_left₀]
+  exact mt Finset.gcd_eq_zero_iff.1 fun h ↦ hfi <| h i his
+#align finset.nat.gcd_div_eq_one Finset.gcd_div_eq_one
+#align finset.int.gcd_div_eq_one Finset.gcd_div_eq_one
+#align finset.polynomial.gcd_div_eq_one Finset.gcd_div_eq_one
+
+lemma gcd_div_id_eq_one {s : Finset α} {a : α} (has : a ∈ s) (ha : a ≠ 0) :
+    s.gcd (fun b ↦ b / s.gcd id) = 1 := gcd_div_eq_one has ha
+#align finset.nat.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
+#align finset.int.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
+#align finset.polynomial.gcd_div_id_eq_one Finset.gcd_div_id_eq_one
 
 end gcd
 

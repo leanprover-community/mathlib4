@@ -286,7 +286,7 @@ theorem GroupWithZero.mul_left_injective (h : x ≠ 0) :
 
 theorem GroupWithZero.mul_right_injective (h : x ≠ 0) :
     Function.Injective fun y => y * x := fun y y' w => by
-  simpa only [mul_assoc, mul_inv_cancel _ h, mul_one] using congr_arg (fun y => y * x⁻¹) w
+  simpa only [mul_assoc, mul_inv_cancel h, mul_one] using congr_arg (fun y => y * x⁻¹) w
 #align group_with_zero.mul_right_injective GroupWithZero.mul_right_injective
 
 @[simp]
