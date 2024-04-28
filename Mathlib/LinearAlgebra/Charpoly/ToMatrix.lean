@@ -38,8 +38,8 @@ namespace LinearMap
 
 section Basic
 
+/- These attribute tweaks save ~ 2000 heartbeats in `LinearMap.charpoly_toMatrix`. -/
 attribute [-instance] instCoeOutOfCoeSort
-
 attribute [local instance 2000] RingHomClass.toNonUnitalRingHomClass
 attribute [local instance 2000] NonUnitalRingHomClass.toMulHomClass
 

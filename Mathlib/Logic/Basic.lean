@@ -169,12 +169,11 @@ alias Iff.imp := imp_congr
 #align imp_iff_right imp_iff_rightₓ -- reorder implicits
 #align imp_iff_not imp_iff_notₓ -- reorder implicits
 
--- These next two are not marked as `simp`
--- because they are duplicates of `simp` lemmas in the `Classical` namespace in core.
--- Perhaps they should just be removed?
+-- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
 theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
 #align imp_iff_right_iff imp_iff_right_iff
 
+-- This is a duplicate of `Classical.and_or_imp`. Deprecate?
 theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
 #align and_or_imp and_or_imp
 

@@ -299,11 +299,12 @@ theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f 
   | h_monomial n b =>
   simp only [monomial_mul_monomial, derivative_monomial]
   simp only [mul_assoc, (Nat.cast_commute _ _).eq, Nat.cast_add, mul_add, map_add]
-  cases m
-  · simp only [zero_add, Nat.cast_zero, mul_zero, map_zero]
-  cases n
-  · simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
-  rename_i m n
+  cases m with
+  | zero => simp only [zero_add, Nat.cast_zero, mul_zero, map_zero]
+  | succ m =>
+  cases n with
+  | zero => simp only [add_zero, Nat.cast_zero, mul_zero, map_zero]
+  | succ n =>
   simp only [Nat.add_succ_sub_one, add_tsub_cancel_right]
   rw [add_assoc, add_comm n 1]
 #align polynomial.derivative_mul Polynomial.derivative_mul
