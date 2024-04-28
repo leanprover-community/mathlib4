@@ -912,17 +912,14 @@ instance (priority := 100) ConnectedSpace.neBot_nhdsWithin_compl_of_nontrivial_o
   simp [compl_inter_self {x}] at contra
 
 theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Space X := by
-  rw [r0Space_iff, Symmetric]
-  have hind : Inducing (mk : X → SeparationQuotient X) := SeparationQuotient.inducing_mk
-  rw [((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
+  rw [r0Space_iff, ((t1Space_TFAE (SeparationQuotient X)).out 0 9 :)]
   constructor
   · intro h x y xspecy
-    rw [← Inducing.specializes_iff hind, h xspecy] at *
+    rw [← Inducing.specializes_iff inducing_mk, h xspecy] at *
   · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
-    suffices Inseparable x y by rwa [Quot.sound]
-    rw [inseparable_iff_specializes_and]
-    have xspecy : x ⤳ y := (Inducing.specializes_iff hind).mp sxspecsy
+    have xspecy : x ⤳ y := (Inducing.specializes_iff inducing_mk).mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
+    erw [mk_eq_mk, inseparable_iff_specializes_and]
     exact ⟨ xspecy, yspecx ⟩
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
