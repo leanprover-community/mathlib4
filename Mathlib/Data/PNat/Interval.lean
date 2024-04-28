@@ -131,20 +131,19 @@ theorem card_fintype_uIcc : Fintype.card (Set.uIcc a b) = (b - a : ℤ).natAbs +
 #align pnat.card_fintype_uIcc PNat.card_fintype_uIcc
 
 -- The following lemmas support Icc in combination with sub
-theorem mem_insert_Icc_sub_one {a b x : ℕ+} (hab : a < b) (hins: x ∈ insert b (Icc a (b - 1))):
+theorem mem_insert_Icc_sub_one {a b x : ℕ+} (hab : a < b) (hins : x ∈ insert b (Icc a (b - 1))):
     a ≤ x ∧ x ≤ b := by
   rw [mem_insert, mem_Icc] at hins
   apply le_of_lt at hab
   rcases hins with hh | hh
   · rw [hh]; exact ⟨ hab, Eq.le rfl ⟩
-  · exact ⟨ hh.1, PNat.le_of_le_sub_one hh.2 ⟩
-#align pnat.mem_insert_Icc_sub_one PNat.mem_insert_Icc_sub_one
+  · exact ⟨ hh.1, le_of_le_sub_one hh.2 ⟩
 
 theorem insert_Icc_sub_one_right {a b : ℕ+} (hab : a < b) : insert b (Icc a (b - 1)) = Icc a b := by
   ext x
   constructor
   · intro h
-    apply PNat.mem_insert_Icc_sub_one hab at h
+    apply mem_insert_Icc_sub_one hab at h
     rw [mem_Icc]
     exact h
   · intro hh
@@ -156,8 +155,7 @@ theorem insert_Icc_sub_one_right {a b : ℕ+} (hab : a < b) : insert b (Icc a (b
     rw [hl]
     constructor
     · exact Or.inr hh.1
-    · rw [PNat.le_iff_eq_or_le_sub_one]
+    · rw [le_iff_eq_or_le_sub_one]
       exact hh.2
-#align pnat.insert_Icc_sub_one_right PNat.insert_Icc_sub_one_right
 
 end PNat
