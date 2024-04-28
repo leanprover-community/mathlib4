@@ -60,13 +60,13 @@ theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
   · rw [if_pos rfl, normalize_eq_mkRat]
     exact Rat.mkRat_nonneg (Nat.cast_nonneg _) _
 
-instance NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
+instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
   ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
     NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
 
 @[simp, norm_cast]
-theorem _root_.NNRat.cast_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
-    (OfScientific.ofScientific m s e : ℚ≥0) = (OfScientific.ofScientific m s e : ℚ) :=
+theorem _root_.NNRat.cast_ofScientific {K} [NNRatCast K] (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℚ≥0) = (OfScientific.ofScientific m s e : K) :=
   rfl
 
 protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
