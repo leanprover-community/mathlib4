@@ -5,7 +5,6 @@ Authors: Chris Hughes
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.Tactic.FinCases
 
 #align_import data.zmod.basic from "leanprover-community/mathlib"@"74ad1c88c77e799d2fea62801d1dbbd698cff1b7"
 
