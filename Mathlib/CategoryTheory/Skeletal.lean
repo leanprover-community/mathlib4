@@ -265,21 +265,18 @@ noncomputable def fromThinSkeleton : ThinSkeleton C ⥤ C where
       (Nonempty.some (Quotient.mk_out X)).hom ≫ f.le.some ≫ (Nonempty.some (Quotient.mk_out Y)).inv
 #align category_theory.thin_skeleton.from_thin_skeleton CategoryTheory.ThinSkeleton.fromThinSkeleton
 
-noncomputable def fromThinSkeletonEquivalence : ThinSkeleton C ≌ C where
+/-- The equivalence between the thin skeleton and the category itself. -/
+noncomputable def equivalence : ThinSkeleton C ≌ C where
   functor := fromThinSkeleton C
   inverse := toThinSkeleton C
   counitIso := NatIso.ofComponents fun X => Nonempty.some (Quotient.mk_out X)
   unitIso := NatIso.ofComponents fun x => Quotient.recOnSubsingleton x fun X =>
     eqToIso (Quotient.sound ⟨(Nonempty.some (Quotient.mk_out X)).symm⟩)
+#align category_theory.thin_skeleton.equivalence CategoryTheory.ThinSkeleton.equivalence
 
 noncomputable instance fromThinSkeleton_isEquivalence : (fromThinSkeleton C).IsEquivalence :=
-  (fromThinSkeletonEquivalence C).isEquivalence_functor
+  (equivalence C).isEquivalence_functor
 #align category_theory.thin_skeleton.from_thin_skeleton_equivalence CategoryTheory.ThinSkeleton.fromThinSkeleton_isEquivalence
-
-/-- The equivalence between the thin skeleton and the category itself. -/
-noncomputable def equivalence : ThinSkeleton C ≌ C :=
-  (fromThinSkeleton C).asEquivalence
-#align category_theory.thin_skeleton.equivalence CategoryTheory.ThinSkeleton.equivalence
 
 variable {C}
 
