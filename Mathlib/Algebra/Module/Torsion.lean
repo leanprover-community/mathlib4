@@ -882,7 +882,6 @@ scoped notation:max A"["n"]" => torsionBy A n
 
 variable {A n}
 
-@[simp]
 lemma mem_torsionBy (x : A) : x ∈ A[n] ↔ n • x = 0 := by simp
 
 @[simp]
