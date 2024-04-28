@@ -1,11 +1,13 @@
 import Mathlib.LinearAlgebra.AdicCompletion
 import Mathlib.RingTheory.Filtration
+import Mathlib.Algebra.Exact
 
-universe u
+universe u v w t
 
 variable {R : Type u} [CommRing R] (I : Ideal R)
 variable {M : Type u} [AddCommGroup M] [Module R M]
 variable {N : Type u} [AddCommGroup N] [Module R N]
+variable {P : Type u} [AddCommGroup P] [Module R P]
 
 def adicCompletion.transitionMap {m n : ℕ} (h : m ≤ n) :
     M ⧸ (I ^ n • ⊤ : Submodule R M) →ₗ[R] M ⧸ (I ^ m • ⊤ : Submodule R M) := by
@@ -17,9 +19,37 @@ lemma adicCompletion.transitionMap_apply_mk {m n : ℕ} (h : m ≤ n) (x : M) :
     (adicCompletion.transitionMap I h) (Submodule.Quotient.mk x) = Submodule.Quotient.mk x := by
   simp [transitionMap]
 
+@[simp]
+lemma adicCompletion.transitionMap_comp {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
+    transitionMap I hmn ∘ₗ transitionMap I hnk = transitionMap (M := M) I (Nat.le_trans hmn hnk) := by
+  rw [← LinearMap.cancel_right (Submodule.mkQ_surjective _)]
+  ext
+  simp
+
+@[simp]
+lemma adicCompletion.transitionMap_id {n : ℕ} :
+    transitionMap (M := M) I (le_refl n) = LinearMap.id := by
+  rw [← LinearMap.cancel_right (Submodule.mkQ_surjective _)]
+  ext
+  simp
+
 lemma adicCompletion.mem (x : ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) :
     x ∈ adicCompletion I M ↔ ∀ {m n : ℕ} (h : m ≤ n), transitionMap I h (x n) = x m := by
   rfl
+
+lemma adicCompletion.mem' (x : ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) :
+    x ∈ adicCompletion I M ↔ ∀ (n : ℕ), transitionMap I (Nat.le_succ n) (x (n + 1)) = x n := by
+  rw [adicCompletion.mem]
+  constructor
+  · intro h n
+    exact h _
+  · intro h m n hmn
+    induction n, hmn using Nat.le_induction with
+    | base =>
+        simp
+    | succ n hmn ih =>
+        rw [← transitionMap_comp I hmn (by omega)]
+        simp [-transitionMap_comp, h n, ih]
 
 @[simp]
 lemma adicCompletion.transitionMap_comp_eval {m n : ℕ} (h : m ≤ n) :
@@ -69,12 +99,53 @@ def adicCompletion.mk (a : ℕ → M) (hcomp : ∀ {m n : ℕ} (hle : m ≤ n),
     exact hcomp hkl
   ⟩
 
+def adicCompletion.mk' (a : ℕ → M)
+    (h : ∀ (n : ℕ), a (n + 1) - a n ∈ (I ^ n • ⊤ : Submodule R M)) :
+    adicCompletion I M := ⟨
+  fun n ↦ Submodule.Quotient.mk (a n), by
+    rw [adicCompletion.mem']
+    intro n
+    simp only [transitionMap_apply_mk, Submodule.Quotient.eq]
+    exact h n
+  ⟩
+
 @[simp]
 lemma adicCompletion.mk_eval (a : ℕ → M) (hcomp : ∀ {m n : ℕ} (hle : m ≤ n),
     adicCompletion.transitionMap I hle (Submodule.Quotient.mk (a n))
       = Submodule.Quotient.mk (a m)) (n : ℕ) :
     adicCompletion.eval I M n (adicCompletion.mk I a hcomp) = Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (a n) :=
   rfl
+
+@[simp]
+lemma adicCompletion.mk'_eval (a : ℕ → M)
+    (h : ∀ (n : ℕ), a (n + 1) - a n ∈ (I ^ n • ⊤ : Submodule R M)) (n : ℕ) :
+    adicCompletion.eval I M n (adicCompletion.mk' I a h) = Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (a n) :=
+  rfl
+
+def adicCompletion.exists_rep' (x : adicCompletion I M) :
+    ∃ (a : ℕ → M) (h : ∀ (n : ℕ), a (n + 1) - a n ∈ (I ^ n • ⊤ : Submodule R M)),
+    adicCompletion.mk' I a h = x := by
+  have hex (n : ℕ) : ∃ (z : M), Submodule.mkQ (I ^ n • ⊤ : Submodule R M) z = adicCompletion.eval I M n x :=
+    Quotient.exists_rep (adicCompletion.eval I M n x)
+  choose a ha using hex
+  use a
+  simp only [Submodule.mkQ_apply] at ha
+  have h (n : ℕ) : a (n + 1) - a n ∈ (I ^ n • ⊤ : Submodule R M) := by
+    rw [← Submodule.Quotient.eq]
+    rw [ha n]
+    have : Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (a (n + 1)) =
+      adicCompletion.transitionMap I (Nat.le_succ n)
+      (Submodule.mkQ (I ^ (n + 1) • ⊤ : Submodule R M) (a (n + 1))) := by
+        simp
+    change Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (a (n + 1)) = eval I M n x
+    rw [this]
+    simp only [Submodule.mkQ_apply]
+    rw [ha]
+    simp [-adicCompletion.coe_eval]
+  use h
+  ext n
+  simp
+  exact ha n
 
 def adicCompletion.lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), adicCompletion.transitionMap I hle ∘ₗ f n = f m) :
@@ -146,7 +217,7 @@ lemma adicCompletion.zero_iff' (x : adicCompletion I M) :
     rw [this]
     simp
 
-lemma adicCompletion.inductionOn {p : adicCompletion I M → Prop} (x : adicCompletion I M)
+def adicCompletion.inductionOn {p : adicCompletion I M → Prop} (x : adicCompletion I M)
     (h : ∀ (a : ℕ → M) (hcomp : ∀ {m n : ℕ} (hle : m ≤ n),
       adicCompletion.transitionMap I hle (Submodule.Quotient.mk (a n))
         = Submodule.Quotient.mk (a m)), p (adicCompletion.mk I a hcomp)) : p x := by
@@ -164,6 +235,16 @@ lemma adicCompletion.inductionOn {p : adicCompletion I M → Prop} (x : adicComp
     simp
   rw [← heq]
   exact h a hcomp
+
+def adicCompletion.inductionOn' {p : adicCompletion I M → Prop} (x : adicCompletion I M)
+    (h : ∀ (a : ℕ → M) (hcomp : ∀ (n : ℕ), a (n + 1) - a n ∈ (I ^ n • ⊤ : Submodule R M)),
+      p (adicCompletion.mk' I a hcomp)) :
+    p x := by
+  obtain ⟨a, h1, h2⟩ := adicCompletion.exists_rep' I x
+  rw [← h2]
+  exact h a h1
+
+section
 
 variable [IsNoetherianRing R] [Module.Finite R N]
 
@@ -196,3 +277,199 @@ theorem LinearMap.adicCompletion_injective (f : M →ₗ[R] N) (hf : Function.In
     exact ⟨he n, ⟨a n, rfl⟩⟩
   rw [← hcomp (by omega : (n - k) ≤ n)]
   simpa
+
+end
+
+section
+
+variable {I} {f : M →ₗ[R] N} (hf : Function.Surjective f)
+
+private noncomputable def LinearMap.adicCompletionPreimageDelta (x : ℕ → N)
+    (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N))
+    {n : ℕ} {y yₙ : M} (hy : f y = x (n + 1)) (hyₙ : f yₙ = x n) :
+    { d : (I ^ n • ⊤ : Submodule R M) | f d = f (yₙ - y) } := by
+  have h1 : f (yₙ - y) ∈ (I ^ n • ⊤ : Submodule R N) := by
+    rw [map_sub, hyₙ, hy, ← Submodule.neg_mem_iff, neg_sub]
+    exact h n
+  have h2 : f (yₙ - y) ∈ Submodule.map f (I ^ n • ⊤ : Submodule R M) := by
+    rwa [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hf]
+  choose d p1 p2 using h2
+  exact ⟨⟨d, p1⟩, p2⟩
+
+private noncomputable def LinearMap.adicCompletionPreimage (x : ℕ → N)
+    (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N)) : (n : ℕ) → f ⁻¹' {x n}
+  | .zero => by
+      exact ⟨(hf (x 0)).choose, (hf (x 0)).choose_spec⟩
+  | .succ n => by
+      choose y hy using hf (x (n + 1))
+      let ⟨yₙ, (hyₙ : f yₙ = x n)⟩ := adicCompletionPreimage x h n
+      let ⟨⟨d', _⟩, (p : f d' = f (yₙ - y))⟩ := adicCompletionPreimageDelta hf x h hy hyₙ
+      refine ⟨yₙ - d', ?_⟩
+      simpa [p]
+
+private lemma LinearMap.adicCompletionPreimage_comp (x : ℕ → N)
+    (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N)) (n : ℕ) :
+    (adicCompletionPreimage hf x h (n + 1) : M) -
+      adicCompletionPreimage hf x h n ∈ (I ^ n • ⊤ : Submodule R M) := by
+  dsimp [adicCompletionPreimage]
+  simp
+
+variable (I)
+
+theorem LinearMap.adicCompletion_surjective : Function.Surjective (f.adicCompletion I) := by
+  intro y
+  apply adicCompletion.inductionOn' I y
+  intro b hcomp
+  let a := LinearMap.adicCompletionPreimage hf b hcomp
+  use adicCompletion.mk' I (fun n ↦ (a n : M)) (adicCompletionPreimage_comp hf b hcomp)
+  ext n
+  simp
+  apply congrArg
+  exact (a n).property
+
+end
+
+section
+
+variable [IsNoetherianRing R] [Module.Finite R N]
+
+variable {f : M →ₗ[R] N} {g : N →ₗ[R] P} (hf : Function.Injective f)
+  (hfg : Function.Exact f g) (hg : Function.Surjective g)
+
+variable {I}
+
+private noncomputable def LinearMap.adicCompletionExactAuxDelta {k : ℕ}
+    (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
+    {x : ℕ → N} (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N))
+    {n : ℕ} {d : N} (p1 : d ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N))
+    {y yₙ : M} (q1 : f y = x (k + n + 1) - d) (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N)) :
+    { d : (I ^ n • ⊤ : Submodule R M) | f (yₙ + d) - x (k + n + 1) ∈ (I ^ (k + n + 1) • ⊤ : Submodule R N) } := by
+  have h4 : f (y - yₙ) ∈ (I ^ (k + n) • ⊤ : Submodule R N) := by
+    simp [q1]
+    convert_to x (k + n + 1) - x (k + n) - d - (f yₙ - x (k + n)) ∈ I ^ (k + n) • ⊤
+    · abel
+    · apply Submodule.sub_mem
+      apply Submodule.sub_mem
+      exact h (k + n)
+      have : (I ^ (k + n + 1) • ⊤ : Submodule R N) ≤ (I ^ (k + n) • ⊤ : Submodule R N) := by
+        apply Submodule.smul_mono
+        apply Ideal.pow_le_pow_right
+        omega
+        rfl
+      apply this
+      exact p1
+      exact hyₙ
+  have hincl : I ^ (k + n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f)
+      ≤ I ^ (k + n - k) • (LinearMap.range f) := by
+    apply Submodule.smul_mono
+    rfl
+    apply inf_le_right
+  have h5 : y - yₙ ∈ (I ^ n • ⊤ : Submodule R M) := by
+    convert_to y - yₙ ∈ (I ^ (k + n - k) • ⊤ : Submodule R M)
+    · simp
+    · rw [← Submodule.comap_map_eq_of_injective hf (I ^ (k + n - k) • ⊤ : Submodule R M)]
+      change f (y - yₙ) ∈ Submodule.map f (I ^ (k + n - k) • ⊤)
+      rw [Submodule.map_smul'', Submodule.map_top]
+      apply hincl
+      rw [← hkn (k + n) (by omega)]
+      exact ⟨h4, ⟨y - yₙ, rfl⟩⟩
+  refine ⟨⟨y - yₙ, h5⟩, ?_⟩
+  simp [q1, Nat.succ_eq_add_one, Nat.add_assoc]
+  exact p1
+
+private noncomputable def LinearMap.adicCompletionExactAux {k : ℕ}
+    (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
+    (x : ℕ → N)
+    (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N))
+    (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P)) :
+    (n : ℕ) → { a : M | f a - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) }
+  | .zero => by
+      have h2 : g (x k) ∈ Submodule.map g (I ^ k • ⊤ : Submodule R N) := by
+        rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hg]
+        exact hker k
+      choose d p1 p2 using h2
+      have h3 : x k - d ∈ Set.range f := by
+        apply (hfg (x k - d)).mp
+        simp [p2]
+      choose d' q1 using h3
+      refine ⟨d', ?_⟩
+      simpa [q1]
+  | .succ n => by
+      have h2 : g (x (k + n + 1)) ∈ Submodule.map g (I ^ (k + n + 1) • ⊤ : Submodule R N) := by
+        rw [Submodule.map_smul'', Submodule.map_top, LinearMap.range_eq_top.mpr hg]
+        exact hker (k + n + 1)
+      choose d p1 p2 using h2
+      have h3 : x (k + n + 1) - d ∈ Set.range f := by
+        apply (hfg (x (k + n + 1) - d)).mp
+        simp [p2]
+      choose y' q1 using h3
+      let ⟨yₙ, (hyₙ : f yₙ - x (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N))⟩ :=
+        adicCompletionExactAux hkn x h hker n
+      let ⟨d, hd⟩ := adicCompletionExactAuxDelta hf hkn h p1 q1 hyₙ
+      exact ⟨yₙ + d, hd⟩
+
+private lemma LinearMap.adicCompletionExactAux_comp {k : ℕ}
+    (hkn : ∀ n ≥ k, I ^ n • ⊤ ⊓ LinearMap.range f = I ^ (n - k) • (I ^ k • ⊤ ⊓ LinearMap.range f))
+    (x : ℕ → N)
+    (h : ∀ (n : ℕ), x (n + 1) - x n ∈ (I ^ n • ⊤ : Submodule R N))
+    (hker : ∀ (n : ℕ), g (x n) ∈ (I ^ n • ⊤ : Submodule R P)) (n : ℕ) :
+    (adicCompletionExactAux hf hfg hg hkn x h hker (n + 1) : M)
+      - adicCompletionExactAux hf hfg hg hkn x h hker n ∈ (I ^ n • ⊤ : Submodule R M) := by
+  -- very strange: why is this needed ?!
+  change (adicCompletionExactAux hf hfg hg hkn x h hker (Nat.succ n) : M) - _ ∈ _
+  dsimp only [LinearMap.adicCompletionExactAux]
+  simp
+
+variable (I)
+
+/-- adicCompletion over a Noetherian ring is exact on finitely generated modules. -/
+theorem LinearMap.adicCompletion_exact :
+    Function.Exact (LinearMap.adicCompletion I f) (LinearMap.adicCompletion I g) := by
+  intro y
+  constructor
+  · intro hz
+    obtain ⟨b, h, rfl⟩ := adicCompletion.exists_rep' I y
+    obtain ⟨k, hk⟩ := Ideal.exists_pow_inf_eq_pow_smul I (LinearMap.range f)
+    have hb (n : ℕ) : adicCompletion.eval I P n ((adicCompletion I g) (adicCompletion.mk' I b h)) = 0 := by
+      rw [hz]
+      simp
+    simp at hb
+    let a := adicCompletionExactAux hf hfg hg hk b h hb
+    let ha := adicCompletionExactAux_comp hf hfg hg hk b h hb
+    let y := adicCompletion.mk' I (fun n ↦ (a n : M)) ha
+    use y
+    have h1 (n : ℕ) : f (a n) - b (k + n) ∈ (I ^ (k + n) • ⊤ : Submodule R N) :=
+      (a n).property
+    have h2 (n : ℕ) :
+        Submodule.mkQ (I ^ n • ⊤ : Submodule R N) (f (a n)) =
+          Submodule.mkQ (I ^ n • ⊤ : Submodule R N) (b (k + n)) := by
+      simp
+      rw [Submodule.Quotient.eq]
+      have hle : (I ^ (k + n) • ⊤ : Submodule R N) ≤ (I ^ n • ⊤ : Submodule R N) := by
+        apply Submodule.smul_mono
+        apply Ideal.pow_le_pow_right
+        omega
+        rfl
+      apply hle
+      exact h1 n
+    have hfinal (n : ℕ) :
+        Submodule.mkQ (I ^ n • ⊤ : Submodule R N) (f (a n)) =
+          Submodule.mkQ (I ^ n • ⊤ : Submodule R N) (b n) := by
+      have hle : n ≤ k + n := by omega
+      rw [h2, Submodule.mkQ_apply, ← adicCompletion.mk'_eval I b h,
+        ← adicCompletion.transitionMap_apply_mk I hle, ← Submodule.mkQ_apply,
+        ← adicCompletion.mk'_eval I b h]
+      rw [adicCompletion.transitionMap_comp_eval_apply]
+    ext n
+    simp [-adicCompletion.coe_eval, y]
+    simp at hfinal
+    exact hfinal n
+  · rintro ⟨x, rfl⟩
+    obtain ⟨a, h, rfl⟩ := adicCompletion.exists_rep' I x
+    ext n
+    simp
+    change (g ∘ f) (a n) ∈ I ^ n • ⊤
+    rw [Function.Exact.comp_eq_zero _ _ hfg]
+    simp
+
+end
