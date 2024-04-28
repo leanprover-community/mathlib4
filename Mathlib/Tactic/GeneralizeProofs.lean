@@ -143,34 +143,39 @@ given that the type of `mkAppN f args` is supposed to be `ty?`
 (where if `ty?` is none, there's no type to propagate inwards).
 -/
 def appArgExpectedTypes (f : Expr) (args : Array Expr) (ty? : Option Expr) :
-    MetaM (Array (Option Expr)) := withTransparency .all <| withNewMCtxDepth do
-  -- Metavariables for each argument to `f`:
-  let mut margs := #[]
-  -- The current type of `mAppN f margs`:
-  let mut fty ← inferType f
-  -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
-  let mut unifiedFTy := false
-  for i in [0 : args.size] do
-    unless i < margs.size do
-      let (margs', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
-      if margs'.isEmpty then panic! "could not make progress at argument {i}"
-      fty := fty'
-      margs := margs ++ margs'
-    let arg := args[i]!
-    let marg := margs[i]!
-    if let some ty := ty? then
+    MetaM (Array (Option Expr)) :=
+  withTransparency .all <| withNewMCtxDepth do
+    -- Try using the expected type, but (*) below might find a bad solution
+    (guard ty?.isSome *> go f args ty?) <|> go f args none
+where
+  go (f : Expr) (args : Array Expr) (ty? : Option Expr) : MetaM (Array (Option Expr)) := do
+    -- Metavariables for each argument to `f`:
+    let mut margs := #[]
+    -- The current type of `mAppN f margs`:
+    let mut fty ← inferType f
+    -- Whether we have already unified the type `ty?` with `fty` (once `margs` is filled)
+    let mut unifiedFTy := false
+    for i in [0 : args.size] do
+      unless i < margs.size do
+        let (margs', _, fty') ← forallMetaBoundedTelescope fty (args.size - i)
+        if margs'.isEmpty then throwError "could not make progress at argument {i}"
+        fty := fty'
+        margs := margs ++ margs'
+      let arg := args[i]!
+      let marg := margs[i]!
       if !unifiedFTy && margs.size == args.size then
-        unifiedFTy := (← observing? <| isDefEq fty ty).getD false
-    unless ← isDefEq (← inferType marg) (← inferType arg) do
-      panic! s!"failed isDefEq types {i}, {← ppExpr marg}, {← ppExpr arg}"
-    unless ← isDefEq marg arg do
-      panic! s!"failed isDefEq values {i}, {← ppExpr marg}, {← ppExpr arg}"
-    unless ← marg.mvarId!.isAssigned do
-      marg.mvarId!.assign arg
-  margs.mapM fun marg => do
-    -- Note: all mvars introduced by `appArgExpectedTypes` are assigned by this point
-    -- so there is no mvar leak.
-    return (← instantiateMVars (← inferType marg)).cleanupAnnotations
+        if let some ty := ty? then
+          unifiedFTy := (← observing? <| isDefEq fty ty).getD false -- (*)
+      unless ← isDefEq (← inferType marg) (← inferType arg) do
+        throwError s!"failed isDefEq types {i}, {← ppExpr marg}, {← ppExpr arg}"
+      unless ← isDefEq marg arg do
+        throwError s!"failed isDefEq values {i}, {← ppExpr marg}, {← ppExpr arg}"
+      unless ← marg.mvarId!.isAssigned do
+        marg.mvarId!.assign arg
+    margs.mapM fun marg => do
+      -- Note: all mvars introduced by `appArgExpectedTypes` are assigned by this point
+      -- so there is no mvar leak.
+      return (← instantiateMVars (← inferType marg)).cleanupAnnotations
 
 /--
 Does `mkLambdaFVars fvars e` but
