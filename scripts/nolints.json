@@ -547,8 +547,6 @@
  ["docBlame", "DirectSum.Decomposition.decompose'"],
  ["docBlame", "DirectSum.GAlgebra.toFun"],
  ["docBlame", "Equiv.Perm.«termC[_,]»"],
- ["docBlame", "EuclideanGeometry.Sphere.center"],
- ["docBlame", "EuclideanGeometry.Sphere.radius"],
  ["docBlame", "FBinopElab.SRec.args"],
  ["docBlame", "FBinopElab.SRec.name"],
  ["docBlame", "Filter.Germ.const"],
