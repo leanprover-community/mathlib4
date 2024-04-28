@@ -138,8 +138,7 @@ instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
     exact ⟨⟨Y.diagram ⋙ Skeleton.equivalence.inverse⟩, ⟨⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩⟩⟩
     -- why can't I just write `i` instead of `⟨i.hom, i.inv, i.hom_inv_id, i.inv_hom_id⟩`?
 
-instance : LightProfinite'.toLightFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj _
+instance : LightProfinite'.toLightFunctor.IsEquivalence where
 
 /-- The equivalence beween `LightProfinite` and a small category. -/
 def LightProfinite.equivSmall : LightProfinite.{u} ≌ LightProfinite'.{u} :=
