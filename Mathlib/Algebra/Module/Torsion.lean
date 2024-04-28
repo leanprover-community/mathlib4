@@ -10,6 +10,7 @@ import Mathlib.GroupTheory.Torsion
 import Mathlib.RingTheory.Coprime.Ideal
 import Mathlib.RingTheory.Finiteness
 import Mathlib.Data.Set.Lattice
+import Mathlib.Data.ZMod.Module
 
 #align_import algebra.module.torsion from "leanprover-community/mathlib"@"cdc34484a07418af43daf8198beaf5c00324bca8"
 
@@ -897,17 +898,7 @@ lemma mod_nsmul_torsionBy_eq_nsmul (m : A[n]) (s : ℕ) :
   nth_rewrite 2 [← Nat.div_add_mod s n]
   rw [add_smul, self_eq_add_left, mul_comm, mul_smul, nsmul_torsionBy, smul_zero]
 
-instance moduleZModTorsionBy [Fact (1 < n)] : Module (ZMod n) A[n] where
-  smul a m := a.val • m
-  one_smul m := show ZMod.val 1 • m = m by
-    rw [ZMod.val_one, one_smul]
-  mul_smul a b m := show (a * b).val • m = a.val • b.val • m by
-    rw [smul_smul, ZMod.val_mul, mod_nsmul_torsionBy_eq_nsmul]
-  smul_zero a := smul_zero a.val
-  smul_add a m₁ m₂ := smul_add a.val ..
-  add_smul a b m := show (a + b).val • m = a.val • m + b.val • m by
-    rw [← add_smul, ZMod.val_add, mod_nsmul_torsionBy_eq_nsmul]
-  zero_smul m := show (0 : ZMod n).val • m = 0 by
-    rw [ZMod.val_zero, zero_smul]
+instance moduleZModTorsionBy : Module (ZMod n) A[n] :=
+  AddCommGroup.zmodModule nsmul_torsionBy
 
 end AddSubgroup
