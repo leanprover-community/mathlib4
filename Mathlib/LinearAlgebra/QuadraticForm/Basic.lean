@@ -551,6 +551,26 @@ instance : AddCommGroup (QuadraticMap R M N) :=
 
 end RingOperators
 
+section restrictScalars
+
+variable [CommSemiring R] [CommSemiring S] [AddCommMonoid M] [Module R M] [AddCommMonoid N]
+  [Module R N] [Module S M] [Module S N] [Algebra S R]
+variable [IsScalarTower S R M] [IsScalarTower S R N]
+
+/-- If `B : M → N → Pₗ` is `R`-`S` bilinear and `R'` and `S'` are compatible scalar multiplications,
+then the restriction of scalars is a `R'`-`S'` bilinear map. -/
+@[simps!]
+def restrictScalars (Q : QuadraticMap R M N) : QuadraticMap S M N where
+  toFun x := Q x
+  toFun_smul a x := by
+    simp [map_smul_of_tower]
+  exists_companion' :=
+    let ⟨B, h⟩ := Q.exists_companion
+    ⟨B.restrictScalars₁₂ (S := R) (R' := S) (S' := S), fun x y => by
+      simp only [LinearMap.restrictScalars₁₂_apply_apply, h]⟩
+
+end restrictScalars
+
 section Comp
 
 variable [CommSemiring R] [AddCommMonoid M] [Module R M] [AddCommMonoid N] [Module R N]
@@ -572,15 +592,20 @@ theorem comp_apply (Q : QuadraticMap R M' N) (f : M →ₗ[R] M') (x : M) : (Q.c
 
 /-- Compose a quadratic map with a linear function on the left. -/
 @[simps (config := { simpRhs := true })]
-def _root_.LinearMap.compQuadraticMap [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
-    [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
-    (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' where
+def _root_.LinearMap.compQuadraticMapAux (f : N →ₗ[R] M') (Q : QuadraticMap R M N) :
+    QuadraticMap R M M' where
   toFun x := f (Q x)
-  toFun_smul b x := by simp only [Q.map_smul_of_tower b x, f.map_smul, smul_eq_mul]
+  toFun_smul b x := by simp only [map_smul, f.map_smul]
   exists_companion' :=
     let ⟨B, h⟩ := Q.exists_companion
-    ⟨(B.restrictScalars₁₂ S S).compr₂ f, fun x y => by
-      simp_rw [h, f.map_add, LinearMap.compr₂_apply, LinearMap.restrictScalars₁₂_apply_apply]⟩
+    ⟨B.compr₂ f, fun x y => by simp only [h, map_add, LinearMap.compr₂_apply]⟩
+
+/-- Compose a quadratic map with a linear function on the left. -/
+@[simps! (config := { simpRhs := true })]
+def _root_.LinearMap.compQuadraticMap [CommSemiring S] [Algebra S R] [Module S N] [Module S M]
+    [IsScalarTower S R N] [IsScalarTower S R M] [Module S M']
+    (f : N →ₗ[S] M') (Q : QuadraticMap R M N) : QuadraticMap S M M' :=
+  _root_.LinearMap.compQuadraticMapAux f Q.restrictScalars
 #align linear_map.comp_quadratic_form LinearMap.compQuadraticMap
 
 end Comp
