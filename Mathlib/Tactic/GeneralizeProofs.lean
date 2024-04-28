@@ -49,7 +49,7 @@ structure Config where
   When it is `false` then such proofs are left alone. -/
   abstract : Bool := true
   /-- (Debugging) When `true`, enables consistency checks. -/
-  debug : Bool := true
+  debug : Bool := false
 
 /-- Elaborates a `Parser.Tactic.config` for `generalize_proofs`. -/
 declare_config_elab elabConfig Config
