@@ -302,6 +302,19 @@ theorem dvd_iff_padicValNat_ne_zero {p n : ℕ} [Fact p.Prime] (hn0 : n ≠ 0) :
     Classical.not_not.1 (mt padicValNat.eq_zero_of_not_dvd h)⟩
 #align dvd_iff_padic_val_nat_ne_zero dvd_iff_padicValNat_ne_zero
 
+open List
+
+theorem le_multiplicity_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+    (hb : b ≠ 0) :
+    ↑n ≤ multiplicity a b ↔ replicate n a <+~ b.factors :=
+  (replicate_subperm_factors_iff ha hb).trans multiplicity.pow_dvd_iff_le_multiplicity |>.symm
+
+theorem le_padicValNat_iff_replicate_subperm_factors {a b : ℕ} {n : ℕ} (ha : a.Prime)
+    (hb : b ≠ 0) :
+    n ≤ padicValNat a b ↔ replicate n a <+~ b.factors := by
+  rw [← le_multiplicity_iff_replicate_subperm_factors ha hb,
+    ← padicValNat_def' ha.ne_one (Nat.pos_of_ne_zero hb), Nat.cast_le]
+
 end padicValNat
 
 namespace padicValRat
