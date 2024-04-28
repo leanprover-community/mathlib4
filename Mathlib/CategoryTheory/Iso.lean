@@ -64,10 +64,6 @@ structure Iso {C : Type u} [Category.{v} C] (X Y : C) where
 #align category_theory.iso.inv_hom_id CategoryTheory.Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id CategoryTheory.Iso.hom_inv_id
 
--- FIXME nightly-testing
-set_option profiler.threshold 1 in
--- This `attribute` line seems to cause `lake build` give a code 139 error
--- and even more mysteriously the `set_option` above suppresses it.
 attribute [reassoc (attr := simp)] Iso.hom_inv_id Iso.inv_hom_id
 #align category_theory.iso.hom_inv_id_assoc CategoryTheory.Iso.hom_inv_id_assoc
 #align category_theory.iso.inv_hom_id_assoc CategoryTheory.Iso.inv_hom_id_assoc
