@@ -455,4 +455,8 @@ theorem smul_eq_mul (x y : R) : x • y = x * y :=
 
 end id
 
+end Semiring
+
+end Algebra
+
 assert_not_exists Module.End
