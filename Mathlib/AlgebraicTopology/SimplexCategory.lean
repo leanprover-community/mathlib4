@@ -490,8 +490,7 @@ instance : skeletalFunctor.EssSurj where
         show f (f.symm i) ≤ f (f.symm j)
         simpa only [OrderIso.apply_symm_apply]⟩⟩
 
-noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence :=
-  Functor.IsEquivalence.ofFullyFaithfullyEssSurj skeletalFunctor
+noncomputable instance isEquivalence : skeletalFunctor.IsEquivalence where
 #align simplex_category.skeletal_functor.is_equivalence SimplexCategory.SkeletalFunctor.isEquivalence
 
 end SkeletalFunctor
