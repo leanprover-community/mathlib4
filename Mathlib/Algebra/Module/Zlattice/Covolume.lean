@@ -11,7 +11,7 @@ import Mathlib.MeasureTheory.Measure.Haar.InnerProductSpace
 
 Let `E` be a finite dimensional real vector space.
 
-Let `L` be a `ℤ`-lattice `L` defined as a discrete `AddSubgroup E` that spans `E` over `ℝ`.
+Let `L` be a `ℤ`-lattice defined as a discrete `AddSubgroup E` that spans `E` over `ℝ`.
 
 ## Main definitions and results
 
@@ -25,7 +25,7 @@ choice of the fundamental domain of `L`.
 value of the determinant of any `ℤ`-basis of `L`.
 
 * `Zlattice.covolume.tendsto_card_div_pow`: Let `s` be a bounded measurable set of `ι → ℝ`, then
-the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to the `volume s / covolume L`
+the number of points in `s ∩ n⁻¹ • L` divided by `n ^ card ι` tends to `volume s / covolume L`
 when `n : ℕ` tends to infinity. See also `Zlattice.covolume.tendsto_card_div_pow'` for a version
 for `InnerProductSpace ℝ E` and `Zlattice.covolume.tendsto_card_div_pow''` for the general version.
 
