@@ -1014,8 +1014,7 @@ to remove the infinite tail of blanks.)
 
 namespace TM0
 
--- "TM0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0"
 
 section
 
@@ -1221,8 +1220,7 @@ before the halt as the output, and `move` and `write` etc. take 0 steps in this 
 
 namespace TM1
 
--- "TM1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1"
 
 section
 
@@ -1267,8 +1265,11 @@ instance Stmt.inhabited : Inhabited Stmt₁ :=
 /-- The configuration of a TM1 machine is given by the currently
   evaluating statement, the variable store value, and the tape. -/
 structure Cfg where
+  /-- The statement (if any) which is currently evaluated -/
   l : Option Λ
+  /-- The current value of the variable store -/
   var : σ
+  /-- The current state of the tape -/
   Tape : Tape Γ
 #align turing.TM1.cfg Turing.TM1.Cfg
 
@@ -1435,8 +1436,7 @@ TM1 semantics.
 
 namespace TM1to0
 
--- "TM1to0"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to0"
 
 section
 
@@ -1608,8 +1608,7 @@ finitely long.
 
 namespace TM1to1
 
--- "TM1to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM1to1"
 
 open TM1
 
@@ -1971,8 +1970,7 @@ unreachable branch).
 
 namespace TM0to1
 
--- "TM0to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM0to1"
 
 section
 
@@ -2076,8 +2074,7 @@ as the output stack.
 
 namespace TM2
 
--- "TM2"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2"
 
 section
 
@@ -2121,8 +2118,11 @@ instance Stmt.inhabited : Inhabited Stmt₂ :=
 local variables, and the stacks. (Note that the stacks are not `ListBlank`s, they have a definite
 size.) -/
 structure Cfg where
+  /-- The current label to run (or `none` for the halting state) -/
   l : Option Λ
+  /-- The internal state -/
   var : σ
+  /-- The (finite) collection of internals stacks -/
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 
@@ -2316,8 +2316,7 @@ steps to run when emulated in TM1, where `m` is the length of the input.
 
 namespace TM2to1
 
--- "TM2to1"
-set_option linter.uppercaseLean3 false
+set_option linter.uppercaseLean3 false -- for "TM2to1"
 
 -- A displaced lemma proved in unnecessary generality
 theorem stk_nth_val {K : Type*} {Γ : K → Type*} {L : ListBlank (∀ k, Option (Γ k))} {k S} (n)
@@ -2812,4 +2811,3 @@ end
 end TM2to1
 
 end Turing
-#lint
