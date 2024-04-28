@@ -99,6 +99,7 @@ variable {K}
 
 @[ext] theorem ext {x y : 𝓞 K} (h : algebraMap _ K x = algebraMap _ K y) : x = y :=
   Subtype.ext h
+
 theorem ext_iff {x y : 𝓞 K} : x = y ↔ algebraMap _ K x = algebraMap _ K y :=
   Subtype.ext_iff
 
