@@ -200,8 +200,9 @@ def whiskeringLeftFunctor : (D ⥤ E) ⥤ W.FunctorsInverting E :=
 #align category_theory.localization.whiskering_left_functor CategoryTheory.Localization.whiskeringLeftFunctor
 
 instance : (whiskeringLeftFunctor L W E).IsEquivalence := by
-  let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj (equivalenceFromModel L W).functor ⋙
-    (Construction.whiskeringLeftEquivalence W E).functor ≅ whiskeringLeftFunctor L W E :=
+  let iso : (whiskeringLeft (MorphismProperty.Localization W) D E).obj
+    (equivalenceFromModel L W).functor ⋙
+      (Construction.whiskeringLeftEquivalence W E).functor ≅ whiskeringLeftFunctor L W E :=
     NatIso.ofComponents (fun F => eqToIso (by
       ext
       change (W.Q ⋙ Localization.Construction.lift L (inverts L W)) ⋙ F = L ⋙ F
