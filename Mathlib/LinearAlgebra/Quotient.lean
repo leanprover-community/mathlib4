@@ -152,7 +152,7 @@ instance isScalarTower (T : Type*) [SMul T R] [SMul T M] [IsScalarTower T R M] [
 
 instance isCentralScalar [SMul Sᵐᵒᵖ R] [SMul Sᵐᵒᵖ M] [IsScalarTower Sᵐᵒᵖ R M]
     [IsCentralScalar S M] : IsCentralScalar S (M ⧸ P) where
-  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _
+  op_smul_eq_smul _x := Quotient.ind' fun _z => congr_arg mk <| op_smul_eq_smul _ _.
 #align submodule.quotient.is_central_scalar Submodule.Quotient.isCentralScalar
 
 end SMul
