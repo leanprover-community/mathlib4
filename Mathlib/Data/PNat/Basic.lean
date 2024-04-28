@@ -349,7 +349,7 @@ theorem add_sub_cancel {a b : ℕ+} : (a + b) - b = a := by
   · have : b < a + b := lt_add_left b a
     exact False.elim (h this)
 
-theorem sub_one_lt_self: ∀ {b : ℕ+} (_: 1 < b), b - 1 < b := by
+theorem sub_one_lt_self: ∀ {b : ℕ+} (_ : 1 < b), b - 1 < b := by
   intro b
   induction b using recOn with
   | p1 => trivial
