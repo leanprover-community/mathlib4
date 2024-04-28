@@ -85,7 +85,7 @@ variable {M : Type*} [AddCommMonoid M] (S : AddSubmonoid M) (N : Type*) [AddComm
 
 /-- The type of AddMonoid homomorphisms satisfying the characteristic predicate: if `f : M →+ N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends AddMonoidHom M N where
   map_add_units' : ∀ y : S, IsAddUnit (toFun y)
@@ -111,7 +111,7 @@ namespace Submonoid
 
 /-- The type of monoid homomorphisms satisfying the characteristic predicate: if `f : M →* N`
 satisfies this predicate, then `N` is isomorphic to the localization of `M` at `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationMap extends MonoidHom M N where
   map_units' : ∀ y : S, IsUnit (toFun y)
@@ -1192,9 +1192,9 @@ theorem map_comp : (f.map hy k).comp f.toMap = k.toMap.comp g :=
 @[to_additive]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
-  · show k.toMap (g x) = k.toMap (g y) * _
-    rw [mul_mk'_eq_mk'_of_mul]
-    exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
+  show k.toMap (g x) = k.toMap (g y) * _
+  rw [mul_mk'_eq_mk'_of_mul]
+  exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
 #align submonoid.localization_map.map_mk' Submonoid.LocalizationMap.map_mk'
 #align add_submonoid.localization_map.map_mk' AddSubmonoid.LocalizationMap.map_mk'
 
@@ -1876,7 +1876,7 @@ theorem LocalizationMap.subsingleton  (f : Submonoid.LocalizationMap S N) (h : 0
 /-- The type of homomorphisms between monoids with zero satisfying the characteristic predicate:
 if `f : M →*₀ N` satisfies this predicate, then `N` is isomorphic to the localization of `M` at
 `S`. -/
--- Porting note: This linter does not exist yet
+-- Porting note(#5171): this linter isn't ported yet.
 -- @[nolint has_nonempty_instance]
 structure LocalizationWithZeroMap extends LocalizationMap S N where
   map_zero' : toFun 0 = 0

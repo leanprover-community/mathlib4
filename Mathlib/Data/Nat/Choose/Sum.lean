@@ -183,7 +183,7 @@ theorem sum_powerset_neg_one_pow_card_of_nonempty {α : Type*} {x : Finset α} (
     (∑ m in x.powerset, (-1 : ℤ) ^ m.card) = 0 := by
   classical
     rw [sum_powerset_neg_one_pow_card, if_neg]
-    rw [← Ne.def, ← nonempty_iff_ne_empty]
+    rw [← Ne, ← nonempty_iff_ne_empty]
     apply h0
 #align finset.sum_powerset_neg_one_pow_card_of_nonempty Finset.sum_powerset_neg_one_pow_card_of_nonempty
 

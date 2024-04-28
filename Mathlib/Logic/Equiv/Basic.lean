@@ -1647,6 +1647,10 @@ theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x
   simp (config := { contextual := true }) [swap_apply_def]
 #align equiv.swap_apply_of_ne_of_ne Equiv.swap_apply_of_ne_of_ne
 
+theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
+  contrapose! h
+  exact swap_apply_of_ne_of_ne h.1 h.2
+
 @[simp]
 theorem swap_swap (a b : α) : (swap a b).trans (swap a b) = Equiv.refl _ :=
   ext fun _ => swapCore_swapCore _ _ _
@@ -1670,7 +1674,7 @@ theorem swap_comp_apply {a b x : α} (π : Perm α) :
 #align equiv.swap_comp_apply Equiv.swap_comp_apply
 
 theorem swap_eq_update (i j : α) : (Equiv.swap i j : α → α) = update (update id j i) i j :=
-  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id.def]
+  funext fun x => by rw [update_apply _ i j, update_apply _ j i, Equiv.swap_apply_def, id]
 #align equiv.swap_eq_update Equiv.swap_eq_update
 
 theorem comp_swap_eq_update (i j : α) (f : α → β) :

@@ -62,12 +62,12 @@ attribute [local instance] metricSpaceSum
 
 namespace GromovHausdorff
 
-section GHSpace
-
-/- In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
+/-! In this section, we define the Gromov-Hausdorff space, denoted `GHSpace` as the quotient
 of nonempty compact subsets of `ℓ^∞(ℝ)` by identifying isometric sets.
 Using the Kuratwoski embedding, we get a canonical map `toGHSpace` mapping any nonempty
 compact type to `GHSpace`. -/
+section GHSpace
+
 /-- Equivalence relation identifying two nonempty compact sets which are isometric -/
 private def IsometryRel (x : NonemptyCompacts ℓ_infty_ℝ) (y : NonemptyCompacts ℓ_infty_ℝ) : Prop :=
   Nonempty (x ≃ᵢ y)
@@ -95,7 +95,7 @@ instance : Inhabited GHSpace :=
   ⟨Quot.mk _ ⟨⟨{0}, isCompact_singleton⟩, singleton_nonempty _⟩⟩
 
 /-- A metric space representative of any abstract point in `GHSpace` -/
--- Porting note: was @[nolint has_nonempty_instance]; why?
+-- Porting note(#5171): linter not yet ported; removed @[nolint has_nonempty_instance]; why?
 def GHSpace.Rep (p : GHSpace) : Type :=
   (Quotient.out p : NonemptyCompacts ℓ_infty_ℝ)
 #align Gromov_Hausdorff.GH_space.rep GromovHausdorff.GHSpace.Rep
@@ -777,7 +777,7 @@ instance : SecondCountableTopology GHSpace := by
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
-        _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
+        _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
         _ = ε := mul_one _
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q
@@ -947,7 +947,7 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
           rw [mul_inv_cancel (ne_of_gt εpos), one_mul]
         _ = ε * (|ε⁻¹| * |dist x y - dist (Ψ x) (Ψ y)|) := by
           rw [abs_of_nonneg (le_of_lt (inv_pos.2 εpos)), mul_assoc]
-        _ ≤ ε * 1 := (mul_le_mul_of_nonneg_left I (le_of_lt εpos))
+        _ ≤ ε * 1 := mul_le_mul_of_nonneg_left I (le_of_lt εpos)
         _ = ε := mul_one _
   calc
     dist p q = ghDist p.Rep q.Rep := dist_ghDist p q

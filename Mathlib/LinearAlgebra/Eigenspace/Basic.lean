@@ -6,6 +6,7 @@ Authors: Alexander Bentkamp
 import Mathlib.Algebra.Algebra.Spectrum
 import Mathlib.LinearAlgebra.GeneralLinearGroup
 import Mathlib.LinearAlgebra.FiniteDimensional
+import Mathlib.RingTheory.Nilpotent.Basic
 
 #align_import linear_algebra.eigenspace.basic from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
 
@@ -479,7 +480,7 @@ theorem pos_finrank_generalizedEigenspace_of_hasEigenvalue [FiniteDimensional K 
     0 < finrank K (f.generalizedEigenspace μ k) :=
   calc
     0 = finrank K (⊥ : Submodule K V) := by rw [finrank_bot]
-    _ < finrank K (f.eigenspace μ) := (Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx))
+    _ < finrank K (f.eigenspace μ) := Submodule.finrank_lt_finrank_of_lt (bot_lt_iff_ne_bot.2 hx)
     _ ≤ finrank K (f.generalizedEigenspace μ k) :=
       Submodule.finrank_mono ((f.generalizedEigenspace μ).monotone (Nat.succ_le_of_lt hk))
 

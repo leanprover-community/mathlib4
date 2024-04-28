@@ -652,7 +652,7 @@ theorem continuousOn_convolution_right_with_param_comp {s : Set P} {v : P → G}
   apply
     (continuousOn_convolution_right_with_param L hk hgs hf hg).comp (continuousOn_id.prod hv)
   intro x hx
-  simp only [hx, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, id.def]
+  simp only [hx, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 #align continuous_on_convolution_right_with_param_comp' continuousOn_convolution_right_with_param_comp
 #align continuous_on_convolution_right_with_param_comp continuousOn_convolution_right_with_param_comp
 
@@ -1237,7 +1237,7 @@ theorem hasFDerivAt_convolution_right_with_param {g : P → G → E'} {s : Set P
     have Z' :
         HasFDerivAt (fun x : P × G => (x.1, x.2 - a)) (ContinuousLinearMap.id 𝕜 (P × G)) x := by
       have : (fun x : P × G => (x.1, x.2 - a)) = _root_.id - fun x => (0, a) := by
-        ext x <;> simp only [Pi.sub_apply, id.def, Prod.fst_sub, sub_zero, Prod.snd_sub]
+        ext x <;> simp only [Pi.sub_apply, _root_.id, Prod.fst_sub, sub_zero, Prod.snd_sub]
       rw [this]
       exact (hasFDerivAt_id x).sub_const (0, a)
     exact Z.comp x Z'
@@ -1374,7 +1374,7 @@ theorem contDiffOn_convolution_right_with_param_comp {n : ℕ∞} (L : E →L[�
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (f ⋆[L, μ] g x) (v x)) s := by
   apply (contDiffOn_convolution_right_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prod hv)
   intro x hx
-  simp only [hx, mem_preimage, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, id.def]
+  simp only [hx, mem_preimage, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 #align cont_diff_on_convolution_right_with_param_comp contDiffOn_convolution_right_with_param_comp
 
 /-- The convolution `g * f` is `C^n` when `f` is locally integrable and `g` is `C^n` and compactly
@@ -1399,7 +1399,7 @@ theorem contDiffOn_convolution_left_with_param_comp [μ.IsAddLeftInvariant] [μ.
     (hg : ContDiffOn 𝕜 n (↿g) (s ×ˢ univ)) : ContDiffOn 𝕜 n (fun x => (g x ⋆[L, μ] f) (v x)) s := by
   apply (contDiffOn_convolution_left_with_param L hs hk hgs hf hg).comp (contDiffOn_id.prod hv)
   intro x hx
-  simp only [hx, mem_preimage, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, id.def]
+  simp only [hx, mem_preimage, prod_mk_mem_set_prod_eq, mem_univ, and_self_iff, _root_.id]
 #align cont_diff_on_convolution_left_with_param_comp contDiffOn_convolution_left_with_param_comp
 
 theorem HasCompactSupport.contDiff_convolution_right {n : ℕ∞} (hcg : HasCompactSupport g)
