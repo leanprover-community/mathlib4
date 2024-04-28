@@ -264,7 +264,7 @@ theorem replicate_subperm_factors_iff {a b n : ℕ} (ha : Prime a) (hb : b ≠ 0
       rw [← Nat.prod_factors hb, ← hu1.prod_eq, ← prod_replicate]
       exact hu2.prod_dvd_prod
     · rintro ⟨c, rfl⟩
-      rw [Ne.def, pow_succ', mul_assoc, mul_eq_zero, _root_.not_or] at hb
+      rw [Ne, pow_succ', mul_assoc, mul_eq_zero, _root_.not_or] at hb
       rw [pow_succ', mul_assoc, replicate_succ, (Nat.perm_factors_mul hb.1 hb.2).subperm_left,
         factors_prime ha, singleton_append, subperm_cons, ih hb.2]
       exact dvd_mul_right _ _
