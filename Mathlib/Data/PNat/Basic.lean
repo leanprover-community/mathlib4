@@ -342,6 +342,22 @@ theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
       exact add_tsub_cancel_of_le h.le
 #align pnat.add_sub_of_lt PNat.add_sub_of_lt
 
+theorem add_sub_cancel {a b : ℕ+} : (a + b) - b = a := by
+  rw [←coe_inj, sub_coe]
+  split_ifs with h
+  · exact Nat.sub_eq_of_eq_add rfl
+  · have : b < a + b := lt_add_left b a
+    exact False.elim (h this)
+
+theorem sub_one_lt_self: ∀ {b : ℕ+} (_: 1 < b), b - 1 < b := by
+  intro b
+  induction b using recOn with
+  | p1 => trivial
+  | hp n =>
+      intro
+      rw [add_sub_cancel, add_one]
+      exact lt_succ_self n
+
 /-- If `n : ℕ+` is different from `1`, then it is the successor of some `k : ℕ+`. -/
 theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n = k + 1
   | ⟨1, _⟩, h₁ => False.elim <| h₁ rfl
