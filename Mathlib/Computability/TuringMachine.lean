@@ -348,6 +348,7 @@ theorem ListBlank.nth_modifyNth {Γ} [Inhabited Γ] (f : Γ → Γ) (n i) (L : L
 /-- A pointed map of `Inhabited` types is a map that sends one default value to the other. -/
 structure PointedMap.{u, v} (Γ : Type u) (Γ' : Type v) [Inhabited Γ] [Inhabited Γ'] :
     Type max u v where
+  /-- The map underlying this instance. -/
   f : Γ → Γ'
   map_pt' : f default = default
 #align turing.pointed_map Turing.PointedMap
@@ -493,10 +494,13 @@ theorem ListBlank.cons_bind {Γ Γ'} [Inhabited Γ] [Inhabited Γ'] (a : Γ) (l 
 /-- The tape of a Turing machine is composed of a head element (which we imagine to be the
 current position of the head), together with two `ListBlank`s denoting the portions of the tape
 going off to the left and right. When the Turing machine moves right, an element is pulled from the
-right side and becomes the new head, while the head element is consed onto the left side. -/
+right side and becomes the new head, while the head element is `cons`ed onto the left side. -/
 structure Tape (Γ : Type*) [Inhabited Γ] where
+  /-- The current position of the head. -/
   head : Γ
+  /-- The portion of the tape going off to the left. -/
   left : ListBlank Γ
+  /-- The portion of the tape going off to the right. -/
   right : ListBlank Γ
 #align turing.tape Turing.Tape
 
@@ -1055,12 +1059,14 @@ instance Machine.inhabited : Inhabited Machine₀ := by
 #align turing.TM0.machine.inhabited Turing.TM0.Machine.inhabited
 
 /-- The configuration state of a Turing machine during operation
-  consists of a label (machine state), and a tape, represented in
-  the form `(a, L, R)` meaning the tape looks like `L.rev ++ [a] ++ R`
+  consists of a label (machine state), and a tape.
+  The tape is represented in the form `(a, L, R)`, meaning the tape looks like `L.rev ++ [a] ++ R`
   with the machine currently reading the `a`. The lists are
   automatically extended with blanks as the machine moves around. -/
 structure Cfg where
+  /-- The current machine state. -/
   q : Λ
+  /-- The current state of the tape: current symbol, left and right parts. -/
   Tape : Tape Γ
 #align turing.TM0.cfg Turing.TM0.Cfg
 
@@ -2806,3 +2812,4 @@ end
 end TM2to1
 
 end Turing
+#lint
