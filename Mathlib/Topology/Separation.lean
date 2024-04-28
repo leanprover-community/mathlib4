@@ -918,10 +918,8 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
   constructor
   · intro h x y xspecy
     rw [← Inducing.specializes_iff hind, h xspecy] at *
-  · intro h sx sy sxspecsy
-    rcases Quotient.exists_rep sx with ⟨ x, rfl ⟩
-    rcases Quotient.exists_rep sy with ⟨ y, rfl ⟩
-    suffices Inseparable x y by rwa [Quotient.sound]
+  · rintro h ⟨x⟩ ⟨y⟩ sxspecsy
+    suffices Inseparable x y by rwa [Quot.sound]
     rw [inseparable_iff_specializes_and]
     have xspecy : x ⤳ y := (Inducing.specializes_iff hind).mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
