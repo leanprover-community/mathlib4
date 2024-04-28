@@ -55,3 +55,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
 theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (b : Bool) (d : ℕ) :
     (OfScientific.ofScientific m b d : ℚ) = (OfScientific.ofScientific m b d : K) := by
   rw [← NNRat.cast_ofScientific (K := K), ← NNRat.cast_ofScientific, cast_nnratCast]
+
+open OfScientific in
+theorem Nonneg.val_ofScientific {K} [LinearOrderedField K] (m s e) :
+    (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
