@@ -6,6 +6,7 @@ Authors: Colin Jones
 import Mathlib.NumberTheory.Divisors
 import Mathlib.Tactic.NormNum.Prime
 import Mathlib.Algebra.GeomSum
+import Mathlib.Tactic.FinCases
 
 /-!
 ## FactorisationProperties.lean
@@ -41,7 +42,6 @@ Let `n : ℕ`. All the following definitions are in the Nat namespace.
 
 ## Tags
 abundant deficient weird Pseudoperfect
-
 -/
 
 open Nat BigOperators Finset
@@ -284,13 +284,14 @@ theorem prime_pow_deficient (h : Prime n) : Deficient (n^m) := by
       _                   < n^m := by {rw [tsub_lt_self_iff]; norm_num; exact lt_of_succ_lt hr}
 
 theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Even d := by
+  have h : 0 < 2 := by linarith
   use 2^(n+1)
   constructor
   · rw [Nat.le_iff_lt_or_eq]
     left
     calc
       n ≤ 2*n := by linarith
-      _ < 2*(2^n) := by rel [show n < 2^n by exact Nat.lt_two_pow n]
+      _ < 2*(2^n) := by {refine Nat.mul_lt_mul_of_pos_left (lt_two_pow n) h}
       _ = 2^(n+1) := by rw [Nat.pow_succ']
   · constructor
     · refine prime_pow_deficient 2 (n + 1) prime_two
@@ -300,11 +301,12 @@ theorem exists_infinite_even_deficients : ∃ d, n ≤ d ∧ Deficient d ∧ Eve
       · exact succ_ne_zero n
 
 theorem exists_infinite_odd_deficients : ∃ d, n ≤ d ∧ Nat.Deficient d ∧ Odd d := by
+  have h : 0 < 2 := by linarith
   use 3^(n+1)
   have nlttwo : n < 2^(n+1) := by
     calc
     n ≤ 2*n := by linarith
-    _ < 2*(2^n) := by rel [show n < 2^n by exact Nat.lt_two_pow n]
+    _ < 2*(2^n) := by refine mul_lt_mul_of_pos_left (lt_two_pow n) h
     _ = 2^(n+1) := by rw [Nat.pow_succ']
   have twoltthree : 2^(n+1) ≤ 3^(n+1) := by
     refine (Nat.pow_le_pow_iff_left (succ_ne_zero n)).mpr ?_; norm_num
