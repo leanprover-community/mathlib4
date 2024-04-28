@@ -719,14 +719,13 @@ instance (priority := 100) faithfulOfEquivalence (F : C ⥤ D) [IsEquivalence F]
 
 See <https://stacks.math.columbia.edu/tag/02C3>.
 -/
-instance (priority := 100) fullOfEquivalence (F : C ⥤ D) [IsEquivalence F] : F.Full
-    where
-  preimage {X Y} f := F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y
-  witness {X Y} f :=
-    F.inv.map_injective <| by
-      simpa only [IsEquivalence.inv_fun_map, assoc, Iso.inv_hom_id_app_assoc,
-        Iso.inv_hom_id_app] using comp_id _
-#align category_theory.equivalence.full_of_equivalence CategoryTheory.Equivalence.fullOfEquivalence
+instance (priority := 100) full_of_equivalence (F : C ⥤ D) [IsEquivalence F] : F.Full where
+  map_surjective {X Y} f :=
+    ⟨F.asEquivalence.unit.app X ≫ F.inv.map f ≫ F.asEquivalence.unitInv.app Y,
+      F.inv.map_injective <| by
+        simpa only [IsEquivalence.inv_fun_map, assoc, Iso.inv_hom_id_app_assoc,
+          Iso.inv_hom_id_app] using comp_id _⟩
+#align category_theory.equivalence.full_of_equivalence CategoryTheory.Equivalence.full_of_equivalence
 
 @[simps]
 private noncomputable def equivalenceInverse (F : C ⥤ D) [F.Full] [F.Faithful] [F.EssSurj] : D ⥤ C

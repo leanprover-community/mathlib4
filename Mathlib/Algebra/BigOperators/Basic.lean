@@ -2075,8 +2075,8 @@ theorem mem_sum {f : α → Multiset β} (s : Finset α) (b : β) :
     (b ∈ ∑ x in s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
   classical
     refine' s.induction_on (by simp) _
-    · intro a t hi ih
-      simp [sum_insert hi, ih, or_and_right, exists_or]
+    intro a t hi ih
+    simp [sum_insert hi, ih, or_and_right, exists_or]
 #align finset.mem_sum Finset.mem_sum
 
 section ProdEqZero
@@ -2499,11 +2499,5 @@ theorem toAdd_prod (s : Finset ι) (f : ι → Multiplicative α) :
 
 end AddCommMonoid
 
-/-!
-### Deprecated lemmas
-
-Those lemmas were deprecated on the 2023/12/23.
--/
-
-@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv
-@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv
+@[deprecated] alias Equiv.prod_comp' := Fintype.prod_equiv -- 2023-12-23
+@[deprecated] alias Equiv.sum_comp' := Fintype.sum_equiv -- 2023-12-23

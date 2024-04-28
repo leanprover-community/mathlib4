@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Bhavik Mehta
 -/
 import Mathlib.CategoryTheory.Adjunction.FullyFaithful
+import Mathlib.CategoryTheory.Conj
 import Mathlib.CategoryTheory.Functor.ReflectsIso
-import Mathlib.CategoryTheory.EpiMono
 
 #align_import category_theory.adjunction.reflective from "leanprover-community/mathlib"@"239d882c4fb58361ee8b3b39fb2091320edef10a"
 
@@ -55,13 +55,8 @@ When restricted to objects in `D` given by `i : D ⥤ C`, the unit is an isomorp
 More generally this applies to objects essentially in the reflective subcategory, see
 `Functor.essImage.unit_isIso`.
 -/
-instance isIso_unit_obj [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) := by
-  have : (ofRightAdjoint i).unit.app (i.obj B) = inv (i.map ((ofRightAdjoint i).counit.app B)) := by
-    rw [← comp_hom_eq_id]
-    apply (ofRightAdjoint i).right_triangle_components
-  rw [this]
-  exact IsIso.inv_isIso
-#align category_theory.is_iso_unit_obj CategoryTheory.isIso_unit_obj
+example [Reflective i] {B : D} : IsIso ((ofRightAdjoint i).unit.app (i.obj B)) :=
+  inferInstance
 
 /-- If `A` is essentially in the image of a reflective functor `i`, then `η_A` is an isomorphism.
 This gives that the "witness" for `A` being in the essential image can instead be given as the
@@ -71,13 +66,7 @@ reflection of `A`, with the isomorphism as `η_A`.
 -/
 theorem Functor.essImage.unit_isIso [Reflective i] {A : C} (h : A ∈ i.essImage) :
     IsIso ((ofRightAdjoint i).unit.app A) := by
-  suffices (ofRightAdjoint i).unit.app A = h.getIso.inv ≫
-      (ofRightAdjoint i).unit.app (i.obj (Functor.essImage.witness h)) ≫
-      (leftAdjoint i ⋙ i).map h.getIso.hom by
-    rw [this]
-    infer_instance
-  rw [← NatTrans.naturality]
-  simp
+  rwa [isIso_unit_app_iff_mem_essImage]
 #align category_theory.functor.ess_image.unit_is_iso CategoryTheory.Functor.essImage.unit_isIso
 
 /-- If `η_A` is an isomorphism, then `A` is in the essential image of `i`. -/

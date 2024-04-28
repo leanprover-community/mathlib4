@@ -276,11 +276,10 @@ def toCat : MonCat ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat MonCat.toCat
 
-instance toCatFull : toCat.Full  where
-  preimage := (SingleObj.mapHom _ _).invFun
-  witness _ := rfl
+instance toCat_full : toCat.Full  where
+  map_surjective := (SingleObj.mapHom _ _).surjective
 set_option linter.uppercaseLean3 false in
-#align Mon.to_Cat_full MonCat.toCatFull
+#align Mon.to_Cat_full MonCat.toCat_full
 
 instance toCat_faithful : toCat.Faithful where
   map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h

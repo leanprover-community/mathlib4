@@ -326,9 +326,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
         exact isEmptyElim (f <| Fin.last _)
       simp_rw [Fin.sum_univ_castSucc, Fin.coe_castSucc, Fin.val_last]
       refine' (add_lt_add_of_lt_of_le (ih _) <| mul_le_mul_right' (Fin.is_le _) _).trans_eq _
-      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ']
-      -- Porting note: added, wrong `succ`
-      rfl⟩)
+      rw [← one_add_mul (_ : ℕ), add_comm, pow_succ', Nat.succ_eq_add_one]⟩)
     (fun a b => ⟨a / m ^ (b : ℕ) % m, by
       cases' n with n
       · exact b.elim0

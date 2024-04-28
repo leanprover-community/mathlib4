@@ -1259,13 +1259,21 @@ theorem X_ne_zero : (X : R[X]) ≠ 0 :=
 
 end NonzeroSemiring
 
+section DivisionSemiring
+variable [DivisionSemiring R]
+
+lemma nnqsmul_eq_C_mul (q : ℚ≥0) (f : R[X]) : q • f = Polynomial.C (q : R) * f := by
+  rw [← NNRat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
+
+end DivisionSemiring
+
 section DivisionRing
 
 variable [DivisionRing R]
 
-theorem rat_smul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
+theorem qsmul_eq_C_mul (a : ℚ) (f : R[X]) : a • f = Polynomial.C (a : R) * f := by
   rw [← Rat.smul_one_eq_coe, ← Polynomial.smul_C, C_1, smul_one_mul]
-#align polynomial.rat_smul_eq_C_mul Polynomial.rat_smul_eq_C_mul
+#align polynomial.rat_smul_eq_C_mul Polynomial.qsmul_eq_C_mul
 
 end DivisionRing
 

@@ -3,7 +3,8 @@ Copyright (c) 2022 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.CategoryTheory.MorphismProperty
+import Mathlib.CategoryTheory.MorphismProperty.Composition
+import Mathlib.CategoryTheory.MorphismProperty.IsInvertedBy
 import Mathlib.CategoryTheory.Category.Quiv
 
 #align_import category_theory.localization.construction from "leanprover-community/mathlib"@"1a5e56f2166e4e9d0964c71f4273b1d39227678d"
@@ -240,11 +241,11 @@ theorem morphismProperty_is_top (P : MorphismProperty W.Localization)
     apply MorphismProperty.top_apply
   · intro
     let G : _ ⥤ W.Localization := Quotient.functor _
-    haveI : G.Full := Quotient.fullFunctor _
+    haveI : G.Full := Quotient.full_functor _
     suffices ∀ (X₁ X₂ : Paths (LocQuiver W)) (f : X₁ ⟶ X₂), P (G.map f) by
       rcases X with ⟨⟨X⟩⟩
       rcases Y with ⟨⟨Y⟩⟩
-      simpa only [Functor.image_preimage] using this _ _ (G.preimage f)
+      simpa only [Functor.map_preimage] using this _ _ (G.preimage f)
     intros X₁ X₂ p
     induction' p with X₂ X₃ p g hp
     · simpa only [Functor.map_id] using hP₁ (𝟙 X₁.obj)

@@ -102,7 +102,7 @@ instance (priority := 100) preservesZeroMorphisms_of_full (F : C ⥤ D) [Full F]
   map_zero X Y :=
     calc
       F.map (0 : X ⟶ Y) = F.map (0 ≫ F.preimage (0 : F.obj Y ⟶ F.obj Y)) := by rw [zero_comp]
-      _ = 0 := by rw [F.map_comp, F.image_preimage, comp_zero]
+      _ = 0 := by rw [F.map_comp, F.map_preimage, comp_zero]
 #align category_theory.functor.preserves_zero_morphisms_of_full CategoryTheory.Functor.preservesZeroMorphisms_of_full
 
 instance preservesZeroMorphisms_evaluation_obj (j : D) :
