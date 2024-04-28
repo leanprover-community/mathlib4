@@ -291,6 +291,10 @@ instance : LieRing (LieDerivation R L L) where
 instance instLieAlgebra : LieAlgebra R (LieDerivation R L L) where
   lie_smul := fun r d e => by ext a; simp only [commutator_apply, map_smul, smul_sub, smul_apply]
 
+@[simp] lemma lie_apply (D₁ D₂ : LieDerivation R L L) (x : L) :
+    ⁅D₁, D₂⁆ x = D₁ (D₂ x) - D₂ (D₁ x) :=
+  rfl
+
 end
 
 section
@@ -327,6 +331,29 @@ def inner : M →ₗ[R] LieDerivation R L M where
       leibniz' := by simp }
   map_add' m n := by ext; simp
   map_smul' t m := by ext; simp
+
+instance instLieRingModule : LieRingModule L (LieDerivation R L M) where
+  bracket x D := inner R L M (D x)
+  add_lie x y D := by simp
+  lie_add x D₁ D₂ := by simp
+  leibniz_lie x y D := by simp
+
+@[simp] lemma lie_lieDerivation_apply (x y : L) (D : LieDerivation R L M) :
+    ⁅x, D⁆ y = ⁅y, D x⁆ :=
+  rfl
+
+@[simp] lemma lie_coe_lieDerivation_apply (x : L) (D : LieDerivation R L M) :
+    ⁅x, (D : L →ₗ[R] M)⁆ = ⁅x, D⁆ := by
+  ext; simp
+
+instance instLieModule : LieModule R L (LieDerivation R L M) where
+  smul_lie t x D := by ext; simp
+  lie_smul t x D := by ext; simp
+
+protected lemma leibniz_lie (x : L) (D₁ D₂ : LieDerivation R L L) :
+    ⁅x, ⁅D₁, D₂⁆⁆ = ⁅⁅x, D₁⁆, D₂⁆ + ⁅D₁, ⁅x, D₂⁆⁆ := by
+  ext y
+  simp [-lie_skew, ← lie_skew (D₁ x) (D₂ y), ← lie_skew (D₂ x) (D₁ y), sub_eq_neg_add]
 
 end Inner
 
