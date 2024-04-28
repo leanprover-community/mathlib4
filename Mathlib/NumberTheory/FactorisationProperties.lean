@@ -9,7 +9,7 @@ import Mathlib.Algebra.GeomSum
 import Mathlib.Tactic.FinCases
 
 /-!
-## FactorisationProperties.lean
+## Factorisation properties of natural numbers
 This file defines abundant, semi-perfect, deficient, and weird numbers and formalizes their
   relations with prime and perfect numbers.
 
