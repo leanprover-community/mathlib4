@@ -259,7 +259,7 @@ theorem StructureGroupoid.mem_of_eqOnSource (G : StructureGroupoid H) {e e' : Pa
   G.mem_of_eqOnSource' e e' he h
 #align structure_groupoid.eq_on_source StructureGroupoid.mem_of_eqOnSource
 
-theorem StructureGroupoid.mem_iff_of_eqOnSource (G : StructureGroupoid H)
+theorem StructureGroupoid.mem_iff_of_eqOnSource {G : StructureGroupoid H}
     {e e' : PartialHomeomorph H H} (h : e ≈ e') : e ∈ G ↔ e' ∈ G :=
   ⟨fun he ↦ G.mem_of_eqOnSource he (Setoid.symm h), fun he' ↦ G.mem_of_eqOnSource he' h⟩
 
