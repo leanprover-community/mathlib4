@@ -76,7 +76,7 @@ instance IsStableUnderComposition.op {P : MorphismProperty C} [P.IsStableUnderCo
   comp_mem f g hf hg := P.comp_mem g.unop f.unop hg hf
 #align category_theory.morphism_property.stable_under_composition.op CategoryTheory.MorphismProperty.IsStableUnderComposition.op
 
-theorem IsStableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} [P.IsStableUnderComposition] :
+instance IsStableUnderComposition.unop {P : MorphismProperty Cᵒᵖ} [P.IsStableUnderComposition] :
     P.unop.IsStableUnderComposition where
   comp_mem f g hf hg := P.comp_mem g.op f.op hg hf
 #align category_theory.morphism_property.stable_under_composition.unop CategoryTheory.MorphismProperty.IsStableUnderComposition.unop
