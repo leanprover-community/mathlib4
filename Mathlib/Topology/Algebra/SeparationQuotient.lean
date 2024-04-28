@@ -1,5 +1,24 @@
+/-
+Copyright (c) 2024 Yury Kudryashov. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Yury Kudryashov
+-/
 import Mathlib.Topology.Algebra.Module.Basic
 import Mathlib.LinearAlgebra.Basis.VectorSpace
+
+/-!
+# Algebraic operations on `SeparationQuotient`
+
+In this file we define algebraic operations (multiplication, addition etc)
+on the separation quotient of a topological space with corresponding operation,
+provided that the original operation is continuous.
+
+We also prove continuity of these operations
+and show that they satisfy the same kind of laws (`Monoid` etc) as the original ones.
+
+Finally, we construct a section of the quotient map
+which is a continuous linear map `SeparationQuotient E →L[K] E`.
+-/
 
 namespace SeparationQuotient
 
@@ -342,6 +361,11 @@ section VectorSpace
 variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
   [TopologicalSpace E] [TopologicalAddGroup E] [ContinuousConstSMul K E]
 
+/-- There exists a continuous `K`-linear map from `SeparationQuotient E` to `E`
+such that `mk (outCLM x) = x` for all `x`.
+
+Note that continuity of this map comes for free, because `mk` is a topology inducing map.
+-/
 theorem exists_out_continuousLinearMap :
     ∃ f : SeparationQuotient E →L[K] E, mkCLM K E ∘L f = .id K (SeparationQuotient E) := by
   rcases (mkCLM K E).toLinearMap.exists_rightInverse_of_surjective
@@ -349,6 +373,48 @@ theorem exists_out_continuousLinearMap :
   replace hf : mk ∘ f = id := congr_arg DFunLike.coe hf
   exact ⟨⟨f, inducing_mk.continuous_iff.2 (by continuity)⟩, DFunLike.ext' hf⟩
 
+/-- A continuous `K`-linear map from `SeparationQuotient E` to `E`
+such that `mk (outCLM x) = x` for all `x`. -/
+noncomputable def outCLM : SeparationQuotient E →L[K] E :=
+  (exists_out_continuousLinearMap K E).choose
+
+@[simp]
+theorem mkCLM_comp_outCLM : mkCLM K E ∘L outCLM K E = .id K (SeparationQuotient E) :=
+  (exists_out_continuousLinearMap K E).choose_spec
+
+variable {E} in
+@[simp]
+theorem mk_outCLM (x : SeparationQuotient E) : mk (outCLM K E x) = x :=
+  DFunLike.congr_fun (mkCLM_comp_outCLM K E) x
+
+@[simp]
+theorem mk_comp_outCLM : mk ∘ outCLM K E = id := funext (mk_outCLM K)
+
+/-- The `SeparationQuotient.outCLM K E` map is a topological embedding. -/
+theorem outCLM_embedding : Embedding (outCLM K E) :=
+  Function.LeftInverse.embedding (mk_outCLM K) continuous_mk (map_continuous _)
+
+theorem outCLM_injective : Function.Injective (outCLM K E) :=
+  (outCLM_embedding K E).injective
+
 end VectorSpace
+
+section VectorSpaceUniform
+
+variable (K E : Type*) [DivisionRing K] [AddCommGroup E] [Module K E]
+    [UniformSpace E] [UniformAddGroup E] [ContinuousConstSMul K E]
+
+theorem outCLM_uniformInducing : UniformInducing (outCLM K E) := by
+  rw [uniformInducing_mk.uniformInducing_iff, mk_comp_outCLM]
+  exact uniformInducing_id
+
+theorem outCLM_uniformEmbedding : UniformEmbedding (outCLM K E) where
+  inj := outCLM_injective K E
+  toUniformInducing := outCLM_uniformInducing K E
+
+theorem outCLM_uniformContinuous : UniformContinuous (outCLM K E) :=
+  (outCLM_uniformInducing K E).uniformContinuous
+
+end VectorSpaceUniform    
 
 end SeparationQuotient
