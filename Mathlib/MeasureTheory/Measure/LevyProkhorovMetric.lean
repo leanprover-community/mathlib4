@@ -297,7 +297,7 @@ lemma BoundedContinuousFunction.integral_le_of_levyProkhorovEDist_lt (μ ν : Me
       simp only [Real.norm_eq_abs, abs_toReal]
       exact (ENNReal.toReal_le_toReal (measure_ne_top _ _) (measure_ne_top _ _)).mpr
             <| measure_mono (subset_univ _)
-  apply le_trans (set_integral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
+  apply le_trans (setIntegral_mono (s := Ioc 0 ‖f‖) ?_ ?_ key)
   rw [integral_add]
   · apply add_le_add_left
     simp only [integral_const, MeasurableSet.univ, Measure.restrict_apply, univ_inter,

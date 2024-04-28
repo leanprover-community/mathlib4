@@ -35,7 +35,7 @@ theorem sq_ne_two_fin_zmod_four (z : ZMod 4) : z * z ≠ 2 := by
 
 theorem Int.sq_ne_two_mod_four (z : ℤ) : z * z % 4 ≠ 2 := by
   suffices ¬z * z % (4 : ℕ) = 2 % (4 : ℕ) by exact this
-  rw [← ZMod.int_cast_eq_int_cast_iff']
+  rw [← ZMod.intCast_eq_intCast_iff']
   simpa using sq_ne_two_fin_zmod_four _
 #align int.sq_ne_two_mod_four Int.sq_ne_two_mod_four
 
@@ -233,8 +233,8 @@ theorem ne_zero_of_coprime (hc : Int.gcd x y = 1) : z ≠ 0 := by
     rw [hc]
     exact one_ne_zero
   cases' Int.ne_zero_of_gcd hc' with hxz hyz
-  · apply lt_add_of_pos_of_le (sq_pos_of_ne_zero x hxz) (sq_nonneg y)
-  · apply lt_add_of_le_of_pos (sq_nonneg x) (sq_pos_of_ne_zero y hyz)
+  · apply lt_add_of_pos_of_le (sq_pos_of_ne_zero hxz) (sq_nonneg y)
+  · apply lt_add_of_le_of_pos (sq_nonneg x) (sq_pos_of_ne_zero hyz)
 #align pythagorean_triple.ne_zero_of_coprime PythagoreanTriple.ne_zero_of_coprime
 
 theorem isPrimitiveClassified_of_coprime_of_zero_left (hc : Int.gcd x y = 1) (hx : x = 0) :

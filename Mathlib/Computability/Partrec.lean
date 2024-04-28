@@ -835,10 +835,10 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      · refine' ⟨n, hn₁, fun m mn km => _⟩
-        cases' km.lt_or_eq_dec with km km
-        · exact hn₂ _ mn km
-        · exact km ▸ ⟨_, hk⟩
+      refine' ⟨n, hn₁, fun m mn km => _⟩
+      cases' km.lt_or_eq_dec with km km
+      · exact hn₂ _ mn km
+      · exact km ▸ ⟨_, hk⟩
 #align partrec.fix_aux Partrec.fix_aux
 
 theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := by

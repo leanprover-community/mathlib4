@@ -231,8 +231,8 @@ instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful whe
     · exact F₂.map_injective (congr_arg CommaMorphism.right h)
 
 instance fullMap [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
-  preimage {X Y} φ :=
-    { left := F₁.preimage φ.left
+  map_surjective {X Y} φ :=
+   ⟨{ left := F₁.preimage φ.left
       right := F₂.preimage φ.right
       w := F.map_injective (by
         rw [← cancel_mono (β.app _), ← cancel_epi (α.app _), F.map_comp, F.map_comp,
@@ -240,7 +240,7 @@ instance fullMap [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (m
         erw [← α.naturality_assoc, β.naturality]
         dsimp
         rw [F₁.image_preimage, F₂.image_preimage]
-        simpa using φ.w) }
+        simpa using φ.w) }, by aesop_cat⟩
 
 instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β] :
     (map α β).EssSurj where
@@ -251,7 +251,7 @@ instance essSurj_map [F₁.EssSurj] [F₂.EssSurj] [F.Full] [IsIso α] [IsIso β
           X.hom ≫ R'.map (F₂.objObjPreimageIso X.right).inv ≫ (inv β).app _) },
             ⟨isoMk (F₁.objObjPreimageIso X.left) (F₂.objObjPreimageIso X.right) (by
               dsimp
-              simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.image_preimage, assoc,
+              simp only [NatIso.isIso_inv_app, Functor.comp_obj, Functor.map_preimage, assoc,
                 IsIso.inv_hom_id, comp_id, IsIso.hom_inv_id_assoc]
               rw [← R'.map_comp, Iso.inv_hom_id, R'.map_id, comp_id])⟩⟩
 
@@ -377,7 +377,7 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R
   Functor.Faithful.of_iso (preLeftIso F L R).symm
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full :=
-  Functor.Full.ofIso (preLeftIso F L R).symm
+  Functor.Full.of_iso (preLeftIso F L R).symm
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj :=
   Functor.essSurj_of_iso (preLeftIso F L R).symm
@@ -409,7 +409,7 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F 
   Functor.Faithful.of_iso (preRightIso L F R).symm
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full :=
-  Functor.Full.ofIso (preRightIso L F R).symm
+  Functor.Full.of_iso (preRightIso L F R).symm
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj :=
   Functor.essSurj_of_iso (preRightIso L F R).symm

@@ -8,7 +8,7 @@ import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.finsupp.basic from "leanprover-community/mathlib"@"f69db8cecc668e2d5894d7e9bfc491da60db3b9f"
 
@@ -481,7 +481,7 @@ theorem mapDomain_comp {f : α → β} {g : β → γ} :
   · intro
     exact single_add _
   refine' sum_congr fun _ _ => sum_single_index _
-  · exact single_zero _
+  exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
 @[simp]

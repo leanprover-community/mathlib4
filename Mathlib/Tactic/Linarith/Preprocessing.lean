@@ -141,7 +141,7 @@ partial def getNatComparisons (e : Expr) : List (Expr × Expr) :=
 /-- If `e : ℕ`, returns a proof of `0 ≤ (e : C)`. -/
 def mk_natCast_nonneg_prf (p : Expr × Expr) : MetaM (Option Expr) :=
   match p with
-  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``nat_cast_nonneg #[target, e])
+  | ⟨e, target⟩ => try commitIfNoEx (mkAppM ``natCast_nonneg #[target, e])
     catch e => do
       trace[linarith] "Got exception when using cast {e.toMessageData}"
       return none
