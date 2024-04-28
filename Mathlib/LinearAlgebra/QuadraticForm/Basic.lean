@@ -587,7 +587,7 @@ end Comp
 
 section CommRing
 
-variable [CommSemiring R]  [CommSemiring N]  [AddCommMonoid M] [Module R M]
+variable [CommSemiring R]  [NonUnitalNonAssocCommSemiring N]  [AddCommMonoid M] [Module R M]
 variable [Module R N] [SMulCommClass R N N] [IsScalarTower R N N]
 
 /-- The product of linear forms is a quadratic form. -/
@@ -1113,6 +1113,12 @@ theorem posDef_iff_nonneg {Q : QuadraticMap R₂ M N} : PosDef Q ↔ (∀ x, 0 �
 theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef Q') :
     PosDef (Q + Q') := fun x hx => add_pos (hQ x hx) (hQ' x hx)
 #align quadratic_form.pos_def.add QuadraticMap.PosDef.add
+
+-- This should be in `Algebra/Ring/Defs` but that causes issues with `Tactic/Ring/Basic`
+-- see Note [lower instance priority]
+instance (priority := 100) _root_.CommSemiring.toNonUnitalNonAssocCommSemiring {N' : Type*}
+    [CommSemiring N'] : NonUnitalNonAssocCommSemiring N' :=
+  { inferInstanceAs (CommMonoid N'), inferInstanceAs (CommSemiring N') with }
 
 theorem linMulLinSelfPosDef {R} {N' : Type*} [LinearOrderedCommRing R] [Module R M]
     [LinearOrderedCommSemiring N'] [ExistsAddOfLE N'] [Module R N'] [SMulCommClass R N' N']
