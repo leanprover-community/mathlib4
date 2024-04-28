@@ -99,13 +99,15 @@ def leftAdjointPreservesColimits : PreservesColimitsOfSize.{v, u} F where
 #align category_theory.adjunction.left_adjoint_preserves_colimits CategoryTheory.Adjunction.leftAdjointPreservesColimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalencePreservesColimits (E : C ⥤ D) [E.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalencePreservesColimits
+    (E : C ⥤ D) [E.IsEquivalence] :
     PreservesColimitsOfSize.{v, u} E :=
   leftAdjointPreservesColimits E.adjunction
 #align category_theory.adjunction.is_equivalence_preserves_colimits CategoryTheory.Adjunction.isEquivalencePreservesColimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceReflectsColimits (E : D ⥤ C) [E.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalenceReflectsColimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsColimitsOfSize.{v, u} E where
   reflectsColimitsOfShape :=
     { reflectsColimit :=
@@ -213,13 +215,15 @@ def rightAdjointPreservesLimits : PreservesLimitsOfSize.{v, u} G where
 #align category_theory.adjunction.right_adjoint_preserves_limits CategoryTheory.Adjunction.rightAdjointPreservesLimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalencePreservesLimits (E : D ⥤ C) [E.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalencePreservesLimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     PreservesLimitsOfSize.{v, u} E :=
   rightAdjointPreservesLimits E.asEquivalence.symm.toAdjunction
 #align category_theory.adjunction.is_equivalence_preserves_limits CategoryTheory.Adjunction.isEquivalencePreservesLimits
 
 -- see Note [lower instance priority]
-noncomputable instance (priority := 100) isEquivalenceReflectsLimits (E : D ⥤ C) [E.IsEquivalence] :
+noncomputable instance (priority := 100) isEquivalenceReflectsLimits
+    (E : D ⥤ C) [E.IsEquivalence] :
     ReflectsLimitsOfSize.{v, u} E where
   reflectsLimitsOfShape :=
     { reflectsLimit :=
