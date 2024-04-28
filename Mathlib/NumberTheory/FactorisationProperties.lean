@@ -40,7 +40,8 @@ Let `n : ℕ`. All the following definitions are in the Nat namespace.
   http://www.jstor.org/stable/27958492. Accessed 21 Feb. 2024.
 
 ## Tags
-abundant deficient weird Pseudoperfect
+
+abundant, deficient, weird, pseudoperfect
 -/
 
 open Nat BigOperators Finset
