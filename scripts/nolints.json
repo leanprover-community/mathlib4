@@ -561,7 +561,6 @@
  ["docBlame", "FirstOrder.Language.«term_≃ᴸ_»"],
  ["docBlame", "GeneralizedContinuedFraction.IntFractPair.b"],
  ["docBlame", "GeneralizedContinuedFraction.IntFractPair.fr"],
- ["docBlame", "Geometry.SimplicialComplex.faces"],
  ["docBlame", "GromovHausdorff.AuxGluingStruct.Space"],
  ["docBlame", "GromovHausdorff.AuxGluingStruct.embed"],
  ["docBlame", "GromovHausdorff.AuxGluingStruct.metric"],
