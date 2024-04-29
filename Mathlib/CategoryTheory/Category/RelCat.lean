@@ -13,12 +13,13 @@ import Mathlib.Data.Rel
 
 /-!
 # Basics on the category of relations
-We define the category of types `CategoryTheory.RelCat` with binary relations as morphisms. Associating
-each function with the relation defined by its graph yields a faithful and essentially surjective
-functor `graphFunctor` that also charakterizes all isomorphisms (see `rel_iso_iff`).
+We define the category of types `CategoryTheory.RelCat` with binary relations as morphisms.
+Associating each function with the relation defined by its graph yields a faithful and
+essentially surjective functor `graphFunctor` that also charakterizes all isomorphisms
+(see `rel_iso_iff`).
 
-By flipping the arguments to a relation, we construct an equivalence `opEquivalence`
-between `RelCat` and its opposite.
+By flipping the arguments to a relation, we construct an equivalence `opEquivalence` between
+`RelCat` and its opposite.
 -/
 
 namespace CategoryTheory
