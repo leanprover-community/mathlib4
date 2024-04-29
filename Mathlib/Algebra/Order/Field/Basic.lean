@@ -47,7 +47,7 @@ def OrderIso.mulRight₀ (a : α) (ha : 0 < a) : α ≃o α :=
 
 
 theorem le_div_iff (hc : 0 < c) : a ≤ b / c ↔ a * c ≤ b :=
-  ⟨fun h => div_mul_cancel b (ne_of_lt hc).symm ▸ mul_le_mul_of_nonneg_right h hc.le, fun h =>
+  ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc).symm ▸ mul_le_mul_of_nonneg_right h hc.le, fun h =>
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc).symm
       _ ≤ b * (1 / c) := mul_le_mul_of_nonneg_right h (one_div_pos.2 hc).le
@@ -61,7 +61,7 @@ theorem le_div_iff' (hc : 0 < c) : a ≤ b / c ↔ c * a ≤ b := by rw [mul_com
 theorem div_le_iff (hb : 0 < b) : a / b ≤ c ↔ a ≤ c * b :=
   ⟨fun h =>
     calc
-      a = a / b * b := by rw [div_mul_cancel _ (ne_of_lt hb).symm]
+      a = a / b * b := by rw [div_mul_cancel₀ _ (ne_of_lt hb).symm]
       _ ≤ c * b := mul_le_mul_of_nonneg_right h hb.le
       ,
     fun h =>
@@ -429,12 +429,12 @@ The equalities also hold in semifields of characteristic `0`.
 /- TODO: Unify `add_halves` and `add_halves'` into a single lemma about
 `DivisionSemiring` + `CharZero` -/
 theorem add_halves (a : α) : a / 2 + a / 2 = a := by
-  rw [div_add_div_same, ← two_mul, mul_div_cancel_left a two_ne_zero]
+  rw [div_add_div_same, ← two_mul, mul_div_cancel_left₀ a two_ne_zero]
 #align add_halves add_halves
 
 -- TODO: Generalize to `DivisionSemiring`
 theorem add_self_div_two (a : α) : (a + a) / 2 = a := by
-  rw [← mul_two, mul_div_cancel a two_ne_zero]
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
 #align add_self_div_two add_self_div_two
 
 theorem half_pos (h : 0 < a) : 0 < a / 2 :=
@@ -480,7 +480,7 @@ theorem add_div_two_lt_right : (a + b) / 2 < b ↔ a < b := by simp [div_lt_iff,
 
 theorem add_thirds (a : α) : a / 3 + a / 3 + a / 3 = a := by
   rw [div_add_div_same, div_add_div_same, ← two_mul, ← add_one_mul 2 a, two_add_one_eq_three,
-    mul_div_cancel_left a three_ne_zero]
+    mul_div_cancel_left₀ a three_ne_zero]
 
 /-!
 ### Miscellaneous lemmas
@@ -657,7 +657,7 @@ theorem div_neg_of_pos_of_neg (ha : 0 < a) (hb : b < 0) : a / b < 0 :=
 
 
 theorem div_le_iff_of_neg (hc : c < 0) : b / c ≤ a ↔ a * c ≤ b :=
-  ⟨fun h => div_mul_cancel b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
+  ⟨fun h => div_mul_cancel₀ b (ne_of_lt hc) ▸ mul_le_mul_of_nonpos_right h hc.le, fun h =>
     calc
       a = a * c * (1 / c) := mul_mul_div a (ne_of_lt hc)
       _ ≥ b * (1 / c) := mul_le_mul_of_nonpos_right h (one_div_neg.2 hc).le
@@ -897,7 +897,7 @@ theorem one_div_le_neg_one (h1 : a < 0) (h2 : -1 ≤ a) : 1 / a ≤ -1 :=
 
 theorem sub_self_div_two (a : α) : a - a / 2 = a / 2 := by
   suffices a / 2 + a / 2 - a / 2 = a / 2 by rwa [add_halves] at this
-  rw [add_sub_cancel]
+  rw [add_sub_cancel_right]
 #align sub_self_div_two sub_self_div_two
 
 theorem div_two_sub_self (a : α) : a / 2 - a = -(a / 2) := by

@@ -57,11 +57,11 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
   congr
   delta IsLocalization.Away.map
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
-  generalize_proofs h1 h2 h3
+  generalize_proofs
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here
   convert
-    (@IsLocalization.map_comp (hy := h3) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
+    (@IsLocalization.map_comp (hy := ‹_ ≤ _›) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
@@ -365,7 +365,7 @@ theorem affine_openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   tfae_have 4 → 3
   · intro H 𝒰 _ i; apply H
   tfae_have 3 → 2
-  · intro H; refine' ⟨X.affineCover, inferInstance, H _⟩
+  · intro H; exact ⟨X.affineCover, inferInstance, H _⟩
   tfae_have 2 → 1
   · rintro ⟨𝒰, _, h𝒰⟩
     exact sourceAffineLocally_of_source_openCover hP f 𝒰 h𝒰
@@ -392,7 +392,7 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
   tfae_have 4 → 3
   · intro H 𝒰 _ i; apply H
   tfae_have 3 → 2
-  · intro H; refine' ⟨X.affineCover, H _⟩
+  · intro H; exact ⟨X.affineCover, H _⟩
   tfae_have 2 → 1
   · rintro ⟨𝒰, h𝒰⟩
     -- Porting note: this has metavariable if I put it directly into rw
@@ -505,7 +505,7 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
     convert @this esto eso _ _ ?_ ?_ ?_
     · exact 1
     -- Porting note: again we have to bypass TC synthesis to keep Lean from running away
-    · refine'
+    · exact
         @IsLocalization.away_of_isUnit_of_bijective _ _ _ _ (_) _ isUnit_one Function.bijective_id
   · intro; exact H
 #align ring_hom.property_is_local.affine_locally_of_is_open_immersion RingHom.PropertyIsLocal.affineLocally_of_isOpenImmersion

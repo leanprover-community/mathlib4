@@ -94,7 +94,7 @@ theorem HasFPowerSeriesOnBall.fderiv [CompleteSpace F] (h : HasFPowerSeriesOnBal
     simpa using ((p.hasFPowerSeriesOnBall_changeOrigin 1
       (h.r_pos.trans_le h.r_le)).mono h.r_pos h.r_le).comp_sub x
   dsimp only
-  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 #align has_fpower_series_on_ball.fderiv HasFPowerSeriesOnBall.fderiv
 
@@ -180,7 +180,7 @@ variable {p : FormalMultilinearSeries 𝕜 E F} {r : ℝ≥0∞} {n : ℕ}
 variable {f : E → F} {x : E} {s : Set E}
 
 /-! The case of continuously polynomial functions. We get the same differentiability
-results as for analytic functions, but without the assumptions that `F` is complete.-/
+results as for analytic functions, but without the assumptions that `F` is complete. -/
 
 theorem HasFiniteFPowerSeriesOnBall.differentiableOn
     (h : HasFiniteFPowerSeriesOnBall f p x n r) : DifferentiableOn 𝕜 f (EMetric.ball x r) :=
@@ -207,7 +207,7 @@ protected theorem HasFiniteFPowerSeriesOnBall.fderiv
     simpa using
       ((p.hasFiniteFPowerSeriesOnBall_changeOrigin 1 h.finite).mono h.r_pos le_top).comp_sub x
   dsimp only
-  rw [← h.fderiv_eq, add_sub_cancel'_right]
+  rw [← h.fderiv_eq, add_sub_cancel]
   simpa only [edist_eq_coe_nnnorm_sub, EMetric.mem_ball] using hz
 
 /-- If a function has a finite power series on a ball, then so does its derivative.
@@ -366,10 +366,10 @@ variable (p : FormalMultilinearSeries 𝕜 E F)
 open Fintype ContinuousLinearMap in
 theorem derivSeries_apply_diag (n : ℕ) (x : E) :
     derivSeries p n (fun _ ↦ x) x = (n + 1) • p (n + 1) fun _ ↦ x := by
-  simp only [derivSeries, strongUniformity_topology_eq, compFormalMultilinearSeries_apply,
-    changeOriginSeries, compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe,
-    LinearIsometryEquiv.coe_coe, Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum,
-    coe_sum', Finset.sum_apply, continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
+  simp only [derivSeries, compFormalMultilinearSeries_apply, changeOriginSeries,
+    compContinuousMultilinearMap_coe, ContinuousLinearEquiv.coe_coe, LinearIsometryEquiv.coe_coe,
+    Function.comp_apply, ContinuousMultilinearMap.sum_apply, map_sum, coe_sum', Finset.sum_apply,
+    continuousMultilinearCurryFin1_apply, Matrix.zero_empty]
   convert Finset.sum_const _
   · rw [Fin.snoc_zero, changeOriginSeriesTerm_apply, Finset.piecewise_same, add_comm]
   · rw [← card, card_subtype, ← Finset.powerset_univ, ← Finset.powersetCard_eq_filter,

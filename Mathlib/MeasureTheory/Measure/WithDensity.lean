@@ -29,6 +29,7 @@ variable {α : Type*} {m0 : MeasurableSpace α} {μ : Measure α}
 
 /-- Given a measure `μ : Measure α` and a function `f : α → ℝ≥0∞`, `μ.withDensity f` is the
 measure such that for a measurable set `s` we have `μ.withDensity f s = ∫⁻ a in s, f a ∂μ`. -/
+@[pp_dot]
 noncomputable
 def Measure.withDensity {m : MeasurableSpace α} (μ : Measure α) (f : α → ℝ≥0∞) : Measure α :=
   Measure.ofMeasurable (fun s _ => ∫⁻ a in s, f a ∂μ) (by simp) fun s hs hd =>
@@ -219,6 +220,13 @@ theorem restrict_withDensity' [SFinite μ] (s : Set α) (f : α → ℝ≥0∞) 
   rw [restrict_apply ht, withDensity_apply _ ht, withDensity_apply' _ (t ∩ s),
     restrict_restrict ht]
 
+lemma trim_withDensity {m m0 : MeasurableSpace α} {μ : Measure α}
+    (hm : m ≤ m0) {f : α → ℝ≥0∞} (hf : Measurable[m] f) :
+    (μ.withDensity f).trim hm = (μ.trim hm).withDensity f := by
+  refine @Measure.ext _ m _ _ (fun s hs ↦ ?_)
+  rw [withDensity_apply _ hs, restrict_trim _ _ hs, lintegral_trim _ hf, trim_measurableSet_eq _ hs,
+    withDensity_apply _ (hm s hs)]
+
 lemma Measure.MutuallySingular.withDensity {ν : Measure α} {f : α → ℝ≥0∞} (h : μ ⟂ₘ ν) :
     μ.withDensity f ⟂ₘ ν :=
   MutuallySingular.mono_ac h (withDensity_absolutelyContinuous _ _) AbsolutelyContinuous.rfl
@@ -295,7 +303,7 @@ theorem aemeasurable_withDensity_ennreal_iff {f : α → ℝ≥0} (hf : Measurab
       rw [ae_restrict_iff' A]
       filter_upwards [hg']
       intro a ha h'a
-      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne.def, ENNReal.coe_eq_zero] using h'a
+      have : (f a : ℝ≥0∞) ≠ 0 := by simpa only [Ne, ENNReal.coe_eq_zero] using h'a
       rw [ha this]
     · filter_upwards [ae_restrict_mem A.compl]
       intro x hx

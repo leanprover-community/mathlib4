@@ -34,7 +34,7 @@ structure AddConstMap (G H : Type*) [Add G] [Add H] (a : G) (b : H) where
   /-- The underlying function of an `AddConstMap`.
   Use automatic coercion to function instead. -/
   protected toFun : G → H
-  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead.-/
+  /-- An `AddConstMap` satisfies `f (x + a) = f x + b`. Use `map_add_const` instead. -/
   map_add_const' (x : G) : toFun (x + a) = toFun x + b
 
 @[inherit_doc]
@@ -157,7 +157,7 @@ theorem map_ofNat_add [AddCommMonoidWithOne G] [AddMonoidWithOne H] [AddConstMap
 @[simp]
 theorem map_sub_nsmul [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]
     (f : F) (x : G) (n : ℕ) : f (x - n • a) = f x - n • b := by
-  conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel]
+  conv_rhs => rw [← sub_add_cancel x (n • a), map_add_nsmul, add_sub_cancel_right]
 
 @[simp]
 theorem map_sub_const [AddGroup G] [AddGroup H] [AddConstMapClass F G H a b]

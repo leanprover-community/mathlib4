@@ -768,7 +768,7 @@ variable {c}
 /-- The congruence relation on a monoid `M` from a submonoid of `M × M` for which membership
     is an equivalence relation. -/
 @[to_additive "The additive congruence relation on an `AddMonoid` `M` from
-an `add_submonoid` of `M × M` for which membership is an equivalence relation."]
+an `AddSubmonoid` of `M × M` for which membership is an equivalence relation."]
 def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M
     where
   r x y := (x, y) ∈ N
@@ -780,7 +780,7 @@ def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ 
 /-- Coercion from a congruence relation `c` on a monoid `M` to the submonoid of `M × M` whose
     elements are `(x, y)` such that `x` is related to `y` by `c`. -/
 @[to_additive "Coercion from a congruence relation `c` on an `AddMonoid` `M`
-to the `add_submonoid` of `M × M` whose elements are `(x, y)` such that `x`
+to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`."]
 instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
   ⟨fun c => c.submonoid⟩
@@ -1140,7 +1140,7 @@ section Monoids
 protected theorem pow {M : Type*} [Monoid M] (c : Con M) :
     ∀ (n : ℕ) {w x}, c w x → c (w ^ n) (x ^ n)
   | 0, w, x, _ => by simpa using c.refl _
-  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul h (Con.pow c n h)
+  | Nat.succ n, w, x, h => by simpa [pow_succ] using c.mul (Con.pow c n h) h
 #align con.pow Con.pow
 #align add_con.nsmul AddCon.nsmul
 

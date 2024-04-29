@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Comma.StructuredArrow
 import Mathlib.CategoryTheory.IsConnected
 import Mathlib.CategoryTheory.Limits.Preserves.Shapes.Terminal
 import Mathlib.CategoryTheory.Limits.Shapes.Types
+import Mathlib.CategoryTheory.Filtered.Basic
 import Mathlib.CategoryTheory.Limits.Yoneda
 import Mathlib.CategoryTheory.PUnit
 
@@ -315,17 +316,9 @@ instance (priority := 100) comp_hasColimit [HasColimit G] : HasColimit (F ⋙ G)
   HasColimit.mk (colimitCoconeComp F (getColimitCocone G))
 #align category_theory.functor.final.comp_has_colimit CategoryTheory.Functor.Final.comp_hasColimit
 
-theorem colimit_pre_is_iso_aux {t : Cocone G} (P : IsColimit t) :
-    ((isColimitWhiskerEquiv F _).symm P).desc (t.whisker F) = 𝟙 t.pt := by
-  dsimp [isColimitWhiskerEquiv]
-  apply P.hom_ext
-  intro j
-  simp
-#align category_theory.functor.final.colimit_pre_is_iso_aux CategoryTheory.Functor.Final.colimit_pre_is_iso_aux
-
 instance colimit_pre_isIso [HasColimit G] : IsIso (colimit.pre G F) := by
   rw [colimit.pre_eq (colimitCoconeComp F (getColimitCocone G)) (getColimitCocone G)]
-  erw [colimit_pre_is_iso_aux]
+  erw [IsColimit.desc_self]
   dsimp
   infer_instance
 #align category_theory.functor.final.colimit_pre_is_iso CategoryTheory.Functor.Final.colimit_pre_isIso
@@ -614,17 +607,9 @@ instance (priority := 100) comp_hasLimit [HasLimit G] : HasLimit (F ⋙ G) :=
   HasLimit.mk (limitConeComp F (getLimitCone G))
 #align category_theory.functor.initial.comp_has_limit CategoryTheory.Functor.Initial.comp_hasLimit
 
-theorem limit_pre_is_iso_aux {t : Cone G} (P : IsLimit t) :
-    ((isLimitWhiskerEquiv F _).symm P).lift (t.whisker F) = 𝟙 t.pt := by
-  change 𝟙 t.pt ≫ P.lift (extendCone.obj (Cone.whisker F t)) = 𝟙 t.pt
-  apply P.hom_ext
-  intro j
-  simp
-#align category_theory.functor.initial.limit_pre_is_iso_aux CategoryTheory.Functor.Initial.limit_pre_is_iso_aux
-
 instance limit_pre_isIso [HasLimit G] : IsIso (limit.pre G F) := by
   rw [limit.pre_eq (limitConeComp F (getLimitCone G)) (getLimitCone G)]
-  erw [limit_pre_is_iso_aux]
+  erw [IsLimit.lift_self]
   dsimp
   infer_instance
 #align category_theory.functor.initial.limit_pre_is_iso CategoryTheory.Functor.Initial.limit_pre_isIso

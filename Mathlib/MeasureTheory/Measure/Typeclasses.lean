@@ -68,7 +68,7 @@ theorem measure_compl_le_add_of_le_add [IsFiniteMeasure μ] (hs : MeasurableSet 
     tsub_le_iff_right]
   calc
     μ univ = μ univ - μ s + μ s := (tsub_add_cancel_of_le <| measure_mono s.subset_univ).symm
-    _ ≤ μ univ - μ s + (μ t + ε) := (add_le_add_left h _)
+    _ ≤ μ univ - μ s + (μ t + ε) := add_le_add_left h _
     _ = _ := by rw [add_right_comm, add_assoc]
 
 #align measure_theory.measure_compl_le_add_of_le_add MeasureTheory.measure_compl_le_add_of_le_add
@@ -148,7 +148,7 @@ theorem measureUnivNNReal_eq_zero [IsFiniteMeasure μ] : measureUnivNNReal μ = 
 
 theorem measureUnivNNReal_pos [IsFiniteMeasure μ] (hμ : μ ≠ 0) : 0 < measureUnivNNReal μ := by
   contrapose! hμ
-  simpa [measureUnivNNReal_eq_zero, le_zero_iff] using hμ
+  simpa [measureUnivNNReal_eq_zero, Nat.le_zero] using hμ
 #align measure_theory.measure_univ_nnreal_pos MeasureTheory.measureUnivNNReal_pos
 
 /-- `le_of_add_le_add_left` is normally applicable to `OrderedCancelAddCommMonoid`,
@@ -313,11 +313,10 @@ protected lemma _root_.MeasurableEmbedding.isProbabilityMeasure_comap (hf : Meas
     (hf' : ∀ᵐ a ∂μ, a ∈ range f) : IsProbabilityMeasure (μ.comap f) :=
   isProbabilityMeasure_comap hf.injective hf' hf.measurableSet_image'
 
-instance isProbabilityMeasure_map_up [IsProbabilityMeasure μ] :
+instance isProbabilityMeasure_map_up :
     IsProbabilityMeasure (μ.map ULift.up) := isProbabilityMeasure_map measurable_up.aemeasurable
 
-instance isProbabilityMeasure_comap_down [IsProbabilityMeasure μ] :
-    IsProbabilityMeasure (μ.comap ULift.down) :=
+instance isProbabilityMeasure_comap_down : IsProbabilityMeasure (μ.comap ULift.down) :=
   MeasurableEquiv.ulift.measurableEmbedding.isProbabilityMeasure_comap <| ae_of_all _ <| by
     simp [Function.Surjective.range_eq <| EquivLike.surjective _]
 
@@ -507,7 +506,8 @@ theorem finiteAtBot {m0 : MeasurableSpace α} (μ : Measure α) : μ.FiniteAtFil
   about the sets, such as that they are monotone.
   `SigmaFinite` is defined in terms of this: `μ` is σ-finite if there exists a sequence of
   finite spanning sets in the collection of all measurable sets. -/
--- @[nolint has_nonempty_instance] -- Porting note: deleted
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure FiniteSpanningSetsIn {m0 : MeasurableSpace α} (μ : Measure α) (C : Set (Set α)) where
   protected set : ℕ → Set α
   protected set_mem : ∀ i, set i ∈ C
@@ -541,7 +541,7 @@ lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = 
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseeded by the instance below. -/
-lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
+lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
@@ -552,11 +552,21 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
-instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
-    SFinite (Measure.sum m) := by
+instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
+
+instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
+  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
+  ext s hs
+  simp only [Measure.add_apply, sum_apply _ hs]
+  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
+    sum_sFiniteSeq, sum_sFiniteSeq]
+
+instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
+  ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
+    by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 end SFinite
 
@@ -895,7 +905,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         calc
           μ (t ∩ disjointed w n) ≤ μ (t ∩ w n) :=
             measure_mono (inter_subset_inter_right _ (disjointed_le w n))
-          _ ≤ μ (w n) := (measure_mono (inter_subset_right _ _))
+          _ ≤ μ (w n) := measure_mono (inter_subset_right _ _)
           _ < ∞ := hw n
       _ = ∑' n, μ.restrict (t ∩ u) (disjointed w n) := by
         congr 1
@@ -909,7 +919,7 @@ theorem measure_toMeasurable_inter_of_cover {s : Set α} (hs : MeasurableSet s) 
         · intro i
           refine MeasurableSet.disjointed (fun n => ?_) i
           exact measurableSet_toMeasurable _ _
-      _ ≤ μ.restrict (t ∩ u) univ := (measure_mono (subset_univ _))
+      _ ≤ μ.restrict (t ∩ u) univ := measure_mono (subset_univ _)
       _ = μ (t ∩ u) := by rw [restrict_apply MeasurableSet.univ, univ_inter]
   -- thanks to the definition of `toMeasurable`, the previous property will also be shared
   -- by `toMeasurable μ t`, which is enough to conclude the proof.

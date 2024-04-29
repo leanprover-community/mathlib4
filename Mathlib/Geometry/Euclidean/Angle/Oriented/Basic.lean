@@ -628,7 +628,6 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
     field_simp
-    ring
   · exact o.kahler_ne_zero hx hy
 #align orientation.inner_eq_norm_mul_norm_mul_cos_oangle Orientation.inner_eq_norm_mul_norm_mul_cos_oangle
 
@@ -638,7 +637,6 @@ theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y �
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
   field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
-  ring
 #align orientation.cos_oangle_eq_inner_div_norm_mul_norm Orientation.cos_oangle_eq_inner_div_norm_mul_norm
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
@@ -702,7 +700,7 @@ theorem oangle_eq_of_angle_eq_of_sign_eq {w x y z : V}
     rcases h' with ⟨hwx, hyz⟩
     have hpi : π / 2 ≠ π := by
       intro hpi
-      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel] at hpi
+      rw [div_eq_iff, eq_comm, ← sub_eq_zero, mul_two, add_sub_cancel_right] at hpi
       · exact Real.pi_pos.ne.symm hpi
       · exact two_ne_zero
     have h0wx : w = 0 ∨ x = 0 := by
@@ -1055,10 +1053,10 @@ theorem oangle_sign_smul_add_smul_smul_add_smul (x y : V) (r₁ r₂ r₃ r₄ :
       oangle_sign_smul_left, add_comm, oangle_sign_smul_add_smul_right, oangle_rev,
       Real.Angle.sign_neg, sign_mul, mul_neg, mul_neg, neg_mul, mul_assoc]
   · rw [← o.oangle_sign_smul_add_right (r₁ • x + r₂ • y) (r₃ • x + r₄ • y) (-r₃ / r₁), smul_add,
-      smul_smul, smul_smul, div_mul_cancel _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
+      smul_smul, smul_smul, div_mul_cancel₀ _ hr₁, neg_smul, ← add_assoc, add_comm (-(r₃ • x)), ←
       sub_eq_add_neg, sub_add_cancel, ← add_smul, oangle_sign_smul_right,
       oangle_sign_smul_add_smul_left, ← mul_assoc, ← sign_mul, add_mul, mul_assoc, mul_comm r₂ r₁, ←
-      mul_assoc, div_mul_cancel _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
+      mul_assoc, div_mul_cancel₀ _ hr₁, add_comm, neg_mul, ← sub_eq_add_neg, mul_comm r₄,
       mul_comm r₃]
 #align orientation.oangle_sign_smul_add_smul_smul_add_smul Orientation.oangle_sign_smul_add_smul_smul_add_smul
 

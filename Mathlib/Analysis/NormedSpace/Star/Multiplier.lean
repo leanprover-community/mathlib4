@@ -202,7 +202,7 @@ instance instPow : Pow 𝓜(𝕜, A) ℕ where
       induction' n with k hk generalizing x y
       · rfl
       · rw [Prod.pow_snd, Prod.pow_fst] at hk ⊢
-        rw [pow_succ a.snd, mul_apply, a.central, hk, pow_succ' a.fst, mul_apply]⟩
+        rw [pow_succ' a.snd, mul_apply, a.central, hk, pow_succ a.fst, mul_apply]⟩
 
 instance instInhabited : Inhabited 𝓜(𝕜, A) :=
   ⟨0⟩
@@ -233,14 +233,14 @@ theorem one_toProd : (1 : 𝓜(𝕜, A)).toProd = 1 :=
 #align double_centralizer.one_to_prod DoubleCentralizer.one_toProd
 
 @[simp]
-theorem nat_cast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem natCast_toProd (n : ℕ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.nat_cast_to_prod DoubleCentralizer.nat_cast_toProd
+#align double_centralizer.nat_cast_to_prod DoubleCentralizer.natCast_toProd
 
 @[simp]
-theorem int_cast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
+theorem intCast_toProd (n : ℤ) : (n : 𝓜(𝕜, A)).toProd = n :=
   rfl
-#align double_centralizer.int_cast_to_prod DoubleCentralizer.int_cast_toProd
+#align double_centralizer.int_cast_to_prod DoubleCentralizer.intCast_toProd
 
 @[simp]
 theorem pow_toProd (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).toProd = a.toProd ^ n :=
@@ -297,21 +297,21 @@ theorem mul_snd (a b : 𝓜(𝕜, A)) : (a * b).snd = b.snd * a.snd :=
   rfl
 #align double_centralizer.mul_snd DoubleCentralizer.mul_snd
 
-theorem nat_cast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem natCast_fst (n : ℕ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.nat_cast_fst DoubleCentralizer.nat_cast_fst
+#align double_centralizer.nat_cast_fst DoubleCentralizer.natCast_fst
 
-theorem nat_cast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
+theorem natCast_snd (n : ℕ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-#align double_centralizer.nat_cast_snd DoubleCentralizer.nat_cast_snd
+#align double_centralizer.nat_cast_snd DoubleCentralizer.natCast_snd
 
-theorem int_cast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
+theorem intCast_fst (n : ℤ) : (n : 𝓜(𝕜, A)).fst = n :=
   rfl
-#align double_centralizer.int_cast_fst DoubleCentralizer.int_cast_fst
+#align double_centralizer.int_cast_fst DoubleCentralizer.intCast_fst
 
-theorem int_cast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
+theorem intCast_snd (n : ℤ) : (n : 𝓜(𝕜, A)).snd = n :=
   rfl
-#align double_centralizer.int_cast_snd DoubleCentralizer.int_cast_snd
+#align double_centralizer.int_cast_snd DoubleCentralizer.intCast_snd
 
 theorem pow_fst (n : ℕ) (a : 𝓜(𝕜, A)) : (a ^ n).fst = a.fst ^ n :=
   rfl
@@ -615,7 +615,7 @@ theorem norm_fst_eq_snd (a : 𝓜(𝕜, A)) : ‖a.fst‖ = ‖a.snd‖ := by
         simpa only [← sq] using CstarRing.nnnorm_self_mul_star.symm
       _ ≤ ‖b‖₊ * ‖a.fst (star (a.snd b))‖₊ :=
         ((a.central b (star (a.snd b))).symm ▸ nnnorm_mul_le _ _)
-      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := (mul_comm _ _)
+      _ = ‖a.fst (star (a.snd b))‖₊ * ‖b‖₊ := mul_comm _ _
       _ ≤ ‖a.fst‖₊ * ‖a.snd b‖₊ * ‖b‖₊ :=
         nnnorm_star (a.snd b) ▸ mul_le_mul_right' (a.fst.le_opNNNorm _) _
 

@@ -6,7 +6,7 @@ Authors: Mario Carneiro
 import Mathlib.Algebra.Field.Defs
 import Mathlib.Algebra.Invertible.GroupWithZero
 import Mathlib.Data.Sigma.Basic
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Int.Cast.Basic
 import Qq.MetaM
 

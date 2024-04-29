@@ -107,7 +107,7 @@ theorem _root_.TendstoUniformlyOn.cderiv (hF : TendstoUniformlyOn F f φ (cthick
   have e3 := sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ)
   have hf : ContinuousOn f (sphere z δ) :=
     e1.mono (sphere_subset_closedBall.trans (closedBall_subset_cthickening hz δ))
-  simpa only [mul_div_cancel _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
+  simpa only [mul_div_cancel_right₀ _ hδ.ne.symm] using norm_cderiv_sub_lt hδ e2 hf (h'.mono e3)
 #align tendsto_uniformly_on.cderiv TendstoUniformlyOn.cderiv
 
 end Cderiv

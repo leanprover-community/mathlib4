@@ -181,6 +181,8 @@ instance ofUnique {X : Type v} [AddCommGroup X] [Module R X] [i : Unique X] : Un
   i
 #align Module.of_unique ModuleCat.ofUnique
 
+@[simp] theorem of_coe (X : ModuleCat R) : of R X = X := rfl
+
 -- Porting note: the simpNF linter complains, but we really need this?!
 -- @[simp, nolint simpNF]
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] : (of R X : Type v) = X :=
@@ -279,13 +281,13 @@ abbrev LinearEquiv.toModuleIso' {M N : ModuleCat.{v} R} (i : M ≃ₗ[R] N) : M 
   i.toModuleIso
 #align linear_equiv.to_Module_iso' LinearEquiv.toModuleIso'
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
+/-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
 abbrev LinearEquiv.toModuleIso'Left {X₁ : ModuleCat.{v} R} [AddCommGroup X₂] [Module R X₂]
     (e : X₁ ≃ₗ[R] X₂) : X₁ ≅ ModuleCat.of R X₂ :=
   e.toModuleIso
 #align linear_equiv.to_Module_iso'_left LinearEquiv.toModuleIso'Left
 
-/-- Build an isomorphism in the category `Module R` from a `linear_equiv` between `module`s. -/
+/-- Build an isomorphism in the category `ModuleCat R` from a `LinearEquiv` between `Module`s. -/
 abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ : ModuleCat.{v} R}
     (e : X₁ ≃ₗ[R] X₂) : ModuleCat.of R X₁ ≅ X₂ :=
   e.toModuleIso
@@ -293,15 +295,15 @@ abbrev LinearEquiv.toModuleIso'Right [AddCommGroup X₁] [Module R X₁] {X₂ :
 
 namespace CategoryTheory.Iso
 
-/-- Build a `linear_equiv` from an isomorphism in the category `Module R`. -/
+/-- Build a `LinearEquiv` from an isomorphism in the category `ModuleCat R`. -/
 def toLinearEquiv {X Y : ModuleCat R} (i : X ≅ Y) : X ≃ₗ[R] Y :=
   LinearEquiv.ofLinear i.hom i.inv i.inv_hom_id i.hom_inv_id
 #align category_theory.iso.to_linear_equiv CategoryTheory.Iso.toLinearEquiv
 
 end CategoryTheory.Iso
 
-/-- linear equivalences between `module`s are the same as (isomorphic to) isomorphisms
-in `Module` -/
+/-- linear equivalences between `Module`s are the same as (isomorphic to) isomorphisms
+in `ModuleCat` -/
 @[simps]
 def linearEquivIsoModuleIso {X Y : Type u} [AddCommGroup X] [AddCommGroup Y] [Module R X]
     [Module R Y] : (X ≃ₗ[R] Y) ≅ ModuleCat.of R X ≅ ModuleCat.of R Y where
@@ -447,5 +449,18 @@ lemma forget₂_map_homMk :
     (forget₂ (ModuleCat R) AddCommGroupCat).map (homMk φ hφ) = φ := rfl
 
 end
+
+instance : (forget (ModuleCat.{v} R)).ReflectsIsomorphisms where
+  reflects f _ :=
+    (inferInstance : IsIso ((LinearEquiv.mk f
+      (asIso ((forget (ModuleCat R)).map f)).toEquiv.invFun
+      (Equiv.left_inv _) (Equiv.right_inv _)).toModuleIso).hom)
+
+instance : (forget₂ (ModuleCat.{v} R) AddCommGroupCat.{v}).ReflectsIsomorphisms where
+  reflects f _ := by
+    have : IsIso ((forget _).map f) := by
+      change IsIso ((forget _).map ((forget₂ _ AddCommGroupCat).map f))
+      infer_instance
+    apply isIso_of_reflects_iso _ (forget _)
 
 end ModuleCat

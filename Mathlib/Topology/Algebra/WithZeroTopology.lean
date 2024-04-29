@@ -3,7 +3,6 @@ Copyright (c) 2021 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot
 -/
-import Mathlib.Algebra.Order.WithZero
 import Mathlib.Topology.Algebra.GroupWithZero
 import Mathlib.Topology.Order.OrderClosed
 
@@ -197,7 +196,7 @@ scoped instance (priority := 100) : ContinuousMul Γ₀ where
       refine' (hasBasis_nhds_zero.tendsto_iff hasBasis_nhds_zero).2 fun γ hγ => _
       refine' ⟨γ / y, div_ne_zero hγ hy, fun x hx => _⟩
       calc x * y < γ / y * y := mul_lt_right₀ _ hx hy
-      _ = γ := div_mul_cancel _ hy
+      _ = γ := div_mul_cancel₀ _ hy
     · have hy : y ≠ 0 := ((zero_lt_iff.mpr hx).trans_le hle).ne'
       rw [nhds_prod_eq, nhds_of_ne_zero hx, nhds_of_ne_zero hy, prod_pure_pure]
       exact pure_le_nhds (x * y)
