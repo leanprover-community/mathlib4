@@ -575,6 +575,7 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
+variable (R M) in
 lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   obtain ⟨s, hs⟩ := finite_def.1 ‹Finite R M›
   rw [Finsupp.span_eq_range_total, LinearMap.range_eq_top] at hs
