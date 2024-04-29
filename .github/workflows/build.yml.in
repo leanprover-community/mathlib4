@@ -133,18 +133,17 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
 
 ##      - name: Fetch latest commits from master
 ##        run: git fetch origin master
 
       - name: print_lost_declarations
         run: |
-          echo github.base_ref
-          echo ${{ github.base_ref }}
-          echo github.event.pull_request.head.ref
-          echo ${{ github.event.pull_request.head.ref }}
           git fetch origin master HEAD
-          FORK_POINT=$( git show-branch --merge-base "origin/master" HEAD )
+          FORK_POINT=$( git merge-base origin/master ${{ github.event.pull_request.head.sha }})
           echo "Fork point: ${FORK_POINT}"
           printf '* fetched\n'
           rp="$(git rev-parse --abbrev-ref HEAD)"
