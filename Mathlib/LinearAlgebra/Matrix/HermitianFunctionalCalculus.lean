@@ -46,8 +46,8 @@ theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum2 (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
-refine (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i) (R := ℝ)
-             (a := toEuclideanLin A)).mp (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
+exact (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
+       (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
