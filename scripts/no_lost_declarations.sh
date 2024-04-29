@@ -17,7 +17,7 @@ fi;
 git diff --unified=0 "${commit}" |
   grep "^[+-]${begs}" |
   sed 's=^\(.\)\(.*\)$=\2 \1=' |
-  awk '{
+  awk 'BEGIN{ paired=0; mismatched=0 }{
     pm=$NF
     gsub(/..$/, "")
     acc[$0]=acc[$0] pm
@@ -30,7 +30,7 @@ git diff --unified=0 "${commit}" |
         fin=fin sprintf("%s%s\n", pm == "+" ? pm "\\" : pm "\\", res)
       } else paired++
     }
-    print fin| "sort -k2"
+    print fin| "sort -k2"; close("sort -k2")
     printf("---\n%s  mismatched declarations\n%s  paired declarations", mismatched, paired)
   }' |
   column -s'\' -t
