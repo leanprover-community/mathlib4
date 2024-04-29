@@ -754,8 +754,6 @@ end WithBot
 
 namespace WithTop
 
-variable {a b : α}
-
 open Function
 
 open OrderDual
