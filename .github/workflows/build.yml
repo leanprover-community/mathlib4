@@ -155,8 +155,8 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Fetch latest commits from master
-        run: git fetch origin master
+##      - name: Fetch latest commits from master
+##        run: git fetch origin master
 
       - name: print_lost_declarations
         run: |
