@@ -239,7 +239,8 @@ instance instPowNat : Pow ℚ ℕ where
   pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
     rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩
 
-lemma pow_def (q : ℚ) (n : ℕ) : q ^ n = ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
+lemma pow_def (q : ℚ) (n : ℕ) :
+  q ^ n = ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
     rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩ := rfl
 
 lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) := by
