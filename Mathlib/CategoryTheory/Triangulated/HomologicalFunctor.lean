@@ -18,6 +18,10 @@ that `F` sends distinguished triangles in `C` to exact sequences in `A`.
 If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`.
 
+Note: depending on the sources, homological functors are sometimes
+called cohomological functors, while certain authors use "cohomological functors"
+for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
+
 ## TODO
 
 * The long exact sequence in homology attached to an homological functor.
