@@ -14,7 +14,7 @@ universe u v
 variable {𝒞 : Type u} [Category.{v} 𝒞] [Abelian 𝒞] [EnoughProjectives 𝒞]
 
 lemma exact_lemma1 {X Y Z W : 𝒞}
-  (g : Y ⟶ Z) (h : Z ⟶ W) (f : X ⟶ kernel g) (i : kernel g ⟶ Y) (hf : Epi f) (hh : Mono h)
+    (g : Y ⟶ Z) (h : Z ⟶ W) (f : X ⟶ kernel g) (i : kernel g ⟶ Y) (hf : Epi f) (hh : Mono h)
   (hi : i = kernel.ι g) : CategoryTheory.Exact (f ≫ i) (g ≫ h) := by
   suffices Exact i g by
     exact exact_comp_mono (exact_epi_comp this)
