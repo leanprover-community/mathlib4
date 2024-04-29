@@ -10,14 +10,13 @@ import Mathlib.Algebra.Module.Submodule.RestrictScalars
 import Mathlib.Algebra.Module.ULift
 import Mathlib.RingTheory.Subring.Basic
 
+#align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
 /-!
 # Further basic results about `Algebra`.
 
 This file could usefully be split further.
 -/
-
-#align_import algebra.algebra.basic from "leanprover-community/mathlib"@"36b8aa61ea7c05727161f96a0532897bd72aedab"
 
 universe u v w u₁ v₁
 
