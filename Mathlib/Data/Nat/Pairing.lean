@@ -132,8 +132,8 @@ theorem pair_lt_pair_left {a₁ a₂} (b) (h : a₁ < a₂) : pair a₁ b < pair
   · simp at h₁
     simp only [not_lt_of_gt (lt_of_le_of_lt h₁ h), ite_false]
     apply add_lt_add
-    exact Nat.mul_self_lt_mul_self h
-    apply Nat.add_lt_add_right; assumption
+    · exact Nat.mul_self_lt_mul_self h
+    · apply Nat.add_lt_add_right; assumption
 #align nat.mkpair_lt_mkpair_left Nat.pair_lt_pair_left
 
 theorem pair_lt_pair_right (a) {b₁ b₂} (h : b₁ < b₂) : pair a b₁ < pair a b₂ := by

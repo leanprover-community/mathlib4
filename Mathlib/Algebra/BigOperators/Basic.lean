@@ -2075,8 +2075,8 @@ theorem mem_sum {f : α → Multiset β} (s : Finset α) (b : β) :
     (b ∈ ∑ x in s, f x) ↔ ∃ a ∈ s, b ∈ f a := by
   classical
     refine' s.induction_on (by simp) _
-    · intro a t hi ih
-      simp [sum_insert hi, ih, or_and_right, exists_or]
+    intro a t hi ih
+    simp [sum_insert hi, ih, or_and_right, exists_or]
 #align finset.mem_sum Finset.mem_sum
 
 section ProdEqZero
