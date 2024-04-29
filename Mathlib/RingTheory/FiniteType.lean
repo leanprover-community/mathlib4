@@ -714,7 +714,8 @@ open Submodule in
 This is a consequence of Noetherian case
 (`IsNoetherian.injective_of_surjective_of_injective`), which requires that `M` is a
 Noetherian module, but allows `R` to be non-commutative. The proof of this result from
-Noetherian case is adapted from <https://math.stackexchange.com/a/1066110/235999>. -/
+Noetherian case is adapted from <https://math.stackexchange.com/a/1066110>.
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms*. -/
 theorem Module.Finite.injective_of_surjective_of_injective
     {R M N : Type*} [CommRing R] [AddCommGroup M] [Module R M] [Module.Finite R M]
     [AddCommGroup N] [Module R N] (i f : N →ₗ[R] M)

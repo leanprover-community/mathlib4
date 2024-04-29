@@ -582,7 +582,8 @@ end Orzech
 open Orzech in
 /-- **Orzech's theorem** for Noetherian module: if `R` is a ring (not necessarily commutative),
 `M` is a Noetherian `R`-module, `N` is a submodule, `f : N →ₗ[R] M` is surjective, then `f` is also
-injective. The proof is adapted from <https://math.stackexchange.com/a/1066128/235999>. -/
+injective. The proof is adapted from <https://math.stackexchange.com/a/1066128>.
+See also Orzech's original paper: *Onto endomorphisms are isomorphisms*. -/
 theorem IsNoetherian.injective_of_surjective_of_submodule
     {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f := by
   obtain ⟨n, H⟩ := monotone_stabilizes_iff_noetherian.2 ‹_› (Kmono f)

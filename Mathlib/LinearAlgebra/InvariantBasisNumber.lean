@@ -21,14 +21,28 @@ that a surjective linear map `(Fin n → R) →ₗ[R] (Fin m → R)` implies `m 
 the strong rank condition, that an injective linear map `(Fin n → R) →ₗ[R] (Fin m → R)`
 implies `n ≤ m`.
 
+Orzech, Djoković and Ribenboim considered the following property for a ring `R`:
+for any finitely generated `R`-module `M`, any surjective homomorphism `f : N → M`
+from a submodule `N` of `M` to `M` is injective.
+It's called `Π`-ring or `Π₁`-ring in their papers.
+They showed that any Noetherian ring (not necessarily commutative) and any commutative ring
+satisfies this property.
+It's easy to see that such property implies strong rank condition given the ring is non-trivial.
+
 The strong rank condition implies the rank condition, and the rank condition implies
 the invariant basis number property.
+The converse is not true, as we have counterexamples in the book of Lam:
+
+- The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
+- The ring `ℚ⟨a, b, c, d⟩ / (ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
+  but not the rank condition.
 
 ## Main definitions
 
-`StrongRankCondition R` is a type class stating that `R` satisfies the strong rank condition.
-`RankCondition R` is a type class stating that `R` satisfies the rank condition.
-`InvariantBasisNumber R` is a type class stating that `R` has the invariant basis number property.
+- `OrzechProperty R` is a type class stating that `R` satisfies the Orzech property.
+- `StrongRankCondition R` is a type class stating that `R` satisfies the strong rank condition.
+- `RankCondition R` is a type class stating that `R` satisfies the rank condition.
+- `InvariantBasisNumber R` is a type class stating that `R` has the invariant basis number property.
 
 ## Main results
 
@@ -56,6 +70,10 @@ variants) should be formalized.
 
 * https://en.wikipedia.org/wiki/Invariant_basis_number
 * https://mathoverflow.net/a/2574/
+* Lam, T. Y. *Lectures on Modules and Rings*
+* Orzech, Morris. *Onto endomorphisms are isomorphisms*
+* Djoković, D. Ž. *Epimorphisms of modules which must be isomorphisms*
+* Ribenboim, Paulo. *Épimorphismes de modules qui sont nécessairement des isomorphismes*
 
 ## Tags
 
@@ -75,6 +93,20 @@ universe u v w
 section
 
 variable (R : Type u) [Semiring R]
+
+/-- We say that `R` satisfies the Orzech property, if for any finitely generated `R`-module `M`,
+    any surjective homomorphism `f : N → M` from a submodule `N` of `M` to `M` is injective. -/
+@[mk_iff]
+class OrzechProperty : Prop where
+  injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
+    [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
+
+-- -- TODO: stuck with universe level problem
+-- theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
+--     {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M] {N : Submodule R M}
+--     (f : N →ₗ[R] M) (hf : Surjective f) : Injective f := by
+--   obtain ⟨s, hs⟩ := Module.finite_def.1 ‹Module.Finite R M›
+--   sorry
 
 /-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
     implies `n ≤ m`. -/
