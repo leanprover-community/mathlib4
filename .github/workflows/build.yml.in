@@ -107,7 +107,7 @@ jobs:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: summarize_declarations
     runs-on: ubuntu-latest
-    steps
+    steps:
       - uses: actions/checkout@v4
         with:
           ## fetch the whole repository, useful to find a common fork
