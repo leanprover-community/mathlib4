@@ -72,7 +72,7 @@ multiplication is given by the tensor product, and satisfies the monoid axioms s
 skeleton.
 -/
 noncomputable instance instCommMonoid [BraidedCategory C] : CommMonoid (Skeleton C) :=
-  commMonoidOfSkeletalBraided (skeletonIsSkeleton _).skel
+  commMonoidOfSkeletalBraided (skeleton_isSkeleton _).skel
 
 end Skeleton
 
