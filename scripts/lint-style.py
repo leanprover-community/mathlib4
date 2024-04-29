@@ -368,36 +368,29 @@ def format_errors(errors):
         if (errno, path.resolve(), None) in exceptions:
             continue
         new_exceptions = True
-        if errno == ERR_COP:
-            output_message(path, line_nr, "ERR_COP", "Malformed or missing copyright header")
-        if errno == ERR_MOD:
-            output_message(path, line_nr, "ERR_MOD", "Module docstring missing, or too late")
-        if errno == ERR_LIN:
-            output_message(path, line_nr, "ERR_LIN", "Line has more than 100 characters")
-        if errno == ERR_OPT:
-            output_message(path, line_nr, "ERR_OPT", "Forbidden set_option command")
-        if errno == ERR_AUT:
-            output_message(path, line_nr, "ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'")
-        if errno == ERR_TAC:
-            output_message(path, line_nr, "ERR_TAC", "Files in mathlib cannot import the whole tactic folder")
-        if errno == ERR_IBY:
-            output_message(path, line_nr, "ERR_IBY", "Line is an isolated 'by'")
-        if errno == ERR_DOT:
-            output_message(path, line_nr, "ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·")
-        if errno == ERR_SEM:
-            output_message(path, line_nr, "ERR_SEM", "Line contains a space before a semicolon")
-        if errno == ERR_WIN:
-            output_message(path, line_nr, "ERR_WIN", "Windows line endings (\\r\\n) detected")
-        if errno == ERR_TWS:
-            output_message(path, line_nr, "ERR_TWS", "Trailing whitespace detected on line")
-        if errno == ERR_CLN:
-            output_message(path, line_nr, "ERR_CLN", "Put : and := before line breaks, not after")
-        if errno == ERR_IND:
-            output_message(path, line_nr, "ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)")
-        if errno == ERR_ARR:
-            output_message(path, line_nr, "ERR_ARR", "Missing space after '←'.")
-        if errno == ERR_NSP:
-            output_message(path, line_nr, "ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output")
+        messages = {
+            ERR_COP : ("ERR_COP", "Malformed or missing copyright header"),
+            ERR_MOD : ("ERR_MOD", "Module docstring missing, or too late"),
+            ERR_LIN : ("ERR_LIN", "Line has more than 100 characters"),
+            ERR_OPT : ("ERR_OPT", "Forbidden set_option command"),
+            ERR_AUT : ("ERR_AUT", "Authors line should look like: 'Authors: Jean Dupont, Иван Иванович Иванов'"),
+            ERR_TAC : ("ERR_TAC", "Files in mathlib cannot import the whole tactic folder"),
+            ERR_IBY : ("ERR_IBY", "Line is an isolated 'by'"),
+            ERR_DOT : ("ERR_DOT", "Line is an isolated focusing dot or uses . instead of ·"),
+            ERR_SEM : ("ERR_SEM", "Line contains a space before a semicolon"),
+            ERR_WIN : ("ERR_WIN", "Windows line endings (\\r\\n) detected"),
+            ERR_TWS : ("ERR_TWS", "Trailing whitespace detected on line"),
+            ERR_CLN : ("ERR_CLN", "Put : and := before line breaks, not after"),
+            ERR_IND : ("ERR_IND", "If the theorem/def statement requires multiple lines, indent it correctly (4 spaces or 2 for `|`)"),
+            ERR_ARR : ("ERR_ARR", "Missing space after '←'."),
+            ERR_NSP : ("ERR_NSP", "Non-terminal simp. Replace with `simp?` and use the suggested output"),
+        }
+        if errno in messages:
+            name, message = messages[errno]
+            output_message(path, line_nr, name, message)
+        else:
+            print(f"unhandled error kind: {errno}")
+
 
 def lint(path, fix=False):
     global new_exceptions
