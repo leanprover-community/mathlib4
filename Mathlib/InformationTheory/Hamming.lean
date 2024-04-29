@@ -470,7 +470,7 @@ instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
   dist_eq := by push_cast; exact mod_cast hammingDist_eq_hammingNorm
 
 @[simp, push_cast]
-theorem nnnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :
+theorem nnorm_eq_hammingNorm [∀ i, AddCommGroup (β i)] (x : Hamming β) :
     ‖x‖₊ = hammingNorm (ofHamming x) :=
   rfl
 #align hamming.nnnorm_eq_hamming_norm Hamming.nnnorm_eq_hammingNorm
