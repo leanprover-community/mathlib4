@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Star.Prod
 import Mathlib.GroupTheory.GroupAction.BigOperators
 import Mathlib.LinearAlgebra.Prod
 
@@ -1088,5 +1089,35 @@ theorem map_comp_map (f : M →ₗ[R'] N) (g : N →ₗ[R'] P) :
 end map
 
 end Algebra
+
+section Star
+variable {R M : Type*}
+
+/-- A `star` operation that acts on `R` and `M` separately. -/
+instance [Star R] [Star M] : Star (tsze R M) := Prod.instStarProd
+
+@[simp] lemma fst_star [Star R] [Star M] (x : tsze R M) : fst (star x) = star x.fst := rfl
+@[simp] lemma snd_star [Star R] [Star M] (x : tsze R M) : snd (star x) = star x.snd := rfl
+
+instance [InvolutiveStar R] [InvolutiveStar M] : InvolutiveStar (tsze R M) :=
+  Prod.instInvolutiveStarProd
+
+instance [AddMonoid R] [AddMonoid M] [StarAddMonoid R] [StarAddMonoid M] :
+    StarAddMonoid (tsze R M) :=
+  Prod.instStarAddMonoidProdInstAddMonoid
+
+@[simp] lemma star_inl [AddMonoid R] [AddMonoid M] [StarAddMonoid R] [StarAddMonoid M] (r : R) :
+    inl (star r) = star (inl r : tsze R M) := ext rfl (star_zero _).symm
+@[simp] lemma star_inr [AddMonoid R] [AddMonoid M] [StarAddMonoid R] [StarAddMonoid M] (m : M) :
+    inr (star m) = star (inr m : tsze R M) := ext (star_zero _).symm rfl
+
+instance [Semiring R] [AddCommMonoid M] [Module R M] [Module Rᵐᵒᵖ M] [SMulCommClass R Rᵐᵒᵖ M]
+    [StarRing R] [StarAddMonoid M] [StarModule' R M] :
+    StarRing (tsze R M) where
+  __ : StarAddMonoid (tsze R M) := inferInstance
+  star_mul x y := ext (star_mul _ _) <| by
+    simp only [snd_mul, fst_star, snd_star, star_add, star_smul', star_op_smul, add_comm]
+
+end Star
 
 end TrivSqZeroExt

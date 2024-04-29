@@ -56,6 +56,11 @@ instance {R : Type w} [∀ i, SMul R (f i)] [Star R] [∀ i, Star (f i)]
     [∀ i, StarModule R (f i)] : StarModule R (∀ i, f i) where
   star_smul r x := funext fun i => star_smul r (x i)
 
+instance {R : Type w} [∀ i, SMul R (f i)] [∀ i, SMul Rᵐᵒᵖ (f i)] [Star R] [∀ i, Star (f i)]
+    [∀ i, StarModule' R (f i)] : StarModule' R (∀ i, f i) where
+  star_smul' r x := funext fun i => star_smul' r (x i)
+  star_op_smul r x := funext fun i => star_op_smul r (x i)
+
 theorem single_star [∀ i, AddMonoid (f i)] [∀ i, StarAddMonoid (f i)] [DecidableEq I] (i : I)
     (a : f i) : Pi.single i (star a) = star (Pi.single i a) :=
   single_op (fun i => @star (f i) _) (fun _ => star_zero _) i a

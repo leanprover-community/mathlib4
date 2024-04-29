@@ -498,20 +498,39 @@ the statement only requires `[Star R] [Star A] [SMul R A]`.
 If used as `[CommRing R] [StarRing R] [Semiring A] [StarRing A] [Algebra R A]`, this represents a
 star algebra.
 -/
-
 class StarModule (R : Type u) (A : Type v) [Star R] [Star A] [SMul R A] : Prop where
   /-- `star` commutes with scalar multiplication -/
   star_smul : ∀ (r : R) (a : A), star (r • a) = star r • star a
 #align star_module StarModule
 
 export StarModule (star_smul)
-
 attribute [simp] star_smul
 
-/-- A commutative star monoid is a star module over itself via `Monoid.toMulAction`. -/
-instance StarMul.toStarModule [CommMonoid R] [StarMul R] : StarModule R R :=
-  ⟨star_mul'⟩
-#align star_semigroup.to_star_module StarMul.toStarModule
+/-- `StarModule'` is a version of `StarModule` generalized to non-commutative settings, where
+we have $(rm)^* = m^*r^*$ where $M$ is an $R$-bimodule.
+
+The second field is redundant in the presence of `StarInvolutive`. -/
+class StarModule' (R : Type u) (M : Type v) [Star R] [Star M] [SMul R M] [SMul Rᵐᵒᵖ M] : Prop where
+  star_smul' (r : R) (m : M) : star (r • m) = MulOpposite.op (star r) • star m
+  star_op_smul (r : R) (m : M) : star (MulOpposite.op r • m) = star r • star m
+
+variable {M : Type*}
+
+export StarModule' (star_smul' star_op_smul)
+attribute [simp] star_op_smul
+attribute [simp low] star_smul'
+
+/-- A star monoid is a star module over itself via `Monoid.toMulAction`. -/
+instance StarMul.toStarModule' [Monoid R] [StarMul R] : StarModule' R R :=
+  ⟨star_mul, Function.swap star_mul⟩
+
+/-- When the action commutes, the non-commutative notion of a star module agrees with the
+commutative version. -/
+instance StarModule'.toStarModule [Star R] [Star M] [SMul R M] [SMul Rᵐᵒᵖ M] [IsCentralScalar R M]
+    [StarModule' R M] : StarModule R M where
+  star_smul r m := by rw [star_smul', op_smul_eq_smul]
+
+#align star_semigroup.to_star_module StarMul.toStarModule'
 
 instance StarAddMonoid.toStarModuleNat {α} [AddCommMonoid α] [StarAddMonoid α] : StarModule ℕ α :=
   ⟨fun n a ↦ by rw [star_nsmul, star_trivial n]⟩
