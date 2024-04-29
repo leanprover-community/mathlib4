@@ -192,9 +192,9 @@ noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint 
   rsuffices : IsRightAdjoint R'
   · let this : IsRightAdjoint (R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv) := by
       infer_instance
-    · let this : R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv ≅ R :=
-        (isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm : _) ≪≫ R.rightUnitor
-      exact Adjunction.rightAdjointOfNatIso this
+    let this : R' ⋙ (Monad.comparison (Adjunction.ofRightAdjoint U)).inv ≅ R :=
+      (isoWhiskerLeft R (Monad.comparison _).asEquivalence.unitIso.symm : _) ≪≫ R.rightUnitor
+    exact Adjunction.rightAdjointOfNatIso this
   let this : IsRightAdjoint (R' ⋙ Monad.forget (Adjunction.ofRightAdjoint U).toMonad) :=
     Adjunction.rightAdjointOfNatIso
       (isoWhiskerLeft R (Monad.comparisonForget (Adjunction.ofRightAdjoint U)).symm : _)
