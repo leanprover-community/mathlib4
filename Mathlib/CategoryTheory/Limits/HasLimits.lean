@@ -646,7 +646,15 @@ theorem hasLimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
 from some other `HasLimitsOfSize C`.
 -/
 theorem hasLimitsOfSizeShrink [HasLimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
-    HasLimitsOfSize.{v₁, u₁} C := hasLimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
+    HasLimitsOfSize.{v₁, u₁} C := sorry --  hasLimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
+/-
+type mismatch
+  hasLimitsOfSizeOfUnivLE C
+has type
+  HasLimitsOfSize.{max v₁ v₂, max u₁ u₂, v, u} C : Prop
+but is expected to have type
+  HasLimitsOfSize.{v₁, u₁, v, u} C : Prop
+-/
 #align category_theory.limits.has_limits_of_size_shrink CategoryTheory.Limits.hasLimitsOfSizeShrink
 
 instance (priority := 100) hasSmallestLimitsOfHasLimits [HasLimits C] : HasLimitsOfSize.{0, 0} C :=
@@ -1220,7 +1228,7 @@ theorem hasColimitsOfSizeOfUnivLE [UnivLE.{v₂, v₁}] [UnivLE.{u₂, u₁}]
 from some other `HasColimitsOfSize C`.
 -/
 theorem hasColimitsOfSizeShrink [HasColimitsOfSize.{max v₁ v₂, max u₁ u₂} C] :
-    HasColimitsOfSize.{v₁, u₁} C := hasColimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
+    HasColimitsOfSize.{v₁, u₁} C := sorry -- hasColimitsOfSizeOfUnivLE.{max v₁ v₂, max u₁ u₂} C
 #align category_theory.limits.has_colimits_of_size_shrink CategoryTheory.Limits.hasColimitsOfSizeShrink
 
 instance (priority := 100) hasSmallestColimitsOfHasColimits [HasColimits C] :

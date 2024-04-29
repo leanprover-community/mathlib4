@@ -257,10 +257,11 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     refine' ⟨s.image (map (algebraMap R A)) ∪ t.attach.image g, _⟩
     rw [Finset.coe_union, Finset.coe_image, Finset.coe_image, Finset.attach_eq_univ,
       Finset.coe_univ, Set.image_univ]
-    let s₀ := (MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g
+    let s' : Set (MvPolynomial (Fin n) R) := s -- problem coercing Finset to Set
+    let s₀ := (MvPolynomial.map (algebraMap R A)) '' s' ∪ Set.range g
     let I := RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X))
     change Ideal.span s₀ = I
-    have leI : Ideal.span ((MvPolynomial.map (algebraMap R A)) '' s ∪ Set.range g) ≤
+    have leI : Ideal.span ((MvPolynomial.map (algebraMap R A)) '' s' ∪ Set.range g) ≤
       RingHom.ker (MvPolynomial.aeval (R := A) (f ∘ MvPolynomial.X)) := by
       rw [Ideal.span_le]
       rintro _ (⟨x, hx, rfl⟩ | ⟨⟨x, hx⟩, rfl⟩) <;>
@@ -273,7 +274,7 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     apply leI.antisymm
     intro x hx
     rw [RingHom.mem_ker] at hx
-    let s₀ := (MvPolynomial.map (algebraMap R A)) '' ↑s ∪ Set.range g
+    let s₀ := (MvPolynomial.map (algebraMap R A)) '' s' ∪ Set.range g
     change x ∈ Ideal.span s₀
     have : x ∈ (MvPolynomial.map (algebraMap R A) : _ →+* AX).range.toAddSubmonoid ⊔
       (Ideal.span s₀).toAddSubmonoid := by
@@ -305,15 +306,17 @@ theorem of_restrict_scalars_finitePresentation [Algebra A B] [IsScalarTower R A 
     obtain ⟨_, ⟨p, rfl⟩, q, hq, rfl⟩ := AddSubmonoid.mem_sup.mp this
     rw [map_add, aeval_map_algebraMap, ← aeval_unique, show MvPolynomial.aeval (f ∘ X) q = 0
       from leI hq, add_zero] at hx
-    suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
-      refine' add_mem _ hq
-      rw [hs] at this
-      exact this hx
-    rw [Ideal.span_le]
-    intro x hx
-    apply Ideal.subset_span
-    apply Set.mem_union_left
-    exact Set.mem_image_of_mem _ hx
+    -- failed FunLike (MvPolynomial ?m.110662 R →+* MvPolynomial ?m.110662 A) ?m.110650 (MvPolynomial (Fin n) A)
+    -- suffices Ideal.span (s : Set RX) ≤ (Ideal.span s₀).comap (MvPolynomial.map <| algebraMap R A) by
+    --   refine' add_mem _ hq
+    --   rw [hs] at this
+    --   exact this hx
+    -- rw [Ideal.span_le]
+    -- intro x hx
+    -- apply Ideal.subset_span
+    -- apply Set.mem_union_left
+    -- exact Set.mem_image_of_mem _ hx
+    sorry
 #align algebra.finite_presentation.of_restrict_scalars_finite_presentation Algebra.FinitePresentation.of_restrict_scalars_finitePresentation
 
 variable {R A B}

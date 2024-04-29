@@ -126,7 +126,7 @@ instance : Inhabited Language :=
   ⟨Language.empty⟩
 
 /-- The sum of two languages consists of the disjoint union of their symbols. -/
-protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language :=
+protected def sum (L : Language.{u, v}) (L' : Language.{u', v'}) : Language.{max u u', max v v'} :=
   ⟨fun n => Sum (L.Functions n) (L'.Functions n), fun n => Sum (L.Relations n) (L'.Relations n)⟩
 #align first_order.language.sum FirstOrder.Language.sum
 

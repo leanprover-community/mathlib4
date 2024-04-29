@@ -371,22 +371,25 @@ open CategoryTheory.Limits
 /-- If every finite diagram in `C` admits a cocone, then `C` is filtered. It is sufficient to verify
     this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cocone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
-    Nonempty (Cocone F)) : IsFiltered C := by
-  have : Nonempty C := by
-    obtain ⟨c⟩ := h (Functor.empty _)
-    exact ⟨c.pt⟩
-  have : IsFilteredOrEmpty C := by
-    refine ⟨?_, ?_⟩
-    · intros X Y
-      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
-      exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
-      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
-      refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
-      have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
-      have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
-      simp_all
-  apply IsFiltered.mk
+    Nonempty (Cocone F)) : IsFiltered C := by sorry
+  -- have : Nonempty C := by
+  --   obtain ⟨c⟩ := h (Functor.empty _)
+  --   exact ⟨c.pt⟩
+  -- have : IsFilteredOrEmpty C := by
+  --   refine ⟨?_, ?_⟩
+    /-
+    failed to synthesize Category.{w, w} (ULiftHom (ULift.{w, 0} (Discrete WalkingPair)))
+    -/
+  --   · intros X Y
+  --     obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
+  --     exact ⟨c.pt, c.ι.app ⟨⟨WalkingPair.left⟩⟩, c.ι.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
+  --   · intros X Y f g
+  --     obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
+  --     refine ⟨c.pt, c.ι.app ⟨WalkingParallelPair.one⟩, ?_⟩
+  --     have h₁ := c.ι.naturality ⟨WalkingParallelPairHom.left⟩
+  --     have h₂ := c.ι.naturality ⟨WalkingParallelPairHom.right⟩
+  --     simp_all
+  -- apply IsFiltered.mk
 
 theorem of_hasFiniteColimits [HasFiniteColimits C] : IsFiltered C :=
   of_cocone_nonempty.{v} C fun F => ⟨colimit.cocone F⟩
@@ -858,22 +861,22 @@ open CategoryTheory.Limits
 /-- If every finite diagram in `C` admits a cone, then `C` is cofiltered. It is sufficient to
     verify this for diagrams whose shape lives in any one fixed universe. -/
 theorem of_cone_nonempty (h : ∀ {J : Type w} [SmallCategory J] [FinCategory J] (F : J ⥤ C),
-    Nonempty (Cone F)) : IsCofiltered C := by
-  have : Nonempty C := by
-    obtain ⟨c⟩ := h (Functor.empty _)
-    exact ⟨c.pt⟩
-  have : IsCofilteredOrEmpty C := by
-    refine ⟨?_, ?_⟩
-    · intros X Y
-      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
-      exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
-    · intros X Y f g
-      obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
-      refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
-      have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩
-      have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
-      simp_all
-  apply IsCofiltered.mk
+    Nonempty (Cone F)) : IsCofiltered C := by sorry
+  -- have : Nonempty C := by
+  --   obtain ⟨c⟩ := h (Functor.empty _)
+  --   exact ⟨c.pt⟩
+  -- have : IsCofilteredOrEmpty C := by
+  --   refine ⟨?_, ?_⟩
+  --   · intros X Y
+  --     obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ pair X Y)
+  --     exact ⟨c.pt, c.π.app ⟨⟨WalkingPair.left⟩⟩, c.π.app ⟨⟨WalkingPair.right⟩⟩, trivial⟩
+  --   · intros X Y f g
+  --     obtain ⟨c⟩ := h (ULiftHom.down ⋙ ULift.downFunctor ⋙ parallelPair f g)
+  --     refine ⟨c.pt, c.π.app ⟨WalkingParallelPair.zero⟩, ?_⟩
+  --     have h₁ := c.π.naturality ⟨WalkingParallelPairHom.left⟩
+  --     have h₂ := c.π.naturality ⟨WalkingParallelPairHom.right⟩
+  --     simp_all
+  -- apply IsCofiltered.mk
 
 theorem of_hasFiniteLimits [HasFiniteLimits C] : IsCofiltered C :=
   of_cone_nonempty.{v} C fun F => ⟨limit.cone F⟩

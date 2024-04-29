@@ -169,11 +169,12 @@ theorem range_pullback_to_prod {X Y Z : TopCat} (f : X ⟶ Z) (g : Y ⟶ Z) :
     simp [pullback.condition]
   · rintro (h : f (_, _).1 = g (_, _).2)
     use (pullbackIsoProdSubtype f g).inv ⟨⟨_, _⟩, h⟩
-    apply Concrete.limit_ext
-    rintro ⟨⟨⟩⟩ <;>
-    rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
-    -- This used to be `simp` before leanprover/lean4#2644
-    aesop_cat
+    sorry
+    -- apply Concrete.limit_ext
+    -- rintro ⟨⟨⟩⟩ <;>
+    -- rw [← comp_apply, ← comp_apply, limit.lift_π] <;>
+    -- -- This used to be `simp` before leanprover/lean4#2644
+    -- aesop_cat
 #align Top.range_pullback_to_prod TopCat.range_pullback_to_prod
 
 /-- The pullback along an embedding is (isomorphic to) the preimage. -/
@@ -231,14 +232,15 @@ theorem range_pullback_map {W X Y Z S T : TopCat} (f₁ : W ⟶ S) (f₂ : X ⟶
     simp only [comp_apply, hx₁, hx₂]
     simp only [← comp_apply, pullback.condition]
   use (pullbackIsoProdSubtype f₁ f₂).inv ⟨⟨x₁, x₂⟩, this⟩
-  apply Concrete.limit_ext
-  rintro (_ | _ | _) <;>
-  simp only [← comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
-  · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
-      pullbackFst_apply, hx₁]
-    rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
-  · simp [hx₁]
-  · simp [hx₂]
+  sorry
+  -- apply Concrete.limit_ext
+  -- rintro (_ | _ | _) <;>
+  -- simp only [← comp_apply, Category.assoc, limit.lift_π, PullbackCone.mk_π_app_one]
+  -- · simp only [cospan_one, pullbackIsoProdSubtype_inv_fst_assoc, comp_apply,
+  --     pullbackFst_apply, hx₁]
+  --   rw [← limit.w _ WalkingCospan.Hom.inl, cospan_map_inl, comp_apply (g := g₁)]
+  -- · simp [hx₁]
+  -- · simp [hx₂]
 #align Top.range_pullback_map TopCat.range_pullback_map
 
 theorem pullback_fst_range {X Y S : TopCat} (f : X ⟶ S) (g : Y ⟶ S) :

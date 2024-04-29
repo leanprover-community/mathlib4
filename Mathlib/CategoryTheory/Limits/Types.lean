@@ -404,8 +404,8 @@ theorem isColimit_iff_bijective_desc : Nonempty (IsColimit c) ↔ (Quot.desc c).
     · let f : Quot F → ULift.{u} Bool := fun z => ULift.up (x = z)
       suffices f x = f y by simpa [f] using this
       rw [← Quot.desc_toCocone_desc c f hc x, h, Quot.desc_toCocone_desc]
-    · let f₁ : c.pt ⟶ ULift.{u} Bool := fun _ => ULift.up true
-      let f₂ : c.pt ⟶ ULift.{u} Bool := fun x => ULift.up (∃ a, Quot.desc c a = x)
+    · let f₁ : c.pt ⟶ ULift.{u,0} Bool := fun _ => ULift.up true
+      let f₂ : c.pt ⟶ ULift.{u,0} Bool := fun x => ULift.up (∃ a, Quot.desc c a = x)
       suffices f₁ = f₂ by simpa [f₁, f₂] using congrFun this x
       refine hc.hom_ext fun j => funext fun x => ?_
       simpa [f₁, f₂] using ⟨Quot.ι F j x, by simp⟩

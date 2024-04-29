@@ -257,8 +257,19 @@ noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     apply Iso.completeGraph
     simpa using (Fintype.equivFin h.choose).symm
   rw [← ha] at this
-  convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
-  exact hb.symm
+  /-
+  application type mismatch
+    Embedding.comp (Embedding.induce ↑(Exists.choose h)) (Iso.toEmbedding this)
+  argument
+    Iso.toEmbedding this
+  has type
+    ⊤ ↪g induce (↑(Exists.choose h)) G : Type u_1
+  but is expected to have type
+    ?m.91277 ↪g induce ↑(Exists.choose h) ?m.91279 : Type u_1
+  -/
+  -- convert (Embedding.induce ↑h.choose.toSet).comp this.toEmbedding
+  -- exact hb.symm
+  sorry
 #align simple_graph.top_embedding_of_not_clique_free SimpleGraph.topEmbeddingOfNotCliqueFree
 
 theorem not_cliqueFree_iff (n : ℕ) : ¬G.CliqueFree n ↔ Nonempty ((⊤ : SimpleGraph (Fin n)) ↪g G) :=

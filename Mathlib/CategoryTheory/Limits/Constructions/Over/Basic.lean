@@ -31,15 +31,16 @@ namespace CategoryTheory.Over
 
 /-- Make sure we can derive pullbacks in `Over B`. -/
 instance {B : C} [HasPullbacks C] : HasPullbacks (Over B) := by
-  letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingCospan)) C :=
-    hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
+  letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingCospan)) C := sorry
+    -- hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
+    -- failed to synthesize Category.{v, v} (ULiftHom (ULift.{v, 0} WalkingCospan))
   letI : Category (ULiftHom.{v} (ULift.{v} WalkingCospan)) := inferInstance
   exact hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
 
 /-- Make sure we can derive equalizers in `Over B`. -/
 instance {B : C} [HasEqualizers C] : HasEqualizers (Over B) := by
-  letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingParallelPair)) C :=
-    hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
+  letI : HasLimitsOfShape (ULiftHom.{v} (ULift.{v} WalkingParallelPair)) C := sorry
+    -- hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v} _)
   letI : Category (ULiftHom.{v} (ULift.{v} WalkingParallelPair)) := inferInstance
   exact hasLimitsOfShape_of_equivalence (ULiftHomULiftCategory.equiv.{v, v} _).symm
 

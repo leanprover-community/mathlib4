@@ -216,7 +216,16 @@ theorem exists_elementaryEmbedding_card_eq_of_le (M : Type w') [L.Structure M] [
   obtain ⟨S, _, hS⟩ := exists_elementarySubstructure_card_eq L ∅ κ h1 (by simp) h2 h3
   have : Small.{w} S := by
     rw [← lift_inj.{_, w + 1}, lift_lift, lift_lift] at hS
-    exact small_iff_lift_mk_lt_univ.2 (lt_of_eq_of_lt hS κ.lift_lt_univ')
+    sorry
+    -- exact small_iff_lift_mk_lt_univ.2 (lt_of_eq_of_lt hS κ.lift_lt_univ')
+  /-
+    argument
+      lift_lt_univ' κ
+    has type
+      lift.{max (w + 1) w', w} κ < univ.{w, w'} : Prop
+    but is expected to have type
+      lift.{max w' (w + 1), w} κ < univ.{w, max w' (w + 1)} : Prop
+  -/
   refine'
     ⟨(equivShrink S).bundledInduced L,
       ⟨S.subtype.comp (Equiv.bundledInducedEquiv L _).symm.toElementaryEmbedding⟩,

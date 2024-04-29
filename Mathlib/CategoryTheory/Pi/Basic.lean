@@ -349,7 +349,11 @@ noncomputable def Pi.equivalenceOfEquiv (e : J ≃ I) :
   functor := Functor.pi' (fun i => Pi.eval _ (e.symm i) ⋙
     (Pi.eqToEquivalence C (by simp)).functor)
   inverse := Functor.pi' (fun i' => Pi.eval _ (e i'))
-  unitIso := NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
+  unitIso :=
+    letI  : (i' : J) →
+      Category.{max u₁ v₁, max u₁ v₁} (C (e (e.symm (e i'))) ⥤ C (e i') → C (e i')) :=
+        fun i' ↦ pi fun _ ↦ C (e i')
+    NatIso.pi' (fun i' => Functor.leftUnitor _ ≪≫
     (Pi.evalCompEqToEquivalenceFunctor (fun j => C (e j)) (e.symm_apply_apply i')).symm ≪≫
     isoWhiskerLeft _ ((Pi.eqToEquivalenceFunctorIso C e (e.symm_apply_apply i')).symm) ≪≫
     (Functor.pi'CompEval _ _).symm ≪≫ isoWhiskerLeft _ (Functor.pi'CompEval _ _).symm ≪≫

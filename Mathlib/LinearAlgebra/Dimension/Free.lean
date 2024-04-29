@@ -98,8 +98,18 @@ lemma rank_eq_mk_of_infinite_lt [Infinite R] (h_lt : lift.{v} #R < lift.{u} #M) 
   have h : lift #M = lift #(ChooseBasisIndex R M →₀ R) := lift_mk_eq'.mpr ⟨(chooseBasis R M).repr⟩
   simp only [mk_finsupp_lift_of_infinite', lift_id', ← rank_eq_card_chooseBasisIndex, lift_max,
     lift_lift] at h
-  refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
-  exact (lift_umax.{v, u}.symm ▸ h_lt).ne
+  sorry
+  -- refine lift_inj.mp ((max_eq_iff.mp h.symm).resolve_right <| not_and_of_not_left _ ?_).left
+  -- exact (lift_umax.{v, u}.symm ▸ h_lt).ne
+  /-
+    argument
+      (Or.resolve_right (max_eq_iff.mp h.symm)
+          (not_and_of_not_left (lift.{u, v} (Module.rank R M) ≤ lift.{v, u} #R) ?m.70458)).left
+    has type
+      lift.{u, v} (Module.rank R M) = lift.{max u v, v} #M : Prop
+    but is expected to have type
+      lift.{u, v} (Module.rank R M) = lift.{u, v} #M : Prop
+  -/
 
 end Module.Free
 

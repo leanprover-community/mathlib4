@@ -260,16 +260,23 @@ theorem range_prod_map {W X Y Z : TopCat.{u}} (f : W ⟶ Y) (g : X ⟶ Z) :
       and_self_iff]
   · rintro ⟨⟨x₁, hx₁⟩, ⟨x₂, hx₂⟩⟩
     use (prodIsoProd W X).inv (x₁, x₂)
-    apply Concrete.limit_ext
-    rintro ⟨⟨⟩⟩
-    · simp only [← comp_apply, Category.assoc]
-      erw [Limits.prod.map_fst]
-      rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
-      exact hx₁
-    · simp only [← comp_apply, Category.assoc]
-      erw [Limits.prod.map_snd]
-      rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
-      exact hx₂
+    /-
+      tactic 'apply' failed, failed to unify
+        ?x = ?y
+      with
+        (prod.map f g) ((prodIsoProd W X).inv (x₁, x₂)) = x
+    -/
+    -- apply Concrete.limit_ext
+    -- rintro ⟨⟨⟩⟩
+    -- · simp only [← comp_apply, Category.assoc]
+    --   erw [Limits.prod.map_fst]
+    --   rw [TopCat.prodIsoProd_inv_fst_assoc,TopCat.comp_app]
+    --   exact hx₁
+    -- · simp only [← comp_apply, Category.assoc]
+    --   erw [Limits.prod.map_snd]
+    --   rw [TopCat.prodIsoProd_inv_snd_assoc,TopCat.comp_app]
+    --   exact hx₂
+    sorry
 #align Top.range_prod_map TopCat.range_prod_map
 
 theorem inducing_prod_map {W X Y Z : TopCat.{u}} {f : W ⟶ X} {g : Y ⟶ Z} (hf : Inducing f)

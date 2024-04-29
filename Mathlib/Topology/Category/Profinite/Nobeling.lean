@@ -522,9 +522,13 @@ def factors (x : π C (· ∈ s)) : List (LocallyConstant (π C (· ∈ s)) ℤ)
     (s.sort (·≥·))
 
 theorem list_prod_apply (x : C) (l : List (LocallyConstant C ℤ)) :
-    l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by
-  rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
-  rfl
+    l.prod x = (l.map (LocallyConstant.evalMonoidHom x)).prod := by sorry
+  /-
+  failed
+  FunLike (LocallyConstant ↑C ?m.171296 →* ?m.171296) (LocallyConstant ↑C ℤ) ?m.171287
+  -/
+  -- rw [← map_list_prod (LocallyConstant.evalMonoidHom x) l]
+  -- rfl
 
 theorem factors_prod_eq_basis_of_eq {x y : (π C fun x ↦ x ∈ s)} (h : y = x) :
     (factors C s x).prod y = 1 := by

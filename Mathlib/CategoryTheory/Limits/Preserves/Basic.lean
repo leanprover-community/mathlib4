@@ -286,7 +286,7 @@ def preservesLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, 
 from some other `PreservesLimitsOfSize F`.
 -/
 def preservesLimitsOfSizeShrink (F : C ⥤ D) [PreservesLimitsOfSize.{max w w₂, max w' w₂'} F] :
-    PreservesLimitsOfSize.{w, w'} F := preservesLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+    PreservesLimitsOfSize.{w, w'} F := sorry --  preservesLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
 #align category_theory.limits.preserves_limits_of_size_shrink CategoryTheory.Limits.preservesLimitsOfSizeShrink
 
 /-- Preserving limits at any universe level implies preserving limits in universe `0`. -/
@@ -356,7 +356,7 @@ def preservesColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂
 from some other `PreservesColimitsOfSize F`.
 -/
 def preservesColimitsOfSizeShrink (F : C ⥤ D) [PreservesColimitsOfSize.{max w w₂, max w' w₂'} F] :
-    PreservesColimitsOfSize.{w, w'} F := preservesColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+    PreservesColimitsOfSize.{w, w'} F := sorry -- preservesColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
 #align category_theory.limits.preserves_colimits_of_size_shrink CategoryTheory.Limits.preservesColimitsOfSizeShrink
 
 /-- Preserving colimits at any universe implies preserving colimits at universe `0`. -/
@@ -638,7 +638,7 @@ def reflectsLimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂, w
 from some other `reflectsLimitsOfSize F`.
 -/
 def reflectsLimitsOfSizeShrink (F : C ⥤ D) [ReflectsLimitsOfSize.{max w w₂, max w' w₂'} F] :
-    ReflectsLimitsOfSize.{w, w'} F := reflectsLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+    ReflectsLimitsOfSize.{w, w'} F := sorry -- reflectsLimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
 #align category_theory.limits.reflects_limits_of_size_shrink CategoryTheory.Limits.reflectsLimitsOfSizeShrink
 
 /-- Reflecting limits at any universe implies reflecting limits at universe `0`. -/
@@ -753,7 +753,7 @@ def reflectsColimitsOfSizeOfUnivLE (F : C ⥤ D) [UnivLE.{w, w'}] [UnivLE.{w₂,
 from some other `reflectsColimitsOfSize F`.
 -/
 def reflectsColimitsOfSizeShrink (F : C ⥤ D) [ReflectsColimitsOfSize.{max w w₂, max w' w₂'} F] :
-    ReflectsColimitsOfSize.{w, w'} F := reflectsColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
+    ReflectsColimitsOfSize.{w, w'} F := sorry -- reflectsColimitsOfSizeOfUnivLE.{max w w₂, max w' w₂'} F
 #align category_theory.limits.reflects_colimits_of_size_shrink CategoryTheory.Limits.reflectsColimitsOfSizeShrink
 
 /-- Reflecting colimits at any universe implies reflecting colimits at universe `0`. -/

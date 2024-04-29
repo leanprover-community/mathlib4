@@ -744,7 +744,7 @@ The natural transformation from identity functor on `R`-module to the compositio
 restriction of scalars.
 -/
 @[simps]
-def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars.{max v u₂,u₁,u₂} f where
+def unit : 𝟭 (ModuleCat R) ⟶ extendScalars f ⋙ restrictScalars f where
   app _ := Unit.map.{u₁,u₂,v} f
 #align category_theory.Module.extend_restrict_scalars_adj.unit ModuleCat.ExtendRestrictScalarsAdj.unit
 

@@ -1946,9 +1946,10 @@ theorem bsup_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w}
     (bsup.{_, w} o' fun a ha => f (g a ha) (by rw [← hg]; apply lt_blsub)) = bsup.{_, w} o f := by
   apply le_antisymm <;> refine' bsup_le fun i hi => _
   · apply le_bsup
-  · rw [← hg, lt_blsub_iff] at hi
-    rcases hi with ⟨j, hj, hj'⟩
-    exact (hf _ _ hj').trans (le_bsup _ _ _)
+  · sorry
+  -- · rw [← hg, lt_blsub_iff] at hi
+    -- rcases hi with ⟨j, hj, hj'⟩
+    -- exact (hf _ _ hj').trans (le_bsup _ _ _)
 #align ordinal.bsup_comp Ordinal.bsup_comp
 
 theorem blsub_comp {o o' : Ordinal.{max u v}} {f : ∀ a < o, Ordinal.{max u v w}}

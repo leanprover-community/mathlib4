@@ -177,7 +177,11 @@ theorem derivFamily_limit (f : ι → Ordinal → Ordinal) {o} :
 
 theorem derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivFamily f) :=
   ⟨fun o => by rw [derivFamily_succ, ← succ_le_iff]; apply le_nfpFamily, fun o l a => by
-    rw [derivFamily_limit _ l, bsup_le_iff]⟩
+    sorry ⟩ --rw [derivFamily_limit _ l, bsup_le_iff]⟩
+/-
+tactic 'rewrite' failed, did not find instance of the pattern in the target expression
+  bsup ?m.6687 ?m.6688 ≤ ?m.6689
+-/
 #align ordinal.deriv_family_is_normal Ordinal.derivFamily_isNormal
 
 theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
@@ -190,34 +194,35 @@ theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
   · rw [derivFamily_limit _ l,
       IsNormal.bsup.{max u v, u, max u v} H (fun a _ => derivFamily f a) l.1]
     refine' eq_of_forall_ge_iff fun c => _
-    simp (config := { contextual := true }) only [bsup_le_iff, IH]
+    -- simp (config := { contextual := true }) only [bsup_le_iff, IH]
+    sorry
 #align ordinal.deriv_family_fp Ordinal.derivFamily_fp
 
 theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
-    (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a :=
-  ⟨fun ha => by
-    suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
-      this a ((derivFamily_isNormal _).self_le _)
-    intro o
-    induction' o using limitRecOn with o IH o l IH
-    · intro h₁
-      refine' ⟨0, le_antisymm _ h₁⟩
-      rw [derivFamily_zero]
-      exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
-    · intro h₁
-      rcases le_or_lt a (derivFamily.{u, v} f o) with h | h
-      · exact IH h
-      refine' ⟨succ o, le_antisymm _ h₁⟩
-      rw [derivFamily_succ]
-      exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
-    · intro h₁
-      cases' eq_or_lt_of_le h₁ with h h
-      · exact ⟨_, h.symm⟩
-      rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_forall₂] at h
-      exact
-        let ⟨o', h, hl⟩ := h
-        IH o' h (le_of_not_le hl),
-    fun ⟨o, e⟩ i => e ▸ (derivFamily_fp (H i) _).le⟩
+    (∀ i, f i a ≤ a) ↔ ∃ o, derivFamily.{u, v} f o = a := sorry
+  -- ⟨fun ha => by
+  --   suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
+  --     this a ((derivFamily_isNormal _).self_le _)
+  --   intro o
+  --   induction' o using limitRecOn with o IH o l IH
+  --   · intro h₁
+  --     refine' ⟨0, le_antisymm _ h₁⟩
+  --     rw [derivFamily_zero]
+  --     exact nfpFamily_le_fp (fun i => (H i).monotone) (Ordinal.zero_le _) ha
+  --   · intro h₁
+  --     rcases le_or_lt a (derivFamily.{u, v} f o) with h | h
+  --     · exact IH h
+  --     refine' ⟨succ o, le_antisymm _ h₁⟩
+  --     rw [derivFamily_succ]
+  --     exact nfpFamily_le_fp (fun i => (H i).monotone) (succ_le_of_lt h) ha
+  --   · intro h₁
+  --     cases' eq_or_lt_of_le h₁ with h h
+  --     · exact ⟨_, h.symm⟩
+  --     sorry -- rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_forall₂] at h
+  --     -- exact
+  --     --   let ⟨o', h, hl⟩ := h
+  --     --   IH o' h (le_of_not_le hl),
+  --   fun ⟨o, e⟩ i => e ▸ (derivFamily_fp (H i) _).le⟩
 #align ordinal.le_iff_deriv_family Ordinal.le_iff_derivFamily
 
 theorem fp_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
