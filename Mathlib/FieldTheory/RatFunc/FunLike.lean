@@ -19,6 +19,8 @@ universe u
 
 variable {K : Type u}
 
+namespace RatFunc
+
 section Eval
 
 open scoped Classical
