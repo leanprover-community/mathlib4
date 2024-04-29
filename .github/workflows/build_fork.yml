@@ -119,7 +119,10 @@ jobs:
           ./mk_build_yml.sh
 
       - name: check that workflows were consistent
-        run: git diff --exit-code
+        run: |
+          git rev-parse --abbrev-ref HEAD
+          git merge-base origin/master -- "origin/$( git rev-parse --abbrev-ref HEAD )"
+          git diff --exit-code
 
   build:
     if: github.repository != 'leanprover-community/mathlib4'
