@@ -2122,7 +2122,7 @@ structure Cfg where
   l : Option Λ
   /-- The internal state -/
   var : σ
-  /-- The (finite) collection of internals stacks -/
+  /-- The (finite) collection of internal stacks -/
   stk : ∀ k, List (Γ k)
 #align turing.TM2.cfg Turing.TM2.Cfg
 

@@ -152,7 +152,7 @@ theorem rfindOpt_mono {α} {f : ℕ → Option α} (H : ∀ {a m n}, m ≤ n →
     simp at this; simp [this, get_mem]⟩
 #align nat.rfind_opt_mono Nat.rfindOpt_mono
 
-/-- Type of partially recursive partial functions `ℕ → ℕ` -/
+/-- `PartRec f` means that `f : ℕ → ℕ` is partially recursive. -/
 inductive Partrec : (ℕ →. ℕ) → Prop
   | zero : Partrec (pure 0)
   | succ : Partrec succ
@@ -251,7 +251,7 @@ def Computable {α σ} [Primcodable α] [Primcodable σ] (f : α → σ) :=
   Partrec (f : α →. σ)
 #align computable Computable
 
-/-- Computable functions `α × β → σ` between `Primcodable` types -/
+/-- Computable functions `α → β → σ` between `Primcodable` types -/
 def Computable₂ {α β σ} [Primcodable α] [Primcodable β] [Primcodable σ] (f : α → β → σ) :=
   Computable fun p : α × β => f p.1 p.2
 #align computable₂ Computable₂
