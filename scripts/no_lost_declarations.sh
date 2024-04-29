@@ -36,7 +36,7 @@ git diff --unified=0 "${commit}" |
 printf $'\nReference commit: %s\n\nYou can run this locally using
 ./scripts/no_lost_declarations.sh <optional_commit>\n' "${commit}"
 
- : <<BYE
+ : <<ReferenceTest
 theorem hello
-inductives counted even if it is
-BYE
+inductives counted even if it is inductives, rather than inductive
+ReferenceTest
