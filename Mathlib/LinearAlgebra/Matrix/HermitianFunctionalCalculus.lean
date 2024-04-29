@@ -39,19 +39,22 @@ so I have to learn how to specify all of this data.
 
 -/
 
+/--Can probably remove this lemma and just incorporate its proof below-/
 theorem RCLike_mem_spectrum_iff_mem_spectrum (t : ℝ) :
-    (RCLike.ofReal t) ∈ spectrum 𝕜 (toEuclideanLin A) ↔ t ∈ spectrum ℝ (toEuclideanLin A) :=
-spectrum.algebraMap_mem_iff
+    (RCLike.ofReal t) ∈ spectrum 𝕜 (toEuclideanLin A) ↔
+                           t ∈ spectrum ℝ (toEuclideanLin A) :=
+spectrum.algebraMap_mem_iff (S := 𝕜) (R := ℝ) (r := t) (a := toEuclideanLin A)
 
-
-theorem eigenvalue_mem_toEuclideanLin_spectrum (i : n) :
-    hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
+theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
+    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
     have H0 : Module.End.HasEigenvalue (toEuclideanLin A) (hA.eigenvalues i) := by sorry
-    have H1 := Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
-    sorry
+    exact Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
 
+theorem eigenvalue_mem_toEuclideanLin_spectrum2 (i : n) :
+    hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
+refine (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i) (R := ℝ)
+             (a := toEuclideanLin A)).mp (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
 
-#exit
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
   diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ hA.eigenvalues)
