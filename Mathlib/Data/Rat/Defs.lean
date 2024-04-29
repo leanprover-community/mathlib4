@@ -44,8 +44,6 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
-lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
-
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
@@ -237,7 +235,8 @@ instance : Inv ℚ :=
 @[simp] lemma inv_divInt' (a b : ℤ) : (a /. b)⁻¹ = b /. a := inv_divInt ..
 #align rat.inv_def Rat.inv_divInt
 
-@[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by rw [mkRat_eq_divInt, inv_divInt']
+@[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by
+  rw [mkRat_eq_divInt, inv_divInt']
 
 lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', num_divInt_den]
 #align rat.inv_def' Rat.inv_def'
