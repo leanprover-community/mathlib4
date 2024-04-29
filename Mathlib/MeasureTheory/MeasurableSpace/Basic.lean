@@ -1848,13 +1848,13 @@ theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, Measurable
   `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
 def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
-  let e : Option δ ≃ δ ⊕ PUnit := Equiv.optionEquivSumPUnit δ
-  let em1 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
+  let e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
+  let em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
     MeasurableEquiv.piCongrLeft α e.symm
-  let em2 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
-      × ((i' : PUnit) → α (e.symm (Sum.inr i'))) :=
+  let em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
+      × ((i' : Unit) → α (e.symm (Sum.inr i'))) :=
     MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
-  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : PUnit.{u_8 + 1}) → α (e.symm (Sum.inr i')))
+  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
       ≃ᵐ ((i : δ) → α (some i)) × α none :=
     MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
       (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))
