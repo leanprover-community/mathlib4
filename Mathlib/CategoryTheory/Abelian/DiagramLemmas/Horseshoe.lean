@@ -481,7 +481,7 @@ instance : QuasiIsoAt (horseshoeToSingle₃ A) 0 := by
   · exact horseshoeBaseπ_epi_τ₃ (horseshoeStep A 0).X
 
 lemma stupid_aux (A B : ShortComplex 𝒞) (h : A = B)  :
-  (eqToHom h).τ₁ = eqToHom (by simp [h]) := by induction h; simp
+    (eqToHom h).τ₁ = eqToHom (by simp [h]) := by induction h; simp
 
 lemma stupid_aux' (A B : ShortComplex 𝒞) (h : A = B)  :
     (eqToHom h).τ₂ = eqToHom (by simp [h]) := by induction h; simp
