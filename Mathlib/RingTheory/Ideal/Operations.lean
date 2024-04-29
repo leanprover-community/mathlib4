@@ -126,6 +126,8 @@ theorem annihilator_iSup (ι : Sort w) (f : ι → Submodule R M) :
         mem_annihilator'.1 this
 #align submodule.annihilator_supr Submodule.annihilator_iSup
 
+-- this, `mem_set_smul_of_mem_mem`, and `smul_mem_pointwise_smul` should be
+-- named in a more consistent & descriptive way
 theorem smul_mem_smul {r} {n} (hr : r ∈ I) (hn : n ∈ N) : r • n ∈ I • N :=
   apply_mem_map₂ _ hr hn
 #align submodule.smul_mem_smul Submodule.smul_mem_smul
@@ -1527,28 +1529,34 @@ theorem le_comap_sup : comap f K ⊔ comap f L ≤ comap f (K ⊔ L) :=
   (gc_map_comap f : GaloisConnection (map f) (comap f)).monotone_u.le_map_sup _ _
 #align ideal.le_comap_sup Ideal.le_comap_sup
 
+theorem smul_restrictScalars_eq_restrictScalars_map_smul {R S M}
+    [CommSemiring R] [CommSemiring S] [Algebra R S] [AddCommMonoid M]
+    [Module R M] [Module S M] [IsScalarTower R S M]
+    (I : Ideal R) (N : Submodule S M) :
+    I • N.restrictScalars R = (I.map (algebraMap R S) • N).restrictScalars R :=
+  le_antisymm (Submodule.smul_le.mpr fun r hr x hx =>
+                algebra_compatible_smul S r x ▸
+                  Submodule.smul_mem_smul (I.mem_map_of_mem _ hr) hx) <| by
+    intro x hx
+    rw [Submodule.restrictScalars_mem] at hx
+    refine Submodule.smul_induction_on hx ?_ (fun _ _ => add_mem)
+    intro r hr
+    refine Submodule.span_induction hr ?_ ?_ ?_ ?_
+    · refine Set.forall_mem_image.mpr ?_
+      intro i hi n hn
+      exact algebraMap_smul S i n ▸ Submodule.smul_mem_smul hi hn
+    · simp only [zero_smul, Submodule.zero_mem, implies_true, forall_const]
+    · intros x y hx hy n hn
+      exact add_smul x y n ▸ add_mem (hx n hn) (hy n hn)
+    · intros s t ht n hn
+      rw [smul_assoc, smul_comm]
+      exact ht (s • n) (N.smul_mem s hn)
+
 @[simp]
 theorem smul_top_eq_map {R S : Type*} [CommSemiring R] [CommSemiring S] [Algebra R S]
-    (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R := by
-  refine'
-    le_antisymm (Submodule.smul_le.mpr fun r hr y _ => _) fun x hx =>
-      Submodule.span_induction hx _ _ _ _
-  · rw [Algebra.smul_def]
-    exact mul_mem_right _ _ (mem_map_of_mem _ hr)
-  · rintro _ ⟨x, hx, rfl⟩
-    rw [← mul_one (algebraMap R S x), ← Algebra.smul_def]
-    exact Submodule.smul_mem_smul hx Submodule.mem_top
-  · exact Submodule.zero_mem _
-  · intro x y
-    exact Submodule.add_mem _
-  intro a x hx
-  refine' Submodule.smul_induction_on hx _ _
-  · intro r hr s _
-    rw [smul_comm]
-    exact Submodule.smul_mem_smul hr Submodule.mem_top
-  · intro x y hx hy
-    rw [smul_add]
-    exact Submodule.add_mem _ hx hy
+    (I : Ideal R) : I • (⊤ : Submodule R S) = (I.map (algebraMap R S)).restrictScalars R :=
+  Eq.trans (smul_restrictScalars_eq_restrictScalars_map_smul I (⊤ : Ideal S)) <|
+    congrArg _ <| Eq.trans (Ideal.smul_eq_mul _ _) (Ideal.mul_top _)
 #align ideal.smul_top_eq_map Ideal.smul_top_eq_map
 
 @[simp]
@@ -2178,6 +2186,11 @@ lemma span_smul_eq
     (s : Set R) (N : Submodule R M) :
     Ideal.span s • N = s • N := by
   rw [← coe_set_smul, coe_span_smul]
+
+theorem set_smul_top_eq_span (s : Set R) :
+    s • ⊤ = Ideal.span s :=
+  Eq.trans (span_smul_eq s ⊤).symm <|
+    Eq.trans (smul_eq_mul (Ideal R)) (Ideal.mul_top (.span s))
 
 end Submodule
 
