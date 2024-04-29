@@ -152,10 +152,12 @@ jobs:
 
       - uses: actions/checkout@v4
 
+      - name: Fetch latest commits from master
+        run: git fetch origin master
+
       - name: print_lost_declarations
         run: |
-          printf '* fetch\n'
-          git fetch origin master
+          printf '* fetched\n'
           rp="$(git rev-parse --abbrev-ref HEAD)"
           printf $'* rev-parse \'%s\'\n' "${rp}"
           #git fetch origin "${rp}"
