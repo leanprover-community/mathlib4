@@ -94,7 +94,8 @@ jobs:
           find . -name . -o -prune -exec rm -rf -- {} +
 
       - uses: actions/checkout@v4
-
+        with:
+          fetch-depth: 0
       - name: update workflows
         run: |
           cd .github/workflows/
