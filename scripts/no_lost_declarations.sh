@@ -27,7 +27,7 @@ git diff --unified=0 "${commit}" |
       pm=acc[res]
       if(pm != "-+") {
         if(pm == "+") { added++ } else removed++
-        fin=fin sprintf("* `%s` `%s`\n", pm == "+" ? pm : pm, res)
+        fin=fin sprintf("* `%s` `%s`\n", pm, res)
       } else paired++
     }
     print fin| "sort -k3"; close("sort -k3")
