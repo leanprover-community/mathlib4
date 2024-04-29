@@ -602,7 +602,7 @@ theorem regulator_ne_zero : regulator K ≠ 0 := Zlattice.covolume_ne_zero (unit
 theorem regulator_pos : 0 < regulator K := Zlattice.covolume_pos (unitLattice K) volume
 
 def regulatorOfFamily (w' : InfinitePlace K) (u : Fin (rank K) → (𝓞 K)ˣ)
-  (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :=
+    (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :=
   (Matrix.of (fun w₁ : {w // w ≠ w'} ↦ fun w₂ ↦ mult w₁.val * Real.log (w₁.val (u (e w₂))))).det
 
 theorem regulator_eq_regulatorofFamily (w' : InfinitePlace K) {u : Fin (rank K) → (𝓞 K)ˣ}
