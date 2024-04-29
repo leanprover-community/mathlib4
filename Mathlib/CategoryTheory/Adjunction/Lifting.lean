@@ -175,7 +175,7 @@ pairs, then a functor `R : A ⥤ B` has a left adjoint if the composite `R ⋙ U
 Note the converse is true (with weaker assumptions), by `Adjunction.comp`.
 See https://ncatlab.org/nlab/show/adjoint+triangle+theorem
 -/
-noncomputable def adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
+lemma adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F ⊣ U)
     [∀ X : B, RegularEpi (adj₁.counit.app X)] [HasReflexiveCoequalizers A]
     [(R ⋙ U).IsRightAdjoint ] : R.IsRightAdjoint where
   exists_leftAdjoint :=

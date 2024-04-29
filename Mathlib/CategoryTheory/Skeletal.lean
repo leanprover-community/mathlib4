@@ -44,7 +44,7 @@ def Skeletal : Prop :=
 /-- `IsSkeletonOf C D F` says that `F : D ⥤ C` exhibits `D` as a skeletal full subcategory of `C`,
 in particular `F` is a (strong) equivalence and `D` is skeletal.
 -/
-structure IsSkeletonOf (F : D ⥤ C) where
+structure IsSkeletonOf (F : D ⥤ C) : Prop where
   /-- The category `D` has isomorphic objects equal -/
   skel : Skeletal D
   /-- The functor `F` is an equivalence -/

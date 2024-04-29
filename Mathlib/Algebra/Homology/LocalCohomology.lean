@@ -273,6 +273,8 @@ def SelfLERadical.cast (hJK : J.radical = K.radical) : SelfLERadical J ⥤ SelfL
 #align local_cohomology.self_le_radical.cast localCohomology.SelfLERadical.cast
 
 -- TODO generalize this to the equivalence of full categories for any `iff`.
+/-- The equivalence of categories `SelfLERadical J ≌ SelfLERadical K`
+when `J.radical = K.radical`. -/
 def SelfLERadical.castEquivalence (hJK : J.radical = K.radical) :
     SelfLERadical J ≌ SelfLERadical K where
   functor := SelfLERadical.cast hJK

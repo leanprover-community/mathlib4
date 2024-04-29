@@ -126,7 +126,7 @@ def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArr
 #align category_theory.adjunction_of_costructured_arrow_terminals CategoryTheory.adjunctionOfCostructuredArrowTerminals
 
 /-- If each costructured arrow category on `G` has a terminal object, `G` is a left adjoint. -/
-def isLeftAdjointOfCostructuredArrowTerminals : G.IsLeftAdjoint where
+def isLeftAdjoint_of_costructuredArrowTerminals : G.IsLeftAdjoint where
   exists_rightAdjoint :=
     ⟨rightAdjointOfCostructuredArrowTerminals G, ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
 #align category_theory.is_left_adjoint_of_costructured_arrow_terminals CategoryTheory.isLeftAdjointOfCostructuredArrowTerminals

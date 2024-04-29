@@ -42,8 +42,10 @@ class Reflective (R : D ⥤ C) extends R.Full, R.Faithful where
 
 variable (i : D ⥤ C)
 
+/-- The reflector `C ⥤ D` when `R : D ⥤ C` is reflective. -/
 def reflector [Reflective i] : C ⥤ D := Reflective.L (R := i)
 
+/-- The adjunction `reflector i ⊣ i` when `i` is reflective. -/
 def reflectorAdjunction [Reflective i] : reflector i ⊣ i := Reflective.adj
 
 instance [Reflective i] : i.IsRightAdjoint := ⟨_, ⟨reflectorAdjunction i⟩⟩
