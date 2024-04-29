@@ -134,8 +134,6 @@ jobs:
           git checkout master
           git checkout "${prBranchName}"
           ./scripts/no_lost_declarations.sh
-          exit 1
-
 
   build:
     if: github.repository == 'leanprover-community/mathlib4'

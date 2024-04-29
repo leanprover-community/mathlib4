@@ -120,8 +120,6 @@ jobs:
           git checkout master
           git checkout "${prBranchName}"
           ./scripts/no_lost_declarations.sh
-          exit 1
-
 
   build:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
