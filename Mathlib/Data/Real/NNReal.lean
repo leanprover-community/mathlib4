@@ -364,6 +364,11 @@ protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
   rfl
 
+@[simp, norm_cast]
+protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
+  rfl
+
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance
 
 @[simp, norm_cast] lemma coe_le_coe : (r₁ : ℝ) ≤ r₂ ↔ r₁ ≤ r₂ := Iff.rfl
