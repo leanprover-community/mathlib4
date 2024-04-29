@@ -407,6 +407,6 @@ lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (
   ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
-  ext; simp [Rat.mul_def', Rat.mkRat_eq_divInt, num_coe, den_coe]
+  ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 end NNRat
