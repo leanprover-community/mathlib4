@@ -12,9 +12,14 @@ import Mathlib.Data.Rel
 #align_import category_theory.category.Rel from "leanprover-community/mathlib"@"afad8e438d03f9d89da2914aa06cb4964ba87a18"
 
 /-!
-The category of types with binary relations as morphisms.
--/
+# Basics on the category of relations
+We define the category of types `CategoryTheory.RelCat` with binary relations as morphisms. Associating
+each function with the relation defined by its graph yields a faithful and essentially surjective
+functor `graphFunctor` that also charakterizes all isomorphisms (see `rel_iso_iff`).
 
+By flipping the arguments to a relation, we construct an equivalence `opEquivalence` 
+between `RelCat` and its opposite.
+-/
 
 namespace CategoryTheory
 
