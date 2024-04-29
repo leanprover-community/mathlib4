@@ -251,12 +251,12 @@ theorem not_cliqueFree_of_top_embedding {n : ℕ} (f : (⊤ : SimpleGraph (Fin n
 /-- An embedding of a complete graph that witnesses the fact that the graph is not clique-free. -/
 noncomputable def topEmbeddingOfNotCliqueFree {n : ℕ} (h : ¬G.CliqueFree n) :
     (⊤ : SimpleGraph (Fin n)) ↪g G := by
-  simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
-  obtain ⟨ha, hb⟩ := h.choose_spec
-  have : (⊤ : SimpleGraph (Fin h.choose.card)) ≃g (⊤ : SimpleGraph h.choose) := by
-    apply Iso.completeGraph
-    simpa using (Fintype.equivFin h.choose).symm
-  rw [← ha] at this
+  -- simp only [CliqueFree, isNClique_iff, isClique_iff_induce_eq, not_forall, Classical.not_not] at h
+  -- obtain ⟨ha, hb⟩ := h.choose_spec
+  -- have : (⊤ : SimpleGraph (Fin h.choose.card)) ≃g (⊤ : SimpleGraph h.choose) := by
+  --   apply Iso.completeGraph
+  --   simpa using (Fintype.equivFin h.choose).symm
+  -- rw [← ha] at this
   /-
   application type mismatch
     Embedding.comp (Embedding.induce ↑(Exists.choose h)) (Iso.toEmbedding this)

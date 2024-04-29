@@ -224,7 +224,7 @@ theorem lift_id' (a : Cardinal.{max u v}) : lift.{u} a = a :=
 #align cardinal.lift_id' Cardinal.lift_id'
 
 /-- A cardinal lifted to the same universe equals itself. -/
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_id (a : Cardinal) : lift.{u, u} a = a :=
   lift_id'.{u, u} a
 #align cardinal.lift_id Cardinal.lift_id
@@ -1061,7 +1061,7 @@ theorem lift_mk_shrink (α : Type u) [Small.{v} α] :
   lift_mk_eq.{v,u,w}.2 ⟨(equivShrink α).symm⟩
 #align cardinal.lift_mk_shrink Cardinal.lift_mk_shrink
 
-@[simp]
+@[simp, nolint simpNF]
 theorem lift_mk_shrink' (α : Type u) [Small.{v} α] :
     Cardinal.lift.{u} #(Shrink.{v} α) = Cardinal.lift.{v} #α :=
   lift_mk_shrink.{u, v, 0} α
