@@ -104,6 +104,10 @@ section DecidableEq
 
 variable [DecidableEq α] [DecidableEq β]
 
+lemma interedges_eq_biUnion :
+    interedges r s t = s.biUnion (fun x ↦ (t.filter (r x)).map ⟨(x, ·), Prod.mk.inj_left x⟩) := by
+  ext ⟨x, y⟩; simp [mem_interedges_iff]
+
 theorem interedges_biUnion_left (s : Finset ι) (t : Finset β) (f : ι → Finset α) :
     interedges r (s.biUnion f) t = s.biUnion fun a ↦ interedges r (f a) t := by
   ext
@@ -319,7 +323,6 @@ theorem edgeDensity_def (s t : Finset α) :
   rfl
 #align simple_graph.edge_density_def SimpleGraph.edgeDensity_def
 
-@[simp]
 theorem card_interedges_div_card (s t : Finset α) :
     ((G.interedges s t).card : ℚ) / (s.card * t.card) = G.edgeDensity s t :=
   rfl
