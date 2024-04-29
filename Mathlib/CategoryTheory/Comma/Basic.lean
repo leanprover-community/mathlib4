@@ -181,6 +181,7 @@ variable {L₁ L₂ L₃ : A ⥤ T} {R₁ R₂ R₃ : B ⥤ T}
 def leftIso {X Y : Comma L₁ R₁} (α : X ≅ Y) : X.left ≅ Y.left := (fst L₁ R₁).mapIso α
 
 /-- Extract the isomorphism between the right objects from an isomorphism in the comma category. -/
+@[simps!]
 def rightIso {X Y : Comma L₁ R₁} (α : X ≅ Y) : X.right ≅ Y.right := (snd L₁ R₁).mapIso α
 
 /-- Construct an isomorphism in the comma category given isomorphisms of the objects whose forward
