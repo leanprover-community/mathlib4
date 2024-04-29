@@ -194,7 +194,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
       rw [← eraseLead_add_C_mul_X_pow g, mul_add, reflect_add, reflect_add, mul_add, hcg, hcg] <;>
         try assumption
       · exact le_add_left card_support_C_mul_X_pow_le_one
-      · exact le_trans (natDegree_C_mul_X_pow_le g.leadingCoeff g.natDegree) Og
+      · exact le_trans (natDegree_C_mul_X_pow_le g.natDegree g.leadingCoeff) Og
       · exact Nat.lt_succ_iff.mp (gt_of_ge_of_gt Cg (eraseLead_support_card_lt g0))
       · exact le_trans eraseLead_natDegree_le_aux Og
   --first induction (left): induction step
@@ -204,7 +204,7 @@ theorem reflect_mul_induction (cf cg : ℕ) :
     rw [← eraseLead_add_C_mul_X_pow f, add_mul, reflect_add, reflect_add, add_mul, hcf, hcf] <;>
       try assumption
     · exact le_add_left card_support_C_mul_X_pow_le_one
-    · exact le_trans (natDegree_C_mul_X_pow_le f.leadingCoeff f.natDegree) Nf
+    · exact le_trans (natDegree_C_mul_X_pow_le f.natDegree f.leadingCoeff) Nf
     · exact Nat.lt_succ_iff.mp (gt_of_ge_of_gt Cf (eraseLead_support_card_lt f0))
     · exact le_trans eraseLead_natDegree_le_aux Nf
 #align polynomial.reflect_mul_induction Polynomial.reflect_mul_induction
@@ -269,6 +269,15 @@ theorem reverse_zero : reverse (0 : R[X]) = 0 :=
 @[simp]
 theorem reverse_eq_zero : f.reverse = 0 ↔ f = 0 := by simp [reverse]
 #align polynomial.reverse_eq_zero Polynomial.reverse_eq_zero
+
+theorem reverse_degree_le (f : R[X]) : f.reverse.degree ≤ f.degree := by
+  by_cases f0 : f = 0
+  · simp [f0]
+  rw [degree_le_iff_coeff_zero]
+  intro n hn
+  rw [← natDegree_lt_iff_degree_lt] at hn
+  rwa [coeff_reverse, revAt, Function.Embedding.coeFn_mk, if_neg (not_le_of_gt hn),
+    coeff_eq_zero_of_degree_lt ((natDegree_lt_iff_degree_lt f0).mp hn)]
 
 theorem reverse_natDegree_le (f : R[X]) : f.reverse.natDegree ≤ f.natDegree := by
   rw [natDegree_le_iff_degree_le, degree_le_iff_coeff_zero]

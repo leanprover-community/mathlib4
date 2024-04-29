@@ -108,7 +108,7 @@ theorem natDegree_divX_eq_natDegree_tsub_one : p.divX.natDegree = p.natDegree - 
     rw [← C_mul_X_pow_eq_monomial, divX_hom_toFun, divX_C_mul, divX_X_pow]
     split_ifs with n0
     · simp [n0]
-    · exact natDegree_C_mul_X_pow (n - 1) c c0
+    · exact natDegree_C_mul_X_pow (n - 1) c0
 
 theorem natDegree_divX_le : p.divX.natDegree ≤ p.natDegree :=
   natDegree_divX_eq_natDegree_tsub_one.trans_le (Nat.pred_le _)
