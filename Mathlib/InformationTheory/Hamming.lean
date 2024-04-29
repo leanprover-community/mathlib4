@@ -459,11 +459,6 @@ instance : MetricSpace (Hamming β) := .ofT0PseudoMetricSpace _
 instance [∀ i, Zero (β i)] : Norm (Hamming β) :=
   ⟨fun x => hammingNorm (ofHamming x)⟩
 
-@[simp, push_cast]
-theorem norm_eq_hammingNorm [∀ i, Zero (β i)] (x : Hamming β) : ‖x‖ = hammingNorm (ofHamming x) :=
-  rfl
-#align hamming.norm_eq_hamming_norm Hamming.norm_eq_hammingNorm
-
 -- Porting note: merged `SeminormedAddCommGroup` and `NormedAddCommGroup` instances
 
 instance [∀ i, AddCommGroup (β i)] : NormedAddCommGroup (Hamming β) where
