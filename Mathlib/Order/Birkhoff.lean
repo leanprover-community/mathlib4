@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Filipo A. E. Nuccio, Sam van Gool
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
+import Mathlib.Order.Interval.Finset.Basic
 import Mathlib.Data.Fintype.Order
 import Mathlib.Order.Irreducible
 import Mathlib.Order.UpperLower.Basic

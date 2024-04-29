@@ -258,8 +258,7 @@ theorem whiskeringLeftFunctor'_eq :
   rfl
 #align category_theory.localization.whiskering_left_functor'_eq CategoryTheory.Localization.whiskeringLeftFunctor'_eq
 
-variable {E}
-
+variable {E} in
 @[simp]
 theorem whiskeringLeftFunctor'_obj (F : D ⥤ E) : (whiskeringLeftFunctor' L W E).obj F = L ⋙ F :=
   rfl
@@ -276,6 +275,14 @@ instance : (whiskeringLeftFunctor' L W E).Faithful := by
   apply @Functor.Faithful.comp _ _ _ _ _ _ _ _ ?_ ?_
   infer_instance
   apply InducedCategory.faithful -- why is it not found automatically ???
+
+lemma full_whiskeringLeft : ((whiskeringLeft C D E).obj L).Full :=
+  inferInstanceAs (whiskeringLeftFunctor' L W E).Full
+
+lemma faithful_whiskeringLeft : ((whiskeringLeft C D E).obj L).Faithful :=
+  inferInstanceAs (whiskeringLeftFunctor' L W E).Faithful
+
+variable {E}
 
 theorem natTrans_ext {F₁ F₂ : D ⥤ E} (τ τ' : F₁ ⟶ F₂)
     (h : ∀ X : C, τ.app (L.obj X) = τ'.app (L.obj X)) : τ = τ' := by
@@ -342,7 +349,7 @@ theorem liftNatTrans_app (F₁ F₂ : C ⥤ E) (F₁' F₂' : D ⥤ E) [Lifting 
     (τ : F₁ ⟶ F₂) (X : C) :
     (liftNatTrans L W F₁ F₂ F₁' F₂' τ).app (L.obj X) =
       (Lifting.iso L W F₁ F₁').hom.app X ≫ τ.app X ≫ (Lifting.iso L W F₂ F₂').inv.app X :=
-  congr_app (Functor.image_preimage (whiskeringLeftFunctor' L W E) _) X
+  congr_app (Functor.map_preimage (whiskeringLeftFunctor' L W E) _) X
 #align category_theory.localization.lift_nat_trans_app CategoryTheory.Localization.liftNatTrans_app
 
 @[reassoc (attr := simp)]

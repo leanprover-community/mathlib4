@@ -80,6 +80,8 @@ lemma traceForm_apply_apply (x y : L) :
 lemma traceForm_comm (x y : L) : traceForm R L M x y = traceForm R L M y x :=
   LinearMap.trace_mul_comm R (φ x) (φ y)
 
+lemma traceForm_isSymm : LinearMap.IsSymm (traceForm R L M) := LieModule.traceForm_comm R L M
+
 @[simp] lemma traceForm_flip : LinearMap.flip (traceForm R L M) = traceForm R L M :=
   Eq.symm <| LinearMap.ext₂ <| traceForm_comm R L M
 
@@ -367,29 +369,28 @@ variable (I : LieIdeal R L)
 
 /-- The orthogonal complement of an ideal with respect to the killing form is an ideal. -/
 noncomputable def killingCompl : LieIdeal R L :=
-  { LinearMap.ker ((killingForm R L).compl₁₂ LinearMap.id I.subtype) with
+  { __ := (killingForm R L).orthogonal I.toSubmodule
     lie_mem := by
       intro x y hy
-      ext ⟨z, hz⟩
-      suffices killingForm R L ⁅x, y⁆ z = 0 by simpa
-      rw [LieModule.traceForm_comm, ← LieModule.traceForm_apply_lie_apply, LieModule.traceForm_comm]
       simp only [AddSubsemigroup.mem_carrier, AddSubmonoid.mem_toSubsemigroup,
-        Submodule.mem_toAddSubmonoid, LinearMap.mem_ker] at hy
-      replace hy := LinearMap.congr_fun hy ⟨⁅z, x⁆, lie_mem_left R L I z x hz⟩
-      simpa using hy }
+        Submodule.mem_toAddSubmonoid, LinearMap.BilinForm.mem_orthogonal_iff,
+        LieSubmodule.mem_coeSubmodule, LinearMap.BilinForm.IsOrtho]
+      intro z hz
+      rw [← LieModule.traceForm_apply_lie_apply]
+      exact hy _ <| lie_mem_left _ _ _ _ _ hz }
+
+@[simp] lemma toSubmodule_killingCompl :
+    LieSubmodule.toSubmodule I.killingCompl = (killingForm R L).orthogonal I.toSubmodule :=
+  rfl
 
 @[simp] lemma mem_killingCompl {x : L} :
-    x ∈ I.killingCompl ↔ ∀ y ∈ I, killingForm R L x y = 0 := by
-  change x ∈ LinearMap.ker ((killingForm R L).compl₁₂ LinearMap.id I.subtype) ↔ _
-  simp only [LinearMap.mem_ker, LieModule.traceForm_apply_apply, LinearMap.ext_iff,
-    LinearMap.compl₁₂_apply, LinearMap.id_coe, id_eq, Submodule.coeSubtype,
-    LieModule.traceForm_apply_apply, LinearMap.zero_apply, Subtype.forall]
+    x ∈ I.killingCompl ↔ ∀ y ∈ I, killingForm R L y x = 0 := by
   rfl
 
 lemma coe_killingCompl_top :
     killingCompl R L ⊤ = LinearMap.ker (killingForm R L) := by
-  ext
-  simp [LinearMap.ext_iff]
+  ext x
+  simp [LinearMap.ext_iff, LinearMap.BilinForm.IsOrtho, LieModule.traceForm_comm R L L x]
 
 variable [IsDomain R] [IsPrincipalIdealRing R]
 
@@ -406,7 +407,7 @@ lemma restrict_killingForm :
   intro x (hx : x ∈ I)
   simp only [mem_killingCompl, LieSubmodule.mem_top, forall_true_left]
   intro y
-  rw [LieModule.traceForm_comm, LieModule.traceForm_apply_apply]
+  rw [LieModule.traceForm_apply_apply]
   exact LieSubmodule.traceForm_eq_zero_of_isTrivial I I (by simp) _ hx
 
 end LieIdeal
@@ -746,7 +747,7 @@ respective Killing forms of `L` and `L'` satisfy `κ'(e x, e y) = κ(x, y)`. -/
 lemma isKilling_of_equiv [IsKilling R L] (e : L ≃ₗ⁅R⁆ L') : IsKilling R L' := by
   constructor
   ext x'
-  rw [LieIdeal.mem_killingCompl]
+  simp_rw [LieIdeal.mem_killingCompl, LieModule.traceForm_comm]
   refine ⟨fun hx' ↦ ?_, fun hx y _ ↦ hx ▸ LinearMap.map_zero₂ (killingForm R L') y⟩
   suffices e.symm x' ∈ LinearMap.ker (killingForm R L) by
     rw [IsKilling.ker_killingForm_eq_bot] at this

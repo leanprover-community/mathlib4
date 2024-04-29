@@ -262,7 +262,7 @@ theorem whiskeringLeft_obj_preimage_app {F G : Karoubi C ⥤ D}
       F.map P.decompId_i ≫ τ.app P.X ≫ G.map P.decompId_p := by
   rw [natTrans_eq]
   congr 2
-  rw [← congr_app (((whiskeringLeft _ _ _).obj (toKaroubi _)).image_preimage τ) P.X]
+  rw [← congr_app (((whiskeringLeft _ _ _).obj (toKaroubi _)).map_preimage τ) P.X]
   dsimp
   congr
 #align category_theory.idempotents.whiskering_left_obj_preimage_app CategoryTheory.Idempotents.whiskeringLeft_obj_preimage_app
