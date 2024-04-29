@@ -485,10 +485,31 @@ def lint(path, fix=False):
         shutil.move(path.with_name(path.name + '.bak'), path)
 
 fix = "--fix" in sys.argv
-argv = (arg for arg in sys.argv[1:] if arg != "--fix")
+argv = [arg for arg in sys.argv[1:] if arg != "--fix"]
 
 for filename in argv:
     lint(Path(filename), fix=fix)
+
+# If no single file was passed, lint all files in the project
+# (we allow restricting to and excluding subdirectories, hard-coded for now).
+if not argv:
+    # Exclude all files whose name starts with one of these.
+    exclude = tuple('foobar'.split(' '))
+    # Lint all non-excluded files whose module name starts with this.
+    # So "Foo.Bar" will lint all files in module "Foo.Bar" and "Foo.Bar.Baz", etc.
+    dir = 'Tactic'
+    assert '/' not in dir
+    print(f"about to lint all files in directory {dir}")
+    files = []
+    projectname = 'Mathlib'
+    for line in open(f'{projectname}.lean', 'r', encoding='utf-8'):
+        line = line[len(f'import {projectname}.'):].strip()
+        if line.startswith(dir) and not line.startswith(exclude):
+            files.append(line)
+    for filename in files:
+        from os import sep
+        path = f"{projectname}/{filename.replace('.', sep)}.lean"
+        lint(Path(path), fix=fix)
 
 if new_exceptions:
     exit(1)
