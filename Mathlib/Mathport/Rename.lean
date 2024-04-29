@@ -6,8 +6,6 @@ Authors: Daniel Selsam
 import Lean.Elab.Command
 import Lean.Linter.Util
 
-set_option autoImplicit true
-
 namespace Mathlib.Prelude.Rename
 
 open Lean
@@ -55,6 +53,7 @@ def RenameMap.insert (m : RenameMap) (e : NameEntry) : RenameMap :=
 /-- Look up a lean 4 name from the lean 3 name. Also return the `dubious` error message. -/
 def RenameMap.find? (m : RenameMap) : Name → Option (String × Name) := m.toLean4.find?
 
+set_option autoImplicit true in
 -- TODO: upstream into core/std
 instance [Inhabited α] : Inhabited (Thunk α) where
   default := .pure default
@@ -127,7 +126,7 @@ these reasons, you should use `#align` on any theorem that needs to be renamed f
 syntax (name := align) "#align " ident ppSpace ident : command
 
 /-- Checks that `id` has not already been `#align`ed or `#noalign`ed. -/
-def ensureUnused [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
+def ensureUnused {m : Type → Type} [Monad m] [MonadEnv m] [MonadError m] (id : Name) : m Unit := do
   if let some (_, n) := (renameExtension.getState (← getEnv)).get.toLean4.find? id then
     if n.isAnonymous then
       throwError "{id} has already been no-aligned"

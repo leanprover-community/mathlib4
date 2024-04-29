@@ -151,9 +151,7 @@ instance (priority := 100) sSupHomClass.toSupBotHomClass [CompleteLattice α]
       rw [← sSup_pair, map_sSup]
       simp only [Set.image_pair, sSup_insert, sSup_singleton]
     map_bot := fun f => by
-      rw [← sSup_empty, map_sSup, Set.image_empty]
-      -- Porting note: rw [sSup_empty] does not work, but exact sSup_empty does?
-      exact sSup_empty }
+      rw [← sSup_empty, map_sSup, Set.image_empty, sSup_empty] }
 #align Sup_hom_class.to_sup_bot_hom_class sSupHomClass.toSupBotHomClass
 
 -- See note [lower instance priority]
@@ -164,9 +162,7 @@ instance (priority := 100) sInfHomClass.toInfTopHomClass [CompleteLattice α]
       rw [← sInf_pair, map_sInf, Set.image_pair]
       simp only [Set.image_pair, sInf_insert, sInf_singleton]
     map_top := fun f => by
-      rw [← sInf_empty, map_sInf, Set.image_empty]
-      -- Porting note: rw [sInf_empty] does not work, but exact sInf_empty does?
-      exact sInf_empty }
+      rw [← sInf_empty, map_sInf, Set.image_empty, sInf_empty] }
 #align Inf_hom_class.to_inf_top_hom_class sInfHomClass.toInfTopHomClass
 
 -- See note [lower instance priority]
