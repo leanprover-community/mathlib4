@@ -112,10 +112,10 @@ theorem skeleton_skeletal : Skeletal (Skeleton C) := by
 #align category_theory.skeleton_skeletal CategoryTheory.skeleton_skeletal
 
 /-- The `skeleton` of `C` given by choice is a skeleton of `C`. -/
-noncomputable def skeletonIsSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
+lemma skeleton_isSkeleton : IsSkeletonOf C (Skeleton C) (fromSkeleton C) where
   skel := skeleton_skeletal C
   eqv := fromSkeleton.isEquivalence C
-#align category_theory.skeleton_is_skeleton CategoryTheory.skeletonIsSkeleton
+#align category_theory.skeleton_is_skeleton CategoryTheory.skeleton_isSkeleton
 
 section
 
@@ -314,14 +314,14 @@ theorem map_iso_eq {F₁ F₂ : D ⥤ C} (h : F₁ ≅ F₂) : map F₁ = map F�
 #align category_theory.thin_skeleton.map_iso_eq CategoryTheory.ThinSkeleton.map_iso_eq
 
 /-- `fromThinSkeleton C` exhibits the thin skeleton as a skeleton. -/
-noncomputable def thinSkeletonIsSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)
+lemma thinSkeleton_isSkeleton : IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)
     where
   skel := skeletal
-#align category_theory.thin_skeleton.thin_skeleton_is_skeleton CategoryTheory.ThinSkeleton.thinSkeletonIsSkeleton
+#align category_theory.thin_skeleton.thin_skeleton_is_skeleton CategoryTheory.ThinSkeleton.thinSkeleton_isSkeleton
 
-noncomputable instance isSkeletonOfInhabited :
+instance isSkeletonOfInhabited :
     Inhabited (IsSkeletonOf C (ThinSkeleton C) (fromThinSkeleton C)) :=
-  ⟨thinSkeletonIsSkeleton⟩
+  ⟨thinSkeleton_isSkeleton⟩
 #align category_theory.thin_skeleton.is_skeleton_of_inhabited CategoryTheory.ThinSkeleton.isSkeletonOfInhabited
 
 end

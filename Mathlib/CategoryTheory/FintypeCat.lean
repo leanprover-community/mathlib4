@@ -217,7 +217,7 @@ set_option linter.uppercaseLean3 false in
 end Skeleton
 
 /-- `Fintype.Skeleton` is a skeleton of `Fintype`. -/
-noncomputable def isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
+lemma isSkeleton : IsSkeletonOf FintypeCat Skeleton Skeleton.incl where
   skel := Skeleton.is_skeletal
   eqv := by infer_instance
 set_option linter.uppercaseLean3 false in

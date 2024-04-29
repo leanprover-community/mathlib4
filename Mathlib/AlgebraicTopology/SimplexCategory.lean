@@ -505,7 +505,7 @@ end Skeleton
 
 /-- `SimplexCategory` is a skeleton of `NonemptyFinLinOrd`.
 -/
-noncomputable def isSkeletonOf :
+lemma isSkeletonOf :
     IsSkeletonOf NonemptyFinLinOrd SimplexCategory skeletalFunctor where
   skel := skeletal
   eqv := SkeletalFunctor.isEquivalence

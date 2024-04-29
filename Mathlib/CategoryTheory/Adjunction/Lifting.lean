@@ -186,7 +186,7 @@ lemma adjointTriangleLift {U : B ⥤ C} {F : C ⥤ B} (R : A ⥤ B) (adj₁ : F 
 functor, then `R` has a left adjoint.
 This is a special case of `adjointTriangleLift` which is often more useful in practice.
 -/
-noncomputable def monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
+lemma monadicAdjointTriangleLift (U : B ⥤ C) [MonadicRightAdjoint U] {R : A ⥤ B}
     [HasReflexiveCoequalizers A] [(R ⋙ U).IsRightAdjoint] : R.IsRightAdjoint := by
   let R' : A ⥤ _ := R ⋙ Monad.comparison (monadicAdjunction U)
   rsuffices : R'.IsRightAdjoint
