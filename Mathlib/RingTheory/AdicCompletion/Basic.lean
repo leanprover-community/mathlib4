@@ -359,15 +359,15 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by
   intro x
-  have h (n : ℕ) : ∃ (a : M), Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R M)) a = x.val n :=
+  have h (n : ℕ) :
+      ∃ (a : M), Submodule.Quotient.mk (p := (I ^ n • ⊤ : Submodule R M)) a = x.val n :=
     Quotient.exists_rep (x.val n)
   choose a ha using h
   refine ⟨⟨a, ?_⟩, ?_⟩
   · intro m n hmn
     rw [SModEq.def, ha m, ← transitionMap_mk I M hmn, ha n, x.property hmn]
   · ext n
-    simp
-    exact ha n
+    simp [ha n]
 
 /-- To show a statement about an element of `adicCompletion I M`, it suffices to check it
 on Cauchy sequences. -/
