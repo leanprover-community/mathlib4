@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.FintypeCat
+import Mathlib.GroupTheory.GroupAction.Pi
 import Mathlib.RepresentationTheory.Action.Basic
-import Mathlib.Algebra.Module.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories
