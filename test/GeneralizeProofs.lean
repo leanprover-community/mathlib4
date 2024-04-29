@@ -105,6 +105,26 @@ example (H : ∀ y, ∃ (x : ℕ) (h : x < y), Classical.choose (⟨x, h⟩ : �
   guard_target =ₛ ∀ (y : ℕ), ∃ x h, Classical.choose (a y x h) < y
   exact H
 
+namespace zulip1
+/-!
+https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/.60generalize_proofs.60.20sometimes.20silently.20has.20no.20effect/near/407162574
+-/
+
+theorem t (x : Option Unit) : x.isSome = true := test_sorry
+def p : Unit → Prop := test_sorry
+
+theorem good (x : Option Unit) : p (Option.get x test_sorry) → x.isSome = true := by
+  generalize_proofs h
+  exact fun _ => h
+
+theorem was_bad (x : Option Unit) : p (Option.get x (t x)) → x.isSome = true := by
+  generalize_proofs h
+  exact fun _ => h
+
+end zulip1
+
+section
+
 attribute [local instance] Classical.propDecidable
 
 example (H : ∀ x, x = 1) : (if h : ∃ (k : ℕ), k = 1 then Classical.choose h else 0) = 1 := by
@@ -114,3 +134,5 @@ example (H : ∀ x, x = 1) : (if h : ∃ (k : ℕ), k = 1 then Classical.choose 
   guard_hyp h :ₛ ∃ x, x = 1
   guard_target =ₛ Classical.choose h = 1
   apply H
+
+end
