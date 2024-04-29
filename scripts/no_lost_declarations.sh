@@ -27,11 +27,11 @@ git diff --unified=0 "${commit}" |
       pm=acc[res]
       if(pm != "-+") {
         if(pm == "+") { added++ } else removed++
-        fin=fin sprintf("%s %s\n", pm == "+" ? pm : pm, res)
+        fin=fin sprintf("* %s `%s`\n", pm == "+" ? pm : pm, res)
       } else paired++
     }
     print fin| "sort -k3"; close("sort -k3")
-    printf("---\n%s  added declarations\n%s  removed declarations\n%s  paired declarations", added, removed, paired)
+    printf("---\n* %s  added declarations\n* %s  removed declarations\n* %s  paired declarations", added, removed, paired)
   }'
 printf $'\n---\n\nReference commit: %s\n\n---\n\nYou can run this locally using
 `./scripts/no_lost_declarations.sh <optional_commit>`\n' "${commit}"
