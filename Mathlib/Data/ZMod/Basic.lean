@@ -297,6 +297,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   cases n;
   · rw [Nat.dvd_one] at h
     subst m
+    have : Subsingleton R := CharP.CharOne.subsingleton
     apply Subsingleton.elim
   rw [Nat.mod_eq_of_lt]
   · exact Nat.cast_one
@@ -1245,12 +1246,11 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) :=
-  { inferInstanceAs (CommRing (ZMod p)), inferInstanceAs (Inv (ZMod p)),
-    ZMod.nontrivial p with
-    mul_inv_cancel := mul_inv_cancel_aux p
-    inv_zero := inv_zero p
-    qsmul := qsmulRec _ }
+instance : Field (ZMod p) where
+  mul_inv_cancel := mul_inv_cancel_aux p
+  inv_zero := inv_zero p
+  nnqsmul := _
+  qsmul := _
 
 /-- `ZMod p` is an integral domain when `p` is prime. -/
 instance (p : ℕ) [hp : Fact p.Prime] : IsDomain (ZMod p) := by

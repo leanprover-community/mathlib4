@@ -5,7 +5,7 @@ Authors: Yaël Dillies, Vladimir Goryachev, Kyle Miller, Scott Morrison, Eric Ro
 -/
 import Mathlib.Data.Nat.Count
 import Mathlib.Data.Nat.SuccPred
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Order.OrderIsoNat
 
 #align_import data.nat.nth from "leanprover-community/mathlib"@"7fdd4f3746cb059edfdb5d52cba98f66fce418c0"

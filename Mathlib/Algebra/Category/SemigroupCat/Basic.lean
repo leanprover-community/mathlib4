@@ -326,7 +326,8 @@ instance SemigroupCat.forgetReflectsIsos : (forget SemigroupCat.{u}).ReflectsIso
 -- automatically reflects isomorphisms
 -- we could have used `CategoryTheory.ConcreteCategory.ReflectsIso` alternatively
 @[to_additive]
-instance SemigroupCat.forget₂Full : (forget₂ SemigroupCat MagmaCat).Full where preimage f := f
+instance SemigroupCat.forget₂_full : (forget₂ SemigroupCat MagmaCat).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 /-!
 Once we've shown that the forgetful functors to type reflect isomorphisms,

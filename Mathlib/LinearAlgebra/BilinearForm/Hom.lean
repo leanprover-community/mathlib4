@@ -60,14 +60,18 @@ def toLinHomAux₁ (A : BilinForm R M) (x : M) : M →ₗ[R] R := A x
 #align bilin_form.to_lin_hom_aux₁ LinearMap.BilinForm.toLinHomAux₁
 
 /-- Auxiliary definition to define `toLinHom`; see below. -/
+@[deprecated]
 def toLinHomAux₂ (A : BilinForm R M) : M →ₗ[R] M →ₗ[R] R := A
 #align bilin_form.to_lin_hom_aux₂ LinearMap.BilinForm.toLinHomAux₂
 
 /-- The linear map obtained from a `BilinForm` by fixing the left co-ordinate and evaluating in
 the right. -/
+@[deprecated]
 def toLinHom : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R := LinearMap.id
 #align bilin_form.to_lin_hom LinearMap.BilinForm.toLinHom
 
+set_option linter.deprecated false in
+@[deprecated]
 theorem toLin'_apply (A : BilinForm R M) (x : M) : toLinHom (M := M) A x = A x :=
   rfl
 #align bilin_form.to_lin'_apply LinearMap.BilinForm.toLin'_apply
@@ -76,7 +80,7 @@ variable (B)
 
 theorem sum_left {α} (t : Finset α) (g : α → M) (w : M) :
     B (∑ i in t, g i) w = ∑ i in t, B (g i) w :=
-  (BilinForm.toLinHom (M := M) B).map_sum₂ t g w
+  B.map_sum₂ t g w
 #align bilin_form.sum_left LinearMap.BilinForm.sum_left
 
 variable (w : M)
@@ -94,7 +98,7 @@ variable {B}
 /-- The linear map obtained from a `BilinForm` by fixing the right co-ordinate and evaluating in
 the left. -/
 def toLinHomFlip : BilinForm R M →ₗ[R] M →ₗ[R] M →ₗ[R] R :=
-  toLinHom.comp flipHom.toLinearMap
+  flipHom.toLinearMap
 #align bilin_form.to_lin_hom_flip LinearMap.BilinForm.toLinHomFlip
 
 theorem toLin'Flip_apply (A : BilinForm R M) (x : M) : toLinHomFlip (M := M) A x = fun y => A y x :=
@@ -116,7 +120,9 @@ This is an auxiliary definition for the full linear equivalence `LinearMap.toBil
 def LinearMap.toBilinAux (f : M →ₗ[R] M →ₗ[R] R) : BilinForm R M := f
 #align linear_map.to_bilin_aux LinearMap.toBilinAux
 
+set_option linter.deprecated false in
 /-- Bilinear forms are linearly equivalent to maps with two arguments that are linear in both. -/
+@[deprecated]
 def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] R :=
   { BilinForm.toLinHom with
     invFun := LinearMap.toBilinAux
@@ -124,35 +130,41 @@ def LinearMap.BilinForm.toLin : BilinForm R M ≃ₗ[R] M →ₗ[R] M →ₗ[R] 
     right_inv := fun _ => rfl }
 #align bilin_form.to_lin LinearMap.BilinForm.toLin
 
+set_option linter.deprecated false in
 /-- A map with two arguments that is linear in both is linearly equivalent to bilinear form. -/
+@[deprecated]
 def LinearMap.toBilin : (M →ₗ[R] M →ₗ[R] R) ≃ₗ[R] BilinForm R M :=
   BilinForm.toLin.symm
 #align linear_map.to_bilin LinearMap.toBilin
 
-@[simp]
+@[deprecated]
 theorem LinearMap.toBilinAux_eq (f : M →ₗ[R] M →ₗ[R] R) :
-    LinearMap.toBilinAux f = LinearMap.toBilin f :=
+    LinearMap.toBilinAux f = f :=
   rfl
 #align linear_map.to_bilin_aux_eq LinearMap.toBilinAux_eq
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated]
 theorem LinearMap.toBilin_symm :
     (LinearMap.toBilin.symm : BilinForm R M ≃ₗ[R] _) = BilinForm.toLin :=
   rfl
 #align linear_map.to_bilin_symm LinearMap.toBilin_symm
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated]
 theorem BilinForm.toLin_symm :
     (BilinForm.toLin.symm : _ ≃ₗ[R] BilinForm R M) = LinearMap.toBilin :=
   LinearMap.toBilin.symm_symm
 #align bilin_form.to_lin_symm BilinForm.toLin_symm
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated]
 theorem LinearMap.toBilin_apply (f : M →ₗ[R] M →ₗ[R] R) (x y : M) :
     toBilin f x y = f x y :=
   rfl
 
-@[simp]
+set_option linter.deprecated false in
+@[deprecated]
 theorem BilinForm.toLin_apply (x : M) : BilinForm.toLin B x = B x :=
   rfl
 #align bilin_form.to_lin_apply BilinForm.toLin_apply

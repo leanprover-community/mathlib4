@@ -780,16 +780,15 @@ end LiftHom
 
 variable (K)
 
-instance instField [IsDomain K] : Field (RatFunc K) :=
-  { RatFunc.instCommRing K, RatFunc.instNontrivial K with
-    inv := Inv.inv
-    -- Porting note: used to be `by frac_tac`
-    inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
-    div := (· / ·)
-    div_eq_mul_inv := by frac_tac
-    mul_inv_cancel := fun _ => mul_inv_cancel
-    zpow := zpowRec
-    qsmul := qsmulRec _ }
+instance instField [IsDomain K] : Field (RatFunc K) where
+  -- Porting note: used to be `by frac_tac`
+  inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
+  div := (· / ·)
+  div_eq_mul_inv := by frac_tac
+  mul_inv_cancel _ := mul_inv_cancel
+  zpow := zpowRec
+  nnqsmul := _
+  qsmul := _
 
 section IsFractionRing
 

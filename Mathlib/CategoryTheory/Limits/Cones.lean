@@ -454,11 +454,11 @@ def functoriality : Cone F ⥤ Cone (F ⋙ G) where
       w := fun j => by simp [-ConeMorphism.w, ← f.w j] }
 #align category_theory.limits.cones.functoriality CategoryTheory.Limits.Cones.functoriality
 
-instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
-  preimage t :=
-    { hom := G.preimage t.hom
-      w := fun j => G.map_injective (by simpa using t.w j) }
-#align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functorialityFull
+instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
+  map_surjective t :=
+    ⟨{ hom := G.preimage t.hom
+       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+#align category_theory.limits.cones.functoriality_full CategoryTheory.Limits.Cones.functoriality_full
 
 instance functoriality_faithful [G.Faithful] : (Cones.functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
@@ -673,11 +673,11 @@ def functoriality : Cocone F ⥤ Cocone (F ⋙ G) where
       w := by intros; rw [← Functor.map_comp, CoconeMorphism.w] }
 #align category_theory.limits.cocones.functoriality CategoryTheory.Limits.Cocones.functoriality
 
-instance functorialityFull [G.Full] [G.Faithful] : (functoriality F G).Full where
-  preimage t :=
-    { hom := G.preimage t.hom
-      w := fun j => G.map_injective (by simpa using t.w j) }
-#align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functorialityFull
+instance functoriality_full [G.Full] [G.Faithful] : (functoriality F G).Full where
+  map_surjective t :=
+    ⟨{ hom := G.preimage t.hom
+       w := fun j => G.map_injective (by simpa using t.w j) }, by aesop_cat⟩
+#align category_theory.limits.cocones.functoriality_full CategoryTheory.Limits.Cocones.functoriality_full
 
 instance functoriality_faithful [G.Faithful] : (functoriality F G).Faithful where
   map_injective {_X} {_Y} f g h :=
