@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Mario Carneiro
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
+import Mathlib.Data.Real.Basic
 
 #align_import topology.separation from "leanprover-community/mathlib"@"d91e7f7a7f1c7e9f0e18fdb6bde4f652004c735d"
 
@@ -2334,6 +2335,35 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
     exacts [hd₁.preimage mk, hd₂.preimage mk]
 
 end CompletelyNormal
+
+section PerfectlyNormal
+
+/-- A topological space `X` is a *perfectly normal space* if for each closed subset `h`,
+there exists a continuous function `f : X → ℝ` with `f ⁻¹' {0} = h`. -/
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
+  perfectly_normal :
+    ∀ ⦃h : Set X⦄, IsClosed h → ∃ f : X → ℝ, f ⁻¹' {0} = h
+
+export PerfectlyNormalSpace (perfectly_normal)
+
+-- see Note [lower instance priority]
+/-- A perfectly normal space is a completely normal space. -/
+instance (priority := 100) PerfectlyNormalSpace.toCompletelyNormalSpace
+    [h: PerfectlyNormalSpace X] : CompletelyNormalSpace X where
+  completely_normal := by
+    intro s t dcst dsct
+    have : ∃ f : X → ℝ, f ⁻¹' {0} = closure s := by
+      apply perfectly_normal
+      simp
+    rcases this with ⟨ f₁, hf₁ ⟩
+    have : ∃ f : X → ℝ, f ⁻¹' {0} = closure t := by
+      apply perfectly_normal
+      simp
+    rcases this with ⟨ f₂, hf₂ ⟩
+    sorry
+
+
+end PerfectlyNormal
 
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
