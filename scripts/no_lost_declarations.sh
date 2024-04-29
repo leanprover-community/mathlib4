@@ -15,7 +15,7 @@ fi;
 ## extract lines that begin with '[+-]' followed by the input `theorem` or `lemma`
 ## in the `git diff`
 git diff --unified=0 "${commit}" |
-  awk -v regex="^[+-]${begs}" 'BEGIN{ paired=0; mismatched=0 }
+  awk -v regex="^[+-]${begs}" 'BEGIN{ paired=0; added=0; removed=0 }
     ($0 ~ regex){
       pm=substr($0, 1, 1)
       rest=substr($0, 2)
@@ -26,14 +26,14 @@ git diff --unified=0 "${commit}" |
     for(res in acc) {
       pm=acc[res]
       if(pm != "-+") {
-        mismatched++
-        fin=fin sprintf("%s/%s\n", pm == "+" ? pm : pm, res)
+        if(pm == "+") { added++ } else removed++
+        fin=fin sprintf("%s %s\n", pm == "+" ? pm : pm, res)
       } else paired++
     }
-    print fin| "sort -k2 | column -s/ -t"; close("sort -k2 | column -s/ -t")
-    printf("---\n%s  mismatched declarations\n%s  paired declarations", mismatched, paired)
+    print fin| "sort -k3"; close("sort -k3")
+    printf("---\n%s  added declarations\n%s  removed declarations\n%s  paired declarations", added, removed, paired)
   }'
-printf $'\nReference commit: %s\n\nYou can run this locally using
+printf $'\n---\nReference commit: %s\n---\nYou can run this locally using
 ./scripts/no_lost_declarations.sh <optional_commit>\n' "${commit}"
 
  : <<ReferenceTest
