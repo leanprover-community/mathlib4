@@ -30,7 +30,7 @@ git diff --unified=0 "${commit}" |
         fin=fin sprintf("%s %s\n", pm == "+" ? pm : pm, res)
       } else paired++
     }
-    print fin| "sort -k3"; close("sort -k2")
+    print fin| "sort -k3"; close("sort -k3")
     printf("---\n%s  mismatched declarations\n%s  paired declarations", mismatched, paired)
   }'
 printf $'\nReference commit: %s\n\nYou can run this locally using
