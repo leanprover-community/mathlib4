@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
 import Mathlib.AlgebraicGeometry.AffineScheme
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Topology.Sheaves.SheafCondition.Sites
 import Mathlib.Algebra.Category.Ring.Constructions
 import Mathlib.RingTheory.LocalProperties
@@ -22,6 +22,8 @@ We provide some basic properties of schemes
 * `AlgebraicGeometry.IsReduced`: A scheme is reduced if all the components of the structure sheaf
   are reduced.
 -/
+
+universe u
 
 
 open TopologicalSpace Opposite CategoryTheory CategoryTheory.Limits TopCat
@@ -89,7 +91,7 @@ theorem isReducedOfOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersi
       Y.presheaf.obj _ ≅ _).symm.commRingCatIsoToRingEquiv.injective
 #align algebraic_geometry.is_reduced_of_open_immersion AlgebraicGeometry.isReducedOfOpenImmersion
 
-instance {R : CommRingCat} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
+instance {R : CommRingCat.{u}} [H : _root_.IsReduced R] : IsReduced (Scheme.Spec.obj <| op R) := by
   apply (config := { allowSynthFailures := true }) isReducedOfStalkIsReduced
   intro x; dsimp
   have : _root_.IsReduced (CommRingCat.of <| Localization.AtPrime (PrimeSpectrum.asIdeal x)) := by

@@ -241,6 +241,19 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
+attribute [simp] nil_subperm
+
+@[simp]
+theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
+  match l with
+  | [] => by simp
+  | head :: tail => by
+    simp only [iff_false]
+    intro h
+    have := h.length_le
+    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
+      not_true_eq_false] at this
+
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
@@ -559,11 +572,6 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     apply h d hd c hc
 #align list.perm_lookmap List.perm_lookmap
 
-@[deprecated Perm.eraseP]
-theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => f a → f b → False) l₁) (p : l₁ ~ l₂) :
-    List.eraseP f l₁ ~ List.eraseP f l₂ :=
-  p.eraseP f (by simp [H])
 #align list.perm.erasep List.Perm.eraseP
 
 theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
