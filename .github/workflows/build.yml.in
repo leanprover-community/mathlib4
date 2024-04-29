@@ -143,8 +143,11 @@ jobs:
       - name: print_lost_declarations
         run: |
           #git fetch origin master head
+          rp="$(git rev-parse --abbrev-ref HEAD)"
+          echo $rp
           git checkout master
-          FORK_POINT=$( git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")
+          git checkout "${rp}"
+          FORK_POINT=$( git merge-base origin/master ${rp})
           echo "Fork point: ${FORK_POINT}"
           printf '* fetched\n'
           rp="$(git rev-parse --abbrev-ref HEAD)"
