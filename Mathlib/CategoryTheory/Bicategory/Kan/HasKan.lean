@@ -18,6 +18,9 @@ we define the left Kan extension `lan f g` by using the axiom of choice.
 * `lan f g` is the left Kan extension of `g` along `f`, and is denoted by `f⁺ g`.
 * `lanLift f g` is the left Kan lift of `g` along `f`, and is denoted by `f₊ g`.
 
+These notations are inspired by
+[M. Kashiwara, P. Schapira, *Categories and Sheaves*][Kashiwara2006].
+
 ## TODO
 
 * `ran f g` is the right Kan extension of `g` along `f`, and is denoted by `f⁺⁺ g`.
