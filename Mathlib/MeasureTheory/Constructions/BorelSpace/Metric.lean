@@ -11,9 +11,16 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Real
 /-!
 # Borel sigma algebras on (pseudo-)metric spaces
 
-## Main definitions
-
 ## Main statements
+
+* `measurable_dist`, `measurable_infEdist`, `measurable_norm`,
+  `Measurable.dist`, `Measurable.infEdist`, `Measurable.norm`:
+  measurability of various metric-related notions;
+* `tendsto_measure_thickening_of_isClosed`:
+  the measure of a closed set is the limit of the measure of its ε-thickenings as ε → 0.
+* `exists_borelSpace_of_countablyGenerated_of_separatesPoints`:
+  if a measurable space is countably generated and separates points, it arises as the Borel sets
+  of some second countable separable metrizable topology.
 
 -/
 
