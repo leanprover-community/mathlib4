@@ -409,15 +409,34 @@ noncomputable def sc' [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.Shor
     ext n
     exact (exact_iff_shortComplex_exact _ |>.mpr (shortExact_α_β_horseshoe F A n).exact).w
 
-/--
-a short complex of chain complexes is exact if the rows are exact.
--/
--- final sorry
+
+-- Jöel wrote this
+noncomputable instance : NormalEpiCategory (ChainComplex C ℕ) := ⟨fun p _ =>
+  NormalEpi.mk _ (kernel.ι p) (kernel.condition _)
+    (HomologicalComplex.isColimitOfEval _ _ (fun _ =>
+      Abelian.isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi _ _))⟩
+
+-- Jöel wrote this
+noncomputable instance : NormalMonoCategory (ChainComplex C ℕ) := ⟨fun p _ =>
+  NormalMono.mk _ (cokernel.π p) (cokernel.condition _)
+    (HomologicalComplex.isLimitOfEval _ _ (fun _ =>
+      Abelian.isLimitMapConeOfKernelForkOfιCokernelConditionOfMono _ _))⟩
+
+-- Jöel wrote this
+noncomputable instance : Abelian (ChainComplex C ℕ) where
+
 lemma aux (A : ShortComplex (ChainComplex C ℕ))
     (hA : ∀ (n : ℕ),
       (A.map (HomologicalComplex.eval C (ComplexShape.down ℕ) n)).ShortExact) :
     A.ShortExact where
-  exact := sorry
+  exact := by
+    -- Jöel wrote this
+    have hA' (n : ℕ) := hA n |>.exact
+    simp_rw [ShortComplex.exact_iff_isZero_homology] at hA'
+    rw [ShortComplex.exact_iff_isZero_homology]
+    rw [IsZero.iff_id_eq_zero]
+    ext i
+    apply (IsZero.of_iso (hA' i) (A.mapHomologyIso (HomologicalComplex.eval C _ i)).symm).eq_of_src
   mono_f := by
     constructor
     intro Z g g' h
