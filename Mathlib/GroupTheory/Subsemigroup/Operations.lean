@@ -765,6 +765,9 @@ theorem mem_srange {f : M →ₙ* N} {y : N} : y ∈ f.srange ↔ ∃ x, f x = y
 #align mul_hom.mem_srange MulHom.mem_srange
 #align add_hom.mem_srange AddHom.mem_srange
 
+@[to_additive] theorem mem_srange_mk {f : M → N} (hf : ∀ a b, f (a * b) = f a * f b) {y : N} :
+    y ∈ srange ⟨f, hf⟩ ↔ y ∈ Set.range f := Iff.rfl
+
 @[to_additive]
 theorem srange_eq_map (f : M →ₙ* N) : f.srange = (⊤ : Subsemigroup M).map f :=
   copy_eq _
