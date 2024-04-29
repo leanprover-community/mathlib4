@@ -141,7 +141,7 @@ noncomputable instance [Full F] [Faithful F] : Faithful F.mapHomotopyCategoryMin
   map_injective h := (F.mapHomotopyCategory _).map_injective h
 
 
-def mapHomotopyCategoryPlusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
+def mapHomotopyCategoryMinusCompIso {E : Type*} [Category E] [Preadditive E] [HasZeroObject E]
     [HasBinaryBiproducts E]
     {F : C ⥤ D} {G : D ⥤ E} {H : C ⥤ E} (e : F ⋙ G ≅ H)
     [F.Additive] [G.Additive] [H.Additive] :

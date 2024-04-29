@@ -133,7 +133,7 @@ noncomputable instance [F.IsHomological] :
   have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
   apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
 
-instance [F.IsHomological] : F.Additive := F.additive_of_preserves_binary_products
+instance (priority := 100) [F.IsHomological] : F.Additive := F.additive_of_preserves_binary_products
 
 instance (L : C ⥤ D) [CommShift L ℤ] [IsTriangulated L]
   (F : D ⥤ A) [F.PreservesZeroMorphisms] [F.IsHomological] :
