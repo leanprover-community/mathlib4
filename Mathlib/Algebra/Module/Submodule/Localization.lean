@@ -85,14 +85,7 @@ def Submodule.toLocalizedQuotient' : M ⧸ M' →ₗ[R] N ⧸ M'.localized' S p 
 abbrev Submodule.toLocalizedQuotient : M ⧸ M' →ₗ[R] LocalizedModule p M ⧸ M'.localized p :=
   M'.toLocalizedQuotient' (Localization p) p (LocalizedModule.mkLinearMap p M)
 
--- Adaptation note: 2024-04-23
--- This requires an increase in the heartbeats limit to 400000.
--- We need to diagnose if the proof is doing something silly,
--- or if this reflects a regression in IsDefeq from
--- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
--- Adaptation note: 2024-04-28
--- Now we need even more, and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 800000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 lemma Submodule.toLocalizedQuotient'_mk (x : M) :
     M'.toLocalizedQuotient' S p f (Submodule.Quotient.mk x) = Submodule.Quotient.mk (f x) := rfl

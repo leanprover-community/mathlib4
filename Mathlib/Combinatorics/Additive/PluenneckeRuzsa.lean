@@ -85,12 +85,7 @@ theorem card_mul_mul_le_card_mul_mul_card_div (A B C : Finset α) :
 #align finset.card_mul_mul_le_card_mul_mul_card_div Finset.card_mul_mul_le_card_mul_mul_card_div
 #align finset.card_add_mul_le_card_add_mul_card_sub Finset.card_add_mul_le_card_add_mul_card_sub
 
--- Adaptation note: 2024-04-23
--- This requires a massive increase in the heartbeats limit.
--- We need to diagnose if the proof is doing something silly,
--- or if this reflects a regression in IsDefeq from
--- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
-set_option maxHeartbeats 800000
+set_option backward.isDefEq.lazyWhnfCore false in
 @[to_additive]
 theorem mul_pluennecke_petridis (C : Finset α)
     (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :

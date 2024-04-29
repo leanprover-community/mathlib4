@@ -135,11 +135,7 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+set_option backward.isDefEq.lazyProjDelta false in
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl

@@ -58,14 +58,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
--- Adaptation note: 2024-04-21
--- This `maxHeartbeats` was not previously required. Now we need 400000.
--- Adaptation note: 2024-04-23
--- Now we need 800000!
--- Adaptation note: 2024-04-28
--- Now we need even more,
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
 corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]

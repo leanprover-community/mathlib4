@@ -749,22 +749,12 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
   intro j
   simp [Finsupp.single_apply, Pi.single_apply]
 
--- Adaptation note: 2024-04-23
--- This requires an increase in the heartbeats limit to 400000.
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
     (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D _ _ (.X i) := by
   apply (mvPolynomialBasis R σ).repr.injective; simp [LinearEquiv.map_smul, -map_smul]
 
--- Adaptation note: 2024-04-23
--- This requires an increase in the heartbeats limit to 400000.
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
     mvPolynomialBasis R σ i = D _ _ (.X i) :=

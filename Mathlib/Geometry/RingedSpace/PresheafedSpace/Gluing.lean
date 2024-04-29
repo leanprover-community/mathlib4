@@ -55,6 +55,8 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 -/
 
+
+
 set_option linter.uppercaseLean3 false
 
 noncomputable section
@@ -178,11 +180,7 @@ theorem f_invApp_f_app (i j k : D.J) (U : Opens (D.V (i, j)).carrier) :
   rfl
 #align algebraic_geometry.PresheafedSpace.glue_data.f_inv_app_f_app AlgebraicGeometry.PresheafedSpace.GlueData.f_invApp_f_app
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- We can prove the `eq` along with the lemma. Thus this is bundled together here, and the
 lemma itself is separated below.
 -/
@@ -235,6 +233,7 @@ theorem snd_invApp_t_app' (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)
     rw [IsIso.inv_comp_eq, 𝖣.t_fac_assoc, 𝖣.t_inv, Category.comp_id]
 #align algebraic_geometry.PresheafedSpace.glue_data.snd_inv_app_t_app' AlgebraicGeometry.PresheafedSpace.GlueData.snd_invApp_t_app'
 
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- The red and the blue arrows in ![this diagram](https://i.imgur.com/q6X1GJ9.png) commute. -/
 @[simp, reassoc]
 theorem snd_invApp_t_app (i j k : D.J) (U : Opens (pullback (D.f i j) (D.f i k)).carrier) :

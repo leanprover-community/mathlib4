@@ -22,11 +22,7 @@ variable {M : Type*} [AddCommGroup M] [Module R M] (U U₁ U₂ : Submodule R M)
 variable {x x₁ x₂ y y₁ y₂ z z₁ z₂ : M}
 variable {N : Type*} [AddCommGroup N] [Module R N] (V V₁ V₂ : Submodule R N)
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- A predicate saying two elements of a module are equivalent modulo a submodule. -/
 def SModEq (x y : M) : Prop :=
   (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y
@@ -36,11 +32,7 @@ notation:50 x " ≡ " y " [SMOD " N "]" => SModEq N x y
 
 variable {U U₁ U₂}
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 protected theorem SModEq.def :
     x ≡ y [SMOD U] ↔ (Submodule.Quotient.mk x : M ⧸ U) = Submodule.Quotient.mk y :=
   Iff.rfl

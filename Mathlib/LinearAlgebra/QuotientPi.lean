@@ -38,11 +38,7 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
   lsum R (fun i => Ms i ⧸ p i) R fun i => (p i).mapQ q (f i) (hf i)
 #align submodule.pi_quotient_lift Submodule.piQuotientLift
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 400000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :

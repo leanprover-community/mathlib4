@@ -83,15 +83,7 @@ def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
--- Adaptation note: 2024-04-23
--- This requires a massive increase in the heartbeats limit.
--- We need to diagnose if the proof is doing something silly,
--- or if this reflects a regression in IsDefeq from
--- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -219,15 +211,7 @@ def of : M →ₗ[R] adicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of adicCompletion.of
 
--- Adaptation note: 2024-04-23
--- This requires a massive increase in the heartbeats limit to 800000.
--- We need to diagnose if the proof is doing something silly,
--- or if this reflects a regression in IsDefeq from
--- https://github.com/leanprover/lean4/pull/3965 or https://github.com/leanprover/lean4/pull/3977
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 1600000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl
@@ -252,7 +236,8 @@ theorem eval_apply (n : ℕ) (f : adicCompletion I M) : eval I M n f = f.1 n :=
 
 -- Adaptation note: 2024-04-23
 -- Previously the right hand side was just `mkQ _ x`.
--- After nightly-2024-04-23, that times out.
+-- After nightly-2024-04-23, that times out, unless we use
+-- set_option backward.isDefEq.lazyWhnfCore false in
 theorem eval_of (n : ℕ) (x : M) : eval I M n (of I M x) = mkQ (I ^ n • (⊤ : Submodule R M)) x :=
   rfl
 #align adic_completion.eval_of adicCompletion.eval_of

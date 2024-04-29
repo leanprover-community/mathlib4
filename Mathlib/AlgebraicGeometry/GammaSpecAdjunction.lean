@@ -318,7 +318,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
-set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
+set_option backward.isDefEq.lazyWhnfCore false in
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ := by
   simpa only [Γ_obj, unop_op, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
@@ -399,7 +399,7 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
-set_option maxHeartbeats 400000 in -- Adaptation note: 2024-04-23
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by

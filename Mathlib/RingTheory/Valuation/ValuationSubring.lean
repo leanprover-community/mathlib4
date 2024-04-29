@@ -727,12 +727,7 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
--- Adaptation note: 2024-04-23
--- Add maxHeartbeats.
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 800000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =

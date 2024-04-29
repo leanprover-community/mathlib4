@@ -460,11 +460,7 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
   QuotientAddGroup.completeSpace M S.toAddSubgroup
 #align submodule.quotient.complete_space Submodule.Quotient.completeSpace
 
--- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
-set_option maxHeartbeats 800000 in
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
 nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :

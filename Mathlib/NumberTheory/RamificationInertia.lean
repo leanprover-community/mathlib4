@@ -447,12 +447,9 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R �
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
 -- Adaptation note: 2024-04-23
--- This `maxHeartbeats` was not previously required. Now we need 400000.
--- Adaptation note: 2024-04-28
--- Now we need even more.
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
--- Adaptation note: 2024-04-28
--- replacing the `_` by `(P ^e)` makes it fast (compare #12412)
+-- The right hand side here used to be `Ideal.Quotient.mk _ (f x)`, but this is now slow without
+-- `set_option backward.isDefEq.lazyProjDelta false in`
+-- Instead we've replaced it with `Ideal.Quotient.mk (P ^ e) (f x)` (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P ^ e) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk (P ^ e) (f x) := rfl
@@ -473,11 +470,9 @@ set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by 
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
 -- Adaptation note: 2024-04-28
--- This maxHeartbeats increase appears to have been provoked by
--- https://github.com/leanprover/lean4/pull/4003
--- and `set_option backward.synthInstance.canonInstances false` doesn't help.
--- Adaptation note: 2024-04-28
--- replacing the `_` by `P` makes it fast (compare #12412)
+-- The RHS used to be `Ideal.Quotient.mk _ (f x)` but this is now slow without
+-- `set_option backward.isDefEq.lazyWhnfCore false in`
+-- (compare https://github.com/leanprover-community/mathlib4/pull/12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (f x) := rfl
