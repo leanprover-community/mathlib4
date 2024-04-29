@@ -7,7 +7,6 @@ import Mathlib.Algebra.Function.Indicator
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Algebra.Order.Monoid.Canonical.Defs
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Support of a function in an order
