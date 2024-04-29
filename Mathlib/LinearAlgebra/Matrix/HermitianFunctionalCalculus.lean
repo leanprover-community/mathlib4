@@ -39,12 +39,6 @@ so I have to learn how to specify all of this data.
 
 -/
 
-/--Can probably remove this lemma and just incorporate its proof below-/
-theorem RCLike_mem_spectrum_iff_mem_spectrum (t : ℝ) :
-    (RCLike.ofReal t) ∈ spectrum 𝕜 (toEuclideanLin A) ↔
-                           t ∈ spectrum ℝ (toEuclideanLin A) :=
-spectrum.algebraMap_mem_iff (S := 𝕜) (R := ℝ) (r := t) (a := toEuclideanLin A)
-
 theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
     have H0 : Module.End.HasEigenvalue (toEuclideanLin A) (hA.eigenvalues i) := by sorry
