@@ -48,9 +48,9 @@ theorem mem_iSup_of_directed {S : ι → Subsemigroup M} (hS : Directed (· ≤ 
   suffices x ∈ closure (⋃ i, (S i : Set M)) → ∃ i, x ∈ S i by
     simpa only [closure_iUnion, closure_eq (S _)] using this
   refine fun hx ↦ closure_induction hx (fun y hy ↦ mem_iUnion.mp hy) ?_
-  · rintro x y ⟨i, hi⟩ ⟨j, hj⟩
-    rcases hS i j with ⟨k, hki, hkj⟩
-    exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
+  rintro x y ⟨i, hi⟩ ⟨j, hj⟩
+  rcases hS i j with ⟨k, hki, hkj⟩
+  exact ⟨k, (S k).mul_mem (hki hi) (hkj hj)⟩
 #align subsemigroup.mem_supr_of_directed Subsemigroup.mem_iSup_of_directed
 #align add_subsemigroup.mem_supr_of_directed AddSubsemigroup.mem_iSup_of_directed
 

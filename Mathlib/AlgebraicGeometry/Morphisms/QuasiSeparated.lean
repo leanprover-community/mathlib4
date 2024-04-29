@@ -144,12 +144,12 @@ instance (priority := 900) quasiSeparatedOfMono {X Y : Scheme} (f : X ⟶ Y) [Mo
   ⟨inferInstance⟩
 #align algebraic_geometry.quasi_separated_of_mono AlgebraicGeometry.quasiSeparatedOfMono
 
-theorem quasiSeparated_stableUnderComposition :
-    MorphismProperty.StableUnderComposition @QuasiSeparated :=
+instance quasiSeparated_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @QuasiSeparated :=
   quasiSeparated_eq_diagonal_is_quasiCompact.symm ▸
-    quasiCompact_stableUnderComposition.diagonal quasiCompact_respectsIso
-      quasiCompact_stableUnderBaseChange
-#align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_stableUnderComposition
+    (MorphismProperty.diagonal_isStableUnderComposition
+        quasiCompact_respectsIso quasiCompact_stableUnderBaseChange)
+#align algebraic_geometry.quasi_separated_stable_under_composition AlgebraicGeometry.quasiSeparated_isStableUnderComposition
 
 theorem quasiSeparated_stableUnderBaseChange :
     MorphismProperty.StableUnderBaseChange @QuasiSeparated :=
@@ -159,7 +159,7 @@ theorem quasiSeparated_stableUnderBaseChange :
 
 instance quasiSeparatedComp {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f]
     [QuasiSeparated g] : QuasiSeparated (f ≫ g) :=
-  quasiSeparated_stableUnderComposition f g inferInstance inferInstance
+  MorphismProperty.comp_mem _ f g inferInstance inferInstance
 #align algebraic_geometry.quasi_separated_comp AlgebraicGeometry.quasiSeparatedComp
 
 theorem quasiSeparated_respectsIso : MorphismProperty.RespectsIso @QuasiSeparated :=
@@ -242,7 +242,7 @@ instance {X Y S : Scheme} (f : X ⟶ S) (g : Y ⟶ S) [QuasiSeparated f] :
 
 instance {X Y Z : Scheme} (f : X ⟶ Y) (g : Y ⟶ Z) [QuasiSeparated f] [QuasiSeparated g] :
     QuasiSeparated (f ≫ g) :=
-  quasiSeparated_stableUnderComposition f g inferInstance inferInstance
+  MorphismProperty.comp_mem _ f g inferInstance inferInstance
 
 theorem quasiSeparatedSpace_of_quasiSeparated {X Y : Scheme} (f : X ⟶ Y)
     [hY : QuasiSeparatedSpace Y.carrier] [QuasiSeparated f] : QuasiSeparatedSpace X.carrier := by

@@ -1938,9 +1938,9 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
-  · intros e
-    rw [edges_transfer]
-    apply edges_subset_edgeSet p
+  intros e
+  rw [edges_transfer]
+  apply edges_subset_edgeSet p
 #align simple_graph.walk.map_to_delete_edges_eq SimpleGraph.Walk.map_toDeleteEdges_eq
 
 protected theorem IsPath.toDeleteEdges (s : Set (Sym2 V))

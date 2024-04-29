@@ -972,6 +972,7 @@ variable {F K}
 
 lemma map_baseChange [Algebra F K] [IsScalarTower R F K] [Algebra F L] [IsScalarTower R F L]
     (χ : K →ₐ[F] L) (P : W⟮F⟯) : map W χ (baseChange W F K P) = baseChange W F L P := by
+  have : Subsingleton (F →ₐ[F] L) := inferInstance
   convert map_map W (Algebra.ofId F K) χ P
 
 end Point

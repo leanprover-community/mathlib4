@@ -679,8 +679,8 @@ instance normedSpace [NormedField 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
 #align pi_Lp.normed_space PiLp.normedSpace
 
 variable {𝕜 p α}
-variable [SeminormedRing 𝕜] [∀ i, SeminormedAddCommGroup (β i)]
-variable [∀ i, Module 𝕜 (β i)] [∀ i, BoundedSMul 𝕜 (β i)] (c : 𝕜)
+variable [Semiring 𝕜] [∀ i, SeminormedAddCommGroup (α i)] [∀ i, SeminormedAddCommGroup (β i)]
+variable [∀ i, Module 𝕜 (α i)] [∀ i, Module 𝕜 (β i)] (c : 𝕜)
 
 /-- The canonical map `WithLp.equiv` between `PiLp ∞ β` and `Π i, β i` as a linear isometric
 equivalence. -/
@@ -691,10 +691,11 @@ def equivₗᵢ : PiLp ∞ β ≃ₗᵢ[𝕜] ∀ i, β i :=
     norm_map' := norm_equiv }
 #align pi_Lp.equivₗᵢ PiLp.equivₗᵢ
 
+section piLpCongrLeft
 variable {ι' : Type*}
 variable [Fintype ι']
 variable (p 𝕜)
-variable (E : Type*) [NormedAddCommGroup E] [Module 𝕜 E] [BoundedSMul 𝕜 E]
+variable (E : Type*) [SeminormedAddCommGroup E] [Module 𝕜 E]
 
 /-- An equivalence of finite domains induces a linearly isometric equivalence of finitely supported
 functions-/
@@ -740,6 +741,58 @@ theorem _root_.LinearIsometryEquiv.piLpCongrLeft_single [DecidableEq ι] [Decida
   simp [LinearIsometryEquiv.piLpCongrLeft_apply, LinearEquiv.piCongrLeft', Equiv.piCongrLeft',
     Pi.single, Function.update, Equiv.symm_apply_eq]
 #align linear_isometry_equiv.pi_Lp_congr_left_single LinearIsometryEquiv.piLpCongrLeft_single
+
+end piLpCongrLeft
+
+section piLpCongrRight
+variable {β}
+
+variable (p) in
+/-- A family of linearly isometric equivalences in the codomain induces an isometric equivalence
+between Pi types with the Lp norm.
+
+This is the isometry version of `LinearEquiv.piCongrRight`. -/
+protected def _root_.LinearIsometryEquiv.piLpCongrRight (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
+    PiLp p α ≃ₗᵢ[𝕜] PiLp p β where
+  toLinearEquiv :=
+    WithLp.linearEquiv _ _ _
+      ≪≫ₗ (LinearEquiv.piCongrRight fun i => (e i).toLinearEquiv)
+      ≪≫ₗ (WithLp.linearEquiv _ _ _).symm
+  norm_map' := (WithLp.linearEquiv p 𝕜 _).symm.surjective.forall.2 fun x => by
+    simp only [LinearEquiv.trans_apply, LinearEquiv.piCongrRight_apply,
+      Equiv.apply_symm_apply, WithLp.linearEquiv_symm_apply, WithLp.linearEquiv_apply]
+    obtain rfl | hp := p.dichotomy
+    · simp_rw [PiLp.norm_equiv_symm, Pi.norm_def, LinearEquiv.piCongrRight_apply,
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.nnnorm_map]
+    · have : 0 < p.toReal := zero_lt_one.trans_le <| by norm_cast
+      simp only [PiLp.norm_eq_sum this, WithLp.equiv_symm_pi_apply, LinearEquiv.piCongrRight_apply,
+        LinearIsometryEquiv.coe_toLinearEquiv, LinearIsometryEquiv.norm_map]
+
+@[simp]
+theorem _root_.LinearIsometryEquiv.piLpCongrRight_apply (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) (x : PiLp p α) :
+    LinearIsometryEquiv.piLpCongrRight p e x =
+      (WithLp.equiv p _).symm (fun i => e i (x i)) :=
+  rfl
+
+@[simp]
+theorem _root_.LinearIsometryEquiv.piLpCongrRight_refl :
+    LinearIsometryEquiv.piLpCongrRight p (fun i => .refl 𝕜 (α i)) = .refl _ _ :=
+  rfl
+
+@[simp]
+theorem _root_.LinearIsometryEquiv.piLpCongrRight_symm (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) :
+    (LinearIsometryEquiv.piLpCongrRight p e).symm =
+      LinearIsometryEquiv.piLpCongrRight p (fun i => (e i).symm) :=
+  rfl
+
+@[simp high]
+theorem _root_.LinearIsometryEquiv.piLpCongrRight_single (e : ∀ i, α i ≃ₗᵢ[𝕜] β i) [DecidableEq ι]
+    (i : ι) (v : α i) :
+    LinearIsometryEquiv.piLpCongrRight p e ((WithLp.equiv p (∀ i, α i)).symm <| Pi.single i v) =
+      (WithLp.equiv p (∀ i, β i)).symm (Pi.single i (e _ v)) :=
+  funext <| Pi.apply_single (e ·) (fun _ => map_zero _) _ _
+
+end piLpCongrRight
 
 section Single
 
