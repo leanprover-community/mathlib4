@@ -41,11 +41,11 @@ abbrev finFree : FintypeCat.{u} ⥤ CondensedMod.{u} R :=
 abbrev profiniteFree : Profinite.{u} ⥤ CondensedMod.{u} R :=
   profiniteToCondensed ⋙ free R
 
-/-- The functor sending a profinite space `S` to the condensed abelian group `ℤ[S]^\solid`. -/
+/-- The functor sending a profinite space `S` to the condensed abelian group `R[S]^\solid`. -/
 def profiniteSolid : Profinite.{u} ⥤ CondensedMod.{u} R :=
   Ran.loc FintypeCat.toProfinite (finFree R)
 
-/-- The natural transformation `ℤ[S] ⟶ ℤ[S]^\solid`. -/
+/-- The natural transformation `R[S] ⟶ R[S]^\solid`. -/
 def profiniteSolidification : profiniteFree R ⟶ profiniteSolid.{u} R :=
   (Ran.equiv FintypeCat.toProfinite (finFree R) (profiniteFree R)).symm (NatTrans.id _)
 
