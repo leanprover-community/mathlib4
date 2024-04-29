@@ -152,11 +152,11 @@ jobs:
         run: |
           printf '* fetch\n'
           git fetch origin master
-          rp="origin/$(git rev-parse --abbrev-ref HEAD)"
+          rp="$(git rev-parse --abbrev-ref HEAD)"
           printf $'* rev-parse \'%s\'\n' "${rp}"
           #git fetch origin "${rp}"
           git merge-base origin/master HEAD
-          printf '* merge-base %s\n' "$(git merge-base origin/master HEAD)"
+          printf '* merge-base %s\n' "$(git merge-base origin/master ${rp})"
           echo "* run script"
           ./scripts/no_lost_declarations.sh
           exit 1
