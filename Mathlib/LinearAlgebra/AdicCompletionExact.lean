@@ -473,3 +473,78 @@ theorem LinearMap.adicCompletion_exact :
     simp
 
 end
+
+
+--def adicCompletion.lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+--    (h : ∀ {m n : ℕ} (hle : m ≤ n), adicCompletion.transitionMap I hle ∘ₗ f n = f m) :
+--    M →ₗ[R] adicCompletion I N where
+--  toFun
+
+def adicCompletion.evalRing (n : ℕ) : adicCompletion I R →ₗ[R] R ⧸ I^n :=
+  let f : adicCompletion I R →ₗ[R] R ⧸ (I^n • ⊤ : Submodule R R) :=
+    eval I R n
+  let g :  R ⧸ (I^n • ⊤ : Submodule R R) →ₗ[R] R ⧸ I^n :=
+    have h : (I^n • ⊤ : Submodule R R) = I^n := by
+      ext x
+      simp
+    Ideal.quotientEquivAlgOfEq R h
+  g.comp f
+
+open TensorProduct
+
+def adicCompletion.Subring : Subring (∀ n , R ⧸ (I^n • ⊤ : Ideal R)) where
+  carrier := adicCompletion I R
+  mul_mem' := by
+    intro a b ha hb
+    intro m n hmn
+    simp
+    obtain ⟨x, h, hx⟩ := adicCompletion.exists_rep' I ⟨a , ha⟩
+    obtain ⟨y, g, gy⟩ := adicCompletion.exists_rep' I ⟨b , hb⟩
+    have hx' : (mk' I x h).val = a := by
+      rw[hx]
+    rw[← hx']
+    have hy' : (mk' I y g).val = b := by
+      rw[gy]
+    rw[← hy']
+    have : (mk' I x h).val n = Ideal.Quotient.mk (I^n • ⊤ : Ideal R) (x n) := sorry
+    rw[this]
+    have : (mk' I y g).val n = Ideal.Quotient.mk (I^n • ⊤ : Ideal R) (y n) := sorry
+    rw[this]
+    simp
+    rw[← _root_.map_mul]
+    rw[← Ideal.Quotient.mk_eq_mk]
+    erw[Submodule.liftQ_apply]
+    simp
+    have : (mk' I x h).val m = Ideal.Quotient.mk (I^m • ⊤ : Ideal R) (x m) := sorry
+    rw[this]
+    have : (mk' I y g).val m = Ideal.Quotient.mk (I^m • ⊤ : Ideal R) (y m) := sorry
+    rw[this]
+    sorry
+    --simp[- Ideal.Quotient.mk_eq_mk]
+  one_mem' := sorry
+  zero_mem' := sorry
+  add_mem' := sorry
+  neg_mem' := sorry
+
+instance : CommRing (adicCompletion I R) := sorry
+--instance (n : ℕ) : Module (R ⧸ (I^n • ⊤ : Submodule R R)) (M ⧸ (I^n • ⊤ : Submodule R M)) := sorry
+
+/-
+def adicCompletion.tensorProductaux (x : adicCompletion I R) : M →ₗ[R] (adicCompletion I M) where
+  toFun y := ⟨ fun n ↦ eval I R n x • Submodule.mkQ (I^n • ⊤ : Submodule R M) y,
+    by
+    obtain ⟨a, h, rfl⟩ := adicCompletion.exists_rep' I x
+    intro m n hmn
+    simp
+    sorry
+    /- by
+    obtain ⟨a, h, rfl⟩ := adicCompletion.exists_rep' I x
+    intro m n hmn
+    --apply adicCompletion.inductionOn' I x
+    simp -/
+    ⟩
+
+noncomputable def adicCompletion.tensorProduct : (adicCompletion I R) ⊗[R] M →ₗ[R] (adicCompletion I M) := by
+  apply TensorProduct.lift sorry
+
+-/
