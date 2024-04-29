@@ -28,25 +28,17 @@ variable {α : Type*} (G G' : SimpleGraph α) [DecidableRel G.Adj] {ε : ℝ} {s
 
 namespace SimpleGraph
 
-/-- The pairs of vertices whose density is big. -/
-private noncomputable def badVertices (ε : ℝ) (s t : Finset α) :=
-  s.filter fun x ↦ ((t.filter $ G.Adj x).card : ℝ) < (G.edgeDensity s t - ε) * t.card
-
-private lemma interedges_badVertices [DecidableEq α] :
-    Rel.interedges G.Adj (badVertices G ε s t) t =
-      (badVertices G ε s t).biUnion (fun x ↦ (t.filter (G.Adj x)).image (x, ·)) := by
-  ext ⟨x, y⟩
-  simp only [mem_biUnion, mem_image, exists_prop, mem_filter, Prod.mk.inj_iff,
-    exists_eq_right_right, Rel.mem_interedges_iff]
+/-- The vertices of `s` whose density in `t` is `ε` less than expected. -/
+private noncomputable def badVertices (ε : ℝ) (s t : Finset α) : Finset α :=
+  s.filter fun x ↦ (t.filter $ G.Adj x).card < (G.edgeDensity s t - ε) * t.card
 
 private lemma card_interedges_badVertices_le :
     (Rel.interedges G.Adj (badVertices G ε s t) t).card ≤
       (badVertices G ε s t).card * t.card * (G.edgeDensity s t - ε) := by
   classical
-  refine (Nat.cast_le.2 $ (card_le_card $ subset_of_eq G.interedges_badVertices).trans
+  refine (Nat.cast_le.2 $ (card_le_card $ subset_of_eq (Rel.interedges_eq_biUnion _)).trans
     card_biUnion_le).trans ?_
-  simp_rw [Nat.cast_sum, card_image_of_injective _ (Prod.mk.inj_left _), ← nsmul_eq_mul,
-    smul_mul_assoc, mul_comm (t.card : ℝ)]
+  simp_rw [Nat.cast_sum, card_map, ← nsmul_eq_mul, smul_mul_assoc, mul_comm (t.card : ℝ)]
   exact sum_le_card_nsmul _ _ _ fun x hx ↦ (mem_filter.1 hx).2.le
 
 private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.edgeDensity s t) :
@@ -58,11 +50,11 @@ private lemma edgeDensity_badVertices_le (hε : 0 ≤ ε) (dst : 2 * ε ≤ G.ed
   exact G.card_interedges_badVertices_le
 
 private lemma card_badVertices_le (dst : 2 * ε ≤ G.edgeDensity s t) (hst : G.IsUniform ε s t) :
-    ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := by
+    (badVertices G ε s t).card ≤ s.card * ε := by
   have hε : ε ≤ 1 := (le_mul_of_one_le_of_le_of_nonneg (by norm_num) le_rfl hst.pos.le).trans
     (dst.trans $ by exact_mod_cast edgeDensity_le_one _ _ _)
   by_contra! h
-  have : |(G.edgeDensity (badVertices G ε s t) t : ℝ) - G.edgeDensity s t| < ε :=
+  have : |(G.edgeDensity (badVertices G ε s t) t - G.edgeDensity s t : ℝ)| < ε :=
     hst (filter_subset _ _) Subset.rfl h.le (mul_le_of_le_one_right (Nat.cast_nonneg _) hε)
   rw [abs_sub_lt_iff] at this
   linarith [G.edgeDensity_badVertices_le hst.pos.le dst]
@@ -82,14 +74,14 @@ private lemma good_vertices_triangle_card [DecidableEq α] (dst : 2 * ε ≤ G.e
     (dsu : 2 * ε ≤ G.edgeDensity s u) (dtu : 2 * ε ≤ G.edgeDensity t u) (utu : G.IsUniform ε t u)
     (x : α) (hx : x ∈ s \ (badVertices G ε s t ∪ badVertices G ε s u)) :
     ε ^ 3 * t.card * u.card ≤ (((t.filter (G.Adj x) ×ˢ u.filter (G.Adj x)).filter
-        (fun (y, z) ↦ G.Adj y z)).image (x, ·)).card := by
+        fun (y, z) ↦ G.Adj y z).image (x, ·)).card := by
   simp only [mem_sdiff, badVertices, mem_union, not_or, mem_filter, not_and_or, not_lt] at hx
   rw [← or_and_left, and_or_left] at hx
-  simp only [false_or, and_not_self, mul_comm ((_ : ℝ) - _)] at hx
+  simp only [false_or, and_not_self, mul_comm (_ - _)] at hx
   obtain ⟨-, hxY, hsu⟩ := hx
-  have hY : (t.card : ℝ) * ε ≤ (filter (G.Adj x) t).card :=
+  have hY : t.card * ε ≤ (filter (G.Adj x) t).card :=
     (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hxY
-  have hZ : (u.card : ℝ) * ε ≤ (filter (G.Adj x) u).card :=
+  have hZ : u.card * ε ≤ (filter (G.Adj x) u).card :=
     (mul_le_mul_of_nonneg_left (by linarith) (Nat.cast_nonneg _)).trans hsu
   rw [card_image_of_injective _ (Prod.mk.inj_left _)]
   have := utu (filter_subset (G.Adj x) _) (filter_subset (G.Adj x) _) hY hZ
@@ -113,8 +105,8 @@ lemma triangle_counting'
     (1 - 2 * ε) * ε ^ 3 * s.card * t.card * u.card ≤
       ((s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c).card := by
   classical
-  have h₁ : ((badVertices G ε s t).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dst hst
-  have h₂ : ((badVertices G ε s u).card : ℝ) ≤ s.card * ε := G.card_badVertices_le dsu usu
+  have h₁ : (badVertices G ε s t).card ≤ s.card * ε := G.card_badVertices_le dst hst
+  have h₂ : (badVertices G ε s u).card ≤ s.card * ε := G.card_badVertices_le dsu usu
   let X' := s \ (badVertices G ε s t ∪ badVertices G ε s u)
   have : X'.biUnion _ ⊆ (s ×ˢ t ×ˢ u).filter fun (a, b, c) ↦ G.Adj a b ∧ G.Adj a c ∧ G.Adj b c := by
     apply triangle_split_helper

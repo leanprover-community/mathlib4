@@ -3,6 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Combinatorics.SimpleGraph.Density
 import Mathlib.Data.Nat.Cast.Field
 import Mathlib.Order.Partition.Equipartition
@@ -411,7 +412,7 @@ namespace SimpleGraph
 
 /-- The reduction of the graph `G` along partition `P` has edges between `ε`-uniform pairs of parts
 that have edge density at least `δ`. -/
-@[simps] def reduced (ε δ : 𝕜) : SimpleGraph α where
+@[simps] def regularityReduced (ε δ : 𝕜) : SimpleGraph α where
   Adj a b := G.Adj a b ∧
     ∃ U ∈ P.parts, ∃ V ∈ P.parts, a ∈ U ∧ b ∈ V ∧ U ≠ V ∧ G.IsUniform ε U V ∧ δ ≤ G.edgeDensity U V
   symm a b := by
@@ -420,26 +421,29 @@ that have edge density at least `δ`. -/
     rwa [edgeDensity_comm]
   loopless a h := G.loopless a h.1
 
-instance : DecidableRel (G.reduced P ε δ).Adj := by unfold reduced; infer_instance
+instance regularityReduced.instDecidableRel_adj : DecidableRel (G.regularityReduced P ε δ).Adj := by
+  unfold regularityReduced; infer_instance
 
 variable {G P}
 
-lemma reduced_le : G.reduced P ε δ ≤ G := fun _ _ ↦ And.left
+lemma regularityReduced_le : G.regularityReduced P ε δ ≤ G := fun _ _ ↦ And.left
 
-lemma reduced_mono {ε₁ ε₂ : 𝕜} (hε : ε₁ ≤ ε₂) : G.reduced P ε₁ δ ≤ G.reduced P ε₂ δ :=
+lemma regularityReduced_mono {ε₁ ε₂ : 𝕜} (hε : ε₁ ≤ ε₂) :
+    G.regularityReduced P ε₁ δ ≤ G.regularityReduced P ε₂ δ :=
   fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε, hGδ⟩ ↦
     ⟨hab, U, hU, V, hV, ha, hb, hUV, hGε.mono hε, hGδ⟩
 
-lemma reduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) : G.reduced P ε δ₂ ≤ G.reduced P ε δ₁ :=
+lemma regularityReduced_anti {δ₁ δ₂ : 𝕜} (hδ : δ₁ ≤ δ₂) :
+    G.regularityReduced P ε δ₂ ≤ G.regularityReduced P ε δ₁ :=
   fun _a _b ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hUVδ⟩ ↦
     ⟨hab, U, hU, V, hV, ha, hb, hUV, hUVε, hδ.trans hUVδ⟩
 
 lemma unreduced_edges_subset :
-    (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.reduced P (ε/8) (ε/4)).Adj x y) ⊆
+    (A ×ˢ A).filter (fun (x, y) ↦ G.Adj x y ∧ ¬ (G.regularityReduced P (ε/8) (ε/4)).Adj x y) ⊆
       (P.nonUniforms G (ε/8)).biUnion (fun (U, V) ↦ U ×ˢ V) ∪ P.parts.biUnion offDiag ∪
         (P.sparsePairs G (ε/4)).biUnion fun (U, V) ↦ G.interedges U V := by
   rintro ⟨x, y⟩
-  simp only [mem_sdiff, mem_filter, mem_univ, true_and, reduced_adj, not_and, not_exists,
+  simp only [mem_sdiff, mem_filter, mem_univ, true_and, regularityReduced_adj, not_and, not_exists,
     not_le, mem_biUnion, mem_union, exists_prop, mem_product, Prod.exists, mem_offDiag, and_imp,
     or_assoc, and_assoc, P.mk_mem_nonUniforms, Finpartition.mk_mem_sparsePairs, mem_interedges_iff]
   intros hx hy h h'
