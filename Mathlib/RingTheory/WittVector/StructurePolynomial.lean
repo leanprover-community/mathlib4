@@ -203,7 +203,7 @@ See `wittStructureInt_prop` for this property,
 and `wittStructureInt_existsUnique` for the fact that `wittStructureInt`
 gives the unique family of polynomials with this property. -/
 noncomputable def wittStructureInt (Φ : MvPolynomial idx ℤ) (n : ℕ) : MvPolynomial (idx × ℕ) ℤ :=
-  Finsupp.mapRange Rat.num (Rat.coe_int_num 0) (wittStructureRat p (map (Int.castRingHom ℚ) Φ) n)
+  Finsupp.mapRange Rat.num (Rat.num_intCast 0) (wittStructureRat p (map (Int.castRingHom ℚ) Φ) n)
 #align witt_structure_int wittStructureInt
 
 variable {p}
