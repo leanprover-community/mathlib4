@@ -126,7 +126,7 @@ def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   let inst := args[1]
   etaExpand args type lambdas 3 fun args lambdas _ => do
     let arg := args[2]
-    reduceUnOpAux inst arg lambdas args #[] 3
+    reduceUnOpAux inst arg lambdas args #[inst] 3
       (fun
         | mkApp3 (.const i _) _ _ inst => if i == instPi then some inst else none
         | _ => none)
@@ -146,7 +146,7 @@ def reduceHActOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let a := args[4]
     let arg := args[5]
-    reduceUnOpAux inst arg lambdas args #[a] 6
+    reduceUnOpAux inst arg lambdas args #[inst, a] 6
       (fun
         | mkApp4 (.const i _) _ _ _ inst => if i == instPi then some inst else none
         | _ => none)
@@ -161,7 +161,7 @@ def reduceHPow (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   let mkApp3 (.const ``instHPow _) _ _ inst := args[3] | return none
   let arg := args[4]
   let exp := args[5]
-  reduceUnOpAux inst arg lambdas args #[exp] 6
+  reduceUnOpAux inst arg lambdas args #[inst, exp] 6
     (fun
       | mkApp4 (.const `Pi.instPow _) _ _ _ inst => some inst
       | _ => none)
@@ -185,7 +185,7 @@ def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
   etaExpand args type lambdas 6 fun args lambdas _ => do
     let lhs := args[4]
     let rhs := args[5]
-    reduceBinOpAux inst lhs rhs lambdas args #[] 6
+    reduceBinOpAux inst lhs rhs lambdas args #[inst] 6
       (fun
         | mkApp3 (.const i _) _ _ inst => if i == instPi then some inst else none
         | _ => none)

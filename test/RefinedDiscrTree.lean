@@ -121,6 +121,16 @@ info: [Function.Bijective (Nat, Nat, HAdd.hAdd (Nat → Nat, Nat → Nat, *, *, 
 #guard_msgs in
 # Function.Bijective fun x : Nat => x+ᵥx
 
+-- don't distribute a lambda when the bound variable appears in the instance:
+/-- info: [id (Sort → Ring (#0) → #1, λ λ HAdd.hAdd (#1, #1, *, *, 1, 2))] -/
+#guard_msgs in
+# id fun (α : Type) [Ring α] => (1+2 : α)
+
+/-- info: [id (Sort → Ring (#0) → #1, λ λ HSMul.hSMul (Nat, #1, *, *, 2, 3))] -/
+#guard_msgs in
+# id fun (α : Type) [Ring α] => (2•3 : α)
+
+
 
 -- index constant number literal functions as just the number literal:
 /-- info: [Function.Bijective (Nat, Nat, 4)] -/
