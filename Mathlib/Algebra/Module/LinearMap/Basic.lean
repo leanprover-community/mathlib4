@@ -5,6 +5,7 @@ Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne 
   Frédéric Dupuis, Heather Macbeth
 -/
 import Mathlib.Algebra.Module.Pi
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Star.Basic
 import Mathlib.GroupTheory.GroupAction.DomAct.Basic

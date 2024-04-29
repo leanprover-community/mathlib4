@@ -5,6 +5,7 @@ Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.FintypeCat
 import Mathlib.RepresentationTheory.Action.Basic
+import Mathlib.Algebra.Module.Basic
 
 /-!
 # Constructors for `Action V G` for some concrete categories

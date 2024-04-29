@@ -5,6 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.Order.Module.Synonym
 import Mathlib.Algebra.Order.Ring.Lemmas
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Tactic.Positivity.Core
 
 /-!

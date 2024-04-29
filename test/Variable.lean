@@ -1,5 +1,5 @@
 import Mathlib.Tactic.Variable
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Algebra.Basic
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
