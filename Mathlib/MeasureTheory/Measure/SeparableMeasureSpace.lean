@@ -190,7 +190,8 @@ theorem measureDense_of_generateFrom_setAglebra_of_finite [IsFiniteMeasure μ] (
                     _ < ∑ n in (Finset.range (N + 1)), (ε / (2 * (N + 1))) :=
                           Finset.sum_lt_sum (fun i _ ↦ le_of_lt (hg i)) ⟨0, by simp, hg 0⟩
                     _ ≤ ε / 2 := by
-                          simp
+                          simp only [Finset.sum_const, Finset.card_range, nsmul_eq_mul,
+                            Nat.cast_add, Nat.cast_one]
                           rw [div_mul_eq_div_mul_one_div, ← mul_assoc, mul_comm ((N : ℝ) + 1),
                             mul_assoc]
                           exact mul_le_of_le_one_right (by linarith [ε_pos]) <|
