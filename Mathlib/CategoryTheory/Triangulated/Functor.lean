@@ -122,7 +122,7 @@ open ZeroObject
 
 variable [F.IsTriangulated]
 
-instance : PreservesZeroMorphisms F where
+instance (priority := 100) : PreservesZeroMorphisms F where
   map_zero X Y := by
     have h₁ : (0 : X ⟶ Y) = 0 ≫ 𝟙 0 ≫ 0 := by simp
     have h₂ : 𝟙 (F.obj 0) = 0 := by
