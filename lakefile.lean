@@ -65,6 +65,15 @@ lean_exe shake where
   root := `Shake.Main
   supportInterpreter := true
 
+/--
+`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+and then calculates the longest pole
+(i.e. the sequence of files you would be waiting for during a infinite parallelism build).
+-/
+lean_exe pole where
+  root := `LongestPole.Main
+  supportInterpreter := true
+
 /-!
 ## Other configuration
 -/
