@@ -71,6 +71,7 @@ lemma ae_compProd_of_ae_ae [SFinite μ] [IsSFiniteKernel κ] {p : α × β → P
 
 -- Adaptation note: nightly-2024-04-01
 -- This maxHeartbeats was not needed previously.
+-- None of the backwards compatibility flags helps.
 set_option maxHeartbeats 400000 in
 lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
