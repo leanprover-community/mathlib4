@@ -17,6 +17,43 @@ open Lean Elab Command
 
 namespace Mathlib.ToNatDegree
 
+/-- the core of the string translation.  These replacements are applied to individual "segments"
+after grouping words and splitting further at uppercase letter. -/
+def segmentReplacements : String → String
+  | "max"    => "min"
+  | "Sup"    => "Inf"
+  | "sup"    => "inf"
+  | "Bot"    => "Top"
+  | "bot"    => "top"
+  | "bot'"   => "top'"
+  | "unbot"  => "untop"
+  | "unbot'" => "untop'"
+  | "comp"   => "lift"
+  | "lift"   => "comp"
+  | "union"  => "inter"
+  | "inter"  => "union"
+  | e => e
+
+def splitUpper (s : String) : List String :=
+  s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
+
+#eval do
+  let res := "SemilatticeSup"
+  IO.println (splitUpper res == ["Semilattice", "Sup"])
+
+/-- replaces "words" in a string using `segmentReplacements`.  It breaks the string into "words"
+grouping together maximal consecutive substrings consisting of
+either `[uppercase]*[lowercase]*` or `[non-alpha]*`. -/
+def stringReplacements (str : String) : String :=
+  let strs := str.toList.groupBy (·.isAlpha && ·.isAlpha)
+  let strs := strs.map fun w => (splitUpper ⟨w⟩).map segmentReplacements
+  String.join <| strs.map String.join
+
+
+#eval
+  stringReplacements "hello I am `WithBot' α` and also `bot'`"
+
+
 partial
 def replAS (stx : Syntax) : CommandElabM Syntax :=
   stx.replaceM fun s => do
@@ -41,32 +78,8 @@ def replAS (stx : Syntax) : CommandElabM Syntax :=
 
 #eval "abcDeF".toList.groupBy fun a b => a.isUpper || (a.isLower && b.isLower)
 
-def splitUpper (s : String) : List String :=
-  s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
-
-
-#eval do
-  let res := "SemilatticeSup"
-  IO.println (splitUpper res == ["Semilattice", "Sup"])
-
-def wordReplacements : String → String
-  | "max" => "min"
-  | "Sup" => "Inf"
-  | "sup" => "inf"
-  | "Bot" => "Top"
-  | "bot" => "top"
-  | "bot'" => "top'"
-  | "unbot" => "untop"
-  | "unbot'" => "untop'"
-  | "comp" => "lift"
-  | "lift" => "comp"
-  | "union" => "inter"
-  | "inter" => "union"
-  | e => e
-
 abbrev lelt : HashSet String := { "le", "lt" }
 abbrev leftRight : HashSet String := { "left", "right", "sup", "inf", "inter", "union" }
-
 
 def swapWords : List String → List String
   | le::left::ls =>
@@ -90,12 +103,18 @@ def swapWords : List String → List String
   IO.println (splitUpper res)
   IO.println (splitUpper res == ["NNReal", "HHi"])
 
+#eval do
+  let test := "hello I am `aDocString 0` and I have, some punctuation."
+  let gps := test.toList.groupBy fun x y : Char => x.isAlpha && y.isAlpha
+  IO.println <| gps.map fun w => (⟨w⟩ : String)
+
+
 /-- converts a name involving `WithBot` to a name involving `WithTop`. -/
 def nameToTop : Name → Name
   | .str a b =>
       let words := b.splitOn "_"
-      let words : List (List String) := words.map fun w => (splitUpper w).map wordReplacements
-      let words := swapWords (words.map fun ws => (ws.foldl (· ++ ·) ""))
+      let words : List (List String) := words.map fun w => (splitUpper w).map segmentReplacements
+      let words := swapWords (words.map String.join)
       let w_s := "_".intercalate words
       .str (nameToTop a) w_s
   | _ => default
@@ -127,12 +146,12 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
       | .node _ `«term_≤_» #[a, _, b] => return some (← `($(⟨b⟩) ≤ $(⟨a⟩)))
       | .node _ `«term_<_» #[a, _, b] => return some (← `($(⟨b⟩) < $(⟨a⟩)))
       | .node _ ``Lean.Parser.Command.docComment #[init, .atom _ docs] =>
---        let newDocs := " ".intercalate <| (docs.splitOn " ").map wordReplacements
+--        let newDocs := " ".intercalate <| (docs.splitOn " ").map segmentReplacements
         let pieces := (docs.splitOn " ").map fun s => s.splitOn "`"
-        let modPieces := pieces.map fun p1 : List String => p1.map wordReplacements
+        let modPieces := pieces.map fun p1 : List String => p1.map segmentReplacements
         let newDocs := (" ".intercalate (modPieces.map "`".intercalate))
---        let newDocs := " ".intercalate <| (docs.splitOn " ").map wordReplacements
---        let newDocs := "`".intercalate <| (newDocs.splitOn "`").map wordReplacements
+--        let newDocs := " ".intercalate <| (docs.splitOn " ").map segmentReplacements
+--        let newDocs := "`".intercalate <| (newDocs.splitOn "`").map segmentReplacements
         let newDocs :=
           if newDocs == docs
           then "[recycled by `toMin`] " ++ docs
