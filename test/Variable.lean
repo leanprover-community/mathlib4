@@ -1,6 +1,6 @@
 import Mathlib.Tactic.Variable
 import Mathlib.Algebra.Module.Defs
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Module.LinearMap.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 set_option autoImplicit true
