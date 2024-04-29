@@ -635,6 +635,10 @@ def leftOpRightOpEquiv : (Cᵒᵖ ⥤ D)ᵒᵖ ≌ C ⥤ Dᵒᵖ where
   counitIso := NatIso.ofComponents fun F => F.leftOpRightOpIso
 #align category_theory.functor.left_op_right_op_equiv CategoryTheory.Functor.leftOpRightOpEquiv
 
+instance {F : C ⥤ D} [EssSurj F] : EssSurj F.op where
+  mem_essImage Y := ⟨op (F.objPreimage Y.unop), ⟨(F.objObjPreimageIso Y.unop).symm.op⟩⟩
+
+
 end Functor
 
 end CategoryTheory

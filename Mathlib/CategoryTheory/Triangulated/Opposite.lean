@@ -995,6 +995,24 @@ instance (S : Subcategory Cᵒᵖ) [ClosedUnderIsomorphisms S.P] :
     ClosedUnderIsomorphisms S.unop.P where
   mem_of_iso e := mem_of_iso S.P e.symm.op
 
+lemma W_of_op (S : Subcategory C) {X Y : C} (f : X ⟶ Y) (hf : S.op.W f.op) : S.W f := by
+  obtain ⟨Z, a, b, h₁, h₂⟩ := hf
+  rw [Subcategory.W_iff']
+  exact ⟨_, _, _, Pretriangulated.unop_distinguished _ h₁, h₂⟩
+
+lemma W_of_unop (S : Subcategory Cᵒᵖ) {X Y : Cᵒᵖ} (f : X ⟶ Y) (hf : S.unop.W f.unop) : S.W f := by
+  obtain ⟨Z, a, b, h₁, h₂⟩ := hf
+  rw [Subcategory.W_iff']
+  exact ⟨_, _, _, Pretriangulated.op_distinguished _ h₁, h₂⟩
+
+lemma W_op_iff (S : Subcategory C) {X Y : Cᵒᵖ } (f : X ⟶ Y) :
+    S.op.W f ↔ S.W f.unop :=
+  ⟨S.W_of_op _, S.op.W_of_unop _⟩
+
+lemma W_op (S : Subcategory C) : S.op.W = S.W.op := by
+  ext X Y f
+  apply S.W_op_iff
+
 end Subcategory
 
 end Triangulated

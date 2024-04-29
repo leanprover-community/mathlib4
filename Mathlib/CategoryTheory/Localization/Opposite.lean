@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
 import Mathlib.CategoryTheory.Localization.Predicate
+import Mathlib.CategoryTheory.Localization.Equivalence
 
 #align_import category_theory.localization.opposite from "leanprover-community/mathlib"@"8efef279998820353694feb6ff5631ed0d309ecc"
 
@@ -56,6 +57,25 @@ instance IsLocalization.op [L.IsLocalization W] : L.op.IsLocalization W.op :=
   IsLocalization.of_equivalence_target W.Q.op W.op L.op (Localization.equivalenceFromModel L W).op
     (NatIso.op (Localization.qCompEquivalenceFromModelFunctorIso L W).symm)
 #align category_theory.functor.is_localization.op CategoryTheory.Functor.IsLocalization.op
+
+variable (L W)
+
+lemma isLocalization_iff_op :
+    L.IsLocalization W ↔ L.op.IsLocalization W.op := by
+  constructor
+  · intro
+    infer_instance
+  · intro
+    letI : CatCommSq (opOpEquivalence C).functor L.op.op L (opOpEquivalence D).functor :=
+      ⟨Iso.refl _⟩
+    refine Functor.IsLocalization.of_equivalences (L.op.op) W.op.op L W
+      (opOpEquivalence C) (opOpEquivalence D) ?_ ?_
+    · intro X Y f hf
+      exact MorphismProperty.subset_isoClosure _ _ hf
+    · intro X Y f hf
+      have := Localization.inverts L.op W.op f.op hf
+      change IsIso (asIso (L.op.map f.op)).unop.hom
+      infer_instance
 
 end Functor
 

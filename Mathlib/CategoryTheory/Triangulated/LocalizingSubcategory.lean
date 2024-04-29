@@ -48,6 +48,8 @@ instance [IsLeftLocalizing F B] : IsRightLocalizing F.op B.op where
     obtain ⟨Y', hY', a, b, fac⟩ := fac_of_isLeftLocalizing F B φ.unop hY
     exact ⟨Opposite.op Y', hY', a.op, b.op, Quiver.Hom.unop_inj fac⟩
 
+lemma isLeftLocalizing_of_op [IsRightLocalizing F.op B.op] : IsLeftLocalizing F B := sorry
+
 lemma fac_of_isRightLocalizing' [IsRightLocalizing F B]
     {X : A} {Y : C} (s : F.obj X ⟶ Y) (hs : B.W s) :
     ∃ (X' : A) (s' : X ⟶ X') (_ : (B.inverseImage F).W s') (b : Y ⟶ F.obj X'),
@@ -63,14 +65,15 @@ lemma fac_of_isRightLocalizing' [IsRightLocalizing F B]
   rw [Subcategory.W_iff']
   exact ⟨_, _, _, hT', hW'⟩
 
-/-lemma fac_of_isLeftLocalizing' [IsLeftLocalizing F B]
+lemma fac_of_isLeftLocalizing' [IsLeftLocalizing F B]
     {X : A} {Y : C} (s : Y ⟶ F.obj X) (hs : B.W s) :
     ∃ (X' : A) (s' : X' ⟶ X) (_ : (B.inverseImage F).W s') (b : F.obj X' ⟶ Y),
       b ≫ s = F.map s' := by
-  have : F.op.IsTriangulated := sorry
-  obtain ⟨X', s', hs', b, fac⟩ := fac_of_isRightLocalizing' F.op B.op s.op (by
-    sorry)
-  refine' ⟨X'.unop, s'.unop, sorry, b.unop, Quiver.Hom.op_inj fac⟩-/
+  obtain ⟨X', s', hs', b, fac⟩ := fac_of_isRightLocalizing' F.op B.op s.op
+    (by simpa only [Subcategory.W_op_iff] using hs)
+  refine' ⟨X'.unop, s'.unop, _, b.unop, Quiver.Hom.op_inj fac⟩
+  rw [← Subcategory.W_op_iff]
+  exact hs'
 
 lemma IsRightLocalizing.mk'
     (h : ∀ ⦃X : A⦄ ⦃Y : C⦄ (s : F.obj X ⟶ Y) (_ : B.W s),
@@ -93,14 +96,24 @@ lemma IsRightLocalizing.mk'
     obtain ⟨_, _, _, hT'', hV⟩ := hs'
     exact ⟨_, _, _, F.map_distinguished _ hT'', hV⟩
 
-variable (L : C ⥤ D) [L.IsLocalization B.W] [IsRightLocalizing F B]
+lemma IsLeftLocalizing.mk'
+    (h : ∀ ⦃Y : C⦄ ⦃X : A⦄ (s : Y ⟶ F.obj X) (_ : B.W s),
+      ∃ (X' : A) (s' : X' ⟶ X) (_ : (B.inverseImage F).W s')
+        (b : F.obj X' ⟶ Y), b ≫ s = F.map s') :
+    IsLeftLocalizing F B := by
+  have : IsRightLocalizing F.op B.op := IsRightLocalizing.mk' _ _ (fun X Y s hs => by
+    obtain ⟨X', s', h, b, fac⟩ := h s.unop (Subcategory.W_of_op _ _ hs)
+    exact ⟨Opposite.op X', s'.op, Subcategory.W_of_unop _ _ h, b.op, Quiver.Hom.unop_inj fac⟩)
+  exact isLeftLocalizing_of_op F B
+
+variable (L : C ⥤ D) [L.IsLocalization B.W]
 
 section
 
 variable (L' : A ⥤ D') [L'.IsLocalization (B.inverseImage F).W]
   (F' : D' ⥤ D) [Localization.Lifting L' (B.inverseImage F).W (F ⋙ L) F']
 
-noncomputable def full_of_isRightLocalizing : F'.Full := by
+noncomputable def full_of_isRightLocalizing [IsRightLocalizing F B] : F'.Full := by
   have := Localization.essSurj L' (B.inverseImage F).W
   apply F'.full_of_precomp_essSurj L'
   intro X₁ X₂ φ
@@ -133,7 +146,7 @@ noncomputable def full_of_isRightLocalizing : F'.Full := by
   erw [e.inv.naturality, e.hom_inv_id_app_assoc]
   rfl
 
-lemma faithful_of_isRightLocalizing : F'.Faithful := by
+lemma faithful_of_isRightLocalizing [IsRightLocalizing F B] : F'.Faithful := by
   have e := Localization.Lifting.iso L' (B.inverseImage F).W (F ⋙ L) F'
   have := IsTriangulated.of_fully_faithful_triangulated_functor F
   letI := Localization.preadditive L' (B.inverseImage F).W
@@ -162,7 +175,7 @@ end
 variable {L : C ⥤ D} {L' : A ⥤ D'} {H : D' ⥤ D} (e : L' ⋙ H ≅ F ⋙ L)
   [L'.EssSurj] [H.Full] [H.Faithful] [L.IsLocalization B.W]
 
-lemma isLocalization_of_isRightLocalizing :
+lemma isLocalization_of_isRightLocalizing [IsRightLocalizing F B] :
     L'.IsLocalization (B.inverseImage F).W := by
   have hL' : (B.inverseImage F).W.IsInvertedBy L' := fun X₁ X₂ f hf => by
     rw [B.mem_inverseImage_W_iff] at hf
@@ -186,6 +199,15 @@ lemma isLocalization_of_isRightLocalizing :
   have := Functor.IsEquivalence.ofFullyFaithfullyEssSurj G
   exact Functor.IsLocalization.of_equivalence_target (B.inverseImage F).W.Q _ _
     G.asEquivalence eG
+
+lemma isLocalization_of_isLeftLocalizing [IsLeftLocalizing F B] :
+    L'.IsLocalization (B.inverseImage F).W := by
+  rw [Functor.isLocalization_iff_op, ← Subcategory.W_op]
+  have : Functor.IsLocalization L.op (B.op.W) := by
+    rw [Subcategory.W_op]
+    infer_instance
+  let e' : L'.op ⋙ H.op ≅ F.op ⋙ L.op := NatIso.op e.symm
+  exact isLocalization_of_isRightLocalizing F.op B.op e'
 
 end Triangulated
 
