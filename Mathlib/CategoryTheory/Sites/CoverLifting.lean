@@ -179,7 +179,7 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   apply getSection_is_unique
   intro V' fV' hV'
   have eq : Z.hom = Y.hom ≫ (G.map f.right.unop).op := by
-    convert f.w
+    convert f.w using 1
     erw [Category.id_comp]
   rw [eq] at hV'
   convert getSection_isAmalgamation ℱ hS hx Y (fV' ≫ f.right.unop) _ using 1
