@@ -12,7 +12,7 @@ import Mathlib.RingTheory.RootsOfUnity.Basic
 
 /-!
 # Dirichlet theorem on the group of units of a number field
-This section is devoted to the proof of Dirichlet unit theorem that states that the group of
+This file is devoted to the proof of Dirichlet unit theorem that states that the group of
 units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
 subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 
