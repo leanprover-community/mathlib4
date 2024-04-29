@@ -409,8 +409,16 @@ noncomputable def sc' [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.Shor
     ext n
     exact (exact_iff_shortComplex_exact _ |>.mpr (shortExact_α_β_horseshoe F A n).exact).w
 
+lemma aux (A : ShortComplex (ChainComplex C ℕ))
+    (hA : ∀ (n : ℕ),
+      (A.map (HomologicalComplex.eval C (ComplexShape.down ℕ) n)).ShortExact) :
+    A.ShortExact := sorry
+
 lemma sc'_shortExact [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
-    (sc' F A).ShortExact := sorry
+    (sc' F A).ShortExact := by
+  apply aux
+  intro n
+  exact shortExact_α_β_horseshoe F A n
 
 noncomputable def δ [EnoughProjectives C] (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
     (F.leftDerived (n + 1)).obj A.X₃ ⟶ (F.leftDerived n).obj A.X₁ :=
