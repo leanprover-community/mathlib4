@@ -46,6 +46,7 @@ reflections unless necessary; instead, we state our results in terms of $B$ wher
 ## Main definitions
 
 * `CoxeterMatrix.Group`
+* `CoxeterMatrix.Group`
 * `CoxeterSystem`
 * `IsCoxeterGroup`
 * `CoxeterSystem.simple` : If `cs` is a Coxeter system on the group `W`, then `cs.simple i` is the
