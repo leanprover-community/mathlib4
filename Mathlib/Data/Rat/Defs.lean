@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Rat.Init
@@ -513,6 +513,9 @@ protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
 theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
 #align rat.mk_eq_div Rat.divInt_eq_div
 
+lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
+#align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
+
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
   by_cases hd : d = 0
   · rw [hd]
@@ -530,15 +533,16 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
   rw [div_eq_mul_inv, inv_divInt', mul_comm, divInt_mul_divInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
-theorem intCast_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
-  repeat' rw [intCast_eq_divInt]
-  exact divInt_div_divInt_cancel_left one_ne_zero n d
-#align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
-
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast]; erw [← divInt_eq_div, num_divInt_den]
 #align rat.num_div_denom Rat.num_div_den
+
+@[simp] lemma divInt_pow (num : ℕ) (den : ℤ) (n : ℕ) : (num /. den) ^ n = num ^ n /. den ^ n := by
+  simp [divInt_eq_div, div_pow]
+
+@[simp] lemma mkRat_pow (num den : ℕ) (n : ℕ) : mkRat num den ^ n = mkRat (num ^ n) (den ^ n) := by
+  rw [mkRat_eq, mkRat_eq, divInt_pow, Int.natCast_pow]
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]
