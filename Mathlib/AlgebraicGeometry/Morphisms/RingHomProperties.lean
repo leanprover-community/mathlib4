@@ -57,11 +57,11 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
   congr
   delta IsLocalization.Away.map
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
-  generalize_proofs h1 h2 h3
+  generalize_proofs
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here
   convert
-    (@IsLocalization.map_comp (hy := h3) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
+    (@IsLocalization.map_comp (hy := ‹_ ≤ _›) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
