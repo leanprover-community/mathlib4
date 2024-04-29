@@ -57,6 +57,7 @@ theorem rel_id_apply₂ (X : RelCat) (x y : X) : (𝟙 X) x y ↔ x = y := by
 
 theorem rel_comp_apply₂ {X Y Z : RelCat} (f : X ⟶ Y) (g : Y ⟶ Z) (x : X) (z : Z) :
     (f ≫ g) x z ↔ ∃ y, f x y ∧ g y z := by rfl
+
 end Hom
 
 /-- The essentially surjective faithful embedding
@@ -70,7 +71,6 @@ def graphFunctor : Type u ⥤ RelCat.{u} where
   map_comp f g := by
     ext
     simp [Hom.rel_comp_apply₂]
-
 
 @[simp] theorem graphFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : X) (y : Y) :
     graphFunctor.map f x y ↔ f x = y := f.graph_def x y
@@ -150,7 +150,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     exact fun a => And.comm
 
 @[simp] theorem opFunctor_comp_unopFunctor_eq :
-    Functor.comp opFunctor unopFunctor = Functor.id _ := by rfl
+    Functor.comp opFunctor unopFunctor = Functor.id _ := rfl
 
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
     Functor.comp unopFunctor opFunctor = Functor.id _ := by rfl
@@ -161,8 +161,8 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
 def opEquivalence : Equivalence RelCat RelCatᵒᵖ where
   functor := opFunctor
   inverse := unopFunctor
-  unitIso := (Iso.refl _)
-  counitIso := (Iso.refl _)
+  unitIso := Iso.refl _
+  counitIso := Iso.refl _
 
 instance : opFunctor.IsEquivalence := by
   change opEquivalence.functor.IsEquivalence
@@ -175,4 +175,5 @@ instance : unopFunctor.IsEquivalence := by
 end Opposite
 
 end RelCat
+
 end CategoryTheory
