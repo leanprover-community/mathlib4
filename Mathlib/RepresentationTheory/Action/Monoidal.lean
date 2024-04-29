@@ -257,7 +257,8 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem functorCategoryMonoidalEquivalence.inverse_map {A B : SingleObj G ⥤ V} (f : A ⟶ B) :
-    (functorCategoryMonoidalEquivalenceInverse _ _).map f = FunctorCategoryEquivalence.inverse.map f :=
+    (functorCategoryMonoidalEquivalenceInverse _ _).map f =
+      FunctorCategoryEquivalence.inverse.map f :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.inverse_map Action.functorCategoryMonoidalEquivalence.inverse_map
