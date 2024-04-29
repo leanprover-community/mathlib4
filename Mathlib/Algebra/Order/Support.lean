@@ -242,18 +242,4 @@ lemma abs_indicator_symmDiff (s t : Set α) (f : α → M) (x : α) :
   apply_indicator_symmDiff abs_neg s t f x
 
 end LinearOrderedAddCommGroup
-
-section NormedAddCommGroup
-variable [NormedAddCommGroup M]
-
-open scoped symmDiff
-
-/-- The norm of an indicator of the symmetric difference is equal to the norm of the difference of
-the two indicators. -/
-lemma norm_indicator_symmDiff (s t : Set α) {f : α → M} :
-    (fun x ↦ ‖(indicator (s ∆ t) f) x‖) = fun x ↦ ‖(indicator s f - indicator t f) x‖ := by
-  ext x
-  apply apply_indicator_symmDiff norm_neg
-
-end NormedAddCommGroup
 end Set
