@@ -40,7 +40,6 @@ lemma natCast_apply [AddCommMonoid M] (n : ℕ) (m : M) : (↑n : AddMonoid.End 
 @[simp] lemma ofNat_apply [AddCommMonoid M] (n : ℕ) [n.AtLeastTwo] (m : M) :
     (no_index (OfNat.ofNat n : AddMonoid.End M)) m = n • m := rfl
 
-
 instance instSemiring [AddCommMonoid M] : Semiring (AddMonoid.End M) :=
   { AddMonoid.End.monoid M, AddMonoidHom.addCommMonoid, AddMonoid.End.instAddMonoidWithOne M with
     zero_mul := fun _ => AddMonoidHom.ext fun _ => rfl,

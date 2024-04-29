@@ -34,14 +34,14 @@ into a dependent family of `MulZeroClass`es, as functions supported at a point.
 
 This is the `MulHom` version of `Pi.single`. -/
 @[simps]
-def singleMulHom (i : ι) : α i →ₙ* ∀ i, α i where
+def _root_.MulHom.single (i : ι) : α i →ₙ* ∀ i, α i where
   toFun := Pi.single i
   map_mul' := Pi.single_op₂ (fun _ ↦ (· * ·)) (fun _ ↦ zero_mul _) _
-#align mul_hom.single Pi.singleMulHom
-#align mul_hom.single_apply Pi.singleMulHom_apply
+#align mul_hom.single MulHom.single
+#align mul_hom.single_apply MulHom.single_apply
 
 lemma single_mul (i : ι) (x y : α i) : single i (x * y) = single i x * single i y :=
-  (singleMulHom _).map_mul _ _
+  (MulHom.single _).map_mul _ _
 #align pi.single_mul Pi.single_mul
 
 lemma single_mul_left_apply (i j : ι) (a : α i) (f : ∀ i, α i) :
