@@ -227,5 +227,7 @@ theorem smul_one_eq_coe (A : Type*) [DivisionRing A] (m : ℚ) : m • (1 : A) =
 
 end Rat
 
-instance RatCast.toOfScientific [RatCast K] : OfScientific K where
-  ofScientific (m : ℕ) (b : Bool) (d : ℕ) := Rat.ofScientific m b d
+/-- `OfScientific.ofScientific` is the simp-normal form. -/
+@[simp]
+theorem Rat.ofScientific_eq_ofScientific :
+    Rat.ofScientific = OfScientific.ofScientific := rfl
