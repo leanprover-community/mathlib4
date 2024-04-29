@@ -350,7 +350,7 @@ instance {R₁ R₂} [CommRing R₁] [CommRing R₂] [Algebra R₁ S] [Algebra R
   rw [Algebra.smul_def, _root_.map_mul, mul_smul, ← IsScalarTower.algebraMap_apply]
 
 lemma Cotangent.val_smul''' {R₀} [CommRing R₀] [Algebra R₀ S] (r : R₀) (x : P.Cotangent) :
-  (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
+    (r • x).val = P.σ (algebraMap R₀ S r) • x.val := rfl
 
 @[simp]
 lemma Cotangent.val_smul (r : S) (x : P.Cotangent) : (r • x).val = P.σ r • x.val := rfl
