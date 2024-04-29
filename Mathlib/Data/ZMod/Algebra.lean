@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Data.ZMod.Basic
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 
 #align_import data.zmod.algebra from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
