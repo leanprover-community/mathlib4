@@ -534,11 +534,11 @@ theorem cof_eq_one_iff_is_succ {o} : cof.{u} o = 1 ↔ ∃ a, o = succ a :=
         · exact Or.inl h
         · exact Or.inr ⟨PUnit.unit, h.symm⟩
         · rcases hl x with ⟨a', aS, hn⟩
-          rw [(_ : ↑a = a')] at h
-          · exact absurd h hn
-          refine' congr_arg Subtype.val (_ : a = ⟨a', aS⟩)
-          haveI := le_one_iff_subsingleton.1 (le_of_eq e)
-          apply Subsingleton.elim,
+          refine absurd h ?_
+          convert hn
+          change _ = ↑(⟨a', aS⟩ : S)
+          have := le_one_iff_subsingleton.1 (le_of_eq e)
+          congr!,
     fun ⟨a, e⟩ => by simp [e]⟩
 #align ordinal.cof_eq_one_iff_is_succ Ordinal.cof_eq_one_iff_is_succ
 

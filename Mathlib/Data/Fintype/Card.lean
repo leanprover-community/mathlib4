@@ -124,8 +124,7 @@ theorem subtype_card {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s 
 theorem card_of_subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x)
     [Fintype { x // p x }] : card { x // p x } = s.card := by
   rw [← subtype_card s H]
-  congr
-  apply Subsingleton.elim
+  congr!
 #align fintype.card_of_subtype Fintype.card_of_subtype
 
 @[simp]
@@ -135,7 +134,7 @@ theorem card_ofFinset {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈
 #align fintype.card_of_finset Fintype.card_ofFinset
 
 theorem card_of_finset' {p : Set α} (s : Finset α) (H : ∀ x, x ∈ s ↔ x ∈ p) [Fintype p] :
-    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr; apply Subsingleton.elim
+    Fintype.card p = s.card := by rw [← card_ofFinset s H]; congr!
 #align fintype.card_of_finset' Fintype.card_of_finset'
 
 end Fintype
@@ -147,7 +146,7 @@ theorem ofEquiv_card [Fintype α] (f : α ≃ β) : @card β (ofEquiv α f) = ca
 #align fintype.of_equiv_card Fintype.ofEquiv_card
 
 theorem card_congr {α β} [Fintype α] [Fintype β] (f : α ≃ β) : card α = card β := by
-  rw [← ofEquiv_card f]; congr; apply Subsingleton.elim
+  rw [← ofEquiv_card f]; congr!
 #align fintype.card_congr Fintype.card_congr
 
 @[congr]
