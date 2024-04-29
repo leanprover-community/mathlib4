@@ -27,15 +27,11 @@ Adding a `bot` or a `top` to an order.
 variable {α β γ δ : Type*}
 
 toTop
+--TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊥` to a type. -/
 def WithBot (α : Type*) :=
   Option α
 #align with_bot WithBot
-
---TODO(Mario): Construct using order dual on `WithBot`
---/-- Attach `⊤` to a type. -/
---def WithTop (α : Type*) :=
---  Option α
 #align with_top WithTop
 
 variable {a b : α}
@@ -54,11 +50,7 @@ toTop
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
---/-- The canonical map from `α` into `WithTop α` -/
---@[coe, match_pattern] def some : α → WithTop α :=
---  Option.some
-
-toTop  -- `WithTop` used to have `coeTC`
+toTop  -- `WithTop` used to have `coeTC`, the porting note was on the `WithBot` instance.
 -- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
@@ -149,10 +141,6 @@ def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
 #align with_bot.unbot' WithBot.unbot'
 
-/- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
--/
-
-
 toTop
 @[simp]
 theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
@@ -171,8 +159,7 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 
 -- on `WithTop.coe_eq_coe`:
 --@[simp, norm_cast] -- Porting note: added `simp`
-attribute [simp] WithTop.coe_eq_coe
-attribute [norm_cast] WithTop.coe_eq_coe
+attribute [simp, norm_cast] WithTop.coe_eq_coe
 
 toTop
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
@@ -195,8 +182,6 @@ toTop
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 #align with_bot.map WithBot.map
-
-/- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 
 toTop
 @[simp]
@@ -223,11 +208,6 @@ toTop
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
-
-/- The image of a binary function `f : α → β → γ` as a function
-`WithTop α → WithTop β → WithTop γ`.
-
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 
 toTop
 lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
@@ -349,9 +329,7 @@ theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) 
   rfl
 #align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
 
-
 variable [LE α]
-
 
 theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
     WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
@@ -795,7 +773,6 @@ open Function
 
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
---/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 #align with_top.rec_top_coe WithTop.recTopCoe
 
 #align with_top.rec_top_coe_top WithTop.recTopCoe_top
@@ -847,8 +824,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
 
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
-/- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
---def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 #align with_top.untop WithTop.untop
 
 #align with_top.coe_untop WithTop.coe_untop
