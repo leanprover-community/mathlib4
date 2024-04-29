@@ -161,7 +161,7 @@ end Lan.CommuteWith
 /-- We say that there exists an absolute left Kan extension of `g` along `f` if any 1-morphism `h`
 commutes with the left Kan extension `f⁺ g`. -/
 class HasAbsLeftKanExtension (f : a ⟶ b) (g : a ⟶ c) extends HasLeftKanExtension f g : Prop where
-  commute : ∀ {x : B} (h : c ⟶ x), Lan.CommuteWith f g h
+  commute {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h
 
 instance [HasAbsLeftKanExtension f g] {x : B} (h : c ⟶ x) : Lan.CommuteWith f g h :=
   HasAbsLeftKanExtension.commute h
