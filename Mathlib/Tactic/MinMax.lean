@@ -7,10 +7,10 @@ Authors: Damiano Testa
 import Lean.Elab.Command
 import Mathlib.Order.Notation
 /-!
-#  `toTD` a command to convert from `degree` to `trailingDegree`
+#  `toTop` a command to convert from `Bot` to `Top`
 
-If `thm` is a theorem about `max`, then `toMin thm` tries to add to the
-environment the analogous result about `min`.
+If `thm` is a theorem about `WithBot`, then `toTop thm` tries to add to the
+environment the analogous result about `WithTop`.
 -/
 
 open Lean Elab Command
@@ -90,22 +90,22 @@ def swapWords : List String → List String
   IO.println (splitUpper res)
   IO.println (splitUpper res == ["NNReal", "HHi"])
 
-/-- converts a name involving `max` to a name involving `min`. -/
-def nameToMin : Name → Name
+/-- converts a name involving `WithBot` to a name involving `WithTop`. -/
+def nameToTop : Name → Name
   | .str a b =>
       let words := b.splitOn "_"
       let words : List (List String) := words.map fun w => (splitUpper w).map wordReplacements
       let words := swapWords (words.map fun ws => (ws.foldl (· ++ ·) ""))
       let w_s := "_".intercalate words
-      .str (nameToMin a) w_s
+      .str (nameToTop a) w_s
   | _ => default
 
-/-- converts a statement involving `degree` to a name involving `trailingDegree`. -/
-def toMin (stx : Syntax) : CommandElabM Syntax :=
+/-- converts a statement involving `WithBot` to a name involving `WithTop`. -/
+def toTop (stx : Syntax) : CommandElabM Syntax :=
   stx.replaceM fun s => do
     match s.getId with
       | .anonymous => return none
-      | v => return some (mkIdent (nameToMin v))
+      | v => return some (mkIdent (nameToTop v))
 
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
@@ -148,23 +148,23 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
 
 
 /--
-If `thm` is a theorem about `max`, then `toMin thm` tries to add to the
-environment the analogous result about `min`.
+If `thm` is a theorem about `WithBot`, then `toTop thm` tries to add to the
+environment the analogous result about `WithTop`.
 -/
-elab "toMin " tk:"?"? cmd:command : command => do
-  let newCmd ← replAS <| ← MaxToMin <| ← toMin cmd
+elab "toTop " tk:"?"? cmd:command : command => do
+  let newCmd ← replAS <| ← MaxToMin <| ← toTop cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   let currNS ← getCurrNamespace
 
-  withScope (fun s => { s with currNamespace := nameToMin currNS } ) <| elabCommand newCmd
+  withScope (fun s => { s with currNamespace := nameToTop currNS } ) <| elabCommand newCmd
 
---  let newNS := mkIdent (nameToMin currNS)
+--  let newNS := mkIdent (nameToTop currNS)
 --  let currNS := mkIdent currNS
 --  elabCommand (← `(end $currNS namespace $newNS))
---  --withScope (fun s => { s with currNamespace := nameToMin currNS } ) <|
+--  --withScope (fun s => { s with currNamespace := nameToTop currNS } ) <|
 --  elabCommand newCmd
 --  elabCommand (← `(end $newNS namespace $currNS))
 
 
-macro "toMin? " cmd:command : command => return (← `(toMin ? $cmd))
+macro "toTop? " cmd:command : command => return (← `(toTop ? $cmd))

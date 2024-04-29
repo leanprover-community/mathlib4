@@ -26,7 +26,7 @@ Adding a `bot` or a `top` to an order.
 
 variable {α β γ δ : Type*}
 
-toMin
+toTop
 /-- Attach `⊥` to a type. -/
 def WithBot (α : Type*) :=
   Option α
@@ -42,14 +42,14 @@ variable {a b : α}
 
 namespace WithBot
 
-toMin
+toTop
 instance [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
     | none => "⊥"
     | some a => "↑" ++ repr a⟩
 
-toMin
+toTop
 /-- The canonical map from `α` into `WithBot α` -/
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
@@ -58,69 +58,69 @@ toMin
 --@[coe, match_pattern] def some : α → WithTop α :=
 --  Option.some
 
-toMin  -- `WithTop` used to have `coeTC`
+toTop  -- `WithTop` used to have `coeTC`
 -- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
-toMin
+toTop
 instance bot : Bot (WithBot α) :=
   ⟨none⟩
 
-toMin
+toTop
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
-toMin
+toTop
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
 open Function
 
-toMin
+toTop
 theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
-toMin
+toTop
 @[simp, norm_cast]
 theorem coe_inj : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_inj WithBot.coe_inj
 
-toMin
+toTop
 protected theorem «forall» {p : WithBot α → Prop} : (∀ x, p x) ↔ p ⊥ ∧ ∀ x : α, p x :=
   Option.forall
 #align with_bot.forall WithBot.forall
 
-toMin
+toTop
 protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ ∨ ∃ x : α, p x :=
   Option.exists
 #align with_bot.exists WithBot.exists
 
-toMin
+toTop
 theorem none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
   rfl
 #align with_bot.none_eq_bot WithBot.none_eq_bot
 
-toMin
+toTop
 theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
   rfl
 #align with_bot.some_eq_coe WithBot.some_eq_coe
 
-toMin
+toTop
 @[simp]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
   nofun
 #align with_bot.bot_ne_coe WithBot.bot_ne_coe
 
-toMin
+toTop
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
-toMin
+toTop
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
@@ -128,21 +128,21 @@ def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) :
   | (a : α) => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
-toMin
+toTop
 @[simp]
 theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
 #align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
 
-toMin
+toTop
 @[simp]
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
-toMin
+toTop
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
@@ -153,19 +153,19 @@ def unbot' (d : α) (x : WithBot α) : α :=
 -/
 
 
-toMin
+toTop
 @[simp]
 theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
   rfl
 #align with_bot.unbot'_bot WithBot.unbot'_bot
 
-toMin
+toTop
 @[simp]
 theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
 #align with_bot.unbot'_coe WithBot.unbot'_coe
 
-toMin
+toTop
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
@@ -174,23 +174,23 @@ theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 attribute [simp] WithTop.coe_eq_coe
 attribute [norm_cast] WithTop.coe_eq_coe
 
-toMin
+toTop
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x using recBotCoe <;> simp [@eq_comm _ d]
 #align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
 
-toMin
+toTop
 @[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
   simp [unbot'_eq_iff]
 #align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
 
-toMin
+toTop
 theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
     unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
  induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
 #align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
-toMin
+toTop
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
@@ -198,26 +198,26 @@ def map (f : α → β) : WithBot α → WithBot β :=
 
 /- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
 
-toMin
+toTop
 @[simp]
 theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
   rfl
 #align with_bot.map_bot WithBot.map_bot
 
-toMin
+toTop
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 #align with_bot.map_coe WithBot.map_coe
 
-toMin
+toTop
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 #align with_bot.map_comm WithBot.map_comm
 
-toMin
+toTop
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
@@ -229,44 +229,44 @@ def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := 
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 
-toMin
+toTop
 lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-toMin
+toTop
 @[simp] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
-toMin
+toTop
 @[simp] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
-toMin
+toTop
 @[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
-toMin
+toTop
 @[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
-toMin
+toTop
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
-toMin
+toTop
 theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
-toMin
+toTop
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 #align with_bot.unbot WithBot.unbot
 
-toMin
+toTop
 @[simp] lemma coe_unbot : ∀ (x : WithBot α) hx, x.unbot hx = x | (x : α), _ => rfl
 #align with_bot.coe_unbot WithBot.coe_unbot
 
-toMin
+toTop
 @[simp]
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) :
     WithBot.unbot (x : WithBot α) h = x :=
   rfl
 #align with_bot.unbot_coe WithBot.unbot_coe
 
-toMin
+toTop
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 #align with_bot.can_lift WithBot.canLift
@@ -393,7 +393,7 @@ section LE
 
 variable [LE α]
 
---toMin?
+--toTop?
 @[simp]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
   simp [LE.le]
