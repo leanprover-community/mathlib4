@@ -280,23 +280,23 @@ instance (x : STEP 𝒞) : Fact (x.Z.ShortExact) := ⟨x.Z_se⟩
 
 def horseshoeStep : ℕ → STEP 𝒞
   | 0 =>
-{ X := horseshoeKer (horseshoeBaseπ A)
-  Y := horseshoeBase A
-  Z := A
-  X_se := horseshoeSnakeInput_L₀_shortExact _ _ _
-  Y_se := horseshoeBase_shortExact A
-  Z_se := a_se.out
-  ι := horseshoeKerι _
-  π := horseshoeBaseπ _ }
-| n + 1 =>
-{ X := horseshoeKer (horseshoeBaseπ (horseshoeStep n).X)
-  Y := horseshoeBase (horseshoeStep n).X
-  Z := (horseshoeStep n).X
-  X_se := horseshoeSnakeInput_L₀_shortExact _ _ _
-  Y_se := horseshoeBase_shortExact _
-  Z_se := (horseshoeStep n).X_se
-  ι := horseshoeKerι _
-  π := horseshoeBaseπ _ }
+    { X := horseshoeKer (horseshoeBaseπ A)
+      Y := horseshoeBase A
+      Z := A
+      X_se := horseshoeSnakeInput_L₀_shortExact _ _ _
+      Y_se := horseshoeBase_shortExact A
+      Z_se := a_se.out
+      ι := horseshoeKerι _
+      π := horseshoeBaseπ _ }
+  | n + 1 =>
+    { X := horseshoeKer (horseshoeBaseπ (horseshoeStep n).X)
+      Y := horseshoeBase (horseshoeStep n).X
+      Z := (horseshoeStep n).X
+      X_se := horseshoeSnakeInput_L₀_shortExact _ _ _
+      Y_se := horseshoeBase_shortExact _
+      Z_se := (horseshoeStep n).X_se
+      ι := horseshoeKerι _
+      π := horseshoeBaseπ _ }
 
 @[reassoc]
 lemma horseshoeStep_ι_comp_π (n : ℕ) : (horseshoeStep A n).ι ≫ (horseshoeStep A n).π = 0 :=
