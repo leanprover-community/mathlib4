@@ -141,7 +141,7 @@ jobs:
           echo "rev-parse"
           git rev-parse --abbrev-ref HEAD
           echo "merge-base"
-          git merge-base -- origin/master "origin/$( git rev-parse --abbrev-ref HEAD )"
+          git merge-base -- origin/master "$( git rev-parse --abbrev-ref HEAD )"
           echo "run script"
           ./scripts/no_lost_declarations.sh
 
