@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 -/
+import Mathlib.Algebra.Algebra.Hom
 import Mathlib.RingTheory.MvPowerSeries.Basic
 
 /-!
@@ -51,309 +52,318 @@ namespace MvPowerSeries
 section Rename
 
 /-- Rename all the variables in a multivariable polynomial. -/
-def rename (f : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
+  toFun := fun φ ↦ φ ∘ (fun a ↦ Finsupp.equivMapDomain e.symm a)
+  invFun := fun φ ↦ φ ∘ (fun a ↦ Finsupp.equivMapDomain e a)
+  left_inv := by
+    intro p
+    funext s
+    simp only [comp_apply, ← equivMapDomain_trans, Equiv.self_trans_symm, equivMapDomain_refl]
+  right_inv := by
+    intro p
+    funext s
+    simp only [comp_apply, ← equivMapDomain_trans, Equiv.symm_trans_self, equivMapDomain_refl]
+  map_mul' := sorry
+  map_add' := sorry
+  commutes' := sorry
 
-  sorry
---  aeval (X ∘ f)
---#align mv_polynomial.rename MvPowerSeries.rename
+-- theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r :=
+--   eval₂_C _ _ _
+-- set_option linter.uppercaseLean3 false in
+-- #align mv_polynomial.rename_C MvPowerSeries.rename_C
 
-theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r :=
-  eval₂_C _ _ _
-set_option linter.uppercaseLean3 false in
-#align mv_polynomial.rename_C MvPowerSeries.rename_C
+-- @[simp]
+-- theorem rename_X (f : σ → τ) (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) :=
+--   eval₂_X _ _ _
+-- set_option linter.uppercaseLean3 false in
+-- #align mv_polynomial.rename_X MvPowerSeries.rename_X
 
-@[simp]
-theorem rename_X (f : σ → τ) (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) :=
-  eval₂_X _ _ _
-set_option linter.uppercaseLean3 false in
-#align mv_polynomial.rename_X MvPowerSeries.rename_X
+-- theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPowerSeries σ R) :
+--     map f (rename g p) = rename g (map f p) := by
+--   apply MvPowerSeries.induction_on p
+--     (fun a => by simp only [map_C, rename_C])
+--     (fun p q hp hq => by simp only [hp, hq, AlgHom.map_add, RingHom.map_add]) fun p n hp => by
+--     simp only [hp, rename_X, map_X, RingHom.map_mul, AlgHom.map_mul]
+-- #align mv_polynomial.map_rename MvPowerSeries.map_rename
 
-theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPowerSeries σ R) :
-    map f (rename g p) = rename g (map f p) := by
-  apply MvPowerSeries.induction_on p
-    (fun a => by simp only [map_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, AlgHom.map_add, RingHom.map_add]) fun p n hp => by
-    simp only [hp, rename_X, map_X, RingHom.map_mul, AlgHom.map_mul]
-#align mv_polynomial.map_rename MvPowerSeries.map_rename
+-- @[simp]
+-- theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPowerSeries σ R) :
+--     rename g (rename f p) = rename (g ∘ f) p :=
+--   show rename g (eval₂ C (X ∘ f) p) = _ by
+--     simp only [rename, aeval_eq_eval₂Hom]
+--     -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
+--     -- Hopefully this is less prone to breaking
+--     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPowerSeries α R)) (X ∘ g)) C (X ∘ f) p]
+--     simp only [(· ∘ ·), eval₂Hom_X']
+--     refine' eval₂Hom_congr _ rfl rfl
+--     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
+-- #align mv_polynomial.rename_rename MvPowerSeries.rename_rename
 
-@[simp]
-theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPowerSeries σ R) :
-    rename g (rename f p) = rename (g ∘ f) p :=
-  show rename g (eval₂ C (X ∘ f) p) = _ by
-    simp only [rename, aeval_eq_eval₂Hom]
-    -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
-    -- Hopefully this is less prone to breaking
-    rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPowerSeries α R)) (X ∘ g)) C (X ∘ f) p]
-    simp only [(· ∘ ·), eval₂Hom_X']
-    refine' eval₂Hom_congr _ rfl rfl
-    ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
-#align mv_polynomial.rename_rename MvPowerSeries.rename_rename
+-- @[simp]
+-- theorem rename_id (p : MvPowerSeries σ R) : rename id p = p :=
+--   eval₂_eta p
+-- #align mv_polynomial.rename_id MvPowerSeries.rename_id
 
-@[simp]
-theorem rename_id (p : MvPowerSeries σ R) : rename id p = p :=
-  eval₂_eta p
-#align mv_polynomial.rename_id MvPowerSeries.rename_id
+-- theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
+--     rename f (monomial d r) = monomial (d.mapDomain f) r := by
+--   rw [rename, aeval_monomial, monomial_eq (s := Finsupp.mapDomain f d),
+--     Finsupp.prod_mapDomain_index]
+--   · rfl
+--   · exact fun n => pow_zero _
+--   · exact fun n i₁ i₂ => pow_add _ _ _
+-- #align mv_polynomial.rename_monomial MvPowerSeries.rename_monomial
 
-theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
-    rename f (monomial d r) = monomial (d.mapDomain f) r := by
-  rw [rename, aeval_monomial, monomial_eq (s := Finsupp.mapDomain f d),
-    Finsupp.prod_mapDomain_index]
-  · rfl
-  · exact fun n => pow_zero _
-  · exact fun n i₁ i₂ => pow_add _ _ _
-#align mv_polynomial.rename_monomial MvPowerSeries.rename_monomial
+-- theorem rename_eq (f : σ → τ) (p : MvPowerSeries σ R) :
+--     rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
+--   simp only [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
+--     X_pow_eq_monomial, ← monomial_finsupp_sum_index]
+--   rfl
+-- #align mv_polynomial.rename_eq MvPowerSeries.rename_eq
 
-theorem rename_eq (f : σ → τ) (p : MvPowerSeries σ R) :
-    rename f p = Finsupp.mapDomain (Finsupp.mapDomain f) p := by
-  simp only [rename, aeval_def, eval₂, Finsupp.mapDomain, algebraMap_eq, comp_apply,
-    X_pow_eq_monomial, ← monomial_finsupp_sum_index]
-  rfl
-#align mv_polynomial.rename_eq MvPowerSeries.rename_eq
+-- theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
+--     Function.Injective (rename f : MvPowerSeries σ R → MvPowerSeries τ R) := by
+--   have :
+--     (rename f : MvPowerSeries σ R → MvPowerSeries τ R) = Finsupp.mapDomain (Finsupp.mapDomain f) :=
+--     funext (rename_eq f)
+--   rw [this]
+--   exact Finsupp.mapDomain_injective (Finsupp.mapDomain_injective hf)
+-- #align mv_polynomial.rename_injective MvPowerSeries.rename_injective
 
-theorem rename_injective (f : σ → τ) (hf : Function.Injective f) :
-    Function.Injective (rename f : MvPowerSeries σ R → MvPowerSeries τ R) := by
-  have :
-    (rename f : MvPowerSeries σ R → MvPowerSeries τ R) = Finsupp.mapDomain (Finsupp.mapDomain f) :=
-    funext (rename_eq f)
-  rw [this]
-  exact Finsupp.mapDomain_injective (Finsupp.mapDomain_injective hf)
-#align mv_polynomial.rename_injective MvPowerSeries.rename_injective
+-- section
 
-section
+-- variable {f : σ → τ} (hf : Function.Injective f)
 
-variable {f : σ → τ} (hf : Function.Injective f)
+-- open scoped Classical
 
-open scoped Classical
+-- /-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
+--   `MvPowerSeries.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
+--   `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
+-- def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R :=
+--   aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
+-- #align mv_polynomial.kill_compl MvPowerSeries.killCompl
 
-/-- Given a function between sets of variables `f : σ → τ` that is injective with proof `hf`,
-  `MvPowerSeries.killCompl hf` is the `AlgHom` from `R[τ]` to `R[σ]` that is left inverse to
-  `rename f : R[σ] → R[τ]` and sends the variables in the complement of the range of `f` to `0`. -/
-def killCompl : MvPowerSeries τ R →ₐ[R] MvPowerSeries σ R :=
-  aeval fun i => if h : i ∈ Set.range f then X <| (Equiv.ofInjective f hf).symm ⟨i, h⟩ else 0
-#align mv_polynomial.kill_compl MvPowerSeries.killCompl
+-- theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
 
-theorem killCompl_C (r : R) : killCompl hf (C r) = C r := algHom_C _ _
+-- theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
+--   algHom_ext fun i => by
+--     dsimp
+--     rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
+-- #align mv_polynomial.kill_compl_comp_rename MvPowerSeries.killCompl_comp_rename
 
-theorem killCompl_comp_rename : (killCompl hf).comp (rename f) = AlgHom.id R _ :=
-  algHom_ext fun i => by
-    dsimp
-    rw [rename, killCompl, aeval_X, comp_apply, aeval_X, dif_pos, Equiv.ofInjective_symm_apply]
-#align mv_polynomial.kill_compl_comp_rename MvPowerSeries.killCompl_comp_rename
+-- @[simp]
+-- theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl hf (rename f p) = p :=
+--   AlgHom.congr_fun (killCompl_comp_rename hf) p
+-- #align mv_polynomial.kill_compl_rename_app MvPowerSeries.killCompl_rename_app
 
-@[simp]
-theorem killCompl_rename_app (p : MvPowerSeries σ R) : killCompl hf (rename f p) = p :=
-  AlgHom.congr_fun (killCompl_comp_rename hf) p
-#align mv_polynomial.kill_compl_rename_app MvPowerSeries.killCompl_rename_app
+-- end
 
-end
+-- section
 
-section
+-- variable (R)
 
-variable (R)
+-- /-- `MvPowerSeries.rename e` is an equivalence when `e` is. -/
+-- @[simps apply]
+-- def renameEquiv (f : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R :=
+--   { rename f with
+--     toFun := rename f
+--     invFun := rename f.symm
+--     left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id]
+--     right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id] }
+-- #align mv_polynomial.rename_equiv MvPowerSeries.renameEquiv
 
-/-- `MvPowerSeries.rename e` is an equivalence when `e` is. -/
-@[simps apply]
-def renameEquiv (f : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R :=
-  { rename f with
-    toFun := rename f
-    invFun := rename f.symm
-    left_inv := fun p => by rw [rename_rename, f.symm_comp_self, rename_id]
-    right_inv := fun p => by rw [rename_rename, f.self_comp_symm, rename_id] }
-#align mv_polynomial.rename_equiv MvPowerSeries.renameEquiv
+-- @[simp]
+-- theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
+--   AlgEquiv.ext rename_id
+-- #align mv_polynomial.rename_equiv_refl MvPowerSeries.renameEquiv_refl
 
-@[simp]
-theorem renameEquiv_refl : renameEquiv R (Equiv.refl σ) = AlgEquiv.refl :=
-  AlgEquiv.ext rename_id
-#align mv_polynomial.rename_equiv_refl MvPowerSeries.renameEquiv_refl
+-- @[simp]
+-- theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv R f.symm :=
+--   rfl
+-- #align mv_polynomial.rename_equiv_symm MvPowerSeries.renameEquiv_symm
 
-@[simp]
-theorem renameEquiv_symm (f : σ ≃ τ) : (renameEquiv R f).symm = renameEquiv R f.symm :=
-  rfl
-#align mv_polynomial.rename_equiv_symm MvPowerSeries.renameEquiv_symm
+-- @[simp]
+-- theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ α) :
+--     (renameEquiv R e).trans (renameEquiv R f) = renameEquiv R (e.trans f) :=
+--   AlgEquiv.ext (rename_rename e f)
+-- #align mv_polynomial.rename_equiv_trans MvPowerSeries.renameEquiv_trans
 
-@[simp]
-theorem renameEquiv_trans (e : σ ≃ τ) (f : τ ≃ α) :
-    (renameEquiv R e).trans (renameEquiv R f) = renameEquiv R (e.trans f) :=
-  AlgEquiv.ext (rename_rename e f)
-#align mv_polynomial.rename_equiv_trans MvPowerSeries.renameEquiv_trans
+-- end
 
-end
+-- section
 
-section
+-- variable (f : R →+* S) (k : σ → τ) (g : τ → S) (p : MvPowerSeries σ R)
 
-variable (f : R →+* S) (k : σ → τ) (g : τ → S) (p : MvPowerSeries σ R)
+-- theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
+--   apply MvPowerSeries.induction_on p <;>
+--     · intros
+--       simp [*]
+-- #align mv_polynomial.eval₂_rename MvPowerSeries.eval₂_rename
 
-theorem eval₂_rename : (rename k p).eval₂ f g = p.eval₂ f (g ∘ k) := by
-  apply MvPowerSeries.induction_on p <;>
-    · intros
-      simp [*]
-#align mv_polynomial.eval₂_rename MvPowerSeries.eval₂_rename
+-- theorem eval_rename (g : τ → R) (p : MvPowerSeries σ R) : eval g (rename k p) = eval (g ∘ k) p :=
+--   eval₂_rename _ _ _ _
 
-theorem eval_rename (g : τ → R) (p : MvPowerSeries σ R) : eval g (rename k p) = eval (g ∘ k) p :=
-  eval₂_rename _ _ _ _
+-- theorem eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
+--   eval₂_rename _ _ _ _
+-- #align mv_polynomial.eval₂_hom_rename MvPowerSeries.eval₂Hom_rename
 
-theorem eval₂Hom_rename : eval₂Hom f g (rename k p) = eval₂Hom f (g ∘ k) p :=
-  eval₂_rename _ _ _ _
-#align mv_polynomial.eval₂_hom_rename MvPowerSeries.eval₂Hom_rename
+-- theorem aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
+--   eval₂Hom_rename _ _ _ _
+-- #align mv_polynomial.aeval_rename MvPowerSeries.aeval_rename
 
-theorem aeval_rename [Algebra R S] : aeval g (rename k p) = aeval (g ∘ k) p :=
-  eval₂Hom_rename _ _ _ _
-#align mv_polynomial.aeval_rename MvPowerSeries.aeval_rename
+-- theorem rename_eval₂ (g : τ → MvPowerSeries σ R) :
+--     rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
+--   apply MvPowerSeries.induction_on p <;>
+--     · intros
+--       simp [*]
+-- #align mv_polynomial.rename_eval₂ MvPowerSeries.rename_eval₂
 
-theorem rename_eval₂ (g : τ → MvPowerSeries σ R) :
-    rename k (p.eval₂ C (g ∘ k)) = (rename k p).eval₂ C (rename k ∘ g) := by
-  apply MvPowerSeries.induction_on p <;>
-    · intros
-      simp [*]
-#align mv_polynomial.rename_eval₂ MvPowerSeries.rename_eval₂
+-- theorem rename_prod_mk_eval₂ (j : τ) (g : σ → MvPowerSeries σ R) :
+--     rename (Prod.mk j) (p.eval₂ C g) = p.eval₂ C fun x => rename (Prod.mk j) (g x) := by
+--   apply MvPowerSeries.induction_on p <;>
+--     · intros
+--       simp [*]
+-- #align mv_polynomial.rename_prodmk_eval₂ MvPowerSeries.rename_prod_mk_eval₂
 
-theorem rename_prod_mk_eval₂ (j : τ) (g : σ → MvPowerSeries σ R) :
-    rename (Prod.mk j) (p.eval₂ C g) = p.eval₂ C fun x => rename (Prod.mk j) (g x) := by
-  apply MvPowerSeries.induction_on p <;>
-    · intros
-      simp [*]
-#align mv_polynomial.rename_prodmk_eval₂ MvPowerSeries.rename_prod_mk_eval₂
+-- theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPowerSeries τ R) :
+--     (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by
+--   apply MvPowerSeries.induction_on p <;>
+--     · intros
+--       simp [*]
+-- #align mv_polynomial.eval₂_rename_prodmk MvPowerSeries.eval₂_rename_prod_mk
 
-theorem eval₂_rename_prod_mk (g : σ × τ → S) (i : σ) (p : MvPowerSeries τ R) :
-    (rename (Prod.mk i) p).eval₂ f g = eval₂ f (fun j => g (i, j)) p := by
-  apply MvPowerSeries.induction_on p <;>
-    · intros
-      simp [*]
-#align mv_polynomial.eval₂_rename_prodmk MvPowerSeries.eval₂_rename_prod_mk
+-- theorem eval_rename_prod_mk (g : σ × τ → R) (i : σ) (p : MvPowerSeries τ R) :
+--     eval g (rename (Prod.mk i) p) = eval (fun j => g (i, j)) p :=
+--   eval₂_rename_prod_mk (RingHom.id _) _ _ _
+-- #align mv_polynomial.eval_rename_prodmk MvPowerSeries.eval_rename_prod_mk
 
-theorem eval_rename_prod_mk (g : σ × τ → R) (i : σ) (p : MvPowerSeries τ R) :
-    eval g (rename (Prod.mk i) p) = eval (fun j => g (i, j)) p :=
-  eval₂_rename_prod_mk (RingHom.id _) _ _ _
-#align mv_polynomial.eval_rename_prodmk MvPowerSeries.eval_rename_prod_mk
+-- end
 
-end
+-- /-- Every polynomial is a polynomial in finitely many variables. -/
+-- theorem exists_finset_rename (p : MvPowerSeries σ R) :
+--     ∃ (s : Finset σ) (q : MvPowerSeries { x // x ∈ s } R), p = rename (↑) q := by
+--   classical
+--   apply induction_on p
+--   · intro r
+--     exact ⟨∅, C r, by rw [rename_C]⟩
+--   · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
+--     refine' ⟨s ∪ t, ⟨_, _⟩⟩
+--     · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
+--         simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
+--           Finset.mem_union, forall_true_iff]
+--     · simp only [rename_rename, AlgHom.map_add]
+--       rfl
+--   · rintro p n ⟨s, p, rfl⟩
+--     refine' ⟨insert n s, ⟨_, _⟩⟩
+--     · refine' rename (Subtype.map id _) p * X ⟨n, s.mem_insert_self n⟩
+--       simp (config := { contextual := true }) only [id.def, or_true_iff, Finset.mem_insert,
+--         forall_true_iff]
+--     · simp only [rename_rename, rename_X, Subtype.coe_mk, AlgHom.map_mul]
+--       rfl
+-- #align mv_polynomial.exists_finset_rename MvPowerSeries.exists_finset_rename
 
-/-- Every polynomial is a polynomial in finitely many variables. -/
-theorem exists_finset_rename (p : MvPowerSeries σ R) :
-    ∃ (s : Finset σ) (q : MvPowerSeries { x // x ∈ s } R), p = rename (↑) q := by
-  classical
-  apply induction_on p
-  · intro r
-    exact ⟨∅, C r, by rw [rename_C]⟩
-  · rintro p q ⟨s, p, rfl⟩ ⟨t, q, rfl⟩
-    refine' ⟨s ∪ t, ⟨_, _⟩⟩
-    · refine' rename (Subtype.map id _) p + rename (Subtype.map id _) q <;>
-        simp (config := { contextual := true }) only [id.def, true_or_iff, or_true_iff,
-          Finset.mem_union, forall_true_iff]
-    · simp only [rename_rename, AlgHom.map_add]
-      rfl
-  · rintro p n ⟨s, p, rfl⟩
-    refine' ⟨insert n s, ⟨_, _⟩⟩
-    · refine' rename (Subtype.map id _) p * X ⟨n, s.mem_insert_self n⟩
-      simp (config := { contextual := true }) only [id.def, or_true_iff, Finset.mem_insert,
-        forall_true_iff]
-    · simp only [rename_rename, rename_X, Subtype.coe_mk, AlgHom.map_mul]
-      rfl
-#align mv_polynomial.exists_finset_rename MvPowerSeries.exists_finset_rename
+-- /-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
+--   polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
+--   a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
+--   `R[s]` of finitely many variables. -/
+-- theorem exists_finset_rename₂ (p₁ p₂ : MvPowerSeries σ R) :
+--     ∃ (s : Finset σ) (q₁ q₂ : MvPowerSeries s R), p₁ = rename (↑) q₁ ∧ p₂ = rename (↑) q₂ := by
+--   obtain ⟨s₁, q₁, rfl⟩ := exists_finset_rename p₁
+--   obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
+--   classical
+--     use s₁ ∪ s₂
+--     use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
+--     use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
+--     constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
+--     · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--       erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
+--       rfl
+--     · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
+--       erw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
+--       rfl
+-- #align mv_polynomial.exists_finset_rename₂ MvPowerSeries.exists_finset_rename₂
 
-/-- `exists_finset_rename` for two polynomials at once: for any two polynomials `p₁`, `p₂` in a
-  polynomial semiring `R[σ]` of possibly infinitely many variables, `exists_finset_rename₂` yields
-  a finite subset `s` of `σ` such that both `p₁` and `p₂` are contained in the polynomial semiring
-  `R[s]` of finitely many variables. -/
-theorem exists_finset_rename₂ (p₁ p₂ : MvPowerSeries σ R) :
-    ∃ (s : Finset σ) (q₁ q₂ : MvPowerSeries s R), p₁ = rename (↑) q₁ ∧ p₂ = rename (↑) q₂ := by
-  obtain ⟨s₁, q₁, rfl⟩ := exists_finset_rename p₁
-  obtain ⟨s₂, q₂, rfl⟩ := exists_finset_rename p₂
-  classical
-    use s₁ ∪ s₂
-    use rename (Set.inclusion <| s₁.subset_union_left s₂) q₁
-    use rename (Set.inclusion <| s₁.subset_union_right s₂) q₂
-    constructor -- Porting note: was `<;> simp <;> rfl` but Lean couldn't infer the arguments
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [rename_rename (Set.inclusion <| s₁.subset_union_left s₂)]
-      rfl
-    · -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-      erw [rename_rename (Set.inclusion <| s₁.subset_union_right s₂)]
-      rfl
-#align mv_polynomial.exists_finset_rename₂ MvPowerSeries.exists_finset_rename₂
+-- /-- Every polynomial is a polynomial in finitely many variables. -/
+-- theorem exists_fin_rename (p : MvPowerSeries σ R) :
+--     ∃ (n : ℕ) (f : Fin n → σ) (_hf : Injective f) (q : MvPowerSeries (Fin n) R), p = rename f q := by
+--   obtain ⟨s, q, rfl⟩ := exists_finset_rename p
+--   let n := Fintype.card { x // x ∈ s }
+--   let e := Fintype.equivFin { x // x ∈ s }
+--   refine' ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, _⟩
+--   rw [← rename_rename, rename_rename e]
+--   simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
+-- #align mv_polynomial.exists_fin_rename MvPowerSeries.exists_fin_rename
 
-/-- Every polynomial is a polynomial in finitely many variables. -/
-theorem exists_fin_rename (p : MvPowerSeries σ R) :
-    ∃ (n : ℕ) (f : Fin n → σ) (_hf : Injective f) (q : MvPowerSeries (Fin n) R), p = rename f q := by
-  obtain ⟨s, q, rfl⟩ := exists_finset_rename p
-  let n := Fintype.card { x // x ∈ s }
-  let e := Fintype.equivFin { x // x ∈ s }
-  refine' ⟨n, (↑) ∘ e.symm, Subtype.val_injective.comp e.symm.injective, rename e q, _⟩
-  rw [← rename_rename, rename_rename e]
-  simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
-#align mv_polynomial.exists_fin_rename MvPowerSeries.exists_fin_rename
+-- end Rename
 
-end Rename
+-- theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPowerSeries σ ℤ) :
+--     eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
+--   apply MvPowerSeries.induction_on p (fun n => by simp only [eval₂_C, rename_C])
+--     (fun p q hp hq => by simp only [hp, hq, rename, eval₂_add, AlgHom.map_add])
+--     fun p n hp => by simp only [eval₂_mul, hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
+-- #align mv_polynomial.eval₂_cast_comp MvPowerSeries.eval₂_cast_comp
 
-theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPowerSeries σ ℤ) :
-    eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
-  apply MvPowerSeries.induction_on p (fun n => by simp only [eval₂_C, rename_C])
-    (fun p q hp hq => by simp only [hp, hq, rename, eval₂_add, AlgHom.map_add])
-    fun p n hp => by simp only [eval₂_mul, hp, eval₂_X, comp_apply, map_mul, rename_X, eval₂_mul]
-#align mv_polynomial.eval₂_cast_comp MvPowerSeries.eval₂_cast_comp
+-- section Coeff
 
-section Coeff
+-- @[simp]
+-- theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPowerSeries σ R) (d : σ →₀ ℕ) :
+--     (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
+--   classical
+--   apply φ.induction_on' (P := fun ψ => coeff (Finsupp.mapDomain f d) ((rename f) ψ) = coeff d ψ)
+--   -- Lean could no longer infer the motive
+--   · intro u r
+--     rw [rename_monomial, coeff_monomial, coeff_monomial]
+--     simp only [(Finsupp.mapDomain_injective hf).eq_iff]
+--   · intros
+--     simp only [*, AlgHom.map_add, coeff_add]
+-- #align mv_polynomial.coeff_rename_map_domain MvPowerSeries.coeff_rename_mapDomain
 
-@[simp]
-theorem coeff_rename_mapDomain (f : σ → τ) (hf : Injective f) (φ : MvPowerSeries σ R) (d : σ →₀ ℕ) :
-    (rename f φ).coeff (d.mapDomain f) = φ.coeff d := by
-  classical
-  apply φ.induction_on' (P := fun ψ => coeff (Finsupp.mapDomain f d) ((rename f) ψ) = coeff d ψ)
-  -- Lean could no longer infer the motive
-  · intro u r
-    rw [rename_monomial, coeff_monomial, coeff_monomial]
-    simp only [(Finsupp.mapDomain_injective hf).eq_iff]
-  · intros
-    simp only [*, AlgHom.map_add, coeff_add]
-#align mv_polynomial.coeff_rename_map_domain MvPowerSeries.coeff_rename_mapDomain
+-- @[simp]
+-- theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPowerSeries σ R) (d : σ →₀ ℕ) :
+--     (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
+--   rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
 
-@[simp]
-theorem coeff_rename_embDomain (f : σ ↪ τ) (φ : MvPowerSeries σ R) (d : σ →₀ ℕ) :
-    (rename f φ).coeff (d.embDomain f) = φ.coeff d := by
-  rw [Finsupp.embDomain_eq_mapDomain f, coeff_rename_mapDomain f f.injective]
+-- theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPowerSeries σ R) (d : τ →₀ ℕ)
+--     (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
+--   classical
+--   rw [rename_eq, ← not_mem_support_iff]
+--   intro H
+--   replace H := mapDomain_support H
+--   rw [Finset.mem_image] at H
+--   obtain ⟨u, hu, rfl⟩ := H
+--   specialize h u rfl
+--   simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
+--   contradiction
+-- #align mv_polynomial.coeff_rename_eq_zero MvPowerSeries.coeff_rename_eq_zero
 
-theorem coeff_rename_eq_zero (f : σ → τ) (φ : MvPowerSeries σ R) (d : τ →₀ ℕ)
-    (h : ∀ u : σ →₀ ℕ, u.mapDomain f = d → φ.coeff u = 0) : (rename f φ).coeff d = 0 := by
-  classical
-  rw [rename_eq, ← not_mem_support_iff]
-  intro H
-  replace H := mapDomain_support H
-  rw [Finset.mem_image] at H
-  obtain ⟨u, hu, rfl⟩ := H
-  specialize h u rfl
-  simp? at h hu says simp only [Finsupp.mem_support_iff, ne_eq] at h hu
-  contradiction
-#align mv_polynomial.coeff_rename_eq_zero MvPowerSeries.coeff_rename_eq_zero
+-- theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPowerSeries σ R) (d : τ →₀ ℕ)
+--     (h : (rename f φ).coeff d ≠ 0) : ∃ u : σ →₀ ℕ, u.mapDomain f = d ∧ φ.coeff u ≠ 0 := by
+--   contrapose! h
+--   apply coeff_rename_eq_zero _ _ _ h
+-- #align mv_polynomial.coeff_rename_ne_zero MvPowerSeries.coeff_rename_ne_zero
 
-theorem coeff_rename_ne_zero (f : σ → τ) (φ : MvPowerSeries σ R) (d : τ →₀ ℕ)
-    (h : (rename f φ).coeff d ≠ 0) : ∃ u : σ →₀ ℕ, u.mapDomain f = d ∧ φ.coeff u ≠ 0 := by
-  contrapose! h
-  apply coeff_rename_eq_zero _ _ _ h
-#align mv_polynomial.coeff_rename_ne_zero MvPowerSeries.coeff_rename_ne_zero
+-- @[simp]
+-- theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPowerSeries σ R) :
+--     constantCoeff (rename f φ) = constantCoeff φ := by
+--   apply φ.induction_on
+--   · intro a
+--     simp only [constantCoeff_C, rename_C]
+--   · intro p q hp hq
+--     simp only [hp, hq, RingHom.map_add, AlgHom.map_add]
+--   · intro p n hp
+--     simp only [hp, rename_X, constantCoeff_X, RingHom.map_mul, AlgHom.map_mul]
+-- #align mv_polynomial.constant_coeff_rename MvPowerSeries.constantCoeff_rename
 
-@[simp]
-theorem constantCoeff_rename {τ : Type*} (f : σ → τ) (φ : MvPowerSeries σ R) :
-    constantCoeff (rename f φ) = constantCoeff φ := by
-  apply φ.induction_on
-  · intro a
-    simp only [constantCoeff_C, rename_C]
-  · intro p q hp hq
-    simp only [hp, hq, RingHom.map_add, AlgHom.map_add]
-  · intro p n hp
-    simp only [hp, rename_X, constantCoeff_X, RingHom.map_mul, AlgHom.map_mul]
-#align mv_polynomial.constant_coeff_rename MvPowerSeries.constantCoeff_rename
+-- end Coeff
 
-end Coeff
+-- section Support
 
-section Support
+-- theorem support_rename_of_injective {p : MvPowerSeries σ R} {f : σ → τ} [DecidableEq τ]
+--     (h : Function.Injective f) :
+--     (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
+--   rw [rename_eq]
+--   exact Finsupp.mapDomain_support_of_injective (mapDomain_injective h) _
+-- #align mv_polynomial.support_rename_of_injective MvPowerSeries.support_rename_of_injective
 
-theorem support_rename_of_injective {p : MvPowerSeries σ R} {f : σ → τ} [DecidableEq τ]
-    (h : Function.Injective f) :
-    (rename f p).support = Finset.image (Finsupp.mapDomain f) p.support := by
-  rw [rename_eq]
-  exact Finsupp.mapDomain_support_of_injective (mapDomain_injective h) _
-#align mv_polynomial.support_rename_of_injective MvPowerSeries.support_rename_of_injective
-
-end Support
+-- end Support
 
 end MvPowerSeries
