@@ -563,13 +563,13 @@ def coyonedaEquiv {X : C} {F : C ⥤ Type v₁} : (coyoneda.obj (op X) ⟶ F) �
     simp
   right_inv := by intro ξ; simp
 
-theorem coyonedaEquiv_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F) :
-    coyonedaEquiv f = f.app X.unop (𝟙 X.unop) :=
+theorem coyonedaEquiv_apply {X : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F) :
+    coyonedaEquiv f = f.app X (𝟙 X) :=
   rfl
 
 @[simp]
-theorem coyonedaEquiv_symm_app_apply {X : Cᵒᵖ} {F : C ⥤ Type v₁} (x : F.obj X.unop) (Y : C)
-    (f : X.unop ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
+theorem coyonedaEquiv_symm_app_apply {X : C} {F : C ⥤ Type v₁} (x : F.obj X) (Y : C)
+    (f : X ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
   rfl
 
 theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F)
