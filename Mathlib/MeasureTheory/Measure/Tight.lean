@@ -5,7 +5,7 @@ Authors: Rémy Degenne, Josha Dekker
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
-
+import Mathlib.MeasureTheory.Measure.Portmanteau
 
 /-!
 # (Pre-)tight measures
@@ -276,6 +276,49 @@ lemma tight_of_isTightSet [TopologicalSpace α] (S : Set (Measure α)) (h : IsTi
   obtain ⟨K, hK, hKμ⟩ := h ε hε
   exact ⟨K, hK, hKμ μ hμ⟩
 
+/-- As tight sequences are very common in measuretheory, we encode these in a separate
+definition. -/
+def IsTightSeq [TopologicalSpace α] (μs : ℕ → Measure α) : Prop :=
+  IsTightSet (Set.range fun n => μs n)
+
+lemma limsup [TopologicalSpace α] {μs : ℕ → Measure α} (h : IsTightSeq μs) :
+    ∀ ε : ℝ≥0∞, 0 < ε →
+    ∃ K : Set α, IsCompact K ∧ Filter.limsup (fun i ↦ (μs i) Kᶜ) Filter.atTop ≤ ε := by
+  intro ε hε
+  obtain ⟨K, hK, hKμ⟩ := h ε hε
+  use K, hK
+  apply le_trans Filter.limsup_le_iSup
+  exact iSup_le (fun i => hKμ (μs i) (Set.mem_range_self i))
+
+lemma of_limsup [TopologicalSpace α] {μs : ℕ → Measure α} (hs : ∀ n, IsTight (μs n))
+    (h : ∀ ε : ℝ≥0∞, 0 < ε →
+      ∃ K : Set α, IsCompact K ∧ Filter.limsup (fun i ↦ (μs i) Kᶜ) Filter.atTop ≤ ε) :
+    IsTightSeq μs := by
+  intro ε hε
+  by_cases hε_fin : ε < ∞
+  · obtain ⟨K', hK', hKμ'⟩ := h (ε / 2) (ENNReal.half_pos hε.ne')
+    obtain ⟨N, hN⟩ := Filter.eventually_atTop.mp (Filter.eventually_lt_of_limsup_lt
+      (lt_of_le_of_lt hKμ' (ENNReal.half_lt_self hε.ne' hε_fin.ne'.symm)))
+    choose K hK₁ hK₂ using fun n => hs n ε hε
+    use (⋃ (i ≤ N), K i) ∪ K'
+    constructor
+    · exact IsCompact.union ((Set.finite_le_nat N).isCompact_biUnion (fun i _ => hK₁ i)) hK'
+    · intro μ hy
+      obtain ⟨n, hn⟩ := Set.mem_range.mp hy
+      rw [← hn]
+      by_cases hnN : n ≤ N
+      · apply le_trans (measure_mono ?_) (hK₂ n)
+        rw [Set.compl_subset_compl]
+        apply Set.subset_union_of_subset_left
+        exact Set.subset_biUnion_of_mem hnN
+      · apply le_trans (measure_mono ?_) (hN n (Nat.le_of_not_ge hnN)).le
+        rw [Set.compl_subset_compl]
+        apply Set.subset_union_of_subset_right
+        rfl
+  · use ∅, isCompact_empty
+    intro μ _
+    simp_all only [not_lt, top_le_iff, Set.mem_range, Set.compl_empty, le_top]
+
 lemma isTightSet_of_finite_tight [TopologicalSpace α] (S : Set (Measure α)) (h : Set.Finite S) :
     (∀ μ ∈ S, IsTight μ) → IsTightSet S := by
   intro hTight ε hε
@@ -292,9 +335,14 @@ lemma tight_singleton [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace �
   intro ε hε
   simp_all only [IsTight.of_innerRegular μ ε hε, Set.mem_singleton_iff, forall_eq]
 
-lemma tight_prob_of_converging_isTightSet_prob [TopologicalSpace α] [OpensMeasurableSpace α]
-    {μs : ℕ → FiniteMeasure α} {μ : FiniteMeasure α} (h : Filter.Tendsto μs Filter.atTop (𝓝 μ)) (hγ : IsTightSet (Set.range fun n => FiniteMeasure.toMeasure (μs n))) :
-    IsTight (α := α) μ := by
+lemma isTightSet_prob_of_converging_prob_to_tight
+    [PseudoEMetricSpace α] [T2Space α] [OpensMeasurableSpace α]
+    {μs : ℕ → ProbabilityMeasure α} {μ : ProbabilityMeasure α}
+    (h : Filter.Tendsto μs Filter.atTop (𝓝 μ)) (hμ : IsTight (α := α) μ):
+    IsTightSet (Set.range fun n => ProbabilityMeasure.toMeasure (μs n)) := by
+  --rw [MeasureTheory.ProbabilityMeasure.tendsto_iff_forall_integral_tendsto] at h
+  intro ε hε
+  obtain ⟨K, hK, hKμ⟩ := hμ ε hε
+  have := MeasureTheory.ProbabilityMeasure.le_liminf_measure_open_of_tendsto h hK.isClosed.isOpen_compl
   sorry
-
 end MeasureTheory
