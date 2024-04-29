@@ -572,34 +572,26 @@ theorem coyonedaEquiv_symm_app_apply {X : C} {F : C ⥤ Type v₁} (x : F.obj X)
     (f : X ⟶ Y) : (coyonedaEquiv.symm x).app Y f = F.map f x :=
   rfl
 
-theorem coyonedaEquiv_naturality {X Y : Cᵒᵖ} {F : C ⥤ Type v₁} (f : coyoneda.obj X ⟶ F)
-    (g : Y ⟶ X) : F.map g.unop (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g ≫ f) := by
-  change (f.app X.unop ≫ F.map g.unop) (𝟙 X.unop) = f.app Y.unop (g.unop ≫ 𝟙 Y.unop)
+lemma coyonedaEquiv_naturality {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
+    (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g.op ≫ f) := by
+  change (f.app X ≫ F.map g) (𝟙 X) = f.app Y (g ≫ 𝟙 Y)
   rw [← f.naturality]
   dsimp
   simp
 
-lemma coyonedaEquiv_naturality' {X Y : C} {F : C ⥤ Type v₁} (f : coyoneda.obj (op X) ⟶ F)
-    (g : X ⟶ Y) : F.map g (coyonedaEquiv f) = coyonedaEquiv (coyoneda.map g.op ≫ f) :=
-  coyonedaEquiv_naturality _ _
-
-lemma coyonedaEquiv_comp {X : Cᵒᵖ} {F G : C ⥤ Type v₁} (α : coyoneda.obj X ⟶ F) (β : F ⟶ G) :
-    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) :=
+lemma coyonedaEquiv_comp {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :
+    coyonedaEquiv (α ≫ β) = β.app _ (coyonedaEquiv α) := by
   rfl
 
-lemma coyonedaEquiv_comp' {X : C} {F G : C ⥤ Type v₁} (α : coyoneda.obj (op X) ⟶ F) (β : F ⟶ G) :
-    coyonedaEquiv (α ≫ β) = β.app X (coyonedaEquiv α) :=
-  rfl
-
-lemma coyonedaEquiv_coyoneda_map {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    coyonedaEquiv (coyoneda.map f) = f.unop := by
+lemma coyonedaEquiv_coyoneda_map {X Y : C} (f : X ⟶ Y) :
+    coyonedaEquiv (coyoneda.map f.op) = f := by
   rw [coyonedaEquiv_apply]
   simp
 
 lemma coyonedaEquiv_symm_map {X Y : C} (f : X ⟶ Y) {F : C ⥤ Type v₁} (t : F.obj X) :
     coyonedaEquiv.symm (F.map f t) = coyoneda.map f.op ≫ coyonedaEquiv.symm t := by
   obtain ⟨u, rfl⟩ := coyonedaEquiv.surjective t
-  simp [coyonedaEquiv_naturality' u f]
+  simp [coyonedaEquiv_naturality u f]
 
 variable (C)
 
