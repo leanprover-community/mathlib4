@@ -395,10 +395,10 @@ of roots of unity in `K` is equal to the number of `fundamentalCone.integralPoin
 norm `n`. -/
 theorem card_isPrincipal_norm_mul {n : ℕ} (hn : 1 ≤ n) :
     Nat.card {I : Ideal (𝓞 K) // Submodule.IsPrincipal I ∧ Ideal.absNorm I = n} *
-      Fintype.card (torsion K) =
+      torsionOrder K =
         Nat.card ({a : integralPoint K // mixedEmbedding.norm (a : E K) = n}) := by
-  rw [← Nat.card_congr (integralPointQuotNormEquivIsPrincipal K n), ← Nat.card_eq_fintype_card,
-    ← Nat.card_prod]
+  rw [← Nat.card_congr (integralPointQuotNormEquivIsPrincipal K n), torsionOrder, PNat.mk_coe,
+    ← Nat.card_eq_fintype_card, ← Nat.card_prod]
   refine Nat.card_congr (Equiv.symm ?_)
   refine (Equiv.subtypeEquiv (q := fun s ↦ integralPointQuotNorm K s.fst = n)
     (MulAction.selfEquivSigmaOrbitsQuotientStabilizer (torsion K) (integralPoint K))
