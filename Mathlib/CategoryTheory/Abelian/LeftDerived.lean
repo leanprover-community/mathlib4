@@ -409,10 +409,32 @@ noncomputable def sc' [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.Shor
     ext n
     exact (exact_iff_shortComplex_exact _ |>.mpr (shortExact_α_β_horseshoe F A n).exact).w
 
+/--
+a short complex of chain complexes is exact if the rows are exact.
+-/
+-- final sorry
 lemma aux (A : ShortComplex (ChainComplex C ℕ))
     (hA : ∀ (n : ℕ),
       (A.map (HomologicalComplex.eval C (ComplexShape.down ℕ) n)).ShortExact) :
-    A.ShortExact := sorry
+    A.ShortExact where
+  exact := sorry
+  mono_f := by
+    constructor
+    intro Z g g' h
+    ext n
+    refine (hA n).mono_f.right_cancellation (g.f n) (g'.f n) ?_
+    change (g ≫ A.f).f n = _
+    rw [h]
+    rfl
+  epi_g := by
+    constructor
+    intro Z g g' h
+    ext n
+    refine (hA n).epi_g.left_cancellation (g.f n) (g'.f n) ?_
+    change (A.g ≫ g).f n = _
+    rw [h]
+    rfl
+
 
 lemma sc'_shortExact [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
     (sc' F A).ShortExact := by
