@@ -345,7 +345,6 @@ variable [TopologicalSpace Y] {Z : Type*}
 
 /-- `LocallyConstant.comap` as a `MulHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddHom`."]
-noncomputable
 def comapMulHom [Mul Z]  (f : C(X, Y)) :
     LocallyConstant Y Z →ₙ* LocallyConstant X Z where
   toFun := comap f
@@ -353,7 +352,6 @@ def comapMulHom [Mul Z]  (f : C(X, Y)) :
 
 /-- `LocallyConstant.comap` as a `MonoidHom`. -/
 @[to_additive (attr := simps) "`LocallyConstant.comap` as an `AddMonoidHom`."]
-noncomputable
 def comapMonoidHom [MulOneClass Z]  (f : C(X, Y)) :
     LocallyConstant Y Z →* LocallyConstant X Z where
   toFun := comap f
@@ -362,7 +360,6 @@ def comapMonoidHom [MulOneClass Z]  (f : C(X, Y)) :
 
 /-- `LocallyConstant.comap` as a linear map. -/
 @[simps!]
-noncomputable
 def comapₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y)) :
     LocallyConstant Y Z →ₗ[R] LocallyConstant X Z where
   toFun := comap f
@@ -371,7 +368,6 @@ def comapₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y
 
 /-- `LocallyConstant.comap` as a `RingHom`. -/
 @[simps!]
-noncomputable
 def comapRingHom [Semiring Z] (f : C(X, Y)) :
     LocallyConstant Y Z →+* LocallyConstant X Z where
   toMonoidHom := comapMonoidHom f
@@ -379,7 +375,6 @@ def comapRingHom [Semiring Z] (f : C(X, Y)) :
 
 /-- `LocallyConstant.comap` as an `AlgHom` -/
 @[simps!]
-noncomputable
 def comapₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z]
     (f : C(X, Y)) : LocallyConstant Y Z →ₐ[R] LocallyConstant X Z where
   toRingHom := comapRingHom f
@@ -392,7 +387,6 @@ lemma ker_comapₗ [Semiring R] [AddCommMonoid Z] [Module R Z] (f : C(X, Y))
 
 /-- `LocallyConstant.congrLeft` as a `MulEquiv`. -/
 @[to_additive (attr := simps!) "`LocallyConstant.congrLeft` as an `AddEquiv`."]
-noncomputable
 def congrLeftMulEquiv [Mul Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃* LocallyConstant Y Z where
   toEquiv := congrLeft e
@@ -400,7 +394,6 @@ def congrLeftMulEquiv [Mul Z] (e : X ≃ₜ Y) :
 
 /-- `LocallyConstant.congrLeft` as a linear equivalence. -/
 @[simps!]
-noncomputable
 def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₗ[R] LocallyConstant Y Z where
   toLinearMap := comapₗ R ⟨_, e.symm.continuous⟩
@@ -408,7 +401,6 @@ def congrLeftₗ (R : Type*) [Semiring R] [AddCommMonoid Z] [Module R Z] (e : X 
 
 /-- `LocallyConstant.congrLeft` as a `RingEquiv`. -/
 @[simps!]
-noncomputable
 def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃+* LocallyConstant Y Z where
   toEquiv := congrLeft e
@@ -417,12 +409,111 @@ def congrLeftRingEquiv [Semiring Z] (e : X ≃ₜ Y) :
 
 /-- `LocallyConstant.congrLeft` as an `AlgEquiv`. -/
 @[simps!]
-noncomputable
 def congrLeftₐ (R : Type*) [CommSemiring R] [Semiring Z] [Algebra R Z] (e : X ≃ₜ Y) :
     LocallyConstant X Z ≃ₐ[R] LocallyConstant Y Z where
   toEquiv := congrLeft e
   __ := comapₐ R ⟨_, e.symm.continuous⟩
 
 end Comap
+
+section Map
+
+variable {Z : Type*}
+
+/-- `LocallyConstant.map` as a `MulHom`. -/
+@[to_additive (attr := simps) "`LocallyConstant.map` as an `AddHom`."]
+def mapMulHom [Mul Y] [Mul Z] (f : Y →ₙ* Z) :
+    LocallyConstant X Y →ₙ* LocallyConstant X Z where
+  toFun := map f
+  map_mul' := by aesop
+
+/-- `LocallyConstant.map` as a `MonoidHom`. -/
+@[to_additive (attr := simps) "`LocallyConstant.map` as an `AddMonoidHom`."]
+def mapMonoidHom [MulOneClass Y] [MulOneClass Z] (f : Y →* Z) :
+    LocallyConstant X Y →* LocallyConstant X Z where
+  toFun := map f
+  map_one' := by aesop
+  map_mul' := by aesop
+
+/-- `LocallyConstant.map` as a linear map. -/
+@[simps!]
+def mapₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
+    [AddCommMonoid Z] [Module R Z] (f : Y →ₗ[R] Z) :
+    LocallyConstant X Y →ₗ[R] LocallyConstant X Z where
+  toFun := map f
+  map_add' := by aesop
+  map_smul' := by aesop
+
+/-- `LocallyConstant.map` as a `RingHom`. -/
+@[simps!]
+def mapRingHom [Semiring Y] [Semiring Z] (f : Y →+* Z) :
+    LocallyConstant X Y →+* LocallyConstant X Z where
+  toMonoidHom := mapMonoidHom f
+  __ := (mapAddMonoidHom f.toAddMonoidHom)
+
+/-- `LocallyConstant.map` as an `AlgHom` -/
+@[simps!]
+def mapₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
+    (f : Y →ₐ[R] Z) : LocallyConstant X Y →ₐ[R] LocallyConstant X Z where
+  toRingHom := mapRingHom f
+  commutes' _ := by aesop
+
+/-- `LocallyConstant.congrRight` as a `MulEquiv`. -/
+@[to_additive (attr := simps!) "`LocallyConstant.congrRight` as an `AddEquiv`."]
+def congrRightMulEquiv [Mul Y] [Mul Z] (e : Y ≃* Z) :
+    LocallyConstant X Y ≃* LocallyConstant X Z where
+  toEquiv := congrRight e
+  map_mul' := map_mul (mapMulHom e.toMulHom)
+
+/-- `LocallyConstant.congrRight` as a linear equivalence. -/
+@[simps!]
+def congrRightₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y]
+    [AddCommMonoid Z] [Module R Z] (e : Y ≃ₗ[R] Z) :
+    LocallyConstant X Y ≃ₗ[R] LocallyConstant X Z where
+  toLinearMap := mapₗ R e
+  __ := congrRight e.toEquiv
+
+/-- `LocallyConstant.congrRight` as a `RingEquiv`. -/
+@[simps!]
+def congrRightRingEquiv [Semiring Y] [Semiring Z] (e : Y ≃+* Z) :
+    LocallyConstant X Y ≃+* LocallyConstant X Z where
+  toEquiv := congrRight e
+  __ := mapMonoidHom e.toMonoidHom
+  __ := mapAddMonoidHom e.toAddMonoidHom
+
+/-- `LocallyConstant.congrRight` as an `AlgEquiv`. -/
+@[simps!]
+def congrRightₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] [Semiring Z] [Algebra R Z]
+    (e : Y ≃ₐ[R] Z) : LocallyConstant X Y ≃ₐ[R] LocallyConstant X Z where
+  toEquiv := congrRight e
+  __ := mapₐ R e.toAlgHom
+
+end Map
+
+section Const
+
+/-- `LocallyConstant.const` as a `MulHom`. -/
+@[to_additive (attr := simps) "`LocallyConstant.const` as an `AddHom`."]
+def constMulHom [Mul Y] :
+    Y →ₙ* LocallyConstant X Y where
+  toFun := const X
+  map_mul' _ _ := rfl
+
+/-- `LocallyConstant.const` as a linear map. -/
+@[simps!]
+def constₗ (R : Type*) [Semiring R] [AddCommMonoid Y] [Module R Y] :
+    Y →ₗ[R] LocallyConstant X Y where
+  toFun := const X
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+/-- `LocallyConstant.const` as an `AlgHom` -/
+@[simps!]
+def constₐ (R : Type*) [CommSemiring R] [Semiring Y] [Algebra R Y] :
+    Y →ₐ[R] LocallyConstant X Y where
+  toRingHom := constRingHom
+  commutes' _ := rfl
+
+end Const
 
 end LocallyConstant
