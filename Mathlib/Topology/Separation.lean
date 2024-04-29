@@ -693,7 +693,9 @@ instance {ι : Type*} {X : ι → Type*} [∀ i, TopologicalSpace (X i)] [∀ i,
 instance ULift.instT1Space [T1Space X] : T1Space (ULift X) :=
   embedding_uLift_down.t1Space
 
-instance [h: TotallyDisconnectedSpace X] : T1Space X := by
+-- see Note [lower instance priority]
+instance (priority := 100) TotallyDisconnectedSpace.t1Space [h: TotallyDisconnectedSpace X] :
+    T1Space X := by
   rw [((t1Space_TFAE X).out 0 1 :)]
   intro x
   rw [← totallyDisconnectedSpace_iff_connectedComponent_singleton.mp h x]
