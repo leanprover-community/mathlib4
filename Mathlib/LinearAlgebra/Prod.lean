@@ -886,6 +886,9 @@ end LinearMap
 
 namespace LinearMap
 
+-- TODO: remove the following section (?) since the proof of strong rank condition for
+-- noetherian rings is replaced by another method.
+
 /-!
 ## Tunnels and tailings
 
