@@ -244,6 +244,10 @@ Test that unused variables are not reported for the variable list either before 
 #guard_msgs in
 variable? {α : _}
 
+/--
+warning: unused variable `α`
+note: this linter can be disabled with `set_option linter.unusedVariables false`
+-/
 #guard_msgs in
 variable? {α : _} => {α : _}
 end
@@ -256,6 +260,10 @@ to be sure that the state is reset when testing what comes after the `=>`.
 
 class foo (β : Nat → Sort*) [CoeFun Nat (fun _ ↦ ∀ a : Nat, β a)] where
 
+/--
+warning: unused variable `i`
+note: this linter can be disabled with `set_option linter.unusedVariables false`
+-/
 #guard_msgs in
 variable? {β : Sort*} [i : foo fun _ ↦ β] =>
   {β : Sort*} [CoeFun Nat fun _ ↦ (a : Nat) → (fun _ ↦ β) a] [i : foo fun _ ↦ β]
