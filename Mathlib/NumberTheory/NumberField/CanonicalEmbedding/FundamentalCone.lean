@@ -76,18 +76,18 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem FiniteDimensional
 
 variable [NumberField K] {K}
 
+open Classical in
 /-- The map from `ℝ^r₁ × ℂ^r₂` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` a fixed place)
 defined in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
 2) it is constant on the lines `{c • x | c ∈ ℝ}`, see `logMap_smul`. -/
-def logMap (x : E K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := by
-  classical
-  exact fun w ↦
-    if hw : IsReal w.val then
-      Real.log ‖x.1 ⟨w.val, hw⟩‖ - Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹
-    else
-      2 * (Real.log ‖x.2 ⟨w.val, not_isReal_iff_isComplex.mp hw⟩‖ -
-        Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
+def logMap (x : E K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := fun w ↦
+  if hw : IsReal w.val then
+    Real.log ‖x.1 ⟨w.val, hw⟩‖ - Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹
+  else
+    2 * (Real.log ‖x.2 ⟨w.val, not_isReal_iff_isComplex.mp hw⟩‖ -
+      Real.log (mixedEmbedding.norm x) * (finrank ℚ K : ℝ)⁻¹)
 
+@[simp]
 theorem logMap_zero : logMap (0 : E K) = 0 := by
   ext
   simp_rw [logMap, Prod.fst_zero, Prod.snd_zero, map_zero, Pi.zero_apply, norm_zero, Real.log_zero,
