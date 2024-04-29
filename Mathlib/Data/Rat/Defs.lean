@@ -44,6 +44,8 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
+lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
+
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
@@ -216,11 +218,37 @@ lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /.
 
 attribute [simp] mkRat_mul_mkRat
 
+lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂) (h₁₂ : n₁.natAbs.Coprime d₂)
+    (h₂₁ : n₂.natAbs.Coprime d₁) :
+    mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
+      rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
+  rw [mul_def]; dsimp; rw [mk_eq_normalize]
+
 lemma mul_def' (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
 @[deprecated] alias mul_num_den := mul_def'
 #align rat.mul_num_denom Rat.mul_def'
+
+instance instPowNat : Pow ℚ ℕ where
+  pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
+    rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩
+
+lemma pow_def (q : ℚ) (n : ℕ) : q ^ n = ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
+    rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩ := rfl
+
+lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) := by
+  rw [pow_def, mk_eq_mkRat]
+
+lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
+  rw [pow_def, mk_eq_divInt, Int.natCast_pow]
+
+@[simp] lemma num_pow (q : ℚ) (n : ℕ) : (q ^ n).num = q.num ^ n := rfl
+@[simp] lemma den_pow (q : ℚ) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
+
+@[simp] lemma mk'_pow (num : ℤ) (den : ℕ) (hd hdn) (n : ℕ) :
+    mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
+      (by simp [Nat.pow_eq_zero, hd]) (by rw [Int.natAbs_pow]; exact hdn.pow _ _) := rfl
 
 #align rat.inv Rat.inv
 
@@ -344,6 +372,16 @@ instance commRing : CommRing ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
+  npow n q := q ^ n
+  npow_zero := by intros; apply Rat.ext <;> simp
+  npow_succ n q := by
+    dsimp
+    rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
+    congr
+    · rw [mk'_pow, Int.natAbs_pow]
+      exact q.reduced.pow_left _
+    · rw [mk'_pow]
+      exact q.reduced.pow_right _
   zero_mul := Rat.zero_mul
   mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add

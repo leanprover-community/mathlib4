@@ -121,6 +121,12 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
+@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n := rfl
+#align nnrat.coe_pow NNRat.coe_pow
+
+@[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
+@[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
+
 -- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
 #noalign nnrat.coe_bit0
 #noalign nnrat.coe_bit1
@@ -202,10 +208,6 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
 
-@[simp, norm_cast]
-theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
-  coeHom.map_pow _ _
-#align nnrat.coe_pow NNRat.coe_pow
 @[norm_cast]
 theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
