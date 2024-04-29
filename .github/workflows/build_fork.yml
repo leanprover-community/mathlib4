@@ -154,12 +154,9 @@ jobs:
 
       - name: print_lost_declarations
         run: |
-          echo "fetch"
-          git fetch origin master
-          echo "rev-parse"
-          git rev-parse --abbrev-ref HEAD
-          echo "merge-base"
-          git merge-base -- origin/master "$( git rev-parse --abbrev-ref HEAD )"
+          printf 'fetch %s\n' "$(git fetch origin master)"
+          printf 'rev-parse %s\n' "$(git rev-parse --abbrev-ref HEAD)"
+          printf 'merge-base %s\n' "$(git merge-base -- origin/master "$( git rev-parse )"--abbrev-ref HEAD )"
           echo "run script"
           ./scripts/no_lost_declarations.sh
 
