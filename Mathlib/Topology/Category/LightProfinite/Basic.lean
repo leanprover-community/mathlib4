@@ -102,8 +102,7 @@ instance : fintypeCatToLightProfinite.Faithful where
   map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
 
 instance : fintypeCatToLightProfinite.Full where
-  preimage f := fun x ↦ f x
-  witness _ := rfl
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
 
 end LightProfinite
 
@@ -127,7 +126,8 @@ def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} 
 
 instance : LightProfinite'.toLightFunctor.{u}.Faithful := ⟨id⟩
 
-instance : LightProfinite'.toLightFunctor.{u}.Full := ⟨id, fun _ ↦ rfl⟩
+instance : LightProfinite'.toLightFunctor.{u}.Full where
+  map_surjective f := ⟨f, rfl⟩
 
 instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y := by

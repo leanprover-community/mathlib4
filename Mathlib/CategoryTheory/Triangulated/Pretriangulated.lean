@@ -188,8 +188,8 @@ lemma complete_distinguished_triangle_morphism₁ (T₁ T₂ : Triangle C)
   · apply (shiftFunctor C (1 : ℤ)).map_injective
     dsimp at ha₂
     rw [neg_comp, comp_neg, neg_inj] at ha₂
-    simpa only [Functor.map_comp, Functor.image_preimage] using ha₂
-  · simpa only [Functor.image_preimage] using ha₁
+    simpa only [Functor.map_comp, Functor.map_preimage] using ha₂
+  · simpa only [Functor.map_preimage] using ha₁
 
 /-- A commutative square involving the morphisms `mor₃` of two distinguished triangles
 can be extended as morphism of triangles -/
