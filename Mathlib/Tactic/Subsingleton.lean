@@ -109,7 +109,7 @@ elab "subsingleton" : tactic => do
       try
         let inst ← withNewMCtxDepth <| synthInstance instYTy
         let pf ← mkHEqSymm <|
-          mkApp6 (.const ``Subsingleton.helim [u]) xTy yTy inst (← mkEqSymm g') x y
+          mkApp6 (.const ``Subsingleton.helim [u]) yTy xTy inst (← mkEqSymm g') y x
         g.assign pf
         return [g'.mvarId!]
       catch _ => pure ()

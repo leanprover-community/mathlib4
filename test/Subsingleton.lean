@@ -60,6 +60,35 @@ example (p q : Prop) (h : p = q) (instp : Decidable p) (instq : Decidable q) :
   exact congrArg Decidable h
 
 /-!
+Can't apply `Subsingleton.helim`
+-/
+/--
+error: tactic 'subsingleton' could not prove heterogenous equality since it could not synthesize either
+  Subsingleton α
+or
+  Subsingleton β
+-/
+#guard_msgs in
+example (α β : Type) (x : α) (y : β) : HEq x y := by
+  subsingleton
+
+/-!
+`Subsingleton.helim` with left argument
+-/
+example (α β : Type) (h : α = β) [Subsingleton α] (x : α) (y : β) : HEq x y := by
+  subsingleton
+  guard_target =ₛ α = β
+  exact h
+
+/-!
+`Subsingleton.helim` with right argument
+-/
+example (α β : Type) (h : α = β) [Subsingleton β] (x : α) (y : β) : HEq x y := by
+  subsingleton
+  guard_target =ₛ α = β
+  exact h
+
+/-!
 `subsingleton` suggests `rfl` when it fails
 -/
 /-- info: Try this: rfl -/
