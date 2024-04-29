@@ -27,8 +27,6 @@ def segmentReplacements : String → String
   | "Bot"    => "Top"
   | "bot"    => "top"
   | "unbot"  => "untop"
-  | "comp"   => "lift"
-  | "lift"   => "comp"
   | "union"  => "inter"
   | "inter"  => "union"
   | e => e

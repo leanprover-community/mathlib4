@@ -31,8 +31,7 @@ toTop
 /-- Attach `⊥` to a type. -/
 def WithBot (α : Type*) :=
   Option α
-#align with_bot WithBot
-#align with_top WithTop
+toTop #align with_bot WithBot
 
 variable {a b : α}
 
@@ -83,34 +82,34 @@ theorem coe_inj : (a : WithBot α) = b ↔ a = b :=
 toTop
 protected theorem «forall» {p : WithBot α → Prop} : (∀ x, p x) ↔ p ⊥ ∧ ∀ x : α, p x :=
   Option.forall
-#align with_bot.forall WithBot.forall
+toTop #align with_bot.forall WithBot.forall
 
 toTop
 protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ ∨ ∃ x : α, p x :=
   Option.exists
-#align with_bot.exists WithBot.exists
+toTop #align with_bot.exists WithBot.exists
 
 toTop
 theorem none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
   rfl
-#align with_bot.none_eq_bot WithBot.none_eq_bot
+toTop #align with_bot.none_eq_bot WithBot.none_eq_bot
 
 toTop
 theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
   rfl
-#align with_bot.some_eq_coe WithBot.some_eq_coe
+toTop #align with_bot.some_eq_coe WithBot.some_eq_coe
 
 toTop
 @[simp]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
   nofun
-#align with_bot.bot_ne_coe WithBot.bot_ne_coe
+toTop #align with_bot.bot_ne_coe WithBot.bot_ne_coe
 
 toTop
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
-#align with_bot.coe_ne_bot WithBot.coe_ne_bot
+toTop #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
 toTop
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
@@ -118,44 +117,44 @@ toTop
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
-#align with_bot.rec_bot_coe WithBot.recBotCoe
+toTop #align with_bot.rec_bot_coe WithBot.recBotCoe
 
 toTop
 @[simp]
 theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
-#align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
+toTop #align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
 
 toTop
 @[simp]
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
-#align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
+toTop #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
 toTop
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
-#align with_bot.unbot' WithBot.unbot'
+toTop #align with_bot.unbot' WithBot.unbot'
 
 toTop
 @[simp]
 theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
   rfl
-#align with_bot.unbot'_bot WithBot.unbot'_bot
+toTop #align with_bot.unbot'_bot WithBot.unbot'_bot
 
 toTop
 @[simp]
 theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
-#align with_bot.unbot'_coe WithBot.unbot'_coe
+toTop #align with_bot.unbot'_coe WithBot.unbot'_coe
 
 toTop
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
-#align with_bot.coe_eq_coe WithBot.coe_eq_coe
+toTop #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
 -- on `WithTop.coe_eq_coe`:
 --@[simp, norm_cast] -- Porting note: added `simp`
@@ -164,43 +163,43 @@ attribute [simp, norm_cast] WithTop.coe_eq_coe
 toTop
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x using recBotCoe <;> simp [@eq_comm _ d]
-#align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
+toTop #align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
 
 toTop
 @[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
   simp [unbot'_eq_iff]
-#align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
+toTop #align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
 
 toTop
 theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
     unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
  induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
-#align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
+toTop #align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
 toTop
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
-#align with_bot.map WithBot.map
+toTop #align with_bot.map WithBot.map
 
 toTop
 @[simp]
 theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
   rfl
-#align with_bot.map_bot WithBot.map_bot
+toTop #align with_bot.map_bot WithBot.map_bot
 
 toTop
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
-#align with_bot.map_coe WithBot.map_coe
+toTop #align with_bot.map_coe WithBot.map_coe
 
 toTop
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
-#align with_bot.map_comm WithBot.map_comm
+toTop #align with_bot.map_comm WithBot.map_comm
 
 toTop
 /-- The image of a binary function `f : α → β → γ` as a function
@@ -228,28 +227,28 @@ toTop
 toTop
 theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
-#align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
+toTop #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
 toTop
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
-#align with_bot.unbot WithBot.unbot
+toTop #align with_bot.unbot WithBot.unbot
 
 toTop
 @[simp] lemma coe_unbot : ∀ (x : WithBot α) hx, x.unbot hx = x | (x : α), _ => rfl
-#align with_bot.coe_unbot WithBot.coe_unbot
+toTop #align with_bot.coe_unbot WithBot.coe_unbot
 
 toTop
 @[simp]
 theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) :
     WithBot.unbot (x : WithBot α) h = x :=
   rfl
-#align with_bot.unbot_coe WithBot.unbot_coe
+toTop #align with_bot.unbot_coe WithBot.unbot_coe
 
 toTop
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
-#align with_bot.can_lift WithBot.canLift
+toTop #align with_bot.can_lift WithBot.canLift
 
 section LE
 
@@ -371,7 +370,6 @@ section LE
 
 variable [LE α]
 
---toTop?
 @[simp]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
   simp [LE.le]
@@ -388,7 +386,6 @@ theorem none_le {a : WithBot α} : @LE.le (WithBot α) _ none a := fun _ h => Op
 
 instance orderBot : OrderBot (WithBot α) :=
   { WithBot.bot with bot_le := fun _ => none_le }
-
 
 instance orderTop [OrderTop α] : OrderTop (WithBot α) where
   top := some ⊤
@@ -761,47 +758,7 @@ variable {a b : α}
 
 open Function
 
-#align with_top.forall WithTop.forall
-
-#align with_top.exists WithTop.exists
-
-#align with_top.none_eq_top WithTop.none_eq_top
-
-#align with_top.some_eq_coe WithTop.some_eq_coe
-
-#align with_top.top_ne_coe WithTop.top_ne_coe
-
-#align with_top.coe_ne_top WithTop.coe_ne_top
-
-#align with_top.rec_top_coe WithTop.recTopCoe
-
-#align with_top.rec_top_coe_top WithTop.recTopCoe_top
-
-#align with_top.rec_top_coe_coe WithTop.recTopCoe_coe
-
 open OrderDual
-
-#align with_top.untop' WithTop.untop'
-
-#align with_top.untop'_top WithTop.untop'_top
-
-#align with_top.untop'_coe WithTop.untop'_coe
-
-#align with_top.coe_eq_coe WithTop.coe_eq_coe
-
-#align with_top.untop'_eq_iff WithTop.untop'_eq_iff
-
-#align with_top.untop'_eq_self_iff WithTop.untop'_eq_self_iff
-
-#align with_top.untop'_eq_untop'_iff WithTop.untop'_eq_untop'_iff
-
-#align with_top.map WithTop.map
-
-#align with_top.map_top WithTop.map_top
-
-#align with_top.map_coe WithTop.map_coe
-
-#align with_top.map_comm WithTop.map_comm
 
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
@@ -821,16 +778,6 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
     WithTop.ofDual (map f a) = WithBot.map (ofDual ∘ f ∘ toDual) (WithTop.ofDual a) :=
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
-
-#align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
-
-#align with_top.untop WithTop.untop
-
-#align with_top.coe_untop WithTop.coe_untop
-
-#align with_top.untop_coe WithTop.untop_coe
-
-#align with_top.can_lift WithTop.canLift
 
 section LE
 
