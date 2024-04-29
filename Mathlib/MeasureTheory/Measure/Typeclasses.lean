@@ -922,6 +922,7 @@ theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :
       restrict_apply ht, inter_comm t]
 #align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sFinite
 
+/-- Auxiliary lemma for `iSup_restrict_spanningSets`. -/
 theorem iSup_restrict_spanningSets_of_measurableSet [SigmaFinite μ] (hs : MeasurableSet s) :
     ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
   calc
