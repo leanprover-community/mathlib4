@@ -51,26 +51,69 @@ namespace MvPowerSeries
 
 section Rename
 
+-- variable [DecidableEq σ] [DecidableEq τ]
 /-- Rename all the variables in a multivariable polynomial. -/
-def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
-  toFun := fun φ ↦ φ ∘ (fun a ↦ Finsupp.equivMapDomain e.symm a)
-  invFun := fun φ ↦ φ ∘ (fun a ↦ Finsupp.equivMapDomain e a)
+def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ MvPowerSeries τ R where
+  toFun := fun φ ↦ φ ∘ (Finsupp.mapDomain.addMonoidHom e.symm)
+  invFun := fun φ ↦ φ ∘ (Finsupp.mapDomain.addMonoidHom e)
   left_inv := by
-    intro p
+    intro x
     funext s
-    simp only [comp_apply, ← equivMapDomain_trans, Equiv.self_trans_symm, equivMapDomain_refl]
+    simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp, Equiv.symm_comp_self,
+      mapDomain_id]
   right_inv := by
-    intro p
+    intro x
     funext s
-    simp only [comp_apply, ← equivMapDomain_trans, Equiv.symm_trans_self, equivMapDomain_refl]
-  map_mul' := sorry
-  map_add' := sorry
-  commutes' := sorry
+    simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp, Equiv.self_comp_symm,
+      mapDomain_id]
 
--- theorem rename_C (f : σ → τ) (r : R) : rename f (C r) = C r :=
---   eval₂_C _ _ _
--- set_option linter.uppercaseLean3 false in
--- #align mv_polynomial.rename_C MvPowerSeries.rename_C
+  -- ≃ₐ[R]
+  -- map_mul' := sorry
+  -- map_add' := by
+  --   intro x y
+  --   ext s
+  --   simp only [map_add]
+  --   congr
+  -- commutes' := sorry
+
+end Rename
+
+variable [DecidableEq σ] [DecidableEq τ]
+
+lemma rename_zero (e : σ ≃ τ) : rename e (0 : MvPowerSeries σ R) = 0 := by
+  simp only [rename, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
+
+theorem rename_C (e : σ ≃ τ) (r : R) : rename e (C σ R r) = C τ R r := by
+  simp only [rename, Equiv.coe_fn_mk]
+  funext t
+  have : ((C σ R) r ∘ ⇑(mapDomain.addMonoidHom ⇑e.symm)) t = (if t = 0 then r else 0)
+      := by
+    simp only [comp_apply, mapDomain.addMonoidHom_apply]
+    by_cases h : t = 0
+    · simp only [h, mapDomain_zero, ↓reduceIte]
+      rfl
+    · simp only [h, ↓reduceIte]
+      show coeff R (Finsupp.mapDomain (⇑e.symm) t) (C σ R r) = 0
+      rw [coeff_C]
+      apply if_neg
+      intro hzero
+      have (s0 : σ) : (Finsupp.mapDomain (⇑e.symm) t) s0 = 0 := by
+        rw [hzero]
+        simp only [coe_zero, Pi.zero_apply, Nat.cast_zero]
+      apply h
+      simp only [Finsupp.mapDomain_equiv_apply t, Equiv.symm_symm] at this
+      ext t0
+      simp only [coe_zero, Pi.zero_apply]
+      rw [← this (e.symm t0)]
+      congr
+      exact (Equiv.symm_apply_eq e).mp rfl
+  rw [this]
+  by_cases h : t = 0
+  · simp only [h, ↓reduceIte]
+    rfl
+  · simp only [h, ↓reduceIte]
+    show 0 = coeff R t (C τ R r)
+    simp only [coeff_C, h, ↓reduceIte]
 
 -- @[simp]
 -- theorem rename_X (f : σ → τ) (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) :=
@@ -365,5 +408,4 @@ def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R whe
 -- #align mv_polynomial.support_rename_of_injective MvPowerSeries.support_rename_of_injective
 
 -- end Support
-
 end MvPowerSeries
