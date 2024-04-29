@@ -223,12 +223,6 @@ attribute [simp] mkRat_mul_mkRat
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
-lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂) (h₁₂ : n₁.natAbs.Coprime d₂)
-    (h₂₁ : n₂.natAbs.Coprime d₁) :
-    mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
-      rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
-  rw [mul_def]; dsimp; rw [mk_eq_normalize]
-
 -- TODO: Rename `divInt_eq_iff` in Std to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
 
