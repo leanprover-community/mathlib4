@@ -8,18 +8,18 @@ import Mathlib.NumberTheory.NumberField.Units
 /-!
 # Fundamental Cone
 
-Let `K` be a number field of signature `(r₁, r₂)`. We define an action of the units `(𝓞 K)ˣ` on
-the space `ℝ^r₁ × ℂ^r₂`. The fundamental cone is a cone in `ℝ^r₁ × ℂ^r₂` that is a fundamental
-domain for the action of `(𝓞 K)ˣ` up to roots of unity.
+Let `K` be a number field of signature `(r₁, r₂)`. We define an action of the group of units
+`(𝓞 K)ˣ` of `K` on the space `ℝ^r₁ × ℂ^r₂`. The fundamental cone is a cone in `ℝ^r₁ × ℂ^r₂`
+that is a fundamental domain for the action of `(𝓞 K)ˣ` up to roots of unity.
 
 ## Main definitions and results
 
 * `NumberField.mixedEmbedding.unitSMul`: The action of `(𝓞 K)ˣ` on `ℝ^r₁ × ℂ^r₂` defined, for
 `u : (𝓞 K)ˣ`, by multiplication component by component with `mixedEmbedding K u`.
 
-* `NumberField.mixedEmbedding.fundamentalCone`: A cone in `ℝ^r₁ × ℂ^r₂` --that is a subset fixed
-by multiplication by a scalar, see `smul_mem_of_mem`--, that is also a fundamental domain for the
-action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unitSMul_me` and
+* `NumberField.mixedEmbedding.fundamentalCone`: A cone in `ℝ^r₁ × ℂ^r₂` --that is a subset stable
+under multiplication by a real number, see `smul_mem_of_mem`--, that is also a fundamental domain
+for the action of `(𝓞 K)ˣ` up to roots of unity, see `exists_unitSMul_me` and
 `torsion_unitSMul_mem_of_mem`.
 
 ## Tags
@@ -39,8 +39,8 @@ local notation "E" K =>
 
 noncomputable section UnitSMul
 
-/-- The action of `(𝓞 K)ˣ` on `ℝ^r₁ × ℂ^r₂` defined, for `u : (𝓞 K)ˣ`, by multiplication components
-by components with `mixedEmbedding K u`. -/
+/-- The action of `(𝓞 K)ˣ` on `ℝ^r₁ × ℂ^r₂` defined, for `u : (𝓞 K)ˣ`, by multiplication component
+by component with `mixedEmbedding K u`. -/
 @[simps]
 instance unitSMul : SMul (𝓞 K)ˣ (E K) where
   smul := fun u x ↦ (mixedEmbedding K u) * x
@@ -77,7 +77,7 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem FiniteDimensional
 variable [NumberField K] {K}
 
 /-- The map from `ℝ^r₁ × ℂ^r₂` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` (with `w₀` a fixed place)
-define in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
+defined in such way that: 1) it factors the map `logEmbedding`, see `logMap_eq_logEmbedding`;
 2) it is constant on the lines `{c • x | c ∈ ℝ}`, see `logMap_smul`. -/
 def logMap (x : E K) : {w : InfinitePlace K // w ≠ w₀} → ℝ := by
   classical
@@ -149,9 +149,9 @@ open NumberField.Units NumberField.Units.dirichletUnitTheorem
 
 variable [NumberField K]
 
-/-- The fundamental cone is a cone in `ℝ^r₁ × ℂ^r₂` --that is a subset fixed by multiplication by
-a scalar, see `smul_mem_of_mem`--, that is also a fundamental domain for the action of `(𝓞 K)ˣ` up
-to roots of unity, see `exists_unitSMul_mem` and `torsion_unitSMul_mem_of_mem`. -/
+/-- The fundamental cone is a cone in `ℝ^r₁ × ℂ^r₂` --that is a subset stable under multiplication
+by a real number, see `smul_mem_of_mem`--, that is also a fundamental domain for the action of
+`(𝓞 K)ˣ` up to roots of unity, see `exists_unitSMul_mem` and `torsion_unitSMul_mem_of_mem`. -/
 def fundamentalCone : Set (E K) := by
   classical
   let B := (Module.Free.chooseBasis ℤ (unitLattice K)).ofZlatticeBasis ℝ _
