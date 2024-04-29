@@ -9,6 +9,7 @@ import Mathlib.Order.BoundedOrder
 import Mathlib.Data.Option.NAry
 import Mathlib.Tactic.Lift
 import Mathlib.Data.Option.Basic
+import Mathlib.Tactic.MinMax
 
 #align_import order.with_bot from "leanprover-community/mathlib"@"0111834459f5d7400215223ea95ae38a1265a907"
 
@@ -25,75 +26,101 @@ Adding a `bot` or a `top` to an order.
 
 variable {α β γ δ : Type*}
 
+toMin
 /-- Attach `⊥` to a type. -/
 def WithBot (α : Type*) :=
   Option α
 #align with_bot WithBot
 
-namespace WithBot
+--TODO(Mario): Construct using order dual on `WithBot`
+--/-- Attach `⊤` to a type. -/
+--def WithTop (α : Type*) :=
+--  Option α
+#align with_top WithTop
 
 variable {a b : α}
 
+namespace WithBot
+
+toMin
 instance [Repr α] : Repr (WithBot α) :=
   ⟨fun o _ =>
     match o with
     | none => "⊥"
     | some a => "↑" ++ repr a⟩
 
+toMin
 /-- The canonical map from `α` into `WithBot α` -/
 @[coe, match_pattern] def some : α → WithBot α :=
   Option.some
 
+--/-- The canonical map from `α` into `WithTop α` -/
+--@[coe, match_pattern] def some : α → WithTop α :=
+--  Option.some
+
+toMin  -- `WithTop` used to have `coeTC`
 -- Porting note: changed this from `CoeTC` to `Coe` but I am not 100% confident that's correct.
 instance coe : Coe α (WithBot α) :=
   ⟨some⟩
 
+toMin
 instance bot : Bot (WithBot α) :=
   ⟨none⟩
 
+toMin
 instance inhabited : Inhabited (WithBot α) :=
   ⟨⊥⟩
 
+toMin
 instance nontrivial [Nonempty α] : Nontrivial (WithBot α) :=
   Option.nontrivial
 
 open Function
 
+toMin
 theorem coe_injective : Injective ((↑) : α → WithBot α) :=
   Option.some_injective _
 #align with_bot.coe_injective WithBot.coe_injective
 
+toMin
 @[simp, norm_cast]
 theorem coe_inj : (a : WithBot α) = b ↔ a = b :=
   Option.some_inj
 #align with_bot.coe_inj WithBot.coe_inj
 
+toMin
 protected theorem «forall» {p : WithBot α → Prop} : (∀ x, p x) ↔ p ⊥ ∧ ∀ x : α, p x :=
   Option.forall
 #align with_bot.forall WithBot.forall
 
+toMin
 protected theorem «exists» {p : WithBot α → Prop} : (∃ x, p x) ↔ p ⊥ ∨ ∃ x : α, p x :=
   Option.exists
 #align with_bot.exists WithBot.exists
 
+toMin
 theorem none_eq_bot : (none : WithBot α) = (⊥ : WithBot α) :=
   rfl
 #align with_bot.none_eq_bot WithBot.none_eq_bot
 
+toMin
 theorem some_eq_coe (a : α) : (Option.some a : WithBot α) = (↑a : WithBot α) :=
   rfl
 #align with_bot.some_eq_coe WithBot.some_eq_coe
 
+toMin
 @[simp]
 theorem bot_ne_coe : ⊥ ≠ (a : WithBot α) :=
   nofun
 #align with_bot.bot_ne_coe WithBot.bot_ne_coe
 
+toMin
 @[simp]
 theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
   nofun
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
+toMin
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
 @[elab_as_elim]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
@@ -101,103 +128,145 @@ def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) :
   | (a : α) => coe a
 #align with_bot.rec_bot_coe WithBot.recBotCoe
 
+toMin
 @[simp]
 theorem recBotCoe_bot {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) :
     @recBotCoe _ C d f ⊥ = d :=
   rfl
 #align with_bot.rec_bot_coe_bot WithBot.recBotCoe_bot
 
+toMin
 @[simp]
 theorem recBotCoe_coe {C : WithBot α → Sort*} (d : C ⊥) (f : ∀ a : α, C a) (x : α) :
     @recBotCoe _ C d f ↑x = f x :=
   rfl
 #align with_bot.rec_bot_coe_coe WithBot.recBotCoe_coe
 
+toMin
 /-- Specialization of `Option.getD` to values in `WithBot α` that respects API boundaries.
 -/
 def unbot' (d : α) (x : WithBot α) : α :=
   recBotCoe d id x
 #align with_bot.unbot' WithBot.unbot'
 
+/- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
+-/
+
+
+toMin
 @[simp]
 theorem unbot'_bot {α} (d : α) : unbot' d ⊥ = d :=
   rfl
 #align with_bot.unbot'_bot WithBot.unbot'_bot
 
+toMin
 @[simp]
 theorem unbot'_coe {α} (d x : α) : unbot' d x = x :=
   rfl
 #align with_bot.unbot'_coe WithBot.unbot'_coe
 
+toMin
 theorem coe_eq_coe : (a : WithBot α) = b ↔ a = b := coe_inj
 #align with_bot.coe_eq_coe WithBot.coe_eq_coe
 
+-- on `WithTop.coe_eq_coe`:
+--@[simp, norm_cast] -- Porting note: added `simp`
+attribute [simp] WithTop.coe_eq_coe
+attribute [norm_cast] WithTop.coe_eq_coe
+
+toMin
 theorem unbot'_eq_iff {d y : α} {x : WithBot α} : unbot' d x = y ↔ x = y ∨ x = ⊥ ∧ y = d := by
   induction x using recBotCoe <;> simp [@eq_comm _ d]
 #align with_bot.unbot'_eq_iff WithBot.unbot'_eq_iff
 
+toMin
 @[simp] theorem unbot'_eq_self_iff {d : α} {x : WithBot α} : unbot' d x = d ↔ x = d ∨ x = ⊥ := by
   simp [unbot'_eq_iff]
 #align with_bot.unbot'_eq_self_iff WithBot.unbot'_eq_self_iff
 
+toMin
 theorem unbot'_eq_unbot'_iff {d : α} {x y : WithBot α} :
     unbot' d x = unbot' d y ↔ x = y ∨ x = d ∧ y = ⊥ ∨ x = ⊥ ∧ y = d := by
  induction y using recBotCoe <;> simp [unbot'_eq_iff, or_comm]
 #align with_bot.unbot'_eq_unbot'_iff WithBot.unbot'_eq_unbot'_iff
 
+toMin
 /-- Lift a map `f : α → β` to `WithBot α → WithBot β`. Implemented using `Option.map`. -/
 def map (f : α → β) : WithBot α → WithBot β :=
   Option.map f
 #align with_bot.map WithBot.map
 
+/- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
+
+toMin
 @[simp]
 theorem map_bot (f : α → β) : map f ⊥ = ⊥ :=
   rfl
 #align with_bot.map_bot WithBot.map_bot
 
+toMin
 @[simp]
 theorem map_coe (f : α → β) (a : α) : map f a = f a :=
   rfl
 #align with_bot.map_coe WithBot.map_coe
 
+toMin
 theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
     (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) :
     map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
   Option.map_comm h _
 #align with_bot.map_comm WithBot.map_comm
 
+toMin
 /-- The image of a binary function `f : α → β → γ` as a function
 `WithBot α → WithBot β → WithBot γ`.
 
 Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def map₂ : (α → β → γ) → WithBot α → WithBot β → WithBot γ := Option.map₂
 
+/- The image of a binary function `f : α → β → γ` as a function
+`WithTop α → WithTop β → WithTop γ`.
+
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
+
+toMin
 lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
+toMin
 @[simp] lemma map₂_bot_left (f : α → β → γ) (b) : map₂ f ⊥ b = ⊥ := rfl
+toMin
 @[simp] lemma map₂_bot_right (f : α → β → γ) (a) : map₂ f a ⊥ = ⊥ := by cases a <;> rfl
+toMin
 @[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
+toMin
 @[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
   cases a <;> rfl
 
+toMin
 @[simp] lemma map₂_eq_bot_iff {f : α → β → γ} {a : WithBot α} {b : WithBot β} :
     map₂ f a b = ⊥ ↔ a = ⊥ ∨ b = ⊥ := Option.map₂_eq_none_iff
 
+toMin
 theorem ne_bot_iff_exists {x : WithBot α} : x ≠ ⊥ ↔ ∃ a : α, ↑a = x :=
   Option.ne_none_iff_exists
 #align with_bot.ne_bot_iff_exists WithBot.ne_bot_iff_exists
 
+toMin
 /-- Deconstruct a `x : WithBot α` to the underlying value in `α`, given a proof that `x ≠ ⊥`. -/
 def unbot : ∀ x : WithBot α, x ≠ ⊥ → α | (x : α), _ => x
 #align with_bot.unbot WithBot.unbot
 
+toMin
 @[simp] lemma coe_unbot : ∀ (x : WithBot α) hx, x.unbot hx = x | (x : α), _ => rfl
 #align with_bot.coe_unbot WithBot.coe_unbot
 
+toMin
 @[simp]
-theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) : (x : WithBot α).unbot h = x :=
+theorem unbot_coe (x : α) (h : (x : WithBot α) ≠ ⊥ := coe_ne_bot) :
+    WithBot.unbot (x : WithBot α) h = x :=
   rfl
 #align with_bot.unbot_coe WithBot.unbot_coe
 
+toMin
 instance canLift : CanLift (WithBot α) α (↑) fun r => r ≠ ⊥ where
   prf x h := ⟨x.unbot h, coe_unbot _ _⟩
 #align with_bot.can_lift WithBot.canLift
@@ -209,6 +278,122 @@ variable [LE α]
 instance (priority := 10) le : LE (WithBot α) :=
   ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₁, ∃ b ∈ o₂, a ≤ b⟩
 
+instance (priority := 10) _root_.WithTop.le : LE (WithTop α) :=
+  ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₂, ∃ b ∈ o₁, b ≤ a⟩
+
+end LE
+
+end WithBot
+
+section toDual_ofDual
+
+namespace WithTop
+
+/-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
+See `WithTop.toDualBotEquiv` for the related order-iso.
+-/
+protected def toDual : WithTop α ≃ WithBot αᵒᵈ :=
+  Equiv.refl _
+#align with_top.to_dual WithTop.toDual
+
+/-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
+See `WithTop.toDualBotEquiv` for the related order-iso.
+-/
+protected def ofDual : WithTop αᵒᵈ ≃ WithBot α :=
+  Equiv.refl _
+#align with_top.of_dual WithTop.ofDual
+
+/-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
+See `WithBot.toDual_top_equiv` for the related order-iso.
+-/
+protected def _root_.WithBot.toDual : WithBot α ≃ WithTop αᵒᵈ :=
+  Equiv.refl _
+#align with_bot.to_dual WithBot.toDual
+
+/-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
+See `WithBot.ofDual_top_equiv` for the related order-iso.
+-/
+protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
+  Equiv.refl _
+#align with_bot.of_dual WithBot.ofDual
+
+@[simp]
+theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=
+  rfl
+#align with_top.to_dual_symm_apply WithTop.toDual_symm_apply
+
+@[simp]
+theorem ofDual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = WithBot.toDual a :=
+  rfl
+#align with_top.of_dual_symm_apply WithTop.ofDual_symm_apply
+
+@[simp]
+theorem toDual_apply_top : WithTop.toDual (⊤ : WithTop α) = ⊥ :=
+  rfl
+#align with_top.to_dual_apply_top WithTop.toDual_apply_top
+
+@[simp]
+theorem ofDual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
+  rfl
+#align with_top.of_dual_apply_top WithTop.ofDual_apply_top
+
+open OrderDual
+
+@[simp]
+theorem toDual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
+  rfl
+#align with_top.to_dual_apply_coe WithTop.toDual_apply_coe
+
+@[simp]
+theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
+  rfl
+#align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
+
+
+variable [LE α]
+
+
+theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
+    WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
+  Iff.rfl
+#align with_top.to_dual_le_iff WithTop.toDual_le_iff
+
+theorem le_toDual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
+    a ≤ WithTop.toDual b ↔ b ≤ WithBot.ofDual a :=
+  Iff.rfl
+#align with_top.le_to_dual_iff WithTop.le_toDual_iff
+
+@[simp]
+theorem toDual_le_toDual_iff {a b : WithTop α} : WithTop.toDual a ≤ WithTop.toDual b ↔ b ≤ a :=
+  Iff.rfl
+#align with_top.to_dual_le_to_dual_iff WithTop.toDual_le_toDual_iff
+
+theorem ofDual_le_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
+    WithTop.ofDual a ≤ b ↔ WithBot.toDual b ≤ a :=
+  Iff.rfl
+#align with_top.of_dual_le_iff WithTop.ofDual_le_iff
+
+theorem le_ofDual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
+    a ≤ WithTop.ofDual b ↔ b ≤ WithBot.toDual a :=
+  Iff.rfl
+#align with_top.le_of_dual_iff WithTop.le_ofDual_iff
+
+@[simp]
+theorem ofDual_le_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a ≤ WithTop.ofDual b ↔ b ≤ a :=
+  Iff.rfl
+#align with_top.of_dual_le_of_dual_iff WithTop.ofDual_le_ofDual_iff
+
+end WithTop
+
+end toDual_ofDual
+
+namespace WithBot
+
+section LE
+
+variable [LE α]
+
+--toMin?
 @[simp]
 theorem some_le_some : @LE.le (WithBot α) _ (Option.some a) (Option.some b) ↔ a ≤ b := by
   simp [LE.le]
@@ -592,221 +777,54 @@ instance noMaxOrder [LT α] [NoMaxOrder α] [Nonempty α] : NoMaxOrder (WithBot 
 
 end WithBot
 
---TODO(Mario): Construct using order dual on `WithBot`
-/-- Attach `⊤` to a type. -/
-def WithTop (α : Type*) :=
-  Option α
-#align with_top WithTop
-
 namespace WithTop
 
 variable {a b : α}
 
-instance [Repr α] : Repr (WithTop α) :=
-  ⟨fun o _ =>
-    match o with
-    | none => "⊤"
-    | some a => "↑" ++ repr a⟩
-
-/-- The canonical map from `α` into `WithTop α` -/
-@[coe, match_pattern] def some : α → WithTop α :=
-  Option.some
-
-instance coeTC : CoeTC α (WithTop α) :=
-  ⟨some⟩
-
-instance top : Top (WithTop α) :=
-  ⟨none⟩
-
-instance inhabited : Inhabited (WithTop α) :=
-  ⟨⊤⟩
-
-instance nontrivial [Nonempty α] : Nontrivial (WithTop α) :=
-  Option.nontrivial
-
 open Function
 
-theorem coe_injective : Injective ((↑) : α → WithTop α) :=
-  Option.some_injective _
-
-@[norm_cast]
-theorem coe_inj : (a : WithTop α) = b ↔ a = b :=
-  Option.some_inj
-
-protected theorem «forall» {p : WithTop α → Prop} : (∀ x, p x) ↔ p ⊤ ∧ ∀ x : α, p x :=
-  Option.forall
 #align with_top.forall WithTop.forall
 
-protected theorem «exists» {p : WithTop α → Prop} : (∃ x, p x) ↔ p ⊤ ∨ ∃ x : α, p x :=
-  Option.exists
 #align with_top.exists WithTop.exists
 
-theorem none_eq_top : (none : WithTop α) = (⊤ : WithTop α) :=
-  rfl
 #align with_top.none_eq_top WithTop.none_eq_top
 
-theorem some_eq_coe (a : α) : (Option.some a : WithTop α) = (↑a : WithTop α) :=
-  rfl
 #align with_top.some_eq_coe WithTop.some_eq_coe
 
-@[simp]
-theorem top_ne_coe : ⊤ ≠ (a : WithTop α) :=
-  nofun
 #align with_top.top_ne_coe WithTop.top_ne_coe
 
-@[simp]
-theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
-  nofun
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
-/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
-def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
-  | none => top
-  | Option.some a => coe a
+--/-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
 #align with_top.rec_top_coe WithTop.recTopCoe
 
-@[simp]
-theorem recTopCoe_top {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) :
-    @recTopCoe _ C d f ⊤ = d :=
-  rfl
 #align with_top.rec_top_coe_top WithTop.recTopCoe_top
 
-@[simp]
-theorem recTopCoe_coe {C : WithTop α → Sort*} (d : C ⊤) (f : ∀ a : α, C a) (x : α) :
-    @recTopCoe _ C d f ↑x = f x :=
-  rfl
 #align with_top.rec_top_coe_coe WithTop.recTopCoe_coe
-
-/-- `WithTop.toDual` is the equivalence sending `⊤` to `⊥` and any `a : α` to `toDual a : αᵒᵈ`.
-See `WithTop.toDualBotEquiv` for the related order-iso.
--/
-protected def toDual : WithTop α ≃ WithBot αᵒᵈ :=
-  Equiv.refl _
-#align with_top.to_dual WithTop.toDual
-
-/-- `WithTop.ofDual` is the equivalence sending `⊤` to `⊥` and any `a : αᵒᵈ` to `ofDual a : α`.
-See `WithTop.toDualBotEquiv` for the related order-iso.
--/
-protected def ofDual : WithTop αᵒᵈ ≃ WithBot α :=
-  Equiv.refl _
-#align with_top.of_dual WithTop.ofDual
-
-/-- `WithBot.toDual` is the equivalence sending `⊥` to `⊤` and any `a : α` to `toDual a : αᵒᵈ`.
-See `WithBot.toDual_top_equiv` for the related order-iso.
--/
-protected def _root_.WithBot.toDual : WithBot α ≃ WithTop αᵒᵈ :=
-  Equiv.refl _
-#align with_bot.to_dual WithBot.toDual
-
-/-- `WithBot.ofDual` is the equivalence sending `⊥` to `⊤` and any `a : αᵒᵈ` to `ofDual a : α`.
-See `WithBot.ofDual_top_equiv` for the related order-iso.
--/
-protected def _root_.WithBot.ofDual : WithBot αᵒᵈ ≃ WithTop α :=
-  Equiv.refl _
-#align with_bot.of_dual WithBot.ofDual
-
-@[simp]
-theorem toDual_symm_apply (a : WithBot αᵒᵈ) : WithTop.toDual.symm a = WithBot.ofDual a :=
-  rfl
-#align with_top.to_dual_symm_apply WithTop.toDual_symm_apply
-
-@[simp]
-theorem ofDual_symm_apply (a : WithBot α) : WithTop.ofDual.symm a = WithBot.toDual a :=
-  rfl
-#align with_top.of_dual_symm_apply WithTop.ofDual_symm_apply
-
-@[simp]
-theorem toDual_apply_top : WithTop.toDual (⊤ : WithTop α) = ⊥ :=
-  rfl
-#align with_top.to_dual_apply_top WithTop.toDual_apply_top
-
-@[simp]
-theorem ofDual_apply_top : WithTop.ofDual (⊤ : WithTop α) = ⊥ :=
-  rfl
-#align with_top.of_dual_apply_top WithTop.ofDual_apply_top
 
 open OrderDual
 
-@[simp]
-theorem toDual_apply_coe (a : α) : WithTop.toDual (a : WithTop α) = toDual a :=
-  rfl
-#align with_top.to_dual_apply_coe WithTop.toDual_apply_coe
-
-@[simp]
-theorem ofDual_apply_coe (a : αᵒᵈ) : WithTop.ofDual (a : WithTop αᵒᵈ) = ofDual a :=
-  rfl
-#align with_top.of_dual_apply_coe WithTop.ofDual_apply_coe
-
-/-- Specialization of `Option.getD` to values in `WithTop α` that respects API boundaries.
--/
-def untop' (d : α) (x : WithTop α) : α :=
-  recTopCoe d id x
 #align with_top.untop' WithTop.untop'
 
-@[simp]
-theorem untop'_top {α} (d : α) : untop' d ⊤ = d :=
-  rfl
 #align with_top.untop'_top WithTop.untop'_top
 
-@[simp]
-theorem untop'_coe {α} (d x : α) : untop' d x = x :=
-  rfl
 #align with_top.untop'_coe WithTop.untop'_coe
 
-@[simp, norm_cast] -- Porting note: added `simp`
-theorem coe_eq_coe : (a : WithTop α) = b ↔ a = b :=
-  Option.some_inj
 #align with_top.coe_eq_coe WithTop.coe_eq_coe
 
-theorem untop'_eq_iff {d y : α} {x : WithTop α} : untop' d x = y ↔ x = y ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_iff
 #align with_top.untop'_eq_iff WithTop.untop'_eq_iff
 
-@[simp] theorem untop'_eq_self_iff {d : α} {x : WithTop α} : untop' d x = d ↔ x = d ∨ x = ⊤ :=
-  WithBot.unbot'_eq_self_iff
 #align with_top.untop'_eq_self_iff WithTop.untop'_eq_self_iff
 
-theorem untop'_eq_untop'_iff {d : α} {x y : WithTop α} :
-    untop' d x = untop' d y ↔ x = y ∨ x = d ∧ y = ⊤ ∨ x = ⊤ ∧ y = d :=
-  WithBot.unbot'_eq_unbot'_iff
 #align with_top.untop'_eq_untop'_iff WithTop.untop'_eq_untop'_iff
 
-/-- Lift a map `f : α → β` to `WithTop α → WithTop β`. Implemented using `Option.map`. -/
-def map (f : α → β) : WithTop α → WithTop β :=
-  Option.map f
 #align with_top.map WithTop.map
 
-@[simp]
-theorem map_top (f : α → β) : map f ⊤ = ⊤ :=
-  rfl
 #align with_top.map_top WithTop.map_top
 
-@[simp]
-theorem map_coe (f : α → β) (a : α) : map f a = f a :=
-  rfl
 #align with_top.map_coe WithTop.map_coe
 
-theorem map_comm {f₁ : α → β} {f₂ : α → γ} {g₁ : β → δ} {g₂ : γ → δ}
-    (h : g₁ ∘ f₁ = g₂ ∘ f₂) (a : α) : map g₁ (map f₁ a) = map g₂ (map f₂ a) :=
-  Option.map_comm h _
 #align with_top.map_comm WithTop.map_comm
-
-/-- The image of a binary function `f : α → β → γ` as a function
-`WithTop α → WithTop β → WithTop γ`.
-
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
-def map₂ : (α → β → γ) → WithTop α → WithTop β → WithTop γ := Option.map₂
-
-lemma map₂_coe_coe (f : α → β → γ) (a : α) (b : β) : map₂ f a b = f a b := rfl
-@[simp] lemma map₂_top_left (f : α → β → γ) (b) : map₂ f ⊤ b = ⊤ := rfl
-@[simp] lemma map₂_top_right (f : α → β → γ) (a) : map₂ f a ⊤ = ⊤ := by cases a <;> rfl
-@[simp] lemma map₂_coe_left (f : α → β → γ) (a : α) (b) : map₂ f a b = b.map fun b ↦ f a b := rfl
-@[simp] lemma map₂_coe_right (f : α → β → γ) (a) (b : β) : map₂ f a b = a.map (f · b) := by
-  cases a <;> rfl
-
-@[simp] lemma map₂_eq_top_iff {f : α → β → γ} {a : WithTop α} {b : WithTop β} :
-    map₂ f a b = ⊤ ↔ a = ⊤ ∨ b = ⊤ := Option.map₂_eq_none_iff
 
 theorem map_toDual (f : αᵒᵈ → βᵒᵈ) (a : WithBot α) :
     map f (WithBot.toDual a) = a.map (toDual ∘ f) :=
@@ -827,62 +845,21 @@ theorem ofDual_map (f : αᵒᵈ → βᵒᵈ) (a : WithTop αᵒᵈ) :
   rfl
 #align with_top.of_dual_map WithTop.ofDual_map
 
-theorem ne_top_iff_exists {x : WithTop α} : x ≠ ⊤ ↔ ∃ a : α, ↑a = x :=
-  Option.ne_none_iff_exists
 #align with_top.ne_top_iff_exists WithTop.ne_top_iff_exists
 
-/-- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
-def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
+/- Deconstruct a `x : WithTop α` to the underlying value in `α`, given a proof that `x ≠ ⊤`. -/
+--def untop : ∀ x : WithTop α, x ≠ ⊤ → α | (x : α), _ => x
 #align with_top.untop WithTop.untop
 
-@[simp] lemma coe_untop : ∀ (x : WithTop α) hx, x.untop hx = x | (x : α), _ => rfl
 #align with_top.coe_untop WithTop.coe_untop
 
-@[simp]
-theorem untop_coe (x : α) (h : (x : WithTop α) ≠ ⊤ := coe_ne_top) : (x : WithTop α).untop h = x :=
-  rfl
 #align with_top.untop_coe WithTop.untop_coe
 
-instance canLift : CanLift (WithTop α) α (↑) fun r => r ≠ ⊤ where
-  prf x h := ⟨x.untop h, coe_untop _ _⟩
 #align with_top.can_lift WithTop.canLift
 
 section LE
 
 variable [LE α]
-
-instance (priority := 10) le : LE (WithTop α) :=
-  ⟨fun o₁ o₂ : Option α => ∀ a ∈ o₂, ∃ b ∈ o₁, b ≤ a⟩
-
-theorem toDual_le_iff {a : WithTop α} {b : WithBot αᵒᵈ} :
-    WithTop.toDual a ≤ b ↔ WithBot.ofDual b ≤ a :=
-  Iff.rfl
-#align with_top.to_dual_le_iff WithTop.toDual_le_iff
-
-theorem le_toDual_iff {a : WithBot αᵒᵈ} {b : WithTop α} :
-    a ≤ WithTop.toDual b ↔ b ≤ WithBot.ofDual a :=
-  Iff.rfl
-#align with_top.le_to_dual_iff WithTop.le_toDual_iff
-
-@[simp]
-theorem toDual_le_toDual_iff {a b : WithTop α} : WithTop.toDual a ≤ WithTop.toDual b ↔ b ≤ a :=
-  Iff.rfl
-#align with_top.to_dual_le_to_dual_iff WithTop.toDual_le_toDual_iff
-
-theorem ofDual_le_iff {a : WithTop αᵒᵈ} {b : WithBot α} :
-    WithTop.ofDual a ≤ b ↔ WithBot.toDual b ≤ a :=
-  Iff.rfl
-#align with_top.of_dual_le_iff WithTop.ofDual_le_iff
-
-theorem le_ofDual_iff {a : WithBot α} {b : WithTop αᵒᵈ} :
-    a ≤ WithTop.ofDual b ↔ b ≤ WithBot.toDual a :=
-  Iff.rfl
-#align with_top.le_of_dual_iff WithTop.le_ofDual_iff
-
-@[simp]
-theorem ofDual_le_ofDual_iff {a b : WithTop αᵒᵈ} : WithTop.ofDual a ≤ WithTop.ofDual b ↔ b ≤ a :=
-  Iff.rfl
-#align with_top.of_dual_le_of_dual_iff WithTop.ofDual_le_ofDual_iff
 
 @[simp, norm_cast]
 theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
@@ -891,7 +868,7 @@ theorem coe_le_coe : (a : WithTop α) ≤ b ↔ a ≤ b := by
 
 @[simp]
 theorem some_le_some : @LE.le (WithTop α) _ (Option.some a) (Option.some b) ↔ a ≤ b :=
-  coe_le_coe
+  WithTop.coe_le_coe
 #align with_top.some_le_some WithTop.some_le_some
 
 @[simp]
