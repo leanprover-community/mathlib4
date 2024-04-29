@@ -487,7 +487,7 @@ lemma stupid_aux' (A B : ShortComplex 𝒞) (h : A = B)  :
   (eqToHom h).τ₂ = eqToHom (by simp [h]) := by induction h; simp
 
 lemma stupid_aux'' (A B : ShortComplex 𝒞) (h : A = B)  :
-  (eqToHom h).τ₃ = eqToHom (by simp [h]) := by induction h; simp
+    (eqToHom h).τ₃ = eqToHom (by simp [h]) := by induction h; simp
 
 lemma stupid_aux2 (m n : ℕ) (h : m = n) :
     eqToHom (by simp [h]) ≫ horseshoeD A m = horseshoeD A n ≫ eqToHom (by simp [h]) := by
