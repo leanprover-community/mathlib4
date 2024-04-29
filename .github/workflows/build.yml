@@ -164,7 +164,7 @@ jobs:
           echo ${{ github.base_ref }}
           echo github.event.pull_request.head.ref
           echo ${{ github.event.pull_request.head.ref }}
-          git fetch origin ${{ github.base_ref }} ${{ github.event.pull_request.head.ref }}
+          git fetch origin master HEAD
           FORK_POINT=$( git show-branch --merge-base "origin/master" HEAD )
           echo "Fork point: ${FORK_POINT}"
           printf '* fetched\n'
