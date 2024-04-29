@@ -3,9 +3,7 @@ Copyright (c) 2024 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
-import Mathlib.RingTheory.Kaehler
-import Mathlib.LinearAlgebra.TensorProduct.RightExactness
-import Mathlib.CategoryTheory.Category.Basic
+import Mathlib.RingTheory.Ideal.Cotangent
 
 /-!
 
@@ -37,11 +35,14 @@ variable (R : Type u) (S : Type v) [CommRing R] [CommRing S] [Algebra R S]
 
 /-- A presentation of a `R`-algebra `S` consists of
 1. `I`: The type of variables.
-2. `val : I → S`: The assignment of each variable to a value.
+2. `val : I → S`: The assignment of each variable to a value in `S`.
 3. `σ`: A section of `R[I] → S`. -/
 structure Algebra.Presentation where
+  /-- The type of variables.  -/
   I : Type w
+  /-- The assignment of each variable to a value in `S`. -/
   val : I → S
+  /-- A section of `R[I] → S`. -/
   σ' : S → MvPolynomial I R
   aeval_val_σ' : ∀ s, aeval val (σ' s) = s
 
@@ -176,6 +177,7 @@ Also see `Algebra.Presentation.Hom.equivAlgHom`.
 -/
 @[ext]
 structure Hom where
+  /-- The assignment of each variable in `I` to a value in `P' = R'[I']`. -/
   val : P.I → P'.Ring
   aeval_val : ∀ i, aeval P'.val (val i) = algebraMap S S' (P.val i)
 
@@ -375,32 +377,6 @@ lemma Cotangent.val_mk (x : P.ker) : (mk x).val = Ideal.toCotangent _ x := rfl
 
 lemma Cotangent.mk_surjective : Function.Surjective (mk (P := P)) :=
   fun x ↦ Ideal.toCotangent_surjective P.ker x.val
-
-section
-
-variable {T} [CommRing T] [Algebra R T] [Algebra S T] [IsScalarTower R S T]
-
-/- The map `I/I² → J/J²` if `I ≤ f⁻¹(J)`. -/
-def Ideal.mapCotangent (I₁ : Ideal S) (I₂ : Ideal T) (f : S →ₐ[R] T) (h : I₁ ≤ I₂.comap f) :
-    I₁.Cotangent →ₗ[R] I₂.Cotangent := by
-  refine Submodule.mapQ ((I₁ • ⊤ : Submodule S I₁).restrictScalars R)
-    ((I₂ • ⊤ : Submodule T I₂).restrictScalars R) ?_ ?_
-  · exact f.toLinearMap.restrict (p := I₁.restrictScalars R) (q := I₂.restrictScalars R) h
-  · intro x hx
-    refine Submodule.smul_induction_on hx ?_ (fun _ _ ↦ add_mem)
-    rintro a ha ⟨b, hb⟩ -
-    simp only [SetLike.mk_smul_mk, smul_eq_mul, Submodule.mem_comap, Submodule.restrictScalars_mem]
-    convert (Submodule.smul_mem_smul (M := I₂) (r := f a)
-      (n := ⟨f b, h hb⟩) (h ha) (Submodule.mem_top)) using 1
-    ext
-    exact f.map_mul a b
-
-@[simp]
-lemma Ideal.mapCotangent_toCotangent
-    (I₁ : Ideal S) (I₂ : Ideal T) (f : S →ₐ[R] T) (h : I₁ ≤ I₂.comap f) (x : I₁) :
-    Ideal.mapCotangent I₁ I₂ f h (Ideal.toCotangent I₁ x) = Ideal.toCotangent I₂ ⟨f x, h x.2⟩ := rfl
-
-end
 
 variable {P'}
 
