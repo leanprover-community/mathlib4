@@ -694,35 +694,20 @@ attribute [local ext] Functor.ext
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma {C : Type u₁} [SmallCategory C] :
-    (coyoneda.rightOp ⋙ coyoneda : C ⥤ (C ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation C (Type u₁) := by
-  refine eqToIso ?_ ≪≫ curry.mapIso
-    (coyonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried C (Type u₁)) uliftFunctorTrivial) ≪≫
-    eqToIso ?_
-  · apply Functor.ext
-    · intro X Y f
-      ext
-      simp
-    · aesop_cat
-  · apply Functor.ext
-    · intro X Y f
-      ext
-      simp
-    · intro X
-      simp only [curry, yoneda, coyoneda, curryObj, yonedaPairing]
-      aesop_cat
+    (coyoneda.rightOp ⋙ coyoneda : C ⥤ (C ⥤ Type u₁) ⥤ Type u₁) ≅ evaluation C (Type u₁) :=
+  NatIso.ofComponents (fun X ↦ NatIso.ofComponents (fun F ↦ Equiv.toIso coyonedaEquiv)) (by
+    intro X Y f
+    ext a b
+    simp [coyonedaEquiv, ← FunctorToTypes.naturality])
 
 /-- The curried version of coyoneda lemma when `C` is small. -/
 def curriedCoyonedaLemma' {C : Type u₁} [SmallCategory C] :
     yoneda ⋙ (whiskeringLeft C (C ⥤ Type u₁)ᵒᵖ (Type u₁)).obj coyoneda.rightOp
-      ≅ 𝟭 (C ⥤ Type u₁) := by
-  refine eqToIso ?_ ≪≫ curry.mapIso (isoWhiskerLeft (Prod.swap _ _)
-    (coyonedaLemma C ≪≫ isoWhiskerLeft (evaluationUncurried C (Type u₁)) uliftFunctorTrivial :_))
-    ≪≫ eqToIso ?_
-  · apply Functor.ext
-    · intro X Y f
-      aesop_cat
-  · apply Functor.ext
-    · aesop_cat
+      ≅ 𝟭 (C ⥤ Type u₁) :=
+  NatIso.ofComponents (fun F ↦ NatIso.ofComponents (fun X ↦ Equiv.toIso coyonedaEquiv) (by
+    intro X Y f
+    ext a
+    simp [coyonedaEquiv, ← FunctorToTypes.naturality]))
 
 lemma isIso_of_coyoneda_map_bijective {X Y : C} (f : X ⟶ Y)
     (hf : ∀ (T : C), Function.Bijective (fun (x : Y ⟶ T) => f ≫ x)) :
