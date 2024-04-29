@@ -152,7 +152,7 @@ jobs:
         run: |
           printf '* fetch\n'
           git fetch origin master
-          rp="$(git rev-parse --abbrev-ref HEAD)"
+          rp="origin/$(git rev-parse --abbrev-ref HEAD)"
           printf $'* rev-parse \'%s\'\n' "${rp}"
           printf '* merge-base %s\n' "$(git merge-base origin/master "${rp}" )"
           echo "* run script"
