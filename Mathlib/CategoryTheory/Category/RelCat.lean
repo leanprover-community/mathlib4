@@ -153,7 +153,7 @@ def unopFunctor : RelCatᵒᵖ ⥤ RelCat where
     Functor.comp opFunctor unopFunctor = Functor.id _ := rfl
 
 @[simp] theorem unopFunctor_comp_opFunctor_eq :
-    Functor.comp unopFunctor opFunctor = Functor.id _ := by rfl
+    Functor.comp unopFunctor opFunctor = Functor.id _ := rfl
 
 /-- `rel` is self-dual: The map that swaps the argument order of a
     relation induces an equivalence between `rel` and its opposite. -/
