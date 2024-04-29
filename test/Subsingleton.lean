@@ -33,7 +33,7 @@ example : ∀ {α : Type} [Subsingleton α] (x y : α), HEq x y := by subsinglet
 section AvoidSurprise
 
 /--
-error: tactic 'subsingleton' could prove equality since it could not synthesize
+error: tactic 'subsingleton' could not prove equality since it could not synthesize
   Subsingleton α
 -/
 #guard_msgs in
@@ -63,10 +63,11 @@ example (p q : Prop) (h : p = q) (instp : Decidable p) (instq : Decidable q) :
 Can't apply `Subsingleton.helim`
 -/
 /--
-error: tactic 'subsingleton' could not prove heterogenous equality since it could not synthesize either
+error: tactic 'subsingleton' could not synthesize either
   Subsingleton α
 or
   Subsingleton β
+to make progress on `HEq` goal using `Subsingleton.helim`
 -/
 #guard_msgs in
 example (α β : Type) (x : α) (y : β) : HEq x y := by

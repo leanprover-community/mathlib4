@@ -436,7 +436,7 @@ instance for both the LHS and the RHS.
 
 If successful, this reduces proving `@HEq α x β y` to proving `α = β`.
 -/
-def Lean.MVarId.subsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
+def Lean.MVarId.fastSubsingletonHelim? (mvarId : MVarId) : MetaM (Option (List MVarId)) :=
   mvarId.withContext <| observing? do
     mvarId.checkNotAssigned `subsingletonHelim
     let some (α, lhs, β, rhs) := (← withReducible mvarId.getType').heq? | failure
@@ -468,7 +468,7 @@ def Lean.MVarId.congrPasses! :
   [("user congr", userCongr?),
    ("hcongr lemma", smartHCongr?),
    ("congr simp lemma", when (·.useCongrSimp) congrSimp?),
-   ("Subsingleton.helim", fun _ => subsingletonHelim?),
+   ("Subsingleton.helim", fun _ => fastSubsingletonHelim?),
    ("BEq instances", when (·.beqEq) fun _ => beqInst?),
    ("obvious funext", fun _ => obviousFunext?),
    ("obvious hfunext", fun _ => obviousHfunext?),

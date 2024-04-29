@@ -18,6 +18,83 @@ and it is careful not to accidentally specialize `Sort _` to `Prop.
 open Lean Meta
 
 /--
+Closes the goal `g` whose target is an `Eq` or `HEq` by appealing to the fact that the types
+are subsingletons.
+Fails if it cannot find a way to do this.
+
+Has support for showing `BEq` instances are equal if they have `LawfulBEq` instances.
+-/
+def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := do
+  let g ← g.heqOfEq
+  g.withContext do
+    let tgt ← whnfR (← g.getType)
+    if let some (ty, x, y) := tgt.eq? then
+      -- Proof irrelevance. This is not necessary since `rfl` suffices,
+      -- but propositions are subsingletons so we may as well.
+      if ← Meta.isProp ty then
+        g.assign <| mkApp3 (.const ``proof_irrel []) ty x y
+        return
+      -- Try `Subsingleton.elim`
+      let u ← getLevel ty
+      let instTy := Expr.app (.const ``Subsingleton [u]) ty
+      try
+        -- Synthesize a subsingleton instance. The new metacontext depth ensures that universe
+        -- level metavariables are not specialized.
+        let inst ← withNewMCtxDepth <| Meta.synthInstance instTy
+        g.assign <| mkApp4 (.const ``Subsingleton.elim [u]) ty inst x y
+        return
+      catch _ => pure ()
+      -- Try `lawful_beq_subsingleton`
+      let ty' ← whnfR ty
+      if ty'.isAppOfArity ``BEq 1 then
+        let α := ty'.appArg!
+        try
+          let some u' := u.dec | failure
+          let xInst ← withNewMCtxDepth <| Meta.synthInstance <| mkApp2 (.const ``LawfulBEq [u']) α x
+          let yInst ← withNewMCtxDepth <| Meta.synthInstance <| mkApp2 (.const ``LawfulBEq [u']) α y
+          g.assign <| mkApp5 (.const ``lawful_beq_subsingleton [u']) α x y xInst yInst
+          return
+        catch _ => pure ()
+      throwError "\
+        tactic 'subsingleton' could not prove equality since it could not synthesize\
+          {indentD instTy}"
+    else if let some (xTy, x, yTy, y) := tgt.heq? then
+      -- The HEq version of proof irrelevance.
+      if ← (Meta.isProp xTy <&&> Meta.isProp yTy) then
+        g.assign <| mkApp4 (.const ``proof_irrel_heq []) xTy yTy x y
+        return
+      throwError "tactic 'subsingleton' could not prove heterogenous equality"
+    throwError "tactic 'subsingleton' failed, goal is neither an equality nor heterogenous equality"
+
+/--
+Tries to apply `Subsingleton.helim` to the goal, returning the new equality goal.
+-/
+def Lean.MVarId.subsingletonHElim (g : MVarId) : MetaM MVarId := do
+  let tgt ← whnfR (← g.getType)
+  let some (xTy, x, yTy, y) := tgt.heq? | failure
+  let u ← getLevel xTy
+  let instXTy := Expr.app (.const ``Subsingleton [u]) xTy
+  let instYTy := Expr.app (.const ``Subsingleton [u]) yTy
+  let g' ← mkFreshExprSyntheticOpaqueMVar (← mkEq xTy yTy) (← g.getTag)
+  try
+    let inst ← withNewMCtxDepth <| Meta.synthInstance instXTy
+    g.assign <| mkApp6 (.const ``Subsingleton.helim [u]) xTy yTy inst g' x y
+    return g'.mvarId!
+  catch _ => pure ()
+  try
+    let inst ← withNewMCtxDepth <| Meta.synthInstance instYTy
+    let pf ← mkHEqSymm <|
+      mkApp6 (.const ``Subsingleton.helim [u]) yTy xTy inst (← mkEqSymm g') y x
+    g.assign pf
+    return g'.mvarId!
+  catch _ =>
+    throwError "\
+      tactic 'subsingleton' could not synthesize either{indentD instXTy}\nor{indentD instYTy}\n\
+      to make progress on `HEq` goal using `Subsingleton.helim`"
+
+namespace Mathlib.Tactic
+
+/--
 The `subsingleton` tactic attempts to close equality or `HEq` goals
 using an argument that the types involved are subsingletons.
 To first approximation, it does `apply Subsingleton.elim`.
@@ -47,73 +124,27 @@ specializing the universe level metavariable in `Sort _` to `0`.
 elab "subsingleton" : tactic => do
   let recover := (← read).recover
   Elab.Tactic.liftMetaTactic fun g => do
-  let (fvars, g) ← g.intros
-  let didIntros := !fvars.isEmpty
-  let g ← g.heqOfEq
-  g.withContext do
-    let tgt ← whnfR (← g.getType)
-    if let some (ty, x, y) := tgt.eq? then
-      -- Proof irrelevance. This is not necessary since `rfl` suffices,
-      -- but propositions are subsingletons so we may as well.
-      if ← Meta.isProp ty then
-        g.assign <| mkApp3 (.const ``proof_irrel []) ty x y
-        return []
-      -- Try `Subsingleton.elim`
-      let u ← getLevel ty
-      let instTy := Expr.app (.const ``Subsingleton [u]) ty
+    let (fvars, g) ← g.intros
+    let didIntros := !fvars.isEmpty
+    let s ← saveState
+    try
+      g.subsingleton
+      return []
+    catch e =>
+      restoreState s
       try
-        -- Synthesize a subsingleton instance. The new metacontext depth ensures that universe
-        -- level metavariables are not specialized.
-        let inst ← withNewMCtxDepth <| synthInstance instTy
-        g.assign <| mkApp4 (.const ``Subsingleton.elim [u]) ty inst x y
-        return []
-      catch _ => pure ()
-      -- Try `lawful_beq_subsingleton`
-      let ty' ← whnfR ty
-      if ty'.isAppOfArity ``BEq 1 then
-        let α := ty'.appArg!
-        try
-          let some u' := u.dec | failure
-          let xInst ← withNewMCtxDepth <| synthInstance <| mkApp2 (.const ``LawfulBEq [u']) α x
-          let yInst ← withNewMCtxDepth <| synthInstance <| mkApp2 (.const ``LawfulBEq [u']) α y
-          g.assign <| mkApp5 (.const ``lawful_beq_subsingleton [u']) α x y xInst yInst
-          return []
-        catch _ => pure ()
-      -- Try `refl` when all else fails, to give a hint to the user
-      if recover then
-        try
-          g.refl
-          let tac ← if didIntros then `(tactic| (intros; rfl)) else `(tactic| rfl)
-          Meta.Tactic.TryThis.addSuggestion (← getRef) tac (origSpan? := ← getRef)
-          return []
-        catch _ => pure ()
-      throwError "\
-        tactic 'subsingleton' could prove equality since it could not synthesize\
-        {indentD instTy}"
-    else if let some (xTy, x, yTy, y) := tgt.heq? then
-      -- The HEq version of proof irrelevance.
-      if ← (Meta.isProp xTy <&&> Meta.isProp yTy) then
-        g.assign <| mkApp4 (.const ``proof_irrel_heq []) xTy yTy x y
-        return []
-      -- Now, try `Subsingleton.helim` by synthesizing a `Subsingleton` instance from either type.
-      -- This does not close a goal, but creates a new goal.
-      let u ← getLevel xTy
-      let instXTy := Expr.app (.const ``Subsingleton [u]) xTy
-      let instYTy := Expr.app (.const ``Subsingleton [u]) yTy
-      let g' ← mkFreshExprSyntheticOpaqueMVar (← mkEq xTy yTy) (← g.getTag)
-      try
-        let inst ← withNewMCtxDepth <| synthInstance instXTy
-        g.assign <| mkApp6 (.const ``Subsingleton.helim [u]) xTy yTy inst g' x y
-        return [g'.mvarId!]
-      catch _ => pure ()
-      try
-        let inst ← withNewMCtxDepth <| synthInstance instYTy
-        let pf ← mkHEqSymm <|
-          mkApp6 (.const ``Subsingleton.helim [u]) yTy xTy inst (← mkEqSymm g') y x
-        g.assign pf
-        return [g'.mvarId!]
-      catch _ => pure ()
-      throwError "\
-        tactic 'subsingleton' could not prove heterogenous equality since it could not \
-        synthesize either{indentD instXTy}\nor{indentD instYTy}"
-    throwError "tactic 'subsingleton' failed, goal is neither an equality nor heterogenous equality"
+        return [← g.subsingletonHElim]
+      catch eheq =>
+        if (← whnfR (← g.getType)).isHEq then
+          throw eheq
+        -- Try `refl` when all else fails, to give a hint to the user
+        if recover then
+          try
+            (← g.heqOfEq).refl
+            let tac ← if didIntros then `(tactic| (intros; rfl)) else `(tactic| rfl)
+            Meta.Tactic.TryThis.addSuggestion (← getRef) tac (origSpan? := ← getRef)
+            return []
+          catch _ => pure ()
+        throw e
+
+end Mathlib.Tactic
