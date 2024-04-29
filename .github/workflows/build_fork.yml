@@ -157,6 +157,9 @@ jobs:
 
       - name: print_lost_declarations
         run: |
+          git fetch origin ${{ github.base_ref }} ${{ github.event.pull_request.head.ref }}
+          FORK_POINT=$( git show-branch --merge-base "origin/${{ github.base_ref }}" "origin/${{ github.event.pull_request.head.ref }}" )
+          echo "Fork point: ${FORK_POINT}"
           printf '* fetched\n'
           rp="$(git rev-parse --abbrev-ref HEAD)"
           printf $'* rev-parse \'%s\'\n' "${rp}"
