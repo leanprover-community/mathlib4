@@ -194,6 +194,10 @@ def functorCategoryMonoidalEquivalence : MonoidalFunctor (Action V G) (SingleObj
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence Action.functorCategoryMonoidalEquivalence
 
+/-- Upgrading the functor `(SingleObj G ⥤ V) ⥤ Action V G` to a monoidal functor. -/
+def functorCategoryMonoidalInverse : MonoidalFunctor (SingleObj G ⥤ V) (Action V G) :=
+  Monoidal.toTransported (Action.functorCategoryEquivalence _ _).symm
+
 instance : (functorCategoryMonoidalEquivalence V G).IsEquivalence := by
   change (Action.functorCategoryEquivalence _ _).functor.IsEquivalence; infer_instance
 
