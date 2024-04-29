@@ -9,7 +9,7 @@ begs="(theorem|lemma|inductive|structure|def|class|instance)"
 if [ -n "${1}" ]; then
   commit="${1}"
 else
-  commit="$( git merge-base origin/master "origin/$( git rev-parse --abbrev-ref HEAD )" )"
+  commit="$( git merge-base origin/master -- "origin/$( git rev-parse --abbrev-ref HEAD )" )"
 fi;
 
 ## extract lines that begin with '[+-]' followed by the input `theorem` or `lemma`
