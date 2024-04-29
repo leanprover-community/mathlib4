@@ -93,7 +93,7 @@ theorem aeval : aeval x (minpoly A x) = 0 := by
 
 /-- Given any `σ : L ≃ₐ[K] L` and any `x : L`, the minimal polynomial of `x` vanishes at `σ x`. -/
 @[simp]
-theorem aeval_algEquiv(f : B ≃ₐ[A] B) (x : B) : (Polynomial.aeval (f x)) (minpoly A x) = 0 := by
+theorem aeval_algEquiv (f : B ≃ₐ[A] B) (x : B) : (Polynomial.aeval (f x)) (minpoly A x) = 0 := by
   rw [Polynomial.aeval_algEquiv, AlgHom.coe_comp, comp_apply, aeval, map_zero]
 
 /-- A minimal polynomial is not `1`. -/

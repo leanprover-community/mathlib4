@@ -1397,30 +1397,29 @@ namespace AdjoinRoot
 
 /-- The canonical algebraic equivalence between `AdjoinRoot p` and `AdjoinRoot q`, where
   the two polynomial `p q : K[X]` are equal.-/
-noncomputable def id_algEquiv {p q : K[X]} (hp : p ≠ 0) (hq : q ≠ 0) (h_eq : p = q) :
+noncomputable def id_algEquiv {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
+  have hq : q ≠ 0 := by rw [← h_eq]; exact hp
   ofAlgHom (liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]))
     (liftHom q (root p) (by rw [h_eq, aeval_eq, mk_self]))
     (PowerBasis.algHom_ext (powerBasis hq)
-      (by
-        rw [powerBasis_gen hq, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
+      (by rw [powerBasis_gen hq, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
           AlgHom.coe_id, id.def]))
     (PowerBasis.algHom_ext (powerBasis hp)
-      (by
-        rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
+      (by rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
           AlgHom.coe_id, id.def]))
 
-theorem id_algEquiv_def' {p q : K[X]} (hp : p ≠ 0) (hq : q ≠ 0) (h_eq : p = q) :
-    (id_algEquiv hp hq h_eq).toFun = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
+theorem id_algEquiv_def' {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    (id_algEquiv hp h_eq).toFun = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
   rfl
 
-theorem id_algEquiv_def {p q : K[X]} (hp : p ≠ 0) (hq : q ≠ 0) (h_eq : p = q) :
-    (id_algEquiv hp hq h_eq).toAlgHom = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
+theorem id_algEquiv_def {p q : K[X]} (hp : p ≠ 0)  (h_eq : p = q) :
+    (id_algEquiv hp h_eq).toAlgHom = liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]) :=
   rfl
 
 /-- `id_alg_equiv` sends `adjoin_root.root p` to `adjoin_root.root q`. -/
-theorem id_algEquiv_apply_root {p q : K[X]} (hp : p ≠ 0) (hq : q ≠ 0) (h_eq : p = q) :
-    id_algEquiv hp hq h_eq (root p) = root q := by
+theorem id_algEquiv_apply_root {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
+    id_algEquiv hp h_eq (root p) = root q := by
   rw [← coe_algHom, id_algEquiv_def, liftHom_root]
 
 end AdjoinRoot
@@ -1430,32 +1429,29 @@ namespace minpoly
 open IntermediateField
 
 /-- If `y : L` is a root of `minpoly K x`, then `minpoly K y = minpoly K x`. -/
-theorem eq_of_root (h_alg : Algebra.IsAlgebraic K L) {x y : L}
-    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x :=
-  Polynomial.eq_of_monic_of_associated (monic (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-    (monic (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-    (Irreducible.associated_of_dvd (irreducible (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-      (irreducible (isAlgebraic_iff_isIntegral.mp (h_alg _))) (dvd K y h_ev))
+theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
+    (h_ev : (Polynomial.aeval y) (minpoly K x) = 0) : minpoly K y = minpoly K x := by
+  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, h_ev⟩
+  exact Polynomial.eq_of_monic_of_associated (monic hy.isIntegral) (monic hx.isIntegral)
+    (Irreducible.associated_of_dvd (irreducible hy.isIntegral)
+      (irreducible hx.isIntegral) (dvd K y h_ev))
 
 /-- The canonical `algEquiv` between `K⟮x⟯`and `K⟮y⟯`, sending `x` to `y`, where `x` and `y` have
   the same minimal polynomial over `K`. -/
-noncomputable def algEquiv (h_alg : Algebra.IsAlgebraic K L) {x y : L}
-    (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ :=
-  AlgEquiv.trans (adjoinRootEquivAdjoin K (isAlgebraic_iff_isIntegral.mp (h_alg _))).symm
-    (AlgEquiv.trans
-      (AdjoinRoot.id_algEquiv (ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg _)))
-        (ne_zero (isAlgebraic_iff_isIntegral.mp (h_alg _))) h_mp)
-      (adjoinRootEquivAdjoin K (isAlgebraic_iff_isIntegral.mp (h_alg _))))
+noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
+    (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
+  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, by simp only [h_mp, aeval]⟩
+  exact AlgEquiv.trans (adjoinRootEquivAdjoin K hx.isIntegral).symm
+    (AlgEquiv.trans (AdjoinRoot.id_algEquiv (ne_zero hx.isIntegral) h_mp)
+      (adjoinRootEquivAdjoin K hy.isIntegral))
 
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
-theorem algEquiv_apply (h_alg : Algebra.IsAlgebraic K L) {x y : L}
-    (h_mp : minpoly K x = minpoly K y) :
-    algEquiv h_alg h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
-  simp only [algEquiv]
-  rw [trans_apply, ← adjoinRootEquivAdjoin_apply_root K
-    (isAlgebraic_iff_isIntegral.mp (h_alg _)),
+theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = minpoly K y) :
+    algEquiv hx h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
+  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, by simp only [h_mp, aeval]⟩
+  rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral,
     symm_apply_apply, trans_apply, AdjoinRoot.id_algEquiv_apply_root,
-    adjoinRootEquivAdjoin_apply_root K (isAlgebraic_iff_isIntegral.mp (h_alg _))]
+    adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
 
 end minpoly
 
