@@ -84,17 +84,6 @@ jobs:
       - name: check that all files are imported
         run: git diff --exit-code
 
-  diff_thm_lemma:
-    if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
-    name: diff_thm_lemma
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: print_lost_declarations
-        run: |
-          ./scripts/no_lost_declarations.sh
-
   check_workflows:
     if: github.repository MAIN_OR_FORK 'leanprover-community/mathlib4'
     name: check workflowsJOB_NAME
@@ -143,6 +132,9 @@ jobs:
           echo "$HOME/.elan/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/checkout@v4
+
+      - name: print_lost_declarations
+        run: ./scripts/no_lost_declarations.sh
 
       # We update `Mathlib.lean` as a convenience here,
       # but verify that this didn't change anything in the `check_imported` job.
