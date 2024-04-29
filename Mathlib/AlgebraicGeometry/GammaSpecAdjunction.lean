@@ -154,10 +154,7 @@ theorem toΓSpecCApp_iff
   --pick_goal 5; exact is_localization.to_basic_open _ r
   constructor
   · intro h
-    -- Porting note: Type class problem got stuck, same as above
-    refine' @IsLocalization.ringHom_ext _ _ _ _ _ _ _ _ loc_inst _ _ _
-    exact h
-    --pick_goal 5; exact is_localization.to_basic_open _ r; exact h
+    exact IsLocalization.ringHom_ext (Submonoid.powers r) h
   apply congr_arg
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec_c_app_iff AlgebraicGeometry.LocallyRingedSpace.toΓSpecCApp_iff
 
@@ -257,7 +254,7 @@ def toΓSpec : X ⟶ Spec.locallyRingedSpaceObj (Γ.obj (op X)) where
     exact ht.mul <| this.map _
 #align algebraic_geometry.LocallyRingedSpace.to_Γ_Spec AlgebraicGeometry.LocallyRingedSpace.toΓSpec
 
-theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ Γ.obj (op X)}
+theorem comp_ring_hom_ext {X : LocallyRingedSpace.{u}} {R : CommRingCat.{u}} {f : R ⟶ Γ.obj (op X)}
     {β : X ⟶ Spec.locallyRingedSpaceObj R}
     (w : X.toΓSpec.1.base ≫ (Spec.locallyRingedSpaceMap f).1.base = β.1.base)
     (h :
@@ -266,16 +263,14 @@ theorem comp_ring_hom_ext {X : LocallyRingedSpace} {R : CommRingCat} {f : R ⟶ 
           toOpen R (basicOpen r) ≫ β.1.c.app (op (basicOpen r))) :
     X.toΓSpec ≫ Spec.locallyRingedSpaceMap f = β := by
   ext1
-  -- Porting note: need more hand holding here
-  change (X.toΓSpec.1 ≫ _).base = _ at w
-  apply Spec.basicOpen_hom_ext w
+  -- Porting note: was `apply Spec.basicOpen_hom_ext`
+  refine Spec.basicOpen_hom_ext w ?_
   intro r U
-  -- Porting note: changed `rw` to `erw`
-  erw [LocallyRingedSpace.comp_val_c_app]
+  rw [LocallyRingedSpace.comp_val_c_app]
   erw [toOpen_comp_comap_assoc]
   rw [Category.assoc]
   erw [toΓSpecSheafedSpace_app_spec, ← X.presheaf.map_comp]
-  convert h r using 1
+  exact h r
 #align algebraic_geometry.LocallyRingedSpace.comp_ring_hom_ext AlgebraicGeometry.LocallyRingedSpace.comp_ring_hom_ext
 
 /-- `toSpecΓ _` is an isomorphism so these are mutually two-sided inverses. -/
@@ -416,11 +411,9 @@ theorem adjunction_unit_app {X : Scheme} :
 -- Porting Note: Commented
 -- attribute [local semireducible] locallyRingedSpaceAdjunction ΓSpec.adjunction
 
-set_option maxHeartbeats 400000 in
-instance isIso_locallyRingedSpaceAdjunction_counit : IsIso locallyRingedSpaceAdjunction.counit := by
-  dsimp only [locallyRingedSpaceAdjunction, Adjunction.mkOfUnitCounit_counit]
-  -- Porting Note: `dsimp` was unnecessary and had to make this explicit
-  convert IsIso.of_iso_inv (NatIso.op SpecΓIdentity) using 1
+instance isIso_locallyRingedSpaceAdjunction_counit :
+    IsIso.{u + 1, u + 1} locallyRingedSpaceAdjunction.counit :=
+  IsIso.of_iso_inv (NatIso.op SpecΓIdentity)
 #align algebraic_geometry.Γ_Spec.is_iso_LocallyRingedSpace_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_locallyRingedSpaceAdjunction_counit
 
 instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
@@ -430,7 +423,7 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   infer_instance
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
-theorem adjunction_unit_app_app_top (X : Scheme) :
+theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
     (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) =
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
   have := congr_app ΓSpec.adjunction.left_triangle X
@@ -450,17 +443,17 @@ theorem adjunction_unit_app_app_top (X : Scheme) :
   rw [← op_inv, Quiver.Hom.op_inj.eq_iff] at this
   -- Note: changed from `rw` to `simp_rw` to improve performance
   simp_rw [SpecΓIdentity_hom_app]
-  convert this using 1
+  exact this
 #align algebraic_geometry.Γ_Spec.adjunction_unit_app_app_top AlgebraicGeometry.ΓSpec.adjunction_unit_app_app_top
 
 end ΓSpec
 
 @[reassoc]
-theorem SpecΓIdentity_naturality {R S : CommRingCat} (f : R ⟶ S) :
+theorem SpecΓIdentity_naturality {R S : CommRingCat.{u}} (f : R ⟶ S) :
     (Scheme.Spec.map f.op).1.c.app (op ⊤) ≫ SpecΓIdentity.hom.app _ =
       SpecΓIdentity.hom.app _ ≫ f := SpecΓIdentity.hom.naturality f
 
-theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme} (U : Opens X) :
+theorem SpecΓIdentity_hom_app_presheaf_obj {X : Scheme.{u}} (U : Opens X) :
     SpecΓIdentity.hom.app (X.presheaf.obj (op U)) =
       Scheme.Γ.map (Scheme.Spec.map (X.presheaf.map (eqToHom U.openEmbedding_obj_top).op).op).op ≫
       (ΓSpec.adjunction.unit.app (X ∣_ᵤ U)).val.c.app (op ⊤) ≫
