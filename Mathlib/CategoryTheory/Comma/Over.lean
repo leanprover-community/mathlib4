@@ -331,7 +331,7 @@ instance (F : D ⥤ T) (X : T) [F.EssSurj] : (toOver F X).EssSurj :=
 /-- An equivalence `F` induces an equivalence `CostructuredArrow F X ≌ Over X`. -/
 instance isEquivalence_toOver (F : D ⥤ T) (X : T) [F.IsEquivalence] :
     (toOver F X).IsEquivalence :=
-  CostructuredArrow.isEquivalencePre _ _ _
+  CostructuredArrow.isEquivalence_pre _ _ _
 
 end CostructuredArrow
 
@@ -569,7 +569,7 @@ instance (X : T) (F : D ⥤ T) [F.EssSurj] : (toUnder X F).EssSurj :=
 /-- An equivalence `F` induces an equivalence `StructuredArrow X F ≌ Under X`. -/
 instance isEquivalence_toUnder (X : T) (F : D ⥤ T) [F.IsEquivalence] :
     (toUnder X F).IsEquivalence :=
-  StructuredArrow.isEquivalencePre _ _ _
+  StructuredArrow.isEquivalence_pre _ _ _
 
 end StructuredArrow
 

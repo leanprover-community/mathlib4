@@ -126,10 +126,10 @@ def adjunctionOfCostructuredArrowTerminals : G ⊣ rightAdjointOfCostructuredArr
 #align category_theory.adjunction_of_costructured_arrow_terminals CategoryTheory.adjunctionOfCostructuredArrowTerminals
 
 /-- If each costructured arrow category on `G` has a terminal object, `G` is a left adjoint. -/
-def isLeftAdjoint_of_costructuredArrowTerminals : G.IsLeftAdjoint where
+lemma isLeftAdjoint_of_costructuredArrowTerminals : G.IsLeftAdjoint where
   exists_rightAdjoint :=
     ⟨rightAdjointOfCostructuredArrowTerminals G, ⟨Adjunction.adjunctionOfEquivRight _ _⟩⟩
-#align category_theory.is_left_adjoint_of_costructured_arrow_terminals CategoryTheory.isLeftAdjointOfCostructuredArrowTerminals
+#align category_theory.is_left_adjoint_of_costructured_arrow_terminals CategoryTheory.isLeftAdjoint_of_costructuredArrowTerminals
 
 end OfTerminals
 
@@ -175,7 +175,7 @@ theorem isRightAdjoint_iff_hasInitial_structuredArrow {G : D ⥤ C} :
 theorem isLeftAdjoint_iff_hasTerminal_costructuredArrow {F : C ⥤ D} :
     F.IsLeftAdjoint ↔ ∀ A, HasTerminal (CostructuredArrow F A) :=
   ⟨fun _ A => (mkTerminalOfRightAdjoint _ (Adjunction.ofIsLeftAdjoint F) A).hasTerminal,
-    fun _ => isLeftAdjointOfCostructuredArrowTerminals _⟩
+    fun _ => isLeftAdjoint_of_costructuredArrowTerminals _⟩
 #align category_theory.nonempty_is_left_adjoint_iff_has_terminal_costructured_arrow CategoryTheory.isLeftAdjoint_iff_hasTerminal_costructuredArrow
 
 end CategoryTheory
