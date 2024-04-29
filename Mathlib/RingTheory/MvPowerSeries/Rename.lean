@@ -45,7 +45,7 @@ open Set Function Finsupp AddMonoidAlgebra
 
 open BigOperators
 
-variable {σ τ α R S : Type*} [CommSemiring R] [CommSemiring S]
+variable {σ τ υ R S : Type*} [CommSemiring R] [CommSemiring S]
 
 namespace MvPowerSeries
 
@@ -66,8 +66,7 @@ def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ MvPowerSeries τ R where
     funext s
     simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp, Equiv.self_comp_symm,
       mapDomain_id]
-
-  -- ≃ₐ[R]
+  --ₐ[R]
   -- map_mul' := sorry
   -- map_add' := by
   --   intro x y
@@ -83,6 +82,7 @@ variable [DecidableEq σ] [DecidableEq τ]
 lemma rename_zero (e : σ ≃ τ) : rename e (0 : MvPowerSeries σ R) = 0 := by
   simp only [rename, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
 
+@[simp]
 theorem rename_C (e : σ ≃ τ) (r : R) : rename e (C σ R r) = C τ R r := by
   simp only [rename, Equiv.coe_fn_mk]
   funext t
@@ -94,36 +94,41 @@ theorem rename_C (e : σ ≃ τ) (r : R) : rename e (C σ R r) = C τ R r := by
           simp only [mapDomain_equiv_apply, Equiv.symm_symm, Equiv.apply_symm_apply]
         simp only [this, h, coe_zero, Pi.zero_apply]
       · simp only [h, mapDomain_zero]
-    simp only [coeff_C, this]
+    simp only [this, coeff_C]
   show coeff R (Finsupp.mapDomain (⇑e.symm) t) ((C σ R) r) = coeff R t ((C τ R) r)
   simp only [this, coeff_C]
 
--- @[simp]
--- theorem rename_X (f : σ → τ) (i : σ) : rename f (X i : MvPowerSeries σ R) = X (f i) :=
---   eval₂_X _ _ _
--- set_option linter.uppercaseLean3 false in
--- #align mv_polynomial.rename_X MvPowerSeries.rename_X
+@[simp]
+theorem rename_X (e : σ ≃ τ) (i : σ) : rename e (X i : MvPowerSeries σ R) = X (e i) := by
+  simp only [rename, Equiv.coe_fn_mk]
+  funext t
+  have : coeff R (Finsupp.mapDomain (⇑e.symm) t) (X i) =
+      (if t = Finsupp.single (e i) 1 then 1 else 0) := by
+    have : Finsupp.mapDomain (⇑e.symm) t = Finsupp.single i 1 ↔ t = Finsupp.single (e i) 1 := by
+      constructor <;> intro h
+      · ext j
+        have : t j = Finsupp.mapDomain (e.symm) t (e.symm j) := by
+          simp only [mapDomain_equiv_apply, Equiv.symm_symm, Equiv.apply_symm_apply]
+        simp only [this, h]
+        rw [Finsupp.single_apply, Finsupp.single_apply]
+        simp_rw [Equiv.eq_symm_apply e]
+      · simp only [h, Finsupp.mapDomain_single, Equiv.symm_apply_apply]
+    simp only [this, coeff_X]
+  show coeff R (Finsupp.mapDomain (⇑e.symm) t) (X i) = coeff R t (X (e i))
+  simp only [this, coeff_X]
 
--- theorem map_rename (f : R →+* S) (g : σ → τ) (p : MvPowerSeries σ R) :
---     map f (rename g p) = rename g (map f p) := by
---   apply MvPowerSeries.induction_on p
---     (fun a => by simp only [map_C, rename_C])
---     (fun p q hp hq => by simp only [hp, hq, AlgHom.map_add, RingHom.map_add]) fun p n hp => by
---     simp only [hp, rename_X, map_X, RingHom.map_mul, AlgHom.map_mul]
--- #align mv_polynomial.map_rename MvPowerSeries.map_rename
+theorem map_rename (f : R →+* S) (e : σ ≃ τ) (p : MvPowerSeries σ R) :
+    map τ f (rename e p) = rename e (map σ f p) := by
+  simp only [map, rename, AlgEquiv.coe_mk, RingHom.coe_mk, MonoidHom.coe_mk, OneHom.coe_mk]
+  rfl
 
--- @[simp]
--- theorem rename_rename (f : σ → τ) (g : τ → α) (p : MvPowerSeries σ R) :
---     rename g (rename f p) = rename (g ∘ f) p :=
---   show rename g (eval₂ C (X ∘ f) p) = _ by
---     simp only [rename, aeval_eq_eval₂Hom]
---     -- Porting note: the Lean 3 proof of this was very fragile and included a nonterminal `simp`.
---     -- Hopefully this is less prone to breaking
---     rw [eval₂_comp_left (eval₂Hom (algebraMap R (MvPowerSeries α R)) (X ∘ g)) C (X ∘ f) p]
---     simp only [(· ∘ ·), eval₂Hom_X']
---     refine' eval₂Hom_congr _ rfl rfl
---     ext1; simp only [comp_apply, RingHom.coe_comp, eval₂Hom_C]
--- #align mv_polynomial.rename_rename MvPowerSeries.rename_rename
+@[simp]
+theorem rename_rename (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
+    rename f (rename e p) = rename (Equiv.trans e f) p := by
+  funext u
+  simp only [rename, Equiv.coe_fn_mk, comp_apply, mapDomain.addMonoidHom_apply, Equiv.coe_trans]
+  rw [← mapDomain_comp]
+  congr
 
 -- @[simp]
 -- theorem rename_id (p : MvPowerSeries σ R) : rename id p = p :=
