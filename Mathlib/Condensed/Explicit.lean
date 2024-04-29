@@ -195,12 +195,12 @@ noncomputable abbrev ofSheafStonean (F : Stonean.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R
     [PreservesFiniteProducts F] : CondensedMod R :=
   Condensed.ofSheafStonean (forget _) F
 
-/-- A `CondensedAb` version of `Condensed.ofSheafProfinite`. -/
+/-- A `CondensedMod` version of `Condensed.ofSheafProfinite`. -/
 noncomputable abbrev ofSheafProfinite (F : Profinite.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedMod R :=
   Condensed.ofSheafProfinite (forget _) F hF
 
-/-- A `CondensedAb` version of `Condensed.ofSheafCompHaus`. -/
+/-- A `CondensedMod` version of `Condensed.ofSheafCompHaus`. -/
 noncomputable abbrev ofSheafCompHaus (F : CompHaus.{u}ᵒᵖ ⥤ ModuleCat.{u+1} R)
     [PreservesFiniteProducts F] (hF : EqualizerCondition (F ⋙ forget _)) : CondensedMod R :=
   Condensed.ofSheafCompHaus (forget _) F hF
