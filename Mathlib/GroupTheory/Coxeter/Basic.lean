@@ -121,14 +121,10 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
   (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
-      -- FIXME nightly-testing
-      -- This appears to have been broken by https://github.com/leanprover/lean4/pull/4003, and
-      -- `set_option backward.synthInstance.canonInstances false` doesn't work.
-      sorry
-      -- rw [reindex_relationsSet,
-      --   Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
-      --   ← MulEquiv.coe_toMonoidHom]
-      -- rfl
+      erw [reindex_relationsSet,
+        Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
+        ← MulEquiv.coe_toMonoidHom]
+      rfl
       )).symm
 
 theorem reindexGroupEquiv_apply_simple (i : B') :

@@ -44,12 +44,9 @@ section Semiring
 
 variable {S : Type*} [Semiring S]
 
+set_option backward.isDefEq.lazyProjDelta false in
 theorem natDegree_list_sum_le (l : List S[X]) : natDegree l.sum ≤ (l.map natDegree).foldr max 0 :=
-  -- FIXME nightly-testing
-  -- This appears to have been broken by https://github.com/leanprover/lean4/pull/4003, and
-  -- `set_option backward.synthInstance.canonInstances false` doesn't work.
-  sorry
-  -- List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
+  List.sum_le_foldr_max natDegree (by simp) natDegree_add_le _
 #align polynomial.nat_degree_list_sum_le Polynomial.natDegree_list_sum_le
 
 theorem natDegree_multiset_sum_le (l : Multiset S[X]) :

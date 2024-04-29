@@ -6,6 +6,7 @@ Authors: Kyle Miller
 import Lean.Meta.Tactic.Cleanup
 import Lean.Meta.Tactic.Cases
 import Lean.Meta.Tactic.Refl
+import Mathlib.Logic.IsEmpty
 
 /-!
 # Additions to `Lean.Meta.CongrTheorems`
