@@ -279,7 +279,7 @@ instance (x : STEP 𝒞) : Fact (x.Y.ShortExact) := ⟨x.Y_se⟩
 instance (x : STEP 𝒞) : Fact (x.Z.ShortExact) := ⟨x.Z_se⟩
 
 def horseshoeStep : ℕ → STEP 𝒞
-| 0 =>
+  | 0 =>
 { X := horseshoeKer (horseshoeBaseπ A)
   Y := horseshoeBase A
   Z := A
