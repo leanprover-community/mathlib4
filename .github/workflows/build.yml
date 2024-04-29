@@ -165,7 +165,7 @@ jobs:
         run: |
           #git fetch origin master head
           git checkout master
-          FORK_POINT=$( git merge-base origin/master ${{ github.event.pull_request.head.sha }})
+          FORK_POINT=$( git merge-base origin/master "$(git rev-parse --abbrev-ref HEAD)")
           echo "Fork point: ${FORK_POINT}"
           printf '* fetched\n'
           rp="$(git rev-parse --abbrev-ref HEAD)"
