@@ -1399,12 +1399,11 @@ namespace AdjoinRoot
   the two polynomial `p q : K[X]` are equal.-/
 noncomputable def id_algEquiv {p q : K[X]} (hp : p ≠ 0) (h_eq : p = q) :
     AdjoinRoot p ≃ₐ[K] AdjoinRoot q :=
-  have hq : q ≠ 0 := by rw [← h_eq]; exact hp
   ofAlgHom (liftHom p (root q) (by rw [h_eq, aeval_eq, mk_self]))
     (liftHom q (root p) (by rw [h_eq, aeval_eq, mk_self]))
-    (PowerBasis.algHom_ext (powerBasis hq)
-      (by rw [powerBasis_gen hq, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
-          AlgHom.coe_id, id.def]))
+    (PowerBasis.algHom_ext (powerBasis (h_eq ▸ hp))
+      (by rw [powerBasis_gen (h_eq ▸ hp), AlgHom.coe_comp, Function.comp_apply, liftHom_root,
+        liftHom_root, AlgHom.coe_id, id.def]))
     (PowerBasis.algHom_ext (powerBasis hp)
       (by rw [powerBasis_gen hp, AlgHom.coe_comp, Function.comp_apply, liftHom_root, liftHom_root,
           AlgHom.coe_id, id.def]))
@@ -1440,7 +1439,7 @@ theorem eq_of_root {x y : L} (hx : IsAlgebraic K x)
   the same minimal polynomial over `K`. -/
 noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
     (h_mp : minpoly K x = minpoly K y) : K⟮x⟯ ≃ₐ[K] K⟮y⟯ := by
-  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, by simp only [h_mp, aeval]⟩
+  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
   exact AlgEquiv.trans (adjoinRootEquivAdjoin K hx.isIntegral).symm
     (AlgEquiv.trans (AdjoinRoot.id_algEquiv (ne_zero hx.isIntegral) h_mp)
       (adjoinRootEquivAdjoin K hy.isIntegral))
@@ -1448,7 +1447,7 @@ noncomputable def algEquiv {x y : L} (hx : IsAlgebraic K x)
 /-- `minpoly.algEquiv` sends the generator of `K⟮x⟯` to the generator of `K⟮y⟯`. -/
 theorem algEquiv_apply {x y : L} (hx : IsAlgebraic K x) (h_mp : minpoly K x = minpoly K y) :
     algEquiv hx h_mp (AdjoinSimple.gen K x) = AdjoinSimple.gen K y := by
-  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, by simp only [h_mp, aeval]⟩
+  have hy : IsAlgebraic K y := ⟨minpoly K x, ne_zero hx.isIntegral, (h_mp ▸ aeval _ _)⟩
   rw [algEquiv, trans_apply, ← adjoinRootEquivAdjoin_apply_root K hx.isIntegral,
     symm_apply_apply, trans_apply, AdjoinRoot.id_algEquiv_apply_root,
     adjoinRootEquivAdjoin_apply_root K hy.isIntegral]
