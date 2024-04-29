@@ -119,8 +119,7 @@ jobs:
           ./mk_build_yml.sh
 
       - name: check that workflows were consistent
-        run: |
-          git diff --exit-code
+        run: git diff --exit-code
 
   build:
     if: github.repository != 'leanprover-community/mathlib4'
@@ -152,8 +151,6 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          ## asks for the sha of the head commit, so that `merge-base` then works
-          ref: ${{ github.event.pull_request.head.sha }}
           ## fetch the whole repository, useful to find a common fork
           fetch-depth: 0
 
