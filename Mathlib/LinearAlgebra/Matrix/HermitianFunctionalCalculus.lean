@@ -45,9 +45,9 @@ theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
     exact Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum2 (i : n) :
-    hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) := by
-exact (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
-       (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
+    hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) :=
+(spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
+        (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
