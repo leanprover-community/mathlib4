@@ -118,7 +118,7 @@ lemma isLeftAdjoint_of_preservesColimits_of_isSeparating [HasColimits C] [WellPo
     F.IsLeftAdjoint :=
   have : ∀ A, HasTerminal (CostructuredArrow F A) := fun A =>
     hasTerminal_of_isSeparating (CostructuredArrow.isSeparating_proj_preimage F A h𝒢)
-  isLeftAdjointOfCostructuredArrowTerminals _
+  isLeftAdjoint_of_costructuredArrowTerminals _
 #align category_theory.is_left_adjoint_of_preserves_colimits_of_is_separatig CategoryTheory.isLeftAdjoint_of_preservesColimits_of_isSeparating
 
 end SpecialAdjointFunctorTheorem
@@ -131,7 +131,7 @@ theorem hasColimits_of_hasLimits_of_isCoseparating [HasLimits C] [WellPowered C]
     [Small.{v} 𝒢] (h𝒢 : IsCoseparating 𝒢) : HasColimits C :=
   { has_colimits_of_shape := fun _ _ =>
       hasColimitsOfShape_iff_isRightAdjoint_const.2
-        (isRightAdjointOfPreservesLimitsOfIsCoseparating h𝒢 _) }
+        (isRightAdjoint_of_preservesLimits_of_isCoseparating h𝒢 _) }
 #align category_theory.limits.has_colimits_of_has_limits_of_is_coseparating CategoryTheory.Limits.hasColimits_of_hasLimits_of_isCoseparating
 
 /-- A consequence of the special adjoint functor theorem: if `C` is cocomplete, well-copowered and
@@ -140,7 +140,7 @@ theorem hasLimits_of_hasColimits_of_isSeparating [HasColimits C] [WellPowered C�
     [Small.{v} 𝒢] (h𝒢 : IsSeparating 𝒢) : HasLimits C :=
   { has_limits_of_shape := fun _ _ =>
       hasLimitsOfShape_iff_isLeftAdjoint_const.2
-        (isLeftAdjointOfPreservesColimitsOfIsSeparatig h𝒢 _) }
+        (isLeftAdjoint_of_preservesColimits_of_isSeparating h𝒢 _) }
 #align category_theory.limits.has_limits_of_has_colimits_of_is_separating CategoryTheory.Limits.hasLimits_of_hasColimits_of_isSeparating
 
 end Limits

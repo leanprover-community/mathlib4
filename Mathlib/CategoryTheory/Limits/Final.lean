@@ -677,15 +677,11 @@ variable {E : Type u₃} [Category.{v₃} E] (F : C ⥤ D) (G : D ⥤ E)
 
 /-- The hypotheses also imply that `G` is final, see `final_of_comp_full_faithful'`. -/
 theorem final_of_comp_full_faithful [Full G] [Faithful G] [Final (F ⋙ G)] : Final F where
-  out d :=
-    have := StructuredArrow.isEquivalencePost d F G
-    isConnected_of_equivalent (StructuredArrow.post d F G).asEquivalence.symm
+  out d := isConnected_of_equivalent (StructuredArrow.post d F G).asEquivalence.symm
 
 /-- The hypotheses also imply that `G` is initial, see `initial_of_comp_full_faithful'`. -/
 theorem initial_of_comp_full_faithful [Full G] [Faithful G] [Initial (F ⋙ G)] : Initial F where
-  out d :=
-    have := CostructuredArrow.isEquivalencePost d F G
-    isConnected_of_equivalent (CostructuredArrow.post F G d).asEquivalence.symm
+  out d := isConnected_of_equivalent (CostructuredArrow.post F G d).asEquivalence.symm
 
 /-- See also the strictly more general `final_comp` below. -/
 theorem final_comp_equivalence [Final F] [IsEquivalence G] : Final (F ⋙ G) :=
@@ -701,27 +697,19 @@ theorem initial_comp_equivalence [Initial F] [IsEquivalence G] : Initial (F ⋙ 
 
 /-- See also the strictly more general `final_comp` below. -/
 theorem final_equivalence_comp [IsEquivalence F] [Final G] : Final (F ⋙ G) where
-  out d :=
-    have := StructuredArrow.isEquivalencePre d F G
-    isConnected_of_equivalent (StructuredArrow.pre d F G).asEquivalence.symm
+  out d := isConnected_of_equivalent (StructuredArrow.pre d F G).asEquivalence.symm
 
 /-- See also the strictly more general `inital_comp` below. -/
 theorem initial_equivalence_comp [IsEquivalence F] [Initial G] : Initial (F ⋙ G) where
-  out d :=
-    have := CostructuredArrow.isEquivalencePre F G d
-    isConnected_of_equivalent (CostructuredArrow.pre F G d).asEquivalence.symm
+  out d := isConnected_of_equivalent (CostructuredArrow.pre F G d).asEquivalence.symm
 
 /-- See also the strictly more general `final_of_final_comp` below. -/
 theorem final_of_equivalence_comp [IsEquivalence F] [Final (F ⋙ G)] : Final G where
-  out d :=
-    have := StructuredArrow.isEquivalencePre d F G
-    isConnected_of_equivalent (StructuredArrow.pre d F G).asEquivalence
+  out d := isConnected_of_equivalent (StructuredArrow.pre d F G).asEquivalence
 
 /-- See also the strictly more general `initial_of_initial_comp` below. -/
 theorem initial_of_equivalence_comp [IsEquivalence F] [Initial (F ⋙ G)] : Initial G where
-  out d :=
-    have := CostructuredArrow.isEquivalencePre F G d
-    isConnected_of_equivalent (CostructuredArrow.pre F G d).asEquivalence
+  out d := isConnected_of_equivalent (CostructuredArrow.pre F G d).asEquivalence
 
 /-- See also the strictly more general `final_iff_comp_final_full_faithful` below. -/
 theorem final_iff_comp_equivalence [IsEquivalence G] : Final F ↔ Final (F ⋙ G) :=
