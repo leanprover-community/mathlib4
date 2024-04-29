@@ -3,7 +3,6 @@ Copyright (c) 2023 Xavier Roblot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Xavier Roblot
 -/
-import Mathlib.Algebra.Module.Zlattice.Covolume
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
 import Mathlib.NumberTheory.NumberField.Norm
@@ -588,30 +587,5 @@ theorem exist_unique_eq_mul_prod (x : (𝓞 K)ˣ) : ∃! ζe : torsion K × (Fin
 
 end statements
 
-section regulator
-
-open MeasureTheory Classical
-
-variable [NumberField K]
-
-/-- The regulator of a number fied `K`. -/
-def regulator : ℝ := Zlattice.covolume (unitLattice K)
-
-theorem regulator_ne_zero : regulator K ≠ 0 := Zlattice.covolume_ne_zero (unitLattice K) volume
-
-theorem regulator_pos : 0 < regulator K := Zlattice.covolume_pos (unitLattice K) volume
-
-def regulatorOfFamily (w' : InfinitePlace K) (u : Fin (rank K) → (𝓞 K)ˣ)
-    (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :=
-  (Matrix.of (fun w₁ : {w // w ≠ w'} ↦ fun w₂ ↦ mult w₁.val * Real.log (w₁.val (u (e w₂))))).det
-
-theorem regulator_eq_regulatorofFamily (w' : InfinitePlace K) {u : Fin (rank K) → (𝓞 K)ˣ}
-    (h : ∀ x : (𝓞 K)ˣ, ∃ ζe : torsion K × (Fin (rank K) → ℤ), x = ζe.1 * ∏ i, (u i ^ (ζe.2 i)))
-    (e : {w : InfinitePlace K // w ≠ w'} ≃ Fin (rank K)) :
-    regulator K = regulatorOfFamily K w' u e := by
-  sorry
-
-
-end regulator
 
 end NumberField.Units
