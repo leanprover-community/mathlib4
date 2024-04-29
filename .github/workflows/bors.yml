@@ -148,29 +148,21 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
+          ## asks for the sha of the head commit, so that `merge-base` then works
           ref: ${{ github.event.pull_request.head.sha }}
+          ## fetch the whole repository, useful to find a common fork
           fetch-depth: 0
-
-##      - name: Fetch latest commits from master
-##        run: git fetch origin master
 
       - name: print_lost_declarations
         run: |
-          #git fetch origin master head
-          rp="$(git rev-parse --abbrev-ref HEAD)"
-          echo $rp
+          ## the branch name of the PR
+          prBranchName="$(git rev-parse --abbrev-ref HEAD)"
+          ## back and forth to settle a "detached head" (maybe?)
           git checkout master
-          git checkout "${rp}"
-          FORK_POINT=$( git merge-base origin/master ${rp})
+          git checkout "${prBranchName}"
+          FORK_POINT=$(git merge-base origin/master ${prBranchName})
           echo "Fork point: ${FORK_POINT}"
-          printf '* fetched\n'
-          rp="$(git rev-parse --abbrev-ref HEAD)"
-          printf $'* rev-parse \'%s\'\n' "${rp}"
-          #git fetch origin "${rp}"
-          git merge-base origin/master HEAD
-          printf '* merge-base %s\n' "$(git merge-base origin/master ${rp})"
-          echo "* run script"
-          ./scripts/no_lost_declarations.sh
+          ./scripts/no_lost_declarations.sh "${FORK_POINT}"
           exit 1
 
       # We update `Mathlib.lean` as a convenience here,
