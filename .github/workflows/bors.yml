@@ -158,6 +158,7 @@ jobs:
           printf '* merge-base %s\n' "$(git merge-base origin/master "${rp}" )"
           echo "* run script"
           ./scripts/no_lost_declarations.sh
+          exit 1
 
       # We update `Mathlib.lean` as a convenience here,
       # but verify that this didn't change anything in the `check_imported` job.
