@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
-import Mathlib.Algebra.Regular.SMul
 import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
 import Mathlib.GroupTheory.GroupAction.Hom
