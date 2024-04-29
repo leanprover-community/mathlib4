@@ -21,10 +21,10 @@ fi |
     fin=""
     for(res in acc) {
       pm=acc[res]
-      if(pm != "-+") {
+      if(pm == "-+" || pm == "+-") { paired++ } else {
         if(pm == "+") { added++ } else removed++
         fin=fin sprintf("* `%s` `%s`\n", pm, res)
-      } else paired++
+      }
     }
     print fin| "sort -k3"; close("sort -k3")
     printf("---\n* %s  added declarations\n* %s  removed declarations\n* %s  paired declarations", added, removed, paired)
