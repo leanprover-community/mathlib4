@@ -33,6 +33,7 @@ git diff --unified=0 "${commit}" |
     print fin| "sort -k3"; close("sort -k3")
     printf("---\n%s  added declarations\n%s  removed declarations\n%s  paired declarations", added, removed, paired)
   }'
+printf $'\n'
 printf $'\nReference commit: %s\n\nYou can run this locally using
 ./scripts/no_lost_declarations.sh <optional_commit>\n' "${commit}"
 
