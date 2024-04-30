@@ -26,24 +26,31 @@ This file defines the predicate `SeparatedNhds`, and common separation axioms
 * `T1Space`: A T₁/Fréchet space is a space where every singleton set is closed.
   This is equivalent to, for every pair `x ≠ y`, there existing an open set containing `x`
   but not `y` (`t1Space_iff_exists_open` shows that these conditions are equivalent.)
+  T₁ implies T₀ and R₀.
 * `R1Space`: An R₁/preregular space is a space where any two topologically distinguishable points
-  have disjoint neighbourhoods;
+  have disjoint neighbourhoods. R₁ implies R₀.
 * `T2Space`: A T₂/Hausdorff space is a space where, for every two points `x ≠ y`,
-  there is two disjoint open sets, one containing `x`, and the other `y`.
+  there is two disjoint open sets, one containing `x`, and the other `y`. T₂ implies T₁ and R₁.
 * `T25Space`: A T₂.₅/Urysohn space is a space where, for every two points `x ≠ y`,
   there is two open sets, one containing `x`, and the other `y`, whose closures are disjoint.
+  T₂.₅ implies T₂.
 * `RegularSpace`: A regular space is one where, given any closed `C` and `x ∉ C`,
   there are disjoint open sets containing `x` and `C` respectively. Such a space is not necessarily
   Hausdorff.
-* `T3Space`: A T₃ space is a T₀ regular space. In `mathlib`, T₃ implies T₂.₅.
+* `T3Space`: A T₃ space is a regular T₀ space. T₃ implies T₂.₅.
 * `NormalSpace`: A normal space, is one where given two disjoint closed sets,
-  we can find two open sets that separate them.
+  we can find two open sets that separate them. Such a space is not necessarily Hausdorff, even if
+  it is T₀.
 * `T4Space`: A T₄ space is a normal T₁ space. T₄ implies T₃.
-* `CompletelyNormalSpace`: A completely normal space is one in which,
-  given two sets `s` and `t` such that the closure of `s` is disjoint from `t`, and conversely,
-  then `s` and `t` have disjoint neighborhoods. This is equivalent to all subspaces
-  being normal.
-* `T5Space`: A T₅ space is a completely normal T₁ space.
+* `CompletelyNormalSpace`: A completely normal space is one in which for any two sets `s`, `t`
+  such that if both `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`,
+  then there exist disjoint neighbourhoods of `s` and `t`. `Embedding.completelyNormalSpace` allows
+  us to conclude that this is equivalent to all subspaces being normal. Such a space is not
+  necessarily Hausdorff or regular, even if it is T₀.
+* `T5Space`: A T₅ space is a completely normal T₁ space. T₅ implies T₄.
+
+Note that `mathlib` adopts the modern convention that `m ≤ n` if and only if `T_m → T_n`, but
+occassionally the literature swaps definitions for e.g. T₃ and regular.
 
 ## Main results
 
@@ -2268,12 +2275,11 @@ end Normality
 
 section CompletelyNormal
 
-/-- A topological space `X` is a *completely normal space* if each subspace `s : Set X` is
-a normal space. Equivalently, for any two sets `s`, `t` such that
-`closure s` is disjoint with `t` and `s` is disjoint with `closure t`, there exist disjoint
-neighbourhoods of `s` and `t`. -/
+/-- A topological space `X` is a *completely normal space* provided that for any two sets `s`, `t`
+such that if both `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`,
+then there exist disjoint neighbourhoods of `s` and `t`. -/
 class CompletelyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
-  /-- If `closure s` is disjoint with `t` and `s` is disjoint with `closure t`, then `s` and `t`
+  /-- If `closure s` is disjoint with `t`, and `s` is disjoint with `closure t`, then `s` and `t`
   admit disjoint neighbourhoods. -/
   completely_normal :
     ∀ ⦃s t : Set X⦄, Disjoint (closure s) t → Disjoint s (closure t) → Disjoint (𝓝ˢ s) (𝓝ˢ t)
