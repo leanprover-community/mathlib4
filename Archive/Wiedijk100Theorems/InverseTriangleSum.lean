@@ -33,8 +33,7 @@ theorem Theorems100.inverse_triangle_sum :
   refine' sum_range_induction _ _ (if_pos rfl) _
   rintro (_ | n)
   · rw [if_neg, if_pos] <;> norm_num
-  simp only [add_eq_zero, Nat.succ_ne_zero, one_ne_zero, and_self, ↓reduceIte, Nat.cast_add,
-    Nat.cast_succ, Nat.cast_one]
+  simp only [Nat.succ_ne_zero, ↓reduceIte, Nat.cast_succ]
   have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast
   push_cast
   field_simp

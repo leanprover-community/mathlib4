@@ -678,7 +678,7 @@ def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M�
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
-instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
+instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toSemilinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
@@ -686,7 +686,7 @@ def toLinearMap (fₗ : M →+[R] M₃) : M →ₗ[R] M₃ :=
   { fₗ with }
 #align distrib_mul_action_hom.to_linear_map DistribMulActionHom.toLinearMap
 
-instance : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
+instance instCoeTCLinearMap : CoeTC (M →+[R] M₃) (M →ₗ[R] M₃) :=
   ⟨toLinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
