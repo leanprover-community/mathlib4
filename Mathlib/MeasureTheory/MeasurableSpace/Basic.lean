@@ -1128,8 +1128,8 @@ theorem measurable_tProd_elim' [DecidableEq δ] {l : List δ} (h : ∀ i, i ∈ 
 theorem MeasurableSet.tProd (l : List δ) {s : ∀ i, Set (π i)} (hs : ∀ i, MeasurableSet (s i)) :
     MeasurableSet (Set.tprod l s) := by
   induction' l with i l ih
-  exact MeasurableSet.univ
-  exact (hs i).prod ih
+  · exact MeasurableSet.univ
+  · exact (hs i).prod ih
 #align measurable_set.tprod MeasurableSet.tProd
 
 end TProd
@@ -1835,8 +1835,8 @@ def sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)]
   · refine Measurable.prod ?_ ?_ <;>
       rw [measurable_pi_iff] <;> rintro i <;> apply measurable_pi_apply
   · rw [measurable_pi_iff]; rintro (i|i)
-    exact measurable_pi_iff.1 measurable_fst _
-    exact measurable_pi_iff.1 measurable_snd _
+    · exact measurable_pi_iff.1 measurable_fst _
+    · exact measurable_pi_iff.1 measurable_snd _
 
 theorem coe_sumPiEquivProdPi (α : δ ⊕ δ' → Type*) [∀ i, MeasurableSpace (α i)] :
     ⇑(MeasurableEquiv.sumPiEquivProdPi α) = Equiv.sumPiEquivProdPi α := by rfl
@@ -1848,13 +1848,13 @@ theorem coe_sumPiEquivProdPi_symm (α : δ ⊕ δ' → Type*) [∀ i, Measurable
   `(∀ i : Option δ, α i) ≃ᵐ (∀ (i : δ), α i) × α none`. -/
 def piOptionEquivProd {δ : Type*} (α : Option δ → Type*) [∀ i, MeasurableSpace (α i)] :
     (∀ i, α i) ≃ᵐ (∀ (i : δ), α i) × α none :=
-  let e : Option δ ≃ δ ⊕ PUnit := Equiv.optionEquivSumPUnit δ
-  let em1 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
+  let e : Option δ ≃ δ ⊕ Unit := Equiv.optionEquivSumPUnit δ
+  let em1 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((a : Option δ) → α a) :=
     MeasurableEquiv.piCongrLeft α e.symm
-  let em2 : ((i : δ ⊕ PUnit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
-      × ((i' : PUnit) → α (e.symm (Sum.inr i'))) :=
+  let em2 : ((i : δ ⊕ Unit) → α (e.symm i)) ≃ᵐ ((i : δ) → α (e.symm (Sum.inl i)))
+      × ((i' : Unit) → α (e.symm (Sum.inr i'))) :=
     MeasurableEquiv.sumPiEquivProdPi (fun i ↦ α (e.symm i))
-  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : PUnit.{u_3 + 1}) → α (e.symm (Sum.inr i')))
+  let em3 : ((i : δ) → α (e.symm (Sum.inl i))) × ((i' : Unit) → α (e.symm (Sum.inr i')))
       ≃ᵐ ((i : δ) → α (some i)) × α none :=
     MeasurableEquiv.prodCongr (MeasurableEquiv.refl ((i : δ) → α (e.symm (Sum.inl i))))
       (MeasurableEquiv.piUnique fun i ↦ α (e.symm (Sum.inr i)))

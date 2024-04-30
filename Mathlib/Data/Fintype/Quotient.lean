@@ -32,8 +32,8 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     refine'
       Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
-    exact fun a l => ⟦fun j h =>
-      if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
+    · exact fun a l => ⟦fun j h =>
+        if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
     refine' fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => _
     by_cases e : j = i <;> simp [e]
     · subst j

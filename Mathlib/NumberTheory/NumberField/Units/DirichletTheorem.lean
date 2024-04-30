@@ -5,15 +5,16 @@ Authors: Xavier Roblot
 -/
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
-# Units of a number field
-We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number
-field `K`.
+# Dirichlet theorem on the group of units of a number field
+This file is devoted to the proof of Dirichlet unit theorem that states that the group of
+units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
+subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 
 ## Main definitions
 
@@ -28,147 +29,29 @@ as an additive `ℤ`-module.
 
 ## Main results
 
-* `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if
-`|norm ℚ x| = 1`.
-
-* `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
-places `w` of `K`.
+* `NumberField.Units.rank_modTorsion`: the `ℤ`-rank of `(𝓞 K)ˣ ⧸ (torsion K)` is equal to
+`card (InfinitePlace K) - 1`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
 can be written uniquely as the product of a root of unity and powers of the units of the
 fundamental system `fundSystem`.
 
 ## Tags
-number field, units
+number field, units, Dirichlet unit theorem
  -/
 
 open scoped NumberField
 
 noncomputable section
 
-open NumberField Units BigOperators
+open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
 
-section Rat
+variable (K : Type*) [Field K] [NumberField K]
 
-theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} : IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
-  simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
-    RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
-    Subtype.coe_injective.eq_iff]; rfl
-#align rat.ring_of_integers.is_unit_iff Rat.RingOfIntegers.isUnit_iff
-
-end Rat
-
-variable (K : Type*) [Field K]
-
-section IsUnit
-
-variable {K}
-
-theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
-    IsUnit x ↔ |(RingOfIntegers.norm ℚ x : ℚ)| = 1 := by
-  convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
-  rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
-#align is_unit_iff_norm NumberField.isUnit_iff_norm
-
-end IsUnit
-
-namespace NumberField.Units
-
-section coe
-
-theorem coe_injective : Function.Injective ((↑) : (𝓞 K)ˣ → K) :=
-  fun _ _ h => by rwa [SetLike.coe_eq_coe, Units.eq_iff] at h
-
-variable {K}
-
-theorem coe_mul (x y : (𝓞 K)ˣ) : ((x * y : (𝓞 K)ˣ) : K) = (x : K) * (y : K) := rfl
-
-theorem coe_pow (x : (𝓞 K)ˣ) (n : ℕ) : (↑(x ^ n) : K) = (x : K) ^ n := by
-  rw [← SubmonoidClass.coe_pow, ← val_pow_eq_pow_val]
-
-theorem coe_zpow (x : (𝓞 K)ˣ) (n : ℤ) : (↑(x ^ n) : K) = (x : K) ^ n := by
-  change ((Units.coeHom K).comp (map (algebraMap (𝓞 K) K))) (x ^ n) = _
-  exact map_zpow _ x n
-
-theorem coe_one : ((1 : (𝓞 K)ˣ) : K) = (1 : K) := rfl
-
-theorem coe_neg_one : ((-1 : (𝓞 K)ˣ) : K) = (-1 : K) := rfl
-
-theorem coe_ne_zero (x : (𝓞 K)ˣ) : (x : K) ≠ 0 :=
-  Subtype.coe_injective.ne_iff.mpr (_root_.Units.ne_zero x)
-
-end coe
-
-open NumberField.InfinitePlace
-
-section torsion
-
-/-- The torsion subgroup of the group of units. -/
-def torsion : Subgroup (𝓞 K)ˣ := CommGroup.torsion (𝓞 K)ˣ
-
-theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
-    x ∈ torsion K ↔ ∀ w : InfinitePlace K, w x = 1 := by
-  rw [eq_iff_eq (x : K) 1, torsion, CommGroup.mem_torsion]
-  refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
-    Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
-  obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.prop h
-  exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
-
-/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.instNonempty
-
-/-- The torsion subgroup is finite. -/
-instance [NumberField K] : Fintype (torsion K) := by
-  refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
-  refine Set.Finite.of_finite_image ?_ ((coe_injective K).injOn _)
-  refine (Embeddings.finite_of_norm_le K ℂ 1).subset
-    (fun a ⟨u, ⟨h_tors, h_ua⟩⟩ => ⟨?_, fun φ => ?_⟩)
-  · rw [← h_ua]
-    exact u.val.prop
-  · rw [← h_ua]
-    exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
-
--- a shortcut instance to stop the next instance from timing out
-instance [NumberField K] : Finite (torsion K) := inferInstance
-
-/-- The torsion subgroup is cylic. -/
-instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
-
-/-- The order of the torsion subgroup as a positive integer. -/
-def torsionOrder [NumberField K] : ℕ+ := ⟨Fintype.card (torsion K), Fintype.card_pos⟩
-
-/-- If `k` does not divide `torsionOrder` then there are no nontrivial roots of unity of
-  order dividing `k`. -/
-theorem rootsOfUnity_eq_one [NumberField K] {k : ℕ+} (hc : Nat.Coprime k (torsionOrder K))
-    {ζ : (𝓞 K)ˣ} : ζ ∈ rootsOfUnity k (𝓞 K) ↔ ζ = 1 := by
-  rw [mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => by rw [h, one_pow]⟩
-  refine orderOf_eq_one_iff.mp (Nat.eq_one_of_dvd_coprimes hc ?_ ?_)
-  · exact orderOf_dvd_of_pow_eq_one h
-  · have hζ : ζ ∈ torsion K := by
-      rw [torsion, CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-      exact ⟨k, k.prop, h⟩
-    rw [orderOf_submonoid (⟨ζ, hζ⟩ : torsion K)]
-    exact orderOf_dvd_card
-
-/-- The group of roots of unity of order dividing `torsionOrder` is equal to the torsion
-group. -/
-theorem rootsOfUnity_eq_torsion [NumberField K] :
-    rootsOfUnity (torsionOrder K) (𝓞 K) = torsion K := by
-  ext ζ
-  rw [torsion, mem_rootsOfUnity]
-  refine ⟨fun h => ?_, fun h => ?_⟩
-  · rw [CommGroup.mem_torsion, isOfFinOrder_iff_pow_eq_one]
-    exact ⟨↑(torsionOrder K), (torsionOrder K).prop, h⟩
-  · exact Subtype.ext_iff.mp (@pow_card_eq_one (torsion K) _ _ ⟨ζ, h⟩)
-
-end torsion
-
-namespace dirichletUnitTheorem
+namespace NumberField.Units.dirichletUnitTheorem
 
 /-!
 ### Dirichlet Unit Theorem
-This section is devoted to the proof of Dirichlet's unit theorem.
 
 We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
 distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
@@ -183,7 +66,6 @@ see the section `span_top` below for more details.
 open scoped Classical
 open Finset
 
-variable [NumberField K]
 variable {K}
 
 /-- The distinguished infinite place. -/
@@ -406,7 +288,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, ne_zero, not_false_eq_true]
+    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, Units.ne_zero, not_false_eq_true]
     · calc
         _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
           rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,
@@ -444,12 +326,12 @@ theorem unitLattice_span_eq_top :
   simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
-  refine add_pos_of_nonneg_of_pos ?_ ?_
-  · rw [sub_nonneg]
-    exact le_abs_self _
-  · rw [sum_logEmbedding_component (exists_unit K w).choose]
-    refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
-    rw [mult]; split_ifs <;> norm_num
+  · refine add_pos_of_nonneg_of_pos ?_ ?_
+    · rw [sub_nonneg]
+      exact le_abs_self _
+    · rw [sum_logEmbedding_component (exists_unit K w).choose]
+      refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
+      rw [mult]; split_ifs <;> norm_num
   · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
     · rw [mult]; split_ifs <;> norm_num
     · exact Subtype.ext_iff_val.not.mp (ne_of_mem_erase hx)

@@ -388,7 +388,7 @@ theorem disjoint_range {i₁ i₂ : Fin c.length} (h : i₁ ≠ i₂) :
     Disjoint (Set.range (c.embedding i₁)) (Set.range (c.embedding i₂)) := by
   classical
     wlog h' : i₁ < i₂
-    exact (this c h.symm (h.lt_or_lt.resolve_left h')).symm
+    · exact (this c h.symm (h.lt_or_lt.resolve_left h')).symm
     by_contra d
     obtain ⟨x, hx₁, hx₂⟩ :
       ∃ x : Fin n, x ∈ Set.range (c.embedding i₁) ∧ x ∈ Set.range (c.embedding i₂) :=
@@ -1031,8 +1031,8 @@ theorem CompositionAsSet.toComposition_boundaries (c : CompositionAsSet n) :
   constructor
   · rintro ⟨i, _, hi⟩
     refine' ⟨i.1, _, _⟩
-    simpa [c.card_boundaries_eq_succ_length] using i.2
-    simp [Composition.boundary, Composition.sizeUpTo, ← hi]
+    · simpa [c.card_boundaries_eq_succ_length] using i.2
+    · simp [Composition.boundary, Composition.sizeUpTo, ← hi]
   · rintro ⟨i, i_lt, hi⟩
     refine' ⟨i, by simp, _⟩
     rw [c.card_boundaries_eq_succ_length] at i_lt
