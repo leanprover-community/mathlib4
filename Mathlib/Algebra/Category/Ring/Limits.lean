@@ -387,7 +387,7 @@ All we need to do is notice that the limit point has a `Ring` instance available
 and then reuse the existing limit.
 -/
 instance : CreatesLimit F (forget₂ RingCat.{u} SemiRingCat.{u}) :=
-  letI : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
+  have : (forget₂ RingCat SemiRingCat).ReflectsIsomorphisms :=
     CategoryTheory.reflectsIsomorphisms_forget₂ _ _
   have : Small.{u} (Functor.sections ((F ⋙ forget₂ _ SemiRingCat) ⋙ forget _)) :=
     inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))
@@ -545,7 +545,7 @@ instance :
     but it seems this would introduce additional identity morphisms in `limit.π`.
     -/
     -- Porting note: need to add these instances manually
-    letI : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
+    have : (forget₂ CommRingCat.{u} RingCat.{u}).ReflectsIsomorphisms :=
       CategoryTheory.reflectsIsomorphisms_forget₂ _ _
     have : Small.{u} (Functor.sections ((F ⋙ forget₂ CommRingCat RingCat) ⋙ forget RingCat)) :=
       inferInstanceAs <| Small.{u} (Functor.sections (F ⋙ forget _))

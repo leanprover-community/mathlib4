@@ -444,7 +444,7 @@ open MulOpposite in
     all_goals apply_rules [Nonempty.mul, Nonempty.image, Finset.Nonempty.map, hc.1, hc.2.1]
 
 open UniqueMul in
-@[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, UniqueProds (G i)] :
+@[to_additive] instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, UniqueProds (G i)] :
     UniqueProds (∀ i, G i) where
   uniqueMul_of_nonempty {A} := by
     classical
@@ -472,7 +472,7 @@ open ULift in
   have : ∀ b, UniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he => Prod.ext ?_ ?_)
-      (instUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
+      (UniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
@@ -521,7 +521,8 @@ theorem of_injective_mulHom (f : H →ₙ* G) (hf : Function.Injective f)
 theorem _root_.MulEquiv.twoUniqueProds_iff (f : G ≃* H) : TwoUniqueProds G ↔ TwoUniqueProds H :=
   ⟨of_injective_mulHom f.symm f.symm.injective, of_injective_mulHom f f.injective⟩
 
-@[to_additive] instance {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
+@[to_additive]
+instance instForall {ι} (G : ι → Type*) [∀ i, Mul (G i)] [∀ i, TwoUniqueProds (G i)] :
     TwoUniqueProds (∀ i, G i) where
   uniqueMul_of_one_lt_card {A} := by
     classical
@@ -561,7 +562,7 @@ open ULift in
   have : ∀ b, TwoUniqueProds (I G H b) := Bool.rec ?_ ?_
   · exact of_injective_mulHom (downMulHom H) down_injective ‹_›
   · refine of_injective_mulHom (Prod.upMulHom G H) (fun x y he ↦ Prod.ext ?_ ?_)
-      (instTwoUniqueProdsForAllInstMul <| I G H) <;> apply up_injective
+      (TwoUniqueProds.instForall <| I G H) <;> apply up_injective
     exacts [congr_fun he false, congr_fun he true]
   · exact of_injective_mulHom (downMulHom G) down_injective ‹_›
 
