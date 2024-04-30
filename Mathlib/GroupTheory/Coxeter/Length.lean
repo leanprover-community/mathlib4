@@ -78,7 +78,7 @@ theorem length_wordProd_le (ω : List B) : ℓ (π ω) ≤ ω.length :=
 @[simp] theorem length_one : ℓ (1 : W) = 0 := Nat.eq_zero_of_le_zero (cs.length_wordProd_le [])
 
 @[simp]
-theorem length_eq_zero_iff (w : W) : ℓ w = 0 ↔ w = 1 := by
+theorem length_eq_zero_iff {w : W} : ℓ w = 0 ↔ w = 1 := by
   constructor
   · intro h
     rcases cs.exists_reduced_word w with ⟨ω, hω, rfl⟩
@@ -228,7 +228,7 @@ theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsRe
 theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
   (isReduced_take_and_drop _ hω _).2
 
-theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
+theorem not_isReduced_alternatingWord (i i' : B) {m : ℕ} (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
   induction' hm with m _ ih
   · -- Base case; m = M i i' + 1
@@ -267,15 +267,15 @@ theorem not_isLeftDescent_one (i : B) : ¬cs.IsLeftDescent 1 i := by simp [IsLef
 
 theorem not_isRightDescent_one (i : B) : ¬cs.IsRightDescent 1 i := by simp [IsRightDescent]
 
-theorem isLeftDescent_inv_iff (w : W) (i : B) :
+theorem isLeftDescent_inv_iff {w : W} {i : B} :
     cs.IsLeftDescent w⁻¹ i ↔ cs.IsRightDescent w i := by
   unfold IsLeftDescent IsRightDescent
   nth_rw 1 [← length_inv]
   simp
 
-theorem isRightDescent_inv_iff (w : W) (i : B) :
+theorem isRightDescent_inv_iff {w : W} {i : B} :
     cs.IsRightDescent w⁻¹ i ↔ cs.IsLeftDescent w i := by
-  simpa using (cs.isLeftDescent_inv_iff w⁻¹ i).symm
+  simpa using (cs.isLeftDescent_inv_iff (w := w⁻¹)).symm
 
 theorem exists_leftDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsLeftDescent w i := by
   rcases cs.exists_reduced_word w with ⟨ω, h, rfl⟩
@@ -292,7 +292,7 @@ theorem exists_rightDescent_of_ne_one {w : W} (hw : w ≠ 1) : ∃ i : B, cs.IsR
   apply exists_leftDescent_of_ne_one
   simpa
 
-theorem isLeftDescent_iff (w : W) (i : B) :
+theorem isLeftDescent_iff {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ℓ (s i * w) + 1 = ℓ w := by
   unfold IsLeftDescent
   constructor
@@ -301,7 +301,7 @@ theorem isLeftDescent_iff (w : W) (i : B) :
   · intro _
     linarith
 
-theorem not_isLeftDescent_iff (w : W) (i : B) :
+theorem not_isLeftDescent_iff {w : W} {i : B} :
     ¬cs.IsLeftDescent w i ↔ ℓ (s i * w) = ℓ w + 1 := by
   unfold IsLeftDescent
   constructor
@@ -310,7 +310,7 @@ theorem not_isLeftDescent_iff (w : W) (i : B) :
   · intro _
     linarith
 
-theorem isRightDescent_iff (w : W) (i : B) :
+theorem isRightDescent_iff {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ℓ (w * s i) + 1 = ℓ w := by
   unfold IsRightDescent
   constructor
@@ -319,7 +319,7 @@ theorem isRightDescent_iff (w : W) (i : B) :
   · intro _
     linarith
 
-theorem not_isRightDescent_iff (w : W) (i : B) :
+theorem not_isRightDescent_iff {w : W} {i : B} :
     ¬cs.IsRightDescent w i ↔ ℓ (w * s i) = ℓ w + 1 := by
   unfold IsRightDescent
   constructor
@@ -328,12 +328,12 @@ theorem not_isRightDescent_iff (w : W) (i : B) :
   · intro _
     linarith
 
-theorem isLeftDescent_iff_not_isLeftDescent_mul (w : W) (i : B) :
+theorem isLeftDescent_iff_not_isLeftDescent_mul {w : W} {i : B} :
     cs.IsLeftDescent w i ↔ ¬cs.IsLeftDescent (s i * w) i := by
   rw [isLeftDescent_iff, not_isLeftDescent_iff, simple_mul_simple_cancel_left]
   tauto
 
-theorem isRightDescent_iff_not_isRightDescent_mul (w : W) (i : B) :
+theorem isRightDescent_iff_not_isRightDescent_mul {w : W} {i : B} :
     cs.IsRightDescent w i ↔ ¬cs.IsRightDescent (w * s i) i := by
   rw [isRightDescent_iff, not_isRightDescent_iff, simple_mul_simple_cancel_right]
   tauto
