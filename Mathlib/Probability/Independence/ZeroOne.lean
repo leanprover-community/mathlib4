@@ -21,15 +21,8 @@ is measurable with respect to the tail σ-algebra `limsup s atTop` has probabili
   σ-algebras `s` has probability 0 or 1.
 -/
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
--- However for this file we need it for nearly every declaration.
+-- See https://github.com/leanprover-community/mathlib4/issues/12532
+-- This option is needed so often in this file that we set it for the whole file.
 set_option backward.synthInstance.canonInstances false
 
 open MeasureTheory MeasurableSpace
