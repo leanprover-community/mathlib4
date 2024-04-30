@@ -503,8 +503,8 @@ section
 
 variable {D : Type*} [Category D] [HasZeroMorphisms D]
 
-/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphisms
-admitting a cokernel such that `F` preserves this cokernel and  `F.map i` is a mono,
+/-- If `F : D ⥤ C` is a functor to an abelian category, `i : X ⟶ Y` is a morphism
+admitting a cokernel such that `F` preserves this cokernel and `F.map i` is a mono,
 then `F.map X` identifies to the kernel of `F.map (cokernel.π i)`. -/
 noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
     {X Y : D} (i : X ⟶ Y) [HasCokernel i] (F : D ⥤ C)
@@ -520,7 +520,7 @@ noncomputable def isLimitMapConeOfKernelForkOfιCokernelConditionOfMono
   rw [Category.comp_id, Category.id_comp]
 
 /-- If `F : D ⥤ C` is a functor to an abelian category, `p : X ⟶ Y` is a morphisms
-admitting a kernel such that `F` preserves this kernel and  `F.map p` is an epi,
+admitting a kernel such that `F` preserves this kernel and `F.map p` is an epi,
 then `F.map Y` identifies to the cokernel of `F.map (kernel.ι p)`. -/
 noncomputable def isColimitMapCoconeOfCokernelCoforkOfπKernelConditionOfEpi
     {X Y : D} (p : X ⟶ Y) [HasKernel p] (F : D ⥤ C)
