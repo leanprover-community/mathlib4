@@ -853,9 +853,9 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [nthLe_insertNth_add_succ]
-      convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
-      · simp [Nat.add_succ, Nat.succ_add]
-      · simp [Nat.add_left_comm, Nat.add_comm]
+      · convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
+        · simp [Nat.add_succ, Nat.succ_add]
+        · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 
