@@ -84,7 +84,7 @@ instance : LawfulTraversable LazyList := by
     · simp only [List.traverse, map_pure]; rfl
     · replace ih : tl.get.traverse f = ofList <$> tl.get.toList.traverse f := ih
       simp only [traverse._eq_2, ih, Functor.map_map, seq_map_assoc, toList, List.traverse, map_seq]
-      · rfl
+      rfl
     · apply ih
 
 /-- `init xs`, if `xs` non-empty, drops the last element of the list.

@@ -172,7 +172,7 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
 
 @[norm_cast]
 lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
-  rw [Rat.mkRat_eq, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
+  rw [Rat.mkRat_eq_divInt, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
 
 @[norm_cast]
 lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
@@ -194,7 +194,7 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast] lemma cast_mul_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p * q) = (p * q : α) := by
-  rw [mul_def', cast_mkRat_of_ne_zero, cast_def, cast_def,
+  rw [mul_eq_mkRat, cast_mkRat_of_ne_zero, cast_def, cast_def,
     (Nat.commute_cast _ _).div_mul_div_comm (Int.commute_cast _ _)]
   · push_cast
     rfl
