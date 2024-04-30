@@ -162,6 +162,8 @@ section Mul
 
 variable [Semiring k] [Mul G]
 
+/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+it trying to unify two things that are different. -/
 @[irreducible] def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
   f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
 
