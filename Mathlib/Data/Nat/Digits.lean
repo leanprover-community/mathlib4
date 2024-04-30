@@ -384,7 +384,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> simp
+    · apply Nat.div_lt_self <;> omega
     · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 
