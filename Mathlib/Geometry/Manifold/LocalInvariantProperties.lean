@@ -162,7 +162,8 @@ this point. (When the property is local and invariant, it will in fact hold usin
 single chart might fail to capture the behavior of the function.
 -/
 @[mk_iff liftPropWithinAt_iff']
-structure LiftPropWithinAt (P : (H → H') → Set H → H → Prop) (f : M → M') (s : Set M) (x : M) : Prop where
+structure LiftPropWithinAt (P : (H → H') → Set H → H → Prop) (f : M → M') (s : Set M) (x : M) :
+    Prop where
   continuousWithinAt : ContinuousWithinAt f s x
   prop : P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x)
 #align charted_space.lift_prop_within_at ChartedSpace.LiftPropWithinAt
@@ -223,7 +224,8 @@ theorem liftPropWithinAt_self {f : H → H'} {s : Set H} {x : H} :
 #align structure_groupoid.lift_prop_within_at_self StructureGroupoid.liftPropWithinAt_self
 
 theorem liftPropWithinAt_self_source {f : H → M'} {s : Set H} {x : H} :
-    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x := liftPropWithinAt_iff' ..
+    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x :=
+  liftPropWithinAt_iff' ..
 #align structure_groupoid.lift_prop_within_at_self_source StructureGroupoid.liftPropWithinAt_self_source
 
 theorem liftPropWithinAt_self_target {f : M → H'} :
