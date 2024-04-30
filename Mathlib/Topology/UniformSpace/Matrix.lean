@@ -20,7 +20,7 @@ variable (m n 𝕜 : Type*) [UniformSpace 𝕜]
 
 namespace Matrix
 
-instance : UniformSpace (Matrix m n 𝕜) :=
+instance instUniformSpace : UniformSpace (Matrix m n 𝕜) :=
   (by infer_instance : UniformSpace (m → n → 𝕜))
 
 instance instUniformAddGroup [AddGroup 𝕜] [UniformAddGroup 𝕜] :
