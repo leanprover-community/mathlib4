@@ -25,21 +25,6 @@ section bounded_sub
 
 variable {R : Type*}
 
-lemma bounded_sub_iff_isBounded_image_sub [PseudoMetricSpace R] [Sub R] (s t : Set R) :
-    (∃ κ, ∀ x₁ ∈ s, ∀ x₂ ∈ s, ∀ y₁ ∈ t, ∀ y₂ ∈ t, dist (x₁ - y₁) (x₂ - y₂) ≤ κ)
-      ↔ (Bornology.IsBounded ((fun p ↦ p.fst - p.snd) '' s ×ˢ t)) := by
-  rw [Metric.isBounded_iff]
-  constructor <;> intro h
-  · rcases h with ⟨c, hc⟩
-    use c
-    intro z ⟨p, ⟨p_mem_st, hpz⟩⟩ w ⟨q, ⟨q_mem_st, hqw⟩⟩
-    simp only [Set.mem_prod] at p_mem_st q_mem_st
-    simpa [hqw, hpz] using hc p.1 p_mem_st.1 q.1 q_mem_st.1 p.2 p_mem_st.2 q.2 q_mem_st.2
-  · rcases h with ⟨c, hc⟩
-    use c
-    intro x₁ x₁_in_s x₂ x₂_in_s y₁ y₁_in_t y₂ y₂_in_t
-    exact hc ⟨⟨x₁, y₁⟩, by aesop⟩ ⟨⟨x₂, y₂⟩, by aesop⟩
-
 open Pointwise
 
 /-- A typeclass saying that `p : R × R ↦ r.1 - r.2` maps any pair of bounded sets to a bounded set.
