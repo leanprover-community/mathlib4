@@ -83,7 +83,7 @@ def Hausdorffification : Type _ :=
   M ⧸ (⨅ n : ℕ, I ^ n • ⊤ : Submodule R M)
 #align Hausdorffification Hausdorffification
 
-set_option backward.isDefEq.lazyWhnfCore false in
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
@@ -211,7 +211,7 @@ def of : M →ₗ[R] adicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of adicCompletion.of
 
-set_option backward.isDefEq.lazyWhnfCore false in
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ _ x :=
   rfl

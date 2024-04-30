@@ -205,7 +205,7 @@ variable {R S : Type u} [CommRing R] [CommSemiring S]
 variable {P A : Type u} [CommRing A] [Algebra R A] [CommRing P] [Algebra R P]
 variable (I : Ideal P) (f : P →ₐ[R] A) (hf : Function.Surjective f)
 
-set_option backward.isDefEq.lazyWhnfCore false in
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem of_split [FormallySmooth R P] (g : A →ₐ[R] P ⧸ (RingHom.ker f.toRingHom) ^ 2)
     (hg : f.kerSquareLift.comp g = AlgHom.id R A) : FormallySmooth R A := by
   constructor
