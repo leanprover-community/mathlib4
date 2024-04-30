@@ -45,7 +45,7 @@ def IsQuasiSeparated (s : Set α) : Prop :=
 subsets are still compact. -/
 @[mk_iff]
 class QuasiSeparatedSpace (α : Type*) [TopologicalSpace α] : Prop where
-  /-- The intersection of two open compact subsets of a quasi-separated space is compact.-/
+  /-- The intersection of two open compact subsets of a quasi-separated space is compact. -/
   inter_isCompact :
     ∀ U V : Set α, IsOpen U → IsCompact U → IsOpen V → IsCompact V → IsCompact (U ∩ V)
 #align quasi_separated_space QuasiSeparatedSpace

@@ -3,7 +3,7 @@ Copyright (c) 2021 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Fin.Basic
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.GroupWithZero.Defs
@@ -130,8 +130,8 @@ def isAlphanum (c : UInt8) : Bool :=
 
 theorem toChar_aux (n : Nat) (h : n < size) : Nat.isValidChar (UInt32.ofNat n).1 := by
   rw [UInt32.val_eq_of_lt]
-  exact Or.inl <| Nat.lt_trans h <| by decide
-  exact Nat.lt_trans h <| by decide
+  · exact Or.inl <| Nat.lt_trans h <| by decide
+  · exact Nat.lt_trans h <| by decide
 
 /-- The numbers from 0 to 256 are all valid UTF-8 characters, so we can embed one in the other. -/
 def toChar (n : UInt8) : Char := ⟨n.toUInt32, toChar_aux n.1 n.1.2⟩

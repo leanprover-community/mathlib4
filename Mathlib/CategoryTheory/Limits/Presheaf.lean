@@ -41,9 +41,6 @@ colimit, representable, presheaf, free cocompletion
 * https://ncatlab.org/nlab/show/Yoneda+extension
 -/
 
-set_option autoImplicit true
-
-
 namespace CategoryTheory
 
 open Category Limits
@@ -151,7 +148,7 @@ theorem extendAlongYoneda_obj (P : Cᵒᵖ ⥤ Type u₁) :
 -- `(extendAlongYoneda A).obj P` is definitionally a colimit, and the ext lemma is just
 -- a special case of `CategoryTheory.Limits.colimit.hom_ext`.
 -- See https://github.com/leanprover-community/mathlib4/issues/5229
-@[ext] lemma extendAlongYoneda_obj.hom_ext {P : Cᵒᵖ ⥤ Type u₁}
+@[ext] lemma extendAlongYoneda_obj.hom_ext {X : ℰ} {P : Cᵒᵖ ⥤ Type u₁}
     {f f' : (extendAlongYoneda A).obj P ⟶ X}
     (w : ∀ j, colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f =
       colimit.ι ((CategoryOfElements.π P).leftOp ⋙ A) j ≫ f') : f = f' :=
@@ -168,7 +165,7 @@ theorem extendAlongYoneda_map {X Y : Cᵒᵖ ⥤ Type u₁} (f : X ⟶ Y) :
   -- and appropriately reordered, presumably because of a non-confluence issue.
   simp only [Adjunction.leftAdjointOfEquiv_map, Iso.symm_mk, Iso.toEquiv_comp, Equiv.coe_trans,
     Equiv.coe_fn_mk, Iso.toEquiv_fun, Equiv.symm_trans_apply, Equiv.coe_fn_symm_mk,
-    Iso.toEquiv_symm_fun, id.def, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
+    Iso.toEquiv_symm_fun, id, colimit.isColimit_desc, colimit.ι_desc, FunctorToTypes.comp,
     Cocone.extend_ι, Cocone.extensions_app, Functor.map_id, Category.comp_id, colimit.cocone_ι]
   simp only [Functor.comp_obj, Functor.leftOp_obj, CategoryOfElements.π_obj, colimit.cocone_x,
     Functor.comp_map, Functor.leftOp_map, CategoryOfElements.π_map, Opposite.unop_op,
@@ -248,8 +245,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     hom_inv_id := by
       erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
       trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
-      congr
-      · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
+      · congr
+        exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
@@ -257,8 +254,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
-      congr
-      · exact CategoryOfElements.to_fromCostructuredArrow_eq X
+      · congr
+        exact CategoryOfElements.to_fromCostructuredArrow_eq X
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
@@ -387,7 +384,7 @@ noncomputable def natIsoOfNatIsoOnRepresentables (L₁ L₂ : (Cᵒᵖ ⥤ Type 
   · intro P₁ P₂ f
     apply (isColimitOfPreserves L₁ (colimitOfRepresentable P₁)).hom_ext
     intro j
-    dsimp only [id.def, isoWhiskerLeft_hom]
+    dsimp only [id, isoWhiskerLeft_hom]
     have :
       (L₁.mapCocone (coconeOfRepresentable P₁)).ι.app j ≫ L₁.map f =
         (L₁.mapCocone (coconeOfRepresentable P₂)).ι.app

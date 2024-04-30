@@ -67,11 +67,9 @@ def TrailingMonic (p : R[X]) :=
   trailingCoeff p = (1 : R)
 #align polynomial.trailing_monic Polynomial.TrailingMonic
 
--- Adaptation note: 2024-03-15: this was called `def`.
--- Should lean be changed to allow that as a name again?
-theorem TrailingMonic.definition : TrailingMonic p ↔ trailingCoeff p = 1 :=
+theorem TrailingMonic.def : TrailingMonic p ↔ trailingCoeff p = 1 :=
   Iff.rfl
-#align polynomial.trailing_monic.def Polynomial.TrailingMonic.definition
+#align polynomial.trailing_monic.def Polynomial.TrailingMonic.def
 
 instance TrailingMonic.decidable [DecidableEq R] : Decidable (TrailingMonic p) :=
   inferInstanceAs <| Decidable (trailingCoeff p = (1 : R))
@@ -280,9 +278,9 @@ theorem natTrailingDegree_one : natTrailingDegree (1 : R[X]) = 0 :=
 #align polynomial.nat_trailing_degree_one Polynomial.natTrailingDegree_one
 
 @[simp]
-theorem natTrailingDegree_nat_cast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_nat_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_nat_cast
+theorem natTrailingDegree_natCast (n : ℕ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_natCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_nat_cast Polynomial.natTrailingDegree_natCast
 
 @[simp]
 theorem trailingDegree_C_mul_X_pow (n : ℕ) (ha : a ≠ 0) : trailingDegree (C a * X ^ n) = n := by
@@ -514,9 +512,9 @@ theorem natTrailingDegree_neg (p : R[X]) : natTrailingDegree (-p) = natTrailingD
 #align polynomial.nat_trailing_degree_neg Polynomial.natTrailingDegree_neg
 
 @[simp]
-theorem natTrailingDegree_int_cast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
-  simp only [← C_eq_int_cast, natTrailingDegree_C]
-#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_int_cast
+theorem natTrailingDegree_intCast (n : ℤ) : natTrailingDegree (n : R[X]) = 0 := by
+  simp only [← C_eq_intCast, natTrailingDegree_C]
+#align polynomial.nat_trailing_degree_int_cast Polynomial.natTrailingDegree_intCast
 
 end Ring
 
@@ -564,15 +562,28 @@ lemma natTrailingDegree_eq_zero_of_constantCoeff_ne_zero (h : constantCoeff p �
     p.natTrailingDegree = 0 :=
   le_antisymm (natTrailingDegree_le_of_ne_zero h) zero_le'
 
-lemma Monic.eq_X_pow_of_natTrailingDegree_eq_natDegree
-    (h₁ : p.Monic) (h₂ : p.natTrailingDegree = p.natDegree) :
-    p = X ^ p.natDegree := by
-  ext n
-  rw [coeff_X_pow]
-  obtain hn | rfl | hn := lt_trichotomy n p.natDegree
-  · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (h₂ ▸ hn)]
-  · simpa only [if_pos rfl] using h₁.leadingCoeff
-  · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
+namespace Monic
+
+lemma eq_X_pow_iff_natDegree_le_natTrailingDegree (h₁ : p.Monic) :
+    p = X ^ p.natDegree ↔ p.natDegree ≤ p.natTrailingDegree := by
+  refine ⟨fun h => ?_, fun h => ?_⟩
+  · nontriviality R
+    rw [h, natTrailingDegree_X_pow, ← h]
+  · ext n
+    rw [coeff_X_pow]
+    obtain hn | rfl | hn := lt_trichotomy n p.natDegree
+    · rw [if_neg hn.ne, coeff_eq_zero_of_lt_natTrailingDegree (hn.trans_le h)]
+    · simpa only [if_pos rfl] using h₁.leadingCoeff
+    · rw [if_neg hn.ne', coeff_eq_zero_of_natDegree_lt hn]
+
+lemma eq_X_pow_iff_natTrailingDegree_eq_natDegree (h₁ : p.Monic) :
+    p = X ^ p.natDegree ↔ p.natTrailingDegree = p.natDegree :=
+  h₁.eq_X_pow_iff_natDegree_le_natTrailingDegree.trans (natTrailingDegree_le_natDegree p).ge_iff_eq
+
+@[deprecated] -- 2024-04-26
+alias ⟨_, eq_X_pow_of_natTrailingDegree_eq_natDegree⟩ := eq_X_pow_iff_natTrailingDegree_eq_natDegree
+
+end Monic
 
 end Semiring
 

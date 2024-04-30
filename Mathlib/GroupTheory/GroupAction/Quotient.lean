@@ -233,7 +233,6 @@ theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
 
 variable (β)
 
--- mathport name: exprΩ
 local notation "Ω" => Quotient <| orbitRel α β
 
 /-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`
@@ -351,9 +350,9 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
-set_option autoImplicit true in
-theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
-    [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
+theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
+    [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
+    Fintype.card (ConjClasses.mk g).carrier =
       Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]

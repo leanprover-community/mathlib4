@@ -3,11 +3,11 @@ Copyright (c) 2019 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Algebra.Order.BigOperators.Group.List
-import Mathlib.Algebra.Order.Monoid.OrderDual
 import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Data.List.MinMax
+import Mathlib.Data.Multiset.Fold
 
 /-!
 # Big operators on a multiset in ordered groups
@@ -176,6 +176,12 @@ variable [CanonicallyOrderedCommMonoid α] {m : Multiset α} {a : α}
 #align multiset.le_sum_of_mem Multiset.le_sum_of_mem
 
 end CanonicallyOrderedCommMonoid
+
+lemma max_le_of_forall_le {α : Type*} [LinearOrder α] [OrderBot α] (l : Multiset α)
+    (n : α) (h : ∀ x ∈ l, x ≤ n) : l.fold max ⊥ ≤ n := by
+  induction l using Quotient.inductionOn
+  simpa using List.max_le_of_forall_le _ _ h
+#align multiset.max_le_of_forall_le Multiset.max_le_of_forall_le
 
 lemma abs_sum_le_sum_abs [LinearOrderedAddCommGroup α] {s : Multiset α} :
     |s.sum| ≤ (s.map abs).sum :=

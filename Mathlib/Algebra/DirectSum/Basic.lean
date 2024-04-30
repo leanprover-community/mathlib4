@@ -282,7 +282,7 @@ section CongrLeft
 
 variable {κ : Type*}
 
-/-- Reindexing terms of a direct sum.-/
+/-- Reindexing terms of a direct sum. -/
 def equivCongrLeft (h : ι ≃ κ) : (⨁ i, β i) ≃+ ⨁ k, β (h.symm k) :=
   { DFinsupp.equivCongrLeft h with map_add' := DFinsupp.comapDomain'_add _ h.right_inv}
 #align direct_sum.equiv_congr_left DirectSum.equivCongrLeft
@@ -299,7 +299,7 @@ section Option
 
 variable {α : Option ι → Type w} [∀ i, AddCommMonoid (α i)]
 
-/-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`.-/
+/-- Isomorphism obtained by separating the term of index `none` of a direct sum over `Option ι`. -/
 @[simps!]
 noncomputable def addEquivProdDirectSum : (⨁ i, α i) ≃+ α none × ⨁ i, α (some i) :=
   { DFinsupp.equivProdDFinsupp with map_add' := DFinsupp.equivProdDFinsupp_add }
@@ -311,7 +311,7 @@ section Sigma
 
 variable {α : ι → Type u} {δ : ∀ i, α i → Type w} [∀ i j, AddCommMonoid (δ i j)]
 
-/-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
+/-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurry : (⨁ i : Σ _i, _, δ i.1 i.2) →+ ⨁ (i) (j), δ i j
     where
   toFun := DFinsupp.sigmaCurry (δ := δ)
@@ -326,7 +326,7 @@ theorem sigmaCurry_apply (f : ⨁ i : Σ _i, _, δ i.1 i.2) (i : ι) (j : α i) 
 #align direct_sum.sigma_curry_apply DirectSum.sigmaCurry_apply
 
 /-- The natural map between `⨁ i (j : α i), δ i j` and `Π₀ (i : Σ i, α i), δ i.1 i.2`, inverse of
-`curry`.-/
+`curry`. -/
 def sigmaUncurry [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ (i) (j), δ i j) →+ ⨁ i : Σ _i, _, δ i.1 i.2
     where
@@ -341,7 +341,7 @@ theorem sigmaUncurry_apply [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ
   DFinsupp.sigmaUncurry_apply f i j
 #align direct_sum.sigma_uncurry_apply DirectSum.sigmaUncurry_apply
 
-/-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`.-/
+/-- The natural map between `⨁ (i : Σ i, α i), δ i.1 i.2` and `⨁ i (j : α i), δ i j`. -/
 def sigmaCurryEquiv [∀ i, DecidableEq (α i)] [∀ i j, DecidableEq (δ i j)] :
     (⨁ i : Σ _i, _, δ i.1 i.2) ≃+ ⨁ (i) (j), δ i j :=
   { sigmaCurry, DFinsupp.sigmaCurryEquiv with }

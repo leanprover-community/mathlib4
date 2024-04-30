@@ -56,7 +56,8 @@ This is a structure, not a class, since the same algebra can have many power bas
 For the common case where `S` is defined by adjoining an integral element to `R`,
 the canonical power basis is given by `{Algebra,IntermediateField}.adjoin.powerBasis`.
 -/
--- @[nolint has_nonempty_instance] -- Porting note: doesn't exist
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 structure PowerBasis (R S : Type*) [CommRing R] [Ring S] [Algebra R S] where
   gen : S
   dim : ℕ
@@ -95,7 +96,7 @@ theorem mem_span_pow' {x y : S} {d : ℕ} :
   simp only [this, Finsupp.mem_span_image_iff_total, degree_lt_iff_coeff_zero, support,
     exists_iff_exists_finsupp, coeff, aeval_def, eval₂RingHom', eval₂_eq_sum, Polynomial.sum,
     Finsupp.mem_supported', Finsupp.total, Finsupp.sum, Algebra.smul_def, eval₂_zero, exists_prop,
-    LinearMap.id_coe, eval₂_one, id.def, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
+    LinearMap.id_coe, eval₂_one, id, not_lt, Finsupp.coe_lsum, LinearMap.coe_smulRight,
     Finset.mem_range, AlgHom.coe_mks, Finset.mem_coe]
   simp_rw [@eq_comm _ y]
   exact Iff.rfl

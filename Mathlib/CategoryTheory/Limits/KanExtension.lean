@@ -95,13 +95,6 @@ def loc (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] : L ⥤ D
     intro x y z f g
     apply limit.hom_ext
     intro j
-    -- Porting note: The fact that we need to add these instances all over the place
-    -- is certainly not ideal.
-    haveI : HasLimit (StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map (f ≫ g) ⋙ diagram ι F _) := h _
-    haveI : HasLimit (StructuredArrow.map g ⋙ StructuredArrow.map f ⋙ diagram ι F _) := h _
-    haveI : HasLimit ((StructuredArrow.map g ⋙ StructuredArrow.map f) ⋙ diagram ι F _) := h _
     erw [limit.pre_pre, limit.pre_π, limit.pre_π]
     congr 1
     aesop_cat
@@ -125,8 +118,8 @@ def equiv (F : S ⥤ D) [h : ∀ x, HasLimit (diagram ι F x)] (G : L ⥤ D) :
         let t : StructuredArrow.mk (𝟙 (ι.obj x)) ⟶
           (StructuredArrow.map (ι.map ff)).obj (StructuredArrow.mk (𝟙 (ι.obj y))) :=
           StructuredArrow.homMk ff ?_
-        convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
-        simp }
+        · convert (limit.w (diagram ι F (ι.obj x)) t).symm using 1
+        · simp }
   invFun f :=
     { app := fun x => limit.lift (diagram ι F x) (cone _ f)
       naturality := by
@@ -180,7 +173,7 @@ def adjunction [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Ran.adjunction CategoryTheory.Ran.adjunction
 
-theorem reflective [Full ι] [Faithful ι] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
+theorem reflective [ι.Full] [ι.Faithful] [∀ X, HasLimitsOfShape (StructuredArrow X ι) D] :
     IsIso (adjunction D ι).counit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).counit X) by
     apply NatIso.isIso_of_isIso_app
@@ -255,6 +248,8 @@ def loc (F : S ⥤ D) [I : ∀ x, HasColimit (diagram ι F x)] : L ⥤ D
     let dd := diagram ι F z
     -- Porting note: It seems that even Lean3 had some trouble with instances in this case.
     -- I don't know why lean can't deduce the following three instances...
+    -- The corresponding `haveI` statements could be removed from `Ran.loc` and it just worked,
+    -- here it doesn't...
     haveI : HasColimit (ff ⋙ gg ⋙ dd) := I _
     haveI : HasColimit ((ff ⋙ gg) ⋙ dd) := I _
     haveI : HasColimit (gg ⋙ dd) := I _
@@ -354,7 +349,7 @@ def adjunction [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
 set_option linter.uppercaseLean3 false in
 #align category_theory.Lan.adjunction CategoryTheory.Lan.adjunction
 
-theorem coreflective [Full ι] [Faithful ι] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
+theorem coreflective [ι.Full] [ι.Faithful] [∀ F : S ⥤ D, ∀ x, HasColimit (Lan.diagram ι F x)] :
     IsIso (adjunction D ι).unit := by
   suffices ∀ (X : S ⥤ D), IsIso (NatTrans.app (adjunction D ι).unit X) by
     apply NatIso.isIso_of_isIso_app

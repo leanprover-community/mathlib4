@@ -52,7 +52,6 @@ structure ElementaryEmbedding where
 #align first_order.language.elementary_embedding.to_fun FirstOrder.Language.ElementaryEmbedding.toFun
 #align first_order.language.elementary_embedding.map_formula' FirstOrder.Language.ElementaryEmbedding.map_formula'
 
--- mathport name: elementary_embedding
 @[inherit_doc FirstOrder.Language.ElementaryEmbedding]
 scoped[FirstOrder] notation:25 A " ↪ₑ[" L "] " B => FirstOrder.Language.ElementaryEmbedding L A B
 

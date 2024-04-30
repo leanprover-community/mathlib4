@@ -85,10 +85,10 @@ variable {α : Type*} [LinearOrderedAddCommGroup α] {a b c : α}
 
 theorem max_sub_max_le_max (a b c d : α) : max a b - max c d ≤ max (a - c) (b - d) := by
   simp only [sub_le_iff_le_add, max_le_iff]; constructor
-  calc
+  · calc
     a = a - c + c := (sub_add_cancel a c).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_left _ _) (le_max_left _ _)
-  calc
+  · calc
     b = b - d + d := (sub_add_cancel b d).symm
     _ ≤ max (a - c) (b - d) + max c d := add_le_add (le_max_right _ _) (le_max_right _ _)
 #align max_sub_max_le_max max_sub_max_le_max

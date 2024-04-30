@@ -350,8 +350,8 @@ theorem hasFDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   have : 𝓝 (0 : G) = 𝓝 (0 + 0 + 0) := by simp only [add_zero]
   rw [this]
   refine' Tendsto.add (Tendsto.add _ _) _
-  simp only
-  · have := difference_quotients_converge_uniformly hf' hf hfg
+  · simp only
+    have := difference_quotients_converge_uniformly hf' hf hfg
     rw [Metric.tendstoUniformlyOnFilter_iff] at this
     rw [Metric.tendsto_nhds]
     intro ε hε
@@ -503,7 +503,7 @@ theorem hasDerivAt_of_tendstoUniformlyOnFilter [NeBot l]
   let F' n z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (f' n z)
   let G' z := (1 : 𝕜 →L[𝕜] 𝕜).smulRight (g' z)
   simp_rw [hasDerivAt_iff_hasFDerivAt] at hf ⊢
-  -- Now we need to rewrite hf' in terms of continuous_linear_maps. The tricky part is that
+  -- Now we need to rewrite hf' in terms of `ContinuousLinearMap`s. The tricky part is that
   -- operator norms are written in terms of `≤` whereas metrics are written in terms of `<`. So we
   -- need to shrink `ε` utilizing the archimedean property of `ℝ`
   have hf' : TendstoUniformlyOnFilter F' G' l (𝓝 x) := by

@@ -9,6 +9,7 @@ import Mathlib.Algebra.BigOperators.Intervals
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.Abel
+import Mathlib.Algebra.Ring.Opposite
 
 #align_import algebra.geom_sum from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -506,8 +507,8 @@ theorem geom_sum_alternating_of_lt_neg_one [StrictOrderedRing α] (hx : x + 1 < 
   by_cases hn' : Even n
   · rw [if_pos hn'] at ihn
     rw [if_neg, lt_add_iff_pos_left]
-    exact mul_pos_of_neg_of_neg hx0 ihn
-    exact not_not_intro hn'
+    · exact mul_pos_of_neg_of_neg hx0 ihn
+    · exact not_not_intro hn'
   · rw [if_neg hn'] at ihn
     rw [if_pos]
     swap

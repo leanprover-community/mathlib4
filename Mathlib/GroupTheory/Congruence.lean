@@ -768,7 +768,7 @@ variable {c}
 /-- The congruence relation on a monoid `M` from a submonoid of `M × M` for which membership
     is an equivalence relation. -/
 @[to_additive "The additive congruence relation on an `AddMonoid` `M` from
-an `add_submonoid` of `M × M` for which membership is an equivalence relation."]
+an `AddSubmonoid` of `M × M` for which membership is an equivalence relation."]
 def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ N) : Con M
     where
   r x y := (x, y) ∈ N
@@ -780,7 +780,7 @@ def ofSubmonoid (N : Submonoid (M × M)) (H : Equivalence fun x y => (x, y) ∈ 
 /-- Coercion from a congruence relation `c` on a monoid `M` to the submonoid of `M × M` whose
     elements are `(x, y)` such that `x` is related to `y` by `c`. -/
 @[to_additive "Coercion from a congruence relation `c` on an `AddMonoid` `M`
-to the `add_submonoid` of `M × M` whose elements are `(x, y)` such that `x`
+to the `AddSubmonoid` of `M × M` whose elements are `(x, y)` such that `x`
 is related to `y` by `c`."]
 instance toSubmonoid : Coe (Con M) (Submonoid (M × M)) :=
   ⟨fun c => c.submonoid⟩
@@ -1338,7 +1338,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
       (fun x y x' y' hx hy => _) u.3 u.4
   refine' Function.hfunext _ _
-  rw [c.eq.2 hx, c.eq.2 hy]
+  · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -
     refine' Function.hfunext _ _
     · rw [c.eq.2 hx, c.eq.2 hy]

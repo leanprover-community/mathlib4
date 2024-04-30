@@ -3,15 +3,10 @@ Copyright (c) 2021 Stuart Presnell. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Stuart Presnell
 -/
-import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Data.Finsupp.Multiset
 import Mathlib.Data.Nat.PrimeFin
 import Mathlib.NumberTheory.Padics.PadicVal
 import Mathlib.Data.Nat.GCD.BigOperators
-import Mathlib.Data.Nat.Interval
-import Mathlib.Tactic.IntervalCases
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.RingTheory.Int.Basic
 
 #align_import data.nat.factorization.basic from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -76,10 +71,15 @@ theorem factors_count_eq {n p : ℕ} : n.factors.count p = n.factorization p := 
   if pp : p.Prime then ?_ else
     rw [count_eq_zero_of_not_mem (mt prime_of_mem_factors pp)]
     simp [factorization, pp]
-  simp only [factorization, coe_mk, pp, if_true]
-  rw [← PartENat.natCast_inj, padicValNat_def' pp.ne_one hn0,
-    UniqueFactorizationMonoid.multiplicity_eq_count_normalizedFactors pp hn0.ne']
-  simp [factors_eq]
+  simp only [factorization_def _ pp]
+  apply _root_.le_antisymm
+  · rw [le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
+    exact List.le_count_iff_replicate_sublist.mp le_rfl |>.subperm
+  · rw [← lt_add_one_iff, lt_iff_not_ge, ge_iff_le,
+      le_padicValNat_iff_replicate_subperm_factors pp hn0.ne']
+    intro h
+    have := h.count_le p
+    simp at this
 #align nat.factors_count_eq Nat.factors_count_eq
 
 theorem factorization_eq_factors_multiset (n : ℕ) :
@@ -221,7 +221,7 @@ theorem factorization_prod {α : Type*} {S : Finset α} {g : α → ℕ} (hS : �
     (S.prod g).factorization = S.sum fun x => (g x).factorization := by
   classical
     ext p
-    refine' Finset.induction_on' S ?_ ?_
+    refine Finset.induction_on' S ?_ ?_
     · simp
     · intro x T hxS hTS hxT IH
       have hT : T.prod g ≠ 0 := prod_ne_zero_iff.mpr fun x hx => hS x (hTS hx)

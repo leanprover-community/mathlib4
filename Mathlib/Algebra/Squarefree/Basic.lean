@@ -3,6 +3,7 @@ Copyright (c) 2020 Aaron Anderson. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson
 -/
+import Mathlib.RingTheory.Nilpotent.Basic
 import Mathlib.RingTheory.UniqueFactorizationDomain
 
 #align_import algebra.squarefree from "leanprover-community/mathlib"@"00d163e35035c3577c1c79fa53b68de17781ffc1"
@@ -315,8 +316,10 @@ theorem squarefree_natAbs {n : ℤ} : Squarefree n.natAbs ↔ Squarefree n := by
 #align int.squarefree_nat_abs Int.squarefree_natAbs
 
 @[simp]
-theorem squarefree_coe_nat {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
+theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := by
   rw [← squarefree_natAbs, natAbs_ofNat]
-#align int.squarefree_coe_nat Int.squarefree_coe_nat
+#align int.squarefree_coe_nat Int.squarefree_natCast
+
+@[deprecated] alias squarefree_coe_nat := squarefree_natCast -- 2024-04-05
 
 end Int

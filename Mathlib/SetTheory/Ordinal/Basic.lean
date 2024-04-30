@@ -836,7 +836,6 @@ def omega : Ordinal.{u} :=
   lift <| @type ℕ (· < ·) _
 #align ordinal.omega Ordinal.omega
 
--- mathport name: ordinal.omega
 @[inherit_doc]
 scoped notation "ω" => Ordinal.omega
 
@@ -1094,9 +1093,9 @@ theorem card_succ (o : Ordinal) : card (succ o) = card o + 1 := by
   simp only [← add_one_eq_succ, card_add, card_one]
 #align ordinal.card_succ Ordinal.card_succ
 
-theorem nat_cast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
+theorem natCast_succ (n : ℕ) : ↑n.succ = succ (n : Ordinal) :=
   rfl
-#align ordinal.nat_cast_succ Ordinal.nat_cast_succ
+#align ordinal.nat_cast_succ Ordinal.natCast_succ
 
 instance uniqueIioOne : Unique (Iio (1 : Ordinal))
     where
@@ -1512,7 +1511,7 @@ theorem lift_lt_univ' (c : Cardinal) : lift.{max (u + 1) v, u} c < univ.{u, v} :
 
 @[simp]
 theorem ord_univ : ord univ.{u, v} = Ordinal.univ.{u, v} := by
-  refine' le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
+  refine le_antisymm (ord_card_le _) <| le_of_forall_lt fun o h => lt_ord.2 ?_
   have := lift.principalSeg.{u, v}.down.1 (by simpa only [lift.principalSeg_coe] using h)
   rcases this with ⟨o, h'⟩
   rw [← h', lift.principalSeg_coe, ← lift_card]

@@ -67,7 +67,7 @@ variable (I I' M M' n)
 
 /-- `n`-times continuously differentiable diffeomorphism between `M` and `M'` with respect to `I`
 and `I'`. -/
--- Porting note: was @[nolint has_nonempty_instance]
+-- Porting note(#5171): was @[nolint has_nonempty_instance]
 structure Diffeomorph extends M ≃ M' where
   protected contMDiff_toFun : ContMDiff I I' n toEquiv
   protected contMDiff_invFun : ContMDiff I' I n toEquiv.symm
@@ -570,12 +570,11 @@ with model `I.trans_diffeomorph e`. -/
 def toTransDiffeomorph (e : E ≃ₘ[𝕜] F) : M ≃ₘ⟮I, I.transDiffeomorph e⟯ M where
   toEquiv := Equiv.refl M
   contMDiff_toFun x := by
-    refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩
-    refine' e.contDiff.contDiffWithinAt.congr' (fun y hy => _) _
-    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph]
-      -- Porting note: `simp only` failed to used next lemma, converted to `rw`
-      rw [(extChartAt I x).right_inv hy.1]
-    exact
+    refine contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, ?_⟩
+    refine e.contDiff.contDiffWithinAt.congr' (fun y hy ↦ ?_) ?_
+    · simp only [Equiv.coe_refl, id, (· ∘ ·), I.coe_extChartAt_transDiffeomorph,
+        (extChartAt I x).right_inv hy.1]
+    · exact
       ⟨(extChartAt I x).map_source (mem_extChartAt_source I x), trivial, by simp only [mfld_simps]⟩
   contMDiff_invFun x := by
     refine' contMDiffWithinAt_iff'.2 ⟨continuousWithinAt_id, _⟩

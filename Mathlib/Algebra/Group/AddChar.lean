@@ -60,7 +60,7 @@ structure AddChar where
 
   Do not use this directly. Instead use `AddChar.map_zero_one`. -/
   map_zero_one' : toFun 0 = 1
-  /- The function maps addition in `A` to multiplication in `M`.
+  /-- The function maps addition in `A` to multiplication in `M`.
 
   Do not use this directly. Instead use `AddChar.map_add_mul`. -/
   map_add_mul' : ∀ a b : A, toFun (a + b) = toFun a * toFun b

@@ -37,7 +37,7 @@ variable {R : Type*} [CommSemiring R]
 
 /-- A sum version of **Vieta's formula** for `Multiset`: the product of the linear terms `X + λ`
 where `λ` runs through a multiset `s` is equal to a linear combination of the symmetric functions
-`esymm s` of the `λ`'s .-/
+`esymm s` of the `λ`'s . -/
 theorem prod_X_add_C_eq_sum_esymm (s : Multiset R) :
     (s.map fun r => X + C r).prod =
       ∑ j in Finset.range (Multiset.card s + 1), (C (s.esymm j) * X ^ (Multiset.card s - j)) := by
@@ -97,7 +97,8 @@ theorem esymm_neg (s : Multiset R) (k : ℕ) : (map Neg.neg s).esymm k = (-1) ^ 
   intro x hx
   rw [(mem_powersetCard.mp hx).right.symm, ← prod_replicate, ← Multiset.map_const]
   nth_rw 3 [← map_id' x]
-  rw [← prod_map_mul, map_congr (Eq.refl _)];rfl
+  rw [← prod_map_mul, map_congr (Eq.refl _)]
+  · rfl
   exact fun z _ => neg_one_mul z
 #align multiset.esymm_neg Multiset.esymm_neg
 

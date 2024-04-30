@@ -45,7 +45,6 @@ structure HomotopyEquiv (X : Type u) (Y : Type v) [TopologicalSpace X] [Topologi
   right_inv : (toFun.comp invFun).Homotopic (ContinuousMap.id Y)
 #align continuous_map.homotopy_equiv ContinuousMap.HomotopyEquiv
 
--- mathport name: continuous_map.homotopy_equiv
 scoped infixl:25 " ≃ₕ " => ContinuousMap.HomotopyEquiv
 
 namespace HomotopyEquiv

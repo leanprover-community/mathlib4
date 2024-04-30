@@ -588,7 +588,7 @@ theorem inductiveLimitDist_eq_dist (I : ∀ n, Isometry (f n)) (x y : Σn, X n) 
       exact inductiveLimitDist_eq_dist I x y m xm ym
 #align metric.inductive_limit_dist_eq_dist Metric.inductiveLimitDist_eq_dist
 
-/-- Premetric space structure on `Σ n, X n`.-/
+/-- Premetric space structure on `Σ n, X n`. -/
 def inductivePremetric (I : ∀ n, Isometry (f n)) : PseudoMetricSpace (Σn, X n) where
   dist := inductiveLimitDist f
   dist_self x := by simp [dist, inductiveLimitDist]

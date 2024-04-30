@@ -8,7 +8,7 @@ import Mathlib.Algebra.Group.Units.Hom
 import Mathlib.Algebra.GroupPower.Basic
 import Mathlib.Algebra.GroupWithZero.Basic
 import Mathlib.Algebra.Opposites
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Lattice
 import Mathlib.Tactic.Common
 
@@ -819,7 +819,7 @@ end Div
 open Pointwise
 
 /-- Repeated pointwise addition (not the same as pointwise repeated addition!) of a `Set`. See
-note [pointwise nat action].-/
+note [pointwise nat action]. -/
 protected def NSMul [Zero α] [Add α] : SMul ℕ (Set α) :=
   ⟨nsmulRec⟩
 #align set.has_nsmul Set.NSMul
@@ -841,7 +841,7 @@ protected def ZSMul [Zero α] [Add α] [Neg α] : SMul ℤ (Set α) :=
 multiplication/division!) of a `Set`. See note [pointwise nat action]. -/
 @[to_additive existing]
 protected def ZPow [One α] [Mul α] [Inv α] : Pow (Set α) ℤ :=
-  ⟨fun s n => zpowRec n s⟩
+  ⟨fun s n => zpowRec npowRec n s⟩
 #align set.has_zpow Set.ZPow
 
 scoped[Pointwise] attribute [instance] Set.NSMul Set.NPow Set.ZSMul Set.ZPow
@@ -1389,12 +1389,12 @@ theorem card_pow_eq_card_pow_card_univ_aux {f : ℕ → ℕ} (h1 : Monotone f) {
           lt_of_le_of_lt (ih (n.le_succ.trans h))
             (lt_of_le_of_ne (h1 n.le_succ) (h2 n (Nat.succ_le_succ_iff.mp h))))
         n
-  · obtain ⟨n, hn1, hn2⟩ := key
-    replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
-      Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
-    replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
-      (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
-    exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
+  obtain ⟨n, hn1, hn2⟩ := key
+  replace key : ∀ k : ℕ, f (n + k) = f (n + k + 1) ∧ f (n + k) = f n := fun k =>
+    Nat.rec ⟨hn2, rfl⟩ (fun k ih => ⟨h3 _ ih.1, ih.1.symm.trans ih.2⟩) k
+  replace key : ∀ k : ℕ, n ≤ k → f k = f n := fun k hk =>
+    (congr_arg f (add_tsub_cancel_of_le hk)).symm.trans (key (k - n)).2
+  exact fun k hk => (key k (hn1.trans hk)).trans (key B hn1).symm
 #align group.card_pow_eq_card_pow_card_univ_aux Group.card_pow_eq_card_pow_card_univ_aux
 #align add_group.card_nsmul_eq_card_nsmul_card_univ_aux AddGroup.card_nsmul_eq_card_nsmul_card_univ_aux
 

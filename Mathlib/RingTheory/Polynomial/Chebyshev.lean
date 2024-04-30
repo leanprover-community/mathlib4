@@ -215,7 +215,7 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
     conv_lhs => rw [T_eq_X_mul_T_sub_pol_U]
     simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
       one_mul, T_derivative_eq_U]
-    rw [T_eq_U_sub_X_mul_U, C_eq_nat_cast]
+    rw [T_eq_U_sub_X_mul_U, C_eq_natCast]
     ring
   calc
     ((n : R[X]) + 1) * T R (n + 1) =

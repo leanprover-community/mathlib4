@@ -250,10 +250,12 @@ lemma exact_iff_δlast {n : ℕ} (S : ComposableArrows C (n + 2)) :
       exact h.exact n (by omega)
   · rintro ⟨h, h'⟩
     refine' Exact.mk (IsComplex.mk (fun i hi => _)) (fun i hi => _)
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+      obtain hi | rfl := hi.lt_or_eq
       · exact h.toIsComplex.zero i
       · exact h'.toIsComplex.zero 0
-    · obtain hi | rfl := LE.le.lt_or_eq (show i ≤ n by omega)
+    · simp only [add_le_add_iff_right, ge_iff_le] at hi
+      obtain hi | rfl := hi.lt_or_eq
       · exact h.exact i
       · exact h'.exact 0
 
