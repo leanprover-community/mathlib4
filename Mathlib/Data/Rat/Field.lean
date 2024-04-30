@@ -69,4 +69,7 @@ lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.i
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by
   ext; simp [Rat.div_def', num_coe, den_coe]
 
+lemma num_inv (q : ℚ≥0) : (q⁻¹).num = q.den := by
+  rw [inv_def, divNat, num, coe_mk, Rat.divInt_ofNat, ← Rat.mk_eq_mkRat]
+
 end NNRat

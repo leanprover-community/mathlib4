@@ -50,6 +50,7 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
+
 /-- Casting a scientific literal via `ℚ` is the same as casting directly. -/
 @[simp, norm_cast]
 theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (s : Bool) (e : ℕ) :
@@ -57,6 +58,47 @@ theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (s : Bool) (e : ℕ) :
   rw [← NNRat.cast_ofScientific (K := K), ← NNRat.cast_ofScientific, cast_nnratCast]
 
 end Rat
+
+namespace NNRat
+
+@[simp, norm_cast]
+theorem cast_pow {K} [DivisionSemiring K] (q : ℚ≥0) (n : ℕ) :
+    NNRat.cast (q ^ n) = (NNRat.cast q : K) ^ n := by
+  rw [cast_def, cast_def, den_pow, num_pow, Nat.cast_pow, Nat.cast_pow, div_eq_mul_inv, ← inv_pow,
+    ← (Nat.cast_commute _ _).mul_pow, ← div_eq_mul_inv]
+
+theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (hq : (q.num : K) ≠ 0) :
+    NNRat.cast (q ^ z) = (NNRat.cast q : K) ^ z := by
+  obtain ⟨n, rfl | rfl⟩ := z.eq_nat_or_neg
+  · simp
+  · simp_rw [zpow_neg, zpow_natCast, ← inv_pow, NNRat.cast_pow]
+    congr
+    rw [cast_inv_of_ne_zero hq]
+
+open OfNat in
+theorem _root_.ofScientific_def {K} [DivisionSemiring K] (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : K)
+      = (ofNat m : ℕ) * (10 : K) ^ (cond s (-(ofNat e)) (ofNat e) : ℤ) := by
+  rw [← NNRat.cast_ofScientific, ← NNRat.cast_natCast]
+  change NNRat.cast ⟨Rat.ofScientific m s e, _⟩ = _
+  rw [←NNRat.cast_ofNat 10, ← NNRat.cast_zpow_of_ne_zero, ← NNRat.cast_mul_of_ne_zero]
+  · congr
+    cases s
+    · rw [Rat.ofScientific_false_def]
+      simp [zpow_ofNat]
+      rfl
+    · rw [Rat.ofScientific_true_def]
+      simp [Rat.mkRat_eq_div, div_eq_mul_inv, zpow_ofNat]
+      rfl
+  · simp
+  · cases s
+    · simp [zpow_ofNat, Rat.den_ofNat]
+      sorry
+    · simp [zpow_ofNat, -inv_pow]
+      rw [← inv_pow, den_pow]
+      simp
+      sorry
+  · sorry
 
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
