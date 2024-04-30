@@ -5,15 +5,16 @@ Authors: Xavier Roblot
 -/
 import Mathlib.LinearAlgebra.Matrix.Gershgorin
 import Mathlib.NumberTheory.NumberField.CanonicalEmbedding.ConvexBody
-import Mathlib.NumberTheory.NumberField.Norm
+import Mathlib.NumberTheory.NumberField.Units.Basic
 import Mathlib.RingTheory.RootsOfUnity.Basic
 
 #align_import number_theory.number_field.units from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
 /-!
-# Units of a number field
-We prove results about the group `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number
-field `K`.
+# Dirichlet theorem on the group of units of a number field
+This file is devoted to the proof of Dirichlet unit theorem that states that the group of
+units `(𝓞 K)ˣ` of units of the ring of integers `𝓞 K` of a number field `K` modulo its torsion
+subgroup is a free `ℤ`-module of rank `card (InfinitePlace K) - 1`.
 
 ## Main definitions
 
@@ -26,27 +27,24 @@ as an additive `ℤ`-module.
 
 ## Main results
 
-* `NumberField.isUnit_iff_norm`: an algebraic integer `x : 𝓞 K` is a unit if and only if
-`|norm ℚ x| = 1`.
-
-* `NumberField.Units.mem_torsion`: a unit `x : (𝓞 K)ˣ` is torsion iff `w x = 1` for all infinite
-places `w` of `K`.
+* `NumberField.Units.rank_modTorsion`: the `ℤ`-rank of `(𝓞 K)ˣ ⧸ (torsion K)` is equal to
+`card (InfinitePlace K) - 1`.
 
 * `NumberField.Units.exist_unique_eq_mul_prod`: **Dirichlet Unit Theorem**. Any unit of `𝓞 K`
 can be written uniquely as the product of a root of unity and powers of the units of the
 fundamental system `fundSystem`.
 
 ## Tags
-number field, units
+number field, units, Dirichlet unit theorem
  -/
 
 open scoped NumberField
 
 noncomputable section
 
-open NumberField Units BigOperators
+open NumberField NumberField.InfinitePlace NumberField.Units BigOperators
 
-section Rat
+variable (K : Type*) [Field K] [NumberField K]
 
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} :
     IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
@@ -172,7 +170,6 @@ namespace dirichletUnitTheorem
 
 /-!
 ### Dirichlet Unit Theorem
-This section is devoted to the proof of Dirichlet's unit theorem.
 
 We define a group morphism from `(𝓞 K)ˣ` to `{w : InfinitePlace K // w ≠ w₀} → ℝ` where `w₀` is a
 distinguished (arbitrary) infinite place, prove that its kernel is the torsion subgroup (see
@@ -187,7 +184,6 @@ see the section `span_top` below for more details.
 open scoped Classical
 open Finset
 
-variable [NumberField K]
 variable {K}
 
 /-- The distinguished infinite place. -/
@@ -455,12 +451,12 @@ theorem unitLattice_span_eq_top :
   simp_rw [Real.norm_eq_abs, B, Basis.coePiBasisFun.toMatrix_eq_transpose, Matrix.transpose_apply]
   rw [← sub_pos, sum_congr rfl (fun x hx => abs_of_neg ?_), sum_neg_distrib, sub_neg_eq_add,
     sum_erase_eq_sub (mem_univ _), ← add_comm_sub]
-  refine add_pos_of_nonneg_of_pos ?_ ?_
-  · rw [sub_nonneg]
-    exact le_abs_self _
-  · rw [sum_logEmbedding_component (exists_unit K w).choose]
-    refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
-    rw [mult]; split_ifs <;> norm_num
+  · refine add_pos_of_nonneg_of_pos ?_ ?_
+    · rw [sub_nonneg]
+      exact le_abs_self _
+    · rw [sum_logEmbedding_component (exists_unit K w).choose]
+      refine mul_pos_of_neg_of_neg ?_ ((exists_unit K w).choose_spec _ w.prop.symm)
+      rw [mult]; split_ifs <;> norm_num
   · refine mul_neg_of_pos_of_neg ?_ ((exists_unit K w).choose_spec x ?_)
     · rw [mult]; split_ifs <;> norm_num
     · exact Subtype.ext_iff_val.not.mp (ne_of_mem_erase hx)

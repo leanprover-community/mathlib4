@@ -412,6 +412,23 @@ instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, SigmaFinite (v
     SigmaFinite (volume : Measure (∀ i, α i)) :=
   pi.sigmaFinite _
 
+instance pi.instIsFiniteMeasure [∀ i, IsFiniteMeasure (μ i)] :
+    IsFiniteMeasure (Measure.pi μ) :=
+  ⟨Measure.pi_univ μ ▸ ENNReal.prod_lt_top (fun i _ ↦ measure_ne_top (μ i) _)⟩
+
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)] [∀ i, IsFiniteMeasure (volume : Measure (α i))] :
+    IsFiniteMeasure (volume : Measure (∀ i, α i)) :=
+  pi.instIsFiniteMeasure _
+
+instance pi.instIsProbabilityMeasure [∀ i, IsProbabilityMeasure (μ i)] :
+    IsProbabilityMeasure (Measure.pi μ) :=
+  ⟨by simp only [Measure.pi_univ, measure_univ, Finset.prod_const_one]⟩
+
+instance {α : ι → Type*} [∀ i, MeasureSpace (α i)]
+    [∀ i, IsProbabilityMeasure (volume : Measure (α i))] :
+    IsProbabilityMeasure (volume : Measure (∀ i, α i)) :=
+  pi.instIsProbabilityMeasure _
+
 theorem pi_of_empty {α : Type*} [Fintype α] [IsEmpty α] {β : α → Type*}
     {m : ∀ a, MeasurableSpace (β a)} (μ : ∀ a : α, Measure (β a)) (x : ∀ a, β a := isEmptyElim) :
     Measure.pi μ = dirac x := by

@@ -179,7 +179,7 @@ theorem getSection_commute {Y Z : StructuredArrow (op U) G.op} (f : Y ⟶ Z) :
   apply getSection_is_unique
   intro V' fV' hV'
   have eq : Z.hom = Y.hom ≫ (G.map f.right.unop).op := by
-    convert f.w
+    convert f.w using 1
     erw [Category.id_comp]
   rw [eq] at hV'
   convert getSection_isAmalgamation ℱ hS hx Y (fV' ≫ f.right.unop) _ using 1
@@ -386,7 +386,7 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext E : 2
-  dsimp [Functor.preimage, Full.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
+  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda, Adjunction.leftAdjointsCoyonedaEquiv]
   erw [Adjunction.homEquiv_unit, Adjunction.homEquiv_counit]
   dsimp [Adjunction.comp]
   simp only [Category.comp_id, map_id, whiskerLeft_id', map_comp, Sheaf.instCategorySheaf_comp_val,
