@@ -203,8 +203,8 @@ def MDifferentiableWithinAt (f : M → M') (s : Set M) (x : M) :=
 theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
     MDifferentiableWithinAt I I' f s x ↔ ContinuousWithinAt f s x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f)
-      ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) :=
-  by rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
+      ((extChartAt I x).symm ⁻¹' s ∩ range I) ((extChartAt I x) x) := by
+  rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
 #align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff'
 
 @[deprecated] -- 2024-04-30
@@ -239,7 +239,7 @@ def MDifferentiableAt (f : M → M') (x : M) :=
 theorem mdifferentiableAt_iff (f : M → M') (x : M) :
     MDifferentiableAt I I' f x ↔ ContinuousAt f x ∧
     DifferentiableWithinAt 𝕜 (writtenInExtChartAt I I' x f) (range I) ((extChartAt I x) x) := by
-  rw [MDifferentiableAt, liftPropAt_iff];
+  rw [MDifferentiableAt, liftPropAt_iff]
   congrm _ ∧ ?_
   simp [DifferentiableWithinAtProp, Set.univ_inter]
   -- Porting note: `rfl` wasn't needed
