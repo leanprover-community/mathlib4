@@ -446,7 +446,7 @@ theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
 open AdicCompletion
 
 theorem AdicCompletion.transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
-  (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ reduceModIdeal (I ^ n) f =
+    (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ reduceModIdeal (I ^ n) f =
       f.reduceModIdeal (I ^ m) ∘ₗ transitionMap I M hmn := by
   ext x
   simp
