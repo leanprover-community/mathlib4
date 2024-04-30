@@ -284,9 +284,9 @@ lemma integral_min_eq_two_mul :
     ∫ θ in (0)..π, min d (θ.sin * l) = 2 * ∫ θ in (0)..π / 2, min d (θ.sin * l) := by
   rw [← intervalIntegral.integral_add_adjacent_intervals (b := π / 2) (c := π)]
   conv => lhs; arg 2; arg 1; intro θ; rw [← neg_neg θ, Real.sin_neg]
-  simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
-    intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), add_left_neg,
-    (by ring : -(π / 2) + π = π / 2), two_mul]
+  · simp_rw [intervalIntegral.integral_comp_neg fun θ => min d (-θ.sin * l), ← Real.sin_add_pi,
+      intervalIntegral.integral_comp_add_right (fun θ => min d (θ.sin * l)), add_left_neg,
+      (by ring : -(π / 2) + π = π / 2), two_mul]
   all_goals exact intervalIntegrable_min_const_sin_mul d l _ _
 
 /--

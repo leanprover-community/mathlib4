@@ -354,7 +354,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
 protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q * r) = padicValRat p q + padicValRat p r := by
   have : q * r = (q.num * r.num) /. (q.den * r.den) := by
-    rw [Rat.mul_def', Rat.mkRat_eq, Nat.cast_mul]
+    rw [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, Nat.cast_mul]
   have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
