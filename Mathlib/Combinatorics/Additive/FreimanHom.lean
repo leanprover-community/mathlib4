@@ -48,7 +48,7 @@ an `AddMonoid`/`Monoid` instead of the `AddMonoid`/`Monoid` itself.
 * Affine maps are Freiman homs.
 -/
 
-open Multiset
+open Multiset Set
 open scoped Pointwise
 
 variable {F α β γ : Type*}
@@ -60,18 +60,18 @@ variable [CommMonoid α] [CommMonoid β] [CommMonoid γ] {A A₁ A₂ : Set α}
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves sums
 of `n` elements. -/
 structure IsAddFreimanHom [AddCommMonoid α] [AddCommMonoid β] (A : Set α) (B : Set β) (n : ℕ)
-    (f : α → β) where
-  mapsTo : Set.MapsTo f A B
+    (f : α → β) : Prop where
+  mapsTo : MapsTo f A B
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
-  map_sum_eq_map_sum {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
+  map_sum_eq_map_sum ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.sum = t.sum) :
     (s.map f).sum = (t.map f).sum
 
 /-- An `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves products of `n`
 elements. -/
 @[to_additive]
-structure IsMulFreimanHom (A : Set α) (B : Set β) (n : ℕ) (f : α → β) where
-  mapsTo : Set.MapsTo f A B
+structure IsMulFreimanHom (A : Set α) (B : Set β) (n : ℕ) (f : α → β) : Prop where
+  mapsTo : MapsTo f A B
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) (h : s.prod = t.prod) :
@@ -83,9 +83,9 @@ structure IsMulFreimanHom (A : Set α) (B : Set β) (n : ℕ) (f : α → β) wh
 preserves sums of `n` elements. -/
 structure IsAddFreimanIso [AddCommMonoid α] [AddCommMonoid β] (A : Set α) (B : Set β) (n : ℕ)
     (f : α → β) where
-  bijOn : Set.BijOn f A B
+  bijOn : BijOn f A B
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
-  map_sum_eq_map_sum {s t : Multiset α} (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
+  map_sum_eq_map_sum ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) :
     (s.map f).sum = (t.map f).sum ↔ s.sum = t.sum
 
@@ -93,7 +93,7 @@ structure IsAddFreimanIso [AddCommMonoid α] [AddCommMonoid β] (A : Set α) (B 
 elements. -/
 @[to_additive]
 structure IsMulFreimanIso (A : Set α) (B : Set β) (n : ℕ) (f : α → β) where
-  bijOn : Set.BijOn f A B
+  bijOn : BijOn f A B
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
     (hs : Multiset.card s = n) (ht : Multiset.card t = n) :
@@ -120,12 +120,20 @@ lemma IsMulFreimanIso.mul_eq_mul (hf : IsMulFreimanIso A B 2 f) {a b c d : α}
   simp_rw [← prod_pair]
   refine' hf.map_prod_eq_map_prod _ _ (card_pair _ _) (card_pair _ _) <;> simp [ha, hb, hc, hd]
 
+/-- Characterisation of `2`-Freiman homs. -/
+@[to_additive "Characterisation of `2`-Freiman homs."]
+lemma isMulFreimanHom_two :
+    IsMulFreimanHom A B 2 f ↔ MapsTo f A B ∧ ∀ a ∈ A, ∀ b ∈ A, ∀ c ∈ A, ∀ d ∈ A,
+      a * b = c * d → f a * f b = f c * f d where
+  mp hf := ⟨hf.mapsTo, fun a ha b hb c hc d hd ↦ hf.mul_eq_mul ha hb hc hd⟩
+  mpr hf := ⟨hf.1, by aesop (add simp [Multiset.card_eq_two])⟩
+
 @[to_additive] lemma isMulFreimanHom_id (hA : A₁ ⊆ A₂) : IsMulFreimanHom A₁ A₂ n id where
   mapsTo := hA
   map_prod_eq_map_prod s t _ _ _ _ h := by simpa using h
 
 @[to_additive] lemma isMulFreimanIso_id : IsMulFreimanIso A A n id where
-  bijOn := Set.bijOn_id _
+  bijOn := bijOn_id _
   map_prod_eq_map_prod s t _ _ _ _ := by simp
 
 @[to_additive] lemma IsMulFreimanHom.comp (hg : IsMulFreimanHom B C n g)
@@ -162,18 +170,18 @@ lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom A B n fun 
 @[to_additive] lemma IsMulFreimanHom.mul (h₁ : IsMulFreimanHom A B₁ n f₁)
     (h₂ : IsMulFreimanHom A B₂ n f₂) : IsMulFreimanHom A (B₁ * B₂) n (f₁ * f₂) where
   -- TODO: Extract `Set.MapsTo.mul` from this proof
-  mapsTo a ha := Set.mul_mem_mul (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo a ha := mul_mem_mul (h₁.mapsTo ha) (h₂.mapsTo ha)
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.mul_def, prod_map_mul, prod_map_mul, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
 
 @[to_additive] lemma MonoidHomClass.isMulFreimanHom [FunLike F α β] [MonoidHomClass F α β] (f : F)
-    (hfAB : Set.MapsTo f A B) : IsMulFreimanHom A B n f where
+    (hfAB : MapsTo f A B) : IsMulFreimanHom A B n f where
   mapsTo := hfAB
   map_prod_eq_map_prod s t _ _ _ _ h := by rw [← map_multiset_prod, h, map_multiset_prod]
 
 @[to_additive] lemma MulEquivClass.isMulFreimanIso [EquivLike F α β] [MulEquivClass F α β] (f : F)
-    (hfAB : Set.BijOn f A B) : IsMulFreimanIso A B n f where
+    (hfAB : BijOn f A B) : IsMulFreimanIso A B n f where
   bijOn := hfAB
   map_prod_eq_map_prod s t _ _ _ _ := by
     rw [← map_multiset_prod, ← map_multiset_prod, EquivLike.apply_eq_iff_eq]
@@ -198,11 +206,11 @@ lemma IsMulFreimanHom.mono {hmn : m ≤ n} (hf : IsMulFreimanHom A B n f) :
       exact mul_right_cancel this
     replace ha := hsA ha
     refine hf.map_prod_eq_map_prod (fun a ha ↦ ?_) (fun a ha ↦ ?_) ?_ ?_ ?_
-    · rw [mem_add] at ha
+    · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact hsA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [mem_add] at ha
+    · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
@@ -233,11 +241,11 @@ lemma IsMulFreimanIso.mono {hmn : m ≤ n} (hf : IsMulFreimanIso A B n f) :
       simpa only [Multiset.map_add, prod_add, mul_right_cancel_iff] using this
     replace ha := hsA ha
     refine hf.map_prod_eq_map_prod (fun a ha ↦ ?_) (fun a ha ↦ ?_) ?_ ?_
-    · rw [mem_add] at ha
+    · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact hsA ha
       · rwa [eq_of_mem_replicate ha]
-    · rw [mem_add] at ha
+    · rw [Multiset.mem_add] at ha
       obtain ha | ha := ha
       · exact htA ha
       · rwa [eq_of_mem_replicate ha]
@@ -252,7 +260,7 @@ variable [CommMonoid α] [DivisionCommMonoid β] {A : Set α} {B : Set β} {f : 
 @[to_additive]
 lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom A B n f) : IsMulFreimanHom A B⁻¹ n f⁻¹ where
   -- TODO: Extract `Set.MapsTo.inv` from this proof
-  mapsTo a ha := Set.inv_mem_inv.2 (hf.mapsTo ha)
+  mapsTo a ha := inv_mem_inv.2 (hf.mapsTo ha)
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.inv_def, prod_map_inv, prod_map_inv, hf.map_prod_eq_map_prod hsA htA hs ht h]
 
@@ -260,7 +268,7 @@ lemma IsMulFreimanHom.inv (hf : IsMulFreimanHom A B n f) : IsMulFreimanHom A B�
     {f₁ f₂ : α → β} (h₁ : IsMulFreimanHom A B₁ n f₁) (h₂ : IsMulFreimanHom A B₂ n f₂) :
     IsMulFreimanHom A (B₁ / B₂) n (f₁ / f₂) where
   -- TODO: Extract `Set.MapsTo.div` from this proof
-  mapsTo a ha := Set.div_mem_div (h₁.mapsTo ha) (h₂.mapsTo ha)
+  mapsTo a ha := div_mem_div (h₁.mapsTo ha) (h₂.mapsTo ha)
   map_prod_eq_map_prod s t hsA htA hs ht h := by
     rw [Pi.div_def, prod_map_div, prod_map_div, h₁.map_prod_eq_map_prod hsA htA hs ht h,
       h₂.map_prod_eq_map_prod hsA htA hs ht h]
