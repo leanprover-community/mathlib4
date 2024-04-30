@@ -1323,7 +1323,7 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 #align finset.prod_ite_eq' Finset.prod_ite_eq'
 #align finset.sum_ite_eq' Finset.sum_ite_eq'
 
-@[to_additive (attr := simp)]
+@[to_additive]
 theorem prod_ite_eq_iff [DecidableEq α] (s : Finset α) (a : α) (b : α → β)
     {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x ↔ a = x) :
     (∏ x in s, ite (p x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
