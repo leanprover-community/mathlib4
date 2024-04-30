@@ -34,8 +34,6 @@ Further more, these properties are stable under compositions (resp. base change)
 
 -/
 
-set_option profiler true
-
 universe u
 
 open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeometry
