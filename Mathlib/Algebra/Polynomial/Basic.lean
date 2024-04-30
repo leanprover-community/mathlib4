@@ -68,12 +68,6 @@ structure Polynomial (R : Type*) [Semiring R] where ofFinsupp ::
 
 @[inherit_doc] scoped[Polynomial] notation:9000 R "[X]" => Polynomial R
 
-/-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation "Y" => Polynomial.X
-
-/-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation R "[X][Y]" => Polynomial (Polynomial R)
-
 open AddMonoidAlgebra
 open Finsupp hiding single
 open Function hiding Commute
