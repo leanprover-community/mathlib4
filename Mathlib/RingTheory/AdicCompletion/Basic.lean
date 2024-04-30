@@ -91,18 +91,11 @@ def AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) :
     rw [ker_mkQ]
     exact smul_mono (Ideal.pow_le_pow_right hmn) le_rfl)
 
-/-- Auxiliary definition for `AdicCompletion`. -/
-private def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
-  carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
-  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
-  add_mem' hf hg m n hmn := by
-    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
-  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
-
 /-- The completion of a module with respect to an ideal. This is not necessarily Hausdorff.
 In fact, this is only complete if the ideal is finitely generated. -/
 def AdicCompletion : Type _ :=
-  adicCompletion I M
+  { f : ∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M) //
+    ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
 #align adic_completion AdicCompletion
 
 namespace IsHausdorff
@@ -212,11 +205,20 @@ end IsPrecomplete
 
 namespace AdicCompletion
 
+/-- `AdicCompletion` is the submodule of compatible families in
+`∀ n : ℕ, M ⧸ (I ^ n • ⊤)`. -/
+def submodule : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
+  carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
+  zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
+  add_mem' hf hg m n hmn := by
+    rw [Pi.add_apply, Pi.add_apply, LinearMap.map_add, hf hmn, hg hmn]
+  smul_mem' c f hf m n hmn := by rw [Pi.smul_apply, Pi.smul_apply, LinearMap.map_smul, hf hmn]
+
 instance : AddCommGroup (AdicCompletion I M) :=
-  inferInstanceAs <| AddCommGroup (adicCompletion I M)
+  inferInstanceAs <| AddCommGroup (submodule I M)
 
 instance : Module R (AdicCompletion I M) :=
-  inferInstanceAs <| Module R (adicCompletion I M)
+  inferInstanceAs <| Module R (submodule I M)
 
 /-- The canonical linear map to the completion. -/
 def of : M →ₗ[R] AdicCompletion I M where
@@ -302,19 +304,25 @@ theorem transitionMap_comp_apply {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k)
   simp
 
 @[simp]
+theorem transitionMap_comp_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
+    transitionMap I M hmn (x.val n) = x.val m :=
+  x.property hmn
+
+@[simp]
 theorem transitionMap_comp_eval {m n : ℕ} (hmn : m ≤ n) :
     transitionMap I M hmn ∘ₗ eval I M n = eval I M m := by
   ext x
-  simp [x.property]
+  simp
 
-@[simp]
-theorem transitionMap_comp_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
-    transitionMap I M hmn (eval I M n x) = eval I M m x := by
-  simp [x.property]
+def IsAdicCauchy (f : ℕ → M) : Prop :=
+  ∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]
 
 /-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
-def adicCauchySequence : Submodule R (ℕ → M) where
-  carrier := { f | ∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)] }
+def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
+
+/-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
+def AdicCauchySequence.submodule : Submodule R (ℕ → M) where
+  carrier := { f | IsAdicCauchy I M f }
   add_mem' := by
     intro f g hf hg m n hmn
     exact SModEq.add (hf hmn) (hg hmn)
@@ -325,19 +333,15 @@ def adicCauchySequence : Submodule R (ℕ → M) where
     intro r f hf m n hmn
     exact SModEq.smul (hf hmn) r
 
-/-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
-def AdicCauchySequence : Type _ :=
-  adicCauchySequence I M
-
 instance : AddCommGroup (AdicCauchySequence I M) :=
-  inferInstanceAs <| AddCommGroup (adicCauchySequence I M)
+  inferInstanceAs <| AddCommGroup (AdicCauchySequence.submodule I M)
 
 instance : Module R (AdicCauchySequence I M) :=
-  inferInstanceAs <| Module R (adicCauchySequence I M)
+  inferInstanceAs <| Module R (AdicCauchySequence.submodule I M)
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
 theorem isAdicCauchy_iff (f : ℕ → M) :
-    f ∈ adicCauchySequence I M ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
+    IsAdicCauchy I M f ↔ ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)] := by
   constructor
   · intro h n
     exact h (Nat.le_succ n)
