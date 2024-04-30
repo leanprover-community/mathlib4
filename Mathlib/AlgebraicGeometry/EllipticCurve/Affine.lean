@@ -81,12 +81,6 @@ elliptic curve, rational point, affine coordinates
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀])
 
-/-- The notation `Y` for `X` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation "Y" => Polynomial.X
-
-/-- The notation `R[X][Y]` for `R[X][X]` in the `PolynomialPolynomial` scope. -/
-scoped[PolynomialPolynomial] notation R "[X][Y]" => Polynomial (Polynomial R)
-
 open Polynomial PolynomialPolynomial
 
 local macro "C_simp" : tactic =>

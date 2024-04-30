@@ -79,7 +79,7 @@ variable (R M)
 
 variable (x y : L)
 
-open LieModule LinearMap
+open LieModule LinearMap PolynomialPolynomial
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
@@ -90,7 +90,7 @@ In other words, we obtain a polynomial over `R[X]`
 that specializes to the characteristic polynomial of `⁅r • y + x, _⁆` under the map `X ↦ r`.
 This polynomial is captured in `lieCharpoly R M x y`. -/
 private noncomputable
-def lieCharpoly : Polynomial R[X] :=
+def lieCharpoly : R[X][Y] :=
   letI bL := chooseBasis R L
   letI bM := chooseBasis R M
   (LinearMap.polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
