@@ -447,8 +447,8 @@ noncomputable instance Quotient.algebraQuotientPowRamificationIdx : Algebra (R â
 #align ideal.quotient.algebra_quotient_pow_ramification_idx Ideal.Quotient.algebraQuotientPowRamificationIdx
 
 -- Adaptation note: 2024-04-23
--- The right hand side here used to be `Ideal.Quotient.mk _ (f x)`, but this is now slow without
--- `set_option backward.isDefEq.lazyProjDelta false in`
+-- The right hand side here used to be `Ideal.Quotient.mk _ (f x)` which was somewhat slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyProjDelta false in`
 -- Instead we've replaced it with `Ideal.Quotient.mk (P ^ e) (f x)` (compare #12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_pow_ramificationIdx (x : R) :
@@ -470,8 +470,8 @@ set_option synthInstance.checkSynthOrder false -- Porting note: this is okay by 
 attribute [local instance] Ideal.Quotient.algebraQuotientOfRamificationIdxNeZero
 
 -- Adaptation note: 2024-04-28
--- The RHS used to be `Ideal.Quotient.mk _ (f x)` but this is now slow without
--- `set_option backward.isDefEq.lazyWhnfCore false in`
+-- The RHS used to be `Ideal.Quotient.mk _ (f x)`, which was slow,
+-- but this is now even slower without `set_option backward.isDefEq.lazyWhnfCore false in`
 -- (compare https://github.com/leanprover-community/mathlib4/pull/12412)
 @[simp]
 theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
