@@ -5,8 +5,8 @@ Authors: Russell Emerine
 -/
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.NFA
-import Mathlib.Data.Fintype.Sum
-import Mathlib.Data.Fintype.Option
+import Mathlib.Data.FinEnum
+import Mathlib.Data.FinEnum.Option
 
 #align_import computability.regular_expression_to_NFA.defs
 
@@ -70,24 +70,14 @@ instance {r : RegularExpression α} : Inhabited r.State :=
     r
 
 -- NFAs are only real NFAs when the states are fintypes, and the instance is needed for the proofs
-instance {r : RegularExpression α} : Fintype r.State :=
-  @rec' α (Fintype ∘ State)
-    (Unit.fintype)
-    (Unit.fintype)
-    (λ a => Bool.fintype)
-    (λ r₁ r₂ hr₁ hr₂ => @instFintypeSum r₁.State r₂.State hr₁ hr₂)
-    (λ r₁ r₂ hr₁ hr₂ => @instFintypeSum r₁.State r₂.State hr₁ hr₂)
-    (λ r hr => @instFintypeOption r.State hr)
-    r
-
-instance {r : RegularExpression α} : DecidableEq r.State :=
-  @rec' α (DecidableEq ∘ State)
-    (instDecidableEqPUnit)
-    (instDecidableEqPUnit)
-    (λ a => instDecidableEqBool)
-    (λ r₁ r₂ hr₁ hr₂ => @instDecidableEqSum r₁.State r₂.State hr₁ hr₂)
-    (λ r₁ r₂ hr₁ hr₂ => @instDecidableEqSum r₁.State r₂.State hr₁ hr₂)
-    (λ r hr => @Option.instDecidableEqOption r.State hr)
+instance {r : RegularExpression α} : FinEnum r.State :=
+  @rec' α (FinEnum ∘ State)
+    (FinEnum.punit.{0})
+    (FinEnum.punit.{0})
+    (λ a => FinEnum.ofEquiv _ Equiv.boolEquivPUnitSumPUnit.{0,0})
+    (λ r₁ r₂ hr₁ hr₂ => @FinEnum.sum r₁.State r₂.State hr₁ hr₂)
+    (λ r₁ r₂ hr₁ hr₂ => @FinEnum.sum r₁.State r₂.State hr₁ hr₂)
+    (λ r hr => @FinEnum.instFinEnumOptionOfFinEnum r.State hr)
     r
 
 /-- Recursively converts a regular expression to its corresponding NFA.
@@ -152,7 +142,7 @@ All three functions in an NFA constructed from `toNFA` are decidable. Since the 
 each other, the class is proven here, and the instance declarations use this.
 -/
 def regularExpressionToNFADecidable {r : RegularExpression α} :
-    (∀ p a q, Decidable (q ∈ r.toNFA.step p a)) ×
+    (∀ p a, DecidablePred (· ∈ r.toNFA.step p a)) ×
       DecidablePred r.toNFA.start × DecidablePred r.toNFA.accept :=
   by
   apply r.rec'
@@ -251,8 +241,8 @@ def regularExpressionToNFADecidable {r : RegularExpression α} :
       case none => exact decidableTrue
       case some => exact hr_accept q
 
-instance decidableStep {r : RegularExpression α} {p a q} : Decidable (r.toNFA.step p a q) :=
-  regularExpressionToNFADecidable.1 p a q
+instance decidableStep {r : RegularExpression α} {p a} : DecidablePred (· ∈ r.toNFA.step p a) :=
+  regularExpressionToNFADecidable.1 p a
 
 instance decidableStart {r : RegularExpression α} : DecidablePred r.toNFA.start :=
   regularExpressionToNFADecidable.2.1
