@@ -38,8 +38,6 @@ endomorphism. We provide basic definitions and results about such endomorphisms 
 ## TODO
 
 In finite dimensions over a field:
- * If semisimple then generalized eigenspace is eigenspace
- * Restriction of semisimple endomorphism is semisimple
  * Triangularizable iff diagonalisable for semisimple endomorphisms
 
 -/
@@ -84,6 +82,25 @@ lemma eq_zero_of_isNilpotent_isSemisimple (hn : IsNilpotent f) (hs : f.IsSemisim
   rw [← aeval_X (R := R) f]; rw [← aeval_X_pow (R := R) f] at h0
   rw [← RingHom.mem_ker, ← AEval.annihilator_eq_ker_aeval (M := M)] at h0 ⊢
   exact hs.annihilator_isRadical ⟨n, h0⟩
+
+@[simp]
+lemma isSemisimple_sub_algebraMap_iff {μ : R} :
+    (f - algebraMap R (End R M) μ).IsSemisimple ↔ f.IsSemisimple := by
+  suffices ∀ p : Submodule R M, p ≤ p.comap (f - algebraMap R (Module.End R M) μ) ↔ p ≤ p.comap f by
+    simp [isSemisimple_iff, this]
+  refine fun p ↦ ⟨fun h x hx ↦ ?_, fun h x hx ↦ p.sub_mem (h hx) (p.smul_mem μ hx)⟩
+  simpa using p.add_mem (h hx) (p.smul_mem μ hx)
+
+lemma IsSemisimple.restrict {p : Submodule R M} {hp : MapsTo f p p} (hf : f.IsSemisimple) :
+    IsSemisimple (f.restrict hp) := by
+  simp only [isSemisimple_iff] at hf ⊢
+  intro q hq
+  replace hq : MapsTo f (q.map p.subtype) (q.map p.subtype) := by
+    rintro - ⟨⟨x, hx⟩, hx', rfl⟩; exact ⟨⟨f x, hp hx⟩, by simpa using hq hx', rfl⟩
+  obtain ⟨r, hr₁, hr₂⟩ := hf _ hq
+  refine ⟨r.comap p.subtype, fun x hx ↦ hr₁ hx, ?_⟩
+  rw [← q.comap_map_eq_of_injective p.injective_subtype]
+  exact p.isCompl_comap_subtype_of_isCompl_of_le hr₂ <| p.map_subtype_le q
 
 end CommRing
 

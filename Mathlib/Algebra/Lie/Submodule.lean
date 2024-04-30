@@ -372,6 +372,10 @@ theorem bot_coeSubmodule : ((⊥ : LieSubmodule R L M) : Submodule R M) = ⊥ :=
 theorem coeSubmodule_eq_bot_iff : (N : Submodule R M) = ⊥ ↔ N = ⊥ := by
   rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
 
+@[simp] theorem mk_eq_bot_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊥ ↔ N = ⊥ := by
+  rw [← coe_toSubmodule_eq_iff, bot_coeSubmodule]
+
 @[simp]
 theorem mem_bot (x : M) : x ∈ (⊥ : LieSubmodule R L M) ↔ x = 0 :=
   mem_singleton_iff
@@ -392,6 +396,10 @@ theorem top_coeSubmodule : ((⊤ : LieSubmodule R L M) : Submodule R M) = ⊤ :=
 
 @[simp]
 theorem coeSubmodule_eq_top_iff : (N : Submodule R M) = ⊤ ↔ N = ⊤ := by
+  rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
+
+@[simp] theorem mk_eq_top_iff {N : Submodule R M} {h} :
+    (⟨N, h⟩ : LieSubmodule R L M) = ⊤ ↔ N = ⊤ := by
   rw [← coe_toSubmodule_eq_iff, top_coeSubmodule]
 
 @[simp]

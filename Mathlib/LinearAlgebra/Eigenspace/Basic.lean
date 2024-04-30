@@ -119,6 +119,22 @@ theorem HasEigenvalue.exists_hasEigenvector {f : End R M} {μ : R} (hμ : f.HasE
   Submodule.exists_mem_ne_zero_of_ne_bot hμ
 #align module.End.has_eigenvalue.exists_has_eigenvector Module.End.HasEigenvalue.exists_hasEigenvector
 
+lemma HasEigenvalue.pow {f : End R M} {μ : R} (h : f.HasEigenvalue μ) (n : ℕ) :
+    (f ^ n).HasEigenvalue (μ ^ n) := by
+  rw [HasEigenvalue, Submodule.ne_bot_iff]
+  obtain ⟨m : M, hm⟩ := h.exists_hasEigenvector
+  exact ⟨m, by simpa [mem_eigenspace_iff] using hm.pow_apply n, hm.2⟩
+
+/-- A nilpotent endomorphism has nilpotent eigenvalues.
+
+See also `LinearMap.isNilpotent_trace_of_isNilpotent`. -/
+lemma HasEigenvalue.isNilpotent_of_isNilpotent [NoZeroSMulDivisors R M] {f : End R M}
+    (hfn : IsNilpotent f) {μ : R} (hf : f.HasEigenvalue μ) :
+    IsNilpotent μ := by
+  obtain ⟨m : M, hm⟩ := hf.exists_hasEigenvector
+  obtain ⟨n : ℕ, hn : f ^ n = 0⟩ := hfn
+  exact ⟨n, by simpa [hn, hm.2, eq_comm (a := (0 : M))] using hm.pow_apply n⟩
+
 theorem HasEigenvalue.mem_spectrum {f : End R M} {μ : R} (hμ : HasEigenvalue f μ) :
     μ ∈ spectrum R f := by
   refine' spectrum.mem_iff.mpr fun h_unit => _

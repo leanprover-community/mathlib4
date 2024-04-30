@@ -191,7 +191,7 @@ non-trivial. -/
 structure Weight where
   /-- The family of eigenvalues corresponding to a weight. -/
   toFun : L → R
-  weightSpace_ne_bot : weightSpace M toFun ≠ ⊥
+  weightSpace_ne_bot' : weightSpace M toFun ≠ ⊥
 
 namespace Weight
 
@@ -202,6 +202,8 @@ instance instFunLike : FunLike (Weight R L M) L R where
 @[simp] lemma coe_weight_mk (χ : L → R) (h) :
     (↑(⟨χ, h⟩ : Weight R L M) : L → R) = χ :=
   rfl
+
+lemma weightSpace_ne_bot (χ : Weight R L M) : weightSpace M χ ≠ ⊥ := χ.weightSpace_ne_bot'
 
 variable {M}
 
@@ -225,6 +227,24 @@ def equivSetOf : Weight R L M ≃ {χ : L → R | weightSpace M χ ≠ ⊥} wher
   invFun w := ⟨w.1, w.2⟩
   left_inv w := by simp
   right_inv w := by simp
+
+lemma weightSpaceOf_ne_bot (χ : Weight R L M) (x : L) :
+    weightSpaceOf M (χ x) x ≠ ⊥ := by
+  have : ⨅ x, weightSpaceOf M (χ x) x ≠ ⊥ := χ.weightSpace_ne_bot
+  contrapose! this
+  rw [eq_bot_iff]
+  exact le_of_le_of_eq (iInf_le _ _) this
+
+lemma hasEigenvalueAt (χ : Weight R L M) (x : L) :
+    (toEndomorphism R L M x).HasEigenvalue (χ x) := by
+  obtain ⟨k : ℕ, hk : (toEndomorphism R L M x).generalizedEigenspace (χ x) k ≠ ⊥⟩ := by
+    simpa [Module.End.maximalGeneralizedEigenspace, weightSpaceOf] using χ.weightSpaceOf_ne_bot x
+  exact Module.End.hasEigenvalue_of_hasGeneralizedEigenvalue hk
+
+lemma apply_eq_zero_of_isNilpotent [NoZeroSMulDivisors R M] [IsReduced R]
+    (x : L) (h : _root_.IsNilpotent (toEndomorphism R L M x)) (χ : Weight R L M) :
+    χ x = 0 :=
+  ((χ.hasEigenvalueAt x).isNilpotent_of_isNilpotent h).eq_zero
 
 end Weight
 

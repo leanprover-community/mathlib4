@@ -887,6 +887,11 @@ instance : IsModularLattice (Submodule R M) :=
     rw [← add_sub_cancel_right c b, add_comm]
     apply z.sub_mem haz (xz hb)⟩
 
+lemma isCompl_comap_subtype_of_isCompl_of_le {p q r : Submodule R M}
+    (h₁ : IsCompl q r) (h₂ : q ≤ p) :
+    IsCompl (q.comap p.subtype) (r.comap p.subtype) := by
+  simpa [p.mapIic.isCompl_iff, Iic.isCompl_iff] using Iic.isCompl_inf_inf_of_isCompl_of_le h₁ h₂
+
 end AddCommGroup
 
 section AddCommGroup
