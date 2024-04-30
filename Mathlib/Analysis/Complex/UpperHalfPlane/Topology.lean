@@ -80,10 +80,10 @@ section strips
 value less than or equal to `A` and imaginary part is at least `B`. -/
 def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
 
-theorem strip_mem_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
+theorem mem_verticalStrip_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
   Iff.rfl
 
-lemma subset_strip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
+lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
     ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
   rcases K.eq_empty_or_nonempty with rfl | hne
   · exact ⟨1, 1, Real.zero_lt_one, empty_subset _⟩
