@@ -52,11 +52,9 @@ union of their respective languages.
 TODO: probably move to computability/regular_expression
 -/
 theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) :
-    (List.sum rs).matches' x ↔ ∃ r : RegularExpression α, r ∈ rs ∧ r.matches' x :=
-  by
+    (List.sum rs).matches' x ↔ ∃ r : RegularExpression α, r ∈ rs ∧ r.matches' x := by
   constructor
-  ·
-    induction rs using List.list_reverse_induction
+  · induction rs using List.list_reverse_induction
     case base => rintro ⟨⟩
     case ind rs r ih =>
       intro hx
@@ -66,8 +64,7 @@ theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) 
       cases hx
       case inl hx => rcases ih hx with ⟨r, mem, mat⟩; exact ⟨r, Or.inl mem, mat⟩
       case inr hx => exact ⟨r, Or.inr rfl, hx⟩
-  ·
-    induction' rs using List.list_reverse_induction with rs r ih
+  · induction' rs using List.list_reverse_induction with rs r ih
     case base =>
       rintro ⟨r, mem, _⟩
       exfalso
@@ -91,15 +88,15 @@ end RegularExpression
 namespace GNFA
 
 instance : Inhabited (GNFA α σ) :=
-  ⟨GNFA.mk fun _ _ => 0⟩
+  ⟨GNFA.mk fun _ _ ↦ 0⟩
 
 /-- A `trace` of a string and an internal state of a GNFA represents a way to get to the state via
 transitions of the GNFA that match parts of the string.
 -/
 inductive trace (M : GNFA α σ) : List α → σ → Prop
   | start : ∀ {x q}, x ∈ (M.step none (some q)).matches' → M.trace x q
-  |
-  step : ∀ {x y z p q}, M.trace y p → z ∈ (M.step (some p) (some q)).matches' → x = y ++ z → M.trace x q
+  | step : ∀ {x y z p q},
+    M.trace y p → z ∈ (M.step (some p) (some q)).matches' → x = y ++ z → M.trace x q
 
 /--
 An `accepts` of a string represents a way to get to the accepting state of a GNFA via transitions
@@ -110,13 +107,14 @@ TODO: make description clearer
 -/
 inductive accepts (M : GNFA α σ) : Language α
   | start : ∀ {x}, x ∈ (M.step none none).matches' → M.accepts x
-  | step : ∀ {x y z} (q), M.trace y q → z ∈ (M.step (some q) none).matches' → x = y ++ z → M.accepts x
+  | step : ∀ {x y z} (q),
+    M.trace y q → z ∈ (M.step (some q) none).matches' → x = y ++ z → M.accepts x
 
 /-- "Rips" an internal state out of a GNFA, making it smaller by one without changing its accepting
 language.
 -/
 def rip (M : GNFA α (Option σ)) : GNFA α σ :=
-  ⟨fun p q =>
+  ⟨fun p q ↦
     let p := p.map some
     let q := q.map some
     let r : Option (Option σ) := some none
@@ -124,12 +122,11 @@ def rip (M : GNFA α (Option σ)) : GNFA α σ :=
 
 theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
     (∃ p, q = some p ∧ M.rip.trace x p) ∨
-      q = none ∧
-        ∃ (y z : _) (xs : List (List α)) (p : Option σ),
-          (Option.map (M.rip.trace y) p).getD (y = []) ∧
-            z ∈ (M.step (Option.map some p) (some none)).matches' ∧
-              (∀ x ∈ xs, x ∈ (M.step (some none) (some none)).matches') ∧ x = y ++ z ++ xs.join :=
-  by
+    q = none ∧ ∃ (y z : _) (xs : List (List α)) (p : Option σ),
+    (p.map <| M.rip.trace y).getD (y = []) ∧
+    z ∈ (M.step (p.map some) (some none)).matches' ∧
+    (∀ x ∈ xs, x ∈ (M.step (some none) (some none)).matches') ∧
+    x = y ++ z ++ xs.join := by
   induction t
   case start x q mat =>
     revert mat
@@ -292,8 +289,7 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
         exact mat y (by simp[mem])
 
 -- TODO: maybe mark as @simp
-theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
-  by
+theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts := by
   ext
   constructor
   · intro t
@@ -397,11 +393,10 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts :=
 /-- Maps a GNFA's states across an equivalence.
 -/
 def mapEquiv {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : σ ≃ τ) : GNFA α τ :=
-  ⟨fun p q => M.step (p.map e.symm) (q.map e.symm)⟩
+  ⟨fun p q ↦ M.step (p.map e.symm) (q.map e.symm)⟩
 
 theorem mapEquiv_trace_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : σ ≃ τ) :
-    ∀ q x, M.trace x q → (M.mapEquiv e).trace x (e q) :=
-  by
+    ∀ q x, M.trace x q → (M.mapEquiv e).trace x (e q) := by
   intro q x t
   induction t
   case start x q mat =>
@@ -419,8 +414,7 @@ theorem mapEquiv_trace_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e
     exact mat
 
 theorem mapEquiv_trace {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e : σ ≃ τ) :
-    ∀ q x, M.trace x q ↔ (M.mapEquiv e).trace x (e q) :=
-  by
+    ∀ q x, M.trace x q ↔ (M.mapEquiv e).trace x (e q) := by
   intro q x
   constructor
   · intro t
@@ -460,11 +454,10 @@ theorem mapEquiv_correct {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e :
     exact this
 
 def sigma_toRegularExpression [FinEnum σ] (M : GNFA α σ) :
-    (r : RegularExpression α) ×' M.accepts = r.matches' :=
-  by
+    (r : RegularExpression α) ×' M.accepts = r.matches' := by
   revert M
   refine' @FinEnum.recEmptyOption
-    (λ (t : Type v) [FinEnum t] ↦
+    (fun (t : Type v) [FinEnum t] ↦
       ∀ (M : GNFA α t), ((r : RegularExpression α) ×' M.accepts = r.matches'))
     _ _ _ σ _
   ·
@@ -500,8 +493,11 @@ end GNFA
 
 namespace NFA
 
-variable (M : NFA α σ) [dec_start : DecidablePred M.start] [dec_accept : DecidablePred M.accept]
-  [dec_step : ∀ p a , DecidablePred (· ∈ M.step p a)] (as : List α)
+variable (M : NFA α σ)
+    [dec_start : DecidablePred M.start]
+    [dec_accept : DecidablePred M.accept]
+    [dec_step : ∀ p a , DecidablePred (· ∈ M.step p a)]
+    (as : List α)
 
 /-- Convert an NFA to the corresponding GNFA.
 
@@ -511,18 +507,16 @@ alphabet.
 TODO: would it be a good idea to make a separate "decidable NFA" structure?
 -/
 def toGNFA [enum : FinEnum α] : GNFA α σ :=
-  ⟨fun p q =>
+  ⟨fun p q ↦
     match (p, q) with
     | (none, none) => 0
     | (none, some q) => if M.start q then 1 else 0
     | (some p, none) => if M.accept p then 1 else 0
     | (some p, some q) =>
-      List.sum <|
-        (List.map fun a => RegularExpression.char a) <| List.filter (fun a => q ∈ M.step p a) enum.toList⟩
+        (enum.toList).filter (q ∈ M.step p ·) |>.map RegularExpression.char |>.sum⟩
 
 -- TODO: maybe mark as @simp
-theorem toGNFA_correct [enum : FinEnum α] : M.accepts = M.toGNFA.accepts :=
-  by
+theorem toGNFA_correct [enum : FinEnum α] : M.accepts = M.toGNFA.accepts := by
   ext x
   constructor
   · rintro ⟨q, accept, eval⟩
@@ -624,8 +618,7 @@ Given an NFA with a `fintype` state, there is a regular expression that matches 
 -/
 def sigma_toRegularExpression [FinEnum α] [FinEnum σ] :
     (r : RegularExpression α) ×' M.accepts = r.matches' :=
-  let ⟨r, hr⟩ := (M.toGNFA).sigma_toRegularExpression 
-  ⟨r, hr ▸ M.toGNFA_correct⟩
+  let ⟨r, hr⟩ := (M.toGNFA).sigma_toRegularExpression; ⟨r, hr ▸ M.toGNFA_correct⟩
 
 /-- Noncomputably finds the regular expression equivalent to the NFA.
 -/
@@ -641,11 +634,11 @@ theorem exists_toRegularExpression [Fintype α] (M : NFA α σ) :
   classical
   have := FinEnum.ofNodupList
     Fintype.elems.toList
-    (λ x : α ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
+    (fun x : α ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
     (Fintype.elems.nodup_toList)
-  have := FinEnum.ofNodupList
+  have : FinEnum σ := FinEnum.ofNodupList
     Fintype.elems.toList
-    (λ x : σ ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
+    (fun x : σ ↦ (Fintype.elems.mem_toList).mpr (Fintype.complete x))
     (Fintype.elems.nodup_toList)
   have := M.sigma_toRegularExpression
   exact ⟨this.fst, this.snd⟩

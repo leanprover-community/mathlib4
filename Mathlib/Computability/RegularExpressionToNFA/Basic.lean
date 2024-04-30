@@ -27,8 +27,7 @@ variable {α : Type u}
 
 namespace RegularExpression
 
-theorem zero_toNFA_correct : (zero : RegularExpression α).matches' = zero.toNFA.accepts :=
-  by
+theorem zero_toNFA_correct : (zero : RegularExpression α).matches' = zero.toNFA.accepts := by
   ext
   constructor
   · intro hx; cases hx
@@ -36,8 +35,7 @@ theorem zero_toNFA_correct : (zero : RegularExpression α).matches' = zero.toNFA
     rcases hx with ⟨q, accept, eval⟩
     cases accept
 
-theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsilon.toNFA.accepts :=
-  by
+theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsilon.toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨⟨⟩⟩; repeat' fconstructor
@@ -51,8 +49,7 @@ theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsi
     rcases hx with ⟨q, mem, step⟩
     cases step
 
-theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts :=
-  by
+theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨⟨⟩⟩
@@ -91,9 +88,10 @@ theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts
     rcases mem with ⟨_, _, _, _⟩
     contradiction
 
-theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matches' = r₁.toNFA.accepts)
-    (hr₂ : r₂.matches' = r₂.toNFA.accepts) : (r₁.plus r₂).matches' = (r₁.plus r₂).toNFA.accepts :=
-  by
+theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α}
+    (hr₁ : r₁.matches' = r₁.toNFA.accepts)
+    (hr₂ : r₂.matches' = r₂.toNFA.accepts) :
+    (r₁.plus r₂).matches' = (r₁.plus r₂).toNFA.accepts := by
   ext x
   constructor
   · intro hx
@@ -174,8 +172,7 @@ theorem plus_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       case inr => exact ⟨p, ih p mem, step⟩
 
 theorem comp_toNFA_eval₁ {r₁ r₂ : RegularExpression α} {x : List α} (q : r₁.State) :
-    q ∈ r₁.toNFA.eval x ↔ Sum.inl q ∈ (r₁.comp r₂).toNFA.eval x :=
-  by
+    q ∈ r₁.toNFA.eval x ↔ Sum.inl q ∈ (r₁.comp r₂).toNFA.eval x := by
   induction x using List.list_reverse_induction generalizing q
   case base => exact ⟨id, id⟩
   rename_i as a ih
@@ -194,8 +191,7 @@ theorem comp_toNFA_eval₁ {r₁ r₂ : RegularExpression α} {x : List α} (q :
 
 theorem comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q : r₂.State)
     (accepts : r₁.toNFA.accepts x) :
-    q ∈ r₂.toNFA.eval y → Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y :=
-  by
+    q ∈ r₂.toNFA.eval y → Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y := by
   induction y using List.list_reverse_induction generalizing q
   case base =>
     intro h
@@ -220,8 +216,7 @@ theorem comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q
     refine' ⟨Sum.inr p, ih p mem, step⟩
 
 theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matches' = r₁.toNFA.accepts)
-    (hr₂ : r₂.matches' = r₂.toNFA.accepts) : (r₁.comp r₂).matches' = (r₁.comp r₂).toNFA.accepts :=
-  by
+    (hr₂ : r₂.matches' = r₂.toNFA.accepts) : (r₁.comp r₂).matches' = (r₁.comp r₂).toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨y, hy, z, hz, comp⟩
@@ -273,8 +268,7 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
       suffices
         ∀ x q,
           Sum.inr q ∈ (r₁.comp r₂).toNFA.eval x →
-            ∃ y z, y ∈ r₁.toNFA.accepts ∧ q ∈ r₂.toNFA.eval z ∧ y ++ z = x
-        by
+            ∃ y z, y ∈ r₁.toNFA.accepts ∧ q ∈ r₂.toNFA.eval z ∧ y ++ z = x by
         specialize this x q eval
         rcases this with ⟨y, z, y_accepts, z_eval, append⟩
         refine' ⟨y, by simpa [hr₁], z, _, by assumption⟩
@@ -308,8 +302,7 @@ theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matc
         exact ⟨p, eval, step⟩
 
 theorem star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA.accepts) :
-    (star r).matches' = (star r).toNFA.accepts :=
-  by
+    (star r).matches' = (star r).toNFA.accepts := by
   ext x
   rw [star_iff_pow]
   constructor
@@ -336,8 +329,7 @@ theorem star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA
       use n.succ
       exact (r.pow_eval x n hr).mpr ⟨q, accept, t⟩
 
-theorem toNFA_correct (r : RegularExpression α) : r.matches' = r.toNFA.accepts :=
-  by
+theorem toNFA_correct (r : RegularExpression α) : r.matches' = r.toNFA.accepts := by
   induction r
   case zero => exact zero_toNFA_correct
   case epsilon => exact epsilon_toNFA_correct

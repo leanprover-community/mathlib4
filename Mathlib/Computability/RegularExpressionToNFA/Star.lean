@@ -26,8 +26,7 @@ variable {α : Type u}
 namespace RegularExpression
 
 theorem star_iff_pow {r : RegularExpression α} {x} :
-    x ∈ r.star.matches' ↔ ∃ n : ℕ, x ∈ (r ^ n).matches' :=
-  by
+    x ∈ r.star.matches' ↔ ∃ n : ℕ, x ∈ (r ^ n).matches' := by
   constructor
   · intro h
     rcases h with ⟨xs, join, all_match⟩
@@ -43,8 +42,8 @@ theorem star_iff_pow {r : RegularExpression α} {x} :
       cases' h with all_match x_match
       specialize ih all_match
       rcases ih with ⟨n, ih⟩
-      exact ⟨n.succ, xs.join, ih, x, x_match, by simp only [List.join_append,
-          List.join, List.append_nil]⟩
+      exact ⟨n.succ, xs.join, ih, x, x_match, by
+        simp only [List.join_append, List.join, List.append_nil]⟩
   · intro h
     rcases h with ⟨n, x_matches⟩
     revert x x_matches
@@ -82,11 +81,9 @@ inductive trace : List α → r.State → ℕ → Prop
   | reset : ∀ {p q x n}, p ∈ r.toNFA.accept → q ∈ r.toNFA.start → trace x p n → trace x q n.succ
 
 theorem star_eval (x : List α) (q : r.State) :
-    some q ∈ r.star.toNFA.eval x ↔ ∃ n, r.trace x.reverse q n :=
-  by
+    some q ∈ r.star.toNFA.eval x ↔ ∃ n, r.trace x.reverse q n := by
   constructor
-  · 
-    induction x using List.list_reverse_induction generalizing q
+  · induction x using List.list_reverse_induction generalizing q
     case base =>
       intro h
       exact ⟨0, trace.nil h⟩
@@ -136,8 +133,7 @@ theorem star_eval (x : List α) (q : r.State) :
           exact ⟨s, accept, step, start⟩
 
 theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
-    x ∈ (r ^ n.succ).matches' ↔ ∃ q, q ∈ r.toNFA.accept ∧ r.trace x.reverse q n :=
-  by
+    x ∈ (r ^ n.succ).matches' ↔ ∃ q, q ∈ r.toNFA.accept ∧ r.trace x.reverse q n := by
   induction n generalizing x
   case zero =>
     constructor
@@ -221,14 +217,12 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
         intro t
         rw [← List.concat_eq_append, List.reverse_concat] at t
         cases t
-        case step p step
-          t =>
+        case step p step t =>
           rcases x_ih p t with ⟨y, z, y_matches, eval, eq⟩
           refine' ⟨y, z ++ [a], y_matches, _, by simp [← eq]⟩
           rw [NFA.eval_append_singleton, NFA.mem_stepSet]
           exact ⟨p, eval, step⟩
-        case reset p accept start
-          t =>
+        case reset p accept start t =>
           rw [← List.reverse_concat] at t
           refine' ⟨as.concat a, [], _, start, by simp⟩
           rw [ih (as.concat a)]
