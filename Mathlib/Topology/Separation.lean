@@ -2326,8 +2326,7 @@ theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : E
 -- see Note [lower instance priority]
 /-- A `T₅` space is a `T₄` space. -/
 instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
-  normal s t hs ht hd := separatedNhds_iff_disjoint.2 <|
-    completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
+  -- follows from type-class inference
 #align t5_space.to_normal_space T5Space.toT4Space
 
 /-- A subspace of a T₅ space is a T₅ space. -/
