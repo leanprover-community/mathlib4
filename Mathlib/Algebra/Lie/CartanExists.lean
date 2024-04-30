@@ -79,7 +79,7 @@ variable (R M)
 
 variable (x y : L)
 
-open LieModule LinearMap PolynomialPolynomial
+open LieModule LinearMap
 
 local notation "φ" => LieModule.toEndomorphism R L M
 
@@ -92,7 +92,7 @@ This polynomial is captured in `lieCharpoly R M x y`. -/
 private noncomputable
 def lieCharpoly : Polynomial R[X] :=
   letI bL := chooseBasis R L
-  (LinearMap.polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
+  (polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
 lemma lieCharpoly_monic : (lieCharpoly R M x y).Monic :=
