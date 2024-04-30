@@ -1907,7 +1907,8 @@ theorem intcast_mulVec [IntCast α] (x : ℤ) (v : m → α) : x *ᵥ v = (x : �
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     OfNat.ofNat (no_index x) *ᵥ v = OfNat.ofNat x • v := by
   change diagonal x *ᵥ v = _
-  simp; rfl
+  rw [Pi.natCast_def, diagonal_mulVec, nsmul_eq_mul]
+  rfl
 
 end NonAssocSemiring
 
