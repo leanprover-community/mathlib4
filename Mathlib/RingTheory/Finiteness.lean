@@ -575,10 +575,11 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
-lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+variable (R M) in
+lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
-  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
+  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by

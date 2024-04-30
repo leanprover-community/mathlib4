@@ -57,11 +57,11 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme} [IsAffine
   congr
   delta IsLocalization.Away.map
   refine' IsLocalization.ringHom_ext (Submonoid.powers r) _
-  generalize_proofs h1 h2 h3
+  generalize_proofs
   haveI i1 := @isLocalization_away_of_isAffine X _ (Scheme.Γ.map f.op r)
   -- Porting note: needs to be very explicit here
   convert
-    (@IsLocalization.map_comp (hy := h3) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
+    (@IsLocalization.map_comp (hy := ‹_ ≤ _›) (Y.presheaf.obj <| Opposite.op (Scheme.basicOpen Y r))
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
@@ -549,47 +549,47 @@ theorem affineLocally_of_comp
   exact h
 #align ring_hom.property_is_local.affine_locally_of_comp RingHom.PropertyIsLocal.affineLocally_of_comp
 
-theorem affineLocally_stableUnderComposition : (affineLocally @P).StableUnderComposition := by
-  intro X Y S f g hf hg
-  let 𝒰 : ∀ i, ((S.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
-    intro i
-    refine' Scheme.OpenCover.bind _ fun i => Scheme.affineCover _
-    apply Scheme.OpenCover.pushforwardIso _
-      (pullbackRightPullbackFstIso g (S.affineCover.map i) f).hom
-    apply Scheme.Pullback.openCoverOfRight
-    exact (pullback g (S.affineCover.map i)).affineCover
-  -- Porting note: used to be - rw [hP.affine_openCover_iff (f ≫ g) S.affineCover _] - but
-  -- metavariables cause problems in the instance search
-  apply (@affine_openCover_iff _ hP _ _ (f ≫ g) S.affineCover _ ?_ ?_).mpr
-  rotate_left
-  · exact 𝒰
-  · intro i j; dsimp [𝒰] at *; infer_instance
-  · rintro i ⟨j, k⟩
-    dsimp at i j k
-    dsimp only [𝒰, Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
-      Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
-      Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj]
-    rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,
-      pullback.lift_snd_assoc, Category.assoc, ← Category.assoc, op_comp, Functor.map_comp]
-    apply hP.StableUnderComposition
-    · -- Porting note: used to be exact _|>. hg i j but that can't find an instance
-      apply hP.affine_openCover_iff _ _ _|>.mp
-      exact hg
-    · delta affineLocally at hf
-      -- Porting note: again strange behavior of TFAE
-      have := (hP.isLocal_sourceAffineLocally.affine_openCover_TFAE f).out 0 3
-      rw [this] at hf
-      -- Porting note: needed to help Lean with this instance (same as above)
-      have : IsOpenImmersion <|
-          ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
-        LocallyRingedSpace.IsOpenImmersion.comp _ _
-      specialize hf ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)
-      -- Porting note: again strange behavior of TFAE
-      have := (hP.affine_openCover_TFAE
-        (pullback.snd : pullback f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
-        pullback.fst) ⟶ _)).out 0 3
-      rw [this] at hf
-      apply hf
-#align ring_hom.property_is_local.affine_locally_stable_under_composition RingHom.PropertyIsLocal.affineLocally_stableUnderComposition
+theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnderComposition where
+  comp_mem {X Y S} f g hf hg := by
+    let 𝒰 : ∀ i, ((S.affineCover.pullbackCover (f ≫ g)).obj i).OpenCover := by
+      intro i
+      refine' Scheme.OpenCover.bind _ fun i => Scheme.affineCover _
+      apply Scheme.OpenCover.pushforwardIso _
+        (pullbackRightPullbackFstIso g (S.affineCover.map i) f).hom
+      apply Scheme.Pullback.openCoverOfRight
+      exact (pullback g (S.affineCover.map i)).affineCover
+    -- Porting note: used to be - rw [hP.affine_openCover_iff (f ≫ g) S.affineCover _] - but
+    -- metavariables cause problems in the instance search
+    apply (@affine_openCover_iff _ hP _ _ (f ≫ g) S.affineCover _ ?_ ?_).mpr
+    rotate_left
+    · exact 𝒰
+    · intro i j; dsimp [𝒰] at *; infer_instance
+    · rintro i ⟨j, k⟩
+      dsimp at i j k
+      dsimp only [𝒰, Scheme.OpenCover.bind_map, Scheme.OpenCover.pushforwardIso_obj,
+        Scheme.Pullback.openCoverOfRight_obj, Scheme.OpenCover.pushforwardIso_map,
+        Scheme.Pullback.openCoverOfRight_map, Scheme.OpenCover.bind_obj]
+      rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,
+        pullback.lift_snd_assoc, Category.assoc, ← Category.assoc, op_comp, Functor.map_comp]
+      apply hP.StableUnderComposition
+      · -- Porting note: used to be exact _|>. hg i j but that can't find an instance
+        apply hP.affine_openCover_iff _ _ _|>.mp
+        exact hg
+      · delta affineLocally at hf
+        -- Porting note: again strange behavior of TFAE
+        have := (hP.isLocal_sourceAffineLocally.affine_openCover_TFAE f).out 0 3
+        rw [this] at hf
+        -- Porting note: needed to help Lean with this instance (same as above)
+        have : IsOpenImmersion <|
+            ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst) :=
+          LocallyRingedSpace.IsOpenImmersion.comp _ _
+        specialize hf ((pullback g (S.affineCover.map i)).affineCover.map j ≫ pullback.fst)
+        -- Porting note: again strange behavior of TFAE
+        have := (hP.affine_openCover_TFAE
+          (pullback.snd : pullback f ((pullback g (S.affineCover.map i)).affineCover.map j ≫
+          pullback.fst) ⟶ _)).out 0 3
+        rw [this] at hf
+        apply hf
+#align ring_hom.property_is_local.affine_locally_stable_under_composition RingHom.PropertyIsLocal.affineLocally_isStableUnderComposition
 
 end RingHom.PropertyIsLocal

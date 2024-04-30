@@ -1663,8 +1663,22 @@ lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
 
 end AbsolutelyContinuous
 
+@[simp]
+lemma absolutelyContinuous_zero_iff : μ ≪ 0 ↔ μ = 0 :=
+  ⟨fun h ↦ measure_univ_eq_zero.mp (h rfl), fun h ↦ h.symm ▸ AbsolutelyContinuous.zero _⟩
+
 alias absolutelyContinuous_refl := AbsolutelyContinuous.refl
 alias absolutelyContinuous_rfl := AbsolutelyContinuous.rfl
+
+lemma absolutelyContinuous_sum_left {μs : ι → Measure α} (hμs : ∀ i, μs i ≪ ν) :
+    Measure.sum μs ≪ ν :=
+  AbsolutelyContinuous.mk fun s hs hs0 ↦ by simp [sum_apply _ hs, fun i ↦ hμs i hs0]
+
+lemma absolutelyContinuous_sum_right {μs : ι → Measure α} (i : ι) (hνμ : ν ≪ μs i) :
+    ν ≪ Measure.sum μs := by
+  refine AbsolutelyContinuous.mk fun s hs hs0 ↦ ?_
+  simp only [sum_apply _ hs, ENNReal.tsum_eq_zero] at hs0
+  exact hνμ (hs0 i)
 
 theorem absolutelyContinuous_of_le_smul {μ' : Measure α} {c : ℝ≥0∞} (hμ'_le : μ' ≤ c • μ) :
     μ' ≪ μ :=

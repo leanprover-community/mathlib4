@@ -203,14 +203,7 @@ theorem qRight_zero_right (t : I) :
 #align unit_interval.Q_right_zero_right unitInterval.qRight_zero_right
 
 theorem qRight_one_right (t : I) : qRight (t, 1) = t :=
-  Eq.trans
-      (by
-        rw [qRight]
-        congr
-        norm_num
-        apply mul_div_cancel_left₀
-        exact two_ne_zero) <|
-    Set.projIcc_val zero_le_one _
+  Eq.trans (by rw [qRight]; norm_num) <| Set.projIcc_val zero_le_one _
 #align unit_interval.Q_right_one_right unitInterval.qRight_one_right
 
 end unitInterval
