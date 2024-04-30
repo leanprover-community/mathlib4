@@ -1911,16 +1911,16 @@ theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x :
 
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    OfNat.ofNat (no_index x) *ᵥ v = OfNat.ofNat x • v := by
+    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v := by
   change diagonal x *ᵥ v = _
-  rw [Pi.natCast_def, diagonal_const_mulVec, nsmul_eq_mul]
+  rw [Pi.natCast_def, diagonal_const_mulVec]
   rfl
 
 @[simp]
 theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v := by
   change v ᵥ* diagonal x = _
-  rw [Pi.natCast_def, const_vecMul_diagonal, MulOpposite.op_natCast, MulOpposite.op_ofNat]
+  rw [Pi.natCast_def, const_vecMul_diagonal]
   rfl
 
 end NonAssocSemiring
