@@ -207,6 +207,9 @@ theorem mdifferentiableWithinAt_iff' (f : M → M') (s : Set M) (x : M) :
   by rw [MDifferentiableWithinAt, liftPropWithinAt_iff']; rfl
 #align mdifferentiable_within_at_iff_lift_prop_within_at mdifferentiableWithinAt_iff'
 
+@[deprecated] -- 2024-04-30
+alias mdifferentiableWithinAt_iff_liftPropWithinAt := mdifferentiableWithinAt_iff'
+
 variable {I I'} in
 theorem MDifferentiableWithinAt.continuousWithinAt {f : M → M'} {s : Set M} {x : M}
     (hf : MDifferentiableWithinAt I I' f s x) :
@@ -242,6 +245,9 @@ theorem mdifferentiableAt_iff (f : M → M') (x : M) :
   -- Porting note: `rfl` wasn't needed
   rfl
 #align mdifferentiable_at_iff_lift_prop_at mdifferentiableAt_iff
+
+@[deprecated] -- 2024-04-30
+alias mdifferentiableAt_iff_liftPropAt := mdifferentiableAt_iff
 
 variable {I I'} in
 theorem MDifferentiableAt.continuousAt {f : M → M'} {x : M} (hf : MDifferentiableAt I I' f x) :
