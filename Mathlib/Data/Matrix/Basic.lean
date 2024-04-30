@@ -1889,6 +1889,26 @@ theorem vecMul_one (v : m → α) : v ᵥ* 1 = v := by
   rw [← diagonal_one, vecMul_diagonal, mul_one]
 #align matrix.vec_mul_one Matrix.vecMul_one
 
+@[simp]
+theorem diagonal_mulVec (x : α) (v : m → α) : (diagonal fun _ => x) *ᵥ v = x • v := by
+  ext; simp [mulVec_diagonal]
+
+@[simp]
+theorem natcast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = x • v := by
+  change diagonal x *ᵥ v = _
+  ext; simp
+
+@[simp]
+theorem intcast_mulVec [IntCast α] (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
+  change diagonal x *ᵥ v = _
+  simp
+
+@[simp]
+theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    OfNat.ofNat (no_index x) *ᵥ v = OfNat.ofNat x • v := by
+  change diagonal x *ᵥ v = _
+  simp; rfl
+
 end NonAssocSemiring
 
 section NonUnitalNonAssocRing
