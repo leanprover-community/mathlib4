@@ -45,8 +45,8 @@ def nil : Vector3 α 0 :=
 @[match_pattern]
 def cons (a : α) (v : Vector3 α n) : Vector3 α (succ n) := fun i => by
   refine' i.cases' _ _
-  exact a
-  exact v
+  · exact a
+  · exact v
 #align vector3.cons Vector3.cons
 
 section
@@ -203,7 +203,8 @@ theorem insert_fs (a : α) (b : α) (v : Vector3 α n) (i : Fin2 (succ n)) :
 theorem append_insert (a : α) (t : Vector3 α m) (v : Vector3 α n) (i : Fin2 (succ n))
     (e : succ n + m = succ (n + m)) :
     insert a (t +-+ v) (Eq.recOn e (i.add m)) = Eq.recOn e (t +-+ insert a v i) := by
-  refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e; rfl
+  refine' Vector3.recOn t (fun e => _) (@fun k b t IH _ => _) e
+  · rfl
   have e' := succ_add n k
   change
     insert a (b :: t +-+ v) (Eq.recOn (congr_arg succ e') (fs (add i k))) =

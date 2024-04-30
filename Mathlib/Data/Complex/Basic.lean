@@ -941,6 +941,16 @@ theorem im_eq_sub_conj (z : ℂ) : (z.im : ℂ) = (z - conj z) / (2 * I) := by
     mul_div_cancel_left₀ _ (mul_ne_zero two_ne_zero I_ne_zero : 2 * I ≠ 0)]
 #align complex.im_eq_sub_conj Complex.im_eq_sub_conj
 
+/-- Show the imaginary number ⟨x, y⟩ as an "x + y*I" string
+
+Note that the Real numbers used for x and y will show as cauchy sequences due to the way Real
+numbers are represented.
+-/
+unsafe instance instRepr : Repr ℂ where
+  reprPrec f p :=
+    (if p > 65 then (Std.Format.bracket "(" . ")") else (·)) <|
+      reprPrec f.re 65 ++ " + " ++ reprPrec f.im 70 ++ "*I"
+
 end Complex
 
 assert_not_exists Multiset

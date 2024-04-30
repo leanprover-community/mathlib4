@@ -75,6 +75,7 @@ namespace Mathlib.Meta.Positivity
 
 open Lean Meta Qq Function
 
+/-- Extension of the `positivity` tactic for Bernstein polynomials: they are always non-negative. -/
 @[positivity DFunLike.coe _ _]
 def evalBernstein : PositivityExt where eval {_ _} _zα _pα e := do
   let .app (.app _coe (.app (.app _ n) ν)) x ← whnfR e | throwError "not bernstein polynomial"
