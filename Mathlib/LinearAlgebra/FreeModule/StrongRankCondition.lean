@@ -3,7 +3,7 @@ Copyright (c) 2021 Riccardo Brasca. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Riccardo Brasca
 -/
-import Mathlib.LinearAlgebra.Charpoly.Basic
+import Mathlib.RingTheory.FiniteType
 import Mathlib.LinearAlgebra.InvariantBasisNumber
 
 #align_import linear_algebra.free_module.strong_rank_condition from "leanprover-community/mathlib"@"f37e88f3ec14ee5eab18a9330ace717740e9c92c"
