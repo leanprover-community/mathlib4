@@ -292,23 +292,22 @@ def optionEquivLeft : MvPolynomial (Option S₁) R ≃ₐ[R] Polynomial (MvPolyn
 
 @[simp]
 lemma optionEquivLeft_X_some (x : S₁) : optionEquivLeft R S₁ (X (some x)) = Polynomial.C (X x) := by
-  simp only [MvPolynomial.optionEquivLeft_apply, MvPolynomial.aeval_X]
+  simp only [optionEquivLeft_apply, aeval_X]
 
 @[simp]
 lemma optionEquivLeft_X_none : optionEquivLeft R S₁ (X none) = Polynomial.X := by
-  simp only [MvPolynomial.optionEquivLeft_apply, @MvPolynomial.aeval_X]
+  simp only [optionEquivLeft_apply, aeval_X]
 
 @[simp]
 lemma optionEquivLeft_C (r : R) : optionEquivLeft R S₁ (C r) = Polynomial.C (C r) := by
-  unfold optionEquivLeft AlgEquiv.ofAlgHom
-  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C]
-  rfl
+  simp only [optionEquivLeft_apply, aeval_C, Polynomial.algebraMap_apply, algebraMap_eq]
 
 end
 
 /-- The algebra isomorphism between multivariable polynomials in `Option S₁` and
 multivariable polynomials with coefficients in polynomials.
 -/
+@[simps!]
 def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ R[X] :=
   AlgEquiv.ofAlgHom (MvPolynomial.aeval fun o => o.elim (C Polynomial.X) X)
     (MvPolynomial.aevalTower (Polynomial.aeval (X none)) fun i => X (Option.some i))
@@ -323,20 +322,14 @@ def optionEquivRight : MvPolynomial (Option S₁) R ≃ₐ[R] MvPolynomial S₁ 
           Polynomial.aeval_X, AlgHom.coe_id, id, aevalTower_X])
 #align mv_polynomial.option_equiv_right MvPolynomial.optionEquivRight
 
-@[simp]
 lemma optionEquivRight_X_some (x : S₁) : optionEquivRight R S₁ (X (some x)) = X x := by
-  unfold optionEquivRight AlgEquiv.ofAlgHom
-  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+  simp only [optionEquivRight_apply, aeval_X]
 
-@[simp]
 lemma optionEquivRight_X_none : optionEquivRight R S₁ (X none) = C Polynomial.X := by
-  unfold optionEquivRight AlgEquiv.ofAlgHom
-  simp only [AlgEquiv.coe_mk, aeval_X, Option.elim]
+  simp only [optionEquivRight_apply, aeval_X]
 
-@[simp]
 lemma optionEquivRight_C (r : R) : optionEquivRight R S₁ (C r) = C (Polynomial.C r) := by
-  unfold optionEquivRight AlgEquiv.ofAlgHom
-  simp only [Option.elim, AlgEquiv.coe_mk, aeval_C, C_eq_algebraMap, algebraMap_apply]
+  simp only [optionEquivRight_apply, aeval_C, algebraMap_apply, Polynomial.algebraMap_eq]
 
 variable (n : ℕ)
 
