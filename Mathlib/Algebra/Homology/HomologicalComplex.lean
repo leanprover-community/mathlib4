@@ -317,8 +317,8 @@ theorem isZero_zero [HasZeroObject V] : IsZero (zero : HomologicalComplex V c) :
   refine' ⟨fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩, fun X => ⟨⟨⟨0⟩, fun f => _⟩⟩⟩
   all_goals
     ext
-    dsimp [zero]
-    apply Subsingleton.elim
+    dsimp only [zero]
+    subsingleton
 #align homological_complex.is_zero_zero HomologicalComplex.isZero_zero
 
 instance [HasZeroObject V] : HasZeroObject (HomologicalComplex V c) :=

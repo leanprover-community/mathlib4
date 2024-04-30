@@ -669,7 +669,7 @@ theorem isUnit_iff_exists_and_exists [Monoid M] {a : M} :
 
 @[to_additive (attr := nontriviality)]
 theorem isUnit_of_subsingleton [Monoid M] [Subsingleton M] (a : M) : IsUnit a :=
-  ⟨⟨a, a, Subsingleton.elim _ _, Subsingleton.elim _ _⟩, rfl⟩
+  ⟨⟨a, a, by subsingleton, by subsingleton⟩, rfl⟩
 #align is_unit_of_subsingleton isUnit_of_subsingleton
 #align is_add_unit_of_subsingleton isAddUnit_of_subsingleton
 
@@ -680,7 +680,7 @@ instance [Monoid M] : CanLift M Mˣ Units.val IsUnit :=
 /-- A subsingleton `Monoid` has a unique unit. -/
 @[to_additive "A subsingleton `AddMonoid` has a unique additive unit."]
 instance [Monoid M] [Subsingleton M] : Unique Mˣ where
-  uniq a := Units.val_eq_one.mp <| Subsingleton.elim (a : M) 1
+  uniq _ := Units.val_eq_one.mp (by subsingleton)
 
 @[to_additive (attr := simp)]
 protected theorem Units.isUnit [Monoid M] (u : Mˣ) : IsUnit (u : M) :=
@@ -732,8 +732,7 @@ lemma IsUnit.exists_left_inv {a : M} (h : IsUnit a) : ∃ b, b * a = 1 := by
 #align is_unit.pow IsUnit.pow
 #align is_add_unit.nsmul IsAddUnit.nsmul
 
-theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 :=
-  Subsingleton.elim u 1
+theorem units_eq_one [Unique Mˣ] (u : Mˣ) : u = 1 := by subsingleton
 #align units_eq_one units_eq_one
 
 @[to_additive] lemma isUnit_iff_eq_one [Unique Mˣ] {x : M} : IsUnit x ↔ x = 1 :=

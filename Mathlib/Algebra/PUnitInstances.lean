@@ -77,7 +77,7 @@ instance commRing : CommRing PUnit where
   natCast _ := unit
 
 instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
-  refine' { PUnit.commRing with .. }; intros; exact Subsingleton.elim _ _
+  refine' { PUnit.commRing with .. }; intros; subsingleton
 
 instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
@@ -86,10 +86,10 @@ instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   normUnit_zero := rfl
   normUnit_mul := by intros; rfl
   normUnit_coe_units := by intros; rfl
-  gcd_dvd_left _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  gcd_dvd_right _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  dvd_gcd {_ _} _ _ _ := ⟨unit, Subsingleton.elim _ _⟩
-  gcd_mul_lcm _ _ := ⟨1, Subsingleton.elim _ _⟩
+  gcd_dvd_left _ _ := ⟨unit, by subsingleton⟩
+  gcd_dvd_right _ _ := ⟨unit, by subsingleton⟩
+  dvd_gcd {_ _} _ _ _ := ⟨unit, by subsingleton⟩
+  gcd_mul_lcm _ _ := ⟨1, by subsingleton⟩
   lcm_zero_left := by intros; rfl
   lcm_zero_right := by intros; rfl
   normalize_gcd := by intros; rfl
@@ -113,7 +113,7 @@ theorem norm_unit_eq {x : PUnit} : normUnit x = 1 :=
 instance canonicallyOrderedAddCommMonoid : CanonicallyOrderedAddCommMonoid PUnit := by
   refine'
     { PUnit.commRing, PUnit.instCompleteBooleanAlgebra with
-      exists_add_of_le := fun {_ _} _ => ⟨unit, Subsingleton.elim _ _⟩.. } <;>
+      exists_add_of_le := fun {_ _} _ => ⟨unit, by subsingleton⟩.. } <;>
     intros <;>
     trivial
 
@@ -152,16 +152,16 @@ instance [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+  refine' { PUnit.smul with .. } <;> intros <;> subsingleton
 
 instance mulAction [Monoid R] : MulAction R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> exact Subsingleton.elim _ _
+  refine' { PUnit.smul with .. } <;> intros <;> subsingleton
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  refine' { PUnit.mulAction with .. } <;> intros <;> subsingleton
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  refine' { PUnit.mulAction with .. } <;> intros <;> subsingleton
 
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
@@ -170,6 +170,6 @@ instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
 instance module [Semiring R] : Module R PUnit := by
-  refine' { PUnit.distribMulAction with .. } <;> intros <;> exact Subsingleton.elim _ _
+  refine' { PUnit.distribMulAction with .. } <;> intros <;> subsingleton
 
 end PUnit

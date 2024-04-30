@@ -338,8 +338,7 @@ def finFunctionFinEquiv {m n : ℕ} : (Fin n → Fin m) ≃ Fin (m ^ n) :=
     fun a => by
       dsimp
       induction' n with n ih
-      · haveI : Subsingleton (Fin (m ^ 0)) := (Fin.castIso <| pow_zero _).toEquiv.subsingleton
-        exact Subsingleton.elim _ _
+      · subsingleton [(Fin.castIso <| pow_zero m).toEquiv.subsingleton]
       simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
       ext
       simp_rw [Fin.sum_univ_succ, Fin.val_zero, Fin.val_succ, pow_zero, Nat.div_one,
@@ -397,9 +396,9 @@ def finPiFinEquiv {m : ℕ} {n : Fin m → ℕ} : (∀ i : Fin m, Fin (n i)) ≃
       intro a; revert a; dsimp only [Fin.val_mk]
       refine' Fin.consInduction _ _ n
       · intro a
-        haveI : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
+        have : Subsingleton (Fin (∏ i : Fin 0, i.elim0)) :=
           (Fin.castIso <| prod_empty).toEquiv.subsingleton
-        exact Subsingleton.elim _ _
+        subsingleton
       · intro n x xs ih a
         simp_rw [Fin.forall_iff, Fin.ext_iff] at ih
         ext

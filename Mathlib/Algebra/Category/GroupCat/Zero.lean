@@ -31,7 +31,7 @@ theorem isZero_of_subsingleton (G : GroupCat) [Subsingleton G] : IsZero G := by
     have : x = 1 := Subsingleton.elim _ _
     rw [this, map_one, map_one]
   · ext
-    apply Subsingleton.elim
+    subsingleton
 set_option linter.uppercaseLean3 false in
 #align Group.is_zero_of_subsingleton GroupCat.isZero_of_subsingleton
 set_option linter.uppercaseLean3 false in
@@ -52,7 +52,7 @@ theorem isZero_of_subsingleton (G : CommGroupCat) [Subsingleton G] : IsZero G :=
     have : x = 1 := Subsingleton.elim _ _
     rw [this, map_one, map_one]
   · ext
-    apply Subsingleton.elim
+    subsingleton
 set_option linter.uppercaseLean3 false in
 #align CommGroup.is_zero_of_subsingleton CommGroupCat.isZero_of_subsingleton
 set_option linter.uppercaseLean3 false in

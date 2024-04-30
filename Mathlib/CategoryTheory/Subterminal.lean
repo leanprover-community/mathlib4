@@ -80,15 +80,15 @@ The converse of `IsSubterminal.mono_terminal_from`.
 theorem isSubterminal_of_mono_terminal_from [HasTerminal C] [Mono (terminal.from A)] :
     IsSubterminal A := fun Z f g => by
   rw [← cancel_mono (terminal.from A)]
-  apply Subsingleton.elim
+  subsingleton
 #align category_theory.is_subterminal_of_mono_terminal_from CategoryTheory.isSubterminal_of_mono_terminal_from
 
 theorem isSubterminal_of_isTerminal {T : C} (hT : IsTerminal T) : IsSubterminal T := fun _ _ _ =>
   hT.hom_ext _ _
 #align category_theory.is_subterminal_of_is_terminal CategoryTheory.isSubterminal_of_isTerminal
 
-theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ =>
-  Subsingleton.elim _ _
+theorem isSubterminal_of_terminal [HasTerminal C] : IsSubterminal (⊤_ C) := fun _ _ _ => by
+  subsingleton
 #align category_theory.is_subterminal_of_terminal CategoryTheory.isSubterminal_of_terminal
 
 /-- If `A` is subterminal, its diagonal morphism is an isomorphism.
@@ -165,16 +165,15 @@ def subterminalsEquivMonoOverTerminal [HasTerminal C] : Subterminals C ≌ MonoO
     { obj := fun X =>
         ⟨X.obj.left, fun Z f g => by
           rw [← cancel_mono X.arrow]
-          apply Subsingleton.elim⟩
+          subsingleton⟩
       map := fun f => f.1
       map_id := fun X => rfl
       map_comp := fun f g => rfl }
   -- Porting note: the original definition was triggering a timeout, using `NatIso.ofComponents`
   -- in the definition of the natural isomorphisms makes the situation slightly better
-  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (fun _ => by apply Subsingleton.elim)
-  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _))
-    (fun _ => by apply Subsingleton.elim)
-  functor_unitIso_comp := fun _ => by apply Subsingleton.elim
+  unitIso := NatIso.ofComponents (fun X => Iso.refl X) (by subsingleton)
+  counitIso := NatIso.ofComponents (fun X => MonoOver.isoMk (Iso.refl _)) (by subsingleton)
+  functor_unitIso_comp := by subsingleton
   -- With `aesop` filling the auto-params this was taking 20s or so
 #align category_theory.subterminals_equiv_mono_over_terminal CategoryTheory.subterminalsEquivMonoOverTerminal
 
