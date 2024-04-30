@@ -1670,7 +1670,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       show ite _ _ _ ≤ a by
         split_ifs with h₁
         · cases' a with a
-          exact le_rfl
+          · exact le_rfl
           cases h₁ haS
         · cases a
           · exact le_top

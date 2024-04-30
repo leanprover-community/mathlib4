@@ -3,7 +3,8 @@ Copyright (c) 2020 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
+import Mathlib.RingTheory.Subring.Basic
 
 #align_import field_theory.subfield from "leanprover-community/mathlib"@"28aa996fc6fb4317f0083c4e6daf79878d81be33"
 
@@ -121,7 +122,7 @@ lemma qsmul_mem (s : S) (q : ℚ) (hx : x ∈ s) : q • x ∈ s := by
 @[aesop safe apply (rule_sets := [SetLike])]
 lemma ofScientific_mem (s : S) {b : Bool} {n m : ℕ} :
     (OfScientific.ofScientific n b m : K) ∈ s :=
-  SubfieldClass.ratCast_mem ..
+  SubfieldClass.nnratCast_mem s (OfScientific.ofScientific n b m)
 
 instance instSMulNNRat (s : S) : SMul ℚ≥0 s where smul q x := ⟨q • x, nnqsmul_mem s q x.2⟩
 instance instSMulRat (s : S) : SMul ℚ s where smul q x := ⟨q • x, qsmul_mem s q x.2⟩

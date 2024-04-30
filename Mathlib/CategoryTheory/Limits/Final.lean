@@ -394,7 +394,8 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
   | rel x y r =>
     obtain ⟨f, w⟩ := r
     fconstructor
-    swap; fconstructor
+    swap
+    · fconstructor
     left; fconstructor
     exact StructuredArrow.homMk f
   | refl => fconstructor
@@ -403,7 +404,8 @@ theorem zigzag_of_eqvGen_quot_rel {F : C ⥤ D} {d : D} {f₁ f₂ : ΣX, d ⟶ 
     exact ih
   | trans x y z _ _ ih₁ ih₂ =>
     apply Relation.ReflTransGen.trans
-    exact ih₁; exact ih₂
+    · exact ih₁
+    · exact ih₂
 #align category_theory.functor.final.zigzag_of_eqv_gen_quot_rel CategoryTheory.Functor.Final.zigzag_of_eqvGen_quot_rel
 
 end Final

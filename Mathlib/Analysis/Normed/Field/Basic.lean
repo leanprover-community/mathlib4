@@ -663,9 +663,9 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
         -- Porting note: `show` used to select a goal to work on
         rotate_right
-        show Tendsto _ _ _
-        exact tendsto_const_nhds
-        simp⟩
+        · show Tendsto _ _ _
+          exact tendsto_const_nhds
+        · simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]

@@ -73,7 +73,7 @@ instance : (forget R).Faithful where
   map_injective h := by ext1; exact h
 
 instance : (forget R).Full where
-  preimage φ := ⟨φ⟩
+  map_surjective φ := ⟨⟨φ⟩, rfl⟩
 
 /-- Evaluation on an object `X` gives a functor
 `SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
