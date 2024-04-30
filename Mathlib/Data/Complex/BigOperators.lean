@@ -31,12 +31,12 @@ theorem ofReal_sum (f : α → ℝ) : ((∑ i in s, f i : ℝ) : ℂ) = ∑ i in
 
 @[simp]
 theorem re_sum (f : α → ℂ) : (∑ i in s, f i).re = ∑ i in s, (f i).re :=
-  reAddGroupHom.map_sum f s
+  map_sum reAddGroupHom f s
 #align complex.re_sum Complex.re_sum
 
 @[simp]
 theorem im_sum (f : α → ℂ) : (∑ i in s, f i).im = ∑ i in s, (f i).im :=
-  imAddGroupHom.map_sum f s
+  map_sum imAddGroupHom f s
 #align complex.im_sum Complex.im_sum
 
 end Complex

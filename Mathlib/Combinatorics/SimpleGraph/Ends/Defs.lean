@@ -89,7 +89,7 @@ namespace ComponentCompl
 for adjacent vertices.
 -/
 protected def lift {β : Sort*} (f : ∀ ⦃v⦄ (_ : v ∉ K), β)
-    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K) (_ : G.Adj v w), f hv = f hw) : G.ComponentCompl K → β :=
+    (h : ∀ ⦃v w⦄ (hv : v ∉ K) (hw : w ∉ K), G.Adj v w → f hv = f hw) : G.ComponentCompl K → β :=
   ConnectedComponent.lift (fun vv => f vv.prop) fun v w p => by
     induction' p with _ u v w a q ih
     · rintro _
@@ -159,7 +159,7 @@ theorem exists_adj_boundary_pair (Gc : G.Preconnected) (hK : K.Nonempty) :
   refine' ComponentCompl.ind fun v vnK => _
   let C : G.ComponentCompl K := G.componentComplMk vnK
   let dis := Set.disjoint_iff.mp C.disjoint_right
-  by_contra' h
+  by_contra! h
   suffices Set.univ = (C : Set V) by exact dis ⟨hK.choose_spec, this ▸ Set.mem_univ hK.some⟩
   symm
   rw [Set.eq_univ_iff_forall]
@@ -248,7 +248,7 @@ theorem infinite_iff_in_all_ranges {K : Finset V} (C : G.ComponentCompl K) :
 
 end ComponentCompl
 
-/- For a locally finite preconnected graph, the number of components outside of any finite set
+/-- For a locally finite preconnected graph, the number of components outside of any finite set
 is finite. -/
 instance componentCompl_finite [LocallyFinite G] [Gpc : Fact G.Preconnected] (K : Finset V) :
     Finite (G.ComponentCompl K) := by

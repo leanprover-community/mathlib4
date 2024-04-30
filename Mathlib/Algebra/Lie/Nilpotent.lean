@@ -3,13 +3,14 @@ Copyright (c) 2021 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
+import Mathlib.Algebra.Lie.BaseChange
 import Mathlib.Algebra.Lie.Solvable
 import Mathlib.Algebra.Lie.Quotient
 import Mathlib.Algebra.Lie.Normalizer
 import Mathlib.LinearAlgebra.Eigenspace.Basic
 import Mathlib.Order.Filter.AtTopBot
 import Mathlib.RingTheory.Artinian
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Lemmas
 import Mathlib.Tactic.Monotonicity
 
 #align_import algebra.lie.nilpotent from "leanprover-community/mathlib"@"6b0169218d01f2837d79ea2784882009a0da1aa1"
@@ -30,17 +31,13 @@ carries a natural concept of nilpotency. We define these here via the lower cent
 lie algebra, lower central series, nilpotent
 -/
 
-
 universe u v w w₁ w₂
 
 section NilpotentModules
 
 variable {R : Type u} {L : Type v} {M : Type w}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [AddCommGroup M] [Module R M]
-
 variable [LieRingModule L M] [LieModule R L M]
-
 variable (k : ℕ) (N : LieSubmodule R L M)
 
 namespace LieSubmodule
@@ -137,7 +134,7 @@ variable (R L M)
 theorem antitone_lowerCentralSeries : Antitone <| lowerCentralSeries R L M := by
   intro l k
   induction' k with k ih generalizing l <;> intro h
-  · exact (le_zero_iff.mp h).symm ▸ le_rfl
+  · exact (Nat.le_zero.mp h).symm ▸ le_rfl
   · rcases Nat.of_le_succ h with (hk | hk)
     · rw [lowerCentralSeries_succ]
       exact (LieSubmodule.mono_lie_right _ _ ⊤ (ih hk)).trans (LieSubmodule.lie_le_right _ _)
@@ -151,7 +148,7 @@ theorem eventually_iInf_lowerCentralSeries_eq [IsArtinian R M] :
   obtain ⟨n, hn : ∀ m, n ≤ m → lowerCentralSeries R L M n = lowerCentralSeries R L M m⟩ :=
     WellFounded.monotone_chain_condition.mp h_wf ⟨_, antitone_lowerCentralSeries R L M⟩
   refine Filter.eventually_atTop.mpr ⟨n, fun l hl ↦ le_antisymm (iInf_le _ _) (le_iInf fun m ↦ ?_)⟩
-  cases' le_or_lt l m with h h
+  rcases le_or_lt l m with h | h
   · rw [← hn _ hl, ← hn _ (hl.trans h)]
   · exact antitone_lowerCentralSeries R L M (le_of_lt h)
 
@@ -273,7 +270,7 @@ theorem isNilpotent_toEndomorphism_of_isNilpotent₂ [IsNilpotent R L M] (x y : 
     _root_.IsNilpotent (toEndomorphism R L M x ∘ₗ toEndomorphism R L M y) := by
   obtain ⟨k, hM⟩ := exists_lowerCentralSeries_eq_bot_of_isNilpotent R L M
   replace hM : lowerCentralSeries R L M (2 * k) = ⊥ := by
-    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by linarith)
+    rw [eq_bot_iff, ← hM]; exact antitone_lowerCentralSeries R L M (by omega)
   use k
   ext m
   rw [LinearMap.pow_apply, LinearMap.zero_apply, ← LieSubmodule.mem_bot (R := R) (L := L), ← hM]
@@ -559,11 +556,8 @@ section Morphisms
 open LieModule Function
 
 variable {L₂ M₂ : Type*} [LieRing L₂] [LieAlgebra R L₂]
-
 variable [AddCommGroup M₂] [Module R M₂] [LieRingModule L₂ M₂] [LieModule R L₂ M₂]
-
 variable {f : L →ₗ⁅R⁆ L₂} {g : M →ₗ[R] M₂}
-
 variable (hf : Surjective f) (hg : Surjective g) (hfg : ∀ x m, ⁅f x, g m⁆ = g ⁅x, m⁆)
 
 theorem Function.Surjective.lieModule_lcs_map_eq (k : ℕ) :
@@ -633,7 +627,6 @@ instance (priority := 100) LieAlgebra.isSolvable_of_isNilpotent (R : Type u) (L 
 section NilpotentAlgebras
 
 variable (R : Type u) (L : Type v) (L' : Type w)
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
 
 /-- We say a Lie algebra is nilpotent when it is nilpotent as a Lie module over itself via the
@@ -780,9 +773,7 @@ namespace LieIdeal
 open LieModule
 
 variable {R L : Type*} [CommRing R] [LieRing L] [LieAlgebra R L] (I : LieIdeal R L)
-
 variable (M : Type*) [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
-
 variable (k : ℕ)
 
 /-- Given a Lie module `M` over a Lie algebra `L` together with an ideal `I` of `L`, this is the
@@ -856,3 +847,25 @@ theorem _root_.LieAlgebra.isNilpotent_ad_of_isNilpotent {L : LieSubalgebra R A} 
 #align lie_algebra.is_nilpotent_ad_of_is_nilpotent LieAlgebra.isNilpotent_ad_of_isNilpotent
 
 end OfAssociative
+
+section ExtendScalars
+
+open LieModule TensorProduct
+
+variable (R A L M : Type*) [CommRing R] [LieRing L] [LieAlgebra R L]
+  [AddCommGroup M] [Module R M] [LieRingModule L M] [LieModule R L M]
+  [CommRing A] [Algebra R A]
+
+@[simp]
+lemma LieSubmodule.lowerCentralSeries_tensor_eq_baseChange (k : ℕ) :
+    lowerCentralSeries A (A ⊗[R] L) (A ⊗[R] M) k =
+    (lowerCentralSeries R L M k).baseChange A := by
+  induction' k with k ih; simp
+  simp only [lowerCentralSeries_succ, ih, ← baseChange_top, lie_baseChange]
+
+instance LieModule.instIsNilpotentTensor [IsNilpotent R L M] :
+    IsNilpotent A (A ⊗[R] L) (A ⊗[R] M) := by
+  obtain ⟨k, hk⟩ := inferInstanceAs (IsNilpotent R L M)
+  exact ⟨k, by simp [hk]⟩
+
+end ExtendScalars

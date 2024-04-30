@@ -30,9 +30,7 @@ namespace Monad
 open Limits
 
 variable {C : Type u₁}
-
 variable [Category.{v₁} C]
-
 variable {T : Monad C} (X : Algebra T)
 
 /-!

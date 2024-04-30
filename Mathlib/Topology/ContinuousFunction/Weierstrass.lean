@@ -30,7 +30,7 @@ open scoped unitInterval
 This is just a matter of unravelling definitions and using the Bernstein approximations.
 -/
 theorem polynomialFunctions_closure_eq_top' : (polynomialFunctions I).topologicalClosure = ⊤ := by
-  apply eq_top_iff.mpr
+  rw [eq_top_iff]
   rintro f -
   refine' Filter.Frequently.mem_closure _
   refine' Filter.Tendsto.frequently (bernsteinApproximation_uniform f) _
@@ -75,7 +75,7 @@ theorem polynomialFunctions_closure_eq_top (a b : ℝ) :
     -- 🎉
     exact p
   · -- Otherwise, `b ≤ a`, and the interval is a subsingleton,
-    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_coe _).mpr $ Set.subsingleton_Icc_of_ge h
+    have : Subsingleton (Set.Icc a b) := (Set.subsingleton_Icc_of_ge h).coe_sort
     apply Subsingleton.elim
 #align polynomial_functions_closure_eq_top polynomialFunctions_closure_eq_top
 

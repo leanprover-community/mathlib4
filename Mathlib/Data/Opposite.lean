@@ -22,7 +22,7 @@ universe v u
 -- morphism levels before object levels. See note [CategoryTheory universes].
 variable (α : Sort u)
 
--- porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
+-- Porting note: in mathlib, `opposite α` was a type synonym for `α`, but if we did
 -- the same in Lean4, one could write problematic definitions like:
 -- example (X : C) : Cᵒᵖ := X
 -- example {X Y : C} (f : X ⟶ Y): op Y ⟶ op X := f
@@ -88,6 +88,10 @@ def equivToOpposite : α ≃ αᵒᵖ where
   left_inv := unop_op
   right_inv := op_unop
 #align opposite.equiv_to_opposite Opposite.equivToOpposite
+
+theorem op_surjective : Function.Surjective (op : α → αᵒᵖ) := equivToOpposite.surjective
+
+theorem unop_surjective : Function.Surjective (unop : αᵒᵖ → α) := equivToOpposite.symm.surjective
 
 @[simp]
 theorem equivToOpposite_coe : (equivToOpposite : α → αᵒᵖ) = op :=

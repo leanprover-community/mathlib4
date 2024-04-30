@@ -3,6 +3,7 @@ Copyright (c) 2022 Moritz Doll. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Doll, Kalle Kytölä
 -/
+import Mathlib.Algebra.EuclideanDomain.Instances
 import Mathlib.Analysis.Normed.Field.Basic
 import Mathlib.LinearAlgebra.SesquilinearForm
 import Mathlib.Topology.Algebra.Module.WeakDual
@@ -46,14 +47,13 @@ namespace LinearMap
 section NormedRing
 
 variable [NormedCommRing 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 
 variable (B : E →ₗ[𝕜] F →ₗ[𝕜] 𝕜)
 
 /-- The (absolute) polar of `s : Set E` is given by the set of all `y : F` such that `‖B x y‖ ≤ 1`
-for all `x ∈ s`.-/
+for all `x ∈ s`. -/
 def polar (s : Set E) : Set F :=
   { y : F | ∀ x ∈ s, ‖B x y‖ ≤ 1 }
 #align linear_map.polar LinearMap.polar
@@ -133,7 +133,6 @@ end NormedRing
 section NontriviallyNormedField
 
 variable [NontriviallyNormedField 𝕜] [AddCommMonoid E] [AddCommMonoid F]
-
 variable [Module 𝕜 E] [Module 𝕜 F]
 
 

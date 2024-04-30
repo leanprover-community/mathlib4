@@ -3,6 +3,7 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Ring.Prod
 import Mathlib.RingTheory.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
@@ -89,6 +90,8 @@ instance (priority := 50) DiscreteTopology.topologicalRing [TopologicalSpace α]
 section
 
 variable [TopologicalSpace α] [Semiring α] [TopologicalSemiring α]
+
+instance : TopologicalSemiring (ULift α) where
 
 namespace Subsemiring
 
@@ -226,6 +229,8 @@ section
 
 variable [NonUnitalNonAssocRing α] [TopologicalRing α]
 
+instance : TopologicalRing (ULift α) where
+
 /-- In a topological semiring, the left-multiplication `AddMonoidHom` is continuous. -/
 theorem mulLeft_continuous (x : α) : Continuous (AddMonoidHom.mulLeft x) :=
   continuous_const.mul continuous_id
@@ -316,11 +321,11 @@ instance : PartialOrder (RingTopology α) :=
 
 private def def_sInf (S : Set (RingTopology α)) : RingTopology α :=
   let _ := sInf (toTopologicalSpace '' S)
-  { toContinuousAdd := continuousAdd_sInf <| ball_image_iff.2 fun t _ =>
+  { toContinuousAdd := continuousAdd_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousAdd
-    toContinuousMul := continuousMul_sInf <| ball_image_iff.2 fun t _ =>
+    toContinuousMul := continuousMul_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousMul
-    toContinuousNeg := continuousNeg_sInf <| ball_image_iff.2 fun t _ =>
+    toContinuousNeg := continuousNeg_sInf <| forall_mem_image.2 fun t _ =>
       let _ := t.1; t.toContinuousNeg }
 
 /-- Ring topologies on `α` form a complete lattice, with `⊥` the discrete topology and `⊤` the
@@ -334,7 +339,7 @@ contained in the intersection of `s` and `t`. -/
 instance : CompleteSemilatticeInf (RingTopology α) where
   sInf := def_sInf
   sInf_le := fun _ a haS => sInf_le (α := TopologicalSpace α) ⟨a, ⟨haS, rfl⟩⟩
-  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace α) <| ball_image_iff.2 h
+  le_sInf := fun _ _ h => le_sInf (α := TopologicalSpace α) <| forall_mem_image.2 h
 
 instance : CompleteLattice (RingTopology α) :=
   completeLatticeOfCompleteSemilatticeInf _
@@ -347,7 +352,7 @@ def coinduced {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β
 
 theorem coinduced_continuous {α β : Type*} [t : TopologicalSpace α] [Ring β] (f : α → β) :
     Continuous[t, (coinduced f).toTopologicalSpace] f :=
-  continuous_sInf_rng.2 <| ball_image_iff.2 fun _ => continuous_iff_coinduced_le.2
+  continuous_sInf_rng.2 <| forall_mem_image.2 fun _ => continuous_iff_coinduced_le.2
 #align ring_topology.coinduced_continuous RingTopology.coinduced_continuous
 
 /-- The forgetful functor from ring topologies on `a` to additive group topologies on `a`. -/

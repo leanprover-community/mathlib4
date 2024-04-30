@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury Kudryashov
 -/
 import Mathlib.Data.ENat.Basic
-import Mathlib.Data.Real.ENNReal
+import Mathlib.Data.ENNReal.Basic
 
 #align_import data.real.enat_ennreal from "leanprover-community/mathlib"@"53b216bcc1146df1c4a0a86877890ea9f1f01589"
 
@@ -15,7 +15,8 @@ In this file we define a coercion from `ℕ∞` to `ℝ≥0∞` and prove some b
 -/
 
 
-open Classical NNReal ENNReal
+open scoped Classical
+open NNReal ENNReal
 
 noncomputable section
 
@@ -56,8 +57,10 @@ theorem toENNReal_coe (n : ℕ) : ((n : ℕ∞) : ℝ≥0∞) = n :=
   rfl
 #align enat.coe_ennreal_coe ENat.toENNReal_coe
 
+-- See note [no_index around OfNat.ofNat]
 @[simp, norm_cast]
-theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] : ((OfNat.ofNat n : ℕ∞) : ℝ≥0∞) = OfNat.ofNat n :=
+theorem toENNReal_ofNat (n : ℕ) [n.AtLeastTwo] :
+    ((no_index (OfNat.ofNat n : ℕ∞)) : ℝ≥0∞) = OfNat.ofNat n :=
   rfl
 
 @[simp, norm_cast]

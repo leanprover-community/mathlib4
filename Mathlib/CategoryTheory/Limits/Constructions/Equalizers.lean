@@ -29,7 +29,6 @@ open CategoryTheory CategoryTheory.Category
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type u'} [Category.{v'} D] (G : C ⥤ D)
 
 -- We hide the "implementation details" inside a namespace
@@ -103,7 +102,7 @@ def preservesEqualizersOfPreservesPullbacksAndBinaryProducts [HasBinaryProducts 
   ⟨fun {K} =>
     preservesLimitOfPreservesLimitCone (equalizerConeIsLimit K) <|
       { lift := fun c => by
-          refine' pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
+          refine pullback.lift ?_ ?_ ?_ ≫ (PreservesPullback.iso _ _ _ ).inv
           · exact c.π.app WalkingParallelPair.zero
           · exact c.π.app WalkingParallelPair.zero
           apply (mapIsLimitOfPreservesOfIsLimit G _ _ (prodIsProd _ _)).hom_ext

@@ -43,7 +43,6 @@ open Limits
 universe v' u' v u
 
 variable {J : Type v'} [Category.{u'} J] {C : Type u} [Category.{v} C]
-
 variable {W X Y Z : C} {f : W ⟶ X} {g : W ⟶ Y} {h : X ⟶ Z} {i : Y ⟶ Z}
 
 -- This only makes sense when the original diagram is a pushout.
@@ -308,7 +307,7 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
     [Adhesive D] [HasPullbacks C] [HasPushouts C]
     [PreservesLimitsOfShape WalkingCospan F]
     [PreservesColimitsOfShape WalkingSpan F]
-    [ReflectsIsomorphisms F] :
+    [F.ReflectsIsomorphisms] :
     Adhesive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F :=
     reflectsLimitsOfShapeOfReflectsIsomorphisms
@@ -318,7 +317,7 @@ theorem adhesive_of_preserves_and_reflects_isomorphism (F : C ⥤ D)
 
 theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [HasPushouts C]
     [H₂ : ∀ {X Y S : D} (f : S ⟶ X) (g : S ⟶ Y) [Mono f], HasPushout f g]
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [PreservesLimitsOfShape WalkingCospan Gl] :
     Adhesive D := by
   have := adj.leftAdjointPreservesColimits
@@ -331,7 +330,7 @@ theorem adhesive_of_reflective [HasPullbacks D] [Adhesive C] [HasPullbacks C] [H
     (isoWhiskerLeft _ (asIso adj.counit) ≪≫ Functor.rightUnitor _).hom).mp ?_
   refine ((this.precompose_isIso (spanCompIso _ _ _).hom).map_reflective adj).of_iso
     (IsColimit.uniqueUpToIso ?_ ?_)
-  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm $ pushoutIsPushout _ _)
+  · exact isColimitOfPreserves Gl ((IsColimit.precomposeHomEquiv _ _).symm <| pushoutIsPushout _ _)
   · exact (IsColimit.precomposeHomEquiv _ _).symm H.isColimit
 
 end functor

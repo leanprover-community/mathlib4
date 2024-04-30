@@ -20,7 +20,7 @@ namespace GeneralizedContinuedFraction
 
 variable {K : Type*} {g : GeneralizedContinuedFraction K} {n m : ℕ}
 
-/-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`.-/
+/-- If a gcf terminated at position `n`, it also terminated at `m ≥ n`. -/
 theorem terminated_stable (n_le_m : n ≤ m) (terminated_at_n : g.TerminatedAt n) :
     g.TerminatedAt m :=
   g.s.terminated_stable n_le_m terminated_at_n
@@ -31,7 +31,7 @@ variable [DivisionRing K]
 theorem continuantsAux_stable_step_of_terminated (terminated_at_n : g.TerminatedAt n) :
     g.continuantsAux (n + 2) = g.continuantsAux (n + 1) := by
   rw [terminatedAt_iff_s_none] at terminated_at_n
-  simp only [continuantsAux, Nat.add_eq, add_zero, terminated_at_n]
+  simp only [continuantsAux, Nat.add_eq, Nat.add_zero, terminated_at_n]
 #align generalized_continued_fraction.continuants_aux_stable_step_of_terminated GeneralizedContinuedFraction.continuantsAux_stable_step_of_terminated
 
 theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : g.TerminatedAt n) :
@@ -45,12 +45,12 @@ theorem continuantsAux_stable_of_terminated (n_lt_m : n < m) (terminated_at_n : 
 theorem convergents'Aux_stable_step_of_terminated {s : Stream'.Seq <| Pair K}
     (terminated_at_n : s.TerminatedAt n) : convergents'Aux s (n + 1) = convergents'Aux s n := by
   change s.get? n = none at terminated_at_n
-  induction' n with n IH generalizing s
-  case zero => simp only [convergents'Aux, terminated_at_n, Stream'.Seq.head]
-  case succ =>
-    cases' s_head_eq : s.head with gp_head
-    case none => simp only [convergents'Aux, s_head_eq]
-    case some =>
+  induction n generalizing s with
+  | zero => simp only [convergents'Aux, terminated_at_n, Stream'.Seq.head]
+  | succ n IH =>
+    cases s_head_eq : s.head with
+    | none => simp only [convergents'Aux, s_head_eq]
+    | some gp_head =>
       have : s.tail.TerminatedAt n := by
         simp only [Stream'.Seq.TerminatedAt, s.get?_tail, terminated_at_n]
       have := IH this

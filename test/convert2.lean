@@ -1,5 +1,6 @@
-import Mathlib.Data.List.Defs
-import Mathlib.Data.Nat.Basic
+import Mathlib.Algebra.BigOperators.List.Basic
+import Mathlib.Algebra.Ring.Nat
+import Mathlib.Tactic.Convert
 
 set_option linter.unreachableTactic false
 

@@ -3,10 +3,10 @@ Copyright (c) 2020 Scott Morrison. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
-import Mathlib.RingTheory.MatrixAlgebra
-import Mathlib.Data.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Matrix.Basis
 import Mathlib.Data.Matrix.DMatrix
+import Mathlib.RingTheory.MatrixAlgebra
 
 #align_import ring_theory.polynomial_algebra from "leanprover-community/mathlib"@"565eb991e264d0db702722b4bde52ee5173c9950"
 
@@ -38,9 +38,7 @@ open Algebra.TensorProduct (algHomOfLinearMapTensorProduct includeLeft)
 noncomputable section
 
 variable (R A : Type*)
-
 variable [CommSemiring R]
-
 variable [Semiring A] [Algebra R A]
 
 namespace PolyEquivTensor
@@ -49,7 +47,7 @@ namespace PolyEquivTensor
 The function underlying `A ⊗[R] R[X] →ₐ[R] A[X]`,
 as a bilinear function of two arguments.
 -/
--- porting note: was  `@[simps apply_apply]`
+-- Porting note: was  `@[simps apply_apply]`
 @[simps! apply_apply]
 def toFunBilinear : A →ₗ[A] R[X] →ₗ[R] A[X] :=
   LinearMap.toSpanSingleton A _ (aeval (Polynomial.X : A[X])).toLinearMap
@@ -99,12 +97,12 @@ theorem toFunLinear_mul_tmul_mul (a₁ a₂ : A) (p₁ p₂ : R[X]) :
   classical
     simp only [toFunLinear_tmul_apply, toFunBilinear_apply_eq_sum]
     ext k
-    simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne.def]
+    simp_rw [coeff_sum, coeff_monomial, sum_def, Finset.sum_ite_eq', mem_support_iff, Ne]
     conv_rhs => rw [coeff_mul]
-    simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne.def, mul_ite,
+    simp_rw [finset_sum_coeff, coeff_monomial, Finset.sum_ite_eq', mem_support_iff, Ne, mul_ite,
       mul_zero, ite_mul, zero_mul]
-    simp_rw [ite_mul_zero_left (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
-    simp_rw [ite_mul_zero_right (¬coeff p₂ _ = 0) _ (_ * _)]
+    simp_rw [← ite_zero_mul (¬coeff p₁ _ = 0) (a₁ * (algebraMap R A) (coeff p₁ _))]
+    simp_rw [← mul_ite_zero (¬coeff p₂ _ = 0) _ (_ * _)]
     simp_rw [toFunLinear_mul_tmul_mul_aux_1, toFunLinear_mul_tmul_mul_aux_2]
 #align poly_equiv_tensor.to_fun_linear_mul_tmul_mul PolyEquivTensor.toFunLinear_mul_tmul_mul
 
@@ -210,7 +208,6 @@ theorem polyEquivTensor_symm_apply_tmul (a : A) (p : R[X]) :
 open DMatrix Matrix BigOperators
 
 variable {R}
-
 variable {n : Type w} [DecidableEq n] [Fintype n]
 
 /--
@@ -226,21 +223,21 @@ noncomputable def matPolyEquiv : Matrix n n R[X] ≃ₐ[R] (Matrix n n R)[X] :=
 #align mat_poly_equiv matPolyEquiv
 
 @[simp] theorem matPolyEquiv_symm_C (M : Matrix n n R) : matPolyEquiv.symm (C M) = M.map C := by
-  simp [matPolyEquiv, ←C_eq_algebraMap]
+  simp [matPolyEquiv, ← C_eq_algebraMap]
 
 @[simp] theorem matPolyEquiv_map_C (M : Matrix n n R) : matPolyEquiv (M.map C) = C M := by
-  rw [←matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
+  rw [← matPolyEquiv_symm_C, AlgEquiv.apply_symm_apply]
 
 @[simp] theorem matPolyEquiv_symm_X :
     matPolyEquiv.symm X = diagonal fun _ : n => (X : R[X]) := by
   suffices (Matrix.map 1 fun x ↦ X * algebraMap R R[X] x) = diagonal fun _ : n => (X : R[X]) by
     simpa [matPolyEquiv]
-  rw [←Matrix.diagonal_one]
+  rw [← Matrix.diagonal_one]
   simp [-Matrix.diagonal_one]
 
 @[simp] theorem matPolyEquiv_diagonal_X :
     matPolyEquiv (diagonal fun _ : n => (X : R[X])) = X := by
-  rw [←matPolyEquiv_symm_X, AlgEquiv.apply_symm_apply]
+  rw [← matPolyEquiv_symm_X, AlgEquiv.apply_symm_apply]
 
 open Finset
 
@@ -300,6 +297,11 @@ theorem matPolyEquiv_smul_one (p : R[X]) :
     matPolyEquiv_coeff_apply]
   split_ifs <;> simp <;> rename_i h <;> simp [h]
 #align mat_poly_equiv_smul_one matPolyEquiv_smul_one
+
+@[simp]
+lemma matPolyEquiv_map_smul (p : R[X]) (M : Matrix n n R[X]) :
+    matPolyEquiv (p • M) = p.map (algebraMap _ _) * matPolyEquiv M := by
+  rw [← one_mul M, ← smul_mul_assoc, _root_.map_mul, matPolyEquiv_smul_one, one_mul]
 
 theorem support_subset_support_matPolyEquiv (m : Matrix n n R[X]) (i j : n) :
     support (m i j) ⊆ support (matPolyEquiv m) := by

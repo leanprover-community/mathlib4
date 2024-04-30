@@ -64,7 +64,7 @@ example {x y z : ℕ} : true := by
   trivial
 
 example {x y z : ℕ} : true := by
-  suffices _this : x + y ≤ z + y; trivial
+  suffices _this : x + y ≤ z + y by trivial
   mono
   guard_target = x ≤ z
   exact test_sorry
@@ -419,7 +419,7 @@ example {x y z w : ℕ} : true := by
 -- example : ∫ x in Icc 0 1, real.exp x ≤ ∫ x in Icc 0 1, real.exp (x+1) := by
 --   mono
 --   · exact real.continuous_exp.locally_integrable.integrable_on_is_compact is_compact_Icc
---   · exact (real.continuous_exp.comp $ continuous_add_right 1)
+--   · exact (real.continuous_exp.comp <| continuous_add_right 1)
 --       .locally_integrable.integrable_on_is_compact is_compact_Icc
 --   intro x
 --   dsimp only

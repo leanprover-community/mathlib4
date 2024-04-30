@@ -26,14 +26,14 @@ An instance is defined for `Part`.
 
 universe u v
 
-open Classical
+open scoped Classical
 
 variable {α : Type*} {β : α → Type*}
 
 /-- `Fix α` provides a `fix` operator to define recursive computation
 via the fixed point of function of type `α → α`. -/
 class Fix (α : Type*) where
-  /-- `fix f` represents the computation of a fixed point for `f`.-/
+  /-- `fix f` represents the computation of a fixed point for `f`. -/
   fix : (α → α) → α
 #align has_fix Fix
 
@@ -91,9 +91,9 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     congr
     ext x: 1
     rw [assert_neg]
-    rfl
-    rw [Nat.zero_add] at _this
-    simpa only [not_not, Coe]
+    · rfl
+    · rw [Nat.zero_add] at _this
+      simpa only [not_not, Coe]
   | succ n n_ih =>
     intro x'
     rw [Fix.approx, WellFounded.fix_eq, fixAux]
@@ -101,10 +101,10 @@ protected theorem fix_def {x : α} (h' : ∃ i, (Fix.approx f i x).Dom) :
     ext : 1
     have hh : ¬(Fix.approx f z.val x).Dom := by
       apply Nat.find_min h'
-      rw [hk, Nat.succ_add, ← Nat.add_succ]
+      rw [hk, Nat.succ_add_eq_add_succ]
       apply Nat.lt_of_succ_le
       apply Nat.le_add_left
-    rw [succ_add_eq_succ_add] at _this hk
+    rw [succ_add_eq_add_succ] at _this hk
     rw [assert_pos hh, n_ih (Upto.succ z hh) _this hk]
 #align part.fix_def Part.fix_def
 

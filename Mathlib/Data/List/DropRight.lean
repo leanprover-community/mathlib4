@@ -3,7 +3,6 @@ Copyright (c) 2022 Yakov Pechersky. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yakov Pechersky
 -/
-import Mathlib.Data.List.Basic
 import Mathlib.Data.List.Infix
 
 #align_import data.list.rdrop from "leanprover-community/mathlib"@"26f081a2fb920140ed5bc5cc5344e84bcc7cb2b2"
@@ -32,6 +31,8 @@ another function that takes a `L : ℕ` and use `L - n`. Under a proof condition
 
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 variable {α : Type*} (p : α → Bool) (l : List α) (n : ℕ)
 
@@ -228,7 +229,7 @@ theorem rtakeWhile_eq_nil_iff : rtakeWhile p l = [] ↔ ∀ hl : l ≠ [], ¬p (
   induction' l using List.reverseRecOn with l a
   · simp only [rtakeWhile, takeWhile, reverse_nil, true_iff]
     intro f; contradiction
-  · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil, getLast_append, ne_eq,
+  · simp only [rtakeWhile, reverse_append, takeWhile, reverse_eq_nil_iff, getLast_append, ne_eq,
       append_eq_nil, and_false, not_false_eq_true, forall_true_left]
     refine' ⟨fun h => _ , fun h => _⟩
     · intro pa; simp [pa] at h

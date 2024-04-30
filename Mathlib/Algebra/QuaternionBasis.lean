@@ -43,7 +43,6 @@ structure Basis {R : Type*} (A : Type*) [CommRing R] [Ring A] [Algebra R A] (c�
 #align quaternion_algebra.basis QuaternionAlgebra.Basis
 
 variable {R : Type*} {A B : Type*} [CommRing R] [Ring A] [Ring B] [Algebra R A] [Algebra R B]
-
 variable {c₁ c₂ : R}
 
 namespace Basis
@@ -180,4 +179,25 @@ def lift : Basis A c₁ c₂ ≃ (ℍ[R,c₁,c₂] →ₐ[R] A) where
     congr <;> simp
 #align quaternion_algebra.lift QuaternionAlgebra.lift
 
+/-- Two `R`-algebra morphisms from a quaternion algebra are equal if they agree on `i` and `j`. -/
+@[ext]
+theorem hom_ext ⦃f g : ℍ[R,c₁,c₂] →ₐ[R] A⦄
+    (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
+    f = g :=
+  lift.symm.injective <| Basis.ext hi hj
+
 end QuaternionAlgebra
+
+namespace Quaternion
+variable {R A : Type*} [CommRing R] [Ring A] [Algebra R A]
+
+open QuaternionAlgebra (Basis)
+
+/-- Two `R`-algebra morphisms from the quaternions are equal if they agree on `i` and `j`. -/
+@[ext]
+theorem hom_ext ⦃f g : ℍ[R] →ₐ[R] A⦄
+    (hi : f (Basis.self R).i = g (Basis.self R).i) (hj : f (Basis.self R).j = g (Basis.self R).j) :
+    f = g :=
+  QuaternionAlgebra.hom_ext hi hj
+
+end Quaternion

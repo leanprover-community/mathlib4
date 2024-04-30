@@ -49,7 +49,7 @@ variable {l : List α}
 
 theorem reverse_eq {l : List α} (p : Palindrome l) : reverse l = l := by
   induction p <;> try (exact rfl)
-  simp; assumption
+  simpa
 #align list.palindrome.reverse_eq List.Palindrome.reverse_eq
 
 theorem of_reverse_eq {l : List α} : reverse l = l → Palindrome l := by

@@ -1,4 +1,9 @@
-import Mathlib.Data.Nat.Basic
+/-
+Copyright (c) 2021 Mario Carneiro. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Mario Carneiro
+-/
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Char
 import Mathlib.Data.UInt
 
@@ -58,7 +63,7 @@ def forIn.loop [Monad m] (f : UInt8 → β → m (ForInStep β))
     | ForInStep.done b => pure b
     | ForInStep.yield b => have := Nat.Up.next h; loop f arr off _end (i+1) b
   else pure b
-termination_by _ => _end - i
+termination_by _end - i
 
 instance : ForIn m ByteSlice UInt8 :=
   ⟨fun ⟨arr, off, len⟩ b f ↦ forIn.loop f arr off (off + len) off b⟩
@@ -82,8 +87,8 @@ def String.toAsciiByteArray (s : String) : ByteArray :=
       Nat.sub_lt_sub_left (Nat.lt_of_not_le <| mt decide_eq_true h)
         (Nat.lt_add_of_pos_right (String.csize_pos _))
     loop (s.next p) (out.push c.toUInt8)
+    termination_by utf8ByteSize s - p.byteIdx
   loop 0 ByteArray.empty
-termination_by _ => utf8ByteSize s - p.byteIdx
 
 /-- Convert a byte slice into a string. This does not handle non-ASCII characters correctly:
 every byte will become a unicode character with codepoint < 256. -/

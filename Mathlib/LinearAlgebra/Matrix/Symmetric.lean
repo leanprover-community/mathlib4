@@ -33,6 +33,9 @@ def IsSymm (A : Matrix n n α) : Prop :=
   Aᵀ = A
 #align matrix.is_symm Matrix.IsSymm
 
+instance (A : Matrix n n α) [Decidable (Aᵀ = A)] : Decidable (IsSymm A) :=
+  inferInstanceAs <| Decidable (_ = _)
+
 theorem IsSymm.eq {A : Matrix n n α} (h : A.IsSymm) : Aᵀ = A :=
   h
 #align matrix.is_symm.eq Matrix.IsSymm.eq
@@ -79,6 +82,11 @@ theorem isSymm_zero [Zero α] : (0 : Matrix n n α).IsSymm :=
 theorem isSymm_one [DecidableEq n] [Zero α] [One α] : (1 : Matrix n n α).IsSymm :=
   transpose_one
 #align matrix.is_symm_one Matrix.isSymm_one
+
+theorem IsSymm.pow [CommSemiring α] [Fintype n] [DecidableEq n] {A : Matrix n n α} (h : A.IsSymm)
+    (k : ℕ) :
+    (A ^ k).IsSymm := by
+  rw [IsSymm, transpose_pow, h]
 
 @[simp]
 theorem IsSymm.map {A : Matrix n n α} (h : A.IsSymm) (f : α → β) : (A.map f).IsSymm :=
@@ -135,8 +143,7 @@ theorem IsSymm.fromBlocks {A : Matrix m m α} {B : Matrix m n α} {C : Matrix n 
     rw [← hBC]
     simp
   unfold Matrix.IsSymm
-  rw [fromBlocks_transpose]
-  congr; rw [hA, hCB, hBC, hD]
+  rw [fromBlocks_transpose, hA, hCB, hBC, hD]
 #align matrix.is_symm.from_blocks Matrix.IsSymm.fromBlocks
 
 /-- This is the `iff` version of `Matrix.isSymm.fromBlocks`. -/

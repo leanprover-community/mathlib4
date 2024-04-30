@@ -6,7 +6,7 @@ Authors: Eric Wieser
 import Mathlib.Analysis.Calculus.FDeriv.Linear
 import Mathlib.Analysis.Calculus.FDeriv.Comp
 import Mathlib.Analysis.Calculus.FDeriv.Equiv
-import Mathlib.Analysis.NormedSpace.Star.Basic
+import Mathlib.Topology.Algebra.Module.Star
 
 #align_import analysis.calculus.fderiv.star from "leanprover-community/mathlib"@"ad84a13c884fd19e286fb7abb36f4b9ba7e2f615"
 
@@ -22,17 +22,16 @@ star operation; which as should be expected rules out `𝕜 = ℂ`.
 -/
 
 
-open Classical
+open scoped Classical
 
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] [StarRing 𝕜] [TrivialStar 𝕜]
-
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {F : Type*} [NormedAddCommGroup F] [StarAddMonoid F] [NormedSpace 𝕜 F] [StarModule 𝕜 F]
   [ContinuousStar F]
 
 variable {f : E → F} {f' : E →L[𝕜] F} (e : E →L[𝕜] F) {x : E} {s : Set E} {L : Filter E}
 
+@[fun_prop]
 theorem HasStrictFDerivAt.star (h : HasStrictFDerivAt f f' x) :
     HasStrictFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
   (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasStrictFDerivAt.comp x h
@@ -43,16 +42,19 @@ theorem HasFDerivAtFilter.star (h : HasFDerivAtFilter f f' x L) :
   (starL' 𝕜 : F ≃L[𝕜] F).toContinuousLinearMap.hasFDerivAtFilter.comp x h Filter.tendsto_map
 #align has_fderiv_at_filter.star HasFDerivAtFilter.star
 
+@[fun_prop]
 nonrec theorem HasFDerivWithinAt.star (h : HasFDerivWithinAt f f' s x) :
     HasFDerivWithinAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') s x :=
   h.star
 #align has_fderiv_within_at.star HasFDerivWithinAt.star
 
+@[fun_prop]
 nonrec theorem HasFDerivAt.star (h : HasFDerivAt f f' x) :
     HasFDerivAt (fun x => star (f x)) (((starL' 𝕜 : F ≃L[𝕜] F) : F →L[𝕜] F) ∘L f') x :=
   h.star
 #align has_fderiv_at.star HasFDerivAt.star
 
+@[fun_prop]
 theorem DifferentiableWithinAt.star (h : DifferentiableWithinAt 𝕜 f s x) :
     DifferentiableWithinAt 𝕜 (fun y => star (f y)) s x :=
   h.hasFDerivWithinAt.star.differentiableWithinAt
@@ -64,6 +66,7 @@ theorem differentiableWithinAt_star_iff :
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableWithinAt_iff
 #align differentiable_within_at_star_iff differentiableWithinAt_star_iff
 
+@[fun_prop]
 theorem DifferentiableAt.star (h : DifferentiableAt 𝕜 f x) :
     DifferentiableAt 𝕜 (fun y => star (f y)) x :=
   h.hasFDerivAt.star.differentiableAt
@@ -75,6 +78,7 @@ theorem differentiableAt_star_iff :
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableAt_iff
 #align differentiable_at_star_iff differentiableAt_star_iff
 
+@[fun_prop]
 theorem DifferentiableOn.star (h : DifferentiableOn 𝕜 f s) :
     DifferentiableOn 𝕜 (fun y => star (f y)) s := fun x hx => (h x hx).star
 #align differentiable_on.star DifferentiableOn.star
@@ -85,6 +89,7 @@ theorem differentiableOn_star_iff :
   (starL' 𝕜 : F ≃L[𝕜] F).comp_differentiableOn_iff
 #align differentiable_on_star_iff differentiableOn_star_iff
 
+@[fun_prop]
 theorem Differentiable.star (h : Differentiable 𝕜 f) : Differentiable 𝕜 fun y => star (f y) :=
   fun x => (h x).star
 #align differentiable.star Differentiable.star

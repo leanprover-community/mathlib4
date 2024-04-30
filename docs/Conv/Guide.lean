@@ -80,7 +80,7 @@ in Lean 4 core.
 * `all_goals convSeq` runs the `conv` tactics on every `conv` goal, collecting all the produced
   subgoals (if any).
 
-* `any_goals convSeq` is like `all_goals` but succeeds if the tactic sequence succees for any
+* `any_goals convSeq` is like `all_goals` but succeeds if the tactic sequence succeeds for any
   of the goals.
 
 * `case tag => convSeq` focuses on a goal with a given tag, runs the tactic sequence, and then

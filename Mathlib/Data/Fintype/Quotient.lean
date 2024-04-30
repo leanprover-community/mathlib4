@@ -32,8 +32,8 @@ def Quotient.finChoiceAux {ι : Type*} [DecidableEq ι] {α : ι → Type*} [S :
     refine'
       Quotient.liftOn₂ (f i (List.mem_cons_self _ _))
         (Quotient.finChoiceAux l fun j h => f j (List.mem_cons_of_mem _ h)) _ _
-    exact fun a l => ⟦fun j h =>
-      if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
+    · exact fun a l => ⟦fun j h =>
+        if e : j = i then by rw [e]; exact a else l _ ((List.mem_cons.1 h).resolve_left e)⟧
     refine' fun a₁ l₁ a₂ l₂ h₁ h₂ => Quotient.sound fun j h => _
     by_cases e : j = i <;> simp [e]
     · subst j
@@ -62,7 +62,7 @@ def Quotient.finChoice {ι : Type*} [DecidableEq ι] [Fintype ι] {α : ι → T
     (@Quotient.recOn _ _ (fun l : Multiset ι => @Quotient (∀ i ∈ l, α i) (by infer_instance))
       Finset.univ.1 (fun l => Quotient.finChoiceAux l fun i _ => f i) (fun a b h => by
       have := fun a => Quotient.finChoiceAux_eq a fun i _ => Quotient.out (f i)
-      simp [Quotient.out_eq] at this
+      simp? [Quotient.out_eq] at this says simp only [out_eq] at this
       simp only [Multiset.quot_mk_to_coe, this]
       let g := fun a : Multiset ι =>
         (⟦fun (i : ι) (_ : i ∈ a) => Quotient.out (f i)⟧ : Quotient (by infer_instance))

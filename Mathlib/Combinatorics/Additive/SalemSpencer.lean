@@ -118,7 +118,7 @@ section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
 
 @[to_additive]
-theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s β 2] (f : F)
+theorem MulSalemSpencer.of_image [FunLike F α β] [FreimanHomClass F s β 2] (f : F)
     (hf : s.InjOn f) (h : MulSalemSpencer (f '' s)) : MulSalemSpencer s :=
   fun _ _ _ ha hb hc habc => hf ha hb <|
     h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
@@ -128,7 +128,7 @@ theorem MulSalemSpencer.of_image [FunLike F α fun _ => β] [FreimanHomClass F s
 
 -- TODO: Generalize to Freiman homs
 @[to_additive]
-theorem MulSalemSpencer.image [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+theorem MulSalemSpencer.image [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
     (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
   rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
   rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
@@ -174,7 +174,7 @@ theorem mulSalemSpencer_pair (a b : α) : MulSalemSpencer ({a, b} : Set α) := b
 #align add_salem_spencer_pair addSalemSpencer_pair
 
 @[to_additive]
-theorem MulSalemSpencer.mul_left (hs : MulSalemSpencer s) : MulSalemSpencer ((· * ·) a '' s) := by
+theorem MulSalemSpencer.mul_left (hs : MulSalemSpencer s) : MulSalemSpencer ((a * ·) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
   rw [hs hb hc hd (mul_left_cancel h)]
@@ -190,7 +190,7 @@ theorem MulSalemSpencer.mul_right (hs : MulSalemSpencer s) : MulSalemSpencer ((�
 #align add_salem_spencer.add_right AddSalemSpencer.add_right
 
 @[to_additive]
-theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
+theorem mulSalemSpencer_mul_left_iff : MulSalemSpencer ((a * ·) '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_left_cancel
       (hs (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) (mem_image_of_mem _ hd) <| by
@@ -232,7 +232,7 @@ section CancelCommMonoidWithZero
 variable [CancelCommMonoidWithZero α] [NoZeroDivisors α] {s : Set α} {a : α}
 
 theorem MulSalemSpencer.mul_left₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
-    MulSalemSpencer ((· * ·) a '' s) := by
+    MulSalemSpencer ((a * ·) '' s) := by
   rintro _ _ _ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ ⟨d, hd, rfl⟩ h
   rw [mul_mul_mul_comm, mul_mul_mul_comm a d] at h
   rw [hs hb hc hd (mul_left_cancel₀ (mul_ne_zero ha ha) h)]
@@ -246,7 +246,7 @@ theorem MulSalemSpencer.mul_right₀ (hs : MulSalemSpencer s) (ha : a ≠ 0) :
 #align mul_salem_spencer.mul_right₀ MulSalemSpencer.mul_right₀
 
 theorem mulSalemSpencer_mul_left_iff₀ (ha : a ≠ 0) :
-    MulSalemSpencer ((· * ·) a '' s) ↔ MulSalemSpencer s :=
+    MulSalemSpencer ((a * ·) '' s) ↔ MulSalemSpencer s :=
   ⟨fun hs b c d hb hc hd h =>
     mul_left_cancel₀ ha
       (hs (Set.mem_image_of_mem _ hb) (Set.mem_image_of_mem _ hc) (Set.mem_image_of_mem _ hd) <| by
@@ -320,11 +320,9 @@ Salem-Spencer subset. -/
 Salem-Spencer subset. The usual Roth number corresponds to `addRothNumber (Finset.range n)`, see
 `rothNumberNat`. "]
 def mulRothNumber : Finset α →o ℕ :=
-  ⟨fun s =>
-    Nat.findGreatest (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α))
-      s.card, by
+  ⟨fun s ↦ Nat.findGreatest (fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α)) s.card, by
     rintro t u htu
-    refine' Nat.findGreatest_mono (fun m => _) (card_le_of_subset htu)
+    refine' Nat.findGreatest_mono (fun m => _) (card_le_card htu)
     rintro ⟨v, hvt, hv⟩
     exact ⟨v, hvt.trans htu, hv⟩⟩
 #align mul_roth_number mulRothNumber
@@ -337,10 +335,9 @@ theorem mulRothNumber_le : mulRothNumber s ≤ s.card := Nat.findGreatest_le s.c
 
 @[to_additive]
 theorem mulRothNumber_spec :
-    ∃ (t : _) (_ : t ⊆ s), t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
-  @Nat.findGreatest_spec _ _
-    (fun m => ∃ (t : _) (_ : t ⊆ s), t.card = m ∧ MulSalemSpencer (t : Set α)) _ (Nat.zero_le _)
-    ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
+    ∃ t ⊆ s, t.card = mulRothNumber s ∧ MulSalemSpencer (t : Set α) :=
+  Nat.findGreatest_spec (P := fun m ↦ ∃ t ⊆ s, t.card = m ∧ MulSalemSpencer (t : Set α))
+    (Nat.zero_le _) ⟨∅, empty_subset _, card_empty, by norm_cast; exact mulSalemSpencer_empty⟩
 #align mul_roth_number_spec mulRothNumber_spec
 #align add_roth_number_spec addRothNumber_spec
 
@@ -349,7 +346,7 @@ variable {s t} {n : ℕ}
 @[to_additive]
 theorem MulSalemSpencer.le_mulRothNumber (hs : MulSalemSpencer (s : Set α)) (h : s ⊆ t) :
     s.card ≤ mulRothNumber t :=
-  le_findGreatest (card_le_of_subset h) ⟨s, h, rfl, hs⟩
+  le_findGreatest (card_le_card h) ⟨s, h, rfl, hs⟩
 #align mul_salem_spencer.le_mul_roth_number MulSalemSpencer.le_mulRothNumber
 #align add_salem_spencer.le_add_roth_number AddSalemSpencer.le_addRothNumber
 
@@ -380,8 +377,8 @@ theorem mulRothNumber_union_le (s t : Finset α) :
   let ⟨u, hus, hcard, hu⟩ := mulRothNumber_spec (s ∪ t)
   calc
     mulRothNumber (s ∪ t) = u.card := hcard.symm
-    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_distrib_left, inter_eq_left.2 hus]
-    _ ≤ (u ∩ s).card + (u ∩ t).card := (card_union_le _ _)
+    _ = (u ∩ s ∪ u ∩ t).card := by rw [← inter_union_distrib_left, inter_eq_left.2 hus]
+    _ ≤ (u ∩ s).card + (u ∩ t).card := card_union_le _ _
     _ ≤ mulRothNumber s + mulRothNumber t := _root_.add_le_add
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
       ((hu.mono <| inter_subset_left _ _).le_mulRothNumber <| inter_subset_right _ _)
@@ -472,7 +469,7 @@ theorem rothNumberNat_le (N : ℕ) : rothNumberNat N ≤ N :=
 #align roth_number_nat_le rothNumberNat_le
 
 theorem rothNumberNat_spec (n : ℕ) :
-    ∃ (t : _) (_ : t ⊆ range n), t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
+    ∃ t ⊆ range n, t.card = rothNumberNat n ∧ AddSalemSpencer (t : Set ℕ) :=
   addRothNumber_spec _
 #align roth_number_nat_spec rothNumberNat_spec
 
@@ -511,7 +508,7 @@ open Asymptotics Filter
 
 theorem rothNumberNat_isBigOWith_id :
     IsBigOWith 1 atTop (fun N => (rothNumberNat N : ℝ)) fun N => (N : ℝ) :=
-  isBigOWith_of_le _ <| by simpa only [Real.norm_coe_nat, Nat.cast_le] using rothNumberNat_le
+  isBigOWith_of_le _ <| by simpa only [Real.norm_natCast, Nat.cast_le] using rothNumberNat_le
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_with_id rothNumberNat_isBigOWith_id
 

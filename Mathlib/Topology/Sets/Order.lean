@@ -45,9 +45,9 @@ theorem upper (s : ClopenUpperSet α) : IsUpperSet (s : Set α) :=
   s.upper'
 #align clopen_upper_set.upper ClopenUpperSet.upper
 
-theorem clopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
-  s.clopen'
-#align clopen_upper_set.clopen ClopenUpperSet.clopen
+theorem isClopen (s : ClopenUpperSet α) : IsClopen (s : Set α) :=
+  s.isClopen'
+#align clopen_upper_set.clopen ClopenUpperSet.isClopen
 
 /-- Reinterpret an upper clopen as an upper set. -/
 @[simps]

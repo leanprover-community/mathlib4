@@ -49,7 +49,7 @@ structure Scheme extends LocallyRingedSpace where
 namespace Scheme
 
 /-- A morphism between schemes is a morphism between the underlying locally ringed spaces. -/
--- @[nolint has_nonempty_instance] -- Porting note: no such linter.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): linter not ported yet
 def Hom (X Y : Scheme) : Type* :=
   X.toLocallyRingedSpace ⟶ Y.toLocallyRingedSpace
 #align algebraic_geometry.Scheme.hom AlgebraicGeometry.Scheme.Hom
@@ -59,7 +59,7 @@ def Hom (X Y : Scheme) : Type* :=
 instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
--- porting note: added to ease automation
+-- porting note (#10688): added to ease automation
 @[continuity]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
@@ -78,16 +78,16 @@ def forgetToLocallyRingedSpace : Scheme ⥤ LocallyRingedSpace :=
 -- deriving Full, Faithful -- Porting note: no delta derive handler, see https://github.com/leanprover-community/mathlib4/issues/5020
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace
 
-instance : Full forgetToLocallyRingedSpace :=
+instance : forgetToLocallyRingedSpace.Full :=
   InducedCategory.full _
 
-instance : Faithful forgetToLocallyRingedSpace :=
+instance : forgetToLocallyRingedSpace.Faithful :=
   InducedCategory.faithful _
 
 @[simp]
 theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
     Scheme.forgetToLocallyRingedSpace.preimage f = f :=
-  rfl
+  Scheme.forgetToLocallyRingedSpace.map_injective (Functor.map_preimage _ _)
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/
@@ -96,11 +96,11 @@ def forgetToTop : Scheme ⥤ TopCat :=
   Scheme.forgetToLocallyRingedSpace ⋙ LocallyRingedSpace.forgetToTop
 #align algebraic_geometry.Scheme.forget_to_Top AlgebraicGeometry.Scheme.forgetToTop
 
--- Porting note : Lean seems not able to find this coercion any more
+-- Porting note: Lean seems not able to find this coercion any more
 instance hasCoeToTopCat : CoeOut Scheme TopCat where
   coe X := X.carrier
 
--- Porting note : added this unification hint just in case
+-- Porting note: added this unification hint just in case
 /-- forgetful functor to `TopCat` is the same as coercion -/
 unif_hint forgetToTop_obj_eq_coe (X : Scheme) where ⊢
   forgetToTop.obj X ≟ (X : TopCat)
@@ -161,7 +161,7 @@ theorem app_eq {X Y : Scheme} (f : X ⟶ Y) {U V : Opens Y.carrier} (e : U = V) 
   rfl
 #align algebraic_geometry.Scheme.app_eq AlgebraicGeometry.Scheme.app_eq
 
--- Porting note : in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
+-- Porting note: in `AffineScheme.lean` file, `eqToHom_op` can't be used in `(e)rw` or `simp(_rw)`
 -- when terms get very complicated. See `AlgebraicGeometry.IsAffineOpen.isLocalization_stalk_aux`.
 lemma presheaf_map_eqToHom_op (X : Scheme) (U V : Opens X) (i : U = V) :
     X.presheaf.map (eqToHom i).op = eqToHom (i ▸ rfl) := by
@@ -231,7 +231,7 @@ theorem specMap_comp {R S T : CommRingCat} (f : R ⟶ S) (g : S ⟶ T) :
 
 /-- The spectrum, as a contravariant functor from commutative rings to schemes.
 -/
--- porting note: removed @[simps]
+-- Porting note: removed @[simps]
 -- TODO: We need to decide whether `Spec_obj` or `Spec.obj` the simp-normal form.
 -- We probably want `Spec.obj`, but note
 -- `locallyRingedSpaceObj` is currently the simp-normal form of `toLocallyRingedSpace.obj`.
