@@ -54,24 +54,6 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub [SeminormedAddCommGroup R] :
 
 open scoped NNReal
 
-lemma NNReal.closedBall_zero_eq_Icc' (c : ℝ≥0) :
-    Metric.closedBall (0 : ℝ≥0) c.toReal = Set.Icc 0 c := by ext x; simp
-
-lemma NNReal.closedBall_zero_eq_Icc {c : ℝ} (c_nn : 0 ≤ c) :
-    Metric.closedBall (0 : ℝ≥0) c = Set.Icc 0 c.toNNReal := by
-  convert NNReal.closedBall_zero_eq_Icc' ⟨c, c_nn⟩
-  simp [Real.toNNReal, c_nn]
-
-lemma NNReal.ball_zero_eq_Ico' (c : ℝ≥0) :
-    Metric.ball (0 : ℝ≥0) c.toReal = Set.Ico 0 c := by ext x; simp
-
-lemma NNReal.ball_zero_eq_Ico (c : ℝ) :
-    Metric.ball (0 : ℝ≥0) c = Set.Ico 0 c.toNNReal := by
-  by_cases c_pos : 0 < c
-  · convert NNReal.ball_zero_eq_Ico' ⟨c, c_pos.le⟩
-    simp [Real.toNNReal, c_pos.le]
-  simp [not_lt.mp c_pos]
-
 noncomputable instance : BoundedSub ℝ≥0 where
   isBounded_sub := by
     intro s t hs _
