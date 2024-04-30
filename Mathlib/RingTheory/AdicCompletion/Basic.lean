@@ -92,7 +92,7 @@ def AdicCompletion.transitionMap {m n : ℕ} (hmn : m ≤ n) :
     exact smul_mono (Ideal.pow_le_pow_right hmn) le_rfl)
 
 /-- Auxiliary definition for `AdicCompletion`. -/
-private def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
+def adicCompletion : Submodule R (∀ n : ℕ, M ⧸ (I ^ n • ⊤ : Submodule R M)) where
   carrier := { f | ∀ {m n} (hmn : m ≤ n), AdicCompletion.transitionMap I M hmn (f n) = f m }
   zero_mem' hmn := by rw [Pi.zero_apply, Pi.zero_apply, LinearMap.map_zero]
   add_mem' hf hg m n hmn := by
@@ -211,6 +211,11 @@ instance (priority := 100) of_subsingleton [Subsingleton M] : IsPrecomplete I M 
 end IsPrecomplete
 
 namespace AdicCompletion
+
+@[simp]
+theorem adicCompletion_mem (x : ∀ n, M ⧸ (I ^ n • ⊤ : Submodule R M)) :
+    x ∈ adicCompletion I M ↔ ∀ {m n : ℕ}, (hmn : m ≤ n) → transitionMap I M hmn (x n) = x m := by
+  rfl
 
 instance : AddCommGroup (AdicCompletion I M) :=
   inferInstanceAs <| AddCommGroup (adicCompletion I M)
@@ -337,6 +342,12 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
         · exact ih
         · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
 
+/-- The defining property of an adic cauchy sequence unwrapped. -/
+theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (x : AdicCauchySequence I M) :
+    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val n) =
+      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val m) :=
+  (x.property hmn).symm
+
 /-- Construct `I`-adic cauchy sequence from sequence satisfying the successive cauchy condition. -/
 def AdicCauchySequence.mk (f : ℕ → M)
     (h : ∀ n, f n ≡ f (n + 1) [SMOD (I ^ n • ⊤ : Submodule R M)]) : AdicCauchySequence I M where
@@ -351,7 +362,7 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
   toFun f := ⟨fun n ↦ Submodule.mkQ (I ^ n • ⊤ : Submodule R M) (f.val n), by
     intro m n hmn
     simp only [mkQ_apply, transitionMap_mk]
-    exact (f.property hmn).symm
+    exact mk_eq_mk I M hmn f
     ⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
