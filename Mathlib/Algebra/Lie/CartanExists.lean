@@ -134,9 +134,8 @@ section Field
 variable {K L : Type*}
 variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra Module.Free Polynomial
+open FiniteDimensional LieSubalgebra Polynomial Cardinal LieModule engel_le_engel
 
-open Cardinal LieModule LieSubalgebra Polynomial engel_le_engel in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -354,11 +353,10 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
 
 variable (K L)
 
-open Cardinal in
-lemma exists_isCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
-    ∃ H : LieSubalgebra K L, IsCartanSubalgebra H := by
+lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K) :
+    ∃ x : L, IsCartanSubalgebra (engel K x) := by
   obtain ⟨x, hx⟩ := exists_isRegular_of_finrank_le_card K L h
-  use engel K x
+  use x
   refine ⟨?_, normalizer_engel _ _⟩
   apply isNilpotent_of_forall_le_engel
   intro y hy
@@ -370,9 +368,9 @@ lemma exists_isCartanSubalgebra_of_finrank_le_card (h : finrank K L ≤ #K) :
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
-lemma exists_isCartanSubalgebra [Infinite K] :
-    ∃ H : LieSubalgebra K L, IsCartanSubalgebra H := by
-  apply exists_isCartanSubalgebra_of_finrank_le_card
+lemma exists_isCartanSubalgebra_engel [Infinite K] :
+    ∃ x : L, IsCartanSubalgebra (engel K x) := by
+  apply exists_isCartanSubalgebra_engel_of_finrank_le_card
   exact (Cardinal.nat_lt_aleph0 _).le.trans <| Cardinal.infinite_iff.mp ‹Infinite K›
 
 end Field
