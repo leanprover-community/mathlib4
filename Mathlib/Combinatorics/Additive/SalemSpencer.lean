@@ -3,9 +3,9 @@ Copyright (c) 2021 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Group.Freiman
 import Mathlib.Analysis.Asymptotics.Asymptotics
 import Mathlib.Analysis.Convex.StrictConvexSpace
+import Mathlib.Combinatorics.Additive.FreimanHom
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
 
@@ -114,17 +114,16 @@ theorem mulSalemSpencer_pi {ι : Type*} {α : ι → Type*} [∀ i, Monoid (α i
 end Monoid
 
 section CommMonoid
-
-variable [CommMonoid α] [CommMonoid β] {s : Set α} {a : α}
+variable [CommMonoid α] [CommMonoid β] {s : Set α} {t : Set β} {f : α → β} {a : α}
 
 @[to_additive]
-theorem MulSalemSpencer.of_image [FunLike F α β] [FreimanHomClass F s β 2] (f : F)
-    (hf : s.InjOn f) (h : MulSalemSpencer (f '' s)) : MulSalemSpencer s :=
-  fun _ _ _ ha hb hc habc => hf ha hb <|
+theorem IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom s t 2) (hf' : s.InjOn f)
+    (ht : MulSalemSpencer t) : MulSalemSpencer s :=
+  fun _ _ _ ha hb hc habc ↦ hf' ha hb <|
     h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
-      map_mul_map_eq_map_mul_map f ha hb hc hc habc
-#align mul_salem_spencer.of_image MulSalemSpencer.of_image
-#align add_salem_spencer.of_image AddSalemSpencer.of_image
+      hf.map_mul_map_eq_map_mul_map ha hb hc hc habc
+#align mul_salem_spencer.of_image IsMulFreimanHom.mulSalemSpencer
+#align add_salem_spencer.of_image IsAddFreimanHom.addSalemSpencer
 
 -- TODO: Generalize to Freiman homs
 @[to_additive]
@@ -517,5 +516,30 @@ theorem rothNumberNat_isBigO_id : (fun N => (rothNumberNat N : ℝ)) =O[atTop] f
   rothNumberNat_isBigOWith_id.isBigO
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_id rothNumberNat_isBigO_id
+
+lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k := by
+  classical
+  obtain ⟨s, hsm, hscard, hs⟩ := rothNumberNat_spec k
+  simp only [subset_iff, mem_range] at hsm
+  rw [two_mul] at hkn
+  rw [← hscard, ← Finset.card_image_of_injOn ((CharP.natCast_injOn_Iio (Fin n.succ) n.succ).mono
+    fun x hx ↦ Nat.lt_succ_iff.2 $ (hsm hx).le.trans $ le_add_self.trans hkn)]
+  refine AddSalemSpencer.le_addRothNumber ?_ ?_
+  · rw [coe_image]
+    rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
+    norm_cast at habc
+    refine congr_arg _ (hs ha hb hc $ CharP.natCast_injOn_Iio _ n.succ ?_ ?_ habc) <;>
+    simp only [Nat.lt_succ_iff, Set.mem_Iio] <;>
+    refine (Nat.add_le_add (hsm ?_).le (hsm ?_).le).trans hkn <;> assumption
+  · replace hkn := Nat.lt_succ_iff.2 (le_add_self.trans hkn)
+    simp only [image_subset_iff, mem_Iio, Fin.lt_iff_val_lt_val, Fin.coe_ofNat_eq_mod]
+    rintro x hx
+    rw [Nat.mod_eq_of_lt hkn, Nat.mod_eq_of_lt ((hsm hx).trans hkn)]
+    exact hsm hx
+
+lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) :
+    addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
+
 
 end rothNumberNat
