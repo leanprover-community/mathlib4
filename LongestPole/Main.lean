@@ -130,7 +130,7 @@ def formatTable (headers : Array String) (table : Array (Array String)) : String
   let paddedTable := table.map fun row => row.mapIdx fun i cell => cell.rightpad widths[i]!
   -- Construct the lines of the table
   let headerLine := String.intercalate " | " (paddedHeaders.toList)
-  let separatorLine := String.intercalate "-+-" ((widths.map (String.replicate · '-')).toList)
+  let separatorLine := String.intercalate " | " ((widths.map (String.replicate · '-')).toList)
   let rowLines := paddedTable.map (fun row => String.intercalate " | " (row.toList))
   -- Return the table
   return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)
