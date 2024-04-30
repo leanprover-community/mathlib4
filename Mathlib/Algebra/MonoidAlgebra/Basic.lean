@@ -162,7 +162,7 @@ section Mul
 
 variable [Semiring k] [Mul G]
 
-irreducible_def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
+@[irreducible] def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
   f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
 
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
@@ -172,8 +172,8 @@ instance instMul : Mul (MonoidAlgebra k G) := ⟨MonoidAlgebra.mul'⟩
 #align monoid_algebra.has_mul MonoidAlgebra.instMul
 
 theorem mul_def {f g : MonoidAlgebra k G} :
-    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
-  mul'_def ..
+    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) := by
+  with_unfolding_all rfl
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
