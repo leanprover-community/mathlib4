@@ -116,35 +116,58 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
+/--
+Takes a 2d array of string data and renders it into a table.
+ -/
+def formatTable (headers : Array String) (table : Array (Array String)) : String := Id.run do
+  -- Get the maximum widths of each column
+  let mut widths := headers.map (·.length)
+  for row in table do
+    for i in [0:widths.size] do
+      widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
+  -- Pad each cell with spaces to match the column width
+  let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
+  let paddedTable := table.map fun row => row.mapIdx fun i cell => cell.rightpad widths[i]!
+  -- Construct the lines of the table
+  let headerLine := String.intercalate " | " (paddedHeaders.toList)
+  let separatorLine := String.intercalate "-+-" ((widths.map (String.replicate · '-')).toList)
+  let rowLines := paddedTable.map (fun row => String.intercalate " | " (row.toList))
+  -- Return the table
+  return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)
+
+open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
-  let to ← match args.flag? "to" with
-  | some to => pure <| to.as! ModuleName
-  | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
+  let to := match args.flag? "to" with
+  | some to => to.as! ModuleName
+  | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
+  let sha := headSha
   searchPathRef.set compile_time_search_path%
-  unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
+  let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
-    let sha ← headSha
-    IO.eprintln s!"Analyzing {to} at {sha}"
-    let instructions ← SpeedCenterAPI.instructions (sha)
+    IO.eprintln s!"Analyzing {to} at {<- sha}"
+    let instructions ← SpeedCenterAPI.instructions (← sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
     let mut table := #[]
     let mut n := some to
-    while hn : n.isSome do
-      let n' := n.get hn
-      let i := instructions.findD n' 0
-      let c := cumulative.find! n'
-      let t := total.find! n'
-      let r := (t / c).toStringDecimals 2
-      table := table.push (n', i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
-      n := slowest.find? n'
-    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
-    IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
-    for (name, inst, cumu, speedup) in table do
-      IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
+    while n != none do
+      let i := instructions.find! n.get!
+      let c := cumulative.find! n.get!
+      let t := total.find! n.get!
+      let r := (t / c).toString
+      let r := match r.split (· = '.') with
+      | [a, b] => a ++ "." ++ b.take 2
+      | _ => r
+      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
+      n := slowest.find? n.get!
+    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table)
+    -- let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
+    -- IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
+    -- IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
+    -- for (name, inst, cumu, speedup) in table do
+    --   IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
