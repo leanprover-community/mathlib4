@@ -118,26 +118,26 @@ Passing subsingleton instances to the tactic.
 example {α : Type} (x y : α) : x = y := by
   subsingleton [(test_sorry : Subsingleton α)]
 
+/-- warning: Unused local instance -/
+#guard_msgs in
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [(test_sorry : Subsingleton α), (test_sorry : Subsingleton α)]
+
 /-!
-Abstraction, but under-specified universe levels.
+Abstraction, with specified universe levels.
 -/
-/--
-error: Expression contains new universe level metavariables in
-  test_sorry
-This means 'subsingleton' will not ever apply this instance.
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [(test_sorry : Subsingleton.{1} _)]
+
+/-!
+Abstraction, with unspecified universe levels.
 -/
 #guard_msgs in
 example {α : Type} (x y : α) : x = y := by
   subsingleton [(test_sorry : Subsingleton _)]
 
 /-!
-Abstraction, but specified universe levels.
--/
-example {α : Type} (x y : α) : x = y := by
-  subsingleton [(test_sorry : Subsingleton.{1} _)]
-
-/-!
-Not a subsingleton instance.
+Not an instance.
 -/
 /--
 error: Not an instance. Term has type
@@ -158,3 +158,11 @@ This too abstracts some metavariables and ensures that `BEq` is instance implici
 -/
 example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x y : α) : x = y := by
   subsingleton [f]
+
+/-!
+The same, but now there's a universe level metavariable.
+-/
+def fdef : ∀ {β : Type _} [BEq β], Subsingleton β := test_sorry
+
+example {α : Type} [BEq α] (x y : α) : x = y := by
+  subsingleton [fdef]

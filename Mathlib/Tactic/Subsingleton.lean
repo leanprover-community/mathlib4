@@ -17,6 +17,40 @@ and it is careful not to accidentally specialize `Sort _` to `Prop.
 
 open Lean Meta
 
+/-- Returns the expression `Subsingleton ty`. -/
+def Lean.Meta.mkSubsingleton (ty : Expr) : MetaM Expr := do
+  let u ← getLevel ty
+  return Expr.app (.const ``Subsingleton [u]) ty
+
+/-- Synthesizes a `Subsingleton ty` instance with the additional local instances made available. -/
+def Lean.Meta.synthSubsingletonInst (ty : Expr)
+    (insts : Array (Term × AbstractMVarsResult) := #[]) :
+    MetaM Expr := do
+  -- Synthesize a subsingleton instance. The new metacontext depth ensures that universe
+  -- level metavariables are not specialized.
+  withNewMCtxDepth do
+    -- We need to process the local instances *under* `withNewMCtxDepth` since they might
+    -- have universe parameters, which we need to let `synthInstance` assign to.
+    let (insts', uss) ← Array.unzip <$> insts.mapM fun inst => do
+      let us ← inst.2.paramNames.mapM fun _ => mkFreshLevelMVar
+      pure <| (inst.2.expr.instantiateLevelParamsArray inst.2.paramNames us, us)
+    withLocalDeclsD (insts'.map fun e => (`inst, fun _ => inferType e)) fun fvars => do
+      withNewLocalInstances fvars 0 do
+        let res ← instantiateMVars <| ← synthInstance <| ← mkSubsingleton ty
+        let res' := res.abstract fvars
+        for i in [0 : fvars.size] do
+          if res'.hasLooseBVar (fvars.size - i - 1) then
+            uss[i]!.forM fun u => do
+              let u ← instantiateLevelMVars u
+              if u.isMVar then
+                -- This shouldn't happen, `synthInstance` should solve for all level metavariables
+                throwErrorAt insts[i]!.1 "\
+                  Instance provided to 'subsingleton' has unassigned universe level metavariable\
+                  {indentD insts'[i]!}"
+          else
+            logWarningAt insts[i]!.1 "Unused local instance"
+        instantiateMVars <| res'.instantiateRev insts'
+
 /--
 Closes the goal `g` whose target is an `Eq` or `HEq` by appealing to the fact that the types
 are subsingletons.
@@ -24,7 +58,8 @@ Fails if it cannot find a way to do this.
 
 Has support for showing `BEq` instances are equal if they have `LawfulBEq` instances.
 -/
-def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := commitIfNoEx do
+def Lean.MVarId.subsingleton (g : MVarId) (insts : Array (Term × AbstractMVarsResult) := #[]) :
+    MetaM Unit := commitIfNoEx do
   let g ← g.heqOfEq
   g.withContext do
     let tgt ← whnfR (← g.getType)
@@ -36,11 +71,8 @@ def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := commitIfNoEx do
         return
       -- Try `Subsingleton.elim`
       let u ← getLevel ty
-      let instTy := Expr.app (.const ``Subsingleton [u]) ty
       try
-        -- Synthesize a subsingleton instance. The new metacontext depth ensures that universe
-        -- level metavariables are not specialized.
-        let inst ← withNewMCtxDepth <| Meta.synthInstance instTy
+        let inst ← synthSubsingletonInst ty insts
         g.assign <| mkApp4 (.const ``Subsingleton.elim [u]) ty inst x y
         return
       catch _ => pure ()
@@ -57,7 +89,7 @@ def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := commitIfNoEx do
         catch _ => pure ()
       throwError "\
         tactic 'subsingleton' could not prove equality since it could not synthesize\
-          {indentD instTy}"
+          {indentD (← mkSubsingleton ty)}"
     else if let some (xTy, x, yTy, y) := tgt.heq? then
       -- The HEq version of proof irrelevance.
       if ← (Meta.isProp xTy <&&> Meta.isProp yTy) then
@@ -69,27 +101,27 @@ def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := commitIfNoEx do
 /--
 Tries to apply `Subsingleton.helim` to the goal, returning the new equality goal.
 -/
-def Lean.MVarId.subsingletonHElim (g : MVarId) : MetaM MVarId := do
+def Lean.MVarId.subsingletonHElim (g : MVarId) (insts : Array (Term × AbstractMVarsResult) := #[]) :
+    MetaM MVarId := do
   let tgt ← whnfR (← g.getType)
   let some (xTy, x, yTy, y) := tgt.heq? | failure
   let u ← getLevel xTy
-  let instXTy := Expr.app (.const ``Subsingleton [u]) xTy
-  let instYTy := Expr.app (.const ``Subsingleton [u]) yTy
   let g' ← mkFreshExprSyntheticOpaqueMVar (← mkEq xTy yTy) (← g.getTag)
   try
-    let inst ← withNewMCtxDepth <| Meta.synthInstance instXTy
+    let inst ← synthSubsingletonInst xTy insts
     g.assign <| mkApp6 (.const ``Subsingleton.helim [u]) xTy yTy inst g' x y
     return g'.mvarId!
   catch _ => pure ()
   try
-    let inst ← withNewMCtxDepth <| Meta.synthInstance instYTy
+    let inst ← synthSubsingletonInst yTy insts
     let pf ← mkHEqSymm <|
       mkApp6 (.const ``Subsingleton.helim [u]) yTy xTy inst (← mkEqSymm g') y x
     g.assign pf
     return g'.mvarId!
   catch _ =>
     throwError "\
-      tactic 'subsingleton' could not synthesize either{indentD instXTy}\nor{indentD instYTy}\n\
+      tactic 'subsingleton' could not synthesize either\
+      {indentD (← mkSubsingleton xTy)}\nor{indentD (← mkSubsingleton yTy)}\n\
       to make progress on `HEq` goal using `Subsingleton.helim`"
 
 namespace Mathlib.Tactic
@@ -134,23 +166,19 @@ open Elab Tactic
 /--
 Elaborates the terms like how `Lean.Elab.Tactic.addSimpTheorem` does,
 abstracting their metavariables.
-Makes sure they're Subsingleton instances, and adds them to the local context.
 -/
-def addSubsingletonInsts
-    (instTerms? : Option (Array Term)) (g : MVarId) : TermElabM MVarId := do
+def elabSubsingletonInsts
+    (instTerms? : Option (Array Term)) : TermElabM (Array (Term × AbstractMVarsResult)) := do
   if let some instTerms := instTerms? then
-    g.withContext <| go instTerms.toList #[] #[]
+    go instTerms.toList #[]
   else
-    return g
+    return #[]
 where
   /-- Main loop for `addSubsingletonInsts`. -/
-  go (instTerms : List Term) (fvars : Array Expr) (insts : Array Expr) : TermElabM MVarId := do
+  go (instTerms : List Term) (insts : Array (Term × AbstractMVarsResult)) :
+      TermElabM (Array (Term × AbstractMVarsResult)) := do
     match instTerms with
-    | [] =>
-      withNewLocalInstances fvars 0 do
-        let g' ← mkFreshExprSyntheticOpaqueMVar (← g.getType) (← g.getTag)
-        g.assign <| mkAppN (← mkLambdaFVars fvars g') insts
-        return g'.mvarId!
+    | [] => return insts
     | instTerm :: instTerms =>
       let inst ← withNewMCtxDepth <| Term.withoutModifyingElabMetaStateWithInfo do
         withRef instTerm <| Term.withoutErrToSorry do
@@ -160,17 +188,7 @@ where
           unless (← isClass? (← inferType e)).isSome do
             throwError "Not an instance. Term has type{indentD <| ← inferType e}"
           if e.hasMVar then
-            -- Level metavariables are OK.
-            -- But if there are *new* level metavariables then the instance will never apply.
-            -- TODO(kmill): Should the tactic have a list of universe level metavariables it's
-            -- allowed to assign to? (Can depth be used for this?)
             let r ← abstractMVars e
-            unless r.paramNames.isEmpty do
-              -- Todo: expose the universe level metavariables?
-              throwError "\
-                Expression contains new universe level metavariables in\
-                {indentD e}\n\
-                This means 'subsingleton' will not ever apply this instance."
             -- Change all instance arguments corresponding to the mvars to be inst implicit.
             let e' ← forallBoundedTelescope (← inferType r.expr) r.numMVars fun args _ => do
               let newBIs ← args.filterMapM fun arg => do
@@ -180,26 +198,24 @@ where
                   return none
               withNewBinderInfos newBIs do
                 mkLambdaFVars args (r.expr.beta args)
-            pure e'
+            pure { r with expr := e' }
           else
-            pure e
-      withLocalDecl `inst .instImplicit (← inferType inst) fun fvar => do
-        go instTerms (fvars.push fvar) (insts.push inst)
+            pure { paramNames := #[], numMVars := 0, expr := e }
+      go instTerms (insts.push (instTerm, inst))
 
 elab_rules : tactic
   | `(tactic| subsingleton $[[$[$instTerms?],*]]?) => withMainContext do
   let recover := (← read).recover
-  let g ← getMainGoal
-  let g ← addSubsingletonInsts instTerms? g
-  replaceMainGoal [g]
+  let insts ← elabSubsingletonInsts instTerms?
   Elab.Tactic.liftMetaTactic1 fun g => do
     let (fvars, g) ← g.intros
+    -- note: `insts` are still valid after `intros`
     try
-      g.subsingleton
+      g.subsingleton (insts := insts)
       return none
     catch e =>
       if (← whnfR (← g.getType)).isHEq then
-        g.subsingletonHElim
+        g.subsingletonHElim (insts := insts)
       else
         -- Try `refl` when all else fails, to give a hint to the user
         if recover then
