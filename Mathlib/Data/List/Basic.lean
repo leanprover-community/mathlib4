@@ -509,9 +509,6 @@ theorem get_cons {l : List α} {a : α} {n} (hl) :
       l.get ⟨n - 1, by contrapose! hl; rw [length_cons]; omega⟩ :=
   getElem_cons hl
 
-theorem modifyHead_modifyHead (l : List α) (f g : α → α) :
-    (l.modifyHead f).modifyHead g = l.modifyHead (g ∘ f) := by cases l <;> simp
-
 /-! ### Induction from the right -/
 
 /-- Induction principle from the right for lists: if a property holds for the empty list, and
