@@ -786,8 +786,9 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine' top_unique fun s hs => _
-  obtain rfl : s = univ; exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  exact univ_mem
+  obtain rfl : s = univ
+  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  · exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -1064,10 +1065,15 @@ theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) 
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 #align filter.infi_principal_finset Filter.iInf_principal_finset
 
+theorem iInf_principal {ι : Sort w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
+  cases nonempty_fintype (PLift ι)
+  rw [← iInf_plift_down, ← iInter_plift_down]
+  simpa using iInf_principal_finset Finset.univ (f <| PLift.down ·)
+
+/-- A special case of `iInf_principal` that is safe to mark `simp`. -/
 @[simp]
-theorem iInf_principal {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) := by
-  cases nonempty_fintype ι
-  simpa using iInf_principal_finset Finset.univ f
+theorem iInf_principal' {ι : Type w} [Finite ι] (f : ι → Set α) : ⨅ i, 𝓟 (f i) = 𝓟 (⋂ i, f i) :=
+  iInf_principal _
 #align filter.infi_principal Filter.iInf_principal
 
 theorem iInf_principal_finite {ι : Type w} {s : Set ι} (hs : s.Finite) (f : ι → Set α) :

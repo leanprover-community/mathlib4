@@ -439,6 +439,8 @@ instance subsingleton (α : Type*) : Subsingleton (Fintype α) :=
   ⟨fun ⟨s₁, h₁⟩ ⟨s₂, h₂⟩ => by congr; simp [Finset.ext_iff, h₁, h₂]⟩
 #align fintype.subsingleton Fintype.subsingleton
 
+instance (α : Type*) : Lean.Meta.FastSubsingleton (Fintype α) := {}
+
 /-- Given a predicate that can be represented by a finset, the subtype
 associated to the predicate is a fintype. -/
 protected def subtype {p : α → Prop} (s : Finset α) (H : ∀ x : α, x ∈ s ↔ p x) :

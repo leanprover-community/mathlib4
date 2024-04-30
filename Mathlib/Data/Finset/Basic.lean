@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -2631,7 +2631,7 @@ theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ 
 
 variable {p q}
 
-theorem filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
+@[simp] lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]

@@ -67,6 +67,14 @@ lemma self_mem_engel (x : L) : x ∈ engel R x := by
   simp only [mem_engel_iff]
   exact ⟨1, by simp⟩
 
+@[simp]
+lemma engel_zero : engel R (0 : L) = ⊤ := by
+  rw [eq_top_iff]
+  rintro x -
+  rw [mem_engel_iff, LieHom.map_zero]
+  use 1
+  simp only [pow_one, LinearMap.zero_apply]
+
 /-- Engel subalgebras are self-normalizing.
 See `LieSubalgebra.normalizer_eq_self_of_engel_le` for a proof that Lie-subalgebras
 containing an Engel subalgebra are also self-normalizing,

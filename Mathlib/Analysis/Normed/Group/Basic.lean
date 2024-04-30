@@ -1071,6 +1071,11 @@ theorem ofReal_norm_eq_coe_nnnorm' (a : E) : ENNReal.ofReal ‖a‖ = ‖a‖₊
 #align of_real_norm_eq_coe_nnnorm' ofReal_norm_eq_coe_nnnorm'
 #align of_real_norm_eq_coe_nnnorm ofReal_norm_eq_coe_nnnorm
 
+/-- The non negative norm seen as an `ENNReal` and then as a `Real` is equal to the norm. -/
+@[to_additive toReal_coe_nnnorm "The non negative norm seen as an `ENNReal` and
+then as a `Real` is equal to the norm."]
+theorem toReal_coe_nnnorm' (a : E) : (‖a‖₊ : ℝ≥0∞).toReal = ‖a‖ := rfl
+
 @[to_additive]
 theorem edist_eq_coe_nnnorm_div (a b : E) : edist a b = ‖a / b‖₊ := by
   rw [edist_dist, dist_eq_norm_div, ofReal_norm_eq_coe_nnnorm']
@@ -1929,8 +1934,7 @@ theorem norm_eq_abs (n : ℤ) : ‖n‖ = |(n : ℝ)| :=
 theorem norm_natCast (n : ℕ) : ‖(n : ℤ)‖ = n := by simp [Int.norm_eq_abs]
 #align int.norm_coe_nat Int.norm_natCast
 
--- 2024-04-05
-@[deprecated] alias norm_coe_nat := norm_natCast
+@[deprecated] alias norm_coe_nat := norm_natCast -- 2024-04-05
 
 theorem _root_.NNReal.natCast_natAbs (n : ℤ) : (n.natAbs : ℝ≥0) = ‖n‖₊ :=
   NNReal.eq <|

@@ -63,8 +63,8 @@ instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
--- 2024-03-24
-@[deprecated ofNat_eq_natCast] protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
+@[deprecated ofNat_eq_natCast] -- 2024-03-24
+protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
 #align int.coe_nat_eq Int.natCast_eq_ofNat
 
 @[norm_cast] lemma natCast_inj : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
