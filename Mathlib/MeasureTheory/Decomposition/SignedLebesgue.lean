@@ -218,11 +218,11 @@ theorem singularPart_add_withDensity_rnDeriv_eq [s.HaveLebesgueDecomposition μ]
     add_assoc (-(s.toJordanDecomposition.negPart.singularPart μ).toSignedMeasure),
     ← toSignedMeasure_add, add_comm, ← add_assoc, ← neg_add, ← toSignedMeasure_add, add_comm,
     ← sub_eq_add_neg]
-  convert rfl
-  -- `convert rfl` much faster than `congr`
-  · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
-  · rw [add_comm]
-    exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
+  · convert rfl
+    -- `convert rfl` much faster than `congr`
+    · exact s.toJordanDecomposition.posPart.haveLebesgueDecomposition_add μ
+    · rw [add_comm]
+      exact s.toJordanDecomposition.negPart.haveLebesgueDecomposition_add μ
   all_goals
     first
     | exact (lintegral_rnDeriv_lt_top _ _).ne

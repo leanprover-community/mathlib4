@@ -245,8 +245,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     hom_inv_id := by
       erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
       trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
-      congr
-      · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
+      · congr
+        exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
@@ -254,8 +254,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
-      congr
-      · exact CategoryOfElements.to_fromCostructuredArrow_eq X
+      · congr
+        exact CategoryOfElements.to_fromCostructuredArrow_eq X
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]

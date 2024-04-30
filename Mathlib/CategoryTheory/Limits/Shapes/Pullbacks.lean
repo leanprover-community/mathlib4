@@ -1962,7 +1962,9 @@ theorem fst_eq_snd_of_mono_eq [Mono f] : (pullback.fst : pullback f f ⟶ _) = p
 
 @[simp]
 theorem pullbackSymmetry_hom_of_mono_eq [Mono f] : (pullbackSymmetry f f).hom = 𝟙 _ := by
-  ext; simp [fst_eq_snd_of_mono_eq]; simp [fst_eq_snd_of_mono_eq]
+  ext
+  · simp [fst_eq_snd_of_mono_eq]
+  · simp [fst_eq_snd_of_mono_eq]
 #align category_theory.limits.pullback_symmetry_hom_of_mono_eq CategoryTheory.Limits.pullbackSymmetry_hom_of_mono_eq
 
 instance fst_iso_of_mono_eq [Mono f] : IsIso (pullback.fst : pullback f f ⟶ _) := by
@@ -2346,7 +2348,7 @@ local notation "l₂'" => (pullback.snd : W' ⟶ Z₂)
 def pullbackPullbackLeftIsPullback [HasPullback (g₂ ≫ f₃) f₄] : IsLimit (PullbackCone.mk l₁ l₂
     (show l₁ ≫ g₂ = l₂ ≫ g₃ from (pullback.lift_fst _ _ _).symm)) := by
   apply leftSquareIsPullback
-  exact pullbackIsPullback f₃ f₄
+  · exact pullbackIsPullback f₃ f₄
   convert pullbackIsPullback (g₂ ≫ f₃) f₄
   rw [pullback.lift_snd]
 #align category_theory.limits.pullback_pullback_left_is_pullback CategoryTheory.Limits.pullbackPullbackLeftIsPullback

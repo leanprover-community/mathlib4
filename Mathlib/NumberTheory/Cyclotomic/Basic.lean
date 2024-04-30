@@ -673,8 +673,8 @@ instance [IsDomain A] [NeZero ((n : ℕ) : A)] :
   map_units' := fun ⟨x, hx⟩ => by
     rw [isUnit_iff_ne_zero]
     apply map_ne_zero_of_mem_nonZeroDivisors
-    apply adjoin_algebra_injective
-    exact hx
+    · apply adjoin_algebra_injective
+    · exact hx
   surj' x := by
     letI : NeZero ((n : ℕ) : K) := NeZero.nat_of_injective (IsFractionRing.injective A K)
     refine

@@ -653,13 +653,13 @@ theorem integral_sin_pow_aux :
   have hv : ∀ x ∈ [[a, b]], HasDerivAt (-cos) (sin x) x := fun x _ => by
     simpa only [neg_neg] using (hasDerivAt_cos x).neg
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
-  calc
-    (∫ x in a..b, sin x ^ (n + 2)) = ∫ x in a..b, sin x ^ (n + 1) * sin x := by
-      simp only [_root_.pow_succ]
-    _ = C + (↑n + 1) * ∫ x in a..b, cos x ^ 2 * sin x ^ n := by simp [H, h, sq]; ring
-    _ = C + (↑n + 1) * ∫ x in a..b, sin x ^ n - sin x ^ (n + 2) := by
-      simp [cos_sq', sub_mul, ← pow_add, add_comm]
-    _ = (C + (↑n + 1) * ∫ x in a..b, sin x ^ n) - (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
+  · calc
+      (∫ x in a..b, sin x ^ (n + 2)) = ∫ x in a..b, sin x ^ (n + 1) * sin x := by
+        simp only [_root_.pow_succ]
+      _ = C + (↑n + 1) * ∫ x in a..b, cos x ^ 2 * sin x ^ n := by simp [H, h, sq]; ring
+      _ = C + (↑n + 1) * ∫ x in a..b, sin x ^ n - sin x ^ (n + 2) := by
+        simp [cos_sq', sub_mul, ← pow_add, add_comm]
+      _ = (C + (↑n + 1) * ∫ x in a..b, sin x ^ n) - (↑n + 1) * ∫ x in a..b, sin x ^ (n + 2) := by
         rw [integral_sub, mul_sub, add_sub_assoc] <;>
           apply Continuous.intervalIntegrable <;> continuity
   all_goals apply Continuous.intervalIntegrable; continuity
@@ -732,15 +732,15 @@ theorem integral_cos_pow_aux :
       simpa only [mul_right_comm, neg_mul, mul_neg] using (hasDerivAt_cos x).pow (n + 1)
   have hv : ∀ x ∈ [[a, b]], HasDerivAt sin (cos x) x := fun x _ => hasDerivAt_sin x
   have H := integral_mul_deriv_eq_deriv_mul hu hv ?_ ?_
-  calc
-    (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
-      simp only [_root_.pow_succ]
-    _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [H, h, sq, -neg_add_rev]
-    _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
-      simp [sin_sq, sub_mul, ← pow_add, add_comm]
-    _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
-      rw [integral_sub, mul_sub, add_sub_assoc] <;>
-        apply Continuous.intervalIntegrable <;> continuity
+  · calc
+      (∫ x in a..b, cos x ^ (n + 2)) = ∫ x in a..b, cos x ^ (n + 1) * cos x := by
+        simp only [_root_.pow_succ]
+      _ = C + (n + 1) * ∫ x in a..b, sin x ^ 2 * cos x ^ n := by simp [H, h, sq, -neg_add_rev]
+      _ = C + (n + 1) * ∫ x in a..b, cos x ^ n - cos x ^ (n + 2) := by
+        simp [sin_sq, sub_mul, ← pow_add, add_comm]
+      _ = (C + (n + 1) * ∫ x in a..b, cos x ^ n) - (n + 1) * ∫ x in a..b, cos x ^ (n + 2) := by
+        rw [integral_sub, mul_sub, add_sub_assoc] <;>
+          apply Continuous.intervalIntegrable <;> continuity
   all_goals apply Continuous.intervalIntegrable; continuity
 #align integral_cos_pow_aux integral_cos_pow_aux
 

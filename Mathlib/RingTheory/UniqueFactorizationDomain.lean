@@ -1194,7 +1194,7 @@ theorem multiplicative_of_coprime (f : α → β) (a b : α) (h0 : f 0 = 0)
       Finset.prod_subset (Finset.subset_union_left _ (normalizedFactors b).toFinset),
       Finset.prod_subset (Finset.subset_union_right _ (normalizedFactors b).toFinset), ←
       Finset.prod_mul_distrib]
-    simp_rw [id, ← pow_add, this]
+    · simp_rw [id, ← pow_add, this]
     all_goals simp only [Multiset.mem_toFinset]
     · intro p _ hpb
       simp [hpb]

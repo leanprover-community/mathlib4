@@ -156,9 +156,9 @@ theorem cyclotomic_mul_prime_pow_eq (R : Type*) {p m : ℕ} [Fact (Nat.Prime p)]
     have hdiv : p ∣ p ^ a.succ * m := ⟨p ^ a * m, by rw [← mul_assoc, pow_succ']⟩
     rw [pow_succ', mul_assoc, mul_comm, cyclotomic_mul_prime_dvd_eq_pow R hdiv,
       cyclotomic_mul_prime_pow_eq _ _ a.succ_pos, ← pow_mul]
-    congr 1
-    simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
-    rwa [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · simp only [tsub_zero, Nat.succ_sub_succ_eq_sub]
+      rw [Nat.mul_sub_right_distrib, mul_comm, pow_succ]
+    · assumption
 #align polynomial.cyclotomic_mul_prime_pow_eq Polynomial.cyclotomic_mul_prime_pow_eq
 
 /-- If `R` is of characteristic `p` and `¬p ∣ m`, then `ζ` is a root of `cyclotomic (p ^ k * m) R`

@@ -301,8 +301,8 @@ theorem AffineTargetMorphismProperty.isLocalOfOpenCoverImply (P : AffineTargetMo
   · introv hs hs'
     replace hs := ((topIsAffineOpen Y).basicOpen_union_eq_self_iff _).mpr hs
     have := H f ⟨Y.openCoverOfSuprEqTop _ hs, ?_, ?_⟩ (𝟙 _)
-    rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
-      at this
+    · rwa [← Category.comp_id pullback.snd, ← pullback.condition, affine_cancel_left_isIso hP]
+        at this
     · intro i; exact (topIsAffineOpen Y).basicOpenIsAffine _
     · rintro (i : s)
       specialize hs' i

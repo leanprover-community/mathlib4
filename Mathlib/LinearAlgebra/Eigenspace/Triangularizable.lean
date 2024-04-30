@@ -140,7 +140,8 @@ theorem inf_iSup_generalizedEigenspace [FiniteDimensional K V] (h : ∀ x ∈ p,
   suffices ∀ μ, (m μ : V) ∈ p by
     exact (mem_iSup_iff_exists_finsupp _ _).mpr ⟨m, fun μ ↦ mem_inf.mp ⟨this μ, hm₂ μ⟩, rfl⟩
   intro μ
-  by_cases hμ : μ ∈ m.support; swap; simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
+  by_cases hμ : μ ∈ m.support; swap
+  · simp only [Finsupp.not_mem_support_iff.mp hμ, p.zero_mem]
   have h_comm : ∀ (μ₁ μ₂ : K),
     Commute ((f - algebraMap K (End K V) μ₁) ^ finrank K V)
             ((f - algebraMap K (End K V) μ₂) ^ finrank K V) := fun μ₁ μ₂ ↦

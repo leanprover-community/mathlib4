@@ -319,18 +319,18 @@ theorem fg_of_fg_map_of_fg_inf_ker {R M P : Type*} [Ring R] [AddCommGroup M] [Mo
   constructor
   · apply s.sub_mem hx
     rw [Finsupp.total_apply, Finsupp.lmapDomain_apply, Finsupp.sum_mapDomain_index]
-    refine' s.sum_mem _
-    · intro y hy
+    · refine' s.sum_mem _
+      intro y hy
       exact s.smul_mem _ (hg y (hl1 hy)).1
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
   · rw [LinearMap.mem_ker, f.map_sub, ← hl2]
     rw [Finsupp.total_apply, Finsupp.total_apply, Finsupp.lmapDomain_apply]
     rw [Finsupp.sum_mapDomain_index, Finsupp.sum, Finsupp.sum, map_sum]
-    rw [sub_eq_zero]
-    refine' Finset.sum_congr rfl fun y hy => _
-    unfold id
-    rw [f.map_smul, (hg y (hl1 hy)).2]
+    · rw [sub_eq_zero]
+      refine' Finset.sum_congr rfl fun y hy => _
+      unfold id
+      rw [f.map_smul, (hg y (hl1 hy)).2]
     · exact zero_smul _
     · exact fun _ _ _ => add_smul _ _ _
 #align submodule.fg_of_fg_map_of_fg_inf_ker Submodule.fg_of_fg_map_of_fg_inf_ker

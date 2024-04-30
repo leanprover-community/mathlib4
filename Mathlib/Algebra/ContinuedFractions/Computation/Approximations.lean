@@ -97,7 +97,7 @@ theorem one_le_succ_nth_stream_b {ifp_succ_n : IntFractPair K}
   obtain ⟨ifp_n, nth_stream_eq, stream_nth_fr_ne_zero, ⟨-⟩⟩ :
     ∃ ifp_n,
       IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-  exact succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+  · exact succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   suffices 1 ≤ ifp_n.fr⁻¹ by rwa [IntFractPair.of, le_floor, cast_one]
   suffices ifp_n.fr ≤ 1 by
     have h : 0 < ifp_n.fr :=
@@ -474,7 +474,7 @@ theorem abs_sub_convergents_le (not_terminated_at_n : ¬(of v).TerminatedAt n) :
   obtain ⟨ifp_n, stream_nth_eq, stream_nth_fr_ne_zero, if_of_eq_ifp_succ_n⟩ :
     ∃ ifp_n,
       IntFractPair.stream v n = some ifp_n ∧ ifp_n.fr ≠ 0 ∧ IntFractPair.of ifp_n.fr⁻¹ = ifp_succ_n
-  exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
+  · exact IntFractPair.succ_nth_stream_eq_some_iff.1 succ_nth_stream_eq
   let denom' := conts.b * (pred_conts.b + ifp_n.fr⁻¹ * conts.b)
   -- now we can use `sub_convergents_eq` to simplify our goal
   suffices |(-1) ^ n / denom'| ≤ 1 / denom by

@@ -269,11 +269,11 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
-  intro h
-  apply @zero_ne_one R
-  exact
-    IsLocalization.injective S (le_of_eq rfl)
-      (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+  · intro h
+    apply @zero_ne_one R
+    exact
+      IsLocalization.injective S (le_of_eq rfl)
+        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
 #align is_fraction_ring.nontrivial IsFractionRing.nontrivial
 
 end IsFractionRing

@@ -119,7 +119,7 @@ lemma hasSum_mellin_pi_mul_sq {a : ι → ℂ} {r : ι → ℝ} {F : ℝ → ℂ
   convert hasSum_mellin_pi_mul₀ (fun i ↦ sq_nonneg (r i)) hs' hF ?_ using 3 with i
   · rw [← neg_div, Gammaℝ_def]
   · rw [← _root_.sq_abs, ofReal_pow, ← cpow_nat_mul']
-    ring_nf
+    · ring_nf
     all_goals rw [arg_ofReal_of_nonneg (abs_nonneg _)]; linarith [pi_pos]
   · convert h_sum using 3 with i
     rw [← _root_.sq_abs, ← rpow_natCast_mul (abs_nonneg _), div_ofNat_re, Nat.cast_ofNat,
