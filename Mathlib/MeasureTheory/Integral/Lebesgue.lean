@@ -393,10 +393,10 @@ theorem lintegral_iSup {f : ℕ → α → ℝ≥0∞} (hf : ∀ n, Measurable (
     _ ≤ ⨆ n : ℕ, ((rs.map c).restrict { a | (rs.map c) a ≤ f n a }).lintegral μ := by
       gcongr with n
       rw [restrict_lintegral _ (h_meas n)]
-      · refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
-        congr 2 with a
-        refine' and_congr_right _
-        simp (config := { contextual := true })
+      refine' le_of_eq (Finset.sum_congr rfl fun r _ => _)
+      congr 2 with a
+      refine' and_congr_right _
+      simp (config := { contextual := true })
     _ ≤ ⨆ n, ∫⁻ a, f n a ∂μ := by
       gcongr with n
       rw [← SimpleFunc.lintegral_eq_lintegral]
@@ -805,8 +805,8 @@ theorem set_lintegral_eq_const {f : α → ℝ≥0∞} (hf : Measurable f) (r : 
     ∫⁻ x in { x | f x = r }, f x ∂μ = r * μ { x | f x = r } := by
   have : ∀ᵐ x ∂μ, x ∈ { x | f x = r } → f x = r := ae_of_all μ fun _ hx => hx
   rw [set_lintegral_congr_fun _ this]
-  rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
-  exact hf (measurableSet_singleton r)
+  · rw [lintegral_const, Measure.restrict_apply MeasurableSet.univ, Set.univ_inter]
+  · exact hf (measurableSet_singleton r)
 #align measure_theory.set_lintegral_eq_const MeasureTheory.set_lintegral_eq_const
 
 theorem lintegral_indicator_one_le (s : Set α) : ∫⁻ a, s.indicator 1 a ∂μ ≤ μ s :=
@@ -1264,7 +1264,7 @@ theorem lintegral_iSup_directed [Countable β] {f : β → α → ℝ≥0∞} (h
     refine' ⟨z, _, _⟩ <;>
       · intro x
         by_cases hx : x ∈ aeSeqSet hf p
-        · repeat' rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
+        · repeat rw [aeSeq.aeSeq_eq_fun_of_mem_aeSeqSet hf hx]
           apply_rules [hz₁, hz₂]
         · simp only [aeSeq, hx, if_false]
           exact le_rfl

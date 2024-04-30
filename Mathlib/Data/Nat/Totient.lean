@@ -100,8 +100,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
         (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
-      rw [add_assoc]
-      exact le_self_add
+      · rw [add_assoc]
+        exact le_self_add
       exact le_self_add
     _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
@@ -345,9 +345,9 @@ theorem totient_gcd_mul_totient_mul (a b : ℕ) : φ (a.gcd b) * φ (a * b) = φ
   rw [shuffle, shuffle]
   rotate_left
   repeat' apply prod_primeFactors_dvd
-  · simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
-    rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
-    exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
+  simp only [prod_primeFactors_gcd_mul_prod_primeFactors_mul]
+  rw [eq_comm, mul_comm, ← mul_assoc, ← Nat.mul_div_assoc]
+  exact mul_dvd_mul (prod_primeFactors_dvd a) (prod_primeFactors_dvd b)
 #align nat.totient_gcd_mul_totient_mul Nat.totient_gcd_mul_totient_mul
 
 theorem totient_super_multiplicative (a b : ℕ) : φ a * φ b ≤ φ (a * b) := by

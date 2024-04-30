@@ -421,9 +421,9 @@ lemma add_pow_le (ha : 0 ≤ a) (hb : 0 ≤ b) : ∀ n, (a + b) ^ n ≤ 2 ^ (n -
       _ ≤ 2 ^ n * (a ^ (n + 2) + b ^ (n + 2) + (a ^ (n + 1) * a + b ^ (n + 1) * b)) :=
           mul_le_mul_of_nonneg_left (add_le_add_left ?_ _) $ pow_nonneg (zero_le_two (α := R)) _
       _ = _ := by simp only [← pow_succ, ← two_mul, ← mul_assoc]; rfl
-    · obtain hab | hba := le_total a b
-      · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
-      · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left hb hba _) hba
+    obtain hab | hba := le_total a b
+    · exact mul_add_mul_le_mul_add_mul (pow_le_pow_left ha hab _) hab
+    · exact mul_add_mul_le_mul_add_mul' (pow_le_pow_left hb hba _) hba
 
 -- TODO: State using `Even`
 protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
@@ -436,7 +436,11 @@ protected lemma Even.add_pow_le (hn : ∃ k, 2 * k = n) :
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
           (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
-    _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [Nat.two_mul]
+    _ = _ := by
+      simp only [← mul_assoc, ← pow_add, ← pow_mul]
+      cases n
+      · rfl
+      · simp [Nat.two_mul]
 
 end LinearOrderedSemiring
 

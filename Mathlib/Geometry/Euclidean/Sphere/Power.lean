@@ -104,9 +104,9 @@ theorem mul_dist_eq_mul_dist_of_cospherical {a b c d p : P} (h : Cospherical ({a
     dist a p * dist b p = dist c p * dist d p := by
   obtain ⟨q, r, h'⟩ := (cospherical_def {a, b, c, d}).mp h
   obtain ⟨ha, hb, hc, hd⟩ := h' a (by simp), h' b (by simp), h' c (by simp), h' d (by simp)
-  · rw [← hd] at hc
-    rw [← hb] at ha
-    rw [mul_dist_eq_abs_sub_sq_dist hapb ha, hb, mul_dist_eq_abs_sub_sq_dist hcpd hc, hd]
+  rw [← hd] at hc
+  rw [← hb] at ha
+  rw [mul_dist_eq_abs_sub_sq_dist hapb ha, hb, mul_dist_eq_abs_sub_sq_dist hcpd hc, hd]
 #align euclidean_geometry.mul_dist_eq_mul_dist_of_cospherical EuclideanGeometry.mul_dist_eq_mul_dist_of_cospherical
 
 /-- **Intersecting Chords Theorem**. -/

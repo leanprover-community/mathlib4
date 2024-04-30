@@ -769,7 +769,7 @@ theorem bind_assoc (s : Computation α) (f : α → Computation β) (g : β → 
       apply recOn s <;> intro s <;> simp
       · generalize f s = fs
         apply recOn fs <;> intro t <;> simp
-        · cases' destruct (g t) with b cb <;> simp
+        cases' destruct (g t) with b cb <;> simp
       · exact Or.inr ⟨s, rfl, rfl⟩
   · exact Or.inr ⟨s, rfl, rfl⟩
 #align computation.bind_assoc Computation.bind_assoc

@@ -365,8 +365,8 @@ lemma _root_.MeasureTheory.IsFundamentalDomain.absolutelyContinuous_map
   intro s s_meas hs
   rw [map_apply meas_π s_meas] at hs ⊢
   rw [Measure.restrict_apply] at hs
-  apply h𝓕.measure_zero_of_invariant _ _ hs
-  · intro γ
+  · apply h𝓕.measure_zero_of_invariant _ _ hs
+    intro γ
     ext g
     rw [Set.mem_smul_set_iff_inv_smul_mem, mem_preimage, mem_preimage]
     congr! 1

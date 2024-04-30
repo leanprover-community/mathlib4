@@ -618,8 +618,8 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 theorem getLast_cons {a : α} {l : List α} :
     ∀ h : l ≠ nil, getLast (a :: l) (cons_ne_nil a l) = getLast l h := by
   induction l <;> intros
-  contradiction
-  rfl
+  · contradiction
+  · rfl
 #align list.last_cons List.getLast_cons
 
 theorem getLast_append_singleton {a : α} (l : List α) :
@@ -802,11 +802,16 @@ theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
 
 @[simp]
 theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
-    head! (s ++ t) = head! s := by induction s; contradiction; rfl
+    head! (s ++ t) = head! s := by
+      induction s
+      · contradiction
+      · rfl
 #align list.head_append List.head!_append
 
 theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
-  cases s; contradiction; exact h
+  cases s
+  · contradiction
+  · exact h
 #align list.head'_append List.head?_append
 
 theorem head?_append_of_ne_nil :
@@ -816,7 +821,9 @@ theorem head?_append_of_ne_nil :
 
 theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
     tail (l ++ [a]) = tail l ++ [a] := by
-  induction l; contradiction; rw [tail, cons_append, tail]
+  induction l
+  · contradiction
+  · rw [tail, cons_append, tail]
 #align list.tail_append_singleton_of_ne_nil List.tail_append_singleton_of_ne_nil
 
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
@@ -991,7 +998,6 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
   | nil => rfl
   | cons x xs =>
   simp only [List.cons_append]
-  congr
   dsimp only [← List.cons_append]
   suffices ∀ (ys init : List α) (hinit : init = ys) (last : α) (hlast : last = b),
       (cons_append a init last
@@ -3670,7 +3676,7 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
           · simp only [drop, cons.sizeOf_spec]
             rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
             exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
-        · simp only [cons.sizeOf_spec]; omega
+        simp only [cons.sizeOf_spec]; omega
     · simp only [cons.sizeOf_spec, Nat.add_lt_add_iff_left]
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi

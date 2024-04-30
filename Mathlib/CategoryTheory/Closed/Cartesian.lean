@@ -355,13 +355,13 @@ def prodCoprodDistrib [HasBinaryCoproducts C] [CartesianClosed C] (X Y Z : C) :
       (coprod.desc (CartesianClosed.curry coprod.inl) (CartesianClosed.curry coprod.inr))
   hom_inv_id := by
     ext
-    rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
+    · rw [coprod.inl_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inl_desc, uncurry_curry]
     rw [coprod.inr_desc_assoc, comp_id, ← uncurry_natural_left, coprod.inr_desc, uncurry_curry]
   inv_hom_id := by
     rw [← uncurry_natural_right, ← eq_curry_iff]
     ext
-    rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
-      comp_id]
+    · rw [coprod.inl_desc_assoc, ← curry_natural_right, coprod.inl_desc, ← curry_natural_left,
+        comp_id]
     rw [coprod.inr_desc_assoc, ← curry_natural_right, coprod.inr_desc, ← curry_natural_left,
       comp_id]
 #align category_theory.prod_coprod_distrib CategoryTheory.prodCoprodDistrib
@@ -421,17 +421,17 @@ def cartesianClosedOfEquiv (e : C ≌ D) [h : CartesianClosed C] : CartesianClos
             simp [prodComparison, prod.comp_lift, ← e.inverse.map_comp, ← e.inverse.map_comp_assoc]
             -- I wonder if it would be a good idea to
             -- make `map_comp` a simp lemma the other way round
-        · have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfNatIso this.symm
-          have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
-            Adjunction.leftAdjointOfComp e.inverse _
-          have :
-            (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
-              prod.functor.obj X := by
-            apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
-            change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
-            apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
-          apply Adjunction.leftAdjointOfNatIso this }
+        have : IsLeftAdjoint (e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfNatIso this.symm
+        have : IsLeftAdjoint (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) :=
+          Adjunction.leftAdjointOfComp e.inverse _
+        have :
+          (e.inverse ⋙ e.functor ⋙ prod.functor.obj X ⋙ e.inverse) ⋙ e.functor ≅
+            prod.functor.obj X := by
+          apply isoWhiskerRight e.counitIso (prod.functor.obj X ⋙ e.inverse ⋙ e.functor) ≪≫ _
+          change prod.functor.obj X ⋙ e.inverse ⋙ e.functor ≅ prod.functor.obj X
+          apply isoWhiskerLeft (prod.functor.obj X) e.counitIso
+        apply Adjunction.leftAdjointOfNatIso this }
 #align category_theory.cartesian_closed_of_equiv CategoryTheory.cartesianClosedOfEquiv
 
 end Functor

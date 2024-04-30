@@ -254,16 +254,18 @@ theorem index_union_eq (K₁ K₂ : Compacts G) {V : Set G} (hV : (interior V).N
       (add_le_add (this K₁.1 <| Subset.trans (subset_union_left _ _) h1s)
         (this K₂.1 <| Subset.trans (subset_union_right _ _) h1s)) _
   rw [← Finset.card_union_of_disjoint, Finset.filter_union_right]
-  exact s.card_filter_le _
+  · exact s.card_filter_le _
   apply Finset.disjoint_filter.mpr
   rintro g₁ _ ⟨g₂, h1g₂, h2g₂⟩ ⟨g₃, h1g₃, h2g₃⟩
   simp only [mem_preimage] at h1g₃ h1g₂
   refine' h.le_bot (_ : g₁⁻¹ ∈ _)
   constructor <;> simp only [Set.mem_inv, Set.mem_mul, exists_exists_and_eq_and, exists_and_left]
-  · refine' ⟨_, h2g₂, (g₁ * g₂)⁻¹, _, _⟩; simp only [inv_inv, h1g₂]
-    simp only [mul_inv_rev, mul_inv_cancel_left]
-  · refine' ⟨_, h2g₃, (g₁ * g₃)⁻¹, _, _⟩; simp only [inv_inv, h1g₃]
-    simp only [mul_inv_rev, mul_inv_cancel_left]
+  · refine' ⟨_, h2g₂, (g₁ * g₂)⁻¹, _, _⟩
+    · simp only [inv_inv, h1g₂]
+    · simp only [mul_inv_rev, mul_inv_cancel_left]
+  · refine' ⟨_, h2g₃, (g₁ * g₃)⁻¹, _, _⟩
+    · simp only [inv_inv, h1g₃]
+    · simp only [mul_inv_rev, mul_inv_cancel_left]
 #align measure_theory.measure.haar.index_union_eq MeasureTheory.Measure.haar.index_union_eq
 #align measure_theory.measure.haar.add_index_union_eq MeasureTheory.Measure.haar.addIndex_union_eq
 
@@ -273,12 +275,12 @@ theorem mul_left_index_le {K : Set G} (hK : IsCompact K) {V : Set G} (hV : (inte
   rcases index_elim hK hV with ⟨s, h1s, h2s⟩; rw [← h2s]
   apply Nat.sInf_le; rw [mem_image]
   refine' ⟨s.map (Equiv.mulRight g⁻¹).toEmbedding, _, Finset.card_map _⟩
-  · simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
-    rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
-    simp only [mem_preimage] at hg₁;
-    simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
-      exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
-    refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
+  simp only [mem_setOf_eq]; refine' Subset.trans (image_subset _ h1s) _
+  rintro _ ⟨g₁, ⟨_, ⟨g₂, rfl⟩, ⟨_, ⟨hg₂, rfl⟩, hg₁⟩⟩, rfl⟩
+  simp only [mem_preimage] at hg₁;
+  simp only [exists_prop, mem_iUnion, Finset.mem_map, Equiv.coe_mulRight,
+    exists_exists_and_eq_and, mem_preimage, Equiv.toEmbedding_apply]
+  refine' ⟨_, hg₂, _⟩; simp only [mul_assoc, hg₁, inv_mul_cancel_left]
 #align measure_theory.measure.haar.mul_left_index_le MeasureTheory.Measure.haar.mul_left_index_le
 #align measure_theory.measure.haar.add_left_add_index_le MeasureTheory.Measure.haar.add_left_addIndex_le
 
@@ -308,7 +310,9 @@ theorem prehaar_le_index (K₀ : PositiveCompacts G) {U : Set G} (K : Compacts G
 @[to_additive]
 theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).Nonempty) {K : Set G}
     (h1K : IsCompact K) (h2K : (interior K).Nonempty) : 0 < prehaar (K₀ : Set G) U ⟨K, h1K⟩ := by
-  apply div_pos <;> norm_cast; apply index_pos ⟨⟨K, h1K⟩, h2K⟩ hU; exact index_pos K₀ hU
+  apply div_pos <;> norm_cast
+  · apply index_pos ⟨⟨K, h1K⟩, h2K⟩ hU
+  · exact index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_pos MeasureTheory.Measure.haar.prehaar_pos
 #align measure_theory.measure.haar.add_prehaar_pos MeasureTheory.Measure.haar.addPrehaar_pos
 
@@ -316,8 +320,9 @@ theorem prehaar_pos (K₀ : PositiveCompacts G) {U : Set G} (hU : (interior U).N
 theorem prehaar_mono {K₀ : PositiveCompacts G} {U : Set G} (hU : (interior U).Nonempty)
     {K₁ K₂ : Compacts G} (h : (K₁ : Set G) ⊆ K₂.1) :
     prehaar (K₀ : Set G) U K₁ ≤ prehaar (K₀ : Set G) U K₂ := by
-  simp only [prehaar]; rw [div_le_div_right]; exact mod_cast index_mono K₂.2 h hU
-  exact mod_cast index_pos K₀ hU
+  simp only [prehaar]; rw [div_le_div_right]
+  · exact mod_cast index_mono K₂.2 h hU
+  · exact mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_mono MeasureTheory.Measure.haar.prehaar_mono
 #align measure_theory.measure.haar.add_prehaar_mono MeasureTheory.Measure.haar.addPrehaar_mono
 
@@ -333,7 +338,8 @@ theorem prehaar_sup_le {K₀ : PositiveCompacts G} {U : Set G} (K₁ K₂ : Comp
     (hU : (interior U).Nonempty) :
     prehaar (K₀ : Set G) U (K₁ ⊔ K₂) ≤ prehaar (K₀ : Set G) U K₁ + prehaar (K₀ : Set G) U K₂ := by
   simp only [prehaar]; rw [div_add_div_same, div_le_div_right]
-  exact mod_cast index_union_le K₁ K₂ hU; exact mod_cast index_pos K₀ hU
+  · exact mod_cast index_union_le K₁ K₂ hU
+  · exact mod_cast index_pos K₀ hU
 #align measure_theory.measure.haar.prehaar_sup_le MeasureTheory.Measure.haar.prehaar_sup_le
 #align measure_theory.measure.haar.add_prehaar_sup_le MeasureTheory.Measure.haar.addPrehaar_sup_le
 
