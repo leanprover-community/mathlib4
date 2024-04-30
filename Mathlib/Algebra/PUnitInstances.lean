@@ -77,7 +77,7 @@ instance commRing : CommRing PUnit where
   natCast _ := unit
 
 instance cancelCommMonoidWithZero : CancelCommMonoidWithZero PUnit := by
-  refine' { PUnit.commRing with .. }; intros; subsingleton
+  refine' { PUnit.commRing with .. }; subsingleton
 
 instance normalizedGCDMonoid : NormalizedGCDMonoid PUnit where
   gcd _ _ := unit
@@ -152,16 +152,16 @@ instance [SMul R S] : IsScalarTower R S PUnit :=
   ⟨fun _ _ _ => rfl⟩
 
 instance smulWithZero [Zero R] : SMulWithZero R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> subsingleton
+  refine' { PUnit.smul with .. } <;> subsingleton
 
 instance mulAction [Monoid R] : MulAction R PUnit := by
-  refine' { PUnit.smul with .. } <;> intros <;> subsingleton
+  refine' { PUnit.smul with .. } <;> subsingleton
 
 instance distribMulAction [Monoid R] : DistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> subsingleton
+  refine' { PUnit.mulAction with .. } <;> subsingleton
 
 instance mulDistribMulAction [Monoid R] : MulDistribMulAction R PUnit := by
-  refine' { PUnit.mulAction with .. } <;> intros <;> subsingleton
+  refine' { PUnit.mulAction with .. } <;> subsingleton
 
 instance mulSemiringAction [Semiring R] : MulSemiringAction R PUnit :=
   { PUnit.distribMulAction, PUnit.mulDistribMulAction with }
@@ -170,6 +170,6 @@ instance mulActionWithZero [MonoidWithZero R] : MulActionWithZero R PUnit :=
   { PUnit.mulAction, PUnit.smulWithZero with }
 
 instance module [Semiring R] : Module R PUnit := by
-  refine' { PUnit.distribMulAction with .. } <;> intros <;> subsingleton
+  refine' { PUnit.distribMulAction with .. } <;> subsingleton
 
 end PUnit
