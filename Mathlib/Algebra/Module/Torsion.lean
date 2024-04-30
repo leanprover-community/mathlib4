@@ -596,7 +596,7 @@ theorem isTorsionBySet_quotient_iff (N : Submodule R M) (s : Set R) :
     Iff.trans Subtype.forall <| forall₂_congr fun _ _ =>
       Submodule.Quotient.mk_eq_zero N
 
-theorem isTorsionBySet_quotient_of_isTorsionBy (N : Submodule R M) {s}
+theorem isTorsionBySet_quotient_of_isTorsionBySet (N : Submodule R M) {s}
     (h : IsTorsionBySet R M s) : IsTorsionBySet R (M⧸N) s :=
   (isTorsionBySet_quotient_iff N s).mpr fun x r h' => @h x ⟨r, h'⟩ ▸ N.zero_mem
 
