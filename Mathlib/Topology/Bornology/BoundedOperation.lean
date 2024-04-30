@@ -57,12 +57,8 @@ lemma sub_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Sub R
     {f g : X → R} (f_bdd : ∃ C, ∀ x y, dist (f x) (f y) ≤ C)
     (g_bdd : ∃ C, ∀ x y, dist (g x) (g y) ≤ C) :
     ∃ C, ∀ x y, dist ((f - g) x) ((f - g) y) ≤ C := by
-  obtain ⟨Cf, hf⟩ := f_bdd
-  obtain ⟨Cg, hg⟩ := g_bdd
-  have key := isBounded_sub (Metric.isBounded_range_iff.mpr ⟨Cf, hf⟩)
-                            (Metric.isBounded_range_iff.mpr ⟨Cg, hg⟩)
-  rw [Metric.isBounded_iff] at key
-  obtain ⟨C, hC⟩ := key
+  obtain ⟨C, hC⟩ := Metric.isBounded_iff.mp <|
+    isBounded_sub (Metric.isBounded_range_iff.mpr f_bdd) (Metric.isBounded_range_iff.mpr g_bdd)
   use C
   intro x y
   exact hC (Set.sub_mem_sub (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
@@ -81,16 +77,14 @@ instance [SeminormedAddCommGroup R] : BoundedSub R where
     obtain ⟨Cg, hg⟩ := ht
     use Cf + Cg
     intro z hz w hw
-    rw [Set.mem_sub] at hz hw
-    obtain ⟨x₁, hx₁, y₁, hy₁, z_eq⟩ := hz
-    obtain ⟨x₂, hx₂, y₂, hy₂, w_eq⟩ := hw
+    obtain ⟨x₁, hx₁, y₁, hy₁, z_eq⟩ := Set.mem_sub.mp hz
+    obtain ⟨x₂, hx₂, y₂, hy₂, w_eq⟩ := Set.mem_sub.mp hw
     rw [← w_eq, ← z_eq, dist_eq_norm]
     calc  ‖x₁ - y₁ - (x₂ - y₂)‖
-     _  = ‖x₁ - x₂ + (y₂ - y₁)‖ := by
-        congr
+     _  = ‖x₁ - x₂ + (y₂ - y₁)‖     := by
         rw [sub_sub_sub_comm, sub_eq_add_neg, neg_sub]
-     _  ≤ ‖x₁ - x₂‖ + ‖y₂ - y₁‖ := norm_add_le _ _
-     _  ≤ Cf + Cg               :=
+     _  ≤ ‖x₁ - x₂‖ + ‖y₂ - y₁‖     := norm_add_le _ _
+     _  ≤ Cf + Cg                   :=
         add_le_add (mem_closedBall_iff_norm.mp (hf hx₁ hx₂))
                    (mem_closedBall_iff_norm.mp (hg hy₂ hy₁))
 
