@@ -573,7 +573,6 @@ def IsTorsionBy.module (hM : IsTorsionBy R M r) : Module (R ⧸ Ideal.span {r}) 
 instance IsTorsionBy.isScalarTower (hM : IsTorsionBy R M r)
     {S : Type*} [SMul S R] [SMul S M] [IsScalarTower S R M] [IsScalarTower S R R] :
     @IsScalarTower S (R ⧸ Ideal.span {r}) M _ (IsTorsionBy.module hM).toSMul _ :=
-  -- Porting note: still needed to be fed the Module R / I M instance
   @IsScalarTower.mk S (R ⧸ Ideal.span {r}) M _ (IsTorsionBy.module hM).toSMul _
     (fun b d x => Quotient.inductionOn' d fun c => (smul_assoc b c x : _))
 
