@@ -155,18 +155,18 @@ theorem eval_one_cyclotomic_not_prime_pow {R : Type*} [Ring R] {n : ℕ}
   apply_fun eval 1 at this
   rw [eval_geom_sum, one_geom_sum, eval_prod, eq_comm, ←
     Finset.prod_sdiff <| @range_pow_padicValNat_subset_divisors' p _ _, Finset.prod_image] at this
-  simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
-  rw [← Finset.prod_sdiff <| show {n} ⊆ _ from _] at this
-  swap
-  · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
-      true_and_iff, mem_image, mem_range, exists_prop, not_exists, not_and]
-    exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
-  rw [← Int.natAbs_ofNat p, Int.natAbs_dvd_natAbs] at hpe
-  obtain ⟨t, ht⟩ := hpe
-  rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
-  have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
-  simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
-  exact pow_succ_padicValNat_not_dvd hn'.ne' this
+  · simp_rw [eval_one_cyclotomic_prime_pow, Finset.prod_const, Finset.card_range, mul_comm] at this
+    rw [← Finset.prod_sdiff <| show {n} ⊆ _ from _] at this
+    swap
+    · simp only [singleton_subset_iff, mem_sdiff, mem_erase, Ne, mem_divisors, dvd_refl,
+        true_and_iff, mem_image, mem_range, exists_prop, not_exists, not_and]
+      exact ⟨⟨hn.ne', hn'.ne'⟩, fun t _ => h hp _⟩
+    rw [← Int.natAbs_ofNat p, Int.natAbs_dvd_natAbs] at hpe
+    obtain ⟨t, ht⟩ := hpe
+    rw [Finset.prod_singleton, ht, mul_left_comm, mul_comm, ← mul_assoc, mul_assoc] at this
+    have : (p : ℤ) ^ padicValNat p n * p ∣ n := ⟨_, this⟩
+    simp only [← _root_.pow_succ, ← Int.natAbs_dvd_natAbs, Int.natAbs_ofNat, Int.natAbs_pow] at this
+    exact pow_succ_padicValNat_not_dvd hn'.ne' this
   · rintro x - y - hxy
     apply Nat.succ_injective
     exact Nat.pow_right_injective hp.two_le hxy
@@ -260,9 +260,9 @@ theorem cyclotomic_eval_lt_add_one_pow_totient {n : ℕ} {q : ℝ} (hn' : 3 ≤ 
       rintro rfl
       exact hn.ne' (hζ.unique IsPrimitiveRoot.zero)
     have : ζ.re < 0 ∧ ζ.im = 0 := ⟨h.1.lt_of_ne ?_, h.2⟩
-    rw [← Complex.arg_eq_pi_iff, hζ.arg_eq_pi_iff hn.ne'] at this
-    rw [this] at hζ
-    linarith [hζ.unique <| IsPrimitiveRoot.neg_one 0 two_ne_zero.symm]
+    · rw [← Complex.arg_eq_pi_iff, hζ.arg_eq_pi_iff hn.ne'] at this
+      rw [this] at hζ
+      linarith [hζ.unique <| IsPrimitiveRoot.neg_one 0 two_ne_zero.symm]
     · contrapose! hζ₀
       apply Complex.ext <;> simp [hζ₀, h.2]
   have : ¬eval (↑q) (cyclotomic n ℂ) = 0 := by
