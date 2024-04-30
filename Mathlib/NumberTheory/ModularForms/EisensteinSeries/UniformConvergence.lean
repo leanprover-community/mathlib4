@@ -164,7 +164,7 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       exact Nat.pos_of_ne_zero hn
 
 theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
-    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
+    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (((r z) ^ k * n ^ k))⁻¹ := by
   have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
   norm_cast at *
   simp_rw [zpow_neg, ← mul_inv] at this
@@ -269,9 +269,8 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     inv_nonneg, pow_nonneg (r_pos _).le]}
   rw [inv_le_inv]
   · apply pow_le_pow_left (r_pos _).le
-    rw [abs_of_pos (r_pos _)]
     · exact r_lower_bound_on_strip hB ⟨x, HABK hx⟩
-  · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
+  · apply pow_pos ( (r_pos x))
   · apply pow_pos (r_pos _)
 
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm

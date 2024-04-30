@@ -115,84 +115,6 @@ theorem lvl_N_periodic (N : ℕ) (k : ℤ) (f : SlashInvariantForm (Gamma N) k) 
   -/
   sorry
 
-
-lemma riemannZeta_abs_int (k : ℤ) (h : 1 < k) : Complex.abs (riemannZeta (k )) =
-  ∑' n : ℕ, 1 / (n : ℝ) ^ k := by
-  have hk0 : 0 ≤ k := by linarith
-  lift k to ℕ using hk0
-  simp at *
-  rw [zeta_nat_eq_tsum_of_gt_one h]
-  have h1 :  ∑' n : ℕ, 1 / (n : ℂ) ^ (k : ℕ) =  ((∑' n : ℕ, 1 / ((n : ℝ)) ^ k) ) := by
-    rw [ofReal_tsum]
-    simp
-  simp at h1
-  norm_cast
-  simp
-  rw [h1]
-  norm_cast
-  simp only [Nat.cast_pow, abs_eq_self, ge_iff_le]
-  apply tsum_nonneg
-  simp
-
-theorem AbsEisenstein_bound (k : ℤ) (z : ℍ) (h : 3 ≤ k) :
-    ∑' (x : Fin 2 → ℤ), Complex.abs (eisSummand k x z) ≤ 8 / r z ^ k * Complex.abs (riemannZeta (k - 1 : ℤ)) :=
-  by
-  have hk1_int : 1 < (k - 1 : ℤ)  := by linarith
-  have hk : 1 < (k-1 : ℝ) := by norm_cast at *
-  have hk1 : 1 < (k -1) := by linarith
-  rw [ riemannZeta_abs_int (k-1) hk1 ]
-  norm_cast
-  rw [←tsum_mul_left]
-  let In := fun (n : ℕ) => Finset.box n (α := ℤ × ℤ)
-  have HI := Int.existsUnique_mem_box
-  let g := fun y : ℤ × ℤ => Complex.abs (eisSummand k ![y.1, y.2] z)
-  have gpos : ∀ y : ℤ × ℤ, 0 ≤ g y := by
-    intro y
-    apply (Complex.abs.nonneg _)
-
-  have hgsumm : Summable g := by apply real_eise_is_summable k z h
-  have index_lem := tsum_lemma g In HI hgsumm
-  simp
-  rw [index_lem]
-  have ind_lem2 := sum_lemma g gpos In HI
-  have smallclaim := AbsEise_bounded_on_square k z h
-  have nze : (8 / rfunct z ^ k : ℝ) ≠ 0 :=
-    by
-    apply div_ne_zero; simp; norm_cast; apply zpow_ne_zero; apply EisensteinSeries.rfunct_ne_zero
-  have riesum := Real.summable_nat_rpow_inv.2 hk
-  have riesum' : Summable fun n : ℕ => 8 / rfunct z ^ k * ((n : ℝ) ^ ((k : ℤ) - 1))⁻¹ :=
-    by
-    rw [← (summable_mul_left_iff nze).symm]
-    convert riesum
-    norm_cast
-  apply tsum_le_tsum
-  simp at *
-  norm_cast at smallclaim
-  rw [← ind_lem2]
-  apply hgsumm
-  norm_cast at riesum'
-
-
-
-
-
-  theorem AbsEisenstein_bound_unifomly_on_stip (k : ℤ) (h : 3 ≤ k) (A B : ℝ) (hb : 0 < B)
-    (z : verticalStrip A B) : ∑' (x : Fin 2 → ℤ), Complex.abs (eisSummand k x z) ≤
-      (8 / r (⟨⟨A, B⟩,  hb⟩) ^ k) * Complex.abs (riemannZeta (k - 1)) := by
-
-  sorry
-  /-
-  have : 8 / rfunct (z : ℍ') ^ k * Complex.abs (riemannZeta (k - 1 )) ≤
-    8 / rfunct (lbpoint A B hb) ^ k * Complex.abs (riemannZeta (k - 1)) := by
-    have hk0 : 0 ≤ k := by linarith
-    lift k to ℕ using hk0
-    apply rfunctbound;
-  have h1 := ( AbsEisenstein_bound k (z : ℍ') h)
-  apply le_trans h1
-  convert this
-  simp
-  -/
-
 lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
   verticalStrip A B' ⊆ verticalStrip A B := by
   simp_rw [verticalStrip]
@@ -201,38 +123,12 @@ lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
   simp only [ha, true_and]
   apply le_trans hbb hb
 
-theorem Eisenstein_series_is_bounded (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
-    (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
-    simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
-    let M : ℝ := 8 / r (⟨⟨N, 2⟩, by simp⟩) ^ k * Complex.abs (riemannZeta (k - 1))
-    use M
-    use 2
-    intro z hz
-    obtain ⟨n, hn⟩ := (upp_half_translation_N z N (by simp))
-    rw [eisensteinSeries_slash_apply]
-    have := lvl_N_periodic N k (eisensteinSeries_SIF (a ᵥ* A) k) z n
-    have h1 :
-        (eisensteinSeries_SIF (a ᵥ* ↑((SpecialLinearGroup.map (Int.castRingHom (ZMod ↑N))) A)) k) z =
-        eisensteinSeries (a ᵥ* ↑((SpecialLinearGroup.map (Int.castRingHom (ZMod ↑N))) A)) k z := by
-        rfl
-    rw [← h1, ← this]
-    apply le_trans (UBOUND N _ _ hk ((ModularGroup.T ^ (N : ℕ)) ^ n • z))
-    let Z := ((ModularGroup.T ^ (N : ℕ)) ^ n) • z
-    have hZ : Z ∈ verticalStrip (N : ℕ) 2 := by
-      have := verticalStrip_mem_le (N : ℕ) 2 z.im hz
-      apply this
-      convert hn
-      simp only [zpow_natCast]
-    exact AbsEisenstein_bound_unifomly_on_stip ( k) hk N 2 (by linarith) ⟨Z, hZ⟩
-
-
 
 theorem Eisenstein_series_is_bounded2 (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
     (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
     simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
     let M' := ∑'(x : Fin 2 → ℤ),
     (1 / r (⟨⟨N, 2⟩, by simp⟩) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹
-    let M : ℝ := 8 / r (⟨⟨N, 2⟩, by simp⟩) ^ k * Complex.abs (riemannZeta (k - 1))
     use M'
     use 2
     intro z hz
@@ -262,8 +158,26 @@ theorem Eisenstein_series_is_bounded2 (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ
     simp only [Fin.isValue, ModularGroup.sl_moeb, map_pow, _root_.map_mul,
       abs_ofReal, abs_natCast, Nat.cast_max, _root_.mul_inv_rev, Z] at this
     apply le_trans this
-
-
+    rw [mul_comm]
+    gcongr
+    · apply pow_pos (r_pos _)
+    · apply (r_pos _).le
+    · apply r_lower_bound_on_strip (A := N) (B := 2) (z:= ⟨Z, hZ⟩)
+    apply (summable_upper_bound hk Z).of_nonneg_of_le
+    · intro b
+      apply (Complex.abs.nonneg _)
+    · intro b
+      have hk0 : 0 ≤ k := by linarith
+      lift k to ℕ using hk0
+      have := eis_is_bounded_on_box k (max (b 0).natAbs (b 1).natAbs) Z b (by simp only [Int.mem_box])
+      rw [eisSummand]
+      simp [Z]
+      simp at this
+      conv =>
+        enter [2]
+        rw [mul_comm]
+      exact this
+    · apply summable_upper_bound hk
 
 
     --exact AbsEisenstein_bound_unifomly_on_stip ( k) hk N 2 (by linarith) ⟨Z, hZ⟩
