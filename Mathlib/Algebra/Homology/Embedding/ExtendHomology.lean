@@ -264,6 +264,11 @@ noncomputable def extendHomologyIso :
   (extend.homologyData' K e hj' rfl rfl (K.sc j).homologyData).left.homologyIso ≪≫
     (K.sc j).homologyData.left.homologyIso.symm
 
+lemma extend_exactAt_iff :
+    (K.extend e).ExactAt j' ↔ K.ExactAt j := by
+  simp only [HomologicalComplex.exactAt_iff_isZero_homology]
+  exact (K.extendHomologyIso e hj').isZero_iff
+
 @[reassoc (attr := simp)]
 lemma extendCyclesIso_hom_iCycles :
     (K.extendCyclesIso e hj').hom ≫ K.iCycles j =
