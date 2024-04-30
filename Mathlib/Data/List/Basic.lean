@@ -505,6 +505,7 @@ theorem bind_eq_bind {α β} (f : α → List β) (l : List α) : l >>= f = l.bi
 
 #align list.concat_nil List.concat_nil
 #align list.concat_cons List.concat_cons
+
 #align list.concat_eq_append List.concat_eq_append
 #align list.init_eq_of_concat_eq List.init_eq_of_concat_eq
 #align list.last_eq_of_concat_eq List.last_eq_of_concat_eq
@@ -861,7 +862,6 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
   simp [get?_eq_some]
-#align list.nth_le_eq_iff List.get_eq_iff
 #align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
@@ -1305,10 +1305,8 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 #align list.nth_le_append_right List.nthLe_append_right
 
 #align list.nth_le_replicate List.get_replicate
-
 #align list.nth_append List.get?_append
 #align list.nth_append_right List.get?_append_right
-
 #align list.last_eq_nth_le List.getLast_eq_get
 
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
