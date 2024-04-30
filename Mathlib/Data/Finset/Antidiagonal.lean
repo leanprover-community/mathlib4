@@ -75,7 +75,7 @@ instance [AddMonoid A] : Subsingleton (HasAntidiagonal A) :=
 -- when the decidability instances obsucate Lean
 lemma hasAntidiagonal_congr (A : Type*) [AddMonoid A]
     [H1 : HasAntidiagonal A] [H2 : HasAntidiagonal A] :
-    H1.antidiagonal = H2.antidiagonal := by congr!
+    H1.antidiagonal = H2.antidiagonal := by congr!; apply Subsingleton.elim
 
 theorem swap_mem_antidiagonal [AddCommMonoid A] [HasAntidiagonal A] {n : A} {xy : A × A}:
     xy.swap ∈ antidiagonal n ↔ xy ∈ antidiagonal n := by

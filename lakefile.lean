@@ -41,6 +41,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 lean_lib Cache
+lean_lib LongestPole
 lean_lib MathlibExtras
 lean_lib Archive
 lean_lib Counterexamples
@@ -64,6 +65,15 @@ lean_exe checkYaml where
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
+  supportInterpreter := true
+
+/--
+`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+and then calculates the longest pole
+(i.e. the sequence of files you would be waiting for during a infinite parallelism build).
+-/
+lean_exe pole where
+  root := `LongestPole.Main
   supportInterpreter := true
 
 /-!
