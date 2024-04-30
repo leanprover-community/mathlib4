@@ -503,7 +503,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     rw [simpleRoot, Finsupp.single_apply, Finsupp.zero_apply, apply_ite (0 ≤ ·)]
     simp
   · -- Otherwise, `w ≠ 1`. Let `i'` be a right descent of `w`.
-    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr ((cs.length_eq_zero_iff w).mp.mt w_ne_one)
+    have h₁ : 1 ≤ ℓ w := Nat.one_le_iff_ne_zero.mpr (cs.length_eq_zero_iff.mp.mt w_ne_one)
     rcases cs.exists_rightDescent_of_ne_one w_ne_one with ⟨i', hwi'⟩
     -- Use the notation `aw` for alternating product of simple reflections `s i` and `s i'`.
     set aw := fun m ↦ π (alternatingWord i i' m) with haw
@@ -519,7 +519,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
       apply Nat.le_findGreatest
       · exact h₁
       · simp [haw, alternatingWord]
-        exact (cs.isRightDescent_iff _ _).mp hwi'
+        exact cs.isRightDescent_iff.mp hwi'
     -- Also, `ℓ (w * (aw m)⁻¹) + m = ℓ w`, by definition of `m`.
     have h₄ : ℓ (w * (aw m)⁻¹) + m = ℓ w := by
       apply Nat.findGreatest_of_ne_zero h₂.symm
@@ -540,7 +540,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     -- By `h₅`, we see that `i''` is not a right descent of `w * (aw m)⁻¹`.
     have h₇ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j := by
       intro h'
-      apply (cs.isRightDescent_iff _ _).mp at h'
+      apply cs.isRightDescent_iff.mp at h'
       rw [add_comm m 1, ← add_assoc, h'] at h₅
       exact h₅ h₄
     /- Let `j' = if Even (m - 1) then i else i'`. So `j` and `j'` are `i` and `i'`, but potentially
@@ -556,7 +556,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
         simple_mul_simple_self, mul_one]
     have h₁₀ : ¬ cs.IsRightDescent (w * (aw m)⁻¹) j' := by
       intro h'
-      apply (cs.isRightDescent_iff _ _).mp at h'
+      apply cs.isRightDescent_iff.mp at h'
       have := calc
         ℓ (w * (aw (m - 1))⁻¹) + 1 + m
         _ = ℓ (w * (aw m)⁻¹ * (s j')) + 1 + m           := by rw [mul_assoc, h₉]
@@ -609,7 +609,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
       · linarith only [h₁₈]
     have h₂₀ : m ≤ M i i' ∨ M i i' = 0 := by
       by_contra! h'
-      exact cs.not_isReduced_alternatingWord i i' m h'.2 h'.1 h₁₉
+      exact cs.not_isReduced_alternatingWord i i' h'.2 h'.1 h₁₉
     clear h₁₈ h₁₉
     /- If `m = M i i'` and `M i i' ≠ 0`, then `aw m` has a reduced word that ends with `i` instead
     of `i'`. We obtain a contradiction from the fact that `i` is not a
@@ -676,7 +676,7 @@ theorem sgr_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i
 nonpositive coordinates and it is nonzero. -/
 theorem sgr_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
     (ρ w) (α i) < 0 := by
-  apply (cs.isRightDescent_iff_not_isRightDescent_mul _ _).mp at h
+  apply cs.isRightDescent_iff_not_isRightDescent_mul.mp at h
   apply sgr_apply_simpleRoot_pos_of at h
   rw [map_mul, mul_apply, sgr_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
   exact neg_pos.mp h
