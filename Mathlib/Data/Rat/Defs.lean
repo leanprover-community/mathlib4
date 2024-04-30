@@ -549,7 +549,7 @@ theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   simp [divInt_eq_div, div_pow]
 
 @[simp] lemma mkRat_pow (num den : ℕ) (n : ℕ) : mkRat num den ^ n = mkRat (num ^ n) (den ^ n) := by
-  rw [mkRat_eq, mkRat_eq, divInt_pow, Int.natCast_pow]
+  rw [mkRat_eq_divInt, mkRat_eq_divInt, divInt_pow, Int.natCast_pow]
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]
