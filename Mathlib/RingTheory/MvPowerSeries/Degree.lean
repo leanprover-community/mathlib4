@@ -26,7 +26,7 @@ namespace MvPowerSeries
 variable {σ R : Type*} [CommSemiring R] [DecidableEq (MvPowerSeries σ R)]
 
 /-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
-def HasDegreeBound (n : ℕ) : MvPowerSeries σ R → Prop :=
+def HasDegreeBound (n : WithBot (WithTop ℕ)) : MvPowerSeries σ R → Prop :=
   fun φ ↦ (∀ s : σ →₀ ℕ, coeff R s φ ≠ 0 → s.sum (fun _ ↦ id) ≤ n)
 
 /-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
@@ -34,8 +34,7 @@ def HasBoundedDegree (φ : MvPowerSeries σ R) : Prop :=
   ∃ n, HasDegreeBound n φ
 
 noncomputable def degree (φ : MvPowerSeries σ R) : WithBot (WithTop ℕ) :=
-  if φ = 0 then ⊥ else (if HasBoundedDegree φ then sorry else ⊤)
-
+  sInf { n | HasDegreeBound n φ }
 
 end MvPowerSeries
 
