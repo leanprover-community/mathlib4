@@ -318,6 +318,7 @@ def identityToΓSpec : 𝟭 LocallyRingedSpace.{u} ⟶ Γ.rightOp ⋙ Spec.toLoc
 
 namespace ΓSpec
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem left_triangle (X : LocallyRingedSpace) :
     SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
   X.Γ_Spec_left_triangle
@@ -394,6 +395,7 @@ theorem adjunction_homEquiv_symm_apply {X : Scheme} {R : CommRingCatᵒᵖ}
   by rw [adjunction_homEquiv]; rfl
 #align algebraic_geometry.Γ_Spec.adjunction_hom_equiv_symm_apply AlgebraicGeometry.ΓSpec.adjunction_homEquiv_symm_apply
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem adjunction_counit_app {R : CommRingCatᵒᵖ} :
     ΓSpec.adjunction.counit.app R = locallyRingedSpaceAdjunction.counit.app R := by
@@ -423,22 +425,6 @@ instance isIso_adjunction_counit : IsIso ΓSpec.adjunction.counit := by
   infer_instance
 #align algebraic_geometry.Γ_Spec.is_iso_adjunction_counit AlgebraicGeometry.ΓSpec.isIso_adjunction_counit
 
-/-
-Adaptation note: nightly-2024-04-01
-This maxHeartbeats was not needed previously.
-Just elaborating the signature times out, even if we replace the proof with `sorry`.
-The left-hand-side has type:
-```
-((Scheme.Γ.rightOp.comp Scheme.Spec).obj X).presheaf.obj (op ⊤) ⟶
-  ((adjunction.unit.app X).val.base _* ((𝟭 Scheme).obj X).presheaf).obj (op ⊤)
-```
-while the right-hand-side has type:
-```
-(Spec.toLocallyRingedSpace.rightOp.comp Γ).obj (X.presheaf.obj (op ⊤)) ⟶
-  (𝟭 CommRingCat).obj (X.presheaf.obj (op ⊤))
-```
--/
-set_option maxHeartbeats 400000 in
 theorem adjunction_unit_app_app_top (X : Scheme.{u}) :
     (ΓSpec.adjunction.unit.app X).1.c.app (op ⊤) =
     SpecΓIdentity.hom.app (X.presheaf.obj (op ⊤)) := by
