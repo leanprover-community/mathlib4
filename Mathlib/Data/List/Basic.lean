@@ -617,8 +617,8 @@ theorem isEmpty_iff_eq_nil {l : List α} : l.isEmpty ↔ l = [] := by cases l <;
 theorem getLast_cons {a : α} {l : List α} :
     ∀ h : l ≠ nil, getLast (a :: l) (cons_ne_nil a l) = getLast l h := by
   induction l <;> intros
-  contradiction
-  rfl
+  · contradiction
+  · rfl
 #align list.last_cons List.getLast_cons
 
 theorem getLast_append_singleton {a : α} (l : List α) :
@@ -801,11 +801,16 @@ theorem mem_of_mem_head? {x : α} {l : List α} (h : x ∈ l.head?) : x ∈ l :=
 
 @[simp]
 theorem head!_append [Inhabited α] (t : List α) {s : List α} (h : s ≠ []) :
-    head! (s ++ t) = head! s := by induction s; contradiction; rfl
+    head! (s ++ t) = head! s := by
+  induction s
+  · contradiction
+  · rfl
 #align list.head_append List.head!_append
 
 theorem head?_append {s t : List α} {x : α} (h : x ∈ s.head?) : x ∈ (s ++ t).head? := by
-  cases s; contradiction; exact h
+  cases s
+  · contradiction
+  · exact h
 #align list.head'_append List.head?_append
 
 theorem head?_append_of_ne_nil :
@@ -815,7 +820,9 @@ theorem head?_append_of_ne_nil :
 
 theorem tail_append_singleton_of_ne_nil {a : α} {l : List α} (h : l ≠ nil) :
     tail (l ++ [a]) = tail l ++ [a] := by
-  induction l; contradiction; rw [tail, cons_append, tail]
+  induction l
+  · contradiction
+  · rw [tail, cons_append, tail]
 #align list.tail_append_singleton_of_ne_nil List.tail_append_singleton_of_ne_nil
 
 theorem cons_head?_tail : ∀ {l : List α} {a : α}, a ∈ head? l → a :: tail l = l
@@ -854,6 +861,7 @@ theorem tail_append_of_ne_nil (l l' : List α) (h : l ≠ []) : (l ++ l').tail =
 
 theorem get_eq_iff {l : List α} {n : Fin l.length} {x : α} : l.get n = x ↔ l.get? n.1 = some x := by
   simp [get?_eq_some]
+#align list.nth_le_eq_iff List.get_eq_iff
 #align list.nth_le_eq_iff List.get_eq_iff
 
 theorem get_eq_get? (l : List α) (i : Fin l.length) :
@@ -997,7 +1005,6 @@ theorem bidirectionalRec_cons_append {motive : List α → Sort*}
   | nil => rfl
   | cons x xs =>
   simp only [List.cons_append]
-  congr
   dsimp only [← List.cons_append]
   suffices ∀ (ys init : List α) (hinit : init = ys) (last : α) (hlast : last = b),
       (cons_append a init last
@@ -1224,10 +1231,7 @@ theorem nthLe_get? {l : List α} {n} (h) : get? l n = some (nthLe l n h) := get?
 theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 #align list.nth_length List.get?_length
 
-@[deprecated get?_eq_some] -- 2023-01-05
-theorem get?_eq_some' {l : List α} {n a} : get? l n = some a ↔ ∃ h, nthLe l n h = a := get?_eq_some
-#align list.nth_eq_some List.get?_eq_some'
-
+#align list.nth_eq_some List.get?_eq_some
 #align list.nth_eq_none_iff List.get?_eq_none
 #align list.nth_of_mem List.get?_of_mem
 
@@ -1516,7 +1520,6 @@ theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
 
 #align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_set
 
-
 /-! ### map -/
 
 #align list.map_nil List.map_nil
@@ -1732,11 +1735,8 @@ theorem take_cons (n) (a : α) (l : List α) : take (succ n) (a :: l) = a :: tak
 #align list.take_append_eq_append_take List.take_append_eq_append_take
 #align list.take_append_of_le_length List.take_append_of_le_length
 #align list.take_append List.take_append
-
 #align list.nth_le_take List.get_take
-
 #align list.nth_le_take' List.get_take'
-
 #align list.nth_take List.get?_take
 #align list.nth_take_of_succ List.nth_take_of_succ
 #align list.take_succ List.take_succ
@@ -1758,8 +1758,8 @@ theorem drop_tail (l : List α) (n : ℕ) : l.tail.drop n = l.drop (n + 1) := by
 theorem cons_get_drop_succ {l : List α} {n} :
     l.get n :: l.drop (n.1 + 1) = l.drop n.1 :=
   (drop_eq_get_cons n.2).symm
-#align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 
+#align list.cons_nth_le_drop_succ List.cons_get_drop_succ
 #align list.drop_nil List.drop_nil
 #align list.drop_one List.drop_one
 #align list.drop_add List.drop_add
@@ -1772,10 +1772,8 @@ theorem cons_get_drop_succ {l : List α} {n} :
 #align list.drop_append_of_le_length List.drop_append_of_le_length
 #align list.drop_append List.drop_append
 #align list.drop_sizeof_le List.drop_sizeOf_le
-
 #align list.nth_le_drop List.get_drop
 #align list.nth_le_drop' List.get_drop'
-
 #align list.nth_drop List.get?_drop
 #align list.drop_drop List.drop_drop
 #align list.drop_take List.drop_take
@@ -3554,7 +3552,6 @@ theorem get_attach (L : List α) (i) :
     (L.attach.get i).1 = (L.attach.map Subtype.val).get ⟨i, by simpa using i.2⟩ :=
       by rw [get_map]
     _ = L.get { val := i, isLt := _ } := by congr 2 <;> simp
-
 #align list.nth_le_attach List.get_attach
 
 @[simp 1100]

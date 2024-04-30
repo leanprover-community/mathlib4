@@ -711,8 +711,8 @@ theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive
-  exact length_zero
-  exact length_add_le
+  · exact length_zero
+  · exact length_add_le
 #align interval.length_sum_le Interval.length_sum_le
 
 end Interval

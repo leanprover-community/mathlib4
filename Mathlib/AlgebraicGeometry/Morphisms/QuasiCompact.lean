@@ -242,9 +242,10 @@ theorem quasiCompact_respectsIso : MorphismProperty.RespectsIso @QuasiCompact :=
     targetAffineLocally_respectsIso QuasiCompact.affineProperty_isLocal.1
 #align algebraic_geometry.quasi_compact_respects_iso AlgebraicGeometry.quasiCompact_respectsIso
 
-theorem quasiCompact_stableUnderComposition :
-    MorphismProperty.StableUnderComposition @QuasiCompact := fun _ _ _ _ _ _ _ => inferInstance
-#align algebraic_geometry.quasi_compact_stable_under_composition AlgebraicGeometry.quasiCompact_stableUnderComposition
+instance quasiCompact_isStableUnderComposition :
+    MorphismProperty.IsStableUnderComposition @QuasiCompact where
+  comp_mem _ _ _ _ := inferInstance
+#align algebraic_geometry.quasi_compact_stable_under_composition AlgebraicGeometry.quasiCompact_isStableUnderComposition
 
 theorem QuasiCompact.affineProperty_stableUnderBaseChange :
     QuasiCompact.affineProperty.StableUnderBaseChange := by
