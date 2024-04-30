@@ -140,20 +140,20 @@ theorem CharP.addOrderOf_one (R) [Semiring R] : CharP R (addOrderOf (1 : R)) :=
   ⟨fun n => by rw [← Nat.smul_one_eq_coe, addOrderOf_dvd_iff_nsmul_eq_zero]⟩
 #align char_p.add_order_of_one CharP.addOrderOf_one
 
-theorem CharP.int_cast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
+theorem CharP.intCast_eq_zero_iff [AddGroupWithOne R] (p : ℕ) [CharP R p] (a : ℤ) :
     (a : R) = 0 ↔ (p : ℤ) ∣ a := by
   rcases lt_trichotomy a 0 with (h | rfl | h)
   · rw [← neg_eq_zero, ← Int.cast_neg, ← dvd_neg]
     lift -a to ℕ using neg_nonneg.mpr (le_of_lt h) with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
   · simp only [Int.cast_zero, eq_self_iff_true, dvd_zero]
   · lift a to ℕ using le_of_lt h with b
-    rw [Int.cast_ofNat, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
-#align char_p.int_cast_eq_zero_iff CharP.int_cast_eq_zero_iff
+    rw [Int.cast_natCast, CharP.cast_eq_zero_iff R p, Int.natCast_dvd_natCast]
+#align char_p.int_cast_eq_zero_iff CharP.intCast_eq_zero_iff
 
 theorem CharP.intCast_eq_intCast [AddGroupWithOne R] (p : ℕ) [CharP R p] {a b : ℤ} :
     (a : R) = b ↔ a ≡ b [ZMOD p] := by
-  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.int_cast_eq_zero_iff R p, Int.modEq_iff_dvd]
+  rw [eq_comm, ← sub_eq_zero, ← Int.cast_sub, CharP.intCast_eq_zero_iff R p, Int.modEq_iff_dvd]
 #align char_p.int_cast_eq_int_cast CharP.intCast_eq_intCast
 
 theorem CharP.natCast_eq_natCast' [AddMonoidWithOne R] (p : ℕ) [CharP R p] {a b : ℕ}
@@ -455,7 +455,6 @@ end Semiring
 section Ring
 
 variable [Ring R] [NoZeroDivisors R] [Nontrivial R] [Finite R]
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem char_is_prime (p : ℕ) [CharP R p] : p.Prime :=
   Or.resolve_right (char_is_prime_or_zero R p) (char_ne_zero_of_finite R p)
@@ -467,8 +466,9 @@ section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
--- see Note [lower instance priority]
-instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
+-- This lemma is not an instance, to make sure that trying to prove `α` is a subsingleton does
+-- not try to find a ring structure on `α`, which can be expensive.
+lemma CharOne.subsingleton [CharP R 1] : Subsingleton R :=
   Subsingleton.intro <|
     suffices ∀ r : R, r = 0 from fun a b => show a = b by rw [this a, this b]
     fun r =>
@@ -478,8 +478,9 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       _ = 0 * r := by rw [CharP.cast_eq_zero]
       _ = 0 := by rw [zero_mul]
 
-theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
-  false_of_nontrivial_of_subsingleton R
+theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
+  have : Subsingleton R := CharOne.subsingleton
+  exact false_of_nontrivial_of_subsingleton R
 #align char_p.false_of_nontrivial_of_char_one CharP.false_of_nontrivial_of_char_one
 
 theorem ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
@@ -522,7 +523,7 @@ protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial 
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
 theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
-  Ring.two_ne_zero hR (one_add_one_eq_two (α := R) ▸ neg_eq_iff_add_eq_zero.mp h)
+  Ring.two_ne_zero hR (one_add_one_eq_two (R := R) ▸ neg_eq_iff_add_eq_zero.mp h)
 #align ring.neg_one_ne_one_of_char_ne_two Ring.neg_one_ne_one_of_char_ne_two
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/
@@ -539,7 +540,6 @@ end
 section
 
 variable [NonAssocRing R] [Fintype R] (n : ℕ)
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem charP_of_ne_zero (hn : Fintype.card R = n) (hR : ∀ i < n, (i : R) = 0 → i = 0) :
     CharP R n :=
@@ -621,14 +621,13 @@ end
 namespace NeZero
 
 variable [AddMonoidWithOne R] {r : R} {n p : ℕ} {a : ℕ+}
--- Porting note: removed redundant binder annotation update `(R)`
 
 theorem of_not_dvd [CharP R p] (h : ¬p ∣ n) : NeZero (n : R) :=
   ⟨(CharP.cast_eq_zero_iff R p n).not.mpr h⟩
 #align ne_zero.of_not_dvd NeZero.of_not_dvd
 
 theorem not_char_dvd (p : ℕ) [CharP R p] (k : ℕ) [h : NeZero (k : R)] : ¬p ∣ k := by
-  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne.def, ← neZero_iff]
+  rwa [← CharP.cast_eq_zero_iff R p k, ← Ne, ← neZero_iff]
 #align ne_zero.not_char_dvd NeZero.not_char_dvd
 
 end NeZero

@@ -336,13 +336,13 @@ only assumes that `‖f x - f x₀‖ ≤ C * ‖x - x₀‖` in a neighborhood 
 theorem HasFDerivAt.le_of_lip' {f : E → F} {f' : E →L[𝕜] F} {x₀ : E} (hf : HasFDerivAt f f' x₀)
     {C : ℝ} (hC₀ : 0 ≤ C) (hlip : ∀ᶠ x in 𝓝 x₀, ‖f x - f x₀‖ ≤ C * ‖x - x₀‖) : ‖f'‖ ≤ C := by
   refine' le_of_forall_pos_le_add fun ε ε0 => opNorm_le_of_nhds_zero _ _
-  exact add_nonneg hC₀ ε0.le
+  · exact add_nonneg hC₀ ε0.le
   rw [← map_add_left_nhds_zero x₀, eventually_map] at hlip
   filter_upwards [isLittleO_iff.1 (hasFDerivAt_iff_isLittleO_nhds_zero.1 hf) ε0, hlip] with y hy hyC
   rw [add_sub_cancel_left] at hyC
   calc
     ‖f' y‖ ≤ ‖f (x₀ + y) - f x₀‖ + ‖f (x₀ + y) - f x₀ - f' y‖ := norm_le_insert _ _
-    _ ≤ C * ‖y‖ + ε * ‖y‖ := (add_le_add hyC hy)
+    _ ≤ C * ‖y‖ + ε * ‖y‖ := add_le_add hyC hy
     _ = (C + ε) * ‖y‖ := (add_mul _ _ _).symm
 
 #align has_fderiv_at.le_of_lip' HasFDerivAt.le_of_lip'

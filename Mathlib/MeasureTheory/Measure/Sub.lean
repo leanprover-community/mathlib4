@@ -104,7 +104,7 @@ theorem sub_add_cancel_of_le [IsFiniteMeasure ν] (h₁ : ν ≤ μ) : μ - ν +
 
 theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     (μ - ν).restrict s = μ.restrict s - ν.restrict s := by
-  repeat' rw [sub_def]
+  repeat rw [sub_def]
   have h_nonempty : { d | μ ≤ d + ν }.Nonempty := ⟨μ, Measure.le_add_right le_rfl⟩
   rw [restrict_sInf_eq_sInf_restrict h_nonempty h_meas_s]
   apply le_antisymm
@@ -115,7 +115,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     refine' ⟨ν' + (⊤ : Measure α).restrict sᶜ, _, _⟩
     · rw [mem_setOf_eq, add_right_comm, Measure.le_iff]
       intro t h_meas_t
-      repeat' rw [← measure_inter_add_diff t h_meas_s]
+      repeat rw [← measure_inter_add_diff t h_meas_s]
       refine' add_le_add _ _
       · rw [add_apply, add_apply]
         apply le_add_right _

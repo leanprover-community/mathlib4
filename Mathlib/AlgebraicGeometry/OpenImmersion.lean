@@ -118,8 +118,8 @@ def affineCover (X : Scheme) : OpenCover X where
     intro x
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
-    erw [Subtype.range_coe_subtype]
-    exact (X.local_affine x).choose.2
+    · erw [Subtype.range_coe_subtype]
+      exact (X.local_affine x).choose.2
     rw [← TopCat.epi_iff_surjective]
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
@@ -561,9 +561,9 @@ theorem range_pullback_snd_of_left :
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
   -- Porting note (#10691): was `rw`
-  erw [TopCat.pullback_snd_image_fst_preimage]
-  rw [Set.image_univ]
-  rfl
+  · erw [TopCat.pullback_snd_image_fst_preimage]
+    rw [Set.image_univ]
+    rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
@@ -578,9 +578,9 @@ theorem range_pullback_fst_of_right :
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
   -- Porting note (#10691): was `rw`
-  erw [TopCat.pullback_fst_image_snd_preimage]
-  rw [Set.image_univ]
-  rfl
+  · erw [TopCat.pullback_fst_image_snd_preimage]
+    rw [Set.image_univ]
+    rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
@@ -703,13 +703,13 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
   -- Porting note (#10691): was `rw`
   erw [PresheafedSpace.IsOpenImmersion.invApp_app_apply] at e
   rw [Scheme.basicOpen_res, inf_eq_right.mpr _] at e
-  rw [← e]
-  ext1
-  -- Porting note: this `dsimp` was not necessary
-  dsimp [Opens.map]
-  refine' Set.image_preimage_eq_inter_range.trans _
-  erw [Set.inter_eq_left]
-  refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  · rw [← e]
+    ext1
+    -- Porting note: this `dsimp` was not necessary
+    dsimp [Opens.map]
+    refine' Set.image_preimage_eq_inter_range.trans _
+    erw [Set.inter_eq_left]
+    refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
@@ -740,8 +740,8 @@ def Scheme.OpenCover.pullbackCover {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_fst_range]
-    obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
-    exact ⟨y, h.symm⟩
+    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+      exact ⟨y, h.symm⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
@@ -763,8 +763,8 @@ def Scheme.OpenCover.pullbackCover' {X : Scheme} (𝒰 : X.OpenCover) {W : Schem
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_snd_range]
-    obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
-    exact ⟨y, h⟩
+    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+      exact ⟨y, h⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 
 theorem Scheme.OpenCover.iUnion_range {X : Scheme} (𝒰 : X.OpenCover) :
@@ -825,5 +825,122 @@ def Scheme.openCoverOfSuprEqTop {s : Type*} (X : Scheme) (U : s → Opens X)
     have : x ∈ ⨆ i, U i := hU.symm ▸ show x ∈ (⊤ : Opens X) by trivial
     exact (Opens.mem_iSup.mp this).choose_spec
 #align algebraic_geometry.Scheme.open_cover_of_supr_eq_top AlgebraicGeometry.Scheme.openCoverOfSuprEqTop
+
+namespace Scheme
+
+/--
+An affine open cover of `X` consists of a family of open immersions into `X` from
+spectra of rings.
+-/
+structure AffineOpenCover (X : Scheme.{u}) where
+  /-- index set of an affine open cover of a scheme `X` -/
+  J : Type v
+  /-- the ring associated to a component of an affine open cover -/
+  obj : J → CommRingCat.{u}
+  /-- the embedding of subschemes to `X` -/
+  map : ∀ j : J, Spec.obj (.op <| obj j) ⟶ X
+  /-- given a point of `x : X`, `f x` is the index of the subscheme which contains `x`  -/
+  f : X.carrier → J
+  /-- the subschemes covers `X` -/
+  Covers : ∀ x, x ∈ Set.range (map (f x)).1.base
+  /-- the embedding of subschemes are open immersions -/
+  IsOpen : ∀ x, IsOpenImmersion (map x) := by infer_instance
+
+namespace AffineOpenCover
+
+attribute [instance] AffineOpenCover.IsOpen
+
+/-- The open cover associated to an affine open cover. -/
+@[simps]
+def openCover {X : Scheme.{u}} (𝓤 : X.AffineOpenCover) : X.OpenCover where
+  J := 𝓤.J
+  map := 𝓤.map
+  f := 𝓤.f
+  Covers := 𝓤.Covers
+
+end AffineOpenCover
+
+/-- A choice of an affine open cover of a scheme. -/
+def affineOpenCover (X : Scheme.{u}) : X.AffineOpenCover where
+  J := X.affineCover.J
+  map := X.affineCover.map
+  f := X.affineCover.f
+  Covers := X.affineCover.Covers
+
+@[simp]
+lemma openCover_affineOpenCover (X : Scheme.{u}) : X.affineOpenCover.openCover = X.affineCover :=
+  rfl
+
+/-- Given any open cover `𝓤`, this is an affine open cover which refines it.
+The morphism in the category of open covers which proves that this is indeed a refinement, see
+`AlgebraicGeometry.Scheme.OpenCover.fromAffineRefinement`.
+-/
+def OpenCover.affineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) : X.AffineOpenCover where
+  J := (𝓤.bind fun j => (𝓤.obj j).affineCover).J
+  map := (𝓤.bind fun j => (𝓤.obj j).affineCover).map
+  f := (𝓤.bind fun j => (𝓤.obj j).affineCover).f
+  Covers := (𝓤.bind fun j => (𝓤.obj j).affineCover).Covers
+
+end Scheme
+
+section category
+
+/--
+A morphism between open covers `𝓤 ⟶ 𝓥` indicates that `𝓤` is a refinement of `𝓥`.
+Since open covers of schemes are indexed, the definition also involves a map on the
+indexing types.
+-/
+structure Scheme.OpenCover.Hom {X : Scheme.{u}} (𝓤 𝓥 : Scheme.OpenCover.{v} X) where
+  /-- The map on indexing types associated to a morphism of open covers. -/
+  idx : 𝓤.J → 𝓥.J
+  /-- The morphism between open subsets associated to a morphism of open covers. -/
+  app (j : 𝓤.J) : 𝓤.obj j ⟶ 𝓥.obj (idx j)
+  isOpen (j : 𝓤.J) : IsOpenImmersion (app j) := by infer_instance
+  w (j : 𝓤.J) : app j ≫ 𝓥.map _ = 𝓤.map _ := by aesop_cat
+
+attribute [reassoc (attr := simp)] Scheme.OpenCover.Hom.w
+attribute [instance] Scheme.OpenCover.Hom.isOpen
+
+/-- The identity morphism in the category of open covers of a scheme. -/
+def Scheme.OpenCover.Hom.id {X : Scheme.{u}} (𝓤 : Scheme.OpenCover.{v} X) : 𝓤.Hom 𝓤 where
+  idx j := j
+  app j := 𝟙 _
+
+/-- The composition of two morphisms in the category of open covers of a scheme. -/
+def Scheme.OpenCover.Hom.comp {X : Scheme.{u}} {𝓤 𝓥 𝓦 : Scheme.OpenCover.{v} X}
+    (f : 𝓤.Hom 𝓥) (g : 𝓥.Hom 𝓦) : 𝓤.Hom 𝓦 where
+  idx j := g.idx <| f.idx j
+  app j := f.app _ ≫ g.app _
+
+instance Scheme.OpenCover.category {X : Scheme.{u}} : Category (Scheme.OpenCover.{v} X) where
+  Hom 𝓤 𝓥 := 𝓤.Hom 𝓥
+  id := Scheme.OpenCover.Hom.id
+  comp f g := f.comp g
+
+@[simp]
+lemma Scheme.OpenCover.id_idx_apply {X : Scheme.{u}} (𝓤 : X.OpenCover) (j : 𝓤.J) :
+    (𝟙 𝓤 : 𝓤 ⟶ 𝓤).idx j = j := rfl
+
+@[simp]
+lemma Scheme.OpenCover.id_app {X : Scheme.{u}} (𝓤 : X.OpenCover) (j : 𝓤.J) :
+    (𝟙 𝓤 : 𝓤 ⟶ 𝓤).app j = 𝟙 _ := rfl
+
+@[simp]
+lemma Scheme.OpenCover.comp_idx_apply {X : Scheme.{u}} {𝓤 𝓥 𝓦 : X.OpenCover}
+    (f : 𝓤 ⟶ 𝓥) (g : 𝓥 ⟶ 𝓦) (j : 𝓤.J) :
+    (f ≫ g).idx j = g.idx (f.idx j) := rfl
+
+@[simp]
+lemma Scheme.OpenCover.comp_app {X : Scheme.{u}} {𝓤 𝓥 𝓦 : X.OpenCover}
+    (f : 𝓤 ⟶ 𝓥) (g : 𝓥 ⟶ 𝓦) (j : 𝓤.J) :
+    (f ≫ g).app j = f.app j ≫ g.app _ := rfl
+
+end category
+
+/-- Given any open cover `𝓤`, this is an affine open cover which refines it. -/
+def Scheme.OpenCover.fromAffineRefinement {X : Scheme.{u}} (𝓤 : X.OpenCover) :
+    𝓤.affineRefinement.openCover ⟶ 𝓤 where
+  idx j := j.fst
+  app j := (𝓤.obj j.fst).affineCover.map _
 
 end AlgebraicGeometry

@@ -469,8 +469,8 @@ theorem quadrant_II (hd : DiffContOnCl ℂ f (Iio 0 ×ℂ Ioi 0))
   have H : MapsTo (· * I) (Ioi 0 ×ℂ Ioi 0) (Iio 0 ×ℂ Ioi 0) := fun w hw ↦ by
     simpa only [mem_reProdIm, mul_I_re, mul_I_im, neg_lt_zero, mem_Iio] using hw.symm
   rcases hB with ⟨c, hc, B, hO⟩
-  refine' quadrant_I (hd.comp (differentiable_id.mul_const _).diffContOnCl H) ⟨c, hc, B, ?_⟩ him
-    (fun x hx => _) hz_im hz_re
+  refine quadrant_I (hd.comp (differentiable_id.mul_const _).diffContOnCl H) ⟨c, hc, B, ?_⟩ him
+    (fun x hx => ?_) hz_im hz_re
   · simpa only [(· ∘ ·), map_mul, abs_I, mul_one]
       using hO.comp_tendsto ((tendsto_mul_right_cobounded I_ne_zero).inf H.tendsto)
   · rw [comp_apply, mul_assoc, I_mul_I, mul_neg_one, ← ofReal_neg]
@@ -693,7 +693,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
           (fun x hx => (hC' x hx).trans <| le_max_right _ _)
           (fun x _ => (him x).trans (le_max_left _ _)) hz h
       exact hO.mono (inf_le_inf_left _ <| principal_mono.2 fun _ => And.left)
-    · refine' quadrant_I (hd.mono fun _ => And.left) ⟨c, hc, B, ?_⟩
+    · refine quadrant_I (hd.mono fun _ => And.left) ⟨c, hc, B, ?_⟩
           (fun x hx => (hC' x hx).trans <| le_max_right _ _)
           (fun x _ => (him x).trans (le_max_left _ _)) hz h
       exact hO.mono (inf_le_inf_left _ <| principal_mono.2 fun _ => And.left)
@@ -731,7 +731,7 @@ theorem right_half_plane_of_tendsto_zero_on_real (hd : DiffContOnCl ℂ f {z | 0
       contrapose! hz
       calc
         x₀ ≤ x₀ - z.re := (le_sub_self_iff _).2 hz
-        _ ≤ |x₀ - z.re| := (le_abs_self _)
+        _ ≤ |x₀ - z.re| := le_abs_self _
         _ = |(z - x₀).re| := by rw [sub_re, ofReal_re, _root_.abs_sub_comm]
         _ ≤ abs (z - x₀) := abs_re_le_abs _
     -- Thus we have `C < ‖f x₀‖ = ‖f 0‖ ≤ C`. Contradiction completes the proof.

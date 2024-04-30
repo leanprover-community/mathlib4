@@ -26,8 +26,6 @@ This file introduces the commuting probability of finite groups.
 * Neumann's theorem.
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open scoped Classical
@@ -55,7 +53,7 @@ theorem commProb_prod (M' : Type*) [Mul M'] : commProb (M × M') = commProb M * 
   exact Nat.card_congr ⟨fun x => ⟨⟨⟨x.1.1.1, x.1.2.1⟩, x.2.1⟩, ⟨⟨x.1.1.2, x.1.2.2⟩, x.2.2⟩⟩,
     fun x => ⟨⟨⟨x.1.1.1, x.2.1.1⟩, ⟨x.1.1.2, x.2.1.2⟩⟩, ⟨x.1.2, x.2.2⟩⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
+theorem commProb_pi {α : Type*} (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
     commProb (∀ a, i a) = ∏ a, commProb (i a) := by
   simp_rw [commProb_def, Finset.prod_div_distrib, Finset.prod_pow, ← Nat.cast_prod,
     ← Nat.card_pi, Commute, SemiconjBy, Function.funext_iff]
@@ -63,7 +61,7 @@ theorem commProb_pi (i : α → Type*) [Fintype α] [∀ a, Mul (i a)] :
   exact Nat.card_congr ⟨fun x a => ⟨⟨x.1.1 a, x.1.2 a⟩, x.2 a⟩, fun x => ⟨⟨fun a => (x a).1.1,
     fun a => (x a).1.2⟩, fun a => (x a).2⟩, fun x => rfl, fun x => rfl⟩
 
-theorem commProb_function [Fintype α] [Mul β] :
+theorem commProb_function {α β : Type*} [Fintype α] [Mul β] :
     commProb (α → β) = (commProb β) ^ Fintype.card α := by
   rw [commProb_pi, Finset.prod_const, Finset.card_univ]
 

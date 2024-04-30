@@ -359,7 +359,7 @@ def output_message(path, line_nr, code, msg):
             msg_type = "warning"
         # We are outputting for github. We duplicate path, line_nr and code,
         # so that they are also visible in the plaintext output.
-        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}#L{line_nr}: {code}: {msg}")
+        print(f"::{msg_type} file={path},line={line_nr},code={code}::{path}:{line_nr} {code}: {msg}")
 
 def format_errors(errors):
     global new_exceptions
