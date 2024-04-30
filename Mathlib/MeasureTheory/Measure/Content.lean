@@ -333,8 +333,8 @@ theorem outerMeasure_caratheodory (A : Set G) :
       ∀ U : Opens G, μ.outerMeasure (U ∩ A) + μ.outerMeasure (U \ A) ≤ μ.outerMeasure U := by
   rw [Opens.forall]
   apply inducedOuterMeasure_caratheodory
-  apply innerContent_iUnion_nat
-  apply innerContent_mono'
+  · apply innerContent_iUnion_nat
+  · apply innerContent_mono'
 #align measure_theory.content.outer_measure_caratheodory MeasureTheory.Content.outerMeasure_caratheodory
 
 @[to_additive]

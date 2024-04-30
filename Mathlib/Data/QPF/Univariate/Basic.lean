@@ -553,8 +553,8 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' a with b h; dsimp
     symm
     trans
-    symm
-    apply abs_map
+    · symm
+      apply abs_map
     congr
     rw [PFunctor.map_eq]
     dsimp [Function.comp_def]
