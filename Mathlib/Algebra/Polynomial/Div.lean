@@ -556,7 +556,8 @@ theorem rootMultiplicity_C (r a : R) : rootMultiplicity a (C r) = 0 := by
   · rw [Subsingleton.elim (C r) 0, rootMultiplicity_zero]
   classical
   rw [rootMultiplicity_eq_multiplicity]
-  split_ifs with hr; rfl
+  split_ifs with hr
+  · rfl
   have h : natDegree (C r) < natDegree (X - C a) := by simp
   simp_rw [multiplicity.multiplicity_eq_zero.mpr ((monic_X_sub_C a).not_dvd_of_natDegree_lt hr h)]
   rfl

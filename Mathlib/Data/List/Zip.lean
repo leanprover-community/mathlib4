@@ -264,8 +264,8 @@ theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
   · cases l₂
-    simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
-    · cases (head :: tail).get? i <;> rfl
+    · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
+      cases (head :: tail).get? i <;> rfl
     · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
 #align list.nth_zip_with List.get?_zip_with
 

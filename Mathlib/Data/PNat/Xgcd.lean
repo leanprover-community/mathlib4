@@ -473,7 +473,7 @@ theorem gcd_props :
   have hb' : (b' : ℕ) = y + z := gcdB'_coe a b
   have hdet : w * z = succPNat (x * y) := u.reduce_isSpecial' rfl
   constructor
-  exact hdet
+  · exact hdet
   have hdet' : (w * z : ℕ) = x * y + 1 := by rw [← mul_coe, hdet, succPNat_coe]
   have _ : u.v = ⟨a, b⟩ := XgcdType.start_v a b
   let hv : Prod.mk (w * d + x * ur.b : ℕ) (y * d + z * ur.b : ℕ) = ⟨a, b⟩ :=
@@ -482,9 +482,9 @@ theorem gcd_props :
   have ha'' : (a : ℕ) = a' * d := (congr_arg Prod.fst hv).symm
   have hb'' : (b : ℕ) = b' * d := (congr_arg Prod.snd hv).symm
   constructor
-  exact eq ha''
+  · exact eq ha''
   constructor
-  exact eq hb''
+  · exact eq hb''
   have hza' : (z * a' : ℕ) = x * b' + 1 := by
     rw [ha', hb', mul_add, mul_add, mul_comm (z : ℕ), hdet']
     ring
@@ -498,7 +498,7 @@ theorem gcd_props :
   · apply eq
     rw [succPNat_coe, Nat.succ_eq_add_one, mul_coe, hwb']
   rw [ha'', hb'']
-  repeat' rw [← @mul_assoc]
+  repeat rw [← @mul_assoc]
   rw [hza', hwb']
   constructor <;> ring
 #align pnat.gcd_props PNat.gcd_props
@@ -507,8 +507,8 @@ theorem gcd_eq : gcdD a b = gcd a b := by
   rcases gcd_props a b with ⟨_, h₁, h₂, _, _, h₅, _⟩
   apply dvd_antisymm
   · apply dvd_gcd
-    exact Dvd.intro (gcdA' a b) (h₁.trans (mul_comm _ _)).symm
-    exact Dvd.intro (gcdB' a b) (h₂.trans (mul_comm _ _)).symm
+    · exact Dvd.intro (gcdA' a b) (h₁.trans (mul_comm _ _)).symm
+    · exact Dvd.intro (gcdB' a b) (h₂.trans (mul_comm _ _)).symm
   · have h₇ : (gcd a b : ℕ) ∣ gcdZ a b * a := (Nat.gcd_dvd_left a b).trans (dvd_mul_left _ _)
     have h₈ : (gcd a b : ℕ) ∣ gcdX a b * b := (Nat.gcd_dvd_right a b).trans (dvd_mul_left _ _)
     rw [h₅] at h₇

@@ -668,8 +668,8 @@ instance instAdd : Add (α →ᵇ β) where
         rw [Prod.dist_eq]
         refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
         apply max_le_max
-        exact Classical.choose_spec f.bounded x y
-        exact Classical.choose_spec g.bounded x y)
+        · exact Classical.choose_spec f.bounded x y
+        · exact Classical.choose_spec g.bounded x y)
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl

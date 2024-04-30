@@ -106,7 +106,8 @@ theorem prod_cons : (a :: l).prod = a * l.prod :=
 lemma prod_induction
     (p : M → Prop) (hom : ∀ a b, p a → p b → p (a * b)) (unit : p 1) (base : ∀ x ∈ l, p x) :
     p l.prod := by
-  induction' l with a l ih; simpa
+  induction' l with a l ih
+  · simpa
   rw [List.prod_cons]
   simp only [Bool.not_eq_true, List.mem_cons, forall_eq_or_imp] at base
   exact hom _ _ (base.1) (ih base.2)

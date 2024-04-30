@@ -292,8 +292,8 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det hdim v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
   by_cases h : ∃ i, v i = 0
-  obtain ⟨i, hi⟩ := h
-  · rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
+  · obtain ⟨i, hi⟩ := h
+    rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
       simp [hi]
   push_neg at h
   congr

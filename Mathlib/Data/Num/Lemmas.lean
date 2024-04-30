@@ -894,7 +894,7 @@ theorem castNum_eq_bitwise {f : Num → Num → Num} {g : Bool → Bool → Bool
       show PosNum.bit0 = PosNum.bit false from rfl, show PosNum.bit1 = PosNum.bit true from rfl,
       show ((1 : Num) : ℕ) = Nat.bit true 0 from rfl]
     all_goals
-      repeat'
+      repeat
         rw [show ∀ b n, (pos (PosNum.bit b n) : ℕ) = Nat.bit b ↑n by
           intros b _; cases b <;> rfl]
       rw [Nat.bitwise_bit gff]
@@ -956,13 +956,13 @@ theorem castNum_shiftRight (m : Num) (n : Nat) : ↑(m >>> n) = (m : ℕ) >>> (n
     apply Nat.div_eq_of_lt
     simp
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit1 m) (n + 1)
     rw [add_comm n 1, @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n
     simp [Nat.shiftRight_succ, Nat.shiftRight_zero, ← Nat.div2_val]
   · trans
-    apply IH
+    · apply IH
     change Nat.shiftRight m n = Nat.shiftRight (_root_.bit0 m) (n + 1)
     rw [add_comm n 1,  @Nat.shiftRight_eq _ (1 + n), Nat.shiftRight_add]
     apply congr_arg fun x => Nat.shiftRight x n

@@ -124,7 +124,7 @@ lemma bodd_add_div2 : ∀ n, cond (bodd n) 1 0 + 2 * div2 n = n
     simp only [bodd_succ, Bool.cond_not, div2_succ, Nat.mul_comm]
     refine' Eq.trans _ (congr_arg succ (bodd_add_div2 n))
     cases bodd n
-    · simp
+    · simp; omega
     · simp; omega
 #align nat.bodd_add_div2 Nat.bodd_add_div2
 
@@ -150,8 +150,8 @@ lemma bit1_val (n : Nat) : bit1 n = 2 * n + 1 := congr_arg succ (bit0_val _)
 
 lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply bit0_val
-  apply bit1_val
+  · apply bit0_val
+  · apply bit1_val
 #align nat.bit_val Nat.bit_val
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=

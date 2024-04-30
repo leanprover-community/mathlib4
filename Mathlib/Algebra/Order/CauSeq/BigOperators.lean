@@ -192,8 +192,8 @@ lemma geo_series [Nontrivial β] (x : β) (hx1 : abv x < 1) :
   refine' @of_mono_bounded _ _ _ _ ((1 : α) / (1 - abv x)) 0 _ _
   · intro n _
     rw [abs_of_nonneg]
-    gcongr
-    · exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
+    · gcongr
+      exact sub_le_self _ (abv_pow abv x n ▸ abv_nonneg _ _)
     refine' div_nonneg (sub_nonneg.2 _) (sub_nonneg.2 <| le_of_lt hx1)
     exact pow_le_one _ (by positivity) hx1.le
   · intro n _

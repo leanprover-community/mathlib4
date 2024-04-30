@@ -34,7 +34,7 @@ theorem Theorems100.inverse_triangle_sum :
   rintro (_ | n)
   · rw [if_neg, if_pos] <;> norm_num
   simp only [Nat.succ_ne_zero, ↓reduceIte, Nat.cast_succ]
-  have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast
+  have A : (n + 1 + 1 : ℚ) ≠ 0 := by norm_cast; norm_num
   push_cast
   field_simp
   ring
