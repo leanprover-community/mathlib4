@@ -120,8 +120,8 @@ theorem Ideal.mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) 
 theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) (x : AdicCauchySequence I M) :
     r.val n • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val n) =
       r.val m • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val m) := by
-  rw [← Submodule.Quotient.mk_smul, ← Module.Ideal.mk_smul_mk, mk_eq_mk I M hmn,
-    Ideal.mk_eq_mk I hmn, Module.Ideal.mk_smul_mk, Submodule.Quotient.mk_smul]
+  rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk, mk_eq_mk I M hmn,
+    Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk, Submodule.Quotient.mk_smul]
 
 instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
@@ -129,7 +129,7 @@ instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
     property := fun {m n} hmn ↦ by
       apply inductionOn I R r (fun r ↦ ?_)
       apply inductionOn I M x (fun x ↦ ?_)
-      simp [Module.Ideal.mk_smul_mk, smul_mk I hmn]
+      simp [Module.Quotient.mk_smul_mk, smul_mk I hmn]
   }
 
 @[simp]

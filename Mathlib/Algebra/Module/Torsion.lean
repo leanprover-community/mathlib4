@@ -552,7 +552,7 @@ instance : Module (R ⧸ I) (M ⧸ I • (⊤ : Submodule R M)) :=
     refine' (Submodule.Quotient.mk_eq_zero _).mpr (Submodule.smul_mem_smul r.prop _)
     trivial
 
-lemma Ideal.mk_smul_mk (r : R) (m : M) :
+lemma Quotient.mk_smul_mk (r : R) (m : M) :
     Ideal.Quotient.mk I r •
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) m =
       Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) (r • m) :=
