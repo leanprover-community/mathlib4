@@ -517,7 +517,7 @@ theorem fromSpec_primeIdealOf (x : U) :
     Scheme.ofRestrict_val_base, Scheme.restrict_carrier, Opens.coe_inclusion]
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
-set_option backward.isDefEq.lazyWhnfCore false in
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem isLocalization_stalk'
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime

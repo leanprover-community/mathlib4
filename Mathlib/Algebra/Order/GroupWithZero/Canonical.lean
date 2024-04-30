@@ -273,7 +273,7 @@ theorem OrderIso.mulRight₀'_symm {a : α} (ha : a ≠ 0) :
   rfl
 #align order_iso.mul_right₀'_symm OrderIso.mulRight₀'_symm
 
-set_option backward.isDefEq.lazyProjDelta false in
+set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 instance : LinearOrderedAddCommGroupWithTop (Additive αᵒᵈ) :=
   { Additive.subNegMonoid, instLinearOrderedAddCommMonoidWithTopAdditiveOrderDual,
     Additive.instNontrivial with
