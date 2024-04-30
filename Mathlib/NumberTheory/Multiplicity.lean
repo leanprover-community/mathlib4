@@ -347,8 +347,8 @@ theorem Int.two_pow_sub_pow {x y : ℤ} {n : ℕ} (hxy : 2 ∣ x - y) (hx : ¬2 
     · simp only [Int.odd_iff_not_even, even_iff_two_dvd, hx, not_false_iff]
   rw [Int.two_pow_sub_pow' d hxy4 _, sq_sub_sq, ← Int.ofNat_mul_out, multiplicity.mul Int.prime_two,
     multiplicity.mul Int.prime_two]
-  suffices multiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm (1 : PartENat), ← add_assoc]
-  · norm_cast
+  · suffices multiplicity (2 : ℤ) ↑(2 : ℕ) = 1 by rw [this, add_comm (1 : PartENat), ← add_assoc]
+    norm_cast
     rw [multiplicity.multiplicity_self _ _]
     · apply Prime.not_unit
       simp only [← Nat.prime_iff, Nat.prime_two]

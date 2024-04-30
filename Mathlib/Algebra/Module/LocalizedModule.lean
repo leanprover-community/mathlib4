@@ -254,7 +254,8 @@ instance {A : Type*} [Semiring A] [Algebra R A] {S : Submonoid R} :
           dsimp only at e₁ e₂ ⊢
           rw [eq_comm]
           trans (u₁ • t₁ • a₁) • u₂ • t₂ • a₂
-          rw [e₁, e₂]; swap; rw [eq_comm]
+          on_goal 1 => rw [e₁, e₂]
+          on_goal 2 => rw [eq_comm]
           all_goals
             rw [smul_smul, mul_mul_mul_comm, ← smul_eq_mul, ← smul_eq_mul A, smul_smul_smul_comm,
               mul_smul, mul_smul])

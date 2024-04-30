@@ -180,25 +180,25 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
       erw [Subtype.range_val]
       convert e
     have := H ⟨(Opens.map (X.ofRestrict U'.openEmbedding).1.base).obj V.1, ?h'⟩
-    erw [← X.presheaf.map_comp] at this
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
-      ← X.presheaf.map_comp]
-    convert this using 1
-    dsimp only [Functor.op, unop_op]
-    rw [Opens.openEmbedding_obj_top]
-    congr 1
-    exact e'.symm
-    case h' =>
-      apply (X.ofRestrict U'.openEmbedding).isAffineOpen_iff_of_isOpenImmersion.mp
-      -- Porting note: was convert V.2
-      erw [e']
-      apply V.2
+    · erw [← X.presheaf.map_comp] at this
+      · rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc,
+          ← X.presheaf.map_comp]
+        · convert this using 1
+        dsimp only [Functor.op, unop_op]
+        rw [Opens.openEmbedding_obj_top]
+        congr 1
+        exact e'.symm
+      case h' =>
+        apply (X.ofRestrict U'.openEmbedding).isAffineOpen_iff_of_isOpenImmersion.mp
+        -- Porting note: was convert V.2
+        erw [e']
+        apply V.2
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
     erw [← X.presheaf.map_comp]
     rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc, ←
       X.presheaf.map_comp]
-    convert H
+    · convert H
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
 
@@ -230,16 +230,16 @@ theorem sourceAffineLocally_isLocal (h₁ : RingHom.RespectsIso @P)
     apply h₃ _ _ hs
     intro r
     have := hs' r ⟨(Opens.map (X.ofRestrict _).1.base).obj U.1, ?_⟩
-    rwa [h₁.ofRestrict_morphismRestrict_iff] at this
-    · exact U.2
-    · rfl
-    · suffices ∀ (V) (_ : V = (Opens.map f.val.base).obj (Y.basicOpen r.val)),
-          IsAffineOpen ((Opens.map (X.ofRestrict V.openEmbedding).1.base).obj U.1) by
-        exact this _ rfl
-      intro V hV
-      rw [Scheme.preimage_basicOpen] at hV
-      subst hV
-      exact U.2.mapRestrictBasicOpen (Scheme.Γ.map f.op r.1)
+    · rwa [h₁.ofRestrict_morphismRestrict_iff] at this
+      · exact U.2
+      · rfl
+      · suffices ∀ (V) (_ : V = (Opens.map f.val.base).obj (Y.basicOpen r.val)),
+            IsAffineOpen ((Opens.map (X.ofRestrict V.openEmbedding).1.base).obj U.1) by
+          exact this _ rfl
+        intro V hV
+        rw [Scheme.preimage_basicOpen] at hV
+        subst hV
+        exact U.2.mapRestrictBasicOpen (Scheme.Γ.map f.op r.1)
 #align algebraic_geometry.source_affine_locally_is_local AlgebraicGeometry.sourceAffineLocally_isLocal
 
 variable (hP : RingHom.PropertyIsLocal @P)
@@ -271,9 +271,9 @@ theorem isOpenImmersionCat_comp_of_sourceAffineLocally (h₁ : RingHom.RespectsI
   rw [← h₁.cancel_right_isIso _
     (Scheme.Γ.map (IsOpenImmersion.isoOfRangeEq (Y.ofRestrict _) f _).hom.op),
     ← Functor.map_comp, ← op_comp]
-  convert h₂ ⟨_, rangeIsAffineOpenOfOpenImmersion f⟩ using 3
-  · rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
-    exact Subtype.range_coe
+  · convert h₂ ⟨_, rangeIsAffineOpenOfOpenImmersion f⟩ using 3
+    · rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc]
+      exact Subtype.range_coe
 #align algebraic_geometry.is_open_immersion_comp_of_source_affine_locally AlgebraicGeometry.isOpenImmersionCat_comp_of_sourceAffineLocally
 
 end AlgebraicGeometry
