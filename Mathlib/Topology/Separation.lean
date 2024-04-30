@@ -2330,6 +2330,13 @@ instance (priority := 100) T5Space.toT4Space [T5Space X] : T4Space X where
     completely_normal (by rwa [hs.closure_eq]) (by rwa [ht.closure_eq])
 #align t5_space.to_normal_space T5Space.toT4Space
 
+/-- A subspace of a T₅ space is a T₅ space. -/
+instance [T5Space X] {p : X → Prop} : T5Space { x // p x } :=
+  embedding_subtype_val.t5Space
+
+instance ULift.instT5Space [T5Space X] : T5Space (ULift X) :=
+  embedding_uLift_down.t5Space
+
 open SeparationQuotient
 
 /-- The `SeparationQuotient` of a completely normal R₀ space is a T₅ space. -/
