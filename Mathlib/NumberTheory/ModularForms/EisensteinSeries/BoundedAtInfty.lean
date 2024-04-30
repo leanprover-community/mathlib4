@@ -26,83 +26,105 @@ open scoped Topology BigOperators Nat Classical MatrixGroups
 namespace EisensteinSeries
 
 
+lemma summable_lem (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
+    Complex.abs (eisSummand k x z) := by
+  apply (summable_upper_bound hk z).of_nonneg_of_le
+  intro b
+  apply (Complex.abs.nonneg _)
+  intro b
+  have hk0 : 0 ≤ k := by linarith
+  lift k to ℕ using hk0
+  have := eis_is_bounded_on_box k (max (b 0).natAbs (b 1).natAbs) z b (by simp only [Int.mem_box])
+  rw [eisSummand]
+  simp
+  simp at this
+  conv =>
+    enter [2]
+    rw [mul_comm]
+  exact this
+
+lemma tsum_subtype_le {α : Type} (f : α → ℝ) (β : Set α) (hf : ∀ a : α, 0 ≤ f a) (hf2 : Summable f) :
+  (∑' (b : β), f b) ≤ (∑' (a : α), f a) := by
+  have := tsum_subtype_add_tsum_subtype_compl hf2 β
+  rw [← this]
+  simp
+  apply tsum_nonneg
+  intro b
+  apply hf b
+
 lemma UBOUND (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ):
   Complex.abs ((((eisensteinSeries a k))) z) ≤ ∑' (x : Fin 2 → ℤ),
     Complex.abs (eisSummand k x z) := by
-sorry
-/-  apply le_trans (abs_tsum' ?_)
-  simp_rw [feise, eise]
-  have := Equiv.tsum_eq prod_fun_equiv.symm (fun x : ℤ × ℤ => (AbsEise k z x))
-  rw [←this]
+simp_rw [← Complex.norm_eq_abs, eisensteinSeries]
+apply le_trans (norm_tsum_le_tsum_norm   ?_)
+apply tsum_subtype_le fun (x : Fin 2 → ℤ) =>
+    ‖(eisSummand k x z)‖
+intro b
+apply norm_nonneg
+simp [summable_lem k hk z]
+simp
+apply (summable_lem k hk z).subtype
 
-  have Ht := tsum_subtype_le (fun x : (Fin 2 → ℤ)  => (AbsEise k z (prod_fun_equiv.symm x)))
-    (lvl_N_congr' N a b) ?_ ?_
-  simp_rw [AbsEise] at *
-  simp at *
-  apply le_trans Ht
-  rfl
-  intro v
-  simp_rw [AbsEise]
-  simp
 
-  apply zpow_nonneg (Complex.abs.nonneg _)
-  have := real_eise_is_summable k z hk
-  rw [←Equiv.summable_iff prod_fun_equiv.symm] at this
-  exact this
-  rw [←summable_iff_abs_summable]
-  apply summable_Eisenstein_N_tsum' k hk
-  -/
-
-theorem upp_half_translation_N (z : ℍ) (N : ℤ) (hn : 0  < N) :
-    ∃ n : ℤ, ((((ModularGroup.T^N)^n))) • z ∈ verticalStrip N z.1.2 :=
-  by
-  let n := Int.floor (z.1.1/N)
-  use-n
+theorem upp_half_translation_N (z : ℍ) (N : ℕ) (hn : 0 < N) :
+    ∃ n : ℤ, ((((ModularGroup.T^N)^n))) • z ∈ verticalStrip N z.im := by
+  let n := Int.floor (z.re/N)
+  use -n
   have hpow : (ModularGroup.T ^ N) ^ (-n) = (ModularGroup.T) ^ (-(N: ℤ)*n) := by
+    rw [zpow_mul]
     simp
-    norm_cast
-    rw [←zpow_mul]
   rw [hpow]
   have := modular_T_zpow_smul z (-N*n)
   simp_rw [this]
-  sorry
-  /-
-  simp only [Int.cast_neg,  abs_ofReal, ge_iff_le]
   constructor
-  have HT: (-(N : ℤ)*(n : ℝ) +ᵥ z).1.re= -N *Int.floor (z.1.1/N) + z.re := by rfl
+  have HT: (-(N : ℤ)*(n : ℝ) +ᵥ z).re= -N *Int.floor (z.re/N) + z.re := by rfl
   norm_cast at *
   rw [HT]
   simp
   rw [add_comm]
   have hnn :  (0 : ℝ)  < (N : ℝ) := by norm_cast at *
-  have h0 := Int.sub_floor_div_mul_lt (z.1.1 : ℝ) hnn
-  simp_rw [UpperHalfPlane.re] at *
-  have h1 := Int.sub_floor_div_mul_nonneg (z.1.1 : ℝ) hnn
-  have h2 : z.1.1 +-(N*n)=  z.1.1 - n*N := by ring
-  simp only [uhc] at *
+  have h0 := Int.sub_floor_div_mul_lt (z.re : ℝ) hnn
+  have h1 := Int.sub_floor_div_mul_nonneg (z.re : ℝ) hnn
+  have h2 : z.re +-(N*n)=  z.re - n*N := by ring
+  simp only at *
   rw [h2]
   rw [abs_eq_self.2 h1]
   apply h0.le
-  have : (-N*(n : ℝ) +ᵥ z).1.im = z.im := by
+  have : (-N*(n : ℝ) +ᵥ z).im = z.im := by
     have := vadd_im (-N*(n : ℝ)) z
     rw [← this]
-    congr
   simp at *
-  rw [this]
-  apply le_abs_self
-  -/
+
+lemma int_cast_abs_self (N : ℤ) : (N : ZMod (Int.natAbs N)) = 0 := by
+  refine Iff.mpr (ZMod.intCast_zmod_eq_zero_iff_dvd N (Int.natAbs N)) ?_
+  simp only [Int.natCast_natAbs, abs_dvd, dvd_refl]
+
+lemma T_pow_N_mem_Gamma (N : ℤ) : (ModularGroup.T^N) ∈ _root_.Gamma (Int.natAbs N) := by
+  simp
+  simp_rw [ModularGroup.coe_T_zpow]
+  simp
+  apply int_cast_abs_self
+
+lemma T_pow_N_mem_Gamma' (N n : ℤ) : (ModularGroup.T^N)^n ∈ _root_.Gamma (Int.natAbs N) := by
+  exact Subgroup.zpow_mem (_root_.Gamma (Int.natAbs N)) (T_pow_N_mem_Gamma N) n
+
+
 
 theorem lvl_N_periodic (N : ℕ) (k : ℤ) (f : SlashInvariantForm (Gamma N) k) :
-    ∀ (z : ℍ) (n : ℤ), f (((ModularGroup.T^N)^n) • z) = f z :=
-  by
-  /-
+    ∀ (z : ℍ) (n : ℤ), f (((ModularGroup.T^N)^n) • z) = f z := by
   have h := SlashInvariantForm.slash_action_eqn' k (Gamma N) f
   intro z n
-  simp only [Subgroup.top_toSubmonoid, subgroup_to_sl_moeb, Subgroup.coe_top, Subtype.forall,
-    Subgroup.mem_top, forall_true_left] at h
+
   have Hn :=  (T_pow_N_mem_Gamma' N n)
-  simp only [zpow_coe_nat, Int.natAbs_ofNat] at Hn
-  have H:= h ((ModularGroup.T^N)^n) Hn z
+  simp  only [zpow_natCast, Int.natAbs_ofNat] at Hn
+  --simp only [zpow_natCast, Int.natAbs_ofNat, Gamma_mem, Fin.isValue] at Hn
+  have H:= h ⟨((ModularGroup.T^N)^n), Hn⟩ z
+  have hh := ModularGroup.coe_T_zpow (N*n)
+  have : ((ModularGroup.T^N)^n)  = (ModularGroup.T^((N : ℤ)*n)) := by
+      rw [zpow_mul]
+      simp
+  simp only [Submonoid.mk_smul, ModularGroup.sl_moeb, Fin.isValue] at H
+  norm_cast at *
   rw [H]
   have : ((ModularGroup.T^N)^n)  = (ModularGroup.T^((N : ℤ)*n)) := by
       rw [zpow_mul]
@@ -112,8 +134,7 @@ theorem lvl_N_periodic (N : ℕ) (k : ℤ) (f : SlashInvariantForm (Gamma N) k) 
   rw [slcoe (ModularGroup.T^(N*n)) 1 0, slcoe (ModularGroup.T^(N*n)) 1 1, hh]
   ring_nf
   simp
-  -/
-  sorry
+
 
 lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
   verticalStrip A B' ⊆ verticalStrip A B := by
@@ -146,7 +167,6 @@ theorem Eisenstein_series_is_bounded2 (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ
       have := verticalStrip_mem_le (N : ℕ) 2 z.im hz
       apply this
       convert hn
-      simp only [zpow_natCast]
     apply tsum_le_tsum
     intro x
     simp

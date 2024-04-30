@@ -82,6 +82,17 @@ def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
 theorem strip_mem_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
   Iff.rfl
 
+lemma strip_of_neg_empty {A B : ℝ} (h : A < 0) : verticalStrip A B = ∅ := by
+  rw [verticalStrip]
+  refine (Set.ext ?h).symm
+  intro x
+  simp
+  intro H
+  exfalso
+  have : |x.re| < 0 := by apply lt_of_le_of_lt H h
+  have := abs_nonneg x.re
+  linarith
+
 lemma subset_strip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
     ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
   rcases K.eq_empty_or_nonempty with rfl | hne
