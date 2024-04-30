@@ -172,15 +172,15 @@ lemma cast_divInt_of_ne_zero (a : ℤ) {b : ℤ} (b0 : (b : α) ≠ 0) : (a /. b
 
 @[norm_cast]
 lemma cast_mkRat_of_ne_zero (a : ℤ) {b : ℕ} (hb : (b : α) ≠ 0) : (mkRat a b : α) = a / b := by
-  rw [Rat.mkRat_eq, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
+  rw [Rat.mkRat_eq_divInt, cast_divInt_of_ne_zero, Int.cast_natCast]; rwa [Int.cast_natCast]
 
 @[norm_cast]
 lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
     (q + r : ℚ) = (q + r : α) := by
   rw [add_def', cast_mkRat_of_ne_zero, cast_def, cast_def, mul_comm r.num,
     (Nat.cast_commute _ _).div_add_div (Nat.commute_cast _ _) hq hr]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hq hr
 #align rat.cast_add_of_ne_zero Rat.cast_add_of_ne_zero
@@ -194,10 +194,10 @@ lemma cast_add_of_ne_zero {q r : ℚ} (hq : (q.den : α) ≠ 0) (hr : (r.den : �
 
 @[norm_cast] lemma cast_mul_of_ne_zero (hp : (p.den : α) ≠ 0) (hq : (q.den : α) ≠ 0) :
     ↑(p * q) = (p * q : α) := by
-  rw [mul_def', cast_mkRat_of_ne_zero, cast_def, cast_def,
+  rw [mul_eq_mkRat, cast_mkRat_of_ne_zero, cast_def, cast_def,
     (Nat.commute_cast _ _).div_mul_div_comm (Int.commute_cast _ _)]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hp hq
 #align rat.cast_mul_of_ne_zero Rat.cast_mul_of_ne_zero
@@ -211,8 +211,8 @@ lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : ↑(q⁻¹) = (q⁻¹ : α
     ↑(p / q) = (p / q : α) := by
   rw [div_def', cast_divInt_of_ne_zero, cast_def, cast_def, div_eq_mul_inv (_ / _), inv_div,
     (Int.commute_cast _ _).div_mul_div_comm (Nat.commute_cast _ _)]
-  push_cast
-  rfl
+  · push_cast
+    rfl
   · push_cast
     exact mul_ne_zero hp hq
 #align rat.cast_div_of_ne_zero Rat.cast_div_of_ne_zero

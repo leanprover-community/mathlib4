@@ -702,8 +702,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
-  · rfl
+  · simp! [cast, *, functor_norm]
+    rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse

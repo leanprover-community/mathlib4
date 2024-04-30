@@ -268,6 +268,7 @@ instance {X : C} (f : X ⟶ 0) : Epi f where left_cancellation g h _ := by ext
 
 instance zero_to_zero_isIso (f : (0 : C) ⟶ 0) : IsIso f := by
   convert show IsIso (𝟙 (0 : C)) by infer_instance
+  apply Subsingleton.elim
 #align category_theory.limits.has_zero_object.zero_to_zero_is_iso CategoryTheory.Limits.HasZeroObject.zero_to_zero_isIso
 
 /-- A zero object is in particular initial. -/
