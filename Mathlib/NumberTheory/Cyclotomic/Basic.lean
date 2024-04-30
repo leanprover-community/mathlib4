@@ -154,6 +154,7 @@ theorem trans (C : Type w) [CommRing C] [Algebra A C] [Algebra B C] [IsScalarTow
 
 @[nontriviality]
 theorem subsingleton_iff [Subsingleton B] : IsCyclotomicExtension S A B ↔ S = { } ∨ S = {1} := by
+  have : Subsingleton (Subalgebra A B) := inferInstance
   constructor
   · rintro ⟨hprim, -⟩
     rw [← subset_singleton_iff_eq]

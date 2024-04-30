@@ -53,7 +53,7 @@ instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  Submodule.Quotient.isNoetherian _
+  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! (config := .lemmasOnly) apply]

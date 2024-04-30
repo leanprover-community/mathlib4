@@ -206,8 +206,7 @@ end InvMemClass
 
 namespace SubgroupClass
 
--- deprecated since 15 January 2024
-@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv
+@[to_additive (attr := deprecated)] alias coe_inv := InvMemClass.coe_inv -- 2024-01-15
 
 -- Here we assume H, K, and L are subgroups, but in fact any one of them
 -- could be allowed to be a subsemigroup.
@@ -3513,8 +3512,8 @@ theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
   refine'
     map_injective_of_ker_le B.subtype (ker_le_comap _ _)
       (le_trans (ker_le_comap B.subtype _) le_sup_left) _
-  · simp only [subgroupOf, map_comap_eq, map_sup, subtype_range]
-    rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
+  simp only [subgroupOf, map_comap_eq, map_sup, subtype_range]
+  rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
 #align subgroup.subgroup_of_sup Subgroup.subgroupOf_sup
 #align add_subgroup.add_subgroup_of_sup AddSubgroup.addSubgroupOf_sup
 

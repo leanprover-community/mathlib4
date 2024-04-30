@@ -630,7 +630,9 @@ theorem lintegral_zero_measure {m : MeasurableSpace α} (f : α → ℝ≥0∞) 
 
 @[simp]
 theorem lintegral_of_isEmpty {α} [MeasurableSpace α] [IsEmpty α] (μ : Measure α) (f : α → ℝ≥0∞) :
-    ∫⁻ x, f x ∂μ = 0 := by convert lintegral_zero_measure f
+    ∫⁻ x, f x ∂μ = 0 := by
+  have : Subsingleton (Measure α) := inferInstance
+  convert lintegral_zero_measure f
 
 theorem set_lintegral_empty (f : α → ℝ≥0∞) : ∫⁻ x in ∅, f x ∂μ = 0 := by
   rw [Measure.restrict_empty, lintegral_zero_measure]
