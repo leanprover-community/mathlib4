@@ -136,6 +136,8 @@ theorem isSymm_standardBilinForm : LinearMap.IsSymm (standardBilinForm M) := by
   intro i'
   simp [standardBilinForm, M.symmetric i i']
 
+theorem standardBilinForm_comm (v v' : V) : ⟪v, v'⟫ = ⟪v', v⟫ := M.isSymm_standardBilinForm.eq v v'
+
 /-- The orthogonal reflection in the vector `v` under the standard bilinear form.
 -/
 def orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
@@ -181,17 +183,18 @@ theorem orthoReflection_eq_orthoReflection_iff {v v' : V} (hv : ⟪v, v⟫ = 1) 
         mul_comm _ μ, ← mul_assoc μ, hv']
     simp
 
-/-- Any orthogonal reflection is orthogonal with respect to the standard bilinear form. -/
-theorem standardBilinForm_compl₁₂_orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
-    LinearMap.compl₁₂ M.standardBilinForm (r hv) (r hv) = M.standardBilinForm := by
-  apply LinearMap.ext
-  intro w
-  apply LinearMap.ext
-  intro w'
+@[simp]
+theorem standardBilinForm_orthoReflection_apply {v : V} {hv : ⟪v, v⟫ = 1} (w w' : V) :
+    ⟪(r hv) w, (r hv) w'⟫ = ⟪w, w'⟫ := by
   dsimp [orthoReflection]
   simp only [map_sub, map_smul, LinearMap.sub_apply, LinearMap.smul_apply, smul_eq_mul]
   simp only [← M.isSymm_standardBilinForm.eq v w, RingHom.id_apply, hv]
   ring
+
+/-- Any orthogonal reflection is orthogonal with respect to the standard bilinear form. -/
+theorem standardBilinForm_compl₁₂_orthoReflection {v : V} (hv : ⟪v, v⟫ = 1) :
+    LinearMap.compl₁₂ M.standardBilinForm (r hv) (r hv) = M.standardBilinForm :=
+  LinearMap.ext fun w ↦ LinearMap.ext fun w' ↦ M.standardBilinForm_orthoReflection_apply w w'
 
 /-- The orthogonal reflection in the standard basis vector `αᵢ` under the standard bilinear form. -/
 def simpleOrthoReflection (i : B) := r (M.standardBilinForm_simpleRoot_self i)
@@ -199,7 +202,7 @@ def simpleOrthoReflection (i : B) := r (M.standardBilinForm_simpleRoot_self i)
 local prefix:100 "σ" => M.simpleOrthoReflection
 
 theorem simpleOrthoReflection_simpleRoot (i i' : B) :
-    (σ i) (α i') = α i' + (2 * cos (Real.pi / M i i')) • α i := by
+    (σ i) (α i') = α i' + (2 * cos (π / M i i')) • α i := by
   dsimp [simpleOrthoReflection, orthoReflection]
   rw [standardBilinForm_simpleRoot_simpleRoot]
   rw [sub_eq_add_neg, ← neg_smul]
@@ -383,14 +386,28 @@ local prefix:100 "ρ" => cs.sgr
 theorem sgr_simple (i : B) : ρ (s i) = σ i := cs.lift_apply_simple _ i
 
 /-- The standard geometric representation preserves the standard bilinear form. -/
+@[simp]
+theorem standardBilinForm_sgr_apply (w : W) (v v' : V) :
+    ⟪(ρ w) v, (ρ w) v'⟫ = ⟪v, v'⟫ := by
+  induction' w using cs.simple_induction with i w₁ w₂ hw₁ hw₂ generalizing v v'
+  · simp [sgr_simple, simpleOrthoReflection]
+  · simp
+  · simp [map_mul, mul_apply, hw₁, hw₂]
+
+theorem standardBilinForm_sgr_inv_apply (w : W) (v v' : V) :
+    ⟪(ρ w⁻¹) v, v'⟫ = ⟪v, (ρ w) v'⟫ := by
+  convert cs.standardBilinForm_sgr_apply w⁻¹ v ((ρ w) v')
+  simp [← mul_apply, ← map_mul]
+
+theorem standardBilinForm_sgr_inv_apply' (w : W) (v v' : V) :
+    ⟪v, (ρ w⁻¹) v'⟫ = ⟪(ρ w) v, v'⟫ := by
+  convert cs.standardBilinForm_sgr_apply w⁻¹ ((ρ w) v) v'
+  simp [← mul_apply, ← map_mul]
+
+/-- The standard geometric representation preserves the standard bilinear form. -/
 theorem standardBilinForm_compl₁₂_sgr_apply (w : W) :
-    M.standardBilinForm.compl₁₂ (ρ w) (ρ w) = M.standardBilinForm := by
-  apply cs.simple_induction w
-  · intro i
-    rw [sgr_simple, simpleOrthoReflection, standardBilinForm_compl₁₂_orthoReflection]
-  · rw [map_one, LinearMap.one_eq_id, LinearMap.compl₁₂_id_id]
-  · intro w w' hw hw'
-    rw [map_mul, mul_eq_comp, LinearMap.compl₁₂_comp_comp, hw, hw']
+    M.standardBilinForm.compl₁₂ (ρ w) (ρ w) = M.standardBilinForm :=
+  LinearMap.ext fun v ↦ LinearMap.ext fun v' ↦ cs.standardBilinForm_sgr_apply w v v'
 
 theorem sgr_alternatingWord_apply_simpleRoot (i i' : B) (m : ℕ) (hM : M i i' > 1) :
     (ρ (π (alternatingWord i i' m))) (α i) = if Even m
@@ -700,7 +717,7 @@ private theorem sgr_apply_simpleRoot_nonneg_of {w : W} {i : B} (h : ¬cs.IsRight
     rw [h₂₃, map_add, map_smul, map_smul]
     exact add_nonneg (smul_nonneg μ_nonneg h₁₆) (smul_nonneg μ'_nonneg h₁₇)
 
-/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has all
+/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is positive; that is, it has
 nonnegative coordinates and it is nonzero. -/
 theorem sgr_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i) :
     0 < (ρ w) (α i) := by
@@ -711,7 +728,7 @@ theorem sgr_apply_simpleRoot_pos_of {w : W} {i : B} (h : ¬cs.IsRightDescent w i
     rw [← mul_apply, ← map_mul, inv_mul_self, map_one, one_apply, map_zero] at this
     exact one_ne_zero (Finsupp.single_eq_zero.mp this.symm)
 
-/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is negative; that is, it has all
+/-- If $i$ is not a right descent of $w$, then $\rho(w) \alpha_i$ is negative; that is, it has
 nonpositive coordinates and it is nonzero. -/
 theorem sgr_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) :
     (ρ w) (α i) < 0 := by
@@ -720,7 +737,7 @@ theorem sgr_apply_simpleRoot_neg_of {w : W} {i : B} (h : cs.IsRightDescent w i) 
   rw [map_mul, mul_apply, sgr_simple, simpleOrthoReflection_simpleRoot_self, map_neg] at h
   exact neg_pos.mp h
 
-theorem sgr_apply_simpleRoot_pos_iff (w : W) (i : B) :
+theorem sgr_apply_simpleRoot_pos_iff {w : W} {i : B} :
     0 < (ρ w) (α i) ↔ ¬ cs.IsRightDescent w i := by
   constructor
   · intro h h'
@@ -728,7 +745,7 @@ theorem sgr_apply_simpleRoot_pos_iff (w : W) (i : B) :
   · intro h
     exact cs.sgr_apply_simpleRoot_pos_of h
 
-theorem sgr_apply_simpleRoot_neg_iff (w : W) (i : B) :
+theorem sgr_apply_simpleRoot_neg_iff {w : W} {i : B} :
     (ρ w) (α i) < 0 ↔ cs.IsRightDescent w i := by
   constructor
   · intro h
@@ -748,8 +765,6 @@ theorem injective_sgr : Function.Injective cs.sgr := by
   have := Finsupp.le_def.mp (le_of_lt this) i
   rw [Finsupp.zero_apply, simpleRoot, Finsupp.single_apply, if_pos (rfl : i = i)] at this
   norm_num at this
-
-alias faithful_sgr := injective_sgr
 
 end CoxeterSystem
 
