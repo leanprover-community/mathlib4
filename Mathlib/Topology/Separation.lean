@@ -928,7 +928,7 @@ theorem SeparationQuotient.t1Space_iff : T1Space (SeparationQuotient X) ↔ R0Sp
     have xspecy : x ⤳ y := (Inducing.specializes_iff inducing_mk).mp sxspecsy
     have yspecx : y ⤳ x := h xspecy
     erw [mk_eq_mk, inseparable_iff_specializes_and]
-    exact ⟨ xspecy, yspecx ⟩
+    exact ⟨xspecy, yspecx⟩
 
 theorem singleton_mem_nhdsWithin_of_mem_discrete {s : Set X} [DiscreteTopology s] {x : X}
     (hx : x ∈ s) : {x} ∈ 𝓝[s] x := by
