@@ -55,50 +55,45 @@ local prefix:100 "ℓ" => cs.length
 
 /-- The proposition that `t` is a reflection of the Coxeter system `cs`; i.e., it is of the form
 $w s_i w^{-1}$, where $w \in W$ and $s_i$ is a simple reflection. -/
-def IsReflection (t : W) : Prop := ∃ w, ∃ i, t = w * s i * w⁻¹
-
-/-- The set of all reflections of the Coxeter group `W`. -/
-def reflections : Set W := {t : W | cs.IsReflection t}
+def IsReflection (t : W) : Prop := ∃ w i, t = w * s i * w⁻¹
 
 theorem isReflection_simple (i : B) : cs.IsReflection (s i) := by use 1, i; simp
 
-theorem pow_two_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t ^ 2 = 1 := by
-  rcases rt with ⟨w, i, rfl⟩
+theorem pow_two_eq_one_of_isReflection {t : W} (ht : cs.IsReflection t) : t ^ 2 = 1 := by
+  rcases ht with ⟨w, i, rfl⟩
   simp
 
-theorem mul_self_eq_one_of_isReflection {t : W} (rt : cs.IsReflection t) : t * t = 1 := by
-  rcases rt with ⟨w, i, rfl⟩
+theorem mul_self_eq_one_of_isReflection {t : W} (ht : cs.IsReflection t) : t * t = 1 := by
+  rcases ht with ⟨w, i, rfl⟩
   simp
 
-theorem inv_reflection_eq {t : W} (rt : cs.IsReflection t) : t⁻¹ = t := by
-  rcases rt with ⟨w, i, rfl⟩
+theorem inv_eq_self_of_isReflection {t : W} (ht : cs.IsReflection t) : t⁻¹ = t := by
+  rcases ht with ⟨w, i, rfl⟩
   group
   simp
 
-alias inv_eq_self_of_isReflection := inv_reflection_eq
-
-theorem length_reflection_odd {t : W} (rt : cs.IsReflection t) : Odd (ℓ t) := by
-  rcases rt with ⟨w, i, rfl⟩
+theorem length_reflection_odd {t : W} (ht : cs.IsReflection t) : Odd (ℓ t) := by
+  rcases ht with ⟨w, i, rfl⟩
   rw [Nat.odd_iff, length_mul_mod_two, Nat.add_mod, length_mul_mod_two, ← Nat.add_mod,
       length_simple, length_inv, add_comm, ← add_assoc, ← two_mul, Nat.mul_add_mod]
   norm_num
 
 alias odd_length_of_isReflection := length_reflection_odd
 
-theorem length_mul_reflection_ne (w : W) {t : W} (rt : cs.IsReflection t) : ℓ (w * t) ≠ ℓ w := by
+theorem length_mul_reflection_ne (w : W) {t : W} (ht : cs.IsReflection t) : ℓ (w * t) ≠ ℓ w := by
   apply_fun (· % 2)
   dsimp only
   rw [length_mul_mod_two]
   intro h
-  have := h ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd rt)
+  have := h ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd ht)
   exact Nat.add_self_ne_one _ this
 
-theorem length_reflection_mul_ne (w : W) {t : W} (rt : cs.IsReflection t) : ℓ (t * w) ≠ ℓ w := by
+theorem length_reflection_mul_ne (w : W) {t : W} (ht : cs.IsReflection t) : ℓ (t * w) ≠ ℓ w := by
   apply_fun (· % 2)
   dsimp only
   rw [length_mul_mod_two]
   intro h
-  have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd rt)
+  have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd ht)
   exact Nat.add_self_ne_one _ (add_comm (ℓ t) _ ▸ this)
 
 theorem isReflection_conjugate_iff (w t : W) :
@@ -121,6 +116,17 @@ def IsRightInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (w * t) < ℓ
 /-- The proposition that `t` is a left inversion of `w`; i.e., `t` is a reflection and
 $\ell (t w) < \ell(w)$. -/
 def IsLeftInversion (w t : W) : Prop := cs.IsReflection t ∧ ℓ (t * w) < ℓ w
+
+theorem isRightInversion_inv_iff {w t : W} :
+    cs.IsRightInversion w⁻¹ t ↔ cs.IsLeftInversion w t := by
+  apply and_congr_right
+  intro ht
+  rw [← length_inv, mul_inv_rev, inv_inv, cs.inv_eq_self_of_isReflection ht, cs.length_inv w]
+
+theorem isLeftInversion_inv_iff {w t : W} :
+    cs.IsLeftInversion w⁻¹ t ↔ cs.IsRightInversion w t := by
+  convert cs.isRightInversion_inv_iff.symm
+  simp
 
 theorem isRightInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflection t) :
     cs.IsRightInversion (w * t) t ↔ ¬cs.IsRightInversion w t := by
@@ -375,7 +381,7 @@ theorem prod_leftInvSeq (ω : List B) : prod (lis ω) = (π ω)⁻¹ := by
     _ = List.map id (ris ω.reverse)             := by
         apply List.map_congr
         intro t ht
-        exact cs.inv_reflection_eq (cs.isReflection_of_mem_rightInvSeq _ ht)
+        exact cs.inv_eq_self_of_isReflection (cs.isReflection_of_mem_rightInvSeq _ ht)
     _ = ris ω.reverse                           := map_id _
   rw [this]
   nth_rw 2 [← reverse_reverse ω]
