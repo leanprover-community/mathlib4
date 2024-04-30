@@ -96,6 +96,7 @@ theorem length_reflection_mul_ne (w : W) {t : W} (ht : cs.IsReflection t) : ℓ 
   have := h.symm ▸ Nat.mod_two_add_add_odd_mod_two (ℓ w) (cs.length_reflection_odd ht)
   exact Nat.add_self_ne_one _ (add_comm (ℓ t) _ ▸ this)
 
+@[simp]
 theorem isReflection_conjugate_iff (w t : W) :
     cs.IsReflection (w * t * w⁻¹) ↔ cs.IsReflection t := by
   constructor
@@ -154,12 +155,14 @@ theorem not_isLeftInversion_mul_iff_of_isReflection {w t : W} (ht : cs.IsReflect
     ¬cs.IsLeftInversion (t * w) t ↔ cs.IsLeftInversion w t :=
   (iff_not_comm.mp (cs.isLeftInversion_mul_iff_of_isReflection ht)).symm
 
+@[simp]
 theorem isRightInversion_simple_iff_isRightDescent (w : W) (i : B) :
     cs.IsRightInversion w (s i) ↔ cs.IsRightDescent w i := by
   unfold IsRightInversion IsRightDescent
   have := cs.isReflection_simple i
   tauto
 
+@[simp]
 theorem isLeftInversion_simple_iff_isLeftDescent (w : W) (i : B) :
     cs.IsLeftInversion w (s i) ↔ cs.IsLeftDescent w i := by
   unfold IsLeftInversion IsLeftDescent
