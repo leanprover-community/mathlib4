@@ -350,8 +350,8 @@ def cons {i} (m : M i) (w : Word M) (hmw : w.fstIdx ≠ some i) (h1 : m ≠ 1) :
     ne_one := by
       simp only [List.mem_cons]
       rintro l (rfl | hl)
-      exact h1
-      exact w.ne_one l hl
+      · exact h1
+      · exact w.ne_one l hl
     chain_ne := w.chain_ne.cons' (fstIdx_ne_iff.mp hmw) }
 
 /- ./././Mathport/Syntax/Translate/Expr.lean:177:8: unsupported: ambiguous notation -/
@@ -809,8 +809,8 @@ def replaceHead : ∀ {i j : ι} (x : M i) (_hnotone : x ≠ 1) (_w : NeWord M i
 theorem replaceHead_head {i j : ι} (x : M i) (hnotone : x ≠ 1) (w : NeWord M i j) :
     (replaceHead x hnotone w).head = x := by
   induction w
-  rfl
-  simp [*]
+  · rfl
+  · simp [*]
 #align free_product.neword.replace_head_head Monoid.CoprodI.NeWord.replaceHead_head
 
 /-- One can multiply an element from the left to a non-empty reduced word if it does not cancel
@@ -823,8 +823,8 @@ def mulHead {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1)
 theorem mulHead_head {i j : ι} (w : NeWord M i j) (x : M i) (hnotone : x * w.head ≠ 1) :
     (mulHead w x hnotone).head = x * w.head := by
   induction w
-  rfl
-  simp [*]
+  · rfl
+  · simp [*]
 #align free_product.neword.mul_head_head Monoid.CoprodI.NeWord.mulHead_head
 
 @[simp]
@@ -1018,8 +1018,8 @@ instance {ι : Type*} (G : ι → Type*) [∀ i, Group (G i)] [∀ i, IsFreeGrou
 def _root_.freeGroupEquivCoprodI {ι : Type u_1} :
     FreeGroup ι ≃* CoprodI fun _ : ι => FreeGroup Unit := by
   refine' MonoidHom.toMulEquiv _ _ _ _
-  exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
-  exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
+  · exact FreeGroup.lift fun i => @CoprodI.of ι _ _ i (FreeGroup.of Unit.unit)
+  · exact CoprodI.lift fun i => FreeGroup.lift fun _ => FreeGroup.of i
   · ext; simp
   · ext i a; cases a; simp
 #align free_group_equiv_free_product freeGroupEquivCoprodI
@@ -1068,18 +1068,18 @@ theorem _root_.FreeGroup.injective_lift_of_ping_pong : Function.Injective (FreeG
   let f : ∀ i, H i →* G := fun i => FreeGroup.lift fun _ => a i
   let X' : ι → Set α := fun i => X i ∪ Y i
   apply lift_injective_of_ping_pong f _ X'
-  show ∀ i, (X' i).Nonempty
-  · exact fun i => Set.Nonempty.inl (hXnonempty i)
-  show Pairwise fun i j => Disjoint (X' i) (X' j)
-  · intro i j hij
+  · show ∀ i, (X' i).Nonempty
+    exact fun i => Set.Nonempty.inl (hXnonempty i)
+  · show Pairwise fun i j => Disjoint (X' i) (X' j)
+    intro i j hij
     simp only [X']
     apply Disjoint.union_left <;> apply Disjoint.union_right
     · exact hXdisj hij
     · exact hXYdisj i j
     · exact (hXYdisj j i).symm
     · exact hYdisj hij
-  show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
-  · rintro i j hij
+  · show Pairwise fun i j => ∀ h : H i, h ≠ 1 → f i h • X' j ⊆ X' i
+    rintro i j hij
     -- use free_group unit ≃ ℤ
     refine' FreeGroup.freeGroupUnitEquivInt.forall_congr_left'.mpr _
     intro n hne1
