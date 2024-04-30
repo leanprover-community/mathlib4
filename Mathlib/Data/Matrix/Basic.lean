@@ -1902,12 +1902,12 @@ theorem const_vecMul_diagonal (x : α) (v : m → α) :
 @[simp]
 theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v := by
   change diagonal x *ᵥ v = _
-  ext; simp
+  simp
 
 @[simp]
 theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v := by
   change v ᵥ* diagonal x = _
-  ext; simp
+  simp
 
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
