@@ -178,6 +178,7 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
+@[simp]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
   rfl
 #align mv_polynomial.algebra_map_eq MvPolynomial.algebraMap_eq
@@ -931,7 +932,6 @@ theorem constantCoeff_comp_C : constantCoeff.comp (C : R →+* MvPolynomial σ R
   exact constantCoeff_C σ x
 #align mv_polynomial.constant_coeff_comp_C MvPolynomial.constantCoeff_comp_C
 
-@[simp]
 theorem constantCoeff_comp_algebraMap :
     constantCoeff.comp (algebraMap R (MvPolynomial σ R)) = RingHom.id R :=
   constantCoeff_comp_C _ _
@@ -1459,6 +1459,7 @@ section Aeval
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 #align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 
@@ -1642,12 +1643,10 @@ theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C 
   RingHom.ext <| aevalTower_C _ _
 #align mv_polynomial.aeval_tower_comp_C MvPolynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_tower_algebra_map MvPolynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap :
     (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
   aevalTower_comp_C _ _
