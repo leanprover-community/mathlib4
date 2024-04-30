@@ -77,7 +77,7 @@ lemma uzpow_coe_nat (s : ℤˣ) (n : ℕ) [n.AtLeastTwo] :
   uzpow_natCast _ _
 
 @[simp] lemma one_uzpow (x : R) : (1 : ℤˣ) ^ x = 1 :=
-  Additive.ofMul.injective <| smul_zero x
+  Additive.ofMul.injective <| smul_zero _
 
 lemma mul_uzpow (s₁ s₂ : ℤˣ) (x : R) : (s₁ * s₂) ^ x = s₁ ^ x * s₂ ^ x :=
   Additive.ofMul.injective <| smul_add x (Additive.ofMul s₁) (Additive.ofMul s₂)
