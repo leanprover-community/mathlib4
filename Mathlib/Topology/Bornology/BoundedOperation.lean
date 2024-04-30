@@ -23,8 +23,6 @@ TODO:
 
 section bounded_sub
 
-variable {R : Type*}
-
 open Pointwise
 
 /-- A typeclass saying that `p : R × R ↦ r.1 - r.2` maps any pair of bounded sets to a bounded set.
@@ -34,7 +32,9 @@ class BoundedSub (R : Type*) [Bornology R] [Sub R] : Prop where
   isBounded_sub : ∀ {s t : Set R},
     Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s - t)
 
-lemma isBounded_sub {R : Type*} [Bornology R] [Sub R] [BoundedSub R] {s t : Set R}
+variable {R : Type*}
+
+lemma isBounded_sub [Bornology R] [Sub R] [BoundedSub R] {s t : Set R}
     (hs : Bornology.IsBounded s) (ht : Bornology.IsBounded t):
     Bornology.IsBounded (s - t) := BoundedSub.isBounded_sub hs ht
 
