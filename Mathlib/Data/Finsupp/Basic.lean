@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
@@ -481,7 +482,7 @@ theorem mapDomain_comp {f : α → β} {g : β → γ} :
   · intro
     exact single_add _
   refine' sum_congr fun _ _ => sum_single_index _
-  · exact single_zero _
+  exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
 @[simp]

@@ -291,6 +291,7 @@ theorem int_cyclotomic_unique {n : ℕ} {P : ℤ[X]} (h : map (Int.castRingHom �
 theorem map_cyclotomic (n : ℕ) {R S : Type*} [Ring R] [Ring S] (f : R →+* S) :
     map f (cyclotomic n R) = cyclotomic n S := by
   rw [← map_cyclotomic_int n R, ← map_cyclotomic_int n S, map_map]
+  have : Subsingleton (ℤ →+* S) := inferInstance
   congr!
 #align polynomial.map_cyclotomic Polynomial.map_cyclotomic
 

@@ -226,7 +226,7 @@ theorem bijection_natural (A B : C) (X X' : D) (f : (leftAdjoint i).obj (A ⨯ B
   erw [homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq,
     homEquiv_symm_apply_eq, homEquiv_symm_apply_eq, homEquiv_apply_eq, homEquiv_apply_eq]
   apply i.map_injective
-  rw [i.image_preimage, i.map_comp, i.image_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
+  rw [i.map_preimage, i.map_comp, i.map_preimage, comp_id, comp_id, comp_id, comp_id, comp_id,
     comp_id, Adjunction.homEquiv_naturality_right, ← assoc, curry_natural_right _ (i.map g),
     unitCompPartialBijective_natural, uncurry_natural_right, ← assoc, curry_natural_right,
     unitCompPartialBijective_natural, uncurry_natural_right, assoc]

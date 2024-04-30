@@ -241,6 +241,19 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
+attribute [simp] nil_subperm
+
+@[simp]
+theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
+  match l with
+  | [] => by simp
+  | head :: tail => by
+    simp only [iff_false]
+    intro h
+    have := h.length_le
+    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
+      not_true_eq_false] at this
+
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
