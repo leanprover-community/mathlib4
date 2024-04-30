@@ -177,7 +177,7 @@ lemma SpectrumRestricts.nnreal_iff_nnnorm {a : A} {t : ℝ≥0} (ha : IsSelfAdjo
   have : IsSelfAdjoint (algebraMap ℝ A t - a) := IsSelfAdjoint.algebraMap A (.all (t : ℝ)) |>.sub ha
   rw [← ENNReal.coe_le_coe, ← IsSelfAdjoint.spectralRadius_eq_nnnorm,
     ← SpectrumRestricts.spectralRadius_eq (f := Complex.reCLM)] at ht ⊢
-  exact SpectrumRestricts.nnreal_iff_spectralRadius_le ht
+  · exact SpectrumRestricts.nnreal_iff_spectralRadius_le ht
   all_goals
     try apply IsSelfAdjoint.spectrumRestricts
     assumption

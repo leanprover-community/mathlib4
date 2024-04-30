@@ -448,8 +448,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_not_dvd, dvd_add_right]
-    intro h_dvd
-    · apply multiplicity.is_greatest _ h_dvd
+    · intro h_dvd
+      apply multiplicity.is_greatest _ h_dvd
       rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k

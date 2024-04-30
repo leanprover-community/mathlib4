@@ -784,9 +784,10 @@ def Raised (n m : ℕ) : Prop :=
 #align ordnode.raised Ordnode.Raised
 
 theorem raised_iff {n m} : Raised n m ↔ n ≤ m ∧ m ≤ n + 1 := by
-  constructor; rintro (rfl | rfl)
-  · exact ⟨le_rfl, Nat.le_succ _⟩
-  · exact ⟨Nat.le_succ _, le_rfl⟩
+  constructor
+  · rintro (rfl | rfl)
+    · exact ⟨le_rfl, Nat.le_succ _⟩
+    · exact ⟨Nat.le_succ _, le_rfl⟩
   · rintro ⟨h₁, h₂⟩
     rcases eq_or_lt_of_le h₁ with (rfl | h₁)
     · exact Or.inl rfl
@@ -1427,30 +1428,30 @@ theorem Valid'.glue_aux {l r o₁ o₂} (hl : Valid' o₁ l o₂) (hr : Valid' o
   cases' r with rs rl rx rr; · exact ⟨hl, rfl⟩
   dsimp [glue]; split_ifs
   · rw [splitMax_eq]
-    cases' Valid'.eraseMax_aux hl with v e
-    suffices H : _ by
-      refine' ⟨Valid'.balanceR v (hr.of_gt _ _) H, _⟩
-      · refine' findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
-          lx lr hl.1.2.to_nil (sep.2.2.imp _)
-        exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
-      · exact @findMax'_all _ (fun a => All (· > a) (.node rs rl rx rr)) lx lr sep.2.1 sep.2.2
-      · rw [size_balanceR v.3 hr.3 v.2 hr.2 H, add_right_comm, ← e, hl.2.1]; rfl
-    refine' Or.inl ⟨_, Or.inr e, _⟩
-    rwa [hl.2.eq_node'] at bal
+    · cases' Valid'.eraseMax_aux hl with v e
+      suffices H : _ by
+        refine' ⟨Valid'.balanceR v (hr.of_gt _ _) H, _⟩
+        · refine' findMax'_all (P := fun a : α => Bounded nil (a : WithTop α) o₂)
+            lx lr hl.1.2.to_nil (sep.2.2.imp _)
+          exact fun x h => hr.1.2.to_nil.mono_left (le_of_lt h.2.1)
+        · exact @findMax'_all _ (fun a => All (· > a) (.node rs rl rx rr)) lx lr sep.2.1 sep.2.2
+        · rw [size_balanceR v.3 hr.3 v.2 hr.2 H, add_right_comm, ← e, hl.2.1]; rfl
+      refine' Or.inl ⟨_, Or.inr e, _⟩
+      rwa [hl.2.eq_node'] at bal
   · rw [splitMin_eq]
-    cases' Valid'.eraseMin_aux hr with v e
-    suffices H : _ by
-      refine' ⟨Valid'.balanceL (hl.of_lt _ _) v H, _⟩
-      · refine' @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
-          rl rx (sep.2.1.1.imp _) hr.1.1.to_nil
-        exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
-      · exact
-          @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx
-            (all_iff_forall.2 fun x hx => sep.imp fun y hy => all_iff_forall.1 hy.1 _ hx)
-            (sep.imp fun y hy => hy.2.1)
-      · rw [size_balanceL hl.3 v.3 hl.2 v.2 H, add_assoc, ← e, hr.2.1]; rfl
-    refine' Or.inr ⟨_, Or.inr e, _⟩
-    rwa [hr.2.eq_node'] at bal
+    · cases' Valid'.eraseMin_aux hr with v e
+      suffices H : _ by
+        refine' ⟨Valid'.balanceL (hl.of_lt _ _) v H, _⟩
+        · refine' @findMin'_all (P := fun a : α => Bounded nil o₁ (a : WithBot α))
+            rl rx (sep.2.1.1.imp _) hr.1.1.to_nil
+          exact fun y h => hl.1.1.to_nil.mono_right (le_of_lt h)
+        · exact
+            @findMin'_all _ (fun a => All (· < a) (.node ls ll lx lr)) rl rx
+              (all_iff_forall.2 fun x hx => sep.imp fun y hy => all_iff_forall.1 hy.1 _ hx)
+              (sep.imp fun y hy => hy.2.1)
+        · rw [size_balanceL hl.3 v.3 hl.2 v.2 H, add_assoc, ← e, hr.2.1]; rfl
+      refine' Or.inr ⟨_, Or.inr e, _⟩
+      rwa [hr.2.eq_node'] at bal
 #align ordnode.valid'.glue_aux Ordnode.Valid'.glue_aux
 
 theorem Valid'.glue {l} {x : α} {r o₁ o₂} (hl : Valid' o₁ l x) (hr : Valid' x r o₂) :

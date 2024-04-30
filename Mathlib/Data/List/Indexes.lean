@@ -77,8 +77,14 @@ protected theorem oldMapIdxCore_append : ∀ (f : ℕ → α → β) (n : ℕ) (
   generalize e : (l₁ ++ l₂).length = len
   revert n l₁ l₂
   induction' len with len ih <;> intros n l₁ l₂ h
-  · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
-    have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
+  · have l₁_nil : l₁ = [] := by
+      cases l₁
+      · rfl
+      · contradiction
+    have l₂_nil : l₂ = [] := by
+      cases l₂
+      · rfl
+      · rw [List.length_append] at h; contradiction
     simp only [l₁_nil, l₂_nil]; rfl
   · cases' l₁ with head tail
     · rfl
@@ -105,8 +111,14 @@ theorem mapIdxGo_append : ∀ (f : ℕ → α → β) (l₁ l₂ : List α) (arr
   generalize e : (l₁ ++ l₂).length = len
   revert l₁ l₂ arr
   induction' len with len ih <;> intros l₁ l₂ arr h
-  · have l₁_nil : l₁ = [] := by cases l₁; rfl; contradiction
-    have l₂_nil : l₂ = [] := by cases l₂; rfl; rw [List.length_append] at h; contradiction
+  · have l₁_nil : l₁ = [] := by
+      cases l₁
+      · rfl
+      · contradiction
+    have l₂_nil : l₂ = [] := by
+      cases l₂
+      · rfl
+      · rw [List.length_append] at h; contradiction
     rw [l₁_nil, l₂_nil]; simp only [mapIdx.go, Array.toList_eq, Array.toArray_data]
   · cases' l₁ with head tail <;> simp only [mapIdx.go]
     · simp only [nil_append, Array.toList_eq, Array.toArray_data]
@@ -149,17 +161,20 @@ theorem map_enumFrom_eq_zipWith : ∀ (l : List α) (n : ℕ) (f : ℕ → α �
   generalize e : l.length = len
   revert l
   induction' len with len ih <;> intros l e n f
-  · have : l = [] := by cases l; rfl; contradiction
+  · have : l = [] := by
+      cases l
+      · rfl
+      · contradiction
     rw [this]; rfl
   · cases' l with head tail
     · contradiction
     · simp only [map, uncurry_apply_pair, range_succ_eq_map, zipWith, zero_add, zipWith_map_left]
       rw [ih]
-      suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
-        rw [this]
-        rfl
-      funext n' a
-      simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
+      · suffices (fun i ↦ f (i + (n + 1))) = ((fun i ↦ f (i + n)) ∘ Nat.succ) by
+          rw [this]
+          rfl
+        funext n' a
+        simp only [comp, Nat.add_assoc, Nat.add_comm, Nat.add_succ]
       simp only [length_cons, Nat.succ.injEq] at e; exact e
 
 theorem mapIdx_eq_enum_map (l : List α) (f : ℕ → α → β) :
@@ -386,7 +401,10 @@ theorem mapIdxMGo_eq_mapIdxMAuxSpec {α β} (f : ℕ → α → m β) (arr : Arr
   generalize e : as.length = len
   revert as arr
   induction' len with len ih <;> intro arr as h
-  · have : as = [] := by cases as; rfl; contradiction
+  · have : as = [] := by
+      cases as
+      · rfl
+      · contradiction
     simp only [this, mapIdxM.go, mapIdxMAuxSpec, List.traverse, map_pure, append_nil]
   · match as with
     | nil => contradiction

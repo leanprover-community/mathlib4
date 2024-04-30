@@ -199,8 +199,8 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
   let F : List (Computation α) → Sum α (List (Computation α)) → Prop := by
     intro l a
     cases' a with a l'
-    exact ∃ c ∈ l, a ∈ c
-    exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
+    · exact ∃ c ∈ l, a ∈ c
+    · exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
   have lem1 : ∀ l : List (Computation α), F l (parallel.aux2 l) := by
     intro l
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
@@ -333,8 +333,8 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     rcases exists_of_mem_map ad' with ⟨a', ac', e'⟩
     injection e' with i1 i2
     constructor
-    rwa [i1, i2] at ac'
-    rwa [i2] at cs'
+    · rwa [i1, i2] at ac'
+    · rwa [i2] at cs'
   cases' this with ac cs
   apply H _ cs _ ac
 #align computation.parallel_rec Computation.parallelRec
