@@ -394,7 +394,7 @@ variable {R : Type*} [Ring R]
 variable {f g : MulRingNorm ℚ}
 
 /-- A multiplicative norm composed with the absolute value on integers equals the norm itself. -/
-lemma f_of_abs_eq_f (x : ℤ) : f (Int.natAbs x) = f x := by
+lemma f_of_abs_eq_f (x : ℤ) (f : MulRingNorm ℚ) : f (Int.natAbs x) = f x := by
   obtain ⟨n,rfl|rfl⟩ := Int.eq_nat_or_neg x
   · simp only [Int.natAbs_ofNat, Int.cast_natCast]
   · simp only [Int.natAbs_neg, Int.natAbs_ofNat, Int.cast_neg, Int.cast_natCast, map_neg_eq_map]
