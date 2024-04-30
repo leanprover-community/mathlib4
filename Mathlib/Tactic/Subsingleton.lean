@@ -24,7 +24,7 @@ Fails if it cannot find a way to do this.
 
 Has support for showing `BEq` instances are equal if they have `LawfulBEq` instances.
 -/
-def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := do
+def Lean.MVarId.subsingleton (g : MVarId) : MetaM Unit := commitIfNoEx do
   let g ← g.heqOfEq
   g.withContext do
     let tgt ← whnfR (← g.getType)
@@ -103,6 +103,9 @@ As a nicety, `subsingleton` first runs the `intros` tactic.
 - If the goal is an equality, it either closes the goal or fails.
 - If the goal is a `HEq`, it can try applying `Subsingleton.helim`
   to convert a `@HEq α x β y` goal into an `α = β` goal.
+- `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances
+  to the local context. Just like `simp`, this abstracts `inst1`, `inst2`, ...
+  if they have metavariables or unsolved instances.
 
 Techniques the `subsingleton` tactic can apply:
 - proof irrelevance
@@ -118,32 +121,82 @@ avoiding the following surprising behavior of `apply Subsingleton.elim`:
 ```lean
 example (α : Sort _) (x y : α) : x = y := by apply Subsingleton.elim
 ```
-The reason this goes through is that it applies the `∀ (p : Prop), Subsingleton p` instance,
+The reason this `example` goes through is that
+it applies the `∀ (p : Prop), Subsingleton p` instance,
 specializing the universe level metavariable in `Sort _` to `0`.
 -/
-elab "subsingleton" : tactic => do
+syntax (name := subsingletonStx) "subsingleton" (ppSpace "[" term,* "]")? : tactic
+
+open Elab Tactic
+
+/--
+Elaborates the terms like how `Lean.Elab.Tactic.addSimpTheorem` does,
+abstracting their metavariables.
+Makes sure they're Subsingleton instances, and adds them to the local context.
+-/
+def addSubsingletonInsts
+    (instTerms? : Option (Array Term)) (g : MVarId) : TermElabM MVarId := do
+  if let some instTerms := instTerms? then
+    g.withContext <| go instTerms.toList #[] #[]
+  else
+    return g
+where
+  go (instTerms : List Term) (fvars : Array Expr) (insts : Array Expr) : TermElabM MVarId := do
+    match instTerms with
+    | [] =>
+      withNewLocalInstances fvars 0 do
+        let g' ← mkFreshExprSyntheticOpaqueMVar (← g.getType) (← g.getTag)
+        g.assign <| mkAppN (← mkLambdaFVars fvars g') insts
+        return g'.mvarId!
+    | instTerm :: instTerms =>
+      let inst ← withNewMCtxDepth <| Term.withoutModifyingElabMetaStateWithInfo do
+        withRef instTerm <| Term.withoutErrToSorry do
+          let e ← Term.elabTerm instTerm none
+          Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
+          let e ← instantiateMVars e
+          forallTelescopeReducing (← inferType e) fun _ ty => do
+            unless (← whnf ty).isAppOfArity ``Subsingleton 1 do
+              throwError "Not a `Subsingleton` instance. Term has type{indentD <| ← inferType e}"
+          if e.hasMVar then
+            -- Level metavariables are OK.
+            -- But if there are *new* level metavariables then the instance will never apply.
+            -- TODO(kmill): Should the tactic have a list of universe level metavariables it's
+            -- allowed to assign to? (Can depth be used for this?)
+            let r ← abstractMVars e
+            unless r.paramNames.isEmpty do
+              -- Todo: expose the universe level metavariables?
+              throwError "\
+                Expression contains new universe level metavariables in\
+                {indentD e}\n\
+                This means 'subsingleton' will not ever apply this instance."
+            pure r.expr
+          else
+            pure e
+      withLocalDecl `inst .instImplicit (← inferType inst) fun fvar => do
+        go instTerms (fvars.push fvar) (insts.push inst)
+
+elab_rules : tactic
+  | `(tactic| subsingleton $[[$[$instTerms?],*]]?) => withMainContext do
   let recover := (← read).recover
-  Elab.Tactic.liftMetaTactic fun g => do
+  let g ← getMainGoal
+  let g ← addSubsingletonInsts instTerms? g
+  replaceMainGoal [g]
+  Elab.Tactic.liftMetaTactic1 fun g => do
     let (fvars, g) ← g.intros
-    let didIntros := !fvars.isEmpty
-    let s ← saveState
     try
       g.subsingleton
-      return []
+      return none
     catch e =>
-      restoreState s
-      try
-        return [← g.subsingletonHElim]
-      catch eheq =>
-        if (← whnfR (← g.getType)).isHEq then
-          throw eheq
+      if (← whnfR (← g.getType)).isHEq then
+        g.subsingletonHElim
+      else
         -- Try `refl` when all else fails, to give a hint to the user
         if recover then
           try
-            (← g.heqOfEq).refl
-            let tac ← if didIntros then `(tactic| (intros; rfl)) else `(tactic| rfl)
+            g.refl <|> g.hrefl
+            let tac ← if !fvars.isEmpty then `(tactic| (intros; rfl)) else `(tactic| rfl)
             Meta.Tactic.TryThis.addSuggestion (← getRef) tac (origSpan? := ← getRef)
-            return []
+            return none
           catch _ => pure ()
         throw e
 

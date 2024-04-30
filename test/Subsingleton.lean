@@ -1,5 +1,7 @@
 import Mathlib.Tactic.Subsingleton
 
+private axiom test_sorry : ∀ {α}, α
+
 /-!
 Basic subsingleton instances
 -/
@@ -109,3 +111,38 @@ example : 1 + 1 = 2 := by
 #guard_msgs in
 example : ∀ (n : Nat), n = n := by
   subsingleton
+
+/-!
+Passing subsingleton instances to the tactic.
+-/
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [(test_sorry : Subsingleton α)]
+
+/-!
+Abstraction, but under-specified universe levels.
+-/
+/--
+error: Expression contains new universe level metavariables in
+  test_sorry
+This means 'subsingleton' will not ever apply this instance.
+-/
+#guard_msgs in
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [(test_sorry : Subsingleton _)]
+
+/-!
+Abstraction, but specified universe levels.
+-/
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [(test_sorry : Subsingleton.{1} _)]
+
+/-!
+Not a subsingleton instance.
+-/
+/--
+error: Not a `Subsingleton` instance. Term has type
+  Bool
+-/
+#guard_msgs in
+example {α : Type} (x y : α) : x = y := by
+  subsingleton [true]
