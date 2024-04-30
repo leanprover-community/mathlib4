@@ -63,35 +63,74 @@ namespace MvPowerSeries
 
 open Finsupp
 
-variable {σ R : Type*}
+variable {σ R S : Type*}
 
-instance [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
-  ⟨fun _ => default⟩
+instance inhabited [Inhabited R] : Inhabited (MvPowerSeries σ R) :=
+  ⟨fun _ ↦ default⟩
 
-instance [Zero R] : Zero (MvPowerSeries σ R) :=
+instance hasZero [Zero R] : Zero (MvPowerSeries σ R) :=
   Pi.instZero
 
-instance [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
+instance addMonoid [AddMonoid R] : AddMonoid (MvPowerSeries σ R) :=
   Pi.addMonoid
 
-instance [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
+instance addGroup [AddGroup R] : AddGroup (MvPowerSeries σ R) :=
   Pi.addGroup
 
-instance [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
+instance addCommMonoid [AddCommMonoid R] : AddCommMonoid (MvPowerSeries σ R) :=
   Pi.addCommMonoid
 
-instance [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
+instance addCommGroup [AddCommGroup R] : AddCommGroup (MvPowerSeries σ R) :=
   Pi.addCommGroup
 
-instance [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
+instance nontrivial [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
   Function.nontrivial
 
-instance {A} [Semiring R] [AddCommMonoid A] [Module R A] : Module R (MvPowerSeries σ A) :=
+instance module [Semiring R] [AddCommMonoid S] [Module R S] : Module R (MvPowerSeries σ S) :=
   Pi.module _ _ _
 
-instance {A S} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
+instance isScalarTower {A} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
     [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
   Pi.isScalarTower
+
+instance commSemiring [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=
+  Pi.commSemiring
+
+instance distribuMulAction [Monoid R] [CommSemiring S] [DistribMulAction R S] :
+    DistribMulAction R (MvPowerSeries σ S) :=
+  Pi.distribMulAction _
+
+instance smulZeroClass [CommSemiring S] [SMulZeroClass R S] :
+    SMulZeroClass R (MvPowerSeries σ S) :=
+  Pi.smulZeroClass _
+
+instance faithfulSMul [CommSemiring S] [SMulZeroClass R S] [FaithfulSMul R S] :
+    FaithfulSMul R (MvPowerSeries σ S) :=
+  Pi.faithfulSMul
+
+instance smulCommClass {A} [CommSemiring A] [SMulZeroClass R A] [SMulZeroClass S A]
+    [SMulCommClass R S A] : SMulCommClass R S (MvPowerSeries σ A) :=
+  Pi.smulCommClass
+
+instance isCentralScalar [CommSemiring S] [SMulZeroClass R S] [SMulZeroClass Rᵐᵒᵖ S]
+    [IsCentralScalar R S] : IsCentralScalar R (MvPowerSeries σ S) :=
+  Pi.isCentralScalar
+
+instance algebra [CommSemiring R] [CommSemiring S] [Algebra R S] :
+    Algebra R (MvPowerSeries σ S) :=
+  Pi.algebra _ _
+
+instance isScalarTower_right [CommSemiring S] [DistribSMul R S] [IsScalarTower R S S] :
+    IsScalarTower R (MvPowerSeries σ S) (MvPowerSeries σ S) :=
+  Pi.isScalarTower'
+
+instance smulCommClass_right [CommSemiring S] [DistribSMul R S] [SMulCommClass R S S] :
+    SMulCommClass R (MvPowerSeries σ S) (MvPowerSeries σ S) :=
+  Pi.smulCommClass'
+
+/-- If `R` is a subsingleton, then `MvPowerSeries σ R` has a unique element -/
+instance unique [CommSemiring R] [Subsingleton R] : Unique (MvPowerSeries σ R) := by
+  sorry
 
 section Semiring
 

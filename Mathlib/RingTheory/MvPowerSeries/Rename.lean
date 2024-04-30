@@ -51,9 +51,10 @@ namespace MvPowerSeries
 
 section Rename
 
--- variable [DecidableEq σ] [DecidableEq τ]
+variable [DecidableEq σ] [DecidableEq τ]
+
 /-- Rename all the variables in a multivariable polynomial. -/
-def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ MvPowerSeries τ R where
+  def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
   toFun := fun φ ↦ φ ∘ (Finsupp.mapDomain.addMonoidHom e.symm)
   invFun := fun φ ↦ φ ∘ (Finsupp.mapDomain.addMonoidHom e)
   left_inv := by
@@ -66,18 +67,13 @@ def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ MvPowerSeries τ R where
     funext s
     simp only [comp_apply, mapDomain.addMonoidHom_apply, ← mapDomain_comp, Equiv.self_comp_symm,
       mapDomain_id]
-  --ₐ[R]
-  -- map_mul' := sorry
-  -- map_add' := by
-  --   intro x y
-  --   ext s
-  --   simp only [map_add]
-  --   congr
-  -- commutes' := sorry
-
-end Rename
-
-variable [DecidableEq σ] [DecidableEq τ]
+  map_mul' := by simp; sorry
+  map_add' := by
+    intro x y
+    ext s
+    simp only [map_add]
+    congr
+  commutes' := sorry
 
 lemma rename_zero (e : σ ≃ τ) : rename e (0 : MvPowerSeries σ R) = 0 := by
   simp only [rename, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
@@ -126,14 +122,15 @@ theorem map_rename (f : R →+* S) (e : σ ≃ τ) (p : MvPowerSeries σ R) :
 theorem rename_rename (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
     rename f (rename e p) = rename (Equiv.trans e f) p := by
   funext u
-  simp only [rename, Equiv.coe_fn_mk, comp_apply, mapDomain.addMonoidHom_apply, Equiv.coe_trans]
+  simp only [rename, AlgEquiv.coe_mk, comp_apply, mapDomain.addMonoidHom_apply, Equiv.coe_trans]
   rw [← mapDomain_comp]
   congr
 
--- @[simp]
--- theorem rename_id (p : MvPowerSeries σ R) : rename id p = p :=
---   eval₂_eta p
--- #align mv_polynomial.rename_id MvPowerSeries.rename_id
+@[simp]
+theorem rename_id (p : MvPowerSeries σ R) : rename (Equiv.refl σ) p = p := by
+  funext s
+  simp only [rename, Equiv.refl_symm, Equiv.coe_refl, mapDomain.addMonoidHom_id, AlgEquiv.coe_mk,
+    comp_apply, AddMonoidHom.id_apply]
 
 -- theorem rename_monomial (f : σ → τ) (d : σ →₀ ℕ) (r : R) :
 --     rename f (monomial d r) = monomial (d.mapDomain f) r := by
@@ -324,7 +321,7 @@ theorem rename_rename (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
 --   simp only [Function.comp, Equiv.symm_apply_apply, rename_rename]
 -- #align mv_polynomial.exists_fin_rename MvPowerSeries.exists_fin_rename
 
--- end Rename
+end Rename
 
 -- theorem eval₂_cast_comp (f : σ → τ) (c : ℤ →+* R) (g : τ → R) (p : MvPowerSeries σ ℤ) :
 --     eval₂ c (g ∘ f) p = eval₂ c g (rename f p) := by
@@ -396,4 +393,5 @@ theorem rename_rename (e : σ ≃ τ) (f : τ ≃ υ) (p : MvPowerSeries σ R) :
 -- #align mv_polynomial.support_rename_of_injective MvPowerSeries.support_rename_of_injective
 
 -- end Support
+
 end MvPowerSeries
