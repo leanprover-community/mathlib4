@@ -184,47 +184,45 @@ variable {M} in
 /-- If `m : ι → M` is a family of elements, then there is an `R`-linear map from `ι →₀ N` to
 `S` which maps `{ n_i }` to the sum of `m_i * n_i`. -/
 def mulLeftMap {ι : Type*} (m : ι → M) : (ι →₀ N) →ₗ[R] S :=
-  mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
-    (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap
+  Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
+
+variable {M N} in
+theorem mulLeftMap_apply {ι : Type*} (m : ι → M) (n : ι →₀ N) :
+    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
 
 variable {M N} in
 @[simp]
 theorem mulLeftMap_apply_single {ι : Type*} (m : ι → M) (i : ι) (n : N) :
     mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
-  simp [mulLeftMap, TensorProduct.finsuppScalarLeft_symm_apply_single]
+  simp [mulLeftMap]
 
 variable {M} in
-theorem mulLeftMap_def' {ι : Type*} (m : ι → M) : mulLeftMap N m =
-    Finsupp.lsum ℕ fun (i : ι) ↦ (LinearMap.mulLeft R (m i).1).comp N.subtype := by
+theorem mulLeftMap_eq_mulMap_comp {ι : Type*} (m : ι → M) :
+    mulLeftMap N m = mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
+      (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap := by
   ext; simp
-
-variable {M N} in
-theorem mulLeftMap_apply {ι : Type*} (m : ι → M) (n : ι →₀ N) :
-    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 :=
-  congr($(mulLeftMap_def' N m) n)
 
 variable {N} in
 /-- If `n : ι → N` is a family of elements, then there is an `R`-linear map from `ι →₀ M` to
 `S` which maps `{ m_i }` to the sum of `m_i * n_i`. -/
 def mulRightMap {ι : Type*} (n : ι → N) : (ι →₀ M) →ₗ[R] S :=
-  mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
-    (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap
+  Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
+
+variable {M N} in
+theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
+    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
 
 variable {M N} in
 @[simp]
 theorem mulRightMap_apply_single {ι : Type*} (n : ι → N) (i : ι) (m : M) :
     mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
-  simp [mulRightMap, TensorProduct.finsuppScalarRight_symm_apply_single]
+  simp [mulRightMap]
 
 variable {N} in
-theorem mulRightMap_def' {ι : Type*} (n : ι → N) : mulRightMap M n =
-    Finsupp.lsum ℕ fun (i : ι) ↦ LinearMap.smulRight M.subtype (n i).1 := by
+theorem mulRightMap_eq_mulMap_comp {ι : Type*} (n : ι → N) :
+    mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
+      (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
   ext; simp
-
-variable {M N} in
-theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
-    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 :=
-  congr($(mulRightMap_def' M n) m)
 
 variable {M} in
 theorem mulLeftMap_eq_mulRightMap_of_commute {ι : Type*} (m : ι → M)
