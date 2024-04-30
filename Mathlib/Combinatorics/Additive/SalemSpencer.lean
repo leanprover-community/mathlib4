@@ -116,23 +116,27 @@ end Monoid
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s : Set α} {t : Set β} {f : α → β} {a : α}
 
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. --/
 @[to_additive]
-theorem IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom s t 2) (hf' : s.InjOn f)
+lemma IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom s t 2 f) (hf' : s.InjOn f)
     (ht : MulSalemSpencer t) : MulSalemSpencer s :=
-  fun _ _ _ ha hb hc habc ↦ hf' ha hb <|
-    h (mem_image_of_mem _ ha) (mem_image_of_mem _ hb) (mem_image_of_mem _ hc) <|
-      hf.map_mul_map_eq_map_mul_map ha hb hc hc habc
+  fun _ _ _ ha hb hc habc ↦ hf' ha hb <| ht (hf.mapsTo ha) (hf.mapsTo hb) (hf.mapsTo hc) <|
+    hf.mul_eq_mul ha hb hc hc habc
 #align mul_salem_spencer.of_image IsMulFreimanHom.mulSalemSpencer
 #align add_salem_spencer.of_image IsAddFreimanHom.addSalemSpencer
 
--- TODO: Generalize to Freiman homs
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. --/
 @[to_additive]
-theorem MulSalemSpencer.image [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
-    (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
-  rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
-  rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
-#align mul_salem_spencer.image MulSalemSpencer.image
-#align add_salem_spencer.image AddSalemSpencer.image
+lemma IsMulFreimanIso.mulSalemSpencer (hf : IsMulFreimanIso s t 2 f) :
+    MulSalemSpencer s ↔ MulSalemSpencer t where
+  mpr := hf.isMulFreimanHom.mulSalemSpencer hf.bijOn.injOn
+  mp hs a b c hfa hfb hfc habc := by
+    obtain ⟨a, ha, rfl⟩ := hf.bijOn.surjOn hfa
+    obtain ⟨b, hb, rfl⟩ := hf.bijOn.surjOn hfb
+    obtain ⟨c, hc, rfl⟩ := hf.bijOn.surjOn hfc
+    exact congr_arg f $ hs ha hb hc $ (hf.mul_eq_mul ha hb hc hc).1 habc
+#align mul_salem_spencer.image IsMulFreimanIso.mulSalemSpencer
+#align add_salem_spencer.image IsAddFreimanIso.addSalemSpencer
 
 end CommMonoid
 
@@ -516,30 +520,5 @@ theorem rothNumberNat_isBigO_id : (fun N => (rothNumberNat N : ℝ)) =O[atTop] f
   rothNumberNat_isBigOWith_id.isBigO
 set_option linter.uppercaseLean3 false in
 #align roth_number_nat_is_O_id rothNumberNat_isBigO_id
-
-lemma Fin.addRothNumber_eq_rothNumberNat (hkn : 2 * k ≤ n) :
-    addRothNumber (Iio k : Finset (Fin n.succ)) = rothNumberNat k := by
-  classical
-  obtain ⟨s, hsm, hscard, hs⟩ := rothNumberNat_spec k
-  simp only [subset_iff, mem_range] at hsm
-  rw [two_mul] at hkn
-  rw [← hscard, ← Finset.card_image_of_injOn ((CharP.natCast_injOn_Iio (Fin n.succ) n.succ).mono
-    fun x hx ↦ Nat.lt_succ_iff.2 $ (hsm hx).le.trans $ le_add_self.trans hkn)]
-  refine AddSalemSpencer.le_addRothNumber ?_ ?_
-  · rw [coe_image]
-    rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
-    norm_cast at habc
-    refine congr_arg _ (hs ha hb hc $ CharP.natCast_injOn_Iio _ n.succ ?_ ?_ habc) <;>
-    simp only [Nat.lt_succ_iff, Set.mem_Iio] <;>
-    refine (Nat.add_le_add (hsm ?_).le (hsm ?_).le).trans hkn <;> assumption
-  · replace hkn := Nat.lt_succ_iff.2 (le_add_self.trans hkn)
-    simp only [image_subset_iff, mem_Iio, Fin.lt_iff_val_lt_val, Fin.coe_ofNat_eq_mod]
-    rintro x hx
-    rw [Nat.mod_eq_of_lt hkn, Nat.mod_eq_of_lt ((hsm hx).trans hkn)]
-    exact hsm hx
-
-lemma Fin.addRothNumber_le_rothNumberNat (k n : ℕ) :
-    addRothNumber (Iio k : Finset (Fin n.succ)) ≤ rothNumberNat k := by
-
 
 end rothNumberNat
