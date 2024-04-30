@@ -96,7 +96,7 @@ instance : (Qh (C := C)).EssSurj := by
   exact ⟨(Q.objPreimage X).truncGE n, inferInstance,
     ⟨(asIso (Q.map ((Q.objPreimage X).πTruncGE n))).symm ≪≫ Q.objObjPreimageIso X⟩⟩
 
-/-instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).W :=
+instance : Qh.IsLocalization (HomotopyCategory.Minus.subcategoryAcyclic C).W :=
   isLocalization_of_isLeftLocalizing (HomotopyCategory.Minus.ι C)
     (HomotopyCategory.subcategoryAcyclic C) (QhCompιIsoιCompQh C)
 
@@ -104,24 +104,24 @@ instance : Qh.IsLocalization (HomotopyCategory.Minus.quasiIso C) := by
   rw [HomotopyCategory.Minus.quasiIso_eq_subcategoryAcyclic_W]
   infer_instance
 
-noncomputable def singleFunctors : SingleFunctors C (Plus C) ℤ :=
-  SingleFunctors.lift (DerivedCategory.singleFunctors C) Plus.ι
-      (fun n => t.plus.lift (DerivedCategory.singleFunctor C n)
+noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
+  SingleFunctors.lift (DerivedCategory.singleFunctors C) Minus.ι
+      (fun n => t.minus.lift (DerivedCategory.singleFunctor C n)
       (fun _ => ⟨n, inferInstance⟩))
       (fun _ => Iso.refl _)
 
-noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Plus C := (singleFunctors C).functor n
+noncomputable abbrev singleFunctor (n : ℤ) : C ⥤ Minus C := (singleFunctors C).functor n
 
 noncomputable def singleFunctorιIso (n : ℤ) :
-    singleFunctor C n ⋙ Plus.ι ≅ DerivedCategory.singleFunctor C n := by
+    singleFunctor C n ⋙ Minus.ι ≅ DerivedCategory.singleFunctor C n := by
   apply SingleFunctors.liftFunctorCompIso
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
   infer_instance
 
-noncomputable def homologyFunctor (n : ℤ) : Plus C ⥤ C :=
-    Plus.ι ⋙ DerivedCategory.homologyFunctor C n
+noncomputable def homologyFunctor (n : ℤ) : Minus C ⥤ C :=
+    Minus.ι ⋙ DerivedCategory.homologyFunctor C n
 
 instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
   dsimp [homologyFunctor]
@@ -129,9 +129,9 @@ instance (n : ℤ) : (homologyFunctor C n).IsHomological := by
 
 instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
-    (HomotopyCategory.Plus.subcategoryAcyclic C).W
+    (HomotopyCategory.Minus.subcategoryAcyclic C).W
 
-variable {C}
+/-variable {C}
 
 abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
   (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
