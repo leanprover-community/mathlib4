@@ -9,6 +9,7 @@ import Mathlib.Analysis.Normed.Order.Lattice
 import Mathlib.Analysis.NormedSpace.OperatorNorm.Basic
 import Mathlib.Analysis.NormedSpace.Star.Basic
 import Mathlib.Analysis.NormedSpace.ContinuousLinearMap
+import Mathlib.Topology.Bornology.BoundedOperation
 
 #align_import topology.continuous_function.bounded from "leanprover-community/mathlib"@"5dc275ec639221ca4d5f56938eb966f6ad9bc89f"
 
@@ -767,6 +768,18 @@ theorem sum_apply {ι : Type*} (s : Finset ι) (f : ι → α →ᵇ β) (a : α
 
 end CommHasLipschitzAdd
 
+section sub
+
+/-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
+instance instSub {X R : Type*} [TopologicalSpace X] [PseudoMetricSpace R]
+    [Sub R] [BoundedSub R] [ContinuousSub R] :
+    Sub (X →ᵇ R) where
+  sub f g :=
+    { toFun := fun x ↦ (f x - g x),
+      map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
+
+end sub
+
 section NormedAddCommGroup
 
 /- In this section, if `β` is a normed group, then we show that the space of bounded
@@ -927,14 +940,6 @@ instance : Neg (α →ᵇ β) :=
   ⟨fun f =>
     ofNormedAddCommGroup (-f) f.continuous.neg ‖f‖ fun x =>
       norm_neg ((⇑f) x) ▸ f.norm_coe_le_norm x⟩
-
-/-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
-instance instSub : Sub (α →ᵇ β) :=
-  ⟨fun f g =>
-    ofNormedAddCommGroup (f - g) (f.continuous.sub g.continuous) (‖f‖ + ‖g‖) fun x => by
-      simp only [sub_eq_add_neg]
-      exact le_trans (norm_add_le _ _)
-        (add_le_add (f.norm_coe_le_norm x) <| norm_neg ((⇑g) x) ▸ g.norm_coe_le_norm x)⟩
 
 @[simp]
 theorem coe_neg : ⇑(-f) = -f := rfl

@@ -3,7 +3,7 @@ Copyright (c) 2024 Kalle Kytölä
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kalle Kytölä
 -/
-import Mathlib.Topology.ContinuousFunction.Bounded
+import Mathlib.Analysis.Normed.Group.Basic
 
 /-!
 # Bounded operations
@@ -73,6 +73,28 @@ lemma SeminormedAddCommGroup.lipschitzWith_sub [SeminormedAddCommGroup R] :
   convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
   norm_num
 
+instance [SeminormedAddCommGroup R] : BoundedSub R where
+  isBounded_sub := by
+    intro s t hs ht
+    rw [Metric.isBounded_iff] at hs ht ⊢
+    obtain ⟨Cf, hf⟩ := hs
+    obtain ⟨Cg, hg⟩ := ht
+    use Cf + Cg
+    intro z hz w hw
+    rw [Set.mem_sub] at hz hw
+    obtain ⟨x₁, hx₁, y₁, hy₁, z_eq⟩ := hz
+    obtain ⟨x₂, hx₂, y₂, hy₂, w_eq⟩ := hw
+    rw [← w_eq, ← z_eq, dist_eq_norm]
+    calc  ‖x₁ - y₁ - (x₂ - y₂)‖
+     _  = ‖x₁ - x₂ + (y₂ - y₁)‖ := by
+        congr
+        rw [sub_sub_sub_comm, sub_eq_add_neg, neg_sub]
+     _  ≤ ‖x₁ - x₂‖ + ‖y₂ - y₁‖ := norm_add_le _ _
+     _  ≤ Cf + Cg               :=
+        add_le_add (mem_closedBall_iff_norm.mp (hf hx₁ hx₂)) (mem_closedBall_iff_norm.mp (hg hy₂ hy₁))
+
+section NNReal
+
 open scoped NNReal
 
 noncomputable instance : BoundedSub ℝ≥0 where
@@ -84,16 +106,9 @@ noncomputable instance : BoundedSub ℝ≥0 where
     intro z hz
     obtain ⟨a, a_in_s, b, _, z_eq⟩ := Set.mem_sub.mp hz
     have key := hc a_in_s
-    simp [NNReal.ball_zero_eq_Ico, ←z_eq] at *
+    simp only [NNReal.ball_zero_eq_Ico, ← z_eq, Set.mem_Ico, zero_le, true_and, gt_iff_lt] at *
     exact tsub_lt_of_lt key
 
-open scoped BoundedContinuousFunction NNReal
-
-instance instSub' {X R : Type*} [TopologicalSpace X] [PseudoMetricSpace R]
-    [Sub R] [BoundedSub R] [ContinuousSub R] :
-    Sub (X →ᵇ R) where
-  sub f g :=
-    { toFun := fun x ↦ (f x - g x),
-      map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
+end NNReal
 
 end bounded_sub
