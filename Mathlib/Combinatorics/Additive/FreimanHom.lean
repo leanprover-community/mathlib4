@@ -6,6 +6,7 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.Set.Pointwise.Basic
+import Mathlib.Data.ZMod.Basic
 
 #align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
@@ -82,7 +83,7 @@ structure IsMulFreimanHom (A : Set α) (B : Set β) (n : ℕ) (f : α → β) : 
 /-- An additive `n`-Freiman homomorphism from a set `A` to a set `B` is a bijective map which
 preserves sums of `n` elements. -/
 structure IsAddFreimanIso [AddCommMonoid α] [AddCommMonoid β] (A : Set α) (B : Set β) (n : ℕ)
-    (f : α → β) where
+    (f : α → β) : Prop where
   bijOn : BijOn f A B
   /-- An additive `n`-Freiman homomorphism preserves sums of `n` elements. -/
   map_sum_eq_map_sum ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
@@ -92,7 +93,7 @@ structure IsAddFreimanIso [AddCommMonoid α] [AddCommMonoid β] (A : Set α) (B 
 /-- An `n`-Freiman homomorphism from a set `A` to a set `B` is a map which preserves products of `n`
 elements. -/
 @[to_additive]
-structure IsMulFreimanIso (A : Set α) (B : Set β) (n : ℕ) (f : α → β) where
+structure IsMulFreimanIso (A : Set α) (B : Set β) (n : ℕ) (f : α → β) : Prop where
   bijOn : BijOn f A B
   /-- An `n`-Freiman homomorphism preserves products of `n` elements. -/
   map_prod_eq_map_prod ⦃s t : Multiset α⦄ (hsA : ∀ ⦃x⦄, x ∈ s → x ∈ A) (htA : ∀ ⦃x⦄, x ∈ t → x ∈ A)
@@ -156,11 +157,19 @@ lemma isMulFreimanHom_two :
     · simpa using fun a h ↦ hf.bijOn.mapsTo (hsA h)
     · simpa using fun a h ↦ hf.bijOn.mapsTo (htA h)
 
-@[to_additive] lemma IsMulFreimanHom.subset (hA : A₁ ⊆ A₂) (hf : IsMulFreimanHom A₂ B n f) :
-    IsMulFreimanHom A₁ B n f := hf.comp (isMulFreimanHom_id hA)
+@[to_additive] lemma IsMulFreimanHom.subset (hA : A₁ ⊆ A₂) (hf : IsMulFreimanHom A₂ B₂ n f)
+    (hf' : MapsTo f A₁ B₁) : IsMulFreimanHom A₁ B₁ n f where
+  mapsTo := hf'
+  __ := hf.comp (isMulFreimanHom_id hA)
 
 @[to_additive] lemma IsMulFreimanHom.superset (hB : B₁ ⊆ B₂) (hf : IsMulFreimanHom A B₁ n f) :
     IsMulFreimanHom A B₂ n f := (isMulFreimanHom_id hB).comp hf
+
+@[to_additive] lemma IsMulFreimanIso.subset (hA : A₁ ⊆ A₂) (hf : IsMulFreimanIso A₂ B₂ n f)
+    (hf' : BijOn f A₁ B₁) : IsMulFreimanIso A₁ B₁ n f where
+  bijOn := hf'
+  map_prod_eq_map_prod s t hsA htA hs ht := by
+    refine hf.map_prod_eq_map_prod (fun a ha ↦ hA (hsA ha)) (fun a ha ↦ hA (htA ha)) hs ht
 
 @[to_additive]
 lemma isMulFreimanHom_const {b : β} (hb : b ∈ B) : IsMulFreimanHom A B n fun _ ↦ b where
