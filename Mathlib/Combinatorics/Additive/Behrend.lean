@@ -172,8 +172,8 @@ nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin
     { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
-  refine' AddSalemSpencer.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
-  · exact cast_injective.comp_left.injOn _
+  refine (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _)).addSalemSpencer
+    (cast_injective.comp_left.injOn _) ?_
   refine' (addSalemSpencer_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere

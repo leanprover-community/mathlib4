@@ -135,8 +135,14 @@ lemma IsMulFreimanIso.mulSalemSpencer (hf : IsMulFreimanIso s t 2 f) :
     obtain ⟨b, hb, rfl⟩ := hf.bijOn.surjOn hfb
     obtain ⟨c, hc, rfl⟩ := hf.bijOn.surjOn hfc
     exact congr_arg f $ hs ha hb hc $ (hf.mul_eq_mul ha hb hc hc).1 habc
-#align mul_salem_spencer.image IsMulFreimanIso.mulSalemSpencer
-#align add_salem_spencer.image IsAddFreimanIso.addSalemSpencer
+
+@[to_additive]
+theorem MulSalemSpencer.image [FunLike F α β] [MulHomClass F α β] (f : F) (hf : (s * s).InjOn f)
+    (h : MulSalemSpencer s) : MulSalemSpencer (f '' s) := by
+  rintro _ _ _ ⟨a, ha, rfl⟩ ⟨b, hb, rfl⟩ ⟨c, hc, rfl⟩ habc
+  rw [h ha hb hc (hf (mul_mem_mul ha hb) (mul_mem_mul hc hc) <| by rwa [map_mul, map_mul])]
+#align mul_salem_spencer.image MulSalemSpencer.image
+#align add_salem_spencer.image AddSalemSpencer.image
 
 end CommMonoid
 
