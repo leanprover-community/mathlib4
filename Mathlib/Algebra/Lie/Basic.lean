@@ -598,6 +598,9 @@ theorem one_apply (x : L₁) : (1 : L₁ ≃ₗ⁅R⁆ L₁) x = x :=
 instance : Inhabited (L₁ ≃ₗ⁅R⁆ L₁) :=
   ⟨1⟩
 
+lemma map_lie (e : L₁ ≃ₗ⁅R⁆ L₂) (x y : L₁) : e ⁅x, y⁆ = ⁅e x, e y⁆ :=
+  LieHom.map_lie e.toLieHom x y
+
 /-- Lie algebra equivalences are reflexive. -/
 def refl : L₁ ≃ₗ⁅R⁆ L₁ :=
   1

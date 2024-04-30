@@ -241,6 +241,19 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
+attribute [simp] nil_subperm
+
+@[simp]
+theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
+  match l with
+  | [] => by simp
+  | head :: tail => by
+    simp only [iff_false]
+    intro h
+    have := h.length_le
+    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
+      not_true_eq_false] at this
+
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
@@ -422,7 +435,7 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
-  simp_rw [Ne.def, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
+  simp_rw [Ne, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
     not_mem_nil, or_false, or_comm]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
@@ -559,11 +572,6 @@ theorem perm_lookmap (f : α → Option α) {l₁ l₂ : List α}
     apply h d hd c hc
 #align list.perm_lookmap List.perm_lookmap
 
-@[deprecated Perm.eraseP]
-theorem Perm.erasep (f : α → Prop) [DecidablePred f] {l₁ l₂ : List α}
-    (H : Pairwise (fun a b => f a → f b → False) l₁) (p : l₁ ~ l₂) :
-    List.eraseP f l₁ ~ List.eraseP f l₂ :=
-  p.eraseP f (by simp [H])
 #align list.perm.erasep List.Perm.eraseP
 
 theorem Perm.take_inter {α : Type*} [DecidableEq α] {xs ys : List α} (n : ℕ) (h : xs ~ ys)
@@ -845,9 +853,9 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [nthLe_insertNth_add_succ]
-      convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
-      · simp [Nat.add_succ, Nat.succ_add]
-      · simp [Nat.add_left_comm, Nat.add_comm]
+      · convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
+        · simp [Nat.add_succ, Nat.succ_add]
+        · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 

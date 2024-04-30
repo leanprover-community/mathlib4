@@ -5,10 +5,10 @@ Authors: Joël Riou
 -/
 
 import Mathlib.Algebra.Homology.HomotopyCofiber
-import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.HomotopyCategory
-import Mathlib.CategoryTheory.Localization.HasLocalization
+import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.CategoryTheory.Localization.Composition
+import Mathlib.CategoryTheory.Localization.HasLocalization
 
 /-! The category of homological complexes up to quasi-isomorphisms
 
@@ -46,9 +46,9 @@ variable (C c)
 
 lemma HomologicalComplex.homologyFunctor_inverts_quasiIso (i : ι) :
     (quasiIso C c).IsInvertedBy (homologyFunctor C c i) := fun _ _ _ hf => by
-      rw [mem_quasiIso_iff] at hf
-      dsimp
-      infer_instance
+  rw [mem_quasiIso_iff] at hf
+  dsimp
+  infer_instance
 
 namespace HomologicalComplexUpToQuasiIso
 

@@ -5,8 +5,8 @@ Authors: Praneeth Kolichala
 -/
 import Mathlib.Init.Data.List.Basic
 import Mathlib.Algebra.Group.Basic
+import Mathlib.Algebra.Group.Nat
 import Mathlib.Data.Bool.Basic
-import Mathlib.Algebra.Ring.Nat
 import Mathlib.Data.Nat.Defs
 import Mathlib.Tactic.Convert
 import Mathlib.Tactic.GeneralizeProofs
@@ -149,8 +149,8 @@ lemma bit1_val (n : Nat) : bit1 n = 2 * n + 1 := congr_arg succ (bit0_val _)
 
 lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply bit0_val
-  apply bit1_val
+  · apply bit0_val
+  · apply bit1_val
 #align nat.bit_val Nat.bit_val
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=
@@ -258,7 +258,7 @@ lemma bodd_bit (b n) : bodd (bit b n) = b := by
 lemma div2_bit (b n) : div2 (bit b n) = n := by
   rw [bit_val, div2_val, Nat.add_comm, add_mul_div_left, div_eq_of_lt, Nat.zero_add]
   <;> cases b
-  <;> exact by decide
+  <;> decide
 #align nat.div2_bit Nat.div2_bit
 
 lemma shiftLeft'_add (b m n) : ∀ k, shiftLeft' b m (n + k) = shiftLeft' b (shiftLeft' b m n) k

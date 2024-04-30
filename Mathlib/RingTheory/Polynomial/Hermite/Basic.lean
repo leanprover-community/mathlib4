@@ -110,8 +110,8 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
-  · rintro m hnm
+  · simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
+    rintro m hnm
     exact coeff_hermite_of_lt hnm
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
@@ -210,8 +210,8 @@ theorem coeff_hermite (n k : ℕ) :
     coeff (hermite n) k =
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
-  exact coeff_hermite_of_even_add h
-  exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_even_add h
+  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
 #align polynomial.coeff_hermite Polynomial.coeff_hermite
 
 end CoeffExplicit

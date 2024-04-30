@@ -7,6 +7,7 @@ import ImportGraph
 import Mathlib.Data.String.Defs
 import Std.Lean.Util.Path
 import Cli
+import LongestPole.SpeedCenterJson
 
 /-!
 # `lake exe pole`
@@ -14,13 +15,9 @@ import Cli
 Longest pole analysis for Mathlib build times.
 -/
 
-set_option autoImplicit true
 
 open Cli
-
 open Lean Meta
-
-open Lean Core System
 
 /-- Runs a terminal command and retrieves its output -/
 def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO String := do
@@ -31,51 +28,27 @@ def runCmd (cmd : String) (args : Array String) (throwFailure := true) : IO Stri
 def runCurl (args : Array String) (throwFailure := true) : IO String := do
   runCmd "curl" args throwFailure
 
-def speedCenterRunJson (hash : String) : IO String :=
-  -- e7b27246-a3e6-496a-b552-ff4b45c7236e is the `repo_id` for the `mathlib4` repository.
-  runCurl #["http://speed.lean-fro.org/mathlib4/api/run/e7b27246-a3e6-496a-b552-ff4b45c7236e?hash=" ++ hash]
+def mathlib4RepoId : String := "e7b27246-a3e6-496a-b552-ff4b45c7236e"
 
-structure SpeedCenterSource_1 where
-  repo_id : String
-  hash : String
-deriving ToJson, FromJson
+namespace SpeedCenterAPI
 
-structure SpeedCenterSource_2 where
-  source : SpeedCenterSource_1
-deriving ToJson, FromJson
+def runJson (hash : String) (repoId : String := mathlib4RepoId) : IO String :=
+  runCurl #[s!"http://speed.lean-fro.org/mathlib4/api/run/{repoId}?hash={hash}"]
 
-structure SpeedCenterDimension where
-  benchmark : String
-  metric : String
-  unit : String
-deriving ToJson, FromJson
+def getRunResponse (hash : String) : IO RunResponse := do
+  let r ← runJson hash
+  match Json.parse r with
+  | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
+  | .ok j => match fromJson? j with
+    | .ok v => pure v
+    | .error e => match fromJson? j with
+      | .ok (v : ErrorMessage) =>
+        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
+        IO.eprintln s!"Try moving to an older commit?"
+        IO.Process.exit 1
+      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
 
-structure SpeedCenterMeasurement where
-  dimension : SpeedCenterDimension
-  value : Float
-deriving ToJson, FromJson
-
-structure SpeedCenterResult where
-  measurements : List SpeedCenterMeasurement
-deriving ToJson, FromJson
-
-structure SpeedCenterRun_3 where
-  id : String
-  source : SpeedCenterSource_2
-  result : SpeedCenterResult
-deriving ToJson, FromJson
-
-structure SpeedCenterRunResponse where
-  run : SpeedCenterRun_3
-deriving ToJson, FromJson
-
-structure SpeedCenterMessage where
-  repo_id : String
-  message : String
-  commit_hash : String
-deriving ToJson, FromJson
-
-def SpeedCenterRunResponse.instructions (response : SpeedCenterRunResponse) :
+def RunResponse.instructions (response : RunResponse) :
     NameMap Float := Id.run do
   let mut r : NameMap Float := ∅
   for m in response.run.result.measurements do
@@ -84,107 +57,94 @@ def SpeedCenterRunResponse.instructions (response : SpeedCenterRunResponse) :
       r := r.insert (n.drop 1).toName m.value
   return r
 
-def speedCenterRunResponse (run : String) : IO SpeedCenterRunResponse := do
-  let r ← speedCenterRunJson run
-  match Json.parse r with
-  | .error e => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{r}"
-  | .ok j => match fromJson? j with
-    | .ok v => pure v
-    | .error e => match fromJson? j with
-      | .ok (v : SpeedCenterMessage) =>
-        IO.eprintln s!"http://speed.lean-fro.org says: {v.message}"
-        IO.eprintln s!"Try moving to an older commit?"
-        IO.Process.exit 1
-      | .error _ => throw <| IO.userError s!"Could not parse speed center JSON: {e}\n{j}"
+def instructions (run : String) : IO (NameMap Float) :=
+  return (← getRunResponse run).instructions
+
+end SpeedCenterAPI
 
 def headSha : IO String := return (← runCmd "git" #["rev-parse", "HEAD"]).trim
 
-def speedCenterInstructions (run : String) : IO (NameMap Float) :=
-  return (← speedCenterRunResponse run).instructions
-
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` of the cumulative instructions taken in the longest pole
+of imports including that file. -/
 partial def cumulativeInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
   graph.fold (init := ∅) fun m n _ => go n m
 where
+  -- Helper which adds the entry for `n` to `m` if it's not already there.
   go (n : Name) (m : NameMap Float) : NameMap Float :=
     if m.contains n then
       m
     else
       let parents := graph.find! n
-      let m := parents.foldr (init := m) fun n' m => go n' m
-      let t := (parents.map fun n' => (m.find! n')).foldr max 0
-      m.insert n ((instructions.find? n).getD 0 + t)
+      -- Add all parents to the map first
+      let m := parents.foldr (init := m) fun parent m => go parent m
+      -- Determine the maximum cumulative instruction count among the parents
+      let t := (parents.map fun parent => (m.find! parent)).foldr max 0
+      m.insert n (instructions.findD n 0 + t)
 
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` indicating the last of the parents of each file that would
+be built in a totally parallel setting. -/
 def slowestParents (cumulative : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Name :=
   graph.fold (init := ∅) fun m n parents =>
     match parents.toList with
+    -- If there are no parents, return the file itself
     | [] => m
     | h :: t => Id.run do
-      let mut r := h
-      for n' in t do
-        if cumulative.find! n' > cumulative.find! r then
-          r := n'
-      return m.insert n r
+      let mut slowestParent := h
+      for parent in t do
+        if cumulative.find! parent > cumulative.find! slowestParent then
+          slowestParent := parent
+      return m.insert n slowestParent
 
+/-- Given `NameMap`s indicating how many instructions are in each file and which files are imported
+by which others, returns a new `NameMap` indicating the total instructions taken to compile the
+file, including all instructions in transitively imported files.
+-/
 def totalInstructions (instructions : NameMap Float) (graph : NameMap (Array Name)) :
     NameMap Float :=
   let transitive := graph.transitiveClosure
-  transitive.filterMap fun n s => some <| s.fold (init := (instructions.find? n).getD 0)
-    fun t n' => t + ((instructions.find? n').getD 0)
+  transitive.filterMap
+    fun n s => some <| s.fold (init := instructions.findD n 0)
+      fun t n' => t + (instructions.findD n' 0)
 
-/--
-Takes a 2d array of string data and renders it into a table.
- -/
-def formatTable (headers : Array String) (table : Array (Array String)) : String := Id.run do
-  -- Get the maximum widths of each column
-  let mut widths := headers.map (·.length)
-  for row in table do
-    for i in [0:widths.size] do
-      widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
-  -- Pad each cell with spaces to match the column width
-  let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
-  let paddedTable := table.map fun row => row.mapIdx fun i cell => cell.rightpad widths[i]!
-  -- Construct the lines of the table
-  let headerLine := String.intercalate " | " (paddedHeaders.toList)
-  let separatorLine := String.intercalate "-+-" ((widths.map (String.replicate · '-')).toList)
-  let rowLines := paddedTable.map (fun row => String.intercalate " | " (row.toList))
-  -- Return the table
-  return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)
+/-- Convert a float to a string with a fixed number of decimal places. -/
+def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
+  match r.toString.split (· = '.') with
+  | [a, b] => a ++ "." ++ b.take digits
+  | _ => r.toString
 
-open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
-  let to := match args.flag? "to" with
-  | some to => to.as! ModuleName
-  | none => `Mathlib -- autodetect the main module from the `lakefile.lean`?
-  let sha := headSha
+  let to ← match args.flag? "to" with
+  | some to => pure <| to.as! ModuleName
+  | none => ImportGraph.getCurrentModule -- autodetect the main module from the `lakefile.lean`
   searchPathRef.set compile_time_search_path%
-  let _ ← unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
+  unsafe withImportModules #[{module := to}] {} (trustLevel := 1024) fun env => do
     let graph := env.importGraph
-    IO.eprintln s!"Analyzing {to} at {<- sha}"
-    let instructions ← speedCenterInstructions (← sha)
+    let sha ← headSha
+    IO.eprintln s!"Analyzing {to} at {sha}"
+    let instructions ← SpeedCenterAPI.instructions (sha)
     let cumulative := cumulativeInstructions instructions graph
     let total := totalInstructions instructions graph
     let slowest := slowestParents cumulative graph
     let mut table := #[]
     let mut n := some to
-    while n != none do
-      let i := instructions.find! n.get!
-      let c := cumulative.find! n.get!
-      let t := total.find! n.get!
-      let r := (t / c).toString
-      let r := match r.split (· = '.') with
-      | [a, b] => a ++ "." ++ b.take 2
-      | _ => r
-      table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
-      n := slowest.find? n.get!
-    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table)
-    -- let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    -- IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
-    -- IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
-    -- for (name, inst, cumu, speedup) in table do
-    --   IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
+    while hn : n.isSome do
+      let n' := n.get hn
+      let i := instructions.findD n' 0
+      let c := cumulative.find! n'
+      let t := total.find! n'
+      let r := (t / c).toStringDecimals 2
+      table := table.push (n', i/10^6 |>.toUInt64, c/10^6 |>.toUInt64, r)
+      n := slowest.find? n'
+    let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
+    IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
+    IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
+    for (name, inst, cumu, speedup) in table do
+      IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/

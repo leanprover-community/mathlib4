@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Jeremy Avigad, Minchao Wu, Mario Carneiro
 -/
 import Mathlib.Data.Finset.Attr
 import Mathlib.Data.Multiset.FinsetOps
-import Mathlib.Data.Set.Intervals.Basic
 import Mathlib.Logic.Equiv.Set
 import Mathlib.Order.Directed
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.finset.basic from "leanprover-community/mathlib"@"442a83d738cb208d3600056c489be16900ba701d"
 
@@ -501,9 +501,10 @@ alias ⟨_, Nonempty.to_set⟩ := coe_nonempty
 alias ⟨_, Nonempty.coe_sort⟩ := nonempty_coe_sort
 #align finset.nonempty.coe_sort Finset.Nonempty.coe_sort
 
-theorem Nonempty.bex {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
+theorem Nonempty.exists_mem {s : Finset α} (h : s.Nonempty) : ∃ x : α, x ∈ s :=
   h
-#align finset.nonempty.bex Finset.Nonempty.bex
+#align finset.nonempty.bex Finset.Nonempty.exists_mem
+@[deprecated] alias Nonempty.bex := Nonempty.exists_mem -- 2024-03-23
 
 theorem Nonempty.mono {s t : Finset α} (hst : s ⊆ t) (hs : s.Nonempty) : t.Nonempty :=
   Set.Nonempty.mono hst hs
@@ -2630,7 +2631,7 @@ theorem filter_False {h} (s : Finset α) : @filter _ (fun _ => False) h s = ∅ 
 
 variable {p q}
 
-theorem filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
+@[simp] lemma filter_eq_self : s.filter p = s ↔ ∀ x ∈ s, p x := by simp [Finset.ext_iff]
 #align finset.filter_eq_self Finset.filter_eq_self
 
 theorem filter_eq_empty_iff : s.filter p = ∅ ↔ ∀ ⦃x⦄, x ∈ s → ¬p x := by simp [Finset.ext_iff]

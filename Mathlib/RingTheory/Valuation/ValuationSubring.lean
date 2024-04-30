@@ -127,13 +127,11 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-      ring
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
       use ⟨b / a, hh⟩;
       left
       ext
       field_simp
-      ring
 
 instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
@@ -826,7 +824,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=

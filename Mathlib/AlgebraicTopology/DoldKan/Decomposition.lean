@@ -84,7 +84,7 @@ set_option linter.uppercaseLean3 false in
 
 variable (X)
 
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 /-- The structure `MorphComponents` is an ad hoc structure that is used in
 the proof that `N₁ : SimplicialObject C ⥤ Karoubi (ChainComplex C ℕ))`
 reflects isomorphisms. The fields are the data that are needed in order to

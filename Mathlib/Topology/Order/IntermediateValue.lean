@@ -3,9 +3,10 @@ Copyright (c) 2021 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Alistair Tucker, Wen Yang
 -/
-import Mathlib.Data.Set.Intervals.Image
+import Mathlib.Order.Interval.Set.Image
 import Mathlib.Order.CompleteLatticeIntervals
-import Mathlib.Topology.Order.Basic
+import Mathlib.Topology.Order.DenselyOrdered
+import Mathlib.Topology.Order.Monotone
 
 #align_import topology.algebra.order.intermediate_value from "leanprover-community/mathlib"@"4c19a16e4b705bf135cf9a80ac18fcc99c438514"
 
@@ -69,9 +70,9 @@ on a preconnected space and `f a ≤ g a` and `g b ≤ f b`, then for some `x` w
 theorem intermediate_value_univ₂ [PreconnectedSpace X] {a b : X} {f g : X → α} (hf : Continuous f)
     (hg : Continuous g) (ha : f a ≤ g a) (hb : g b ≤ f b) : ∃ x, f x = g x := by
   obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty
-  exact
-    isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
-      (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
+  · exact
+      isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
+        (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
   exact ⟨x, le_antisymm hfg hgf⟩
 #align intermediate_value_univ₂ intermediate_value_univ₂
 
@@ -203,7 +204,7 @@ theorem mem_range_of_exists_le_of_exists_ge [PreconnectedSpace X] {c : α} {f : 
 
 In this section we prove the following results:
 
-* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `ord_connected`,
+* `IsPreconnected.ordConnected`: any preconnected set `s` in a linear order is `OrdConnected`,
   i.e. `a ∈ s` and `b ∈ s` imply `Icc a b ⊆ s`;
 
 * `IsPreconnected.mem_intervals`: any preconnected set `s` in a conditionally complete linear order
@@ -335,7 +336,7 @@ theorem setOf_isPreconnected_subset_of_ordered :
 /-!
 ### Intervals are connected
 
-In this section we prove that a closed interval (hence, any `ord_connected` set) in a dense
+In this section we prove that a closed interval (hence, any `OrdConnected` set) in a dense
 conditionally complete linear order is preconnected.
 -/
 
@@ -351,7 +352,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
   cases' eq_or_lt_of_le c_le with hc hc
-  exact hc ▸ c_mem.1
+  · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
   exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
@@ -515,6 +516,19 @@ theorem setOf_isPreconnected_eq_of_ordered :
     isPreconnected_Ioi, isPreconnected_Iio, isPreconnected_Ici, isPreconnected_Iic,
     isPreconnected_univ, isPreconnected_empty]
 #align set_of_is_preconnected_eq_of_ordered setOf_isPreconnected_eq_of_ordered
+
+/-- This lemmas characterizes when a subset `s` of a densely ordered conditionally complete linear
+order is totally disconnected with respect to the order topology: between any two distinct points
+of `s` must lie a point not in `s`. -/
+lemma isTotallyDisconnected_iff_lt {s : Set α} :
+    IsTotallyDisconnected s ↔ ∀ x ∈ s, ∀ y ∈ s, x < y → ∃ z ∉ s, z ∈ Ioo x y := by
+  simp only [IsTotallyDisconnected, isPreconnected_iff_ordConnected, ← not_nontrivial_iff,
+    nontrivial_iff_exists_lt, not_exists, not_and]
+  refine ⟨fun h x hx y hy hxy ↦ ?_, fun h t hts ht x hx y hy hxy ↦ ?_⟩
+  · simp_rw [← not_ordConnected_inter_Icc_iff hx hy]
+    exact fun hs ↦ h _ (inter_subset_left _ _) hs _ ⟨hx, le_rfl, hxy.le⟩ _ ⟨hy, hxy.le, le_rfl⟩ hxy
+  · obtain ⟨z, h1z, h2z⟩ := h x (hts hx) y (hts hy) hxy
+    exact h1z <| hts <| ht.1 hx hy ⟨h2z.1.le, h2z.2.le⟩
 
 /-!
 ### Intermediate Value Theorem on an interval

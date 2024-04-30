@@ -88,7 +88,7 @@ instance : Quiver LocallyRingedSpace :=
   ⟨Hom⟩
 
 @[ext] lemma Hom.ext' (X Y : LocallyRingedSpace) {f g : X ⟶ Y} (h : f.val = g.val) : f = g :=
-Hom.ext _ _ h
+  Hom.ext _ _ h
 
 -- TODO perhaps we should make a bundled `LocalRing` and return one here?
 -- TODO define `sheaf.stalk` so we can write `X.𝒪.stalk` here?
@@ -154,7 +154,7 @@ def forgetToSheafedSpace : LocallyRingedSpace ⥤ SheafedSpace CommRingCat where
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.forget_to_SheafedSpace AlgebraicGeometry.LocallyRingedSpace.forgetToSheafedSpace
 
-instance : Faithful forgetToSheafedSpace where
+instance : forgetToSheafedSpace.Faithful where
   map_injective {_ _} _ _ h := Hom.ext _ _ h
 
 /-- The forgetful functor from `LocallyRingedSpace` to `Top`. -/
@@ -219,7 +219,7 @@ def isoOfSheafedSpaceIso {X Y : LocallyRingedSpace} (f : X.toSheafedSpace ≅ Y.
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.iso_of_SheafedSpace_iso AlgebraicGeometry.LocallyRingedSpace.isoOfSheafedSpaceIso
 
-instance : ReflectsIsomorphisms forgetToSheafedSpace where reflects {_ _} f i :=
+instance : forgetToSheafedSpace.ReflectsIsomorphisms where reflects {_ _} f i :=
   { out :=
       ⟨homOfSheafedSpaceHomOfIsIso (CategoryTheory.inv (forgetToSheafedSpace.map f)),
         Hom.ext _ _ (IsIso.hom_inv_id (I := i)), Hom.ext _ _ (IsIso.inv_hom_id (I := i))⟩ }
@@ -252,8 +252,9 @@ set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a locally ringed space `X` to the top subspace is isomorphic to `X` itself.
 -/
-def restrictTopIso (X : LocallyRingedSpace) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
-  @isoOfSheafedSpaceIso (X.restrict (Opens.openEmbedding ⊤)) X X.toSheafedSpace.restrictTopIso
+def restrictTopIso (X : LocallyRingedSpace) :
+    X.restrict (Opens.openEmbedding ⊤) ≅ X :=
+  isoOfSheafedSpaceIso X.toSheafedSpace.restrictTopIso
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.LocallyRingedSpace.restrict_top_iso AlgebraicGeometry.LocallyRingedSpace.restrictTopIso
 

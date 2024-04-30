@@ -227,8 +227,8 @@ theorem bit1_val (n : ℤ) : bit1 n = 2 * n + 1 :=
 
 theorem bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply (bit0_val n).trans (add_zero _).symm
-  apply bit1_val
+  · apply (bit0_val n).trans (add_zero _).symm
+  · apply bit1_val
 #align int.bit_val Int.bit_val
 
 theorem bit_decomp (n : ℤ) : bit (bodd n) (div2 n) = n :=
@@ -513,9 +513,9 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         by dsimp; simp [← Nat.shiftLeft_sub _ , Nat.add_sub_cancel_left])
       fun i n => by
         dsimp
-        simp only [Nat.shiftLeft'_false, Nat.shiftRight_add, le_refl, ← Nat.shiftLeft_sub,
-          Nat.sub_eq_zero_of_le, Nat.shiftLeft_zero]
-        rfl
+        simp_rw [negSucc_eq, shiftLeft_neg, Nat.shiftLeft'_false, Nat.shiftRight_add,
+          ← Nat.shiftLeft_sub _ le_rfl, Nat.sub_self, Nat.shiftLeft_zero, ← shiftRight_coe_nat,
+          ← shiftRight_add, Nat.cast_one]
   | -[m+1], n, -[k+1] =>
     subNatNat_elim n k.succ
       (fun n k i => -[m+1] <<< i = -[(Nat.shiftLeft' true m n) >>> k+1])
@@ -523,8 +523,8 @@ theorem shiftLeft_add : ∀ (m : ℤ) (n : ℕ) (k : ℤ), m <<< (n + k) = (m <<
         congr_arg negSucc <| by
           rw [← Nat.shiftLeft'_sub, Nat.add_sub_cancel_left]; apply Nat.le_add_right)
       fun i n =>
-      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub, Nat.sub_self]
-      <;> rfl
+      congr_arg negSucc <| by rw [add_assoc, Nat.shiftRight_add, ← Nat.shiftLeft'_sub _ _ le_rfl,
+          Nat.sub_self, Nat.shiftLeft']
 #align int.shiftl_add Int.shiftLeft_add
 
 theorem shiftLeft_sub (m : ℤ) (n : ℕ) (k : ℤ) : m <<< (n - k) = (m <<< (n : ℤ)) >>> k :=
@@ -539,8 +539,9 @@ theorem shiftLeft_eq_mul_pow : ∀ (m : ℤ) (n : ℕ), m <<< (n : ℤ) = m * (2
 theorem shiftRight_eq_div_pow : ∀ (m : ℤ) (n : ℕ), m >>> (n : ℤ) = m / (2 ^ n : ℕ)
   | (m : ℕ), n => by rw [shiftRight_coe_nat, Nat.shiftRight_eq_div_pow _ _]; simp
   | -[m+1], n => by
-    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]; rfl
-    exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
+    rw [shiftRight_negSucc, negSucc_ediv, Nat.shiftRight_eq_div_pow]
+    · rfl
+    · exact ofNat_lt_ofNat_of_lt (Nat.pow_pos (by decide))
 #align int.shiftr_eq_div_pow Int.shiftRight_eq_div_pow
 
 theorem one_shiftLeft (n : ℕ) : 1 <<< (n : ℤ) = (2 ^ n : ℕ) :=

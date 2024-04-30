@@ -70,8 +70,6 @@ polynomial, multivariate polynomial, multivariable polynomial
 
 -/
 
-set_option autoImplicit true
-
 noncomputable section
 
 open Set Function Finsupp AddMonoidAlgebra
@@ -180,6 +178,7 @@ def C : R →+* MvPolynomial σ R :=
 
 variable (R σ)
 
+@[simp]
 theorem algebraMap_eq : algebraMap R (MvPolynomial σ R) = C :=
   rfl
 #align mv_polynomial.algebra_map_eq MvPolynomial.algebraMap_eq
@@ -505,7 +504,8 @@ theorem algHom_ext {A : Type*} [Semiring A] [Algebra R A] {f g : MvPolynomial σ
 #align mv_polynomial.alg_hom_ext MvPolynomial.algHom_ext
 
 @[simp]
-theorem algHom_C (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) : f (C r) = C r :=
+theorem algHom_C {τ : Type*} (f : MvPolynomial σ R →ₐ[R] MvPolynomial τ R) (r : R) :
+    f (C r) = C r :=
   f.commutes r
 #align mv_polynomial.alg_hom_C MvPolynomial.algHom_C
 
@@ -834,6 +834,10 @@ theorem support_eq_empty {p : MvPolynomial σ R} : p.support = ∅ ↔ p = 0 :=
   Finsupp.support_eq_empty
 #align mv_polynomial.support_eq_empty MvPolynomial.support_eq_empty
 
+@[simp]
+lemma support_nonempty {p : MvPolynomial σ R} : p.support.Nonempty ↔ p ≠ 0 := by
+  rw [Finset.nonempty_iff_ne_empty, ne_eq, support_eq_empty]
+
 theorem exists_coeff_ne_zero {p : MvPolynomial σ R} (h : p ≠ 0) : ∃ d, coeff d p ≠ 0 :=
   ne_zero_iff.mp h
 #align mv_polynomial.exists_coeff_ne_zero MvPolynomial.exists_coeff_ne_zero
@@ -928,7 +932,6 @@ theorem constantCoeff_comp_C : constantCoeff.comp (C : R →+* MvPolynomial σ R
   exact constantCoeff_C σ x
 #align mv_polynomial.constant_coeff_comp_C MvPolynomial.constantCoeff_comp_C
 
-@[simp]
 theorem constantCoeff_comp_algebraMap :
     constantCoeff.comp (algebraMap R (MvPolynomial σ R)) = RingHom.id R :=
   constantCoeff_comp_C _ _
@@ -1207,11 +1210,11 @@ theorem eval_assoc {τ} (f : σ → MvPolynomial τ R) (g : τ → R) (p : MvPol
 #align mv_polynomial.eval_assoc MvPolynomial.eval_assoc
 
 @[simp]
-theorem eval₂_id (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
+theorem eval₂_id {g : σ → R} (p : MvPolynomial σ R) : eval₂ (RingHom.id _) g p = eval g p :=
   rfl
 #align mv_polynomial.eval₂_id MvPolynomial.eval₂_id
 
-theorem eval_eval₂ [CommSemiring R] [CommSemiring S]
+theorem eval_eval₂ {S τ : Type*} {x : τ → S} [CommSemiring R] [CommSemiring S]
     (f : R →+* MvPolynomial τ S) (g : σ → MvPolynomial τ S) (p : MvPolynomial σ R) :
     eval x (eval₂ f g p) = eval₂ ((eval x).comp f) (fun s => eval x (g s)) p := by
   apply induction_on p
@@ -1456,6 +1459,7 @@ section Aeval
 variable [Algebra R S₁] [CommSemiring S₂]
 variable (f : σ → S₁)
 
+@[simp]
 theorem algebraMap_apply (r : R) : algebraMap R (MvPolynomial σ S₁) r = C (algebraMap R S₁ r) := rfl
 #align mv_polynomial.algebra_map_apply MvPolynomial.algebraMap_apply
 
@@ -1639,12 +1643,10 @@ theorem aevalTower_comp_C : (aevalTower g y : MvPolynomial σ R →+* A).comp C 
   RingHom.ext <| aevalTower_C _ _
 #align mv_polynomial.aeval_tower_comp_C MvPolynomial.aevalTower_comp_C
 
-@[simp]
 theorem aevalTower_algebraMap (x : R) : aevalTower g y (algebraMap R (MvPolynomial σ R) x) = g x :=
   eval₂_C _ _ _
 #align mv_polynomial.aeval_tower_algebra_map MvPolynomial.aevalTower_algebraMap
 
-@[simp]
 theorem aevalTower_comp_algebraMap :
     (aevalTower g y : MvPolynomial σ R →+* A).comp (algebraMap R (MvPolynomial σ R)) = g :=
   aevalTower_comp_C _ _

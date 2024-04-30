@@ -714,7 +714,7 @@ theorem aleph0_le_cof {o} : ℵ₀ ≤ cof o ↔ IsLimit o := by
     cases n
     · simp at e
       simp [e, not_zero_isLimit] at l
-    · rw [nat_cast_succ, cof_succ] at this
+    · rw [natCast_succ, cof_succ] at this
       rw [← this, cof_eq_one_iff_is_succ] at e
       rcases e with ⟨a, rfl⟩
       exact not_succ_isLimit _ l

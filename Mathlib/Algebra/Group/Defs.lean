@@ -1045,7 +1045,7 @@ end InvOneClass
 `-(a + b) = -b + -a` and `a + b = 0 → -a = b`. -/
 class SubtractionMonoid (G : Type u) extends SubNegMonoid G, InvolutiveNeg G where
   protected neg_add_rev (a b : G) : -(a + b) = -b + -a
-  /- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
+  /-- Despite the asymmetry of `neg_eq_of_add`, the symmetric version is true thanks to the
   involutivity of negation. -/
   protected neg_eq_of_add (a b : G) : a + b = 0 → -a = b
 #align subtraction_monoid SubtractionMonoid
@@ -1057,7 +1057,7 @@ This is the immediate common ancestor of `Group` and `GroupWithZero`. -/
 @[to_additive SubtractionMonoid]
 class DivisionMonoid (G : Type u) extends DivInvMonoid G, InvolutiveInv G where
   protected mul_inv_rev (a b : G) : (a * b)⁻¹ = b⁻¹ * a⁻¹
-  /- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
+  /-- Despite the asymmetry of `inv_eq_of_mul`, the symmetric version is true thanks to the
   involutivity of inversion. -/
   protected inv_eq_of_mul (a b : G) : a * b = 1 → a⁻¹ = b
 #align division_monoid DivisionMonoid

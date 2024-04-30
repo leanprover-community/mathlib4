@@ -365,7 +365,7 @@ theorem exists_infinite_pseudoprimes {b : ℕ} (h : 1 ≤ b) (m : ℕ) :
   · have h₁ : b = 1 := by omega
     rw [h₁]
     use 2 * (m + 2)
-    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by norm_num) (by norm_num)
+    have : ¬Nat.Prime (2 * (m + 2)) := Nat.not_prime_mul (by omega) (by omega)
     exact ⟨fermatPsp_base_one (by omega) this, by omega⟩
 #align fermat_psp.exists_infinite_pseudoprimes Nat.exists_infinite_pseudoprimes
 

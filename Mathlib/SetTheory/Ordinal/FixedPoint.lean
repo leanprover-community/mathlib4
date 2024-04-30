@@ -213,7 +213,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     · intro h₁
       cases' eq_or_lt_of_le h₁ with h h
       · exact ⟨_, h.symm⟩
-      rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_ball] at h
+      rw [derivFamily_limit _ l, ← not_le, bsup_le_iff, not_forall₂] at h
       exact
         let ⟨o', h, hl⟩ := h
         IH o' h (le_of_not_le hl),
@@ -668,7 +668,7 @@ theorem eq_zero_or_opow_omega_le_of_mul_eq_right {a b : Ordinal} (hab : a * b = 
   rw [or_iff_not_imp_left]
   intro hb
   rw [← nfp_mul_one ha]
-  rw [← Ne.def, ← one_le_iff_ne_zero] at hb
+  rw [← Ne, ← one_le_iff_ne_zero] at hb
   exact nfp_le_fp (mul_isNormal ha).monotone hb (le_of_eq hab)
 #align ordinal.eq_zero_or_opow_omega_le_of_mul_eq_right Ordinal.eq_zero_or_opow_omega_le_of_mul_eq_right
 
