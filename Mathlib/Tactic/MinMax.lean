@@ -19,17 +19,16 @@ namespace Mathlib.ToNatDegree
 
 /-- the core of the string translation.  These replacements are applied to individual "segments"
 after grouping words and splitting further at uppercase letter. -/
-def segmentReplacements : String → String
-  | "⊥"      => "⊤"
-  | "max"    => "min"
-  | "Sup"    => "Inf"
-  | "sup"    => "inf"
-  | "Bot"    => "Top"
-  | "bot"    => "top"
-  | "unbot"  => "untop"
-  | "union"  => "inter"
-  | "inter"  => "union"
-  | e => e
+abbrev segmentReplacements : HashMap String String := HashMap.empty
+  |>.insert "⊥"      "⊤"
+  |>.insert "max"    "min"
+  |>.insert "Sup"    "Inf"
+  |>.insert "sup"    "inf"
+  |>.insert "Bot"    "Top"
+  |>.insert "bot"    "top"
+  |>.insert "unbot"  "untop"
+  |>.insert "union"  "inter"
+  |>.insert "inter"  "union"
 
 /-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
 `[non-alpha]*`. -/
@@ -40,33 +39,43 @@ def splitUpper (s : String) : List String :=
 grouping together maximal consecutive substrings consisting of
 either `[uppercase]*[lowercase]*` or `[non-alpha]*`. -/
 def stringReplacements (str : String) : String :=
-  let strs := (splitUpper str).map segmentReplacements
+  let strs := (splitUpper str).map fun s => (segmentReplacements.find? s).getD s
   String.join <| strs
 
+/-- some binary operations need to be reversed in the change `Bot` to `Top`, others stay unchanged.
+`binopReplacements` performs some of these changes. -/
 partial
-def replAS {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m Syntax :=
+def binopReplacements {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) :
+    m Syntax :=
   stx.replaceM fun s => do
     match s with
       | `(term| antisymm $ha $hb) => return some (← `($(mkIdent `antisymm) $hb $ha))
       | `(term| le_trans $ha $hb) => return some (← `($(mkIdent `le_trans) $hb $ha))
       | `(term| lt_trans $ha $hb) => return some (← `($(mkIdent `lt_trans) $hb $ha))
       | `(term| $ha ⊔ $hb) =>
-        let ha' := ⟨← replAS ha⟩
-        let hb' := ⟨← replAS hb⟩
+        let ha' := ⟨← binopReplacements ha⟩
+        let hb' := ⟨← binopReplacements hb⟩
         return some (← `(term| $ha' ⊓ $hb'))
       | `(term| $ha ∪ $hb) =>
-        let ha' := ⟨← replAS ha⟩
-        let hb' := ⟨← replAS hb⟩
+        let ha' := ⟨← binopReplacements ha⟩
+        let hb' := ⟨← binopReplacements hb⟩
         return some (← `(term| $ha' ∩ $hb'))
       | `(term| $ha ∩ $hb) =>
-        let ha' := ⟨← replAS ha⟩
-        let hb' := ⟨← replAS hb⟩
+        let ha' := ⟨← binopReplacements ha⟩
+        let hb' := ⟨← binopReplacements hb⟩
         return some (← `(term| $ha' ∪ $hb'))
       | _ => return none
 
+/-- some names have consecutive parts that should be transposed.
+`lelt` is one of the two parts. -/
 abbrev lelt : HashSet String := { "le", "lt" }
+
+/-- some names have consecutive parts that should be transposed.
+`leftRight` is one of the two parts. -/
 abbrev leftRight : HashSet String := { "left", "right", "sup", "inf", "inter", "union", "none" }
 
+/-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
+E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
 def swapWords : List String → List String
   | le::left::ls =>
     if ((lelt.contains le) && (leftRight.contains left)) ||
@@ -123,7 +132,7 @@ environment the analogous result about `WithTop`.
 Writing `toTop?` also prints the extra declaration added by `toTop`.
 -/
 elab (name := toTopCmd) "toTop " tk:"?"? cmd:command : command => do
-  let newCmd ← replAS <| ← MaxToMin <| ← toTop cmd
+  let newCmd ← binopReplacements <| ← MaxToMin <| ← toTop cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   let currNS ← getCurrNamespace
@@ -132,4 +141,3 @@ elab (name := toTopCmd) "toTop " tk:"?"? cmd:command : command => do
 
 @[inherit_doc toTopCmd]
 macro "toTop? " cmd:command : command => return (← `(toTop ? $cmd))
---#lint
