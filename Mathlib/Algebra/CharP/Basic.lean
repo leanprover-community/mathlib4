@@ -466,8 +466,9 @@ section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
--- see Note [lower instance priority]
-instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
+-- This lemma is not an instance, to make sure that trying to prove `α` is a subsingleton does
+-- not try to find a ring structure on `α`, which can be expensive.
+lemma CharOne.subsingleton [CharP R 1] : Subsingleton R :=
   Subsingleton.intro <|
     suffices ∀ r : R, r = 0 from fun a b => show a = b by rw [this a, this b]
     fun r =>
@@ -477,8 +478,9 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       _ = 0 * r := by rw [CharP.cast_eq_zero]
       _ = 0 := by rw [zero_mul]
 
-theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
-  false_of_nontrivial_of_subsingleton R
+theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
+  have : Subsingleton R := CharOne.subsingleton
+  exact false_of_nontrivial_of_subsingleton R
 #align char_p.false_of_nontrivial_of_char_one CharP.false_of_nontrivial_of_char_one
 
 theorem ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by
@@ -521,7 +523,7 @@ protected theorem Ring.two_ne_zero {R : Type*} [NonAssocSemiring R] [Nontrivial 
 /-- Characteristic `≠ 2` and nontrivial implies that `-1 ≠ 1`. -/
 theorem Ring.neg_one_ne_one_of_char_ne_two {R : Type*} [NonAssocRing R] [Nontrivial R]
     (hR : ringChar R ≠ 2) : (-1 : R) ≠ 1 := fun h =>
-  Ring.two_ne_zero hR (one_add_one_eq_two (α := R) ▸ neg_eq_iff_add_eq_zero.mp h)
+  Ring.two_ne_zero hR (one_add_one_eq_two (R := R) ▸ neg_eq_iff_add_eq_zero.mp h)
 #align ring.neg_one_ne_one_of_char_ne_two Ring.neg_one_ne_one_of_char_ne_two
 
 /-- Characteristic `≠ 2` in a domain implies that `-a = a` iff `a = 0`. -/

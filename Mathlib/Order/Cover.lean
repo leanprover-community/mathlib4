@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Violeta Hernández Palacios, Grayson Burton, Floris van Doorn
 -/
-import Mathlib.Data.Set.Intervals.OrdConnected
+import Mathlib.Order.Interval.Set.OrdConnected
 import Mathlib.Order.Antisymmetrization
 
 #align_import order.cover from "leanprover-community/mathlib"@"207cfac9fcd06138865b5d04f7091e46d9320432"

@@ -1462,7 +1462,7 @@ theorem factors_zero : (0 : Associates α).factors = ⊤ :=
   dif_pos rfl
 #align associates.factors_0 Associates.factors_zero
 
-@[deprecated] alias factors_0 := factors_zero -- 2024/03/16
+@[deprecated] alias factors_0 := factors_zero -- 2024-03-16
 
 @[simp]
 theorem factors_mk (a : α) (h : a ≠ 0) : (Associates.mk a).factors = factors' a := by
@@ -1487,6 +1487,7 @@ theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
 
 @[nontriviality]
 theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = ⊤ := by
+  have : Subsingleton (Associates α) := inferInstance
   convert factors_zero
 #align associates.factors_subsingleton Associates.factors_subsingleton
 

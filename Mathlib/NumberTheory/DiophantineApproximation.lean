@@ -445,7 +445,7 @@ private theorem aux₂ : 0 < u - ⌊ξ⌋ * v ∧ u - ⌊ξ⌋ * v < v := by
   have hu₀ : 0 ≤ u - ⌊ξ⌋ * v := by
     -- Porting note: this abused the definitional equality `-1 + 1 = 0`
     -- refine' (mul_nonneg_iff_of_pos_right hv₁).mp ((lt_iff_add_one_le (-1 : ℤ) _).mp _)
-    refine' (mul_nonneg_iff_of_pos_right hv₁).mp ?_
+    refine (mul_nonneg_iff_of_pos_right hv₁).mp ?_
     rw [← sub_one_lt_iff, zero_sub]
     replace h := h.1
     rw [← lt_sub_iff_add_lt, ← mul_assoc, ← sub_mul] at h
@@ -586,7 +586,7 @@ theorem exists_rat_eq_convergent {q : ℚ} (h : |ξ - q| < 1 / (2 * (q.den : ℝ
   refine' q.num_div_den ▸ exists_rat_eq_convergent' ⟨_, fun hd => _, _⟩
   · exact coprime_iff_nat_coprime.mpr (natAbs_ofNat q.den ▸ q.reduced)
   · rw [← q.den_eq_one_iff.mp (Nat.cast_eq_one.mp hd)] at h
-    simpa only [Rat.coe_int_den, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
+    simpa only [Rat.den_intCast, Nat.cast_one, one_pow, mul_one] using (abs_lt.mp h).1
   · obtain ⟨hq₀, hq₁⟩ := aux₀ (Nat.cast_pos.mpr q.pos)
     replace hq₁ := mul_pos hq₀ hq₁
     have hq₂ : (0 : ℝ) < 2 * (q.den * q.den) := mul_pos zero_lt_two (mul_pos hq₀ hq₀)

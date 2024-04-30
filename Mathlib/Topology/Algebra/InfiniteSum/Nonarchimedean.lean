@@ -19,15 +19,17 @@ open Filter Topology BigOperators
 
 namespace NonarchimedeanGroup
 
+variable {α G : Type*}
+variable [CommGroup G] [UniformSpace G] [UniformGroup G] [NonarchimedeanGroup G]
+
 /-- Let `G` be a nonarchimedean multiplicative abelian group, and let `f : α → G` be a function that
 tends to one on the filter of cofinite sets. For each finite subset of `α`, consider the partial
 product of `f` on that subset. These partial products form a Cauchy filter. -/
 @[to_additive "Let `G` be a nonarchimedean additive abelian group, and let `f : α → G` be a function
 that tends to zero on the filter of cofinite sets. For each finite subset of `α`, consider the
 partial sum of `f` on that subset. These partial sums form a Cauchy filter."]
-theorem cauchySeq_prod_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
-    [UniformGroup G] [NonarchimedeanGroup G] {f : α → G}
-    (hf : Tendsto f cofinite (𝓝 1)) : CauchySeq (fun s ↦ ∏ i in s, f i) := by
+theorem cauchySeq_prod_of_tendsto_cofinite_one {f : α → G} (hf : Tendsto f cofinite (𝓝 1)) :
+    CauchySeq (fun s ↦ ∏ i in s, f i) := by
   /- Let `U` be a neighborhood of `1`. It suffices to show that there exists `s : Finset α` such
   that for any `t : Finset α` disjoint from `s`, we have `∏ i in t, f i ∈ U`. -/
   apply cauchySeq_finset_iff_prod_vanishing.mpr
@@ -50,8 +52,7 @@ function that tends to one on the filter of cofinite sets. Then `f` is unconditi
 multipliable. -/
 @[to_additive "Let `G` be a complete nonarchimedean additive abelian group, and let `f : α → G` be a
 function that tends to zero on the filter of cofinite sets. Then `f` is unconditionally summable."]
-theorem multipliable_of_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
-    [UniformGroup G] [CompleteSpace G] [NonarchimedeanGroup G] {f : α → G}
+theorem multipliable_of_tendsto_cofinite_one [CompleteSpace G] {f : α → G}
     (hf : Tendsto f cofinite (𝓝 1)) : Multipliable f :=
   CompleteSpace.complete (cauchySeq_prod_of_tendsto_cofinite_one hf)
 
@@ -60,8 +61,7 @@ is unconditionally multipliable if and only if it tends to one on the filter of 
 @[to_additive "Let `G` be a complete nonarchimedean additive abelian group. Then a function
 `f : α → G` is unconditionally summable if and only if it tends to zero on the filter of cofinite
 sets."]
-theorem multipliable_iff_tendsto_cofinite_one {α G : Type*} [CommGroup G] [UniformSpace G]
-    [UniformGroup G] [CompleteSpace G] [NonarchimedeanGroup G] (f : α → G) :
+theorem multipliable_iff_tendsto_cofinite_one [CompleteSpace G] (f : α → G) :
     Multipliable f ↔ Tendsto f cofinite (𝓝 1) :=
   ⟨Multipliable.tendsto_cofinite_one, multipliable_of_tendsto_cofinite_one⟩
 

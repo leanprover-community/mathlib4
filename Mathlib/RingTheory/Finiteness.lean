@@ -5,10 +5,11 @@ Authors: Johan Commelin
 -/
 import Mathlib.Algebra.Algebra.RestrictScalars
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
+import Mathlib.LinearAlgebra.Quotient
 import Mathlib.LinearAlgebra.StdBasis
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Ideal.Operations
-import Mathlib.RingTheory.Nilpotent
+import Mathlib.RingTheory.Nilpotent.Defs
 
 #align_import ring_theory.finiteness from "leanprover-community/mathlib"@"c813ed7de0f5115f956239124e9b30f3a621966f"
 
@@ -193,10 +194,10 @@ theorem fg_biSup {ι : Type*} (s : Finset ι) (N : ι → Submodule R M) (h : �
     (⨆ i ∈ s, N i).FG := by simpa only [Finset.sup_eq_iSup] using fg_finset_sup s N h
 #align submodule.fg_bsupr Submodule.fg_biSup
 
-theorem fg_iSup {ι : Type*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
+theorem fg_iSup {ι : Sort*} [Finite ι] (N : ι → Submodule R M) (h : ∀ i, (N i).FG) :
     (iSup N).FG := by
-  cases nonempty_fintype ι
-  simpa using fg_biSup Finset.univ N fun i _ => h i
+  cases nonempty_fintype (PLift ι)
+  simpa [iSup_plift_down] using fg_biSup Finset.univ (N ∘ PLift.down) fun i _ => h i.down
 #align submodule.fg_supr Submodule.fg_iSup
 
 variable {P : Type*} [AddCommMonoid P] [Module R P]
@@ -574,10 +575,11 @@ theorem exists_fin [Finite R M] : ∃ (n : ℕ) (s : Fin n → M), Submodule.spa
   Submodule.fg_iff_exists_fin_generating_family.mp out
 #align module.finite.exists_fin Module.Finite.exists_fin
 
-lemma exists_fin' (R M : Type*) [CommSemiring R] [AddCommMonoid M] [Module R M] [Finite R M] :
-    ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
+variable (R M) in
+lemma exists_fin' [Finite R M] : ∃ (n : ℕ) (f : (Fin n → R) →ₗ[R] M), Surjective f := by
   have ⟨n, s, hs⟩ := exists_fin (R := R) (M := M)
-  exact ⟨n, piEquiv (Fin n) R M s, by simpa⟩
+  refine ⟨n, Basis.constr (Pi.basisFun R _) ℕ s, ?_⟩
+  rw [← LinearMap.range_eq_top, Basis.constr_range, hs]
 
 theorem of_surjective [hM : Finite R M] (f : M →ₗ[R] N) (hf : Surjective f) : Finite R N :=
   ⟨by

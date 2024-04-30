@@ -244,8 +244,8 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         apply w₁
         exact List.mem_cons_of_mem _ m
       · intro h
-        · rw [List.getLast_cons h] at w₂
-          convert w₂
+        rw [List.getLast_cons h] at w₂
+        convert w₂
     · exact w₁ d (List.mem_cons_self _ _)
     · by_cases h' : L = []
       · rcases h' with rfl
@@ -366,8 +366,8 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine' IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) _
-    · rw [← pos_iff_ne_zero]
-      exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
+    rw [← pos_iff_ne_zero]
+    exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
@@ -752,8 +752,7 @@ lemma toDigitsCore_lens_eq_aux (b f : Nat) :
       specialize ih (n / b) (Nat.digitChar (n % b) :: l1) (Nat.digitChar (n % b) :: l2)
       simp only [List.length, congrArg (fun l ↦ l + 1) hlen] at ih
       exact ih trivial
--- deprecated 2024-02-19
-@[deprecated] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux
+@[deprecated] alias to_digits_core_lens_eq_aux:= toDigitsCore_lens_eq_aux -- 2024-02-19
 
 lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Char),
     (Nat.toDigitsCore b f n (c :: tl)).length = (Nat.toDigitsCore b f n tl).length + 1 := by
@@ -770,8 +769,7 @@ lemma toDigitsCore_lens_eq (b f : Nat) : ∀ (n : Nat) (c : Char) (tl : List Cha
       have lens_eq : (x :: (c :: tl)).length = (c :: x :: tl).length := by simp
       apply toDigitsCore_lens_eq_aux
       exact lens_eq
--- deprecated 2024-02-19
-@[deprecated] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq
+@[deprecated] alias to_digits_core_lens_eq:= toDigitsCore_lens_eq -- 2024-02-19
 
 lemma nat_repr_len_aux (n b e : Nat) (h_b_pos : 0 < b) :  n < b ^ e.succ → n / b < b ^ e := by
   simp only [Nat.pow_succ]
@@ -802,8 +800,7 @@ lemma toDigitsCore_length (b : Nat) (h : 2 <= b) (f n e : Nat)
         have _ : b ^ 1 = b := by simp only [Nat.pow_succ, pow_zero, Nat.one_mul]
         have _ : n < b := ‹b ^ 1 = b› ▸ hlt
         simp [(@Nat.div_eq_of_lt n b ‹n < b› : n / b = 0)]
--- deprecated 2024-02-19
-@[deprecated] alias to_digits_core_length := toDigitsCore_length
+@[deprecated] alias to_digits_core_length := toDigitsCore_length -- 2024-02-19
 
 /-- The core implementation of `Nat.repr` returns a String with length less than or equal to the
 number of digits in the decimal number (represented by `e`). For example, the decimal string

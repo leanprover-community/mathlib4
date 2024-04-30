@@ -377,9 +377,9 @@ def IsBisimulation :=
 theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s₁ = s₂ := by
   apply Subtype.eq
   apply Stream'.eq_of_bisim fun x y => ∃ s s' : Seq α, s.1 = x ∧ s'.1 = y ∧ R s s'
-  dsimp [Stream'.IsBisimulation]
-  intro t₁ t₂ e
-  exact
+  · dsimp [Stream'.IsBisimulation]
+    intro t₁ t₂ e
+    exact
     match t₁, t₂, e with
     | _, _, ⟨s, s', rfl, rfl, r⟩ => by
       suffices head s = head s' ∧ R (tail s) (tail s') from
@@ -401,9 +401,9 @@ theorem eq_of_bisim (bisim : IsBisimulation R) {s₁ s₂} (r : s₁ ~ s₂) : s
         rw [head_cons, head_cons, tail_cons, tail_cons]
         cases' this with h1 h2
         constructor
-        rw [h1]
-        exact h2
-  exact ⟨s₁, s₂, rfl, rfl, r⟩
+        · rw [h1]
+        · exact h2
+  · exact ⟨s₁, s₂, rfl, rfl, r⟩
 #align stream.seq.eq_of_bisim Stream'.Seq.eq_of_bisim
 
 end Bisim
