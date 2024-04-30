@@ -927,7 +927,7 @@ theorem uniformIntegrable_average
     simp_rw [Finset.smul_sum, Finset.indicator_sum]
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
-      fun i ↦ indicator_const_smul _ ((n : ℝ) ⁻¹) _
+      fun i ↦ indicator_const_smul _ _ _
     simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_natCast]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]

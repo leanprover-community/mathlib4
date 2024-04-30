@@ -121,6 +121,7 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
   (QuotientGroup.congr (Subgroup.normalClosure M.relationsSet)
     (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
+      -- Adaptation note: 2024-04-21, this did not previously require `erw`.
       erw [reindex_relationsSet,
         Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
         ← MulEquiv.coe_toMonoidHom]

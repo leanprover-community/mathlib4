@@ -320,12 +320,8 @@ namespace ΓSpec
 
 set_option backward.isDefEq.lazyWhnfCore false in
 theorem left_triangle (X : LocallyRingedSpace) :
-    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ := by
-  simpa only [Γ_obj, unop_op, Functor.id_obj, Functor.comp_obj, Functor.rightOp_obj,
-    Spec.toLocallyRingedSpace_obj, Spec.locallyRingedSpaceObj_toSheafedSpace,
-    Spec.sheafedSpaceObj_carrier, pushforwardObj_obj, Functor.op_obj, Opens.map_top,
-    Spec.sheafedSpaceObj_presheaf, SpecΓIdentity_inv_app, toΓSpec_val_base] using
-    X.Γ_Spec_left_triangle
+    SpecΓIdentity.inv.app (Γ.obj (op X)) ≫ (identityToΓSpec.app X).val.c.app (op ⊤) = 𝟙 _ :=
+  X.Γ_Spec_left_triangle
 #align algebraic_geometry.Γ_Spec.left_triangle AlgebraicGeometry.ΓSpec.left_triangle
 
 /-- `SpecΓIdentity` is iso so these are mutually two-sided inverses. -/

@@ -117,8 +117,7 @@ def effectiveEpiStructOfIsColimit {X Y : C} (f : Y ⟶ X)
       nth_rewrite 2 [← Category.id_comp e]
       apply h
       generalize_proofs hh
-      rw [hh.choose_spec]
-      simp
+      rw [hh.choose_spec, Category.id_comp]
     uniq := by
       intro W e h m hm
       dsimp
