@@ -1178,7 +1178,7 @@ See also: `Fintype.exists_ne_map_eq_of_card_lt`, `Finite.exists_infinite_fiber`.
 -/
 theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f : α → β) :
     ∃ x y : α, x ≠ y ∧ f x = f y := by
-  simpa only [Injective, not_forall, not_imp, and_comm] using not_injective_infinite_finite f
+  simpa [Injective, and_comm] using not_injective_infinite_finite f
 #align finite.exists_ne_map_eq_of_infinite Finite.exists_ne_map_eq_of_infinite
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
