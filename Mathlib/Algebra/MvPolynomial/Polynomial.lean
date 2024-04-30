@@ -34,7 +34,6 @@ theorem eval_polynomial_eval_finSuccEquiv {n : ℕ} {x : Fin n → R}
   conv in RingHom.comp _ _ =>
     refine @RingHom.ext _ _ _ _ _ (RingHom.id _) fun r => ?_
     simp
-    rfl
   simp only [eval₂_id]
   congr
   funext i
