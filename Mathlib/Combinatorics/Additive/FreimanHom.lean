@@ -6,7 +6,6 @@ Authors: Yaël Dillies
 import Mathlib.Algebra.BigOperators.Multiset.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.Set.Pointwise.Basic
-import Mathlib.Data.ZMod.Basic
 
 #align_import algebra.hom.freiman from "leanprover-community/mathlib"@"f694c7dead66f5d4c80f446c796a5aad14707f0e"
 
