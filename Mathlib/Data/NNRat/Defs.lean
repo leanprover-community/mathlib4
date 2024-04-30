@@ -370,8 +370,8 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    exact Rat.num_nonneg.2 p.2
-    exact Rat.num_nonneg.2 q.2
+    · exact Rat.num_nonneg.2 p.2
+    · exact Rat.num_nonneg.2 q.2
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 
@@ -404,9 +404,9 @@ def numDenCasesOn.{u} {C : ℚ≥0 → Sort u} (q) (H : ∀ n d, d ≠ 0 → n.C
     C q := by rw [← q.num_divNat_den]; exact H _ _ q.den_ne_zero q.coprime_num_den
 
 lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (q.den * r.den) := by
-  ext; simp [Rat.add_def', Rat.mkRat_eq, num_coe, den_coe]
+  ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
-  ext; simp [Rat.mul_def', Rat.mkRat_eq, num_coe, den_coe]
+  ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 end NNRat
