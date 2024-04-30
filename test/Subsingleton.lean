@@ -118,7 +118,9 @@ Passing subsingleton instances to the tactic.
 example {α : Type} (x y : α) : x = y := by
   subsingleton [(test_sorry : Subsingleton α)]
 
-/-- warning: Unused local instance -/
+/-!
+No linting yet for unused instances.
+-/
 #guard_msgs in
 example {α : Type} (x y : α) : x = y := by
   subsingleton [(test_sorry : Subsingleton α), (test_sorry : Subsingleton α)]

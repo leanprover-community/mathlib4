@@ -48,7 +48,9 @@ def Lean.Meta.synthSubsingletonInst (ty : Expr)
                   Instance provided to 'subsingleton' has unassigned universe level metavariable\
                   {indentD insts'[i]!}"
           else
-            logWarningAt insts[i]!.1 "Unused local instance"
+            -- Unused local instance.
+            -- Not logging a warning since this might be `... <;> subsingleton [...]`
+            pure ()
         instantiateMVars <| res'.instantiateRev insts'
 
 /--
