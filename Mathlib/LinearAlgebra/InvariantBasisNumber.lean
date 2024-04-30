@@ -5,6 +5,7 @@ Authors: Markus Himmel, Scott Morrison
 -/
 import Mathlib.RingTheory.Ideal.Quotient
 import Mathlib.RingTheory.PrincipalIdealDomain
+import Mathlib.Logic.Equiv.TransferInstance
 
 #align_import linear_algebra.invariant_basis_number from "leanprover-community/mathlib"@"5fd3186f1ec30a75d5f65732e3ce5e623382556f"
 
@@ -31,7 +32,8 @@ It's easy to see that such property implies strong rank condition given the ring
 
 The strong rank condition implies the rank condition, and the rank condition implies
 the invariant basis number property.
-The converse is not true, as we have counterexamples in the book of Lam:
+The converse is not true, as we have counterexamples in the book of Lam
+(see also <https://math.stackexchange.com/questions/4711904>):
 
 - The free algebra `k⟨x, y⟩` satisfies the rank condition but not the strong rank condition.
 - The ring `ℚ⟨a, b, c, d⟩ / (ac − 1, bd − 1, ab, cd)` satisfies the invariant basis number property
@@ -101,12 +103,37 @@ class OrzechProperty : Prop where
   injective_of_surjective_of_submodule' : ∀ {M : Type u} [AddCommMonoid M] [Module R M]
     [Module.Finite R M] {N : Submodule R M} (f : N →ₗ[R] M), Surjective f → Injective f
 
--- -- TODO: stuck with universe level problem
--- theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
---     {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M] {N : Submodule R M}
---     (f : N →ₗ[R] M) (hf : Surjective f) : Injective f := by
---   obtain ⟨s, hs⟩ := Module.finite_def.1 ‹Module.Finite R M›
---   sorry
+variable {R} in
+theorem OrzechProperty.injective_of_surjective_of_injective [OrzechProperty R]
+    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+    {N : Type w} [AddCommMonoid N] [Module R N]
+    (i f : N →ₗ[R] M) (hi : Injective i) (hf : Surjective f) : Injective f := by
+  obtain ⟨n, g, hg⟩ := Module.Finite.exists_fin' R M
+  haveI := small_of_surjective hg
+  letI := Equiv.addCommMonoid (equivShrink M).symm
+  letI := Equiv.module R (equivShrink M).symm
+  let j : Shrink.{u} M ≃ₗ[R] M := Equiv.linearEquiv R (equivShrink M).symm
+  haveI := Module.Finite.equiv j.symm
+  let i' := j.symm.toLinearMap ∘ₗ i
+  replace hi : Injective i' := by simpa [i'] using hi
+  let f' := j.symm.toLinearMap ∘ₗ f ∘ₗ (LinearEquiv.ofInjective i' hi).symm.toLinearMap
+  replace hf : Surjective f' := by simpa [f'] using hf
+  simpa [f'] using OrzechProperty.injective_of_surjective_of_submodule' f' hf
+
+variable {R} in
+theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
+    {M : Type v} [AddCommMonoid M] [Module R M] [Module.Finite R M]
+    {N : Submodule R M} (f : N →ₗ[R] M) (hf : Surjective f) : Injective f :=
+  OrzechProperty.injective_of_surjective_of_injective N.subtype f N.injective_subtype hf
+
+/-- Any Noetherian ring satisfies Orzech property.
+    See also `IsNoetherian.injective_of_surjective_of_submodule` and
+    `IsNoetherian.injective_of_surjective_of_injective`. -/
+instance (priority := 100) IsNoetherianRing.orzechProperty
+    (R : Type u) [Ring R] [IsNoetherianRing R] : OrzechProperty R where
+  injective_of_surjective_of_submodule' :=
+    letI := Module.addCommMonoidToAddCommGroup
+    IsNoetherian.injective_of_surjective_of_submodule
 
 /-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
     implies `n ≤ m`. -/
@@ -134,6 +161,22 @@ theorem strongRankCondition_iff_succ :
       h m (f.comp (Function.ExtendByZero.linearMap R (Fin.castLE (not_le.1 H))))
         (hf.comp (Function.extend_injective (Fin.strictMono_castLE _).injective _))
 #align strong_rank_condition_iff_succ strongRankCondition_iff_succ
+
+/-- Any nontrivial ring satisfying Orzech property also satisfies strong rank condition. -/
+instance (priority := 100) strongRankCondition_of_orzechProperty
+    [Nontrivial R] [OrzechProperty R] : StrongRankCondition R := by
+  refine (strongRankCondition_iff_succ R).2 fun n i hi ↦ ?_
+  let f : (Fin (n + 1) → R) →ₗ[R] Fin n → R := {
+    toFun := fun x ↦ x ∘ Fin.castSucc
+    map_add' := fun _ _ ↦ rfl
+    map_smul' := fun _ _ ↦ rfl
+  }
+  have h : (0 : Fin (n + 1) → R) = update (0 : Fin (n + 1) → R) (Fin.last n) 1 := by
+    apply OrzechProperty.injective_of_surjective_of_injective i f hi
+      (Fin.castSucc_injective _).surjective_comp_right
+    ext m
+    simp [f, update_apply, (Fin.castSucc_lt_last m).ne]
+  simpa using congr_fun h (Fin.last n)
 
 theorem card_le_of_injective [StrongRankCondition R] {α β : Type*} [Fintype α] [Fintype β]
     (f : (α → R) →ₗ[R] β → R) (i : Injective f) : Fintype.card α ≤ Fintype.card β := by
@@ -247,30 +290,10 @@ section
 
 variable (R : Type u) [Ring R] [Nontrivial R] [IsNoetherianRing R]
 
--- Note this includes fields,
--- and we use this below to show any commutative ring has invariant basis number.
-/-- Any nontrivial noetherian ring satisfies the strong rank condition.
-
-An injective map `((Fin n ⊕ Fin (1 + m)) → R) →ₗ[R] (Fin n → R)` for some left-noetherian `R`
-would force `Fin (1 + m) → R ≃ₗ PUnit` (via `IsNoetherian.equivPUnitOfProdInjective`),
-which is not the case!
--/
-instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R := by
-  constructor
-  intro m n f i
-  by_contra h
-  rw [not_le, ← Nat.add_one_le_iff, le_iff_exists_add] at h
-  obtain ⟨m, rfl⟩ := h
-  let e : Fin (n + 1 + m) ≃ Sum (Fin n) (Fin (1 + m)) :=
-    (finCongr (add_assoc _ _ _)).trans finSumFinEquiv.symm
-  let f' :=
-    f.comp
-      ((LinearEquiv.sumArrowLequivProdArrow _ _ R R).symm.trans
-          (LinearEquiv.funCongrLeft R R e)).toLinearMap
-  have i' : Injective f' := i.comp (LinearEquiv.injective _)
-  apply @zero_ne_one (Fin (1 + m) → R) _ _
-  apply (IsNoetherian.equivPUnitOfProdInjective f' i').injective
-  ext
+/-- Any nontrivial noetherian ring satisfies the strong rank condition,
+    since it satisfies Orzech property. -/
+instance (priority := 100) IsNoetherianRing.strongRankCondition : StrongRankCondition R :=
+  inferInstance
 #align noetherian_ring_strong_rank_condition IsNoetherianRing.strongRankCondition
 
 end
