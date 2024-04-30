@@ -95,17 +95,19 @@ def Lean.MVarId.subsingletonHElim (g : MVarId) : MetaM MVarId := do
 namespace Mathlib.Tactic
 
 /--
-The `subsingleton` tactic attempts to close equality or `HEq` goals
-using an argument that the types involved are subsingletons.
-To first approximation, it does `apply Subsingleton.elim`.
+The `subsingleton` tactic tries to prove a goal of the form `x = y` or `HEq x y`
+using the fact that the types involved are *subsingletons*
+(a type with exactly zero or one terms).
+To a first approximation, it does `apply Subsingleton.elim`.
 As a nicety, `subsingleton` first runs the `intros` tactic.
 
 - If the goal is an equality, it either closes the goal or fails.
 - If the goal is a `HEq`, it can try applying `Subsingleton.helim`
   to convert a `@HEq α x β y` goal into an `α = β` goal.
 - `subsingleton [inst1, inst2, ...]` can be used to add additional `Subsingleton` instances
-  to the local context. Just like `simp`, this abstracts `inst1`, `inst2`, ...
-  if they have metavariables or unsolved instances.
+  to the local context. This can be more flexible than
+  `have := inst1; have := inst2; ...; subsingleton` since the tactic does not require that
+  all placeholders be solved for.
 
 Techniques the `subsingleton` tactic can apply:
 - proof irrelevance
