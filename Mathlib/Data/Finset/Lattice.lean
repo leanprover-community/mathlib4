@@ -1241,7 +1241,7 @@ variable [DistribLattice α] {s : Finset ι} {t : Finset κ} (hs : s.Nonempty) (
 
 theorem sup'_inf_distrib_left (f : ι → α) (a : α) :
     a ⊓ s.sup' hs f = s.sup' hs fun i ↦ a ⊓ f i := by
-  refine' hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
+  refine hs.cons_induction (fun i ↦ ?_) fun i s hi hs ih ↦ ?_
   · simp
   · simp_rw [sup'_cons hs, inf_sup_left]
     rw [ih]
@@ -1768,7 +1768,7 @@ theorem min_erase_ne_self {s : Finset α} : (s.erase x).min ≠ x := by
   convert @max_erase_ne_self αᵒᵈ _ (toDual x) (s.map toDual.toEmbedding) using 1
   apply congr_arg -- Porting note: forces unfolding to see `Finset.min` is `Finset.max`
   congr!
-  · ext; simp only [mem_map_equiv]; exact Iff.rfl
+  ext; simp only [mem_map_equiv]; exact Iff.rfl
 #align finset.min_erase_ne_self Finset.min_erase_ne_self
 
 theorem exists_next_right {x : α} {s : Finset α} (h : ∃ y ∈ s, x < y) :

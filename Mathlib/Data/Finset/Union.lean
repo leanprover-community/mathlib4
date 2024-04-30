@@ -87,6 +87,7 @@ lemma disjiUnion_disjiUnion (s : Finset α) (f : α → Finset β) (g : β → F
           exact disjoint_left.mp (h1 a.prop b.prop <| Subtype.coe_injective.ne hab) hfa hfb :=
   eq_of_veq <| Multiset.bind_assoc.trans (Multiset.attach_bind_coe _ _).symm
 #align finset.disj_Union_disj_Union Finset.disjiUnion_disjiUnion
+
 variable [DecidableEq β] {s : Finset α} {t : Finset β} {f : α → β}
 
 private lemma pairwiseDisjoint_fibers : Set.PairwiseDisjoint ↑t fun a ↦ s.filter (f · = a) :=

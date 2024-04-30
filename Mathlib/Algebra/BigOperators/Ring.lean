@@ -323,7 +323,6 @@ protected lemma sum_div (hf : ∀ i ∈ s, n ∣ f i) : (∑ i in s, f i) / n = 
   refine' sum_congr rfl fun s hs ↦ _
   rw [Nat.div_mul_cancel (hf _ hs)]
 
-
 @[simp, norm_cast]
 lemma cast_list_sum [AddMonoidWithOne β] (s : List ℕ) : (↑s.sum : β) = (s.map (↑)).sum :=
   map_list_sum (castAddMonoidHom β) _

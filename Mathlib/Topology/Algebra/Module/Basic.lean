@@ -9,7 +9,7 @@ import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Topology.Algebra.UniformGroup
 import Mathlib.Topology.ContinuousFunction.Basic
 import Mathlib.Topology.UniformSpace.UniformEmbedding
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.LinearAlgebra.Projection
 import Mathlib.LinearAlgebra.Pi
 import Mathlib.LinearAlgebra.Finsupp
@@ -1350,6 +1350,17 @@ theorem iInf_ker_proj : (⨅ i, ker (proj i : (∀ i, φ i) →L[R] φ i) : Subm
 #align continuous_linear_map.infi_ker_proj ContinuousLinearMap.iInf_ker_proj
 
 variable (R φ)
+
+/-- Given a function `f : α → ι`, it induces a continuous linear function by right composition on
+product types. For `f = Subtype.val`, this corresponds to forgetting some set of variables. -/
+def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L[R] ((i : α) → φ (f i)) where
+  toFun := fun v i ↦ v (f i)
+  map_add' := by intros; ext; simp
+  map_smul' := by intros; ext; simp
+  cont := by continuity
+
+@[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
+    Pi.compRightL R φ f v i = v (f i) := rfl
 
 /-- If `I` and `J` are complementary index sets, the product of the kernels of the `J`th projections
 of `φ` is linearly equivalent to the product over `I`. -/
