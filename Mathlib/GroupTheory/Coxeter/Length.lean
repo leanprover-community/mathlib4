@@ -47,7 +47,7 @@ prove analogous results.
 
 namespace CoxeterSystem
 
-open List Matrix Function
+open List Matrix Function Classical
 
 variable {B : Type*}
 variable {W : Type*} [Group W]
@@ -58,11 +58,7 @@ local prefix:100 "π" => cs.wordProd
 
 /-! ### Length -/
 
-private noncomputable local instance (w : W) :
-    DecidablePred (fun n ↦ ∃ ω, ω.length = n ∧ π ω = w) :=
-  Classical.decPred _
-
-private theorem exists_word_with_prod (w : W) : ∃ n, ∃ ω, ω.length = n ∧ π ω = w := by
+private theorem exists_word_with_prod (w : W) : ∃ n ω, ω.length = n ∧ π ω = w := by
   rcases cs.wordProd_surjective w with ⟨ω, rfl⟩
   use ω.length, ω
 
@@ -129,8 +125,7 @@ theorem lengthParity_simple (i : B):
     cs.lengthParity (s i) = Multiplicative.ofAdd 1 := cs.lift_apply_simple _ _
 
 theorem lengthParity_comp_simple :
-    cs.lengthParity ∘ cs.simple = fun _ ↦ Multiplicative.ofAdd 1 :=
-  funext cs.lengthParity_simple
+    cs.lengthParity ∘ cs.simple = fun _ ↦ Multiplicative.ofAdd 1 := funext cs.lengthParity_simple
 
 theorem lengthParity_eq_ofAdd_length (w : W) :
     cs.lengthParity w = Multiplicative.ofAdd (↑(ℓ w)) := by
@@ -162,24 +157,31 @@ theorem length_eq_one_iff {w : W} : ℓ w = 1 ↔ ∃ i : B, w = s i := by
   · rintro ⟨i, rfl⟩
     exact cs.length_simple i
 
+theorem length_mul_simple_ne (w : W) (i : B) : ℓ (w * s i) ≠ ℓ w := by
+  intro eq
+  have length_mod_two := cs.length_mul_mod_two w (s i)
+  rw [eq, length_simple] at length_mod_two
+  rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
+  · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
+    contradiction
+  · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
+    contradiction
+
+theorem length_simple_mul_ne (w : W) (i : B) : ℓ (s i * w) ≠ ℓ w := by
+  convert cs.length_mul_simple_ne w⁻¹ i using 1
+  · convert cs.length_inv ?_ using 2
+    simp
+  · simp
+
 theorem length_mul_simple (w : W) (i : B) :
     ℓ (w * s i) = ℓ w + 1 ∨ ℓ (w * s i) + 1 = ℓ w := by
-  rcases Nat.lt_trichotomy (ℓ (w * s i)) (ℓ w) with lt | eq | gt
+  rcases Nat.lt_or_gt_of_ne (cs.length_mul_simple_ne w i) with lt | gt
   · -- lt : ℓ (w * s i) < ℓ w
     right
     have length_ge := cs.length_mul_ge_length_sub_length w (s i)
     simp only [length_simple, tsub_le_iff_right] at length_ge
     -- length_ge : ℓ w ≤ ℓ (w * s i) + 1
     linarith
-  · -- eq : ℓ (w * s i) = ℓ w
-    have length_mod_two := cs.length_mul_mod_two w (s i)
-    rw [eq, length_simple] at length_mod_two
-    -- length_mod_two : (ℓ w) % 2 = (ℓ w + 1) % 2
-    rcases Nat.mod_two_eq_zero_or_one (ℓ w) with even | odd
-    · rw [even, Nat.succ_mod_two_eq_one_iff.mpr even] at length_mod_two
-      contradiction
-    · rw [odd, Nat.succ_mod_two_eq_zero_iff.mpr odd] at length_mod_two
-      contradiction
   · -- gt : ℓ w < ℓ (w * s i)
     left
     have length_le := cs.length_mul_le w (s i)
@@ -207,27 +209,24 @@ theorem exists_reduced_word' (w : W) : ∃ ω : List B, cs.IsReduced ω ∧ w = 
   use ω
   tauto
 
-private theorem isReduced_take_and_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) :
+private theorem isReduced_take_and_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) :
     cs.IsReduced (ω.take j) ∧ cs.IsReduced (ω.drop j) := by
-  have take_append_drop : ω = ω.take j ++ ω.drop j           := (List.take_append_drop _ _).symm
-  have mul_take_drop : π ω = π (ω.take j) * π (ω.drop j)     := by
-    rw [← wordProd_append, ← take_append_drop]
-  have take_length : ℓ (π (ω.take j)) ≤ (ω.take j).length    := cs.length_wordProd_le (ω.take j)
-  have drop_length : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
-  have length_add_ge := calc
-    ℓ (π (ω.take j)) + ℓ (π (ω.drop j))
-    _ ≥ ℓ (π ω)                                              := mul_take_drop ▸ cs.length_mul_le _ _
-    _ = ω.length                                             := rω
-    _ = (ω.take j).length + (ω.drop j).length                := by
-        rw [← List.length_append, ← take_append_drop]
+  have h₁ : ℓ (π (ω.take j)) ≤ (ω.take j).length    := cs.length_wordProd_le (ω.take j)
+  have h₂ : ℓ (π (ω.drop j)) ≤ (ω.drop j).length    := cs.length_wordProd_le (ω.drop j)
+  have h₃ := calc
+    (ω.take j).length + (ω.drop j).length
+    _ = ω.length                             := by rw [← List.length_append, ω.take_append_drop j];
+    _ = ℓ (π ω)                              := hω.symm
+    _ = ℓ (π (ω.take j) * π (ω.drop j))      := by rw [← cs.wordProd_append, ω.take_append_drop j];
+    _ ≤ ℓ (π (ω.take j)) + ℓ (π (ω.drop j))  := cs.length_mul_le _ _
   unfold IsReduced
   exact ⟨by linarith, by linarith⟩
 
-theorem isReduced_take {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
-  (isReduced_take_and_drop _ rω _).1
+theorem isReduced_take {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.take j) :=
+  (isReduced_take_and_drop _ hω _).1
 
-theorem isReduced_drop {ω : List B} (rω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
-  (isReduced_take_and_drop _ rω _).2
+theorem isReduced_drop {ω : List B} (hω : cs.IsReduced ω) (j : ℕ) : cs.IsReduced (ω.drop j) :=
+  (isReduced_take_and_drop _ hω _).2
 
 theorem not_isReduced_alternatingWord (i i' : B) (m : ℕ) (hM : M i i' ≠ 0) (hm : m > M i i') :
     ¬cs.IsReduced (alternatingWord i i' m) := by
