@@ -102,14 +102,11 @@ in `ℕ∞`. -/
 def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
   stx.replaceM fun s => do
     match s with
---      | .node _ ``Lean.Parser.Term.app #[.ident _ _ `WithBot _, _] =>
---        return some (← `(ℕ∞))
-      | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[hb]] =>
+      | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
         match na with
-          | .str ha "antisymm" => return some (← `($(mkIdent `antisymm) $(mkIdent ha) $(⟨hb⟩)))
-          | .str ha "trans_le" => return some (← `($(mkIdent `lt_of_le_of_lt) $(⟨hb⟩) $(mkIdent ha)))
+          | .str a "antisymm" => return some (← `($(mkIdent `antisymm) $(mkIdent a) $(⟨b⟩)))
+          | .str a "trans_le" => return some (← `($(mkIdent `lt_of_le_of_lt) $(⟨b⟩) $(mkIdent a)))
           | _ => return none
---      | .node _ `«term⊔» #[.atom _ "⊔"] => return some (← `(⊓))
       | .node _ `«term⊥» #[.atom _ "⊥"] => return some (← `((⊤ : $(mkIdent `WithTop) _)))
       | .atom _ s =>
         if s.contains '⊥' then return some (mkAtom (s.replace "⊥" "⊤")) else return none
