@@ -109,32 +109,25 @@ lemma T_pow_N_mem_Gamma' (N n : ℤ) : (ModularGroup.T^N)^n ∈ _root_.Gamma (In
   exact Subgroup.zpow_mem (_root_.Gamma (Int.natAbs N)) (T_pow_N_mem_Gamma N) n
 
 
-
 theorem lvl_N_periodic (N : ℕ) (k : ℤ) (f : SlashInvariantForm (Gamma N) k) :
     ∀ (z : ℍ) (n : ℤ), f (((ModularGroup.T^N)^n) • z) = f z := by
   have h := SlashInvariantForm.slash_action_eqn' k (Gamma N) f
   intro z n
-
   have Hn :=  (T_pow_N_mem_Gamma' N n)
   simp  only [zpow_natCast, Int.natAbs_ofNat] at Hn
-  --simp only [zpow_natCast, Int.natAbs_ofNat, Gamma_mem, Fin.isValue] at Hn
-  have H:= h ⟨((ModularGroup.T^N)^n), Hn⟩ z
+  have H := h ⟨((ModularGroup.T^N)^n), Hn⟩ z
   have hh := ModularGroup.coe_T_zpow (N*n)
   have : ((ModularGroup.T^N)^n)  = (ModularGroup.T^((N : ℤ)*n)) := by
       rw [zpow_mul]
       simp
   simp only [Submonoid.mk_smul, ModularGroup.sl_moeb, Fin.isValue] at H
   norm_cast at *
-  rw [H]
-  have : ((ModularGroup.T^N)^n)  = (ModularGroup.T^((N : ℤ)*n)) := by
-      rw [zpow_mul]
-      simp
-  simp_rw [this]
-  have hh := ModularGroup.coe_T_zpow (N*n)
-  rw [slcoe (ModularGroup.T^(N*n)) 1 0, slcoe (ModularGroup.T^(N*n)) 1 1, hh]
-  ring_nf
+  rw [this] at *
+  convert H
+  unfold SpecialLinearGroup.coeToGL
   simp
-
+  rw [hh]
+  simp
 
 lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
   verticalStrip A B' ⊆ verticalStrip A B := by
