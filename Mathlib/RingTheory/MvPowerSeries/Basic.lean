@@ -151,6 +151,8 @@ def coeff (n : σ →₀ ℕ) : MvPowerSeries σ R →ₗ[R] R :=
   LinearMap.proj n
 #align mv_power_series.coeff MvPowerSeries.coeff
 
+lemma apply_eq_coeff (φ : MvPowerSeries σ R) (n : σ →₀ ℕ) : φ n = coeff R n φ := rfl
+
 variable {R}
 
 /-- Two multivariate formal power series are equal if all their coefficients are equal. -/

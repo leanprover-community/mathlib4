@@ -510,6 +510,15 @@ theorem mapDomain_equiv_apply {f : α ≃ β} (x : α →₀ M) (a : β) :
   exact mapDomain_apply f.injective _ _
 #align finsupp.map_domain_equiv_apply Finsupp.mapDomain_equiv_apply
 
+@[simp]
+lemma mapDomain_equiv_eq_zero_iff {f : α ≃ β} {x : α →₀ M} : mapDomain f x = 0 ↔ x = 0 := by
+  constructor <;> intro h
+  · ext a
+    have : x a = Finsupp.mapDomain f x (f a) := by
+      simp only [mapDomain_equiv_apply, Equiv.symm_apply_apply]
+    simp only [this, h, coe_zero, Pi.zero_apply]
+  · rw [h, mapDomain_zero]
+
 /-- `Finsupp.mapDomain` is an `AddMonoidHom`. -/
 @[simps]
 def mapDomain.addMonoidHom (f : α → β) : (α →₀ M) →+ β →₀ M
