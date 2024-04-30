@@ -627,7 +627,7 @@ theorem nodalWeight_eq_eval_nodal_erase_inv :
 
 theorem nodal_erase_eq_nodal_div (hi : i ∈ s) :
     nodal (s.erase i) v = nodal s v / (X - C (v i)) := by
-  rw [nodal_eq_mul_nodal_erase hi, EuclideanDomain.mul_div_cancel_left]
+  rw [nodal_eq_mul_nodal_erase hi, mul_div_cancel_left₀]
   exact X_sub_C_ne_zero _
 #align lagrange.nodal_erase_eq_nodal_div Lagrange.nodal_erase_eq_nodal_div
 

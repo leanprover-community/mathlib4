@@ -377,7 +377,7 @@ def lieConj : Module.End R M₁ ≃ₗ⁅R⁆ Module.End R M₂ :=
     map_lie' := fun {f g} =>
       show e.conj ⁅f, g⁆ = ⁅e.conj f, e.conj g⁆ by
         simp only [LieRing.of_associative_ring_bracket, LinearMap.mul_eq_comp, e.conj_comp,
-          LinearEquiv.map_sub] }
+          map_sub] }
 #align linear_equiv.lie_conj LinearEquiv.lieConj
 
 @[simp]

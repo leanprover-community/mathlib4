@@ -221,7 +221,7 @@ def sheafHom' (F G : Sheaf J A) : Cᵒᵖ ⥤ Type _ where
 def sheafHom'Iso (F G : Sheaf J A) :
     sheafHom' F G ≅ presheafHom F.1 G.1 :=
   NatIso.ofComponents
-    (fun _ => Equiv.toIso (equivOfFullyFaithful (sheafToPresheaf _ _))) (fun _ => rfl)
+    (fun _ => Sheaf.homEquiv.toIso) (fun _ => rfl)
 
 /-- Given two sheaves `F` and `G` on a site `(C, J)` with values in a category `A`,
 this `sheafHom F G` is the sheaf of types which sends an object `X : C`
@@ -234,8 +234,7 @@ def sheafHom (F G : Sheaf J A) : Sheaf J (Type _) where
 def sheafHomSectionsEquiv (F G : Sheaf J A) :
     (sheafHom F G).1.sections ≃ (F ⟶ G) :=
   ((Functor.sectionsFunctor Cᵒᵖ).mapIso (sheafHom'Iso F G)).toEquiv.trans
-    ((presheafHomSectionsEquiv F.1 G.1).trans
-    ((equivOfFullyFaithful (sheafToPresheaf _ _)).symm))
+    ((presheafHomSectionsEquiv F.1 G.1).trans Sheaf.homEquiv.symm)
 
 @[simp]
 lemma sheafHomSectionsEquiv_symm_apply_coe_apply {F G : Sheaf J A} (φ : F ⟶ G) (X : Cᵒᵖ) :

@@ -72,7 +72,7 @@ theorem antidiagonal_succ (n : ℕ) :
         (by simp) := by
   apply eq_of_veq
   rw [cons_val, map_val]
-  · apply Multiset.Nat.antidiagonal_succ
+  apply Multiset.Nat.antidiagonal_succ
 #align finset.nat.antidiagonal_succ Finset.Nat.antidiagonal_succ
 
 theorem antidiagonal_succ' (n : ℕ) :

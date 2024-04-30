@@ -227,6 +227,7 @@ See note [reducible non-instances]. -/
 protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
   __ := commRing _
   __ := Quotient.groupWithZero _
+  nnqsmul := _
   qsmul := _
 #align ideal.quotient.field Ideal.Quotient.field
 

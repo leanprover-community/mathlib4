@@ -157,7 +157,7 @@ def toKaroubi : C ⥤ Karoubi C where
   map f := ⟨f, by simp only [comp_id, id_comp]⟩
 #align category_theory.idempotents.to_karoubi CategoryTheory.Idempotents.toKaroubi
 
-instance : (toKaroubi C).Full where preimage f := f.f
+instance : (toKaroubi C).Full where map_surjective f := ⟨f.f, rfl⟩
 
 instance : (toKaroubi C).Faithful where
   map_injective := fun h => congr_arg Karoubi.Hom.f h

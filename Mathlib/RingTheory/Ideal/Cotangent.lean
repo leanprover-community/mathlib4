@@ -53,7 +53,7 @@ instance Cotangent.isScalarTower : IsScalarTower S S' I.Cotangent :=
 #align ideal.cotangent.is_scalar_tower Ideal.Cotangent.isScalarTower
 
 instance [IsNoetherian R I] : IsNoetherian R I.Cotangent :=
-  Submodule.Quotient.isNoetherian _
+  inferInstanceAs (IsNoetherian R (I ⧸ (I • ⊤ : Submodule R I)))
 
 /-- The quotient map from `I` to `I ⧸ I ^ 2`. -/
 @[simps! (config := .lemmasOnly) apply]
@@ -236,8 +236,8 @@ lemma CotangentSpace.span_image_eq_top_iff [IsNoetherianRing R] {s : Set (maxima
       Submodule.span R s = ⊤ := by
   rw [← map_eq_top_iff, ← (Submodule.restrictScalars_injective R ..).eq_iff,
     Submodule.restrictScalars_span]
-  simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
-  exact Ideal.Quotient.mk_surjective
+  · simp only [Ideal.toCotangent_apply, Submodule.restrictScalars_top, Submodule.map_span]
+  · exact Ideal.Quotient.mk_surjective
 
 open FiniteDimensional
 

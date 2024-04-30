@@ -588,6 +588,7 @@ noncomputable instance FractionalIdeal.semifield : Semifield (FractionalIdeal Aâ
   inv_zero := inv_zero' _
   div_eq_mul_inv := FractionalIdeal.div_eq_mul_inv
   mul_inv_cancel _ := FractionalIdeal.mul_inv_cancel
+  nnqsmul := _
 #align fractional_ideal.semifield FractionalIdeal.semifield
 
 /-- Fractional ideals have cancellative multiplication in a Dedekind domain.

@@ -373,7 +373,8 @@ lemma zero_smulRight (x : M) : (0 : M₁ →ₗ[R] S).smulRight x = 0 := by ext;
 @[simp]
 lemma smulRight_apply_eq_zero_iff {f : M₁ →ₗ[R] S} {x : M} [NoZeroSMulDivisors S M] :
     f.smulRight x = 0 ↔ f = 0 ∨ x = 0 := by
-  rcases eq_or_ne x 0 with rfl | hx; simp
+  rcases eq_or_ne x 0 with rfl | hx
+  · simp
   refine ⟨fun h ↦ Or.inl ?_, fun h ↦ by simp [h.resolve_right hx]⟩
   ext v
   replace h : f v • x = 0 := by simpa only [LinearMap.zero_apply] using LinearMap.congr_fun h v
