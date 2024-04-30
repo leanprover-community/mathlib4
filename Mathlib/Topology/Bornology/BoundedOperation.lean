@@ -91,7 +91,8 @@ instance [SeminormedAddCommGroup R] : BoundedSub R where
         rw [sub_sub_sub_comm, sub_eq_add_neg, neg_sub]
      _  ≤ ‖x₁ - x₂‖ + ‖y₂ - y₁‖ := norm_add_le _ _
      _  ≤ Cf + Cg               :=
-        add_le_add (mem_closedBall_iff_norm.mp (hf hx₁ hx₂)) (mem_closedBall_iff_norm.mp (hg hy₂ hy₁))
+        add_le_add (mem_closedBall_iff_norm.mp (hf hx₁ hx₂))
+                   (mem_closedBall_iff_norm.mp (hg hy₂ hy₁))
 
 section NNReal
 
