@@ -469,8 +469,6 @@ def yonedaLemma : yonedaPairing C ≅ yonedaEvaluation C :=
 
 variable {C}
 
-attribute [local ext] Functor.ext
-
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of yoneda lemma when `C` is small. -/
 def curriedYonedaLemma {C : Type u₁} [SmallCategory C] :
@@ -616,8 +614,6 @@ def coyonedaLemma : coyonedaPairing C ≅ coyonedaEvaluation C :=
         simp [coyonedaEquiv, ← FunctorToTypes.naturality])
 
 variable {C}
-
-attribute [local ext] Functor.ext
 
 /- Porting note: this used to be two calls to `tidy` -/
 /-- The curried version of coyoneda lemma when `C` is small. -/
