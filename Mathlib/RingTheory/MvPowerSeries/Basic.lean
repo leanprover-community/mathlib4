@@ -89,8 +89,8 @@ instance nontrivial [Nontrivial R] : Nontrivial (MvPowerSeries σ R) :=
 instance module [Semiring R] [AddCommMonoid S] [Module R S] : Module R (MvPowerSeries σ S) :=
   Pi.module _ _ _
 
-instance isScalarTower {A} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A] [SMul R S]
-    [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
+instance isScalarTower {A} [Semiring R] [Semiring S] [AddCommMonoid A] [Module R A] [Module S A]
+    [SMul R S] [IsScalarTower R S A] : IsScalarTower R S (MvPowerSeries σ A) :=
   Pi.isScalarTower
 
 instance commSemiring [CommSemiring R] : CommSemiring (MvPowerSeries σ R) :=

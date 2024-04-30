@@ -1,3 +1,4 @@
+import Mathlib.Tactic.Basic
 import Mathlib.RingTheory.MvPowerSeries.Basic
 import Mathlib.RingTheory.MvPowerSeries.Rename
 
@@ -77,23 +78,11 @@ def boundedDegreeSubalgebra : Subalgebra R (MvPowerSeries σ R) where
     rintro a b ⟨na, ha⟩ ⟨nb, hb⟩
     use max na nb
     intro s hs
-    rw [coeff_add] at hs
-    have that : ∃ p : Finset.antidiagonal s, coeff R p.1.1 a + coeff R p.1.2 b ≠ 0 := by
-      apply Finset.exists_ne_zero_of_sum_ne_zero at hs
-      obtain ⟨p, hp⟩ := hs
-      use ⟨p, hp.left⟩
-      exact hp.right
-    obtain ⟨p, hp⟩ := that
-    rw [Finsupp.sum_add_distrib, Finsupp.sum_add_distrib] at hp
-    rw [← hp]
-    gcongr
-    · apply ha
-      contrapose! hp
-      rw [hp]
-      exact zero_add _
-    · apply hb
-      contrapose! hp
-      rw [hp]
-      exact add_zero _
+    have : coeff R s a ≠ 0 ∨ coeff R s b ≠ 0 := by
+      contrapose! hs
+      simp only [map_add, hs, add_zero]
+    rcases this with h | h
+    · apply le_trans (ha s h) (le_max_left na nb)
+    · apply le_trans (hb s h) (le_max_right na nb)
 
 end MvPowerSeries
