@@ -97,13 +97,24 @@ instance : Nontrivial (𝓞 K) :=
 
 variable {K}
 
-@[ext] theorem ext {x y : 𝓞 K} (h : algebraMap _ K x = algebraMap _ K y) : x = y :=
+/-- The canonical coercion from `𝓞 K` to `K`. -/
+@[coe]
+abbrev val (x : 𝓞 K) : K := algebraMap _ _ x
+
+/-- This instance has to be `CoeHead` because we only want to apply it from `𝓞 K` to `K`. -/
+instance : CoeHead (𝓞 K) K := ⟨val⟩
+
+lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
+
+@[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
 
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ algebraMap _ K x = algebraMap _ K y :=
+theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
   Subtype.ext_iff
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
+
+@[simp] lemma coe_mk (x : K) (hx) : ((⟨x, hx⟩ : 𝓞 K) : K) = x := rfl
 
 lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y := by simp
 

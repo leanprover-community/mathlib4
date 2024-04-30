@@ -49,7 +49,7 @@ open NumberField Units BigOperators
 section Rat
 
 theorem Rat.RingOfIntegers.isUnit_iff {x : 𝓞 ℚ} :
-    IsUnit x ↔ algebraMap _ ℚ x = 1 ∨ algebraMap _ ℚ x = -1 := by
+    IsUnit x ↔ (x : ℚ) = 1 ∨ (x : ℚ) = -1 := by
   simp_rw [(isUnit_map_iff (Rat.ringOfIntegersEquiv : 𝓞 ℚ →+* ℤ) x).symm, Int.isUnit_iff,
     RingEquiv.coe_toRingHom, RingEquiv.map_eq_one_iff, RingEquiv.map_eq_neg_one_iff, ←
     Subtype.coe_injective.eq_iff]; rfl
@@ -64,7 +64,7 @@ section IsUnit
 variable {K}
 
 theorem NumberField.isUnit_iff_norm [NumberField K] {x : 𝓞 K} :
-    IsUnit x ↔ |algebraMap _ ℚ (RingOfIntegers.norm ℚ x)| = 1 := by
+    IsUnit x ↔ |((RingOfIntegers.norm ℚ x) : ℚ)| = 1 := by
   convert (RingOfIntegers.isUnit_norm ℚ (F := K)).symm
   rw [← abs_one, abs_eq_abs, ← Rat.RingOfIntegers.isUnit_iff]
 #align is_unit_iff_norm NumberField.isUnit_iff_norm
@@ -115,7 +115,8 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   refine ⟨fun hx φ ↦ (((φ.comp $ algebraMap (𝓞 K) K).toMonoidHom.comp $
     Units.coeHom _).isOfFinOrder hx).norm_eq_one, fun h ↦ isOfFinOrder_iff_pow_eq_one.2 ?_⟩
   obtain ⟨n, hn, hx⟩ := Embeddings.pow_eq_one_of_norm_eq_one K ℂ x.val.isIntegral_coe h
-  exact ⟨n, hn, by ext; rw [coe_pow, hx, coe_one]⟩
+  exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
+    NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
 /-- Shortcut instance because Lean tends to time out before finding the general instance. -/
 instance : Nonempty (torsion K) := One.instNonempty
@@ -329,11 +330,11 @@ variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBo
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
-      (∀ w, w ≠ w₁ → w (algebraMap _ _ y) < w (algebraMap _ _ x)) ∧
+      (∀ w, w ≠ w₁ → w y < w x) ∧
       |Algebra.norm ℚ (algebraMap _ K y)| ≤ B := by
   have hx' := mt RingOfIntegers.coe_eq_zero_iff.mp hx
   let f : InfinitePlace K → ℝ≥0 :=
-    fun w => ⟨(w (algebraMap _ _ x)) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
+    fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)

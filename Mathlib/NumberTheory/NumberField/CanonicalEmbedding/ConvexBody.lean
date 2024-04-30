@@ -538,7 +538,7 @@ theorem exists_ne_zero_mem_ideal_lt' (w₀ : {w : InfinitePlace K // IsComplex w
 
 /-- A version of `exists_ne_zero_mem_ideal_lt` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume (convexBodyLT K f)) :
-    ∃ a : 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w (algebraMap _ _ a) < f w := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ ∀ w : InfinitePlace K, w a < f w := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt K ↑1 h
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, mt RingOfIntegers.coe_eq_zero_iff.mpr h_nz, h_bd⟩
@@ -546,17 +546,17 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume
 /-- A version of `exists_ne_zero_mem_ideal_lt'` for the ring of integers of `K`. -/
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K ↑1 < volume (convexBodyLT' K f w₀)) :
-    ∃ a : 𝓞 K, a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w (algebraMap _ _ a) < f w) ∧
-      |(w₀.val.embedding (algebraMap _ _ a)).re| < 1 ∧
-      |(w₀.val.embedding (algebraMap _ _ a)).im| < (f w₀ : ℝ) ^ 2 := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
+      |(w₀.val.embedding a).re| < 1 ∧
+      |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt' K ↑1 w₀ h
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, mt RingOfIntegers.coe_eq_zero_iff.mpr h_nz, h_bd⟩
 
 theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : IsReal w₀) {B : ℝ≥0}
     (hB : minkowskiBound K ↑1 < convexBodyLTFactor K * B) :
-    ∃ a : 𝓞 K, ℚ⟮algebraMap _ K a⟯ = ⊤ ∧
-      ∀ w : InfinitePlace K, w (algebraMap _ K a) < max B 1 := by
+    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w a < max B 1 := by
   have : minkowskiBound K ↑1 < volume (convexBodyLT K (fun w ↦ if w = w₀ then B else 1)) := by
     rw [convexBodyLT_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
     simp_rw [ite_pow, one_pow]
@@ -565,14 +565,14 @@ theorem exists_primitive_element_lt_of_isReal {w₀ : InfinitePlace K} (hw₀ : 
     exact hB
   obtain ⟨a, h_nz, h_le⟩ := exists_ne_zero_mem_ringOfIntegers_lt K this
   refine ⟨a, ?_, fun w ↦ lt_of_lt_of_le (h_le w) ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := a) h_nz
+  · exact is_primitive_element_of_infinitePlace_lt h_nz
       (fun w h_ne ↦ by convert (if_neg h_ne) ▸ h_le w) (Or.inl hw₀)
   · split_ifs <;> simp
 
 theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀ : IsComplex w₀)
     {B : ℝ≥0} (hB : minkowskiBound K ↑1 < convexBodyLT'Factor K * B) :
-    ∃ a : 𝓞 K, ℚ⟮algebraMap _ K a⟯ = ⊤ ∧
-      ∀ w : InfinitePlace K, w (algebraMap _ K a) < Real.sqrt (1 + B ^ 2) := by
+    ∃ a : 𝓞 K, ℚ⟮(a : K)⟯ = ⊤ ∧
+      ∀ w : InfinitePlace K, w a < Real.sqrt (1 + B ^ 2) := by
   have : minkowskiBound K ↑1 <
       volume (convexBodyLT' K (fun w ↦ if w = w₀ then NNReal.sqrt B else 1) ⟨w₀, hw₀⟩) := by
     rw [convexBodyLT'_volume, ← Finset.prod_erase_mul _ _ (Finset.mem_univ w₀)]
@@ -583,7 +583,7 @@ theorem exists_primitive_element_lt_of_isComplex {w₀ : InfinitePlace K} (hw₀
     exact hB
   obtain ⟨a, h_nz, h_le, h_le₀⟩ := exists_ne_zero_mem_ringOfIntegers_lt' K ⟨w₀, hw₀⟩ this
   refine ⟨a, ?_, fun w ↦ ?_⟩
-  · exact is_primitive_element_of_infinitePlace_lt (x := a) h_nz
+  · exact is_primitive_element_of_infinitePlace_lt h_nz
       (fun w h_ne ↦ by convert if_neg h_ne ▸ h_le w h_ne) (Or.inr h_le₀.1)
   · by_cases h_eq : w = w₀
     · rw [if_pos rfl] at h_le₀
@@ -639,7 +639,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le {B : ℝ}
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le {B : ℝ}
     (h : (minkowskiBound K ↑1) ≤ volume (convexBodySum K B)) :
-    ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (algebraMap _ K a)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
+    ∃ a : 𝓞 K, a ≠ 0 ∧ |Algebra.norm ℚ (a : K)| ≤ (B / finrank ℚ K) ^ finrank ℚ K := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_of_norm_le K ↑1 h
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, mt RingOfIntegers.coe_eq_zero_iff.mpr h_nz, h_bd⟩
