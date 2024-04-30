@@ -106,9 +106,6 @@ theorem mem_torsion {x : (𝓞 K)ˣ} [NumberField K] :
   exact ⟨n, hn, by ext; rw [NumberField.RingOfIntegers.coe_eq_algebraMap, coe_pow, hx,
     NumberField.RingOfIntegers.coe_eq_algebraMap, coe_one]⟩
 
-/-- Shortcut instance because Lean tends to time out before finding the general instance. -/
-instance : Nonempty (torsion K) := One.instNonempty
-
 /-- The torsion subgroup is finite. -/
 instance [NumberField K] : Fintype (torsion K) := by
   refine @Fintype.ofFinite _ (Set.finite_coe_iff.mpr ?_)
