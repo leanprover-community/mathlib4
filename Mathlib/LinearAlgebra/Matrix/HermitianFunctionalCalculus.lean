@@ -39,10 +39,25 @@ so I have to learn how to specify all of this data.
 
 -/
 
+
+theorem eigenspace_lemma (i : n) :
+   (hA.eigenvectorBasis) i ∈ Module.End.eigenspace (toEuclideanLin A)
+     ((RCLike.ofReal ∘ hA.eigenvalues) i) := by
+simp only [Module.End.mem_eigenspace_iff, toEuclideanLin_apply, mulVec_eigenvectorBasis,
+←WithLp.equiv_smul, Equiv.symm_apply_apply, Function.comp_apply, ←RCLike.real_smul_eq_coe_smul]
+
+
 theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
-    have H0 : Module.End.HasEigenvalue (toEuclideanLin A) (hA.eigenvalues i) := by sorry
-    exact Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
+have H0 : Module.End.HasEigenvalue (toEuclideanLin A) ((RCLike.ofReal ∘ hA.eigenvalues) i) := by
+   sorry
+refine Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
+
+
+
+
+
+#exit
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum2 (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) :=
