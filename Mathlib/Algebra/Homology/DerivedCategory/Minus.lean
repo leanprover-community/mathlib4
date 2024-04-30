@@ -131,33 +131,33 @@ instance : (Qh (C := C)).mapArrow.EssSurj :=
   Localization.essSurj_mapArrow_of_hasLeftCalculusofFractions _
     (HomotopyCategory.Minus.subcategoryAcyclic C).W
 
-/-variable {C}
+variable {C}
 
-abbrev TStructure.t : TStructure (DerivedCategory.Plus C) :=
-  (DerivedCategory.TStructure.t (C := C)).plus.tStructure DerivedCategory.TStructure.t
+abbrev TStructure.t : TStructure (DerivedCategory.Minus C) :=
+  (DerivedCategory.TStructure.t (C := C)).minus.tStructure DerivedCategory.TStructure.t
 
-abbrev IsGE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsGE X n
-abbrev IsLE (X : Plus C) (n : ℤ) : Prop := Plus.TStructure.t.IsLE X n
+abbrev IsGE (X : Minus C) (n : ℤ) : Prop := Minus.TStructure.t.IsGE X n
+abbrev IsLE (X : Minus C) (n : ℤ) : Prop := Minus.TStructure.t.IsLE X n
 
-lemma isGE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isGE_ι_obj_iff (X : DerivedCategory.Minus C) (n : ℤ) :
     (ι.obj X).IsGE n ↔ X.IsGE n := by
   constructor
   all_goals exact fun h => ⟨h.1⟩
 
-lemma isLE_ι_obj_iff (X : DerivedCategory.Plus C) (n : ℤ) :
+lemma isLE_ι_obj_iff (X : DerivedCategory.Minus C) (n : ℤ) :
     (ι.obj X).IsLE n ↔ X.IsLE n := by
   constructor
   all_goals exact fun h => ⟨h.1⟩
 
-instance (X : Plus C) (n : ℤ) [X.IsGE n] : (ι.obj X).IsGE n := by
+instance (X : Minus C) (n : ℤ) [X.IsGE n] : (ι.obj X).IsGE n := by
   rw [isGE_ι_obj_iff]
   infer_instance
 
-instance (X : Plus C) (n : ℤ) [X.IsLE n] : (ι.obj X).IsLE n := by
+instance (X : Minus C) (n : ℤ) [X.IsLE n] : (ι.obj X).IsLE n := by
   rw [isLE_ι_obj_iff]
   infer_instance
 
-noncomputable instance : (DerivedCategory.Plus.homologyFunctor C 0).ShiftSequence  ℤ := by
+noncomputable instance : (DerivedCategory.Minus.homologyFunctor C 0).ShiftSequence  ℤ := by
   dsimp [homologyFunctor]
   infer_instance
 
@@ -172,16 +172,16 @@ instance (X : C) (n : ℤ) : ((singleFunctor C n).obj X).IsLE n := by
   infer_instance
 
 lemma isZero_homology_of_isGE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
+    (X : DerivedCategory.Minus C) (n : ℤ) [X.IsGE n] (i : ℤ) (hi : i < n) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isGE n i hi
 
 lemma isZero_homology_of_isLE
-    (X : DerivedCategory.Plus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
+    (X : DerivedCategory.Minus C) (n : ℤ) [X.IsLE n] (i : ℤ) (hi : n < i) :
     IsZero ((homologyFunctor C i).obj X) :=
   (ι.obj X).isZero_of_isLE n i hi
 
-lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
+lemma isIso_iff {X Y : DerivedCategory.Minus C} (f : X ⟶ Y) :
     IsIso f ↔ ∀ (n : ℤ), IsIso ((homologyFunctor C n).map f) := by
   constructor
   · intro _ n
@@ -190,6 +190,6 @@ lemma isIso_iff {X Y : DerivedCategory.Plus C} (f : X ⟶ Y) :
     have : IsIso (ι.map f) := by
       rw [DerivedCategory.isIso_iff]
       exact h
-    apply isIso_of_fully_faithful ι-/
+    apply isIso_of_fully_faithful ι
 
 end Minus

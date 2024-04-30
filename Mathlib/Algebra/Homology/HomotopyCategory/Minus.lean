@@ -88,7 +88,7 @@ def quotientCompι :
     CochainComplex.Minus.ι C ⋙ HomotopyCategory.quotient C (ComplexShape.up ℤ) := by
   apply FullSubcategory.lift_comp_inclusion
 
-/-noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
+noncomputable def singleFunctors : SingleFunctors C (Minus C) ℤ :=
   SingleFunctors.lift (HomotopyCategory.singleFunctors C) (ι C)
     (fun n => (subcategoryMinus C).lift (singleFunctor C n) (fun X => by
       refine' ⟨n, _⟩
@@ -104,7 +104,7 @@ noncomputable def singleFunctorιIso (n : ℤ) :
 
 instance (n : ℤ) : (singleFunctor C n).Additive := by
   dsimp [singleFunctor, singleFunctors]
-  infer_instance-/
+  infer_instance
 
 end Minus
 
