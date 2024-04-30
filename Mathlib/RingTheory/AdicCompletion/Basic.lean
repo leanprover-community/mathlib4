@@ -295,9 +295,21 @@ theorem transitionMap_comp {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k) :
   simp
 
 @[simp]
+theorem transitionMap_comp_apply {m n k : ℕ} (hmn : m ≤ n) (hnk : n ≤ k)
+    (x : M ⧸ (I ^ k • ⊤ : Submodule R M)) :
+    transitionMap I M hmn (transitionMap I M hnk x) = transitionMap I M (hmn.trans hnk) x := by
+  change (transitionMap I M hmn ∘ₗ transitionMap I M hnk) x = transitionMap I M (hmn.trans hnk) x
+  simp
+
+@[simp]
 theorem transitionMap_comp_eval {m n : ℕ} (hmn : m ≤ n) :
     transitionMap I M hmn ∘ₗ eval I M n = eval I M m := by
   ext x
+  simp [x.property]
+
+@[simp]
+theorem transitionMap_comp_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
+    transitionMap I M hmn (eval I M n x) = eval I M m x := by
   simp [x.property]
 
 /-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
@@ -384,10 +396,9 @@ def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m) :
     M →ₗ[R] AdicCompletion I N where
   toFun := fun x ↦ ⟨fun n ↦ f n x, by
-      intro k l hkl
-      change ((transitionMap I N hkl) ∘ₗ (f l)) x = _
-      rw [h hkl]
-    ⟩
+    intro k l hkl
+    change ((transitionMap I N hkl) ∘ₗ (f l)) x = _
+    rw [h hkl]⟩
   map_add' x y := by
     simp only [map_add]
     rfl
