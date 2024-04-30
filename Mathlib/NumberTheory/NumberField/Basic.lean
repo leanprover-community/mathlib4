@@ -114,7 +114,7 @@ theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
 
-@[simp] lemma coe_mk (x : K) (hx) : ((⟨x, hx⟩ : 𝓞 K) : K) = x := rfl
+lemma coe_mk {x : K} (hx) : ((⟨x, hx⟩ : 𝓞 K) : K) = x := rfl
 
 lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y := by simp
 
