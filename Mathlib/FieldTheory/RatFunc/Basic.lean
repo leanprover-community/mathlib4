@@ -3,9 +3,8 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.RingTheory.EuclideanDomain
 import Mathlib.RingTheory.Localization.FractionRing
-import Mathlib.RingTheory.Polynomial.Content
+import Mathlib.Algebra.Polynomial.RingDivision
 
 -- #align_import field_theory.ratfunc from "leanprover-community/mathlib"@"bf9bbbcf0c1c1ead18280b0d010e417b10abb1b6"
 
