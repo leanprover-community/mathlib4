@@ -1899,7 +1899,7 @@ theorem natcast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = x • v := by
   ext; simp
 
 @[simp]
-theorem intcast_mulVec [IntCast α] (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
+theorem intCast_mulVec [IntCast α] (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
   change diagonal x *ᵥ v = _
   simp
 
