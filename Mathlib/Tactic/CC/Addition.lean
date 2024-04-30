@@ -32,64 +32,85 @@ initialize
   registerTraceClass `Debug.Meta.Tactic.cc.ac
   registerTraceClass `Debug.Meta.Tactic.cc.parentOccs
 
+/-- The monad for the `cc` tactic stores the current state of the tactic. -/
 abbrev CCM := StateRefT CCStructure MetaM
 
 namespace CCM
 
+/-- Run a computation in the `CCM` monad. -/
 @[inline]
 def run {α : Type} (x : CCM α) (c : CCStructure) : MetaM (α × CCStructure) := StateRefT'.run x c
 
+/-- Update the `todo` field of the state. -/
 @[inline]
 def modifyTodo (f : Array TodoEntry → Array TodoEntry) : CCM Unit :=
   modify fun cc => { cc with todo := f cc.todo }
 
+/-- Update the `acTodo` field of the state. -/
 @[inline]
 def modifyACTodo (f : Array ACTodoEntry → Array ACTodoEntry) : CCM Unit :=
   modify fun cc => { cc with acTodo := f cc.acTodo }
 
+/-- Update the `cache` field of the state. -/
 @[inline]
 def modifyCache (f : CCCongrTheoremCache → CCCongrTheoremCache) : CCM Unit :=
   modify fun cc => { cc with cache := f cc.cache }
 
+/-- Read the `todo` field of the state. -/
 @[inline]
 def getTodo : CCM (Array TodoEntry) := do
   return (← get).todo
 
+/-- Read the `acTodo` field of the state. -/
 @[inline]
 def getACTodo : CCM (Array ACTodoEntry) := do
   return (← get).acTodo
 
+/-- Read the `cache` field of the state. -/
 @[inline]
 def getCache : CCM CCCongrTheoremCache := do
   return (← get).cache
 
+/-- Look up an entry associated with the given expression. -/
 def getEntry (e : Expr) : CCM (Option Entry) := do
   return (← get).entries.find? e
 
+/-- Use the normalizer to normalize `e`.
+
+If no normalizer was configured, returns `e` itself. -/
 def normalize (e : Expr) : CCM Expr := do
   if let some normalizer := (← get).normalizer then
     normalizer.normalize e
   else
     return e
 
+/-- Add a new entry to the end of the todo list.
+
+See also `pushEq`, `pushHEq` and `pushReflEq`. -/
 def pushTodo (lhs rhs : Expr) (H : EntryExpr) (heqProof : Bool) : CCM Unit := do
   modifyTodo fun todo => todo.push (lhs, rhs, H, heqProof)
 
+/-- Add the equality proof `H : $lhs = $rhs` to the end of the todo list. -/
 def pushEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   modifyTodo fun todo => todo.push (lhs, rhs, H, false)
 
+/-- Add the heterogeneous equality proof `H : HEq $lhs $rhs` to the end of the todo list. -/
 def pushHEq (lhs rhs : Expr) (H : EntryExpr) : CCM Unit :=
   modifyTodo fun todo => todo.push (lhs, rhs, H, true)
 
+/-- Add `rfl : $lhs = $rhs` to the todo list. -/
 def pushReflEq (lhs rhs : Expr) : CCM Unit :=
   modifyTodo fun todo => todo.push (lhs, rhs, .refl, false)
 
+/-- Return the root expression of the expression's congruence class. -/
 def getRoot (e : Expr) : CCM Expr := do
   return (← get).root e
 
+/-- Is `e` the root of its congruence class? -/
 def isCgRoot (e : Expr) : CCM Bool := do
   return (← get).isCgRoot e
 
+/-- Update the `child` so its parent becomes `parent`. -/
 def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
   let childRoot ← getRoot child
   modify fun ccs =>
@@ -101,10 +122,13 @@ def addOccurrence (parent child : Expr) (symmTable : Bool) : CCM Unit := do
 /--
 Return true iff the given function application are congruent
 
+`e₁` should have the form `f a` and `e₂` the form `g b`.
+
 See paper: Congruence Closure for Intensional Type Theory. -/
 partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
   let .app f a := e₁ | failure
   let .app g b := e₂ | failure
+  -- If they are non-dependent functions, then we can compare all arguments at once.
   if (← getEntry e₁).any Entry.fo then
     e₁.withApp fun f₁ args₁ =>
     e₂.withApp fun f₂ args₂ => do
@@ -145,6 +169,7 @@ partial def isCongruent (e₁ e₂ : Expr) : CCM Bool := do
       -/
       return false
 
+/-- Return the `CongruencesKey` associated with an expression of the form `f a`. -/
 def mkCongruencesKey (e : Expr) : CCM CongruencesKey := do
   let .app f a := e | failure
   if (← getEntry e).any Entry.fo then
@@ -154,32 +179,14 @@ def mkCongruencesKey (e : Expr) : CCM CongruencesKey := do
   else
     return .ho (← getRoot f) (← getRoot a)
 
+/-- Return the `SymmCongruencesKey` associated with the equality `lhs = rhs`. -/
 def mkSymmCongruencesKey (lhs rhs : Expr) : CCM SymmCongruencesKey := do
   let lhs ← getRoot lhs
   let rhs ← getRoot rhs
   if hash lhs > hash rhs then return { h₁ := rhs, h₂ := lhs } else return { h₁ := lhs, h₂ := rhs }
 
-def mkCCCongrTheorem (e : Expr) : CCM (Option CCCongrTheorem) := do
-  let fn := e.getAppFn
-  let nargs := e.getAppNumArgs
-  let cache ← getCache
-
-  -- Check if `{ fn, nargs }` is in the cache
-  let key₁ : CCCongrTheoremKey := { fn, nargs }
-  if let some it₁ := cache.findEntry? key₁ then
-    return it₁.2
-
-  -- Try automatically generated congruence lemma with support for heterogeneous equality.
-  let lemm ← mkCCHCongrWithArity fn nargs
-
-  if let some lemm := lemm then
-    modifyCache fun ccc => ccc.insert key₁ (some lemm)
-    return lemm
-
-  -- cache failure
-  modifyCache fun ccc => ccc.insert key₁ none
-  return none
-
+/-- Try to find a congruence theorem for an application of `fn` with `nargs` arguments, with support
+for `HEq`. -/
 def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) := do
   let cache ← getCache
 
@@ -199,6 +206,13 @@ def mkCCHCongrTheorem (fn : Expr) (nargs : Nat) : CCM (Option CCCongrTheorem) :=
   modifyCache fun ccc => ccc.insert key₁ none
   return none
 
+/-- Try to find a congruence theorem for the expression `e` with support for `HEq`. -/
+def mkCCCongrTheorem (e : Expr) : CCM (Option CCCongrTheorem) := do
+  let fn := e.getAppFn
+  let nargs := e.getAppNumArgs
+  mkCCHCongrTheorem fn nargs
+
+/-- Record the instance `e` and add it to the set of known defeq instances. -/
 def propagateInstImplicit (e : Expr) : CCM Unit := do
   let type ← inferType e
   let type ← normalize type
@@ -214,10 +228,12 @@ def propagateInstImplicit (e : Expr) : CCM Unit := do
     modify fun ccs =>
       { ccs with instImplicitReprs := ccs.instImplicitReprs.insert type [e] }
 
+/-- Treat the entry associated with `e` as a first-order function. -/
 def setFO (e : Expr) : CCM Unit :=
   modify fun ccs =>
     { ccs with entries := ccs.entries.modify e fun d => { d with fo := true } }
 
+/-- Update the modification time of the congruence class of `e`. -/
 partial def updateMT (e : Expr) : CCM Unit := do
   let r ← getRoot e
   let some ps := (← get).parents.find? r | return
@@ -230,6 +246,7 @@ partial def updateMT (e : Expr) : CCM Unit := do
         { ccs with entries := ccs.entries.insert p.expr newIt }
       updateMT p.expr
 
+/-- Does the congruence class with root `root` have any `HEq` proofs? -/
 def hasHEqProofs (root : Expr) : CCM Bool := do
   let some n ← getEntry root | failure
   guard (n.root == root)
