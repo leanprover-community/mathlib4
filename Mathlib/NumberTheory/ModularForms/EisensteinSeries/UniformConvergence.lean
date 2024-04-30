@@ -168,11 +168,7 @@ theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x
   have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
   norm_cast at *
   simp_rw [zpow_neg, ← mul_inv] at this
-  have H : |r z ^ k * ↑(n ^ k)| = r z ^ k * ↑(n ^ k) := by
-    refine abs_eq_self.mpr ?_
-    apply mul_nonneg (pow_nonneg (r_pos z).le _)
-    simp only [Nat.cast_pow, ge_iff_le, Nat.cast_nonneg, pow_nonneg]
-  simp only [map_pow, zpow_natCast, H]
+  simp only [map_pow, zpow_natCast]
   simpa using this
 
 lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
