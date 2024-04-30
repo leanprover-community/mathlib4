@@ -1454,18 +1454,18 @@ by a summable series of `NNReal`s, then the original sequence is a Cauchy sequen
 theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
-  -- Actually we need partial sums of `d` to be a Cauchy sequence
+  -- Actually we need partial sums of `d` to be a Cauchy sequence.
   replace hd : CauchySeq fun n : ℕ ↦ ∑ x in Finset.range n, d x :=
     let ⟨_, H⟩ := hd
     H.tendsto_sum_nat.cauchySeq
-  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence
+  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence.
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
   specialize hN n hn
-  -- We simplify the known inequality
+  -- We simplify the known inequality.
   rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
     NNReal.coe_lt_coe, max_lt_iff] at hN
   rw [edist_comm]
-  -- Then use `hf` to simplify the goal to the same form
+  -- Then use `hf` to simplify the goal to the same form.
   refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
   exact mod_cast hN.1
 #align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable
