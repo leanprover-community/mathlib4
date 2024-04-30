@@ -910,8 +910,7 @@ section
 
 instance instUniqueLocalization [Subsingleton R] : Unique (Localization M) where
   uniq a := show a = mk 1 1 from
-    Localization.induction_on a fun _ => by
-      congr <;> apply Subsingleton.elim
+    Localization.induction_on a fun _ => by congr <;> subsingleton
 
 /-- Addition in a ring localization is defined as `⟨a, b⟩ + ⟨c, d⟩ = ⟨b * c + d * a, b * d⟩`.
 
