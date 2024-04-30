@@ -2317,7 +2317,7 @@ class T5Space (X : Type u) [TopologicalSpace X] extends T1Space X, CompletelyNor
 
 theorem Embedding.t5Space [TopologicalSpace Y] [T5Space Y] {e : X → Y} (he : Embedding e) :
     T5Space X where
-  t1 := ((t1Space_TFAE X).out 0 1).mp he.t1Space
+  __ := he.t1Space
   completely_normal := by
     have := Embedding.completelyNormalSpace he
     exact completely_normal
