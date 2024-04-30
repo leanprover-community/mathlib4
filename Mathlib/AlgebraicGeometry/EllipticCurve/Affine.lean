@@ -81,7 +81,11 @@ elliptic curve, rational point, affine coordinates
 local macro "map_simp" : tactic =>
   `(tactic| simp only [map_ofNat, map_neg, map_add, map_sub, map_mul, map_pow, map_div₀])
 
-open Polynomial PolynomialPolynomial
+open Polynomial
+open scoped PolynomialPolynomial
+
+-- TODO: `open scoped PolynomialPolynomial` does not seem to enable this notation
+local notation "Y" => Polynomial.X
 
 local macro "C_simp" : tactic =>
   `(tactic| simp only [map_ofNat, C_0, C_1, C_neg, C_add, C_sub, C_mul, C_pow])
