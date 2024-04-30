@@ -83,7 +83,7 @@ class IsCancelMulZero (M₀ : Type u) [Mul M₀] [Zero M₀]
 #align is_cancel_mul_zero IsCancelMulZero
 
 export MulZeroClass (zero_mul mul_zero)
-attribute [simp] zero_mul mul_zero
+attribute [simp↓] zero_mul mul_zero
 #align zero_mul MulZeroClass.zero_mul
 #align mul_zero MulZeroClass.mul_zero
 
