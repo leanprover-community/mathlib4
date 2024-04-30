@@ -314,13 +314,15 @@ theorem transitionMap_comp_eval {m n : ℕ} (hmn : m ≤ n) :
   ext x
   simp
 
+/-- A sequence `ℕ → M` is an `I`-adic Cauchy sequence if for every `m ≤ n`,
+`f m ≡ f n` modulo `I ^ m • ⊤`. -/
 def IsAdicCauchy (f : ℕ → M) : Prop :=
   ∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)]
 
-/-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
+/-- The type of `I`-adic Cauchy sequences. -/
 def AdicCauchySequence : Type _ := { f : ℕ → M // IsAdicCauchy I M f }
 
-/-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
+/-- The type of `I`-adic cauchy sequences is a submodule of the product `ℕ → M`. -/
 def AdicCauchySequence.submodule : Submodule R (ℕ → M) where
   carrier := { f | IsAdicCauchy I M f }
   add_mem' := by
