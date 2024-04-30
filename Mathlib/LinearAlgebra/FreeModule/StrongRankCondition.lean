@@ -49,8 +49,8 @@ variable (R : Type*) [CommRing R]
     See also `Module.Finite.injective_of_surjective_of_submodule` and
     `Module.Finite.injective_of_surjective_of_injective`. -/
 instance (priority := 100) commRing_orzechProperty : OrzechProperty R where
-  injective_of_surjective_of_submodule' :=
-    letI := Module.addCommMonoidToAddCommGroup
+  injective_of_surjective_of_submodule' {M} :=
+    letI := Module.addCommMonoidToAddCommGroup R (M := M)
     Module.Finite.injective_of_surjective_of_submodule
 
 variable [Nontrivial R]

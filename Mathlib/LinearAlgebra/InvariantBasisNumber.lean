@@ -131,8 +131,8 @@ theorem OrzechProperty.injective_of_surjective_of_submodule [OrzechProperty R]
     `IsNoetherian.injective_of_surjective_of_injective`. -/
 instance (priority := 100) IsNoetherianRing.orzechProperty
     (R : Type u) [Ring R] [IsNoetherianRing R] : OrzechProperty R where
-  injective_of_surjective_of_submodule' :=
-    letI := Module.addCommMonoidToAddCommGroup
+  injective_of_surjective_of_submodule' {M} :=
+    letI := Module.addCommMonoidToAddCommGroup R (M := M)
     IsNoetherian.injective_of_surjective_of_submodule
 
 /-- We say that `R` satisfies the strong rank condition if `(Fin n → R) →ₗ[R] (Fin m → R)` injective
