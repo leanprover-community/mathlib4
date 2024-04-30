@@ -1257,7 +1257,7 @@ theorem card_fintypeInsertOfNotMem {a : α} (s : Set α) [Fintype s] (h : a ∉ 
 @[simp]
 theorem card_insert {a : α} (s : Set α) [Fintype s] (h : a ∉ s)
     {d : Fintype.{u} (insert a s : Set α)} : @Fintype.card _ d = Fintype.card s + 1 := by
-  rw [← card_fintypeInsertOfNotMem s h]; congr; exact Subsingleton.elim _ _
+  rw [← card_fintypeInsertOfNotMem s h]; congr!
 #align set.card_insert Set.card_insert
 
 theorem card_image_of_inj_on {s : Set α} [Fintype s] {f : α → β} [Fintype (f '' s)]

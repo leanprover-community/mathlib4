@@ -143,6 +143,7 @@ def addSubsingletonInsts
   else
     return g
 where
+  /-- Main loop for `addSubsingletonInsts`. -/
   go (instTerms : List Term) (fvars : Array Expr) (insts : Array Expr) : TermElabM MVarId := do
     match instTerms with
     | [] =>
@@ -156,9 +157,8 @@ where
           let e ← Term.elabTerm instTerm none
           Term.synthesizeSyntheticMVars (mayPostpone := false) (ignoreStuckTC := true)
           let e ← instantiateMVars e
-          forallTelescopeReducing (← inferType e) fun _ ty => do
-            unless (← whnf ty).isAppOfArity ``Subsingleton 1 do
-              throwError "Not a `Subsingleton` instance. Term has type{indentD <| ← inferType e}"
+          unless (← isClass? (← inferType e)).isSome do
+            throwError "Not an instance. Term has type{indentD <| ← inferType e}"
           if e.hasMVar then
             -- Level metavariables are OK.
             -- But if there are *new* level metavariables then the instance will never apply.
@@ -171,7 +171,16 @@ where
                 Expression contains new universe level metavariables in\
                 {indentD e}\n\
                 This means 'subsingleton' will not ever apply this instance."
-            pure r.expr
+            -- Change all instance arguments corresponding to the mvars to be inst implicit.
+            let e' ← forallBoundedTelescope (← inferType r.expr) r.numMVars fun args _ => do
+              let newBIs ← args.filterMapM fun arg => do
+                if (← isClass? (← inferType arg)).isSome then
+                  return some (arg.fvarId!, .instImplicit)
+                else
+                  return none
+              withNewBinderInfos newBIs do
+                mkLambdaFVars args (r.expr.beta args)
+            pure e'
           else
             pure e
       withLocalDecl `inst .instImplicit (← inferType inst) fun fvar => do

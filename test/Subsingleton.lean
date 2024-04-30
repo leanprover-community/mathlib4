@@ -140,9 +140,21 @@ example {α : Type} (x y : α) : x = y := by
 Not a subsingleton instance.
 -/
 /--
-error: Not a `Subsingleton` instance. Term has type
+error: Not an instance. Term has type
   Bool
 -/
 #guard_msgs in
 example {α : Type} (x y : α) : x = y := by
   subsingleton [true]
+
+/-!
+When abstracting, metavariables become instance implicit if they're for classes.
+-/
+example {α : Type} [BEq α] (f : BEq α → Subsingleton α) (x y : α) : x = y := by
+  subsingleton [f _]
+
+/-!
+This too abstracts some metavariables and ensures that `BEq` is instance implicit.
+-/
+example {α : Type} [BEq α] (f : ∀ {β : Type} [BEq β], Subsingleton β) (x y : α) : x = y := by
+  subsingleton [f]

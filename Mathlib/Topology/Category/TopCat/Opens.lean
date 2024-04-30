@@ -367,8 +367,7 @@ theorem inclusion_top_functor (X : TopCat) :
   · intro U
     ext x
     exact ⟨fun ⟨⟨_, _⟩, h, rfl⟩ => h, fun h => ⟨⟨x, trivial⟩, h, rfl⟩⟩
-  · intros U V f
-    apply Subsingleton.elim
+  · subsingleton
 #align topological_space.opens.inclusion_top_functor TopologicalSpace.Opens.inclusion_top_functor
 
 theorem functor_obj_map_obj {X Y : TopCat} {f : X ⟶ Y} (hf : IsOpenMap f) (U : Opens Y) :
@@ -415,7 +414,7 @@ theorem map_functor_eq {X : TopCat} {U : Opens X} (V : Opens U) :
 theorem adjunction_counit_map_functor {X : TopCat} {U : Opens X} (V : Opens U) :
     U.openEmbedding.isOpenMap.adjunction.counit.app (U.openEmbedding.isOpenMap.functor.obj V) =
       eqToHom (by dsimp; rw [map_functor_eq V]) :=
-  by apply Subsingleton.elim
+  by subsingleton
 #align topological_space.opens.adjunction_counit_map_functor TopologicalSpace.Opens.adjunction_counit_map_functor
 
 end TopologicalSpace.Opens

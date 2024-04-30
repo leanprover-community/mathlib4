@@ -218,7 +218,7 @@ noncomputable def preservesFiniteLimitsIffFlat [HasFiniteLimits C] (F : C ⥤ D)
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
     -- Porting note: this next line wasn't needed in lean 3
-    apply Subsingleton.elim
+    subsingleton
 
 #align category_theory.preserves_finite_limits_iff_flat CategoryTheory.preservesFiniteLimitsIffFlat
 
@@ -321,7 +321,7 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
     -- indicates that it was doing the same as `dsimp only`
     dsimp only [preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]; congr
     -- Porting note: next line wasn't necessary in lean 3
-    apply Subsingleton.elim
+    subsingleton
   right_inv x := by
     -- cases x; -- Porting note: not necessary in lean 4
     dsimp only [lanPreservesFiniteLimitsOfPreservesFiniteLimits,
@@ -329,7 +329,7 @@ noncomputable def preservesFiniteLimitsIffLanPreservesFiniteLimits (F : C ⥤ D)
       preservesFiniteLimitsOfPreservesFiniteLimitsOfSize]
     congr
     -- Porting note: next line wasn't necessary in lean 3
-    apply Subsingleton.elim
+    subsingleton
 set_option linter.uppercaseLean3 false in
 #align category_theory.preserves_finite_limits_iff_Lan_preserves_finite_limits CategoryTheory.preservesFiniteLimitsIffLanPreservesFiniteLimits
 

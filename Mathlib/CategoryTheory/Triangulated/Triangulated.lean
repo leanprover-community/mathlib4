@@ -57,7 +57,7 @@ instance (X : C) :
       (contractible_distinguished X) (contractible_distinguished X)) := by
   refine' ⟨⟨0, 0, _, _, _, _, isomorphic_distinguished _ (contractible_distinguished (0 : C)) _
     (Triangle.isoMk _ _ (by rfl) (by rfl) (by rfl))⟩⟩
-  all_goals apply Subsingleton.elim
+  all_goals subsingleton
 
 namespace Octahedron
 

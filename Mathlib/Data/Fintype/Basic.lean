@@ -629,7 +629,7 @@ def toFinset (s : Set α) [Fintype s] : Finset α :=
 
 @[congr]
 theorem toFinset_congr {s t : Set α} [Fintype s] [Fintype t] (h : s = t) :
-    toFinset s = toFinset t := by subst h; congr; exact Subsingleton.elim _ _
+    toFinset s = toFinset t := by subst h; congr!
 #align set.to_finset_congr Set.toFinset_congr
 
 @[simp]

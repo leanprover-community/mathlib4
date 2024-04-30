@@ -198,7 +198,7 @@ protected noncomputable def extraDegeneracy (Δ : SimplexCategory) :
     (shift (objEquiv _ _ f))
   s'_comp_ε := by
     dsimp
-    apply Subsingleton.elim
+    subsingleton
   s₀_comp_δ₁ := by
     dsimp
     ext1 x

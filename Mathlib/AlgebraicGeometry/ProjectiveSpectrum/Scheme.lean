@@ -633,7 +633,7 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
     by_cases ineq : f^k = 0
     · have := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
         ⟨k, ineq⟩
-      exact Subsingleton.elim _ _
+      subsingleton
     · simp_rw [← pow_mul]; congr
       exact DirectSum.degree_eq_of_mem_mem 𝒜 F_mem (SetLike.pow_mem_graded k f_deg) ineq |>.symm
 
@@ -656,7 +656,7 @@ lemma toSpec_fromSpec {f : A} {m : ℕ} (f_deg : f ∈ 𝒜 m) (hm : 0 < m) (x :
       by_cases ineq : f^k = 0
       · have := IsLocalization.uniqueOfZeroMem (M := Submonoid.powers f) (S := Localization.Away f)
           ⟨k, ineq⟩
-        exact Subsingleton.elim _ _
+        subsingleton
       · dsimp; congr 2
         rw [← k_spec, ← pow_mul, show z.deg = k * m from
           degree_eq_of_mem_mem 𝒜 (k_spec ▸ z.den_mem_deg) (SetLike.pow_mem_graded k f_deg) ineq]

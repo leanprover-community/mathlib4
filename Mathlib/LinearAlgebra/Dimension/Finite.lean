@@ -462,7 +462,7 @@ theorem Submodule.bot_eq_top_of_rank_eq_zero [NoZeroSMulDivisors R M] (h : Modul
     (⊥ : Submodule R M) = ⊤ := by
   nontriviality R
   rw [rank_zero_iff] at h
-  exact Subsingleton.elim _ _
+  subsingleton
 #align bot_eq_top_of_rank_eq_zero Submodule.bot_eq_top_of_rank_eq_zero
 
 /-- See `rank_subsingleton` for the reason that `Nontrivial R` is needed. -/

@@ -206,7 +206,7 @@ theorem exists_of_length_succ {n} : ∀ l : List α, l.length = n + 1 → ∃ h 
     · cases hl
     · next ih _ _ =>
       congr
-      · exact Subsingleton.elim _ _
+      · subsingleton
       · apply ih; simpa using hl
 #align list.length_injective_iff List.length_injective_iff
 

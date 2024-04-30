@@ -221,7 +221,7 @@ theorem natDegree_minpoly [Nontrivial A] (pb : PowerBasis A S) :
 protected theorem leftMulMatrix (pb : PowerBasis A S) : Algebra.leftMulMatrix pb.basis pb.gen =
     @Matrix.of (Fin pb.dim) (Fin pb.dim) _ fun i j =>
       if ↑j + 1 = pb.dim then -pb.minpolyGen.coeff ↑i else if (i : ℕ) = j + 1 then 1 else 0 := by
-  cases subsingleton_or_nontrivial A; · apply Subsingleton.elim
+  cases subsingleton_or_nontrivial A; · subsingleton
   rw [Algebra.leftMulMatrix_apply, ← LinearEquiv.eq_symm_apply, LinearMap.toMatrix_symm]
   refine' pb.basis.ext fun k => _
   simp_rw [Matrix.toLin_self, Matrix.of_apply, pb.basis_eq_pow]

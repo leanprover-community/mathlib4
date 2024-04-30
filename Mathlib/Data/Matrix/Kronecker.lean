@@ -392,7 +392,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
   by_cases hA : IsUnit A.det;
   swap
   · cases isEmpty_or_nonempty n
-    · exact Subsingleton.elim _ _
+    · subsingleton
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
       refine' mt (fun hAB => _) hA
       rw [det_kronecker] at hAB
@@ -400,7 +400,7 @@ theorem inv_kronecker [Fintype m] [Fintype n] [DecidableEq m] [DecidableEq n] [C
     rw [nonsing_inv_apply_not_isUnit _ hA, zero_kronecker, nonsing_inv_apply_not_isUnit _ hAB]
   by_cases hB : IsUnit B.det; swap
   · cases isEmpty_or_nonempty m
-    · exact Subsingleton.elim _ _
+    · subsingleton
     have hAB : ¬IsUnit (A ⊗ₖ B).det := by
       refine' mt (fun hAB => _) hB
       rw [det_kronecker] at hAB

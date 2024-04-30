@@ -197,7 +197,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
     DirectLimit G f →ₗ[R] DirectLimit G' f' :=
   lift _ _ _ _ (fun i ↦ of _ _ _ _ _ ∘ₗ g i) fun i j h g ↦ by
     cases isEmpty_or_nonempty ι
-    · exact Subsingleton.elim _ _
+    · subsingleton
     · have eq1 := LinearMap.congr_fun (hg i j h) g
       simp only [LinearMap.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
@@ -210,7 +210,7 @@ def map (g : (i : ι) → G i →ₗ[R] G' i) (hg : ∀ i j h, g j ∘ₗ f i j 
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ LinearMap.id) (fun _ _ _ ↦ rfl) = LinearMap.id (R := R) (M := DirectLimit G f) :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -222,7 +222,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
     (map (fun i ↦ g₂ i ∘ₗ g₁ i) fun i j h ↦ by
         rw [LinearMap.comp_assoc, hg₁ i, ← LinearMap.comp_assoc, hg₂ i, LinearMap.comp_assoc] :
       DirectLimit G f →ₗ[R] DirectLimit G'' f'') :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 open LinearEquiv LinearMap in
@@ -470,7 +470,7 @@ def map (g : (i : ι) → G i →+ G' i)
     DirectLimit G f →+ DirectLimit G' f' :=
   lift _ _ _ (fun i ↦ (of _ _ _).comp (g i)) fun i j h g ↦ by
     cases isEmpty_or_nonempty ι
-    · exact Subsingleton.elim _ _
+    · subsingleton
     · have eq1 := DFunLike.congr_fun (hg i j h) g
       simp only [AddMonoidHom.coe_comp, Function.comp_apply] at eq1 ⊢
       rw [eq1, of_f]
@@ -483,7 +483,7 @@ def map (g : (i : ι) → G i →+ G' i)
 
 @[simp] lemma map_id [IsDirected ι (· ≤ ·)] :
     map (fun i ↦ AddMonoidHom.id _) (fun _ _ _ ↦ rfl) = AddMonoidHom.id (DirectLimit G f) :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 lemma map_comp [IsDirected ι (· ≤ ·)]
@@ -496,7 +496,7 @@ lemma map_comp [IsDirected ι (· ≤ ·)]
       rw [AddMonoidHom.comp_assoc, hg₁ i, ← AddMonoidHom.comp_assoc, hg₂ i,
         AddMonoidHom.comp_assoc] :
       DirectLimit G f →+ DirectLimit G'' f'') :=
-  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (fun _ ↦ Subsingleton.elim _ _) fun _ ↦
+  DFunLike.ext _ _ fun x ↦ (isEmpty_or_nonempty ι).elim (by subsingleton) fun _ ↦
     x.induction_on fun i g ↦ by simp
 
 /--
