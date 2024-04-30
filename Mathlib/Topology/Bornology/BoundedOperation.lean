@@ -5,6 +5,24 @@ Authors: Kalle Kytölä
 -/
 import Mathlib.Topology.ContinuousFunction.Bounded
 
+/-!
+# Bounded operations
+
+This file introduces type classes for bornologically bounded operations. Together with type classes
+which guarantee continuous operations, these enable to equip bounded continuous functions with the
+respective operations, in particular.
+
+## Main definitions
+
+* `BoundedSub R`: a class guaranteeing boundedness of subtraction.
+
+TODO:
+* Add bounded multiplication. (So that, e.g., multiplication works in `X →ᵇ ℝ≥0`.)
+
+-/
+
+section bounded_sub
+
 variable {R : Type*}
 
 lemma bounded_sub_iff_isBounded_image_sub [PseudoMetricSpace R] [Sub R] (s t : Set R) :
@@ -24,7 +42,10 @@ lemma bounded_sub_iff_isBounded_image_sub [PseudoMetricSpace R] [Sub R] (s t : S
 
 open Pointwise
 
-class BoundedSub (R : Type*) [Bornology R] [Sub R] where
+/-- A typeclass saying that `p : R × R ↦ r.1 - r.2` maps any pair of bounded sets to a bounded set.
+This property automatically holds for seminormed additive groups, but it also holds, e.g.,
+for `ℝ≥0`. -/
+class BoundedSub (R : Type*) [Bornology R] [Sub R] : Prop where
   isBounded_sub : ∀ {s t : Set R},
     Bornology.IsBounded s → Bornology.IsBounded t → Bornology.IsBounded (s - t)
 
@@ -74,3 +95,5 @@ instance instSub' {X R : Type*} [TopologicalSpace X] [PseudoMetricSpace R]
   sub f g :=
     { toFun := fun x ↦ (f x - g x),
       map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
+
+end bounded_sub
