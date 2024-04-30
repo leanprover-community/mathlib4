@@ -1890,24 +1890,37 @@ theorem vecMul_one (v : m → α) : v ᵥ* 1 = v := by
 #align matrix.vec_mul_one Matrix.vecMul_one
 
 @[simp]
-theorem diagonal_const_mulVec (x : α) (v : m → α) : (diagonal fun _ => x) *ᵥ v = x • v := by
+theorem diagonal_const_mulVec (x : α) (v : m → α) :
+    (diagonal fun _ => x) *ᵥ v = x • v := by
   ext; simp [mulVec_diagonal]
 
 @[simp]
-theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = x • v := by
+theorem const_vecMul_diagonal (x : α) (v : m → α) :
+    v ᵥ* (diagonal fun _ => x) = MulOpposite.op x • v := by
+  ext; simp [vecMul_diagonal, mul_comm]
+
+@[simp]
+theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v := by
   change diagonal x *ᵥ v = _
   ext; simp
 
 @[simp]
-theorem intCast_mulVec [IntCast α] (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
-  change diagonal x *ᵥ v = _
-  simp
+theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v := by
+  change v ᵥ* diagonal x = _
+  ext; simp
 
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
     OfNat.ofNat (no_index x) *ᵥ v = OfNat.ofNat x • v := by
   change diagonal x *ᵥ v = _
   rw [Pi.natCast_def, diagonal_const_mulVec, nsmul_eq_mul]
+  rfl
+
+@[simp]
+theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
+    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v := by
+  change v ᵥ* diagonal x = _
+  rw [Pi.natCast_def, const_vecMul_diagonal, MulOpposite.op_natCast, MulOpposite.op_ofNat]
   rfl
 
 end NonAssocSemiring
@@ -1990,30 +2003,25 @@ theorem mulVec_smul_assoc [Fintype n] (A : Matrix m n α) (b : n → α) (a : α
   apply dotProduct_smul
 #align matrix.mul_vec_smul_assoc Matrix.mulVec_smul_assoc
 
+end CommSemiring
+
+section NonAssocRing
+
+variable [NonAssocRing α]
+
 variable [Fintype m] [DecidableEq m]
 
 @[simp]
-theorem const_vecMul_diagonal (x : α) (v : m → α) : v ᵥ* (diagonal fun _ => x) = x • v := by
-  ext; simp [vecMul_diagonal, mul_comm]
-
-@[simp]
-theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = x • v := by
-  change v ᵥ* diagonal x = _
-  ext; simp
-
-@[simp]
-theorem vecMul_intCast [IntCast α] (x : ℤ) (v : m → α) : v ᵥ* x = (x : α) • v := by
-  change v ᵥ* diagonal x = _
+theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
+  change diagonal x *ᵥ v = _
   simp
 
 @[simp]
-theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    v ᵥ* OfNat.ofNat (no_index x) = OfNat.ofNat x • v := by
+theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v := by
   change v ᵥ* diagonal x = _
-  rw [Pi.natCast_def, const_vecMul_diagonal, nsmul_eq_mul]
-  rfl
+  simp
 
-end CommSemiring
+end NonAssocRing
 
 section Transpose
 
