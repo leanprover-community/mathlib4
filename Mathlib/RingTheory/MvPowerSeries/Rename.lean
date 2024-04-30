@@ -51,9 +51,17 @@ namespace MvPowerSeries
 
 section Rename
 
+
+lemma some_lemma (e : σ ≃ τ) (t : τ →₀ ℕ) : Finsupp.mapDomain (⇑e.symm) t = 0 ↔ t = 0 := by
+  constructor <;> intro h
+  · ext t0
+    have : t t0 = Finsupp.mapDomain (e.symm) t (e.symm t0) := by
+      simp only [mapDomain_equiv_apply, Equiv.symm_symm, Equiv.apply_symm_apply]
+    simp only [this, h, coe_zero, Pi.zero_apply]
+  · simp only [h, mapDomain_zero]
+
 variable [DecidableEq σ] [DecidableEq τ] [DecidableEq υ]
 
-#check Finsupp.mapDomain
 /-- Rename all the variables in a multivariable polynomial. -/
 def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R where
   toFun := fun φ ↦ φ ∘ (Finsupp.mapDomain e.symm)
@@ -94,17 +102,20 @@ def rename (e : σ ≃ τ) : MvPowerSeries σ R ≃ₐ[R] MvPowerSeries τ R whe
         simp only [← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
     · simp only [Finset.mem_antidiagonal, Equiv.coe_fn_mk, Prod.forall]
       intro a b _
-      have ha : (coeff R a) x = (coeff R (Finsupp.mapDomain (⇑e) a)) (x ∘ Finsupp.mapDomain ⇑e.symm) := by
-        simp only [h1, h2, ← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
-      have hb : (coeff R b) y = (coeff R (Finsupp.mapDomain (⇑e) b)) (y ∘ Finsupp.mapDomain ⇑e.symm) := by
-        simp only [h1, h2, ← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
-      rw [ha, hb]
+      simp only [h1, h2, ← mapDomain_comp, Equiv.symm_comp_self, mapDomain_id]
   map_add' := by
     intro x y
     ext s
     simp only [map_add]
     congr
-  commutes' := sorry
+  commutes' := by
+    intro r
+    ext t
+    have h2 (z : MvPowerSeries σ R) (t : τ →₀ ℕ) : (coeff R t) (z ∘ Finsupp.mapDomain ⇑e.symm) = (coeff R (Finsupp.mapDomain (e.symm) t)) z := by rfl
+    simp only [algebraMap_apply, Algebra.id.map_eq_id, RingHom.id_apply]
+    rw [h2, coeff_C, coeff_C]
+    simp only [some_lemma]
+
 
 lemma rename_zero (e : σ ≃ τ) : rename e (0 : MvPowerSeries σ R) = 0 := by
   simp only [rename, map_zero, Equiv.coe_fn_mk, Pi.zero_comp, map_zero]
@@ -114,14 +125,7 @@ theorem rename_C (e : σ ≃ τ) (r : R) : rename e (C σ R r) = C τ R r := by
   simp only [rename, Equiv.coe_fn_mk]
   funext t
   have : coeff R (Finsupp.mapDomain (⇑e.symm) t) (C σ R r) = (if t = 0 then r else 0) := by
-    have : Finsupp.mapDomain (⇑e.symm) t = 0 ↔ t = 0 := by
-      constructor <;> intro h
-      · ext t0
-        have : t t0 = Finsupp.mapDomain (e.symm) t (e.symm t0) := by
-          simp only [mapDomain_equiv_apply, Equiv.symm_symm, Equiv.apply_symm_apply]
-        simp only [this, h, coe_zero, Pi.zero_apply]
-      · simp only [h, mapDomain_zero]
-    simp only [this, coeff_C]
+    simp only [some_lemma, coeff_C]
   show coeff R (Finsupp.mapDomain (⇑e.symm) t) ((C σ R) r) = coeff R t ((C τ R) r)
   simp only [this, coeff_C]
 
