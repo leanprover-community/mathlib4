@@ -49,6 +49,27 @@ variable {a b c : ℚ}
 @[simp] lemma mkRat_nonneg {a : ℤ} (ha : 0 ≤ a) (b : ℕ) : 0 ≤ mkRat a b := by
   simpa using divInt_nonneg ha b.cast_nonneg
 
+theorem ofScientific_nonneg (m : ℕ) (s : Bool) (e : ℕ) :
+    0 ≤ Rat.ofScientific m s e := by
+  rw [Rat.ofScientific]
+  cases s
+  · rw [if_neg (by decide)]
+    refine num_nonneg.mp ?_
+    rw [num_natCast]
+    exact Nat.cast_nonneg _
+  · rw [if_pos rfl, normalize_eq_mkRat]
+    exact Rat.mkRat_nonneg (Nat.cast_nonneg _) _
+
+instance _root_.NNRatCast.toOfScientific {K} [NNRatCast K] : OfScientific K where
+  ofScientific (m : ℕ) (b : Bool) (d : ℕ) :=
+    NNRat.cast ⟨Rat.ofScientific m b d, ofScientific_nonneg m b d⟩
+
+/-- Casting a scientific literal via `ℚ≥0` is the same as casting directly. -/
+@[simp, norm_cast]
+theorem _root_.NNRat.cast_ofScientific {K} [NNRatCast K] (m : ℕ) (s : Bool) (e : ℕ) :
+    (OfScientific.ofScientific m s e : ℚ≥0) = (OfScientific.ofScientific m s e : K) :=
+  rfl
+
 protected lemma add_nonneg : 0 ≤ a → 0 ≤ b → 0 ≤ a + b :=
   numDenCasesOn' a fun n₁ d₁ h₁ ↦ numDenCasesOn' b fun n₂ d₂ h₂ ↦ by
     have d₁0 : 0 < (d₁ : ℤ) := mod_cast h₁.bot_lt

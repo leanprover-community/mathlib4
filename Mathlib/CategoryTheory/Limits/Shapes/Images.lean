@@ -110,8 +110,8 @@ theorem ext {F F' : MonoFactorisation f} (hI : F.I = F'.I)
   cases' hI
   simp? at hm says simp only [eqToHom_refl, Category.id_comp] at hm
   congr
-  · apply (cancel_mono Fm).1
-    rw [Ffac, hm, Ffac']
+  apply (cancel_mono Fm).1
+  rw [Ffac, hm, Ffac']
 #align category_theory.limits.mono_factorisation.ext CategoryTheory.Limits.MonoFactorisation.ext
 
 /-- Any mono factorisation of `f` gives a mono factorisation of `f ≫ g` when `g` is a mono. -/

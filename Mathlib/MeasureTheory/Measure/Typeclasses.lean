@@ -541,7 +541,7 @@ lemma sum_sFiniteSeq (μ : Measure α) [h : SFinite μ] : sum (sFiniteSeq μ) = 
 
 /-- A countable sum of finite measures is s-finite.
 This lemma is superseeded by the instance below. -/
-lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
+lemma sfinite_sum_of_countable [Countable ι]
     (m : ι → Measure α) [∀ n, IsFiniteMeasure (m n)] : SFinite (Measure.sum m) := by
   classical
   obtain ⟨f, hf⟩ : ∃ f : ι → ℕ, Function.Injective f := Countable.exists_injective_nat ι
@@ -552,11 +552,21 @@ lemma sfinite_sum_of_countable {ι : Type*} [Countable ι]
   · rw [Function.extend_apply' _ _ _ hn, Pi.zero_apply]
     infer_instance
 
-instance {ι : Type*} [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] :
-    SFinite (Measure.sum m) := by
+instance [Countable ι] (m : ι → Measure α) [∀ n, SFinite (m n)] : SFinite (Measure.sum m) := by
   change SFinite (Measure.sum (fun i ↦ m i))
   simp_rw [← sum_sFiniteSeq (m _), Measure.sum_sum]
   apply sfinite_sum_of_countable
+
+instance [SFinite μ] [SFinite ν] : SFinite (μ + ν) := by
+  refine ⟨fun n ↦ sFiniteSeq μ n + sFiniteSeq ν n, inferInstance, ?_⟩
+  ext s hs
+  simp only [Measure.add_apply, sum_apply _ hs]
+  rw [tsum_add ENNReal.summable ENNReal.summable, ← sum_apply _ hs, ← sum_apply _ hs,
+    sum_sFiniteSeq, sum_sFiniteSeq]
+
+instance [SFinite μ] (s : Set α) : SFinite (μ.restrict s) :=
+  ⟨fun n ↦ (sFiniteSeq μ n).restrict s, fun n ↦ inferInstance,
+    by rw [← restrict_sum_of_countable, sum_sFiniteSeq]⟩
 
 end SFinite
 
@@ -672,27 +682,6 @@ instance (priority := 100) [SigmaFinite μ] : SFinite μ := by
     (sum_restrict_disjointed_spanningSets μ).symm⟩⟩
 
 namespace Measure
-
-theorem iSup_restrict_spanningSets [SigmaFinite μ] (hs : MeasurableSet s) :
-    ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
-  calc
-    ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
-      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
-    _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
-#align measure_theory.measure.supr_restrict_spanning_sets MeasureTheory.Measure.iSup_restrict_spanningSets
-
-/-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
-finite measure `> r`. -/
-theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : MeasurableSet s)
-    (h's : r < μ s) : ∃ t, MeasurableSet t ∧ t ⊆ s ∧ r < μ t ∧ μ t < ∞ := by
-  rw [← iSup_restrict_spanningSets hs,
-    @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
-  rcases h's with ⟨n, hn⟩
-  simp only [restrict_apply hs] at hn
-  refine'
-    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
-  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
-#align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 /-- A set in a σ-finite space has zero measure if and only if its intersection with
 all members of the countable family of finite measure spanning sets has zero measure. -/
@@ -942,6 +931,36 @@ theorem restrict_toMeasurable_of_sFinite [SFinite μ] (s : Set α) :
     rw [restrict_apply ht, inter_comm t, measure_toMeasurable_inter_of_sFinite ht,
       restrict_apply ht, inter_comm t]
 #align measure_theory.measure.restrict_to_measurable_of_sigma_finite MeasureTheory.Measure.restrict_toMeasurable_of_sFinite
+
+/-- Auxiliary lemma for `iSup_restrict_spanningSets`. -/
+theorem iSup_restrict_spanningSets_of_measurableSet [SigmaFinite μ] (hs : MeasurableSet s) :
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ s :=
+  calc
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ.restrict (⋃ i, spanningSets μ i) s :=
+      (restrict_iUnion_apply_eq_iSup (monotone_spanningSets μ).directed_le hs).symm
+    _ = μ s := by rw [iUnion_spanningSets, restrict_univ]
+#align measure_theory.measure.supr_restrict_spanning_sets MeasureTheory.Measure.iSup_restrict_spanningSets_of_measurableSet
+
+theorem iSup_restrict_spanningSets [SigmaFinite μ] (s : Set α) :
+    ⨆ i, μ.restrict (spanningSets μ i) s = μ s := by
+  rw [← measure_toMeasurable s,
+    ← iSup_restrict_spanningSets_of_measurableSet (measurableSet_toMeasurable _ _)]
+  simp_rw [restrict_apply' (measurable_spanningSets μ _), Set.inter_comm s,
+    ← restrict_apply (measurable_spanningSets μ _), ← restrict_toMeasurable_of_sFinite s,
+    restrict_apply (measurable_spanningSets μ _), Set.inter_comm _ (toMeasurable μ s)]
+
+/-- In a σ-finite space, any measurable set of measure `> r` contains a measurable subset of
+finite measure `> r`. -/
+theorem exists_subset_measure_lt_top [SigmaFinite μ] {r : ℝ≥0∞} (hs : MeasurableSet s)
+    (h's : r < μ s) : ∃ t, MeasurableSet t ∧ t ⊆ s ∧ r < μ t ∧ μ t < ∞ := by
+  rw [← iSup_restrict_spanningSets,
+    @lt_iSup_iff _ _ _ r fun i : ℕ => μ.restrict (spanningSets μ i) s] at h's
+  rcases h's with ⟨n, hn⟩
+  simp only [restrict_apply hs] at hn
+  refine'
+    ⟨s ∩ spanningSets μ n, hs.inter (measurable_spanningSets _ _), inter_subset_left _ _, hn, _⟩
+  exact (measure_mono (inter_subset_right _ _)).trans_lt (measure_spanningSets_lt_top _ _)
+#align measure_theory.measure.exists_subset_measure_lt_top MeasureTheory.Measure.exists_subset_measure_lt_top
 
 namespace FiniteSpanningSetsIn
 

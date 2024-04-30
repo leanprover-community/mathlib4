@@ -332,7 +332,8 @@ instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Faithful] : (preLeft F L R
     (by apply congrArg CommaMorphism.right h)
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.Full] : (preLeft F L R).Full where
-  preimage {X Y} f := CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w)
+  map_surjective {X Y} f :=
+    ⟨CommaMorphism.mk (F.preimage f.left) f.right (by simpa using f.w), by aesop_cat⟩
 
 instance (F : C ⥤ A) (L : A ⥤ T) (R : B ⥤ T) [F.EssSurj] : (preLeft F L R).EssSurj where
   mem_essImage Y :=
@@ -362,7 +363,8 @@ instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Faithful] : (preRight L F 
     (F.map_injective (congrArg CommaMorphism.right h))
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.Full] : (preRight L F R).Full where
-  preimage {X Y} f := CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w)
+  map_surjective {X Y} f :=
+    ⟨CommaMorphism.mk f.left (F.preimage f.right) (by simpa using f.w), by aesop_cat⟩
 
 instance (L : A ⥤ T) (F : C ⥤ B) (R : B ⥤ T) [F.EssSurj] : (preRight L F R).EssSurj where
   mem_essImage Y :=
