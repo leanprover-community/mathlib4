@@ -300,12 +300,12 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   -- Once again, we are left with showing that `⁅y, _⁆` acts nilpotently on `E`.
   rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
     (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
-  -- To do so, it suffices to show that the Engel subalgebra of `y = a • u + x` is contained in `E`.
-  let y := α • u + x
-  suffices engel K (y : L) ≤ engel K (x : L) by
+  -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
+  let v := α • u + x
+  suffices engel K (v : L) ≤ engel K (x : L) by
     -- Indeed, in that case the minimality assumption on `E` implies
-    -- that `E` is contained in the Engel subalgebra of `y`.
-    replace this : engel K (x : L) ≤ engel K (y : L) := (hmin y this).ge
+    -- that `E` is contained in the Engel subalgebra of `v`.
+    replace this : engel K (x : L) ≤ engel K (v : L) := (hmin v this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
     simpa only [mem_engel_iff, Subtype.ext_iff, LieSubmodule.coe_toEndomorphism_pow] using this z.2
@@ -317,8 +317,8 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   rw [← LieSubmodule.Quotient.mk_eq_zero]
   -- We denote the image of `z` in `Q` by `z'`.
   set z' : Q := LieSubmodule.Quotient.mk' E z
-  -- First we observe that `z'` is killed by a power of `⁅y, _⁆`.
-  have hz' : ∃ n : ℕ, ((toEndomorphism K U Q) y ^ n) z' = 0 := by
+  -- First we observe that `z'` is killed by a power of `⁅v, _⁆`.
+  have hz' : ∃ n : ℕ, ((toEndomorphism K U Q) v ^ n) z' = 0 := by
     rw [mem_engel_iff] at hz
     obtain ⟨n, hn⟩ := hz
     use n
@@ -330,24 +330,24 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
     | zero => simp only [Nat.zero_eq, pow_zero, LinearMap.one_apply]
     | succ n ih => rw [pow_succ', pow_succ', LinearMap.mul_apply, ih]; rfl
   classical
-  -- Now let `n` be the smallest power such that `⁅y, _⁆ ^ n` kills `z'`.
+  -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
-  have hn : ((toEndomorphism K (↥U) Q) y ^ n) z' = 0 := Nat.find_spec hz'
+  have hn : ((toEndomorphism K (↥U) Q) v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
-  -- If `n = k + 1`, then we can write `⁅y, _⁆ ^ n = ⁅y, _⁆ ∘ ⁅y, _⁆ ^ k`.
-  -- Recall that `constantCoeff ψ` is non-zero on `α`, and `y = α • u + x`.
+  -- If `n = k + 1`, then we can write `⁅v, _⁆ ^ n = ⁅v, _⁆ ∘ ⁅v, _⁆ ^ k`.
+  -- Recall that `constantCoeff ψ` is non-zero on `α`, and `v = α • u + x`.
   specialize hsψ α hα
-  -- Hence `⁅y, _⁆` acts injectively on `Q`.
+  -- Hence `⁅v, _⁆` acts injectively on `Q`.
   rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
     ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
   -- We deduce from this that `z' = 0`, arguing by contraposition.
   contrapose! hsψ
-  -- Indeed `⁅y, _⁆` kills `⁅y, _⁆ ^ k` applied to `z'`.
-  use ((LieModule.toEndomorphism K U Q) y ^ k) z'
+  -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
+  use ((LieModule.toEndomorphism K U Q) v ^ k) z'
   refine ⟨?_, ?_⟩
-  · -- And `⁅y, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
+  · -- And `⁅v, _⁆ ^ k` applied to `z'` is non-zero by definition of `n`.
     apply Nat.find_min hz'; omega
   · rw [← hn, hk, pow_succ', LinearMap.mul_apply]
 
