@@ -30,7 +30,7 @@ fi |
         fin=fin sprintf("| %s | `%s` | `%s` |\n", fil[res], pm, res)
       }
     }
-    print fin| "sort -k3"; close("sort -k3")
+    print fin| "sort -k6 -k8"; close("sort -k6 -k8")
     printf("---\n* %s  added declarations\n* %s  removed declarations\n* %s  paired declarations", added, removed, paired)
   }'
 printf $'\n---\n\nYou can run this locally using
