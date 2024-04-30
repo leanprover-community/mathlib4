@@ -168,7 +168,7 @@ theorem single_eq_monomial (s : σ →₀ ℕ) (a : R) : Finsupp.single s a = mo
 #align mv_polynomial.single_eq_monomial MvPolynomial.single_eq_monomial
 
 theorem mul_def : p * q = p.sum fun m a => q.sum fun n b => monomial (m + n) (a * b) :=
-  rfl
+  AddMonoidAlgebra.mul_def
 #align mv_polynomial.mul_def MvPolynomial.mul_def
 
 /-- `C a` is the constant polynomial with value `a` -/
