@@ -725,6 +725,15 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 #align subgroup.quotient_map_of_le_apply_mk Subgroup.quotientMapOfLE_apply_mk
 #align add_subgroup.quotient_map_of_le_apply_mk AddSubgroup.quotientMapOfLE_apply_mk
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]

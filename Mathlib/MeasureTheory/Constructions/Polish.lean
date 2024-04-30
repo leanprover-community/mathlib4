@@ -317,6 +317,15 @@ theorem _root_.MeasurableSet.analyticSet {α : Type*} [t : TopologicalSpace α] 
   simp only [id, image_id']
 #align measurable_set.analytic_set MeasurableSet.analyticSet
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- Given a Borel-measurable function from a Polish space to a second-countable space, there exists
 a finer Polish topology on the source space for which the function is continuous. -/
 theorem _root_.Measurable.exists_continuous {α β : Type*} [t : TopologicalSpace α] [PolishSpace α]

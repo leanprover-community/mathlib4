@@ -206,6 +206,15 @@ theorem norm_mk_lt' (S : AddSubgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
   rwa [add_neg_cancel_left]
 #align norm_mk_lt' norm_mk_lt'
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- The quotient norm satisfies the triangle inequality. -/
 theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩
@@ -451,6 +460,7 @@ instance Submodule.Quotient.completeSpace [CompleteSpace M] : CompleteSpace (M �
   QuotientAddGroup.completeSpace M S.toAddSubgroup
 #align submodule.quotient.complete_space Submodule.Quotient.completeSpace
 
+set_option backward.isDefEq.lazyWhnfCore false in
 /-- For any `x : M ⧸ S` and any `0 < ε`, there is `m : M` such that `Submodule.Quotient.mk m = x`
 and `‖m‖ < ‖x‖ + ε`. -/
 nonrec theorem Submodule.Quotient.norm_mk_lt {S : Submodule R M} (x : M ⧸ S) {ε : ℝ} (hε : 0 < ε) :

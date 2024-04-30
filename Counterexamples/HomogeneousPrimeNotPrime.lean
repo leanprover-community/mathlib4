@@ -117,7 +117,9 @@ def grading.decompose : R × R →+ DirectSum Two fun i => grading R i where
 theorem grading.right_inv : Function.RightInverse (coeLinearMap (grading R)) grading.decompose :=
   fun zz => by
   induction' zz using DirectSum.induction_on with i zz d1 d2 ih1 ih2
-  · simp only [map_zero]
+  · -- Adaptation note: 2024-04-23
+    -- `simp?` suggests `map_zero`, but that fails to synthesize `ZeroHomClass`
+    simp
   · rcases i with (_ | ⟨⟨⟩⟩) <;> rcases zz with ⟨⟨a, b⟩, hab : _ = _⟩ <;> dsimp at hab <;>
       cases hab <;>
       -- Porting note: proof was `decide`

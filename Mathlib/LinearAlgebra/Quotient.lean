@@ -135,6 +135,7 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
+set_option backward.isDefEq.lazyProjDelta false in
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl

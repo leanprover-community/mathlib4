@@ -180,6 +180,15 @@ theorem ae_bdd_condexp_of_ae_bdd {R : ℝ≥0} {f : α → ℝ} (hbdd : ∀ᵐ x
   exact Subtype.mk_le_mk.2 (le_of_lt hx)
 #align measure_theory.ae_bdd_condexp_of_ae_bdd MeasureTheory.ae_bdd_condexp_of_ae_bdd
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- Given an integrable function `g`, the conditional expectations of `g` with respect to
 a sequence of sub-σ-algebras is uniformly integrable. -/
 theorem Integrable.uniformIntegrable_condexp {ι : Type*} [IsFiniteMeasure μ] {g : α → ℝ}

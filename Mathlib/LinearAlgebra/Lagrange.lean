@@ -588,6 +588,15 @@ theorem eval_nodal_derivative_eval_node_eq [DecidableEq ι] {i : ι} (hi : i ∈
   exact sum_eq_zero fun j hj => (eval_nodal_at_node (mem_erase.mpr ⟨(mem_erase.mp hj).1.symm, hi⟩))
 #align lagrange.eval_nodal_derivative_eval_node_eq Lagrange.eval_nodal_derivative_eval_node_eq
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 /-- The vanishing polynomial on a multiplicative subgroup is of the form X ^ n - 1. -/
 @[simp] theorem nodal_subgroup_eq_X_pow_card_sub_one [IsDomain R]
   (G : Subgroup Rˣ) [Fintype G] :

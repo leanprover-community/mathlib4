@@ -1343,6 +1343,7 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 #align set.eq_singleton_iff_nonempty_unique_mem Set.eq_singleton_iff_nonempty_unique_mem
 
+set_option backward.synthInstance.canonInstances false in
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
@@ -1489,9 +1490,19 @@ theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t :
     (hs : s.Nonempty) [Nonempty t] : s = t :=
   have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
 
+set_option backward.synthInstance.canonInstances false in
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
     s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
+-- Adaptation note: 2024-04-28
+-- The change to typeclass resolution in
+-- https://github.com/leanprover/lean4/pull/4003
+-- (See also https://github.com/leanprover/lean4/issues/3996)
+-- will hopefully significantly speed up typeclass search in Mathlib.
+-- However it causes some breakages.
+-- Currently, we're using the backwards compatibility flag to disable the new behaviour
+-- as locally as possible, and leaving the task of cleaning this up for later.
+set_option backward.synthInstance.canonInstances false in
 theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
     s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 

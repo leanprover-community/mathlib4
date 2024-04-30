@@ -72,7 +72,8 @@ instance : LE (ValueGroup A K) :=
         · rintro ⟨e, he⟩; dsimp
           use c * e * (d⁻¹ : Aˣ)
           simp_rw [Units.smul_def, ← he, mul_smul]
-          rw [← mul_smul _ _ b, Units.inv_mul, one_smul])
+          rw [← mul_smul _ _ b, Units.inv_mul, one_smul]
+        )
 
 instance : Zero (ValueGroup A K) := ⟨Quotient.mk'' 0⟩
 

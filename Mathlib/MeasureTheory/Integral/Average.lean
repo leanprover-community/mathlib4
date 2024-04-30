@@ -839,7 +839,7 @@ theorem tendsto_integral_smul_of_tendsto_average_norm_sub
       apply Integrable.sub _ (hig.smul_const _)
       have A : Function.support (fun y ↦ g i y • f y) ⊆ a i := by
         apply Subset.trans _ hisupp
-        exact Function.support_smul_subset_left _ _
+        exact Function.support_smul_subset_left (g i) f
       rw [← integrableOn_iff_integrable_of_support_subset A]
       apply Integrable.smul_of_top_right hif
       exact memℒp_top_of_bound hig.aestronglyMeasurable.restrict

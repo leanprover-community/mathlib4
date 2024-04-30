@@ -245,6 +245,8 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
 
 namespace IsAffineOpen
 
+-- Adaptation note: 2024-04-23
+-- TODO check if this `.{u}` restricts anything
 variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U))
 
 local notation "𝖲𝗉𝖾𝖼 𝓞ₓ(U)" => Scheme.Spec.obj (op <| X.presheaf.obj <| op U)
@@ -318,6 +320,9 @@ theorem fromSpec_base_preimage :
   exact Set.preimage_image_eq _ PresheafedSpace.IsOpenImmersion.base_open.inj
 #align algebraic_geometry.is_affine_open.from_Spec_base_preimage AlgebraicGeometry.IsAffineOpen.fromSpec_base_preimage
 
+-- Adaptation note: 2024-04-23
+-- The backwards compatibility flags don't help here.
+set_option maxHeartbeats 800000 in
 -- Doesn't build without the `IsAffine` instance but the linter complains
 @[nolint unusedHavesSuffices]
 theorem SpecΓIdentity_hom_app_fromSpec :
@@ -512,6 +517,7 @@ theorem fromSpec_primeIdealOf (x : U) :
     Scheme.ofRestrict_val_base, Scheme.restrict_carrier, Opens.coe_inclusion]
 #align algebraic_geometry.is_affine_open.from_Spec_prime_ideal_of AlgebraicGeometry.IsAffineOpen.fromSpec_primeIdealOf
 
+set_option backward.isDefEq.lazyWhnfCore false in
 theorem isLocalization_stalk'
     (y : PrimeSpectrum (X.presheaf.obj <| op U)) (hy : hU.fromSpec.1.base y ∈ U) :
     @IsLocalization.AtPrime
