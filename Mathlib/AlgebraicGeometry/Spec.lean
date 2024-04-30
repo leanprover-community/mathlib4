@@ -34,8 +34,6 @@ The adjunction `Γ ⊣ Spec` is constructed in `Mathlib/AlgebraicGeometry/GammaS
 
 -/
 
-set_option profiler true
-
 noncomputable section
 
 universe u v
