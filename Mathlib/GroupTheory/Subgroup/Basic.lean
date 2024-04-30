@@ -3123,7 +3123,7 @@ theorem comap_normalizer_eq_of_injective_of_le_range {N : Type*} [Group N] (H : 
 theorem subgroupOf_normalizer_eq {H N : Subgroup G} (h : H.normalizer ≤ N) :
     H.normalizer.subgroupOf N = (H.subgroupOf N).normalizer := by
   apply comap_normalizer_eq_of_injective_of_le_range
-  exact Subtype.coe_injective
+  · exact Subtype.coe_injective
   simpa
 #align subgroup.subgroup_of_normalizer_eq Subgroup.subgroupOf_normalizer_eq
 #align add_subgroup.add_subgroup_of_normalizer_eq AddSubgroup.addSubgroupOf_normalizer_eq
@@ -3512,8 +3512,8 @@ theorem subgroupOf_sup (A A' B : Subgroup G) (hA : A ≤ B) (hA' : A' ≤ B) :
   refine'
     map_injective_of_ker_le B.subtype (ker_le_comap _ _)
       (le_trans (ker_le_comap B.subtype _) le_sup_left) _
-  · simp only [subgroupOf, map_comap_eq, map_sup, subtype_range]
-    rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
+  simp only [subgroupOf, map_comap_eq, map_sup, subtype_range]
+  rw [inf_of_le_right (sup_le hA hA'), inf_of_le_right hA', inf_of_le_right hA]
 #align subgroup.subgroup_of_sup Subgroup.subgroupOf_sup
 #align add_subgroup.add_subgroup_of_sup AddSubgroup.addSubgroupOf_sup
 

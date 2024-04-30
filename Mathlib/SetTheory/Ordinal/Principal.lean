@@ -251,11 +251,11 @@ theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
     · rw [← succ_le_iff, succ_zero] at hb₁'
       intro c d hc hd
       rw [lt_mul_of_limit (principal_add_isLimit (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
-      · rcases hc with ⟨x, hx, hx'⟩
-        rcases hd with ⟨y, hy, hy'⟩
-        use x + y, hb hx hy
-        rw [mul_add]
-        exact Left.add_lt_add hx' hy'
+      rcases hc with ⟨x, hx, hx'⟩
+      rcases hd with ⟨y, hy, hy'⟩
+      use x + y, hb hx hy
+      rw [mul_add]
+      exact Left.add_lt_add hx' hy'
 #align ordinal.mul_principal_add_is_principal_add Ordinal.mul_principal_add_is_principal_add
 
 /-! #### Multiplicative principal ordinals -/

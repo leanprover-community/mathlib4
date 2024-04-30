@@ -387,8 +387,8 @@ theorem ballot_problem' :
       ring
     all_goals
       refine' (ENNReal.mul_lt_top _ _).ne
-      exact (measure_lt_top _ _).ne
-      simp [Ne, ENNReal.div_eq_top]
+      · exact (measure_lt_top _ _).ne
+      · simp [Ne, ENNReal.div_eq_top]
 #align ballot.ballot_problem' Ballot.ballot_problem'
 
 /-- The ballot problem. -/

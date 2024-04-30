@@ -628,7 +628,6 @@ theorem inner_eq_norm_mul_norm_mul_cos_oangle (x y : V) :
   rw [oangle, Real.Angle.cos_coe, Complex.cos_arg, o.abs_kahler]
   · simp only [kahler_apply_apply, real_smul, add_re, ofReal_re, mul_re, I_re, ofReal_im]
     field_simp
-    ring
   · exact o.kahler_ne_zero hx hy
 #align orientation.inner_eq_norm_mul_norm_mul_cos_oangle Orientation.inner_eq_norm_mul_norm_mul_cos_oangle
 
@@ -638,7 +637,6 @@ theorem cos_oangle_eq_inner_div_norm_mul_norm {x y : V} (hx : x ≠ 0) (hy : y �
     Real.Angle.cos (o.oangle x y) = ⟪x, y⟫ / (‖x‖ * ‖y‖) := by
   rw [o.inner_eq_norm_mul_norm_mul_cos_oangle]
   field_simp [norm_ne_zero_iff.2 hx, norm_ne_zero_iff.2 hy]
-  ring
 #align orientation.cos_oangle_eq_inner_div_norm_mul_norm Orientation.cos_oangle_eq_inner_div_norm_mul_norm
 
 /-- The cosine of the oriented angle between two nonzero vectors equals that of the unoriented
