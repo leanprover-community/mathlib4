@@ -11,8 +11,7 @@ import Mathlib.RingTheory.Regular.IsSMulRegular
 The notion of a regular sequence is fundamental in commutative algebra.
 Properties of regular sequences encode information about a singularities of a
 ring and regularity of a sequence can be tested homologically.
-The reader should take this with a grain of salt, however, because the notion
-of a regular sequence is only really sensible for a Noetherian local ring.
+However the notion of a regular sequence is only really sensible for Noetherian local rings.
 
 TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, depth.
 
