@@ -33,6 +33,7 @@ open Submodule
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable (M : Type*) [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
+variable {P : Type*} [AddCommGroup P] [Module R P]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -300,6 +301,11 @@ theorem transitionMap_comp_eval {m n : ℕ} (hmn : m ≤ n) :
   ext x
   simp [x.property]
 
+@[simp]
+theorem transitionMap_eval_apply {m n : ℕ} (hmn : m ≤ n) (x : AdicCompletion I M) :
+    transitionMap I M hmn (x.val n) = x.val m :=
+  x.property hmn
+
 /-- The module of `I`-adic cauchy sequences as a submodule of the product `ℕ → M`. -/
 def adicCauchySequence : Submodule R (ℕ → M) where
   carrier := { f | ∀ {m n}, m ≤ n → f m ≡ f n [SMOD (I ^ m • ⊤ : Submodule R M)] }
@@ -407,7 +413,76 @@ lemma lift_eval_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
 
+/-- Elements of the adic completion are equal if almost all components are equal. -/
+theorem ext' {x y : AdicCompletion I M}
+    (h : ∃ (k : ℕ), ∀ {n : ℕ}, k ≤ n → x.val n = y.val n) : x = y := by
+  obtain ⟨k, hk⟩ := h
+  ext n
+  have h : n ≤ n + k := by omega
+  simp only [coe_eval, ← transitionMap_eval_apply I M h]
+  rw [hk (by omega)]
+
 end AdicCompletion
+
+namespace LinearMap
+
+variable {M}
+
+/-- The induced linear map on the quotients mod `I • ⊤`. -/
+def reduceModIdeal (f : M →ₗ[R] N) :
+    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R] N ⧸ (I • ⊤ : Submodule R N) :=
+  Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
+    (fun x hx ↦ by
+      refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
+      · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
+      · simp [Submodule.add_mem _ hx hy])
+
+@[simp]
+theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
+    (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
+      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) := by
+  simp [reduceModIdeal]
+
+open AdicCompletion
+
+theorem AdicCompletion.transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
+  (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ reduceModIdeal (I ^ n) f =
+      f.reduceModIdeal (I ^ m) ∘ₗ transitionMap I M hmn := by
+  ext x
+  simp
+
+/-- A linear map induces a map on adic completions. -/
+def adicCompletion (f : M →ₗ[R] N) : AdicCompletion I M →ₗ[R] AdicCompletion I N :=
+  AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
+    (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
+      comp_assoc, transitionMap_comp_eval])
+
+@[simp]
+theorem adicCompletion_eval (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
+    (f.adicCompletion I x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
+  rfl
+
+/-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
+@[ext]
+theorem AdicCompletion.ext {f g : AdicCompletion I M →ₗ[R] N}
+    (h : ∀ (a : AdicCauchySequence I M),
+      f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
+    f = g := by
+  ext x
+  apply inductionOn I M x (fun a ↦ h a)
+
+variable (M) in
+theorem adicCompletion_id :
+    adicCompletion I (LinearMap.id (M := M)) = LinearMap.id := by
+  ext
+  simp
+
+theorem adicCompletion_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
+    g.adicCompletion I ∘ₗ f.adicCompletion I = (g ∘ₗ f).adicCompletion I := by
+  ext
+  simp
+
+end LinearMap
 
 namespace IsAdicComplete
 
