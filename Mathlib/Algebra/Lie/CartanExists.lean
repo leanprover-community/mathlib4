@@ -90,9 +90,8 @@ In other words, we obtain a polynomial over `R[X]`
 that specializes to the characteristic polynomial of `⁅r • y + x, _⁆` under the map `X ↦ r`.
 This polynomial is captured in `lieCharpoly R M x y`. -/
 private noncomputable
-def lieCharpoly : R[X][Y] :=
+def lieCharpoly : Polynomial R[X] :=
   letI bL := chooseBasis R L
-  letI bM := chooseBasis R M
   (LinearMap.polyCharpoly (LieHom.toLinearMap φ) bL).map <| RingHomClass.toRingHom <|
     MvPolynomial.aeval fun i ↦ C (bL.repr y i) * X + C (bL.repr x i)
 
