@@ -6,6 +6,8 @@ Authors: Yoh Tanimoto
 import Mathlib.Topology.ContinuousFunction.Bounded
 import Mathlib.Topology.ContinuousFunction.CocompactMap
 -- import Mathlib.Topology.ContinuousFunction.ZeroAtInfty
+-- make coercion from C₀ to C_c
+-- show the density of C_c in C₀
 
 /-!
 # Compactly supported continuous functions
@@ -160,11 +162,7 @@ then `C_c(α, β)` inherits a corresponding algebraic structure. The primary exc
 
 section AlgebraicStructure
 
-section AddMonoid
-
-variable [TopologicalSpace β] (x : α)
-
-variable [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β))
+variable [TopologicalSpace β]
 
 instance instZero [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
@@ -202,6 +200,7 @@ instance instSemigroupWithZero [SemigroupWithZero β] [ContinuousMul β] :
     SemigroupWithZero C_c(α, β) :=
   DFunLike.coe_injective.semigroupWithZero _ coe_zero coe_mul
 
+-- need `[AddMonoid β]` here to apply `HasCompactSupport.add`
 instance instAdd [AddMonoid β] [ContinuousAdd β] : Add C_c(α, β) :=
   ⟨fun f g => ⟨f + g, HasCompactSupport.add f.2 g.2⟩⟩
 
@@ -215,21 +214,22 @@ theorem add_apply [AddMonoid β] [ContinuousAdd β] (f g : C_c(α, β)) : (f + g
 instance instAddZeroClass [AddMonoid β] [ContinuousAdd β] : AddZeroClass C_c(α, β) :=
   DFunLike.coe_injective.addZeroClass _ coe_zero coe_add
 
-instance instSMul {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
+instance instSMul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] :
     SMul R C_c(α, β) :=
-  -- Porting note: Original version didn't have `Continuous.const_smul f.continuous r`
   ⟨fun r f => ⟨⟨r • ⇑f, Continuous.const_smul f.continuous r⟩, HasCompactSupport.smul_left' f.2⟩⟩
 
 @[simp, norm_cast]
-theorem coe_smul {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
+theorem coe_smul [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β] (r : R)
     (f : C_c(α, β)) : ⇑(r • f) = r • ⇑f :=
   rfl
 
-theorem smul_apply {R : Type*} [MonoidWithZero R] [SMulWithZero R β] [ContinuousConstSMul R β]
+theorem smul_apply [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [ContinuousConstSMul R β]
     (r : R) (f : C_c(α, β)) (x : α) : (r • f) x = r • f x :=
   rfl
 
-instance instAddMonoid : AddMonoid C_c(α, β) :=
+section AddMonoid
+
+instance instAddMonoid [AddMonoid β] [ContinuousAdd β] : AddMonoid C_c(α, β) :=
   DFunLike.coe_injective.addMonoid _ coe_zero coe_add fun _ _ => rfl
 
 end AddMonoid
@@ -288,17 +288,15 @@ instance instAddCommGroup [AddCommGroup β] [TopologicalAddGroup β] : AddCommGr
   DFunLike.coe_injective.addCommGroup _ coe_zero coe_add coe_neg coe_sub (fun _ _ => rfl) fun _ _ =>
     rfl
 
-instance instIsCentralScalar [AddCommMonoid β] {R : Type*} [MonoidWithZero R] [SMulWithZero R β]
-    [SMulWithZero Rᵐᵒᵖ β]
+instance instIsCentralScalar [Zero β] {R : Type*} [Zero R] [SMulWithZero R β] [SMulWithZero Rᵐᵒᵖ β]
     [ContinuousConstSMul R β] [IsCentralScalar R β] : IsCentralScalar R C_c(α, β) :=
   ⟨fun _ _ => ext fun _ => op_smul_eq_smul _ _⟩
 
-instance instSMulWithZero [AddCommMonoid β] {R : Type*} [MonoidWithZero R] [SMulWithZero R β]
+instance instSMulWithZero [Zero β] {R : Type*} [Zero R] [SMulWithZero R β]
     [ContinuousConstSMul R β] : SMulWithZero R C_c(α, β) :=
   Function.Injective.smulWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
-instance instMulActionWithZero [AddCommMonoid β] {R : Type*} [MonoidWithZero R]
-    [MulActionWithZero R β]
+instance instMulActionWithZero [Zero β] {R : Type*} [MonoidWithZero R] [MulActionWithZero R β]
     [ContinuousConstSMul R β] : MulActionWithZero R C_c(α, β) :=
   Function.Injective.mulActionWithZero ⟨_, coe_zero⟩ DFunLike.coe_injective coe_smul
 
@@ -307,6 +305,7 @@ instance instModule [AddCommMonoid β] [ContinuousAdd β] {R : Type*} [Semiring 
   Function.Injective.module R ⟨⟨_, coe_zero⟩, coe_add⟩ DFunLike.coe_injective coe_smul
 
 -- TODO: solve type class instance problem
+-- related with the assumption `[AddCommMonoid β] [ContinuousAdd β]` in `Add`?
 -- instance instNonUnitalNonAssocSemiring [NonUnitalNonAssocSemiring β] [TopologicalSemiring β] :
 --     NonUnitalNonAssocSemiring C_c(α, β) :=
 --   DFunLike.coe_injective.nonUnitalNonAssocSemiring _ coe_zero coe_add coe_mul fun _ _ => rfl
@@ -333,23 +332,21 @@ instance instNonUnitalCommRing [NonUnitalCommRing β] [TopologicalRing β] :
   DFunLike.coe_injective.nonUnitalCommRing _ coe_zero coe_add coe_mul coe_neg coe_sub
     (fun _ _ => rfl) fun _ _ => rfl
 
-instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocRing β]
-    [TopologicalSemiring β][MonoidWithZero R] [SMulWithZero R β]
-    [ContinuousConstSMul R β] [IsScalarTower R β β] :
-    IsScalarTower R C_c(α, β) C_c(α, β) where
-  smul_assoc r f g := by
-    ext
-    simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
-    rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
+-- instance instIsScalarTower {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
+--     [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [IsScalarTower R β β] :
+--     IsScalarTower R C_c(α, β) C_c(α, β) where
+--   smul_assoc r f g := by
+--     ext
+--     simp only [smul_eq_mul, coe_mul, coe_smul, Pi.mul_apply, Pi.smul_apply]
+--     rw [← smul_eq_mul, ← smul_eq_mul, smul_assoc]
 
-instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocRing β]
-    [TopologicalSemiring β] [MonoidWithZero R] [SMulWithZero R β]
-    [ContinuousConstSMul R β] [SMulCommClass R β β] :
-    SMulCommClass R C_c(α, β) C_c(α, β) where
-  smul_comm r f g := by
-    ext
-    simp only [smul_eq_mul, coe_smul, coe_mul, Pi.smul_apply, Pi.mul_apply]
-    rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
+-- instance instSMulCommClass {R : Type*} [Semiring R] [NonUnitalNonAssocSemiring β]
+--     [TopologicalSemiring β] [Module R β] [ContinuousConstSMul R β] [SMulCommClass R β β] :
+--     SMulCommClass R C_c(α, β) C_c(α, β) where
+--   smul_comm r f g := by
+--     ext
+--     simp only [smul_eq_mul, coe_smul, coe_mul, Pi.smul_apply, Pi.mul_apply]
+--     rw [← smul_eq_mul, ← smul_eq_mul, smul_comm]
 
 end AlgebraicStructure
 
@@ -429,12 +426,12 @@ end
 
 variable {C : ℝ} {f g : C_c(α, β)}
 
-/-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
+/-- The type of compactly supported continuous functions, with the uniform distance induced by the
 inclusion `CompactlySupportedContinuousMap.toBCF`, is a pseudo-metric space. -/
 noncomputable instance instPseudoMetricSpace : PseudoMetricSpace C_c(α, β) :=
   PseudoMetricSpace.induced toBCF inferInstance
 
-/-- The type of continuous functions vanishing at infinity, with the uniform distance induced by the
+/-- The type of compactly supported continuous functions, with the uniform distance induced by the
 inclusion `CompactlySupportedContinuousMap.toBCF`, is a metric space. -/
 noncomputable instance instMetricSpace {β : Type*} [MetricSpace β] [Zero β] :
     MetricSpace C_c(α, β) :=
@@ -527,11 +524,6 @@ counterparts on `α →ᵇ β`. Ultimately, when `β` is a C⋆-ring, then so is
 
 variable [TopologicalSpace β] [AddMonoid β] [StarAddMonoid β] [ContinuousStar β]
 
-theorem Function.support_star (f : α → β) :
-    (Function.support fun (x : α) => star (f x)) = Function.support f := by
-  ext x
-  simp only [Function.mem_support, ne_eq, star_eq_zero]
-
 instance instStar : Star C_c(α, β) where
   star f :=
     { toFun := fun x => star (f x)
@@ -539,7 +531,10 @@ instance instStar : Star C_c(α, β) where
       has_compact_support' := by
         rw [HasCompactSupport, tsupport]
         simp only
-        rw [Function.support_star f]
+        have support_star : (Function.support fun (x : α) => star (f x)) = Function.support f := by
+          ext x
+          simp only [Function.mem_support, ne_eq, star_eq_zero]
+        rw [support_star]
         exact f.2
     }
 
@@ -568,11 +563,10 @@ end NormedStar
 section StarModule
 
 variable {𝕜 : Type*} [Zero 𝕜] [Star 𝕜] [AddMonoid β] [StarAddMonoid β] [TopologicalSpace β]
-  [ContinuousAdd β] [ContinuousStar β] [MonoidWithZero 𝕜] [SMulWithZero 𝕜 β]
-  [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
+  [ContinuousStar β] [SMulWithZero 𝕜 β] [ContinuousConstSMul 𝕜 β] [StarModule 𝕜 β]
 
--- instance instStarModule : StarModule 𝕜 C_c(α, β) where
---   star_smul k f := ext fun x => star_smul k (f x)
+instance instStarModule : StarModule 𝕜 C_c(α, β) where
+  star_smul k f := ext fun x => star_smul k (f x)
 
 end StarModule
 
