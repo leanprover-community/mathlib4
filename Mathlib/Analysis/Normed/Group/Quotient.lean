@@ -206,15 +206,7 @@ theorem norm_mk_lt' (S : AddSubgroup M) (m : M) {ε : ℝ} (hε : 0 < ε) :
   rwa [add_neg_cancel_left]
 #align norm_mk_lt' norm_mk_lt'
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The quotient norm satisfies the triangle inequality. -/
 theorem quotient_norm_add_le (S : AddSubgroup M) (x y : M ⧸ S) : ‖x + y‖ ≤ ‖x‖ + ‖y‖ := by
   rcases And.intro (mk_surjective x) (mk_surjective y) with ⟨⟨x, rfl⟩, ⟨y, rfl⟩⟩

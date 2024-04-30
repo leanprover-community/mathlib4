@@ -691,15 +691,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder' [BoundedOrder α] {f : α →
     (hf_c.strictMono_of_inj_boundedOrder · hf_i)
     (hf_c.strictAnti_of_inj_boundedOrder · hf_i)
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `α` is equipped with a conditionally complete linear dense order and `f : α → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if
 it is strictly monotone (increasing) on some closed interval `[a, b]`. -/
@@ -730,15 +722,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   replace : StrictMonoOn f (Icc x y) := StrictMonoOn.mono hf_mono_st this
   exact this (left_mem_Icc.mpr (le_of_lt hxy)) (right_mem_Icc.mpr (le_of_lt hxy)) hxy
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if `f(a) ≤ f(b)`. -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}

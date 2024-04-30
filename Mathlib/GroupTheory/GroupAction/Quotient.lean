@@ -258,15 +258,7 @@ noncomputable def selfEquivSigmaOrbitsQuotientStabilizer' {φ : Ω → β}
 #align mul_action.self_equiv_sigma_orbits_quotient_stabilizer' MulAction.selfEquivSigmaOrbitsQuotientStabilizer'
 #align add_action.self_equiv_sigma_orbits_quotient_stabilizer' AddAction.selfEquivSigmaOrbitsQuotientStabilizer'
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- **Class formula** for a finite group acting on a finite type. See
 `MulAction.card_eq_sum_card_group_div_card_stabilizer` for a specialized version using
 `Quotient.out'`. -/
@@ -359,15 +351,7 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
     [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
     Fintype.card (ConjClasses.mk g).carrier =

@@ -128,15 +128,7 @@ theorem cotangentIdeal_square (I : Ideal R) : I.cotangentIdeal ^ 2 = ⊥ := by
   · intro x y hx hy; exact add_mem hx hy
 #align ideal.cotangent_ideal_square Ideal.cotangentIdeal_square
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem to_quotient_square_range :
     LinearMap.range I.cotangentToQuotientSquare = I.cotangentIdeal.restrictScalars R := by
   trans LinearMap.range (I.cotangentToQuotientSquare.comp I.toCotangent)
@@ -144,15 +136,7 @@ theorem to_quotient_square_range :
   · rw [to_quotient_square_comp_toCotangent, LinearMap.range_comp, I.range_subtype]; ext; rfl
 #align ideal.to_quotient_square_range Ideal.to_quotient_square_range
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The equivalence of the two definitions of `I / I ^ 2`, either as the quotient of `I` or the
 ideal of `R / I ^ 2`. -/
 noncomputable def cotangentEquivIdeal : I.Cotangent ≃ₗ[R] I.cotangentIdeal := by

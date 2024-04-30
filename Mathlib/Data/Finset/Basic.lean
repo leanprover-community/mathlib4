@@ -850,15 +850,7 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
--- Adaptation note: 2024-04-28
--- The change to typeclass resolution in
--- https://github.com/leanprover/lean4/pull/4003
--- (See also https://github.com/leanprover/lean4/issues/3996)
--- will hopefully significantly speed up typeclass search in Mathlib.
--- However it causes some breakages.
--- Currently, we're using the backwards compatibility flag to disable the new behaviour
--- as locally as possible, and leaving the task of cleaning this up for later.
-set_option backward.synthInstance.canonInstances false in
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
