@@ -162,7 +162,7 @@ then `C_c(α, β)` inherits a corresponding algebraic structure. The primary exc
 
 section AlgebraicStructure
 
-variable [TopologicalSpace β]
+variable [TopologicalSpace β] (x : α)
 
 instance instZero [Zero β] : Zero C_c(α, β) where
   zero := { toFun := (0 : C(α, β))
