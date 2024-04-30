@@ -149,8 +149,8 @@ lemma bit1_val (n : Nat) : bit1 n = 2 * n + 1 := congr_arg succ (bit0_val _)
 
 lemma bit_val (b n) : bit b n = 2 * n + cond b 1 0 := by
   cases b
-  apply bit0_val
-  apply bit1_val
+  · apply bit0_val
+  · apply bit1_val
 #align nat.bit_val Nat.bit_val
 
 lemma bit_decomp (n : Nat) : bit (bodd n) (div2 n) = n :=

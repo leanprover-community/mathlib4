@@ -1492,8 +1492,10 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
     (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
-  cases isEmpty_or_nonempty α; subsingleton
-  cases isEmpty_or_nonempty β; subsingleton
+  cases isEmpty_or_nonempty α
+  · subsingleton
+  cases isEmpty_or_nonempty β
+  · subsingleton
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 
