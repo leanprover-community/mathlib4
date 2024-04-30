@@ -20,13 +20,15 @@ TODO: Koszul regular sequences, H_1-regular sequences, quasi-regular sequences, 
 module, regular element, regular sequence, commutative algebra
 -/
 
+universe u v
+
 namespace RingTheory.Sequence
 
 open scoped Pointwise
 
 open Submodule
 
-variable (R : Type*) {S : Type*} (M : Type*) {M'}
+variable (R : Type u) {S : Type*} (M : Type v) {M' : Type*}
 
 section
 
@@ -170,15 +172,15 @@ the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-def rec.{u} {R} [CommRing R]
-    {motive : (M : Type u) → [AddCommGroup M] → [Module R M] → (rs : List R) →
+def rec
+    {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsWeaklyRegular M rs → Sort*}
-    (nil : (M : Type u) → [AddCommGroup M] → [Module R M] → motive M [] (nil R M))
-    (cons : {M : Type u} → [AddCommGroup M] → [Module R M] → (r : R) →
+    (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → motive M [] (nil R M))
+    (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsWeaklyRegular (M⧸r • ⊤) rs) → (ih : motive (M⧸r • ⊤) rs h2) →
       motive M (r::rs) (cons h1 h2)) :
-    {M : Type u} → [AddCommGroup M] → [Module R M] → {rs : List R} →
+    {M : Type v} → [AddCommGroup M] → [Module R M] → {rs : List R} →
     (h : IsWeaklyRegular M rs) → motive M rs h
   | M, _, _, [], _ => nil M
   | M, _, _, (r::rs), h =>
@@ -188,10 +190,10 @@ def rec.{u} {R} [CommRing R]
 /-- A simplified version of `IsWeaklyRegular.rec` where the motive is not
 allowed to depend on the proof of `IsWeaklyRegular`. -/
 @[eliminator]
-def ndrec.{u} {R} [CommRing R]
-    {motive : (M : Type u) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
-    (nil : (M : Type u) → [AddCommGroup M] → [Module R M] → motive M [])
-    (cons : {M : Type u} → [AddCommGroup M] → [Module R M] → (r : R) → (rs : List R) →
+def ndrec
+    {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
+    (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → motive M [])
+    (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) → (rs : List R) →
       IsSMulRegular M r → IsWeaklyRegular (M⧸r • (⊤ : Submodule R M)) rs →
       motive (M⧸r • (⊤ : Submodule R M)) rs → motive M (r::rs))
     {M} [AddCommGroup M] [Module R M] {rs} :
@@ -202,19 +204,19 @@ def ndrec.{u} {R} [CommRing R]
 out by successive elements in both the module and the base ring. This is useful
 for propogating certain properties of the initial `M`, e.g. faithfulness or
 freeness, throughout the induction. -/
-def recWithRing.{v, u}
-    {motive : (R : Type v) → [CommRing R] → (M : Type u) → [AddCommGroup M] →
+def recWithRing
+    {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → (rs : List R) → IsWeaklyRegular M rs → Sort*}
-    (nil : (R : Type v) → [CommRing R] → (M : Type u) → [AddCommGroup M] →
+    (nil : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → motive R M [] (nil R M))
-    (cons : {R : Type v} → [CommRing R] → {M : Type u} → [AddCommGroup M] →
+    (cons : {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsWeaklyRegular (M⧸r • ⊤)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
       (ih : motive (R⧸Ideal.span {r}) (M⧸r • ⊤)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) h2) →
             motive R M (r::rs) (cons' h1 h2)) :
-    {R : Type v} → [CommRing R] → {M : Type u} → [AddCommGroup M] →
+    {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
     [Module R M] → {rs : List R} → (h : IsWeaklyRegular M rs) → motive R M rs h
   | R, _, M, _, _, [], _ => nil R M
   | R, _, M, _, _, (r::rs), h =>
@@ -224,12 +226,12 @@ def recWithRing.{v, u}
 
 /-- A simplified version of `IsWeaklyRegular.recWithRing` where the motive is
 not allowed to depend on the proof of `IsWeaklyRegular`. -/
-def ndrecWithRing.{v, u}
-    {motive : (R : Type v) → [CommRing R] → (M : Type u) →
+def ndrecWithRing
+    {motive : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
-    (nil : (R : Type v) → [CommRing R] → (M : Type u) →
+    (nil : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → motive R M [])
-    (cons : {R : Type v} → [CommRing R] → {M : Type u} →
+    (cons : {R : Type u} → [CommRing R] → {M : Type v} →
       [AddCommGroup M] → [Module R M] → (r : R) → (rs : List R) →
       IsSMulRegular M r →
       IsWeaklyRegular (M⧸r • (⊤ : Submodule R M))
@@ -302,12 +304,12 @@ sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-def rec.{u} {R} [CommRing R]
-    {motive : (M : Type u) → [AddCommGroup M] → [Module R M] → (rs : List R) →
+def rec
+    {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsRegular M rs → Sort*}
-    (nil : (M : Type u) → [AddCommGroup M] → [Module R M] → [Nontrivial M] →
+    (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → [Nontrivial M] →
       motive M [] (nil R M))
-    (cons : {M : Type u} → [AddCommGroup M] → [Module R M] → (r : R) →
+    (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → (h1 : IsSMulRegular M r) → (h2 : IsRegular (M⧸r • ⊤) rs) →
       (ih : motive (M⧸r • ⊤) rs h2) → motive M (r::rs) (cons h1 h2))
     {M} [AddCommGroup M] [Module R M] {rs} (h : IsRegular M rs) : motive M rs h :=
@@ -323,10 +325,10 @@ def rec.{u} {R} [CommRing R]
 /-- A simplified version of `IsRegular.rec` where the motive is not allowed to
 depend on the proof of `IsRegular`. -/
 @[eliminator]
-def ndrec.{u} {R} [CommRing R]
-    {motive : (M : Type u) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
-    (nil : (M : Type u) → [AddCommGroup M] → [Module R M] → [Nontrivial M] → motive M [])
-    (cons : {M : Type u} → [AddCommGroup M] → [Module R M] → (r : R) →
+def ndrec
+    {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
+    (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → [Nontrivial M] → motive M [])
+    (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → IsSMulRegular M r → IsRegular (M⧸r • (⊤ : Submodule R M)) rs →
       motive (M⧸r • (⊤ : Submodule R M)) rs → motive M (r::rs))
     {M} [AddCommGroup M] [Module R M] {rs} : IsRegular M rs → motive M rs :=
@@ -336,12 +338,12 @@ def ndrec.{u} {R} [CommRing R]
 successive elements in both the module and the base ring. This is useful for
 propogating certain properties of the initial `M`, e.g. being faithful or free,
 throughout the induction. -/
-def recWithRing.{v, u}
-    {motive : (R : Type v) → [CommRing R] → (M : Type u) → [AddCommGroup M] →
+def recWithRing
+    {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → (rs : List R) → IsRegular M rs → Sort*}
-    (nil : (R : Type v) → [CommRing R] → (M : Type u) → [AddCommGroup M] →
+    (nil : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → [Nontrivial M] → motive R M [] (nil R M))
-    (cons : {R : Type v} → [CommRing R] → {M : Type u} → [AddCommGroup M] →
+    (cons : {R : Type u} → [CommRing R] → {M : Type v} → [AddCommGroup M] →
       [Module R M] → (r : R) → (rs : List R) → (h1 : IsSMulRegular M r) →
       (h2 : IsRegular (M⧸r • ⊤)
               (rs.map (Ideal.Quotient.mk (Ideal.span {r})))) →
@@ -361,12 +363,12 @@ def recWithRing.{v, u}
 
 /-- A simplified version of `IsRegular.recWithRing` where the motive is not
 allowed to depend on the proof of `IsRegular`. -/
-def ndrecWithRing.{v, u}
-    {motive : (R : Type v) → [CommRing R] → (M : Type u) →
+def ndrecWithRing
+    {motive : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
-    (nil : (R : Type v) → [CommRing R] → (M : Type u) →
+    (nil : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → [Nontrivial M] → motive R M [])
-    (cons : {R : Type v} → [CommRing R] → {M : Type u} →
+    (cons : {R : Type u} → [CommRing R] → {M : Type v} →
       [AddCommGroup M] → [Module R M] → (r : R) → (rs : List R) →
       IsSMulRegular M r →
       IsRegular (M⧸r • (⊤ : Submodule R M))
