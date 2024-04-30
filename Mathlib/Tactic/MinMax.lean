@@ -31,26 +31,20 @@ def segmentReplacements : String → String
   | "inter"  => "union"
   | e => e
 
+/-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
+`[non-alpha]*`. -/
 def splitUpper (s : String) : List String :=
   s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
-
-#eval do
-  let res := "SemilatticeSup"
-  IO.println (splitUpper res == ["Semilattice", "Sup"])
 
 /-- replaces "words" in a string using `segmentReplacements`.  It breaks the string into "words"
 grouping together maximal consecutive substrings consisting of
 either `[uppercase]*[lowercase]*` or `[non-alpha]*`. -/
 def stringReplacements (str : String) : String :=
-  let strs := str.toList.groupBy (·.isAlpha && ·.isAlpha)
-  let strs := strs.map fun w => (splitUpper ⟨w⟩).map segmentReplacements
-  String.join <| strs.map String.join
-
-#eval
-  stringReplacements "hello I am `WithBot' α` and also `bot'`"
+  let strs := (splitUpper str).map segmentReplacements
+  String.join <| strs
 
 partial
-def replAS (stx : Syntax) : CommandElabM Syntax :=
+def replAS {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) : m Syntax :=
   stx.replaceM fun s => do
     match s with
       | `(term| antisymm $ha $hb) => return some (← `($(mkIdent `antisymm) $hb $ha))
@@ -70,8 +64,6 @@ def replAS (stx : Syntax) : CommandElabM Syntax :=
         return some (← `(term| $ha' ∪ $hb'))
       | _ => return none
 
-#eval "abcDeF".toList.groupBy fun a b => a.isUpper || (a.isLower && b.isLower)
-
 abbrev lelt : HashSet String := { "le", "lt" }
 abbrev leftRight : HashSet String := { "left", "right", "sup", "inf", "inter", "union", "none" }
 
@@ -82,21 +74,6 @@ def swapWords : List String → List String
     then left::le::(swapWords ls)
     else le::swapWords (left :: ls)
   | e => e
-
-#eval do
-  let res := ["le", "inf"]
-  let res := ["inf", "le"]
-  IO.println (swapWords res) -- == ["Semilattice", "Sup"])
-
-#eval do
-  let res := "NNRealHHi"
-  IO.println (splitUpper res)
-  IO.println (splitUpper res == ["NNReal", "HHi"])
-
-#eval do
-  let test := "hello I am `aDocString 0` and I have, some punctuation."
-  let gps := test.toList.groupBy fun x y : Char => x.isAlpha && y.isAlpha
-  IO.println <| gps.map fun w => (⟨w⟩ : String)
 
 /-- converts a name involving `WithBot` to a name involving `WithTop`. -/
 def nameToTop : Name → Name
@@ -142,8 +119,10 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
 /--
 If `thm` is a theorem about `WithBot`, then `toTop thm` tries to add to the
 environment the analogous result about `WithTop`.
+
+Writing `toTop?` also prints the extra declaration added by `toTop`.
 -/
-elab "toTop " tk:"?"? cmd:command : command => do
+elab (name := toTopCmd) "toTop " tk:"?"? cmd:command : command => do
   let newCmd ← replAS <| ← MaxToMin <| ← toTop cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
@@ -151,12 +130,6 @@ elab "toTop " tk:"?"? cmd:command : command => do
 
   withScope (fun s => { s with currNamespace := nameToTop currNS } ) <| elabCommand newCmd
 
---  let newNS := mkIdent (nameToTop currNS)
---  let currNS := mkIdent currNS
---  elabCommand (← `(end $currNS namespace $newNS))
---  --withScope (fun s => { s with currNamespace := nameToTop currNS } ) <|
---  elabCommand newCmd
---  elabCommand (← `(end $newNS namespace $currNS))
-
-
+@[inherit_doc toTopCmd]
 macro "toTop? " cmd:command : command => return (← `(toTop ? $cmd))
+--#lint
