@@ -37,7 +37,7 @@ def splitUpper (s : String) : List String :=
 
 /-- replaces "words" in a string using `segmentReplacements`.  It breaks the string into "words"
 grouping together maximal consecutive substrings consisting of
-either `[uppercase]*[lowercase]*` or `[non-alpha]*`. -/
+either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
 def stringReplacements (str : String) : String :=
   let strs := (splitUpper str).map fun s => (segmentReplacements.find? s).getD s
   String.join <| strs
