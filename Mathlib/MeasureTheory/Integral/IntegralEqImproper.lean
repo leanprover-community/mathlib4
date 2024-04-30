@@ -761,8 +761,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
-    apply le_antisymm (le_top)
-    rw [← volume_Ici (a := b)]
+    rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
   exact (Completion.uniformEmbedding_coe E).embedding
@@ -817,7 +816,7 @@ theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
   have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono _root_.atTop_le_cocompact |>.tendsto
 
@@ -938,8 +937,8 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
   suffices ∃ a, Tendsto f atBot (𝓝 a) from tendsto_nhds_limUnder this
   let g := f ∘ (fun x ↦ -x)
   have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
-    intro x (hx : -a < x)
-    have : -x ∈ Iic a := by simp; linarith
+    intro x hx
+    have : -x ∈ Iic a := by simp only [mem_Iic, mem_Ioi, neg_le] at *; exact hx.le
     simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
   have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg
@@ -1020,7 +1019,7 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
   have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 

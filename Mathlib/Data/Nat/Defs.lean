@@ -64,7 +64,7 @@ open Function
 namespace Nat
 variable {a b c d m n k : ℕ} {p q : ℕ → Prop}
 
-instance nontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
+instance instNontrivial : Nontrivial ℕ := ⟨⟨0, 1, Nat.zero_ne_one⟩⟩
 
 attribute [gcongr] Nat.succ_le_succ
 attribute [simp] Nat.not_lt_zero Nat.succ_ne_zero Nat.succ_ne_self Nat.zero_ne_one Nat.one_ne_zero
@@ -1197,7 +1197,8 @@ lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 lemma add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; simp only [zero_eq, mod_zero, zero_le, ↓reduceIte, Nat.sub_zero]
+  cases k
+  · simp
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
@@ -1292,9 +1293,9 @@ set_option linter.deprecated false in
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
   -- Porting note: was `cc`
-  decide
-  rw [bit0, ← Nat.two_mul]
-  exact Nat.dvd_mul_right _ _
+  · decide
+  · rw [bit0, ← Nat.two_mul]
+    exact Nat.dvd_mul_right _ _
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
@@ -1376,6 +1377,17 @@ lemma dvd_div_of_mul_dvd (h : a * b ∣ c) : b ∣ c / a :=
 @[simp] lemma dvd_div_iff (hbc : c ∣ b) : a ∣ b / c ↔ c * a ∣ b :=
   ⟨fun h => mul_dvd_of_dvd_div hbc h, fun h => dvd_div_of_mul_dvd h⟩
 #align nat.dvd_div_iff Nat.dvd_div_iff
+
+lemma dvd_mul_of_div_dvd (h : b ∣ a) (hdiv : a / b ∣ c) : a ∣ b * c := by
+  obtain ⟨e, rfl⟩ := hdiv
+  rw [← Nat.mul_assoc, Nat.mul_comm _ (a / b), Nat.div_mul_cancel h]
+  exact Nat.dvd_mul_right a e
+
+@[simp] lemma div_dvd_iff_dvd_mul (h : b ∣ a) (hb : b ≠ 0) : a / b ∣ c ↔ a ∣ b * c :=
+  exists_congr <| fun d => by
+  have := Nat.dvd_trans (Nat.dvd_mul_left _ d) (Nat.mul_dvd_mul_left d h)
+  rw [eq_comm, Nat.mul_comm, ← Nat.mul_div_assoc d h,
+    Nat.div_eq_iff_eq_mul_right (Nat.pos_of_ne_zero hb) this, Nat.mul_comm, eq_comm]
 
 @[simp] lemma div_div_div_eq_div (dvd : b ∣ a) (dvd2 : a ∣ c) : c / (a / b) / b = c / a :=
   match a, b, c with

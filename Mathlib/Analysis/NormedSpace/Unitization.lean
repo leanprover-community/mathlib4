@@ -150,7 +150,7 @@ theorem lipschitzWith_addEquiv :
   rw [← Real.toNNReal_ofNat]
   refine AddMonoidHomClass.lipschitz_of_bound (Unitization.addEquiv 𝕜 A) 2 fun x => ?_
   rw [norm_eq_sup, Prod.norm_def]
-  refine' max_le ?_ ?_
+  refine max_le ?_ ?_
   · rw [sup_eq_max, mul_max_of_nonneg _ _ (zero_le_two : (0 : ℝ) ≤ 2)]
     exact le_max_of_le_left ((le_add_of_nonneg_left (norm_nonneg _)).trans_eq (two_mul _).symm)
   · nontriviality A

@@ -88,7 +88,7 @@ instance : IsAddHaarMeasure (volume : Measure (E K)) := prod.instIsAddHaarMeasur
 instance : NoAtoms (volume : Measure (E K)) := by
   obtain ⟨w⟩ := (inferInstance : Nonempty (InfinitePlace K))
   by_cases hw : IsReal w
-  exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
+  · exact @prod.instNoAtoms_fst _ _ _ _ volume volume _ (pi_noAtoms ⟨w, hw⟩)
   · exact @prod.instNoAtoms_snd _ _ _ _ volume volume _
       (pi_noAtoms ⟨w, not_isReal_iff_isComplex.mp hw⟩)
 
@@ -223,16 +223,16 @@ theorem convexBodyLT'_volume :
   have vol_box : ∀ B : ℝ≥0, volume {x : ℂ | |x.re| < 1 ∧ |x.im| < B^2} = 4*B^2 := by
     intro B
     rw [← (Complex.volume_preserving_equiv_real_prod.symm).measure_preimage]
-    simp_rw [Set.preimage_setOf_eq, Complex.measurableEquivRealProd_symm_apply]
-    rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
-      Set.Ioo (-1:ℝ) (1:ℝ) ×ˢ Set.Ioo (- (B:ℝ) ^ 2) ((B:ℝ) ^ 2) by
-        ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
-    simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
-      ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
-      ofReal_coe_nnreal, ← mul_assoc, show (2:ℝ≥0∞) * 2 = 4 by norm_num]
-    refine MeasurableSet.inter ?_ ?_
-    · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
-    · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
+    · simp_rw [Set.preimage_setOf_eq, Complex.measurableEquivRealProd_symm_apply]
+      rw [show {a : ℝ × ℝ | |a.1| < 1 ∧ |a.2| < B ^ 2} =
+        Set.Ioo (-1:ℝ) (1:ℝ) ×ˢ Set.Ioo (- (B:ℝ) ^ 2) ((B:ℝ) ^ 2) by
+          ext; simp_rw [Set.mem_setOf_eq, Set.mem_prod, Set.mem_Ioo, abs_lt]]
+      simp_rw [volume_eq_prod, prod_prod, Real.volume_Ioo, sub_neg_eq_add, one_add_one_eq_two,
+        ← two_mul, ofReal_mul zero_le_two, ofReal_pow (coe_nonneg B), ofReal_ofNat,
+        ofReal_coe_nnreal, ← mul_assoc, show (2:ℝ≥0∞) * 2 = 4 by norm_num]
+    · refine MeasurableSet.inter ?_ ?_
+      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_re) measurable_const
+      · exact measurableSet_lt (measurable_norm.comp Complex.measurable_im) measurable_const
   calc
     _ = (∏ x : {w // InfinitePlace.IsReal w}, ENNReal.ofReal (2 * (f x.val))) *
           ((∏ x in Finset.univ.erase  w₀, ENNReal.ofReal (f x.val) ^ 2 * pi) *
@@ -293,12 +293,12 @@ theorem convexBodySumFun_neg (x : E K) :
 theorem convexBodySumFun_add_le (x y : E K) :
     convexBodySumFun (x + y) ≤ convexBodySumFun x + convexBodySumFun y := by
   simp_rw [convexBodySumFun, Prod.fst_add, Pi.add_apply, Prod.snd_add]
-  refine le_trans (add_le_add
+  refine (add_le_add
     (Finset.sum_le_sum (fun w _ => norm_add_le (x.1 w) (y.1 w)))
     (mul_le_mul_of_nonneg_left
-      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))) ?_
+      (Finset.sum_le_sum (fun w _ => norm_add_le (x.2 w) (y.2 w))) (by norm_num))).trans_eq ?_
   simp_rw [Finset.sum_add_distrib, mul_add]
-  exact le_of_eq (by ring)
+  ring
 
 theorem convexBodySumFun_smul (c : ℝ) (x : E K) :
     convexBodySumFun (c • x) = |c| * convexBodySumFun x := by
@@ -384,8 +384,8 @@ theorem convexBodySum_convex : Convex ℝ (convexBodySum K B) := by
 theorem convexBodySum_isBounded : Bornology.IsBounded (convexBodySum K B) := by
   refine Metric.isBounded_iff.mpr ⟨B + B, fun x hx y hy => ?_⟩
   refine le_trans (norm_sub_le x y) (add_le_add ?_ ?_)
-  exact le_trans (norm_le_convexBodySumFun x) hx
-  exact le_trans (norm_le_convexBodySumFun y) hy
+  · exact le_trans (norm_le_convexBodySumFun x) hx
+  · exact le_trans (norm_le_convexBodySumFun y) hy
 
 theorem convexBodySum_compact : IsCompact (convexBodySum K B) := by
   rw [Metric.isCompact_iff_isClosed_bounded]
@@ -486,10 +486,10 @@ theorem volume_fundamentalDomain_fractionalIdealLatticeBasis :
       fractionalIdeal_rank]
   rw [← fundamentalDomain_reindex (fractionalIdealLatticeBasis K I) e,
     measure_fundamentalDomain ((fractionalIdealLatticeBasis K I).reindex e)]
-  rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
-      (basisOfFractionalIdeal K I) ∘ e.symm by
-    ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
-  rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
+  · rw [show (fractionalIdealLatticeBasis K I).reindex e = (mixedEmbedding K) ∘
+        (basisOfFractionalIdeal K I) ∘ e.symm by
+      ext1; simp only [Basis.coe_reindex, Function.comp_apply, fractionalIdealLatticeBasis_apply]]
+    rw [mixedEmbedding.det_basisOfFractionalIdeal_eq_norm]
 
 theorem minkowskiBound_lt_top : minkowskiBound K I < ⊤ := by
   refine ENNReal.mul_lt_top ?_ ?_

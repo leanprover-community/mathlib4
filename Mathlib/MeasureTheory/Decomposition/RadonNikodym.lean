@@ -255,14 +255,14 @@ lemma rnDeriv_add_right_of_mutuallySingular {ν' : Measure α}
   have h₂ := rnDeriv_add' (μ.singularPart ν') (ν'.withDensity (μ.rnDeriv ν')) ν
   refine (Filter.EventuallyEq.trans (h_ac.ae_le h₁) ?_).trans h₂.symm
   have h₃ := rnDeriv_add_right_of_mutuallySingular' (?_ : μ.singularPart ν' ⟂ₘ ν') hνν'
-  have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
-    refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
-    exact hνν'.symm.withDensity
-  have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
-    rw [rnDeriv_eq_zero]
-    exact hνν'.symm.withDensity
-  filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
-  rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
+  · have h₄ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv (ν + ν') =ᵐ[ν] 0 := by
+      refine rnDeriv_eq_zero_of_mutuallySingular ?_ h_ac
+      exact hνν'.symm.withDensity
+    have h₅ : (ν'.withDensity (rnDeriv μ ν')).rnDeriv ν =ᵐ[ν] 0 := by
+      rw [rnDeriv_eq_zero]
+      exact hνν'.symm.withDensity
+    filter_upwards [h₃, h₄, h₅] with x hx₃ hx₄ hx₅
+    rw [Pi.add_apply, Pi.add_apply, hx₃, hx₄, hx₅]
   exact mutuallySingular_singularPart μ ν'
 
 lemma rnDeriv_withDensity_rnDeriv [SigmaFinite μ] [SigmaFinite ν] (hμν : μ ≪ ν) :

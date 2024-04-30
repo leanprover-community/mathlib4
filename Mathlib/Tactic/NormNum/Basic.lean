@@ -101,7 +101,7 @@ theorem isNat_natAbs_neg : {n : ℤ} → {a : ℕ} → IsInt n (.negOfNat a) →
 
 /-! # Casts -/
 
-theorem isnatCast {R} [AddMonoidWithOne R] (n m : ℕ) :
+theorem isNat_natCast {R} [AddMonoidWithOne R] (n m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨rfl⟩
 
 /-- The `norm_num` extension which identifies an expression `Nat.cast n`, returning `n`. -/
@@ -111,7 +111,7 @@ theorem isnatCast {R} [AddMonoidWithOne R] (n m : ℕ) :
   guard <|← withNewMCtxDepth <| isDefEq n q(Nat.cast (R := $α))
   let ⟨na, pa⟩ ← deriveNat a q(instAddMonoidWithOneNat)
   haveI' : $e =Q $a := ⟨⟩
-  return .isNat sα na q(isnatCast $a $na $pa)
+  return .isNat sα na q(isNat_natCast $a $na $pa)
 
 theorem isNat_intCast {R} [Ring R] (n : ℤ) (m : ℕ) :
     IsNat n m → IsNat (n : R) m := by rintro ⟨⟨⟩⟩; exact ⟨by simp⟩

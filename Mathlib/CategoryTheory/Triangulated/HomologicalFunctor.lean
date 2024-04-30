@@ -15,8 +15,12 @@ In this file, given a functor `F : C ⥤ A` from a pretriangulated category to
 an abelian category, we define the type class `F.IsHomological`, which is the property
 that `F` sends distinguished triangles in `C` to exact sequences in `A`.
 
-If `F` is a homological functor, we defined the strictly full triangulated subcategory
+If `F` is a homological functor, we define the strictly full triangulated subcategory
 `F.homologicalKernel`.
+
+Note: depending on the sources, homological functors are sometimes
+called cohomological functors, while certain authors use "cohomological functors"
+for "contravariant" functors (i.e. functors `Cᵒᵖ ⥤ A`).
 
 ## TODO
 
@@ -96,7 +100,7 @@ lemma mem_homologicalKernel_iff [F.IsHomological] [F.ShiftSequence ℤ] (X : C) 
   simp only [← fun (n : ℤ) => Iso.isZero_iff ((F.isoShift n).app X)]
   rfl
 
-noncomputable instance [F.IsHomological] :
+noncomputable instance (priority := 100) [F.IsHomological] :
     PreservesLimitsOfShape (Discrete WalkingPair) F := by
   suffices ∀ (X₁ X₂ : C), PreservesLimit (pair X₁ X₂) F from
     ⟨fun {X} => preservesLimitOfIsoDiagram F (diagramIsoPair X).symm⟩
@@ -117,7 +121,8 @@ noncomputable instance [F.IsHomological] :
   have : PreservesBinaryBiproduct X₁ X₂ F := preservesBinaryBiproductOfMonoBiprodComparison _
   apply Limits.preservesBinaryProductOfPreservesBinaryBiproduct
 
-instance [F.IsHomological] : F.Additive := F.additive_of_preserves_binary_products
+instance (priority := 100) [F.IsHomological] : F.Additive :=
+  F.additive_of_preserves_binary_products
 
 end Functor
 

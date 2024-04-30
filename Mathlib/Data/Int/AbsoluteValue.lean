@@ -3,7 +3,7 @@ Copyright (c) 2021 Anne Baanen. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Data.Int.Cast.Lemmas
 import Mathlib.Data.Int.Units

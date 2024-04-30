@@ -132,15 +132,12 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
-noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
-    inv := IsFractionRing.inv A
-    mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-    inv_zero := by
-      change IsFractionRing.inv A (0 : K) = 0
-      rw [IsFractionRing.inv]
-      exact dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def toField : Field K where
+  __ := IsFractionRing.isDomain A
+  mul_inv_cancel := IsFractionRing.mul_inv_cancel A
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
@@ -272,11 +269,11 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
-  intro h
-  apply @zero_ne_one R
-  exact
-    IsLocalization.injective S (le_of_eq rfl)
-      (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+  · intro h
+    apply @zero_ne_one R
+    exact
+      IsLocalization.injective S (le_of_eq rfl)
+        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
 #align is_fraction_ring.nontrivial IsFractionRing.nontrivial
 
 end IsFractionRing

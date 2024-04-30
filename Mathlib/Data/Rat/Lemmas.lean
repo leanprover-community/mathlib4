@@ -130,7 +130,7 @@ theorem mul_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
@@ -147,7 +147,7 @@ theorem add_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
@@ -191,7 +191,7 @@ theorem den_div_cast_eq_one_iff (m n : ℤ) (hn : n ≠ 0) : ((m : ℚ) / n).den
     simp_rw [eq_div_iff_mul_eq hn, ← Int.cast_mul] at hk
     rwa [mul_comm, eq_comm, coe_int_inj] at hk
   · rintro ⟨d, rfl⟩
-    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.coe_int_den]
+    rw [Int.cast_mul, mul_comm, mul_div_cancel_right₀ _ hn, Rat.den_intCast]
 #align rat.denom_div_cast_eq_one_iff Rat.den_div_cast_eq_one_iff
 
 theorem num_div_eq_of_coprime {a b : ℤ} (hb0 : 0 < b) (h : Nat.Coprime a.natAbs b.natAbs) :

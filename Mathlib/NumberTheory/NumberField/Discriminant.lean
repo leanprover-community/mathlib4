@@ -122,8 +122,8 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
   congr 1
   rw [eq_comm]
   calc
-    _ = FractionalIdeal.absNorm I.1 * (2:ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
-          (2:ℝ) ^ finrank ℚ K * ((2:ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ)⁻¹ ^ NrComplexPlaces K * sqrt ‖discr K‖₊ *
+          (2 : ℝ) ^ finrank ℚ K * ((2 : ℝ) ^ NrRealPlaces K * (π / 2) ^ NrComplexPlaces K /
             (Nat.factorial (finrank ℚ K)))⁻¹ := by
       simp_rw [minkowskiBound, convexBodySumFactor,
         volume_fundamentalDomain_fractionalIdealLatticeBasis,
@@ -131,22 +131,22 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
         toReal_ofNat, mixedEmbedding.finrank, mul_assoc]
       rw [ENNReal.toReal_ofReal (Rat.cast_nonneg.mpr (FractionalIdeal.absNorm_nonneg I.1))]
       rfl
-    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (finrank ℚ K - NrComplexPlaces K - NrRealPlaces K +
           NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ * Nat.factorial (finrank ℚ K) *
             π⁻¹ ^ (NrComplexPlaces K) := by
       simp_rw [inv_div, div_eq_mul_inv, mul_inv, ← zpow_neg_one, ← zpow_natCast, mul_zpow,
         ← zpow_mul, neg_one_mul, mul_neg_one, neg_neg, Real.coe_sqrt, coe_nnnorm, sub_eq_add_neg,
-        zpow_add₀ (two_ne_zero : (2:ℝ) ≠ 0)]
+        zpow_add₀ (two_ne_zero : (2 : ℝ) ≠ 0)]
       ring
-    _ = FractionalIdeal.absNorm I.1 * (2:ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
+    _ = FractionalIdeal.absNorm I.1 * (2 : ℝ) ^ (2 * NrComplexPlaces K : ℤ) * Real.sqrt ‖discr K‖ *
           Nat.factorial (finrank ℚ K) * π⁻¹ ^ (NrComplexPlaces K) := by
       congr
       rw [← card_add_two_mul_card_eq_rank, Nat.cast_add, Nat.cast_mul, Nat.cast_ofNat]
       ring
     _ = FractionalIdeal.absNorm I.1 * (4 / π) ^ NrComplexPlaces K * (finrank ℚ K).factorial *
           Real.sqrt |discr K| := by
-      rw [show ‖discr K‖ = |(discr K : ℝ)| by rfl, zpow_mul, show (2:ℝ) ^ (2:ℤ) = 4 by norm_cast,
-        div_pow, inv_eq_one_div, div_pow, one_pow, zpow_natCast]
+      rw [Int.norm_eq_abs, zpow_mul, show (2 : ℝ) ^ (2 : ℤ) = 4 by norm_cast, div_pow,
+        inv_eq_one_div, div_pow, one_pow, zpow_natCast]
       ring
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
@@ -167,7 +167,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
   obtain ⟨x, h_nz, h_bd⟩ := exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr K
-  have h_nm : (1:ℝ) ≤ |(Algebra.norm ℚ) (x:K)| := by
+  have h_nm : (1 : ℝ) ≤ |(Algebra.norm ℚ) (x : K)| := by
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
@@ -176,7 +176,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   refine le_trans ?_ h_bd
   -- The sequence `a n` is a lower bound for `|discr K|`. We prove below by induction an uniform
   -- lower bound for this sequence from which we deduce the result.
-  let a : ℕ → ℝ := fun n => (n:ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial:ℝ) ^ 2)
+  let a : ℕ → ℝ := fun n => (n : ℝ) ^ (n * 2) / ((4 / π) ^ n * (n.factorial : ℝ) ^ 2)
   suffices ∀ n, 2 ≤ n → (4 / 9 : ℝ) * (3 * π / 4) ^ n ≤ a n by
     refine le_trans (this (finrank ℚ K) h) ?_
     simp only [a]
@@ -188,7 +188,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   induction n, hn using Nat.le_induction with
   | base => exact le_of_eq <| by norm_num [a, Nat.factorial_two]; field_simp; ring
   | succ m _ h_m =>
-      suffices (3:ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
+      suffices (3 : ℝ) ≤ (1 + 1 / m : ℝ) ^ (2 * m) by
         convert_to _ ≤ (a m) * (1 + 1 / m : ℝ) ^ (2 * m) / (4 / π)
         · simp_rw [a, add_mul, one_mul, pow_succ, Nat.factorial_succ]
           field_simp; ring
@@ -196,23 +196,25 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
           convert (mul_le_mul h_m this (by positivity) (by positivity)) using 1
           field_simp; ring
       refine le_trans (le_of_eq (by field_simp; norm_num)) (one_add_mul_le_pow ?_ (2 * m))
-      exact le_trans (by norm_num : (-2:ℝ) ≤ 0) (by positivity)
+      exact le_trans (by norm_num : (-2 : ℝ) ≤ 0) (by positivity)
 
 /-- **Hermite-Minkowski Theorem**. A nontrivial number field has discriminant greater than `2`. -/
 theorem abs_discr_gt_two (h : 1 < finrank ℚ K) : 2 < |discr K| := by
   have h₁ : 1 ≤ 3 * π / 4 := by
     rw [_root_.le_div_iff (by positivity), ← _root_.div_le_iff' (by positivity), one_mul]
     linarith [Real.pi_gt_three]
-  have h₂ : (9:ℝ) < π ^ 2 := by
-    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9:ℝ) = 3 from
+  have h₂ : (9 : ℝ) < π ^ 2 := by
+    rw [ ← Real.sqrt_lt (by positivity) (by positivity), show Real.sqrt (9 : ℝ) = 3 from
     (Real.sqrt_eq_iff_sq_eq (by positivity) (by positivity)).mpr (by norm_num)]
     exact Real.pi_gt_three
   refine Int.cast_lt.mp <| lt_of_lt_of_le ?_ (abs_discr_ge h)
   rw [← _root_.div_lt_iff' (by positivity), Int.cast_ofNat]
   refine lt_of_lt_of_le ?_ (pow_le_pow_right (n := 2) h₁ h)
-  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow, show (2:ℝ) / (4 / 9) * 4 ^ 2 = 72 by
-    norm_num, show (3:ℝ) ^ 2 = 9 by norm_num, ← _root_.div_lt_iff' (by positivity),
-    show (72:ℝ) / 9 = 8 by norm_num]
+  rw [div_pow, _root_.lt_div_iff (by norm_num), mul_pow,
+    show (2 : ℝ) / (4 / 9) * 4 ^ 2 = 72 by norm_num,
+    show (3 : ℝ) ^ 2 = 9 by norm_num,
+    ← _root_.div_lt_iff' (by positivity),
+    show (72 : ℝ) / 9 = 8 by norm_num]
   linarith [h₂]
 
 /-!

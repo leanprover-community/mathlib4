@@ -430,6 +430,28 @@ theorem exists_length_eq_zero_iff {u v : V} : (∃ p : G.Walk u v, p.length = 0)
 theorem length_eq_zero_iff {u : V} {p : G.Walk u u} : p.length = 0 ↔ p = nil := by cases p <;> simp
 #align simple_graph.walk.length_eq_zero_iff SimpleGraph.Walk.length_eq_zero_iff
 
+theorem getVert_append {u v w : V} (p : G.Walk u v) (q : G.Walk v w) (i : ℕ) :
+    (p.append q).getVert i = if i < p.length then p.getVert i else q.getVert (i - p.length) := by
+  induction p generalizing i with
+  | nil => simp
+  | cons h p ih => cases i <;> simp [getVert, ih, Nat.succ_lt_succ_iff]
+
+theorem getVert_reverse {u v : V} (p : G.Walk u v) (i : ℕ) :
+    p.reverse.getVert i = p.getVert (p.length - i) := by
+  induction p with
+  | nil => rfl
+  | cons h p ih =>
+    simp only [reverse_cons, getVert_append, length_reverse, ih, length_cons]
+    split_ifs
+    next hi =>
+      rw [Nat.succ_sub hi.le]
+      simp [getVert]
+    next hi =>
+      obtain rfl | hi' := Nat.eq_or_lt_of_not_lt hi
+      · simp [getVert]
+      · rw [Nat.eq_add_of_sub_eq (Nat.sub_pos_of_lt hi') rfl, Nat.sub_eq_zero_of_le hi']
+        simp [getVert]
+
 section ConcatRec
 
 variable {motive : ∀ u v : V, G.Walk u v → Sort*} (Hnil : ∀ {u : V}, motive u u nil)
@@ -1128,7 +1150,10 @@ def takeUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then
       by subst u; exact Walk.nil
     else
-      cons r (takeUntil p u <| by cases h; exact (hx rfl).elim; assumption)
+      cons r (takeUntil p u <| by
+        cases h
+        · exact (hx rfl).elim
+        · assumption)
 #align simple_graph.walk.take_until SimpleGraph.Walk.takeUntil
 
 /-- Given a vertex in the support of a path, give the path from (and including) that vertex to
@@ -1140,7 +1165,10 @@ def dropUntil {v w : V} : ∀ (p : G.Walk v w) (u : V), u ∈ p.support → G.Wa
     if hx : v = u then by
       subst u
       exact cons r p
-    else dropUntil p u <| by cases h; exact (hx rfl).elim; assumption
+    else dropUntil p u <| by
+      cases h
+      · exact (hx rfl).elim
+      · assumption
 #align simple_graph.walk.drop_until SimpleGraph.Walk.dropUntil
 
 /-- The `takeUntil` and `dropUntil` functions split a walk into two pieces.
@@ -1469,7 +1497,7 @@ theorem length_bypass_le {u v : V} (p : G.Walk u v) : p.bypass.length ≤ p.leng
     simp only [bypass]
     split_ifs
     · trans
-      apply length_dropUntil_le
+      · apply length_dropUntil_le
       rw [length_cons]
       exact le_add_right ih
     · rw [length_cons, length_cons]
@@ -1916,9 +1944,9 @@ abbrev toDeleteEdge (e : Sym2 V) (p : G.Walk v w) (hp : e ∉ p.edges) :
 theorem map_toDeleteEdges_eq (s : Set (Sym2 V)) {p : G.Walk v w} (hp) :
     Walk.map (Hom.mapSpanningSubgraphs (G.deleteEdges_le s)) (p.toDeleteEdges s hp) = p := by
   rw [← transfer_eq_map_of_le, transfer_transfer, transfer_self]
-  · intros e
-    rw [edges_transfer]
-    apply edges_subset_edgeSet p
+  intros e
+  rw [edges_transfer]
+  apply edges_subset_edgeSet p
 #align simple_graph.walk.map_to_delete_edges_eq SimpleGraph.Walk.map_toDeleteEdges_eq
 
 protected theorem IsPath.toDeleteEdges (s : Set (Sym2 V))
