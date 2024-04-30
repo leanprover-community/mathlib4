@@ -332,7 +332,7 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
   classical
   -- Now let `n` be the smallest power such that `⁅v, _⁆ ^ n` kills `z'`.
   set n := Nat.find hz' with _hn
-  have hn : (toEndomorphism K ↥U Q v ^ n) z' = 0 := Nat.find_spec hz'
+  have hn : (toEndomorphism K U Q v ^ n) z' = 0 := Nat.find_spec hz'
   -- If `n = 0`, then we are done.
   obtain hn₀|⟨k, hk⟩ : n = 0 ∨ ∃ k, n = k + 1 := by cases n <;> simp
   · simpa only [hn₀, pow_zero, LinearMap.one_apply] using hn
