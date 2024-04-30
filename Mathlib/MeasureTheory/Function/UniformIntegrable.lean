@@ -234,23 +234,23 @@ theorem Memℒp.snormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
   have hbdd : snormEssSup f μ < ∞ := hf.snorm_lt_top
   refine' ⟨(snorm f ∞ μ + 1).toReal, _⟩
   rw [snormEssSup_indicator_eq_snormEssSup_restrict]
-  have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
-    simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
-    have : { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
-        { x : α | snormEssSup f μ < ‖f x‖₊ } := by
-      intro x hx
-      rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
-        ENNReal.coe_toReal, coe_nnnorm]
-      refine' lt_of_lt_of_le _ hx
-      rw [ENNReal.toReal_lt_toReal hbdd.ne]
-      · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-      · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
-    rw [← nonpos_iff_eq_zero]
-    refine' (measure_mono this).trans _
-    have hle := coe_nnnorm_ae_le_snormEssSup f μ
-    simp_rw [ae_iff, not_le] at hle
-    exact nonpos_iff_eq_zero.2 hle
-  rw [this, snormEssSup_measure_zero]
+  · have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
+      simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
+      have : { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
+          { x : α | snormEssSup f μ < ‖f x‖₊ } := by
+        intro x hx
+        rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
+          ENNReal.coe_toReal, coe_nnnorm]
+        refine' lt_of_lt_of_le _ hx
+        rw [ENNReal.toReal_lt_toReal hbdd.ne]
+        · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
+        · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
+      rw [← nonpos_iff_eq_zero]
+      refine' (measure_mono this).trans _
+      have hle := coe_nnnorm_ae_le_snormEssSup f μ
+      simp_rw [ae_iff, not_le] at hle
+      exact nonpos_iff_eq_zero.2 hle
+    rw [this, snormEssSup_measure_zero]
   exact measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe
 #align measure_theory.mem_ℒp.snorm_ess_sup_indicator_norm_ge_eq_zero MeasureTheory.Memℒp.snormEssSup_indicator_norm_ge_eq_zero
 
@@ -284,7 +284,8 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
         (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
-  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]; rfl
+  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]
+    · rfl
     rw [Set.mem_setOf_eq]
     rwa [← hiff]
   · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem]
@@ -351,8 +352,8 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
     snorm_indicator_le_of_bound (f := { x | ‖f x‖ < M }.indicator f) hp_top hε (by
       intro x
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
-      split_ifs with h
-      exacts [h, hMpos])
+      · split_ifs with h
+        exacts [h, hMpos])
   · refine' ⟨δ, hδpos, fun s hs hμs => _⟩
     rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
     · rw [snorm_indicator_eq_snorm_restrict hs]
