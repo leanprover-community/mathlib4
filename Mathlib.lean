@@ -274,6 +274,7 @@ import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.Embedding.ComplementaryTrunc
 import Mathlib.Algebra.Homology.Embedding.Extend
 import Mathlib.Algebra.Homology.Embedding.ExtendHomology
+import Mathlib.Algebra.Homology.Embedding.ExtendMap
 import Mathlib.Algebra.Homology.Embedding.HomEquiv
 import Mathlib.Algebra.Homology.Embedding.Limits
 import Mathlib.Algebra.Homology.Embedding.Restriction

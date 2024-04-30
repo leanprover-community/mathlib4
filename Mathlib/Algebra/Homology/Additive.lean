@@ -142,7 +142,9 @@ variable {W : Type*} [Category W] [Preadditive W]
 This is sometimes called the "prolongation".
 -/
 @[simps]
-def Functor.mapHomologicalComplex (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) :
+def Functor.mapHomologicalComplex {V W : Type*} [Category V] [Category W]
+    [HasZeroMorphisms V] [HasZeroMorphisms W]
+    (F : V ⥤ W) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
     HomologicalComplex V c ⥤ HomologicalComplex W c where
   obj C :=
     { X := fun i => F.obj (C.X i)
