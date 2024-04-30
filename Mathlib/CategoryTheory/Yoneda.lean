@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import Mathlib.CategoryTheory.Functor.Hom
-import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Products.Basic
 import Mathlib.Data.ULift
 
