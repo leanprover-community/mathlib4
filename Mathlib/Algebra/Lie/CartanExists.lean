@@ -4,10 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 
-import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.CartanSubalgebra
 import Mathlib.Algebra.Lie.Rank
-import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Existence of Cartan subalgebras
@@ -44,19 +42,6 @@ variable [Module.Finite R M] [Module.Free R M]
 open FiniteDimensional LieSubalgebra Module.Free Polynomial
 
 variable (K)
-
-lemma finrank_engel (x : L) :
-    finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
-  (ad K L x).finrank_maximalGeneralizedEigenspace
-
-lemma rank_le_finrank_engel (x : L) :
-    rank K L ≤ finrank K (engel K x) :=
-  (rank_le_natTrailingDegree_charpoly_ad K x).trans
-    (finrank_engel K x).ge
-
-lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
-    IsRegular K x ↔ finrank K (engel K x) = rank K L := by
-  rw [isRegular_iff_natTrailingDegree_charpoly_eq_rank, finrank_engel]
 
 namespace engel_le_engel
 
@@ -130,6 +115,10 @@ end CommRing
 
 section Field
 
+-- move this
+def _root_.IsMinimumOfMinimalOn {ι α : Type*} [Preorder α] (s : Set ι) (f : ι → α) : Prop :=
+    ∀ i ∈ s, (∀ j, f j ≤ f i → f j = f i) → ∀ j, f i ≤ f j
+
 variable {K L : Type*}
 variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
@@ -141,11 +130,11 @@ Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` fo
 Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
 Lemma 2 in [barnes1967]. -/
-lemma engel_le_engel (hLK : finrank K L ≤ #K)
-    (U : LieSubalgebra K L) (x : U) (hUx : U ≤ engel K (x : L))
-    (hmin : ∀ y : U, engel K (y : L) ≤ engel K (x : L) → engel K (y : L) = engel K (x : L))
-    (y : U) :
-    engel K (x : L) ≤ engel K (y : L) := by
+lemma isMinimumOfMinimalOn_engel_of_finrank_le
+    (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L) :
+    IsMinimumOfMinimalOn {x : U | U ≤ engel K (x : L)} (fun y : U ↦ engel K (y : L)) := by
+  intro x hUx hmin y
+  dsimp at hUx hmin ⊢
   -- We denote by `E` the Engel subalgebra `engel K x`
   -- viewed as Lie submodule of `L` over the Lie algebra `U`.
   let E : LieSubmodule K U L :=
@@ -352,6 +341,17 @@ lemma engel_le_engel (hLK : finrank K L ≤ #K)
 
 variable (K L)
 
+lemma engel_le_engel
+    (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
+    (E : {engel K x | x ∈ U}) (hUE : U ≤ E) (hE : IsMin E) :
+    IsBot E := by
+  rcases E with ⟨_, x, hxU, rfl⟩
+  rintro ⟨_, y, hyU, rfl⟩
+  refine isMinimumOfMinimalOn_engel_of_finrank_le hLK U ⟨x, hxU⟩ hUE ?_ ⟨y, hyU⟩
+  intro z hz
+  apply le_antisymm hz
+  exact @hE ⟨_, ⟨z, z.2, rfl⟩⟩ hz
+
 lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K) :
     ∃ x : L, IsCartanSubalgebra (engel K x) := by
   obtain ⟨x, hx⟩ := exists_isRegular_of_finrank_le_card K L h
@@ -359,7 +359,8 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   refine ⟨?_, normalizer_engel _ _⟩
   apply isNilpotent_of_forall_le_engel
   intro y hy
-  apply engel_le_engel h (engel K x) ⟨x, self_mem_engel _ _⟩ le_rfl _ ⟨y, hy⟩
+  apply isMinimumOfMinimalOn_engel_of_finrank_le
+    h (engel K x) ⟨x, self_mem_engel _ _⟩ (le_refl (engel K x)) _ ⟨y, hy⟩
   rintro ⟨y, hy⟩ hyx
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
     apply LieSubalgebra.to_submodule_injective
