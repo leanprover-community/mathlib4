@@ -1487,6 +1487,7 @@ theorem prod_factors [Nontrivial α] (s : FactorSet α) : s.prod.factors = s :=
 
 @[nontriviality]
 theorem factors_subsingleton [Subsingleton α] {a : Associates α} : a.factors = ⊤ := by
+  have : Subsingleton (Associates α) := inferInstance
   convert factors_zero
 #align associates.factors_subsingleton Associates.factors_subsingleton
 

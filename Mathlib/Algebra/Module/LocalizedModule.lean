@@ -1160,3 +1160,5 @@ theorem mkOfAlgebra {R S S' : Type*} [CommRing R] [CommRing S] [CommRing S'] [Al
 end Algebra
 
 end IsLocalizedModule
+
+end IsLocalizedModule

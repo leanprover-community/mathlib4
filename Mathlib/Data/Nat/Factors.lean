@@ -253,6 +253,22 @@ theorem dvd_of_factors_subperm {a b : ℕ} (ha : a ≠ 0) (h : a.factors <+~ b.f
     Nat.prod_factors hb.ne']
 #align nat.dvd_of_factors_subperm Nat.dvd_of_factors_subperm
 
+theorem replicate_subperm_factors_iff {a b n : ℕ} (ha : Prime a) (hb : b ≠ 0) :
+    replicate n a <+~ factors b ↔ a ^ n ∣ b := by
+  induction n generalizing b with
+  | zero => simp
+  | succ n ih =>
+    constructor
+    · rw [List.subperm_iff]
+      rintro ⟨u, hu1, hu2⟩
+      rw [← Nat.prod_factors hb, ← hu1.prod_eq, ← prod_replicate]
+      exact hu2.prod_dvd_prod
+    · rintro ⟨c, rfl⟩
+      rw [Ne, pow_succ', mul_assoc, mul_eq_zero, _root_.not_or] at hb
+      rw [pow_succ', mul_assoc, replicate_succ, (Nat.perm_factors_mul hb.1 hb.2).subperm_left,
+        factors_prime ha, singleton_append, subperm_cons, ih hb.2]
+      exact dvd_mul_right _ _
+
 end
 
 theorem mem_factors_mul {a b : ℕ} (ha : a ≠ 0) (hb : b ≠ 0) {p : ℕ} :
