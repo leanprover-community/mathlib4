@@ -2197,7 +2197,7 @@ theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
-/-- Equivalence from the disjoint union of a family of sets forming a partition of `β`, to `β` 
+/-- Equivalence from the disjoint union of a family of sets forming a partition of `β`, to `β`
 itself. -/
 noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i) :
     (Σ i, s i) ≃ β where
