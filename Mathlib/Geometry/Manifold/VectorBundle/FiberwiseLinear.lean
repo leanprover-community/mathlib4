@@ -229,6 +229,7 @@ variable (F B IB)
 -- set_option backward.isDefEq.lazyProjDelta false in
 -- set_option backward.isDefEq.lazyWhnfCore false in
 -- set_option backward.synthInstance.canonInstances false in
+-- See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/Mathlib.20status.20updates/near/436257970
 set_option maxHeartbeats 400000 in
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
