@@ -272,7 +272,7 @@ theorem mem_adjoin_of_smul_prime_smul_of_minpoly_isEisensteinAt {B : PowerBasis 
     exact dvd_coeff_zero_of_aeval_eq_prime_smul_of_minpoly_isEisensteinAt hp hBint hQ hzint hei
   · intro hj
     convert hp.dvd_of_pow_dvd_pow_mul_pow_of_square_not_dvd _ hndiv
-    exact n
+    · exact n
     -- Two technical results we will need about `P.natDegree` and `Q.natDegree`.
     have H := degree_modByMonic_lt Q₁ (minpoly.monic hBint)
     rw [← hQ₁, ← hP] at H

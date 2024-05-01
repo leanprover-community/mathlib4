@@ -622,7 +622,7 @@ theorem order_ofForallLtEqZero [LinearOrder Γ] [LocallyFiniteOrder Γ] [Zero Γ
   dsimp only [order]
   by_cases h : ofSuppBddBelow f (forallLTEqZero_supp_BddBelow f n hn) = 0
   cases h
-  exact (hf rfl).elim
+  · exact (hf rfl).elim
   simp_all only [dite_false]
   rw [Set.IsWF.le_min_iff]
   intro m hm

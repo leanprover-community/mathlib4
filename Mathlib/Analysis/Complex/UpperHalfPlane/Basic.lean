@@ -137,6 +137,18 @@ theorem ne_zero (z : ℍ) : (z : ℂ) ≠ 0 :=
   mt (congr_arg Complex.im) z.im_ne_zero
 #align upper_half_plane.ne_zero UpperHalfPlane.ne_zero
 
+/-- Define I := √-1 as an element on the upper half plane. -/
+def I : ℍ := ⟨Complex.I, by simp⟩
+
+@[simp]
+lemma I_im : I.im = 1 := rfl
+
+@[simp]
+lemma I_re : I.re = 0 := rfl
+
+@[simp, norm_cast]
+lemma coe_I : I = Complex.I := rfl
+
 end UpperHalfPlane
 
 namespace Mathlib.Meta.Positivity
