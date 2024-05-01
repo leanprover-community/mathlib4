@@ -1338,7 +1338,7 @@ def liftOnUnits (u : Units c.Quotient) (f : ∀ x y : M, c (x * y) 1 → c (y * 
         f x y (c.eq.1 hxy) (c.eq.1 hyx))
       (fun x y x' y' hx hy => _) u.3 u.4
   refine' Function.hfunext _ _
-  rw [c.eq.2 hx, c.eq.2 hy]
+  · rw [c.eq.2 hx, c.eq.2 hy]
   · rintro Hxy Hxy' -
     refine' Function.hfunext _ _
     · rw [c.eq.2 hx, c.eq.2 hy]

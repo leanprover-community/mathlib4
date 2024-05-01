@@ -439,7 +439,7 @@ instance Pi.opensMeasurableSpace {ι : Type*} {π : ι → Type*} [Countable ι]
   constructor
   have : Pi.topologicalSpace = .generateFrom { t | ∃ (s : ∀ a, Set (π a)) (i : Finset ι),
       (∀ a ∈ i, s a ∈ countableBasis (π a)) ∧ t = pi (↑i) s } := by
-    rw [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
+    simp only [funext fun a => @eq_generateFrom_countableBasis (π a) _ _, pi_generateFrom_eq]
   rw [borel_eq_generateFrom_of_subbasis this]
   apply generateFrom_le
   rintro _ ⟨s, i, hi, rfl⟩
