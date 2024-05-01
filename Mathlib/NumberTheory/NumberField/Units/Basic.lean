@@ -63,7 +63,6 @@ namespace NumberField.Units
 
 section coe
 
--- TODO: figure out precise coercion
 instance : CoeHTC (𝓞 K)ˣ K :=
   ⟨fun x => algebraMap _ K (Units.val x)⟩
 
