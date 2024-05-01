@@ -630,7 +630,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
   | _           => unreachable!
 
 
-private abbrev M := StateListT (AssocList Expr DTExpr) $ ReaderT Context MetaM
+private abbrev M := ReaderT Context $ StateListT (AssocList Expr DTExpr) $ MetaM
 
 /-
 Caching values is a bit dangerous, because when two expressions are be equal and they live under
@@ -710,7 +710,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
     if let fvarId' :: lambdas' := lambdas then
       if fvarId' == fvarId && args.isEmpty && !root then
         return ← withLams lambdas' do
-          let type ← mkDTExprAux (← fvarId.getType) false
+          let type ← mkDTExprsAux (← fvarId.getType) false
           return .const ``id #[type]
     withLams lambdas do
       let c ← read
@@ -768,7 +768,7 @@ If onlySpecific is `true`, then filter the encodings by whether they are specifi
 def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
   withReducible do
-    let es ← (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {config, fvarInContext}
+    let es ← (MkDTExpr.mkDTExprsAux e true).run {config, fvarInContext} |>.run' {}
     return if onlySpecific then es.filter (·.isSpecific) else es
 
 
@@ -939,6 +939,7 @@ def matchTargetStar (mvarId? : Option MVarId) (t : Trie α) : M (Trie α) := do
 while keeping track of the `Key.star` assignments. -/
 def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
   let {starAssignments, ..} ← get
+  Id.run do
   let mut result := failure
   /- The `Key.star` are at the start of the `t.children!`,
   so this loops through all of them. -/
