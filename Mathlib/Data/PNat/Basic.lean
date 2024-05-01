@@ -335,7 +335,7 @@ theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ
     rfl
 #align pnat.sub_coe PNat.sub_coe
 
-theorem sub_le {a b : ℕ+} : a - b ≤ a := by
+theorem sub_le (a b : ℕ+) : a - b ≤ a := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
   · exact Nat.sub_le a b
