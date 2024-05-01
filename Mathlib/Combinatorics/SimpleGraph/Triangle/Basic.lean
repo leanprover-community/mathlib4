@@ -3,14 +3,12 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.Order.Field.Basic
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
 import Mathlib.Data.Finset.Sym
-import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
-import Mathlib.Tactic.Positivity.Finset
 
 #align_import combinatorics.SimpleGraph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
