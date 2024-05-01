@@ -187,8 +187,8 @@ theorem eq_zero_of_basicOpen_eq_bot {X : Scheme} [hX : IsReduced X] {U : Opens X
     replace hs := hs.map (SpecΓIdentity.app R).inv
     -- what the hell?!
     replace hs := @IsNilpotent.eq_zero _ _ _ _ (show _ from ?_) hs
-    rw [Iso.hom_inv_id_apply] at hs
-    rw [hs, map_zero]
+    · rw [Iso.hom_inv_id_apply] at hs
+      rw [hs, map_zero]
     exact @IsReduced.component_reduced _ hX ⊤
 #align algebraic_geometry.eq_zero_of_basic_open_eq_bot AlgebraicGeometry.eq_zero_of_basicOpen_eq_bot
 
@@ -242,10 +242,10 @@ instance is_irreducible_of_isIntegral [IsIntegral X] : IrreducibleSpace X.carrie
   let e : X.presheaf.obj _ ≅ CommRingCat.of _ :=
     (X.sheaf.isProductOfDisjoint ⟨_, hS.1⟩ ⟨_, hT.1⟩ ?_).conePointUniqueUpToIso
       (CommRingCat.prodFanIsLimit _ _)
-  apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
-  · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
-  · apply X.toLocallyRingedSpace.component_nontrivial
-  · apply X.toLocallyRingedSpace.component_nontrivial
+  · apply (config := { allowSynthFailures := true }) false_of_nontrivial_of_product_domain
+    · exact e.symm.commRingCatIsoToRingEquiv.toMulEquiv.isDomain _
+    · apply X.toLocallyRingedSpace.component_nontrivial
+    · apply X.toLocallyRingedSpace.component_nontrivial
   · ext x
     constructor
     · rintro ⟨hS, hT⟩
