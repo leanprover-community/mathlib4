@@ -919,8 +919,7 @@ instance instAlternativeComputation : Alternative Computation :=
 @[simp]
 theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElseOfOrElse
-    unfold OrElse.orElse instOrElseOfAlternative Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.ret_orelse Computation.ret_orElse
 
@@ -928,8 +927,7 @@ theorem ret_orElse (a : α) (c₂ : Computation α) : (pure a <|> c₂) = pure a
 @[simp]
 theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) = pure a :=
   destruct_eq_pure <| by
-    unfold HOrElse.hOrElse instHOrElseOfOrElse
-    unfold OrElse.orElse instOrElseOfAlternative Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_ret Computation.orElse_pure
 
@@ -937,8 +935,7 @@ theorem orElse_pure (c₁ : Computation α) (a : α) : (think c₁ <|> pure a) =
 @[simp]
 theorem orElse_think (c₁ c₂ : Computation α) : (think c₁ <|> think c₂) = think (c₁ <|> c₂) :=
   destruct_eq_think <| by
-    unfold HOrElse.hOrElse instHOrElseOfOrElse
-    unfold OrElse.orElse instOrElseOfAlternative Alternative.orElse instAlternativeComputation
+    unfold_projs
     simp [orElse]
 #align computation.orelse_think Computation.orElse_think
 
