@@ -4,6 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.RingTheory.Regular.IsSMulRegular
+import Mathlib.RingTheory.Artinian
+import Mathlib.RingTheory.Flat.Basic
+import Mathlib.LinearAlgebra.TensorProduct.RightExactness
+import Mathlib.Logic.Equiv.TransferInstance
 
 /-!
 # Regular sequences and weakly regular sequences
@@ -78,11 +82,17 @@ lemma restrictScalars_map_algebraMap_smul_eq_smul_restrictScalars
     Ideal.smul_restrictScalars_eq_restrictScalars_map_smul, Ideal.map_span]
   rfl
 
+lemma smul_le_ideal_smul_of_forall_mem {I : Ideal R} {rs : List R}
+    (N : Submodule R M) (h : ∀ r ∈ rs, r ∈ I) : rs • N ≤ I • N :=
+  le_of_eq_of_le (sequence_smul_eq_ideal_span_smul rs N) <|
+    Submodule.smul_mono_left <| Ideal.span_le.mpr h
+
 end
 
 section
 
 variable {R M} [CommRing R] [AddCommGroup M] [Module R M]
+    [AddCommGroup M'] [Module R M']
 
 /-- Modding out by a sequence is the same as taking iterated quotients by each term. -/
 def _root_.Submodule.quotientConsSmulEquivQuotientQuotientTailSmul
@@ -99,15 +109,17 @@ variable (M)
 
 /-- A sequence `[r₁, …, rₙ]` is weakly regular on `M` iff `rᵢ` is regular on
 `M⧸(r₁, …, rᵢ₋₁)M` for all `1 ≤ i ≤ n`. -/
-def IsWeaklyRegular (rs : List R) := ∀ i (h : i < rs.length),
-  IsSMulRegular (M⧸(rs.take i • (⊤ : Submodule R M))) rs[i]
+@[mk_iff]
+structure IsWeaklyRegular (rs : List R) : Prop where
+  regular_mod_prev : ∀ i (h : i < rs.length),
+    IsSMulRegular (M⧸(rs.take i • (⊤ : Submodule R M))) rs[i]
 
 namespace IsWeaklyRegular
 
 variable (R)
 
 lemma nil : IsWeaklyRegular M ([] : List R) :=
-  fun i h => absurd h (Nat.not_lt_zero i)
+  .mk (False.elim <| Nat.not_lt_zero · ·)
 
 variable {R M}
 
@@ -117,7 +129,7 @@ lemma isWeaklyRegular_iff_isWeaklyRegular_over_quotient_by_torsion_ideal
       IsWeaklyRegular M rs ↔
         IsWeaklyRegular M (rs.map (Ideal.Quotient.mk I)) := by
   letI := h.module
-  simp only [IsWeaklyRegular, List.getElem_eq_get, List.length_map, List.get_map]
+  simp only [isWeaklyRegular_iff, List.getElem_eq_get, List.length_map, List.get_map]
   refine forall₂_congr ?_
   intro i h
   refine LinearEquiv.isSMulRegular_congr ?_ _
@@ -132,8 +144,9 @@ lemma isWeaklyRegular_cons_iff (r : R) (rs : List R) :
     IsWeaklyRegular M (r::rs) ↔
       IsSMulRegular M r ∧
         IsWeaklyRegular (M⧸(r • (⊤ : Submodule R M))) rs := by
+  simp_rw [isWeaklyRegular_iff]
   refine Iff.trans Nat.and_forall_succ.symm ?_
-  simp only [IsWeaklyRegular, Nat.zero_lt_succ, forall_true_left,
+  simp only [Nat.zero_lt_succ, forall_true_left,
     Nat.succ_lt_succ_iff, List.length_cons, Nat.zero_lt_succ]
   refine and_congr ?_ <| forall₂_congr fun i h => ?_ <;>
     apply LinearEquiv.isSMulRegular_congr
@@ -172,7 +185,8 @@ the sequence obtained from `rs` by prepending `r` is weakly regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-def rec
+@[eliminator]
+def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsWeaklyRegular M rs → Sort*}
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → motive M [] (nil R M))
@@ -185,12 +199,11 @@ def rec
   | M, _, _, [], _ => nil M
   | M, _, _, (r::rs), h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff M r rs).mp h
-    cons r rs h1 h2 (rec nil cons h2)
+    cons r rs h1 h2 (recIterModByRegular nil cons h2)
 
-/-- A simplified version of `IsWeaklyRegular.rec` where the motive is not
-allowed to depend on the proof of `IsWeaklyRegular`. -/
-@[eliminator]
-def ndrec
+/-- A simplified version of `IsWeaklyRegular.recIterModByRegular` where the
+motive is not allowed to depend on the proof of `IsWeaklyRegular`. -/
+def ndrecIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → motive M [])
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) → (rs : List R) →
@@ -198,13 +211,13 @@ def ndrec
       motive (M⧸r • (⊤ : Submodule R M)) rs → motive M (r::rs))
     {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive M rs :=
-  rec (motive := (fun M _ _ rs _ => motive M rs)) nil cons
+  recIterModByRegular (motive := (fun M _ _ rs _ => motive M rs)) nil cons
 
-/-- An alternate induction principle from `IsWeaklyRegular.rec` where we mod
-out by successive elements in both the module and the base ring. This is useful
-for propogating certain properties of the initial `M`, e.g. faithfulness or
-freeness, throughout the induction. -/
-def recWithRing
+/-- An alternate induction principle from `IsWeaklyRegular.recIterModByRegular`
+where we mod out by successive elements in both the module and the base ring.
+This is useful for propogating certain properties of the initial `M`, e.g.
+faithfulness or freeness, throughout the induction. -/
+def recIterModByRegularWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → (rs : List R) → IsWeaklyRegular M rs → Sort*}
     (nil : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
@@ -221,11 +234,11 @@ def recWithRing
   | R, _, M, _, _, [], _ => nil R M
   | R, _, M, _, _, (r::rs), h =>
     let ⟨h1, h2⟩ := (isWeaklyRegular_cons_iff' M r rs).mp h
-    cons r rs h1 h2 (recWithRing nil cons h2)
+    cons r rs h1 h2 (recIterModByRegularWithRing nil cons h2)
   termination_by _ _ _ _ _ rs => List.length rs
 
-/-- A simplified version of `IsWeaklyRegular.recWithRing` where the motive is
-not allowed to depend on the proof of `IsWeaklyRegular`. -/
+/-- A simplified version of `IsWeaklyRegular.recIterModByRegularWithRing` where
+the motive is not allowed to depend on the proof of `IsWeaklyRegular`. -/
 def ndrecWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
@@ -241,22 +254,25 @@ def ndrecWithRing
       motive R M (r::rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsWeaklyRegular M rs → motive R M rs :=
-  recWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs)) nil cons
+  recIterModByRegularWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs))
+    nil cons
 
 end IsWeaklyRegular
 
 /-- A weakly regular sequence `rs` on `M` is regular if also `M/rsM ≠ 0`. -/
-def IsRegular (rs : List R) :=
-  IsWeaklyRegular M rs ∧ rs • ⊤ ≠ (⊤ : Submodule R M)
+@[mk_iff]
+structure IsRegular (rs : List R) extends IsWeaklyRegular M rs : Prop where
+  smul_ne_top : rs • ⊤ ≠ (⊤ : Submodule R M)
 
 namespace IsRegular
 
 variable (R)
 
-lemma nil [Nontrivial M] : IsRegular M ([] : List R) :=
-  ⟨IsWeaklyRegular.nil R M,
-    mt ((quotEquivOfEqBot _ rfl).toEquiv.subsingleton_congr.mp ∘
-          subsingleton_quotient_iff_eq_top.mpr) (not_subsingleton M)⟩
+lemma nil [Nontrivial M] : IsRegular M ([] : List R) where
+  toIsWeaklyRegular := IsWeaklyRegular.nil R M
+  smul_ne_top h := not_subsingleton M <|
+    (quotEquivOfEqBot _ rfl).toEquiv.subsingleton_congr.mp <|
+      subsingleton_quotient_iff_eq_top.mpr h
 
 variable {R}
 
@@ -269,20 +285,18 @@ private lemma cons_smul_eq_top_iff {r : R} {rs} :
 
 lemma isRegular_cons_iff (r : R) (rs : List R) :
     IsRegular M (r::rs) ↔
-      IsSMulRegular M r ∧ IsRegular (M⧸(r • (⊤ : Submodule R M))) rs :=
-  Iff.trans (and_congr_left' (IsWeaklyRegular.isWeaklyRegular_cons_iff M r rs))
-    (Iff.trans (and_congr_right' (cons_smul_eq_top_iff M).not) and_assoc)
+      IsSMulRegular M r ∧ IsRegular (M⧸(r • (⊤ : Submodule R M))) rs := by
+  simp_rw [isRegular_iff, IsWeaklyRegular.isWeaklyRegular_cons_iff M r rs,
+    ne_eq, cons_smul_eq_top_iff M, and_assoc]
 
-open IsWeaklyRegular in
 lemma isRegular_cons_iff' (r : R) (rs : List R) :
     IsRegular M (r::rs) ↔
       IsSMulRegular M r ∧ IsRegular (M⧸(r • (⊤ : Submodule R M)))
           (rs.map (Ideal.Quotient.mk (Ideal.span {r}))) := by
-  refine Iff.trans (and_congr_left' (isWeaklyRegular_cons_iff' M r rs)) ?_
-  refine Iff.trans (and_congr_right' (Iff.not ?_)) and_assoc
-  rw [← restrictScalars_inj R (R⧸_), ← Ideal.Quotient.algebraMap_eq,
+  simp_rw [isRegular_iff, IsWeaklyRegular.isWeaklyRegular_cons_iff', ne_eq,
+    ← restrictScalars_inj R (R⧸_), ← Ideal.Quotient.algebraMap_eq,
     restrictScalars_map_algebraMap_smul_eq_smul_restrictScalars]
-  exact cons_smul_eq_top_iff M
+  exact Iff.trans (and_congr_right' (cons_smul_eq_top_iff M).not) and_assoc
 
 variable {M}
 
@@ -304,7 +318,8 @@ sequence obtained from `rs` by prepending `r` is regular on `M`.
 
 This is the induction principle produced by the inductive definition above.
 The motive will usually be valued in `Prop`, but `Sort*` works too. -/
-def rec
+@[eliminator]
+def recIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) →
       IsRegular M rs → Sort*}
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → [Nontrivial M] →
@@ -313,32 +328,32 @@ def rec
       (rs : List R) → (h1 : IsSMulRegular M r) → (h2 : IsRegular (M⧸r • ⊤) rs) →
       (ih : motive (M⧸r • ⊤) rs h2) → motive M (r::rs) (cons h1 h2))
     {M} [AddCommGroup M] [Module R M] {rs} (h : IsRegular M rs) : motive M rs h :=
-  h.left.rec (motive := fun N _ _ rs' h' => ∀ h'', motive N rs' ⟨h', h''⟩)
+  h.toIsWeaklyRegular.recIterModByRegular
+    (motive := fun N _ _ rs' h' => ∀ h'', motive N rs' ⟨h', h''⟩)
     (fun N _ _ h' =>
       haveI := (Submodule.nontrivial_iff R).mp (nontrivial_of_ne _ _ h')
       nil N)
     (fun r rs' h1 h2 h3 h4 =>
       have h5 := (isRegular_cons_iff _ _ _).mp ⟨IsWeaklyRegular.cons h1 h2, h4⟩
-      cons r rs' h5.left h5.right <| h3 h5.right.right)
-    h.right
+      cons r rs' h5.left h5.right <| h3 h5.right.smul_ne_top)
+    h.smul_ne_top
 
-/-- A simplified version of `IsRegular.rec` where the motive is not allowed to
-depend on the proof of `IsRegular`. -/
-@[eliminator]
-def ndrec
+/-- A simplified version of `IsRegular.recIterModByRegular` where the motive is
+not allowed to depend on the proof of `IsRegular`. -/
+def ndrecIterModByRegular
     {motive : (M : Type v) → [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
     (nil : (M : Type v) → [AddCommGroup M] → [Module R M] → [Nontrivial M] → motive M [])
     (cons : {M : Type v} → [AddCommGroup M] → [Module R M] → (r : R) →
       (rs : List R) → IsSMulRegular M r → IsRegular (M⧸r • (⊤ : Submodule R M)) rs →
       motive (M⧸r • (⊤ : Submodule R M)) rs → motive M (r::rs))
     {M} [AddCommGroup M] [Module R M] {rs} : IsRegular M rs → motive M rs :=
-  rec (motive := (fun M _ _ rs _ => motive M rs)) nil cons
+  recIterModByRegular (motive := (fun M _ _ rs _ => motive M rs)) nil cons
 
-/-- An alternate induction principle from `IsRegular.rec` where we mod out by
-successive elements in both the module and the base ring. This is useful for
-propogating certain properties of the initial `M`, e.g. being faithful or free,
-throughout the induction. -/
-def recWithRing
+/-- An alternate induction principle from `IsRegular.recIterModByRegular` where
+we mod out by successive elements in both the module and the base ring. This is
+useful for propogating certain properties of the initial `M`, e.g. faithfulness
+or freeness, throughout the induction. -/
+def recIterModByRegularWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
       [Module R M] → (rs : List R) → IsRegular M rs → Sort*}
     (nil : (R : Type u) → [CommRing R] → (M : Type v) → [AddCommGroup M] →
@@ -352,18 +367,19 @@ def recWithRing
             motive R M (r::rs) (cons' h1 h2))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs}
     (h : IsRegular M rs) : motive R M rs h :=
-  h.left.recWithRing (motive := fun R _ N _ _ rs' h' => ∀ h'', motive R N rs' ⟨h', h''⟩)
+  h.toIsWeaklyRegular.recIterModByRegularWithRing
+    (motive := fun R _ N _ _ rs' h' => ∀ h'', motive R N rs' ⟨h', h''⟩)
     (fun R _ N _ _ h' =>
       haveI := (Submodule.nontrivial_iff R).mp (nontrivial_of_ne _ _ h')
       nil R N)
     (fun r rs' h1 h2 h3 h4 =>
       have h5 := (isRegular_cons_iff' _ _ _).mp ⟨IsWeaklyRegular.cons' h1 h2, h4⟩
-      cons r rs' h5.left h5.right <| h3 h5.right.right)
-    h.right
+      cons r rs' h5.left h5.right <| h3 h5.right.smul_ne_top)
+    h.smul_ne_top
 
-/-- A simplified version of `IsRegular.recWithRing` where the motive is not
-allowed to depend on the proof of `IsRegular`. -/
-def ndrecWithRing
+/-- A simplified version of `IsRegular.recIterModByRegularWithRing` where the
+motive is not allowed to depend on the proof of `IsRegular`. -/
+def ndrecIterModByRegularWithRing
     {motive : (R : Type u) → [CommRing R] → (M : Type v) →
       [AddCommGroup M] → [Module R M] → (rs : List R) → Sort*}
     (nil : (R : Type u) → [CommRing R] → (M : Type v) →
@@ -378,9 +394,43 @@ def ndrecWithRing
       motive R M (r::rs))
     {R} [CommRing R] {M} [AddCommGroup M] [Module R M] {rs} :
     IsRegular M rs → motive R M rs :=
-  recWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs)) nil cons
+  recIterModByRegularWithRing (motive := (fun R _ M _ _ rs _ => motive R M rs))
+    nil cons
 
 end IsRegular
+
+lemma isRegular_iff_isWeaklyRegular_of_subset_jacobson_radical [Nontrivial M]
+    [Module.Finite R M] {rs : List R} (h1 : ∀ r ∈ rs, r ∈ Ideal.jacobson ⊥) :
+    IsRegular M rs ↔ IsWeaklyRegular M rs :=
+  Iff.trans (isRegular_iff M rs) <| and_iff_left fun h2 =>
+    have h3 := eq_bot_of_le_smul_of_le_jacobson_bot _ _ Module.Finite.out <|
+      le_of_eq <| Eq.trans h2.symm <| sequence_smul_eq_ideal_span_smul _ _
+    nontrivial_iff_ne_bot.mp topEquiv.toEquiv.nontrivial (h3 (span_le.mpr h1))
+
+lemma eq_nil_of_isRegular_on_nontrivial_artinian [Nontrivial M]
+    [IsArtinian R M] : {rs : List R} → IsRegular M rs → rs = []
+  | [], _ => rfl
+  | _::_, h =>
+    Not.elim (ne_of_lt (lt_of_le_of_lt le_sup_left (h.smul_ne_top.lt_top))) <|
+      Eq.trans (map_top _) <| LinearMap.range_eq_top.mpr <|
+        IsArtinian.surjective_of_injective_endomorphism _ <|
+          And.left <| (IsRegular.isRegular_cons_iff _ _ _).mp h
+
+open LinearMap DistribMulAction in
+open scoped TensorProduct in
+lemma IsWeaklyRegular.isWeaklyRegular_tensor_with_flat [Module.Flat R M']
+    {rs : List R} (h : IsWeaklyRegular M rs) :
+    IsWeaklyRegular (M ⊗[R] M') rs := by
+  induction h with
+  | nil N => exact nil R (N ⊗[R] M')
+  | @cons N _ _ r rs' h1 h2 ih =>
+    have h3 : r • ⊤ = range (rTensor M' (toLinearMap R N r)) :=
+      Eq.trans (Submodule.map_top _) (congrArg _ (rTensor_smul_action N M' r).symm)
+    let e : (N ⊗[R] M' ⧸ r • ⊤) ≃ₗ[R] (N ⧸ r • (⊤ : Submodule R N)) ⊗[R] M' :=
+      quotEquivOfEq _ _ h3 ≪≫ₗ
+        rTensor.equiv M' (exact_map_mkQ_range _) (mkQ_surjective _) ≪≫ₗ
+          (quotEquivOfEq _ _ (Submodule.map_top _).symm).rTensor M'
+    admit
 
 end
 
