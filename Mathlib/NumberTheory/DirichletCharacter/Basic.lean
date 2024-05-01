@@ -20,21 +20,6 @@ Main definitions:
 - `conductor`: The conductor of a Dirichlet character.
 - `isPrimitive`: If the level is equal to the conductor.
 
-## TODO
-
-- add
-  `lemma unitsMap_surjective {n m : ℕ} (h : n ∣ m) (hm : m ≠ 0) : Function.Surjective (unitsMap h)`
-  and then
-  ```
-  lemma changeLevel_injective {d : ℕ} (h : d ∣ n) (hn : n ≠ 0) :
-      Function.Injective (changeLevel (R := R) h)
-  ```
-  and
-  ```
-  lemma changeLevel_one_iff {d : ℕ} {χ : DirichletCharacter R n} {χ' : DirichletCharacter R d}
-    (hdn : d ∣ n) (hn : n ≠ 0) (h : χ = changeLevel hdn χ') : χ = 1 ↔ χ' = 1
-  ```
-
 ## Tags
 
 dirichlet character, multiplicative character
@@ -83,9 +68,14 @@ lemma changeLevel_injective {m : ℕ} [NeZero m] (hm : n ∣ m) :
     Function.Injective (changeLevel (R := R) hm) := by
   intro _ _ h
   ext1 y
-  rcases ZMod.unitsMap_surjective hm y with ⟨z, rfl⟩
+  obtain ⟨z, rfl⟩ := ZMod.unitsMap_surjective hm y
   rw [ext_iff] at h
   simpa [changeLevel_def] using h z
+
+@[simp]
+lemma changeLevel_eq_one_iff {m : ℕ} {χ : DirichletCharacter R n} (hm : n ∣ m) [NeZero m] :
+    changeLevel hm χ = 1 ↔ χ = 1 :=
+  map_eq_one_iff _ (changeLevel_injective hm)
 
 @[simp]
 lemma changeLevel_self : changeLevel (dvd_refl n) χ = χ := by
@@ -119,7 +109,7 @@ variable {χ}
 /-- The fact that `d` divides `n` when `χ` factors through a Dirichlet character at level `d` -/
 lemma dvd {d : ℕ} (h : FactorsThrough χ d) : d ∣ n := h.1
 
-/-- The Dirichlet character at level `d` through which `χ` factors. -/
+/-- The Dirichlet character at level `d` through which `χ` factors -/
 noncomputable
 def χ₀ {d : ℕ} (h : FactorsThrough χ d) : DirichletCharacter R d := Classical.choose h.2
 
@@ -131,7 +121,7 @@ lemma eq_changeLevel {d : ℕ} (h : FactorsThrough χ d) : χ = changeLevel h.dv
 lemma existsUnique {d : ℕ} [NeZero n] (h : FactorsThrough χ d) :
     ∃! χ' : DirichletCharacter R d, χ = changeLevel h.dvd χ' := by
   rcases h with ⟨hd, χ₂, rfl⟩
-  exact ⟨χ₂, rfl, fun χ₃ hχ₃↦ (changeLevel_injective hd hχ₃).symm⟩
+  exact ⟨χ₂, rfl, fun χ₃ hχ₃ ↦ (changeLevel_injective hd hχ₃).symm⟩
 
 variable (χ) in
 lemma same_level : FactorsThrough χ n := ⟨dvd_refl n, χ, (changeLevel_self χ).symm⟩
