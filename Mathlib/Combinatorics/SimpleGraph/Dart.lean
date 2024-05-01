@@ -26,7 +26,7 @@ structure Dart extends V × V where
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
 
-attribute [simp] Dart.isAdj
+attribute [simp] Dart.is_adj
 
 variable {G}
 
