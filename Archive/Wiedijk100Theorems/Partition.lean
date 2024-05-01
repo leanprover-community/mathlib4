@@ -5,7 +5,7 @@ Authors: Bhavik Mehta, Aaron Anderson
 -/
 import Mathlib.RingTheory.PowerSeries.Inverse
 import Mathlib.RingTheory.PowerSeries.Order
-import Mathlib.Combinatorics.Partition
+import Mathlib.Combinatorics.Enumerative.Partition
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Finset.NatAntidiagonal
 import Mathlib.Data.Fin.Tuple.NatAntidiagonal
@@ -215,7 +215,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact fun hi _ => ha.2 i hi
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
-      simp only [smul_eq_mul]
+      · simp only [smul_eq_mul]
       · intro i
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
@@ -229,8 +229,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
+      · rw [Multiset.count_eq_zero_of_not_mem]
+        intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
@@ -306,7 +306,7 @@ theorem oddGF_prop [Field α] (n m : ℕ) (h : n < m * 2) :
     (Finset.card (Nat.Partition.odds n) : α) = coeff α n (partialOddGF m) := by
   rw [← partialOddGF_prop, Nat.Partition.odds]
   congr with p
-  apply ball_congr
+  apply forall₂_congr
   intro i hi
   have hin : i ≤ n := by
     simpa [p.parts_sum] using Multiset.single_le_sum (fun _ _ => Nat.zero_le _) _ hi

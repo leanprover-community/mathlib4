@@ -30,19 +30,12 @@ open Topology BigOperators Filter ENNReal
 open Filter Asymptotics Set
 
 variable {𝕜 : Type u} [NontriviallyNormedField 𝕜]
-
 variable {F : Type v} [NormedAddCommGroup F] [NormedSpace 𝕜 F]
-
 variable {E : Type w} [NormedAddCommGroup E] [NormedSpace 𝕜 E]
-
 variable {f f₀ f₁ g : 𝕜 → F}
-
 variable {f' f₀' f₁' g' : F}
-
 variable {x : 𝕜}
-
 variable {s t : Set 𝕜}
-
 variable {L : Filter 𝕜}
 
 section Add
@@ -81,7 +74,7 @@ theorem deriv_add (hf : DifferentiableAt 𝕜 f x) (hg : DifferentiableAt 𝕜 g
   (hf.hasDerivAt.add hg.hasDerivAt).deriv
 #align deriv_add deriv_add
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem HasStrictDerivAt.add_const (c : F) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun y ↦ f y + c) f' x :=
   add_zero f' ▸ hf.add (hasStrictDerivAt_const x c)
@@ -115,7 +108,7 @@ theorem deriv_add_const' (c : F) : (deriv fun y => f y + c) = deriv f :=
   funext fun _ => deriv_add_const c
 #align deriv_add_const' deriv_add_const'
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem HasStrictDerivAt.const_add (c : F) (hf : HasStrictDerivAt f f' x) :
     HasStrictDerivAt (fun y ↦ c + f y) f' x :=
   zero_add f' ▸ (hasStrictDerivAt_const x c).add hf
@@ -154,9 +147,6 @@ end Add
 section Sum
 
 /-! ### Derivative of a finite sum of functions -/
-
-
-open BigOperators
 
 variable {ι : Type*} {u : Finset ι} {A : ι → 𝕜 → F} {A' : ι → F}
 

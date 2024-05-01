@@ -35,21 +35,13 @@ attribute [simp] LawfulTraversable.id_traverse
 namespace Traversable
 
 variable {t : Type u → Type u}
-
 variable [Traversable t] [LawfulTraversable t]
-
 variable (F G : Type u → Type u)
-
 variable [Applicative F] [LawfulApplicative F]
-
 variable [Applicative G] [LawfulApplicative G]
-
 variable {α β γ : Type u}
-
 variable (g : α → F β)
-
 variable (h : β → G γ)
-
 variable (f : β → γ)
 
 /-- The natural applicative transformation from the identity functor

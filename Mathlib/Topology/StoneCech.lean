@@ -264,9 +264,7 @@ theorem denseRange_stoneCechUnit : DenseRange (stoneCechUnit : α → StoneCech 
 section Extension
 
 variable {γ : Type u} [TopologicalSpace γ] [T2Space γ] [CompactSpace γ]
-
 variable {γ' : Type u} [TopologicalSpace γ'] [T2Space γ']
-
 variable {f : α → γ} (hf : Continuous f)
 
 -- Porting note: missing attribute
@@ -297,7 +295,7 @@ end Extension
 
 theorem convergent_eqv_pure {u : Ultrafilter α} {x : α} (ux : ↑u ≤ 𝓝 x) : u ≈ pure x :=
   fun γ tγ h₁ h₂ f hf => by
-  trans f x; swap; symm
+  trans f x; swap; on_goal 1 => symm
   all_goals refine' ultrafilter_extend_eq_iff.mpr (le_trans (map_mono _) (hf.tendsto _))
   · apply pure_le_nhds
   · exact ux

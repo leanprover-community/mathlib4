@@ -198,7 +198,6 @@ end Completion
 section Extension
 
 variable {G : Type*} [SeminormedAddCommGroup G]
-
 variable {H : Type*} [SeminormedAddCommGroup H] [T0Space H] [CompleteSpace H]
 
 /-- If `H` is complete, the extension of `f : NormedAddGroupHom G H` to a

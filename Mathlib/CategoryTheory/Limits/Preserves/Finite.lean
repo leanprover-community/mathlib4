@@ -32,11 +32,8 @@ namespace CategoryTheory.Limits
 universe w w₂ v₁ v₂ v₃ u₁ u₂ u₃
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {D : Type u₂} [Category.{v₂} D]
-
 variable {E : Type u₃} [Category.{v₃} E]
-
 variable {J : Type w} [SmallCategory J] {K : J ⥤ C}
 
 /-- A functor is said to preserve finite limits, if it preserves all limits of shape `J`,
@@ -110,6 +107,14 @@ class PreservesFiniteProducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesLimitsOfShape (Discrete J) F
 
 attribute [instance] PreservesFiniteProducts.preserves
+
+instance compPreservesFiniteProducts (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteProducts F] [PreservesFiniteProducts G] :
+    PreservesFiniteProducts (F ⋙ G) where
+  preserves _ _ := by infer_instance
+
+noncomputable instance (F : C ⥤ D) [PreservesFiniteLimits F] : PreservesFiniteProducts F where
+  preserves _ _ := by infer_instance
 
 /-- A functor is said to preserve finite colimits, if it preserves all colimits of
 shape `J`, where `J : Type` is a finite category.
@@ -186,5 +191,13 @@ class PreservesFiniteCoproducts (F : C ⥤ D) where
   preserves : ∀ (J : Type) [Fintype J], PreservesColimitsOfShape (Discrete J) F
 
 attribute [instance] PreservesFiniteCoproducts.preserves
+
+instance compPreservesFiniteCoproducts (F : C ⥤ D) (G : D ⥤ E)
+    [PreservesFiniteCoproducts F] [PreservesFiniteCoproducts G] :
+    PreservesFiniteCoproducts (F ⋙ G) where
+  preserves _ _ := by infer_instance
+
+noncomputable instance (F : C ⥤ D) [PreservesFiniteColimits F] : PreservesFiniteCoproducts F where
+  preserves _ _ := by infer_instance
 
 end CategoryTheory.Limits

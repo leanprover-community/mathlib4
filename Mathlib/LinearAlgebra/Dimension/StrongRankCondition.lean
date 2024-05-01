@@ -43,7 +43,6 @@ noncomputable section
 universe u v w w'
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {ι : Type w} {ι' : Type w'}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -114,7 +113,7 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
-    apply LinearEquiv.surjective
+    · apply LinearEquiv.surjective
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     simpa using s
 #align basis.le_span'' Basis.le_span''

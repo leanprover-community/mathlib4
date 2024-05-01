@@ -72,7 +72,7 @@ theorem totient_pos : ∀ {n : ℕ}, 0 < n → 0 < φ n
   | 1 => by simp [totient]
   | n + 2 => fun _ =>
   -- Must qualify `Finset.card_pos` because of leanprover/lean4#2849
-    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by simp), coprime_one_right _⟩⟩
+    Finset.card_pos.2 ⟨1, mem_filter.2 ⟨mem_range.2 (by omega), coprime_one_right _⟩⟩
 #align nat.totient_pos Nat.totient_pos
 
 theorem filter_coprime_Ico_eq_totient (a n : ℕ) :
@@ -100,8 +100,8 @@ theorem Ico_filter_coprime_le {a : ℕ} (k n : ℕ) (a_pos : 0 < a) :
         (Ico k (k + n % a + a * i) ∪ Ico (k + n % a + a * i) (k + n % a + a * i + a))).card := by
       congr
       rw [Ico_union_Ico_eq_Ico]
-      rw [add_assoc]
-      exact le_self_add
+      · rw [add_assoc]
+        exact le_self_add
       exact le_self_add
     _ ≤ (filter a.Coprime (Ico k (k + n % a + a * i))).card + a.totient := by
       rw [filter_union, ← filter_coprime_Ico_eq_totient a (k + n % a + a * i)]
@@ -275,6 +275,9 @@ theorem totient_eq_one_iff : ∀ {n : ℕ}, n.totient = 1 ↔ n = 1 ∨ n = 2
     simp only [succ_succ_ne_one, false_or_iff]
     exact ⟨fun h => not_even_one.elim <| h ▸ totient_even this, by rintro ⟨⟩⟩
 #align nat.totient_eq_one_iff Nat.totient_eq_one_iff
+
+theorem dvd_two_of_totient_le_one {a : ℕ} (han : 0 < a) (ha : a.totient ≤ 1) : a ∣ 2 := by
+  rcases totient_eq_one_iff.mp <| le_antisymm ha <| totient_pos han with rfl | rfl <;> norm_num
 
 /-! ### Euler's product formula for the totient function
 

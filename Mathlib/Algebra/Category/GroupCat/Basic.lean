@@ -440,12 +440,12 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddGroup_iso addEquivIsoAddGroupIso
 
-/-- "additive equivalences between `add_group`s are the same
-as (isomorphic to) isomorphisms in `AddGroup` -/
+/-- Additive equivalences between `AddGroup`s are the same
+as (isomorphic to) isomorphisms in `AddGroupCat`. -/
 add_decl_doc addEquivIsoAddGroupIso
 
-/-- multiplicative equivalences between `comm_group`s are the same as (isomorphic to) isomorphisms
-in `CommGroup` -/
+/-- Multiplicative equivalences between `CommGroup`s are the same as (isomorphic to) isomorphisms
+in `CommGroupCat`. -/
 @[to_additive]
 def mulEquivIsoCommGroupIso {X Y : CommGroupCat.{u}} : X ≃* Y ≅ X ≅ Y where
   hom e := e.toCommGroupCatIso
@@ -455,8 +455,8 @@ set_option linter.uppercaseLean3 false in
 set_option linter.uppercaseLean3 false in
 #align add_equiv_iso_AddCommGroup_iso addEquivIsoAddCommGroupIso
 
-/-- additive equivalences between `AddCommGroup`s are
-the same as (isomorphic to) isomorphisms in `AddCommGroup` -/
+/-- Additive equivalences between `AddCommGroup`s are
+the same as (isomorphic to) isomorphisms in `AddCommGroupCat`. -/
 add_decl_doc addEquivIsoAddCommGroupIso
 
 namespace CategoryTheory.Aut
@@ -475,7 +475,7 @@ def isoPerm {α : Type u} : GroupCat.of (Aut α) ≅ GroupCat.of (Equiv.Perm α)
 set_option linter.uppercaseLean3 false in
 #align category_theory.Aut.iso_perm CategoryTheory.Aut.isoPerm
 
-/-- The (unbundled) group of automorphisms of a type is `mul_equiv` to the (unbundled) group
+/-- The (unbundled) group of automorphisms of a type is `MulEquiv` to the (unbundled) group
 of permutations. -/
 def mulEquivPerm {α : Type u} : Aut α ≃* Equiv.Perm α :=
   isoPerm.groupIsoToMulEquiv
@@ -485,7 +485,7 @@ set_option linter.uppercaseLean3 false in
 end CategoryTheory.Aut
 
 @[to_additive]
-instance GroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget GroupCat.{u}) where
+instance GroupCat.forget_reflects_isos : (forget GroupCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget GroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _ }
@@ -496,7 +496,7 @@ set_option linter.uppercaseLean3 false in
 #align AddGroup.forget_reflects_isos AddGroupCat.forget_reflects_isos
 
 @[to_additive]
-instance CommGroupCat.forget_reflects_isos : ReflectsIsomorphisms (forget CommGroupCat.{u}) where
+instance CommGroupCat.forget_reflects_isos : (forget CommGroupCat.{u}).ReflectsIsomorphisms where
   reflects {X Y} f _ := by
     let i := asIso ((forget CommGroupCat).map f)
     let e : X ≃* Y := { i.toEquiv with map_mul' := map_mul _}

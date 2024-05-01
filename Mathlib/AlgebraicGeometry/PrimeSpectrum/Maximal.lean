@@ -85,7 +85,6 @@ theorem toPrimeSpectrum_continuous : Continuous <| @toPrimeSpectrum R _ :=
 #align maximal_spectrum.to_prime_spectrum_continuous MaximalSpectrum.toPrimeSpectrum_continuous
 
 variable (R)
-
 variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its maximal ideals
@@ -123,7 +122,6 @@ end MaximalSpectrum
 namespace PrimeSpectrum
 
 variable (R)
-
 variable [IsDomain R] (K : Type v) [Field K] [Algebra R K] [IsFractionRing R K]
 
 /-- An integral domain is equal to the intersection of its localizations at all its prime ideals

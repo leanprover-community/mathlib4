@@ -195,6 +195,9 @@ theorem Specializes.prod {x₁ x₂ : X} {y₁ y₂ : Y} (hx : x₁ ⤳ x₂) (h
   specializes_prod.2 ⟨hx, hy⟩
 #align specializes.prod Specializes.prod
 
+theorem Specializes.fst {a b : X × Y} (h : a ⤳ b) : a.1 ⤳ b.1 := (specializes_prod.1 h).1
+theorem Specializes.snd {a b : X × Y} (h : a ⤳ b) : a.2 ⤳ b.2 := (specializes_prod.1 h).2
+
 @[simp]
 theorem specializes_pi {f g : ∀ i, π i} : f ⤳ g ↔ ∀ i, f i ⤳ g i := by
   simp only [Specializes, nhds_pi, pi_le_pi]
@@ -485,6 +488,16 @@ theorem map_mk_nhdsWithin_preimage (s : Set (SeparationQuotient X)) (x : X) :
     map mk (𝓝[mk ⁻¹' s] x) = 𝓝[s] mk x := by
   rw [nhdsWithin, ← comap_principal, Filter.push_pull, nhdsWithin, map_mk_nhds]
 #align separation_quotient.map_mk_nhds_within_preimage SeparationQuotient.map_mk_nhdsWithin_preimage
+
+/-- The map `(x, y) ↦ (mk x, mk y)` is a quotient map. -/
+theorem quotientMap_prodMap_mk : QuotientMap (Prod.map mk mk : X × Y → _) := by
+  have hsurj : Surjective (Prod.map mk mk : X × Y → _) := surjective_mk.Prod_map surjective_mk
+  refine quotientMap_iff.2 ⟨hsurj, fun s ↦ ?_⟩
+  refine ⟨fun hs ↦ hs.preimage (continuous_mk.prod_map continuous_mk), fun hs ↦ ?_⟩
+  refine isOpen_iff_mem_nhds.2 <| hsurj.forall.2 fun (x, y) h ↦ ?_
+  rw [Prod.map_mk, nhds_prod_eq, ← map_mk_nhds, ← map_mk_nhds, Filter.prod_map_map_eq',
+    ← nhds_prod_eq, Filter.mem_map]
+  exact hs.mem_nhds h
 
 /-- Lift a map `f : X → α` such that `Inseparable x y → f x = f y` to a map
 `SeparationQuotient X → α`. -/

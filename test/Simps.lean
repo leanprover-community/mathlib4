@@ -123,15 +123,15 @@ example (n : ℕ) : foo.rfl.toFun n = n := by rw [foo.rfl_toFun, id]
 example (n : ℕ) : foo.rfl.invFun n = n := by rw [foo.rfl_invFun]
 
 /- the declarations are `simp` lemmas -/
-@[simps] def foo : ℕ × ℤ := (1, 2)
+@[simps] def bar : ℕ × ℤ := (1, 2)
 
 -- note: in Lean 4 the first test succeeds without `@[simps]`, however, the remaining tests don't
-example : foo.1 = 1 := by simp
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by rw [foo_fst, h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by simp; rw [h]
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by simp; rw [h]
-example {a : ℕ} {h : 1 = a} : foo.1 = a := by dsimp; rw [h] -- check that dsimp also unfolds
-example {a : ℤ} {h : 2 = a} : foo.2 = a := by dsimp; rw [h]
+example : bar.1 = 1 := by simp
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by rw [bar_fst, h]
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by simp; rw [h]
+example {a : ℤ} {h : 2 = a} : bar.2 = a := by simp; rw [h]
+example {a : ℕ} {h : 1 = a} : bar.1 = a := by dsimp; rw [h] -- check that dsimp also unfolds
+example {a : ℤ} {h : 2 = a} : bar.2 = a := by dsimp; rw [h]
 example {α} (x y : α) (h : x = y) : foo.rfl.toFun x = y := by simp; rw [h]
 example {α} (x y : α) (h : x = y) : foo.rfl.invFun x = y := by simp; rw [h]
 -- example {α} (x y : α) (h : x = y) : foo.rfl.toFun = @id α := by { successIfFail {simp}, rfl }

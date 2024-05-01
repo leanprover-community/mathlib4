@@ -3,12 +3,12 @@ Copyright (c) 2023 Jujian Zhang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang, Fangming Li
 -/
-import Mathlib.Data.Int.Basic
+import Mathlib.Algebra.Ring.Int
 import Mathlib.Data.List.Chain
 import Mathlib.Data.List.OfFn
 import Mathlib.Data.Rel
-import Mathlib.Tactic.Linarith
 import Mathlib.Tactic.Abel
+import Mathlib.Tactic.Linarith
 
 /-!
 # Series of a relation
@@ -105,7 +105,7 @@ def fromListChain' (x : List α) (x_ne_empty : x ≠ []) (hx : x.Chain' r) : Rel
   step i := List.chain'_iff_get.mp hx i i.2
 
 /-- Relation series of `r` and nonempty list of `α` satisfying `r`-chain condition bijectively
-corresponds to each other.-/
+corresponds to each other. -/
 protected def Equiv : RelSeries r ≃ {x : List α | x ≠ [] ∧ x.Chain' r} where
   toFun x := ⟨_, x.toList_ne_empty, x.toList_chain'⟩
   invFun x := fromListChain' _ x.2.1 x.2.2
@@ -253,15 +253,13 @@ For two types `α, β` and relation on them `r, s`, if `f : α → β` preserves
 `a₀ -r→ a₁ -r→ ... -r→ aₙ ↦ f a₀ -s→ f a₁ -s→ ... -s→ f aₙ`
 -/
 @[simps length]
-def map (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) : RelSeries s where
+def map (p : RelSeries r) (f : r →r s) : RelSeries s where
   length := p.length
-  toFun := f.comp p
-  step := (hf <| p.step .)
+  toFun := f.1.comp p
+  step := (f.2 <| p.step ·)
 
-@[simp] lemma map_apply (p : RelSeries r)
-    (f : α → β) (hf : ∀ ⦃x y : α⦄, r x y → s (f x) (f y)) (i : Fin (p.length + 1)) :
-    p.map f hf i = f (p i) := rfl
+@[simp] lemma map_apply (p : RelSeries r) (f : r →r s) (i : Fin (p.length + 1)) :
+    p.map f i = f (p i) := rfl
 
 /--
 If `a₀ -r→ a₁ -r→ ... -r→ aₙ` is an `r`-series and `a` is such that
@@ -279,15 +277,18 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · convert p.step ⟨m, hm.trans i.2⟩
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; exact hm.trans (lt_add_one _)
+        pick_goal 2
+        · exact hm.trans (lt_add_one _)
         simp
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
+        pick_goal 2
+        · change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
         simp; rfl
     · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        pick_goal 2
+        · show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
         simp]
       convert prev_connect
       · ext; exact hm
@@ -302,7 +303,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           aesop
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; exact hm.trans (lt_add_one _)
+          swap
+          · exact hm.trans (lt_add_one _)
           simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
             Fin.succ_mk]
           congr
@@ -312,7 +314,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
+          swap
+          · change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 
@@ -452,11 +455,9 @@ lemma smash_succ_castAdd {p q : RelSeries r} (h : p.last = q.head)
 
 lemma smash_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (Fin.castSucc <| i.natAdd p.length) = q (Fin.castSucc i) := by
-  rw [smash_toFun]
-  split_ifs with H
-  · simp only [Fin.coe_castSucc, Fin.coe_natAdd, add_lt_iff_neg_left, not_lt_zero'] at H
-  · congr
-    exact Nat.add_sub_self_left _ _
+  rw [smash_toFun, dif_neg (by simp)]
+  congr
+  exact Nat.add_sub_self_left _ _
 
 lemma smash_succ_natAdd {p q : RelSeries r} (h : p.last = q.head) (i : Fin q.length) :
     smash p q h (i.natAdd p.length).succ = q i.succ := by
@@ -483,11 +484,17 @@ end RelSeries
 
 /-- A type is finite dimensional if its `LTSeries` has bounded length. -/
 abbrev FiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.FiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.FiniteDimensional ((· < ·) : γ → γ → Prop)
+
+instance FiniteDimensionalOrder.ofUnique (γ : Type*) [Preorder γ] [Unique γ] :
+    FiniteDimensionalOrder γ where
+  exists_longest_relSeries := ⟨.singleton _ default, fun x ↦ by
+    by_contra! r
+    exact (ne_of_lt <| x.step ⟨0, by omega⟩) <| Subsingleton.elim _ _⟩
 
 /-- A type is infinite dimensional if it has `LTSeries` of at least arbitrary length -/
 abbrev InfiniteDimensionalOrder (γ : Type*) [Preorder γ] :=
-  Rel.InfiniteDimensional ((. < .) : γ → γ → Prop)
+  Rel.InfiniteDimensional ((· < ·) : γ → γ → Prop)
 
 section LTSeries
 
@@ -495,7 +502,7 @@ variable (α) [Preorder α] [Preorder β]
 /--
 If `α` is a preorder, a LTSeries is a relation series of the less than relation.
 -/
-abbrev LTSeries := RelSeries ((. < .) : Rel α α)
+abbrev LTSeries := RelSeries ((· < ·) : Rel α α)
 
 namespace LTSeries
 

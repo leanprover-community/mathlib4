@@ -149,7 +149,7 @@ theorem principal_add_iff_add_left_eq_self {o : Ordinal} :
 #align ordinal.principal_add_iff_add_left_eq_self Ordinal.principal_add_iff_add_left_eq_self
 
 theorem exists_lt_add_of_not_principal_add {a} (ha : ¬Principal (· + ·) a) :
-    ∃ (b c : _) (_ : b < a) (_ : c < a), b + c = a := by
+    ∃ b c, b < a ∧ c < a ∧ b + c = a := by
   unfold Principal at ha
   push_neg at ha
   rcases ha with ⟨b, c, hb, hc, H⟩
@@ -251,11 +251,11 @@ theorem mul_principal_add_is_principal_add (a : Ordinal.{u}) {b : Ordinal.{u}} (
     · rw [← succ_le_iff, succ_zero] at hb₁'
       intro c d hc hd
       rw [lt_mul_of_limit (principal_add_isLimit (lt_of_le_of_ne hb₁' hb₁.symm) hb)] at *
-      · rcases hc with ⟨x, hx, hx'⟩
-        rcases hd with ⟨y, hy, hy'⟩
-        use x + y, hb hx hy
-        rw [mul_add]
-        exact Left.add_lt_add hx' hy'
+      rcases hc with ⟨x, hx, hx'⟩
+      rcases hd with ⟨y, hy, hy'⟩
+      use x + y, hb hx hy
+      rw [mul_add]
+      exact Left.add_lt_add hx' hy'
 #align ordinal.mul_principal_add_is_principal_add Ordinal.mul_principal_add_is_principal_add
 
 /-! #### Multiplicative principal ordinals -/
@@ -323,7 +323,7 @@ theorem principal_mul_iff_mul_left_eq {o : Ordinal} :
 theorem principal_mul_omega : Principal (· * ·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    dsimp only; rw [← nat_cast_mul]
+    dsimp only; rw [← natCast_mul]
     apply nat_lt_omega
 #align ordinal.principal_mul_omega Ordinal.principal_mul_omega
 
@@ -415,7 +415,7 @@ theorem mul_eq_opow_log_succ {a b : Ordinal.{u}} (ha : a ≠ 0) (hb : Principal 
 theorem principal_opow_omega : Principal (·^·) omega := fun a b ha hb =>
   match a, b, lt_omega.1 ha, lt_omega.1 hb with
   | _, _, ⟨m, rfl⟩, ⟨n, rfl⟩ => by
-    simp_rw [← nat_cast_opow]
+    simp_rw [← natCast_opow]
     apply nat_lt_omega
 #align ordinal.principal_opow_omega Ordinal.principal_opow_omega
 

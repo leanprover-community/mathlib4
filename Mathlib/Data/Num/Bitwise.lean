@@ -278,7 +278,6 @@ and the negation of the MSB is sign-extended to all higher bits.
 
 namespace NzsNum
 
--- mathport name: nznum.bit
 @[inherit_doc]
 scoped notation a "::" b => bit a b
 
@@ -295,7 +294,6 @@ def not : NzsNum → NzsNum
   | b :: p => Not b :: not p
 #align nzsnum.not NzsNum.not
 
--- mathport name: «expr~ »
 @[inherit_doc]
 scoped prefix:100 "~" => not
 
@@ -342,7 +340,6 @@ def not : SNum → SNum
 #align snum.not SNum.not
 
 -- Porting note: Defined `priority` so that `~1 : SNum` is unambiguous.
--- mathport name: snum.not
 @[inherit_doc]
 scoped prefix:100 (priority := default + 1) "~" => not
 
@@ -353,7 +350,6 @@ def bit : Bool → SNum → SNum
   | b, nz p => p.bit b
 #align snum.bit SNum.bit
 
--- mathport name: snum.bit
 @[inherit_doc]
 scoped notation a "::" b => bit a b
 

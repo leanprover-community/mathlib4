@@ -33,7 +33,6 @@ commutative ring, field of fractions
 
 
 variable {R : Type*} [CommSemiring R] (M : Submonoid R) (S : Type*) [CommSemiring S]
-
 variable [Algebra R S] {P : Type*} [CommSemiring P]
 
 section AtPrime
@@ -182,7 +181,6 @@ open IsLocalization
 attribute [local instance] Classical.propDecidable
 
 variable (I : Ideal R) [hI : I.IsPrime]
-
 variable {I}
 
 /-- The unique maximal ideal of the localization at `I.primeCompl` lies over the ideal `I`. -/

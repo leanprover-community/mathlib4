@@ -3,7 +3,7 @@ Copyright (c) 2023 Luke Mantle. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Luke Mantle
 -/
-import Mathlib.Data.Polynomial.Derivative
+import Mathlib.Algebra.Polynomial.Derivative
 import Mathlib.Data.Nat.Parity
 import Mathlib.Data.Nat.Factorial.DoubleFactorial
 
@@ -110,8 +110,8 @@ theorem coeff_hermite_self (n : ℕ) : coeff (hermite n) n = 1 := by
 @[simp]
 theorem degree_hermite (n : ℕ) : (hermite n).degree = n := by
   rw [degree_eq_of_le_of_coeff_ne_zero]
-  simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
-  · rintro m hnm
+  · simp_rw [degree_le_iff_coeff_zero, Nat.cast_lt]
+    rintro m hnm
     exact coeff_hermite_of_lt hnm
   · simp [coeff_hermite_self n]
 #align polynomial.degree_hermite Polynomial.degree_hermite
@@ -173,7 +173,7 @@ theorem coeff_hermite_explicit :
       -- Factor out (-1)'s.
       rw [mul_comm (↑k + _ : ℤ), sub_eq_add_neg]
       nth_rw 3 [neg_eq_neg_one_mul]
-      simp only [mul_assoc, ← mul_add, pow_succ]
+      simp only [mul_assoc, ← mul_add, pow_succ']
       congr 2
       -- Factor out double factorials.
       norm_cast
@@ -210,8 +210,8 @@ theorem coeff_hermite (n k : ℕ) :
     coeff (hermite n) k =
       if Even (n + k) then (-1 : ℤ) ^ ((n - k) / 2) * (n - k - 1)‼ * Nat.choose n k else 0 := by
   split_ifs with h
-  exact coeff_hermite_of_even_add h
-  exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
+  · exact coeff_hermite_of_even_add h
+  · exact coeff_hermite_of_odd_add (Nat.odd_iff_not_even.mpr h)
 #align polynomial.coeff_hermite Polynomial.coeff_hermite
 
 end CoeffExplicit

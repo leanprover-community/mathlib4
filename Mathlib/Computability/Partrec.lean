@@ -274,7 +274,6 @@ protected theorem Computable₂.partrec₂ {α β σ} [Primcodable α] [Primcoda
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem of_eq {f g : α → σ} (hf : Computable f) (H : ∀ n, f n = g n) : Computable g :=
@@ -422,7 +421,6 @@ end Computable
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -494,7 +492,6 @@ end Partrec
 namespace Partrec₂
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem unpaired {f : ℕ → ℕ →. α} : Partrec (Nat.unpaired f) ↔ Partrec₂ f :=
@@ -521,7 +518,6 @@ end Partrec₂
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 nonrec theorem comp {f : β → σ} {g : α → β} (hf : Computable f) (hg : Computable g) :
@@ -539,7 +535,6 @@ end Computable
 namespace Computable₂
 
 variable {α : Type*} {β : Type*} {γ : Type*} {δ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable δ] [Primcodable σ]
 
 theorem mk {f : α → β → σ} (hf : Computable fun p : α × β => f p.1 p.2) : Computable₂ f := hf
@@ -559,7 +554,6 @@ end Computable₂
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -627,7 +621,6 @@ theorem Vector.mOfFn_part_some {α n} :
 namespace Computable
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 theorem option_some_iff {f : α → σ} : (Computable fun a => Option.some (f a)) ↔ Computable f :=
@@ -760,7 +753,6 @@ end Computable
 namespace Partrec
 
 variable {α : Type*} {β : Type*} {γ : Type*} {σ : Type*}
-
 variable [Primcodable α] [Primcodable β] [Primcodable γ] [Primcodable σ]
 
 open Computable
@@ -843,10 +835,10 @@ theorem fix_aux {α σ} (f : α →. Sum σ α) (a : α) (b : σ) :
         exact Or.inr ⟨_, hk, h₂⟩
       · rwa [le_antisymm (Nat.le_of_lt_succ mk) km]
     · rcases IH _ am₃ k.succ (by simp [F]; exact ⟨_, hk, am₃⟩) with ⟨n, hn₁, hn₂⟩
-      · refine' ⟨n, hn₁, fun m mn km => _⟩
-        cases' km.lt_or_eq_dec with km km
-        · exact hn₂ _ mn km
-        · exact km ▸ ⟨_, hk⟩
+      refine' ⟨n, hn₁, fun m mn km => _⟩
+      cases' km.lt_or_eq_dec with km km
+      · exact hn₂ _ mn km
+      · exact km ▸ ⟨_, hk⟩
 #align partrec.fix_aux Partrec.fix_aux
 
 theorem fix {f : α →. Sum σ α} (hf : Partrec f) : Partrec (PFun.fix f) := by

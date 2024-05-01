@@ -303,7 +303,8 @@ theorem PartiallyWellOrderedOn.image_of_monotone_on (hs : s.PartiallyWellOrdered
     (hf : ∀ a₁ ∈ s, ∀ a₂ ∈ s, r a₁ a₂ → r' (f a₁) (f a₂)) : (f '' s).PartiallyWellOrderedOn r' := by
   intro g' hg'
   choose g hgs heq using hg'
-  obtain rfl : f ∘ g = g'; exact funext heq
+  obtain rfl : f ∘ g = g'
+  · exact funext heq
   obtain ⟨m, n, hlt, hmn⟩ := hs g hgs
   exact ⟨m, n, hlt, hf _ (hgs m) _ (hgs n) hmn⟩
 #align set.partially_well_ordered_on.image_of_monotone_on Set.PartiallyWellOrderedOn.image_of_monotone_on
@@ -702,6 +703,22 @@ end Set
 
 open Set
 
+section LocallyFiniteOrder
+
+variable {s : Set α} [Preorder α] [LocallyFiniteOrder α]
+
+theorem BddBelow.wellFoundedOn_lt : BddBelow s → s.WellFoundedOn (· < ·) := by
+  rw [wellFoundedOn_iff_no_descending_seq]
+  rintro ⟨a, ha⟩ f hf
+  refine infinite_range_of_injective f.injective ?_
+  exact (finite_Icc a <| f 0).subset <| range_subset_iff.2 <| fun n =>
+    ⟨ha <| hf _, antitone_iff_forall_lt.2 (fun a b hab => (f.map_rel_iff.2 hab).le) <| zero_le _⟩
+
+theorem BddAbove.wellFoundedOn_gt : BddAbove s → s.WellFoundedOn (· > ·) :=
+  fun h => h.dual.wellFoundedOn_lt
+
+end LocallyFiniteOrder
+
 namespace Set.PartiallyWellOrderedOn
 
 variable {r : α → α → Prop}
@@ -849,12 +866,12 @@ section ProdLex
 variable {rα : α → α → Prop} {rβ : β → β → Prop} {f : γ → α} {g : γ → β} {s : Set γ}
 
 /-- Stronger version of `WellFounded.prod_lex`. Instead of requiring `rβ on g` to be well-founded,
-we only require it to be well-founded on fibers of `f`.-/
+we only require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.prod_lex_of_wellFoundedOn_fiber (hα : WellFounded (rα on f))
     (hβ : ∀ a, (f ⁻¹' {a}).WellFoundedOn (rβ on g)) :
     WellFounded (Prod.Lex rα rβ on fun c => (f c, g c)) := by
   refine' (PSigma.lex_wf (wellFoundedOn_range.2 hα) fun a => hβ a).onFun.mono fun c c' h => _
-  exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
+  · exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
   obtain h' | h' := Prod.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
   · dsimp only [InvImage, (· on ·)] at h' ⊢
@@ -867,8 +884,8 @@ theorem Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber (hα : s.WellFoundedOn
     s.WellFoundedOn (Prod.Lex rα rβ on fun c => (f c, g c)) := by
   refine' WellFounded.prod_lex_of_wellFoundedOn_fiber hα fun a ↦ (hβ a).onFun.mono (fun b c h ↦ _)
   swap
-  exact fun _ x => ⟨x, x.1.2, x.2⟩
-  assumption
+  · exact fun _ x => ⟨x, x.1.2, x.2⟩
+  · assumption
 #align set.well_founded_on.prod_lex_of_well_founded_on_fiber Set.WellFoundedOn.prod_lex_of_wellFoundedOn_fiber
 
 end ProdLex
@@ -878,12 +895,12 @@ section SigmaLex
 variable {rι : ι → ι → Prop} {rπ : ∀ i, π i → π i → Prop} {f : γ → ι} {g : ∀ i, γ → π i} {s : Set γ}
 
 /-- Stronger version of `PSigma.lex_wf`. Instead of requiring `rπ on g` to be well-founded, we only
-require it to be well-founded on fibers of `f`.-/
+require it to be well-founded on fibers of `f`. -/
 theorem WellFounded.sigma_lex_of_wellFoundedOn_fiber (hι : WellFounded (rι on f))
     (hπ : ∀ i, (f ⁻¹' {i}).WellFoundedOn (rπ i on g i)) :
     WellFounded (Sigma.Lex rι rπ on fun c => ⟨f c, g (f c) c⟩) := by
   refine' (PSigma.lex_wf (wellFoundedOn_range.2 hι) fun a => hπ a).onFun.mono fun c c' h => _
-  exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
+  · exact fun c => ⟨⟨_, c, rfl⟩, c, rfl⟩
   obtain h' | ⟨h', h''⟩ := Sigma.lex_iff.1 h
   · exact PSigma.Lex.left _ _ h'
   · dsimp only [InvImage, (· on ·)] at h' ⊢
@@ -905,8 +922,8 @@ theorem Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber (hι : s.WellFoundedO
     @WellFounded.sigma_lex_of_wellFoundedOn_fiber _ s _ _ rπ (fun c => f c) (fun i c => g _ c) hι
       fun i => (hπ i).onFun.mono (fun b c h => _)
   swap
-  exact fun _ x => ⟨x, x.1.2, x.2⟩
-  assumption
+  · exact fun _ x => ⟨x, x.1.2, x.2⟩
+  · assumption
 #align set.well_founded_on.sigma_lex_of_well_founded_on_fiber Set.WellFoundedOn.sigma_lex_of_wellFoundedOn_fiber
 
 end SigmaLex

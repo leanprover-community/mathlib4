@@ -3,7 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Tactic.Common
 
@@ -97,7 +97,7 @@ theorem enumerate_inj {n₁ n₂ : ℕ} {a : α} {s : Set α} (h_sel : ∀ s a, 
         simp_all only [add_comm, self_eq_add_left, Nat.add_succ, enumerate_eq_none_of_sel _ h]
       | some =>
         simp_all only [add_comm, self_eq_add_left, enumerate, Option.some.injEq,
-                       Nat.add_succ, enumerate._eq_2, Nat.succ.injEq]
+                       Nat.add_succ, Nat.succ.injEq]
         exact ih h₁ h₂
 #align set.enumerate_inj Set.enumerate_inj
 

@@ -176,7 +176,7 @@ theorem iUnion_of_tendsto_zero {ι} (m : OuterMeasure α) {s : ι → Set α} (l
   have A : ∀ k, m S ≤ M + m (S \ s k) := fun k =>
     calc
       m S = m (s k ∪ S \ s k) := by rw [union_diff_self, union_eq_self_of_subset_left hsS]
-      _ ≤ m (s k) + m (S \ s k) := (m.union _ _)
+      _ ≤ m (s k) + m (S \ s k) := m.union _ _
       _ ≤ M + m (S \ s k) := add_le_add_right (le_iSup (m.measureOf ∘ s) k) _
   have B : Tendsto (fun k => M + m (S \ s k)) l (𝓝 (M + 0)) := tendsto_const_nhds.add h0
   rw [add_zero] at B
@@ -217,7 +217,7 @@ theorem diff_null (m : OuterMeasure α) (s : Set α) {t : Set α} (ht : m t = 0)
   refine' le_antisymm (m.mono <| diff_subset _ _) _
   calc
     m s ≤ m (s ∩ t) + m (s \ t) := le_inter_add_diff _
-    _ ≤ m t + m (s \ t) := (add_le_add_right (m.mono <| inter_subset_right _ _) _)
+    _ ≤ m t + m (s \ t) := add_le_add_right (m.mono <| inter_subset_right _ _) _
     _ = m (s \ t) := by rw [ht, zero_add]
 #align measure_theory.outer_measure.diff_null MeasureTheory.OuterMeasure.diff_null
 
@@ -282,7 +282,6 @@ theorem add_apply (m₁ m₂ : OuterMeasure α) (s : Set α) : (m₁ + m₂) s =
 section SMul
 
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
-
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
 instance instSMul : SMul R (OuterMeasure α) :=
@@ -1301,7 +1300,6 @@ open OuterMeasure
 section Extend
 
 variable {α : Type*} {P : α → Prop}
-
 variable (m : ∀ s : α, P s → ℝ≥0∞)
 
 /-- We can trivially extend a function defined on a subclass of objects (with codomain `ℝ≥0∞`)
@@ -1349,20 +1347,15 @@ end Extend
 section ExtendSet
 
 variable {α : Type*} {P : Set α → Prop}
-
 variable {m : ∀ s : Set α, P s → ℝ≥0∞}
-
 variable (P0 : P ∅) (m0 : m ∅ P0 = 0)
-
 variable (PU : ∀ ⦃f : ℕ → Set α⦄ (_hm : ∀ i, P (f i)), P (⋃ i, f i))
-
 variable
   (mU :
     ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, P (f i)),
       Pairwise (Disjoint on f) → m (⋃ i, f i) (PU hm) = ∑' i, m (f i) (hm i))
 
 variable (msU : ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, P (f i)), m (⋃ i, f i) (PU hm) ≤ ∑' i, m (f i) (hm i))
-
 variable (m_mono : ∀ ⦃s₁ s₂ : Set α⦄ (hs₁ : P s₁) (hs₂ : P s₂), s₁ ⊆ s₂ → m s₁ hs₁ ≤ m s₂ hs₂)
 
 theorem extend_empty : extend m ∅ = 0 :=
@@ -1491,8 +1484,8 @@ theorem inducedOuterMeasure_preimage (f : α ≃ α) (Pm : ∀ s : Set α, P (f 
 
 theorem inducedOuterMeasure_exists_set {s : Set α} (hs : inducedOuterMeasure m P0 m0 s ≠ ∞)
     {ε : ℝ≥0∞} (hε : ε ≠ 0) :
-    ∃ (t : Set α) (_ht : P t),
-      s ⊆ t ∧ inducedOuterMeasure m P0 m0 t ≤ inducedOuterMeasure m P0 m0 s + ε := by
+    ∃ t : Set α,
+      P t ∧ s ⊆ t ∧ inducedOuterMeasure m P0 m0 t ≤ inducedOuterMeasure m P0 m0 s + ε := by
   have h := ENNReal.lt_add_right hs hε
   conv at h =>
     lhs
@@ -1540,11 +1533,8 @@ end ExtendSet
 section MeasurableSpace
 
 variable {α : Type*} [MeasurableSpace α]
-
 variable {m : ∀ s : Set α, MeasurableSet s → ℝ≥0∞}
-
 variable (m0 : m ∅ MeasurableSet.empty = 0)
-
 variable
   (mU :
     ∀ ⦃f : ℕ → Set α⦄ (hm : ∀ i, MeasurableSet (f i)),

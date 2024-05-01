@@ -6,6 +6,7 @@ Authors: Michael Stoll
 import Mathlib.NumberTheory.Cyclotomic.PrimitiveRoots
 import Mathlib.FieldTheory.Finite.Trace
 import Mathlib.Algebra.Group.AddChar
+import Mathlib.Data.ZMod.Units
 
 #align_import number_theory.legendre_symbol.add_character from "leanprover-community/mathlib"@"0723536a0522d24fc2f159a096fb3304bef77472"
 
@@ -77,6 +78,15 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
   rwa [mulShift_apply, mul_inv_cancel_left₀ ha]
 #align add_char.is_nontrivial.is_primitive AddChar.IsNontrivial.isPrimitive
 
+/-- If `r` is not a unit, then `e.mulShift r` is not primitive. -/
+lemma not_isPrimitive_mulShift [Finite R] (e : AddChar R R') {r : R}
+    (hr : ¬ IsUnit r) : ¬ IsPrimitive (e.mulShift r) := by
+  simp only [IsPrimitive, not_forall]
+  simp only [isUnit_iff_mem_nonZeroDivisors_of_finite, mem_nonZeroDivisors_iff, not_forall] at hr
+  rcases hr with ⟨x, h, h'⟩
+  exact ⟨x, h', by simp only [mulShift_mulShift, mul_comm r, h, mulShift_zero, not_ne_iff,
+    isNontrivial_iff_ne_trivial]⟩
+
 -- Porting note: Using `structure` gives a timeout, see
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout/near/365719262 and
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/mysterious.20finsupp.20related.20timeout
@@ -85,7 +95,8 @@ theorem IsNontrivial.isPrimitive {F : Type u} [Field F] {ψ : AddChar F R'} (hψ
 /-- Definition for a primitive additive character on a finite ring `R` into a cyclotomic extension
 of a field `R'`. It records which cyclotomic extension it is, the character, and the
 fact that the character is primitive. -/
--- @[nolint has_nonempty_instance] -- Porting note: removed
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 def PrimitiveAddChar (R : Type u) [CommRing R] (R' : Type v) [Field R'] :=
   Σ n : ℕ+, Σ' char : AddChar R (CyclotomicField n R'), IsPrimitive char
 #align add_char.primitive_add_char AddChar.PrimitiveAddChar
@@ -109,22 +120,37 @@ theorem PrimitiveAddChar.prim {R : Type u} [CommRing R] {R' : Type v} [Field R']
 ### Additive characters on `ZMod n`
 -/
 
+section ZMod
+
+variable {N : ℕ+} {R : Type*} [CommRing R] (e : AddChar (ZMod N) R)
+
+/-- If `e` is not primitive, then `e.mulShift d = 1` for some proper divisor `d` of `N`. -/
+lemma exists_divisor_of_not_isPrimitive (he : ¬e.IsPrimitive) :
+    ∃ d : ℕ, d ∣ N ∧ d < N ∧ e.mulShift d = 1 := by
+  simp_rw [IsPrimitive, not_forall, isNontrivial_iff_ne_trivial, not_ne_iff] at he
+  rcases he with ⟨b, hb_ne, hb⟩
+  -- We have `AddChar.mulShift e b = 1`, but `b ≠ 0`.
+  obtain ⟨d, hd, u, hu, rfl⟩ := b.eq_unit_mul_divisor
+  refine ⟨d, hd, lt_of_le_of_ne (Nat.le_of_dvd N.pos hd) ?_, ?_⟩
+  · exact fun h ↦ by simp only [h, ZMod.natCast_self, mul_zero, ne_eq, not_true_eq_false] at hb_ne
+  · rw [← mulShift_unit_eq_one_iff _ hu, ← hb, mul_comm]
+    ext1 y
+    rw [mulShift_apply, mulShift_apply, mulShift_apply, mul_assoc]
+
+end ZMod
+
 section ZModChar
 
 variable {C : Type v} [CommMonoid C]
 
 section ZModCharDef
 
-open Multiplicative
--- so we can write simply `toAdd`, which we need here again
 
 /-- We can define an additive character on `ZMod n` when we have an `n`th root of unity `ζ : C`. -/
 def zmodChar (n : ℕ+) {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) : AddChar (ZMod n) C where
-  toFun := fun a : Multiplicative (ZMod n) => ζ ^ a.toAdd.val
-  map_one' := by simp only [toAdd_one, ZMod.val_zero, pow_zero]
-  map_mul' x y := by
-    dsimp only
-    rw [toAdd_mul, ← pow_add, ZMod.val_add (toAdd x) (toAdd y), ← pow_eq_pow_mod _ hζ]
+  toFun a := ζ ^ a.val
+  map_zero_one' := by simp only [ZMod.val_zero, pow_zero]
+  map_add_mul' x y := by simp only [ZMod.val_add, ← pow_eq_pow_mod _ hζ, ← pow_add]
 #align add_char.zmod_char AddChar.zmodChar
 
 /-- The additive character on `ZMod n` defined using `ζ` sends `a` to `ζ^a`. -/
@@ -135,7 +161,7 @@ theorem zmodChar_apply {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ZMod 
 
 theorem zmodChar_apply' {n : ℕ+} {ζ : C} (hζ : ζ ^ (n : ℕ) = 1) (a : ℕ) :
     zmodChar n hζ a = ζ ^ a := by
-  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_nat_cast a]
+  rw [pow_eq_pow_mod a hζ, zmodChar_apply, ZMod.val_natCast a]
 #align add_char.zmod_char_apply' AddChar.zmodChar_apply'
 
 end ZModCharDef
@@ -147,7 +173,7 @@ theorem zmod_char_isNontrivial_iff (n : ℕ+) (ψ : AddChar (ZMod n) C) :
   contrapose!
   rintro h₁ ⟨a, ha⟩
   have ha₁ : a = a.val • (1 : ZMod ↑n) := by
-    rw [nsmul_eq_mul, mul_one]; exact (ZMod.nat_cast_zmod_val a).symm
+    rw [nsmul_eq_mul, mul_one]; exact (ZMod.natCast_zmod_val a).symm
   rw [ha₁, map_nsmul_pow, h₁, one_pow] at ha
   exact ha rfl
 #align add_char.zmod_char_is_nontrivial_iff AddChar.zmod_char_isNontrivial_iff
@@ -197,12 +223,11 @@ end Additive
 ### Existence of a primitive additive character on a finite field
 -/
 
-
 /-- There is a primitive additive character on the finite field `F` if the characteristic
 of the target is different from that of `F`.
 We obtain it as the composition of the trace from `F` to `ZMod p` with a primitive
 additive character on `ZMod p`, where `p` is the characteristic of `F`. -/
-noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] [Field F']
+noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Finite F] [Field F']
     (h : ringChar F' ≠ ringChar F) : PrimitiveAddChar F F' := by
   let p := ringChar F
   haveI hp : Fact p.Prime := ⟨CharP.char_is_prime F _⟩
@@ -214,7 +239,7 @@ noncomputable def primitiveCharFiniteField (F F' : Type*) [Field F] [Fintype F] 
       exact fun hf => Nat.Prime.ne_zero hp.1 (zero_dvd_iff.mp hf)
   let ψ := primitiveZModChar pp F' (neZero_iff.mp (NeZero.of_not_dvd F' hp₂))
   letI : Algebra (ZMod p) F := ZMod.algebra _ _
-  let ψ' := ψ.char.comp (AddMonoidHom.toMultiplicative (Algebra.trace (ZMod p) F).toAddMonoidHom)
+  let ψ' := ψ.char.compAddMonoidHom (Algebra.trace (ZMod p) F).toAddMonoidHom
   have hψ' : IsNontrivial ψ' := by
     obtain ⟨a, ha⟩ := FiniteField.trace_to_zmod_nondegenerate F one_ne_zero
     rw [one_mul] at ha

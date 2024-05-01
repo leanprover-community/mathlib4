@@ -68,9 +68,7 @@ set_option linter.uppercaseLean3 false
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
 variable (V : Type*) (Pt : Type*)
-
 variable [NormedAddCommGroup V] [InnerProductSpace ℝ V] [MetricSpace Pt]
-
 variable [NormedAddTorsor V Pt] [hd2 : Fact (finrank ℝ V = 2)]
 
 namespace Imo2019Q2

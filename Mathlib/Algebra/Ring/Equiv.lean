@@ -3,7 +3,6 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Callum Sutton, Yury Kudryashov
 -/
-import Mathlib.Algebra.Field.IsField
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Units.Equiv
 import Mathlib.Algebra.GroupWithZero.InjSurj
@@ -64,7 +63,6 @@ algebraic structure. -/
 structure RingEquiv (R S : Type*) [Mul R] [Mul S] [Add R] [Add S] extends R ≃ S, R ≃* S, R ≃+ S
 #align ring_equiv RingEquiv
 
--- mathport name: «expr ≃+* »*
 /-- Notation for `RingEquiv`. -/
 infixl:25 " ≃+* " => RingEquiv
 
@@ -285,7 +283,7 @@ theorem symm_symm (e : R ≃+* S) : e.symm.symm = e :=
   ext fun _ => rfl
 #align ring_equiv.symm_symm RingEquiv.symm_symm
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem symm_refl : (RingEquiv.refl R).symm = RingEquiv.refl R :=
   rfl
@@ -848,7 +846,7 @@ end RingEquiv
 
 namespace MulEquiv
 
-/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
     [MulEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x + y) = f x + f y) : R ≃+* S :=
@@ -859,7 +857,7 @@ end MulEquiv
 
 namespace AddEquiv
 
-/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
     [AddEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x * y) = f x * f y) : R ≃+* S :=
@@ -901,15 +899,8 @@ protected theorem isDomain {A : Type*} (B : Type*) [Semiring A] [Semiring B] [Is
     exists_pair_ne := ⟨e.symm 0, e.symm 1, e.symm.injective.ne zero_ne_one⟩ }
 #noalign ring_equiv.is_domain
 
-protected theorem isField {A : Type*} (B : Type*) [Semiring A] [Semiring B] (hB : IsField B)
-    (e : A ≃* B) : IsField A where
-  exists_pair_ne := have ⟨x, y, h⟩ := hB.exists_pair_ne; ⟨e.symm x, e.symm y, e.symm.injective.ne h⟩
-  mul_comm := fun x y => e.injective <| by rw [map_mul, map_mul, hB.mul_comm]
-  mul_inv_cancel := fun h => by
-    obtain ⟨a', he⟩ := hB.mul_inv_cancel ((e.injective.ne h).trans_eq <| map_zero e)
-    exact ⟨e.symm a', e.injective <| by rw [map_mul, map_one, e.apply_symm_apply, he]⟩
-
 end MulEquiv
 
 -- guard against import creep
+assert_not_exists Field
 assert_not_exists Fintype
