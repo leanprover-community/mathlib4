@@ -128,6 +128,9 @@ theorem fact_iff {p : Prop} : Fact p ↔ p := ⟨fun h ↦ h.1, fun h ↦ ⟨h�
 #align fact_iff fact_iff
 #align fact.elim Fact.elim
 
+instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
+  decidable_of_iff _ fact_iff.symm
+
 /-- Swaps two pairs of arguments to a function. -/
 @[reducible] def Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
