@@ -26,6 +26,8 @@ structure Dart extends V × V where
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
 
+attribute [simp] Dart.isAdj
+
 variable {G}
 
 theorem Dart.ext_iff (d₁ d₂ : G.Dart) : d₁ = d₂ ↔ d₁.toProd = d₂.toProd := by
