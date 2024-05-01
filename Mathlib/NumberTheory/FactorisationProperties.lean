@@ -170,9 +170,8 @@ theorem prime_not_pseudoperfect (h : Nat.Prime n) : ¬ Nat.Pseudoperfect n := by
   rw [h1]
   right
   rintro s hs
-  rcases (List.mem_pair.mp hs) with hs | hs
-  <;> {simp only [ne_eq, hs, sum_empty, sum_singleton];
-        exact Nat.ne_of_lt (by linarith [Prime.one_lt h])}
+  rcases (List.mem_pair.mp hs) with hs | hs <;>
+  {simp only [ne_eq, hs, sum_empty, sum_singleton]; exact Nat.ne_of_lt (by linarith [Prime.one_lt h])}
 
 theorem prime_not_perfect (h : Prime n) : ¬ Perfect n :=
   not_pseudoperfect_not_perfect n (prime_not_pseudoperfect n h)
