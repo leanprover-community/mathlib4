@@ -739,6 +739,12 @@ theorem C_mul_eq_smul {r : R} {x : HahnSeries Γ R} : C r * x = r • x :=
   single_zero_mul_eq_smul
 #align hahn_series.C_mul_eq_smul HahnSeries.C_mul_eq_smul
 
+@[simp]
+theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
+  induction' n with n IH
+  · simp only [Nat.zero_eq, pow_zero, zero_smul, single_zero_one]
+  · simp only [pow_succ, IH, single_mul_single, succ_nsmul]
+
 end Semiring
 
 section Domain

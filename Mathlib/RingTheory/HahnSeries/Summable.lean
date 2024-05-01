@@ -242,7 +242,7 @@ end AddCommGroup
 
 section Semiring
 
--- change this to [OrderedCancelVAdd Γ Γ'] and [SMul R V]
+-- change this to [OrderedCancelVAdd Γ Γ'] and [SMul R V]?
 
 variable [OrderedCancelAddCommMonoid Γ] [Semiring R] {α : Type*}
 
