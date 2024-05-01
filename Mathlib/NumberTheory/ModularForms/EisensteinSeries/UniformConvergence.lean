@@ -163,12 +163,12 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       norm_cast
       exact Nat.pos_of_ne_zero hn
 
-theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
+/-This is a special case of the above, but one that we use more.-/
+theorem eis_is_bounded_on_box  {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k) (hx : (x 0, x 1) ∈ box n) :
     (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (((r z) ^ k * n ^ k))⁻¹ := by
-  have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
+  have := eis_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   norm_cast at *
-  simp_rw [zpow_neg, ← mul_inv] at this
-  simp only [map_pow, zpow_natCast]
+  simp_rw [zpow_neg, ← mul_inv] at  *
   simpa using this
 
 lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
@@ -240,8 +240,6 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
-  have hk0 : 0 ≤ k := by linarith
-  lift k to ℕ using hk0
   rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact
     (by simp only [Set.top_eq_univ, isOpen_univ]), eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
@@ -254,18 +252,19 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     simp only [zpow_natCast, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs) x v
+  have := eis_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v (by linarith)
   simp only [Nat.cast_max,Int.natCast_natAbs, iff_true, zpow_natCast, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
   apply le_trans (this (by simp only [Int.mem_box]))
   rw [mul_comm]
   apply mul_le_mul _ (by rfl)
-  repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, pow_nonneg,
-    inv_nonneg, pow_nonneg (r_pos _).le]}
-  rw [inv_le_inv]
-  · apply pow_le_pow_left (r_pos _).le
-    · exact r_lower_bound_on_strip hB ⟨x, HABK hx⟩
+  repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg,
+    inv_nonneg, zpow_nonneg (r_pos _).le]}
+  have hk0 : 0 ≤ k := by linarith
+  lift k to ℕ using hk0
+  rw [inv_le_inv ]
+  · apply pow_le_pow_left (r_pos _).le (r_lower_bound_on_strip hB ⟨x, HABK hx⟩)
   · apply pow_pos ( (r_pos x))
   · apply pow_pos (r_pos _)
 
