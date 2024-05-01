@@ -96,7 +96,7 @@ theorem controlled_closure_of_complete {f : NormedAddGroupHom G H} {K : AddSubgr
         _ = ε * ‖h‖ := mul_div_cancel₀ _ two_ne_zero
     calc
       ‖s n‖ ≤ ∑ k in range (n + 1), ‖u k‖ := norm_sum_le _ _
-      _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := (sum_range_succ' _ _)
+      _ = (∑ k in range n, ‖u (k + 1)‖) + ‖u 0‖ := sum_range_succ' _ _
       _ ≤ (∑ k in range n, C * ‖v (k + 1)‖) + ‖u 0‖ := by gcongr; apply hnorm_u
       _ ≤ (∑ k in range n, C * b (k + 1)) + (C * b 0 + C * ‖h‖) := by
         gcongr with k; exact (hv _ k.succ_pos).le

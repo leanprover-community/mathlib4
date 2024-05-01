@@ -1178,7 +1178,7 @@ See also: `Fintype.exists_ne_map_eq_of_card_lt`, `Finite.exists_infinite_fiber`.
 -/
 theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f : α → β) :
     ∃ x y : α, x ≠ y ∧ f x = f y := by
-  simpa only [Injective, not_forall, not_imp, and_comm] using not_injective_infinite_finite f
+  simpa [Injective, and_comm] using not_injective_infinite_finite f
 #align finite.exists_ne_map_eq_of_infinite Finite.exists_ne_map_eq_of_infinite
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=
@@ -1251,13 +1251,13 @@ theorem List.exists_pw_disjoint_with_card {α : Type*} [Fintype α]
     exact ranges_nodup hu
   · -- pairwise disjoint
     refine Pairwise.map _ (fun s t ↦ disjoint_map (Equiv.injective _)) ?_
-    · -- List.Pairwise List.disjoint l
-      apply Pairwise.pmap (List.ranges_disjoint c)
-      intro u hu v hv huv
-      apply disjoint_pmap
-      · intro a a' ha ha' h
-        simpa only [klift, Fin.mk_eq_mk] using h
-      exact huv
+    -- List.Pairwise List.disjoint l
+    apply Pairwise.pmap (List.ranges_disjoint c)
+    intro u hu v hv huv
+    apply disjoint_pmap
+    · intro a a' ha ha' h
+      simpa only [klift, Fin.mk_eq_mk] using h
+    exact huv
 
 end Ranges
 

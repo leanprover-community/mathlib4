@@ -19,9 +19,6 @@ in favor of the "Peano" natural numbers `Nat`, and the purpose of this
 collection of theorems is to show the equivalence of the different approaches.
 -/
 
-set_option autoImplicit true
-
-
 /-- The type of positive binary numbers.
 
      13 = 1101(base 2) = bit1 (bit0 (bit1 one)) -/
@@ -158,7 +155,7 @@ def ofNat (n : ℕ) : PosNum :=
   ofNatSucc (Nat.pred n)
 #align pos_num.of_nat PosNum.ofNat
 
-instance : OfNat PosNum (n + 1) where
+instance {n : ℕ} : OfNat PosNum (n + 1) where
   ofNat := ofNat (n + 1)
 
 open Ordering

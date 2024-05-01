@@ -177,7 +177,7 @@ instance (priority := 999) subsemiring (U : Subsemiring S) : IsScalarTower U S A
   of_algebraMap_eq fun _x => rfl
 #align is_scalar_tower.subsemiring IsScalarTower.subsemiring
 
--- Porting note: @[nolint instance_priority]
+-- Porting note(#12096): removed @[nolint instance_priority], linter not ported yet
 instance (priority := 999) of_algHom {R A B : Type*} [CommSemiring R] [CommSemiring A]
     [CommSemiring B] [Algebra R A] [Algebra R B] (f : A →ₐ[R] B) :
     @IsScalarTower R A B _ f.toRingHom.toAlgebra.toSMul _ :=

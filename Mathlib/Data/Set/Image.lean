@@ -3,7 +3,7 @@ Copyright (c) 2014 Jeremy Avigad. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Leonardo de Moura
 -/
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.WithBot
 
 #align_import data.set.image from "leanprover-community/mathlib"@"001ffdc42920050657fd45bd2b8bfbec8eaaeb29"
@@ -29,8 +29,6 @@ import Mathlib.Order.WithBot
 set, sets, image, preimage, pre-image, range
 
 -/
-
-set_option autoImplicit true
 
 universe u v
 
@@ -1057,10 +1055,10 @@ theorem surjective_onto_range : Surjective (rangeFactorization f) := fun ⟨_, �
 theorem image_eq_range (f : α → β) (s : Set α) : f '' s = range fun x : s => f x := by
   ext
   constructor
-  rintro ⟨x, h1, h2⟩
-  exact ⟨⟨x, h1⟩, h2⟩
-  rintro ⟨⟨x, h1⟩, h2⟩
-  exact ⟨x, h1, h2⟩
+  · rintro ⟨x, h1, h2⟩
+    exact ⟨⟨x, h1⟩, h2⟩
+  · rintro ⟨⟨x, h1⟩, h2⟩
+    exact ⟨x, h1, h2⟩
 #align set.image_eq_range Set.image_eq_range
 
 theorem _root_.Sum.range_eq (f : Sum α β → γ) :
@@ -1085,8 +1083,8 @@ theorem range_ite_subset' {p : Prop} [Decidable p] {f g : α → β} :
 theorem range_ite_subset {p : α → Prop} [DecidablePred p] {f g : α → β} :
     (range fun x => if p x then f x else g x) ⊆ range f ∪ range g := by
   rw [range_subset_iff]; intro x; by_cases h : p x
-  simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
-  simp [if_neg h, mem_union, mem_range_self]
+  · simp only [if_pos h, mem_union, mem_range, exists_apply_eq_apply, true_or]
+  · simp [if_neg h, mem_union, mem_range_self]
 #align set.range_ite_subset Set.range_ite_subset
 
 @[simp]
@@ -1250,7 +1248,7 @@ end Set
 
 namespace Function
 
-variable {ι : Sort*} {f : α → β}
+variable {α β : Type*} {ι : Sort*} {f : α → β}
 
 open Set
 
@@ -1300,7 +1298,7 @@ theorem Surjective.preimage_subset_preimage_iff {s t : Set β} (hf : Surjective 
   apply subset_univ
 #align function.surjective.preimage_subset_preimage_iff Function.Surjective.preimage_subset_preimage_iff
 
-theorem Surjective.range_comp {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
+theorem Surjective.range_comp {ι' : Sort*} {f : ι → ι'} (hf : Surjective f) (g : ι' → α) :
     range (g ∘ f) = range g :=
   ext fun y => (@Surjective.exists _ _ _ hf fun x => g x = y).symm
 #align function.surjective.range_comp Function.Surjective.range_comp
@@ -1339,9 +1337,10 @@ protected theorem Involutive.preimage {f : α → α} (hf : Involutive f) : Invo
 end Function
 
 namespace EquivLike
-variable {E : Type*} [EquivLike E ι ι']
 
-@[simp] lemma range_comp (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
+variable {ι ι' : Sort*} {E : Type*} [EquivLike E ι ι']
+
+@[simp] lemma range_comp {α : Type*} (f : ι' → α) (e : E) : range (f ∘ e) = range f :=
   (EquivLike.surjective _).range_comp _
 #align equiv_like.range_comp EquivLike.range_comp
 

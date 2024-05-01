@@ -14,7 +14,7 @@ import Mathlib.Analysis.SpecialFunctions.Pow.Real
 
 We define the constant `γ`, and give upper and lower bounds for it.
 
-## Main definitions and results
+## Main definitions and results
 
 * `Real.eulerMascheroniConstant`: the constant `γ`
 * `Real.tendsto_harmonic_sub_log`: the sequence `n ↦ harmonic n - log n` tends to `γ` as `n → ∞`
@@ -104,8 +104,8 @@ lemma eulerMascheroniSeq'_six_lt_two_thirds : eulerMascheroniSeq' 6 < 2 / 3 := b
   rw [exp_one_rpow] at this
   refine lt_trans this ?_
   rw [← rpow_lt_rpow_iff (z := 60), ← rpow_mul, div_mul_cancel₀, ← Nat.cast_ofNat,
-    ← Nat.cast_ofNat, rpow_nat_cast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_nat_cast]
-  norm_num
+    ← Nat.cast_ofNat, rpow_natCast, Nat.cast_ofNat, ← Nat.cast_ofNat (n := 60), rpow_natCast]
+  · norm_num
   all_goals positivity
 
 lemma eulerMascheroniSeq_lt_eulerMascheroniSeq' (m n : ℕ) :
@@ -127,8 +127,8 @@ noncomputable def eulerMascheroniConstant : ℝ := limUnder atTop eulerMascheron
 lemma tendsto_eulerMascheroniSeq :
     Tendsto eulerMascheroniSeq atTop (𝓝 eulerMascheroniConstant) := by
   have := tendsto_atTop_ciSup strictMono_eulerMascheroniSeq.monotone ?_
-  rwa [eulerMascheroniConstant, this.limUnder_eq]
-  exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
+  · rwa [eulerMascheroniConstant, this.limUnder_eq]
+  · exact ⟨_, fun _ ⟨_, hn⟩ ↦ hn ▸ (eulerMascheroniSeq_lt_eulerMascheroniSeq' _ 1).le⟩
 
 lemma tendsto_harmonic_sub_log_add_one :
     Tendsto (fun n : ℕ ↦ harmonic n - log (n + 1)) atTop (𝓝 eulerMascheroniConstant) :=
@@ -139,7 +139,7 @@ lemma tendsto_eulerMascheroniSeq' :
   suffices Tendsto (fun n ↦ eulerMascheroniSeq' n - eulerMascheroniSeq n) atTop (𝓝 0) by
     simpa using this.add tendsto_eulerMascheroniSeq
   suffices Tendsto (fun x : ℝ ↦ log (x + 1) - log x) atTop (𝓝 0) by
-    apply (this.comp tendsto_nat_cast_atTop_atTop).congr'
+    apply (this.comp tendsto_natCast_atTop_atTop).congr'
     filter_upwards [eventually_ne_atTop 0] with n hn
     simp [eulerMascheroniSeq, eulerMascheroniSeq', eq_false_intro hn]
   suffices Tendsto (fun x : ℝ ↦ log (1 + 1 / x)) atTop (𝓝 0) by
