@@ -244,6 +244,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
+@[simp]
 theorem Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
   rfl
 #align finset.card_univ Finset.card_univ
