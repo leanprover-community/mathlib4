@@ -148,6 +148,12 @@ theorem sum_support_of [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i
   DFinsupp.sum_single
 #align direct_sum.sum_support_of DirectSum.sum_support_of
 
+theorem sum_univ_of [Fintype ι] [∀ (i : ι) (x : β i), Decidable (x ≠ 0)] (x : ⨁ i, β i) :
+    ∑ i in Finset.univ, of β i (x i) = x := by
+  change (∑ i in Finset.univ, DFinsupp.single i (x i)) = x
+  ext
+  simp
+
 variable {β}
 
 theorem mk_injective (s : Finset ι) : Function.Injective (mk β s) :=
