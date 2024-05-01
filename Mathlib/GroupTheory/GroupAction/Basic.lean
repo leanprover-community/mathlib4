@@ -434,7 +434,7 @@ theorem quotient_preimage_image_eq_union_mul (U : Set α) :
   · intro hx
     rw [Set.mem_iUnion] at hx
     obtain ⟨g, u, hu₁, hu₂⟩ := hx
-    rw [Set.mem_preimage, Set.mem_image_iff_bex]
+    rw [Set.mem_preimage, Set.mem_image]
     refine' ⟨g⁻¹ • a, _, by simp only [f, Quotient.eq']; use g⁻¹⟩
     rw [← hu₂]
     convert hu₁

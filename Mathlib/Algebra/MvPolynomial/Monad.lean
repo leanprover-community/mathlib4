@@ -42,7 +42,7 @@ whereas `MvPolynomial.map` is the "map" operation for the other pair.
 
 We add a `LawfulMonad` instance for the (`bind₁`, `join₁`) pair.
 The second pair cannot be instantiated as a `Monad`,
-since it is not a monad in `Type` but in `CommRing` (or rather `CommSemiRing`).
+since it is not a monad in `Type` but in `CommRingCat` (or rather `CommSemiRingCat`).
 
 -/
 
@@ -372,7 +372,7 @@ theorem vars_bind₁ [DecidableEq τ] (f : σ → MvPolynomial τ R) (φ : MvPol
         vars_mul _ _
       _ ≤ (∏ i : σ in d.support, f i ^ d i).vars := by
         simp only [Finset.empty_union, vars_C, Finset.le_iff_subset, Finset.Subset.refl]
-      _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := (vars_prod _)
+      _ ≤ d.support.biUnion fun i : σ => vars (f i ^ d i) := vars_prod _
       _ ≤ d.support.biUnion fun i : σ => (f i).vars := ?_
     apply Finset.biUnion_mono
     intro i _hi

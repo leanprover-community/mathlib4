@@ -846,7 +846,7 @@ end RingEquiv
 
 namespace MulEquiv
 
-/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of a `MulEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
     [MulEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x + y) = f x + f y) : R ≃+* S :=
@@ -857,7 +857,7 @@ end MulEquiv
 
 namespace AddEquiv
 
-/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition.-/
+/-- Gives a `RingEquiv` from an element of an `AddEquivClass` preserving addition. -/
 def toRingEquiv {R S F : Type*} [Add R] [Add S] [Mul R] [Mul S] [EquivLike F R S]
     [AddEquivClass F R S] (f : F)
     (H : ∀ x y : R, f (x * y) = f x * f y) : R ≃+* S :=

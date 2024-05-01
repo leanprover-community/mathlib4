@@ -226,12 +226,14 @@ theorem SMulCommClass.symm (M N α : Type*) [SMul M α] [SMul N α] [SMulCommCla
 because this would cause a loop in the instance search graph. -/
 add_decl_doc VAddCommClass.symm
 
+@[to_additive]
 theorem Function.Injective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N β] {f : α → β} (hf : Function.Injective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
     SMulCommClass M N α where
   smul_comm c₁ c₂ x := hf <| by simp only [h₁, h₂, smul_comm c₁ c₂ (f x)]
 
+@[to_additive]
 theorem Function.Surjective.smulCommClass [SMul M α] [SMul N α] [SMul M β] [SMul N β]
     [SMulCommClass M N α] {f : α → β} (hf : Function.Surjective f)
     (h₁ : ∀ (c : M) x, f (c • x) = c • f x) (h₂ : ∀ (c : N) x, f (c • x) = c • f x) :
@@ -846,7 +848,7 @@ theorem smul_add (a : M) (b₁ b₂ : A) : a • (b₁ + b₂) = a • b₁ + a 
 
 instance AddMonoidHom.smulZeroClass [AddZeroClass B] : SMulZeroClass M (B →+ A) where
   smul r f :=
-    { toFun := (fun a => r • (f a))
+    { toFun := fun a => r • (f a)
       map_zero' := by simp only [map_zero, smul_zero]
       map_add' := fun x y => by simp only [map_add, smul_add] }
   smul_zero r := ext fun _ => smul_zero _

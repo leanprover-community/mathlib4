@@ -840,7 +840,7 @@ variable [Algebra A B] [Algebra R B] (f : R →+* S) (g : S →+* T)
 variable [Algebra R A] [IsScalarTower R A B]
 
 /-- If A is an R-algebra all of whose elements are integral over R,
-and x is an element of an A-algebra that is integral over A, then x is integral over R.-/
+and x is an element of an A-algebra that is integral over A, then x is integral over R. -/
 theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegral A x) :
     IsIntegral R x := by
   rcases hx with ⟨p, pmonic, hp⟩
@@ -866,7 +866,7 @@ theorem isIntegral_trans (A_int : Algebra.IsIntegral R A) (x : B) (hx : IsIntegr
 
 /-- If A is an R-algebra all of whose elements are integral over R,
 and B is an A-algebra all of whose elements are integral over A,
-then all elements of B are integral over R.-/
+then all elements of B are integral over R. -/
 protected theorem Algebra.IsIntegral.trans
     (hA : Algebra.IsIntegral R A) (hB : Algebra.IsIntegral A B) : Algebra.IsIntegral R B :=
   fun x ↦ isIntegral_trans hA x (hB x)
@@ -878,6 +878,16 @@ protected theorem RingHom.IsIntegral.trans
   haveI : IsScalarTower R S T := IsScalarTower.of_algebraMap_eq fun _ ↦ rfl
   Algebra.IsIntegral.trans hf hg
 #align ring_hom.is_integral_trans RingHom.IsIntegral.trans
+
+/-- If `R → A → B` is an algebra tower, `C` is the integral closure of `R` in `B`
+and `A` is integral over `R`, then `C` is the integral closure of `A` in `B`. -/
+lemma IsIntegralClosure.tower_top {B C : Type*} [CommRing C] [CommRing B]
+    [Algebra R B] [Algebra A B] [Algebra C B] [IsScalarTower R A B]
+    [IsIntegralClosure C R B] (hRA : Algebra.IsIntegral R A) :
+    IsIntegralClosure C A B :=
+  ⟨IsIntegralClosure.algebraMap_injective _ R _,
+   fun hx => (IsIntegralClosure.isIntegral_iff).mp (isIntegral_trans hRA _ hx),
+   fun hx => ((IsIntegralClosure.isIntegral_iff (R := R)).mpr hx).tower_top⟩
 
 theorem RingHom.isIntegral_of_surjective (hf : Function.Surjective f) : f.IsIntegral :=
   fun x ↦ (hf x).recOn fun _y hy ↦ hy ▸ f.isIntegralElem_map
