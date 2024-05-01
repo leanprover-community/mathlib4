@@ -388,9 +388,6 @@ theorem sub_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g
 theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
   rfl
 
-theorem val_apply (n : ℕ) (f : AdicCauchySequence I M) : f.val n = f n :=
-  rfl
-
 @[ext]
 theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
   Subtype.eq <| funext h
