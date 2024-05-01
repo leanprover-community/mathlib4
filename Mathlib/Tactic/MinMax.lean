@@ -35,11 +35,11 @@ abbrev segmentReplacements : HashMap String String := HashMap.empty
 def splitUpper (s : String) : List String :=
   s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
 
-/-- replaces "words" in a string using `segmentReplacements`.  It breaks the string into "words"
+/-- replaces "words" in a string using `convs`.  It breaks the string into "words"
 grouping together maximal consecutive substrings consisting of
 either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
-def stringReplacements (str : String) : String :=
-  let strs := (splitUpper str).map fun s => (segmentReplacements.find? s).getD s
+def stringReplacements (convs : HashMap String String) (str : String) : String :=
+  let strs := (splitUpper str).map fun s => (convs.find? s).getD s
   String.join <| strs
 
 /-- some binary operations need to be reversed in the change `Bot` to `Top`, others stay unchanged.
@@ -84,22 +84,22 @@ def swapWords : List String → List String
     else le::swapWords (left :: ls)
   | e => e
 
+variable (convs : HashMap String String) in
 /-- converts a name involving `WithBot` to a name involving `WithTop`. -/
 def nameToTop : Name → Name
-  | .str a b => .str (nameToTop a) (stringReplacements b)
+  | .str a b => .str (nameToTop a) (stringReplacements convs b)
   | _ => default
 
-/-- converts a statement involving `WithBot` to a name involving `WithTop`. -/
-def to_top (stx : Syntax) : CommandElabM Syntax :=
-  stx.replaceM fun s => do
-    match s.getId with
-      | .anonymous => return none
-      | v => return some (mkIdent (nameToTop v))
-
+variable (convs : HashMap String String) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
 in `ℕ∞`. -/
-def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
+def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
+  let stx ← stx.replaceM fun s => do
+    match s.getId with
+      | .anonymous => return none
+      | v => return some (mkIdent (nameToTop convs v))
+
   stx.replaceM fun s => do
     match s with
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
@@ -113,7 +113,7 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
       | .node _ `«term_≤_» #[a, _, b] => return some (← `($(⟨b⟩) ≤ $(⟨a⟩)))
       | .node _ `«term_<_» #[a, _, b] => return some (← `($(⟨b⟩) < $(⟨a⟩)))
       | .node _ ``Lean.Parser.Command.docComment #[init, .atom _ docs] =>
-        let newDocs := stringReplacements docs
+        let newDocs := stringReplacements convs docs
         let newDocs :=
           if newDocs == docs
           then "[recycled by `to_top`] " ++ docs
@@ -122,6 +122,8 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax :=
         return some nd
       | _ => return none
 
+def translation (convs : HashMap String String) (stx : Syntax) : CommandElabM Syntax := do
+  binopReplacements <| ← MaxToMin convs stx
 /--
 If `thm` is a theorem about `WithBot`, then `to_top thm` tries to add to the
 environment the analogous result about `WithTop`.
@@ -129,12 +131,48 @@ environment the analogous result about `WithTop`.
 Writing `to_top?` also prints the extra declaration added by `to_top`.
 -/
 elab (name := to_topCmd) "to_top " tk:"?"? cmd:command : command => do
-  let newCmd ← binopReplacements <| ← MaxToMin <| ← to_top cmd
+  let newCmd ← binopReplacements <| ← MaxToMin segmentReplacements cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   let currNS ← getCurrNamespace
-
-  withScope (fun s => { s with currNamespace := nameToTop currNS } ) <| elabCommand newCmd
+  withScope (fun s => { s with currNamespace := nameToTop segmentReplacements currNS }) <| elabCommand newCmd
 
 @[inherit_doc to_topCmd]
 macro "to_top? " cmd:command : command => return (← `(to_top ? $cmd))
+
+/-- The "syntaxTranslation" linter performs a `Syntax`-aware string replacement. -/
+register_option linter.syntaxTranslation : Nat := {
+  defValue := default
+  descr := "enable the syntaxTranslation linter"
+}
+
+abbrev botTop : HashMap String String := HashMap.empty
+  |>.insert "⊥"      "⊤"
+--  |>.insert "max"    "min"
+--  |>.insert "Sup"    "Inf"
+--  |>.insert "sup"    "inf"
+  |>.insert "Bot"    "Top"
+  |>.insert "bot"    "top"
+  |>.insert "unbot"  "untop"
+  |>.insert "union"  "inter"
+--  |>.insert "inter"  "union"
+
+
+--/-- Gets the value of the `linter.syntaxTranslation` option. -/
+--def getLinterHash (o : Options) : Syntax := Linter.getLinterValue linter.syntaxTranslation o
+/--  i am the linter -/
+def syntaxTranslationLinter : Linter where
+  run := withSetOptionIn fun stx => do
+    let gh := linter.syntaxTranslation.get (← getOptions)
+    unless gh == default do
+--    let nm ← resolveGlobalConstNoOverloadWithInfo gh
+    if (← MonadState.get).messages.hasErrors then
+      return
+    match gh with
+      | 0 =>
+        let newCmd ← binopReplacements <| ← MaxToMin botTop stx
+        let currNS ← getCurrNamespace
+        withScope (fun s => { s with currNamespace := nameToTop botTop currNS } ) <| elabCommand newCmd
+      | _ => return --logWarning "not implemented"; return
+
+initialize addLinter syntaxTranslationLinter
