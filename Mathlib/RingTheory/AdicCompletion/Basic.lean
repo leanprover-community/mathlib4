@@ -259,6 +259,20 @@ theorem eval_comp_of (n : ℕ) : (eval I M n).comp (of I M) = mkQ _ :=
   rfl
 #align adic_completion.eval_comp_of AdicCompletion.eval_comp_of
 
+theorem eval_surjective (n : ℕ) : Function.Surjective (eval I M n) := fun x ↦
+  Quotient.inductionOn' x fun x ↦ ⟨of I M x, rfl⟩
+
+@[simp]
+theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
+  LinearMap.range_eq_top.2 (eval_surjective I M n)
+#align adic_completion.range_eval AdicCompletion.range_eval
+
+@[simp]
+theorem val_zero (n : ℕ) : (0 : AdicCompletion I M).val n = 0 :=
+  rfl
+
+variable {I M}
+
 @[simp]
 theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n + g.val n :=
   rfl
@@ -271,29 +285,23 @@ theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n -
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl
 
-@[simp]
-theorem val_zero (n : ℕ) : (0 : AdicCompletion I M).val n = 0 :=
-  rfl
-
-@[simp]
-theorem range_eval (n : ℕ) : LinearMap.range (eval I M n) = ⊤ :=
-  LinearMap.range_eq_top.2 fun x => Quotient.inductionOn' x fun x => ⟨of I M x, rfl⟩
-#align adic_completion.range_eval AdicCompletion.range_eval
-
-variable {I M}
-
 @[ext]
-theorem ext {x y : AdicCompletion I M} (h : ∀ n, eval I M n x = eval I M n y) : x = y :=
+theorem ext {x y : AdicCompletion I M} (h : ∀ n, x.val n = y.val n) : x = y :=
   Subtype.eq <| funext h
 #align adic_completion.ext AdicCompletion.ext
 
+theorem ext_iff {x y : AdicCompletion I M} : x = y ↔ ∀ n, x.val n = y.val n :=
+  ⟨fun h n ↦ congrArg (eval I M n) h, ext⟩
+
 variable (I M)
 
-instance : IsHausdorff I (AdicCompletion I M) :=
-  ⟨fun x hx => ext fun n => smul_induction_on (SModEq.zero.1 <| hx n) (fun r hr x _ =>
-    ((eval I M n).map_smul r x).symm ▸
-      Quotient.inductionOn' (eval I M n x) fun x => SModEq.zero.2 <| smul_mem_smul hr mem_top)
-    fun _ _ ih1 ih2 => by rw [LinearMap.map_add, ih1, ih2, LinearMap.map_zero, add_zero]⟩
+instance : IsHausdorff I (AdicCompletion I M) where
+  haus' x h := ext fun n ↦ by
+    refine smul_induction_on (SModEq.zero.1 <| h n) (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
+    · simp only [val_smul, val_zero]
+      exact Quotient.inductionOn' (x.val n)
+        (fun a ↦ SModEq.zero.2 <| smul_mem_smul hr mem_top)
+    · simp only [val_add, hx, val_zero, hy, add_zero]
 
 @[simp]
 theorem transitionMap_mk {m n : ℕ} (hmn : m ≤ n) (x : M) :
@@ -368,20 +376,29 @@ theorem ext {f g : AdicCauchySequence I M} (h : ∀ n, f n = g n) : f = g :=
   Subtype.eq <| funext h
 
 @[simp]
-theorem val_add (n : ℕ) (f g : AdicCauchySequence I M) : (f + g) n = f n + g n :=
+theorem zero_apply (n : ℕ) : (0 : AdicCauchySequence I M) n = 0 :=
+  rfl
+
+variable {I M}
+
+@[simp]
+theorem add_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f + g) n = f n + g n :=
   rfl
 
 @[simp]
-theorem val_sub (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g n :=
+theorem sub_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g n :=
   rfl
 
 @[simp]
-theorem val_smul (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
+theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
   rfl
 
-@[simp]
-theorem val_zero (n : ℕ) : (0 : AdicCauchySequence I M) n = 0 :=
-  rfl
+@[ext]
+theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
+  Subtype.eq <| funext h
+
+theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
+  ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
 
 end AdicCauchySequence
 
@@ -428,7 +445,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
 
 /-- To show a statement about an element of `adicCompletion I M`, it suffices to check it
 on Cauchy sequences. -/
-theorem inductionOn {p : AdicCompletion I M → Prop} (x : AdicCompletion I M)
+theorem induction_on {p : AdicCompletion I M → Prop} (x : AdicCompletion I M)
     (h : ∀ (f : AdicCauchySequence I M), p (mk I M f)) : p x := by
   obtain ⟨f, rfl⟩ := mk_surjective I M x
   exact h f
@@ -449,13 +466,13 @@ def lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     rfl
 
 @[simp]
-lemma lift_eval (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+lemma eval_lift (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) : eval I N n ∘ₗ lift I f h = f n :=
   rfl
 
 @[simp]
-lemma lift_eval_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
+lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Submodule R N))
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
