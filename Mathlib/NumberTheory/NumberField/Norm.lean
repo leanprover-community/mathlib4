@@ -77,7 +77,7 @@ theorem isUnit_norm_of_isGalois [IsGalois K L] {x : 𝓞 L} : IsUnit (norm K x) 
     ⟨(univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x,
       prod_mem fun σ _ => x.2.map (σ : L →+* L).toIntAlgHom⟩ _ _
   convert hx using 1
-  refine RingOfIntegers.ext ?h.e'_3.h
+  ext
   push_cast
   convert_to ((univ \ {AlgEquiv.refl}).prod fun σ : L ≃ₐ[K] L => σ x) *
     ∏ σ : L ≃ₐ[K] L in {AlgEquiv.refl}, σ x = _
