@@ -37,7 +37,7 @@ The category of condensed `R`-modules, defined as sheaves of `R`-modules over
 -/
 abbrev CondensedMod := Condensed.{u} (ModuleCat.{u+1} R)
 
-noncomputable instance (R : Type (u+1)) [Ring R] : Abelian (CondensedMod.{u} R) := sheafIsAbelian
+noncomputable instance : Abelian (CondensedMod.{u} R) := sheafIsAbelian
 
 /-- The forgetful functor from condensed `R`-modules to condensed sets. -/
 def Condensed.forget : CondensedMod R ⥤ CondensedSet := sheafCompose _ (CategoryTheory.forget _)
