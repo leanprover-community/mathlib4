@@ -10,12 +10,12 @@ import Mathlib.Data.Finset.Sym
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
 
-#align_import combinatorics.SimpleGraph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
+#align_import combinatorics.simple_graph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
 /-!
 # Triangles in graphs
 
-A *triangle* in a simple graph is a `3`-clique, namely a Set of three vertices that are
+A *triangle* in a simple graph is a `3`-clique, namely a set of three vertices that are
 pairwise adjacent.
 
 This module defines and proves properties about triangles in simple graphs.
@@ -198,7 +198,7 @@ nonrec theorem FarFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ
 #align simple_graph.far_from_triangle_free.mono SimpleGraph.FarFromTriangleFree.mono
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
-    (hcard : (G.edgeFinset.card - H.edgeFinset.card : 𝕜) < ε * (card α ^ 2 : ℕ)) :
+    (hcard : G.edgeFinset.card - H.edgeFinset.card < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=
   nonempty_of_ne_empty <|
     cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
