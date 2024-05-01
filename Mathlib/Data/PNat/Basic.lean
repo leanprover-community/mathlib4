@@ -347,10 +347,6 @@ theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
   · exact Nat.le_pred_of_lt hab
   · exact hab.le.trans (le_of_not_lt h)
 
-theorem le_of_le_sub_one {a b : ℕ+} (hab: a ≤ b - 1): a ≤ b := by
-  apply LE.le.trans hab (a := a) (c := b) (b := b - 1)
-  exact sub_le
-
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
