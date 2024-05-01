@@ -412,4 +412,8 @@ end Rename
 
 -- end Support
 
+-- theorem degree_rename_eq (e : σ → τ) :
+--     (rename f p).degree = φ.degree :=
+--   sorry
+
 end MvPowerSeries
