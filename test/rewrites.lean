@@ -93,6 +93,7 @@ example : ∀ (x : ℕ) (_w : x ≤ 6), x ≤ 8 := by
   guard_target = ∀ (x : ℕ) (_w : x ≤ 7), x ≤ 8
   exact test_sorry
 
+-- check we can look inside let expressions
 #guard_msgs(drop info) in
 example (n : ℕ) : let y := 3; n + y = 3 + n := by
   rw?
@@ -142,6 +143,7 @@ info: Try this: rw [h (f p)]
 #guard_msgs in
 example {P Q : Prop} (p : P) (f : P → Q) (h : Q → 1 = 2) : 2 = 1 := by
   rw?
+
 
 -- Rewrite in reverse, discharging side conditions from local hypotheses.
 /--

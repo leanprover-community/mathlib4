@@ -194,6 +194,8 @@ attribute [simp] xor_assoc
 
 #align bool.bxor_ff_left Bool.false_xor
 #align bool.bxor_ff_right Bool.xor_false
+#align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
+#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
 theorem xor_iff_ne : ∀ {x y : Bool}, xor x y = true ↔ x ≠ y := by decide
 #align bool.bxor_iff_ne Bool.xor_iff_ne
@@ -306,8 +308,5 @@ protected def xor3 (x y c : Bool) :=
 protected def carry (x y c : Bool) :=
   x && y || x && c || y && c
 #align bitvec.carry Bool.carry
-
-#align bool.band_bxor_distrib_left Bool.and_xor_distrib_left
-#align bool.band_bxor_distrib_right Bool.and_xor_distrib_right
 
 end Bool

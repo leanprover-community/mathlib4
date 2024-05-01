@@ -434,8 +434,7 @@ theorem matches'_map (f : α → β) :
   -- Porting note: the following close with last `rw` but not with `simp`?
   | R + S => by simp only [matches'_map, map, matches'_add]; rw [map_add]
   -- Adaptation note: around nightly-2024-02-25, we need to write `comp x y` in the pattern here,
-  -- instead of `x * y`.
-  -- and the `erw` was just `rw`
+  -- instead of `x * y` (and the `erw` was just `rw`).
   | comp R S => by simp only [matches'_map, map, matches'_mul]; erw [map_mul]
   | star R => by
     simp_rw [map, matches', matches'_map]

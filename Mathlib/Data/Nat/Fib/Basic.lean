@@ -115,10 +115,7 @@ theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib 
 
 theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
-  rw [← tsub_pos_iff_lt, add_comm 2, add_right_comm, fib_add_two]
-  -- Adaptation note: nightly-2024-03-07
-  -- It would be nice to clean up the arithmetic here, to avoid the `erw`.
-  erw [add_tsub_cancel_right, fib_pos]
+  rw [← tsub_pos_iff_lt, add_comm 2, add_right_comm, fib_add_two, add_tsub_cancel_right, fib_pos]
   exact succ_pos n
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 

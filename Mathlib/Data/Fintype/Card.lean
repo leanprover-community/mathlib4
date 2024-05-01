@@ -319,7 +319,6 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
           left_inv := fun i ↦ rfl
           right_inv := fun i ↦ rfl }
 
-@[simp]
 theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
   rw [Finset.card_univ, Fintype.card_fin]
 #align finset.card_fin Finset.card_fin
