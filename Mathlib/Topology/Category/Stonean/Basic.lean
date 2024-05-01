@@ -219,7 +219,7 @@ instance {X Y : Stonean} (f : X ⟶ Y) [@Epi CompHaus _ _ _ f] : Epi f := by
   rwa [CompHaus.epi_iff_surjective] at *
 
 /-- Every Stonean space is projective in `CompHaus` -/
-instance (X : Stonean) : Projective X.compHaus where
+instance instProjectiveCompHausCompHaus (X : Stonean) : Projective X.compHaus where
   factors := by
     intro B C φ f _
     haveI : ExtremallyDisconnected X.compHaus.toTop := X.extrDisc
