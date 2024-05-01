@@ -16,7 +16,7 @@ import Mathlib.Data.FinEnum.Option
 
 This file contains the definition of a Generalized Nondeterministic Finite Automaton, a state
 machine which determines whether a string (implemented as a list over an arbitrary alphabet) is in
-a regular set by evaluating the string over every possible series of regular expressions. We show 
+a regular set by evaluating the string over every possible series of regular expressions. We show
 that GNFA's are equivalent to NFA's, and that GNFA's are equivalent to smaller GNFA's with a state
 "ripped" out. Through this mechanism, we show that NFA's are equivalent to regular expressions.
 Unlike for DFA's and NFA's, GNFA's can only be made with a `fin` as the state type.
@@ -135,7 +135,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       intro mat
       right
       refine' ⟨rfl, _⟩
-      refine' ⟨[], x, [], none, by dsimp <;> rfl, mat, _, by simp⟩
+      refine' ⟨[], x, [], none, by dsimp, mat, _, by simp⟩
       intro x mem
       cases mem
     case some q =>
@@ -154,7 +154,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       refine' ⟨rfl, _⟩
       cases ih
       case inl ih =>
-        rcases ih with ⟨p, eq, t⟩
+        rcases ih with ⟨p, eq, _⟩
         cases eq
       case inr ih =>
       rcases ih with ⟨_, y, z', xs, p, t', matches', x_matches, eq⟩
@@ -171,7 +171,7 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
       refine' ⟨q, rfl, _⟩
       cases ih
       case inl ih =>
-        rcases ih with ⟨p, eq, t⟩
+        rcases ih with ⟨p, eq, _⟩
         cases eq
       case inr ih =>
       rcases ih with ⟨_, y, z', xs, p, t', matches', x_matches, eq⟩
@@ -181,7 +181,8 @@ theorem rip_trace_aux (M : GNFA α (Option σ)) {x q} (t : M.trace x q) :
         simp at t'
         rw [t']; clear t' y
         refine' trace.start (Or.inr _)
-        simp
+        simp only [List.nil_append, List.append_assoc, Option.map_none', Option.map_some',
+          RegularExpression.matches'_mul, RegularExpression.matches'_star]
         rw [← List.append_assoc]
         refine' ⟨_, _, _, mat, rfl⟩
         refine' ⟨_, matches', _, _, rfl⟩
@@ -259,7 +260,7 @@ theorem rip_trace_correct (M : GNFA α (Option σ)) {x} {q : σ} :
         refine' trace.step (ih _) (mat x (by simp)) rfl
         intro y mem
         exact mat y (by simp[mem])
-    case step x y z p q t mat eq ih =>
+    case step x y z p q _ mat eq ih =>
       cases mat
       case inl mat => exact trace.step ih mat eq
       case inr mat =>
@@ -308,10 +309,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts := by
       rw [join]; clear join z
       revert x_matches
       induction xs using List.list_reverse_induction
-      case base =>
-        intro x_matches
-        refine' trace.start _
-        simpa
+      case base => exact fun _ ↦ trace.start (by simpa)
       case ind xs x ih =>
         intro x_matches
         rw [List.join_append, List.join_singleton]
@@ -340,7 +338,7 @@ theorem rip_correct (M : GNFA α (Option σ)) : M.rip.accepts = M.accepts := by
       revert x_matches
       induction xs using List.list_reverse_induction
       case base =>
-        intro mat
+        intro _
         unfold List.join
         rw [List.append_nil]
         refine' trace.step _ z_matches rfl
@@ -405,8 +403,7 @@ theorem mapEquiv_trace_aux {σ τ} [Fintype σ] [Fintype τ] (M : GNFA α σ) (e
     dsimp
     rw [Equiv.symm_apply_apply]
     exact mat
-  case step x y z p q t mat eq
-    ih =>
+  case step x y z p q _ mat eq ih =>
     refine' trace.step ih _ eq
     unfold mapEquiv
     dsimp
@@ -460,8 +457,7 @@ def sigma_toRegularExpression [FinEnum σ] (M : GNFA α σ) :
     (fun (t : Type v) [FinEnum t] ↦
       ∀ (M : GNFA α t), ((r : RegularExpression α) ×' M.accepts = r.matches'))
     _ _ _ σ _
-  ·
-    intro σ τ
+  · intro σ τ
     intro _ _
     intro e h M
     specialize h (M.mapEquiv e.symm)
@@ -475,12 +471,11 @@ def sigma_toRegularExpression [FinEnum σ] (M : GNFA α σ) :
     constructor
     · intro t
       induction t
-      case start x mat => exact mat
+      case start _ mat => exact mat
       case step empty _ _ _ => cases empty
     · intro mat
       exact accepts.start mat
-  ·
-    intro σ
+  · intro σ
     intro _
     intro h M
     specialize h M.rip

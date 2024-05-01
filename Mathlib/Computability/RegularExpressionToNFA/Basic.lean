@@ -14,7 +14,7 @@ import Mathlib.Computability.RegularExpressionToNFA.Star
 Inductively proves that `regular_expression.to_NFA` converts a regular expression to an NFA with
 the same accepting language.
 
-TODO: 
+TODO:
  * possibly merge the files into computability/regular_expression? or change filenames?
  * mark things as @simp?
  * clean up things
@@ -31,11 +31,10 @@ theorem zero_toNFA_correct : (zero : RegularExpression α).matches' = zero.toNFA
   ext
   constructor
   · intro hx; cases hx
-  · intro hx
-    rcases hx with ⟨q, accept, eval⟩
-    cases accept
+  · rintro ⟨q, accept, _⟩; cases accept
 
-theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsilon.toNFA.accepts := by
+theorem epsilon_toNFA_correct :
+    (epsilon : RegularExpression α).matches' = epsilon.toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨⟨⟩⟩; repeat' fconstructor
@@ -46,7 +45,7 @@ theorem epsilon_toNFA_correct : (epsilon : RegularExpression α).matches' = epsi
     case inl => simp
     intro hx
     rw [NFA.eval_append_singleton, NFA.mem_stepSet] at hx
-    rcases hx with ⟨q, mem, step⟩
+    rcases hx with ⟨q, _, step⟩
     cases step
 
 theorem char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts := by
@@ -191,7 +190,8 @@ theorem comp_toNFA_eval₁ {r₁ r₂ : RegularExpression α} {x : List α} (q :
 
 theorem comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q : r₂.State)
     (accepts : r₁.toNFA.accepts x) :
-    q ∈ r₂.toNFA.eval y → Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y := by
+    q ∈ r₂.toNFA.eval y →
+    Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y := by
   induction y using List.list_reverse_induction generalizing q
   case base =>
     intro h
@@ -215,8 +215,10 @@ theorem comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q
     rcases h with ⟨p, mem, step⟩
     refine' ⟨Sum.inr p, ih p mem, step⟩
 
-theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α} (hr₁ : r₁.matches' = r₁.toNFA.accepts)
-    (hr₂ : r₂.matches' = r₂.toNFA.accepts) : (r₁.comp r₂).matches' = (r₁.comp r₂).toNFA.accepts := by
+theorem comp_toNFA_correct {r₁ r₂ : RegularExpression α}
+    (hr₁ : r₁.matches' = r₁.toNFA.accepts)
+    (hr₂ : r₂.matches' = r₂.toNFA.accepts) :
+    (r₁.comp r₂).matches' = (r₁.comp r₂).toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨y, hy, z, hz, comp⟩

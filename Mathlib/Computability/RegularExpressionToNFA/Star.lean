@@ -33,9 +33,7 @@ theorem star_iff_pow {r : RegularExpression α} {x} :
     rw [join]; clear join
     revert all_match
     induction xs using List.list_reverse_induction
-    case base =>
-      intro h
-      exact ⟨0, rfl⟩
+    case base => exact fun _ ↦ ⟨0, rfl⟩
     case ind xs x ih =>
       intro h
       simp only [List.forall_mem_append, List.forall_mem_singleton] at h
@@ -90,7 +88,8 @@ theorem star_eval (x : List α) (q : r.State) :
     case ind as a ih =>
       intro h
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at h
-      simp
+      simp only [List.reverse_append, List.reverse_cons, List.reverse_nil, List.nil_append,
+        List.singleton_append]
       rcases h with ⟨p, mem, step⟩
       rcases p with p | p; rcases step with step | step
       rcases ih p mem with ⟨n, t⟩
@@ -110,8 +109,7 @@ theorem star_eval (x : List α) (q : r.State) :
     rw[xreq] at t
     induction t generalizing x <;> rw[xreq] <;> clear xreq x
     case nil q start => exact start
-    case step p a q as n step t
-      ih =>
+    case step p a q as _ step _ ih =>
       rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet]
       simp only [List.reverse_reverse,List.reverse_eq_iff] at ih
       exact ⟨some p, ih as.reverse rfl, Or.inl step⟩
@@ -119,8 +117,7 @@ theorem star_eval (x : List α) (q : r.State) :
       simp only [List.reverse_reverse,List.reverse_eq_iff] at ih
       cases x
       case nil => exact start
-      case cons a
-        as =>
+      case cons a as =>
         specialize ih _ rfl
         rw [List.reverse_cons, NFA.eval_append_singleton, NFA.mem_stepSet] at *
         rcases ih with ⟨r, mem, step⟩
@@ -198,8 +195,7 @@ theorem pow_eval (x : List α) (n : ℕ) (hr : r.matches' = r.toNFA.accepts) :
         exact trace.step step (ih p mem)
     · rintro ⟨q, accept, t⟩
       rw [matches'_pow, Nat.succ_eq_add_one, pow_add, ← matches'_pow, pow_one]
-      suffices ∃ y z, y ∈ (r ^ n.succ).matches' ∧ q ∈ r.toNFA.eval z ∧ y ++ z = x
-        by
+      suffices ∃ y z, y ∈ (r ^ n.succ).matches' ∧ q ∈ r.toNFA.eval z ∧ y ++ z = x by
         rcases this with ⟨y, z, y_matches, eval, eq⟩
         refine' ⟨y, y_matches, z, _, eq⟩
         rw [hr]

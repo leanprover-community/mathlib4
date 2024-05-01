@@ -63,10 +63,10 @@ instance {r : RegularExpression α} : Inhabited r.State :=
   @rec' α (Inhabited ∘ State)
     (instInhabitedPUnit)
     (instInhabitedPUnit)
-    (fun a ↦ instInhabitedBool)
-    (fun r₁ r₂ hr₁ hr₂ ↦ @Sum.inhabitedLeft r₁.State r₂.State hr₁)
-    (fun r₁ r₂ hr₁ hr₂ ↦ @Sum.inhabitedLeft r₁.State r₂.State hr₁)
-    (fun r hr ↦ instInhabitedOption)
+    (fun _ ↦ instInhabitedBool)
+    (fun r₁ r₂ hr₁ _ ↦ @Sum.inhabitedLeft r₁.State r₂.State hr₁)
+    (fun r₁ r₂ hr₁ _ ↦ @Sum.inhabitedLeft r₁.State r₂.State hr₁)
+    (fun _ _ ↦ instInhabitedOption)
     r
 
 -- NFAs are only real NFAs when the states are fintypes, and the instance is needed for the proofs
@@ -74,7 +74,7 @@ instance {r : RegularExpression α} : FinEnum r.State :=
   @rec' α (FinEnum ∘ State)
     (FinEnum.punit.{0})
     (FinEnum.punit.{0})
-    (fun a ↦ FinEnum.ofEquiv _ Equiv.boolEquivPUnitSumPUnit.{0,0})
+    (fun _ ↦ FinEnum.ofEquiv _ Equiv.boolEquivPUnitSumPUnit.{0,0})
     (fun r₁ r₂ hr₁ hr₂ ↦ @FinEnum.sum r₁.State r₂.State hr₁ hr₂)
     (fun r₁ r₂ hr₁ hr₂ ↦ @FinEnum.sum r₁.State r₂.State hr₁ hr₂)
     (fun r hr ↦ @FinEnum.instFinEnumOptionOfFinEnum r.State hr)
@@ -110,8 +110,8 @@ def toNFA : ∀ r : RegularExpression α, NFA α r.State
       match (p, q) with
       | (Sum.inl p, Sum.inl q) => P₁.step p c q
       | (Sum.inl p, Sum.inr q) => P₂.start q ∧ ∃ r, P₁.accept r ∧ P₁.step p c r
-      | (Sum.inr p, Sum.inl q) => False
-      | (Sum.inr p, Sum.inr q) => P₂.step p c q,
+      | (Sum.inr p, Sum.inr q) => P₂.step p c q
+      | _ => False,
       fun q ↦
       match q with
       | Sum.inl q => P₁.start q
@@ -125,9 +125,7 @@ def toNFA : ∀ r : RegularExpression α, NFA α r.State
     ⟨fun p c q ↦
       match (p, q) with
       | (some p, some q) => P.step p c q ∨ ∃ r, P.accept r ∧ P.step p c r ∧ P.start q
-      | (some p, none) => False
-      | (none, some q) => False
-      | (none, none) => False,
+      | _ => False,
       fun q ↦
       match q with
       | some q => P.start q
@@ -147,25 +145,16 @@ def regularExpressionToNFADecidable {r : RegularExpression α} :
     DecidablePred r.toNFA.accept := by
   apply r.rec'
   case zero =>
-    refine' ⟨_, _, _⟩
-    · intro _ _ _; exact decidableFalse
-    · intro q; exact decidableFalse
-    · intro q; exact decidableFalse
+    refine' ⟨_, _, _⟩ <;> (repeat intro _) <;> exact decidableFalse
   case epsilon =>
-    refine' ⟨_, _, _⟩
-    · intro p a q; exact decidableFalse
-    · intro q; exact decidableTrue
-    · intro q; exact decidableTrue
+    refine' ⟨_, _, _⟩ <;> (repeat intro _) <;>
+      first | exact decidableTrue | exact decidableFalse
   case char =>
     intro a
-    refine' ⟨_, _, _⟩
-    · intro p c q; exact And.decidable
-    · intro q; exact Set.decidableSetOf false (Eq q)
-    · intro q; exact Set.decidableSetOf true (Eq q)
+    refine' ⟨_, _, _⟩ <;> (repeat intro _) <;>
+      first | exact And.decidable | exact Set.decidableSetOf _ <| Eq _
   case plus =>
-    intro r₁ r₂ hr₁ hr₂
-    rcases hr₁ with ⟨hr₁_step, hr₁_start, hr₁_accept⟩
-    rcases hr₂ with ⟨hr₂_step, hr₂_start, hr₂_accept⟩
+    intro r₁ r₂ ⟨hr₁_step, hr₁_start, hr₁_accept⟩ ⟨hr₂_step, hr₂_start, hr₂_accept⟩
     refine' ⟨_, _, _⟩
     · intro p a q
       rcases p with p | p <;> rcases q with q | q
@@ -221,8 +210,7 @@ def regularExpressionToNFADecidable {r : RegularExpression α} :
             (∃ r_1 : r.State, r.toNFA.accept r_1 ∧ r.toNFA.step p a r_1 ∧ r.toNFA.start q) :=
           haveI :
             DecidablePred fun r_1 : r.State ↦
-              r.toNFA.accept r_1 ∧ r.toNFA.step p a r_1 ∧ r.toNFA.start q :=
-            by
+              r.toNFA.accept r_1 ∧ r.toNFA.step p a r_1 ∧ r.toNFA.start q := by
             intro s
             have : Decidable (r.toNFA.step p a s ∧ r.toNFA.start q) :=
               haveI : Decidable (r.toNFA.step p a s) := hr_step p a s
