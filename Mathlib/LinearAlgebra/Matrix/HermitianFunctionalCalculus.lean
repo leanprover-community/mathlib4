@@ -46,10 +46,19 @@ have H0 : Module.End.HasEigenvalue (toEuclideanLin A) ((RCLike.ofReal ∘ hA.eig
         (n := Fintype.card n) (Matrix.isHermitian_iff_isSymmetric.mp hA)
 apply Module.End.hasEigenvalue_iff_mem_spectrum.mp (H0)
 
+theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike1 (i : n) :
+    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
+apply Module.End.hasEigenvalue_iff_mem_spectrum.mp
+apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues
+
 theorem eigenvalue_mem_toEuclideanLin_spectrum_real (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) :=
 (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
         (eigenvalue_mem_toEuclideanLin_spectrum_RCLike _ i)
+
+#exit
+
+--Now I need to get φ below to be a map from C(spectrum ℝ A, ℝ) into Matrix n n 𝕜.
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
