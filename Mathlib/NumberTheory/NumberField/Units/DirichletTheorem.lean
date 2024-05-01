@@ -202,7 +202,7 @@ variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBo
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
       (∀ w, w ≠ w₁ → w y < w x) ∧
-      |Algebra.norm ℚ (algebraMap _ K y)| ≤ B := by
+      |Algebra.norm ℚ (y : K)| ≤ B := by
   have hx' := mt RingOfIntegers.coe_eq_zero_iff.mp hx
   let f : InfinitePlace K → ℝ≥0 :=
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
