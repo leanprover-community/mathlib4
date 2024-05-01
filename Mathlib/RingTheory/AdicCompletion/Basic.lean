@@ -363,6 +363,10 @@ instance : AddCommGroup (AdicCauchySequence I M) :=
 instance : Module R (AdicCauchySequence I M) :=
   inferInstanceAs <| Module R (AdicCauchySequence.submodule I M)
 
+@[ext]
+theorem ext {f g : AdicCauchySequence I M} (h : ∀ n, f n = g n) : f = g :=
+  Subtype.eq <| funext h
+
 @[simp]
 theorem val_add (n : ℕ) (f g : AdicCauchySequence I M) : (f + g) n = f n + g n :=
   rfl
@@ -466,66 +470,6 @@ theorem ext' {x y : AdicCompletion I M}
   rw [hk (by omega)]
 
 end AdicCompletion
-
-namespace LinearMap
-
-variable {M}
-
-/-- The induced linear map on the quotients mod `I • ⊤`. -/
-def reduceModIdeal (f : M →ₗ[R] N) :
-    M ⧸ (I • ⊤ : Submodule R M) →ₗ[R] N ⧸ (I • ⊤ : Submodule R N) :=
-  Submodule.mapQ (I • ⊤ : Submodule R M) (I • ⊤ : Submodule R N) f
-    (fun x hx ↦ by
-      refine Submodule.smul_induction_on hx (fun r hr x _ ↦ ?_) (fun x y hx hy ↦ ?_)
-      · simp [Submodule.smul_mem_smul hr Submodule.mem_top]
-      · simp [Submodule.add_mem _ hx hy])
-
-@[simp]
-theorem reduceModIdeal_apply (f : M →ₗ[R] N) (x : M) :
-    (f.reduceModIdeal I) (Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x) =
-      Submodule.Quotient.mk (p := (I • ⊤ : Submodule R N)) (f x) := by
-  simp [reduceModIdeal]
-
-open AdicCompletion
-
-theorem AdicCompletion.transitionMap_comp_reduceModIdeal (f : M →ₗ[R] N) {m n : ℕ}
-    (hmn : m ≤ n) : transitionMap I N hmn ∘ₗ reduceModIdeal (I ^ n) f =
-      f.reduceModIdeal (I ^ m) ∘ₗ transitionMap I M hmn := by
-  ext x
-  simp
-
-/-- A linear map induces a map on adic completions. -/
-def adicCompletion (f : M →ₗ[R] N) : AdicCompletion I M →ₗ[R] AdicCompletion I N :=
-  AdicCompletion.lift I (fun n ↦ reduceModIdeal (I ^ n) f ∘ₗ AdicCompletion.eval I M n)
-    (fun {m n} hmn ↦ by rw [← comp_assoc, AdicCompletion.transitionMap_comp_reduceModIdeal,
-      comp_assoc, transitionMap_comp_eval])
-
-@[simp]
-theorem adicCompletion_eval (f : M →ₗ[R] N) {n : ℕ} (x : AdicCompletion I M) :
-    (f.adicCompletion I x).val n = f.reduceModIdeal (I ^ n) (x.val n) :=
-  rfl
-
-/-- Equality of linear maps out of an adic completion can be checked on Cauchy sequences. -/
-@[ext]
-theorem AdicCompletion.ext {f g : AdicCompletion I M →ₗ[R] N}
-    (h : ∀ (a : AdicCauchySequence I M),
-      f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
-    f = g := by
-  ext x
-  apply inductionOn I M x (fun a ↦ h a)
-
-variable (M) in
-theorem adicCompletion_id :
-    adicCompletion I (LinearMap.id (M := M)) = LinearMap.id := by
-  ext
-  simp
-
-theorem adicCompletion_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
-    g.adicCompletion I ∘ₗ f.adicCompletion I = (g ∘ₗ f).adicCompletion I := by
-  ext
-  simp
-
-end LinearMap
 
 namespace IsAdicComplete
 
