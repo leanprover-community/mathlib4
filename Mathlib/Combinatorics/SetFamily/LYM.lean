@@ -234,8 +234,8 @@ theorem IsAntichain.sperner [Fintype α] {𝒜 : Finset (Finset α)}
     suffices (∑ r in Iic (Fintype.card α),
         ((𝒜 # r).card : ℚ) / (Fintype.card α).choose (Fintype.card α / 2)) ≤ 1 by
       rw [← sum_div, ← Nat.cast_sum, div_le_one] at this
-      simp only [cast_le] at this
-      rwa [sum_card_slice] at this
+      · simp only [cast_le] at this
+        rwa [sum_card_slice] at this
       simp only [cast_pos]
       exact choose_pos (Nat.div_le_self _ _)
     rw [Iic_eq_Icc, ← Ico_succ_right, bot_eq_zero, Ico_zero_eq_range]
