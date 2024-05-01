@@ -28,10 +28,9 @@ open scoped BigOperators Pointwise
 variable {α : Type*} [DecidableEq α]
 
 namespace Finset
-
 section Mul
-
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
+
 /-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
 @[to_additive additiveEnergy
@@ -42,9 +41,15 @@ def multiplicativeEnergy (s t : Finset α) : ℕ :=
 #align finset.multiplicative_energy Finset.multiplicativeEnergy
 #align finset.additive_energy Finset.additiveEnergy
 
-notation3:max "Eₘ[" s ", " t "]" => Finset.multiplicativeEnergy s t
-notation3:max "E[" s ", " t "]" => Finset.additiveEnergy s t
+@[inherit_doc multiplicativeEnergy] notation3:max "Eₘ[" s ", " t "]" => multiplicativeEnergy s t
+@[inherit_doc additiveEnergy] notation3:max "E[" s ", " t "]" => additiveEnergy s t
+
+/-- The multiplicative energy of a finset `s` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × s × s` such that `a₁ * b₁ = a₂ * b₂`. -/
 notation3:max "Eₘ[" s "]" => Finset.multiplicativeEnergy s s
+
+/-- The additive energy of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × s × s` such that `a₁ + b₁ = a₂ + b₂`. -/
 notation3:max "E[" s "]" => Finset.additiveEnergy s s
 
 @[to_additive additiveEnergy_mono]
