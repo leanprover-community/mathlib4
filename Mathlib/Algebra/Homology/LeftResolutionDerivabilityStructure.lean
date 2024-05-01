@@ -10,11 +10,6 @@ variable {C A : Type*} [Category C] [Abelian C] [Category A] [Preadditive A]
   [HasZeroObject A] [HasBinaryBiproducts A]
   (ι : A ⥤ C) [ι.Full] [ι.Faithful] [ι.PreservesZeroMorphisms] [ι.Additive]
 
-structure LeftResolutions where
-  F : C ⥤ A
-  π : F ⋙ ι ⟶ 𝟭 C
-  hε (X : C) : Epi (π.app X) := by infer_instance
-
 namespace LeftResolutions
 
 abbrev quasiIso : MorphismProperty (HomotopyCategory.Minus A) :=
