@@ -2619,7 +2619,7 @@ theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filte
   simp_rw [filter_filter, and_comm]
 #align finset.filter_comm Finset.filter_comm
 
--- We can simplify an application of filter where the decidability is inferred in "the wrong way"
+-- We can replace an application of filter where the decidability is inferred in "the wrong way".
 theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidablePred p)
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 #align finset.filter_congr_decidable Finset.filter_congr_decidable
