@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Brendan Murphy
 -/
 import Mathlib.Algebra.Module.Torsion
-import Mathlib.RingTheory.Ideal.Operations
+import Mathlib.RingTheory.Ideal.AssociatedPrime
 
 /-!
 # Lemmas about the `IsSmulRegular` Predicate
@@ -131,5 +131,13 @@ lemma isSMulRegular_on_submodule_iff_disjoint_ker_smul_submodule :
 lemma isSMulRegular_on_quot_iff_smul_comap_le :
     IsSMulRegular (M⧸N) r ↔ N.comap (DistribMulAction.toLinearMap R M r) ≤ N :=
   isSMulRegular_on_quot_iff_smul_mem_implies_mem N r
+
+variable (R)
+
+lemma biUnion_associatedPrimes_eq_non_regular [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R M, p = { r : R | ¬ IsSMulRegular M r } :=
+  Eq.trans (biUnion_associatedPrimes_eq_zero_divisors R M) <| by
+    simp_rw [isSMulRegular_iff_smul_eq_zero_imp_eq_zero,
+      not_forall, exists_prop, and_comm]
 
 end IsSMulRegular

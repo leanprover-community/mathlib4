@@ -129,6 +129,18 @@ theorem associatedPrimes.nonempty [IsNoetherianRing R] [Nontrivial M] :
   exact ⟨P, hP⟩
 #align associated_primes.nonempty associatedPrimes.nonempty
 
+theorem biUnion_associatedPrimes_eq_zero_divisors [IsNoetherianRing R] :
+    ⋃ p ∈ associatedPrimes R M, p = { r : R | ∃ x : M, x ≠ 0 ∧ r • x = 0 } := by
+  simp_rw [← Submodule.mem_annihilator_span_singleton]
+  refine subset_antisymm (Set.iUnion₂_subset ?_) ?_
+  · rintro _ ⟨h, x, ⟨⟩⟩ r h'
+    refine ⟨x, ne_of_eq_of_ne (one_smul R x).symm ?_, h'⟩
+    refine mt (Submodule.mem_annihilator_span_singleton _ _).mpr ?_
+    exact (Ideal.ne_top_iff_one _).mp h.ne_top
+  · intro r ⟨x, h, h'⟩
+    obtain ⟨P, hP, hx⟩ := exists_le_isAssociatedPrime_of_isNoetherianRing R x h
+    exact Set.mem_biUnion hP (hx h')
+
 variable {R M}
 
 theorem IsAssociatedPrime.annihilator_le (h : IsAssociatedPrime I M) :
