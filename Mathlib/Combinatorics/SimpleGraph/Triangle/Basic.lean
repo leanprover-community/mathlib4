@@ -3,12 +3,14 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.GroupPower.Order
-import Mathlib.Algebra.Order.Field.Defs
+import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Combinatorics.Enumerative.DoubleCounting
 import Mathlib.Combinatorics.SimpleGraph.Clique
+import Mathlib.Data.Finset.Sym
+import Mathlib.Data.Nat.Parity
 import Mathlib.Tactic.GCongr
 import Mathlib.Tactic.Positivity
+import Mathlib.Tactic.Positivity.Finset
 
 #align_import combinatorics.SimpleGraph.triangle.basic from "leanprover-community/mathlib"@"3365b20c2ffa7c35e47e5209b89ba9abdddf3ffe"
 
@@ -204,7 +206,76 @@ theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFro
     cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
 #align simple_graph.far_from_triangle_free.clique_finset_nonempty' SimpleGraph.FarFromTriangleFree.cliqueFinset_nonempty'
 
+private lemma farFromTriangleFree_of_disjoint_triangles_aux {tris : Finset (Finset α)}
+    (htris : tris ⊆ G.cliqueFinset 3)
+    (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton) (hHG : H ≤ G)
+    (hH : H.CliqueFree 3) : tris.card ≤ G.edgeFinset.card - H.edgeFinset.card := by
+  rw [← card_sdiff (edgeFinset_mono hHG), ← card_attach]
+  by_contra! hG
+  have ⦃t⦄ (ht : t ∈ tris) :
+    ∃ x y, x ∈ t ∧ y ∈ t ∧ x ≠ y ∧ s(x, y) ∈ G.edgeFinset \ H.edgeFinset := by
+    by_contra! h
+    refine hH t ?_
+    simp only [not_and, mem_sdiff, not_not, mem_edgeFinset, mem_edgeSet] at h
+    obtain ⟨x, y, z, xy, xz, yz, rfl⟩ := is3Clique_iff.1 (mem_cliqueFinset_iff.1 $ htris ht)
+    rw [is3Clique_triple_iff]
+    refine ⟨h _ _ ?_ ?_ xy.ne xy, h _ _ ?_ ?_ xz.ne xz, h _ _ ?_ ?_ yz.ne yz⟩ <;> simp
+  choose fx fy hfx hfy hfne fmem using this
+  let f (t : {x // x ∈ tris}) : Sym2 α := s(fx t.2, fy t.2)
+  have hf (x) (_ : x ∈ tris.attach) : f x ∈ G.edgeFinset \ H.edgeFinset := fmem _
+  obtain ⟨⟨t₁, ht₁⟩, -, ⟨t₂, ht₂⟩, -, tne, t : s(_, _) = s(_, _)⟩ :=
+    exists_ne_map_eq_of_card_lt_of_maps_to hG hf
+  dsimp at t
+  have i := pd ht₁ ht₂ (Subtype.val_injective.ne tne)
+  rw [Sym2.eq_iff] at t
+  obtain t | t := t
+  · exact hfne _ (i ⟨hfx ht₁, t.1.symm ▸ hfx ht₂⟩ ⟨hfy ht₁, t.2.symm ▸ hfy ht₂⟩)
+  · exact hfne _ (i ⟨hfx ht₁, t.1.symm ▸ hfy ht₂⟩ ⟨hfy ht₁, t.2.symm ▸ hfx ht₂⟩)
+
+/-- If there are `ε * (card α)^2` disjoint triangles, then the graph is `ε`-far from being
+triangle-free. -/
+lemma farFromTriangleFree_of_disjoint_triangles (tris : Finset (Finset α))
+    (htris : tris ⊆ G.cliqueFinset 3)
+    (pd : (tris : Set (Finset α)).Pairwise fun x y ↦ (x ∩ y : Set α).Subsingleton)
+    (tris_big : ε * (card α ^ 2 : ℕ) ≤ tris.card) :
+    G.FarFromTriangleFree ε := by
+  rw [farFromTriangleFree_iff]
+  intros H _ hG hH
+  rw [← Nat.cast_sub (card_le_card $ edgeFinset_mono hG)]
+  exact tris_big.trans
+    (Nat.cast_le.2 $ farFromTriangleFree_of_disjoint_triangles_aux htris pd hG hH)
+
+protected lemma EdgeDisjointTriangles.farFromTriangleFree (hG : G.EdgeDisjointTriangles)
+  (tris_big : ε * (card α ^ 2 : ℕ) ≤ (G.cliqueFinset 3).card) : G.FarFromTriangleFree ε :=
+  farFromTriangleFree_of_disjoint_triangles _ Subset.rfl (by simpa using hG) tris_big
+
 variable [Nonempty α]
+
+lemma FarFromTriangleFree.lt_half (hG : G.FarFromTriangleFree ε) : ε < 2⁻¹ := by
+  by_contra! hε
+  refine lt_irrefl (ε * card α ^ 2) ?_
+  have hε₀ : 0 < ε := hε.trans_lt' (by norm_num)
+  rw [inv_pos_le_iff_one_le_mul (zero_lt_two' 𝕜)] at hε
+  calc
+    _ ≤ (G.edgeFinset.card : 𝕜) := by
+      simpa using hG.le_card_sub_card bot_le (cliqueFree_bot (le_succ _))
+    _ ≤ ε * 2 * (edgeFinset G).card := le_mul_of_one_le_left (by positivity) (by assumption)
+    _ < ε * card α ^ 2 := ?_
+  rw [mul_assoc, mul_lt_mul_left hε₀]
+  norm_cast
+  calc
+    _ ≤ 2 * (⊤ : SimpleGraph α).edgeFinset.card := by gcongr; exact le_top
+    _ < card α ^ 2 := ?_
+  rw [edgeFinset_top, filter_not, card_sdiff (subset_univ _), card_univ, Sym2.card,]
+  simp_rw [choose_two_right, Nat.add_sub_cancel, Nat.mul_comm _ (card α),
+    Sym2.isDiag_iff_mem_range_diag, univ_filter_mem_range, mul_tsub,
+    Nat.mul_div_cancel' (card α).even_mul_succ_self.two_dvd]
+  rw [card_image_of_injective _ Sym2.diag_injective, card_univ, mul_add_one (α := ℕ), two_mul, sq,
+    add_tsub_add_eq_tsub_right]
+  apply tsub_lt_self <;> positivity
+
+lemma FarFromTriangleFree.lt_one (hG : G.FarFromTriangleFree ε) : ε < 1 :=
+  hG.lt_half.trans $ inv_lt_one one_lt_two
 
 theorem FarFromTriangleFree.nonpos (h₀ : G.FarFromTriangleFree ε) (h₁ : G.CliqueFree 3) :
     ε ≤ 0 := by
