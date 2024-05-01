@@ -77,7 +77,8 @@ theorem upp_half_translation_N (z : ℍ) (N : ℕ) (hn : 0 < N) :
   apply (Int.sub_floor_div_mul_lt (z.re : ℝ) hnn).le
 
 
-lemma T_pow_N_mem_Gamma (N M: ℤ) (hNM : N ∣ M) : (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
+lemma T_pow_N_mem_Gamma (N M: ℤ) (hNM : N ∣ M) :
+    (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
   simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
     empty_val', cons_val_fin_one, Int.cast_one, cons_val_one, head_cons, head_fin_const,
     Int.cast_zero, and_self, and_true, true_and]
@@ -105,14 +106,13 @@ lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
 theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
     (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
     simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
-    let M := ∑'(x : Fin 2 → ℤ),
-      (1 / r (⟨⟨N, 2⟩, by simp⟩) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹
-    refine ⟨M, 2, ?_⟩
+    refine ⟨∑'(x : Fin 2 → ℤ),
+      (1 / r (⟨⟨N, 2⟩, by simp⟩) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹, 2, ?_⟩
     intro z hz
     obtain ⟨n, hn⟩ := (upp_half_translation_N z N (by simp))
     rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
       ← lvl_N_periodic N k (eisensteinSeries_SIF (a ᵥ* A) k) z n]
-    let Z := ((ModularGroup.T ^ ((N : ℤ)* n))) • z
+    let Z := ((ModularGroup.T ^ ((N : ℤ) * n))) • z
     apply le_trans (abs_le_tsum_abs N _ _ hk (Z))
     apply tsum_le_tsum
     · intro x
