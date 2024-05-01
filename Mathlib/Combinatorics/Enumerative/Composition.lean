@@ -714,7 +714,7 @@ theorem get_splitWrtCompositionAux (l : List α) (ns : List ℕ) {i : ℕ} (hi) 
   · cases hi
   cases' i with i
   · rw [Nat.add_zero, List.take_zero, sum_nil]
-    simpa using get_zero hi
+    simpa using get_mk_zero hi
   · simp only [splitWrtCompositionAux, get_cons_succ, IH, take,
         sum_cons, Nat.add_eq, add_zero, splitAt_eq_take_drop, drop_take, drop_drop]
     rw [add_comm (sum _) n, Nat.add_sub_add_left]
