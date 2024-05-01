@@ -39,7 +39,8 @@ so I have to learn how to specify all of this data.
 
 -/
 
-alias ⟨_root_.Module.End.HasEigenvalue.mem_spectrum, _root_.Module.End.HasEigenvalue.of_mem_spectrum⟩ := Module.End.hasEigenvalue_iff_mem_spectrum
+alias ⟨_root_.Module.End.HasEigenvalue.mem_spectrum,
+       _root_.Module.End.HasEigenvalue.of_mem_spectrum⟩ := Module.End.hasEigenvalue_iff_mem_spectrum
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
