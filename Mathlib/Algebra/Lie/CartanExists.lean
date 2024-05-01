@@ -119,6 +119,8 @@ variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L
 
 open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
+-- Adaptation note: otherwise there is a spurious warning on `contrapose!` below.
+set_option linter.unusedVariables false in
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
 Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` for `y ∈ U`.
@@ -334,7 +336,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
     ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
   -- We deduce from this that `z' = 0`, arguing by contraposition.
-  contrapose!
+  contrapose! hsψ
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
   use (toEndomorphism K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
