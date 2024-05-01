@@ -443,7 +443,7 @@ theorem mk_surjective : Function.Surjective (mk I M) := by
 
 /-- To show a statement about an element of `adicCompletion I M`, it suffices to check it
 on Cauchy sequences. -/
-theorem inductionOn {p : AdicCompletion I M → Prop} (x : AdicCompletion I M)
+theorem induction_on {p : AdicCompletion I M → Prop} (x : AdicCompletion I M)
     (h : ∀ (f : AdicCauchySequence I M), p (mk I M f)) : p x := by
   obtain ⟨f, rfl⟩ := mk_surjective I M x
   exact h f
