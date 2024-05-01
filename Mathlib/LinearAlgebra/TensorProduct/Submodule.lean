@@ -31,11 +31,7 @@ mainly used in the definition of linearly disjointness (`Submodule.LinearDisjoin
   `M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
   This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`.
 
-- `Submodule.mulLeftMap`: if `m : ι → M` is a family of elements, then there is an `R`-linear map
-  from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
-
-- `Submodule.mulRightMap`: if `n : ι → N` is a family of elements, then there is an `R`-linear map
-  from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
+There are also `Submodule.mulLeftMap` and `Submodule.mulRightMap`, defined in earlier files.
 
 -/
 
@@ -54,8 +50,6 @@ section Semiring
 variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
-
-section mulMap
 
 -- can't use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
 -- `Subalgebra.mulMap` which is `(Algebra.TensorProduct.productMap A.val B.val).toLinearMap`
@@ -181,55 +175,16 @@ theorem rTensorOne_symm_apply (m : M) :
     M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, one_le.1 (le_refl _)⟩ := rfl
 
 variable {M} in
-/-- If `m : ι → M` is a family of elements, then there is an `R`-linear map from `ι →₀ N` to
-`S` which maps `{ n_i }` to the sum of `m_i * n_i`. -/
-def mulLeftMap {ι : Type*} (m : ι → M) : (ι →₀ N) →ₗ[R] S :=
-  Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
-
-variable {M N} in
-theorem mulLeftMap_apply {ι : Type*} (m : ι → M) (n : ι →₀ N) :
-    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
-
-variable {M N} in
-@[simp]
-theorem mulLeftMap_apply_single {ι : Type*} (m : ι → M) (i : ι) (n : N) :
-    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
-  simp [mulLeftMap]
-
-variable {M} in
 theorem mulLeftMap_eq_mulMap_comp {ι : Type*} (m : ι → M) :
     mulLeftMap N m = mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
       (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap := by
   ext; simp
 
 variable {N} in
-/-- If `n : ι → N` is a family of elements, then there is an `R`-linear map from `ι →₀ M` to
-`S` which maps `{ m_i }` to the sum of `m_i * n_i`. -/
-def mulRightMap {ι : Type*} (n : ι → N) : (ι →₀ M) →ₗ[R] S :=
-  Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
-
-variable {M N} in
-theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
-    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
-
-variable {M N} in
-@[simp]
-theorem mulRightMap_apply_single {ι : Type*} (n : ι → N) (i : ι) (m : M) :
-    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
-  simp [mulRightMap]
-
-variable {N} in
 theorem mulRightMap_eq_mulMap_comp {ι : Type*} (n : ι → N) :
     mulRightMap M n = mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
       (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap := by
   ext; simp
-
-variable {M} in
-theorem mulLeftMap_eq_mulRightMap_of_commute {ι : Type*} (m : ι → M)
-    (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
-  ext i n; simp [(hc i n).eq]
-
-end mulMap
 
 end Semiring
 
@@ -241,10 +196,6 @@ variable (M N : Submodule R S)
 
 theorem mulMap_comm : mulMap N M = (mulMap M N).comp (TensorProduct.comm R N M).toLinearMap :=
   mulMap_comm_of_commute M N fun _ _ ↦ mul_comm _ _
-
-variable {M} in
-theorem mulLeftMap_eq_mulRightMap {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
-  mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
 
 end CommSemiring
 
