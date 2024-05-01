@@ -53,8 +53,7 @@ noncomputable def norm [IsSeparable K L] : 𝓞 L →* 𝓞 K :=
   norm K x = Algebra.norm K (x : L) := rfl
 
 theorem coe_algebraMap_norm [IsSeparable K L] (x : 𝓞 L) :
-    (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) =
-      algebraMap K L (Algebra.norm K (x : L)) :=
+    (algebraMap (𝓞 K) (𝓞 L) (norm K x) : L) = algebraMap K L (Algebra.norm K (x : L)) :=
   rfl
 #align ring_of_integers.coe_algebra_map_norm RingOfIntegers.coe_algebraMap_norm
 
