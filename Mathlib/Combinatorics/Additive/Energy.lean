@@ -140,11 +140,12 @@ lemma multiplicativeEnergy_eq_sum_sq' (s t : Finset α) :
   rw [← card_disjiUnion]
   -- The `swap`, `ext` and `simp` calls significantly reduce heartbeats
   swap
-  · simp [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
+  · simp only [Set.PairwiseDisjoint, Set.Pairwise, coe_mul, ne_eq, disjoint_left, mem_product,
+      mem_filter, not_and, and_imp, Prod.forall]
     aesop
   · congr
     ext
-    simp
+    simp only [mem_filter, mem_product, disjiUnion_eq_biUnion, mem_biUnion]
     aesop (add unsafe mul_mem_mul)
 
 @[to_additive additiveEnergy_eq_sum_sq]

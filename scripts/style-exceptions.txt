@@ -13,7 +13,6 @@ Mathlib/Analysis/Normed/Group/Basic.lean : line 1 : ERR_NUM_LIN : 3000 file cont
 Mathlib/Analysis/NormedSpace/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1511 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Biproducts.lean : line 1 : ERR_NUM_LIN : 2300 file contains 2118 lines, try to split it up
 Mathlib/CategoryTheory/Limits/Shapes/Pullbacks.lean : line 1 : ERR_NUM_LIN : 2900 file contains 2728 lines, try to split it up
-Mathlib/Combinatorics/Additive/Energy.lean : line 147 : ERR_NSP : Non-terminal simp. Replace with `simp?` and use the suggested output
 Mathlib/Combinatorics/SimpleGraph/Connectivity.lean : line 1 : ERR_NUM_LIN : 2800 file contains 2653 lines, try to split it up
 Mathlib/Computability/Primrec.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1568 lines, try to split it up
 Mathlib/Computability/TMToPartrec.lean : line 1 : ERR_NUM_LIN : 2200 file contains 2069 lines, try to split it up
