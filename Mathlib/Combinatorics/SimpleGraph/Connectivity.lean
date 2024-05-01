@@ -899,7 +899,7 @@ def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
   snd := p.sndOfNotNil hp
-  is_adj := p.adj_sndOfNotNil hp
+  adj := p.adj_sndOfNotNil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
