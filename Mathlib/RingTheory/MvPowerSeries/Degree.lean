@@ -26,23 +26,52 @@ namespace MvPowerSeries
 variable {σ R S : Type*} [CommSemiring R] [DecidableEq (MvPowerSeries σ R)]
 variable {φ ψ : MvPowerSeries σ R}
 
-/-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
+/-- A `MvPowerSeries φ` has degree bound n if its monomials are uniformly bounded by n-/
 def HasDegreeBound (n : WithBot (WithTop ℕ)) : MvPowerSeries σ R → Prop :=
   fun φ ↦ (∀ s : σ →₀ ℕ, coeff R s φ ≠ 0 → s.sum (fun _ ↦ id) ≤ n)
+
+@[simp]
+theorem HasDegreeBound_def {n : WithBot (WithTop ℕ)} : HasDegreeBound n φ ↔
+  ∀ s : σ →₀ ℕ, coeff R s φ ≠ 0 → s.sum (fun _ ↦ id) ≤ n := by rfl
 
 /-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
 def HasBoundedDegree (φ : MvPowerSeries σ R) : Prop :=
   ∃ n, HasDegreeBound n φ
 
+@[simp]
+theorem HasBoundedDegree_def : HasBoundedDegree φ ↔ ∃ n, HasDegreeBound n φ := by rfl
+
 noncomputable def degree (φ : MvPowerSeries σ R) : WithBot (WithTop ℕ) :=
   sInf { n | HasDegreeBound n φ }
+
+@[simp]
+theorem degree_def : φ.degree = sInf { n | HasDegreeBound n φ } := rfl
+
+@[simp]
+theorem hasDegreeBound_degree : HasDegreeBound φ.degree φ := by
+  simp only [degree_def, HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq, le_sInf_iff,
+    Set.mem_setOf_eq]
+  intro s hs b hb
+  exact_mod_cast hb s hs
+
+@[simp]
+theorem degree_le_DegreeBound {n : WithBot (WithTop ℕ)} (h : HasDegreeBound n φ) :
+    φ.degree ≤ n := by
+  simp only [degree_def, le_sInf_iff, Set.mem_setOf_eq]
+  exact sInf_le h
 
 theorem le_degree {s : σ →₀ ℕ} (h : φ s ≠ 0) : (s.sum fun _ ↦ id) ≤ degree φ := by
   sorry
 
-theorem totalDegree_le_of_support_subset (h : ∀ s, φ s ≠ 0 → ψ s ≠ 0) :
-    degree φ ≤ degree ψ :=
-  sorry
+theorem degree_le_of_support_subset (h : ∀ s, φ s ≠ 0 → ψ s ≠ 0) :
+    degree φ ≤ degree ψ := by
+  simp only [degree, le_sInf_iff, Set.mem_setOf_eq]
+  intro d hd
+  apply sInf_le
+  intro s hs
+  apply h at hs
+  apply hd
+  exact hs
 
 @[simp]
 theorem degree_zero : (0 : MvPowerSeries σ R).degree = ⊥ := by sorry
@@ -55,13 +84,33 @@ theorem degree_one : (1 : MvPowerSeries σ R).degree = 0 :=
   degree_C (1 : R)
 
 @[simp]
-theorem degree_X [Nontrivial R] (s : σ) : (X s : MvPowerSeries σ R).degree = 1 := by
-  -- rw [degree, support_X]
-  -- simp only [Finset.sup, Finsupp.sum_single_index, Finset.fold_singleton, sup_bot_eq]
-  sorry
+theorem degree_X [Nontrivial R] (i : σ) : (X i : MvPowerSeries σ R).degree = 1 := by
+  rw [degree, X_def]
+  simp_rw [HasDegreeBound_def, coeff_monomial]
+  simp only [ne_eq, ite_eq_right_iff, one_ne_zero, imp_false, not_not, Nat.cast_finsupp_sum, id_eq,
+    forall_eq, Nat.cast_zero, Finsupp.sum_single_index, Nat.cast_one]
+  apply le_antisymm
+  · apply sInf_le
+    simp only [Set.mem_setOf_eq, le_refl]
+  · apply le_sInf
+    simp only [Set.mem_setOf_eq, imp_self, forall_const]
+
+theorem degree_bound_add {a b : WithBot (WithTop ℕ)} (ha : HasDegreeBound a φ)
+    (hb: HasDegreeBound b ψ) : HasDegreeBound (max a b) (φ + ψ) := by
+  intro s hs
+  have : coeff R s φ ≠ 0 ∨ coeff R s ψ ≠ 0 := by
+    contrapose! hs
+    simp only [map_add, hs, add_zero]
+  rcases this with h | h
+  · apply le_trans (ha s h) (le_max_left a b)
+  · apply le_trans (hb s h) (le_max_right a b)
 
 theorem degree_add : (φ + ψ).degree ≤ max φ.degree ψ.degree := by
-  sorry
+  have : HasDegreeBound (max φ.degree ψ.degree) (φ + ψ) := by
+    apply degree_bound_add
+    · exact hasDegreeBound_degree
+    · exact hasDegreeBound_degree
+  exact degree_le_DegreeBound this
 
 theorem degree_add_eq_left_of_degree_lt (h : ψ.degree < φ.degree) :
     (φ + ψ).degree = φ.degree := by
@@ -110,17 +159,17 @@ theorem degree_monomial (s : σ →₀ ℕ) {r : R} (hr : r ≠ 0) :
   sorry
 
 theorem degree_monomial_le (s : σ →₀ ℕ) (r : R) :
-    (monomial s r).degree ≤ s.sum fun _ ↦ id := by
-  if hr : r = 0 then
-    simp only [hr, map_zero, degree_zero]
-  else
-    rw [degree_monomial _ hr]
-    exact le_rfl
+    (monomial _ s r).degree ≤ s.sum fun _ ↦ id := by
   sorry
+  -- if hr : r = 0 then
+  --   simp only [hr, map_zero, degree_zero]
+  -- else
+  --   rw [degree_monomial _ hr]
+  --   exact le_rfl
 
 @[simp]
 theorem degree_X_pow [Nontrivial R] (i : σ) (n : ℕ) :
-    (X i ^ n : MvPowerSeries σ R).degree = n := by simp [X_pow_eq_monomial, one_ne_zero]
+    (X i ^ n : MvPowerSeries σ R).degree = n := by sorry --simp [X_pow_eq_monomial, one_ne_zero]
 
 end MvPowerSeries
 
