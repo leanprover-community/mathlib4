@@ -50,7 +50,6 @@ theorem cast_nnratCast {K} [DivisionRing K] (q : ℚ≥0) :
   simp only [Int.cast_natCast, Nat.cast_inj] at hn hd
   rw [hn, hd, Int.cast_natCast]
 
-
 /-- Casting a scientific literal via `ℚ` is the same as casting directly. -/
 @[simp, norm_cast]
 theorem cast_ofScientific {K} [DivisionRing K] (m : ℕ) (s : Bool) (e : ℕ) :

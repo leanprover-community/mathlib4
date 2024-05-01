@@ -90,7 +90,6 @@ lemma cast_mul_of_ne_zero (hq : (q.den : α) ≠ 0) (hr : (r.den : α) ≠ 0) :
 
 @[norm_cast]
 lemma cast_inv_of_ne_zero (hq : (q.num : α) ≠ 0) : (q⁻¹ : ℚ≥0) = (q⁻¹ : α) := by
-  rw [cast_def, cast_def, inv_div, inv_def]
   rw [inv_def, cast_divNat_of_ne_zero _ hq, cast_def, inv_div]
 
 @[norm_cast]
