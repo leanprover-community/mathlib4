@@ -947,7 +947,7 @@ def tensoringLeft : C ⥤ C ⥤ C where
   map {X} {Y} f := { app := fun Z => f ▷ Z }
 #align category_theory.monoidal_category.tensoring_left CategoryTheory.MonoidalCategory.tensoringLeft
 
-instance : Faithful (tensoringLeft C) where
+instance : (tensoringLeft C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)
@@ -963,7 +963,7 @@ def tensoringRight : C ⥤ C ⥤ C where
   map {X} {Y} f := { app := fun Z => Z ◁ f }
 #align category_theory.monoidal_category.tensoring_right CategoryTheory.MonoidalCategory.tensoringRight
 
-instance : Faithful (tensoringRight C) where
+instance : (tensoringRight C).Faithful where
   map_injective {X} {Y} f g h := by
     injections h
     replace h := congr_fun h (𝟙_ C)

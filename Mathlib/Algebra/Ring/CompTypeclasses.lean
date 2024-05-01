@@ -179,7 +179,8 @@ theorem RingHom.surjective (σ : R₁ →+* R₂) [t : RingHomSurjective σ] : F
 namespace RingHomSurjective
 
 -- The linter gives a false positive, since `σ₂` is an out_param
--- @[nolint dangerous_instance] Porting note: this linter is not implemented yet
+-- Porting note(#12094): removed nolint; dangerous_instance linter not ported yet
+-- @[nolint dangerous_instance]
 instance (priority := 100) invPair {σ₁ : R₁ →+* R₂} {σ₂ : R₂ →+* R₁} [RingHomInvPair σ₁ σ₂] :
     RingHomSurjective σ₁ :=
   ⟨fun x => ⟨σ₂ x, RingHomInvPair.comp_apply_eq₂⟩⟩

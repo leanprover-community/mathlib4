@@ -147,15 +147,15 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
     have h := R.uniq (BinaryFan.assocInv P t) m
     rw [h]
     rintro ⟨⟨⟩⟩ <;> simp
-    apply P.hom_ext
-    rintro ⟨⟨⟩⟩ <;> simp
-    · exact w ⟨WalkingPair.left⟩
-    · specialize w ⟨WalkingPair.right⟩
-      simp? at w says
-        simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
-          Functor.const_obj_obj, pair_obj_left] at w
-      rw [← w]
-      simp
+    · apply P.hom_ext
+      rintro ⟨⟨⟩⟩ <;> simp
+      · exact w ⟨WalkingPair.left⟩
+      · specialize w ⟨WalkingPair.right⟩
+        simp? at w says
+          simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
+            Functor.const_obj_obj, pair_obj_left] at w
+        rw [← w]
+        simp
     · specialize w ⟨WalkingPair.right⟩
       simp? at w says
         simp only [pair_obj_right, BinaryFan.π_app_right, BinaryFan.assoc_snd,
@@ -344,7 +344,7 @@ a fixed choice of limit data for the empty functor, and for `pair X Y` for every
 
 This is an implementation detail for `SymmetricOfChosenFiniteProducts`.
 -/
--- Porting note: no `has_nonempty_instance` linter.
+-- Porting note(#5171): linter `has_nonempty_instance` not ported yet
 -- @[nolint has_nonempty_instance]
 @[nolint unusedArguments]
 def MonoidalOfChosenFiniteProductsSynonym (_𝒯 : LimitCone (Functor.empty.{0} C))

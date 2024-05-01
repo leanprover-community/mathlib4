@@ -345,7 +345,7 @@ theorem red_iff_irreducible {x1 b1 x2 b2} (h : (x1, b1) ≠ (x2, b2)) :
   generalize eq : [(x1, not b1), (x2, b2)] = L'
   intro L h'
   cases h'
-  simp [List.cons_eq_append_iff, List.nil_eq_append] at eq
+  simp [List.cons_eq_append, List.nil_eq_append] at eq
   rcases eq with ⟨rfl, ⟨rfl, rfl⟩, ⟨rfl, rfl⟩, rfl⟩
   simp at h
 #align free_group.red.red_iff_irreducible FreeGroup.Red.red_iff_irreducible
@@ -1172,11 +1172,7 @@ theorem reduce.not {p : Prop} :
       simp? [List.length] at this says
         simp only [List.length, zero_add, List.length_append] at this
       rw [add_comm, add_assoc, add_assoc, add_comm, <-add_assoc] at this
-      simp [Nat.one_eq_succ_zero, Nat.succ_add] at this
-      -- Porting note: needed to add this step in #3414.
-      -- This is caused by https://github.com/leanprover/lean4/pull/2146.
-      -- Nevertheless the proof could be cleaned up.
-      cases this
+      omega
     | cons hd tail =>
       cases' hd with y c
       dsimp only

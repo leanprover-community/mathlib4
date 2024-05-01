@@ -568,7 +568,7 @@ theorem salient_positive : Salient (positive 𝕜 E) := fun x xs hx hx' =>
   lt_irrefl (0 : E)
     (calc
       0 < x := lt_of_le_of_ne xs hx.symm
-      _ ≤ x + -x := (le_add_of_nonneg_right hx')
+      _ ≤ x + -x := le_add_of_nonneg_right hx'
       _ = 0 := add_neg_self x
       )
 #align convex_cone.salient_positive ConvexCone.salient_positive

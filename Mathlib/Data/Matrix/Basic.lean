@@ -175,9 +175,7 @@ def conjTranspose [Star α] (M : Matrix m n α) : Matrix n m α :=
 scoped postfix:1024 "ᴴ" => Matrix.conjTranspose
 
 instance inhabited [Inhabited α] : Inhabited (Matrix m n α) :=
-  -- Porting note: this instance was called `Pi.inhabited` in lean3-core, which is much
-  -- nicer than the name `instInhabitedForAll_1` it got in lean4-core...
-  instInhabitedForAll_1 _
+  inferInstanceAs <| Inhabited <| m → n → α
 
 -- Porting note: new, Lean3 found this automatically
 instance decidableEq [DecidableEq α] [Fintype m] [Fintype n] : DecidableEq (Matrix m n α) :=
@@ -226,8 +224,7 @@ instance unique [Unique α] : Unique (Matrix m n α) :=
   Pi.unique
 
 instance subsingleton [Subsingleton α] : Subsingleton (Matrix m n α) :=
-  instSubsingletonForAll
--- Porting note: this instance was `Pi.subsingleton` in lean3-core
+  inferInstanceAs <| Subsingleton <| m → n → α
 
 instance nonempty [Nonempty m] [Nonempty n] [Nontrivial α] : Nontrivial (Matrix m n α) :=
   Function.nontrivial
@@ -880,7 +877,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dotProduct, Fintype.card]
+  simp [dotProduct]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring

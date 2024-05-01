@@ -139,8 +139,8 @@ lemma isProbabilityMeasure_tilted [NeZero μ] (hf : Integrable (fun x ↦ exp (f
   rw [lintegral_mul_const'' _ hf.1.aemeasurable.ennreal_ofReal,
     ← ofReal_integral_eq_lintegral_ofReal hf (ae_of_all _ fun _ ↦ (exp_pos _).le),
     ENNReal.mul_inv_cancel]
-  simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
-  · exact integral_exp_pos hf
+  · simp only [ne_eq, ENNReal.ofReal_eq_zero, not_le]
+    exact integral_exp_pos hf
   · simp
 
 section lintegral
@@ -191,10 +191,10 @@ section integral
 
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
 
-lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
+lemma setIntegral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : MeasurableSet s) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀ _ _ hs]
+  · rw [tilted_eq_withDensity_nnreal, setIntegral_withDensity_eq_setIntegral_smul₀ _ _ hs]
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
         rw [← aemeasurable_coe_nnreal_real_iff]
@@ -208,10 +208,14 @@ lemma set_integral_tilted' (f : α → ℝ) (g : α → E) {s : Set α} (hs : Me
     rw [integral_undef hf']
     simp
 
-lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
+@[deprecated]
+alias set_integral_tilted' :=
+  setIntegral_tilted' -- deprecated on 2024-04-17
+
+lemma setIntegral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set α) :
     ∫ x in s, g x ∂(μ.tilted f) = ∫ x in s, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
   by_cases hf : AEMeasurable f μ
-  · rw [tilted_eq_withDensity_nnreal, set_integral_withDensity_eq_set_integral_smul₀']
+  · rw [tilted_eq_withDensity_nnreal, setIntegral_withDensity_eq_setIntegral_smul₀']
     · congr
     · suffices AEMeasurable (fun x ↦ exp (f x) / ∫ x, exp (f x) ∂μ) μ by
         rw [← aemeasurable_coe_nnreal_real_iff]
@@ -224,10 +228,14 @@ lemma set_integral_tilted [SFinite μ] (f : α → ℝ) (g : α → E) (s : Set 
       integral_zero_measure]
     rw [integral_undef hf']
     simp
+
+@[deprecated]
+alias set_integral_tilted :=
+  setIntegral_tilted -- deprecated on 2024-04-17
 
 lemma integral_tilted (f : α → ℝ) (g : α → E) :
     ∫ x, g x ∂(μ.tilted f) = ∫ x, (exp (f x) / ∫ x, exp (f x) ∂μ) • (g x) ∂μ := by
-  rw [← integral_univ, set_integral_tilted' f g MeasurableSet.univ, integral_univ]
+  rw [← integral_univ, setIntegral_tilted' f g MeasurableSet.univ, integral_univ]
 
 end integral
 

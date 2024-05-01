@@ -73,12 +73,12 @@ theorem quadraticCharFun_eq_zero_iff {a : F} : quadraticCharFun F a = 0 ↔ a = 
 
 @[simp]
 theorem quadraticCharFun_zero : quadraticCharFun F 0 = 0 := by
-  simp only [quadraticCharFun, eq_self_iff_true, if_true, id.def]
+  simp only [quadraticCharFun, eq_self_iff_true, if_true, id]
 #align quadratic_char_fun_zero quadraticCharFun_zero
 
 @[simp]
 theorem quadraticCharFun_one : quadraticCharFun F 1 = 1 := by
-  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false, id.def]
+  simp only [quadraticCharFun, one_ne_zero, isSquare_one, if_true, if_false, id]
 #align quadratic_char_fun_one quadraticCharFun_one
 
 /-- If `ringChar F = 2`, then `quadraticCharFun F` takes the value `1` on nonzero elements. -/
