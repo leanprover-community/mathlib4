@@ -130,7 +130,7 @@ theorem mul_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.num) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
@@ -147,7 +147,7 @@ theorem add_num_den' (q r : ℚ) :
     exists_eq_mul_div_num_and_eq_mul_div_den (q.num * r.den + r.num * q.den) hs
   rw [c_mul_num, mul_assoc, mul_comm]
   nth_rw 1 [c_mul_den]
-  repeat' rw [Int.mul_assoc]
+  repeat rw [Int.mul_assoc]
   apply mul_eq_mul_left_iff.2
   rw [or_iff_not_imp_right]
   intro
