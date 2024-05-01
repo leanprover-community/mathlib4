@@ -39,24 +39,16 @@ so I have to learn how to specify all of this data.
 
 -/
 
-theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
-    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
-have H0 : Module.End.HasEigenvalue (toEuclideanLin A) ((RCLike.ofReal ∘ hA.eigenvalues) i) := by
-  apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues (hn := by simp only [finrank_euclideanSpace])
-        (n := Fintype.card n) (Matrix.isHermitian_iff_isSymmetric.mp hA)
-apply Module.End.hasEigenvalue_iff_mem_spectrum.mp (H0)
+alias ⟨_root_.Module.End.HasEigenvalue.mem_spectrum, _root_.Module.End.HasEigenvalue.of_mem_spectrum⟩ := Module.End.hasEigenvalue_iff_mem_spectrum
 
-theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike1 (i : n) :
-    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
-apply Module.End.hasEigenvalue_iff_mem_spectrum.mp
-apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues
+theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
+    (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
+  LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
 
 theorem eigenvalue_mem_toEuclideanLin_spectrum_real (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) :=
 (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
         (eigenvalue_mem_toEuclideanLin_spectrum_RCLike _ i)
-
-#exit
 
 --Now I need to get φ below to be a map from C(spectrum ℝ A, ℝ) into Matrix n n 𝕜.
 
