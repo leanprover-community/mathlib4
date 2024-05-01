@@ -115,12 +115,7 @@ end CommRing
 
 section Field
 
--- move this
-def _root_.IsMinimumOfMinimalOn {ι α : Type*} [Preorder α] (s : Set ι) (f : ι → α) : Prop :=
-    ∀ i ∈ s, (∀ j, f j ≤ f i → f j = f i) → ∀ j, f i ≤ f j
-
-variable {K L : Type*}
-variable [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
+variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
 open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_le_engel
 
@@ -130,37 +125,45 @@ Suppose that `engel K x` is minimal amongst the Engel subalgebras `engel K y` fo
 Then `engel K x ≤ engel K y` for all `y ∈ U`.
 
 Lemma 2 in [barnes1967]. -/
-lemma isMinimumOfMinimalOn_engel_of_finrank_le
-    (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L) :
-    IsMinimumOfMinimalOn {x : U | U ≤ engel K (x : L)} (fun y : U ↦ engel K (y : L)) := by
-  intro x hUx hmin y
-  dsimp at hUx hmin ⊢
-  -- We denote by `E` the Engel subalgebra `engel K x`
-  -- viewed as Lie submodule of `L` over the Lie algebra `U`.
+lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
+    (E : {engel K x | x ∈ U}) (hUle : U ≤ E) (hmin : IsMin E) :
+    IsBot E := by
+  rcases E with ⟨_, x, hxU, rfl⟩
+  rintro ⟨_, y, hyU, rfl⟩
+  -- It will be useful to repackage the Engel subalgebras
+  set Ex : {engel K x | x ∈ U} := ⟨engel K x, x, hxU, rfl⟩
+  set Ey : {engel K y | y ∈ U} := ⟨engel K y, y, hyU, rfl⟩
+  replace hUle : U ≤ Ex := hUle
+  replace hmin : ∀ E, E ≤ Ex → Ex ≤ E := @hmin
+  -- We also repackage the Engel subalgebra `engel K x`
+  -- as Lie submodule `E` of `L` over the Lie algebra `U`.
   let E : LieSubmodule K U L :=
-  { engel K (x : L) with
-    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K (x : L)).lie_mem (hUx hu) hy }
+  { engel K x with
+    lie_mem := by rintro ⟨u, hu⟩ y hy; exact (engel K x).lie_mem (hUle hu) hy }
   -- We may and do assume that `x ≠ 0`, since otherwise the statement is trivial.
   obtain rfl|hx₀ := eq_or_ne x 0
-  · simpa using hmin y
+  · simpa [Ex, Ey] using hmin Ey
   -- We denote by `Q` the quotient `L / E`, and by `r` the dimension of `E`.
   let Q := L ⧸ E
   let r := finrank K E
   -- If `r = finrank K L`, then `E = L`, and the statement is trivial.
   obtain hr|hr : r = finrank K L ∨ r < finrank K L := (Submodule.finrank_le _).eq_or_lt
-  · rw [hmin y]
-    suffices engel K (x : L) = ⊤ by simp_rw [this, le_top]
+  · suffices engel K y ≤ engel K x from hmin Ey this
+    suffices engel K x = ⊤ by simp_rw [this, le_top]
     apply LieSubalgebra.to_submodule_injective
     apply Submodule.eq_top_of_finrank_eq hr
   -- So from now on, we assume that `r < finrank K L`.
+  -- We denote by `x'` and `y'` the elements `x` and `y` viewed as terms of `U`.
+  set x' : U := ⟨x, hxU⟩
+  set y' : U := ⟨y, hyU⟩
   -- Let `u : U` denote `y - x`.
-  let u : U := y - x
+  let u : U := y' - x'
   -- We denote by `χ r` the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `E`. Note that `χ` is polynomial in its argument `r`.
   -- Similarly: `ψ r` is the characteristic polynomial of `⁅r • u + x, _⁆`
   --   viewed as endomorphism of `Q`. Note that `ψ` is polynomial in its argument `r`.
-  let χ : Polynomial (K[X]) := lieCharpoly K E x u
-  let ψ : Polynomial (K[X]) := lieCharpoly K Q x u
+  let χ : Polynomial (K[X]) := lieCharpoly K E x' u
+  let ψ : Polynomial (K[X]) := lieCharpoly K Q x' u
   -- It suffices to show that `χ` is the monomial `X ^ r`.
   suffices χ = X ^ r by
     -- Indeed, by evaluating the coefficients at `1`
@@ -177,9 +180,9 @@ lemma isMinimumOfMinimalOn_engel_of_finrank_le
     exact this ⟨z, hz⟩
   -- To show that `χ = X ^ r`, it suffices to show that all coefficients in degrees `< r` are `0`.
   suffices ∀ i < r, χ.coeff i = 0 by
-    simp_rw [r, ← lieCharpoly_natDegree K E x u] at this ⊢
-    rw [(lieCharpoly_monic K E x u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
-    exact le_natTrailingDegree (lieCharpoly_monic K E x u).ne_zero this
+    simp_rw [r, ← lieCharpoly_natDegree K E x' u] at this ⊢
+    rw [(lieCharpoly_monic K E x' u).eq_X_pow_iff_natDegree_le_natTrailingDegree]
+    exact le_natTrailingDegree (lieCharpoly_monic K E x' u).ne_zero this
   -- Let us consider the `i`-th coefficient of `χ`, for `i < r`.
   intro i hi
   -- We separately consider the case `i = 0`.
@@ -201,15 +204,15 @@ lemma isMinimumOfMinimalOn_engel_of_finrank_le
     rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
       ← constantCoeff_apply, LinearMap.charpoly_constantCoeff_eq_zero_iff]
     -- We consider `z = α • u + x`, and split into the cases `z = 0` and `z ≠ 0`.
-    let z := α • u + x
+    let z := α • u + x'
     obtain hz₀|hz₀ := eq_or_ne z 0
     · -- If `z = 0`, then `⁅α • u + x, x⁆` vanishes and we use our assumption `x ≠ 0`.
-      refine ⟨⟨x, self_mem_engel K (x : L)⟩, ?_, ?_⟩
+      refine ⟨⟨x, self_mem_engel K x⟩, ?_, ?_⟩
       · simpa [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero] using hx₀
       · dsimp only [z] at hz₀
         simp only [coe_bracket_of_module, hz₀, LieHom.map_zero, LinearMap.zero_apply]
     -- If `z ≠ 0`, then `⁅α • u + x, z⁆` vanishes per axiom of Lie algebras
-    refine ⟨⟨z, hUx z.2⟩, ?_, ?_⟩
+    refine ⟨⟨z, hUle z.2⟩, ?_, ?_⟩
     · simpa only [coe_bracket_of_module, ne_eq, Submodule.mk_eq_zero, Subtype.ext_iff] using hz₀
     · show ⁅z, _⁆ = (0 : E)
       ext
@@ -223,7 +226,7 @@ lemma isMinimumOfMinimalOn_engel_of_finrank_le
     -- Suppose that `ψ` in fact has trivial constant coefficient.
     intro H
     -- Then there exists a `z ≠ 0` in `Q` such that `⁅x, z⁆ = 0`.
-    obtain ⟨z, hz0, hxz⟩ : ∃ z : Q, z ≠ 0 ∧ ⁅x, z⁆ = 0 := by
+    obtain ⟨z, hz0, hxz⟩ : ∃ z : Q, z ≠ 0 ∧ ⁅x', z⁆ = 0 := by
       -- Indeed, if the constant coefficient of `ψ` is trivial,
       -- then `0` is a root of the characteristic polynomial of `⁅0 • u + x, _⁆` acting on `Q`,
       -- and hence we find an eigenvector `z` as desired.
@@ -289,11 +292,11 @@ lemma isMinimumOfMinimalOn_engel_of_finrank_le
   rw [← coe_evalRingHom, ← coeff_map, lieCharpoly_map_eval,
     (LinearMap.charpoly_eq_X_pow_iff _).mpr, coeff_X_pow, if_neg hi.ne]
   -- To do so, it suffices to show that the Engel subalgebra of `v = a • u + x` is contained in `E`.
-  let v := α • u + x
-  suffices engel K (v : L) ≤ engel K (x : L) by
+  let v := α • u + x'
+  suffices engel K (v : L) ≤ engel K x by
     -- Indeed, in that case the minimality assumption on `E` implies
     -- that `E` is contained in the Engel subalgebra of `v`.
-    replace this : engel K (x : L) ≤ engel K (v : L) := (hmin v this).ge
+    replace this : engel K x ≤ engel K (v : L) := (hmin ⟨_, v, v.2, rfl⟩ this).ge
     intro z
     -- And so we are done, by the definition of Engel subalgebra.
     simpa only [mem_engel_iff, Subtype.ext_iff, coe_toEndomorphism_pow] using this z.2
@@ -341,17 +344,6 @@ lemma isMinimumOfMinimalOn_engel_of_finrank_le
 
 variable (K L)
 
-lemma engel_le_engel
-    (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
-    (E : {engel K x | x ∈ U}) (hUE : U ≤ E) (hE : IsMin E) :
-    IsBot E := by
-  rcases E with ⟨_, x, hxU, rfl⟩
-  rintro ⟨_, y, hyU, rfl⟩
-  refine isMinimumOfMinimalOn_engel_of_finrank_le hLK U ⟨x, hxU⟩ hUE ?_ ⟨y, hyU⟩
-  intro z hz
-  apply le_antisymm hz
-  exact @hE ⟨_, ⟨z, z.2, rfl⟩⟩ hz
-
 lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K) :
     ∃ x : L, IsCartanSubalgebra (engel K x) := by
   obtain ⟨x, hx⟩ := exists_isRegular_of_finrank_le_card K L h
@@ -359,12 +351,14 @@ lemma exists_isCartanSubalgebra_engel_of_finrank_le_card (h : finrank K L ≤ #K
   refine ⟨?_, normalizer_engel _ _⟩
   apply isNilpotent_of_forall_le_engel
   intro y hy
-  apply isMinimumOfMinimalOn_engel_of_finrank_le
-    h (engel K x) ⟨x, self_mem_engel _ _⟩ (le_refl (engel K x)) _ ⟨y, hy⟩
-  rintro ⟨y, hy⟩ hyx
+  set Ex : {engel K z | z ∈ engel K x} := ⟨engel K x, x, self_mem_engel _ _, rfl⟩
+  suffices IsBot Ex from @this ⟨engel K y, y, hy, rfl⟩
+  apply engel_isBot_of_isMin h (engel K x) Ex le_rfl
+  rintro ⟨_, y, hy, rfl⟩ hyx
   suffices finrank K (engel K x) ≤ finrank K (engel K y) by
+    suffices engel K y = engel K x from this.ge
     apply LieSubalgebra.to_submodule_injective
-    apply eq_of_le_of_finrank_le hyx this
+    exact eq_of_le_of_finrank_le hyx this
   rw [(isRegular_iff_finrank_engel_eq_rank K x).mp hx]
   apply rank_le_finrank_engel
 
