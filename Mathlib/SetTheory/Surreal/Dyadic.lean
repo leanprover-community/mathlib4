@@ -134,7 +134,8 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
       · rintro ⟨⟩
       rintro ⟨⟩
       apply lf_of_moveRight_le
-      swap; exact Sum.inl default
+      swap
+      · exact Sum.inl default
       calc
         powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
           add_le_add_left (powHalf_succ_le_powHalf _) _

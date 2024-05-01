@@ -592,14 +592,14 @@ theorem get_cyclicPermutations (l : List α) (n : Fin (length (cyclicPermutation
 #align list.nth_le_cyclic_permutations List.get_cyclicPermutations
 
 @[simp]
-theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
-  have h : 0 < length (cyclicPermutations l) := length_pos_of_ne_nil (cyclicPermutations_ne_nil _)
-  simp_rw [← get_zero h, get_cyclicPermutations, rotate_zero]
-
-@[simp]
 theorem head_cyclicPermutations (l : List α) :
     (cyclicPermutations l).head (cyclicPermutations_ne_nil l) = l := by
-  rw [← Option.some_inj, ← head?_eq_head, head?_cyclicPermutations]
+  have h : 0 < length (cyclicPermutations l) := length_pos_of_ne_nil (cyclicPermutations_ne_nil _)
+  rw [← get_mk_zero h, get_cyclicPermutations, Fin.val_mk, rotate_zero]
+
+@[simp]
+theorem head?_cyclicPermutations (l : List α) : (cyclicPermutations l).head? = l := by
+  rw [head?_eq_head, head_cyclicPermutations]
 
 theorem cyclicPermutations_injective : Function.Injective (@cyclicPermutations α) := fun l l' h ↦ by
   simpa using congr_arg head? h
