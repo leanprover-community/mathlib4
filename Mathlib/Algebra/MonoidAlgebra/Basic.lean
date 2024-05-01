@@ -162,16 +162,20 @@ section Mul
 
 variable [Semiring k] [Mul G]
 
+/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+it trying to unify two things that are different. -/
+@[irreducible] def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
+  f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
+
 /-- The product of `f g : MonoidAlgebra k G` is the finitely supported function
   whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
   such that `x * y = a`. (Think of the group ring of a group.) -/
-instance mul : Mul (MonoidAlgebra k G) :=
-  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)⟩
-#align monoid_algebra.has_mul MonoidAlgebra.mul
+instance instMul : Mul (MonoidAlgebra k G) := ⟨MonoidAlgebra.mul'⟩
+#align monoid_algebra.has_mul MonoidAlgebra.instMul
 
 theorem mul_def {f g : MonoidAlgebra k G} :
-    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) :=
-  rfl
+    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂) := by
+  with_unfolding_all rfl
 #align monoid_algebra.mul_def MonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring (MonoidAlgebra k G) :=
@@ -449,8 +453,9 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
 
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
-    single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) :=
-  (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
+    single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) := by
+  rw [mul_def]
+  exact (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
     (sum_single_index (by rw [mul_zero, single_zero]))
 #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
@@ -1298,12 +1303,12 @@ variable [Semiring k] [Add G]
   such that `x + y = a`. (Think of the product of multivariate
   polynomials where `α` is the additive monoid of monomial exponents.) -/
 instance hasMul : Mul k[G] :=
-  ⟨fun f g => f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂)⟩
+  ⟨fun f g => MonoidAlgebra.mul' (G := Multiplicative G) f g⟩
 #align add_monoid_algebra.has_mul AddMonoidAlgebra.hasMul
 
 theorem mul_def {f g : k[G]} :
     f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
-  rfl
+  MonoidAlgebra.mul_def (G := Multiplicative G)
 #align add_monoid_algebra.mul_def AddMonoidAlgebra.mul_def
 
 instance nonUnitalNonAssocSemiring : NonUnitalNonAssocSemiring k[G] :=

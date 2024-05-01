@@ -68,11 +68,12 @@ def homOfLE {x y : X} (h : x ≤ y) : x ⟶ y :=
   ULift.up (PLift.up h)
 #align category_theory.hom_of_le CategoryTheory.homOfLE
 
-alias _root_.LE.le.hom := homOfLE
+@[inherit_doc homOfLE]
+abbrev _root_.LE.le.hom := @homOfLE
 #align has_le.le.hom LE.le.hom
 
 @[simp]
-theorem homOfLE_refl {x : X} : (le_refl x).hom = 𝟙 x :=
+theorem homOfLE_refl {x : X} (h : x ≤ x) : h.hom = 𝟙 x :=
   rfl
 #align category_theory.hom_of_le_refl CategoryTheory.homOfLE_refl
 
@@ -88,7 +89,8 @@ theorem leOfHom {x y : X} (h : x ⟶ y) : x ≤ y :=
   h.down.down
 #align category_theory.le_of_hom CategoryTheory.leOfHom
 
-alias _root_.Quiver.Hom.le := leOfHom
+@[nolint defLemma, inherit_doc leOfHom]
+abbrev _root_.Quiver.Hom.le := @leOfHom
 #align quiver.hom.le Quiver.Hom.le
 
 -- Porting note: why does this lemma exist? With proof irrelevance, we don't need to simplify proofs
@@ -145,7 +147,7 @@ theorem Monotone.functor_obj {f : X → Y} (h : Monotone f) : h.functor.obj = f 
 
 -- Faithfulness is automatic because preorder categories are thin
 instance (f : X ↪o Y) : f.monotone.functor.Full where
-  preimage {x y} h := homOfLE (f.map_rel_iff.1 h.le)
+  map_surjective h := ⟨homOfLE (f.map_rel_iff.1 h.le), rfl⟩
 
 end
 

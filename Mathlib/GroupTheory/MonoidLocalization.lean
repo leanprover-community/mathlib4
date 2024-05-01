@@ -961,7 +961,7 @@ noncomputable def lift : N →* P where
     dsimp only
     rw [mul_inv_left hg, ← mul_assoc, ← mul_assoc, mul_inv_right hg, mul_comm _ (g (f.sec y).1), ←
       mul_assoc, ← mul_assoc, mul_inv_right hg]
-    repeat' rw [← g.map_mul]
+    repeat rw [← g.map_mul]
     exact f.eq_of_eq hg (by simp_rw [f.toMap.map_mul, sec_spec']; ac_rfl)
 #align submonoid.localization_map.lift Submonoid.LocalizationMap.lift
 #align add_submonoid.localization_map.lift AddSubmonoid.LocalizationMap.lift
@@ -1192,9 +1192,9 @@ theorem map_comp : (f.map hy k).comp f.toMap = k.toMap.comp g :=
 @[to_additive]
 theorem map_mk' (x) (y : S) : f.map hy k (f.mk' x y) = k.mk' (g x) ⟨g y, hy y⟩ := by
   rw [map, lift_mk', mul_inv_left]
-  · show k.toMap (g x) = k.toMap (g y) * _
-    rw [mul_mk'_eq_mk'_of_mul]
-    exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
+  show k.toMap (g x) = k.toMap (g y) * _
+  rw [mul_mk'_eq_mk'_of_mul]
+  exact (k.mk'_mul_cancel_left (g x) ⟨g y, hy y⟩).symm
 #align submonoid.localization_map.map_mk' Submonoid.LocalizationMap.map_mk'
 #align add_submonoid.localization_map.map_mk' AddSubmonoid.LocalizationMap.map_mk'
 
@@ -2099,9 +2099,10 @@ instance partialOrder : PartialOrder (Localization s) where
       rwa [mul_left_comm, mul_left_comm (b.2 : α), mul_le_mul_iff_left]
   le_antisymm a b := by
     induction' a using Localization.rec with a₁ a₂
-    induction' b using Localization.rec with b₁ b₂
-    simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
-    exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
+    on_goal 1 =>
+      induction' b using Localization.rec with b₁ b₂
+      · simp_rw [mk_le_mk, mk_eq_mk_iff, r_iff_exists]
+        exact fun hab hba => ⟨1, by rw [hab.antisymm hba]⟩
     all_goals rfl
   lt_iff_le_not_le a b := Localization.induction_on₂ a b fun a b => lt_iff_le_not_le
 

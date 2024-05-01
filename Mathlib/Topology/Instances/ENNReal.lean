@@ -647,8 +647,8 @@ theorem finset_sum_iSup_nat {α} {ι} [SemilatticeSup ι] {s : Finset α} {f : �
 theorem mul_iSup {ι : Sort*} {f : ι → ℝ≥0∞} {a : ℝ≥0∞} : a * iSup f = ⨆ i, a * f i := by
   by_cases hf : ∀ i, f i = 0
   · obtain rfl : f = fun _ => 0
-    exact funext hf
-    simp only [iSup_zero_eq_zero, mul_zero]
+    · exact funext hf
+    · simp only [iSup_zero_eq_zero, mul_zero]
   · refine' (monotone_id.const_mul' _).map_iSup_of_continuousAt _ (mul_zero a)
     refine' ENNReal.Tendsto.const_mul tendsto_id (Or.inl _)
     exact mt iSup_eq_zero.1 hf
@@ -1202,8 +1202,8 @@ theorem indicator_summable {f : α → ℝ≥0} (hf : Summable f) (s : Set α) :
     Summable (s.indicator f) := by
   refine' NNReal.summable_of_le (fun a => le_trans (le_of_eq (s.indicator_apply f a)) _) hf
   split_ifs
-  exact le_refl (f a)
-  exact zero_le_coe
+  · exact le_refl (f a)
+  · exact zero_le_coe
 #align nnreal.indicator_summable NNReal.indicator_summable
 
 theorem tsum_indicator_ne_zero {f : α → ℝ≥0} (hf : Summable f) {s : Set α} (h : ∃ a ∈ s, f a ≠ 0) :
@@ -1454,18 +1454,18 @@ by a summable series of `NNReal`s, then the original sequence is a Cauchy sequen
 theorem cauchySeq_of_edist_le_of_summable [PseudoEMetricSpace α] {f : ℕ → α} (d : ℕ → ℝ≥0)
     (hf : ∀ n, edist (f n) (f n.succ) ≤ d n) (hd : Summable d) : CauchySeq f := by
   refine EMetric.cauchySeq_iff_NNReal.2 fun ε εpos ↦ ?_
-  -- Actually we need partial sums of `d` to be a Cauchy sequence
+  -- Actually we need partial sums of `d` to be a Cauchy sequence.
   replace hd : CauchySeq fun n : ℕ ↦ ∑ x in Finset.range n, d x :=
     let ⟨_, H⟩ := hd
     H.tendsto_sum_nat.cauchySeq
-  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence
+  -- Now we take the same `N` as in one of the definitions of a Cauchy sequence.
   refine (Metric.cauchySeq_iff'.1 hd ε (NNReal.coe_pos.2 εpos)).imp fun N hN n hn ↦ ?_
   specialize hN n hn
-  -- We simplify the known inequality
+  -- We simplify the known inequality.
   rw [dist_nndist, NNReal.nndist_eq, ← Finset.sum_range_add_sum_Ico _ hn, add_tsub_cancel_left,
     NNReal.coe_lt_coe, max_lt_iff] at hN
   rw [edist_comm]
-  -- Then use `hf` to simplify the goal to the same form
+  -- Then use `hf` to simplify the goal to the same form.
   refine lt_of_le_of_lt (edist_le_Ico_sum_of_edist_le hn fun _ _ ↦ hf _) ?_
   exact mod_cast hN.1
 #align cauchy_seq_of_edist_le_of_summable cauchySeq_of_edist_le_of_summable

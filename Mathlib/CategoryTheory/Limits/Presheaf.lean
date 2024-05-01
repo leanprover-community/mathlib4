@@ -74,9 +74,9 @@ embedding.
 -/
 def restrictedYonedaYoneda : restrictedYoneda (yoneda : C ⥤ Cᵒᵖ ⥤ Type u₁) ≅ 𝟭 _ :=
   NatIso.ofComponents fun P =>
-    NatIso.ofComponents (fun X => yonedaSectionsSmall X.unop _) @ fun X Y f =>
+    NatIso.ofComponents (fun X => Equiv.toIso yonedaEquiv) @ fun X Y f =>
       funext fun x => by
-        dsimp
+        dsimp [yonedaEquiv]
         have : x.app X (CategoryStruct.id (Opposite.unop X)) =
             (x.app X (𝟙 (Opposite.unop X))) := rfl
         rw [this]
@@ -245,8 +245,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     hom_inv_id := by
       erw [colimit.pre_pre ((CategoryOfElements.π X).leftOp ⋙ A) eq.inverse]
       trans colimit.pre ((CategoryOfElements.π X).leftOp ⋙ A) (𝟭 _)
-      congr
-      · exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
+      · congr
+        exact congr_arg Functor.op (CategoryOfElements.from_toCostructuredArrow_eq X)
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
@@ -254,8 +254,8 @@ noncomputable def extendAlongYonedaIsoKanApp (X) :
     inv_hom_id := by
       erw [colimit.pre_pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) eq.functor]
       trans colimit.pre (Lan.diagram (yoneda : C ⥤ _ ⥤ Type u₁) A X) (𝟭 _)
-      congr
-      · exact CategoryOfElements.to_fromCostructuredArrow_eq X
+      · congr
+        exact CategoryOfElements.to_fromCostructuredArrow_eq X
       · ext
         simp only [colimit.ι_pre]
         erw [Category.comp_id]
@@ -338,7 +338,7 @@ set_option linter.uppercaseLean3 false in
 -- Marking this as a simp lemma seems to make things more awkward.
 /-- An explicit formula for the legs of the cocone `coconeOfRepresentable`. -/
 theorem coconeOfRepresentable_ι_app (P : Cᵒᵖ ⥤ Type u₁) (j : P.Elementsᵒᵖ) :
-    (coconeOfRepresentable P).ι.app j = (yonedaSectionsSmall _ _).inv j.unop.2 :=
+    (coconeOfRepresentable P).ι.app j = yonedaEquiv.symm j.unop.2 :=
   colimit.ι_desc _ _
 #align category_theory.cocone_of_representable_ι_app CategoryTheory.coconeOfRepresentable_ι_app
 
@@ -474,7 +474,7 @@ def isColimitTautologicalCocone : IsColimit (tautologicalCocone P) where
     obtain ⟨t, rfl⟩ := yonedaEquiv.surjective x
     dsimp
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-    erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp']
+    erw [Equiv.symm_apply_apply, ← yonedaEquiv_comp]
     exact congr_arg _ (h (CostructuredArrow.mk t))
 
 variable {I : Type v₁} [SmallCategory I] (F : I ⥤ C)
