@@ -3,7 +3,6 @@ Copyright (c) 2023 Gareth Ma. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Gareth Ma
 -/
-import Mathlib.Data.Real.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
 
