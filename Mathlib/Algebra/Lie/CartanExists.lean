@@ -43,13 +43,13 @@ open FiniteDimensional LieSubalgebra Module.Free Polynomial
 
 variable (K)
 
-namespace engel_le_engel
+namespace engel_isBot_of_isMin
 
 /-!
-## Implementation details for the proof of `LieAlgebra.engel_le_engel`
+## Implementation details for the proof of `LieAlgebra.engel_isBot_of_isMin`
 
 In this section we provide some auxiliary definitions and lemmas
-that are used in the proof of `LieAlgebra.engel_le_engel`,
+that are used in the proof of `LieAlgebra.engel_isBot_of_isMin`,
 which is the following statement:
 
 Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
@@ -109,7 +109,7 @@ lemma lieCharpoly_coeff_natDegree (i j : ℕ) (hij : i + j = finrank R M) :
     simp only [natDegree_X, le_rfl]
   · simp only [natDegree_C, zero_le]
 
-end engel_le_engel
+end engel_isBot_of_isMin
 
 end CommRing
 
@@ -117,7 +117,7 @@ section Field
 
 variable {K L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
 
-open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_le_engel
+open FiniteDimensional LieSubalgebra LieSubmodule Polynomial Cardinal LieModule engel_isBot_of_isMin
 
 /-- Let `L` be a Lie algebra of dimension `n` over a field `K` with at least `n` elements.
 Given a Lie subalgebra `U` of `L`, and an element `x ∈ U` such that `U ≤ engel K x`.
