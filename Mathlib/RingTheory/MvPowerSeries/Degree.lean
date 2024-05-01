@@ -37,18 +37,67 @@ def HasBoundedDegree (φ : MvPowerSeries σ R) : Prop :=
 noncomputable def degree (φ : MvPowerSeries σ R) : WithBot (WithTop ℕ) :=
   sInf { n | HasDegreeBound n φ }
 
+
 theorem le_degree {s : σ →₀ ℕ} (h : φ s ≠ 0) : (s.sum fun _ ↦ id) ≤ degree φ := by
-  sorry
+  simp only [Nat.cast_finsupp_sum, id_eq, degree, le_sInf_iff, Set.mem_setOf_eq]
+  intro b hb
+  simp only [HasDegreeBound, ne_eq, Nat.cast_finsupp_sum, id_eq] at hb
+  apply hb
+  exact h
 
 theorem totalDegree_le_of_support_subset (h : ∀ s, φ s ≠ 0 → ψ s ≠ 0) :
     degree φ ≤ degree ψ :=
   sorry
 
 @[simp]
-theorem degree_zero : (0 : MvPowerSeries σ R).degree = ⊥ := by sorry
+theorem degree_zero : (0 : MvPowerSeries σ R).degree = ⊥ := by
+  simp only [degree, HasDegreeBound, map_zero, ne_eq, not_true_eq_false, Nat.cast_finsupp_sum,
+    id_eq, IsEmpty.forall_iff, forall_const, Set.setOf_true, sInf_univ]
 
 @[simp]
-theorem degree_C (r : R) : (C σ R r : MvPowerSeries σ R).degree = 0 := by sorry
+theorem degree_eq_bot_iff_zero : φ.degree = ⊥ ↔ φ = 0 := by
+  constructor
+  · intro hbot
+    simp [degree] at hbot
+    have : HasDegreeBound ⊥ φ := by
+      sorry
+
+    sorry
+  · sorry
+
+@[simp]
+theorem degree_lt_zero_iff_zero : φ.degree < 0 ↔ φ = 0 := sorry
+
+@[simp]
+theorem degree_C (r : R) (hr : r ≠ 0) : (C σ R r : MvPowerSeries σ R).degree = 0 := by
+  rw [le_antisymm_iff]
+  constructor
+  · apply sInf_le
+    simp only [HasDegreeBound, ne_eq, Nat.cast_finsupp_sum, id_eq, Set.mem_setOf_eq]
+    intro s hs
+    simp only [coeff_C, ite_eq_right_iff, not_forall, exists_prop] at hs
+    rw [hs.1]
+    simp only [Finsupp.sum_zero_index, le_refl]
+  · have (s : R) : 0 ≤ degree ((C σ R) s) ↔ s ≠ 0 := by
+      constructor
+      · intro hC
+        intro hs
+        have : (C σ R) s = (0 : MvPowerSeries σ R) := by
+          rw [hs]
+          simp only [map_zero]
+        rw [← degree_lt_zero_iff_zero] at this
+        have := lt_of_lt_of_le' this hC
+        contradiction
+      · intro hs
+        by_contra hC
+        simp only [not_le, degree_lt_zero_iff_zero] at hC
+        have : coeff R 0 (C σ R s) = s := by simp only [coeff_C, ↓reduceIte]
+        rw [hC] at this
+        simp at this
+        symm at this
+        contradiction
+    rw [this]
+    exact hr
 
 @[simp]
 theorem degree_one : (1 : MvPowerSeries σ R).degree = 0 :=
