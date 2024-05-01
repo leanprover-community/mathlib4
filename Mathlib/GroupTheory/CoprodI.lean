@@ -489,7 +489,7 @@ theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     · subst k
       by_cases hij : j = i <;> simp_all
     · by_cases hik : i = k
-      · subst i; simp_all [eq_comm, and_comm, or_comm]
+      · subst i; simp_all [@eq_comm _ m g, @eq_comm _ k j, or_comm]
       · simp [hik, Ne.symm hik]
 
 theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
