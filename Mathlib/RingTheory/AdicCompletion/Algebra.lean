@@ -68,6 +68,14 @@ instance : CommRing (AdicCompletion I R) :=
 instance : Algebra R (AdicCompletion I R) :=
   inferInstanceAs <| Algebra R (subalgebra I)
 
+@[simp]
+theorem val_one (n : ℕ) : (1 : AdicCompletion I R).val n = 1 :=
+  rfl
+
+@[simp]
+theorem val_mul (n : ℕ) (x y : AdicCompletion I R) : (x * y).val n = x.val n * y.val n :=
+  rfl
+
 /-- The canonical algebra map from the adic completion to `R ⧸ I ^ n`.
 
 This is `AdicCompletion.eval` postcomposed with the algebra isomorphism
@@ -101,6 +109,14 @@ instance : CommRing (AdicCauchySequence I R) :=
 instance : Algebra R (AdicCauchySequence I R) :=
   inferInstanceAs <| Algebra R (AdicCauchySequence.subalgebra I)
 
+@[simp]
+theorem one_apply (n : ℕ) : (1 : AdicCauchySequence I R) n = 1 :=
+  rfl
+
+@[simp]
+theorem mul_apply (n : ℕ) (f g : AdicCauchySequence I R) : (f * g) n = f n * g n :=
+  rfl
+
 /-- The canonical algebra map from adic cauchy sequences to the adic completion. -/
 @[simps!]
 def mkₐ : AdicCauchySequence I R →ₐ[R] AdicCompletion I R :=
@@ -117,34 +133,68 @@ theorem Ideal.mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) 
   rw [h, ← Ideal.Quotient.mk_eq_mk, ← Ideal.Quotient.mk_eq_mk]
   exact (r.property hmn).symm
 
-theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R) (x : AdicCauchySequence I M) :
+theorem smul_mk {m n : ℕ} (hmn : m ≤ n) (r : AdicCauchySequence I R)
+    (x : AdicCauchySequence I M) :
     r.val n • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val n) =
       r.val m • Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val m) := by
-  rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk, mk_eq_mk I M hmn,
-    Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk, Submodule.Quotient.mk_smul]
+  rw [← Submodule.Quotient.mk_smul, ← Module.Quotient.mk_smul_mk,
+    AdicCauchySequence.mk_eq_mk hmn, Ideal.mk_eq_mk I hmn, Module.Quotient.mk_smul_mk,
+    Submodule.Quotient.mk_smul]
+
+/-- Scalar multiplication of `R ⧸ (I • ⊤)` on `M ⧸ (I • ⊤)`. Used to have good
+definitional behaviour for the module instance on adic completions -/
+instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
+  smul r x :=
+    Quotient.liftOn r (· • x) fun b₁ b₂ (h : Setoid.Rel _ b₁ b₂) ↦ by
+      refine Quotient.inductionOn' x (fun x ↦ ?_)
+      have h : b₁ - b₂ ∈ (I : Submodule R R) := by
+        rwa [show I = I • ⊤ by simp, ← Submodule.quotientRel_r_def]
+      rw [← sub_eq_zero, ← sub_smul, Submodule.Quotient.mk''_eq_mk,
+        ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
+      exact Submodule.smul_mem_smul h mem_top
+
+@[simp]
+theorem mk_smul_mk (r : R) (x : M) :
+    Ideal.Quotient.mk (I • ⊤) r • Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x
+      = r • Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x :=
+  rfl
+
+instance : Module (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) :=
+  Function.Surjective.moduleLeft (Ideal.Quotient.mk (I • ⊤ : Ideal R))
+    Ideal.Quotient.mk_surjective (fun _ _ ↦ rfl)
+
+instance : IsScalarTower R (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)) where
+  smul_assoc r s x := by
+    refine Quotient.inductionOn' s (fun s ↦ ?_)
+    refine Quotient.inductionOn' x (fun x ↦ ?_)
+    simp only [Submodule.Quotient.mk''_eq_mk]
+    rw [← Submodule.Quotient.mk_smul, Ideal.Quotient.mk_eq_mk, mk_smul_mk, smul_assoc]
+    rfl
 
 instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
-    val := fun n ↦ evalₐ I n r • eval I M n x
+    val := fun n ↦ eval I R n r • eval I M n x
     property := fun {m n} hmn ↦ by
       apply induction_on I R r (fun r ↦ ?_)
       apply induction_on I M x (fun x ↦ ?_)
-      simp [Module.Quotient.mk_smul_mk, smul_mk I hmn]
+      simp only [coe_eval, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk,
+        mk_smul_mk, LinearMapClass.map_smul, transitionMap_mk]
+      rw [smul_mk I hmn]
   }
 
 @[simp]
 theorem smul_eval (n : ℕ) (r : AdicCompletion I R) (x : AdicCompletion I M) :
-    (r • x).val n = evalₐ I n r • x.val n :=
+    (r • x).val n = r.val n • x.val n :=
   rfl
 
 /-- `AdicCompletion I M` is naturally an `AdicCompletion I R` module. -/
 instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
   one_smul b := by
     ext n
-    rw [smul_eval, map_one, one_smul]
+    simp only [smul_eval, val_one, one_smul]
   mul_smul r s x := by
     ext n
-    simp only [smul_eval, map_mul, mul_smul]
+    simp only [smul_eval, val_mul, mul_smul]
   smul_zero r := by
     ext n
     rw [smul_eval, val_zero, smul_zero]
@@ -161,12 +211,9 @@ instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
   smul_assoc r s x := by
     ext n
-    rw [smul_eval, val_smul, smul_eval, map_smul, smul_assoc]
+    rw [smul_eval, val_smul, val_smul, smul_eval, smul_assoc]
 
-/-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances. Both agree. -/
-theorem smul_eq_mul (r s : AdicCompletion I R) : r • s = r * s := by
-  apply induction_on I R r (fun r ↦ ?_)
-  apply induction_on I R s (fun x ↦ ?_)
-  ext n
-  simp only [smul_eval, evalₐ_mk, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk]
+/-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
+Both agree definitionally. -/
+theorem smul_eq_mul (r s : AdicCompletion I R) : r • s = r * s :=
   rfl

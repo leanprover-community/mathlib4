@@ -1695,9 +1695,12 @@ instance hasPullback_of_right_factors_mono (f : X ⟶ Z) : HasPullback i (f ≫ 
 
 instance pullback_snd_iso_of_right_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.snd : pullback i (f ≫ i) ⟶ _) := by
-  convert (congrArg IsIso (show _ ≫ pullback.snd = _ from
-    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right)).mp
-    inferInstance;
+  -- Adaptation note: nightly-testing 2024-04-01
+  -- this could not be placed directly in the `show from` without `dsimp`
+  have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono (𝟙 _) f i⟩ WalkingCospan.right
+  dsimp only [cospan_right, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+    Functor.const_obj_obj, cospan_one] at this
+  convert (congrArg IsIso (show _ ≫ pullback.snd = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_right_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_right_factors_mono
@@ -1771,9 +1774,12 @@ instance hasPullback_of_left_factors_mono (f : X ⟶ Z) : HasPullback (f ≫ i) 
 
 instance pullback_snd_iso_of_left_factors_mono (f : X ⟶ Z) :
     IsIso (pullback.fst : pullback (f ≫ i) i ⟶ _) := by
-  convert (congrArg IsIso (show _ ≫ pullback.fst = _ from
-    limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left)).mp
-    inferInstance;
+  -- Adaptation note: nightly-testing 2024-04-01
+  -- this could not be placed directly in the `show from` without `dsimp`
+  have := limit.isoLimitCone_hom_π ⟨_, pullbackIsPullbackOfCompMono f (𝟙 _) i⟩ WalkingCospan.left
+  dsimp only [cospan_left, id_eq, eq_mpr_eq_cast, PullbackCone.mk_pt, PullbackCone.mk_π_app,
+    Functor.const_obj_obj, cospan_one] at this
+  convert (congrArg IsIso (show _ ≫ pullback.fst = _ from this)).mp inferInstance
   · exact (Category.id_comp _).symm
   · exact (Category.id_comp _).symm
 #align category_theory.limits.pullback_snd_iso_of_left_factors_mono CategoryTheory.Limits.pullback_snd_iso_of_left_factors_mono

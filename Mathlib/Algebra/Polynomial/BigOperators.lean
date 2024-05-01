@@ -150,7 +150,7 @@ theorem leadingCoeff_multiset_prod' (h : (t.map leadingCoeff).prod ≠ 0) :
     simp only [ne_eq]
     apply right_ne_zero_of_mul h
   · rw [ih]
-    exact h
+    · exact h
     simp only [ne_eq, not_false_eq_true]
     apply right_ne_zero_of_mul h
 #align polynomial.leading_coeff_multiset_prod' Polynomial.leadingCoeff_multiset_prod'

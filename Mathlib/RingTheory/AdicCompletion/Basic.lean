@@ -280,7 +280,8 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
 
-@[simp]
+/- No `simp` attribute, since it cases `simp` unification timeouts when considering
+the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl
 
@@ -395,6 +396,12 @@ theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
 theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
   ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
 
+/-- The defining property of an adic cauchy sequence unwrapped. -/
+theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
+    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
+      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
+  (f.property hmn).symm
+
 end AdicCauchySequence
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
@@ -410,12 +417,6 @@ theorem isAdicCauchy_iff (f : ℕ → M) :
         trans
         · exact ih
         · refine SModEq.mono (smul_mono (Ideal.pow_le_pow_right hmn) (by rfl)) (h n)
-
-/-- The defining property of an adic cauchy sequence unwrapped. -/
-theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (x : AdicCauchySequence I M) :
-    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val n) =
-      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (x.val m) :=
-  (x.property hmn).symm
 
 /-- Construct `I`-adic cauchy sequence from sequence satisfying the successive cauchy condition. -/
 @[simps]

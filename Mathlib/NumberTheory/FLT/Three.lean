@@ -97,7 +97,8 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   rw [fermatLastTheoremFor_iff_int]
   refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦?_)
   by_cases h1 : 3 ∣ a * b * c
-  swap; exact fermatLastTheoremThree_case_1 h1 hF
+  swap
+  · exact fermatLastTheoremThree_case_1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with ((h3a | h3b) | h3c)

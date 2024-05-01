@@ -394,7 +394,7 @@ theorem rcons_inj {i} : Function.Injective (rcons : Pair M i → Word M) := by
 theorem mem_rcons_iff {i j : ι} (p : Pair M i) (m : M j) :
     ⟨_, m⟩ ∈ (rcons p).toList ↔ ⟨_, m⟩ ∈ p.tail.toList ∨
       m ≠ 1 ∧ (∃ h : i = j, m = h ▸ p.head) := by
-  simp only [rcons._eq_1, cons._eq_1, ne_eq]
+  simp only [rcons, cons, ne_eq]
   by_cases hij : i = j
   · subst i
     by_cases hm : m = p.head
@@ -489,7 +489,7 @@ theorem mem_equivPair_tail_iff {i j : ι} {w : Word M} (m : M i) :
     · subst k
       by_cases hij : j = i <;> simp_all
     · by_cases hik : i = k
-      · subst i; simp_all [eq_comm, and_comm, or_comm]
+      · subst i; simp_all [@eq_comm _ m g, @eq_comm _ k j, or_comm]
       · simp [hik, Ne.symm hik]
 
 theorem mem_of_mem_equivPair_tail {i j : ι} {w : Word M} (m : M i) :
