@@ -143,7 +143,7 @@ def isBinaryCoproductOfIsInitialIsPushout (F : Discrete WalkingPair ⥤ C) (c : 
     apply hc.hom_ext
     rintro (_ | (_ | _)) <;>
       simp only [PushoutCocone.mk_ι_app_zero, PushoutCocone.mk_ι_app, Category.assoc]
-    congr 1
+    on_goal 1 => congr 1
     exacts [(hc.fac c' WalkingSpan.left).symm, (hc.fac c' WalkingSpan.left).symm,
       (hc.fac c' WalkingSpan.right).symm]
 #align is_binary_coproduct_of_is_initial_is_pushout isBinaryCoproductOfIsInitialIsPushout
