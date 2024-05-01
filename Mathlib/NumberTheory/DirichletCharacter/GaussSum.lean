@@ -31,7 +31,7 @@ lemma gaussSum_aux_of_mulShift (χ : DirichletCharacter R N) {d : ℕ}
     ZMod.intCast_eq_intCast_iff_dvd_sub] at hu
 
 /-- If `gaussSum χ e ≠ 0`, and `d` is such that `e.mulShift d = 1`, then `χ` must factor through
-`d`. (This will be used to show that Gauss sums vanish when `χ` is primitive and `e` is not.)-/
+`d`. (This will be used to show that Gauss sums vanish when `χ` is primitive and `e` is not.) -/
 lemma factorsThrough_of_gaussSum_ne_zero [IsDomain R] {χ : DirichletCharacter R N} {d : ℕ}
     (hd : d ∣ N) (he : e.mulShift d = 1) (h_ne : gaussSum χ e ≠ 0) :
     χ.FactorsThrough d := by
@@ -57,21 +57,6 @@ lemma gaussSum_mulShift_of_isPrimitive [IsDomain R] {χ : DirichletCharacter R N
     gaussSum χ (e.mulShift a) = χ⁻¹ a * gaussSum χ e := by
   by_cases ha : IsUnit a
   · conv_rhs => rw [← gaussSum_mulShift χ e ha.unit]
-    have : IsUnit (χ a) := by rw [← ha.unit_spec, ← MulChar.coe_toUnitHom]; apply Units.isUnit
-    rw [IsUnit.unit_spec, MulChar.inv_apply_eq_inv, Ring.inverse_mul_cancel_left _ _ this]
+    rw [IsUnit.unit_spec, MulChar.inv_apply_eq_inv, Ring.inverse_mul_cancel_left _ _ (ha.map χ)]
   · rw [MulChar.map_nonunit _ ha, zero_mul]
-    apply gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive _ hχ
-    -- this is just showing `e.mulShift a` is not primitive if `a` is non-unit -- separate?
-    simp only [IsPrimitive, not_forall]
-    obtain ⟨d, ⟨b, hb⟩, u, hu, rfl⟩ := a.eq_unit_mul_divisor
-    have hd' : d ≠ 1 := by contrapose! ha; rwa [ha, Nat.cast_one, mul_one]
-    refine ⟨b, ?_, ?_⟩
-    · have hb_ne : b ≠ 0 := (N.ne_zero <| mul_zero d ▸ · ▸ hb)
-      have hb_lt : b < N := by
-        refine lt_of_le_of_ne (Nat.le_of_dvd N.pos ⟨d, mul_comm b d ▸ hb⟩) ?_
-        contrapose! hd'
-        simpa only [ne_eq, PNat.ne_zero, not_false_eq_true, right_eq_mul₀] using (hd' ▸ hb :)
-      rw [Ne, ZMod.natCast_zmod_eq_zero_iff_dvd]
-      exact fun h ↦ not_lt_of_le (Nat.le_of_dvd (Nat.pos_iff_ne_zero.mpr hb_ne) h) hb_lt
-    · rw [isNontrivial_iff_ne_trivial, mulShift_mulShift, mul_assoc, ← Nat.cast_mul,
-        ← hb, ZMod.natCast_self, mul_zero, mulShift_zero, not_ne_iff]
+    exact gaussSum_eq_zero_of_isPrimitive_of_not_isPrimitive _ hχ (not_isPrimitive_mulShift e ha)
