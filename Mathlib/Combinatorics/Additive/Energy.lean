@@ -3,8 +3,10 @@ Copyright (c) 2022 Yaël Dillies, Ella Yu. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Ella Yu
 -/
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Fintype.Prod
+import Mathlib.Data.Finset.Pointwise
 
 #align_import combinatorics.additive.energy from "leanprover-community/mathlib"@"509de852e1de55e1efa8eacfa11df0823f26f226"
 
@@ -21,12 +23,7 @@ It's possibly interesting to have
 (whose `card` is `multiplicativeEnergy s t`) as a standalone definition.
 -/
 
-
-section
-
-variable {α : Type*} [PartialOrder α] {x y : α}
-
-end
+open scoped BigOperators Pointwise
 
 variable {α : Type*} [DecidableEq α]
 
@@ -44,6 +41,11 @@ def multiplicativeEnergy (s t : Finset α) : ℕ :=
   (((s ×ˢ s) ×ˢ t ×ˢ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
 #align finset.multiplicative_energy Finset.multiplicativeEnergy
 #align finset.additive_energy Finset.additiveEnergy
+
+notation3:max "Eₘ[" s ", " t "]" => Finset.multiplicativeEnergy s t
+notation3:max "E[" s ", " t "]" => Finset.additiveEnergy s t
+notation3:max "Eₘ[" s "]" => Finset.multiplicativeEnergy s s
+notation3:max "E[" s "]" => Finset.additiveEnergy s s
 
 @[to_additive additiveEnergy_mono]
 theorem multiplicativeEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) :
@@ -119,6 +121,53 @@ theorem multiplicativeEnergy_eq_zero_iff : multiplicativeEnergy s t = 0 ↔ s = 
   simp [← (Nat.zero_le _).not_gt_iff_eq, not_and_or, imp_iff_or_not, or_comm]
 #align finset.multiplicative_energy_eq_zero_iff Finset.multiplicativeEnergy_eq_zero_iff
 #align finset.additive_energy_eq_zero_iff Finset.additive_energy_eq_zero_iff
+
+@[to_additive additiveEnergy_eq_card_filter]
+lemma multiplicativeEnergy_eq_card_filter (s t : Finset α) :
+    Eₘ[s, t] = (((s ×ˢ t) ×ˢ s ×ˢ t).filter fun ((a, b), c, d) ↦ a * b = c * d).card := by
+  refine Finset.card_congr (fun ((a, b), c, d) _ ↦ ((a, c), b, d)) (by aesop) (by aesop)
+    fun ((a, b), c, d) h ↦ ⟨((a, c), b, d), by simpa [and_and_and_comm] using h⟩
+
+@[to_additive additiveEnergy_eq_sum_sq']
+lemma multiplicativeEnergy_eq_sum_sq' (s t : Finset α) :
+    Eₘ[s, t] = ∑ a in s * t, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+  simp_rw [multiplicativeEnergy_eq_card_filter, sq, ← card_product]
+  rw [← card_disjiUnion]
+  -- The `swap`, `ext` and `simp` calls significantly reduce heartbeats
+  swap
+  · simp [Set.PairwiseDisjoint, Set.Pairwise, disjoint_left]
+    aesop
+  · congr
+    ext
+    simp
+    aesop (add unsafe mul_mem_mul)
+
+@[to_additive additiveEnergy_eq_sum_sq]
+lemma multiplicativeEnergy_eq_sum_sq [Fintype α] (s t : Finset α) :
+    Eₘ[s, t] = ∑ a, ((s ×ˢ t).filter fun (x, y) ↦ x * y = a).card ^ 2 := by
+  rw [multiplicativeEnergy_eq_sum_sq']
+  exact Fintype.sum_subset $ by aesop (add simp [filter_eq_empty_iff, mul_mem_mul])
+
+@[to_additive card_sq_le_card_mul_additiveEnergy]
+lemma card_sq_le_card_mul_multiplicativeEnergy (s t u : Finset α) :
+    ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ u).card ^ 2 ≤ u.card * Eₘ[s, t] := by
+  calc
+    _ = (∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card) ^ 2 := by
+        rw [← sum_card_fiberwise_eq_card_filter]
+    _ ≤ u.card * ∑ c in u, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+        simpa using sum_mul_sq_le_sq_mul_sq (R := ℕ) _ 1 _
+    _ ≤ u.card * ∑ c in s * t, ((s ×ˢ t).filter fun (a, b) ↦ a * b = c).card ^ 2 := by
+        refine mul_le_mul_left' (sum_le_sum_of_ne_zero ?_) _
+        aesop (add simp [filter_eq_empty_iff]) (add unsafe mul_mem_mul)
+    _ = u.card * Eₘ[s, t] := by rw [multiplicativeEnergy_eq_sum_sq']
+
+@[to_additive le_card_add_mul_additiveEnergy]
+lemma le_card_add_mul_multiplicativeEnergy (s t : Finset α) :
+    s.card ^ 2 * t.card ^ 2 ≤ (s * t).card * Eₘ[s, t] :=
+  calc
+    _ = ((s ×ˢ t).filter fun (a, b) ↦ a * b ∈ s * t).card ^ 2 := by
+      rw [filter_eq_self.2, card_product, mul_pow]; aesop (add unsafe mul_mem_mul)
+    _ ≤ (s * t).card * Eₘ[s, t] := card_sq_le_card_mul_multiplicativeEnergy _ _ _
 
 end Mul
 
