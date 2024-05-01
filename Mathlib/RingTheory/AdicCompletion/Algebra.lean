@@ -30,17 +30,17 @@ namespace AdicCompletion
 
 attribute [-simp] smul_eq_mul Algebra.id.smul_eq_mul
 
-@[simp]
+@[local simp]
 theorem transitionMap_ideal_mk {m n : ℕ} (hmn : m ≤ n) (x : R) :
     transitionMap I R hmn (Ideal.Quotient.mk (I ^ n • ⊤ : Ideal R) x) =
       Ideal.Quotient.mk (I ^ m • ⊤ : Ideal R) x :=
   rfl
 
-@[simp]
+@[local simp]
 theorem transitionMap_map_one {m n : ℕ} (hmn : m ≤ n) : transitionMap I R hmn 1 = 1 :=
   rfl
 
-@[simp]
+@[local simp]
 theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n • ⊤ : Ideal R)) :
     transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y := by
   refine Quotient.inductionOn' x (fun x ↦ ?_)
@@ -54,7 +54,7 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
 
 /-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
-  Submodule.toSubalgebra (adicCompletion I R)
+  Submodule.toSubalgebra (submodule I R)
     (fun {m n} _ ↦ by simp)
     (fun x y hx hy {m n} hmn ↦ by simp [hx hmn, hy hmn])
 
@@ -85,7 +85,7 @@ theorem evalₐ_mk (n : ℕ) (x : AdicCauchySequence I R) :
 
 /-- `AdicCauchySequence I R` is an `R`-subalgebra of `ℕ → R`. -/
 def AdicCauchySequence.subalgebra : Subalgebra R (ℕ → R) :=
-  Submodule.toSubalgebra (adicCauchySequence I R)
+  Submodule.toSubalgebra (AdicCauchySequence.submodule I R)
     (fun {m n} _ ↦ by simp; rfl)
     (fun x y hx hy {m n} hmn ↦ by
       simp only [Pi.mul_apply]
@@ -127,8 +127,8 @@ instance smul : SMul (AdicCompletion I R) (AdicCompletion I M) where
   smul r x := {
     val := fun n ↦ evalₐ I n r • eval I M n x
     property := fun {m n} hmn ↦ by
-      apply inductionOn I R r (fun r ↦ ?_)
-      apply inductionOn I M x (fun x ↦ ?_)
+      apply induction_on I R r (fun r ↦ ?_)
+      apply induction_on I M x (fun x ↦ ?_)
       simp [Module.Quotient.mk_smul_mk, smul_mk I hmn]
   }
 
@@ -141,33 +141,32 @@ theorem smul_eval (n : ℕ) (r : AdicCompletion I R) (x : AdicCompletion I M) :
 instance module : Module (AdicCompletion I R) (AdicCompletion I M) where
   one_smul b := by
     ext n
-    simp
+    rw [smul_eval, map_one, one_smul]
   mul_smul r s x := by
     ext n
-    simp only [coe_eval, smul_eval, map_mul, mul_smul]
+    simp only [smul_eval, map_mul, mul_smul]
   smul_zero r := by
     ext n
-    simp
+    rw [smul_eval, val_zero, smul_zero]
   smul_add r x y := by
     ext n
-    simp only [coe_eval, smul_eval, map_add]
-    rw [coe_add, Pi.add_apply, smul_add]
+    simp only [smul_eval, val_add, smul_add]
   add_smul r s x := by
     ext n
-    simp only [coe_eval, smul_eval, map_add, add_smul]
+    simp only [coe_eval, smul_eval, map_add, add_smul, val_add]
   zero_smul x := by
     ext n
-    simp
+    simp only [smul_eval, _root_.map_zero, zero_smul, val_zero]
 
 instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
   smul_assoc r s x := by
     ext n
-    simp
+    rw [smul_eval, val_smul, smul_eval, map_smul, smul_assoc]
 
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances. Both agree. -/
 theorem smul_eq_mul (r s : AdicCompletion I R) : r • s = r * s := by
-  apply inductionOn I R r (fun r ↦ ?_)
-  apply inductionOn I R s (fun x ↦ ?_)
+  apply induction_on I R r (fun r ↦ ?_)
+  apply induction_on I R s (fun x ↦ ?_)
   ext n
-  simp
+  simp only [smul_eval, evalₐ_mk, mk_apply_coe, mkQ_apply, Ideal.Quotient.mk_eq_mk]
   rfl
