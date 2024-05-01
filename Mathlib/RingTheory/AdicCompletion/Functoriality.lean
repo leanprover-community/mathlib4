@@ -1,5 +1,5 @@
 /-
-Copyright (c) 2024 Kenny Lau. All rights reserved.
+Copyright (c) 2024 Judith Ludwig, Christian Merten. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Judith Ludwig, Christian Merten
 -/
@@ -93,7 +93,7 @@ theorem AdicCompletion.ext {f g : AdicCompletion I M →ₗ[R] N}
       f (AdicCompletion.mk I M a) = g (AdicCompletion.mk I M a)) :
     f = g := by
   ext x
-  apply inductionOn I M x (fun a ↦ h a)
+  apply induction_on I M x (fun a ↦ h a)
 
 variable (M) in
 @[simp]
@@ -213,13 +213,13 @@ def sumInv : AdicCompletion I (⨁ j, M j) →ₗ[R] (⨁ j, (AdicCompletion I (
 @[simp]
 theorem component_sumInv (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     component R ι _ j (sumInv I M x) = (component R ι _ j).adicCompletion I x := by
-  apply inductionOn I _ x (fun x ↦ ?_)
+  apply induction_on I _ x (fun x ↦ ?_)
   rfl
 
 @[simp]
 theorem sumInv_apply (x : AdicCompletion I (⨁ j, M j)) (j : ι) :
     (sumInv I M x) j = (component R ι _ j).adicCompletion I x := by
-  apply inductionOn I _ x (fun x ↦ ?_)
+  apply induction_on I _ x (fun x ↦ ?_)
   rfl
 
 theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by

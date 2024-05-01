@@ -393,13 +393,6 @@ theorem sub_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g
 theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
   rfl
 
-@[ext]
-theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
-  Subtype.eq <| funext h
-
-theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
-  ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
-
 end AdicCauchySequence
 
 /-- The `I`-adic cauchy condition can be checked on successive `n`.-/
