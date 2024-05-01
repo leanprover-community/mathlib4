@@ -1895,33 +1895,27 @@ theorem diagonal_const_mulVec (x : α) (v : m → α) :
   ext; simp [mulVec_diagonal]
 
 @[simp]
-theorem const_vecMul_diagonal (x : α) (v : m → α) :
+theorem vecMul_diagonal_const (x : α) (v : m → α) :
     v ᵥ* (diagonal fun _ => x) = MulOpposite.op x • v := by
-  ext; simp [vecMul_diagonal, mul_comm]
+  ext; simp [vecMul_diagonal]
 
 @[simp]
-theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v := by
-  change diagonal x *ᵥ v = _
-  simp
+theorem natCast_mulVec (x : ℕ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
 
 @[simp]
-theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v := by
-  change v ᵥ* diagonal x = _
-  simp
+theorem vecMul_natCast (x : ℕ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
 
 @[simp]
 theorem ofNat_mulVec (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v := by
-  change diagonal x *ᵥ v = _
-  rw [Pi.natCast_def, diagonal_const_mulVec]
-  rfl
+    OfNat.ofNat (no_index x) *ᵥ v = (OfNat.ofNat x : α) • v :=
+  natCast_mulVec _ _
 
 @[simp]
 theorem vecMul_ofNat (x : ℕ) [x.AtLeastTwo] (v : m → α) :
-    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v := by
-  change v ᵥ* diagonal x = _
-  rw [Pi.natCast_def, const_vecMul_diagonal]
-  rfl
+    v ᵥ* OfNat.ofNat (no_index x) = MulOpposite.op (OfNat.ofNat x : α) • v :=
+  vecMul_natCast _ _
 
 end NonAssocSemiring
 
@@ -2012,14 +2006,12 @@ variable [NonAssocRing α]
 variable [Fintype m] [DecidableEq m]
 
 @[simp]
-theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v := by
-  change diagonal x *ᵥ v = _
-  simp
+theorem intCast_mulVec (x : ℤ) (v : m → α) : x *ᵥ v = (x : α) • v :=
+  diagonal_const_mulVec _ _
 
 @[simp]
-theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v := by
-  change v ᵥ* diagonal x = _
-  simp
+theorem vecMul_intCast (x : ℤ) (v : m → α) : v ᵥ* x = MulOpposite.op (x : α) • v :=
+  vecMul_diagonal_const _ _
 
 end NonAssocRing
 
