@@ -730,7 +730,7 @@ variable [Semiring R] [Module R V2] [SMulCommClass k R V2]
 instance : Module R (P1 →ᵃ[k] V2) :=
   { AffineMap.distribMulAction with
     add_smul := fun _ _ _ => ext fun _ => add_smul _ _ _
-    zero_smul := fun _ => ext fun _ => zero_smul _ _ }
+    zero_smul := fun _ => ext fun _ => zero_smul R _ }
 
 variable (R)
 

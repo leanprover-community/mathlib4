@@ -31,6 +31,7 @@ section getD
 
 variable (d : α)
 
+#align list.nthd_nil List.getD_nilₓ -- argument order
 #align list.nthd_cons_zero List.getD_cons_zeroₓ -- argument order
 #align list.nthd_cons_succ List.getD_cons_succₓ -- argument order
 

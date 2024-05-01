@@ -245,6 +245,8 @@ theorem isBasis_basicOpen (X : Scheme) [IsAffine X] :
 
 namespace IsAffineOpen
 
+-- Adaptation note: 2024-04-23
+-- TODO check if this `.{u}` restricts anything
 variable {X Y : Scheme.{u}} {U : Opens X} (hU : IsAffineOpen U) (f : X.presheaf.obj (op U))
 
 local notation "𝖲𝗉𝖾𝖼 𝓞ₓ(U)" => Scheme.Spec.obj (op <| X.presheaf.obj <| op U)
