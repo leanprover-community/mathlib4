@@ -64,13 +64,14 @@ theorem num_mk (n d : ℤ) : (n /. d).num = d.sign * n / n.gcd d := by
   rw [← Int.div_eq_ediv_of_dvd] <;>
   simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
     Int.zero_ediv, Int.ofNat_dvd_left, Nat.gcd_dvd_left]
-  congr
+  conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
 #align rat.num_mk Rat.num_mk
 
 theorem den_mk (n d : ℤ) : (n /. d).den = if d = 0 then 1 else d.natAbs / n.gcd d := by
   rcases d with ((_ | _) | _) <;>
-    simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd]
-  congr
+    simp [divInt, mkRat, Rat.normalize, Nat.succPNat, Int.sign, Int.gcd,
+      if_neg (Nat.cast_add_one_ne_zero _)]
+  conv_rhs => rw [← Nat.cast_one, ← Nat.cast_add, Int.natAbs_cast]
 #align rat.denom_mk Rat.den_mk
 
 #noalign rat.mk_pnat_denom_dvd

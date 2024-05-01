@@ -844,6 +844,7 @@ instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
   .of_basis (KaehlerDifferential.mvPolynomialBasis R σ)
 
 end MvPolynomial
+
 section Polynomial
 
 open Polynomial

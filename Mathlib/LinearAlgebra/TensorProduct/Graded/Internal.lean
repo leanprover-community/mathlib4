@@ -119,8 +119,6 @@ notation:100 x " ᵍ⊗ₜ" y:100 => tmul _ x y
 @[inherit_doc]
 notation:100 x " ᵍ⊗ₜ[" R "] " y:100 => tmul R x y
 
-theorem one_def : (1 : 𝒜 ᵍ⊗[R] ℬ) = 1 ᵍ⊗ₜ 1 := rfl
-
 variable (R) in
 /-- An auxiliary construction to move between the graded tensor product of internally-graded objects
 and the tensor product of direct sums. -/
