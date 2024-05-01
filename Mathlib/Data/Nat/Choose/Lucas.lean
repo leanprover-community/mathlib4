@@ -6,6 +6,7 @@ Authors: Gareth Ma
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
+import Mathlib.Tactic.SlimCheck
 
 /-!
 # Funny docstring placeholder blablabla
@@ -45,7 +46,22 @@ theorem lucas : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
 
-/- TODO: Finish proof -/
-theorem lucas' {a : ℕ} (ha₁ : n ≤ p ^ a) (ha₂ : k ≤ p ^ a) :
-    (choose n k) ≡ ∏ i in range a.succ, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
-  sorry
+theorem lucas' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
+      ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
+  induction a with
+  | zero => simp
+  | succ a ih =>
+    apply ih.trans
+    clear ih
+    rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
+    gcongr
+    apply lucas.trans
+    simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm]
+    rfl
+
+theorem lucas'' {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
+    choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
+  apply (lucas' a).trans
+  simp_rw [(Nat.div_eq_zero_iff $ by omega).mpr ha₁, (Nat.div_eq_zero_iff $ by omega).mpr ha₂,
+    choose, cast_one, one_mul, cast_prod]
+  rfl
