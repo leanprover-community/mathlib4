@@ -372,8 +372,8 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    exact Rat.num_nonneg.2 p.2
-    exact Rat.num_nonneg.2 q.2
+    · exact Rat.num_nonneg.2 p.2
+    · exact Rat.num_nonneg.2 q.2
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 

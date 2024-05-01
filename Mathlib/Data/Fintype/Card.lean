@@ -244,6 +244,7 @@ theorem toFinset_card {α : Type*} (s : Set α) [Fintype s] : s.toFinset.card = 
 
 end Set
 
+@[simp]
 theorem Finset.card_univ [Fintype α] : (Finset.univ : Finset α).card = Fintype.card α :=
   rfl
 #align finset.card_univ Finset.card_univ
@@ -318,9 +319,7 @@ theorem Fintype.card_fin_lt_of_le {m n : ℕ} (h : m ≤ n) :
           left_inv := fun i ↦ rfl
           right_inv := fun i ↦ rfl }
 
-@[simp]
-theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by
-  rw [Finset.card_univ, Fintype.card_fin]
+theorem Finset.card_fin (n : ℕ) : Finset.card (Finset.univ : Finset (Fin n)) = n := by simp
 #align finset.card_fin Finset.card_fin
 
 /-- `Fin` as a map from `ℕ` to `Type` is injective. Note that since this is a statement about
@@ -1178,7 +1177,7 @@ See also: `Fintype.exists_ne_map_eq_of_card_lt`, `Finite.exists_infinite_fiber`.
 -/
 theorem Finite.exists_ne_map_eq_of_infinite {α β} [Infinite α] [Finite β] (f : α → β) :
     ∃ x y : α, x ≠ y ∧ f x = f y := by
-  simpa only [Injective, not_forall, not_imp, and_comm] using not_injective_infinite_finite f
+  simpa [Injective, and_comm] using not_injective_infinite_finite f
 #align finite.exists_ne_map_eq_of_infinite Finite.exists_ne_map_eq_of_infinite
 
 instance Function.Embedding.is_empty {α β} [Infinite α] [Finite β] : IsEmpty (α ↪ β) :=

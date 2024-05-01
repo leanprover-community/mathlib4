@@ -457,12 +457,12 @@ variable [OrderedAddCommMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x y : E}
 theorem segment_subset_Icc (h : x ≤ y) : [x -[𝕜] y] ⊆ Icc x y := by
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   constructor
-  calc
-    x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ ≤ a • x + b • y := by gcongr
-  calc
-    a • x + b • y ≤ a • y + b • y := by gcongr
-    _ = y := Convex.combo_self hab _
+  · calc
+      x = a • x + b • x := (Convex.combo_self hab _).symm
+      _ ≤ a • x + b • y := by gcongr
+  · calc
+      a • x + b • y ≤ a • y + b • y := by gcongr
+      _ = y := Convex.combo_self hab _
 #align segment_subset_Icc segment_subset_Icc
 
 end OrderedAddCommMonoid
@@ -474,12 +474,12 @@ variable [OrderedCancelAddCommMonoid E] [Module 𝕜 E] [OrderedSMul 𝕜 E] {x 
 theorem openSegment_subset_Ioo (h : x < y) : openSegment 𝕜 x y ⊆ Ioo x y := by
   rintro z ⟨a, b, ha, hb, hab, rfl⟩
   constructor
-  calc
-    x = a • x + b • x := (Convex.combo_self hab _).symm
-    _ < a • x + b • y := by gcongr
-  calc
-    a • x + b • y < a • y + b • y := by gcongr
-    _ = y := Convex.combo_self hab _
+  · calc
+      x = a • x + b • x := (Convex.combo_self hab _).symm
+      _ < a • x + b • y := by gcongr
+  · calc
+      a • x + b • y < a • y + b • y := by gcongr
+      _ = y := Convex.combo_self hab _
 #align open_segment_subset_Ioo openSegment_subset_Ioo
 
 end OrderedCancelAddCommMonoid
