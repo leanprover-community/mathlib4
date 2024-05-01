@@ -119,9 +119,9 @@ This is promoted to an isomorphism as `Submodule.lTensorOne`. Use that instead. 
 def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N :=
   (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
 
-theorem lTensorOne'_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (n : N) : N.lTensorOne' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
+@[simp]
+theorem lTensorOne'_tmul (y : R) (n : N) :
+    N.lTensorOne' (⟨algebraMap R S y, algebraMap_mem y⟩ ⊗ₜ[R] n) = y • n :=
   Subtype.val_injective <| by simp [lTensorOne', Algebra.smul_def]
 
 /-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
@@ -132,16 +132,19 @@ def lTensorOne : (1 : Submodule R S) ⊗[R] N ≃ₗ[R] N := by
     ⟨1, one_le.1 (le_refl _)⟩) (by ext; simp [lTensorOne']) (TensorProduct.ext' fun r n ↦ ?_)
   change ⟨1, _⟩ ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
   obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
-  simp_rw [← h, lTensorOne'_apply, ← TensorProduct.smul_tmul,
+  simp_rw [← h, lTensorOne'_tmul, ← TensorProduct.smul_tmul,
     SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
 
-theorem lTensorOne_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (n : N) : N.lTensorOne (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
-  N.lTensorOne'_apply y n
+@[simp]
+theorem lTensorOne_tmul (y : R) (n : N) :
+    N.lTensorOne (⟨algebraMap R S y, algebraMap_mem y⟩ ⊗ₜ[R] n) = y • n := N.lTensorOne'_tmul y n
 
+@[simp]
 theorem lTensorOne_symm_apply (n : N) :
     N.lTensorOne.symm n = ⟨1, one_le.1 (le_refl _)⟩ ⊗ₜ[R] n := rfl
+
+theorem mulMap_one_left_eq : mulMap 1 N = N.subtype ∘ₗ N.lTensorOne.toLinearMap :=
+  TensorProduct.ext' fun _ _ ↦ rfl
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
 `M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map.
@@ -149,9 +152,9 @@ This is promoted to an isomorphism as `Submodule.rTensorOne`. Use that instead. 
 def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M :=
   (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
 
-theorem rTensorOne'_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (m : M) : M.rTensorOne' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
+@[simp]
+theorem rTensorOne'_tmul (y : R) (m : M) :
+    M.rTensorOne' (m ⊗ₜ[R] ⟨algebraMap R S y, algebraMap_mem y⟩) = y • m :=
   Subtype.val_injective <| by simp [rTensorOne', Algebra.smul_def, Algebra.commutes y m.1]
 
 /-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
@@ -163,16 +166,19 @@ def rTensorOne : M ⊗[R] (1 : Submodule R S) ≃ₗ[R] M := by
       (by ext; simp [rTensorOne']) (TensorProduct.ext' fun n r ↦ ?_)
   change rTensorOne' M _ ⊗ₜ[R] ⟨1, _⟩ = n ⊗ₜ[R] r
   obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
-  simp_rw [← h, rTensorOne'_apply, TensorProduct.smul_tmul,
+  simp_rw [← h, rTensorOne'_tmul, TensorProduct.smul_tmul,
     SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
 
-theorem rTensorOne_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (m : M) : M.rTensorOne (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
-  M.rTensorOne'_apply y m
+@[simp]
+theorem rTensorOne_tmul (y : R) (m : M) :
+    M.rTensorOne (m ⊗ₜ[R] ⟨algebraMap R S y, algebraMap_mem y⟩) = y • m := M.rTensorOne'_tmul y m
 
+@[simp]
 theorem rTensorOne_symm_apply (m : M) :
     M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, one_le.1 (le_refl _)⟩ := rfl
+
+theorem mulMap_one_right_eq : mulMap M 1 = M.subtype ∘ₗ M.rTensorOne.toLinearMap :=
+  TensorProduct.ext' fun _ _ ↦ rfl
 
 variable {M} in
 theorem mulLeftMap_eq_mulMap_comp {ι : Type*} (m : ι → M) :
