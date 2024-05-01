@@ -84,7 +84,7 @@ General algebra:
     roots of a polynomial: 'Polynomial.roots'
     multiplicity: 'Polynomial.rootMultiplicity'
     separable polynomial: 'Polynomial.Separable'
-    $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomainPolynomialToSemiringToDivisionSemiringToSemifield'
+    $K[X]$ is Euclidean: 'Polynomial.instEuclideanDomain'
     Hilbert basis theorem: 'Polynomial.isNoetherianRing'
     $A[X]$ has gcd and lcm if $A$ does: 'Polynomial.normalizedGcdMonoid'
     $A[{X_i}]$ is a UFD when $A$ is a UFD: 'MvPolynomial.uniqueFactorizationMonoid'
