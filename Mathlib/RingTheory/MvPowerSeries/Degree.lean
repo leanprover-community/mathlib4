@@ -23,7 +23,7 @@ section Degree
 namespace MvPowerSeries
 
 
-variable {σ R : Type*} [CommSemiring R] [DecidableEq (MvPowerSeries σ R)]
+variable {σ R S : Type*} [CommSemiring R] [DecidableEq (MvPowerSeries σ R)]
 variable {φ ψ : MvPowerSeries σ R}
 
 /-- A `MvPowerSeries φ` has bounded degree if its monomials are uniformly bounded -/
@@ -40,18 +40,18 @@ noncomputable def degree (φ : MvPowerSeries σ R) : WithBot (WithTop ℕ) :=
 theorem le_degree {s : σ →₀ ℕ} (h : φ s ≠ 0) : (s.sum fun _ ↦ id) ≤ degree φ := by
   sorry
 
-theorem totalDegree_le_of_support_subset (h : ∀ s, φ s ≠ 0 \to \psi s ≠ 0) :
-    degree φ ≤ degree \psi :=
+theorem totalDegree_le_of_support_subset (h : ∀ s, φ s ≠ 0 → ψ s ≠ 0) :
+    degree φ ≤ degree ψ :=
   sorry
 
 @[simp]
 theorem degree_zero : (0 : MvPowerSeries σ R).degree = ⊥ := by sorry
 
 @[simp]
-theorem degree_C (r : R) : (C r : MvPowerSeries σ R).degree = 0 := by sorry
+theorem degree_C (r : R) : (C σ R r : MvPowerSeries σ R).degree = 0 := by sorry
 
 @[simp]
-theorem degree_one : (1 : MvPowerSeries σ R).totalDegree = 0 :=
+theorem degree_one : (1 : MvPowerSeries σ R).degree = 0 :=
   degree_C (1 : R)
 
 @[simp]
@@ -93,7 +93,6 @@ theorem degree_add_eq_right_of_degree_lt (h : ψ.degree < φ.degree) :
 theorem degree_mul : (φ * ψ).degree ≤ φ.degree + ψ.degree := by
   sorry
 
-#check ⊤ + ⊤
 
 theorem degree_smul_le [CommSemiring S] [DistribMulAction R S] (r : R) :
     (r • φ).degree ≤ φ.degree := sorry
@@ -106,8 +105,8 @@ theorem degree_pow (n : ℕ) : (φ ^ n).degree ≤ n * φ.degree := by
 
 @[simp]
 theorem degree_monomial (s : σ →₀ ℕ) {r : R} (hr : r ≠ 0) :
-    (monomial s r : MvPowerSeries σ R).degree = s.sum fun _ ↦ id := by
-  simp [degree, support_monomial, if_neg hr]
+    (monomial _ s r : MvPowerSeries σ R).degree = s.sum fun _ ↦ id := by
+  --simp [degree, support_monomial, if_neg hr]
   sorry
 
 theorem degree_monomial_le (s : σ →₀ ℕ) (r : R) :
