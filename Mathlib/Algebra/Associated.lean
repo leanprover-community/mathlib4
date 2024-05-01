@@ -403,6 +403,9 @@ protected theorem refl [Monoid α] (x : α) : x ~ᵤ x :=
   ⟨1, by simp⟩
 #align associated.refl Associated.refl
 
+protected theorem rfl [Monoid α] {x : α} : x ~ᵤ x :=
+  .refl x
+
 instance [Monoid α] : IsRefl α Associated :=
   ⟨Associated.refl⟩
 
@@ -561,6 +564,9 @@ protected theorem Associated.dvd [Monoid α] {a b : α} : a ~ᵤ b → a ∣ b :
   ⟨u, hu.symm⟩
 #align associated.dvd Associated.dvd
 
+protected theorem Associated.dvd' [Monoid α] {a b : α} (h : a ~ᵤ b) : b ∣ a :=
+  h.symm.dvd
+
 protected theorem Associated.dvd_dvd [Monoid α] {a b : α} (h : a ~ᵤ b) : a ∣ b ∧ b ∣ a :=
   ⟨h.dvd, h.symm.dvd⟩
 #align associated.dvd_dvd Associated.dvd_dvd
@@ -607,6 +613,10 @@ theorem Associated.eq_zero_iff [MonoidWithZero α] {a b : α} (h : a ~ᵤ b) : a
 theorem Associated.ne_zero_iff [MonoidWithZero α] {a b : α} (h : a ~ᵤ b) : a ≠ 0 ↔ b ≠ 0 :=
   not_congr h.eq_zero_iff
 #align associated.ne_zero_iff Associated.ne_zero_iff
+
+theorem Associated.neg [Monoid α] [HasDistribNeg α] {a b : α} (h : Associated a b) :
+    Associated (-a) b :=
+  let ⟨u, hu⟩ := h; ⟨-u, by simp [hu]⟩
 
 protected theorem Associated.prime [CommMonoidWithZero α] {p q : α} (h : p ~ᵤ q) (hp : Prime p) :
     Prime q :=
