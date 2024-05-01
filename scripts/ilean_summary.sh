@@ -43,7 +43,7 @@ genSumm (){
 
 genSumm
 (
-  printf "|File|+-|Name|Decl|\n|-|-|-|-|\n"
+  printf "|File|+-|Declaration|Code|\n|-|-|-|-|\n"
 eval "$(genSumm)" |
   sed "s=£='=g" |
   sed 's=|\([^|]*\)|\([^|]*\)|$=|`\1`|`\2`|='
