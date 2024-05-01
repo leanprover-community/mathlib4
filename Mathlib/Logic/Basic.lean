@@ -165,8 +165,8 @@ instance : IsRefl Prop Iff := ⟨Iff.refl⟩
 instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 
 alias Iff.imp := imp_congr
-
 #align iff.imp Iff.imp
+
 #align eq_true_eq_id eq_true_eq_id
 #align imp_and_distrib imp_and
 #align imp_iff_right imp_iff_rightₓ -- reorder implicits

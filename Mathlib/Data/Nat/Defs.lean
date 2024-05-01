@@ -1883,10 +1883,4 @@ instance decidableLoHiLe (lo hi : ℕ) (P : ℕ → Prop) [DecidablePred P] :
     forall₂_congr fun _ _ ↦ imp_congr Nat.lt_succ_iff Iff.rfl
 #align nat.decidable_lo_hi_le Nat.decidableLoHiLe
 
-#align nat.mul_lt_mul Nat.mul_lt_mulₓ
-
-#align nat.mul_lt_mul' Nat.mul_lt_mul'ₓ
-
-#align nat.le_of_le_of_sub_le_sub_right Nat.le_of_le_of_sub_le_sub_right
-
 end Nat

@@ -44,6 +44,8 @@ example : Measurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
 example : AEMeasurable (fun x => x * (Real.log x) ^ 2 - Real.exp x / x) :=
   by fun_prop
 
+
+
 private noncomputable def S (a b c d : ℝ) : ℝ :=
     a / (a + b + d) + b / (a + b + c) +
     c / (b + c + d) + d / (a + c + d)
@@ -70,6 +72,7 @@ example : Measurable T := by
 example : AEMeasurable T := by
   unfold T S
   fun_prop
+
 
 private theorem t1 : (5: ℕ) + (1 : ℕ∞) ≤ (12 : ℕ∞) := by norm_cast
 
