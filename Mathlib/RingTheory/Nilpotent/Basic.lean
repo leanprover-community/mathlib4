@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
@@ -122,7 +122,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   by_cases hi : m ≤ i
-  rw [pow_eq_zero_of_le hi hx, zero_mul]
+  · rw [pow_eq_zero_of_le hi hx, zero_mul]
   rw [pow_eq_zero_of_le ?_ hy, mul_zero]
   linarith [Finset.mem_antidiagonal.mp hij]
 

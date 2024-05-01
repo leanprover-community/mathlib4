@@ -88,6 +88,7 @@ variable [SmoothManifoldWithCorners I M] [SmoothManifoldWithCorners I' M']
 
 theorem mdifferentiableAt_atlas (h : e ∈ atlas H M) {x : M} (hx : x ∈ e.source) :
     MDifferentiableAt I I e x := by
+  rw [mdifferentiableAt_iff]
   refine' ⟨(e.continuousOn x hx).continuousAt (e.open_source.mem_nhds hx), _⟩
   have mem :
     I ((chartAt H x : M → H) x) ∈ I.symm ⁻¹' ((chartAt H x).symm ≫ₕ e).source ∩ range I := by
@@ -111,6 +112,7 @@ theorem mdifferentiableOn_atlas (h : e ∈ atlas H M) : MDifferentiableOn I I e 
 
 theorem mdifferentiableAt_atlas_symm (h : e ∈ atlas H M) {x : H} (hx : x ∈ e.target) :
     MDifferentiableAt I I e.symm x := by
+  rw [mdifferentiableAt_iff]
   refine' ⟨(e.continuousOn_symm x hx).continuousAt (e.open_target.mem_nhds hx), _⟩
   have mem : I x ∈ I.symm ⁻¹' (e.symm ≫ₕ chartAt H (e.symm x)).source ∩ range I := by
     simp only [hx, mfld_simps]
@@ -169,7 +171,7 @@ theorem tangentMap_chart_symm {p : TangentBundle I M} {q : TangentBundle I H}
 
 lemma mfderiv_chartAt_eq_tangentCoordChange {x y : M} (hsrc : x ∈ (chartAt H y).source) :
     mfderiv I I (chartAt H y) x = tangentCoordChange I x y x := by
-  have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) (extChartAt_source I y ▸ hsrc)
+  have := mdifferentiableAt_atlas I (ChartedSpace.chart_mem_atlas _) hsrc
   simp [mfderiv, if_pos this, Function.comp.assoc]
 
 end Charts

@@ -3,7 +3,7 @@ Copyright (c) 2021 Kevin Buzzard. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Buzzard, Antoine Labelle
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.LinearAlgebra.Finsupp
 import Mathlib.LinearAlgebra.FreeModule.Basic
 
