@@ -34,7 +34,7 @@ Further more, these properties are stable under compositions (resp. base change)
 
 -/
 
-universe v u
+universe u
 
 open CategoryTheory Opposite TopologicalSpace CategoryTheory.Limits AlgebraicGeometry
 
@@ -64,7 +64,7 @@ theorem RespectsIso.basicOpen_iff (hP : RespectsIso @P) {X Y : Scheme.{u}} [IsAf
     _ _ (isLocalization_away_of_isAffine _) _ _ _ i1).symm using 1
   change Y.presheaf.map _ ≫ _ = _ ≫ X.presheaf.map _
   rw [f.val.c.naturality_assoc]
-  erw [← X.presheaf.map_comp]
+  simp only [TopCat.Presheaf.pushforwardObj_map, ← X.presheaf.map_comp]
   congr 1
 #align ring_hom.respects_iso.basic_open_iff RingHom.RespectsIso.basicOpen_iff
 
@@ -147,10 +147,6 @@ theorem sourceAffineLocally_respectsIso (h₁ : RingHom.RespectsIso @P) :
     rw [← h₁.cancel_right_isIso _ (Scheme.Γ.map (Scheme.restrictMapIso e.inv U.1).hom.op), ←
       Functor.map_comp, ← op_comp]
     convert H ⟨_, U.prop.map_isIso e.inv⟩ using 3
-    -- Porting note: have to add this instance manually
-    haveI i1 : IsOpenImmersion
-      (Scheme.ofRestrict Y ((Opens.map e.inv.val.base).obj U.1).openEmbedding ≫ e.inv) :=
-      PresheafedSpace.IsOpenImmersion.comp _ _
     rw [IsOpenImmersion.isoOfRangeEq_hom_fac_assoc, Category.assoc,
       e.inv_hom_id_assoc]
   · introv H U
@@ -410,7 +406,6 @@ theorem openCover_TFAE {X Y : Scheme.{u}} [IsAffine Y] (f : X ⟶ Y) :
       -- Porting note: this has metavariable if I put it directly into rw
       have := (hP.affine_openCover_TFAE (𝒰.map i.fst ≫ f)).out 0 3
       rw [this] at h𝒰
-      erw [Category.assoc]
       -- Porting note: this was discharged after the apply previously
       have : IsAffine (Scheme.OpenCover.obj
         (Scheme.OpenCover.bind 𝒰 fun x ↦ Scheme.affineCover (Scheme.OpenCover.obj 𝒰 x)) i) := by
@@ -497,7 +492,7 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
   apply hP.sourceAffineLocally_comp_of_isOpenImmersion
   -- Porting note: need to excuse Lean from synthesizing an instance
   rw [@source_affine_openCover_iff _ hP _ _ _ _ (Scheme.openCoverOfIsIso (𝟙 _)) (_)]
-  · intro i; erw [Category.id_comp, op_id, Scheme.Γ.map_id]
+  · intro i
     let esto := Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val))
     let eso := Scheme.Γ.obj (Opposite.op ((Scheme.openCoverOfIsIso
       (𝟙 (Y.restrict <| Opens.openEmbedding U.val))).obj i))
@@ -505,6 +500,10 @@ theorem affineLocally_of_isOpenImmersion (hP : RingHom.PropertyIsLocal @P) {X Y 
     -- convert hP.HoldsAwayLocalizationAway _ (1 : Scheme.Γ.obj _) _
     have : 𝟙 (Scheme.Γ.obj (Opposite.op (Y.restrict <| Opens.openEmbedding U.val)))
       = @algebraMap esto eso _ _ (_) := (RingHom.algebraMap_toAlgebra _).symm
+    simp only [Scheme.Γ_obj, unop_op, Scheme.restrict_presheaf_obj, Scheme.openCoverOfIsIso_obj,
+      Scheme.openCoverOfIsIso_map, Category.comp_id, op_id, Scheme.Γ_map, unop_id,
+      Scheme.id_val_base, Scheme.id_app, eqToHom_refl, Scheme.restrict_presheaf_map,
+      CategoryTheory.Functor.map_id] at *
     rw [this]
     have := hP.HoldsForLocalizationAway
     convert @this esto eso _ _ ?_ ?_ ?_
@@ -541,17 +540,7 @@ theorem affineLocally_of_comp
     Scheme.OpenCover.pullbackCover_obj, Scheme.OpenCover.pullbackCover_map] at h ⊢
   rw [Category.assoc, Category.assoc, pullbackRightPullbackFstIso_hom_snd,
     pullback.lift_snd_assoc, Category.assoc, ← Category.assoc, op_comp, Functor.map_comp] at h
-  -- Porting note: this previously ended with `exact H _ _ h` but that runs away
-  -- explicitly specifying `f'` and `g'` in the `comp` and then using a `convert` (?)
-  -- lets us get something
-  let f' := Scheme.Γ.map (Scheme.OpenCover.map
-      (Scheme.affineCover (pullback g (Scheme.OpenCover.map (Scheme.affineCover Z) i))) j ≫
-        pullback.snd).op
-  let g' := Scheme.Γ.map (Scheme.OpenCover.map (Scheme.affineCover (pullback f
-      (Scheme.OpenCover.map (Scheme.affineCover (pullback g (Scheme.OpenCover.map
-        (Scheme.affineCover Z) i))) j ≫ pullback.fst))) k ≫ pullback.snd).op
-  convert H f' g' ?_
-  exact h
+  exact H _ _ h
 #align ring_hom.property_is_local.affine_locally_of_comp RingHom.PropertyIsLocal.affineLocally_of_comp
 
 theorem affineLocally_isStableUnderComposition : (affineLocally @P).IsStableUnderComposition where
