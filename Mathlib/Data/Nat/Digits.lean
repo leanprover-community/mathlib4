@@ -525,8 +525,7 @@ lemma ofDigits_div_pow_eq_ofDigits_drop
     ofDigits p digits / p ^ i = ofDigits p (digits.drop i) := by
   induction' i with i hi
   · simp
-  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi,
-      ofDigits_div_eq_ofDigits_tail hpos
+  · rw [Nat.pow_succ, ← Nat.div_div_eq_div_mul, hi, ofDigits_div_eq_ofDigits_tail hpos
       (List.drop i digits) fun x hx ↦ w₁ x <| List.mem_of_mem_drop hx, ← List.drop_one,
       List.drop_drop, add_comm]
 

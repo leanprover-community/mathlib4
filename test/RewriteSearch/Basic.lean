@@ -1,8 +1,4 @@
 import Mathlib.Tactic.RewriteSearch
--- Adaptation note:
--- Without `attribute [refl] Eq.refl`, `rw_search` can deal with non-equality goals.
--- This will be fixed in https://github.com/leanprover/lean4/pull/3784
-import Mathlib.Init.Core
 
 set_option autoImplicit true
 

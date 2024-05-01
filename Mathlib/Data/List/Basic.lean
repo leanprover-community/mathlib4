@@ -1233,9 +1233,6 @@ theorem get?_length (l : List α) : l.get? l.length = none := get?_len_le le_rfl
 theorem nthLe_mem (l : List α) (n h) : nthLe l n h ∈ l := get_mem ..
 #align list.nth_le_mem List.nthLe_mem
 
-theorem nthLe_congr {l : List α} {n p : ℕ} {h : n < length l} (hnp : n = p) :
-    nthLe l n h = nthLe l p (hnp ▸ h) := by simp [hnp]
-
 #align list.nth_mem List.get?_mem
 
 @[deprecated mem_iff_get] -- 2023-01-05
