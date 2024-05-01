@@ -53,10 +53,28 @@ theorem hasDegreeBound_degree : HasDegreeBound φ.totalDegree φ := by
   exact_mod_cast hb s hs
 
 @[simp]
+lemma hasDegreeBound_of_le {n : WithTop ℕ} (hn : HasDegreeBound n φ) (m : WithTop ℕ) (h : n ≤ m) :
+    HasDegreeBound m φ := by
+  simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq]
+  simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq] at hn
+  intro s hs
+  exact le_trans (hn s hs) h
+
+@[simp]
 theorem totalDegree_le_DegreeBound {n : WithTop ℕ} (h : HasDegreeBound n φ) :
     φ.totalDegree ≤ n := by
   simp only [totalDegree_def, le_sInf_iff, Set.mem_setOf_eq]
   exact sInf_le h
+
+@[simp]
+theorem totalDegree_le_DegreeBound_iff {n : WithTop ℕ} :
+    HasDegreeBound n φ ↔ φ.totalDegree ≤ n := by
+  constructor
+  · exact totalDegree_le_DegreeBound
+  · intro h
+    apply hasDegreeBound_of_le
+    · exact hasDegreeBound_degree
+    · exact h
 
 theorem le_totalDegree {s : σ →₀ ℕ} (h : φ s ≠ 0) : (s.sum fun _ ↦ id) ≤ totalDegree φ := by
   simp only [Nat.cast_finsupp_sum, id_eq, totalDegree, le_sInf_iff, Set.mem_setOf_eq]
@@ -109,6 +127,17 @@ theorem totalDegree_X [Nontrivial R] (i : σ) : (X i : MvPowerSeries σ R).total
   · apply le_sInf
     simp only [Set.mem_setOf_eq, imp_self, forall_const]
 
+lemma totalDegreeBound_le : φ.totalDegree ≤ ψ.totalDegree ↔ ∀ n, (HasDegreeBound n ψ → HasDegreeBound n φ) := by
+  constructor
+  · intro h n hn
+    apply hasDegreeBound_of_le
+    · exact hasDegreeBound_degree
+    · exact le_trans h (totalDegree_le_DegreeBound hn)
+  · intro h
+    rw [← totalDegree_le_DegreeBound_iff]
+    apply h
+    exact hasDegreeBound_degree
+
 theorem totalDegree_bound_add {a b : WithTop ℕ} (ha : HasDegreeBound a φ)
     (hb: HasDegreeBound b ψ) : HasDegreeBound (max a b) (φ + ψ) := by
   intro s hs
@@ -127,10 +156,30 @@ theorem totalDegree_add : (φ + ψ).totalDegree ≤ max φ.totalDegree ψ.totalD
   exact totalDegree_le_DegreeBound this
 
 theorem totalDegree_mul : (φ * ψ).totalDegree ≤ φ.totalDegree + ψ.totalDegree := by
+  rw [← totalDegree_le_DegreeBound_iff]
+  intro s hs
+  rw [coeff_mul] at hs
+  have hf : HasDegreeBound φ.totalDegree φ := hasDegreeBound_degree
+  have hg : HasDegreeBound ψ.totalDegree ψ := hasDegreeBound_degree
+  simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq] at hf
+  simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq] at hg
+  have ⟨a, ⟨has, ha⟩⟩ := Finset.exists_ne_zero_of_sum_ne_zero hs
+  simp only [Finset.mem_antidiagonal] at has
+  rw [← has]
   sorry
 
-theorem totalDegree_smul_le [CommSemiring S] [DistribMulAction R S] (r : R) :
-    (r • φ).totalDegree ≤ φ.totalDegree := sorry
+theorem totalDegree_smul_le (r : R) :
+    (r • φ).totalDegree ≤ φ.totalDegree := by
+  rw [totalDegreeBound_le]
+  intro n hn
+  simp only [HasDegreeBound_def, LinearMapClass.map_smul, smul_eq_mul, ne_eq, Nat.cast_finsupp_sum,
+    id_eq]
+  intro s hs
+  simp only [HasDegreeBound_def, ne_eq, Nat.cast_finsupp_sum, id_eq] at hn
+  apply hn s
+  by_contra h
+  simp only [h, mul_zero, not_true_eq_false] at hs
+
 
 theorem totalDegree_pow (n : ℕ) : (φ ^ n).totalDegree ≤ n * φ.totalDegree := by
   -- rw [Finset.pow_eq_prod_const, ← Nat.nsmul_eq_mul, Finset.nsmul_eq_sum_const]
@@ -156,13 +205,6 @@ theorem totalDegree_monomial_le (s : σ →₀ ℕ) (r : R) :
 @[simp]
 theorem totalDegree_X_pow [Nontrivial R] (i : σ) (n : ℕ) :
     (X i ^ n : MvPowerSeries σ R).totalDegree = n := by sorry --simp [X_pow_eq_monomial, one_ne_zero]
-
-
-lemma degreeBound_le : φ.totalDegree ≤ ψ.totalDegree ↔ ∀ n, (HasDegreeBound n ψ → HasDegreeBound n φ) := by
-  simp only [totalDegree, le_sInf_iff, Set.mem_setOf_eq]
-  constructor
-  · sorry
-  · sorry
 
 theorem totalDegree_add_eq_left_of_totalDegree_lt [CommRing R] (h : ψ.totalDegree < φ.totalDegree) :
     (φ + ψ).totalDegree = φ.totalDegree := by
