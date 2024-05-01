@@ -73,7 +73,7 @@ theorem degree_eq_sum_if_adj [AddCommMonoidWithOne α] (i : V) :
 $$x^{\top} L x = \sum_{i \sim j} (x_{i}-x_{j})^{2}$$,
 where $\sim$ denotes the adjacency relation -/
 theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
-    toLinearMap₂' (G.lapMatrix α) x x =
+    toLinearMap₂' (R := α) (G.lapMatrix α) x x =
     (∑ i : V, ∑ j : V, if G.Adj i j then (x i - x j)^2 else 0) / 2 := by
   simp_rw [toLinearMap₂'_apply', lapMatrix, sub_mulVec, dotProduct_sub, dotProduct_mulVec_degMatrix,
     dotProduct_mulVec_adjMatrix, ← sum_sub_distrib, degree_eq_sum_if_adj, sum_mul, ite_mul, one_mul,
@@ -99,7 +99,7 @@ theorem posSemidef_lapMatrix [LinearOrderedField α] [StarRing α] [StarOrderedR
     · rfl
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj [LinearOrderedField α] (x : V → α) :
-    Matrix.toLinearMap₂' (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
+    Matrix.toLinearMap₂' (R := α) (G.lapMatrix α) x x = 0 ↔ ∀ i j : V, G.Adj i j → x i = x j := by
   constructor
   · intro h i j
     by_contra! hn
@@ -122,7 +122,8 @@ theorem lapMatrix_toLin'_apply_eq_zero_iff_forall_adj (x : V → ℝ) :
       lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
 
 theorem lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_reachable (x : V → ℝ) :
-    Matrix.toLinearMap₂' (G.lapMatrix ℝ) x x = 0 ↔ ∀ i j : V, G.Reachable i j → x i = x j := by
+    Matrix.toLinearMap₂' (R := ℝ) (G.lapMatrix ℝ) x x = 0 ↔
+      ∀ i j : V, G.Reachable i j → x i = x j := by
   rw [lapMatrix_toLinearMap₂'_apply'_eq_zero_iff_forall_adj]
   refine ⟨?_, fun h i j hA ↦ h i j hA.reachable⟩
   · intro h i j ⟨w⟩
