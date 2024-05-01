@@ -39,30 +39,17 @@ so I have to learn how to specify all of this data.
 
 -/
 
-
-theorem eigenspace_lemma (i : n) :
-   (hA.eigenvectorBasis) i ∈ Module.End.eigenspace (toEuclideanLin A)
-     ((RCLike.ofReal ∘ hA.eigenvalues) i) := by
-simp only [Module.End.mem_eigenspace_iff, toEuclideanLin_apply, mulVec_eigenvectorBasis,
-←WithLp.equiv_smul, Equiv.symm_apply_apply, Function.comp_apply, ←RCLike.real_smul_eq_coe_smul]
-
-
-theorem eigenvalue_mem_toEuclideanLin_spectrum1 (i : n) :
+theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) := by
 have H0 : Module.End.HasEigenvalue (toEuclideanLin A) ((RCLike.ofReal ∘ hA.eigenvalues) i) := by
-   sorry
-refine Module.End.hasEigenvalue_iff_mem_spectrum.mp H0
+  apply LinearMap.IsSymmetric.hasEigenvalue_eigenvalues (hn := by simp only [finrank_euclideanSpace])
+        (n := Fintype.card n) (Matrix.isHermitian_iff_isSymmetric.mp hA)
+apply Module.End.hasEigenvalue_iff_mem_spectrum.mp (H0)
 
-
-
-
-
-#exit
-
-theorem eigenvalue_mem_toEuclideanLin_spectrum2 (i : n) :
+theorem eigenvalue_mem_toEuclideanLin_spectrum_real (i : n) :
     hA.eigenvalues i ∈ spectrum ℝ (toEuclideanLin A) :=
 (spectrum.algebraMap_mem_iff (S := 𝕜) (r := hA.eigenvalues i)).mp
-        (eigenvalue_mem_toEuclideanLin_spectrum1 _ i)
+        (eigenvalue_mem_toEuclideanLin_spectrum_RCLike _ i)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
