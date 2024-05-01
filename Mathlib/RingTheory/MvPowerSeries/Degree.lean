@@ -82,19 +82,42 @@ theorem degree_zero : (0 : MvPowerSeries σ R).degree = ⊥ := by
   simp only [degree, HasDegreeBound, map_zero, ne_eq, not_true_eq_false, Nat.cast_finsupp_sum,
     id_eq, IsEmpty.forall_iff, forall_const, Set.setOf_true, sInf_univ]
 
+lemma aux (h : HasDegreeBound ⊥ φ) : φ = 0 := by
+  ext s
+  simp only [map_zero]
+  by_contra hnezero
+  have this := h s hnezero
+  have that := WithBot.bot_lt_coe (Finsupp.sum s fun x ↦ id)
+  --simp only [id_eq, le_bot_iff] at this
+  apply_mod_cast lt_irrefl (Finsupp.sum s fun x ↦ id)
+  apply lt_of_le_of_lt
+  sorry
+
 @[simp]
 theorem degree_eq_bot_iff_zero : φ.degree = ⊥ ↔ φ = 0 := by
   constructor
   · intro hbot
-    simp [degree] at hbot
     have : HasDegreeBound ⊥ φ := by
-      sorry
-
-    sorry
-  · sorry
+      rw [← hbot]
+      exact hasDegreeBound_degree
+    exact aux this
+  · intro hzero
+    simp only [hzero, degree_def, HasDegreeBound_def, map_zero, ne_eq, not_true_eq_false,
+      Nat.cast_finsupp_sum, id_eq, IsEmpty.forall_iff, forall_const, Set.setOf_true, sInf_univ]
 
 @[simp]
-theorem degree_lt_zero_iff_zero : φ.degree < 0 ↔ φ = 0 := sorry
+theorem degree_lt_zero_iff_zero : φ.degree < 0 ↔ φ = 0 := by
+  have : φ.degree < 0 ↔ φ.degree = ⊥ := by
+    constructor
+    · intro hlt
+      by_cases h : φ.degree = ⊥
+      · exact h
+      · exact WithBot.lt_coe_bot.mp hlt
+    · intro hbot
+      rw [hbot]
+      exact compare_gt_iff_gt.mp rfl
+  rw [← degree_eq_bot_iff_zero]
+  exact this
 
 @[simp]
 theorem degree_C (r : R) (hr : r ≠ 0) : (C σ R r : MvPowerSeries σ R).degree = 0 := by
