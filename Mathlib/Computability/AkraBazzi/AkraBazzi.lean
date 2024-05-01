@@ -1156,11 +1156,6 @@ lemma base_nonempty {n : ℕ} (hn : 0 < n) : (Finset.Ico (⌊b (min_bi b) / 2 * 
                                  _ ≤ 1 * n        := by gcongr; norm_num
                                  _ = n             := by simp
 
--- Adaptation note: 2024-04-23
--- None of the backwards compatibility flags help here,
--- but I think this timeout is the proof's fault for being too long, not Lean's fault.
--- Refactor requested at https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/Computability.2FAkraBazzi
-set_option maxHeartbeats 400000 in
 /-- The main proof of the upper bound part of the Akra-Bazzi theorem. The factor
 `1 - ε n` does not change the asymptotic order, but is needed for the induction step to go
 through. -/
