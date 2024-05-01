@@ -174,7 +174,7 @@ Ring Theory:
     characteristic p: 'CharP'
     Subfields: 'field_theory/subfield.html'
     Frobenius morphisms: 'frobenius'
-    field $\Q$ of rational numbers: 'Rat.field'
+    field $\Q$ of rational numbers: 'Rat.instField'
     field $\R$ of real numbers: 'Real.field'
     field $\C$ of complex numbers: 'Complex.instField'
     $\C$ is algebraically closed: 'Complex.exists_root'

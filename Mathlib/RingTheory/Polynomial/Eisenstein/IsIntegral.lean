@@ -60,13 +60,13 @@ theorem cyclotomic_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] :
     rw [natDegree_comp, show (X + 1 : ℤ[X]) = X + C 1 by simp, natDegree_X_add_C, mul_one,
       natDegree_cyclotomic, Nat.totient_prime hp.out] at hi
     simp only [hi.trans_le (Nat.sub_le _ _), sum_ite_eq', mem_range, if_true,
-      Ideal.submodule_span_eq, Ideal.mem_span_singleton, Int.coe_nat_dvd]
+      Ideal.submodule_span_eq, Ideal.mem_span_singleton, Int.natCast_dvd_natCast]
     exact hp.out.dvd_choose_self i.succ_ne_zero (lt_tsub_iff_right.1 hi)
   · rw [coeff_zero_eq_eval_zero, eval_comp, cyclotomic_prime, eval_add, eval_X, eval_one, zero_add,
       eval_geom_sum, one_geom_sum, Ideal.submodule_span_eq, Ideal.span_singleton_pow,
       Ideal.mem_span_singleton]
     intro h
-    obtain ⟨k, hk⟩ := Int.coe_nat_dvd.1 h
+    obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     rw [mul_assoc, mul_comm 1, mul_one] at hk
     nth_rw 1 [← Nat.mul_one p] at hk
     rw [mul_right_inj' hp.out.ne_zero] at hk
@@ -110,7 +110,7 @@ theorem cyclotomic_prime_pow_comp_X_add_one_isEisensteinAt [hp : Fact p.Prime] (
       submodule_span_eq, Ideal.submodule_span_eq, Ideal.span_singleton_pow,
       Ideal.mem_span_singleton]
     intro h
-    obtain ⟨k, hk⟩ := Int.coe_nat_dvd.1 h
+    obtain ⟨k, hk⟩ := Int.natCast_dvd_natCast.1 h
     rw [mul_assoc, mul_comm 1, mul_one] at hk
     nth_rw 1 [← Nat.mul_one p] at hk
     rw [mul_right_inj' hp.out.ne_zero] at hk

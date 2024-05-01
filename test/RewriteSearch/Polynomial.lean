@@ -1,6 +1,6 @@
+import Mathlib.Algebra.Polynomial.Eval
+import Mathlib.Algebra.Polynomial.Inductions
 import Mathlib.Init.Core
-import Mathlib.Data.Polynomial.Eval
-import Mathlib.Data.Polynomial.Inductions
 import Mathlib.Tactic.RewriteSearch
 
 set_option autoImplicit true
@@ -27,7 +27,7 @@ example {R : Type*} [Ring R] {p : Polynomial R} {a : R} :
 --   rw_search
 
 
--- All rewrite-only lemmas from `Mathlib.Data.Polynomial.Degree.Definitions`,
+-- All rewrite-only lemmas from `Mathlib.Algebra.Polynomial.Degree.Definitions`,
 -- whose statements are equalities.
 -- TODO: `rw_search` should handle `iff` as well.
 

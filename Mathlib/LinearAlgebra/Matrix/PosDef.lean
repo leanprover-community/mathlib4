@@ -34,7 +34,7 @@ namespace Matrix
 
 variable {m n R 𝕜 : Type*}
 variable [Fintype m] [Fintype n]
-variable [CommRing R] [PartialOrder R] [StarOrderedRing R]
+variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
 variable [RCLike 𝕜]
 open scoped Matrix
 

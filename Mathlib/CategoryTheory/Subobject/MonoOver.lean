@@ -366,7 +366,7 @@ def image : Over X ⥤ MonoOver X where
   map {f g} k := by
     apply (forget X).preimage _
     apply Over.homMk _ _
-    refine'
+    exact
       image.lift
         { I := Limits.image _
           m := image.ι g.hom
@@ -387,7 +387,7 @@ def imageForgetAdj : image ⊣ forget X :=
             apply image.fac
           invFun := fun k => by
             refine' Over.homMk _ _
-            refine'
+            exact
               image.lift
                 { I := g.obj.left
                   m := g.arrow

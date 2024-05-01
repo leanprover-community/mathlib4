@@ -187,8 +187,7 @@ def equivProdNatSmoothNumbers {p : ℕ} (hp: p.Prime) :
       simp only [not_lt, le_iff_eq_or_lt, H, or_false, eq_comm, true_eq_decide_iff]
     refine prod_eq <| (filter_eq m.factors p).symm ▸ this ▸ perm_append_comm.trans ?_
     convert filter_append_perm ..
-    simp only [not_lt]
-    simp only [decide_not, Bool.not_not, lt_iff_not_ge]
+    simp only [not_lt, decide_not, Bool.not_not, lt_iff_not_ge]
 
 @[simp]
 lemma equivProdNatSmoothNumbers_apply {p e m : ℕ} (hp: p.Prime) (hm : m ∈ p.smoothNumbers) :

@@ -455,8 +455,9 @@ theorem pow_bit0_pos {a : R} (h : a ≠ 0) (n : ℕ) : 0 < a ^ bit0 n :=
   (pow_bit0_nonneg a n).lt_of_ne (pow_ne_zero _ h).symm
 #align pow_bit0_pos pow_bit0_pos
 
-theorem sq_pos_of_ne_zero (a : R) (h : a ≠ 0) : 0 < a ^ 2 :=
-  pow_bit0_pos h 1
+theorem sq_pos_of_ne_zero {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R]
+    (a : R) (h : a ≠ 0) : 0 < a ^ 2 := by
+  rwa [(sq_nonneg a).lt_iff_ne, ne_comm, pow_ne_zero_iff two_ne_zero]
 #align sq_pos_of_ne_zero sq_pos_of_ne_zero
 
 alias pow_two_pos_of_ne_zero := sq_pos_of_ne_zero
@@ -499,7 +500,9 @@ lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := by
 
 end deprecated
 
-lemma sq_pos_iff (a : R) : 0 < a ^ 2 ↔ a ≠ 0 := pow_bit0_pos_iff a one_ne_zero
+lemma sq_pos_iff {R : Type*} [LinearOrderedSemiring R] [ExistsAddOfLE R] (a : R) :
+    0 < a ^ 2 ↔ a ≠ 0 := by
+  rw [← pow_ne_zero_iff two_ne_zero, (sq_nonneg a).lt_iff_ne, ne_comm]
 #align sq_pos_iff sq_pos_iff
 
 lemma pow_four_le_pow_two_of_pow_two_le (h : a ^ 2 ≤ b) : a ^ 4 ≤ b ^ 2 :=

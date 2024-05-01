@@ -25,6 +25,16 @@ Then `H` satisfies the group axioms.
 The relevant definition in this case is `Function.Surjective.group`.
 Dually, there is also `Function.Injective.group`.
 And there are versions for (additive) (commutative) semigroups/monoids.
+
+## Implementation note
+
+The `nsmul` and `zsmul` assumptions on any tranfer definition for an algebraic structure involving
+both addition and multiplication (eg `AddMonoidWithOne`) is `∀ n x, f (n • x) = n • f x`, which is
+what we would expect.
+However, we cannot do the same for transfer definitions built using `to_additive` (eg `AddMonoid`)
+as we want the multiplicative versions to be `∀ x n, f (x ^ n) = f x ^ n`.
+As a result, we must use `Function.swap` when using additivised transfer definitions in
+non-additivised ones.
 -/
 
 
@@ -131,9 +141,9 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def addMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
     [AddMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₁ :=
-  { hf.addMonoid f zero add nsmul with
+  { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := hf (by erw [nat_cast, Nat.cast_zero, zero]),
     natCast_succ := fun n => hf (by erw [nat_cast, Nat.cast_succ, add, one, nat_cast]), one := 1 }
@@ -193,9 +203,10 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def addCommMonoidWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [NatCast M₁]
     [AddCommMonoidWithOne M₂] (f : M₁ → M₂) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ :=
-  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid f zero add nsmul with }
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₁ where
+  __ := hf.addMonoidWithOne f zero one add nsmul nat_cast
+  __ := hf.addCommMonoid _ zero add (swap nsmul)
 #align function.injective.add_comm_monoid_with_one Function.Injective.addCommMonoidWithOne
 
 /-- A type endowed with `1` and `*` is a cancel commutative monoid, if it admits an injective map
@@ -325,10 +336,10 @@ map that preserves `0`, `1` and `+` to an additive group with one.  See note
 protected def addGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₁ :=
-  { hf.addGroup f zero add neg sub nsmul zsmul,
+  { hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul),
     hf.addMonoidWithOne f zero one add nsmul nat_cast with
     intCast := Int.cast,
     intCast_ofNat := fun n => hf (by rw [nat_cast, ← Int.cast, int_cast, Int.cast_ofNat]),
@@ -355,11 +366,11 @@ See note [reducible non-instances]. -/
 protected def addCommGroupWithOne {M₁} [Zero M₁] [One M₁] [Add M₁] [SMul ℕ M₁] [Neg M₁] [Sub M₁]
     [SMul ℤ M₁] [NatCast M₁] [IntCast M₁] [AddCommGroupWithOne M₂] (f : M₁ → M₂) (hf : Injective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₁ :=
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
-    hf.addCommMonoid f zero add nsmul with }
+    hf.addCommMonoid _ zero add (swap nsmul) with }
 #align function.injective.add_comm_group_with_one Function.Injective.addCommGroupWithOne
 
 end Injective
@@ -445,9 +456,9 @@ map that preserves `0`, `1` and `*` from an additive monoid with one. See note
 @[reducible]
 protected def addMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
     [AddMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
     (nat_cast : ∀ n : ℕ, f n = n) : AddMonoidWithOne M₂ :=
-  { hf.addMonoid f zero add nsmul with
+  { hf.addMonoid f zero add (swap nsmul) with
     natCast := Nat.cast,
     natCast_zero := by rw [← Nat.cast, ← nat_cast, Nat.cast_zero, zero]
     natCast_succ := fun n => by rw [← Nat.cast, ← nat_cast, Nat.cast_succ, add, one, nat_cast]
@@ -472,9 +483,10 @@ See note [reducible non-instances]. -/
 @[reducible]
 protected def addCommMonoidWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [SMul ℕ M₂] [NatCast M₂]
     [AddCommMonoidWithOne M₁] (f : M₁ → M₂) (hf : Surjective f) (zero : f 0 = 0) (one : f 1 = 1)
-    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ :=
-  { hf.addMonoidWithOne f zero one add nsmul nat_cast, hf.addCommMonoid _ zero add nsmul with }
+    (add : ∀ x y, f (x + y) = f x + f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (nat_cast : ∀ n : ℕ, f n = n) : AddCommMonoidWithOne M₂ where
+  __ := hf.addMonoidWithOne f zero one add nsmul nat_cast
+  __ := hf.addCommMonoid _ zero add (swap nsmul)
 #align function.surjective.add_comm_monoid_with_one Function.Surjective.addCommMonoidWithOne
 
 /-- A type has an involutive inversion if it admits a surjective map that preserves `⁻¹` to a type
@@ -535,11 +547,11 @@ See note [reducible non-instances]. -/
 protected def addGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddGroupWithOne M₂ :=
   { hf.addMonoidWithOne f zero one add nsmul nat_cast,
-    hf.addGroup f zero add neg sub nsmul zsmul with
+    hf.addGroup f zero add neg sub (swap nsmul) (swap zsmul) with
     intCast := Int.cast,
     intCast_ofNat := fun n => by rw [← Int.cast, ← int_cast, Int.cast_ofNat, nat_cast],
     intCast_negSucc := fun n => by
@@ -567,11 +579,11 @@ See note [reducible non-instances]. -/
 protected def addCommGroupWithOne {M₂} [Zero M₂] [One M₂] [Add M₂] [Neg M₂] [Sub M₂] [SMul ℕ M₂]
     [SMul ℤ M₂] [NatCast M₂] [IntCast M₂] [AddCommGroupWithOne M₁] (f : M₁ → M₂) (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (neg : ∀ x, f (-x) = -f x)
-    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x)
-    (zsmul : ∀ (x) (n : ℤ), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
+    (sub : ∀ x y, f (x - y) = f x - f y) (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x)
+    (zsmul : ∀ (n : ℤ) (x), f (n • x) = n • f x) (nat_cast : ∀ n : ℕ, f n = n)
     (int_cast : ∀ n : ℤ, f n = n) : AddCommGroupWithOne M₂ :=
   { hf.addGroupWithOne f zero one add neg sub nsmul zsmul nat_cast int_cast,
-    hf.addCommMonoid _ zero add nsmul with }
+    hf.addCommMonoid _ zero add (swap nsmul) with }
 #align function.surjective.add_comm_group_with_one Function.Surjective.addCommGroupWithOne
 
 end Surjective

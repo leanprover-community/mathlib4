@@ -197,6 +197,10 @@ section ContinuousInv
 variable [TopologicalSpace G] [Inv G] [ContinuousInv G]
 
 @[to_additive]
+instance : ContinuousInv (ULift G) :=
+  ⟨continuous_uLift_up.comp (continuous_inv.comp continuous_uLift_down)⟩
+
+@[to_additive]
 theorem continuousOn_inv {s : Set G} : ContinuousOn Inv.inv s :=
   continuous_inv.continuousOn
 #align continuous_on_inv continuousOn_inv
@@ -486,6 +490,8 @@ end Conj
 
 variable [TopologicalSpace G] [Group G] [TopologicalGroup G] [TopologicalSpace α] {f : α → G}
   {s : Set α} {x : α}
+
+instance : TopologicalGroup (ULift G) where
 
 section ZPow
 

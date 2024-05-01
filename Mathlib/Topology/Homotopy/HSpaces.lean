@@ -48,7 +48,7 @@ particular, only has an instance of `MulOneClass`).
 * [J.-P. Serre, *Homologie singulière des espaces fibrés. Applications*,
   Ann. of Math (2) 1951, 54, 425–505][serre1951]
 -/
--- Porting note: `H_space` already contains an upper case letter
+-- Porting note: `HSpace` already contains an upper case letter
 set_option linter.uppercaseLean3 false
 universe u v
 
@@ -71,7 +71,7 @@ class HSpace (X : Type u) [TopologicalSpace X] where
     (hmul.comp <| (ContinuousMap.id X).prodMk <| const X e).HomotopyRel (ContinuousMap.id X) {e}
 #align H_space HSpace
 
--- We use the notation `⋀`, typeset as \And, to denote the binary operation `hmul` on an H-space
+/-- The binary operation `hmul` on an `H`-space -/
 scoped[HSpaces] notation x "⋀" y => HSpace.hmul (x, y)
 
 -- Porting note: opening `HSpaces` so that the above notation works

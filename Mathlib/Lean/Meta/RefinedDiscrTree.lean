@@ -3,9 +3,11 @@ Copyright (c) 2023 Jovan Gerbscheid. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jovan Gerbscheid
 -/
-import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
-import Std.Data.List.Basic
 import Lean.Meta.DiscrTree
+import Std.Data.List.Basic
+import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
+import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
+
 /-!
 We define discrimination trees for the purpose of unifying local expressions with library results.
 
@@ -73,18 +75,19 @@ I document here what features are not in the original:
   - The expression `fun a : α => a` is stored as `@id α`.
     - This makes lemmas such as `continuous_id'` redundant, which is the same as `continuous_id`,
       with `id` replaced by `fun x => x`.
-  - lambdas in front of number literals have been removed.
-  - Any expression with head constant `+`, `*`, `-`, `/` or `⁻¹` is normalized to not have a lambda
-    in front and to always have the default amount of arguments.
+  - Lambdas in front of number literals are removed. This is because usually `n : α → β` is
+    defined to be `fun _ : α => n` for a number literal `n`. So instead of `[λ, n]` we store `[n]`.
+  - Any expression with head constant `+`, `*`, `-`, `/`, `⁻¹`, `+ᵥ`, `•` or `^` is normalized to
+    not have a lambda in front and to always have the default amount of arguments.
     e.g. `(f + g) a` is stored as `f a + g a` and `fun x => f x + g x` is stored as `f + g`.
     - This makes lemmas such as `MeasureTheory.integral_integral_add'` redundant, which is the
       same as `MeasureTheory.integral_integral_add`, with `f a + g a` replaced by `(f + g) a`
     - it also means that a lemma like `Continuous.mul` can be stated as talking about `f * g`
       instead of `fun x => f x * g x`.
-    - When trying to find `Continuous.mul` with the expression `Continuous fun x => 1 + x`,
+    - When trying to find `Continuous.add` with the expression `Continuous fun x => 1 + x`,
       this is possible, because we first revert the eta-reduction that happens by default,
       and then distribute the lambda. Thus this is indexed as `Continuous (1 + id)`,
-      which matches with `Continuous (f + g)` from `Continuous.mul`.
+      which matches with `Continuous (f + g)` from `Continuous.add`.
 
 I have also made some changes in the implementation:
 
@@ -217,7 +220,6 @@ def Key.arity : Key → Nat
   | .proj _ _ a => 1 + a
   | _           => 0
 
-variable {α : Type}
 /-- Discrimination tree trie. See `RefinedDiscrTree`. -/
 inductive Trie (α : Type) where
   /-- Map from `Key` to `Trie`. Children is an `Array` of size at least 2,
@@ -227,6 +229,9 @@ inductive Trie (α : Type) where
   | path (keys : Array Key) (child : Trie α)
   /-- Leaf of the Trie. `values` is an `Array` of size at least 1. -/
   | values (vs : Array α)
+
+variable {α : Type}
+
 instance : Inhabited (Trie α) := ⟨.node #[]⟩
 
 /-- `Trie.path` constructor that only inserts the path if it is non-empty. -/
@@ -423,8 +428,6 @@ which is used for `RefinedDiscrTree` indexing. -/
 def DTExpr.flatten (e : DTExpr) (initCapacity := 16) : Array Key :=
   (DTExpr.flattenAux (.mkEmpty initCapacity) e).run' {}
 
-
-
 /-- Return `true` if `e` is one of the following
 - A nat literal (numeral)
 - `Nat.zero`
@@ -510,7 +513,7 @@ def getIgnores (fn : Expr) (args : Array Expr) : MetaM (Array Bool) := do
   let mut result := Array.mkEmpty args.size
   let mut j := 0
   for i in [:args.size] do
-    unless fnType matches .forallE .. do
+    unless fnType.isForall do
       fnType ← whnfD (fnType.instantiateRevRange j i args)
       j := i
     let .forallE _ d b bi := fnType | throwError m! "expected function type {indentExpr fnType}"
@@ -528,116 +531,6 @@ where
     | .strictImplicit => return !(← isType arg)
     | .default => isProof arg
 
-
-
-/-- Introduce new lambdas by η-expansion. -/
-@[specialize]
-def etaExpand (args : Array Expr) (type : Expr) (lambdas : List FVarId) (goalArity : Nat)
-    (k : Array Expr → List FVarId → MetaM α) : MetaM α  := do
-  if args.size < goalArity then
-    withLocalDeclD `_η type fun fvar =>
-      etaExpand (args.push fvar) type (fvar.fvarId! :: lambdas) goalArity k
-  else
-    k args lambdas
-termination_by goalArity - args.size
-
-
-/-- Normalize an application of a heterogenous binary operator like `HAdd.hAdd`, using:
-- (1) `f = fun x => f x` to increase the arity to 6
-- (2) `(f + g) a = f a + g a` to try to decrease the arity to 6
-- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
-def reduceHBinOpAux (args : Array Expr) (lambdas : List FVarId) (instH instPi : Name) :
-    MetaM (Option (Expr × Expr × Expr × List FVarId)) := do
-  let some (mkApp2 (.const instH' _) type inst) := args[3]? | return none
-  unless (instH == instH') do return none
-  some <$> do
-  if args.size ≤ 6 then
-    -- (1)
-    etaExpand args type lambdas 6 fun args lambdas =>
-      distributeLambdas lambdas type args[4]! args[5]!
-  else
-  -- (2)
-  let mut type := type
-  let mut inst := inst
-  let mut lhs := args[4]!
-  let mut rhs := args[5]!
-  for arg in args[6:] do
-    let mkApp3 (.const i _) _ f inst' := inst | return (type, lhs, rhs, lambdas)
-    unless i == instPi do return (type, lhs, rhs, lambdas)
-    type := .app f arg
-    inst := inst'
-    lhs := .app lhs arg
-    rhs := .app rhs arg
-  distributeLambdas lambdas type lhs rhs
-where
-  /-- (3) `(fun x => f x + g x) = f + g` to get rid of the lambdas in front -/
-  distributeLambdas (lambdas : List FVarId) (type lhs rhs : Expr) :
-      MetaM (Expr × Expr × Expr × List FVarId) := match lambdas with
-    | fvarId :: lambdas => do
-      let decl ← fvarId.getDecl
-      let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
-      let lhs  := .lam     decl.userName decl.type (lhs.abstract  #[.fvar fvarId]) decl.binderInfo
-      let rhs  := .lam     decl.userName decl.type (rhs.abstract  #[.fvar fvarId]) decl.binderInfo
-      distributeLambdas lambdas type lhs rhs
-    | [] => return (type, lhs, rhs, [])
-
-/-- Normalize an application if the head is  `+`, `*`, `-` or `/`.
-Optionally return the `(type, lhs, rhs, lambdas)`. -/
-@[inline] def reduceHBinOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
-    MetaM (Option (Expr × Expr × Expr × List FVarId)) :=
-  match n with
-  | ``HAdd.hAdd => reduceHBinOpAux args lambdas ``instHAdd `Pi.instAdd
-  | ``HMul.hMul => reduceHBinOpAux args lambdas ``instHMul `Pi.instMul
-  | ``HSub.hSub => reduceHBinOpAux args lambdas ``instHSub `Pi.instSub
-  | ``HDiv.hDiv => reduceHBinOpAux args lambdas ``instHDiv `Pi.instDiv
-  | _ => return none
-
-/-- Normalize an application of a unary operator like `Inv.inv`, using:
-- (1) `Inv.inv => id⁻¹` to increase the arity to 3
-- (2) `f⁻¹ a = (f a)⁻¹` to try to decrease the arity to 3
-- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
-def reduceUnOpAux (args : Array Expr) (lambdas : List FVarId) (instPi : Name) :
-    MetaM (Option (Expr × Expr × List FVarId)) := do
-  unless args.size ≥ 2 do return none
-  let type := args[0]!
-  let inst := args[1]!
-  if args.size == 2 then
-    -- (1)
-    let arg  := .app (.const ``id [← getLevel type]) type
-    let type := .forallE `_a type type .default
-    distributeLambdas lambdas type arg
-  else
-  let mut type := type
-  let mut inst := inst
-  let mut arg  := args[2]!
-  -- (2)
-  for arg' in args[3:] do
-    let mkApp3 (.const i _) _ f inst' := inst | return (type, arg, lambdas)
-    unless i == instPi do return (type, arg, lambdas)
-    type := .app f arg'
-    inst := inst'
-    arg  := .app arg arg'
-  distributeLambdas lambdas type arg
-where
-  /-- (3) `(fun x => (f x)⁻¹) = f⁻¹` to get rid of the lambdas in front -/
-  distributeLambdas (lambdas : List FVarId) (type arg : Expr) :
-      MetaM (Expr × Expr × List FVarId) := match lambdas with
-    | fvarId :: lambdas => do
-      let decl ← fvarId.getDecl
-      let type := .forallE decl.userName decl.type (type.abstract #[.fvar fvarId]) decl.binderInfo
-      let arg  := .lam     decl.userName decl.type (arg.abstract  #[.fvar fvarId]) decl.binderInfo
-      distributeLambdas lambdas type arg
-    | [] => return (type, arg, [])
-
-/-- Normalize an application if the head is `⁻¹` or `-`.
-Optionally return the `(type, arg, lambdas)`. -/
-@[inline] def reduceUnOp (n : Name) (args : Array Expr) (lambdas : List FVarId) :
-    MetaM (Option (Expr × Expr × List FVarId)) :=
-  match n with
-  | ``Neg.neg => reduceUnOpAux args lambdas `Pi.instNeg
-  |  `Inv.inv => reduceUnOpAux args lambdas `Pi.instInv
-  | _ => return none
-
 @[specialize]
 private def withLams {m} [Monad m] [MonadWithReader Context m]
     (lambdas : List FVarId) (k : m DTExpr) : m DTExpr :=
@@ -645,7 +538,7 @@ private def withLams {m} [Monad m] [MonadWithReader Context m]
     k
   else do
     let e ← withReader (fun c => { c with bvars := lambdas ++ c.bvars }) k
-    return lambdas.foldl (fun _ => ·.lam) e
+    return lambdas.foldl (fun d _ => d.lam) e
 
 /-- Reduction procedure for the `RefinedDiscrTree` indexing. -/
 partial def reduce (e : Expr) (config : WhnfCoreConfig) : MetaM Expr := do
@@ -675,7 +568,8 @@ partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadContr
 /-- Return the encoding of `e` as a `DTExpr`.
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr := do
-  lambdaTelescopeReduce e [] (← read).config fun e lambdas =>
+  lambdaTelescopeReduce e [] (← read).config fun e lambdas => do
+  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
   e.withApp fun fn args => do
 
   let argDTExpr (arg : Expr) (ignore : Bool) : ReaderT Context MetaM DTExpr :=
@@ -689,19 +583,6 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
   match fn with
   | .const n _ =>
     unless root do
-      if let some (type, lhs, rhs, lambdas') ← reduceHBinOp n args lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprAux type false
-          let lhs ← mkDTExprAux lhs false
-          let rhs ← mkDTExprAux rhs false
-          return .const n #[type, type, .star none, .star none, lhs, rhs]
-
-      if let some (type, arg, lambdas') ← reduceUnOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprAux type false
-          let arg ← mkDTExprAux arg false
-          return .const n #[type, .star none, arg]
-
       /- since `(fun _ => 0) = 0` and `(fun _ => 1) = 1`,
       we don't index lambdas before literals -/
       if let some v := toNatLit? e then
@@ -727,10 +608,10 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
       else
         return .opaque
   | .mvar mvarId =>
-    /- When the mvarId has arguments, index it with `[*]` instead of `[λ,*]`,
-    because the star could depend on the bound variables. As a result,
-    something indexed `[λ,*]` has that the `*` cannot depend on the λ-bound variables -/
-    if args.isEmpty then
+    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
+    When not at the root, don't index the lambdas, as it should be able to match with
+    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
+    if args.isEmpty && (root || lambdas.isEmpty) then
       withLams lambdas do return .star (some mvarId)
     else
       return .star none
@@ -749,7 +630,7 @@ partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr 
   | _           => unreachable!
 
 
-private abbrev M := StateListT (AssocList Expr DTExpr) $ ReaderT Context MetaM
+private abbrev M := ReaderT Context $ StateListT (AssocList Expr DTExpr) $ MetaM
 
 /-
 Caching values is a bit dangerous, because when two expressions are be equal and they live under
@@ -799,21 +680,7 @@ If `root = false`, then `e` is a strict sub expression of the original expressio
 partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
   lambdaTelescopeReduce original [] (← read).config fun e lambdas => do
 
-  if !root then
-    if let .const n _ := e.getAppFn then
-      if let some (type, lhs, rhs, lambdas') ← reduceHBinOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprsAux type false
-          let lhs ← mkDTExprsAux lhs false
-          let rhs ← mkDTExprsAux rhs false
-          return .const n #[type, type, .star none, .star none, lhs, rhs]
-
-      if let some (type, arg, lambdas') ← reduceUnOp n e.getAppArgs lambdas then
-        return ← withLams lambdas' do
-          let type ← mkDTExprsAux type false
-          let arg ← mkDTExprsAux arg false
-          return .const n #[type, .star none, arg]
-
+  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
   cacheEtaPossibilities e original lambdas fun e lambdas =>
   e.withApp fun fn args => do
 
@@ -843,7 +710,7 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
     if let fvarId' :: lambdas' := lambdas then
       if fvarId' == fvarId && args.isEmpty && !root then
         return ← withLams lambdas' do
-          let type ← mkDTExprAux (← fvarId.getType) false
+          let type ← mkDTExprsAux (← fvarId.getType) false
           return .const ``id #[type]
     withLams lambdas do
       let c ← read
@@ -855,10 +722,10 @@ partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
       else
         return .opaque
   | .mvar mvarId =>
-    /- When the mvarId has arguments, index it with `[*]` instead of `[λ,*]`,
-    because the star could depend on the bound variables. As a result,
-    something indexed `[λ,*]` has that the `*` cannot depend on the λ-bound variables -/
-    if args.isEmpty then
+    /- If there are arguments, don't index the lambdas, as `e` might contain the bound variables
+    When not at the root, don't index the lambdas, as it should be able to match with
+    `fun _ => x + y`, which is indexed as `(fun _ => x) + (fun _ => y)`. -/
+    if args.isEmpty && (root || lambdas.isEmpty) then
       withLams lambdas do return .star (some mvarId)
     else
       return .star none
@@ -896,18 +763,17 @@ def mkDTExpr (e : Expr) (config : WhnfCoreConfig)
   withReducible do (MkDTExpr.mkDTExprAux e true |>.run {config, fvarInContext})
 
 /-- Similar to `mkDTExpr`.
-Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account. -/
+Return all encodings of `e` as a `DTExpr`, taking potential further η-reductions into account.
+If onlySpecific is `true`, then filter the encodings by whether they are specific. -/
 def mkDTExprs (e : Expr) (config : WhnfCoreConfig) (onlySpecific : Bool)
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (List DTExpr) :=
   withReducible do
-    let es ← (MkDTExpr.mkDTExprsAux e true).run' {} |>.run {config, fvarInContext}
+    let es ← (MkDTExpr.mkDTExprsAux e true).run {config, fvarInContext} |>.run' {}
     return if onlySpecific then es.filter (·.isSpecific) else es
 
 
 
 /-! ### Inserting intro a RefinedDiscrTree -/
-
-variable {α : Type}
 
 /-- If `vs` contains an element `v'` such that `v == v'`, then replace `v'` with `v`.
 Otherwise, push `v`.
@@ -952,7 +818,7 @@ partial def insertInTrie [BEq α] (keys : Array Key) (i : Nat) (v : α) : Trie �
 
 /-- Insert the value `v` at index `keys : Array Key` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Key) (v : α) :
     RefinedDiscrTree α :=
@@ -967,7 +833,7 @@ def insertInRefinedDiscrTree [BEq α] (d : RefinedDiscrTree α) (keys : Array Ke
 
 /-- Insert the value `v` at index `e : DTExpr` in a `RefinedDiscrTree`.
 
-Warning: to accound for η-reduction, an entry may need to be added at multiple indexes,
+Warning: to account for η-reduction, an entry may need to be added at multiple indexes,
 so it is recommended to use `RefinedDiscrTree.insert` for insertion. -/
 def insertDTExpr [BEq α] (d : RefinedDiscrTree α) (e : DTExpr) (v : α) : RefinedDiscrTree α :=
   insertInRefinedDiscrTree d e.flatten v
@@ -984,18 +850,18 @@ def insert [BEq α] (d : RefinedDiscrTree α) (e : Expr) (v : α)
   let keys ← mkDTExprs e config onlySpecific fvarInContext
   return keys.foldl (insertDTExpr · · v) d
 
-/-- Insert the value `vLhs` at index `lhs`, and if `rhs` is indexed differently, then also
-insert the value `vRhs` at index `rhs`. -/
-def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vLhs vRhs : α)
+/-- Insert the value `vlhs` at index `lhs`, and if `rhs` is indexed differently, then also
+insert the value `vrhs` at index `rhs`. -/
+def insertEqn [BEq α] (d : RefinedDiscrTree α) (lhs rhs : Expr) (vlhs vrhs : α)
     (onlySpecific : Bool := true) (config : WhnfCoreConfig := {})
     (fvarInContext : FVarId → Bool := fun _ => false) : MetaM (RefinedDiscrTree α) := do
   let keysLhs ← mkDTExprs lhs config onlySpecific fvarInContext
   let keysRhs ← mkDTExprs rhs config onlySpecific fvarInContext
-  let d := keysLhs.foldl (insertDTExpr · · vLhs) d
+  let d := keysLhs.foldl (insertDTExpr · · vlhs) d
   if @List.beq _ ⟨DTExpr.eqv⟩ keysLhs keysRhs then
     return d
   else
-    return keysRhs.foldl (insertDTExpr · · vRhs) d
+    return keysRhs.foldl (insertDTExpr · · vrhs) d
 
 
 
@@ -1049,12 +915,13 @@ private def assignMVar (mvarId : MVarId) (e : Array Key) : M Unit := do
   | none =>
     modify fun s => { s with mvarAssignments := s.mvarAssignments.insert mvarId e }
 
-/-- Return the possible `Trie α` that match with `n` metavariable. -/
+/-- Return the possible `Trie α` that match with `n` metavariables. -/
 partial def skipEntries (t : Trie α) (skipped : Array Key) : Nat → M (Array Key × Trie α)
   | 0      => pure (skipped, t)
   | skip+1 =>
     t.children!.foldr (init := failure) fun (k, c) x =>
       (skipEntries c (skipped.push k) (skip + k.arity)) <|> x
+
 /-- Return the possible `Trie α` that match with anything.
 We add 1 to the matching score when the key is `.opaque`,
 since this pattern is "harder" to match with. -/
@@ -1072,6 +939,7 @@ def matchTargetStar (mvarId? : Option MVarId) (t : Trie α) : M (Trie α) := do
 while keeping track of the `Key.star` assignments. -/
 def matchTreeStars (e : DTExpr) (t : Trie α) : M (Trie α) := do
   let {starAssignments, ..} ← get
+  Id.run do
   let mut result := failure
   /- The `Key.star` are at the start of the `t.children!`,
   so this loops through all of them. -/

@@ -884,11 +884,9 @@ end AddValuation
 
 section ValuationNotation
 
--- mathport name: nat.multiplicative_zero
 /-- Notation for `WithZero (Multiplicative ℕ)` -/
 scoped[DiscreteValuation] notation "ℕₘ₀" => WithZero (Multiplicative ℕ)
 
--- mathport name: int.multiplicative_zero
 /-- Notation for `WithZero (Multiplicative ℤ)` -/
 scoped[DiscreteValuation] notation "ℤₘ₀" => WithZero (Multiplicative ℤ)
 

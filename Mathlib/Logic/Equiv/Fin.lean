@@ -290,9 +290,9 @@ theorem finSuccEquivLast_symm_some (i : Fin n) :
 @[simps (config := .asFn)]
 def Equiv.piFinSuccAbove (α : Fin (n + 1) → Type u) (i : Fin (n + 1)) :
     (∀ j, α j) ≃ α i × ∀ j, α (i.succAbove j) where
-  toFun f := (f i, fun j => f (i.succAbove j))
+  toFun f := i.extractNth f
   invFun f := i.insertNth f.1 f.2
-  left_inv f := by simp [Fin.insertNth_eq_iff]
+  left_inv f := by simp
   right_inv f := by simp
 #align equiv.pi_fin_succ_above_equiv Equiv.piFinSuccAbove
 #align equiv.pi_fin_succ_above_equiv_apply Equiv.piFinSuccAbove_apply
@@ -518,14 +518,14 @@ def Int.divModEquiv (n : ℕ) [NeZero n] : ℤ ≃ ℤ × Fin n where
   toFun a := (a / n, ↑(a.natMod n))
   invFun p := p.1 * n + ↑p.2
   left_inv a := by
-    simp_rw [Fin.coe_ofNat_eq_mod, Int.coe_nat_mod, Int.natMod,
+    simp_rw [Fin.coe_ofNat_eq_mod, Int.natCast_mod, Int.natMod,
       Int.toNat_of_nonneg (Int.emod_nonneg _ <| NeZero.ne ↑n), Int.emod_emod,
       Int.ediv_add_emod']
   right_inv := fun ⟨q, r, hrn⟩ => by
     simp only [Fin.val_mk, Prod.mk.inj_iff, Fin.ext_iff]
-    obtain ⟨h1, h2⟩ := Int.coe_nat_nonneg r, Int.ofNat_lt.2 hrn
+    obtain ⟨h1, h2⟩ := Int.natCast_nonneg r, Int.ofNat_lt.2 hrn
     rw [add_comm, Int.add_mul_ediv_right _ _ (NeZero.ne ↑n), Int.ediv_eq_zero_of_lt h1 h2,
-      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_coe_nat]
+      Int.natMod, Int.add_mul_emod_self, Int.emod_eq_of_lt h1 h2, Int.toNat_natCast]
     exact ⟨zero_add q, Fin.val_cast_of_lt hrn⟩
 #align int.div_mod_equiv Int.divModEquiv
 

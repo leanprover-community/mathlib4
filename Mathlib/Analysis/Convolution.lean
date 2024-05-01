@@ -440,16 +440,13 @@ noncomputable def convolution [Sub G] (f : G → E) (g : G → E') (L : E →L[�
   ∫ t, L (f t) (g (x - t)) ∂μ
 #align convolution convolution
 
--- mathport name: convolution
 /-- The convolution of two functions with respect to a bilinear operation `L` and a measure `μ`. -/
 scoped[Convolution] notation:67 f " ⋆[" L:67 ", " μ:67 "] " g:66 => convolution f g L μ
 
--- mathport name: convolution.volume
 /-- The convolution of two functions with respect to a bilinear operation `L` and the volume. -/
 scoped[Convolution]
   notation:67 f " ⋆[" L:67 "]" g:66 => convolution f g L MeasureTheory.MeasureSpace.volume
 
--- mathport name: convolution.lsmul
 /-- The convolution of two real-valued functions with respect to volume. -/
 scoped[Convolution]
   notation:67 f " ⋆ " g:66 =>

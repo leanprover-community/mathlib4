@@ -91,7 +91,6 @@ set_option linter.uppercaseLean3 false in
 instance : Category (ExactFunctor C D) :=
   FullSubcategory.category _
 
--- mathport name: «expr ⥤ₑ »
 /-- `C ⥤ₑ D` denotes exact functors `C ⥤ D` -/
 infixr:26 " ⥤ₑ " => ExactFunctor
 

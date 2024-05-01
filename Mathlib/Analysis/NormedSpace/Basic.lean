@@ -101,8 +101,8 @@ instance NormedSpace.discreteTopology_zmultiples
     obtain ⟨k, rfl⟩ := AddSubgroup.mem_zmultiples_iff.mp hx
     rw [mem_preimage, mem_ball_zero_iff, AddSubgroup.coe_mk, mem_singleton_iff, Subtype.ext_iff,
       AddSubgroup.coe_mk, AddSubgroup.coe_zero, norm_zsmul ℚ k e, Int.norm_cast_rat,
-      Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ←
-      @Int.cast_one ℝ _, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
+      Int.norm_eq_abs, mul_lt_iff_lt_one_left (norm_pos_iff.mpr he), ← @Int.cast_one ℝ _,
+      ← Int.cast_abs, Int.cast_lt, Int.abs_lt_one_iff, smul_eq_zero, or_iff_left he]
 
 open NormedField
 
@@ -128,10 +128,9 @@ instance Pi.normedSpace {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, Sem
     exact Finset.sup_mono_fun fun _ _ => norm_smul_le a _
 #align pi.normed_space Pi.normedSpace
 
-instance MulOpposite.normedSpace : NormedSpace 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.seminormedAddCommGroup (E := Eᵐᵒᵖ), MulOpposite.module _ with
-    norm_smul_le := fun s x => norm_smul_le s x.unop }
-#align mul_opposite.normed_space MulOpposite.normedSpace
+instance MulOpposite.instNormedSpace : NormedSpace 𝕜 Eᵐᵒᵖ where
+  norm_smul_le _ x := norm_smul_le _ x.unop
+#align mul_opposite.normed_space MulOpposite.instNormedSpace
 
 /-- A subspace of a normed space is also a normed space, with the restriction of the norm. -/
 instance Submodule.normedSpace {𝕜 R : Type*} [SMul 𝕜 R] [NormedField 𝕜] [Ring R] {E : Type*}
@@ -373,11 +372,11 @@ instance Pi.normedAlgebra {ι : Type*} {E : ι → Type*} [Fintype ι] [∀ i, S
 
 variable [SeminormedRing E] [NormedAlgebra 𝕜 E]
 
-instance MulOpposite.normedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
-    NormedAlgebra 𝕜 Eᵐᵒᵖ :=
-  { MulOpposite.normedSpace, MulOpposite.instAlgebra with }
-
-#align mul_opposite.normed_algebra MulOpposite.normedAlgebra
+instance MulOpposite.instNormedAlgebra {E : Type*} [SeminormedRing E] [NormedAlgebra 𝕜 E] :
+    NormedAlgebra 𝕜 Eᵐᵒᵖ where
+  __ := instAlgebra
+  __ := instNormedSpace
+#align mul_opposite.normed_algebra MulOpposite.instNormedAlgebra
 
 end NormedAlgebra
 

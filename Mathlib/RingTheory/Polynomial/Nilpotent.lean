@@ -3,11 +3,11 @@ Copyright (c) 2023 Oliver Nash. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Emilie Uthaiwat, Oliver Nash
 -/
-import Mathlib.RingTheory.Nilpotent
-import Mathlib.Data.Polynomial.AlgebraMap
-import Mathlib.Data.Polynomial.Div
-import Mathlib.Data.Polynomial.Identities
+import Mathlib.Algebra.Polynomial.AlgebraMap
+import Mathlib.Algebra.Polynomial.Div
+import Mathlib.Algebra.Polynomial.Identities
 import Mathlib.RingTheory.Ideal.QuotientOperations
+import Mathlib.RingTheory.Nilpotent
 import Mathlib.RingTheory.Polynomial.Tower
 
 /-!

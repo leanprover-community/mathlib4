@@ -41,6 +41,7 @@ noncomputable def restrictₗ {m0 : MeasurableSpace α} (s : Set α) : Measure �
 #align measure_theory.measure.restrictₗ MeasureTheory.Measure.restrictₗ
 
 /-- Restrict a measure `μ` to a set `s`. -/
+@[pp_dot]
 noncomputable def restrict {_m0 : MeasurableSpace α} (μ : Measure α) (s : Set α) : Measure α :=
   restrictₗ s μ
 #align measure_theory.measure.restrict MeasureTheory.Measure.restrict

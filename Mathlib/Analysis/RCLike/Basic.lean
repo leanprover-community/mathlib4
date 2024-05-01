@@ -883,7 +883,7 @@ lemma neg_iff_exists_ofReal : z < 0 ↔ ∃ x < (0 : ℝ), x = z := by
 (That is, a star ring in which the nonnegative elements are those of the form `star z * z`.)
 
 Note this is only an instance with `open scoped ComplexOrder`. -/
-def toStarOrderedRing : StarOrderedRing K :=
+lemma toStarOrderedRing : StarOrderedRing K :=
   StarOrderedRing.ofNonnegIff'
     (h_add := fun {x y} hxy z => by
       rw [RCLike.le_iff_re_im] at *

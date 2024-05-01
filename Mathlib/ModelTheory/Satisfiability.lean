@@ -304,7 +304,6 @@ def ModelsBoundedFormula (φ : L.BoundedFormula α n) : Prop :=
 #align first_order.language.Theory.models_bounded_formula FirstOrder.Language.Theory.ModelsBoundedFormula
 
 -- Porting note: In Lean3 it was `⊨` but ambiguous.
--- mathport name: models_bounded_formula
 @[inherit_doc FirstOrder.Language.Theory.ModelsBoundedFormula]
 infixl:51 " ⊨ᵇ " => ModelsBoundedFormula -- input using \|= or \vDash, but not using \models
 

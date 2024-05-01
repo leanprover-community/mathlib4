@@ -19,8 +19,6 @@ The resulting nonnegative real number is denoted by `‖n‖₊`.
 -/
 
 
-open BigOperators
-
 namespace Int
 
 theorem nnnorm_coe_units (e : ℤˣ) : ‖(e : ℤ)‖₊ = 1 := by
@@ -39,7 +37,7 @@ theorem nnnorm_coe_nat (n : ℕ) : ‖(n : ℤ)‖₊ = n :=
 
 @[simp]
 theorem toNat_add_toNat_neg_eq_nnnorm (n : ℤ) : ↑n.toNat + ↑(-n).toNat = ‖n‖₊ := by
-  rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.coe_natAbs]
+  rw [← Nat.cast_add, toNat_add_toNat_neg_eq_natAbs, NNReal.natCast_natAbs]
 #align int.to_nat_add_to_nat_neg_eq_nnnorm Int.toNat_add_toNat_neg_eq_nnnorm
 
 @[simp]

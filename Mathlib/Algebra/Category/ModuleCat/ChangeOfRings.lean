@@ -233,7 +233,6 @@ section ModuleCat.Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
--- mathport name: «expr ⊗ₜ[ , ] »
 -- This notation is necessary because we need to reason about `s ⊗ₜ m` where `s : S` and `m : M`;
 -- without this notation, one need to work with `s : (restrictScalars f).obj ⟨S⟩`.
 scoped[ChangeOfRings]
@@ -324,7 +323,6 @@ section Unbundled
 
 variable (M : Type v) [AddCommMonoid M] [Module R M]
 
--- mathport name: exprS'
 -- We use `S'` to denote `S` viewed as `R`-module, via the map `f`.
 -- Porting note: this seems to cause problems related to lack of reducibility
 -- local notation "S'" => (restrictScalars f).obj ⟨S⟩

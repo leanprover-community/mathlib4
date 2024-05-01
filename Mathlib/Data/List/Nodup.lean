@@ -469,7 +469,7 @@ theorem Nodup.pairwise_coe [IsSymm α r] (hl : l.Nodup) :
 
 -- Porting note (#10756): new theorem
 theorem Nodup.take_eq_filter_mem [DecidableEq α] :
-    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (· ∈ l.take n)
+    ∀ {l : List α} {n : ℕ} (_ : l.Nodup), l.take n = l.filter (l.take n).elem
   | [], n, _ => by simp
   | b::l, 0, _ => by simp
   | b::l, n+1, hl => by

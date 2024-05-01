@@ -128,7 +128,7 @@ theorem card_uIcc : (uIcc a b).card = (b - a).natAbs + 1 :=
       change ((↑) : ℕ → ℤ) _ = ((↑) : ℕ → ℤ) _
       rw [card_range, sup_eq_max, inf_eq_min,
         Int.toNat_of_nonneg (sub_nonneg_of_le <| le_add_one min_le_max), Int.ofNat_add,
-        Int.coe_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
+        Int.natCast_natAbs, add_comm, add_sub_assoc, max_sub_min_eq_abs, add_comm, Int.ofNat_one]
 #align int.card_uIcc Int.card_uIcc
 
 theorem card_Icc_of_le (h : a ≤ b + 1) : ((Icc a b).card : ℤ) = b + 1 - a := by

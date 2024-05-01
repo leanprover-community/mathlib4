@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kevin Kappelmann, Kyle Miller, Mario Carneiro
 -/
 import Mathlib.Init.Data.Nat.Lemmas
-import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Data.Nat.GCD.Basic
 import Mathlib.Logic.Function.Iterate
 import Mathlib.Data.Finset.NatAntidiagonal

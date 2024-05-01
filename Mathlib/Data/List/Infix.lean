@@ -70,6 +70,11 @@ theorem infix_rfl : l <:+: l :=
 theorem prefix_concat (a : α) (l) : l <+: concat l a := by simp
 #align list.prefix_concat List.prefix_concat
 
+theorem prefix_concat_iff {l₁ l₂ : List α} {a : α} :
+    l₁ <+: l₂ ++ [a] ↔ l₁ = l₂ ++ [a] ∨ l₁ <+: l₂ := by
+  simpa only [← reverse_concat', reverse_inj, reverse_suffix] using
+    suffix_cons_iff (l₁ := l₁.reverse) (l₂ := l₂.reverse)
+
 #align list.infix_cons List.infix_cons
 #align list.infix_concat List.infix_concat
 #align list.is_prefix.trans List.IsPrefix.trans
@@ -210,6 +215,27 @@ theorem prefix_iff_eq_take : l₁ <+: l₂ ↔ l₁ = take (length l₁) l₂ :=
   ⟨fun h => append_cancel_right <| (prefix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
     fun e => e.symm ▸ take_prefix _ _⟩
 #align list.prefix_iff_eq_take List.prefix_iff_eq_take
+
+theorem prefix_take_iff {x y : List α} {n : ℕ} : x <+: y.take n ↔ x <+: y ∧ x.length ≤ n := by
+  constructor
+  · intro h
+    constructor
+    · exact List.IsPrefix.trans h <| List.take_prefix n y
+    · replace h := h.length_le
+      rw [length_take, Nat.le_min] at h
+      exact h.left
+  · intro ⟨hp, hl⟩
+    have hl' := hp.length_le
+    rw [List.prefix_iff_eq_take] at *
+    rw [hp, List.take_take]
+    simp [min_eq_left, hl, hl']
+
+theorem concat_get_prefix {x y : List α} (h : x <+: y) (hl : x.length < y.length) :
+    x ++ [y.get ⟨x.length, hl⟩] <+: y := by
+  use y.drop (x.length + 1)
+  nth_rw 1 [List.prefix_iff_eq_take.mp h]
+  convert List.take_append_drop (x.length + 1) y using 2
+  rw [← List.take_concat_get, List.concat_eq_append]; rfl
 
 theorem suffix_iff_eq_drop : l₁ <:+ l₂ ↔ l₁ = drop (length l₂ - length l₁) l₂ :=
   ⟨fun h => append_cancel_left <| (suffix_iff_eq_append.1 h).trans (take_append_drop _ _).symm,
@@ -442,7 +468,7 @@ theorem nth_le_tails (l : List α) (n : ℕ) (hn : n < length (tails l)) :
   · simp
   · cases n
     · simp [nthLe_cons]
-    · simpa[nthLe_cons] using IH _ _
+    · simpa [nthLe_cons] using IH _ _
 #align list.nth_le_tails List.nth_le_tails
 
 @[simp]
@@ -452,7 +478,7 @@ theorem nth_le_inits (l : List α) (n : ℕ) (hn : n < length (inits l)) :
   · simp
   · cases n
     · simp [nthLe_cons]
-    · simpa[nthLe_cons] using IH _ _
+    · simpa [nthLe_cons] using IH _ _
 #align list.nth_le_inits List.nth_le_inits
 end deprecated
 
@@ -509,5 +535,18 @@ end Insert
 theorem mem_of_mem_suffix (hx : a ∈ l₁) (hl : l₁ <:+ l₂) : a ∈ l₂ :=
   hl.subset hx
 #align list.mem_of_mem_suffix List.mem_of_mem_suffix
+
+theorem IsPrefix.ne_nil {x y : List α} (h : x <+: y) (hx : x ≠ []) : y ≠ [] := by
+  rintro rfl; exact hx <| List.prefix_nil.mp h
+
+theorem IsPrefix.get_eq {x y : List α} (h : x <+: y) {n} (hn : n < x.length) :
+    x.get ⟨n, hn⟩ = y.get ⟨n, hn.trans_le h.length_le⟩ := by
+  obtain ⟨_, rfl⟩ := h
+  exact (List.get_append n hn).symm
+
+theorem IsPrefix.head_eq {x y : List α} (h : x <+: y) (hx : x ≠ []) :
+    x.head hx = y.head (h.ne_nil hx) := by
+  cases x <;> cases y <;> simp only [head_cons, ne_eq, not_true_eq_false] at hx ⊢
+  all_goals (obtain ⟨_, h⟩ := h; injection h)
 
 end List

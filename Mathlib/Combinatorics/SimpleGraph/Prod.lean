@@ -47,7 +47,6 @@ def boxProd (G : SimpleGraph α) (H : SimpleGraph β) : SimpleGraph (α × β) w
   loopless x := by simp
 #align simple_graph.box_prod SimpleGraph.boxProd
 
--- mathport name: «expr □ »
 /-- Box product of simple graphs. It relates `(a₁, b)` and `(a₂, b)` if `G` relates `a₁` and `a₂`,
 and `(a, b₁)` and `(a, b₂)` if `H` relates `b₁` and `b₂`. -/
 infixl:70 " □ " => boxProd

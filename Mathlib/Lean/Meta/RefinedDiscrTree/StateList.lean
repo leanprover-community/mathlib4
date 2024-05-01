@@ -6,9 +6,9 @@ Authors: Jovan Gerbscheid
 
 /-!
 The combined state and list monad transformer.
-`StateListT σ α` is equivalent to `StateT σ (ListT α)` but more efficient.
+`StateListT σ α` is equivalent to `StateT σ (ListT α)` but slightly more efficient.
 
-WARNING: `StateListT σ α m` is only a monad if `m` is a commutative monad.
+WARNING: `StateListT σ m`, just like `ListT m`, is only a monad if `m` is a commutative monad.
 For example,
 ```
 def problem : StateListT Unit (StateM (Array Nat)) Unit := do
@@ -20,6 +20,9 @@ def problem : StateListT Unit (StateM (Array Nat)) Unit := do
 ```
 will yield either `#[0,1,0,1]`, or `#[0,0,1,1]`, depending on the order in which the actions
 in the do block are combined.
+
+The `MLList` data structure from Std is lazy and thus does not have this problem. Unfortunately,
+it is much less efficient.
 
 -/
 
@@ -148,22 +151,17 @@ instance : MonadLift m (StateListT σ m) := ⟨StateListT.lift⟩
 instance : MonadFunctor m (StateListT σ m) := ⟨fun f x s => f (x s)⟩
 
 @[always_inline]
-instance (ε) [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) := {
-  throw    := fun e => StateListT.lift (throw e)
-  tryCatch := fun x c s => tryCatch (x s) (fun e => c e s)
-}
-
-end StateListT
-
+instance {ε} [MonadExceptOf ε m] : MonadExceptOf ε (StateListT σ m) where
+  throw e := StateListT.lift (throw e)
+  tryCatch x c s := tryCatch (x s) (fun e => c e s)
 
 instance : MonadStateOf σ (StateListT σ m) where
   get       := StateListT.get
   set       := StateListT.set
   modifyGet := StateListT.modifyGet
 
-
 @[always_inline]
-instance StateListT.monadControl : MonadControl m (StateListT σ m) where
+instance : MonadControl m (StateListT σ m) where
   stM      := StateList σ
   liftWith := fun f => do let s ← get; liftM (f (fun x => x s))
   restoreM := fun x _ => x

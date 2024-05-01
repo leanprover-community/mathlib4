@@ -67,7 +67,6 @@ theorem ae_eq_zero_of_forall_inner [NormedAddCommGroup E] [InnerProductSpace �
   exact @isClosed_property ℕ E _ s (fun c => inner c (f x) = (0 : 𝕜)) hs h_closed (fun n => hx n) _
 #align measure_theory.ae_eq_zero_of_forall_inner MeasureTheory.ae_eq_zero_of_forall_inner
 
--- mathport name: «expr⟪ , ⟫»
 local notation "⟪" x ", " y "⟫" => y x
 
 variable (𝕜)

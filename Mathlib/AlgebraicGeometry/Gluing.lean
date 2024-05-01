@@ -379,12 +379,8 @@ theorem fromGlued_injective : Function.Injective 𝒰.fromGlued.1.base := by
   right
   use e.hom ⟨⟨x, y⟩, h⟩
   constructor
-  -- Porting note: in the two subproofs below, added the `change` lines
-  · change (e.hom ≫ _) ⟨(x, y), h⟩ = x
-    erw [IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
-  · change (e.hom ≫ ((gluedCover 𝒰).toGlueData.t i j ≫
-      (gluedCover 𝒰).toGlueData.f j i).val.base) ⟨(x, y), h⟩ = y
-    erw [pullbackSymmetry_hom_comp_fst,
+  · erw [← comp_apply e.hom, IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.left]; rfl
+  · erw [← comp_apply e.hom, pullbackSymmetry_hom_comp_fst,
       IsLimit.conePointUniqueUpToIso_hom_comp _ _ WalkingCospan.right]
     rfl
 #align algebraic_geometry.Scheme.open_cover.from_glued_injective AlgebraicGeometry.Scheme.OpenCover.fromGlued_injective

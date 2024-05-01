@@ -8,6 +8,7 @@ import Mathlib.Order.Filter.Pointwise
 import Mathlib.Topology.Algebra.MulAction
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Topology.ContinuousFunction.Basic
+import Mathlib.Algebra.Group.ULift
 
 #align_import topology.algebra.monoid from "leanprover-community/mathlib"@"1ac8d4304efba9d03fa720d06516fac845aa5353"
 
@@ -70,6 +71,13 @@ theorem continuous_mul : Continuous fun p : M × M => p.1 * p.2 :=
   ContinuousMul.continuous_mul
 #align continuous_mul continuous_mul
 #align continuous_add continuous_add
+
+@[to_additive]
+instance : ContinuousMul (ULift.{u} M) := by
+  constructor
+  apply continuous_uLift_up.comp
+  exact continuous_mul.comp₂ (continuous_uLift_down.comp continuous_fst)
+    (continuous_uLift_down.comp continuous_snd)
 
 @[to_additive]
 instance ContinuousMul.to_continuousSMul : ContinuousSMul M M :=

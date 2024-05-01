@@ -78,7 +78,6 @@ structure Adjunction (F : C ⥤ D) (G : D ⥤ C) where
 #align category_theory.adjunction.hom_equiv_counit CategoryTheory.Adjunction.homEquiv_counit
 #align category_theory.adjunction.hom_equiv_counit' CategoryTheory.Adjunction.homEquiv_counit
 
--- mathport name: «expr ⊣ »
 /-- The notation `F ⊣ G` stands for `Adjunction F G` representing that `F` is left adjoint to `G` -/
 infixl:15 " ⊣ " => Adjunction
 

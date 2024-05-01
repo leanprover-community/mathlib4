@@ -502,7 +502,7 @@ attribute [deprecated] exists_extension_of_closedEmbedding -- deprecated since 2
 
 /-- **Tietze extension theorem** for real-valued continuous maps, a version for a closed set. Let
 `s` be a closed set in a normal topological space `Y`. Let `f` be a continuous real-valued function
-on `s`. Let `t` be a nonempty convex set of real numbers (we use `ord_connected` instead of `convex`
+on `s`. Let `t` be a nonempty convex set of real numbers (we use `ord_connected` instead of `Convex`
 to automatically deduce this argument by typeclass search) such that `f x ∈ t` for all `x : s`. Then
 there exists a continuous real-valued function `g : C(Y, ℝ)` such that `g y ∈ t` for all `y` and
 `g.restrict s = f`. -/

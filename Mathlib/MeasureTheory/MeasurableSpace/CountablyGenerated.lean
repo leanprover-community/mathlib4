@@ -290,14 +290,10 @@ lemma measurableSet_generateFrom_memPartition_iff (t : ℕ → Set α) (n : ℕ)
         exact diff_subset _ _
       · simp only [Finset.coe_sdiff, coe_toFinset]
         refine (IsCompl.eq_compl ⟨?_, ?_⟩).symm
-        · rw [disjoint_iff_inter_eq_empty]
-          ext x
-          simp only [mem_inter_iff, mem_sUnion, mem_diff, Finset.mem_coe, mem_empty_iff_false,
-            iff_false, not_and, not_exists, forall_exists_index, and_imp]
-          intro u hu huS hxu v hvS
-          have huv : u ≠ v := fun h_eq ↦ absurd hvS (h_eq ▸ huS)
-          have : Disjoint u v := disjoint_memPartition t n hu (hS_subset hvS) huv
-          exact fun hxv ↦ absurd rfl (this.ne_of_mem hxu hxv)
+        · refine Set.disjoint_sUnion_right.mpr fun u huS => ?_
+          refine Set.disjoint_sUnion_left.mpr fun v huV => ?_
+          refine disjoint_memPartition t n (mem_of_mem_diff huV) (hS_subset huS) ?_
+          exact ne_of_mem_of_not_mem huS (not_mem_of_mem_diff huV) |>.symm
         · rw [codisjoint_iff]
           simp only [sup_eq_union, top_eq_univ]
           rw [← sUnion_memPartition t n, union_comm, ← sUnion_union, union_diff_cancel hS_subset]

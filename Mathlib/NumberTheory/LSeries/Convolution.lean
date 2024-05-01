@@ -4,8 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Michael Stoll
 -/
 import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.NumberTheory.LSeries.Convergence
 import Mathlib.Analysis.Normed.Field.InfiniteSum
+import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.LSeries.Convergence
 
 /-!
 # Dirichlet convolution of sequences and products of L-series
@@ -28,13 +29,21 @@ open Complex LSeries
 ### Dirichlet convolution of two functions
 -/
 
-open BigOperators
+open BigOperators Nat
 
 /-- We turn any function `ℕ → R` into an `ArithmeticFunction R` by setting its value at `0`
 to be zero. -/
 def toArithmeticFunction {R : Type*} [Zero R] (f : ℕ → R) : ArithmeticFunction R where
   toFun n := if n = 0 then 0 else f n
   map_zero' := rfl
+
+lemma toArithmeticFunction_congr {R : Type*} [Zero R] {f f' : ℕ → R}
+    (h : ∀ {n}, n ≠ 0 → f n = f' n) :
+    toArithmeticFunction f = toArithmeticFunction f' := by
+  ext ⟨- | _⟩
+  · simp only [zero_eq, ArithmeticFunction.map_zero]
+  · simp only [toArithmeticFunction, ArithmeticFunction.coe_mk, succ_ne_zero, ↓reduceIte,
+      ne_eq, not_false_eq_true, h]
 
 /-- If we consider an arithmetic function just as a function and turn it back into an
 arithmetic function, it is the same as before. -/
@@ -54,6 +63,11 @@ noncomputable def LSeries.convolution {R : Type*} [Semiring R] (f g : ℕ → R)
 @[inherit_doc]
 scoped[LSeries.notation] infixl:70 " ⍟ " => LSeries.convolution
 
+lemma LSeries.convolution_congr {R : Type*} [Semiring R] {f f' g g' : ℕ → R}
+    (hf : ∀ {n}, n ≠ 0 → f n = f' n) (hg : ∀ {n}, n ≠ 0 → g n = g' n) :
+    f ⍟ g = f' ⍟ g' := by
+  simp only [convolution, toArithmeticFunction_congr hf, toArithmeticFunction_congr hg]
+
 /-- The product of two arithmetic functions defines the same function as the Dirichlet convolution
 of the functions defined by them. -/
 lemma ArithmeticFunction.coe_mul {R : Type*} [Semiring R] (f g : ArithmeticFunction R) :
@@ -68,13 +82,12 @@ lemma convolution_def {R : Type*} [Semiring R] (f g : ℕ → R) :
   simp only [convolution, toArithmeticFunction, ArithmeticFunction.mul_apply,
     ArithmeticFunction.coe_mk, mul_ite, mul_zero, ite_mul, zero_mul]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨hp₁, hp₂⟩ := Nat.mem_divisorsAntidiagonal.mp hp
-  obtain ⟨h₁, h₂⟩ := mul_ne_zero_iff.mp (hp₁.symm ▸ hp₂)
+  obtain ⟨h₁, h₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
   simp only [h₂, ↓reduceIte, h₁]
 
 @[simp]
 lemma convolution_map_zero {R : Type*} [Semiring R] (f g : ℕ → R) : (f ⍟ g) 0 = 0 := by
-  simp only [convolution_def, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
+  simp only [convolution_def, divisorsAntidiagonal_zero, Finset.sum_empty]
 
 
 /-!
@@ -86,14 +99,13 @@ in terms of a sum over `Nat.divisorsAntidiagonal`. -/
 lemma term_convolution (f g : ℕ → ℂ) (s : ℂ) (n : ℕ) :
     term (f ⍟ g) s n = ∑ p in n.divisorsAntidiagonal, term f s p.1 * term g s p.2 := by
   rcases eq_or_ne n 0 with rfl | hn
-  · simp only [term_zero, Nat.divisorsAntidiagonal_zero, Finset.sum_empty]
+  · simp only [term_zero, divisorsAntidiagonal_zero, Finset.sum_empty]
   -- now `n ≠ 0`
   rw [term_of_ne_zero hn, convolution_def, Finset.sum_div]
   refine Finset.sum_congr rfl fun p hp ↦ ?_
-  obtain ⟨hp, hn₀⟩ := Nat.mem_divisorsAntidiagonal.mp hp
-  have ⟨hp₁, hp₂⟩ := mul_ne_zero_iff.mp <| hp.symm ▸ hn₀
-  rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div,
-    ← mul_div_assoc, ← natCast_mul_natCast_cpow, ← Nat.cast_mul, mul_comm p.2, hp]
+  have ⟨hp₁, hp₂⟩ := ne_zero_of_mem_divisorsAntidiagonal hp
+  rw [term_of_ne_zero hp₁ f s, term_of_ne_zero hp₂ g s, mul_comm_div, div_div, ← mul_div_assoc,
+    ← natCast_mul_natCast_cpow, ← cast_mul, mul_comm p.2, (mem_divisorsAntidiagonal.mp hp).1]
 
 open Set in
 /-- We give an expression of the `LSeries.term` of the convolution of two functions
@@ -110,7 +122,7 @@ lemma term_convolution' (f g : ℕ → ℂ) (s : ℂ) :
     -- the right hand sum is over the union below, but in each term, one factor is always zero
     have hS : (fun p ↦ p.1 * p.2) ⁻¹' {0} = {0} ×ˢ univ ∪ univ ×ˢ {0} := by
       ext
-      simp only [mem_preimage, mem_singleton_iff, mul_eq_zero, mem_union, mem_prod, mem_univ,
+      simp only [mem_preimage, mem_singleton_iff, Nat.mul_eq_zero, mem_union, mem_prod, mem_univ,
         and_true, true_and]
     have : ∀ p : (fun p : ℕ × ℕ ↦ p.1 * p.2) ⁻¹' {0}, term f s p.val.1 * term g s p.val.2 = 0 := by
       rintro ⟨⟨p₁, p₂⟩, hp⟩

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Yury Kudryashov, Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Intervals
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.Support
 import Mathlib.Order.LiminfLimsup
 import Mathlib.Order.Filter.Archimedean

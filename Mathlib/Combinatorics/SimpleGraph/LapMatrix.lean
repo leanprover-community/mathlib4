@@ -87,8 +87,8 @@ theorem lapMatrix_toLinearMap₂' [Field α] [CharZero α] (x : V → α) :
   ring_nf
 
 /-- The Laplacian matrix is positive semidefinite -/
-theorem posSemidef_lapMatrix [LinearOrderedField α] [StarOrderedRing α] [TrivialStar α] :
-    PosSemidef (G.lapMatrix α) := by
+theorem posSemidef_lapMatrix [LinearOrderedField α] [StarRing α] [StarOrderedRing α]
+    [TrivialStar α] : PosSemidef (G.lapMatrix α) := by
   constructor
   · rw [IsHermitian, conjTranspose_eq_transpose_of_trivial, isSymm_lapMatrix]
   · intro x

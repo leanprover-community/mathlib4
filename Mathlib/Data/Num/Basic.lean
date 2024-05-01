@@ -5,9 +5,9 @@ Authors: Leonardo de Moura, Mario Carneiro
 -/
 import Lean.Linter.Deprecated
 import Mathlib.Mathport.Rename
-import Mathlib.Init.Data.Nat.Bitwise
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
+import Mathlib.Data.Nat.Bits
 
 #align_import data.num.basic from "leanprover-community/mathlib"@"c4658a649d216f57e99621708b09dcb3dcccbd23"
 /-!

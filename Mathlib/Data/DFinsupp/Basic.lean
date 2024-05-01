@@ -67,11 +67,9 @@ structure DFinsupp [∀ i, Zero (β i)] : Type max u v where mk' ::
 
 variable {β}
 
--- mathport name: «exprΠ₀ , »
 /-- `Π₀ i, β i` denotes the type of dependent functions with finite support `DFinsupp β`. -/
 notation3 "Π₀ "(...)", "r:(scoped f => DFinsupp f) => r
 
--- mathport name: «expr →ₚ »
 @[inherit_doc]
 infixl:25 " →ₚ " => DFinsupp
 

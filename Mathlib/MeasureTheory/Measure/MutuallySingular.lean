@@ -40,7 +40,6 @@ def MutuallySingular {_ : MeasurableSpace α} (μ ν : Measure α) : Prop :=
   ∃ s : Set α, MeasurableSet s ∧ μ s = 0 ∧ ν sᶜ = 0
 #align measure_theory.measure.mutually_singular MeasureTheory.Measure.MutuallySingular
 
--- mathport name: measure.mutually_singular
 @[inherit_doc MeasureTheory.Measure.MutuallySingular]
 scoped[MeasureTheory] infixl:60 " ⟂ₘ " => MeasureTheory.Measure.MutuallySingular
 

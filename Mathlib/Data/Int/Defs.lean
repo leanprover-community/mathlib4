@@ -8,6 +8,8 @@ import Mathlib.Init.ZeroOne
 import Mathlib.Logic.Nontrivial.Defs
 import Mathlib.Tactic.Convert
 
+#align_import init.data.int.comp_lemmas from "leanprover-community/lean"@"4a03bdeb31b3688c31d02d7ff8e0ff2e5d6174db"
+
 /-!
 # Basic operations on the integers
 
@@ -19,19 +21,51 @@ open Nat
 namespace Int
 variable {m n : ℕ}
 
+#noalign int.ne_neg_of_ne
+#noalign int.neg_ne_zero_of_ne
+#noalign int.zero_ne_neg_of_ne
+#noalign int.neg_ne_of_pos
+#noalign int.ne_neg_of_pos
+#noalign int.bit0_nonneg
+#noalign int.bit1_nonneg
+#noalign int.nonneg_of_pos
+#noalign int.ne_of_nat_abs_ne_nat_abs_of_nonneg
+#noalign int.ne_of_nat_ne_nonneg_case
+#noalign int.nat_abs_bit0
+#noalign int.nat_abs_bit0_step
+#noalign int.nat_abs_bit1_nonneg
+#noalign int.nat_abs_bit1_nonneg_step
+#align int.neg_succ_lt_zero Int.negSucc_lt_zero
+#align int.of_nat_nat_abs_eq_of_nonneg Int.ofNat_natAbs_eq_of_nonnegₓ
+#align int.nat_abs_of_neg_succ_of_nat Int.natAbs_negSucc
+
 -- TODO: Tag in Std
 attribute [simp] natAbs_pos
 
+protected lemma one_pos : 0 < (1 : Int) := Int.zero_lt_one
+#align int.one_pos Int.one_pos
+
+protected lemma one_nonneg : 0 ≤ (1 : ℤ) := Int.le_of_lt Int.zero_lt_one
+#align int.one_nonneg Int.one_nonneg
+
+lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zero_add]; rfl)
+#align int.zero_le_of_nat Int.zero_le_ofNat
+
 instance instNontrivialInt : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
-@[simp] lemma ofNat_eq_cast : Int.ofNat n = n := rfl
+@[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
-@[norm_cast] lemma cast_eq_cast_iff_Nat (m n : ℕ) : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+-- 2024-03-24
+@[deprecated ofNat_eq_natCast] protected lemma natCast_eq_ofNat (n : ℕ) : ↑n = Int.ofNat n := rfl
+#align int.coe_nat_eq Int.natCast_eq_ofNat
+
+@[norm_cast] lemma natCast_inj : (m : ℤ) = (n : ℤ) ↔ m = n := ofNat_inj
+#align int.coe_nat_inj' Int.natCast_inj
 
 @[simp, norm_cast] lemma natAbs_cast (n : ℕ) : natAbs ↑n = n := rfl
 
 @[norm_cast]
-protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
+protected lemma natCast_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m - ↑n := ofNat_sub
 
 #align int.neg_succ_not_nonneg Int.negSucc_not_nonneg
 #align int.neg_succ_not_pos Int.negSucc_not_pos
@@ -43,17 +77,14 @@ protected lemma coe_nat_sub {n m : ℕ} : n ≤ m → (↑(m - n) : ℤ) = ↑m 
 #align int.coe_nat_le Int.ofNat_le
 #align int.coe_nat_lt Int.ofNat_lt
 
-lemma coe_nat_inj' : (↑m : ℤ) = ↑n ↔ m = n := Int.ofNat_inj
-#align int.coe_nat_inj' Int.coe_nat_inj'
-
-lemma coe_nat_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
-#align int.coe_nat_nonneg Int.coe_nat_nonneg
+lemma natCast_nonneg (n : ℕ) : 0 ≤ (n : ℤ) := ofNat_le.2 (Nat.zero_le _)
+#align int.coe_nat_nonneg Int.natCast_nonneg
 
 #align int.neg_of_nat_ne_zero Int.negSucc_ne_zero
 #align int.zero_ne_neg_of_nat Int.zero_ne_negSucc
 
-@[simp] lemma sign_coe_add_one (n : ℕ) : sign (n + 1) = 1 := rfl
-#align int.sign_coe_add_one Int.sign_coe_add_one
+@[simp] lemma sign_natCast_add_one (n : ℕ) : sign (n + 1) = 1 := rfl
+#align int.sign_coe_add_one Int.sign_natCast_add_one
 
 #align int.sign_neg_succ_of_nat Int.sign_negSucc
 
@@ -85,8 +116,8 @@ def succ (a : ℤ) := a + 1
 def pred (a : ℤ) := a - 1
 #align int.pred Int.pred
 
-lemma nat_succ_eq_int_succ (n : ℕ) : (Nat.succ n : ℤ) = Int.succ n := rfl
-#align int.nat_succ_eq_int_succ Int.nat_succ_eq_int_succ
+lemma natCast_succ (n : ℕ) : (Nat.succ n : ℤ) = Int.succ n := rfl
+#align int.nat_succ_eq_int_succ Int.natCast_succ
 
 lemma pred_succ (a : ℤ) : pred (succ a) = a := Int.add_sub_cancel _ _
 #align int.pred_succ Int.pred_succ
@@ -113,12 +144,12 @@ lemma pred_nat_succ (n : ℕ) : pred (Nat.succ n) = n := pred_succ n
 lemma neg_nat_succ (n : ℕ) : -(Nat.succ n : ℤ) = pred (-n) := neg_succ n
 #align int.neg_nat_succ Int.neg_nat_succ
 
-lemma succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
-#align int.succ_neg_nat_succ Int.succ_neg_nat_succ
+lemma succ_neg_natCast_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
+#align int.succ_neg_nat_succ Int.succ_neg_natCast_succ
 
-@[norm_cast] lemma coe_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
+@[norm_cast] lemma natCast_pred_of_pos {n : ℕ} (h : 0 < n) : ((n - 1 : ℕ) : ℤ) = (n : ℤ) - 1 := by
   cases n; cases h; simp [ofNat_succ]
-#align int.coe_pred_of_pos Int.coe_pred_of_pos
+#align int.coe_pred_of_pos Int.natCast_pred_of_pos
 
 @[elab_as_elim] protected lemma induction_on {p : ℤ → Prop} (i : ℤ)
     (hz : p 0) (hp : ∀ i : ℕ, p i → p (i + 1)) (hn : ∀ i : ℕ, p (-i) → p (-i - 1)) : p i := by
@@ -135,6 +166,21 @@ lemma succ_neg_nat_succ (n : ℕ) : succ (-Nat.succ n) = -n := succ_neg_succ n
 #align int.induction_on Int.induction_on
 
 /-! ### nat abs -/
+
+-- TODO: Rename `natAbs_of_Nat` to `natAbs_natCast`
+lemma natAbs_ofNat' (n : ℕ) : natAbs (ofNat n) = n := rfl
+#align int.nat_abs_of_nat_core Int.natAbs_ofNat'
+
+lemma natAbs_add_of_nonneg : ∀ {a b : Int}, 0 ≤ a → 0 ≤ b → natAbs (a + b) = natAbs a + natAbs b
+  | ofNat _, ofNat _, _, _ => rfl
+#align int.nat_abs_add_nonneg Int.natAbs_add_of_nonneg
+
+lemma natAbs_add_of_nonpos : ∀ {a b : Int}, a ≤ 0 → b ≤ 0 → natAbs (a + b) = natAbs a + natAbs b
+  | negSucc _, negSucc _, _, _ => by simp [negSucc_add_negSucc, Nat.succ_add]; rfl
+  | negSucc _, 0, _, _ => by simp
+  | 0, negSucc _, _, _ => by simp
+  | 0, 0, _, _ => rfl
+#align int.nat_abs_add_neg Int.natAbs_add_of_nonpos
 
 lemma natAbs_surjective : natAbs.Surjective := fun n => ⟨n, natAbs_ofNat n⟩
 #align int.nat_abs_surjective Int.natAbs_surjective
@@ -167,10 +213,10 @@ lemma natAbs_ne_zero_of_ne_zero : ∀ {a : ℤ}, a ≠ 0 → natAbs a ≠ 0 := n
 
 #align int.of_nat_div Int.ofNat_div
 
-@[simp, norm_cast] lemma coe_nat_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
-#align int.coe_nat_div Int.coe_nat_div
+@[simp, norm_cast] lemma natCast_div (m n : ℕ) : ((m / n : ℕ) : ℤ) = m / n := rfl
+#align int.coe_nat_div Int.natCast_div
 
-lemma coe_nat_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
+lemma natCast_ediv (m n : ℕ) : ((m / n : ℕ) : ℤ) = ediv m n := rfl
 
 #align int.neg_succ_of_nat_div Int.negSucc_ediv
 
@@ -191,8 +237,8 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 
 #align int.of_nat_mod Int.ofNat_mod_ofNat
 
-@[simp, norm_cast] lemma coe_nat_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
-#align int.coe_nat_mod Int.coe_nat_mod
+@[simp, norm_cast] lemma natCast_mod (m n : ℕ) : (↑(m % n) : ℤ) = ↑m % ↑n := rfl
+#align int.coe_nat_mod Int.natCast_mod
 
 #align int.neg_succ_of_nat_mod Int.negSucc_emod
 #align int.mod_neg Int.mod_negₓ -- int div alignment
@@ -217,8 +263,8 @@ lemma ediv_of_neg_of_pos {a b : ℤ} (Ha : a < 0) (Hb : 0 < b) : ediv a b = -((-
 #align int.nat_abs_sign Int.natAbs_sign
 #align int.nat_abs_sign_of_nonzero Int.natAbs_sign_of_nonzero
 
-lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
-#align int.sign_coe_nat_of_nonzero Int.sign_coe_nat_of_nonzero
+lemma sign_natCast_of_ne_zero (hn : n ≠ 0) : Int.sign n = 1 := sign_ofNat_of_nonzero hn
+#align int.sign_coe_nat_of_nonzero Int.sign_natCast_of_ne_zero
 
 #align int.div_sign Int.div_sign -- int div alignment
 #align int.of_nat_add_neg_succ_of_nat_of_lt Int.ofNat_add_negSucc_of_lt
@@ -231,11 +277,11 @@ lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 #align int.to_nat_one Int.toNat_one
 #align int.to_nat_of_nonneg Int.toNat_of_nonneg
 
-@[simp] lemma toNat_coe_nat (n : ℕ) : toNat ↑n = n := rfl
-#align int.to_nat_coe_nat Int.toNat_coe_nat
+@[simp] lemma toNat_natCast (n : ℕ) : toNat ↑n = n := rfl
+#align int.to_nat_coe_nat Int.toNat_natCast
 
-@[simp] lemma toNat_coe_nat_add_one {n : ℕ} : ((n : ℤ) + 1).toNat = n + 1 := rfl
-#align int.to_nat_coe_nat_add_one Int.toNat_coe_nat_add_one
+@[simp] lemma toNat_natCast_add_one {n : ℕ} : ((n : ℤ) + 1).toNat = n + 1 := rfl
+#align int.to_nat_coe_nat_add_one Int.toNat_natCast_add_one
 
 #align int.le_to_nat Int.self_le_toNat
 #align int.le_to_nat_iff Int.le_toNat
@@ -249,3 +295,18 @@ lemma sign_coe_nat_of_nonzero {n : ℕ} (hn : n ≠ 0) : Int.sign n = 1 := sign_
 
 -- Porting note: this was added in an ad hoc port for use in `Tactic/NormNum/Basic`
 @[simp] lemma pow_eq (m : ℤ) (n : ℕ) : m.pow n = m ^ n := rfl
+
+-- 2024-04-02
+@[deprecated] alias ofNat_eq_cast := ofNat_eq_natCast
+@[deprecated] alias cast_eq_cast_iff_Nat := natCast_inj
+@[deprecated] alias coe_nat_sub := Int.natCast_sub
+@[deprecated] alias coe_nat_nonneg := natCast_nonneg
+@[deprecated] alias sign_coe_add_one := sign_natCast_add_one
+@[deprecated] alias nat_succ_eq_int_succ := natCast_succ
+@[deprecated] alias succ_neg_nat_succ := succ_neg_natCast_succ
+@[deprecated] alias coe_pred_of_pos := natCast_pred_of_pos
+@[deprecated] alias coe_nat_div := natCast_div
+@[deprecated] alias coe_nat_ediv := natCast_ediv
+@[deprecated] alias sign_coe_nat_of_nonzero := sign_natCast_of_ne_zero
+@[deprecated] alias toNat_coe_nat := toNat_natCast
+@[deprecated] alias toNat_coe_nat_add_one := toNat_natCast_add_one

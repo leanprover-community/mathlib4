@@ -3,12 +3,12 @@ Copyright (c) 2022 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.Algebra.Ring.Idempotents
 import Mathlib.RingTheory.Ideal.LocalRing
 import Mathlib.RingTheory.Noetherian
 import Mathlib.RingTheory.ReesAlgebra
 import Mathlib.RingTheory.Finiteness
-import Mathlib.Data.Polynomial.Module.Basic
 import Mathlib.Order.Basic
 import Mathlib.Order.Hom.Lattice
 
@@ -67,12 +67,12 @@ theorem pow_smul_le (i j : ℕ) : I ^ i • F.N j ≤ F.N (i + j) := by
   induction' i with _ ih
   · simp
   · rw [pow_succ', mul_smul, Nat.succ_eq_add_one, add_assoc, add_comm 1, ← add_assoc]
-    exact (Submodule.smul_mono_right ih).trans (F.smul_le _)
+    exact (smul_mono_right _ ih).trans (F.smul_le _)
 #align ideal.filtration.pow_smul_le Ideal.Filtration.pow_smul_le
 
 theorem pow_smul_le_pow_smul (i j k : ℕ) : I ^ (i + k) • F.N j ≤ I ^ k • F.N (i + j) := by
   rw [add_comm, pow_add, mul_smul]
-  exact Submodule.smul_mono_right (F.pow_smul_le i j)
+  exact smul_mono_right _ (F.pow_smul_le i j)
 #align ideal.filtration.pow_smul_le_pow_smul Ideal.Filtration.pow_smul_le_pow_smul
 
 protected theorem antitone : Antitone F.N :=
@@ -111,7 +111,7 @@ instance : SupSet (I.Filtration M) :=
 instance : Inf (I.Filtration M) :=
   ⟨fun F F' =>
     ⟨F.N ⊓ F'.N, fun i => inf_le_inf (F.mono i) (F'.mono i), fun i =>
-      (Submodule.smul_inf_le _ _ _).trans <| inf_le_inf (F.smul_le i) (F'.smul_le i)⟩⟩
+      (smul_inf_le _ _ _).trans <| inf_le_inf (F.smul_le i) (F'.smul_le i)⟩⟩
 
 /-- The `sInf` of a family of `I.Filtration`s is an `I.Filtration`. -/
 instance : InfSet (I.Filtration M) :=
@@ -123,7 +123,7 @@ instance : InfSet (I.Filtration M) :=
         exact ⟨_, ⟨⟨_, F, hF, rfl⟩, rfl⟩, F.mono i⟩
       smul_le := fun i => by
         rw [sInf_eq_iInf', iInf_apply, iInf_apply]
-        refine' Submodule.smul_iInf_le.trans _
+        refine' smul_iInf_le.trans _
         apply iInf_mono _
         rintro ⟨_, F, hF, rfl⟩
         exact F.smul_le i }⟩
@@ -245,7 +245,7 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   induction' n with n hn
   · refine' (F.antitone _).trans e; simp
   · rw [Nat.succ_eq_one_add, add_assoc, add_comm, add_comm 1 n, ← hF]
-    exact (Submodule.smul_mono_right hn).trans (F'.smul_le _)
+    exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
 #align ideal.filtration.stable.exists_forall_le Ideal.Filtration.Stable.exists_forall_le
 

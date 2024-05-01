@@ -47,7 +47,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive "Addition is commutative"]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several
@@ -64,7 +64,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -90,9 +90,9 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `CommSemigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
-* `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
+* `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
 
 ### Heuristics
 
@@ -214,18 +214,18 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * [todo] Namespaces can be transformed using `map_namespace`. For example:
   ```
-  run_cmd to_additive.map_namespace `quotient_group `quotient_add_group
+  run_cmd to_additive.map_namespace `QuotientGroup `QuotientAddGroup
   ```
 
-  Later uses of `to_additive` on declarations in the `quotient_group`
-  namespace will be created in the `quotient_add_group` namespaces.
+  Later uses of `to_additive` on declarations in the `QuotientGroup`
+  namespace will be created in the `QuotientAddGroup` namespaces.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
 
 * If `@[to_additive]` is called with a `name` argument
-  `new_namespace.new_name` /with a dot/, then `to_additive` uses this
+  `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
   new name as is.
 
 As a safety check, in the first case `to_additive` double checks
@@ -1006,6 +1006,10 @@ def fixAbbreviation : List String → List String
   | "Is" :: "Left" :: "Regular" :: s  => "IsAddLeftRegular" :: fixAbbreviation s
   | "is" :: "Right" :: "Regular" :: s => "isAddRightRegular" :: fixAbbreviation s
   | "Is" :: "Right" :: "Regular" :: s => "IsAddRightRegular" :: fixAbbreviation s
+  | "Has" :: "Fundamental" :: "Domain" :: s => "HasAddFundamentalDomain" :: fixAbbreviation s
+  | "has" :: "Fundamental" :: "Domain" :: s => "hasAddFundamentalDomain" :: fixAbbreviation s
+  | "Quotient" :: "Measure" :: s => "AddQuotientMeasure" :: fixAbbreviation s
+  | "quotient" :: "Measure" :: s => "addQuotientMeasure" :: fixAbbreviation s
   -- the capitalization heuristic of `applyNameDict` doesn't work in the following cases
   | "HSmul" :: s                      => "HSMul" :: fixAbbreviation s -- from `HPow`
   | "NSmul" :: s                      => "NSMul" :: fixAbbreviation s -- from `NPow`
@@ -1292,7 +1296,7 @@ has a doc string, a doc string for the additive version should be passed explici
 ```
 /-- Multiplication is commutative -/
 @[to_additive "Addition is commutative"]
-theorem mul_comm' {α} [comm_semigroup α] (x y : α) : x * y = y * x := comm_semigroup.mul_comm
+theorem mul_comm' {α} [CommSemigroup α] (x y : α) : x * y = y * x := CommSemigroup.mul_comm
 ```
 
 The transport tries to do the right thing in most cases using several
@@ -1309,7 +1313,7 @@ Use the `(attr := ...)` syntax to apply attributes to both the multiplicative an
 version:
 
 ```
-@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [group G] (x : G) : x * 1 = x := mul_one x
+@[to_additive (attr := simp)] lemma mul_one' {G : Type*} [Group G] (x : G) : x * 1 = x := mul_one x
 ```
 
 For `simp` and `simps` this also ensures that some generated lemmas are added to the additive
@@ -1335,9 +1339,9 @@ that have previously been labeled with `to_additive`.
 
 In the `mul_comm'` example above, `to_additive` maps:
 * `mul_comm'` to `add_comm'`,
-* `comm_semigroup` to `add_comm_semigroup`,
+* `CommSemigroup` to `AddCommSemigroup`,
 * `x * y` to `x + y` and `y * x` to `y + x`, and
-* `comm_semigroup.mul_comm'` to `add_comm_semigroup.add_comm'`.
+* `CommSemigroup.mul_comm'` to `AddCommSemigroup.add_comm'`.
 
 ### Heuristics
 
@@ -1459,18 +1463,18 @@ In this case `to_additive` adds all structure fields to its mapping.
 
 * [todo] Namespaces can be transformed using `map_namespace`. For example:
   ```
-  run_cmd to_additive.map_namespace `quotient_group `quotient_add_group
+  run_cmd to_additive.map_namespace `QuotientGroup `QuotientAddGroup
   ```
 
-  Later uses of `to_additive` on declarations in the `quotient_group`
-  namespace will be created in the `quotient_add_group` namespaces.
+  Later uses of `to_additive` on declarations in the `QuotientGroup`
+  namespace will be created in the `QuotientAddGroup` namespaces.
 
 * If `@[to_additive]` is called with a `name` argument `new_name`
   /without a dot/, then `to_additive` updates the prefix as described
   above, then replaces the last part of the name with `new_name`.
 
 * If `@[to_additive]` is called with a `name` argument
-  `new_namespace.new_name` /with a dot/, then `to_additive` uses this
+  `NewNamespace.new_name` /with a dot/, then `to_additive` uses this
   new name as is.
 
 As a safety check, in the first case `to_additive` double checks

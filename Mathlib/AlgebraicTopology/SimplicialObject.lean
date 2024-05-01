@@ -416,7 +416,6 @@ instance : Category (CosimplicialObject C) := by
 
 namespace CosimplicialObject
 
--- mathport name: cosimplicial_object.at
 set_option quotPrecheck false in
 /-- `X _[n]` denotes the `n`th-term of the cosimplicial object X -/
 scoped[Simplicial]
