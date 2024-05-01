@@ -164,9 +164,20 @@ theorem totalDegree_mul : (φ * ψ).totalDegree ≤ φ.totalDegree + ψ.totalDeg
   simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq] at hf
   simp only [HasDegreeBound_def, Nat.cast_finsupp_sum, id_eq] at hg
   have ⟨a, ⟨has, ha⟩⟩ := Finset.exists_ne_zero_of_sum_ne_zero hs
+  have ha1 : (coeff R a.1 φ ≠ 0) := by
+    contrapose! ha
+    simp only [ha, zero_mul]
+  have ha2 : (coeff R a.2 ψ ≠ 0) := by
+    contrapose! ha
+    simp only [ha, mul_zero]
   simp only [Finset.mem_antidiagonal] at has
-  rw [← has]
-  sorry
+  rw [← has, Finsupp.sum_add_index]
+  · simp only [Nat.cast_add, Nat.cast_finsupp_sum, id_eq, ge_iff_le]
+    gcongr
+    · exact hf a.1 ha1
+    · exact hg a.2 ha2
+  · simp only [Finset.mem_union, Finsupp.mem_support_iff, ne_eq, id_eq, implies_true]
+  · simp only [Finset.mem_union, Finsupp.mem_support_iff, ne_eq, id_eq, forall_const, implies_true]
 
 theorem totalDegree_smul_le (r : R) :
     (r • φ).totalDegree ≤ φ.totalDegree := by
