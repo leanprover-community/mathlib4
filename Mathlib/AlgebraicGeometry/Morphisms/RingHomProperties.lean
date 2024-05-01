@@ -191,25 +191,17 @@ theorem affineLocally_iff_affineOpens_le (hP : RingHom.RespectsIso @P) {X Y : Sc
       congr 1
       rw [X.presheaf.map_comp]
       swap
-      dsimp only [Functor.op, unop_op]
-      rw [Opens.openEmbedding_obj_top]
-      congr 1
-      exact e''.symm
-      simp only [Scheme.ofRestrict_val_base, Functor.op_obj, unop_op, inducedFunctor_obj,
-        LocallyRingedSpace.forgetToSheafedSpace_obj, SheafedSpace.forgetToPresheafedSpace_obj,
-        TopCat.Presheaf.pushforwardObj_obj, Scheme.Γ_obj, Scheme.restrict_presheaf_obj,
-        Opens.coe_inclusion, eqToHom_op, Scheme.ofRestrict_val_c_app, Opens.map_top,
-        Scheme.restrict_presheaf_map, Quiver.Hom.unop_op, ← X.presheaf.map_comp]
-      congr 1
+      · dsimp only [Functor.op, unop_op]
+        rw [Opens.openEmbedding_obj_top]
+        congr 1
+        exact e''.symm
+      · simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
+        congr 1
   · intro H V
     specialize H ⟨_, V.2.imageIsOpenImmersion (X.ofRestrict _)⟩ (Subtype.coe_image_subset _ _)
-    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc] --, ←
+    rw [← hP.cancel_right_isIso _ (X.presheaf.map (eqToHom _)), Category.assoc]
     · convert H
-      simp only [TopCat.Presheaf.pushforwardObj_obj, Functor.op_obj, unop_op, inducedFunctor_obj,
-        LocallyRingedSpace.forgetToSheafedSpace_obj, SheafedSpace.forgetToPresheafedSpace_obj,
-        Scheme.Γ_obj, Scheme.restrict_presheaf_obj, Opens.coe_inclusion, eqToHom_op,
-        Scheme.ofRestrict_val_base, Scheme.ofRestrict_val_c_app, Opens.map_top,
-        Scheme.restrict_presheaf_map, Quiver.Hom.unop_op, Category.assoc, ← X.presheaf.map_comp]
+      simp only [Scheme.ofRestrict_val_c_app, Scheme.restrict_presheaf_map, ← X.presheaf.map_comp]
       congr!
     · dsimp only [Functor.op, unop_op]; rw [Opens.openEmbedding_obj_top]
 #align algebraic_geometry.affine_locally_iff_affine_opens_le AlgebraicGeometry.affineLocally_iff_affineOpens_le
