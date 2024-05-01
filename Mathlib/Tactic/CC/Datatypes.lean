@@ -9,7 +9,6 @@ import Std.Data.HashMap.Basic
 import Std.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Mathport.Rename
-import Lean.Meta.Tactic.Rfl
 
 /-!
 # Datatypes for `cc`
