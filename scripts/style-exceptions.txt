@@ -64,6 +64,7 @@ Mathlib/Lean/LocalContext.lean : line 8 : ERR_MOD : Module docstring missing, or
 Mathlib/LinearAlgebra/AffineSpace/AffineSubspace.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1891 lines, try to split it up
 Mathlib/LinearAlgebra/Basis.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1646 lines, try to split it up
 Mathlib/LinearAlgebra/Dual.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1847 lines, try to split it up
+Mathlib/LinearAlgebra/Finsupp.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1508 lines, try to split it up
 Mathlib/LinearAlgebra/LinearIndependent.lean : line 1 : ERR_NUM_LIN : 1700 file contains 1537 lines, try to split it up
 Mathlib/LinearAlgebra/Multilinear/Basic.lean : line 1 : ERR_NUM_LIN : 2000 file contains 1819 lines, try to split it up
 Mathlib/LinearAlgebra/TensorProduct/Basic.lean : line 1 : ERR_NUM_LIN : 1800 file contains 1660 lines, try to split it up
