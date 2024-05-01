@@ -177,10 +177,9 @@ end Pi
 
 -- TODO: this is a basic thereom about `Fintype.card`,
 -- and ideally could be moved to `Mathlib.Data.Fintype.Card`.
--- Note that this can no longer be a `simp` lemma because `Fintype.card_pi` will apply to the LHS.
 theorem Fintype.card_fun [DecidableEq α] [Fintype α] [Fintype β] :
     Fintype.card (α → β) = Fintype.card β ^ Fintype.card α := by
-  rw [Fintype.card_pi, Finset.prod_const]; rfl
+  simp
 #align fintype.card_fun Fintype.card_fun
 
 @[simp]
