@@ -684,7 +684,7 @@ variable [Semiring R]
 @[simp]
 theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
   induction' n with n IH
-  · simp; rfl
+  · simp
   · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
 
 end Semiring
