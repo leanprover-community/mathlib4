@@ -158,7 +158,7 @@ lemma one_le_iff_ne_zero : 1 ≤ n ↔ n ≠ 0 := Nat.pos_iff_ne_zero
 lemma one_lt_iff_ne_zero_and_ne_one : ∀ {n : ℕ}, 1 < n ↔ n ≠ 0 ∧ n ≠ 1
   | 0 => by decide
   | 1 => by decide
-  | n + 2 => by simp
+  | n + 2 => by omega
 #align nat.one_lt_iff_ne_zero_and_ne_one Nat.one_lt_iff_ne_zero_and_ne_one
 
 lemma le_one_iff_eq_zero_or_eq_one : ∀ {n : ℕ}, n ≤ 1 ↔ n = 0 ∨ n = 1 := by simp [le_succ_iff]
@@ -1197,7 +1197,8 @@ lemma dvd_sub_mod (k : ℕ) : n ∣ k - k % n :=
 
 lemma add_mod_eq_ite :
     (m + n) % k = if k ≤ m % k + n % k then m % k + n % k - k else m % k + n % k := by
-  cases k; simp only [zero_eq, mod_zero, zero_le, ↓reduceIte, Nat.sub_zero]
+  cases k
+  · simp
   rw [Nat.add_mod]
   split_ifs with h
   · rw [Nat.mod_eq_sub_mod h, Nat.mod_eq_of_lt]
@@ -1292,9 +1293,9 @@ set_option linter.deprecated false in
 protected theorem not_two_dvd_bit1 (n : ℕ) : ¬2 ∣ bit1 n := by
   rw [bit1, Nat.dvd_add_right, Nat.dvd_one]
   -- Porting note: was `cc`
-  decide
-  rw [bit0, ← Nat.two_mul]
-  exact Nat.dvd_mul_right _ _
+  · decide
+  · rw [bit0, ← Nat.two_mul]
+    exact Nat.dvd_mul_right _ _
 #align nat.not_two_dvd_bit1 Nat.not_two_dvd_bit1
 
 /-- A natural number `m` divides the sum `m + n` if and only if `m` divides `n`.-/
