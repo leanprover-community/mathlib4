@@ -6,21 +6,27 @@ Authors: Gareth Ma
 import Mathlib.Data.Real.Basic
 import Mathlib.Data.ZMod.Basic
 import Mathlib.RingTheory.Polynomial.Basic
-import Mathlib.Tactic.SlimCheck
 
 /-!
-# Funny docstring placeholder blablabla
+# Lucas's theorem
+
+This file contains a proof of [Lucas's theorem](https://www.wikiwand.com/en/Lucas%27s_theorem) about
+binomial coefficients, which says that for primes `p`, `n` choose `k` is congruent to product of
+`n_i` choose `k_i` modulo `p`, where `n_i` and `k_i` are the base-`p` digits of `n` and `k`,
+respectively.
 -/
 
-/- An alternative is to use n.choose k everywhere. Otherwise, this imports `Finset.choose` -/
 open Finset hiding choose
+
 open Nat BigOperators Polynomial
 
 namespace Choose
 
-variable {n k p : ℕ} [hp : Fact p.Prime]
+variable {n k p : ℕ} [Fact p.Prime]
 
-theorem lucas : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
+/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to `choose (n % p) (k % p) *
+  choose (n / p) (k / p)` modulo `p`. -/
+theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
     nth_rw 1 [← mod_add_div n p, pow_add, pow_mul, add_pow_char (ZMod p)[X] (p := p), one_pow]
   simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
@@ -46,7 +52,7 @@ theorem lucas : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [
       exact ⟨mod_eq_of_lt h', self_eq_add_left.mpr (div_eq_of_lt h')⟩
     · rw [← h.left, ← h.right, mod_add_div]
 
-theorem lucas' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
+theorem lucas_theorem' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
       ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
   induction a with
   | zero => simp
@@ -55,13 +61,15 @@ theorem lucas' (a : ℕ) : choose n k ≡ choose (n / p ^ a) (k / p ^ a) *
     clear ih
     rw [prod_range_succ, cast_mul, ← mul_assoc, mul_right_comm]
     gcongr
-    apply lucas.trans
+    apply lucas_theorem.trans
     simp_rw [pow_succ, Nat.div_div_eq_div_mul, mul_comm]
     rfl
 
-theorem lucas'' {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
+/-- **Lucas's Theorem**: For primes `p`, `choose n k` is congruent to the product of
+  `choose (n / p ^ i) (k / p ^ i)` over `i` modulo `p`. -/
+theorem lucas_theorem'' {a : ℕ} (ha₁ : n < p ^ a) (ha₂ : k < p ^ a) :
     choose n k ≡ ∏ i in range a, choose (n / p ^ i % p) (k / p ^ i % p) [ZMOD p] := by
-  apply (lucas' a).trans
+  apply (lucas_theorem' a).trans
   simp_rw [(Nat.div_eq_zero_iff $ by omega).mpr ha₁, (Nat.div_eq_zero_iff $ by omega).mpr ha₂,
     choose, cast_one, one_mul, cast_prod]
   rfl
