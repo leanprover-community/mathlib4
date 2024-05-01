@@ -26,17 +26,22 @@ sed 's="c:=\n=g' ".lake/build/lib/${fil/%lean/ilean}" |
     /,null/d
     /{"version":.,"/d
   ' | tr -d '][' |
-  awk -F, -v ti="'" -v fil="$fil" '{
-    printf("sed -n %s%s,%sp%s %s #%s\n", ti, $2+1, $2+1, ti, fil, $1)
-  }'
+  awk -F, -v ti="'" -v fil="$fil" 'BEGIN{ tot=""; max=0 }{
+    acc[$2+1]=$1
+    if(max < $2+1) { max=$2+1 }
+    tot=tot sprintf("  %s,%sp #%s\n", $2+1, $2+1, "$1")
+  }END{
+    print max
+    printf("sed -n %s\n", ti)
+    for(i=1; i<=max; i++) if(acc[i]) { gsub(ti, "`", acc[i]); printf("  %s,%sp #%s\n", i, i, acc[i]) }
+#    print tot| "sort -t, -n"; close("sort -t, -n")
+    printf("%s %s\n", ti, fil) }'
 
-sed -n '104,104p' $fil
-sed -n '309,309p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_two_iff
-sed -n '313,313p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_three_iff
-sed -n '286,286p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_right
-sed -n '305,305p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_one_iff
-sed -n '295,295p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_min_iff
-sed -n '294,294p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_max_iff
-sed -n '285,285p' Mathlib//Data/Nat/Defs.lean #Nat.add_eq_left
-sed -n '281,281p' Mathlib//Data/Nat/Defs.lean #Nat.add_def
-sed -n '104,104p' Mathlib//Data/Nat/Defs.lean #LT.lt.nat_succ_le
+sed -n '
+
+  1848,1848p #Nat.findGreatest_mono
+  1853,1853p #Nat.findGreatest_is_greatest
+  1857,1857p #Nat.findGreatest_of_ne_zero
+  1871,1871p #Nat.decidableLoHi
+  1880,1880p #Nat.decidableLoHiLe
+' Mathlib//Data/Nat/Defs.lean
