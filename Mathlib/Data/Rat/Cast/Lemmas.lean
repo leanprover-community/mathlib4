@@ -74,31 +74,6 @@ theorem cast_zpow_of_ne_zero {K} [DivisionSemiring K] (q : ℚ≥0) (z : ℤ) (h
     congr
     rw [cast_inv_of_ne_zero hq]
 
-open OfNat in
-theorem _root_.ofScientific_def {K} [DivisionSemiring K] (m : ℕ) (s : Bool) (e : ℕ) :
-    (OfScientific.ofScientific m s e : K)
-      = (ofNat m : ℕ) * (10 : K) ^ (cond s (-(ofNat e)) (ofNat e) : ℤ) := by
-  rw [← NNRat.cast_ofScientific, ← NNRat.cast_natCast]
-  change NNRat.cast ⟨Rat.ofScientific m s e, _⟩ = _
-  rw [←NNRat.cast_ofNat 10, ← NNRat.cast_zpow_of_ne_zero, ← NNRat.cast_mul_of_ne_zero]
-  · congr
-    cases s
-    · rw [Rat.ofScientific_false_def]
-      simp [zpow_ofNat]
-      rfl
-    · rw [Rat.ofScientific_true_def]
-      simp [Rat.mkRat_eq_div, div_eq_mul_inv, zpow_ofNat]
-      rfl
-  · simp
-  · cases s
-    · simp [zpow_ofNat, Rat.den_ofNat]
-      sorry
-    · simp [zpow_ofNat, -inv_pow]
-      rw [← inv_pow, den_pow]
-      simp
-      sorry
-  · sorry
-
 open OfScientific in
 theorem Nonneg.coe_ofScientific {K} [LinearOrderedField K] (m : ℕ) (s : Bool) (e : ℕ) :
     (ofScientific m s e : {x : K // 0 ≤ x}).val = ofScientific m s e := rfl
