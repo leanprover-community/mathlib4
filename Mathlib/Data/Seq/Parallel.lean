@@ -143,8 +143,8 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1.eq_1]
-        rw [h, H]
+        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
+          rw [h, H]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
@@ -162,8 +162,8 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1.eq_1]
-        rw [h]
+        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
+          rw [h]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
