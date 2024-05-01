@@ -226,7 +226,9 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
   ext j x
   apply DirectSum.ext R (fun i ↦ ?_)
   ext n
-  simp
+  simp only [LinearMap.coe_comp, Function.comp_apply, sum_lof, LinearMap.adicCompletion_mk,
+    component_sumInv, mk_apply_coe, LinearMap.adicCauchy_apply_coe, Submodule.mkQ_apply,
+    LinearMap.id_comp]
   rw [DirectSum.component.of, DirectSum.component.of]
   split
   · next h => subst h; simp
@@ -234,10 +236,12 @@ theorem sumInv_comp_sum : sumInv I M ∘ₗ sum I M = LinearMap.id := by
 
 theorem sum_comp_sumInv : sum I M ∘ₗ sumInv I M = LinearMap.id := by
   ext f n
-  simp
+  simp only [LinearMap.coe_comp, Function.comp_apply, LinearMap.id_coe, id_eq, mk_apply_coe,
+    Submodule.mkQ_apply]
   classical
   rw [← DirectSum.sum_univ_of _ (((sumInv I M) ((AdicCompletion.mk I (⨁ (j : ι), M j)) f)))]
-  simp
+  simp only [sumInv_apply, LinearMap.adicCompletion_mk, map_sum, sum_of, LinearMap.val_sum,
+    mk_apply_coe, LinearMap.adicCauchy_apply_coe, Submodule.mkQ_apply]
   simp only [← Submodule.mkQ_apply, ← map_sum]
   erw [DirectSum.sum_univ_of]
 
