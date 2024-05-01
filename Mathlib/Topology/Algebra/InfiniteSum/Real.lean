@@ -84,9 +84,7 @@ theorem summable_sigma_of_nonneg {β : α → Type*} {f : (Σ x, β x) → ℝ} 
 lemma summable_partition {κ ι: Type*} {f : ι → ℝ} (hf : 0 ≤ f) {s : κ → Set ι}
     (hs : ∀ i, ∃! j, i ∈ s j) : Summable f ↔
       (∀ j, Summable fun i : s j ↦ f i) ∧ Summable fun j ↦ ∑' i : s j, f i := by
-  rw [← (Set.sigmaEquiv s hs).summable_iff, summable_sigma_of_nonneg]
-  simp only [Set.sigmaEquiv, Equiv.coe_fn_mk, Function.comp_apply]
-  exact fun _ ↦ hf _
+  simpa only [← (Set.sigmaEquiv s hs).summable_iff] using summable_sigma_of_nonneg (fun _ ↦ hf _)
 
 theorem summable_prod_of_nonneg {f : (α × β) → ℝ} (hf : 0 ≤ f) :
     Summable f ↔ (∀ x, Summable fun y ↦ f (x, y)) ∧ Summable fun x ↦ ∑' y, f (x, y) :=
