@@ -334,7 +334,7 @@ lemma engel_isBot_of_isMin (hLK : finrank K L ≤ #K) (U : LieSubalgebra K L)
   rw [← coe_evalRingHom, constantCoeff_apply, ← coeff_map, lieCharpoly_map_eval,
     ← constantCoeff_apply, ne_eq, LinearMap.charpoly_constantCoeff_eq_zero_iff] at hsψ
   -- We deduce from this that `z' = 0`, arguing by contraposition.
-  contrapose! hsψ
+  contrapose!
   -- Indeed `⁅v, _⁆` kills `⁅v, _⁆ ^ k` applied to `z'`.
   use (toEndomorphism K U Q v ^ k) z'
   refine ⟨?_, ?_⟩
