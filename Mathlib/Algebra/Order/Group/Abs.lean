@@ -528,6 +528,22 @@ theorem abs_sub_nonpos : |a - b| ≤ 0 ↔ a = b :=
 theorem abs_sub_pos : 0 < |a - b| ↔ a ≠ b :=
   not_le.symm.trans abs_sub_nonpos.not
 
+theorem abs_add_abs_eq_zero : |a| + |b| = 0 ↔ a = 0 ∧ b = 0 := by
+  constructor
+  · intro h
+    constructor
+    · have : |a| ≤ 0 := by
+        have : |a| ≤ |a| + |b| := by rw [le_add_iff_nonneg_right]; simp
+        rwa [h] at this
+      exact abs_nonpos_iff.mp this
+    · have : |b| ≤ 0 := by
+        have : |b| ≤ |a| + |b| := by rw [le_add_iff_nonneg_left]; simp
+        rwa [h] at this
+      exact abs_nonpos_iff.mp this
+  · intro h
+    rw [h.1, h.2]
+    simp
+
 @[simp]
 theorem abs_eq_self : |a| = a ↔ 0 ≤ a := by
   rw [abs_eq_max_neg, max_eq_left_iff, neg_le_self_iff]
