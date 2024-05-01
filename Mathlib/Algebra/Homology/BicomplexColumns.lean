@@ -165,7 +165,7 @@ end CategoryTheory
 
 namespace HomologicalComplex₂
 
-variable {C : Type*} [Category C] [Preadditive C]
+variable {C D : Type*} [Category C] [Preadditive C]
   {ι₁ ι₂ ι : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
 
 section
@@ -431,7 +431,9 @@ end HomologicalComplex₂
 
 namespace HomologicalComplex₂
 
-variable (C : Type*) [Category C] [Abelian C] {ι : Type*} (c : ComplexShape ι)
+variable (C : Type*) [Category C] [Abelian C]
+  {D : Type*} [Category D] [Preadditive D] [HasFiniteCoproducts D]
+  {ι : Type*} (c : ComplexShape ι)
 
 noncomputable abbrev rowFiltrationGEFunctor :
     ℤᵒᵖ ⥤ HomologicalComplex₂ C (up ℤ) c ⥤ HomologicalComplex₂ C (up ℤ) c :=
@@ -547,7 +549,7 @@ noncomputable def singleColumnObjTotal_hom_naturality {K L : CochainComplex C �
   rw [← cancel_epi (singleColumnObjTotal K x x' h).inv,
     singleColumnObjTotal_inv_naturality_assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc]
 
-lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
+lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
     [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
     K.HasTotal (up ℤ) := fun n => by
   obtain ⟨M, hM⟩ : ∃ (M : ℕ), y₀ < n - x₀ + M := by

@@ -160,6 +160,11 @@ def Functor.mapHomologicalComplex {V W : Type*} [Category V] [Category W]
         rw [← F.map_comp, ← F.map_comp, f.comm] }
 #align category_theory.functor.map_homological_complex CategoryTheory.Functor.mapHomologicalComplex
 
+instance {V W : Type*} [Category V] [Category W]
+    [HasZeroMorphisms V] [HasZeroMorphisms W]
+    (F : V ⥤ W) [F.PreservesZeroMorphisms] (c : ComplexShape ι) :
+    (F.mapHomologicalComplex c).PreservesZeroMorphisms where
+
 variable (V)
 
 /-- The functor on homological complexes induced by the identity functor is
@@ -211,7 +216,7 @@ instance (F : V ⥤ W) [F.Additive] (c : ComplexShape ι) [F.Faithful] [F.Full] 
 between those functors applied to homological complexes.
 -/
 @[simps]
-def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.Additive] [G.Additive] (α : F ⟶ G)
+def NatTrans.mapHomologicalComplex {F G : V ⥤ W} [F.PreservesZeroMorphisms] [G.PreservesZeroMorphisms] (α : F ⟶ G)
     (c : ComplexShape ι) : F.mapHomologicalComplex c ⟶ G.mapHomologicalComplex c where
   app C := { f := fun i => α.app _ }
 #align category_theory.nat_trans.map_homological_complex CategoryTheory.NatTrans.mapHomologicalComplex

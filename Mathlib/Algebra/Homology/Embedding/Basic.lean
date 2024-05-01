@@ -485,10 +485,10 @@ end
 section
 
 variable {c c'}
-variable {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-  (F : C ⥤ D) [F.Additive] (K : HomologicalComplex C c') (e : c.Embedding c')
+variable {C D : Type*} [Category C] [Category D] [HasZeroMorphisms C] [HasZeroMorphisms D]
+  (K : HomologicalComplex C c') (F : C ⥤ D) [F.PreservesZeroMorphisms] (e : c.Embedding c')
 
-instance [K.IsStrictlySupported e] :
+instance map_isStrictlySupported [K.IsStrictlySupported e] :
     ((F.mapHomologicalComplex c').obj K).IsStrictlySupported e where
   isZero i' hi' := by
     rw [IsZero.iff_id_eq_zero]
