@@ -770,13 +770,22 @@ end CommHasLipschitzAdd
 
 section sub
 
+variable [TopologicalSpace α]
+variable {R : Type*} [PseudoMetricSpace R] [Sub R] [BoundedSub R] [ContinuousSub R]
+variable (f g : α →ᵇ R)
+
 /-- The pointwise difference of two bounded continuous functions is again bounded continuous. -/
-instance instSub {X R : Type*} [TopologicalSpace X] [PseudoMetricSpace R]
-    [Sub R] [BoundedSub R] [ContinuousSub R] :
-    Sub (X →ᵇ R) where
+instance instSub : Sub (α →ᵇ R) where
   sub f g :=
     { toFun := fun x ↦ (f x - g x),
       map_bounded' := sub_bounded_of_bounded_of_bounded f.map_bounded' g.map_bounded' }
+
+theorem sub_apply {x : α} : (f - g) x = f x - g x := rfl
+#align bounded_continuous_function.sub_apply BoundedContinuousFunction.sub_apply
+
+@[simp]
+theorem coe_sub : ⇑(f - g) = f - g := rfl
+#align bounded_continuous_function.coe_sub BoundedContinuousFunction.coe_sub
 
 end sub
 
@@ -947,13 +956,6 @@ theorem coe_neg : ⇑(-f) = -f := rfl
 
 theorem neg_apply : (-f) x = -f x := rfl
 #align bounded_continuous_function.neg_apply BoundedContinuousFunction.neg_apply
-
-@[simp]
-theorem coe_sub : ⇑(f - g) = f - g := rfl
-#align bounded_continuous_function.coe_sub BoundedContinuousFunction.coe_sub
-
-theorem sub_apply : (f - g) x = f x - g x := rfl
-#align bounded_continuous_function.sub_apply BoundedContinuousFunction.sub_apply
 
 @[simp]
 theorem mkOfCompact_neg [CompactSpace α] (f : C(α, β)) : mkOfCompact (-f) = -mkOfCompact f := rfl

@@ -8,9 +8,10 @@ import Mathlib.Analysis.Normed.Group.Basic
 /-!
 # Bounded operations
 
-This file introduces type classes for bornologically bounded operations. Together with type classes
-which guarantee continuous operations, these enable to equip bounded continuous functions with the
-respective operations, in particular.
+This file introduces type classes for bornologically bounded operations.
+
+In particular, when combined with type classes which guarantee continuity of the same operations,
+we can equip bounded continuous functions with the corresponding operations.
 
 ## Main definitions
 
@@ -22,11 +23,14 @@ TODO:
 -/
 
 section bounded_sub
+/-!
+### Bounded subtraction
+-/
 
 open Pointwise
 
-/-- A typeclass saying that `p : R × R ↦ r.1 - r.2` maps any pair of bounded sets to a bounded set.
-This property automatically holds for seminormed additive groups, but it also holds, e.g.,
+/-- A typeclass saying that `(p : R × R) ↦ p.1 - p.2` maps any pair of bounded sets to a bounded
+set. This property automatically holds for seminormed additive groups, but it also holds, e.g.,
 for `ℝ≥0`. -/
 class BoundedSub (R : Type*) [Bornology R] [Sub R] : Prop where
   isBounded_sub : ∀ {s t : Set R},
@@ -49,12 +53,21 @@ lemma sub_bounded_of_bounded_of_bounded {X : Type*} [PseudoMetricSpace R] [Sub R
   exact hC (Set.sub_mem_sub (Set.mem_range_self (f := f) x) (Set.mem_range_self (f := g) x))
            (Set.sub_mem_sub (Set.mem_range_self (f := f) y) (Set.mem_range_self (f := g) y))
 
-lemma SeminormedAddCommGroup.lipschitzWith_sub [SeminormedAddCommGroup R] :
+end bounded_sub
+
+section SeminormedAddCommGroup
+/-!
+### Bounded operations in seminormed additive commutative groups
+-/
+
+variable {R : Type*} [SeminormedAddCommGroup R]
+
+lemma SeminormedAddCommGroup.lipschitzWith_sub :
     LipschitzWith 2 (fun (p : R × R) ↦ p.1 - p.2) := by
   convert LipschitzWith.prod_fst.sub LipschitzWith.prod_snd
   norm_num
 
-instance [SeminormedAddCommGroup R] : BoundedSub R where
+instance : BoundedSub R where
   isBounded_sub := by
     intro s t hs ht
     rw [Metric.isBounded_iff] at hs ht ⊢
@@ -73,7 +86,12 @@ instance [SeminormedAddCommGroup R] : BoundedSub R where
         add_le_add (mem_closedBall_iff_norm.mp (hf hx₁ hx₂))
                    (mem_closedBall_iff_norm.mp (hg hy₂ hy₁))
 
+end SeminormedAddCommGroup
+
 section NNReal
+/-!
+### Bounded operations in ℝ≥0
+-/
 
 open scoped NNReal
 
@@ -90,5 +108,3 @@ noncomputable instance : BoundedSub ℝ≥0 where
     exact tsub_lt_of_lt key
 
 end NNReal
-
-end bounded_sub
