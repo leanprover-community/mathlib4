@@ -344,7 +344,7 @@ theorem sub_le (a b : ℕ+) : a - b ≤ a := by
 theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
   rw [← coe_le_coe, sub_coe]
   split_ifs with h
-  · apply Nat.le_pred_of_lt hab
+  · exact Nat.le_pred_of_lt hab
   · exact hab.le.trans (le_of_not_lt h)
 
 theorem le_of_le_sub_one {a b : ℕ+} (hab: a ≤ b - 1): a ≤ b := by
