@@ -221,12 +221,12 @@ theorem variance_le_expectation_sq [@IsProbabilityMeasure Ω _ ℙ] {X : Ω → 
   · rw [variance_def' hX]
     simp only [sq_nonneg, sub_le_self_iff]
   rw [variance, evariance_eq_lintegral_ofReal, ← integral_eq_lintegral_of_nonneg_ae]
-  by_cases hint : Integrable X; swap
-  · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
-    exact le_rfl
-  · rw [integral_undef]
-    · exact integral_nonneg fun a => sq_nonneg _
-    · intro h
+  · by_cases hint : Integrable X; swap
+    · simp only [integral_undef hint, Pi.pow_apply, Pi.sub_apply, sub_zero]
+      exact le_rfl
+    · rw [integral_undef]
+      · exact integral_nonneg fun a => sq_nonneg _
+      intro h
       have A : Memℒp (X - fun ω : Ω => 𝔼[X]) 2 ℙ :=
         (memℒp_two_iff_integrable_sq (hint.aestronglyMeasurable.sub aestronglyMeasurable_const)).2 h
       have B : Memℒp (fun _ : Ω => 𝔼[X]) 2 ℙ := memℒp_const _

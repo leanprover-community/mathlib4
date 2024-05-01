@@ -275,11 +275,12 @@ theorem HasLines.lineCount_eq_pointCount [HasLines P L] [Fintype P] [Fintype L]
       simp_rw [Finset.sum_const, Finset.card_univ, hPL, sum_lineCount_eq_sum_pointCount]
     have step2 : ∑ i in s, lineCount L i.1 = ∑ i in s, pointCount P i.2 := by
       rw [s.sum_finset_product Finset.univ fun p => Set.toFinset { l | p ∈ l }]
-      rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }, eq_comm]
-      refine sum_bijective _ hf1 (by simp) fun l _ ↦ ?_
-      simp_rw [hf2, sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
-      change pointCount P l • _ = lineCount L (f l) • _
-      rw [hf2]
+      on_goal 1 =>
+        rw [s.sum_finset_product_right Finset.univ fun l => Set.toFinset { p | p ∈ l }, eq_comm]
+        · refine sum_bijective _ hf1 (by simp) fun l _ ↦ ?_
+          simp_rw [hf2, sum_const, Set.toFinset_card, ← Nat.card_eq_fintype_card]
+          change pointCount P l • _ = lineCount L (f l) • _
+          rw [hf2]
       all_goals simp_rw [s, Finset.mem_univ, true_and_iff, Set.mem_toFinset]; exact fun p => Iff.rfl
     have step3 : ∑ i in sᶜ, lineCount L i.1 = ∑ i in sᶜ, pointCount P i.2 := by
       rwa [← s.sum_add_sum_compl, ← s.sum_add_sum_compl, step2, add_left_cancel_iff] at step1
@@ -312,7 +313,7 @@ noncomputable def HasLines.hasPoints [HasLines P L] [Fintype P] [Fintype L]
       have h₂ : ∀ l : L, 0 < pointCount P l := fun l => (congr_arg _ (hf2 l)).mpr (h₁ (f l))
       obtain ⟨p, hl₁⟩ := Fintype.card_pos_iff.mp ((congr_arg _ Nat.card_eq_fintype_card).mp (h₂ l₁))
       by_cases hl₂ : p ∈ l₂
-      exact ⟨p, hl₁, hl₂⟩
+      · exact ⟨p, hl₁, hl₂⟩
       have key' : Fintype.card { q : P // q ∈ l₂ } = Fintype.card { l : L // p ∈ l } :=
         ((HasLines.lineCount_eq_pointCount h hl₂).trans Nat.card_eq_fintype_card).symm.trans
           Nat.card_eq_fintype_card

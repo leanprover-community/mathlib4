@@ -155,7 +155,7 @@ Ring Theory:
     $\Z/n\Z$ and its invertible elements: 'ZMod.unitOfCoprime'
     Euler's totient function ($\varphi$): 'Nat.totient'
   Polynomial rings:
-    $K[X]$ is a euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomainPolynomialToSemiringToDivisionSemiringToSemifield'
+    $K[X]$ is a euclidean ring when $K$ is a field: 'Polynomial.instEuclideanDomain'
     irreducible polynomial: 'Irreducible'
     cyclotomic polynomials in $\Q[X]$: 'Polynomial.cyclotomic'
     Eisenstein's criterion: 'Polynomial.irreducible_of_eisenstein_criterion'
