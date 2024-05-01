@@ -1223,7 +1223,10 @@ lemma T_isBigO_smoothingFn_mul_asympBound :
             gcongr (∑ i, a i * ?_) + g n with i _
             · exact le_of_lt <| R.a_pos _
             · if ri_lt_n₀ : r i n < n₀ then
-                exact h_base _ <| by aesop
+                exact h_base _ <| by
+                  simp_all only [gt_iff_lt, Nat.ofNat_pos, div_pos_iff_of_pos_right,
+                    eventually_atTop, ge_iff_le, sub_pos, one_div, mem_Ico, and_imp,
+                    forall_true_left, mem_univ, and_self, b', C, base_max]
               else
                 push_neg at ri_lt_n₀
                 exact h_ind (r i n) (R.r_lt_n _ _ (n₀_ge_Rn₀.trans hn)) ri_lt_n₀

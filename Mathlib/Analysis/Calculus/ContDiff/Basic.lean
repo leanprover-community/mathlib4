@@ -607,19 +607,19 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
     refine' ⟨w, _, fun y => (g' (f y)).comp (f' y), _, _⟩
-    show w ∈ 𝓝[s] x
-    · apply Filter.inter_mem self_mem_nhdsWithin
+    · show w ∈ 𝓝[s] x
+      apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
       apply ContinuousWithinAt.preimage_mem_nhdsWithin'
       · rw [← continuousWithinAt_inter' hu]
         exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
       · apply nhdsWithin_mono _ _ hv
         exact Subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
-    show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
-    · rintro y ⟨-, yu, yv⟩
+    · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
+      rintro y ⟨-, yu, yv⟩
       exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
-    show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
-    · have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
+    · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
+      have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
         IH g'_diff ((hf.of_le (WithTop.coe_le_coe.2 (Nat.le_succ n))).mono ws) wv
       have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
       have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B

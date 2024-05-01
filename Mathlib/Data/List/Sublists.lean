@@ -84,9 +84,10 @@ theorem mem_sublists' {s t : List α} : s ∈ sublists' t ↔ s <+ t := by
   · simp only [sublists'_nil, mem_singleton]
     exact ⟨fun h => by rw [h], eq_nil_of_sublist_nil⟩
   simp only [sublists'_cons, mem_append, IH, mem_map]
-  constructor <;> intro h; rcases h with (h | ⟨s, h, rfl⟩)
-  · exact sublist_cons_of_sublist _ h
-  · exact h.cons_cons _
+  constructor <;> intro h
+  · rcases h with (h | ⟨s, h, rfl⟩)
+    · exact sublist_cons_of_sublist _ h
+    · exact h.cons_cons _
   · cases' h with _ _ _ h s _ _ h
     · exact Or.inl h
     · exact Or.inr ⟨s, h, rfl⟩

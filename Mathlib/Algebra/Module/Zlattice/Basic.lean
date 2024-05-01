@@ -518,8 +518,8 @@ theorem Zlattice.rank [hs : IsZlattice K L] : finrank ℤ L = finrank K E := by
   have h_card : Fintype.card (Module.Free.ChooseBasisIndex ℤ L) =
       (Set.range b).toFinset.card := by
     rw [Set.toFinset_range, Finset.univ.card_image_of_injective]
-    rfl
-    exact Subtype.coe_injective.comp (Basis.injective _)
+    · rfl
+    · exact Subtype.coe_injective.comp (Basis.injective _)
   rw [finrank_eq_card_chooseBasisIndex]
     -- We prove that `finrank ℤ L ≤ finrank K E` and `finrank K E ≤ finrank ℤ L`
   refine le_antisymm ?_ ?_

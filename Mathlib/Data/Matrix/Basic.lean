@@ -877,7 +877,7 @@ variable [NonAssocSemiring α]
 
 @[simp]
 theorem one_dotProduct_one : (1 : n → α) ⬝ᵥ 1 = Fintype.card n := by
-  simp [dotProduct, Fintype.card]
+  simp [dotProduct]
 #align matrix.one_dot_product_one Matrix.one_dotProduct_one
 
 end NonAssocSemiring

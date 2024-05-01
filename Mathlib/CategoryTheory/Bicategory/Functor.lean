@@ -499,15 +499,17 @@ instance : Inhabited (Pseudofunctor B B) :=
   ⟨id B⟩
 
 /-- Composition of pseudofunctors. -/
-@[simps]
 def comp (F : Pseudofunctor B C) (G : Pseudofunctor C D) : Pseudofunctor B D :=
-  {
-    (F : PrelaxFunctor B C).comp
+  { (F : PrelaxFunctor B C).comp
       (G : PrelaxFunctor C D) with
     mapId := fun a => (G.mapFunctor _ _).mapIso (F.mapId a) ≪≫ G.mapId (F.obj a)
     mapComp := fun f g =>
       (G.mapFunctor _ _).mapIso (F.mapComp f g) ≪≫ G.mapComp (F.map f) (F.map g) }
 #align category_theory.pseudofunctor.comp CategoryTheory.Pseudofunctor.comp
+
+-- `comp` is near the `maxHeartbeats` limit (and seems to go over in CI),
+-- so we defer creating its `@[simp]` lemmas until a separate command.
+attribute [simps] comp
 
 /-- Construct a pseudofunctor from an oplax functor whose `mapId` and `mapComp` are isomorphisms.
 -/
