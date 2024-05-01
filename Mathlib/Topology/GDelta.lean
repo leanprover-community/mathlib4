@@ -17,7 +17,8 @@ In this file we define `Gδ` sets and prove their basic properties.
 ## Main definitions
 
 * `IsGδ`: a set `s` is a `Gδ` set if it can be represented as an intersection
-  of countably many open sets;
+  of countably many open sets; (defined in Mathlib.Topology.Separation as it is used there
+  to define PerfectlyNormalSpace)
 
 * `residual`: the σ-filter of residual sets. A set `s` is called *residual* if it includes a
   countable intersection of dense open sets.
@@ -54,11 +55,6 @@ set_option linter.uppercaseLean3 false
 section IsGδ
 
 variable [TopologicalSpace X]
-
-/-- A Gδ set is a countable intersection of open sets. -/
-def IsGδ (s : Set X) : Prop :=
-  ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
-#align is_Gδ IsGδ
 
 /-- An open set is a Gδ set. -/
 theorem IsOpen.isGδ {s : Set X} (h : IsOpen s) : IsGδ s :=

@@ -2350,6 +2350,27 @@ instance [CompletelyNormalSpace X] [R0Space X] : T5Space (SeparationQuotient X) 
 end CompletelyNormal
 
 
+section IsGδ
+
+/-- A Gδ set is a countable intersection of open sets. -/
+def IsGδ (s : Set X) : Prop :=
+  ∃ T : Set (Set X), (∀ t ∈ T, IsOpen t) ∧ T.Countable ∧ s = ⋂₀ T
+set_option linter.uppercaseLean3 false
+#align is_Gδ IsGδ
+
+end IsGδ
+
+
+section PerfectlyNormal
+
+/-- A topological space `X` is a *perfectly normal space* if it is normal
+and every closed subset `h` is Gδ. -/
+class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] [NormalSpace X] : Prop where
+  closed_gδ: ∀ h : Set X, IsClosed h → IsGδ h
+
+end PerfectlyNormal
+
+
 /-- In a compact T₂ space, the connected component of a point equals the intersection of all
 its clopen neighbourhoods. -/
 theorem connectedComponent_eq_iInter_isClopen [T2Space X] [CompactSpace X] (x : X) :

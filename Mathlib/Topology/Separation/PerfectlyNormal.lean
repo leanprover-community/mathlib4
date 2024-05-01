@@ -11,17 +11,17 @@ section PerfectlyNormal
 
 /-- A topological space `X` is a *perfectly normal space* if for each closed subset `h`,
 there exists a continuous function `f : X → ℝ` with `f ⁻¹' {0} = h`. -/
-class PerfectlyNormalSpace (X : Type u) [TopologicalSpace X] : Prop where
+class PerfectlyNormalSpace₂ (X : Type u) [TopologicalSpace X] : Prop where
   perfectly_normal :
     ∀ ⦃h : Set X⦄, IsClosed h → ∃ f : X → ℝ, Continuous f ∧ f ⁻¹' {0} = h
 
-export PerfectlyNormalSpace (perfectly_normal)
+export PerfectlyNormalSpace₂ (perfectly_normal)
 
-theorem perfectly_normal_function [PerfectlyNormalSpace X] {h : Set X} (h_closed : IsClosed h) :
-  ∃ f : X → ℝ, Continuous f ∧ f ⁻¹' {0} = h := PerfectlyNormalSpace.perfectly_normal h_closed
+theorem perfectly_normal_function [PerfectlyNormalSpace₂ X] {h : Set X} (h_closed : IsClosed h) :
+  ∃ f : X → ℝ, Continuous f ∧ f ⁻¹' {0} = h := PerfectlyNormalSpace₂.perfectly_normal h_closed
 
 theorem perfectly_normal_iff_closed_pair (X : Type u) [TopologicalSpace X] :
-    PerfectlyNormalSpace X ↔ ∀ h k : Set X, IsClosed h → IsClosed k →
+    PerfectlyNormalSpace₂ X ↔ ∀ h k : Set X, IsClosed h → IsClosed k →
     Disjoint h k → ∃ f : X → ℝ, Continuous f ∧ f ⁻¹' {0} = h ∧ f ⁻¹' {1} = k := by
   constructor
   · intro _ h k h_closed k_closed hk_dis
