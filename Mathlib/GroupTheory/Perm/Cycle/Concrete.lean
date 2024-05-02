@@ -41,8 +41,6 @@ The forward direction of `Equiv.Perm.isoCycle'` uses `Fintype.choose` of the uni
 result, relying on the `Fintype` instance of a `Cycle.nodup` subtype.
 It is unclear if this works faster than the `Equiv.Perm.toCycle`, which relies
 on recursion over `Finset.univ`.
-Running `#eval` on even a simple noncyclic permutation `c[(1 : Fin 7), 2, 3] * c[0, 5]`
-to show it takes a long time. TODO: is this because computing the cycle factors is slow?
 
 -/
 
