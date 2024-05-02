@@ -1993,6 +1993,14 @@ instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCon
 
 end BinaryOp
 
+section ULift
+
+@[simp]
+theorem ulift_symm_down (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
+  rfl
+
+end ULift
+
 end Equiv
 
 theorem Function.Injective.swap_apply

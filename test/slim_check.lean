@@ -3,6 +3,7 @@ import Mathlib.Tactic.SuccessIfFailWithMsg
 import Mathlib.Data.Finsupp.Notation
 import Mathlib.Testing.SlimCheck.Functions
 import Mathlib.Tactic.Have
+import Mathlib.Data.Nat.Prime
 
 private axiom test_sorry : ∀ {α}, α
 
@@ -381,7 +382,7 @@ issue: true ≠ true does not hold
   trivial
 
 -- TODO: fails without this line!
-attribute [-instance] Finsupp.instReprFinsupp in
+attribute [-instance] Finsupp.instRepr in
 
 example (f : ℕ →₀ ℕ) : true := by
   have : f = 0 := by
@@ -452,3 +453,20 @@ theorem testBit_pred :
     testBit (pred x) i = (decide (0 < x) &&
       (Bool.xor ((List.range i).all fun j => ! testBit x j) (testBit x i))) := by
   slim_check
+
+-- https://github.com/leanprover-community/mathlib4/issues/12565
+-- Make `slim_check` handle `Fact` instances.
+/--
+error:
+===================
+Found problems!
+a := 7
+guard: ⋯
+issue: ⋯ does not hold
+issue: ⋯ does not hold
+(0 shrinks)
+-------------------
+-/
+#guard_msgs in
+example {a : ℕ} [Fact a.Prime] : (a + 1).Prime ∨ (a + 2).Prime := by
+  slim_check (config := { randomSeed := some 257 })

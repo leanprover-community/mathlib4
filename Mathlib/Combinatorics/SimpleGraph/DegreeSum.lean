@@ -62,7 +62,7 @@ theorem dart_fst_fiber [DecidableEq V] (v : V) :
   simp only [mem_image, true_and_iff, mem_filter, SetCoe.exists, mem_univ, exists_prop_of_true]
   constructor
   · rintro rfl
-    exact ⟨_, d.is_adj, by ext <;> rfl⟩
+    exact ⟨_, d.adj, by ext <;> rfl⟩
   · rintro ⟨e, he, rfl⟩
     rfl
 #align simple_graph.dart_fst_fiber SimpleGraph.dart_fst_fiber

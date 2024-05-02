@@ -279,9 +279,11 @@ instance Interval.mulOneClass [OrderedCommMonoid α] : MulOneClass (Interval α)
   mul := (· * ·)
   one := 1
   one_mul s :=
-    (Option.map₂_coe_left _ _ _).trans <| by simp_rw [one_mul, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_left _ _ _).trans <| by
+      simp_rw [one_mul, ← Function.id_def, Option.map_id, id]
   mul_one s :=
-    (Option.map₂_coe_right _ _ _).trans <| by simp_rw [mul_one, ← id_def, Option.map_id, id]
+    (Option.map₂_coe_right _ _ _).trans <| by
+      simp_rw [mul_one, ← Function.id_def, Option.map_id, id]
 
 @[to_additive]
 instance Interval.commMonoid [OrderedCommMonoid α] : CommMonoid (Interval α) :=
@@ -711,8 +713,8 @@ theorem length_sum_le (f : ι → Interval α) (s : Finset ι) :
     (∑ i in s, f i).length ≤ ∑ i in s, (f i).length := by
   -- Porting note: Old proof was `:= Finset.le_sum_of_subadditive _ length_zero length_add_le _ _`
   apply Finset.le_sum_of_subadditive
-  exact length_zero
-  exact length_add_le
+  · exact length_zero
+  · exact length_add_le
 #align interval.length_sum_le Interval.length_sum_le
 
 end Interval

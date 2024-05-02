@@ -183,7 +183,7 @@ instance : LT ℚ := by infer_instance
 
 instance : DistribLattice ℚ := by infer_instance
 
-instance : Lattice ℚ := by infer_instance
+instance instLattice : Lattice ℚ := by infer_instance
 
 instance : SemilatticeInf ℚ := by infer_instance
 
