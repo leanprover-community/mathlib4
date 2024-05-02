@@ -305,7 +305,7 @@ theorem AnalyticOn.div {f g : E → 𝕝} {s : Set E}
 theorem Finset.analyticAt_sum {f : α → E → F} {c : E}
     (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∑ n in N, f n z) c := by
-  induction' N using Finset.induction with a B aB hB
+  induction' N with a B aB hB
   · simp only [Finset.sum_empty]
     exact analyticAt_const
   · simp_rw [Finset.sum_insert aB]
@@ -322,7 +322,7 @@ theorem Finset.analyticOn_sum {f : α → E → F} {s : Set E}
 theorem Finset.analyticAt_prod {A : Type*} [NormedCommRing A] [NormedAlgebra 𝕜 A]
     {f : α → E → A} {c : E} (N : Finset α) (h : ∀ n ∈ N, AnalyticAt 𝕜 (f n) c) :
     AnalyticAt 𝕜 (fun z ↦ ∏ n in N, f n z) c := by
-  induction' N using Finset.induction with a B aB hB
+  induction' N with a B aB hB
   · simp only [Finset.prod_empty]
     exact analyticAt_const
   · simp_rw [Finset.prod_insert aB]

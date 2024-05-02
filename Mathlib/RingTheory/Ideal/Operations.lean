@@ -873,7 +873,7 @@ theorem isCoprime_biInf {J : ι → Ideal R} {s : Finset ι}
     (hf : ∀ j ∈ s, IsCoprime I (J j)) : IsCoprime I (⨅ j ∈ s, J j) := by
   classical
   simp_rw [isCoprime_iff_add] at *
-  induction s using Finset.induction with
+  induction s with
   | empty =>
       simp
   | @insert i s _ hs =>

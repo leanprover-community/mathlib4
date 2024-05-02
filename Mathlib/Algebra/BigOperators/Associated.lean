@@ -59,7 +59,7 @@ theorem Prod.associated_iff {M N : Type*} [Monoid M] [Monoid N] {x z : M × N} :
 
 theorem Associated.prod {M : Type*} [CommMonoid M] {ι : Type*} (s : Finset ι) (f : ι → M)
     (g : ι → M) (h : ∀ i, i ∈ s → (f i) ~ᵤ (g i)) : (∏ i in s, f i) ~ᵤ (∏ i in s, g i) := by
-  induction s using Finset.induction with
+  induction s with
   | empty =>
     simp only [Finset.prod_empty]
     rfl

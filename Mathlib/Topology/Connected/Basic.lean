@@ -1055,7 +1055,7 @@ theorem isConnected_iff_sUnion_disjoint_open {s : Set α} :
         (∀ u ∈ U, IsOpen u) → (s ⊆ ⋃₀ ↑U) → ∃ u ∈ U, s ⊆ u := by
   rw [IsConnected, isPreconnected_iff_subset_of_disjoint]
   refine ⟨fun ⟨hne, h⟩ U hU hUo hsU => ?_, fun h => ⟨?_, fun u v hu hv hs hsuv => ?_⟩⟩
-  · induction U using Finset.induction_on with
+  · induction U with
     | empty => exact absurd (by simpa using hsU) hne.not_subset_empty
     | @insert u U uU IH =>
       simp only [← forall_cond_comm, Finset.forall_mem_insert, Finset.exists_mem_insert,

@@ -98,7 +98,7 @@ theorem div_eq_quo_add_sum_rem_div (f : R[X]) {ι : Type*} {g : ι → R[X]} {s 
       (∀ i ∈ s, (r i).degree < (g i).degree) ∧
         ((↑f : K) / ∏ i in s, ↑(g i)) = ↑q + ∑ i in s, (r i : K) / (g i : K) := by
   classical
-  induction' s using Finset.induction_on with a b hab Hind f generalizing f
+  induction' s using with a b hab Hind f generalizing f
   · refine' ⟨f, fun _ : ι => (0 : R[X]), fun i => _, by simp⟩
     rintro ⟨⟩
   obtain ⟨q₀, r₁, r₂, hdeg₁, _, hf : (↑f : K) / _ = _⟩ :=

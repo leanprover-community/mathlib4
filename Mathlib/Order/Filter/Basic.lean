@@ -978,7 +978,7 @@ theorem iInf_sets_induct {f : ι → Filter α} {s : Set α} (hs : s ∈ iInf f)
   rw [mem_iInf_finite'] at hs
   simp only [← Finset.inf_eq_iInf] at hs
   rcases hs with ⟨is, his⟩
-  induction is using Finset.induction_on generalizing s with
+  induction is generalizing s with
   | empty => rwa [mem_top.1 his]
   | insert _ ih =>
     rw [Finset.inf_insert, mem_inf_iff] at his

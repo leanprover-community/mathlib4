@@ -719,7 +719,7 @@ theorem ker_noncommProd_eq_of_supIndep_ker [FiniteDimensional K V] {ι : Type*} 
     (s : Finset ι) (comm) (h : s.SupIndep fun i ↦ ker (f i)) :
     ker (s.noncommProd f comm) = ⨆ i ∈ s, ker (f i) := by
   classical
-  induction' s using Finset.induction_on with i s hi ih
+  induction' s with i s hi ih
   · set_option tactic.skipAssignedInstances false in
     simpa using LinearMap.ker_id
   replace ih : ker (Finset.noncommProd s f <| Set.Pairwise.mono (s.subset_insert i) comm) =

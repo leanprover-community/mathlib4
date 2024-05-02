@@ -473,7 +473,7 @@ instance : SupSet (LieSubmodule R L M) where
         obtain ⟨s, hs, hsm⟩ := Submodule.mem_sSup_iff_exists_finset.mp hm
         clear hm
         classical
-        induction' s using Finset.induction_on with q t hqt ih generalizing m
+        induction' s with q t hqt ih generalizing m
         · replace hsm : m = 0 := by simpa using hsm
           simp [hsm]
         · rw [Finset.iSup_insert] at hsm

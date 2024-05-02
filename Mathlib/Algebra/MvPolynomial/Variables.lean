@@ -148,7 +148,7 @@ are a subset of the union of the sets of variables of each polynomial.
 theorem vars_prod {ι : Type*} [DecidableEq σ] {s : Finset ι} (f : ι → MvPolynomial σ R) :
     (∏ i in s, f i).vars ⊆ s.biUnion fun i => (f i).vars := by
   classical
-  induction s using Finset.induction_on with
+  induction s with
   | empty => simp
   | insert hs hsub =>
     simp only [hs, Finset.biUnion_insert, Finset.prod_insert, not_false_iff]
@@ -182,7 +182,7 @@ variable {ι : Type*} (t : Finset ι) (φ : ι → MvPolynomial σ R)
 theorem vars_sum_subset [DecidableEq σ] :
     (∑ i in t, φ i).vars ⊆ Finset.biUnion t fun i => (φ i).vars := by
   classical
-  induction t using Finset.induction_on with
+  induction t with
   | empty => simp
   | insert has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has]
@@ -194,7 +194,7 @@ theorem vars_sum_subset [DecidableEq σ] :
 theorem vars_sum_of_disjoint [DecidableEq σ] (h : Pairwise <| (Disjoint on fun i => (φ i).vars)) :
     (∑ i in t, φ i).vars = Finset.biUnion t fun i => (φ i).vars := by
   classical
-  induction t using Finset.induction_on with
+  induction t with
   | empty => simp
   | insert has hsum =>
     rw [Finset.biUnion_insert, Finset.sum_insert has, vars_add_of_disjoint, hsum]

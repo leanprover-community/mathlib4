@@ -204,7 +204,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
       (∫⋯∫⁻_s.image e, f ∘ (· ∘' e) ∂μ) x = (∫⋯∫⁻_s, f ∂μ ∘' e) (x ∘' e) := by
   have h : Measurable ((· ∘' e) : (∀ i, π i) → _) :=
     measurable_pi_iff.mpr <| fun i ↦ measurable_pi_apply (e i)
-  induction s using Finset.induction generalizing x with
+  induction s generalizing x with
   | empty => simp
   | insert hi ih =>
     rw [image_insert, lmarginal_insert _ (hf.comp h) (he.mem_finset_image.not.mpr hi),
@@ -214,7 +214,7 @@ theorem lmarginal_image [DecidableEq δ'] {e : δ' → δ} (he : Injective e) (s
 theorem lmarginal_update_of_not_mem {i : δ}
     {f : (∀ i, π i) → ℝ≥0∞} (hf : Measurable f) (hi : i ∉ s) (x : ∀ i, π i) (y : π i) :
     (∫⋯∫⁻_s, f ∂μ) (Function.update x i y) = (∫⋯∫⁻_s, f ∘ (Function.update · i y) ∂μ) x := by
-  induction s using Finset.induction generalizing x with
+  induction s generalizing x with
   | empty => simp
   | @insert i' s hi' ih =>
     rw [lmarginal_insert _ hf hi', lmarginal_insert _ (hf.comp measurable_update_left) hi']

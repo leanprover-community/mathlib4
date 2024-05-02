@@ -1282,7 +1282,7 @@ protected theorem induction {α γ} [MeasurableSpace α] [AddMonoid γ] {P : Sim
     (f : SimpleFunc α γ) : P f := by
   generalize h : f.range \ {0} = s
   rw [← Finset.coe_inj, Finset.coe_sdiff, Finset.coe_singleton, SimpleFunc.coe_range] at h
-  induction s using Finset.induction generalizing f with
+  induction s generalizing f with
   | empty =>
     rw [Finset.coe_empty, diff_eq_empty, range_subset_singleton] at h
     convert h_ind 0 MeasurableSet.univ

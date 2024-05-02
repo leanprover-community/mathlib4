@@ -559,7 +559,7 @@ theorem integrable_zero_measure {_ : MeasurableSpace α} {f : α → β} :
 
 theorem integrable_finset_sum_measure {ι} {m : MeasurableSpace α} {f : α → β} {μ : ι → Measure α}
     {s : Finset ι} : Integrable f (∑ i in s, μ i) ↔ ∀ i ∈ s, Integrable f (μ i) := by
-  induction s using Finset.induction_on <;> simp [*]
+  induction s <;> simp [*]
 #align measure_theory.integrable_finset_sum_measure MeasureTheory.integrable_finset_sum_measure
 
 theorem Integrable.smul_measure {f : α → β} (h : Integrable f μ) {c : ℝ≥0∞} (hc : c ≠ ∞) :

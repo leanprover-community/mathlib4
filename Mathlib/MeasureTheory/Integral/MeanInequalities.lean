@@ -203,7 +203,7 @@ theorem lintegral_prod_norm_pow_le {α ι : Type*} [MeasurableSpace α] {μ : Me
     (s : Finset ι) {f : ι → α → ℝ≥0∞} (hf : ∀ i ∈ s, AEMeasurable (f i) μ)
     {p : ι → ℝ} (hp : ∑ i in s, p i = 1) (h2p : ∀ i ∈ s, 0 ≤ p i) :
     ∫⁻ a, ∏ i in s, f i a ^ p i ∂μ ≤ ∏ i in s, (∫⁻ a, f i a ∂μ) ^ p i := by
-  induction s using Finset.induction generalizing p with
+  induction s generalizing p with
   | empty =>
     simp at hp
   | @insert i₀ s hi₀ ih =>

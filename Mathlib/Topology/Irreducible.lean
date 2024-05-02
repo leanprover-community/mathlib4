@@ -254,7 +254,7 @@ theorem isIrreducible_iff_sInter :
       ∀ (U : Finset (Set X)), (∀ u ∈ U, IsOpen u) → (∀ u ∈ U, (s ∩ u).Nonempty) →
         (s ∩ ⋂₀ ↑U).Nonempty := by
   refine ⟨fun h U hu hU => ?_, fun h => ⟨?_, ?_⟩⟩
-  · induction U using Finset.induction_on with
+  · induction U with
     | empty => simpa using h.nonempty
     | @insert u U _ IH =>
       rw [Finset.coe_insert, sInter_insert]

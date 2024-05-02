@@ -132,7 +132,7 @@ variable [DecidableEq ι]
 lemma prod_sum (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     ∏ a in s, ∑ b in t a, f a b = ∑ p in s.pi t, ∏ x in s.attach, f x.1 (p x.1 x.2) := by
   classical
-  induction' s using Finset.induction with a s ha ih
+  induction' s with a s ha ih
   · rw [pi_empty, sum_singleton]
     rfl
   · have h₁ : ∀ x ∈ t a, ∀ y ∈ t a, x ≠ y →

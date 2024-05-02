@@ -2038,7 +2038,7 @@ theorem prod_pow_boole [DecidableEq α] (s : Finset α) (f : α → β) (a : α)
 theorem prod_dvd_prod_of_dvd {S : Finset α} (g1 g2 : α → β) (h : ∀ a ∈ S, g1 a ∣ g2 a) :
     S.prod g1 ∣ S.prod g2 := by
   classical
-    induction' S using Finset.induction_on' with a T _haS _hTS haT IH
+    induction' S with a T haT IH
     · simp
     · rw [Finset.prod_insert haT, prod_insert haT]
       exact mul_dvd_mul (h a <| T.mem_insert_self a) <| IH fun b hb ↦ h b <| mem_insert_of_mem hb
@@ -2236,7 +2236,7 @@ variable [Nontrivial β] [NoZeroDivisors β]
 
 theorem prod_eq_zero_iff : ∏ x ∈ s, f x = 0 ↔ ∃ a ∈ s, f a = 0 := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
+    induction' s with a s ha ih
     · exact ⟨Not.elim one_ne_zero, fun ⟨_, H, _⟩ => by simp at H⟩
     · rw [prod_insert ha, mul_eq_zero, exists_mem_insert, ih]
 #align finset.prod_eq_zero_iff Finset.prod_eq_zero_iff
@@ -2556,7 +2556,7 @@ theorem toFinset_prod_dvd_prod [CommMonoid α] (S : Multiset α) : S.toFinset.pr
 theorem prod_sum {α : Type*} {ι : Type*} [CommMonoid α] (f : ι → Multiset α) (s : Finset ι) :
     (∑ x ∈ s, f x).prod = ∏ x ∈ s, (f x).prod := by
   classical
-    induction' s using Finset.induction_on with a t hat ih
+    induction' s with a t hat ih
     · rw [Finset.sum_empty, Finset.prod_empty, Multiset.prod_zero]
     · rw [Finset.sum_insert hat, Finset.prod_insert hat, Multiset.prod_add, ih]
 #align multiset.prod_sum Multiset.prod_sum
@@ -2573,13 +2573,13 @@ theorem Units.coe_prod {M : Type*} [CommMonoid M] (f : α → Mˣ) (s : Finset �
 theorem Units.mk0_prod [CommGroupWithZero β] (s : Finset α) (f : α → β) (h) :
     Units.mk0 (∏ b ∈ s, f b) h =
       ∏ b ∈ s.attach, Units.mk0 (f b) fun hh => h (Finset.prod_eq_zero b.2 hh) := by
-  classical induction s using Finset.induction_on <;> simp [*]
+  classical induction s <;> simp [*]
 #align units.mk0_prod Units.mk0_prod
 
 theorem nat_abs_sum_le {ι : Type*} (s : Finset ι) (f : ι → ℤ) :
     (∑ i ∈ s, f i).natAbs ≤ ∑ i ∈ s, (f i).natAbs := by
   classical
-    induction' s using Finset.induction_on with i s his IH
+    induction' s with i s his IH
     · simp only [Finset.sum_empty, Int.natAbs_zero, le_refl]
     · simp only [his, Finset.sum_insert, not_false_iff]
       exact (Int.natAbs_add_le _ _).trans (add_le_add le_rfl IH)

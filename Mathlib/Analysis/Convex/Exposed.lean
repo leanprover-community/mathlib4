@@ -155,7 +155,7 @@ protected theorem inter [ContinuousAdd 𝕜] {A B C : Set E} (hB : IsExposed �
 
 theorem sInter [ContinuousAdd 𝕜] {F : Finset (Set E)} (hF : F.Nonempty)
     (hAF : ∀ B ∈ F, IsExposed 𝕜 A B) : IsExposed 𝕜 A (⋂₀ F) := by
-  induction F using Finset.induction with
+  induction F with
   | empty => exfalso; exact Finset.not_nonempty_empty hF
   | @insert C F _ hF' =>
     rw [Finset.coe_insert, sInter_insert]

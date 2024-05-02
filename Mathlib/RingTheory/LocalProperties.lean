@@ -480,7 +480,7 @@ theorem multiple_mem_span_of_mem_localization_span [Algebra R' S] [Algebra R S]
   rsuffices ⟨t, ht⟩ : ∃ t : M, t • x ∈ Submodule.span R (s' : Set S)
   · exact ⟨t, Submodule.span_mono hss' ht⟩
   clear hx hss' s
-  induction s' using Finset.induction_on generalizing x
+  induction s' generalizing x
   · use 1; simpa using hs'
   rename_i a s _ hs
   simp only [Finset.coe_insert, Finset.image_insert, Finset.coe_image, Subtype.coe_mk,

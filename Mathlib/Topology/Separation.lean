@@ -799,7 +799,7 @@ theorem Dense.diff_singleton [T1Space X] {s : Set X} (hs : Dense s) (x : X) [NeB
 obtains a dense set. -/
 theorem Dense.diff_finset [T1Space X] [∀ x : X, NeBot (𝓝[≠] x)] {s : Set X} (hs : Dense s)
     (t : Finset X) : Dense (s \ t) := by
-  induction t using Finset.induction_on with
+  induction t with
   | empty => simpa using hs
   | insert _ ih =>
     rw [Finset.coe_insert, ← union_singleton, ← diff_diff]
