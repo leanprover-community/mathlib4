@@ -79,7 +79,6 @@ theorem upp_half_translation_N (z : ℍ) (N : ℕ) (hn : 0 < N) :
   rw [h2, abs_eq_self.2 (Int.sub_floor_div_mul_nonneg (z.re : ℝ) hnn)]
   apply (Int.sub_floor_div_mul_lt (z.re : ℝ) hnn).le
 
-
 lemma T_pow_N_mem_Gamma (N M: ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
   simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
@@ -98,13 +97,6 @@ theorem lvl_N_periodic (N : ℕ) (k : ℤ) (f : SlashInvariantForm (Gamma N) k) 
   simp only [Fin.isValue, ModularGroup.coe_T_zpow (N * n), of_apply, cons_val', cons_val_zero,
     empty_val', cons_val_fin_one, cons_val_one, head_fin_const, Int.cast_zero, zero_mul, head_cons,
     Int.cast_one, zero_add, one_zpow, one_mul]
-
-lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
-  verticalStrip A B' ⊆ verticalStrip A B := by
-  simp only [verticalStrip, setOf_subset_setOf, and_imp]
-  intro z ha hb
-  simp only [ha, true_and]
-  apply le_trans hbb hb
 
 theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
     (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
