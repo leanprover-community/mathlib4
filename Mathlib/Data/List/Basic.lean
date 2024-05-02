@@ -1293,7 +1293,7 @@ theorem nthLe_map' (f : α → β) {l n} (H) :
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.get_singleton
 
-#noalign list.nth_le_zero -- List.nthLe_zero
+#align list.nth_le_zero List.get_mk_zero
 
 #align list.nth_le_append List.get_append
 

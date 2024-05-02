@@ -2133,9 +2133,11 @@ theorem sdiff_union_of_subset {s₁ s₂ : Finset α} (h : s₁ ⊆ s₂) : s₂
   (union_comm _ _).trans (union_sdiff_of_subset h)
 #align finset.sdiff_union_of_subset Finset.sdiff_union_of_subset
 
-theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := by
-  ext x
-  simp [and_assoc]
+lemma inter_sdiff_assoc (s t u : Finset α) : (s ∩ t) \ u = s ∩ (t \ u) := by
+  ext x; simp [and_assoc]
+
+@[deprecated inter_sdiff_assoc] -- 2024-05-01
+theorem inter_sdiff (s t u : Finset α) : s ∩ (t \ u) = (s ∩ t) \ u := (inter_sdiff_assoc _ _ _).symm
 #align finset.inter_sdiff Finset.inter_sdiff
 
 @[simp]
@@ -2321,7 +2323,7 @@ theorem disjoint_of_erase_right (ha : a ∉ s) (hst : Disjoint s (t.erase a)) : 
 #align finset.disjoint_of_erase_right Finset.disjoint_of_erase_right
 
 theorem inter_erase (a : α) (s t : Finset α) : s ∩ t.erase a = (s ∩ t).erase a := by
-  simp only [erase_eq, inter_sdiff]
+  simp only [erase_eq, inter_sdiff_assoc]
 #align finset.inter_erase Finset.inter_erase
 
 @[simp]
@@ -2617,8 +2619,7 @@ theorem filter_comm (s : Finset α) : (s.filter p).filter q = (s.filter q).filte
   simp_rw [filter_filter, and_comm]
 #align finset.filter_comm Finset.filter_comm
 
--- We can simplify an application of filter where the decidability is inferred in "the wrong way"
-@[simp]
+-- We can replace an application of filter where the decidability is inferred in "the wrong way".
 theorem filter_congr_decidable (s : Finset α) (p : α → Prop) (h : DecidablePred p)
     [DecidablePred p] : @filter α p h s = s.filter p := by congr
 #align finset.filter_congr_decidable Finset.filter_congr_decidable
