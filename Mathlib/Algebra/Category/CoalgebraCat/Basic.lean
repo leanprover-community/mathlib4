@@ -96,22 +96,15 @@ theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
     (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f : X →ₗ[R] Y) :=
   rfl
 
-instance hasForgetToAddCommGroup : HasForget₂ (CoalgebraCat R) AddCommGroupCat where
-  forget₂ :=
-    { obj := fun M => AddCommGroupCat.of M
-      map := fun f => AddCommGroupCat.ofHom f.toLinearMap }
-
-instance {M : CoalgebraCat.{v} R} :
-    Module R ((forget₂ (CoalgebraCat R) (AddCommGroupCat)).obj M) :=
-  (inferInstance : Module R M)
-
-instance {M : CoalgebraCat.{v} R} :
-    Coalgebra R ((forget₂ (CoalgebraCat R) (AddCommGroupCat)).obj M) :=
-  (inferInstance : Coalgebra R M)
-
 /-- The object in the category of R-coalgebras associated to an R-coalgebra. -/
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat R :=
   ⟨X⟩
+
+@[simp] theorem of_coe (X : CoalgebraCat R) : of R X = X := rfl
+
+theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
+    (of R X : Type v) = X :=
+  rfl
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 def ofHom {R : Type u} [CommRing R] {X Y : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X]
