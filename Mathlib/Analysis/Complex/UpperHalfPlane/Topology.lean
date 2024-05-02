@@ -95,7 +95,7 @@ lemma verticalStrip_of_neg_empty {A B : ℝ} (h : A < 0) : verticalStrip A B = �
   linarith
 
 lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
-  verticalStrip A B' ⊆ verticalStrip A B := by
+    verticalStrip A B' ⊆ verticalStrip A B := by
   simp only [verticalStrip, setOf_subset_setOf, and_imp]
   intro z ha hb
   simp only [ha, true_and]

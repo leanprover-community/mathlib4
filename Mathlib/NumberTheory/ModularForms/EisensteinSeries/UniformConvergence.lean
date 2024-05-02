@@ -19,15 +19,15 @@ of weight `k` and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`
 
 noncomputable section
 
-open Complex Filter UpperHalfPlane Set Finset
+open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators NNReal Classical Filter Matrix UpperHalfPlane Complex
+open scoped BigOperators Matrix UpperHalfPlane Complex
 
 namespace EisensteinSeries
 
 section bounding_functions
 
-/-- Auxiliary function used for bounding Eisenstein series-/
+/-- Auxiliary function used for bounding Eisenstein series. -/
 def r1 (z : ℍ) : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
 
 lemma r1' (z : ℍ) : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by
@@ -37,7 +37,7 @@ theorem r1_pos (z : ℍ) : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- This function is used to give an upper bound on Eisenstein series-/
+/-- This function is used to give an upper bound on Eisenstein series. -/
 def r (z : ℍ) : ℝ := min z.im (Real.sqrt (r1 z))
 
 lemma r_pos (z : ℍ) : 0 < r z := by
@@ -91,6 +91,7 @@ lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
   ext x
   fin_cases x <;> aesop
 
+/-This proof is faster than the one above, but longer. -/
 lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
   apply ne_zero_if_max (x := ![x 1, x 0]) ?_ (by simpa only [Fin.isValue, Matrix.cons_val_zero,
@@ -139,9 +140,9 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   · simp only [ne_eq, not_not] at hk0
     simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, le_refl]
 
-theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
+theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)))) ^ (-k) ≤
-      (((r z) ^ (-k) * n ^ (-k))) := by
+      (r z) ^ (-k) * n ^ (-k) := by
   by_cases hn : n = 0
   · simp only [hn, box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2] at *
@@ -175,16 +176,16 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       norm_cast
       exact Nat.pos_of_ne_zero hn
 
-/-This is a special case of the above, but one that we use more.-/
-theorem eis_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
+/-This is a special case of the above, but one that we use more. -/
+theorem summand_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
     (hx : (x 0, x 1) ∈ box n) :
     (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (((r z) ^ k * n ^ k))⁻¹ := by
-  have := eis_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
+  have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   norm_cast at *
   rw [zpow_neg, mul_inv] at *
   simpa only [Fin.isValue, map_zpow₀, ge_iff_le, zpow_neg] using this
 
-lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
+lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
   simp only [mem_verticalStrip_iff, abs_ofReal, ge_iff_le] at hz
@@ -264,7 +265,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     simp only [zpow_natCast, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v (by linarith)
+  have := summand_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v (by linarith)
   simp only [Nat.cast_max,Int.natCast_natAbs, iff_true, zpow_natCast, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
@@ -276,14 +277,14 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
   rw [inv_le_inv ]
-  · apply pow_le_pow_left (r_pos _).le (r_lower_bound_on_strip hB ⟨x, HABK hx⟩)
+  · apply pow_le_pow_left (r_pos _).le (r_lower_bound_on_verticalStrip hB ⟨x, HABK hx⟩)
   · apply pow_pos (r_pos x)
   · apply pow_pos (r_pos _)
 
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-/- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later -/
+/- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later. -/
 lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)

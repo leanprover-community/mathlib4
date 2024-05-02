@@ -4,11 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Birkbeck
 -/
 
-import Mathlib.NumberTheory.ModularForms.EisensteinSeries.MDifferentiable
+import Mathlib.NumberTheory.ModularForms.EisensteinSeries.UniformConvergence
 import Mathlib.Analysis.Complex.UpperHalfPlane.Manifold
 import Mathlib.Analysis.Complex.LocallyUniformLimit
 import Mathlib.NumberTheory.ModularForms.Basic
-import Mathlib.NumberTheory.ZetaFunction
 
 /-!
 # Boundedness of Eisenstein series
@@ -31,7 +30,7 @@ lemma eis_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
   have hk0 : 0 ≤ k := by omega
   lift k to ℕ using hk0
   intro b
-  have := eis_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
+  have := summand_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
     (by simp)
   conv =>
     enter [2]
@@ -119,7 +118,7 @@ theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k
         lift k to ℕ using hk0
         push_cast
         apply pow_le_pow_left (r_pos _).le
-        apply r_lower_bound_on_strip (A := N) (B := 2)
+        apply r_lower_bound_on_verticalStrip (A := N) (B := 2)
             (z:= ⟨Z, (verticalStrip_mem_le (N : ℕ) 2 z.im hz) hn⟩)
     · apply (summable_upper_bound hk Z).of_nonneg_of_le (fun _ => Complex.abs.nonneg _)
         (eis_bound k hk Z)
