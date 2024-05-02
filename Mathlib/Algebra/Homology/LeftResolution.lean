@@ -2,7 +2,7 @@ import Mathlib.Algebra.Homology.Embedding.RestrictionHomology
 import Mathlib.Algebra.Homology.Embedding.ExtendMap
 import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
-import Mathlib.Algebra.Homology.BicomplexColumns
+import Mathlib.Algebra.Homology.BicomplexRows
 import Mathlib.Algebra.Homology.CochainComplexMinus
 
 open CategoryTheory Category Limits Preadditive ZeroObject ComplexShape
@@ -499,7 +499,7 @@ section
 
 variable (K : CochainComplex.Minus C)
 
-noncomputable abbrev totalπ'  :
+noncomputable def totalπ'  :
     ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (up ℤ) ⟶
       ((bicomplexSingleRowFunctor C).obj K.obj).total (up ℤ) :=
   HomologicalComplex₂.total.map (Λ.bicomplexπ.app K.obj) (up ℤ)
@@ -508,6 +508,15 @@ instance : QuasiIso (Λ.totalπ' K) := by
   obtain ⟨i, hi⟩ := K.2
   apply HomologicalComplex₂.total.quasiIso_map_of_isStrictlyGE_of_isStrictlyLE _ i 0
   dsimp [bicomplexπ]
+  infer_instance
+
+
+noncomputable def totalπ'' :
+    ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (up ℤ) ⟶ K.obj :=
+  Λ.totalπ' K ≫ (HomologicalComplex₂.singleRow₀ObjTotal K.obj).hom
+
+instance : QuasiIso (Λ.totalπ'' K) := by
+  dsimp only [totalπ'']
   infer_instance
 
 end
