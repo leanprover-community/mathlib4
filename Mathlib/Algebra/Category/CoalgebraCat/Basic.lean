@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Robert A. Spencer, Markus Himmel, Amelia Livingston
+Authors: Amelia Livingston
 -/
 import Mathlib.RingTheory.Coalgebra.Equiv
 import Mathlib.Algebra.Category.ModuleCat.Basic
@@ -42,7 +42,7 @@ instance : CoeSort (CoalgebraCat.{v} R) (Type v) :=
 
 attribute [coe] CoalgebraCat.carrier
 
-instance CoalgebraCategory : Category.{v, max (v+1) u} (CoalgebraCat.{v} R) where
+instance coalgebraCategory : Category.{v, max (v+1) u} (CoalgebraCat.{v} R) where
   Hom M N := M →ₗc[R] N
   id _ := CoalgHom.id R _
   comp f g := g.comp f
@@ -103,13 +103,6 @@ def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
     (forget₂ (CoalgebraCat R) (ModuleCat R)).obj X = ModuleCat.of R X :=
-  rfl
-
--- following the advice of corresponding line in `ModuleCat.Basic`:
-@[simp]
-theorem moduleCat_of_of (X : Type v) [AddCommGroup X] [Module R X]
-    [Coalgebra R X] :
-    ModuleCat.of R (of R X) = ModuleCat.of R X :=
   rfl
 
 @[simp]
