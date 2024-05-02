@@ -63,8 +63,8 @@ def piFanIsLimit {ι : Type v} (α : ι → TopCat.{max v u}) : IsLimit (piFan �
 equipped with the product topology.
 -/
 def piIsoPi {ι : Type v} (α : ι → TopCat.{max v u}) : ∏ α ≅ TopCat.of (∀ i, α i) :=
-  have := topCat_hasLimitsOfSize -- This wasn't necessary when we had `TopCatMax` 
-  (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit α)
+  (limit.isLimit _).conePointUniqueUpToIso (piFanIsLimit.{v, u} α)
+  -- Specifying the universes in `piFanIsLimit` wasn't necessary when we had `TopCatMax` 
 #align Top.pi_iso_pi TopCat.piIsoPi
 
 @[reassoc (attr := simp)]
@@ -120,8 +120,8 @@ def sigmaCofanIsColimit {ι : Type v} (β : ι → TopCat.{max v u}) : IsColimit
 /-- The coproduct is homeomorphic to the disjoint union of the topological spaces.
 -/
 def sigmaIsoSigma {ι : Type v} (α : ι → TopCat.{max v u}) : ∐ α ≅ TopCat.of (Σi, α i) :=
-  have := topCat_hasColimitsOfSize -- This wasn't necessary when we used `TopCatMax`
-  (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit α)
+  (colimit.isColimit _).coconePointUniqueUpToIso (sigmaCofanIsColimit.{v, u} α)
+  -- Specifying the universes in `sigmaCofanIsColimit` wasn't necessary when we had `TopCatMax` 
 #align Top.sigma_iso_sigma TopCat.sigmaIsoSigma
 
 @[reassoc (attr := simp)]
