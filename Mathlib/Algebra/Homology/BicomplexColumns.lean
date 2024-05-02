@@ -416,7 +416,6 @@ lemma singleColumn_d₁ (x : ι₁) (y : ι₂) (n : ι) :
     · rw [d₁_eq_zero' _ _ hx _ _ hx']
   · rw [d₁_eq_zero _ _ _ _ _ hx]
 
-@[simp]
 lemma singleColumn_d₂ (y y' : ι₂) (hy : c₂.Rel y y') (n : ι)
     (hn : π c₁ c₂ c (i₁, y') = n) :
     ((singleColumn C c₁ c₂ i₁).obj K).d₂ c i₁ y n =
