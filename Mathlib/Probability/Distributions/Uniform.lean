@@ -304,7 +304,6 @@ variable [Fintype α] [Nonempty α]
 @[simp]
 theorem uniformOfFintype_apply (a : α) : uniformOfFintype α a = (Fintype.card α : ℝ≥0∞)⁻¹ := by
   simp [uniformOfFintype, Finset.mem_univ, if_true, uniformOfFinset_apply]
-  rfl
 #align pmf.uniform_of_fintype_apply PMF.uniformOfFintype_apply
 
 @[simp]
@@ -329,7 +328,6 @@ theorem toOuterMeasure_uniformOfFintype_apply :
 theorem toMeasure_uniformOfFintype_apply [MeasurableSpace α] (hs : MeasurableSet s) :
     (uniformOfFintype α).toMeasure s = Fintype.card s / Fintype.card α := by
   simp [uniformOfFintype, hs]
-  rfl
 #align pmf.to_measure_uniform_of_fintype_apply PMF.toMeasure_uniformOfFintype_apply
 
 end Measure
