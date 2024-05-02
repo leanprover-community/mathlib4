@@ -32,6 +32,8 @@ private def dischargerTraceMessage (prop: Expr) : Except ε (Option Expr) → Si
 | .error _ | .ok none => return m!"{crossEmoji} discharge {prop}"
 | .ok (some _) => return m!"{checkEmoji} discharge {prop}"
 
+open private Simp.dischargeUsingAssumption? from Lean.Meta.Tactic.Simp.Rewrite
+
 /-- Discharge strategy for the `field_simp` tactic. -/
 partial def discharge (prop : Expr) : SimpM (Option Expr) :=
   withTraceNode `Tactic.field_simp (dischargerTraceMessage prop) do
