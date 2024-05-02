@@ -183,10 +183,10 @@ is a ring homomorphism and the range of either `f` or `g` is in center of `R`, t
 ring homomorphism.  If `R` is a `k`-algebra and `f = algebraMap k R`, then the result is an algebra
 homomorphism called `AddMonoidAlgebra.lift`. -/
 
-to_ama
+to_ama [g]
 @[simp]
 theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
-    MonoidAlgebra.liftNC f g (single a b) = f b * g a :=
+    liftNC f g (single a b) = f b * g a :=
   liftAddHom_apply_single _ _ _
 to_ama #align monoid_algebra.lift_nc_single MonoidAlgebra.liftNC_single
 
@@ -202,18 +202,18 @@ section Mul
 -- probably use `Mathlib.Command.Variable.elabVariables.extendScope` for `Mul G` → `Add G`
 variable [Semiring k]
 
---to_ama?
+--to_ama? [G]
  variable [Mul G] in
 /-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
 it trying to unify two things that are different. -/
 @[irreducible] def mul' (f g : MonoidAlgebra k G) : MonoidAlgebra k G :=
   f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
 
- variable [Add G] in
-/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
-it trying to unify two things that are different. -/
-@[irreducible] def _root_.AddMonoidAlgebra.mul' (f g : AddMonoidAlgebra k (Multiplicative G)) : AddMonoidAlgebra k (Multiplicative G) :=
-  f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
+-- variable [Add G] in
+--/-- The multiplication in a monoid algebra. We make it irreducible so that Lean doesn't unfold
+--it trying to unify two things that are different. -/
+--@[irreducible] def _root_.AddMonoidAlgebra.mul' (f g : AddMonoidAlgebra k (Multiplicative G)) : AddMonoidAlgebra k (Multiplicative G) :=
+--  f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ * a₂) (b₁ * b₂)
 
  variable [Mul G] in
 -- adding
@@ -318,8 +318,9 @@ end Mul
 
 section Semigroup
 
-variable [Semiring k] [Semigroup G] [Semiring R]
-
+variable [Semiring k]
+to_ama
+variable [Semigroup G] [Semiring R] in
 instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
     mul_assoc := fun f g h => by
@@ -328,39 +329,79 @@ instance nonUnitalSemiring : NonUnitalSemiring (MonoidAlgebra k G) :=
       rw [sum_sum_index]; congr; ext a₁ b₁
       rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
       rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, mul_assoc]
+      rw [sum_single_index, mul_assoc]
+      -- a small hack
+      -- * for `MonoidAlgebra`:    `rw [mul_assoc]`
+      -- * for `AddMonoidAlgebra`: `rw [add_assoc]`
+      first | rw [mul_assoc] | rw [add_assoc]
       all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
         mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
-#align monoid_algebra.non_unital_semiring MonoidAlgebra.nonUnitalSemiring
+to_ama #align monoid_algebra.non_unital_semiring MonoidAlgebra.nonUnitalSemiring
 
 end Semigroup
 
 section One
 
-variable [NonAssocSemiring R] [Semiring k] [One G]
+variable [NonAssocSemiring R] [Semiring k] [One G] [Zero G]
 
+to_ama
 /-- The unit of the multiplication is `single 1 1`, i.e. the function
   that is `1` at `1` and zero elsewhere. -/
 instance one : One (MonoidAlgebra k G) :=
   ⟨single 1 1⟩
-#align monoid_algebra.has_one MonoidAlgebra.one
+to_ama #align monoid_algebra.has_one MonoidAlgebra.one
+/- The unit of the multiplication is `single 0 1`, i.e. the function
+  that is `1` at `0` and zero elsewhere. -/
 
+--instance one1 : One (AddMonoidAlgebra k G) :=
+--  ⟨AddMonoidAlgebra.single 0 1⟩
+
+to_ama
+--variable [One G] in
 theorem one_def : (1 : MonoidAlgebra k G) = single 1 1 :=
   rfl
-#align monoid_algebra.one_def MonoidAlgebra.one_def
+to_ama #align monoid_algebra.one_def MonoidAlgebra.one_def
+--#check AddMonoidAlgebra.one_def
 
+--variable [Zero G] in
+--theorem new1 : (1 : AddMonoidAlgebra k G) = AddMonoidAlgebra.single 0 1 := by rfl <;>
+--  sorry --AddMonoidAlgebra.one_def
+
+--#check new1
+
+--variable [One G] in
+to_ama [] G
 @[simp]
 theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) :
-    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def]
-#align monoid_algebra.lift_nc_one MonoidAlgebra.liftNC_one
+    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def] --; try congr;
+to_ama #align monoid_algebra.lift_nc_one MonoidAlgebra.liftNC_one
+
+--variable [Zero G] in
+--@[simp]
+--theorem _root_.AddMonoidAlgebra.litNC_one {g_hom : Type*} [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
+--    (f : k →+* R) (g : g_hom) :
+--    AddMonoidAlgebra.liftNC (f : k →+ R) g 1 = 1 := by simp [AddMonoidAlgebra.one_def]
+--
+-- adding
+--variable [Zero G] in
+--@[simp]
+--theorem _root_.AddMonoidAlgebra.liftNC_one {g_hom : Type*} [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
+--    (f : k →+* R) (g : g_hom) : AddMonoidAlgebra.liftNC (f : k →+ R) g 1 = 1 :=
+--  (MonoidAlgebra.liftNC_one f g : _)
+  --   by
+  --simp [AddMonoidAlgebra.one_def]
+  --exact?
+--  rfl
 
 end One
 
 section MulOneClass
 
-variable [Semiring k] [MulOneClass G]
+variable [Semiring k]
 
+to_ama
+variable [MulOneClass G] in
 instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalNonAssocSemiring with
     natCast := fun n => single 1 n
@@ -372,8 +413,9 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
     mul_one := fun f => by
       simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
         mul_one, sum_single] }
-#align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
+to_ama #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
 
+variable [MulOneClass G] in
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
 #align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
@@ -1301,15 +1343,16 @@ variable {k G}
 section Mul
 
 variable [Semiring k] [Add G]
---
+
 --/-- The product of `f g : k[G]` is the finitely supported function
 --  whose value at `a` is the sum of `f x * g y` over all pairs `x, y`
 --  such that `x + y = a`. (Think of the product of multivariate
 --  polynomials where `α` is the additive monoid of monomial exponents.) -/
 --instance hasMul : Mul k[G] :=
+--  --⟨AddMonoidAlgebra.mul'⟩
 --  ⟨fun f g => MonoidAlgebra.mul' (G := Multiplicative G) f g⟩
 --#align add_monoid_algebra.has_mul AddMonoidAlgebra.hasMul
---
+
 --theorem mul_def {f g : k[G]} :
 --    f * g = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => single (a₁ + a₂) (b₁ * b₂) :=
 --  MonoidAlgebra.mul_def (G := Multiplicative G)
@@ -1362,22 +1405,22 @@ section One
 
 variable [Semiring k] [Zero G] [NonAssocSemiring R]
 
-/-- The unit of the multiplication is `single 1 1`, i.e. the function
-  that is `1` at `0` and zero elsewhere. -/
-instance one : One k[G] :=
-  ⟨single 0 1⟩
-#align add_monoid_algebra.has_one AddMonoidAlgebra.one
+--/-- The unit of the multiplication is `single 1 1`, i.e. the function
+--  that is `1` at `0` and zero elsewhere. -/
+--instance one : One k[G] :=
+--  ⟨single 0 1⟩
+--#align add_monoid_algebra.has_one AddMonoidAlgebra.one
 
-theorem one_def : (1 : k[G]) = single 0 1 :=
-  rfl
-#align add_monoid_algebra.one_def AddMonoidAlgebra.one_def
+--theorem one_def : (1 : k[G]) = single 0 1 :=
+--  rfl
+--#align add_monoid_algebra.one_def AddMonoidAlgebra.one_def
 
-@[simp]
-theorem liftNC_one {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
-    (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
-  (MonoidAlgebra.liftNC_one f g : _)
-#align add_monoid_algebra.lift_nc_one AddMonoidAlgebra.liftNC_one
+--@[simp]
+--theorem liftNC_one {g_hom : Type*}
+--    [FunLike g_hom (Multiplicative G) R] [OneHomClass g_hom (Multiplicative G) R]
+--    (f : k →+* R) (g : g_hom) : liftNC (f : k →+ R) g 1 = 1 :=
+--  (MonoidAlgebra.liftNC_one f g : _)
+--#align add_monoid_algebra.lift_nc_one AddMonoidAlgebra.liftNC_one
 
 end One
 
@@ -1385,18 +1428,18 @@ section Semigroup
 
 variable [Semiring k] [AddSemigroup G]
 
-instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    mul_assoc := fun f g h => by
-      -- Porting note: `reducible` cannot be `local` so proof gets long.
-      simp only [mul_def]
-      rw [sum_sum_index]; congr; ext a₁ b₁
-      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
-      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
-      rw [sum_single_index, mul_assoc, add_assoc]
-      all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
-        mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
-#align add_monoid_algebra.non_unital_semiring AddMonoidAlgebra.nonUnitalSemiring
+--instance nonUnitalSemiring : NonUnitalSemiring k[G] :=
+--  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
+--    mul_assoc := fun f g h => by
+--      -- Porting note: `reducible` cannot be `local` so proof gets long.
+--      simp only [mul_def]
+--      rw [sum_sum_index]; congr; ext a₁ b₁
+--      rw [sum_sum_index, sum_sum_index]; congr; ext a₂ b₂
+--      rw [sum_sum_index, sum_single_index]; congr; ext a₃ b₃
+--      rw [sum_single_index, mul_assoc, add_assoc]
+--      all_goals simp only [single_zero, single_add, forall_true_iff, add_mul,
+--        mul_add, zero_mul, mul_zero, sum_zero, sum_add] }
+--#align add_monoid_algebra.non_unital_semiring AddMonoidAlgebra.nonUnitalSemiring
 
 end Semigroup
 
@@ -1404,18 +1447,18 @@ section MulOneClass
 
 variable [Semiring k] [AddZeroClass G]
 
-instance nonAssocSemiring : NonAssocSemiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
-    natCast := fun n => single 0 n
-    natCast_zero := by simp
-    natCast_succ := fun _ => by simp; rfl
-    one_mul := fun f => by
-      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
-        one_mul, sum_single]
-    mul_one := fun f => by
-      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
-        mul_one, sum_single] }
-#align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
+--instance nonAssocSemiring : NonAssocSemiring k[G] :=
+--  { AddMonoidAlgebra.nonUnitalNonAssocSemiring with
+--    natCast := fun n => single 0 n
+--    natCast_zero := by simp
+--    natCast_succ := fun _ => by simp; rfl
+--    one_mul := fun f => by
+--      simp only [mul_def, one_def, sum_single_index, zero_mul, single_zero, sum_zero, zero_add,
+--        one_mul, sum_single]
+--    mul_one := fun f => by
+--      simp only [mul_def, one_def, sum_single_index, mul_zero, single_zero, sum_zero, add_zero,
+--        mul_one, sum_single] }
+--#align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
 theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
   rfl
@@ -1977,11 +2020,7 @@ variable {A : Type u₃} [Semiring A] [Algebra k A] {B : Type*} [Semiring B] [Al
 def liftNCAlgHom (f : A →ₐ[k] B) (g : Multiplicative G →* B) (h_comm : ∀ x y, Commute (f x) (g y)) :
     A[G] →ₐ[k] B :=
   { liftNCRingHom (f : A →+* B) g h_comm with
-    commutes' := by
-      simp [liftNCRingHom]
---      change ∀ (r : k), (liftNC ↑↑f ⇑g) (single 0 ((algebraMap k A) r)) = (algebraMap k B) r
---      simp
-  }
+    commutes' := by simp [liftNCRingHom] }
 #align add_monoid_algebra.lift_nc_alg_hom AddMonoidAlgebra.liftNCAlgHom
 
 /-- A `k`-algebra homomorphism from `k[G]` is uniquely defined by its

@@ -31,12 +31,13 @@ namespace Mathlib.MA
 --  |>.insert "inter"  "union"
 
 abbrev botTop : HashMap String String := HashMap.empty
-  |>.insert "⊥"      "⊤"
-  |>.insert "Mul"    "Add"
-  |>.insert "Bot"    "Top"
-  |>.insert "bot"    "top"
-  |>.insert "unbot"  "untop"
-  |>.insert "union"  "inter"
+  |>.insert "⊥"         "⊤"
+  |>.insert "Mul"       "Add"
+  |>.insert "Bot"       "Top"
+  |>.insert "bot"       "top"
+  |>.insert "unbot"     "untop"
+  |>.insert "union"     "inter"
+  |>.insert "Semigroup" "AddSemigroup"
 
 /-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
 `[non-alpha]*`. -/
@@ -84,6 +85,7 @@ abbrev leftRight : HashSet String :=
 /-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
 E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
 def swapWords : List String → List String
+  | "Add"::"One"::"Class"::rest => "AddZeroClass"::swapWords rest
   | "Monoid"::"Algebra"::rest => "AddMonoidAlgebra"::swapWords rest
   | "monoid"::"_"::"algebra"::rest => "add_monoid_algebra"::swapWords rest
   | "le"::"_"::"of"::"_"::"eq"::rest => "ge"::"_"::"of"::"_"::"eq"::swapWords rest
@@ -109,7 +111,15 @@ def nameToTop : Name → Name
   | .str a b => .str (nameToTop a) (stringReplacements convs b)
   | _ => default
 
-variable (convs : HashMap String String) in
+--|-node Lean.Parser.Term.app, none
+--|   |-ident original: ⟨⟩⟨ ⟩-- (Add.add,Add.add)
+--|   |-node null, none
+--|   |   |-node num, none
+--|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '4'
+--|   |   |-node num, none
+--|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '5'
+
+variable (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
 in `ℕ∞`. -/
@@ -121,16 +131,26 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
 
   stx.replaceM fun s => do
     match s with
+      | .node _ ``Lean.Parser.Term.app
+          #[.ident _ _ `single _, .node _ _ #[.node _ `num #[.atom _ "1"], c]] =>
+        return some <| mkNode ``Lean.Parser.Term.app #[
+            mkIdent `single,
+            mkNode `null #[mkNode `num #[mkAtom "0"], c]]
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
         match na with
           | .str a "antisymm" => return some (← `($(mkIdent `antisymm) $(mkIdent a) $(⟨b⟩)))
           | .str a "trans_le" => return some (← `($(mkIdent `lt_of_le_of_lt) $(⟨b⟩) $(mkIdent a)))
-          | `g => return some <| mkNode ``Lean.Parser.Term.app #[
+--          | _ => return none
+          | _ => if na != toMultArrow then return none else
+                    return some <| mkNode ``Lean.Parser.Term.app #[
                                   mkIdent na,
                                   mkNode `null #[mkNode ``Lean.Parser.Term.app #[
                                   mkIdent `Multiplicative.ofAdd,
                                   mkNode `null #[mkIdent b.getId]]]]
-          | _ => return none
+      | .ident _ _ x _ => if x != toMult then return none else
+                return some <| mkNode ``Lean.Parser.Term.app #[
+                              mkIdent `Multiplicative,
+                              mkNode `null #[mkIdent x]]
       | .node _ `«term⊥» #[.atom _ "⊥"] => return some (← `((⊤ : $(mkIdent `WithTop) _)))
       | .atom _ s =>
         if s.contains '⊥' then return some (mkAtom (s.replace "⊥" "⊤")) else return none
@@ -167,49 +187,38 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
                 mkNode `null #[],
                 mkAtom ")"]
       | _ => return none
---|-mkNode ``Lean.Parser.Term.app #[mkIdent `Multiplicative, mkNode ``null #[mkIdent `G]]
---|   |-node null, none
---|   |   |-ident original: ⟨⟩⟨\n\n⟩-- (G,G)
---|-node Lean.Parser.Term.app, none
---|   |-ident original: ⟨⟩⟨ ⟩-- (Multiplicative,Multiplicative)
---|   |-node null, none
---|   |   |-ident original: ⟨⟩⟨\n\n⟩-- (G,G)
-
-
---|-node Lean.Parser.Term.explicitBinder, none
---|   |-atom original: ⟨⟩⟨⟩-- '('
---|   |-node null, none
---|   |   |-ident original: ⟨⟩⟨ ⟩-- (f,f)
---|   |-node null, none
---|   |   |-atom original: ⟨⟩⟨ ⟩-- ':'
---|   |   |-node Lean.Parser.Term.arrow, none
---|   |   |   |-ident original: ⟨⟩⟨ ⟩-- (G,G)
---|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '→'
---|   |   |   |-ident original: ⟨⟩⟨⟩-- (R,R)
---|   |-node null, none
---|   |-atom original: ⟨⟩⟨ ⟩-- ')'
-
 
 
 def translation (convs : HashMap String String) (stx : Syntax) : CommandElabM Syntax := do
-  binopReplacements <| ← MaxToMin convs stx
+  binopReplacements <| ← MaxToMin convs `g default stx
 /--
 If `thm` is a theorem about `WithBot`, then `to_top thm` tries to add to the
 environment the analogous result about `WithTop`.
 
 Writing `to_top?` also prints the extra declaration added by `to_top`.
 -/
-elab (name := to_amaCmd) "to_ama " tk:"?"? cmd:command : command => do
-  let newCmd ← binopReplacements <| ← MaxToMin botTop cmd
+elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:command : command => do
+  let g := match id with | some id => id.getId | _ => default
+  let h := match id2 with | some id => id.getId | _ => default
+--  dbg_trace g
+  let newCmd ← binopReplacements <| ← MaxToMin botTop g h cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
+  if (← get).messages.hasErrors then return
   let currNS ← getCurrNamespace
   withScope (fun s => { s with currNamespace := nameToTop botTop currNS }) <| elabCommand newCmd
 
 @[inherit_doc to_amaCmd]
-macro "to_ama? " cmd:command : command => return (← `(to_ama ? $cmd))
+macro "to_ama? " "[" id:ident "]" cmd:command : command => return (← `(to_ama [$id] ? $cmd))
+#check Term.mkFreshIdent
+macro "to_ama " cmd:command : command =>
+  let rid := mkIdent `hi
+  return (← `(to_ama [] $rid $cmd))
+
+--@[inherit_doc to_amaCmd]
+--macro "to_ama? " cmd:command : command => return (← `(to_ama ? $cmd))
 
 --variable {X Y G H R}
---set_option linter.unusedVariables false in
---to_ama?
---example (f : X → Y) (h : H) (g : H → Prop) : g h := sorry
+set_option linter.unusedVariables false in
+to_ama [] ?
+example : Add.add 1 5 = 5 := by (try rfl) <;> sorry
