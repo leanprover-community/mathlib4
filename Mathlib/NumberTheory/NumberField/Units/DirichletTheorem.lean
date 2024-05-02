@@ -72,13 +72,10 @@ def w₀ : InfinitePlace K := (inferInstance : Nonempty (InfinitePlace K)).some
 variable (K)
 
 /-- The logarithmic embedding of the units (seen as an `Additive` group). -/
-def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) where
-  toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
+def logEmbedding : Additive ((𝓞 K)ˣ) →+ ({w : InfinitePlace K // w ≠ w₀} → ℝ) :=
+{ toFun := fun x w => mult w.val * Real.log (w.val ↑(Additive.toMul x))
   map_zero' := by simp; rfl
-  map_add' _ _ := by
-    ext x
-    simp only [toMul_add, val_mul, map_mul, Pi.add_apply]
-    rw [Real.log_mul, mul_add] <;> simp [coe_ne_zero]
+  map_add' := fun _ _ => by simp [Real.log_mul, mul_add]; rfl }
 
 variable {K}
 
@@ -199,18 +196,16 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
-      (∀ w, w ≠ w₁ → w (algebraMap _ _ y) < w (algebraMap _ _ x)) ∧
-      |Algebra.norm ℚ (algebraMap _ K y)| ≤ B := by
-  have hx' := ((map_ne_zero_iff _ (NoZeroSMulDivisors.algebraMap_injective _ K)).mpr hx)
+      (∀ w, w ≠ w₁ → w y < w x) ∧
+      |Algebra.norm ℚ (y : K)| ≤ B := by
+  have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
-    fun w => ⟨(w (algebraMap _ _ x)) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
+    fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
     obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
@@ -243,9 +238,8 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
 /-- The terms of the sequence are nonzero. -/
-theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 := by
-  refine (map_ne_zero_iff (algebraMap (𝓞 K) K) ?_).mpr (seq K w₁ hB n).prop
-  exact IsFractionRing.injective _ K
+theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
+  RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
@@ -293,7 +287,7 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, Units.ne_zero, not_false_eq_true]
+    · exact pos_iff.mpr (coe_ne_zero _)
     · calc
         _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
           rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),

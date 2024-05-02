@@ -100,7 +100,7 @@ theorem integerLattice.inter_ball_finite [NumberField K] (r : ℝ) :
     convert (Embeddings.finite_of_norm_le K ℂ r).image (canonicalEmbedding K)
     ext; constructor
     · rintro ⟨⟨_, ⟨x, rfl⟩, rfl⟩, hx⟩
-      exact ⟨algebraMap _ _ x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
+      exact ⟨x, ⟨SetLike.coe_mem x, fun φ => (heq _).mp hx φ⟩, rfl⟩
     · rintro ⟨x, ⟨hx1, hx2⟩, rfl⟩
       exact ⟨⟨x, ⟨⟨x, hx1⟩, rfl⟩, rfl⟩, (heq x).mpr hx2⟩
 
@@ -491,7 +491,7 @@ theorem mem_span_latticeBasis (x : (E K)) :
       (mixedEmbedding K).toIntAlgHom.toLinearMap '' (Set.range (integralBasis K)) by
     rw [← Set.range_comp]; exact congrArg Set.range (funext (fun i => latticeBasis_apply K i))]
   rw [← Submodule.map_span, ← SetLike.mem_coe, Submodule.map_coe]
-  simp only [ Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
+  simp only [Set.mem_image, SetLike.mem_coe, mem_span_integralBasis K,
     RingHom.mem_range, exists_exists_eq_and]
   rfl
 

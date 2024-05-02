@@ -64,12 +64,21 @@ instance [NumberField L] [Algebra K L] : FiniteDimensional K L :=
   Module.Finite.of_restrictScalars_finite ℚ K L
 
 /-- The ring of integers (or number ring) corresponding to a number field
-is the integral closure of ℤ in the number field. -/
+is the integral closure of ℤ in the number field.
+
+This is defined as its own type, rather than a `Subalgebra`, for performance reasons:
+looking for instances of the form `SMul (RingOfIntegers _) (RingOfIntegers _)` makes
+much more effective use of the discrimination tree than instances of the form
+`SMul (Subtype _) (Subtype _)`.
+The drawback is we have to copy over instances manually.
+-/
 def RingOfIntegers : Type _ :=
   integralClosure ℤ K
 #align number_field.ring_of_integers NumberField.RingOfIntegers
 
 @[inherit_doc] scoped notation "𝓞" => NumberField.RingOfIntegers
+
+#noalign number_field.mem_ring_of_integers
 
 namespace RingOfIntegers
 
@@ -83,15 +92,29 @@ instance : Algebra (𝓞 K) K :=
   inferInstanceAs (Algebra (integralClosure _ _) _)
 instance : NoZeroSMulDivisors (𝓞 K) K :=
   inferInstanceAs (NoZeroSMulDivisors (integralClosure _ _) _)
+instance : Nontrivial (𝓞 K) :=
+  inferInstanceAs (Nontrivial (integralClosure _ _))
 
 variable {K}
 
-@[ext] theorem ext {x y : 𝓞 K} (h : algebraMap _ K x = algebraMap _ K y) : x = y :=
+/-- The canonical coercion from `𝓞 K` to `K`. -/
+@[coe]
+abbrev val (x : 𝓞 K) : K := algebraMap _ _ x
+
+/-- This instance has to be `CoeHead` because we only want to apply it from `𝓞 K` to `K`. -/
+instance : CoeHead (𝓞 K) K := ⟨val⟩
+
+lemma coe_eq_algebraMap (x : 𝓞 K) : (x : K) = algebraMap _ _ x := rfl
+
+@[ext] theorem ext {x y : 𝓞 K} (h : (x : K) = (y : K)) : x = y :=
   Subtype.ext h
-theorem ext_iff {x y : 𝓞 K} : x = y ↔ algebraMap _ K x = algebraMap _ K y :=
+
+theorem ext_iff {x y : 𝓞 K} : x = y ↔ (x : K) = (y : K) :=
   Subtype.ext_iff
 
 @[simp] lemma map_mk (x : K) (hx) : algebraMap (𝓞 K) K ⟨x, hx⟩ = x := rfl
+
+lemma coe_mk {x : K} (hx) : ((⟨x, hx⟩ : 𝓞 K) : K) = x := rfl
 
 lemma mk_eq_mk (x y : K) (hx hy) : (⟨x, hx⟩ : 𝓞 K) = ⟨y, hy⟩ ↔ x = y := by simp
 
@@ -119,12 +142,10 @@ end RingOfIntegers
 instance inst_ringOfIntegersAlgebra [Algebra K L] : Algebra (𝓞 K) (𝓞 L) :=
   RingHom.toAlgebra
     { toFun := fun k => ⟨algebraMap K L (algebraMap _ K k), IsIntegral.algebraMap k.2⟩
-      map_zero' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_zero, map_zero]
-      map_one' := Subtype.ext <| by simp only [Subtype.coe_mk, Subalgebra.coe_one, map_one]
-      map_add' := fun x y =>
-        Subtype.ext <| by simp only; rw [map_add, map_add, RingOfIntegers.mk_add_mk]
-      map_mul' := fun x y =>
-        Subtype.ext <| by simp only; rw [map_mul, map_mul, RingOfIntegers.mk_mul_mk] }
+      map_zero' := by ext; simp only [RingOfIntegers.map_mk, map_zero]
+      map_one' := by ext; simp only [RingOfIntegers.map_mk, map_one]
+      map_add' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_add]
+      map_mul' := fun x y => by ext; simp only [RingOfIntegers.map_mk, map_mul] }
 #align number_field.ring_of_integers_algebra NumberField.inst_ringOfIntegersAlgebra
 
 -- diamond at `reducible_and_instances` #10906
@@ -134,14 +155,37 @@ namespace RingOfIntegers
 
 variable {K}
 
-theorem isIntegral {K : Type*} [Field K] (x : 𝓞 K) :
-    IsIntegral ℤ x := by
-  obtain ⟨P, hPm, hP⟩ := x.2
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `NoZeroSMulDivisors.algebraMap_injective`.
+-/
+lemma coe_injective : Function.Injective (algebraMap (𝓞 K) K) :=
+  NoZeroSMulDivisors.algebraMap_injective _ _
+
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `map_eq_zero_iff` applied to
+`NoZeroSMulDivisors.algebraMap_injective`.
+-/
+@[simp] lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
+  map_eq_zero_iff _ coe_injective
+
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `map_ne_zero_iff` applied to
+`NoZeroSMulDivisors.algebraMap_injective`.
+-/
+lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
+  map_ne_zero_iff _ coe_injective
+
+theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
+  x.2
+#align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
+
+theorem isIntegral (x : 𝓞 K) : IsIntegral ℤ x := by
+  obtain ⟨P, hPm, hP⟩ := x.isIntegral_coe
   refine' ⟨P, hPm, _⟩
-  have : algebraMap _ K x = x.1 := rfl
-  rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← this, ← Polynomial.hom_eval₂, map_eq_zero_iff]
-    at hP
-  · apply NoZeroSMulDivisors.algebraMap_injective
+  rwa [IsScalarTower.algebraMap_eq (S := 𝓞 K), ← Polynomial.hom_eval₂, coe_eq_zero_iff] at hP
 #align number_field.is_integral_of_mem_ring_of_integers NumberField.RingOfIntegers.isIntegral
 
 instance [NumberField K] : IsFractionRing (𝓞 K) K :=
@@ -153,10 +197,6 @@ instance : IsIntegralClosure (𝓞 K) ℤ K :=
 instance [NumberField K] : IsIntegrallyClosed (𝓞 K) :=
   integralClosure.isIntegrallyClosedOfFiniteExtension ℚ
 
-theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
-  x.2
-#align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe
-
 #noalign number_field.ring_of_integers.map_mem
 
 /-- The ring of integers of `K` are equivalent to any integral closure of `ℤ` in `K` -/
@@ -167,7 +207,7 @@ protected noncomputable def equiv (R : Type*) [CommRing R] [Algebra R K]
 
 variable (K)
 
-instance : CharZero (𝓞 K) :=
+instance [CharZero K] : CharZero (𝓞 K) :=
   CharZero.of_module _ K
 
 instance : IsNoetherian ℤ (𝓞 K) :=
@@ -207,16 +247,16 @@ def restrict (f : M → K) (h : ∀ x, IsIntegral ℤ (f x)) (x : M) : 𝓞 K :=
 def restrict_addMonoidHom [AddZeroClass M] (f : M →+ K) (h : ∀ x, IsIntegral ℤ (f x)) :
     M →+ 𝓞 K where
   toFun := restrict f h
-  map_zero' := by unfold restrict; rw [← mk_zero, mk_eq_mk, map_zero]
-  map_add' x y := by unfold restrict; simp only [map_add]; rw [mk_add_mk]
+  map_zero' := by simp only [restrict, map_zero, mk_zero]
+  map_add' x y := by simp only [restrict, map_add, mk_add_mk _]
 
 /-- Given `f : M →* K` such that `∀ x, IsIntegral ℤ (f x)`, the corresponding function
 `M →* 𝓞 K`. -/
 @[to_additive existing] -- TODO: why doesn't it figure this out by itself?
 def restrict_monoidHom [MulOneClass M] (f : M →* K) (h : ∀ x, IsIntegral ℤ (f x)) : M →* 𝓞 K where
   toFun := restrict f h
-  map_one' := by unfold restrict; rw [← mk_one, mk_eq_mk, map_one]
-  map_mul' x y := by unfold restrict; simp only [map_mul]; rw [mk_mul_mk]
+  map_one' := by simp only [restrict, map_one, mk_one]
+  map_mul' x y := by simp only [restrict, map_mul, mk_mul_mk _]
 
 end RingOfIntegers
 
