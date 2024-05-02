@@ -42,13 +42,6 @@ abbrev botTop : HashMap String String := HashMap.empty
 def splitUpper (s : String) : List String :=
   s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
 
-/-- replaces "words" in a string using `convs`.  It breaks the string into "words"
-grouping together maximal consecutive substrings consisting of
-either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
-def stringReplacements (convs : HashMap String String) (str : String) : String :=
-  let strs := (splitUpper str).map fun s => (convs.find? s).getD s
-  String.join <| strs
-
 /-- some binary operations need to be reversed in the change `Bot` to `Top`, others stay unchanged.
 `binopReplacements` performs some of these changes. -/
 partial
@@ -71,6 +64,10 @@ def binopReplacements {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation
         let ha' := ⟨← binopReplacements ha⟩
         let hb' := ⟨← binopReplacements hb⟩
         return some (← `(term| $ha' ∪ $hb'))
+      | `(term| $ha ≤ $hb) =>
+        let ha' := ⟨← binopReplacements ha⟩
+        let hb' := ⟨← binopReplacements hb⟩
+        return some (← `(term| $ha' ≤ $hb'))
       | _ => return none
 
 /-- some names have consecutive parts that should be transposed.
@@ -79,17 +76,28 @@ abbrev lelt : HashSet String := { "le", "lt" }
 
 /-- some names have consecutive parts that should be transposed.
 `leftRight` is one of the two parts. -/
-abbrev leftRight : HashSet String := { "left", "right", "sup", "inf", "inter", "union", "none" }
+abbrev leftRight : HashSet String :=
+  { "left", "right", "sup", "inf", "inter", "union", "none", "bot", "top", "trailingDegree" }
 
 /-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
 E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
 def swapWords : List String → List String
-  | le::left::ls =>
+  | "le"::"_"::"of"::"_"::"eq"::rest => "ge"::"_"::"of"::"_"::"eq"::swapWords rest
+  | "untop"::"'"::"_"::"le"::rest => "le"::"_"::"untop"::"'"::swapWords rest
+  | le::"_"::left::ls =>
     if ((lelt.contains le) && (leftRight.contains left)) ||
        ((lelt.contains left) && (leftRight.contains le))
-    then left::le::(swapWords ls)
-    else le::swapWords (left :: ls)
-  | e => e
+    then left::"_"::le::(swapWords ls)
+    else le::"_"::swapWords (left :: ls)
+  | le::left => le::swapWords left
+  | [] => []
+
+/-- replaces "words" in a string using `convs`.  It breaks the string into "words"
+grouping together maximal consecutive substrings consisting of
+either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
+def stringReplacements (convs : HashMap String String) (str : String) : String :=
+  let strs := (splitUpper str).map fun s => (convs.find? s).getD s
+  String.join <| swapWords strs
 
 variable (convs : HashMap String String) in
 /-- converts a name involving `WithBot` to a name involving `WithTop`. -/
@@ -118,7 +126,7 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
       | .atom _ s =>
         if s.contains '⊥' then return some (mkAtom (s.replace "⊥" "⊤")) else return none
       | .node _ `«term_≤_» #[a, _, b] => return some (← `($(⟨b⟩) ≤ $(⟨a⟩)))
-      | .node _ `«term_<_» #[a, _, b] => return some (← `($(⟨b⟩) < $(⟨a⟩)))
+--      | .node _ `«term_<_» #[a, _, b] => return some (← `($(⟨b⟩) < $(⟨a⟩)))
       | .node _ ``Lean.Parser.Command.docComment #[init, .atom _ docs] =>
         let newDocs := stringReplacements convs docs
         let newDocs :=
