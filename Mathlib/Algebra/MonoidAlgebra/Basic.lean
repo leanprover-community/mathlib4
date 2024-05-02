@@ -415,10 +415,11 @@ instance nonAssocSemiring : NonAssocSemiring (MonoidAlgebra k G) :=
         mul_one, sum_single] }
 to_ama #align monoid_algebra.non_assoc_semiring MonoidAlgebra.nonAssocSemiring
 
+to_ama
 variable [MulOneClass G] in
 theorem natCast_def (n : ℕ) : (n : MonoidAlgebra k G) = single (1 : G) (n : k) :=
   rfl
-#align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
+to_ama #align monoid_algebra.nat_cast_def MonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -427,12 +428,13 @@ end MulOneClass
 
 section Semiring
 
-variable [Semiring k] [Monoid G]
+variable [Semiring k] [Monoid G] [AddMonoid G]
 
+to_ama
 instance semiring : Semiring (MonoidAlgebra k G) :=
   { MonoidAlgebra.nonUnitalSemiring,
     MonoidAlgebra.nonAssocSemiring with }
-#align monoid_algebra.semiring MonoidAlgebra.semiring
+to_ama #align monoid_algebra.semiring MonoidAlgebra.semiring
 
 variable [Semiring R]
 
@@ -1460,9 +1462,9 @@ variable [Semiring k] [AddZeroClass G]
 --        mul_one, sum_single] }
 --#align add_monoid_algebra.non_assoc_semiring AddMonoidAlgebra.nonAssocSemiring
 
-theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
-  rfl
-#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
+--theorem natCast_def (n : ℕ) : (n : k[G]) = single (0 : G) (n : k) :=
+--  rfl
+--#align add_monoid_algebra.nat_cast_def AddMonoidAlgebra.natCast_def
 
 end MulOneClass
 
@@ -1477,10 +1479,10 @@ instance smulZeroClass [Semiring k] [SMulZeroClass R k] : SMulZeroClass R k[G] :
 
 variable [Semiring k] [AddMonoid G]
 
-instance semiring : Semiring k[G] :=
-  { AddMonoidAlgebra.nonUnitalSemiring,
-    AddMonoidAlgebra.nonAssocSemiring with }
-#align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
+--instance semiring : Semiring k[G] :=
+--  { AddMonoidAlgebra.nonUnitalSemiring,
+--    AddMonoidAlgebra.nonAssocSemiring with }
+--#align add_monoid_algebra.semiring AddMonoidAlgebra.semiring
 
 variable [Semiring R]
 
