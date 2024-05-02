@@ -65,9 +65,9 @@ variable [CanonicallyOrderedAddCommMonoid α] [Sub α] [OrderedSub α]
 instance : OrderedSub (WithTop α) := by
   constructor
   rintro x y z
-  induction y using WithTop.recTopCoe; · simp
-  induction x using WithTop.recTopCoe; · simp
-  induction z using WithTop.recTopCoe; · simp
+  induction y; · simp
+  induction x; · simp
+  induction z; · simp
   norm_cast; exact tsub_le_iff_right
 
 end WithTop

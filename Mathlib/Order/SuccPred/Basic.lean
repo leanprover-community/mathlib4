@@ -1113,7 +1113,7 @@ theorem pred_coe (a : α) : pred (↑a : WithTop α) = ↑(pred a) :=
 @[simp]
 theorem pred_untop :
     ∀ (a : WithTop α) (ha : a ≠ ⊤),
-      pred (a.untop ha) = (pred a).untop (by induction a using WithTop.recTopCoe <;> simp)
+      pred (a.untop ha) = (pred a).untop (by induction a <;> simp)
   | ⊤, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_top.pred_untop WithTop.pred_untop
@@ -1224,7 +1224,7 @@ theorem succ_coe (a : α) : succ (↑a : WithBot α) = ↑(succ a) :=
 @[simp]
 theorem succ_unbot :
     ∀ (a : WithBot α) (ha : a ≠ ⊥),
-      succ (a.unbot ha) = (succ a).unbot (by induction a using WithBot.recBotCoe <;> simp)
+      succ (a.unbot ha) = (succ a).unbot (by induction a <;> simp)
   | ⊥, ha => (ha rfl).elim
   | (a : α), _ => rfl
 #align with_bot.succ_unbot WithBot.succ_unbot

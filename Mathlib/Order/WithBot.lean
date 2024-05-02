@@ -95,7 +95,7 @@ theorem coe_ne_bot : (a : WithBot α) ≠ ⊥ :=
 #align with_bot.coe_ne_bot WithBot.coe_ne_bot
 
 /-- Recursor for `WithBot` using the preferred forms `⊥` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recBotCoe {C : WithBot α → Sort*} (bot : C ⊥) (coe : ∀ a : α, C a) : ∀ n : WithBot α, C n
   | ⊥ => bot
   | (a : α) => coe a
@@ -660,7 +660,7 @@ theorem coe_ne_top : (a : WithTop α) ≠ ⊤ :=
 #align with_top.coe_ne_top WithTop.coe_ne_top
 
 /-- Recursor for `WithTop` using the preferred forms `⊤` and `↑a`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def recTopCoe {C : WithTop α → Sort*} (top : C ⊤) (coe : ∀ a : α, C a) : ∀ n : WithTop α, C n
   | none => top
   | Option.some a => coe a

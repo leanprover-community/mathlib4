@@ -58,7 +58,7 @@ theorem sections_add (s t : Multiset (Multiset α)) :
 
 theorem mem_sections {s : Multiset (Multiset α)} :
     ∀ {a}, a ∈ Sections s ↔ s.Rel (fun s a => a ∈ s) a := by
-  induction s using Multiset.induction_on with
+  induction s with
   | empty => simp
   | cons ih => simp [ih, rel_cons_left, eq_comm]
 #align multiset.mem_sections Multiset.mem_sections

@@ -184,7 +184,7 @@ theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
 #align with_one.coe_inj WithOne.coe_inj
 #align with_zero.coe_inj WithZero.coe_inj
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on

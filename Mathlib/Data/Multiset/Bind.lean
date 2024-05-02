@@ -79,14 +79,14 @@ theorem card_join (S) : card (@join α S) = sum (map card S) :=
 @[simp]
 theorem map_join (f : α → β) (S : Multiset (Multiset α)) :
     map f (join S) = join (map (map f) S) := by
-  induction S using Multiset.induction with
+  induction S with
   | empty => simp
   | cons ih => simp [ih]
 
 @[to_additive (attr := simp)]
 theorem prod_join [CommMonoid α] {S : Multiset (Multiset α)} :
     prod (join S) = prod (map prod S) := by
-  induction S using Multiset.induction with
+  induction S with
   | empty => simp
   | cons ih => simp [ih]
 

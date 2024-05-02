@@ -159,7 +159,7 @@ theorem cons_inj_right (a : α) : ∀ {s t : Multiset α}, a ::ₘ s = a ::ₘ t
   rintro ⟨l₁⟩ ⟨l₂⟩; simp
 #align multiset.cons_inj_right Multiset.cons_inj_right
 
-@[recursor 5]
+@[recursor 5, induction_eliminator]
 protected theorem induction {p : Multiset α → Prop} (empty : p 0)
     (cons : ∀ ⦃a : α⦄ {s : Multiset α}, p s → p (a ::ₘ s)) : ∀ s, p s := by
   rintro ⟨l⟩; induction' l with _ _ ih <;> [exact empty; exact cons ih]

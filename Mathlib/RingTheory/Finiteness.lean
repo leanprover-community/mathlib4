@@ -340,7 +340,7 @@ theorem fg_induction (R M : Type*) [Semiring R] [AddCommMonoid M] [Module R M]
     (h₂ : ∀ M₁ M₂, P M₁ → P M₂ → P (M₁ ⊔ M₂)) (N : Submodule R M) (hN : N.FG) : P N := by
   classical
     obtain ⟨s, rfl⟩ := hN
-    induction s using Finset.induction
+    induction s
     · rw [Finset.coe_empty, Submodule.span_empty, ← Submodule.span_zero_singleton]
       apply h₁
     · rw [Finset.coe_insert, Submodule.span_insert]

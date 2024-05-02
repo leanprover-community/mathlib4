@@ -852,7 +852,7 @@ theorem normalizedFactors_multiset_prod (s : Multiset α) (hs : 0 ∉ s) :
       intro _
       convert hs
     simp
-  induction s using Multiset.induction with
+  induction s with
   | empty => simp
   | cons IH =>
     rw [Multiset.prod_cons, Multiset.map_cons, Multiset.sum_cons, normalizedFactors_mul, IH]
@@ -1287,7 +1287,7 @@ theorem prod_mono : ∀ {a b : FactorSet α}, a ≤ b → a.prod ≤ b.prod
 #align associates.prod_mono Associates.prod_mono
 
 theorem FactorSet.prod_eq_zero_iff [Nontrivial α] (p : FactorSet α) : p.prod = 0 ↔ p = ⊤ := by
-  induction p using WithTop.recTopCoe
+  induction p
   · simp only [iff_self_iff, eq_self_iff_true, Associates.prod_top]
   · rw [prod_coe, Multiset.prod_eq_zero_iff, Multiset.mem_map, eq_false WithTop.coe_ne_top,
       iff_false_iff, not_exists]
@@ -1391,7 +1391,7 @@ theorem unique' {p q : Multiset (Associates α)} :
 #align associates.unique' Associates.unique'
 
 theorem FactorSet.unique [Nontrivial α] {p q : FactorSet α} (h : p.prod = q.prod) : p = q := by
-  induction p using WithTop.recTopCoe <;> induction q using WithTop.recTopCoe
+  induction p <;> induction q
   · rfl
   · rw [eq_comm, ← FactorSet.prod_eq_zero_iff, ← h, Associates.prod_top]
   · rw [← FactorSet.prod_eq_zero_iff, h, Associates.prod_top]

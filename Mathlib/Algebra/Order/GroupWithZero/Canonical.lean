@@ -371,9 +371,9 @@ protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (�
 
 instance existsAddOfLE [Add α] [ExistsAddOfLE α] : ExistsAddOfLE (WithZero α) :=
   ⟨fun {a b} => by
-    induction a using WithZero.cases_on
+    induction a
     · exact fun _ => ⟨b, (zero_add b).symm⟩
-    induction b using WithZero.cases_on
+    induction b
     · exact fun h => (WithBot.not_coe_le_bot _ h).elim
     intro h
     obtain ⟨c, rfl⟩ := exists_add_of_le (WithZero.coe_le_coe.1 h)
@@ -447,9 +447,9 @@ instance canonicallyOrderedAddCommMonoid [CanonicallyOrderedAddCommMonoid α] :
     WithZero.orderedAddCommMonoid _root_.zero_le,
     WithZero.existsAddOfLE with
     le_self_add := fun a b => by
-      induction a using WithZero.cases_on
+      induction a
       · exact bot_le
-      induction b using WithZero.cases_on
+      induction b
       · exact le_rfl
       · exact WithZero.coe_le_coe.2 le_self_add }
 #align with_zero.canonically_ordered_add_monoid WithZero.canonicallyOrderedAddCommMonoid

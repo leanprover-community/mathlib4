@@ -916,7 +916,7 @@ theorem nonempty_cons (h : a ∉ s) : (cons a s h).Nonempty :=
 
 @[simp]
 theorem nonempty_mk {m : Multiset α} {hm} : (⟨m, hm⟩ : Finset α).Nonempty ↔ m ≠ 0 := by
-  induction m using Multiset.induction_on <;> simp
+  induction m <;> simp
 #align finset.nonempty_mk Finset.nonempty_mk
 
 @[simp]
@@ -1251,7 +1251,7 @@ theorem ssubset_insert (h : a ∉ s) : s ⊂ insert a s :=
 theorem cons_induction {α : Type*} {p : Finset α → Prop} (empty : p ∅)
     (cons : ∀ ⦃a : α⦄ {s : Finset α} (h : a ∉ s), p s → p (cons a s h)) : ∀ s, p s
   | ⟨s, nd⟩ => by
-    induction s using Multiset.induction with
+    induction s with
     | empty => exact empty
     | @cons a s IH =>
       cases' nodup_cons.1 nd with m nd'
