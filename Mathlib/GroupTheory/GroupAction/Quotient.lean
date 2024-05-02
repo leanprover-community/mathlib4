@@ -64,6 +64,7 @@ instance left_quotientAction : QuotientAction α H :=
 #align mul_action.left_quotient_action MulAction.left_quotientAction
 #align add_action.left_quotient_action AddAction.left_quotientAction
 
+attribute [local semireducible] Subgroup.op AddSubgroup.op in
 @[to_additive]
 instance right_quotientAction : QuotientAction (normalizer H).op H :=
   ⟨fun b c _ _ => by

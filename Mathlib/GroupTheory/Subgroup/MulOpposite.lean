@@ -23,6 +23,7 @@ variable {ι : Sort*} {G : Type*} [Group G]
 namespace Subgroup
 
 /-- Pull a subgroup back to an opposite subgroup along `MulOpposite.unop`-/
+-- We make this irreducible at the end of the file.
 @[to_additive (attr := simps)
 "Pull an additive subgroup back to an opposite additive subgroup along `AddOpposite.unop`"]
 protected def op (H : Subgroup G) : Subgroup Gᵐᵒᵖ where
@@ -59,6 +60,8 @@ theorem unop_op (S : Subgroup G) : S.op.unop = S := rfl
 
 @[to_additive (attr := simp)]
 theorem op_unop (S : Subgroup Gᵐᵒᵖ) : S.unop.op = S := rfl
+
+
 
 /-! ### Lattice results -/
 
@@ -181,5 +184,7 @@ theorem smul_opposite_mul {H : Subgroup G} (x g : G) (h : H.op) :
   mul_assoc _ _ _
 #align subgroup.smul_opposite_mul Subgroup.smul_opposite_mul
 #align add_subgroup.vadd_opposite_add AddSubgroup.vadd_opposite_add
+
+attribute [irreducible] Subgroup.op AddSubgroup.op
 
 end Subgroup

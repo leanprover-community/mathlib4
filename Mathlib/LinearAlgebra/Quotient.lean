@@ -15,6 +15,8 @@ import Mathlib.LinearAlgebra.Span
   that is, elements of `M` are identified if their difference is in `p`. This is itself a module.
 
 -/
+set_option diagnostics true
+attribute [irreducible] Subgroup.op AddSubgroup.op
 
 -- For most of this file we work over a noncommutative ring
 section Ring
@@ -135,7 +137,6 @@ instance instSMul : SMul R (M ⧸ P) :=
   Quotient.instSMul' P
 #align submodule.quotient.has_smul Submodule.Quotient.instSMul
 
-set_option backward.isDefEq.lazyProjDelta false in -- See https://github.com/leanprover-community/mathlib4/issues/12535
 @[simp]
 theorem mk_smul (r : S) (x : M) : (mk (r • x) : M ⧸ p) = r • mk x :=
   rfl

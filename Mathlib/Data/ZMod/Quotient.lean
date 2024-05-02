@@ -119,6 +119,7 @@ open AddAction Subgroup AddSubgroup Function
 
 variable {α β : Type*} [Group α] (a : α) [MulAction α β] (b : β)
 
+attribute [local semireducible] Subgroup.op AddSubgroup.op in
 /-- The quotient `(a ^ ℤ) ⧸ (stabilizer b)` is cyclic of order `minimalPeriod ((•) a) b`. -/
 noncomputable def zpowersQuotientStabilizerEquiv :
     zpowers a ⧸ stabilizer (zpowers a) b ≃* Multiplicative (ZMod (minimalPeriod (a • ·) b)) :=
@@ -126,6 +127,7 @@ noncomputable def zpowersQuotientStabilizerEquiv :
   AddEquiv.toMultiplicative f
 #align mul_action.zpowers_quotient_stabilizer_equiv MulAction.zpowersQuotientStabilizerEquiv
 
+attribute [local semireducible] Subgroup.op AddSubgroup.op in
 theorem zpowersQuotientStabilizerEquiv_symm_apply (n : ZMod (minimalPeriod (a • ·) b)) :
     (zpowersQuotientStabilizerEquiv a b).symm n = (⟨a, mem_zpowers a⟩ : zpowers a) ^ (cast n : ℤ) :=
   rfl
