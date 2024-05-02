@@ -371,6 +371,14 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       _ ≤ ∑ i in range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
 #align ennreal.tsum_geometric ENNReal.tsum_geometric
 
+theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
+  calc ∑' n : ℕ, r ^ (n + 1)
+  _ = ∑' n : ℕ, r * r ^ (n) := by
+        congr with n
+        exact pow_succ' r n
+  _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
+  _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
+
 end Geometric
 
 /-!
