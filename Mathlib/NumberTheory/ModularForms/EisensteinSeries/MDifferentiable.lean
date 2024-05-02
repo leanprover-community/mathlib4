@@ -89,7 +89,7 @@ theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (h
   have ha : UpperHalfPlane.coe '' ⊤ ∈ 𝓝 ↑z := by
     exact IsOpenMap.image_mem_nhds (OpenEmbedding.isOpenMap openEmbedding_coe) (by simp)
   constructor
-  rw [PartialHomeomorph.continuousAt_iff_continuousAt_comp_right
+  rw [continuousWithinAt_univ, PartialHomeomorph.continuousAt_iff_continuousAt_comp_right
     (e := (PartialHomeomorph.symm (OpenEmbedding.toPartialHomeomorph
     UpperHalfPlane.coe openEmbedding_coe)))]
   · exact ContinuousOn.continuousAt
@@ -97,5 +97,12 @@ theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (h
         (s := (UpperHalfPlane.coe '' ⊤)) (x := z) ha
   · simp only [PartialHomeomorph.symm_toPartialEquiv, PartialEquiv.symm_target,
     OpenEmbedding.toPartialHomeomorph_source, mem_univ]
-  · apply DifferentiableOn.differentiableAt (s := UpperHalfPlane.coe '' ⊤) _ ha
+  · rw [DifferentiableWithinAtProp]
+    simp only [modelWithCornersSelf_coe, SlashInvariantForm.toFun_eq_coe,
+      PartialHomeomorph.refl_partialEquiv, PartialEquiv.refl_source,
+      PartialHomeomorph.singletonChartedSpace_chartAt_eq, PartialHomeomorph.refl_apply,
+      OpenEmbedding.toPartialHomeomorph_source, CompTriple.comp_eq, modelWithCornersSelf_coe_symm,
+      preimage_univ, range_id, inter_self, OpenEmbedding.toPartialHomeomorph_apply, id_eq]
+    rw [ differentiableWithinAt_univ]
+    apply DifferentiableOn.differentiableAt (s := UpperHalfPlane.coe '' ⊤) _ ha
     exact eisensteinSeries_SIF_complex_differentiableOn k a hk
