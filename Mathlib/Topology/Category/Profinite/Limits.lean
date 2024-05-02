@@ -130,7 +130,7 @@ end Pullbacks
 
 section FiniteCoproducts
 
-variable {α : Type w} [Finite α] (X : α → ProfiniteMax.{u, w})
+variable {α : Type w} [Finite α] (X : α → Profinite.{max u w})
 
 /--
 The coproduct of a finite family of objects in `Profinite`, constructed as the disjoint
@@ -148,7 +148,7 @@ To construct a morphism from the explicit finite coproduct, it suffices to
 specify a morphism from each of its factors.
 This is essentially the universal property of the coproduct.
 -/
-def finiteCoproduct.desc {B : ProfiniteMax.{u, w}} (e : (a : α) → (X a ⟶ B)) :
+def finiteCoproduct.desc {B : Profinite.{max u w}} (e : (a : α) → (X a ⟶ B)) :
     finiteCoproduct X ⟶ B where
   toFun := fun ⟨a, x⟩ => e a x
   continuous_toFun := by
@@ -157,10 +157,10 @@ def finiteCoproduct.desc {B : ProfiniteMax.{u, w}} (e : (a : α) → (X a ⟶ B)
     exact (e a).continuous
 
 @[reassoc (attr := simp)]
-lemma finiteCoproduct.ι_desc {B : ProfiniteMax.{u, w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
+lemma finiteCoproduct.ι_desc {B : Profinite.{max u w}} (e : (a : α) → (X a ⟶ B)) (a : α) :
     finiteCoproduct.ι X a ≫ finiteCoproduct.desc X e = e a := rfl
 
-lemma finiteCoproduct.hom_ext {B : ProfiniteMax.{u, w}} (f g : finiteCoproduct X ⟶ B)
+lemma finiteCoproduct.hom_ext {B : Profinite.{max u w}} (f g : finiteCoproduct X ⟶ B)
     (h : ∀ a : α, finiteCoproduct.ι X a ≫ f = finiteCoproduct.ι X a ≫ g) : f = g := by
   ext ⟨a, x⟩
   specialize h a
