@@ -99,10 +99,10 @@ import Mathlib.Tactic.Linarith.Frontend
 import Mathlib.Tactic.Linarith.Lemmas
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Tactic.Linarith.Preprocessing
-import Mathlib.Tactic.Linarith.SimplexAlgo.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgo.Gauss
-import Mathlib.Tactic.Linarith.SimplexAlgo.PositiveVector
-import Mathlib.Tactic.Linarith.SimplexAlgo.SimplexAlgo
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Verification
 import Mathlib.Tactic.LinearCombination
 import Mathlib.Tactic.Lint

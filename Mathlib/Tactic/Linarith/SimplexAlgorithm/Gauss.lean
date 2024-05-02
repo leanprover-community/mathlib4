@@ -8,8 +8,8 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
 /-!
 # Gaussian Elimination algorithm
 
-The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding initial feasible solution
-which is done by standard Gaussian Elimination algorithm implemented in this file.
+The first step of `Linarith.SimplexAlgorithm.findPositiveVector` is finding initial feasible
+solution which is done by standard Gaussian Elimination algorithm implemented in this file.
 -/
 
 namespace Linarith.SimplexAlgorithm.Gauss

@@ -8,14 +8,15 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
 /-!
 # Simplex Algorithm
 
-To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we run the Simplex Algorithm.
-We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
+To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we run the Simplex
+Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
 
 namespace Linarith.SimplexAlgorithm
 
 /-- An exception in the `SimplexAlgorithmM` monad. -/
 inductive SimplexAlgorithmException
+  /-- The solution is infeasible. -/
 | infeasible : SimplexAlgorithmException
 
 /-- The mutable state for the `SimplexAlgorithmM` monad. -/
