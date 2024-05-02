@@ -344,8 +344,8 @@ theorem coe_le_iff {x : WithZero α} : (a : WithZero α) ≤ x ↔ ∃ b : α, x
 instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ ·)] :
     CovariantClass (WithZero α) (WithZero α) (· * ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a using WithZero.recZeroCoe; · exact zero_le _
-  induction b using WithZero.recZeroCoe; · exact zero_le _
+  induction a; · exact zero_le _
+  induction b; · exact zero_le _
   rcases WithZero.coe_le_iff.1 hbc with ⟨c, rfl, hbc'⟩
   rw [← coe_mul _ c, ← coe_mul, coe_le_coe]
   exact mul_le_mul_left' hbc' _
@@ -355,11 +355,11 @@ instance covariantClass_mul_le [Mul α] [CovariantClass α α (· * ·) (· ≤ 
 protected lemma covariantClass_add_le [AddZeroClass α] [CovariantClass α α (· + ·) (· ≤ ·)]
     (h : ∀ a : α, 0 ≤ a) : CovariantClass (WithZero α) (WithZero α) (· + ·) (· ≤ ·) := by
   refine ⟨fun a b c hbc => ?_⟩
-  induction a using WithZero.recZeroCoe
+  induction a
   · rwa [zero_add, zero_add]
-  induction b using WithZero.recZeroCoe
+  induction b
   · rw [add_zero]
-    induction c using WithZero.recZeroCoe
+    induction c
     · rw [add_zero]
     · rw [← coe_add, coe_le_coe]
       exact le_add_of_nonneg_right (h _)
@@ -391,11 +391,11 @@ instance contravariantClass_mul_lt [Mul α] [ContravariantClass α α (· * ·) 
     ContravariantClass (WithZero α) (WithZero α) (· * ·) (· < ·) := by
   refine ⟨fun a b c h => ?_⟩
   have := ((zero_le _).trans_lt h).ne'
-  induction a using WithZero.recZeroCoe
+  induction a
   · simp at this
-  induction c using WithZero.recZeroCoe
+  induction c
   · simp at this
-  induction b using WithZero.recZeroCoe
+  induction b
   exacts [zero_lt_coe _, coe_lt_coe.mpr (lt_of_mul_lt_mul_left' <| coe_lt_coe.mp h)]
 #align with_zero.contravariant_class_mul_lt WithZero.contravariantClass_mul_lt
 

@@ -115,7 +115,7 @@ instance coeTC : CoeTC α (WithOne α) :=
   ⟨coe⟩
 
 /-- Recursor for `WithOne` using the preferred forms `1` and `↑a`. -/
-@[to_additive (attr := elab_as_elim)
+@[to_additive (attr := elab_as_elim, induction_eliminator)
   "Recursor for `WithZero` using the preferred forms `0` and `↑a`."]
 def recOneCoe {C : WithOne α → Sort*} (h₁ : C 1) (h₂ : ∀ a : α, C a) : ∀ n : WithOne α, C n
   | Option.none => h₁
@@ -184,7 +184,7 @@ theorem coe_inj {a b : α} : (a : WithOne α) = b ↔ a = b :=
 #align with_one.coe_inj WithOne.coe_inj
 #align with_zero.coe_inj WithZero.coe_inj
 
-@[to_additive (attr := elab_as_elim, induction_eliminator)]
+@[to_additive (attr := elab_as_elim)]
 protected theorem cases_on {P : WithOne α → Prop} : ∀ x : WithOne α, P 1 → (∀ a : α, P a) → P x :=
   Option.casesOn
 #align with_one.cases_on WithOne.cases_on
