@@ -892,13 +892,13 @@ def recOnPrimeCoprime {P : ℕ → Sort*} (h0 : P 0) (hp : ∀ p n : ℕ, Prime 
 @[elab_as_elim]
 def recOnMul {P : ℕ → Sort*} (h0 : P 0) (h1 : P 1) (hp : ∀ p, Prime p → P p)
     (h : ∀ a b, P a → P b → P (a * b)) : ∀ a, P a :=
-  let hp : ∀ p n : ℕ, Prime p → P (p ^ n) := fun p n hp' =>
-    n.recOn h1 (fun n hn => by rw [Nat.pow_succ]; apply h _ _ hn (hp p hp'))
-    -- Porting note: was
-    -- match n with
-    -- | 0 => h1
-    -- | n + 1 => h _ _ (hp p hp') (_match _)
-  recOnPrimeCoprime h0 hp fun a b _ _ _ => h a b
+  let rec
+    /-- The predicate holds on prime powers -/
+    hp'' (p n : ℕ) (hp' : Prime p) : P (p ^ n) :=
+    match n with
+    | 0 => h1
+    | n + 1 => h _ _ (hp'' p n hp') (hp p hp')
+  recOnPrimeCoprime h0 hp'' fun a b _ _ _ => h a b
 #align nat.rec_on_mul Nat.recOnMul
 
 /-- For any multiplicative function `f` with `f 1 = 1` and any `n ≠ 0`,

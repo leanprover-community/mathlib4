@@ -33,7 +33,6 @@ open Submodule
 variable {R : Type*} [CommRing R] (I : Ideal R)
 variable (M : Type*) [AddCommGroup M] [Module R M]
 variable {N : Type*} [AddCommGroup N] [Module R N]
-variable {P : Type*} [AddCommGroup P] [Module R P]
 
 /-- A module `M` is Hausdorff with respect to an ideal `I` if `⋂ I^n M = 0`. -/
 class IsHausdorff : Prop where
@@ -281,7 +280,8 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
 
-@[simp]
+/- No `simp` attribute, since it cases `simp` unification timeouts when considering
+the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl
 
@@ -371,10 +371,6 @@ instance : AddCommGroup (AdicCauchySequence I M) :=
 instance : Module R (AdicCauchySequence I M) :=
   inferInstanceAs <| Module R (AdicCauchySequence.submodule I M)
 
-@[ext]
-theorem ext {f g : AdicCauchySequence I M} (h : ∀ n, f n = g n) : f = g :=
-  Subtype.eq <| funext h
-
 @[simp]
 theorem zero_apply (n : ℕ) : (0 : AdicCauchySequence I M) n = 0 :=
   rfl
@@ -392,6 +388,19 @@ theorem sub_apply (n : ℕ) (f g : AdicCauchySequence I M) : (f - g) n = f n - g
 @[simp]
 theorem smul_apply (n : ℕ) (r : R) (f : AdicCauchySequence I M) : (r • f) n = r • f n :=
   rfl
+
+@[ext]
+theorem ext {x y : AdicCauchySequence I M} (h : ∀ n, x n = y n) : x = y :=
+  Subtype.eq <| funext h
+
+theorem ext_iff {x y : AdicCauchySequence I M} : x = y ↔ ∀ n, x n = y n :=
+  ⟨fun h ↦ congrFun (congrArg Subtype.val h), ext⟩
+
+/-- The defining property of an adic cauchy sequence unwrapped. -/
+theorem mk_eq_mk {m n : ℕ} (hmn : m ≤ n) (f : AdicCauchySequence I M) :
+    Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f n) =
+      Submodule.Quotient.mk (p := (I ^ m • ⊤ : Submodule R M)) (f m) :=
+  (f.property hmn).symm
 
 end AdicCauchySequence
 
@@ -469,15 +478,6 @@ lemma eval_lift_apply (f : ∀ (n : ℕ), M →ₗ[R] N ⧸ (I ^ n • ⊤ : Sub
     (h : ∀ {m n : ℕ} (hle : m ≤ n), transitionMap I N hle ∘ₗ f n = f m)
     (n : ℕ) (x : M) : (lift I f h x).val n = f n x :=
   rfl
-
-/-- Elements of the adic completion are equal if almost all components are equal. -/
-theorem ext' {x y : AdicCompletion I M}
-    (h : ∃ (k : ℕ), ∀ {n : ℕ}, k ≤ n → x.val n = y.val n) : x = y := by
-  obtain ⟨k, hk⟩ := h
-  ext n
-  have h : n ≤ n + k := by omega
-  simp only [coe_eval, ← transitionMap_comp_eval_apply I M h]
-  rw [hk (by omega)]
 
 end AdicCompletion
 
