@@ -379,6 +379,7 @@ def fundamentalGroupoidFunctor : TopCat ⥤ CategoryTheory.Grpd where
     refine' Quotient.inductionOn p fun q => _
     rw [← Path.Homotopic.map_lift]
     conv_rhs => rw [← q.map_id]
+    rfl
   map_comp f g := by
     simp only
     congr

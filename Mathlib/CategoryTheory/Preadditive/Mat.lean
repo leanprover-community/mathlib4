@@ -316,7 +316,7 @@ namespace Embedding
 instance : (embedding C).Faithful where
   map_injective h := congr_fun (congr_fun h PUnit.unit) PUnit.unit
 
-instance : (embedding C).Full where preimage f := f PUnit.unit PUnit.unit
+instance : (embedding C).Full where map_surjective f := ⟨f PUnit.unit PUnit.unit, rfl⟩
 
 instance : Functor.Additive (embedding C) where
 
@@ -342,7 +342,7 @@ def isoBiproductEmbedding (M : Mat_ C) : M ≅ ⨁ fun i => (embedding C).obj (M
     rw [Finset.sum_apply, Finset.sum_apply, Finset.sum_eq_single i]; rotate_left
     · intro b _ hb
       dsimp
-      simp only [Finset.sum_const, Finset.card_singleton, one_smul]
+      simp only [Finset.sum_singleton]
       rw [dif_neg hb.symm, zero_comp]
     · intro h
       simp at h
@@ -644,7 +644,7 @@ instance : (equivalenceSingleObjInverse R).Faithful where
     exact congr_fun (congr_fun w _) _
 
 instance : (equivalenceSingleObjInverse R).Full where
-  preimage f i j := MulOpposite.op (f i j)
+  map_surjective f := ⟨fun i j => MulOpposite.op (f i j), rfl⟩
 
 instance : (equivalenceSingleObjInverse R).EssSurj where
   mem_essImage X :=

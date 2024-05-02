@@ -147,7 +147,7 @@ theorem num_series' [Field α] (i : ℕ) :
       symm
       split_ifs with h
       · suffices
-          ((antidiagonal n.succ).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
+          ((antidiagonal (n+1)).filter fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1).card =
             1 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_one]
@@ -164,7 +164,7 @@ theorem num_series' [Field α] (i : ℕ) :
           | 0 => rw [mul_zero] at hp; cases hp
           | p + 1 => rw [hp]; simp [mul_add]
       · suffices
-          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal n.succ)).card =
+          (filter (fun a : ℕ × ℕ => i + 1 ∣ a.fst ∧ a.snd = i + 1) (antidiagonal (n+1))).card =
             0 by
           simp only [Set.mem_setOf_eq]; convert congr_arg ((↑) : ℕ → α) this; norm_cast
         rw [card_eq_zero]
@@ -215,7 +215,7 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
       exact fun hi _ => ha.2 i hi
     · conv_rhs => simp [← a.parts_sum]
       rw [sum_multiset_count_of_subset _ s]
-      simp only [smul_eq_mul]
+      · simp only [smul_eq_mul]
       · intro i
         simp only [Multiset.mem_toFinset, not_not, mem_filter]
         apply ha.2
@@ -229,8 +229,8 @@ theorem partialGF_prop (α : Type*) [CommSemiring α] (n : ℕ) (s : Finset ℕ)
     by_cases hi : i = 0
     · rw [hi]
       rw [Multiset.count_eq_zero_of_not_mem]
-      rw [Multiset.count_eq_zero_of_not_mem]
-      intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
+      · rw [Multiset.count_eq_zero_of_not_mem]
+        intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₂.2 0 a))
       intro a; exact Nat.lt_irrefl 0 (hs 0 (hp₁.2 0 a))
     · rw [← mul_left_inj' hi]
       rw [Function.funext_iff] at h
@@ -373,7 +373,6 @@ theorem same_gf [Field α] (m : ℕ) :
   rw [partialOddGF, partialDistinctGF]
   induction' m with m ih
   · simp
-  rw [Nat.succ_eq_add_one]
   set! π₀ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + 1 + i + 1)) with hπ₀
   set! π₁ : PowerSeries α := ∏ i in range m, (1 - X ^ (2 * i + 1))⁻¹ with hπ₁
   set! π₂ : PowerSeries α := ∏ i in range m, (1 - X ^ (m + i + 1)) with hπ₂

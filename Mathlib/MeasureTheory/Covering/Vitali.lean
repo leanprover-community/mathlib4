@@ -149,9 +149,7 @@ theorem exists_disjoint_subfamily_covering_enlargment (B : ι → Set α) (t : S
       · refine' ⟨b, mem_insert _ _, hcb, _⟩
         calc
           δ c ≤ m := le_csSup bddA (mem_image_of_mem _ ⟨ct, H⟩)
-          _ = τ * (m / τ) := by
-            field_simp [(zero_lt_one.trans hτ).ne']
-            ring
+          _ = τ * (m / τ) := by field_simp [(zero_lt_one.trans hτ).ne']
           _ ≤ τ * δ b := mul_le_mul_of_nonneg_left ha' (zero_le_one.trans hτ.le)
       · rw [← not_disjoint_iff_nonempty_inter] at hcb
         exact (hcb (H _ H')).elim
@@ -169,6 +167,11 @@ theorem exists_disjoint_subfamily_covering_enlargment_closedBall [MetricSpace α
   · exact ⟨∅, Subset.refl _, pairwiseDisjoint_empty, by simp⟩
   by_cases ht : ∀ a ∈ t, r a < 0
   · exact ⟨t, Subset.rfl, fun a ha b _ _ => by
+      -- Adaptation note: nightly-2024-03-16
+      -- Previously `Function.onFun` unfolded in the following `simp only`,
+      -- but now needs a separate `rw`.
+      -- This may be a bug: a no import minimization may be required.
+      rw [Function.onFun]
       simp only [Function.onFun, closedBall_eq_empty.2 (ht a ha), empty_disjoint],
       fun a ha => ⟨a, ha, by simp only [closedBall_eq_empty.2 (ht a ha), empty_subset]⟩⟩
   push_neg at ht
