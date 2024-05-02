@@ -111,14 +111,6 @@ def nameToTop : Name → Name
   | .str a b => .str (nameToTop a) (stringReplacements convs b)
   | _ => default
 
---|-node Lean.Parser.Term.app, none
---|   |-ident original: ⟨⟩⟨ ⟩-- (Add.add,Add.add)
---|   |-node null, none
---|   |   |-node num, none
---|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '4'
---|   |   |-node num, none
---|   |   |   |-atom original: ⟨⟩⟨ ⟩-- '5'
-
 variable (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
@@ -132,15 +124,29 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
   stx.replaceM fun s => do
     match s with
       | .node _ ``Lean.Parser.Term.app
-          #[.ident _ _ `single _, .node _ _ #[.node _ `num #[.atom _ "1"], c]] =>
-        return some <| mkNode ``Lean.Parser.Term.app #[
-            mkIdent `single,
-            mkNode `null #[mkNode `num #[mkAtom "0"], c]]
+          #[.ident _ _ `single _, .node _ _ #[one, c]] =>
+        match one with
+          | .node _ `num #[un@(.atom _ "1")] =>
+            return some <| mkNode ``Lean.Parser.Term.app #[
+              mkIdent `single,
+              mkNode `null #[mkNode `num #[mkAtomFrom un "0"], c]]
+
+          | .node _ ``Lean.Parser.Term.typeAscription
+              #[opar, .node _ `num #[un@(.atom _ "1")], colon, type, cpar] =>
+            let ascripZero := mkNode ``Lean.Parser.Term.typeAscription
+                        #[opar,
+                          mkNode `num #[mkAtomFrom un "0"],
+                          colon,
+                          type,
+                          cpar]
+            return some <| mkNode ``Lean.Parser.Term.app #[
+              mkIdent `single,
+              mkNode `null #[ascripZero, c]]
+          | _ => return none
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
         match na with
           | .str a "antisymm" => return some (← `($(mkIdent `antisymm) $(mkIdent a) $(⟨b⟩)))
           | .str a "trans_le" => return some (← `($(mkIdent `lt_of_le_of_lt) $(⟨b⟩) $(mkIdent a)))
---          | _ => return none
           | _ => if na != toMultArrow then return none else
                     return some <| mkNode ``Lean.Parser.Term.app #[
                                   mkIdent na,
@@ -210,7 +216,7 @@ elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:
 
 @[inherit_doc to_amaCmd]
 macro "to_ama? " "[" id:ident "]" cmd:command : command => return (← `(to_ama [$id] ? $cmd))
-#check Term.mkFreshIdent
+
 macro "to_ama " cmd:command : command =>
   let rid := mkIdent `hi
   return (← `(to_ama [] $rid $cmd))
@@ -219,6 +225,5 @@ macro "to_ama " cmd:command : command =>
 --macro "to_ama? " cmd:command : command => return (← `(to_ama ? $cmd))
 
 --variable {X Y G H R}
-set_option linter.unusedVariables false in
-to_ama [] ?
-example : Add.add 1 5 = 5 := by (try rfl) <;> sorry
+--to_ama
+--example : Add.add (1 : Nat) 5 = 5 := sorry --by try rfl <;> sorry --by (try rfl) <;> sorry
