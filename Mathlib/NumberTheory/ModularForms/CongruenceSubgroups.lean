@@ -88,8 +88,7 @@ theorem Gamma_zero_bot : Gamma 0 = ⊥ := by
     simp [h]
 #align Gamma_zero_bot Gamma_zero_bot
 
-
-lemma ModularGroup_T_pow_mem_Gamma (N M: ℤ) (hNM : N ∣ M) :
+lemma ModularGroup_T_pow_mem_Gamma (N M : ℤ) (hNM : N ∣ M) :
     (ModularGroup.T ^ M) ∈ _root_.Gamma (Int.natAbs N) := by
   simp only [Gamma_mem, Fin.isValue, ModularGroup.coe_T_zpow, of_apply, cons_val', cons_val_zero,
     empty_val', cons_val_fin_one, Int.cast_one, cons_val_one, head_cons, head_fin_const,
