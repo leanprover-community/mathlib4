@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes, Yaël Dillies
 -/
 
-import Mathlib.Data.List.iterate
+import Mathlib.Data.List.Iterate
 import Mathlib.GroupTheory.Perm.Cycle.Basic
 
 #align_import group_theory.perm.cycle.basic from "leanprover-community/mathlib"@"e8638a0fcaf73e4500469f368ef9494e495099b3"
