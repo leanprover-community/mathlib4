@@ -136,9 +136,9 @@ theorem logb_rpow : logb b (b ^ x) = x := by
 
 theorem rpow_logb_eq_abs (hx : x ≠ 0) : b ^ logb b x = |x| := by
   apply log_injOn_pos
-  simp only [Set.mem_Ioi]
-  apply rpow_pos_of_pos b_pos
-  simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
+  · simp only [Set.mem_Ioi]
+    apply rpow_pos_of_pos b_pos
+  · simp only [abs_pos, mem_Ioi, Ne, hx, not_false_iff]
   rw [log_rpow b_pos, logb, log_abs]
   field_simp [log_b_ne_zero b_pos b_ne_one]
 #align real.rpow_logb_eq_abs Real.rpow_logb_eq_abs
@@ -399,8 +399,8 @@ theorem tendsto_logb_atTop_of_base_lt_one : Tendsto (logb b) atTop atBot := by
   simp only [and_imp, sup_le_iff]
   intro ha
   rw [logb_le_iff_le_rpow_of_base_lt_one b_pos b_lt_one]
-  tauto
-  exact lt_of_lt_of_le zero_lt_one ha
+  · tauto
+  · exact lt_of_lt_of_le zero_lt_one ha
 #align real.tendsto_logb_at_top_of_base_lt_one Real.tendsto_logb_atTop_of_base_lt_one
 
 end BPosAndBLtOne

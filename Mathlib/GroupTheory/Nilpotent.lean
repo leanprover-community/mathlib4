@@ -323,7 +323,8 @@ theorem lowerCentralSeries_antitone : Antitone (lowerCentralSeries G) := by
 /-- The lower central series of a group is a descending central series. -/
 theorem lowerCentralSeries_isDescendingCentralSeries :
     IsDescendingCentralSeries (lowerCentralSeries G) := by
-  constructor; rfl
+  constructor
+  · rfl
   intro x n hxn g
   exact commutator_mem_commutator hxn (mem_top g)
 #align lower_central_series_is_descending_central_series lowerCentralSeries_isDescendingCentralSeries

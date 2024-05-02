@@ -198,7 +198,7 @@ theorem isMaximal_iff_isMaximal_disjoint [H : IsJacobson R] (J : Ideal S) :
   · refine' fun h => ⟨⟨fun hJ => h.1.ne_top (eq_top_iff.2 _), fun I hI => _⟩⟩
     · rwa [eq_top_iff, ← (IsLocalization.orderEmbedding (powers y) S).le_iff_le] at hJ
     · have := congr_arg (map (algebraMap R S)) (h.1.1.2 _ ⟨comap_mono (le_of_lt hI), ?_⟩)
-      rwa [map_comap (powers y) S I, map_top] at this
+      · rwa [map_comap (powers y) S I, map_top] at this
       refine' fun hI' => hI.right _
       rw [← map_comap (powers y) S I, ← map_comap (powers y) S J]
       exact map_mono hI'
@@ -665,15 +665,15 @@ private lemma aux_IH {R : Type u} {S : Type v} {T : Type w}
       AlgEquiv.coe_ringEquiv, Function.comp_apply, AlgEquiv.commutes]
   rw [h_eq]
   apply RingHom.IsIntegral.trans
-  apply RingHom.IsIntegral.trans
-  · apply IH
-    apply Polynomial.isMaximal_comap_C_of_isJacobson'
-    exact hQ
-  · suffices w'.toRingHom = Ideal.quotientMap Q (Polynomial.C) le_rfl by
-      rw [this]
-      rw [isIntegral_quotientMap_iff _]
-      apply Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
-    rfl
+  · apply RingHom.IsIntegral.trans
+    · apply IH
+      apply Polynomial.isMaximal_comap_C_of_isJacobson'
+      exact hQ
+    · suffices w'.toRingHom = Ideal.quotientMap Q (Polynomial.C) le_rfl by
+        rw [this]
+        rw [isIntegral_quotientMap_iff _]
+        apply Polynomial.quotient_mk_comp_C_isIntegral_of_jacobson
+      rfl
   · apply RingHom.isIntegral_of_surjective
     exact w.surjective
 

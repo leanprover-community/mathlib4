@@ -241,7 +241,10 @@ theorem induction {C : Poly α → Prop} (H1 : ∀ i, C (proj i)) (H2 : ∀ n, C
     (H3 : ∀ f g, C f → C g → C (f - g)) (H4 : ∀ f g, C f → C g → C (f * g)) (f : Poly α) : C f := by
   cases' f with f pf
   induction' pf with i n f g pf pg ihf ihg f g pf pg ihf ihg
-  apply H1; apply H2; apply H3 _ _ ihf ihg; apply H4 _ _ ihf ihg
+  · apply H1
+  · apply H2
+  · apply H3 _ _ ihf ihg
+  · apply H4 _ _ ihf ihg
 #align poly.induction Poly.induction
 
 /-- The sum of squares of a list of polynomials. This is relevant for
@@ -355,7 +358,7 @@ theorem DiophList.forall (l : List (Set <| α → ℕ)) (d : l.Forall Dioph) :
     let ⟨β, pl, h⟩ := this
     ⟨β, Poly.sumsq pl, fun v => (h v).trans <| exists_congr fun t => (Poly.sumsq_eq_zero _ _).symm⟩
   induction' l with S l IH
-  exact ⟨ULift Empty, [], fun _ => by simp⟩
+  · exact ⟨ULift Empty, [], fun _ => by simp⟩
   simp? at d says simp only [List.forall_cons] at d
   exact
     let ⟨⟨β, p, pe⟩, dl⟩ := d
@@ -398,12 +401,12 @@ theorem union : ∀ (_ : Dioph S) (_ : Dioph S'), Dioph (S ∪ S')
                   (q ((v ⊗ t) ∘ (inl ⊗ inr ∘ inr)))).symm))
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact some ⊗ fun _ => none
-        exact fun _ => by simp only [elim_inl]
+        · exact some ⊗ fun _ => none
+        · exact fun _ => by simp only [elim_inl]
       -- Porting note: putting everything on the same line fails
       · refine inject_dummies_lem _ ?_ ?_ _ _
-        exact (fun _ => none) ⊗ some
-        exact fun _ => by simp only [elim_inr]⟩
+        · exact (fun _ => none) ⊗ some
+        · exact fun _ => by simp only [elim_inr]⟩
 #align dioph.union Dioph.union
 
 /-- A partial function is Diophantine if its graph is Diophantine. -/
@@ -674,7 +677,8 @@ theorem mod_dioph : DiophFn fun v => f v % g v :=
         (vectorAll_iff_forall _).1 fun z x y =>
           show ((y = 0 ∨ z < y) ∧ ∃ c, z + y * c = x) ↔ x % y = z from
             ⟨fun ⟨h, c, hc⟩ => by
-              rw [← hc]; simp; cases' h with x0 hl; rw [x0, mod_zero]
+              rw [← hc]; simp; cases' h with x0 hl
+              · rw [x0, mod_zero]
               exact mod_eq_of_lt hl, fun e => by
                 rw [← e]
                 exact ⟨or_iff_not_imp_left.2 fun h => mod_lt _ (Nat.pos_of_ne_zero h), x / y,

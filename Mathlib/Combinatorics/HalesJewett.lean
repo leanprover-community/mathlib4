@@ -300,8 +300,8 @@ private theorem exists_mono_in_high_dimension' :
     · obtain ⟨p, p_mem, hp⟩ := h
       refine' Or.inr (mono_of_mono ⟨p.line, p.color, _⟩)
       rintro (_ | _)
-      rw [hp, s.is_focused p p_mem]
-      apply p.has_color
+      · rw [hp, s.is_focused p p_mem]
+      · apply p.has_color
     -- If not, we get `r+1` color focused lines by taking the product of the `r` lines with `l'`
     -- and adding to this the vertical line obtained by the focus point and `l`.
     refine' Or.inl ⟨⟨(s.lines.map _).cons ⟨(l'.map some).vertical s.focus, C' s.focus, fun x => _⟩,

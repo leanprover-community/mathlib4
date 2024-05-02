@@ -1239,7 +1239,8 @@ theorem LipschitzOnWith.coordinate [PseudoMetricSpace α] (f : α → ℓ^∞(ι
       dist (f x i) (f y i) ≤ dist (f x) (f y) := lp.norm_apply_le_norm top_ne_zero (f x - f y) i
       _ ≤ K * dist x y := hfl x hx y hy
   · intro hgl x hx y hy
-    apply lp.norm_le_of_forall_le; positivity
+    apply lp.norm_le_of_forall_le
+    · positivity
     intro i
     apply hgl i x hx y hy
 

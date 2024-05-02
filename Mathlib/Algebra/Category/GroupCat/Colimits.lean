@@ -296,8 +296,8 @@ noncomputable def cokernelIsoQuotient {G H : AddCommGroupCat.{u}} (f : G ⟶ H) 
         apply Quotient.sound
         apply leftRel_apply.mpr
         fconstructor
-        exact -x
-        simp only [add_zero, AddMonoidHom.map_neg]
+        · exact -x
+        · simp only [add_zero, AddMonoidHom.map_neg]
   inv :=
     QuotientAddGroup.lift _ (cokernel.π f) <| by
       rintro _ ⟨x, rfl⟩

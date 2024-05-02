@@ -692,14 +692,14 @@ instance : SecondCountableTopology GHSpace := by
   -- are within controlled Gromov-Hausdorff distance.
   have main : ghDist p.Rep q.Rep ≤ ε + ε / 2 + ε := by
     refine' ghDist_le_of_approx_subsets Φ _ _ _
-    show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
-    · -- by construction, `s p` is `ε`-dense
+    · show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
+      -- by construction, `s p` is `ε`-dense
       intro x
       have : x ∈ ⋃ y ∈ s p, ball y ε := (hs p).2 (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       exact ⟨y, ys, le_of_lt hy⟩
-    show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
-    · -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
+    · show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
+      -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
       intro x
       have : x ∈ ⋃ y ∈ s q, ball y ε := (hs q).2 (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
@@ -717,8 +717,8 @@ instance : SecondCountableTopology GHSpace := by
       have : Φ z = y := by simp only [Φ, Ψ]; rw [C1, C2, C3]
       rw [this]
       exact le_of_lt hy
-    show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
-    · /- the distance between `x` and `y` is encoded in `F p`, and the distance between
+    · show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
+      /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
       -- Porting note: we have to circumvent the absence of `change … with … `
@@ -833,7 +833,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     ⟨⟨N p, lt_of_le_of_lt (hN p) (Nat.lt_succ_self _)⟩, fun a b =>
       ⟨min M ⌊ε⁻¹ * dist ((E p).symm a) ((E p).symm b)⌋₊,
         (min_le_left _ _).trans_lt (Nat.lt_succ_self _)⟩⟩
-  refine' ⟨_, _, fun p => F p, _⟩; infer_instance
+  refine' ⟨_, _, fun p => F p, _⟩;
+  · infer_instance
   -- It remains to show that if `F p = F q`, then `p` and `q` are `ε`-close
   rintro ⟨p, pt⟩ ⟨q, qt⟩ hpq
   have Npq : N p = N q := Fin.ext_iff.1 (Sigma.mk.inj_iff.1 hpq).1
@@ -844,14 +845,14 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
     -- in `q`, and `s p` and `s q` are almost isometric. Then closeness follows
     -- from `ghDist_le_of_approx_subsets`
     refine' ghDist_le_of_approx_subsets Φ _ _ _
-    show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
-    · -- by construction, `s p` is `ε`-dense
+    · show ∀ x : p.Rep, ∃ y ∈ s p, dist x y ≤ ε
+      -- by construction, `s p` is `ε`-dense
       intro x
       have : x ∈ ⋃ y ∈ s p, ball y (u n) := (hs p pt) (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
       exact ⟨y, ys, le_trans (le_of_lt hy) u_le_ε⟩
-    show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
-    · -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
+    · show ∀ x : q.Rep, ∃ z : s p, dist x (Φ z) ≤ ε
+      -- by construction, `s q` is `ε`-dense, and it is the range of `Φ`
       intro x
       have : x ∈ ⋃ y ∈ s q, ball y (u n) := (hs q qt) (mem_univ _)
       rcases mem_iUnion₂.1 this with ⟨y, ys, hy⟩
@@ -869,8 +870,8 @@ theorem totallyBounded {t : Set GHSpace} {C : ℝ} {u : ℕ → ℝ} {K : ℕ �
       have : Φ z = y := by simp only [Ψ, Φ]; rw [C1, C2, C3]
       rw [this]
       exact le_trans (le_of_lt hy) u_le_ε
-    show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
-    · /- the distance between `x` and `y` is encoded in `F p`, and the distance between
+    · show ∀ x y : s p, |dist x y - dist (Φ x) (Φ y)| ≤ ε
+      /- the distance between `x` and `y` is encoded in `F p`, and the distance between
             `Φ x` and `Φ y` (two points of `s q`) is encoded in `F q`, all this up to `ε`.
             As `F p = F q`, the distances are almost equal. -/
       intro x y

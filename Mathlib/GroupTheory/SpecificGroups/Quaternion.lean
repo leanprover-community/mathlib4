@@ -225,8 +225,8 @@ theorem orderOf_xa [NeZero n] (i : ZMod (2 * n)) : orderOf (xa i) = 4 := by
 /-- In the special case `n = 1`, `Quaternion 1` is a cyclic group (of order `4`). -/
 theorem quaternionGroup_one_isCyclic : IsCyclic (QuaternionGroup 1) := by
   apply isCyclic_of_orderOf_eq_card
-  rw [card, mul_one]
-  exact orderOf_xa 0
+  · rw [card, mul_one]
+    exact orderOf_xa 0
 #align quaternion_group.quaternion_group_one_is_cyclic QuaternionGroup.quaternionGroup_one_isCyclic
 
 /-- If `0 < n`, then `a 1` has order `2 * n`.

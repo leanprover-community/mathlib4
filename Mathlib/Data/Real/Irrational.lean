@@ -503,9 +503,9 @@ theorem one_lt_natDegree_of_irrational_root (hx : Irrational x) (p_nonzero : p �
   · obtain rfl : b = 0 := by simpa
     simp at p_nonzero
   · rw [mul_comm, ← eq_div_iff_mul_eq, eq_comm] at this
-    refine' hx ⟨-b / a, _⟩
-    assumption_mod_cast
-    assumption_mod_cast
+    · refine' hx ⟨-b / a, _⟩
+      assumption_mod_cast
+    · assumption_mod_cast
 #align one_lt_nat_degree_of_irrational_root one_lt_natDegree_of_irrational_root
 
 end Polynomial

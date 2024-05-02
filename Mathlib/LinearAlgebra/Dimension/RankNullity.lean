@@ -101,9 +101,9 @@ theorem exists_linearIndependent_of_lt_rank [StrongRankCondition R]
     rw [Subtype.coe_mk, ← hsec x, Submodule.Quotient.mk_eq_zero]
     exact Submodule.subset_span hxs
   refine ⟨s ∪ sec '' t, subset_union_left _ _, ?_, ?_⟩
-  rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
-    ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
-  · exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
+  · rw [Cardinal.mk_union_of_disjoint hst, Cardinal.mk_image_eq, ht,
+      ← rank_quotient_add_rank (Submodule.span R s), add_comm, rank_span_set hs]
+    exact HasLeftInverse.injective ⟨Submodule.Quotient.mk, hsec⟩
   · apply LinearIndependent.union_of_quotient Submodule.subset_span hs
     rwa [Function.comp, linearIndependent_image ((hsec'.symm ▸ injective_id).injOn t).image_of_comp,
       ← image_comp, hsec', image_id]

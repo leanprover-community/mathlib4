@@ -127,7 +127,8 @@ lemma Dual.eq_of_preReflection_mapsTo [CharZero R] [NoZeroSMulDivisors R M]
   replace hu : ∀ (n : ℕ),
       ↑(u ^ n) = LinearMap.id (R := R) (M := M) + (n : R) • (f - g).smulRight x := by
     intros n
-    induction' n with n ih; simp
+    induction' n with n ih
+    · simp
     have : ((f - g).smulRight x).comp ((n : R) • (f - g).smulRight x) = 0 := by ext; simp [hf₁, hg₁]
     rw [pow_succ', LinearEquiv.coe_toLinearMap_mul, ih, hu, add_mul, mul_add, mul_add]
     simp_rw [LinearMap.mul_eq_comp, LinearMap.comp_id, LinearMap.id_comp, this, add_zero, add_assoc,

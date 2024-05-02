@@ -246,7 +246,7 @@ theorem Stable.exists_forall_le (h : F.Stable) (e : F.N 0 ≤ F'.N 0) :
   induction' n with n hn
   · refine' (F.antitone _).trans e; simp
   · rw [Nat.succ_eq_one_add, add_assoc, add_comm, add_comm 1 n, ← hF]
-    exact (smul_mono_right _ hn).trans (F'.smul_le _)
+    · exact (smul_mono_right _ hn).trans (F'.smul_le _)
     simp
 #align ideal.filtration.stable.exists_forall_le Ideal.Filtration.Stable.exists_forall_le
 

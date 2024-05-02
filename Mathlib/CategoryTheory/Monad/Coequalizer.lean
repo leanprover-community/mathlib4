@@ -66,7 +66,7 @@ theorem FreeCoequalizer.condition :
 
 instance : IsReflexivePair (FreeCoequalizer.topMap X) (FreeCoequalizer.bottomMap X) := by
   apply IsReflexivePair.mk' _ _ _
-  apply (free T).map (T.η.app X.A)
+  · apply (free T).map (T.η.app X.A)
   · ext
     dsimp
     rw [← Functor.map_comp, X.unit, Functor.map_id]

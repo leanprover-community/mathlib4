@@ -200,8 +200,8 @@ noncomputable def preservesFiniteLimitsOfFlat (F : C ⥤ D) [RepresentablyFlat F
       fac := PreservesFiniteLimitsOfFlat.fac F hc
       uniq := fun s m h => by
         apply PreservesFiniteLimitsOfFlat.uniq F hc
-        exact h
-        exact PreservesFiniteLimitsOfFlat.fac F hc s }
+        · exact h
+        · exact PreservesFiniteLimitsOfFlat.fac F hc s }
 #align category_theory.preserves_finite_limits_of_flat CategoryTheory.preservesFiniteLimitsOfFlat
 
 /-- If `C` is finitely cocomplete, then `F : C ⥤ D` is representably flat iff it preserves

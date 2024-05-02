@@ -121,10 +121,10 @@ theorem iff_pid_with_one_nonzero_prime (R : Type u) [CommRing R] [IsDomain R] :
   · intro RDVR
     rcases id RDVR with ⟨Rlocal⟩
     constructor
-    assumption
+    · assumption
     use LocalRing.maximalIdeal R
     constructor
-    exact ⟨Rlocal, inferInstance⟩
+    · exact ⟨Rlocal, inferInstance⟩
     · rintro Q ⟨hQ1, hQ2⟩
       obtain ⟨q, rfl⟩ := (IsPrincipalIdealRing.principal Q).1
       have hq : q ≠ 0 := by

@@ -211,9 +211,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
       cases' hx with hxσ hxτ
       · rw [mem_coe, mem_support] at hxσ
         rw [Set.union_apply_left hd1''.le_bot _, Set.union_apply_left hd1''.le_bot _]
-        simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
-          Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
-        · have h := (hd2 (f x)).resolve_left ?_
+        · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inl, comp_apply,
+            Set.union_symm_apply_left, Subtype.coe_mk, apply_eq_iff_eq]
+          have h := (hd2 (f x)).resolve_left ?_
           · rw [mul_apply, mul_apply] at h
             rw [h, inv_apply_self, (hd1 x).resolve_left hxσ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]
@@ -222,9 +222,9 @@ theorem Disjoint.isConj_mul [Finite α] {σ τ π ρ : Perm α} (hc1 : IsConj σ
             apply_mem_support, mem_support]
       · rw [mem_coe, ← apply_mem_support, mem_support] at hxτ
         rw [Set.union_apply_right hd1''.le_bot _, Set.union_apply_right hd1''.le_bot _]
-        simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
-          Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
-        · have h := (hd2 (g (τ x))).resolve_right ?_
+        · simp only [subtypeEquiv_apply, Perm.coe_mul, Sum.map_inr, comp_apply,
+            Set.union_symm_apply_right, Subtype.coe_mk, apply_eq_iff_eq]
+          have h := (hd2 (g (τ x))).resolve_right ?_
           · rw [mul_apply, mul_apply] at h
             rw [inv_apply_self, h, (hd1 (τ x)).resolve_right hxτ]
           · rwa [mul_apply, mul_apply, inv_apply_self, apply_eq_iff_eq]

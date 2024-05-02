@@ -231,9 +231,9 @@ noncomputable def stoneCechEquivalence (X : TopCat.{u}) (Y : CompHaus.{u}) :
     intro (x : StoneCech X)
     refine' congr_fun _ x
     apply Continuous.ext_on denseRange_stoneCechUnit (continuous_stoneCechExtend _) hf
-    rintro _ ⟨y, rfl⟩
-    apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
-    apply continuous_stoneCechUnit
+    · rintro _ ⟨y, rfl⟩
+      apply congr_fun (stoneCechExtend_extends (hf.comp _)) y
+      apply continuous_stoneCechUnit
   right_inv := by
     rintro ⟨f : (X : Type _) ⟶ Y, hf : Continuous f⟩
     -- Porting note: `ext` fails.

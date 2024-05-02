@@ -146,8 +146,8 @@ def inf {A : C} : MonoOver A ⥤ MonoOver A ⥤ MonoOver A where
   map k :=
     { app := fun g => by
         apply homMk _ _
-        apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
-        rw [pullback.condition, assoc, w k]
+        · apply pullback.lift pullback.fst (pullback.snd ≫ k.left) _
+          rw [pullback.condition, assoc, w k]
         dsimp
         rw [pullback.lift_snd_assoc, assoc, w k] }
 #align category_theory.mono_over.inf CategoryTheory.MonoOver.inf
@@ -166,8 +166,8 @@ def infLERight {A : C} (f g : MonoOver A) : (inf.obj f).obj g ⟶ g :=
 def leInf {A : C} (f g h : MonoOver A) : (h ⟶ f) → (h ⟶ g) → (h ⟶ (inf.obj f).obj g) := by
   intro k₁ k₂
   refine' homMk (pullback.lift k₂.left k₁.left _) _
-  rw [w k₁, w k₂]
-  erw [pullback.lift_snd_assoc, w k₁]
+  · rw [w k₁, w k₂]
+  · erw [pullback.lift_snd_assoc, w k₁]
 #align category_theory.mono_over.le_inf CategoryTheory.MonoOver.leInf
 
 end Inf
@@ -201,8 +201,8 @@ def leSupRight {A : C} (f g : MonoOver A) : g ⟶ (sup.obj f).obj g := by
 def supLe {A : C} (f g h : MonoOver A) : (f ⟶ h) → (g ⟶ h) → ((sup.obj f).obj g ⟶ h) := by
   intro k₁ k₂
   refine' homMk _ _
-  apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
-  · ext
+  · apply image.lift ⟨_, h.arrow, coprod.desc k₁.left k₂.left, _⟩
+    ext
     · simp [w k₁]
     · simp [w k₂]
   · apply image.lift_fac
