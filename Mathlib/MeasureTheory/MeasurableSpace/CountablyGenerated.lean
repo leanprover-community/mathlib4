@@ -184,7 +184,7 @@ theorem countablySeparated_def [MeasurableSpace α] :
 
 theorem CountablySeparated.mono {m m' : MeasurableSpace α} [hsep : @CountablySeparated _ m]
     (h : m ≤ m') : @CountablySeparated _ m' := by
-  simp_rw[countablySeparated_def] at *
+  simp_rw [countablySeparated_def] at *
   rcases hsep with ⟨S, Sct, Smeas, hS⟩
   use S, Sct, (fun s hs => h _ <| Smeas _ hs), hS
 
@@ -198,7 +198,7 @@ instance (priority := 100) Subtype.separatesPoints [MeasurableSpace α] [h : Sep
   ⟨fun _ _ hxy ↦ Subtype.val_injective $ h.1 _ _ fun _ ht ↦ hxy _ $ measurable_subtype_coe ht⟩
 
 instance (priority := 100) Subtype.countablySeparated [MeasurableSpace α]
-    [h :CountablySeparated α] {s : Set α} : CountablySeparated s := by
+    [h : CountablySeparated α] {s : Set α} : CountablySeparated s := by
   rw [CountablySeparated.subtype_iff]
   exact h.countably_separated.mono (fun s => id) $ subset_univ _
 
@@ -209,11 +209,11 @@ instance (priority := 100) separatesPoints_of_measurableSingletonClass [Measurab
   simp_rw [mem_singleton_iff, forall_true_left] at h
   exact h.symm
 
-instance countablySeparated_subtype_of_hasCountableSeparatingOn
+instance hasCountableSeparatingOn_of_countablySeparated_subtype
     [MeasurableSpace α] {s : Set α} [h : CountablySeparated s] :
     HasCountableSeparatingOn _ MeasurableSet s := CountablySeparated.subtype_iff.mp h
 
-instance hasCountableSeparatingPn_of_countablySeparated_subtype
+instance countablySeparated_subtype_of_hasCountableSeparatingOn
     [MeasurableSpace α] {s : Set α} [h : HasCountableSeparatingOn _ MeasurableSet s] :
     CountablySeparated s := CountablySeparated.subtype_iff.mpr h
 
