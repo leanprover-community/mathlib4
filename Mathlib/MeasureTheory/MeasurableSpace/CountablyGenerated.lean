@@ -295,7 +295,7 @@ theorem measurable_injection_nat_bool_of_countablySeparated [MeasurableSpace α]
 variable {α}
 
 --TODO: Make this an instance
-theorem measurableSingletonClass_of_countablySeparated
+instance measurableSingletonClass_of_countablySeparated
     [MeasurableSpace α] [CountablySeparated α] :
     MeasurableSingletonClass α := by
   rcases measurable_injection_nat_bool_of_countablySeparated α with ⟨f, fmeas, finj⟩
