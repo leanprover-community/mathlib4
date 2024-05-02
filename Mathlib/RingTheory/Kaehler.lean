@@ -830,13 +830,13 @@ lemma KaehlerDifferential.mvPolynomialBasis_repr_apply (σ) (x) (i) :
   simp [Finsupp.single_apply, Pi.single_apply]
 
 lemma KaehlerDifferential.mvPolynomialBasis_repr_symm_single (σ) (i) (x) :
-    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D _ _ (.X i) := by
+    (mvPolynomialBasis R σ).repr.symm (Finsupp.single i x) = x • D R (MvPolynomial σ R) (.X i) := by
   apply (mvPolynomialBasis R σ).repr.injective; simp [LinearEquiv.map_smul, -map_smul]
 
 
 @[simp]
 lemma KaehlerDifferential.mvPolynomialBasis_apply (σ) (i) :
-    mvPolynomialBasis R σ i = D _ _ (.X i) :=
+    mvPolynomialBasis R σ i = D R (MvPolynomial σ R) (.X i) :=
   (mvPolynomialBasis_repr_symm_single R σ i 1).trans (one_smul _ _)
 
 instance (σ) : Module.Free (MvPolynomial σ R) (Ω[MvPolynomial σ R⁄R]) :=
