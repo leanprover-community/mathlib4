@@ -74,21 +74,59 @@ lemma aux3 [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)] {s : Set α} (
   choose! f hf hfb using this
   use ⋃ n, f n
   constructor
-  · apply Set.countable_iUnion
-    exact fun i => (hf i).countable
+  · exact Set.countable_iUnion <| fun i => (hf i).countable
   · intro x hx
     rw [Metric.mem_closure_iff]
     intro ε hε
     obtain ⟨n, hn⟩ := exists_nat_one_div_lt hε
-    have := hfb n hx
     have : ∃ b ∈ f n, dist x b < ε := by
-      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp this
+      obtain ⟨i, hi⟩ := Set.mem_iUnion.mp (hfb n hx)
       simp only [one_div, Set.mem_iUnion, Metric.mem_ball, exists_prop] at hi
       use i, hi.1
       apply lt_trans hi.2 ?_
       rw [inv_eq_one_div]
       exact hn
     aesop
+
+lemma aux_sep_1 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
+    [Nonempty α] (μ : Measure α) [IsFiniteMeasure μ] :
+    ∃ K : ℕ → α, DenseRange K ∧ ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
+  obtain ⟨K, hK⟩ := TopologicalSpace.exists_dense_seq α
+  rw [DenseRange] at hK
+  have ball_cover : ∀ δ > 0, μ (⋃ i, Metric.ball (K i) δ) = μ (Set.univ) := by
+    intro δ hδ
+    apply le_antisymm (measure_mono fun ⦃a⦄ _ ↦ trivial)
+    exact measure_mono <| fun y _ => Set.mem_iUnion.mpr (DenseRange.exists_dist_lt hK y hδ)
+  have cover : ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
+    exact fun  η hη δ hδ ↦ aux1 (fun y ↦ Metric.ball (K y) δ) (ball_cover δ hδ) η hη
+  exact ⟨K, hK, cover⟩
+
+lemma aux_sep_2 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
+    [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] {ε : ENNReal} (hε : 0 < ε) :
+    ∃ K : ℕ → α, DenseRange K ∧ ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (K i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
+  obtain ⟨K, hK, cover⟩ := aux_sep_1 μ
+  have hεj_pos : ∀ j : ℕ, ε/(2^(j+1)) > 0 := by
+    exact fun j => ENNReal.div_pos hε.ne' (Ne.symm (ne_of_beq_false rfl))
+  use K, hK
+  intro j
+  obtain ⟨N, hN⟩ := cover (ε/(2^(j+1))) (hεj_pos j) (1/(j+1)) (Nat.one_div_pos_of_nat)
+  use N
+  have meas : MeasurableSet (⋃ i ≤ N, Metric.ball (K i) (1 / (j + 1))) := by
+    measurability
+  calc
+    _ = μ (Set.univ) - μ (⋃ i, ⋃ (_ : i ≤ N), Metric.ball (K i) (1 / (↑j + 1))) := by
+      refine measure_compl meas ?h_fin
+      apply measure_ne_top μ (⋃ i, ⋃ (_ : i ≤ N), Metric.ball (K i) (1 / (↑j + 1)))
+    _ ≤ _ := by
+      exact tsub_le_iff_tsub_le.mp hN
+
+theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
+   calc ∑' n : ℕ, r ^ (n + 1)
+   _ = ∑' n : ℕ, r * r ^ (n) := by
+         congr with n
+         exact pow_succ' r n
+   _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
+   _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
 
 variable [MeasurableSpace α] {μ : Measure α}
 
@@ -135,9 +173,8 @@ lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     apply measure_mono
     rw [Set.compl_subset_compl]
     exact Set.subset_accumulate
-  have : μ ((Set.Accumulate K n)ᶜ) < ε := by
-    apply lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn)
-  exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n) this
+  exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n)
+    (lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn))
 
 lemma to_isSeparable_on_countable_generated_uniform [UniformSpace α]
     [i : IsCountablyGenerated (𝓤 α)] (h : IsPretight μ) : IsSeparable μ := by
@@ -145,50 +182,6 @@ lemma to_isSeparable_on_countable_generated_uniform [UniformSpace α]
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
   exact fun i => aux3 (hKa i)
-
-lemma aux_sep_1 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
-    (μ : Measure α) [IsFiniteMeasure μ] :
-    ∃ K : ℕ → α, DenseRange K ∧ ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
-  obtain ⟨K, hK⟩ := TopologicalSpace.exists_dense_seq α
-  rw [DenseRange] at hK
-  have ball_cover : ∀ δ > 0, μ (⋃ i, Metric.ball (K i) δ) = μ (Set.univ) := by
-    intro δ hδ
-    apply le_antisymm (measure_mono fun ⦃a⦄ _ ↦ trivial)
-    apply measure_mono
-    exact fun y _ => Set.mem_iUnion.mpr (DenseRange.exists_dist_lt hK y hδ)
-  have cover : ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
-    intro η hη δ hδ
-    exact aux1 (fun y ↦ Metric.ball (K y) δ) (ball_cover δ hδ) η hη
-  exact ⟨K, hK, cover⟩
-
-lemma aux_sep_2 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
-    [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] {ε : ENNReal} (hε : 0 < ε) :
-    ∃ K : ℕ → α, DenseRange K ∧ ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (K i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
-  obtain ⟨K, hK, cover⟩ := aux_sep_1 μ
-  have hεj_pos : ∀ j : ℕ, ε/(2^(j+1)) > 0 := by
-    exact fun j => ENNReal.div_pos hε.ne' (Ne.symm (ne_of_beq_false rfl))
-  have hj_pos : ∀ j : ℕ, (1/(j+1) : ℝ) > 0 := by
-    exact fun j ↦ Nat.one_div_pos_of_nat
-  use K, hK
-  intro j
-  obtain ⟨N, hN⟩ := cover (ε/(2^(j+1))) (hεj_pos j) (1/(j+1)) (hj_pos j)
-  use N
-  have meas : MeasurableSet (⋃ i ≤ N, Metric.ball (K i) (1 / (j + 1))) := by
-    measurability
-  calc
-    _ = μ (Set.univ) - μ (⋃ i, ⋃ (_ : i ≤ N), Metric.ball (K i) (1 / (↑j + 1))) := by
-      refine measure_compl meas ?h_fin
-      apply measure_ne_top μ (⋃ i, ⋃ (_ : i ≤ N), Metric.ball (K i) (1 / (↑j + 1)))
-    _ ≤ _ := by
-      exact tsub_le_iff_tsub_le.mp hN
-
-theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
-   calc ∑' n : ℕ, r ^ (n + 1)
-   _ = ∑' n : ℕ, r * r ^ (n) := by
-         congr with n
-         exact pow_succ' r n
-   _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
-   _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
 
 lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
     [OpensMeasurableSpace α] [IsFiniteMeasure μ] : IsPretight μ := by
@@ -225,9 +218,7 @@ lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.Separ
       apply le_trans (MeasureTheory.measure_iUnion_le _)
       have : ∀ i, μ (⋂ j, ⋂ (_ : j ≤ G i), (Metric.ball (x j) (↑i + 1)⁻¹)ᶜ) ≤ ε / 2 ^ (i + 1) := by
         intro i
-        have := hG i
-        simp only [one_div, Set.compl_iUnion] at this
-        exact this
+        simp_all only [Measure.measure_univ_eq_zero, one_div, compl_iUnion]
       apply le_trans (ENNReal.tsum_le_tsum this)
       calc ∑' (a : ℕ), ε / (2 ^ (a + 1))
         _ = ε * ∑' (a : ℕ), 2⁻¹ ^ (a + 1) := by
@@ -246,7 +237,8 @@ lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
       exact (Subtype.coe_image_univ (closure S)).symm
     rw [this] at hSc
     sorry
-  have := of_separableSpace_on_metric (α := closure S) -- fails
+  --have : --of_separableSpace_on_metric (α := closure S) -- fails
+  sorry
 
 end IsPretight
 
@@ -274,7 +266,7 @@ lemma IsPretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ :
   intro ε hε
   obtain ⟨K, hK_compact, hKμ⟩ := h ε hε
   use K
-  refine ⟨hK_compact.totallyBounded, hKμ⟩
+  exact ⟨hK_compact.totallyBounded, hKμ⟩
 
 /-- On complete uniform spaces, every pre-tight measure is tight -/
 lemma of_isPretight_complete [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : IsTight μ := by
@@ -282,10 +274,7 @@ lemma of_isPretight_complete [UniformSpace α] [CompleteSpace α] (h : IsPretigh
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := h ε hε
   refine ⟨closure K, isCompact_of_totallyBounded_isClosed hK.closure isClosed_closure, ?_⟩
-  have : μ (closure K)ᶜ ≤ μ Kᶜ := by
-    apply μ.mono
-    simp only [Set.compl_subset_compl, subset_closure]
-  exact le_trans this hKe
+  exact le_trans (subset_closure |> compl_subset_compl.mpr |> μ.mono) hKe
 
 lemma isPretight_iff_uniform_complete [UniformSpace α] [CompleteSpace α] :
     IsTight μ ↔ IsPretight μ := ⟨IsPretight.of_isTight, of_isPretight_complete⟩
@@ -295,8 +284,7 @@ lemma of_isSeparable_complete_uniform [UniformSpace α] [i : IsCountablyGenerate
     [TopologicalSpace.SeparableSpace α] [CompleteSpace α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] : IsTight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
-  apply of_isPretight_complete
-  exact IsPretight.of_separableSpace_on_metric
+  exact IsPretight.of_separableSpace_on_metric |> of_isPretight_complete
 
 lemma of_le_isTight [TopologicalSpace α] {μ ν : Measure α} (h : μ ≤ ν) (hν : IsTight ν) :
     IsTight μ := by
@@ -331,9 +319,8 @@ lemma const_mul [TopologicalSpace α] {μ : Measure α} (c : NNReal) (hμ : IsTi
 instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFiniteMeasureOnCompacts μ]
     [h : Fact (IsTight μ)] : IsFiniteMeasure μ := by
   obtain ⟨_, hK, hμ⟩ := (iff_compact_sets.mp h.out) 1 (zero_lt_one)
-  have := (MeasureTheory.measure_add_measure_compl (μ := μ) hK.isClosed.measurableSet).symm
   have : μ Set.univ < ⊤ := by
-    rw [this, WithTop.add_lt_top]
+    rw [← (MeasureTheory.measure_add_measure_compl hK.isClosed.measurableSet), WithTop.add_lt_top]
     exact ⟨hk.lt_top_of_isCompact hK, lt_of_le_of_lt hμ ENNReal.one_lt_top⟩
   exact ⟨this⟩
 
@@ -363,11 +350,10 @@ lemma of_innerRegular [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace �
   cases eq_zero_or_neZero μ with
   | inl hμ =>
     rw [hμ]
-    refine fun _ _ ↦ ⟨∅, isCompact_empty, ?_⟩
-    simp
+    exact fun _ i ↦ ⟨∅, isCompact_empty, le_of_lt i⟩
   | inr hμ =>
     let r := μ Set.univ
-    have hr : 0 < r := NeZero.pos r
+    have hr := NeZero.pos r
     intro ε hε
     cases lt_or_ge ε r with
     | inl hεr =>
@@ -387,25 +373,19 @@ lemma of_innerRegular [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace �
 lemma countable_compact_cover [TopologicalSpace α] (h : IsTight μ) :
     ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
   choose! K hK using h.has_compact_nat
-  use ⋃ n, K n
-  constructor
-  · apply isSigmaCompact_iUnion_of_isCompact
-    intro _
-    simp_all only [one_div,
-      ENNReal.le_inv_iff_mul_le]
-  · rw [measure_congr]
-    rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
-    refine le_of_forall_lt' (fun ε hε ↦ ?_)
-    obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
-    exact lt_of_le_of_lt ((measure_mono <| Set.iInter_subset _ n).trans <|
-      (inv_eq_one_div (n : ENNReal)).symm ▸ (hK n).2) hn
+  use ⋃ n, K n, isSigmaCompact_iUnion_of_isCompact _ (fun _ => (hK _).1 )
+  rw [measure_congr]
+  rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
+  refine le_of_forall_lt' (fun ε hε ↦ ?_)
+  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
+  exact lt_of_le_of_lt ((measure_mono <| Set.iInter_subset _ n).trans <|
+    (inv_eq_one_div (n : ENNReal)).symm ▸ (hK n).2) hn
 
 lemma of_countable_compact_cover [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] (h : ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ) : IsTight μ := by
   rw [iff_compact_sets]
   rintro ε hε
   rcases h with ⟨M, hM, hMμ⟩
-  unfold IsSigmaCompact at hM
   rcases hM with ⟨K, hK, rfl⟩
   have hAKc : ∀ n, IsCompact (Set.Accumulate K n) := fun n ↦ isCompact_accumulate hK n
   obtain ⟨n, hn⟩ := aux2 K (fun n => (hK n).isClosed) hMμ ε hε
