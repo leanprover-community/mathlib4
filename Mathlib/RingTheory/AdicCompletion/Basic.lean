@@ -280,7 +280,7 @@ theorem val_add (n : ℕ) (f g : AdicCompletion I M) : (f + g).val n = f.val n +
 theorem val_sub (n : ℕ) (f g : AdicCompletion I M) : (f - g).val n = f.val n - g.val n :=
   rfl
 
-/- No `simp` attribute, since it cases `simp` unification timeouts when considering
+/- No `simp` attribute, since it causes `simp` unification timeouts when considering
 the `AdicCompletion I R` module instance on `AdicCompletion I M` (see `AdicCompletion/Algebra`). -/
 theorem val_smul (n : ℕ) (r : R) (f : AdicCompletion I M) : (r • f).val n = r • f.val n :=
   rfl

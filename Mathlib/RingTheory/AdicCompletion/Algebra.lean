@@ -42,10 +42,8 @@ theorem transitionMap_map_one {m n : ℕ} (hmn : m ≤ n) : transitionMap I R hm
 
 @[local simp]
 theorem transitionMap_map_mul {m n : ℕ} (hmn : m ≤ n) (x y : R ⧸ (I ^ n • ⊤ : Ideal R)) :
-    transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y := by
-  refine Quotient.inductionOn' x (fun x ↦ ?_)
-  refine Quotient.inductionOn' y (fun y ↦ ?_)
-  rfl
+    transitionMap I R hmn (x * y) = transitionMap I R hmn x * transitionMap I R hmn y :=
+  Quotient.inductionOn₂' x y (fun _ _ ↦ rfl)
 
 /-- `AdicCompletion.transitionMap` as an algebra homomorphism. -/
 def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
@@ -54,9 +52,8 @@ def transitionMapₐ {m n : ℕ} (hmn : m ≤ n) :
 
 /-- `AdicCompletion I R` is an `R`-subalgebra of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subalgebra : Subalgebra R (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
-  Submodule.toSubalgebra (submodule I R)
-    (fun {m n} _ ↦ by simp)
-    (fun x y hx hy {m n} hmn ↦ by simp [hx hmn, hy hmn])
+  Submodule.toSubalgebra (submodule I R) (fun _ ↦ by simp)
+    (fun x y hx hy m n hmn ↦ by simp [hx hmn, hy hmn])
 
 /-- `AdicCompletion I R` is a subring of `∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)`. -/
 def subring : Subring (∀ n, R ⧸ (I ^ n • ⊤ : Ideal R)) :=
@@ -215,5 +212,6 @@ instance : IsScalarTower R (AdicCompletion I R) (AdicCompletion I M) where
 
 /-- A priori `AdicCompletion I R` has two `AdicCompletion I R`-module instances.
 Both agree definitionally. -/
-theorem smul_eq_mul (r s : AdicCompletion I R) : r • s = r * s :=
+example : module I = @Algebra.toModule (AdicCompletion I R)
+    (AdicCompletion I R) _ _ (Algebra.id _) :=
   rfl
