@@ -70,4 +70,4 @@ theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k
       push_cast
       apply pow_le_pow_left (r_pos _).le
       apply r_lower_bound_on_verticalStrip (A := N) (B := 2)
-          (z:= ⟨Z, (verticalStrip_mem_le (N : ℕ) 2 z.im hz) hn⟩)
+          (z:= ⟨Z, (verticalStrip_subset_le (N : ℕ) 2 z.im hz) hn⟩)
