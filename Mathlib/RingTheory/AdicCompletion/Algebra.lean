@@ -153,7 +153,7 @@ instance : SMul (R ⧸ (I • ⊤ : Ideal R)) (M ⧸ (I • ⊤ : Submodule R M)
         ← Submodule.Quotient.mk_smul, Submodule.Quotient.mk_eq_zero]
       exact Submodule.smul_mem_smul h mem_top
 
-@[simp]
+@[local simp]
 theorem mk_smul_mk (r : R) (x : M) :
     Ideal.Quotient.mk (I • ⊤) r • Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x
       = r • Submodule.Quotient.mk (p := (I • ⊤ : Submodule R M)) x :=
