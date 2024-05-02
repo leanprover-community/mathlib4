@@ -25,12 +25,11 @@ open scoped Topology BigOperators Nat Classical MatrixGroups
 
 namespace EisensteinSeries
 
-lemma eisSummand_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
-    ∀ (b : Fin 2 → ℤ), Complex.abs (eisSummand k b z) ≤
-     ((r z ^ k) * max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
+lemma eisSummand_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) (b : Fin 2 → ℤ) :
+    Complex.abs (eisSummand k b z) ≤
+    ((r z ^ k) * max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
   have hk0 : 0 ≤ k := by omega
   lift k to ℕ using hk0
-  intro b
   simpa only [zpow_natCast, Fin.isValue, _root_.mul_inv_rev, Nat.cast_max] using
     (eisSummand_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
       (by simp))
