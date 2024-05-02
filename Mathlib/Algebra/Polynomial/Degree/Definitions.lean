@@ -291,9 +291,10 @@ theorem natDegree_eq_of_degree_eq_some {p : R[X]} {n : ℕ} (h : degree p = n) :
   rw [natDegree, h, Nat.cast_withBot, WithBot.unbot'_coe]
 to_td #align polynomial.nat_degree_eq_of_degree_eq_some Polynomial.natDegree_eq_of_degree_eq_some
 
+to_td
 theorem degree_ne_of_natDegree_ne {n : ℕ} : p.natDegree ≠ n → degree p ≠ n :=
   mt natDegree_eq_of_degree_eq_some
-#align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
+to_td #align polynomial.degree_ne_of_nat_degree_ne Polynomial.degree_ne_of_natDegree_ne
 
 @[simp]
 theorem degree_le_natDegree : degree p ≤ natDegree p :=
@@ -319,7 +320,7 @@ theorem le_degree_of_ne_zero (h : coeff p n ≠ 0) : (n : WithBot ℕ) ≤ degre
   exact Finset.le_sup (mem_support_iff.2 h)
 to_td #align polynomial.le_degree_of_ne_zero Polynomial.le_degree_of_ne_zero
 
-to_td?
+to_td
 theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
   rw [← Nat.cast_le (α := WithBot ℕ), ← degree_eq_natDegree]
   · exact le_degree_of_ne_zero h
@@ -899,25 +900,29 @@ theorem natDegree_add_le_of_le (hp : natDegree p ≤ m) (hq : natDegree q ≤ n)
     natDegree (p + q) ≤ max m n :=
   (p.natDegree_add_le q).trans <| max_le_max ‹_› ‹_›
 
+to_td
 @[simp]
 theorem leadingCoeff_zero : leadingCoeff (0 : R[X]) = 0 :=
   rfl
-#align polynomial.leading_coeff_zero Polynomial.leadingCoeff_zero
+to_td #align polynomial.leading_coeff_zero Polynomial.leadingCoeff_zero
 
+to_td
 @[simp]
 theorem leadingCoeff_eq_zero : leadingCoeff p = 0 ↔ p = 0 :=
   ⟨fun h =>
     Classical.by_contradiction fun hp =>
       mt mem_support_iff.1 (Classical.not_not.2 h) (mem_of_max (degree_eq_natDegree hp)),
     fun h => h.symm ▸ leadingCoeff_zero⟩
-#align polynomial.leading_coeff_eq_zero Polynomial.leadingCoeff_eq_zero
+to_td #align polynomial.leading_coeff_eq_zero Polynomial.leadingCoeff_eq_zero
 
+to_td
 theorem leadingCoeff_ne_zero : leadingCoeff p ≠ 0 ↔ p ≠ 0 := by rw [Ne, leadingCoeff_eq_zero]
-#align polynomial.leading_coeff_ne_zero Polynomial.leadingCoeff_ne_zero
+to_td #align polynomial.leading_coeff_ne_zero Polynomial.leadingCoeff_ne_zero
 
+to_td
 theorem leadingCoeff_eq_zero_iff_deg_eq_bot : leadingCoeff p = 0 ↔ degree p = ⊥ := by
   rw [leadingCoeff_eq_zero, degree_eq_bot]
-#align polynomial.leading_coeff_eq_zero_iff_deg_eq_bot Polynomial.leadingCoeff_eq_zero_iff_deg_eq_bot
+to_td #align polynomial.leading_coeff_eq_zero_iff_deg_eq_bot Polynomial.leadingCoeff_eq_zero_iff_deg_eq_bot
 
 lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDegree ≤ n - 1 := by
   obtain _ | n := n
