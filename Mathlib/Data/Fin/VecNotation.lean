@@ -76,18 +76,33 @@ macro_rules
   | `(![$term:term]) => `(vecCons $term ![])
   | `(![]) => `(vecEmpty)
 
-/-- Unexpander for the `![x, y, ...]` notation. -/
-@[app_unexpander vecCons]
-def vecConsUnexpander : Lean.PrettyPrinter.Unexpander
-  | `($_ $term ![$term2, $terms,*]) => `(![$term, $term2, $terms,*])
-  | `($_ $term ![$term2]) => `(![$term, $term2])
-  | `($_ $term ![]) => `(![$term])
-  | _ => throw ()
+section Delab
 
-/-- Unexpander for the `![]` notation. -/
-@[app_unexpander vecEmpty]
-def vecEmptyUnexpander : Lean.PrettyPrinter.Unexpander
-  | _ => `(![])
+open Lean Meta Syntax TSyntax PrettyPrinter.Delaborator SubExpr
+
+/-- Delaborates elements of the vector. -/
+partial def delabVecElems : DelabM (List Term) := do
+  let e ← getExpr
+  if e.isAppOfArity ``vecCons 4 then
+    -- Matrix.vecCons.{u} : {α : Type u} → {n : ℕ} → α → (Fin n → α) → Fin (Nat.succ n) → α
+    let a ← withAppFn <| withAppArg delab
+    withAppArg <| List.cons a <$> delabVecElems
+  else if e.isAppOfArity ``vecEmpty 1 then
+    -- Matrix.vecEmpty.{u} : {α : Type u} → Fin 0 → α
+    pure []
+  else failure
+
+/-- Delaborator for the `![x, y, ...]` notation. -/
+@[delab app.Matrix.vecCons]
+def delabVecCons : Delab := whenPPOption getPPNotation <| withOverApp 4 do
+  let es ← delabVecElems
+  `(![$(TSepArray.ofElems es.toArray),*])
+
+/-- Delaborator for the `![]` notation. -/
+@[delab app.Matrix.vecEmpty]
+def delabAppVecEmpty : Delab := whenPPOption getPPNotation <| withOverApp 1 `(![])
+
+end Delab
 
 /-- `vecHead v` gives the first entry of the vector `v` -/
 def vecHead {n : ℕ} (v : Fin n.succ → α) : α :=
