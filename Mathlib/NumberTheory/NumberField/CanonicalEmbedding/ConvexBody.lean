@@ -547,8 +547,7 @@ theorem exists_ne_zero_mem_ringOfIntegers_lt (h : minkowskiBound K ↑1 < volume
 theorem exists_ne_zero_mem_ringOfIntegers_lt' (w₀ : {w : InfinitePlace K // IsComplex w})
     (h : minkowskiBound K ↑1 < volume (convexBodyLT' K f w₀)) :
     ∃ a : 𝓞 K, a ≠ 0 ∧ (∀ w : InfinitePlace K, w ≠ w₀ → w a < f w) ∧
-      |(w₀.val.embedding a).re| < 1 ∧
-      |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
+      |(w₀.val.embedding a).re| < 1 ∧ |(w₀.val.embedding a).im| < (f w₀ : ℝ) ^ 2 := by
   obtain ⟨_, h_mem, h_nz, h_bd⟩ := exists_ne_zero_mem_ideal_lt' K ↑1 w₀ h
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
   exact ⟨a, RingOfIntegers.coe_ne_zero_iff.mp h_nz, h_bd⟩
