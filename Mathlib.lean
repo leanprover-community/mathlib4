@@ -2545,9 +2545,14 @@ import Mathlib.Lean.Meta
 import Mathlib.Lean.Meta.Basic
 import Mathlib.Lean.Meta.CongrTheorems
 import Mathlib.Lean.Meta.DiscrTree
+import Mathlib.Lean.Meta.KAbstractPositions
+import Mathlib.Lean.Meta.RefinedDiscrTree
+import Mathlib.Lean.Meta.RefinedDiscrTree.Pi
+import Mathlib.Lean.Meta.RefinedDiscrTree.StateList
 import Mathlib.Lean.Meta.Simp
 import Mathlib.Lean.Name
 import Mathlib.Lean.PrettyPrinter.Delaborator
+import Mathlib.Lean.SubExpr
 import Mathlib.Lean.Thunk
 import Mathlib.LinearAlgebra.AffineSpace.AffineEquiv
 import Mathlib.LinearAlgebra.AffineSpace.AffineMap
@@ -3695,9 +3700,11 @@ import Mathlib.Tactic.HigherOrder
 import Mathlib.Tactic.Hint
 import Mathlib.Tactic.InferParam
 import Mathlib.Tactic.Inhabit
+import Mathlib.Tactic.InteractiveUnfold
 import Mathlib.Tactic.IntervalCases
 import Mathlib.Tactic.IrreducibleDef
 import Mathlib.Tactic.Lemma
+import Mathlib.Tactic.LibraryRewrite
 import Mathlib.Tactic.Lift
 import Mathlib.Tactic.LiftLets
 import Mathlib.Tactic.Linarith
