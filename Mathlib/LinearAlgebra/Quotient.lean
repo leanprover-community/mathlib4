@@ -15,8 +15,6 @@ import Mathlib.LinearAlgebra.Span
   that is, elements of `M` are identified if their difference is in `p`. This is itself a module.
 
 -/
-set_option diagnostics true
-attribute [irreducible] Subgroup.op AddSubgroup.op
 
 -- For most of this file we work over a noncommutative ring
 section Ring
