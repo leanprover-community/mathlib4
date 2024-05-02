@@ -549,7 +549,8 @@ def ofNatIso {X : C} (h : yoneda.obj X ⋙ uliftFunctor.{u₁} ≅ F.cones) : Is
     cases s
     injection h with h₁ h₂
     simp only [heq_iff_eq] at h₂
-    conv_rhs => rw [← h₂]; rfl
+    conv_rhs => rw [← h₂]
+    rfl
   uniq s m w := by
     rw [← homOfCone_coneOfHom h m]
     congr
@@ -1077,7 +1078,8 @@ def ofNatIso {X : C} (h : coyoneda.obj (op X) ⋙ uliftFunctor.{u₁} ≅ F.coco
     cases s
     injection h with h₁ h₂
     simp only [heq_iff_eq] at h₂
-    conv_rhs => rw [← h₂]; rfl
+    conv_rhs => rw [← h₂]
+    rfl
   uniq s m w := by
     rw [← homOfCocone_cooneOfHom h m]
     congr
