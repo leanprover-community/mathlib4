@@ -245,17 +245,6 @@ theorem SameCycle.exists_pow_eq'' [Finite α] (h : SameCycle f x y) :
     · exact ⟨i.succ, i.zero_lt_succ, hi.le, by rfl⟩
 #align equiv.perm.same_cycle.exists_pow_eq'' Equiv.Perm.SameCycle.exists_pow_eq''
 
-instance [Fintype α] [DecidableEq α] (f : Perm α) : DecidableRel (SameCycle f) := fun x y =>
-  decidable_of_iff (∃ n ∈ List.range (Fintype.card (Perm α)), (f ^ n) x = y)
-    ⟨fun ⟨n, _, hn⟩ => ⟨n, hn⟩, fun ⟨i, hi⟩ => ⟨(i % orderOf f).natAbs,
-      List.mem_range.2 (Int.ofNat_lt.1 <| by
-        rw [Int.natAbs_of_nonneg (Int.emod_nonneg _ <| Int.natCast_ne_zero.2 (orderOf_pos _).ne')]
-        · refine' (Int.emod_lt _ <| Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _).trans_le _
-          simp [orderOf_le_card_univ]),
-      by
-        rw [← zpow_natCast, Int.natAbs_of_nonneg (Int.emod_nonneg _ <|
-          Int.natCast_ne_zero_iff_pos.2 <| orderOf_pos _), zpow_mod_orderOf, hi]⟩⟩
-
 end SameCycle
 
 /-!

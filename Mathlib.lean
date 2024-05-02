@@ -1914,6 +1914,7 @@ import Mathlib.Data.List.Indexes
 import Mathlib.Data.List.Infix
 import Mathlib.Data.List.InsertNth
 import Mathlib.Data.List.Intervals
+import Mathlib.Data.List.Iterate
 import Mathlib.Data.List.Join
 import Mathlib.Data.List.Lattice
 import Mathlib.Data.List.Lemmas
