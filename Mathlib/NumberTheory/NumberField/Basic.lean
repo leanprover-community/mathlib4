@@ -170,6 +170,14 @@ This is a convenient abbreviation for `map_eq_zero_iff` applied to
 @[simp] lemma coe_eq_zero_iff {x : 𝓞 K} : algebraMap _ K x = 0 ↔ x = 0 :=
   map_eq_zero_iff _  coe_injective
 
+/-- The canonical map from `𝓞 K` to `K` is injective.
+
+This is a convenient abbreviation for `map_ne_zero_iff` applied to
+`NoZeroSMulDivisors.algebraMap_injective`.
+-/
+@[simp] lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
+  map_ne_zero_iff _  coe_injective
+
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
   x.2
 #align number_field.ring_of_integers.is_integral_coe NumberField.RingOfIntegers.isIntegral_coe

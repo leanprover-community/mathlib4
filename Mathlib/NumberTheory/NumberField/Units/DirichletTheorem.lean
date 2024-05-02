@@ -203,7 +203,7 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
     ∃ y : 𝓞 K, y ≠ 0 ∧
       (∀ w, w ≠ w₁ → w y < w x) ∧
       |Algebra.norm ℚ (y : K)| ≤ B := by
-  have hx' := mt RingOfIntegers.coe_eq_zero_iff.mp hx
+  have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
@@ -239,7 +239,7 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
 
 /-- The terms of the sequence are nonzero. -/
 theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
-  mt (RingOfIntegers.coe_eq_zero_iff).mp (seq K w₁ hB n).prop
+  RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
