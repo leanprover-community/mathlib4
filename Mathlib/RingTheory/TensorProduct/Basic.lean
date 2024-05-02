@@ -761,8 +761,8 @@ Note that if `A` is commutative this can be instantiated with `S = A`.
 -/
 protected nonrec def rid : A ⊗[R] R ≃ₐ[S] A :=
   algEquivOfLinearEquivTensorProduct (AlgebraTensorModule.rid R S A)
-    (fun _a₁ _a₂ _r₁ _r₂ => smul_mul_smul _ _ _ _ |>.symm)
-    (one_smul _ _)
+    (fun a₁ a₂ r₁ r₂ => smul_mul_smul r₁ r₂ a₁ a₂ |>.symm)
+    (one_smul R _)
 #align algebra.tensor_product.rid Algebra.TensorProduct.rid
 
 @[simp] theorem rid_toLinearEquiv :

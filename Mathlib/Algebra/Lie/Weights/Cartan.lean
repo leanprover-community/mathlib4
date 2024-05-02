@@ -84,7 +84,8 @@ def rootSpaceWeightSpaceProductAux {χ₁ χ₂ χ₃ : H → R} (hχ : χ₁ + 
         dsimp only
         conv_lhs =>
           congr
-          rw [LieSubmodule.coe_smul, lie_smul] }
+          rw [LieSubmodule.coe_smul, lie_smul]
+        rfl }
   map_add' x y := by
     ext m
     simp only [AddSubmonoid.coe_add, Submodule.coe_toAddSubmonoid, add_lie, LinearMap.coe_mk,

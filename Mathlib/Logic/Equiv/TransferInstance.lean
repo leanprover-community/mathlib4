@@ -773,7 +773,7 @@ end Equiv
 
 namespace Finite
 
-attribute [-instance] Fin.instMulFin
+attribute [-instance] Fin.instMul
 
 /-- Any finite group in universe `u` is equivalent to some finite group in universe `0`. -/
 lemma exists_type_zero_nonempty_mulEquiv (G : Type u) [Group G] [Finite G] :

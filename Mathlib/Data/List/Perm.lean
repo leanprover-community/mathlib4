@@ -241,6 +241,19 @@ lemma subperm_iff : l₁ <+~ l₂ ↔ ∃ l, l ~ l₂ ∧ l₁ <+ l := by
   · rintro (rfl | rfl)
     exacts [nil_subperm, Subperm.refl _]
 
+attribute [simp] nil_subperm
+
+@[simp]
+theorem subperm_nil : List.Subperm l [] ↔ l = [] :=
+  match l with
+  | [] => by simp
+  | head :: tail => by
+    simp only [iff_false]
+    intro h
+    have := h.length_le
+    simp only [List.length_cons, List.length_nil, Nat.succ_ne_zero, ← Nat.not_lt, Nat.zero_lt_succ,
+      not_true_eq_false] at this
+
 #align list.perm.countp_eq List.Perm.countP_eq
 
 #align list.subperm.countp_le List.Subperm.countP_le
@@ -422,8 +435,9 @@ theorem perm_replicate_append_replicate {l : List α} {a b : α} {m n : ℕ} (h 
   rw [perm_iff_count, ← Decidable.and_forall_ne a, ← Decidable.and_forall_ne b]
   suffices l ⊆ [a, b] ↔ ∀ c, c ≠ b → c ≠ a → c ∉ l by
     simp (config := { contextual := true }) [count_replicate, h, h.symm, this, count_eq_zero]
-  simp_rw [Ne, ← and_imp, ← not_or, Decidable.not_imp_not, subset_def, mem_cons,
-    not_mem_nil, or_false, or_comm]
+  trans ∀ c, c ∈ l → c = b ∨ c = a
+  · simp [subset_def, or_comm]
+  · exact forall_congr' fun _ => by rw [← and_imp, ← not_or, not_imp_not]
 #align list.perm_replicate_append_replicate List.perm_replicate_append_replicate
 
 #align list.subperm.cons_right List.Subperm.cons_right
@@ -628,8 +642,7 @@ theorem length_permutationsAux :
   refine' permutationsAux.rec (by simp) _
   intro t ts is IH1 IH2
   have IH2 : length (permutationsAux is nil) + 1 = is.length ! := by simpa using IH2
-  simp? [Nat.factorial, Nat.add_succ, Nat.mul_comm] at IH1 says
-    simp only [factorial, add_eq, Nat.add_zero, Nat.mul_comm] at IH1
+  simp only [factorial, Nat.mul_comm, add_eq] at IH1
   rw [permutationsAux_cons,
     length_foldr_permutationsAux2' _ _ _ _ _ fun l m => (perm_of_mem_permutations m).length_eq,
     permutations, length, length, IH2, Nat.succ_add, Nat.factorial_succ, Nat.mul_comm (_ + 1),
@@ -672,7 +685,7 @@ theorem mem_permutations {s t : List α} : s ∈ permutations t ↔ s ~ t :=
 
 -- Porting note: temporary theorem to solve diamond issue
 private theorem DecEq_eq {α : Type*} [DecidableEq α] :
-     instBEqList = @instBEq (List α) instDecidableEqList :=
+    List.instBEq = @instBEqOfDecidableEq (List α) instDecidableEqList :=
   congr_arg BEq.mk <| by
     funext l₁ l₂
     show (l₁ == l₂) = _
@@ -840,9 +853,9 @@ theorem nodup_permutations'Aux_iff {s : List α} {x : α} : Nodup (permutations'
     · obtain ⟨m, rfl⟩ := Nat.exists_eq_add_of_lt H'
       erw [length_insertNth _ _ hk.le, Nat.succ_lt_succ_iff, Nat.succ_add] at hn
       rw [nthLe_insertNth_add_succ]
-      convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
-      · simp [Nat.add_succ, Nat.succ_add]
-      · simp [Nat.add_left_comm, Nat.add_comm]
+      · convert nthLe_insertNth_add_succ s x k m.succ (by simpa using hn) using 2
+        · simp [Nat.add_assoc, Nat.add_left_comm]
+        · simp [Nat.add_left_comm, Nat.add_comm]
       · simpa [Nat.succ_add] using hn
 #align list.nodup_permutations'_aux_iff List.nodup_permutations'Aux_iff
 

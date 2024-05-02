@@ -53,9 +53,9 @@ lemma chooseNatLt_aux {lo hi : Nat} (a : Nat) (h : Nat.succ lo ≤ a ∧ a ≤ h
     lo ≤ Nat.pred a ∧ Nat.pred a < hi :=
   And.intro (Nat.le_sub_one_of_lt (Nat.lt_of_succ_le h.left)) <|
     show a.pred.succ ≤ hi by
-       rw [Nat.succ_pred_eq_of_pos]
-       exact h.right
-       exact lt_of_le_of_lt (Nat.zero_le lo) h.left
+      rw [Nat.succ_pred_eq_of_pos]
+      · exact h.right
+      · exact lt_of_le_of_lt (Nat.zero_le lo) h.left
 
 /-- Generate a `Nat` example between `x` and `y` (exclusively). -/
 def chooseNatLt (lo hi : Nat) (h : lo < hi) : Gen {a // lo ≤ a ∧ a < hi} :=

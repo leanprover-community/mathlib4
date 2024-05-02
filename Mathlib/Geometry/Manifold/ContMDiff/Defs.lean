@@ -245,8 +245,9 @@ variable {I I'}
 /-! ### Deducing smoothness from higher smoothness -/
 
 theorem ContMDiffWithinAt.of_le (hf : ContMDiffWithinAt I I' n f s x) (le : m ≤ n) :
-    ContMDiffWithinAt I I' m f s x :=
-  ⟨hf.1, hf.2.of_le le⟩
+    ContMDiffWithinAt I I' m f s x := by
+  simp only [ContMDiffWithinAt, LiftPropWithinAt] at hf ⊢
+  exact ⟨hf.1, hf.2.of_le le⟩
 #align cont_mdiff_within_at.of_le ContMDiffWithinAt.of_le
 
 theorem ContMDiffAt.of_le (hf : ContMDiffAt I I' n f x) (le : m ≤ n) : ContMDiffAt I I' m f x :=
@@ -327,8 +328,8 @@ theorem contMDiffWithinAt_iff :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
-          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) :=
-  Iff.rfl
+          ((extChartAt I x).symm ⁻¹' s ∩ range I) (extChartAt I x x) := by
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff']; rfl
 #align cont_mdiff_within_at_iff contMDiffWithinAt_iff
 
 /-- One can reformulate smoothness within a set at a point as continuity within this set at this
@@ -345,8 +346,9 @@ theorem contMDiffWithinAt_iff' :
         ContDiffWithinAt 𝕜 n (extChartAt I' (f x) ∘ f ∘ (extChartAt I x).symm)
           ((extChartAt I x).target ∩
             (extChartAt I x).symm ⁻¹' (s ∩ f ⁻¹' (extChartAt I' (f x)).source))
-          (extChartAt I x x) :=
-  and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
+          (extChartAt I x x) := by
+  simp only [ContMDiffWithinAt, liftPropWithinAt_iff']
+  exact and_congr_right fun hc => contDiffWithinAt_congr_nhds <|
     hc.nhdsWithin_extChartAt_symm_preimage_inter_range I I'
 #align cont_mdiff_within_at_iff' contMDiffWithinAt_iff'
 
@@ -355,7 +357,7 @@ point, and smoothness in the corresponding extended chart in the target. -/
 theorem contMDiffWithinAt_iff_target :
     ContMDiffWithinAt I I' n f s x ↔
       ContinuousWithinAt f s x ∧ ContMDiffWithinAt I 𝓘(𝕜, E') n (extChartAt I' (f x) ∘ f) s x := by
-  simp_rw [ContMDiffWithinAt, LiftPropWithinAt, ← and_assoc]
+  simp_rw [ContMDiffWithinAt, liftPropWithinAt_iff', ← and_assoc]
   have cont :
     ContinuousWithinAt f s x ∧ ContinuousWithinAt (extChartAt I' (f x) ∘ f) s x ↔
         ContinuousWithinAt f s x :=
