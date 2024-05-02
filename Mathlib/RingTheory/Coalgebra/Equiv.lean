@@ -245,4 +245,5 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 end
+
 end CoalgEquiv
