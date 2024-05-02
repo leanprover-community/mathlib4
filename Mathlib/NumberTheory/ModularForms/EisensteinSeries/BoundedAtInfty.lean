@@ -25,19 +25,19 @@ open scoped Topology BigOperators Nat Classical MatrixGroups
 
 namespace EisensteinSeries
 
-lemma eis_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : ∀ (b : Fin 2 → ℤ),
-    Complex.abs (eisSummand k b z) ≤ 1 / r z ^ k *
-      (max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
-  have hk0 : 0 ≤ k := by linarith
+lemma eis_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
+    ∀ (b : Fin 2 → ℤ), Complex.abs (eisSummand k b z) ≤
+    1 / r z ^ k * (max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
+  have hk0 : 0 ≤ k := by omega
   lift k to ℕ using hk0
   intro b
   have := eis_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
     (by simp)
-  simp only [eisSummand, Fin.isValue, zpow_natCast, one_div, map_inv₀, map_pow, ge_iff_le, map_pow,
-    Nat.cast_max, _root_.mul_inv_rev] at *
   conv =>
     enter [2]
     rw [mul_comm]
+  simp only [eisSummand, Fin.isValue, zpow_natCast, one_div, map_inv₀, map_pow, ge_iff_le, map_pow,
+    Nat.cast_max, _root_.mul_inv_rev] at *
   exact this
 
 lemma summable_lem (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
@@ -45,11 +45,14 @@ lemma summable_lem (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 
   apply (summable_upper_bound hk z).of_nonneg_of_le (fun _ => Complex.abs.nonneg _)
     (eis_bound k hk z)
 
-lemma tsum_subtype_le {α : Type*} (f : α → ℝ) (β : Set α) (hf : ∀ a : α, 0 ≤ f a) (hf2 : Summable f) :
-    (∑' (b : β), f b) ≤ (∑' (a : α), f a) := by
-  rw [← (tsum_subtype_add_tsum_subtype_compl hf2 β)]
-  simp only [le_add_iff_nonneg_right, ge_iff_le]
-  apply tsum_nonneg (fun _ => hf _)
+
+variable {γ : Type*} [OrderedAddCommGroup γ] [UniformSpace γ] [UniformAddGroup γ]
+  [OrderClosedTopology γ ] [ CompleteSpace γ]
+
+lemma tsum_subtype_le {α : Type*} (f : α → γ) (β : Set α) (h : ∀ a : α, 0 ≤ f a)
+    (hf : Summable f) : (∑' (b : β), f b) ≤ (∑' (a : α), f a) := by
+  apply tsum_le_tsum_of_inj _ (Subtype.coe_injective) (by simp [h]) (by simp) (by apply hf.subtype)
+  apply hf
 
 lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) (z : ℍ):
     Complex.abs ((((eisensteinSeries a k))) z) ≤ ∑' (x : Fin 2 → ℤ),

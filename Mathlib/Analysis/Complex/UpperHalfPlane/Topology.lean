@@ -94,7 +94,7 @@ lemma strip_of_neg_empty {A B : ℝ} (h : A < 0) : verticalStrip A B = ∅ := by
   have := abs_nonneg x.re
   linarith
 
-lemma subset_strip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
+lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
     ∃ A B : ℝ, 0 < B ∧ K ⊆ verticalStrip A B := by
   rcases K.eq_empty_or_nonempty with rfl | hne
   · exact ⟨1, 1, Real.zero_lt_one, empty_subset _⟩
