@@ -83,7 +83,7 @@ def verticalStrip (A B : ℝ) := {z : ℍ | |z.re| ≤ A ∧ B ≤ z.im}
 theorem mem_verticalStrip_iff (A B : ℝ) (z : ℍ) : z ∈ verticalStrip A B ↔ |z.re| ≤ A ∧ B ≤ z.im :=
   Iff.rfl
 
-lemma verticalStrip_mem_le (A B B': ℝ) (hbb : B ≤ B') :
+lemma verticalStrip_subset_le (A B B': ℝ) (hbb : B ≤ B') :
     verticalStrip A B' ⊆ verticalStrip A B := by
   simp only [verticalStrip, setOf_subset_setOf, and_imp]
   intro z ha hb
