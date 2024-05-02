@@ -28,7 +28,7 @@ local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
 
 variable (k : ℤ) (a : Fin 2 → ℤ)
 
-theorem complex_denom_HasDerivAt (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
+theorem linear_HasDerivAt (z : ℂ) (h : (a 0 : ℂ) * z + a 1 ≠ 0) :
     HasDerivAt (fun z : ℂ => (a 0 * z + a 1) ^ k) (k * (a 0 * z + a 1) ^ (k - 1) * a 0) z := by
   rw [← Function.comp_def (fun x : ℂ => x ^ k) ((a 0) * · + (a 1))]
   apply HasDerivAt.comp
@@ -47,7 +47,7 @@ lemma complex_eisSummand_differentiableOn :
   by_cases ha : a ≠ 0
   · apply DifferentiableOn.div (differentiableOn_const 1)
     · intro z hz
-      apply DifferentiableAt.differentiableWithinAt (complex_denom_HasDerivAt k a z
+      apply DifferentiableAt.differentiableWithinAt (linear_HasDerivAt k a z
         (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)).differentiableAt
     · intro z hz
       apply zpow_ne_zero k (UpperHalfPlane.coe_linear_ne_zero a ⟨z, hz⟩ ha)
@@ -82,7 +82,7 @@ lemma eisensteinSeries_SIF_complex_differentiableOn {N : ℕ} (a : Fin 2 → ZMo
     simp only [top_eq_univ, isOpen_univ]
     exact openEmbedding_coe
 
-theorem eisensteinSeries_SIF_Mdifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
+theorem eisensteinSeries_SIF_MDifferentiable {N : ℕ} (a : Fin 2 → ZMod N) (hk : 3 ≤ k) :
     MDifferentiable 𝓘(ℂ) 𝓘(ℂ) (eisensteinSeries_SIF a k).toFun := by
   simp only [MDifferentiable, MDifferentiableAt, differentiableWithinAt_univ, mfld_simps]
   intro z
