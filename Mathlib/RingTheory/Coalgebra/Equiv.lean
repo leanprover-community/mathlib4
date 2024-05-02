@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth, Amelia Livingston
+Authors: Amelia Livingston
 -/
 import Mathlib.RingTheory.Coalgebra.Hom
 
@@ -111,9 +110,6 @@ theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B)
 @[simp]
 theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅} :
     (⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩ : A ≃ₗc[R] B) = f := rfl
-
-theorem coe_injective : @Function.Injective (A ≃ₗc[R] B) (A → B) CoeFun.coe :=
-  DFunLike.coe_injective
 
 end
 
