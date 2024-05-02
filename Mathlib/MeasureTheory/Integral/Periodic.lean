@@ -84,6 +84,7 @@ instance isFiniteMeasure : IsFiniteMeasure (volume : Measure (AddCircle T)) wher
 instance : HasAddFundamentalDomain (AddSubgroup.op <| .zmultiples T) ℝ where
   ExistsIsAddFundamentalDomain := ⟨Ioc 0 (0 + T), isAddFundamentalDomain_Ioc' Fact.out 0⟩
 
+attribute [local semireducible] Subgroup.op AddSubgroup.op in
 instance : AddQuotientMeasureEqMeasurePreimage volume (volume : Measure (AddCircle T)) := by
   apply MeasureTheory.leftInvariantIsAddQuotientMeasureEqMeasurePreimage
   simp [(isAddFundamentalDomain_Ioc' hT.out 0).covolume_eq_volume, AddCircle.measure_univ]

@@ -62,6 +62,8 @@ https://doc.sagemath.org/html/en/reference/number_fields/sage/rings/number_field
 class group, selmer group, unit group
 -/
 
+attribute [local semireducible] Subgroup.op AddSubgroup.op
+
 set_option quotPrecheck false
 local notation K "/" n => Kˣ ⧸ (powMonoidHom n : Kˣ →* Kˣ).range
 
