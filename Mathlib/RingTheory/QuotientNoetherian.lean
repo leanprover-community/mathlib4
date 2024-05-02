@@ -14,5 +14,5 @@ import Mathlib.RingTheory.Ideal.QuotientOperations
 
 instance Ideal.Quotient.isNoetherianRing {R : Type*} [CommRing R] [IsNoetherianRing R]
     (I : Ideal R) : IsNoetherianRing (R ⧸ I) :=
-  isNoetherianRing_iff.mpr <| isNoetherian_of_tower R <| Submodule.Quotient.isNoetherian _
+  isNoetherianRing_iff.mpr <| isNoetherian_of_tower R <| inferInstance
 #align ideal.quotient.is_noetherian_ring Ideal.Quotient.isNoetherianRing

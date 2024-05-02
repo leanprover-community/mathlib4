@@ -164,6 +164,7 @@ private theorem step0 : N ≠ ⊥ := by
   rintro rfl
   exact h3 ⊤ isComplement'_bot_top
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Do not use this lemma: It is made obsolete by `exists_right_complement'_of_coprime` -/
 private theorem step1 (K : Subgroup G) (hK : K ⊔ N = ⊤) : K = ⊤ := by
   contrapose! h3

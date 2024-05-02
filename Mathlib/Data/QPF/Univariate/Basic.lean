@@ -299,9 +299,8 @@ theorem Fix.ind_aux (a : q.P.A) (f : q.P.B a → q.P.W) :
   have : Fix.mk (abs ⟨a, fun x => ⟦f x⟧⟩) = ⟦Wrepr ⟨a, f⟩⟧ := by
     apply Quot.sound; apply Wequiv.abs'
     rw [PFunctor.W.dest_mk, abs_map, abs_repr, ← abs_map, PFunctor.map_eq]
-    conv =>
-      rhs
-      simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    simp only [Wrepr, recF_eq, PFunctor.W.dest_mk, abs_repr, Function.comp]
+    rfl
   rw [this]
   apply Quot.sound
   apply Wrepr_equiv
@@ -553,8 +552,8 @@ def comp : QPF (Functor.Comp F₂ F₁) where
     cases' a with b h; dsimp
     symm
     trans
-    symm
-    apply abs_map
+    · symm
+      apply abs_map
     congr
     rw [PFunctor.map_eq]
     dsimp [Function.comp_def]

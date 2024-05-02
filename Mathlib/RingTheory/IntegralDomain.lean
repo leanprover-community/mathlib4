@@ -98,6 +98,7 @@ def Fintype.divisionRingOfIsDomain (R : Type*) [Ring R] [IsDomain R] [DecidableE
     DivisionRing R where
   __ := Fintype.groupWithZeroOfCancel R
   __ := ‹Ring R›
+  nnqsmul := _
   qsmul := _
 #align fintype.division_ring_of_is_domain Fintype.divisionRingOfIsDomain
 

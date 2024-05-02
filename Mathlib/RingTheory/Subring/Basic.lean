@@ -774,6 +774,7 @@ instance instField : Field (center K) where
   div_eq_mul_inv a b := Subtype.ext <| div_eq_mul_inv _ _
   inv_zero := Subtype.ext inv_zero
   -- TODO: use a nicer defeq
+  nnqsmul := _
   qsmul := _
 
 @[simp]

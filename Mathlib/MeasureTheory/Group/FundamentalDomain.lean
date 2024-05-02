@@ -669,8 +669,8 @@ theorem pairwise_disjoint_fundamentalInterior :
   rintro _ ⟨x, hx, rfl⟩ ⟨y, hy, hxy⟩
   rw [mem_fundamentalInterior] at hx hy
   refine' hx.2 (a⁻¹ * b) _ _
-  rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
-  simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
+  · rwa [Ne, inv_mul_eq_iff_eq_mul, mul_one, eq_comm]
+  · simpa [mul_smul, ← hxy, mem_inv_smul_set_iff] using hy.1
 #align measure_theory.pairwise_disjoint_fundamental_interior MeasureTheory.pairwise_disjoint_fundamentalInterior
 #align measure_theory.pairwise_disjoint_add_fundamental_interior MeasureTheory.pairwise_disjoint_addFundamentalInterior
 

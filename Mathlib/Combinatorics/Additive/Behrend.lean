@@ -293,7 +293,7 @@ theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
   rw [mul_pow, sq (log 2), mul_assoc, mul_comm]
   refine' mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
   rw [← le_div_iff]
-  apply log_two_lt_d9.le.trans
+  on_goal 1 => apply log_two_lt_d9.le.trans
   all_goals norm_num1
 #align behrend.log_two_mul_two_le_sqrt_log_eight Behrend.log_two_mul_two_le_sqrt_log_eight
 
@@ -428,9 +428,9 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
-    rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
-    · norm_num1
+    · rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
+      · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
+      · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
       exact hN.trans' (by norm_num1)
@@ -491,8 +491,8 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 theorem exp_four_lt : exp 4 < 64 := by
   rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
     ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
-  exact log_two_gt_d9.trans_le' (by norm_num1)
-  norm_num
+  · exact log_two_gt_d9.trans_le' (by norm_num1)
+  · norm_num
 #align behrend.exp_four_lt Behrend.exp_four_lt
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by
