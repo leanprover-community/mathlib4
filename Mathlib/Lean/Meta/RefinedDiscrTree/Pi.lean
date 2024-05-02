@@ -71,8 +71,8 @@ private def absorbArgsUnOp (args : Array Expr) (idx : Nat) (type inst arg : Expr
 termination_by args.size - idx
 
 private def absorbArgsBinOp (args : Array Expr) (idx : Nat) (type inst lhs rhs : Expr)
-    (matchPiInst : Expr → Option Expr) (numArgs : Nat) : MetaM (Expr × Expr × Expr × Option Nat)
-    := do
+    (matchPiInst : Expr → Option Expr) (numArgs : Nat) :
+    MetaM (Expr × Expr × Expr × Option Nat) := do
   if h : idx < args.size then
     let some inst := matchPiInst (← unfoldPiInst inst numArgs) | return (type, lhs, rhs, some idx)
     let extraArg := args[idx]
