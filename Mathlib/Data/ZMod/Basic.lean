@@ -957,7 +957,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
     · right
-      rwa [show Nat.succ Nat.zero = 1 from rfl, mul_one] at he
+      rwa [show 0 + 1 = 1 from rfl, mul_one] at he
     refine' (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left _ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
@@ -1246,7 +1246,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) where
+instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _

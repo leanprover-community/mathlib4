@@ -1478,6 +1478,10 @@ theorem aeval_eq_eval₂Hom (p : MvPolynomial σ R) : aeval f p = eval₂Hom (al
 #align mv_polynomial.aeval_eq_eval₂_hom MvPolynomial.aeval_eq_eval₂Hom
 
 @[simp]
+lemma coe_aeval_eq_eval : RingHomClass.toRingHom (MvPolynomial.aeval f) = MvPolynomial.eval f :=
+  rfl
+
+@[simp]
 theorem aeval_X (s : σ) : aeval f (X s : MvPolynomial _ R) = f s :=
   eval₂_X _ _ _
 #align mv_polynomial.aeval_X MvPolynomial.aeval_X

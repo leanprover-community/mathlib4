@@ -3,7 +3,6 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -2335,19 +2334,19 @@ where
         cases xs with
         | nil => contradiction
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
             ← Array.toList_eq]
           exact ih _ _ <| (by omega)
     · induction n generalizing xs acc with
       | zero =>
-        replace h : xs.length = 0 := by rw [zero_eq] at h; omega
+        replace h : xs.length = 0 := by omega
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go]
           exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop
