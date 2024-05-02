@@ -91,6 +91,14 @@ def StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
 
+/-- Turn a `List α` into a `StateListT σ m α`. -/
+def ofList (x : List α) : StateListT σ m α := fun s =>
+  return x.foldl (·.cons · s) .nil
+
+/-- Turn an `Array α` into a `StateListT σ m α`. -/
+def ofArray (x : Array α) : StateListT σ m α := fun s =>
+  return x.foldl (·.cons · s) .nil
+
 @[always_inline, inline]
 private def pure (a : α) : StateListT σ m α :=
   fun s => return StateList.nil.cons a s
@@ -115,7 +123,7 @@ instance : Monad (StateListT σ m) where
 
 @[always_inline, inline]
 private def orElse (x : StateListT σ m α) (y : Unit → StateListT σ m α) : StateListT σ m α :=
-  fun s => (· ++ ·) <$> x s <*> y () s
+  fun s => return (← x s) ++ (← y () s)
 
 @[always_inline, inline]
 private def failure : StateListT σ m α :=

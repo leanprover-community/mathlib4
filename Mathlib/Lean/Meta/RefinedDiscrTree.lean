@@ -569,7 +569,13 @@ partial def lambdaTelescopeReduce {m} [Monad m] [MonadLiftT MetaM m] [MonadContr
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprAux (e : Expr) (root : Bool) : ReaderT Context MetaM DTExpr := do
   lambdaTelescopeReduce e [] (← read).config fun e lambdas => do
-  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
+  unless root do
+    if let some (n, as) ← reducePi e lambdas then
+      let (args, lambdas) := as.back
+      return ← withLams lambdas do
+        return .const n (← args.mapM fun
+          | none => pure (.star none)
+          | some arg => mkDTExprAux arg false)
   e.withApp fun fn args => do
 
   let argDTExpr (arg : Expr) (ignore : Bool) : ReaderT Context MetaM DTExpr :=
@@ -679,8 +685,13 @@ def cacheEtaPossibilities (e original : Expr) (lambdas : List FVarId)
 If `root = false`, then `e` is a strict sub expression of the original expression. -/
 partial def mkDTExprsAux (original : Expr) (root : Bool) : M DTExpr := do
   lambdaTelescopeReduce original [] (← read).config fun e lambdas => do
-
-  let (e, lambdas) ← if root then pure (e, lambdas) else reducePi e lambdas
+  unless root do
+    if let some (n, as) ← reducePi e lambdas then
+      let (args, lambdas) ← fun _ => StateListT.ofArray as
+      return ← withLams lambdas do
+        return .const n (← args.mapM fun
+          | none => pure (.star none)
+          | some arg => mkDTExprsAux arg false)
   cacheEtaPossibilities e original lambdas fun e lambdas =>
   e.withApp fun fn args => do
 
