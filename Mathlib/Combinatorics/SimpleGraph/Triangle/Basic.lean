@@ -185,7 +185,7 @@ variable [Fintype α] [DecidableEq α] [DecidableRel G.Adj] [DecidableRel H.Adj]
 def FarFromTriangleFree : Prop := G.DeleteFar (fun H ↦ H.CliqueFree 3) <| ε * (card α ^ 2 : ℕ)
 #align simple_graph.far_from_triangle_free SimpleGraph.FarFromTriangleFree
 
-variable {G H}
+variable {G ε}
 
 theorem farFromTriangleFree_iff :
     G.FarFromTriangleFree ε ↔ ∀ ⦃H : SimpleGraph α⦄, [DecidableRel H.Adj] → H ≤ G → H.CliqueFree 3 →
