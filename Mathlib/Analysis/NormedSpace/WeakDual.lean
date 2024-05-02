@@ -36,8 +36,6 @@ The main definitions concern the canonical mapping `Dual 𝕜 E → WeakDual �
 
 ## Main results
 
-The first main result concerns the comparison of the operator norm topology on
-`ContinuousLinearMap.Dual 𝕜 E` and the weak-* topology on (its type synonym) `WeakDual 𝕜 E`:
 * `dual_norm_topology_le_weak_dual_topology`: The weak-* topology on the dual of a normed space is
   coarser (not necessarily strictly) than the operator norm topology.
 * `WeakDual.isCompact_polar` (a version of the Banach-Alaoglu theorem): The polar set of a
