@@ -100,7 +100,8 @@ theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
 def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat R :=
   ⟨X⟩
 
-@[simp] theorem of_coe (X : CoalgebraCat R) : of R X = X := rfl
+@[simp]
+theorem of_coe (X : CoalgebraCat R) : of R X = X := rfl
 
 theorem coe_of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] :
     (of R X : Type v) = X :=
