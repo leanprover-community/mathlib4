@@ -77,8 +77,8 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
   rw [← Finset.card_image_of_injective _ Subtype.coe_injective, ←
     Finset.card_image_of_injective _ inj]
   let a : Finset ℂ := ?_
-  let b : Finset ℂ := ?_
-  let c : Finset ℂ := ?_
+  on_goal 1 => let b : Finset ℂ := ?_
+  on_goal 1 => let c : Finset ℂ := ?_
   -- Porting note: was
   --   change a.card = b.card + c.card
   suffices a.card = b.card + c.card by exact this
@@ -91,7 +91,10 @@ theorem card_complex_roots_eq_card_real_add_card_not_gal_inv (p : ℚ[X]) :
     · rintro ⟨w, hw, rfl⟩
       exact ⟨by rw [aeval_algHom_apply, hw, AlgHom.map_zero], rfl⟩
     · rintro ⟨hz1, hz2⟩
-      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by ext; rfl; rw [hz2]; rfl
+      have key : IsScalarTower.toAlgHom ℚ ℝ ℂ z.re = z := by
+        ext
+        · rfl
+        · rw [hz2]; rfl
       exact ⟨z.re, inj (by rwa [← aeval_algHom_apply, key, AlgHom.map_zero]), key⟩
   have hc0 :
     ∀ w : p.rootSet ℂ, galActionHom p ℂ (restrict p ℂ (Complex.conjAe.restrictScalars ℚ)) w = w ↔

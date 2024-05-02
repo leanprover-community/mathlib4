@@ -20,11 +20,13 @@ variable {V : Type*} (G : SimpleGraph V)
 This terminology comes from combinatorial maps, and they are also known as "half-edges"
 or "bonds." -/
 structure Dart extends V × V where
-  is_adj : G.Adj fst snd
+  adj : G.Adj fst snd
   deriving DecidableEq
 #align simple_graph.dart SimpleGraph.Dart
 
 initialize_simps_projections Dart (+toProd, -fst, -snd)
+
+attribute [simp] Dart.adj
 
 variable {G}
 
@@ -47,7 +49,7 @@ theorem Dart.toProd_injective : Function.Injective (Dart.toProd : G.Dart → V �
 instance Dart.fintype [Fintype V] [DecidableRel G.Adj] : Fintype G.Dart :=
   Fintype.ofEquiv (Σ v, G.neighborSet v)
     { toFun := fun s => ⟨(s.fst, s.snd), s.snd.property⟩
-      invFun := fun d => ⟨d.fst, d.snd, d.is_adj⟩
+      invFun := fun d => ⟨d.fst, d.snd, d.adj⟩
       left_inv := fun s => by ext <;> simp
       right_inv := fun d => by ext <;> simp }
 #align simple_graph.dart.fintype SimpleGraph.Dart.fintype
@@ -64,13 +66,13 @@ theorem Dart.edge_mk {p : V × V} (h : G.Adj p.1 p.2) : (Dart.mk p h).edge = Sym
 
 @[simp]
 theorem Dart.edge_mem (d : G.Dart) : d.edge ∈ G.edgeSet :=
-  d.is_adj
+  d.adj
 #align simple_graph.dart.edge_mem SimpleGraph.Dart.edge_mem
 
 /-- The dart with reversed orientation from a given dart. -/
 @[simps]
 def Dart.symm (d : G.Dart) : G.Dart :=
-  ⟨d.toProd.swap, G.symm d.is_adj⟩
+  ⟨d.toProd.swap, G.symm d.adj⟩
 #align simple_graph.dart.symm SimpleGraph.Dart.symm
 
 @[simp]
@@ -99,7 +101,7 @@ theorem Dart.symm_involutive : Function.Involutive (Dart.symm : G.Dart → G.Dar
 #align simple_graph.dart.symm_involutive SimpleGraph.Dart.symm_involutive
 
 theorem Dart.symm_ne (d : G.Dart) : d.symm ≠ d :=
-  ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.is_adj.ne
+  ne_of_apply_ne (Prod.snd ∘ Dart.toProd) d.adj.ne
 #align simple_graph.dart.symm_ne SimpleGraph.Dart.symm_ne
 
 theorem dart_edge_eq_iff : ∀ d₁ d₂ : G.Dart, d₁.edge = d₂.edge ↔ d₁ = d₂ ∨ d₁ = d₂.symm := by

@@ -286,7 +286,7 @@ theorem isComplete_of_complete_image {m : α → β} {s : Set α} (hm : UniformI
   intro f hf hfs
   rw [le_principal_iff] at hfs
   obtain ⟨_, ⟨x, hx, rfl⟩, hyf⟩ : ∃ y ∈ m '' s, map m f ≤ 𝓝 y
-  exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
+  · exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
   rw [map_le_iff_le_comap, ← nhds_induced, ← hm.inducing.induced] at hyf
   exact ⟨x, hx, hyf⟩
 #align is_complete_of_complete_image isComplete_of_complete_image

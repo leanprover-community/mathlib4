@@ -30,7 +30,7 @@ variable {a b c : ℚ}
 
 #noalign rat.nonneg
 
-@[simp] lemma num_nonneg : 0 ≤ a.num ↔ 0 ≤ a := by simp [instLERat, Rat.blt, le_iff_lt_or_eq]; tauto
+@[simp] lemma num_nonneg : 0 ≤ a.num ↔ 0 ≤ a := by simp [instLE, Rat.blt, le_iff_lt_or_eq]; tauto
 #align rat.num_nonneg_iff_zero_le Rat.num_nonneg
 
 @[simp] lemma divInt_nonneg_iff_of_pos_right {a b : ℤ} (hb : 0 < b) : 0 ≤ a /. b ↔ 0 ≤ a := by
@@ -99,7 +99,7 @@ protected theorem nonneg_total (a : ℚ) : 0 ≤ a ∨ 0 ≤ -a := by
   simp_rw [← num_nonneg, num_neg_eq_neg_num, neg_nonneg]; exact le_total _ _
 #align rat.nonneg_total Rat.nonneg_total
 
-#align rat.decidable_nonneg Rat.instDecidableLeRatInstLERat
+#align rat.decidable_nonneg Rat.instDecidableLe
 
 -- Porting note (#11215): TODO can this be shortened?
 protected theorem le_iff_sub_nonneg (a b : ℚ) : a ≤ b ↔ 0 ≤ b - a :=
@@ -183,7 +183,7 @@ instance : LT ℚ := by infer_instance
 
 instance : DistribLattice ℚ := by infer_instance
 
-instance : Lattice ℚ := by infer_instance
+instance instLattice : Lattice ℚ := by infer_instance
 
 instance : SemilatticeInf ℚ := by infer_instance
 
