@@ -80,25 +80,11 @@ instance hasForgetToModule : HasForget₂ (CoalgebraCat R) (ModuleCat R) where
     { obj := fun M => ModuleCat.of R M
       map := fun f => ModuleCat.ofHom f.toLinearMap }
 
-instance {M : CoalgebraCat.{v} R} :
-    AddCommGroup ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
-  (inferInstance : AddCommGroup M)
-instance {M : CoalgebraCat.{v} R} : Module R ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
-  (inferInstance : Module R M)
 instance {M : CoalgebraCat.{v} R} : Coalgebra R ((forget₂ (CoalgebraCat R) (ModuleCat R)).obj M) :=
   (inferInstance : Coalgebra R M)
 
 instance {M : CoalgebraCat.{v} R} : Coalgebra R (ModuleCat.of R M) :=
   (inferInstance : Coalgebra R M)
-
-instance hasForgetToAddCommGroup : HasForget₂ (CoalgebraCat R) AddCommGroupCat where
-  forget₂ :=
-    { obj := fun M => AddCommGroupCat.of M
-      map := fun f => AddCommGroupCat.ofHom f.toLinearMap }
-
-/-- The object in the category of R-coalgebras associated to an R-coalgebra. -/
-def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat R :=
-  ⟨X⟩
 
 @[simp]
 theorem forget₂_obj (X : CoalgebraCat R) :
@@ -109,6 +95,23 @@ theorem forget₂_obj (X : CoalgebraCat R) :
 theorem forget₂_map (X Y : CoalgebraCat R) (f : X ⟶ Y) :
     (forget₂ (CoalgebraCat R) (ModuleCat R)).map f = (f : X →ₗ[R] Y) :=
   rfl
+
+instance hasForgetToAddCommGroup : HasForget₂ (CoalgebraCat R) AddCommGroupCat where
+  forget₂ :=
+    { obj := fun M => AddCommGroupCat.of M
+      map := fun f => AddCommGroupCat.ofHom f.toLinearMap }
+
+instance {M : CoalgebraCat.{v} R} :
+    Module R ((forget₂ (CoalgebraCat R) (AddCommGroupCat)).obj M) :=
+  (inferInstance : Module R M)
+
+instance {M : CoalgebraCat.{v} R} :
+    Coalgebra R ((forget₂ (CoalgebraCat R) (AddCommGroupCat)).obj M) :=
+  (inferInstance : Coalgebra R M)
+
+/-- The object in the category of R-coalgebras associated to an R-coalgebra. -/
+def of (X : Type v) [AddCommGroup X] [Module R X] [Coalgebra R X] : CoalgebraCat R :=
+  ⟨X⟩
 
 /-- Typecheck a `CoalgHom` as a morphism in `CoalgebraCat R`. -/
 def ofHom {R : Type u} [CommRing R] {X Y : Type v} [AddCommGroup X] [Module R X] [Coalgebra R X]
