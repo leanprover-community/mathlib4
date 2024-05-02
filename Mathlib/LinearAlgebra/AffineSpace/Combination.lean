@@ -441,8 +441,8 @@ theorem attach_affineCombination_of_injective [DecidableEq P] (s : Finset P) (w 
     ext
     simp
   rw [hgf, sum_image]
-  simp only [Function.comp_apply]
-  exact fun _ _ _ _ hxy => hf hxy
+  · simp only [Function.comp_apply]
+  · exact fun _ _ _ _ hxy => hf hxy
 #align finset.attach_affine_combination_of_injective Finset.attach_affineCombination_of_injective
 
 theorem attach_affineCombination_coe (s : Finset P) (w : P → k) :

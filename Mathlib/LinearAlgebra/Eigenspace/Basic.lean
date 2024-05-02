@@ -369,7 +369,8 @@ theorem independent_generalizedEigenspace [NoZeroSMulDivisors R M] (f : End R M)
       Finset.supIndep_iff_disjoint_erase]
     exact fun s μ _ ↦ this _ _ (s.not_mem_erase μ)
   intro μ₁ s
-  induction' s using Finset.induction_on with μ₂ s _ ih; simp
+  induction' s using Finset.induction_on with μ₂ s _ ih
+  · simp
   intro hμ₁₂
   obtain ⟨hμ₁₂ : μ₁ ≠ μ₂, hμ₁ : μ₁ ∉ s⟩ := by rwa [Finset.mem_insert, not_or] at hμ₁₂
   specialize ih hμ₁
