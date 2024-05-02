@@ -423,9 +423,10 @@ lemma differentiableAt_completedHurwitzZetaEven
     DifferentiableAt ℂ (completedHurwitzZetaEven a) s := by
   refine (((hurwitzEvenFEPair a).differentiableAt_Λ ?_ (Or.inl ?_)).comp s
       (differentiableAt_id.div_const _)).div_const _
-  · rw [div_ne_zero_iff, eq_true_intro two_ne_zero, and_true]
-    refine Or.imp (by tauto) (fun ha ↦ ?_) hs
-    simp only [hurwitzEvenFEPair, eq_false_intro ha, if_false]
+  · simp only [ne_eq, div_eq_zero_iff, OfNat.ofNat_ne_zero, or_false]
+    rcases hs with h | h
+    · exact Or.inl h
+    · simp only [hurwitzEvenFEPair, one_div, h, ↓reduceIte, or_true]
   · change s / 2 ≠ ↑(1 / 2 : ℝ)
     rw [ofReal_div, ofReal_one, ofReal_ofNat]
     exact hs' ∘ (div_left_inj' two_ne_zero).mp
@@ -452,7 +453,7 @@ lemma differentiableAt_completedCosZeta
     DifferentiableAt ℂ (completedCosZeta a) s := by
   refine (((hurwitzEvenFEPair a).symm.differentiableAt_Λ (Or.inl ?_) ?_).comp s
       (differentiableAt_id.div_const _)).div_const _
-  · rwa [div_ne_zero_iff, eq_true_intro two_ne_zero, and_true]
+  · exact div_ne_zero_iff.mpr ⟨hs, two_ne_zero⟩
   · change s / 2 ≠ ↑(1 / 2 : ℝ) ∨ (if a = 0 then 1 else 0) = 0
     refine Or.imp (fun h ↦ ?_) (fun ha ↦ ?_) hs'
     · simpa only [push_cast] using h ∘ (div_left_inj' two_ne_zero).mp
