@@ -20,7 +20,13 @@ elab "exact_with_diamond_warning" tgt:name default:name msg:str: tactic => do
   let default' := Lean.mkIdent default.getName
   -- TODO: use "Try this" somehow, but we don't have the position info we need
   let stx ← `(Lean.Parser.Command.whereStructField| $tgt' := $default')
+  let tac ← `(tactic| exact $default')
+  try
+    Lean.Elab.Tactic.withoutRecover <| Lean.Elab.Tactic.evalTactic <| tac
+  catch e =>
+    throwErrorAt e.getRef m!"While evaluating default {stx}:{Lean.indentD e.toMessageData}"
   Lean.Linter.logLintIf linter.structureDiamondDefaults tgt <|
     m!"Using default value {stx}, which may {msg.getString}.\n" ++
       m!"If you are sure this is not an issue, write {stx} explicitly"
-  Lean.Elab.Tactic.evalTactic <| ← `(tactic| exact $default')
+
+#check Lean.Elab.Tactic.withoutRecover
