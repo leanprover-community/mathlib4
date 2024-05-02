@@ -175,7 +175,7 @@ This is a convenient abbreviation for `map_eq_zero_iff` applied to
 This is a convenient abbreviation for `map_ne_zero_iff` applied to
 `NoZeroSMulDivisors.algebraMap_injective`.
 -/
-@[simp] lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
+lemma coe_ne_zero_iff {x : 𝓞 K} : algebraMap _ K x ≠ 0 ↔ x ≠ 0 :=
   map_ne_zero_iff _  coe_injective
 
 theorem isIntegral_coe (x : 𝓞 K) : IsIntegral ℤ (algebraMap _ K x) :=
