@@ -332,7 +332,7 @@ theorem le_natDegree_of_ne_zero (h : coeff p n ≠ 0) : n ≤ natDegree p := by
 alias natTrailingDegree_le_of_ne_zero := le_natTrailingDegree_of_ne_zero
 #align polynomial.nat_trailing_degree_le_of_ne_zero Polynomial.natTrailingDegree_le_of_ne_zero
 
-to_td?  -- backported
+to_td  -- backported
 @[simp] lemma coeff_natDegree_eq_zero : coeff p p.natDegree = 0 ↔ p = 0 := by
   constructor
   · rintro h
@@ -403,7 +403,7 @@ theorem supp_subset_range_natDegree_succ : p.support ⊆ Finset.range (natDegree
   supp_subset_range (Nat.lt_succ_self _)
 #align polynomial.supp_subset_range_nat_degree_succ Polynomial.supp_subset_range_natDegree_succ
 
-to_td?
+to_td
 theorem degree_le_degree (h : coeff q (natDegree p) ≠ 0) : degree p ≤ degree q := by
   by_cases hp : p = 0
   · rw [hp, degree_zero]
