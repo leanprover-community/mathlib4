@@ -5,6 +5,7 @@ Authors: Jeremy Avigad, Leonardo de Moura, Simon Hudon, Mario Carneiro
 -/
 import Mathlib.Init.Data.Int.Basic
 import Mathlib.Init.ZeroOne
+import Mathlib.Tactic.DefaultFieldLinter
 import Mathlib.Tactic.Lemma
 import Mathlib.Tactic.TypeStar
 import Mathlib.Tactic.Simps.Basic
@@ -593,7 +594,9 @@ need right away.
 class AddMonoid (M : Type u) extends AddSemigroup M, AddZeroClass M where
   /-- Multiplication by a natural number.
   Set this to `nsmulRec` unless `Module` diamonds are possible. -/
-  protected nsmul : ℕ → M → M
+  protected nsmul : ℕ → M → M := by
+    exact_with_diamond_warning `nsmul `nsmulRec
+      "cause typeclass diamonds for `Module ℕ _`"
   /-- Multiplication by `(0 : ℕ)` gives `0`. -/
   protected nsmul_zero : ∀ x, nsmul 0 x = 0 := by intros; rfl
   /-- Multiplication by `(n + 1 : ℕ)` behaves as expected. -/
@@ -920,7 +923,9 @@ class SubNegMonoid (G : Type u) extends AddMonoid G, Neg G, Sub G where
   protected sub_eq_add_neg : ∀ a b : G, a - b = a + -b := by intros; rfl
   /-- Multiplication by an integer.
   Set this to `zsmulRec` unless `Module` diamonds are possible. -/
-  protected zsmul : ℤ → G → G
+  protected zsmul : ℤ → G → G := by
+    exact_with_diamond_warning `zsmul `zsmulRec
+      "cause typeclass diamonds for `Module ℤ _`"
   protected zsmul_zero' : ∀ a : G, zsmul 0 a = 0 := by intros; rfl
   protected zsmul_succ' (n : ℕ) (a : G) :
       zsmul (Int.ofNat n.succ) a = zsmul (Int.ofNat n) a + a := by
