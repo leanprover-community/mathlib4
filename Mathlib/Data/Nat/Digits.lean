@@ -244,8 +244,8 @@ theorem digits_ofDigits (b : ℕ) (h : 1 < b) (L : List ℕ) (w₁ : ∀ l ∈ L
         apply w₁
         exact List.mem_cons_of_mem _ m
       · intro h
-        · rw [List.getLast_cons h] at w₂
-          convert w₂
+        rw [List.getLast_cons h] at w₂
+        convert w₂
     · exact w₁ d (List.mem_cons_self _ _)
     · by_cases h' : L = []
       · rcases h' with rfl
@@ -366,8 +366,8 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
   · simpa only [digits_of_lt (b + 2) n hn hnb]
   · rw [digits_getLast n (le_add_left 2 b)]
     refine' IH _ (Nat.div_lt_self hn.bot_lt (one_lt_succ_succ b)) _
-    · rw [← pos_iff_ne_zero]
-      exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
+    rw [← pos_iff_ne_zero]
+    exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
@@ -384,7 +384,7 @@ theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b 
   -- Porting note: Previous code (single line) contained linarith.
   -- . exact IH _ (Nat.div_lt_self (Nat.succ_pos _) (by linarith)) hd
   · apply IH ((n + 1) / (b + 2))
-    · apply Nat.div_lt_self <;> simp
+    · apply Nat.div_lt_self <;> omega
     · assumption
 #align nat.digits_lt_base' Nat.digits_lt_base'
 

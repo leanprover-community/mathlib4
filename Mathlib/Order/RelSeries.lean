@@ -277,15 +277,18 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
     · convert p.step ⟨m, hm.trans i.2⟩
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; exact hm.trans (lt_add_one _)
+        pick_goal 2
+        · exact hm.trans (lt_add_one _)
         simp
       · show Fin.insertNth _ _ _ _ = _
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
+        pick_goal 2
+        · change m.1 + 1 < i.1 + 1; rwa [add_lt_add_iff_right]
         simp; rfl
     · rw [show x = p m from show Fin.insertNth _ _ _ _ = _ by
         rw [Fin.insertNth_apply_below]
-        pick_goal 2; show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
+        pick_goal 2
+        · show m.1 < i.1 + 1; exact hm ▸ lt_add_one _
         simp]
       convert prev_connect
       · ext; exact hm
@@ -300,7 +303,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           aesop
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; exact hm.trans (lt_add_one _)
+          swap
+          · exact hm.trans (lt_add_one _)
           simp only [Fin.val_succ, Nat.zero_eq, Fin.pred_succ, eq_rec_constant, ge_iff_le,
             Fin.succ_mk]
           congr
@@ -310,7 +314,8 @@ def insertNth (p : RelSeries r) (i : Fin p.length) (a : α)
           rw [show m.castSucc = i.succ.castSucc from Fin.ext hm.symm, Fin.insertNth_apply_same]
         · change Fin.insertNth _ _ _ _ = _
           rw [Fin.insertNth_apply_above]
-          swap; change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
+          swap
+          · change i.1 + 1 < m.1 + 1; rw [hm]; exact lt_add_one _
           simp only [Fin.pred_succ, eq_rec_constant]
           congr; ext; exact hm.symm
 

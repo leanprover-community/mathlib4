@@ -339,7 +339,7 @@ theorem contMDiffWithinAt_finprod (lf : LocallyFinite fun i ↦ mulSupport <| f 
 theorem contMDiffWithinAt_finset_prod' (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x) :
     ContMDiffWithinAt I' I n (∏ i in t, f i) s x :=
   Finset.prod_induction f (fun f => ContMDiffWithinAt I' I n f s x) (fun _ _ hf hg => hf.mul hg)
-    contMDiffWithinAt_const h
+    (contMDiffWithinAt_const (c := 1)) h
 #align cont_mdiff_within_at_finset_prod' contMDiffWithinAt_finset_prod'
 #align cont_mdiff_within_at_finset_sum' contMDiffWithinAt_finset_sum'
 
@@ -514,8 +514,10 @@ section
 variable {𝕜 : Type*} [NontriviallyNormedField 𝕜] {E : Type*} [NormedAddCommGroup E]
   [NormedSpace 𝕜 E]
 
-instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E :=
-  ⟨by rw [← modelWithCornersSelf_prod]; exact contDiff_add.contMDiff⟩
+instance hasSmoothAddSelf : SmoothAdd 𝓘(𝕜, E) E := by
+  constructor
+  rw [← modelWithCornersSelf_prod, chartedSpaceSelf_prod]
+  exact contDiff_add.contMDiff
 #align has_smooth_add_self hasSmoothAddSelf
 
 end

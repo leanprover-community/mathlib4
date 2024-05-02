@@ -464,7 +464,7 @@ theorem skeletal : Skeletal SimplexCategory := fun X Y ⟨I⟩ => by
 namespace SkeletalFunctor
 
 instance : skeletalFunctor.Full where
-  preimage f := SimplexCategory.Hom.mk f
+  map_surjective f := ⟨SimplexCategory.Hom.mk f, rfl⟩
 
 instance : skeletalFunctor.Faithful where
   map_injective {_ _ f g} h := by
@@ -761,8 +761,8 @@ theorem eq_comp_δ_of_not_surjective' {n : ℕ} {Δ : SimplexCategory} (θ : Δ 
       dsimp [σ, δ]
       erw [Fin.predAbove_of_castSucc_lt _ _ (by rwa [Fin.castSucc_castPred])]
       rw [Fin.succAbove_of_le_castSucc i _]
-      erw [Fin.succ_pred]
-      exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
+      · erw [Fin.succ_pred]
+      · exact Nat.le_sub_one_of_lt (Fin.lt_iff_val_lt_val.mp h')
   · obtain rfl := le_antisymm (Fin.le_last i) (not_lt.mp h)
     use θ ≫ σ (Fin.last _)
     ext x : 3

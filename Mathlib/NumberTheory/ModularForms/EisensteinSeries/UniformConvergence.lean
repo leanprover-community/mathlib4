@@ -174,7 +174,7 @@ theorem eis_is_bounded_on_box  {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) 
 lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
-  simp only [strip_mem_iff, abs_ofReal, ge_iff_le] at hz
+  simp only [mem_verticalStrip_iff, abs_ofReal, ge_iff_le] at hz
   simp_rw [r]
   apply min_le_min
   · dsimp only
@@ -244,7 +244,7 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     (by simp only [Set.top_eq_univ, isOpen_univ]), eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
-  obtain ⟨A, B, hB, HABK⟩ := subset_strip_of_isCompact hK
+  obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK
   have hu : Summable fun x : (gammaSet N a) =>
     (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
     apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
