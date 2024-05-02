@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
-import Mathlib.Algebra.Ring.Nat
+import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.Submonoid.Basic
 import Mathlib.GroupTheory.Subsemigroup.Operations
@@ -979,6 +979,10 @@ theorem mrange_eq_map (f : F) : mrange f = (⊤ : Submonoid M).map f :=
 #align monoid_hom.mrange_eq_map MonoidHom.mrange_eq_map
 #align add_monoid_hom.mrange_eq_map AddMonoidHom.mrange_eq_map
 
+@[to_additive (attr := simp)]
+theorem mrange_id : mrange (MonoidHom.id M) = ⊤ := by
+  simp [mrange_eq_map]
+
 @[to_additive]
 theorem map_mrange (g : N →* P) (f : M →* N) : f.mrange.map g = mrange (comp g f) := by
   simpa only [mrange_eq_map] using (⊤ : Submonoid M).map_map g f
@@ -1018,6 +1022,10 @@ theorem map_mclosure (f : F) (s : Set M) : (closure s).map f = closure (f '' s) 
     (closure_le.2 <| Set.image_subset _ subset_closure)
 #align monoid_hom.map_mclosure MonoidHom.map_mclosure
 #align add_monoid_hom.map_mclosure AddMonoidHom.map_mclosure
+
+@[to_additive (attr := simp)]
+theorem mclosure_range (f : F) : closure (Set.range f) = mrange f := by
+  rw [← Set.image_univ, ← map_mclosure, mrange_eq_map, closure_univ]
 
 /-- Restriction of a monoid hom to a submonoid of the domain. -/
 @[to_additive "Restriction of an `AddMonoid` hom to an `AddSubmonoid` of the domain."]
@@ -1310,7 +1318,8 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
 @[to_additive "An additive submonoid is either the trivial additive submonoid or nontrivial."]
 theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
-  simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← not_imp, Classical.em]
+  simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← Classical.not_imp,
+    Classical.em]
 #align submonoid.bot_or_nontrivial Submonoid.bot_or_nontrivial
 #align add_submonoid.bot_or_nontrivial AddSubmonoid.bot_or_nontrivial
 
@@ -1493,8 +1502,7 @@ namespace Submonoid
 elements of `M`. -/
 @[to_additive (attr := simps!) " The additive equivalence between the type of additive units of `M`
   and the additive submonoid whose elements are the additive units of `M`. "]
-noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] :
-  Mˣ ≃* IsUnit.submonoid M where
+noncomputable def unitsTypeEquivIsUnitSubmonoid [Monoid M] : Mˣ ≃* IsUnit.submonoid M where
   toFun x := ⟨x, Units.isUnit x⟩
   invFun x := x.prop.unit
   left_inv x := IsUnit.unit_of_val_units _

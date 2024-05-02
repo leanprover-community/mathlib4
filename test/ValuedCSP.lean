@@ -26,7 +26,7 @@ def ValuedCSP.binaryTerm {D C : Type} [OrderedAddCommMonoid C]
 -- ## Example: minimize `|x| + |y|` where `x` and `y` are rational numbers
 
 private def absRat : (Fin 1 → ℚ) → ℚ :=
-  Function.OfArity.uncurry (@abs ℚ Rat.instLatticeRat Rat.addGroup)
+  Function.OfArity.uncurry (@abs ℚ Rat.instLattice Rat.addGroup)
 
 private def exampleAbs : Σ (n : ℕ), (Fin n → ℚ) → ℚ := ⟨1, absRat⟩
 

@@ -212,7 +212,7 @@ theorem volumeForm_robust (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBasis.o
   cases n
   · classical
       have : o = positiveOrientation := hb.symm.trans b.toBasis.orientation_isEmpty
-      simp_rw [volumeForm, Or.by_cases, dif_pos this, Basis.det_isEmpty]
+      simp_rw [volumeForm, Or.by_cases, dif_pos this, Nat.rec_zero, Basis.det_isEmpty]
   · simp_rw [volumeForm]
     rw [same_orientation_iff_det_eq_det, hb]
     exact o.finOrthonormalBasis_orientation _ _
@@ -225,7 +225,7 @@ theorem volumeForm_robust_neg (b : OrthonormalBasis (Fin n) ℝ E) (hb : b.toBas
   cases' n with n
   · classical
       have : positiveOrientation ≠ o := by rwa [b.toBasis.orientation_isEmpty] at hb
-      simp_rw [volumeForm, Or.by_cases, dif_neg this.symm, Basis.det_isEmpty]
+      simp_rw [volumeForm, Or.by_cases, dif_neg this.symm, Nat.rec_zero, Basis.det_isEmpty]
   let e : OrthonormalBasis (Fin n.succ) ℝ E := o.finOrthonormalBasis n.succ_pos Fact.out
   simp_rw [volumeForm]
   apply e.det_eq_neg_det_of_opposite_orientation b
@@ -292,8 +292,8 @@ theorem abs_volumeForm_apply_of_pairwise_orthogonal {v : Fin n → E}
   have hb : b.toBasis.det v = ∏ i, ⟪b i, v i⟫ := gramSchmidtOrthonormalBasis_det hdim v
   rw [o.volumeForm_robust' b, hb, Finset.abs_prod]
   by_cases h : ∃ i, v i = 0
-  obtain ⟨i, hi⟩ := h
-  · rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
+  · obtain ⟨i, hi⟩ := h
+    rw [Finset.prod_eq_zero (Finset.mem_univ i), Finset.prod_eq_zero (Finset.mem_univ i)] <;>
       simp [hi]
   push_neg at h
   congr
