@@ -6,7 +6,7 @@ Authors: Joël Riou
 import Mathlib.CategoryTheory.Shift.CommShift
 
 /-!
-# Functors from a category to a category with shift
+# Functors from a category to a category with a shift
 
 Given a category `C`, and a category `D` equipped with a shift by a monoid `A`,
 we define a structure `SingleFunctors C D A` which contains the data of
