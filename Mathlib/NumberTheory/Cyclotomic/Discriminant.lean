@@ -81,7 +81,7 @@ theorem discr_prime_pow_ne_two [IsCyclotomicExtension {p ^ (k + 1)} K L] [hp : F
       rw [mul_assoc, Nat.mul_div_cancel_left _ zero_lt_two, Nat.mul_div_cancel_left _ zero_lt_two]
       cases k
       · simp
-      · norm_num; simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
+      · simp_rw [_root_.pow_succ', (even_two.mul_right _).neg_one_pow,
           ((even_two.mul_right _).mul_right _).neg_one_pow]
     · replace hp2 : (p : ℕ) ≠ 2 := by rwa [Ne, ← coe_two, PNat.coe_inj]
       have hpo : Odd (p : ℕ) := hp.out.odd_of_ne_two hp2
@@ -164,7 +164,7 @@ theorem discr_prime_pow [hcycl : IsCyclotomicExtension {p ^ k} K L] [hp : Fact (
       replace hk := Nat.pow_right_injective rfl.le hk
       rw [add_left_eq_self] at hk
       subst hk
-      rw [← Nat.one_eq_succ_zero, pow_one] at hζ hcycl
+      rw [pow_one] at hζ hcycl
       have : natDegree (minpoly K ζ) = 1 := by
         rw [hζ.eq_neg_one_of_two_right, show (-1 : L) = algebraMap K L (-1) by simp,
           minpoly.eq_X_sub_C_of_algebraMap_inj _ (NoZeroSMulDivisors.algebraMap_injective K L)]

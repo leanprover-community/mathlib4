@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura, Miyahara Kō
 -/
 import Lean.Meta.CongrTheorems
-import Std.Tactic.Relation.Rfl
+import Lean.Meta.Tactic.Rfl
 import Std.Data.HashMap.Basic
 import Std.Data.RBMap.Basic
 import Mathlib.Lean.Meta.Basic

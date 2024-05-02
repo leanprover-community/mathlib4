@@ -241,7 +241,7 @@ set_option linter.uppercaseLean3 false in
  `Field ℝ` is found first, then decaying it to these typeclasses would result in a `noncomputable`
  version of them. -/
 
-instance : Ring ℝ := by infer_instance
+instance instRing : Ring ℝ := by infer_instance
 
 instance : CommSemiring ℝ := by infer_instance
 

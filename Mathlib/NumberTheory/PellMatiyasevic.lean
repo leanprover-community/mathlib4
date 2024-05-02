@@ -675,7 +675,8 @@ theorem eq_of_xn_modEq_lem3 {i n} (npos : 0 < n) :
         lt_of_add_lt_add_right <|
           show 2 * n - k + k < n + k by
             rw [tsub_add_cancel_of_le]
-            rw [two_mul]; exact add_lt_add_left kn n
+            · rw [two_mul]
+              exact add_lt_add_left kn n
             exact k2n
       have xle : xn a1 (2 * n - k) ≤ xn a1 n := le_of_lt <| strictMono_x a1 k2nl
       suffices xn a1 k % xn a1 n = xn a1 n - xn a1 (2 * n - k) by rw [this, Int.ofNat_sub xle]
@@ -754,7 +755,7 @@ theorem eq_of_xn_modEq_le {i j n} (ij : i ≤ j) (j2n : j ≤ 2 * n)
           rw [Nat.mod_eq_of_lt (strictMono_x a1 (Nat.pos_of_ne_zero npos))]
           exact Nat.succ_pos _
         cases' i with i
-        exact x0
+        · exact x0
         rw [jn] at ij'
         exact
           x0.trans

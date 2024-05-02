@@ -680,9 +680,9 @@ theorem not_isField : ¬IsField A⟦X⟧ := by
     rw [Ring.not_isField_iff_exists_ideal_bot_lt_and_lt_top]
     use Ideal.span {X}
     constructor
-    · rw [bot_lt_iff_ne_bot, Ne.def, Ideal.span_singleton_eq_bot]
+    · rw [bot_lt_iff_ne_bot, Ne, Ideal.span_singleton_eq_bot]
       exact X_ne_zero
-    · rw [lt_top_iff_ne_top, Ne.def, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
+    · rw [lt_top_iff_ne_top, Ne, Ideal.eq_top_iff_one, Ideal.mem_span_singleton,
         X_dvd_iff, constantCoeff_one]
       exact one_ne_zero
 
