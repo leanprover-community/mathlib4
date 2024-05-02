@@ -193,7 +193,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · rfl
-        rw [Nat.succ_eq_add_one, hc, sub_eq_add_neg, ← add_zero a₀]
+        rw [hc, sub_eq_add_neg, ← add_zero a₀]
         refine' ih.add _
         rw [SModEq.zero, Ideal.neg_mem_iff]
         refine' I.mul_mem_right _ _
@@ -209,7 +209,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         intro n
         induction' n with n ih
         · simpa only [Nat.zero_eq, Nat.rec_zero, zero_add, pow_one] using h₁
-        rw [Nat.succ_eq_add_one, ← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
+        rw [← taylor_eval_sub (c n), hc, sub_eq_add_neg, sub_eq_add_neg,
           add_neg_cancel_comm]
         rw [eval_eq_sum, sum_over_range' _ _ _ (lt_add_of_pos_right _ zero_lt_two), ←
           Finset.sum_range_add_sum_Ico _ (Nat.le_add_left _ _)]
@@ -236,8 +236,14 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         obtain ⟨k, rfl⟩ := Nat.exists_eq_add_of_le hmn
         clear hmn
         induction' k with k ih
-        · rw [Nat.zero_eq, add_zero]
-        rw [Nat.succ_eq_add_one, ← add_assoc, hc, ← add_zero (c m), sub_eq_add_neg]
+        · rw [add_zero]
+        rw [← add_assoc]
+        -- Adaptation note: nightly-2024-03-11
+        -- I'm not sure why the `erw` is now needed here. It looks like it should work.
+        -- It looks like a diamond between `instHAdd` on `Nat` and `AddSemigroup.toAdd` which is
+        -- used by `instHAdd`
+        erw [hc]
+        rw [← add_zero (c m), sub_eq_add_neg]
         refine' ih.add _
         symm
         rw [SModEq.zero, Ideal.neg_mem_iff]
@@ -256,7 +262,7 @@ instance (priority := 100) IsAdicComplete.henselianRing (R : Type*) [CommRing R]
         rw [SModEq.zero]
         exact Ideal.pow_le_pow_right le_self_add (hfcI _)
       · show a - a₀ ∈ I
-        specialize ha 1
+        specialize ha (0 + 1)
         rw [hc, pow_one, ← Ideal.one_eq_top, Ideal.smul_eq_mul, mul_one, sub_eq_add_neg] at ha
         rw [← SModEq.sub_mem, ← add_zero a₀]
         refine' ha.symm.trans (SModEq.rfl.add _)

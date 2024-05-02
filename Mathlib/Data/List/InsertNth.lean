@@ -174,7 +174,7 @@ theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
   · simp at hk'
   · cases n
     · simp
-    · simpa [succ_add] using IH _ _ _
+    · simpa [Nat.add_right_comm] using IH _ _ _
 
 set_option linter.deprecated false in
 @[deprecated get_insertNth_add_succ] -- 2023-01-05

@@ -1,8 +1,7 @@
 /-
 Copyright (c) 2024 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
-  Frédéric Dupuis, Heather Macbeth, Amelia Livingston
+Authors: Amelia Livingston
 -/
 import Mathlib.RingTheory.Coalgebra.Hom
 
@@ -54,19 +53,17 @@ variable {F R A B : Type*} [CommSemiring R] [AddCommMonoid A] [AddCommMonoid B]
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 @[coe]
-def coalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
+def toCoalgEquiv [EquivLike F A B] [CoalgEquivClass F R A B] (f : F) : A ≃ₗc[R] B :=
   { (f : A →ₗc[R] B), (f : A ≃ₗ[R] B) with }
 
 /-- Reinterpret an element of a type of coalgebra equivalences as a coalgebra equivalence. -/
 instance instCoeToCoalgEquiv
-    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeTC F (A ≃ₗc[R] B) where
-  coe f := coalgEquiv f
+    [EquivLike F A B] [CoalgEquivClass F R A B] : CoeHead F (A ≃ₗc[R] B) where
+  coe f := toCoalgEquiv f
 
 end CoalgEquivClass
 
 namespace CoalgEquiv
-
-section AddCommMonoid
 
 variable [CommSemiring R]
 
@@ -114,9 +111,6 @@ theorem toCoalgHom_inj {e₁ e₂ : A ≃ₗc[R] B} : (↑e₁ : A →ₗc[R] B)
 theorem coe_mk {f h h₀ h₁ h₂ h₃ h₄ h₅} :
     (⟨⟨⟨⟨f, h⟩, h₀⟩, h₁, h₂⟩, h₃, h₄, h₅⟩ : A ≃ₗc[R] B) = f := rfl
 
-theorem coe_injective : @Function.Injective (A ≃ₗc[R] B) (A → B) CoeFun.coe :=
-  DFunLike.coe_injective
-
 end
 
 section
@@ -156,8 +150,6 @@ theorem coe_toCoalgHom : ⇑(e : A →ₗc[R] B) = e :=
 
 theorem toLinearEquiv_toLinearMap : ((e : A ≃ₗ[R] B) : A →ₗ[R] B) = (e : A →ₗc[R] B) :=
   rfl
-
-theorem toFun_eq_coe : e.toFun = e := rfl
 
 section
 
@@ -253,5 +245,4 @@ theorem coe_toEquiv_trans : (e₁₂ : A ≃ B).trans e₂₃ = (e₁₂.trans e
   rfl
 
 end
-end AddCommMonoid
 end CoalgEquiv

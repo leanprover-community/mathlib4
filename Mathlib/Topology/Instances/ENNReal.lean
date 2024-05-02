@@ -433,7 +433,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
 theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
-  simp_rw [Nat.succ_eq_add_one, pow_add, pow_one, continuous_iff_continuousAt]
+  simp_rw [pow_add, pow_one, continuous_iff_continuousAt]
   intro x
   refine' ENNReal.Tendsto.mul (IH.tendsto _) _ tendsto_id _ <;> by_cases H : x = 0
   · simp only [H, zero_ne_top, Ne, or_true_iff, not_false_iff]
