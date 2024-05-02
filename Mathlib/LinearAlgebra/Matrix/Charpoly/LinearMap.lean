@@ -24,9 +24,7 @@ This is used to conclude the Cayley-Hamilton theorem for f.g. modules over arbit
 
 
 variable {ι : Type*} [Fintype ι]
-
 variable {M : Type*} [AddCommGroup M] (R : Type*) [CommRing R] [Module R M] (I : Ideal R)
-
 variable (b : ι → M) (hb : Submodule.span R (Set.range b) = ⊤)
 
 open BigOperators Polynomial Matrix
@@ -143,7 +141,7 @@ theorem Matrix.Represents.zero : (0 : Matrix ι ι R).Represents b 0 := by
 theorem Matrix.Represents.smul {A : Matrix ι ι R} {f : Module.End R M} (h : A.Represents b f)
     (r : R) : (r • A).Represents b (r • f) := by
   delta Matrix.Represents at h ⊢
-  rw [SMulHomClass.map_smul, SMulHomClass.map_smul, h]
+  rw [_root_.map_smul, _root_.map_smul, h]
 #align matrix.represents.smul Matrix.Represents.smul
 
 theorem Matrix.Represents.algebraMap (r : R) :

@@ -199,7 +199,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
     rfl
   { toFun := fun g => ⟨fun b => F.map (homOfPair b g), g⟩
     map_one' := by
-      congr
       dsimp
       ext1
       ext b
@@ -207,7 +206,6 @@ def curry (F : ActionCategory G X ⥤ SingleObj H) : G →* (X → H) ⋊[mulAut
       rfl
     map_mul' := by
       intro g h
-      congr
       ext b
       exact F_map_eq.symm.trans (F.map_comp (homOfPair (g⁻¹ • b) h) (homOfPair b g))
       rfl }

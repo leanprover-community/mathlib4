@@ -39,7 +39,6 @@ open Limits Category
 section Ideal
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D] {i : D ⥤ C}
-
 variable (i) [HasFiniteProducts C] [CartesianClosed C]
 
 /-- The subcategory `D` of `C` expressed as an inclusion functor is an *exponential ideal* if
@@ -103,7 +102,6 @@ end Ideal
 section
 
 variable {C : Type u₁} {D : Type u₂} [Category.{v₁} C] [Category.{v₁} D]
-
 variable (i : D ⥤ C)
 
 -- Porting note: this used to be used as a local instance,
@@ -182,14 +180,14 @@ noncomputable def bijection (A B : C) (X : D) :
     ((leftAdjoint i).obj (A ⨯ B) ⟶ X) ≃ ((leftAdjoint i).obj A ⨯ (leftAdjoint i).obj B ⟶ X) :=
   calc
     _ ≃ (A ⨯ B ⟶ i.obj X) := (Adjunction.ofRightAdjoint i).homEquiv _ _
-    _ ≃ (B ⨯ A ⟶ i.obj X) := ((Limits.prod.braiding _ _).homCongr (Iso.refl _))
-    _ ≃ (A ⟶ B ⟹ i.obj X) := ((exp.adjunction _).homEquiv _ _)
+    _ ≃ (B ⨯ A ⟶ i.obj X) := (Limits.prod.braiding _ _).homCongr (Iso.refl _)
+    _ ≃ (A ⟶ B ⟹ i.obj X) := (exp.adjunction _).homEquiv _ _
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⟶ B ⟹ i.obj X) :=
       (unitCompPartialBijective _ (ExponentialIdeal.exp_closed (i.obj_mem_essImage _) _))
     _ ≃ (B ⨯ i.obj ((leftAdjoint i).obj A) ⟶ i.obj X) := ((exp.adjunction _).homEquiv _ _).symm
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⨯ B ⟶ i.obj X) :=
       ((Limits.prod.braiding _ _).homCongr (Iso.refl _))
-    _ ≃ (B ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) := ((exp.adjunction _).homEquiv _ _)
+    _ ≃ (B ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) := (exp.adjunction _).homEquiv _ _
     _ ≃ (i.obj ((leftAdjoint i).obj B) ⟶ i.obj ((leftAdjoint i).obj A) ⟹ i.obj X) :=
       (unitCompPartialBijective _ (ExponentialIdeal.exp_closed (i.obj_mem_essImage _) _))
     _ ≃ (i.obj ((leftAdjoint i).obj A) ⨯ i.obj ((leftAdjoint i).obj B) ⟶ i.obj X) :=

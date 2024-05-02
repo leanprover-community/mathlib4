@@ -85,7 +85,7 @@ theorem partialSups_le (f : ℕ → α) (n : ℕ) (a : α) (w : ∀ m, m ≤ n �
 lemma upperBounds_range_partialSups (f : ℕ → α) :
     upperBounds (Set.range (partialSups f)) = upperBounds (Set.range f) := by
   ext a
-  simp only [mem_upperBounds, Set.forall_range_iff, partialSups_le_iff]
+  simp only [mem_upperBounds, Set.forall_mem_range, partialSups_le_iff]
   exact ⟨fun h _ ↦ h _ _ le_rfl, fun h _ _ _ ↦ h _⟩
 
 @[simp]

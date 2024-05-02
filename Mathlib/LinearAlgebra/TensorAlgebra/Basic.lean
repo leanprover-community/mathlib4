@@ -41,7 +41,6 @@ modulo the additional relations making the inclusion of `M` into an `R`-linear m
 
 
 variable (R : Type*) [CommSemiring R]
-
 variable (M : Type*) [AddCommMonoid M] [Module R M]
 
 namespace TensorAlgebra
@@ -274,9 +273,8 @@ def ιInv : TensorAlgebra R M →ₗ[R] M := by
   exact (TrivSqZeroExt.sndHom R M).comp toTrivSqZeroExt.toLinearMap
 #align tensor_algebra.ι_inv TensorAlgebra.ιInv
 
-theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x => by
-  -- Porting note: needs the last two `simp` lemmas explicitly in order to use them
-  simp [ιInv, (AlgHom.toLinearMap_apply), toTrivSqZeroExt_ι _]
+theorem ι_leftInverse : Function.LeftInverse ιInv (ι R : M → TensorAlgebra R M) := fun x ↦ by
+  simp [ιInv]
 #align tensor_algebra.ι_left_inverse TensorAlgebra.ι_leftInverse
 
 variable (R)
@@ -307,7 +305,7 @@ theorem ι_eq_algebraMap_iff (x : M) (r : R) : ι R x = algebraMap R _ r ↔ x =
 
 @[simp]
 theorem ι_ne_one [Nontrivial R] (x : M) : ι R x ≠ 1 := by
-  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne.def, ι_eq_algebraMap_iff]
+  rw [← (algebraMap R (TensorAlgebra R M)).map_one, Ne, ι_eq_algebraMap_iff]
   exact one_ne_zero ∘ And.right
 #align tensor_algebra.ι_ne_one TensorAlgebra.ι_ne_one
 

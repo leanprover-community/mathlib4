@@ -32,14 +32,14 @@ theorem decide_False {h} : @decide False h = false :=
 @[simp]
 theorem decide_coe (b : Bool) {h} : @decide b h = b := by
   cases b
-  · exact _root_.decide_eq_false <| λ j => by cases j
+  · exact _root_.decide_eq_false <| fun j ↦ by cases j
   · exact _root_.decide_eq_true <| rfl
 #align bool.to_bool_coe Bool.decide_coe
 
 theorem coe_decide (p : Prop) [d : Decidable p] : decide p ↔ p :=
   match d with
-  | isTrue hp => ⟨λ _ => hp, λ _ => rfl⟩
-  | isFalse hnp => ⟨λ h => Bool.noConfusion h, λ hp => (hnp hp).elim⟩
+  | isTrue hp => ⟨fun _ ↦ hp, fun _ ↦ rfl⟩
+  | isFalse hnp => ⟨fun h ↦ Bool.noConfusion h, fun hp ↦ (hnp hp).elim⟩
 #align bool.coe_to_bool Bool.coe_decide
 
 theorem of_decide_iff {p : Prop} [Decidable p] : decide p ↔ p :=
@@ -68,11 +68,11 @@ theorem decide_or (p q : Prop) [Decidable p] [Decidable q] : decide (p ∨ q) = 
 theorem not_false' : ¬false := nofun
 #align bool.not_ff Bool.not_false'
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem eq_iff_eq_true_iff {a b : Bool} : a = b ↔ ((a = true) ↔ (b = true)) := by
   cases a <;> cases b <;> simp
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 /- Even though `DecidableEq α` implies an instance of (`Lawful`)`BEq α`, we keep the seemingly
 redundant typeclass assumptions so that the theorem is also applicable for types that have
 overridden this default instance of `LawfulBEq α` -/
@@ -82,7 +82,7 @@ theorem beq_eq_decide_eq {α} [BEq α] [LawfulBEq α] [DecidableEq α]
   · simp [ne_of_beq_false h]
   · simp [eq_of_beq h]
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 theorem beq_comm {α} [BEq α] [LawfulBEq α] {a b : α} : (a == b) = (b == a) :=
   eq_iff_eq_true_iff.2 (by simp [@eq_comm α])
 

@@ -212,7 +212,7 @@ lemma condIndepSets_iff (s1 s2 : Set (Set Ω)) (hs1 : ∀ s ∈ s1, MeasurableSe
       · exact measurable_condexpKernel (hs1 s hs)
       · exact measurable_condexpKernel (hs2 t ht)
     filter_upwards [hs1_eq s hs, hs2_eq t ht, hs12_eq s hs t ht, h] with ω hs_eq ht_eq hst_eq h
-    have h_ne_top : condexpKernel μ m' ω (s ∩ t) ≠ ∞ := (measure_ne_top (condexpKernel μ m' ω) _)
+    have h_ne_top : condexpKernel μ m' ω (s ∩ t) ≠ ∞ := measure_ne_top (condexpKernel μ m' ω) _
     rw [← ENNReal.ofReal_toReal h_ne_top, hst_eq, h, Pi.mul_apply, ← hs_eq, ← ht_eq,
       ← ENNReal.toReal_mul, ENNReal.ofReal_toReal]
     exact ENNReal.mul_ne_top (measure_ne_top (condexpKernel μ m' ω) s)
@@ -231,8 +231,7 @@ lemma iCondIndepSets_singleton_iff (s : ι → Set Ω) (hπ : ∀ i, MeasurableS
       apply congr_arg₂
       · exact Set.iInter₂_congr hf
       · rfl
-    · congr
-      simp_rw [Finset.prod_apply]
+    · simp_rw [Finset.prod_apply]
       refine Finset.prod_congr rfl (fun i hi ↦ ?_)
       rw [hf i hi]
   · simpa only [Set.mem_singleton_iff, forall_eq]

@@ -143,7 +143,7 @@ theorem multiplicity_factorial_mul_succ {n p : ℕ} (hp : p.Prime) :
   have h2 : p * n + 1 ≤ p * (n + 1) := by linarith
   have h3 : p * n + 1 ≤ p * (n + 1) + 1 := by omega
   have hm : multiplicity p (p * n)! ≠ ⊤ := by
-    rw [Ne.def, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
+    rw [Ne, eq_top_iff_not_finite, Classical.not_not, finite_nat_iff]
     exact ⟨hp.ne_one, factorial_pos _⟩
   revert hm
   have h4 : ∀ m ∈ Ico (p * n + 1) (p * (n + 1)), multiplicity p m = 0 := by

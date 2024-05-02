@@ -130,6 +130,9 @@ lemma sections_property {F : J ⥤ Type w} (s : (F.sections : Type _))
     {j j' : J} (f : j ⟶ j') : F.map f (s.val j) = s.val j' :=
   s.property f
 
+lemma sections_ext_iff {F : J ⥤ Type w} {x y : F.sections} : x = y ↔ ∀ j, x.val j = y.val j :=
+  Subtype.ext_iff.trans Function.funext_iff
+
 variable (J)
 
 /-- The functor which sends a functor to types to its sections. -/
@@ -144,7 +147,6 @@ end Functor
 namespace FunctorToTypes
 
 variable {C : Type u} [Category.{v} C] (F G H : C ⥤ Type w) {X Y Z : C}
-
 variable (σ : F ⟶ G) (τ : G ⟶ H)
 
 @[simp]
@@ -223,10 +225,11 @@ theorem uliftFunctor_map {X Y : Type u} (f : X ⟶ Y) (x : ULift.{v} X) :
   rfl
 #align category_theory.ulift_functor_map CategoryTheory.uliftFunctor_map
 
-instance uliftFunctorFull : Full.{u} uliftFunctor where preimage f x := (f (ULift.up x)).down
+instance uliftFunctorFull : Functor.Full.{u} uliftFunctor where
+  preimage f x := (f (ULift.up x)).down
 #align category_theory.ulift_functor_full CategoryTheory.uliftFunctorFull
 
-instance uliftFunctor_faithful : Faithful uliftFunctor where
+instance uliftFunctor_faithful : uliftFunctor.Faithful where
   map_injective {_X} {_Y} f g p :=
     funext fun x =>
       congr_arg ULift.down (congr_fun p (ULift.up x) : ULift.up (f x) = ULift.up (g x))
@@ -255,7 +258,6 @@ See <https://stacks.math.columbia.edu/tag/003C>.
 theorem mono_iff_injective {X Y : Type u} (f : X ⟶ Y) : Mono f ↔ Function.Injective f := by
   constructor
   · intro H x x' h
-    skip
     rw [← homOfElement_eq_iff] at h ⊢
     exact (cancel_mono f).mp h
   · exact fun H => ⟨fun g g' h => H.comp_left h⟩

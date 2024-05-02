@@ -38,7 +38,6 @@ This file provides some notable isomorphisms regarding the even subalgebra, `Cli
 namespace CliffordAlgebra
 
 variable {R M : Type*} [CommRing R] [AddCommGroup M] [Module R M]
-
 variable (Q : QuadraticForm R M)
 
 /-! ### Constructions needed for `CliffordAlgebra.equivEven` -/
@@ -85,7 +84,7 @@ theorem neg_e0_mul_v (m : M) : -(e0 Q * v Q m) = v Q m * e0 Q := by
   refine' neg_eq_of_add_eq_zero_right ((ι_mul_ι_add_swap _ _).trans _)
   dsimp [QuadraticForm.polar]
   simp only [add_zero, mul_zero, mul_one, zero_add, neg_zero, QuadraticForm.map_zero,
-    add_sub_cancel, sub_self, map_zero, zero_sub]
+    add_sub_cancel_right, sub_self, map_zero, zero_sub]
 #align clifford_algebra.equiv_even.neg_e0_mul_v CliffordAlgebra.EquivEven.neg_e0_mul_v
 
 theorem neg_v_mul_e0 (m : M) : -(v Q m * e0 Q) = e0 Q * v Q m := by

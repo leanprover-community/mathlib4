@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Neil Strickland
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 import Mathlib.Data.Set.Basic
 import Mathlib.Algebra.GroupWithZero.Divisibility
 import Mathlib.Algebra.Order.Positive.Ring
@@ -181,7 +181,7 @@ theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false
@@ -256,7 +256,7 @@ theorem lt_add_right (n m : ℕ+) : n < n + m :=
   (lt_add_left n m).trans_eq (add_comm _ _)
 #align pnat.lt_add_right PNat.lt_add_right
 
--- Porting note: deprecated
+-- Porting note (#11229): deprecated
 section deprecated
 
 set_option linter.deprecated false
@@ -398,13 +398,11 @@ theorem dvd_iff {k m : ℕ+} : k ∣ m ↔ (k : ℕ) ∣ (m : ℕ) := by
   · rcases h with ⟨_, rfl⟩
     apply dvd_mul_right
   · rcases h with ⟨a, h⟩
-    cases a with
-    | zero =>
-      contrapose h
-      apply ne_zero
-    | succ n =>
-      use ⟨n.succ, n.succ_pos⟩
-      rw [← coe_inj, h, mul_coe, mk_coe]
+    obtain ⟨n, rfl⟩ := Nat.exists_eq_succ_of_ne_zero (n := a) <| by
+      rintro rfl
+      simp only [mul_zero, ne_zero] at h
+    use ⟨n.succ, n.succ_pos⟩
+    rw [← coe_inj, h, mul_coe, mk_coe]
 #align pnat.dvd_iff PNat.dvd_iff
 
 theorem dvd_iff' {k m : ℕ+} : k ∣ m ↔ mod m k = k := by

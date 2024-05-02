@@ -166,7 +166,7 @@ theorem basisDivisor_eq_zero_iff : basisDivisor x y = 0 ↔ x = y :=
 #align lagrange.basis_divisor_eq_zero_iff Lagrange.basisDivisor_eq_zero_iff
 
 theorem basisDivisor_ne_zero_iff : basisDivisor x y ≠ 0 ↔ x ≠ y := by
-  rw [Ne.def, basisDivisor_eq_zero_iff]
+  rw [Ne, basisDivisor_eq_zero_iff]
 #align lagrange.basis_divisor_ne_zero_iff Lagrange.basisDivisor_ne_zero_iff
 
 theorem degree_basisDivisor_of_ne (hxy : x ≠ y) : (basisDivisor x y).degree = 1 := by
@@ -236,7 +236,7 @@ theorem basis_pair_right (hij : i ≠ j) : Lagrange.basis {i, j} v j = basisDivi
 #align lagrange.basis_pair_right Lagrange.basis_pair_right
 
 theorem basis_ne_zero (hvs : Set.InjOn v s) (hi : i ∈ s) : Lagrange.basis s v i ≠ 0 := by
-  simp_rw [Lagrange.basis, prod_ne_zero_iff, Ne.def, mem_erase]
+  simp_rw [Lagrange.basis, prod_ne_zero_iff, Ne, mem_erase]
   rintro j ⟨hij, hj⟩
   rw [basisDivisor_eq_zero_iff, hvs.eq_iff hi hj]
   exact hij.symm
@@ -262,12 +262,12 @@ theorem eval_basis_of_ne (hij : i ≠ j) (hj : j ∈ s) : (Lagrange.basis s v i)
 theorem natDegree_basis (hvs : Set.InjOn v s) (hi : i ∈ s) :
     (Lagrange.basis s v i).natDegree = s.card - 1 := by
   have H : ∀ j, j ∈ s.erase i → basisDivisor (v i) (v j) ≠ 0 := by
-    simp_rw [Ne.def, mem_erase, basisDivisor_eq_zero_iff]
+    simp_rw [Ne, mem_erase, basisDivisor_eq_zero_iff]
     exact fun j ⟨hij₁, hj⟩ hij₂ => hij₁ (hvs hj hi hij₂.symm)
   rw [← card_erase_of_mem hi, card_eq_sum_ones]
   convert natDegree_prod _ _ H using 1
   refine' sum_congr rfl fun j hj => (natDegree_basisDivisor_of_ne _).symm
-  rw [Ne.def, ← basisDivisor_eq_zero_iff]
+  rw [Ne, ← basisDivisor_eq_zero_iff]
   exact H _ hj
 #align lagrange.nat_degree_basis Lagrange.natDegree_basis
 
@@ -418,7 +418,7 @@ theorem eq_interpolate_iff {f : F[X]} (hvs : Set.InjOn v s) :
 #align lagrange.eq_interpolate_iff Lagrange.eq_interpolate_iff
 
 /-- Lagrange interpolation induces isomorphism between functions from `s`
-and polynomials of degree less than `Fintype.card ι`.-/
+and polynomials of degree less than `Fintype.card ι`. -/
 def funEquivDegreeLT (hvs : Set.InjOn v s) : degreeLT F s.card ≃ₗ[F] s → F where
   toFun f i := f.1.eval (v i)
   map_add' f g := funext fun v => eval_add
@@ -534,7 +534,7 @@ rcases s.eq_empty_or_nonempty with (rfl | h)
 
 @[simp]
 theorem degree_nodal [Nontrivial R] : (nodal s v).degree = s.card := by
-  simp_rw [degree_eq_natDegree (nodal_ne_zero), natDegree_nodal]
+  simp_rw [degree_eq_natDegree nodal_ne_zero, natDegree_nodal]
 #align lagrange.degree_nodal Lagrange.degree_nodal
 
 theorem nodal_monic : (nodal s v).Monic :=

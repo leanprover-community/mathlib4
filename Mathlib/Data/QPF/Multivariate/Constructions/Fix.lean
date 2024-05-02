@@ -97,7 +97,7 @@ theorem recF_eq_of_wEquiv (α : TypeVec n) {β : Type u} (u : F (α.append1 β) 
   intro a₁ f'₁ f₁
   intro h
   -- Porting note: induction on h doesn't work.
-  refine' @WEquiv.recOn _ _ _ _ _ (λ a a' _ => recF u a = recF u a') _ _ h _ _ _
+  refine' @WEquiv.recOn _ _ _ _ _ (fun a a' _ ↦ recF u a = recF u a') _ _ h _ _ _
   · intros a f' f₀ f₁ _h ih; simp only [recF_eq, Function.comp]
     congr; funext; congr; funext; apply ih
   · intros a₀ f'₀ f₀ a₁ f'₁ f₁ h; simp only [recF_eq', abs_map, MvPFunctor.wDest'_wMk, h]
@@ -188,6 +188,7 @@ def Fix {n : ℕ} (F : TypeVec (n + 1) → Type*) [MvFunctor F] [q : MvQPF F] (�
   Quotient (wSetoid α : Setoid (q.P.W α))
 #align mvqpf.fix MvQPF.Fix
 
+-- Porting note(#5171): this linter isn't ported yet.
 --attribute [nolint has_nonempty_instance] Fix
 
 /-- `Fix F` is a functor -/

@@ -59,7 +59,6 @@ open CategoryTheory.Limits.WalkingParallelPair
 namespace CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable [HasZeroMorphisms C]
 
 /-- A morphism `f` has a kernel if the functor `ParallelPair f 0` has a limit. -/
@@ -120,7 +119,7 @@ def ofιCongr {P : C} {ι ι' : P ⟶ X} {w : ι ≫ f = 0} (h : ι = ι') :
 
 /-- If `F` is an equivalence, then applying `F` to a diagram indexing a (co)kernel of `f` yields
     the diagram indexing the (co)kernel of `F.map f`. -/
-def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [IsEquivalence F] :
+def compNatIso {D : Type u'} [Category.{v} D] [HasZeroMorphisms D] (F : C ⥤ D) [F.IsEquivalence] :
     parallelPair f 0 ⋙ F ≅ parallelPair (F.map f) 0 :=
   let app (j :WalkingParallelPair) :
       (parallelPair f 0 ⋙ F).obj j ≅ (parallelPair (F.map f) 0).obj j :=
@@ -384,7 +383,7 @@ theorem kernelIsoOfEq_refl {h : f = f} : kernelIsoOfEq h = Iso.refl (kernel f) :
   simp [kernelIsoOfEq]
 #align category_theory.limits.kernel_iso_of_eq_refl CategoryTheory.Limits.kernelIsoOfEq_refl
 
-/- Porting note: induction on Eq is trying instantiate another g...-/
+/- Porting note: induction on Eq is trying instantiate another g... -/
 @[reassoc (attr := simp)]
 theorem kernelIsoOfEq_hom_comp_ι {f g : X ⟶ Y} [HasKernel f] [HasKernel g] (h : f = g) :
     (kernelIsoOfEq h).hom ≫ kernel.ι g = kernel.ι f := by
@@ -423,10 +422,8 @@ theorem kernel_not_epi_of_nonzero (w : f ≠ 0) : ¬Epi (kernel.ι f) := fun _ =
   w (eq_zero_of_epi_kernel f)
 #align category_theory.limits.kernel_not_epi_of_nonzero CategoryTheory.Limits.kernel_not_epi_of_nonzero
 
-theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun I =>
-  kernel_not_epi_of_nonzero w <| by
-    skip
-    infer_instance
+theorem kernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (kernel.ι f) → False := fun _ =>
+  kernel_not_epi_of_nonzero w inferInstance
 #align category_theory.limits.kernel_not_iso_of_nonzero CategoryTheory.Limits.kernel_not_iso_of_nonzero
 
 instance hasKernel_comp_mono {X Y Z : C} (f : X ⟶ Y) [HasKernel f] (g : Y ⟶ Z) [Mono g] :
@@ -515,7 +512,7 @@ end HasZeroObject
 
 section Transport
 
-/-- If `i` is an isomorphism such that `l ≫ i.hom = f`, then any kernel of `f` is a kernel of `l`.-/
+/-- If `i` is an isomorphism such that `l ≫ i.hom = f`, any kernel of `f` is a kernel of `l`. -/
 def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f) {s : KernelFork f}
     (hs : IsLimit s) :
     IsLimit
@@ -526,7 +523,7 @@ def IsKernel.ofCompIso {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f)
       simpa using h
 #align category_theory.limits.is_kernel.of_comp_iso CategoryTheory.Limits.IsKernel.ofCompIso
 
-/-- If `i` is an isomorphism such that `l ≫ i.hom = f`, then the kernel of `f` is a kernel of `l`.-/
+/-- If `i` is an isomorphism such that `l ≫ i.hom = f`, the kernel of `f` is a kernel of `l`. -/
 def kernel.ofCompIso [HasKernel f] {Z : C} (l : X ⟶ Z) (i : Z ≅ Y) (h : l ≫ i.hom = f) :
     IsLimit
       (KernelFork.ofι (kernel.ι f) <| show kernel.ι f ≫ l = 0 by simp [← i.comp_inv_eq.2 h.symm]) :=
@@ -541,7 +538,7 @@ def IsKernel.isoKernel {Z : C} (l : Z ⟶ X) {s : KernelFork f} (hs : IsLimit s)
     Cones.ext i.symm fun j => by
       cases j
       · exact (Iso.eq_inv_comp i).2 h
-      · dsimp; rw[← h]; simp
+      · dsimp; rw [← h]; simp
 #align category_theory.limits.is_kernel.iso_kernel CategoryTheory.Limits.IsKernel.isoKernel
 
 /-- If `i` is an isomorphism such that `i.hom ≫ kernel.ι f = l`, then `l` is a kernel of `f`. -/
@@ -926,10 +923,8 @@ theorem cokernel_not_mono_of_nonzero (w : f ≠ 0) : ¬Mono (cokernel.π f) := f
   w (eq_zero_of_mono_cokernel f)
 #align category_theory.limits.cokernel_not_mono_of_nonzero CategoryTheory.Limits.cokernel_not_mono_of_nonzero
 
-theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun I =>
-  cokernel_not_mono_of_nonzero w <| by
-    skip
-    infer_instance
+theorem cokernel_not_iso_of_nonzero (w : f ≠ 0) : IsIso (cokernel.π f) → False := fun _ =>
+  cokernel_not_mono_of_nonzero w inferInstance
 #align category_theory.limits.cokernel_not_iso_of_nonzero CategoryTheory.Limits.cokernel_not_iso_of_nonzero
 
 -- TODO the remainder of this section has obvious generalizations to `HasCoequalizer f g`.
@@ -1146,7 +1141,6 @@ end Transport
 section Comparison
 
 variable {D : Type u₂} [Category.{v₂} D] [HasZeroMorphisms D]
-
 variable (G : C ⥤ D) [Functor.PreservesZeroMorphisms G]
 
 /-- The comparison morphism for the kernel of `f`.
@@ -1224,7 +1218,6 @@ end CategoryTheory.Limits
 namespace CategoryTheory.Limits
 
 variable (C : Type u) [Category.{v} C]
-
 variable [HasZeroMorphisms C]
 
 /-- `HasKernels` represents the existence of kernels for every morphism. -/

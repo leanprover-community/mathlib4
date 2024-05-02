@@ -56,17 +56,14 @@ open CategoryTheory Opposite CategoryTheory.Presieve.FamilyOfElements CategoryTh
 namespace CategoryTheory
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D] (F : C ⥤ D)
-
 variable {A : Type u₃} [Category.{v₃} A]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
-
 variable {L : GrothendieckTopology A}
 
 /-- A functor `G : (C, J) ⥤ (D, K)` between sites is *cover-preserving*
 if for all covering sieves `R` in `C`, `R.functorPushforward G` is a covering sieve in `D`.
 -/
--- Porting note: removed `@[nolint has_nonempty_instance]`
+-- Porting note(#5171): removed `@[nolint has_nonempty_instance]`
 structure CoverPreserving (G : C ⥤ D) : Prop where
   cover_preserve : ∀ {U : C} {S : Sieve U} (_ : S ∈ J U), S.functorPushforward G ∈ K (G.obj U)
 #align category_theory.cover_preserving CategoryTheory.CoverPreserving
@@ -90,7 +87,7 @@ compatible family of elements at `C` and valued in `G.op ⋙ ℱ`, and each comm
 This is actually stronger than merely preserving compatible families because of the definition of
 `functorPushforward` used.
 -/
--- Porting note: this doesn't work yet @[nolint has_nonempty_instance]
+-- Porting note(#5171): linter not ported yet @[nolint has_nonempty_instance]
 structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop where
   compatible :
     ∀ (ℱ : SheafOfTypes.{w} K) {Z} {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T}
@@ -100,7 +97,6 @@ structure CompatiblePreserving (K : GrothendieckTopology D) (G : C ⥤ D) : Prop
 #align category_theory.compatible_preserving CategoryTheory.CompatiblePreserving
 
 variable {J K} {G : C ⥤ D} (hG : CompatiblePreserving.{w} K G) (ℱ : SheafOfTypes.{w} K) {Z : C}
-
 variable {T : Presieve Z} {x : FamilyOfElements (G.op ⋙ ℱ.val) T} (h : x.Compatible)
 
 /-- `CompatiblePreserving` functors indeed preserve compatible families. -/
@@ -162,7 +158,7 @@ theorem compatiblePreservingOfFlat {C : Type u₁} [Category.{v₁} C] {D : Type
   exact hx (c'.π.app left).right (c'.π.app right).right hg₁ hg₂ (e₁.symm.trans e₂)
 #align category_theory.compatible_preserving_of_flat CategoryTheory.compatiblePreservingOfFlat
 
-theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [Full F] [Faithful F]
+theorem compatiblePreservingOfDownwardsClosed (F : C ⥤ D) [F.Full] [F.Faithful]
     (hF : ∀ {c : C} {d : D} (_ : d ⟶ F.obj c), Σc', F.obj c' ≅ d) : CompatiblePreserving K F := by
   constructor
   introv hx he

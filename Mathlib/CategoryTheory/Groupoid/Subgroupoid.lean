@@ -232,7 +232,7 @@ instance : InfSet (Subgroupoid C) :=
         rw [mem_iInter₂] at hp hq ⊢;
         exact fun S hS => S.mul (hp S hS) (hq S hS) }⟩
 
--- Porting note: new lemma
+-- Porting note (#10756): new lemma
 theorem mem_sInf_arrows {s : Set (Subgroupoid C)} {c d : C} {p : c ⟶ d} :
     p ∈ (sInf s).arrows c d ↔ ∀ S ∈ s, p ∈ S.arrows c d :=
   mem_iInter₂
@@ -585,7 +585,7 @@ theorem isNormal_map (hφ : Function.Injective φ.obj) (hφ' : im φ hφ = ⊤) 
       obtain ⟨c', rfl⟩ := this
       have : g ∈ (im φ hφ).arrows (φ.obj c) (φ.obj c') := by rw [hφ']; trivial
       rw [mem_im_iff] at this
-      obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; subst_vars; cases hφ hb; cases hφ hb'
+      obtain ⟨b, b', f, hb, hb', _, hf⟩ := this; cases hφ hb; cases hφ hb'
       change Map.Arrows φ hφ S (φ.obj c') (φ.obj c') _
       simp only [eqToHom_refl, Category.comp_id, Category.id_comp, inv_eq_inv]
       suffices Map.Arrows φ hφ S (φ.obj c') (φ.obj c') (φ.map <| Groupoid.inv f ≫ γ ≫ f) by

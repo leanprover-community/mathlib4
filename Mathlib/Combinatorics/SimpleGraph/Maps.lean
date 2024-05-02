@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Hunter Monroe, Kyle Miller
 -/
 import Mathlib.Combinatorics.SimpleGraph.Dart
-import Mathlib.Combinatorics.SimpleGraph.Finite
 import Mathlib.Data.FunLike.Fintype
 
 /-!
@@ -91,7 +90,7 @@ theorem map_monotone (f : V ↪ W) : Monotone (SimpleGraph.map f) := by
 adjacency relation.
 This is one of the ways of creating induced graphs. See `SimpleGraph.induce` for a wrapper.
 
-This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`).-/
+This is surjective when `f` is injective (see `SimpleGraph.comap_surjective`). -/
 protected def comap (f : V → W) (G : SimpleGraph W) : SimpleGraph V where
   Adj u v := G.Adj (f u) (f v)
   symm _ _ h := h.symm
@@ -455,6 +454,8 @@ protected def completeGraph {α β : Type*} (f : α ↪ β) :
   { f with map_rel_iff' := by simp }
 #align simple_graph.embedding.complete_graph SimpleGraph.Embedding.completeGraph
 
+@[simp] lemma coe_completeGraph {α β : Type*} (f : α ↪ β) : ⇑(Embedding.completeGraph f) = f := rfl
+
 variable {G'' : SimpleGraph X}
 
 /-- Composition of graph embeddings. -/
@@ -593,12 +594,6 @@ theorem card_eq [Fintype V] [Fintype W] : Fintype.card V = Fintype.card W := by
   rw [← Fintype.ofEquiv_card f.toEquiv]
   convert rfl
 #align simple_graph.iso.card_eq_of_iso SimpleGraph.Iso.card_eq
-
-theorem card_edgeFinset_eq [Fintype G.edgeSet] [Fintype G'.edgeSet] :
-    G.edgeFinset.card = G'.edgeFinset.card := by
-  apply Finset.card_eq_of_equiv
-  simp only [Set.mem_toFinset]
-  exact f.mapEdgeSet
 
 /-- Given a bijection, there is an embedding from the comapped graph into the original
 graph. -/

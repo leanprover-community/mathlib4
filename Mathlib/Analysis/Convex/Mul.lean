@@ -139,7 +139,9 @@ lemma ConcaveOn.mul_convexOn' (hf : ConcaveOn 𝕜 s f) (hg : ConvexOn 𝕜 s g)
 lemma ConvexOn.pow (hf : ConvexOn 𝕜 s f) (hf₀ : ∀ ⦃x⦄, x ∈ s → 0 ≤ f x) :
     ∀ n, ConvexOn 𝕜 s (f ^ n)
   | 0 => by simpa using convexOn_const 1 hf.1
-  | n + 1 => by rw [pow_succ]; exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
+  | n + 1 => by
+    rw [pow_succ']
+    exact hf.mul (hf.pow hf₀ _) hf₀ (fun x hx ↦ pow_nonneg (hf₀ hx) _) <|
       (monovaryOn_self f s).pow_right₀ hf₀ n
 
 /-- `x^n`, `n : ℕ` is convex on `[0, +∞)` for all `n`. -/
@@ -167,7 +169,7 @@ open Int in
 /-- `x^m`, `m : ℤ` is convex on `(0, +∞)` for all `m`. -/
 lemma convexOn_zpow : ∀ n : ℤ, ConvexOn 𝕜 (Ioi 0) fun x : 𝕜 ↦ x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_coe_nat]
+    simp_rw [zpow_natCast]
     exact (convexOn_pow n).subset Ioi_subset_Ici_self (convex_Ioi _)
   | -[n+1] => by
     simp_rw [zpow_negSucc, ← inv_pow]

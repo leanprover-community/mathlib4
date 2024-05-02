@@ -233,7 +233,6 @@ theorem stabilizer_quotient {G} [Group G] (H : Subgroup G) :
 
 variable (β)
 
--- mathport name: exprΩ
 local notation "Ω" => Quotient <| orbitRel α β
 
 /-- **Class formula** : given `G` a group acting on `X` and `φ` a function mapping each orbit of `X`
@@ -351,9 +350,9 @@ instance isPretransitive_quotient (G) [Group G] (H : Subgroup G) : IsPretransiti
 
 end MulAction
 
-set_option autoImplicit true in
-theorem ConjClasses.card_carrier [Group G] [Fintype G] (g : G) [Fintype (ConjClasses.mk g).carrier]
-    [Fintype <| MulAction.stabilizer (ConjAct G) g] : Fintype.card (ConjClasses.mk g).carrier =
+theorem ConjClasses.card_carrier {G : Type*} [Group G] [Fintype G] (g : G)
+    [Fintype (ConjClasses.mk g).carrier] [Fintype <| MulAction.stabilizer (ConjAct G) g] :
+    Fintype.card (ConjClasses.mk g).carrier =
       Fintype.card G / Fintype.card (MulAction.stabilizer (ConjAct G) g) := by
   classical
   rw [Fintype.card_congr <| ConjAct.toConjAct (G := G) |>.toEquiv]
@@ -427,7 +426,7 @@ theorem card_comm_eq_card_conjClasses_mul_card (G : Type*) [Group G] :
   rw [card_congr (Equiv.subtypeProdEquivSigmaSubtype Commute), card_sigma,
     sum_equiv ConjAct.toConjAct.toEquiv (fun a ↦ card { b // Commute a b })
       (fun g ↦ card (MulAction.fixedBy G g))
-      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.to_eq,
+      fun g ↦ card_congr' <| congr_arg _ <| funext fun h ↦ mul_inv_eq_iff_eq_mul.symm.eq,
     MulAction.sum_card_fixedBy_eq_card_orbits_mul_card_group]
   congr 1; apply card_congr'; congr; ext;
   exact (Setoid.comm' _).trans isConj_iff.symm

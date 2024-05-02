@@ -16,7 +16,6 @@ import Mathlib.Tactic.Nontriviality
 
 
 variable {α M₀ G₀ M₀' G₀' F F' : Type*}
-
 variable [MonoidWithZero M₀]
 
 namespace Ring

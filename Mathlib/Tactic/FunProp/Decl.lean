@@ -88,8 +88,7 @@ the function it talks about. -/
 def getFunProp? (e : Expr) : MetaM (Option (FunPropDecl × Expr)) := do
   let ext := funPropDeclsExt.getState (← getEnv)
 
-  let decls ← ext.decls.getMatch e
-    {zeta:=false,zetaDelta:=false,proj:=.no,iota:=false,beta:=false}
+  let decls ← ext.decls.getMatch e {}
 
   if decls.size = 0 then
     return none
@@ -108,10 +107,12 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 /-- Is `e` a function property statement? -/
 def isFunProp (e : Expr) : MetaM Bool := do return (← getFunProp? e).isSome
 
+
 /-- Is `e` a `fun_prop` goal? For example `∀ y z, Continuous fun x => f x y z` -/
 def isFunPropGoal (e : Expr) : MetaM Bool := do
   forallTelescope e fun _ b =>
   return (← getFunProp? b).isSome
+
 
 /-- Returns function property declaration from `e = P f`. -/
 def getFunPropDecl? (e : Expr) : MetaM (Option FunPropDecl) := do

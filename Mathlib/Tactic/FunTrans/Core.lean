@@ -41,6 +41,7 @@ private def ppOrigin' (origin : FunProp.Origin) : MetaM String := do
 
 
 def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array BinderInfo) : SimpM Bool := do
+  let mut postponed : Array Expr := #[]
   for x in xs, bi in bis do
     let type ← inferType x
     if (← instantiateMVars x).isMVar then
@@ -62,7 +63,18 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
             x.mvarId!.assignIfDefeq r
             continue
 
-      trace[Meta.Tactic.fun_trans.discharge] "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
+      if ¬(← isProp type) then
+        postponed := postponed.push x
+        continue
+      else
+        trace[Meta.Tactic.fun_trans]
+          "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
+        return false
+
+  for x in postponed do
+    if (← instantiateMVars x).isMVar then
+      trace[Meta.Tactic.fun_trans]
+        "{← ppOrigin' thmId}, failed to infer `({← ppExpr x} : {← ppExpr (← inferType x)})`"
       return false
 
   return true
@@ -343,6 +355,7 @@ def tryTheorems (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Functi
     match compare thm.appliedArgs fData.args.size with
     | .lt =>
       trace[Meta.Tactic.fun_trans] s!"removing argument to later use {← ppOrigin' thm.thmOrigin}"
+      trace[Meta.Tactic.fun_trans] s!"NOT IMPLEMENTED"
       -- if let .some r ← removeArgRule funTransDecl e fData funTrans then
       --   return r
       return none
@@ -443,6 +456,9 @@ def fvarAppCase (funTransDecl : FunTransDecl) (e : Expr) (fData : FunProp.Functi
     let thms ← getLocalTheorems funTransDecl (.fvar fvarId) fData.mainArgs e.getAppNumArgs
     trace[Meta.Tactic.fun_trans] "candidate local theorems for {← ppExpr (.fvar fvarId)}: {thms.map fun thm => thm.thmOrigin.name}"
     if let .some r ← tryTheorems funTransDecl e fData thms then
+      return r
+
+    if let .some r ← applyMorTheorems funTransDecl e fData then
       return r
 
     if let .some r ← applyFVarTheorems e then

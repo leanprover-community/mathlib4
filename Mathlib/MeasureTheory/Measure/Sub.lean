@@ -129,7 +129,7 @@ theorem restrict_sub_eq_restrict_sub_restrict (h_meas_s : MeasurableSet s) :
     · ext1 t h_meas_t
       simp [restrict_apply h_meas_t, restrict_apply (h_meas_t.inter h_meas_s), inter_assoc]
   · refine' sInf_le_sInf_of_forall_exists_le _
-    refine' ball_image_iff.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
+    refine' forall_mem_image.2 fun t h_t_in => ⟨t.restrict s, _, le_rfl⟩
     rw [Set.mem_setOf_eq, ← restrict_add]
     exact restrict_mono Subset.rfl h_t_in
 #align measure_theory.measure.restrict_sub_eq_restrict_sub_restrict MeasureTheory.Measure.restrict_sub_eq_restrict_sub_restrict

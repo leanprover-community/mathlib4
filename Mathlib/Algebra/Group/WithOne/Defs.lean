@@ -26,9 +26,13 @@ information about these structures (which are not that standard in informal math
 ## Porting notes
 
 In Lean 3, we use `id` here and there to get correct types of proofs. This is required because
-`WithOne` and `WithZero` are marked as `Irreducible` at the end of
+`WithOne` and `WithZero` are marked as `irreducible` at the end of
 `Mathlib.Algebra.Group.WithOne.Defs`, so proofs that use `Option α` instead of `WithOne α` no
 longer typecheck. In Lean 4, both types are plain `def`s, so we don't need these `id`s.
+
+## TODO
+
+`WithOne.coe_mul` and `WithZero.coe_mul` have inconsistent use of implicit parameters
 -/
 
 
@@ -279,7 +283,9 @@ instance monoidWithZero [Monoid α] : MonoidWithZero (WithZero α) :=
       | some x => congr_arg some <| pow_zero x,
     npow_succ := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ (n + 1) = 0 ^ n * 0
+        simp only [mul_zero]; rfl
       | some x => congr_arg some <| pow_succ x n }
 
 instance commMonoidWithZero [CommMonoid α] : CommMonoidWithZero (WithZero α) :=
@@ -338,7 +344,10 @@ instance divInvMonoid [DivInvMonoid α] : DivInvMonoid (WithZero α) :=
       | some x => congr_arg some <| zpow_zero x,
     zpow_succ' := fun n x =>
       match x with
-      | none => rfl
+      | none => by
+        change 0 ^ _ = 0 ^ _ * 0
+        simp only [mul_zero]
+        rfl
       | some x => congr_arg some <| DivInvMonoid.zpow_succ' n x,
     zpow_neg' := fun n x =>
       match x with

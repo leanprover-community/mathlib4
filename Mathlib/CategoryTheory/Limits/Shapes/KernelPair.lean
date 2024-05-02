@@ -40,7 +40,6 @@ namespace CategoryTheory
 open CategoryTheory CategoryTheory.Category CategoryTheory.Limits
 
 variable {C : Type u} [Category.{v} C]
-
 variable {R X Y Z : C} (f : X ⟶ Y) (a b : R ⟶ X)
 
 /-- `IsKernelPair f a b` expresses that `(a, b)` is a kernel pair for `f`, i.e. `a ≫ f = b ≫ f`

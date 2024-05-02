@@ -92,6 +92,8 @@ def addFunTransDecl (declName : Name) : MetaM Unit := do
 
 /-- -/
 def getFunTrans? (e : Expr) : MetaM (Option (FunTransDecl × Expr)) := do
+  unless e.isApp do return .none
+
   let ext := funTransDeclsExt.getState (← getEnv)
 
   let decls ← ext.decls.getMatchWithExtra e

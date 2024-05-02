@@ -70,15 +70,13 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       have : m pk = ⟨2 * t + 2 ^ pk.succ, _⟩ := if_neg (irrefl pk); simp [this]
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / (n : ℚ) : ℚ)= 1 + (2 * 2 ^ pk - 1) / (2 * (t + 1) : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 2 * 2 ^ pk)) * (1 + (2 ^ pk - 1) / (↑t + 1)) := by
         field_simp
         ring
       _ = (1 + 1 / (2 * t + 2 ^ pk.succ)) * (1 + (2 ^ pk - 1) / t_succ) := by
         -- Porting note: used to work with `norm_cast`
-        simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff]
-        left
-        rfl
+        simp only [t_succ, PNat.mk_coe, Nat.cast_add, Nat.cast_one, mul_eq_mul_right_iff, pow_succ']
       _ = (∏ i in Finset.range pk, (1 + 1 / (m i : ℚ))) * (1 + 1 / m pk) := by
         rw [prod_lemma, hpm, ← hmpk, mul_comm]
       _ = ∏ i in Finset.range pk.succ, (1 + 1 / (m i : ℚ)) := by rw [← Finset.prod_range_succ _ pk]
@@ -92,7 +90,7 @@ theorem imo2013_q1 (n : ℕ+) (k : ℕ) :
       simp [this]
     calc
       ((1 : ℚ) + (2 ^ pk.succ - 1) / ↑n : ℚ) = 1 + (2 * 2 ^ pk - 1) / (2 * t + 1 : ℕ) := by
-        rw [ht, pow_succ]
+        rw [ht, pow_succ']
       _ = (1 + 1 / (2 * t + 1)) * (1 + (2 ^ pk - 1) / (t + 1)) := by
         field_simp
         ring

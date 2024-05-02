@@ -44,11 +44,8 @@ section Field
 open Polynomial
 
 variable {K : Type*} [Field K]
-
 variable [Invertible (2 : K)] [Invertible (3 : K)]
-
 variable (a b c d : K)
-
 variable {ω p q r s t : K}
 
 theorem cube_root_of_unity_sum (hω : IsPrimitiveRoot ω 3) : 1 + ω + ω ^ 2 = 0 := by

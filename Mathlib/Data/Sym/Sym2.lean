@@ -3,6 +3,7 @@ Copyright (c) 2020 Kyle Miller All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kyle Miller
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Finset.Prod
 import Mathlib.Data.Sym.Basic
 import Mathlib.Data.Sym.Sym2.Init
@@ -747,7 +748,7 @@ theorem filter_image_mk_not_isDiag [DecidableEq α] (s : Finset α) :
     rw [← h, Sym2.mk_isDiag_iff] at hab
     exact ⟨a, b, ⟨ha, hb, hab⟩, h⟩
   · rintro ⟨a, b, ⟨ha, hb, hab⟩, h⟩
-    rw [Ne.def, ← Sym2.mk_isDiag_iff, h] at hab
+    rw [Ne, ← Sym2.mk_isDiag_iff, h] at hab
     exact ⟨⟨a, b, ⟨ha, hb⟩, h⟩, hab⟩
 #align sym2.filter_image_quotient_mk_not_is_diag Sym2.filter_image_mk_not_isDiag
 

@@ -37,9 +37,7 @@ lie algebra, derived series, derived length, solvable, radical
 universe u v w w₁ w₂
 
 variable (R : Type u) (L : Type v) (M : Type w) {L' : Type w₁}
-
 variable [CommRing R] [LieRing L] [LieAlgebra R L] [LieRing L'] [LieAlgebra R L']
-
 variable (I J : LieIdeal R L) {f : L' →ₗ⁅R⁆ L}
 
 namespace LieAlgebra
@@ -91,7 +89,7 @@ theorem derivedSeriesOfIdeal_add (k l : ℕ) : D (k + l) I = D k (D l I) := by
 theorem derivedSeriesOfIdeal_le {I J : LieIdeal R L} {k l : ℕ} (h₁ : I ≤ J) (h₂ : l ≤ k) :
     D k I ≤ D l J := by
   revert l; induction' k with k ih <;> intro l h₂
-  · rw [Nat.zero_eq, le_zero_iff] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
+  · rw [Nat.zero_eq, Nat.le_zero] at h₂; rw [h₂, derivedSeriesOfIdeal_zero]; exact h₁
   · have h : l = k.succ ∨ l ≤ k := by rwa [le_iff_eq_or_lt, Nat.lt_succ_iff] at h₂
     cases' h with h h
     · rw [h, derivedSeriesOfIdeal_succ, derivedSeriesOfIdeal_succ]

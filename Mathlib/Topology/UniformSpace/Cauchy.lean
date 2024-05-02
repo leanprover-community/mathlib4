@@ -43,7 +43,7 @@ theorem Filter.HasBasis.cauchy_iff {ι} {p : ι → Prop} {s : ι → Set (α ×
     Cauchy f ↔ NeBot f ∧ ∀ i, p i → ∃ t ∈ f, ∀ x ∈ t, ∀ y ∈ t, (x, y) ∈ s i :=
   and_congr Iff.rfl <|
     (f.basis_sets.prod_self.le_basis_iff h).trans <| by
-      simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
+      simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, forall_mem_comm]
 #align filter.has_basis.cauchy_iff Filter.HasBasis.cauchy_iff
 
 theorem cauchy_iff' {f : Filter α} :
@@ -53,7 +53,7 @@ theorem cauchy_iff' {f : Filter α} :
 
 theorem cauchy_iff {f : Filter α} : Cauchy f ↔ NeBot f ∧ ∀ s ∈ 𝓤 α, ∃ t ∈ f, t ×ˢ t ⊆ s :=
   cauchy_iff'.trans <| by
-    simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, ball_mem_comm]
+    simp only [subset_def, Prod.forall, mem_prod_eq, and_imp, id, forall_mem_comm]
 #align cauchy_iff cauchy_iff
 
 lemma cauchy_iff_le {l : Filter α} [hl : l.NeBot] :
@@ -795,7 +795,7 @@ theorem complete_of_cauchySeq_tendsto (H' : ∀ u : ℕ → α, CauchySeq u → 
 
 variable (α)
 
--- Porting note: todo: move to `Topology.UniformSpace.Basic`
+-- Porting note (#11215): TODO: move to `Topology.UniformSpace.Basic`
 instance (priority := 100) firstCountableTopology : FirstCountableTopology α :=
   ⟨fun a => by rw [nhds_eq_comap_uniformity]; infer_instance⟩
 #align uniform_space.first_countable_topology UniformSpace.firstCountableTopology

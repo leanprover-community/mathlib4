@@ -72,6 +72,22 @@ lemma prod_Iio_mul_eq_prod_Iic (a : α) : (∏ x in Iio a, f x) * f a = ∏ x in
 end LocallyFiniteOrderBot
 end PartialOrder
 
+section LinearOrder
+variable [Fintype α] [LinearOrder α] [LocallyFiniteOrderTop α] [LocallyFiniteOrderBot α]
+  [CommMonoid M]
+
+@[to_additive]
+lemma prod_prod_Ioi_mul_eq_prod_prod_off_diag (f : α → α → M) :
+    ∏ i, ∏ j in Ioi i, f j i * f i j = ∏ i, ∏ j in {i}ᶜ, f j i := by
+  simp_rw [← Ioi_disjUnion_Iio, prod_disjUnion, prod_mul_distrib]
+  congr 1
+  rw [prod_sigma', prod_sigma']
+  refine' prod_nbij' (fun i ↦ ⟨i.2, i.1⟩) (fun i ↦ ⟨i.2, i.1⟩) _ _ _ _ _ <;> simp
+#align finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag Finset.prod_prod_Ioi_mul_eq_prod_prod_off_diag
+#align finset.sum_sum_Ioi_add_eq_sum_sum_off_diag Finset.sum_sum_Ioi_add_eq_sum_sum_off_diag
+
+end LinearOrder
+
 section Generic
 variable [CommMonoid M] {s₂ s₁ s : Finset α} {a : α} {g f : α → M}
 
@@ -287,7 +303,6 @@ end Generic
 section Nat
 
 variable {M : Type*}
-
 variable (f g : ℕ → M) {m n : ℕ}
 
 section Group

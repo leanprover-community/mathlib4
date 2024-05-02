@@ -41,12 +41,18 @@ sythesized value{indentExpr val}\nis not definitionally equal to{indentExpr x}"
 
 
 /-- Synthesize arguments `xs` either with typeclass synthesis, with funProp or with discharger. -/
-def synthesizeArgs (thmId : Origin) (xs : Array Expr) (funProp : Expr → FunPropM (Option Result)) :
+def synthesizeArgs (thmId : Origin) (xs : Array Expr) (bis : Array BinderInfo)
+    (funProp : Expr → FunPropM (Option Result)) :
     FunPropM Bool := do
   let mut postponed : Array Expr := #[]
-  for x in xs do
+  for x in xs, bi in bis do
     let type ← inferType x
-    if (← instantiateMVars x).isMVar then
+    if bi.isInstImplicit then
+      unless (← synthesizeInstance thmId x type) do
+        logError s!"Failed to synthesize instance {← ppExpr type} \
+        when applying theorem {← ppOrigin' thmId}."
+        return false
+    else if (← instantiateMVars x).isMVar then
 
       -- try type class
       if (← isClass? type).isSome then
@@ -54,7 +60,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (funProp : Expr → FunPro
           continue
 
       -- try function property
-      if (← isFunPropGoal type) then
+      if (← isFunProp type.getForallBody) then
         if let .some ⟨proof⟩ ← funProp type then
           if (← isDefEq x proof) then
             continue
@@ -98,7 +104,7 @@ def synthesizeArgs (thmId : Origin) (xs : Array Expr) (funProp : Expr → FunPro
 
 
 /-- Try to apply theorem - core function -/
-def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
+def tryTheoremCore (xs : Array Expr) (bis : Array BinderInfo) (val : Expr) (type : Expr) (e : Expr)
     (thmId : Origin) (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
   withTraceNode `Meta.Tactic.fun_prop
     (fun r => return s!"[{ExceptToEmoji.toEmoji r}] applying: {← ppOrigin' thmId}") do
@@ -108,7 +114,7 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
 
   if (← isDefEq type e) then
 
-    if ¬(← synthesizeArgs thmId xs funProp) then
+    if ¬(← synthesizeArgs thmId xs bis funProp) then
       return none
     let proof ← instantiateMVars (mkAppN val xs)
 
@@ -120,27 +126,25 @@ def tryTheoremCore (xs : Array Expr) (val : Expr) (type : Expr) (e : Expr)
 
 
 /-- Try to apply a theorem provided some of the theorem arguments. -/
-def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin) (hint : Array (Nat×Expr))
+def tryTheoremWithHint? (e : Expr) (thmOrigin : Origin)
+    (hint : Array (Nat×Expr))
     (funProp : Expr → FunPropM (Option Result)) (newMCtxDepth : Bool := false) :
     FunPropM (Option Result) := do
   let go : FunPropM (Option Result) := do
     let thmProof ← thmOrigin.getValue
     let type ← inferType thmProof
-    let (xs, _, type) ← forallMetaTelescope type
+    let (xs, bis, type) ← forallMetaTelescope type
 
-    try
-      for (id,v) in hint do
-        xs[id]!.mvarId!.assignIfDefeq v
-    catch _ =>
-      let hintsString ← hint.mapM fun (n,e) => do pure s!"{n}: {← ppExpr e}"
-      trace[Meta.Tactic.fun_prop]
-        "failed to use `{← FunProp.ppOrigin thmOrigin}` with hints `{hintsString}` on `{e}`"
-      return .none
+    for (i,x) in hint do
+      try
+        for (id,v) in hint do
+          xs[id]!.mvarId!.assignIfDefeq v
+      catch _ =>
+        trace[Meta.Tactic.fun_trans]
+          "failed to use hint {i} `{← ppExpr x} when applying theorem {← ppOrigin thmOrigin}"
 
-    tryTheoremCore xs thmProof type e thmOrigin funProp
+    tryTheoremCore xs bis thmProof type e thmOrigin funProp
 
-  -- simplifier introduces new mctx depth here but it for `fun_prop` this does not seem to be
-  -- a good idea so by default we do not introduce new mctx depth.
   if newMCtxDepth then
     withNewMCtxDepth go
   else
@@ -366,6 +370,7 @@ def removeArgRule (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
       let .some (f,g) ← fData.peeloffArgDecomposition | return none
       applyCompRule funPropDecl e f g funProp
 
+
 /-- Prove function property of `fun f => f x₁ ... xₙ`. -/
 def bvarAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
@@ -547,7 +552,7 @@ def constAppCase (funPropDecl : FunPropDecl) (e : Expr) (fData : FunctionData)
     (funProp : Expr → FunPropM (Option Result)) : FunPropM (Option Result) := do
 
   let .some (funName,_) := fData.fn.const?
-    | throwError "fun_prop bug: invalid use of const app case"
+    | throwError "fun_prop bug: invelid use of const app case"
   let globalThms ← getDeclTheorems funPropDecl funName fData.mainArgs fData.args.size
 
   trace[Meta.Tactic.fun_prop]

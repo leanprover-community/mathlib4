@@ -48,7 +48,7 @@ section CommSemiring
 variable {F : Type*} [CommSemiring F] (q : ℕ)
 
 /-- A separable contraction of a polynomial `f` is a separable polynomial `g` such that
-`g(x^(q^m)) = f(x)` for some `m : ℕ`.-/
+`g(x^(q^m)) = f(x)` for some `m : ℕ`. -/
 def IsSeparableContraction (f : F[X]) (g : F[X]) : Prop :=
   g.Separable ∧ ∃ m : ℕ, expand F (q ^ m) g = f
 #align polynomial.is_separable_contraction Polynomial.IsSeparableContraction
@@ -104,7 +104,6 @@ end CommSemiring
 section Field
 
 variable {F : Type*} [Field F]
-
 variable (q : ℕ) {f : F[X]} (hf : HasSeparableContraction q f)
 
 /-- Every irreducible polynomial can be contracted to a separable polynomial.

@@ -249,7 +249,8 @@ set_option linter.uppercaseLean3 false in
 attribute [local instance] Wsetoid
 
 /-- inductive type defined as initial algebra of a Quotient of Polynomial Functor -/
---@[nolint has_nonempty_instance] Porting note: linter does not exist
+-- Porting note(#5171): this linter isn't ported yet.
+-- @[nolint has_nonempty_instance]
 def Fix (F : Type u → Type u) [Functor F] [q : QPF F] :=
   Quotient (Wsetoid : Setoid q.P.W)
 #align qpf.fix QPF.Fix
@@ -518,7 +519,6 @@ Composition of qpfs.
 namespace QPF
 
 variable {F₂ : Type u → Type u} [Functor F₂] [q₂ : QPF F₂]
-
 variable {F₁ : Type u → Type u} [Functor F₁] [q₁ : QPF F₁]
 
 /-- composition of qpfs gives another qpf -/
@@ -574,11 +574,8 @@ We show that if `F` is a qpf and `G` is a suitable quotient of `F`, then `G` is 
 namespace QPF
 
 variable {F : Type u → Type u} [Functor F] [q : QPF F]
-
 variable {G : Type u → Type u} [Functor G]
-
 variable {FG_abs : ∀ {α}, F α → G α}
-
 variable {FG_repr : ∀ {α}, G α → F α}
 
 /-- Given a qpf `F` and a well-behaved surjection `FG_abs` from `F α` to
