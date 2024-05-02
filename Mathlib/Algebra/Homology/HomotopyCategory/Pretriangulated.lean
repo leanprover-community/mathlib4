@@ -189,37 +189,39 @@ noncomputable def rotateHomotopyEquiv :
           Cocycle.ofHom_coe, Cochain.neg_comp, add_right_neg])
   inv := desc (inr φ) 0 (triangle φ).mor₃
     (by simp only [δ_zero, inr_triangleδ, Cochain.ofHom_zero])
-  homotopyHomInvId := Homotopy.ofEq (by
+  homotopyHomInvId := Homotopy.ofEq <| by
     ext n
     simp? [lift_desc_f _ _ _ _ _ _ _ _ _ rfl,
-      (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right])] says
-      simp only [shiftFunctor_obj_X', HomologicalComplex.comp_f,
-        lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg, Cocycle.leftShift_coe,
-        Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v,
-        comp_zero, (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
-        shiftFunctor_obj_X, mul_zero, sub_self, Int.zero_ediv, add_zero, Int.negOnePow_zero,
-        shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp, one_smul,
-        Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg, zero_add,
-        HomologicalComplex.id_f])
+        (inl φ).leftShift_v 1 0 _ _ n _ (n + 1)
+          (by
+            simp only [add_neg_cancel_right])] says simp only [shiftFunctor_obj_X',
+        HomologicalComplex.comp_f, lift_desc_f _ _ _ _ _ _ _ _ _ rfl, Cocycle.coe_neg,
+        Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.neg_v, Cochain.zero_v, comp_zero,
+        (inl φ).leftShift_v 1 0 _ _ n _ (n + 1) (by simp only [add_neg_cancel_right]),
+        shiftFunctor_obj_X, ↓mul_zero, sub_self, one_mul, Int.zero_ediv, add_zero,
+        Int.negOnePow_zero, shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom,
+        id_comp, one_smul, Preadditive.neg_comp, inl_v_triangle_mor₃_f, Iso.refl_inv, neg_neg,
+        zero_add, HomologicalComplex.id_f]
   homotopyInvHomId := (Cochain.equivHomotopy _ _).symm
     ⟨-(snd (inr φ)).comp ((snd φ).comp (inl (inr φ)) (zero_add (-1))) (zero_add (-1)), by
       ext n
       simp? [ext_to_iff _ _ (n + 1) rfl, ext_from_iff _ (n + 1) _ rfl,
-        δ_zero_cochain_comp _ _ _ (neg_add_self 1),
-        (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
-        (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-        Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega)] says
-        simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
+          δ_zero_cochain_comp _ _ _ (neg_add_self 1),
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+          (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
+          Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl
+            (by
+              omega)] says simp only [Cochain.ofHom_comp, ofHom_desc, ofHom_lift, Cocycle.coe_neg,
           Cocycle.leftShift_coe, Cocycle.ofHom_coe, Cochain.comp_zero_cochain_v,
           shiftFunctor_obj_X', δ_neg, δ_zero_cochain_comp _ _ _ (neg_add_self 1), δ_inl,
           Int.reduceNeg, Int.negOnePow_neg, Int.negOnePow_one, δ_snd, Cochain.neg_comp,
-          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul,
-          neg_neg, Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
+          Cochain.comp_assoc_of_second_is_zero_cochain, smul_neg, Units.neg_smul, one_smul, neg_neg,
+          Cochain.comp_add, inr_snd_assoc, neg_add_rev, Cochain.add_v, Cochain.neg_v,
           Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n rfl (by omega),
           Cochain.zero_cochain_comp_v, Cochain.ofHom_v, HomologicalComplex.id_f,
           ext_to_iff _ _ (n + 1) rfl, assoc, liftCochain_v_fst_v,
           (Cochain.ofHom φ).leftShift_v 1 1 (zero_add 1) n (n + 1) rfl (n + 1) (by omega),
-          shiftFunctor_obj_X, mul_one, sub_self, mul_zero, Int.zero_ediv, add_zero,
+          shiftFunctor_obj_X, mul_one, sub_self, one_mul, Int.zero_ediv, add_zero,
           shiftFunctorObjXIso, HomologicalComplex.XIsoOfEq_rfl, Iso.refl_hom, id_comp,
           Preadditive.add_comp, Preadditive.neg_comp, inl_v_fst_v, comp_id, inr_f_fst_v, comp_zero,
           neg_zero, neg_add_cancel_comm, ext_from_iff _ (n + 1) _ rfl, inl_v_descCochain_v_assoc,
@@ -227,7 +229,7 @@ noncomputable def rotateHomotopyEquiv :
           inr_f_descCochain_v_assoc, inr_f_snd_v_assoc, inl_v_triangle_mor₃_f_assoc, triangle_obj₁,
           Iso.refl_inv, inl_v_fst_v_assoc, inr_f_triangle_mor₃_f_assoc, inr_f_fst_v_assoc, and_self,
           liftCochain_v_snd_v,
-          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega),
+          (inl φ).leftShift_v 1 0 (neg_add_self 1) n n (add_zero n) (n + 1) (by omega), ↓mul_zero,
           Int.negOnePow_zero, inl_v_snd_v, inr_f_snd_v, zero_add, inl_v_descCochain_v,
           inr_f_descCochain_v, inl_v_triangle_mor₃_f, inr_f_triangle_mor₃_f, add_left_neg]⟩
 
