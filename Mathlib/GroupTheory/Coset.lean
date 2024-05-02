@@ -725,6 +725,7 @@ theorem quotientMapOfLE_apply_mk (h : s ≤ t) (g : α) :
 #align subgroup.quotient_map_of_le_apply_mk Subgroup.quotientMapOfLE_apply_mk
 #align add_subgroup.quotient_map_of_le_apply_mk AddSubgroup.quotientMapOfLE_apply_mk
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- The natural embedding `H ⧸ (⨅ i, f i).subgroupOf H ↪ Π i, H ⧸ (f i).subgroupOf H`. -/
 @[to_additive (attr := simps) "The natural embedding
  `H ⧸ (⨅ i, f i).addSubgroupOf H) ↪ Π i, H ⧸ (f i).addSubgroupOf H`."]
