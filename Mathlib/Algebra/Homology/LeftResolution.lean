@@ -4,6 +4,7 @@ import Mathlib.Algebra.Homology.QuasiIso
 import Mathlib.Algebra.Homology.SingleHomology
 import Mathlib.Algebra.Homology.BicomplexRows
 import Mathlib.Algebra.Homology.CochainComplexMinus
+import Mathlib.Algebra.Homology.TotalComplexMap
 
 open CategoryTheory Category Limits Preadditive ZeroObject ComplexShape
 
@@ -497,7 +498,7 @@ noncomputable abbrev bicomplexπ :
 
 section
 
-variable (K : CochainComplex.Minus C)
+variable (K L : CochainComplex.Minus C) (φ : K ⟶ L)
 
 noncomputable def totalπ'  :
     ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (up ℤ) ⟶
@@ -510,14 +511,41 @@ instance : QuasiIso (Λ.totalπ' K) := by
   dsimp [bicomplexπ]
   infer_instance
 
+noncomputable instance : ι.PreservesTotalComplex ((bicomplexFunctor Λ).obj K.obj) (up ℤ) := by
+  apply Nonempty.some
+  have ⟨i, hi⟩ := K.2
+  exact ⟨HomologicalComplex₂.preservesTotal_of_isStrictlyLE _ i 0 ι⟩
 
-noncomputable def totalπ'' :
-    ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (up ℤ) ⟶ K.obj :=
-  Λ.totalπ' K ≫ (HomologicalComplex₂.singleRow₀ObjTotal K.obj).hom
+noncomputable def totalπ :
+    (ι.mapHomologicalComplex _).obj ((Λ.bicomplexFunctor.obj K.obj).total (up ℤ)) ⟶ K.obj :=
+  (HomologicalComplex₂.mapTotalIso _ _ _).inv ≫ Λ.totalπ' K ≫
+    (HomologicalComplex₂.singleRow₀ObjTotal K.obj).hom
 
-instance : QuasiIso (Λ.totalπ'' K) := by
-  dsimp only [totalπ'']
+instance : QuasiIso (Λ.totalπ K) := by
+  dsimp only [totalπ]
   infer_instance
+
+variable {K L}
+
+/-@[pp_dot]
+noncomputable def resolutionFunctor : CochainComplex.Minus C ⥤ CochainComplex.Minus A where
+  obj K := ⟨((Λ.bicomplexFunctor.obj K.obj).total (up ℤ)), sorry⟩
+  map {K L} φ := HomologicalComplex₂.total.map (Λ.bicomplexFunctor.map φ) (up ℤ)
+  map_id K := by
+    dsimp
+    erw [Λ.bicomplexFunctor.map_id, HomologicalComplex₂.total.map_id]
+    rfl
+  map_comp φ ψ := by
+    dsimp
+    erw [Λ.bicomplexFunctor.map_comp, HomologicalComplex₂.total.map_comp]
+    rfl
+
+@[pp_dot]
+noncomputable def resolutionNatTrans : Λ.resolutionFunctor ⋙ ι.mapCochainComplexMinus ⟶ 𝟭 _ where
+  app := Λ.totalπ
+  naturality {K L} f := by
+    dsimp [resolutionFunctor, totalπ]
+    sorry-/
 
 end
 

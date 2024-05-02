@@ -228,6 +228,33 @@ def isBilimitBiconeOfLimitCone : (biconeOfLimitCone c hc).IsBilimit :=
 
 end
 
+section
+
+variable {J : Type _} [Fintype J] {X : J → C} (c : Cofan X) (hc : IsColimit c)
+  [DecidableEq J]
+
+@[simps]
+def biconeOfColimitCocone : Bicone X where
+  pt := c.pt
+  π j := hc.desc (Cofan.mk (X j) (fun i => if h : i = j then eqToHom (by rw [h]) else 0))
+  ι j := c.inj j
+  ι_π i j := by
+    erw [IsColimit.fac]
+    dsimp
+    congr
+
+def isBilimitBiconeOfColimitCocone : (biconeOfColimitCocone c hc).IsBilimit :=
+  isBilimitOfTotal _ (hc.hom_ext (fun ⟨j⟩ => by
+    erw [Preadditive.comp_sum, Category.comp_id, Finset.sum_eq_single j]
+    · simp
+      rfl
+    · intro i _ hi
+      simp [dif_neg hi.symm]
+    · intro h
+      simp at h))
+
+end
+
 instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
     PreservesFiniteProducts F where
   preserves J _ :=
@@ -245,6 +272,24 @@ instance (priority := 100) preservesFiniteProductsOfAdditive [Additive F] :
               (isBilimitOfPreserves F (isBilimitBiconeOfLimitCone c hc)).isLimit
                 (Cones.ext (Iso.refl _) (by aesop_cat)))
         exact preservesLimitOfIsoDiagram _ Discrete.natIsoFunctor.symm}
+
+instance (priority := 100) preservesFiniteCoproductsOfAdditive [Additive F] :
+    PreservesFiniteCoproducts F where
+  preserves J _ :=
+    { preservesColimit := fun {K} => by
+        have : PreservesColimit (Discrete.functor (K.obj ∘ Discrete.mk)) F := by
+          refine' ⟨fun {c : Cofan _} hc => _⟩
+          have : DecidableEq J := by
+            classical
+            infer_instance
+          let e : Discrete.functor (F.obj ∘ K.obj ∘ Discrete.mk) ≅
+              Discrete.functor (K.obj ∘ Discrete.mk) ⋙ F :=
+            Discrete.natIso (fun j => Iso.refl _)
+          refine' (IsColimit.precomposeHomEquiv e _).1
+            (IsColimit.ofIsoColimit
+              (isBilimitOfPreserves F (isBilimitBiconeOfColimitCocone c hc)).isColimit
+                (Cocones.ext (Iso.refl _) (by aesop_cat)))
+        exact preservesColimitOfIsoDiagram _ Discrete.natIsoFunctor.symm}
 
 end
 

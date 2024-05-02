@@ -39,3 +39,32 @@ instance : (ι C).CommShift ℤ :=
 end Minus
 
 end CochainComplex
+
+namespace CategoryTheory
+
+namespace Functor
+
+variable {C D : Type*} [Category C] [Category D] (F : C ⥤ D)
+
+section
+
+variable [HasZeroMorphisms C] [HasZeroMorphisms D] [F.PreservesZeroMorphisms]
+
+@[pp_dot]
+def mapCochainComplexMinus : CochainComplex.Minus C ⥤ CochainComplex.Minus D :=
+  FullSubcategory.lift _ (CochainComplex.Minus.ι C ⋙ F.mapHomologicalComplex _) (fun K => by
+    obtain ⟨i, hi⟩ := K.2
+    refine' ⟨i, _⟩
+    dsimp [CochainComplex.Minus.ι]
+    infer_instance)
+
+@[pp_dot]
+def mapCochainComplexMinusCompι :
+    F.mapCochainComplexMinus ⋙ CochainComplex.Minus.ι D ≅
+      CochainComplex.Minus.ι C ⋙ F.mapHomologicalComplex _ := Iso.refl _
+
+end
+
+end Functor
+
+end CategoryTheory

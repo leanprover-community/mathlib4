@@ -223,20 +223,9 @@ namespace Functor
 
 variable {C D}
 
-def mapHomologicalComplex₂ [F.PreservesZeroMorphisms] :
+abbrev mapHomologicalComplex₂ [F.PreservesZeroMorphisms] :
     HomologicalComplex₂ C c₁ c₂ ⥤ HomologicalComplex₂ D c₁ c₂ :=
   (F.mapHomologicalComplex c₂).mapHomologicalComplex c₁
-
-instance [F.PreservesZeroMorphisms] :
-    (F.mapHomologicalComplex₂ c₁ c₂).PreservesZeroMorphisms := by
-  dsimp only [mapHomologicalComplex₂]
-  infer_instance
-
-instance {C D : Type*} [Category C] [Category D] [Preadditive C] [Preadditive D]
-    (F : C ⥤ D) [F.Additive] :
-    (F.mapHomologicalComplex₂ c₁ c₂).Additive := by
-  dsimp only [mapHomologicalComplex₂]
-  infer_instance
 
 end Functor
 

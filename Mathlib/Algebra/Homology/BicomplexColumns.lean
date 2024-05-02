@@ -2,6 +2,7 @@ import Mathlib.Algebra.Homology.Embedding.StupidFiltration
 import Mathlib.Algebra.Homology.Embedding.CochainComplex
 import Mathlib.Algebra.Homology.TotalComplex
 import Mathlib.Algebra.Homology.TotalComplexShift
+import Mathlib.Algebra.Homology.TotalComplexMap
 
 open CategoryTheory Category Limits ComplexShape
 
@@ -127,6 +128,32 @@ noncomputable def isColimitCofanOfIsZero : IsColimit (cofanOfIsZero X ι) :=
 lemma hasCoproduct_of_isZero : HasCoproduct X :=
   ⟨_, isColimitCofanOfIsZero X ι hι hX⟩
 
+section
+
+variable {D : Type*} [Category D] [HasZeroMorphisms D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
+  [PreservesColimit (Discrete.functor (X ∘ ι)) F]
+
+noncomputable def preservesColimitOfIsZero : PreservesColimit (Discrete.functor X) F := by
+  have : HasCoproduct ((F.obj ∘ X) ∘ ι) := by
+    let h := isColimitOfPreserves F (coproductIsCoproduct (X ∘ ι))
+    exact ⟨_, (isColimitMapCoconeCofanMkEquiv _ _ _).1 h⟩
+  have : HasCoproduct fun b ↦ F.obj ((X ∘ ι) b) := by assumption
+  apply preservesColimitOfPreservesColimitCocone (isColimitCofanOfIsZero X ι hι hX)
+  refine (isColimitMapCoconeCofanMkEquiv _ _ _).2
+    (IsColimit.ofIsoColimit (isColimitCofanOfIsZero (F.obj ∘ X) ι hι
+      (fun i hi => F.map_isZero (hX i hi)))
+      (Cofan.ext (asIso (sigmaComparison F (X ∘ ι))) ?_))
+  intro i
+  by_cases hi : i ∈ Set.range ι
+  · obtain ⟨j, rfl⟩ := hi
+    change _ = F.map ((cofanOfIsZero X ι).inj (ι j))
+    rw [cofanOfIsZero_inj _ _ hι, cofanOfIsZero_inj _ _ hι]
+    erw [ι_comp_sigmaComparison]
+    rfl
+  · apply (F.map_isZero (hX _ hi)).eq_of_src
+
+end
+
 end
 
 section
@@ -165,7 +192,7 @@ end CategoryTheory
 
 namespace HomologicalComplex₂
 
-variable {C D : Type*} [Category C] [Preadditive C]
+variable {C : Type*} [Category C] [Preadditive C]
   {ι₁ ι₂ ι : Type*} {c₁ : ComplexShape ι₁} {c₂ : ComplexShape ι₂}
 
 section
@@ -185,6 +212,86 @@ variable {ι₁' : Type*} {c₁' : ComplexShape ι₁'} (e : c₁'.Embedding c�
 instance [K.HasTotal c] : HomologicalComplex₂.HasTotal (K.stupidTrunc e) c :=
   hasTotal_of_directFactor K c
     (fun i₁ i₂ => (K.stupidTruncDirectFactor e i₁).map (HomologicalComplex.eval _ _ i₂))
+
+end
+
+section
+
+variable (K : HomologicalComplex₂ C c₁ c₂)
+  (c : ComplexShape ι) [TotalComplexShape c₁ c₂ c]
+  (n : ι)
+
+structure CoreHasTotal where
+  J : Type*
+  φ₁ : J → ι₁
+  φ₂ : J → ι₂
+  π_φ (j : J) : ComplexShape.π c₁ c₂ c ⟨φ₁ j, φ₂ j⟩ = n
+  hφ : Function.Injective (fun j ↦ (φ₁ j, φ₂ j))
+  isZero (i₁ : ι₁) (i₂ : ι₂) (hi : ComplexShape.π c₁ c₂ c ⟨i₁, i₂⟩ = n)
+    (h : ¬ IsZero ((K.X i₁).X i₂)) : ∃ j, φ₁ j = i₁ ∧ φ₂ j = i₂
+  hasCoproduct' : HasCoproduct (fun j => (K.X (φ₁ j)).X (φ₂ j)) := by infer_instance
+
+namespace CoreHasTotal
+
+variable {K c n}
+variable (κ : K.CoreHasTotal c n)
+
+@[simps]
+def φ : κ.J → π c₁ c₂ c ⁻¹' {n} := fun j => ⟨⟨κ.φ₁ j, κ.φ₂ j⟩, κ.π_φ j⟩
+
+lemma injective_φ : Function.Injective κ.φ := by
+  intro j₁ j₂ h
+  apply κ.hφ
+  simpa only [Subtype.ext_iff] using h
+
+attribute [instance] hasCoproduct'
+
+instance : HasCoproduct (K.toGradedObject.mapObjFun (π c₁ c₂ c) n ∘ κ.φ) := κ.hasCoproduct'
+
+lemma isZero' (i : π c₁ c₂ c ⁻¹' {n}) (hi : i ∉ Set.range κ.φ) :
+    IsZero ((K.X i.1.1).X i.1.2) := by
+  obtain ⟨⟨i₁, i₂⟩, hi₁₂⟩ := i
+  by_contra h
+  apply hi
+  obtain ⟨j, rfl, rfl⟩ := κ.isZero i₁ i₂ hi₁₂ h
+  exact ⟨j, rfl⟩
+
+noncomputable def cofan : Cofan (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) :=
+  cofanOfIsZero (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) κ.φ
+
+noncomputable def isColimit : IsColimit κ.cofan :=
+  isColimitCofanOfIsZero (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) κ.φ
+    κ.injective_φ κ.isZero'
+
+def hasCoproduct :
+    HasCoproduct (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n) :=
+  ⟨_, κ.isColimit⟩
+
+section
+
+variable {D : Type*} [Category D] [Preadditive D] (F : C ⥤ D) [F.PreservesZeroMorphisms]
+  [PreservesColimit (Discrete.functor (fun j => (K.X (κ.φ₁ j)).X (κ.φ₂ j))) F]
+
+def map :
+    CoreHasTotal ((F.mapHomologicalComplex₂ c₁ c₂).obj K) c n where
+  J := κ.J
+  φ₁ := κ.φ₁
+  φ₂ := κ.φ₂
+  π_φ := κ.π_φ
+  hφ := κ.hφ
+  isZero i₁ i₂ h h' := κ.isZero i₁ i₂ h (fun h'' => h' (F.map_isZero h''))
+  hasCoproduct' := ⟨_, isColimitOfHasCoproductOfPreservesColimit F _⟩
+
+noncomputable def preserves : PreservesColimit (Discrete.functor
+    (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n)) F := by
+  have : PreservesColimit (Discrete.functor (K.toGradedObject.mapObjFun (π c₁ c₂ c) n ∘ φ κ)) F :=
+    by assumption
+  exact preservesColimitOfIsZero (X := (K.toGradedObject.mapObjFun (ComplexShape.π c₁ c₂ c) n))
+    κ.φ κ.injective_φ κ.isZero' F
+
+end
+
+end CoreHasTotal
 
 end
 
@@ -548,26 +655,47 @@ noncomputable def singleColumnObjTotal_hom_naturality {K L : CochainComplex C �
   rw [← cancel_epi (singleColumnObjTotal K x x' h).inv,
     singleColumnObjTotal_inv_naturality_assoc, Iso.inv_hom_id, comp_id, Iso.inv_hom_id_assoc]
 
+section
+
+variable (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
+    [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] (n : ℤ)
+
+def coreHasTotalOfIsStrictlyLE :
+    K.CoreHasTotal (up ℤ) n where
+  J := Fin (Int.toNat (x₀ + y₀ - n + 1))
+  φ₁ := fun ⟨k, _⟩ => x₀ - k
+  φ₂ := fun ⟨k, _⟩ => n - x₀ + k
+  π_φ _ := by simp
+  hφ j₁ j₂ h := by aesop
+  isZero i₁ i₂ h h' := by
+    dsimp at h
+    have h₁ : i₁ ≤ x₀ := by
+      by_contra!
+      exact h' ((HomologicalComplex.eval _ _ i₂).map_isZero
+        (CochainComplex.isZero_of_isStrictlyLE K _ _ this))
+    have h₂ : i₂ ≤ y₀ := by
+      by_contra!
+      exact h' (CochainComplex.isZero_of_isStrictlyLE (K.X i₁) _ _ this)
+    obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le h₁
+    refine' ⟨⟨k, _⟩, by dsimp; omega, by dsimp; omega⟩
+    rw [Int.lt_toNat]
+    omega
+
+instance : Fintype (K.coreHasTotalOfIsStrictlyLE x₀ y₀ n).J := by
+  dsimp [coreHasTotalOfIsStrictlyLE]
+  infer_instance
+
 lemma hasTotal_of_isStrictlyLE (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
     [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀] :
-    K.HasTotal (up ℤ) := fun n => by
-  obtain ⟨M, hM⟩ : ∃ (M : ℕ), y₀ < n - x₀ + M := by
-    by_cases h : y₀ < n - x₀
-    · exact ⟨0, by omega⟩
-    · simp only [not_lt] at h
-      obtain ⟨k, rfl⟩ := Int.eq_add_ofNat_of_le h
-      exact ⟨k + 1, by omega⟩
-  apply hasCoproduct_of_isZero (J := Fin M) (ι := fun ⟨k, _⟩ => ⟨⟨x₀ - k, n - x₀ + k⟩, by simp⟩)
-  · rintro ⟨k, hk⟩ ⟨k', hk'⟩
-    simp
-  · rintro ⟨⟨x, y⟩, hxy : x + y = n⟩ h
-    by_cases hx : x ≤ x₀
-    · apply CochainComplex.isZero_of_isStrictlyLE (K.X x) y₀
-      by_contra!
-      obtain ⟨k, hk⟩ := Int.eq_add_ofNat_of_le hx
-      exact h ⟨⟨k, by omega⟩, by simp only [Subtype.mk.injEq, Prod.mk.injEq]; omega⟩
-    · exact (HomologicalComplex.eval _ _ y).map_isZero
-        (CochainComplex.isZero_of_isStrictlyLE K x₀ x (by simpa using hx))
+    K.HasTotal (up ℤ) := fun n => (K.coreHasTotalOfIsStrictlyLE x₀ y₀ n).hasCoproduct
+
+noncomputable def preservesTotal_of_isStrictlyLE (K : HomologicalComplex₂ D (up ℤ) (up ℤ)) (x₀ y₀ : ℤ)
+    [CochainComplex.IsStrictlyLE K x₀] [∀ x, CochainComplex.IsStrictlyLE (K.X x) y₀]
+    {E : Type*} [Category E] [Preadditive E] (F : D ⥤ E) [F.Additive] :
+    F.PreservesTotalComplex K (up ℤ) := fun n =>
+  (K.coreHasTotalOfIsStrictlyLE x₀ y₀ n).preserves F
+
+end
 
 lemma hasTotal_of_isStrictlyGE_of_isStrictlyLE (K : HomologicalComplex₂ C (up ℤ) (up ℤ))
     (x₀ x₁ : ℤ)
