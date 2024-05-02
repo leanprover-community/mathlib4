@@ -163,7 +163,7 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
                     mkNode ``Lean.Parser.Term.app #[
                       mkIdent `Multiplicative,
                       mkNode `null #[mkIdent `G]],
-                    mkAtom "→", mkIdent "R"]],
+                    mkAtom "→", mkIdent `R]],
                 mkNode `null #[],
                 mkAtom ")"]
       | _ => return none
