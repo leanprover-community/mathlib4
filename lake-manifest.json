@@ -1,4 +1,4 @@
-{"version": 7,
+{"version":  7,
  "packagesDir": ".lake/packages",
  "packages":
  [{"url": "https://github.com/leanprover/std4",
