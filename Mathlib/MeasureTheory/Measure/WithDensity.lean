@@ -595,7 +595,7 @@ lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaF
   have hs : MeasurableSet s := hf (measurableSet_singleton _)
   rw [← restrict_add_restrict_compl (μ := μ.withDensity f) hs, restrict_withDensity hs,
     restrict_withDensity hs.compl, ← withDensity_indicator hs, ← withDensity_indicator hs.compl]
-  have h1 : SFinite (μ.withDensity (Set.indicator s f)) := by
+  have h1 : SFinite (μ.withDensity (s.indicator f)) := by
     have h_eq_sum : s.indicator f = ∑' n : ℕ, s.indicator 1 := by
       ext x
       rw [tsum_apply]
@@ -606,13 +606,13 @@ lemma sFinite_withDensity_of_sigmaFinite_of_measurable (μ : Measure α) [SigmaF
         simp [hx, ENNReal.tsum_const_eq_top_of_ne_zero]
       · simp
     rw [h_eq_sum, withDensity_tsum (fun _ ↦ measurable_one.indicator hs)]
-    have : SigmaFinite (μ.withDensity (Set.indicator s 1)) := by
+    have : SigmaFinite (μ.withDensity (s.indicator 1)) := by
       refine SigmaFinite.withDensity_of_ne_top' (measurable_one.indicator hs).aemeasurable
         (fun x ↦ ?_)
       simp only [Set.indicator_apply, Pi.one_apply, ne_eq]
       split_ifs with h <;> simp [h]
     infer_instance
-  have h2 : SigmaFinite (μ.withDensity (Set.indicator sᶜ f)) := by
+  have h2 : SigmaFinite (μ.withDensity (sᶜ.indicator f)) := by
     refine SigmaFinite.withDensity_of_ne_top' (hf.indicator hs.compl).aemeasurable (fun x ↦ ?_)
     simp only [Set.indicator_apply, Set.mem_compl_iff, Set.mem_setOf_eq, ite_not, ne_eq, s]
     split_ifs with h <;> simp [h]
