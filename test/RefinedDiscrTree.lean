@@ -49,7 +49,7 @@ info: [Function.Bijective (Int, Int, λ Int.succ (*)), Function.Bijective (Int, 
 #guard_msgs in
 # Nat.sqrt $ ((@id Nat) + fun x : Nat => x) 4
 
-/-- info: [Nat.sqrt (HPow.hPow (Nat → Nat, Nat, *, *, id (Nat), 3, 6))] -/
+/-- info: [Nat.sqrt (HPow.hPow (Nat, Nat, *, *, id (Nat, 6), 3))] -/
 #guard_msgs in
 # Nat.sqrt $ (id ^ 3 : Nat → Nat) 6
 
@@ -106,6 +106,11 @@ info: [Function.Bijective (Nat, Nat, HAdd.hAdd (Nat → Nat, Nat → Nat, *, *, 
 #guard_msgs in
 # Function.Bijective fun x => x*3+4/(3+ᵥ2•5)^x
 
+/--
+info: [Nat.sqrt (HAdd.hAdd (Nat → Nat, Nat → Nat, *, *, HVAdd.hVAdd (Nat, Nat → Nat, *, *, HSMul.hSMul (Nat, Nat, *, *, 2, 1), id (Nat)), HDiv.hDiv (Nat → Nat, Nat → Nat, *, *, HMul.hMul (Nat → Nat, Nat → Nat, *, *, 4, 5), HPow.hPow (Nat → Nat, Nat, *, *, id (Nat), 9)), 5))]
+-/
+#guard_msgs in
+# Nat.sqrt $ (2•1+ᵥid+4*5/id^9 : Nat → Nat) 5
 
 
 -- don't distrubute a lambda when the bound variable appears in the exponent/multiplier:
