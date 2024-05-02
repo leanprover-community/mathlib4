@@ -46,22 +46,22 @@ lemma zero (f : Q.obj K ⟶ Q.obj L) [L.IsGE 1] : f = 0 := by
 end t_aux
 
 def t : TStructure (DerivedCategory C) where
-  setLE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
-  setGE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
-  setLE_respectsIso n :=
+  LE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyLE n
+  GE n X := ∃ (K : CochainComplex C ℤ) (_ : X ≅ DerivedCategory.Q.obj K), K.IsStrictlyGE n
+  LE_closedUnderIsomorphisms n :=
     { mem_of_iso := by
         rintro X Y e ⟨K, e', _⟩
         exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
-  setGE_respectsIso n :=
+  GE_closedUnderIsomorphisms n :=
     { mem_of_iso := by
         rintro X Y e ⟨K, e', _⟩
         exact ⟨K, e.symm ≪≫ e', inferInstance⟩ }
-  shift_mem_setLE := by
+  shift_LE := by
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
       K.isStrictlyLE_shift n a n' h⟩
-  shift_mem_setGE := by
+  shift_GE := by
     rintro n a n' h X ⟨K, e, _⟩
     exact ⟨(shiftFunctor (CochainComplex C ℤ) a).obj K,
       (shiftFunctor (DerivedCategory C) a).mapIso e ≪≫ (Q.commShiftIso a).symm.app K,
@@ -70,10 +70,10 @@ def t : TStructure (DerivedCategory C) where
     rintro ⟨K, e₁, _⟩ ⟨L, e₂, _⟩
     rw [← cancel_epi e₁.inv, ← cancel_mono e₂.hom, comp_zero, zero_comp]
     apply t_aux.zero
-  setLE_zero_subset := by
+  LE_zero_le := by
     rintro X ⟨K, e, _⟩
     exact ⟨K, e, K.isStrictlyLE_of_LE 0 1 (by omega)⟩
-  setGE_one_subset := by
+  GE_one_le := by
     rintro X ⟨K, e, _⟩
     exact ⟨K, e, K.isStrictlyGE_of_GE 0 1 (by omega)⟩
   exists_triangle_zero_one X := by
