@@ -1,42 +1,42 @@
-import Mathlib
+import Mathlib.MeasureTheory.Measure.Regular
+import Mathlib.MeasureTheory.Measure.ProbabilityMeasure
+import Mathlib.MeasureTheory.Measure.Portmanteau
 
-variable {α : Type*} {ε : ENNReal}
-
+open Topology Filter Uniformity Uniform MeasureTheory Set
 open scoped ENNReal
 
-lemma aux : ∑' (a : ℕ), (1 : ℝ≥0∞) / (2 ^ (a + 1)) = 1 := by
-  simp only [one_div, pow_add, pow_one]
-  calc ∑' i, ((2 : ℝ≥0∞) ^ i * 2)⁻¹
-  _ = ∑' i, (2⁻¹ ^ i) * 2⁻¹ := by
-        congr with i
-        rw [ENNReal.mul_inv (by simp) (by simp), ENNReal.inv_pow]
-  _ = (∑' i, 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_right]
-  _ = (1 - 2⁻¹)⁻¹ * 2⁻¹ := by rw [ENNReal.tsum_geometric]
-  _ = 1 := by simp [ENNReal.one_sub_inv_two, inv_inv, ENNReal.mul_inv_cancel]
+namespace MeasureTheory
 
-lemma aux2 : ∑' (a : ℕ), ε / (2 ^ (a + 1)) = ε := by
-  simp only [div_eq_mul_inv, pow_add, pow_one]
-  calc ∑' i, ε * ((2 : ℝ≥0∞) ^ i * 2)⁻¹
-  _ = ∑' i, ε * (2⁻¹ ^ i) * 2⁻¹ := by
-        congr with i
-        rw [ENNReal.mul_inv (by simp) (by simp), ENNReal.inv_pow, mul_assoc]
-  _ = (∑' i, ε * 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_right]
-  _ = ε * (∑' i, 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_left]
-  _ = ε * (1 - 2⁻¹)⁻¹ * 2⁻¹ := by rw [ENNReal.tsum_geometric]
-  _ = ε := by
-    simp only [ENNReal.one_sub_inv_two, inv_inv, mul_assoc]
-    rw [ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
-    simp
+variable {α ι : Type*}
 
-theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
-  calc ∑' n : ℕ, r ^ (n + 1)
-  _ = ∑' n : ℕ, r * r ^ (n) := by
-        congr with n
-        exact pow_succ' r n
-  _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
-  _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
+variable [MeasurableSpace α] {μ : Measure α}
 
-theorem ENNReal.tsum_geometric_add_one_mul_const (r : ℝ≥0∞) : ∑' n : ℕ, ε * r ^ (n + 1) = ε * r * (1 - r)⁻¹ := by
-  calc ∑' n : ℕ, ε * r ^ (n + 1)
-  _ = ε * ∑' n : ℕ, r ^ (n + 1) := by rw [ENNReal.tsum_mul_left]
-  _ = ε * r * (1 - r)⁻¹ := by rw [mul_assoc, ENNReal.tsum_geometric_add_one r]
+/-- A measure `μ` is separable if there is a separable set `S` such that `μ S = μ Set.univ`. -/
+ def IsSeparable [TopologicalSpace α] (μ : Measure α) : Prop :=
+   ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ S = μ Set.univ
+
+/-- A measure `μ` is pre-tight if for all `0 < ε`, there exists `K` totally bounded such that
+  `μ Kᶜ ≤ ε`. -/
+def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
+  ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ ε
+
+/-- Ulam tightness theorem, which I have already proven. -/
+lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
+    [OpensMeasurableSpace α] [IsFiniteMeasure μ] : IsPretight μ := by
+  sorry
+
+-- The proof idea is simple: if `μ` is separable, then there exists a separable set `S` such that
+-- `μ S = μ Set.univ`. On this subspace, we can invoke `of_separableSpace_on_metric` to get that
+-- `μ` is pre-tight on this subspace. As this has full measure, we want to lift this back.
+lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
+    (h : IsSeparable μ) [IsFiniteMeasure μ] : IsPretight μ := by
+  obtain ⟨S, hS, hSμ⟩ := h
+  have : TopologicalSpace.PseudoMetrizableSpace (closure S) := by
+    infer_instance
+  have : TopologicalSpace.SeparableSpace (closure S) := by
+    have hSc := TopologicalSpace.IsSeparable.closure hS
+    have : closure S = Set.univ (α := closure S) := by
+      exact (Subtype.coe_image_univ (closure S)).symm
+    rw [this] at hSc
+    sorry
+  have := of_separableSpace_on_metric (α := closure S) -- fails

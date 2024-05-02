@@ -68,6 +68,7 @@ lemma aux2 [IsFiniteMeasure μ] [TopologicalSpace α] [OpensMeasurableSpace α]
   rw [measure_compl hK2.measurableSet (measure_ne_top μ _)]
   exact tsub_le_iff_tsub_le.mp hn
 
+-- added
 lemma aux3 [PseudoMetricSpace α] {s : Set α} (h : TotallyBounded s) :
     TopologicalSpace.IsSeparable s:= by
   rw [Metric.totallyBounded_iff] at h
@@ -96,6 +97,7 @@ lemma aux3 [PseudoMetricSpace α] {s : Set α} (h : TotallyBounded s) :
  def IsSeparable [TopologicalSpace α] (μ : Measure α) : Prop :=
    ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ S = μ Set.univ
 
+-- added
 /-- A measure `μ` is pre-tight if for all `0 < ε`, there exists `K` totally bounded such that
   `μ Kᶜ ≤ ε`. -/
 def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
@@ -103,12 +105,14 @@ def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
 
 namespace IsPretight
 
+-- added
 lemma has_totally_bounded_nat [UniformSpace α] (h : IsPretight μ) :
     ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n := by
   intro n
   apply h
   simp
 
+-- added
 lemma of_totally_bounded_nat [UniformSpace α]
     (h : ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n) : IsPretight μ := by
   intro ε hε
@@ -118,10 +122,12 @@ lemma of_totally_bounded_nat [UniformSpace α]
   apply le_trans hKe (le_trans ?_ hn.le)
   rw [one_div, ENNReal.inv_le_inv]
 
+-- added
 lemma totally_bounded_nat_iff [UniformSpace α] :
     IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n :=
   ⟨has_totally_bounded_nat, of_totally_bounded_nat⟩
 
+-- added
 lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
   choose! K hKa hKb using h.has_totally_bounded_nat
@@ -139,12 +145,14 @@ lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     apply lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn)
   exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n) this
 
+-- added
 lemma to_isSeparable_on_metric [PseudoMetricSpace α] (h : IsPretight μ) : IsSeparable μ := by
   obtain ⟨K, hKa, hKb⟩ := has_countable_totally_bounded_union h
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
   exact fun i => aux3 (hKa i)
 
+-- added
 lemma aux_sep_1 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
     [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] :
     ∃ K : ℕ → α, DenseRange K ∧ ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
@@ -160,6 +168,7 @@ lemma aux_sep_1 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Non
     exact aux1 (fun y ↦ Metric.ball (K y) δ) (ball_cover δ hδ) η hη
   exact ⟨K, hK, cover⟩
 
+-- added
 lemma aux_sep_2 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
     [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] {ε : ENNReal} (hε : 0 < ε) :
     ∃ K : ℕ → α, DenseRange K ∧ ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (K i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
@@ -181,20 +190,16 @@ lemma aux_sep_2 [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Non
     _ ≤ _ := by
       exact tsub_le_iff_tsub_le.mp hN
 
-lemma aux_sep_3 (ε : ENNReal) : ∑' (a : ℕ), ε / (2 ^ (a + 1)) = ε := by
-  simp only [div_eq_mul_inv, pow_add, pow_one]
-  calc ∑' i, ε * ((2 : ℝ≥0∞) ^ i * 2)⁻¹
-  _ = ∑' i, ε * (2⁻¹ ^ i) * 2⁻¹ := by
-        congr with i
-        rw [ENNReal.mul_inv (by simp) (by simp), ENNReal.inv_pow, mul_assoc]
-  _ = (∑' i, ε * 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_right]
-  _ = ε * (∑' i, 2⁻¹ ^ i) * 2⁻¹ := by rw [ENNReal.tsum_mul_left]
-  _ = ε * (1 - 2⁻¹)⁻¹ * 2⁻¹ := by rw [ENNReal.tsum_geometric]
-  _ = ε := by
-    simp only [ENNReal.one_sub_inv_two, inv_inv, mul_assoc]
-    rw [ENNReal.mul_inv_cancel two_ne_zero ENNReal.two_ne_top]
-    simp
+-- added
+theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
+   calc ∑' n : ℕ, r ^ (n + 1)
+   _ = ∑' n : ℕ, r * r ^ (n) := by
+         congr with n
+         exact pow_succ' r n
+   _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
+   _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
 
+-- added
 lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
     [OpensMeasurableSpace α] [IsFiniteMeasure μ] : IsPretight μ := by
   by_cases hμ : μ (Set.univ) = 0
@@ -233,8 +238,14 @@ lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.Separ
         have := hG i
         simp only [one_div, Set.compl_iUnion] at this
         exact this
-      exact le_trans (ENNReal.tsum_le_tsum this) (aux_sep_3 ε).le
+      apply le_trans (ENNReal.tsum_le_tsum this)
+      calc ∑' (a : ℕ), ε / (2 ^ (a + 1))
+        _ = ε * ∑' (a : ℕ), 2⁻¹ ^ (a + 1) := by
+          simp only [div_eq_mul_inv, ENNReal.inv_pow, ENNReal.tsum_mul_left]
+        _ = ε * (2⁻¹ * 2) := by simp [ENNReal.tsum_geometric_add_one]
+        _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
 
+-- added, wip
 lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
     (h : IsSeparable μ) : IsPretight μ := by
   by_cases hμ : μ (Set.univ) = 0
@@ -301,7 +312,7 @@ instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFin
     exact ⟨hk.lt_top_of_isCompact hK, lt_of_le_of_lt hμ ENNReal.one_lt_top⟩
   exact ⟨this⟩
 
-/-- Every tight measure is pre-tight-/
+-- added
 lemma IsPretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
   intro ε hε
   obtain ⟨K, hK_compact, hKμ⟩ := h ε hε
@@ -400,7 +411,7 @@ lemma countable_compact_cover_iff [TopologicalSpace α] [T2Space α] [OpensMeasu
     [IsFiniteMeasure μ] : IsTight μ ↔ ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ :=
   ⟨countable_compact_cover, of_countable_compact_cover⟩
 
-
+-- added
 lemma of_isPretight [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : IsTight μ := by
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := h ε hε
@@ -410,9 +421,11 @@ lemma of_isPretight [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : I
     simp only [Set.compl_subset_compl, subset_closure]
   exact le_trans this hKe
 
+-- added
 lemma isPretight_iff_uniform_complete [UniformSpace α] [CompleteSpace α] :
     IsTight μ ↔ IsPretight μ := ⟨IsPretight.of_isTight, of_isPretight⟩
 
+-- added
 lemma Ulam_tightness [UniformSpace α] [TopologicalSpace.SeparableSpace α] [MetricSpace α]
     [CompleteSpace α] [OpensMeasurableSpace α] [IsFiniteMeasure μ] : IsTight μ := by
   apply of_isPretight
@@ -421,84 +434,4 @@ lemma Ulam_tightness [UniformSpace α] [TopologicalSpace.SeparableSpace α] [Met
 
 end IsTight
 
-/-- A set `S` of measures is uniformly tight if for all `0 < ε`, there exists `K` compact such that
-for all `μ` in `S`, `μ Kᶜ ≤ ε`. -/
-def IsUniformlyTight [TopologicalSpace α] (S : Set (Measure α)) : Prop :=
-  ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, IsCompact K ∧ ∀ μ ∈ S, μ Kᶜ ≤ ε
-
-namespace IsUniformlyTight
-
-lemma tight_of_isTightSet [TopologicalSpace α] {S : Set (Measure α)} (h : IsUniformlyTight S) :
-    ∀ μ ∈ S, IsTight μ := by
-  intro μ hμ ε hε
-  obtain ⟨K, hK, hKμ⟩ := h ε hε
-  exact ⟨K, hK, hKμ μ hμ⟩
-
-lemma isTightSet_of_finite_tight [TopologicalSpace α] (S : Set (Measure α)) (h : Set.Finite S) :
-    (∀ μ ∈ S, IsTight μ) → IsUniformlyTight S := by
-  intro hTight ε hε
-  choose! K hKc hKε using fun ν hν => hTight ν hν ε hε
-  use ⋃ ν ∈ S, K ν, h.isCompact_biUnion hKc
-  rintro μ hμ
-  apply le_trans (μ.mono ?_) (hKε μ hμ)
-  simp only [Set.compl_subset_compl]
-  exact Set.subset_biUnion_of_mem hμ
-
-lemma tight_singleton [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] (μ : Measure α)
-    [IsFiniteMeasure μ] [μ.InnerRegular] : IsUniformlyTight {μ} := by
-  intro ε hε
-  simp_all only [IsTight.of_innerRegular μ ε hε, Set.mem_singleton_iff, forall_eq]
-
-end IsUniformlyTight
-
-/-- As tight sequences are very common in measure theory, we encode these in a separate
-definition. -/
-def IsAsymptoticallyTight [TopologicalSpace α] (μs : ℕ → Measure α) : Prop :=
-  ∀ ε : ℝ≥0∞, 0 < ε → ∃ K : Set α, IsCompact K ∧ Filter.limsup (fun i ↦ (μs i) Kᶜ) Filter.atTop ≤ ε
-
-namespace IsAsymptoticallyTight
-
-lemma of_isUniformlyTight_seq [TopologicalSpace α] {μs : ℕ → Measure α}
-    (hμs : IsUniformlyTight (Set.range fun n => μs n)) : IsAsymptoticallyTight μs := by
-  intro ε hε
-  obtain ⟨K, hK, hKμ⟩ := hμs ε hε
-  use K, hK
-  exact le_trans Filter.limsup_le_iSup (iSup_le (fun i => hKμ (μs i) (Set.mem_range_self i)))
-
-lemma isUniformlyTight_of_isAsympotiticallyTight_of_tight_seq [TopologicalSpace α]
-    {μs : ℕ → Measure α} (hμs : IsAsymptoticallyTight μs) (hs : ∀ n, IsTight (μs n)) :
-    IsUniformlyTight (Set.range fun n => μs n) := by
-  intro ε hε
-  by_cases hε_fin : ε < ∞
-  · obtain ⟨K', hK', hKμ'⟩ := hμs (ε / 2) (ENNReal.half_pos hε.ne')
-    obtain ⟨N, hN⟩ := Filter.eventually_atTop.mp (Filter.eventually_lt_of_limsup_lt
-      (lt_of_le_of_lt hKμ' (ENNReal.half_lt_self hε.ne' hε_fin.ne'.symm)))
-    choose K hK₁ hK₂ using fun n => hs n ε hε
-    use (⋃ (i ≤ N), K i) ∪ K'
-    constructor
-    · exact IsCompact.union ((Set.finite_le_nat N).isCompact_biUnion (fun i _ => hK₁ i)) hK'
-    · intro μ hy
-      obtain ⟨n, hn⟩ := Set.mem_range.mp hy
-      rw [← hn]
-      by_cases hnN : n ≤ N
-      · apply le_trans (measure_mono ?_) (hK₂ n)
-        rw [Set.compl_subset_compl]
-        apply Set.subset_union_of_subset_left
-        exact Set.subset_biUnion_of_mem hnN
-      · apply le_trans (measure_mono ?_) (hN n (Nat.le_of_not_ge hnN)).le
-        rw [Set.compl_subset_compl]
-        apply Set.subset_union_of_subset_right
-        rfl
-  · use ∅, isCompact_empty
-    intro μ _
-    simp_all only [not_lt, top_le_iff, Set.mem_range, Set.compl_empty, le_top]
-
-lemma tight_seq_iff_isUniformlyTight [TopologicalSpace α] {μs : ℕ → Measure α} :
-    (IsAsymptoticallyTight μs ∧ ∀ n, IsTight (μs n)) ↔
-    IsUniformlyTight (Set.range fun n => μs n) := by
-  refine ⟨fun h => isUniformlyTight_of_isAsympotiticallyTight_of_tight_seq h.1 h.2, ?_⟩
-  exact fun h => ⟨of_isUniformlyTight_seq h,
-    fun n => IsUniformlyTight.tight_of_isTightSet h (μs n) (Set.mem_range_self n)⟩
-
-end IsAsymptoticallyTight
 end MeasureTheory
