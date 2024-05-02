@@ -30,6 +30,13 @@ abbrev segmentReplacements : HashMap String String := HashMap.empty
   |>.insert "union"  "inter"
   |>.insert "inter"  "union"
 
+abbrev botTop : HashMap String String := HashMap.empty
+  |>.insert "⊥"      "⊤"
+  |>.insert "Bot"    "Top"
+  |>.insert "bot"    "top"
+  |>.insert "unbot"  "untop"
+  |>.insert "union"  "inter"
+
 /-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
 `[non-alpha]*`. -/
 def splitUpper (s : String) : List String :=
@@ -131,11 +138,11 @@ environment the analogous result about `WithTop`.
 Writing `to_top?` also prints the extra declaration added by `to_top`.
 -/
 elab (name := to_topCmd) "to_top " tk:"?"? cmd:command : command => do
-  let newCmd ← binopReplacements <| ← MaxToMin segmentReplacements cmd
+  let newCmd ← binopReplacements <| ← MaxToMin botTop cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   let currNS ← getCurrNamespace
-  withScope (fun s => { s with currNamespace := nameToTop segmentReplacements currNS }) <| elabCommand newCmd
+  withScope (fun s => { s with currNamespace := nameToTop botTop currNS }) <| elabCommand newCmd
 
 @[inherit_doc to_topCmd]
 macro "to_top? " cmd:command : command => return (← `(to_top ? $cmd))
@@ -146,33 +153,41 @@ register_option linter.syntaxTranslation : Nat := {
   descr := "enable the syntaxTranslation linter"
 }
 
-abbrev botTop : HashMap String String := HashMap.empty
-  |>.insert "⊥"      "⊤"
---  |>.insert "max"    "min"
---  |>.insert "Sup"    "Inf"
---  |>.insert "sup"    "inf"
-  |>.insert "Bot"    "Top"
-  |>.insert "bot"    "top"
-  |>.insert "unbot"  "untop"
-  |>.insert "union"  "inter"
---  |>.insert "inter"  "union"
-
-
 --/-- Gets the value of the `linter.syntaxTranslation` option. -/
 --def getLinterHash (o : Options) : Syntax := Linter.getLinterValue linter.syntaxTranslation o
 /--  i am the linter -/
 def syntaxTranslationLinter : Linter where
   run := withSetOptionIn fun stx => do
     let gh := linter.syntaxTranslation.get (← getOptions)
-    unless gh == default do
+--    unless gh == default do
 --    let nm ← resolveGlobalConstNoOverloadWithInfo gh
     if (← MonadState.get).messages.hasErrors then
       return
     match gh with
-      | 0 =>
+      | 1 =>
         let newCmd ← binopReplacements <| ← MaxToMin botTop stx
         let currNS ← getCurrNamespace
-        withScope (fun s => { s with currNamespace := nameToTop botTop currNS } ) <| elabCommand newCmd
+        withScope (fun s => { s with currNamespace := nameToTop botTop currNS } ) do
+          logInfo m!"--adding\n{newCmd}"
+          elabCommand newCmd
+          elabCommand (← `(#check $(mkIdent `WithBot)))
+          let d := (← getEnv).find? `WithBot
+          --let val := (d.getD default).toConstantVal
+          let atd : Declaration := match d with
+              | some (.axiomInfo a)  => .axiomDecl a
+              | some (.defnInfo a)   => .defnDecl a
+              | some (.thmInfo a)    => .thmDecl a
+              | some (.opaqueInfo a) => .opaqueDecl a
+              | _ => default
+
+          liftCoreM <| addDecl atd
+        --elabCommand newCmd
       | _ => return --logWarning "not implemented"; return
 
 initialize addLinter syntaxTranslationLinter
+
+
+--  | axiomDecl       (val : AxiomVal)
+--  | defnDecl        (val : DefinitionVal)
+--  | thmDecl         (val : TheoremVal)
+--  | opaqueDecl      (val : OpaqueVal)

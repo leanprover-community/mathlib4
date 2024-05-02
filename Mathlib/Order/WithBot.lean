@@ -25,7 +25,7 @@ Adding a `bot` or a `top` to an order.
  -/
 
 variable {α β γ δ : Type*}
-set_option Mathlib.ToNatDegree.linter.syntaxTranslation 0
+--set_option linter.syntaxTranslation 1
 to_top
 --TODO(Mario): Construct using order dual on `WithBot`
 /-- Attach `⊥` to a type. -/
