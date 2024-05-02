@@ -69,6 +69,10 @@ lemma ae_compProd_of_ae_ae [SFinite μ] [IsSFiniteKernel κ] {p : α × β → P
     ∀ᵐ x ∂(μ ⊗ₘ κ), p x :=
   kernel.ae_compProd_of_ae_ae hp h
 
+-- Adaptation note: nightly-2024-04-01
+-- This maxHeartbeats was not needed previously.
+-- None of the backwards compatibility flags helps.
+set_option maxHeartbeats 400000 in
 lemma ae_ae_of_ae_compProd [SFinite μ] [IsSFiniteKernel κ] {p : α × β → Prop}
     (h : ∀ᵐ x ∂(μ ⊗ₘ κ), p x) :
     ∀ᵐ a ∂μ, ∀ᵐ b ∂(κ a), p (a, b) :=
@@ -113,19 +117,23 @@ lemma integrable_compProd_iff [SFinite μ] [IsSFiniteKernel κ] {E : Type*} [Nor
   rfl
 
 lemma integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
     {f : α × β → E} (hf : Integrable f (μ ⊗ₘ κ)) :
     ∫ x, f x ∂(μ ⊗ₘ κ) = ∫ a, ∫ b, f (a, b) ∂(κ a) ∂μ := by
   rw [compProd, ProbabilityTheory.integral_compProd hf]
   simp
 
-lemma set_integral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
-    [NormedAddCommGroup E] [NormedSpace ℝ E] [CompleteSpace E]
+lemma setIntegral_compProd [SFinite μ] [IsSFiniteKernel κ] {E : Type*}
+    [NormedAddCommGroup E] [NormedSpace ℝ E]
     {s : Set α} (hs : MeasurableSet s) {t : Set β} (ht : MeasurableSet t)
     {f : α × β → E} (hf : IntegrableOn f (s ×ˢ t) (μ ⊗ₘ κ))  :
     ∫ x in s ×ˢ t, f x ∂(μ ⊗ₘ κ) = ∫ a in s, ∫ b in t, f (a, b) ∂(κ a) ∂μ := by
-  rw [compProd, ProbabilityTheory.set_integral_compProd hs ht hf]
+  rw [compProd, ProbabilityTheory.setIntegral_compProd hs ht hf]
   simp
+
+@[deprecated]
+alias set_integral_compProd :=
+  setIntegral_compProd -- deprecated on 2024-04-17
 
 end Integral
 

@@ -212,6 +212,12 @@ theorem lt_iff_lex_lt [LinearOrder α] (l l' : List α) : lt l l' ↔ Lex (· < 
     | @cons a as bs _ ih => apply lt.tail <;> simp [ih]
     | @rel a as b bs h => apply lt.head; assumption
 
+@[simp]
+theorem nil_le {α} [LinearOrder α] {l : List α} : [] ≤ l :=
+  match l with
+  | [] => le_rfl
+  | _ :: _ => le_of_lt <| nil_lt_cons _ _
+
 theorem head_le_of_lt [LinearOrder α] {a a' : α} {l l' : List α} (h : (a' :: l') < (a :: l)) :
     a' ≤ a := by
   by_contra hh

@@ -416,3 +416,37 @@ theorem Filter.map_neg_eq_comap_neg [AddGroup α] :
     map (Neg.neg : α → α) = comap (Neg.neg : α → α) :=
   funext fun _ => map_eq_comap_of_inverse (funext neg_neg) (funext neg_neg)
 #align filter.map_neg_eq_comap_neg Filter.map_neg_eq_comap_neg
+
+namespace Set.OrdConnected
+
+variable [TopologicalSpace α] [LinearOrder α] [OrderTopology α] [DenselyOrdered α]
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a right neighbourhood
+of `x`. -/
+lemma mem_nhdsWithin_Ici [NoMaxOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[≥] x :=
+  mem_nhdsWithin_Ici_iff_exists_Icc_subset.2 ⟨y, hxy, hS.out hx hy⟩
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured right
+neighbourhood of `x`. -/
+lemma mem_nhdsWithin_Ioi [NoMaxOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[>] x :=
+  nhdsWithin_mono _ Ioi_subset_Ici_self <| hS.mem_nhdsWithin_Ici hx hy hxy
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a left neighbourhood
+of `y`. -/
+lemma mem_nhdsWithin_Iic [NoMinOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[≤] y :=
+  mem_nhdsWithin_Iic_iff_exists_Icc_subset.2 ⟨x, hxy, hS.out hx hy⟩
+
+/-- If `S` is order-connected and contains two points `x < y`, then `S` is a punctured left
+neighbourhood of `y`. -/
+lemma mem_nhdsWithin_Iio [NoMinOrder α] {S : Set α} (hS : OrdConnected S)
+    {x y : α} (hx : x ∈ S) (hy : y ∈ S) (hxy : x < y) :
+    S ∈ 𝓝[<] y :=
+  nhdsWithin_mono _ Iio_subset_Iic_self <| hS.mem_nhdsWithin_Iic hx hy hxy
+
+end OrdConnected

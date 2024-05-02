@@ -11,16 +11,16 @@ jobs:
       GH_TOKEN: ${{ github.token }}
     steps:
       - name: "Checkout mathlib4"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: "Checkout mathlib3"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: leanprover-community/mathlib
           path: port-repos/leanprover-community/mathlib
 
       - name: "Checkout lean3"
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: leanprover-community/lean
           path: port-repos/leanprover-community/lean

@@ -51,8 +51,8 @@ def hasseDeriv (R : Type*) {V : Type*} [AddCommGroup V] [Semiring R] [Module R V
     (forallLTEqZero_supp_BddBelow _ (f.order - k : ℤ)
     (fun _ h_lt ↦ by rw [coeff_eq_zero_of_lt_order <| lt_sub_iff_add_lt.mp h_lt, smul_zero]))
   map_add' f g := by
+    ext
     simp only [ofSuppBddBelow, add_coeff', Pi.add_apply, smul_add]
-    exact rfl
   map_smul' r f := by
     ext
     simp only [ofSuppBddBelow, smul_coeff, RingHom.id_apply, smul_comm r]
