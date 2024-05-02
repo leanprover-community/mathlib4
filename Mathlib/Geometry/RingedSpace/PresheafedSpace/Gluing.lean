@@ -55,8 +55,6 @@ commute with the maps in the diagram (the green arrows), which is just a lengthy
 
 -/
 
-
-
 set_option linter.uppercaseLean3 false
 
 noncomputable section
