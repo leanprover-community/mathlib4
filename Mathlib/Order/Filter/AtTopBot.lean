@@ -9,8 +9,8 @@ import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
 import Mathlib.Algebra.Order.Group.MinMax
 import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Set.Intervals.Disjoint
-import Mathlib.Data.Set.Intervals.OrderIso
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrderIso
 import Mathlib.Order.ConditionallyCompleteLattice.Basic
 import Mathlib.Order.Filter.Bases
 
@@ -1492,8 +1492,10 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
     (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
-  cases isEmpty_or_nonempty α; exact Subsingleton.elim _ _
-  cases isEmpty_or_nonempty β; exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty α
+  · exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty β
+  · exact Subsingleton.elim _ _
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 

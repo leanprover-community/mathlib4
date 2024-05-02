@@ -157,11 +157,11 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
   letI : IsNoetherian K V := iff_fg.2 ?_
-  exact
-    iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
-  infer_instance
+  · exact
+      iff_fg.1
+        (IsNoetherian.iff_rank_lt_aleph0.2
+          (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
+  · infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
@@ -487,7 +487,7 @@ theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional 
     finrank K ↑(s ⊔ t) + finrank K ↑(s ⊓ t) = finrank K ↑s + finrank K ↑t := by
   have key : Module.rank K ↑(s ⊔ t) + Module.rank K ↑(s ⊓ t) = Module.rank K s + Module.rank K t :=
     rank_sup_add_rank_inf_eq s t
-  repeat' rw [← finrank_eq_rank] at key
+  repeat rw [← finrank_eq_rank] at key
   norm_cast at key
 #align submodule.finrank_sup_add_finrank_inf_eq Submodule.finrank_sup_add_finrank_inf_eq
 

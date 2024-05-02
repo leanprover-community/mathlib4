@@ -88,9 +88,9 @@ theorem Perfect.exists_nat_bool_injection [CompleteSpace α] :
   let DP : List Bool → P := fun l => by
     induction' l with a l ih; · exact ⟨C, ⟨hC, hnonempty⟩⟩
     cases a
-    · use C0 ih.property.1 ih.property.2 (upos l.length.succ)
+    · use C0 ih.property.1 ih.property.2 (upos (l.length + 1))
       exact ⟨(h0 _ _ _).1, (h0 _ _ _).2.1⟩
-    use C1 ih.property.1 ih.property.2 (upos l.length.succ)
+    use C1 ih.property.1 ih.property.2 (upos (l.length + 1))
     exact ⟨(h1 _ _ _).1, (h1 _ _ _).2.1⟩
   let D : List Bool → Set α := fun l => (DP l).val
   have hanti : ClosureAntitone D := by

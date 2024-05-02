@@ -6,7 +6,7 @@ Authors: Sébastien Gouëzel
 import Mathlib.Order.Bounds.Basic
 import Mathlib.Order.WellFounded
 import Mathlib.Data.Set.Image
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 import Mathlib.Data.Set.Lattice
 
 #align_import order.conditionally_complete_lattice.basic from "leanprover-community/mathlib"@"29cb56a7b35f72758b05a30490e1f10bd62c35c1"
@@ -1670,7 +1670,7 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
       show ite _ _ _ ≤ a by
         split_ifs with h₁
         · cases' a with a
-          exact le_rfl
+          · exact le_rfl
           cases h₁ haS
         · cases a
           · exact le_top
