@@ -26,24 +26,18 @@ namespace EisensteinSeries
 
 lemma eis_bound (k : ℤ) (hk : 3 ≤ k) (z : ℍ) :
     ∀ (b : Fin 2 → ℤ), Complex.abs (eisSummand k b z) ≤
-    1 / r z ^ k * (max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
+     ((r z ^ k) * max (Int.natAbs (b 0) : ℝ) (Int.natAbs (b 1)) ^ k)⁻¹ := by
   have hk0 : 0 ≤ k := by omega
   lift k to ℕ using hk0
   intro b
-  have := summand_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
-    (by simp)
-  conv =>
-    enter [2]
-    rw [mul_comm]
-  simp only [eisSummand, Fin.isValue, zpow_natCast, one_div, map_inv₀, map_pow, ge_iff_le, map_pow,
-    Nat.cast_max, _root_.mul_inv_rev] at *
-  exact this
+  simpa only [zpow_natCast, Fin.isValue, _root_.mul_inv_rev, Nat.cast_max] using
+    (eisSummand_is_bounded_on_box (k := k) (max (b 0).natAbs (b 1).natAbs) z b (Int.ofNat_zero_le k)
+      (by simp))
 
 lemma summable_lem (k : ℤ) (hk : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
     Complex.abs (eisSummand k x z) := by
   apply (summable_upper_bound hk z).of_nonneg_of_le (fun _ => Complex.abs.nonneg _)
     (eis_bound k hk z)
-
 
 variable {γ : Type*} [OrderedAddCommGroup γ] [UniformSpace γ] [UniformAddGroup γ]
   [OrderClosedTopology γ ] [ CompleteSpace γ]
@@ -101,25 +95,23 @@ theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k
     (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
     simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
     refine ⟨∑'(x : Fin 2 → ℤ),
-      (1 / r (⟨⟨N, 2⟩, by simp⟩) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹, 2, ?_⟩
+      (r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ k * (max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹, 2, ?_⟩
     intro z hz
     obtain ⟨n, hn⟩ := (upp_half_translation_N z N (by simp))
     rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
       ← lvl_N_periodic N k (eisensteinSeries_SIF (a ᵥ* A) k) z n]
     let Z := ((ModularGroup.T ^ ((N : ℤ) * n))) • z
     apply le_trans (abs_le_tsum_abs N _ _ hk (Z))
-    apply tsum_le_tsum
-    · intro x
-      apply le_trans ((eis_bound k hk Z x))
-      simp only [one_div, Fin.isValue]
-      gcongr
-      · apply zpow_pos_of_pos (r_pos _)
-      · have hk0 : 0 ≤ k := by linarith
-        lift k to ℕ using hk0
-        push_cast
-        apply pow_le_pow_left (r_pos _).le
-        apply r_lower_bound_on_verticalStrip (A := N) (B := 2)
-            (z:= ⟨Z, (verticalStrip_mem_le (N : ℕ) 2 z.im hz) hn⟩)
-    · apply (summable_upper_bound hk Z).of_nonneg_of_le (fun _ => Complex.abs.nonneg _)
-        (eis_bound k hk Z)
-    · apply summable_upper_bound hk
+    apply tsum_le_tsum _ ((summable_upper_bound hk Z).of_nonneg_of_le
+      (fun _ => Complex.abs.nonneg _) (eis_bound k hk Z)) (summable_upper_bound hk _)
+    intro x
+    apply le_trans ((eis_bound k hk Z x))
+    simp only [Fin.isValue, _root_.mul_inv_rev]
+    gcongr
+    · apply zpow_pos_of_pos (r_pos _)
+    · have hk0 : 0 ≤ k := by linarith
+      lift k to ℕ using hk0
+      push_cast
+      apply pow_le_pow_left (r_pos _).le
+      apply r_lower_bound_on_verticalStrip (A := N) (B := 2)
+          (z:= ⟨Z, (verticalStrip_mem_le (N : ℕ) 2 z.im hz) hn⟩)
