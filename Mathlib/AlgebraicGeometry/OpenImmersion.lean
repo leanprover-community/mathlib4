@@ -118,8 +118,8 @@ def affineCover (X : Scheme) : OpenCover X where
     intro x
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ]
-    erw [Subtype.range_coe_subtype]
-    exact (X.local_affine x).choose.2
+    · erw [Subtype.range_coe_subtype]
+      exact (X.local_affine x).choose.2
     rw [← TopCat.epi_iff_surjective]
     change Epi ((SheafedSpace.forget _).map (LocallyRingedSpace.forgetToSheafedSpace.map _))
     infer_instance
@@ -561,9 +561,9 @@ theorem range_pullback_snd_of_left :
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.fst : pullback f.1.base g.1.base ⟶ _)]
   -- Porting note (#10691): was `rw`
-  erw [TopCat.pullback_snd_image_fst_preimage]
-  rw [Set.image_univ]
-  rfl
+  · erw [TopCat.pullback_snd_image_fst_preimage]
+    rw [Set.image_univ]
+    rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_snd_of_left AlgebraicGeometry.IsOpenImmersion.range_pullback_snd_of_left
@@ -578,9 +578,9 @@ theorem range_pullback_fst_of_right :
   rw [Set.range_comp, Set.range_iff_surjective.mpr, ←
     @Set.preimage_univ _ _ (pullback.snd : pullback g.1.base f.1.base ⟶ _)]
   -- Porting note (#10691): was `rw`
-  erw [TopCat.pullback_fst_image_snd_preimage]
-  rw [Set.image_univ]
-  rfl
+  · erw [TopCat.pullback_fst_image_snd_preimage]
+    rw [Set.image_univ]
+    rfl
   rw [← TopCat.epi_iff_surjective]
   infer_instance
 #align algebraic_geometry.IsOpenImmersion.range_pullback_fst_of_right AlgebraicGeometry.IsOpenImmersion.range_pullback_fst_of_right
@@ -703,13 +703,13 @@ theorem image_basicOpen {X Y : Scheme} (f : X ⟶ Y) [H : IsOpenImmersion f] {U 
   -- Porting note (#10691): was `rw`
   erw [PresheafedSpace.IsOpenImmersion.invApp_app_apply] at e
   rw [Scheme.basicOpen_res, inf_eq_right.mpr _] at e
-  rw [← e]
-  ext1
-  -- Porting note: this `dsimp` was not necessary
-  dsimp [Opens.map]
-  refine' Set.image_preimage_eq_inter_range.trans _
-  erw [Set.inter_eq_left]
-  refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
+  · rw [← e]
+    ext1
+    -- Porting note: this `dsimp` was not necessary
+    dsimp [Opens.map]
+    refine' Set.image_preimage_eq_inter_range.trans _
+    erw [Set.inter_eq_left]
+    refine' Set.Subset.trans (Scheme.basicOpen_le _ _) (Set.image_subset_range _ _)
   refine' le_trans (Scheme.basicOpen_le _ _) (le_of_eq _)
   ext1
   exact (Set.preimage_image_eq _ H.base_open.inj).symm
@@ -740,8 +740,8 @@ def Scheme.OpenCover.pullbackCover {X : Scheme} (𝒰 : X.OpenCover) {W : Scheme
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_fst_range]
-    obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
-    exact ⟨y, h.symm⟩
+    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+      exact ⟨y, h.symm⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 #align algebraic_geometry.Scheme.open_cover.pullback_cover AlgebraicGeometry.Scheme.OpenCover.pullbackCover
 
@@ -763,8 +763,8 @@ def Scheme.OpenCover.pullbackCover' {X : Scheme} (𝒰 : X.OpenCover) {W : Schem
     erw [coe_comp]
     rw [Set.range_comp, Set.range_iff_surjective.mpr, Set.image_univ,
       TopCat.pullback_snd_range]
-    obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
-    exact ⟨y, h⟩
+    · obtain ⟨y, h⟩ := 𝒰.Covers (f.1.base x)
+      exact ⟨y, h⟩
     · rw [← TopCat.epi_iff_surjective]; infer_instance
 
 theorem Scheme.OpenCover.iUnion_range {X : Scheme} (𝒰 : X.OpenCover) :

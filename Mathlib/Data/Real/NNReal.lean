@@ -3,7 +3,7 @@ Copyright (c) 2018 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.Order.Field.Canonical.Basic
 import Mathlib.Algebra.Order.Nonneg.Field
@@ -362,6 +362,11 @@ protected theorem coe_natCast (n : ℕ) : (↑(↑n : ℝ≥0) : ℝ) = n :=
 @[simp, norm_cast]
 protected theorem coe_ofNat (n : ℕ) [n.AtLeastTwo] :
     (no_index (OfNat.ofNat n : ℝ≥0) : ℝ) = OfNat.ofNat n :=
+  rfl
+
+@[simp, norm_cast]
+protected theorem coe_ofScientific (m : ℕ) (s : Bool) (e : ℕ) :
+    ↑(OfScientific.ofScientific m s e : ℝ≥0) = (OfScientific.ofScientific m s e : ℝ) :=
   rfl
 
 noncomputable example : LinearOrder ℝ≥0 := by infer_instance

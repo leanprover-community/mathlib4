@@ -213,7 +213,7 @@ theorem M.dest_corec' {α : TypeVec.{u} n} {β : Type u} (g₀ : β → P.A)
 theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β)) (x : β) :
     M.dest P (M.corec P g x) = appendFun id (M.corec P g) <$$> g x := by
   trans
-  apply M.dest_corec'
+  · apply M.dest_corec'
   cases' g x with a f; dsimp
   rw [MvPFunctor.map_eq]; congr
   conv =>

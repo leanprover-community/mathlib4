@@ -138,7 +138,7 @@ private theorem pentagon_aux (W X Y Z : Type*) [AddCommMonoid W] [AddCommMonoid 
     [AddCommMonoid Y] [AddCommMonoid Z] [Module R W] [Module R X] [Module R Y] [Module R Z] :
     (((assoc R X Y Z).toLinearMap.lTensor W).comp
             (assoc R W (X ⊗[R] Y) Z).toLinearMap).comp
-        ((assoc R W X Y).rTensor Z) =
+        ((assoc R W X Y).toLinearMap.rTensor Z) =
       (assoc R W X (Y ⊗[R] Z)).toLinearMap.comp (assoc R (W ⊗[R] X) Y Z).toLinearMap := by
   apply TensorProduct.ext_fourfold
   intro w x y z
