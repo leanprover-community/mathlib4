@@ -28,7 +28,7 @@ elab "exact_with_diamond_warning" tgt:name default:name msg:str: tactic => do
   catch e =>
     throwErrorAt e.getRef m!"While evaluating default {stx}:{Lean.indentD e.toMessageData}"
   Lean.Linter.logLintIf linter.structureDiamondDefaults tgt <|
-    m!"Using default value {stx}, which may {msg.getString}.\n" ++
-      m!"If you are sure this is not an issue, write {stx} explicitly"
-
-#check Lean.Elab.Tactic.withoutRecover
+    m!"Using default value{Lean.indentD stx}\n" ++
+    m!"which may {msg.getString}.\n" ++
+    m!"To silence this warning, write the above in your instance definition, " ++
+    m!"optionally replacing {default'} with a better implementation."

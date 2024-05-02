@@ -41,11 +41,15 @@ instance : Neg Foo where
   neg _ := ()
 
 /--
-warning: Using default value nsmul := nsmulRec, which may cause typeclass diamonds for `Module ℕ _`.
-If you are sure this is not an issue, write nsmul := nsmulRec explicitly [linter.structureDiamondDefaults]
+warning: Using default value
+  nsmul := nsmulRec
+which may cause typeclass diamonds for `Module ℕ _`.
+To silence this warning, write the above in your instance definition, optionally replacing nsmulRec with a better implementation. [linter.structureDiamondDefaults]
 ---
-warning: Using default value zsmul := zsmulRec, which may cause typeclass diamonds for `Module ℤ _`.
-If you are sure this is not an issue, write zsmul := zsmulRec explicitly [linter.structureDiamondDefaults]
+warning: Using default value
+  zsmul := zsmulRec
+which may cause typeclass diamonds for `Module ℤ _`.
+To silence this warning, write the above in your instance definition, optionally replacing zsmulRec with a better implementation. [linter.structureDiamondDefaults]
 -/
 #guard_msgs in
 instance : Ring Foo where
