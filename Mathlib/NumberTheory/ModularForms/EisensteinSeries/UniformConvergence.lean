@@ -19,15 +19,15 @@ of weight `k` and level `Γ(N)` with congruence condition `a : Fin 2 → ZMod N`
 
 noncomputable section
 
-open Complex Filter UpperHalfPlane Set Finset
+open Complex UpperHalfPlane Set Finset
 
-open scoped BigOperators NNReal Classical Filter Matrix UpperHalfPlane Complex
+open scoped BigOperators Matrix UpperHalfPlane Complex
 
 namespace EisensteinSeries
 
 section bounding_functions
 
-/-- Auxiliary function used for bounding Eisenstein series-/
+/-- Auxiliary function used for bounding Eisenstein series. -/
 def r1 (z : ℍ) : ℝ := z.im ^ 2 / (z.re ^ 2 + z.im ^ 2)
 
 lemma r1' (z : ℍ) : r1 z = 1 / ((z.re / z.im) ^ 2 + 1) := by
@@ -37,7 +37,7 @@ theorem r1_pos (z : ℍ) : 0 < r1 z := by
   dsimp only [r1]
   positivity
 
-/-- This function is used to give an upper bound on Eisenstein series-/
+/-- This function is used to give an upper bound on Eisenstein series. -/
 def r (z : ℍ) : ℝ := min z.im (Real.sqrt (r1 z))
 
 lemma r_pos (z : ℍ) : 0 < r z := by
@@ -91,9 +91,11 @@ lemma ne_zero_if_max {x : Fin 2 → ℤ} (hx : x ≠ 0)
   ext x
   fin_cases x <;> aesop
 
+/-This proof is faster than the one above, but longer. -/
 lemma ne_zero_if_max' {x : Fin 2 → ℤ} (hx : x ≠ 0)
     (h : (max (x 0).natAbs (x 1).natAbs) = (x 1).natAbs) : (x 1) ≠ 0 := by
-  apply ne_zero_if_max (x := ![x 1, x 0]) ?_ (by simpa using h)
+  apply ne_zero_if_max (x := ![x 1, x 0]) ?_ (by simpa only [Fin.isValue, Matrix.cons_val_zero,
+    Matrix.cons_val_one, Matrix.head_cons, max_eq_left_iff, max_eq_right_iff] using h)
   simp only [ne_eq, Matrix.cons_eq_zero_iff, Matrix.zero_empty, and_true, not_and]
   intro h1 h0
   rw [Function.ne_iff, Fin.exists_fin_two, h1, h0] at hx
@@ -103,8 +105,12 @@ lemma div_max_sq_ge_one (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     (1 : ℝ) ≤ (x 0 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 ∨
       (1 : ℝ) ≤ (x 1 / (max (x 0).natAbs (x 1).natAbs)) ^ 2 := by
   refine (max_choice (x 0).natAbs (x 1).natAbs).imp (fun H1 => ?_) (fun H2 => ?_)
-  · simp [H1, Int.cast_natAbs, ne_zero_if_max hx H1]
-  · simp [H2, Int.cast_natAbs, ne_zero_if_max' hx H2]
+  · simp only [Fin.isValue, H1, Int.cast_natAbs, Int.cast_abs, div_pow, _root_.sq_abs, ne_eq,
+    OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero, ne_zero_if_max hx H1,
+    div_self, le_refl]
+  · simp only [Fin.isValue, H2, Int.cast_natAbs, Int.cast_abs, div_pow, _root_.sq_abs, ne_eq,
+    OfNat.ofNat_ne_zero, not_false_eq_true, pow_eq_zero_iff, Int.cast_eq_zero,
+    ne_zero_if_max' hx H2, div_self, le_refl]
 
 lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x ≠ 0) :
     ((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs) ^ k ≤
@@ -112,9 +118,10 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
   by_cases hk0 : k ≠ 0
   · let n := max (x 0).natAbs (x 1).natAbs
     have hn0 : n ≠ 0 := by
-      rw [← Iff.ne ((eq_zero_iff_eq_zero_of_mem_box  (α := ℤ × ℤ) (x := ((x 0, x 1)))) (by simp)),
+      rw [← Iff.ne ((eq_zero_iff_eq_zero_of_mem_box (α := ℤ × ℤ) (x := ((x 0, x 1)))) (by simp)),
         ← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun x ↦ ℤ)))] at *
-      simpa using hx
+      simpa only [Fin.isValue, ne_eq, Prod.mk_eq_zero, not_and, piFinTwoEquiv_apply, Pi.zero_apply,
+        Prod.mk.injEq] using hx
     have h11 : ((x 0) * ↑z + (x 1)) =
         (((x 0 : ℝ) / (n : ℝ)) * (z : ℂ) + (x 1 : ℝ) / (n : ℝ)) * ((n : ℝ)) := by
         have : (n : ℂ) ≠ 0 := by norm_cast
@@ -123,17 +130,19 @@ lemma rpow_bound {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (x : Fin 2 → ℤ) (hx : x 
     rw [Real.mul_rpow (by apply apply_nonneg) (by apply abs_nonneg)]
     cases' (div_max_sq_ge_one x hx) with H1 H2
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
-      · simpa [n] using (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
+      · simpa only [Fin.isValue, ofReal_intCast, Nat.cast_max, ofReal_div, n] using
+        (Real.rpow_le_rpow (r_pos _).le (auxbound1 z (x 1 / n) H1) hk)
       · positivity
     · apply mul_le_mul _ (by norm_cast) _ (by apply Real.rpow_nonneg (Complex.abs.nonneg _) k)
-      · simpa [n] using (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
+      · simpa only [Fin.isValue, ofReal_intCast, Nat.cast_max, ofReal_div, n] using
+        (Real.rpow_le_rpow (r_pos _).le (auxbound2 z (x 0 / n) H2) hk)
       · positivity
   · simp only [ne_eq, not_not] at hk0
     simp only [hk0, Real.rpow_zero, Nat.cast_max, mul_one, le_refl]
 
-theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
+theorem summand_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) (x : Fin 2 → ℤ)
     (hx : (x 0, x 1) ∈ box n) : (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)))) ^ (-k) ≤
-      (((r z) ^ (-k) * n ^ (-k))) := by
+      (r z) ^ (-k) * n ^ (-k) := by
   by_cases hn : n = 0
   · simp only [hn, box_zero, Finset.mem_singleton, Prod.mk_eq_zero] at hx
     rw [hx.1, hx.2] at *
@@ -146,7 +155,9 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       simp only [h1, hn, CharP.cast_eq_zero, mul_zero, le_refl]
   · have hx2 : x ≠ 0 := by
       rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℤ)))]
-      simpa using (Iff.ne ((eq_zero_iff_eq_zero_of_mem_box (x := (x 0, x 1))) hx)).mpr hn
+      simpa only [piFinTwoEquiv_apply, Fin.isValue, Pi.zero_apply, ne_eq, Prod.mk.injEq, not_and,
+        Prod.mk_eq_zero] using
+        (Iff.ne ((eq_zero_iff_eq_zero_of_mem_box (x := (x 0, x 1))) hx)).mpr hn
     simp only [Int.mem_box] at hx
     rw [Real.rpow_neg (by apply apply_nonneg), Real.rpow_neg ((r_pos z).le),
       Real.rpow_neg (Nat.cast_nonneg n), ← mul_inv, inv_le_inv]
@@ -155,37 +166,37 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
     · simp only [Nat.cast_max]
     · apply Real.rpow_pos_of_pos
       apply Complex.abs.pos (linear_ne_zero ![x 0, x 1] z ?_)
-      have := (Function.comp_ne_zero_iff x  Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
+      have := (Function.comp_ne_zero_iff x Int.cast_injective Int.cast_zero (γ := ℝ)).mpr hx2
       rw [← Iff.ne (Function.Injective.eq_iff (Equiv.injective (piFinTwoEquiv fun _ ↦ ℝ)))] at this
-      simpa using this
+      simpa only [Fin.isValue, ne_eq, Matrix.cons_eq_zero_iff, Int.cast_eq_zero, Matrix.zero_empty,
+        and_true, not_and, piFinTwoEquiv_apply, Function.comp_apply, Pi.zero_apply,
+        Prod.mk.injEq] using this
     · apply mul_pos (Real.rpow_pos_of_pos (r_pos z) _)
       apply Real.rpow_pos_of_pos
       norm_cast
       exact Nat.pos_of_ne_zero hn
 
-/-This is a special case of the above, but one that we use more.-/
-theorem eis_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
-    (hx : (x 0, x 1) ∈ box n) :
-    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (((r z) ^ k * n ^ k))⁻¹ := by
-  have := eis_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
+/-This is a special case of the above, but one that we use more. -/
+theorem eisSummand_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
+    (hx : (x 0, x 1) ∈ box n) : Complex.abs (eisSummand k x z) ≤ (((r z) ^ k * n ^ k))⁻¹ := by
+  have := summand_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   norm_cast at *
-  simp_rw [zpow_neg, ← mul_inv] at  *
-  simpa using this
+  rw [zpow_neg, mul_inv, eisSummand] at *
+  simpa only [Fin.isValue, one_div, map_inv₀, map_zpow₀, ge_iff_le, zpow_neg] using this
 
-lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
+lemma r_lower_bound_on_verticalStrip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
   simp only [mem_verticalStrip_iff, abs_ofReal, ge_iff_le] at hz
-  simp_rw [r]
+  rw [r]
   apply min_le_min
-  · dsimp only
-    convert hz.2
+  · convert hz.2
   · rw [Real.sqrt_le_sqrt_iff (by apply (r1_pos z).le)]
     simp only [r1', div_pow, one_div]
     rw [inv_le_inv (by positivity) (by positivity), add_le_add_iff_right]
     apply div_le_div (sq_nonneg _) _ (by positivity)
-    · simpa [even_two.pow_abs] using pow_le_pow_left h.le hz.2 2
-    · simpa [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
+    · simpa only using pow_le_pow_left h.le hz.2 2
+    · simpa only [even_two.pow_abs] using pow_le_pow_left (abs_nonneg _) hz.1 2
 
 end bounding_functions
 
@@ -216,8 +227,8 @@ lemma summable_over_box {k : ℤ} (z : ℍ) (h : 3 ≤ k):
     ring_nf
 
 lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x : Fin 2 → ℤ) =>
-    (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹ := by
-  set f := fun x : Fin 2 → ℤ ↦ (1 / (r z) ^ k) * ((max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹
+    (((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹ := by
+  set f := fun x : Fin 2 → ℤ ↦ (((r z) ^ k) * (max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹
   rw [← (piFinTwoEquiv _).symm.summable_iff,
     summable_partition _ (s := fun n ↦ (box n : Finset (ℤ × ℤ))) Int.existsUnique_mem_box]
   · simp_rw [coe_sort_coe, Finset.tsum_subtype]
@@ -225,15 +236,17 @@ lemma summable_upper_bound {k : ℤ} (h : 3 ≤ k) (z : ℍ) : Summable fun (x :
     refine ⟨fun n ↦ ?_, Summable.congr (summable_over_box z h) fun n ↦ Finset.sum_congr rfl
       fun x hx ↦ ?_⟩
     · simpa using (box n).summable (f ∘ (piFinTwoEquiv _).symm)
-    · simp only [Int.mem_box] at hx
-      rw [← hx, one_div]
-      simp only [Nat.cast_max, one_div, Fin.isValue, Fin.cons_zero, Fin.cons_one, f]
+    · simp only [Int.mem_box, one_div] at *
+      simp only [← hx, Nat.cast_max, Fin.isValue, mul_inv_rev, Fin.cons_zero, Fin.cons_one, f]
+      rw [mul_comm]
   · intro y
+    simp only [Pi.zero_apply, Fin.isValue, mul_inv_rev, piFinTwoEquiv_symm_apply,
+      Function.comp_apply, Fin.cons_zero, Fin.cons_one, f]
     apply mul_nonneg
-    · simp only [one_div, inv_nonneg]
-      apply zpow_nonneg (r_pos z).le
     · simp only [piFinTwoEquiv_symm_apply, Fin.cons_zero, Fin.cons_one, inv_nonneg, ge_iff_le,
       le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg]
+    · simp only [one_div, inv_nonneg]
+      apply zpow_nonneg (r_pos z).le
 
 end summability
 
@@ -247,38 +260,32 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
   intro K hK
   obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK
   have hu : Summable fun x : (gammaSet N a) =>
-    (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
+    (((r ⟨⟨A, B⟩, hB⟩) ^ k) * (max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
     apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
     intro v
     simp only [zpow_natCast, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v (by linarith)
-  simp only [Nat.cast_max,Int.natCast_natAbs, iff_true, zpow_natCast, one_div, map_pow,
-    map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
-    ge_iff_le] at *
-  apply le_trans (this (by simp only [Int.mem_box]))
-  rw [mul_comm]
-  apply mul_le_mul _ (by rfl)
-  repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg,
-    inv_nonneg, zpow_nonneg (r_pos _).le]}
+  apply le_trans (eisSummand_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v
+    (by linarith) (by simp only [Int.mem_box]))
+  simp  [Fin.isValue, Nat.cast_max, mul_inv_rev, one_div]
   have hk0 : 0 ≤ k := by linarith
   lift k to ℕ using hk0
-  rw [inv_le_inv ]
-  · apply pow_le_pow_left (r_pos _).le (r_lower_bound_on_strip hB ⟨x, HABK hx⟩)
-  · apply pow_pos ( (r_pos x))
+  gcongr
   · apply pow_pos (r_pos _)
+  · apply (r_pos _).le
+  · apply (r_lower_bound_on_verticalStrip hB ⟨x, HABK hx⟩)
 
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm
           (OpenEmbedding.toPartialHomeomorph UpperHalfPlane.coe openEmbedding_coe))
 
-/- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later -/
-lemma  eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
+/- A version for the extension to maps `ℂ → ℂ` that is nice to have for holomorphicity later. -/
+lemma eisensteinSeries_tendstoLocallyUniformlyOn {k : ℤ} {N : ℕ} (hk : 3 ≤ k)
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformlyOn (fun (s : Finset (gammaSet N a )) =>
       ↑ₕ(fun (z : ℍ) => ∑ x in s, eisSummand k x z )) (↑ₕ(eisensteinSeries_SIF a k).toFun)
           Filter.atTop (UpperHalfPlane.coe '' ⊤) := by
-  apply TendstoLocallyUniformlyOn.comp (s := ⊤)
-  simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
-  apply eisensteinSeries_tendstoLocallyUniformly hk
-  simp only [Set.top_eq_univ, image_univ, mapsTo_range_iff, Set.mem_univ, forall_const]
-  apply PartialHomeomorph.continuousOn_symm
+  apply TendstoLocallyUniformlyOn.comp (s := ⊤) _ _ _ (PartialHomeomorph.continuousOn_symm _)
+  · simp only [SlashInvariantForm.toFun_eq_coe, Set.top_eq_univ, tendstoLocallyUniformlyOn_univ]
+    apply eisensteinSeries_tendstoLocallyUniformly hk
+  · simp only [OpenEmbedding.toPartialHomeomorph_target, Set.top_eq_univ, mapsTo_range_iff,
+    Set.mem_univ, forall_const]
