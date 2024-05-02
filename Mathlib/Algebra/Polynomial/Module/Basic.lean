@@ -385,7 +385,7 @@ noncomputable def equivPolynomialSelf : PolynomialModule R R ≃ₗ[R[X]] R[X] :
         single_apply, ge_iff_le, smul_eq_mul, Polynomial.coeff_mul, mul_ite, mul_zero]
         split_ifs with hn
         · rw [Finset.sum_eq_single (i - n, n)]
-          simp only [ite_true]
+          · simp only [ite_true]
           · rintro ⟨p, q⟩ hpq1 hpq2
             rw [Finset.mem_antidiagonal] at hpq1
             split_ifs with H

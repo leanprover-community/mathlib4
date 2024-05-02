@@ -41,7 +41,9 @@ open FiniteDimensional
 be positive; that should be given as a hypothesis to lemmas that require it. -/
 @[ext]
 structure Sphere [MetricSpace P] where
+  /-- center of this sphere -/
   center : P
+  /-- radius of the sphere: not required to be positive -/
   radius : ℝ
 #align euclidean_geometry.sphere EuclideanGeometry.Sphere
 
