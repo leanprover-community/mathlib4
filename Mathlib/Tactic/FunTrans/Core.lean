@@ -54,12 +54,12 @@ def synthesizeArgs (thmId : FunProp.Origin) (xs : Array Expr) (bis : Array Binde
       if (← isProp type) then
         if ← FunProp.isFunPropGoal type then
           if let .some r ← runFunProp type then
-            x.mvarId!.assign r
+            x.mvarId!.assignIfDefeq r
             continue
         else
           let disch := (← funTransConfig.get).funPropConfig.disch
           if let .some r ← disch type then
-            x.mvarId!.assign r
+            x.mvarId!.assignIfDefeq r
             continue
 
       trace[Meta.Tactic.fun_trans.discharge] "{← ppOrigin' thmId}, failed to discharge hypotheses{indentExpr type}"
