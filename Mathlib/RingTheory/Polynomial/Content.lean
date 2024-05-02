@@ -363,7 +363,6 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     intro n
     induction' n with n ih
     · intro p q hpq
-      dsimp at hpq
       rw [Nat.cast_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp
