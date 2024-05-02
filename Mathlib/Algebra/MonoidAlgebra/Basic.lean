@@ -304,13 +304,14 @@ theorem liftNC_mul {g_hom : Type*} [FunLike g_hom G R] [MulHomClass g_hom G R]
   simp [mul_assoc, (h_comm hy).left_comm]
 #align monoid_algebra.lift_nc_mul MonoidAlgebra.liftNC_mul
 
+open AddMonoidAlgebra in
 variable [Add G] [Semiring R] in
 theorem _root_.AddMonoidAlgebra.liftNC_mul {g_hom : Type*}
     [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
     (f : k →+* R) (g : g_hom) (a b : k[G])
     (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
     AddMonoidAlgebra.liftNC (f : k →+ R) g (a * b) = AddMonoidAlgebra.liftNC (f : k →+ R) g a * AddMonoidAlgebra.liftNC (f : k →+ R) g b :=
-  (AddMonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
 #align add_monoid_algebra.lift_nc_mul AddMonoidAlgebra.liftNC_mul
 
 end Mul
@@ -1347,13 +1348,13 @@ variable [Semiring k] [Add G]
 
 variable [Semiring R]
 
-theorem liftNC_mul {g_hom : Type*}
-    [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
-    (f : k →+* R) (g : g_hom) (a b : k[G])
-    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
-    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
-  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
-#align add_monoid_algebra.lift_nc_mul AddMonoidAlgebra.liftNC_mul
+--theorem liftNC_mul {g_hom : Type*}
+--    [FunLike g_hom (Multiplicative G) R] [MulHomClass g_hom (Multiplicative G) R]
+--    (f : k →+* R) (g : g_hom) (a b : k[G])
+--    (h_comm : ∀ {x y}, y ∈ a.support → Commute (f (b x)) (g <| Multiplicative.ofAdd y)) :
+--    liftNC (f : k →+ R) g (a * b) = liftNC (f : k →+ R) g a * liftNC (f : k →+ R) g b :=
+--  (MonoidAlgebra.liftNC_mul f g _ _ @h_comm : _)
+--#align add_monoid_algebra.lift_nc_mul AddMonoidAlgebra.liftNC_mul
 
 end Mul
 
