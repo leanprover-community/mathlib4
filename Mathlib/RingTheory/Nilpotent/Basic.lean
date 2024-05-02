@@ -6,7 +6,7 @@ Authors: Oliver Nash
 import Mathlib.Algebra.Associated
 import Mathlib.Algebra.GeomSum
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.SMulWithZero
 import Mathlib.Data.Nat.Choose.Sum
 import Mathlib.Data.Nat.Lattice
@@ -122,7 +122,7 @@ theorem add_pow_eq_zero_of_add_le_succ_of_pow_eq_zero {m n k : ℕ}
   rintro ⟨i, j⟩ hij
   suffices x ^ i * y ^ j = 0 by simp only [this, nsmul_eq_mul, mul_zero]
   by_cases hi : m ≤ i
-  rw [pow_eq_zero_of_le hi hx, zero_mul]
+  · rw [pow_eq_zero_of_le hi hx, zero_mul]
   rw [pow_eq_zero_of_le ?_ hy, mul_zero]
   linarith [Finset.mem_antidiagonal.mp hij]
 
@@ -198,7 +198,7 @@ lemma NoZeroSMulDivisors.isReduced (R M : Type*)
     IsReduced R := by
   refine ⟨fun x ⟨k, hk⟩ ↦ ?_⟩
   induction' k with k ih
-  · rw [Nat.zero_eq, pow_zero] at hk
+  · rw [pow_zero] at hk
     exact eq_zero_of_zero_eq_one hk.symm x
   · obtain ⟨m : M, hm : m ≠ 0⟩ := exists_ne (0 : M)
     have : x ^ (k + 1) • m = 0 := by simp only [hk, zero_smul]

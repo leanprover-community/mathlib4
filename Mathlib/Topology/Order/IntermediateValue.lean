@@ -70,9 +70,9 @@ on a preconnected space and `f a ≤ g a` and `g b ≤ f b`, then for some `x` w
 theorem intermediate_value_univ₂ [PreconnectedSpace X] {a b : X} {f g : X → α} (hf : Continuous f)
     (hg : Continuous g) (ha : f a ≤ g a) (hb : g b ≤ f b) : ∃ x, f x = g x := by
   obtain ⟨x, _, hfg, hgf⟩ : (univ ∩ { x | f x ≤ g x ∧ g x ≤ f x }).Nonempty
-  exact
-    isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
-      (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
+  · exact
+      isPreconnected_closed_iff.1 PreconnectedSpace.isPreconnected_univ _ _ (isClosed_le hf hg)
+        (isClosed_le hg hf) (fun _ _ => le_total _ _) ⟨a, trivial, ha⟩ ⟨b, trivial, hb⟩
   exact ⟨x, le_antisymm hfg hgf⟩
 #align intermediate_value_univ₂ intermediate_value_univ₂
 
@@ -352,7 +352,7 @@ theorem IsClosed.mem_of_ge_of_forall_exists_gt {a b : α} {s : Set α} (hs : IsC
   have c_mem : c ∈ S := hs.csSup_mem ⟨_, ha⟩ Sbd
   have c_le : c ≤ b := csSup_le ⟨_, ha⟩ fun x hx => hx.2.2
   cases' eq_or_lt_of_le c_le with hc hc
-  exact hc ▸ c_mem.1
+  · exact hc ▸ c_mem.1
   exfalso
   rcases hgt c ⟨c_mem.1, c_mem.2.1, hc⟩ with ⟨x, xs, cx, xb⟩
   exact not_lt_of_le (le_csSup Sbd ⟨xs, le_trans (le_csSup Sbd ha) (le_of_lt cx), xb⟩) cx
@@ -691,6 +691,7 @@ theorem Continuous.strictMono_of_inj_boundedOrder' [BoundedOrder α] {f : α →
     (hf_c.strictMono_of_inj_boundedOrder · hf_i)
     (hf_c.strictAnti_of_inj_boundedOrder · hf_i)
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `α` is equipped with a conditionally complete linear dense order and `f : α → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if
 it is strictly monotone (increasing) on some closed interval `[a, b]`. -/
@@ -721,6 +722,7 @@ theorem Continuous.strictMonoOn_of_inj_rigidity {f : α → δ}
   replace : StrictMonoOn f (Icc x y) := StrictMonoOn.mono hf_mono_st this
   exact this (left_mem_Icc.mpr (le_of_lt hxy)) (right_mem_Icc.mpr (le_of_lt hxy)) hxy
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 /-- Suppose `f : [a, b] → δ` is
 continuous and injective. Then `f` is strictly monotone (increasing) if `f(a) ≤ f(b)`. -/
 theorem ContinuousOn.strictMonoOn_of_injOn_Icc {a b : α} {f : α → δ}

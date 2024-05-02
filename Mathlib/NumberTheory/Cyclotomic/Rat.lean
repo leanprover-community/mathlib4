@@ -250,9 +250,9 @@ noncomputable def subOneIntegralPowerBasis [IsCyclotomicExtension {p ^ k} ℚ K]
       convert Subalgebra.add_mem _ (self_mem_adjoin_singleton ℤ (⟨ζ - 1, _⟩ : 𝓞 K))
         (Subalgebra.one_mem _)
 -- Porting note: `simp` was able to finish the proof.
-      simp only [Subsemiring.coe_add, Subalgebra.coe_toSubsemiring,
-        OneMemClass.coe_one, sub_add_cancel]
-      exact Subalgebra.sub_mem _ (hζ.isIntegral (by simp)) (Subalgebra.one_mem _))
+      · simp only [Subsemiring.coe_add, Subalgebra.coe_toSubsemiring,
+          OneMemClass.coe_one, sub_add_cancel]
+      · exact Subalgebra.sub_mem _ (hζ.isIntegral (by simp)) (Subalgebra.one_mem _))
 #align is_primitive_root.sub_one_integral_power_basis IsPrimitiveRoot.subOneIntegralPowerBasis
 
 @[simp]

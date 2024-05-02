@@ -161,9 +161,11 @@ this point. (When the property is local and invariant, it will in fact hold usin
 `liftPropWithinAt_indep_chart`). We require continuity in the lifted property, as otherwise one
 single chart might fail to capture the behavior of the function.
 -/
-def LiftPropWithinAt (P : (H → H') → Set H → H → Prop) (f : M → M') (s : Set M) (x : M) : Prop :=
-  ContinuousWithinAt f s x ∧
-    P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x)
+@[mk_iff liftPropWithinAt_iff']
+structure LiftPropWithinAt (P : (H → H') → Set H → H → Prop) (f : M → M') (s : Set M) (x : M) :
+    Prop where
+  continuousWithinAt : ContinuousWithinAt f s x
+  prop : P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x)
 #align charted_space.lift_prop_within_at ChartedSpace.LiftPropWithinAt
 
 /-- Given a property of germs of functions and sets in the model space, then one defines
@@ -183,7 +185,7 @@ def LiftPropAt (P : (H → H') → Set H → H → Prop) (f : M → M') (x : M) 
 theorem liftPropAt_iff {P : (H → H') → Set H → H → Prop} {f : M → M'} {x : M} :
     LiftPropAt P f x ↔
       ContinuousAt f x ∧ P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm) univ (chartAt H x x) := by
-  rw [LiftPropAt, LiftPropWithinAt, continuousWithinAt_univ, preimage_univ]
+  rw [LiftPropAt, liftPropWithinAt_iff', continuousWithinAt_univ, preimage_univ]
 #align charted_space.lift_prop_at_iff ChartedSpace.liftPropAt_iff
 
 /-- Given a property of germs of functions and sets in the model space, then one defines
@@ -217,17 +219,19 @@ theorem liftPropOn_univ : LiftPropOn P g univ ↔ LiftProp P g := by
 #align structure_groupoid.lift_prop_on_univ StructureGroupoid.liftPropOn_univ
 
 theorem liftPropWithinAt_self {f : H → H'} {s : Set H} {x : H} :
-    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P f s x := Iff.rfl
+    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P f s x :=
+  liftPropWithinAt_iff' ..
 #align structure_groupoid.lift_prop_within_at_self StructureGroupoid.liftPropWithinAt_self
 
 theorem liftPropWithinAt_self_source {f : H → M'} {s : Set H} {x : H} :
-    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x := Iff.rfl
+    LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧ P (chartAt H' (f x) ∘ f) s x :=
+  liftPropWithinAt_iff' ..
 #align structure_groupoid.lift_prop_within_at_self_source StructureGroupoid.liftPropWithinAt_self_source
 
 theorem liftPropWithinAt_self_target {f : M → H'} :
     LiftPropWithinAt P f s x ↔ ContinuousWithinAt f s x ∧
       P (f ∘ (chartAt H x).symm) ((chartAt H x).symm ⁻¹' s) (chartAt H x x) :=
-  Iff.rfl
+  liftPropWithinAt_iff' ..
 #align structure_groupoid.lift_prop_within_at_self_target StructureGroupoid.liftPropWithinAt_self_target
 
 namespace LocalInvariantProp
@@ -242,6 +246,7 @@ theorem liftPropWithinAt_iff {f : M → M'} :
         P (chartAt H' (f x) ∘ f ∘ (chartAt H x).symm)
           ((chartAt H x).target ∩ (chartAt H x).symm ⁻¹' (s ∩ f ⁻¹' (chartAt H' (f x)).source))
           (chartAt H x x) := by
+  rw [liftPropWithinAt_iff']
   refine' and_congr_right fun hf ↦ hG.congr_set _
   exact PartialHomeomorph.preimage_eventuallyEq_target_inter_preimage_inter hf
     (mem_chart_source H x) (chart_source_mem_nhds H' (f x))
@@ -302,8 +307,10 @@ theorem liftPropWithinAt_indep_chart_aux (he : e ∈ G.maximalAtlas M) (xe : x �
 theorem liftPropWithinAt_indep_chart [HasGroupoid M G] [HasGroupoid M' G']
     (he : e ∈ G.maximalAtlas M) (xe : x ∈ e.source) (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) :
-    LiftPropWithinAt P g s x ↔ ContinuousWithinAt g s x ∧ P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) :=
-  and_congr_right <|
+    LiftPropWithinAt P g s x ↔
+    ContinuousWithinAt g s x ∧ P (f ∘ g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
+  simp only [liftPropWithinAt_iff']
+  exact and_congr_right <|
     hG.liftPropWithinAt_indep_chart_aux (chart_mem_maximalAtlas _ _) (mem_chart_source _ _) he xe
       (chart_mem_maximalAtlas _ _) (mem_chart_source _ _) hf xf
 #align structure_groupoid.local_invariant_prop.lift_prop_within_at_indep_chart StructureGroupoid.LocalInvariantProp.liftPropWithinAt_indep_chart
@@ -312,7 +319,7 @@ theorem liftPropWithinAt_indep_chart [HasGroupoid M G] [HasGroupoid M' G']
 theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maximalAtlas M)
     (xe : x ∈ e.source) :
     LiftPropWithinAt P g s x ↔ LiftPropWithinAt P (g ∘ e.symm) (e.symm ⁻¹' s) (e x) := by
-  rw [liftPropWithinAt_self_source, LiftPropWithinAt,
+  rw [liftPropWithinAt_self_source, liftPropWithinAt_iff',
     e.symm.continuousWithinAt_iff_continuousWithinAt_comp_right xe, e.symm_symm]
   refine' and_congr Iff.rfl _
   rw [Function.comp_apply, e.left_inv xe, ← Function.comp.assoc,
@@ -324,7 +331,7 @@ theorem liftPropWithinAt_indep_chart_source [HasGroupoid M G] (he : e ∈ G.maxi
 theorem liftPropWithinAt_indep_chart_target [HasGroupoid M' G'] (hf : f ∈ G'.maximalAtlas M')
     (xf : g x ∈ f.source) :
     LiftPropWithinAt P g s x ↔ ContinuousWithinAt g s x ∧ LiftPropWithinAt P (f ∘ g) s x := by
-  rw [liftPropWithinAt_self_target, LiftPropWithinAt, and_congr_right_iff]
+  rw [liftPropWithinAt_self_target, liftPropWithinAt_iff', and_congr_right_iff]
   intro hg
   simp_rw [(f.continuousAt xf).comp_continuousWithinAt hg, true_and_iff]
   exact hG.liftPropWithinAt_indep_chart_target_aux (mem_chart_source _ _)
@@ -356,7 +363,7 @@ theorem liftPropOn_indep_chart [HasGroupoid M G] [HasGroupoid M' G'] (he : e ∈
 
 theorem liftPropWithinAt_inter' (ht : t ∈ 𝓝[s] x) :
     LiftPropWithinAt P g (s ∩ t) x ↔ LiftPropWithinAt P g s x := by
-  rw [LiftPropWithinAt, LiftPropWithinAt, continuousWithinAt_inter' ht, hG.congr_set]
+  rw [liftPropWithinAt_iff', liftPropWithinAt_iff', continuousWithinAt_inter' ht, hG.congr_set]
   simp_rw [eventuallyEq_set, mem_preimage,
     (chartAt _ x).eventually_nhds' (fun x ↦ x ∈ s ∩ t ↔ x ∈ s) (mem_chart_source _ x)]
   exact (mem_nhdsWithin_iff_eventuallyEq.mp ht).symm.mem_iff
@@ -441,6 +448,7 @@ theorem liftPropOn_congr_iff (h₁ : ∀ y ∈ s, g' y = g y) : LiftPropOn P g' 
 theorem liftPropWithinAt_mono_of_mem
     (mono_of_mem : ∀ ⦃s x t⦄ ⦃f : H → H'⦄, s ∈ 𝓝[t] x → P f s x → P f t x)
     (h : LiftPropWithinAt P g s x) (hst : s ∈ 𝓝[t] x) : LiftPropWithinAt P g t x := by
+  simp only [liftPropWithinAt_iff'] at h ⊢
   refine' ⟨h.1.mono_of_mem hst, mono_of_mem _ h.2⟩
   simp_rw [← mem_map, (chartAt H x).symm.map_nhdsWithin_preimage_eq (mem_chart_target H x),
     (chartAt H x).left_inv (mem_chart_source H x), hst]
@@ -542,6 +550,7 @@ theorem liftProp_id (hG : G.LocalInvariantProp G Q) (hQ : ∀ y, Q id univ y) :
 theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Opens M}
     (f : M → M') (x : U) :
     LiftPropAt P f x ↔ LiftPropAt P (f ∘ Subtype.val) x := by
+  simp only [LiftPropAt, liftPropWithinAt_iff']
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ, U.openEmbedding'.continuousAt_iff]
   · apply hG.congr_iff
@@ -550,6 +559,7 @@ theorem liftPropAt_iff_comp_subtype_val (hG : LocalInvariantProp G G' P) {U : Op
 theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Opens M} (hUV : U ≤ V)
     (f : V → M') (x : U) :
     LiftPropAt P f (Set.inclusion hUV x) ↔ LiftPropAt P (f ∘ Set.inclusion hUV : U → M') x := by
+  simp only [LiftPropAt, liftPropWithinAt_iff']
   congrm ?_ ∧ ?_
   · simp_rw [continuousWithinAt_univ,
       (TopologicalSpace.Opens.openEmbedding_of_le hUV).continuousAt_iff]
