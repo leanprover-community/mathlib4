@@ -47,13 +47,13 @@ lemma abs_le_tsum_abs (N : ℕ) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k) 
       ‖(eisSummand k x z)‖) _ (fun _ => norm_nonneg _) (summable_lem k hk z))
   apply (summable_lem k hk z).subtype
 
-theorem eisensteinSeries_IsBoundedAtImInfty (N : ℕ+) (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
+theorem eisensteinSeries_IsBoundedAtImInfty {N : ℕ+} (a : Fin 2 → ZMod N) (k : ℤ) (hk : 3 ≤ k)
     (A : SL(2, ℤ)) : IsBoundedAtImInfty ((eisensteinSeries_SIF a k).toFun ∣[(k : ℤ)] A) := by
     simp_rw [UpperHalfPlane.bounded_mem, eisensteinSeries_SIF] at *
     refine ⟨∑'(x : Fin 2 → ℤ),
       (r ⟨⟨N, 2⟩, Nat.ofNat_pos⟩ ^ k * (max (x 0).natAbs (x 1).natAbs : ℝ) ^ k)⁻¹, 2, ?_⟩
     intro z hz
-    obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z N (by simp))
+    obtain ⟨n, hn⟩ := (ModularGroup_T_zpow_mem_verticalStrip z N N.2)
     rw [eisensteinSeries_slash_apply, ← eisensteinSeries_SIF_apply,
       ← SIF_lvl_N_periodic N k (eisensteinSeries_SIF (a ᵥ* A) k) z n]
     let Z := ((ModularGroup.T ^ ((N : ℤ) * n))) • z
