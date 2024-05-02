@@ -91,9 +91,11 @@ def StateListM (σ α : Type u) : Type u := StateListT σ Id α
 
 namespace StateListT
 
+/-- Turn a `List α` into a `StateListT σ m α`. -/
 def ofList (x : List α) : StateListT σ m α := fun s =>
   return x.foldl (·.cons · s) .nil
 
+/-- Turn an `Array α` into a `StateListT σ m α`. -/
 def ofArray (x : Array α) : StateListT σ m α := fun s =>
   return x.foldl (·.cons · s) .nil
 

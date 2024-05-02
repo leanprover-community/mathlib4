@@ -229,6 +229,8 @@ open BigOperators
 info: Pattern ∑ x in s, (f x + g x)
 · ∑ x in Finset.range n, x + ∑ x in Finset.range n, 1
   Finset.sum_add_distrib
+· ∑ a in Finset.range n, a + (Finset.range n).card • 1
+  Finset.sum_add_card_nsmul
 
 Pattern ∑ i in Finset.range n, f i
 · ∑ i : Fin n, (↑i + 1)
