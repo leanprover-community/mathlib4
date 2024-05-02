@@ -3,7 +3,6 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -1294,11 +1293,9 @@ theorem nthLe_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) 
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
 #align list.nth_le_singleton List.nthLe_singleton
 
-@[deprecated] -- 2023-01-05 -- FIXME: replacement -- it's not `get_zero` and it's not `get?_zero`
-theorem nthLe_zero [Inhabited α] {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head! := by
-  cases L
-  cases h
-  simp [nthLe]
+@[deprecated get_mk_zero] -- 2023-01-05
+theorem nthLe_zero {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head (length_pos.1 h) :=
+  get_mk_zero h
 #align list.nth_le_zero List.nthLe_zero
 
 #align list.nth_le_append List.get_append
@@ -2337,19 +2334,19 @@ where
         cases xs with
         | nil => contradiction
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
             ← Array.toList_eq]
           exact ih _ _ <| (by omega)
     · induction n generalizing xs acc with
       | zero =>
-        replace h : xs.length = 0 := by rw [zero_eq] at h; omega
+        replace h : xs.length = 0 := by omega
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go]
           exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop

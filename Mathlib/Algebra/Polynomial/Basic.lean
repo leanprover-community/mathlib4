@@ -648,7 +648,7 @@ theorem monomial_mul_X_pow (n : ℕ) (r : R) (k : ℕ) :
     monomial n r * X ^ k = monomial (n + k) r := by
   induction' k with k ih
   · simp
-  · simp [ih, pow_succ, ← mul_assoc, add_assoc]
+  · simp [ih, pow_succ, ← mul_assoc, add_assoc, Nat.succ_eq_add_one]
 #align polynomial.monomial_mul_X_pow Polynomial.monomial_mul_X_pow
 
 @[simp]
@@ -688,8 +688,7 @@ theorem toFinsupp_apply (f : R[X]) (i) : f.toFinsupp i = f.coeff i := by cases f
 #align polynomial.to_finsupp_apply Polynomial.toFinsupp_apply
 
 theorem coeff_monomial : coeff (monomial n a) m = if n = m then a else 0 := by
-  simp only [← ofFinsupp_single, coeff, LinearMap.coe_mk]
-  rw [Finsupp.single_apply]
+  simp [coeff, Finsupp.single_apply]
 #align polynomial.coeff_monomial Polynomial.coeff_monomial
 
 @[simp]
@@ -989,8 +988,8 @@ theorem mul_eq_sum_sum :
     p * q = ∑ i in p.support, q.sum fun j a => (monomial (i + j)) (p.coeff i * a) := by
   apply toFinsupp_injective
   rcases p with ⟨⟩; rcases q with ⟨⟩
-  simp [support, sum, coeff, toFinsupp_sum]
-  rfl
+  simp_rw [sum, coeff, toFinsupp_sum, support, toFinsupp_mul, toFinsupp_monomial,
+    AddMonoidAlgebra.mul_def, Finsupp.sum]
 #align polynomial.mul_eq_sum_sum Polynomial.mul_eq_sum_sum
 
 @[simp]
