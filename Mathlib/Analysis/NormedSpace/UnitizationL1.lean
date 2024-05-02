@@ -10,14 +10,16 @@ import Mathlib.Analysis.NormedSpace.ProdLp
 
 In another file, the `Unitization 𝕜 A` of a non-unital normed `𝕜`-algebra `A` is equipped with the
 norm inherited as the pullback via a map (closely related to) the left-regular representation of the
-algebra on itself.
+algebra on itself (see `Unitization.instNormedRing`).
 
 However, this construction is only valid (and an isometry) when `A` is a `RegularNormedAlgebra`.
 Sometimes it is useful to consider the unitization of a non-unital algebra with the $L^1$ norm
 instead. This file provides that norm on the type synonym `WithLp 1 (Unitization 𝕜 A)`, along
 with the algebra isomomorphism between `Unitization 𝕜 A` and `WithLp 1 (Unitization 𝕜 A)`.
+Note that `TrivSqZeroExt` is also equipped with the $L^1$ norm in the analogous way, but it is
+registered as an instance without the type synonym.
 
-One application of this is a stragihtforward proof that the quasispectrum of an element in a
+One application of this is a straightforward proof that the quasispectrum of an element in a
 non-untal Banach algebra is compact, which can be established by passing to the unitization.
 -/
 
@@ -85,13 +87,6 @@ lemma unitization_mul (x y : WithLp 1 (Unitization 𝕜 A)) :
     WithLp.equiv 1 _ (x * y) = (WithLp.equiv 1 _ x) * (WithLp.equiv 1 _ y) :=
   rfl
 
-instance instSMul {R : Type*} [SMul R 𝕜] [SMul R A] : SMul R (WithLp 1 (Unitization 𝕜 A)) :=
-  inferInstanceAs (SMul R (Unitization 𝕜 A))
-
-lemma unitization_smul {R : Type*} [SMul R 𝕜] [SMul R A] (r : R) (x : WithLp 1 (Unitization 𝕜 A)) :
-    WithLp.equiv 1 _ (r • x) = r • (WithLp.equiv 1 _ x) :=
-  rfl
-
 instance {R : Type*} [CommSemiring R] [Algebra R 𝕜] [DistribMulAction R A] [IsScalarTower R 𝕜 A] :
     Algebra R (WithLp 1 (Unitization 𝕜 A)) :=
   inferInstanceAs (Algebra R (Unitization 𝕜 A))
@@ -129,7 +124,7 @@ noncomputable instance instUnitizationNormedRing : NormedRing (WithLp 1 (Unitiza
 noncomputable instance instUnitizationNormedAlgebra :
     NormedAlgebra 𝕜 (WithLp 1 (Unitization 𝕜 A)) where
   norm_smul_le r x := by
-    simp_rw [unitization_norm_def, unitization_smul, fst_smul, snd_smul, norm_smul, mul_add]
+    simp_rw [unitization_norm_def, equiv_smul, fst_smul, snd_smul, norm_smul, mul_add]
     exact le_rfl
 
 end WithLp
