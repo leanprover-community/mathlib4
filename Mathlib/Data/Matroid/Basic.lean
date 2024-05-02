@@ -454,10 +454,10 @@ end Base
 section dep_indep
 
 /-- A set is `Indep`endent if it is contained in a `Base`.  -/
-@[pp_dot] def Indep (M : Matroid α) (I : Set α) : Prop := ∃ B, M.Base B ∧ I ⊆ B
+def Indep (M : Matroid α) (I : Set α) : Prop := ∃ B, M.Base B ∧ I ⊆ B
 
 /-- A subset of `M.E` is `Dep`endent if it is not `Indep`endent . -/
-@[pp_dot] def Dep (M : Matroid α) (D : Set α) : Prop := ¬M.Indep D ∧ D ⊆ M.E
+def Dep (M : Matroid α) (D : Set α) : Prop := ¬M.Indep D ∧ D ⊆ M.E
 
 theorem indep_iff_subset_base : M.Indep I ↔ ∃ B, M.Base B ∧ I ⊆ B := Iff.rfl
 
@@ -674,12 +674,12 @@ section Basis
 
 /-- A Basis for a set `X ⊆ M.E` is a maximal independent subset of `X`
   (Often in the literature, the word 'Basis' is used to refer to what we call a 'Base'). -/
-@[pp_dot] def Basis (M : Matroid α) (I X : Set α) : Prop :=
+def Basis (M : Matroid α) (I X : Set α) : Prop :=
   I ∈ maximals (· ⊆ ·) {A | M.Indep A ∧ A ⊆ X} ∧ X ⊆ M.E
 
 /-- A `Basis'` is a basis without the requirement that `X ⊆ M.E`. This is convenient for some
   API building, especially when working with rank and closure.  -/
-@[pp_dot] def Basis' (M : Matroid α) (I X : Set α) : Prop :=
+def Basis' (M : Matroid α) (I X : Set α) : Prop :=
   I ∈ maximals (· ⊆ ·) {A | M.Indep A ∧ A ⊆ X}
 
 theorem Basis'.indep (hI : M.Basis' I X) : M.Indep I :=

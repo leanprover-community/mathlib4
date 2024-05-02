@@ -30,7 +30,7 @@ instance Primes.infinite : Infinite Primes := infinite_setOf_prime.to_subtype
 instance Primes.countable : Countable Primes := ⟨⟨coeNat.coe, coe_nat_injective⟩⟩
 
 /-- The prime factors of a natural number as a finset. -/
-@[pp_dot] def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset
+def primeFactors (n : ℕ) : Finset ℕ := n.factors.toFinset
 
 @[simp] lemma toFinset_factors (n : ℕ) : n.factors.toFinset = n.primeFactors := rfl
 

@@ -187,11 +187,11 @@ theorem range_coe' : range ofNNReal = Iio ∞ := WithTop.range_coe
 theorem range_coe : range ofNNReal = {∞}ᶜ := (isCompl_range_some_none ℝ≥0).symm.compl_eq.symm
 
 /-- `toNNReal x` returns `x` if it is real, otherwise 0. -/
-@[pp_dot] protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
+protected def toNNReal : ℝ≥0∞ → ℝ≥0 := WithTop.untop' 0
 #align ennreal.to_nnreal ENNReal.toNNReal
 
 /-- `toReal x` returns `x` if it is real, `0` otherwise. -/
-@[pp_dot] protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
+protected def toReal (a : ℝ≥0∞) : Real := a.toNNReal
 #align ennreal.to_real ENNReal.toReal
 
 /-- `ofReal x` returns `x` if it is nonnegative, `0` otherwise. -/

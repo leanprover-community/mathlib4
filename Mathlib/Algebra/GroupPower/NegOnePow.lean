@@ -19,7 +19,6 @@ Johan Commelin to the Liquid Tensor Experiment.
 namespace Int
 
 /-- The map `ℤ → ℤˣ` which sends `n` to `(-1 : ℤˣ) ^ n`. -/
-@[pp_dot]
 def negOnePow (n : ℤ) : ℤˣ := (-1 : ℤˣ) ^ n
 
 lemma negOnePow_def (n : ℤ) : n.negOnePow = (-1 : ℤˣ) ^ n := rfl

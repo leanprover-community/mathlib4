@@ -148,7 +148,7 @@ namespace NNReal
 /-- Two nonnegative real exponents `p, q` are conjugate if they are `> 1` and satisfy the equality
 `1/p + 1/q = 1`. This condition shows up in many theorems in analysis, notably related to `L^p`
 norms. -/
-@[mk_iff, pp_dot]
+@[mk_iff]
 structure IsConjExponent (p q : ℝ≥0) : Prop where
   one_lt : 1 < p
   inv_add_inv_conj : p⁻¹ + q⁻¹ = 1

@@ -609,7 +609,7 @@ namespace Equivalence
 
 /-- The adjunction given by an equivalence of categories. (To obtain the opposite adjunction,
 simply use `e.symm.toAdjunction`. -/
-@[pp_dot, simps! unit counit]
+@[simps! unit counit]
 def toAdjunction (e : C ≌ D) : e.functor ⊣ e.inverse :=
   mkOfUnitCounit
     ⟨e.unit, e.counit, by

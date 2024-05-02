@@ -405,7 +405,6 @@ end Equivalence
 
 /-- The universal property of a limit cone: a map `W ⟶ X` is the same as
   a cone on `F` with cone point `W`. -/
-@[pp_dot]
 def homIso (h : IsLimit t) (W : C) : ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅ (const J).obj W ⟶ F where
   hom f := (t.extend f.down).π
   inv π := ⟨h.lift { pt := W, π }⟩
@@ -428,7 +427,6 @@ def natIso (h : IsLimit t) : yoneda.obj t.pt ⋙ uliftFunctor.{u₁} ≅ F.cones
 
 /-- Another, more explicit, formulation of the universal property of a limit cone.
 See also `homIso`. -/
-@[pp_dot]
 def homIso' (h : IsLimit t) (W : C) :
     ULift.{u₁} (W ⟶ t.pt : Type v₃) ≅
       { p : ∀ j, W ⟶ F.obj j // ∀ {j j'} (f : j ⟶ j'), p j ≫ F.map f = p j' } :=
@@ -933,7 +931,6 @@ end Equivalence
 
 /-- The universal property of a colimit cocone: a map `X ⟶ W` is the same as
   a cocone on `F` with cone point `W`. -/
-@[pp_dot]
 def homIso (h : IsColimit t) (W : C) : ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅ F ⟶ (const J).obj W where
   hom f := (t.extend f.down).ι
   inv ι := ⟨h.desc
@@ -958,7 +955,6 @@ def natIso (h : IsColimit t) : coyoneda.obj (op t.pt) ⋙ uliftFunctor.{u₁} �
 
 /-- Another, more explicit, formulation of the universal property of a colimit cocone.
 See also `homIso`. -/
-@[pp_dot]
 def homIso' (h : IsColimit t) (W : C) :
     ULift.{u₁} (t.pt ⟶ W : Type v₃) ≅
       { p : ∀ j, F.obj j ⟶ W // ∀ {j j' : J} (f : j ⟶ j'), F.map f ≫ p j' = p j } :=

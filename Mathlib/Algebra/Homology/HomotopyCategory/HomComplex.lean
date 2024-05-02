@@ -78,7 +78,6 @@ def mk (v : ∀ (p q : ℤ) (_ : p + n = q), F.X p ⟶ G.X q) : Cochain F G n :=
   fun ⟨p, q, hpq⟩ => v p q hpq
 
 /-- The value of a cochain on a triplet `⟨p, q, hpq⟩`. -/
-@[pp_dot]
 def v (γ : Cochain F G n) (p q : ℤ) (hpq : p + n = q) :
     F.X p ⟶ G.X q := γ ⟨p, q, hpq⟩
 
@@ -217,7 +216,6 @@ lemma v_comp_XIsoOfEq_inv
   simp only [HomologicalComplex.XIsoOfEq, eqToIso_refl, Iso.refl_inv, comp_id]
 
 /-- The composition of cochains. -/
-@[pp_dot]
 def comp {n₁ n₂ n₁₂ : ℤ} (z₁ : Cochain F G n₁) (z₂ : Cochain G K n₂) (h : n₁ + n₂ = n₁₂) :
     Cochain F K n₁₂ :=
   Cochain.mk (fun p q hpq => z₁.v p (p + n₁) rfl ≫ z₂.v (p + n₁) q (by omega))

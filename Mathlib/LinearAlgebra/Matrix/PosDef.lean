@@ -133,7 +133,6 @@ section sqrt
 variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 
 /-- The positive semidefinite square root of a positive semidefinite matrix -/
-@[pp_dot]
 noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorMatrix * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) * hA.1.eigenvectorMatrixᴴ
 
