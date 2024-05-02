@@ -9,7 +9,7 @@ import Std.Data.Rat.Basic
 # Datatypes for Simplex Algorithm implementation
 -/
 
-namespace Linarith.SimplexAlgo
+namespace Linarith.SimplexAlgorithm
 
 /--
 Structure for matrices over ℚ.
@@ -45,4 +45,4 @@ structure Table where
   /-- Matrix of coefficients the basic variables expressed through the free ones. -/
   mat : Matrix basic.size free.size
 
-end Linarith.SimplexAlgo
+end Linarith.SimplexAlgorithm

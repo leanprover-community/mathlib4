@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgo.PositiveVector
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -336,7 +336,7 @@ def FourierMotzkin.produceCertificate : CertificateOracle :=
   | (Except.ok _) => failure
   | (Except.error contr) => return contr.src.flatten
 
-namespace SimplexAlgo
+namespace SimplexAlgorithm
 
 /-- Preprocess the goal to pass it to `findPositiveVector`. -/
 def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × List Nat :=
@@ -363,6 +363,6 @@ def produceCertificate : CertificateOracle :=
     let vec := findPositiveVector A strictIndexes
     return postprocess vec
 
-end SimplexAlgo
+end SimplexAlgorithm
 
 end Linarith

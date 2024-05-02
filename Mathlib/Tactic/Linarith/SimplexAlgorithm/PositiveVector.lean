@@ -3,20 +3,20 @@ Copyright (c) 2024 Vasily Nesterov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
-import Mathlib.Tactic.Linarith.SimplexAlgo.SimplexAlgo
-import Mathlib.Tactic.Linarith.SimplexAlgo.Gauss
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.SimplexAlgorithm
+import Mathlib.Tactic.Linarith.SimplexAlgorithm.Gauss
 
 /-!
 # `linarith` certificate search a LP problem
 
 `linarith` certificate search can easily be reduced to this LP problem: given the matrix `A` and the
 list `strictIndexes`, find the non-negative vector `v` such that some of its coordinates from
-the `strictIndexes` are posivie and `A v = 0`.
+the `strictIndexes` are positive and `A v = 0`.
 
 The function `findPositiveVector` solves this problem.
 -/
 
-namespace Linarith.SimplexAlgo
+namespace Linarith.SimplexAlgorithm
 
 /--
 Given matrix `A` and list `strictIndexes` of strict inequalities' indexes, we want to state the
@@ -74,7 +74,7 @@ def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) :
   let initTable := Gauss.getTable B
 
   /- Run Simplex Algorithm and extract the solution. -/
-  let resTable := runSimplexAlgo initTable
+  let resTable := runSimplexAlgorithm initTable
   exctractSolution resTable
 
-end Linarith.SimplexAlgo
+end Linarith.SimplexAlgorithm
