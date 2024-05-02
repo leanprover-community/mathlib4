@@ -253,8 +253,8 @@ theorem efixedPoint_eq_of_edist_lt_top' (hf : ContractingWith K f) {s : Set α} 
   · apply Setoid.symm' -- Porting note: Originally `symm`
     apply edist_efixedPoint_lt_top'
   trans y
-  exact lt_top_iff_ne_top.2 hxy
-  apply edist_efixedPoint_lt_top'
+  · exact lt_top_iff_ne_top.2 hxy
+  · apply edist_efixedPoint_lt_top'
 #align contracting_with.efixed_point_eq_of_edist_lt_top' ContractingWith.efixedPoint_eq_of_edist_lt_top'
 
 end ContractingWith
