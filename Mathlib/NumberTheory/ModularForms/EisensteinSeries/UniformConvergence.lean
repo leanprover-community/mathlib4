@@ -163,22 +163,19 @@ theorem eis_is_bounded_on_box_rpow {k : ℝ} (hk : 0 ≤ k) (z : ℍ) (n : ℕ) 
       norm_cast
       exact Nat.pos_of_ne_zero hn
 
-theorem eis_is_bounded_on_box (k n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hx : (x 0, x 1) ∈ box n) :
-    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (Complex.abs ((r z) ^ k * n ^ k))⁻¹ := by
-  have := eis_is_bounded_on_box_rpow (Nat.cast_nonneg k) z n x hx
+/-This is a special case of the above, but one that we use more.-/
+theorem eis_is_bounded_on_box {k: ℤ} (n : ℕ) (z : ℍ) (x : Fin 2 → ℤ) (hk : 0 ≤ k)
+    (hx : (x 0, x 1) ∈ box n) :
+    (Complex.abs (((x 0 : ℂ) * z + (x 1 : ℂ)) ^ k))⁻¹ ≤ (((r z) ^ k * n ^ k))⁻¹ := by
+  have := eis_is_bounded_on_box_rpow (Int.cast_nonneg.2 hk) z n x hx
   norm_cast at *
-  simp_rw [zpow_neg, ← mul_inv] at this
-  have H : |r z ^ k * ↑(n ^ k)| = r z ^ k * ↑(n ^ k) := by
-    refine abs_eq_self.mpr ?_
-    apply mul_nonneg (pow_nonneg (r_pos z).le _)
-    simp only [Nat.cast_pow, ge_iff_le, Nat.cast_nonneg, pow_nonneg]
-  simp only [map_pow, zpow_natCast, H]
+  simp_rw [zpow_neg, ← mul_inv] at  *
   simpa using this
 
 lemma r_lower_bound_on_strip {A B : ℝ} (h : 0 < B) (z : verticalStrip A B) :
     r ⟨⟨A, B⟩, h⟩ ≤ r z.1 := by
   have hz := z.2
-  simp only [strip_mem_iff, abs_ofReal, ge_iff_le] at hz
+  simp only [mem_verticalStrip_iff, abs_ofReal, ge_iff_le] at hz
   simp_rw [r]
   apply min_le_min
   · dsimp only
@@ -244,13 +241,11 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     (a : Fin 2 → ZMod N) : TendstoLocallyUniformly (fun (s : Finset (gammaSet N a)) =>
       (fun (z : ℍ) => ∑ x in s, eisSummand k x z))
         (fun (z : ℍ) => (eisensteinSeries_SIF a k).1 z) Filter.atTop := by
-  have hk0 : 0 ≤ k := by linarith
-  lift k to ℕ using hk0
   rw [← tendstoLocallyUniformlyOn_univ,tendstoLocallyUniformlyOn_iff_forall_isCompact
     (by simp only [Set.top_eq_univ, isOpen_univ]), eisensteinSeries_SIF]
   simp only [Set.top_eq_univ, Set.subset_univ, eisensteinSeries, forall_true_left]
   intro K hK
-  obtain ⟨A, B, hB, HABK⟩ := subset_strip_of_isCompact hK
+  obtain ⟨A, B, hB, HABK⟩ := subset_verticalStrip_of_isCompact hK
   have hu : Summable fun x : (gammaSet N a) =>
     (1/(r ⟨⟨A, B⟩, hB⟩) ^ k) * ((max (x.1 0).natAbs (x.1 1).natAbs : ℝ) ^ k)⁻¹ := by
     apply (Summable.subtype (summable_upper_bound hk ⟨⟨A, B⟩, hB⟩) (gammaSet N a)).congr
@@ -258,20 +253,20 @@ theorem eisensteinSeries_tendstoLocallyUniformly {k : ℤ} (hk : 3 ≤ k) (N : �
     simp only [zpow_natCast, one_div, Function.comp_apply]
   apply tendstoUniformlyOn_tsum hu
   intro v x hx
-  have := eis_is_bounded_on_box k (max (v.1 0).natAbs (v.1 1).natAbs) x v
+  have := eis_is_bounded_on_box (k := k) (max (v.1 0).natAbs (v.1 1).natAbs) x v (by linarith)
   simp only [Nat.cast_max,Int.natCast_natAbs, iff_true, zpow_natCast, one_div, map_pow,
     map_mul, abs_ofReal, abs_natCast, mul_inv_rev, eisSummand, norm_inv, norm_pow, norm_eq_abs,
     ge_iff_le] at *
   apply le_trans (this (by simp only [Int.mem_box]))
   rw [mul_comm]
   apply mul_le_mul _ (by rfl)
-  repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, pow_nonneg,
-    inv_nonneg, pow_nonneg (r_pos _).le]}
-  rw [inv_le_inv]
-  · apply pow_le_pow_left (r_pos _).le
-    rw [abs_of_pos (r_pos _)]
-    · exact r_lower_bound_on_strip hB ⟨x, HABK hx⟩
-  · apply pow_pos (abs_pos.mpr (ne_of_gt (r_pos x)))
+  repeat {simp only [inv_nonneg, ge_iff_le, le_max_iff, Nat.cast_nonneg, or_self, zpow_nonneg,
+    inv_nonneg, zpow_nonneg (r_pos _).le]}
+  have hk0 : 0 ≤ k := by linarith
+  lift k to ℕ using hk0
+  rw [inv_le_inv ]
+  · apply pow_le_pow_left (r_pos _).le (r_lower_bound_on_strip hB ⟨x, HABK hx⟩)
+  · apply pow_pos ( (r_pos x))
   · apply pow_pos (r_pos _)
 
 local notation "↑ₕ" f => f ∘ (PartialHomeomorph.symm

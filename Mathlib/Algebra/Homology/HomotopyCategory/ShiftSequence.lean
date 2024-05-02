@@ -134,8 +134,6 @@ noncomputable instance :
   Functor.ShiftSequence.induced (homologyFunctorFactors C (ComplexShape.up ℤ) 0) ℤ
     (homologyFunctor C (ComplexShape.up ℤ))
     (homologyFunctorFactors C (ComplexShape.up ℤ))
-    ⟨⟨Quotient.full_whiskeringLeft_functor _ _⟩,
-      Quotient.faithful_whiskeringLeft_functor _ _⟩
 
 variable {C}
 

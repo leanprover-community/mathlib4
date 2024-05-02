@@ -217,7 +217,7 @@ lemma term_tsum_of_lt {s : ℝ} (hs : 1 < s) :
           linarith
         · apply le_of_eq
           rw [rpow_sub_one, ← div_mul, div_one, mul_comm, one_div, inv_rpow, ← div_eq_mul_inv]
-          norm_cast
+          · norm_cast
           all_goals positivity
 
 /-- Reformulation of `ZetaAsymptotics.term_tsum_of_lt` which is useful for some computations
@@ -271,9 +271,9 @@ lemma continuousOn_term_tsum : ContinuousOn term_tsum (Ici 1) := by
     · exact (term_welldef n.succ_pos (zero_lt_one.trans_le hs)).1
     · exact (term_welldef n.succ_pos zero_lt_one).1
     · rw [div_le_div_left] -- leave side-goals to end and kill them all together
-      apply rpow_le_rpow_of_exponent_le
-      · exact (lt_of_le_of_lt (by simp) hx.1).le
-      · linarith [mem_Ici.mp hs]
+      · apply rpow_le_rpow_of_exponent_le
+        · exact (lt_of_le_of_lt (by simp) hx.1).le
+        · linarith [mem_Ici.mp hs]
       · linarith [hx.1]
       all_goals apply rpow_pos_of_pos ((Nat.cast_nonneg _).trans_lt hx.1)
   · rw [intervalIntegral.integral_of_le (by linarith)]
