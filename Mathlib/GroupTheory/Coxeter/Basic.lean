@@ -409,7 +409,7 @@ theorem prod_alternatingWord_eq_mul_pow (i i' : B) (m : ℕ) :
     π (alternatingWord i i' m) = (if Even m then 1 else s i') * (s i * s i') ^ (m / 2) := by
   induction' m with m ih
   · simp [alternatingWord]
-  · rw [alternatingWord_succ', wordProd_cons, ih, Nat.succ_eq_add_one]
+  · rw [alternatingWord_succ', wordProd_cons, ih]
     rcases Nat.even_or_odd m with even | odd
     · rcases even with ⟨k, rfl⟩
       ring_nf
