@@ -7,7 +7,6 @@ import Mathlib.Algebra.Homology.ShortComplex.PreservesHomology
 import Mathlib.Algebra.Homology.ShortComplex.Abelian
 import Mathlib.Algebra.Homology.ShortComplex.QuasiIso
 import Mathlib.CategoryTheory.Abelian.Exact
-import Mathlib.CategoryTheory.MorphismProperty
 import Mathlib.CategoryTheory.Preadditive.Injective
 
 /-!
