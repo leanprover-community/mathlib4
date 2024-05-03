@@ -65,7 +65,7 @@ theorem eigenvalues_eq (i : n) :
     mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
 #align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
 
-/--Unitary matrix whose columns are Orthonormal Basis of Eigenvectors of Hermitian Matrix-/
+/-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
     Matrix.unitaryGroup n 𝕜 :=
