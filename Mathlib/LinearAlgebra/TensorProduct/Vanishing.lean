@@ -5,7 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.RingTheory.TensorProduct.Basic
 
-/-! # The equational criterion for vanishing
+/-! # Vanishing of elements in a tensor product of two modules
 
 Let $M$ and $N$ be modules over a commutative ring $R$. Recall that every element of $M \otimes N$
 can be written as a finite sum $\sum_{i} m_i \otimes n_i$ of pure tensors
@@ -44,7 +44,7 @@ $M' \otimes N \to M \otimes N$ is injective for every submodule $M' \subseteq M$
 
 ## TODO
 
-* Prove the same theorems but with $M$ and $N$ swapped.
+* Prove the same theorems with $M$ and $N$ swapped.
 
 -/
 
@@ -125,6 +125,14 @@ theorem rTensor_injective_of_forall_vanishesTrivially
     (hMN : ∀ {ι : Type u} [Fintype ι] (m : ι → M) (n : ι → N),
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n)
     (M' : Submodule R M) : Injective (rTensor N M'.subtype) := by
+  sorry
+
+/-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
+for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
+theorem forall_rTensor_injective_iff_forall_vanishesTrivially :
+    (∀ {ι : Type u} [Fintype ι] (m : ι → M) (n : ι → N),
+      ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
+    ∀ M' : Submodule R M, Injective (rTensor N M'.subtype) := by
   sorry
 
 end TensorProduct
