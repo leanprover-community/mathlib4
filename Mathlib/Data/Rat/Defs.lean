@@ -87,6 +87,7 @@ lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
 #align rat.zero_mk_nat Rat.zero_mkRat
 #align rat.zero_mk Rat.zero_divInt
 
+attribute [local semireducible] Nat.gcd in
 @[simp] lemma mk'_zero (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 
 @[simp]
