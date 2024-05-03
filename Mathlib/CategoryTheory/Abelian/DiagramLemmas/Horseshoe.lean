@@ -5,10 +5,9 @@ Authors: Jujian Zhang
 -/
 
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
-import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
-import Mathlib.Algebra.Homology.HomologySequence
+import Mathlib.CategoryTheory.Preadditive.ProjectiveResolution
 
 /-!
 # Horseshoe Lemma

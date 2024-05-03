@@ -7,6 +7,7 @@ import Mathlib.CategoryTheory.Abelian.Homology
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Horseshoe
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.Algebra.Homology.Additive
+import Mathlib.Algebra.Homology.HomologySequence
 
 #align_import category_theory.abelian.left_derived from "leanprover-community/mathlib"@"8001ea54ece3bd5c0d0932f1e4f6d0f142ea20d9"
 
@@ -459,8 +460,8 @@ lemma sc'_shortExact [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.Short
   exact shortExact_α_β_horseshoe F A n
 
 /--
-the connecting morphism `H₁(A₃) -> H₀(A₁)` in the long exact sequence associated to a short exact sequence
-`0 -> A₁ -> A₂ -> A₃ -> 0` in `C`.
+the connecting morphism `H₁(A₃) -> H₀(A₁)` in the long exact sequence associated to a short exact
+sequence `0 -> A₁ -> A₂ -> A₃ -> 0` in `C`.
 -/
 noncomputable def δ [EnoughProjectives C] (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
     (F.leftDerived (n + 1)).obj A.X₃ ⟶ (F.leftDerived n).obj A.X₁ :=
