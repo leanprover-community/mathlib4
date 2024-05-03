@@ -116,8 +116,7 @@ instance [NumberField K] : Fintype (torsion K) := by
   · rw [← h_ua]
     exact le_of_eq ((eq_iff_eq _ 1).mp ((mem_torsion K).mp h_tors) φ)
 
--- a shortcut instance to stop the next instance from timing out
-instance [NumberField K] : Finite (torsion K) := inferInstance
+instance : Nonempty (torsion K) := One.instNonempty
 
 /-- The torsion subgroup is cylic. -/
 instance [NumberField K] : IsCyclic (torsion K) := subgroup_units_cyclic _
