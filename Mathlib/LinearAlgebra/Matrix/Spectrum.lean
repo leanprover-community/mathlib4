@@ -141,20 +141,10 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
   simp
 #align matrix.is_hermitian.det_eq_prod_eigenvalues Matrix.IsHermitian.det_eq_prod_eigenvalues
 
-@[simp]
-theorem rank_unitary_mul (A : unitaryGroup n 𝕜) (B : Matrix n n 𝕜) :
-    rank (B * A.1) = rank B :=
-  rank_mul_eq_left_of_isUnit_det (A : Matrix n n 𝕜) B (isUnits_det_units (unitary.toUnits A))
-
-@[simp]
-theorem rank_mul_unitary (A : unitaryGroup n 𝕜) (B : Matrix n n 𝕜) :
-    rank (A.1 * B) = rank B :=
-  rank_mul_eq_right_of_isUnit_det (A : Matrix n n 𝕜) B (isUnits_det_units (unitary.toUnits A))
-
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
 lemma rank_eq_rank_diagonal : A.rank = (Matrix.diagonal hA.eigenvalues).rank := by
   conv_lhs => rw [hA.spectral_theorem, ← unitary.coe_star]
-  simp [-unitary.coe_star, rank_diagonal]
+  simp [-isUnit_iff_ne_zero, -unitary.coe_star, rank_diagonal]
 #align matrix.is_hermitian.rank_eq_rank_diagonal Matrix.IsHermitian.rank_eq_rank_diagonal
 
 /-- rank of a hermitian matrix is the number of nonzero eigenvalues of the hermitian matrix -/
@@ -178,3 +168,4 @@ analogues have replaced them).-/
 #noalign matrix.is_hermitian.eigenvector_matrix_inv_apply
 #noalign matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv
 #noalign matrix.is_hermitian.conj_transpose_eigenvector_matrix
+#noalign matrix.is_hermitian.spectral_theorem

@@ -343,6 +343,7 @@ theorem det_pos [DecidableEq n] {M : Matrix n n ℝ} (hM : M.PosDef) : 0 < det M
    apply Finset.prod_pos
    intro i _
    exact hM.eigenvalues_pos i
+#align matrix.pos_def.det_pos Matrix.PosDef.det_pos
 
 end PosDef
 
