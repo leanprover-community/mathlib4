@@ -95,7 +95,7 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
   convert TopologicalSpace.IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
     (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
-  erw [topology_eq α]
+  erw [@topology_eq_lawson α _ _ _]
   rw [lawson]
   apply (congrArg₂ Inf.inf _) _
   letI _ := lower α; exact @IsLower.withLowerHomeomorph α ‹_› (lower α) ⟨rfl⟩ |>.inducing.induced
@@ -144,7 +144,7 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
-  ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
+  ofLawson.toHomeomorphOfInducing ⟨by erw [@IsLawson.topology_eq_lawson α _ _, induced_id]; rfl⟩
 
 theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
@@ -185,17 +185,17 @@ variable (L : TopologicalSpace α) (S : TopologicalSpace α)
 variable [@IsLawson α _ L] [@IsScott α _ S]
 
 lemma isLawson_le_isScott : L ≤ S := by
-  rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq α _ L _]
+  rw [@IsScott.topology_eq α _ S _, @IsLawson.topology_eq_lawson α _ L _]
   exact inf_le_right
 
 lemma scottHausdorff_le_isLawson : scottHausdorff α ≤ L := by
-  rw [@IsLawson.topology_eq α _ L _]
+  rw [@IsLawson.topology_eq_lawson α _ L _]
   exact scottHausdorff_le_lawson
 
 /-- An upper set is Lawson open if and only if it is Scott open -/
 lemma lawsonOpen_iff_scottOpen_of_isUpperSet' (s : Set α) (h : IsUpperSet s) :
     IsOpen[L] s ↔ IsOpen[S] s := by
-  rw [@IsLawson.topology_eq α _ L _, @IsScott.topology_eq α _ S _]
+  rw [@IsLawson.topology_eq_lawson α _ L _, @IsScott.topology_eq α _ S _]
   exact lawsonOpen_iff_scottOpen_of_isUpperSet h
 
 lemma lawsonClosed_iff_scottClosed_of_isLowerSet (s : Set α) (h : IsLowerSet s) :
@@ -219,7 +219,7 @@ section PartialOrder
 variable [PartialOrder α] [TopologicalSpace α] [IsLawson α]
 
 lemma singleton_isClosed (a : α) : IsClosed ({a} : Set α) := by
-  simp only [IsLawson.topology_eq]
+  simp only [IsLawson.topology_eq_lawson]
   rw [← (Set.OrdConnected.upperClosure_inter_lowerClosure ordConnected_singleton),
     ← WithLawson.isClosed_preimage_ofLawson]
   apply IsClosed.inter
