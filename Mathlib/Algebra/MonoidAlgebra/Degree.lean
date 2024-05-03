@@ -187,8 +187,8 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
   refine' OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) m
-  exact degt0
-  exact degtm _ _
+  · exact degt0
+  · exact degtm _ _
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
 
 theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)

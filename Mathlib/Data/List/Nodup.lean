@@ -101,7 +101,7 @@ theorem nodup_iff_injective_get {l : List α} :
       fun hinj i j hij h => Nat.ne_of_lt hij (Fin.val_eq_of_eq (hinj h))⟩
 
 set_option linter.deprecated false in
-@[deprecated nodup_iff_injective_get]
+@[deprecated nodup_iff_injective_get] -- 2023-01-10
 theorem nodup_iff_nthLe_inj {l : List α} :
     Nodup l ↔ ∀ i j h₁ h₂, nthLe l i h₁ = nthLe l j h₂ → i = j :=
   nodup_iff_injective_get.trans
@@ -114,7 +114,7 @@ theorem Nodup.get_inj_iff {l : List α} (h : Nodup l) {i j : Fin l.length} :
   (nodup_iff_injective_get.1 h).eq_iff
 
 set_option linter.deprecated false in
-@[deprecated Nodup.get_inj_iff]
+@[deprecated Nodup.get_inj_iff] -- 2023-01-10
 theorem Nodup.nthLe_inj_iff {l : List α} (h : Nodup l) {i j : ℕ} (hi : i < l.length)
     (hj : j < l.length) : l.nthLe i hi = l.nthLe j hj ↔ i = j :=
   ⟨nodup_iff_nthLe_inj.mp h _ _ _ _, by simp (config := { contextual := true })⟩
@@ -160,7 +160,7 @@ theorem get_indexOf [DecidableEq α] {l : List α} (H : Nodup l) (i : Fin l.leng
   nodup_iff_injective_get.1 H (by simp)
 
 set_option linter.deprecated false in
-@[simp, deprecated get_indexOf]
+@[simp, deprecated get_indexOf] -- 2023-01-10
 theorem nthLe_index_of [DecidableEq α] {l : List α} (H : Nodup l) (n h) :
     indexOf (nthLe l n h) l = n :=
   nodup_iff_nthLe_inj.1 H _ _ _ h <| indexOf_nthLe <| indexOf_lt_length.2 <| nthLe_mem _ _ _
@@ -243,7 +243,7 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
   induction' l with hd tl ih
   · simp
-  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
+  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.eq_def] at d
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl

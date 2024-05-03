@@ -122,7 +122,7 @@ theorem Gamma_mul_add_mul_le_rpow_Gamma_mul_rpow_Gamma {s t a b : ℝ} (hs : 0 <
     intro c x hc u hx
     dsimp only [f]
     rw [mul_rpow (exp_pos _).le ((rpow_nonneg hx.le) _), ← exp_mul, ← rpow_mul hx.le]
-    congr 2 <;> · field_simp [hc.ne']; ring
+    congr 2 <;> field_simp [hc.ne']; ring
   -- show `f c u` is in `ℒp` for `p = 1/c`:
   have f_mem_Lp :
     ∀ {c u : ℝ} (hc : 0 < c) (hu : 0 < u),
@@ -216,9 +216,9 @@ theorem f_add_nat_eq (hf_feq : ∀ {y : ℝ}, 0 < y → f (y + 1) = f y + log y)
   · simp
   · have : x + n.succ = x + n + 1 := by push_cast; ring
     rw [this, hf_feq, hn]
-    rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
-    abel
-    linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
+    · rw [Finset.range_succ, Finset.sum_insert Finset.not_mem_range_self]
+      abel
+    · linarith [(Nat.cast_nonneg n : 0 ≤ (n : ℝ))]
 #align real.bohr_mollerup.f_add_nat_eq Real.BohrMollerup.f_add_nat_eq
 
 /-- Linear upper bound for `f (x + n)` on unit interval -/
@@ -293,13 +293,13 @@ theorem tendsto_logGammaSeq_of_le_one (hf_conv : ConvexOn ℝ (Ioi 0) f)
   refine' tendsto_of_tendsto_of_tendsto_of_le_of_le' _ tendsto_const_nhds _ _
   -- Porting note: `show` no longer reorders goals
   pick_goal 4
-  show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
-  · filter_upwards [eventually_ne_atTop 0] with n hn using
+  · show ∀ᶠ n : ℕ in atTop, logGammaSeq x n ≤ f x - f 1
+    filter_upwards [eventually_ne_atTop 0] with n hn using
       le_sub_iff_add_le'.mpr (ge_logGammaSeq hf_conv hf_feq hx hn)
   -- Porting note: `show` no longer reorders goals
   pick_goal 3
-  show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
-  · filter_upwards with n
+  · show ∀ᶠ n : ℕ in atTop, f x - f 1 - x * (log (n + 1) - log n) ≤ logGammaSeq x n
+    filter_upwards with n
     rw [sub_le_iff_le_add', sub_le_iff_le_add']
     convert le_logGammaSeq hf_conv (@hf_feq) hx hx' n using 1
     ring

@@ -320,7 +320,6 @@ theorem squarefree_natCast {n : ℕ} : Squarefree (n : ℤ) ↔ Squarefree n := 
   rw [← squarefree_natAbs, natAbs_ofNat]
 #align int.squarefree_coe_nat Int.squarefree_natCast
 
--- 2024-04-05
-@[deprecated] alias squarefree_coe_nat := squarefree_natCast
+@[deprecated] alias squarefree_coe_nat := squarefree_natCast -- 2024-04-05
 
 end Int

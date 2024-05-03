@@ -172,9 +172,7 @@ theorem existsUnique_dist_eq_of_insert {s : AffineSubspace ℝ P}
         x * x + (1 - t₃) * (1 - t₃) * (y * y) = x * x + y * y - 2 * y * (t₃ * y) + t₃ * y * (t₃ * y)
         by ring,
       add_left_inj] at hcr₃
-    have ht₃ : t₃ = ycc₂ / y := by
-      field_simp [ycc₂, ← hcr₃, hy0]
-      ring
+    have ht₃ : t₃ = ycc₂ / y := by field_simp [ycc₂, ← hcr₃, hy0]
     subst ht₃
     change cc₃ = cc₂ at hcc₃''
     congr

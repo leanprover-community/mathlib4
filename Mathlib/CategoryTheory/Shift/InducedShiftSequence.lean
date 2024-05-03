@@ -34,7 +34,7 @@ variable {C D A : Type*} [Category C] [Category D] [Category A]
   {L : C ⥤ D} {F : D ⥤ A} {G : C ⥤ A} (e : L ⋙ F ≅ G) (M : Type*)
   [AddMonoid M] [HasShift C M] [HasShift D M] [L.CommShift M]
   [G.ShiftSequence M] (F' : M → D ⥤ A) (e' : ∀ m, L ⋙ F' m ≅ G.shift m)
-  (hL : Nonempty (((whiskeringLeft C D A).obj L).Full) ∧ ((whiskeringLeft C D A).obj L).Faithful)
+  [((whiskeringLeft C D A).obj L).Full] [((whiskeringLeft C D A).obj L).Faithful]
 
 namespace Functor
 
@@ -44,34 +44,28 @@ namespace induced
 
 /-- The `isoZero` field of the induced shift sequence. -/
 noncomputable def isoZero : F' 0 ≅ F :=
-  letI := hL.1.some
-  have := hL.2
   ((whiskeringLeft C D A).obj L).preimageIso (e' 0 ≪≫ G.isoShiftZero M ≪≫ e.symm)
 
 lemma isoZero_hom_app_obj (X : C) :
-    (isoZero e M F' e' hL).hom.app (L.obj X) =
+    (isoZero e M F' e').hom.app (L.obj X) =
       (e' 0).hom.app X ≫ (isoShiftZero G M).hom.app X ≫ e.inv.app X :=
-  letI := hL.1.some
-  NatTrans.congr_app (((whiskeringLeft C D A).obj L).image_preimage _) X
+  NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X
 
 variable (L G)
 
 /-- The `shiftIso` field of the induced shift sequence. -/
 noncomputable def shiftIso (n a a' : M) (ha' : n + a = a') :
     shiftFunctor D n ⋙ F' a ≅ F' a' := by
-  letI := hL.1.some
-  have := hL.2
   exact ((whiskeringLeft C D A).obj L).preimageIso ((Functor.associator _ _ _).symm ≪≫
     isoWhiskerRight (L.commShiftIso n).symm _ ≪≫
     Functor.associator _ _ _ ≪≫ isoWhiskerLeft _ (e' a) ≪≫
     G.shiftIso n a a' ha' ≪≫ (e' a').symm)
 
 lemma shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
-    (shiftIso L G M F' e' hL n a a' ha').hom.app (L.obj X) =
+    (shiftIso L G M F' e' n a a' ha').hom.app (L.obj X) =
       (F' a).map ((L.commShiftIso n).inv.app X) ≫
         (e' a).hom.app (X⟦n⟧) ≫ (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X :=
-  letI := hL.1.some
-  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).image_preimage _) X).trans (by simp)
+  (NatTrans.congr_app (((whiskeringLeft C D A).obj L).map_preimage _) X).trans (by simp)
 
 attribute [irreducible] isoZero shiftIso
 
@@ -84,10 +78,9 @@ induced on `F` induced by a shift sequence for the functor `G`, provided that
 the functor `(whiskeringLeft C D A).obj L` of precomposition by `L` is fully faithful. -/
 noncomputable def induced : F.ShiftSequence M where
   sequence := F'
-  isoZero := induced.isoZero e M F' e' hL
-  shiftIso := induced.shiftIso L G M F' e' hL
+  isoZero := induced.isoZero e M F' e'
+  shiftIso := induced.shiftIso L G M F' e'
   shiftIso_zero a := by
-    have := hL.2
     ext1
     apply ((whiskeringLeft C D A).obj L).map_injective
     ext K
@@ -97,7 +90,6 @@ noncomputable def induced : F.ShiftSequence M where
       comp_id, ← Functor.map_comp, L.commShiftIso_zero, CommShift.isoZero_inv_app, assoc,
       Iso.inv_hom_id_app, Functor.map_id]
   shiftIso_add n m a a' a'' ha' ha'' := by
-    have := hL.2
     ext1
     apply ((whiskeringLeft C D A).obj L).map_injective
     ext K
@@ -114,14 +106,14 @@ noncomputable def induced : F.ShiftSequence M where
 
 @[simp, reassoc]
 lemma induced_isoShiftZero_hom_app_obj (X : C) :
-    letI := (induced e M F' e' hL)
+    letI := (induced e M F' e')
     (F.isoShiftZero M).hom.app (L.obj X) =
       (e' 0).hom.app X ≫ (isoShiftZero G M).hom.app X ≫ e.inv.app X := by
   apply induced.isoZero_hom_app_obj
 
 @[simp, reassoc]
 lemma induced_shiftIso_hom_app_obj (n a a' : M) (ha' : n + a = a') (X : C) :
-    letI := (induced e M F' e' hL)
+    letI := (induced e M F' e')
     (F.shiftIso n a a' ha').hom.app (L.obj X) =
       (F.shift a).map ((L.commShiftIso n).inv.app X) ≫ (e' a).hom.app (X⟦n⟧) ≫
         (G.shiftIso n a a' ha').hom.app X ≫ (e' a').inv.app X := by

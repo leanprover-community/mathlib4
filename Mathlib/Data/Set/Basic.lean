@@ -1343,6 +1343,7 @@ theorem eq_singleton_iff_nonempty_unique_mem : s = {a} ↔ s.Nonempty ∧ ∀ x 
     and_congr_left fun H => ⟨fun h' => ⟨_, h'⟩, fun ⟨x, h⟩ => H x h ▸ h⟩
 #align set.eq_singleton_iff_nonempty_unique_mem Set.eq_singleton_iff_nonempty_unique_mem
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 -- while `simp` is capable of proving this, it is not capable of turning the LHS into the RHS.
 @[simp]
 theorem default_coe_singleton (x : α) : (default : ({x} : Set α)) = ⟨x, rfl⟩ :=
@@ -1489,9 +1490,11 @@ theorem eq_of_nonempty_of_subsingleton' {α} [Subsingleton α] {s : Set α} (t :
     (hs : s.Nonempty) [Nonempty t] : s = t :=
   have := hs.to_subtype; eq_of_nonempty_of_subsingleton s t
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Nonempty.eq_zero [Subsingleton α] [Zero α] {s : Set α} (h : s.Nonempty) :
     s = {0} := eq_of_nonempty_of_subsingleton' {0} h
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem Nonempty.eq_one [Subsingleton α] [One α] {s : Set α} (h : s.Nonempty) :
     s = {1} := eq_of_nonempty_of_subsingleton' {1} h
 
