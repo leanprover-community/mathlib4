@@ -113,6 +113,31 @@ protected theorem norm_algebraMap {L : Type*} [Ring L] [Algebra K L] (x : K) :
     exact H ⟨s, ⟨b⟩⟩
 #align algebra.norm_algebra_map Algebra.norm_algebraMap
 
+theorem norm_algebraMap' {L S} [Field L] [Ring S] [Algebra K L] [Algebra K S] [Algebra L S]
+    [IsScalarTower K L S] [Module.Finite K L] [Module.Finite L S] (x : L) :
+    norm K (algebraMap L S x) = (norm K x) ^ finrank L S := by
+  let pbL := Module.Free.chooseBasis L S
+  let pbx := Module.Free.chooseBasis K L
+  rw [norm_eq_matrix_det (pbx.smul pbL) _,
+    smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx]
+  simp only [Finset.card_fin, Finset.prod_const, ← finrank_eq_card_basis pbL, Finset.card_univ]
+
+-- TODO : remove Nontrivial
+theorem norm_algebraMap_tower [Nontrivial S] [Algebra K S] [Algebra L S] [IsScalarTower K L S]
+    (x : L) : norm K (algebraMap L S x) = norm K x ^ finrank L S := by
+  by_cases h_top : FiniteDimensional L S
+  · by_cases h_bot : FiniteDimensional K L
+    · let bS := Module.Free.chooseBasis L S
+      let bL := Module.Free.chooseBasis K L
+      rw [norm_eq_matrix_det (bL.smul bS), smul_leftMulMatrix_algebraMap, det_blockDiagonal,
+        norm_eq_matrix_det bL, Finset.prod_const, ← Fintype.card, finrank_eq_card_basis bS]
+    · by_cases h : FiniteDimensional K S
+      · exact (h_bot <| left K L S).elim
+      · rw [norm_eq_one_of_not_module_finite h_bot, one_pow, norm_eq_one_of_not_module_finite h]
+  · by_cases h : FiniteDimensional K S
+    · exact (h_top <| right K L S).elim
+    · rw [finrank_of_not_finite h_top, pow_zero, norm_eq_one_of_not_module_finite h]
+
 section EqProdRoots
 
 /-- Given `pb : PowerBasis K S`, then the norm of `pb.gen` is
@@ -196,17 +221,16 @@ open IntermediateField
 
 variable (K)
 
-theorem norm_eq_norm_adjoin [FiniteDimensional K L] [IsSeparable K L] (x : L) :
+theorem norm_eq_norm_adjoin [FiniteDimensional K L] (x : L) :
     norm K x = norm K (AdjoinSimple.gen K x) ^ finrank K⟮x⟯ L := by
-  letI := isSeparable_tower_top_of_isSeparable K K⟮x⟯ L
-  let pbL := Field.powerBasisOfFiniteOfSeparable K⟮x⟯ L
-  let pbx := IntermediateField.adjoin.powerBasis (IsSeparable.isIntegral K x)
+  let bL := Module.Free.chooseBasis K⟮x⟯ L
+  let pbx := IntermediateField.adjoin.powerBasis (.of_finite K x)
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
-  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul pbL.basis) _,
+  erw [← AdjoinSimple.algebraMap_gen K x, norm_eq_matrix_det (pbx.basis.smul bL) _,
     smul_leftMulMatrix_algebraMap, det_blockDiagonal, norm_eq_matrix_det pbx.basis]
   simp only [Finset.card_fin, Finset.prod_const]
   congr
-  rw [← PowerBasis.finrank, AdjoinSimple.algebraMap_gen K x]
+  rw [← Fintype.card, ← finrank_eq_card_basis bL, AdjoinSimple.algebraMap_gen K x]
 #align algebra.norm_eq_norm_adjoin Algebra.norm_eq_norm_adjoin
 
 variable {K}
@@ -244,6 +268,7 @@ open IntermediateField IntermediateField.AdjoinSimple Polynomial
 
 variable (F) (E : Type*) [Field E] [Algebra K E]
 
+-- TODO (maybe?): raise RHS to the "natInsepDegree" of `minpoly R pb.gen` and remove `hfx`
 theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
     (hE : (minpoly R pb.gen).Splits (algebraMap R F)) (hfx : (minpoly R pb.gen).Separable) :
     algebraMap R F (norm R pb.gen) =
@@ -259,13 +284,14 @@ theorem norm_eq_prod_embeddings_gen [Algebra R F] (pb : PowerBasis R S)
   · intro σ; simp only [PowerBasis.liftEquiv'_apply_coe]
 #align algebra.norm_eq_prod_embeddings_gen Algebra.norm_eq_prod_embeddings_gen
 
-theorem norm_eq_prod_roots [IsSeparable K L] [FiniteDimensional K L] {x : L}
+theorem norm_eq_prod_roots [FiniteDimensional K L] {x : L}
     (hF : (minpoly K x).Splits (algebraMap K F)) :
     algebraMap K F (norm K x) =
       ((minpoly K x).aroots F).prod ^ finrank K⟮x⟯ L := by
   rw [norm_eq_norm_adjoin K x, map_pow, IntermediateField.AdjoinSimple.norm_gen_eq_prod_roots _ hF]
 #align algebra.norm_eq_prod_roots Algebra.norm_eq_prod_roots
 
+-- TODO: replace finrank by finSepDegree and remove IsSeparable
 theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAlgClosed E]
     [IsSeparable K F] [FiniteDimensional K F] (pb : PowerBasis K L) :
     ∏ σ : F →ₐ[K] E, σ (algebraMap L F pb.gen) =
@@ -288,6 +314,7 @@ theorem prod_embeddings_eq_finrank_pow [Algebra L F] [IsScalarTower K L F] [IsAl
 
 variable (K)
 
+-- TODO: raise RHS to the `finInsepDegree K L`th power and remove IsSeparable
 /-- For `L/K` a finite separable extension of fields and `E` an algebraically closed extension
 of `K`, the norm (down to `K`) of an element `x` of `L` is equal to the product of the images
 of `x` over all the `K`-embeddings `σ` of `L` into `E`. -/
@@ -314,7 +341,7 @@ theorem norm_eq_prod_automorphisms [FiniteDimensional K L] [IsGalois K L] (x : L
       AlgEquiv.coe_ofBijective, AlgHom.restrictNormal_commutes, id.map_eq_id, RingHom.id_apply]
 #align algebra.norm_eq_prod_automorphisms Algebra.norm_eq_prod_automorphisms
 
-theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L] [IsSeparable K L]
+theorem isIntegral_norm [Algebra R L] [Algebra R K] [IsScalarTower R K L]
     [FiniteDimensional K L] {x : L} (hx : IsIntegral R x) : IsIntegral R (norm K x) := by
   have hx' : IsIntegral K x := hx.tower_top
   rw [← isIntegral_algebraMap_iff (algebraMap K (AlgebraicClosure L)).injective, norm_eq_prod_roots]
@@ -365,7 +392,7 @@ lemma norm_eq_of_equiv_equiv {A₁ B₁ A₂ B₂ : Type*} [CommRing A₁] [Ring
 
 variable {F} (L)
 
--- TODO. Generalize this proof to rings
+-- TODO. Remove IsSeparable; Generalize this proof to rings
 theorem norm_norm [Algebra L F] [IsScalarTower K L F] [IsSeparable K F] (x : F) :
     norm K (norm L x) = norm K x := by
   by_cases hKF : FiniteDimensional K F
