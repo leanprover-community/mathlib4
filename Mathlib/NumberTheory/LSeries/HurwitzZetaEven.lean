@@ -673,13 +673,9 @@ lemma differentiable_hurwitzZetaEven_sub_hurwitzZetaEven (a b : UnitAddCircle) :
   intro z
   rcases ne_or_eq z 1 with hz | rfl
   · exact (differentiableAt_hurwitzZetaEven a hz).sub (differentiableAt_hurwitzZetaEven b hz)
-  · -- NB. This can be written more tidily with `convert`, but the `convert` version is 3x slower,
-    -- as it spends 877 TC synthesis steps vainly trying to infer `Subsingleton (ℂ → ℂ)`.
-    -- (TODO: revisit this once lean4#3996 makes its way into mathlib's Lean version.)
-    have (s) : (hurwitzZetaEven a s - hurwitzZetaEven b s) = ((hurwitzZetaEven a s -
-        1 / (s - 1) / Gammaℝ s) - (hurwitzZetaEven b s - 1 / (s - 1) / Gammaℝ s)) := by abel
-    exact funext this ▸ (differentiableAt_hurwitzZetaEven_sub_one_div a).sub
-      (differentiableAt_hurwitzZetaEven_sub_one_div b)
+  · convert (differentiableAt_hurwitzZetaEven_sub_one_div a).sub
+      (differentiableAt_hurwitzZetaEven_sub_one_div b) using 2 with s
+    abel
 
 /--
 Formula for `hurwitzZetaEven` as a Dirichlet series in the convergence range, with sum over `ℤ`.
