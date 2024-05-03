@@ -131,7 +131,7 @@ lemma toLawson_inj {a b : α} : toLawson a = toLawson b ↔ a = b := Iff.rfl
 lemma ofLawson_inj {a b : WithLawson α} : ofLawson a = ofLawson b ↔ a = b := Iff.rfl
 
 /-- A recursor for `WithLawson`. Use as `induction' x using WithLawson.rec`. -/
-protected def rec {β : WithLawson α → Sort _}
+protected def rec {β : WithLawson α → Sort*}
     (h : ∀ a, β (toLawson a)) : ∀ a, β a := fun a => h (ofLawson a)
 
 instance [Nonempty α] : Nonempty (WithLawson α) := ‹Nonempty α›
