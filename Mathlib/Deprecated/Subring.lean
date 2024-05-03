@@ -16,7 +16,7 @@ This file is deprecated, and is no longer imported by anything in mathlib other 
 deprecated files, and test files. You should not need to import it.
 
 This file defines predicates for unbundled subrings. Instead of using this file, please use
-`Subring`, defined in `Algebra.Ring.Subring.Basic`, for subrings of rings.
+`Subring`, defined in `Mathlib.Algebra.Ring.Subring.Basic`, for subrings of rings.
 
 ## Main definitions
 
