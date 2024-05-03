@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Scott Morrison
 -/
 import Mathlib.Algebra.BigOperators.Finsupp
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Regular.SMul
 import Mathlib.Data.Finset.Preimage
 import Mathlib.Data.Rat.BigOperators
@@ -481,7 +482,7 @@ theorem mapDomain_comp {f : α → β} {g : β → γ} :
   · intro
     exact single_add _
   refine' sum_congr fun _ _ => sum_single_index _
-  · exact single_zero _
+  exact single_zero _
 #align finsupp.map_domain_comp Finsupp.mapDomain_comp
 
 @[simp]
@@ -793,6 +794,7 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     (hl : ↑l.support ⊆ Set.range f) :
     mapDomain f (comapDomain f l (hf.injOn _)) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
+  rfl
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
 
 end FInjective
@@ -850,8 +852,8 @@ theorem prod_option_index [AddCommMonoid M] [CommMonoid N] (f : Option α →₀
     · simp [some_zero, h_zero]
     · intro f₁ f₂ h₁ h₂
       rw [Finsupp.prod_add_index, h₁, h₂, some_add, Finsupp.prod_add_index]
-      simp only [h_add, Pi.add_apply, Finsupp.coe_add]
-      rw [mul_mul_mul_comm]
+      · simp only [h_add, Pi.add_apply, Finsupp.coe_add]
+        rw [mul_mul_mul_comm]
       all_goals simp [h_zero, h_add]
     · rintro (_ | a) m <;> simp [h_zero, h_add]
 #align finsupp.prod_option_index Finsupp.prod_option_index
@@ -1598,9 +1600,9 @@ theorem mapRange_smul {_ : Monoid R} [AddMonoid M] [DistribMulAction R M] [AddMo
     [DistribMulAction R N] {f : M → N} {hf : f 0 = 0} (c : R) (v : α →₀ M)
     (hsmul : ∀ x, f (c • x) = c • f x) : mapRange f hf (c • v) = c • mapRange f hf v := by
   erw [← mapRange_comp]
-  have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
-  simp_rw [this]
-  apply mapRange_comp
+  · have : f ∘ (c • ·) = (c • ·) ∘ f := funext hsmul
+    simp_rw [this]
+    apply mapRange_comp
   simp only [Function.comp_apply, smul_zero, hf]
 #align finsupp.map_range_smul Finsupp.mapRange_smul
 

@@ -668,8 +668,8 @@ instance instAdd : Add (α →ᵇ β) where
         rw [Prod.dist_eq]
         refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
         apply max_le_max
-        exact Classical.choose_spec f.bounded x y
-        exact Classical.choose_spec g.bounded x y)
+        · exact Classical.choose_spec f.bounded x y
+        · exact Classical.choose_spec g.bounded x y)
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl
@@ -1394,7 +1394,7 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
 
 instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofMinimalAxioms
-      (fun _ _ _ => ext fun _ => smul_add _ _ _)
+      (fun c _ _ => ext fun a => smul_add (c a) _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
       (fun f => ext fun x => one_smul 𝕜 (f x))

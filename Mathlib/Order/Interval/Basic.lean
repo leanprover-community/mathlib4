@@ -557,7 +557,7 @@ instance lattice : Lattice (Interval α) :=
         change _ ≤ dite _ _ _
         simp only [WithBot.some_eq_coe, WithBot.coe_le_coe] at hb hc ⊢
         rw [dif_pos, WithBot.coe_le_coe]
-        exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
+        · exact ⟨sup_le hb.1 hc.1, le_inf hb.2 hc.2⟩
         -- Porting note: had to add the next 6 lines including the changes because
         -- it seems that lean cannot automatically turn `NonemptyInterval.toDualProd s`
         -- into `s.toProd` anymore.

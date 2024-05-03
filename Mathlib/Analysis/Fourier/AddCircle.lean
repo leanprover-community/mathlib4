@@ -368,10 +368,10 @@ theorem fourierCoeff_liftIoc_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
     fourierCoeff (AddCircle.liftIoc T a f) n =
     fourierCoeffOn (lt_add_of_pos_right a hT.out) f n := by
   rw [fourierCoeffOn_eq_integral, fourierCoeff_eq_intervalIntegral, add_sub_cancel_left a T]
-  congr 1
-  refine' intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
-  rw [liftIoc_coe_apply]
-  rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
+  · congr 1
+    refine' intervalIntegral.integral_congr_ae (ae_of_all _ fun x hx => _)
+    rw [liftIoc_coe_apply]
+    rwa [uIoc_of_le (lt_add_of_pos_right a hT.out).le] at hx
 #align fourier_coeff_lift_Ioc_eq fourierCoeff_liftIoc_eq
 
 theorem fourierCoeff_liftIco_eq {a : ℝ} (f : ℝ → ℂ) (n : ℤ) :
