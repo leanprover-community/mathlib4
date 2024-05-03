@@ -39,9 +39,6 @@ so I have to learn how to specify all of this data.
 
 -/
 
-alias ⟨_root_.Module.End.HasEigenvalue.mem_spectrum,
-       _root_.Module.End.HasEigenvalue.of_mem_spectrum⟩ := Module.End.hasEigenvalue_iff_mem_spectrum
-
 theorem eigenvalue_mem_toEuclideanLin_spectrum_RCLike (i : n) :
     (RCLike.ofReal ∘ hA.eigenvalues) i ∈ spectrum 𝕜 (toEuclideanLin A) :=
   LinearMap.IsSymmetric.hasEigenvalue_eigenvalues _ _ _ |>.mem_spectrum
@@ -63,12 +60,19 @@ noncomputable def f1 : n → spectrum ℝ (toEuclideanLin A) := by
  apply Set.codRestrict (fun (i : n) ↦ (hA.eigenvalues i))
  apply eigenvalue_mem_toEuclideanLin_spectrum_real
 
+--Is the linear equivalence an algebra equivalence? That might be a fun thing to have in finite dims.
+
+theorem spec_eq : spectrum ℝ (toEuclideanLin A) = spectrum ℝ A := by
+refine AlgEquiv.spectrum_eq (Matrix.toEuclideanCLM ∘ LinearMap.toContinuousLinearMap) A
 
 
 #exit
+
+noncomputable def f2 : n → spectrum ℝ A := spec_eq (𝕜 := 𝕜) (n:= n) ▸ hA.f1
+
 def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
   fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ f1)
+  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ (f1 hA))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
