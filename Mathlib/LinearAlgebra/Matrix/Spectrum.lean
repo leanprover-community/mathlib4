@@ -93,11 +93,7 @@ theorem star_eigenvectorUnitary_mulVec (j : n) :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) *ᵥ ⇑(hA.eigenvectorBasis j) = Pi.single j 1 := by
   rw [← eigenvectorUnitary_mulVec, mulVec_mulVec, unitary.coe_star_mul_self, one_mulVec]
 
-/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
-diagonalized by a change of basis.
-
-For the spectral theorem on linear maps, see
-`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`. -/
+/--Unitary diagonalization of a Hermitian matrix.-/
 theorem star_mul_self_mul_eq_diagonal :
     (star (eigenvectorUnitary hA : Matrix n n 𝕜)) * A * (eigenvectorUnitary hA : Matrix n n 𝕜)
       = diagonal (RCLike.ofReal ∘ hA.eigenvalues) := by
@@ -112,18 +108,18 @@ theorem star_mul_self_mul_eq_diagonal :
   apply PiLp.ext
   intro j
   simp only [PiLp.smul_apply, EuclideanSpace.single_apply, smul_eq_mul, mul_ite, mul_one, mul_zero]
-#align matrix.is_hermitian.star_mul_self_mul_eq_diagonal Matrix.IsHermitian.star_mul_self_mul_eq_diagonal
 
-/-- *spectral theorem* A hermitian matrix can be can be
-replaced by a diagonal matrix sandwiched between the eigenvector unitaries. This alternate form
-allows direct rewriting of A since: <| A = V D V⁻¹$ -/
+
+/-- **Diagonalization theorem**, **spectral theorem** for matrices; A hermitian matrix can be
+diagonalized by a change of basis. For the spectral theorem on linear maps, see
+`LinearMap.IsSymmetric.eigenvectorBasis_apply_self_apply`.-/
 theorem spectral_theorem :
     A = (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ hA.eigenvalues)
       * (star (eigenvectorUnitary hA : Matrix n n 𝕜)) := by
   rw [← star_mul_self_mul_eq_diagonal, mul_assoc, mul_assoc,
     (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, mul_one,
     ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
-#align matrix.is_hermitian.spectral_theorem Matrix.IsHermitian.spectral_theorem
+#align matrix.is_hermitian.spectral_theorem' Matrix.IsHermitian.spectral_theorem
 
 /-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
 lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
