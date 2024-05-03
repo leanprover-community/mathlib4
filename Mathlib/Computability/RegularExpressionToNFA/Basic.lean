@@ -43,7 +43,7 @@ lemma epsilon_toNFA_correct :
     rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
     rcases eval with ⟨_, _, ⟨⟩⟩
 
-lemma char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts := by
+lemma char_toNFA_correct (a : α) : (char a).matches' = (char a).toNFA.accepts := by
   ext x
   constructor
   · rintro ⟨⟨⟩⟩
@@ -68,7 +68,7 @@ lemma char_toNFA_correct {a : α} : (char a).matches' = (char a).toNFA.accepts :
     rw [NFA.mem_stepSet] at mem
     rcases mem with ⟨_, _, _, _, ⟨⟩⟩
 
-lemma plus_toNFA_correct {r₁ r₂ : RegularExpression α}
+lemma plus_toNFA_correct (r₁ r₂ : RegularExpression α)
     (hr₁ : r₁.matches' = r₁.toNFA.accepts)
     (hr₂ : r₂.matches' = r₂.toNFA.accepts) :
     (r₁.plus r₂).matches' = (r₁.plus r₂).toNFA.accepts := by
@@ -135,7 +135,7 @@ lemma comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q :
     rintro ⟨p, mem, step⟩
     exact ⟨Sum.inr p, ih p mem, step⟩
 
-lemma comp_toNFA_correct {r₁ r₂ : RegularExpression α}
+lemma comp_toNFA_correct (r₁ r₂ : RegularExpression α)
     (hr₁ : r₁.matches' = r₁.toNFA.accepts)
     (hr₂ : r₂.matches' = r₂.toNFA.accepts) :
     (r₁.comp r₂).matches' = (r₁.comp r₂).toNFA.accepts := by
@@ -266,7 +266,7 @@ lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
       · simp[toNFA,Set.mem_def] at step
       exact ⟨some t, iih eval, step⟩
 
-lemma star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA.accepts) :
+lemma star_toNFA_correct (r : RegularExpression α) (hr : r.matches' = r.toNFA.accepts) :
     (star r).matches' = (star r).toNFA.accepts := by
   ext x
   rw [matches'_star,Language.mem_kstar, NFA.mem_accepts]
@@ -289,14 +289,14 @@ lemma star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA.a
       exact List.forall_mem_append.mpr ⟨allys, List.forall_mem_singleton.mpr ⟨q, accept, evalz⟩⟩
 
 /-- The NFA constructed from a regular expression retains the same language. -/
-theorem toNFA_correct (r : RegularExpression α) : r.matches' = r.toNFA.accepts := by
-  induction r
-  case zero => exact zero_toNFA_correct
-  case epsilon => exact epsilon_toNFA_correct
-  case char a => exact char_toNFA_correct
-  case plus r₁ r₂ hr₁ hr₂ => exact plus_toNFA_correct hr₁ hr₂
-  case comp r₁ r₂ hr₁ hr₂ => exact comp_toNFA_correct hr₁ hr₂
-  case star r hr => exact star_toNFA_correct hr
+theorem toNFA_correct (r : RegularExpression α) : r.matches' = r.toNFA.accepts :=
+  r.recOn
+    zero_toNFA_correct
+    epsilon_toNFA_correct
+    char_toNFA_correct
+    plus_toNFA_correct
+    comp_toNFA_correct
+    star_toNFA_correct
 
 end RegularExpression
 

@@ -58,36 +58,13 @@ union of their respective languages.
 TODO: probably move to computability/regular_expression
 -/
 theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) :
-    (List.sum rs).matches' x ↔ ∃ r : RegularExpression α, r ∈ rs ∧ r.matches' x := by
-  constructor
-  · induction rs using List.list_reverse_induction
-    case base => rintro ⟨⟩
-    case ind rs r ih =>
-      intro hx
-      unfold List.sum at hx
-      simp only [RegularExpression.matches'_add, List.foldl_append,
-        List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
-      cases hx
-      case inl hx => rcases ih hx with ⟨r, mem, mat⟩; exact ⟨r, Or.inl mem, mat⟩
-      case inr hx => exact ⟨r, Or.inr rfl, hx⟩
-  · induction' rs using List.list_reverse_induction with rs r ih
-    case base =>
-      rintro ⟨r, mem, _⟩
-      exfalso
-      contradiction
-    intro hx
-    unfold List.sum
-    simp only [RegularExpression.matches'_add, forall_exists_index,
-      List.foldl_append, List.foldl_cons, List.foldl_nil, List.mem_append, List.mem_singleton] at *
-    rcases hx with ⟨r', hr', mat⟩
-    cases hr'
-    case inl hr' =>
-      left
-      exact ih r' ⟨hr', mat⟩
-    case inr hr' =>
-      right
-      rw [hr'] at mat
-      exact mat
+    x ∈ (List.sum rs).matches' ↔ ∃ r : RegularExpression α, r ∈ rs ∧ x ∈ r.matches' := by
+  rw [List.sum, ← List.foldl_map' matches' (· + ·) (· + ·) 0 _ matches'_add, matches'_zero,
+    ← List.sum]
+  induction rs
+  · simp
+  rename_i r rs ih
+  simp [r.matches'.mem_add, ih]
 
 end RegularExpression
 
