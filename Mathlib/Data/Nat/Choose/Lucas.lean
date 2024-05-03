@@ -27,7 +27,7 @@ variable {n k p : ℕ} [Fact p.Prime]
   choose (n / p) (k / p)` modulo `p`. -/
 theorem lucas_theorem : choose n k ≡ choose (n % p) (k % p) * choose (n / p) (k / p) [ZMOD p] := by
   have decompose : ((X : (ZMod p)[X]) + 1) ^ n = (X + 1) ^ (n % p) * (X ^ p + 1) ^ (n / p) := by
-    nth_rw 1 [← mod_add_div n p, pow_add, pow_mul, add_pow_char (ZMod p)[X] (p := p), one_pow]
+    simpa using add_pow_eq_add_pow_mod_mul_pow_add_pow_div _ (X : (ZMod p)[X]) 1
   simp only [← ZMod.intCast_eq_intCast_iff, Int.cast_mul, Int.cast_ofNat,
     ← coeff_X_add_one_pow _ n k, ← eq_intCast (Int.castRingHom (ZMod p)), ← coeff_map,
     Polynomial.map_pow, Polynomial.map_add, Polynomial.map_one, map_X, decompose]
