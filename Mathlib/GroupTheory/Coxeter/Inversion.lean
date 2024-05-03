@@ -331,7 +331,8 @@ theorem wordProd_mul_getD_rightInvSeq (ω : List B) (j : ℕ) :
   rw [take_succ]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
-    simp [wordProd_append, wordProd_cons, mul_assoc]
+    simp only [wordProd_append, wordProd_cons, mul_assoc]
+    simp
   · rw [get?_eq_none.mpr (by linarith)]
     simp
 
@@ -342,7 +343,8 @@ theorem getD_leftInvSeq_mul_wordProd (ω : List B) (j : ℕ) :
   rw [take_succ]
   rcases em (j < ω.length) with hj | nhj
   · rw [get?_eq_get hj]
-    simp [wordProd_append, wordProd_cons, mul_assoc]
+    simp only [wordProd_append, wordProd_cons, mul_assoc]
+    simp
   · rw [get?_eq_none.mpr (by linarith)]
     simp
 
