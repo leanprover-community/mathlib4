@@ -511,7 +511,7 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
         exact hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
       · exact le_rfl
     refine' ⟨this, _⟩
-    simp only [lowerCrossingTime, eq_comm, this]
+    simp only [lowerCrossingTime, eq_comm, this, Nat.succ_eq_add_one]
     refine' hitting_eq_hitting_of_exists hNM _
     rw [lowerCrossingTime, hitting_lt_iff _ le_rfl] at h
     obtain ⟨j, hj₁, hj₂⟩ := h
