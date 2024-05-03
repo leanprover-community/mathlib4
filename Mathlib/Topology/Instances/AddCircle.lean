@@ -265,12 +265,14 @@ theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
 variable {x : AddCircle p} (hx : x ≠ a)
 
 theorem continuousAt_equivIco : ContinuousAt (equivIco p a) x := by
+  unfold AddCircle at x
   induction x
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIcoMod hp.out a hx).codRestrict _
 #align add_circle.continuous_at_equiv_Ico AddCircle.continuousAt_equivIco
 
 theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
+  unfold AddCircle at x
   induction x
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _

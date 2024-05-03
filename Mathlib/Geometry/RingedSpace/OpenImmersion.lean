@@ -316,7 +316,7 @@ theorem to_iso (f : X ⟶ Y) [h : IsOpenImmersion f] [h' : Epi f.base] : IsIso f
   have : ∀ (U : (Opens Y)ᵒᵖ), IsIso (f.c.app U) := by
     intro U
     have : U = op (h.openFunctor.obj ((Opens.map f.base).obj (unop U))) := by
-      induction U
+      induction U with | h U => ?_
       cases U
       dsimp only [Functor.op, Opens.map]
       congr
