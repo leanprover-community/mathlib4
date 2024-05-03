@@ -69,8 +69,7 @@ abbrev forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Typ
 #align category_theory.forget CategoryTheory.forget
 
 -- this is reducible because we want `forget (Type u)` to unfold to `𝟭 _`
-@[reducible]
-instance ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
+@[instance] abbrev ConcreteCategory.types : ConcreteCategory.{u, u, u+1} (Type u) where
   forget := 𝟭 _
 #align category_theory.concrete_category.types CategoryTheory.ConcreteCategory.types
 
