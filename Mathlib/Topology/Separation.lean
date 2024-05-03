@@ -2148,13 +2148,30 @@ protected theorem ClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace 
         (disjoint_image_of_injective hf.inj hst)
     exact (H.preimage hf.continuous).mono (subset_preimage_image _ _) (subset_preimage_image _ _)
 
+/-- Every Fσ subspace of a normal space is normal. -/
+theorem fσ_subspace_of_normal_is_normal [TopologicalSpace X] [NormalSpace X]
+    (a : Set X) (afσ: ∃ f : ℕ → Set X, a = ⋃ i, f i ∧ ∀ i : ℕ, IsClosed (f i)) :
+    NormalSpace {x // x ∈ a} where
+  normal h k hh hk hhk := by
+    rcases afσ with ⟨f', a_union_f', a_each_closed'⟩
+    let f : ℕ → Set X := fun i ↦ ⋃₀ { f' j | j < i}
+    let hf : ℕ → Set X := fun i ↦ h ∩ f i
+    let kf : ℕ → Set X := fun i ↦ k ∩ f i
+    have : IsClosed (h ∩ closure k) := by
+      sorry
+    sorry
+
+    -- have sfc : ∀ i, IsClosed (sf i) := by
+    --   sorry
+
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
 /-- A regular topological space with second countable topology is a normal space.
 
-TODO: The same is true for a regular Lindelöf space. -/
+TODO: Regular and second countable is actually equivalent to the stronger property of
+separable and psuedometrizable. This can be weakened to assume only regular and Lindelöf. -/
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
     [RegularSpace X] [SecondCountableTopology X] : NormalSpace X := by
   have key : ∀ {s t : Set X}, IsClosed t → Disjoint s t →
