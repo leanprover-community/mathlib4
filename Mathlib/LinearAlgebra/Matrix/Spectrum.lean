@@ -150,14 +150,14 @@ theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
 
 @[simp]
 theorem rank_unitary_mul (A : unitaryGroup n 𝕜) (B : Matrix n n 𝕜) :
-    rank (B * A.1) = rank B :=
-rank_mul_eq_left_of_isUnit_det A B (isUnits_det_units (unitary.toUnits A))
+    rank (B * A.1) = rank B := by
+apply rank_mul_eq_left_of_isUnit_det A B (isUnits_det_units (unitary.toUnits A))
 #align matrix.is_hermitian.rank_unitary_mul Matrix.IsHermitian.rank_unitary_mul
 
 @[simp]
 theorem rank_mul_unitary (A : unitaryGroup n 𝕜)(B : Matrix n n 𝕜) :
-    rank ((A : Matrix n n 𝕜) * B) = rank B := by sorry
-    --rank_mul_eq_right_of_isUnit_det (unitary.toUnits A) B
+    rank (A.1 * B) = rank B := by
+apply rank_mul_eq_right_of_isUnit_det A B (isUnits_det_units (unitary.toUnits A))
 #align matrix.is_hermitian.rank_mul_unitary Matrix.IsHermitian.rank_mul_unitary
 
 /-- rank of a hermitian matrix is the rank of after diagonalization by the eigenvector unitary -/
