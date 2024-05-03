@@ -32,7 +32,8 @@ def epiWithInjectiveKernel : MorphismProperty C :=
   fun _ _ f => Epi f ∧ Injective (kernel f)
 
 /-- A morphism `g : X ⟶ Y` is epi with an injective kernel iff there exists a morphism
-`f : I ⟶ X` such that `f ≫ g = 0` and the the short complex `I ⟶ X ⟶ Y` has a splitting. -/
+`f : I ⟶ X` with `I` injective such that `f ≫ g = 0` and
+the the short complex `I ⟶ X ⟶ Y` has a splitting. -/
 lemma epiWithInjectiveKernel_iff {X Y : C} (g : X ⟶ Y) :
     epiWithInjectiveKernel g ↔ ∃ (I : C) (_ : Injective I) (f : I ⟶ X) (w : f ≫ g = 0),
       Nonempty (ShortComplex.mk _ _ w).Splitting := by
