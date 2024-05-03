@@ -315,7 +315,8 @@ lemma eventuallyle (z : ℂ) (hB : BddAbove ((norm ∘ f) '' (verticalClosedStri
     norm_le_interpStrip_of_mem_verticalClosedStrip_eps f ε hε z hB hd
       (mem_of_mem_of_subset hz (preimage_mono Ioo_subset_Icc_self))
 
-lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
+lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
+    (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) (hz : z ∈ verticalStrip 0 1) :
     ‖f z‖ ≤ ‖interpStrip f z‖ := by
   apply tendsto_le_of_eventuallyLE _ _ (eventuallyle f z hB hd hz)
