@@ -13,6 +13,7 @@ import Mathlib.RingTheory.Polynomial.Basic
 import Mathlib.Algebra.GeomSum
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.Quotient
+import Mathlib.Algebra.Module.Projective
 
 
 /-!
@@ -48,6 +49,7 @@ namespace Nat
 open Polynomial
 
 open Finset BigOperators
+open scoped Classical
 
 -- polynomials? this should output a polynomial, not a nat
 
@@ -440,16 +442,365 @@ def Grassmannian (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V]
 [Fintype K] [FiniteDimensional K V] (k : ℕ) :=
 {W : Submodule K V | FiniteDimensional.finrank K W = k}
 
-variable [FiniteDimensional K V] [Fintype K] [Fintype V] [DecidableEq (Submodule K V)]
-variable [∀ n : ℕ, DecidablePred fun (v : ((Fin n) → V)) ↦ LinearIndependent K v]
+variable [FiniteDimensional K V] [Fintype K]
 
 -- show bijection with projection first
 -- count linear independent sets as subtype of powerset?
 
--- needs a decidablepred instance that i don't like
-/-- Finset of linear independent vectors of card n in V -/
+-- LinearEquiv.submoduleMap
 
-def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
+open Submodule
+
+
+/-def proj2 (p : Submodule K V) : (V →ₗ[K] (V ⧸ p)) × (V →ₗ[K] p) :=
+  have f := p.mkQ
+  have hf : ∀ (x : V), f x = x := by sorry
+
+  have h3 := LinearMap.isCompl_of_proj
+
+  --let ⟨q, hq⟩ := (p).exists_isCompl
+ --linearProjOfIsCompl
+  sorry-/
+
+/-def proj2 (a : V) : (V →ₗ[K] (V ⧸ span K {a})) × (V →ₗ[K] span K {a}) :=
+  let ⟨q, hq⟩ := (span K {a}).exists_isCompl
+ --linearProjOfIsCompl
+  sorry-/
+
+noncomputable def truc (a : V) : V ≃ₗ[K] (V ⧸ span K {a}) ×  span K {a} :=
+  (Classical.choice (quotient_prod_linearEquiv (span K {a}))).symm
+
+-- linearProjOfIsCompl
+/-noncomputable def equivSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
+{W : Submodule K V | FiniteDimensional.finrank K W = k} ≃
+  {W : Submodule K ((V ⧸ (K ∙ a)) × (K ∙ a)) | FiniteDimensional.finrank K W = k} where
+    toFun := λ x => by sorry
+      --have h2 := Submodule.quotientEquivOfIsCompl
+      /-obtain ⟨f, hf⟩ := Classical.choice ((Module.projective_lifting_property (Submodule.mkQ (K ∙ a))
+        (LinearMap.id) (Submodule.mkQ_surjective (K ∙ a))))-/
+      --have h3 := (Classical.choice (quotient_prod_linearEquiv (span K {a}))).symm
+
+      /-have h3 := Submodule.prodEquivOfIsCompl (Submodule.comapMkQOrderEmbedding (K ∙ a)
+        (⊤ : Submodule K (V ⧸ (K ∙ a)))) (K ∙ a) {
+          disjoint := by
+            intros x hx1 hx2
+
+            sorry
+          codisjoint := by
+            simp
+        }
+      -- Fintype.card_congr
+      have h4 := @AddSubgroup.addGroupEquivQuotientProdAddSubgroup V _ (K ∙ a).toAddSubgroup
+      have h5 := h4.toFun '' (x.1)-/
+
+
+    invFun := _
+    left_inv := _
+    right_inv := _-/
+
+-- needs a decidablepred instance that i don't like
+/- Finset of linear independent vectors of card n in V -/
+
+/-def equivThing (a : V) (x : Submodule K V) (ha : a ∈ x) :
+  ↥(map (mkQ (span K {a})) ↑x) ≃ₗ[K] x ⧸ span K {(⟨a, ha⟩ : x)} where
+    toFun := λ e => sorry
+    map_add' := sorry
+    map_smul' := sorry
+    invFun := sorry
+    left_inv := sorry
+    right_inv := sorry-/
+
+variable {K : Type u} {W : Type v}
+
+variable [Field K] [AddCommGroup V] [Module K V] [AddCommGroup W] [Module K W]
+
+/-def subspacesBijection' : {X : Submodule K (V × W) | Submodule.snd K V W ≤ X} ≃
+  {X : Submodule K (V × W) | ∀ x ∈ X, x.2 = 0 } where
+    toFun := λ r => ⟨(Submodule.map (LinearMap.inl K V W) ∘
+      Submodule.map (LinearMap.fst K V W)) r, by simp ⟩
+    invFun := λ s => ⟨s ⊔  Submodule.snd K V W, by simp ⟩
+    left_inv := λ r => by
+      simp
+      ext x;
+      simp
+      rw [mem_sup]
+      refine ⟨λ h => ?_, λ h => ?_⟩
+      obtain ⟨y, ⟨hy, ⟨z, ⟨hz, rfl⟩⟩⟩⟩ := h
+      simp at hy
+      obtain ⟨z2, hz2⟩ := hy
+      obtain ⟨a, ha⟩ := z2
+      have h3 : (0, a) ∈ r.1 := by
+        apply Set.mem_of_subset_of_mem r.2.subset
+        simp
+        rw [Submodule.mem_snd]
+      have h7 := add_mem ha (neg_mem h3)
+      simp at h7
+      rw [← hz2] at h7
+      apply add_mem h7 (Set.mem_of_subset_of_mem r.2.subset ?_)
+      simp
+      refine ⟨(x.1, 0), ⟨?_, ⟨(0, x.2), ⟨by simp, by simp⟩⟩⟩⟩
+      simp
+      refine ⟨x.2, h⟩
+      sorry
+    right_inv := _-/
+
+-- Why not prove that subspaces of X x Y containing 0 + Y biject with subspaces of X x Y
+-- having trivial intersection with Y first?
+def subspacesBijection : {X : Submodule K (V × W) | Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
+  {X : Submodule K (V × W) | ∀ x ∈ X, x.2 = 0 } where
+    toFun := λ r => ⟨(Submodule.map (LinearMap.inl K V W) ∘
+      Submodule.map (LinearMap.fst K V W)) r, by simp ⟩
+    invFun := λ s => ⟨s ⊔ Submodule.map (LinearMap.inr K V W) ⊤, by simp ⟩
+    left_inv := λ r => by
+      simp
+      ext x;
+      simp
+      rw [mem_sup]
+      refine ⟨λ h => ?_, λ h => ?_⟩
+      obtain ⟨y, ⟨hy, ⟨z, ⟨hz, rfl⟩⟩⟩⟩ := h
+      simp at hy
+      obtain ⟨z2, hz2⟩ := hy
+      simp at hz
+      obtain ⟨a, ha⟩ := z2
+      obtain ⟨b, rfl⟩ := hz
+      have h3 : (0, a) ∈ r.1 := by
+        apply Set.mem_of_subset_of_mem r.2.subset
+        simp
+      have h7 := add_mem ha (neg_mem h3)
+      simp at h7
+      rw [← hz2] at h7
+      apply add_mem h7 (Set.mem_of_subset_of_mem r.2.subset ?_)
+      simp
+      refine ⟨(x.1, 0), ⟨?_, ⟨(0, x.2), ⟨by simp, by simp⟩⟩⟩⟩
+      simp
+      refine ⟨x.2, h⟩
+    right_inv := λ s => by
+      simp
+      ext x;
+      simp
+      refine ⟨λ ⟨h1, h2⟩ => ?_, λ h => ⟨?_, ?_⟩⟩
+      rw [mem_sup] at h1
+      obtain ⟨y, ⟨hy, ⟨z, ⟨hz, hzy⟩⟩⟩⟩ := h1
+      simp at hz
+      rw [← hz] at hzy
+      simp at hzy
+      simp at hy
+      obtain ⟨z2, hz2⟩ := hy
+      have h4 := s.2 _ hz2
+      simp at h4
+      simp_rw [h4, hzy, ← h2] at hz2
+      apply hz2
+      apply mem_sup_left
+      simp
+      refine ⟨x.2, h⟩
+      apply s.2 x h
+
+/-lemma subspacesBijection.map (X : {X : Submodule K (V × W) | Submodule.map (LinearMap.inr K V W) ⊤ ≤ X}) :
+  (Submodule.map (LinearMap.inr K V W) ∘
+      Submodule.map (LinearMap.snd K V W)) X = Submodule.map (LinearMap.inr K V W) ⊤ := by
+
+  simp
+  sorry-/
+
+/-lemma prodSubmod (X : Submodule K (V × W)) : X = (Submodule.map (LinearMap.inl K V W) ∘
+      Submodule.map (LinearMap.fst K V W)) X ⊔ (Submodule.map (LinearMap.inr K V W) ∘
+      Submodule.map (LinearMap.snd K V W)) X := by
+  rw [← Submodule.map_sup]
+  --rw [← LinearMap.coe_comp]
+  rw [← LinearMap.prod_eq_sup_map]
+  simp
+  rw [LinearMap.prod]
+  ext x;
+  refine ⟨λ hx => ?_, λ hx => ?_⟩
+  simp
+  refine ⟨⟨x.2, hx⟩, ⟨x.1, hx⟩⟩
+  simp at hx
+  obtain ⟨⟨x2, hx2⟩, ⟨x1, hx1⟩⟩ := hx
+  sorry-/
+
+variable [FiniteDimensional K V] [FiniteDimensional K W]
+
+lemma subspacesDimBijection (X : {X : Submodule K (V × W) | Submodule.map (LinearMap.inr K V W) ⊤ ≤ X}) :
+FiniteDimensional.finrank K X = FiniteDimensional.finrank K (subspacesBijection X) + FiniteDimensional.finrank K W := by
+  rw [subspacesBijection]
+  simp
+  rw [← LinearMap.finrank_range_of_inj (@LinearMap.inr_injective K V W _ _ _ _ _),
+    ← Submodule.map_top, ← finrank_sup_add_finrank_inf_eq, disjoint_iff.1]
+  simp
+  have h3 : X = (map (LinearMap.inl K V W) (map (LinearMap.fst K V W) ↑X) ⊔ map (LinearMap.inr K V W) ⊤) := by
+    apply le_antisymm
+    intros x hx
+    rw [mem_sup]
+    refine ⟨⟨x.1, 0⟩, ⟨?_, ⟨⟨0, x.2⟩, ⟨by simp, by simp⟩⟩⟩⟩
+    simp
+    refine ⟨x.2, hx⟩
+    apply sup_le
+    simp
+    intros x hx
+    simp at hx
+    obtain ⟨⟨x1, hx1⟩, hx2⟩ := hx
+    have h3 : (0, x1) ∈ X.1 := by
+      apply Set.mem_of_subset_of_mem X.2.subset
+      simp
+    have h7 := add_mem hx1 (neg_mem h3)
+    simp at h7
+    rw [← hx2] at h7
+    apply h7
+    intros x hx
+    simp at hx
+    obtain ⟨x2, rfl⟩ := hx
+    have hX := X.2
+    simp at hX
+    apply Set.mem_of_subset_of_mem (hX.subset)
+    simp
+  rw [← h3]
+  simp
+  rw [disjoint_iff]
+  ext x;
+  simp
+  refine ⟨λ hx => ?_, λ hx => ?_⟩
+  obtain ⟨⟨⟨x1, hx1⟩, hx22⟩, ⟨x2, rfl⟩⟩ := hx
+  simp at hx22
+  rw [hx22]
+  simp
+  refine ⟨⟨⟨0, ?_⟩, (Prod.mk_eq_zero.1 hx).2⟩, ⟨0, ?_⟩⟩
+  rw [(Prod.mk_eq_zero.1 hx).1]
+  apply zero_mem
+  rw [hx]
+  simp
+
+lemma subspacesDimBijection' (X : {X : Submodule K (V × W) | ∀ x ∈ X, x.2 = 0 }) :
+FiniteDimensional.finrank K (subspacesBijection.invFun X) = FiniteDimensional.finrank K X + FiniteDimensional.finrank K W := by
+  rw [subspacesDimBijection]
+  have h2 := (@subspacesBijection V K W).right_inv X
+  simp at h2
+  simp
+  rw [h2]
+
+
+
+lemma divNatThing (j : ℕ) : (j * (j + 1) / 2 : ℕ) = (j * (j + 1) : ℚ) / 2 := by
+  sorry
+
+-- ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X (this is probably easier for by_cases)
+-- Submodule.map (LinearMap.inr K V W) ⊤ ∩ X ≠ Submodule.map (LinearMap.inr K V W) ⊤
+
+-- the second one is dependent on the first
+def subspacesBijection2 : {X : Submodule K (V × W) | ¬ Submodule.map (LinearMap.inr K V W) ⊤ ≤ X} ≃
+  {((X, φ) : (Submodule K V × W) × (V × W →ₗ[K] W)) | ∀ x ∈ X, x.2 = 0 ∧ ∀ x ∉ X, φ x = 0} where
+    toFun := _
+    invFun := _
+    left_inv := _
+    right_inv := _
+
+/-def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
+  {W : Submodule K ((V ⧸ (K ∙ a)) × (K ∙ a))| FiniteDimensional.finrank K W = k + 1 ∧ ⟨0, ⟨a, mem_span_singleton_self a⟩⟩ ∈ W} ≃
+  {W : Submodule K ((V ⧸ (K ∙ a)) × (K ∙ a)) | FiniteDimensional.finrank K W = k ∧ ∀ x ∈ W, x.2 = 0} where
+    toFun := λ r => ⟨(Submodule.map (LinearMap.inl K (V ⧸ (K ∙ a)) (K ∙ a)) ∘
+      Submodule.map ((LinearMap.fst K (V ⧸ (K ∙ a)) (K ∙ a)))) r, by
+      simp
+      obtain ⟨hs1, hs2⟩ := r.2
+      have h2 : (⟨0, ⟨a, mem_span_singleton_self a⟩⟩ : ((V ⧸ (K ∙ a)) × (K ∙ a))) ∉
+        (prod (map (LinearMap.fst K (V ⧸ span K {a}) (span K {a})) r) ⊥) := by
+        simp
+        intros x hx hxr
+        apply ha
+      rw [← disjoint_span_singleton'] at h2
+      have h4 : (span K {(⟨0, ⟨a, mem_span_singleton_self a⟩⟩ : ((V ⧸ (K ∙ a)) × (K ∙ a)))}) =
+        Submodule.prod ⊥ (map (LinearMap.snd K (V ⧸ span K {a}) (span K {a})) ↑r) := by
+        simp
+        apply span_eq_of_le
+        apply Set.singleton_subset_iff.2
+        simp
+        refine ⟨0, hs2⟩
+        intros v hv
+        rw [mem_span_singleton]
+        simp at hv
+        obtain ⟨hv1, ⟨a_1, ha_1⟩⟩ := hv
+        obtain ⟨a_2, ha_2⟩ := mem_span_singleton.1 v.2.2
+        refine ⟨a_2, ?_⟩
+        simp
+        simp_rw [← hv1, ha_2]
+      have h3 : (prod (map (LinearMap.fst K (V ⧸ span K {a}) (span K {a})) r) ⊥) ⊔
+        (span K {(0, { val := a, property := mem_span_singleton_self a })}) = r.1 := by
+        rw [h4, prod_sup_prod]
+        simp
+        ext x;
+        simp
+        refine ⟨λ hx => ?_, λ hx => ?_⟩
+        obtain ⟨⟨a_1, ⟨b, hb⟩⟩, ⟨a_2, ha_2⟩⟩ := hx
+        sorry
+        refine ⟨⟨0, ⟨zero_mem _, ?_⟩⟩, ?_⟩
+        obtain ⟨c, hc⟩ := mem_span_singleton.1 x.2.2
+        have h2 : (⟨0, ⟨x.2, x.2.2⟩⟩ : ((V ⧸ (K ∙ a)) × (K ∙ a))) ∈ r.1 := by
+          simp_rw [← hc]
+          have h3 := smul_mem r c hs2
+          simp at h3
+          apply h3
+        have h4 := sub_mem hx h2
+        simp at h4
+        have h5 : x - ((0 : (V ⧸ (K ∙ a))), x.2) = (x.1, (⟨0, zero_mem _⟩ : (K ∙ a))) := by
+          rw [Prod.mk.inj_iff]
+          simp
+
+          sorry
+          /-have h3 := @add_neg_self (K ∙ a) _ x.2
+          simp_rw [← h3]
+          rw [← add_zero x.1]
+          have h6 : (x.1 + 0, x.2 + -x.2) = (x.1, x.2) + (0, -x.2) := by
+            exact rfl
+          rw [h6]
+          simp
+          have h7 : -((0 : (V ⧸ (K ∙ a))), x.2) = (-0, -x.2) := by
+            exact rfl
+          simp_rw [h7]
+          simp-/
+        rw [← h5]
+        apply h4
+        refine ⟨x.1, hx⟩
+      rw [← h3] at hs1
+      rw [disjoint_iff, ← Submodule.finrank_eq_zero] at h2
+      rw [← add_zero (FiniteDimensional.finrank K _), ← h2, finrank_sup_add_finrank_inf_eq,
+        finrank_span_singleton, add_right_cancel_iff] at hs1
+      apply hs1
+      apply Prod.mk_eq_zero.1.mt
+      simp
+      apply ha
+
+      apply Prod.mk_eq_zero.1.mt
+      simp
+      apply ha⟩
+    invFun := λ s => ⟨span K (insert (⟨0, ⟨a, mem_span_singleton_self a⟩⟩ : ((V ⧸ (K ∙ a)) × (K ∙ a))) s), by
+      simp
+      refine ⟨?_, Set.mem_of_subset_of_mem (subset_span) (Set.mem_insert _ _)⟩
+      rw [span_insert, span_eq]
+      have h2 : (⟨0, ⟨a, mem_span_singleton_self a⟩⟩ : ((V ⧸ (K ∙ a)) × (K ∙ a))) ∉ s.1 := by
+        by_contra h4
+        have h3 := s.2.2
+        specialize h3 _ h4
+        simp at h3
+        apply ha h3
+      rw [← disjoint_span_singleton', disjoint_iff, inf_comm, ← Submodule.finrank_eq_zero] at h2
+      rw [← add_zero (FiniteDimensional.finrank K _), ← h2, finrank_sup_add_finrank_inf_eq]
+      rw [finrank_span_singleton, s.2.1, add_comm]
+      simp
+      apply ha
+      simp
+      apply ha⟩
+    left_inv := λ r => by
+      have h3 := r.2.2
+      ext;
+      refine ⟨λ hx => ?_, λ hx => ?_⟩
+      simp at hx
+      rw [mem_span_insert] at hx
+      obtain ⟨a_1, ⟨z, ⟨hz1, rfl⟩⟩⟩ := hx
+      apply Submodule.add_mem
+      apply Submodule.smul_mem
+      apply h3
+      sorry
+    right_inv := _-/
+
+/-def succDimSubspaces_equivDimSubspaces' (a : V) (ha : a ≠ 0) (k : ℕ) :
   {W : Submodule K V | FiniteDimensional.finrank K W = k + 1 ∧ a ∈ W} ≃
   {W : Submodule K (V ⧸ (K ∙ a)) | FiniteDimensional.finrank K W = k} where
     toFun := λ x => ⟨Submodule.map (K ∙ a).mkQ x, by
@@ -458,22 +809,30 @@ def succDimSubspaces_equivDimSubspaces (a : V) (ha : a ≠ 0) (k : ℕ) :
       rw [← Submodule.finrank_quotient_add_finrank (K ∙ ⟨a, hx2⟩), finrank_span_singleton] at hx1
       simp [Order.succ_eq_succ_iff] at hx1
       simp [← hx1]
+      apply LinearEquiv.finrank_eq
+      --have h2 := LinearEquiv.quotEquivOfEquiv
 
+      --apply LinearEquiv.quotEquivOfEquiv
       sorry
       simp
       apply ha⟩
-    invFun := λ y => ⟨Submodule.comapMkQOrderEmbedding (K ∙ a) y ⊔ (K ∙ a), by sorry⟩
+    invFun := λ y => ⟨Submodule.comapMkQOrderEmbedding (K ∙ a) y ⊔ (K ∙ a), by
+      simp
+      sorry⟩
     left_inv := λ x => by
       simp
       sorry
     right_inv := λ y => by
       simp
-      sorry
+      sorry-/
 
-def linIndCard (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] [Fintype K] [Fintype V]
+/-def linIndCard (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] [Fintype K] [Fintype V]
 [FiniteDimensional K V] [∀ n : ℕ, DecidablePred fun (v : ((Fin n) → V)) ↦ LinearIndependent K v]
 (n : ℕ) : Finset ((Fin n) → V) :=
   (@Finset.univ ((Fin n) → V)).filter (λ v => LinearIndependent K v)
+
+variable [Fintype V] [DecidableEq (Submodule K V)]
+variable [∀ n : ℕ, DecidablePred fun (v : ((Fin n) → V)) ↦ LinearIndependent K v]
 
 lemma linIndCardEqQFactDesc (n k : ℕ) :
   (q_factorial'_desc n k).eval ↑(Fintype.card K) = (linIndCard K V k).card := by
@@ -539,7 +898,7 @@ def fintypeOfFintype [Fintype K] [FiniteDimensional K V] : Fintype (Submodule K 
 `V` of dimension `k`. -/
 def subspacesDim [FiniteDimensional K V] (k : ℕ) : Finset (Submodule K V) := sorry
   /-⟨((s.1.powersetCard n).pmap Finset.mk) fun _t h => nodup_of_le (mem_powersetCard.1 h).1 s.2,
-    s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩-/
+    s.2.powersetCard.pmap fun _a _ha _b _hb => congr_arg Finset.val⟩-/-/
 
 
 end subspacesCard
