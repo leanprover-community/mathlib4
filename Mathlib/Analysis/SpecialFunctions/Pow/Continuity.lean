@@ -92,7 +92,7 @@ theorem continuousAt_cpow {p : ℂ × ℂ} (hp_fst : p.fst ∈ slitPlane) :
 #align continuous_at_cpow continuousAt_cpow
 
 theorem continuousAt_cpow_const {a b : ℂ} (ha : a ∈ slitPlane) :
-    ContinuousAt (fun x => cpow x b) a :=
+    ContinuousAt (· ^ b) a :=
   Tendsto.comp (@continuousAt_cpow (a, b) ha) (continuousAt_id.prod continuousAt_const)
 #align continuous_at_cpow_const continuousAt_cpow_const
 
