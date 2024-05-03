@@ -9,6 +9,8 @@ import Mathlib.Tactic.Attr.Core
 import Mathlib.Tactic.Attr.Register
 import Mathlib.Tactic.Basic
 import Mathlib.Tactic.ByContra
+import Mathlib.Tactic.CC.Datatypes
+import Mathlib.Tactic.CC.Lemmas
 import Mathlib.Tactic.CancelDenoms
 import Mathlib.Tactic.CancelDenoms.Core
 import Mathlib.Tactic.Cases
@@ -157,7 +159,6 @@ import Mathlib.Tactic.Rename
 import Mathlib.Tactic.RenameBVar
 import Mathlib.Tactic.Replace
 import Mathlib.Tactic.RewriteSearch
-import Mathlib.Tactic.Rewrites
 import Mathlib.Tactic.Rify
 import Mathlib.Tactic.Ring
 import Mathlib.Tactic.Ring.Basic

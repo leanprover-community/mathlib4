@@ -292,7 +292,7 @@ theorem Cofix.bisim {α : TypeVec n} (r : Cofix F α → Cofix F α → Prop)
   rw [← split_dropFun_lastFun f₀, ← split_dropFun_lastFun f₁]
   rw [appendFun_comp_splitFun, appendFun_comp_splitFun]
   rw [id_comp, id_comp]
-  congr 2 with (i j); cases' i with _ i <;> dsimp
+  congr 2 with (i j); cases' i with _ i
   · apply Quot.sound
     apply h' _ j
   · change f₀ _ j = f₁ _ j

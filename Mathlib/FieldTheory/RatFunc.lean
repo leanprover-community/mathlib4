@@ -646,6 +646,7 @@ theorem map_apply_ofFractionRing_mk [MonoidHomClass F R[X] S[X]] (φ : F)
   rw [dif_pos]
 #align ratfunc.map_apply_of_fraction_ring_mk RatFunc.map_apply_ofFractionRing_mk
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 theorem map_injective [MonoidHomClass F R[X] S[X]] (φ : F) (hφ : R[X]⁰ ≤ S[X]⁰.comap φ)
     (hf : Function.Injective φ) : Function.Injective (map φ hφ) := by
   rintro ⟨x⟩ ⟨y⟩ h
@@ -780,16 +781,15 @@ end LiftHom
 
 variable (K)
 
-instance instField [IsDomain K] : Field (RatFunc K) :=
-  { RatFunc.instCommRing K, RatFunc.instNontrivial K with
-    inv := Inv.inv
-    -- Porting note: used to be `by frac_tac`
-    inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
-    div := (· / ·)
-    div_eq_mul_inv := by frac_tac
-    mul_inv_cancel := fun _ => mul_inv_cancel
-    zpow := zpowRec
-    qsmul := qsmulRec _ }
+instance instField [IsDomain K] : Field (RatFunc K) where
+  -- Porting note: used to be `by frac_tac`
+  inv_zero := by rw [← ofFractionRing_zero, ← ofFractionRing_inv, inv_zero]
+  div := (· / ·)
+  div_eq_mul_inv := by frac_tac
+  mul_inv_cancel _ := mul_inv_cancel
+  zpow := zpowRec
+  nnqsmul := _
+  qsmul := _
 
 section IsFractionRing
 
@@ -1777,7 +1777,7 @@ set_option linter.uppercaseLean3 false in
 theorem single_one_eq_pow {R : Type _} [Ring R] (n : ℕ) :
     single (n : ℤ) (1 : R) = single (1 : ℤ) 1 ^ n := by
   induction' n with n h_ind
-  · simp only [Nat.zero_eq, Int.ofNat_eq_coe, zpow_zero]
+  · simp only [Nat.cast_zero, pow_zero]
     rfl
   · rw [← Int.ofNat_add_one_out, pow_succ', ← h_ind, HahnSeries.single_mul_single, one_mul,
       add_comm]
