@@ -1698,6 +1698,7 @@ import Mathlib.Computability.ContextFreeGrammar
 import Mathlib.Computability.DFA
 import Mathlib.Computability.Encoding
 import Mathlib.Computability.EpsilonNFA
+import Mathlib.Computability.GNFA
 import Mathlib.Computability.Halting
 import Mathlib.Computability.Language
 import Mathlib.Computability.NFA
@@ -1705,6 +1706,8 @@ import Mathlib.Computability.Partrec
 import Mathlib.Computability.PartrecCode
 import Mathlib.Computability.Primrec
 import Mathlib.Computability.Reduce
+import Mathlib.Computability.RegularExpressionToNFA.Basic
+import Mathlib.Computability.RegularExpressionToNFA.Defs
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.TMComputable
 import Mathlib.Computability.TMToPartrec
@@ -1810,6 +1813,7 @@ import Mathlib.Data.Fin.Tuple.Reflection
 import Mathlib.Data.Fin.Tuple.Sort
 import Mathlib.Data.Fin.VecNotation
 import Mathlib.Data.FinEnum
+import Mathlib.Data.FinEnum.Option
 import Mathlib.Data.Finite.Basic
 import Mathlib.Data.Finite.Card
 import Mathlib.Data.Finite.Defs

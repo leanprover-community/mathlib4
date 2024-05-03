@@ -250,7 +250,7 @@ lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
       simp [NFA.mem_stepSet]
       refine ⟨some t, ih eval, Or.inl step⟩
     case cons y ys ih =>
-      simp
+      simp only [List.join, List.append_assoc]
       simp at allys
       rcases allys with ⟨accepty, allys⟩
       specialize ih eval allys
