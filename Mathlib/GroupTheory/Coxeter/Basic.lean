@@ -122,9 +122,8 @@ def reindexGroupEquiv : (M.reindex e).Group ≃* M.Group :=
     (Subgroup.normalClosure (M.reindex e).relationsSet)
     (FreeGroup.freeGroupCongr e) (by
       rw [reindex_relationsSet,
-        Subgroup.map_normalClosure _ _ (FreeGroup.freeGroupCongr e).surjective,
-        ← MulEquiv.coe_toMonoidHom]
-      rfl)).symm
+        Subgroup.map_normalClosure _ _ (by simpa using (FreeGroup.freeGroupCongr e).surjective),
+        MonoidHom.coe_coe])).symm
 
 theorem reindexGroupEquiv_apply_simple (i : B') :
     (M.reindexGroupEquiv e) ((M.reindex e).simple i) = M.simple (e.symm i) := rfl
