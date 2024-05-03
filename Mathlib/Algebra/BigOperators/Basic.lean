@@ -1326,7 +1326,7 @@ theorem prod_ite_eq' [DecidableEq α] (s : Finset α) (a : α) (b : α → β) :
 @[to_additive]
 theorem prod_ite_eq_iff [DecidableEq α] (s : Finset α) (a : α) (b : α → β)
     {p : α → Prop} [DecidablePred p] (h : ∀ x ∈ s, p x ↔ a = x) :
-    (∏ x in s, ite (p x) (b x) 1) = ite (a ∈ s) (b a) 1 :=
+    (∏ x in s, if p x then b x else 1) = if a ∈ s then b a else 1 :=
   (prod_ite_eq s a b).symm ▸ prod_congr rfl (fun a ha => if_congr (h a ha) rfl rfl)
 
 @[to_additive]
