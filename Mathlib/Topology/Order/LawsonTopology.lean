@@ -139,9 +139,9 @@ instance [Inhabited α] : Inhabited (WithLawson α) := ‹Inhabited α›
 
 variable [Preorder α]
 
-instance : Preorder (WithLawson α) := ‹Preorder α›
-instance : TopologicalSpace (WithLawson α) := lawson α
-instance : IsLawson (WithLawson α) := ⟨rfl⟩
+instance instPreorder : Preorder (WithLawson α) := ‹Preorder α›
+instance instTopologicalSpace : TopologicalSpace (WithLawson α) := lawson α
+instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 
 /-- If `α` is equipped with the Lawson topology, then it is homeomorphic to `WithLawson α`.
 -/
