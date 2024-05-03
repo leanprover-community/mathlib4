@@ -83,6 +83,7 @@ lemma eigenvectorUnitary_coe {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n
 theorem eigenvectorUnitary_apply (i j : n) :
     eigenvectorUnitary hA i j = ⇑(hA.eigenvectorBasis j) i :=
   rfl
+#align matrix.is_hermitian.eigenvector_matrix_apply Matrix.IsHermitian.eigenvectorUnitary_apply
 
 theorem eigenvectorUnitary_mulVec (j : n) :
     eigenvectorUnitary hA *ᵥ Pi.single j 1 = ⇑(hA.eigenvectorBasis j) := by
@@ -176,9 +177,8 @@ unused in the library, followed as immediate consequences of, or were replaced b
 above results (e.g. results about inverses don't need replacement because their unitary
 analogues have replaced them).-/
 
-#noalign Matrix.IsHermitian.eigenvectorMatrixinv
+#noalign Matrix.IsHermitian.eigenvector_matrix_inv
 #noalign matrix.is_hermitian.eigenvector_matrix_mul_inv
-#noalign matrix.is_hermitian.eigenvector_matrix_apply
 #noalign matrix.is_hermitian.eigenvector_matrix_inv_apply
 #noalign matrix.is_hermitian.conj_transpose_eigenvector_matrix_inv
 #noalign matrix.is_hermitian.conj_transpose_eigenvector_matrix
