@@ -2815,6 +2815,10 @@ theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p 
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
 
+lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
+    s.filter (fun a ↦ p a ∧ ¬ q a) = s.filter p \ s.filter q := by
+  rw [filter_and, filter_not, ← inter_sdiff_assoc, inter_eq_left.2 (filter_subset _ _)]
+
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
   ext fun _ => by simp [mem_sdiff, mem_filter]
 #align finset.sdiff_eq_filter Finset.sdiff_eq_filter

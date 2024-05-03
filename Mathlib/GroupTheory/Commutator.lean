@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jordan Brown, Thomas Browning, Patrick Lutz
 -/
 import Mathlib.Algebra.Group.Commutator
+import Mathlib.Algebra.Group.Subgroup.Finite
 import Mathlib.Data.Bracket
-import Mathlib.GroupTheory.Subgroup.Finite
 import Mathlib.GroupTheory.Subgroup.Centralizer
 import Mathlib.Tactic.Group
 
