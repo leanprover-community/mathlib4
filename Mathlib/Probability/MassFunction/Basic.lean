@@ -159,6 +159,16 @@ theorem massOf_eq_zero_iff_massSupport_disjoint : massOf f s = 0 ↔ Disjoint (m
 theorem massOf_eq_zero_iff_disjoint_massSupport : massOf f s = 0 ↔ Disjoint s (massSupport f) := by
   simp_rw [massOf_eq_zero_iff, disjoint_massSupport_iff]
 
+theorem massOf_ne_zero_iff : massOf f s ≠ 0 ↔ ∃ a ∈ s, f a ≠ 0 := by
+  simp_rw [Ne.def, massOf_eq_zero_iff_disjoint_massSupport, Set.not_disjoint_iff,
+  mem_massSupport_iff]
+
+theorem massOf_ne_zero_iff_massSupport_disjoint : massOf f s ≠ 0 ↔ ((massSupport f) ∩ s).Nonempty := by
+  simp_rw [Ne.def, massOf_eq_zero_iff_massSupport_disjoint, Set.not_disjoint_iff_nonempty_inter]
+
+theorem massOf_ne_zero_iff_disjoint_massSupport : massOf f s ≠ 0 ↔ (s ∩ (massSupport f)).Nonempty := by
+  simp_rw [Ne.def, massOf_eq_zero_iff_disjoint_massSupport, Set.not_disjoint_iff_nonempty_inter]
+
 @[simp]
 theorem massOf_apply_inter_massSupport :
     massOf f (s ∩ massSupport f) = massOf f s :=

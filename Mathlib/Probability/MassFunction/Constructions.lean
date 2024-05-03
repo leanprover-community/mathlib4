@@ -361,29 +361,28 @@ end OfFintype
 
 section Normalize
 
-variable {F : Sort*} {α : Type*} [MFLike F α] {f : F} {a : α} {hf0 : mass f ≠ 0} {hf : mass f ≠ ∞}
+variable {F : Sort*} {α : Type*} [MFLike F α] [FMFClass F α] {f : F} {a : α} {hf : mass f ≠ 0}
 
-noncomputable def normalize (f : F) (hf0 : mass f ≠ 0) (hf : mass f ≠ ∞) : PMF α :=
+noncomputable def normalize (f : F) (hf : mass f ≠ 0) : PMF α :=
   ⟨fun a => f a * (mass f)⁻¹, by simp_rw [ENNReal.tsum_mul_right,
-  tsum_eq_mass, ENNReal.mul_inv_cancel hf0 hf]⟩
+  tsum_eq_mass, ENNReal.mul_inv_cancel hf mass_ne_top]⟩
 
 @[simp]
-theorem normalize_apply : (normalize f hf0 hf) a = f a * (mass f)⁻¹ := rfl
+theorem normalize_apply : (normalize f hf) a = f a * (mass f)⁻¹ := rfl
 
 @[simp]
-theorem massSupport_normalize : massSupport (normalize f hf0 hf) = Function.support f :=
-  Set.ext fun a => by simp [hf, mem_massSupport_iff]
+theorem massSupport_normalize : massSupport (normalize f hf) = Function.support f :=
+  Set.ext fun a => by simp [mass_ne_top, mem_massSupport_iff]
 
 theorem mem_massSupport_normalize_iff :
-    a ∈ massSupport (normalize f hf0 hf) ↔ f a ≠ 0 := by simp
+    a ∈ massSupport (normalize f hf) ↔ f a ≠ 0 := by simp
 
 end Normalize
 
 section Filter
 
 noncomputable def filter (d : PMF α) (s : Set α) (h : (s ∩ massSupport d).Nonempty) : PMF α :=
-  normalize (SPMF.filter d s) (mass_ne_zero_iff'.mpr
-    (by rwa [SPMF.massSupport_filter])) mass_ne_top
+  normalize (SPMF.filter d s) (by rwa [SPMF.mass_filter, massOf_ne_zero_iff_disjoint_massSupport])
 
 variable {d : PMF α} {s : Set α} {a a' : α} {h : (s ∩ massSupport d).Nonempty}
 
