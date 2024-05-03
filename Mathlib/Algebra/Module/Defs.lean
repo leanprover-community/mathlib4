@@ -642,8 +642,8 @@ theorem Int.smul_one_eq_cast {R : Type*} [Ring R] (m : ℤ) : m • (1 : R) = �
   rw [zsmul_eq_mul, mul_one]
 #align int.smul_one_eq_coe Int.smul_one_eq_cast
 
-@[deprecated (since := "2024-05-03"] alias Nat.smul_one_eq_coe := smul_one_eq_cast
-@[deprecated (since := "2024-05-03"] alias Int.smul_one_eq_coe := smul_one_eq_cast
+@[deprecated (since := "2024-05-03")] alias Nat.smul_one_eq_coe := smul_one_eq_cast
+@[deprecated (since := "2024-05-03")] alias Int.smul_one_eq_coe := smul_one_eq_cast
 
 assert_not_exists Multiset
 assert_not_exists Set.indicator

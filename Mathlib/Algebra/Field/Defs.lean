@@ -202,7 +202,7 @@ variable (α)
 
 @[simp] lemma smul_one_eq_cast (q : ℚ≥0) : q • (1 : α) = q := by rw [NNRat.smul_def, mul_one]
 
-@[deprecated (since := "2024-05-03"] alias smul_one_eq_coe := smul_one_eq_cast
+@[deprecated (since := "2024-05-03")] alias smul_one_eq_coe := smul_one_eq_cast
 
 end NNRat
 
