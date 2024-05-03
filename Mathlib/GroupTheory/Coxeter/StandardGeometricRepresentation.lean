@@ -110,7 +110,8 @@ theorem orthoReflection_apply_self {v : V} (hv : ⟪v, v⟫ = 1) : (r hv) v = -v
 theorem orthoReflection_sq {v : V} (hv : ⟪v, v⟫ = 1) :
     (r hv) * (r hv) = LinearMap.id := by
   apply LinearMap.ext
-  exact Module.involutive_reflection _
+  exact Module.involutive_reflection (show ((2 : ℝ) • (standardBilinForm M v)) v = 2 by
+    rw [LinearMap.smul_apply, hv]; norm_num)
 
 theorem orthoReflection_eq_orthoReflection_iff {v v' : V} (hv : ⟪v, v⟫ = 1) (hv' : ⟪v', v'⟫ = 1) :
     r hv = r hv' ↔ ∃ μ : ℝ, v' = μ • v := by
