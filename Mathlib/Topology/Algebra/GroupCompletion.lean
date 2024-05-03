@@ -299,7 +299,7 @@ section UniformCommGroup
 variable [UniformSpace α] [CommGroup α] [UniformGroup α]
 
 @[to_additive]
-noncomputable instance : CommGroup (Completion α) :=
+noncomputable instance instCommGroup : CommGroup (Completion α) :=
   { (inferInstance : Group <| Completion α) with
     mul_comm := fun a b ↦
       Completion.induction_on₂ a b
