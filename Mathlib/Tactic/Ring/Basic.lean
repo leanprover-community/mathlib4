@@ -821,18 +821,23 @@ def evalPow (va : ExSum sα a) (vb : ExSum sℕ b) : Result (ExSum sα) q($a ^ $
 
 /-- This cache contains data required by the `ring` tactic during execution. -/
 structure Cache {α : Q(Type u)} (sα : Q(CommSemiring $α)) :=
-  /-- A ring instance on `α`, if available. -/
-  rα : Option Q(Ring $α)
-  /-- A division ring instance on `α`, if available. -/
-  dα : Option Q(DivisionRing $α)
+  /-- A ring and divisionring instance on `α`, if available. -/
+  rdα : Option <| Σ'
+    (rα : Q(Ring $α))
+    (hra : ($rα).toSemiring =Q ($sα).toSemiring),
+    Option {dα : Q(DivisionRing $α) // $(dα).toRing =Q $rα}
   /-- A characteristic zero ring instance on `α`, if available. -/
   czα : Option Q(CharZero $α)
 
 /-- Create a new cache for `α` by doing the necessary instance searches. -/
 def mkCache {α : Q(Type u)} (sα : Q(CommSemiring $α)) : MetaM (Cache sα) :=
   return {
-    rα := (← trySynthInstanceQ q(Ring $α)).toOption
-    dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
+    rdα := ← do
+      let .some (i : Q(Ring $α)) := (← trySynthInstanceQ q(Ring $α)) | return none
+      return some ⟨i, (← Qq.assertDefEqQ _ _).down, ← do
+        let .some (i : Q(DivisionRing $α)) := (← trySynthInstanceQ q(DivisionRing $α)) | return none
+        return some ⟨i, (← Qq.assertDefEqQ _ _).down⟩⟩
+    -- dα := (← trySynthInstanceQ q(DivisionRing $α)).toOption
     czα := (← trySynthInstanceQ q(CharZero $α)).toOption }
 
 theorem cast_pos : IsNat (a : R) n → a = n.rawCast + 0
@@ -990,7 +995,7 @@ theorem div_congr {R} [DivisionRing R] {a a' b b' c : R} (_ : a = a') (_ : b = b
     (_ : a' / b' = c) : (a / b : R) = c := by subst_vars; rfl
 
 /-- A precomputed `Cache` for `ℕ`. -/
-def Cache.nat : Cache sℕ := { rα := none, dα := none, czα := some q(inferInstance) }
+def Cache.nat : Cache sℕ := { rdα := none, czα := some q(inferInstance) }
 
 /-- Checks whether `e` would be processed by `eval` as a ring expression,
 or otherwise if it is an atom or something simplifiable via `norm_num`.
@@ -1010,16 +1015,16 @@ def isAtomOrDerivable {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
       pure <| some (evalCast sα (← derive e))
     catch _ => pure (some none)
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dα with
-  | ``HAdd.hAdd, _, _ | ``Add.add, _, _
-  | ``HMul.hMul, _, _ | ``Mul.mul, _, _
-  | ``HSMul.hSMul, _, _
-  | ``HPow.hPow, _, _ | ``Pow.pow, _, _
-  | ``Neg.neg, some _, _
-  | ``HSub.hSub, some _, _ | ``Sub.sub, some _, _
-  | ``Inv.inv, _, some _
-  | ``HDiv.hDiv, _, some _ | ``Div.div, _, some _ => pure none
-  | _, _, _ => els
+  match n, c.rdα with
+  | ``HAdd.hAdd, _ | ``Add.add, _
+  | ``HMul.hMul, _ | ``Mul.mul, _
+  | ``HSMul.hSMul, _
+  | ``HPow.hPow, _ | ``Pow.pow, _
+  | ``Neg.neg, some _
+  | ``HSub.hSub, some _ | ``Sub.sub, some _
+  | ``Inv.inv, some ⟨_, _, some _⟩
+  | ``HDiv.hDiv, some ⟨_, _, some _⟩ | ``Div.div, some ⟨_, _, some _⟩ => pure none
+  | _, _ => els
 
 /--
 Evaluates expression `e` of type `α` into a normalized representation as a polynomial.
@@ -1031,60 +1036,60 @@ partial def eval {u} {α : Q(Type u)} (sα : Q(CommSemiring $α))
     try evalCast sα (← derive e)
     catch _ => evalAtom sα e
   let .const n _ := (← withReducible <| whnf e).getAppFn | els
-  match n, c.rα, c.dα with
-  | ``HAdd.hAdd, _, _ | ``Add.add, _, _ => match e with
+  match n, c.rdα with
+  | ``HAdd.hAdd, _ | ``Add.add, _ => match e with
     | ~q($a + $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalAdd sα va vb
-      pure ⟨c, vc, (q(add_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(add_congr $pa $pb $p)⟩
     | _ => els
-  | ``HMul.hMul, _, _ | ``Mul.mul, _, _ => match e with
+  | ``HMul.hMul, _ | ``Mul.mul, _ => match e with
     | ~q($a * $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ := evalMul sα va vb
-      pure ⟨c, vc, (q(mul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(mul_congr $pa $pb $p)⟩
     | _ => els
-  | ``HSMul.hSMul, _, _ => match e with
+  | ``HSMul.hSMul, _ => match e with
     | ~q(($a : ℕ) • ($b : «$α»)) =>
       let ⟨_, va, pa⟩ ← eval sℕ .nat a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalNSMul sα va vb
-      pure ⟨c, vc, (q(nsmul_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(nsmul_congr $pa $pb $p)⟩
     | _ => els
-  | ``HPow.hPow, _, _ | ``Pow.pow, _, _ => match e with
+  | ``HPow.hPow, _ | ``Pow.pow, _ => match e with
     | ~q($a ^ $b) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sℕ .nat b
       let ⟨c, vc, p⟩ := evalPow sα va vb
-      pure ⟨c, vc, (q(pow_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(pow_congr $pa $pb $p)⟩
     | _ => els
-  | ``Neg.neg, some rα, _ => match e with
+  | ``Neg.neg, some ⟨rα, _, _⟩ => match e with
     | ~q(-$a) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ := evalNeg sα rα va
-      pure ⟨b, vb, (q(neg_congr $pa $p) : Expr)⟩
-  | ``HSub.hSub, some rα, _ | ``Sub.sub, some rα, _ => match e with
+      pure ⟨b, vb, q(neg_congr $pa $p)⟩
+  | ``HSub.hSub, some ⟨rα, _, _⟩ | ``Sub.sub, some ⟨rα, hrα, _⟩ => match e with
     | ~q($a - $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
-      let ⟨c, vc, p⟩ := evalSub sα rα va vb
-      pure ⟨c, vc, (q(sub_congr $pa $pb $p) : Expr)⟩
+      let ⟨c, vc, p⟩ := evalSub sα rα hrα va vb
+      pure ⟨c, vc, q(sub_congr $pa $pb $p)⟩
     | _ => els
-  | ``Inv.inv, _, some dα => match e with
+  | ``Inv.inv, some ⟨_, _, some ⟨dα, _⟩⟩ => match e with
     | ~q($a⁻¹) =>
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨b, vb, p⟩ ← va.evalInv sα dα c.czα
-      pure ⟨b, vb, (q(inv_congr $pa $p) : Expr)⟩
-  | ``HDiv.hDiv, _, some dα | ``Div.div, _, some dα => match e with
+      pure ⟨b, vb, q(inv_congr $pa $p)⟩
+  | ``HDiv.hDiv, some ⟨_, _, some ⟨dα, _⟩⟩ | ``Div.div, some ⟨_, _, some ⟨dα, _⟩⟩ => match e with
     | ~q($a / $b) => do
       let ⟨_, va, pa⟩ ← eval sα c a
       let ⟨_, vb, pb⟩ ← eval sα c b
       let ⟨c, vc, p⟩ ← evalDiv sα dα c.czα va vb
-      pure ⟨c, vc, (q(div_congr $pa $pb $p) : Expr)⟩
+      pure ⟨c, vc, q(div_congr $pa $pb $p)⟩
     | _ => els
-  | _, _, _ => els
+  | _, _ => els
 
 /-- `CSLift α β` is a typeclass used by `ring` for lifting operations from `α`
 (which is not a commutative semiring) into a commutative semiring `β` by using an injective map
