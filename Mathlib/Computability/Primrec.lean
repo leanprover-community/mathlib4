@@ -1302,6 +1302,7 @@ theorem vector_get {n} : Primrec₂ (@Vector.get α n) :=
 
 #align primrec.vector_nth Primrec.vector_get
 
+unseal Array.ofFn.go in
 theorem list_ofFn :
     ∀ {n} {f : Fin n → α → σ}, (∀ i, Primrec (f i)) → Primrec fun a => List.ofFn fun i => f i a
   | 0, _, _ => const []
