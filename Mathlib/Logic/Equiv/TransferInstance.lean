@@ -525,7 +525,6 @@ noncomputable instance [Small.{v} α] [CommRing α] : CommRing (Shrink.{v} α) :
   (equivShrink α).symm.commRing
 
 /-- Transfer `Nontrivial` across an `Equiv` -/
-@[reducible]
 protected theorem nontrivial [Nontrivial β] : Nontrivial α :=
   e.surjective.nontrivial
 #align equiv.nontrivial Equiv.nontrivial
@@ -534,7 +533,6 @@ noncomputable instance [Small.{v} α] [Nontrivial α] : Nontrivial (Shrink.{v} �
   (equivShrink α).symm.nontrivial
 
 /-- Transfer `IsDomain` across an `Equiv` -/
-@[reducible]
 protected theorem isDomain [Ring α] [Ring β] [IsDomain β] (e : α ≃+* β) : IsDomain α :=
   Function.Injective.isDomain e.toRingHom e.injective
 #align equiv.is_domain Equiv.isDomain
