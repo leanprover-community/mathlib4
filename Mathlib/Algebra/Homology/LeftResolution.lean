@@ -126,12 +126,6 @@ lemma map_chainComplex_d_1_0 :
       ι.map (Λ.chainComplexXZeroIso X).inv := by
   simp [chainComplexXOneIso, chainComplexXZeroIso, chainComplex]
 
---@[reassoc (attr := simp)]
---lemma map_chainComplex_d_1_0_comp_π :
---    ι.map ((Λ.chainComplex X).d 1 0) ≫ ι.map (Λ.chainComplexXZeroIso X).hom ≫ Λ.π.app X = 0 := by
---  rw [map_chainComplex_d_1_0, assoc, assoc, assoc, ← ι.map_comp_assoc, Iso.inv_hom_id, ι.map_id,
---    id_comp, kernel.condition, comp_zero, comp_zero]
-
 @[pp_dot]
 noncomputable def chainComplexXIso (n : ℕ) :
     (Λ.chainComplex X).X (n + 2) ≅ Λ.F.obj (kernel (ι.map ((Λ.chainComplex X).d (n + 1) n))) := by

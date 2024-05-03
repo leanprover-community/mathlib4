@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Functor.Derived.Pointwise
 import Mathlib.CategoryTheory.Limits.Final
 

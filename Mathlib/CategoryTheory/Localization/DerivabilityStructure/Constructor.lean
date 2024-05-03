@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 
 universe v₁ v₂ u₁ u₂
 

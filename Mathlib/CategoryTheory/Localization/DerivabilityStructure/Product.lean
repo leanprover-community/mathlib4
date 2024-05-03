@@ -1,4 +1,4 @@
-import Mathlib.CategoryTheory.Localization.DerivabilityStructure
+import Mathlib.CategoryTheory.Localization.DerivabilityStructure.Basic
 import Mathlib.CategoryTheory.Localization.Prod
 
 namespace CategoryTheory
