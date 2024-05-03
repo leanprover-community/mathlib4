@@ -58,19 +58,16 @@ theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => c
 theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
 #align opposite.unop_injective Opposite.unop_injective
 
-@[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
 #align opposite.op_unop Opposite.op_unop
 
-@[simp]
 theorem unop_op (x : α) : unop (op x) = x :=
   rfl
 #align opposite.unop_op Opposite.unop_op
 
 -- We could prove these by `Iff.rfl`, but that would make these eligible for `dsimp`. That would be
 -- a bad idea because `Opposite` is irreducible.
-@[simp]
 theorem op_inj_iff (x y : α) : op x = op y ↔ x = y :=
   op_injective.eq_iff
 #align opposite.op_inj_iff Opposite.op_inj_iff
