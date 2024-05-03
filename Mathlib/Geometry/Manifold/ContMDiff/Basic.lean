@@ -338,7 +338,7 @@ theorem contMDiff_of_mulTSupport [One M'] {f : M → M'}
       (not_mem_mulTSupport_iff_eventuallyEq.1 hx)
 #align cont_mdiff_of_support contMDiff_of_tsupport
 
-@[deprecated] alias contMDiff_of_support := contMDiff_of_tsupport -- 2024-01-15
+@[deprecated (since := "2024-01-15")] alias contMDiff_of_support := contMDiff_of_tsupport
 
 @[to_additive contMDiffWithinAt_of_not_mem]
 theorem contMDiffWithinAt_of_not_mem_mulTSupport {f : M → M'} [One M'] {x : M}

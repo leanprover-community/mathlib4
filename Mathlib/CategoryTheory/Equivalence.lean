@@ -712,7 +712,7 @@ noncomputable def _root_.CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyE
     (NatIso.ofComponents F.objObjPreimageIso)
 #align category_theory.equivalence.of_fully_faithfully_ess_surj CategoryTheory.Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
-@[deprecated] -- 2024-04-06
+@[deprecated (since := "2024-04-06")]
 alias ofFullyFaithfullyEssSurj := Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
 @[simp]
@@ -770,6 +770,11 @@ def isoInverseComp {G : C ≌ D} (i : G.functor ⋙ H ≅ F) : H ≅ G.inverse �
     ≪≫ isoWhiskerLeft G.inverse i
 
 end Iso
+
+@[deprecated (since := "2024-02-07")] alias compInvIso := Iso.compInvIso
+@[deprecated (since := "2024-02-07")] alias isoCompInv := Iso.isoCompInv
+@[deprecated (since := "2024-02-07")] alias invCompIso := Iso.invCompIso
+@[deprecated (since := "2024-02-07")] alias isoInvComp := Iso.isoInvComp
 
 -- deprecated on 2024-04-06
 @[deprecated] alias IsEquivalence := Functor.IsEquivalence
