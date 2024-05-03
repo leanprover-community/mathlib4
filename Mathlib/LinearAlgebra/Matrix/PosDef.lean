@@ -136,7 +136,7 @@ variable [DecidableEq n] {A : Matrix n n 𝕜} (hA : PosSemidef A)
 @[pp_dot]
 noncomputable def sqrt : Matrix n n 𝕜 :=
   hA.1.eigenvectorUnitary.1 * diagonal ((↑) ∘ Real.sqrt ∘ hA.1.eigenvalues) *
-  hA.1.eigenvectorUnitaryᴴ
+  (star hA.1.eigenvectorUnitary : Matrix n n 𝕜)
 
 open Lean PrettyPrinter.Delaborator SubExpr in
 /-- Custom elaborator to produce output like `(_ : PosSemidef A).sqrt` in the goal view. -/
