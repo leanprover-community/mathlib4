@@ -126,8 +126,8 @@ theorem partialSections.closed [∀ j : J, T2Space (F.obj j)] {G : Finset J}
 
 /-- Cofiltered limits of nonempty compact Hausdorff spaces are nonempty topological spaces.
 -/
--- Porting note: generalized from `TopCat.{u}` to `TopCatMax.{u,v}`
-theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCatMax.{u,v})
+-- Porting note: generalized from `TopCat.{u}` to `TopCat.{max v u}`
+theorem nonempty_limitCone_of_compact_t2_cofiltered_system (F : J ⥤ TopCat.{max v u})
     [IsCofilteredOrEmpty J]
     [∀ j : J, Nonempty (F.obj j)] [∀ j : J, CompactSpace (F.obj j)] [∀ j : J, T2Space (F.obj j)] :
     Nonempty (TopCat.limitCone F).pt := by

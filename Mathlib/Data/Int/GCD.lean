@@ -490,9 +490,8 @@ theorem pow_gcd_eq_one {M : Type*} [Monoid M] (x : M) {m n : ℕ} (hm : x ^ m = 
     x ^ m.gcd n = 1 := by
   rcases m with (rfl | m); · simp [hn]
   obtain ⟨y, rfl⟩ := isUnit_ofPowEqOne hm m.succ_ne_zero
-  simp only [← Units.val_pow_eq_pow_val] at *
-  rw [← Units.val_one, ← zpow_natCast, ← Units.ext_iff] at *
-  simp only [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, hm, hn, one_zpow, one_mul]
+  rw [← Units.val_pow_eq_pow_val, ← Units.val_one (α := M), ← zpow_natCast, ← Units.ext_iff] at *
+  rw [Nat.gcd_eq_gcd_ab, zpow_add, zpow_mul, zpow_mul, hn, hm, one_zpow, one_zpow, one_mul]
 #align pow_gcd_eq_one pow_gcd_eq_one
 #align gcd_nsmul_eq_zero gcd_nsmul_eq_zero
 
