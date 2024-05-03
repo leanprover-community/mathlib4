@@ -377,6 +377,13 @@ structure QuasispectrumRestricts
   /-- `f` is a left inverse of `algebraMap R S`. -/
   left_inv : Function.LeftInverse f (algebraMap R S)
 
+lemma quasispectrumRestricts_iff
+    {R S A : Type*} [CommSemiring R] [CommSemiring S] [NonUnitalRing A]
+    [Module R A] [Module S A] [Algebra R S] (a : A) (f : S → R) :
+    QuasispectrumRestricts a f ↔ (quasispectrum S a).RightInvOn f (algebraMap R S) ∧
+      Function.LeftInverse f (algebraMap R S) :=
+  ⟨fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩, fun ⟨h₁, h₂⟩ ↦ ⟨h₁, h₂⟩⟩
+
 @[simp]
 theorem quasispectrum.algebraMap_mem_iff (S : Type*) {R A : Type*} [Semifield R] [Field S]
     [NonUnitalRing A] [Algebra R S] [Module S A] [IsScalarTower S A A]
@@ -398,17 +405,18 @@ namespace QuasispectrumRestricts
 
 section NonUnital
 
-variable {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A]
-  [Module R A] [IsScalarTower R A A] [SMulCommClass R A A]
-  [Module S A] [IsScalarTower S A A] [SMulCommClass S A A]
-  [Algebra R S] [IsScalarTower R S A] [SMulCommClass R S A]
+variable {R S A : Type*} [Semifield R] [Field S] [NonUnitalRing A] [Module R A] [Module S A]
+variable [IsScalarTower S A A] [SMulCommClass S A A] [Algebra R S] {a : A} {f : S → R}
 
-theorem of_subset_range_algebraMap (a : A) (f : S → R) (hf : f.LeftInverse (algebraMap R S))
+protected theorem map_zero (h : QuasispectrumRestricts a f) : f 0 = 0 := by
+  rw [← h.left_inv 0, map_zero (algebraMap R S)]
+
+theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : quasispectrum S a ⊆ Set.range (algebraMap R S)) : QuasispectrumRestricts a f where
   rightInvOn := fun s hs => by obtain ⟨r, rfl⟩ := h hs; rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] {a : A} {f : S → R} (h : QuasispectrumRestricts a f)
+variable [IsScalarTower R S A] (h : QuasispectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' quasispectrum R a = quasispectrum S a := by
   refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
@@ -447,32 +455,39 @@ end NonUnital
 
 end QuasispectrumRestricts
 
+/-- A (reducible) alias of `QuasispectrumRestricts` which enforces stronger type class assumptions
+on the types involved, as it's really intended for the `spectrum`. The separate definition also
+allows for dot notation. -/
 @[reducible]
-alias SpectrumRestricts := QuasispectrumRestricts
+def SpectrumRestricts
+    {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
+    [Algebra R A] [Algebra S A] [Algebra R S] (a : A) (f : S → R) : Prop :=
+  QuasispectrumRestricts a f
 
 namespace SpectrumRestricts
 
 section Unital
 
-theorem rightInvOn {R S A : Type*} [CommSemiring R] [CommSemiring S] [Ring A]
-    [Algebra R S] [Algebra R A] [Algebra S A](a : A) (f : S → R) (h : SpectrumRestricts a f) :
-    (spectrum S a).RightInvOn f (algebraMap R S) :=
+variable {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
+variable [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R}
+
+theorem rightInvOn (h : SpectrumRestricts a f) : (spectrum S a).RightInvOn f (algebraMap R S) :=
   (QuasispectrumRestricts.rightInvOn h).mono <| spectrum_subset_quasispectrum _ _
 
-theorem of_rightInvOn {R S A : Type*} [Semifield R] [Semifield S] [Ring A]
-    [Algebra R S] [Algebra R A] [Algebra S A](a : A) (f : S → R)
-    (h₁ : Function.LeftInverse f (algebraMap R S))
-    (h₂ : (spectrum S a).RightInvOn f (algebraMap R S)) :
-    SpectrumRestricts a f where
+theorem of_rightInvOn (h₁ : Function.LeftInverse f (algebraMap R S))
+    (h₂ : (spectrum S a).RightInvOn f (algebraMap R S)) : SpectrumRestricts a f where
   rightInvOn x hx := by
     obtain (rfl | hx) := mem_quasispectrum_iff.mp hx
     · simpa using h₁ 0
     · exact h₂ hx
   left_inv := h₁
 
-variable {R S A : Type*} [Semifield R] [Field S] [Ring A] [Algebra R S] [Algebra R A] [Algebra S A]
+lemma _root_.spectrumRestricts_iff :
+    SpectrumRestricts a f ↔ (spectrum S a).RightInvOn f (algebraMap R S) ∧
+      Function.LeftInverse f (algebraMap R S) :=
+  ⟨fun h ↦ ⟨h.rightInvOn, h.left_inv⟩, fun h ↦ .of_rightInvOn h.2 h.1⟩
 
-theorem of_subset_range_algebraMap (a : A) (f : S → R) (hf : f.LeftInverse (algebraMap R S))
+theorem of_subset_range_algebraMap (hf : f.LeftInverse (algebraMap R S))
     (h : spectrum S a ⊆ Set.range (algebraMap R S)) : SpectrumRestricts a f where
   rightInvOn := fun s hs => by
     rw [mem_quasispectrum_iff] at hs
@@ -482,7 +497,7 @@ theorem of_subset_range_algebraMap (a : A) (f : S → R) (hf : f.LeftInverse (al
       rw [hf r]
   left_inv := hf
 
-variable [IsScalarTower R S A] {a : A} {f : S → R} (h : SpectrumRestricts a f)
+variable [IsScalarTower R S A] (h : SpectrumRestricts a f)
 
 theorem algebraMap_image : algebraMap R S '' spectrum R a = spectrum S a := by
   refine' Set.eq_of_subset_of_subset _ fun s hs => ⟨f s, _⟩
@@ -509,3 +524,22 @@ lemma of_spectrum_eq {a b : A} {f : S → R} (ha : SpectrumRestricts a f)
 end Unital
 
 end SpectrumRestricts
+
+theorem quasispectrumRestricts_iff_spectrumRestricts_inr {R S A : Type*} [Semifield R] [Field S]
+    [NonUnitalRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [IsScalarTower R S A] (a : A) (f : S → R) :
+    QuasispectrumRestricts a f ↔ SpectrumRestricts (a : Unitization S A) f := by
+  rw [quasispectrumRestricts_iff, spectrumRestricts_iff,
+    ← Unitization.quasispectrum_eq_spectrum_inr']
+
+theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [IsScalarTower R S A] (a : A) (f : S → R) :
+    QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
+  rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
+  refine and_congr_left fun h ↦ ?_
+  refine ⟨(Set.RightInvOn.mono · (Set.subset_union_left _ _)), fun h' x hx ↦ ?_⟩
+  simp only [Set.union_singleton, Set.mem_insert_iff] at hx
+  obtain (rfl | hx) := hx
+  · simpa using h 0
+  · exact h' hx
