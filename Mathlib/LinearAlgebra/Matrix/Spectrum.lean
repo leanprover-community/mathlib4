@@ -57,14 +57,6 @@ lemma mulVec_eigenvectorBasis (j : n) :
       congr(⇑$((isHermitian_iff_isSymmetric.1 hA).apply_eigenvectorBasis
         finrank_euclideanSpace ((Fintype.equivOfCardEq (Fintype.card_fin _)).symm j)))
 
-theorem eigenvalues_eq (i : n) :
-    (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
-    (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
-  simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
-    inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
-    mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
-#align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
-
 /-- Unitary matrix whose columns are `Matrix.IsHermitian.eigenvectorBasis`. -/
 noncomputable def eigenvectorUnitary {𝕜 : Type*} [RCLike 𝕜] {n : Type*}
     [Fintype n]{A : Matrix n n 𝕜} [DecidableEq n] (hA : Matrix.IsHermitian A) :
@@ -121,18 +113,13 @@ theorem spectral_theorem :
     ← mul_assoc, (Matrix.mem_unitaryGroup_iff).mp (eigenvectorUnitary hA).2, one_mul]
 #align matrix.is_hermitian.spectral_theorem' Matrix.IsHermitian.spectral_theorem
 
-/-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
-lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
-    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
-  classical
-  have : hA.eigenvalues ≠ 0 := by
-    contrapose! h_ne
-    have := hA.spectral_theorem
-    rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
-      diagonal_zero, mul_zero, zero_mul] at this
-  obtain ⟨i, hi⟩ := Function.ne_iff.mp this
-  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
-#align matrix.is_hermitian.exists_eigenvector_of_ne_zero Matrix.IsHermitian.exists_eigenvector_of_ne_zero
+theorem eigenvalues_eq (i : n) :
+    (hA.eigenvalues i) = RCLike.re (Matrix.dotProduct (star ⇑(hA.eigenvectorBasis i))
+    (A *ᵥ ⇑(hA.eigenvectorBasis i))):= by
+  simp only [mulVec_eigenvectorBasis, dotProduct_smul,← EuclideanSpace.inner_eq_star_dotProduct,
+    inner_self_eq_norm_sq_to_K, RCLike.smul_re, hA.eigenvectorBasis.orthonormal.1 i,
+    mul_one, algebraMap.coe_one, one_pow, RCLike.one_re]
+#align matrix.is_hermitian.eigenvalues_eq Matrix.IsHermitian.eigenvalues_eq
 
 /-- The determinant of a hermitian matrix is the product of its eigenvalues. -/
 theorem det_eq_prod_eigenvalues : det A = ∏ i, (hA.eigenvalues i : 𝕜) := by
@@ -153,6 +140,19 @@ lemma rank_eq_card_non_zero_eigs : A.rank = Fintype.card {i // hA.eigenvalues i 
 #align matrix.is_hermitian.rank_eq_card_non_zero_eigs Matrix.IsHermitian.rank_eq_card_non_zero_eigs
 
 end DecidableEq
+
+/-- A nonzero Hermitian matrix has an eigenvector with nonzero eigenvalue. -/
+lemma exists_eigenvector_of_ne_zero (hA : IsHermitian A) (h_ne : A ≠ 0) :
+    ∃ (v : n → 𝕜) (t : ℝ), t ≠ 0 ∧ v ≠ 0 ∧ A *ᵥ v = t • v := by
+  classical
+  have : hA.eigenvalues ≠ 0 := by
+    contrapose! h_ne
+    have := hA.spectral_theorem
+    rwa [h_ne, Pi.comp_zero, RCLike.ofReal_zero, (by rfl : Function.const n (0 : 𝕜) = fun _ ↦ 0),
+      diagonal_zero, mul_zero, zero_mul] at this
+  obtain ⟨i, hi⟩ := Function.ne_iff.mp this
+  exact ⟨_, _, hi, hA.eigenvectorBasis.orthonormal.ne_zero i, hA.mulVec_eigenvectorBasis i⟩
+#align matrix.is_hermitian.exists_eigenvector_of_ne_zero Matrix.IsHermitian.exists_eigenvector_of_ne_zero
 
 end IsHermitian
 
