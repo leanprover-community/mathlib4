@@ -668,8 +668,8 @@ instance instAdd : Add (α →ᵇ β) where
         rw [Prod.dist_eq]
         refine' mul_le_mul_of_nonneg_left _ (LipschitzAdd.C β).coe_nonneg
         apply max_le_max
-        · exact Classical.choose_spec f.bounded x y
-        · exact Classical.choose_spec g.bounded x y)
+        exact Classical.choose_spec f.bounded x y
+        exact Classical.choose_spec g.bounded x y)
 
 @[simp]
 theorem coe_add : ⇑(f + g) = f + g := rfl
@@ -1394,7 +1394,7 @@ instance instSMul' : SMul (α →ᵇ 𝕜) (α →ᵇ β) where
 
 instance instModule' : Module (α →ᵇ 𝕜) (α →ᵇ β) :=
   Module.ofMinimalAxioms
-      (fun c _ _ => ext fun a => smul_add (c a) _ _)
+      (fun _ _ _ => ext fun _ => smul_add _ _ _)
       (fun _ _ _ => ext fun _ => add_smul _ _ _)
       (fun _ _ _ => ext fun _ => mul_smul _ _ _)
       (fun f => ext fun x => one_smul 𝕜 (f x))
@@ -1625,5 +1625,35 @@ lemma norm_sub_nonneg (f : α →ᵇ ℝ) :
   linarith [(abs_le.mp (norm_coe_le_norm f x)).2]
 
 end
+
+variable (α : Type*) [TopologicalSpace α]
+variable (γ : Type*)
+variable {𝕜 : Type*} [NormedField 𝕜]
+variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
+
+/-- The subtype of compactly supported functions as an ideal. -/
+instance CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
+  carrier := { f : α →ᵇ γ | HasCompactSupport f }
+  add_mem' := by
+    intro f g hf hg
+    exact HasCompactSupport.add hf hg
+  zero_mem' := by
+    simp only [mem_setOf_eq, coe_zero]
+    rw [HasCompactSupport, tsupport]
+    simp only [ContinuousMap.coe_zero, Function.support_zero', closure_empty,
+      isCompact_empty]
+  smul_mem' := by
+    intro a f
+    simp only [mem_setOf_eq, smul_eq_mul, coe_mul]
+    intro hf
+    exact HasCompactSupport.mul_left hf
+
+@[inherit_doc]
+scoped[BoundedContinuousFunction] notation (priority := 2000)
+  "C_cb(" α ", " γ ")" => CompactlySupportedBoundedContinuousFunction α γ
+
+@[inherit_doc]
+scoped[BoundedContinuousFunction] notation α " →C_cb " γ =>
+  CompactlySupportedBoundedContinuousFunction α γ
 
 end BoundedContinuousFunction
