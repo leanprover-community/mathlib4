@@ -80,6 +80,18 @@ theorem evalFrom_append_singleton (S : Set σ) (x : List α) (a : α) :
   simp only [evalFrom, List.foldl_append, List.foldl_cons, List.foldl_nil]
 #align NFA.eval_from_append_singleton NFA.evalFrom_append_singleton
 
+/-- Evaluations can be staggered. -/
+theorem evalFrom_append (S : Set σ) (x y : List α) :
+    M.evalFrom S (x ++ y) = M.evalFrom (M.evalFrom S x) y := by
+  simp only [evalFrom, List.foldl_append]
+
+/-- Evaluations are monotone. -/
+theorem evalFrom_subset {σ : Type v} (M : NFA α σ) (x : List α) {qs ps : Set σ}
+    (subs : qs ⊆ ps) : M.evalFrom qs x ⊆ M.evalFrom ps x := x.reverseRecOn subs <| by
+  simp only [evalFrom_append_singleton, mem_stepSet, subset_def]
+  rintro _ _ ih _ ⟨t, eval, step⟩
+  exact ⟨t, ih t eval, step⟩
+
 /-- `M.eval x` computes all possible paths though `M` with input `x` starting at an element of
   `M.start`. -/
 def eval : List α → Set σ :=

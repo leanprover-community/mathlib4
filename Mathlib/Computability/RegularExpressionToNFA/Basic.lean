@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Russell Emerine
 -/
 import Mathlib.Computability.RegularExpressionToNFA.Defs
-import Mathlib.Computability.RegularExpressionToNFA.Star
+import Mathlib.Data.List.Indexes
 
 #align_import computability.regular_expression_to_NFA.basic
 
@@ -195,25 +195,98 @@ lemma comp_toNFA_correct {r₁ r₂ : RegularExpression α}
         rw [List.foldl_append, List.foldl_cons, List.foldl_nil, NFA.mem_stepSet]
         exact ⟨p, eval, step⟩
 
+/-- All start states of an unstarred NFA can be reached in a starred NFA by a string in the
+original's language. -/
+lemma star_eval_aux {r : RegularExpression α} {y} (h : y ∈ r.toNFA.accepts) :
+    r.star.toNFA.start \ {none} ⊆ r.star.toNFA.eval y := by
+  rintro (⟨⟩ | s) ⟨selem, snelem⟩
+  · simp at snelem
+  rcases y.eq_nil_or_concat with rfl | ⟨as, a, rfl⟩
+  · exact selem
+  simp [NFA.mem_accepts, NFA.mem_stepSet] at h
+  rcases h with ⟨q, accept, p, eval, step⟩
+  simp only [NFA.eval_append_singleton, NFA.mem_stepSet]
+  refine ⟨some p, ?_, Or.inr ⟨q, accept, step, selem⟩⟩
+  clear step
+  induction as using List.list_reverse_induction generalizing p
+  · exact eval
+  rename_i bs b ih
+  simp only [NFA.evalFrom_append_singleton, NFA.mem_stepSet] at eval
+  rcases eval with ⟨t, eval, step⟩
+  simp only [NFA.eval_append_singleton, NFA.mem_stepSet]
+  exact ⟨some t, ih t eval, Or.inl step⟩
+
+/-- A state of an unstarred NFA can be reached in the starred NFA by any word that has prefixes
+accepted by the original NFA and a suffix that would have reached the state anyway. -/
+lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
+    some q ∈ r.star.toNFA.eval x ↔
+    ∃ (ys : List (List α)) (z : List α),
+    x = ys.join ++ z ∧ q ∈ r.toNFA.eval z ∧ ∀ y ∈ ys, y ∈ r.toNFA.accepts := by
+  constructor
+  · induction x using List.list_reverse_induction generalizing q
+    · rintro h; exact ⟨[], [], rfl, h, List.forall_mem_nil _⟩
+    rename_i as a ih
+    rw [NFA.eval_append_singleton,NFA.mem_stepSet]
+    rintro ⟨⟨⟩ | p, eval, step⟩
+    · cases step
+    specialize ih eval
+    rcases ih with ⟨ys, z, rfl, evalz, allys⟩
+    rcases step with step | ⟨t, accept, step, start⟩
+    · refine ⟨ys, z ++ [a], List.append_assoc _ _ _, ?_, allys⟩
+      rw [NFA.eval_append_singleton, NFA.mem_stepSet]
+      exact ⟨p, evalz, step⟩
+    · refine ⟨ys ++ [z ++ [a]], [], by simp, start, ?_⟩
+      refine List.forall_mem_append.mpr ⟨allys, List.forall_mem_singleton.mpr ⟨t, accept, ?_⟩⟩
+      rw [NFA.eval_append_singleton, NFA.mem_stepSet]
+      exact ⟨p, evalz, step⟩
+  · rintro ⟨ys, z, rfl, eval, allys⟩
+    unfold NFA.eval
+    induction ys generalizing q
+    · induction z using List.list_reverse_induction generalizing q <;> simp only [toNFA]
+      · exact eval
+      case ind as a ih =>
+      rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
+      rcases eval with ⟨t, eval, step⟩
+      simp [NFA.mem_stepSet]
+      refine ⟨some t, ih eval, Or.inl step⟩
+    case cons y ys ih =>
+      simp
+      simp at allys
+      rcases allys with ⟨accepty, allys⟩
+      specialize ih eval allys
+      generalize ys.join ++ z = ysj at ih
+      rw [NFA.evalFrom_append]
+      refine (r.star.toNFA).evalFrom_subset _ (star_eval_aux accepty) ?_
+      clear eval
+      induction ysj using List.list_reverse_induction generalizing q
+      · simp; exact ih
+      rename_i as a iih
+      simp only [NFA.evalFrom_append_singleton,NFA.mem_stepSet] at *
+      rcases ih with ⟨⟨⟩ | t, eval, step⟩
+      · simp[toNFA,Set.mem_def] at step
+      exact ⟨some t, iih eval, step⟩
+
 lemma star_toNFA_correct {r : RegularExpression α} (hr : r.matches' = r.toNFA.accepts) :
     (star r).matches' = (star r).toNFA.accepts := by
   ext x
-  rw [matches'_star,Language.kstar_eq_iSup_pow,Language.mem_iSup]
-  simp only [← matches'_pow]
+  rw [matches'_star,Language.mem_kstar, NFA.mem_accepts]
+  simp only [hr]
   constructor
-  · rintro ⟨⟨⟩ | n, h⟩
-    · cases h; exact ⟨none, trivial, trivial⟩
-    · rw [r.pow_eval x n hr] at h
-      rcases h with ⟨q, accept, t⟩
-      exact ⟨some q, accept, (r.star_eval x q).mpr ⟨n, t⟩⟩
+  · rintro ⟨l, rfl, h⟩
+    rcases l.eq_nil_or_concat with rfl | ⟨ys, z, rfl⟩
+    · exact ⟨none, trivial, trivial⟩
+    · rw [List.forall_mem_append, List.forall_mem_singleton, NFA.mem_accepts] at h
+      rcases h with ⟨allys, q, accept, eval⟩
+      exact ⟨some q, accept, star_eval.mpr ⟨ys, z, by simp, eval, allys⟩⟩
   · rintro ⟨⟨⟩ | q, accept, eval⟩
-    · use 0
+    · refine ⟨[], ?_, by simp⟩
       rcases x.eq_nil_or_concat with rfl | ⟨as, a, rfl⟩
       case inl => exact rfl
-      rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
+      simp [NFA.evalFrom_append_singleton, NFA.mem_stepSet] at eval
       rcases eval with ⟨_ | _, _, ⟨⟩⟩
-    · rcases (r.star_eval x q).mp eval with ⟨n, t⟩
-      exact ⟨n.succ, (r.pow_eval x n hr).mpr ⟨q, accept, t⟩⟩
+    · rcases star_eval.mp eval with ⟨ys, z, rfl, evalz, allys⟩
+      refine ⟨ys ++ [z], by simp, ?_⟩
+      exact List.forall_mem_append.mpr ⟨allys, List.forall_mem_singleton.mpr ⟨q, accept, evalz⟩⟩
 
 /-- The NFA constructed from a regular expression retains the same language. -/
 theorem toNFA_correct (r : RegularExpression α) : r.matches' = r.toNFA.accepts := by
