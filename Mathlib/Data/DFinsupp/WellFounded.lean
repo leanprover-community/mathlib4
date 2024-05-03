@@ -81,7 +81,7 @@ theorem lex_fibration [∀ (i) (s : Set ι), Decidable (i ∈ s)] :
       simp only [piecewise_apply, Set.mem_setOf_eq]
       split_ifs with h₁ h₂ <;> try rfl
       · rw [hr j h₂, if_pos (h₁ h₂)]
-      · rw [not_imp] at h₁
+      · rw [Classical.not_imp] at h₁
         rw [hr j h₁.1, if_neg h₁.2]
   · refine ⟨⟨{ j | r j i ∧ j ∈ p }, x₁, piecewise x₂ x { j | r j i }⟩,
       .snd ⟨i, fun j hj ↦ ?_, ?_⟩, ?_⟩ <;> simp only [piecewise_apply, Set.mem_setOf_eq]
