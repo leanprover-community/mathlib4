@@ -89,8 +89,8 @@ lemma aux3 [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)] {s : Set α} (
     aesop
 
 lemma aux_sep_1 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
-    [Nonempty α] (μ : Measure α) [IsFiniteMeasure μ] :
-    ∃ K : ℕ → α, DenseRange K ∧ ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
+    [Nonempty α] (μ : Measure α) [IsFiniteMeasure μ] : ∃ K : ℕ → α, DenseRange K ∧
+    ∀ η > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - η := by
   obtain ⟨K, hK⟩ := TopologicalSpace.exists_dense_seq α
   rw [DenseRange] at hK
   have ball_cover : ∀ δ > 0, μ (⋃ i, Metric.ball (K i) δ) = μ (Set.univ) := by
@@ -101,9 +101,10 @@ lemma aux_sep_1 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.Se
     exact fun  η hη δ hδ ↦ aux1 (fun y ↦ Metric.ball (K y) δ) (ball_cover δ hδ) η hη
   exact ⟨K, hK, cover⟩
 
-lemma aux_sep_2 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α] [Nonempty α]
-    [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] {ε : ENNReal} (hε : 0 < ε) :
-    ∃ K : ℕ → α, DenseRange K ∧ ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (K i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
+lemma aux_sep_2 [MeasurableSpace α] [PseudoMetricSpace α] [TopologicalSpace.SeparableSpace α]
+    [Nonempty α] [OpensMeasurableSpace α] (μ : Measure α) [IsFiniteMeasure μ] {ε : ENNReal}
+    (hε : 0 < ε) : ∃ K : ℕ → α, DenseRange K ∧
+    ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (K i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
   obtain ⟨K, hK, cover⟩ := aux_sep_1 μ
   have hεj_pos : ∀ j : ℕ, ε/(2^(j+1)) > 0 := by
     exact fun j => ENNReal.div_pos hε.ne' (Ne.symm (ne_of_beq_false rfl))
@@ -227,8 +228,8 @@ lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.Separ
         _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
 
 -- The proof idea is simple: if `μ` is separable, then there exists a separable set `S` such that
--- `μ S = μ Set.univ`. On the subspace (closure S) we can invoke `of_separableSpace_on_metric` to get that
--- `μ` is pre-tight on this subspace. As this has full measure, we want to lift this back.
+-- `μ S = μ Set.univ`. On the subspace (closure S) we can invoke `of_separableSpace_on_metric` to
+-- get that `μ` is pre-tight on this subspace. As this has full measure, we want to lift this back.
 lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
     (h : IsSeparable μ) [IsFiniteMeasure μ] : IsPretight μ := by
   obtain ⟨S, hS, hSμ⟩ := h
@@ -257,7 +258,7 @@ lemma iff_compact_sets [TopologicalSpace α] {μ : Measure α} :
   simp only [IsTight, ne_eq, ENNReal.zero_ne_top, not_false_eq_true, ENNReal.tendsto_nhds,
     zero_le, tsub_eq_zero_of_le, zero_add, mem_Icc, true_and,
     eventually_smallSets, mem_cocompact]
-  apply forall₂_congr ; rintro ε - ; constructor
+  apply forall₂_congr; rintro ε -; constructor
   · rintro ⟨A, ⟨K, h1, h2⟩, hA⟩
     exact ⟨K, h1, hA Kᶜ h2⟩
   · rintro ⟨K, h1, h2⟩
