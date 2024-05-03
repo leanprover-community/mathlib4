@@ -91,8 +91,8 @@ protected theorem isTopologicalBasis : TopologicalSpace.IsTopologicalBasis (laws
     simp_rw [diff_eq_compl_inter]
     aesop
   rw [lawsonBasis_image2]
-  convert TopologicalSpace.IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
-    (TopologicalSpace.isTopologicalBasis_opens (α := WithScott α))
+  convert IsTopologicalBasis.inf_induced IsLower.isTopologicalBasis
+    (isTopologicalBasis_opens (α := WithScott α))
     WithLower.toLower WithScott.toScott
   erw [@topology_eq_lawson α _ _ _]
   rw [lawson]
