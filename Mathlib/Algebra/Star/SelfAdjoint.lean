@@ -61,6 +61,10 @@ theorem star_comm_self' [Mul R] [Star R] (x : R) [IsStarNormal x] : star x * x =
   IsStarNormal.star_comm_self
 #align star_comm_self' star_comm_self'
 
+lemma isStarNormal_iff [Mul R] [Star R] {x : R} :
+    IsStarNormal x ↔ star x * x = x * star x :=
+  ⟨fun ⟨h⟩ ↦ h.eq, (⟨·⟩)⟩
+
 namespace IsSelfAdjoint
 
 -- named to match `Commute.allₓ`
