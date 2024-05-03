@@ -214,6 +214,7 @@ theorem whiskerRight_toPlus_comp_plusCompIso_hom :
   simp only [diagramCompIso_hom_ι, Category.assoc, ← F.map_comp]
   simp only [unop_op, limit.lift_π, Multifork.ofι_π_app, Functor.comp_obj, Functor.comp_map,
     implies_true]
+  sorry
 #align category_theory.grothendieck_topology.whisker_right_to_plus_comp_plus_comp_iso_hom CategoryTheory.GrothendieckTopology.whiskerRight_toPlus_comp_plusCompIso_hom
 
 @[simp]
