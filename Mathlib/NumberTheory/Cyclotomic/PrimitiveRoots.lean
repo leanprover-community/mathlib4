@@ -628,30 +628,29 @@ theorem norm_zeta_pow_sub_one_of_eq_two {k : ℕ} (hk : 2 ≤ k)
 
 end IsCyclotomicExtension
 
--- deprecated 2024-04-02
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_ne_two :=
   IsPrimitiveRoot.norm_pow_sub_one_of_prime_pow_ne_two
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_ne_two :=
   IsPrimitiveRoot.norm_pow_sub_one_of_prime_ne_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_prime_ne_two :=
   IsPrimitiveRoot.norm_sub_one_of_prime_ne_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_prime :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_prime :=
   IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
   IsPrimitiveRoot.norm_pow_sub_one_of_eq_two
-@[deprecated] alias IsPrimitiveRoot.sub_one_norm_two :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_two :=
   IsPrimitiveRoot.norm_sub_one_of_eq_two
-@[deprecated] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
+@[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
   IsPrimitiveRoot.norm_pow_sub_one_prime_pow_of_ne_zero
-@[deprecated] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
+@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_sub_one_of_isPrimePow
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one :=
+@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_pow_sub_one :=
   IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_pow_ne_two
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one :=
+@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.prime_ne_two_pow_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_pow_sub_one_of_prime_ne_two
-@[deprecated] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one :=
+@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_sub_one_of_prime_ne_two
-@[deprecated] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one :=
+@[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
 
 end Norm
