@@ -15,31 +15,37 @@ and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$ such that for all $i$
 and for all $j$,
 \[\sum_{i} f_i a_{ij} = 0.\]
 
-The *equational criterion for flatness*,
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), states that $M$ is flat if and only
-if every relation in $M$ is trivial.
+The *equational criterion for flatness* [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK),
+states that $M$ is flat if and only if every relation in $M$ is trivial.
 
-The equational criterion for flatness can be stated in the following equivalent form. Let $M$ be an
-$R$-module. Let $x \in R^{\iota}$, where $\iota$ is a finite index type, and let
-$f \colon R^{\iota} \to M$ be a homomorphism of modules such that $f(x) = 0$. Let us say that
-the pair $(f, x)$ is *trivial* if there exist a finite index type $\kappa$ and module
+The equational criterion for flatness can be stated in the following form. Let $M$ be an $R$-module.
+Then the following two conditions are equivalent:
+- $M$ is flat.
+- For all finite index types $\iota$, all elements $x \in R^{\iota}$, and all homomorphisms
+$f \colon R^{\iota} \to M$ such that $f(x) = 0$, there exist a finite index type $\kappa$ and module
 homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $f = y \circ a$ and $a(x) = 0$.
-
-Then the module $M$ is flat if and only if every pair $(f, x)$ which satisfies $f(x) = 0$
-is trivial, for all finite index types $\iota$.
 
 ## References
 
 * [Stacks: Flat modules and flat ring maps](https://stacks.math.columbia.edu/tag/00H9)
+* [Stacks: Characterizing flatness](https://stacks.math.columbia.edu/tag/058C)
 
 ## TODO
 
 * State a version of the equational criterion for flatness where $R^\iota$ is replaced by an
-arbitrary free module.
+arbitrary free module. (Is this really necessary? )
+* Let $M$ be a flat module. Then we have the following generalization of the equational criterion
+for flatness to multiple relations. Let $\alpha$ and $\iota$ be finite index types, and let
+$x \colon R^\alpha \to R^\iota$ and $f \colon R^\iota \to M$ be homomorphisms such that
+$f \circ x = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
+$a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $f = y \circ a$ and
+$a \circ x = 0$. We recover the usual equational criterion for flatness if $\alpha$ is a singleton.
+This is used in the proof of Lazard's theorem.
 
 -/
 
+/-
 universe u v w
 
 variable {R : Type u} {M : Type v} [CommRing R] [AddCommGroup M] [Module R M]
@@ -100,7 +106,7 @@ theorem relation_trivial_of_flat [Flat R M] {ι : Type w} [Fintype ι] {f : ι �
   -- So $\sum_i f_i \otimes x_i = 0$ as desired.
   have rTensor_injective := (iff_rTensor_injective' R M).mp inferInstance I
   have fx_eq_zero := (injective_iff_map_eq_zero _).mp rTensor_injective fx rTensor_apply_fx_eq_zero
-
-
+  sorry
 
 end Module.Flat
+-/

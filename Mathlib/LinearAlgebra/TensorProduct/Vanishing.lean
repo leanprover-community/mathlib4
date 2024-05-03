@@ -67,12 +67,13 @@ elements $(y_j)_{j \in \kappa}$ of $N$, and elements $(a_{ij})_{i \in \iota, j \
 such that for all $i$,
 \[n_i = \sum_j a_{ij} y_j\]
 and for all $j$,
-\[\sum_{i} a_{ij} m_i = 0.\] -/
+\[\sum_{i} a_{ij} m_i = 0.\]
+Note that this condition is not symmetric in $M$ and $N$. -/
 abbrev VanishesTrivially : Prop :=
   ∃ (κ : Type u) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
     (∀ i, n i = ∑ j, a i j • y j) ∧ ∀ j, ∑ i, a i j • m i = 0
 
-/-- **Equational criterion for vanishing**,
+/-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2012term],
 backward direction. If the expression $\sum_i m_i \otimes n_i$ vanishes trivially, then it vanishes.
 That is, $\sum_i m_i \otimes n_i = 0$. -/
@@ -83,7 +84,7 @@ theorem sum_tmul_eq_zero_of_vanishesTrivially (hmn : VanishesTrivially R m n) :
   rw [Finset.sum_comm]
   simp_rw [← tmul_smul, ← smul_tmul, ← sum_tmul, h₂, zero_tmul, Finset.sum_const_zero]
 
-/-- **Equational criterion for vanishing**,
+/-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2012term],
 forward direction. Assume that the $m_i$ generate $M$. If the expression $\sum_i m_i \otimes n_i$
 vanishes, then it vanishes trivially. -/
@@ -91,7 +92,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero (hm : Submodule.span R (Set.range 
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   sorry
 
-/-- **Equational criterion for vanishing**,
+/-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2012term].
 Assume that the $m_i$ generate $M$. Then the expression $\sum_i m_i \otimes n_i$ vanishes
 trivially if and only if it vanishes. -/
@@ -99,7 +100,7 @@ theorem vanishesTrivially_iff_sum_tmul_eq_zero (hm : Submodule.span R (Set.range
     VanishesTrivially R m n ↔ ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) := by
   sorry
 
-/-- **Equational criterion for vanishing**,
+/-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2012term],
 forward direction. Assume that the $m_i$ generate a submodule $M' \subseteq M$ such that the map
 $M' \otimes N \to M \otimes N$ is injective. If the expression $\sum_i m_i \otimes n_i$ vanishes,
@@ -109,7 +110,7 @@ theorem vanishesTrivially_of_sum_tmul_eq_zero_of_rTensor_injective
     (hmn : ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N)) : VanishesTrivially R m n := by
   sorry
 
-/-- **Equational criterion for vanishing**,
+/-- **Equational criterion for vanishing**
 [A. Altman and S. Kleiman, *A term of commutative algebra* (Lemma 8.16)][altman2012term].
 Assume that the $m_i$ generate a submodule $M' \subseteq M$ such that the map
 $M' \otimes N \to M \otimes N$ is injective. Then the expression $\sum_i m_i \otimes n_i$ vanishes
@@ -129,10 +130,26 @@ theorem rTensor_injective_of_forall_vanishesTrivially
 
 /-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
 for every submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is injective. -/
-theorem forall_rTensor_injective_iff_forall_vanishesTrivially :
+theorem forall_vanishesTrivially_iff_forall_rTensor_injective :
     (∀ {ι : Type u} [Fintype ι] (m : ι → M) (n : ι → N),
       ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
     ∀ M' : Submodule R M, Injective (rTensor N M'.subtype) := by
+  sorry
+
+/-- Every expression $\sum_i m_i \otimes n_i$ which vanishes also vanishes trivially if and only if
+for every finitely generated submodule $M' \subseteq M$, the map $M' \otimes N \to M \otimes N$ is
+injective. -/
+theorem forall_vanishesTrivially_iff_forall_FG_rTensor_injective :
+    (∀ {ι : Type u} [Fintype ι] (m : ι → M) (n : ι → N),
+      ∑ i, m i ⊗ₜ n i = (0 : M ⊗[R] N) → VanishesTrivially R m n) ↔
+    ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype) := by
+  sorry
+
+/-- If the map $M' \otimes N \to M \otimes N$ is injective for every finitely generated submodule
+$M' \subseteq M$, then it is in fact injective for every submodule $M' \subseteq M$. -/
+theorem rTensor_injective_of_forall_FG_rTensor_injective
+    (hMN : ∀ (M' : Submodule R M) (_ : M'.FG), Injective (rTensor N M'.subtype))
+    (M' : Submodule R M) : Injective (rTensor N M'.subtype) := by
   sorry
 
 end TensorProduct
