@@ -1413,7 +1413,7 @@ theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
 @[simp]
 theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, not_imp]
+  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
 #align filter.frequently_and_distrib_left Filter.frequently_and_distrib_left
 
 @[simp]
