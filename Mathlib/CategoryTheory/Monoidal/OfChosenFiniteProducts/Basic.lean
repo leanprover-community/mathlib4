@@ -167,9 +167,9 @@ def IsLimit.assoc {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : Bin
 /-- Given two pairs of limit cones corresponding to the parenthesisations of `X × Y × Z`,
 we obtain an isomorphism between the cone points.
 -/
-abbrev BinaryFan.associator {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY) {sYZ : BinaryFan Y Z}
-    (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s) {t : BinaryFan X sYZ.pt}
-    (S : IsLimit t) : s.pt ≅ t.pt :=
+abbrev BinaryFan.associator {X Y Z : C} {sXY : BinaryFan X Y} (P : IsLimit sXY)
+    {sYZ : BinaryFan Y Z} (Q : IsLimit sYZ) {s : BinaryFan sXY.pt Z} (R : IsLimit s)
+    {t : BinaryFan X sYZ.pt} (S : IsLimit t) : s.pt ≅ t.pt :=
   IsLimit.conePointUniqueUpToIso (IsLimit.assoc P Q R) S
 #align category_theory.limits.binary_fan.associator CategoryTheory.Limits.BinaryFan.associator
 

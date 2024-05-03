@@ -276,7 +276,8 @@ variable (R)
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
 See note [reducible non-instances]. -/
-abbrev Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+abbrev Module.addCommMonoidToAddCommGroup
+    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with
     neg := fun a => (-1 : R) • a
     add_left_neg := fun a =>

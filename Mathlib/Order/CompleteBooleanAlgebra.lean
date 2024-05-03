@@ -592,8 +592,8 @@ protected abbrev Function.Injective.completeBooleanAlgebra [Sup α] [Inf α] [Su
 
 -- See note [reducible non-instances]
 /-- Pullback a `CompleteAtomicBooleanAlgebra` along an injection. -/
-protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Sup α] [Inf α] [SupSet α] [InfSet α]
-    [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteAtomicBooleanAlgebra β] (f : α → β)
+protected abbrev Function.Injective.completeAtomicBooleanAlgebra [Sup α] [Inf α] [SupSet α]
+    [InfSet α] [Top α] [Bot α] [HasCompl α] [SDiff α] [CompleteAtomicBooleanAlgebra β] (f : α → β)
     (hf : Function.Injective f) (map_sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b)
     (map_inf : ∀ a b, f (a ⊓ b) = f a ⊓ f b) (map_sSup : ∀ s, f (sSup s) = ⨆ a ∈ s, f a)
     (map_sInf : ∀ s, f (sInf s) = ⨅ a ∈ s, f a) (map_top : f ⊤ = ⊤) (map_bot : f ⊥ = ⊥)

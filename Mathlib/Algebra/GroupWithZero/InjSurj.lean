@@ -24,8 +24,9 @@ variable [MulZeroClass M₀] {a b : M₀}
 
 /-- Pull back a `MulZeroClass` instance along an injective function.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀) (hf : Injective f)
-    (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) : MulZeroClass M₀' where
+protected abbrev Function.Injective.mulZeroClass [Mul M₀'] [Zero M₀'] (f : M₀' → M₀)
+    (hf : Injective f) (zero : f 0 = 0) (mul : ∀ a b, f (a * b) = f a * f b) :
+    MulZeroClass M₀' where
   mul := (· * ·)
   zero := 0
   zero_mul a := hf <| by simp only [mul, zero, zero_mul]
@@ -181,8 +182,8 @@ variable [CancelCommMonoidWithZero M₀] {a b c : M₀}
 
 /-- Pull back a `CancelCommMonoidWithZero` along an injective function.
 See note [reducible non-instances]. -/
-protected abbrev Function.Injective.cancelCommMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀'] [Pow M₀' ℕ]
-    (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
+protected abbrev Function.Injective.cancelCommMonoidWithZero [Zero M₀'] [Mul M₀'] [One M₀']
+    [Pow M₀' ℕ] (f : M₀' → M₀) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (mul : ∀ x y, f (x * y) = f x * f y) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) :
     CancelCommMonoidWithZero M₀' :=
   { hf.commMonoidWithZero f zero one mul npow, hf.cancelMonoidWithZero f zero one mul npow with }
@@ -211,8 +212,8 @@ protected abbrev Function.Injective.groupWithZero [Zero G₀'] [Mul G₀'] [One 
 
 /-- Push forward a `GroupWithZero` along a surjective function.
 See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀'] [Div G₀']
-    [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
+protected abbrev Function.Surjective.groupWithZero [Zero G₀'] [Mul G₀'] [One G₀'] [Inv G₀']
+    [Div G₀'] [Pow G₀' ℕ] [Pow G₀' ℤ] (h01 : (0 : G₀') ≠ 1) (f : G₀ → G₀') (hf : Surjective f)
     (zero : f 0 = 0) (one : f 1 = 1) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n) (zpow : ∀ (x) (n : ℤ), f (x ^ n) = f x ^ n) :

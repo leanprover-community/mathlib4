@@ -185,8 +185,9 @@ protected abbrev Function.Injective.mulActionWithZero (f : ZeroHom M' M) (hf : F
 
 /-- Pushforward a `MulActionWithZero` structure along a surjective zero-preserving homomorphism.
 See note [reducible non-instances]. -/
-protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom M M') (hf : Function.Surjective f)
-    (smul : ∀ (a : R) (b), f (a • b) = a • f b) : MulActionWithZero R M' :=
+protected abbrev Function.Surjective.mulActionWithZero (f : ZeroHom M M')
+    (hf : Function.Surjective f) (smul : ∀ (a : R) (b), f (a • b) = a • f b) :
+    MulActionWithZero R M' :=
   { hf.mulAction f smul, hf.smulWithZero f smul with }
 #align function.surjective.mul_action_with_zero Function.Surjective.mulActionWithZero
 

@@ -909,7 +909,8 @@ abbrev liftOrderBot [Preorder β] [OrderBot β] (gi : GaloisCoinsertion l u) : O
 
 -- See note [reducible non instances]
 /-- Lift the top, bottom, suprema, and infima along a Galois coinsertion -/
-abbrev liftBoundedOrder [Preorder β] [BoundedOrder β] (gi : GaloisCoinsertion l u) : BoundedOrder α :=
+abbrev liftBoundedOrder
+    [Preorder β] [BoundedOrder β] (gi : GaloisCoinsertion l u) : BoundedOrder α :=
   { gi.liftOrderBot, gi.gc.liftOrderTop with }
 #align galois_coinsertion.lift_bounded_order GaloisCoinsertion.liftBoundedOrder
 

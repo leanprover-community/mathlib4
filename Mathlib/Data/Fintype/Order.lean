@@ -116,7 +116,8 @@ noncomputable abbrev toCompleteDistribLattice [DistribLattice α] [BoundedOrder 
 
 -- See note [reducible non-instances]
 /-- A finite bounded linear order is complete. -/
-noncomputable abbrev toCompleteLinearOrder [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
+noncomputable abbrev toCompleteLinearOrder
+    [LinearOrder α] [BoundedOrder α] : CompleteLinearOrder α :=
   { toCompleteLattice α, ‹LinearOrder α› with }
 #align fintype.to_complete_linear_order Fintype.toCompleteLinearOrder
 

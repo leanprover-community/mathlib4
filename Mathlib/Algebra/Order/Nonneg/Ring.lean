@@ -86,8 +86,9 @@ protected noncomputable abbrev conditionallyCompleteLinearOrder [ConditionallyCo
 This instance uses data fields from `Subtype.linearOrder` to help type-class inference.
 The `Set.Ici` data fields are definitionally equal, but that requires unfolding semireducible
 definitions, so type-class inference won't see this. -/
-protected noncomputable abbrev conditionallyCompleteLinearOrderBot [ConditionallyCompleteLinearOrder α]
-    (a : α) : ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
+protected noncomputable abbrev conditionallyCompleteLinearOrderBot
+    [ConditionallyCompleteLinearOrder α] (a : α) :
+    ConditionallyCompleteLinearOrderBot { x : α // a ≤ x } :=
   { Nonneg.orderBot, Nonneg.conditionallyCompleteLinearOrder with
     csSup_empty := by
       rw [@subset_sSup_def α (Set.Ici a) _ _ ⟨⟨a, le_rfl⟩⟩]; simp [bot_eq] }

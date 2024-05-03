@@ -617,8 +617,8 @@ noncomputable def LocallyFiniteOrder.ofFiniteIcc (h : ∀ a b : α, (Set.Icc a b
 This is not an instance as it would not be defeq to better instances such as
 `Fin.locallyFiniteOrder`.
 -/
-abbrev Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)] [@DecidableRel α (· ≤ ·)] :
-    LocallyFiniteOrder α where
+abbrev Fintype.toLocallyFiniteOrder [Fintype α] [@DecidableRel α (· < ·)]
+    [@DecidableRel α (· ≤ ·)] : LocallyFiniteOrder α where
   finsetIcc a b := (Set.Icc a b).toFinset
   finsetIco a b := (Set.Ico a b).toFinset
   finsetIoc a b := (Set.Ioc a b).toFinset
