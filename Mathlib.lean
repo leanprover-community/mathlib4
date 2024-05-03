@@ -1094,6 +1094,7 @@ import Mathlib.Analysis.SumOverResidueClass
 import Mathlib.Analysis.VonNeumannAlgebra.Basic
 import Mathlib.CategoryTheory.Abelian.Basic
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Horseshoe
 import Mathlib.CategoryTheory.Abelian.Exact
 import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory

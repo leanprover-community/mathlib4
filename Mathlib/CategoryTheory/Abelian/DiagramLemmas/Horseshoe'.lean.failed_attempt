@@ -1,0 +1,293 @@
+import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
+import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
+import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
+import Mathlib.Algebra.Homology.HomologySequence
+
+
+open CategoryTheory Limits
+open scoped ZeroObject
+
+suppress_compilation
+
+universe u v
+
+variable {𝒞 : Type u} [Category.{v} 𝒞] [Abelian 𝒞] [EnoughProjectives 𝒞]
+
+lemma exact_lemma1 {X Y Z W : 𝒞}
+    (g : Y ⟶ Z) (h : Z ⟶ W) (f : X ⟶ kernel g) (i : kernel g ⟶ Y) (hf : Epi f) (hh : Mono h)
+  (hi : i = kernel.ι g) : CategoryTheory.Exact (f ≫ i) (g ≫ h) := by
+  suffices Exact i g by
+    exact exact_comp_mono (exact_epi_comp this)
+  rw [hi]
+  exact exact_kernel_ι
+
+namespace CategoryTheory.ShortComplex
+
+variable (A B : ShortComplex 𝒞) (fAB : A ⟶ B)
+
+open Projective
+
+variable {A}
+variable (P₁ : ProjectiveResolution A.X₁) (P₃ : ProjectiveResolution A.X₃)
+abbrev horseshoeProjectiveResolution₃ : ProjectiveResolution A.X₃ :=
+  projectiveResolution A.X₃
+
+@[simps]
+def row (n : ℕ) : ShortComplex 𝒞 where
+  X₁ := P₁.complex.X n
+  X₂ := P₁.complex.X n ⊞ P₃.complex.X n
+  X₃ := P₃.complex.X n
+  f := biprod.inl
+  g := biprod.snd
+  zero := by simp
+
+@[simps]
+def row₀ToBase [Epi A.g] : row P₁ P₃ 0 ⟶ A where
+  τ₁ := P₁.π.f 0
+  τ₂ := biprod.desc (P₁.π.f 0 ≫ A.f) (factorThru (P₃.π.f 0) A.g)
+  τ₃ := P₃.π.f 0
+  comm₁₂ := by simp
+  comm₂₃ := by aesop_cat
+
+
+------------------------------------------------------------------------------------------------------------------------
+namespace Hom
+
+variable {B} in
+@[simps!]
+def ker : ShortComplex 𝒞 where
+  X₁ := kernel fAB.τ₁
+  X₂ := kernel fAB.τ₂
+  X₃ := kernel fAB.τ₃
+  f := kernel.map _ _ A.f B.f fAB.comm₁₂
+  g := kernel.map _ _ A.g B.g fAB.comm₂₃
+  zero := by
+    ext
+    simp
+
+variable {B} in
+@[simps]
+def kerι : ker fAB ⟶ A where
+  τ₁ := kernel.ι _
+  τ₂ := kernel.ι _
+  τ₃ := kernel.ι _
+  comm₁₂ := by simp
+  comm₂₃ := by simp
+
+
+variable {B} in
+@[simps!]
+def Coker : ShortComplex 𝒞 where
+  X₁ := cokernel fAB.τ₁
+  X₂ := cokernel fAB.τ₂
+  X₃ := cokernel fAB.τ₃
+  f := cokernel.map _ _ A.f B.f fAB.comm₁₂
+  g := cokernel.map _ _ A.g B.g fAB.comm₂₃
+  zero := by ext; simp
+
+variable {B} in
+@[simps]
+def Cokerπ : B ⟶ Coker fAB where
+  τ₁ := cokernel.π _
+  τ₂ := cokernel.π _
+  τ₃ := cokernel.π _
+  comm₁₂ := by simp
+  comm₂₃ := by simp
+
+variable [a_se : Fact <| A.ShortExact] [b_se : Fact <| B.ShortExact]
+
+
+instance [short_exact : Fact <| A.ShortExact] : Epi A.g := short_exact.out.epi_g
+
+instance [short_exact : Fact <| A.ShortExact] : Mono A.f := short_exact.out.mono_f
+
+
+variable {B} in
+/-- ker f -> A - f -> B -> coker f -/
+@[simps!]
+def snakeInput :
+    SnakeInput 𝒞 where
+  L₀ := ker fAB
+  L₁ := A
+  L₂ := B
+  L₃ := Coker fAB
+  v₀₁ := kerι fAB
+  v₁₂ := fAB
+  v₂₃ := Cokerπ fAB
+  h₀ := by
+    apply (config := {allowSynthFailures := true}) KernelFork.IsLimit.ofι'
+    · intro C g h
+      refine ⟨⟨kernel.lift _ g.τ₁ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.1,
+        kernel.lift _ g.τ₂ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.1,
+        kernel.lift _ g.τ₃ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.2, ?_, ?_⟩, ?_⟩
+      · exact equalizer.hom_ext <| by simpa using g.comm₁₂
+      · exact equalizer.hom_ext <| by simpa using g.comm₂₃
+      · ext <;> simp
+    · constructor
+      intro C g₁ g₂ h
+      ext
+      · exact equalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.1
+      · exact equalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.1
+      · exact equalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.2
+  h₃ := by
+    apply (config := {allowSynthFailures := true}) CokernelCofork.IsColimit.ofπ'
+    · intro C g h
+      refine ⟨⟨cokernel.desc _ g.τ₁ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.1,
+        cokernel.desc _ g.τ₂ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.1,
+        cokernel.desc _ g.τ₃ <| ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.2, ?_, ?_⟩, ?_⟩
+      · exact coequalizer.hom_ext <| by simpa using g.comm₁₂
+      · exact coequalizer.hom_ext <| by simpa using g.comm₂₃
+      · ext <;> simp
+    · constructor
+      intro C g₁ g₂ h
+      ext
+      · exact coequalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.1
+      · exact coequalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.1
+      · exact coequalizer.hom_ext <| by simpa using ShortComplex.Hom.ext_iff _ _ |>.mp h |>.2.2
+  L₁_exact := a_se.out.exact
+  epi_L₁_g := inferInstance
+  L₂_exact := b_se.out.exact
+  mono_L₂_f := inferInstance
+
+variable {B} in
+lemma snakeInput_L₀_shortExact [Epi fAB.τ₁] :
+    (snakeInput fAB).L₀.ShortExact where
+  exact := (snakeInput fAB).L₀_exact
+  mono_f := by dsimp; infer_instance
+  epi_g := by
+    dsimp only [snakeInput_L₀_X₂, snakeInput_L₀_X₃, snakeInput_L₀_g]
+    have h := Abelian.tfae_epi (cokernel fAB.τ₁) (kernel.map fAB.τ₂ fAB.τ₃ A.g B.g fAB.comm₂₃)
+      |>.out 0 2
+    refine h.mpr ?_
+    have := (snakeInput fAB).snake_lemma.2 1
+    rw [← exact_iff_shortComplex_exact] at this
+    simp only [SnakeInput.composableArrows, ComposableArrows.mk₅, snakeInput_L₀_X₂,
+      snakeInput_L₀_X₃, snakeInput_L₃_X₁, snakeInput_L₃_X₂,
+      snakeInput_L₃_X₃, snakeInput_L₀_g, snakeInput_L₃_f,
+      snakeInput_L₃_g, ComposableArrows.mk₄, ComposableArrows.mk₃, ComposableArrows.mk₂,
+      snakeInput_L₀_X₁, snakeInput_L₀_f, id_eq, Nat.cast_ofNat,
+      Int.Nat.cast_ofNat_Int, Fin.mk_one, ComposableArrows.precomp_obj,
+      ComposableArrows.Precomp.obj_one, Fin.zero_eta, ComposableArrows.Precomp.obj_zero,
+      ComposableArrows.Precomp.obj_succ, ComposableArrows.map', ComposableArrows.precomp_map,
+      ComposableArrows.Precomp.map_one_succ, ComposableArrows.Precomp.map_zero_one,
+      ComposableArrows.Precomp.map_succ_succ] at this
+    dsimp at this
+    convert this using 1
+    symm
+    convert IsZero.eq_of_tgt _ _ _ using 1
+    simp only [snakeInput_L₃_X₁]
+    exact (isZero_zero _).of_iso <| Limits.cokernel.ofEpi _
+
+instance [Epi fAB.τ₁] : Fact (snakeInput fAB).L₀.ShortExact :=
+  ⟨snakeInput_L₀_shortExact _⟩
+
+instance ker_short_exact [Epi fAB.τ₁] : Fact <| (ker fAB).ShortExact :=
+  ⟨snakeInput_L₀_shortExact _⟩
+
+end Hom
+
+def rowSplitting (n) : Splitting (row P₁ P₃ n) where
+  r := biprod.fst
+  s := biprod.inr
+  f_r := by simp
+  s_g := by simp
+  id := by simp
+
+instance (n) : Fact (ShortExact (row P₁ P₃ n)) := by
+  constructor
+  apply ShortComplex.Splitting.shortExact
+  exact rowSplitting P₁ P₃ _
+
+variable [Fact <| A.ShortExact]
+
+instance : Epi (row₀ToBase P₁ P₃).τ₁ := by
+  simp only [row_X₁, row₀ToBase_τ₁]
+  infer_instance
+
+instance aux.se0 :
+    Fact <| ShortComplex.Hom.ker (row₀ToBase P₁ P₃) |>.ShortExact := by
+  apply Hom.ker_short_exact
+
+
+@[simps!?]
+def row1ToKer : (row P₁ P₃ 1) ⟶ (ShortComplex.Hom.ker (row₀ToBase P₁ P₃)) :=
+{ τ₁ := kernel.lift _ (P₁.complex.d 1 0) (by simp)
+  τ₂ := biprod.desc
+    (kernel.lift _ (P₁.complex.d 1 0) (by simp) ≫ (ShortComplex.Hom.ker (row₀ToBase P₁ P₃)).f)
+    (factorThru (kernel.lift _ (P₃.complex.d 1 0) (by simp))
+      (ShortComplex.Hom.ker (row₀ToBase P₁ P₃)).g)
+  τ₃ := kernel.lift _ (P₃.complex.d 1 0) (by simp)
+  comm₁₂ := by simp
+  comm₂₃ := by
+    simp
+    ext
+    · simp
+      erw [kernel.lift_ι, kernel.lift_ι_assoc]
+      rw [Category.assoc, kernel.lift_ι_assoc]
+      simp
+    · simp }
+
+@[simps!?]
+def rowD10 : (row P₁ P₃ 1) ⟶ (row P₁ P₃ 0) :=
+row1ToKer _ _ ≫
+{ τ₁ := kernel.ι _
+  τ₂ := kernel.ι _
+  τ₃ := kernel.ι _
+  comm₁₂ := by
+    simp
+    erw [kernel.lift_ι]
+    rfl
+  comm₂₃ := by
+    simp
+    erw [kernel.lift_ι]
+    rfl }
+
+instance : Fact <| ShortExact (Hom.ker (row1ToKer P₁ P₃)) := by
+  have : QuasiIso' P₁.π := sorry
+
+  have : CategoryTheory.Exact (P₁.complex.d 1 0) (P₁.π.f 0) := by
+    exact HomologicalComplex.Hom.to_single₀_exact_d_f_at_zero P₁.π
+
+  have : Epi (row1ToKer P₁ P₃).τ₁ := by
+    simp
+    apply Exact.epi_kernel_lift
+    exact this
+  exact Hom.ker_short_exact _ (row1ToKer P₁ P₃)
+
+def row2ToKer : (row P₁ P₃ 2) ⟶ (Hom.ker (row1ToKer P₁ P₃)) where
+  τ₁ := kernel.lift _ (P₁.complex.d 2 1) (by aesop_cat)
+  τ₂ := biprod.desc
+    (kernel.lift _ (P₁.complex.d 2 1) (by aesop_cat) ≫ (Hom.ker (row1ToKer P₁ P₃)).f)
+
+    (factorThru (kernel.lift _ (P₃.complex.d 2 1) (by aesop_cat))
+      (Hom.ker (row1ToKer P₁ P₃)).g)
+  τ₃ := kernel.lift _ (P₃.complex.d 2 1) (by aesop_cat)
+  comm₁₂ := by simp
+  comm₂₃ := by
+    dsimp
+    refine equalizer.hom_ext ?_
+    rw [Category.assoc]
+    simp only [equalizer_as_kernel, kernel.lift_ι, Category.assoc]
+    refine biprod.hom_ext' _ _ ?_ ?_
+    · simp
+    · simp only [biprod.inr_desc_assoc, BinaryBicone.inr_snd_assoc]
+      sorry
+
+@[simps!]
+def rowD21 : (row P₁ P₃ 2) ⟶ (row P₁ P₃ 1) :=
+row2ToKer _ _ ≫
+{ τ₁ := kernel.ι _
+  τ₂ := kernel.ι _
+  τ₃ := kernel.ι _
+  comm₁₂ := by
+    simp
+    erw [kernel.lift_ι]
+    rfl
+  comm₂₃ := by
+    simp
+    erw [kernel.lift_ι]
+    rfl }
+
+
+end CategoryTheory.ShortComplex

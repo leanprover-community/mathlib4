@@ -1,8 +1,41 @@
+/-
+Copyright (c) 2024 Jujian Zhang. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Jujian Zhang
+-/
+
 import Mathlib.CategoryTheory.Abelian.DiagramLemmas.Four
 import Mathlib.CategoryTheory.Abelian.ProjectiveResolution
 import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.Algebra.Homology.ShortComplex.SnakeLemma
 import Mathlib.Algebra.Homology.HomologySequence
+
+/-!
+# Horseshoe Lemma
+
+The Horseshoe Lemma is a result in homological algebra that provides a way to construct a short
+exact sequence of projective resolutions. Let `𝒞` be an abelian category with enough projectives
+and
+```
+0 -> A --> B --> C -> 0
+```
+be a short exact sequence.
+In this file, we construct simultaneously three projective resolutions `P` of `A`, `S` of `B`,
+and `Q` of `C` such that `S` is the binary biproduct of `P` and `Q`. That is we have the following
+commutative diagram:
+```
+0 -> ... --> ... ----> ... -> 0
+      |       |         |
+      v       v         v
+0 -> P₁ --> P₁ ⊕ Q₁ --> Q₁ -> 0
+      |       |         |
+      v       v         v
+0 -> P₀ -> P₀ ⊕ Q₀ ---> Q₀ -> 0
+      |       |         |
+      v       v         v
+0 -> A ----> B ------> C -> 0
+```
+-/
 
 open CategoryTheory Limits
 open scoped ZeroObject
@@ -28,6 +61,15 @@ variable (A B : ShortComplex 𝒞) (fAB : A ⟶ B)
 
 open Projective
 
+/--
+The first row of the horseshoe lemma.
+```
+      P₁ --> P₁ ⊕ Q₁ --> Q₁
+      |       |         |
+      v       v         v
+0 --> A ----> B ------> C --> 0
+```
+-/
 @[simps]
 def horseshoeBase : ShortComplex 𝒞 where
   X₁ := over A.X₁
@@ -37,6 +79,9 @@ def horseshoeBase : ShortComplex 𝒞 where
   g := biprod.snd
   zero := by simp
 
+/--
+The first row `P₁ --> P₁ ⊕ Q₁ --> Q₁` of the horseshoe lemma is split.
+-/
 def horseshoeBase_splitting : A.horseshoeBase.Splitting where
   r := biprod.fst
   s := biprod.inr
@@ -49,6 +94,9 @@ lemma horseshoeBase_shortExact : A.horseshoeBase.ShortExact :=
 
 instance : Fact (ShortExact (horseshoeBase A)) := ⟨horseshoeBase_shortExact _⟩
 
+/--
+The morphism from the first row `P₁ --> P₁ ⊕ Q₁ --> Q₁` to the zeroth row. We will call it `π`.
+-/
 @[simps]
 def horseshoeBaseπ [epi : Epi A.g] : A.horseshoeBase ⟶ A where
   τ₁ := π _
@@ -132,9 +180,11 @@ instance horseshoeBaseπ_epi_τ₂ [short_exact : Fact <| A.ShortExact] : Epi A.
   · dsimp; infer_instance
   · dsimp; infer_instance
 
-example : true := rfl
-
+-- TODO : move this; this belongs to another file
 variable {A B} in
+/--
+kernel of a short complex
+-/
 @[simps!]
 def horseshoeKer : ShortComplex 𝒞 where
   X₁ := kernel fAB.τ₁
@@ -150,7 +200,11 @@ def horseshoeKer : ShortComplex 𝒞 where
     erw [kernel.lift_ι, kernel.lift_ι_assoc]
     simp
 
+-- TODO : move this; this belongs to another file
 variable {A B} in
+/--
+the morphism from kernel of a short compelx to itself
+-/
 @[simps]
 def horseshoeKerι : horseshoeKer fAB ⟶ A where
   τ₁ := kernel.ι _
@@ -160,7 +214,11 @@ def horseshoeKerι : horseshoeKer fAB ⟶ A where
   comm₂₃ := by simp
 
 
+-- TODO : move this; this belongs to another file
 variable {A B} in
+/--
+cokernel of a short complex
+-/
 @[simps!]
 def horseshoeCoker : ShortComplex 𝒞 where
   X₁ := cokernel fAB.τ₁
@@ -170,7 +228,11 @@ def horseshoeCoker : ShortComplex 𝒞 where
   g := cokernel.map _ _ A.g B.g fAB.comm₂₃
   zero := by ext; simp
 
+-- TODO : move this; this belongs to another file
 variable {A B} in
+/--
+the morphism a short complex to its cokernel
+-/
 @[simps]
 def horseshoeCokerπ : B ⟶ horseshoeCoker fAB where
   τ₁ := cokernel.π _
@@ -266,18 +328,62 @@ instance [Epi fAB.τ₁] : Fact (horseshoeSnakeInput fAB).L₀.ShortExact :=
   ⟨horseshoeSnakeInput_L₀_shortExact _ _ _⟩
 
 variable (𝒞) in
+/--
+structure used in the inductive step of the horseshoe lemma
+-/
 structure STEP where
+/--we need three short exact sequences X, Y, Z-/
 (X Y Z : ShortComplex 𝒞)
+/--short exact-/
 (X_se : X.ShortExact)
+/--short exact-/
 (Y_se : Y.ShortExact)
+/--short exact-/
 (Z_se : Z.ShortExact)
+/-- the morphism between X and Y-/
 (ι : X ⟶ Y)
+/-- the morphism between Y and Z-/
 (π : Y ⟶ Z)
 
 instance (x : STEP 𝒞) : Fact (x.X.ShortExact) := ⟨x.X_se⟩
 instance (x : STEP 𝒞) : Fact (x.Y.ShortExact) := ⟨x.Y_se⟩
 instance (x : STEP 𝒞) : Fact (x.Z.ShortExact) := ⟨x.Z_se⟩
 
+/--
+induction:
+
+for case zero, we consider the following:
+```
+0 --> ker a ---> ker b --> ker c -> 0
+      |          |         |
+      v          v         v
+0 --> P₁ --> P₁ ⊕ Q₁ ---> Q₁ -> 0
+      |a       |b        |c
+      v        v         v
+0 --> A ----> B ------> C --> 0
+```
+
+Assume we have case n:
+```
+0 -> G --> H --> I -> 0
+    |     |     |
+    v     v     v
+0 -> D --> E --> F -> 0
+    |     |     |
+    v     v     v
+0 -> A --> B --> C -> 0
+```
+we consider the following:
+```
+0 -> ker a --> ker b --> ker c -> 0
+      |         |          |
+      v         v          v
+0 -> P_G --> P_G ⊕ P_I --> P_I -> 0
+      |a        |b        |c
+      v        v          v
+0 -> G ------> H -------> I -> 0
+```
+-/
 def horseshoeStep : ℕ → STEP 𝒞
   | 0 =>
     { X := horseshoeKer (horseshoeBaseπ A)
@@ -333,18 +439,43 @@ match n with
   simp [horseshoeStep]
   infer_instance
 
+/--
+the `n`-th row of the horseshoe lemma
+-/
 def horseshoeObj (n : ℕ) : ShortComplex 𝒞 := horseshoeStep A n |>.Y
 
+/--
+the morphism from the `n+1`-th row to the `n`-th row of the horseshoe lemma
+-/
 def horseshoeD (n : ℕ) : horseshoeObj A (n + 1) ⟶ horseshoeObj A n :=
   (horseshoeStep A (n + 1)).π ≫ (horseshoeStep A n).ι
 
 lemma horseshoeD_square (n : ℕ) : horseshoeD A (n + 1) ≫ horseshoeD A n = 0 := by
   simp [horseshoeD, horseshoeStep, horseshoeKerι_comp_assoc]
 
+/--
+the chain complex of short complex in the horse lemma, every row is short exact,
+every column is exact.
+```
+0 -> ... -----> ... ----> ....
+      |         |          |
+      v         v          v
+0 -> P₂ --> P₂ ⊕ Q₂ --> Q₂ -> 0
+      |       |         |
+      v       v         v
+0 -> P₁ --> P₁ ⊕ Q₁ --> Q₁ -> 0
+      |       |         |
+      v       v         v
+0 -> P₀ --> P₀ ⊕ Q₀ --> Q₀ -> 0
+```
+-/
 @[simps!]
 def horseshoe : ChainComplex (ShortComplex 𝒞) ℕ :=
 .of (horseshoeObj A) (horseshoeD A) (horseshoeD_square A)
 
+/--
+the zeroth row `P₀ --> P₀ ⊕ Q₀ --> Q₀` to the base `A --> B --> C`.
+-/
 abbrev horseshoeπ : (horseshoe A).X 0 ⟶ A := horseshoeBaseπ A
 
 lemma horseshoe_d_π : (horseshoe A).d 1 0 ≫ horseshoeπ A = 0 := by
@@ -353,12 +484,21 @@ lemma horseshoe_d_π : (horseshoe A).d 1 0 ≫ horseshoeπ A = 0 := by
   simp only [horseshoeStep, horseshoeD, Category.assoc] at eq ⊢
   rw [eq, comp_zero]
 
+/--
+a chain complex of the left term
+-/
 abbrev horseshoeChainComplex₁ : ChainComplex 𝒞 ℕ :=
 ShortComplex.π₁.mapHomologicalComplex _ |>.obj (horseshoe A)
 
+/--
+a chain complex of the middle term
+-/
 abbrev horseshoeChainComplex₂ : ChainComplex 𝒞 ℕ :=
 ShortComplex.π₂.mapHomologicalComplex _ |>.obj (horseshoe A)
 
+/--
+a chain complex of the right term
+-/
 abbrev horseshoeChainComplex₃ : ChainComplex 𝒞 ℕ :=
 ShortComplex.π₃.mapHomologicalComplex _ |>.obj (horseshoe A)
 
@@ -637,18 +777,30 @@ instance : _root_.QuasiIso (horseshoeToSingle₃ A) where
   quasiIsoAt n := by
     cases n <;> infer_instance
 
+/--
+the first column is a projective resolution
+-/
 def horseshoeProjectiveResolution₁ : ProjectiveResolution A.X₁ where
   complex := horseshoeChainComplex₁ A
   π := horseshoeToSingle₁ A
 
+/--
+the second column is a projective resolution
+-/
 def horseshoeProjectiveResolution₂ : ProjectiveResolution A.X₂ where
   complex := horseshoeChainComplex₂ A
   π := horseshoeToSingle₂ A
 
+/--
+the third column is a projective resolution
+-/
 def horseshoeProjectiveResolution₃ : ProjectiveResolution A.X₃ where
   complex := horseshoeChainComplex₃ A
   π := horseshoeToSingle₃ A
 
+/--
+each row splits
+-/
 def horseshoe_splitting (n : ℕ) : ((horseshoe A).X n).Splitting :=
 match n with
 | 0 =>

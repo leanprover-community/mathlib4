@@ -380,35 +380,33 @@ private abbrev β :
 
 private noncomputable abbrev sc [EnoughProjectives C]
     (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] : ShortComplex D :=
-  (ShortComplex.mk
-  ((α F |>.app (ShortComplex.horseshoe A)).f n)
-  ((β F |>.app (ShortComplex.horseshoe A)).f n)
-  (show F.map (ShortComplex.horseshoeObj A n).f ≫ F.map (ShortComplex.horseshoeObj A n).g = 0 by
-    rw [← F.map_comp, (ShortComplex.horseshoeObj A n).zero,
-      Functor.map_zero]))
+  ShortComplex.mk
+    ((α F |>.app A.horseshoe).f n)
+    ((β F |>.app A.horseshoe).f n)
+    (by simp [← F.map_comp])
 
 private lemma shortExact_α_β_horseshoe [EnoughProjectives C]
     (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
     (sc F A n).ShortExact := by
   apply ShortComplex.Splitting.shortExact
-  apply ShortComplex.Splitting.map
-  apply ShortComplex.horseshoe_splitting
+  exact A.horseshoe_splitting n |>.map F
 
+/--
+For `0 -> A₁ -> A₂ -> A₃ -> 0` a short exact sequence in `C`,
+this is the short complex `0 -> F(P₁) -> F(P₂) -> F(P₃) -> 0`, where `Pᵢ` is a projective
+resolution for `Aᵢ` obained by the horseshoe lemma.
+-/
 @[simps]
 noncomputable def sc' [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
     ShortComplex (ChainComplex D ℕ) where
-  X₁ := (ShortComplex.π₁ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
-    (ShortComplex.horseshoe A)
-  X₂ := (ShortComplex.π₂ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
-    (ShortComplex.horseshoe A)
-  X₃ := (ShortComplex.π₃ ⋙ F).mapHomologicalComplex (ComplexShape.down ℕ) |>.obj
-    (ShortComplex.horseshoe A)
+  X₁ := (ShortComplex.π₁ ⋙ F).mapHomologicalComplex _ |>.obj A.horseshoe
+  X₂ := (ShortComplex.π₂ ⋙ F).mapHomologicalComplex _ |>.obj A.horseshoe
+  X₃ := (ShortComplex.π₃ ⋙ F).mapHomologicalComplex _ |>.obj A.horseshoe
   f := α F |>.app _
   g := β F |>.app _
   zero := by
     ext n
     exact (exact_iff_shortComplex_exact _ |>.mpr (shortExact_α_β_horseshoe F A n).exact).w
-
 
 -- Jöel wrote this
 noncomputable instance : NormalEpiCategory (ChainComplex C ℕ) := ⟨fun p _ =>
@@ -454,13 +452,16 @@ lemma aux (A : ShortComplex (ChainComplex C ℕ))
     rw [h]
     rfl
 
-
 lemma sc'_shortExact [EnoughProjectives C] (A : ShortComplex C) [Fact <| A.ShortExact] :
     (sc' F A).ShortExact := by
   apply aux
   intro n
   exact shortExact_α_β_horseshoe F A n
 
+/--
+the connecting morphism `H₁(A₃) -> H₀(A₁)` in the long exact sequence associated to a short exact sequence
+`0 -> A₁ -> A₂ -> A₃ -> 0` in `C`.
+-/
 noncomputable def δ [EnoughProjectives C] (A : ShortComplex C) (n : ℕ)  [Fact <| A.ShortExact] :
     (F.leftDerived (n + 1)).obj A.X₃ ⟶ (F.leftDerived n).obj A.X₁ :=
   let e1 := (ShortComplex.horseshoeProjectiveResolution₁ A).isoLeftDerivedObj F n
