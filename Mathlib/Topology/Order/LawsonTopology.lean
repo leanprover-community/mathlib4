@@ -148,13 +148,13 @@ instance instIsLawson : IsLawson (WithLawson α) := ⟨rfl⟩
 def homeomorph [TopologicalSpace α] [IsLawson α] : WithLawson α ≃ₜ α :=
   ofLawson.toHomeomorphOfInducing ⟨by erw [IsLawson.topology_eq α, induced_id]; rfl⟩
 
-theorem isOpen_preimage_ofLawson (S : Set α) :
+theorem isOpen_preimage_ofLawson {S : Set α} :
     IsOpen (ofLawson ⁻¹' S) ↔ (lawson α).IsOpen S := Iff.rfl
 
-theorem isClosed_preimage_ofLawson (S : Set α) :
+theorem isClosed_preimage_ofLawson {S : Set α} :
     IsClosed (ofLawson ⁻¹' S) ↔ IsClosed[lawson α] S := Iff.rfl
 
-theorem isOpen_def (T : Set (WithLawson α)) :
+theorem isOpen_def {T : Set (WithLawson α)} :
     IsOpen T ↔ (lawson α).IsOpen (toLawson ⁻¹' T) := Iff.rfl
 
 end WithLawson
