@@ -3,7 +3,7 @@ Copyright (c) 2024 Joël Riou. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joël Riou
 -/
-import Mathlib.Algebra.Homology.ShortComplex.Exact
+import Mathlib.Algebra.Homology.ShortComplex.ShortExact
 import Mathlib.CategoryTheory.MorphismProperty.Composition
 
 /-!
@@ -47,14 +47,7 @@ lemma epiWithInjectiveKernel_iff {X Y : C} (g : X ⟶ Y) :
   · rintro ⟨I, _,  f, w, ⟨σ⟩⟩
     have : IsSplitEpi g := ⟨σ.s, σ.s_g⟩
     let e : I ≅ kernel g :=
-      { hom := kernel.lift _ f w
-        inv := kernel.ι g ≫ σ.r
-        hom_inv_id := by simpa using σ.f_r
-        inv_hom_id := by
-          ext
-          have eq := σ.r_f
-          dsimp at eq
-          simp [eq] }
+      IsLimit.conePointUniqueUpToIso (σ.shortExact.fIsKernel) (limit.isLimit _)
     exact ⟨inferInstance, Injective.of_iso e inferInstance⟩
 
 lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
