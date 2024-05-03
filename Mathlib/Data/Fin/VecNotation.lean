@@ -200,6 +200,7 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   funext <| Unique.forall_iff.2 rfl
 #align matrix.vec_single_eq_const Matrix.vec_single_eq_const
 
+attribute [local semireducible] Nat.modCore in
 /-- `![a, b, ...] 1` is equal to `b`.
 
   The simplifier needs a special lemma for length `≥ 2`, in addition to
@@ -210,15 +211,18 @@ theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead 
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
+attribute [local semireducible] Nat.modCore in
 @[simp]
 theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
   rfl
 
+attribute [local semireducible] Nat.modCore in
 @[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
+attribute [local semireducible] Nat.modCore in
 @[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
@@ -360,9 +364,7 @@ theorem vecAlt1_vecAppend (v : Fin (n + 1) → α) : vecAlt1 rfl (vecAppend rfl 
     simp only [Nat.zero_eq, zero_add, Nat.lt_one_iff] at hi; subst i; rfl
   | succ n =>
     split_ifs with h <;> simp_rw [bit1, bit0] <;> congr
-    · rw [Fin.val_mk] at h
-      rw [Nat.mod_eq_of_lt (Nat.lt_of_succ_lt h)]
-      erw [Nat.mod_eq_of_lt h]
+    · simp [Nat.mod_eq_of_lt, h]
     · rw [Fin.val_mk, not_lt] at h
       simp only [Fin.ext_iff, Fin.val_add, Fin.val_mk, Nat.mod_add_mod, Fin.val_one,
         Nat.mod_eq_sub_mod h, show 1 % (n + 2) = 1 from Nat.mod_eq_of_lt (by omega)]
