@@ -51,9 +51,9 @@ open Pretriangulated
 
 /-- `TStructure C` is the type of t-structures on the (pre)triangulated category `C`. -/
 structure TStructure where
-  /-- the predicated of objects that are `≤ n` for `n : ℤ`. -/
+  /-- the predicate of objects that are `≤ n` for `n : ℤ`. -/
   LE (n : ℤ) : C → Prop
-  /-- the predicated of objects that are `≥ n` for `n : ℤ`. -/
+  /-- the predicate of objects that are `≥ n` for `n : ℤ`. -/
   GE (n : ℤ) : C → Prop
   LE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (LE n) := by infer_instance
   GE_closedUnderIsomorphisms (n : ℤ) : ClosedUnderIsomorphisms (GE n) := by infer_instance
