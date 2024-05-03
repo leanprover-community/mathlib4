@@ -45,7 +45,7 @@ In particular,
 
 
 For finitely presented algebras, see `Algebra.FinitePresentation`
-in file `RingTheory/FinitePresentation`.
+in file `Mathlib.RingTheory.FinitePresentation`.
 -/
 
 section Semiring

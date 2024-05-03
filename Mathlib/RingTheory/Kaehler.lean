@@ -602,10 +602,13 @@ end Presentation
 section ExactSequence
 
 /- We have the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 variable (A B : Type*) [CommRing A] [CommRing B] [Algebra R A] [Algebra R B]
 variable [Algebra A B] [Algebra S B] [IsScalarTower R A B] [IsScalarTower R S B]
 variable [SMulCommClass S A B]
@@ -618,10 +621,12 @@ local macro "finsupp_map" : term =>
 
 /--
 Given the commutative diagram
+```
 A --→ B
 ↑     ↑
 |     |
 R --→ S
+```
 The kernel of the presentation `⊕ₓ B dx ↠ Ω_{B/S}` is spanned by the image of the
 kernel of `⊕ₓ A dx ↠ Ω_{A/R}` and all `ds` with `s : S`.
 See `kerTotal_map'` for the special case where `R = S`.
@@ -632,10 +637,8 @@ theorem KaehlerDifferential.kerTotal_map (h : Function.Surjective (algebraMap A 
       (KaehlerDifferential.kerTotal S B).restrictScalars _ := by
   rw [KaehlerDifferential.kerTotal, Submodule.map_span, KaehlerDifferential.kerTotal,
     Submodule.restrictScalars_span _ _ h]
-  -- Porting note: the proof is diverging from the mathlib3 proof here.
-  -- `map_sub` and `map_add` are not firing so we need to use `LinearMap.map_*` instead
   simp_rw [Set.image_union, Submodule.span_union, ← Set.image_univ, Set.image_image, Set.image_univ,
-    LinearMap.map_sub, LinearMap.map_add]
+    map_sub, map_add]
   simp only [LinearMap.comp_apply, Finsupp.lmapDomain_apply, Finsupp.mapDomain_single,
     Finsupp.mapRange.linearMap_apply, Finsupp.mapRange_single, Algebra.linearMap_apply,
     map_one, map_add, map_mul]
@@ -665,10 +668,13 @@ theorem KaehlerDifferential.kerTotal_map' (h : Function.Surjective (algebraMap A
   ext; simp [IsScalarTower.algebraMap_eq R A B]
 
 /-- The map `Ω[A⁄R] →ₗ[A] Ω[B⁄S]` given a square
+```
 A --→ B
 ↑     ↑
 |     |
-R --→ S -/
+R --→ S
+```
+-/
 def KaehlerDifferential.map : Ω[A⁄R] →ₗ[A] Ω[B⁄S] :=
   Derivation.liftKaehlerDifferential
     (((KaehlerDifferential.D S B).restrictScalars R).compAlgebraMap A)

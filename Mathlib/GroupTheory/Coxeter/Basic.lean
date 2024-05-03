@@ -321,15 +321,14 @@ def lift {G : Type*} [Monoid G] : {f : B → G // IsLiftable M f} ≃ (W →* G)
     ext i
     simp only [MonoidHom.comp_apply, comp_apply, mem_setOf_eq, groupLift, simple]
     rw [← MonoidHom.toFun_eq_coe, toMonoidHom_apply_symm_apply, PresentedGroup.toGroup.of,
-      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply]
-    rfl
+      OneHom.toFun_eq_coe, MonoidHom.toOneHom_coe, Units.coeHom_apply, restrictUnit]
   right_inv ι := by
     apply cs.ext_simple
     intro i
     dsimp only
     rw [groupLift, simple, MonoidHom.comp_apply, MonoidHom.comp_apply, toMonoidHom_apply_symm_apply,
       PresentedGroup.toGroup.of, CoxeterSystem.restrictUnit, Units.coeHom_apply]
-    rfl
+    simp only [comp_apply, simple]
 
 @[simp]
 theorem lift_apply_simple {G : Type*} [Monoid G] {f : B → G} (hf : IsLiftable M f) (i : B) :
