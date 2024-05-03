@@ -999,6 +999,19 @@ theorem integralClosure_idem {R A : Type*} [CommRing R] [CommRing A] [Algebra R 
     ⟨⟨x, isIntegral_trans (A := integralClosure R A) integralClosure.isIntegral x hx⟩, rfl⟩
 #align integral_closure_idem integralClosure_idem
 
+/-- If `A` and `B` are the integral closure of `R` in `K` and `L` respectively, then `B`
+is also the integral closure of `R` in `L` -/
+lemma isIntegralClosure_of_isScalarTower (R A K L B) [CommRing R] [CommRing A] [CommRing K]
+    [CommRing L] [CommRing B] [Algebra R K] [Algebra A K] [Algebra R L] [Algebra B L]
+    [Algebra A L] [Algebra R A] [IsScalarTower R A K] [IsScalarTower R A L]
+    [IsIntegralClosure A R K] [IsIntegralClosure B R L] :
+    IsIntegralClosure B A L where
+  algebraMap_injective' := IsIntegralClosure.algebraMap_injective B R L
+  isIntegral_iff := fun {x} ↦ by
+    refine Iff.trans ?_ (IsIntegralClosure.isIntegral_iff (R := R) (A := B) (B := L))
+    exact ⟨isIntegral_trans (IsIntegralClosure.isIntegral_algebra R (A := A) K) x,
+      IsIntegral.tower_top⟩
+
 section IsDomain
 
 variable {R S : Type*} [CommRing R] [CommRing S] [IsDomain S] [Algebra R S]
