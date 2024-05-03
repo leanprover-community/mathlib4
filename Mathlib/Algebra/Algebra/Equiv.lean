@@ -157,10 +157,13 @@ instance hasCoeToRingEquiv : CoeOut (A₁ ≃ₐ[R] A₂) (A₁ ≃+* A₂) :=
 #align alg_equiv.has_coe_to_ring_equiv AlgEquiv.hasCoeToRingEquiv
 
 @[simp]
+theorem coe_mk' {toEquiv map_mul map_add commutes} :
+    ⇑(⟨toEquiv, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toEquiv :=
+  rfl
+
 theorem coe_mk {toFun invFun left_inv right_inv map_mul map_add commutes} :
     ⇑(⟨⟨toFun, invFun, left_inv, right_inv⟩, map_mul, map_add, commutes⟩ : A₁ ≃ₐ[R] A₂) = toFun :=
-  rfl
-#align alg_equiv.coe_mk AlgEquiv.coe_mk
+  by rw [coe_mk', Equiv.coe_fn_mk]
 
 @[simp]
 theorem mk_coe (e : A₁ ≃ₐ[R] A₂) (e' h₁ h₂ h₃ h₄ h₅) :
