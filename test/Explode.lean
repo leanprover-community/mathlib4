@@ -229,7 +229,7 @@ info: fun hp hnp ↦ hnp hp : p → (p → q) → q
 info: fun hNQNP ↦
   Or.elim (Classical.em q) (fun hQ hP ↦ hQ) fun hNQ hP ↦
     let hNP := hNQNP hNQ;
-    (hNP hP).elim : (¬q → ¬p) → p → q
+    False.elim (hNP hP) : (¬q → ¬p) → p → q
 
 0 │      │ hNQNP        ├ ¬q → ¬p
 1 │      │ Classical.em │ q ∨ ¬q
