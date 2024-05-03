@@ -217,6 +217,10 @@ def gfpApprox (a : Ordinal.{u}) : α :=
 termination_by a
 decreasing_by exact h
 
+-- By unsealing these recursive definitions we can relate them
+-- by definitional equality
+unseal gfpApprox lfpApprox
+
 theorem gfpApprox_antitone : Antitone (gfpApprox f x) :=
   lfpApprox_monotone (OrderHom.dual f) x
 
