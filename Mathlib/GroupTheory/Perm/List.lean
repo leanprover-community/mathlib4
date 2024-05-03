@@ -308,6 +308,7 @@ theorem formPerm_pow_apply_head (x : α) (l : List α) (h : Nodup (x :: l)) (n :
   simp
 #align list.form_perm_pow_apply_head List.formPerm_pow_apply_head
 
+unseal Nat.modCore in
 set_option linter.deprecated false in
 theorem formPerm_ext_iff {x y x' y' : α} {l l' : List α} (hd : Nodup (x :: y :: l))
     (hd' : Nodup (x' :: y' :: l')) :
