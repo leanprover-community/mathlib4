@@ -131,7 +131,7 @@ protected theorem map_one {A'} [Semiring A'] [Algebra R A'] (f : A →ₐ[R] A')
 theorem map_op_one :
     map (↑(opLinearEquiv R : A ≃ₗ[R] Aᵐᵒᵖ) : A →ₗ[R] Aᵐᵒᵖ) (1 : Submodule R A) = 1 := by
   ext x
-  induction x using MulOpposite.rec'
+  induction x
   simp
 #align submodule.map_op_one Submodule.map_op_one
 

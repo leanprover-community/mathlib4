@@ -804,7 +804,7 @@ variable [DecidableEq ι]
 theorem nnnorm_equiv_symm_single [hp : Fact (1 ≤ p)] (i : ι) (b : β i) :
     ‖(WithLp.equiv p (∀ i, β i)).symm (Pi.single i b)‖₊ = ‖b‖₊ := by
   haveI : Nonempty ι := ⟨i⟩
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp_rw [nnnorm_eq_ciSup, WithLp.equiv_symm_pi_apply]
     refine' ciSup_eq_of_forall_le_of_forall_lt_exists_gt (fun j => _) fun n hn => ⟨i, hn.trans_eq _⟩

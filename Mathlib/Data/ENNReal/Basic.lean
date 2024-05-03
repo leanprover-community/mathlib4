@@ -162,6 +162,7 @@ instance : Inhabited ℝ≥0∞ := ⟨0⟩
 instance : Coe ℝ≥0 ℝ≥0∞ := ⟨ofNNReal⟩
 
 /-- A version of `WithTop.recTopCoe` that uses `ENNReal.ofNNReal`. -/
+@[induction_eliminator]
 def recTopCoe {C : ℝ≥0∞ → Sort*} (top : C ∞) (coe : ∀ x : ℝ≥0, C x) (x : ℝ≥0∞) : C x :=
   WithTop.recTopCoe top coe x
 

@@ -122,7 +122,7 @@ theorem Real.Angle.expMapCircle_coe (x : ℝ) : Real.Angle.expMapCircle x = _roo
 
 theorem Real.Angle.coe_expMapCircle (θ : Real.Angle) :
     (θ.expMapCircle : ℂ) = θ.cos + θ.sin * I := by
-  induction θ using Real.Angle.induction_on
+  induction θ
   simp [Complex.exp_mul_I]
 #align real.angle.coe_exp_map_circle Real.Angle.coe_expMapCircle
 
@@ -134,22 +134,22 @@ theorem Real.Angle.expMapCircle_zero : Real.Angle.expMapCircle 0 = 1 := by
 @[simp]
 theorem Real.Angle.expMapCircle_neg (θ : Real.Angle) :
     Real.Angle.expMapCircle (-θ) = (Real.Angle.expMapCircle θ)⁻¹ := by
-  induction θ using Real.Angle.induction_on
+  induction θ
   simp_rw [← Real.Angle.coe_neg, Real.Angle.expMapCircle_coe, _root_.expMapCircle_neg]
 #align real.angle.exp_map_circle_neg Real.Angle.expMapCircle_neg
 
 @[simp]
 theorem Real.Angle.expMapCircle_add (θ₁ θ₂ : Real.Angle) : Real.Angle.expMapCircle (θ₁ + θ₂) =
     Real.Angle.expMapCircle θ₁ * Real.Angle.expMapCircle θ₂ := by
-  induction θ₁ using Real.Angle.induction_on
-  induction θ₂ using Real.Angle.induction_on
+  induction θ₁
+  induction θ₂
   exact _root_.expMapCircle_add _ _
 #align real.angle.exp_map_circle_add Real.Angle.expMapCircle_add
 
 @[simp]
 theorem Real.Angle.arg_expMapCircle (θ : Real.Angle) :
     (arg (Real.Angle.expMapCircle θ) : Real.Angle) = θ := by
-  induction θ using Real.Angle.induction_on
+  induction θ
   rw [Real.Angle.expMapCircle_coe, expMapCircle_apply, exp_mul_I, ← ofReal_cos, ← ofReal_sin, ←
     Real.Angle.cos_coe, ← Real.Angle.sin_coe, arg_cos_add_sin_mul_I_coe_angle]
 #align real.angle.arg_exp_map_circle Real.Angle.arg_expMapCircle
@@ -178,8 +178,8 @@ theorem toCircle_apply_mk (x : ℝ) : @toCircle T x = expMapCircle (2 * π / T *
 
 theorem toCircle_add (x : AddCircle T) (y : AddCircle T) :
     @toCircle T (x + y) = toCircle x * toCircle y := by
-  induction x using QuotientAddGroup.induction_on'
-  induction y using QuotientAddGroup.induction_on'
+  induction x
+  induction y
   simp_rw [← coe_add, toCircle_apply_mk, mul_add, expMapCircle_add]
 #align add_circle.to_circle_add AddCircle.toCircle_add
 
@@ -189,8 +189,8 @@ theorem continuous_toCircle : Continuous (@toCircle T) :=
 
 theorem injective_toCircle (hT : T ≠ 0) : Function.Injective (@toCircle T) := by
   intro a b h
-  induction a using QuotientAddGroup.induction_on'
-  induction b using QuotientAddGroup.induction_on'
+  induction a
+  induction b
   simp_rw [toCircle_apply_mk] at h
   obtain ⟨m, hm⟩ := expMapCircle_eq_expMapCircle.mp h.symm
   rw [QuotientAddGroup.eq]; simp_rw [AddSubgroup.mem_zmultiples_iff, zsmul_eq_mul]

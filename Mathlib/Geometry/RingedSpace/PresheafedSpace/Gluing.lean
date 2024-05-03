@@ -368,8 +368,8 @@ def ιInvApp {i : D.J} (U : Opens (D.U i).carrier) :
       π :=
         { app := fun j => D.ιInvAppπApp U (unop j)
           naturality := fun {X Y} f' => by
-            induction X using Opposite.rec' with | h X => ?_
-            induction Y using Opposite.rec' with | h Y => ?_
+            induction X with | h X => ?_
+            induction Y with | h Y => ?_
             let f : Y ⟶ X := f'.unop; have : f' = f.op := rfl; clear_value f; subst this
             rcases f with (_ | ⟨j, k⟩ | ⟨j, k⟩)
             · erw [Category.id_comp, CategoryTheory.Functor.map_id]
@@ -491,7 +491,7 @@ theorem π_ιInvApp_π (i j : D.J) (U : Opens (D.U i).carrier) :
 theorem π_ιInvApp_eq_id (i : D.J) (U : Opens (D.U i).carrier) :
     D.diagramOverOpenπ U i ≫ D.ιInvAppπEqMap U ≫ D.ιInvApp U = 𝟙 _ := by
   ext j
-  induction j using Opposite.rec' with | h j => ?_
+  induction j with | h j => ?_
   rcases j with (⟨j, k⟩ | ⟨j⟩)
   · rw [← limit.w (componentwiseDiagram 𝖣.diagram.multispan _)
         (Quiver.Hom.op (WalkingMultispan.Hom.fst (j, k))),

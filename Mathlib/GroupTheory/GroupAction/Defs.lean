@@ -297,7 +297,7 @@ attribute [simp] IsCentralScalar.op_smul_eq_smul
 @[to_additive]
 theorem IsCentralScalar.unop_smul_eq_smul {M α : Type*} [SMul M α] [SMul Mᵐᵒᵖ α]
     [IsCentralScalar M α] (m : Mᵐᵒᵖ) (a : α) : MulOpposite.unop m • a = m • a := by
-  induction m using MulOpposite.rec'
+  induction m
   exact (IsCentralScalar.op_smul_eq_smul _ a).symm
 #align is_central_scalar.unop_smul_eq_smul IsCentralScalar.unop_smul_eq_smul
 #align is_central_vadd.unop_vadd_eq_vadd IsCentralVAdd.unop_vadd_eq_vadd

@@ -71,8 +71,8 @@ attribute [nolint simpNF] FreeAddMagma.add.injEq
 attribute [nolint simpNF] FreeMagma.mul.injEq
 
 /-- Recursor for `FreeMagma` using `x * y` instead of `FreeMagma.mul x y`. -/
-@[to_additive (attr := elab_as_elim) "Recursor for `FreeAddMagma` using `x + y` instead of
-`FreeAddMagma.add x y`."]
+@[to_additive (attr := elab_as_elim, induction_eliminator) "Recursor for `FreeAddMagma` using
+`x + y` instead of `FreeAddMagma.add x y`."]
 def recOnMul {C : FreeMagma α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C x → C y → C (x * y)) : C x :=
   FreeMagma.recOn x ih1 ih2
@@ -393,7 +393,7 @@ def of : α →ₙ* AssocQuotient α where toFun := Quot.mk _; map_mul' _x _y :=
 @[to_additive]
 instance [Inhabited α] : Inhabited (AssocQuotient α) := ⟨of default⟩
 
-@[to_additive (attr := elab_as_elim)]
+@[to_additive (attr := elab_as_elim, induction_eliminator)]
 protected theorem induction_on {C : AssocQuotient α → Prop} (x : AssocQuotient α)
     (ih : ∀ x, C (of x)) : C x := Quot.induction_on x ih
 #align magma.assoc_quotient.induction_on Magma.AssocQuotient.induction_on
@@ -516,7 +516,8 @@ theorem length_of (x : α) : (of x).length = 1 := rfl
 instance [Inhabited α] : Inhabited (FreeSemigroup α) := ⟨of default⟩
 
 /-- Recursor for free semigroup using `of` and `*`. -/
-@[to_additive (attr := elab_as_elim) "Recursor for free additive semigroup using `of` and `+`."]
+@[to_additive (attr := elab_as_elim, induction_eliminator) "Recursor for free additive semigroup
+using `of` and `+`."]
 protected def recOnMul {C : FreeSemigroup α → Sort l} (x) (ih1 : ∀ x, C (of x))
     (ih2 : ∀ x y, C (of x) → C y → C (of x * y)) : C x :=
       FreeSemigroup.recOn x fun f s ↦

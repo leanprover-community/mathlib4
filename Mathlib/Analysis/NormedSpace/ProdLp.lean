@@ -675,7 +675,7 @@ section Single
 @[simp]
 theorem nnnorm_equiv_symm_fst (x : α) :
     ‖(WithLp.equiv p (α × β)).symm (x, 0)‖₊ = ‖x‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
@@ -685,7 +685,7 @@ theorem nnnorm_equiv_symm_fst (x : α) :
 @[simp]
 theorem nnnorm_equiv_symm_snd (y : β) :
     ‖(WithLp.equiv p (α × β)).symm (0, y)‖₊ = ‖y‖₊ := by
-  induction p using ENNReal.recTopCoe generalizing hp with
+  induction p generalizing hp with
   | top =>
     simp [prod_nnnorm_eq_sup]
   | coe p =>
