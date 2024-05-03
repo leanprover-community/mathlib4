@@ -41,6 +41,10 @@ achieved by yielding a `RegularExpression` matching `∅`; canonically
 -/
 -- Porting note: removed Fintype instance for σ as an argument
 structure GNFA (α : Type u) (σ : Type v) where
+  /-- Yields the regular expression (sub)strings have to match to transition from the first to the
+  second argument state. `Option.none` in the first position signifies a transition originating in
+  the start state, `Option.none` in the second position signifies a transition targetting the
+  accept state. -/
   step : Option σ → Option σ → RegularExpression α
 
 variable {α : Type u} {σ : Type v}
