@@ -48,8 +48,7 @@ Lawson topology, preorder
 -/
 
 open Set
-
-open TopologicalSpace
+open scoped TopologicalSpace
 
 variable {α β : Type*}
 
