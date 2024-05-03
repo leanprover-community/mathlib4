@@ -80,6 +80,10 @@ private noncomputable def bundledAbstractFilteredClosure : ℕ → Σ t : Type (
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractFilteredClosure m)⟩
 
+/-! The function is defined by well-founded recursion, but we really want to use its
+definitional equalities in the proofs below, so lets make it semireducible.  -/
+attribute [semireducible] bundledAbstractFilteredClosure
+
 /-- The small type modelling the filtered closure. -/
 private noncomputable def AbstractFilteredClosure : Type (max v w) :=
   Σ n, (bundledAbstractFilteredClosure f n).1
@@ -208,6 +212,10 @@ private noncomputable def inductiveStepRealization (n : ℕ)
 private noncomputable def bundledAbstractCofilteredClosure : ℕ → Σ t : Type (max v w), t → C
   | 0 => ⟨ULift.{v} α, f ∘ ULift.down⟩
   | (n + 1) => ⟨_, inductiveStepRealization (n + 1) (fun m _ => bundledAbstractCofilteredClosure m)⟩
+
+/-! The function is defined by well-founded recursion, but we really want to use its
+definitional equalities in the proofs below, so lets make it semireducible.  -/
+attribute [semireducible] bundledAbstractCofilteredClosure
 
 /-- Implementation detail for the instance
     `EssentiallySmall.{max v w} (FullSubcategory (CofilteredClosure f))`. -/
