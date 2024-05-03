@@ -51,6 +51,13 @@ We'll soon provide finer grained options here, e.g. to turn off simprocs only in
 -/
 set_option simprocs false
 
+
+/-!
+This module contains many `Fin` literals like `1`, where we need to allow `1 % 2` to compute
+for a fair number of proofs by definitional equality in this module.
+-/
+attribute [local semireducible] Nat.modCore
+
 namespace CategoryTheory
 
 open Category
