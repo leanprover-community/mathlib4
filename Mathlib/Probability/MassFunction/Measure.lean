@@ -1,4 +1,4 @@
-import Mathlib.Probability.SubProbabilityMassFunction.Basic
+import Mathlib.Probability.MassFunction.Constructions
 import Mathlib.MeasureTheory.Measure.Dirac
 
 section OuterMeasure
@@ -10,6 +10,8 @@ variable {α : Type*}
 open BigOperators ENNReal
 
 namespace SPMF
+
+/-
 
 section OuterMeasure
 
@@ -78,7 +80,7 @@ theorem toOuterMeasure_apply_fintype [Fintype α] : d.toOuterMeasure s = ∑ x, 
 
 end OuterMeasure
 
-/-
+
 
 section Measure
 
