@@ -47,7 +47,7 @@ lemma epiWithInjectiveKernel_iff {X Y : C} (g : X ⟶ Y) :
   · rintro ⟨I, _,  f, w, ⟨σ⟩⟩
     have : IsSplitEpi g := ⟨σ.s, σ.s_g⟩
     let e : I ≅ kernel g :=
-      IsLimit.conePointUniqueUpToIso (σ.shortExact.fIsKernel) (limit.isLimit _)
+      IsLimit.conePointUniqueUpToIso σ.shortExact.fIsKernel (limit.isLimit _)
     exact ⟨inferInstance, Injective.of_iso e inferInstance⟩
 
 lemma epiWithInjectiveKernel_of_iso {X Y : C} (f : X ⟶ Y) [IsIso f] :
