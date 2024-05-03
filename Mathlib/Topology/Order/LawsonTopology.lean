@@ -79,8 +79,6 @@ namespace IsLawson
 section Preorder
 variable (α) [Preorder α] [TopologicalSpace α] [IsLawson α]
 
-lemma topology_eq : ‹_› = lawson α := topology_eq_lawson
-
 /-- The complements of the upper closures of finite sets intersected with Scott open sets form
 a basis for the lawson topology. -/
 def lawsonBasis := { s : Set α | ∃ t : Set α, t.Finite ∧ ∃ u : Set α, IsOpen[scott α] u ∧
