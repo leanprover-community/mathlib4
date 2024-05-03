@@ -3,10 +3,8 @@ Copyright (c) 2021 Damiano Testa. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
-
-import Mathlib.GroupTheory.Subgroup.Basic
-import Mathlib.GroupTheory.Submonoid.Order
 import Mathlib.Algebra.Order.Group.InjSurj
+import Mathlib.Algebra.Group.Subgroup.Basic
 
 /-!
 # Ordered instances on subgroups
