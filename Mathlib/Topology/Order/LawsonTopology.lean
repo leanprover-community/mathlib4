@@ -47,8 +47,7 @@ It is shown that `Topology.WithLawson α` is an instance of `Topology.IsLawson`.
 Lawson topology, preorder
 -/
 
-open Set
-open scoped TopologicalSpace
+open Set TopologicalSpace
 
 variable {α β : Type*}
 
