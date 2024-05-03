@@ -85,8 +85,14 @@ abbrev leftRight : HashSet String :=
 /-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
 E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
 def swapWords : List String → List String
+  | "Add"::"Action"::rest => "MulAction"::swapWords rest
+  | "Add"::"Comm"::"Monoid"::rest => "AddCommMonoid"::swapWords rest
+  | "Add"::"Monoid"::rest => "AddMonoid"::swapWords rest
+  | "Comm"::"Monoid"::rest => "AddCommMonoid"::swapWords rest
+  | "Comm"::"AddSemigroup"::rest => "AddCommSemigroup"::swapWords rest
   | "Add"::"One"::"Class"::rest => "AddZeroClass"::swapWords rest
   | "Monoid"::"Algebra"::rest => "AddMonoidAlgebra"::swapWords rest
+  | "Monoid"::rest => "AddMonoid"::swapWords rest
   | "monoid"::"_"::"algebra"::rest => "add_monoid_algebra"::swapWords rest
   | "le"::"_"::"of"::"_"::"eq"::rest => "ge"::"_"::"of"::"_"::"eq"::swapWords rest
   | "untop"::"'"::"_"::"le"::rest => "le"::"_"::"untop"::"'"::swapWords rest
