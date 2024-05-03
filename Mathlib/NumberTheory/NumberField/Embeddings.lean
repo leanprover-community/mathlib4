@@ -430,6 +430,10 @@ theorem embedding_of_isReal_apply {w : InfinitePlace K} (hw : IsReal w) (x : K) 
     ((embedding_of_isReal hw) x : ℂ) = (embedding w) x :=
   ComplexEmbedding.IsReal.coe_embedding_apply (isReal_iff.mp hw) x
 
+theorem norm_embedding_of_isReal {w : InfinitePlace K} (hw : IsReal w) (x : K) :
+    ‖embedding_of_isReal hw x‖ = w x := by
+  rw [← norm_embedding_eq, ← embedding_of_isReal_apply hw, Complex.norm_real]
+
 @[simp]
 theorem isReal_of_mk_isReal {φ : K →+* ℂ} (h : IsReal (mk φ)) :
     ComplexEmbedding.IsReal φ := by
@@ -523,7 +527,7 @@ theorem prod_eq_abs_norm (x : K) :
       rw [← (Finset.mem_filter.mp hφ).2]
       rfl
     simp_rw [Finset.prod_congr rfl (this _), Finset.prod_const, card_filter_mk_eq]
-  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_rat_cast]
+  · rw [eq_ratCast, Rat.cast_abs, ← Complex.abs_ofReal, Complex.ofReal_ratCast]
 #align number_field.infinite_place.prod_eq_abs_norm NumberField.InfinitePlace.prod_eq_abs_norm
 
 theorem one_le_of_lt_one {w : InfinitePlace K} {a : (𝓞 K)} (ha : a ≠ 0)
@@ -598,7 +602,7 @@ theorem card_complex_embeddings :
       fun φ : { φ // ¬ ComplexEmbedding.IsReal φ } => mkComplex φ = w).card = 2 by
     rw [Fintype.card, Finset.card_eq_sum_ones, ← Finset.sum_fiberwise _ (fun φ => mkComplex φ)]
     simp_rw [Finset.sum_const, this, smul_eq_mul, mul_one, Fintype.card, Finset.card_eq_sum_ones,
-      Finset.mul_sum]
+      Finset.mul_sum, Finset.sum_const, smul_eq_mul, mul_one]
   rintro ⟨w, hw⟩
   convert card_filter_mk_eq w
   · rw [← Fintype.card_subtype, ← Fintype.card_subtype]
@@ -657,7 +661,8 @@ lemma comap_surjective [Algebra k K] (h : Algebra.IsAlgebraic k K) :
 lemma mult_comap_le (f : k →+* K) (w : InfinitePlace K) : mult (w.comap f) ≤ mult w := by
   rw [mult, mult]
   split_ifs with h₁ h₂ h₂
-  pick_goal 3; exact (h₁ (h₂.comap _)).elim
+  pick_goal 3
+  · exact (h₁ (h₂.comap _)).elim
   all_goals decide
 
 variable [Algebra k K] [Algebra k F] [Algebra K F] [IsScalarTower k K F]
@@ -952,18 +957,18 @@ lemma card_isUnramified [NumberField k] [IsGalois k K] :
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))), ← smul_eq_mul, ← sum_const]
-  refine sum_congr rfl (fun w hw ↦ ?_)
-  obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
-  simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
-  trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
-  · congr; ext w'
-    simp only [mem_univ, forall_true_left, filter_congr_decidable, mem_filter, true_and,
-      Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _), and_iff_right_iff_imp]
-    intro e; rwa [← isUnramifiedIn_comap, ← e]
-  · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-      ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
-      mul_one, Set.toFinset_card]
-    rwa [← isUnramifiedIn_comap]
+  · refine sum_congr rfl (fun w hw ↦ ?_)
+    obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    simp only [mem_univ, forall_true_left, mem_filter, true_and] at hw
+    trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
+    · congr; ext w'
+      simp only [mem_univ, forall_true_left, filter_congr_decidable, mem_filter, true_and,
+        Set.mem_toFinset, mem_orbit_iff, @eq_comm _ (comap w' _), and_iff_right_iff_imp]
+      intro e; rwa [← isUnramifiedIn_comap, ← e]
+    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+        ← Nat.card_eq_fintype_card (α := Stab w), card_stabilizer, if_pos,
+        mul_one, Set.toFinset_card]
+      rwa [← isUnramifiedIn_comap]
   · simp [isUnramifiedIn_comap]
 
 open Finset BigOperators in
@@ -974,18 +979,18 @@ lemma card_isUnramified_compl [NumberField k] [IsGalois k K] :
   rw [← IsGalois.card_aut_eq_finrank,
     Finset.card_eq_sum_card_fiberwise (f := (comap · (algebraMap k K)))
     (t := (univ.filter <| IsUnramifiedIn K (k := k))ᶜ), ← smul_eq_mul, ← sum_const]
-  refine sum_congr rfl (fun w hw ↦ ?_)
-  obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
-  simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
-  trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
-  · congr; ext w'
-    simp only [compl_filter, filter_congr_decidable, mem_filter, mem_univ, true_and,
-      @eq_comm _ (comap w' _), Set.mem_toFinset, mem_orbit_iff, and_iff_right_iff_imp]
-    intro e; rwa [← isUnramifiedIn_comap, ← e]
-  · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
-      ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
-      Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
-    rwa [← isUnramifiedIn_comap]
+  · refine sum_congr rfl (fun w hw ↦ ?_)
+    obtain ⟨w, rfl⟩ := comap_surjective (Normal.isAlgebraic' (K := K)) w
+    simp only [mem_univ, forall_true_left, compl_filter, not_not, mem_filter, true_and] at hw
+    trans Finset.card (MulAction.orbit (K ≃ₐ[k] K) w).toFinset
+    · congr; ext w'
+      simp only [compl_filter, filter_congr_decidable, mem_filter, mem_univ, true_and,
+        @eq_comm _ (comap w' _), Set.mem_toFinset, mem_orbit_iff, and_iff_right_iff_imp]
+      intro e; rwa [← isUnramifiedIn_comap, ← e]
+    · rw [← MulAction.card_orbit_mul_card_stabilizer_eq_card_group _ w,
+        ← Nat.card_eq_fintype_card (α := Stab w), InfinitePlace.card_stabilizer, if_neg,
+        Nat.mul_div_cancel _ zero_lt_two, Set.toFinset_card]
+      rwa [← isUnramifiedIn_comap]
   · simp [isUnramifiedIn_comap]
 
 lemma card_eq_card_isUnramifiedIn [NumberField k] [IsGalois k K] :

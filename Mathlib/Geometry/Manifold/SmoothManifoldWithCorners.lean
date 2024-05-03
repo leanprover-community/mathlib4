@@ -53,17 +53,17 @@ but add these assumptions later as needed. (Quite a few results still do not req
 
 As specific examples of models with corners, we define (in `Geometry.Manifold.Instances.Real`)
 * `modelWithCornersSelf ℝ (EuclideanSpace (Fin n))` for the model space used to define
-  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `manifold`)
+  `n`-dimensional real manifolds without boundary (with notation `𝓡 n` in the locale `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanHalfSpace n)` for the model space
   used to define `n`-dimensional real manifolds with boundary (with notation `𝓡∂ n` in the locale
-  `manifold`)
+  `Manifold`)
 * `ModelWithCorners ℝ (EuclideanSpace (Fin n)) (EuclideanQuadrant n)` for the model space used
   to define `n`-dimensional real manifolds with corners
 
 With these definitions at hand, to invoke an `n`-dimensional real manifold without boundary,
 one could use
 
-  `variables {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
+  `variable {n : ℕ} {M : Type*} [TopologicalSpace M] [ChartedSpace (EuclideanSpace (Fin n)) M]
    [SmoothManifoldWithCorners (𝓡 n) M]`.
 
 However, this is not the recommended way: a theorem proved using this assumption would not apply
@@ -74,7 +74,7 @@ In the same way, it would not apply to product manifolds, modelled on
 The right invocation does not focus on one specific construction, but on all constructions sharing
 the right properties, like
 
-  `variables {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
+  `variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] [FiniteDimensional ℝ E]
   {I : ModelWithCorners ℝ E E} [I.Boundaryless]
   {M : Type*} [TopologicalSpace M] [ChartedSpace E M] [SmoothManifoldWithCorners I M]`
 
@@ -138,7 +138,7 @@ scoped[Manifold] notation "∞" => (⊤ : ℕ∞)
 model vector space `E` over the field `𝕜`. This is all what is needed to
 define a smooth manifold with model space `H`, and model vector space `E`.
 -/
-@[ext] -- Porting note: was nolint has_nonempty_instance
+@[ext] -- Porting note(#5171): was nolint has_nonempty_instance
 structure ModelWithCorners (𝕜 : Type*) [NontriviallyNormedField 𝕜] (E : Type*)
     [NormedAddCommGroup E] [NormedSpace 𝕜 E] (H : Type*) [TopologicalSpace H] extends
     PartialEquiv H E where

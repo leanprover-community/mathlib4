@@ -618,7 +618,7 @@ noncomputable def allDefinable : ∀ {n} (F : OfArity ZFSet ZFSet n), Definable 
     let p := @Quotient.exists_rep PSet _ F
     @Definable.EqMk 0 ⟨choose p, Equiv.rfl⟩ _ (choose_spec p)
   | n + 1, (F : OfArity ZFSet ZFSet (n + 1)) => by
-    have I : (x : ZFSet) → Definable (Nat.add n 0) (F x) := fun x => allDefinable (F x)
+    have I : (x : ZFSet) → Definable n (F x) := fun x => allDefinable (F x)
     refine' @Definable.EqMk (n + 1) ⟨fun x : PSet => (@Definable.Resp _ _ (I ⟦x⟧)).1, _⟩ _ _
     · dsimp [Arity.Equiv]
       intro x y h
@@ -1381,17 +1381,15 @@ theorem hereditarily_iff : Hereditarily p x ↔ p x ∧ ∀ y ∈ x, Hereditaril
   rw [← Hereditarily]
 #align Set.hereditarily_iff ZFSet.hereditarily_iff
 
--- Adaptation note: nightly-2024-03-15
--- This has been renamed to avoid the clash with the reserved name `Hereditarily.def`.
-alias ⟨Hereditarily.def', _⟩ := hereditarily_iff
-#align Set.hereditarily.def ZFSet.Hereditarily.def'
+alias ⟨Hereditarily.def, _⟩ := hereditarily_iff
+#align Set.hereditarily.def ZFSet.Hereditarily.def
 
 theorem Hereditarily.self (h : x.Hereditarily p) : p x :=
-  h.def'.1
+  h.def.1
 #align Set.hereditarily.self ZFSet.Hereditarily.self
 
 theorem Hereditarily.mem (h : x.Hereditarily p) (hy : y ∈ x) : y.Hereditarily p :=
-  h.def'.2 _ hy
+  h.def.2 _ hy
 #align Set.hereditarily.mem ZFSet.Hereditarily.mem
 
 theorem Hereditarily.empty : Hereditarily p x → p ∅ := by
@@ -1497,9 +1495,9 @@ theorem mem_wf : @WellFounded Class.{u} (· ∈ ·) :=
       refine' fun a => ZFSet.inductionOn a fun x IH => ⟨_, _⟩
       rintro A ⟨z, rfl, hz⟩
       exact IH z hz
-    · refine' fun A => ⟨A, _⟩
-      rintro B ⟨x, rfl, _⟩
-      exact H x⟩
+    refine' fun A => ⟨A, _⟩
+    rintro B ⟨x, rfl, _⟩
+    exact H x⟩
 #align Class.mem_wf Class.mem_wf
 
 instance : WellFoundedRelation Class :=

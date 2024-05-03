@@ -7,7 +7,7 @@ import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Algebra.Order.BigOperators.Group.Finset
 import Mathlib.Algebra.Order.Pi
 import Mathlib.Data.Finset.Sups
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 import Mathlib.Order.Birkhoff
 import Mathlib.Order.Booleanisation
 import Mathlib.Order.Sublattice
@@ -286,8 +286,8 @@ lemma four_functions_theorem [DecidableEq α] (h₁ : 0 ≤ f₁) (h₂ : 0 ≤ 
     (extend g (f₃ ∘ (↑)) 0) (extend g (f₄ ∘ (↑)) 0) (extend_nonneg (fun _ ↦ h₁ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₂ _) le_rfl) (extend_nonneg (fun _ ↦ h₃ _) le_rfl)
     (extend_nonneg (fun _ ↦ h₄ _) le_rfl) ?_ (s'.map ⟨g, hg⟩) (t'.map ⟨g, hg⟩)
-  simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
-    using this
+  · simpa only [← hs', ← ht', ← map_sups, ← map_infs, sum_map, Embedding.coeFn_mk, hg.extend_apply]
+      using this
   rintro s t
   classical
   obtain ⟨a, rfl⟩ | hs := em (∃ a, g a = s)
