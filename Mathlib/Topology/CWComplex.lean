@@ -120,7 +120,7 @@ def skeletaInclusion' {A : TopCat} (X : RelativeCWComplex A)
 /-- The colimit diagram in the definition of a relative CW-complex -/
 def colimitDiagram {A : TopCat} (X : RelativeCWComplex A) : ℤ ⥤ TopCat where
   obj := X.sk
-  map := @fun n m n_le_m => skeletaInclusion' X n m <| Quiver.Hom.le n_le_m
+  map {n m} n_le_m := skeletaInclusion' X n m (leOfHom n_le_m)
   map_id := by simp [skeletaInclusion']
   map_comp := by
     let rec p (n m l : ℤ) (n_le_m : n ≤ m) (m_le_l : m ≤ l) (n_le_l : n ≤ l) :
