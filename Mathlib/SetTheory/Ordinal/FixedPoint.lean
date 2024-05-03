@@ -182,7 +182,7 @@ theorem derivFamily_isNormal (f : ι → Ordinal → Ordinal) : IsNormal (derivF
 
 theorem derivFamily_fp {i} (H : IsNormal (f i)) (o : Ordinal.{max u v}) :
     f i (derivFamily.{u, v} f o) = derivFamily.{u, v} f o := by
-  induction' o using limitRecOn with o _ o l IH
+  induction' o with o _ o l IH
   · rw [derivFamily_zero]
     exact nfpFamily_fp H 0
   · rw [derivFamily_succ]
@@ -199,7 +199,7 @@ theorem le_iff_derivFamily (H : ∀ i, IsNormal (f i)) {a} :
     suffices ∀ (o) (_ : a ≤ derivFamily.{u, v} f o), ∃ o, derivFamily.{u, v} f o = a from
       this a ((derivFamily_isNormal _).self_le _)
     intro o
-    induction' o using limitRecOn with o IH o l IH
+    induction' o with o IH o l IH
     · intro h₁
       refine' ⟨0, le_antisymm _ h₁⟩
       rw [derivFamily_zero]

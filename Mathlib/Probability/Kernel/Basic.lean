@@ -338,7 +338,7 @@ instance IsSFiniteKernel.add (κ η : kernel α β) [IsSFiniteKernel κ] [IsSFin
 theorem IsSFiniteKernel.finset_sum {κs : ι → kernel α β} (I : Finset ι)
     (h : ∀ i ∈ I, IsSFiniteKernel (κs i)) : IsSFiniteKernel (∑ i in I, κs i) := by
   classical
-  induction' I using Finset.induction with i I hi_nmem_I h_ind h
+  induction' I with i I hi_nmem_I h_ind h
   · rw [Finset.sum_empty]; infer_instance
   · rw [Finset.sum_insert hi_nmem_I]
     haveI : IsSFiniteKernel (κs i) := h i (Finset.mem_insert_self _ _)

@@ -222,7 +222,7 @@ noncomputable def homeomorphCircle (hT : T ≠ 0) : AddCircle T ≃ₜ circle :=
 
 theorem homeomorphCircle_apply (hT : T ≠ 0) (x : AddCircle T) :
     homeomorphCircle hT x = toCircle x := by
-  induction' x using QuotientAddGroup.induction_on' with x
+  induction' x with x
   rw [homeomorphCircle, Homeomorph.trans_apply,
     homeomorphAddCircle_apply_mk, homeomorphCircle'_apply_mk, toCircle_apply_mk]
   ring_nf

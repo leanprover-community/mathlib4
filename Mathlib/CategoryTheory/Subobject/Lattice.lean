@@ -435,7 +435,7 @@ theorem inf_arrow_factors_right {B : C} (X Y : Subobject B) : Y.Factors (X ⊓ Y
 theorem finset_inf_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subobject B} (f : A ⟶ B) :
     (s.inf P).Factors f ↔ ∀ i ∈ s, (P i).Factors f := by
   classical
-  induction' s using Finset.induction_on with _ _ _ ih
+  induction' s with _ _ _ ih
   · simp [top_factors]
   · simp [ih]
 #align category_theory.subobject.finset_inf_factors CategoryTheory.Subobject.finset_inf_factors
@@ -445,7 +445,7 @@ theorem finset_inf_arrow_factors {I : Type*} {B : C} (s : Finset I) (P : I → S
     (m : i ∈ s) : (P i).Factors (s.inf P).arrow := by
   classical
   revert i m
-  induction' s using Finset.induction_on with _ _ _ ih
+  induction' s with _ _ _ ih
   · rintro _ ⟨⟩
   · intro _ m
     rw [Finset.inf_insert]
@@ -539,7 +539,7 @@ theorem finset_sup_factors {I : Type*} {A B : C} {s : Finset I} {P : I → Subob
     (h : ∃ i ∈ s, (P i).Factors f) : (s.sup P).Factors f := by
   classical
   revert h
-  induction' s using Finset.induction_on with _ _ _ ih
+  induction' s with _ _ _ ih
   · rintro ⟨_, ⟨⟨⟩, _⟩⟩
   · rintro ⟨j, ⟨m, h⟩⟩
     simp only [Finset.sup_insert]

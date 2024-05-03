@@ -258,7 +258,8 @@ def rayOfNeZero (v : M) (h : v ≠ 0) : Module.Ray R M :=
   ⟦⟨v, h⟩⟧
 #align ray_of_ne_zero rayOfNeZero
 
-/-- An induction principle for `Module.Ray`, used as `induction x using Module.Ray.ind`. -/
+/-- An induction principle for `Module.Ray`. -/
+@[induction_eliminator]
 theorem Module.Ray.ind {C : Module.Ray R M → Prop} (h : ∀ (v) (hv : v ≠ 0), C (rayOfNeZero R v hv))
     (x : Module.Ray R M) : C x :=
   Quotient.ind (Subtype.rec <| h) x
@@ -351,7 +352,7 @@ namespace Module.Ray
 -- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 /-- Scaling by a positive unit is a no-op. -/
 theorem units_smul_of_pos (u : Rˣ) (hu : 0 < (u.1 : R)) (v : Module.Ray R M) : u • v = v := by
-  induction v using Module.Ray.ind
+  induction v
   rw [smul_rayOfNeZero, ray_eq_iff]
   exact SameRay.sameRay_pos_smul_left _ hu
 #align module.ray.units_smul_of_pos Module.Ray.units_smul_of_pos
@@ -475,13 +476,13 @@ instance : InvolutiveNeg (Module.Ray R M)
 
 /-- A ray does not equal its own negation. -/
 theorem ne_neg_self [NoZeroSMulDivisors R M] (x : Module.Ray R M) : x ≠ -x := by
-  induction' x using Module.Ray.ind with x hx
+  induction' x with x hx
   rw [neg_rayOfNeZero, Ne, ray_eq_iff]
   exact mt eq_zero_of_sameRay_self_neg hx
 #align module.ray.ne_neg_self Module.Ray.ne_neg_self
 
 theorem neg_units_smul (u : Rˣ) (v : Module.Ray R M) : -u • v = -(u • v) := by
-  induction v using Module.Ray.ind
+  induction v
   simp only [smul_rayOfNeZero, Units.smul_def, Units.val_neg, neg_smul, neg_rayOfNeZero]
 #align module.ray.neg_units_smul Module.Ray.neg_units_smul
 
@@ -494,7 +495,7 @@ theorem units_smul_of_neg (u : Rˣ) (hu : u.1 < 0) (v : Module.Ray R M) : u • 
 
 @[simp]
 protected theorem map_neg (f : M ≃ₗ[R] N) (v : Module.Ray R M) : map f (-v) = -map f v := by
-  induction' v using Module.Ray.ind with g hg
+  induction' v with g hg
   simp
 #align module.ray.map_neg Module.Ray.map_neg
 
@@ -576,7 +577,7 @@ theorem sameRay_neg_smul_left_iff_of_ne {v : M} {r : R} (hv : v ≠ 0) (hr : r �
 -- Porting note: `(u.1 : R)` was `(u : R)`, CoeHead from R to Rˣ does not seem to work.
 @[simp]
 theorem units_smul_eq_self_iff {u : Rˣ} {v : Module.Ray R M} : u • v = v ↔ 0 < u.1 := by
-  induction' v using Module.Ray.ind with v hv
+  induction' v with v hv
   simp only [smul_rayOfNeZero, ray_eq_iff, Units.smul_def, sameRay_smul_left_iff_of_ne hv u.ne_zero]
 #align units_smul_eq_self_iff units_smul_eq_self_iff
 

@@ -54,7 +54,7 @@ theorem IsLowerSet.memberSubfamily_subset_nonMemberSubfamily (h : IsLowerSet (�
 theorem IsLowerSet.le_card_inter_finset' (h𝒜 : IsLowerSet (𝒜 : Set (Finset α)))
     (hℬ : IsLowerSet (ℬ : Set (Finset α))) (h𝒜s : ∀ t ∈ 𝒜, t ⊆ s) (hℬs : ∀ t ∈ ℬ, t ⊆ s) :
     𝒜.card * ℬ.card ≤ 2 ^ s.card * (𝒜 ∩ ℬ).card := by
-  induction' s using Finset.induction with a s hs ih generalizing 𝒜 ℬ
+  induction' s with a s hs ih generalizing 𝒜 ℬ
   · simp_rw [subset_empty, ← subset_singleton_iff', subset_singleton_iff] at h𝒜s hℬs
     obtain rfl | rfl := h𝒜s
     · simp only [card_empty, zero_mul, empty_inter, mul_zero, le_refl]

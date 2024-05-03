@@ -78,7 +78,7 @@ lemma summable_and_hasSum_factoredNumbers_prod_filter_prime_tsum
     Summable (fun m : factoredNumbers s ↦ ‖f m‖) ∧
       HasSum (fun m : factoredNumbers s ↦ f m)
         (∏ p in s.filter Nat.Prime, ∑' n : ℕ, f (p ^ n)) := by
-  induction' s using Finset.induction with p s hp ih
+  induction' s with p s hp ih
   · rw [factoredNumbers_empty]
     simp only [not_mem_empty, IsEmpty.forall_iff, forall_const, filter_true_of_mem, prod_empty]
     exact ⟨(Set.finite_singleton 1).summable (‖f ·‖), hf₁ ▸ hasSum_singleton 1 f⟩

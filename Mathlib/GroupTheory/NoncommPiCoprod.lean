@@ -59,7 +59,7 @@ theorem eq_one_of_noncommProd_eq_one_of_independent {ι : Type*} (s : Finset ι)
     (heq1 : s.noncommProd f comm = 1) : ∀ i ∈ s, f i = 1 := by
   classical
     revert heq1
-    induction' s using Finset.induction_on with i s hnmem ih
+    induction' s with i s hnmem ih
     · simp
     · have hcomm := comm.mono (Finset.coe_subset.2 <| Finset.subset_insert _ _)
       simp only [Finset.forall_mem_insert] at hmem

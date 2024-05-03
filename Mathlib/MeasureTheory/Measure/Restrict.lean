@@ -389,7 +389,7 @@ theorem restrict_finset_biUnion_congr {s : Finset ι} {t : ι → Set α} :
     μ.restrict (⋃ i ∈ s, t i) = ν.restrict (⋃ i ∈ s, t i) ↔
       ∀ i ∈ s, μ.restrict (t i) = ν.restrict (t i) := by
   classical
-  induction' s using Finset.induction_on with i s _ hs; · simp
+  induction' s with i s _ hs; · simp
   simp only [forall_eq_or_imp, iUnion_iUnion_eq_or_left, Finset.mem_insert]
   rw [restrict_union_congr, ← hs]
 #align measure_theory.measure.restrict_finset_bUnion_congr MeasureTheory.Measure.restrict_finset_biUnion_congr

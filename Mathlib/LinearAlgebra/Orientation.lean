@@ -126,7 +126,7 @@ theorem Orientation.map_positiveOrientation_of_isEmpty [IsEmpty ι] (f : M ≃�
 @[simp]
 theorem Orientation.map_of_isEmpty [IsEmpty ι] (x : Orientation R M ι) (f : M ≃ₗ[R] M) :
     Orientation.map ι f x = x := by
-  induction' x using Module.Ray.ind with g hg
+  induction' x with g hg
   rw [Orientation.map_apply]
   congr
   ext i
@@ -164,7 +164,7 @@ theorem map_orientation_eq_det_inv_smul [Finite ι] (e : Basis ι R M) (x : Orie
     (f : M ≃ₗ[R] M) : Orientation.map ι f x = (LinearEquiv.det f)⁻¹ • x := by
   cases nonempty_fintype ι
   letI := Classical.decEq ι
-  induction' x using Module.Ray.ind with g hg
+  induction' x with g hg
   rw [Orientation.map_apply, smul_rayOfNeZero, ray_eq_iff, Units.smul_def,
     (g.compLinearMap f.symm).eq_smul_basis_det e, g.eq_smul_basis_det e,
     AlternatingMap.compLinearMap_apply, AlternatingMap.smul_apply,
@@ -226,7 +226,7 @@ respect to an empty index type. (Note that these are only orientations of `M` of
 mathematical sense if `M` is zero-dimensional.) -/
 theorem eq_or_eq_neg_of_isEmpty [IsEmpty ι] (o : Orientation R M ι) :
     o = positiveOrientation ∨ o = -positiveOrientation := by
-  induction' o using Module.Ray.ind with x hx
+  induction' o with x hx
   dsimp [positiveOrientation]
   simp only [ray_eq_iff, sameRay_neg_swap]
   rw [sameRay_or_sameRay_neg_iff_not_linearIndependent]
@@ -260,7 +260,7 @@ theorem orientation_eq_iff_det_pos (e₁ e₂ : Basis ι R M) :
 /-- Given a basis, any orientation equals the orientation given by that basis or its negation. -/
 theorem orientation_eq_or_eq_neg (e : Basis ι R M) (x : Orientation R M ι) :
     x = e.orientation ∨ x = -e.orientation := by
-  induction' x using Module.Ray.ind with x hx
+  induction' x with x hx
   rw [← x.map_basis_ne_zero_iff e] at hx
   rwa [Basis.orientation, ray_eq_iff, neg_rayOfNeZero, ray_eq_iff, x.eq_smul_basis_det e,
     sameRay_neg_smul_left_iff_of_ne e.det_ne_zero hx, sameRay_smul_left_iff_of_ne e.det_ne_zero hx,

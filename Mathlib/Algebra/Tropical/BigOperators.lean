@@ -86,7 +86,7 @@ theorem List.trop_minimum [LinearOrder R] (l : List R) :
 
 theorem Multiset.trop_inf [LinearOrder R] [OrderTop R] (s : Multiset R) :
     trop s.inf = Multiset.sum (s.map trop) := by
-  induction' s using Multiset.induction with s x IH
+  induction' s with s x IH
   · simp
   · simp [← IH]
 #align multiset.trop_inf Multiset.trop_inf
@@ -112,7 +112,7 @@ theorem trop_iInf [ConditionallyCompleteLinearOrder R] [Fintype S] (f : S → Wi
 
 theorem Multiset.untrop_sum [LinearOrder R] [OrderTop R] (s : Multiset (Tropical R)) :
     untrop s.sum = Multiset.inf (s.map untrop) := by
-  induction' s using Multiset.induction with s x IH
+  induction' s with s x IH
   · simp
   · simp only [sum_cons, ge_iff_le, untrop_add, untrop_le_iff, map_cons, inf_cons, ← IH]
     rfl

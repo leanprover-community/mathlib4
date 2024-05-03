@@ -341,7 +341,7 @@ theorem monomial_smul_apply (i : ℕ) (r : R) (g : PolynomialModule R M) (n : �
 @[simp]
 theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
     (f • single R i m) n = ite (i ≤ n) (f.coeff (n - i) • m) 0 := by
-  induction' f using Polynomial.induction_on' with p q hp hq
+  induction' f with p q hp hq
   · rw [add_smul, Finsupp.add_apply, hp, hq, coeff_add, add_smul]
     split_ifs
     exacts [rfl, zero_add 0]
@@ -356,7 +356,7 @@ theorem smul_single_apply (i : ℕ) (f : R[X]) (m : M) (n : ℕ) :
 
 theorem smul_apply (f : R[X]) (g : PolynomialModule R M) (n : ℕ) :
     (f • g) n = ∑ x in Finset.antidiagonal n, f.coeff x.1 • g x.2 := by
-  induction' f using Polynomial.induction_on' with p q hp hq f_n f_a
+  induction' f with p q hp hq f_n f_a
   · rw [add_smul, Finsupp.add_apply, hp, hq, ← Finset.sum_add_distrib]
     congr
     ext
@@ -434,7 +434,7 @@ theorem map_smul (f : M →ₗ[R] M') (p : R[X]) (q : PolynomialModule R M) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
+  induction' p with _ _ e₁ e₂
   · rw [add_smul, map_add, e₁, e₂, Polynomial.map_add, add_smul]
   · rw [monomial_smul_single, map_single, Polynomial.map_monomial, map_single, monomial_smul_single,
       f.map_smul, algebraMap_smul]
@@ -471,7 +471,7 @@ theorem eval_smul (p : R[X]) (q : PolynomialModule R M) (r : R) :
   · intro f g e₁ e₂
     rw [smul_add, map_add, e₁, e₂, map_add, smul_add]
   intro i m
-  induction' p using Polynomial.induction_on' with _ _ e₁ e₂
+  induction' p with _ _ e₁ e₂
   · rw [add_smul, map_add, Polynomial.eval_add, e₁, e₂, add_smul]
   · rw [monomial_smul_single, eval_single, Polynomial.eval_monomial, eval_single, smul_comm, ←
       smul_smul, pow_add, mul_smul]

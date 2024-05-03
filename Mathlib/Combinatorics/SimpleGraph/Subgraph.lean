@@ -550,7 +550,7 @@ theorem edgeSet_sup {H₁ H₂ : Subgraph G} : (H₁ ⊔ H₂).edgeSet = H₁.ed
 @[simp]
 theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edgeSet G' := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Sup SimpleGraph.Subgraph.edgeSet_sSup
 
@@ -558,7 +558,7 @@ theorem edgeSet_sSup (s : Set G.Subgraph) : (sSup s).edgeSet = ⋃ G' ∈ s, edg
 theorem edgeSet_sInf (s : Set G.Subgraph) :
     (sInf s).edgeSet = (⋂ G' ∈ s, edgeSet G') ∩ G.edgeSet := by
   ext e
-  induction e using Sym2.ind
+  induction e
   simp
 #align simple_graph.subgraph.edge_set_Inf SimpleGraph.Subgraph.edgeSet_sInf
 

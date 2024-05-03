@@ -145,7 +145,7 @@ theorem integral_finset_biUnion {ι : Type*} (t : Finset ι) {s : ι → Set X}
     (hs : ∀ i ∈ t, MeasurableSet (s i)) (h's : Set.Pairwise (↑t) (Disjoint on s))
     (hf : ∀ i ∈ t, IntegrableOn f (s i) μ) :
     ∫ x in ⋃ i ∈ t, s i, f x ∂μ = ∑ i in t, ∫ x in s i, f x ∂μ := by
-  induction' t using Finset.induction_on with a t hat IH hs h's
+  induction' t with a t hat IH hs h's
   · simp
   · simp only [Finset.coe_insert, Finset.forall_mem_insert, Set.pairwise_insert,
       Finset.set_biUnion_insert] at hs hf h's ⊢

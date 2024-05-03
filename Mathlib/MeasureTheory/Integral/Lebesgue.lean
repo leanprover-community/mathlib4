@@ -593,7 +593,7 @@ theorem lintegral_sum_measure {m : MeasurableSpace α} {ι} (f : α → ℝ≥0�
   simp only [lintegral, iSup_subtype', SimpleFunc.lintegral_sum, ENNReal.tsum_eq_iSup_sum]
   rw [iSup_comm]
   congr; funext s
-  induction' s using Finset.induction_on with i s hi hs
+  induction' s with i s hi hs
   · simp
   simp only [Finset.sum_insert hi, ← hs]
   refine' (ENNReal.iSup_add_iSup _).symm
@@ -651,7 +651,7 @@ theorem set_lintegral_measure_zero (s : Set α) (f : α → ℝ≥0∞) (hs' : �
 theorem lintegral_finset_sum' (s : Finset β) {f : β → α → ℝ≥0∞}
     (hf : ∀ b ∈ s, AEMeasurable (f b) μ) :
     ∫⁻ a, ∑ b in s, f b a ∂μ = ∑ b in s, ∫⁻ a, f b a ∂μ := by
-  induction' s using Finset.induction_on with a s has ih
+  induction' s with a s has ih
   · simp
   · simp only [Finset.sum_insert has]
     rw [Finset.forall_mem_insert] at hf

@@ -632,7 +632,7 @@ theorem map_prod {ι : Type*} [CommMonoidWithZero R] (g : ι → ℕ) {f : Arith
     (hf : f.IsMultiplicative) (s : Finset ι) (hs : (s : Set ι).Pairwise (Coprime on g)) :
     f (∏ i in s, g i) = ∏ i in s, f (g i) := by
   classical
-    induction' s using Finset.induction_on with a s has ih hs
+    induction' s with a s has ih hs
     · simp [hf]
     rw [coe_insert, Set.pairwise_insert_of_symmetric (Coprime.symmetric.comap g)] at hs
     rw [prod_insert has, prod_insert has, hf.map_mul_of_coprime, ih hs.1]

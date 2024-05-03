@@ -167,7 +167,7 @@ lemma Finset.centerMass_of_sum_add_sum_eq_zero {s t : Finset ι}
 provided that all weights are non-negative, and the total weight is positive. -/
 theorem Convex.centerMass_mem (hs : Convex R s) :
     (∀ i ∈ t, 0 ≤ w i) → (0 < ∑ i in t, w i) → (∀ i ∈ t, z i ∈ s) → t.centerMass w z ∈ s := by
-  induction' t using Finset.induction with i t hi ht
+  induction' t with i t hi ht
   · simp [lt_irrefl]
   intro h₀ hpos hmem
   have zi : z i ∈ s := hmem _ (mem_insert_self _ _)

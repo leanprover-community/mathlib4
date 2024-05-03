@@ -58,7 +58,7 @@ variable (p : 𝕜[X]) (q : R[X])
 /-- The derivative (in the analysis sense) of a polynomial `p` is given by `p.derivative`. -/
 protected theorem hasStrictDerivAt (x : 𝕜) :
     HasStrictDerivAt (fun x => p.eval x) (p.derivative.eval x) x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq => simpa using hp.add hq
   | h_monomial n a => simpa [mul_assoc] using (hasStrictDerivAt_pow n x).const_mul a
 #align polynomial.has_strict_deriv_at Polynomial.hasStrictDerivAt

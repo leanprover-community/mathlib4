@@ -460,7 +460,7 @@ theorem beth_le {o₁ o₂ : Ordinal} : beth o₁ ≤ beth o₂ ↔ o₁ ≤ o�
 #align cardinal.beth_le Cardinal.beth_le
 
 theorem aleph_le_beth (o : Ordinal) : aleph o ≤ beth o := by
-  induction o using limitRecOn with
+  induction o with
   | H₁ => simp
   | H₂ o h =>
     rw [aleph_succ, beth_succ, succ_le_iff]

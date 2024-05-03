@@ -270,7 +270,7 @@ theorem mul_pos (ha : a ≠ 0) (hb : b ≠ 0) : 0 < a * b :=
 @[simp] theorem pow_eq_top_iff {n : ℕ} : a ^ n = ∞ ↔ a = ∞ ∧ n ≠ 0 := by
   rcases n.eq_zero_or_pos with rfl | (hn : 0 < n)
   · simp
-  · induction a using recTopCoe
+  · induction a
     · simp only [Ne, hn.ne', top_pow hn, not_false_eq_true, and_self]
     · simp only [← coe_pow, coe_ne_top, false_and]
 #align ennreal.pow_eq_top_iff ENNReal.pow_eq_top_iff

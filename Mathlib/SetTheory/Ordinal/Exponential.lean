@@ -81,7 +81,7 @@ theorem opow_one (a : Ordinal) : a ^ (1 : Ordinal) = a := by
 
 @[simp]
 theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
-  induction a using limitRecOn with
+  induction a with
   | H₁ => simp only [opow_zero]
   | H₂ _ ih =>
     simp only [opow_succ, ih, mul_one]
@@ -93,7 +93,7 @@ theorem one_opow (a : Ordinal) : (1 : Ordinal) ^ a = 1 := by
 
 theorem opow_pos {a : Ordinal} (b : Ordinal) (a0 : 0 < a) : 0 < a ^ b := by
   have h0 : 0 < a ^ (0 : Ordinal) := by simp only [opow_zero, zero_lt_one]
-  induction b using limitRecOn with
+  induction b with
   | H₁ => exact h0
   | H₂ b IH =>
     rw [opow_succ]
@@ -152,7 +152,7 @@ theorem opow_le_opow_left {a b : Ordinal} (c : Ordinal) (ab : a ≤ b) : a ^ c �
     · subst c
       simp only [opow_zero, le_refl]
     · simp only [zero_opow c0, Ordinal.zero_le]
-  · induction c using limitRecOn with
+  · induction c with
     | H₁ => simp only [opow_zero, le_refl]
     | H₂ c IH =>
       simpa only [opow_succ] using mul_le_mul' IH ab
@@ -192,7 +192,7 @@ theorem opow_add (a b c : Ordinal) : a ^ (b + c) = a ^ b * a ^ c := by
     simp only [zero_opow c0, zero_opow this, mul_zero]
   rcases eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with (rfl | a1)
   · simp only [one_opow, mul_one]
-  induction c using limitRecOn with
+  induction c with
   | H₁ => simp
   | H₂ c IH =>
     rw [add_succ, opow_succ, IH, opow_succ, mul_assoc]
@@ -233,7 +233,7 @@ theorem opow_mul (a b c : Ordinal) : a ^ (b * c) = (a ^ b) ^ c := by
   cases' eq_or_lt_of_le (one_le_iff_ne_zero.2 a0) with a1 a1
   · subst a1
     simp only [one_opow]
-  induction c using limitRecOn with
+  induction c with
   | H₁ => simp only [mul_zero, opow_zero]
   | H₂ c IH =>
     rw [mul_succ, opow_add, IH, opow_succ]

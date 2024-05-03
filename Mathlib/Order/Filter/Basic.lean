@@ -1060,7 +1060,7 @@ theorem principal_le_iff {s : Set α} {f : Filter α} : 𝓟 s ≤ f ↔ ∀ V �
 @[simp]
 theorem iInf_principal_finset {ι : Type w} (s : Finset ι) (f : ι → Set α) :
     ⨅ i ∈ s, 𝓟 (f i) = 𝓟 (⋂ i ∈ s, f i) := by
-  induction' s using Finset.induction_on with i s _ hs
+  induction' s with i s _ hs
   · simp
   · rw [Finset.iInf_insert, Finset.set_biInter_insert, hs, inf_principal]
 #align filter.infi_principal_finset Filter.iInf_principal_finset

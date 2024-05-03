@@ -275,7 +275,7 @@ theorem hom_ext (f g : X ⟶ Y) (h : ∀ n : ℕ, s.φ f n = s.φ g n) : f = g :
   apply s.hom_ext'
   intro A
   induction' Δ using Opposite.rec with Δ
-  induction' Δ using SimplexCategory.rec with n
+  induction' Δ with n
   dsimp
   simp only [s.cofan_inj_comp_app, h]
 #align simplicial_object.splitting.hom_ext SimplicialObject.Splitting.hom_ext

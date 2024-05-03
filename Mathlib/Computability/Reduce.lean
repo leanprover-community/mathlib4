@@ -365,7 +365,7 @@ def of (p : α → Prop) : ManyOneDegree :=
   Quotient.mk'' (toNat p)
 #align many_one_degree.of ManyOneDegree.of
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem ind_on {C : ManyOneDegree → Prop} (d : ManyOneDegree)
     (h : ∀ p : Set ℕ, C (of p)) : C d :=
   Quotient.inductionOn' d h
@@ -393,7 +393,7 @@ protected def liftOn₂ {φ} (d₁ d₂ : ManyOneDegree) (f : Set ℕ → Set �
   d₁.liftOn (fun p => d₂.liftOn (f p) fun q₁ q₂ hq => h _ _ _ _ (by rfl) hq)
     (by
       intro p₁ p₂ hp
-      induction d₂ using ManyOneDegree.ind_on
+      induction d₂
       apply h
       assumption
       rfl)
@@ -432,18 +432,18 @@ theorem of_le_of {p : α → Prop} {q : β → Prop} : of p ≤ of q ↔ p ≤�
 #align many_one_degree.of_le_of ManyOneDegree.of_le_of
 
 private theorem le_refl (d : ManyOneDegree) : d ≤ d := by
-  induction d using ManyOneDegree.ind_on; simp; rfl
+  induction d; simp; rfl
 
 private theorem le_antisymm {d₁ d₂ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₁ → d₁ = d₂ := by
-  induction d₁ using ManyOneDegree.ind_on
-  induction d₂ using ManyOneDegree.ind_on
+  induction d₁
+  induction d₂
   intro hp hq
   simp_all only [ManyOneEquiv, of_le_of, of_eq_of, true_and_iff]
 
 private theorem le_trans {d₁ d₂ d₃ : ManyOneDegree} : d₁ ≤ d₂ → d₂ ≤ d₃ → d₁ ≤ d₃ := by
-  induction d₁ using ManyOneDegree.ind_on
-  induction d₂ using ManyOneDegree.ind_on
-  induction d₃ using ManyOneDegree.ind_on
+  induction d₁
+  induction d₂
+  induction d₃
   apply ManyOneReducible.trans
 
 instance instPartialOrder : PartialOrder ManyOneDegree where
@@ -480,9 +480,9 @@ theorem add_of (p : Set α) (q : Set β) : of (p ⊕' q) = of p + of q :=
 
 @[simp]
 protected theorem add_le {d₁ d₂ d₃ : ManyOneDegree} : d₁ + d₂ ≤ d₃ ↔ d₁ ≤ d₃ ∧ d₂ ≤ d₃ := by
-  induction d₁ using ManyOneDegree.ind_on
-  induction d₂ using ManyOneDegree.ind_on
-  induction d₃ using ManyOneDegree.ind_on
+  induction d₁
+  induction d₂
+  induction d₃
   simpa only [← add_of, of_le_of] using disjoin_le
 #align many_one_degree.add_le ManyOneDegree.add_le
 

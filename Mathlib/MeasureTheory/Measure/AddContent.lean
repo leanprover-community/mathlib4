@@ -160,7 +160,7 @@ lemma addContent_biUnion_le {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     {S : Finset ι} (hs : ∀ n ∈ S, s n ∈ C) :
     m (⋃ i ∈ S, s i) ≤ ∑ i in S, m (s i) := by
   classical
-  induction' S using Finset.induction with i S hiS h hs
+  induction' S with i S hiS h hs
   · simp
   · rw [Finset.sum_insert hiS]
     simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]

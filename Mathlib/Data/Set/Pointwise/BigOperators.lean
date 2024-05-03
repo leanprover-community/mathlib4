@@ -60,7 +60,7 @@ theorem image_finset_prod (f : F) (m : Finset ι) (s : ι → Set α) :
 theorem mem_finset_prod (t : Finset ι) (f : ι → Set α) (a : α) :
     (a ∈ ∏ i in t, f i) ↔ ∃ (g : ι → α) (_ : ∀ {i}, i ∈ t → g i ∈ f i), ∏ i in t, g i = a := by
   classical
-    induction' t using Finset.induction_on with i is hi ih generalizing a
+    induction' t with i is hi ih generalizing a
     · simp_rw [Finset.prod_empty, Set.mem_one]
       exact ⟨fun h ↦ ⟨fun _ ↦ a, fun hi ↦ False.elim (Finset.not_mem_empty _ hi), h.symm⟩,
         fun ⟨_, _, hf⟩ ↦ hf.symm⟩

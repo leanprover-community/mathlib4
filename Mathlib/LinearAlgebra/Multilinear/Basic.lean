@@ -653,7 +653,7 @@ theorem map_sum [DecidableEq ι] [Fintype ι] [∀ i, Fintype (α i)] :
 theorem map_update_sum {α : Type*} [DecidableEq ι] (t : Finset α) (i : ι) (g : α → M₁ i)
     (m : ∀ i, M₁ i) : f (update m i (∑ a in t, g a)) = ∑ a in t, f (update m i (g a)) := by
   classical
-    induction' t using Finset.induction with a t has ih h
+    induction' t with a t has ih h
     · simp
     · simp [Finset.sum_insert has, ih]
 #align multilinear_map.map_update_sum MultilinearMap.map_update_sum

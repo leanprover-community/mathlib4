@@ -303,7 +303,7 @@ lemma biUnion_mem {ι : Type*} (hC : IsSetRing C) {s : ι → Set α}
     (S : Finset ι) (hs : ∀ n ∈ S, s n ∈ C) :
     ⋃ i ∈ S, s i ∈ C := by
   classical
-  induction' S using Finset.induction with i S _ h hs
+  induction' S with i S _ h hs
   · simp [hC.empty_mem]
   · simp_rw [← Finset.mem_coe, Finset.coe_insert, Set.biUnion_insert]
     refine hC.union_mem (hs i (mem_insert_self i S)) ?_

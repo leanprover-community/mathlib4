@@ -131,7 +131,7 @@ infixl:100 " ⊗ₜ " => tmul _
 notation:100 x " ⊗ₜ[" R "] " y:100 => tmul R x y
 
 -- Porting note: make the arguments of induction_on explicit
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {motive : M ⊗[R] N → Prop} (z : M ⊗[R] N)
     (zero : motive 0)
     (tmul : ∀ x y, motive <| x ⊗ₜ[R] y)
@@ -463,7 +463,7 @@ open BigOperators
 theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
     (∑ a in s, m a) ⊗ₜ[R] n = ∑ a in s, m a ⊗ₜ[R] n := by
   classical
-    induction' s using Finset.induction with a s has ih h
+    induction' s with a s has ih h
     · simp
     · simp [Finset.sum_insert has, add_tmul, ih]
 #align tensor_product.sum_tmul TensorProduct.sum_tmul
@@ -471,7 +471,7 @@ theorem sum_tmul {α : Type*} (s : Finset α) (m : α → M) (n : N) :
 theorem tmul_sum (m : M) {α : Type*} (s : Finset α) (n : α → N) :
     (m ⊗ₜ[R] ∑ a in s, n a) = ∑ a in s, m ⊗ₜ[R] n a := by
   classical
-    induction' s using Finset.induction with a s has ih h
+    induction' s with a s has ih h
     · simp
     · simp [Finset.sum_insert has, tmul_add, ih]
 #align tensor_product.tmul_sum TensorProduct.tmul_sum
@@ -501,7 +501,7 @@ theorem map₂_mk_top_top_eq_top : Submodule.map₂ (mk R M N) ⊤ ⊤ = ⊤ := 
 theorem exists_eq_tmul_of_forall (x : TensorProduct R M N)
     (h : ∀ (m₁ m₂ : M) (n₁ n₂ : N), ∃ m n, m₁ ⊗ₜ n₁ + m₂ ⊗ₜ n₂ = m ⊗ₜ[R] n) :
     ∃ m n, x = m ⊗ₜ n := by
-  induction x using TensorProduct.induction_on with
+  induction x with
   | zero =>
     use 0, 0
     rw [TensorProduct.zero_tmul]

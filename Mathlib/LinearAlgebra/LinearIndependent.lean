@@ -817,7 +817,7 @@ theorem linearIndependent_iUnion_finite_subtype {ι : Type*} {f : ι → Set M}
   · apply directed_of_isDirected_le
     exact fun t₁ t₂ ht => iUnion_mono fun i => iUnion_subset_iUnion_const fun h => ht h
   intro t
-  induction' t using Finset.induction_on with i s his ih
+  induction' t with i s his ih
   · refine' (linearIndependent_empty R M).mono _
     simp
   · rw [Finset.set_biUnion_insert]

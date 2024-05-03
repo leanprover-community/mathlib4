@@ -480,7 +480,7 @@ theorem isPreconnected_univ_pi [∀ i, TopologicalSpace (π i)] {s : ∀ i, Set 
     (hs : ∀ i, IsPreconnected (s i)) : IsPreconnected (pi univ s) := by
   rintro u v uo vo hsuv ⟨f, hfs, hfu⟩ ⟨g, hgs, hgv⟩
   rcases exists_finset_piecewise_mem_of_mem_nhds (uo.mem_nhds hfu) g with ⟨I, hI⟩
-  induction' I using Finset.induction_on with i I _ ihI
+  induction' I with i I _ ihI
   · refine' ⟨g, hgs, ⟨_, hgv⟩⟩
     simpa using hI
   · rw [Finset.piecewise_insert] at hI

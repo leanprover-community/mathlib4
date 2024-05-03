@@ -390,9 +390,8 @@ theorem inl_fst_add_inr_snd_eq [AddZeroClass R] [AddZeroClass M] (x : tsze R M) 
 #align triv_sq_zero_ext.inl_fst_add_inr_snd_eq TrivSqZeroExt.inl_fst_add_inr_snd_eq
 
 /-- To show a property hold on all `TrivSqZeroExt R M` it suffices to show it holds
-on terms of the form `inl r + inr m`.
-
-This can be used as `induction x using TrivSqZeroExt.ind`. -/
+on terms of the form `inl r + inr m`. -/
+@[induction_eliminator]
 theorem ind {R M} [AddZeroClass R] [AddZeroClass M] {P : TrivSqZeroExt R M → Prop}
     (h : ∀ r m, P (inl r + inr m)) (x) : P x :=
   inl_fst_add_inr_snd_eq x ▸ h x.1 x.2

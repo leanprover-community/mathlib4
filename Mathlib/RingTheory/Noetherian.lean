@@ -211,7 +211,7 @@ instance isNoetherian_pi {R ι : Type*} {M : ι → Type*}
     letI : IsNoetherian R (∀ i : Finset.univ, M (coe_e i)) := on_finset Finset.univ
     exact isNoetherian_of_linearEquiv (LinearEquiv.piCongrLeft R M coe_e)
   intro s
-  induction' s using Finset.induction with a s has ih
+  induction' s with a s has ih
   · exact ⟨fun s => by
       have : s = ⊥ := by simp only [eq_iff_true_of_subsingleton]
       rw [this]

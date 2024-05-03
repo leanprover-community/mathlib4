@@ -502,7 +502,7 @@ applications are disjoint (but not necessarily distinct!), then the size of `t` 
 theorem card_dvd_card_image₂_right (hf : ∀ a ∈ s, Injective (f a))
     (hs : ((fun a => t.image <| f a) '' s).PairwiseDisjoint id) : t.card ∣ (image₂ f s t).card := by
   classical
-  induction' s using Finset.induction with a s _ ih
+  induction' s with a s _ ih
   · simp
   specialize ih (forall_of_forall_insert hf)
     (hs.subset <| Set.image_subset _ <| coe_subset.2 <| subset_insert _ _)

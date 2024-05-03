@@ -393,7 +393,7 @@ theorem basicOpen_eq_of_affine' {R : CommRingCat}
 
 theorem Scheme.Spec_map_presheaf_map_eqToHom {X : Scheme} {U V : Opens X} (h : U = V) (W) :
     (Scheme.Spec.map (X.presheaf.map (eqToHom h).op).op).val.c.app W =
-      eqToHom (by cases h; induction W using Opposite.rec'; dsimp; simp) := by
+      eqToHom (by cases h; induction W; dsimp; simp) := by
   have : Scheme.Spec.map (X.presheaf.map (𝟙 (op U))).op = 𝟙 _ := by
     rw [X.presheaf.map_id, op_id, Scheme.Spec.map_id]
   cases h

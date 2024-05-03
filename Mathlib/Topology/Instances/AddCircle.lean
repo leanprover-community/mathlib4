@@ -129,6 +129,10 @@ section LinearOrderedAddCommGroup
 
 variable [LinearOrderedAddCommGroup 𝕜] [TopologicalSpace 𝕜] [OrderTopology 𝕜] (p : 𝕜)
 
+@[elab_as_elim, induction_eliminator]
+theorem induction_on {C : AddCircle p → Prop} (x : AddCircle p) (H : ∀ z : 𝕜, C z) : C x :=
+  QuotientAddGroup.induction_on' x H
+
 theorem coe_nsmul {n : ℕ} {x : 𝕜} : (↑(n • x) : AddCircle p) = n • (x : AddCircle p) :=
   rfl
 #align add_circle.coe_nsmul AddCircle.coe_nsmul
@@ -265,14 +269,12 @@ theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
 variable {x : AddCircle p} (hx : x ≠ a)
 
 theorem continuousAt_equivIco : ContinuousAt (equivIco p a) x := by
-  unfold AddCircle at x
   induction x
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIcoMod hp.out a hx).codRestrict _
 #align add_circle.continuous_at_equiv_Ico AddCircle.continuousAt_equivIco
 
 theorem continuousAt_equivIoc : ContinuousAt (equivIoc p a) x := by
-  unfold AddCircle at x
   induction x
   rw [ContinuousAt, Filter.Tendsto, QuotientAddGroup.nhds_eq, Filter.map_map]
   exact (continuousAt_toIocMod hp.out a hx).codRestrict _

@@ -252,7 +252,7 @@ theorem sup_le_of_le_directed {α : Type*} [SemilatticeSup α] [OrderBot α] (s 
     (hs : s.Nonempty) (hdir : DirectedOn (· ≤ ·) s) (t : Finset α) :
     (∀ x ∈ t, ∃ y ∈ s, x ≤ y) → ∃ x ∈ s, t.sup id ≤ x := by
   classical
-    induction' t using Finset.induction_on with a r _ ih h
+    induction' t with a r _ ih h
     · simpa only [forall_prop_of_true, and_true_iff, forall_prop_of_false, bot_le, not_false_iff,
         sup_empty, forall_true_iff, not_mem_empty]
     · intro h
@@ -279,7 +279,7 @@ theorem sup_mem (s : Set α) (w₁ : ⊥ ∈ s) (w₂ : ∀ᵉ (x ∈ s) (y ∈ 
 
 @[simp]
 protected theorem sup_eq_bot_iff (f : β → α) (S : Finset β) : S.sup f = ⊥ ↔ ∀ s ∈ S, f s = ⊥ := by
-  classical induction' S using Finset.induction with a S _ hi <;> simp [*]
+  classical induction' S with a S _ hi <;> simp [*]
 #align finset.sup_eq_bot_iff Finset.sup_eq_bot_iff
 
 end Sup
@@ -592,7 +592,7 @@ variable [BoundedOrder α] [DecidableEq ι]
 theorem inf_sup {κ : ι → Type*} (s : Finset ι) (t : ∀ i, Finset (κ i)) (f : ∀ i, κ i → α) :
     (s.inf fun i => (t i).sup (f i)) =
       (s.pi t).sup fun g => s.attach.inf fun i => f _ <| g _ i.2 := by
-  induction' s using Finset.induction with i s hi ih
+  induction' s with i s hi ih
   · simp
   rw [inf_insert, ih, attach_insert, sup_inf_sup]
   refine' eq_of_forall_ge_iff fun c => _
@@ -1390,7 +1390,7 @@ theorem max_eq_bot {s : Finset α} : s.max = ⊥ ↔ s = ∅ :=
 #align finset.max_eq_bot Finset.max_eq_bot
 
 theorem mem_of_max {s : Finset α} : ∀ {a : α}, s.max = a → a ∈ s := by
-  induction' s using Finset.induction_on with b s _ ih
+  induction' s with b s _ ih
   · intro _ H; cases H
   · intro a h
     by_cases p : b = a

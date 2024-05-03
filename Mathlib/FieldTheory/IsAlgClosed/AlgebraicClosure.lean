@@ -139,7 +139,7 @@ theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.
 theorem AdjoinMonic.isIntegral (z : AdjoinMonic k) : IsIntegral k z := by
   let ⟨p, hp⟩ := Ideal.Quotient.mk_surjective z
   rw [← hp]
-  induction p using MvPolynomial.induction_on generalizing z with
+  induction p generalizing z with
     | h_C => exact isIntegral_algebraMap
     | h_add _ _ ha hb => exact (ha _ rfl).add (hb _ rfl)
     | h_X p f ih =>

@@ -122,9 +122,8 @@ theorem exists_smul_eq_mk_rep (v : V) (hv : v ≠ 0) : ∃ a : Kˣ, a • v = (m
 
 variable {K}
 
-/-- An induction principle for `Projectivization`.
-Use as `induction v using Projectivization.ind`. -/
-@[elab_as_elim]
+/-- An induction principle for `Projectivization`. -/
+@[elab_as_elim, induction_eliminator]
 theorem ind {P : ℙ K V → Prop} (h : ∀ (v : V) (h : v ≠ 0), P (mk K v h)) : ∀ p, P p :=
   Quotient.ind' <| Subtype.rec <| h
 #align projectivization.ind Projectivization.ind
@@ -151,8 +150,8 @@ instance (v : ℙ K V) : FiniteDimensional K v.submodule := by
 
 theorem submodule_injective :
     Function.Injective (Projectivization.submodule : ℙ K V → Submodule K V) := fun u v h ↦ by
-  induction' u using ind with u hu
-  induction' v using ind with v hv
+  induction' u with u hu
+  induction' v with v hv
   rw [submodule_mk, submodule_mk, Submodule.span_singleton_eq_span_singleton] at h
   exact ((mk_eq_mk_iff K v u hv hu).2 h).symm
 #align projectivization.submodule_injective Projectivization.submodule_injective
@@ -211,7 +210,7 @@ theorem map_mk {σ : K →+* L} (f : V →ₛₗ[σ] W) (hf : Function.Injective
 an injective map on projective spaces. -/
 theorem map_injective {σ : K →+* L} {τ : L →+* K} [RingHomInvPair σ τ] (f : V →ₛₗ[σ] W)
     (hf : Function.Injective f) : Function.Injective (map f hf) := fun u v h ↦ by
-  induction' u using ind with u hu; induction' v using ind with v hv
+  induction' u with u hu; induction' v with v hv
   simp only [map_mk, mk_eq_mk_iff'] at h ⊢
   rcases h with ⟨a, ha⟩
   refine ⟨τ a, hf ?_⟩

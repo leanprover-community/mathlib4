@@ -419,7 +419,7 @@ theorem fix_inv {x : Q} : x ◃⁻¹ x = x := by
 instance oppositeQuandle : Quandle Qᵐᵒᵖ where
   fix := by
     intro x
-    induction' x using MulOpposite.rec'
+    induction' x
     simp
 #align quandle.opposite_quandle Quandle.oppositeQuandle
 

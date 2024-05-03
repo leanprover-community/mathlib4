@@ -1033,7 +1033,7 @@ theorem ContDiffWithinAt.fderivWithin'' {f : E → F → G} {g : E → F} {t : S
     refine hf'.congr_of_eventuallyEq_insert ?_
     filter_upwards [hv, ht]
     exact fun y hy h2y => (hvf' y hy).fderivWithin h2y
-  induction' m using WithTop.recTopCoe with m
+  induction' m with m
   · obtain rfl := eq_top_iff.mpr hmn
     rw [contDiffWithinAt_top]
     exact fun m => this m le_top
@@ -1423,7 +1423,7 @@ theorem ContDiffWithinAt.sum {ι : Type*} {f : ι → E → F} {s : Finset ι} {
     (h : ∀ i ∈ s, ContDiffWithinAt 𝕜 n (fun x => f i x) t x) :
     ContDiffWithinAt 𝕜 n (fun x => ∑ i in s, f i x) t x := by
   classical
-    induction' s using Finset.induction_on with i s is IH
+    induction' s with i s is IH
     · simp [contDiffWithinAt_const]
     · simp only [is, Finset.sum_insert, not_false_iff]
       exact (h _ (Finset.mem_insert_self i s)).add

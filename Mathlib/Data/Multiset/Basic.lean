@@ -1378,7 +1378,7 @@ theorem map_subset_map {f : α → β} {s t : Multiset α} (H : s ⊆ t) : map f
 
 theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Function.Injective f) (x : α)
     (s : Multiset α) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
+  induction' s with y s ih
   · simp
   by_cases hxy : y = x
   · cases hxy
@@ -1388,7 +1388,7 @@ theorem map_erase [DecidableEq α] [DecidableEq β] (f : α → β) (hf : Functi
 
 theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
     (s : Multiset α) {x : α} (h : x ∈ s) : (s.erase x).map f = (s.map f).erase (f x) := by
-  induction' s using Multiset.induction_on with y s ih
+  induction' s with y s ih
   · simp
   rcases eq_or_ne y x with rfl | hxy
   · simp
@@ -1398,7 +1398,7 @@ theorem map_erase_of_mem [DecidableEq α] [DecidableEq β] (f : α → β)
 theorem map_surjective_of_surjective {f : α → β} (hf : Function.Surjective f) :
     Function.Surjective (map f) := by
   intro s
-  induction' s using Multiset.induction_on with x s ih
+  induction' s with x s ih
   · exact ⟨0, map_zero _⟩
   · obtain ⟨y, rfl⟩ := hf x
     obtain ⟨t, rfl⟩ := ih
@@ -2694,7 +2694,7 @@ end
 @[ext]
 theorem addHom_ext [AddZeroClass β] ⦃f g : Multiset α →+ β⦄ (h : ∀ x, f {x} = g {x}) : f = g := by
   ext s
-  induction' s using Multiset.induction_on with a s ih
+  induction' s with a s ih
   · simp only [_root_.map_zero]
   · simp only [← singleton_add, _root_.map_add, ih, h]
 #align multiset.add_hom_ext Multiset.addHom_ext
@@ -2917,7 +2917,7 @@ theorem rel_replicate_right {m : Multiset α} {a : α} {r : α → α → Prop} 
 protected nonrec -- Porting note: added
 theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} (r1 : Rel r s t)
     (r2 : Rel r t u) : Rel r s u := by
-  induction' t using Multiset.induction_on with x t ih generalizing s u
+  induction' t with x t ih generalizing s u
   · rw [rel_zero_right.mp r1, rel_zero_left.mp r2, rel_zero_left]
   · obtain ⟨a, as, ha1, ha2, rfl⟩ := rel_cons_right.mp r1
     obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp r2
@@ -2926,7 +2926,7 @@ theorem Rel.trans (r : α → α → Prop) [IsTrans α r] {s t u : Multiset α} 
 
 theorem Rel.countP_eq (r : α → α → Prop) [IsTrans α r] [IsSymm α r] {s t : Multiset α} (x : α)
     [DecidablePred (r x)] (h : Rel r s t) : countP (r x) s = countP (r x) t := by
-  induction' s using Multiset.induction_on with y s ih generalizing t
+  induction' s with y s ih generalizing t
   · rw [rel_zero_left.mp h]
   · obtain ⟨b, bs, hb1, hb2, rfl⟩ := rel_cons_left.mp h
     rw [countP_cons, countP_cons, ih hb2]

@@ -291,10 +291,10 @@ set_option linter.uppercaseLean3 false in
 
 @[simp]
 theorem derivative_mul {f g : R[X]} : derivative (f * g) = derivative f * g + f * derivative g := by
-  induction f using Polynomial.induction_on' with
+  induction f with
   | h_add => simp only [add_mul, map_add, add_assoc, add_left_comm, *]
   | h_monomial m a =>
-  induction g using Polynomial.induction_on' with
+  induction g with
   | h_add => simp only [mul_add, map_add, add_assoc, add_left_comm, *]
   | h_monomial n b =>
   simp only [monomial_mul_monomial, derivative_monomial]
@@ -528,7 +528,7 @@ set_option linter.uppercaseLean3 false in
 
 theorem derivative_comp (p q : R[X]) :
     derivative (p.comp q) = derivative q * p.derivative.comp q := by
-  induction p using Polynomial.induction_on'
+  induction p
   · simp [*, mul_add]
   · simp only [derivative_pow, derivative_mul, monomial_comp, derivative_monomial, derivative_C,
       zero_mul, C_eq_natCast, zero_add, RingHom.map_mul]

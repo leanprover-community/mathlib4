@@ -393,7 +393,7 @@ protected theorem Tendsto.mul_const {f : Filter α} {m : α → ℝ≥0∞} {a b
 theorem tendsto_finset_prod_of_ne_top {ι : Type*} {f : ι → α → ℝ≥0∞} {x : Filter α} {a : ι → ℝ≥0∞}
     (s : Finset ι) (h : ∀ i ∈ s, Tendsto (f i) x (𝓝 (a i))) (h' : ∀ i ∈ s, a i ≠ ∞) :
     Tendsto (fun b => ∏ c in s, f c b) x (𝓝 (∏ c in s, a c)) := by
-  induction' s using Finset.induction with a s has IH
+  induction' s with a s has IH
   · simp [tendsto_const_nhds]
   simp only [Finset.prod_insert has]
   apply Tendsto.mul (h _ (Finset.mem_insert_self _ _))

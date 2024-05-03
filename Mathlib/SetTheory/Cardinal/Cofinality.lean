@@ -1188,7 +1188,7 @@ theorem derivFamily_lt_ord_lift {ι} {f : ι → Ordinal → Ordinal} {c} (hc : 
   have hω : ℵ₀ < c.ord.cof := by
     rw [hc.cof_eq]
     exact lt_of_le_of_ne hc.1 hc'.symm
-  induction a using limitRecOn with
+  induction a with
   | H₁ =>
     rw [derivFamily_zero]
     exact nfpFamily_lt_ord_lift hω (by rwa [hc.cof_eq]) hf

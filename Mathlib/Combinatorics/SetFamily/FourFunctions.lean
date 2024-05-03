@@ -241,7 +241,7 @@ protected lemma Finset.four_functions_theorem (u : Finset α)
     (h : ∀ ⦃s⦄, s ⊆ u → ∀ ⦃t⦄, t ⊆ u → f₁ s * f₂ t ≤ f₃ (s ∩ t) * f₄ (s ∪ t))
     {𝒜 ℬ : Finset (Finset α)} (h𝒜 : 𝒜 ⊆ u.powerset) (hℬ : ℬ ⊆ u.powerset) :
     (∑ s in 𝒜, f₁ s) * ∑ s in ℬ, f₂ s ≤ (∑ s in 𝒜 ⊼ ℬ, f₃ s) * ∑ s in 𝒜 ⊻ ℬ, f₄ s := by
-  induction' u using Finset.induction with a u hu ih generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ
+  induction' u with a u hu ih generalizing f₁ f₂ f₃ f₄ 𝒜 ℬ
   · simp only [Finset.powerset_empty, Finset.subset_singleton_iff] at h𝒜 hℬ
     obtain rfl | rfl := h𝒜 <;> obtain rfl | rfl := hℬ <;> simp; exact h (subset_refl ∅) subset_rfl
   specialize ih (collapse_nonneg h₁) (collapse_nonneg h₂) (collapse_nonneg h₃) (collapse_nonneg h₄)

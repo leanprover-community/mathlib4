@@ -161,7 +161,7 @@ protected theorem casesOn' {P : PartENat → Prop} :
   Part.induction_on
 #align part_enat.cases_on' PartENat.casesOn'
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem casesOn {P : PartENat → Prop} : ∀ a : PartENat, P ⊤ → (∀ n : ℕ, P n) → P a := by
   exact PartENat.casesOn'
 #align part_enat.cases_on PartENat.casesOn
@@ -488,7 +488,7 @@ theorem eq_natCast_sub_of_add_eq_natCast {x y : PartENat} {n : ℕ} (h : x + y =
 protected theorem add_lt_add_right {x y z : PartENat} (h : x < y) (hz : z ≠ ⊤) : x + z < y + z := by
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   rcases ne_top_iff.mp hz with ⟨k, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction' y with n
   · rw [top_add]
     -- Porting note: was apply_mod_cast natCast_lt_top
     norm_cast; apply natCast_lt_top
@@ -516,7 +516,7 @@ theorem lt_add_one {x : PartENat} (hx : x ≠ ⊤) : x < x + 1 := by
 #align part_enat.lt_add_one PartENat.lt_add_one
 
 theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
-  induction' y using PartENat.casesOn with n
+  induction' y with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   -- Porting note: was `apply_mod_cast Nat.le_of_lt_succ; apply_mod_cast h`
@@ -524,7 +524,7 @@ theorem le_of_lt_add_one {x y : PartENat} (h : x < y + 1) : x ≤ y := by
 #align part_enat.le_of_lt_add_one PartENat.le_of_lt_add_one
 
 theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
-  induction' y using PartENat.casesOn with n
+  induction' y with n
   · apply le_top
   rcases ne_top_iff.mp (ne_top_of_lt h) with ⟨m, rfl⟩
   -- Porting note: was `apply_mod_cast Nat.succ_le_of_lt; apply_mod_cast h`
@@ -534,7 +534,7 @@ theorem add_one_le_of_lt {x y : PartENat} (h : x < y) : x + 1 ≤ y := by
 theorem add_one_le_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x + 1 ≤ y ↔ x < y := by
   refine ⟨fun h => ?_, add_one_le_of_lt⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction' y with n
   · apply natCast_lt_top
   -- Porting note: was `apply_mod_cast Nat.lt_of_succ_le; apply_mod_cast h`
   norm_cast; apply Nat.lt_of_succ_le; norm_cast at h
@@ -547,7 +547,7 @@ theorem coe_succ_le_iff {n : ℕ} {e : PartENat} : ↑n.succ ≤ e ↔ ↑n < e 
 theorem lt_add_one_iff_lt {x y : PartENat} (hx : x ≠ ⊤) : x < y + 1 ↔ x ≤ y := by
   refine ⟨le_of_lt_add_one, fun h => ?_⟩
   rcases ne_top_iff.mp hx with ⟨m, rfl⟩
-  induction' y using PartENat.casesOn with n
+  induction' y with n
   · rw [top_add]
     apply natCast_lt_top
   -- Porting note: was `apply_mod_cast Nat.lt_succ_of_le; apply_mod_cast h`
@@ -647,9 +647,9 @@ theorem toWithTop_ofNat (n : ℕ) [n.AtLeastTwo] {_ : Decidable (OfNat.ofNat n :
 @[simp]
 theorem toWithTop_le {x y : PartENat} [hx : Decidable x.Dom] [hy : Decidable y.Dom] :
     toWithTop x ≤ toWithTop y ↔ x ≤ y := by
-  induction y using PartENat.casesOn generalizing hy
+  induction y generalizing hy
   · simp
-  induction x using PartENat.casesOn generalizing hx
+  induction x generalizing hx
   · simp
   · simp -- Porting note: this takes too long.
 #align part_enat.to_with_top_le PartENat.toWithTop_le
@@ -713,7 +713,7 @@ theorem toWithTop_ofENat (n : ℕ∞) {_ : Decidable (n : PartENat).Dom} : toWit
 
 @[simp, norm_cast]
 theorem ofENat_toWithTop (x : PartENat) {_ : Decidable (x : PartENat).Dom} : toWithTop x = x := by
-  induction x using PartENat.casesOn <;> simp
+  induction x <;> simp
 
 @[simp, norm_cast]
 theorem ofENat_le {x y : ℕ∞} : ofENat x ≤ ofENat y ↔ x ≤ y := by

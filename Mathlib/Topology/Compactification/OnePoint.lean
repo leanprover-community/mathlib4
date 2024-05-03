@@ -103,7 +103,7 @@ theorem infty_ne_coe (x : X) : ∞ ≠ (x : OnePoint X) :=
 #align alexandroff.infty_ne_coe OnePoint.infty_ne_coe
 
 /-- Recursor for `OnePoint` using the preferred forms `∞` and `↑x`. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected def rec {C : OnePoint X → Sort*} (h₁ : C ∞) (h₂ : ∀ x : X, C x) :
     ∀ z : OnePoint X, C z
   | ∞ => h₁
@@ -142,7 +142,7 @@ theorem compl_image_coe (s : Set X) : ((↑) '' s : Set (OnePoint X))ᶜ = (↑)
 #align alexandroff.compl_image_coe OnePoint.compl_image_coe
 
 theorem ne_infty_iff_exists {x : OnePoint X} : x ≠ ∞ ↔ ∃ y : X, (y : OnePoint X) = x := by
-  induction x using OnePoint.rec <;> simp
+  induction x <;> simp
 #align alexandroff.ne_infty_iff_exists OnePoint.ne_infty_iff_exists
 
 instance canLift : CanLift (OnePoint X) X (↑) fun x => x ≠ ∞ :=
@@ -418,7 +418,7 @@ theorem not_inseparable_coe_infty {x : X} : ¬Inseparable (x : OnePoint X) ∞ :
 
 theorem inseparable_iff {x y : OnePoint X} :
     Inseparable x y ↔ x = ∞ ∧ y = ∞ ∨ ∃ x' : X, x = x' ∧ ∃ y' : X, y = y' ∧ Inseparable x' y' := by
-  induction x using OnePoint.rec <;> induction y using OnePoint.rec <;>
+  induction x <;> induction y <;>
     simp [not_inseparable_infty_coe, not_inseparable_coe_infty, coe_eq_coe, Inseparable.refl]
 #align alexandroff.inseparable_iff OnePoint.inseparable_iff
 
@@ -452,7 +452,7 @@ instance [T0Space X] : T0Space (OnePoint X) := by
 /-- The one point compactification of a `T1Space` space is a `T1Space`. -/
 instance [T1Space X] : T1Space (OnePoint X) where
   t1 z := by
-    induction z using OnePoint.rec
+    induction z
     · exact isClosed_infty
     · rw [← image_singleton, isClosed_image_coe]
       exact ⟨isClosed_singleton, isCompact_singleton⟩
@@ -465,7 +465,7 @@ instance [LocallyCompactSpace X] [R1Space X] : NormalSpace (OnePoint X) := by
       disjoint_map coe_injective, ← principal_singleton, disjoint_principal_right, compl_infty]
     exact ⟨disjoint_nhds_cocompact z, range_mem_map⟩
   refine ⟨fun x y ↦ ?_⟩
-  induction x using OnePoint.rec <;> induction y using OnePoint.rec
+  induction x <;> induction y
   · exact .inl le_rfl
   · exact .inr (key _).symm
   · exact .inr (key _)

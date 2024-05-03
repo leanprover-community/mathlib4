@@ -167,7 +167,7 @@ theorem norm_image_sub_le_of_bound' [DecidableEq ι] {C : ℝ} (hC : 0 ≤ C)
       ‖f m₁ - f (s.piecewise m₂ m₁)‖ ≤
         C * ∑ i in s, ∏ j, if j = i then ‖m₁ i - m₂ i‖ else max ‖m₁ j‖ ‖m₂ j‖ := by
     intro s
-    induction' s using Finset.induction with i s his Hrec
+    induction' s with i s his Hrec
     · simp
     have I :
       ‖f (s.piecewise m₂ m₁) - f ((insert i s).piecewise m₂ m₁)‖ ≤

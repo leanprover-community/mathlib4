@@ -293,7 +293,7 @@ theorem map'_id {M : ModuleCat.{v} R} : map' f (𝟙 M) = 𝟙 _ :=
     dsimp only [map']
     -- Porting note: this got put in the dsimp by mathport
     rw [ModuleCat.id_apply]
-    induction' x using TensorProduct.induction_on with _ _ m s ihx ihy
+    induction' x with _ _ m s ihx ihy
     · rw [map_zero] -- Porting note: simp only [map_zero] failed
     · -- Porting note: issues with synthesizing Algebra R S
       erw [@LinearMap.baseChange_tmul R S M M _ _ (_), ModuleCat.id_apply]
@@ -304,7 +304,7 @@ theorem map'_comp {M₁ M₂ M₃ : ModuleCat.{v} R} (l₁₂ : M₁ ⟶ M₂) (
     map' f (l₁₂ ≫ l₂₃) = map' f l₁₂ ≫ map' f l₂₃ :=
   LinearMap.ext fun x : obj' f M₁ => by
     dsimp only [map']
-    induction' x using TensorProduct.induction_on with _ _ x y ihx ihy
+    induction' x with _ _ x y ihx ihy
     · rfl
     · rfl
     · rw [map_add, map_add, ihx, ihy] -- Porting note: simp again failing where rw succeeds
@@ -687,7 +687,7 @@ def HomEquiv.fromExtendScalars {X Y} (g : X ⟶ (restrictScalars f).obj Y) :
     rw [map_add]
   · intro s z
     change lift _ (s • z) = s • lift _ z
-    induction' z using TensorProduct.induction_on with s' x x y ih1 ih2
+    induction' z with s' x x y ih1 ih2
     · rw [smul_zero, map_zero, smul_zero]
     · rw [LinearMap.coe_mk, ExtendScalars.smul_tmul]
       erw [lift.tmul, lift.tmul]
@@ -708,7 +708,7 @@ def homEquiv {X Y} :
   left_inv g := by
     letI m1 : Module R S := Module.compHom S f; letI m2 : Module R Y := Module.compHom Y f
     apply LinearMap.ext; intro z
-    induction' z using TensorProduct.induction_on with x s z1 z2 ih1 ih2
+    induction' z with x s z1 z2 ih1 ih2
     · rw [map_zero, map_zero]
     · erw [TensorProduct.lift.tmul]
       simp only [LinearMap.coe_mk]
@@ -775,7 +775,7 @@ def Counit.map {Y} : (restrictScalars f ⋙ extendScalars f).obj Y ⟶ Y := by
     rw [map_add]
   · intro s z
     dsimp
-    induction' z using TensorProduct.induction_on with s' y z1 z2 ih1 ih2
+    induction' z with s' y z1 z2 ih1 ih2
     · rw [smul_zero, map_zero, smul_zero]
     · rw [ExtendScalars.smul_tmul, LinearMap.coe_mk]
       erw [TensorProduct.lift.tmul, TensorProduct.lift.tmul]
@@ -802,7 +802,7 @@ def counit : restrictScalars.{max v u₂,u₁,u₂} f ⋙ extendScalars f ⟶ �
     letI m2 : Module R Y := Module.compHom Y f
     letI m2 : Module R Y' := Module.compHom Y' f
     apply LinearMap.ext; intro z
-    induction' z using TensorProduct.induction_on with s' y z₁ z₂ ih₁ ih₂
+    induction' z with s' y z₁ z₂ ih₁ ih₂
     · rw [map_zero, map_zero]
     · dsimp
       rw [ModuleCat.coe_comp, ModuleCat.coe_comp, Function.comp_apply, Function.comp_apply,
@@ -835,7 +835,7 @@ def extendRestrictScalarsAdj {R : Type u₁} {S : Type u₂} [CommRing R] [CommR
       -- Porting note: once again reminding Lean of the instances
       letI m1 : Module R S := Module.compHom S f
       letI m2 : Module R Y := Module.compHom Y f
-      induction' x using TensorProduct.induction_on with s x _ _ _ _
+      induction' x with s x _ _ _ _
       · rw [map_zero, map_zero]
       · rw [ExtendRestrictScalarsAdj.homEquiv_symm_apply]
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644

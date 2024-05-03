@@ -693,7 +693,7 @@ theorem _root_.Polynomial.coeff_prod_mem_ideal_pow_tsub {ι : Type*} (s : Finset
     (I : Ideal R) (n : ι → ℕ) (h : ∀ i ∈ s, ∀ (k), (f i).coeff k ∈ I ^ (n i - k)) (k : ℕ) :
     (s.prod f).coeff k ∈ I ^ (s.sum n - k) := by
   classical
-    induction' s using Finset.induction with a s ha hs generalizing k
+    induction' s with a s ha hs generalizing k
     · rw [sum_empty, prod_empty, coeff_one, zero_tsub, pow_zero, Ideal.one_eq_top]
       exact Submodule.mem_top
     · rw [sum_insert ha, prod_insert ha, coeff_mul]

@@ -118,7 +118,7 @@ theorem Lex.acc_of_single [DecidableEq ι] [∀ (i) (x : α i), Decidable (x ≠
     (∀ i ∈ x.support, Acc (DFinsupp.Lex r s) <| single i (x i)) → Acc (DFinsupp.Lex r s) x := by
   generalize ht : x.support = t; revert x
   classical
-    induction' t using Finset.induction with b t hb ih
+    induction' t with b t hb ih
     · intro x ht
       rw [support_eq_empty.1 ht]
       exact fun _ => Lex.acc_zero hbot

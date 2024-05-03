@@ -322,7 +322,7 @@ variable {ι 𝕜 : Type*} [NontriviallyNormedField 𝕜] {H : Type*} [Topologic
 theorem ContMDiffWithinAt.prod (h : ∀ i ∈ t, ContMDiffWithinAt I' I n (f i) s x₀) :
     ContMDiffWithinAt I' I n (fun x ↦ ∏ i in t, f i x) s x₀ := by
   classical
-  induction' t using Finset.induction_on with i K iK IH
+  induction' t with i K iK IH
   · simp [contMDiffWithinAt_const]
   · simp only [iK, Finset.prod_insert, not_false_iff]
     exact (h _ (Finset.mem_insert_self i K)).mul (IH fun j hj ↦ h _ <| Finset.mem_insert_of_mem hj)

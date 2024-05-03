@@ -305,7 +305,7 @@ theorem zero_or_succ_or_limit (o : Ordinal) : o = 0 ∨ (∃ a, o = succ a) ∨ 
 
 /-- Main induction principle of ordinals: if one can prove a property by
   induction at successor ordinals and at limit ordinals, then it holds for all ordinals. -/
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 def limitRecOn {C : Ordinal → Sort*} (o : Ordinal) (H₁ : C 0) (H₂ : ∀ o, C o → C (succ o))
     (H₃ : ∀ o, IsLimit o → (∀ o' < o, C o') → C o) : C o :=
   lt_wf.fix
@@ -447,7 +447,7 @@ theorem IsNormal.le_set {f o} (H : IsNormal f) (p : Set Ordinal) (p0 : p.Nonempt
     (H₂ : ∀ o, b ≤ o ↔ ∀ a ∈ p, a ≤ o) : f b ≤ o ↔ ∀ a ∈ p, f a ≤ o :=
   ⟨fun h a pa => (H.le_iff.2 ((H₂ _).1 le_rfl _ pa)).trans h, fun h => by
     -- Porting note: `refine'` didn't work well so `induction` is used
-    induction b using limitRecOn with
+    induction b with
     | H₁ =>
       cases' p0 with x px
       have := Ordinal.le_zero.1 ((H₂ _).1 (Ordinal.zero_le _) _ px)
@@ -905,7 +905,7 @@ theorem div_pos {b c : Ordinal} (h : c ≠ 0) : 0 < b / c ↔ c ≤ b := by simp
 #align ordinal.div_pos Ordinal.div_pos
 
 theorem le_div {a b c : Ordinal} (c0 : c ≠ 0) : a ≤ b / c ↔ c * a ≤ b := by
-  induction a using limitRecOn with
+  induction a with
   | H₁ => simp only [mul_zero, Ordinal.zero_le]
   | H₂ _ _ => rw [succ_le_iff, lt_div c0]
   | H₃ _ h₁ h₂ =>
@@ -1993,7 +1993,7 @@ theorem IsNormal.eq_iff_zero_and_succ {f g : Ordinal.{u} → Ordinal.{u}} (hf : 
     (hg : IsNormal g) : f = g ↔ f 0 = g 0 ∧ ∀ a, f a = g a → f (succ a) = g (succ a) :=
   ⟨fun h => by simp [h], fun ⟨h₁, h₂⟩ =>
     funext fun a => by
-      induction' a using limitRecOn with _ _ _ ho H
+      induction' a with _ _ _ ho H
       any_goals solve_by_elim
       rw [← IsNormal.bsup_eq.{u, u} hf ho, ← IsNormal.bsup_eq.{u, u} hg ho]
       congr
@@ -2503,7 +2503,7 @@ theorem add_mul_limit_aux {a b c : Ordinal} (ba : b + a = a) (l : IsLimit c)
 #align ordinal.add_mul_limit_aux Ordinal.add_mul_limit_aux
 
 theorem add_mul_succ {a b : Ordinal} (c) (ba : b + a = a) : (a + b) * succ c = a * succ c + b := by
-  induction c using limitRecOn with
+  induction c with
   | H₁ => simp only [succ_zero, mul_one]
   | H₂ c IH =>
     rw [mul_succ, IH, ← add_assoc, add_assoc _ b, ba, ← mul_succ]

@@ -84,7 +84,8 @@ theorem mk_len (n : SimplexCategory) : ([n.len] : SimplexCategory) = n :=
   rfl
 #align simplex_category.mk_len SimplexCategory.mk_len
 
-/-- A recursor for `SimplexCategory`. Use it as `induction Δ using SimplexCategory.rec`. -/
+/-- A recursor for `SimplexCategory`. -/
+@[induction_eliminator]
 protected def rec {F : SimplexCategory → Sort*} (h : ∀ n : ℕ, F [n]) : ∀ X, F X := fun n =>
   h n.len
 #align simplex_category.rec SimplexCategory.rec

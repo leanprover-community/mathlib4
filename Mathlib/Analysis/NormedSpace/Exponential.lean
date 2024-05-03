@@ -522,7 +522,7 @@ theorem exp_sum_of_commute {ι} (s : Finset ι) (f : ι → 𝔸)
     exp 𝕂 (∑ i in s, f i) =
       s.noncommProd (fun i => exp 𝕂 (f i)) fun i hi j hj _ => (h.of_refl hi hj).exp 𝕂 := by
   classical
-    induction' s using Finset.induction_on with a s ha ih
+    induction' s with a s ha ih
     · simp
     rw [Finset.noncommProd_insert_of_not_mem _ _ _ _ ha, Finset.sum_insert ha, exp_add_of_commute,
       ih (h.mono <| Finset.subset_insert _ _)]

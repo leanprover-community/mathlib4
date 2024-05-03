@@ -31,7 +31,7 @@ theorem Multiset.sum_smul {l : Multiset R} {x : M} : l.sum • x = (l.map fun r 
 
 theorem Multiset.sum_smul_sum {s : Multiset R} {t : Multiset M} :
     s.sum • t.sum = ((s ×ˢ t).map fun p : R × M ↦ p.fst • p.snd).sum := by
-  induction' s using Multiset.induction with a s ih
+  induction' s with a s ih
   · simp
   · simp [add_smul, ih, ← Multiset.smul_sum]
 #align multiset.sum_smul_sum Multiset.sum_smul_sum

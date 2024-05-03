@@ -119,7 +119,7 @@ theorem nat_le_order (φ : R⟦X⟧) (n : ℕ) (h : ∀ i < n, coeff R i φ = 0)
 the `i`th coefficient is `0` for all `i < n`. -/
 theorem le_order (φ : R⟦X⟧) (n : PartENat) (h : ∀ i : ℕ, ↑i < n → coeff R i φ = 0) :
     n ≤ order φ := by
-  induction n using PartENat.casesOn
+  induction n
   · show _ ≤ _
     rw [top_le_iff, order_eq_top]
     ext i
@@ -142,7 +142,7 @@ theorem order_eq_nat {φ : R⟦X⟧} {n : ℕ} :
 and the `i`th coefficient is `0` for all `i < n`. -/
 theorem order_eq {φ : R⟦X⟧} {n : PartENat} :
     order φ = n ↔ (∀ i : ℕ, ↑i = n → coeff R i φ ≠ 0) ∧ ∀ i : ℕ, ↑i < n → coeff R i φ = 0 := by
-  induction n using PartENat.casesOn
+  induction n
   · rw [order_eq_top]
     constructor
     · rintro rfl
@@ -250,7 +250,7 @@ theorem coeff_mul_prod_one_sub_of_lt_order {R ι : Type*} [CommRing R] (k : ℕ)
     (φ : R⟦X⟧) (f : ι → R⟦X⟧) :
     (∀ i ∈ s, ↑k < (f i).order) → coeff R k (φ * ∏ i in s, (1 - f i)) = coeff R k φ := by
   classical
-  induction' s using Finset.induction_on with a s ha ih t
+  induction' s with a s ha ih t
   · simp
   · intro t
     simp only [Finset.mem_insert, forall_eq_or_imp] at t
@@ -278,7 +278,7 @@ theorem order_eq_multiplicity_X {R : Type*} [Semiring R] [@DecidableRel R⟦X⟧
   classical
   rcases eq_or_ne φ 0 with (rfl | hφ)
   · simp
-  induction' ho : order φ using PartENat.casesOn with n
+  induction' ho : order φ with n
   · simp [hφ] at ho
   have hn : φ.order.get (order_finite_iff_ne_zero.mpr hφ) = n := by simp [ho]
   rw [← hn]

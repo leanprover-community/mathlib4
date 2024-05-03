@@ -148,7 +148,7 @@ theorem detAux_def' (b : Basis ι A M) (f : M →ₗ[A] M) :
 theorem detAux_def'' {ι' : Type*} [Fintype ι'] [DecidableEq ι'] (tb : Trunc <| Basis ι A M)
     (b' : Basis ι' A M) (f : M →ₗ[A] M) :
     LinearMap.detAux tb f = Matrix.det (LinearMap.toMatrix b' b' f) := by
-  induction tb using Trunc.induction_on with
+  induction tb with
   | h b => rw [detAux_def', det_toMatrix_eq_det_toMatrix b b']
 #align linear_map.det_aux_def' LinearMap.detAux_def''
 

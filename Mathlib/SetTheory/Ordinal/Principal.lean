@@ -185,7 +185,7 @@ theorem principal_add_omega : Principal (· + ·) omega :=
 
 theorem add_omega_opow {a b : Ordinal} (h : a < (omega^b)) : a + (omega^b) = (omega^b) := by
   refine' le_antisymm _ (le_add_left _ _)
-  induction' b using limitRecOn with b _ b l IH
+  induction' b with b _ b l IH
   · rw [opow_zero, ← succ_zero, lt_succ_iff, Ordinal.le_zero] at h
     rw [h, zero_add]
   · rw [opow_succ] at h

@@ -341,7 +341,7 @@ theorem nat_nadd (n : ℕ) : ↑n ♯ a = a + n := by rw [nadd_comm, nadd_nat]
 #align ordinal.nat_nadd Ordinal.nat_nadd
 
 theorem add_le_nadd : a + b ≤ a ♯ b := by
-  induction b using limitRecOn with
+  induction b with
   | H₁ => simp
   | H₂ c h =>
     rwa [add_succ, nadd_succ, succ_le_succ_iff]

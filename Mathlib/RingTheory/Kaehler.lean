@@ -741,7 +741,7 @@ lemma KaehlerDifferential.range_mapBaseChange :
     LinearMap.range (mapBaseChange R A B) = LinearMap.ker (map R A B B) := by
   apply le_antisymm
   · rintro _ ⟨x, rfl⟩
-    induction' x using TensorProduct.induction_on with r s
+    induction' x with r s
     · simp
     · obtain ⟨x, rfl⟩ := total_surjective _ _ s
       simp only [mapBaseChange_tmul, LinearMap.mem_ker, map_smul]
@@ -792,7 +792,7 @@ def KaehlerDifferential.mvPolynomialEquiv (σ : Type*) :
     · simp only [AddHom.toFun_eq_coe, LinearMap.coe_toAddHom, Finsupp.total_single,
         LinearMap.map_smul, Derivation.liftKaehlerDifferential_comp_D]
       congr 1
-      induction a using MvPolynomial.induction_on
+      induction a
       · simp only [MvPolynomial.derivation_C, map_zero]
       · simp only [map_add, *]
       · simp [*]

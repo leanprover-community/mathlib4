@@ -499,7 +499,7 @@ protected def liftOn (q : Trunc α) (f : α → β) (c : ∀ a b : α, f a = f b
   lift f c q
 #align trunc.lift_on Trunc.liftOn
 
-@[elab_as_elim]
+@[elab_as_elim, induction_eliminator]
 protected theorem induction_on {β : Trunc α → Prop} (q : Trunc α) (h : ∀ a, β (mk a)) : β q :=
   ind h q
 #align trunc.induction_on Trunc.induction_on

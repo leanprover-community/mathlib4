@@ -29,7 +29,7 @@ theorem mul_eq_mul_prime_prod {α : Type*} [DecidableEq α] {x y a : R} {s : Fin
     (hp : ∀ i ∈ s, Prime (p i)) (hx : x * y = a * ∏ i in s, p i) :
     ∃ (t u : Finset α) (b c : R),
       t ∪ u = s ∧ Disjoint t u ∧ a = b * c ∧ (x = b * ∏ i in t, p i) ∧ y = c * ∏ i in u, p i := by
-  induction' s using Finset.induction with i s his ih generalizing x y a
+  induction' s with i s his ih generalizing x y a
   · exact ⟨∅, ∅, x, y, by simp [hx]⟩
   · rw [prod_insert his, ← mul_assoc] at hx
     have hpi : Prime (p i) := hp i (mem_insert_self _ _)

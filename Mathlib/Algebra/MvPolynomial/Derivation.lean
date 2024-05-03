@@ -107,7 +107,7 @@ theorem leibniz_iff_X (D : MvPolynomial σ R →ₗ[R] A) (h₁ : D 1 = 0) :
         smul_add, D.map_smul, smul_comm r (X i)]
     · rw [add_mul, map_add, map_add, hp, hq, add_smul, smul_add, add_add_add_comm]
   intro p q
-  induction q using MvPolynomial.induction_on with
+  induction q with
   | h_C c =>
     rw [mul_comm, C_mul', hC, smul_zero, zero_add, D.map_smul, C_eq_smul_one, smul_one_smul]
   | h_add q₁ q₂ h₁ h₂ => simp only [mul_add, map_add, h₁, h₂, smul_add, add_smul]; abel

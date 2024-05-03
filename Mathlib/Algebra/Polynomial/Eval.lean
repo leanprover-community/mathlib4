@@ -417,7 +417,7 @@ theorem eval_smul [Monoid S] [DistribMulAction S R] [IsScalarTower S R R] (s : S
 
 @[simp]
 theorem eval_C_mul : (C a * p).eval x = a * p.eval x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp only [mul_add, eval_add, ph, qh]
   | h_monomial n b =>
@@ -464,7 +464,7 @@ theorem eval_natCast_mul {n : ℕ} : ((n : R[X]) * p).eval x = n * p.eval x := b
 
 @[simp]
 theorem eval_mul_X : (p * X).eval x = p.eval x * x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q ph qh =>
     simp only [add_mul, eval_add, ph, qh]
   | h_monomial n a =>
@@ -600,7 +600,7 @@ theorem monomial_comp (n : ℕ) : (monomial n a).comp p = C a * p ^ n :=
 
 @[simp]
 theorem mul_X_comp : (p * X).comp r = p.comp r * r := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp only [hp, hq, add_mul, add_comp]
   | h_monomial n b =>
@@ -623,7 +623,7 @@ theorem mul_X_pow_comp {k : ℕ} : (p * X ^ k).comp r = p.comp r * r ^ k := by
 
 @[simp]
 theorem C_mul_comp : (C a * p).comp r = C a * p.comp r := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp [hp, hq, mul_add]
   | h_monomial n b =>
@@ -841,7 +841,7 @@ def piEquiv {ι} [Finite ι] (R : ι → Type*) [∀ i, Semiring (R i)] :
           contrapose! hn; exact funext hn), by ext i n; exact coeff_map _ _⟩⟩
 
 theorem eval₂_eq_eval_map {x : S} : p.eval₂ f x = (p.map f).eval x := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp [hp, hq]
   | h_monomial n r =>
@@ -990,7 +990,7 @@ theorem eval_zero_map (f : R →+* S) (p : R[X]) : (p.map f).eval 0 = f (p.eval 
 
 @[simp]
 theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
   | h_monomial n r =>
@@ -1000,7 +1000,7 @@ theorem eval_one_map (f : R →+* S) (p : R[X]) : (p.map f).eval 1 = f (p.eval 1
 @[simp]
 theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
     (p.map f).eval (n : S) = f (p.eval n) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
   | h_monomial n r =>
@@ -1010,7 +1010,7 @@ theorem eval_natCast_map (f : R →+* S) (p : R[X]) (n : ℕ) :
 @[simp]
 theorem eval_intCast_map {R S : Type*} [Ring R] [Ring S] (f : R →+* S) (p : R[X]) (i : ℤ) :
     (p.map f).eval (i : S) = f (p.eval i) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add p q hp hq =>
     simp only [hp, hq, Polynomial.map_add, RingHom.map_add, eval_add]
   | h_monomial n r =>
@@ -1089,7 +1089,7 @@ theorem eval₂_pow' (n : ℕ) :
 @[simp]
 theorem eval₂_comp' : eval₂ (algebraMap R S) x (p.comp q) =
     eval₂ (algebraMap R S) (eval₂ (algebraMap R S) x q) p := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add r s hr hs => simp only [add_comp, eval₂_add, hr, hs]
   | h_monomial n a => simp only [monomial_comp, eval₂_mul', eval₂_C, eval₂_monomial, eval₂_pow']
 
@@ -1125,7 +1125,7 @@ theorem eval_pow (n : ℕ) : (p ^ n).eval x = p.eval x ^ n :=
 
 @[simp]
 theorem eval_comp : (p.comp q).eval x = p.eval (q.eval x) := by
-  induction p using Polynomial.induction_on' with
+  induction p with
   | h_add r s hr hs =>
     simp [add_comp, hr, hs]
   | h_monomial n a =>

@@ -261,7 +261,7 @@ theorem aestronglyMeasurable_exp_mul_sum {X : ι → Ω → ℝ} {s : Finset ι}
     (h_int : ∀ i ∈ s, AEStronglyMeasurable (fun ω => exp (t * X i ω)) μ) :
     AEStronglyMeasurable (fun ω => exp (t * (∑ i in s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
+  induction' s with i s hi_notin_s h_rec h_int
   · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact aestronglyMeasurable_const
   · have : ∀ i : ι, i ∈ s → AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -284,7 +284,7 @@ theorem iIndepFun.integrable_exp_mul_sum [IsProbabilityMeasure μ] {X : ι → �
     {s : Finset ι} (h_int : ∀ i ∈ s, Integrable (fun ω => exp (t * X i ω)) μ) :
     Integrable (fun ω => exp (t * (∑ i in s, X i) ω)) μ := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
+  induction' s with i s hi_notin_s h_rec h_int
   · simp only [Pi.zero_apply, sum_apply, sum_empty, mul_zero, exp_zero]
     exact integrable_const _
   · have : ∀ i : ι, i ∈ s → Integrable (fun ω : Ω => exp (t * X i ω)) μ := fun i hi =>
@@ -300,7 +300,7 @@ theorem iIndepFun.mgf_sum [IsProbabilityMeasure μ] {X : ι → Ω → ℝ}
     (h_indep : iIndepFun (fun i => inferInstance) X μ) (h_meas : ∀ i, Measurable (X i))
     (s : Finset ι) : mgf (∑ i in s, X i) μ t = ∏ i in s, mgf (X i) μ t := by
   classical
-  induction' s using Finset.induction_on with i s hi_notin_s h_rec h_int
+  induction' s with i s hi_notin_s h_rec h_int
   · simp only [sum_empty, mgf_zero_fun, measure_univ, ENNReal.one_toReal, prod_empty]
   · have h_int' : ∀ i : ι, AEStronglyMeasurable (fun ω : Ω => exp (t * X i ω)) μ := fun i =>
       ((h_meas i).const_mul t).exp.aestronglyMeasurable

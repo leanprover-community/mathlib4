@@ -128,9 +128,9 @@ protected def _root_.MonoidWithZeroHom.withTopMap {R S : Type*} [MulZeroOneClass
       · simp
       rcases Decidable.eq_or_ne y 0 with (rfl | hy)
       · simp
-      induction' x using WithTop.recTopCoe with x
+      induction' x with x
       · simp [hy, this]
-      induction' y using WithTop.recTopCoe with y
+      induction' y with y
       · have : (f x : WithTop S) ≠ 0 := by simpa [hf.eq_iff' (map_zero f)] using hx
         simp [mul_top hx, mul_top this]
       · -- Porting note (#11215): TODO: `simp [← coe_mul]` times out
@@ -145,9 +145,9 @@ instance instSemigroupWithZero [SemigroupWithZero α] [NoZeroDivisors α] :
     rcases eq_or_ne b 0 with (rfl | hb); · simp only [zero_mul, mul_zero]
     rcases eq_or_ne c 0 with (rfl | hc); · simp only [mul_zero]
   -- Porting note: below needed to be rewritten due to changed `simp` behaviour for `coe`
-    induction' a using WithTop.recTopCoe with a; · simp [hb, hc]
-    induction' b using WithTop.recTopCoe with b; · simp [mul_top ha, top_mul hc]
-    induction' c using WithTop.recTopCoe with c
+    induction' a with a; · simp [hb, hc]
+    induction' b with b; · simp [mul_top ha, top_mul hc]
+    induction' c with c
     · rw [mul_top hb, mul_top ha]
       rw [← coe_zero, ne_eq, coe_eq_coe] at ha hb
       simp [ha, hb]
@@ -178,7 +178,7 @@ instance instCommMonoidWithZero [CommMonoidWithZero α] [NoZeroDivisors α] [Non
 variable [CanonicallyOrderedCommSemiring α]
 
 private theorem distrib' (a b c : WithTop α) : (a + b) * c = a * c + b * c := by
-  induction' c using WithTop.recTopCoe with c
+  induction' c with c
   · by_cases ha : a = 0 <;> simp [ha]
   · by_cases hc : c = 0
     · simp [hc]

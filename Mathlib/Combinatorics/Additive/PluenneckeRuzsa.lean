@@ -90,7 +90,7 @@ set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/lean
 theorem mul_pluennecke_petridis (C : Finset α)
     (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :
     (A * B * C).card * A.card ≤ (A * B).card * (A * C).card := by
-  induction' C using Finset.induction_on with x C _ ih
+  induction' C with x C _ ih
   · simp
   set A' := A ∩ (A * C / {x}) with hA'
   set C' := insert x C with hC'
