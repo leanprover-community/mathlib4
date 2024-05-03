@@ -1632,7 +1632,7 @@ variable {𝕜 : Type*} [NormedField 𝕜]
 variable [NormedRing γ] [NormedAlgebra 𝕜 γ]
 
 /-- The subtype of compactly supported functions as an ideal. -/
-instance CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
+def CompactlySupportedBoundedContinuousFunction : Ideal (α →ᵇ γ) where
   carrier := { f : α →ᵇ γ | HasCompactSupport f }
   add_mem' := by
     intro f g hf hg
