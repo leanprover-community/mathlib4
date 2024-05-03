@@ -284,11 +284,11 @@ theorem hasInitial_of_isCoseparating [WellPowered C] [HasLimits C] {𝒢 : Set C
     (h𝒢 : IsCoseparating 𝒢) : HasInitial C := by
   haveI : HasProductsOfShape 𝒢 C := hasProductsOfShape_of_small C 𝒢
   haveI := fun A => hasProductsOfShape_of_small.{v₁} C (ΣG : 𝒢, A ⟶ (G : C))
-  letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj (Subtype.val : 𝒢 → C)))
-  suffices ∀ A : C, Unique (((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C) ⟶ A) by
-    exact hasInitial_of_unique ((⊥ : Subobject (piObj (Subtype.val : 𝒢 → C))) : C)
+  letI := completeLatticeOfCompleteSemilatticeInf (Subobject (piObj ((↑) : 𝒢 → C)))
+  suffices ∀ A : C, Unique (((⊥ : Subobject (piObj ((↑) : 𝒢 → C))) : C) ⟶ A) by
+    exact hasInitial_of_unique ((⊥ : Subobject (piObj ((↑) : 𝒢 → C))) : C)
   refine' fun A => ⟨⟨_⟩, fun f => _⟩
-  · let s := Pi.lift fun f : ΣG : 𝒢, A ⟶ (G : C) => id (Pi.π (Subtype.val : 𝒢 → C)) f.1
+  · let s := Pi.lift fun f : ΣG : 𝒢, A ⟶ (G : C) => id (Pi.π ((↑) : 𝒢 → C)) f.1
     let t := Pi.lift (@Sigma.snd 𝒢 fun G => A ⟶ (G : C))
     haveI : Mono t := (isCoseparating_iff_mono 𝒢).1 h𝒢 A
     exact Subobject.ofLEMk _ (pullback.fst : pullback s t ⟶ _) bot_le ≫ pullback.snd

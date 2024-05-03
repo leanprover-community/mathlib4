@@ -715,7 +715,7 @@ variable {V W V₁ V₂ V₃ : Type*} [SeminormedAddCommGroup V] [SeminormedAddC
 /-- The inclusion of an `AddSubgroup`, as bounded group homomorphism. -/
 @[simps!]
 def incl (s : AddSubgroup V) : NormedAddGroupHom s V where
-  toFun := (Subtype.val : s → V)
+  toFun := ((↑) : s → V)
   map_add' v w := AddSubgroup.coe_add _ _ _
   bound' := ⟨1, fun v => by rw [one_mul, AddSubgroup.coe_norm]⟩
 #align normed_add_group_hom.incl NormedAddGroupHom.incl

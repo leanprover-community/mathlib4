@@ -211,7 +211,7 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
 
 /-- A small set of games is bounded above. -/
 lemma bddAbove_of_small (s : Set Game.{u}) [Small.{u} s] : BddAbove s := by
-  simpa using bddAbove_range_of_small (Subtype.val : s → Game.{u})
+  simpa using bddAbove_range_of_small ((↑) : s → Game.{u})
 #align game.bdd_above_of_small SetTheory.Game.bddAbove_of_small
 
 /-- A small family of games is bounded below. -/
@@ -223,7 +223,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Game.{u}) 
 
 /-- A small set of games is bounded below. -/
 lemma bddBelow_of_small (s : Set Game.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → Game.{u})
+  simpa using bddBelow_range_of_small ((↑) : s → Game.{u})
 #align game.bdd_below_of_small SetTheory.Game.bddBelow_of_small
 
 end Game

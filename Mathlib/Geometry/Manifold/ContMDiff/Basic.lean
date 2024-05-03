@@ -365,7 +365,7 @@ theorem contMdiffAt_subtype_iff {n : ℕ∞} {U : Opens M} {f : M → M'} {x : U
     ContMDiffAt I I' n (fun x : U ↦ f x) x ↔ ContMDiffAt I I' n f x :=
   ((contDiffWithinAt_localInvariantProp I I' n).liftPropAt_iff_comp_subtype_val _ _).symm
 
-theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n (Subtype.val : U → M) :=
+theorem contMDiff_subtype_val {n : ℕ∞} {U : Opens M} : ContMDiff I I n ((↑) : U → M) :=
   fun _ ↦ contMdiffAt_subtype_iff.mpr contMDiffAt_id
 
 @[to_additive]
@@ -391,7 +391,7 @@ theorem contMDiff_inclusion {n : ℕ∞} {U V : Opens M} (h : U ≤ V) :
 theorem smooth_subtype_iff {U : Opens M} {f : M → M'} {x : U} :
     SmoothAt I I' (fun x : U ↦ f x) x ↔ SmoothAt I I' f x := contMdiffAt_subtype_iff
 
-theorem smooth_subtype_val {U : Opens M} : Smooth I I (Subtype.val : U → M) := contMDiff_subtype_val
+theorem smooth_subtype_val {U : Opens M} : Smooth I I ((↑) : U → M) := contMDiff_subtype_val
 
 @[to_additive]
 theorem Smooth.extend_one [T2Space M] [One M'] {U : Opens M} {f : U → M'}

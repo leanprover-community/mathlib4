@@ -490,7 +490,7 @@ are equal. -/
 theorem strictMono_unique {f g : Fin n → α} (hf : StrictMono f) (hg : StrictMono g)
     (h : range f = range g) : f = g :=
   have : (hf.orderIso f).trans (OrderIso.setCongr _ _ h) = hg.orderIso g := Subsingleton.elim _ _
-  congr_arg (Function.comp (Subtype.val : range g → α)) (funext <| RelIso.ext_iff.1 this)
+  congr_arg (Function.comp ((↑) : range g → α)) (funext <| RelIso.ext_iff.1 this)
 #align fin.strict_mono_unique Fin.strictMono_unique
 
 /-- Two order embeddings of `Fin n` are equal provided that their ranges are equal. -/

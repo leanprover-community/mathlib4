@@ -744,7 +744,7 @@ lemma bddAbove_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddAbove (
 
 /-- A small set of pre-games is bounded above. -/
 lemma bddAbove_of_small (s : Set PGame.{u}) [Small.{u} s] : BddAbove s := by
-  simpa using bddAbove_range_of_small (Subtype.val : s → PGame.{u})
+  simpa using bddAbove_range_of_small ((↑) : s → PGame.{u})
 #align pgame.bdd_above_of_small SetTheory.PGame.bddAbove_of_small
 
 #noalign pgame.lower_bound
@@ -762,7 +762,7 @@ lemma bddBelow_range_of_small [Small.{u} ι] (f : ι → PGame.{u}) : BddBelow (
 
 /-- A small set of pre-games is bounded below. -/
 lemma bddBelow_of_small (s : Set PGame.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → PGame.{u})
+  simpa using bddBelow_range_of_small ((↑) : s → PGame.{u})
 #align pgame.bdd_below_of_small SetTheory.PGame.bddBelow_of_small
 
 /-- The equivalence relation on pre-games. Two pre-games `x`, `y` are equivalent if `x ≤ y` and

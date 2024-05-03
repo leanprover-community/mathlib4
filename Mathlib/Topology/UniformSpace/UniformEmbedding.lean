@@ -165,7 +165,7 @@ theorem Filter.HasBasis.uniformEmbedding_iff {ι ι'} {p : ι → Prop} {p' : ι
 #align filter.has_basis.uniform_embedding_iff Filter.HasBasis.uniformEmbedding_iff
 
 theorem uniformEmbedding_subtype_val {p : α → Prop} :
-    UniformEmbedding (Subtype.val : Subtype p → α) :=
+    UniformEmbedding ((↑) : Subtype p → α) :=
   { comap_uniformity := rfl
     inj := Subtype.val_injective }
 #align uniform_embedding_subtype_val uniformEmbedding_subtype_val

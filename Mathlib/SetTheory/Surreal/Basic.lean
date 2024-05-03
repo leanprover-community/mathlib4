@@ -412,7 +412,7 @@ lemma bddAbove_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
 
 /-- A small set of surreals is bounded above. -/
 lemma bddAbove_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddAbove s := by
-  simpa using bddAbove_range_of_small (Subtype.val : s → Surreal.{u})
+  simpa using bddAbove_range_of_small ((↑) : s → Surreal.{u})
 #align surreal.bdd_above_of_small Surreal.bddAbove_of_small
 
 /-- A small family of surreals is bounded below. -/
@@ -434,7 +434,7 @@ lemma bddBelow_range_of_small {ι : Type*} [Small.{u} ι] (f : ι → Surreal.{u
 
 /-- A small set of surreals is bounded below. -/
 lemma bddBelow_of_small (s : Set Surreal.{u}) [Small.{u} s] : BddBelow s := by
-  simpa using bddBelow_range_of_small (Subtype.val : s → Surreal.{u})
+  simpa using bddBelow_range_of_small ((↑) : s → Surreal.{u})
 #align surreal.bdd_below_of_small Surreal.bddBelow_of_small
 
 end Surreal

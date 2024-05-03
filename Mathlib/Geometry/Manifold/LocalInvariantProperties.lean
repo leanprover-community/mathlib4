@@ -570,7 +570,7 @@ theorem liftPropAt_iff_comp_inclusion (hG : LocalInvariantProp G G' P) {U V : Op
 
 theorem liftProp_subtype_val {Q : (H → H) → Set H → H → Prop} (hG : LocalInvariantProp G G Q)
     (hQ : ∀ y, Q id univ y) (U : Opens M) :
-    LiftProp Q (Subtype.val : U → M) := by
+    LiftProp Q ((↑) : U → M) := by
   intro x
   show LiftPropAt Q (id ∘ Subtype.val) x
   rw [← hG.liftPropAt_iff_comp_subtype_val]

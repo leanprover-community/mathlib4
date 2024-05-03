@@ -1374,7 +1374,7 @@ theorem range_coe {s : Set α} : range ((↑) : s → α) = s := by
 /-- A variant of `range_coe`. Try to use `range_coe` if possible.
   This version is useful when defining a new type that is defined as the subtype of something.
   In that case, the coercion doesn't fire anymore. -/
-theorem range_val {s : Set α} : range (Subtype.val : s → α) = s :=
+theorem range_val {s : Set α} : range ((↑) : s → α) = s :=
   range_coe
 #align subtype.range_val Subtype.range_val
 
@@ -1391,7 +1391,7 @@ theorem coe_preimage_self (s : Set α) : ((↑) : s → α) ⁻¹' s = univ := b
   rw [← preimage_range, range_coe]
 #align subtype.coe_preimage_self Subtype.coe_preimage_self
 
-theorem range_val_subtype {p : α → Prop} : range (Subtype.val : Subtype p → α) = { x | p x } :=
+theorem range_val_subtype {p : α → Prop} : range ((↑) : Subtype p → α) = { x | p x } :=
   range_coe
 #align subtype.range_val_subtype Subtype.range_val_subtype
 
@@ -1409,7 +1409,7 @@ theorem image_preimage_coe (s t : Set α) : ((↑) : s → α) '' (((↑) : s �
   image_preimage_eq_range_inter.trans <| congr_arg (· ∩ t) range_coe
 #align subtype.image_preimage_coe Subtype.image_preimage_coe
 
-theorem image_preimage_val (s t : Set α) : (Subtype.val : s → α) '' (Subtype.val ⁻¹' t) = s ∩ t :=
+theorem image_preimage_val (s t : Set α) : ((↑) : s → α) '' (Subtype.val ⁻¹' t) = s ∩ t :=
   image_preimage_coe s t
 #align subtype.image_preimage_val Subtype.image_preimage_val
 
@@ -1430,7 +1430,7 @@ theorem preimage_coe_inter_self (s t : Set α) :
 #align subtype.preimage_coe_inter_self Subtype.preimage_coe_inter_self
 
 theorem preimage_val_eq_preimage_val_iff (s t u : Set α) :
-    (Subtype.val : s → α) ⁻¹' t = Subtype.val ⁻¹' u ↔ s ∩ t = s ∩ u :=
+    ((↑) : s → α) ⁻¹' t = Subtype.val ⁻¹' u ↔ s ∩ t = s ∩ u :=
   preimage_coe_eq_preimage_coe_iff
 #align subtype.preimage_val_eq_preimage_val_iff Subtype.preimage_val_eq_preimage_val_iff
 

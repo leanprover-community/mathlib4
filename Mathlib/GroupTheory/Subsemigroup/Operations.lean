@@ -621,7 +621,7 @@ theorem coe_equivMapOfInjective_apply (f : M →ₙ* N) (hf : Function.Injective
 
 @[to_additive (attr := simp)]
 theorem closure_closure_coe_preimage {s : Set M} :
-    closure ((Subtype.val : closure s → M) ⁻¹' s) = ⊤ :=
+    closure (((↑) : closure s → M) ⁻¹' s) = ⊤ :=
   eq_top_iff.2 fun x =>
     Subtype.recOn x fun x hx _ => by
       refine' closure_induction' _ (fun g hg => subset_closure hg) (fun g₁ g₂ hg₁ hg₂ => _) hx

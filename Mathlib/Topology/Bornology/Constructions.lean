@@ -42,7 +42,7 @@ def Bornology.induced {α β : Type*} [Bornology β] (f : α → β) : Bornology
 #align bornology.induced Bornology.induced
 
 instance {p : α → Prop} : Bornology (Subtype p) :=
-  Bornology.induced (Subtype.val : Subtype p → α)
+  Bornology.induced ((↑) : Subtype p → α)
 
 namespace Bornology
 

@@ -322,22 +322,22 @@ theorem _root_.StrictAntiOn.mono (h : StrictAntiOn f s) (h' : s₂ ⊆ s) : Stri
 #align strict_anti_on.mono StrictAntiOn.mono
 
 protected theorem _root_.MonotoneOn.monotone (h : MonotoneOn f s) :
-    Monotone (f ∘ Subtype.val : s → β) :=
+    Monotone (f ∘ (↑) : s → β) :=
   fun x y hle => h x.coe_prop y.coe_prop hle
 #align monotone_on.monotone MonotoneOn.monotone
 
 protected theorem _root_.AntitoneOn.monotone (h : AntitoneOn f s) :
-    Antitone (f ∘ Subtype.val : s → β) :=
+    Antitone (f ∘ (↑) : s → β) :=
   fun x y hle => h x.coe_prop y.coe_prop hle
 #align antitone_on.monotone AntitoneOn.monotone
 
 protected theorem _root_.StrictMonoOn.strictMono (h : StrictMonoOn f s) :
-    StrictMono (f ∘ Subtype.val : s → β) :=
+    StrictMono (f ∘ (↑) : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 #align strict_mono_on.strict_mono StrictMonoOn.strictMono
 
 protected theorem _root_.StrictAntiOn.strictAnti (h : StrictAntiOn f s) :
-    StrictAnti (f ∘ Subtype.val : s → β) :=
+    StrictAnti (f ∘ (↑) : s → β) :=
   fun x y hlt => h x.coe_prop y.coe_prop hlt
 #align strict_anti_on.strict_anti StrictAntiOn.strictAnti
 

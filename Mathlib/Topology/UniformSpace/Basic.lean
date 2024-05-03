@@ -1469,7 +1469,7 @@ theorem map_uniformity_set_coe {s : Set α} [UniformSpace α] :
   rw [uniformity_setCoe, map_comap, range_prod_map, Subtype.range_val]
 
 theorem uniformContinuous_subtype_val {p : α → Prop} [UniformSpace α] :
-    UniformContinuous (Subtype.val : { a : α // p a } → α) :=
+    UniformContinuous ((↑) : { a : α // p a } → α) :=
   uniformContinuous_comap
 #align uniform_continuous_subtype_val uniformContinuous_subtype_val
 #align uniform_continuous_subtype_coe uniformContinuous_subtype_val
