@@ -42,7 +42,7 @@ attribute [simp] cast_eq cast_heq imp_false
 /-- An identity function with its main argument implicit. This will be printed as `hidden` even
 if it is applied to a large term, so it can be used for elision,
 as done in the `elide` and `unelide` tactics. -/
-@[reducible] def hidden {α : Sort*} {a : α} := a
+abbrev hidden {α : Sort*} {a : α} := a
 #align hidden hidden
 
 variable {α : Sort*}
@@ -132,7 +132,7 @@ instance {p : Prop} [Decidable p] : Decidable (Fact p) :=
   decidable_of_iff _ fact_iff.symm
 
 /-- Swaps two pairs of arguments to a function. -/
-@[reducible] def Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
+abbrev Function.swap₂ {ι₁ ι₂ : Sort*} {κ₁ : ι₁ → Sort*} {κ₂ : ι₂ → Sort*}
     {φ : ∀ i₁, κ₁ i₁ → ∀ i₂, κ₂ i₂ → Sort*} (f : ∀ i₁ j₁ i₂ j₂, φ i₁ j₁ i₂ j₂)
     (i₂ j₂ i₁ j₁) : φ i₁ j₁ i₂ j₂ := f i₁ j₁ i₂ j₂
 #align function.swap₂ Function.swap₂

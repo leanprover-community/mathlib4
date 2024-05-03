@@ -55,8 +55,7 @@ def compLeft (f : β → β → β) (g : α → β) : α → β → β := fun a 
 /-- Given functions `f : β → β → φ` and `g : α → β`, produce a function `α → α → φ` that evaluates
 `g` on each argument, then applies `f` to the results. Can be used, e.g., to transfer a relation
 from `β` to `α`. -/
-@[reducible]
-def onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
+abbrev onFun (f : β → β → φ) (g : α → β) : α → α → φ := fun x y => f (g x) (g y)
 #align function.on_fun Function.onFun
 
 @[inherit_doc onFun]
@@ -75,8 +74,7 @@ def combine (f : α → β → φ) (op : φ → δ → ζ) (g : α → β → δ
 
 #align function.const Function.const
 
-@[reducible]
-def swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
+abbrev swap {φ : α → β → Sort u₃} (f : ∀ x y, φ x y) : ∀ y x, φ x y := fun y x => f x y
 #align function.swap Function.swap
 
 -- Adaptation note: nightly-2024-03-16: added to replace simp [Function.swap]

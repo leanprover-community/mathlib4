@@ -64,8 +64,7 @@ attribute [reducible] ConcreteCategory.forget
 attribute [instance] ConcreteCategory.forget_faithful
 
 /-- The forgetful functor from a concrete category to `Type u`. -/
-@[reducible]
-def forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w :=
+abbrev forget (C : Type u) [Category.{v} C] [ConcreteCategory.{w} C] : C ⥤ Type w :=
   ConcreteCategory.forget
 #align category_theory.forget CategoryTheory.forget
 
@@ -97,8 +96,7 @@ variable {C : Type u} [Category.{v} C] [ConcreteCategory.{w} C]
 -- Porting note: forget_obj_eq_coe has become a syntactic tautology.
 #noalign category_theory.forget_obj_eq_coe
 
-@[reducible]
-def ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
+abbrev ConcreteCategory.instFunLike {X Y : C} : FunLike (X ⟶ Y) X Y where
   coe f := (forget C).map f
   coe_injective' _ _ h := (forget C).map_injective h
 attribute [local instance] ConcreteCategory.instFunLike
@@ -213,8 +211,7 @@ class HasForget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory
 
 /-- The forgetful functor `C ⥤ D` between concrete categories for which we have an instance
 `HasForget₂ C`. -/
-@[reducible]
-def forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
+abbrev forget₂ (C : Type u) (D : Type u') [Category.{v} C] [ConcreteCategory.{w} C]
     [Category.{v'} D] [ConcreteCategory.{w} D] [HasForget₂ C D] : C ⥤ D :=
   HasForget₂.forget₂
 #align category_theory.forget₂ CategoryTheory.forget₂

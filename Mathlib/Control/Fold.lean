@@ -104,8 +104,7 @@ calc   const.run (traverse (fun y ↦ const.mk' (flip f y)) [y₀,y₁]) x
 And this is how `const` turns a monoid into an applicative functor and
 how the monoid of endofunctions define `Foldl`.
 -/
-@[reducible]
-def Foldl (α : Type u) : Type u :=
+abbrev Foldl (α : Type u) : Type u :=
   (End α)ᵐᵒᵖ
 #align monoid.foldl Monoid.Foldl
 
@@ -131,8 +130,7 @@ def Foldl.ofFreeMonoid (f : β → α → β) : FreeMonoid α →* Monoid.Foldl 
     rfl
 #align monoid.foldl.of_free_monoid Monoid.Foldl.ofFreeMonoid
 
-@[reducible]
-def Foldr (α : Type u) : Type u :=
+abbrev Foldr (α : Type u) : Type u :=
   End α
 #align monoid.foldr Monoid.Foldr
 
@@ -152,8 +150,7 @@ def Foldr.ofFreeMonoid (f : α → β → β) : FreeMonoid α →* Monoid.Foldr 
   map_mul' _ _ := funext fun _ => List.foldr_append _ _ _ _
 #align monoid.foldr.of_free_monoid Monoid.Foldr.ofFreeMonoid
 
-@[reducible]
-def foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldlM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   MulOpposite <| End <| KleisliCat.mk m α
 #align monoid.mfoldl Monoid.foldlM
 
@@ -173,8 +170,7 @@ def foldlM.ofFreeMonoid [LawfulMonad m] (f : β → α → m β) : FreeMonoid α
   map_mul' := by intros; apply unop_injective; funext; apply List.foldlM_append
 #align monoid.mfoldl.of_free_monoid Monoid.foldlM.ofFreeMonoid
 
-@[reducible]
-def foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
+abbrev foldrM (m : Type u → Type u) [Monad m] (α : Type u) : Type u :=
   End <| KleisliCat.mk m α
 #align monoid.mfoldr Monoid.foldrM
 

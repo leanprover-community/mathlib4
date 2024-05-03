@@ -158,8 +158,7 @@ open scoped ComplexConjugate
 variable {K : Type*} [Field K] {k : Type*} [Field k]
 
 /-- The conjugate of a complex embedding as a complex embedding. -/
-@[reducible]
-def conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
+abbrev conjugate (φ : K →+* ℂ) : K →+* ℂ := star φ
 #align number_field.complex_embedding.conjugate NumberField.ComplexEmbedding.conjugate
 
 @[simp]
@@ -171,8 +170,7 @@ theorem place_conjugate (φ : K →+* ℂ) : place (conjugate φ) = place φ := 
 #align number_field.complex_embedding.place_conjugate NumberField.ComplexEmbedding.place_conjugate
 
 /-- An embedding into `ℂ` is real if it is fixed by complex conjugation. -/
-@[reducible]
-def IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
+abbrev IsReal (φ : K →+* ℂ) : Prop := IsSelfAdjoint φ
 #align number_field.complex_embedding.is_real NumberField.ComplexEmbedding.IsReal
 
 theorem isReal_iff {φ : K →+* ℂ} : IsReal φ ↔ conjugate φ = φ := isSelfAdjoint_iff

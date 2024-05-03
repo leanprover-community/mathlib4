@@ -210,8 +210,7 @@ open scoped Classical
 since users will have computable inverses in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
+protected noncomputable abbrev groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
     GroupWithZero (R ⧸ I) :=
   { inv := fun a => if ha : a = 0 then 0 else Classical.choose (exists_inv ha)
     mul_inv_cancel := fun a (ha : a ≠ 0) =>
@@ -223,8 +222,7 @@ protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
-@[reducible]
-protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
+protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
   __ := commRing _
   __ := Quotient.groupWithZero _
   nnqsmul := _

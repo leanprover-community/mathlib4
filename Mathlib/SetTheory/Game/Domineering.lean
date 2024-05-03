@@ -44,8 +44,7 @@ def shiftRight : ℤ × ℤ ≃ ℤ × ℤ :=
 /-- A Domineering board is an arbitrary finite subset of `ℤ × ℤ`. -/
 -- Porting note: `reducible` cannot be `local`. For now there are no dependents of this file so
 -- being globally reducible is fine.
-@[reducible]
-def Board :=
+abbrev Board :=
   Finset (ℤ × ℤ)
 deriving Inhabited
 #align pgame.domineering.board SetTheory.PGame.Domineering.Board

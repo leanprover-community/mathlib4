@@ -1336,8 +1336,7 @@ projection provides a means to decompose the space into its submodules.
 The projection function is `decompose V x i = orthogonalProjection (V i) x`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
+abbrev OrthogonalFamily.decomposition [DecidableEq ι] [Fintype ι] {V : ι → Submodule 𝕜 E}
     [∀ i, CompleteSpace (V i)] (hV : OrthogonalFamily 𝕜 (fun i => V i) fun i => (V i).subtypeₗᵢ)
     (h : iSup V = ⊤) : DirectSum.Decomposition V
     where
