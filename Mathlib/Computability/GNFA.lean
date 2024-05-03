@@ -49,25 +49,6 @@ structure GNFA (α : Type u) (σ : Type v) where
 
 variable {α : Type u} {σ : Type v}
 
-namespace RegularExpression
-
-/-- A string matches the sum of a list of regular expressions if and only if there is some regular
-expression in the list that it matches. This is because the sum of regular expressions matches the
-union of their respective languages.
-
-TODO: probably move to computability/regular_expression
--/
-theorem mem_sum_iff_exists_mem (x : List α) (rs : List (RegularExpression α)) :
-    x ∈ (List.sum rs).matches' ↔ ∃ r : RegularExpression α, r ∈ rs ∧ x ∈ r.matches' := by
-  rw [List.sum, ← List.foldl_map' matches' (· + ·) (· + ·) 0 _ matches'_add, matches'_zero,
-    ← List.sum]
-  induction rs
-  · simp
-  rename_i r rs ih
-  simp [r.matches'.mem_add, ih]
-
-end RegularExpression
-
 namespace GNFA
 
 /-- The GNFA admitting only impassable transitions (and be it only from start to accept state)
@@ -540,11 +521,10 @@ theorem toGNFA_correct [alphabet : FinEnum α] : M.accepts = M.toGNFA.accepts :=
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at hx
       rcases hx with ⟨p, mem, step⟩
       refine' GNFA.trace.step p q (ih p mem) _ rfl
-      rw [Set.mem_def]
       unfold toGNFA; simp only
-      rw [RegularExpression.mem_sum_iff_exists_mem]
-      refine' ⟨RegularExpression.char a, _, rfl⟩
-      simpa [alphabet.mem_toList,List.mem_filter]
+      rw [RegularExpression.matches'_sum, Language.mem_sum]
+      simp [alphabet.mem_toList, List.mem_filter]
+      exact ⟨a, step, rfl⟩
   · intro hx
     cases' hx with x step x y z q t step eq
     case start => cases step
@@ -576,9 +556,9 @@ theorem toGNFA_correct [alphabet : FinEnum α] : M.accepts = M.toGNFA.accepts :=
         rw [List.nil_eq_append] at eq
         cases eq.2
         unfold toGNFA at step; simp only at step
-        rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
+        rw [RegularExpression.matches'_sum, Language.mem_sum] at step
         rcases step with ⟨r, mem, mat⟩
-        rw [List.mem_map] at mem
+        simp [List.mem_map] at mem
         rcases mem with ⟨a, _, eq⟩
         rw [← eq] at mat
         cases mat
@@ -600,19 +580,13 @@ theorem toGNFA_correct [alphabet : FinEnum α] : M.accepts = M.toGNFA.accepts :=
         · rw [if_neg h] at step
           cases step
       case step y z p t step eq =>
-        unfold toGNFA at step; simp only at step
-        rw [Set.mem_def, RegularExpression.mem_sum_iff_exists_mem] at step
-        rcases step with ⟨r, mem, mat⟩
-        simp only [List.mem_map, List.mem_filter] at mem
-        rcases mem with ⟨b, ⟨_, step⟩, eq⟩
-        rw [← eq] at mat
-        cases mat
-        have ⟨aseqy, aeqb⟩ := List.append_inj' eq rfl
-        injection aeqb with aeqb
-        subst aseqy
-        subst aeqb
+        unfold toGNFA at step
+        simp [RegularExpression.matches'_sum, Language.mem_sum] at step
+        rcases step with ⟨r, mem, rfl⟩
+        rw [List.mem_filter] at mem
+        have ⟨rfl, rfl⟩ := List.append_inj' eq rfl
         rw [NFA.mem_stepSet]
-        exact ⟨p, ih p t, Bool.of_decide_true step⟩
+        exact ⟨p, ih p t, Bool.of_decide_true mem.right⟩
 
 /-- Any computably useful NFA with a `FinEnum` state space has some `RegularExpression` that matches
 its language -/
