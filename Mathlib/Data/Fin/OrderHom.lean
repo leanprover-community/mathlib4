@@ -317,6 +317,7 @@ lemma rev_succAbove (p : Fin (n + 1)) (i : Fin n) :
     rev (succAbove p i) = succAbove (rev p) (rev i) := by
   rw [succAbove_rev_left, rev_rev]
 
+attribute [local semireducible] Nat.modCore in
 --@[simp] -- Porting note: can be proved by `simp`
 theorem one_succAbove_zero {n : ℕ} : (1 : Fin (n + 2)).succAbove 0 = 0 := by
   rfl
@@ -338,6 +339,7 @@ theorem one_succAbove_succ {n : ℕ} (j : Fin n) :
   rwa [succ_zero_eq_one, zero_succAbove] at this
 #align fin.one_succ_above_succ Fin.one_succAbove_succ
 
+attribute [local semireducible] Nat.modCore in
 @[simp]
 theorem one_succAbove_one {n : ℕ} : (1 : Fin (n + 3)).succAbove 1 = 2 := by
   have := succ_succAbove_succ (0 : Fin (n + 2)) (0 : Fin (n + 2))
