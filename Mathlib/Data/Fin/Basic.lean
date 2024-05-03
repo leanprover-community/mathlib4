@@ -437,7 +437,7 @@ instance : Lattice (Fin (n + 1)) :=
 
 theorem last_pos' [NeZero n] : 0 < last n := NeZero.pos n
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 theorem one_lt_last [NeZero n] : 1 < last (n + 1) :=
   (lt_add_iff_pos_left 1).mpr (NeZero.pos n)
 
@@ -752,7 +752,7 @@ theorem succ_injective (n : ℕ) : Injective (@Fin.succ n) := (succEmb n).inject
 #align fin.succ_inj Fin.succ_inj
 #align fin.succ_ne_zero Fin.succ_ne_zero
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 theorem succ_zero_eq_one' [NeZero n] : Fin.succ (0 : Fin n) = 1 := by
   cases n
@@ -765,7 +765,7 @@ theorem zero_ne_one' [NeZero n] : (0 : Fin (n + 1)) ≠ 1 := Fin.ne_of_lt one_po
 
 #align fin.succ_zero_eq_one' Fin.succ_zero_eq_one
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 /--
 The `Fin.succ_one_eq_two` in `Std` only applies in `Fin (n+2)`.
 This one instead uses a `NeZero n` typeclass hypothesis.
@@ -1334,7 +1334,7 @@ theorem castPred_zero (h := last_pos.ne)  :
     castPred (0 : Fin (n + 2)) h = 0 := rfl
 #align fin.cast_pred_zero Fin.castPred_zero
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 theorem castPred_one [NeZero n] (h := one_lt_last.ne) : castPred (1 : Fin (n + 2)) h = 1 := by
   cases n

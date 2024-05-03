@@ -56,7 +56,7 @@ set_option simprocs false
 This module contains many `Fin` literals like `1`, where we need to allow `1 % 2` to compute
 for a fair number of proofs by definitional equality in this module.
 -/
-attribute [local semireducible] Nat.modCore
+unseal Nat.modCore
 
 namespace CategoryTheory
 

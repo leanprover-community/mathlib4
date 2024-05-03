@@ -79,7 +79,7 @@ theorem cons_succ : cons x p i.succ = p i := by simp [cons]
 theorem cons_zero : cons x p 0 = x := by simp [cons]
 #align fin.cons_zero Fin.cons_zero
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 theorem cons_one {α : Fin (n + 2) → Type*} (x : α 0) (p : ∀ i : Fin n.succ, α i.succ) :
     cons x p 1 = p 0 := by

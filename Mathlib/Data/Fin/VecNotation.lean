@@ -200,7 +200,7 @@ theorem vec_single_eq_const (a : α) : ![a] = fun _ => a :=
   funext <| Unique.forall_iff.2 rfl
 #align matrix.vec_single_eq_const Matrix.vec_single_eq_const
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 /-- `![a, b, ...] 1` is equal to `b`.
 
   The simplifier needs a special lemma for length `≥ 2`, in addition to
@@ -211,18 +211,18 @@ theorem cons_val_one (x : α) (u : Fin m.succ → α) : vecCons x u 1 = vecHead 
   rfl
 #align matrix.cons_val_one Matrix.cons_val_one
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 theorem cons_val_two (x : α) (u : Fin m.succ.succ → α) : vecCons x u 2 = vecHead (vecTail u) :=
   rfl
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 lemma cons_val_three (x : α) (u : Fin m.succ.succ.succ → α) :
     vecCons x u 3 = vecHead (vecTail (vecTail u)) :=
   rfl
 
-attribute [local semireducible] Nat.modCore in
+unseal Nat.modCore in
 @[simp]
 lemma cons_val_four (x : α) (u : Fin m.succ.succ.succ.succ → α) :
     vecCons x u 4 = vecHead (vecTail (vecTail (vecTail u))) :=
