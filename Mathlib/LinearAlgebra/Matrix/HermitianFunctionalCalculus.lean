@@ -52,6 +52,24 @@ theorem eigenvalue_mem_toEuclideanLin_spectrum_real (i : n) :
         (eigenvalue_mem_toEuclideanLin_spectrum_RCLike _ i)
 
 --Now I need to get φ below to be a map from C(spectrum ℝ A, ℝ) into Matrix n n 𝕜.
+--Let's try to prove that the range of the function in question is in the real spectrum, using
+--the above theorem, then try to use this fact to define a function into the spectrum.
+
+theorem range_thm : Set.range (fun (i : n) ↦ (hA.eigenvalues i)) ⊆ (spectrum ℝ (toEuclideanLin A)) := by
+   rw [Set.range_subset_iff]
+   apply eigenvalue_mem_toEuclideanLin_spectrum_real
+
+noncomputable def f1 : n → spectrum ℝ (toEuclideanLin A) := by
+ apply Set.codRestrict (fun (i : n) ↦ (hA.eigenvalues i))
+ apply eigenvalue_mem_toEuclideanLin_spectrum_real
+
+
+
+#exit
+def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
+  fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
+  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ f1)
+      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
   toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
