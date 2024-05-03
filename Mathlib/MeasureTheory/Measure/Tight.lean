@@ -226,6 +226,9 @@ lemma of_separableSpace_on_metric [PseudoMetricSpace α] [TopologicalSpace.Separ
         _ = ε * (2⁻¹ * 2) := by simp [ENNReal.tsum_geometric_add_one]
         _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
 
+-- The proof idea is simple: if `μ` is separable, then there exists a separable set `S` such that
+-- `μ S = μ Set.univ`. On the subspace (closure S) we can invoke `of_separableSpace_on_metric` to get that
+-- `μ` is pre-tight on this subspace. As this has full measure, we want to lift this back.
 lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
     (h : IsSeparable μ) [IsFiniteMeasure μ] : IsPretight μ := by
   obtain ⟨S, hS, hSμ⟩ := h
@@ -237,7 +240,7 @@ lemma of_isSeparable_on_metric [PseudoMetricSpace α] [OpensMeasurableSpace α]
       exact (Subtype.coe_image_univ (closure S)).symm
     rw [this] at hSc
     sorry
-  --have : --of_separableSpace_on_metric (α := closure S) -- fails
+  --have := of_separableSpace_on_metric (α := closure S) -- fails
   sorry
 
 end IsPretight
