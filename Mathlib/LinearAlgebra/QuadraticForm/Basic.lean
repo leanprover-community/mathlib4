@@ -1140,17 +1140,16 @@ theorem PosDef.add (Q Q' : QuadraticMap R₂ M N) (hQ : PosDef Q) (hQ' : PosDef 
 #align quadratic_form.pos_def.add QuadraticMap.PosDef.add
 
 -- This should be in `Algebra/Ring/Defs` but that causes issues with `Tactic/Ring/Basic`
+-- See https://github.com/leanprover-community/mathlib4/pull/12617
 -- see Note [lower instance priority]
-instance (priority := 100) _root_.CommSemiring.toNonUnitalNonAssocCommSemiring {N' : Type*}
-    [CommSemiring N'] : NonUnitalNonAssocCommSemiring N' :=
-  { inferInstanceAs (CommMonoid N'), inferInstanceAs (CommSemiring N') with }
+instance (priority := 100) _root_.CommSemiring.toNonUnitalNonAssocCommSemiring [CommSemiring A] :
+    NonUnitalNonAssocCommSemiring A :=
+  { inferInstanceAs (CommMonoid A), inferInstanceAs (CommSemiring A) with }
 
-theorem linMulLinSelfPosDef {R} {N' : Type*} [LinearOrderedCommRing R] [Module R M]
-    [LinearOrderedCommSemiring N'] [ExistsAddOfLE N'] [Module R N'] [SMulCommClass R N' N']
-    [IsScalarTower R N' N']
-    (f : M →ₗ[R] N') (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin (R := R) (A := N') f f) :=
-  fun _x hx =>
-    mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
+theorem linMulLinSelfPosDef {R} [LinearOrderedCommRing R] [Module R M] [LinearOrderedCommSemiring A]
+    [ExistsAddOfLE A] [Module R A] [SMulCommClass R A A] [IsScalarTower R A A] (f : M →ₗ[R] A)
+    (hf : LinearMap.ker f = ⊥) : PosDef (linMulLin f f) :=
+  fun _x hx => mul_self_pos.2 fun h => hx <| LinearMap.ker_eq_bot'.mp hf _ h
 #align quadratic_form.lin_mul_lin_self_pos_def QuadraticMap.linMulLinSelfPosDef
 
 end PosDef
