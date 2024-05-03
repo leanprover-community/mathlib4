@@ -390,8 +390,7 @@ lemma Functor.toSheafify_pullbackSheafificationCompatibility (F : Dᵒᵖ ⥤ A)
   apply Quiver.Hom.op_inj
   apply coyoneda.map_injective
   ext E : 2
-  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda]
-  dsimp [Adjunction.comp]
+  dsimp [Functor.preimage, Coyoneda.preimage, coyoneda, Adjunction.comp]
   simp only [Category.comp_id, map_id, whiskerLeft_id', map_comp, Sheaf.instCategorySheaf_comp_val,
     sheafificationAdjunction_counit_app_val, sheafifyMap_sheafifyLift,
     Category.id_comp, Category.assoc, toSheafify_sheafifyLift]
