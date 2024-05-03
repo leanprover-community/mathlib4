@@ -76,7 +76,7 @@ def getRootHash : CacheM UInt64 := do
       pure ((← mathlibDepPath) / ·)
   let hashs ← rootFiles.mapM fun path =>
     hashFileContents <$> IO.FS.readFile (qualifyPath path)
-  return hash (hash Lean.githash :: hashs)
+  return hash (dbgTraceVal <| hash Lean.githash :: hashs)
 
 /--
 Computes the hash of a file, which mixes:
@@ -105,7 +105,7 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
         return none
     let rootHash := (← get).rootHash
     let pathHash := hash filePath.components
-    let fileHash := hash <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
+    let fileHash := hash <| dbgTraceVal <| rootHash :: pathHash :: hashFileContents content :: importHashes.toList
     modifyGet fun stt =>
       (some fileHash, { stt with
         hashMap := stt.hashMap.insert filePath fileHash
@@ -113,7 +113,7 @@ partial def getFileHash (filePath : FilePath) : HashM <| Option UInt64 := do
         depsMap := stt.depsMap.insert filePath fileImports })
 
 /-- Files to start hashing from. -/
-def roots : Array FilePath := #["Mathlib.lean"]
+def roots : Array FilePath := #[]
 
 /-- Main API to retrieve the hashes of the Lean files -/
 def getHashMemo (extraRoots : Array FilePath) : CacheM HashMemo :=
