@@ -197,7 +197,7 @@ theorem add_one_mul_T_eq_poly_in_U (n : ℕ) :
     ((n : R[X]) + 1) * T R (n + 1) = X * U R n - (1 - X ^ 2) * derivative (U R n) := by
   have h₁ := congr_arg derivative <| T_eq_X_mul_T_sub_pol_U R n
   simp only [derivative_sub, derivative_mul, derivative_X, derivative_one, derivative_X_pow,
-    T_derivative_eq_U, C_eq_nat_cast] at h₁
+    T_derivative_eq_U, C_eq_natCast] at h₁
   have h₂ := T_eq_U_sub_X_mul_U R n
   push_cast at *
   linear_combination h₁ + (n + 2) * h₂
