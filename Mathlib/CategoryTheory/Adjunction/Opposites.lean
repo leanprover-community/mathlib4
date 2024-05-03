@@ -129,6 +129,10 @@ def leftAdjointsCoyonedaEquiv {F F' : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) (a
 
 /-- Given two adjunctions, if the right adjoints are naturally isomorphic, then so are the left
 adjoints.
+
+Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
+The reason this definition still exists is that apparently `CategoryTheory.extendAlongYonedaYoneda`
+uses its definitional properties (TODO: figure out a way to avoid this).
 -/
 def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (r : G ≅ G') : F ≅ F' :=
@@ -137,14 +141,12 @@ def natIsoOfRightAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
 
 /-- Given two adjunctions, if the left adjoints are naturally isomorphic, then so are the right
 adjoints.
+
+Note: it is generally better to use `Adjunction.natIsoEquiv`, see the file `Adjunction.Unique`.
 -/
 def natIsoOfLeftAdjointNatIso {F F' : C ⥤ D} {G G' : D ⥤ C}
     (adj1 : F ⊣ G) (adj2 : F' ⊣ G') (l : F ≅ F') : G ≅ G' :=
   NatIso.removeOp (natIsoOfRightAdjointNatIso (opAdjointOpOfAdjoint _ F' adj2)  (opAdjointOpOfAdjoint _ _ adj1) (NatIso.op l))
 #align category_theory.adjunction.nat_iso_of_left_adjoint_nat_iso CategoryTheory.Adjunction.natIsoOfLeftAdjointNatIso
-
-
-
--- NatIso.removeOp (Coyoneda.preimageNatIso (leftAdjointsCoyonedaEquiv adj2 adj1))
 
 end CategoryTheory.Adjunction
