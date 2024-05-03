@@ -40,16 +40,15 @@ def natTransEquiv {F F' : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F' 
     naturality := by
       intro X Y g
       simp only [← Category.assoc, ← Functor.map_comp]
-      erw [Category.assoc, (adj1.unit ≫ (whiskerLeft F f)).naturality]
+      erw [(adj1.unit ≫ (whiskerLeft F f)).naturality]
       simp
   }
   invFun f := {
     app := fun X ↦ adj2.unit.app (G.obj X) ≫ G'.map (f.app (G.obj X) ≫ adj1.counit.app X)
     naturality := by
       intro X Y g
-      simp only [ ← Category.assoc, ← Functor.map_comp]
-      erw [← adj2.unit_naturality]
-      simp only [Category.assoc, ← Functor.map_comp]
+      erw [← adj2.unit_naturality_assoc]
+      simp only [← Functor.map_comp]
       simp
   }
   left_inv f := by
@@ -78,14 +77,10 @@ lemma natTransEquiv_comp {F F' F'' : C ⥤ D} {G G' G'' : D ⥤ C}
   ext X
   simp only [natTransEquiv_symm_apply_app, Functor.comp_obj, NatTrans.comp_app,
     natTransEquiv_apply_app, Functor.id_obj, whiskerLeft_app, Functor.map_comp, Category.assoc,
-    unit_naturality_assoc, right_triangle_components_assoc, Equiv.symm_apply_apply]
-  simp only [← g.naturality_assoc, ← g.naturality]
-  simp only [← Category.assoc]
-  congr
-  simp only [Category.assoc, unit_naturality, Functor.comp_obj, right_triangle_components,
-    Category.comp_id, ← f.naturality]
-  simp only [← Category.assoc]
-  simp
+    unit_naturality_assoc, right_triangle_components_assoc, Equiv.symm_apply_apply,
+    ← g.naturality_assoc, ← g.naturality]
+  simp only [← Category.assoc, unit_naturality, Functor.comp_obj, right_triangle_components,
+    Category.comp_id, ← f.naturality, Category.id_comp]
 
 @[simp]
 lemma natTransEquiv_comp_symm {F F' F'' : C ⥤ D} {G G' G'' : D ⥤ C}
@@ -189,6 +184,7 @@ theorem leftAdjointUniq_refl {F : C ⥤ D} {G : D ⥤ C} (adj1 : F ⊣ G) :
 /-- If `G` and `G'` are both right adjoint to `F`, then they are naturally isomorphic. -/
 def rightAdjointUniq {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G) (adj2 : F ⊣ G') : G ≅ G' :=
   (natIsoEquiv adj1 adj2).symm (Iso.refl _)
+#align category_theory.adjunction.right_adjoint_uniq CategoryTheory.Adjunction.rightAdjointUniq
 
 -- Porting note (#10618): simp can prove this
 theorem homEquiv_symm_rightAdjointUniq_hom_app {F : C ⥤ D} {G G' : D ⥤ C} (adj1 : F ⊣ G)
