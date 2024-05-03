@@ -121,7 +121,9 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
-@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n := rfl
+-- eligible for dsimp
+@[simp, nolint simpNF, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
+  rfl
 #align nnrat.coe_pow NNRat.coe_pow
 
 @[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
