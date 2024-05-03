@@ -58,6 +58,7 @@ theorem op_injective : Function.Injective (op : α → αᵒᵖ) := fun _ _ => c
 theorem unop_injective : Function.Injective (unop : αᵒᵖ → α) := fun ⟨_⟩⟨_⟩ => by simp
 #align opposite.unop_injective Opposite.unop_injective
 
+@[simp]
 theorem op_unop (x : αᵒᵖ) : op (unop x) = x :=
   rfl
 #align opposite.op_unop Opposite.op_unop
