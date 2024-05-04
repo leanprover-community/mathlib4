@@ -12,7 +12,7 @@ import Mathlib.Analysis.SpecificLimits.Basic
 The key definition of interest here is that of tight measures, `IsTight`. We first introduce two
 weaker notions, `IsSeparable` and `IsPretight`, which are equivalent on complete metric spaces. We
 provide some basic API for these notions and prove Ulam's tightness theorem
-(`of_isSeparableSpace_complete_uniform`) and its strengthening `of_isSeparable_complete_uniform`.
+(`of_isSeparableSpace_completeSpace`) and its strengthening `of_isSeparable_completeSpace`.
 
 ## Main definitions
 * `IsSeparable`: A measure `μ` is separable if there is a separable set `S` such that
@@ -25,9 +25,9 @@ provide some basic API for these notions and prove Ulam's tightness theorem
 
 ## Main statements
 
-* `of_isSeparableSpace_complete_uniform`: Ulam's tightness theorem: a finite measure on a complete
+* `of_isSeparableSpace_completeSpace`: Ulam's tightness theorem: a finite measure on a complete
   separable metric space is tight.
-* `of_isSeparable_complete_uniform`: A strengthening of Ulam's tightness theorem: a finite,
+* `of_isSeparable_completeSpace`: A strengthening of Ulam's tightness theorem: a finite,
   separable measure on a complete metric space is tight.
 * `of_innerRegular`: Every finite, inner-regular measure on a T2 space is tight.
 
@@ -51,14 +51,14 @@ variable [MeasurableSpace α] {μ : Measure α}
 cover of accumulated sets that has `ε`-almost full measure. -/
 private lemma almost_cover_has_approx_accumulate [MeasurableSpace α] {μ : Measure α}
     [IsFiniteMeasure μ] (K : ℕ → Set α) (h : μ (⋃ n, K n) = μ Set.univ) :
-    ∀ ε > 0, ∃ n, μ (Set.Accumulate K n) ≥ μ Set.univ - ε := by
+    ∀ ε > 0, ∃ n, μ Set.univ - ε ≤ μ (Set.Accumulate K n) := by
   rintro ε hε
   have : Filter.Tendsto (μ ∘ Set.Accumulate K) Filter.atTop (nhds (μ (⋃ n, Set.Accumulate K n))) :=
     MeasureTheory.tendsto_measure_iUnion Set.monotone_accumulate
   rw [ENNReal.tendsto_atTop (measure_ne_top μ (⋃ n, Accumulate K n)), Set.iUnion_accumulate] at this
   obtain ⟨N, hN⟩ := this ε hε
   use N
-  simp_all only [Function.comp_apply, mem_Icc, tsub_le_iff_right, le_refl]
+  simp_all only [Function.comp_apply, mem_Icc, le_refl]
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets for which the complement has measure below `ε`. -/
@@ -83,7 +83,7 @@ cover all but a set of measure below `ε`. -/
 private lemma approx_ball_cover_of_separableSpace [MeasurableSpace α] [PseudoMetricSpace α]
     [TopologicalSpace.SeparableSpace α] [Nonempty α] (μ : Measure α) [IsFiniteMeasure μ] :
     ∃ K : ℕ → α, DenseRange K ∧
-    ∀ ε > 0, ∀ δ > 0, ∃ N : ℕ, μ (⋃ i ≤ N, Metric.ball (K i) δ) ≥ μ (Set.univ) - ε := by
+    ∀ ε > 0, ∀ δ > 0, ∃ N : ℕ, μ (Set.univ) - ε ≤ μ (⋃ i ≤ N, Metric.ball (K i) δ)  := by
   obtain ⟨K, hK⟩ := TopologicalSpace.exists_dense_seq α
   use K, hK
   intro ε hε δ hδ
@@ -133,14 +133,14 @@ lemma of_totallyBounded [UniformSpace α] (h : TotallyBounded (Set.univ : Set α
   rw [Set.compl_univ, measure_empty]
   exact hε.le
 
-lemma has_totally_bounded_nat [UniformSpace α] (h : IsPretight μ) :
+lemma exists_totallyBounded_nat [UniformSpace α] (h : IsPretight μ) :
     ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n := by
   intro n
   apply h
   simp
 
 /-- It suffices to check totally boundedness along countably many `ε`. -/
-lemma of_totally_bounded_nat [UniformSpace α]
+lemma of_totallyBounded_nat [UniformSpace α]
     (h : ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n) : IsPretight μ := by
   intro ε hε
   obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne'
@@ -149,15 +149,15 @@ lemma of_totally_bounded_nat [UniformSpace α]
   apply le_trans hKe (le_trans ?_ hn.le)
   rw [one_div, ENNReal.inv_le_inv]
 
-lemma totally_bounded_nat_iff [UniformSpace α] :
+lemma totallyBounded_nat_iff [UniformSpace α] :
     IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n :=
-  ⟨has_totally_bounded_nat, of_totally_bounded_nat⟩
+  ⟨exists_totallyBounded_nat, of_totallyBounded_nat⟩
 
 /-- If a measure `μ` is pretight, we can cover `μ`-almost all of the space by a countable sequence
 of totally bounded sets. -/
-lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
+lemma exists_countable_totallyBounded_union [UniformSpace α] (h : IsPretight μ):
     ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
-  choose! K hKa hKb using h.has_totally_bounded_nat
+  choose! K hKa hKb using h.exists_totallyBounded_nat
   use K, hKa
   rw [← Set.iUnion_accumulate, measure_congr]
   rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
@@ -172,17 +172,17 @@ lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     (lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn))
 
 /-- Every pretight measure on a countably generated uniform space is separable. -/
-lemma to_isSeparable_on_countable_generated_uniform [UniformSpace α]
+lemma to_isSeparable_on_countably_generated_uniformSpace [UniformSpace α]
     [i : IsCountablyGenerated (𝓤 α)] (h : IsPretight μ) : IsSeparable μ := by
-  obtain ⟨K, hKa, hKb⟩ := has_countable_totally_bounded_union h
+  obtain ⟨K, hKa, hKb⟩ := exists_countable_totallyBounded_union h
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
   exact fun i => TotallyBounded.isSeparable (hKa i)
 
 /-- Every finite measure on a countably generated, separable, uniform space is pretight.-/
-lemma of_separableSpace_on_metric [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
-    [TopologicalSpace.SeparableSpace α] [OpensMeasurableSpace α] [IsFiniteMeasure μ] :
-    IsPretight μ := by
+lemma of_separableSpace_on_countablyGenerated_uniformSpace [UniformSpace α]
+    [i : IsCountablyGenerated (𝓤 α)] [TopologicalSpace.SeparableSpace α] [OpensMeasurableSpace α]
+    [IsFiniteMeasure μ] : IsPretight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
   by_cases hμ : μ (Set.univ) = 0
   · intro ε hε
@@ -226,8 +226,9 @@ lemma of_separableSpace_on_metric [UniformSpace α] [i : IsCountablyGenerated (�
         _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
 
 /-- Every finite separable measure on a countably generated, uniform space is pretight.-/
-lemma of_isSeparable_on_metric [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
-    [OpensMeasurableSpace α] (h : IsSeparable μ) [IsFiniteMeasure μ] : IsPretight μ := by
+lemma of_isSeparable_on_countablyGenerated_uniformSpace [UniformSpace α]
+    [i : IsCountablyGenerated (𝓤 α)] [OpensMeasurableSpace α] (h : IsSeparable μ)
+    [IsFiniteMeasure μ] : IsPretight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
   obtain ⟨S, hS, hSμ⟩ := h
   have : TopologicalSpace.SeparableSpace (closure S) :=
@@ -238,7 +239,7 @@ lemma of_isSeparable_on_metric [UniformSpace α] [i : IsCountablyGenerated (𝓤
     constructor
     rw [Measure.Subtype.volume_univ (MeasurableSet.nullMeasurableSet measurableSet_closure)]
     exact measure_lt_top volume (closure S)
-  have := of_separableSpace_on_metric (μ := mS.volume)
+  have := of_separableSpace_on_countablyGenerated_uniformSpace (μ := mS.volume)
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := this ε hε
   have hSμ : μ (closure S) = μ Set.univ := le_antisymm (measure_mono <| Set.subset_univ _)
@@ -292,13 +293,13 @@ end IsPretight
 
 /-- A measure `μ` is tight if for all `0 < ε`, there exists `K` compact such that `μ Kᶜ ≤ ε`.
 This is formulated in terms of filters for simplicity, and proven equivalent to the usual definition
-in `iff_compact_sets`. -/
+in `iff_isCompact_sets`. -/
 def IsTight [TopologicalSpace α] (μ : Measure α) : Prop := Tendsto μ (cocompact α).smallSets (𝓝 0)
 
 namespace IsTight
 
 /-- The usual definition of tightness is equivalent to the filter definition. -/
-lemma iff_compact_sets [TopologicalSpace α] {μ : Measure α} :
+lemma iff_isCompact_sets [TopologicalSpace α] {μ : Measure α} :
     IsTight μ ↔ ∀ ε > 0, ∃ K : Set α, IsCompact K ∧ μ (Kᶜ) ≤ ε := by
   simp only [IsTight, ne_eq, ENNReal.zero_ne_top, not_false_eq_true, ENNReal.tendsto_nhds,
     zero_le, tsub_eq_zero_of_le, zero_add, mem_Icc, true_and,
@@ -309,36 +310,36 @@ lemma iff_compact_sets [TopologicalSpace α] {μ : Measure α} :
   · rintro ⟨K, h1, h2⟩
     refine ⟨Kᶜ, ⟨K, h1, subset_rfl⟩, fun A hA => μ.mono hA |>.trans h2⟩
 
-lemma of_compact [TopologicalSpace α] [CompactSpace α] {μ : Measure α} : IsTight μ := by
-  rw [iff_compact_sets]
+lemma of_compactSpace [TopologicalSpace α] [CompactSpace α] {μ : Measure α} : IsTight μ := by
+  rw [iff_isCompact_sets]
   intro ε hε
   use Set.univ, CompactSpace.isCompact_univ
   rw [Set.compl_univ, measure_empty]
   exact hε.le
 
-lemma has_compact_nat [TopologicalSpace α] (h : IsTight μ) :
+lemma exists_isCompact_nat [TopologicalSpace α] (h : IsTight μ) :
     ∀ n : ℕ, ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n := by
   intro n
-  rw [iff_compact_sets] at h
+  rw [iff_isCompact_sets] at h
   apply h
   simp
 
-lemma of_compact_nat [TopologicalSpace α] (h : ∀ n : ℕ, ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n) :
+lemma of_isCompact_nat [TopologicalSpace α] (h : ∀ n : ℕ, ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n) :
     IsTight μ:= by
-  rw [iff_compact_sets]
+  rw [iff_isCompact_sets]
   intro ε hε
   obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne'
   obtain ⟨K, hK, hKe⟩ := h n
   refine ⟨K, hK, le_trans hKe (le_trans ?_ hn.le)⟩
   rw [one_div, ENNReal.inv_le_inv]
 
-lemma iff_compact_nat [TopologicalSpace α] :
+lemma iff_isCompact_nat [TopologicalSpace α] :
     IsTight μ ↔ ∀ n : ℕ, ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n :=
-  ⟨has_compact_nat, of_compact_nat⟩
+  ⟨exists_isCompact_nat, of_isCompact_nat⟩
 
-lemma countable_compact_cover [TopologicalSpace α] (h : IsTight μ) :
+lemma exists_countable_isSigmaCompact_cover [TopologicalSpace α] (h : IsTight μ) :
     ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ := by
-  choose! K hK using h.has_compact_nat
+  choose! K hK using h.exists_isCompact_nat
   use ⋃ n, K n, isSigmaCompact_iUnion_of_isCompact _ (fun _ => (hK _).1 )
   rw [measure_congr]
   rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
@@ -347,9 +348,9 @@ lemma countable_compact_cover [TopologicalSpace α] (h : IsTight μ) :
   exact lt_of_le_of_lt ((measure_mono <| Set.iInter_subset _ n).trans <|
     (inv_eq_one_div (n : ENNReal)).symm ▸ (hK n).2) hn
 
-lemma of_countable_compact_cover [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
+lemma of_countable_isSigmaCompact_cover [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] (h : ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ) : IsTight μ := by
-  rw [iff_compact_sets]
+  rw [iff_isCompact_sets]
   rintro ε hε
   rcases h with ⟨M, hM, hMμ⟩
   rcases hM with ⟨K, hK, rfl⟩
@@ -357,20 +358,20 @@ lemma of_countable_compact_cover [TopologicalSpace α] [T2Space α] [OpensMeasur
   obtain ⟨n, hn⟩ := almost_cover_has_approx_accumulate_compl K (fun n => (hK n).isClosed) hMμ ε hε
   exact ⟨Set.Accumulate K n, hAKc n, hn⟩
 
-lemma iff_countable_compact_cover [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
+lemma iff_countable_isSigmaCompact_cover [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] : IsTight μ ↔ ∃ M, IsSigmaCompact M ∧ μ M = μ Set.univ :=
-  ⟨countable_compact_cover, of_countable_compact_cover⟩
+  ⟨exists_countable_isSigmaCompact_cover, of_countable_isSigmaCompact_cover⟩
 
 lemma of_le_isTight [TopologicalSpace α] {μ ν : Measure α} (h : μ ≤ ν) (hν : IsTight ν) :
     IsTight μ := by
-  rw [iff_compact_sets] at *
+  rw [iff_isCompact_sets] at *
   intro ε hε
   obtain ⟨K, hK, hKc⟩ := hν ε hε
   exact ⟨K, hK, le_trans (h Kᶜ) hKc⟩
 
 lemma of_restrict_isTight [TopologicalSpace α] {μ : Measure α} {U : Set α} (hν : IsTight μ) :
     IsTight (μ.restrict U) := by
-  rw [iff_compact_sets] at *
+  rw [iff_isCompact_sets] at *
   intro ε hε
   obtain ⟨K, hK, hKc⟩ := hν ε hε
   exact ⟨K, hK, le_trans (μ.restrict_le_self _) hKc⟩
@@ -383,7 +384,7 @@ lemma add [TopologicalSpace α] {μ ν : Measure α} (hμ : IsTight μ) (hν : I
 
 lemma const_mul [TopologicalSpace α] {μ : Measure α} (c : NNReal) (hμ : IsTight μ) :
     IsTight (c • μ) := by
-  rw [iff_compact_sets] at *
+  rw [iff_isCompact_sets] at *
   intro ε hε
   have hεc : ε / c > 0 := by
     simp only [ENNReal.div_pos_iff, ne_eq, ENNReal.coe_ne_top, not_false_eq_true,
@@ -393,41 +394,44 @@ lemma const_mul [TopologicalSpace α] {μ : Measure α} (c : NNReal) (hμ : IsTi
 
 /-- Every tight measure is pre-tight -/
 lemma IsPretight.of_isTight [UniformSpace α] (h : IsTight μ) : IsPretight μ := by
-  rw [iff_compact_sets] at h
+  rw [iff_isCompact_sets] at h
   intro ε hε
   obtain ⟨K, hK_compact, hKμ⟩ := h ε hε
   use K
   exact ⟨hK_compact.totallyBounded, hKμ⟩
 
 /-- On complete uniform spaces, every pre-tight measure is tight -/
-lemma of_isPretight_complete [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) : IsTight μ := by
-  rw [iff_compact_sets]
+lemma of_isPretight_completeSpace [UniformSpace α] [CompleteSpace α] (h : IsPretight μ) :
+    IsTight μ := by
+  rw [iff_isCompact_sets]
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := h ε hε
   refine ⟨closure K, isCompact_of_totallyBounded_isClosed hK.closure isClosed_closure, ?_⟩
   exact le_trans (subset_closure |> compl_subset_compl.mpr |> μ.mono) hKe
 
-lemma isPretight_iff_uniform_complete [UniformSpace α] [CompleteSpace α] :
-    IsTight μ ↔ IsPretight μ := ⟨IsPretight.of_isTight, of_isPretight_complete⟩
+lemma isPretight_iff_completeSpace [UniformSpace α] [CompleteSpace α] :
+    IsTight μ ↔ IsPretight μ := ⟨IsPretight.of_isTight, of_isPretight_completeSpace⟩
 
 /-- Ulam's tightness theorem. -/
-lemma of_isSeparableSpace_complete_uniform [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
+lemma of_isSeparableSpace_completeSpace [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
     [TopologicalSpace.SeparableSpace α] [CompleteSpace α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] : IsTight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
-  exact IsPretight.of_separableSpace_on_metric |> of_isPretight_complete
+  apply of_isPretight_completeSpace
+  exact IsPretight.of_separableSpace_on_countablyGenerated_uniformSpace
 
 /-- A strengthened version of Ulam's tightness theorem. -/
-lemma of_isSeparable_complete_uniform [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
+lemma of_isSeparable_completeSpace [UniformSpace α] [i : IsCountablyGenerated (𝓤 α)]
     [CompleteSpace α] [OpensMeasurableSpace α] (h : IsSeparable μ) [IsFiniteMeasure μ] :
     IsTight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
-  exact IsPretight.of_isSeparable_on_metric h |> of_isPretight_complete
+  apply of_isPretight_completeSpace
+  exact IsPretight.of_isSeparable_on_countablyGenerated_uniformSpace h
 
 /-- Tight measures on T2 spaces that assign finite measure to compact sets are finite. -/
 instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFiniteMeasureOnCompacts μ]
     [h : Fact (IsTight μ)] : IsFiniteMeasure μ := by
-  obtain ⟨_, hK, hμ⟩ := (iff_compact_sets.mp h.out) 1 (zero_lt_one)
+  obtain ⟨_, hK, hμ⟩ := (iff_isCompact_sets.mp h.out) 1 (zero_lt_one)
   have : μ Set.univ < ⊤ := by
     rw [← (MeasureTheory.measure_add_measure_compl hK.isClosed.measurableSet), WithTop.add_lt_top]
     exact ⟨hk.lt_top_of_isCompact hK, lt_of_le_of_lt hμ ENNReal.one_lt_top⟩
@@ -436,7 +440,7 @@ instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFin
 /-- Inner regular finite measures on T2 spaces are tight. -/
 lemma of_innerRegular [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] (μ : Measure α)
     [IsFiniteMeasure μ] [μ.InnerRegular] : IsTight μ := by
-  rw [iff_compact_sets]
+  rw [iff_isCompact_sets]
   cases eq_zero_or_neZero μ with
   | inl hμ =>
     rw [hμ]
