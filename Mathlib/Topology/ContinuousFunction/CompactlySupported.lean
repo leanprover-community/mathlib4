@@ -190,12 +190,23 @@ instance instMul [MulZeroClass β] [ContinuousMul β] : Mul C_c(α, β) :=
 theorem coe_mul [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : ⇑(f * g) = f * g :=
   rfl
 
+@[simp]
 theorem mul_apply [MulZeroClass β] [ContinuousMul β] (f g : C_c(α, β)) : (f * g) x = f x * g x :=
   rfl
 
 -- the product of `(f : C(α, β))` and `(g : C_c(α, β))` is in `C_c(α, β)`
 instance instSMulC [MulZeroClass β] [ContinuousMul β] : SMul C(α, β) C_c(α, β) :=
   ⟨fun f g => ⟨f * g, HasCompactSupport.mul_left g.2⟩⟩
+
+@[simp]
+theorem coe_smulc [MulZeroClass β] [ContinuousMul β] (f : C(α, β)) (g : C_c(α, β)) :
+    ⇑(f • g) = f * g :=
+  rfl
+
+@[simp]
+theorem smulc_apply [MulZeroClass β] [ContinuousMul β] (f : C(α, β)) (g : C_c(α, β)) :
+    (f • g) x = f x * g x :=
+  rfl
 
 instance instMulZeroClass [MulZeroClass β] [ContinuousMul β] : MulZeroClass C_c(α, β) :=
   DFunLike.coe_injective.mulZeroClass _ coe_zero coe_mul
