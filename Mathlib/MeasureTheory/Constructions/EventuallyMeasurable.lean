@@ -31,7 +31,7 @@ TODO: Implement the latter.
 
 open Filter Set MeasurableSpace
 
-variable {α : Type*} (m : MeasurableSpace α) (l : Filter α) [CountableInterFilter l] {s t: Set α}
+variable {α : Type*} (m : MeasurableSpace α) (l : Filter α) [CountableInterFilter l] {s t : Set α}
 
 /-- The `MeasurableSpace` of sets which are measurable with respect to a given σ-algebra `m`
 on `α`, modulo a given σ-filter `l` on `α`. -/
@@ -62,7 +62,7 @@ theorem eventuallyMeasurableSet_of_mem_filter (hs : s ∈ l) : EventuallyMeasura
 
 /-- A set which is `EventuallyEq` to an `EventuallyMeasurableSet`
 is an `EventuallyMeasurableSet`. -/
-theorem EventuallyMeasurableSet.eventuallyMeasurableSet_of_eventuallyEq
+theorem EventuallyMeasurableSet.congr
     (ht : EventuallyMeasurableSet m l t) (hst : s =ᶠ[l] t) : EventuallyMeasurableSet m l s := by
   rcases ht with ⟨t', ht', htt'⟩
   exact ⟨t', ht', hst.trans htt'⟩
@@ -104,7 +104,7 @@ theorem Measurable.comp_eventuallyMeasurable (hh : Measurable h) (hf : Eventuall
 
 /-- A function which is `EventuallyEq` to some `EventuallyMeasurable` function
 is `EventuallyMeasurable`.-/
-theorem EventuallyMeasurable.eventuallyMeasurable_of_eventuallyEq
+theorem EventuallyMeasurable.congr
     (hf : EventuallyMeasurable m l f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
   fun _ hs => EventuallyMeasurableSet.eventuallyMeasurableSet_of_eventuallyEq (hf hs)
     (hgf.preimage _)
