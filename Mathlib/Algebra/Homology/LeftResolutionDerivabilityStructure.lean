@@ -29,6 +29,11 @@ variable (Λ : LeftResolutions ι)
   have := Λ
   sorry
 
+lemma localizerMorphism_op_isLocalizedEquivalence :
+    (localizerMorphism ι).op.IsLocalizedEquivalence := by
+  have := Λ
+  sorry
+
 lemma isLocalization [HasDerivedCategory C] :
     (ι.mapHomotopyCategoryMinus ⋙ DerivedCategory.Minus.Qh).IsLocalization (quasiIso ι) := by
   have := Λ.localizerMorphism_isLocalizedEquivalence
@@ -37,18 +42,11 @@ lemma isLocalization [HasDerivedCategory C] :
 
 lemma isLeftDerivabilityStructure :
     (localizerMorphism ι).op.IsRightDerivabilityStructure := by
-  have : HasDerivedCategory C := HasDerivedCategory.standard _
-  have : ((Functor.mapHomotopyCategoryMinus ι).op ⋙ DerivedCategory.Minus.Qh.op).IsLocalization
-      (quasiIso ι).op := (Functor.isLocalization_iff_op _ _).1 Λ.isLocalization
+  have paf := Λ.localizerMorphism_op_isLocalizedEquivalence
   have : ∀ (X₂ : (HomotopyCategory.Minus C)ᵒᵖ),
     IsConnected (LocalizerMorphism.RightResolution (LocalizerMorphism.op (localizerMorphism ι)) X₂) := sorry
   have : LocalizerMorphism.HasRightResolutions (LocalizerMorphism.arrow (LocalizerMorphism.op (localizerMorphism ι))) := sorry
-  have : CatCommSq (LocalizerMorphism.op (localizerMorphism ι)).functor
-    ((Functor.mapHomotopyCategoryMinus ι).op ⋙ DerivedCategory.Minus.Qh.op) DerivedCategory.Minus.Qh.op
-    (𝟭 (DerivedCategory.Minus C)ᵒᵖ) := ⟨Iso.refl _⟩
-  exact LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism ι).op
-    (ι.mapHomotopyCategoryMinus.op ⋙ (DerivedCategory.Minus.Qh (C := C)).op)
-    DerivedCategory.Minus.Qh.op (F := 𝟭 _)-/
+  apply LocalizerMorphism.IsRightDerivabilityStructure.mk'-/
 
 end LeftResolutions
 
