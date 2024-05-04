@@ -29,7 +29,6 @@ suppress_compilation
 variable {R M₁ M₂ N : Type*}
 variable [CommRing R] [AddCommGroup M₁] [AddCommGroup M₂] [AddCommGroup N]
 variable [Module R M₁] [Module R M₂] [Module R N]
-
 variable (Q₁ : QuadraticForm R M₁) (Q₂ : QuadraticForm R M₂) (Qₙ : QuadraticForm R N)
 
 open scoped TensorProduct

@@ -38,9 +38,7 @@ open MulAction Finset FiniteDimensional
 universe u v w
 
 variable {M : Type u} [Monoid M]
-
 variable (G : Type u) [Group G]
-
 variable (F : Type v) [Field F] [MulSemiringAction M F] [MulSemiringAction G F] (m : M)
 
 /-- The subfield of F fixed by the field endomorphism `m`. -/
@@ -344,7 +342,7 @@ theorem finrank_eq_card (G : Type u) (F : Type v) [Group G] [Field F] [Fintype G
     calc
       Fintype.card G ≤ Fintype.card (F →ₐ[FixedPoints.subfield G F] F) :=
         Fintype.card_le_of_injective _ (MulSemiringAction.toAlgHom_injective _ F)
-      _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := (finrank_algHom (subfield G F) F)
+      _ ≤ finrank F (F →ₗ[FixedPoints.subfield G F] F) := finrank_algHom (subfield G F) F
       _ = finrank (FixedPoints.subfield G F) F := finrank_linearMap_self _ _ _
 #align fixed_points.finrank_eq_card FixedPoints.finrank_eq_card
 

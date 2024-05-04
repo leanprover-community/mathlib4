@@ -13,13 +13,13 @@ import Mathlib.MeasureTheory.Constructions.BorelSpace.Basic
 
 noncomputable section
 
-instance (priority := 900) IsROrC.measurableSpace {𝕜 : Type*} [IsROrC 𝕜] : MeasurableSpace 𝕜 :=
+instance (priority := 900) RCLike.measurableSpace {𝕜 : Type*} [RCLike 𝕜] : MeasurableSpace 𝕜 :=
   borel 𝕜
-#align is_R_or_C.measurable_space IsROrC.measurableSpace
+#align is_R_or_C.measurable_space RCLike.measurableSpace
 
-instance (priority := 900) IsROrC.borelSpace {𝕜 : Type*} [IsROrC 𝕜] : BorelSpace 𝕜 :=
+instance (priority := 900) RCLike.borelSpace {𝕜 : Type*} [RCLike 𝕜] : BorelSpace 𝕜 :=
   ⟨rfl⟩
-#align is_R_or_C.borel_space IsROrC.borelSpace
+#align is_R_or_C.borel_space RCLike.borelSpace
 
 instance Complex.measurableSpace : MeasurableSpace ℂ :=
   borel ℂ

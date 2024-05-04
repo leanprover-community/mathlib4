@@ -5,7 +5,6 @@ Authors: Patrick Massot
 -/
 import Lean.Elab.Tactic.Calc
 import Std.CodeAction
-import Std.Data.Json
 
 import Mathlib.Data.String.Defs
 import Mathlib.Tactic.Widget.SelectPanelUtils
@@ -136,9 +135,9 @@ elab_rules : tactic
   for step in ← Lean.Elab.Term.getCalcSteps steps do
     let some replaceRange := (← getFileMap).rangeOfStx? step | unreachable!
     let `(calcStep| $(_) := $proofTerm) := step | unreachable!
-    let json := open scoped Std.Json in json% {"replaceRange": $(replaceRange),
-                                                        "isFirst": $(isFirst),
-                                                        "indent": $(indent)}
+    let json := json% {"replaceRange": $(replaceRange),
+                        "isFirst": $(isFirst),
+                        "indent": $(indent)}
     Widget.savePanelWidgetInfo CalcPanel.javascriptHash (pure json) proofTerm
     isFirst := false
   evalCalc (← `(tactic|calc%$calcstx $stx))

@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison, Johannes Hölzl
 -/
 import Mathlib.Algebra.Category.Ring.Basic
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.CommRing
 
 #align_import algebra.category.Ring.adjunctions from "leanprover-community/mathlib"@"79ffb5563b56fefdea3d60b5736dad168a9494ab"
 
@@ -25,7 +25,7 @@ open CategoryTheory
 namespace CommRingCat
 set_option linter.uppercaseLean3 false -- `CommRing`
 
-open Classical
+open scoped Classical
 
 /-- The free functor `Type u ⥤ CommRingCat` sending a type `X` to the multivariable (commutative)
 polynomials with variables `x : X`.

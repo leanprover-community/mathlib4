@@ -53,7 +53,7 @@ better match the behavior of mathlib3's `split_ifs`.
 -/
 private def discharge? (e : Expr) : SimpM (Option Expr) := do
   let e ← instantiateMVars e
-  if let some e1 ← SplitIf.discharge? false e
+  if let some e1 ← (← SplitIf.mkDischarge? false) e
     then return some e1
   if e.isConstOf `True
     then return some (mkConst `True.intro)

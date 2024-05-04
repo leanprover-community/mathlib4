@@ -124,9 +124,8 @@ noncomputable def cokernelIsoRangeQuotient {G H : ModuleCat.{v} R} (f : G ⟶ H)
 -- We now show this isomorphism commutes with the projection of target to the cokernel.
 @[simp, elementwise]
 theorem cokernel_π_cokernelIsoRangeQuotient_hom :
-    cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = f.range.mkQ := by
-  -- Porting note: needs help with F but got rid of rfl after
-  convert colimit.isoColimitCocone_ι_hom (F := parallelPair f 0) _ _
+    cokernel.π f ≫ (cokernelIsoRangeQuotient f).hom = f.range.mkQ :=
+  colimit.isoColimitCocone_ι_hom _ _
 #align Module.cokernel_π_cokernel_iso_range_quotient_hom ModuleCat.cokernel_π_cokernelIsoRangeQuotient_hom
 
 @[simp, elementwise]

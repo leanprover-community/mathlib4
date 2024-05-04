@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad, Johannes Hölzl, Reid Barton, Scott Morrison, Patrick Massot, Kyle Miller,
 Minchao Wu, Yury Kudryashov, Floris van Doorn
 -/
-import Std.Classes.SetNotation
 import Mathlib.Data.SProd
 import Mathlib.Data.Subtype
 import Mathlib.Order.Notation
@@ -320,7 +319,7 @@ def InvOn (g : β → α) (f : α → β) (s : Set α) (t : Set β) : Prop :=
 section image2
 
 /-- The image of a binary function `f : α → β → γ` as a function `Set α → Set β → Set γ`.
-Mathematically this should be thought of as the image of the corresponding function `α × β → γ`.-/
+Mathematically this should be thought of as the image of the corresponding function `α × β → γ`. -/
 def image2 (f : α → β → γ) (s : Set α) (t : Set β) : Set γ := {c | ∃ a ∈ s, ∃ b ∈ t, f a b = c}
 #align set.image2 Set.image2
 
@@ -347,3 +346,5 @@ theorem mem_seq_iff {s : Set (α → β)} {t : Set α} {b : β} :
 #align set.mem_seq_iff Set.mem_seq_iff
 
 lemma seq_eq_image2 (s : Set (α → β)) (t : Set α) : seq s t = image2 (fun f a ↦ f a) s t := rfl
+
+end Set

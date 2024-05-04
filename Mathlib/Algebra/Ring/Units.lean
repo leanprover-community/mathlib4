@@ -126,7 +126,7 @@ theorem divp_add_divp [CommRing α] (a b : α) (u₁ u₂ : αˣ) :
   rw [mul_comm (↑u₁ * b), mul_comm b]
   rw [← mul_assoc, ← mul_assoc, mul_assoc a, mul_assoc (↑u₂⁻¹ : α), mul_inv, inv_mul, mul_one,
     mul_one]
-  -- porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
+  -- Porting note: `assoc_rw` not ported: `assoc_rw [mul_inv, mul_inv, mul_one, mul_one]`
 #align units.divp_add_divp Units.divp_add_divp
 
 @[field_simps]

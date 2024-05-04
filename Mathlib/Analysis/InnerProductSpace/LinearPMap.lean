@@ -50,14 +50,12 @@ Unbounded operators, closed operators
 
 noncomputable section
 
-open IsROrC
+open RCLike
 
 open scoped ComplexConjugate Classical
 
-variable {𝕜 E F G : Type*} [IsROrC 𝕜]
-
+variable {𝕜 E F G : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [InnerProductSpace 𝕜 E]
-
 variable [NormedAddCommGroup F] [InnerProductSpace 𝕜 F]
 
 local notation "⟪" x ", " y "⟫" => @inner 𝕜 _ _ x y
@@ -107,7 +105,6 @@ theorem adjointDomainMkCLM_apply (y : T.adjointDomain) (x : T.domain) :
 #align linear_pmap.adjoint_domain_mk_clm_apply LinearPMap.adjointDomainMkCLM_apply
 
 variable {T}
-
 variable (hT : Dense (T.domain : Set E))
 
 /-- The unique continuous extension of the operator `adjointDomainMkCLM` to `E`. -/
@@ -216,11 +213,10 @@ end LinearPMap
 namespace ContinuousLinearMap
 
 variable [CompleteSpace E] [CompleteSpace F]
-
 variable (A : E →L[𝕜] F) {p : Submodule 𝕜 E}
 
 /-- Restricting `A` to a dense submodule and taking the `LinearPMap.adjoint` is the same
-as taking the `continuous_linear_map.adjoint` interpreted as a `linear_pmap`. -/
+as taking the `ContinuousLinearMap.adjoint` interpreted as a `LinearPMap`. -/
 theorem toPMap_adjoint_eq_adjoint_toPMap_of_dense (hp : Dense (p : Set E)) :
     (A.toPMap p).adjoint = A.adjoint.toPMap ⊤ := by
   ext x y hxy

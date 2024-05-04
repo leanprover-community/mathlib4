@@ -58,7 +58,7 @@ protected theorem id : LeftOrdContinuous (id : α → α) := fun s x h => by
 
 variable {α}
 
--- porting note: not sure what is the correct name for this
+-- Porting note: not sure what is the correct name for this
 protected theorem order_dual : LeftOrdContinuous f → RightOrdContinuous (toDual ∘ f ∘ ofDual) :=
   id
 #align left_ord_continuous.order_dual LeftOrdContinuous.order_dual
@@ -77,7 +77,7 @@ theorem comp (hg : LeftOrdContinuous g) (hf : LeftOrdContinuous f) : LeftOrdCont
   fun s x h => by simpa only [image_image] using hg (hf h)
 #align left_ord_continuous.comp LeftOrdContinuous.comp
 
--- PORTING NOTE: how to do this in non-tactic mode?
+-- Porting note: how to do this in non-tactic mode?
 protected theorem iterate {f : α → α} (hf : LeftOrdContinuous f) (n : ℕ) :
     LeftOrdContinuous f^[n] := by
   induction n with

@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         ref: nightly-testing # checkout nightly-testing branch
         token: ${{ secrets.NIGHTLY_TESTING }}
@@ -18,8 +18,8 @@ jobs:
     - name: Get latest release tag from leanprover/lean4-nightly
       id: get-latest-release
       run: |
-        RELEASE_TAG=$(curl -s "https://api.github.com/repos/leanprover/lean4-nightly/releases" | jq -r '.[0].tag_name')
-        echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+        RELEASE_TAG="$(curl -s "https://api.github.com/repos/leanprover/lean4-nightly/releases" | jq -r '.[0].tag_name')"
+        echo "RELEASE_TAG=$RELEASE_TAG" >> "${GITHUB_ENV}"
 
     - name: Update lean-toolchain file
       run: |

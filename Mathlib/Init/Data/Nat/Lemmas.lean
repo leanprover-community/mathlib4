@@ -107,7 +107,7 @@ theorem eq_zero_of_mul_eq_zero : ∀ {n m : ℕ}, n * m = 0 → n = 0 ∨ m = 0
 
 #align nat.lt_iff_le_not_le Nat.lt_iff_le_not_le
 
-instance linearOrder : LinearOrder ℕ where
+instance instLinearOrder : LinearOrder ℕ where
   le := Nat.le
   le_refl := @Nat.le_refl
   le_trans := @Nat.le_trans
@@ -118,7 +118,7 @@ instance linearOrder : LinearOrder ℕ where
   decidableLT := inferInstance
   decidableLE := inferInstance
   decidableEq := inferInstance
-#align nat.linear_order Nat.linearOrder
+#align nat.linear_order Nat.instLinearOrder
 
 #align nat.eq_zero_of_le_zero Nat.eq_zero_of_le_zero
 
@@ -270,8 +270,8 @@ protected theorem bit0_inj : ∀ {n m : ℕ}, bit0 n = bit0 m → n = m
   | n + 1, 0, h => by contradiction
   | n + 1, m + 1, h => by
     have : succ (succ (n + n)) = succ (succ (m + m)) := by
-      unfold bit0 at h; simp [add_one, add_succ, succ_add] at h
-      have aux : n + n = m + m := h; rw [aux]
+      unfold bit0 at h; simp only [add_one, add_succ, succ_add, succ_inj'] at h
+      rw [h]
     have : n + n = m + m := by repeat injection this with this
     have : n = m := Nat.bit0_inj this
     rw [this]
@@ -496,7 +496,7 @@ def subInduction {P : ℕ → ℕ → Sort u} (H1 : ∀ m, P 0 m) (H2 : ∀ n, P
 
 #align nat.strong_rec_on Nat.strongRecOn
 
--- porting note: added `elab_as_elim`
+-- Porting note: added `elab_as_elim`
 @[elab_as_elim]
 protected theorem strong_induction_on {p : Nat → Prop} (n : Nat)
     (h : ∀ n, (∀ m, m < n → p m) → p n) : p n :=

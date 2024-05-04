@@ -49,8 +49,6 @@ open TopologicalSpace Filter MeasureTheory Asymptotics
 
 open scoped Real BigOperators Filter FourierTransform
 
-attribute [local instance] Real.fact_zero_lt_one
-
 open ContinuousMap
 
 /-- The key lemma for Poisson summation: the `m`-th Fourier coefficient of the periodic function
@@ -62,7 +60,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   -- block, but I think it's more legible this way. We start with preliminaries about the integrand.
   let e : C(ℝ, ℂ) := (fourier (-m)).comp ⟨((↑) : ℝ → UnitAddCircle), continuous_quotient_mk'⟩
   have neK : ∀ (K : Compacts ℝ) (g : C(ℝ, ℂ)), ‖(e * g).restrict K‖ = ‖g.restrict K‖ := by
-    have : ∀ x : ℝ, ‖e x‖ = 1 := fun x => abs_coe_circle (AddCircle.toCircle (-m • x))
+    have (x : ℝ) : ‖e x‖ = 1 := abs_coe_circle (AddCircle.toCircle (-m • x))
     intro K g
     simp_rw [norm_eq_iSup_norm, restrict_apply, mul_apply, norm_mul, this, one_mul]
   have eadd : ∀ (n : ℤ), e.comp (ContinuousMap.addRight n) = e := by
@@ -73,7 +71,7 @@ theorem Real.fourierCoeff_tsum_comp_add {f : C(ℝ, ℂ)}
   calc
     fourierCoeff (Periodic.lift <| f.periodic_tsum_comp_add_zsmul 1) m =
         ∫ x in (0 : ℝ)..1, e x * (∑' n : ℤ, f.comp (ContinuousMap.addRight n)) x := by
-      simp_rw [fourierCoeff_eq_intervalIntegral _ m 0, div_one, one_smul, zero_add, comp_apply,
+      simp_rw [fourierCoeff_eq_intervalIntegral _ m 0, div_one, one_smul, zero_add, e, comp_apply,
         coe_mk, Periodic.lift_coe, zsmul_one, smul_eq_mul]
     -- Transform sum in C(ℝ, ℂ) evaluated at x into pointwise sum of values.
     _ = ∫ x in (0:ℝ)..1, ∑' n : ℤ, (e * f.comp (ContinuousMap.addRight n)) x := by
@@ -120,7 +118,7 @@ theorem Real.tsum_eq_tsum_fourierIntegral {f : C(ℝ, ℂ)}
   · simpa only [F, coe_mk, ← QuotientAddGroup.mk_zero, Periodic.lift_coe, zsmul_one, comp_apply,
       coe_addRight, zero_add]
        using (hasSum_apply (summable_of_locally_summable_norm h_norm).hasSum x).tsum_eq
-  · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, coe_mk]
+  · simp_rw [← Real.fourierCoeff_tsum_comp_add h_norm, smul_eq_mul, F, coe_mk]
 
 #align real.tsum_eq_tsum_fourier_integral Real.tsum_eq_tsum_fourierIntegral
 
@@ -176,9 +174,9 @@ theorem isBigO_norm_Icc_restrict_atBot {f : C(ℝ, E)} {b : ℝ} (hb : 0 < b)
   rintro ⟨x, hx⟩
   rw [ContinuousMap.restrict_apply_mk]
   refine' (le_of_eq _).trans (ContinuousMap.norm_coe_le_norm _ ⟨-x, _⟩)
-  rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
-    ContinuousMap.coe_mk, neg_neg]
-  exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
+  · rw [ContinuousMap.restrict_apply_mk, ContinuousMap.comp_apply, ContinuousMap.coe_mk,
+      ContinuousMap.coe_mk, neg_neg]
+    exact ⟨by linarith [hx.2], by linarith [hx.1]⟩
 set_option linter.uppercaseLean3 false in
 #align is_O_norm_Icc_restrict_at_bot isBigO_norm_Icc_restrict_atBot
 

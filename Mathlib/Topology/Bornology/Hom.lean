@@ -88,7 +88,7 @@ instance : FunLike (LocallyBoundedMap α β) α β where
 instance : LocallyBoundedMapClass (LocallyBoundedMap α β) α β where
   comap_cobounded_le f := f.comap_cobounded_le'
 
--- porting note: syntactic tautology because of the way coercions work
+-- Porting note: syntactic tautology because of the way coercions work
 #noalign locally_bounded_map.to_fun_eq_coe
 
 @[ext]
@@ -116,7 +116,7 @@ sets. -/
 def ofMapBounded (f : α → β) (h : ∀ ⦃s : Set α⦄, IsBounded s → IsBounded (f '' s)) :
     LocallyBoundedMap α β :=
   ⟨f, comap_cobounded_le_iff.2 h⟩
--- porting note: I had to provide the type of `h` explicitly.
+-- Porting note: I had to provide the type of `h` explicitly.
 #align locally_bounded_map.of_map_bounded LocallyBoundedMap.ofMapBounded
 
 @[simp]
@@ -190,7 +190,7 @@ theorem id_comp (f : LocallyBoundedMap α β) : (LocallyBoundedMap.id β).comp f
 theorem cancel_right {g₁ g₂ : LocallyBoundedMap β γ} {f : LocallyBoundedMap α β}
     (hf : Surjective f) : g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, congrArg (fun x => comp x f)⟩
--- porting note: unification was not strong enough to do `congrArg _`.
+-- Porting note: unification was not strong enough to do `congrArg _`.
 #align locally_bounded_map.cancel_right LocallyBoundedMap.cancel_right
 
 @[simp]

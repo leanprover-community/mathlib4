@@ -41,7 +41,6 @@ open BigOperators Matrix
 universe v
 
 variable {α β m n o : Type*} {m' n' : α → Type*}
-
 variable {R : Type v} [CommRing R] {M N : Matrix m m R} {b : m → α}
 
 namespace Matrix
@@ -212,9 +211,9 @@ theorem twoBlockTriangular_det' (M : Matrix m m R) (p : m → Prop) [DecidablePr
     (h : ∀ i, p i → ∀ j, ¬p j → M i j = 0) :
     M.det = (toSquareBlockProp M p).det * (toSquareBlockProp M fun i => ¬p i).det := by
   rw [M.twoBlockTriangular_det fun i => ¬p i, mul_comm]
-  congr 1
-  exact equiv_block_det _ fun _ => not_not.symm
-  simpa only [Classical.not_not] using h
+  · congr 1
+    exact equiv_block_det _ fun _ => not_not.symm
+  · simpa only [Classical.not_not] using h
 #align matrix.two_block_triangular_det' Matrix.twoBlockTriangular_det'
 
 protected theorem BlockTriangular.det [DecidableEq α] [LinearOrder α] (hM : BlockTriangular M b) :

@@ -115,7 +115,7 @@ theorem starConvex_sInter {S : Set (Set E)} (h : ∀ s ∈ S, StarConvex 𝕜 x 
 
 theorem starConvex_iInter {ι : Sort*} {s : ι → Set E} (h : ∀ i, StarConvex 𝕜 x (s i)) :
     StarConvex 𝕜 x (⋂ i, s i) :=
-  sInter_range s ▸ starConvex_sInter <| forall_range_iff.2 h
+  sInter_range s ▸ starConvex_sInter <| forall_mem_range.2 h
 #align star_convex_Inter starConvex_iInter
 
 theorem StarConvex.union (hs : StarConvex 𝕜 x s) (ht : StarConvex 𝕜 x t) :
@@ -450,16 +450,16 @@ theorem Set.OrdConnected.starConvex [OrderedSemiring 𝕜] [OrderedAddCommMonoid
   intro y hy a b ha hb hab
   obtain hxy | hyx := h _ hy
   · refine' hs.out hx hy (mem_Icc.2 ⟨_, _⟩)
-    calc
-      x = a • x + b • x := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        x = a • x + b • x := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • y + b • y := by gcongr
       _ = y := Convex.combo_self hab _
   · refine' hs.out hy hx (mem_Icc.2 ⟨_, _⟩)
-    calc
-      y = a • y + b • y := (Convex.combo_self hab _).symm
-      _ ≤ a • x + b • y := by gcongr
+    · calc
+        y = a • y + b • y := (Convex.combo_self hab _).symm
+        _ ≤ a • x + b • y := by gcongr
     calc
       a • x + b • y ≤ a • x + b • x := by gcongr
       _ = x := Convex.combo_self hab _

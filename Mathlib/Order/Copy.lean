@@ -22,7 +22,7 @@ universe u
 
 variable {α : Type u}
 
---Porting note: mathlib3 proof uses `refine { top := top, bot := bot, .. }` but this does not work
+-- Porting note: mathlib3 proof uses `refine { top := top, bot := bot, .. }` but this does not work
 -- anymore
 /-- A function to create a provable equal copy of a bounded order
 with possibly different definitional equalities. -/
@@ -34,7 +34,7 @@ def BoundedOrder.copy {h : LE α} {h' : LE α} (c : @BoundedOrder α h')
     (@OrderBot.mk α h { bot := bot } (fun _ ↦ by simp [eq_bot, le_eq]))
 #align bounded_order.copy BoundedOrder.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a lattice
 with possibly different definitional equalities. -/
@@ -55,7 +55,7 @@ def Lattice.copy (c : Lattice α)
   · intro _ _ _ hac hbc; simp_rw [eq_le] at hac hbc ⊢; simp [eq_inf, hac, hbc]
 #align lattice.copy Lattice.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a distributive lattice
 with possibly different definitional equalities. -/
@@ -77,7 +77,7 @@ def DistribLattice.copy (c : DistribLattice α)
   · intros; simp [eq_le, eq_inf, eq_sup, le_sup_inf]
 #align distrib_lattice.copy DistribLattice.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a complete lattice
 with possibly different definitional equalities. -/
@@ -100,7 +100,7 @@ def CompleteLattice.copy (c : CompleteLattice α)
   · intros; simp [eq_le, eq_bot]
 #align complete_lattice.copy CompleteLattice.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a frame with possibly different definitional
 equalities. -/
@@ -117,7 +117,7 @@ def Frame.copy (c : Frame α) (le : α → α → Prop) (eq_le : le = (by infer_
       simp [eq_le, eq_sup, eq_inf, eq_sSup, @Order.Frame.inf_sSup_le_iSup_inf α _ a s] }
 #align frame.copy Frame.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a coframe with possibly different definitional
 equalities. -/
@@ -151,7 +151,7 @@ def CompleteDistribLattice.copy (c : CompleteDistribLattice α)
       inf eq_inf sSup eq_sSup sInf eq_sInf with }
 #align complete_distrib_lattice.copy CompleteDistribLattice.copy
 
---Porting note: original proof uses
+-- Porting note: original proof uses
 -- `all_goals { abstract { subst_vars, casesI c, simp_rw le_eq, assumption } }`
 /-- A function to create a provable equal copy of a conditionally complete lattice
 with possibly different definitional equalities. -/

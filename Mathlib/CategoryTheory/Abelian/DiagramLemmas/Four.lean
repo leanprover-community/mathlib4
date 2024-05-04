@@ -117,7 +117,7 @@ theorem epi_of_epi_of_epi_of_mono'
   rw [assoc, assoc, assoc, add_comp, assoc, assoc, assoc, NatTrans.naturality,
     ← reassoc_of% h₆, ← h₅, comp_sub]
   dsimp
-  rw [add_sub_cancel'_right]
+  rw [add_sub_cancel]
 #align category_theory.abelian.epi_of_epi_of_epi_of_mono CategoryTheory.Abelian.epi_of_epi_of_epi_of_mono'
 
 theorem epi_of_epi_of_epi_of_mono (hR₁ : R₁.Exact) (hR₂ : R₂.Exact)
@@ -133,6 +133,12 @@ section Five
 
 variable {R₁ R₂ : ComposableArrows C 4} (hR₁ : R₁.Exact) (hR₂ : R₂.Exact) (φ : R₁ ⟶ R₂)
 
+-- Adaptation note: nightly-2024-03-11
+-- We turn off simprocs here.
+-- Ideally someone will investigate whether `simp` lemmas can be rearranged
+-- so that this works without the `set_option`,
+-- *or* come up with a proposal regarding finer control of disabling simprocs.
+set_option simprocs false in
 /-- The five lemma. -/
 theorem isIso_of_epi_of_isIso_of_isIso_of_mono (h₀ : Epi (app' φ 0)) (h₁ : IsIso (app' φ 1))
     (h₂ : IsIso (app' φ 3)) (h₃ : Mono (app' φ 4)) : IsIso (app' φ 2) := by

@@ -33,21 +33,21 @@ def PontryaginDual :=
   ContinuousMonoidHom A circle
 #align pontryagin_dual PontryaginDual
 
--- porting note: `deriving` doesn't derive these instances
+-- Porting note: `deriving` doesn't derive these instances
 instance : TopologicalSpace (PontryaginDual A) :=
   (inferInstance : TopologicalSpace (ContinuousMonoidHom A circle))
 
 instance : T2Space (PontryaginDual A) :=
   (inferInstance : T2Space (ContinuousMonoidHom A circle))
 
--- porting note: instance is now noncomputable
+-- Porting note: instance is now noncomputable
 noncomputable instance : CommGroup (PontryaginDual A) :=
   (inferInstance : CommGroup (ContinuousMonoidHom A circle))
 
 instance : TopologicalGroup (PontryaginDual A) :=
   (inferInstance : TopologicalGroup (ContinuousMonoidHom A circle))
 
--- porting note: instance is now noncomputable
+-- Porting note: instance is now noncomputable
 noncomputable instance : Inhabited (PontryaginDual A) :=
   (inferInstance : Inhabited (ContinuousMonoidHom A circle))
 
