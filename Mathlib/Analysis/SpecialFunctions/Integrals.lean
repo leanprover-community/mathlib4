@@ -763,7 +763,7 @@ theorem integral_cos_sq : ∫ x in a..b, cos x ^ 2 = (cos b * sin b - cos a * si
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `n` is odd. -/
 theorem integral_sin_pow_mul_cos_pow_odd (m n : ℕ) :
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) = ∫ u in sin a..sin b, u^m * (↑1 - u ^ 2) ^ n :=
-  have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := by continuity
+  have hc : Continuous fun u : ℝ => u ^ m * (↑1 - u ^ 2) ^ n := by fun_prop
   calc
     (∫ x in a..b, sin x ^ m * cos x ^ (2 * n + 1)) =
         ∫ x in a..b, sin x ^ m * (↑1 - sin x ^ 2) ^ n * cos x := by
@@ -799,7 +799,7 @@ theorem integral_cos_pow_three :
 /-- Simplification of the integral of `sin x ^ m * cos x ^ n`, case `m` is odd. -/
 theorem integral_sin_pow_odd_mul_cos_pow (m n : ℕ) :
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) = ∫ u in cos b..cos a, u^n * (↑1 - u ^ 2) ^ m :=
-  have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := by continuity
+  have hc : Continuous fun u : ℝ => u ^ n * (↑1 - u ^ 2) ^ m := by fun_prop
   calc
     (∫ x in a..b, sin x ^ (2 * m + 1) * cos x ^ n) =
         -∫ x in b..a, sin x ^ (2 * m + 1) * cos x ^ n :=
@@ -846,7 +846,7 @@ theorem integral_sin_sq_mul_cos_sq :
     ∫ x in a..b, sin x ^ 2 * cos x ^ 2 = (b - a) / 8 - (sin (4 * b) - sin (4 * a)) / 32 := by
   convert integral_sin_pow_even_mul_cos_pow_even 1 1 using 1
   have h1 : ∀ c : ℝ, (↑1 - c) / ↑2 * ((↑1 + c) / ↑2) = (↑1 - c ^ 2) / 4 := fun c => by ring
-  have h2 : Continuous fun x => cos (2 * x) ^ 2 := by continuity
+  have h2 : Continuous fun x => cos (2 * x) ^ 2 := by fun_prop
   have h3 : ∀ x, cos x * sin x = sin (2 * x) / 2 := by intro; rw [sin_two_mul]; ring
   have h4 : ∀ d : ℝ, 2 * (2 * d) = 4 * d := fun d => by ring
   -- Porting note: was
@@ -867,7 +867,7 @@ theorem integral_sqrt_one_sub_sq : ∫ x in (-1 : ℝ)..1, √(1 - x ^ 2 : ℝ) 
     _ = ∫ x in sin (-(π / 2)).. sin (π / 2), √(1 - x ^ 2 : ℝ) := by rw [sin_neg, sin_pi_div_two]
     _ = ∫ x in (-(π / 2))..(π / 2), √(1 - sin x ^ 2 : ℝ) * cos x :=
           (integral_comp_mul_deriv (fun x _ => hasDerivAt_sin x) continuousOn_cos
-            (by continuity)).symm
+            (by fun_prop)).symm
     _ = ∫ x in (-(π / 2))..(π / 2), cos x ^ 2 := by
           refine integral_congr_ae (MeasureTheory.ae_of_all _ fun _ h => ?_)
           rw [uIoc_of_le (neg_le_self (le_of_lt (half_pos Real.pi_pos))), Set.mem_Ioc] at h

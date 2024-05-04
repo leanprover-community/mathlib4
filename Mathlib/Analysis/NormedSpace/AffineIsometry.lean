@@ -179,7 +179,7 @@ protected theorem antilipschitz : AntilipschitzWith 1 f :=
   f.isometry.antilipschitz
 #align affine_isometry.antilipschitz AffineIsometry.antilipschitz
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous : Continuous f :=
   f.isometry.continuous
 #align affine_isometry.continuous AffineIsometry.continuous

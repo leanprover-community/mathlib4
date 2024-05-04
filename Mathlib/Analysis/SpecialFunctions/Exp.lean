@@ -64,7 +64,7 @@ theorem locally_lipschitz_exp {r : ℝ} (hr_nonneg : 0 ≤ r) (hr_le : r ≤ 1) 
 
 -- Porting note: proof by term mode `locally_lipschitz_exp zero_le_one le_rfl x`
 -- doesn't work because `‖y - x‖` and `dist y x` don't unify
-@[continuity]
+@[fun_prop]
 theorem continuous_exp : Continuous exp :=
   continuous_iff_continuousAt.mpr fun x =>
     continuousAt_of_locally_lipschitz zero_lt_one (2 * ‖exp x‖)
@@ -119,7 +119,7 @@ end ComplexContinuousExpComp
 
 namespace Real
 
-@[continuity]
+@[fun_prop]
 theorem continuous_exp : Continuous exp :=
   Complex.continuous_re.comp Complex.continuous_ofReal.cexp
 #align real.continuous_exp Real.continuous_exp

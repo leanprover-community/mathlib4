@@ -77,7 +77,7 @@ instance continuousMapClass : ContinuousMapClass (M [⋀^ι]→L[R] N) (ι → M
 
 initialize_simps_projections ContinuousAlternatingMap (toFun → apply)
 
-@[continuity]
+@[fun_prop]
 theorem coe_continuous : Continuous f := f.cont
 
 @[simp]

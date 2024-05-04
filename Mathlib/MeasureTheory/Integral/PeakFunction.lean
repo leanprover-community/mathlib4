@@ -265,7 +265,7 @@ theorem tendsto_setIntegral_pow_smul_of_unique_maximum_of_isCompact_of_measure_n
     peak functions `φₙ = (c x) ^ n / ∫ (c x) ^ n`. The only nontrivial bit is to check that this
     sequence converges uniformly to zero on any set `s \ u` away from `x₀`. By compactness, the
     function `c` is bounded by `t < c x₀` there. Consider `t' ∈ (t, c x₀)`, and a neighborhood `v`
-    of `x₀` where `c x ≥ t'`, by continuity. Then `∫ (c x) ^ n` is bounded below by `t' ^ n μ v`.
+    of `x₀` where `c x ≥ t'`, by fun_prop. Then `∫ (c x) ^ n` is bounded below by `t' ^ n μ v`.
     It follows that, on `s \ u`, then `φₙ x ≤ t ^ n / (t' ^ n μ v)`,
     which tends (exponentially fast) to zero with `n`. -/
   let φ : ℕ → α → ℝ := fun n x => (∫ x in s, c x ^ n ∂μ)⁻¹ * c x ^ n
@@ -473,7 +473,7 @@ theorem tendsto_integral_comp_smul_smul_of_integrable'
       atTop (𝓝 (f 0)) := by
     apply tendsto_integral_comp_smul_smul_of_integrable hφ h'φ h If
     have A : ContinuousAt g (x₀ - 0) := by simpa using h'g
-    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by continuity)
+    have B : ContinuousAt (fun x ↦ x₀ - x) 0 := Continuous.continuousAt (by fun_prop)
     exact A.comp B
   simp only [f, sub_zero] at this
   convert this using 2 with c

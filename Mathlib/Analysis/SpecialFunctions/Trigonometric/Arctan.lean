@@ -60,7 +60,7 @@ theorem continuousOn_tan : ContinuousOn tan {x | cos x ≠ 0} := by
   exact continuousOn_sin.div continuousOn_cos fun x => id
 #align real.continuous_on_tan Real.continuousOn_tan
 
-@[continuity]
+@[fun_prop]
 theorem continuous_tan : Continuous fun x : {x | cos x ≠ 0} => tan x :=
   continuousOn_iff_continuous_restrict.1 continuousOn_tan
 #align real.continuous_tan Real.continuous_tan
@@ -303,7 +303,7 @@ theorem four_mul_arctan_inv_5_sub_arctan_inv_239 : 4 * arctan 5⁻¹ - arctan 23
 
 end ArctanAdd
 
-@[continuity]
+@[fun_prop]
 theorem continuous_arctan : Continuous arctan :=
   continuous_subtype_val.comp tanOrderIso.toHomeomorph.continuous_invFun
 #align real.continuous_arctan Real.continuous_arctan

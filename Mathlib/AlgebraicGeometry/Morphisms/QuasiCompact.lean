@@ -44,7 +44,7 @@ class QuasiCompact (f : X ⟶ Y) : Prop where
 #align algebraic_geometry.quasi_compact AlgebraicGeometry.QuasiCompact
 
 theorem quasiCompact_iff_spectral : QuasiCompact f ↔ IsSpectralMap f.1.base :=
-  ⟨fun ⟨h⟩ => ⟨by continuity, h⟩, fun h => ⟨h.2⟩⟩
+  ⟨fun ⟨h⟩ => ⟨by fun_prop, h⟩, fun h => ⟨h.2⟩⟩
 #align algebraic_geometry.quasi_compact_iff_spectral AlgebraicGeometry.quasiCompact_iff_spectral
 
 /-- The `AffineTargetMorphismProperty` corresponding to `QuasiCompact`, asserting that the

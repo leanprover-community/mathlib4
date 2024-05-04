@@ -97,7 +97,7 @@ def Simps.apply (L₁ : ContinuousMultilinearMap R M₁ M₂) (v : ∀ i, M₁ i
 initialize_simps_projections ContinuousMultilinearMap (-toMultilinearMap,
   toMultilinearMap_toFun → apply)
 
-@[continuity]
+@[fun_prop]
 theorem coe_continuous : Continuous (f : (∀ i, M₁ i) → M₂) :=
   f.cont
 #align continuous_multilinear_map.coe_continuous ContinuousMultilinearMap.coe_continuous

@@ -351,12 +351,12 @@ theorem continuousOn_log : ContinuousOn log {0}ᶜ := by
   exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
 #align real.continuous_on_log Real.continuousOn_log
 
-@[continuity]
+@[fun_prop]
 theorem continuous_log : Continuous fun x : { x : ℝ // x ≠ 0 } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
 #align real.continuous_log Real.continuous_log
 
-@[continuity]
+@[fun_prop]
 theorem continuous_log' : Continuous fun x : { x : ℝ // 0 < x } => log x :=
   continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
 #align real.continuous_log' Real.continuous_log'

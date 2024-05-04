@@ -162,12 +162,12 @@ section Prod
 -- Porting note: why is autoParam not firing?
 /-- The first projection from the product. -/
 abbrev prodFst {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ X :=
-  ⟨Prod.fst, by continuity⟩
+  ⟨Prod.fst, by fun_prop⟩
 #align Top.prod_fst TopCat.prodFst
 
 /-- The second projection from the product. -/
 abbrev prodSnd {X Y : TopCat.{u}} : TopCat.of (X × Y) ⟶ Y :=
-  ⟨Prod.snd, by continuity⟩
+  ⟨Prod.snd, by fun_prop⟩
 #align Top.prod_snd TopCat.prodSnd
 
 /-- The explicit binary cofan of `X, Y` given by `X × Y`. -/
@@ -295,7 +295,7 @@ end Prod
 
 /-- The binary coproduct cofan in `TopCat`. -/
 protected def binaryCofan (X Y : TopCat.{u}) : BinaryCofan X Y :=
-  BinaryCofan.mk (⟨Sum.inl, by continuity⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by continuity⟩
+  BinaryCofan.mk (⟨Sum.inl, by fun_prop⟩ : X ⟶ TopCat.of (Sum X Y)) ⟨Sum.inr, by fun_prop⟩
 #align Top.binary_cofan TopCat.binaryCofan
 
 /-- The constructed binary coproduct cofan in `TopCat` is the coproduct. -/

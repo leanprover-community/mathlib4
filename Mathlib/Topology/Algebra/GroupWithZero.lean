@@ -71,7 +71,7 @@ theorem ContinuousOn.div_const (hf : ContinuousOn f s) (y : G₀) :
   simpa only [div_eq_mul_inv] using hf.mul continuousOn_const
 #align continuous_on.div_const ContinuousOn.div_const
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.div_const (hf : Continuous f) (y : G₀) : Continuous fun x => f x / y := by
   simpa only [div_eq_mul_inv] using hf.mul continuous_const
 #align continuous.div_const Continuous.div_const
@@ -129,7 +129,7 @@ nonrec theorem ContinuousAt.inv₀ (hf : ContinuousAt f a) (ha : f a ≠ 0) :
   hf.inv₀ ha
 #align continuous_at.inv₀ ContinuousAt.inv₀
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.inv₀ (hf : Continuous f) (h0 : ∀ x, f x ≠ 0) : Continuous fun x => (f x)⁻¹ :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).inv₀ (h0 x)
 #align continuous.inv₀ Continuous.inv₀
@@ -206,7 +206,7 @@ nonrec theorem ContinuousAt.div (hf : ContinuousAt f a) (hg : ContinuousAt g a) 
   hf.div hg h₀
 #align continuous_at.div ContinuousAt.div
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.div (hf : Continuous f) (hg : Continuous g) (h₀ : ∀ x, g x ≠ 0) :
     Continuous (f / g) := by simpa only [div_eq_mul_inv] using hf.mul (hg.inv₀ h₀)
 #align continuous.div Continuous.div
@@ -375,7 +375,7 @@ theorem ContinuousOn.zpow₀ (hf : ContinuousOn f s) (m : ℤ) (h : ∀ a ∈ s,
     ContinuousOn (fun x => f x ^ m) s := fun a ha => (hf a ha).zpow₀ m (h a ha)
 #align continuous_on.zpow₀ ContinuousOn.zpow₀
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.zpow₀ (hf : Continuous f) (m : ℤ) (h0 : ∀ a, f a ≠ 0 ∨ 0 ≤ m) :
     Continuous fun x => f x ^ m :=
   continuous_iff_continuousAt.2 fun x => (hf.tendsto x).zpow₀ m (h0 x)

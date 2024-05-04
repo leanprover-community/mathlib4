@@ -31,7 +31,6 @@ import Mathlib.Tactic.Clear!
 import Mathlib.Tactic.ClearExcept
 import Mathlib.Tactic.Constructor
 import Mathlib.Tactic.Congrm
-import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert

@@ -111,7 +111,7 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
   map_div₀ sqrtHom x y
 #align nnreal.sqrt_div NNReal.sqrt_div
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
@@ -150,7 +150,7 @@ theorem coe_sqrt {x : ℝ≥0} : (NNReal.sqrt x : ℝ) = √(x : ℝ) := by
   rw [Real.sqrt, Real.toNNReal_coe]
 #align real.coe_sqrt Real.coe_sqrt
 
-@[continuity]
+@[fun_prop]
 theorem continuous_sqrt : Continuous (√· : ℝ → ℝ) :=
   NNReal.continuous_coe.comp <| NNReal.continuous_sqrt.comp continuous_real_toNNReal
 #align real.continuous_sqrt Real.continuous_sqrt
@@ -524,7 +524,7 @@ theorem ContinuousOn.sqrt (h : ContinuousOn f s) : ContinuousOn (fun x => √(f 
   fun x hx => (h x hx).sqrt
 #align continuous_on.sqrt ContinuousOn.sqrt
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.sqrt (h : Continuous f) : Continuous fun x => √(f x) :=
   continuous_sqrt.comp h
 #align continuous.sqrt Continuous.sqrt

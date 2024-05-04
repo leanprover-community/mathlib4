@@ -338,7 +338,7 @@ theorem fourierChar_apply (x : ℝ) : 𝐞 x = Complex.exp (↑(2 * π * x) * Co
   rfl
 #align real.fourier_char_apply Real.fourierChar_apply
 
-@[continuity]
+@[fun_prop]
 theorem continuous_fourierChar : Continuous 𝐞 :=
   (map_continuous expMapCircle).comp (continuous_mul_left _)
 #align real.continuous_fourier_char Real.continuous_fourierChar

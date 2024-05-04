@@ -145,7 +145,7 @@ theorem univBall_symm_apply_center (c : P) (r : ℝ) : (univBall c r).symm c = 0
   have : 0 ∈ (univBall c r).source := by simp
   simpa only [univBall_apply_zero] using (univBall c r).left_inv this
 
-@[continuity]
+@[fun_prop]
 theorem continuous_univBall (c : P) (r : ℝ) : Continuous (univBall c r) := by
   simpa [continuous_iff_continuousOn_univ] using (univBall c r).continuousOn
 

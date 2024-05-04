@@ -242,7 +242,7 @@ ring `R`. -/
 structure ContinuousLinearMap {R : Type*} {S : Type*} [Semiring R] [Semiring S] (σ : R →+* S)
     (M : Type*) [TopologicalSpace M] [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂]
     [AddCommMonoid M₂] [Module R M] [Module S M₂] extends M →ₛₗ[σ] M₂ where
-  cont : Continuous toFun := by continuity
+  cont : Continuous toFun := by fun_prop
 #align continuous_linear_map ContinuousLinearMap
 
 attribute [inherit_doc ContinuousLinearMap] ContinuousLinearMap.cont
@@ -289,8 +289,8 @@ structure ContinuousLinearEquiv {R : Type*} {S : Type*} [Semiring R] [Semiring S
     {σ' : S →+* R} [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : Type*) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : Type*) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] extends M ≃ₛₗ[σ] M₂ where
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 #align continuous_linear_equiv ContinuousLinearEquiv
 
 attribute [inherit_doc ContinuousLinearEquiv] ContinuousLinearEquiv.continuous_toFun
@@ -315,8 +315,8 @@ class ContinuousSemilinearEquivClass (F : Type*) {R : outParam (Type*)} {S : out
     [RingHomInvPair σ σ'] [RingHomInvPair σ' σ] (M : outParam (Type*)) [TopologicalSpace M]
     [AddCommMonoid M] (M₂ : outParam (Type*)) [TopologicalSpace M₂] [AddCommMonoid M₂] [Module R M]
     [Module S M₂] [EquivLike F M M₂] extends SemilinearEquivClass F σ M M₂ : Prop where
-  map_continuous : ∀ f : F, Continuous f := by continuity
-  inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by continuity
+  map_continuous : ∀ f : F, Continuous f := by fun_prop
+  inv_continuous : ∀ f : F, Continuous (EquivLike.inv f) := by fun_prop
 #align continuous_semilinear_equiv_class ContinuousSemilinearEquivClass
 
 attribute [inherit_doc ContinuousSemilinearEquivClass]
@@ -437,7 +437,7 @@ theorem coe_mk' (f : M₁ →ₛₗ[σ₁₂] M₂) (h) : (mk f h : M₁ → M�
   rfl
 #align continuous_linear_map.coe_mk' ContinuousLinearMap.coe_mk'
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (f : M₁ →SL[σ₁₂] M₂) : Continuous f :=
   f.2
 #align continuous_linear_map.continuous ContinuousLinearMap.continuous
@@ -1357,7 +1357,7 @@ def _root_.Pi.compRightL {α : Type*} (f : α → ι) : ((i : ι) → φ i) →L
   toFun := fun v i ↦ v (f i)
   map_add' := by intros; ext; simp
   map_smul' := by intros; ext; simp
-  cont := by continuity
+  cont := by fun_prop
 
 @[simp] lemma _root_.Pi.compRightL_apply {α : Type*} (f : α → ι) (v : (i : ι) → φ i) (i : α) :
     Pi.compRightL R φ f v i = v (f i) := rfl
@@ -1594,7 +1594,7 @@ protected theorem isOpenMap_of_ne_zero [TopologicalSpace R] [DivisionRing R] [Co
     (f : M →L[R] R) (hf : f ≠ 0) : IsOpenMap f :=
   let ⟨x, hx⟩ := exists_ne_zero hf
   IsOpenMap.of_sections fun y =>
-    ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by continuity, by simp,
+    ⟨fun a => y + (a - f y) • (f x)⁻¹ • x, Continuous.continuousAt <| by fun_prop, by simp,
       fun a => by simp [hx]⟩
 #align continuous_linear_map.is_open_map_of_ne_zero ContinuousLinearMap.isOpenMap_of_ne_zero
 
@@ -1995,7 +1995,7 @@ theorem map_eq_zero_iff (e : M₁ ≃SL[σ₁₂] M₂) {x : M₁} : e x = 0 ↔
 attribute [continuity]
   ContinuousLinearEquiv.continuous_toFun ContinuousLinearEquiv.continuous_invFun
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (e : M₁ ≃SL[σ₁₂] M₂) : Continuous (e : M₁ → M₂) :=
   e.continuous_toFun
 #align continuous_linear_equiv.continuous ContinuousLinearEquiv.continuous

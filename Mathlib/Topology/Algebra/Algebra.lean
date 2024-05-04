@@ -47,7 +47,7 @@ theorem continuous_algebraMap_iff_smul :
     exact h.comp (continuous_id.prod_mk continuous_const)
 #align continuous_algebra_map_iff_smul continuous_algebraMap_iff_smul
 
-@[continuity]
+@[fun_prop]
 theorem continuous_algebraMap [ContinuousSMul R A] : Continuous (algebraMap R A) :=
   (continuous_algebraMap_iff_smul R A).2 continuous_smul
 #align continuous_algebra_map continuous_algebraMap

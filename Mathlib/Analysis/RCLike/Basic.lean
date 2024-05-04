@@ -1000,7 +1000,7 @@ theorem reCLM_apply : ((reCLM : K →L[ℝ] ℝ) : K → ℝ) = re :=
   rfl
 #align is_R_or_C.re_clm_apply RCLike.reCLM_apply
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_re : Continuous (re : K → ℝ) :=
   reCLM.continuous
 #align is_R_or_C.continuous_re RCLike.continuous_re
@@ -1032,7 +1032,7 @@ theorem imCLM_apply : ((imCLM : K →L[ℝ] ℝ) : K → ℝ) = im :=
   rfl
 #align is_R_or_C.im_clm_apply RCLike.imCLM_apply
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_im : Continuous (im : K → ℝ) :=
   imCLM.continuous
 #align is_R_or_C.continuous_im RCLike.continuous_im
@@ -1079,7 +1079,7 @@ theorem conjCLE_apply : (conjCLE : K → K) = conj :=
 instance (priority := 100) : ContinuousStar K :=
   ⟨conjLIE.continuous⟩
 
-@[continuity]
+@[fun_prop]
 theorem continuous_conj : Continuous (conj : K → K) :=
   continuous_star
 #align is_R_or_C.continuous_conj RCLike.continuous_conj
@@ -1120,12 +1120,12 @@ theorem ofRealCLM_apply : (ofRealCLM : ℝ → K) = ofReal :=
   rfl
 #align is_R_or_C.of_real_clm_apply RCLike.ofRealCLM_apply
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_ofReal : Continuous (ofReal : ℝ → K) :=
   ofRealLI.continuous
 #align is_R_or_C.continuous_of_real RCLike.continuous_ofReal
 
-@[continuity]
+@[fun_prop]
 theorem continuous_normSq : Continuous (normSq : K → ℝ) :=
   (continuous_re.mul continuous_re).add (continuous_im.mul continuous_im)
 #align is_R_or_C.continuous_norm_sq RCLike.continuous_normSq

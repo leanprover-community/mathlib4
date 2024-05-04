@@ -332,7 +332,7 @@ variable {𝕜₁ 𝕜₂ : Type*} [NontriviallyNormedField 𝕜₁] [Nontrivial
   [TopologicalSpace M₂] [AddCommGroup M₂] [Module 𝕜₁ M₁] [Module 𝕜₂ M₂] [TopologicalAddGroup M₁]
   [ContinuousConstSMul 𝕜₁ M₁] [TopologicalAddGroup M₂] [ContinuousSMul 𝕜₂ M₂]
 
-@[continuity]
+@[fun_prop]
 theorem IsCompactOperator.continuous {f : M₁ →ₛₗ[σ₁₂] M₂} (hf : IsCompactOperator f) :
     Continuous f := by
   letI : UniformSpace M₂ := TopologicalAddGroup.toUniformSpace _

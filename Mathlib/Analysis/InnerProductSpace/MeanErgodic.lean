@@ -54,7 +54,7 @@ theorem LinearMap.tendsto_birkhoffAverage_of_ker_subset_closure [NormedSpace �
     have hgz : g z = z := congr_arg Subtype.val (hg_proj ⟨z, hz⟩)
     simpa [hy, hgz, birkhoffAverage, birkhoffSum, Finset.sum_add_distrib, smul_add]
       using this.add (hz.tendsto_birkhoffAverage 𝕜 _root_.id)
-  /- By continuity, it suffices to prove the theorem on a dense subset of `LinearMap.ker g`.
+  /- by fun_prop, it suffices to prove the theorem on a dense subset of `LinearMap.ker g`.
   By assumption, `LinearMap.range (f - 1)` is dense in the kernel of `g`,
   so it suffices to prove the theorem for `y = f x - x`. -/
   have : IsClosed {x | Tendsto (birkhoffAverage 𝕜 f _root_.id · x) atTop (𝓝 0)} :=

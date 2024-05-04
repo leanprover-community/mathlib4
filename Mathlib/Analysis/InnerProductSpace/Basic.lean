@@ -2283,7 +2283,7 @@ theorem ContinuousOn.inner (hf : ContinuousOn f s) (hg : ContinuousOn g s) :
     ContinuousOn (fun t => ⟪f t, g t⟫) s := fun x hx => (hf x hx).inner (hg x hx)
 #align continuous_on.inner ContinuousOn.inner
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.inner (hf : Continuous f) (hg : Continuous g) : Continuous fun t => ⟪f t, g t⟫ :=
   continuous_iff_continuousAt.2 fun _x => hf.continuousAt.inner hg.continuousAt
 #align continuous.inner Continuous.inner

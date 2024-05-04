@@ -40,7 +40,7 @@ theorem isOpenMap_barycentric_coord [Nontrivial ι] (b : AffineBasis ι 𝕜 P) 
 
 variable [FiniteDimensional 𝕜 E] (b : AffineBasis ι 𝕜 P)
 
-@[continuity]
+@[fun_prop]
 theorem continuous_barycentric_coord (i : ι) : Continuous (b.coord i) :=
   (b.coord i).continuous_of_finiteDimensional
 #align continuous_barycentric_coord continuous_barycentric_coord

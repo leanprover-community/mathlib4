@@ -184,7 +184,7 @@ theorem dist_le_iff_of_nonempty [Nonempty α] : dist f g ≤ C ↔ ∀ x, dist (
 
 theorem dist_lt_of_nonempty_compact [Nonempty α] [CompactSpace α]
     (w : ∀ x : α, dist (f x) (g x) < C) : dist f g < C := by
-  have c : Continuous fun x => dist (f x) (g x) := by continuity
+  have c : Continuous fun x => dist (f x) (g x) := by fun_prop
   obtain ⟨x, -, le⟩ :=
     IsCompact.exists_isMaxOn isCompact_univ Set.univ_nonempty (Continuous.continuousOn c)
   exact lt_of_le_of_lt (dist_le_iff_of_nonempty.mpr fun y => le trivial) (w x)
@@ -314,13 +314,13 @@ theorem continuous_coe : Continuous fun (f : α →ᵇ β) x => f x :=
 #align bounded_continuous_function.continuous_coe BoundedContinuousFunction.continuous_coe
 
 /-- When `x` is fixed, `(f : α →ᵇ β) ↦ f x` is continuous. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_eval_const {x : α} : Continuous fun f : α →ᵇ β => f x :=
   (continuous_apply x).comp continuous_coe
 #align bounded_continuous_function.continuous_eval_const BoundedContinuousFunction.continuous_eval_const
 
 /-- The evaluation map is continuous, as a joint function of `u` and `x`. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_eval : Continuous fun p : (α →ᵇ β) × α => p.1 p.2 :=
   (continuous_prod_of_continuous_lipschitzWith _ 1 fun f => f.continuous) <| lipschitz_evalx
 #align bounded_continuous_function.continuous_eval BoundedContinuousFunction.continuous_eval

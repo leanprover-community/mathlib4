@@ -25,7 +25,7 @@ This construction will be possible if `f a : ℚ → ℝ` satisfies a package of
 monotonicity, limits at +-∞ and a continuity property. We define `IsRatStieltjesPoint f a` to state
 that this is the case at `a` and define the property `IsMeasurableRatCDF f` that `f` is measurable
 and `IsRatStieltjesPoint f a` for all `a`.
-The function `α → StieltjesFunction` obtained by extending `f` by continuity from the right is then
+The function `α → StieltjesFunction` obtained by extending `f` by fun_prop from the right is then
 called `IsMeasurableRatCDF.stieltjesFunction`.
 
 In applications, we will often only have `IsRatStieltjesPoint f a` almost surely with respect to

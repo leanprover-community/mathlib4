@@ -429,7 +429,7 @@ protected theorem continuous_div_const (c : ℝ≥0∞) (c_ne_zero : c ≠ 0) :
   exact ENNReal.continuousAt_mul_const (Or.intro_left _ (inv_ne_top.mpr c_ne_zero))
 #align ennreal.continuous_div_const ENNReal.continuous_div_const
 
-@[continuity]
+@[fun_prop]
 theorem continuous_pow (n : ℕ) : Continuous fun a : ℝ≥0∞ => a ^ n := by
   induction' n with n IH
   · simp [continuous_const]
@@ -1438,7 +1438,7 @@ theorem continuous_edist : Continuous fun p : α × α => edist p.1 p.2 := by
     _ = edist x' y' + 2 * edist (x, y) (x', y') := by rw [← mul_two, mul_comm]
 #align continuous_edist continuous_edist
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.edist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => edist (f b) (g b) :=
   continuous_edist.comp (hf.prod_mk hg : _)

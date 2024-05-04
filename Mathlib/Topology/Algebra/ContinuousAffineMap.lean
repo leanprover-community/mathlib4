@@ -128,7 +128,7 @@ theorem mk_coe (f : P →A[R] Q) (h) : (⟨(f : P →ᵃ[R] Q), h⟩ : P →A[R]
   rfl
 #align continuous_affine_map.mk_coe ContinuousAffineMap.mk_coe
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (f : P →A[R] Q) : Continuous f := f.2
 #align continuous_affine_map.continuous ContinuousAffineMap.continuous
 

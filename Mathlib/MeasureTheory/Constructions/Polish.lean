@@ -401,7 +401,7 @@ theorem measurablySeparable_range_of_disjoint [T2Space α] [MeasurableSpace α]
     images are not Borel-separated, and then two smaller cylinders of length two whose images are
     not Borel-separated, and so on. One thus gets two sequences of cylinders, that decrease to two
     points `x` and `y`. Their images are different by the disjointness assumption, hence contained
-    in two disjoint open sets by the T2 property. By continuity, long enough cylinders around `x`
+    in two disjoint open sets by the T2 property. by fun_prop, long enough cylinders around `x`
     and `y` have images which are separated by these two disjoint open sets, a contradiction.
     -/
   by_contra hfg
@@ -689,7 +689,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
     Thus, `y` is a Cauchy sequence, converging to a limit `z`. We claim that `f z = x`, completing
     the proof.
     Otherwise, one could find open sets `v` and `w` separating `f z` from `x`. Then, for large `n`,
-    the image `f '' (s i)` would be included in `v` by continuity of `f`, so its closure would be
+    the image `f '' (s i)` would be included in `v` by fun_prop of `f`, so its closure would be
     contained in the closure of `v`, and therefore it would be disjoint from `w`. This is a
     contradiction since `x` belongs both to this closure and to `w`. -/
   letI := upgradePolishSpace γ
@@ -803,7 +803,7 @@ theorem measurableSet_range_of_continuous_injective {β : Type*} [TopologicalSpa
       haveI : Tendsto (fun n => u n + dist (y n) z) atTop (𝓝 0) := by
         simpa only [add_zero] using u_lim.add (tendsto_iff_dist_tendsto_zero.1 y_lim)
       ((tendsto_order.1 this).2 _ δpos).exists
-    -- for large enough `n`, the image of `s n` is contained in `v`, by continuity of `f`.
+    -- for large enough `n`, the image of `s n` is contained in `v`, by fun_prop of `f`.
     have fsnv : f '' s n ⊆ v := by
       rw [image_subset_iff]
       apply Subset.trans _ hδ

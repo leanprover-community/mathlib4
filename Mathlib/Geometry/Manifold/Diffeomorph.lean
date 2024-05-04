@@ -112,7 +112,7 @@ def toContMDiffMap (Φ : M ≃ₘ^n⟮I, I'⟯ M') : C^n⟮I, M; I', M'⟯ :=
 instance : Coe (M ≃ₘ^n⟮I, I'⟯ M') C^n⟮I, M; I', M'⟯ :=
   ⟨toContMDiffMap⟩
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (h : M ≃ₘ^n⟮I, I'⟯ M') : Continuous h :=
   h.contMDiff_toFun.continuous
 #align diffeomorph.continuous Diffeomorph.continuous

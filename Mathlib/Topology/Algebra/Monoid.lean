@@ -355,7 +355,7 @@ theorem isClosed_setOf_map_mul [Mul M₁] [Mul M₂] [ContinuousMul M₂] :
         isClosed_eq (continuous_apply _)
           -- Porting note: proof was:
           -- `((continuous_apply _).mul (continuous_apply _))`
-          (by continuity)
+          (by fun_prop)
 #align is_closed_set_of_map_mul isClosed_setOf_map_mul
 #align is_closed_set_of_map_add isClosed_setOf_map_add
 

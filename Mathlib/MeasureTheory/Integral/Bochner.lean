@@ -739,7 +739,7 @@ theorem norm_integral_le (f : α →₁[μ] E) : ‖integral f‖ ≤ ‖f‖ :=
 theorem nnnorm_integral_le (f : α →₁[μ] E) : ‖integral f‖₊ ≤ ‖f‖₊ :=
   norm_integral_le f
 
-@[continuity]
+@[fun_prop]
 theorem continuous_integral : Continuous fun f : α →₁[μ] E => integral f := by
   simp only [integral]
   exact L1.integralCLM.continuous
@@ -953,7 +953,7 @@ theorem L1.integral_of_fun_eq_integral {f : α → G} (hf : Integrable f μ) :
 set_option linter.uppercaseLean3 false in
 #align measure_theory.L1.integral_of_fun_eq_integral MeasureTheory.L1.integral_of_fun_eq_integral
 
-@[continuity]
+@[fun_prop]
 theorem continuous_integral : Continuous fun f : α →₁[μ] G => ∫ a, f a ∂μ := by
   by_cases hG : CompleteSpace G
   · simp only [integral, hG, L1.integral]

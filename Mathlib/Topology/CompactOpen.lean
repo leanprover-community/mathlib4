@@ -162,7 +162,7 @@ section Ev
 
 /-- The evaluation map `C(X, Y) × X → Y` is continuous
 if `X, Y` is a locally compact pair of spaces. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) × X => p.1 p.2 := by
   simp_rw [continuous_iff_continuousAt, ContinuousAt, (nhds_basis_opens _).tendsto_right_iff]
   rintro ⟨f, x⟩ U ⟨hx : f x ∈ U, hU : IsOpen U⟩
@@ -177,7 +177,7 @@ theorem continuous_eval [LocallyCompactPair X Y] : Continuous fun p : C(X, Y) ×
 
 Porting note: merged `continuous_eval_const` with `continuous_eval_const'` removing unneeded
 assumptions. -/
-@[continuity]
+@[fun_prop]
 theorem continuous_eval_const (a : X) : Continuous fun f : C(X, Y) => f a :=
   continuous_def.2 fun U hU ↦ by simpa using isOpen_setOf_mapsTo (isCompact_singleton (x := a)) hU
 #align continuous_map.continuous_eval_const' ContinuousMap.continuous_eval_const
@@ -330,7 +330,7 @@ section Curry
     If `a × β` is locally compact, this is continuous. If `α` and `β` are both locally
     compact, then this is a homeomorphism, see `Homeomorph.curry`. -/
 def curry (f : C(X × Y, Z)) : C(X, C(Y, Z)) where
-  toFun a := ⟨Function.curry f a, f.continuous.comp <| by continuity⟩
+  toFun a := ⟨Function.curry f a, f.continuous.comp <| by fun_prop⟩
   continuous_toFun := (continuous_comp f).comp continuous_coev
 #align continuous_map.curry ContinuousMap.curry
 

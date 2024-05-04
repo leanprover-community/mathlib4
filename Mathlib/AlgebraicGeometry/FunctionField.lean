@@ -82,7 +82,7 @@ theorem genericPoint_eq_of_isOpenImmersion {X Y : Scheme} (f : X ⟶ Y) [H : IsO
     [hX : IrreducibleSpace X.carrier] [IrreducibleSpace Y.carrier] :
     f.1.base (genericPoint X.carrier : _) = (genericPoint Y.carrier : _) := by
   apply ((genericPoint_spec Y).eq _).symm
-  -- Porting note: the continuity argument used to be `by continuity`
+  -- Porting note: the continuity argument used to be `by fun_prop`
   convert (genericPoint_spec X.carrier).image
     (show Continuous f.1.base from ContinuousMap.continuous_toFun _)
   symm

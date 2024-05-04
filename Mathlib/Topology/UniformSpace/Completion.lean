@@ -501,7 +501,7 @@ theorem uniformContinuous_extension : UniformContinuous (Completion.extension f)
   cPkg.uniformContinuous_extend
 #align uniform_space.completion.uniform_continuous_extension UniformSpace.Completion.uniformContinuous_extension
 
-@[continuity]
+@[fun_prop]
 theorem continuous_extension : Continuous (Completion.extension f) :=
   cPkg.continuous_extend
 #align uniform_space.completion.continuous_extension UniformSpace.Completion.continuous_extension
@@ -544,7 +544,7 @@ theorem uniformContinuous_map : UniformContinuous (Completion.map f) :=
   cPkg.uniformContinuous_map cPkg f
 #align uniform_space.completion.uniform_continuous_map UniformSpace.Completion.uniformContinuous_map
 
-@[continuity]
+@[fun_prop]
 theorem continuous_map : Continuous (Completion.map f) :=
   cPkg.continuous_map cPkg f
 #align uniform_space.completion.continuous_map UniformSpace.Completion.continuous_map

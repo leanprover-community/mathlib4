@@ -252,12 +252,12 @@ variable (p a)
 
 section Continuity
 
-@[continuity]
+@[fun_prop]
 theorem continuous_equivIco_symm : Continuous (equivIco p a).symm :=
   continuous_quotient_mk'.comp continuous_subtype_val
 #align add_circle.continuous_equiv_Ico_symm AddCircle.continuous_equivIco_symm
 
-@[continuity]
+@[fun_prop]
 theorem continuous_equivIoc_symm : Continuous (equivIoc p a).symm :=
   continuous_quotient_mk'.comp continuous_subtype_val
 #align add_circle.continuous_equiv_Ioc_symm AddCircle.continuous_equivIoc_symm

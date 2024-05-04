@@ -45,14 +45,14 @@ section TopologicalSemiring
 
 variable {R S : Type*} [Semiring R] [TopologicalSpace R] [TopologicalSemiring R] (p : R[X])
 
-@[continuity, fun_prop]
+@[fun_prop]
 protected theorem continuous_eval₂ [Semiring S] (p : S[X]) (f : S →+* R) :
     Continuous fun x => p.eval₂ f x := by
   simp only [eval₂_eq_sum, Finsupp.sum]
   exact continuous_finset_sum _ fun c _ => continuous_const.mul (continuous_pow _)
 #align polynomial.continuous_eval₂ Polynomial.continuous_eval₂
 
-@[continuity, fun_prop]
+@[fun_prop]
 protected theorem continuous : Continuous fun x => p.eval x :=
   p.continuous_eval₂ _
 #align polynomial.continuous Polynomial.continuous
@@ -79,7 +79,7 @@ section TopologicalAlgebra
 variable {R A : Type*} [CommSemiring R] [Semiring A] [Algebra R A] [TopologicalSpace A]
   [TopologicalSemiring A] (p : R[X])
 
-@[continuity, fun_prop]
+@[fun_prop]
 protected theorem continuous_aeval : Continuous fun x : A => aeval x p :=
   p.continuous_eval₂ _
 #align polynomial.continuous_aeval Polynomial.continuous_aeval

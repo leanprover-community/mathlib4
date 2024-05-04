@@ -53,7 +53,7 @@ instance : CircularOrder Real.Angle :=
   QuotientAddGroup.circularOrder (hp' := ⟨by norm_num [pi_pos]⟩)
 
 
-@[continuity]
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : ℝ → Angle) :=
   continuous_quotient_mk'
 #align real.angle.continuous_coe Real.Angle.continuous_coe
@@ -309,7 +309,7 @@ theorem sin_coe (x : ℝ) : sin (x : Angle) = Real.sin x :=
   rfl
 #align real.angle.sin_coe Real.Angle.sin_coe
 
-@[continuity]
+@[fun_prop]
 theorem continuous_sin : Continuous sin :=
   Real.continuous_sin.quotient_liftOn' _
 #align real.angle.continuous_sin Real.Angle.continuous_sin
@@ -324,7 +324,7 @@ theorem cos_coe (x : ℝ) : cos (x : Angle) = Real.cos x :=
   rfl
 #align real.angle.cos_coe Real.Angle.cos_coe
 
-@[continuity]
+@[fun_prop]
 theorem continuous_cos : Continuous cos :=
   Real.continuous_cos.quotient_liftOn' _
 #align real.angle.continuous_cos Real.Angle.continuous_cos

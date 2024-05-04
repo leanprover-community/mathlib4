@@ -151,7 +151,7 @@ theorem nhds_eq_comap (a : ℝₗ) : 𝓝 a = comap toReal (𝓝[≥] (toReal a)
   rw [← map_toReal_nhds, comap_map toReal.injective]
 #align counterexample.sorgenfrey_line.nhds_eq_comap Counterexample.SorgenfreyLine.nhds_eq_comap
 
-@[continuity]
+@[fun_prop]
 theorem continuous_toReal : Continuous toReal :=
   continuous_iff_continuousAt.2 fun x => by
     rw [ContinuousAt, Tendsto, map_toReal_nhds]

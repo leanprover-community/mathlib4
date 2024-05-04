@@ -479,7 +479,7 @@ theorem _root_.ApproximatesLinearOn.norm_fderiv_sub_le {A : E →L[ℝ] E} {δ :
     have :
       Tendsto (fun ε : ℝ => ((δ : ℝ) + ε) * (‖z‖ + ε) + ‖f' x - A‖ * ε) (𝓝[>] 0)
         (𝓝 ((δ + 0) * (‖z‖ + 0) + ‖f' x - A‖ * 0)) :=
-      Tendsto.mono_left (Continuous.tendsto (by continuity) 0) nhdsWithin_le_nhds
+      Tendsto.mono_left (Continuous.tendsto (by fun_prop) 0) nhdsWithin_le_nhds
     simp only [add_zero, mul_zero] at this
     apply le_of_tendsto_of_tendsto tendsto_const_nhds this
     filter_upwards [self_mem_nhdsWithin]

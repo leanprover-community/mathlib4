@@ -181,12 +181,12 @@ theorem norm_int_of_nonneg {n : ℤ} (hn : 0 ≤ n) : ‖(n : ℂ)‖ = n := by
 lemma normSq_eq_norm_sq (z : ℂ) : normSq z = ‖z‖ ^ 2 := by
   rw [normSq_eq_abs, norm_eq_abs]
 
-@[continuity]
+@[fun_prop]
 theorem continuous_abs : Continuous abs :=
   continuous_norm
 #align complex.continuous_abs Complex.continuous_abs
 
-@[continuity]
+@[fun_prop]
 theorem continuous_normSq : Continuous normSq := by
   simpa [← normSq_eq_abs] using continuous_abs.pow 2
 #align complex.continuous_norm_sq Complex.continuous_normSq
@@ -271,7 +271,7 @@ def reCLM : ℂ →L[ℝ] ℝ :=
   reLm.mkContinuous 1 fun x => by simp [abs_re_le_abs]
 #align complex.re_clm Complex.reCLM
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_re : Continuous re :=
   reCLM.continuous
 #align complex.continuous_re Complex.continuous_re
@@ -291,7 +291,7 @@ def imCLM : ℂ →L[ℝ] ℝ :=
   imLm.mkContinuous 1 fun x => by simp [abs_im_le_abs]
 #align complex.im_clm Complex.imCLM
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_im : Continuous im :=
   imCLM.continuous
 #align complex.continuous_im Complex.continuous_im
@@ -361,7 +361,7 @@ theorem nndist_conj_comm (z w : ℂ) : nndist (conj z) w = nndist z (conj w) :=
 instance : ContinuousStar ℂ :=
   ⟨conjLIE.continuous⟩
 
-@[continuity]
+@[fun_prop]
 theorem continuous_conj : Continuous (conj : ℂ → ℂ) :=
   continuous_star
 #align complex.continuous_conj Complex.continuous_conj
@@ -397,7 +397,7 @@ theorem isometry_ofReal : Isometry ((↑) : ℝ → ℂ) :=
   ofRealLI.isometry
 #align complex.isometry_of_real Complex.isometry_ofReal
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_ofReal : Continuous ((↑) : ℝ → ℂ) :=
   ofRealLI.continuous
 #align complex.continuous_of_real Complex.continuous_ofReal

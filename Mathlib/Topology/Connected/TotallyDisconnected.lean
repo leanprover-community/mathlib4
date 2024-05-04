@@ -265,7 +265,7 @@ def Continuous.connectedComponentsLift (h : Continuous f) : ConnectedComponents 
   Quotient.liftOn' x f h.image_eq_of_connectedComponent_eq
 #align continuous.connected_components_lift Continuous.connectedComponentsLift
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.connectedComponentsLift_continuous (h : Continuous f) :
     Continuous h.connectedComponentsLift :=
   h.quotient_liftOn' <| by convert h.image_eq_of_connectedComponent_eq

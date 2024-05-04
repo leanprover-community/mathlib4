@@ -1285,7 +1285,7 @@ theorem quotientMap_coe : QuotientMap (mk : α → ConnectedComponents α) :=
   quotientMap_quot_mk
 #align connected_components.quotient_map_coe ConnectedComponents.quotientMap_coe
 
-@[continuity]
+@[fun_prop]
 theorem continuous_coe : Continuous (mk : α → ConnectedComponents α) :=
   quotientMap_coe.continuous
 #align connected_components.continuous_coe ConnectedComponents.continuous_coe

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro, Jeremy Avigad
 -/
 import Mathlib.Order.SetNotation
-import Mathlib.Tactic.Continuity
 import Mathlib.Tactic.FunProp
 
 #align_import topology.basic from "leanprover-community/mathlib"@"e354e865255654389cc46e6032160238df2e0f40"

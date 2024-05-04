@@ -141,7 +141,7 @@ theorem edist_le_infEdist_add_ediam (hy : y ∈ s) : edist x y ≤ infEdist x s 
 #align emetric.edist_le_inf_edist_add_ediam EMetric.edist_le_infEdist_add_ediam
 
 /-- The edist to a set depends continuously on the point -/
-@[continuity]
+@[fun_prop]
 theorem continuous_infEdist : Continuous fun x => infEdist x s :=
   continuous_of_le_add_edist 1 (by simp) <| by
     simp only [one_mul, infEdist_le_infEdist_add_edist, forall₂_true_iff]
@@ -586,7 +586,7 @@ theorem uniformContinuous_infDist_pt : UniformContinuous (infDist · s) :=
 #align metric.uniform_continuous_inf_dist_pt Metric.uniformContinuous_infDist_pt
 
 /-- The minimal distance to a set is continuous in point -/
-@[continuity]
+@[fun_prop]
 theorem continuous_infDist_pt : Continuous (infDist · s) :=
   (uniformContinuous_infDist_pt s).continuous
 #align metric.continuous_inf_dist_pt Metric.continuous_infDist_pt

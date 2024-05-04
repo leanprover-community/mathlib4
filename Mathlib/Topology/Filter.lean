@@ -220,7 +220,7 @@ theorem inducing_nhds : Inducing (𝓝 : X → Filter X) :=
         IsOpen.interior_eq]
 #align filter.inducing_nhds Filter.inducing_nhds
 
-@[continuity]
+@[fun_prop]
 theorem continuous_nhds : Continuous (𝓝 : X → Filter X) :=
   inducing_nhds.continuous
 #align filter.continuous_nhds Filter.continuous_nhds

@@ -60,7 +60,7 @@ instance : Category Scheme :=
   { InducedCategory.category Scheme.toLocallyRingedSpace with Hom := Hom }
 
 -- porting note (#10688): added to ease automation
-@[continuity]
+@[fun_prop]
 lemma Hom.continuous {X Y : Scheme} (f : X ⟶ Y) : Continuous f.1.base := f.1.base.2
 
 /-- The structure sheaf of a scheme. -/

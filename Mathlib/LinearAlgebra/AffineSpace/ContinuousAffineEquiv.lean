@@ -38,8 +38,8 @@ structure ContinuousAffineEquiv (k P₁ P₂ : Type*) {V₁ V₂ : Type*} [Ring 
     [AddCommGroup V₁] [Module k V₁] [AddTorsor V₁ P₁] [TopologicalSpace P₁]
     [AddCommGroup V₂] [Module k V₂] [AddTorsor V₂ P₂] [TopologicalSpace P₂]
     extends P₁ ≃ᵃ[k] P₂ where
-  continuous_toFun : Continuous toFun := by continuity
-  continuous_invFun : Continuous invFun := by continuity
+  continuous_toFun : Continuous toFun := by fun_prop
+  continuous_invFun : Continuous invFun := by fun_prop
 
 @[inherit_doc]
 notation:25 P₁ " ≃ᵃL[" k:25 "] " P₂:0 => ContinuousAffineEquiv k P₁ P₂
@@ -117,7 +117,7 @@ theorem ext {e e' : P₁ ≃ᵃL[k] P₂} (h : ∀ x, e x = e' x) : e = e' :=
 theorem ext_iff {e e' : P₁ ≃ᵃL[k] P₂} : e = e' ↔ ∀ x, e x = e' x :=
   DFunLike.ext_iff
 
-@[continuity]
+@[fun_prop]
 protected theorem continuous (e : P₁ ≃ᵃL[k] P₂) : Continuous e :=
   e.2
 

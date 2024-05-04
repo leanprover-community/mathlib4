@@ -54,7 +54,7 @@ instance (priority := 100) LinearOrderedAddCommGroup.topologicalAddGroup : Topol
         (eventually_abs_sub_lt a ε0).mono fun x hx => by rwa [neg_sub_neg, abs_sub_comm]
 #align linear_ordered_add_comm_group.topological_add_group LinearOrderedAddCommGroup.topologicalAddGroup
 
-@[continuity]
+@[fun_prop]
 theorem continuous_abs : Continuous (abs : G → G) :=
   continuous_id.max continuous_neg
 #align continuous_abs continuous_abs

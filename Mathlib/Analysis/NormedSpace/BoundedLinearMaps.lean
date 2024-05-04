@@ -523,7 +523,7 @@ theorem IsBoundedBilinearMap.isBoundedLinearMap_deriv (h : IsBoundedBilinearMap 
 
 end BilinearMap
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G} {f : X → E →L[𝕜] F}
     (hg : Continuous g) (hf : Continuous f) : Continuous fun x => (g x).comp (f x) :=
   (compL 𝕜 E F G).continuous₂.comp₂ hg hf
@@ -535,7 +535,7 @@ theorem ContinuousOn.clm_comp {X} [TopologicalSpace X] {g : X → F →L[𝕜] G
   (compL 𝕜 E F G).continuous₂.comp_continuousOn (hg.prod hf)
 #align continuous_on.clm_comp ContinuousOn.clm_comp
 
-@[continuity]
+@[fun_prop]
 theorem Continuous.clm_apply {X} [TopologicalSpace X] {f : X → (E →L[𝕜] F)} {g : X → E}
     (hf : Continuous f) (hg : Continuous g) : Continuous (fun x ↦ (f x) (g x)) :=
   isBoundedBilinearMap_apply.continuous.comp₂ hf hg

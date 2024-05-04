@@ -1582,13 +1582,13 @@ theorem preimage_interior_subset_interior_preimage {t : Set Y} (hf : Continuous 
   interior_maximal (preimage_mono interior_subset) (isOpen_interior.preimage hf)
 #align preimage_interior_subset_interior_preimage preimage_interior_subset_interior_preimage
 
-@[continuity]
+@[fun_prop]
 theorem continuous_id : Continuous (id : X → X) :=
   continuous_def.2 fun _ => id
 #align continuous_id continuous_id
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_id' : Continuous (fun (x : X) => x) := continuous_id
 
 theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
@@ -1597,7 +1597,7 @@ theorem Continuous.comp {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
 #align continuous.comp Continuous.comp
 
 -- This is needed due to reducibility issues with the `continuity` tactic.
-@[continuity, fun_prop]
+@[fun_prop]
 theorem Continuous.comp' {g : Y → Z} (hg : Continuous g) (hf : Continuous f) :
     Continuous (fun x => g (f x)) := hg.comp hf
 
@@ -1646,7 +1646,7 @@ theorem continuousAt_const : ContinuousAt (fun _ : X => y) x :=
   tendsto_const_nhds
 #align continuous_at_const continuousAt_const
 
-@[continuity, fun_prop]
+@[fun_prop]
 theorem continuous_const : Continuous fun _ : X => y :=
   continuous_iff_continuousAt.mpr fun _ => continuousAt_const
 #align continuous_const continuous_const

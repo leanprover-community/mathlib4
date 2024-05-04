@@ -490,7 +490,7 @@ private theorem continuousAt_rpow_const_of_pos {x : ℝ≥0∞} {y : ℝ} (h : 0
   ext1 x
   simp [coe_rpow_of_nonneg _ h.le]
 
-@[continuity]
+@[fun_prop]
 theorem continuous_rpow_const {y : ℝ} : Continuous fun a : ℝ≥0∞ => a ^ y := by
   refine continuous_iff_continuousAt.2 fun x => ?_
   rcases lt_trichotomy (0 : ℝ) y with (hy | rfl | hy)

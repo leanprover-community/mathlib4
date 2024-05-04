@@ -466,7 +466,7 @@ theorem exp_hasFPowerSeriesAt_zero : HasFPowerSeriesAt (exp 𝕂) (expSeries �
   exp_hasFPowerSeriesOnBall.hasFPowerSeriesAt
 #align exp_has_fpower_series_at_zero NormedSpace.exp_hasFPowerSeriesAt_zero
 
-@[continuity]
+@[fun_prop]
 theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
   rw [continuous_iff_continuousOn_univ, ← Metric.eball_top_eq_univ (0 : 𝔸), ←
     expSeries_radius_eq_top 𝕂 𝔸]

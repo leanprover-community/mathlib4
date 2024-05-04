@@ -822,7 +822,7 @@ private theorem extend_Z_bilin_key (x₀ : α) (y₀ : γ) : ∃ U ∈ comap e (
 open DenseInducing
 
 /-- Bourbaki GT III.6.5 Theorem I:
-ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by continuity.
+ℤ-bilinear continuous maps from dense images into a complete Hausdorff group extend by fun_prop.
 Note: Bourbaki assumes that α and β are also complete Hausdorff, but this is not necessary. -/
 theorem extend_Z_bilin : Continuous (extend (de.prod df) (fun p : β × δ => φ p.1 p.2)) := by
   refine' continuous_extend_of_cauchy _ _

@@ -95,7 +95,7 @@ theorem arcsin_inj {x y : ℝ} (hx₁ : -1 ≤ x) (hx₂ : x ≤ 1) (hy₁ : -1 
   injOn_arcsin.eq_iff ⟨hx₁, hx₂⟩ ⟨hy₁, hy₂⟩
 #align real.arcsin_inj Real.arcsin_inj
 
-@[continuity]
+@[fun_prop]
 theorem continuous_arcsin : Continuous arcsin :=
   continuous_subtype_val.comp sinOrderIso.symm.continuous.Icc_extend'
 #align real.continuous_arcsin Real.continuous_arcsin
@@ -447,7 +447,7 @@ theorem arccos_le_pi_div_four {x} : arccos x ≤ π / 4 ↔ √2 / 2 ≤ x := by
       linarith
 #align real.arccos_le_pi_div_four Real.arccos_le_pi_div_four
 
-@[continuity]
+@[fun_prop]
 theorem continuous_arccos : Continuous arccos :=
   continuous_const.sub continuous_arcsin
 #align real.continuous_arccos Real.continuous_arccos

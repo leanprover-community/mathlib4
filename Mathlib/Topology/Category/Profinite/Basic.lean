@@ -233,7 +233,7 @@ discrete topology. -/
 @[simps!]
 def FintypeCat.toProfinite : FintypeCat ⥤ Profinite where
   obj A := Profinite.of A
-  map f := ⟨f, by continuity⟩
+  map f := ⟨f, by fun_prop⟩
 #align Fintype.to_Profinite FintypeCat.toProfinite
 
 instance : FintypeCat.toProfinite.Faithful where

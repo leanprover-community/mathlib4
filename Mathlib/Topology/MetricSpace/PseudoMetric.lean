@@ -1704,12 +1704,12 @@ protected theorem UniformContinuous.dist [UniformSpace β] {f g : β → α} (hf
   uniformContinuous_dist.comp (hf.prod_mk hg)
 #align uniform_continuous.dist UniformContinuous.dist
 
-@[continuity]
+@[fun_prop]
 theorem continuous_dist : Continuous fun p : α × α => dist p.1 p.2 :=
   uniformContinuous_dist.continuous
 #align continuous_dist continuous_dist
 
-@[continuity, fun_prop]
+@[fun_prop]
 protected theorem Continuous.dist [TopologicalSpace β] {f g : β → α} (hf : Continuous f)
     (hg : Continuous g) : Continuous fun b => dist (f b) (g b) :=
   continuous_dist.comp (hf.prod_mk hg : _)

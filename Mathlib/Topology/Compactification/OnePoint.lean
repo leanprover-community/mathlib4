@@ -260,7 +260,7 @@ theorem infty_mem_opensOfCompl {s : Set X} (h₁ : IsClosed s) (h₂ : IsCompact
   mem_compl infty_not_mem_image_coe
 #align alexandroff.infty_mem_opens_of_compl OnePoint.infty_mem_opensOfCompl
 
-@[continuity]
+@[fun_prop]
 theorem continuous_coe : Continuous ((↑) : X → OnePoint X) :=
   continuous_def.mpr fun _s hs => hs.right
 #align alexandroff.continuous_coe OnePoint.continuous_coe

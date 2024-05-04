@@ -44,7 +44,7 @@ theorem continuous_iff {f : E →ᵃ[R] F} : Continuous f ↔ Continuous f.linea
 #align affine_map.continuous_iff AffineMap.continuous_iff
 
 /-- The line map is continuous. -/
-@[continuity]
+@[fun_prop]
 theorem lineMap_continuous [TopologicalSpace R] [ContinuousSMul R F] {p v : F} :
     Continuous (lineMap p v : R →ᵃ[R] F) :=
   continuous_iff.mpr <|
@@ -57,12 +57,12 @@ section CommRing
 
 variable [CommRing R] [Module R F] [ContinuousConstSMul R F]
 
-@[continuity]
+@[fun_prop]
 theorem homothety_continuous (x : F) (t : R) : Continuous <| homothety x t := by
   suffices ⇑(homothety x t) = fun y => t • (y - x) + x by
     rw [this]
     exact ((continuous_id.sub continuous_const).const_smul _).add continuous_const
-    -- Porting note: proof was `by continuity`
+    -- Porting note: proof was `by fun_prop`
   ext y
   simp [homothety_apply]
 #align affine_map.homothety_continuous AffineMap.homothety_continuous

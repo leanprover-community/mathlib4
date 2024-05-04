@@ -3641,8 +3641,6 @@ import Mathlib.Tactic.ComputeDegree
 import Mathlib.Tactic.Congr!
 import Mathlib.Tactic.Congrm
 import Mathlib.Tactic.Constructor
-import Mathlib.Tactic.Continuity
-import Mathlib.Tactic.Continuity.Init
 import Mathlib.Tactic.Contrapose
 import Mathlib.Tactic.Conv
 import Mathlib.Tactic.Convert
