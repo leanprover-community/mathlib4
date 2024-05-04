@@ -445,7 +445,7 @@ end Real
 open Real in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (rexp ∘ f) (rexp a) :=
-  Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.rexp h
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.rexp h
 
 namespace Complex
 
