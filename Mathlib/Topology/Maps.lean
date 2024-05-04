@@ -66,9 +66,11 @@ protected theorem Inducing.comp (hg : Inducing g) (hf : Inducing f) :
   ⟨by rw [hf.induced, hg.induced, induced_compose]⟩
 #align inducing.comp Inducing.comp
 
-theorem Inducing.of_comp_iff (hg : Inducing g) : Inducing (g ∘ f) ↔ Inducing f := by
+theorem Inducing.of_comp_iff (hg : Inducing g) :
+    Inducing (g ∘ f) ↔ Inducing f := by
   refine ⟨fun h ↦ ?_, hg.comp⟩
   rw [inducing_iff, hg.induced, induced_compose, h.induced]
+#align inducing.inducing_iff Inducing.of_comp_iff
 
 theorem inducing_of_inducing_compose
     (hf : Continuous f) (hg : Continuous g) (hgf : Inducing (g ∘ f)) : Inducing f :=
@@ -140,13 +142,6 @@ theorem continuousAt_iff' (hf : Inducing f) {x : X} (h : range f ∈ 𝓝 (f x))
 protected theorem continuous (hf : Inducing f) : Continuous f :=
   hf.continuous_iff.mp continuous_id
 #align inducing.continuous Inducing.continuous
-
-protected theorem inducing_iff (hg : Inducing g) :
-    Inducing f ↔ Inducing (g ∘ f) := by
-  refine' ⟨fun h => hg.comp h, fun hgf => inducing_of_inducing_compose _ hg.continuous hgf⟩
-  rw [hg.continuous_iff]
-  exact hgf.continuous
-#align inducing.inducing_iff Inducing.inducing_iff
 
 theorem closure_eq_preimage_closure_image (hf : Inducing f) (s : Set X) :
     closure s = f ⁻¹' closure (f '' s) := by
