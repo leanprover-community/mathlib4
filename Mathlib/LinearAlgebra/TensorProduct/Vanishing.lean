@@ -14,7 +14,7 @@ can be written as a finite sum $\sum_{i} m_i \otimes n_i$ of pure tensors
 expression vanishes.
 
 Let us say that an expression $\sum_{i \in \iota} m_i \otimes n_i$ in $M \otimes N$
-*vanishes trivially* (`TensorProduct.VanishesTrivially`), if there exist a finite index type
+*vanishes trivially* (`TensorProduct.VanishesTrivially`) if there exist a finite index type
 $\kappa$, elements $(y_j)_{j \in \kappa}$ of $N$, and elements
 $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$ such that for all $i$,
 \[n_i = \sum_j a_{ij} y_j\]
