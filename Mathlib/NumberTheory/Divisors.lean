@@ -209,7 +209,7 @@ theorem properDivisors_one : properDivisors 1 = ∅ := by rw [properDivisors, Ic
 
 theorem pos_of_mem_divisors {m : ℕ} (h : m ∈ n.divisors) : 0 < m := by
   cases m
-  · rw [mem_divisors, zero_eq, zero_dvd_iff (a := n)] at h
+  · rw [mem_divisors, zero_dvd_iff (a := n)] at h
     cases h.2 h.1
   apply Nat.succ_pos
 #align nat.pos_of_mem_divisors Nat.pos_of_mem_divisors
@@ -405,7 +405,7 @@ theorem eq_properDivisors_of_subset_of_sum_eq_sum {s : Finset ℕ} (hsub : s ⊆
     apply Subset.antisymm hsub
     rw [← sdiff_eq_empty_iff_subset]
     contrapose h
-    rw [← Ne.def, ← nonempty_iff_ne_empty] at h
+    rw [← Ne, ← nonempty_iff_ne_empty] at h
     apply ne_of_lt
     rw [← zero_add (∑ x in s, x), ← add_assoc, add_zero]
     apply add_lt_add_right

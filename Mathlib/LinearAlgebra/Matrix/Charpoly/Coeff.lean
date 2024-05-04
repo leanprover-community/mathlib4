@@ -62,11 +62,11 @@ theorem charpoly_sub_diagonal_degree_lt :
     (M.charpoly - ∏ i : n, (X - C (M i i))).degree < ↑(Fintype.card n - 1) := by
   rw [charpoly, det_apply', ← insert_erase (mem_univ (Equiv.refl n)),
     sum_insert (not_mem_erase (Equiv.refl n) univ), add_comm]
-  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id.def, Int.cast_one,
+  simp only [charmatrix_apply_eq, one_mul, Equiv.Perm.sign_refl, id, Int.cast_one,
     Units.val_one, add_sub_cancel_right, Equiv.coe_refl]
   rw [← mem_degreeLT]
   apply Submodule.sum_mem (degreeLT R (Fintype.card n - 1))
-  intro c hc; rw [← C_eq_int_cast, C_mul']
+  intro c hc; rw [← C_eq_intCast, C_mul']
   apply Submodule.smul_mem (degreeLT R (Fintype.card n - 1)) ↑↑(Equiv.Perm.sign c)
   rw [mem_degreeLT]
   apply lt_of_le_of_lt degree_le_natDegree _
@@ -306,12 +306,11 @@ theorem coeff_charpoly_mem_ideal_pow {I : Ideal R} (h : ∀ i j, M i j ∈ I) (k
   rw [← this]
   apply coeff_prod_mem_ideal_pow_tsub
   rintro i - (_ | k)
-  · rw [Nat.zero_eq]  -- Porting note: `rw [Nat.zero_eq]` was not present
-    rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
+  · rw [tsub_zero, pow_one, charmatrix_apply, coeff_sub, ← smul_one_eq_diagonal, smul_apply,
       smul_eq_mul, coeff_X_mul_zero, coeff_C_zero, zero_sub]
     apply neg_mem  -- Porting note: was `rw [neg_mem_iff]`, but Lean could not synth `NegMemClass`
     exact h (c i) i
-  · rw [Nat.succ_eq_one_add, tsub_self_add, pow_zero, Ideal.one_eq_top]
+  · rw [add_comm, tsub_self_add, pow_zero, Ideal.one_eq_top]
     exact Submodule.mem_top
 #align coeff_charpoly_mem_ideal_pow Matrix.coeff_charpoly_mem_ideal_pow
 

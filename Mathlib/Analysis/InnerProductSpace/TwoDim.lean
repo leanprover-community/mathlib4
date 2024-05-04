@@ -80,7 +80,7 @@ lemma FiniteDimensional.of_fact_finrank_eq_two {K V : Type*} [DivisionRing K]
 
 attribute [local instance] FiniteDimensional.of_fact_finrank_eq_two
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias FiniteDimensional.finiteDimensional_of_fact_finrank_eq_two :=
   FiniteDimensional.of_fact_finrank_eq_two
 
@@ -606,7 +606,7 @@ attribute [local instance] Complex.finrank_real_complex_fact
 protected theorem areaForm (w z : ℂ) : Complex.orientation.areaForm w z = (conj w * z).im := by
   let o := Complex.orientation
   simp only [o.areaForm_to_volumeForm, o.volumeForm_robust Complex.orthonormalBasisOneI rfl,
-    (Basis.det_apply), Matrix.det_fin_two, (Basis.toMatrix_apply), toBasis_orthonormalBasisOneI,
+    Basis.det_apply, Matrix.det_fin_two, Basis.toMatrix_apply, toBasis_orthonormalBasisOneI,
     Matrix.cons_val_zero, coe_basisOneI_repr, Matrix.cons_val_one, Matrix.head_cons, mul_im,
     conj_re, conj_im]
   ring
