@@ -18,12 +18,7 @@ open Lean Elab Command
 namespace Mathlib.MA
 
 abbrev botTop : HashMap String String := HashMap.empty
-  |>.insert "⊥"         "⊤"
   |>.insert "Mul"       "Add"
-  |>.insert "Bot"       "Top"
-  |>.insert "bot"       "top"
-  |>.insert "unbot"     "untop"
-  |>.insert "union"     "inter"
   |>.insert "Semigroup" "AddSemigroup"
 
 /-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
