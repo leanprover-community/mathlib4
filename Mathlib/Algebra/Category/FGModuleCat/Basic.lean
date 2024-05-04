@@ -119,7 +119,7 @@ instance : HasForget₂ (FGModuleCat.{u} R) (ModuleCat.{u} R) := by
   infer_instance
 
 instance : (forget₂ (FGModuleCat R) (ModuleCat.{u} R)).Full where
-  preimage f := f
+  map_surjective f := ⟨f, rfl⟩
 
 variable {R}
 

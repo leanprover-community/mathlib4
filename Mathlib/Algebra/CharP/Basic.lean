@@ -466,8 +466,9 @@ section NonAssocSemiring
 
 variable {R} [NonAssocSemiring R]
 
--- see Note [lower instance priority]
-instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
+-- This lemma is not an instance, to make sure that trying to prove `α` is a subsingleton does
+-- not try to find a ring structure on `α`, which can be expensive.
+lemma CharOne.subsingleton [CharP R 1] : Subsingleton R :=
   Subsingleton.intro <|
     suffices ∀ r : R, r = 0 from fun a b => show a = b by rw [this a, this b]
     fun r =>
@@ -477,8 +478,9 @@ instance (priority := 100) CharOne.subsingleton [CharP R 1] : Subsingleton R :=
       _ = 0 * r := by rw [CharP.cast_eq_zero]
       _ = 0 := by rw [zero_mul]
 
-theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False :=
-  false_of_nontrivial_of_subsingleton R
+theorem false_of_nontrivial_of_char_one [Nontrivial R] [CharP R 1] : False := by
+  have : Subsingleton R := CharOne.subsingleton
+  exact false_of_nontrivial_of_subsingleton R
 #align char_p.false_of_nontrivial_of_char_one CharP.false_of_nontrivial_of_char_one
 
 theorem ringChar_ne_one [Nontrivial R] : ringChar R ≠ 1 := by

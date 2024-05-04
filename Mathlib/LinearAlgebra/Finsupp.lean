@@ -1461,3 +1461,48 @@ end Finsupp
 end AddCommMonoid
 
 end LinearMap
+
+namespace Submodule
+
+variable {S : Type*} [Semiring S] [Module R S] [SMulCommClass R R S] [SMulCommClass R S S]
+  [IsScalarTower R S S]
+
+/-- If `M` and `N` are submodules of an `R`-algebra `S`, `m : ι → M` is a family of elements, then
+there is an `R`-linear map from `ι →₀ N` to `S` which maps `{ n_i }` to the sum of `m_i * n_i`.
+This is used in the definition of linearly disjointness. -/
+def mulLeftMap {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M) :
+    (ι →₀ N) →ₗ[R] S := Finsupp.lsum R fun i ↦ (m i).1 • N.subtype
+
+theorem mulLeftMap_apply {M N : Submodule R S} {ι : Type*} (m : ι → M) (n : ι →₀ N) :
+    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 := rfl
+
+@[simp]
+theorem mulLeftMap_apply_single {M N : Submodule R S} {ι : Type*} (m : ι → M) (i : ι) (n : N) :
+    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
+  simp [mulLeftMap]
+
+/-- If `M` and `N` are submodules of an `R`-algebra `S`, `n : ι → N` is a family of elements, then
+there is an `R`-linear map from `ι →₀ M` to `S` which maps `{ m_i }` to the sum of `m_i * n_i`.
+This is used in the definition of linearly disjointness. -/
+def mulRightMap (M : Submodule R S) {N : Submodule R S} {ι : Type*} (n : ι → N) :
+    (ι →₀ M) →ₗ[R] S := Finsupp.lsum R fun i ↦ MulOpposite.op (n i).1 • M.subtype
+
+theorem mulRightMap_apply {M N : Submodule R S} {ι : Type*} (n : ι → N) (m : ι →₀ M) :
+    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 := rfl
+
+@[simp]
+theorem mulRightMap_apply_single {M N : Submodule R S} {ι : Type*} (n : ι → N) (i : ι) (m : M) :
+    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
+  simp [mulRightMap]
+
+theorem mulLeftMap_eq_mulRightMap_of_commute
+    {M : Submodule R S} (N : Submodule R S) {ι : Type*} (m : ι → M)
+    (hc : ∀ (i : ι) (n : N), Commute (m i).1 n.1) : mulLeftMap N m = mulRightMap N m := by
+  ext i n; simp [(hc i n).eq]
+
+theorem mulLeftMap_eq_mulRightMap {S : Type*} [CommSemiring S] [Module R S] [SMulCommClass R R S]
+    [SMulCommClass R S S] [IsScalarTower R S S] {M : Submodule R S} (N : Submodule R S)
+    {ι : Type*} (m : ι → M) : mulLeftMap N m = mulRightMap N m :=
+  mulLeftMap_eq_mulRightMap_of_commute N m fun _ _ ↦ mul_comm _ _
+
+end Submodule

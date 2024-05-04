@@ -54,43 +54,45 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 @[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
 @[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
 
-@[simp, norm_cast]
-theorem coe_int_num (n : ℤ) : (n : ℚ).num = n :=
-  rfl
-#align rat.coe_int_num Rat.coe_int_num
+@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
+#align rat.coe_nat_num Rat.num_natCast
 
-@[simp, norm_cast]
-theorem coe_int_den (n : ℤ) : (n : ℚ).den = 1 :=
-  rfl
-#align rat.coe_int_denom Rat.coe_int_den
+@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
+#align rat.coe_nat_denom Rat.den_natCast
+
+-- TODO: Replace `intCast_num`/`intCast_den` the names in Std
+@[simp, norm_cast] lemma num_intCast (n : ℤ) : (n : ℚ).num = n := rfl
+#align rat.coe_int_num Rat.num_intCast
+
+@[simp, norm_cast] lemma den_intCast (n : ℤ) : (n : ℚ).den = 1 := rfl
+#align rat.coe_int_denom Rat.den_intCast
+
+-- 2024-04-29
+@[deprecated] alias coe_int_num := num_intCast
+@[deprecated] alias coe_int_den := den_intCast
 
 #noalign rat.mk_pnat
+#noalign rat.mk_pnat_eq
+#noalign rat.zero_mk_pnat
 
 -- Porting note (#11215): TODO Should this be namespaced?
 #align rat.mk_nat mkRat
 
-#noalign rat.mk_pnat_eq
-
-theorem mkRat_eq (n d) : mkRat n d = n /. d :=
-  rfl
-#align rat.mk_nat_eq Rat.mkRat_eq
+lemma mkRat_eq_divInt (n d) : mkRat n d = n /. d := rfl
+#align rat.mk_nat_eq Rat.mkRat_eq_divInt
 
 #align rat.mk_zero Rat.divInt_zero
-
-@[simp]
-theorem zero_mk (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
-
-#noalign rat.zero_mk_pnat
-
 #align rat.zero_mk_nat Rat.zero_mkRat
 #align rat.zero_mk Rat.zero_divInt
+
+@[simp] lemma mk'_zero (d) (h : d ≠ 0) (w) : mk' 0 d h w = 0 := by congr
 
 @[simp]
 lemma num_eq_zero {q : ℚ} : q.num = 0 ↔ q = 0 := by
   induction q
   constructor
   · rintro rfl
-    exact zero_mk _ _ _
+    exact mk'_zero _ _ _
   · exact congr_arg num
 
 lemma num_ne_zero {q : ℚ} : q.num ≠ 0 ↔ q ≠ 0 := num_eq_zero.not
@@ -216,11 +218,14 @@ lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /.
 
 attribute [simp] mkRat_mul_mkRat
 
-lemma mul_def' (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
+lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
-@[deprecated] alias mul_num_den := mul_def'
-#align rat.mul_num_denom Rat.mul_def'
+-- TODO: Rename `divInt_eq_iff` in Std to `divInt_eq_divInt`
+alias divInt_eq_divInt := divInt_eq_iff
+
+@[deprecated] alias mul_num_den := mul_eq_mkRat
+#align rat.mul_num_denom Rat.mul_eq_mkRat
 
 #align rat.inv Rat.inv
 
@@ -230,7 +235,8 @@ instance : Inv ℚ :=
 @[simp] lemma inv_divInt' (a b : ℤ) : (a /. b)⁻¹ = b /. a := inv_divInt ..
 #align rat.inv_def Rat.inv_divInt
 
-@[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by rw [mkRat_eq, inv_divInt']
+@[simp] lemma inv_mkRat (a : ℤ) (b : ℕ) : (mkRat a b)⁻¹ = b /. a := by
+  rw [mkRat_eq_divInt, inv_divInt']
 
 lemma inv_def' (q : ℚ) : q⁻¹ = q.den /. q.num := by rw [← inv_divInt', num_divInt_den]
 #align rat.inv_def' Rat.inv_def'
@@ -273,7 +279,7 @@ protected lemma add_left_neg : -a + a = 0 := by simp [add_def, normalize_eq_mkRa
 #align rat.mk_zero_one Rat.zero_divInt
 
 @[simp] lemma divInt_one (n : ℤ) : n /. 1 = n := by simp [divInt, mkRat, normalize]
-@[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq]
+@[simp] lemma mkRat_one (n : ℤ) : mkRat n 1 = n := by simp [mkRat_eq_divInt]
 
 lemma divInt_one_one : 1 /. 1 = 1 := by rw [divInt_one]; rfl
 #align rat.mk_one_one Rat.divInt_one_one
@@ -315,7 +321,7 @@ attribute [simp] mkRat_eq_zero
 protected theorem mul_inv_cancel : a ≠ 0 → a * a⁻¹ = 1 :=
   numDenCasesOn' a fun n d hd hn ↦ by
     simp [hd] at hn;
-    simp [-divInt_ofNat, mkRat_eq, mul_comm, mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
+    simp [-divInt_ofNat, mkRat_eq_divInt, mul_comm, mul_ne_zero hn (Int.ofNat_ne_zero.2 hd)]
 #align rat.mul_inv_cancel Rat.mul_inv_cancel
 
 protected theorem inv_mul_cancel (h : a ≠ 0) : a⁻¹ * a = 1 :=
@@ -493,7 +499,7 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
 theorem intCast_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
-  repeat' rw [intCast_eq_divInt]
+  repeat rw [intCast_eq_divInt]
   exact divInt_div_divInt_cancel_left one_ne_zero n d
 #align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
 
@@ -513,7 +519,7 @@ lemma eq_num_of_isInt {q : ℚ} (h : q.isInt) : q = q.num := by
   exact (Rat.coe_int_num_of_den_eq_one h).symm
 
 theorem den_eq_one_iff (r : ℚ) : r.den = 1 ↔ ↑r.num = r :=
-  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.coe_int_den r.num⟩
+  ⟨Rat.coe_int_num_of_den_eq_one, fun h => h ▸ Rat.den_intCast r.num⟩
 #align rat.denom_eq_one_iff Rat.den_eq_one_iff
 
 instance canLift : CanLift ℚ ℤ (↑) fun q => q.den = 1 :=
@@ -529,16 +535,6 @@ theorem natCast_eq_divInt (n : ℕ) : ↑n = n /. 1 := by
 @[deprecated] alias coe_int_div_eq_divInt := intCast_div_eq_divInt
 @[deprecated] alias coe_nat_eq_divInt := natCast_eq_divInt
 
-@[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
-#align rat.coe_nat_num Rat.num_natCast
-
-@[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
-#align rat.coe_nat_denom Rat.den_natCast
-
--- TODO: Fix the names in Std
-alias num_intCast := intCast_num
-alias den_intCast := intCast_den
-
 -- Will be subsumed by `Int.coe_inj` after we have defined
 -- `LinearOrderedField ℚ` (which implies characteristic zero).
 theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
@@ -548,6 +544,6 @@ theorem coe_int_inj (m n : ℤ) : (m : ℚ) = n ↔ m = n :=
 end Casts
 
 theorem mkRat_eq_div (n : ℤ) (d : ℕ) : mkRat n d = n / d := by
-  simp only [mkRat_eq, divInt_eq_div, Int.cast_natCast]
+  simp only [mkRat_eq_divInt, divInt_eq_div, Int.cast_natCast]
 
 end Rat

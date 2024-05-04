@@ -5,6 +5,7 @@ Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.TensorProduct.Tower
 import Mathlib.LinearAlgebra.TensorProduct.Finiteness
+import Mathlib.LinearAlgebra.TensorProduct.Submodule
 import Mathlib.LinearAlgebra.Dimension.Finite
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.Data.Fin.Tuple.Reflection
@@ -127,175 +128,6 @@ variable [CommSemiring R] [Semiring S] [Algebra R S]
 
 variable (M N : Submodule R S)
 
-section mulMap
-
--- can't use `LinearMap.mul' R S ∘ₗ TensorProduct.mapIncl M N` since it is not defeq to
--- `(Algebra.TensorProduct.productMap A.val B.val).toLinearMap`
-
-/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
-`M ⊗[R] N →ₗ[R] S` induced by multiplication in `S`. -/
-def mulMap := TensorProduct.lift <| ((LinearMap.domRestrict' N).comp <| .mul R S).domRestrict M
-
-@[simp]
-theorem mulMap_tmul (m : M) (n : N) : mulMap M N (m ⊗ₜ[R] n) = m.1 * n.1 := rfl
-
-theorem mulMap_op :
-    mulMap (equivOpposite.symm (MulOpposite.op M)) (equivOpposite.symm (MulOpposite.op N)) =
-    (MulOpposite.opLinearEquiv R).toLinearMap ∘ₗ mulMap N M ∘ₗ
-    (TensorProduct.congr
-      (LinearEquiv.ofSubmodule' (MulOpposite.opLinearEquiv R).symm M)
-      (LinearEquiv.ofSubmodule' (MulOpposite.opLinearEquiv R).symm N) ≪≫ₗ
-    TensorProduct.comm R M N).toLinearMap :=
-  TensorProduct.ext' fun _ _ ↦ rfl
-
-theorem mulMap_comm_of_commute (hc : ∀ (m : M) (n : N), Commute m.1 n.1) :
-    mulMap N M = mulMap M N ∘ₗ TensorProduct.comm R N M := by
-  refine TensorProduct.ext' fun n m ↦ ?_
-  simp_rw [LinearMap.comp_apply, LinearEquiv.coe_coe, TensorProduct.comm_tmul, mulMap_tmul]
-  exact (hc m n).symm
-
-theorem mulMap_comp_rTensor (M' : Submodule R S) (hM : M' ≤ M) :
-    mulMap M N ∘ₗ (inclusion hM).rTensor N = mulMap M' N :=
-  TensorProduct.ext' fun _ _ ↦ rfl
-
-theorem mulMap_comp_lTensor (N' : Submodule R S) (hN : N' ≤ N) :
-    mulMap M N ∘ₗ (inclusion hN).lTensor M = mulMap M N' :=
-  TensorProduct.ext' fun _ _ ↦ rfl
-
-theorem mulMap_comp_map_inclusion (M' N' : Submodule R S) (hM : M' ≤ M) (hN : N' ≤ N) :
-    mulMap M N ∘ₗ TensorProduct.map (inclusion hM) (inclusion hN) = mulMap M' N' :=
-  TensorProduct.ext' fun _ _ ↦ rfl
-
-theorem mulMap_eq_mul'_comp_mapIncl : mulMap M N = .mul' R S ∘ₗ TensorProduct.mapIncl M N :=
-  TensorProduct.ext' fun _ _ ↦ rfl
-
-theorem mulMap_range : LinearMap.range (mulMap M N) = M * N := by
-  refine le_antisymm ?_ (mul_le.2 fun m hm n hn ↦ ⟨⟨m, hm⟩ ⊗ₜ[R] ⟨n, hn⟩, rfl⟩)
-  rintro _ ⟨x, rfl⟩
-  induction x using TensorProduct.induction_on with
-  | zero => rw [_root_.map_zero]; exact zero_mem _
-  | tmul a b => exact mul_mem_mul a.2 b.2
-  | add a b ha hb => rw [_root_.map_add]; exact add_mem ha hb
-
-/-- If `M` and `N` are submodules in an algebra `S` over `R`, there is the natural map
-`M ⊗[R] N →ₗ[R] M * N` induced by multiplication in `S`,
-which is surjective (`Submodule.mulMap'_surjective`). -/
-def mulMap' := (LinearEquiv.ofEq _ _ (mulMap_range M N)).toLinearMap ∘ₗ (mulMap M N).rangeRestrict
-
-@[simp]
-theorem coe_mulMap'_tmul (m : M) (n : N) : (mulMap' M N (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
-
-theorem mulMap'_surjective : Function.Surjective (mulMap' M N) := by
-  simp_rw [mulMap', LinearMap.coe_comp, LinearEquiv.coe_coe, EquivLike.comp_surjective,
-    LinearMap.surjective_rangeRestrict]
-
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural map
-`i(R) ⊗[R] N →ₗ[R] N` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-def lTensorOne' : (1 : Submodule R S) ⊗[R] N →ₗ[R] N :=
-  (LinearEquiv.ofEq _ _ (by rw [mulMap_range, one_mul])).toLinearMap ∘ₗ (mulMap _ N).rangeRestrict
-
-theorem lTensorOne'_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (n : N) : N.lTensorOne' (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
-  Subtype.val_injective <| by simp [lTensorOne', Algebra.smul_def]
-
-/-- If `N` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
-`i(R) ⊗[R] N` and `N` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `TensorProduct.lid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def lTensorOne : (1 : Submodule R S) ⊗[R] N ≃ₗ[R] N := by
-  refine LinearEquiv.ofLinear N.lTensorOne' (TensorProduct.mk R (1 : Submodule R S) N
-    ⟨1, one_le.1 (le_refl _)⟩) (by ext; simp [lTensorOne']) (TensorProduct.ext' fun r n ↦ ?_)
-  change ⟨1, _⟩ ⊗ₜ[R] lTensorOne' N _ = r ⊗ₜ[R] n
-  obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
-  simp_rw [← h, lTensorOne'_apply, ← TensorProduct.smul_tmul,
-    SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
-
-theorem lTensorOne_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (n : N) : N.lTensorOne (⟨algebraMap R S y, hy⟩ ⊗ₜ[R] n) = y • n :=
-  N.lTensorOne'_apply y n
-
-theorem lTensorOne_symm_apply (n : N) :
-    N.lTensorOne.symm n = ⟨1, one_le.1 (le_refl _)⟩ ⊗ₜ[R] n := rfl
-
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural map
-`M ⊗[R] i(R) →ₗ[R] M` induced by multiplication in `S`, here `i : R → S` is the structure map. -/
-def rTensorOne' : M ⊗[R] (1 : Submodule R S) →ₗ[R] M :=
-  (LinearEquiv.ofEq _ _ (by rw [mulMap_range, mul_one])).toLinearMap ∘ₗ (mulMap M _).rangeRestrict
-
-theorem rTensorOne'_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (m : M) : M.rTensorOne' (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
-  Subtype.val_injective <| by simp [rTensorOne', Algebra.smul_def, Algebra.commutes y m.1]
-
-/-- If `M` is a submodule in an algebra `S` over `R`, there is the natural isomorphism between
-`M ⊗[R] i(R)` and `M` induced by multiplication in `S`, here `i : R → S` is the structure map.
-This generalizes `TensorProduct.rid` as `i(R)` is not necessarily isomorphic to `R`. -/
-def rTensorOne : M ⊗[R] (1 : Submodule R S) ≃ₗ[R] M := by
-  refine LinearEquiv.ofLinear M.rTensorOne' ((TensorProduct.comm R _ _).toLinearMap ∘ₗ
-    TensorProduct.mk R (1 : Submodule R S) M ⟨1, one_le.1 (le_refl _)⟩)
-      (by ext; simp [rTensorOne']) (TensorProduct.ext' fun n r ↦ ?_)
-  change rTensorOne' M _ ⊗ₜ[R] ⟨1, _⟩ = n ⊗ₜ[R] r
-  obtain ⟨x, y, h : algebraMap R S y = x⟩ := r
-  simp_rw [← h, rTensorOne'_apply, TensorProduct.smul_tmul,
-    SetLike.mk_smul_mk, Algebra.smul_def, mul_one]
-
-theorem rTensorOne_apply
-    (y : R) {hy : algebraMap R S y ∈ (1 : Submodule R S)}
-    (m : M) : M.rTensorOne (m ⊗ₜ[R] ⟨algebraMap R S y, hy⟩) = y • m :=
-  M.rTensorOne'_apply y m
-
-theorem rTensorOne_symm_apply (m : M) :
-    M.rTensorOne.symm m = m ⊗ₜ[R] ⟨1, one_le.1 (le_refl _)⟩ := rfl
-
-variable {M} in
-/-- If `m : ι → M` is a family of elements, then there is an `R`-linear map from `ι →₀ N` to
-`S` which maps `{ n_i }` to the sum of `m_i * n_i`. -/
-def mulLeftMap {ι : Type*} (m : ι → M) : (ι →₀ N) →ₗ[R] S :=
-  mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m) ∘ₗ
-    (TensorProduct.finsuppScalarLeft R N ι).symm.toLinearMap
-
-variable {M N} in
-@[simp]
-theorem mulLeftMap_apply_single {ι : Type*} (m : ι → M) (i : ι) (n : N) :
-    mulLeftMap N m (Finsupp.single i n) = (m i).1 * n.1 := by
-  simp [mulLeftMap, TensorProduct.finsuppScalarLeft_symm_apply_single]
-
-variable {M} in
-theorem mulLeftMap_def' {ι : Type*} (m : ι → M) : mulLeftMap N m =
-    Finsupp.lsum ℕ fun (i : ι) ↦ (LinearMap.mulLeft R (m i).1).comp N.subtype := by
-  ext; simp
-
-variable {M N} in
-theorem mulLeftMap_apply {ι : Type*} (m : ι → M) (n : ι →₀ N) :
-    mulLeftMap N m n = Finsupp.sum n fun (i : ι) (n : N) ↦ (m i).1 * n.1 :=
-  congr($(mulLeftMap_def' N m) n)
-
-variable {N} in
-/-- If `n : ι → N` is a family of elements, then there is an `R`-linear map from `ι →₀ M` to
-`S` which maps `{ m_i }` to the sum of `m_i * n_i`. -/
-def mulRightMap {ι : Type*} (n : ι → N) : (ι →₀ M) →ₗ[R] S :=
-  mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n) ∘ₗ
-    (TensorProduct.finsuppScalarRight R M ι).symm.toLinearMap
-
-variable {M N} in
-@[simp]
-theorem mulRightMap_apply_single {ι : Type*} (n : ι → N) (i : ι) (m : M) :
-    mulRightMap M n (Finsupp.single i m) = m.1 * (n i).1 := by
-  simp [mulRightMap, TensorProduct.finsuppScalarRight_symm_apply_single]
-
-variable {N} in
-theorem mulRightMap_def' {ι : Type*} (n : ι → N) : mulRightMap M n =
-    Finsupp.lsum ℕ fun (i : ι) ↦ LinearMap.smulRight M.subtype (n i).1 := by
-  ext; simp
-
-variable {M N} in
-theorem mulRightMap_apply {ι : Type*} (n : ι → N) (m : ι →₀ M) :
-    mulRightMap M n m = Finsupp.sum m fun (i : ι) (m : M) ↦ m.1 * (n i).1 :=
-  congr($(mulRightMap_def' M n) m)
-
-end mulMap
-
 /-- Two submodules `M` and `N` in an algebra `S` over `R` are linearly disjoint if the natural map
 `M ⊗[R] N →ₗ[R] S` induced by multiplication in `S` is injective. -/
 @[mk_iff]
@@ -306,11 +138,11 @@ variable {M N}
 
 /-- If `M` and `N` are linearly disjoint submodules, then there is the natural isomorphism
 `M ⊗[R] N ≃ₗ[R] M * N` induced by multiplication in `S`. -/
-protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) :=
+protected def LinearDisjoint.mulMap (H : M.LinearDisjoint N) : M ⊗[R] N ≃ₗ[R] ↥(M * N) :=
   LinearEquiv.ofInjective (M.mulMap N) H.injective ≪≫ₗ LinearEquiv.ofEq _ _ (mulMap_range M N)
 
 @[simp]
-theorem LinearDisjoint.coe_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
+theorem LinearDisjoint.val_mulMap_tmul (H : M.LinearDisjoint N) (m : M) (n : N) :
     (H.mulMap (m ⊗ₜ[R] n) : S) = m.1 * n.1 := rfl
 
 @[nontriviality]
@@ -344,14 +176,14 @@ variable (M N)
 
 theorem of_map_linearIndependent_left' {ι : Type*} (m : Basis ι R M)
     (H : Function.Injective (mulLeftMap N m)) : M.LinearDisjoint N := by
-  simp_rw [mulLeftMap, ← Basis.coe_repr_symm,
+  simp_rw [mulLeftMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_rTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
 
 theorem of_map_linearIndependent_right' {ι : Type*} (n : Basis ι R N)
     (H : Function.Injective (mulRightMap M n)) : M.LinearDisjoint N := by
-  simp_rw [mulRightMap, ← Basis.coe_repr_symm,
+  simp_rw [mulRightMap_eq_mulMap_comp, ← Basis.coe_repr_symm,
     ← LinearEquiv.coe_lTensor, LinearEquiv.comp_coe, LinearMap.coe_comp,
     LinearEquiv.coe_coe, EquivLike.injective_comp] at H
   exact ⟨H⟩
@@ -375,16 +207,12 @@ theorem of_bot_right : M.LinearDisjoint (⊥ : Submodule R S) :=
   ⟨Function.injective_of_subsingleton _⟩
 
 theorem of_one_left : (1 : Submodule R S).LinearDisjoint N := by
-  have : N.subtype ∘ₗ N.lTensorOne.toLinearMap = mulMap 1 N := TensorProduct.ext' fun _ _ ↦ rfl
-  have h : Function.Injective (N.subtype ∘ₗ N.lTensorOne.toLinearMap) :=
-    N.injective_subtype.comp N.lTensorOne.injective
-  exact ⟨this ▸ h⟩
+  rw [linearDisjoint_iff, mulMap_one_left_eq]
+  exact N.injective_subtype.comp N.lTensorOne.injective
 
 theorem of_one_right : M.LinearDisjoint (1 : Submodule R S) := by
-  have : M.subtype ∘ₗ M.rTensorOne.toLinearMap = mulMap M 1 := TensorProduct.ext' fun _ _ ↦ rfl
-  have h : Function.Injective (M.subtype ∘ₗ M.rTensorOne.toLinearMap) :=
-    M.injective_subtype.comp M.rTensorOne.injective
-  exact ⟨this ▸ h⟩
+  rw [linearDisjoint_iff, mulMap_one_right_eq]
+  exact M.injective_subtype.comp M.rTensorOne.injective
 
 theorem of_linearDisjoint_finite_left
     (H : ∀ M' : Submodule R S, M' ≤ M → [Module.Finite R M'] → M'.LinearDisjoint N) :
@@ -421,12 +249,7 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable (M N : Submodule R S)
-
-theorem mulMap_comm : mulMap N M = (mulMap M N).comp (TensorProduct.comm R N M).toLinearMap :=
-  mulMap_comm_of_commute M N fun _ _ ↦ mul_comm _ _
-
-variable {M N}
+variable {M N : Submodule R S}
 
 /-- Linearly disjoint is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : M.LinearDisjoint N) : N.LinearDisjoint M :=
@@ -450,8 +273,8 @@ variable {M N} in
 theorem map_linearIndependent_left_of_flat (H : M.LinearDisjoint N) [Module.Flat R N]
     {ι : Type*} {m : ι → M} (hm : LinearIndependent R m) : LinearMap.ker (mulLeftMap N m) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  let f := mulMap M N ∘ₗ LinearMap.rTensor N (Finsupp.total ι M R m)
-  refine ((TensorProduct.finsuppScalarLeft R N ι).symm.toEquiv.injective_comp f).2 ?_
+  simp_rw [mulLeftMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    ← Function.comp.assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hm
   exact H.injective.comp (Module.Flat.rTensor_preserves_injective_linearMap (M := N) _ hm)
 
@@ -465,8 +288,8 @@ variable {M N} in
 theorem map_linearIndependent_right_of_flat (H : M.LinearDisjoint N) [Module.Flat R M]
     {ι : Type*} {n : ι → N} (hn : LinearIndependent R n) : LinearMap.ker (mulRightMap M n) = ⊥ := by
   refine LinearMap.ker_eq_bot_of_injective ?_
-  let f := mulMap M N ∘ₗ LinearMap.lTensor M (Finsupp.total ι N R n)
-  refine ((TensorProduct.finsuppScalarRight R M ι).symm.toEquiv.injective_comp f).2 ?_
+  simp_rw [mulRightMap_eq_mulMap_comp, LinearMap.coe_comp, LinearEquiv.coe_coe,
+    ← Function.comp.assoc, EquivLike.injective_comp]
   rw [LinearIndependent, LinearMap.ker_eq_bot] at hn
   exact H.injective.comp (Module.Flat.lTensor_preserves_injective_linearMap (M := M) _ hn)
 
