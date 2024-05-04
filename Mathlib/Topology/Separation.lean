@@ -3,6 +3,7 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
+import Mathlib.Topology.Compactness.Lindelof
 import Mathlib.Topology.Compactness.SigmaCompact
 import Mathlib.Topology.Connected.TotallyDisconnected
 import Mathlib.Topology.Inseparable
@@ -2151,6 +2152,33 @@ protected theorem ClosedEmbedding.normalSpace [TopologicalSpace Y] [NormalSpace 
 instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] [R1Space X] :
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
+
+
+instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
+    [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
+  normal h k hcl kcl hkdis := by
+    rw [Set.disjoint_iff] at hkdis
+    have : ∀ a ∈ h, ∃ n ∈ 𝓝 a, IsClosed n ∧ Disjoint n k := by
+      intro a ainh
+      have : kᶜ ∈ 𝓝 a := by
+        apply IsClosed.compl_mem_nhds kcl
+        by_contra aink; exact hkdis ⟨ainh, aink⟩
+      rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
+          with ⟨n, nna, ncl, nsubkc⟩
+      use n
+      exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
+
+    -- have : ∀ b ∈ k, Disjoint (𝓝ˢ h) (𝓝 b) := by
+    --   intro b bink
+    --   have : b ∉ closure h := by
+    --     rw [IsClosed.closure_eq hcl]
+    --     rw [Set.disjoint_iff] at hkdis
+    --     by_contra binh; exact hkdis ⟨binh, bink⟩
+    --   apply ((regularSpace_TFAE X).out 0 1 :).mp
+    --   assumption
+    --   apply this
+
+
 
 /-- A regular topological space with second countable topology is a normal space.
 
