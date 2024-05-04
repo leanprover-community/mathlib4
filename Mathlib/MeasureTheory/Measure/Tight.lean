@@ -59,9 +59,8 @@ lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets for which the complement has measure below `ε`. -/
-lemma exists_sub_le_measure_accumulate_compl [TopologicalSpace α] [OpensMeasurableSpace α]
-    [IsFiniteMeasure μ] (K : ℕ → Set α) (hKmeas : ∀ n, MeasurableSet (K n))
-    (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
+lemma exists_sub_le_measure_accumulate_compl [IsFiniteMeasure μ] (K : ℕ → Set α)
+    (hKmeas : ∀ n, MeasurableSet (K n)) (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
     ∃ n, μ ((Set.Accumulate K n)ᶜ) ≤ ε := by
   obtain ⟨n, hn⟩ := exists_sub_le_measure_accumulate K h hε
   use n
