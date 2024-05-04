@@ -64,6 +64,7 @@ instance lieRingModule : LieRingModule L (M ⊗[R] N) where
       LinearMap.coe_restrictScalars, Function.comp_apply, LinearMap.coe_comp,
       LinearMap.rTensor_tmul, LieHom.map_lie, toEndomorphism_apply_apply, LinearMap.add_apply,
       LinearMap.map_add, LieHom.lie_apply, Module.End.lie_apply, LinearMap.lTensor_tmul]
+    abel
 #align tensor_product.lie_module.lie_ring_module TensorProduct.LieModule.lieRingModule
 
 /-- The tensor product of two Lie modules is a Lie module. -/
