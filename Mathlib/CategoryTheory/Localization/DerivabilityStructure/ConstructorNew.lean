@@ -59,7 +59,7 @@ noncomputable def fromRightResolution :
       isoOfHom_hom, isoOfHom_hom_inv_id_assoc, assoc, ← L.map_comp_assoc,
       φ.comm, isoOfHom_hom_inv_id_assoc])
 
-lemma isConnected  :
+lemma isConnected :
     IsConnected ((TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _)
       (Functor.rightUnitor _).inv).CostructuredArrowDownwards y) := by
   let w := (TwoSquare.mk Φ.functor (Φ.functor ⋙ L) L (𝟭 _) (Functor.rightUnitor _).inv)
@@ -76,31 +76,19 @@ lemma isConnected  :
   obtain ⟨c, g, x, fac, rfl⟩ := TwoSquare.CostructuredArrowDownwards.mk_surjective X
   dsimp [w] at x fac
   rw [id_comp] at fac
-  obtain ⟨c'', c', f, t'', t', ht'', ht', fac'⟩ :
-    ∃ (c'' c' : C₁) (f : c'' ⟶ c') (t'' : d ⟶ Φ.functor.obj c'')
-      (t' : Φ.functor.obj c ⟶ Φ.functor.obj c') (ht'' : W₂ t'') (ht' : W₂ t'),
-      t'' ≫ Φ.functor.map f = g ≫ t' := by
-    let ρ : Φ.arrow.RightResolution (Arrow.mk g) := Classical.arbitrary _
-    exact ⟨ρ.X₁.left, ρ.X₁.right, ρ.X₁.hom, ρ.w.left, ρ.w.right, ρ.hw.1, ρ.hw.2, by simp⟩
-  let z := Localization.isoOfHom L W₂ t' ht'
-  let x' := z.inv ≫ x
-  let g' := g ≫ t'
-  let cgx' : w.CostructuredArrowDownwards y :=
-    TwoSquare.CostructuredArrowDownwards.mk _ _ c' g' x' (by
-      dsimp [g', x', w, z]
-      simp [fac])
-  refine' ⟨RightResolution.mk t'' ht'', _⟩
-  have := zigzag_obj_of_zigzag (fromRightResolution Φ L x ⋙ w.precomp x y g fac)
+  let ρ : Φ.arrow.RightResolution (Arrow.mk g) := Classical.arbitrary _
+  refine' ⟨RightResolution.mk ρ.w.left ρ.hw.1, _⟩
+  have := zigzag_obj_of_zigzag (fromRightResolution Φ L x ⋙ w.costructuredArrowDownwardsPrecomp x y g fac)
       (isPreconnected_zigzag  (RightResolution.mk (𝟙 _) (W₂.id_mem _))
-      (RightResolution.mk t' ht'))
+      (RightResolution.mk ρ.w.right ρ.hw.2))
   refine' Zigzag.trans _ (Zigzag.trans this _)
   · exact Zigzag.of_hom (eqToHom (by aesop))
   · apply Zigzag.of_inv
-    refine' CostructuredArrow.homMk (StructuredArrow.homMk f fac') ?_
+    refine' CostructuredArrow.homMk (StructuredArrow.homMk ρ.X₁.hom (by simp)) ?_
     ext
     dsimp
-    rw [← cancel_epi (isoOfHom L W₂ t'' ht'').hom, isoOfHom_hom, isoOfHom_hom_inv_id_assoc,
-      ← L.map_comp_assoc, fac', L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
+    rw [← cancel_epi (isoOfHom L W₂ ρ.w.left ρ.hw.1).hom, isoOfHom_hom, isoOfHom_hom_inv_id_assoc,
+      ← L.map_comp_assoc, Arrow.w_mk_right, Arrow.mk_hom, L.map_comp, assoc, isoOfHom_hom_inv_id_assoc, fac]
 
 end Constructor
 
