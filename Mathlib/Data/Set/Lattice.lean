@@ -543,6 +543,14 @@ theorem directed_on_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
 #align set.directed_on_Union Set.directed_on_iUnion
 
+theorem directed_on_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+  simp only [DirectedOn, mem_sUnion, exists_imp]
+  exact fun a₁ b₁ ⟨hb₁, ha₁⟩ a₂ b₂ ⟨hb₂, ha₂⟩ =>
+    let ⟨z, zS, zb₁, zb₂⟩ := hd b₁ hb₁ b₂ hb₂
+    let ⟨x, xz, xa₁, xa₂⟩ := (h z zS) a₁ (zb₁ ha₁) a₂ (zb₂ ha₂)
+    ⟨x, ⟨⟨z, ⟨zS, xz⟩⟩, xa₁, xa₂⟩⟩
+
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
 #align set.Union_inter_subset Set.iUnion_inter_subset
