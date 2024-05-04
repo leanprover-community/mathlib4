@@ -332,7 +332,7 @@ to_ama [] G
 @[simp]
 theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) :
-    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def] --; try congr;
+    liftNC (f : k →+ R) g 1 = 1 := by simp [one_def]
 to_ama #align monoid_algebra.lift_nc_one MonoidAlgebra.liftNC_one
 
 end One
