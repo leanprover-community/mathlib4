@@ -6,6 +6,7 @@ Authors: Aaron Anderson, Scott Carnahan
 import Mathlib.Algebra.Algebra.Subalgebra.Basic
 import Mathlib.Algebra.Order.AddTorsor
 import Mathlib.RingTheory.HahnSeries.Addition
+import Mathlib.RingTheory.Nilpotent.Defs
 import Mathlib.Data.Finset.MulAntidiagonal
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
@@ -64,6 +65,7 @@ theorem support_one [MulZeroOneClass R] [Nontrivial R] : support (1 : HahnSeries
   support_single_of_ne one_ne_zero
 #align hahn_series.support_one HahnSeries.support_one
 
+@[simp]
 theorem orderTop_one [MulZeroOneClass R] [Nontrivial R] : orderTop (1 : HahnSeries Γ R) = 0 := by
   rw [← single_zero_one, orderTop_single one_ne_zero, WithTop.coe_eq_zero]
 
@@ -73,6 +75,10 @@ theorem order_one [MulZeroOneClass R] : order (1 : HahnSeries Γ R) = 0 := by
   · rw [Subsingleton.elim (1 : HahnSeries Γ R) 0, order_zero]
   · exact order_single one_ne_zero
 #align hahn_series.order_one HahnSeries.order_one
+
+@[simp]
+theorem leadingCoeff_one [MulZeroOneClass R] : (1 : HahnSeries Γ R).leadingCoeff = 1 := by
+  simp [leadingCoeff_eq]
 
 end HahnSeries
 
@@ -342,7 +348,14 @@ theorem orderTop_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
     rw [HahnSeries.orderTop_of_ne hxy, WithTop.coe_le_coe]
     exact Set.IsWF.min_le_min_of_subset support_smul_subset_vAdd_support
 
---use smul_coeffTop_orderTop_vAdd_orderTop?
+theorem leadingCoeff_smul_of_nonzero {Γ Γ'} [LinearOrder Γ] [LinearOrder Γ']
+    [OrderedCancelVAdd Γ Γ'] [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}
+    {y : HahnModule Γ' R V} (h : x.leadingCoeff • ((of R).symm y).leadingCoeff ≠ 0) :
+    ((of R).symm (x • y)).leadingCoeff = x.leadingCoeff • ((of R).symm y).leadingCoeff := by
+  by_cases hx : x = 0; · simp_all
+  by_cases hy : (of R).symm y = 0; · simp_all
+  simp [HahnSeries.leadingCoeff, orderTop_smul_of_nonzero h, smul_coeffTop_orderTop_vAdd_orderTop]
+
 theorem smul_coeff_order_add_order {Γ} [LinearOrderedCancelAddCommMonoid Γ] [Zero R]
     [SMulWithZero R V] (x : HahnSeries Γ R) (y : HahnModule Γ R V) :
     ((of R).symm (x • y)).coeff (x.order + ((of R).symm y).order) =
@@ -484,6 +497,11 @@ theorem order_mul_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
   rw [order_of_ne <| leadingCoeff_ne_iff.mpr hx, order_of_ne <| leadingCoeff_ne_iff.mpr hy,
     order_of_ne <| ne_zero_of_coeff_ne_zero hxy, ← Set.IsWF.min_add]
   exact Set.IsWF.min_le_min_of_subset support_mul_subset_add_support
+
+theorem leadingCoeff_mul_of_nonzero {Γ} [LinearOrderedCancelAddCommMonoid Γ]
+    [NonUnitalNonAssocSemiring R] {x y : HahnSeries Γ R} (h : x.leadingCoeff * y.leadingCoeff ≠ 0) :
+    (x * y).leadingCoeff = x.leadingCoeff * y.leadingCoeff := by
+  simp only [leadingCoeff_eq, order_mul_of_nonzero h, mul_coeff_order_add_order]
 
 theorem order_mul_single_of_nonzero_divisor {Γ} [LinearOrderedCancelAddCommMonoid Γ]
     [NonUnitalNonAssocSemiring R] {g : Γ} {r : R} (hr : ∀ (s : R), r * s = 0 → s = 0)
@@ -684,18 +702,6 @@ theorem single_mul_single {a b : Γ} {r s : R} :
 
 end NonUnitalNonAssocSemiring
 
-section Semiring
-
-variable [Semiring R]
-
-@[simp]
-theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a) (r ^ n) := by
-  induction' n with n IH
-  · simp; rfl
-  · rw [pow_succ, pow_succ, IH, single_mul_single, succ_nsmul]
-
-end Semiring
-
 section NonAssocSemiring
 
 variable [NonAssocSemiring R]
@@ -756,6 +762,15 @@ theorem single_pow (a : Γ) (n : ℕ) (r : R) : single a r ^ n = single (n • a
   induction' n with n IH
   · simp only [Nat.zero_eq, pow_zero, zero_smul, single_zero_one]
   · simp only [pow_succ, IH, single_mul_single, succ_nsmul]
+
+theorem pow_leadingCoeff {Γ} [LinearOrderedCancelAddCommMonoid Γ] {x : HahnSeries Γ R}
+    (hx : ¬IsNilpotent x.leadingCoeff) (n : ℕ) : (x ^ n).leadingCoeff = (x.leadingCoeff) ^ n := by
+  induction' n with n ihn
+  · simp
+  · rw [pow_succ, leadingCoeff_mul_of_nonzero, ihn, pow_succ]
+    rw [ihn, ← pow_succ]
+    by_contra
+    simp_all [IsNilpotent]
 
 end Semiring
 

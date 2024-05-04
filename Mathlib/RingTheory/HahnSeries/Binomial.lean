@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Aaron Anderson, Scott Carnahan
 -/
 import Mathlib.RingTheory.HahnSeries.Summable
---import Mathlib.RingTheory.Binomial
+import Mathlib.RingTheory.Binomial
 
 #align_import ring_theory.hahn_series from "leanprover-community/mathlib"@"a484a7d0eade4e1268f4fb402859b6686037f965"
 
@@ -67,6 +67,21 @@ theorem supp_one_sub_single {g : Γ} (r : R) :
       exact Set.compl_subset_compl.mp fun ⦃a⦄ _ a_2 ↦ a_2 (h (coeff 1 a) 0)
   · exact support_single_subset.trans (Set.subset_insert 0 {g})
 
+theorem orderTop_one_sub_single [Nontrivial R] {g : Γ} (hg : 0 < g) (r : R) :
+    (1 - single g r).orderTop = 0 := by
+  rw [orderTop_sub, orderTop_one]
+  rw [orderTop_one]
+  exact lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hg) orderTop_single_le
+
+theorem leadingCoeff_one_sub_single {g : Γ} (hg : 0 < g) (r : R) :
+    (1 - single g r).leadingCoeff = 1 := by
+  by_cases h : Nontrivial R
+  · rw [leadingCoeff_sub, leadingCoeff_one]
+    rw [orderTop_one]
+    exact lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hg) orderTop_single_le
+  · rw [not_nontrivial_iff_subsingleton] at h
+    exact Subsingleton.eq_one (leadingCoeff (1 - (single g) r))
+
 theorem coeff_mul_one_sub_single {x : HahnSeries Γ R} {g g' : Γ} {r : R} :
     (x * (1 - single g r)).coeff (g + g') = x.coeff (g + g') - r * x.coeff g' := by
   rw [mul_one_sub, sub_coeff, sub_right_inj, add_comm, mul_single_coeff_add, mul_comm]
@@ -77,8 +92,8 @@ theorem support_one_sub_single_npow' {g : Γ} {r : R} {n : ℕ} :
     (AddSubmonoid.closure_mono (supp_one_sub_single r))
 
 theorem _root_.AddSubmonoid.closure_insert_zero {Γ} [AddZeroClass Γ] {g : Γ} :
-  AddSubmonoid.closure ({0, g} : Set Γ) ≤ AddSubmonoid.closure ({g} : Set Γ) :=
-    AddSubmonoid.closure_le.mpr <| Set.insert_subset_iff.mpr
+    AddSubmonoid.closure ({0, g} : Set Γ) ≤ AddSubmonoid.closure ({g} : Set Γ) :=
+  AddSubmonoid.closure_le.mpr <| Set.insert_subset_iff.mpr
     { left := AddSubmonoid.zero_mem _, right := AddSubmonoid.subset_closure }
 --#find_home AddSubmonoid.closure_insert_zero --[Mathlib.LinearAlgebra.Span]
 
@@ -152,33 +167,71 @@ theorem coeff_one_sub_single_npow {g : Γ} (hg : 0 < g) (r : R) {k n : ℕ}:
         rw [← Nat.add_one, add_smul, one_smul, add_comm _ g]
       rw [pow_succ, hkg, coeff_mul_one_sub_single, ← hkg, ihn, ihn, Nat.choose_succ_succ,
         sub_eq_add_neg, neg_mul_eq_mul_neg, pow_succ', pow_succ']
-      simp
+      simp only [Int.reduceNeg, neg_mul, one_mul, nsmul_eq_mul, neg_smul, zsmul_eq_mul,
+        Int.cast_pow, Int.cast_neg, Int.cast_one, mul_neg, Nat.cast_add]
       ring_nf
 
+theorem zero_lt_orderTop_single {g : Γ} (hg : 0 < g) (r : R) : 0 < (single g r).orderTop :=
+  lt_orderTop_single hg
+
+theorem one_sub_single_inv_eq_powers {g : Γ} (hg : 0 < g) {r : R} :
+    (IsUnit.unit (isUnit_one_sub_single hg r)).inv =
+    (SummableFamily.powers (zero_lt_orderTop_single hg r)).hsum := by
+  rw [Units.inv_eq_val_inv, ← Units.mul_eq_one_iff_inv_eq, IsUnit.unit_spec]
+  exact SummableFamily.one_sub_self_mul_hsum_powers (zero_lt_orderTop_single hg r)
+
+theorem coeff_one_sub_single_inv {g : Γ} (hg : 0 < g) {r : R} {k : ℕ} :
+    (IsUnit.unit (isUnit_one_sub_single hg r)).inv.coeff (k • g) = r ^ k := by
+  rw [one_sub_single_inv_eq_powers hg, SummableFamily.hsum_coeff, SummableFamily.coe_powers,
+    finsum_eq_single (fun i => ((single g) r ^ i).coeff (k • g)) k]
+  simp only [single_pow, single_coeff_same]
+  intro i hi
+  rw [single_pow, single_coeff_of_ne]
+  rw [ne_iff_lt_or_gt] at hi
+  cases hi with
+  | inl hik => exact Ne.symm (ne_of_lt (nsmul_lt_nsmul_left hg hik))
+  | inr hki => exact ne_of_lt (nsmul_lt_nsmul_left hg hki)
+
 /-!
-theorem coeff_one_sub_single_neg_pow {g : Γ} (hg : 0 < g) {r : R} {n : ℤ} : ∀(k : ℕ),
+theorem coeff_one_sub_single_neg_pow {g : Γ} (hg : 0 < g) {r : R} {n k : ℕ} :
+    ((IsUnit.unit (isUnit_one_sub_single hg r)) ^ (-n : ℤ)).val.coeff (k • g) =
+    Nat.choose (n + k - 1) k • (-r) ^ k := by
+  induction' n with n ihn generalizing k
+  · simp only [Nat.zero_eq, Nat.cast_zero, neg_zero, zpow_zero, Units.val_one, one_coeff,
+      nsmul_eq_mul]
+    induction' k with k ihk
+    · simp
+    · simp only [zero_add, Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.choose_succ_self,
+      Nat.cast_zero, zero_mul, ite_eq_right_iff]
+      intro hkg
+      have h : 0 < Nat.succ k • g := nsmul_pos hg (Ne.symm (NeZero.ne' (Nat.succ k)))
+      simp_all
+  · simp_all only [nsmul_eq_mul, neg_add_rev, Nat.succ_add_sub_one]
+    sorry
+
+-- change this to cases, do induction in separate results?
+theorem coeff_one_sub_single_zpow {g : Γ} (hg : 0 < g) {r : R} {n : ℤ} : ∀(k : ℕ),
     ((IsUnit.unit (isUnit_one_sub_single hg r)) ^ n).val.coeff (k • g) =
       (-r) ^ k • Ring.choose n k := by
   refine Int.induction_on n ?_ ?_ ?_
   · exact fun k => by
+      rw [zpow_zero]
       by_cases hk : k = 0
-      · rw [hk, Ring.choose_zero_right, zero_smul, zpow_zero, pow_zero]
-        norm_cast
-        simp
-      · rw [Ring.choose_zero_pos ℤ k (Nat.pos_iff_ne_zero.mpr hk), zpow_zero]
-        norm_cast
-        rw [smul_zero]
+      · simp [hk]
+      · simp [Ring.choose_zero_pos ℤ k (Nat.pos_iff_ne_zero.mpr hk)]
         have hkg : 0 < k • g := (nsmul_pos_iff hk).mpr hg
-        have hkg' : ¬ k • g = 0 := fun h => by simp_all
-        rw [one_coeff, if_neg hkg']
+        have hkg' : ¬ k • g = 0 := fun h => by simp_all only [lt_self_iff_false]
+        exact fun a ↦ (hkg' a).elim
   · intro n h k
-    rw [zpow_add_one, Units.val_mul, IsUnit.unit_spec]
-    by_cases hk : k = 0
-    · rw [coeff_mul_one_sub_single, h, hk, coeff_one_sub_single_pow_of_neg hg
-        (show 0 • g - g < 0 by simp [hg])]
-      simp
-    · sorry
-  · sorry
+    norm_cast
+    simp only [zpow_natCast, Units.val_pow_eq_pow_val, IsUnit.unit_spec]
+    rw [coeff_one_sub_single_npow hg, Ring.choose_eq_Nat_choose, smul_algebra_smul_comm,
+      ← smul_pow, smul_eq_mul, mul_comm]
+    simp
+  · intro n h
+    simp_all only [zpow_neg, zpow_natCast, smul_eq_mul]
+
+    sorry
 -/
 
 end OneSubSingle
@@ -222,5 +275,19 @@ theorem isUnit_binomial {g g' : Γ} (hgg' : g < g') (a : Units R) (b : R) :
     rw [← one_mul (leadingCoeff _), ← hz, zero_mul, hz, isUnit_iff_dvd_one]
   · rw [leadingCoeff_binomial hgg' ha]
     exact Units.isUnit a
+
+/-- A binomial Hahn series with unit leading coefficient -/
+abbrev UnitBinomial {g g' : Γ} (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
+    (HahnSeries Γ R)ˣ :=
+  IsUnit.unit (isUnit_binomial hgg' (IsUnit.unit ha) b)
+
+theorem UnitBinomial_val {g g' : Γ} (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
+  (UnitBinomial hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b := rfl
+
+--theorem xxx : IsUnit (1 : R) := by exact isUnit_one
+
+/-- A function for describing coefficients of powers of invertible binomials.-/
+def UnitBinomialPow_coeff_aux {a : R} (ha : IsUnit a) (b : R) (n : ℤ) :
+    ℕ → R := fun k => (IsUnit.unit ha) ^ (n - k) • b ^ k • Ring.choose n k
 
 end SingleAddSingle

@@ -70,6 +70,18 @@ theorem add_coeff {x y : HahnSeries Γ R} {a : Γ} : (x + y).coeff a = x.coeff a
   rfl
 #align hahn_series.add_coeff HahnSeries.add_coeff
 
+theorem add_coeffTop {x y : HahnSeries Γ R} {a : WithTop Γ} :
+    (x + y).coeffTop a = x.coeffTop a + y.coeffTop a := by
+  match a with
+  | ⊤ => simp
+  | (a : Γ) => simp
+
+@[simp]
+theorem add_coeffTop' {x y : HahnSeries Γ R} :
+    (x + y).coeffTop = x.coeffTop + y.coeffTop := by
+  ext
+  exact add_coeffTop
+
 theorem support_add_subset {x y : HahnSeries Γ R} : support (x + y) ⊆ support x ∪ support y :=
   fun a ha => by
   rw [mem_support, add_coeff] at ha
@@ -114,6 +126,12 @@ theorem orderTop_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
     rw [orderTop_of_ne hx]
     exact orderTop_le_of_coeff_ne_zero hcxyne
   exact le_antisymm hxyx (le_of_eq_of_le (min_eq_left_of_lt hxy).symm min_orderTop_le_orderTop_add)
+
+theorem leadingCoeff_add_eq {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (x + y).leadingCoeff = x.leadingCoeff := by
+  rw [leadingCoeff, orderTop_add_eq hxy, add_coeffTop, coeffTop_eq_zero_of_lt_orderTop hxy,
+    add_zero]
+  exact rfl
 
 /-- `single` as an additive monoid/group homomorphism -/
 @[simps!]
@@ -209,6 +227,23 @@ theorem order_neg [Zero Γ] {f : HahnSeries Γ R} : (-f).order = f.order := by
   · simp only [hf, neg_zero]
   simp only [order, support_neg, neg_eq_zero]
 #align hahn_series.order_neg HahnSeries.order_neg
+
+theorem min_orderTop_le_orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R} :
+    min x.orderTop y.orderTop ≤ (x - y).orderTop := by
+  rw [sub_eq_add_neg, ← orderTop_neg (x := y)]
+  exact min_orderTop_le_orderTop_add
+
+theorem orderTop_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (x - y).orderTop = x.orderTop := by
+  rw [sub_eq_add_neg]
+  rw [← orderTop_neg (x := y)] at hxy
+  exact orderTop_add_eq hxy
+
+theorem leadingCoeff_sub {Γ} [LinearOrder Γ] {x y : HahnSeries Γ R}
+    (hxy : x.orderTop < y.orderTop) : (x - y).leadingCoeff = x.leadingCoeff := by
+  rw [sub_eq_add_neg]
+  rw [← orderTop_neg (x := y)] at hxy
+  exact leadingCoeff_add_eq hxy
 
 end AddGroup
 

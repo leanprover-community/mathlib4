@@ -294,6 +294,9 @@ theorem orderTop_single_le : a ≤ (single a r).orderTop := by
     exact OrderTop.le_top (a : WithTop Γ)
   · rw [orderTop_single hr]
 
+theorem lt_orderTop_single {g g' : Γ} (hgg' : g < g') : g < (single g' r).orderTop :=
+  lt_of_lt_of_le (WithTop.coe_lt_coe.mpr hgg') orderTop_single_le
+
 theorem coeff_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : Γ} (hi : i < x.orderTop) :
     x.coeff i = 0 := by
   rcases eq_or_ne x 0 with (rfl | hx)
@@ -335,6 +338,12 @@ theorem orderTop_le_of_coeffTop_ne_zero {Γ} [LinearOrder Γ] {x : HahnSeries Γ
   | (g : Γ) =>
     rw [orderTop_of_ne (ne_zero_of_coeffTop_ne_zero h), WithTop.coe_le_coe]
     exact Set.IsWF.min_le _ _ ((mem_support _ _).2 h)
+
+theorem coeffTop_eq_zero_of_lt_orderTop {x : HahnSeries Γ R} {i : WithTop Γ} (hi : i < x.orderTop) :
+    x.coeffTop i = 0 := by
+  match i with
+  | ⊤ => exact rfl
+  | (i : Γ) => rw [coeffTop_eq, coeff_eq_zero_of_lt_orderTop hi]
 
 /-- A leading coefficient of a Hahn series is the coefficient of a lowest-order nonzero term, or
   zero if the series vanishes. This is uniquely defined if `Γ` is a linear order. -/
