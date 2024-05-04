@@ -126,6 +126,13 @@ def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
 
 namespace IsPretight
 
+lemma of_totallyBounded [UniformSpace α] (h : TotallyBounded (Set.univ : Set α)) :
+    IsPretight μ := by
+  intro ε hε
+  use Set.univ, h
+  rw [Set.compl_univ, measure_empty]
+  exact hε.le
+
 lemma has_totally_bounded_nat [UniformSpace α] (h : IsPretight μ) :
     ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n := by
   intro n
@@ -301,6 +308,13 @@ lemma iff_compact_sets [TopologicalSpace α] {μ : Measure α} :
     exact ⟨K, h1, hA Kᶜ h2⟩
   · rintro ⟨K, h1, h2⟩
     refine ⟨Kᶜ, ⟨K, h1, subset_rfl⟩, fun A hA => μ.mono hA |>.trans h2⟩
+
+lemma of_compact [TopologicalSpace α] [CompactSpace α] {μ : Measure α} : IsTight μ := by
+  rw [iff_compact_sets]
+  intro ε hε
+  use Set.univ, CompactSpace.isCompact_univ
+  rw [Set.compl_univ, measure_empty]
+  exact hε.le
 
 lemma has_compact_nat [TopologicalSpace α] (h : IsTight μ) :
     ∀ n : ℕ, ∃ K : Set α, IsCompact K ∧ μ Kᶜ ≤ 1/n := by
