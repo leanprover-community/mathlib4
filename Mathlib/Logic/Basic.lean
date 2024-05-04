@@ -167,18 +167,17 @@ instance : IsTrans Prop Iff := ⟨fun _ _ _ ↦ Iff.trans⟩
 alias Iff.imp := imp_congr
 #align iff.imp Iff.imp
 
-@[simp] theorem eq_true_eq_id : Eq True = id := by
-  funext _; simp only [true_iff, id, eq_iff_iff]
 #align eq_true_eq_id eq_true_eq_id
-
 #align imp_and_distrib imp_and
 #align imp_iff_right imp_iff_rightₓ -- reorder implicits
 #align imp_iff_not imp_iff_notₓ -- reorder implicits
 
-@[simp] theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
+-- This is a duplicate of `Classical.imp_iff_right_iff`. Deprecate?
+theorem imp_iff_right_iff {a b : Prop} : (a → b ↔ b) ↔ a ∨ b := Decidable.imp_iff_right_iff
 #align imp_iff_right_iff imp_iff_right_iff
 
-@[simp] theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
+-- This is a duplicate of `Classical.and_or_imp`. Deprecate?
+theorem and_or_imp {a b c : Prop} : a ∧ b ∨ (a → c) ↔ a → b ∨ c := Decidable.and_or_imp
 #align and_or_imp and_or_imp
 
 /-- Provide modus tollens (`mt`) as dot notation for implications. -/
@@ -403,9 +402,7 @@ theorem imp_iff_or_not {b a : Prop} : b → a ↔ a ∨ ¬b := Decidable.imp_iff
 theorem not_imp_not : ¬a → ¬b ↔ b → a := Decidable.not_imp_not
 #align not_imp_not not_imp_not
 
-@[simp]
-theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by
-  rw [imp_iff_or_not, imp_iff_or_not, not_not, ← or_and_left, not_and_self_iff, or_false_iff]
+theorem imp_and_neg_imp_iff (p q : Prop) : (p → q) ∧ (¬p → q) ↔ q := by simp
 
 /-- Provide the reverse of modus tollens (`mt`) as dot notation for implications. -/
 protected theorem Function.mtr : (¬a → ¬b) → b → a := not_imp_not.mp
@@ -719,7 +716,7 @@ theorem forall_imp_iff_exists_imp {α : Sort*} {p : α → Prop} {b : Prop} [ha 
     (∀ x, p x) → b ↔ ∃ x, p x → b := by
   let ⟨a⟩ := ha
   refine ⟨fun h ↦ not_forall_not.1 fun h' ↦ ?_, fun ⟨x, hx⟩ h ↦ hx (h x)⟩
-  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (not_imp.1 (h' x)).1
+  exact if hb : b then h' a fun _ ↦ hb else hb <| h fun x ↦ (_root_.not_imp.1 (h' x)).1
 #align forall_imp_iff_exists_imp forall_imp_iff_exists_imp
 
 @[mfld_simps]
@@ -1333,16 +1330,9 @@ theorem dite_prop_iff_and {Q : P → Prop} {R : ¬P → Prop} [Decidable P] :
     dite P Q R ↔ (∀ h, Q h) ∧ (∀ h, R h) := by
   by_cases h : P <;> simp [h, forall_prop_of_false, forall_prop_of_true]
 
-@[simp] lemma if_true_right : (if P then Q else True) ↔ ¬P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_right_eq_or if_true_right
-
-@[simp] lemma if_true_left : (if P then True else Q) ↔ P ∨ Q := by by_cases P <;> simp [*]
 #align if_true_left_eq_or if_true_left
-
-@[simp] lemma if_false_right : (if P then Q else False) ↔ P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_right_eq_and if_false_right
-
-@[simp] lemma if_false_left : (if P then False else Q) ↔ ¬P ∧ Q := by by_cases P <;> simp [*]
 #align if_false_left_eq_and if_false_left
 
 end ite
