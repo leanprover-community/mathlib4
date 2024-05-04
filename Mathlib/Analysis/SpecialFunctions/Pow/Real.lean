@@ -1040,7 +1040,7 @@ def evalRPow : NormNumExt where eval {u α} e := do
       assumeInstancesCommute
       return .isNat sα' ne' q(isNat_rpow_neg $pb $pe')
     | .isNegNat sα' ne' pe' =>
-      let _ := q(instRingReal)
+      let _ := q(Real.instRing)
       assumeInstancesCommute
       return .isNegNat sα' ne' q(isInt_rpow_neg $pb $pe')
     | .isRat sα' qe' nume' dene' pe' =>
@@ -1051,10 +1051,4 @@ end Mathlib.Meta.NormNum
 
 end Tactics
 
-/-!
-### Deprecated lemmas
-
-These lemmas have been deprecated on 2024-01-07.
--/
-
-@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg
+@[deprecated] alias rpow_nonneg_of_nonneg := rpow_nonneg -- 2024-01-07

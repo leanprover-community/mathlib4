@@ -764,6 +764,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
     Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
+  have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
   exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
 

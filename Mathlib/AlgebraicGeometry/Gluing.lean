@@ -129,7 +129,8 @@ def gluedScheme : Scheme := by
   intro x
   obtain ⟨i, y, rfl⟩ := D.toLocallyRingedSpaceGlueData.ι_jointly_surjective x
   refine' ⟨_, _ ≫ D.toLocallyRingedSpaceGlueData.toGlueData.ι i, _⟩
-  swap; exact (D.U i).affineCover.map y
+  swap
+  · exact (D.U i).affineCover.map y
   constructor
   · dsimp [-Set.mem_range]
     rw [coe_comp, Set.range_comp]
@@ -329,8 +330,8 @@ theorem glued_cover_cocycle_snd (x y z : 𝒰.J) :
 theorem glued_cover_cocycle (x y z : 𝒰.J) :
     gluedCoverT' 𝒰 x y z ≫ gluedCoverT' 𝒰 y z x ≫ gluedCoverT' 𝒰 z x y = 𝟙 _ := by
   apply pullback.hom_ext <;> simp_rw [Category.id_comp, Category.assoc]
-  apply glued_cover_cocycle_fst
-  apply glued_cover_cocycle_snd
+  · apply glued_cover_cocycle_fst
+  · apply glued_cover_cocycle_snd
 #align algebraic_geometry.Scheme.open_cover.glued_cover_cocycle AlgebraicGeometry.Scheme.OpenCover.glued_cover_cocycle
 
 /-- The glue data associated with an open cover.
@@ -355,7 +356,7 @@ def gluedCover : Scheme.GlueData.{u} where
 This is an isomorphism, as witnessed by an `IsIso` instance. -/
 def fromGlued : 𝒰.gluedCover.glued ⟶ X := by
   fapply Multicoequalizer.desc
-  exact fun x => 𝒰.map x
+  · exact fun x => 𝒰.map x
   rintro ⟨x, y⟩
   change pullback.fst ≫ _ = ((pullbackSymmetry _ _).hom ≫ pullback.fst) ≫ _
   simpa using pullback.condition
@@ -453,7 +454,7 @@ def glueMorphisms {Y : Scheme} (f : ∀ x, 𝒰.obj x ⟶ Y)
     X ⟶ Y := by
   refine' inv 𝒰.fromGlued ≫ _
   fapply Multicoequalizer.desc
-  exact f
+  · exact f
   rintro ⟨i, j⟩
   change pullback.fst ≫ f i = (_ ≫ _) ≫ f j
   erw [pullbackSymmetry_hom_comp_fst]

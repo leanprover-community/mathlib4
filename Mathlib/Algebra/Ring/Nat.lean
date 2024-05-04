@@ -40,6 +40,9 @@ instance instCancelCommMonoidWithZero : CancelCommMonoidWithZero ℕ where
   mul_left_cancel_of_ne_zero h := Nat.eq_of_mul_eq_mul_left (Nat.pos_of_ne_zero h)
 #align nat.cancel_comm_monoid_with_zero Nat.instCancelCommMonoidWithZero
 
+instance instMulDivCancelClass : MulDivCancelClass ℕ where
+  mul_div_cancel _ _b hb := Nat.mul_div_cancel _ (Nat.pos_iff_ne_zero.2 hb)
+
 /-!
 ### Extra instances to short-circuit type class resolution
 

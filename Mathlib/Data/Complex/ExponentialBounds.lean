@@ -43,14 +43,16 @@ theorem exp_one_lt_d9 : exp 1 < 2.7182818286 :=
 
 theorem exp_neg_one_gt_d9 : 0.36787944116 < exp (-1) := by
   rw [exp_neg, lt_inv _ (exp_pos _)]
-  refine' lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) _
-  all_goals norm_num
+  · refine' lt_of_le_of_lt (sub_le_iff_le_add.1 (abs_sub_le_iff.1 exp_one_near_10).1) _
+    norm_num
+  · norm_num
 #align real.exp_neg_one_gt_d9 Real.exp_neg_one_gt_d9
 
 theorem exp_neg_one_lt_d9 : exp (-1) < 0.3678794412 := by
   rw [exp_neg, inv_lt (exp_pos _)]
-  refine' lt_of_lt_of_le _ (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
-  all_goals norm_num
+  · refine' lt_of_lt_of_le _ (sub_le_comm.1 (abs_sub_le_iff.1 exp_one_near_10).2)
+    norm_num
+  · norm_num
 #align real.exp_neg_one_lt_d9 Real.exp_neg_one_lt_d9
 
 set_option tactic.skipAssignedInstances false in
