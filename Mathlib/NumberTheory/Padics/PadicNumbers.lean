@@ -173,6 +173,9 @@ section
 
 variable {p : ℕ} [Fact p.Prime]
 
+instance : Add (PadicSeq p) := inferInstance
+instance : Sub (PadicSeq p) := inferInstance
+
 /-- The `p`-adic norm of the entries of a nonzero Cauchy sequence of rationals is eventually
 constant. -/
 theorem stationary {f : CauSeq ℚ (padicNorm p)} (hf : ¬f ≈ 0) :
@@ -570,10 +573,31 @@ instance : AddCommGroup ℚ_[p] := by infer_instance
 def mk : PadicSeq p → ℚ_[p] :=
   Quotient.mk'
 
+@[elab_as_elim]
+protected
+theorem induction_on {motive : ℚ_[p] → Prop} (q : ℚ_[p]) (h : ∀ a : PadicSeq p, motive (.mk a)) :
+    motive q :=
+  Quotient.inductionOn q h
+
+/--
+If `f : PadicSeq p → β` respects the equivalence relation `≈`,
+then it lifts to a function on `Padic` such that `Padic.lift f h (Padic.mk a) = f a`.
+-/
+protected
+def lift {β : Sort*} (f : PadicSeq p → β) : (∀ a b : PadicSeq p, a ≈ b → f a = f b) → ℚ_[p] → β :=
+  Quotient.lift f
+
+@[simp]
+theorem lift_mk {β : Sort*} (f : PadicSeq p → β) (h : ∀ a b : PadicSeq p, a ≈ b → f a = f b)
+    (x : PadicSeq p) :
+    Padic.lift f h (.mk x) = f x :=
+  rfl
+
 variable (p)
 
-theorem zero_def : (0 : ℚ_[p]) = ⟦0⟧ := rfl
+theorem zero_def : (0 : ℚ_[p]) = .mk 0 := rfl
 
+@[simp]
 theorem mk_eq {f g : PadicSeq p} : mk f = mk g ↔ f ≈ g :=
   Quotient.eq'
 
@@ -581,9 +605,12 @@ theorem const_equiv {q r : ℚ} : const (padicNorm p) q ≈ const (padicNorm p) 
   ⟨fun heq ↦ eq_of_sub_eq_zero <| const_limZero.1 heq, fun heq ↦ by
     rw [heq]⟩
 
+theorem mk_const (x : ℚ) : Padic.mk (const (padicNorm p) x) = x :=
+  rfl
+
 @[norm_cast]
 theorem coe_inj {q r : ℚ} : (↑q : ℚ_[p]) = ↑r ↔ q = r :=
-  ⟨(const_equiv p).1 ∘ Quotient.eq'.1, fun h ↦ by rw [h]⟩
+  ⟨(const_equiv p).1 ∘ (mk_eq _).1, fun h ↦ by rw [h]⟩
 
 instance : CharZero ℚ_[p] :=
   ⟨fun m n ↦ by
@@ -595,9 +622,15 @@ instance : CharZero ℚ_[p] :=
 theorem coe_add : ∀ {x y : ℚ}, (↑(x + y) : ℚ_[p]) = ↑x + ↑y :=
   Rat.cast_add _ _
 
+theorem mk_add {f g : PadicSeq p} : Padic.mk (p := p) (f + g) = Padic.mk f + Padic.mk g :=
+  rfl
+
 @[norm_cast]
 theorem coe_neg : ∀ {x : ℚ}, (↑(-x) : ℚ_[p]) = -↑x :=
   Rat.cast_neg _
+
+theorem mk_sub {f g : PadicSeq p} : Padic.mk (p := p) (f - g) = .mk f - .mk g :=
+  rfl
 
 @[norm_cast]
 theorem coe_mul : ∀ {x y : ℚ}, (↑(x * y) : ℚ_[p]) = ↑x * ↑y :=
@@ -624,21 +657,25 @@ end Padic
 /-- The rational-valued `p`-adic norm on `ℚ_[p]` is lifted from the norm on Cauchy sequences. The
 canonical form of this function is the normed space instance, with notation `‖ ‖`. -/
 def padicNormE {p : ℕ} [hp : Fact p.Prime] : AbsoluteValue ℚ_[p] ℚ where
-  toFun := Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
+  toFun := Padic.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _
   map_mul' q r := Quotient.inductionOn₂ q r <| PadicSeq.norm_mul
-  nonneg' q := Quotient.inductionOn q <| PadicSeq.norm_nonneg
-  eq_zero' q := Quotient.inductionOn q fun r ↦ by
-    rw [Padic.zero_def, Quotient.eq]
+  nonneg' q := Padic.induction_on q <| PadicSeq.norm_nonneg
+  eq_zero' q := Padic.induction_on q fun r ↦ by
+    rw [Padic.zero_def, Padic.mk_eq]
     exact PadicSeq.norm_zero_iff r
   add_le' q r := by
     trans
-      max ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
-        ((Quotient.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
+      max ((Padic.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) q)
+        ((Padic.lift PadicSeq.norm <| @PadicSeq.norm_equiv _ _) r)
     · exact Quotient.inductionOn₂ q r <| PadicSeq.norm_nonarchimedean
     refine max_le_add_of_nonneg (Quotient.inductionOn q <| PadicSeq.norm_nonneg) ?_
     exact Quotient.inductionOn r <| PadicSeq.norm_nonneg
 
 namespace padicNormE
+
+lemma padicNormE_mk {p : ℕ} [Fact p.Prime] (x : CauSeq ℚ (padicNorm p)) :
+    padicNormE (.mk x) = PadicSeq.norm x := by
+  simp [padicNormE]
 
 section Embedding
 
@@ -648,16 +685,14 @@ variable {p : ℕ} [Fact p.Prime]
 
 theorem defn (f : PadicSeq p) {ε : ℚ} (hε : 0 < ε) :
     ∃ N, ∀ i ≥ N, padicNormE (Padic.mk f - f i : ℚ_[p]) < ε := by
-  dsimp [padicNormE]
-  -- `change ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε` also works, but is very slow
-  suffices hyp : ∃ N, ∀ i ≥ N, (f - const _ (f i)).norm < ε by peel hyp with N; use N
+  simp_rw [← Padic.mk_const, ← Padic.mk_sub, padicNormE_mk]
   by_contra! h
   obtain ⟨N, hN⟩ := cauchy₂ f hε
   rcases h N with ⟨i, hi, hge⟩
   have hne : ¬f - const (padicNorm p) (f i) ≈ 0 := fun h ↦ by
     rw [PadicSeq.norm, dif_pos h] at hge
     exact not_lt_of_ge hge hε
-  unfold PadicSeq.norm at hge; split_ifs at hge
+  unfold PadicSeq.norm at hge; rw [dif_neg hne] at hge
   apply not_le_of_gt _ hge
   cases _root_.le_total N (stationaryPoint hne) with
   | inl hgen =>
@@ -701,11 +736,13 @@ open PadicSeq Padic
 variable {p : ℕ} [Fact p.Prime] (f : CauSeq _ (@padicNormE p _))
 
 theorem rat_dense' (q : ℚ_[p]) {ε : ℚ} (hε : 0 < ε) : ∃ r : ℚ, padicNormE (q - r : ℚ_[p]) < ε :=
-  Quotient.inductionOn q fun q' ↦
+  Padic.induction_on q fun q' ↦
     have : ∃ N, ∀ m ≥ N, ∀ n ≥ N, padicNorm p (q' m - q' n) < ε := cauchy₂ _ hε
     let ⟨N, hN⟩ := this
     ⟨q' N, by
       classical
+      -- rw?
+      rw [← mk_const]
       dsimp [padicNormE]
       convert_to PadicSeq.norm (q' - const _ (q' N)) < ε -- `change` times out here.
       rcases Decidable.em (q' - const (padicNorm p) (q' N) ≈ 0) with heq | hne'
@@ -768,7 +805,7 @@ private def lim' : PadicSeq p :=
   ⟨_, exi_rat_seq_conv_cauchy f⟩
 
 private def lim : ℚ_[p] :=
-  ⟦lim' f⟧
+  .mk <| lim' f
 
 theorem complete' : ∃ q : ℚ_[p], ∀ ε > 0, ∃ N, ∀ i ≥ N, padicNormE (q - f i : ℚ_[p]) < ε :=
   ⟨lim f, fun ε hε ↦ by
@@ -896,10 +933,10 @@ instance : NontriviallyNormedField ℚ_[p] :=
         exact mod_cast hp.1.one_lt⟩ }
 
 protected theorem padicNormE.image {q : ℚ_[p]} : q ≠ 0 → ∃ n : ℤ, ‖q‖ = ↑((p : ℚ) ^ (-n)) :=
-  Quotient.inductionOn q fun f hf ↦
+  Padic.induction_on q fun f hf ↦
     have : ¬f ≈ 0 := (PadicSeq.ne_zero_iff_nequiv_zero f).1 hf
     let ⟨n, hn⟩ := PadicSeq.norm_values_discrete f this
-    ⟨n, by rw [← hn]; rfl⟩
+    ⟨n, by rw [← hn, ← padicNormE.is_norm, padicNormE.padicNormE_mk]⟩
 
 protected theorem padicNormE.is_rat (q : ℚ_[p]) : ∃ q' : ℚ, ‖q‖ = q' := by
   classical
@@ -1072,18 +1109,18 @@ def valuation : ℚ_[p] → ℤ :=
       exact PadicSeq.norm_equiv h
 
 @[simp]
+theorem valuation_mk {x : PadicSeq p} : valuation (mk x) = x.valuation := rfl
+
+@[simp]
 theorem valuation_zero : valuation (0 : ℚ_[p]) = 0 :=
   dif_pos ((const_equiv p).2 rfl)
 
 theorem norm_eq_zpow_neg_valuation {x : ℚ_[p]} : x ≠ 0 → ‖x‖ = (p : ℝ) ^ (-x.valuation) := by
-  refine Quotient.inductionOn' x fun f hf => ?_
-  change (PadicSeq.norm _ : ℝ) = (p : ℝ) ^ (-PadicSeq.valuation _)
-  rw [PadicSeq.norm_eq_zpow_neg_valuation]
+  refine Padic.induction_on x fun f hf => ?_
+  rw [← padicNormE.is_norm, padicNormE.padicNormE_mk, valuation_mk,
+    PadicSeq.norm_eq_zpow_neg_valuation]
   · rw [Rat.cast_zpow, Rat.cast_natCast]
-  · apply CauSeq.not_limZero_of_not_congr_zero
-    contrapose! hf
-    apply Quotient.sound
-    simpa using hf
+  · simpa [zero_def] using hf
 
 @[simp]
 lemma valuation_ratCast (q : ℚ) : valuation (q : ℚ_[p]) = padicValRat p q := by
