@@ -276,7 +276,6 @@ instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_non_unital_comm_semiring CommSemiring.toNonUnitalCommSemiring
 
-
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
     CommMonoidWithZero α :=
