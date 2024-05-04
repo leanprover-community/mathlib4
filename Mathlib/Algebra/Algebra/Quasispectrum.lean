@@ -525,16 +525,15 @@ end Unital
 
 end SpectrumRestricts
 
-theorem quasispectrumRestricts_iff_spectrumRestricts_inr {R S A : Type*} [Semifield R] [Field S]
-    [NonUnitalRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A]
-    [SMulCommClass S A A] [IsScalarTower R S A] (a : A) (f : S → R) :
+theorem quasispectrumRestricts_iff_spectrumRestricts_inr (S : Type*) {R A : Type*} [Semifield R]
+    [Field S] [NonUnitalRing A] [Algebra R S] [Module R A] [Module S A] [IsScalarTower S A A]
+    [SMulCommClass S A A] [IsScalarTower R S A] {a : A} {f : S → R} :
     QuasispectrumRestricts a f ↔ SpectrumRestricts (a : Unitization S A) f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff,
     ← Unitization.quasispectrum_eq_spectrum_inr']
 
 theorem quasispectrumRestricts_iff_spectrumRestricts {R S A : Type*} [Semifield R] [Semifield S]
-    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] [IsScalarTower S A A]
-    [SMulCommClass S A A] [IsScalarTower R S A] (a : A) (f : S → R) :
+    [Ring A] [Algebra R S] [Algebra R A] [Algebra S A] {a : A} {f : S → R} :
     QuasispectrumRestricts a f ↔ SpectrumRestricts a f := by
   rw [quasispectrumRestricts_iff, spectrumRestricts_iff, quasispectrum_eq_spectrum_union_zero]
   refine and_congr_left fun h ↦ ?_
