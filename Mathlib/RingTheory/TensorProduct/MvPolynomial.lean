@@ -68,17 +68,14 @@ lemma rTensor_apply_tmul (p : MvPolynomial σ S) (n : N) :
     rTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m ⊗ₜ[R] n)) :=
   TensorProduct.finsuppLeft_apply_tmul p n
 
-@[simp]
 lemma rTensor_apply_tmul_apply (p : MvPolynomial σ S) (n : N) (d : σ →₀ ℕ) :
     rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n :=
   TensorProduct.finsuppLeft_apply_tmul_apply p n d
 
-@[simp]
 lemma rTensor_apply_monomial_tmul (e : σ →₀ ℕ) (s : S) (n : N) (d : σ →₀ ℕ) :
     rTensor (monomial e s ⊗ₜ[R] n) d = if e = d then s ⊗ₜ[R] n else 0 := by
   simp only [rTensor_apply_tmul_apply, coeff_monomial, ite_tmul]
 
-@[simp]
 lemma rTensor_apply_X_tmul (s : σ) (n : N) (d : σ →₀ ℕ) :
     rTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then (1 : S) ⊗ₜ[R] n else 0 := by
   rw [rTensor_apply_tmul_apply, coeff_X', ite_tmul]
@@ -103,17 +100,14 @@ lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
     scalarRTensor (p ⊗ₜ[R] n) = p.sum (fun i m ↦ Finsupp.single i (m • n)) :=
   TensorProduct.finsuppScalarLeft_apply_tmul p n
 
-@[simp]
 lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
     scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n :=
   TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
 
-@[simp]
 lemma scalarRTensor_apply_monomial_tmul (e : σ →₀ ℕ) (r : R) (n : N) (d : σ →₀ ℕ):
     scalarRTensor (monomial e r ⊗ₜ[R] n) d = if e = d then r • n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_monomial, ite_smul, zero_smul]
 
- @[simp]
  lemma scalarRTensor_apply_X_tmul_apply (s : σ) (n : N) (d : σ →₀ ℕ):
     scalarRTensor (X s ⊗ₜ[R] n) d = if Finsupp.single s 1 = d then n else 0 := by
   rw [scalarRTensor_apply_tmul_apply, coeff_X', ite_smul, one_smul, zero_smul]
