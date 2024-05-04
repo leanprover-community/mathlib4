@@ -5,6 +5,7 @@ Authors: Rémy Degenne, Josha Dekker
 -/
 import Mathlib.MeasureTheory.Measure.Regular
 import Mathlib.Topology.Metrizable.Uniformity
+import Mathlib.Analysis.SpecificLimits.Basic
 
 /-!
 # (Pre-)tight measures
@@ -44,14 +45,6 @@ namespace MeasureTheory
 
 variable {α ι : Type*}
 
-theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
-   calc ∑' n : ℕ, r ^ (n + 1)
-   _ = ∑' n : ℕ, r * r ^ (n) := by
-         congr with n
-         exact pow_succ' r n
-   _ = r * ∑' n : ℕ, r ^ n := by rw [ENNReal.tsum_mul_left]
-   _ = r * (1 - r)⁻¹ := by rw [ENNReal.tsum_geometric r]
-
 variable [MeasurableSpace α] {μ : Measure α}
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
@@ -76,8 +69,12 @@ private lemma almost_cover_has_approx_accumulate_compl [MeasurableSpace α] [Top
   rintro ε hε
   obtain ⟨n, hn⟩ := almost_cover_has_approx_accumulate K h ε hε
   use n
-  have hK2 : IsClosed (Set.Accumulate K n) :=
-      Set.Finite.isClosed_biUnion instFiniteSubtypeLeToLE (fun i _ => hKclosed i)
+  have hK2 : IsClosed (Set.Accumulate K n) := by
+    apply Set.Finite.isClosed_biUnion ?_ (fun i _ => hKclosed i)
+    apply Set.Finite.to_subtype
+    convert (Finset.Iic n).finite_toSet using 1
+    simp only [Nat.le_eq, Finset.coe_Iic]
+    rfl
   rw [measure_compl hK2.measurableSet (measure_ne_top μ _)]
   exact tsub_le_iff_tsub_le.mp hn
 
