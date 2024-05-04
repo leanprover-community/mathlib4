@@ -139,8 +139,8 @@ lemma totally_bounded_nat_iff [UniformSpace α] :
     IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, TotallyBounded K ∧ μ Kᶜ ≤ 1/n :=
   ⟨has_totally_bounded_nat, of_totally_bounded_nat⟩
 
-/-- If a measure `μ` is pretight, we can cover `μ`-almost all of the space by a countable sequence of
-totally bounded sets. -/
+/-- If a measure `μ` is pretight, we can cover `μ`-almost all of the space by a countable sequence
+of totally bounded sets. -/
 lemma has_countable_totally_bounded_union [UniformSpace α] (h : IsPretight μ):
     ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
   choose! K hKa hKb using h.has_totally_bounded_nat
