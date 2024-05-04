@@ -2158,25 +2158,43 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
     rw [Set.disjoint_iff] at hkdis
-    have : ∀ a ∈ h, ∃ n ∈ 𝓝 a, IsClosed n ∧ Disjoint n k := by
-      intro a ainh
-      have : kᶜ ∈ 𝓝 a := by
-        apply IsClosed.compl_mem_nhds kcl
-        by_contra aink; exact hkdis ⟨ainh, aink⟩
-      rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
+    have hlind : IsLindelof h := by
+      apply IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl
+      simp
+    have : ∀ a : X, ∃ n : Set X, a ∈ h → n ∈ 𝓝 a ∧ IsClosed n ∧ Disjoint n k := by
+      intro a
+      by_cases hyp: a ∈ h
+      · have : kᶜ ∈ 𝓝 a := by
+          apply IsClosed.compl_mem_nhds kcl
+          by_contra aink; exact hkdis ⟨hyp, aink⟩
+        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
           with ⟨n, nna, ncl, nsubkc⟩
-      use n
-      exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
-
-    -- have : ∀ b ∈ k, Disjoint (𝓝ˢ h) (𝓝 b) := by
-    --   intro b bink
-    --   have : b ∉ closure h := by
-    --     rw [IsClosed.closure_eq hcl]
-    --     rw [Set.disjoint_iff] at hkdis
-    --     by_contra binh; exact hkdis ⟨binh, bink⟩
-    --   apply ((regularSpace_TFAE X).out 0 1 :).mp
-    --   assumption
-    --   apply this
+        use n
+        intro ainh
+        exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
+      · use ∅; intro ainh; by_contra; exact hyp ainh
+    choose n na_nhd na_cl na_dis using this
+    rcases IsLindelof.elim_nhds_subcover hlind n na_nhd
+      with ⟨h', h'_cnt, h'_subh, nh'_cov⟩
+    have klind : IsLindelof k := by
+      apply IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl
+      simp
+    have : ∀ a : X, ∃ n : Set X, a ∈ k → n ∈ 𝓝 a ∧ IsClosed n ∧ Disjoint n h := by
+      intro a
+      by_cases hyp: a ∈ k
+      · have : hᶜ ∈ 𝓝 a := by
+          apply IsClosed.compl_mem_nhds hcl
+          by_contra ainh; exact hkdis ⟨ainh, hyp⟩
+        rcases (((regularSpace_TFAE X).out 0 3).mp r:) a hᶜ this
+          with ⟨n, nna, ncl, nsubkc⟩
+        use n
+        intro ainh
+        exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
+      · use ∅; intro aink; by_contra; exact hyp aink
+    choose m ma_nhd ma_cl ma_dis using this
+    rcases IsLindelof.elim_nhds_subcover klind m ma_nhd
+      with ⟨k', k'_cnt, k'_subh, mk'_cov⟩
+    sorry
 
 
 
