@@ -37,6 +37,12 @@ namespace Constructor
 variable {L₁ L₂ F} (e : Φ.functor ⋙ L₂ ≅ L₁ ⋙ F)
   {X₂ X₂' : C₂} {X₃ : D₁} (g : L₂.obj X₂ ⟶ F.obj X₃)
 
+lemma essSurj : F.EssSurj where
+  mem_essImage Y₂ := by
+    have : L₂.EssSurj := Localization.essSurj L₂ W₂
+    let E : Φ.RightResolution (L₂.objPreimage Y₂) := Classical.arbitrary _
+    exact ⟨L₁.obj E.X₁, ⟨e.symm.app _ ≪≫ (Localization.isoOfHom L₂ W₂ E.w E.hw).symm ≪≫ L₂.objObjPreimageIso Y₂⟩⟩
+
 namespace FromRightResolution
 
 @[simps! left]
