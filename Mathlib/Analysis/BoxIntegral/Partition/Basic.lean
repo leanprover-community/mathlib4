@@ -139,10 +139,8 @@ instance partialOrder : PartialOrder (Prepartition I) where
       fun π₁ π₂ h₁ h₂ => injective_boxes (Subset.antisymm (this h₁ h₂) (this h₂ h₁))
     intro π₁ π₂ h₁ h₂ J hJ
     rcases h₁ hJ with ⟨J', hJ', hle⟩; rcases h₂ hJ' with ⟨J'', hJ'', hle'⟩
-    obtain rfl : J = J''
-    · exact π₁.eq_of_le hJ hJ'' (hle.trans hle')
-    obtain rfl : J' = J
-    · exact le_antisymm ‹_› ‹_›
+    obtain rfl : J = J'' := π₁.eq_of_le hJ hJ'' (hle.trans hle')
+    obtain rfl : J' = J := le_antisymm ‹_› ‹_›
     assumption
 
 instance : OrderTop (Prepartition I) where
@@ -536,9 +534,8 @@ theorem restrict_biUnion (πi : ∀ J, Prepartition J) (hJ : J ∈ π) :
     exact WithBot.coe_le_coe.2 (le_of_mem _ h₁)
   · simp only [iUnion_restrict, iUnion_biUnion, Set.subset_def, Set.mem_inter_iff, Set.mem_iUnion]
     rintro x ⟨hxJ, J₁, h₁, hx⟩
-    obtain rfl : J = J₁
-    · exact π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
-    · exact hx
+    obtain rfl : J = J₁ := π.eq_of_mem_of_mem hJ h₁ hxJ (iUnion_subset _ hx)
+    exact hx
 #align box_integral.prepartition.restrict_bUnion BoxIntegral.Prepartition.restrict_biUnion
 
 theorem biUnion_le_iff {πi : ∀ J, Prepartition J} {π' : Prepartition I} :

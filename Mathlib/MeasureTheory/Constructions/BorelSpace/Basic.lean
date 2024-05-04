@@ -322,8 +322,8 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
 
 instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
     CountablySeparated s := by
-    rw [CountablySeparated.subtype_iff]
-    exact .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
+  rw [CountablySeparated.subtype_iff]
+  exact .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
