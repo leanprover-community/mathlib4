@@ -508,7 +508,7 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv
 
 /-- Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
-lemma degreeOf_eq_degree_optionEquivLeft_optionSubtypeNe [DecidableEq σ]
+lemma degreeOf_eq_degree [DecidableEq σ]
   (a : σ) (p : MvPolynomial σ R) :
   degreeOf a p = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a}) (renameEquiv R (Equiv.optionSubtypeNe a).symm p)) := by
   sorry
