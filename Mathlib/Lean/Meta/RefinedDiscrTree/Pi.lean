@@ -17,8 +17,14 @@ according to the following reductions:
 - Absorbing lambdas: lambdas in front of the constant can be moved inside.
   For example `fun x => x + 1` is turned into `(fun x => x) + (fun x => 1)`.
 
-The Pi type instances only work when the domain is a `Type*`, and not a `Prop`. However, there are
-cases in which the domain is a `Sort*` where we would still like to do these reductions.
+The Pi type instances only applies when the domain is a `Type*`, and not a `Prop`.
+However, there are cases in which the domain is a `Sort*` where we would still like to do these
+reductions. So we ignore universe levels.
+
+Not every instance that gives a function is a Pi type instance, for example for matrices
+`A` and `B`, the coefficient `(A * B) i j` is not the same as `A i j * B i j`. Thus, to check
+whether the instance is truly a Pi type instance, we unfold it to whnf, and check that the
+function distributes as expected.
 
 Another issue is the following:
 `fun x => (a x)^(b x)` would be indexed as `λ, (* ^ *)`. But `fun x => x^2` would be indexed as
@@ -26,12 +32,9 @@ Another issue is the following:
 depend on the bound variable `x`. Thus, in the case that the exponent depends on the bound variable,
 but could avoid depending on it, we must index it with and without the distributed lambda.
 
-The same issue happens in `fun [Ring α] => (1 + 2 : α)`, where the instance argument contains
-the bound variable.
+A similar situation occurs in `fun [Ring α] => (1 + 2 : α)`, where the instance argument contains
+the bound variable. In this case we never want to distribute the function.
 
-Not every instance that gives a function is a Pi type instance, for example for matrices
-`A` and `B`, the coefficient `(A * B) i j` is not the same as `A i j * B i j`. However, there
-are also cases where
 -/
 
 open Lean Meta
@@ -49,7 +52,7 @@ private def etaExpand {α} (args : Array Expr) (type : Expr) (lambdas : List FVa
     k args lambdas (by omega)
 termination_by arity - args.size
 
-
+/-- Reduce the Pi type instance to whnf, reducing inside of `numArgs` lambda binders. -/
 private def unfoldPiInst (inst : Expr) (numArgs : Nat) : MetaM Expr := do
   let some e ← project? inst 0 | throwError "unable to project to field 1 in {inst}"
   forallBoundedTelescope (← inferType e) numArgs fun fvars _ => do
@@ -86,7 +89,8 @@ private def absorbArgsBinOp (args : Array Expr) (idx : Nat) (type inst lhs rhs :
     return (type, lhs, rhs, none)
 termination_by args.size - idx
 
-/-- Return true iff `e` contains a free variable which satisfies `p`. -/
+/-- Return true iff `e` must cointain a free variable which satisfies `p`,
+no matter the instantiation of the metavariables. -/
 @[inline] private def mustHaveAnyFVar (e : Expr) (p : FVarId → Bool) : Bool :=
   let rec @[specialize] visit (e : Expr) := if !e.hasFVar then false else
     match e with
@@ -94,12 +98,7 @@ termination_by args.size - idx
     | .lam _ d b _       => visit d || visit b
     | .mdata _ e         => visit e
     | .letE _ t v b _    => visit t || visit v || visit b
-    | .app f a           =>
-      let rec @[specialize] visitArgs (e : Expr) := if !e.hasFVar then false else
-        match e with
-        | .app f a => visit a || visitArgs f
-        | _ => false
-      !f.getAppFn.isMVar && (visit a || visitArgs f)
+    | .app f a           => !f.getAppFn.isMVar && (visit a || visit f)
     | .proj _ _ e        => visit e
     | .fvar fvarId       => p fvarId
     | _                      => false
