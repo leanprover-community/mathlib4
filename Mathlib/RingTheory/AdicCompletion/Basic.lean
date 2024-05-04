@@ -227,6 +227,7 @@ def of : M →ₗ[R] AdicCompletion I M where
   map_smul' _ _ := rfl
 #align adic_completion.of AdicCompletion.of
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem of_apply (x : M) (n : ℕ) : (of I M x).1 n = mkQ (I ^ n • ⊤ : Submodule R M) x :=
   rfl
@@ -434,6 +435,17 @@ def mk : AdicCauchySequence I M →ₗ[R] AdicCompletion I M where
     exact (f.property hmn).symm⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Criterion for checking that an adic cauchy sequence is mapped to zero in the adic completion. -/
+theorem mk_zero_of (f : AdicCauchySequence I M)
+    (h : ∃ k : ℕ, ∀ n ≥ k, ∃ m ≥ n, ∃ l ≥ n, f m ∈ (I ^ l • ⊤ : Submodule R M)) :
+    AdicCompletion.mk I M f = 0 := by
+  obtain ⟨k, h⟩ := h
+  ext n
+  obtain ⟨m, hnm, l, hnl, hl⟩ := h (n + k) (by omega)
+  rw [mk_apply_coe, Submodule.mkQ_apply, val_zero,
+    ← AdicCauchySequence.mk_eq_mk (show n ≤ m by omega)]
+  simpa using (Submodule.smul_mono_left (Ideal.pow_le_pow_right (by omega))) hl
 
 /-- Every element in the adic completion is represented by a Cauchy sequence. -/
 theorem mk_surjective : Function.Surjective (mk I M) := by

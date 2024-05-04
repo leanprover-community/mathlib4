@@ -41,6 +41,13 @@ def Exact [Zero P] : Prop := ∀ y, g y = 0 ↔ y ∈ Set.range f
 lemma Exact.comp_eq_zero [Zero P] (h : Exact f g) : g.comp f = 0 :=
   funext fun _ => (h _).mpr <| Set.mem_range_self _
 
+lemma Exact.of_comp_eq_zero_of_ker_in_range [Zero P] (hc : g.comp f = 0)
+    (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
+    Exact f g := by
+  refine fun y ↦ ⟨hr y, ?_⟩
+  rintro ⟨x, rfl⟩
+  exact congrFun hc x
+
 end Function
 
 section LinearMap
@@ -61,6 +68,12 @@ lemma LinearMap.exact_iff : Exact f g ↔ LinearMap.ker g = LinearMap.range f :=
 
 lemma Exact.linearMap_comp_eq_zero (h : Exact f g) : g.comp f = 0 :=
   DFunLike.coe_injective h.comp_eq_zero
+
+lemma Exact.of_linearMap_comp_eq_zero_of_ker_in_range (hc : g.comp f = 0)
+    (hr : ∀ y, g y = 0 → y ∈ Set.range f) :
+    Exact f g := by
+  apply Function.Exact.of_comp_eq_zero_of_ker_in_range _ _ ?_ hr
+  · rw [← LinearMap.coe_comp, hc]; rfl
 
 end LinearMap
 
