@@ -45,6 +45,9 @@ variable [Zero α]
 section LE
 variable [LE α] {f g : ι →₀ α}
 
+instance instLEFinsupp : LE (ι →₀ α) :=
+  ⟨fun f g => ∀ i, f i ≤ g i⟩
+
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align finsupp.le_def Finsupp.le_def
 

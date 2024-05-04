@@ -308,9 +308,20 @@ theorem cancel_left {g : TopHom β γ} {f₁ f₂ : TopHom α β} (hg : Injectiv
 
 end Top
 
+instance [LE β] [Top β] : LE (TopHom α β) where
+  le f g := (f : α → β) ≤ g
+
+instance [LE β] [Top β] : DFunLike.PointwiseLE (TopHom α β) where
+
+instance [Preorder β] [Top β] : Preorder (TopHom α β) :=
+  Preorder.lift (DFunLike.coe : TopHom α β → α → β)
+
+instance [PartialOrder β] [Top β] : PartialOrder (TopHom α β) :=
+  DFunLike.instPartialOrder
+
 section OrderTop
 
-variable [Preorder β] [OrderTop β]
+variable [LE β] [OrderTop β]
 
 instance : OrderTop (TopHom α β) where
   top := ⟨⊤, rfl⟩
@@ -495,9 +506,20 @@ theorem cancel_left {g : BotHom β γ} {f₁ f₂ : BotHom α β} (hg : Injectiv
 
 end Bot
 
+instance [LE β] [Bot β] : LE (BotHom α β) where
+  le f g := (f : α → β) ≤ g
+
+instance [LE β] [Bot β] : DFunLike.PointwiseLE (BotHom α β) where
+
+instance [Preorder β] [Bot β] : Preorder (BotHom α β) :=
+  Preorder.lift (DFunLike.coe : BotHom α β → α → β)
+
+instance [PartialOrder β] [Bot β] : PartialOrder (BotHom α β) :=
+  DFunLike.instPartialOrder
+
 section OrderBot
 
-variable [Preorder β] [OrderBot β]
+variable [LE β] [OrderBot β]
 
 instance : OrderBot (BotHom α β) where
   bot := ⟨⊥, rfl⟩

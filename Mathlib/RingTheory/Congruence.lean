@@ -576,7 +576,8 @@ variable (R)
 protected def gi : @GaloisInsertion (R → R → Prop) (RingCon R) _ _ ringConGen (⇑) where
   choice r _h := ringConGen r
   gc _r c :=
-    ⟨fun H _ _ h => H _ _ <| .of _ _ h, fun H => ringConGen_of_ringCon c ▸ ringConGen_mono H⟩
+    ⟨fun H _ _ h => H <| RingConGen.Rel.of _ _ h, fun H =>
+      ringConGen_of_ringCon c ▸ ringConGen_mono H⟩
   le_l_u x := (ringConGen_of_ringCon x).symm ▸ le_refl x
   choice_eq _ _ := rfl
 

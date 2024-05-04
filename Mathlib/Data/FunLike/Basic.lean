@@ -181,7 +181,7 @@ run_cmd Lean.Elab.Command.liftTermElabM do
 theorem coe_eq_coe_fn : (DFunLike.coe (F := F)) = (fun f => ↑f) := rfl
 #align fun_like.coe_eq_coe_fn DFunLike.coe_eq_coe_fn
 
-theorem coe_injective : Function.Injective (fun f : F ↦ (f : ∀ a : α, β a)) :=
+theorem coe_injective : Function.Injective (DFunLike.coe : F → ∀ a : α, β a) :=
   DFunLike.coe_injective'
 #align fun_like.coe_injective DFunLike.coe_injective
 

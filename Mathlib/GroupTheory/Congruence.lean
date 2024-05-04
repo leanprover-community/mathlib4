@@ -403,6 +403,17 @@ protected def congr {c d : Con M} (h : c = d) : c.Quotient ≃* d.Quotient :=
 #align con.congr Con.congr
 #align add_con.congr AddCon.congr
 
+-- The complete lattice of congruence relations on a type
+/-- For congruence relations `c, d` on a type `M` with a multiplication, `c ≤ d` iff `∀ x y ∈ M`,
+    `x` is related to `y` by `d` if `x` is related to `y` by `c`. -/
+@[to_additive "For additive congruence relations `c, d` on a type `M` with an addition, `c ≤ d` iff
+`∀ x y ∈ M`, `x` is related to `y` by `d` if `x` is related to `y` by `c`."]
+instance : LE (Con M) where
+  le c d := ∀ ⦃x y⦄, c x y → d x y
+
+@[to_additive]
+instance : DFunLike.PointwiseLE (Con M) where
+
 /-- Definition of `≤` for congruence relations. -/
 @[to_additive "Definition of `≤` for additive congruence relations."]
 theorem le_def {c d : Con M} : c ≤ d ↔ ∀ {x y}, c x y → d x y := Iff.rfl
@@ -446,16 +457,22 @@ theorem coe_sInf (S : Set (Con M)) :
 theorem coe_iInf {ι : Sort*} (f : ι → Con M) : ⇑(iInf f) = ⨅ i, ⇑(f i) := by
   rw [iInf, coe_sInf, ← Set.range_comp, sInf_range, Function.comp]
 
+@[to_additive]
+instance : PartialOrder (Con M) where
+  le_refl _ _ _ := id
+  le_trans _ _ _ h1 h2 _ _ h := h2 <| h1 h
+  le_antisymm _ _ hc hd := ext fun _ _ => ⟨fun h => hc h, fun h => hd h⟩
+
 /-- The complete lattice of congruence relations on a given type with a multiplication. -/
 @[to_additive "The complete lattice of additive congruence relations on a given type with
 an addition."]
 instance : CompleteLattice (Con M) where
   __ := completeLatticeOfInf (Con M) fun s =>
-      ⟨fun r hr x y h => h r hr, fun r hr x y h r' hr' => hr hr' _ _ h⟩
+      ⟨fun r hr x y h => h r hr, fun r hr x y h r' hr' => hr hr' h⟩
   inf c d := ⟨c.toSetoid ⊓ d.toSetoid, fun h1 h2 => ⟨c.mul h1.1 h2.1, d.mul h1.2 h2.2⟩⟩
   inf_le_left _ _ := fun _ _ h => h.1
   inf_le_right _ _ := fun _ _ h => h.2
-  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb _ _ h, hc _ _ h⟩
+  le_inf  _ _ _ hb hc := fun _ _ h => ⟨hb h, hc h⟩
   top := { Setoid.completeLattice.top with mul' := by tauto }
   le_top _ := fun _ _ _ => trivial
   bot := { Setoid.completeLattice.bot with mul' := fun h1 h2 => h1 ▸ h2 ▸ rfl }
@@ -566,7 +583,7 @@ theorem sSup_eq_conGen (S : Set (Con M)) :
   rw [conGen_eq]
   apply congr_arg sInf
   ext
-  exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 _ _ hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
+  exact ⟨fun h _ _ ⟨r, hr⟩ => h hr.1 hr.2, fun h r hS _ _ hr => h _ _ ⟨r, hS, hr⟩⟩
 #align con.Sup_eq_con_gen Con.sSup_eq_conGen
 #align add_con.Sup_eq_add_con_gen AddCon.sSup_eq_addConGen
 
@@ -589,9 +606,10 @@ variable (M)
     binary relations on `M`. -/
 @[to_additive "There is a Galois insertion of additive congruence relations on a type with
 an addition `M` into binary relations on `M`."]
-protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen DFunLike.coe where
+protected def gi : @GaloisInsertion (M → M → Prop) (Con M) _ _ conGen DFunLike.coe
+    where
   choice r _ := conGen r
-  gc _ c := ⟨fun H _ _ h => H _ _ <| ConGen.Rel.of _ _ h, fun H => conGen_of_con c ▸ conGen_mono H⟩
+  gc _ c := ⟨fun H _ _ h => H <| ConGen.Rel.of _ _ h, @fun H => conGen_of_con c ▸ conGen_mono H⟩
   le_l_u x := (conGen_of_con x).symm ▸ le_refl x
   choice_eq _ _ := rfl
 #align con.gi Con.gi
@@ -679,7 +697,7 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
         ext fun x y =>
           ⟨fun h =>
             let ⟨a, b, hx, hy, H⟩ := h
-            d.1.trans (d.1.symm <| d.2 _ _ <| c.eq.1 hx) <| d.1.trans H <| d.2 _ _ <| c.eq.1 hy,
+            d.1.trans (d.1.symm <| d.2 <| c.eq.1 hx) <| d.1.trans H <| d.2 <| c.eq.1 hy,
             fun h => ⟨_, _, rfl, rfl, h⟩⟩
   right_inv d :=
     -- Porting note: by exact needed for unknown reason
@@ -692,12 +710,12 @@ def correspondence : { d // c ≤ d } ≃o Con c.Quotient where
   map_rel_iff' := @fun s t => by
     constructor
     · intros h x y hs
-      rcases h _ _ ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
-      exact t.1.trans (t.1.symm <| t.2 _ _ <| Quotient.eq_rel.1 hx)
-        (t.1.trans ht (t.2 _ _ <| Quotient.eq_rel.1 hy))
+      rcases h ⟨x, y, rfl, rfl, hs⟩ with ⟨a, b, hx, hy, ht⟩
+      exact t.1.trans (t.1.symm <| t.2 <| Quotient.eq_rel.1 hx)
+        (t.1.trans ht (t.2 <| Quotient.eq_rel.1 hy))
     · intros h _ _ hs
       rcases hs with ⟨a, b, hx, hy, Hs⟩
-      exact ⟨a, b, hx, hy, h _ _ Hs⟩
+      exact ⟨a, b, hx, hy, h Hs⟩
 #align con.correspondence Con.correspondence
 #align add_con.correspondence AddCon.correspondence
 
@@ -782,7 +800,7 @@ theorem to_submonoid_inj (c d : Con M) (H : (c : Submonoid (M × M)) = d) : c = 
 
 @[to_additive]
 theorem le_iff {c d : Con M} : c ≤ d ↔ (c : Submonoid (M × M)) ≤ d :=
-  ⟨fun h _ H => h _ _ H, fun h x y hc => h <| show (x, y) ∈ c from hc⟩
+  ⟨fun h _ H => h H, fun h x y hc => h <| show (x, y) ∈ c from hc⟩
 #align con.le_iff Con.le_iff
 #align add_con.le_iff AddCon.le_iff
 
@@ -880,7 +898,7 @@ variable (c) (f : M →* P)
 @[to_additive "The homomorphism on the quotient of an `AddMonoid` by an additive congruence
 relation `c` induced by a homomorphism constant on `c`'s equivalence classes."]
 def lift (H : c ≤ ker f) : c.Quotient →* P where
-  toFun x := (Con.liftOn x f) fun _ _ h => H _ _ h
+  toFun x := Con.liftOn x f H
   map_one' := by rw [← f.map_one]; rfl
   map_mul' x y := Con.induction_on₂ x y fun m n => by
     dsimp only [← coe_mul, Con.liftOn_coe]
@@ -1024,7 +1042,7 @@ theorem kerLift_injective (f : M →* P) : Injective (kerLift f) := fun x y =>
 contains `c`, `d`'s quotient map induces a homomorphism from the quotient by `c` to the quotient
 by `d`."]
 def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
-  (c.lift d.mk') fun x y hc => show (ker d.mk') x y from (mk'_ker d).symm ▸ h _ _ hc
+  c.lift d.mk' fun _x _y hc => (mk'_ker d).symm ▸ h hc
 #align con.map Con.map
 #align add_con.map AddCon.map
 
@@ -1035,7 +1053,7 @@ def map (c d : Con M) (h : c ≤ d) : c.Quotient →* d.Quotient :=
 contains `c`, the definition of the homomorphism from the quotient by `c` to the quotient by `d`
 induced by `d`'s quotient map."]
 theorem map_apply {c d : Con M} (h : c ≤ d) (x) :
-    c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h _ _ hc) x :=
+    c.map d h x = c.lift d.mk' (fun _ _ hc => d.eq.2 <| h hc) x :=
   rfl
 #align con.map_apply Con.map_apply
 #align add_con.map_apply AddCon.map_apply

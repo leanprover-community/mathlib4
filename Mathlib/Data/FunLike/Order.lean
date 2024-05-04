@@ -18,18 +18,31 @@ namespace DFunLike
 
 variable {F : Type*} {α : Type*} {β : α → Type*} [DFunLike F α β]
 
-instance instLE [∀ a, LE (β a)] : LE F where
-  le f g := coe f ≤ coe g
+section LE
 
-@[simp, norm_cast] theorem coe_le [∀ a, LE (β a)] {f g : F} : coe f ≤ g ↔ f ≤ g := .rfl
-theorem le_def [∀ a, LE (β a)] {f g : F} : f ≤ g ↔ ∀ a, f a ≤ g a := .rfl
+variable (F) in
+/-- A mixin typeclass saying that the order on bundled morphisms
+agrees with the pointwise order on corresponding functions. -/
+class PointwiseLE [∀ a, LE (β a)] [LE F] : Prop where
+  le_iff : ∀ {f g : F}, f ≤ g ↔ ∀ a, f a ≤ g a := by intro; rfl
 
-instance instPreorder [∀ a, Preorder (β a)] : Preorder F := .lift coe
+variable [∀ a, LE (β a)] [LE F] [PointwiseLE F] {f g : F}
 
-theorem lt_def [∀ a, Preorder (β a)] {f g : F} : f < g ↔ f ≤ g ∧ ∃ a, f a < g a := Pi.lt_def
+theorem le_def : f ≤ g ↔ ∀ a, f a ≤ g a := PointwiseLE.le_iff
 
-instance instPartialOrder [∀ a, PartialOrder (β a)] : PartialOrder F := .lift coe coe_injective
+@[simp, norm_cast] theorem coe_le_coe : coe f ≤ g ↔ f ≤ g := le_def.symm
 
-@[gcongr] theorem apply_mono [∀ a, Preorder (β a)] {f g : F} (h : f ≤ g) (x : α) : f x ≤ g x := h x
+@[gcongr] theorem apply_mono (h : f ≤ g) (x : α) : f x ≤ g x := le_def.1 h x
+
+end LE
+
+theorem lt_def [∀ a, Preorder (β a)] [Preorder F] [PointwiseLE F] {f g : F} :
+    f < g ↔ f ≤ g ∧ ∃ a, f a < g a := by
+  rw [← coe_le_coe, ← Pi.lt_def]
+  exact lt_iff_lt_of_le_iff_le' coe_le_coe.symm coe_le_coe.symm
+
+instance (priority := 100) instPartialOrder [∀ a, PartialOrder (β a)] [Preorder F]
+    [PointwiseLE F] : PartialOrder F where
+  le_antisymm _a _b hab hba := coe_injective <| le_antisymm (mod_cast hab) (mod_cast hba)
 
 end DFunLike
