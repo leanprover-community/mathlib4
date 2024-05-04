@@ -260,6 +260,12 @@ multiplication by zero law (`MulZeroClass`). -/
 class NonUnitalCommSemiring (α : Type u) extends NonUnitalSemiring α, CommSemigroup α
 #align non_unital_comm_semiring NonUnitalCommSemiring
 
+-- see Note [lower instance priority]
+instance (priority := 100) NonUnitalCommSemiring.toNonUnitalNonAssocCommSemiring
+    [NonUnitalCommSemiring α] :
+    NonUnitalNonAssocCommSemiring α :=
+  { ‹NonUnitalCommSemiring α› with }
+
 /-- A commutative semiring is a semiring with commutative multiplication. -/
 class CommSemiring (R : Type u) extends Semiring R, CommMonoid R
 #align comm_semiring CommSemiring
@@ -270,10 +276,6 @@ instance (priority := 100) CommSemiring.toNonUnitalCommSemiring [CommSemiring α
   { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 #align comm_semiring.to_non_unital_comm_semiring CommSemiring.toNonUnitalCommSemiring
 
--- see Note [lower instance priority]
-instance (priority := 100) CommSemiring.toNonUnitalNonAssocCommSemiring [CommSemiring α] :
-    NonUnitalNonAssocCommSemiring α :=
-  { inferInstanceAs (CommMonoid α), inferInstanceAs (CommSemiring α) with }
 
 -- see Note [lower instance priority]
 instance (priority := 100) CommSemiring.toCommMonoidWithZero [CommSemiring α] :
