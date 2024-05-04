@@ -183,6 +183,11 @@ noncomputable instance [EnoughInjectives C] :
     ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh).IsEquivalence := by
   apply Functor.IsEquivalence.ofFullyFaithfullyEssSurj
 
+instance [EnoughInjectives C] : (localizerMorphism C).IsLocalizedEquivalence :=
+  LocalizerMorphism.IsLocalizedEquivalence.mk'
+    (localizerMorphism C) (𝟭 _) DerivedCategory.Plus.Qh
+      ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
+
 lemma localizerMorphism_lift_map_on_resolutions {X Y : HomotopyCategory.Plus C} (φ : X ⟶ Y)
     (X' : (localizerMorphism C).RightResolution X) (Y' : (localizerMorphism C).RightResolution Y) :
     ∃ (ψ : X'.X₁ ⟶ Y'.X₁), X'.w ≫ (localizerMorphism C).functor.map ψ = φ ≫ Y'.w := by
@@ -228,8 +233,7 @@ instance [EnoughInjectives C] (X : HomotopyCategory.Plus C) :
 into the homotopy category `K^+` induces a right derivability structure, which allow
 to derive any functor from `K^+`. -/
 instance [EnoughInjectives C] : (localizerMorphism C).IsRightDerivabilityStructure :=
-  LocalizerMorphism.IsRightDerivabilityStructure.mk' (localizerMorphism C) (𝟭 _)
-    DerivedCategory.Plus.Qh ((ι C).mapHomotopyCategoryPlus ⋙ DerivedCategory.Plus.Qh)
+  LocalizerMorphism.IsRightDerivabilityStructure.mk' _
 
 section
 
