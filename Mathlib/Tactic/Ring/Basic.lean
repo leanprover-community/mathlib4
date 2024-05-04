@@ -581,7 +581,11 @@ theorem sub_pf {R} [Ring R] {a b c d : R}
 def evalSub (rα : Q(Ring $α)) (va : ExSum sα a) (vb : ExSum sα b) : Result (ExSum sα) q($a - $b) :=
   let ⟨_c, vc, pc⟩ := evalNeg sα rα vb
   let ⟨d, vd, (pd : Q($a + $_c = $d))⟩ := evalAdd sα va vc
-  ⟨d, vd, (q(sub_pf $pc $pd) : Expr)⟩
+  -- TODO: Qq does not know that `rα` and `sα` are coherent; we could perhaps fix this by passing
+  -- around some `=Q` arguments, but even these are tricky as `Ring R` and `CommSemiring R` have
+  -- multiple common parents.
+  let hack := Expr.app q(sub_pf (a := $a) (d := $d) $pc) pd
+  ⟨d, vd, hack⟩
 
 theorem pow_prod_atom (a : R) (b) : a ^ b = (a + 0) ^ b * (nat_lit 1).rawCast := by simp
 
