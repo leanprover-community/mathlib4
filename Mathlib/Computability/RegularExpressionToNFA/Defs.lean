@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2022 Russell Emerine. All rights reserved.
+Copyright (c) 2022 Russell Emerine, 2024 Tom Kranz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Russell Emerine
+Authors: Russell Emerine, Tom Kranz
 -/
 import Mathlib.Computability.RegularExpressions
 import Mathlib.Computability.NFA
