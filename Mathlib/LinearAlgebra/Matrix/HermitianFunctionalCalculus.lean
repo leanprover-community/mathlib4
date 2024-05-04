@@ -71,9 +71,8 @@ noncomputable def f1 : n → spectrum 𝕜 (toEuclideanLin A) := by
 
 theorem spec_eq : spectrum 𝕜 (toEuclideanCLM.1 A) = spectrum 𝕜 A := by
 simp only [StarAlgEquiv.toRingEquiv_eq_coe]
-refine AlgEquiv.spectrum_eq (↑toEuclideanCLM) A
+apply AlgEquiv.spectrum_eq (R:= 𝕜) (↑toEuclideanCLM) A
 sorry
-
  --have F := LinearMap.toContinuousLinearMap (toEuclideanLin A)
 #exit
 
