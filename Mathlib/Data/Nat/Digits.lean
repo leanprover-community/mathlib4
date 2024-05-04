@@ -201,7 +201,6 @@ theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
     ofDigits (1 : α) (h :: L) = h + ofDigits 1 L := by simp [ofDigits]
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
 
-@[simp]
 theorem ofDigits_cons {b hd} {tl : List ℕ} :
     ofDigits b (hd :: tl) = hd + b * ofDigits b tl := by rfl
 
