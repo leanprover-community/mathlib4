@@ -112,6 +112,13 @@ private lemma approx_ball_cover_of_separableSpace_compl [MeasurableSpace α] [Ps
  def IsSeparable [TopologicalSpace α] (μ : Measure α) : Prop :=
    ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ S = μ Set.univ
 
+namespace IsSeparable
+
+lemma of_separableSpace [TopologicalSpace α] [TopologicalSpace.SeparableSpace α] :
+    IsSeparable μ := ⟨Set.univ, TopologicalSpace.isSeparable_univ_iff.mpr ‹_›, rfl⟩
+
+end IsSeparable
+
 /-- A measure `μ` is pre-tight if for all `0 < ε`, there exists `K` totally bounded such that
   `μ Kᶜ ≤ ε`. -/
 def IsPretight [UniformSpace α] (μ : Measure α) : Prop :=
