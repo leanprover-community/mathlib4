@@ -45,8 +45,10 @@ variable [Zero α]
 section LE
 variable [LE α] {f g : ι →₀ α}
 
-instance instLEFinsupp : LE (ι →₀ α) :=
+instance instLE : LE (ι →₀ α) :=
   ⟨fun f g => ∀ i, f i ≤ g i⟩
+
+instance instPointwiseLE : DFunLike.PointwiseLE (ι →₀ α) where
 
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align finsupp.le_def Finsupp.le_def
@@ -67,6 +69,10 @@ end LE
 section Preorder
 variable [Preorder α] {f g : ι →₀ α}
 
+instance instPreorder : Preorder (ι →₀ α) where
+  toLE := instLE
+  __ := Preorder.lift (DFunLike.coe : (ι →₀ α) → (ι → α))
+
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
@@ -77,8 +83,11 @@ lemma coe_strictMono : Monotone (Finsupp.toFun : (ι →₀ α) → ι → α) :
 
 end Preorder
 
+instance instPartialOrder [PartialOrder α] : PartialOrder (ι →₀ α) :=
+  DFunLike.instPartialOrder
+
 instance semilatticeInf [SemilatticeInf α] : SemilatticeInf (ι →₀ α) :=
-  { DFunLike.instPartialOrder with
+  { instPartialOrder with
     inf := zipWith (· ⊓ ·) (inf_idem _)
     inf_le_left := fun _f _g _i => inf_le_left
     inf_le_right := fun _f _g _i => inf_le_right
@@ -90,7 +99,7 @@ theorem inf_apply [SemilatticeInf α] {i : ι} {f g : ι →₀ α} : (f ⊓ g) 
 #align finsupp.inf_apply Finsupp.inf_apply
 
 instance semilatticeSup [SemilatticeSup α] : SemilatticeSup (ι →₀ α) :=
-  { DFunLike.instPartialOrder with
+  { instPartialOrder with
     sup := zipWith (· ⊔ ·) (sup_idem _)
     le_sup_left := fun _f _g _i => le_sup_left
     le_sup_right := fun _f _g _i => le_sup_right
@@ -123,7 +132,7 @@ end Zero
 
 
 instance orderedAddCommMonoid [OrderedAddCommMonoid α] : OrderedAddCommMonoid (ι →₀ α) :=
-  { Finsupp.instAddCommMonoid, DFunLike.instPartialOrder with
+  { Finsupp.instAddCommMonoid, instPartialOrder with
     add_le_add_left := fun _a _b h c s => add_le_add_left (h s) (c s) }
 
 instance orderedCancelAddCommMonoid [OrderedCancelAddCommMonoid α] :

@@ -40,6 +40,8 @@ variable [∀ i, LE (α i)] {f g : Π₀ i, α i}
 instance : LE (Π₀ i, α i) :=
   ⟨fun f g ↦ ∀ i, f i ≤ g i⟩
 
+instance : DFunLike.PointwiseLE (Π₀ i, α i) where
+
 lemma le_def : f ≤ g ↔ ∀ i, f i ≤ g i := Iff.rfl
 #align dfinsupp.le_def DFinsupp.le_def
 
@@ -64,6 +66,10 @@ section Preorder
 
 variable [∀ i, Preorder (α i)] {f g : Π₀ i, α i}
 
+instance : Preorder (Π₀ i, α i) where
+  toLE := inferInstance
+  __ := Preorder.lift DFunLike.coe
+
 lemma lt_def : f < g ↔ f ≤ g ∧ ∃ i, f i < g i := Pi.lt_def
 @[simp, norm_cast] lemma coe_lt_coe : ⇑f < g ↔ f < g := Iff.rfl
 
@@ -73,6 +79,9 @@ lemma coe_mono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ �
 lemma coe_strictMono : Monotone ((⇑) : (Π₀ i, α i) → ∀ i, α i) := fun _ _ ↦ id
 
 end Preorder
+
+instance [∀ i, PartialOrder (α i)] : PartialOrder (Π₀ i, α i) :=
+  DFunLike.instPartialOrder
 
 instance [∀ i, SemilatticeInf (α i)] : SemilatticeInf (Π₀ i, α i) :=
   { (inferInstance : PartialOrder (DFinsupp α)) with
