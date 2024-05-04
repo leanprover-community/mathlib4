@@ -62,7 +62,7 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
   _ = ∫ x, (- ∫ t, B (f' (x, t)) (g (x, t))) ∂μ := by
     apply integral_congr_ae
     filter_upwards [hf'g.prod_right_ae, hfg'.prod_right_ae, hfg.prod_right_ae]
-      with x hf'gx hfg'x  hfgx
+      with x hf'gx hfg'x hfgx
     apply integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable ?_ ?_ hfg'x hf'gx hfgx
     · intro t
       convert (hf (x, t)).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp)
