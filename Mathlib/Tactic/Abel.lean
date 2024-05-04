@@ -299,7 +299,7 @@ lemma subst_into_negg {α} [AddCommGroup α] (a ta t : α)
 def evalSMul' (eval : Expr → M (NormalExpr × Expr))
     (is_smulg : Bool) (orig e₁ e₂ : Expr) : M (NormalExpr × Expr) := do
   trace[abel] "Calling NormNum on {e₁}"
-  let ⟨e₁', p₁, _, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
+  let ⟨e₁', p₁, _⟩ ← try Meta.NormNum.eval e₁ catch _ => pure { expr := e₁ }
   let p₁ ← p₁.getDM (mkEqRefl e₁')
   match e₁'.int? with
   | some n => do

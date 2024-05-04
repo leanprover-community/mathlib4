@@ -49,30 +49,36 @@ theorem length_insertNth : ∀ n as, n ≤ length as → length (insertNth n a a
   | n + 1, _ :: as, h => congr_arg Nat.succ <| length_insertNth n as (Nat.le_of_succ_le_succ h)
 #align list.length_insert_nth List.length_insertNth
 
-theorem removeNth_insertNth (n : ℕ) (l : List α) : (l.insertNth n a).removeNth n = l := by
-  rw [removeNth_eq_nth_tail, insertNth, modifyNthTail_modifyNthTail_same]
+theorem eraseIdx_insertNth (n : ℕ) (l : List α) : (l.insertNth n a).eraseIdx n = l := by
+  rw [eraseIdx_eq_modifyNthTail, insertNth, modifyNthTail_modifyNthTail_same]
   exact modifyNthTail_id _ _
-#align list.remove_nth_insert_nth List.removeNth_insertNth
+#align list.remove_nth_insert_nth List.eraseIdx_insertNth
 
-theorem insertNth_removeNth_of_ge :
+@[deprecated] alias removeNth_insertNth := eraseIdx_insertNth -- 2024-05-04
+
+theorem insertNth_eraseIdx_of_ge :
     ∀ n m as,
-      n < length as → n ≤ m → insertNth m a (as.removeNth n) = (as.insertNth (m + 1) a).removeNth n
+      n < length as → n ≤ m → insertNth m a (as.eraseIdx n) = (as.insertNth (m + 1) a).eraseIdx n
   | 0, 0, [], has, _ => (lt_irrefl _ has).elim
-  | 0, 0, _ :: as, _, _ => by simp [removeNth, insertNth]
+  | 0, 0, _ :: as, _, _ => by simp [eraseIdx, insertNth]
   | 0, m + 1, a :: as, _, _ => rfl
   | n + 1, m + 1, a :: as, has, hmn =>
     congr_arg (cons a) <|
-      insertNth_removeNth_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
-#align list.insert_nth_remove_nth_of_ge List.insertNth_removeNth_of_ge
+      insertNth_eraseIdx_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
+#align list.insert_nth_remove_nth_of_ge List.insertNth_eraseIdx_of_ge
 
-theorem insertNth_removeNth_of_le :
+@[deprecated] alias insertNth_removeNth_of_ge := insertNth_eraseIdx_of_ge -- 2024-05-04
+
+theorem insertNth_eraseIdx_of_le :
     ∀ n m as,
-      n < length as → m ≤ n → insertNth m a (as.removeNth n) = (as.insertNth m a).removeNth (n + 1)
+      n < length as → m ≤ n → insertNth m a (as.eraseIdx n) = (as.insertNth m a).eraseIdx (n + 1)
   | _, 0, _ :: _, _, _ => rfl
   | n + 1, m + 1, a :: as, has, hmn =>
     congr_arg (cons a) <|
-      insertNth_removeNth_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
-#align list.insert_nth_remove_nth_of_le List.insertNth_removeNth_of_le
+      insertNth_eraseIdx_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
+#align list.insert_nth_remove_nth_of_le List.insertNth_eraseIdx_of_le
+
+@[deprecated] alias insertNth_removeNth_of_le := insertNth_eraseIdx_of_le -- 2024-05-04
 
 theorem insertNth_comm (a b : α) :
     ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
@@ -174,7 +180,7 @@ theorem get_insertNth_add_succ (l : List α) (x : α) (n k : ℕ) (hk' : n + k <
   · simp at hk'
   · cases n
     · simp
-    · simpa [succ_add] using IH _ _ _
+    · simpa [Nat.add_right_comm] using IH _ _ _
 
 set_option linter.deprecated false in
 @[deprecated get_insertNth_add_succ] -- 2023-01-05

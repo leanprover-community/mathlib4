@@ -199,17 +199,18 @@ theorem dist_div_cos_oangle_center_div_two_eq_radius {s : Sphere P} {p₁ p₂ :
     div_mul_cancel₀ _ (two_ne_zero' ℝ), @dist_eq_norm_vsub' V, @dist_eq_norm_vsub' V,
     vadd_vsub_assoc, add_comm, o.oangle_add_right_smul_rotation_pi_div_two, Real.Angle.cos_coe,
     Real.cos_arctan]
-  norm_cast
-  rw [one_div, div_inv_eq_mul, ←
-    mul_self_inj (mul_nonneg (norm_nonneg _) (Real.sqrt_nonneg _)) (norm_nonneg _),
-    norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _), ←
-    mul_assoc, mul_comm, mul_comm _ (√_), ← mul_assoc, ← mul_assoc,
-    Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
-    LinearIsometryEquiv.norm_map]
-  swap; · simpa using h.symm
-  conv_rhs =>
-    rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs, abs_mul_abs_self]
-  ring
+  · norm_cast
+    rw [one_div, div_inv_eq_mul, ←
+      mul_self_inj (mul_nonneg (norm_nonneg _) (Real.sqrt_nonneg _)) (norm_nonneg _),
+      norm_add_sq_eq_norm_sq_add_norm_sq_real (o.inner_smul_rotation_pi_div_two_right _ _), ←
+      mul_assoc, mul_comm, mul_comm _ (√_), ← mul_assoc, ← mul_assoc,
+      Real.mul_self_sqrt (add_nonneg zero_le_one (sq_nonneg _)), norm_smul,
+      LinearIsometryEquiv.norm_map]
+    conv_rhs =>
+      rw [← mul_assoc, mul_comm _ ‖Real.Angle.tan _‖, ← mul_assoc, Real.norm_eq_abs,
+        abs_mul_abs_self]
+    ring
+  · simpa using h.symm
 #align euclidean_geometry.sphere.dist_div_cos_oangle_center_div_two_eq_radius EuclideanGeometry.Sphere.dist_div_cos_oangle_center_div_two_eq_radius
 
 /-- Given two points on a circle, twice the radius of that circle may be expressed explicitly as
