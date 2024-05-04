@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
 import Mathlib.Algebra.BigOperators.Multiset.Basic
-import Mathlib.Algebra.CharP.Basic
 import Mathlib.Data.FunLike.Basic
 import Mathlib.Data.Set.Pointwise.Basic
 
