@@ -47,7 +47,7 @@ variable {α ι : Type*} [MeasurableSpace α] {μ : Measure α}
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets that has `ε`-almost full measure. -/
-private lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
+lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ → Set α)
     (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
     ∃ n, μ Set.univ - ε ≤ μ (Set.Accumulate K n) := by
   have : Filter.Tendsto (μ ∘ Set.Accumulate K) Filter.atTop (nhds (μ (⋃ n, Set.Accumulate K n))) :=
@@ -59,7 +59,7 @@ private lemma exists_sub_le_measure_accumulate [IsFiniteMeasure μ] (K : ℕ →
 
 /-- For a finite measure `μ`, we can extract from a countable cover that has full measure, a finite
 cover of accumulated sets for which the complement has measure below `ε`. -/
-private lemma exists_sub_le_measure_accumulate_compl [TopologicalSpace α] [OpensMeasurableSpace α]
+lemma exists_sub_le_measure_accumulate_compl [TopologicalSpace α] [OpensMeasurableSpace α]
     [IsFiniteMeasure μ] (K : ℕ → Set α) (hKmeas : ∀ n, MeasurableSet (K n))
     (h : μ (⋃ n, K n) = μ Set.univ) {ε : ENNReal} (hε : ε > 0) :
     ∃ n, μ ((Set.Accumulate K n)ᶜ) ≤ ε := by
@@ -73,7 +73,7 @@ private lemma exists_sub_le_measure_accumulate_compl [TopologicalSpace α] [Open
 
 /-- For a finite measure `μ`, we can construct a dense sequence such that for any radius, we can
 cover all but a set of measure below `ε`. -/
-private lemma exists_denseRange_sub_le_measure_univ_of_separableSpace [PseudoMetricSpace α]
+lemma exists_denseRange_sub_le_measure_univ_of_separableSpace [PseudoMetricSpace α]
     [TopologicalSpace.SeparableSpace α] [Nonempty α] (μ : Measure α) [IsFiniteMeasure μ] :
     ∃ u : ℕ → α, DenseRange u ∧
     ∀ ε > 0, ∀ δ > 0, ∃ N : ℕ, μ (Set.univ) - ε ≤ μ (⋃ i ≤ N, Metric.ball (u i) δ) := by
@@ -87,7 +87,7 @@ private lemma exists_denseRange_sub_le_measure_univ_of_separableSpace [PseudoMet
 /-- For a finite measure `μ`, we can construct a dense sequence such that for any radius, we can
 find a `N` such that the measure of the complement of the first `N` balls of radius `1/(j+1)` is
 at most `ε/2^(j+1)`. -/
-private lemma exists_denseRange_sub_le_measure_univ_of_separableSpace_compl [PseudoMetricSpace α]
+lemma exists_denseRange_sub_le_measure_univ_of_separableSpace_compl [PseudoMetricSpace α]
     [TopologicalSpace.SeparableSpace α] [Nonempty α] [OpensMeasurableSpace α] (μ : Measure α)
     [IsFiniteMeasure μ] {ε : ENNReal} (hε : 0 < ε) : ∃ u : ℕ → α, DenseRange u ∧
     ∀ j : ℕ, ∃ N : ℕ, μ ((⋃ i ≤ N, Metric.ball (u i) (1/(j+1)))ᶜ) ≤ ε/2^(j+1) := by
