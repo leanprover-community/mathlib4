@@ -190,7 +190,7 @@ theorem liftNC_single (f : k →+ R) (g : G → R) (a : G) (b : k) :
   liftAddHom_apply_single _ _ _
 to_ama #align monoid_algebra.lift_nc_single MonoidAlgebra.liftNC_single
 
-@[simp]
+--@[simp]
 theorem _root_.AddMonoidAlgebra.mapDomain_single {G' : Type*} {f : G → G'} {a : G} {b : k} :
     AddMonoidAlgebra.mapDomain f (AddMonoidAlgebra.single a b) = AddMonoidAlgebra.single (f a) b :=
   Finsupp.mapDomain_single
