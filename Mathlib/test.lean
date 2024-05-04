@@ -1,6 +1,6 @@
 import Mathlib
 
-variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+variable {E : Type*} [NormedAddCommGroup E]  [NormedSpace ℝ E]
 
 lemma l₁ (f : E → ℝ) (z a b : E) :
     (fderiv ℝ (fun w => fderiv ℝ f w) z) a b = iteratedFDeriv ℝ 2 f z ![a, b] := by
