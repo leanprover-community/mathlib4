@@ -26,15 +26,6 @@ abbrev botTop : HashMap String String := HashMap.empty
 def splitUpper (s : String) : List String :=
   s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
 
-/-- some names have consecutive parts that should be transposed.
-`lelt` is one of the two parts. -/
-abbrev lelt : HashSet String := { "le", "lt" }
-
-/-- some names have consecutive parts that should be transposed.
-`leftRight` is one of the two parts. -/
-abbrev leftRight : HashSet String :=
-  { "left", "right", "sup", "inf", "inter", "union", "none", "bot", "top", "trailingDegree" }
-
 /-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
 E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
 def swapWords : List String → List String
@@ -78,42 +69,18 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
       | .node _ ``Lean.Parser.Term.app
           #[.ident _ _ `single _, .node _ _ #[one, c]] =>
         match one with
-          | .node _ `num #[un@(.atom _ "1")] =>
-            return some <| mkNode ``Lean.Parser.Term.app #[
-              mkIdent `single,
-              mkNode `null #[mkNode `num #[mkAtomFrom un "0"], c]]
-
+          | .node _ `num #[.atom _ "1"] =>
+            return some <| ← `($(mkIdent `single) 0 $(⟨c⟩))
           | .node _ ``Lean.Parser.Term.typeAscription
-              #[opar, .node _ `num #[un@(.atom _ "1")], colon, type, cpar] =>
-            let ascripZero := mkNode ``Lean.Parser.Term.typeAscription
-                        #[opar,
-                          mkNode `num #[mkAtomFrom un "0"],
-                          colon,
-                          type,
-                          cpar]
-            return some <| mkNode ``Lean.Parser.Term.app #[
-              mkIdent `single,
-              mkNode `null #[ascripZero, c]]
+              #[_opar, .node _ `num #[.atom _ "1"], _colon, .node _ `null #[type], _cpar] =>
+            return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨c⟩))
           | _ => return none
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
         match na with
-          | .str a "antisymm" => return some (← `($(mkIdent `antisymm) $(mkIdent a) $(⟨b⟩)))
-          | .str a "trans_le" => return some (← `($(mkIdent `lt_of_le_of_lt) $(⟨b⟩) $(mkIdent a)))
           | _ => if na != toMultArrow then return none else
-                    return some <| mkNode ``Lean.Parser.Term.app #[
-                                  mkIdent na,
-                                  mkNode `null #[mkNode ``Lean.Parser.Term.app #[
-                                  mkIdent `Multiplicative.ofAdd,
-                                  mkNode `null #[mkIdent b.getId]]]]
+                    return some <| ← `($(mkIdent na) ($(mkIdent `Multiplicative.ofAdd) $(⟨b⟩)))
       | .ident _ _ x _ => if x != toMult then return none else
-                return some <| mkNode ``Lean.Parser.Term.app #[
-                              mkIdent `Multiplicative,
-                              mkNode `null #[mkIdent x]]
-      | .node _ `«term⊥» #[.atom _ "⊥"] => return some (← `((⊤ : $(mkIdent `WithTop) _)))
-      | .atom _ s =>
-        if s.contains '⊥' then return some (mkAtom (s.replace "⊥" "⊤")) else return none
-      | .node _ `«term_≤_» #[a, _, b] => return some (← `($(⟨b⟩) ≤ $(⟨a⟩)))
---      | .node _ `«term_<_» #[a, _, b] => return some (← `($(⟨b⟩) < $(⟨a⟩)))
+                return some <| ← `($(mkIdent `Multiplicative) $(mkIdent x))
       | .node _ ``Lean.Parser.Command.docComment #[init, .atom _ docs] =>
         let newDocs := stringReplacements convs docs
         let newDocs :=
@@ -132,20 +99,9 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
               .atom _ _,
               .ident _ _ `R _]],
           _, _] => -- `)`
-            return some <| mkNode ``Lean.Parser.Term.explicitBinder #[
-                mkAtom "(",
-                mkNode `null #[mkIdent `g],
-                mkNode `null #[
-                  mkAtom ":",
-                  mkNode ``Lean.Parser.Term.arrow #[
-                    mkNode ``Lean.Parser.Term.app #[
-                      mkIdent `Multiplicative,
-                      mkNode `null #[mkIdent `G]],
-                    mkAtom "→", mkIdent `R]],
-                mkNode `null #[],
-                mkAtom ")"]
+            let GtoR ← `($(mkIdent `Multiplicative) $(mkIdent `G) → $(mkIdent `R))
+            return some <| Term.mkExplicitBinder (mkIdent `g) GtoR
       | _ => return none
-
 
 /--
 If `thm` is a theorem about `MonoidAlgebra`, then `to_ama thm` tries to add to the
