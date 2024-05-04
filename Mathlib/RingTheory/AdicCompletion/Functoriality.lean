@@ -84,6 +84,11 @@ variable (M) in
 theorem adicCauchy_id : adicCauchy I (LinearMap.id (M := M)) = LinearMap.id :=
   rfl
 
+variable (M N) in
+theorem adicCauchy_zero : adicCauchy I (0 : M →ₗ[R] N) =
+    (0 : AdicCauchySequence I M →ₗ[R] AdicCauchySequence I N) :=
+  rfl
+
 @[simp]
 theorem adicCauchy_comp (f : M →ₗ[R] N) (g : N →ₗ[R] P) :
     g.adicCauchy I ∘ₗ f.adicCauchy I = (g ∘ₗ f).adicCauchy I :=
@@ -154,6 +159,13 @@ variable (M) in
 theorem adicCompletion_id :
     adicCompletion I (LinearMap.id (M := M)) =
       LinearMap.id (R := AdicCompletion I R) (M := AdicCompletion I M) := by
+  ext
+  simp
+
+variable (M N) in
+@[simp]
+theorem adicCompletion_zero : adicCompletion I (0 : M →ₗ[R] N) =
+    (0 : AdicCompletion I M →ₗ[AdicCompletion I R] AdicCompletion I N) := by
   ext
   simp
 
