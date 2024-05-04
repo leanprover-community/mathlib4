@@ -488,7 +488,7 @@ instance distribSMul [Semiring k] [DistribSMul R k] : DistribSMul R (MonoidAlgeb
   Finsupp.distribSMul _ _
 to_ama #align monoid_algebra.distrib_smul MonoidAlgebra.distribSMul
 
-variable [Monoid R] in -- this way, `to_add` does not convert `Monoid R` to `AddMonoid R`
+variable [Monoid R] in -- this way, `to_ama` does not convert `Monoid R` to `AddMonoid R`
 to_ama
 instance distribMulAction [Semiring k] [DistribMulAction R k] :
     DistribMulAction R (MonoidAlgebra k G) :=

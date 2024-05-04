@@ -26,35 +26,6 @@ abbrev botTop : HashMap String String := HashMap.empty
 def splitUpper (s : String) : List String :=
   s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
 
-/-- some binary operations need to be reversed in the change `Bot` to `Top`, others stay unchanged.
-`binopReplacements` performs some of these changes. -/
-partial
-def binopReplacements {m : Type → Type} [Monad m] [MonadRef m] [MonadQuotation m] (stx : Syntax) :
-    m Syntax :=
-  stx.replaceM fun s => do
-    match s with
-      | `(term| antisymm $ha $hb) => return some (← `($(mkIdent `antisymm) $hb $ha))
-      | `(term| le_trans $ha $hb) => return some (← `($(mkIdent `le_trans) $hb $ha))
-      | `(term| lt_trans $ha $hb) => return some (← `($(mkIdent `lt_trans) $hb $ha))
-      | `(term| $ha ⊔ $hb) =>
-        let ha' := ⟨← binopReplacements ha⟩
-        let hb' := ⟨← binopReplacements hb⟩
-        return some (← `(term| $ha' ⊓ $hb'))
-      | `(term| $ha ∪ $hb) =>
-        let ha' := ⟨← binopReplacements ha⟩
-        let hb' := ⟨← binopReplacements hb⟩
-        return some (← `(term| $ha' ∩ $hb'))
-      | `(term| $ha ∩ $hb) =>
-        let ha' := ⟨← binopReplacements ha⟩
-        let hb' := ⟨← binopReplacements hb⟩
-        return some (← `(term| $ha' ∪ $hb'))
-      | `(term| $ha ≤ $hb) =>
-        let ha' := ⟨← binopReplacements ha⟩
-        let hb' := ⟨← binopReplacements hb⟩
-        return some (← `(term| $ha' ≤ $hb'))
-      | `(Lean.Parser.Term.typeAscription| (g : G → R)) => dbg_trace "found"; return some (← `(term| (g : Multiplicative G → R)))
-      | _ => return none
-
 /-- some names have consecutive parts that should be transposed.
 `lelt` is one of the two parts. -/
 abbrev lelt : HashSet String := { "le", "lt" }
@@ -76,13 +47,6 @@ def swapWords : List String → List String
   | "Monoid"::"Algebra"::rest => "AddMonoidAlgebra"::swapWords rest
   | "Monoid"::rest => "AddMonoid"::swapWords rest
   | "monoid"::"_"::"algebra"::rest => "add_monoid_algebra"::swapWords rest
-  | "le"::"_"::"of"::"_"::"eq"::rest => "ge"::"_"::"of"::"_"::"eq"::swapWords rest
-  | "untop"::"'"::"_"::"le"::rest => "le"::"_"::"untop"::"'"::swapWords rest
-  | le::"_"::left::ls =>
-    if ((lelt.contains le) && (leftRight.contains left)) ||
-       ((lelt.contains left) && (leftRight.contains le))
-    then left::"_"::le::(swapWords ls)
-    else le::"_"::swapWords (left :: ls)
   | le::left => le::swapWords left
   | [] => []
 
@@ -192,7 +156,7 @@ Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:command : command => do
   let g := match id with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
-  let newCmd ← binopReplacements <| ← MaxToMin botTop g h cmd
+  let newCmd ← MaxToMin botTop g h cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   if (← get).messages.hasErrors then return
