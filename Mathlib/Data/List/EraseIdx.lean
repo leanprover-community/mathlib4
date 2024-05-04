@@ -16,12 +16,6 @@ namespace List
 
 variable {α β : Type*}
 
-@[simp]
-theorem length_eraseIdx {k} {l : List α} (h : k < length l) :
-    length (eraseIdx l k) = length l - 1 := calc
-  _ = min k (length l) + (length l - (k + 1)) := by simp [eraseIdx_eq_take_drop_succ]
-  _ = length l - 1 := by omega
-
 @[simp] theorem eraseIdx_zero (l : List α) : eraseIdx l 0 = tail l := by cases l <;> rfl
 
 theorem eraseIdx_sublist (l : List α) (k : ℕ) : eraseIdx l k <+ l := calc
