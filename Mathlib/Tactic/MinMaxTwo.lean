@@ -17,36 +17,26 @@ open Lean Elab Command
 
 namespace Mathlib.MA
 
-abbrev botTop : HashMap String String := HashMap.empty
+/-- `toAddWords` performs a subset of what `to_additive` would do. -/
+abbrev toAddWords : HashMap String String := HashMap.empty
   |>.insert "Mul"       "Add"
   |>.insert "Semigroup" "AddSemigroup"
+  |>.insert "CommMonoid" "AddCommMonoid"
+  |>.insert "Monoid" "AddMonoid"
+  |>.insert "CommSemigroup" "AddCommSemigroup"
+  |>.insert "MulOneClass" "AddZeroClass"
+  |>.insert "MonoidAlgebra" "AddMonoidAlgebra"
+  |>.insert "monoid" "add_monoid"
 
-/-- splits a string into maximal substrings consisting of either `[uppercase]*[lowercase]*` or
-`[non-alpha]*`. -/
-def splitUpper (s : String) : List String :=
-  s.toList.groupBy (fun a b => a.isUpper || (a.isLower && b.isLower)) |>.map (⟨·⟩)
-
-/-- `swapWords` uses `lelt` and `leftRight` to perform the swap in names.
-E.g. it replaces `["none", "le"]` with `["le", "none"]`. -/
-def swapWords : List String → List String
-  | "Add"::"Action"::rest => "MulAction"::swapWords rest
-  | "Add"::"Comm"::"Monoid"::rest => "AddCommMonoid"::swapWords rest
-  | "Add"::"Monoid"::rest => "AddMonoid"::swapWords rest
-  | "Comm"::"Monoid"::rest => "AddCommMonoid"::swapWords rest
-  | "Comm"::"AddSemigroup"::rest => "AddCommSemigroup"::swapWords rest
-  | "Add"::"One"::"Class"::rest => "AddZeroClass"::swapWords rest
-  | "Monoid"::"Algebra"::rest => "AddMonoidAlgebra"::swapWords rest
-  | "Monoid"::rest => "AddMonoid"::swapWords rest
-  | "monoid"::"_"::"algebra"::rest => "add_monoid_algebra"::swapWords rest
-  | le::left => le::swapWords left
-  | [] => []
+/-- splits a string into maximal substrings consisting of either `[alpha]*` or `[non-alpha]*`. -/
+def splitAlpha (s : String) : List String :=
+  s.toList.groupBy (fun a b => (a.isAlpha && b.isAlpha)) |>.map (⟨·⟩)
 
 /-- replaces "words" in a string using `convs`.  It breaks the string into "words"
 grouping together maximal consecutive substrings consisting of
 either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
 def stringReplacements (convs : HashMap String String) (str : String) : String :=
-  let strs := (splitUpper str).map fun s => (convs.find? s).getD s
-  String.join <| swapWords strs
+  String.join <| (splitAlpha str).map fun s => (convs.find? s).getD s
 
 variable (convs : HashMap String String) in
 /-- converts a name involving `WithBot` to a name involving `WithTop`. -/
@@ -99,8 +89,8 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
               .atom _ _,
               .ident _ _ `R _]],
           _, _] => -- `)`
-            let GtoR ← `($(mkIdent `Multiplicative) $(mkIdent `G) → $(mkIdent `R))
-            return some <| Term.mkExplicitBinder (mkIdent `g) GtoR
+            let MultGtoR ← `($(mkIdent `Multiplicative) $(mkIdent `G) → $(mkIdent `R))
+            return some <| Term.mkExplicitBinder (mkIdent `g) MultGtoR
       | _ => return none
 
 /--
@@ -109,15 +99,16 @@ environment the analogous result about `AddMonoidAlgebra`.
 
 Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 -/
-elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:command : command => do
+elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:command :
+    command => do
   let g := match id with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
-  let newCmd ← MaxToMin botTop g h cmd
+  let newCmd ← MaxToMin toAddWords g h cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   if (← get).messages.hasErrors then return
   let currNS ← getCurrNamespace
-  withScope (fun s => { s with currNamespace := nameToTop botTop currNS }) <| elabCommand newCmd
+  withScope (fun s => { s with currNamespace := nameToTop toAddWords currNS }) <| elabCommand newCmd
 
 @[inherit_doc to_amaCmd]
 macro "to_ama? " "[" id:ident "]" cmd:command : command => return (← `(to_ama [$id] ? $cmd))
