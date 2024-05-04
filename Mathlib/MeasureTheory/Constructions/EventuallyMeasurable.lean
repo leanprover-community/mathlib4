@@ -106,12 +106,12 @@ theorem Measurable.comp_eventuallyMeasurable (hh : Measurable h) (hf : Eventuall
 is `EventuallyMeasurable`.-/
 theorem EventuallyMeasurable.congr
     (hf : EventuallyMeasurable m l f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
-  fun _ hs => EventuallyMeasurableSet.eventuallyMeasurableSet_of_eventuallyEq (hf hs)
+  fun _ hs => EventuallyMeasurableSet.congr (hf hs)
     (hgf.preimage _)
 
 /-- A function which is `EventuallyEq` to some `Measurable` function is `EventuallyMeasurable`.-/
 theorem Measurable.eventuallyMeasurable_of_eventuallyEq
     (hf : Measurable f) (hgf : g =ᶠ[l] f) : EventuallyMeasurable m l g :=
-  hf.eventuallyMeasurable.eventuallyMeasurable_of_eventuallyEq hgf
+  hf.eventuallyMeasurable.congr hgf
 
 end EventuallyMeasurable

@@ -134,7 +134,7 @@ theorem of_subsingleton [Subsingleton α] : NullMeasurableSet s μ :=
 #align measure_theory.null_measurable_set.of_subsingleton MeasureTheory.NullMeasurableSet.of_subsingleton
 
 protected theorem congr (hs : NullMeasurableSet s μ) (h : s =ᵐ[μ] t) : NullMeasurableSet t μ :=
-  EventuallyMeasurableSet.eventuallyMeasurableSet_of_eventuallyEq hs h.symm
+  EventuallyMeasurableSet.congr hs h.symm
 #align measure_theory.null_measurable_set.congr MeasureTheory.NullMeasurableSet.congr
 
 protected theorem iUnion {ι : Sort*} [Countable ι] {s : ι → Set α}
@@ -424,7 +424,7 @@ theorem Measurable.comp_nullMeasurable {g : β → γ} (hg : Measurable g) (hf :
 
 theorem NullMeasurable.congr {g : α → β} (hf : NullMeasurable f μ) (hg : f =ᵐ[μ] g) :
     NullMeasurable g μ :=
-  EventuallyMeasurable.eventuallyMeasurable_of_eventuallyEq hf hg.symm
+  EventuallyMeasurable.congr hf hg.symm
 #align measure_theory.null_measurable.congr MeasureTheory.NullMeasurable.congr
 
 end NullMeasurable
