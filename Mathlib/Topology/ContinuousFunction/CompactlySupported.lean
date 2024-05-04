@@ -101,6 +101,10 @@ theorem coe_toContinuousMap (f : C_c(α, β)) : (f.toContinuousMap : α → β) 
 theorem ext {f g : C_c(α, β)} (h : ∀ x, f x = g x) : f = g :=
   DFunLike.ext _ _ h
 
+@[simp]
+theorem coe_mk (f : C(α, β)) (h : HasCompactSupport f) : ⇑(⟨f, h⟩ : C_c(α, β)) = f :=
+  rfl
+
 /-- Copy of a `CompactlySupportedContinuousMap` with a new `toFun` equal to the old one. Useful
 to fix definitional equalities. -/
 protected def copy (f : C_c(α, β)) (f' : α → β) (h : f' = f) : C_c(α, β) where
