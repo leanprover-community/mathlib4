@@ -239,7 +239,7 @@ theorem add_smul [AddCommMonoid R] [SMulWithZero R V] {x y : HahnSeries Γ R}
   · simp only [HahnSeries.add_coeff, h, sum_add_distrib]
   · intro b
     simp_all only [Set.isPWO_union, HahnSeries.isPWO_support, and_self, HahnSeries.mem_support,
-      HahnSeries.add_coeff, Ne.def, Set.mem_union, Set.mem_setOf_eq, mem_support]
+      HahnSeries.add_coeff, ne_eq, Set.mem_union]
     contrapose!
     intro h
     rw [h.1, h.2, add_zero]
@@ -250,8 +250,7 @@ theorem single_smul_coeff_add [MulZeroClass R] [SMulWithZero R V] {r : R} {x : H
   by_cases hr : r = 0
   · simp_all only [map_zero, zero_smul, smul_coeff, HahnSeries.support_zero, HahnSeries.zero_coeff,
     sum_const_zero]
-  simp only [hr, smul_coeff, smul_coeff, HahnSeries.support_single_of_ne, Ne.def, not_false_iff,
-    smul_eq_mul]
+  simp only [smul_coeff, ne_eq, hr, not_false_eq_true, HahnSeries.support_single_of_ne]
   by_cases hx : ((of R).symm x).coeff a = 0
   · simp only [hx, smul_zero]
     rw [sum_congr _ fun _ _ => rfl, sum_empty]
@@ -308,7 +307,7 @@ theorem support_smul_subset_vAdd_support' [MulZeroClass R] [SMulWithZero R V] {x
   · exact y.isPWO_support
   intro x hx
   contrapose! hx
-  simp only [not_nonempty_iff_eq_empty, Ne.def, Set.mem_setOf_eq] at hx
+  simp only [Set.mem_setOf_eq, not_nonempty_iff_eq_empty] at hx
   simp [hx, smul_coeff]
 
 theorem support_smul_subset_vAdd_support [MulZeroClass R] [SMulWithZero R V] {x : HahnSeries Γ R}

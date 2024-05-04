@@ -6,7 +6,7 @@ Authors: Scott Carnahan
 import Mathlib.Algebra.BigOperators.Finsupp
 import Mathlib.Algebra.Group.Defs
 import Mathlib.Algebra.Group.PNatPowAssoc
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Ring.Defs
 import Mathlib.Data.Int.Cast.Defs
 

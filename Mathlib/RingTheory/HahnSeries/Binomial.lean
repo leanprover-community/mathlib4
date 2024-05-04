@@ -95,7 +95,12 @@ theorem _root_.AddSubmonoid.closure_insert_zero {Γ} [AddZeroClass Γ] {g : Γ} 
     AddSubmonoid.closure ({0, g} : Set Γ) ≤ AddSubmonoid.closure ({g} : Set Γ) :=
   AddSubmonoid.closure_le.mpr <| Set.insert_subset_iff.mpr
     { left := AddSubmonoid.zero_mem _, right := AddSubmonoid.subset_closure }
---#find_home AddSubmonoid.closure_insert_zero --[Mathlib.LinearAlgebra.Span]
+--#find_home! AddSubmonoid.closure_insert_zero --[Mathlib.LinearAlgebra.Span]
+
+theorem _root_.AddSubmonoid.closure_insert_zero_eq {Γ} [AddZeroClass Γ] {g : Γ} :
+    AddSubmonoid.closure ({0, g} : Set Γ) = AddSubmonoid.closure ({g} : Set Γ) :=
+  le_antisymm AddSubmonoid.closure_insert_zero (AddSubmonoid.closure_mono (Set.subset_insert 0 {g}))
+--#find_home! AddSubmonoid.closure_insert_zero_eq
 
 theorem support_one_sub_single_npow (g : Γ) (r : R) {n : ℕ} :
     ((1 - single g r) ^ n).support ⊆ AddSubmonoid.closure {g} :=
@@ -171,6 +176,7 @@ theorem coeff_one_sub_single_npow {g : Γ} (hg : 0 < g) (r : R) {k n : ℕ}:
         Int.cast_pow, Int.cast_neg, Int.cast_one, mul_neg, Nat.cast_add]
       ring_nf
 
+--redundant
 theorem zero_lt_orderTop_single {g : Γ} (hg : 0 < g) (r : R) : 0 < (single g r).orderTop :=
   lt_orderTop_single hg
 
@@ -282,12 +288,14 @@ abbrev UnitBinomial {g g' : Γ} (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) 
   IsUnit.unit (isUnit_binomial hgg' (IsUnit.unit ha) b)
 
 theorem UnitBinomial_val {g g' : Γ} (hgg' : g < g') {a : R} (ha : IsUnit a) (b : R) :
-  (UnitBinomial hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b := rfl
+    (UnitBinomial hgg' ha b).val = single g (IsUnit.unit ha).val + single g' b := rfl
 
---theorem xxx : IsUnit (1 : R) := by exact isUnit_one
+--theorem xxx : IsUnit (1 : R) := isUnit_one
 
 /-- A function for describing coefficients of powers of invertible binomials.-/
 def UnitBinomialPow_coeff_aux {a : R} (ha : IsUnit a) (b : R) (n : ℤ) :
     ℕ → R := fun k => (IsUnit.unit ha) ^ (n - k) • b ^ k • Ring.choose n k
+
+-- if k ∈ Monoid.closure g, then ... else 0
 
 end SingleAddSingle
