@@ -1,46 +1,73 @@
 /-
-Copyright (c) 2024 Johan Commelin. All rights reserved.
+Copyright (c) 2024 Kyle Miller. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Johan Commelin
+Authors: Kyle Miller
 -/
-import Lean.Elab.Command
+import Lean
 
-set_option linter.unusedVariables false
+/-!
+# Adaptation notes
 
-elab "#adaptation_note " str:str : command => pure ()
+This file defines a `#adaptation_note` command.
+Adaptation notes are comments that are used to indicate that a piece of code
+has been changed to accomodate a change in Lean core.
+They typically require further action/maintenance to be taken in the future.
+-/
 
-elab "#adaptation_note " str:str ppLine e:term : term =>
-  Lean.Elab.Term.elabTerm e none
+open Lean
 
-elab "#adaptation_note " str:str : tactic => pure ()
+initialize registerTraceClass `adaptationNote
 
-#adaptation_note "This is a test"
+/-- General function implementing adaptation notes. -/
+def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM Unit := do
+  let stx ← getRef
+  if let some doc := stx[1].getOptional? then
+    trace[adaptationNote] (Lean.TSyntax.getDocString ⟨doc⟩)
+  else
+    logError "Adaptation notes must be followed by a /-- comment -/"
+    let trailing := if let .original (trailing := s) .. := stx[0].getTailInfo then s else default
+    let doc : Syntax :=
+      Syntax.node2 .none ``Parser.Command.docComment (mkAtom "/--") (mkAtom "comment -/")
+    -- Optional: copy the original whitespace after the `#adaptation_note` token
+    -- to after the docstring comment
+    let doc := doc.updateTrailing trailing
+    let stx' := (← getRef)
+    let stx' := stx'.setArg 0 stx'[0].unsetTrailing
+    let stx' := stx'.setArg 1 (mkNullNode #[doc])
+    Meta.Tactic.TryThis.addSuggestion (← getRef) (f stx') (origSpan? := ← getRef)
 
-example : 1 = 1 :=
-  #adaptation_note "This is a test"
-  rfl
+/-- Adaptation notes are comments that are used to indicate that a piece of code
+has been changed to accomodate a change in Lean core.
+They typically require further action/maintenance to be taken in the future. -/
+elab "#adaptation_note " (docComment)? : command => do
+  Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
-example : 1 = 1 := by
-  #adaptation_note "This is a test"
-  rfl
+/-- Adaptation notes are comments that are used to indicate that a piece of code
+has been changed to accomodate a change in Lean core.
+They typically require further action/maintenance to be taken in the future. -/
+elab "#adaptation_note " (docComment)? : tactic =>
+  reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
+
+/-- Adaptation notes are comments that are used to indicate that a piece of code
+has been changed to accomodate a change in Lean core.
+They typically require further action/maintenance to be taken in the future. -/
+syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : term
+
+/-- Elaborator for adaptation notes. -/
+@[term_elab adaptationNoteTermStx]
+def adaptationNoteTermElab : Elab.Term.TermElab
+  | `(#adaptation_note $[$_]? $t) => fun expectedType? => do
+    reportAdaptationNote (fun s => (⟨s⟩ : Term))
+    Elab.Term.elabTerm t expectedType?
+  | _ => fun _ => Elab.throwUnsupportedSyntax
 
 
+#adaptation_note /-- This is a test -/
 
+example : True := by
+  #adaptation_note /-- This is a test -/
+  trivial
 
-  -- withoutModifyingEnv <| Command.runTermElabM fun _ => do
-  -- let (heading, e) ← try
-  --   -- Adapted from `#check` implementation
-  --   let theoremName : Name ← resolveGlobalConstNoOverloadWithInfo stx
-  --   addCompletionInfo <| .id stx theoremName (danglingDot := false) {} none
-  --   let decl ← getConstInfo theoremName
-  --   let c : Expr := .const theoremName (decl.levelParams.map mkLevelParam)
-  --   pure (m!"{ppConst c} : {decl.type}", decl.value!)
-  -- catch _ =>
-  --   let e ← Term.elabTerm stx none
-  --   Term.synthesizeSyntheticMVarsNoPostponing
-  --   let e ← Term.levelMVarToParam (← instantiateMVars e)
-  --   pure (m!"{e} : {← Meta.inferType e}", e)
-  -- unless e.isSyntheticSorry do
-  --   let entries ← explode e
-  --   let fitchTable : MessageData ← entriesToMessageData entries
-  --   logInfo <|← addMessageContext m!"{heading}\n\n{fitchTable}\n"
+example : True :=
+  #adaptation_note /-- This is a test -/
+  trivial
