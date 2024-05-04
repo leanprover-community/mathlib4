@@ -51,10 +51,6 @@ when the module lives in a lower universe.
 
 ## TODO
 
-* Show that flatness is stable under base change (aka extension of scalars)
-  Using the `IsBaseChange` predicate should allow us to treat both
-  `A[X]` and `A ⊗ R[X]` as the base change of `R[X]` to `A`.
-  (Similar examples exist with `Fin n → R`, `R × R`, `ℤ[i] ⊗ ℝ`, etc...)
 * Generalize flatness to noncommutative rings.
 
 -/
