@@ -190,7 +190,7 @@ lemma of_separableSpace_on_countablyGenerated_uniformSpace [UniformSpace α]
     rw [Set.compl_empty, hμ]
     exact hε.le
   · have : Nonempty α := by
-      have : μ (Set.univ) > 0 := by
+      have : 0 < μ (Set.univ) := by
         rw [Measure.measure_univ_eq_zero] at hμ
         exact Measure.measure_univ_pos.mpr hμ
       exact nonempty_of_exists (MeasureTheory.nonempty_of_measure_ne_zero this.ne')
@@ -386,7 +386,7 @@ lemma const_mul [TopologicalSpace α] {μ : Measure α} (c : NNReal) (hμ : IsTi
     IsTight (c • μ) := by
   rw [iff_isCompact_sets] at *
   intro ε hε
-  have hεc : ε / c > 0 := by
+  have hεc : 0 < ε / c := by
     simp only [ENNReal.div_pos_iff, ne_eq, ENNReal.coe_ne_top, not_false_eq_true,
       and_true, hε.ne']
   obtain ⟨K, hK, hKc⟩ := hμ (ε / c) hεc
