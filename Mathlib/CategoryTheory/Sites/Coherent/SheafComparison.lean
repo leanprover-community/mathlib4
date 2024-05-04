@@ -63,16 +63,13 @@ theorem exists_effectiveEpiFamily_iff_mem_induced (X : C) (S : Sieve X) :
     let Z : α → C := fun a ↦ (Functor.EffectivelyEnough.presentation (F := F) (Y a)).some.p
     let g₀ : (a : α) → F.obj (Z a) ⟶ Y a := fun a ↦ F.effectiveEpiOver (Y a)
     have : EffectiveEpiFamily _ (fun a ↦ g₀ a ≫ π a) := inferInstance
-    refine ⟨Z , fun a ↦ Full.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨Z , fun a ↦ F.preimage (g₀ a ≫ π a), ?_, fun a ↦ (?_ : S.arrows (F.preimage _))⟩
     · refine F.finite_effectiveEpiFamily_of_map _ _ ?_
       simpa using this
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂ a
       rw [h₂]
-      have : Full.preimage (g₀ a ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ a ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ a ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_precoherent
     coherentTopology C =
@@ -169,17 +166,14 @@ theorem exists_effectiveEpi_iff_mem_induced (X : C) (S : Sieve X) :
     exact F.map_effectiveEpi _
   · obtain ⟨Y, π, ⟨H₁, H₂⟩⟩ := (mem_sieves_iff_hasEffectiveEpi _).mp hS
     let g₀ := F.effectiveEpiOver Y
-    refine ⟨_, Full.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (Full.preimage _))⟩
+    refine ⟨_, F.preimage (g₀ ≫ π), ?_, (?_ : S.arrows (F.preimage _))⟩
     · refine F.effectiveEpi_of_map _ ?_
-      simp only [Full.witness]
+      simp only [map_preimage]
       infer_instance
     · obtain ⟨W, g₁, g₂, h₁, h₂⟩ := H₂
       rw [h₂]
-      have : Full.preimage (g₀ ≫ g₂ ≫ F.map g₁) = (Full.preimage (g₀ ≫ g₂)) ≫ g₁ := by
-        apply Faithful.map_injective (F := F)
-        simp
-      rw [this]
-      exact S.downward_closed h₁ _
+      convert S.downward_closed h₁ (F.preimage (g₀ ≫ g₂))
+      exact F.map_injective (by simp)
 
 lemma eq_induced : haveI := F.reflects_preregular
     regularTopology C =
