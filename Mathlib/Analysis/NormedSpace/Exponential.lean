@@ -474,7 +474,7 @@ theorem exp_continuous : Continuous (exp 𝕂 : 𝔸 → 𝔸) := by
 #align exp_continuous NormedSpace.exp_continuous
 
 open Topology in
-lemma _root_.Filter.Tendsto.NormedSpace_exp {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
+lemma _root_.Filter.Tendsto.exp {α : Type*} {l : Filter α} {f : α → 𝔸} {a : 𝔸}
     (hf : Tendsto f l (𝓝 a)) :
     Tendsto (fun x => exp 𝕂 (f x)) l (𝓝 (exp 𝕂 a)) :=
   (exp_continuous.tendsto _).comp hf

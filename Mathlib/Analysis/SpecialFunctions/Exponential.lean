@@ -429,6 +429,6 @@ variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.NormedSpace_exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
     HasProd (exp 𝕂 ∘ f) (exp 𝕂 a) :=
-  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.NormedSpace_exp h
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
 
 end tsum_tprod
