@@ -53,3 +53,13 @@ def recEmptyOption {P : (α : Type u) → [FinEnum α] → Sort v}
     have fssumfe := @FinEnum.sum _ _ fe FinEnum.punit.{u}
     have fsuccfe := FinEnum.ofEquiv _ fssumeq
     exact of_equiv fsucceq <| of_equiv optioeq.symm <| h_option <| @ih _ fe fecardeq
+
+/-- A recursor principle for finite-and-enumerable types, analogous to `Nat.recOn`.
+It effectively says that every `FinEnum` is either `Empty` or `Option α`, up to an `Equiv`.
+In contrast to the `Fintype` case, data can be transported along such an `Equiv`. -/
+def recOnEmptyOption {P : (α : Type u) → [FinEnum α] → Sort v}
+    {α : Type u} (aenum : FinEnum α)
+    (of_equiv : {α β : Type u} → [FinEnum α] → [FinEnum β] → α ≃ β → P α → P β)
+    (h_empty : P PEmpty.{u + 1})
+    (h_option : {α : Type u} → [FinEnum α] → P α → P (Option α)) :
+    P α := @recEmptyOption P of_equiv h_empty h_option α aenum
