@@ -70,9 +70,10 @@ noncomputable def f1 : n → spectrum 𝕜 (toEuclideanLin A) := by
 --Is the linear equivalence an algebra equivalence? That might be a fun thing to have in finite dims.
 
 theorem spec_eq : spectrum 𝕜 (toEuclideanCLM.1 A) = spectrum 𝕜 A := by
-refine AlgEquiv.spectrum_eq (R:= 𝕜) (A := Matrix n n 𝕜) (toEuclideanCLM) (a := A)
---#check toEuclideanCLM A
+simp only [StarAlgEquiv.toRingEquiv_eq_coe]
+refine AlgEquiv.spectrum_eq (↑toEuclideanCLM) A
 sorry
+
  --have F := LinearMap.toContinuousLinearMap (toEuclideanLin A)
 #exit
 
