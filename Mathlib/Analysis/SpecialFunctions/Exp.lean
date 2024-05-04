@@ -136,23 +136,23 @@ variable {α : Type*}
 
 open Real
 
-theorem Filter.Tendsto.exp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
+theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Tendsto f l (𝓝 z)) :
     Tendsto (fun x => exp (f x)) l (𝓝 (exp z)) :=
   (continuous_exp.tendsto _).comp hf
-#align filter.tendsto.exp Filter.Tendsto.exp
+#align filter.tendsto.exp Filter.Tendsto.rexp
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
 nonrec
 theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y => exp (f y)) s x :=
-  h.exp
+  h.rexp
 #align continuous_within_at.exp ContinuousWithinAt.exp
 
 @[fun_prop]
 nonrec
 theorem ContinuousAt.exp (h : ContinuousAt f x) : ContinuousAt (fun y => exp (f y)) x :=
-  h.exp
+  h.rexp
 #align continuous_at.exp ContinuousAt.exp
 
 @[fun_prop]
@@ -445,7 +445,7 @@ end Real
 open Real in
 /-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
 lemma HasSum.rexp {ι} {f : ι → ℝ} {a : ℝ} (h : HasSum f a) : HasProd (rexp ∘ f) (rexp a) :=
-  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Filter.Tendsto.rexp h
 
 namespace Complex
 
