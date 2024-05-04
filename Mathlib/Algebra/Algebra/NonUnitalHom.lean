@@ -545,6 +545,8 @@ variable (R : Type*) {S A B : Type*} [Monoid R] [Monoid S]
     [DistribMulAction S A] [DistribMulAction S B] [DistribMulAction R A] [DistribMulAction R B]
     [IsScalarTower R S A] [IsScalarTower R S B]
 
+/-- If a monoid `R` acts on another monoid `S`, then a non-unital algebra homomorphism
+over `S` can be viewed as a non-unital algebra homomorphism over `R`.  -/
 def restrictScalars (f : A →ₙₐ[S] B) : A →ₙₐ[R] B :=
   { (f : A →ₙ+* B) with
     map_smul' := fun r x ↦ by have := map_smul f (r • 1) x; simpa }
