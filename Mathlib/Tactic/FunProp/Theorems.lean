@@ -33,7 +33,7 @@ is represented by
  -/
 inductive LambdaTheoremArgs
   | id (X : Nat)
-  | const (X y : Nat)
+  | const
   | proj (x Y : Nat)
   | projDep (x Y : Nat)
   | comp (f g : Nat)
@@ -76,16 +76,13 @@ def detectLambdaTheoremArgs (f : Expr) (ctxVars : Array Expr) :
 
   match f with
   | .lam xName xType xBody xBi =>
+    if ¬xBody.hasLooseBVars then
+      return .some .const
     match xBody with
     | .bvar 0 =>
       -- fun x => x
       let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
       return .some (.id argId_X)
-    | .fvar yId =>
-      -- fun x => y
-      let .some argId_X := ctxVars.findIdx? (fun x => x == xType) | return none
-      let .some argId_y := ctxVars.findIdx? (fun x => x == (.fvar yId)) | return none
-      return .some (.const argId_X argId_y)
     | .app (.bvar 0) (.fvar xId) =>
       -- fun f => f x
       let fType := xType
@@ -129,7 +126,7 @@ structure LambdaTheorem where
 /-- -/
 structure LambdaTheorems where
   /-- map: function property name × theorem type → lambda theorem -/
-  theorems : HashMap (Name × LambdaTheoremType) LambdaTheorem := {}
+  theorems : HashMap (Name × LambdaTheoremType) (Array LambdaTheorem) := {}
   deriving Inhabited
 
 
@@ -146,13 +143,15 @@ initialize lambdaTheoremsExt : LambdaTheoremsExt ←
     name := by exact decl_name%
     initial := {}
     addEntry := fun d e =>
-      {d with theorems := d.theorems.insert (e.funPropName, e.thmArgs.type) e}
+      {d with theorems :=
+        let es := d.theorems.findD (e.funPropName, e.thmArgs.type) #[]
+        d.theorems.insert (e.funPropName, e.thmArgs.type) (es.push e)}
   }
 
 /-- -/
-def getLambdaTheorem (funPropName : Name) (type : LambdaTheoremType) :
-    CoreM (Option LambdaTheorem) := do
-  return (lambdaTheoremsExt.getState (← getEnv)).theorems.find? (funPropName,type)
+def getLambdaTheorems (funPropName : Name) (type : LambdaTheoremType) :
+    CoreM (Array LambdaTheorem) := do
+  return (lambdaTheoremsExt.getState (← getEnv)).theorems.findD (funPropName,type) #[]
 
 
 --------------------------------------------------------------------------------

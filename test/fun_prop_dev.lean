@@ -49,6 +49,7 @@ variable [Obj α] [Obj β] [Obj γ] [Obj δ] [∀ x, Obj (E x)]
 
 -- Lin is missing `const` theorem
 @[fun_prop] theorem Lin_id : Lin (fun x : α => x) := silentSorry
+@[fun_prop] theorem Lin_const {β} [Obj β] [Zero β] : Lin (fun x : α => (0 : β)) := silentSorry
 @[fun_prop] theorem Lin_apply (x : α) : Lin (fun f : α → β => f x) := silentSorry
 @[fun_prop] theorem Lin_applyDep (x : α) : Lin (fun f : (x' : α) → E x' => f x) := silentSorry
 @[fun_prop] theorem Lin_comp (f : β → γ) (g : α → β) (hf : Lin f) (hg : Lin g) : Lin (f ∘ g) := silentSorry
@@ -321,6 +322,8 @@ example (x) : Con fun (f : α ->> α) => f (f x) := by fun_prop
 example (x) : Con fun (f : α ->> α) => f (f (f x)) := by fun_prop
 
 
+example [Zero α] : Lin (fun x : α => (0:α) + x + (0 : α) + (0 : α) + x) := by fun_prop
+
 noncomputable
 def foo : α ->> α ->> α := silentSorry
 noncomputable
@@ -358,11 +361,13 @@ theorem iterate_con (n : Nat) (f : α → α) (hf : Con f) : Con (iterate n f) :
 
 
 example : let f := fun x : α => x; Con f := by fun_prop
-
+example : let f := fun x => x + y; ∀ y : α, ∀ z : α, Con fun x => x + f x + z := by fun_prop
+example : ∀ y : α, let f := fun x => x + y; ∀ z : α, Con fun x => x + f x + z := by fun_prop
+-- this is still broken
+-- example : ∀ y : α, ∀ z : α, let f := fun x => x + y; Con fun x => x + f x + z := by fun_prop
 
 example (f g : α → β) (hf : Con f := by fun_prop) (hg : outParam (Con g)) :
   Con (fun x => f x + g x) := by fun_prop
-
 
 opaque foo1 : α → α := id
 opaque foo2 : α → α := id
@@ -383,3 +388,27 @@ def diag (f : α → α → α) (x : α) := f x x
 
 theorem diag_Con (f : α → α → α) (hf : Con (myUncurry f)) : Con (fun x => diag f x) := by
   fun_prop [diag,myUncurry]
+
+
+namespace MultipleLambdaTheorems
+
+opaque A : Prop
+opaque B : Prop
+@[local fun_prop] theorem Con_comp' (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := silentSorry
+@[local fun_prop] theorem Con_comp'' (f : β → γ) (g : α → β) (b : B) : Con (fun x => f (g x)) := silentSorry
+
+example (f : β → γ) (g : α → β) (h : A) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
+example (f : β → γ) (g : α → β) (h : B) : Con (fun x => f (g x)) := by fun_prop (disch:=assumption)
+
+end MultipleLambdaTheorems
+
+
+-- These used to get into infinite loop
+-- todo: how do I turn off warrnings?
+-- #check_failure ((by fun_prop) : ?m)
+-- #check_failure (by exact add_Con' (by fun_prop) : Con (fun x : α => (x + x) + (x + x)))
+
+
+example : Con fun ((x,_,_) : α×α×α) => x := by fun_prop
+example : Con fun ((_,x,_) : α×α×α) => x := by fun_prop
+example : Con fun ((_,_,x) : α×α×α) => x := by fun_prop

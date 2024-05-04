@@ -99,6 +99,7 @@ fun_prop bug: expression {← ppExpr e} matches multiple function properties
 {decls.map (fun d => d.funPropName)}"
 
   let decl := decls[0]!
+  unless decl.funArgId < e.getAppNumArgs do return none
   let f := e.getArg! decl.funArgId
 
   return (decl,f)
