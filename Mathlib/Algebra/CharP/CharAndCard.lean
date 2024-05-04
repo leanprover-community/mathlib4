@@ -5,6 +5,7 @@ Authors: Michael Stoll
 -/
 import Mathlib.Algebra.CharP.Basic
 import Mathlib.GroupTheory.Perm.Cycle.Type
+import Mathlib.RingTheory.Coprime.Lemmas
 
 #align_import algebra.char_p.char_and_card from "leanprover-community/mathlib"@"2fae5fd7f90711febdadf19c44dc60fae8834d1b"
 

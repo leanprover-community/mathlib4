@@ -1647,6 +1647,10 @@ theorem swap_apply_of_ne_of_ne {a b x : α} : x ≠ a → x ≠ b → swap a b x
   simp (config := { contextual := true }) [swap_apply_def]
 #align equiv.swap_apply_of_ne_of_ne Equiv.swap_apply_of_ne_of_ne
 
+theorem eq_or_eq_of_swap_apply_ne_self {a b x : α} (h : swap a b x ≠ x) : x = a ∨ x = b := by
+  contrapose! h
+  exact swap_apply_of_ne_of_ne h.1 h.2
+
 @[simp]
 theorem swap_swap (a b : α) : (swap a b).trans (swap a b) = Equiv.refl _ :=
   ext fun _ => swapCore_swapCore _ _ _
@@ -1988,6 +1992,14 @@ instance [IsRightCancel α₁ f] : IsRightCancel β₁ (e.arrowCongr (e.arrowCon
   ⟨e.surjective.forall₃.2 fun x y z => by simpa using @IsRightCancel.right_cancel _ f _ x y z⟩
 
 end BinaryOp
+
+section ULift
+
+@[simp]
+theorem ulift_symm_down (x : α) : (Equiv.ulift.{u, v}.symm x).down = x :=
+  rfl
+
+end ULift
 
 end Equiv
 

@@ -2136,13 +2136,15 @@ theorem IsBigOWith.right_le_sub_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWit
       · exact le_trans (sub_le_sub_left hx _) (norm_sub_norm_le _ _)
       · exact sub_pos.2 hc
 #align asymptotics.is_O_with.right_le_sub_of_lt_1 Asymptotics.IsBigOWith.right_le_sub_of_lt_one
-@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 
 theorem IsBigOWith.right_le_add_of_lt_one {f₁ f₂ : α → E'} (h : IsBigOWith c l f₁ f₂) (hc : c < 1) :
     IsBigOWith (1 / (1 - c)) l f₂ fun x => f₁ x + f₂ x :=
   (h.neg_right.right_le_sub_of_lt_one hc).neg_right.of_neg_left.congr rfl (fun x ↦ rfl) fun x ↦ by
     rw [neg_sub, sub_neg_eq_add]
 #align asymptotics.is_O_with.right_le_add_of_lt_1 Asymptotics.IsBigOWith.right_le_add_of_lt_one
+
+-- 2024-01-31
+@[deprecated] alias IsBigOWith.right_le_sub_of_lt_1 := IsBigOWith.right_le_sub_of_lt_one
 @[deprecated] alias IsBigOWith.right_le_add_of_lt_1 := IsBigOWith.right_le_add_of_lt_one
 
 theorem IsLittleO.right_isBigO_sub {f₁ f₂ : α → E'} (h : f₁ =o[l] f₂) :

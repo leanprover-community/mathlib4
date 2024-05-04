@@ -58,8 +58,8 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
     intro s hm
     refine' Tendsto.sub _ _ <;>
       refine' NNReal.tendsto_coe.2 <| (ENNReal.tendsto_toNNReal _).comp <| tendsto_measure_iUnion hm
-    exact hμ _
-    exact hν _
+    · exact hμ _
+    · exact hν _
   have d_Inter :
     ∀ s : ℕ → Set α,
       (∀ n, MeasurableSet (s n)) →
@@ -122,9 +122,9 @@ theorem hahn_decomposition [IsFiniteMeasure μ] [IsFiniteMeasure ν] :
             rw [f_succ _ _ hmn, d_split (f m n) (e (n + 1)) (hf _ _) (he₁ _), add_assoc]
           _ = d (e (n + 1) ∪ f m n) + d (f m (n + 1)) := by
             rw [d_split (e (n + 1) ∪ f m n) (e (n + 1)), union_diff_left, union_inter_cancel_left]
-            abel
-            exact (he₁ _).union (hf _ _)
-            exact he₁ _
+            · abel
+            · exact (he₁ _).union (hf _ _)
+            · exact he₁ _
           _ ≤ γ + d (f m (n + 1)) := add_le_add_right (d_le_γ _ <| (he₁ _).union (hf _ _)) _
 
       exact (add_le_add_iff_left γ).1 this
