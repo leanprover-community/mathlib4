@@ -454,7 +454,8 @@ theorem unique_single_eq_iff [Unique α] {b' : M} : single a b = single a' b' �
 #align finsupp.unique_single_eq_iff Finsupp.unique_single_eq_iff
 
 lemma apply_single [AddCommMonoid N] [AddCommMonoid P]
-    (e : N →+ P) (a : α) (n : N) (b : α) :
+    {F : Type*} [FunLike F N P] [AddMonoidHomClass F N P] (e : F)
+    (a : α) (n : N) (b : α) :
     e ((single a n) b) = single a (e n) b := by
   classical
   simp only [single_apply]

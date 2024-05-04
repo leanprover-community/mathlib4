@@ -215,11 +215,6 @@ def mapRange.addMonoidHom (f : M →+ N) : (α →₀ M) →+ α →₀ N
   map_add' a b := by dsimp only; exact mapRange_add f.map_add _ _; -- Porting note: `dsimp` needed
 #align finsupp.map_range.add_monoid_hom Finsupp.mapRange.addMonoidHom
 
-lemma mapRange.addMonoidHom_apply_single
-    [AddCommMonoid N] [AddCommMonoid P] (e : N →+ P) (a : α) (n : N) :
-    mapRange.addMonoidHom e (single a n) = single a (e n) := by
-    simp only [addMonoidHom_apply, mapRange_single]
-
 @[simp]
 theorem mapRange.addMonoidHom_id :
     mapRange.addMonoidHom (AddMonoidHom.id M) = AddMonoidHom.id (α →₀ M) :=
