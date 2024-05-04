@@ -32,37 +32,6 @@ variable {α : Type u}
 
 namespace RegularExpression
 
-/-- A recursor for regular expressions, since the code generator doesn't want to implement it for
-us. -/
-def rec' {α : Type u} {motive : RegularExpression α → Type _}
-    (zero : motive zero)
-    (epsilon : motive epsilon)
-    (char : (a : α) → motive (char a))
-    (plus : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (plus a a_1))
-    (comp : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (comp a a_1))
-    (star : (a : RegularExpression α) → motive a → motive (star a)) :
-    (t : RegularExpression α) → motive t
-  | .zero => zero
-  | .epsilon => epsilon
-  | .char a => char a
-  | .plus l r =>
-      plus l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
-  | .comp l r =>
-      comp l r (rec' zero epsilon char plus comp star l) (rec' zero epsilon char plus comp star r)
-  | .star r => star r (rec' zero epsilon char plus comp star r)
-
-/-- A recursor for regular expressions with the expression as the first argument, since the code
-generator doesn't want to implement it for us. -/
-def recOn' {α : Type u} {motive : RegularExpression α → Type _}
-    (t : RegularExpression α)
-    (zero : motive zero)
-    (epsilon : motive epsilon)
-    (char : (a : α) → motive (char a))
-    (plus : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (plus a a_1))
-    (comp : (a a_1 : RegularExpression α) → motive a → motive a_1 → motive (comp a a_1))
-    (star : (a : RegularExpression α) → motive a → motive (star a)) :
-    motive t := rec' zero epsilon char plus comp star t
-
 /-- The state space of the resulting NFA depends on the regular expression's structure. -/
 def State : RegularExpression α → Type _
   | zero => Unit
