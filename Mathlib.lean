@@ -1136,7 +1136,6 @@ import Mathlib.CategoryTheory.Abelian.Ext
 import Mathlib.CategoryTheory.Abelian.FunctorCategory
 import Mathlib.CategoryTheory.Abelian.Generator
 import Mathlib.CategoryTheory.Abelian.Homology
-import Mathlib.CategoryTheory.Abelian.Horseshoe
 import Mathlib.CategoryTheory.Abelian.Images
 import Mathlib.CategoryTheory.Abelian.Injective
 import Mathlib.CategoryTheory.Abelian.InjectiveResolution
