@@ -204,25 +204,32 @@ theorem measureDense_of_generateFrom_setAglebra_of_finite [IsFiniteMeasure μ] (
 family of sets with finite measure spanning `X` (thus the measure is `σ`-finite), then this algebra
 of sets is measure-dense. -/
 theorem measureDense_of_generateFrom_setAglebra_of_sigmaFinite (h𝒜 : IsSetAlgebra 𝒜)
-    (S : ℕ → Set X) (monoS : Monotone S) (mS : ∀ n, MeasurableSet (S n))
-    (hμS : ∀ n, μ (S n) ≠ ∞) (hUS : ⋃ n, S n = univ) (h : ∀ n, S n ∈ 𝒜)
-    (hgen : m = MeasurableSpace.generateFrom 𝒜) : MeasureDense μ 𝒜 where
-  measurable := fun s hs ↦ hgen ▸ measurableSet_generateFrom hs
+    (S : μ.FiniteSpanningSetsIn 𝒜) (hgen : m = MeasurableSpace.generateFrom 𝒜) :
+    MeasureDense μ 𝒜 where
+  measurable s hs := hgen ▸ measurableSet_generateFrom hs
   approx := by
-    -- We use the fact that we already know this is true for finite measures. As `⋃ n, S n = X`,
-    -- we have that `μ ((S n) ∩ s) ⟶ μ s`.
+    -- We use partial unions of (Sₙ) to get a monotone family spanning `X`.
+    let T := Accumulate S.set
+    have T_mem : ∀ n, T n ∈ 𝒜 := fun n ↦ by
+      simpa using h𝒜.biUnion_mem {k | k ≤ n}.toFinset (fun k _ ↦ S.set_mem k)
+    have T_finite : ∀ n, μ (T n) < ∞ := fun n ↦ by
+      simpa using measure_biUnion_lt_top {k | k ≤ n}.toFinset.finite_toSet
+        (fun k _ ↦ ne_of_lt (S.finite k))
+    have T_spanning : ⋃ n, T n = univ := S.spanning ▸ iUnion_accumulate
+    -- We use the fact that we already know this is true for finite measures. As `⋃ n, T n = X`,
+    -- we have that `μ ((T n) ∩ s) ⟶ μ s`.
     intro s ms hμs ε ε_pos
-    have mono : Monotone (fun n ↦ (S n) ∩ s) :=
-      fun n k hnk ↦ inter_subset_inter_left _ (monoS hnk)
+    have mono : Monotone (fun n ↦ (T n) ∩ s) := fun m n hmn ↦ inter_subset_inter_left s
+        (biUnion_subset_biUnion_left fun k hkm ↦ Nat.le_trans hkm hmn)
     have := tendsto_measure_iUnion (μ := μ) mono
     rw [← tendsto_toReal_iff] at this
     · -- We can therefore choose `N` such that `μ s - μ ((S N) ∩ s) < ε/2`.
       rcases Metric.tendsto_atTop.1 this (ε / 2) (by linarith [ε_pos]) with ⟨N, hN⟩
-      have : Fact (μ (S N) < ∞) := Fact.mk <| (hμS N).lt_top
+      have : Fact (μ (T N) < ∞) := Fact.mk <| T_finite N
       -- Then we can apply the previous result to the measure `μ ((S N) ∩ •)`.
       -- There exists `t ∈ 𝒜` such that `μ ((S N) ∩ (s ∆ t)) < ε/2`.
       rcases (measureDense_of_generateFrom_setAglebra_of_finite
-        (μ := μ.restrict (S N)) h𝒜 hgen).approx s ms
+        (μ := μ.restrict (T N)) h𝒜 hgen).approx s ms
         (ne_of_lt (lt_of_le_of_lt (μ.restrict_apply_le _ s) hμs.lt_top))
         (ε / 2) (by linarith [ε_pos])
         with ⟨t, t_mem, ht⟩
@@ -230,10 +237,10 @@ theorem measureDense_of_generateFrom_setAglebra_of_sigmaFinite (h𝒜 : IsSetAlg
       -- `μ (s ∆ (t ∩ S N))`
       --   `≤ μ (s ∆ (s ∩ S N)) + μ ((s ∩ S N) ∆ (t ∩ S N))`
       --   `= μ s - μ (s ∩ S N) + μ (s ∆ t) ∩ S N) < ε`.
-      refine ⟨t ∩ S N, h𝒜.inter_mem t_mem (h N), ?_⟩
+      refine ⟨t ∩ T N, h𝒜.inter_mem t_mem (T_mem N), ?_⟩
       calc
-        μ (s ∆ (t ∩ S N))
-          ≤ μ (s \ (s ∩ S N)) + μ ((s ∆ t) ∩ S N) := by
+        μ (s ∆ (t ∩ T N))
+          ≤ μ (s \ (s ∩ T N)) + μ ((s ∆ t) ∩ T N) := by
               rw [← symmDiff_of_le (inter_subset_left ..), symmDiff_comm _ s,
                 inter_symmDiff_distrib_right]
               exact measure_symmDiff_le _ _ _
@@ -241,15 +248,15 @@ theorem measureDense_of_generateFrom_setAglebra_of_sigmaFinite (h𝒜 : IsSetAlg
               apply ENNReal.add_lt_add
               · rw [measure_diff
                     (inter_subset_left ..)
-                    (ms.inter (mS N))
+                    (ms.inter (hgen ▸ measurableSet_generateFrom (T_mem N)))
                     (ne_top_of_le_ne_top hμs (measure_mono (inter_subset_left ..))),
                   lt_ofReal_iff_toReal_lt (sub_ne_top hμs),
                   toReal_sub_of_le (measure_mono (inter_subset_left ..)) hμs]
                 apply lt_of_le_of_lt (sub_le_dist ..)
                 nth_rw 1 [← univ_inter s]
-                rw [inter_comm s, dist_comm, ← hUS, iUnion_inter]
+                rw [inter_comm s, dist_comm, ← T_spanning, iUnion_inter _ T]
                 apply hN N (le_refl _)
-              · rwa [← μ.restrict_apply' (mS N)]
+              · rwa [← μ.restrict_apply' (hgen ▸ measurableSet_generateFrom (T_mem N))]
         _ = ENNReal.ofReal ε := by
               rw [← ofReal_add (by linarith [ε_pos]) (by linarith [ε_pos]), add_halves]
     · exact fun n ↦ ne_top_of_le_ne_top hμs (measure_mono (inter_subset_right ..))
@@ -281,15 +288,18 @@ instance instSeparableMeasureSapaceCountablyGeneratedSigmaFinite [CountablyGener
   exists_countable_measureDense := by
     have h := countable_countableGeneratingSet (α := X)
     have hgen := generateFrom_countableGeneratingSet (α := X)
-    let 𝒜 := (countableGeneratingSet X) ∪ {spanningSets μ n | n : ℕ}
+    let 𝒜 := (countableGeneratingSet X) ∪ {μ.toFiniteSpanningSetsIn.set n | n : ℕ}
     have count_𝒜 : 𝒜.Countable :=
-      countable_union.2 ⟨h, countable_iff_exists_subset_range.2 ⟨spanningSets μ, fun _ hx ↦ hx⟩⟩
+      countable_union.2 ⟨h, countable_iff_exists_subset_range.2
+        ⟨μ.toFiniteSpanningSetsIn.set, fun _ hx ↦ hx⟩⟩
     refine ⟨generateSetAlgebra 𝒜, countable_generateSetAlgebra count_𝒜,
       measureDense_of_generateFrom_setAglebra_of_sigmaFinite isSetAlgebra_generateSetAlgebra
-      (spanningSets μ) (monotone_spanningSets μ) (measurable_spanningSets μ)
-      (fun n ↦ ne_of_lt <| measure_spanningSets_lt_top μ n)
-      (iUnion_spanningSets μ)
-      (fun n ↦ self_subset_generateSetAlgebra <| Or.inr ⟨n, rfl⟩)
+      {
+        set := μ.toFiniteSpanningSetsIn.set
+        set_mem := fun n ↦ self_subset_generateSetAlgebra (𝒜 := 𝒜) <| Or.inr ⟨n, rfl⟩
+        finite := μ.toFiniteSpanningSetsIn.finite
+        spanning := μ.toFiniteSpanningSetsIn.spanning
+      }
       (le_antisymm ?_ (generateFrom_le (fun s hs ↦ ?_)))⟩
     · rw [← hgen]
       exact generateFrom_mono <| le_trans self_subset_generateSetAlgebra <|
@@ -298,7 +308,7 @@ instance instSeparableMeasureSapaceCountablyGeneratedSigmaFinite [CountablyGener
       | @base t t_mem =>
         rcases t_mem with t_mem | ⟨n, rfl⟩
         · exact hgen ▸ measurableSet_generateFrom t_mem
-        · exact measurable_spanningSets μ n
+        · exact μ.toFiniteSpanningSetsIn.set_mem n
       | empty => exact MeasurableSet.empty
       | @compl t _ t_mem => exact MeasurableSet.compl t_mem
       | @union t u _ _ t_mem u_mem => exact MeasurableSet.union t_mem u_mem
