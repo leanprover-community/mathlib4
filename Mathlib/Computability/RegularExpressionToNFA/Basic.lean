@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Russell Emerine, Tom Kranz
 -/
 import Mathlib.Computability.RegularExpressionToNFA.Defs
-import Mathlib.Data.List.Indexes
 
 #align_import computability.regular_expression_to_NFA.basic
 
@@ -81,8 +80,8 @@ lemma plus_toNFA_correct (r₁ r₂ : RegularExpression α)
       rcases hx with ⟨q, accept, eval⟩
       first | exists Sum.inl q | exists Sum.inr q
       refine' ⟨accept, _⟩; clear accept
-      induction x using List.list_reverse_induction generalizing q
-      case base => exact eval
+      induction x using List.reverseRecOn generalizing q
+      · exact eval
       rename_i as a ih
       rw [List.foldl_append, List.foldl_cons, List.foldl_nil, NFA.mem_stepSet] at *
       rcases eval with ⟨p, mem, step⟩
@@ -92,8 +91,8 @@ lemma plus_toNFA_correct (r₁ r₂ : RegularExpression α)
     · simp only [plus_def, matches'_add, hr₁, hr₂]
       first | left; exists q | right; exists q
       refine' ⟨accept, _⟩; clear accept
-      induction x using List.list_reverse_induction generalizing q
-      case base => exact eval
+      induction x using List.reverseRecOn generalizing q
+      · exact eval
       rename_i as a ih
       unfold NFA.eval NFA.evalFrom at *
       rw [List.foldl_append, List.foldl_cons, List.foldl_nil, NFA.mem_stepSet] at *
@@ -102,8 +101,8 @@ lemma plus_toNFA_correct (r₁ r₂ : RegularExpression α)
 
 lemma comp_toNFA_eval₁ {r₁ r₂ : RegularExpression α} {x : List α} (q : r₁.State) :
     q ∈ r₁.toNFA.eval x ↔ Sum.inl q ∈ (r₁.comp r₂).toNFA.eval x := by
-  induction x using List.list_reverse_induction generalizing q
-  case base => exact ⟨id, id⟩
+  induction x using List.reverseRecOn generalizing q
+  · exact ⟨id, id⟩
   rename_i as a ih
   constructor <;> simp only [NFA.eval_append_singleton, NFA.mem_stepSet] <;> rintro ⟨p, eval, step⟩
   · rw [ih p] at eval
@@ -116,9 +115,8 @@ lemma comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q :
     (accepts : r₁.toNFA.accepts x) :
     q ∈ r₂.toNFA.eval y →
     Sum.inr q ∈ (r₁.comp r₂).toNFA.evalFrom ((r₁.comp r₂).toNFA.eval x) y := by
-  induction y using List.list_reverse_induction generalizing q
-  case base =>
-    intro h
+  induction y using List.reverseRecOn generalizing q
+  · intro h
     rcases accepts with ⟨p, accept, eval⟩
     rw [comp_toNFA_eval₁ p] at eval
     rcases x.eq_nil_or_concat with eq | ⟨as, a, eq⟩ <;> subst eq
@@ -130,7 +128,7 @@ lemma comp_toNFA_eval₂ {r₁ r₂ : RegularExpression α} {x y : List α} (q :
     cases r
     case inl => exact ⟨h, p, accept, step⟩
     case inr => cases step
-  case ind bs b ih =>
+  · rename_i bs b ih
     simp only [NFA.eval_append_singleton, NFA.evalFrom_append_singleton, NFA.mem_stepSet]
     rintro ⟨p, mem, step⟩
     exact ⟨Sum.inr p, ih p mem, step⟩
@@ -164,8 +162,8 @@ lemma comp_toNFA_correct (r₁ r₂ : RegularExpression α)
       refine' ⟨x, _, [], _, by simp⟩
       · rw [hr₁]
         refine' ⟨q, accept, _⟩; clear accept
-        induction x using List.list_reverse_induction generalizing q
-        case base => exact eval
+        induction x using List.reverseRecOn generalizing q
+        · exact eval
         rename_i as a ih
         unfold NFA.eval NFA.evalFrom at *
         rw [List.foldl_append, List.foldl_cons, List.foldl_nil, NFA.mem_stepSet] at *
@@ -179,8 +177,8 @@ lemma comp_toNFA_correct (r₁ r₂ : RegularExpression α)
         rcases this with ⟨y, z, y_accepts, z_eval, append⟩
         refine' ⟨y, hr₁ ▸ y_accepts, z, hr₂ ▸ ⟨q, accept, z_eval⟩, append⟩
       clear accept
-      induction x using List.list_reverse_induction generalizing q
-      case base => rcases eval with ⟨start, _⟩; exact ⟨[], [], by simpa, start, rfl⟩
+      induction x using List.reverseRecOn generalizing q
+      · rcases eval with ⟨start, _⟩; exact ⟨[], [], by simpa, start, rfl⟩
       rename_i as a ih
       unfold NFA.eval NFA.evalFrom
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
@@ -208,7 +206,7 @@ lemma star_eval_aux {r : RegularExpression α} {y} (h : y ∈ r.toNFA.accepts) :
   simp only [NFA.eval_append_singleton, NFA.mem_stepSet]
   refine ⟨some p, ?_, Or.inr ⟨q, accept, step, selem⟩⟩
   clear step
-  induction as using List.list_reverse_induction generalizing p
+  induction as using List.reverseRecOn generalizing p
   · exact eval
   rename_i bs b ih
   simp only [NFA.evalFrom_append_singleton, NFA.mem_stepSet] at eval
@@ -223,7 +221,7 @@ lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
     ∃ (ys : List (List α)) (z : List α),
     x = ys.join ++ z ∧ q ∈ r.toNFA.eval z ∧ ∀ y ∈ ys, y ∈ r.toNFA.accepts := by
   constructor
-  · induction x using List.list_reverse_induction generalizing q
+  · induction x using List.reverseRecOn generalizing q
     · rintro h; exact ⟨[], [], rfl, h, List.forall_mem_nil _⟩
     rename_i as a ih
     rw [NFA.eval_append_singleton,NFA.mem_stepSet]
@@ -242,9 +240,9 @@ lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
   · rintro ⟨ys, z, rfl, eval, allys⟩
     unfold NFA.eval
     induction ys generalizing q
-    · induction z using List.list_reverse_induction generalizing q <;> simp only [toNFA]
+    · induction z using List.reverseRecOn generalizing q <;> simp only [toNFA]
       · exact eval
-      case ind as a ih =>
+      rename_i as a ih
       rw [NFA.eval_append_singleton, NFA.mem_stepSet] at eval
       rcases eval with ⟨t, eval, step⟩
       simp [NFA.mem_stepSet]
@@ -258,7 +256,7 @@ lemma star_eval {r : RegularExpression α} {x : List α} {q : r.State} :
       rw [NFA.evalFrom_append]
       refine (r.star.toNFA).evalFrom_subset _ (star_eval_aux accepty) ?_
       clear eval
-      induction ysj using List.list_reverse_induction generalizing q
+      induction ysj using List.reverseRecOn generalizing q
       · simp; exact ih
       rename_i as a iih
       simp only [NFA.evalFrom_append_singleton,NFA.mem_stepSet] at *
