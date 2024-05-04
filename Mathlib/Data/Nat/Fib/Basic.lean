@@ -115,7 +115,7 @@ theorem fib_add_two_sub_fib_add_one {n : ℕ} : fib (n + 2) - fib (n + 1) = fib 
 
 theorem fib_lt_fib_succ {n : ℕ} (hn : 2 ≤ n) : fib n < fib (n + 1) := by
   rcases exists_add_of_le hn with ⟨n, rfl⟩
-  rw [← tsub_pos_iff_lt, add_comm 2, fib_add_two_sub_fib_add_one, fib_pos]
+  rw [← tsub_pos_iff_lt, add_comm 2, add_right_comm, fib_add_two, add_tsub_cancel_right, fib_pos]
   exact succ_pos n
 #align nat.fib_lt_fib_succ Nat.fib_lt_fib_succ
 
@@ -169,14 +169,14 @@ theorem fib_add (m n : ℕ) : fib (m + n + 1) = fib m * fib n + fib (m + 1) * fi
   · simp
   · specialize ih (m + 1)
     rw [add_assoc m 1 n, add_comm 1 n] at ih
-    simp only [fib_add_two, ih]
+    simp only [fib_add_two, succ_eq_add_one, ih]
     ring
 #align nat.fib_add Nat.fib_add
 
 theorem fib_two_mul (n : ℕ) : fib (2 * n) = fib n * (2 * fib (n + 1) - fib n) := by
   cases n
   · simp
-  · rw [Nat.succ_eq_add_one, two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
+  · rw [two_mul, ← add_assoc, fib_add, fib_add_two, two_mul]
     simp only [← add_assoc, add_tsub_cancel_right]
     ring
 #align nat.fib_two_mul Nat.fib_two_mul
@@ -191,7 +191,7 @@ theorem fib_two_mul_add_two (n : ℕ) :
   rw [fib_add_two, fib_two_mul, fib_two_mul_add_one]
   -- Porting note: A bunch of issues similar to [this zulip thread](https://github.com/leanprover-community/mathlib4/pull/1576) with `zify`
   have : fib n ≤ 2 * fib (n + 1) :=
-    le_trans (fib_le_fib_succ) (mul_comm 2 _ ▸ Nat.le_mul_of_pos_right _ two_pos)
+    le_trans fib_le_fib_succ (mul_comm 2 _ ▸ Nat.le_mul_of_pos_right _ two_pos)
   zify [this]
   ring
 

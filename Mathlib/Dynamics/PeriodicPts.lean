@@ -505,7 +505,7 @@ theorem periodicOrbit_length : (periodicOrbit f x).length = minimalPeriod f x :=
 @[simp]
 theorem periodicOrbit_eq_nil_iff_not_periodic_pt :
     periodicOrbit f x = Cycle.nil ↔ x ∉ periodicPts f := by
-  simp only [periodicOrbit._eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
+  simp only [periodicOrbit.eq_1, Cycle.coe_eq_nil, List.map_eq_nil, List.range_eq_nil]
   exact minimalPeriod_eq_zero_iff_nmem_periodicPts
 #align function.periodic_orbit_eq_nil_iff_not_periodic_pt Function.periodicOrbit_eq_nil_iff_not_periodic_pt
 
@@ -542,15 +542,11 @@ theorem nodup_periodicOrbit : (periodicOrbit f x).Nodup := by
   rwa [iterate_eq_iterate_iff_of_lt_minimalPeriod hm hn] at hmn
 #align function.nodup_periodic_orbit Function.nodup_periodicOrbit
 
-set_option linter.deprecated false in
 theorem periodicOrbit_apply_iterate_eq (hx : x ∈ periodicPts f) (n : ℕ) :
     periodicOrbit f (f^[n] x) = periodicOrbit f x :=
-  Eq.symm <|
-    Cycle.coe_eq_coe.2 <|
-      ⟨n, by
-        apply List.ext_nthLe _ fun m _ _ => _
-        · simp [minimalPeriod_apply_iterate hx]
-        · simp [List.nthLe_rotate, iterate_add_apply]⟩
+  Eq.symm <| Cycle.coe_eq_coe.2 <| .intro n <|
+    List.ext_get (by simp [minimalPeriod_apply_iterate hx]) fun m _ _ ↦ by
+      simp [List.get_rotate, iterate_add_apply]
 #align function.periodic_orbit_apply_iterate_eq Function.periodicOrbit_apply_iterate_eq
 
 theorem periodicOrbit_apply_eq (hx : x ∈ periodicPts f) :

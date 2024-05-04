@@ -5,7 +5,7 @@ Authors: Yaël Dillies
 -/
 import Mathlib.Data.Finset.Sum
 import Mathlib.Data.Sum.Order
-import Mathlib.Order.LocallyFinite
+import Mathlib.Order.Interval.Finset.Defs
 
 #align_import data.sum.interval from "leanprover-community/mathlib"@"48a058d7e39a80ed56858505719a0b2197900999"
 
@@ -60,7 +60,7 @@ theorem mem_sumLift₂ :
 theorem inl_mem_sumLift₂ {c₁ : γ₁} :
     inl c₁ ∈ sumLift₂ f g a b ↔ ∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ c₁ ∈ f a₁ b₁ := by
   rw [mem_sumLift₂, or_iff_left]
-  simp only [inl.injEq, exists_and_left, exists_eq_left']
+  · simp only [inl.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inl_ne_inr h
 #align finset.inl_mem_sum_lift₂ Finset.inl_mem_sumLift₂
@@ -68,7 +68,7 @@ theorem inl_mem_sumLift₂ {c₁ : γ₁} :
 theorem inr_mem_sumLift₂ {c₂ : γ₂} :
     inr c₂ ∈ sumLift₂ f g a b ↔ ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ c₂ ∈ g a₂ b₂ := by
   rw [mem_sumLift₂, or_iff_right]
-  simp only [inr.injEq, exists_and_left, exists_eq_left']
+  · simp only [inr.injEq, exists_and_left, exists_eq_left']
   rintro ⟨_, _, c₂, _, _, h, _⟩
   exact inr_ne_inl h
 #align finset.inr_mem_sum_lift₂ Finset.inr_mem_sumLift₂
@@ -92,7 +92,7 @@ theorem sumLift₂_nonempty :
     (sumLift₂ f g a b).Nonempty ↔
       (∃ a₁ b₁, a = inl a₁ ∧ b = inl b₁ ∧ (f a₁ b₁).Nonempty) ∨
         ∃ a₂ b₂, a = inr a₂ ∧ b = inr b₂ ∧ (g a₂ b₂).Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, not_imp]
+  simp only [nonempty_iff_ne_empty, Ne, sumLift₂_eq_empty, not_and_or, not_forall, exists_prop]
 #align finset.sum_lift₂_nonempty Finset.sumLift₂_nonempty
 
 theorem sumLift₂_mono (h₁ : ∀ a b, f₁ a b ⊆ g₁ a b) (h₂ : ∀ a b, f₂ a b ⊆ g₂ a b) :
