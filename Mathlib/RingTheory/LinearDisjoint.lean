@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jz Pan
 -/
 import Mathlib.LinearAlgebra.LinearDisjoint
+import Mathlib.LinearAlgebra.TensorProduct.Subalgebra
 import Mathlib.LinearAlgebra.FiniteDimensional
 import Mathlib.LinearAlgebra.FreeModule.StrongRankCondition
 
@@ -87,16 +88,7 @@ section CommSemiring
 
 variable [CommSemiring R] [CommSemiring S] [Algebra R S]
 
-variable (A B : Subalgebra R S)
-
-/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, there is the natural map
-`A ⊗[R] B →ₐ[R] S` induced by multiplication in `S`. -/
-def mulMap := Algebra.TensorProduct.productMap A.val B.val
-
-@[simp]
-theorem mulMap_tmul (a : A) (b : B) : mulMap A B (a ⊗ₜ[R] b) = a.1 * b.1 := rfl
-
-variable {A B}
+variable {A B : Subalgebra R S}
 
 /-- Linearly disjoint is symmetric in a commutative ring. -/
 theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
@@ -106,32 +98,7 @@ theorem LinearDisjoint.symm (H : A.LinearDisjoint B) : B.LinearDisjoint A :=
 theorem linearDisjoint_symm : A.LinearDisjoint B ↔ B.LinearDisjoint A :=
   ⟨LinearDisjoint.symm, LinearDisjoint.symm⟩
 
-variable (A B)
-
-theorem mulMap_toLinearMap : (A.mulMap B).toLinearMap = (toSubmodule A).mulMap (toSubmodule B) :=
-  rfl
-
-theorem mulMap_comm : mulMap B A = (mulMap A B).comp (Algebra.TensorProduct.comm R B A) := by
-  ext <;> simp
-
-theorem mulMap_range : (A.mulMap B).range = A ⊔ B := by
-  simp_rw [mulMap, Algebra.TensorProduct.productMap_range, Subalgebra.range_val]
-
-/-- If `A` and `B` are subalgebras in a commutative algebra `S` over `R`, there is the natural map
-`A ⊗[R] B →ₐ[R] A ⊔ B` induced by multiplication in `S`,
-which is surjective (`Subalgebra.mulMap'_surjective`). -/
-def mulMap' := (equivOfEq _ _ (mulMap_range A B)).toAlgHom.comp (mulMap A B).rangeRestrict
-
-@[simp]
-theorem coe_mulMap'_tmul (a : A) (b : B) : (mulMap A B (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
-
-theorem mulMap'_surjective : Function.Surjective (mulMap' A B) := by
-  simp_rw [mulMap', AlgEquiv.toAlgHom_eq_coe, AlgHom.coe_comp, AlgHom.coe_coe,
-    EquivLike.comp_surjective, AlgHom.rangeRestrict_surjective]
-
 namespace LinearDisjoint
-
-variable {A B}
 
 variable (H : A.LinearDisjoint B)
 
@@ -142,7 +109,7 @@ protected def mulMap :=
   (AlgEquiv.ofInjective (A.mulMap B) H.1.1).trans (equivOfEq _ _ (mulMap_range A B))
 
 @[simp]
-theorem coe_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
+theorem val_mulMap_tmul (a : A) (b : B) : (H.mulMap (a ⊗ₜ[R] b) : S) = a.1 * b.1 := rfl
 
 theorem sup_free_of_free [Module.Free R A] [Module.Free R B] : Module.Free R ↥(A ⊔ B) :=
   Module.Free.of_equiv H.mulMap.toLinearEquiv
