@@ -118,7 +118,7 @@ variable [CommMonoid α] [CommMonoid β] {s : Set α} {t : Set β} {f : α → �
 
 /-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. --/
 @[to_additive]
-lemma IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom s t 2 f) (hf' : s.InjOn f)
+lemma IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f)
     (ht : MulSalemSpencer t) : MulSalemSpencer s :=
   fun _ _ _ ha hb hc habc ↦ hf' ha hb <| ht (hf.mapsTo ha) (hf.mapsTo hb) (hf.mapsTo hc) <|
     hf.mul_eq_mul ha hb hc hc habc
@@ -127,7 +127,7 @@ lemma IsMulFreimanHom.mulSalemSpencer (hf : IsMulFreimanHom s t 2 f) (hf' : s.In
 
 /-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. --/
 @[to_additive]
-lemma IsMulFreimanIso.mulSalemSpencer (hf : IsMulFreimanIso s t 2 f) :
+lemma IsMulFreimanIso.mulSalemSpencer (hf : IsMulFreimanIso 2 s t f) :
     MulSalemSpencer s ↔ MulSalemSpencer t where
   mpr := hf.isMulFreimanHom.mulSalemSpencer hf.bijOn.injOn
   mp hs a b c hfa hfb hfc habc := by
