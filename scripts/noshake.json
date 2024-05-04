@@ -338,9 +338,9 @@
   "Mathlib.Control.Traversable.Instances": ["Mathlib.Control.Applicative"],
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
-  "Mathlib.Combinatorics.SimpleGraph.Subgraph": ["Mathlib.Init.Core"],
   "Mathlib.Combinatorics.SimpleGraph.Triangle.Basic":
   ["Mathlib.Tactic.Positivity.Finset"],
+  "Mathlib.Combinatorics.SimpleGraph.Subgraph": ["Mathlib.Init.Core"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":
@@ -349,6 +349,7 @@
   "Mathlib.AlgebraicTopology.DoldKan.Notations":
   ["Mathlib.AlgebraicTopology.AlternatingFaceMapComplex"],
   "Mathlib.Algebra.Ring.CentroidHom": ["Mathlib.Algebra.Algebra.Defs"],
+  "Mathlib.Algebra.MonoidAlgebra.Basic": ["Mathlib.Tactic.MinMaxTwo"],
   "Mathlib.Algebra.Module.Submodule.Order":
   ["Mathlib.GroupTheory.Subgroup.Order", "Mathlib.GroupTheory.Submonoid.Order"],
   "Mathlib.Algebra.Module.LinearMap.Basic": ["Mathlib.Algebra.Star.Basic"],

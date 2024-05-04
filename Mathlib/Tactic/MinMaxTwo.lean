@@ -5,7 +5,6 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Mathlib.Order.Notation
 /-!
 #  `to_ama` a command to convert from `MonoidAlgebra` to `AddMonoidAlgebra`
 
