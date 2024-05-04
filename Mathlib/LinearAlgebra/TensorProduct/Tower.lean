@@ -290,6 +290,23 @@ theorem congr_mul (f₁ f₂ : M ≃ₗ[A] M) (g₁ g₂ : N ≃ₗ[R] N) :
     (congr f g).symm (p ⊗ₜ q) = f.symm p ⊗ₜ g.symm q :=
   rfl
 
+variable (N) in
+/-- Tensor a linear equivalence to the right or to the left gives a linear equivalence-/
+noncomputable def rTensor (f : M ≃ₗ[A] P) :
+    M ⊗[R] N ≃ₗ[A] P ⊗[R] N :=
+  congr f (LinearEquiv.refl R N)
+
+lemma rTensor_apply {f : M ≃ₗ[A] P} (mn : M ⊗[R] N) :
+    rTensor N f mn = LinearEquiv.rTensor N (f.restrictScalars R) mn :=
+  rfl
+
+lemma rTensor_restrictScalars {f : M ≃ₗ[A] P} :
+    (rTensor N f).restrictScalars R = LinearEquiv.rTensor N (f.restrictScalars R) :=
+  rfl
+
+lemma rTensor_coe {f : M ≃ₗ[A] P} :
+    ⇑(rTensor N f) = LinearEquiv.rTensor N (f.restrictScalars R) := rfl
+
 variable (R A M)
 
 /-- Heterobasic version of `TensorProduct.rid`. -/
