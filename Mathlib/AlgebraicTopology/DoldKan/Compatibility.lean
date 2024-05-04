@@ -246,7 +246,7 @@ unit isomorphism of `e'` and the isomorphism `hF : eA.functor ⋙ e'.functor ≅
 def υ : eA.functor ≅ F ⋙ e'.inverse :=
   calc
     eA.functor ≅ eA.functor ⋙ 𝟭 A' := (Functor.leftUnitor _).symm
-    _ ≅ eA.functor ⋙ e'.functor ⋙ e'.inverse := (isoWhiskerLeft _ e'.unitIso)
+    _ ≅ eA.functor ⋙ e'.functor ⋙ e'.inverse := isoWhiskerLeft _ e'.unitIso
     _ ≅ (eA.functor ⋙ e'.functor) ⋙ e'.inverse := Iso.refl _
     _ ≅ F ⋙ e'.inverse := isoWhiskerRight hF _
 #align algebraic_topology.dold_kan.compatibility.υ AlgebraicTopology.DoldKan.Compatibility.υ

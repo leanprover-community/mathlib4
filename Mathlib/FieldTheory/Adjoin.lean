@@ -3,6 +3,7 @@ Copyright (c) 2020 Thomas Browning, Patrick Lutz. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Thomas Browning, Patrick Lutz
 -/
+import Mathlib.Algebra.Algebra.Subalgebra.Directed
 import Mathlib.FieldTheory.IntermediateField
 import Mathlib.FieldTheory.Separable
 import Mathlib.FieldTheory.SplittingField.IsSplittingField
@@ -1092,7 +1093,7 @@ noncomputable def adjoinRootEquivAdjoin (h : IsIntegral F α) :
       · exact RingHom.injective f
       · suffices F⟮α⟯.toSubfield ≤ RingHom.fieldRange (F⟮α⟯.toSubfield.subtype.comp f) by
           intro x
-          obtain ⟨y, hy⟩ := (this (Subtype.mem x))
+          obtain ⟨y, hy⟩ := this (Subtype.mem x)
           exact ⟨y, Subtype.ext hy⟩
         refine' Subfield.closure_le.mpr (Set.union_subset (fun x hx => _) _)
         · obtain ⟨y, hy⟩ := hx
@@ -1218,6 +1219,7 @@ theorem _root_.minpoly.degree_le (x : L) [FiniteDimensional K L] :
   degree_le_of_natDegree_le (minpoly.natDegree_le x)
 #align minpoly.degree_le minpoly.degree_le
 
+-- TODO: generalize to `Sort`
 /-- A compositum of algebraic extensions is algebraic -/
 theorem isAlgebraic_iSup {ι : Type*} {t : ι → IntermediateField K L}
     (h : ∀ i, Algebra.IsAlgebraic K (t i)) :

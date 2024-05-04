@@ -204,7 +204,7 @@ theorem content_eq_gcd_leadingCoeff_content_eraseLead (p : R[X]) :
     p.content = GCDMonoid.gcd p.leadingCoeff (eraseLead p).content := by
   by_cases h : p = 0
   · simp [h]
-  rw [← leadingCoeff_eq_zero, leadingCoeff, ← Ne.def, ← mem_support_iff] at h
+  rw [← leadingCoeff_eq_zero, leadingCoeff, ← Ne, ← mem_support_iff] at h
   rw [content, ← Finset.insert_erase h, Finset.gcd_insert, leadingCoeff, content,
     eraseLead_support]
   refine' congr rfl (Finset.gcd_congr rfl fun i hi => _)
@@ -363,7 +363,6 @@ theorem content_mul {p q : R[X]} : (p * q).content = p.content * q.content := by
     intro n
     induction' n with n ih
     · intro p q hpq
-      dsimp at hpq
       rw [Nat.cast_zero,
         Nat.WithBot.lt_zero_iff, degree_eq_bot, mul_eq_zero] at hpq
       rcases hpq with (rfl | rfl) <;> simp

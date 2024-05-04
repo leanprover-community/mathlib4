@@ -132,8 +132,10 @@ theorem rel_equiv : Equivalence D.Rel :=
   ⟨fun x => Or.inl (refl x), by
     rintro a b (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
     exacts [Or.inl rfl, Or.inr ⟨D.t _ _ x, by simp [e₁, e₂]⟩], by
-    rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩); exact id
-    rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩); exact Or.inr ⟨x, e₁, e₂⟩
+    rintro ⟨i, a⟩ ⟨j, b⟩ ⟨k, c⟩ (⟨⟨⟩⟩ | ⟨x, e₁, e₂⟩)
+    · exact id
+    rintro (⟨⟨⟩⟩ | ⟨y, e₃, e₄⟩)
+    · exact Or.inr ⟨x, e₁, e₂⟩
     let z := (pullbackIsoProdSubtype (D.f j i) (D.f j k)).inv ⟨⟨_, _⟩, e₂.trans e₃.symm⟩
     have eq₁ : (D.t j i) ((pullback.fst : _ /-(D.f j k)-/ ⟶ D.V (j, i)) z) = x := by simp [z]
     have eq₂ : (pullback.snd : _ ⟶ D.V _) z = y := pullbackIsoProdSubtype_inv_snd_apply _ _ _
@@ -219,7 +221,7 @@ theorem ι_eq_iff_rel (i j : D.J) (x : D.U i) (y : D.U j) :
     erw [sigmaIsoSigma_hom_ι_apply, sigmaIsoSigma_hom_ι_apply]
     exact Or.inr ⟨y, ⟨rfl, rfl⟩⟩
   · rintro (⟨⟨⟩⟩ | ⟨z, e₁, e₂⟩)
-    rfl
+    · rfl
     dsimp only at *
     -- Porting note: there were `subst e₁` and `subst e₂`, instead of the `rw`
     rw [← e₁, ← e₂] at *
@@ -297,8 +299,8 @@ theorem preimage_image_eq_image' (i j : D.J) (U : Set (𝖣.U i)) :
   -- Porting note: `congr 1` was here, instead of `congr_arg`, however, it did nothing.
   refine congr_arg ?_ ?_
   rw [← Set.eq_preimage_iff_image_eq, Set.preimage_preimage]
-  change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
-  rw [𝖣.t_inv_assoc]
+  · change _ = (D.t i j ≫ D.t j i ≫ _) ⁻¹' _
+    rw [𝖣.t_inv_assoc]
   rw [← isIso_iff_bijective]
   apply (forget TopCat).map_isIso
 set_option linter.uppercaseLean3 false in
@@ -353,10 +355,10 @@ set_option linter.uppercaseLean3 false in
 
 theorem MkCore.t_inv (h : MkCore) (i j : h.J) (x : h.V j i) : h.t i j ((h.t j i) x) = x := by
   have := h.cocycle j i j x ?_
-  rw [h.t_id] at this
-  convert Subtype.eq this
-  rw [h.V_id]
-  trivial
+  · rw [h.t_id] at this
+    · convert Subtype.eq this
+    rw [h.V_id]
+    trivial
 set_option linter.uppercaseLean3 false in
 #align Top.glue_data.mk_core.t_inv TopCat.GlueData.MkCore.t_inv
 
@@ -389,8 +391,8 @@ def mk' (h : MkCore.{u}) : TopCat.GlueData where
   V i := (Opens.toTopCat _).obj (h.V i.1 i.2)
   f i j := (h.V i j).inclusion
   f_id i := by
-    -- Porting note (#10752): added `dsimp only`
-    dsimp only
+    -- Porting note (#12129): additional beta reduction needed
+    beta_reduce
     exact (h.V_id i).symm ▸ IsIso.of_iso (Opens.inclusionTopIso (h.U i))
   f_open := fun i j : h.J => (h.V i j).openEmbedding
   t := h.t

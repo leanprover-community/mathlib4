@@ -468,8 +468,10 @@ variable {F G R}
   δ_smul ..
 
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
-  by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
-  by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
+  by_cases h₁₂ : n₁ + 1 = n₂; swap
+  · rw [δ_shape _ _ h₁₂]
+  by_cases h₀₁ : n₀ + 1 = n₁; swap
+  · rw [δ_shape _ _ h₀₁, δ_zero]
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,

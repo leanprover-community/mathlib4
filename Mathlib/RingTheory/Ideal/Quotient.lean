@@ -45,7 +45,7 @@ This definition is marked `reducible` so that typeclass instances can be shared 
 `Ideal.Quotient I` and `Submodule.Quotient I`.
 -/
 @[reducible]
-instance : HasQuotient R (Ideal R) :=
+instance instHasQuotient : HasQuotient R (Ideal R) :=
   Submodule.hasQuotient
 
 namespace Quotient
@@ -220,12 +220,15 @@ protected noncomputable def groupWithZero (I : Ideal R) [hI : I.IsMaximal] :
 #align ideal.quotient.group_with_zero Ideal.Quotient.groupWithZero
 
 /-- The quotient by a maximal ideal is a field. This is a `def` rather than `instance`, since users
-will have computable inverses (and `qsmul`, `rat_cast`) in some applications.
+will have computable inverses (and `qsmul`, `ratCast`) in some applications.
 
 See note [reducible non-instances]. -/
 @[reducible]
-protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) :=
-  { Quotient.commRing I, Quotient.groupWithZero I with qsmul := qsmulRec _ }
+protected noncomputable def field (I : Ideal R) [hI : I.IsMaximal] : Field (R ⧸ I) where
+  __ := commRing _
+  __ := Quotient.groupWithZero _
+  nnqsmul := _
+  qsmul := _
 #align ideal.quotient.field Ideal.Quotient.field
 
 /-- If the quotient by an ideal is a field, then the ideal is maximal. -/

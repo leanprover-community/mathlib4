@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
 import Mathlib.Computability.PartrecCode
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import computability.halting from "leanprover-community/mathlib"@"a50170a88a47570ed186b809ca754110590f9476"
 
@@ -206,7 +206,14 @@ theorem rice (C : Set (ℕ →. ℕ)) (h : ComputablePred fun c => eval c ∈ C)
     fixed_point₂
       (Partrec.cond (h.comp fst) ((Partrec.nat_iff.2 hg).comp snd).to₂
           ((Partrec.nat_iff.2 hf).comp snd).to₂).to₂
-  aesop
+  simp only [Bool.cond_decide] at e
+  by_cases H : eval c ∈ C
+  · simp only [H, if_true] at e
+    change (fun b => g b) ∈ C
+    rwa [← e]
+  · simp only [H, if_false] at e
+    rw [e] at H
+    contradiction
 #align computable_pred.rice ComputablePred.rice
 
 theorem rice₂ (C : Set Code) (H : ∀ cf cg, eval cf = eval cg → (cf ∈ C ↔ cg ∈ C)) :
@@ -252,11 +259,11 @@ theorem computable_iff_re_compl_re {p : α → Prop} [DecidablePred p] :
           simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop,
             and_true, exists_const] at hx hy
           cases hy.1 hx.1)
-      · refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
-        rw [hk]
-        simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
-          true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
-        apply Decidable.em⟩⟩
+      refine' Partrec.of_eq pk fun n => Part.eq_some_iff.2 _
+      rw [hk]
+      simp only [Part.mem_map_iff, Part.mem_assert_iff, Part.mem_some_iff, exists_prop, and_true,
+        true_eq_decide_iff, and_self, exists_const, false_eq_decide_iff]
+      apply Decidable.em⟩⟩
 #align computable_pred.computable_iff_re_compl_re ComputablePred.computable_iff_re_compl_re
 
 theorem computable_iff_re_compl_re' {p : α → Prop} :
@@ -416,7 +423,7 @@ theorem part_iff₁ {f : ℕ →. ℕ} : (@Partrec' 1 fun v => f v.head) ↔ _ro
   part_iff.trans
     ⟨fun h =>
       (h.comp <| (Primrec.vector_ofFn fun _ => _root_.Primrec.id).to_comp).of_eq fun v => by
-        simp only [id.def, head_ofFn],
+        simp only [id, head_ofFn],
       fun h => h.comp vector_head⟩
 #align nat.partrec'.part_iff₁ Nat.Partrec'.part_iff₁
 
