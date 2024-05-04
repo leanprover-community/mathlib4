@@ -1470,13 +1470,7 @@ theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (
 #align list.modify_nth_tail_modify_nth_tail_same List.modifyNthTail_modifyNthTail_same
 
 #align list.modify_nth_tail_id List.modifyNthTail_id
-
-theorem removeNth_eq_nthTail : ∀ (n) (l : List α), removeNth l n = modifyNthTail tail n l
-  | 0, l => by cases l <;> rfl
-  | n + 1, [] => rfl
-  | n + 1, a :: l => congr_arg (cons _) (removeNth_eq_nthTail _ _)
-#align list.remove_nth_eq_nth_tail List.removeNth_eq_nthTail
-
+#align list.remove_nth_eq_nth_tail List.eraseIdx_eq_modifyNthTail
 #align list.update_nth_eq_modify_nth List.set_eq_modifyNth
 
 theorem modifyNth_eq_set (f : α → α) :
