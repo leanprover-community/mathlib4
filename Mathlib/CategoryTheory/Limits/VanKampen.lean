@@ -360,7 +360,7 @@ theorem IsUniversalColimit.map_reflective
         exact c.w _
   let cf : (Cocones.precompose β.hom).obj c' ⟶ Gl.mapCocone c'' := by
     refine { hom := pullback.lift ?_ f ?_ ≫ (PreservesPullback.iso _ _ _).inv, w := ?_ }
-    exact (inv <| adj.counit.app c'.pt)
+    exact inv <| adj.counit.app c'.pt
     · rw [IsIso.inv_comp_eq, ← adj.counit_naturality_assoc f, ← cancel_mono (adj.counit.app <|
         Gl.obj c.pt), Category.assoc, Category.assoc, adj.left_triangle_components]
       erw [Category.comp_id]
@@ -764,6 +764,7 @@ theorem isPullback_initial_to_of_cofan_isVanKampen [HasInitial C] {ι : Type*} {
     Functor.hext (fun i ↦ rfl) (by rintro ⟨i⟩ ⟨j⟩ ⟨⟨rfl : i = j⟩⟩; simp [f])
   clear_value f
   subst this
+  have : ∀ i, Subsingleton (⊥_ C ⟶ (Discrete.functor f).obj i) := inferInstance
   convert isPullback_of_cofan_isVanKampen hc i.as j.as
   exact (if_neg (mt (Discrete.ext _ _) hi.symm)).symm
 

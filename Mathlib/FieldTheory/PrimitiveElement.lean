@@ -290,7 +290,7 @@ theorem FiniteDimensional.of_finite_intermediateField
   rw [htop] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_finite_intermediateField := FiniteDimensional.of_finite_intermediateField
 
 theorem exists_primitive_element_of_finite_intermediateField
@@ -311,7 +311,7 @@ theorem FiniteDimensional.of_exists_primitive_element (halg : Algebra.IsAlgebrai
   rw [hprim] at hfin
   exact topEquiv.toLinearEquiv.finiteDimensional
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated] -- Since 2024-02-02
 alias finiteDimensional_of_exists_primitive_element := FiniteDimensional.of_exists_primitive_element
 
 -- A finite simple extension has only finitely many intermediate fields

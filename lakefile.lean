@@ -29,7 +29,7 @@ require «doc-gen4» from git "https://github.com/leanprover/doc-gen4" @ "main"
 require std from git "https://github.com/leanprover/std4" @ "main"
 require Qq from git "https://github.com/leanprover-community/quote4" @ "master"
 require aesop from git "https://github.com/leanprover-community/aesop" @ "master"
-require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.30"
+require proofwidgets from git "https://github.com/leanprover-community/ProofWidgets4" @ "v0.0.35"
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
@@ -41,7 +41,7 @@ require importGraph from git "https://github.com/leanprover-community/import-gra
 lean_lib Mathlib
 
 lean_lib Cache
-lean_lib MathlibExtras
+lean_lib LongestPole
 lean_lib Archive
 lean_lib Counterexamples
 /-- Additional documentation in the form of modules that only contain module docstrings. -/
@@ -64,6 +64,15 @@ lean_exe checkYaml where
 /-- `lake exe shake` checks files for unnecessary imports. -/
 lean_exe shake where
   root := `Shake.Main
+  supportInterpreter := true
+
+/--
+`lake exe pole` queries the Mathlib speedcenter for build times for the current commit,
+and then calculates the longest pole
+(i.e. the sequence of files you would be waiting for during a infinite parallelism build).
+-/
+lean_exe pole where
+  root := `LongestPole.Main
   supportInterpreter := true
 
 /-!

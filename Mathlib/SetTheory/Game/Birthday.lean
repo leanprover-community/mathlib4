@@ -186,10 +186,10 @@ theorem birthday_one_add : (1 + a).birthday = Order.succ a.birthday := by simp
 #align pgame.birthday_one_add SetTheory.PGame.birthday_one_add
 
 @[simp]
-theorem birthday_nat_cast : ∀ n : ℕ, birthday n = n
+theorem birthday_natCast : ∀ n : ℕ, birthday n = n
   | 0 => birthday_zero
-  | n + 1 => by simp [birthday_nat_cast]
-#align pgame.birthday_nat_cast SetTheory.PGame.birthday_nat_cast
+  | n + 1 => by simp [birthday_natCast]
+#align pgame.birthday_nat_cast SetTheory.PGame.birthday_natCast
 
 theorem birthday_add_nat (n : ℕ) : (a + n).birthday = a.birthday + n := by simp
 #align pgame.birthday_add_nat SetTheory.PGame.birthday_add_nat

@@ -307,8 +307,8 @@ theorem colorable_chromaticNumber {m : ℕ} (hc : G.Colorable m) :
     G.Colorable (ENat.toNat G.chromaticNumber) := by
   classical
   rw [hc.chromaticNumber_eq_sInf, Nat.sInf_def]
-  apply Nat.find_spec
-  exact colorable_set_nonempty_of_colorable hc
+  · apply Nat.find_spec
+  · exact colorable_set_nonempty_of_colorable hc
 #align simple_graph.colorable_chromatic_number SimpleGraph.colorable_chromaticNumber
 
 theorem colorable_chromaticNumber_of_fintype (G : SimpleGraph V) [Finite V] :
@@ -432,7 +432,7 @@ theorem chromaticNumber_top [Fintype V] : (⊤ : SimpleGraph V).chromaticNumber 
 theorem chromaticNumber_top_eq_top_of_infinite (V : Type*) [Infinite V] :
     (⊤ : SimpleGraph V).chromaticNumber = ⊤ := by
   by_contra hc
-  rw [← Ne.def, chromaticNumber_ne_top_iff_exists] at hc
+  rw [← Ne, chromaticNumber_ne_top_iff_exists] at hc
   obtain ⟨n, ⟨hn⟩⟩ := hc
   exact not_injective_infinite_finite _ hn.injective_of_top_hom
 #align simple_graph.chromatic_number_top_eq_zero_of_infinite SimpleGraph.chromaticNumber_top_eq_top_of_infinite

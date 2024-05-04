@@ -32,18 +32,8 @@ set_option autoImplicit true
 
 namespace Bool
 
--- In Lean 3 we had `attribute [simp] cond or and not xor` in the corresponding
--- file, but in Lean 4 this makes the `simpNF` linter complain, so instead we
--- manually generate the corresponding equation lemmas and tag them with `@[simp]` instead.
--- `or`, `and`, and `not` are already done in core Lean 4; here is `cond`, and `xor` is done below.
-@[simp] lemma cond_true {α : Type u} {a b : α} : cond true a b = a := rfl
 #align bool.cond_tt Bool.cond_true
-
-@[simp] lemma cond_false {α : Type u} {a b : α} : cond false a b = b := rfl
 #align bool.cond_ff Bool.cond_false
-
-@[simp]
-theorem cond_self.{u} {α : Type u} (b : Bool) (a : α) : cond b a a = a := by cases b <;> rfl
 #align cond_a_a Bool.cond_self
 
 attribute [simp] xor_self
@@ -85,13 +75,12 @@ theorem or_eq_true_eq_eq_true_or_eq_true (a b : Bool) :
 theorem not_eq_true_eq_eq_false (a : Bool) : (not a = true) = (a = false) := by cases a <;> simp
 #align bnot_eq_true_eq_eq_ff Bool.not_eq_true_eq_eq_false
 
-@[simp]
+-- Adaptation note: this is no longer a simp lemma, as after nightly-2024-03-05 the LHS simplifies.
 theorem and_eq_false_eq_eq_false_or_eq_false (a b : Bool) :
     ((a && b) = false) = (a = false ∨ b = false) := by
   cases a <;> cases b <;> simp
 #align band_eq_false_eq_eq_ff_or_eq_ff Bool.and_eq_false_eq_eq_false_or_eq_false
 
-@[simp]
 theorem or_eq_false_eq_eq_false_and_eq_false (a b : Bool) :
     ((a || b) = false) = (a = false ∧ b = false) := by
   cases a <;> cases b <;> simp
@@ -160,15 +149,7 @@ theorem coe_xor_iff (a b : Bool) : xor a b ↔ Xor' (a = true) (b = true) := by
   cases a <;> cases b <;> decide
 #align bxor_coe_iff Bool.coe_xor_iff
 
-@[simp]
-theorem ite_eq_true_distrib (c : Prop) [Decidable c] (a b : Bool) :
-    ((if c then a else b) = true) = if c then a = true else b = true := by by_cases c <;> simp [*]
 #align ite_eq_tt_distrib Bool.ite_eq_true_distrib
-
-@[simp]
-theorem ite_eq_false_distrib (c : Prop) [Decidable c] (a b : Bool) :
-    ((if c then a else b) = false) = if c then a = false else b = false := by
-  by_cases c <;> simp [*]
 #align ite_eq_ff_distrib Bool.ite_eq_false_distrib
 
 end Bool

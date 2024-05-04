@@ -622,7 +622,7 @@ theorem integrableOn_Ioc_of_intervalIntegral_norm_bounded {I a₀ b₀ : ℝ}
   refine (aecover_Ioc_of_Ioc ha hb).integrable_of_integral_norm_bounded I
     (fun i => (hfi i).restrict measurableSet_Ioc) (h.mono fun i hi ↦ ?_)
   rw [Measure.restrict_restrict measurableSet_Ioc]
-  refine' le_trans (set_integral_mono_set (hfi i).norm _ _) hi <;> apply ae_of_all
+  refine' le_trans (setIntegral_mono_set (hfi i).norm _ _) hi <;> apply ae_of_all
   · simp only [Pi.zero_apply, norm_nonneg, forall_const]
   · intro c hc; exact hc.1
 #align measure_theory.integrable_on_Ioc_of_interval_integral_norm_bounded MeasureTheory.integrableOn_Ioc_of_intervalIntegral_norm_bounded
@@ -708,7 +708,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
   have A : ∀ᶠ (n : ℕ) in atTop, ∫ (x : ℝ) in Ici ↑n, ‖f' x‖ < ε := by
     have L : Tendsto (fun (n : ℕ) ↦ ∫ x in Ici (n : ℝ), ‖f' x‖) atTop
         (𝓝 (∫ x in ⋂ (n : ℕ), Ici (n : ℝ), ‖f' x‖)) := by
-      apply tendsto_set_integral_of_antitone (fun n ↦ measurableSet_Ici)
+      apply tendsto_setIntegral_of_antitone (fun n ↦ measurableSet_Ici)
       · intro m n hmn
         exact Ici_subset_Ici.2 (Nat.cast_le.mpr hmn)
       · rcases exists_nat_gt a with ⟨n, hn⟩
@@ -735,7 +735,7 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi [CompleteSpace E]
         exact f'int.mono_set (Ioc_subset_Ioi_self.trans (Ioi_subset_Ioi h'N.le))
   _ ≤ ∫ t in Ioc ↑N x, ‖f' t‖ := norm_integral_le_integral_norm fun a ↦ f' a
   _ ≤ ∫ t in Ici ↑N, ‖f' t‖ := by
-      apply set_integral_mono_set
+      apply setIntegral_mono_set
       · apply IntegrableOn.mono_set f'int.norm (Ici_subset_Ioi.2 h'N)
       · filter_upwards with x using norm_nonneg _
       · have : Ioc (↑N) x ⊆ Ici ↑N := Ioc_subset_Ioi_self.trans Ioi_subset_Ici_self
@@ -761,8 +761,7 @@ theorem tendsto_zero_of_hasDerivAt_of_integrableOn_Ioi
     apply IntegrableAtFilter.eq_zero_of_tendsto this ?_ A
     intro s hs
     rcases mem_atTop_sets.1 hs with ⟨b, hb⟩
-    apply le_antisymm (le_top)
-    rw [← volume_Ici (a := b)]
+    rw [← top_le_iff, ← volume_Ici (a := b)]
     exact measure_mono hb
   rwa [B, ← Embedding.tendsto_nhds_iff] at A
   exact (Completion.uniformEmbedding_coe E).embedding
@@ -817,7 +816,7 @@ theorem _root_.HasCompactSupport.integral_Ioi_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Ioi b, deriv f x = - f b := by
   have := fun x (_ : x ∈ Ioi b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Ioi_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, zero_sub]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono _root_.atTop_le_cocompact |>.tendsto
 
@@ -848,7 +847,7 @@ theorem integrableOn_Ioi_deriv_of_nonneg (hcont : ContinuousWithinAt g (Ici a) a
         (fun y hy => hderiv y hy.1) fun y hy => g'pos y hy.1
     _ = ∫ y in a..id x, ‖g' y‖ := by
       simp_rw [intervalIntegral.integral_of_le h'x]
-      refine' set_integral_congr measurableSet_Ioc fun y hy => _
+      refine' setIntegral_congr measurableSet_Ioc fun y hy => _
       dsimp
       rw [abs_of_nonneg]
       exact g'pos _ hy.1
@@ -938,8 +937,8 @@ theorem tendsto_limUnder_of_hasDerivAt_of_integrableOn_Iic [CompleteSpace E]
   suffices ∃ a, Tendsto f atBot (𝓝 a) from tendsto_nhds_limUnder this
   let g := f ∘ (fun x ↦ -x)
   have hdg : ∀ x ∈ Ioi (-a), HasDerivAt g (-f' (-x)) x := by
-    intro x (hx : -a < x)
-    have : -x ∈ Iic a := by simp; linarith
+    intro x hx
+    have : -x ∈ Iic a := by simp only [mem_Iic, mem_Ioi, neg_le] at *; exact hx.le
     simpa using HasDerivAt.scomp x (hderiv (-x) this) (hasDerivAt_neg' x)
   have L : Tendsto g atTop (𝓝 (limUnder atTop g)) := by
     apply tendsto_limUnder_of_hasDerivAt_of_integrableOn_Ioi hdg
@@ -1020,7 +1019,7 @@ theorem _root_.HasCompactSupport.integral_Iic_deriv_eq (hf : ContDiff ℝ 1 f)
     (h2f : HasCompactSupport f) (b : ℝ) : ∫ x in Iic b, deriv f x = f b := by
   have := fun x (_ : x ∈ Iio b) ↦ hf.differentiable le_rfl x |>.hasDerivAt
   rw [integral_Iic_of_hasDerivAt_of_tendsto hf.continuous.continuousWithinAt this, sub_zero]
-  refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
+  · refine hf.continuous_deriv le_rfl |>.integrable_of_hasCompactSupport h2f.deriv |>.integrableOn
   rw [hasCompactSupport_iff_eventuallyEq, Filter.coclosedCompact_eq_cocompact] at h2f
   exact h2f.filter_mono _root_.atBot_le_cocompact |>.tendsto
 
@@ -1133,7 +1132,7 @@ theorem integral_comp_rpow_Ioi (g : ℝ → E) {p : ℝ} (hp : p ≠ 0) :
       rw [← rpow_mul (le_of_lt hx), one_div_mul_cancel hp, rpow_one]
   have := integral_image_eq_integral_abs_deriv_smul measurableSet_Ioi a1 a2 g
   rw [a3] at this; rw [this]
-  refine' set_integral_congr measurableSet_Ioi _
+  refine' setIntegral_congr measurableSet_Ioi _
   intro x hx; dsimp only
   rw [abs_mul, abs_of_nonneg (rpow_nonneg (le_of_lt hx) _)]
 #align measure_theory.integral_comp_rpow_Ioi MeasureTheory.integral_comp_rpow_Ioi
