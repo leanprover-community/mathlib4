@@ -197,7 +197,7 @@ theorem mapIdx_append {α} (K L : List α) (f : ℕ → α → β) :
     (K ++ L).mapIdx f = K.mapIdx f ++ L.mapIdx fun i a ↦ f (i + K.length) a := by
   induction' K with a J IH generalizing f
   · rfl
-  · simp [IH fun i ↦ f (i + 1), add_assoc]
+  · simp [IH fun i ↦ f (i + 1), add_assoc, Nat.succ_eq_add_one]
 #align list.map_with_index_append List.mapIdx_append
 
 @[simp]
@@ -257,7 +257,7 @@ end FoldrIdx
 theorem indexesValues_eq_filter_enum (p : α → Prop) [DecidablePred p] (as : List α) :
     indexesValues p as = filter (p ∘ Prod.snd) (enum as) := by
   simp (config := { unfoldPartialApp := true }) [indexesValues, foldrIdx_eq_foldr_enum, uncurry,
-    filter_eq_foldr]
+    filter_eq_foldr, cond_eq_if]
 #align list.indexes_values_eq_filter_enum List.indexesValues_eq_filter_enum
 
 theorem findIdxs_eq_map_indexesValues (p : α → Prop) [DecidablePred p] (as : List α) :

@@ -4,10 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Kenny Lau, Johan Commelin, Mario Carneiro, Kevin Buzzard,
 Amelia Livingston, Yury Kudryashov
 -/
+import Mathlib.Algebra.Group.Submonoid.Basic
+import Mathlib.Algebra.Group.Subsemigroup.Operations
 import Mathlib.Algebra.Group.Nat
 import Mathlib.GroupTheory.GroupAction.Defs
-import Mathlib.GroupTheory.Submonoid.Basic
-import Mathlib.GroupTheory.Subsemigroup.Operations
 
 #align_import group_theory.submonoid.operations from "leanprover-community/mathlib"@"cf8e77c636317b059a8ce20807a29cf3772a0640"
 
@@ -1318,7 +1318,8 @@ theorem nontrivial_iff_exists_ne_one (S : Submonoid M) : Nontrivial S ↔ ∃ x 
 /-- A submonoid is either the trivial submonoid or nontrivial. -/
 @[to_additive "An additive submonoid is either the trivial additive submonoid or nontrivial."]
 theorem bot_or_nontrivial (S : Submonoid M) : S = ⊥ ∨ Nontrivial S := by
-  simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← not_imp, Classical.em]
+  simp only [eq_bot_iff_forall, nontrivial_iff_exists_ne_one, ← not_forall, ← Classical.not_imp,
+    Classical.em]
 #align submonoid.bot_or_nontrivial Submonoid.bot_or_nontrivial
 #align add_submonoid.bot_or_nontrivial AddSubmonoid.bot_or_nontrivial
 
