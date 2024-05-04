@@ -502,7 +502,7 @@ to_ama #align monoid_algebra.module MonoidAlgebra.module
 
 variable [Monoid R] in -- this way, `to_add` does not convert `Monoid R` to `AddMonoid R`
 to_ama
-instance faithfulSMul [Semiring k] [DistribMulAction R k] [FaithfulSMul R k]
+instance faithfulSMul [Semiring k] [SMulZeroClass R k] [FaithfulSMul R k]
     [Nonempty G] : FaithfulSMul R (MonoidAlgebra k G) :=
   Finsupp.faithfulSMul
 #align monoid_algebra.has_faithful_smul MonoidAlgebra.faithfulSMul
@@ -517,14 +517,14 @@ to_ama #align monoid_algebra.is_scalar_tower MonoidAlgebra.isScalarTower
 
 variable [Monoid R] [Monoid S] in -- so, `to_add` does not convert `Monoid R/S` to `AddMonoid R/S`
 to_ama
-instance smulCommClass [Semiring k] [DistribMulAction R k]
-    [DistribMulAction S k] [SMulCommClass R S k] : SMulCommClass R S (MonoidAlgebra k G) :=
+instance smulCommClass [Semiring k] [SMulZeroClass R k]
+    [SMulZeroClass S k] [SMulCommClass R S k] : SMulCommClass R S (MonoidAlgebra k G) :=
   Finsupp.smulCommClass G k
 to_ama #align monoid_algebra.smul_comm_tower MonoidAlgebra.smulCommClass
 
 variable [Monoid R] in -- this way, `to_add` does not convert `Monoid R` to `AddMonoid R`
 to_ama
-instance isCentralScalar [Semiring k] [DistribMulAction R k] [DistribMulAction Rᵐᵒᵖ k]
+instance isCentralScalar [Semiring k] [SMulZeroClass R k] [SMulZeroClass Rᵐᵒᵖ k]
     [IsCentralScalar R k] : IsCentralScalar R (MonoidAlgebra k G) :=
   Finsupp.isCentralScalar G k
 to_ama #align monoid_algebra.is_central_scalar MonoidAlgebra.isCentralScalar
