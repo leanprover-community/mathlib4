@@ -68,7 +68,7 @@ section DegreeOf
 lemma degreeOf_mul : degreeOf n (p * q) = degreeOf n p + degreeOf n q := by
   sorry
 
-theorem degreeOf_C_mul (j : σ) (c : F) (hc : c ≠ 0) :
+theorem degreeOf_C_mul (j : σ) (c : R) (hc : c ≠ 0) :
     MvPolynomial.degreeOf j (MvPolynomial.C c * p) = MvPolynomial.degreeOf j p := by sorry
 
 end DegreeOf
