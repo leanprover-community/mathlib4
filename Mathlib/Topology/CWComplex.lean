@@ -23,12 +23,12 @@ open CategoryTheory
 
 namespace CWComplex
 
-/-- The n-dimensional sphere is the set of points in ℝ^(n+1) whose norm equals 1, endowed with the
+/-- The n-dimensional sphere is the set of points in ℝⁿ⁺¹ whose norm equals 1, endowed with the
 subspace topology. -/
 noncomputable def sphere (n : ℤ) : TopCat :=
   TopCat.of <| Metric.sphere (0 : EuclideanSpace ℝ <| Fin <| Int.toNat <| n + 1) 1
 
-/-- The n-dimensional closed disk is the set of points in ℝ^n whose norm is at most 1, endowed with
+/-- The n-dimensional closed disk is the set of points in ℝⁿ whose norm is at most 1, endowed with
 the subspace topology. -/
 noncomputable def disk (n : ℤ) : TopCat :=
   TopCat.of <| Metric.closedBall (0 : EuclideanSpace ℝ <| Fin <| Int.toNat n) 1
@@ -60,26 +60,26 @@ def sigmaAttachMap (X : TopCat) (n : ℤ) (cells : Type) (attach_maps : cells �
   toFun := fun ⟨i, x⟩ ↦ attach_maps i x
   continuous_toFun := continuous_sigma fun i ↦ (attach_maps i).continuous_toFun
 
-/-- A type witnessing that X' is obtained from X by attaching (n+1)-disks -/
+/-- A type witnessing that `X'` is obtained from `X` by attaching (n+1)-disks -/
 structure AttachCells (X X' : TopCat) (n : ℤ) where
   /-- The index type over the (n+1)-disks -/
   cells : Type
   /-- For each (n+1)-disk, we have an attaching map from its boundary, namely an n-sphere,
   to `X`. -/
   attach_maps : cells → C(𝕊 n, X)
-  /-- X' is the pushout obtained from X along `sigmaAttachMap`. -/
+  /-- `X'` is the pushout obtained from `X` along `sigmaAttachMap`. -/
   iso_pushout : X' ≅ Limits.pushout
     (sigmaSphereInclusion n cells) (sigmaAttachMap X n cells attach_maps)
 
 end CWComplex
 
 /-- A relative CW-complex contains an expanding sequence of subspaces `sk i`
-(called the `i`-skeleta) for `i ≥ -1`, where `sk (-1)` is an arbitrary topological space,
+(called the `i`-skeleton) for `i ≥ -1`, where `sk (-1)` is an arbitrary topological space,
 isomorphic to `A`, and each `sk (n+1)` is obtained from `sk n` by attaching (n+1)-disks. -/
 structure RelativeCWComplex (A : TopCat) where
   /-- Skeleta -/
   sk : ℤ → TopCat
-  /-- A is isomorphic to the (-1)-skeleton. -/
+  /-- `A` is isomorphic to the (-1)-skeleton. -/
   iso_sk_neg_one : A ≅ sk (-1)
   /-- The (n+1)-skeleton is obtained from the n-skeleton by attaching (n+1)-disks. -/
   attach_cells : (n : ℤ) → CWComplex.AttachCells (sk n) (sk (n + 1)) n
@@ -91,7 +91,7 @@ namespace CWComplex
 
 noncomputable section Topology
 
-/-- The inclusion map from `X` to `X'`, given that `X'` is obtained from X by attaching
+/-- The inclusion map from `X` to `X'`, given that `X'` is obtained from `X` by attaching
 (n+1)-disks -/
 def attachCellsInclusion (X X' : TopCat) (n : ℤ) (att : AttachCells X X' n) : X ⟶ X' :=
   @Limits.pushout.inr TopCat _ _ _ X
