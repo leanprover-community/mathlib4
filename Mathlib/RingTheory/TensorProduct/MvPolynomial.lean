@@ -15,9 +15,13 @@ import Mathlib.Algebra.MvPolynomial.Equiv
 Let `Semiring R`, `Algebra R S` and `Module R N`.
 
 * `MvPolynomial.rTensor` gives the linear equivalence
-  `MvPolynomial σ S ⊗[R] N ≃ₗ[R] σ →₀ (S ⊗[R] N)`
-  and `MvPolynomial.scalarRTensor` gives the linear equivalence
-  `MvPolynomial σ R ⊗[R] N ≃ₗ[R] σ →₀ N`
+  `MvPolynomial σ S ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ (S ⊗[R] N)` characterized,
+  for `p : MvPolynomial σ S`, `n : N` and `d : σ →₀ ℕ`, by
+  `rTensor (p ⊗ₜ[R] n) d = (coeff d p) ⊗ₜ[R] n`
+* `MvPolynomial.scalarRTensor` gives the linear equivalence
+  `MvPolynomial σ R ⊗[R] N ≃ₗ[R] (σ →₀ ℕ) →₀ N`
+  such that `MvPolynomial.scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n`
+  for `p : MvPolynomial σ R`, `n : N` and `d : σ →₀ ℕ`, by
 
 * `MvPolynomial.rTensorAlgHom`, the algebra morphism from the tensor product
   of a polynomial algebra by an algebra to a polynomial algebra
@@ -101,7 +105,7 @@ lemma scalarRTensor_apply_tmul (p : MvPolynomial σ R) (n : N) :
 
 @[simp]
 lemma scalarRTensor_apply_tmul_apply (p : MvPolynomial σ R) (n : N) (d : σ →₀ ℕ):
-    scalarRTensor (p ⊗ₜ[R] n) d = (coeff d p) • n :=
+    scalarRTensor (p ⊗ₜ[R] n) d = coeff d p • n :=
   TensorProduct.finsuppScalarLeft_apply_tmul_apply p n d
 
 @[simp]
