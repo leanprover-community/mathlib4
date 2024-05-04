@@ -71,9 +71,9 @@ variable {ι : Type u} [Fintype ι] (m : ι → M) (n : ι → N)
 *vanishes trivially*. That is, there exist a finite index type $\kappa$,
 elements $(y_j)_{j \in \kappa}$ of $N$, and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$
 such that for all $i$,
-\[n_i = \sum_j a_{ij} y_j\]
+$$n_i = \sum_j a_{ij} y_j$$
 and for all $j$,
-\[\sum_{i} a_{ij} m_i = 0.\]
+$$\sum_{i} a_{ij} m_i = 0.$$
 Note that this condition is not symmetric in $M$ and $N$. -/
 abbrev VanishesTrivially : Prop :=
   ∃ (κ : Type u) (_ : Fintype κ) (a : ι → κ → R) (y : κ → N),
