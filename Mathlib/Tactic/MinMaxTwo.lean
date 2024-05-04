@@ -59,11 +59,8 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
       | .node _ ``Lean.Parser.Term.app
           #[.ident _ _ `single _, .node _ _ #[one, c]] =>
         match one with
-          | .node _ `num #[.atom _ "1"] =>
-            return some <| ← `($(mkIdent `single) 0 $(⟨c⟩))
-          | .node _ ``Lean.Parser.Term.typeAscription
-              #[_opar, .node _ `num #[.atom _ "1"], _colon, .node _ `null #[type], _cpar] =>
-            return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨c⟩))
+          | `(1)           => return some <| ← `($(mkIdent `single) 0 $(⟨c⟩))
+          | `((1 : $type)) => return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨c⟩))
           | _ => return none
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
         match na with
@@ -99,7 +96,7 @@ environment the analogous result about `AddMonoidAlgebra`.
 
 Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 -/
-elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:command :
+elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id:(ident)? "]" id2:(ident)? cmd:command :
     command => do
   let g := match id with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
@@ -111,8 +108,16 @@ elab (name := to_amaCmd) "to_ama " "[" id:(ident)? "]" id2:(ident)? tk:"?"? cmd:
   withScope (fun s => { s with currNamespace := nameToTop toAddWords currNS }) <| elabCommand newCmd
 
 @[inherit_doc to_amaCmd]
-macro "to_ama? " "[" id:ident "]" cmd:command : command => return (← `(to_ama [$id] ? $cmd))
+macro "to_ama? " "[" id:(ident)? "]" cmd:command : command =>
+  let rid := mkIdent `hi
+  return (← `(to_ama ? [$(id.getD default)] $rid $cmd))
 
+@[inherit_doc to_amaCmd]
+macro "to_ama? " cmd:command : command =>
+  let rid := mkIdent `hi
+  return (← `(to_ama ? [] $rid $cmd))
+
+@[inherit_doc to_amaCmd]
 macro "to_ama " cmd:command : command =>
   let rid := mkIdent `hi
   return (← `(to_ama [] $rid $cmd))
