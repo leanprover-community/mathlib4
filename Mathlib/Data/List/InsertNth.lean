@@ -54,6 +54,8 @@ theorem eraseIdx_insertNth (n : ℕ) (l : List α) : (l.insertNth n a).eraseIdx 
   exact modifyNthTail_id _ _
 #align list.remove_nth_insert_nth List.eraseIdx_insertNth
 
+@[deprecated] alias removeNth_insertNth := eraseIdx_insertNth -- 2024-05-04
+
 theorem insertNth_eraseIdx_of_ge :
     ∀ n m as,
       n < length as → n ≤ m → insertNth m a (as.eraseIdx n) = (as.insertNth (m + 1) a).eraseIdx n
@@ -65,6 +67,8 @@ theorem insertNth_eraseIdx_of_ge :
       insertNth_eraseIdx_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
 #align list.insert_nth_remove_nth_of_ge List.insertNth_eraseIdx_of_ge
 
+@[deprecated] alias insertNth_removeNth_of_ge := insertNth_eraseIdx_of_ge -- 2024-05-04
+
 theorem insertNth_eraseIdx_of_le :
     ∀ n m as,
       n < length as → m ≤ n → insertNth m a (as.eraseIdx n) = (as.insertNth m a).eraseIdx (n + 1)
@@ -73,6 +77,8 @@ theorem insertNth_eraseIdx_of_le :
     congr_arg (cons a) <|
       insertNth_eraseIdx_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
 #align list.insert_nth_remove_nth_of_le List.insertNth_eraseIdx_of_le
+
+@[deprecated] alias insertNth_removeNth_of_le := insertNth_eraseIdx_of_le -- 2024-05-04
 
 theorem insertNth_comm (a b : α) :
     ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),

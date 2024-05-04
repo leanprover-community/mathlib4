@@ -4,7 +4,7 @@
  [{"url": "https://github.com/urkud/std4",
    "type": "git",
    "subDir": null,
-   "rev": "2573b45b645c05dbb3719b515482a55aada21f3b",
+   "rev": "af5e49dad3868721ee8f159d1a57b0b183392195",
    "name": "std",
    "manifestFile": "lake-manifest.json",
    "inputRev": "YK-removeNth",

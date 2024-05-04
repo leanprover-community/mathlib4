@@ -560,10 +560,14 @@ theorem eraseIdx_val {i : Fin n} : ∀ {v : Vector α n}, (eraseIdx i v).val = v
   | _ => rfl
 #align vector.remove_nth_val Vector.eraseIdx_val
 
+@[deprecated] alias removeNth_val := eraseIdx_val -- 2024-05-04
+
 theorem eraseIdx_insertNth {v : Vector α n} {i : Fin (n + 1)} :
     eraseIdx i (insertNth a i v) = v :=
   Subtype.eq <| List.eraseIdx_insertNth i.1 v.1
 #align vector.remove_nth_insert_nth Vector.eraseIdx_insertNth
+
+@[deprecated] alias removeNth_insertNth := eraseIdx_insertNth -- 2024-05-04
 
 theorem eraseIdx_insertNth' {v : Vector α (n + 1)} :
     ∀ {i : Fin (n + 1)} {j : Fin (n + 2)},
@@ -585,6 +589,8 @@ theorem eraseIdx_insertNth' {v : Vector α (n + 1)} :
       · simpa
       · simpa [not_lt] using hij
 #align vector.remove_nth_insert_nth' Vector.eraseIdx_insertNth'
+
+@[deprecated] alias removeNth_insertNth' := eraseIdx_insertNth' -- 2024-05-04
 
 theorem insertNth_comm (a b : α) (i j : Fin (n + 1)) (h : i ≤ j) :
     ∀ v : Vector α n,
