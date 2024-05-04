@@ -6,6 +6,7 @@ Authors: Johannes Hölzl, Johan Commelin, Mario Carneiro
 import Mathlib.Algebra.BigOperators.Fin
 import Mathlib.Algebra.MvPolynomial.Rename
 import Mathlib.Algebra.MvPolynomial.Degrees
+import Mathlib.Algebra.MvPolynomial.Monad
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.Data.Finsupp.Fin
 import Mathlib.Logic.Equiv.Fin
@@ -505,6 +506,12 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     erw [WithBot.unbot'_coe]
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv
+
+/-- Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
+lemma degreeOf_eq_degree_optionEquivLeft_optionSubtypeNe [DecidableEq σ]
+  (a : σ) (p : MvPolynomial σ R) :
+  degreeOf a p = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a}) (renameEquiv R (Equiv.optionSubtypeNe a).symm p)) := by
+  sorry
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
