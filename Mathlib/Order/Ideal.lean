@@ -606,7 +606,7 @@ section sUnion
 variable [Preorder P]
 
 /-- A non-empty directed union of ideals of sets in a preorder is an ideal. -/
-lemma isIdeal_sUnion_directed {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+lemma isIdeal_sUnion_of_directedOn {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
   refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
   directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
@@ -614,9 +614,9 @@ lemma isIdeal_sUnion_directed {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
   exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
 
 /-- A union of a nonempty chain of ideals of sets is an ideal. -/
-lemma isIdeal_sUnion_nechain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
-    (hC : IsChain (· ⊆ ·) C) (hne : C.Nonempty) : IsIdeal C.sUnion :=
-  isIdeal_sUnion_directed hidl hC.directedOn hne
+lemma isIdeal_sUnion_of_isChain {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
+    (hC : IsChain (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion :=
+  isIdeal_sUnion_of_directedOn hidl hC.directedOn hNe
 
 end sUnion
 end Order
