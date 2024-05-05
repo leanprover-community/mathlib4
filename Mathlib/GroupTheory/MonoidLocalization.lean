@@ -3,10 +3,10 @@ Copyright (c) 2019 Amelia Livingston. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Amelia Livingston
 -/
-import Mathlib.GroupTheory.Congruence
-import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Algebra.Group.Units
 import Mathlib.Algebra.Regular.Basic
+import Mathlib.GroupTheory.Congruence
 import Mathlib.Init.Data.Prod
 
 #align_import group_theory.monoid_localization from "leanprover-community/mathlib"@"10ee941346c27bdb5e87bb3535100c0b1f08ac41"
