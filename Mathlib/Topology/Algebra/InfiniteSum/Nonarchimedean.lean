@@ -7,18 +7,21 @@ import Mathlib.Topology.Algebra.InfiniteSum.Group
 import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.Monoid
 import Mathlib.Topology.Algebra.InfiniteSum.Ring
+import Mathlib.Topology.Algebra.UniformRing
+import Mathlib.Topology.Algebra.Nonarchimedean.Completion
 
 /-!
 # Infinite sums and products in nonarchimedean abelian groups
 
 Let `G` be a complete nonarchimedean abelian group and let `f : α → G` be a function. We prove that
-`f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`.
-We also prove the analogous result in the multiplicative setting.
+`f` is unconditionally summable if and only if `f a` tends to zero on the cofinite filter on `α`
+(`NonarchimedeanAddGroup.summable_iff_tendsto_cofinite_zero`). We also prove the analogous result in
+the multiplicative setting (`NonarchimedeanGroup.multipliable_iff_tendsto_cofinite_one`).
 
 We also prove that multiplication distributes over arbitrarily indexed sums in a nonarchimedean
 ring. That is, let `R` be a nonarchimedean ring, let `f : α → R` be a function that sums to `a : R`,
 and let `g : β → R` be a function that sums to `b : R`. Then `fun (i : α × β) ↦ (f i.1) * (g i.2)`
-sums to `a * b`.
+sums to `a * b` (`HasSum.mul_of_nonarchimedean`).
 
 -/
 
@@ -102,8 +105,8 @@ sums to `a * b`. -/
 theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf : HasSum f a)
     (hg : HasSum g b) : HasSum (fun (i : α × β) ↦ (f i.1) * (g i.2)) (a * b) := by
   rw [hasSum_iff_hasSum_compl] at *
-  -- convert hf.mul_of_complete_nonarchimedean hg
-  sorry -- Proving that the completion of `R` is a nonarchimedean ring still needs to be done
+  convert hf.mul_of_complete_nonarchimedean hg <;>
+  · exact UniformSpace.Completion.coe_mul _ _
 
 /-- Let `R` be a nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable, then
 so is `fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
