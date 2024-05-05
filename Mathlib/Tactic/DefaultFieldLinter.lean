@@ -8,6 +8,10 @@ import Lean
 # The `linter.structureDiamondDefaults` linter
 -/
 
+/--
+Linter to check if structure fields that are often implicated in typeclass diamonds are using
+implicit default values.
+-/
 register_option linter.structureDiamondDefaults : Bool := {
   defValue := true
   descr :=
