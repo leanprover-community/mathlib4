@@ -106,7 +106,7 @@ theorem HasSum.mul_of_nonarchimedean {f : α → R} {g : β → R} {a b : R} (hf
     (hg : HasSum g b) : HasSum (fun (i : α × β) ↦ (f i.1) * (g i.2)) (a * b) := by
   rw [hasSum_iff_hasSum_compl] at *
   convert hf.mul_of_complete_nonarchimedean hg <;>
-  · exact UniformSpace.Completion.coe_mul _ _
+  exact UniformSpace.Completion.coe_mul _ _
 
 /-- Let `R` be a nonarchimedean ring. If functions `f : α → R` and `g : β → R` are summable, then
 so is `fun (i : α × β) ↦ (f i.1) * (g i.2)`. -/
