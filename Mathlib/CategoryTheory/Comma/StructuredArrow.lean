@@ -125,6 +125,11 @@ def homMk {f f' : StructuredArrow S T} (g : f.right ⟶ f'.right)
 picks up on it (seems like a bug). Either way simp solves it.  -/
 attribute [-simp, nolint simpNF] homMk_left
 
+theorem homMk_surjective {f f' : StructuredArrow S T} (φ : f ⟶ f') :
+    ∃ (ψ : f.right ⟶ f'.right) (hψ : f.hom ≫ T.map ψ = f'.hom),
+      φ = StructuredArrow.homMk ψ hψ :=
+  ⟨φ.right, StructuredArrow.w φ, rfl⟩
+
 /-- Given a structured arrow `X ⟶ T(Y)`, and an arrow `Y ⟶ Y'`, we can construct a morphism of
     structured arrows given by `(X ⟶ T(Y)) ⟶ (X ⟶ T(Y) ⟶ T(Y'))`.  -/
 @[simps]
@@ -221,6 +226,10 @@ def eta (f : StructuredArrow S T) : f ≅ mk f.hom :=
 /- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_left_down_down eta_inv_left_down_down
+
+lemma mk_surjective (f : StructuredArrow S T) :
+    ∃ (Y : C) (g : S ⟶ T.obj Y), f = mk g :=
+  ⟨_, _, eq_mk f⟩
 
 /-- A morphism between source objects `S ⟶ S'`
 contravariantly induces a functor between structured arrows,
@@ -465,6 +474,11 @@ def homMk {f f' : CostructuredArrow S T} (g : f.left ⟶ f'.left)
 picks up on it. Either way simp can prove this -/
 attribute [-simp, nolint simpNF] homMk_right_down_down
 
+theorem homMk_surjective {f f' : CostructuredArrow S T} (φ : f ⟶ f') :
+    ∃ (ψ : f.left ⟶ f'.left) (hψ : S.map ψ ≫ f'.hom = f.hom),
+      φ = CostructuredArrow.homMk ψ hψ :=
+  ⟨φ.left, CostructuredArrow.w φ, rfl⟩
+
 /-- Given a costructured arrow `S(Y) ⟶ X`, and an arrow `Y' ⟶ Y'`, we can construct a morphism of
     costructured arrows given by `(S(Y) ⟶ X) ⟶ (S(Y') ⟶ S(Y) ⟶ X)`. -/
 @[simps]
@@ -558,6 +572,10 @@ def eta (f : CostructuredArrow S T) : f ≅ mk f.hom :=
 /- Porting note: it appears the simp lemma is not getting generated but the linter
 picks up on it. Either way simp solves these. -/
 attribute [-simp, nolint simpNF] eta_hom_right_down_down eta_inv_right_down_down
+
+lemma mk_surjective (f : CostructuredArrow S T) :
+    ∃ (Y : C) (g : S.obj Y ⟶ T), f = mk g :=
+  ⟨_, _, eq_mk f⟩
 
 /-- A morphism between target objects `T ⟶ T'`
 covariantly induces a functor between costructured arrows,
