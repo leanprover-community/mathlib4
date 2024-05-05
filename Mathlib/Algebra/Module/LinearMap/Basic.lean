@@ -219,6 +219,9 @@ instance instFunLike : FunLike (M →ₛₗ[σ] M₃) M M₃ where
     apply DFunLike.coe_injective'
     exact h
 
+instance instCoeFun : CoeFun (M →ₛₗ[σ] M₃) (fun _ => M → M₃) where
+  coe := DFunLike.coe
+
 instance semilinearMapClass : SemilinearMapClass (M →ₛₗ[σ] M₃) σ M M₃ where
   map_add f := f.map_add'
   map_smulₛₗ := LinearMap.map_smul'
