@@ -3,7 +3,6 @@ Copyright (c) 2023 Rémy Degenne. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Rémy Degenne
 -/
-import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Asymptotics
 import Mathlib.Analysis.Convex.Deriv
@@ -23,22 +22,6 @@ which is notably used in the theory of Shannon entropy.
 open scoped Topology
 
 namespace Real
-
-lemma continuous_mul_logb (b : ℝ) : Continuous fun x ↦ x * logb b x := by
-  rw [continuous_iff_continuousAt]
-  intro x
-  obtain hx | rfl := ne_or_eq x 0
-  · exact (continuous_id'.continuousAt).mul (continuousAt_logb hx)
-  rw [ContinuousAt, zero_mul]
-  simp_rw [mul_comm _ (log _)]
-  nth_rewrite 1 [← nhdsWithin_univ]
-  have : (Set.univ : Set ℝ) = Set.Iio 0 ∪ Set.Ioi 0 ∪ {0} := by ext; simp [em]
-  rw [this, nhdsWithin_union, nhdsWithin_union]
-  simp only [nhdsWithin_singleton, sup_le_iff, Filter.nonpos_iff, Filter.tendsto_sup]
-  refine ⟨⟨tendsto_log_mul_self_nhds_zero_left, ?_⟩, ?_⟩
-  · simpa only [rpow_one] using tendsto_log_mul_rpow_nhds_zero zero_lt_one
-  · convert tendsto_pure_nhds (fun x ↦ log x * x) 0
-    simp
 
 lemma continuous_mul_log : Continuous fun x ↦ x * log x := by
   rw [continuous_iff_continuousAt]
