@@ -2693,7 +2693,7 @@ attribute [simp] find?_eq_none
 
 #align list.find_some List.find?_some
 
-@[deprecated] alias find?_mem := mem_of_find?_eq_some -- 2024-05-05
+@[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
 #align list.find_mem List.mem_of_find?_eq_some
 
 end find?
