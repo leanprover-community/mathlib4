@@ -18,7 +18,6 @@ open Set Real Metric ContinuousLinearMap
 section SemiNormed
 
 variable [SeminormedAddCommGroup E] [SeminormedAddCommGroup F] [SeminormedAddCommGroup G]
-
 variable [NormedSpace 𝕜 E] [NormedSpace 𝕜 F] [NormedSpace 𝕜 G]
 
 namespace ContinuousLinearMap
@@ -54,18 +53,14 @@ theorem opNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖ =
         (le_max_right _ _).trans ((f.prod g).le_opNorm x))
 #align continuous_linear_map.op_norm_prod ContinuousLinearMap.opNorm_prod
 
-@[deprecated]
-alias op_norm_prod :=
-  opNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_norm_prod := opNorm_prod -- deprecated on 2024-02-02
 
 @[simp]
 theorem opNNNorm_prod (f : E →L[𝕜] F) (g : E →L[𝕜] G) : ‖f.prod g‖₊ = ‖(f, g)‖₊ :=
   Subtype.ext <| opNorm_prod f g
 #align continuous_linear_map.op_nnnorm_prod ContinuousLinearMap.opNNNorm_prod
 
-@[deprecated]
-alias op_nnnorm_prod :=
-  opNNNorm_prod -- deprecated on 2024-02-02
+@[deprecated] alias op_nnnorm_prod := opNNNorm_prod -- deprecated on 2024-02-02
 
 /-- `ContinuousLinearMap.prod` as a `LinearIsometryEquiv`. -/
 def prodₗᵢ (R : Type*) [Semiring R] [Module R F] [Module R G] [ContinuousConstSMul R F]
@@ -81,7 +76,6 @@ set_option linter.uppercaseLean3 false
 section Prod
 
 variable (M₁ M₂ M₃ M₄ : Type*) (𝕜)
-
 variable
   [SeminormedAddCommGroup M₁] [NormedSpace 𝕜 M₁]
   [SeminormedAddCommGroup M₂] [NormedSpace 𝕜 M₂]

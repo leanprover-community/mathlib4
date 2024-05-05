@@ -67,7 +67,6 @@ theorem isIntegrallyClosed_eq_field_fractions' [IsDomain S] [Algebra K S] [IsSca
 end
 
 variable [IsDomain S] [NoZeroSMulDivisors R S]
-
 variable [IsIntegrallyClosed R]
 
 /-- For integrally closed rings, the minimal polynomial divides any polynomial that has the
@@ -89,7 +88,7 @@ theorem isIntegrallyClosed_dvd {s : S} (hs : IsIntegral R s) {p : R[X]}
     exact Monic.map _ (minpoly.monic hs)
   rw [isIntegrallyClosed_eq_field_fractions _ _ hs,
     map_dvd_map (algebraMap R K) (IsFractionRing.injective R K) (minpoly.monic hs)] at this
-  rw [← dvd_iff_modByMonic_eq_zero (minpoly.monic hs)]
+  rw [← modByMonic_eq_zero_iff_dvd (minpoly.monic hs)]
   exact Polynomial.eq_zero_of_dvd_of_degree_lt this (degree_modByMonic_lt p <| minpoly.monic hs)
 #align minpoly.is_integrally_closed_dvd minpoly.isIntegrallyClosed_dvd
 
@@ -130,9 +129,8 @@ theorem _root_.IsIntegrallyClosed.minpoly.unique {s : S} {P : R[X]} (hmo : P.Mon
   have hs : IsIntegral R s := ⟨P, hmo, hP⟩
   symm; apply eq_of_sub_eq_zero
   by_contra hnz
-  have := IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP])
-  contrapose! this
-  refine' degree_sub_lt _ (ne_zero hs) _
+  refine IsIntegrallyClosed.degree_le_of_ne_zero hs hnz (by simp [hP]) |>.not_lt ?_
+  refine degree_sub_lt ?_ (ne_zero hs) ?_
   · exact le_antisymm (min R s hmo hP) (Pmin (minpoly R s) (monic hs) (aeval R s))
   · rw [(monic hs).leadingCoeff, hmo.leadingCoeff]
 #align minpoly.is_integrally_closed.minpoly.unique IsIntegrallyClosed.minpoly.unique

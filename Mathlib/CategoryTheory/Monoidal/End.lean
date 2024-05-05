@@ -105,7 +105,6 @@ def tensoringRightMonoidal [MonoidalCategory.{v} C] : MonoidalFunctor C (C ⥤ C
 #align category_theory.tensoring_right_monoidal CategoryTheory.tensoringRightMonoidal
 
 variable {C}
-
 variable {M : Type*} [Category M] [MonoidalCategory M] (F : MonoidalFunctor M (C ⥤ C))
 
 @[reassoc (attr := simp)]
@@ -302,7 +301,7 @@ theorem obj_μ_zero_app (m₁ m₂ : M) (X : C) :
     (F.μ (𝟙_ M) m₂).app ((F.obj m₁).obj X) ≫
     (F.map (λ_ m₂).hom).app ((F.obj m₁).obj X) ≫ (F.obj m₂).map ((F.map (ρ_ m₁).inv).app X) := by
   rw [← obj_ε_inv_app_assoc, ← Functor.map_comp]
-  congr; simp
+  simp
 #align category_theory.obj_μ_zero_app CategoryTheory.obj_μ_zero_app
 
 /-- If `m ⊗ n ≅ 𝟙_M`, then `F.obj m` is a left inverse of `F.obj n`. -/

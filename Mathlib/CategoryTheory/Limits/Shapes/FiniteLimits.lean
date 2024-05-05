@@ -107,6 +107,9 @@ instance (priority := 100) hasFiniteColimits_of_hasColimitsOfSize [HasColimitsOf
     (@FinCategory.categoryAsType J (@FinCategory.fintypeObj J hJ hJ') hJ hJ') _ _ J hJ F _
 #align category_theory.limits.has_finite_colimits_of_has_colimits_of_size CategoryTheory.Limits.hasFiniteColimits_of_hasColimitsOfSize
 
+instance (priority := 100) hasFiniteColimits_of_hasColimits [HasColimits C] : HasFiniteColimits C :=
+  inferInstance
+
 /-- We can always derive `HasFiniteColimits C` by providing colimits at an
 arbitrary universe. -/
 theorem hasFiniteColimits_of_hasFiniteColimits_of_size
@@ -143,7 +146,7 @@ instance instFintypeWalkingParallelPairHom (j j' : WalkingParallelPair) :
       (WalkingParallelPair.recOn j' ∅ [WalkingParallelPairHom.id one].toFinset)
   complete := by
     rintro (_|_) <;> simp
-    · cases j <;> simp
+    cases j <;> simp
 end
 
 instance : FinCategory WalkingParallelPair where
@@ -164,7 +167,7 @@ variable {J : Type v}
 namespace WidePullbackShape
 
 instance fintypeObj [Fintype J] : Fintype (WidePullbackShape J) :=
-  instFintypeOption
+  inferInstanceAs <| Fintype (Option _)
 #align category_theory.limits.wide_pullback_shape.fintype_obj CategoryTheory.Limits.WidePullbackShape.fintypeObj
 
 instance fintypeHom (j j' : WidePullbackShape J) : Fintype (j ⟶ j') where

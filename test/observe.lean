@@ -1,8 +1,8 @@
-import Mathlib.Tactic.Linarith
 import Mathlib.Data.Nat.Prime
 
 open Nat
 
+set_option maxHeartbeats 6000 in
 theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   let N := n.factorial + 1
   let p := minFac N
@@ -10,7 +10,7 @@ theorem euclid (n : ℕ) : ∃ N, n < N ∧ N.Prime := by
   have prime : p.Prime := by
     apply minFac_prime
     observe : n.factorial > 0
-    linarith
+    omega
   constructor
   · by_contra!
     observe : p ∣ n.factorial

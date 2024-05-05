@@ -3,8 +3,8 @@ Copyright (c) 2019 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau, Johan Commelin
 -/
-import Mathlib.Data.MvPolynomial.Equiv
-import Mathlib.Data.MvPolynomial.CommRing
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.CommRing
 import Mathlib.Logic.Equiv.Functor
 import Mathlib.RingTheory.FreeRing
 
@@ -52,7 +52,8 @@ free commutative ring, free ring
 
 noncomputable section
 
-open Classical Polynomial
+open scoped Classical
+open Polynomial
 
 universe u v
 
@@ -259,7 +260,7 @@ theorem isSupported_of {p} {s : Set α} : IsSupported (of p) s ↔ p ∈ s :=
   exfalso
   apply Ne.symm Int.zero_ne_one
   rcases this with ⟨w, H⟩
-  rw [← Polynomial.C_eq_int_cast] at H
+  rw [← Polynomial.C_eq_intCast] at H
   have : Polynomial.X.coeff 1 = (Polynomial.C ↑w).coeff 1 := by rw [H]; rfl
   rwa [Polynomial.coeff_C, if_neg (one_ne_zero : 1 ≠ 0), Polynomial.coeff_X, if_pos rfl] at this
 #align free_comm_ring.is_supported_of FreeCommRing.isSupported_of
@@ -386,6 +387,7 @@ theorem coe_eq : ((↑) : FreeRing α → FreeCommRing α) =
     FreeMonoid.recOn L rfl fun hd tl ih => by
       rw [(FreeMonoid.lift _).map_mul, FreeMonoid.lift_eval_of, ih]
       conv_lhs => reduce
+      rfl
 #align free_ring.coe_eq FreeRing.coe_eq
 
 /-- If α has size at most 1 then the natural map from the free ring on `α` to the

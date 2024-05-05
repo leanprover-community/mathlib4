@@ -136,6 +136,7 @@ theorem submodule_mk (v : V) (hv : v ≠ 0) : (mk K v hv).submodule = K ∙ v :=
 
 theorem submodule_eq (v : ℙ K V) : v.submodule = K ∙ v.rep := by
   conv_lhs => rw [← v.mk_rep]
+  rfl
 #align projectivization.submodule_eq Projectivization.submodule_eq
 
 theorem finrank_submodule (v : ℙ K V) : finrank K v.submodule = 1 := by

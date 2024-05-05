@@ -250,7 +250,7 @@ theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.nonempty_compacts.carrier_eq_coe TopologicalSpace.NonemptyCompacts.carrier_eq_coe
 
-@[simp] -- Porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 instance : Sup (NonemptyCompacts α) :=

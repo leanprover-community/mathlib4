@@ -3,9 +3,11 @@ Copyright (c) 2018 Mario Carneiro. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro
 -/
+import Mathlib.Algebra.BigOperators.List.Basic
 import Mathlib.Data.Vector
 import Mathlib.Data.List.Nodup
 import Mathlib.Data.List.OfFn
+import Mathlib.Data.List.InsertNth
 import Mathlib.Control.Applicative
 import Mathlib.Control.Traversable.Basic
 
@@ -67,7 +69,7 @@ theorem eq_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
 #align vector.eq_cons_iff Vector.eq_cons_iff
 
 theorem ne_cons_iff (a : α) (v : Vector α n.succ) (v' : Vector α n) :
-    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne.def, eq_cons_iff a v v', not_and_or]
+    v ≠ a ::ᵥ v' ↔ v.head ≠ a ∨ v.tail ≠ v' := by rw [Ne, eq_cons_iff a v v', not_and_or]
 #align vector.ne_cons_iff Vector.ne_cons_iff
 
 theorem exists_eq_cons (v : Vector α n.succ) : ∃ (a : α) (as : Vector α n), v = a ::ᵥ as :=
@@ -117,12 +119,6 @@ theorem get_eq_get (v : Vector α n) (i : Fin n) :
     v.get i = v.toList.get (Fin.cast v.toList_length.symm i) :=
   rfl
 #align vector.nth_eq_nth_le Vector.get_eq_getₓ
-
--- Porting note: `nthLe` deprecated for `get`
-@[deprecated get_eq_get]
-theorem nth_eq_nthLe :
-    ∀ (v : Vector α n) (i), get v i = v.toList.nthLe i.1 (by rw [toList_length]; exact i.2)
-  | ⟨_, _⟩, _ => rfl
 
 @[simp]
 theorem get_replicate (a : α) (i : Fin n) : (Vector.replicate n a).get i = a := by
@@ -310,9 +306,7 @@ theorem reverse_get_zero {v : Vector α (n + 1)} : v.reverse.head = v.last := by
 section Scan
 
 variable {β : Type*}
-
 variable (f : β → α → β) (b : β)
-
 variable (v : Vector α n)
 
 /-- Construct a `Vector β (n + 1)` from a `Vector α n` by scanning `f : β → α → β`
@@ -661,7 +655,6 @@ namespace Vector
 section Traverse
 
 variable {F G : Type u → Type u}
-
 variable [Applicative F] [Applicative G]
 
 open Applicative Functor
@@ -700,7 +693,6 @@ end
 open Function
 
 variable [LawfulApplicative F] [LawfulApplicative G]
-
 variable {α β γ : Type u}
 
 -- We need to turn off the linter here as
@@ -710,8 +702,8 @@ protected theorem comp_traverse (f : β → F γ) (g : α → G β) (x : Vector 
     Vector.traverse (Comp.mk ∘ Functor.map f ∘ g) x =
       Comp.mk (Vector.traverse f <$> Vector.traverse g x) := by
   induction' x using Vector.inductionOn with n x xs ih
-  simp! [cast, *, functor_norm]
-  · rfl
+  · simp! [cast, *, functor_norm]
+    rfl
   · rw [Vector.traverse_def, ih]
     simp [functor_norm, (· ∘ ·)]
 #align vector.comp_traverse Vector.comp_traverse

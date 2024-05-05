@@ -36,9 +36,7 @@ universe v u v₁ v₂ u₁ u₂
 namespace Monad
 
 variable {C : Type u₁} [Category.{v₁} C]
-
 variable {T : Monad C}
-
 variable {J : Type u} [Category.{v} J]
 
 namespace ForgetCreatesLimits
@@ -279,7 +277,6 @@ theorem forget_creates_colimits_of_monad_preserves [PreservesColimitsOfShape J (
 end Monad
 
 variable {C : Type u₁} [Category.{v₁} C] {D : Type u₂} [Category.{v₂} D]
-
 variable {J : Type u} [Category.{v} J]
 
 instance comp_comparison_forget_hasLimit (F : J ⥤ D) (R : D ⥤ C) [MonadicRightAdjoint R]
@@ -327,7 +324,7 @@ noncomputable def monadicCreatesColimitOfPreservesColimit (R : D ⥤ C) (K : J �
     exact preservesColimitOfIsoDiagram _ (isoWhiskerRight i (leftAdjoint R ⋙ R)).symm
   letI : CreatesColimit (K ⋙ A) B := CategoryTheory.Monad.forgetCreatesColimit _
   letI : CreatesColimit K (A ⋙ B) := CategoryTheory.compCreatesColimit _ _
-  let e := (Monad.comparisonForget (Adjunction.ofRightAdjoint R))
+  let e := Monad.comparisonForget (Adjunction.ofRightAdjoint R)
   apply createsColimitOfNatIso e
 #align category_theory.monadic_creates_colimit_of_preserves_colimit CategoryTheory.monadicCreatesColimitOfPreservesColimit
 
@@ -403,7 +400,7 @@ noncomputable def leftAdjointPreservesTerminalOfReflective (R : D ⥤ C) [Reflec
       apply (asIso ((Adjunction.ofRightAdjoint R).counit.app _)).symm.trans
       apply (leftAdjoint R).mapIso
       letI := monadicCreatesLimits.{v, v} R
-      let A := (CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R)
+      let A := CategoryTheory.preservesLimitOfCreatesLimitAndHasLimit F R
       apply (A.preserves (limit.isLimit F)).conePointUniqueUpToIso h
     apply preservesLimitOfIsoDiagram _ (Functor.emptyExt (F ⋙ R) _)
 #align category_theory.left_adjoint_preserves_terminal_of_reflective CategoryTheory.leftAdjointPreservesTerminalOfReflective

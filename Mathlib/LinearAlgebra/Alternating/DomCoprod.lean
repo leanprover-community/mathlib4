@@ -21,7 +21,6 @@ suppress_compilation
 open BigOperators TensorProduct
 
 variable {ιa ιb : Type*} [Fintype ιa] [Fintype ιb]
-
 variable {R' : Type*} {Mᵢ N₁ N₂ : Type*} [CommSemiring R'] [AddCommGroup N₁] [Module R' N₁]
   [AddCommGroup N₂] [Module R' N₂] [AddCommMonoid Mᵢ] [Module R' Mᵢ]
 

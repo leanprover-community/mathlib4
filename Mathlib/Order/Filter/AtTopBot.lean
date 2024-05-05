@@ -3,14 +3,16 @@ Copyright (c) 2017 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jeremy Avigad, Yury Kudryashov, Patrick Massot
 -/
-import Mathlib.Algebra.Order.Field.Basic
-import Mathlib.Data.Finset.Preimage
-import Mathlib.Data.Set.Intervals.Disjoint
-import Mathlib.Data.Set.Intervals.OrderIso
-import Mathlib.Order.Filter.Bases
-import Mathlib.Order.ConditionallyCompleteLattice.Basic
-import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Algebra.BigOperators.Basic
+import Mathlib.Algebra.GroupPower.Order
+import Mathlib.Algebra.Order.Field.Defs
 import Mathlib.Algebra.Order.Group.Instances
+import Mathlib.Algebra.Order.Group.MinMax
+import Mathlib.Data.Finset.Preimage
+import Mathlib.Order.Interval.Set.Disjoint
+import Mathlib.Order.Interval.Set.OrderIso
+import Mathlib.Order.ConditionallyCompleteLattice.Basic
+import Mathlib.Order.Filter.Bases
 
 #align_import order.filter.at_top_bot from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -30,8 +32,7 @@ set_option autoImplicit true
 variable {ι ι' α β γ : Type*}
 
 open Set
-
-open BigOperators
+open scoped BigOperators
 
 namespace Filter
 
@@ -1036,7 +1037,7 @@ theorem tendsto_pow_atTop_iff {n : ℕ} : Tendsto (fun x : α => x ^ n) atTop at
 
 end LinearOrderedSemiring
 
--- Porting note: todo: make `Odd` and `Even` available here, drop `bit1`
+-- Porting note (#11215): TODO: make `Odd` and `Even` available here, drop `bit1`
 set_option linter.deprecated false in
 theorem nonneg_of_eventually_pow_nonneg [LinearOrderedRing α] {a : α}
     (h : ∀ᶠ n in atTop, 0 ≤ a ^ (n : ℕ)) : 0 ≤ a :=
@@ -1077,7 +1078,7 @@ theorem tendsto_mul_const_atTop_of_pos (hr : 0 < r) :
 /-- If `r` is a positive constant, `x ↦ f x / r` tends to infinity along a filter
 if and only if `f` tends to infinity along the same filter. -/
 lemma tendsto_div_const_atTop_of_pos (hr : 0 < r) :
-    Tendsto (λ x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
+    Tendsto (fun x ↦ f x / r) l atTop ↔ Tendsto f l atTop := by
   simpa only [div_eq_mul_inv] using tendsto_mul_const_atTop_of_pos (inv_pos.2 hr)
 
 /-- If `f` tends to infinity along a nontrivial filter `l`, then
@@ -1099,7 +1100,7 @@ theorem tendsto_mul_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
 /-- If `f` tends to infinity along a nontrivial filter `l`, then
 `x ↦ f x * r` tends to infinity if and only if `0 < r. `-/
 lemma tendsto_div_const_atTop_iff_pos [NeBot l] (h : Tendsto f l atTop) :
-    Tendsto (λ x ↦ f x / r) l atTop ↔ 0 < r := by
+    Tendsto (fun x ↦ f x / r) l atTop ↔ 0 < r := by
   simp only [div_eq_mul_inv, tendsto_mul_const_atTop_iff_pos h, inv_pos]
 
 /-- If `f` tends to infinity along a filter, then `f` multiplied by a positive
@@ -1542,8 +1543,10 @@ theorem tendsto_finset_preimage_atTop_atTop {f : α → β} (hf : Function.Injec
 -- Porting note: generalized from `SemilatticeSup` to `Preorder`
 theorem prod_atTop_atTop_eq [Preorder α] [Preorder β] :
     (atTop : Filter α) ×ˢ (atTop : Filter β) = (atTop : Filter (α × β)) := by
-  cases isEmpty_or_nonempty α; exact Subsingleton.elim _ _
-  cases isEmpty_or_nonempty β; exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty α
+  · exact Subsingleton.elim _ _
+  cases isEmpty_or_nonempty β
+  · exact Subsingleton.elim _ _
   simpa [atTop, prod_iInf_left, prod_iInf_right, iInf_prod] using iInf_comm
 #align filter.prod_at_top_at_top_eq Filter.prod_atTop_atTop_eq
 
@@ -1621,12 +1624,12 @@ theorem eventually_atTop_prod_self [SemilatticeSup α] [Nonempty α] {p : α × 
 
 theorem eventually_atBot_prod_self' [SemilatticeInf α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atBot, p x) ↔ ∃ a, ∀ k ≤ a, ∀ l ≤ a, p (k, l) := by
-  simp only [eventually_atBot_prod_self, ball_cond_comm]
+  simp only [eventually_atBot_prod_self, forall_cond_comm]
 #align filter.eventually_at_bot_prod_self' Filter.eventually_atBot_prod_self'
 
 theorem eventually_atTop_prod_self' [SemilatticeSup α] [Nonempty α] {p : α × α → Prop} :
     (∀ᶠ x in atTop, p x) ↔ ∃ a, ∀ k ≥ a, ∀ l ≥ a, p (k, l) := by
-  simp only [eventually_atTop_prod_self, ball_cond_comm]
+  simp only [eventually_atTop_prod_self, forall_cond_comm]
 #align filter.eventually_at_top_prod_self' Filter.eventually_atTop_prod_self'
 
 theorem eventually_atTop_curry [SemilatticeSup α] [SemilatticeSup β] {p : α × β → Prop}
@@ -1939,7 +1942,7 @@ theorem HasAntitoneBasis.subbasis_with_rel {f : Filter α} {s : ℕ → Set α}
   have : ∀ t : Set ℕ, t.Finite → ∀ᶠ n in atTop, ∀ m ∈ t, m < n ∧ r m n := fun t ht =>
     (eventually_all_finite ht).2 fun m _ => (eventually_gt_atTop m).and (hr _)
   rcases seq_of_forall_finite_exists fun t ht => (this t ht).exists with ⟨φ, hφ⟩
-  simp only [ball_image_iff, forall_and, mem_Iio] at hφ
+  simp only [forall_mem_image, forall_and, mem_Iio] at hφ
   exact ⟨φ, forall_swap.2 hφ.1, forall_swap.2 hφ.2⟩
 #align filter.has_antitone_basis.subbasis_with_rel Filter.HasAntitoneBasis.subbasis_with_rel
 
@@ -2078,7 +2081,7 @@ theorem Monotone.piecewise_eventually_eq_iUnion {β : α → Type*} [Preorder ι
   rcases em (∃ i, a ∈ s i) with ⟨i, hi⟩ | ha
   · refine (eventually_ge_atTop i).mono fun j hij ↦ ?_
     simp only [Set.piecewise_eq_of_mem, hs hij hi, subset_iUnion _ _ hi]
-  · refine eventually_of_forall fun i ↦ ?_
+  · filter_upwards with i
     simp only [Set.piecewise_eq_of_not_mem, not_exists.1 ha i, mt mem_iUnion.1 ha,
       not_false_eq_true, exists_false]
 
@@ -2096,7 +2099,7 @@ to a commutative monoid. Suppose that `f x = 1` outside of the range of `g`. The
 `atTop.map (fun s ↦ ∏ i in s, f (g i))` and `atTop.map (fun s ↦ ∏ i in s, f i)` coincide.
 
 The additive version of this lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 @[to_additive]
 theorem Function.Injective.map_atTop_finset_prod_eq [CommMonoid α] {g : γ → β}
     (hg : Function.Injective g) {f : β → α} (hf : ∀ x, x ∉ Set.range g → f x = 1) :
@@ -2122,5 +2125,5 @@ to an additive commutative monoid. Suppose that `f x = 0` outside of the range o
 filters `atTop.map (fun s ↦ ∑ i in s, f (g i))` and `atTop.map (fun s ↦ ∑ i in s, f i)` coincide.
 
 This lemma is used to prove the equality `∑' x, f (g x) = ∑' y, f y` under
-the same assumptions.-/
+the same assumptions. -/
 add_decl_doc Function.Injective.map_atTop_finset_sum_eq

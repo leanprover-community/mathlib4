@@ -145,7 +145,8 @@ set_option autoImplicit true
 
 noncomputable section
 
-open MeasureTheory Set Classical Filter Function
+open scoped Classical
+open MeasureTheory Set Filter Function
 
 open scoped Classical Topology Filter ENNReal BigOperators Interval NNReal
 
@@ -1060,7 +1061,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
             ENNReal.toReal_ofReal]
         _ ≤ ∫ w in t..u, (G' w).toReal := by
           rw [intervalIntegral.integral_of_le hu.1.le, ← integral_Icc_eq_integral_Ioc]
-          apply set_integral_mono_ae_restrict
+          apply setIntegral_mono_ae_restrict
           · simp only [integrableOn_const, Real.volume_Icc, ENNReal.ofReal_lt_top, or_true_iff]
           · exact IntegrableOn.mono_set G'int I
           · have C1 : ∀ᵐ x : ℝ ∂volume.restrict (Icc t u), G' x < ∞ :=
@@ -1095,7 +1096,7 @@ theorem sub_le_integral_of_hasDeriv_right_of_le_Ico (hab : a ≤ b)
     refine' ⟨x, _, Ioc_subset_Ioc le_rfl (min_le_left _ _) h'x⟩
     calc
       g x - g a = g t - g a + (g x - g t) := by abel
-      _ ≤ (∫ w in a..t, (G' w).toReal) + ∫ w in t..x, (G' w).toReal := (add_le_add ht.1 hx)
+      _ ≤ (∫ w in a..t, (G' w).toReal) + ∫ w in t..x, (G' w).toReal := add_le_add ht.1 hx
       _ = ∫ w in a..x, (G' w).toReal := by
         apply integral_add_adjacent_intervals
         · rw [intervalIntegrable_iff_integrableOn_Ioc_of_le ht.2.1]
@@ -1250,7 +1251,7 @@ theorem integral_deriv_eq_sub' (f) (hderiv : deriv f = f')
 
 /-- A variant of `intervalIntegral.integral_deriv_eq_sub`, the Fundamental theorem
 of calculus, involving integrating over the unit interval. -/
-lemma integral_unitInterval_deriv_eq_sub [IsROrC 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
+lemma integral_unitInterval_deriv_eq_sub [RCLike 𝕜] [NormedSpace 𝕜 E] [IsScalarTower ℝ 𝕜 E]
     {f f' : 𝕜 → E} {z₀ z₁ : 𝕜}
     (hcont : ContinuousOn (fun t : ℝ ↦ f' (z₀ + t • z₁)) (Set.Icc 0 1))
     (hderiv : ∀ t ∈ Set.Icc (0 : ℝ) 1, HasDerivAt f (f' (z₀ + t • z₁)) (z₀ + t • z₁)) :
@@ -1340,25 +1341,123 @@ section Parts
 
 variable [NormedRing A] [NormedAlgebra ℝ A] [CompleteSpace A]
 
-theorem integral_deriv_mul_eq_sub {u v u' v' : ℝ → A} (hu : ∀ x ∈ uIcc a b, HasDerivAt u (u' x) x)
-    (hv : ∀ x ∈ uIcc a b, HasDerivAt v (v' x) x) (hu' : IntervalIntegrable u' volume a b)
+/-- The integral of the derivative of a product of two maps.
+For improper integrals, see `MeasureTheory.integral_deriv_mul_eq_sub`,
+`MeasureTheory.integral_Ioi_deriv_mul_eq_sub`, and `MeasureTheory.integral_Iic_deriv_mul_eq_sub`. -/
+theorem integral_deriv_mul_eq_sub_of_hasDeriv_right {u v u' v' : ℝ → A}
+    (hu : ContinuousOn u [[a, b]])
+    (hv : ContinuousOn v [[a, b]])
+    (huu' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt u (u' x) (Ioi x) x)
+    (hvv' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt v (v' x) (Ioi x) x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u' x * v x + u x * v' x = u b * v b - u a * v a := by
+  apply integral_eq_sub_of_hasDeriv_right (hu.mul hv) fun x hx ↦ (huu' x hx).mul (hvv' x hx)
+  exact (hu'.mul_continuousOn hv).add (hv'.continuousOn_mul hu)
+
+/-- The integral of the derivative of a product of two maps.
+Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
+two-sided derivative in the interior of the interval. -/
+theorem integral_deriv_mul_eq_sub_of_hasDerivAt {u v u' v' : ℝ → A}
+    (hu : ContinuousOn u [[a, b]])
+    (hv : ContinuousOn v [[a, b]])
+    (huu' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt u (u' x) x)
+    (hvv' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt v (v' x) x)
+    (hu' : IntervalIntegrable u' volume a b)
     (hv' : IntervalIntegrable v' volume a b) :
     ∫ x in a..b, u' x * v x + u x * v' x = u b * v b - u a * v a :=
-  (integral_eq_sub_of_hasDerivAt fun x hx => (hu x hx).mul (hv x hx)) <|
-    (hu'.mul_continuousOn (HasDerivAt.continuousOn hv)).add
-      (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))
+  integral_deriv_mul_eq_sub_of_hasDeriv_right hu hv
+    (fun x hx ↦ huu' x hx |>.hasDerivWithinAt) (fun x hx ↦ hvv' x hx |>.hasDerivWithinAt) hu' hv'
+
+/-- The integral of the derivative of a product of two maps.
+Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
+  one-sided derivative at the endpoints. -/
+theorem integral_deriv_mul_eq_sub_of_hasDerivWithinAt {u v u' v' : ℝ → A}
+    (hu : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x)
+    (hv : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u' x * v x + u x * v' x = u b * v b - u a * v a :=
+  integral_deriv_mul_eq_sub_of_hasDerivAt
+    (fun x hx ↦ (hu x hx).continuousWithinAt)
+    (fun x hx ↦ (hv x hx).continuousWithinAt)
+    (fun x hx ↦ hu x (mem_Icc_of_Ioo hx) |>.hasDerivAt (Icc_mem_nhds hx.1 hx.2))
+    (fun x hx ↦ hv x (mem_Icc_of_Ioo hx) |>.hasDerivAt (Icc_mem_nhds hx.1 hx.2))
+    hu' hv'
+
+/-- Special case of `integral_deriv_mul_eq_sub_of_hasDeriv_right` where the functions have a
+  derivative at the endpoints. -/
+theorem integral_deriv_mul_eq_sub {u v u' v' : ℝ → A}
+    (hu : ∀ x ∈ [[a, b]], HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ [[a, b]], HasDerivAt v (v' x) x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u' x * v x + u x * v' x = u b * v b - u a * v a :=
+  integral_deriv_mul_eq_sub_of_hasDerivWithinAt
+    (fun x hx ↦ hu x hx |>.hasDerivWithinAt) (fun x hx ↦ hv x hx |>.hasDerivWithinAt) hu' hv'
 #align interval_integral.integral_deriv_mul_eq_sub intervalIntegral.integral_deriv_mul_eq_sub
 
-theorem integral_mul_deriv_eq_deriv_mul {u v u' v' : ℝ → A}
-    (hu : ∀ x ∈ uIcc a b, HasDerivAt u (u' x) x) (hv : ∀ x ∈ uIcc a b, HasDerivAt v (v' x) x)
-    (hu' : IntervalIntegrable u' volume a b) (hv' : IntervalIntegrable v' volume a b) :
+/-- **Integration by parts**. For improper integrals, see
+`MeasureTheory.integral_mul_deriv_eq_deriv_mul`,
+`MeasureTheory.integral_Ioi_mul_deriv_eq_deriv_mul`,
+and `MeasureTheory.integral_Iic_mul_deriv_eq_deriv_mul`. -/
+theorem integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right {u v u' v' : ℝ → A}
+    (hu : ContinuousOn u [[a, b]])
+    (hv : ContinuousOn v [[a, b]])
+    (huu' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt u (u' x) (Ioi x) x)
+    (hvv' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivWithinAt v (v' x) (Ioi x) x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
     ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x := by
-  rw [← integral_deriv_mul_eq_sub hu hv hu' hv', ← integral_sub]
-  · exact integral_congr fun x _ => by simp only [add_sub_cancel']
-  · exact
-      (hu'.mul_continuousOn (HasDerivAt.continuousOn hv)).add
-        (hv'.continuousOn_mul (HasDerivAt.continuousOn hu))
-  · exact hu'.mul_continuousOn (HasDerivAt.continuousOn hv)
+  rw [← integral_deriv_mul_eq_sub_of_hasDeriv_right hu hv huu' hvv' hu' hv', ← integral_sub]
+  · simp_rw [add_sub_cancel_left]
+  · exact (hu'.mul_continuousOn hv).add (hv'.continuousOn_mul hu)
+  · exact hu'.mul_continuousOn hv
+
+/-- **Integration by parts**. Special case of `integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right`
+where the functions have a two-sided derivative in the interior of the interval. -/
+theorem integral_mul_deriv_eq_deriv_mul_of_hasDerivAt {u v u' v' : ℝ → A}
+    (hu : ContinuousOn u [[a, b]])
+    (hv : ContinuousOn v [[a, b]])
+    (huu' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt u (u' x) x)
+    (hvv' : ∀ x ∈ Ioo (min a b) (max a b), HasDerivAt v (v' x) x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x :=
+  integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right hu hv
+        (fun x hx ↦ (huu' x hx).hasDerivWithinAt) (fun x hx ↦ (hvv' x hx).hasDerivWithinAt) hu' hv'
+
+/-- **Integration by parts**. Special case of
+`intervalIntegrable.integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right`
+where the functions have a one-sided derivative at the endpoints. -/
+theorem integral_mul_deriv_eq_deriv_mul_of_hasDerivWithinAt {u v u' v' : ℝ → A}
+    (hu : ∀ x ∈ [[a, b]], HasDerivWithinAt u (u' x) [[a, b]] x)
+    (hv : ∀ x ∈ [[a, b]], HasDerivWithinAt v (v' x) [[a, b]] x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x :=
+  integral_mul_deriv_eq_deriv_mul_of_hasDerivAt
+    (fun x hx ↦ (hu x hx).continuousWithinAt)
+    (fun x hx ↦ (hv x hx).continuousWithinAt)
+    (fun x hx ↦ hu x (mem_Icc_of_Ioo hx) |>.hasDerivAt (Icc_mem_nhds hx.1 hx.2))
+    (fun x hx ↦ hv x (mem_Icc_of_Ioo hx) |>.hasDerivAt (Icc_mem_nhds hx.1 hx.2))
+    hu' hv'
+
+/-- **Integration by parts**. Special case of
+`intervalIntegrable.integral_mul_deriv_eq_deriv_mul_of_hasDeriv_right`
+where the functions have a derivative also at the endpoints.
+For improper integrals, see
+`MeasureTheory.integral_mul_deriv_eq_deriv_mul`,
+`MeasureTheory.integral_Ioi_mul_deriv_eq_deriv_mul`,
+and `MeasureTheory.integral_Iic_mul_deriv_eq_deriv_mul`. -/
+theorem integral_mul_deriv_eq_deriv_mul {u v u' v' : ℝ → A}
+    (hu : ∀ x ∈ [[a, b]], HasDerivAt u (u' x) x)
+    (hv : ∀ x ∈ [[a, b]], HasDerivAt v (v' x) x)
+    (hu' : IntervalIntegrable u' volume a b)
+    (hv' : IntervalIntegrable v' volume a b) :
+    ∫ x in a..b, u x * v' x = u b * v b - u a * v a - ∫ x in a..b, u' x * v x :=
+  integral_mul_deriv_eq_deriv_mul_of_hasDerivWithinAt
+    (fun x hx ↦ (hu x hx).hasDerivWithinAt) (fun x hx ↦ (hv x hx).hasDerivWithinAt) hu' hv'
 #align interval_integral.integral_mul_deriv_eq_deriv_mul intervalIntegral.integral_mul_deriv_eq_deriv_mul
 
 end Parts

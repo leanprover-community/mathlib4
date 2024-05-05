@@ -3,9 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Data.Polynomial.RingDivision
 
 #align_import analysis.special_functions.polynomials from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 

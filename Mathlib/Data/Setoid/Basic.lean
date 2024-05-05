@@ -443,6 +443,15 @@ def correspondence (r : Setoid α) : { s // r ≤ s } ≃o Setoid (Quotient r) w
     ⟨fun h x y hs ↦ @h ⟦x⟧ ⟦y⟧ hs, fun h x y ↦ Quotient.inductionOn₂ x y fun _ _ hs ↦ h hs⟩
 #align setoid.correspondence Setoid.correspondence
 
+/-- Given two equivalence relations with `r ≤ s`, a bijection between the sum of the quotients by
+`r` on each equivalence class by `s` and the quotient by `r`. -/
+def sigmaQuotientEquivOfLe {r s : Setoid α} (hle : r ≤ s) :
+    (Σ q : Quotient s, Quotient (r.comap (Subtype.val : Quotient.mk s ⁻¹' {q} → α))) ≃
+      Quotient r :=
+  .trans (.symm <| .sigmaCongrRight fun _ ↦ .subtypeQuotientEquivQuotientSubtype
+      (s₁ := r) (s₂ := r.comap Subtype.val) _ (fun _ ↦ Iff.rfl) fun _ _ ↦ Iff.rfl)
+    (.sigmaFiberEquiv fun a ↦ a.lift (Quotient.mk s) fun _ _ h ↦ Quotient.sound <| hle h)
+
 end Setoid
 
 @[simp]
@@ -460,6 +469,5 @@ theorem Quot.subsingleton_iff (r : α → α → Prop) : Subsingleton (Quot r) �
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun a => _)
   refine' (surjective_quot_mk _).forall.trans (forall_congr' fun b => _)
   rw [Quot.eq]
-  simp only [forall_const, le_Prop_eq, OrderTop.toTop, Pi.orderTop, Pi.top_apply,
-             Prop.top_eq_true, true_implies]
+  simp only [forall_const, le_Prop_eq, Pi.top_apply, Prop.top_eq_true, true_implies]
 #align quot.subsingleton_iff Quot.subsingleton_iff

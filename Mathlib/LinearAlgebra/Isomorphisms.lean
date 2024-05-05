@@ -19,11 +19,8 @@ import Mathlib.LinearAlgebra.Quotient
 universe u v
 
 variable {R M M₂ M₃ : Type*}
-
 variable [Ring R] [AddCommGroup M] [AddCommGroup M₂] [AddCommGroup M₃]
-
 variable [Module R M] [Module R M₂] [Module R M₃]
-
 variable (f : M →ₗ[R] M₂)
 
 /-! The first and second isomorphism theorems for modules. -/
@@ -94,7 +91,7 @@ theorem quotientInfEquivSupQuotient_surjective (p p' : Submodule R M) :
   rw [← range_eq_top, quotientInfToSupQuotient, range_liftQ, eq_top_iff']
   rintro ⟨x, hx⟩; rcases mem_sup.1 hx with ⟨y, hy, z, hz, rfl⟩
   use ⟨y, hy⟩; apply (Submodule.Quotient.eq _).2
-  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel', neg_mem_iff, hz]
+  simp only [mem_comap, map_sub, coeSubtype, coe_inclusion, sub_add_cancel_left, neg_mem_iff, hz]
 
 /--
 Second Isomorphism Law : the canonical map from `p/(p ∩ p')` to `(p+p')/p'` as a linear isomorphism.
@@ -171,6 +168,7 @@ theorem quotientQuotientEquivQuotientAux_mk (x : M ⧸ S) :
   liftQ_apply _ _ _
 #align submodule.quotient_quotient_equiv_quotient_aux_mk Submodule.quotientQuotientEquivQuotientAux_mk
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem quotientQuotientEquivQuotientAux_mk_mk (x : M) :
     quotientQuotientEquivQuotientAux S T h (Quotient.mk (Quotient.mk x)) = Quotient.mk x := by simp

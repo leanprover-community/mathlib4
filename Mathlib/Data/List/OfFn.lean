@@ -44,7 +44,7 @@ theorem length_ofFn {n} (f : Fin n → α) : length (ofFn f) = n := by
 
 #noalign list.nth_of_fn_aux
 
--- Porting note: new theorem
+-- Porting note (#10756): new theorem
 @[simp]
 theorem get_ofFn {n} (f : Fin n → α) (i) : get (ofFn f) i = f (Fin.cast (by simp) i) := by
   have := Array.getElem_ofFn f i (by simpa using i.2)
@@ -60,21 +60,21 @@ theorem get?_ofFn {n} (f : Fin n → α) (i) : get? (ofFn f) i = ofFnNthVal f i 
   if h : i < (ofFn f).length
   then by
     rw [get?_eq_get h, get_ofFn]
-    · simp at h; simp [ofFnNthVal, h]
+    · simp only [length_ofFn] at h; simp [ofFnNthVal, h]
   else by
     rw [ofFnNthVal, dif_neg] <;>
     simpa using h
 #align list.nth_of_fn List.get?_ofFn
 
 set_option linter.deprecated false in
-@[deprecated get_ofFn]
+@[deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn {n} (f : Fin n → α) (i : Fin n) :
     nthLe (ofFn f) i ((length_ofFn f).symm ▸ i.2) = f i := by
   simp [nthLe]
 #align list.nth_le_of_fn List.nthLe_ofFn
 
 set_option linter.deprecated false in
-@[simp, deprecated get_ofFn]
+@[simp, deprecated get_ofFn] -- 2023-01-17
 theorem nthLe_ofFn' {n} (f : Fin n → α) {i : ℕ} (h : i < (ofFn f).length) :
     nthLe (ofFn f) i h = f ⟨i, length_ofFn f ▸ h⟩ :=
   nthLe_ofFn f ⟨i, length_ofFn f ▸ h⟩
@@ -189,7 +189,7 @@ theorem ofFn_get : ∀ l : List α, (ofFn (get l)) = l
     exact ofFn_get l
 
 set_option linter.deprecated false in
-@[deprecated ofFn_get]
+@[deprecated ofFn_get] -- 2023-01-17
 theorem ofFn_nthLe : ∀ l : List α, (ofFn fun i => nthLe l i i.2) = l :=
   ofFn_get
 #align list.of_fn_nth_le List.ofFn_nthLe
@@ -203,7 +203,7 @@ theorem mem_ofFn {n} (f : Fin n → α) (a : α) : a ∈ ofFn f ↔ a ∈ Set.ra
 
 @[simp]
 theorem forall_mem_ofFn_iff {n : ℕ} {f : Fin n → α} {P : α → Prop} :
-    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_range_iff]
+    (∀ i ∈ ofFn f, P i) ↔ ∀ j : Fin n, P (f j) := by simp only [mem_ofFn, Set.forall_mem_range]
 #align list.forall_mem_of_fn_iff List.forall_mem_ofFn_iff
 
 @[simp]

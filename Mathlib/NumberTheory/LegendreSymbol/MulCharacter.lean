@@ -365,7 +365,7 @@ theorem inv_apply' {R : Type u} [Field R] (χ : MulChar R R') (a : R) : χ⁻¹ 
 #align mul_char.inv_apply' MulChar.inv_apply'
 
 /-- The product of a character with its inverse is the trivial character. -/
--- Porting note: @[simp] can prove this (later)
+-- Porting note (#10618): @[simp] can prove this (later)
 theorem inv_mul (χ : MulChar R R') : χ⁻¹ * χ = 1 := by
   ext x
   rw [coeToFun_mul, Pi.mul_apply, inv_apply_eq_inv]
@@ -440,7 +440,7 @@ def IsNontrivial (χ : MulChar R R') : Prop :=
 
 /-- A multiplicative character is nontrivial iff it is not the trivial character. -/
 theorem isNontrivial_iff (χ : MulChar R R') : χ.IsNontrivial ↔ χ ≠ 1 := by
-  simp only [IsNontrivial, Ne.def, ext_iff, not_forall, one_apply_coe]
+  simp only [IsNontrivial, Ne, ext_iff, not_forall, one_apply_coe]
 #align mul_char.is_nontrivial_iff MulChar.isNontrivial_iff
 
 end nontrivial
@@ -551,12 +551,12 @@ theorem IsNontrivial.sum_eq_zero [IsDomain R'] {χ : MulChar R R'}
 
 /-- The sum over all values of the trivial multiplicative character on a finite ring is
 the cardinality of its unit group. -/
-theorem sum_one_eq_card_units [Fintype R] [DecidableEq R] :
+theorem sum_one_eq_card_units [DecidableEq R] :
     (∑ a, (1 : MulChar R R') a) = Fintype.card Rˣ := by
   calc
     (∑ a, (1 : MulChar R R') a) = ∑ a : R, if IsUnit a then 1 else 0 :=
       Finset.sum_congr rfl fun a _ => ?_
-    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole
+    _ = ((Finset.univ : Finset R).filter IsUnit).card := Finset.sum_boole _ _
     _ = (Finset.univ.map ⟨((↑) : Rˣ → R), Units.ext⟩).card := ?_
     _ = Fintype.card Rˣ := congr_arg _ (Finset.card_map _)
   · split_ifs with h

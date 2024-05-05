@@ -30,7 +30,6 @@ open BigOperators Affine
 section AffineSpace'
 
 variable (k : Type*) {V : Type*} {P : Type*}
-
 variable {ι : Type*}
 
 open AffineSubspace FiniteDimensional Module
@@ -187,7 +186,6 @@ theorem affineIndependent_iff_finrank_vectorSpan_eq [Fintype ι] (p : ι → P) 
   rw [affineIndependent_iff_linearIndependent_vsub _ _ i₁,
     linearIndependent_iff_card_eq_finrank_span, eq_comm,
     vectorSpan_range_eq_span_range_vsub_right_ne k p i₁, Set.finrank]
-  congr
   rw [← Finset.card_univ] at hc
   rw [Fintype.subtype_card]
   simp [Finset.filter_ne', Finset.card_erase_of_mem, hc]
@@ -824,7 +822,6 @@ namespace AffineBasis
 universe u₁ u₂ u₃ u₄
 
 variable {ι : Type u₁} {k : Type u₂} {V : Type u₃} {P : Type u₄}
-
 variable [AddCommGroup V] [AffineSpace V P]
 
 section DivisionRing

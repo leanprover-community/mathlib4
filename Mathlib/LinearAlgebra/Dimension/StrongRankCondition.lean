@@ -43,7 +43,6 @@ noncomputable section
 universe u v w w'
 
 variable {R : Type u} {M : Type v} [Ring R] [AddCommGroup M] [Module R M]
-
 variable {ι : Type w} {ι' : Type w'}
 
 open BigOperators Cardinal Basis Submodule Function Set
@@ -114,7 +113,7 @@ theorem Basis.le_span'' {ι : Type*} [Fintype ι] (b : Basis ι R M) {w : Set M}
   fapply card_le_of_surjective' R
   · exact b.repr.toLinearMap.comp (Finsupp.total w M R (↑))
   · apply Surjective.comp (g := b.repr.toLinearMap)
-    apply LinearEquiv.surjective
+    · apply LinearEquiv.surjective
     rw [← LinearMap.range_eq_top, Finsupp.range_total]
     simpa using s
 #align basis.le_span'' Basis.le_span''
@@ -471,7 +470,8 @@ theorem rank_lt_aleph0 [Module.Finite R M] : Module.rank R M < ℵ₀ := by
   exact linearIndependent_le_span_finset _ i.prop S hS
 #align finite_dimensional.rank_lt_aleph_0 rank_lt_aleph0
 
-@[deprecated] protected alias FiniteDimensional.rank_lt_aleph0 := rank_lt_aleph0
+@[deprecated (since := "2024-01-01")]
+protected alias FiniteDimensional.rank_lt_aleph0 := rank_lt_aleph0
 
 /-- If `M` is finite, `finrank M = rank M`. -/
 @[simp]
@@ -480,7 +480,8 @@ theorem finrank_eq_rank [Module.Finite R M] :
   rw [FiniteDimensional.finrank, cast_toNat_of_lt_aleph0 (rank_lt_aleph0 R M)]
 #align finite_dimensional.finrank_eq_rank finrank_eq_rank
 
-@[deprecated] protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
+@[deprecated (since := "2024-01-01")]
+protected alias FiniteDimensional.finrank_eq_rank := finrank_eq_rank
 
 variable {R M}
 variable {M'} [AddCommGroup M'] [Module R M']

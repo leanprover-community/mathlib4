@@ -51,7 +51,7 @@ instance existsMulOfLe {ι : Type*} {α : ι → Type*} [∀ i, LE (α i)] [∀ 
 a canonically ordered additive monoid."]
 instance {ι : Type*} {Z : ι → Type*} [∀ i, CanonicallyOrderedCommMonoid (Z i)] :
     CanonicallyOrderedCommMonoid (∀ i, Z i) where
-  __ := Pi.orderBot
+  __ := Pi.instOrderBot
   __ := Pi.orderedCommMonoid
   __ := Pi.existsMulOfLe
   le_self_mul _ _ := fun _ => le_self_mul

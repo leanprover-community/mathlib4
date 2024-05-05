@@ -175,8 +175,8 @@ def braiding : C × D ≌ D × C :=
     (NatIso.ofComponents fun X => eqToIso (by simp))
 #align category_theory.prod.braiding CategoryTheory.Prod.braiding
 
-instance swapIsEquivalence : IsEquivalence (swap C D) :=
-  (by infer_instance : IsEquivalence (braiding C D).functor)
+instance swapIsEquivalence : (swap C D).IsEquivalence :=
+  (by infer_instance : (braiding C D).functor.IsEquivalence)
 #align category_theory.prod.swap_is_equivalence CategoryTheory.Prod.swapIsEquivalence
 
 end Prod
@@ -384,11 +384,11 @@ open Opposite
 @[simps]
 def prodOpEquiv : (C × D)ᵒᵖ ≌ Cᵒᵖ × Dᵒᵖ where
   functor :=
-    { obj := λ X => ⟨op X.unop.1, op X.unop.2⟩,
-      map := λ f => ⟨f.unop.1.op, f.unop.2.op⟩ }
+    { obj := fun X ↦ ⟨op X.unop.1, op X.unop.2⟩,
+      map := fun f ↦ ⟨f.unop.1.op, f.unop.2.op⟩ }
   inverse :=
-    { obj := λ ⟨X,Y⟩ => op ⟨X.unop, Y.unop⟩,
-      map := λ ⟨f,g⟩ => op ⟨f.unop, g.unop⟩ }
+    { obj := fun ⟨X,Y⟩ ↦ op ⟨X.unop, Y.unop⟩,
+      map := fun ⟨f,g⟩ ↦ op ⟨f.unop, g.unop⟩ }
   unitIso := Iso.refl _
   counitIso := Iso.refl _
   functor_unitIso_comp := fun ⟨X, Y⟩ => by

@@ -25,7 +25,7 @@ having to supply instances or delay with non-defeq conflicts between instances.
 
 universe w v u
 
-open Classical
+open scoped Classical
 
 noncomputable section
 

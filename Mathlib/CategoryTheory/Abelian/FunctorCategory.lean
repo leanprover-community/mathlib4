@@ -31,7 +31,6 @@ universe z w v u
 -- Porting note: removed restrictions on universes
 
 variable {C : Type u} [Category.{v} C]
-
 variable {D : Type w} [Category.{z} D] [Abelian D]
 
 namespace FunctorCategory
@@ -74,6 +73,7 @@ theorem coimageImageComparison_app :
   erw [kernelComparison_comp_ι _ ((evaluation C D).obj X),
     π_comp_cokernelComparison_assoc _ ((evaluation C D).obj X)]
   conv_lhs => rw [← coimage_image_factorisation α]
+  rfl
 #align category_theory.abelian.functor_category.coimage_image_comparison_app CategoryTheory.Abelian.FunctorCategory.coimageImageComparison_app
 
 theorem coimageImageComparison_app' :

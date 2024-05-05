@@ -28,11 +28,8 @@ namespace Submodule
 open LinearMap
 
 variable {ι R : Type*} [CommRing R]
-
 variable {Ms : ι → Type*} [∀ i, AddCommGroup (Ms i)] [∀ i, Module R (Ms i)]
-
 variable {N : Type*} [AddCommGroup N] [Module R N]
-
 variable {Ns : ι → Type*} [∀ i, AddCommGroup (Ns i)] [∀ i, Module R (Ns i)]
 
 /-- Lift a family of maps to the direct sum of quotients. -/
@@ -41,6 +38,7 @@ def piQuotientLift [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
   lsum R (fun i => Ms i ⧸ p i) R fun i => (p i).mapQ q (f i) (hf i)
 #align submodule.pi_quotient_lift Submodule.piQuotientLift
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem piQuotientLift_mk [Fintype ι] [DecidableEq ι] (p : ∀ i, Submodule R (Ms i))
     (q : Submodule R N) (f : ∀ i, Ms i →ₗ[R] N) (hf : ∀ i, p i ≤ q.comap (f i)) (x : ∀ i, Ms i) :
