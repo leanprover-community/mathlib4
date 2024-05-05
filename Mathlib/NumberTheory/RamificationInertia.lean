@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anne Baanen
 -/
 import Mathlib.RingTheory.DedekindDomain.Ideal
+set_option profiler  true
 
 #align_import number_theory.ramification_inertia from "leanprover-community/mathlib"@"039a089d2a4b93c761b234f3e5f5aeb752bac60f"
 
@@ -39,6 +40,14 @@ leaving `p` and `P` implicit.
 
 -/
 
+-- Modify instance priorities to speed up typeclass synthesis
+attribute [local instance 90] DistribMulActionSemiHomClass.toAddMonoidHomClass
+attribute [local instance 1100] CommRing.toCommSemiring
+attribute [local instance 1100] Ring.toSemiring
+attribute [local instance 1100] Submodule.module'
+attribute [local instance 1100] CommRing.toRing
+attribute [local instance 1100] Algebra.toSMul
+attribute [local instance 1100] Algebra.toModule
 
 namespace Ideal
 
@@ -206,7 +215,12 @@ theorem inertiaDeg_of_subsingleton [hp : p.IsMaximal] [hQ : Subsingleton (S ⧸ 
 theorem inertiaDeg_algebraMap [Algebra R S] [Algebra (R ⧸ p) (S ⧸ P)]
     [IsScalarTower R (R ⧸ p) (S ⧸ P)] [hp : p.IsMaximal] :
     inertiaDeg (algebraMap R S) p P = finrank (R ⧸ p) (S ⧸ P) := by
-  nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
+  -- trying to infer `Nontrivial (S ⧸ P)` takes fairly long
+  -- nontriviality S ⧸ P using inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton
+  rcases subsingleton_or_nontrivial (S ⧸ P) with H | H
+  · -- deal with the `Subsingleton` case
+    rw [inertiaDeg_of_subsingleton, finrank_zero_of_subsingleton]
+  -- now have `Nontrivial (S ⧸ P)`
   have := comap_eq_of_scalar_tower_quotient (algebraMap (R ⧸ p) (S ⧸ P)).injective
   rw [inertiaDeg, dif_pos this]
   congr
@@ -323,8 +337,10 @@ theorem FinrankQuotientMap.span_eq_top [IsDomain R] [IsDomain S] [Algebra K L] [
   let B := A.adjugate
   have A_smul : ∀ i, ∑ j, A i j • a j = 0 := by
     intros
-    simp [A, Matrix.sub_apply, Matrix.of_apply, ne_eq, Matrix.one_apply, sub_smul,
-      Finset.sum_sub_distrib, hA', sub_self]
+    -- `simp` squeezed
+    simp only [Matrix.sub_apply, Matrix.of_apply, Matrix.one_apply, sub_smul, ite_smul, one_smul,
+      zero_smul, Finset.sum_sub_distrib, hA', Finset.sum_ite_eq, Finset.mem_univ, ↓reduceIte,
+      sub_self, A]
   -- since `span S {det A} / M = 0`.
   have d_smul : ∀ i, A.det • a i = 0 := by
     intro i
@@ -396,6 +412,8 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
   -- We'll use the previous results to turn it into a basis on `[Frac(S) : Frac(R)]`.
   letI : Field (R ⧸ p) := Ideal.Quotient.field _
   let ι := Module.Free.ChooseBasisIndex (R ⧸ p) (S ⧸ map (algebraMap R S) p)
+  -- add explicit instance to avoid slow instance search
+  have ιFin : Fintype ι := Module.Free.ChooseBasisIndex.fintype (R ⧸ p) (S ⧸ map (algebraMap R S) p)
   let b : Basis ι (R ⧸ p) (S ⧸ map (algebraMap R S) p) := Module.Free.chooseBasis _ _
   -- Namely, choose a representative `b' i : S` for each `b i : S / pS`.
   let b' : ι → S := fun i => (Ideal.Quotient.mk_surjective (b i)).choose
@@ -428,8 +446,9 @@ theorem finrank_quotient_map [IsDomain S] [IsDedekindDomain R] [Algebra K L]
       Submodule.Quotient.eq] at y_eq
     exact add_mem (Submodule.mem_sup_left y_mem) (neg_mem <| Submodule.mem_sup_right y_eq)
   · have := b.linearIndependent; rw [b_eq_b'] at this
-    convert FinrankQuotientMap.linearIndependent_of_nontrivial K _
-        ((Algebra.linearMap S L).restrictScalars R) _ ((Submodule.mkQ _).restrictScalars R) this
+    -- replaced `convert` by `refine` to speed it up
+    refine FinrankQuotientMap.linearIndependent_of_nontrivial K ?_
+        ((Algebra.linearMap S L).restrictScalars R) ?_ ((Submodule.mkQ _).restrictScalars R) this
     · rw [Quotient.algebraMap_eq, Ideal.mk_ker]
       exact hp.ne_top
     · exact IsFractionRing.injective S L
@@ -479,24 +498,37 @@ theorem Quotient.algebraMap_quotient_of_ramificationIdx_neZero (x : R) :
     algebraMap (R ⧸ p) (S ⧸ P) (Ideal.Quotient.mk p x) = Ideal.Quotient.mk P (f x) := rfl
 #align ideal.quotient.algebra_map_quotient_of_ramification_idx_ne_zero Ideal.Quotient.algebraMap_quotient_of_ramificationIdx_neZero
 
+-- added to speed up instance search below
+instance : HPow (Ideal S) ℕ (Ideal S) := instHPow
+
+noncomputable instance (priority := 1100) instModule_IdealMap {i : ℕ} :
+    Module (R ⧸ p) ↥(Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) :=
+  Submodule.module' (map (Quotient.mk (P ^ e)) (P ^ i))
+
 /-- The inclusion `(P^(i + 1) / P^e) ⊂ (P^i / P^e)`. -/
+-- this is quite slow! (46.5k hb)
+-- `whatsnew in ...` lists pages and pages of stuff...
 @[simps]
 def powQuotSuccInclusion (i : ℕ) :
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ (i + 1)) →ₗ[R ⧸ p]
     Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i) where
-  toFun x := ⟨x, Ideal.map_mono (Ideal.pow_le_pow_right i.le_succ) x.2⟩
+  toFun x := ⟨x.1, Ideal.map_mono (Ideal.pow_le_pow_right i.le_succ) x.2⟩
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
 #align ideal.pow_quot_succ_inclusion Ideal.powQuotSuccInclusion
 
 theorem powQuotSuccInclusion_injective (i : ℕ) :
     Function.Injective (powQuotSuccInclusion f p P i) := by
-  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot']
+  rw [← LinearMap.ker_eq_bot, LinearMap.ker_eq_bot'] -- 4300
   rintro ⟨x, hx⟩ hx0
-  rw [Subtype.ext_iff] at hx0 ⊢
-  rwa [powQuotSuccInclusion_apply_coe] at hx0
+  simp only [Subtype.ext_iff, powQuotSuccInclusion_apply_coe, ZeroMemClass.coe_zero] at hx0 ⊢
+  exact hx0
+  -- this was very slow (170k hb):
+  -- rw [Subtype.ext_iff] at hx0 ⊢
+  -- rwa [powQuotSuccInclusion_apply_coe] at hx0
 #align ideal.pow_quot_succ_inclusion_injective Ideal.powQuotSuccInclusion_injective
 
+attribute [instance 1100] Ring.toAddCommGroup Submodule.addCommGroup in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`.
 See `quotientToQuotientRangePowQuotSucc` for this as a linear map,
 and `quotientRangePowQuotSuccInclusionEquiv` for this as a linear equivalence.
@@ -520,18 +552,23 @@ theorem quotientToQuotientRangePowQuotSuccAux_mk {i : ℕ} {a : S} (a_mem : a �
   by apply Quotient.map'_mk''
 #align ideal.quotient_to_quotient_range_pow_quot_succ_aux_mk Ideal.quotientToQuotientRangePowQuotSuccAux_mk
 
+-- count_heartbeats in -- ~27k, still slow
+attribute [instance 1100] AddCommGroup.toAddCommMonoid Submodule.Quotient.addCommGroup
+  Submodule.Quotient.module AddCommMagma.toAdd in
 /-- `S ⧸ P` embeds into the quotient by `P^(i+1) ⧸ P^e` as a subspace of `P^i ⧸ P^e`. -/
 noncomputable def quotientToQuotientRangePowQuotSucc {i : ℕ} {a : S} (a_mem : a ∈ P ^ i) :
     S ⧸ P →ₗ[R ⧸ p]
       (P ^ i).map (Ideal.Quotient.mk (P ^ e)) ⧸ LinearMap.range (powQuotSuccInclusion f p P i) where
   toFun := quotientToQuotientRangePowQuotSuccAux f p P a_mem
   map_add' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y
+    refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
     simp only [Submodule.Quotient.mk''_eq_mk, ← Submodule.Quotient.mk_add,
       quotientToQuotientRangePowQuotSuccAux_mk, mul_add]
-    exact congr_arg Submodule.Quotient.mk rfl
+    exact congr_arg Submodule.Quotient.mk rfl -- slow `exact` (1.25k hb)
   map_smul' := by
-    intro x y; refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
+    intro x y
+    refine' Quotient.inductionOn' x fun x => Quotient.inductionOn' y fun y => _
     simp only [Submodule.Quotient.mk''_eq_mk, RingHom.id_apply,
       quotientToQuotientRangePowQuotSuccAux_mk]
     refine congr_arg Submodule.Quotient.mk ?_
@@ -625,6 +662,9 @@ theorem rank_pow_quot_aux [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : 
   exact (rank_quotient_add_rank (LinearMap.range (powQuotSuccInclusion f p P i))).symm
 #align ideal.rank_pow_quot_aux Ideal.rank_pow_quot_aux
 
+-- in the following declaration, we have to remove an instance again,
+-- otherwise `rw [..., map_quotient_self]` errors
+attribute [-instance] instModule_IdealMap in
 theorem rank_pow_quot [IsDedekindDomain S] [p.IsMaximal] [P.IsPrime] (hP0 : P ≠ ⊥)
     (i : ℕ) (hi : i ≤ e) :
     Module.rank (R ⧸ p) (Ideal.map (Ideal.Quotient.mk (P ^ e)) (P ^ i)) =
@@ -718,7 +758,10 @@ attribute [local instance] Quotient.algebraQuotientOfRamificationIdxNeZero
 
 instance Factors.isScalarTower (P : (factors (map (algebraMap R S) p)).toFinset) :
     IsScalarTower R (R ⧸ p) (S ⧸ (P : Ideal S)) :=
-  IsScalarTower.of_algebraMap_eq fun x => by simp
+  IsScalarTower.of_algebraMap_eq fun x => by
+    -- squeezed the `simp`
+    simp only [Quotient.algebraMap_eq, Quotient.algebraMap_quotient_of_ramificationIdx_neZero,
+      Quotient.mk_algebraMap]
 #align ideal.factors.is_scalar_tower Ideal.Factors.isScalarTower
 
 attribute [local instance] Ideal.Quotient.field
