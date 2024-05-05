@@ -342,8 +342,8 @@ def map₂ : StructuredArrow L R ⥤ StructuredArrow L' R' :=
 instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
 
-instance fullMap₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
-  apply Comma.fullMap
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
 
 instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
   apply Comma.essSurj_map
@@ -707,8 +707,8 @@ def map₂ : CostructuredArrow S T ⥤ CostructuredArrow U V :=
 instance faithful_map₂ [F.Faithful] : (map₂ α β).Faithful := by
   apply Comma.faithful_map
 
-instance fullMap₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
-  apply Comma.fullMap
+instance full_map₂ [G.Faithful] [F.Full] [IsIso α] [IsIso β] : (map₂ α β).Full := by
+  apply Comma.full_map
 
 instance essSurj_map₂ [F.EssSurj] [G.Full] [IsIso α] [IsIso β] : (map₂ α β).EssSurj := by
   apply Comma.essSurj_map
