@@ -143,6 +143,7 @@ theorem Filter.Tendsto.rexp {l : Filter α} {f : α → ℝ} {z : ℝ} (hf : Ten
 
 variable [TopologicalSpace α] {f : α → ℝ} {s : Set α} {x : α}
 
+-- TODO: the two next theorems should be `rexp` as well
 nonrec
 theorem ContinuousWithinAt.exp (h : ContinuousWithinAt f s x) :
     ContinuousWithinAt (fun y => exp (f y)) s x :=
