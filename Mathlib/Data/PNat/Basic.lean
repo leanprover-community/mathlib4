@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2017 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Mario Carneiro, Neil Strickland
+Authors: Mario Carneiro, Ralf Stephan, Neil Strickland, Ruben Van de Velde
 -/
 import Mathlib.Data.PNat.Defs
 import Mathlib.Data.Nat.Bits
@@ -181,6 +181,42 @@ theorem bot_eq_one : (⊥ : ℕ+) = 1 :=
   rfl
 #align pnat.bot_eq_one PNat.bot_eq_one
 
+/-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
+def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
+    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
+  apply strongInductionOn a
+  rintro ⟨k, kprop⟩ hk
+  cases' k with k
+  · exact (lt_irrefl 0 kprop).elim
+  cases' k with k
+  · exact hz
+  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
+#align pnat.case_strong_induction_on PNat.caseStrongInductionOn
+
+/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
+not only to `Prop`. -/
+@[elab_as_elim]
+def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
+  rcases n with ⟨n, h⟩
+  induction' n with n IH
+  · exact absurd h (by decide)
+  · cases' n with n
+    · exact p1
+    · exact hp _ (IH n.succ_pos)
+#align pnat.rec_on PNat.recOn
+
+@[simp]
+theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
+  rfl
+#align pnat.rec_on_one PNat.recOn_one
+
+@[simp]
+theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
+    @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
+  cases' n with n h
+  cases n <;> [exact absurd h (by decide); rfl]
+#align pnat.rec_on_succ PNat.recOn_succ
+
 -- Porting note (#11229): deprecated
 section deprecated
 
@@ -278,6 +314,13 @@ theorem pow_coe (m : ℕ+) (n : ℕ) : ↑(m ^ n) = (m : ℕ) ^ n :=
   rfl
 #align pnat.pow_coe PNat.pow_coe
 
+/-- b is greater one if any a is less than b -/
+theorem one_lt_of_lt {a b : ℕ+} (hab : a < b) : 1 < b := bot_le.trans_lt hab
+
+theorem add_one (a : ℕ+) : a + 1 = succPNat a := rfl
+
+theorem lt_succ_self (a : ℕ+) : a < succPNat a := lt.base a
+
 /-- Subtraction a - b is defined in the obvious way when
   a > b, and by a - b = 1 if a ≤ b.
 -/
@@ -292,6 +335,18 @@ theorem sub_coe (a b : ℕ+) : ((a - b : ℕ+) : ℕ) = ite (b < a) (a - b : ℕ
     rfl
 #align pnat.sub_coe PNat.sub_coe
 
+theorem sub_le (a b : ℕ+) : a - b ≤ a := by
+  rw [← coe_le_coe, sub_coe]
+  split_ifs with h
+  · exact Nat.sub_le a b
+  · exact a.2
+
+theorem le_sub_one_of_lt {a b : ℕ+} (hab: a < b) : a ≤ b - (1 : ℕ+) := by
+  rw [← coe_le_coe, sub_coe]
+  split_ifs with h
+  · exact Nat.le_pred_of_lt hab
+  · exact hab.le.trans (le_of_not_lt h)
+
 theorem add_sub_of_lt {a b : ℕ+} : a < b → a + (b - a) = b :=
   fun h =>
     PNat.eq <| by
@@ -305,42 +360,7 @@ theorem exists_eq_succ_of_ne_one : ∀ {n : ℕ+} (_ : n ≠ 1), ∃ k : ℕ+, n
   | ⟨n + 2, _⟩, _ => ⟨⟨n + 1, by simp⟩, rfl⟩
 #align pnat.exists_eq_succ_of_ne_one PNat.exists_eq_succ_of_ne_one
 
-/-- Strong induction on `ℕ+`, with `n = 1` treated separately. -/
-def caseStrongInductionOn {p : ℕ+ → Sort*} (a : ℕ+) (hz : p 1)
-    (hi : ∀ n, (∀ m, m ≤ n → p m) → p (n + 1)) : p a := by
-  apply strongInductionOn a
-  rintro ⟨k, kprop⟩ hk
-  cases' k with k
-  · exact (lt_irrefl 0 kprop).elim
-  cases' k with k
-  · exact hz
-  exact hi ⟨k.succ, Nat.succ_pos _⟩ fun m hm => hk _ (Nat.lt_succ_iff.2 hm)
-#align pnat.case_strong_induction_on PNat.caseStrongInductionOn
-
-/-- An induction principle for `ℕ+`: it takes values in `Sort*`, so it applies also to Types,
-not only to `Prop`. -/
-@[elab_as_elim]
-def recOn (n : ℕ+) {p : ℕ+ → Sort*} (p1 : p 1) (hp : ∀ n, p n → p (n + 1)) : p n := by
-  rcases n with ⟨n, h⟩
-  induction' n with n IH
-  · exact absurd h (by decide)
-  · cases' n with n
-    · exact p1
-    · exact hp _ (IH n.succ_pos)
-#align pnat.rec_on PNat.recOn
-
-@[simp]
-theorem recOn_one {p} (p1 hp) : @PNat.recOn 1 p p1 hp = p1 :=
-  rfl
-#align pnat.rec_on_one PNat.recOn_one
-
-@[simp]
-theorem recOn_succ (n : ℕ+) {p : ℕ+ → Sort*} (p1 hp) :
-    @PNat.recOn (n + 1) p p1 hp = hp n (@PNat.recOn n p p1 hp) := by
-  cases' n with n h
-  cases n <;> [exact absurd h (by decide); rfl]
-#align pnat.rec_on_succ PNat.recOn_succ
-
+/-- Lemmas with div, dvd and mod operations -/
 theorem modDivAux_spec :
     ∀ (k : ℕ+) (r q : ℕ) (_ : ¬(r = 0 ∧ q = 0)),
       ((modDivAux k r q).1 : ℕ) + k * (modDivAux k r q).2 = r + k * q

@@ -75,6 +75,47 @@ theorem vert_inv {g : W ≅ Y} {h : X ≅ Z} (p : CommSq f g.hom h.hom i) :
     CommSq i g.inv h.inv f :=
   ⟨by rw [Iso.comp_inv_eq, Category.assoc, Iso.eq_inv_comp, p.w]⟩
 
+theorem horiz_inv {f : W ≅ X} {i : Y ≅ Z} (p : CommSq f.hom g h i.hom) :
+    CommSq f.inv h g i.inv :=
+  flip (vert_inv (flip p))
+
+/-- The horizontal composition of two commutative squares as below is a commutative square.
+```
+  W ---f---> X ---f'--> X'
+  |          |          |
+  g          h          h'
+  |          |          |
+  v          v          v
+  Y ---i---> Z ---i'--> Z'
+
+```
+-/
+lemma horiz_comp {W X X' Y Z Z' : C} {f : W ⟶ X} {f' : X ⟶ X'} {g : W ⟶ Y} {h : X ⟶ Z}
+    {h' : X' ⟶ Z'} {i : Y ⟶ Z} {i' : Z ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq f' h h' i') :
+    CommSq (f ≫ f') g h' (i ≫ i') :=
+  ⟨by rw [← Category.assoc, Category.assoc, ← hsq₁.w, hsq₂.w, Category.assoc]⟩
+
+/-- The vertical composition of two commutative squares as below is a commutative square.
+```
+  W ---f---> X
+  |          |
+  g          h
+  |          |
+  v          v
+  Y ---i---> Z
+  |          |
+  g'         h'
+  |          |
+  v          v
+  Y'---i'--> Z'
+
+```
+-/
+lemma vert_comp {W X Y Y' Z Z' : C} {f : W ⟶ X} {g : W ⟶ Y} {g' : Y ⟶ Y'} {h : X ⟶ Z}
+    {h' : Z ⟶ Z'} {i : Y ⟶ Z} {i' : Y' ⟶ Z'} (hsq₁ : CommSq f g h i) (hsq₂ : CommSq i g' h' i') :
+    CommSq f (g ≫ g') (h ≫ h') i' :=
+  flip (horiz_comp (flip hsq₁) (flip hsq₂))
+
 end CommSq
 
 namespace Functor
