@@ -243,7 +243,7 @@ theorem inj_on_of_nodup_map {f : α → β} {l : List α} (d : Nodup (map f l)) 
     ∀ ⦃x⦄, x ∈ l → ∀ ⦃y⦄, y ∈ l → f x = f y → x = y := by
   induction' l with hd tl ih
   · simp
-  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.def] at d
+  · simp only [map, nodup_cons, mem_map, not_exists, not_and, ← Ne.eq_def] at d
     simp only [mem_cons]
     rintro _ (rfl | h₁) _ (rfl | h₂) h₃
     · rfl

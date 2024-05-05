@@ -3,8 +3,10 @@ Copyright (c) 2024 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Lie.EngelSubalgebra
 import Mathlib.Algebra.Lie.OfAssociative
 import Mathlib.Algebra.Module.LinearMap.Polynomial
+import Mathlib.LinearAlgebra.Eigenspace.Zero
 
 /-!
 # Rank of a Lie algebra and regular elements
@@ -181,5 +183,26 @@ lemma exists_isRegular [Infinite R] : ∃ x : L, IsRegular R x :=
   LinearMap.exists_isNilRegular _
 
 end IsDomain
+
+end LieAlgebra
+
+namespace LieAlgebra
+
+variable (K : Type*) {L : Type*} [Field K] [LieRing L] [LieAlgebra K L] [Module.Finite K L]
+
+open FiniteDimensional LieSubalgebra
+
+lemma finrank_engel (x : L) :
+    finrank K (engel K x) = (ad K L x).charpoly.natTrailingDegree :=
+  (ad K L x).finrank_maximalGeneralizedEigenspace
+
+lemma rank_le_finrank_engel (x : L) :
+    rank K L ≤ finrank K (engel K x) :=
+  (rank_le_natTrailingDegree_charpoly_ad K x).trans
+    (finrank_engel K x).ge
+
+lemma isRegular_iff_finrank_engel_eq_rank (x : L) :
+    IsRegular K x ↔ finrank K (engel K x) = rank K L := by
+  rw [isRegular_iff_natTrailingDegree_charpoly_eq_rank, finrank_engel]
 
 end LieAlgebra

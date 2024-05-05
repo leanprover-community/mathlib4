@@ -71,7 +71,7 @@ theorem npow_mul_comm (m n : ℕ) (x : M) :
 theorem npow_mul (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ m) ^ n := by
   induction n with
   | zero => rw [npow_zero, Nat.mul_zero, npow_zero]
-  | succ n ih => rw [← Nat.add_one, mul_add, npow_add, ih, mul_one, npow_add, npow_one]
+  | succ n ih => rw [mul_add, npow_add, ih, mul_one, npow_add, npow_one]
 
 theorem npow_mul' (x : M) (m n : ℕ) : x ^ (m * n) = (x ^ n) ^ m := by
   rw [mul_comm]
@@ -105,7 +105,7 @@ theorem Nat.cast_npow (R : Type*) [NonAssocSemiring R] [Pow R ℕ] [NatPowAssoc 
     (↑(n ^ m) : R) = (↑n : R) ^ m := by
   induction' m with m ih
   · simp only [pow_zero, Nat.cast_one, npow_zero]
-  · rw [← Nat.add_one, npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
+  · rw [npow_add, npow_add, Nat.cast_mul, ih, npow_one, npow_one]
 
 @[simp, norm_cast]
 theorem Int.cast_npow (R : Type*) [NonAssocRing R] [Pow R ℕ] [NatPowAssoc R]
