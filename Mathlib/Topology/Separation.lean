@@ -2189,7 +2189,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
     use i
     constructor
     · rw [ihyp]; exact h₀inh₁
-    · intro j jlei
+    · intro j _
       by_contra h₀incl
       have := (v_hyp j).2
       rw [Set.disjoint_iff] at this
@@ -2203,7 +2203,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
     use i
     constructor
     · rw [ihyp]; exact k₀ink₁
-    · intro j jlei
+    · intro j _
       by_contra k₀incl
       have := (u_hyp j).2
       rw [Set.disjoint_iff] at this
