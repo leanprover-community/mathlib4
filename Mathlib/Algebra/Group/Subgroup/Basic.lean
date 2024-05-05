@@ -5,10 +5,10 @@ Authors: Kexing Ying
 -/
 import Mathlib.Algebra.Group.Conj
 import Mathlib.Algebra.Group.Pi.Lemmas
+import Mathlib.Algebra.Group.Subsemigroup.Operations
+import Mathlib.Algebra.Group.Submonoid.Operations
 import Mathlib.Algebra.Order.Group.Abs
 import Mathlib.Data.Set.Image
-import Mathlib.GroupTheory.Subsemigroup.Operations
-import Mathlib.GroupTheory.Submonoid.Operations
 import Mathlib.Order.Atoms
 import Mathlib.Tactic.ApplyFun
 
@@ -1799,7 +1799,7 @@ section Pi
 
 variable {η : Type*} {f : η → Type*}
 
--- defined here and not in GroupTheory.Submonoid.Operations to have access to Algebra.Group.Pi
+-- defined here and not in Algebra.Group.Submonoid.Operations to have access to Algebra.Group.Pi
 /-- A version of `Set.pi` for submonoids. Given an index set `I` and a family of submodules
 `s : Π i, Submonoid f i`, `pi I s` is the submonoid of dependent functions `f : Π i, f i` such that
 `f i` belongs to `Pi I s` whenever `i ∈ I`. -/

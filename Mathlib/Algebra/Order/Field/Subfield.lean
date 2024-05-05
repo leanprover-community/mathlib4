@@ -5,8 +5,8 @@ Authors: Damiano Testa
 -/
 
 import Mathlib.Algebra.Order.Field.InjSurj
-import Mathlib.FieldTheory.Subfield
-import Mathlib.RingTheory.Subring.Order
+import Mathlib.Algebra.Field.Subfield
+import Mathlib.Algebra.Ring.Subring.Order
 
 /-!
 # Ordered instances on subfields
