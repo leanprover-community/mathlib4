@@ -778,7 +778,7 @@ theorem _root_.Disjoint.image {s t u : Set α} {f : α → β} (h : Disjoint s t
 #align disjoint.image Disjoint.image
 
 lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f '' (s ∩ t) := by
-  refine subset_antisymm (subset_diff.2 ⟨image_subset f (diff_subset s t),?_⟩)
+  refine subset_antisymm (subset_diff.2 ⟨image_subset f (diff_subset s t), ?_⟩)
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
   exact Disjoint.image disjoint_sdiff_inter h (diff_subset _ _) (inter_subset_left _ _)
 
