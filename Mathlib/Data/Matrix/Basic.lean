@@ -2332,7 +2332,10 @@ theorem conjTranspose_ratCast_smul [DivisionRing R] [AddCommGroup α] [StarAddMo
   Matrix.ext <| by simp
 #align matrix.conj_transpose_rat_cast_smul Matrix.conjTranspose_ratCast_smul
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12231
+@[simp, nolint simpNF]
 theorem conjTranspose_rat_smul [AddCommGroup α] [StarAddMonoid α] [Module ℚ α] (c : ℚ)
     (M : Matrix m n α) : (c • M)ᴴ = c • Mᴴ :=
   Matrix.ext <| by simp
