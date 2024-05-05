@@ -1550,7 +1550,6 @@ theorem pred_ok (q₁ q₂ s v) (c d : List Γ') : ∃ s',
   rcases v with (_ | ⟨_ | n, v⟩)
   · refine' ⟨none, TransGen.single _⟩
     simp
-    rfl
   · refine' ⟨some Γ'.cons, TransGen.single _⟩
     simp
   refine' ⟨none, _⟩
