@@ -159,7 +159,7 @@ theorem IsBlock.def_mem {B : Set X} (hB : IsBlock G B) {a : X} {g : G} :
   IsBlock.mk_mem.mp hB g a
 
 theorem IsBlock.mk_subset {B : Set X} :
-    IsBlock G B ↔ ∀ {g : G} {b : X} (_ : b ∈ B) (_ : b ∈ g • B), g • B ≤ B := by
+    IsBlock G B ↔ ∀ {g : G} {b : X} (_ : b ∈ B) (_ : b ∈ g • B), g • B ⊆ B := by
   simp_rw [IsBlock.mk_notempty_one, ← Set.nonempty_iff_ne_empty]
   constructor
   · intro hB g b hb hgb
