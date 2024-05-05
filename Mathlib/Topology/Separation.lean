@@ -2153,6 +2153,69 @@ instance (priority := 100) NormalSpace.of_compactSpace_r1Space [CompactSpace X] 
     NormalSpace X where
   normal _s _t hs ht := .of_isCompact_isCompact_isClosed hs.isCompact ht.isCompact ht
 
+lemma countable_covers_to_separated_nhds (h k: Set X)
+    (h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ i, u i ∧
+      ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) k)
+    (k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ i, u i ∧
+      ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) h) : SeparatedNhds h k := by
+  rcases h_cov with ⟨u, u_cov, u_hyp⟩
+  rcases k_cov with ⟨v, v_cov, v_hyp⟩
+  use ⋃ n, u n \ ⋃ m ∈ {m | m ≤ n}, closure (v m)
+  use ⋃ n, v n \ ⋃ m ∈ {m | m ≤ n}, closure (u m)
+  constructor
+  · apply isOpen_iUnion
+    intro i
+    apply IsOpen.sdiff
+    · exact (u_hyp i).1
+    · apply Set.Finite.isClosed_biUnion
+      · exact finite_le_nat i
+      · intro _ _
+        exact isClosed_closure
+  constructor
+  · apply isOpen_iUnion
+    intro i
+    apply IsOpen.sdiff
+    · exact (v_hyp i).1
+    · apply Set.Finite.isClosed_biUnion
+      · exact finite_le_nat i
+      · intros
+        exact isClosed_closure
+  constructor
+  · intro h₀ h₀inh
+    simp
+    rcases u_cov h₀inh with ⟨h₁, ⟨h₁ran, h₀inh₁⟩ ⟩
+    rcases h₁ran with ⟨i, ihyp⟩
+    simp at ihyp
+    use i
+    constructor
+    · rw [ihyp]; exact h₀inh₁
+    · intro j jlei
+      by_contra h₀incl
+      have := (v_hyp j).2
+      rw [Set.disjoint_iff] at this
+      exact this ⟨h₀incl,h₀inh⟩
+  constructor
+  · intro k₀ k₀ink
+    simp
+    rcases v_cov k₀ink with ⟨k₁, ⟨k₁ran, k₀ink₁⟩ ⟩
+    rcases k₁ran with ⟨i, ihyp⟩
+    simp at ihyp
+    use i
+    constructor
+    · rw [ihyp]; exact k₀ink₁
+    · intro j jlei
+      by_contra k₀incl
+      have := (u_hyp j).2
+      rw [Set.disjoint_iff] at this
+      exact this ⟨k₀incl,k₀ink⟩
+  · by_contra nonempty
+    rw [Set.not_disjoint_iff] at nonempty
+    rcases nonempty with ⟨x, xinun, xinvn⟩
+    rcases Set.mem_iUnion.mp xinun with ⟨i₁, ⟨xinui,xnotinclvj⟩⟩
+    rcases Set.mem_iUnion.mp xinvn with ⟨i₂, ⟨xinvi,xnotincluj⟩⟩
+    sorry
+
+
 
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
