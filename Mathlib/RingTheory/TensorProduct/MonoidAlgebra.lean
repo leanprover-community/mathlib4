@@ -351,10 +351,10 @@ noncomputable def rTensorAlgHom :
       rw [commute_iff_eq]
       simp only [single_mul_single, mul_one, Algebra.TensorProduct.tmul_mul_tmul, one_mul])
 
-lemma rTensorAlgHom_apply_single_tmul_apply
-    (s : S) (a : α) (t : T) (b : α) :
-    rTensorAlgHom (MonoidAlgebra.single a s ⊗ₜ[R] t) b
-      = if a = b then s ⊗ₜ[R] t else 0 := by
+@[simp]
+lemma rTensorAlgHom_apply_single_tmul
+    (s : S) (a : α) (t : T) :
+    rTensorAlgHom (MonoidAlgebra.single a s ⊗ₜ[R] t) = single a (s ⊗ₜ[R] t) := by
   simp only [rTensorAlgHom, Algebra.TensorProduct.lift_tmul, AlgHom.coe_comp, Function.comp_apply,
     Algebra.TensorProduct.includeRight_apply, singleOneAlgHom_apply]
   simp only [liftNCAlgHom, liftNCRingHom, ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
@@ -362,14 +362,14 @@ lemma rTensorAlgHom_apply_single_tmul_apply
     AddMonoidHom.coe_coe, RingHom.coe_coe, AlgHom.coe_comp, Function.comp_apply,
     Algebra.TensorProduct.includeLeft_apply, singleOneAlgHom_apply, of_apply, single_mul_single,
     one_mul, mul_one, Algebra.TensorProduct.tmul_mul_tmul]
-  simp only [single_apply]
 
+@[simp]
 lemma rTensorAlgHom_apply_tmul_apply
     (x : MonoidAlgebra S α) (t : T) (a : α) :
-    rTensorAlgHom (x ⊗ₜ[R] t) a = (x a) ⊗ₜ[R] t := by
+    rTensorAlgHom (x ⊗ₜ[R] t) a = x a ⊗ₜ[R] t := by
   conv_lhs => rw [← sum_single x, Finsupp.sum, sum_tmul, map_sum]
   rw [Finset.sum_apply']
-  simp_rw [rTensorAlgHom_apply_single_tmul_apply]
+  simp_rw [rTensorAlgHom_apply_single_tmul, single_apply]
   simp only [Finset.sum_ite_eq', mem_support_iff, ne_eq, ite_eq_left_iff, not_not]
   intro ha; rw [ha, zero_tmul]
 
