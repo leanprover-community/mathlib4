@@ -947,6 +947,7 @@ def nameDict : String → List String
   | "zpowers"     => ["zmultiples"]
   | "powers"      => ["multiples"]
   | "multipliable"=> ["summable"]
+  | "threegpfree" => ["threeAPFree"]
   | x             => [x]
 
 /--
