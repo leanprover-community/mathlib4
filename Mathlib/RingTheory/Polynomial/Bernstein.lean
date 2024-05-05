@@ -243,8 +243,7 @@ open Submodule
 theorem linearIndependent_aux (n k : ℕ) (h : k ≤ n + 1) :
     LinearIndependent ℚ fun ν : Fin k => bernsteinPolynomial ℚ n ν := by
   induction' k with k ih
-  · simp [Nat.zero_eq]
-    apply linearIndependent_empty_type
+  · apply linearIndependent_empty_type
   · apply linearIndependent_fin_succ'.mpr
     fconstructor
     · exact ih (le_of_lt h)
