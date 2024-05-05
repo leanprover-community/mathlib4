@@ -147,7 +147,7 @@ This is due to definition of `Real.log` for negative numbers. -/
 lemma h₂_continuous : Continuous h₂ := by
   unfold h₂
   apply Continuous.add
-  · simp_rw [←neg_mul_eq_neg_mul]
+  · simp_rw [← neg_mul_eq_neg_mul]
     apply Continuous.neg
     exact continuous_mul_log
   · apply Continuous.neg
