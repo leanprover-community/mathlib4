@@ -2213,7 +2213,15 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
     rcases nonempty with ⟨x, xinun, xinvn⟩
     rcases Set.mem_iUnion.mp xinun with ⟨i₁, ⟨xinui,xnotinclvj⟩⟩
     rcases Set.mem_iUnion.mp xinvn with ⟨i₂, ⟨xinvi,xnotincluj⟩⟩
-    sorry
+    by_cases hyp: i₁ < i₂
+    · apply xnotincluj
+      simp
+      use i₁
+      exact ⟨le_of_lt hyp, subset_closure xinui⟩
+    · apply xnotinclvj
+      simp; simp at hyp
+      use i₂
+      exact ⟨hyp, subset_closure xinvi⟩
 
 
 
