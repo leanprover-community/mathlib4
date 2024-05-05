@@ -228,7 +228,7 @@ lemma chainComplexMap_f_succ_succ (n : ℕ) :
 
 variable (X) in
 @[simp]
-noncomputable def chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
+lemma chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := by
   ext n
   induction n with
   | zero => simp
@@ -240,7 +240,7 @@ noncomputable def chainComplexMap_id : Λ.chainComplexMap (𝟙 X) = 𝟙 _ := b
 
 variable (X Y) in
 @[simp]
-noncomputable def chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
+lemma chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
     Λ.chainComplexMap (0 : X ⟶ Y) = 0 := by
   ext n
   induction n with
@@ -250,7 +250,7 @@ noncomputable def chainComplexMap_zero [Λ.F.PreservesZeroMorphisms] :
       · simp
       · simp [hn]
 
-@[reassoc (attr := simp)]
+@[reassoc, simp]
 lemma chainComplexMap_comp :
     Λ.chainComplexMap (f ≫ g) = Λ.chainComplexMap f ≫ Λ.chainComplexMap g := by
   ext n
@@ -461,23 +461,18 @@ instance (K : CochainComplex.Minus C) :
   dsimp
   infer_instance
 
-variable (C) in
-noncomputable def bicomplexSingleRowFunctor :
-    CochainComplex C ℤ ⥤ HomologicalComplex₂ C (up ℤ) (up ℤ) :=
-  ((HomologicalComplex.single C (up ℤ) 0).mapHomologicalComplex (up ℤ))
-
 instance (K : CochainComplex C ℤ) (i : ℤ) :
-    IsStrictlyLE (((bicomplexSingleRowFunctor C).obj K).X i) 0 := by
-  dsimp [bicomplexSingleRowFunctor]
+    IsStrictlyLE (((HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0).obj K).X i) 0 := by
+  dsimp [HomologicalComplex₂.singleRow]
   infer_instance
 
 instance (K : CochainComplex C ℤ) (i : ℤ) [K.IsStrictlyLE i] :
-    IsStrictlyLE ((bicomplexSingleRowFunctor C).obj K) i := by
-  dsimp [bicomplexSingleRowFunctor]
+    IsStrictlyLE ((HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0).obj K) i := by
+  dsimp [HomologicalComplex₂.singleRow]
   infer_instance
 
 instance (K : CochainComplex C ℤ) :
-    ((bicomplexSingleRowFunctor C).obj K).HasTotal (up ℤ) := fun i =>
+    ((HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0).obj K).HasTotal (up ℤ) := fun i =>
   hasCoproduct_of_isZero_but_one _ ⟨⟨i, 0⟩, by simp⟩ (by
     rintro ⟨⟨p, q⟩, hpq⟩ h
     apply HomologicalComplex.isZero_single_obj_X
@@ -487,7 +482,7 @@ instance (K : CochainComplex C ℤ) :
 
 noncomputable abbrev bicomplexπ :
     Λ.bicomplexFunctor ⋙ ι.mapHomologicalComplex₂ (up ℤ) (up ℤ) ⟶
-      bicomplexSingleRowFunctor C :=
+      HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0 :=
   NatTrans.mapHomologicalComplex Λ.cochainComplexNatTransπ (up ℤ)
 
 section
@@ -496,7 +491,7 @@ variable (K L : CochainComplex.Minus C) (φ : K ⟶ L)
 
 noncomputable def totalπ'  :
     ((ι.mapHomologicalComplex₂ _ _).obj (Λ.bicomplexFunctor.obj K.obj)).total (up ℤ) ⟶
-      ((bicomplexSingleRowFunctor C).obj K.obj).total (up ℤ) :=
+      ((HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0).obj K.obj).total (up ℤ) :=
   HomologicalComplex₂.total.map (Λ.bicomplexπ.app K.obj) (up ℤ)
 
 instance : QuasiIso (Λ.totalπ' K) := by
@@ -521,7 +516,16 @@ instance : QuasiIso (Λ.totalπ K) := by
 
 variable {K L}
 
-/-@[pp_dot]
+/-@[reassoc (attr := simp)]
+lemma totalπ'_naturality :
+    (HomologicalComplex₂.total.map
+      ((ι.mapHomologicalComplex₂ (up ℤ) (up ℤ)).map
+        (Λ.bicomplexFunctor.map φ)) (up ℤ)) ≫ Λ.totalπ' L =
+      Λ.totalπ' K ≫ HomologicalComplex₂.total.map
+        ((HomologicalComplex₂.singleRow C (up ℤ) (up ℤ) 0).map φ) (up ℤ) := by
+  sorry
+
+@[pp_dot]
 noncomputable def resolutionFunctor : CochainComplex.Minus C ⥤ CochainComplex.Minus A where
   obj K := ⟨((Λ.bicomplexFunctor.obj K.obj).total (up ℤ)), sorry⟩
   map {K L} φ := HomologicalComplex₂.total.map (Λ.bicomplexFunctor.map φ) (up ℤ)
@@ -539,6 +543,10 @@ noncomputable def resolutionNatTrans : Λ.resolutionFunctor ⋙ ι.mapCochainCom
   app := Λ.totalπ
   naturality {K L} f := by
     dsimp [resolutionFunctor, totalπ]
+    erw [HomologicalComplex₂.mapTotalIso_inv_naturality_assoc]
+    rw [totalπ'_naturality_assoc]
+    erw [assoc ((HomologicalComplex₂.mapTotalIso ι _ (up ℤ)).inv), assoc]
+    congr 2
     sorry-/
 
 end
