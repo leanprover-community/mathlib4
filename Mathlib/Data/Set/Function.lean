@@ -782,7 +782,7 @@ lemma InjOn.image_diff {t : Set α} (h : s.InjOn f) : f '' (s \ t) = f '' s \ f 
     (diff_subset_iff.2 (by rw [← image_union, inter_union_diff]))
   exact Disjoint.image disjoint_sdiff_inter h (diff_subset _ _) (inter_subset_left _ _)
 
-lemma InjOn.image_diff_of_subset {f : α → β} {t : Set α } (h : InjOn f s) (hst : t ⊆ s) :
+lemma InjOn.image_diff_of_subset {f : α → β} {t : Set α} (h : InjOn f s) (hst : t ⊆ s) :
     f '' (s \ t) = f '' s \ f '' t := by
   rw [h.image_diff, inter_eq_self_of_subset_right hst]
 
