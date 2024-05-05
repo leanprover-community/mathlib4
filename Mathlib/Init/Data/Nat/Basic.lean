@@ -13,7 +13,7 @@ set_option linter.deprecated false
 
 theorem add_one_pos (n : ℕ) : 0 < n + 1 := succ_pos n
 
-@[simp] theorem default_eq : default = 0 := rfl
+@[simp] theorem default_eq_zero : default = 0 := rfl
 
 protected theorem bit0_succ_eq (n : ℕ) : bit0 (succ n) = succ (succ (bit0 n)) :=
   show succ (succ n + n) = succ (succ (n + n)) from congrArg succ (succ_add n n)
