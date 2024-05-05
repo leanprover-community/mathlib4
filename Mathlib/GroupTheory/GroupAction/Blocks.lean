@@ -64,16 +64,18 @@ section SMul
 variable (G : Type*) {X : Type*} [SMul G X]
 
 -- Change terminology : is_fully_invariant ?
-/-- A fixed block is a fully invariant subset -/
+/-- For `SMul G X`, a fixed block is a `Set X` which is fully invariant :
+  `g • B = B` for all `g : G` -/
 def IsFixedBlock (B : Set X) := ∀ g : G, g • B = B
 
-/-- An invariant block is a set which is stable under has_smul -/
-def IsInvariantBlock (B : Set X) := ∀ g : G, g • B ≤ B
+/-- For `SMul G X`, an invariant block is a `Set X` which is stable under `smul` : `g • B ⊆ B` for all `g : G` -/
+def IsInvariantBlock (B : Set X) := ∀ g : G, g • B ⊆ B
 
-/-- A trivial block is a subsingleton or ⊤ (it is not necessarily a block…)-/
+/-- A trivial block is a `Set X` which is either a subsingleton or ⊤
+  (it is not necessarily a block…) -/
 def IsTrivialBlock (B : Set X) := B.Subsingleton ∨ B = ⊤
 
-/-- A block is a set whose translates are pairwise disjoint -/
+/-- `For SMul G X`, a block is a `Set X` whose translates are pairwise disjoint -/
 def IsBlock (B : Set X) := (Set.range fun g : G => g • B).PairwiseDisjoint id
 
 variable {G}
