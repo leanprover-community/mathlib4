@@ -190,7 +190,7 @@ lemma deriv_log_one_sub {x : ℝ} (hh : x ≠ 1): deriv (fun p ↦ log (1 - p)) 
 lemma deriv_h₂' {x : ℝ} (h: x ≠ 0) (hh : x ≠ 1) :
     deriv (fun p => -p * log p - (1 - p) * log (1 - p)) x = log (1 - x) - log x := by
   rw [deriv_sub]
-  simp_rw [←neg_mul_eq_neg_mul]
+  simp_rw [← neg_mul_eq_neg_mul]
   rw [deriv.neg, deriv_mul_log h]
   simp_rw [mul_sub_right_distrib]
   simp only [one_mul]
