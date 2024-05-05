@@ -102,7 +102,7 @@ Let $M$ be a module over a commutative ring $R$. The following are equivalent:
 $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there exist a finite index type $\kappa$ and module
 homomorphisms $a \colon R^{\iota} \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a(f) = 0$.
-* For all finite free modules $N$, all elements $f \in N$, and all homomorphisms $x \colon N \to M
+* For all finite free modules $N$, all elements $f \in N$, and all homomorphisms $x \colon N \to M$
 such that $x(f) = 0$, there exist a finite index type $\kappa$ and module homomorphisms
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a(f) = 0$. -/
