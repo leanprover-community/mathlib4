@@ -202,7 +202,7 @@ theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
 
 theorem ofDigits_cons {b hd} {tl : List ℕ} :
-    ofDigits b (hd :: tl) = hd + b * ofDigits b tl := by rfl
+    ofDigits b (hd :: tl) = hd + b * ofDigits b tl := rfl
 
 theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
