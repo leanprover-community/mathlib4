@@ -180,9 +180,9 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   `Base` of `M`. An `Indep`endent set is just a set contained in a base, but we include this
   predicate as a structure field for better definitional properties.
 
-  In most cases, using this definition directly is not the best way to define a matroid,
+  In most cases, using this definition directly is not the best way to construct a matroid,
   since it requires specifying both the bases and independent sets. If the bases are known,
-  use `Matroid.ofBase` or a variant. If just the independent sets are known, use
+  use `Matroid.ofBase` or a variant. If just the independent sets are known,
   define an `IndepMatroid`, and then use `IndepMatroid.matroid`.
   -/
 @[ext] structure Matroid (α : Type _) where
