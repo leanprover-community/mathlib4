@@ -7,8 +7,11 @@ import Mathlib.Topology.Algebra.Nonarchimedean.Basic
 import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.UniformRing
 
-/-! # The completion of a nonarchimedean additive group
+/-!
+# The completion of a nonarchimedean additive group
+
 The completion of a nonarchimedean additive group is a nonarchimedean additive group.
+
 The completion of a nonarchimedean ring is a nonarchimedean ring.
 -/
 
