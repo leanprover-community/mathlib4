@@ -102,8 +102,7 @@ lemma image_val_compl : ↑(Dᶜ) = A \ ↑D := by
 
 @[simp]
 lemma image_val_sUnion : ↑(⋃₀ T) = ⋃₀ { (B : Set α) | B ∈ T} := by
-  rw [image_sUnion]
-  rfl
+  rw [image_sUnion, image]
 
 @[simp]
 lemma image_val_iUnion : ↑(⋃ i, t i) = ⋃ i, (t i : Set α) := image_iUnion
