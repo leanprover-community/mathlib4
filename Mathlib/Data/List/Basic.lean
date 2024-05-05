@@ -3574,16 +3574,8 @@ theorem sizeOf_dropSlice_lt [SizeOf α] (i j : ℕ) (hj : 0 < j) (xs : List α) 
     · cases j with
       | zero => contradiction
       | succ n =>
-        dsimp only [drop]; apply @lt_of_le_of_lt _ _ _ (sizeOf xs)
-        induction xs generalizing n with
-        | nil => rw [drop_nil]
-        | cons _ xs_tl =>
-          cases n
-          · simp
-          · simp only [drop, cons.sizeOf_spec]
-            rw [← Nat.zero_add (sizeOf (drop _ xs_tl))]
-            exact Nat.add_le_add (Nat.zero_le _) (drop_sizeOf_le xs_tl _)
-        · simp only [cons.sizeOf_spec]; omega
+        dsimp only [drop]; apply lt_of_le_of_lt (drop_sizeOf_le xs n)
+        simp only [cons.sizeOf_spec]; omega
     · simp only [cons.sizeOf_spec, Nat.add_lt_add_iff_left]
       apply xs_ih _ j hj
       apply lt_of_succ_lt_succ hi
