@@ -8,7 +8,6 @@ import Mathlib.Data.Setoid.Partition
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Pointwise
 import Mathlib.GroupTheory.GroupAction.SubMulAction
-import Mathlib.GroupTheory.Subgroup.Actions
 
 /-! # Blocks
 
@@ -319,14 +318,11 @@ theorem IsBlock.translate {B : Set X} (g : G) (hB : IsBlock G B) :
   apply IsBlock.of_subgroup_of_conjugate
   rwa [Subgroup.comap_top]
 
-variable (G)
-
+variable (G) in
 /-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
   for the action of `G` -/
 def IsBlockSystem (B : Set (Set X)) :=
   Setoid.IsPartition B ∧ ∀ b : Set X, b ∈ B → IsBlock G b
-
-variable {G}
 
 /-- Translates of a block form a `block_system` -/
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
