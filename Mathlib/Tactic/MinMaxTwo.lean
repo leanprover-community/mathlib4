@@ -99,9 +99,10 @@ environment the analogous result about `AddMonoidAlgebra`.
 
 Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 -/
-elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id:(ident)? "]" id2:(ident)? "plus"? id3:(ident)? "noplus"? cmd:command :
+elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id1:(ident)? "]" id2:(ident)?
+    "plus"? id3:(ident)? "noplus"? cmd:command :
     command => do
-  let g := match id with | some id => id.getId | _ => default
+  let g := match id1 with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
   let i := match id3 with | some id => id.getId | _ => default
   let newCmd ← MaxToMin toAddWords g h i cmd
