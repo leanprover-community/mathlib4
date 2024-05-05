@@ -338,7 +338,8 @@ theorem IsBlock.translate {B : Set X} (g : G) (hB : IsBlock G B) :
 
 variable (G)
 
-/-- A block_system of X is a partition of X into blocks -/
+/-- For `SMul G X`, a block system of `X` is a partition of `X` into blocks
+  for the action of `G` -/
 def IsBlockSystem (B : Set (Set X)) :=
   Setoid.IsPartition B ∧ ∀ b : Set X, b ∈ B → IsBlock G b
 
