@@ -233,9 +233,7 @@ theorem IsPartition.pairwiseDisjoint {c : Set (Set α)} (hc : IsPartition c) :
 lemma _root_.Set.PairwiseDisjoint.isPartition_of_exists_of_ne_empty {α : Type*} {s : Set (Set α)}
     (h₁ : s.PairwiseDisjoint id) (h₂ : ∀ a : α, ∃ x ∈ s, a ∈ x) (h₃ : ∅ ∉ s) :
     Setoid.IsPartition s := by
-  refine ⟨h₃, fun a ↦ ?_⟩
-  simp only [exists_unique_iff_exists, exists_prop]
-  apply exists_unique_of_exists_of_unique (h₂ a)
+  refine ⟨h₃, fun a ↦ exists_unique_of_exists_of_unique (h₂ a) ?_⟩
   intro b₁ b₂ hb₁ hb₂
   apply h₁.elim hb₁.1 hb₂.1
   simp only [Set.not_disjoint_iff]
