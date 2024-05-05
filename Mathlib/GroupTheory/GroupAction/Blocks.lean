@@ -118,21 +118,25 @@ section Group
 
 variable {G : Type*} [Group G] {X : Type*} [MulAction G X]
 
+theorem IsBlock.smul_eq_or_disjoint {B : Set X} (hB : IsBlock G B) (g : G) :
+    g • B = B ∨ Disjoint (g • B) B := by
+  rw [IsBlock.def] at hB
+  simpa only [one_smul] using hB g 1
+
 theorem IsBlock.def_one {B : Set X} :
     IsBlock G B ↔ ∀ g : G, g • B = B ∨ Disjoint (g • B) B := by
-  rw [IsBlock.def]; constructor
-  · intro hB g
-    simpa only [one_smul] using hB g 1
-  · intro hB g g'
-    apply (hB (g'⁻¹ * g)).imp
-    · rw [← smul_smul, ← eq_inv_smul_iff, inv_inv]
-      exact id
-    · intro h
-      rw [Set.disjoint_iff] at h ⊢
-      rintro x hx
-      suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ∩ B by apply h this
-      simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul]
-      exact hx
+  refine ⟨IsBlock.smul_eq_or_disjoint, ?_⟩
+  rw [IsBlock.def]
+  intro hB g g'
+  apply (hB (g'⁻¹ * g)).imp
+  · rw [← smul_smul, ← eq_inv_smul_iff, inv_inv]
+    exact id
+  · intro h
+    rw [Set.disjoint_iff] at h ⊢
+    rintro x hx
+    suffices g'⁻¹ • x ∈ (g'⁻¹ * g) • B ∩ B by apply h this
+    simp only [Set.mem_inter_iff, ← Set.mem_smul_set_iff_inv_smul_mem, ← smul_smul, smul_inv_smul]
+    exact hx
 
 theorem IsBlock.mk_notempty_one {B : Set X} :
     IsBlock G B ↔ ∀ g : G, g • B ∩ B ≠ ∅ → g • B = B := by
@@ -207,18 +211,18 @@ variable {X}
 theorem IsBlock.subgroup {H : Subgroup G} {B : Set X} (hfB : IsBlock G B) :
     IsBlock H B := by
   rw [IsBlock.def_one]; rintro ⟨g, _⟩
-  simpa only using IsBlock.def_one.mp hfB g
+  simpa only using hfB.smul_eq_or_disjoint g
 
 theorem IsBlock.preimage {H Y : Type*} [Group H] [MulAction H Y]
     {φ : H → G} (j : Y →ₑ[φ] X) {B : Set X} (hB : IsBlock G B) :
     IsBlock H (j ⁻¹' B) := by
   rw [IsBlock.def_one]
   intro g
-  apply (IsBlock.def_one.mp hB (φ g)).imp
+  rw [← Group.preimage_smul_setₛₗ Y X φ j]
+  apply (hB.smul_eq_or_disjoint (φ g)).imp
   · intro heq
-    rw [← Group.preimage_smul_setₛₗ Y X φ j, heq]
-  · rw [← Group.preimage_smul_setₛₗ Y X φ j]
-    exact Disjoint.preimage _
+    rw [heq]
+  · exact Disjoint.preimage _
 
 theorem IsBlock.image {H Y : Type*} [Group H] [MulAction H Y]
     {φ : G →* H} (j : X →ₑ[φ] Y)
@@ -238,26 +242,19 @@ theorem IsBlock.subtype_val_preimage {C : SubMulAction G X} {B : Set X} (hB : Is
     IsBlock G (Subtype.val ⁻¹' B : Set C) :=
   hB.preimage C.inclusion
 
-/-
-theorem IsBlock.smul_coe_eq_coe_smul {C : SubMulAction G X} {B : Set C} {g : G} :
-    g • (Subtype.val '' B : Set X) = Subtype.val '' (g • B) :=
-  (image_smul_set G _ X C.inclusion g B).symm
--/
-
-theorem IsBlock.iff_of_subtype_val {C : SubMulAction G X} {B : Set C} :
+theorem IsBlock.iff_subtype_val {C : SubMulAction G X} {B : Set C} :
     IsBlock G B ↔ IsBlock G (Subtype.val '' B : Set X) := by
   simp only [IsBlock.def_one]
   apply forall_congr'
   intro g
-  erw [← image_smul_set _ _ _ C.inclusion g B]
-  apply or_congr (Set.image_eq_image Subtype.coe_injective).symm
-  simp only [Set.disjoint_iff, Set.subset_empty_iff]
-  erw [←
-    Set.InjOn.image_inter (Set.injOn_of_injective Subtype.coe_injective _)
-      (Set.subset_univ _) (Set.subset_univ _)]
-  simp only [Set.image_eq_empty]
+  rw [← SubMulAction.inclusion.coe_eq, ← image_smul_set _ _ _ C.inclusion g B,
+    ← Set.image_eq_image Subtype.coe_injective]
+  apply or_congr Iff.rfl
+  simp only [Set.disjoint_iff, Set.subset_empty_iff, Set.image_eq_empty,
+    ← (Set.injOn_of_injective C.inclusion_injective _).image_inter
+        (Set.subset_univ _) (Set.subset_univ _)]
 
-theorem IsBlock.iff_of_top (B : Set X) :
+theorem IsBlock.iff_top (B : Set X) :
     IsBlock G B ↔ IsBlock (⊤ : Subgroup G) B := by
   simp only [IsBlock.def_one]
   constructor
@@ -270,39 +267,34 @@ theorem IsBlock.inter {B₁ B₂ : Set X} (h₁ : IsBlock G B₁) (h₂ : IsBloc
   rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_inter]
-  cases' IsBlock.def_one.mp h₁ g with h₁ h₁
-  · cases' IsBlock.def_one.mp h₂ g with h₂ h₂
-    · apply Or.intro_left; rw [h₁, h₂]
-    apply Or.intro_right
+  cases' h₁.smul_eq_or_disjoint g with h₁ h₁
+  · cases' h₂.smul_eq_or_disjoint g with h₂ h₂
+    · left; rw [h₁, h₂]
+    right
     apply Disjoint.inter_left'; apply Disjoint.inter_right'
     exact h₂
-  · apply Or.intro_right
+  · right
     apply Disjoint.inter_left; apply Disjoint.inter_right
     exact h₁
 
 /-- An intersection of blocks is a block -/
 theorem IsBlock.iInter {ι : Type*} {B : ι → Set X} (hB : ∀ i : ι, IsBlock G (B i)) :
     IsBlock G (⋂ i, B i) := by
-  rw [IsBlock.def_one]
-  cases' em (IsEmpty ι) with hι hι
+  by_cases hι : (IsEmpty ι)
   · -- ι = ∅, block = ⊤
-    suffices (⋂ i : ι, B i) = Set.univ by
-      rw [this]
-      exact IsBlock.def_one.mp (isBlock_top X)
-    simp only [Set.top_eq_univ, Set.iInter_eq_univ]
-    intro i; exfalso; apply hι.false; exact i
+    suffices (⋂ i : ι, B i) = Set.univ by simpa only [this] using isBlock_top X
+    simpa only [Set.top_eq_univ, Set.iInter_eq_univ] using (hι.elim' ·)
+  rw [IsBlock.def_one]
   intro g
   rw [Set.smul_set_iInter]
-  cases' em (∃ i : ι, Disjoint (g • B i) (B i)) with h h
-  · obtain ⟨j, hj⟩ := h
-    apply Or.intro_right
-    refine' Disjoint.mono _ _ hj
-    apply Set.iInter_subset
-    apply Set.iInter_subset
-  simp only [not_exists] at h
-  apply Or.intro_left
-  have : ∀ i : ι, g • B i = B i := fun i => Or.resolve_right (IsBlock.def_one.mp (hB i) g) (h i)
-  rw [Set.iInter_congr this]
+  by_cases h : ∃ i : ι, Disjoint (g • B i) (B i)
+  · right
+    obtain ⟨j, hj⟩ := h
+    refine' Disjoint.mono _ _ hj <;> apply Set.iInter_subset
+  · left
+    simp only [not_exists] at h
+    have : ∀ i : ι, g • B i = B i := fun i => ((hB i).smul_eq_or_disjoint g).resolve_right (h i)
+    rw [Set.iInter_congr this]
 
 theorem IsBlock.of_subgroup_of_conjugate {B : Set X} {H : Subgroup G} (hB : IsBlock H B) (g : G) :
     IsBlock (Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) H) (g • B) := by
@@ -312,29 +304,20 @@ theorem IsBlock.of_subgroup_of_conjugate {B : Set X} {H : Subgroup G} (hB : IsBl
   simp only [MulEquiv.coe_toMonoidHom, MulAut.conj_apply] at hh
   suffices h' • g • B = g • h • B by
     simp only [this]
-    cases' IsBlock.def_one.mp hB ⟨h, hH⟩ with heq hdis
-    · left; congr
-    · right
-      exact Set.disjoint_image_of_injective (MulAction.injective g) hdis
+    apply (hB.smul_eq_or_disjoint ⟨h, hH⟩).imp
+    · intro; congr
+    · exact Set.disjoint_image_of_injective (MulAction.injective g)
   suffices (h' : G) • g • B = g • h • B by
     rw [← this]; rfl
-  rw [← hh]
-  rw [smul_smul (g * h * g⁻¹) g B]
-  rw [smul_smul g h B]
-  simp only [inv_mul_cancel_right]
+  rw [← hh, smul_smul (g * h * g⁻¹) g B, smul_smul g h B, inv_mul_cancel_right]
 
 /-- A translate of a block is a block -/
 theorem IsBlock.translate {B : Set X} (g : G) (hB : IsBlock G B) :
     IsBlock G (g • B) := by
-  rw [IsBlock.iff_of_top] at hB ⊢
-  suffices Subgroup.map (MulEquiv.toMonoidHom (MulAut.conj g)) ⊤ = ⊤ by
-    rw [← this]
-    exact IsBlock.of_subgroup_of_conjugate hB g
-  suffices ⊤ = Subgroup.comap (MulEquiv.toMonoidHom (MulAut.conj g)) ⊤ by
-    rw [this]
-    refine Subgroup.map_comap_eq_self_of_surjective ?_ _
-    exact MulEquiv.surjective (MulAut.conj g)
-  rw [Subgroup.comap_top]
+  rw [IsBlock.iff_top] at hB ⊢
+  rw [← Subgroup.map_comap_eq_self_of_surjective (f := MulAut.conj g) (MulAut.conj g).surjective ⊤]
+  apply IsBlock.of_subgroup_of_conjugate
+  rwa [Subgroup.comap_top]
 
 variable (G)
 
@@ -345,43 +328,32 @@ def IsBlockSystem (B : Set (Set X)) :=
 
 variable {G}
 
--- The following proof is absurdly complicated !
 /-- Translates of a block form a `block_system` -/
 theorem IsBlock.isBlockSystem [hGX : MulAction.IsPretransitive G X]
     {B : Set X} (hB : IsBlock G B) (hBe : B.Nonempty) :
     IsBlockSystem G (Set.range fun g : G => g • B) := by
-  constructor
-  constructor
+  refine ⟨⟨?nonempty, ?cover⟩, ?mem_blocks⟩
+  case mem_blocks => rintro B' ⟨g, rfl⟩; exact hB.translate g
   · simp only [Set.mem_range, not_exists]
-    intro x hx; apply Set.Nonempty.ne_empty hBe
-    rw [← Set.image_eq_empty]
-    exact hx
+    intro g hg
+    apply hBe.ne_empty
+    simpa only [Set.smul_set_eq_empty] using hg
   · intro a
     obtain ⟨b : X, hb : b ∈ B⟩ := hBe
     obtain ⟨g, rfl⟩ := exists_smul_eq G b a
     use g • B
-    constructor
-    · simp only [Set.mem_range, exists_apply_eq_apply,
-        exists_unique_iff_exists, exists_true_left, Set.smul_mem_smul_set_iff]
-      exact hb
-    · simp only [Set.mem_range, exists_unique_iff_exists, exists_prop, and_imp,
-        forall_exists_index, forall_apply_eq_imp_iff']
-      rintro B' g' ⟨rfl⟩ ha
-      apply Or.resolve_right (IsBlock.def.mp hB g' g)
-      rw [Set.not_disjoint_iff]
-      refine ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
-  rintro B' ⟨g, rfl⟩; exact hB.translate g
+    simp only [Set.smul_mem_smul_set_iff, hb, exists_unique_iff_exists, Set.mem_range,
+      exists_apply_eq_apply, exists_const, exists_prop, and_imp, forall_exists_index,
+      forall_apply_eq_imp_iff, true_and]
+    intro g' ha
+    apply (IsBlock.def.mp hB g' g).resolve_right
+    rw [Set.not_disjoint_iff]
+    refine ⟨g • b, ha, ⟨b, hb, rfl⟩⟩
 
 section Normal
 
-/-- An orbit of a normal subgroup is a block -/
-theorem orbit.isBlock_of_normal {N : Subgroup G} (nN : Subgroup.Normal N) (a : X) :
-    IsBlock G (orbit N a) := by
-  rw [IsBlock.def_one]
-  intro g
-  suffices g • orbit N a = orbit N (g • a) by
-    rw [this]
-    apply orbit.eq_or_disjoint
+lemma smul_orbit_eq_orbit_smul (N : Subgroup G) [nN : N.Normal] (a : X) (g : G) :
+    g • orbit N a = orbit N (g • a) := by
   simp only [orbit, Set.image_smul, Set.smul_set_range]
   ext
   simp only [Set.mem_range]
@@ -395,13 +367,21 @@ theorem orbit.isBlock_of_normal {N : Subgroup G} (nN : Subgroup.Normal N) (a : X
     simp only [Submonoid.mk_smul]
     simp only [← mul_assoc, ← smul_smul, smul_inv_smul, inv_inv]
 
+/-- An orbit of a normal subgroup is a block -/
+theorem orbit.isBlock_of_normal {N : Subgroup G} [N.Normal] (a : X) :
+    IsBlock G (orbit N a) := by
+  rw [IsBlock.def_one]
+  intro g
+  rw [smul_orbit_eq_orbit_smul]
+  apply orbit.eq_or_disjoint
+
 /-- The orbits of a normal subgroup form a block system -/
-theorem IsBlockSystem.of_normal {N : Subgroup G} (nN : Subgroup.Normal N) :
+theorem IsBlockSystem.of_normal {N : Subgroup G} [N.Normal] :
     IsBlockSystem G (Set.range fun a : X => orbit N a) := by
   constructor
   · apply IsPartition.of_orbits
   · intro b; rintro ⟨a, rfl⟩
-    exact orbit.isBlock_of_normal nN a
+    exact orbit.isBlock_of_normal a
 
 end Normal
 
