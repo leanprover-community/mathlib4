@@ -127,7 +127,7 @@ theorem ContDiffWithinAt.exists_lipschitzOnWith
   exact ⟨K, t, hst, hft⟩
 #align cont_diff_within_at.exists_lipschitz_on_with ContDiffWithinAt.exists_lipschitzOnWith
 
-/-- If `f` is `C^1` at `x` and `K > ‖fderiv 𝕂 f x‖`, then `f` is `K`-Lipschitz in a neighborhood of
+/-- If `f` is `C^1` at `x` and `‖fderiv 𝕂 f x‖ < K`, then `f` is `K`-Lipschitz in a neighborhood of
 `x`. -/
 theorem ContDiffAt.exists_lipschitzOnWith_of_nnnorm_lt {f : E' → F'} {x : E'}
     (hf : ContDiffAt 𝕂 1 f x) (K : ℝ≥0) (hK : ‖fderiv 𝕂 f x‖₊ < K) :
@@ -146,6 +146,15 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
   intro x
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
+
+/-- A `C¹` function is Lipschitz on each convex compact set. -/
+theorem ContDiff.lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiff ℝ n f) (hn : 1 ≤ n)
+    (hs : Convex ℝ s) (hs' : IsCompact s) : ∃ K, LipschitzOnWith K f s := by
+  rcases (bddAbove_iff_exists_ge 0).mp (hs'.image (hf.continuous_fderiv hn).norm).bddAbove
+    with ⟨M, M_nonneg, hM⟩
+  simp_rw [forall_mem_image] at hM
+  use ⟨M, M_nonneg⟩
+  exact Convex.lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf.differentiable hn x) hM hs
 
 /-- A `C^1` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
