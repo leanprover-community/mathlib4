@@ -330,9 +330,9 @@ instance multiset : Denumerable (Multiset α) :=
      fun s => by
       have :=
         raise_lower (List.sorted_cons.2 ⟨fun n _ => Nat.zero_le n, (s.map encode).sort_sorted _⟩)
-      simp [-Multiset.coe_map, this],
+      simp [-Multiset.map_coe, this],
      fun n => by
-      simp [-Multiset.coe_map, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
+      simp [-Multiset.map_coe, List.mergeSort_eq_self _ (raise_sorted _ _), lower_raise]⟩
 #align denumerable.multiset Denumerable.multiset
 
 end Multiset
@@ -391,10 +391,10 @@ instance finset : Denumerable (Finset α) :=
     ⟨fun s : Finset α => encode <| lower' ((s.map (eqv α).toEmbedding).sort (· ≤ ·)) 0, fun n =>
       Finset.map (eqv α).symm.toEmbedding (raise'Finset (ofNat (List ℕ) n) 0), fun s =>
       Finset.eq_of_veq <| by
-        simp [-Multiset.coe_map, raise'Finset,
+        simp [-Multiset.map_coe, raise'Finset,
           raise_lower' (fun n _ => Nat.zero_le n) (Finset.sort_sorted_lt _)],
       fun n => by
-      simp [-Multiset.coe_map, Finset.map, raise'Finset, Finset.sort,
+      simp [-Multiset.map_coe, Finset.map, raise'Finset, Finset.sort,
         List.mergeSort_eq_self (· ≤ ·) ((raise'_sorted _ _).imp (@le_of_lt _ _)), lower_raise']⟩
 #align denumerable.finset Denumerable.finset
 

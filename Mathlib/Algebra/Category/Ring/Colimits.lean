@@ -140,16 +140,24 @@ def ColimitType : Type v :=
   Quotient (colimitSetoid F)
 #align CommRing.colimits.colimit_type CommRingCat.Colimits.ColimitType
 
-instance ColimitType.AddGroup : AddGroup (ColimitType F) where
-  zero := Quotient.mk _ zero
-  neg := Quotient.map neg Relation.neg_1
-  add := Quotient.map₂ add fun x x' rx y y' ry =>
+instance ColimitType.instZero : Zero (ColimitType F) where zero := Quotient.mk _ zero
+
+instance ColimitType.instAdd : Add (ColimitType F) where
+  add := Quotient.map₂ add <| fun _x x' rx y _y' ry =>
     Setoid.trans (Relation.add_1 _ _ y rx) (Relation.add_2 x' _ _ ry)
-  zero_add := Quotient.ind fun _ => Quotient.sound <| Relation.zero_add _
-  add_zero := Quotient.ind fun _ => Quotient.sound <| Relation.add_zero _
-  add_left_neg := Quotient.ind fun _ => Quotient.sound <| Relation.add_left_neg _
-  add_assoc := Quotient.ind fun _ => Quotient.ind₂ fun _ _ =>
+
+instance ColimitType.instNeg : Neg (ColimitType F) where
+  neg := Quotient.map neg Relation.neg_1
+
+instance ColimitType.AddGroup : AddGroup (ColimitType F) where
+  neg := Quotient.map neg Relation.neg_1
+  zero_add := Quotient.ind <| fun _ => Quotient.sound <| Relation.zero_add _
+  add_zero := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_zero _
+  add_left_neg := Quotient.ind <| fun _ => Quotient.sound <| Relation.add_left_neg _
+  add_assoc := Quotient.ind <| fun _ => Quotient.ind₂ <| fun _ _ =>
     Quotient.sound <| Relation.add_assoc _ _ _
+  nsmul := nsmulRec
+  zsmul := zsmulRec
 
 -- Porting note: failed to derive `Inhabited` instance
 instance InhabitedColimitType : Inhabited <| ColimitType F where

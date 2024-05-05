@@ -109,7 +109,7 @@ protected def const : ℕ → Code
 theorem const_inj : ∀ {n₁ n₂}, Nat.Partrec.Code.const n₁ = Nat.Partrec.Code.const n₂ → n₁ = n₂
   | 0, 0, _ => by simp
   | n₁ + 1, n₂ + 1, h => by
-    dsimp [Nat.add_one, Nat.Partrec.Code.const] at h
+    dsimp [Nat.Partrec.Code.const] at h
     injection h with h₁ h₂
     simp only [const_inj h₂]
 #align nat.partrec.code.const_inj Nat.Partrec.Code.const_inj
@@ -181,7 +181,7 @@ private theorem encode_ofNatCode : ∀ n, encodeCode (ofNatCode n) = n
     have IH1 := encode_ofNatCode m.unpair.1
     have IH2 := encode_ofNatCode m.unpair.2
     conv_rhs => rw [← Nat.bit_decomp n, ← Nat.bit_decomp n.div2]
-    simp only [ofNatCode._eq_5]
+    simp only [ofNatCode.eq_5]
     cases n.bodd <;> cases n.div2.bodd <;>
       simp [encodeCode, ofNatCode, IH, IH1, IH2, Nat.bit_val]
 
@@ -343,8 +343,8 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp (config := { zeta := false })
-  iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
+  simp
+  iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
@@ -356,8 +356,7 @@ theorem rec_prim' {α σ} [Primcodable α] [Primcodable σ] {c : α → Code} (h
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp (config := { zeta := false }) [G₁]
-  simp (config := { zeta := false }) [m, List.get?_map, List.get?_range, hm, m1, m2]
+  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -457,8 +456,8 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       snd.pair <| nat_div2.comp <| nat_div2.comp snd
   refine (nat_strong_rec (fun a n => F a (ofNat Code n)) this.to₂ fun a n => ?_)
     |>.comp .id (encode_iff.2 hc) |>.of_eq fun a => by simp
-  simp (config := { zeta := false })
-  iterate 4 cases' n with n; · simp (config := { zeta := false }) [ofNatCode_eq, ofNatCode]; rfl
+  simp
+  iterate 4 cases' n with n; · simp [ofNatCode_eq, ofNatCode]; rfl
   simp only [G]; rw [List.length_map, List.length_range]
   let m := n.div2.div2
   show G₁ ((a, (List.range (n + 4)).map fun n => F a (ofNat Code n)), n, m)
@@ -470,8 +469,7 @@ theorem rec_computable {α σ} [Primcodable α] [Primcodable σ] {c : α → Cod
       (Nat.succ_le_succ (Nat.le_add_right ..))
   have m1 : m.unpair.1 < n + 4 := lt_of_le_of_lt m.unpair_left_le hm
   have m2 : m.unpair.2 < n + 4 := lt_of_le_of_lt m.unpair_right_le hm
-  simp (config := { zeta := false }) [G₁]
-  simp (config := { zeta := false }) [m, List.get?_map, List.get?_range, hm, m1, m2]
+  simp [G₁]; simp [m, List.get?_map, List.get?_range, hm, m1, m2]
   rw [show ofNat Code (n + 4) = ofNatCode (n + 4) from rfl]
   simp [ofNatCode]
   cases n.bodd <;> cases n.div2.bodd <;> rfl
@@ -645,8 +643,6 @@ def evaln : ℕ → Code → ℕ → Option ℕ
         pure m
       else
         evaln k (rfind' cf) (Nat.pair a (m + 1))
-  termination_by k c => (k, c)
-  decreasing_by all_goals { decreasing_with (dsimp; omega) }
 #align nat.partrec.code.evaln Nat.Partrec.Code.evaln
 
 theorem evaln_bound : ∀ {k c n x}, x ∈ evaln k c n → n < k
@@ -772,7 +768,7 @@ theorem evaln_complete {c n x} : x ∈ eval c n ↔ ∃ k, x ∈ evaln k c n := 
             le_trans (le_max_left _ (Nat.pair n₁ m)) nk₁, y,
           evaln_mono (Nat.succ_le_succ <| le_max_left _ _) _,
           evaln_mono (Nat.succ_le_succ <| Nat.le_succ_of_le <| le_max_right _ _) hk₂⟩
-      simp only [evaln._eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
+      simp only [evaln.eq_8, bind, unpaired, unpair_pair, Option.mem_def, Option.bind_eq_some,
         Option.guard_eq_some', exists_and_left, exists_const]
       exact ⟨le_trans (le_max_right _ _) nk₁, hk₁⟩
   | rfind' cf hf =>

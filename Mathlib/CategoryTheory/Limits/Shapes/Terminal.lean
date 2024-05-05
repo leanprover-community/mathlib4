@@ -252,7 +252,7 @@ def isLimitEmptyConeEquiv (c₁ : Cone F₁) (c₂ : Cone F₂) (h : c₁.pt ≅
   invFun hl := isLimitChangeEmptyCone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro; funext
+    dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.is_limit_empty_cone_equiv CategoryTheory.Limits.isLimitEmptyConeEquiv
 
@@ -286,7 +286,7 @@ def isColimitEmptyCoconeEquiv (c₁ : Cocone F₁) (c₂ : Cocone F₂) (h : c�
   invFun hl := isColimitChangeEmptyCocone C hl c₁ h.symm
   left_inv := by dsimp [Function.LeftInverse]; intro; simp only [eq_iff_true_of_subsingleton]
   right_inv := by
-    dsimp [Function.LeftInverse,Function.RightInverse]; intro; funext
+    dsimp [Function.LeftInverse,Function.RightInverse]; intro
     simp only [eq_iff_true_of_subsingleton]
 #align category_theory.limits.is_colimit_empty_cocone_equiv CategoryTheory.Limits.isColimitEmptyCoconeEquiv
 
@@ -604,7 +604,7 @@ def limitOfDiagramInitial {X : J} (tX : IsInitial X) (F : J ⥤ C) :
   uniq s m w := by
     conv_lhs => dsimp
     simp_rw [← w X, coneOfDiagramInitial_π_app, tX.hom_ext (tX.to X) (𝟙 _)]
-    dsimp; simp
+    simp
 #align category_theory.limits.limit_of_diagram_initial CategoryTheory.Limits.limitOfDiagramInitial
 
 instance hasLimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C} : HasLimit F :=
@@ -681,6 +681,12 @@ def colimitOfDiagramTerminal {X : J} (tX : IsTerminal X) (F : J ⥤ C) :
 instance hasColimit_of_domain_hasTerminal [HasTerminal J] {F : J ⥤ C} : HasColimit F :=
   HasColimit.mk { cocone := _, isColimit := colimitOfDiagramTerminal (terminalIsTerminal) F }
 
+lemma IsColimit.isIso_ι_app_of_isTerminal {F : J ⥤ C} {c : Cocone F} (hc : IsColimit c)
+    (X : J) (hX : IsTerminal X) :
+    IsIso (c.ι.app X) := by
+  change IsIso (coconePointUniqueUpToIso (colimitOfDiagramTerminal hX F) hc).hom
+  infer_instance
+
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has a terminal object then the image of it is isomorphic
 to the colimit of `F`. -/
@@ -716,6 +722,12 @@ def colimitOfDiagramInitial {X : J} (hX : IsInitial X) (F : J ⥤ C)
 instance hasColimit_of_domain_hasInitial [HasInitial J] {F : J ⥤ C}
     [∀ (i j : J) (f : i ⟶ j), IsIso (F.map f)] : HasColimit F :=
   HasColimit.mk { cocone := _, isColimit := colimitOfDiagramInitial (initialIsInitial) F }
+
+lemma IsLimit.isIso_π_app_of_isInitial {F : J ⥤ C} {c : Cone F} (hc : IsLimit c)
+    (X : J) (hX : IsInitial X) :
+    IsIso (c.π.app X) := by
+  change IsIso (conePointUniqueUpToIso hc (limitOfDiagramInitial hX F)).hom
+  infer_instance
 
 -- This is reducible to allow usage of lemmas about `cocone_point_unique_up_to_iso`.
 /-- For a functor `F : J ⥤ C`, if `J` has an initial object and all the morphisms in the diagram

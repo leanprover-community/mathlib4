@@ -3,9 +3,9 @@ Copyright (c) 2020 Anatole Dedecker. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Anatole Dedecker, Devon Tuma
 -/
+import Mathlib.Algebra.Polynomial.RingDivision
 import Mathlib.Analysis.Asymptotics.AsymptoticEquivalent
 import Mathlib.Analysis.Asymptotics.SpecificAsymptotics
-import Mathlib.Data.Polynomial.RingDivision
 
 #align_import analysis.special_functions.polynomials from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
@@ -142,7 +142,7 @@ theorem div_tendsto_zero_of_degree_lt (hdeg : P.degree < Q.degree) :
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_nhds _
   rw [← mul_zero]
   refine' (tendsto_zpow_atTop_zero _).const_mul _
-  linarith
+  omega
 #align polynomial.div_tendsto_zero_of_degree_lt Polynomial.div_tendsto_zero_of_degree_lt
 
 theorem div_tendsto_zero_iff_degree_lt (hQ : Q ≠ 0) :
@@ -179,7 +179,7 @@ theorem div_tendsto_atTop_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_atTop _
   apply Tendsto.const_mul_atTop hpos
   apply tendsto_zpow_atTop_atTop
-  linarith
+  omega
 #align polynomial.div_tendsto_at_top_of_degree_gt' Polynomial.div_tendsto_atTop_of_degree_gt'
 
 theorem div_tendsto_atTop_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)
@@ -202,7 +202,7 @@ theorem div_tendsto_atBot_of_degree_gt' (hdeg : Q.degree < P.degree)
   refine' (isEquivalent_atTop_div P Q).symm.tendsto_atBot _
   apply Tendsto.neg_const_mul_atTop hneg
   apply tendsto_zpow_atTop_atTop
-  linarith
+  omega
 #align polynomial.div_tendsto_at_bot_of_degree_gt' Polynomial.div_tendsto_atBot_of_degree_gt'
 
 theorem div_tendsto_atBot_of_degree_gt (hdeg : Q.degree < P.degree) (hQ : Q ≠ 0)

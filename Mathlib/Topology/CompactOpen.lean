@@ -150,7 +150,7 @@ lemma _root_.Continuous.compCM (hg : Continuous g) (hf : Continuous f) :
     Continuous fun x => (g x).comp (f x) :=
   continuous_comp'.comp (hf.prod_mk hg)
 
-@[deprecated _root_.Continuous.compCM] -- deprecated on 2024/01/30
+@[deprecated _root_.Continuous.compCM] -- deprecated on 2024-01-30
 lemma continuous.comp' (hf : Continuous f) (hg : Continuous g) :
     Continuous fun x => (g x).comp (f x) :=
   hg.compCM hf
@@ -436,7 +436,6 @@ open ContinuousMap
 namespace Homeomorph
 
 variable {X : Type*} {Y : Type*} {Z : Type*}
-
 variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z]
 
 /-- Currying as a homeomorphism between the function spaces `C(X × Y, Z)` and `C(X, C(Y, Z))`. -/

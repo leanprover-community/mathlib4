@@ -34,8 +34,8 @@ namespace Matrix
 
 variable {m n R 𝕜 : Type*}
 variable [Fintype m] [Fintype n]
-variable [CommRing R] [PartialOrder R] [StarOrderedRing R]
-variable [IsROrC 𝕜]
+variable [CommRing R] [PartialOrder R] [StarRing R] [StarOrderedRing R]
+variable [RCLike 𝕜]
 open scoped Matrix
 
 /-!
@@ -62,8 +62,8 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosSemidef) : M.IsHermitian :=
   hM.1
 
 theorem re_dotProduct_nonneg {M : Matrix n n 𝕜} (hM : M.PosSemidef) (x : n → 𝕜) :
-    0 ≤ IsROrC.re (dotProduct (star x) (M *ᵥ x)) :=
-  IsROrC.nonneg_iff.mp (hM.2 _) |>.1
+    0 ≤ RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+  RCLike.nonneg_iff.mp (hM.2 _) |>.1
 
 lemma conjTranspose_mul_mul_same {A : Matrix n n R} (hA : PosSemidef A)
     {m : Type*} [Fintype m] (B : Matrix n m R) :
@@ -107,7 +107,7 @@ protected lemma pow [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) (k : 
   | 0 => .one
   | 1 => by simpa using hM
   | (k + 2) => by
-    rw [pow_succ', pow_succ]
+    rw [pow_succ, pow_succ']
     simpa only [hM.isHermitian.eq] using (hM.pow k).mul_mul_conjTranspose_same M
 
 protected lemma inv [DecidableEq n] {M : Matrix n n R} (hM : M.PosSemidef) : M⁻¹.PosSemidef := by
@@ -143,6 +143,7 @@ open Lean PrettyPrinter.Delaborator SubExpr in
 def delabSqrt : Delab :=
   whenPPOption getPPNotation <|
   whenNotPPOption getPPAnalysisSkip <|
+  withOverApp 7 <|
   withOptionAtCurrPos `pp.analysis.skip true do
     let e ← getExpr
     guard <| e.isAppOfArity ``Matrix.PosSemidef.sqrt 7
@@ -153,11 +154,11 @@ def delabSqrt : Delab :=
 lemma posSemidef_sqrt : PosSemidef hA.sqrt := by
   apply PosSemidef.mul_mul_conjTranspose_same
   refine posSemidef_diagonal_iff.mpr fun i ↦ ?_
-  rw [Function.comp_apply, IsROrC.nonneg_iff]
+  rw [Function.comp_apply, RCLike.nonneg_iff]
   constructor
-  · simp only [IsROrC.ofReal_re]
+  · simp only [RCLike.ofReal_re]
     exact Real.sqrt_nonneg _
-  · simp only [IsROrC.ofReal_im]
+  · simp only [RCLike.ofReal_im]
 
 @[simp]
 lemma sq_sqrt : hA.sqrt ^ 2 = A := by
@@ -174,7 +175,7 @@ lemma sq_sqrt : hA.sqrt ^ 2 = A := by
   have : E * E = diagonal ((↑) ∘ hA.1.eigenvalues) := by
     rw [diagonal_mul_diagonal]
     refine congr_arg _ (funext fun v ↦ ?_) -- why doesn't "congr with v" work?
-    simp [← pow_two, ← IsROrC.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
+    simp [← pow_two, ← RCLike.ofReal_pow, Real.sq_sqrt (hA.eigenvalues_nonneg v)]
   rw [this]
   convert hA.1.spectral_theorem'.symm
   apply Matrix.IsHermitian.conjTranspose_eigenvectorMatrix
@@ -197,16 +198,16 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
       rw [mulVec_mulVec, mulVec_mulVec, ← dotProduct_add, ← add_mulVec, mul_sub, sub_mul,
         add_sub, sub_add_cancel, pow_two, pow_two]
     _ = t * (star v ⬝ᵥ A *ᵥ v) + (star v) ᵥ* (A - B)ᴴ ⬝ᵥ B *ᵥ v := by
-      rw [hv', mulVec_smul, dotProduct_smul, IsROrC.real_smul_eq_coe_mul,
+      rw [hv', mulVec_smul, dotProduct_smul, RCLike.real_smul_eq_coe_mul,
         dotProduct_mulVec _ (A - B), hA.1.sub hB.1]
     _ = t * (star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v) := by
-      simp_rw [← star_mulVec, hv', mul_add, ← IsROrC.real_smul_eq_coe_mul, ← smul_dotProduct]
+      simp_rw [← star_mulVec, hv', mul_add, ← RCLike.real_smul_eq_coe_mul, ← smul_dotProduct]
       congr 2 with i
-      simp only [Pi.star_apply, Pi.smul_apply, IsROrC.real_smul_eq_coe_mul, star_mul',
-        IsROrC.star_def, IsROrC.conj_ofReal]
+      simp only [Pi.star_apply, Pi.smul_apply, RCLike.real_smul_eq_coe_mul, star_mul',
+        RCLike.star_def, RCLike.conj_ofReal]
   replace h_sum : star v ⬝ᵥ A *ᵥ v + star v ⬝ᵥ B *ᵥ v = 0 := by
     rw [eq_comm, ← mul_zero (t : 𝕜)] at h_sum
-    exact mul_left_cancel₀ (IsROrC.ofReal_ne_zero.mpr ht) h_sum
+    exact mul_left_cancel₀ (RCLike.ofReal_ne_zero.mpr ht) h_sum
   have h_van : star v ⬝ᵥ A *ᵥ v = 0 ∧ star v ⬝ᵥ B *ᵥ v = 0 := by
     refine ⟨le_antisymm ?_ (hA.2 v), le_antisymm ?_ (hB.2 v)⟩
     · rw [add_comm, add_eq_zero_iff_eq_neg] at h_sum
@@ -214,9 +215,9 @@ lemma eq_of_sq_eq_sq {B : Matrix n n 𝕜} (hB : PosSemidef B) (hAB : A ^ 2 = B 
     · simpa only [add_eq_zero_iff_eq_neg.mp h_sum, neg_nonneg] using hA.2 v
   have aux : star v ⬝ᵥ (A - B) *ᵥ v = 0 := by
     rw [sub_mulVec, dotProduct_sub, h_van.1, h_van.2, sub_zero]
-  rw [hv', dotProduct_smul, IsROrC.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
+  rw [hv', dotProduct_smul, RCLike.real_smul_eq_coe_mul, ← mul_zero ↑t] at aux
   exact hv <| Matrix.dotProduct_star_self_eq_zero.mp <| mul_left_cancel₀
-    (IsROrC.ofReal_ne_zero.mpr ht) aux
+    (RCLike.ofReal_ne_zero.mpr ht) aux
 
 lemma sqrt_sq : (hA.pow 2 : PosSemidef (A ^ 2)).sqrt = A :=
   (hA.pow 2).posSemidef_sqrt.eq_of_sq_eq_sq hA (hA.pow 2).sq_sqrt
@@ -265,7 +266,7 @@ lemma IsHermitian.posSemidef_of_eigenvalues_nonneg [DecidableEq n] {A : Matrix n
     (hA : IsHermitian A) (h : ∀ i : n, 0 ≤ hA.eigenvalues i) : PosSemidef A := by
   simp_rw [hA.conjTranspose_eigenvectorMatrix.symm ▸ hA.spectral_theorem']
   refine (posSemidef_diagonal_iff.mpr fun i ↦ ?_).mul_mul_conjTranspose_same _
-  rw [IsROrC.le_iff_re_im]
+  rw [RCLike.le_iff_re_im]
   simpa using h i
 
 /-- For `A` positive semidefinite, we have `x⋆ A x = 0` iff `A x = 0`. -/
@@ -304,14 +305,14 @@ theorem isHermitian {M : Matrix n n R} (hM : M.PosDef) : M.IsHermitian :=
 #align matrix.pos_def.is_hermitian Matrix.PosDef.isHermitian
 
 theorem re_dotProduct_pos {M : Matrix n n 𝕜} (hM : M.PosDef) {x : n → 𝕜} (hx : x ≠ 0) :
-    0 < IsROrC.re (dotProduct (star x) (M *ᵥ x)) :=
-  IsROrC.pos_iff.mp (hM.2 _ hx) |>.1
+    0 < RCLike.re (dotProduct (star x) (M *ᵥ x)) :=
+  RCLike.pos_iff.mp (hM.2 _ hx) |>.1
 
 theorem posSemidef {M : Matrix n n R} (hM : M.PosDef) : M.PosSemidef := by
   refine' ⟨hM.1, _⟩
   intro x
   by_cases hx : x = 0
-  · simp only [hx, zero_dotProduct, star_zero, IsROrC.zero_re']
+  · simp only [hx, zero_dotProduct, star_zero, RCLike.zero_re']
     exact le_rfl
   · exact le_of_lt (hM.2 x hx)
 #align matrix.pos_def.pos_semidef Matrix.PosDef.posSemidef
@@ -382,7 +383,7 @@ end QuadraticForm
 
 namespace Matrix
 
-variable {𝕜 : Type*} [IsROrC 𝕜] {n : Type*} [Fintype n]
+variable {𝕜 : Type*} [RCLike 𝕜] {n : Type*} [Fintype n]
 
 /-- A positive definite matrix `M` induces a norm `‖x‖ = sqrt (re xᴴMx)`. -/
 @[reducible]

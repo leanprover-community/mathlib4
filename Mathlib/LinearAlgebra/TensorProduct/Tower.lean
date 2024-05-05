@@ -5,7 +5,7 @@ Authors: Scott Morrison, Johan Commelin, Eric Wieser
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.LinearAlgebra.Basic
-import Mathlib.LinearAlgebra.TensorProduct
+import Mathlib.LinearAlgebra.TensorProduct.Basic
 
 #align_import ring_theory.tensor_product from "leanprover-community/mathlib"@"88fcdc3da43943f5b01925deddaa5bf0c0e85e4e"
 
@@ -62,20 +62,14 @@ open Algebra (lsmul)
 section Semiring
 
 variable [CommSemiring R] [Semiring A] [Semiring B] [Algebra R A] [Algebra R B]
-
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-
 variable [AddCommMonoid N] [Module R N]
-
 variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
-
 variable [AddCommMonoid Q] [Module R Q]
-
 variable [AddCommMonoid P'] [Module R P'] [Module A P'] [Module B P']
 variable [IsScalarTower R A P'] [IsScalarTower R B P'] [SMulCommClass A B P']
-
 variable [AddCommMonoid Q'] [Module R Q']
 
 theorem smul_eq_lsmul_rTensor (a : A) (x : M ⊗[R] N) : a • x = (lsmul R R M a).rTensor N x :=
@@ -156,7 +150,7 @@ def uncurry : (M →ₗ[A] N →ₗ[R] P) →ₗ[B] M ⊗[R] N →ₗ[A] P where
   toFun := lift
   map_add' _ _ := ext fun x y => by simp only [lift_tmul, add_apply]
   map_smul' _ _ := ext fun x y => by simp only [lift_tmul, smul_apply, RingHom.id_apply]
--- porting note: new `B` argument
+-- Porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.uncurry TensorProduct.AlgebraTensorModule.uncurryₓ
 
 /-- Heterobasic version of `TensorProduct.lcurry`:
@@ -168,7 +162,7 @@ def lcurry : (M ⊗[R] N →ₗ[A] P) →ₗ[B] M →ₗ[A] N →ₗ[R] P where
   toFun := curry
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
--- porting note: new `B` argument
+-- Porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.lcurry TensorProduct.AlgebraTensorModule.lcurryₓ
 
 /-- Heterobasic version of `TensorProduct.lift.equiv`:
@@ -180,7 +174,7 @@ def lift.equiv : (M →ₗ[A] N →ₗ[R] P) ≃ₗ[B] M ⊗[R] N →ₗ[A] P :=
   LinearEquiv.ofLinear (uncurry R A B M N P) (lcurry R A B M N P)
     (LinearMap.ext fun _ => ext fun x y => lift_tmul _ x y)
     (LinearMap.ext fun f => LinearMap.ext fun x => LinearMap.ext fun y => lift_tmul f x y)
--- porting note: new `B` argument
+-- Porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.lift.equiv TensorProduct.AlgebraTensorModule.lift.equivₓ
 
 /-- Heterobasic version of `TensorProduct.mk`:
@@ -322,17 +316,12 @@ end Semiring
 section CommSemiring
 
 variable [CommSemiring R] [CommSemiring A] [Semiring B] [Algebra R A] [Algebra R B]
-
 variable [AddCommMonoid M] [Module R M] [Module A M] [Module B M]
 variable [IsScalarTower R A M] [IsScalarTower R B M] [SMulCommClass A B M]
-
 variable [AddCommMonoid N] [Module R N]
-
 variable [AddCommMonoid P] [Module R P] [Module A P] [Module B P]
 variable [IsScalarTower R A P] [IsScalarTower R B P] [SMulCommClass A B P]
-
 variable [AddCommMonoid Q] [Module R Q]
-
 variable (R A B M N P Q)
 
 attribute [local ext high] TensorProduct.ext
@@ -352,7 +341,7 @@ def assoc : (M ⊗[A] P) ⊗[R] Q ≃ₗ[B] M ⊗[A] (P ⊗[R] Q) :=
     (lift <| uncurry R A B P Q _ ∘ₗ curry (mk R B _ Q))
     (by ext; rfl)
     (by ext; rfl)
--- porting note: new `B` argument
+-- Porting note: new `B` argument
 #align tensor_product.algebra_tensor_module.assoc TensorProduct.AlgebraTensorModule.assocₓ
 
 variable {M P N Q}

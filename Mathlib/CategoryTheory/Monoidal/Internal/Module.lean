@@ -140,6 +140,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
       ← Algebra.smul_def]
     erw [id_apply]
   mul_assoc := by
+    set_option tactic.skipAssignedInstances false in
     -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
@@ -152,8 +153,7 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
     erw [id_apply]
-    erw [TensorProduct.mk_apply, TensorProduct.mk_apply, id_apply, LinearMap.mul'_apply,
-      LinearMap.mul'_apply]
+    erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
     simp only [LinearMap.mul'_apply, mul_assoc]
 #align Module.Mon_Module_equivalence_Algebra.inverse_obj ModuleCat.MonModuleEquivalenceAlgebra.inverseObj
 

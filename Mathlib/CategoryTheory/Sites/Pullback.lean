@@ -3,6 +3,7 @@ Copyright (c) 2021 Andrew Yang. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Andrew Yang
 -/
+import Mathlib.CategoryTheory.Adjunction.Restrict
 import Mathlib.CategoryTheory.Sites.CoverPreserving
 import Mathlib.CategoryTheory.Sites.LeftExact
 
@@ -34,20 +35,17 @@ open CategoryTheory.Limits
 namespace CategoryTheory
 
 variable {C : Type v₁} [SmallCategory C] {D : Type v₁} [SmallCategory D] (G : C ⥤ D)
-
 variable (A : Type u₁) [Category.{v₁} A]
-
 variable (J : GrothendieckTopology C) (K : GrothendieckTopology D)
 
--- porting note: there was an explicit call to
+-- Porting note: there was an explicit call to
 -- CategoryTheory.Sheaf.CategoryTheory.SheafToPresheaf.CategoryTheory.createsLimits.{u₁, v₁, v₁}
 -- but it is not necessary (it was not either in mathlib)
 instance [HasLimits A] : CreatesLimits (sheafToPresheaf J A) := inferInstance
 
 -- The assumptions so that we have sheafification
 variable [ConcreteCategory.{v₁} A] [PreservesLimits (forget A)] [HasColimits A] [HasLimits A]
-
-variable [PreservesFilteredColimits (forget A)] [ReflectsIsomorphisms (forget A)]
+variable [PreservesFilteredColimits (forget A)] [(forget A).ReflectsIsomorphisms]
 
 attribute [local instance] reflectsLimitsOfReflectsIsomorphisms
 

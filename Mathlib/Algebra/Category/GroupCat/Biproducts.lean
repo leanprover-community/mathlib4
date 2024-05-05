@@ -20,8 +20,6 @@ open CategoryTheory
 
 open CategoryTheory.Limits
 
-open BigOperators
-
 universe w u
 
 namespace AddCommGroupCat

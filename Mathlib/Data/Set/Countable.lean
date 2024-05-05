@@ -6,7 +6,7 @@ Authors: Johannes Hölzl
 import Mathlib.Data.Set.Finite
 import Mathlib.Data.Countable.Basic
 import Mathlib.Logic.Equiv.List
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import data.set.countable from "leanprover-community/mathlib"@"1f0096e6caa61e9c849ec2adbd227e960e9dff58"
 
@@ -26,7 +26,8 @@ sets, countable set
 
 noncomputable section
 
-open Function Set Encodable Classical
+open scoped Classical
+open Function Set Encodable
 
 universe u v w x
 
@@ -194,7 +195,7 @@ theorem exists_seq_iSup_eq_top_iff_countable [CompleteLattice α] {p : α → Pr
       ∃ S : Set α, S.Countable ∧ (∀ s ∈ S, p s) ∧ sSup S = ⊤ := by
   constructor
   · rintro ⟨s, hps, hs⟩
-    refine' ⟨range s, countable_range s, forall_range_iff.2 hps, _⟩
+    refine' ⟨range s, countable_range s, forall_mem_range.2 hps, _⟩
     rwa [sSup_range]
   · rintro ⟨S, hSc, hps, hS⟩
     rcases eq_empty_or_nonempty S with (rfl | hne)

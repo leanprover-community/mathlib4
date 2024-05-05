@@ -4,11 +4,11 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
 import Mathlib.Algebra.FreeAlgebra
+import Mathlib.Algebra.Polynomial.Module.Basic
 import Mathlib.GroupTheory.Finiteness
 import Mathlib.RingTheory.Adjoin.Tower
 import Mathlib.RingTheory.Finiteness
 import Mathlib.RingTheory.Noetherian
-import Mathlib.Data.Polynomial.Module.Basic
 
 #align_import ring_theory.finite_type from "leanprover-community/mathlib"@"bb168510ef455e9280a152e7f31673cabd3d7496"
 
@@ -85,7 +85,7 @@ protected theorem polynomial : FiniteType R R[X] :=
       exact Polynomial.adjoin_X⟩⟩
 #align algebra.finite_type.polynomial Algebra.FiniteType.polynomial
 
-open Classical
+open scoped Classical
 
 protected theorem freeAlgebra (ι : Type*) [Finite ι] : FiniteType R (FreeAlgebra R ι) := by
   cases nonempty_fintype ι
@@ -305,9 +305,7 @@ end RingHom
 namespace AlgHom
 
 variable {R A B C : Type*} [CommRing R]
-
 variable [CommRing A] [CommRing B] [CommRing C]
-
 variable [Algebra R A] [Algebra R B] [Algebra R C]
 
 /-- An algebra morphism `A →ₐ[R] B` is of `FiniteType` if it is of finite type as ring morphism.
@@ -568,7 +566,7 @@ theorem support_gen_of_gen {S : Set (MonoidAlgebra R M)} (hS : Algebra.adjoin R 
   refine' le_antisymm le_top _
   rw [← hS, adjoin_le_iff]
   intro f hf
-  --Porting note: ⋃ notation did not work here. Was
+  -- Porting note: ⋃ notation did not work here. Was
   -- ⋃ (g : MonoidAlgebra R M) (H : g ∈ S), (of R M '' g.support)
   have hincl : (of R M '' f.support) ⊆
       Set.iUnion fun (g : MonoidAlgebra R M)

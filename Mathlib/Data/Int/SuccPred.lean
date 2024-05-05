@@ -3,7 +3,7 @@ Copyright (c) 2021 Yaël Dillies. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies
 -/
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.SuccPred
 
 #align_import data.int.succ_pred from "leanprover-community/mathlib"@"9003f28797c0664a49e4179487267c494477d853"
@@ -64,7 +64,7 @@ theorem pred_iterate (a : ℤ) : ∀ n, pred^[n] a = a - n
 instance : IsSuccArchimedean ℤ :=
   ⟨fun {a b} h =>
     ⟨(b - a).toNat, by
-      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel']⟩⟩
+      rw [succ_eq_succ, succ_iterate, toNat_sub_of_le h, ← add_sub_assoc, add_sub_cancel_left]⟩⟩
 
 instance : IsPredArchimedean ℤ :=
   ⟨fun {a b} h =>
@@ -91,7 +91,7 @@ end Int
 @[simp, norm_cast]
 theorem Nat.cast_int_covBy_iff {a b : ℕ} : (a : ℤ) ⋖ b ↔ a ⋖ b := by
   rw [Nat.covBy_iff_succ_eq, Int.covBy_iff_succ_eq]
-  exact Int.coe_nat_inj'
+  exact Int.natCast_inj
 #align nat.cast_int_covby_iff Nat.cast_int_covBy_iff
 
 alias ⟨_, CovBy.cast_int⟩ := Nat.cast_int_covBy_iff

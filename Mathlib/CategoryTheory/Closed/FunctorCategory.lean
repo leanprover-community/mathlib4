@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Antoine Labelle
 -/
 import Mathlib.CategoryTheory.Closed.Monoidal
+import Mathlib.CategoryTheory.Functor.Currying
 import Mathlib.CategoryTheory.Monoidal.FunctorCategory
 
 #align_import category_theory.closed.functor_category from "leanprover-community/mathlib"@"0caf3701139ef2e69c215717665361cda205a90b"
@@ -41,7 +42,7 @@ def closedUnit (F : D ⥤ C) : 𝟭 (D ⥤ C) ⟶ tensorLeft F ⋙ closedIhom F 
       dsimp
       simp only [ihom.coev_naturality, closedIhom_obj_map, Monoidal.tensorObj_map]
       dsimp
-      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp]
+      rw [coev_app_comp_pre_app_assoc, ← Functor.map_comp, tensorHom_def]
       simp }
 #align category_theory.functor.closed_unit CategoryTheory.Functor.closedUnit
 
@@ -55,8 +56,8 @@ def closedCounit (F : D ⥤ C) : closedIhom F ⋙ tensorLeft F ⟶ 𝟭 (D ⥤ C
       intro X Y f
       dsimp
       simp only [closedIhom_obj_map, pre_comm_ihom_map]
-      rw [← tensor_id_comp_id_tensor, id_tensor_comp]
-      simp [tensor_id_comp_id_tensor_assoc] }
+      rw [tensorHom_def]
+      simp }
 #align category_theory.functor.closed_counit CategoryTheory.Functor.closedCounit
 
 /-- If `C` is a monoidal closed category and `D` is a groupoid, then every functor `F : D ⥤ C` is

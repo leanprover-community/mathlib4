@@ -12,7 +12,7 @@ import Mathlib.Data.BitVec.Defs
 This file contains theorems about bitvectors.
 -/
 
-namespace Std.BitVec
+namespace BitVec
 
 open Nat
 
@@ -47,7 +47,7 @@ lemma toNat_ofNat_of_lt {m} (h : m < 2^w) : (BitVec.ofNat w m).toNat = m := by
 -- The statement in the new API would be: `n#(k.succ) = ((n / 2)#k).concat (n % 2 != 0)`
 #noalign bitvec.of_nat_succ
 
-#align bitvec.to_nat_of_nat Std.BitVec.toNat_ofNat
+#align bitvec.to_nat_of_nat BitVec.toNat_ofNat
 
 @[simp]
 lemma extractLsb_eq {w : ℕ} (hi lo : ℕ) (a : BitVec w) :
@@ -60,25 +60,25 @@ theorem toNat_extractLsb' {i j} {x : BitVec w} :
 
 theorem ofFin_val {n : ℕ} (i : Fin <| 2 ^ n) : (ofFin i).toNat = i.val :=
   rfl
-#align bitvec.of_fin_val Std.BitVec.ofFin_val
+#align bitvec.of_fin_val BitVec.ofFin_val
 
 theorem addLsb_eq_twice_add_one {x b} : addLsb x b = 2 * x + cond b 1 0 := by
   simp [addLsb, two_mul]; cases b <;> rfl
-#align bitvec.add_lsb_eq_twice_add_one Std.BitVec.addLsb_eq_twice_add_one
+#align bitvec.add_lsb_eq_twice_add_one BitVec.addLsb_eq_twice_add_one
 
 -- The previous statement was `(v : BitVec n) : v.toNat = v.toList.reverse.foldr (flip addLsb) 0`.
 -- Since the statement is awkward and `Std.BitVec` has no comparable API, we just drop it.
 #noalign bitvec.to_nat_eq_foldr_reverse
 
-#align bitvec.to_nat_lt Std.BitVec.toNat_lt
+#align bitvec.to_nat_lt BitVec.toNat_lt
 
 theorem addLsb_div_two {x b} : addLsb x b / 2 = x := by
   rw [addLsb, ← Nat.div2_val, Nat.div2_bit]
-#align bitvec.add_lsb_div_two Std.BitVec.addLsb_div_two
+#align bitvec.add_lsb_div_two BitVec.addLsb_div_two
 
 theorem decide_addLsb_mod_two {x b} : decide (addLsb x b % 2 = 1) = b := by
   simp [addLsb]
-#align bitvec.to_bool_add_lsb_mod_two Std.BitVec.decide_addLsb_mod_two
+#align bitvec.to_bool_add_lsb_mod_two BitVec.decide_addLsb_mod_two
 
 lemma ofNat_toNat' (x : BitVec w) : (x.toNat)#w = x := by
   rw [ofNat_toNat, truncate_eq]
@@ -89,46 +89,47 @@ lemma ofNat_toNat_of_eq (x : BitVec w) (h : w = v):
 
 theorem toFin_val {n : ℕ} (v : BitVec n) : (toFin v : ℕ) = v.toNat := by
   rfl
-#align bitvec.to_fin_val Std.BitVec.toFin_val
+#align bitvec.to_fin_val BitVec.toFin_val
 
 theorem toFin_le_toFin_of_le {n} {v₀ v₁ : BitVec n} (h : v₀ ≤ v₁) : v₀.toFin ≤ v₁.toFin :=
   show (v₀.toFin : ℕ) ≤ v₁.toFin by
     rw [toFin_val, toFin_val]
     exact h
-#align bitvec.to_fin_le_to_fin_of_le Std.BitVec.toFin_le_toFin_of_le
+#align bitvec.to_fin_le_to_fin_of_le BitVec.toFin_le_toFin_of_le
 
-theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j := by
-  exact h
-#align bitvec.of_fin_le_of_fin_of_le Std.BitVec.ofFin_le_ofFin_of_le
+theorem ofFin_le_ofFin_of_le {n : ℕ} {i j : Fin (2 ^ n)} (h : i ≤ j) : ofFin i ≤ ofFin j := h
+#align bitvec.of_fin_le_of_fin_of_le BitVec.ofFin_le_ofFin_of_le
 
 theorem toFin_ofFin {n} (i : Fin <| 2 ^ n) : (ofFin i).toFin = i :=
-  Fin.eq_of_veq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
-#align bitvec.to_fin_of_fin Std.BitVec.toFin_ofFin
+  Fin.eq_of_val_eq (by simp [toFin_val, ofFin, toNat_ofNat, Nat.mod_eq_of_lt, i.is_lt])
+#align bitvec.to_fin_of_fin BitVec.toFin_ofFin
 
-theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := by
-  rfl
-#align bitvec.of_fin_to_fin Std.BitVec.ofFin_toFin
+theorem ofFin_toFin {n} (v : BitVec n) : ofFin (toFin v) = v := rfl
+#align bitvec.of_fin_to_fin BitVec.ofFin_toFin
 
 /-!
-### Distributivity of `Std.BitVec.ofFin`
+### Distributivity of `BitVec.ofFin`
 -/
 section
 variable (x y : Fin (2^w))
 
 @[simp] lemma ofFin_neg : ofFin (-x) = -(ofFin x) := by
-  rw [neg_eq_zero_sub]; rfl
+  ext; rw [neg_eq_zero_sub]; simp; rfl -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_and : ofFin (x &&& y) = ofFin x &&& ofFin y := by
-  simp only [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  exact mod_eq_of_lt (Nat.and_lt_two_pow _ y.prop)
+  ext
+  simp [HAnd.hAnd, AndOp.and, Fin.land, BitVec.and, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_or  : ofFin (x ||| y) = ofFin x ||| ofFin y := by
-  simp only [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  exact mod_eq_of_lt (Nat.or_lt_two_pow x.prop y.prop)
+  ext
+  simp [HOr.hOr, OrOp.or, Fin.lor, BitVec.or, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_xor : ofFin (x ^^^ y) = ofFin x ^^^ ofFin y := by
-  simp only [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin, ofFin.injEq, Fin.mk.injEq]
-  exact mod_eq_of_lt (Nat.xor_lt_two_pow x.prop y.prop)
+  ext
+  simp [HXor.hXor, Xor.xor, Fin.xor, BitVec.xor, toNat_ofFin]
+  -- v4.7.0-rc1 issues remove?
 
 @[simp] lemma ofFin_mul : ofFin (x * y)   = ofFin x * ofFin y   := rfl
 
@@ -159,19 +160,20 @@ section
 variable (x y : BitVec w)
 
 @[simp] lemma toFin_neg : toFin (-x) = -(toFin x) := by
-  rw [neg_eq_zero_sub]; rfl
+  ext; rw [neg_eq_zero_sub]; simp; rfl
+  -- v4.7.0-rc1 issues remove?
 
 -- These should be simp, but Std's simp-lemmas do not allow this yet.
 lemma toFin_zero : toFin (0 : BitVec w) = 0 := rfl
 lemma toFin_one  : toFin (1 : BitVec w) = 1 := by
-  apply toFin_inj.mpr; simp only [ofNat_eq_ofNat, ofFin_ofNat]
+  rw [toFin_inj]; simp only [ofNat_eq_ofNat, ofFin_ofNat]
 
 lemma toFin_nsmul (n : ℕ) (x : BitVec w) : toFin (n • x) = n • x.toFin := rfl
 lemma toFin_zsmul (z : ℤ) (x : BitVec w) : toFin (z • x) = z • x.toFin := rfl
 @[simp] lemma toFin_pow (n : ℕ) : toFin (x ^ n) = x.toFin ^ n := rfl
 
 lemma toFin_natCast (n : ℕ) : toFin (n : BitVec w) = n := by
-  apply toFin_inj.mpr; simp only [ofFin_natCast]
+  rw [toFin_inj]; simp only [ofFin_natCast]
 
 end
 
@@ -191,8 +193,7 @@ proof_wanted toFin_intCast (z : ℤ) : toFin (z : BitVec w) = z
 
 -- TODO: generalize to `CommRing` after `ofFin_intCast` is proven
 instance : CommSemiring (BitVec w) :=
-  toFin_injective.commSemiring _
-    toFin_zero toFin_one toFin_add toFin_mul (Function.swap toFin_nsmul)
+  toFin_injective.commSemiring _ toFin_zero toFin_one toFin_add toFin_mul toFin_nsmul
     toFin_pow toFin_natCast
 
-end Std.BitVec
+end BitVec

@@ -78,7 +78,7 @@ theorem edgeFinset_subset_edgeFinset : G₁.edgeFinset ⊆ G₂.edgeFinset ↔ G
 theorem edgeFinset_ssubset_edgeFinset : G₁.edgeFinset ⊂ G₂.edgeFinset ↔ G₁ < G₂ := by simp
 #align simple_graph.edge_finset_ssubset_edge_finset SimpleGraph.edgeFinset_ssubset_edgeFinset
 
-alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
+@[gcongr] alias ⟨_, edgeFinset_mono⟩ := edgeFinset_subset_edgeFinset
 #align simple_graph.edge_finset_mono SimpleGraph.edgeFinset_mono
 
 alias ⟨_, edgeFinset_strict_mono⟩ := edgeFinset_ssubset_edgeFinset
@@ -91,8 +91,8 @@ theorem edgeFinset_bot : (⊥ : SimpleGraph V).edgeFinset = ∅ := by simp [edge
 #align simple_graph.edge_finset_bot SimpleGraph.edgeFinset_bot
 
 @[simp]
-theorem edgeFinset_sup [DecidableEq V] : (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by
-  simp [edgeFinset]
+theorem edgeFinset_sup [Fintype (edgeSet (G₁ ⊔ G₂))] [DecidableEq V] :
+    (G₁ ⊔ G₂).edgeFinset = G₁.edgeFinset ∪ G₂.edgeFinset := by simp [edgeFinset]
 #align simple_graph.edge_finset_sup SimpleGraph.edgeFinset_sup
 
 @[simp]
@@ -143,7 +143,7 @@ theorem edgeFinset_deleteEdges [DecidableEq V] [Fintype G.edgeSet] (s : Finset (
 
 section DeleteFar
 
--- porting note: added `Fintype (Sym2 V)` argument.
+-- Porting note: added `Fintype (Sym2 V)` argument.
 variable {𝕜 : Type*} [OrderedRing 𝕜] [Fintype V] [Fintype (Sym2 V)]
   [Fintype G.edgeSet] {p : SimpleGraph V → Prop} {r r₁ r₂ : 𝕜}
 

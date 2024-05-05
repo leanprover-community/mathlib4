@@ -3,7 +3,7 @@ Copyright (c) 2021 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.DirectSum.Module
 import Mathlib.Algebra.DirectSum.Ring
 
@@ -36,9 +36,7 @@ namespace DirectSum
 open DirectSum
 
 variable (R : Type uR) (A : ι → Type uA) {B : Type uB} [DecidableEq ι]
-
 variable [CommSemiring R] [∀ i, AddCommMonoid (A i)] [∀ i, Module R (A i)]
-
 variable [AddMonoid ι] [GSemiring A]
 
 section

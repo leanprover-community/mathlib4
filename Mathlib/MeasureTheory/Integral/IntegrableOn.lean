@@ -91,13 +91,6 @@ def IntegrableOn (f : α → E) (s : Set α) (μ : Measure α := by volume_tac) 
   Integrable f (μ.restrict s)
 #align measure_theory.integrable_on MeasureTheory.IntegrableOn
 
--- Porting note: TODO Delete this when leanprover/lean4#2243 is fixed.
-theorem integrableOn_def (f : α → E) (s : Set α) (μ : Measure α) :
-    IntegrableOn f s μ ↔ Integrable f (μ.restrict s) :=
-  Iff.rfl
-
-attribute [eqns integrableOn_def] IntegrableOn
-
 theorem IntegrableOn.integrable (h : IntegrableOn f s μ) : Integrable f (μ.restrict s) :=
   h
 #align measure_theory.integrable_on.integrable MeasureTheory.IntegrableOn.integrable
@@ -317,10 +310,9 @@ theorem IntegrableOn.restrict_toMeasurable (hf : IntegrableOn f s μ) (h's : ∀
     exact (hf.measure_norm_ge_lt_top (u_pos n)).ne
   apply Measure.restrict_toMeasurable_of_cover _ A
   intro x hx
-  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne.def, not_false_iff]
-  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖; exact ((tendsto_order.1 u_lim).2 _ this).exists
-  refine' mem_iUnion.2 ⟨n, _⟩
-  exact subset_toMeasurable _ _ hn.le
+  have : 0 < ‖f x‖ := by simp only [h's x hx, norm_pos_iff, Ne, not_false_iff]
+  obtain ⟨n, hn⟩ : ∃ n, u n < ‖f x‖ := ((tendsto_order.1 u_lim).2 _ this).exists
+  exact mem_iUnion.2 ⟨n, subset_toMeasurable _ _ hn.le⟩
 #align measure_theory.integrable_on.restrict_to_measurable MeasureTheory.IntegrableOn.restrict_toMeasurable
 
 /-- If a function is integrable on a set `s`, and vanishes on `t \ s`, then it is integrable on `t`
@@ -497,6 +489,12 @@ theorem integrableAtFilter_top : IntegrableAtFilter f ⊤ μ ↔ Integrable f μ
   obtain ⟨s, hsf, hs⟩ := h
   exact (integrableOn_iff_integrable_of_support_subset fun _ _ ↦ hsf _).mp hs
 
+theorem IntegrableAtFilter.sup_iff {l l' : Filter α} :
+    IntegrableAtFilter f (l ⊔ l') μ ↔ IntegrableAtFilter f l μ ∧ IntegrableAtFilter f l' μ := by
+  constructor
+  · exact fun h => ⟨h.filter_mono le_sup_left, h.filter_mono le_sup_right⟩
+  · exact fun ⟨⟨s, hsl, hs⟩, ⟨t, htl, ht⟩⟩ ↦ ⟨s ∪ t, union_mem_sup hsl htl, hs.union ht⟩
+
 /-- If `μ` is a measure finite at filter `l` and `f` is a function such that its norm is bounded
 above at `l`, then `f` is integrable at `l`. -/
 theorem Measure.FiniteAtFilter.integrableAtFilter {l : Filter α} [IsMeasurablyGenerated l]
@@ -532,6 +530,11 @@ alias _root_.Filter.Tendsto.integrableAtFilter :=
   Measure.FiniteAtFilter.integrableAtFilter_of_tendsto
 #align filter.tendsto.integrable_at_filter Filter.Tendsto.integrableAtFilter
 
+lemma Measure.integrableOn_of_bounded (s_finite : μ s ≠ ∞) (f_mble : AEStronglyMeasurable f μ)
+    {M : ℝ} (f_bdd : ∀ᵐ a ∂(μ.restrict s), ‖f a‖ ≤ M) :
+    IntegrableOn f s μ :=
+  ⟨f_mble.restrict, hasFiniteIntegral_restrict_of_bounded (C := M) s_finite.lt_top f_bdd⟩
+
 theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (support g))
     (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
     Integrable (f + g) μ ↔ Integrable f μ ∧ Integrable g μ := by
@@ -539,6 +542,22 @@ theorem integrable_add_of_disjoint {f g : α → E} (h : Disjoint (support f) (s
   · rw [← indicator_add_eq_left h]; exact hfg.indicator hf.measurableSet_support
   · rw [← indicator_add_eq_right h]; exact hfg.indicator hg.measurableSet_support
 #align measure_theory.integrable_add_of_disjoint MeasureTheory.integrable_add_of_disjoint
+
+/-- If a function converges along a filter to a limit `a`, is integrable along this filter, and
+all elements of the filter have infinite measure, then the limit has to vanish. -/
+lemma IntegrableAtFilter.eq_zero_of_tendsto
+    (h : IntegrableAtFilter f l μ) (h' : ∀ s ∈ l, μ s = ∞) {a : E}
+    (hf : Tendsto f l (𝓝 a)) : a = 0 := by
+  by_contra H
+  obtain ⟨ε, εpos, hε⟩ : ∃ (ε : ℝ), 0 < ε ∧ ε < ‖a‖ := exists_between (norm_pos_iff'.mpr H)
+  rcases h with ⟨u, ul, hu⟩
+  let v := u ∩ {b | ε < ‖f b‖}
+  have hv : IntegrableOn f v μ := hu.mono_set (inter_subset_left _ _)
+  have vl : v ∈ l := inter_mem ul ((tendsto_order.1 hf.norm).1 _ hε)
+  have : μ.restrict v v < ∞ := lt_of_le_of_lt (measure_mono (inter_subset_right _ _))
+    (Integrable.measure_gt_lt_top hv.norm εpos)
+  have : μ v ≠ ∞ := ne_of_lt (by simpa only [Measure.restrict_apply_self])
+  exact this (h' v vl)
 
 end NormedAddCommGroup
 

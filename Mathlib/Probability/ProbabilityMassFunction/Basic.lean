@@ -36,7 +36,8 @@ noncomputable section
 
 variable {α β γ : Type*}
 
-open Classical BigOperators NNReal ENNReal MeasureTheory
+open scoped Classical
+open BigOperators NNReal ENNReal MeasureTheory
 
 /-- A probability mass function, or discrete probability measures is a function `α → ℝ≥0∞` such
   that the values have (infinite) sum `1`. -/
@@ -282,7 +283,7 @@ theorem toMeasure_apply_inter_support (hs : MeasurableSet s) (hp : MeasurableSet
 #align pmf.to_measure_apply_inter_support PMF.toMeasure_apply_inter_support
 
 @[simp]
-theorem restrict_toMeasure_support [MeasurableSpace α] [MeasurableSingletonClass α]  (p : PMF α) :
+theorem restrict_toMeasure_support [MeasurableSingletonClass α]  (p : PMF α) :
     Measure.restrict (toMeasure p) (support p) = toMeasure p := by
   ext s hs
   apply (MeasureTheory.Measure.restrict_apply hs).trans

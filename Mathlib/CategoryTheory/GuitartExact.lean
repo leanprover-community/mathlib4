@@ -98,7 +98,7 @@ that there is an equivalence
 
 /-- Given `w : TwoSquare T L R B` and a morphism `g : R.obj X₂ ⟶ B.obj X₃`, this is the
 category `StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)`,
-see the constructor `StructuredArrowRightwards.mk` for the data that is involved.-/
+see the constructor `StructuredArrowRightwards.mk` for the data that is involved. -/
 abbrev StructuredArrowRightwards :=
   StructuredArrow (CostructuredArrow.mk g) (w.costructuredArrowRightwards X₃)
 

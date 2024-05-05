@@ -129,7 +129,7 @@ instance : Category (Action V G) where
   id M := Hom.id M
   comp f g := Hom.comp f g
 
--- porting note: added because `Hom.ext` is not triggered automatically
+-- Porting note: added because `Hom.ext` is not triggered automatically
 @[ext]
 lemma hom_ext {M N : Action V G} (φ₁ φ₂ : M ⟶ N) (h : φ₁.hom = φ₂.hom) : φ₁ = φ₂ :=
   Hom.ext _ _ h
@@ -273,7 +273,7 @@ def forget : Action V G ⥤ V where
 set_option linter.uppercaseLean3 false in
 #align Action.forget Action.forget
 
-instance : Faithful (forget V G) where map_injective w := Hom.ext _ _ w
+instance : (forget V G).Faithful where map_injective w := Hom.ext _ _ w
 
 instance [ConcreteCategory V] : ConcreteCategory (Action V G) where
   forget := forget V G ⋙ ConcreteCategory.forget

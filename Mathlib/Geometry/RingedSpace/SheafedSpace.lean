@@ -97,6 +97,14 @@ theorem ext {X Y : SheafedSpace C} (α β : X ⟶ Y) (w : α.base = β.base)
     (h : α.c ≫ whiskerRight (eqToHom (by rw [w])) _ = β.c) : α = β :=
   PresheafedSpace.ext α β w h
 
+/-- Constructor for isomorphisms in the category `SheafedSpace C`. -/
+@[simps]
+def isoMk {X Y : SheafedSpace C} (e : X.toPresheafedSpace ≅ Y.toPresheafedSpace) : X ≅ Y where
+  hom := e.hom
+  inv := e.inv
+  hom_inv_id := e.hom_inv_id
+  inv_hom_id := e.inv_hom_id
+
 /-- Forgetting the sheaf condition is a functor from `SheafedSpace C` to `PresheafedSpace C`. -/
 @[simps! obj map]
 def forgetToPresheafedSpace : SheafedSpace C ⥤ PresheafedSpace C :=
@@ -105,11 +113,11 @@ set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.forget_to_PresheafedSpace AlgebraicGeometry.SheafedSpace.forgetToPresheafedSpace
 
 -- Porting note: can't derive `Full` functor automatically
-instance forgetToPresheafedSpace_full : Full <| forgetToPresheafedSpace (C := C) where
-  preimage f := f
+instance forgetToPresheafedSpace_full : (forgetToPresheafedSpace (C := C)).Full where
+  map_surjective f := ⟨f, rfl⟩
 
 -- Porting note: can't derive `Faithful` functor automatically
-instance forgetToPresheafedSpace_faithful : Faithful <| forgetToPresheafedSpace (C := C) where
+instance forgetToPresheafedSpace_faithful : (forgetToPresheafedSpace (C := C)).Faithful where
 
 instance is_presheafedSpace_iso {X Y : SheafedSpace C} (f : X ⟶ Y) [IsIso f] :
     @IsIso (PresheafedSpace C) _ _ _ f :=
@@ -189,8 +197,9 @@ set_option linter.uppercaseLean3 false in
 
 /-- The restriction of a sheafed space `X` to the top subspace is isomorphic to `X` itself.
 -/
+@[simps! hom inv]
 def restrictTopIso (X : SheafedSpace C) : X.restrict (Opens.openEmbedding ⊤) ≅ X :=
-  forgetToPresheafedSpace.preimageIso X.toPresheafedSpace.restrictTopIso
+  isoMk (X.toPresheafedSpace.restrictTopIso)
 set_option linter.uppercaseLean3 false in
 #align algebraic_geometry.SheafedSpace.restrict_top_iso AlgebraicGeometry.SheafedSpace.restrictTopIso
 

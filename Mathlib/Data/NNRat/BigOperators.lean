@@ -3,7 +3,7 @@ Copyright (c) 2022 Yaël Dillies, Bhavik Mehta. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
-import Mathlib.Algebra.BigOperators.Order
+import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Data.NNRat.Defs
 
 /-! # Casting lemmas for non-negative rational numbers involving sums and products
@@ -17,27 +17,27 @@ namespace NNRat
 
 @[norm_cast]
 theorem coe_list_sum (l : List ℚ≥0) : (l.sum : ℚ) = (l.map (↑)).sum :=
-  coeHom.map_list_sum _
+  map_list_sum coeHom _
 #align nnrat.coe_list_sum NNRat.coe_list_sum
 
 @[norm_cast]
 theorem coe_list_prod (l : List ℚ≥0) : (l.prod : ℚ) = (l.map (↑)).prod :=
-  coeHom.map_list_prod _
+  map_list_prod coeHom _
 #align nnrat.coe_list_prod NNRat.coe_list_prod
 
 @[norm_cast]
 theorem coe_multiset_sum (s : Multiset ℚ≥0) : (s.sum : ℚ) = (s.map (↑)).sum :=
-  coeHom.map_multiset_sum _
+  map_multiset_sum coeHom _
 #align nnrat.coe_multiset_sum NNRat.coe_multiset_sum
 
 @[norm_cast]
 theorem coe_multiset_prod (s : Multiset ℚ≥0) : (s.prod : ℚ) = (s.map (↑)).prod :=
-  coeHom.map_multiset_prod _
+  map_multiset_prod coeHom _
 #align nnrat.coe_multiset_prod NNRat.coe_multiset_prod
 
 @[norm_cast]
 theorem coe_sum {s : Finset α} {f : α → ℚ≥0} : ↑(∑ a in s, f a) = ∑ a in s, (f a : ℚ) :=
-  coeHom.map_sum _ _
+  map_sum coeHom _ _
 #align nnrat.coe_sum NNRat.coe_sum
 
 theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a ∈ s → 0 ≤ f a) :
@@ -48,7 +48,7 @@ theorem toNNRat_sum_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a, a �
 
 @[norm_cast]
 theorem coe_prod {s : Finset α} {f : α → ℚ≥0} : ↑(∏ a in s, f a) = ∏ a in s, (f a : ℚ) :=
-  coeHom.map_prod _ _
+  map_prod coeHom _ _
 #align nnrat.coe_prod NNRat.coe_prod
 
 theorem toNNRat_prod_of_nonneg {s : Finset α} {f : α → ℚ} (hf : ∀ a ∈ s, 0 ≤ f a) :

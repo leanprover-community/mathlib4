@@ -169,7 +169,7 @@ theorem equiv_refl : Compacts.equiv (Homeomorph.refl α) = Equiv.refl _ :=
 @[simp]
 theorem equiv_trans (f : α ≃ₜ β) (g : β ≃ₜ γ) :
     Compacts.equiv (f.trans g) = (Compacts.equiv f).trans (Compacts.equiv g) :=
-  -- porting note: can no longer write `map_comp _ _ _ _` and unify
+  -- Porting note: can no longer write `map_comp _ _ _ _` and unify
   Equiv.ext <| map_comp g f g.continuous f.continuous
 #align topological_space.compacts.equiv_trans TopologicalSpace.Compacts.equiv_trans
 
@@ -245,12 +245,12 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.nonempty_compacts.coe_mk TopologicalSpace.NonemptyCompacts.coe_mk
 
--- porting note: `@[simp]` moved to `coe_toCompacts`
+-- Porting note: `@[simp]` moved to `coe_toCompacts`
 theorem carrier_eq_coe (s : NonemptyCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.nonempty_compacts.carrier_eq_coe TopologicalSpace.NonemptyCompacts.carrier_eq_coe
 
-@[simp] -- porting note: new lemma
+@[simp] -- Porting note (#10756): new lemma
 theorem coe_toCompacts (s : NonemptyCompacts α) : (s.toCompacts : Set α) = s := rfl
 
 instance : Sup (NonemptyCompacts α) :=
@@ -353,7 +353,7 @@ theorem coe_mk (s : Compacts α) (h) : (mk s h : Set α) = s :=
   rfl
 #align topological_space.positive_compacts.coe_mk TopologicalSpace.PositiveCompacts.coe_mk
 
--- porting note: `@[simp]` moved to a new lemma
+-- Porting note: `@[simp]` moved to a new lemma
 theorem carrier_eq_coe (s : PositiveCompacts α) : s.carrier = s :=
   rfl
 #align topological_space.positive_compacts.carrier_eq_coe TopologicalSpace.PositiveCompacts.carrier_eq_coe

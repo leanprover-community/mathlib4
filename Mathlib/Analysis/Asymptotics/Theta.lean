@@ -29,19 +29,14 @@ variable {α : Type*} {β : Type*} {E : Type*} {F : Type*} {G : Type*} {E' : Typ
   {R' : Type*} {𝕜 : Type*} {𝕜' : Type*}
 
 variable [Norm E] [Norm F] [Norm G]
-
 variable [SeminormedAddCommGroup E'] [SeminormedAddCommGroup F'] [SeminormedAddCommGroup G']
   [NormedAddCommGroup E''] [NormedAddCommGroup F''] [NormedAddCommGroup G''] [SeminormedRing R]
   [SeminormedRing R']
 
 variable [NormedField 𝕜] [NormedField 𝕜']
-
 variable {c c' c₁ c₂ : ℝ} {f : α → E} {g : α → F} {k : α → G}
-
 variable {f' : α → E'} {g' : α → F'} {k' : α → G'}
-
 variable {f'' : α → E''} {g'' : α → F''}
-
 variable {l l' : Filter α}
 
 /-- We say that `f` is `Θ(g)` along a filter `l` (notation: `f =Θ[l] g`) if `f =O[l] g` and
@@ -265,7 +260,7 @@ theorem IsTheta.pow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : �
 theorem IsTheta.zpow {f : α → 𝕜} {g : α → 𝕜'} (h : f =Θ[l] g) (n : ℤ) :
     (fun x ↦ f x ^ n) =Θ[l] fun x ↦ g x ^ n := by
   cases n
-  · simpa only [Int.ofNat_eq_coe, zpow_coe_nat] using h.pow _
+  · simpa only [Int.ofNat_eq_coe, zpow_natCast] using h.pow _
   · simpa only [zpow_negSucc] using (h.pow _).inv
 #align asymptotics.is_Theta.zpow Asymptotics.IsTheta.zpow
 

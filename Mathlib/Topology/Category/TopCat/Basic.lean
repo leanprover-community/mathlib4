@@ -34,7 +34,7 @@ set_option linter.uppercaseLean3 false in
 
 namespace TopCat
 
--- porting note: had to add in the last two proofs
+-- Porting note: had to add in the last two proofs
 instance bundledHom : BundledHom @ContinuousMap :=
   ⟨@ContinuousMap.toFun, @ContinuousMap.id, @ContinuousMap.comp, @ContinuousMap.coe_injective,
     fun _ => rfl, fun _ _ _ _ _ => rfl⟩
@@ -97,7 +97,7 @@ set_option linter.uppercaseLean3 false in
 instance inhabited : Inhabited TopCat :=
   ⟨TopCat.of Empty⟩
 
--- porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
+-- Porting note: added to ease the port of `AlgebraicTopology.TopologicalSimplex`
 lemma hom_apply {X Y : TopCat} (f : X ⟶ Y) (x : X) : f x = ContinuousMap.toFun f x := rfl
 
 /-- The discrete topology on any type. -/

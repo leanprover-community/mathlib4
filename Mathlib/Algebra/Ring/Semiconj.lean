@@ -69,12 +69,12 @@ section
 
 variable [MulOneClass R] [HasDistribNeg R] {a x y : R}
 
--- porting note: `simpNF` told me to remove `simp` attribute
+-- Porting note: `simpNF` told me to remove `simp` attribute
 theorem neg_one_right (a : R) : SemiconjBy a (-1) (-1) :=
   (one_right a).neg_right
 #align semiconj_by.neg_one_right SemiconjBy.neg_one_right
 
--- porting note: `simpNF` told me to remove `simp` attribute
+-- Porting note: `simpNF` told me to remove `simp` attribute
 theorem neg_one_left (x : R) : SemiconjBy (-1) x x :=
   (SemiconjBy.one_left x).neg_left
 #align semiconj_by.neg_one_left SemiconjBy.neg_one_left

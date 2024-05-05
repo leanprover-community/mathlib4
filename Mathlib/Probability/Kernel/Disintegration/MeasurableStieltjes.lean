@@ -219,7 +219,7 @@ section ToRatCDF
 
 variable {f : α → ℚ → ℝ}
 
-open Classical in
+open scoped Classical in
 /-- Turn a function `f : α → ℚ → ℝ` into another with the property `IsRatStieltjesPoint f a`
 everywhere. At `a` that does not satisfy that property, `f a` is replaced by an arbitrary suitable
 function.
