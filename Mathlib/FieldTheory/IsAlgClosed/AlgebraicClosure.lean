@@ -78,7 +78,7 @@ def toSplittingField (s : Finset (MonicIrreducible k)) :
 theorem toSplittingField_evalXSelf {s : Finset (MonicIrreducible k)} {f} (hf : f ∈ s) :
     toSplittingField k s (evalXSelf k f) = 0 := by
   rw [toSplittingField, evalXSelf, ← AlgHom.coe_toRingHom, hom_eval₂, AlgHom.coe_toRingHom,
-    MvPolynomial.aeval_X, dif_pos hf, ← algebraMap_eq, AlgHom.comp_algebraMap]
+    MvPolynomial.aeval_X, dif_pos hf, ← MvPolynomial.algebraMap_eq, AlgHom.comp_algebraMap]
   exact map_rootOfSplits _ _ _
 set_option linter.uppercaseLean3 false in
 #align algebraic_closure.to_splitting_field_eval_X_self AlgebraicClosure.toSplittingField_evalXSelf
@@ -130,6 +130,7 @@ instance AdjoinMonic.algebra : Algebra k (AdjoinMonic k) :=
   (toAdjoinMonic k).toAlgebra
 #align algebraic_closure.adjoin_monic.algebra AlgebraicClosure.AdjoinMonic.algebra
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 -- Porting note: In the statement, the type of `C` had to be made explicit.
 theorem AdjoinMonic.algebraMap : algebraMap k (AdjoinMonic k) = (Ideal.Quotient.mk _).comp
     (C : k →+* MvPolynomial (MonicIrreducible k) k) := rfl

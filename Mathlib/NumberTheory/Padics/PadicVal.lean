@@ -354,7 +354,7 @@ protected theorem defn (p : ℕ) [hp : Fact p.Prime] {q : ℚ} {n d : ℤ} (hqz 
 protected theorem mul {q r : ℚ} (hq : q ≠ 0) (hr : r ≠ 0) :
     padicValRat p (q * r) = padicValRat p q + padicValRat p r := by
   have : q * r = (q.num * r.num) /. (q.den * r.den) := by
-    rw [Rat.mul_def', Rat.mkRat_eq, Nat.cast_mul]
+    rw [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, Nat.cast_mul]
   have hq' : q.num /. q.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hr' : r.num /. r.den ≠ 0 := by rwa [Rat.num_divInt_den]
   have hp' : Prime (p : ℤ) := Nat.prime_iff_prime_int.1 hp.1
@@ -687,7 +687,7 @@ theorem padicValNat_eq_zero_of_mem_Ioo {m k : ℕ}
 theorem padicValNat_factorial_mul_add {n : ℕ} (m : ℕ) [hp : Fact p.Prime] (h : n < p) :
     padicValNat p (p * m + n) ! = padicValNat p (p * m) ! := by
   induction' n with n hn
-  · rw [zero_eq, add_zero]
+  · rw [add_zero]
   · rw [add_succ, factorial_succ,
       padicValNat.mul (succ_ne_zero (p * m + n)) <| factorial_ne_zero (p * m + _),
       hn <| lt_of_succ_lt h, ← add_succ,
@@ -717,8 +717,10 @@ Taking (`p - 1`) times the `p`-adic valuation of `n!` equals `n` minus the sum o
 of `n`. -/
 theorem sub_one_mul_padicValNat_factorial [hp : Fact p.Prime] (n : ℕ):
     (p - 1) * padicValNat p (n !) = n - (p.digits n).sum := by
-  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n), ← Finset.sum_Ico_add' _ 0 _ 1,
-    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits]
+  rw [padicValNat_factorial <| lt_succ_of_lt <| lt.base (log p n)]
+  norm_cast; nth_rw 2 [← zero_add 1]
+  rw [Nat.succ_eq_add_one, ← Finset.sum_Ico_add' _ 0 _ 1,
+    Ico_zero_eq_range, ← sub_one_mul_sum_log_div_pow_eq_sub_sum_digits, Nat.succ_eq_add_one]
 
 /-- **Kummer's Theorem**
 
