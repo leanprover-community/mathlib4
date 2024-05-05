@@ -52,7 +52,7 @@ instance {G : Type*} [AddGroup G] [UniformSpace G] [UniformAddGroup G] [Nonarchi
       inducing and `W` is a neighborhood of `0` in `G`. -/
       apply isOpen_of_mem_nhds (g := 0)
       simp only [topologicalClosure_coe, coe_map]
-      apply DenseInducing.closure_image_mem_nhds (denseInducing_toCompl _)
+      apply (denseInducing_toCompl _).closure_image_mem_nhds
       rw [coe_toAddSubgroup]
       exact mem_nhds_zero W
     use ⟨_, this⟩
