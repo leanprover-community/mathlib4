@@ -812,7 +812,6 @@ theorem permutations'Aux_get_zero (s : List α) (x : α)
   get_permutations'Aux _ _ _ _
 #align list.permutations'_aux_nth_le_zero List.permutations'Aux_get_zero
 
-set_option linter.deprecated false in
 theorem injective_permutations'Aux (x : α) : Function.Injective (permutations'Aux x) := by
   intro s t h
   apply insertNth_injective s.length x
