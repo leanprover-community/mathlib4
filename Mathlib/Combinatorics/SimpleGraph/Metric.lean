@@ -137,7 +137,7 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
   · let ⟨w, hw⟩ := exists_walk_of_dist_ne_zero (ne_zero_of_eq_one h)
     rw [h] at hw
     apply w.adj_of_length_eq_one hw
-  · have : (Adj.toWalk h).length = 1 := by rw [Walk.length_cons, Walk.length_nil]
+  · have : h.toWalk.length = 1 := by rw [Walk.length_cons, Walk.length_nil]
     have : G.dist u v ≤ 1 := by
       rw [← this]
       apply dist_le
