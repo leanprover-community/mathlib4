@@ -367,7 +367,7 @@ theorem natAbs_num_coe : (q : ℚ).num.natAbs = q.num := rfl
 
 lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den] using Rat.reduced _
 
--- TODO: Rename `Rat.natCast_num`, `Rat.intCast_den`, `Rat.ofNat_num`, `Rat.ofNat_den` to match
+-- TODO: Rename `Rat.coe_nat_num`, `Rat.intCast_den`, `Rat.ofNat_num`, `Rat.ofNat_den`
 @[simp, norm_cast] lemma num_natCast (n : ℕ) : num n = n := rfl
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 
