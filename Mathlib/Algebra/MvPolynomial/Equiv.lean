@@ -507,11 +507,23 @@ theorem natDegree_finSuccEquiv (f : MvPolynomial (Fin (n + 1)) R) :
     simp
 #align mv_polynomial.nat_degree_fin_succ_equiv MvPolynomial.natDegree_finSuccEquiv
 
+lemma natDegree_OptionEquivLeft [DecidableEq σ]
+    (p : MvPolynomial (Option σ) R) :
+  Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := σ) p)
+   = p.degreeOf none := by
+
+  rw? [degreeOf_eq_degree]
+  sorry
+
 /-- Generalization of `natDegree_finSuccEquiv` to arbitrary variable types -/
 lemma degreeOf_eq_degree [DecidableEq σ]
     (a : σ) (p : MvPolynomial σ R) :
-  degreeOf a p = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a}) (renameEquiv R (Equiv.optionSubtypeNe a).symm p)) := by
-  sorry
+  degreeOf a p
+  = Polynomial.natDegree (optionEquivLeft (R := R) (S₁ := {b // b ≠ a})
+    (rename (Equiv.optionSubtypeNe a).symm p)) := by
+  rw [natDegree_OptionEquivLeft, eq_comm]
+  convert degreeOf_rename_of_injective (Equiv.injective (Equiv.optionSubtypeNe a).symm) a
+  exact (Equiv.apply_eq_iff_eq_symm_apply (Equiv.optionSubtypeNe a)).mp rfl
 
 theorem degreeOf_coeff_finSuccEquiv (p : MvPolynomial (Fin (n + 1)) R) (j : Fin n) (i : ℕ) :
     degreeOf j (Polynomial.coeff (finSuccEquiv R n p) i) ≤ degreeOf j.succ p := by
