@@ -141,7 +141,7 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
     have : G.dist u v ≤ 1 := by
       rw [← this]
       apply dist_le
-    rw [← LE.le.ge_iff_eq this, Nat.succ_le_iff]
+    rw [← this.ge_iff_eq, Nat.succ_le_iff]
     apply Reachable.pos_dist_of_ne
     · apply Adj.reachable h
     · apply Adj.ne h
