@@ -105,11 +105,11 @@ theorem comp_def (P Q : RegularExpression α) : comp P Q = P * Q :=
 #align regular_expression.comp_def RegularExpression.comp_def
 
 -- Porting note: `matches` is reserved, moved to `matches'`
+#adaptation_note /-- around nightly-2024-02-25,
+  we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 /-- `matches' P` provides a language which contains all strings that `P` matches -/
 -- Porting note: was '@[simp] but removed based on
 -- https://leanprover.zulipchat.com/#narrow/stream/287929-mathlib4/topic/simpNF.20issues.20in.20Computability.2ERegularExpressions.20!4.232306/near/328355362
-#adaptation_note /-- around nightly-2024-02-25,
-  we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
 def matches' : RegularExpression α → Language α
   | 0 => 0
   | 1 => 1
@@ -157,9 +157,9 @@ theorem matches'_star (P : RegularExpression α) : P.star.matches' = P.matches'�
   rfl
 #align regular_expression.matches_star RegularExpression.matches'_star
 
-/-- `matchEpsilon P` is true if and only if `P` matches the empty string -/
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
+/-- `matchEpsilon P` is true if and only if `P` matches the empty string -/
 def matchEpsilon : RegularExpression α → Bool
   | 0 => false
   | 1 => true
@@ -169,11 +169,10 @@ def matchEpsilon : RegularExpression α → Bool
   | star _P => true
 #align regular_expression.match_epsilon RegularExpression.matchEpsilon
 
-
-/-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
-  to `a` -/
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
+/-- `P.deriv a` matches `x` if `P` matches `a :: x`, the Brzozowski derivative of `P` with respect
+  to `a` -/
 def deriv : RegularExpression α → α → RegularExpression α
   | 0, _ => 0
   | 1, _ => 0
@@ -379,9 +378,9 @@ theorem rmatch_iff_matches' (P : RegularExpression α) (x : List α) :
 instance (P : RegularExpression α) : DecidablePred (· ∈ P.matches') := fun _ ↦
   decidable_of_iff _ (rmatch_iff_matches' _ _)
 
-/-- Map the alphabet of a regular expression. -/
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp P Q`, instead of `x * y`. -/
+/-- Map the alphabet of a regular expression. -/
 @[simp]
 def map (f : α → β) : RegularExpression α → RegularExpression β
   | 0 => 0
@@ -425,7 +424,7 @@ theorem map_map (g : β → γ) (f : α → β) : ∀ P : RegularExpression α, 
 
 #adaptation_note /-- around nightly-2024-02-25,
   we need to write `comp x y` in the pattern `comp R S`,
-  instead of `x * y` (and the `erw` was just `rw`).
+  instead of `x * y` (and the `erw` was just `rw`). -/
 /-- The language of the map is the map of the language. -/
 @[simp]
 theorem matches'_map (f : α → β) :
