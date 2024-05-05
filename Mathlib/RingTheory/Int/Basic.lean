@@ -290,4 +290,3 @@ theorem eq_pow_of_mul_eq_pow_bit1 {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
 end bit
 
 end Int
-#minimize_imports
