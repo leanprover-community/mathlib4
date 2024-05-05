@@ -871,6 +871,11 @@ theorem get_eq_get? (l : List α) (i : Fin l.length) :
 section deprecated
 set_option linter.deprecated false -- TODO(Mario): make replacements for theorems in this section
 
+/-- nth element of a list `l` given `n < l.length`. -/
+@[deprecated get] -- 2023-01-05
+def nthLe (l : List α) (n) (h : n < l.length) : α := get l ⟨n, h⟩
+#align list.nth_le List.nthLe
+
 @[simp] theorem nthLe_tail (l : List α) (i) (h : i < l.tail.length)
     (h' : i + 1 < l.length := (by simp only [length_tail] at h; omega)) :
     l.tail.nthLe i h = l.nthLe (i + 1) h' := by
@@ -1268,22 +1273,13 @@ theorem nthLe_map' (f : α → β) {l n} (H) :
     nthLe (map f l) n H = f (nthLe l n (l.length_map f ▸ H)) := nthLe_map f _ _
 #align list.nth_le_map' List.nthLe_map'
 
-/-- If one has `nthLe L i hi` in a formula and `h : L = L'`, one can not `rw h` in the formula as
-`hi` gives `i < L.length` and not `i < L'.length`. The lemma `nth_le_of_eq` can be used to make
-such a rewrite, with `rw (nth_le_of_eq h)`. -/
-@[deprecated get_of_eq] -- 2023-01-05
-theorem nthLe_of_eq {L L' : List α} (h : L = L') {i : ℕ} (hi : i < L.length) :
-    nthLe L i hi = nthLe L' i (h ▸ hi) := by congr
-#align list.nth_le_of_eq List.nthLe_of_eq
+#align list.nth_le_of_eq List.get_of_eq
 
 @[simp, deprecated get_singleton] -- 2023-01-05
 theorem nthLe_singleton (a : α) {n : ℕ} (hn : n < 1) : nthLe [a] n hn = a := get_singleton ..
-#align list.nth_le_singleton List.nthLe_singleton
+#align list.nth_le_singleton List.get_singleton
 
-@[deprecated get_mk_zero] -- 2023-01-05
-theorem nthLe_zero {L : List α} (h : 0 < L.length) : List.nthLe L 0 h = L.head (length_pos.1 h) :=
-  get_mk_zero h
-#align list.nth_le_zero List.nthLe_zero
+#align list.nth_le_zero List.get_mk_zero
 
 #align list.nth_le_append List.get_append
 
@@ -1302,8 +1298,8 @@ theorem nthLe_append_right {l₁ l₂ : List α} {n : ℕ} (h₁ : l₁.length �
 theorem get_length_sub_one {l : List α} (h : l.length - 1 < l.length) :
     l.get ⟨l.length - 1, h⟩ = l.getLast (by rintro rfl; exact Nat.lt_irrefl 0 h) :=
   (getLast_eq_get l _).symm
-
 #align list.nth_le_length_sub_one List.get_length_sub_one
+
 #align list.nth_concat_length List.get?_concat_length
 
 @[deprecated get_cons_length] -- 2023-01-05
@@ -1356,15 +1352,11 @@ theorem indexOf_get [DecidableEq α] {a : α} : ∀ {l : List α} (h), get l ⟨
   | b :: l, h => by
     by_cases h' : b = a <;>
     simp only [h', if_pos, if_false, indexOf_cons, get, @indexOf_get _ _ l, cond_eq_if, beq_iff_eq]
-
-@[simp, deprecated indexOf_get] -- 2023-01-05
-theorem indexOf_nthLe [DecidableEq α] {a : α} : ∀ {l : List α} (h), nthLe l (indexOf a l) h = a :=
-  indexOf_get
-#align list.index_of_nth_le List.indexOf_nthLe
+#align list.index_of_nth_le List.indexOf_get
 
 @[simp]
 theorem indexOf_get? [DecidableEq α] {a : α} {l : List α} (h : a ∈ l) :
-    get? l (indexOf a l) = some a := by rw [nthLe_get?, indexOf_nthLe (indexOf_lt_length.2 h)]
+    get? l (indexOf a l) = some a := by rw [get?_eq_get, indexOf_get (indexOf_lt_length.2 h)]
 #align list.index_of_nth List.indexOf_get?
 
 @[deprecated] -- 2023-01-05
@@ -1502,13 +1494,14 @@ theorem length_modifyNth (f : α → α) : ∀ n l, length (modifyNth f n l) = l
 #align list.update_nth_comm List.set_comm
 
 #align list.nth_le_update_nth_eq List.get_set_eq
+
 @[simp]
 theorem get_set_of_ne {l : List α} {i j : ℕ} (h : i ≠ j) (a : α)
     (hj : j < (l.set i a).length) :
     (l.set i a).get ⟨j, hj⟩ = l.get ⟨j, by simpa using hj⟩ := by
   rw [← Option.some_inj, ← List.get?_eq_get, List.get?_set_ne _ _ h, List.get?_eq_get]
-
 #align list.nth_le_update_nth_of_ne List.get_set_of_ne
+
 #align list.mem_or_eq_of_mem_update_nth List.mem_or_eq_of_mem_set
 
 /-! ### map -/
@@ -3534,12 +3527,7 @@ theorem getLast_reverse {l : List α} (hl : l.reverse ≠ [])
   · simpa using hl'
 #align list.last_reverse List.getLast_reverse
 
-set_option linter.deprecated false in
-@[deprecated] -- 2023-01-05
-theorem ilast'_mem : ∀ a l, @ilast' α a l ∈ a :: l
-  | a, [] => by simp [ilast']
-  | a, b :: l => by rw [mem_cons]; exact Or.inr (ilast'_mem b l)
-#align list.ilast'_mem List.ilast'_mem
+#noalign list.ilast'_mem --List.ilast'_mem
 
 @[simp]
 theorem get_attach (L : List α) (i) :
