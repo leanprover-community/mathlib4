@@ -3,13 +3,7 @@ Copyright (c) 2018 Johannes Hölzl. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Jens Wagemaker, Aaron Anderson
 -/
-import Mathlib.Algebra.CharZero.Lemmas
 import Mathlib.Algebra.EuclideanDomain.Basic
-import Mathlib.Algebra.EuclideanDomain.Instances
-import Mathlib.Algebra.Group.Subgroup.ZPowers
-import Mathlib.Data.Nat.Prime
-import Mathlib.RingTheory.Coprime.Basic
-import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.PrincipalIdealDomain
 
 #align_import ring_theory.int.basic from "leanprover-community/mathlib"@"e655e4ea5c6d02854696f97494997ba4c31be802"
@@ -296,3 +290,4 @@ theorem eq_pow_of_mul_eq_pow_bit1 {a b c : ℤ} (hab : IsCoprime a b) {k : ℕ}
 end bit
 
 end Int
+#minimize_imports
