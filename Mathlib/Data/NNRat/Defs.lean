@@ -121,6 +121,12 @@ theorem coe_mul (p q : ℚ≥0) : ((p * q : ℚ≥0) : ℚ) = p * q :=
   rfl
 #align nnrat.coe_mul NNRat.coe_mul
 
+@[simp, norm_cast] lemma coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n := rfl
+#align nnrat.coe_pow NNRat.coe_pow
+
+@[simp] lemma num_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).num = q.num ^ n := by simp [num, Int.natAbs_pow]
+@[simp] lemma den_pow (q : ℚ≥0) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
+
 -- Porting note: `bit0` `bit1` are deprecated, so remove these theorems.
 #noalign nnrat.coe_bit0
 #noalign nnrat.coe_bit1
@@ -202,10 +208,6 @@ theorem coe_coeHom : ⇑coeHom = ((↑) : ℚ≥0 → ℚ) :=
   rfl
 #align nnrat.coe_coe_hom NNRat.coe_coeHom
 
-@[simp, norm_cast]
-theorem coe_pow (q : ℚ≥0) (n : ℕ) : (↑(q ^ n) : ℚ) = (q : ℚ) ^ n :=
-  coeHom.map_pow _ _
-#align nnrat.coe_pow NNRat.coe_pow
 @[norm_cast]
 theorem nsmul_coe (q : ℚ≥0) (n : ℕ) : ↑(n • q) = n • (q : ℚ) :=
   coeHom.toAddMonoidHom.map_nsmul _ _
@@ -370,8 +372,8 @@ lemma coprime_num_den (q : ℚ≥0) : q.num.Coprime q.den := by simpa [num, den]
 theorem ext_num_den (hn : p.num = q.num) (hd : p.den = q.den) : p = q := by
   refine ext <| Rat.ext ?_ ?_
   · apply (Int.natAbs_inj_of_nonneg_of_nonneg _ _).1 hn
-    exact Rat.num_nonneg.2 p.2
-    exact Rat.num_nonneg.2 q.2
+    · exact Rat.num_nonneg.2 p.2
+    · exact Rat.num_nonneg.2 q.2
   · exact hd
 #align nnrat.ext_num_denom NNRat.ext_num_den
 
@@ -404,9 +406,9 @@ def numDenCasesOn.{u} {C : ℚ≥0 → Sort u} (q) (H : ∀ n d, d ≠ 0 → n.C
     C q := by rw [← q.num_divNat_den]; exact H _ _ q.den_ne_zero q.coprime_num_den
 
 lemma add_def (q r : ℚ≥0) : q + r = divNat (q.num * r.den + r.num * q.den) (q.den * r.den) := by
-  ext; simp [Rat.add_def', Rat.mkRat_eq, num_coe, den_coe]
+  ext; simp [Rat.add_def', Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 lemma mul_def (q r : ℚ≥0) : q * r = divNat (q.num * r.num) (q.den * r.den) := by
-  ext; simp [Rat.mul_def', Rat.mkRat_eq, num_coe, den_coe]
+  ext; simp [Rat.mul_eq_mkRat, Rat.mkRat_eq_divInt, num_coe, den_coe]
 
 end NNRat

@@ -31,6 +31,17 @@ argument.
 * `integral_mul_fderiv_eq_neg_fderiv_mul_of_integrable`: integration by parts for scalar
   multiplication, in terms of Fréchet derivatives, written with `fderiv` assumptions.
 
+## Implementation notes
+
+A standard set of assumptions for integration by parts in a finite-dimensional real vector
+space (without boundary term) is that the functions tend to zero at infinity and have integrable
+derivatives. In this file, we instead assume that the functions are integrable and have integrable
+derivatives. These sets of assumptions are not directly comparable (an integrable function with
+integrable derivative does *not* have to tend to zero at infinity). The one we use is geared
+towards applications to Fourier transforms.
+
+TODO: prove similar theorems assuming that the functions tend to zero at infinity and have
+integrable derivatives.
 -/
 
 open MeasureTheory Measure FiniteDimensional
@@ -51,7 +62,7 @@ lemma integral_bilinear_hasLineDerivAt_right_eq_neg_left_of_integrable_aux1 [Sig
   _ = ∫ x, (- ∫ t, B (f' (x, t)) (g (x, t))) ∂μ := by
     apply integral_congr_ae
     filter_upwards [hf'g.prod_right_ae, hfg'.prod_right_ae, hfg.prod_right_ae]
-      with x hf'gx hfg'x  hfgx
+      with x hf'gx hfg'x hfgx
     apply integral_bilinear_hasDerivAt_right_eq_neg_left_of_integrable ?_ ?_ hfg'x hf'gx hfgx
     · intro t
       convert (hf (x, t)).scomp_of_eq t ((hasDerivAt_id t).add (hasDerivAt_const t (-t))) (by simp)

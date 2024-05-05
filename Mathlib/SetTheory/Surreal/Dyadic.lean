@@ -3,7 +3,7 @@ Copyright (c) 2021 Apurva Nakade. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Apurva Nakade
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.RingTheory.Localization.Basic
 import Mathlib.SetTheory.Game.Birthday
@@ -134,7 +134,8 @@ theorem add_powHalf_succ_self_eq_powHalf (n) : powHalf (n + 1) + powHalf (n + 1)
       · rintro ⟨⟩
       rintro ⟨⟩
       apply lf_of_moveRight_le
-      swap; exact Sum.inl default
+      swap
+      · exact Sum.inl default
       calc
         powHalf n.succ + powHalf (n.succ + 1) ≤ powHalf n.succ + powHalf n.succ :=
           add_le_add_left (powHalf_succ_le_powHalf _) _
