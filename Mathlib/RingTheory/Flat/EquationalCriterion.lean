@@ -60,7 +60,7 @@ variable {ι : Type u} [Fintype ι] (f : ι → R) (x : ι → M)
 
 /-- The proposition that the relation $\sum_i f_i x_i = 0$ in $M$ is trivial.
 That is, there exist a finite index type $\kappa$, elements
-$(y_j)_{j \in \kappa}$ of $M$, and elements $(a_{ij})_{i \in \iota, j \in \kappa$ of $R$
+$(y_j)_{j \in \kappa}$ of $M$, and elements $(a_{ij})_{i \in \iota, j \in \kappa}$ of $R$
 such that for all $i$,
 $$x_i = \sum_j a_{ij} y_j$$
 and for all $j$,
@@ -205,7 +205,7 @@ theorem of_forall_isTrivialRelation (hfx : ∀ {ι : Type u} [Fintype ι] {f : �
   iff_forall_isTrivialRelation.mpr hfx
 
 /-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), alternate form.
+[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK) alternate form.
 
 A module $M$ is flat if and only if for all finite free modules $R^\iota$,
 all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
