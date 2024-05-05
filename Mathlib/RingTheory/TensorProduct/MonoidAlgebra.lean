@@ -219,6 +219,37 @@ end MonoidAlgebra
 
 end Functoriality
 -/
+section
+
+open MonoidAlgebra
+
+variable {R S T α : Type*} [CommSemiring R] [Semiring S] [Semiring T]
+
+/-- AddHom functoriality for the monoid algebra -/
+noncomputable def addHom [MulOneClass α] (e : S →+ T) :
+    MonoidAlgebra S α →+ MonoidAlgebra T α :=
+  liftNC ((Finsupp.singleAddHom 1).comp e) (of T α)
+
+variable [Monoid α]
+
+/-- RingHom functoriality for the monoid algebra -/
+noncomputable def ringHom (e : S →+* T) :
+    MonoidAlgebra S α →+* MonoidAlgebra T α :=
+  liftNCRingHom (singleOneRingHom.comp e) (of T α) (fun s a ↦ by
+    simp only [RingHom.coe_comp, Function.comp_apply, singleOneRingHom_apply,
+      ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe,
+      Finsupp.singleAddHom_apply, of_apply, commute_iff_eq, single_mul_single,
+      one_mul, mul_one])
+
+/-- RingHom functoriality for the monoid algebra (equivalence) -/
+noncomputable def ringEquiv (e : S ≃+* T) :
+    MonoidAlgebra S α ≃+* MonoidAlgebra T α := by
+  apply RingEquiv.ofHomInv (ringHom e) (ringHom e.symm) <;>
+  · convert ringHom_comp _ _
+    convert ringHom_id.symm
+    simp only [RingEquiv.symm_comp, RingEquiv.comp_symm]
+
+end
 section TensorProduct
 
 open TensorProduct Finsupp
