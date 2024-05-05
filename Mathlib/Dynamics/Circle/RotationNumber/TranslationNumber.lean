@@ -423,6 +423,8 @@ noncomputable instance : Lattice CircleDeg1Lift where
   inf_le_right f g x := min_le_right (f x) (g x)
   le_inf f₁ f₂ f₃ h₂ h₃ x := le_min (h₂ x) (h₃ x)
 
+instance : DFunLike.PointwiseLE CircleDeg1Lift where
+
 @[simp]
 theorem sup_apply (x : ℝ) : (f ⊔ g) x = max (f x) (g x) :=
   rfl

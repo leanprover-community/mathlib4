@@ -192,7 +192,7 @@ theorem cancel_right {g₁ g₂ : β →Co γ} {f : α →Co β} (hf : Surjectiv
     g₁.comp f = g₂.comp f ↔ g₁ = g₂ :=
   ⟨fun h => ext <| hf.forall.2 <| DFunLike.ext_iff.1 h, fun h => congr_arg₂ _ h rfl⟩
 #align continuous_order_hom.cancel_right ContinuousOrderHom.cancel_right
-p
+
 @[simp]
 theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective g) :
     g.comp f₁ = g.comp f₂ ↔ f₁ = f₂ :=
@@ -202,6 +202,11 @@ theorem cancel_left {g : β →Co γ} {f₁ f₂ : α →Co β} (hg : Injective 
 instance : Preorder (α →Co β) :=
   Preorder.lift ((↑) : (α →Co β) → α → β)
 
+instance : DFunLike.PointwiseLE (α →Co β) where
+
 end Preorder
+
+instance [PartialOrder β] : PartialOrder (α →Co β) :=
+  DFunLike.instPartialOrder
 
 end ContinuousOrderHom
