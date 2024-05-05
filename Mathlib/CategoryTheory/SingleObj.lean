@@ -241,12 +241,10 @@ namespace Units
 
 variable (M : Type u) [Monoid M]
 
--- Porting note: it was necessary to add `by exact` in this definition, presumably
--- so that Lean4 is not confused by the fact that `M` has two opposite multiplications
 /-- The units in a monoid are (multiplicatively) equivalent to
 the automorphisms of `star` when we think of the monoid as a single-object category. -/
 def toAut : Mˣ ≃* Aut (SingleObj.star M) :=
-  MulEquiv.trans (Units.mapEquiv (by exact SingleObj.toEnd M))
+  MulEquiv.trans (Units.mapEquiv (SingleObj.toEnd M))
     (Aut.unitsEndEquivAut (SingleObj.star M))
 set_option linter.uppercaseLean3 false in
 #align units.to_Aut Units.toAut
@@ -276,11 +274,10 @@ def toCat : MonCat ⥤ Cat where
 set_option linter.uppercaseLean3 false in
 #align Mon.to_Cat MonCat.toCat
 
-instance toCatFull : toCat.Full  where
-  preimage := (SingleObj.mapHom _ _).invFun
-  witness _ := rfl
+instance toCat_full : toCat.Full  where
+  map_surjective := (SingleObj.mapHom _ _).surjective
 set_option linter.uppercaseLean3 false in
-#align Mon.to_Cat_full MonCat.toCatFull
+#align Mon.to_Cat_full MonCat.toCat_full
 
 instance toCat_faithful : toCat.Faithful where
   map_injective h := by rwa [toCat, (SingleObj.mapHom _ _).apply_eq_iff_eq] at h

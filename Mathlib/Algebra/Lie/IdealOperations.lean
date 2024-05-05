@@ -310,9 +310,9 @@ theorem comap_bracket_eq {J₁ J₂ : LieIdeal R L'} (h : f.IsIdealMorphism) :
     simp only [hz₁, hz₂, Submodule.coe_mk, LieHom.map_lie]
   · rintro ⟨x, ⟨⟨z₁, hz₁⟩, ⟨z₂, hz₂⟩, hx⟩, hy⟩; rw [← hy, ← hx]
     have hz₁' : f z₁ ∈ f.idealRange ⊓ J₁ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₁⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₁, hz₁⟩
     have hz₂' : f z₂ ∈ f.idealRange ⊓ J₂ := by
-      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange, hz₂⟩
+      rw [LieSubmodule.mem_inf]; exact ⟨f.mem_idealRange z₂, hz₂⟩
     use ⟨f z₁, hz₁'⟩, ⟨f z₂, hz₂'⟩; simp only [Submodule.coe_mk, LieHom.map_lie]
 #align lie_ideal.comap_bracket_eq LieIdeal.comap_bracket_eq
 
@@ -329,7 +329,8 @@ theorem comap_bracket_incl {I₁ I₂ : LieIdeal R L} :
     next => skip
     rw [← I.incl_idealRange]
   rw [comap_bracket_eq]
-  simp only [ker_incl, sup_bot_eq]; exact I.incl_isIdealMorphism
+  · simp only [ker_incl, sup_bot_eq]
+  · exact I.incl_isIdealMorphism
 #align lie_ideal.comap_bracket_incl LieIdeal.comap_bracket_incl
 
 /-- This is a very useful result; it allows us to use the fact that inclusion distributes over the

@@ -806,7 +806,7 @@ theorem subset_countable_closure_of_almost_dense_set (s : Set α)
     · refine' ⟨y, hys, fun z hz => _⟩
       calc
         edist z y ≤ edist z x + edist y x := edist_triangle_right _ _ _
-        _ ≤ r + r := (add_le_add hz.1 hxy)
+        _ ≤ r + r := add_le_add hz.1 hxy
         _ = r * 2 := (mul_two r).symm
   choose f hfs hf using this
   refine'
@@ -1001,7 +1001,7 @@ theorem diam_closedBall {r : ℝ≥0∞} : diam (closedBall x r) ≤ 2 * r :=
   diam_le fun a ha b hb =>
     calc
       edist a b ≤ edist a x + edist b x := edist_triangle_right _ _ _
-      _ ≤ r + r := (add_le_add ha hb)
+      _ ≤ r + r := add_le_add ha hb
       _ = 2 * r := (two_mul r).symm
 #align emetric.diam_closed_ball EMetric.diam_closedBall
 

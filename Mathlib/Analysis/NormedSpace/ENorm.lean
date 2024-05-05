@@ -120,7 +120,7 @@ theorem map_add_le (x y : V) : e (x + y) ≤ e x + e y :=
 theorem map_sub_le (x y : V) : e (x - y) ≤ e x + e y :=
   calc
     e (x - y) = e (x + -y) := by rw [sub_eq_add_neg]
-    _ ≤ e x + e (-y) := (e.map_add_le x (-y))
+    _ ≤ e x + e (-y) := e.map_add_le x (-y)
     _ = e x + e y := by rw [e.map_neg]
 #align enorm.map_sub_le ENorm.map_sub_le
 
