@@ -729,13 +729,13 @@ section Neg
 variable [HasDistribNeg α]
 
 lemma gcd_neg' [GCDMonoid α] {a b : α} : Associated (gcd a (-b)) (gcd a b) :=
-  Associated.gcd .rfl (.neg .rfl)
+  Associated.gcd .rfl (.neg_left .rfl)
 
 lemma gcd_neg [NormalizedGCDMonoid α] {a b : α} : gcd a (-b) = gcd a b :=
   gcd_neg'.eq_of_normalized (normalize_gcd _ _) (normalize_gcd _ _)
 
 lemma neg_gcd' [GCDMonoid α] {a b : α} : Associated (gcd (-a) b) (gcd a b) :=
-  Associated.gcd (.neg .rfl) .rfl
+  Associated.gcd (.neg_left .rfl) .rfl
 
 lemma neg_gcd [NormalizedGCDMonoid α] {a b : α} : gcd (-a) b = gcd a b :=
   neg_gcd'.eq_of_normalized (normalize_gcd _ _) (normalize_gcd _ _)
