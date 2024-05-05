@@ -1243,21 +1243,8 @@ theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :
 #align list.mem_iff_nth List.mem_iff_get?
 #align list.nth_zero List.get?_zero
 
--- Porting note: couldn't synthesize _ in cases h x _ rfl anymore, needed to be given explicitly
-theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.length) (h₁ : Nodup xs)
-    (h₂ : xs.get? i = xs.get? j) : i = j := by
-  induction xs generalizing i j with
-  | nil => cases h₀
-  | cons x xs tail_ih =>
-    cases i <;> cases j
-    case zero.zero => rfl
-    case succ.succ =>
-      congr; cases h₁
-      apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    all_goals (dsimp at h₂; cases' h₁ with _ _ h h')
-    · cases (h x (mem_iff_get?.mpr ⟨_, h₂.symm⟩) rfl)
-    · cases (h x (mem_iff_get?.mpr ⟨_, h₂⟩) rfl)
-#align list.nth_injective List.get?_injective
+@[deprecated] alias get?_injective := get?_inj -- 2024-05-03
+#align list.nth_injective List.get?_inj
 
 #align list.nth_map List.get?_map
 
