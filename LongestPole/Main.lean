@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Scott Morrison
 -/
 import ImportGraph
-import Mathlib.Data.String.Defs
 import Std.Lean.Util.Path
 import Cli
+import LongestPole.FormatTable
 import LongestPole.SpeedCenterJson
 
 /-!
@@ -116,25 +116,6 @@ def Float.toStringDecimals (r : Float) (digits : Nat) : String :=
   | [a, b] => a ++ "." ++ b.take digits
   | _ => r.toString
 
-/--
-Takes a 2d array of string data and renders it into a table.
- -/
-def formatTable (headers : Array String) (table : Array (Array String)) : String := Id.run do
-  -- Get the maximum widths of each column
-  let mut widths := headers.map (·.length)
-  for row in table do
-    for i in [0:widths.size] do
-      widths := widths.set! i (max widths[i]! ((row[i]?.map (·.length)).getD 0))
-  -- Pad each cell with spaces to match the column width
-  let paddedHeaders := headers.mapIdx fun i h => h.rightpad widths[i]!
-  let paddedTable := table.map fun row => row.mapIdx fun i cell => cell.rightpad widths[i]!
-  -- Construct the lines of the table
-  let headerLine := String.intercalate " | " (paddedHeaders.toList)
-  let separatorLine := String.intercalate " | " ((widths.map (String.replicate · '-')).toList)
-  let rowLines := paddedTable.map (fun row => String.intercalate " | " (row.toList))
-  -- Return the table
-  return String.intercalate "\n" (headerLine :: separatorLine :: rowLines.toList)
-
 open IO.FS IO.Process Name in
 /-- Implementation of the longest pole command line program. -/
 def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
@@ -162,12 +143,7 @@ def longestPoleCLI (args : Cli.Parsed) : IO UInt32 := do
       | _ => r
       table := table.push #[n.get!.toString, toString (i/10^6 |>.toUInt64), toString (c/10^6 |>.toUInt64), r]
       n := slowest.find? n.get!
-    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table)
-    -- let widest := table.map (·.1.toString.length) |>.toList.maximum?.getD 0
-    -- IO.println s!"{"file".rightpad widest} | instructions | (cumulative) | parallelism"
-    -- IO.println s!"{"".rightpad widest '-'} | ------------ | ------------ | -----------"
-    -- for (name, inst, cumu, speedup) in table do
-    --   IO.println s!"{name.toString.rightpad widest} | {(toString inst).leftpad 12} | {(toString cumu).leftpad 12} | x{speedup}"
+    IO.println (formatTable #["file", "instructions", "cumulative", "parallelism"] table #[Alignment.left, Alignment.right, Alignment.right, Alignment.center])
   return 0
 
 /-- Setting up command line options and help text for `lake exe pole`. -/
