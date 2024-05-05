@@ -275,7 +275,7 @@ theorem extract_gcd (f : β → α) (hs : s.Nonempty) :
       push_neg at h
       refine' ⟨fun b ↦ if hb : b ∈ s then g' hb else 0, fun b hb ↦ _,
           extract_gcd' f _ h fun b hb ↦ _⟩
-      simp only [hb, hg, dite_true]
+      · simp only [hb, hg, dite_true]
       rw [dif_pos hb, hg hb]
 #align finset.extract_gcd Finset.extract_gcd
 

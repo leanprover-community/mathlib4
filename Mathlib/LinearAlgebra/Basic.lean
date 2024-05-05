@@ -430,6 +430,12 @@ theorem ofLinear_symm_apply {h₁ h₂} (x : M₂) : (ofLinear f g h₁ h₂ : M
 #align linear_equiv.of_linear_symm_apply LinearEquiv.ofLinear_symm_apply
 
 @[simp]
+theorem ofLinear_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂) = f := rfl
+
+@[simp]
+theorem ofLinear_symm_toLinearMap {h₁ h₂} : (ofLinear f g h₁ h₂ : M ≃ₛₗ[σ₁₂] M₂).symm = g := rfl
+
+@[simp]
 protected theorem range : LinearMap.range (e : M →ₛₗ[σ₁₂] M₂) = ⊤ :=
   LinearMap.range_eq_top.2 e.toEquiv.surjective
 #align linear_equiv.range LinearEquiv.range
@@ -532,15 +538,8 @@ variable {re₁₂ : RingHomInvPair σ₁₂ σ₂₁} {re₂₁ : RingHomInvPai
 variable {re₃₄ : RingHomInvPair σ₃₄ σ₄₃} {re₄₃ : RingHomInvPair σ₄₃ σ₃₄}
 variable (e e₁ : M ≃ₛₗ[σ₁₂] M₂) (e₂ : M₃ ≃ₛₗ[σ₃₄] M₄)
 
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem map_neg (a : M) : e (-a) = -e a :=
-  e.toLinearMap.map_neg a
-#align linear_equiv.map_neg LinearEquiv.map_neg
-
--- @[simp] -- Porting note (#10618): simp can prove this
-theorem map_sub (a b : M) : e (a - b) = e a - e b :=
-  e.toLinearMap.map_sub a b
-#align linear_equiv.map_sub LinearEquiv.map_sub
+#align linear_equiv.map_neg map_negₓ
+#align linear_equiv.map_sub map_subₓ
 
 end AddCommGroup
 

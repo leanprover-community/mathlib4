@@ -189,6 +189,8 @@ theorem le_antisymm : ∀ {a b : α}, a ≤ b → b ≤ a → a = b :=
   PartialOrder.le_antisymm _ _
 #align le_antisymm le_antisymm
 
+alias eq_of_le_of_le := le_antisymm
+
 theorem le_antisymm_iff {a b : α} : a = b ↔ a ≤ b ∧ b ≤ a :=
   ⟨fun e => ⟨le_of_eq e, le_of_eq e.symm⟩, fun ⟨h1, h2⟩ => le_antisymm h1 h2⟩
 #align le_antisymm_iff le_antisymm_iff

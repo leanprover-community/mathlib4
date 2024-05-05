@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Masso
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
-import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 #align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
@@ -155,10 +155,11 @@ alias tendsto_pow_atTop_nhds_0_of_lt_1 := tendsto_pow_atTop_nhds_zero_of_lt_one
       simp only [hr.symm, one_pow] at h
       exact zero_ne_one <| tendsto_nhds_unique h tendsto_const_nhds
     · apply @not_tendsto_nhds_of_tendsto_atTop 𝕜 ℕ _ _ _ _ atTop _ (fun n ↦ |r| ^ n) _ 0 _
-      refine (pow_right_strictMono <| lt_of_le_of_ne (le_of_not_lt hr_le)
-        hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
-      obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
-      exacts [⟨n, le_of_lt hn⟩, by simpa only [← abs_pow]]
+      · refine (pow_right_strictMono <| lt_of_le_of_ne (le_of_not_lt hr_le)
+          hr).monotone.tendsto_atTop_atTop (fun b ↦ ?_)
+        obtain ⟨n, hn⟩ := (pow_unbounded_of_one_lt b (lt_of_le_of_ne (le_of_not_lt hr_le) hr))
+        exact ⟨n, le_of_lt hn⟩
+      · simpa only [← abs_pow]
   · simpa only [← abs_pow] using (tendsto_pow_atTop_nhds_zero_of_lt_one (abs_nonneg r)) h
 @[deprecated] alias tendsto_pow_atTop_nhds_0_iff := tendsto_pow_atTop_nhds_zero_iff -- 2024-01-31
 
@@ -369,6 +370,9 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       (n : ℝ≥0∞) = ∑ i in range n, 1 := by rw [sum_const, nsmul_one, card_range]
       _ ≤ ∑ i in range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
 #align ennreal.tsum_geometric ENNReal.tsum_geometric
+
+theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
+  simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
 end Geometric
 

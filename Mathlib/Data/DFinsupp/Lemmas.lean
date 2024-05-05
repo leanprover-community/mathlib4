@@ -107,7 +107,7 @@ theorem add_closure_iUnion_range_single :
     AddSubmonoid.closure (⋃ i : ι, Set.range (single i : β i → Π₀ i, β i)) = ⊤ :=
   top_unique fun x _ => by
     apply DFinsupp.induction x
-    exact AddSubmonoid.zero_mem _
+    · exact AddSubmonoid.zero_mem _
     exact fun a b f _ _ hf =>
       AddSubmonoid.add_mem _
         (AddSubmonoid.subset_closure <| Set.mem_iUnion.2 ⟨a, Set.mem_range_self _⟩) hf
@@ -442,8 +442,8 @@ theorem sumAddHom_apply [∀ i, AddZeroClass (β i)] [∀ (i) (x : β i), Decida
   intro i _
   dsimp only [coe_mk', Subtype.coe_mk] at *
   split_ifs with h
-  rfl
-  rw [not_not.mp h, AddMonoidHom.map_zero]
+  · rfl
+  · rw [not_not.mp h, AddMonoidHom.map_zero]
 #align dfinsupp.sum_add_hom_apply DFinsupp.sumAddHom_apply
 
 theorem _root_.dfinsupp_sumAddHom_mem [∀ i, AddZeroClass (β i)] [AddCommMonoid γ] {S : Type*}
