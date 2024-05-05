@@ -10,7 +10,7 @@ import Mathlib.CategoryTheory.Shift.Basic
 # Predicates on categories equipped with shift
 
 Given a predicate `P : C → Prop` on objects of a category equipped with a shift
-by `A`, we define shifted predicated `PredicateShift P a` for all `a : A`.
+by `A`, we define shifted predicates `PredicateShift P a` for all `a : A`.
 
 -/
 
