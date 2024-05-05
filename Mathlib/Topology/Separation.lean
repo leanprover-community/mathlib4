@@ -2169,7 +2169,7 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
     · exact (u_hyp i).1
     · apply Set.Finite.isClosed_biUnion
       · exact finite_le_nat i
-      · intro _ _
+      · intros
         exact isClosed_closure
   constructor
   · apply isOpen_iUnion
