@@ -1182,7 +1182,6 @@ def trNat (n : ℕ) : List Γ' :=
 theorem trNat_zero : trNat 0 = [] := by rw [trNat, Nat.cast_zero]; rfl
 #align turing.partrec_to_TM2.tr_nat_zero Turing.PartrecToTM2.trNat_zero
 
-@[simp]
 theorem trNat_default : trNat default = [] :=
   trNat_zero
 #align turing.partrec_to_TM2.tr_nat_default Turing.PartrecToTM2.trNat_default
