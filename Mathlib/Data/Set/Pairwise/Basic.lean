@@ -341,7 +341,7 @@ lemma PairwiseDisjoint.eq_or_disjoint
   rw [or_iff_not_imp_right]
   exact h.elim hi hj
 
-lemma _root_.Set.pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
+lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
     (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
   constructor
   · intro h x y
