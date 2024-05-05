@@ -1891,7 +1891,7 @@ theorem RegularSpace.of_hasBasis {ι : X → Sort*} {p : ∀ a, ι a → Prop} {
   .of_lift'_closure fun a => (h₁ a).lift'_closure_eq_self (h₂ a)
 #align regular_space.of_basis RegularSpace.of_hasBasis
 
-@[deprecated]
+@[deprecated] -- 2024-02-28
 alias RegularSpace.ofBasis := RegularSpace.of_hasBasis
 
 theorem RegularSpace.of_exists_mem_nhds_isClosed_subset

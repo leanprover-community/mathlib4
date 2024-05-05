@@ -52,7 +52,7 @@ variable [TopologicalSpace X] [TopologicalSpace Y] [TopologicalSpace Z] {K : Set
 
 /-- The compact-open topology on the space of continuous maps `C(X, Y)`. -/
 instance compactOpen : TopologicalSpace C(X, Y) :=
- .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
+  .generateFrom <| image2 (fun K U ↦ {f | MapsTo f K U}) {K | IsCompact K} {U | IsOpen U}
 #align continuous_map.compact_open ContinuousMap.compactOpen
 
 /-- Definition of `ContinuousMap.compactOpen`. -/
@@ -200,17 +200,24 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
     IsClopen {f : C(X, Y) | MapsTo f K U} :=
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
+@[simp, norm_cast]
 lemma specializes_coe {f g : C(X, Y)} : (f : X → Y) ⤳ g ↔ f ⤳ g := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
   suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
     simpa [specializes_iff_pure, nhds_compactOpen]
   exact fun K _ U hU hg x hx ↦ (h.map (continuous_apply x)).mem_open hU (hg hx)
 
+@[simp, norm_cast]
 lemma inseparable_coe {f g : C(X, Y)} : Inseparable (f : X → Y) g ↔ Inseparable f g := by
   simp only [inseparable_iff_specializes_and, specializes_coe]
 
 instance [T0Space Y] : T0Space C(X, Y) :=
   t0Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
+
+instance [R0Space Y] : R0Space C(X, Y) where
+  specializes_symmetric f g h := by
+    rw [← specializes_coe] at h ⊢
+    exact h.symm
 
 instance [T1Space Y] : T1Space C(X, Y) :=
   t1Space_of_injective_of_continuous DFunLike.coe_injective continuous_coe
