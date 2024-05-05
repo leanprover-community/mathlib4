@@ -566,7 +566,7 @@ lemma hasSum_int_completedHurwitzZetaEven (a : ℝ) {s : ℂ} (hs : 1 < re s) :
 ## The un-completed even Hurwitz zeta
 -/
 
-/-- Technical lemma which will give us differentiability of Riemann zeta at `s = 0`. -/
+/-- Technical lemma which will give us differentiability of Hurwitz zeta at `s = 0`. -/
 lemma differentiableAt_update_of_residue
     {Λ : ℂ → ℂ} (hf : ∀ (s : ℂ) (_ : s ≠ 0) (_ : s ≠ 1), DifferentiableAt ℂ Λ s)
     {L : ℂ} (h_lim : Tendsto (fun s ↦ s * Λ s) (𝓝[≠] 0) (𝓝 L)) (s : ℂ) (hs' : s ≠ 1) :
