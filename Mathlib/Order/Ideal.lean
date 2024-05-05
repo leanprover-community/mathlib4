@@ -609,7 +609,7 @@ variable [Preorder P]
 lemma isIdeal_sUnion_directed {C : Set (Set P)} (hidl : ∀ I ∈ C, IsIdeal I)
     (hD : DirectedOn (· ⊆ ·) C) (hNe : C.Nonempty) : IsIdeal C.sUnion := by
   refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
-  directed_on_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
+  directedOn_sUnion hD (fun J hJ => (hidl J hJ).3)⟩
   let ⟨I, hI⟩ := hNe
   exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
 

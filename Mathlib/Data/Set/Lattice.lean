@@ -534,23 +534,6 @@ theorem diff_iInter (s : Set β) (t : ι → Set β) : (s \ ⋂ i, t i) = ⋃ i,
   rw [diff_eq, compl_iInter, inter_iUnion]; rfl
 #align set.diff_Inter Set.diff_iInter
 
-theorem directed_on_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
-    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
-  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
-  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
-    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
-    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
-    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
-#align set.directed_on_Union Set.directed_on_iUnion
-
-theorem directed_on_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
-    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
-  simp only [DirectedOn, mem_sUnion, exists_imp]
-  exact fun a₁ b₁ ⟨hb₁, ha₁⟩ a₂ b₂ ⟨hb₂, ha₂⟩ =>
-    let ⟨z, zS, zb₁, zb₂⟩ := hd b₁ hb₁ b₂ hb₂
-    let ⟨x, xz, xa₁, xa₂⟩ := (h z zS) a₁ (zb₁ ha₁) a₂ (zb₂ ha₂)
-    ⟨x, ⟨⟨z, ⟨zS, xz⟩⟩, xa₁, xa₂⟩⟩
-
 theorem iUnion_inter_subset {ι α} {s t : ι → Set α} : ⋃ i, s i ∩ t i ⊆ (⋃ i, s i) ∩ ⋃ i, t i :=
   le_iSup_inf_iSup s t
 #align set.Union_inter_subset Set.iUnion_inter_subset
@@ -2048,6 +2031,24 @@ theorem iUnion_univ_pi {ι : α → Type*} (t : (a : α) → ι a → Set (π a)
 #align set.Union_univ_pi Set.iUnion_univ_pi
 
 end Pi
+
+section Directed
+
+theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
+    (h : ∀ x, DirectedOn r (f x)) : DirectedOn r (⋃ x, f x) := by
+  simp only [DirectedOn, exists_prop, mem_iUnion, exists_imp]
+  exact fun a₁ b₁ fb₁ a₂ b₂ fb₂ =>
+    let ⟨z, zb₁, zb₂⟩ := hd b₁ b₂
+    let ⟨x, xf, xa₁, xa₂⟩ := h z a₁ (zb₁ fb₁) a₂ (zb₂ fb₂)
+    ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
+#align set.directed_on_Union Set.directedOn_iUnion
+
+theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
+    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
+  rw [sUnion_eq_iUnion]
+  exact directedOn_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
+
+end Directed
 
 end Set
 
