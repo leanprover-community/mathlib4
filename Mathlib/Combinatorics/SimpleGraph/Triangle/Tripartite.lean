@@ -25,7 +25,8 @@ The two important properties of this construction are:
 This construction shows up unrelatingly twice in the theory of Roth numbers:
 * The lower bound of the Ruzsa-Szemerédi problem: From a set `s` in a finite abelian group `G` of
   odd order, we construct a tripartite graph on `G ⊕ G ⊕ G`. The triangle indices are
-  `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is 3AP-free.
+  `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always
+  edge-disjoint and there is no accidental triangle if `s` is 3AP-free.
 * The proof of the corners theorem from the triangle removal lemma: For a set `s` in a finite
   abelian group `G`, we construct a tripartite graph on `G ⊕ G ⊕ G`, whose vertices correspond to
   the horizontal, vertical and diagonal lines in `G × G`. The explicit triangles are `(h, v, d)`
