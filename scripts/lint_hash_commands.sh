@@ -19,7 +19,7 @@ getHashCommands () {
     grep -v "#align$" |
     grep -v "#align_import$" |
     grep -v "#noalign$" |
-    grep -v "#adaptation_note" |
+    grep -v "#adaptation_note$" |
     sort -u | tr '\n' , |
     sed 's=$=^#eval='
 }
