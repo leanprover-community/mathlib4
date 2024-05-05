@@ -9,13 +9,13 @@ import Mathlib.Combinatorics.SimpleGraph.Triangle.Basic
 # Construct a tripartite graph from its triangles
 
 This file contains the construction of a simple graph on `α ⊕ β ⊕ γ` from a list of triangles
-`(a, b, c)` (with `a` in the first summand, `b` in the second, `c` in the third).
+`(a, b, c)` (with `a` in the first component, `b` in the second, `c` in the third).
 
 We call
 * `t : Finset (α × β × γ)` the set of *triangle indices* (its elements are not triangles within the
   graph but instead index them).
 * *explicit* a triangle of the constructed graph coming from a triangle index.
-* *accidental* a triangle of the constructed graph not coming from a triangle.
+* *accidental* a triangle of the constructed graph not coming from a triangle index.
 
 The two important properties of this construction are:
 * `SimpleGraph.TripartiteFromTriangles.ExplicitDisjoint`: Whether the explicit triangles are
@@ -23,16 +23,15 @@ The two important properties of this construction are:
 * `SimpleGraph.TripartiteFromTriangles.NoAccidental`: Whether all triangles are explicit.
 
 This construction shows up unrelatingly twice in the theory of Roth numbers:
-* The lower bound of the Ruzsa-Szemerédi problem: From a Salem-Spencer set `s` on a commutative ring
-  `α` (in which `2` is invertible), we build a locally linear graph on `α ⊕ α ⊕ α`. The triangle
-  indices are `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are
-  edge-disjoint and there is no accidental triangle.
-* The proof of the corners theorem from the triangle removal lemma. For a subset `s` of the `n × n`
-  grid, we construct a tripartite graph whose vertices are the horizontal, vertical and diagonal
-  lines in the grid. The explicit triangles are `(h, v, d)` where `h`, `v`, `d` are horizontal,
-  vertical, diagonal lines that intersect in an element of `s`. The explicit triangles are
-  edge-disjoint. However, there are accidental triangles (and this is what the argument wants to
-  prove).
+* The lower bound of the Ruzsa-Szemerédi problem: From a set `s` in a finite abelian group `G` of
+  odd order, we construct a tripartite graph on `G ⊕ G ⊕ G`. The triangle indices are
+  `(x, x + a, x + 2 * a)` for `x` any element and `a ∈ s`. The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is 3AP-free.
+* The proof of the corners theorem from the triangle removal lemma: For a set `s` in a finite
+  abelian group `G`, we construct a tripartite graph on `G ⊕ G ⊕ G`, whose vertices correspond to
+  the horizontal, vertical and diagonal lines in `G × G`. The explicit triangles are `(h, v, d)`
+  where `h`, `v`, `d` are horizontal, vertical, diagonal lines that intersect in an element of `s`.
+  The explicit triangles are always edge-disjoint and there is no accidental triangle if `s` is
+  corner-free.
 -/
 
 open Finset Function Sum3
