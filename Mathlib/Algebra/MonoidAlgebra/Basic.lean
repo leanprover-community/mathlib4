@@ -328,7 +328,7 @@ theorem one_def : (1 : MonoidAlgebra k G) = single 1 1 :=
   rfl
 to_ama #align monoid_algebra.one_def MonoidAlgebra.one_def
 
-to_ama [] G
+to_ama G
 @[simp]
 theorem liftNC_one {g_hom : Type*} [FunLike g_hom G R] [OneHomClass g_hom G R]
     (f : k →+* R) (g : g_hom) :
@@ -541,14 +541,14 @@ section MiscTheorems
 variable [Semiring k]
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
-
+to_ama [] plus a₁
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
   -- Porting note: `reducible` cannot be `local` so proof gets long.
   rw [mul_def, Finsupp.sum_apply]; congr; ext
   rw [Finsupp.sum_apply]; congr; ext
   apply single_apply
-#align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
+to_ama #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 := by
@@ -1322,10 +1322,10 @@ section MiscTheorems
 
 variable [Semiring k]
 
-theorem mul_apply [DecidableEq G] [Add G] (f g : k[G]) (x : G) :
-    (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ + a₂ = x then b₁ * b₂ else 0 :=
-  @MonoidAlgebra.mul_apply k (Multiplicative G) _ _ _ _ _ _
-#align add_monoid_algebra.mul_apply AddMonoidAlgebra.mul_apply
+--theorem mul_apply [DecidableEq G] [Add G] (f g : k[G]) (x : G) :
+--    (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ + a₂ = x then b₁ * b₂ else 0 :=
+--  @MonoidAlgebra.mul_apply k (Multiplicative G) _ _ _ _ _ _
+--#align add_monoid_algebra.mul_apply AddMonoidAlgebra.mul_apply
 
 theorem mul_apply_antidiagonal [Add G] (f g : k[G]) (x : G) (s : Finset (G × G))
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 + p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 :=

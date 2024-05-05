@@ -43,7 +43,7 @@ def nameToTop : Name → Name
   | .str a b => .str (nameToTop a) (stringReplacements convs b)
   | _ => default
 
-variable (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) in
+variable (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) (toPlus : Name) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
 in `ℕ∞`. -/
@@ -55,6 +55,10 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
 
   stx.replaceM fun s => do
     match s with
+      | .node _ `«term_*_» #[a, _, b] =>
+        if (a.getId != .anonymous) && a.getId == toPlus then
+          return some <| ← `($(⟨a⟩) + $(⟨b⟩))
+        else return none
       | .node _ ``Lean.Parser.Term.app
           #[.ident _ _ `single _, .node _ _ #[one, c]] =>
         match one with
@@ -95,11 +99,12 @@ environment the analogous result about `AddMonoidAlgebra`.
 
 Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 -/
-elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id:(ident)? "]" id2:(ident)? cmd:command :
+elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id:(ident)? "]" id2:(ident)? "plus"? id3:(ident)? "noplus"? cmd:command :
     command => do
   let g := match id with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
-  let newCmd ← MaxToMin toAddWords g h cmd
+  let i := match id3 with | some id => id.getId | _ => default
+  let newCmd ← MaxToMin toAddWords g h i cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
   if (← get).messages.hasErrors then return
@@ -109,14 +114,22 @@ elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id:(ident)? "]" id2:(ident)? cm
 @[inherit_doc to_amaCmd]
 macro "to_ama? " "[" id:(ident)? "]" cmd:command : command =>
   let rid := mkIdent `hi
-  return (← `(to_ama ? [$(id.getD default)] $rid $cmd))
+  return (← `(to_ama ? [$(id.getD default)] $rid noplus $cmd))
 
 @[inherit_doc to_amaCmd]
 macro "to_ama? " cmd:command : command =>
   let rid := mkIdent `hi
-  return (← `(to_ama ? [] $rid $cmd))
+  return (← `(to_ama ? [] $rid noplus $cmd))
+
+@[inherit_doc to_amaCmd]
+macro "to_ama " id:ident cmd:command : command =>
+  return (← `(to_ama [] $id noplus $cmd))
+
+@[inherit_doc to_amaCmd]
+macro "to_ama " "plus" id:ident cmd:command : command =>
+  return (← `(to_ama [] $id plus $id noplus $cmd))
 
 @[inherit_doc to_amaCmd]
 macro "to_ama " cmd:command : command =>
   let rid := mkIdent `hi
-  return (← `(to_ama [] $rid $cmd))
+  return (← `(to_ama [] $rid noplus $cmd))
