@@ -188,7 +188,7 @@ theorem iff_forall_isTrivialRelation : Flat R M ↔ ∀ {ι : Type u} [Fintype �
     {x : ι → M}, ∑ i, f i • x i = 0 → IsTrivialRelation f x :=
   (tfae_equational_criterion R M).out 0 3
 
-/-- **Equational criterion for flatness**,
+/-- **Equational criterion for flatness**
 [Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), forward direction.
 
 If $M$ is flat, then every relation $\sum_i f_i x_i = 0$ in $M$ is trivial. -/
@@ -205,7 +205,7 @@ theorem of_forall_isTrivialRelation (hfx : ∀ {ι : Type u} [Fintype ι] {f : �
   iff_forall_isTrivialRelation.mpr hfx
 
 /-- **Equational criterion for flatness**
-[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK) alternate form.
+[Stacks 00HK](https://stacks.math.columbia.edu/tag/00HK), alternate form.
 
 A module $M$ is flat if and only if for all finite free modules $R^\iota$,
 all $f \in R^{\iota}$, and all homomorphisms $x \colon R^{\iota} \to M$ such that $x(f) = 0$, there
