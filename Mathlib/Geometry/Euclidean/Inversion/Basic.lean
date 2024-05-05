@@ -5,6 +5,7 @@ Authors: Yury G. Kudryashov
 -/
 import Mathlib.Analysis.Normed.Group.AddTorsor
 import Mathlib.Analysis.InnerProductSpace.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import geometry.euclidean.inversion from "leanprover-community/mathlib"@"46b633fd842bef9469441c0209906f6dddd2b4f5"
 

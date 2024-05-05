@@ -6,6 +6,7 @@ Authors: Anne Baanen, Devon Tuma
 import Mathlib.Algebra.GroupWithZero.NonZeroDivisors
 import Mathlib.Algebra.Polynomial.AlgebraMap
 import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import ring_theory.polynomial.scale_roots from "leanprover-community/mathlib"@"40ac1b258344e0c2b4568dc37bfad937ec35a727"
 

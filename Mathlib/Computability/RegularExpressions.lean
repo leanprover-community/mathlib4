@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Fox Thomson
 -/
 import Mathlib.Computability.Language
+import Mathlib.Tactic.AdaptationNote
 
 #align_import computability.regular_expressions from "leanprover-community/mathlib"@"369525b73f229ccd76a6ec0e0e0bf2be57599768"
 

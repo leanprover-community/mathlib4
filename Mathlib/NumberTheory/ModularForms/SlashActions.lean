@@ -6,6 +6,7 @@ Authors: Chris Birkbeck
 import Mathlib.Analysis.Complex.UpperHalfPlane.Basic
 import Mathlib.LinearAlgebra.Matrix.GeneralLinearGroup
 import Mathlib.LinearAlgebra.Matrix.SpecialLinearGroup
+import Mathlib.Tactic.AdaptationNote
 
 #align_import number_theory.modular_forms.slash_actions from "leanprover-community/mathlib"@"738054fa93d43512da144ec45ce799d18fd44248"
 

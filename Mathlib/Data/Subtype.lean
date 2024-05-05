@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl
 -/
 import Mathlib.Logic.Function.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import data.subtype from "leanprover-community/mathlib"@"48fb5b5280e7c81672afc9524185ae994553ebf4"
 #align_import init.data.subtype.basic from "leanprover-community/lean"@"855e5b74e3a52a40552e8f067169d747d48743fd"

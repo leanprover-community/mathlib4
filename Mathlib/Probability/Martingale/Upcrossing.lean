@@ -6,6 +6,7 @@ Authors: Kexing Ying
 import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
+import Mathlib.Tactic.AdaptationNote
 
 #align_import probability.martingale.upcrossing from "leanprover-community/mathlib"@"2c1d8ca2812b64f88992a5294ea3dba144755cd1"
 

@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying, Rémy Degenne
 -/
 import Mathlib.Probability.Process.Stopping
+import Mathlib.Tactic.AdaptationNote
 
 #align_import probability.process.hitting_time from "leanprover-community/mathlib"@"f2ce6086713c78a7f880485f7917ea547a215982"
 
