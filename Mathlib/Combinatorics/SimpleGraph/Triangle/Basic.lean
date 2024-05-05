@@ -200,7 +200,7 @@ nonrec theorem FarFromTriangleFree.mono (hε : G.FarFromTriangleFree ε) (h : δ
 #align simple_graph.far_from_triangle_free.mono SimpleGraph.FarFromTriangleFree.mono
 
 theorem FarFromTriangleFree.cliqueFinset_nonempty' (hH : H ≤ G) (hG : G.FarFromTriangleFree ε)
-    (hcard : (G.edgeFinset.card - H.edgeFinset.card : 𝕜) < ε * (card α ^ 2 : ℕ)) :
+    (hcard : G.edgeFinset.card - H.edgeFinset.card < ε * (card α ^ 2 : ℕ)) :
     (H.cliqueFinset 3).Nonempty :=
   nonempty_of_ne_empty <|
     cliqueFinset_eq_empty_iff.not.2 fun hH' => (hG.le_card_sub_card hH hH').not_lt hcard
