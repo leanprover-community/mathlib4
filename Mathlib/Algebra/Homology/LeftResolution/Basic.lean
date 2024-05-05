@@ -589,6 +589,20 @@ lemma quasiIso_resolutionNatTrans_app (K : CochainComplex.Minus C) :
     Minus.quasiIso (Λ.resolutionNatTrans.app K) :=
   inferInstanceAs (QuasiIso (Λ.totalπ K))
 
+instance (K : CochainComplex.Minus C) : QuasiIso ((Minus.ι C).map (Λ.resolutionNatTrans.app K)) :=
+  Λ.quasiIso_resolutionNatTrans_app K
+
+lemma quasiIso_resolutionFunctor_map {K L : CochainComplex.Minus C} (f : K ⟶ L)
+    (hf : Minus.quasiIso f) :
+    Minus.quasiIso (ι.mapCochainComplexMinus.map (Λ.resolutionFunctor.map f)) := by
+  have eq := (CochainComplex.Minus.ι _).congr_map (Λ.resolutionNatTrans.naturality f)
+  dsimp at eq
+  simp only [Functor.map_comp] at eq
+  change QuasiIso _
+  rw [← quasiIso_iff_comp_right _ ((Minus.ι C).map (Λ.resolutionNatTrans.app L)), eq]
+  have : QuasiIso ((Minus.ι C).map f) := hf
+  infer_instance
+
 end
 
 end LeftResolutions
