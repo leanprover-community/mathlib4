@@ -528,7 +528,7 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
       rw [← fourierIntegral_continuousMultilinearMap_apply' ((J.apply_continuousLinearMap _)),
           ← fourierIntegral_continuousLinearMap_apply' J]
       exact H
-    have h'n : n < N := lt_of_lt_of_le (by simp [-Nat.cast_succ]) hn
+    have h'n : n < N := lt_of_lt_of_le (by simp [-Nat.cast_add]) hn
     rw [fourierIntegral_fderiv]
     · have A : ∀ (x : ℝ) (v : E), x • v = (x : ℂ) • v := fun x v ↦ rfl
       simp only [ih h'n.le, fourierSMulRight_apply, ContinuousLinearMap.neg_apply,
@@ -543,6 +543,8 @@ theorem fourierIntegral_iteratedFDeriv [FiniteDimensional ℝ V]
     · exact hf.differentiable_iteratedFDeriv h'n
     · exact J
 
+/-- The `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`, is the
+Fourier integral of the `n`-th derivative of `(L v w) ^ k * f`. -/
 theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
@@ -573,6 +575,9 @@ theorem fourierPowSMulRight_iteratedFDeriv_fourierIntegral [FiniteDimensional �
     · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
       exact ⟨hj, hi⟩
 
+/-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
+in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
+(for `i ≤ k`). -/
 theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
@@ -602,6 +607,9 @@ theorem norm_fourierPowSMulRight_iteratedFDeriv_fourierIntegral_le [FiniteDimens
     · simp only [Finset.mem_product, Finset.mem_range_succ_iff]
       exact ⟨hj, hi⟩
 
+/-- One can bound the `k`-th derivative of the Fourier integral of `f`, multiplied by `(L v w) ^ n`,
+in terms of integrals of iterated derivatives of `f` (of order up to `n`) multiplied by `‖v‖ ^ i`
+(for `i ≤ k`). -/
 lemma pow_mul_norm_iteratedFDeriv_fourierIntegral_le [FiniteDimensional ℝ V]
     {μ : Measure V} [Measure.IsAddHaarMeasure μ] {K N : ℕ∞} (hf : ContDiff ℝ N f)
     (h'f : ∀ (k n : ℕ), k ≤ K → n ≤ N → Integrable (fun v ↦ ‖v‖^k * ‖iteratedFDeriv ℝ n f v‖) μ)
