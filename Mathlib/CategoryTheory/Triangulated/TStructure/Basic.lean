@@ -27,7 +27,7 @@ use depending on the context.
 ## TODO
 
 * define functors `t.truncLE n : C ⥤ C`,`t.truncGE n : C ⥤ C` and the
-associated distiguished triangles
+associated distinguished triangles
 * promote these truncations to a (functorial) spectral object
 * define the heart of `t` and show it is an abelian category
 * define triangulated subcategories `t.plus`, `t.minus`, `t.bounded` and show
