@@ -191,7 +191,7 @@ We do not assume `P` lies over `p` in the definition; we return `0` instead.
 See `inertiaDeg_algebraMap` for the common case where `f = algebraMap R S`
 and there is an algebra structure `R / p → S / P`.
 -/
-noncomputable def inertiaDeg [p.IsMaximal] : ℕ :=
+noncomputable def inertiaDeg : ℕ :=
   if hPp : comap f P = p then
     @finrank (R ⧸ p) (S ⧸ P) _ _ <|
       @Algebra.toModule _ _ _ _ <|
