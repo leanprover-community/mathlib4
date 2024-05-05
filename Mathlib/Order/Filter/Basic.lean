@@ -786,8 +786,9 @@ theorem NeBot.nonempty (f : Filter α) [hf : f.NeBot] : Nonempty α :=
 equal. -/
 theorem eq_top_of_neBot [Subsingleton α] (l : Filter α) [NeBot l] : l = ⊤ := by
   refine' top_unique fun s hs => _
-  obtain rfl : s = univ; exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
-  exact univ_mem
+  obtain rfl : s = univ
+  · exact Subsingleton.eq_univ_of_nonempty (nonempty_of_mem hs)
+  · exact univ_mem
 #align filter.eq_top_of_ne_bot Filter.eq_top_of_neBot
 
 theorem forall_mem_nonempty_iff_neBot {f : Filter α} :
@@ -1412,7 +1413,7 @@ theorem eventually_imp_distrib_right {f : Filter α} {p : α → Prop} {q : Prop
 @[simp]
 theorem frequently_and_distrib_left {f : Filter α} {p : Prop} {q : α → Prop} :
     (∃ᶠ x in f, p ∧ q x) ↔ p ∧ ∃ᶠ x in f, q x := by
-  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, not_imp]
+  simp only [Filter.Frequently, not_and, eventually_imp_distrib_left, Classical.not_imp]
 #align filter.frequently_and_distrib_left Filter.frequently_and_distrib_left
 
 @[simp]

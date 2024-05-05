@@ -448,8 +448,8 @@ theorem multiplicity_add_of_gt {p a b : α} (h : multiplicity p b < multiplicity
     cases' PartENat.ne_top_iff.mp (PartENat.ne_top_of_lt h) with k hk
     rw [hk]
     rw_mod_cast [multiplicity_lt_iff_not_dvd, dvd_add_right]
-    intro h_dvd
-    · apply multiplicity.is_greatest _ h_dvd
+    · intro h_dvd
+      apply multiplicity.is_greatest _ h_dvd
       rw [hk, ← Nat.succ_eq_add_one]
       norm_cast
       apply Nat.lt_succ_self k
@@ -608,7 +608,7 @@ protected theorem pow' {p a : α} (hp : Prime p) (ha : Finite p a) :
   induction' k with k hk
   · simp [one_right hp.not_unit]
   · have : multiplicity p (a ^ (k + 1)) = multiplicity p (a * a ^ k) := by rw [_root_.pow_succ']
-    rw [succ_eq_add_one, get_eq_get_of_eq _ _ this,
+    rw [get_eq_get_of_eq _ _ this,
       multiplicity.mul' hp, hk, add_mul, one_mul, add_comm]
 #align multiplicity.pow' multiplicity.pow'
 

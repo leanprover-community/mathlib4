@@ -115,8 +115,8 @@ where `a ≠ 0` is `addOrderOf_coe'`. -/
 @[simp]
 theorem addOrderOf_coe (a : ℕ) {n : ℕ} (n0 : n ≠ 0) : addOrderOf (a : ZMod n) = n / n.gcd a := by
   cases' a with a
-  simp only [Nat.zero_eq, Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right, Nat.pos_of_ne_zero n0,
-    Nat.div_self]
+  · simp only [Nat.zero_eq, Nat.cast_zero, addOrderOf_zero, Nat.gcd_zero_right,
+      Nat.pos_of_ne_zero n0, Nat.div_self]
   rw [← Nat.smul_one_eq_coe, addOrderOf_nsmul' _ a.succ_ne_zero, ZMod.addOrderOf_one]
 #align zmod.add_order_of_coe ZMod.addOrderOf_coe
 
@@ -297,6 +297,7 @@ theorem cast_one (h : m ∣ n) : (cast (1 : ZMod n) : R) = 1 := by
   cases n;
   · rw [Nat.dvd_one] at h
     subst m
+    have : Subsingleton R := CharP.CharOne.subsingleton
     apply Subsingleton.elim
   rw [Nat.mod_eq_of_lt]
   · exact Nat.cast_one
@@ -956,7 +957,7 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
       exact Or.inl (a.val_eq_zero.1 he)
     cases m
     · right
-      rwa [show Nat.succ Nat.zero = 1 from rfl, mul_one] at he
+      rwa [show 0 + 1 = 1 from rfl, mul_one] at he
     refine' (a.val_lt.not_le <| Nat.le_of_mul_le_mul_left _ zero_lt_two).elim
     rw [he, mul_comm]
     apply Nat.mul_le_mul_left
@@ -1245,7 +1246,7 @@ private theorem mul_inv_cancel_aux (a : ZMod p) (h : a ≠ 0) : a * a⁻¹ = 1 :
   rwa [Nat.Prime.coprime_iff_not_dvd Fact.out, ← CharP.cast_eq_zero_iff (ZMod p)]
 
 /-- Field structure on `ZMod p` if `p` is prime. -/
-instance : Field (ZMod p) where
+instance instField : Field (ZMod p) where
   mul_inv_cancel := mul_inv_cancel_aux p
   inv_zero := inv_zero p
   nnqsmul := _

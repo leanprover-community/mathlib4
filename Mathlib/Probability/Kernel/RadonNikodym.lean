@@ -115,7 +115,8 @@ lemma withDensity_rnDerivAux (κ η : kernel α γ) [IsFiniteKernel κ] [IsFinit
     withDensity (κ + η) (fun a x ↦ Real.toNNReal (rnDerivAux κ (κ + η) a x)) = κ := by
   ext a s hs
   rw [kernel.withDensity_apply']
-  swap; exact (measurable_rnDerivAux _ _).ennreal_ofReal
+  swap
+  · exact (measurable_rnDerivAux _ _).ennreal_ofReal
   have : ∀ b, (Real.toNNReal b : ℝ≥0∞) = ENNReal.ofReal b := fun _ ↦ rfl
   simp_rw [this]
   exact set_lintegral_rnDerivAux κ η a hs
