@@ -230,7 +230,7 @@ instance faithful_map [F₁.Faithful] [F₂.Faithful] : (map α β).Faithful whe
     · exact F₁.map_injective (congr_arg CommaMorphism.left h)
     · exact F₂.map_injective (congr_arg CommaMorphism.right h)
 
-instance fullMap [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
+instance full_map [F.Faithful] [F₁.Full] [F₂.Full] [IsIso α] [IsIso β] : (map α β).Full where
   map_surjective {X Y} φ :=
    ⟨{ left := F₁.preimage φ.left
       right := F₂.preimage φ.right
