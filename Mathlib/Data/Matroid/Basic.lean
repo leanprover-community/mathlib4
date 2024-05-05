@@ -190,7 +190,7 @@ def Matroid.ExistsMaximalSubsetProperty {α : Type _} (P : Set α → Prop) (X :
   (E : Set α)
   /-- `M` has a predicate `Base` definining its bases -/
   (Base : Set α → Prop)
-  /-- `M` has a prediate `Indep` defining its independent sets -/
+  /-- `M` has a predicate `Indep` defining its independent sets -/
   (Indep : Set α → Prop)
   /-- the `Indep`endent sets are those contained in `Base`s. -/
   (indep_iff' : ∀ ⦃I⦄, Indep I ↔ ∃ B, Base B ∧ I ⊆ B)
