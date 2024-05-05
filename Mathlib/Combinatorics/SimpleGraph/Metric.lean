@@ -143,8 +143,8 @@ theorem dist_eq_one_iff_adj {u v : V} : G.dist u v = 1 ↔ G.Adj u v := by
       apply dist_le
     rw [← this.ge_iff_eq, Nat.succ_le_iff]
     apply Reachable.pos_dist_of_ne
-    · apply Adj.reachable h
-    · apply Adj.ne h
+    · exact h.reachable
+    · exact h.ne
 
 theorem Walk.isPath_of_length_eq_dist {u v : V} (p : G.Walk u v) (hp : p.length = G.dist u v) :
     p.IsPath := by
