@@ -437,6 +437,63 @@ theorem logb_eq_zero : logb b x = 0 ↔ b = 0 ∨ b = 1 ∨ b = -1 ∨ x = 0 ∨
   tauto
 #align real.logb_eq_zero Real.logb_eq_zero
 
+
+lemma logb_ne_zero : logb b x ≠ 0 ↔ b ≠ 0 ∧ b ≠ 1 ∧ b ≠ -1 ∧ x ≠ 0 ∧ x ≠ 1 ∧ x ≠ -1 := by
+  simpa only [not_or] using logb_eq_zero.not
+
+@[simp] lemma logb_pow (x : ℝ) (n : ℕ) : logb b (x ^ n) = n * logb b x := by
+  induction' n with n ih
+  · simp
+  obtain rfl | hx := eq_or_ne x 0
+  · simp
+  rw [pow_succ', logb_mul (pow_ne_zero _ hx) hx, ih, Nat.cast_succ, add_mul, one_mul]
+
+@[simp] lemma logb_zpow (x : ℝ) (n : ℤ) : logb b (x ^ n) = n * logb b x := by
+  induction n
+  · rw [Int.ofNat_eq_coe, zpow_coe_nat, logb_pow, Int.cast_ofNat]
+  · rw [zpow_negSucc, logb_inv, logb_pow, Int.cast_negSucc, Nat.cast_add_one, neg_mul_eq_neg_mul]
+
+lemma logb_sqrt (hx : 0 ≤ x) : logb b (sqrt x) = logb b x / 2 := by
+  rw [eq_div_iff, mul_comm, ← Nat.cast_two, ← logb_pow, sq_sqrt hx]; exact two_ne_zero
+
+lemma tendsto_logb_nhdsWithin_zero : Tendsto (logb b) (𝓝[≠] 0) atBot := by
+  unfold logb
+  refine Tendsto.comp (f := log) (g := fun x ↦ x / log b) (by apply?) tendsto_log_nhdsWithin_zero
+  rw [← show _ = logb b from funext logb_abs]
+  refine' Tendsto.comp (g := logb b) _ tendsto_abs_nhdsWithin_zero
+  simpa [← tendsto_comp_exp_atBot] using tendsto_id
+#align real.tendsto_logb_nhds_within_zero Real.tendsto_logb_nhdsWithin_zero
+
+lemma tendsto_logb_nhdsWithin_zero_right : Tendsto logb (𝓝[>] 0) atBot :=
+  tendsto_logb_nhdsWithin_zero.mono_left <| nhdsWithin_mono _ fun _ h ↦ ne_of_gt h
+
+lemma continuousOn_logb : ContinuousOn logb {0}ᶜ := by
+  simp (config := { unfoldPartialApp := true }) only [continuousOn_iff_continuous_restrict,
+    restrict]
+  conv in logb _ => rw [logb_of_ne_zero (show (x : ℝ) ≠ 0 from x.2)]
+  exact expOrderIso.symm.continuous.comp (continuous_subtype_val.norm.subtype_mk _)
+
+@[continuity]
+theorem continuous_logb : Continuous fun x : { x : ℝ // x ≠ 0 } => logb x :=
+  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ => id
+
+@[continuity]
+theorem continuous_logb' : Continuous fun x : { x : ℝ // 0 < x } => logb x :=
+  continuousOn_iff_continuous_restrict.1 <| continuousOn_log.mono fun _ hx => ne_of_gt hx
+#align real.continuous_log' Real.continuous_log'
+
+theorem continuousAt_logb (hx : x ≠ 0) : ContinuousAt logb x :=
+  (continuousOn_logb x hx).continuousAt <| isOpen_compl_singleton.mem_nhds hx
+#align real.continuous_at_logb Real.continuousAt_log
+
+@[simp]
+theorem continuousAt_logb_iff : ContinuousAt logb x ↔ x ≠ 0 := by
+  refine' ⟨_, continuousAt_logb⟩
+  rintro h rfl
+  exact not_tendsto_nhds_of_tendsto_atBot tendsto_logb_nhdsWithin_zero _
+    (h.tendsto.mono_left inf_le_left)
+#align real.continuous_at_logb_iff Real.continuousAt_logb_iff
+
 -- TODO add other limits and continuous API lemmas analogous to those in Log.lean
 open BigOperators
 
