@@ -325,8 +325,8 @@ import Mathlib.Algebra.Homology.HomotopyCategory.Triangulated
 import Mathlib.Algebra.Homology.HomotopyCofiber
 import Mathlib.Algebra.Homology.HomotopyFiber
 import Mathlib.Algebra.Homology.ImageToKernel
-import Mathlib.Algebra.Homology.LeftResolution
-import Mathlib.Algebra.Homology.LeftResolutionDerivabilityStructure
+import Mathlib.Algebra.Homology.LeftResolution.Basic
+import Mathlib.Algebra.Homology.LeftResolution.DerivabilityStructure
 import Mathlib.Algebra.Homology.Linear
 import Mathlib.Algebra.Homology.LocalCohomology
 import Mathlib.Algebra.Homology.Localization
