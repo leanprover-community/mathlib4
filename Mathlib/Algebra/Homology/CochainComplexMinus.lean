@@ -22,6 +22,10 @@ def ι : Minus C ⥤ CochainComplex C ℤ := fullSubcategoryInclusion _
 instance : (ι C).Full := FullSubcategory.full _
 instance : (ι C).Faithful := FullSubcategory.faithful _
 
+variable {C} in
+def quasiIso [CategoryWithHomology C] : MorphismProperty (Minus C) :=
+  (HomologicalComplex.quasiIso C (ComplexShape.up ℤ)).inverseImage (ι C)
+
 end
 
 variable [Preadditive C]

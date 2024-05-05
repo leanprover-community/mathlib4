@@ -144,4 +144,12 @@ noncomputable def singleRow₀ObjTotal (L : CochainComplex C ℤ) :
     ((singleRow C (up ℤ) (up ℤ) 0).obj L).total (up ℤ) ≅ L :=
   singleRowObjTotal L 0 0 (add_zero 0) ≪≫ (shiftFunctorZero _ _).app L
 
+@[reassoc (attr := simp)]
+lemma singleRow₀ObjTotal_hom_naturality {K L : CochainComplex C ℤ} (φ : K ⟶ L) :
+    total.map ((singleRow C (up ℤ) (up ℤ) 0).map φ) (up ℤ) ≫ (singleRow₀ObjTotal L).hom =
+      (singleRow₀ObjTotal K).hom ≫ φ := by
+  dsimp [singleRow₀ObjTotal]
+  rw [singleRowObjTotal_hom_naturality_assoc, assoc, NatTrans.naturality]
+  rfl
+
 end HomologicalComplex₂
