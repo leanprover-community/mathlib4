@@ -688,10 +688,7 @@ theorem toMeasure_toOuterMeasure (m : OuterMeasure α) (h : ms ≤ m.caratheodor
   rfl
 #align measure_theory.to_measure_to_outer_measure MeasureTheory.toMeasure_toOuterMeasure
 
--- Porting note: A coercion is directly elaborated in Lean4, so the LHS is simplified by
--- `toMeasure_toOuterMeasure` even if this theorem has high priority.
--- Instead of this theorem, we give `simp` attr to `OuterMeasure.trim_eq`.
--- @[simp]
+@[simp]
 theorem toMeasure_apply (m : OuterMeasure α) (h : ms ≤ m.caratheodory) {s : Set α}
     (hs : MeasurableSet s) : m.toMeasure h s = m s :=
   m.trim_eq hs
@@ -833,7 +830,7 @@ instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        simp_rw [OuterMeasure.smul_apply, measure_iUnion hd hs]
+        simp_rw [OuterMeasure.smul_apply, coe_toOuterMeasure, measure_iUnion hd hs]
         simpa using (ENNReal.tsum_mul_left (a := c • 1)).symm
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
@@ -914,10 +911,7 @@ instance instModule [Semiring R] [Module R ℝ≥0∞] [IsScalarTower R ℝ≥0�
     toOuterMeasure_injective smul_toOuterMeasure
 #align measure_theory.measure.module MeasureTheory.Measure.instModule
 
--- Porting note: A coercion is directly elaborated in Lean4, so the LHS is simplified by
--- `smul_toOuterMeasure` even if this theorem has high priority.
--- Instead of this theorem, we give `simp` attr to `nnreal_smul_coe_apply`.
--- @[simp]
+@[simp]
 theorem coe_nnreal_smul_apply {_m : MeasurableSpace α} (c : ℝ≥0) (μ : Measure α) (s : Set α) :
     (c • μ) s = c * μ s :=
   rfl
@@ -984,7 +978,7 @@ theorem toOuterMeasure_le : μ₁.toOuterMeasure ≤ μ₂.toOuterMeasure ↔ μ
 #align measure_theory.measure.to_outer_measure_le MeasureTheory.Measure.toOuterMeasure_le
 
 theorem le_iff : μ₁ ≤ μ₂ ↔ ∀ s, MeasurableSet s → μ₁ s ≤ μ₂ s := by
-  rw [← toOuterMeasure_le, ← OuterMeasure.le_trim_iff, μ₂.trimmed]
+  erw [← toOuterMeasure_le, ← OuterMeasure.le_trim_iff, μ₂.trimmed]
 #align measure_theory.measure.le_iff MeasureTheory.Measure.le_iff
 
 theorem le_intro (h : ∀ s, MeasurableSet s → s.Nonempty → μ₁ s ≤ μ₂ s) : μ₁ ≤ μ₂ :=
@@ -1021,8 +1015,8 @@ theorem sInf_caratheodory (s : Set α) (hs : MeasurableSet s) :
     MeasurableSet[(sInf (toOuterMeasure '' m)).caratheodory] s := by
   rw [OuterMeasure.sInf_eq_boundedBy_sInfGen]
   refine' OuterMeasure.boundedBy_caratheodory fun t => _
-  simp only [OuterMeasure.sInfGen, le_iInf_iff, forall_mem_image,
-    measure_eq_iInf t]
+  simp only [OuterMeasure.sInfGen, le_iInf_iff, forall_mem_image, measure_eq_iInf t,
+    coe_toOuterMeasure]
   intro μ hμ u htu _hu
   have hm : ∀ {s t}, s ⊆ t → OuterMeasure.sInfGen (toOuterMeasure '' m) s ≤ μ t := by
     intro s t hst
@@ -1057,17 +1051,19 @@ instance instCompleteSemilatticeInf [MeasurableSpace α] : CompleteSemilatticeIn
 #align measure_theory.measure.complete_semilattice_Inf MeasureTheory.Measure.instCompleteSemilatticeInf
 
 instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α) :=
-  { /- Porting note:
-    Adding an explicit `top` made `leanchecker` fail in Lean3 because of lean#364,
-    but in Lean4 it's all right.
-    top := (⊤ : OuterMeasure α).toMeasure
-      (by rw [OuterMeasure.top_caratheodory]; exact le_top)
-    le_top := fun a s hs => by
-      rcases s.eq_empty_or_nonempty with rfl | h <;>
-      dsimp only [] <;>
-        [simp, (rw [fun h' => toMeasure_apply ⊤ h' hs, OuterMeasure.top_apply h]; exact le_top) ]
-    -/
-    completeLatticeOfCompleteSemilatticeInf (Measure α) with
+  { completeLatticeOfCompleteSemilatticeInf (Measure α) with
+    top :=
+      { toOuterMeasure := ⊤,
+        m_iUnion := by
+          intro f _ _
+          refine (OuterMeasure.iUnion _ _).antisymm ?_
+          if hne : (⋃ i, f i).Nonempty then
+            rw [OuterMeasure.top_apply hne]
+            exact le_top
+          else
+            simp_all [Set.not_nonempty_iff_eq_empty]
+        trimmed := le_antisymm le_top (OuterMeasure.le_trim _) },
+    le_top := fun μ => toOuterMeasure_le.mp le_top
     bot := 0
     bot_le := fun _a _s => bot_le }
 #align measure_theory.measure.complete_lattice MeasureTheory.Measure.instCompleteLattice
@@ -1075,17 +1071,16 @@ instance instCompleteLattice [MeasurableSpace α] : CompleteLattice (Measure α)
 end sInf
 
 @[simp]
-theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top [MeasurableSpace α] :
+theorem _root_.MeasureTheory.OuterMeasure.toMeasure_top :
     (⊤ : OuterMeasure α).toMeasure (by rw [OuterMeasure.top_caratheodory]; exact le_top) =
       (⊤ : Measure α) :=
-  top_unique <| le_intro fun s hs hne => by
-    simp [hne, toMeasure_apply ⊤ _ hs, OuterMeasure.top_apply]
+  toOuterMeasure_toMeasure (μ := ⊤)
 #align measure_theory.outer_measure.to_measure_top MeasureTheory.OuterMeasure.toMeasure_top
 
 @[simp]
 theorem toOuterMeasure_top [MeasurableSpace α] :
-    (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) := by
-  rw [← OuterMeasure.toMeasure_top, toMeasure_toOuterMeasure, OuterMeasure.trim_top]
+    (⊤ : Measure α).toOuterMeasure = (⊤ : OuterMeasure α) :=
+  rfl
 #align measure_theory.measure.to_outer_measure_top MeasureTheory.Measure.toOuterMeasure_top
 
 @[simp]
@@ -1262,7 +1257,7 @@ theorem map_toOuterMeasure (hf : AEMeasurable f μ) :
     (μ.map f).toOuterMeasure = (OuterMeasure.map f μ.toOuterMeasure).trim := by
   rw [← trimmed, OuterMeasure.trim_eq_trim_iff]
   intro s hs
-  rw [map_apply_of_aemeasurable hf hs, OuterMeasure.map_apply]
+  simp [hf, hs]
 #align measure_theory.measure.map_to_outer_measure MeasureTheory.Measure.map_toOuterMeasure
 
 @[simp] lemma map_eq_zero_iff (hf : AEMeasurable f μ) : μ.map f = 0 ↔ μ = 0 := by
@@ -1337,7 +1332,7 @@ def comapₗ [MeasurableSpace α] (f : α → β) : Measure β →ₗ[ℝ≥0∞
 theorem comapₗ_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α → β)
     (hfi : Injective f) (hf : ∀ s, MeasurableSet s → MeasurableSet (f '' s)) (μ : Measure β)
     (hs : MeasurableSet s) : comapₗ f μ s = μ (f '' s) := by
-  rw [comapₗ, dif_pos, liftLinear_apply _ hs, OuterMeasure.comap_apply]
+  rw [comapₗ, dif_pos, liftLinear_apply _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
   exact ⟨hfi, hf⟩
 #align measure_theory.measure.comapₗ_apply MeasureTheory.Measure.comapₗ_apply
 
@@ -1355,7 +1350,7 @@ theorem comap_apply₀ [MeasurableSpace α] (f : α → β) (μ : Measure β) (h
     (hf : ∀ s, MeasurableSet s → NullMeasurableSet (f '' s) μ)
     (hs : NullMeasurableSet s (comap f μ)) : comap f μ s = μ (f '' s) := by
   rw [comap, dif_pos (And.intro hfi hf)] at hs ⊢
-  rw [toMeasure_apply₀ _ _ hs, OuterMeasure.comap_apply]
+  rw [toMeasure_apply₀ _ _ hs, OuterMeasure.comap_apply, coe_toOuterMeasure]
 #align measure_theory.measure.comap_apply₀ MeasureTheory.Measure.comap_apply₀
 
 theorem le_comap_apply {β} [MeasurableSpace α] {mβ : MeasurableSpace β} (f : α → β) (μ : Measure β)
@@ -1514,9 +1509,6 @@ theorem sum_fintype [Fintype ι] (μ : ι → Measure α) : sum μ = ∑ i, μ i
   simp only [sum_apply, finset_sum_apply, hs, tsum_fintype]
 #align measure_theory.measure.sum_fintype MeasureTheory.Measure.sum_fintype
 
--- Porting note: The LHS is simplified by
--- `sum_fintype` even if this theorem has high priority.
-@[simp, nolint simpNF]
 theorem sum_coe_finset (s : Finset ι) (μ : ι → Measure α) :
     (sum fun i : s => μ i) = ∑ i in s, μ i := by rw [sum_fintype, Finset.sum_coe_sort s μ]
 #align measure_theory.measure.sum_coe_finset MeasureTheory.Measure.sum_coe_finset
@@ -1526,17 +1518,15 @@ theorem ae_sum_eq [Countable ι] (μ : ι → Measure α) : (sum μ).ae = ⨆ i,
   Filter.ext fun _ => ae_sum_iff.trans mem_iSup.symm
 #align measure_theory.measure.ae_sum_eq MeasureTheory.Measure.ae_sum_eq
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem sum_bool (f : Bool → Measure α) : sum f = f true + f false := by
   rw [sum_fintype, Fintype.sum_bool]
 #align measure_theory.measure.sum_bool MeasureTheory.Measure.sum_bool
 
--- @[simp] -- Porting note (#10618): simp can prove this
 theorem sum_cond (μ ν : Measure α) : (sum fun b => cond b μ ν) = μ + ν :=
   sum_bool _
 #align measure_theory.measure.sum_cond MeasureTheory.Measure.sum_cond
 
--- @[simp] -- Porting note (#10618): simp can prove this
+@[simp]
 theorem sum_of_empty [IsEmpty ι] (μ : ι → Measure α) : sum μ = 0 := by
   rw [← measure_univ_eq_zero, sum_apply _ MeasurableSet.univ, tsum_empty]
 #align measure_theory.measure.sum_of_empty MeasureTheory.Measure.sum_of_empty
@@ -1633,7 +1623,7 @@ protected theorem smul [Monoid R] [DistribMulAction R ℝ≥0∞] [IsScalarTower
 
 protected lemma add (h1 : μ₁ ≪ ν) (h2 : μ₂ ≪ ν') : μ₁ + μ₂ ≪ ν + ν' := by
   intro s hs
-  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact ⟨h1 hs.1, h2 hs.2⟩
 
 lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
@@ -1647,7 +1637,7 @@ lemma add_left_iff {μ₁ μ₂ ν : Measure α} :
 
 lemma add_right (h1 : μ ≪ ν) (ν' : Measure α) : μ ≪ ν + ν' := by
   intro s hs
-  simp only [add_toOuterMeasure, OuterMeasure.coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
+  simp only [coe_add, Pi.add_apply, add_eq_zero] at hs ⊢
   exact h1 hs.1
 
 end AbsolutelyContinuous
