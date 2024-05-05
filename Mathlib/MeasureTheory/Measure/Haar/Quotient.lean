@@ -85,7 +85,7 @@ lemma MeasureTheory.QuotientMeasureEqMeasurePreimage.smulInvariantMeasure_quotie
     obtain ⟨𝓕, h𝓕⟩ := hasFun.ExistsIsFundamentalDomain
     have h𝓕_translate_fundom : IsFundamentalDomain Γ.op (g • 𝓕) ν :=
       h𝓕.smul_of_comm g
-    rw [h𝓕.projection_respects_measure_apply (μ := μ)
+    erw [h𝓕.projection_respects_measure_apply (μ := μ)
       (meas_π (measurableSet_preimage (measurable_const_smul g) hA)),
       h𝓕_translate_fundom.projection_respects_measure_apply (μ := μ) hA]
     change ν ((π ⁻¹' _) ∩ _) = ν ((π ⁻¹' _) ∩ _)
@@ -235,7 +235,7 @@ theorem MeasureTheory.QuotientMeasureEqMeasurePreimage.haarMeasure_quotient [Loc
     ne_top_of_lt $ QuotientMeasureEqMeasurePreimage.covolume_ne_top μ (ν := ν)
   obtain ⟨s, fund_dom_s⟩ := i
   rw [fund_dom_s.covolume_eq_volume] at finiteCovol
-  rw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
+  erw [fund_dom_s.projection_respects_measure_apply μ K'.isCompact.measurableSet]
   apply IsHaarMeasure.smul
   · intro h
     haveI i' : IsOpenPosMeasure (ν : Measure G) := inferInstance
