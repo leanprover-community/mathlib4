@@ -5,6 +5,7 @@ Authors: Mitchell Lee
 -/
 import Mathlib.RingTheory.Flat.Basic
 import Mathlib.LinearAlgebra.TensorProduct.Vanishing
+import Mathlib.Algebra.Module.FinitePresentation
 
 /-! # The equational criterion for flatness
 
@@ -39,6 +40,9 @@ $x \colon N \to M$ be homomorphisms such that $x \circ f = 0$. Then there exist 
 $\kappa$ and module homomorphisms $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such
 that $x = y \circ a$ and $a \circ f = 0$. We recover the usual equational criterion for flatness if
 $K = R$ and $N = R^\iota$. This is used in the proof of Lazard's theorem.
+
+We conclude that every homomorphism from a finitely presented module to a flat module factors
+through a finite free module (`Module.Flat.exists_factorization_of_isFinitelyPresented`).
 
 ## References
 
@@ -259,7 +263,7 @@ free, and let $f \colon K \to N$ and $x \colon N \to M$ be homomorphisms such th
 $x \circ f = 0$. Then there exist a finite index type $\kappa$ and module homomorphisms
 $a \colon N \to R^{\kappa}$ and $y \colon R^{\kappa} \to M$ such that $x = y \circ a$ and
 $a \circ f = 0$. -/
-theorem exists_factorization_of_comp_eq_zero_of_free [flat : Flat R M] {K N : Type u}
+theorem exists_factorization_of_comp_eq_zero_of_free [Flat R M] {K N : Type u}
     [AddCommGroup K] [Module R K] [Finite R K] [AddCommGroup N] [Module R N] [Free R N] [Finite R N]
     {f : K →ₗ[R] N} {x : N →ₗ[R] M} (h : x ∘ₗ f = 0) :
     ∃ (κ : Type u) (_ : Fintype κ) (a : N →ₗ[R] (κ →₀ R)) (y : (κ →₀ R) →ₗ[R] M),
@@ -278,10 +282,24 @@ theorem exists_factorization_of_comp_eq_zero_of_free [flat : Flat R M] {K N : Ty
       obtain ⟨κ₂, hκ₂, a₂, y₂, ⟨rfl, ha₂⟩⟩ := ih₂ this
       use κ₂, hκ₂, a₂ ∘ₗ a₁, y₂
       simp_rw [comp_assoc]
-      constructor
-      · trivial
-      · exact sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂
+      exact ⟨trivial, sup_le (ha₁.trans (ker_le_ker_comp _ _)) ha₂⟩
   convert this ⊤ Finite.out
   simp only [top_le_iff, ker_eq_top]
+
+/-- Every homomorphism from a finitely presented module to a flat module factors through a finite
+free module. -/
+theorem exists_factorization_of_isFinitelyPresented [Flat R M] {P : Type u} [AddCommGroup P]
+    [Module R P] [fp : FinitePresentation R P] (h₁ : P →ₗ[R] M) :
+      ∃ (κ : Type u) (_ : Fintype κ) (h₂ : P →ₗ[R] (κ →₀ R)) (h₃ : (κ →₀ R) →ₗ[R] M),
+        h₁ = h₃ ∘ₗ h₂ := by
+  obtain ⟨L, _, _, _, _, K, hK, ⟨ϕ⟩⟩ := FinitePresentation.equiv_quotient R P
+  haveI : Finite R ↥K := Module.Finite.iff_fg.mpr hK
+  have : (h₁ ∘ₗ ϕ.symm ∘ₗ K.mkQ) ∘ₗ K.subtype = 0 := by
+    simp_rw [comp_assoc, (LinearMap.exact_subtype_mkQ K).linearMap_comp_eq_zero, comp_zero]
+  obtain ⟨κ, hκ, a, y, ⟨hay, ha⟩⟩ := exists_factorization_of_comp_eq_zero_of_free this
+  use κ, hκ, (K.liftQ a (by rwa [← range_le_ker_iff, Submodule.range_subtype] at ha)) ∘ₗ ϕ, y
+  apply (cancel_right ϕ.symm.surjective).mp
+  apply (cancel_right K.mkQ_surjective).mp
+  simpa [comp_assoc]
 
 end Module.Flat
