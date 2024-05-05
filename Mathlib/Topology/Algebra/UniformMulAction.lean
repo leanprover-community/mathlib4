@@ -144,14 +144,22 @@ section SMul
 variable [SMul M X]
 
 @[to_additive]
-noncomputable instance : SMul M (Completion X) :=
+noncomputable instance instSMul : SMul M (Completion X) :=
   ⟨fun c => Completion.map (c • ·)⟩
+
+@[to_additive existing instSMul]
+noncomputable instance [Pow X M] : Pow (Completion X) M :=
+  ⟨fun c n => Completion.map (· ^ n) c⟩
 
 @[to_additive]
 theorem smul_def (c : M) (x : Completion X) : c • x = Completion.map (c • ·) x :=
   rfl
 #align uniform_space.completion.smul_def UniformSpace.Completion.smul_def
 #align uniform_space.completion.vadd_def UniformSpace.Completion.vadd_def
+
+@[to_additive existing (reorder := 5 6) smul_def]
+theorem pow_def [Pow X M] (x : Completion X) (c : M) : x ^ c = Completion.map (· ^ c) x :=
+  rfl
 
 @[to_additive]
 instance : UniformContinuousConstSMul M (Completion X) :=
