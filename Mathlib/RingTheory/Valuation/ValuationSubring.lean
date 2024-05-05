@@ -5,7 +5,7 @@ Authors: Adam Topaz, Junyan Xu, Jack McKoen
 -/
 import Mathlib.RingTheory.Valuation.ValuationRing
 import Mathlib.RingTheory.Localization.AsSubring
-import Mathlib.RingTheory.Subring.Pointwise
+import Mathlib.Algebra.Ring.Subring.Pointwise
 import Mathlib.AlgebraicGeometry.PrimeSpectrum.Basic
 
 #align_import ring_theory.valuation.valuation_subring from "leanprover-community/mathlib"@"2196ab363eb097c008d4497125e0dde23fb36db2"
@@ -127,13 +127,11 @@ instance : ValuationRing A where
       right
       ext
       field_simp
-      ring
     · rw [show (a / b : K)⁻¹ = b / a by field_simp] at hh
       use ⟨b / a, hh⟩;
       left
       ext
       field_simp
-      ring
 
 instance : Algebra A K :=
   show Algebra A.toSubring K by infer_instance
@@ -375,7 +373,7 @@ theorem idealOfLE_le_of_le (R S : ValuationSubring K) (hR : A ≤ R) (hS : A ≤
       apply not_le_of_lt ((valuation_lt_one_iff S _).1 hx) c)
 #align valuation_subring.ideal_of_le_le_of_le ValuationSubring.idealOfLE_le_of_le
 
-/-- The equivalence between coarsenings of a valuation ring and its prime ideals.-/
+/-- The equivalence between coarsenings of a valuation ring and its prime ideals. -/
 @[simps]
 def primeSpectrumEquiv : PrimeSpectrum A ≃ {S // A ≤ S} where
   toFun P := ⟨ofPrime A P.asIdeal, le_ofPrime _ _⟩
@@ -729,6 +727,7 @@ def unitGroupToResidueFieldUnits : A.unitGroup →* (LocalRing.ResidueField A)ˣ
   MonoidHom.comp (Units.map <| (Ideal.Quotient.mk _).toMonoidHom) A.unitGroupMulEquiv.toMonoidHom
 #align valuation_subring.unit_group_to_residue_field_units ValuationSubring.unitGroupToResidueFieldUnits
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[simp]
 theorem coe_unitGroupToResidueFieldUnits_apply (x : A.unitGroup) :
     (A.unitGroupToResidueFieldUnits x : LocalRing.ResidueField A) =
@@ -826,7 +825,7 @@ theorem pointwise_smul_toSubring (g : G) (S : ValuationSubring K) :
 
 /-- The action on a valuation subring corresponding to applying the action to every element.
 
-This is available as an instance in the `pointwise` locale.
+This is available as an instance in the `Pointwise` locale.
 
 This is a stronger version of `ValuationSubring.pointwiseSMul`. -/
 def pointwiseMulAction : MulAction G (ValuationSubring K) :=

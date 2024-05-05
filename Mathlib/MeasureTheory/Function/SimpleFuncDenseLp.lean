@@ -54,7 +54,6 @@ variable {α β ι E F 𝕜 : Type*}
 
 namespace MeasureTheory
 
--- mathport name: «expr →ₛ »
 local infixr:25 " →ₛ " => SimpleFunc
 
 namespace SimpleFunc
@@ -79,7 +78,7 @@ theorem norm_approxOn_y₀_le [OpensMeasurableSpace E] {f : β → E} (hf : Meas
     {y₀ : E} (h₀ : y₀ ∈ s) [SeparableSpace s] (x : β) (n : ℕ) :
     ‖approxOn f hf s y₀ h₀ n x - y₀‖ ≤ ‖f x - y₀‖ + ‖f x - y₀‖ := by
   have := edist_approxOn_y0_le hf h₀ x n
-  repeat' rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
+  repeat rw [edist_comm y₀, edist_eq_coe_nnnorm_sub] at this
   exact mod_cast this
 #align measure_theory.simple_func.norm_approx_on_y₀_le MeasureTheory.SimpleFunc.norm_approxOn_y₀_le
 
@@ -1017,7 +1016,6 @@ theorem Memℒp.induction_dense (hp_ne_top : p ≠ ∞) (P : (α → E) → Prop
 
 section Integrable
 
--- mathport name: «expr →₁ₛ[ ] »
 @[inherit_doc MeasureTheory.Lp.simpleFunc]
 notation:25 α " →₁ₛ[" μ "] " E => @MeasureTheory.Lp.simpleFunc α E _ _ 1 μ
 

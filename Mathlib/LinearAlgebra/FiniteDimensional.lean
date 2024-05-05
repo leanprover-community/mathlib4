@@ -140,7 +140,7 @@ noncomputable def fintypeBasisIndex {ι : Type*} [FiniteDimensional K V] (b : Ba
 #align finite_dimensional.fintype_basis_index FiniteDimensional.fintypeBasisIndex
 
 /-- If a vector space is `FiniteDimensional`, `Basis.ofVectorSpace` is indexed by
-  a finite type.-/
+  a finite type. -/
 noncomputable instance [FiniteDimensional K V] : Fintype (Basis.ofVectorSpaceIndex K V) := by
   letI : IsNoetherian K V := IsNoetherian.iff_fg.2 inferInstance
   infer_instance
@@ -157,11 +157,11 @@ theorem of_finite_basis {ι : Type w} {s : Set ι} (h : Basis s K V) (hs : Set.F
 instance finiteDimensional_submodule [FiniteDimensional K V] (S : Submodule K V) :
     FiniteDimensional K S := by
   letI : IsNoetherian K V := iff_fg.2 ?_
-  exact
-    iff_fg.1
-      (IsNoetherian.iff_rank_lt_aleph0.2
-        (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
-  infer_instance
+  · exact
+      iff_fg.1
+        (IsNoetherian.iff_rank_lt_aleph0.2
+          (lt_of_le_of_lt (rank_submodule_le _) (_root_.rank_lt_aleph0 K V)))
+  · infer_instance
 #align finite_dimensional.finite_dimensional_submodule FiniteDimensional.finiteDimensional_submodule
 
 /-- A quotient of a finite-dimensional space is also finite-dimensional. -/
@@ -217,8 +217,8 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
 #align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
-@[deprecated] alias
-lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
+@[deprecated (since := "2023-12-27")]
+alias lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
@@ -344,6 +344,17 @@ theorem range_basisSingleton (ι : Type*) [Unique ι] (h : finrank K V = 1) (v :
 
 end DivisionRing
 
+section Tower
+
+variable (F K A : Type*) [DivisionRing F] [DivisionRing K] [AddCommGroup A]
+variable [Module F K] [Module K A] [Module F A] [IsScalarTower F K A]
+
+theorem trans [FiniteDimensional F K] [FiniteDimensional K A] : FiniteDimensional F A :=
+  Module.Finite.trans K A
+#align finite_dimensional.trans FiniteDimensional.trans
+
+end Tower
+
 end FiniteDimensional
 
 section ZeroRank
@@ -357,21 +368,21 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
   Module.finite_of_rank_eq_nat h
 #align finite_dimensional_of_rank_eq_nat FiniteDimensional.of_rank_eq_nat
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
 
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 #align finite_dimensional_of_rank_eq_zero FiniteDimensional.of_rank_eq_zero
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
 
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
 #align finite_dimensional_of_rank_eq_one FiniteDimensional.of_rank_eq_one
 
-@[deprecated] -- Since 2024/02/02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
@@ -476,7 +487,7 @@ theorem finrank_sup_add_finrank_inf_eq (s t : Submodule K V) [FiniteDimensional 
     finrank K ↑(s ⊔ t) + finrank K ↑(s ⊓ t) = finrank K ↑s + finrank K ↑t := by
   have key : Module.rank K ↑(s ⊔ t) + Module.rank K ↑(s ⊓ t) = Module.rank K s + Module.rank K t :=
     rank_sup_add_rank_inf_eq s t
-  repeat' rw [← finrank_eq_rank] at key
+  repeat rw [← finrank_eq_rank] at key
   norm_cast at key
 #align submodule.finrank_sup_add_finrank_inf_eq Submodule.finrank_sup_add_finrank_inf_eq
 
@@ -497,6 +508,12 @@ theorem eq_top_of_disjoint [FiniteDimensional K V] (s t : Submodule K V)
   rw [h_finrank_inf]
   rfl
 #align submodule.eq_top_of_disjoint Submodule.eq_top_of_disjoint
+
+theorem finrank_add_finrank_le_of_disjoint [FiniteDimensional K V]
+    {s t : Submodule K V} (hdisjoint : Disjoint s t) :
+    finrank K s + finrank K t ≤ finrank K V := by
+  rw [← Submodule.finrank_sup_add_finrank_inf_eq s t, hdisjoint.eq_bot, finrank_bot, add_zero]
+  exact Submodule.finrank_le _
 
 end DivisionRing
 
@@ -842,19 +859,18 @@ lemma FiniteDimensional.exists_mul_eq_one (F : Type*) {K : Type*} [Field F] [Rin
   exact this 1
 
 /-- A domain that is module-finite as an algebra over a field is a division ring. -/
-noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [h : Ring K] [IsDomain K]
-    [Algebra F K] [FiniteDimensional F K] : DivisionRing K :=
-  { ‹IsDomain K› with
-    toRing := h
-    inv := fun x =>
-      letI := Classical.decEq K
-      if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
-    mul_inv_cancel := fun x hx =>
-      show x * dite _ (h := _) _ = _ by
-        rw [dif_neg hx]
-        exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
-    inv_zero := dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def divisionRingOfFiniteDimensional (F K : Type*) [Field F] [Ring K] [IsDomain K]
+    [Algebra F K] [FiniteDimensional F K] : DivisionRing K where
+  __ := ‹IsDomain K›
+  inv x :=
+    letI := Classical.decEq K
+    if H : x = 0 then 0 else Classical.choose <| FiniteDimensional.exists_mul_eq_one F H
+  mul_inv_cancel x hx := show x * dite _ (h := _) _ = _ by
+    rw [dif_neg hx]
+    exact (Classical.choose_spec (FiniteDimensional.exists_mul_eq_one F hx) :)
+  inv_zero := dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align division_ring_of_finite_dimensional divisionRingOfFiniteDimensional
 
 /-- An integral domain that is module-finite as an algebra over a field is a field. -/
@@ -948,7 +964,7 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 #align span_eq_top_of_linear_independent_of_card_eq_finrank LinearIndependent.span_eq_top_of_card_eq_finrank
 
-@[deprecated] -- 2024-02-14
+@[deprecated (since := "2024-02-14")]
 alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
   LinearIndependent.span_eq_top_of_card_eq_finrank
 
@@ -1143,9 +1159,9 @@ instance FiniteDimensional.finiteDimensional_subalgebra [FiniteDimensional F E]
   FiniteDimensional.of_subalgebra_toSubmodule inferInstance
 #align finite_dimensional.finite_dimensional_subalgebra FiniteDimensional.finiteDimensional_subalgebra
 
-instance Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) := by
-  nontriviality E
-  exact .of_rank_eq_one Subalgebra.rank_bot
+@[deprecated Subalgebra.finite_bot] -- 2024-04-11
+theorem Subalgebra.finiteDimensional_bot : FiniteDimensional F (⊥ : Subalgebra F E) :=
+  Subalgebra.finite_bot
 #align subalgebra.finite_dimensional_bot Subalgebra.finiteDimensional_bot
 
 theorem Subalgebra.eq_bot_of_rank_le_one {S : Subalgebra F E} (h : Module.rank F S ≤ 1) :
@@ -1280,7 +1296,7 @@ theorem ker_pow_eq_ker_pow_finrank_of_le [FiniteDimensional K V] {f : End K V} {
     LinearMap.ker (f ^ m) = LinearMap.ker (f ^ (k + (m - k))) := by
       rw [add_tsub_cancel_of_le (h_k_le.trans hm)]
     _ = LinearMap.ker (f ^ k) := by rw [ker_pow_constant hk _]
-    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := (ker_pow_constant hk (finrank K V - k))
+    _ = LinearMap.ker (f ^ (k + (finrank K V - k))) := ker_pow_constant hk (finrank K V - k)
     _ = LinearMap.ker (f ^ finrank K V) := by rw [add_tsub_cancel_of_le h_k_le]
 #align module.End.ker_pow_eq_ker_pow_finrank_of_le Module.End.ker_pow_eq_ker_pow_finrank_of_le
 
@@ -1308,7 +1324,7 @@ theorem cardinal_mk_eq_cardinal_mk_field_pow_rank (K V : Type u) [DivisionRing K
   let hs := Basis.ofVectorSpace K V
   calc
     #V = #(s →₀ K) := Quotient.sound ⟨hs.repr.toEquiv⟩
-    _ = #(s → K) := (Quotient.sound ⟨Finsupp.equivFunOnFinite⟩)
+    _ = #(s → K) := Quotient.sound ⟨Finsupp.equivFunOnFinite⟩
     _ = _ := by rw [← Cardinal.lift_inj.1 hs.mk_eq_rank, Cardinal.power_def]
 #align cardinal_mk_eq_cardinal_mk_field_pow_rank cardinal_mk_eq_cardinal_mk_field_pow_rank
 

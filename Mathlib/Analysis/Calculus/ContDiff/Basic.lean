@@ -550,7 +550,7 @@ theorem ContDiffAt.prod {f : E → F} {g : E → G} (hf : ContDiffAt 𝕜 n f x)
     ContDiffWithinAt.prod (contDiffWithinAt_univ.2 hf) (contDiffWithinAt_univ.2 hg)
 #align cont_diff_at.prod ContDiffAt.prod
 
-/-- The cartesian product of `C^n` functions is `C^n`.-/
+/-- The cartesian product of `C^n` functions is `C^n`. -/
 theorem ContDiff.prod {f : E → F} {g : E → G} (hf : ContDiff 𝕜 n f) (hg : ContDiff 𝕜 n g) :
     ContDiff 𝕜 n fun x : E => (f x, g x) :=
   contDiffOn_univ.1 <| ContDiffOn.prod (contDiffOn_univ.2 hf) (contDiffOn_univ.2 hg)
@@ -607,19 +607,19 @@ private theorem ContDiffOn.comp_same_univ {Eu : Type u} [NormedAddCommGroup Eu] 
     have wu : w ⊆ u := fun y hy => hy.2.1
     have ws : w ⊆ s := fun y hy => hy.1
     refine' ⟨w, _, fun y => (g' (f y)).comp (f' y), _, _⟩
-    show w ∈ 𝓝[s] x
-    · apply Filter.inter_mem self_mem_nhdsWithin
+    · show w ∈ 𝓝[s] x
+      apply Filter.inter_mem self_mem_nhdsWithin
       apply Filter.inter_mem hu
       apply ContinuousWithinAt.preimage_mem_nhdsWithin'
       · rw [← continuousWithinAt_inter' hu]
         exact (hf' x xu).differentiableWithinAt.continuousWithinAt.mono (inter_subset_right _ _)
       · apply nhdsWithin_mono _ _ hv
         exact Subset.trans (image_subset_iff.mpr st) (subset_insert (f x) t)
-    show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
-    · rintro y ⟨-, yu, yv⟩
+    · show ∀ y ∈ w, HasFDerivWithinAt (g ∘ f) ((g' (f y)).comp (f' y)) w y
+      rintro y ⟨-, yu, yv⟩
       exact (hg' (f y) yv).comp y ((hf' y yu).mono wu) wv
-    show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
-    · have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
+    · show ContDiffOn 𝕜 n (fun y => (g' (f y)).comp (f' y)) w
+      have A : ContDiffOn 𝕜 n (fun y => g' (f y)) w :=
         IH g'_diff ((hf.of_le (WithTop.coe_le_coe.2 (Nat.le_succ n))).mono ws) wv
       have B : ContDiffOn 𝕜 n f' w := f'_diff.mono wu
       have C : ContDiffOn 𝕜 n (fun y => (g' (f y), f' y)) w := A.prod B
@@ -1085,7 +1085,7 @@ theorem ContDiffWithinAt.iteratedFderivWithin_right {i : ℕ} (hf : ContDiffWith
     (hs : UniqueDiffOn 𝕜 s) (hmn : (m + i : ℕ∞) ≤ n) (hx₀s : x₀ ∈ s) :
     ContDiffWithinAt 𝕜 m (iteratedFDerivWithin 𝕜 i f s) s x₀ := by
   induction' i with i hi generalizing m
-  · rw [Nat.zero_eq, ENat.coe_zero, add_zero] at hmn
+  · rw [ENat.coe_zero, add_zero] at hmn
     exact (hf.of_le hmn).continuousLinearMap_comp
       ((continuousMultilinearCurryFin0 𝕜 E F).symm : _ →L[𝕜] E [×0]→L[𝕜] F)
   · rw [Nat.cast_succ, add_comm _ 1, ← add_assoc] at hmn
@@ -1672,6 +1672,10 @@ theorem iteratedFDeriv_const_smul_apply {x : E} (hf : ContDiff 𝕜 i f) :
   simp_rw [← contDiffOn_univ, ← iteratedFDerivWithin_univ] at *
   exact iteratedFDerivWithin_const_smul_apply hf uniqueDiffOn_univ (Set.mem_univ _)
 #align iterated_fderiv_const_smul_apply iteratedFDeriv_const_smul_apply
+
+theorem iteratedFDeriv_const_smul_apply' {x : E} (hf : ContDiff 𝕜 i f) :
+    iteratedFDeriv 𝕜 i (fun x ↦ a • f x) x = a • iteratedFDeriv 𝕜 i f x :=
+  iteratedFDeriv_const_smul_apply hf
 
 end ConstSMul
 

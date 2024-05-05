@@ -5,6 +5,7 @@ Authors: Kenny Lau, Mario Carneiro, Johan Commelin, Amelia Livingston, Anne Baan
 -/
 import Mathlib.Algebra.Algebra.Tower
 import Mathlib.RingTheory.Localization.Basic
+import Mathlib.Algebra.Field.Equiv
 
 #align_import ring_theory.localization.fraction_ring from "leanprover-community/mathlib"@"831c494092374cfe9f50591ed0ac81a25efc5b86"
 
@@ -54,7 +55,7 @@ instance Rat.isFractionRing : IsFractionRing ℤ ℚ where
   surj' := by
     rintro ⟨n, d, hd, h⟩
     refine' ⟨⟨n, ⟨d, _⟩⟩, Rat.mul_den_eq_num⟩
-    rw [mem_nonZeroDivisors_iff_ne_zero, Int.coe_nat_ne_zero_iff_pos]
+    rw [mem_nonZeroDivisors_iff_ne_zero, Int.natCast_ne_zero_iff_pos]
     exact Nat.zero_lt_of_ne_zero hd
   exists_of_eq {x y} := by
     rw [eq_intCast, eq_intCast, Int.cast_inj]
@@ -131,15 +132,12 @@ protected theorem mul_inv_cancel (x : K) (hx : x ≠ 0) : x * IsFractionRing.inv
 /-- A `CommRing` `K` which is the localization of an integral domain `R` at `R - {0}` is a field.
 See note [reducible non-instances]. -/
 @[reducible]
-noncomputable def toField : Field K :=
-  { IsFractionRing.isDomain A, inferInstanceAs (CommRing K) with
-    inv := IsFractionRing.inv A
-    mul_inv_cancel := IsFractionRing.mul_inv_cancel A
-    inv_zero := by
-      change IsFractionRing.inv A (0 : K) = 0
-      rw [IsFractionRing.inv]
-      exact dif_pos rfl
-    qsmul := qsmulRec _ }
+noncomputable def toField : Field K where
+  __ := IsFractionRing.isDomain A
+  mul_inv_cancel := IsFractionRing.mul_inv_cancel A
+  inv_zero := show IsFractionRing.inv A (0 : K) = 0 by rw [IsFractionRing.inv]; exact dif_pos rfl
+  nnqsmul := _
+  qsmul := _
 #align is_fraction_ring.to_field IsFractionRing.toField
 
 lemma surjective_iff_isField [IsDomain R] : Function.Surjective (algebraMap R K) ↔ IsField R where
@@ -179,6 +177,7 @@ theorem isUnit_map_of_injective (hg : Function.Injective g) (y : nonZeroDivisors
     show g.toMonoidWithZeroHom y ≠ 0 from map_ne_zero_of_mem_nonZeroDivisors g hg y.2
 #align is_fraction_ring.is_unit_map_of_injective IsFractionRing.isUnit_map_of_injective
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 theorem mk'_eq_zero_iff_eq_zero [Algebra R K] [IsFractionRing R K] {x : R} {y : nonZeroDivisors R} :
     mk' K x y = 0 ↔ x = 0 := by
@@ -271,11 +270,11 @@ theorem isFractionRing_iff_of_base_ringEquiv (h : R ≃+* P) :
 protected theorem nontrivial (R S : Type*) [CommRing R] [Nontrivial R] [CommRing S] [Algebra R S]
     [IsFractionRing R S] : Nontrivial S := by
   apply nontrivial_of_ne
-  intro h
-  apply @zero_ne_one R
-  exact
-    IsLocalization.injective S (le_of_eq rfl)
-      (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
+  · intro h
+    apply @zero_ne_one R
+    exact
+      IsLocalization.injective S (le_of_eq rfl)
+        (((algebraMap R S).map_zero.trans h).trans (algebraMap R S).map_one.symm)
 #align is_fraction_ring.nontrivial IsFractionRing.nontrivial
 
 end IsFractionRing

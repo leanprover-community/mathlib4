@@ -106,7 +106,7 @@ theorem union_right_iff {t'} :
 theorem finite_iUnion_left_iff {ι : Type*} {I : Set ι} (hI : I.Finite) {s : ι → Set X}
     {t : Set X} : IsMetricSeparated (⋃ i ∈ I, s i) t ↔ ∀ i ∈ I, IsMetricSeparated (s i) t := by
   refine' Finite.induction_on hI (by simp) @fun i I _ _ hI => _
-  rw [biUnion_insert, ball_insert_iff, union_left_iff, hI]
+  rw [biUnion_insert, forall_mem_insert, union_left_iff, hI]
 #align is_metric_separated.finite_Union_left_iff IsMetricSeparated.finite_iUnion_left_iff
 
 alias ⟨_, finite_iUnion_left⟩ := finite_iUnion_left_iff

@@ -416,7 +416,7 @@ section Functor
 
 theorem finitaryExtensive_of_reflective
     [HasFiniteCoproducts D] [HasPullbacksOfInclusions D] [FinitaryExtensive C]
-    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Full Gr] [Faithful Gr]
+    {Gl : C ⥤ D} {Gr : D ⥤ C} (adj : Gl ⊣ Gr) [Gr.Full] [Gr.Faithful]
     [∀ X Y (f : X ⟶ Gl.obj Y), HasPullback (Gr.map f) (adj.unit.app Y)]
     [∀ X Y (f : X ⟶ Gl.obj Y), PreservesLimit (cospan (Gr.map f) (adj.unit.app Y)) Gl]
     [PreservesPullbacksOfInclusions Gl] :
@@ -475,7 +475,7 @@ theorem finitaryExtensive_of_preserves_and_reflects (F : C ⥤ D) [FinitaryExten
 
 theorem finitaryExtensive_of_preserves_and_reflects_isomorphism (F : C ⥤ D) [FinitaryExtensive D]
     [HasFiniteCoproducts C] [HasPullbacks C] [PreservesLimitsOfShape WalkingCospan F]
-    [PreservesColimitsOfShape (Discrete WalkingPair) F] [ReflectsIsomorphisms F] :
+    [PreservesColimitsOfShape (Discrete WalkingPair) F] [F.ReflectsIsomorphisms] :
     FinitaryExtensive C := by
   haveI : ReflectsLimitsOfShape WalkingCospan F := reflectsLimitsOfShapeOfReflectsIsomorphisms
   haveI : ReflectsColimitsOfShape (Discrete WalkingPair) F :=

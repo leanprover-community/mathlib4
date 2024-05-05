@@ -151,8 +151,8 @@ theorem residue_eq_zero_iff_sMod_eq_zero (p : ℕ) (w : 1 < p) :
   · -- We want to use that fact that `0 ≤ s_mod p (p-2) < 2^p - 1`
     -- and `lucas_lehmer_residue p = 0 → 2^p - 1 ∣ s_mod p (p-2)`.
     intro h
-    simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-      simp only [ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos, pow_pos, cast_pred,
+    simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
+      simp only [ZMod.intCast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos, pow_pos, cast_pred,
         cast_pow, cast_ofNat] at h
     apply Int.eq_zero_of_dvd_of_nonneg_of_lt _ _ h <;> clear h
     · exact sMod_nonneg _ (by positivity) _
@@ -346,9 +346,12 @@ set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.X.coe_mul LucasLehmer.X.coe_mul
 
 @[norm_cast]
-theorem coe_nat (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
+theorem coe_natCast (n : ℕ) : ((n : ℤ) : X q) = (n : X q) := by ext <;> simp
 set_option linter.uppercaseLean3 false in
-#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_nat
+#align lucas_lehmer.X.coe_nat LucasLehmer.X.coe_natCast
+
+-- 2024-04-05
+@[deprecated] alias coe_nat := coe_natCast
 
 /-- The cardinality of `X` is `q^2`. -/
 theorem card_eq : Fintype.card (X q) = q ^ 2 := by
@@ -424,8 +427,8 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
         k * mersenne (p' + 2) * (ω : X (q (p' + 2))) ^ 2 ^ p' - 1 := by
   dsimp [lucasLehmerResidue] at h
   rw [sZMod_eq_s p'] at h
-  simp? [ZMod.int_cast_zmod_eq_zero_iff_dvd] at h says
-    simp only [add_tsub_cancel_right, ZMod.int_cast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos,
+  simp? [ZMod.intCast_zmod_eq_zero_iff_dvd] at h says
+    simp only [add_tsub_cancel_right, ZMod.intCast_zmod_eq_zero_iff_dvd, gt_iff_lt, ofNat_pos,
       pow_pos, cast_pred, cast_pow, cast_ofNat] at h
   cases' h with k h
   use k
@@ -446,7 +449,7 @@ theorem ω_pow_formula (p' : ℕ) (h : lucasLehmerResidue (p' + 2) = 0) :
 
 /-- `q` is the minimum factor of `mersenne p`, so `M p = 0` in `X q`. -/
 theorem mersenne_coe_X (p : ℕ) : (mersenne p : X (q p)) = 0 := by
-  ext <;> simp [mersenne, q, ZMod.nat_cast_zmod_eq_zero_iff_dvd, -pow_pos]
+  ext <;> simp [mersenne, q, ZMod.natCast_zmod_eq_zero_iff_dvd, -pow_pos]
   apply Nat.minFac_dvd
 set_option linter.uppercaseLean3 false in
 #align lucas_lehmer.mersenne_coe_X LucasLehmer.mersenne_coe_X

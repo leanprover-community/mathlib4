@@ -234,23 +234,23 @@ theorem Memℒp.snormEssSup_indicator_norm_ge_eq_zero (hf : Memℒp f ∞ μ)
   have hbdd : snormEssSup f μ < ∞ := hf.snorm_lt_top
   refine' ⟨(snorm f ∞ μ + 1).toReal, _⟩
   rw [snormEssSup_indicator_eq_snormEssSup_restrict]
-  have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
-    simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
-    have : { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
-        { x : α | snormEssSup f μ < ‖f x‖₊ } := by
-      intro x hx
-      rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
-        ENNReal.coe_toReal, coe_nnnorm]
-      refine' lt_of_lt_of_le _ hx
-      rw [ENNReal.toReal_lt_toReal hbdd.ne]
-      · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
-      · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
-    rw [← nonpos_iff_eq_zero]
-    refine' (measure_mono this).trans _
-    have hle := coe_nnnorm_ae_le_snormEssSup f μ
-    simp_rw [ae_iff, not_le] at hle
-    exact nonpos_iff_eq_zero.2 hle
-  rw [this, snormEssSup_measure_zero]
+  · have : μ.restrict { x : α | (snorm f ⊤ μ + 1).toReal ≤ ‖f x‖₊ } = 0 := by
+      simp only [coe_nnnorm, snorm_exponent_top, Measure.restrict_eq_zero]
+      have : { x : α | (snormEssSup f μ + 1).toReal ≤ ‖f x‖ } ⊆
+          { x : α | snormEssSup f μ < ‖f x‖₊ } := by
+        intro x hx
+        rw [Set.mem_setOf_eq, ← ENNReal.toReal_lt_toReal hbdd.ne ENNReal.coe_lt_top.ne,
+          ENNReal.coe_toReal, coe_nnnorm]
+        refine' lt_of_lt_of_le _ hx
+        rw [ENNReal.toReal_lt_toReal hbdd.ne]
+        · exact ENNReal.lt_add_right hbdd.ne one_ne_zero
+        · exact (ENNReal.add_lt_top.2 ⟨hbdd, ENNReal.one_lt_top⟩).ne
+      rw [← nonpos_iff_eq_zero]
+      refine' (measure_mono this).trans _
+      have hle := coe_nnnorm_ae_le_snormEssSup f μ
+      simp_rw [ae_iff, not_le] at hle
+      exact nonpos_iff_eq_zero.2 hle
+    rw [this, snormEssSup_measure_zero]
   exact measurableSet_le measurable_const hmeas.nnnorm.measurable.subtype_coe
 #align measure_theory.mem_ℒp.snorm_ess_sup_indicator_norm_ge_eq_zero MeasureTheory.Memℒp.snormEssSup_indicator_norm_ge_eq_zero
 
@@ -284,7 +284,8 @@ theorem Memℒp.snorm_indicator_norm_ge_le (hf : Memℒp f p μ) (hmeas : Strong
         (one_div_pos.2 <| ENNReal.toReal_pos hp_ne_zero hp_ne_top), ← Real.rpow_mul (norm_nonneg _),
       mul_one_div_cancel (ENNReal.toReal_pos hp_ne_zero hp_ne_top).ne.symm, Real.rpow_one]
   by_cases hx : x ∈ { x : α | M ^ (1 / p.toReal) ≤ ‖f x‖₊ }
-  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]; rfl
+  · rw [Set.indicator_of_mem hx, Set.indicator_of_mem, Real.nnnorm_of_nonneg]
+    · rfl
     rw [Set.mem_setOf_eq]
     rwa [← hiff]
   · rw [Set.indicator_of_not_mem hx, Set.indicator_of_not_mem]
@@ -351,8 +352,8 @@ theorem Memℒp.snorm_indicator_le' (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) (hf 
     snorm_indicator_le_of_bound (f := { x | ‖f x‖ < M }.indicator f) hp_top hε (by
       intro x
       rw [norm_indicator_eq_indicator_norm, Set.indicator_apply]
-      split_ifs with h
-      exacts [h, hMpos])
+      · split_ifs with h
+        exacts [h, hMpos])
   · refine' ⟨δ, hδpos, fun s hs hμs => _⟩
     rw [(_ : f = { x : α | M ≤ ‖f x‖₊ }.indicator f + { x : α | ‖f x‖ < M }.indicator f)]
     · rw [snorm_indicator_eq_snorm_restrict hs]
@@ -443,8 +444,7 @@ theorem unifIntegrable_fin (hp_one : 1 ≤ p) (hp_top : p ≠ ∞) {n : ℕ} {f 
     · have hi' := Fin.is_lt i
       rw [Nat.lt_succ_iff] at hi'
       rw [not_lt] at hi
-      -- Porting note: Original proof was `simp [← le_antisymm hi' hi]`
-      ext; symm; rw [Fin.coe_ofNat_eq_mod, le_antisymm hi' hi, Nat.mod_succ_eq_iff_lt, Nat.lt_succ]
+      simp [← le_antisymm hi' hi]
 #align measure_theory.unif_integrable_fin MeasureTheory.unifIntegrable_fin
 
 /-- A finite sequence of Lp functions is uniformly integrable. -/
@@ -929,7 +929,7 @@ theorem uniformIntegrable_average
     refine' le_trans (snorm_sum_le (fun i _ => ((hf₁ i).const_smul _).indicator hs) hp) _
     have : ∀ i, s.indicator ((n : ℝ) ⁻¹ • f i) = (↑n : ℝ)⁻¹ • s.indicator (f i) :=
       fun i ↦ indicator_const_smul _ _ _
-    simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
+    simp_rw [this, snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_natCast]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * n • ENNReal.ofReal ε ≤ ENNReal.ofReal ε)
@@ -937,13 +937,13 @@ theorem uniformIntegrable_average
       conv_rhs => rw [← Finset.card_range n]
       exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hδ₂ _ _ hs hle
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
-        ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_natCast,
+        ENNReal.inv_mul_cancel _ (ENNReal.natCast_ne_top _), one_mul]
       all_goals simpa only [Ne, Nat.cast_eq_zero]
   · obtain ⟨C, hC⟩ := hf₃
     simp_rw [Finset.smul_sum]
     refine' ⟨C, fun n => (snorm_sum_le (fun i _ => (hf₁ i).const_smul _) hp).trans _⟩
-    simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_coe_nat]
+    simp_rw [snorm_const_smul, ← Finset.mul_sum, nnnorm_inv, Real.nnnorm_natCast]
     by_cases hn : (↑(↑n : ℝ≥0)⁻¹ : ℝ≥0∞) = 0
     · simp only [hn, zero_mul, zero_le]
     refine' le_trans _ (_ : ↑(↑n : ℝ≥0)⁻¹ * (n • C : ℝ≥0∞) ≤ C)
@@ -951,8 +951,8 @@ theorem uniformIntegrable_average
       conv_rhs => rw [← Finset.card_range n]
       exact Finset.sum_le_card_nsmul _ _ _ fun i _ => hC i
     · simp only [ENNReal.coe_eq_zero, inv_eq_zero, Nat.cast_eq_zero] at hn
-      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_nat,
-        ENNReal.inv_mul_cancel _ (ENNReal.nat_ne_top _), one_mul]
+      rw [nsmul_eq_mul, ← mul_assoc, ENNReal.coe_inv, ENNReal.coe_natCast,
+        ENNReal.inv_mul_cancel _ (ENNReal.natCast_ne_top _), one_mul]
       all_goals simpa only [Ne, Nat.cast_eq_zero]
 
 /-- The averaging of a uniformly integrable real-valued sequence is also uniformly integrable. -/
