@@ -6,8 +6,6 @@ import Mathlib.Data.Fin.VecNotation
 
 open Lean
 open Lean.Meta
-open Lean.Elab
-open Lean.PrettyPrinter
 open Qq
 
 set_option pp.unicode.fun false
