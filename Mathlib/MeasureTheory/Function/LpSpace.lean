@@ -306,6 +306,8 @@ protected theorem edist_dist (f g : Lp E p μ) : edist f g = .ofReal (dist f g) 
 protected theorem dist_edist (f g : Lp E p μ) : dist f g = (edist f g).toReal :=
   MeasureTheory.Lp.dist_def ..
 
+theorem dist_eq_norm (f g : Lp E p μ) : dist f g = ‖f - g‖ := rfl
+
 @[simp]
 theorem edist_toLp_toLp (f g : α → E) (hf : Memℒp f p μ) (hg : Memℒp g p μ) :
     edist (hf.toLp f) (hg.toLp g) = snorm (f - g) p μ := by
@@ -819,26 +821,16 @@ theorem norm_indicatorConstLp_le :
     ENNReal.toReal_rpow, ENNReal.ofReal_toReal]
   exact ENNReal.rpow_ne_top_of_nonneg (by positivity) hμs
 
-theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+theorem edist_indicatorConstLp_eq_nnnorm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     edist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖₊ := by
   unfold indicatorConstLp
   rw [Lp.edist_toLp_toLp, snorm_indicator_sub_indicator, Lp.coe_nnnorm_toLp]
 
-theorem dist_indicatorConstLp_eq_norm {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞) :
+theorem dist_indicatorConstLp_eq_norm {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞} :
     dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c) =
       ‖indicatorConstLp p (hs.symmDiff ht) (measure_symmDiff_ne_top hμs hμt) c‖ := by
   rw [Lp.dist_edist, edist_indicatorConstLp_eq_nnnorm, ENNReal.coe_toReal, Lp.coe_nnnorm]
-
-open scoped symmDiff in
-/-- Compute the `ℒᵖ` norm of the difference of two constant indicators of sets with finite measure
-and same constant using symmetric difference. -/
-theorem norm_indicatorConstLp_sub {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞}
-    (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
-    ‖indicatorConstLp p hs hμs c - indicatorConstLp p ht hμt c‖ =
-    ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal) := by
-  conv_lhs => change dist (indicatorConstLp p hs hμs c) (indicatorConstLp p ht hμt c)
-  rw [dist_indicatorConstLp_eq_norm ht hμt, norm_indicatorConstLp hp_ne_zero hp_ne_top]
 
 @[simp]
 theorem indicatorConstLp_empty :
