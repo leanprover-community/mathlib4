@@ -788,7 +788,7 @@ variable {A : Type v} [CommRing A] (φ : R →+* A)
 lemma map_equation {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
     (W.map φ).toAffine.equation (φ x) (φ y) ↔ W.equation x y := by
   simpa only [equation_iff] using
-    ⟨fun h => hφ <| by map_simp; exact h, fun h => by convert congr_arg φ h <;> map_simp <;> rfl⟩
+    ⟨fun h => hφ <| by map_simp; exact h, fun h => by convert congr_arg φ h <;> map_simp⟩
 #align weierstrass_curve.equation_iff_base_change WeierstrassCurve.Affine.map_equation
 
 lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
@@ -797,7 +797,7 @@ lemma map_nonsingular {φ : R →+* A} (hφ : Function.Injective φ) (x y : R) :
   refine ⟨Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_),
     Or.imp (not_imp_not.mpr fun h => ?_) (not_imp_not.mpr fun h => ?_)⟩
   any_goals apply hφ; map_simp; exact h
-  any_goals convert congr_arg φ h <;> map_simp <;> rfl
+  any_goals convert congr_arg φ h <;> map_simp
 #align weierstrass_curve.nonsingular_iff_base_change WeierstrassCurve.Affine.map_nonsingular
 
 lemma map_negY (x y : R) : (W.map φ).toAffine.negY (φ x) (φ y) = φ (W.negY x y) := by
