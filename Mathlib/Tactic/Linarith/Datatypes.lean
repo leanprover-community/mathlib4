@@ -299,19 +299,19 @@ instance GlobalPreprocessorToGlobalBranchingPreprocessor :
   ⟨GlobalPreprocessor.branching⟩
 
 /--
-A `CertificateOracle` is a function
+A `CertificateOracle` provides a function
 `produceCertificate : List Comp → Nat → MetaM (HashMap Nat Nat)`.
-`produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `max_var`.
-If successful, it returns a map `coeff : Nat → Nat` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 
 The default `CertificateOracle` used by `linarith` is
 `Linarith.CertificateOracle.simplexAlgorithm`.
 `Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
 -/
 structure CertificateOracle : Type where
-  produceCertificate : List Comp → Nat → MetaM (Std.HashMap Nat Nat)
+  /-- `produceCertificate hyps max_var` tries to derive a contradiction from the comparisons in
+  `hyps` by eliminating all variables ≤ `max_var`.
+  If successful, it returns a map `coeff : Nat → Nat` as a certificate.
+  This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`. -/
+  produceCertificate (hyps : List Comp) (max_var : Nat) : MetaM (Std.HashMap Nat Nat)
 
 open Meta
 
