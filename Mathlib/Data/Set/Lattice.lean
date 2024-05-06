@@ -2043,6 +2043,9 @@ theorem directedOn_iUnion {r} {f : ι → Set α} (hd : Directed (· ⊆ ·) f)
     ⟨x, ⟨z, xf⟩, xa₁, xa₂⟩
 #align set.directed_on_Union Set.directedOn_iUnion
 
+@[deprecated (since := "2024-05-05")]
+alias directed_on_iUnion := directedOn_iUnion
+
 theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
     (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
   rw [sUnion_eq_iUnion]
