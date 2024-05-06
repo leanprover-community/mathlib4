@@ -520,6 +520,32 @@ theorem measurableEmbedding_inv [InvolutiveInv α] [MeasurableInv α] :
 
 end Inv
 
+@[to_additive (attr := measurability)]
+theorem Measurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
+    Measurable (f * g) ↔ Measurable g :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive (attr := measurability)]
+theorem AEMeasurable.mul_iff_right {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
+    AEMeasurable (f * g) μ ↔ AEMeasurable g μ :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive (attr := measurability)]
+theorem Measurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {f g : α → G} (hf : Measurable f) :
+    Measurable (g * f) ↔ Measurable g :=
+  mul_comm g f ▸ Measurable.mul_iff_right hf
+
+@[to_additive (attr := measurability)]
+theorem AEMeasurable.mul_iff_left {G : Type*} [MeasurableSpace G] [MeasurableSpace α] [CommGroup G]
+    [MeasurableMul₂ G] [MeasurableInv G] {μ : Measure α} {f g : α → G} (hf : AEMeasurable f μ) :
+    AEMeasurable (g * f) μ ↔ AEMeasurable g μ :=
+  mul_comm g f ▸ AEMeasurable.mul_iff_right hf
+
 /-- `DivInvMonoid.Pow` is measurable. -/
 instance DivInvMonoid.measurableZPow (G : Type u) [DivInvMonoid G] [MeasurableSpace G]
     [MeasurableMul₂ G] [MeasurableInv G] : MeasurablePow G ℤ :=
