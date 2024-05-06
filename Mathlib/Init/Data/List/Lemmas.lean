@@ -90,8 +90,7 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 
 #align list.subset List.Subset
 -- This is relying on an automatically generated instance name from Std.
--- See https://github.com/leanprover/lean4/issues/2343
-#align list.has_subset List.instHasSubsetList
+#align list.has_subset List.instHasSubset_std
 #align list.nil_subset List.nil_subset
 #align list.subset.refl List.Subset.refl
 #align list.subset.trans List.Subset.trans
@@ -106,7 +105,8 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 #align list.length_map₂ List.length_zipWith
 #align list.length_take List.length_take
 #align list.length_take_le List.length_take_le
-#align list.length_remove_nth List.length_removeNth
+#align list.remove_nth List.eraseIdx
+#align list.length_remove_nth List.length_eraseIdx
 #align list.partition_eq_filter_filter List.partition_eq_filter_filterₓ
 
 /-! sublists -/

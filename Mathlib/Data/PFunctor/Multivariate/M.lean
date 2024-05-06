@@ -216,9 +216,8 @@ theorem M.dest_corec {α : TypeVec n} {β : Type u} (g : β → P (α.append1 β
   · apply M.dest_corec'
   cases' g x with a f; dsimp
   rw [MvPFunctor.map_eq]; congr
-  conv =>
-    rhs
-    rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  conv_rhs => rw [← split_dropFun_lastFun f, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_corec MvPFunctor.M.dest_corec
 
 theorem M.bisim_lemma {α : TypeVec n} {a₁ : (mp P).A} {f₁ : (mp P).B a₁ ⟹ α} {a' : P.A}
@@ -324,6 +323,7 @@ theorem M.dest_map {α β : TypeVec n} (g : α ⟹ β) (x : P.M α) :
   conv =>
     rhs
     rw [M.dest, M.dest', map_eq, appendFun_comp_splitFun]
+  rfl
 #align mvpfunctor.M.dest_map MvPFunctor.M.dest_map
 
 theorem M.map_dest {α β : TypeVec n} (g : (α ::: P.M α) ⟹ (β ::: P.M β)) (x : P.M α)

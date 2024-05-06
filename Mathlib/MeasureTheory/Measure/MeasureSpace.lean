@@ -829,23 +829,12 @@ section SMul
 variable [SMul R ℝ≥0∞] [IsScalarTower R ℝ≥0∞ ℝ≥0∞]
 variable [SMul R' ℝ≥0∞] [IsScalarTower R' ℝ≥0∞ ℝ≥0∞]
 
--- TODO: refactor
 instance instSMul [MeasurableSpace α] : SMul R (Measure α) :=
   ⟨fun c μ =>
     { toOuterMeasure := c • μ.toOuterMeasure
       m_iUnion := fun s hs hd => by
-        rw [← smul_one_smul ℝ≥0∞ c (_ : OuterMeasure α)]
-        conv_lhs =>
-          change OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (⋃ i, s i)
-          change (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf μ.toOuterMeasure (⋃ i, s i)
-        conv_rhs =>
-          change ∑' i, OuterMeasure.measureOf
-            ((c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) • μ.toOuterMeasure) (s i)
-          change ∑' i, (c • @OfNat.ofNat _ 1 One.toOfNat1 : ℝ≥0∞) *
-            OuterMeasure.measureOf (μ.toOuterMeasure) (s i)
-        simp_rw [measure_iUnion hd hs, ENNReal.tsum_mul_left]
+        simp_rw [OuterMeasure.smul_apply, measure_iUnion hd hs]
+        simpa using (ENNReal.tsum_mul_left (a := c • 1)).symm
       trimmed := by rw [OuterMeasure.trim_smul, μ.trimmed] }⟩
 #align measure_theory.measure.has_smul MeasureTheory.Measure.instSMul
 
