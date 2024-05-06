@@ -147,14 +147,24 @@ lemma ContDiff.locallyLipschitz {f : E' → F'} (hf : ContDiff 𝕂 1 f) : Local
   rcases hf.contDiffAt.exists_lipschitzOnWith with ⟨K, t, ht, hf⟩
   use K, t
 
-/-- A `C¹` function is Lipschitz on each convex compact set. -/
-theorem ContDiff.lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiff ℝ n f) (hn : 1 ≤ n)
-    (hs : Convex ℝ s) (hs' : IsCompact s) : ∃ K, LipschitzOnWith K f s := by
-  rcases (bddAbove_iff_exists_ge 0).mp (hs'.image (hf.continuous_fderiv hn).norm).bddAbove
-    with ⟨M, M_nonneg, hM⟩
+/-- If `f` is `C¹` on a convex compact set `s`, it is Lipschitz on `s`. -/
+theorem ContDiffOn.exists_lipschitzOnWith {s : Set E} {f : E → F} {n} (hf : ContDiffOn ℝ n f s)
+    (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) (hs'' : UniqueDiffOn ℝ s) :
+    ∃ K, LipschitzOnWith K f s := by
+  obtain ⟨M, M_nonneg, hM⟩ := (bddAbove_iff_exists_ge 0).mp
+    (hs'.image_of_continuousOn (hf.continuousOn_fderivWithin hs'' hn).norm).bddAbove
   simp_rw [forall_mem_image] at hM
   use ⟨M, M_nonneg⟩
-  exact Convex.lipschitzOnWith_of_nnnorm_fderiv_le (fun x _ ↦ hf.differentiable hn x) hM hs
+  exact Convex.lipschitzOnWith_of_nnnorm_fderivWithin_le (hf.differentiableOn hn) hM hs
+
+/-- A `C¹` function is Lipschitz on each convex compact set. -/
+theorem ContDiff.exists_lipschitzOnWith {s : Set E} {f : E → F} {n}
+    (hf : ContDiff ℝ n f) (hn : 1 ≤ n) (hs : Convex ℝ s) (hs' : IsCompact s) :
+    ∃ K, LipschitzOnWith K f s := by
+  have : UniqueDiffOn ℝ s := by
+    refine uniqueDiffOn_convex hs ?hs
+    sorry -- `s` has non-empty interior: is an extra condition!
+  exact hf.contDiffOn.exists_lipschitzOnWith hn hs hs' this
 
 /-- A `C^1` function with compact support is Lipschitz. -/
 theorem ContDiff.lipschitzWith_of_hasCompactSupport {f : E' → F'} {n : ℕ∞}
