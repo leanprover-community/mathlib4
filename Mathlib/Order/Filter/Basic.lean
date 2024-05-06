@@ -2328,14 +2328,14 @@ nonrec theorem _root_.Function.RightInverse.filter_comap {f : α → β} {g : β
     (hfg : RightInverse g f) : LeftInverse (comap g) (comap f) :=
   hfg.filter_comap
 
-theorem _root_.Set.LeftInvOn.filter_map {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
+theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : LeftInvOn g f s) :
     LeftInvOn (map g) (map f) (Iic <| 𝓟 s) := fun F (hF : F ≤ 𝓟 s) ↦ by
   have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
-nonrec theorem _root_.Set.RightInvOn.filter_map {f : α → β} {g : β → α} (hfg : RightInvOn g f t) :
+nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : RightInvOn g f t) :
     RightInvOn (map g) (map f) (Iic <| 𝓟 t) :=
-  hfg.filter_map
+  hfg.filter_map_Iic
 
 end
 
@@ -3364,7 +3364,7 @@ theorem Filter.map_surjOn_Iic_iff_surjOn {m : α → β} :
     SurjOn (map m) (Iic <| 𝓟 s) (Iic <| 𝓟 t) ↔ SurjOn m s t := by
   rw [map_surjOn_Iic_iff_le_map, map_principal, principal_mono, SurjOn]
 
-alias ⟨_, root_.Set.SurjOn.filter_map_Iic⟩ := Filter.map_surjOn_Iic_iff_surjOn
+alias ⟨_, Set.SurjOn.filter_map_Iic⟩ := Filter.map_surjOn_Iic_iff_surjOn
 
 theorem Filter.filter_injOn_Iic_iff_injOn {m : α → β} :
     InjOn (map m) (Iic <| 𝓟 s) ↔ InjOn m s := by
@@ -3373,7 +3373,7 @@ theorem Filter.filter_injOn_Iic_iff_injOn {m : α → β} :
       at hxy <;> rwa [mem_Iic, pure_le_principal]
   · simp [map_eq_map_iff_of_injOn (le_principal_iff.mp hF) (le_principal_iff.mp hG) hm]
 
-alias ⟨_, _root_.Set.InjOn.filter_map_Iic⟩ := Filter.filter_injOn_Iic_iff_injOn
+alias ⟨_, Set.InjOn.filter_map_Iic⟩ := Filter.filter_injOn_Iic_iff_injOn
 
 namespace Filter
 
