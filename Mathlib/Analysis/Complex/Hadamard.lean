@@ -118,7 +118,7 @@ lemma diffContOnCl_invInterpStrip {ε : ℝ} (hε : ε > 0) :
     simp only [ne_eq, ne_of_gt (sSupNormIm_eps_pos f hε 0), not_false_eq_true]
   · apply Differentiable.const_cpow (Differentiable.neg differentiable_id')
     apply Or.inl
-    rw [← ofReal_add, ofReal_ne_zero];
+    rw [← ofReal_add, ofReal_ne_zero]
     exact (ne_of_gt (sSupNormIm_eps_pos f hε 1))
 
 /-- If `f` is bounded on the unit vertical strip, then `f` is bounded by `sSupNormIm` there. -/
@@ -287,10 +287,10 @@ lemma diffContOnCl_interpStrip :
       (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
     refine DifferentiableAt.mul ?_ ?_
     · apply DifferentiableAt.const_cpow (DifferentiableAt.const_sub (differentiableAt_id') 1) _
-      left; simp only [Ne.def, ofReal_eq_zero]; rwa [eq_comm]
+      left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
     · refine DifferentiableAt.const_cpow ?_ ?_
       · apply differentiableAt_id'
-      · left; simp only [Ne.def, ofReal_eq_zero]; rwa [eq_comm]
+      · left; simp only [Ne, ofReal_eq_zero]; rwa [eq_comm]
 
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip_eps (ε : ℝ) (hε : ε > 0) (z : ℂ)
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
