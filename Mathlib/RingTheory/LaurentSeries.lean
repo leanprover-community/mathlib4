@@ -105,7 +105,7 @@ theorem factorial_smul_hasseDeriv_coeff (k : ℕ) (f : LaurentSeries V) (n : ℤ
     HahnSeries.coeff ((derivative R)^[k] f) n := by
   induction k generalizing f with
   | zero =>
-    rw [Nat.zero_eq, Nat.factorial_zero, hasseDeriv_zero', one_smul, Function.iterate_zero, id_eq]
+    rw [Nat.factorial_zero, hasseDeriv_zero', one_smul, Function.iterate_zero, id_eq]
   | succ k ih =>
     rw [Function.iterate_succ, Function.comp_apply, ← ih, derivative_apply, @hasseDeriv_comp' R,
       Nat.choose_symm_add, Nat.choose_one_right, Nat.factorial, mul_nsmul]

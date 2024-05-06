@@ -504,45 +504,74 @@ end SummableFamily
 
 section Inversion
 
+section Monoid
+
+variable [LinearOrderedCancelAddCommMonoid Γ] [CommRing R]
+
+theorem one_minus_single_mul' {x y : HahnSeries Γ R} (r : R) (hr : r * x.leadingCoeff = 1)
+    (hxy : x = y + x.leadingTerm) (hxo : IsAddUnit x.order) :
+    1 - single (IsAddUnit.addUnit hxo).neg r * x = -(single (IsAddUnit.addUnit hxo).neg r * y) := by
+  nth_rw 2 [hxy]
+  rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, AddUnits.neg_eq_val_neg,
+    IsAddUnit.val_neg_add, sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
+  exact rfl
+
+theorem unit_aux' (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1)
+    (hxo : IsAddUnit x.order) : 0 < (1 - single (IsAddUnit.addUnit hxo).neg r * x).orderTop := by
+  let y := (x - x.leadingTerm)
+  by_cases hy : y = 0
+  · have hrx : (single (IsAddUnit.addUnit hxo).neg) r * x = 1 := by
+      nth_rw 2 [eq_of_sub_eq_zero hy] -- get a bad loop without `nth_rw`
+      simp only [leadingTerm_eq, single_mul_single, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add,
+        hr, ← leadingCoeff_eq]
+      exact rfl
+    simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
+  have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
+    fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
+  have hy' : 0 < (single (IsAddUnit.addUnit hxo).neg r * y).order := by
+    rw [(order_mul_single_of_nonzero_divisor hr' hy)]
+    refine pos_of_lt_add_right (a := x.order) ?_
+    rw [← add_assoc, add_comm x.order, AddUnits.neg_eq_val_neg, IsAddUnit.val_neg_add, zero_add]
+    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
+  simp only [one_minus_single_mul' r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
+  exact zero_lt_orderTop_of_order hy'
+
+theorem isUnit_of_isUnit_leadingCoeff_AddUnitOrder {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff)
+    (hxo : IsAddUnit x.order) : IsUnit x := by
+  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
+  rw [Units.val_mk] at h
+  rw [h] at iu
+  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux' x iu hxo)
+  rw [sub_sub_cancel] at h'
+  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
+
+end Monoid
+
 variable [LinearOrderedAddCommGroup Γ]
 
 section CommRing
 
 variable [CommRing R]
 
+theorem neg_eq_addUnit_neg {G : Type*} [AddGroup G] (g : G) :
+    -g = (IsAddUnit.addUnit (AddGroup.isAddUnit g)).neg := by
+  simp only [AddUnits.neg_eq_val_neg, AddUnits.val_neg_eq_neg_val, IsAddUnit.addUnit_spec]
+--#find_home! neg_eq_addUnit_neg --[Mathlib.Algebra.Group.Units]
+
 theorem one_minus_single_mul (x y : HahnSeries Γ R) (r : R) (hr : r * x.leadingCoeff = 1)
     (hxy : x = y + x.leadingTerm) : 1 - single (-order x) r * x = -(single (-x.order) r * y) := by
-  nth_rw 2 [hxy]
-  rw [mul_add, leadingTerm_eq, single_mul_single, ← leadingCoeff_eq, hr, add_left_neg,
-    sub_add_eq_sub_sub_swap, sub_eq_neg_self, sub_eq_zero_of_eq]
-  exact rfl
+  rw [neg_eq_addUnit_neg]
+  exact one_minus_single_mul' r hr hxy (AddGroup.isAddUnit x.order)
 
 theorem unit_aux (x : HahnSeries Γ R) {r : R} (hr : r * x.leadingCoeff = 1) :
     0 < (1 - single (-x.order) r * x).orderTop := by
-  let y := (x - x.leadingTerm)
-  by_cases hy : y = 0
-  · have hrx : (single (-order x)) r * x = 1 := by
-      nth_rw 2 [eq_of_sub_eq_zero hy]
-      simp only [leadingTerm_eq, single_mul_single, add_left_neg, hr, ← leadingCoeff_eq]
-      exact rfl
-    simp only [hrx, sub_self, orderTop_zero, WithTop.zero_lt_top]
-  have hr' : ∀ (s : R), r * s = 0 → s = 0 :=
-    fun s hs => by rw [← one_mul s, ← hr, mul_right_comm, hs, zero_mul]
-  have hy' : 0 < (single (-x.order) r * y).order := by
-    rw [(order_mul_single_of_nonzero_divisor hr' hy), lt_neg_add_iff_lt]
-    exact order_lt_add_single_support_order (sub_add_cancel x x.leadingTerm).symm hy
-  simp only [one_minus_single_mul x y r hr (sub_add_cancel x x.leadingTerm).symm, orderTop_neg]
-  exact zero_lt_orderTop_of_order hy'
+  rw [neg_eq_addUnit_neg]
+  exact unit_aux' x hr (AddGroup.isAddUnit x.order)
 #align hahn_series.unit_aux HahnSeries.unit_aux
 
 theorem isUnit_of_isUnit_leadingCoeff {x : HahnSeries Γ R} (hx : IsUnit x.leadingCoeff) :
     IsUnit x := by
-  let ⟨⟨u, i, ui, iu⟩, h⟩ := hx
-  rw [Units.val_mk] at h
-  rw [h] at iu
-  have h' := SummableFamily.one_sub_self_mul_hsum_powers (unit_aux x iu)
-  rw [sub_sub_cancel] at h'
-  exact isUnit_of_mul_isUnit_right (isUnit_of_mul_eq_one _ _ h')
+  exact isUnit_of_isUnit_leadingCoeff_AddUnitOrder hx (AddGroup.isAddUnit x.order)
 
 theorem isUnit_iff [IsDomain R] {x : HahnSeries Γ R} :
     IsUnit x ↔ IsUnit (x.leadingCoeff) := by
