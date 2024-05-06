@@ -71,7 +71,17 @@ noncomputable def colimitBundledCore : BundledCorePresheafOfModules R where
       ModuleCat.restrictScalarsId'App_inv_naturality]
     rw [restrictionApp_id]
     rfl)
-  map_comp := sorry
+  map_comp {X Y Z} f g := colimit.hom_ext (fun j => by
+    dsimp
+    rw [ι_colimMap_assoc, whiskerLeft_app, restriction_app, assoc, ι_colimMap_assoc]
+    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map (f ≫ g))),
+      ι_preservesColimitsIso_inv_assoc (G := ModuleCat.restrictScalars (R.map f))]
+    rw [← Functor.map_comp_assoc, ι_colimMap_assoc]
+    erw [ι_preservesColimitsIso_inv (G := ModuleCat.restrictScalars (R.map g))]
+    rw [restrictionApp_comp, ModuleCat.restrictScalarsComp'_inv_app, assoc, assoc,
+      whiskerLeft_app, whiskerLeft_app, restriction_app, restriction_app]
+    simp only [Functor.map_comp, assoc]
+    rfl)
 
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the canonical map
 `F.obj j ⟶ (colimitBundledCore F).toPresheafOfModules` for all `j : J`. -/
