@@ -2285,6 +2285,7 @@ lemma countable_covers_to_separated_nhds' (h k: Set X)
 
 
 
+/-- A regular Lindelöf topological space is a normal space. -/
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     [r: RegularSpace X] [LindelofSpace X] : NormalSpace X where
   normal h k hcl kcl hkdis := by
@@ -2367,54 +2368,9 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
         rw [← mv₀eqv]
         exact ⟨ma_open v₀, ma_dis v₀⟩
 
-
-
-
-/-- A regular topological space with second countable topology is a normal space.
-
-TODO: The same is true for a regular Lindelöf space. -/
 instance (priority := 100) NormalSpace.of_regularSpace_secondCountableTopology
-    [RegularSpace X] [SecondCountableTopology X] : NormalSpace X := by
-  have key : ∀ {s t : Set X}, IsClosed t → Disjoint s t →
-    ∃ U : Set (countableBasis X), (s ⊆ ⋃ u ∈ U, ↑u) ∧ (∀ u ∈ U, Disjoint (closure ↑u) t) ∧
-      ∀ n : ℕ, IsClosed (⋃ (u ∈ U) (_ : Encodable.encode u ≤ n), closure (u : Set X)) := by
-    intro s t hc hd
-    rw [disjoint_left] at hd
-    have : ∀ x ∈ s, ∃ U ∈ countableBasis X, x ∈ U ∧ Disjoint (closure U) t := by
-      intro x hx
-      rcases (isBasis_countableBasis X).exists_closure_subset (hc.compl_mem_nhds (hd hx))
-        with ⟨u, hu, hxu, hut⟩
-      exact ⟨u, hu, hxu, disjoint_left.2 hut⟩
-    choose! U hu hxu hd using this
-    set V : s → countableBasis X := MapsTo.restrict _ _ _ hu
-    refine' ⟨range V, _, forall_mem_range.2 <| Subtype.forall.2 hd, fun n => _⟩
-    · rw [biUnion_range]
-      exact fun x hx => mem_iUnion.2 ⟨⟨x, hx⟩, hxu x hx⟩
-    · simp only [← iSup_eq_iUnion, iSup_and']
-      exact (((finite_le_nat n).preimage_embedding (Encodable.encode' _)).subset <|
-        inter_subset_right _ _).isClosed_biUnion fun u _ => isClosed_closure
-  refine' { normal := fun s t hs ht hd => _ }
-  rcases key ht hd with ⟨U, hsU, hUd, hUc⟩
-  rcases key hs hd.symm with ⟨V, htV, hVd, hVc⟩
-  refine ⟨⋃ u ∈ U, ↑u \ ⋃ (v ∈ V) (_ : Encodable.encode v ≤ Encodable.encode u), closure ↑v,
-    ⋃ v ∈ V, ↑v \ ⋃ (u ∈ U) (_ : Encodable.encode u ≤ Encodable.encode v), closure ↑u,
-    isOpen_biUnion fun u _ => (isOpen_of_mem_countableBasis u.2).sdiff (hVc _),
-    isOpen_biUnion fun v _ => (isOpen_of_mem_countableBasis v.2).sdiff (hUc _),
-    fun x hx => ?_, fun x hx => ?_, ?_⟩
-  · rcases mem_iUnion₂.1 (hsU hx) with ⟨u, huU, hxu⟩
-    refine' mem_biUnion huU ⟨hxu, _⟩
-    simp only [mem_iUnion]
-    rintro ⟨v, hvV, -, hxv⟩
-    exact (hVd v hvV).le_bot ⟨hxv, hx⟩
-  · rcases mem_iUnion₂.1 (htV hx) with ⟨v, hvV, hxv⟩
-    refine' mem_biUnion hvV ⟨hxv, _⟩
-    simp only [mem_iUnion]
-    rintro ⟨u, huU, -, hxu⟩
-    exact (hUd u huU).le_bot ⟨hxu, hx⟩
-  · simp only [disjoint_left, mem_iUnion, mem_diff, not_exists, not_and, not_forall, not_not]
-    rintro a ⟨u, huU, hau, haV⟩ v hvV hav
-    rcases le_total (Encodable.encode u) (Encodable.encode v) with hle | hle
-    exacts [⟨u, huU, hle, subset_closure hau⟩, (haV _ hvV hle <| subset_closure hav).elim]
+    [RegularSpace X] [SecondCountableTopology X] : NormalSpace X :=
+  of_regularSpace_lindelofSpace
 #align normal_space_of_t3_second_countable NormalSpace.of_regularSpace_secondCountableTopology
 
 end NormalSpace
