@@ -387,7 +387,8 @@ lemma changeOriginSeriesTerm_bound (p : FormalMultilinearSeries 𝕜 E F) {n : �
     (hn : ∀ (m : ℕ), n ≤ m → p m = 0) (k l : ℕ) {s : Finset (Fin (k + l))}
     (hs : s.card = l) (hkl : n ≤ k + l) :
     p.changeOriginSeriesTerm k l s hs = 0 := by
-  rw [changeOriginSeriesTerm, hn _ hkl, map_zero]
+  rw [changeOriginSeriesTerm, hn _ hkl] -- was: `rw [..., map_zero]`, without `rfl`
+  rfl
 
 /-- If `p` is a finite formal multilinear series, then so is `p.changeOriginSeries k` for every
 `k` in `ℕ`. More precisely, if `p m = 0` for `n ≤ m`, then `p.changeOriginSeries k m = 0` for
