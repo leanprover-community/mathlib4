@@ -384,8 +384,8 @@ lemma norm_toInteger_pow_sub_one_of_prime_ne_two [IsCyclotomicExtension {p ^ (k 
   have coe_two : ((2 : ℕ+) : ℕ) = 2 := by norm_cast
   refine hζ.norm_toInteger_pow_sub_one_of_prime_pow_ne_two hs (fun h ↦ ?_)
   rw [← PNat.coe_inj, coe_two, PNat.pow_coe, ← pow_one 2] at h
-  exact hodd (PNat.coe_injective (by simp [eq_of_prime_pow_eq
-    (Nat.prime_iff.1 hp.out) (Nat.prime_iff.1 Nat.prime_two) (k - s).succ_pos h]))
+  apply hodd
+  simp [← PNat.coe_inj, eq_of_prime_pow_eq hp.out.prime Nat.prime_two.prime (k - s).succ_pos h]
 
 /-- The norm, relative to `ℤ`, of `ζ - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ` is
 `p` if `p ≠ 2`. -/
