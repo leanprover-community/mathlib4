@@ -406,7 +406,7 @@ protected theorem length_reverseAux {u v w : V} (p : G.Walk u v) (q : G.Walk u w
     (p.reverseAux q).length = p.length + q.length := by
   induction p with
   | nil => simp!
-  | cons _ _ ih => simp [ih, Nat.add_succ, Nat.succ_add]
+  | cons _ _ ih => simp [ih, Nat.succ_add, Nat.add_assoc]
 #align simple_graph.walk.length_reverse_aux SimpleGraph.Walk.length_reverseAux
 
 @[simp]
@@ -899,7 +899,7 @@ def tail (p : G.Walk u v) (hp : ¬ p.Nil) : G.Walk (p.sndOfNotNil hp) v :=
 def firstDart (p : G.Walk v w) (hp : ¬ p.Nil) : G.Dart where
   fst := v
   snd := p.sndOfNotNil hp
-  is_adj := p.adj_sndOfNotNil hp
+  adj := p.adj_sndOfNotNil hp
 
 lemma edge_firstDart (p : G.Walk v w) (hp : ¬ p.Nil) :
     (p.firstDart hp).edge = s(v, p.sndOfNotNil hp) := rfl
