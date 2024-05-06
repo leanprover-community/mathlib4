@@ -5,6 +5,7 @@ Authors: Bhavik Mehta
 -/
 import Mathlib.Algebra.Associated
 import Mathlib.NumberTheory.Divisors
+import Mathlib.Data.Nat.Log
 
 #align_import algebra.is_prime_pow from "leanprover-community/mathlib"@"f7fc89d5d5ff1db2d1242c7bb0e9062ce47ef47c"
 
@@ -82,14 +83,22 @@ theorem Nat.Prime.isPrimePow {p : ℕ} (hp : p.Prime) : IsPrimePow p :=
 #align nat.prime.is_prime_pow Nat.Prime.isPrimePow
 
 theorem isPrimePow_nat_iff_bounded (n : ℕ) :
-    IsPrimePow n ↔ ∃ p : ℕ, p ≤ n ∧ ∃ k : ℕ, k ≤ n ∧ p.Prime ∧ 0 < k ∧ p ^ k = n := by
+    IsPrimePow n ↔ ∃ p ≤ n, ∃ k ≤ n.log2, p.Prime ∧ 0 < k ∧ p ^ k = n := by
   rw [isPrimePow_nat_iff]
-  refine' Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, _⟩
+  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
   rintro ⟨p, k, hp, hk, rfl⟩
-  refine' ⟨p, _, k, (Nat.lt_pow_self hp.one_lt _).le, hp, hk, rfl⟩
-  conv => { lhs; rw [← (pow_one p)] }
-  exact pow_le_pow_right hp.one_lt.le hk
+  refine ⟨p, ?_, k, Nat.le_log2_prime_pow hp, hp, hk, rfl⟩
+  exact Nat.le_self_pow (Nat.pos_iff_ne_zero.mp hk) _
 #align is_prime_pow_nat_iff_bounded isPrimePow_nat_iff_bounded
+
+theorem isPrimePow_nat_iff_bounded' (n : ℕ) :
+    IsPrimePow n ↔ ∃ p ≤ n, ∃ k ≤ p.log n, p.Prime ∧ 0 < k ∧ p ^ k = n := by
+  rw [isPrimePow_nat_iff]
+  refine Iff.symm ⟨fun ⟨p, _, k, _, hp, hk, hn⟩ => ⟨p, k, hp, hk, hn⟩, ?_⟩
+  rintro ⟨p, k, hp, hk, rfl⟩
+  refine ⟨p, ?_, k, ?_, hp, hk, rfl⟩
+  · exact Nat.le_self_pow (Nat.pos_iff_ne_zero.mp hk) _
+  · exact le_of_eq (Nat.log_pow (Nat.Prime.one_lt hp) k).symm
 
 instance {n : ℕ} : Decidable (IsPrimePow n) :=
   decidable_of_iff' _ (isPrimePow_nat_iff_bounded n)

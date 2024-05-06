@@ -769,6 +769,10 @@ lemma Prime.pow_inj {p q m n : ℕ} (hp : p.Prime) (hq : q.Prime)
     (Prime.dvd_of_dvd_pow hq <| h.symm ▸ dvd_pow_self q (succ_ne_zero n))
   exact ⟨H, succ_inj'.mp <| Nat.pow_right_injective hq.two_le (H ▸ h)⟩
 
+theorem le_log2_prime_pow {p k : ℕ} (hp : p.Prime) : k ≤ (p^k).log2 := by
+  rw [le_log2 (pow_ne_zero _ <| Prime.ne_zero hp)]
+  exact Nat.pow_le_pow_left hp.two_le k
+
 /-- The type of prime numbers -/
 def Primes :=
   { p : ℕ // p.Prime }
