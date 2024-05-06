@@ -43,8 +43,6 @@ noncomputable def h₂ (p : ℝ) : ℝ := -p * log p - (1 - p) * log (1 - p)
   simp only [one_div, log_inv]
   field_simp
 
--- lemma mul_log2_lt {x y : ℝ} : x < y ↔ x * log 2 < y * log 2 := by field_simp
-
 -- some basic facts about h₂
 
 /-- `h₂` is symmetric about 1/2, i.e.,
@@ -83,19 +81,19 @@ lemma h2_zero_iff_zero_or_one {p : ℝ} (domup : p ≤ 1) (domun : 0 ≤ p) :
   · unfold h₂
     cases h <;> simp [*]
 
-lemma zero_lt_log_2 : 0 < log 2 := by
-  refine (log_pos_iff zero_lt_two).mpr one_lt_two
+lemma zero_lt_log_two : 0 < log 2 := by
+  exact (log_pos_iff zero_lt_two).mpr one_lt_two
 
 /-- For probability p < 0.5,
 
- h₂ p < 1.
+ h₂ p < log 2.
 -/
 lemma h2_lt_log2_of_gt_half {p : ℝ} (pge0 : 0 ≤ p) (plehalf : p < 1/2) : h₂ p < log 2 := by
   -- Proof by concavity of log.
   unfold h₂
   simp only [neg_mul, one_mul, gt_iff_lt]
   by_cases pz : p = 0
-  · simp [*]; exact zero_lt_log_2
+  · simp [*]; exact zero_lt_log_two
   · have invppos : 0 < 1/p := by positivity
     have : 0 < 1 - p := by norm_num; linarith -- used implicitly by tactics. Can eliminate?
     have sub1pinvpos : 0 < 1 / (1 - p) := by positivity
@@ -135,8 +133,10 @@ lemma h2_le_log_2 {p : ℝ} (pge0 : 0 ≤ p) (ple1 : p ≤ 1) : h₂ p ≤ log 2
       · linarith [h2_lt_log2_of_gt_half pge0 hhh]
       · have : 1/2 < p := by
           refine Ne.lt_of_le ?_ ?_
-          aesop
-          aesop
+          · simp only [not_lt] at hhh
+            intro a
+            simp_all only [not_true_eq_false]
+          · simp_all only [one_div, not_lt]
         have := h2_lt_one_of_gt_log2 this ple1
         exact LT.lt.le this
 
@@ -293,12 +293,6 @@ lemma h2_strictMono : StrictMonoOn h₂ (Set.Icc 0 (1/2)) := by
 
 lemma log2_ne_0 : log 2 ≠ 0 := by norm_num
 lemma log2_gt_0 : 0 < log 2 := by positivity
-
--- NOTE: NOT USED! TODO
--- lemma log2_lt_1 : log 2 < 1 := by
---   rw [show (1 : ℝ) = 2 - 1 by norm_num]
---   apply Real.log_lt_sub_one_of_pos zero_lt_two (Ne.symm (OfNat.one_ne_ofNat 2))
-
 
 lemma strictConcave_h2 : StrictConcaveOn ℝ (Icc 0 1) h₂ := by
   apply strictConcaveOn_of_deriv2_neg (convex_Icc 0 1) h₂_continuous.continuousOn
