@@ -38,8 +38,11 @@ namespace Rat
 instance instField : Field ℚ where
   __ := commRing
   __ := commGroupWithZero
-  ratCast_def q := (num_div_den _).symm
+  nnqsmul := _
   qsmul := _
+  nnratCast_def q := by
+    rw [← NNRat.den_coe, ← Int.cast_natCast q.num, ← NNRat.num_coe]; exact(num_div_den _).symm
+  ratCast_def q := (num_div_den _).symm
 
 -- Extra instances to short-circuit type class resolution
 instance instDivisionRing : DivisionRing ℚ := by infer_instance
@@ -65,5 +68,14 @@ namespace NNRat
 lemma inv_def (q : ℚ≥0) : q⁻¹ = divNat q.den q.num := by ext; simp [Rat.inv_def', num_coe, den_coe]
 lemma div_def (p q : ℚ≥0) : p / q = divNat (p.num * q.den) (p.den * q.num) := by
   ext; simp [Rat.div_def', num_coe, den_coe]
+
+lemma num_inv_of_ne_zero {q : ℚ≥0} (hq : q ≠ 0) : q⁻¹.num = q.den := by
+  rw [inv_def, divNat, num, coe_mk, Rat.divInt_ofNat, ← Rat.mk_eq_mkRat _ _ (num_ne_zero.mpr hq),
+    Int.natAbs_ofNat]
+  simpa using q.coprime_num_den.symm
+
+lemma den_inv_of_ne_zero {q : ℚ≥0} (hq : q ≠ 0) : q⁻¹.den = q.num := by
+  rw [inv_def, divNat, den, coe_mk, Rat.divInt_ofNat, ← Rat.mk_eq_mkRat _ _ (num_ne_zero.mpr hq)]
+  simpa using q.coprime_num_den.symm
 
 end NNRat

@@ -30,7 +30,7 @@ private lemma cube_of_castHom_ne_zero {n : ZMod 9} :
 private lemma cube_of_not_dvd {n : ℤ} (h : ¬ 3 ∣ n) :
     (n : ZMod 9) ^ 3 = 1 ∨ (n : ZMod 9) ^ 3 = 8 := by
   apply cube_of_castHom_ne_zero
-  rwa [map_intCast, Ne, ZMod.int_cast_zmod_eq_zero_iff_dvd]
+  rwa [map_intCast, Ne, ZMod.intCast_zmod_eq_zero_iff_dvd]
 
 /-- If `a b c : ℤ` are such that `¬ 3 ∣ a * b * c`, then `a ^ 3 + b ^ 3 ≠ c ^ 3`. -/
 theorem fermatLastTheoremThree_case_1 {a b c : ℤ} (hdvd : ¬ 3 ∣ a * b * c) :
@@ -97,7 +97,8 @@ theorem fermatLastTheoremThree_of_three_dvd_only_c
   rw [fermatLastTheoremFor_iff_int]
   refine fermatLastTheoremWith_of_fermatLastTheoremWith_coprime (fun a b c ha hb hc Hgcd hF ↦?_)
   by_cases h1 : 3 ∣ a * b * c
-  swap; exact fermatLastTheoremThree_case_1 h1 hF
+  swap
+  · exact fermatLastTheoremThree_case_1 h1 hF
   rw [(prime_three).dvd_mul, (prime_three).dvd_mul] at h1
   rw [← sub_eq_zero, sub_eq_add_neg, ← (show Odd 3 by decide).neg_pow] at hF
   rcases h1 with ((h3a | h3b) | h3c)

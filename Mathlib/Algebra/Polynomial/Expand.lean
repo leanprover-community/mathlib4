@@ -94,7 +94,7 @@ theorem expand_pow (f : R[X]) : expand R (p ^ q) f = (expand R p)^[q] f :=
 
 theorem derivative_expand (f : R[X]) : Polynomial.derivative (expand R p f) =
     expand R p (Polynomial.derivative f) * (p * (X ^ (p - 1) : R[X])) := by
-  rw [coe_expand, derivative_eval₂_C, derivative_pow, C_eq_nat_cast, derivative_X, mul_one]
+  rw [coe_expand, derivative_eval₂_C, derivative_pow, C_eq_natCast, derivative_X, mul_one]
 #align polynomial.derivative_expand Polynomial.derivative_expand
 
 theorem coeff_expand {p : ℕ} (hp : 0 < p) (f : R[X]) (n : ℕ) :

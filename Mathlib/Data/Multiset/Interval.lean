@@ -3,10 +3,10 @@ Copyright (c) 2022 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Data.Finset.LocallyFinite.Basic
 import Mathlib.Data.DFinsupp.Interval
 import Mathlib.Data.DFinsupp.Multiset
 import Mathlib.Data.Nat.Interval
+import Mathlib.Order.Interval.Finset.Basic
 
 #align_import data.multiset.interval from "leanprover-community/mathlib"@"1d29de43a5ba4662dd33b5cfeecfc2a27a5a8a29"
 
@@ -62,17 +62,17 @@ theorem card_Icc :
 
 theorem card_Ico :
     (Finset.Ico s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
-  rw [card_Ico_eq_card_Icc_sub_one, card_Icc]
+  rw [Finset.card_Ico_eq_card_Icc_sub_one, card_Icc]
 #align multiset.card_Ico Multiset.card_Ico
 
 theorem card_Ioc :
     (Finset.Ioc s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 1 := by
-  rw [card_Ioc_eq_card_Icc_sub_one, card_Icc]
+  rw [Finset.card_Ioc_eq_card_Icc_sub_one, card_Icc]
 #align multiset.card_Ioc Multiset.card_Ioc
 
 theorem card_Ioo :
     (Finset.Ioo s t).card = ∏ i in s.toFinset ∪ t.toFinset, (t.count i + 1 - s.count i) - 2 := by
-  rw [card_Ioo_eq_card_Icc_sub_two, card_Icc]
+  rw [Finset.card_Ioo_eq_card_Icc_sub_two, card_Icc]
 #align multiset.card_Ioo Multiset.card_Ioo
 
 theorem card_uIcc :
