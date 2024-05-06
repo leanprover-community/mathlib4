@@ -43,11 +43,12 @@ def nameToTop : Name → Name
   | .str a b => .str (nameToTop a) (stringReplacements convs b)
   | _ => default
 
-variable (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) (toPlus : Name) in
+variable {m} [Monad m] [MonadRef m] [MonadQuotation m]
+  (convs : HashMap String String) (toMultArrow : Name) (toMult : Name) (toPlus : Syntax) in
 /-- converts `WithBot _` to `ℕ∞` and `⊥` to `⊤`.
 Useful when converting a `degree` with values in `WithBot ℕ` to a `trailingDegree` with values
 in `ℕ∞`. -/
-def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
+def MaxToMin(stx : Syntax) : m Syntax := do
   let stx ← stx.replaceM fun s => do
     match s.getId with
       | .anonymous => return none
@@ -56,7 +57,7 @@ def MaxToMin (stx : Syntax) : CommandElabM Syntax := do
   stx.replaceM fun s => do
     match s with
       | .node _ `«term_*_» #[a, _, b] =>
-        if (a.getId != .anonymous) && a.getId == toPlus then
+        if a == toPlus then
           return some <| ← `($(⟨a⟩) + $(⟨b⟩))
         else return none
       | .node _ ``Lean.Parser.Term.app
@@ -100,11 +101,11 @@ environment the analogous result about `AddMonoidAlgebra`.
 Writing `to_ama?` also prints the extra declaration added by `to_ama`.
 -/
 elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id1:(ident)? "]" id2:(ident)?
-    "plus"? id3:(ident)? "noplus"? cmd:command :
+    "plus"? id3:(term)? "noplus"? cmd:command :
     command => do
   let g := match id1 with | some id => id.getId | _ => default
   let h := match id2 with | some id => id.getId | _ => default
-  let i := match id3 with | some id => id.getId | _ => default
+  let i := match id3 with | some id => id.raw | _ => default
   let newCmd ← MaxToMin toAddWords g h i cmd
   if tk.isSome then logInfo m!"-- adding\n{newCmd}"
   elabCommand cmd
@@ -112,25 +113,41 @@ elab (name := to_amaCmd) "to_ama " tk:("?")? "[" id1:(ident)? "]" id2:(ident)?
   let currNS ← getCurrNamespace
   withScope (fun s => { s with currNamespace := nameToTop toAddWords currNS }) <| elabCommand newCmd
 
+def toAmaCmd (verbose? : Bool) (id1 id2 : TSyntax `ident) (id3 : Syntax) (cmd : Syntax) :
+    CommandElabM Unit := do
+  let g := id1.getId
+  let h := id2.getId
+--  let i := id3.getId
+  let newCmd ← MaxToMin toAddWords g h id3 cmd
+  if verbose? then logInfo m!"-- adding\n{newCmd}"
+  elabCommand cmd
+  if (← get).messages.hasErrors then return
+  let currNS ← getCurrNamespace
+  withScope (fun s => { s with currNamespace := nameToTop toAddWords currNS }) <| elabCommand newCmd
+
 @[inherit_doc to_amaCmd]
-macro "to_ama? " "[" id:(ident)? "]" cmd:command : command =>
+elab "to_ama " tk:("?")? "[" id:(ident)? "]" cmd:command : command =>
   let rid := mkIdent `hi
-  return (← `(to_ama ? [$(id.getD default)] $rid noplus $cmd))
+  toAmaCmd tk.isSome (id.getD default) rid default cmd
+--  return (← `(to_ama ? [$(id.getD default)] $rid noplus $cmd))
+
+--@[inherit_doc to_amaCmd]
+--macro "to_ama? " cmd:command : command =>
+--  let rid := mkIdent `hi
+--  return (← `(to_ama ? [] $rid noplus $cmd))
 
 @[inherit_doc to_amaCmd]
-macro "to_ama? " cmd:command : command =>
-  let rid := mkIdent `hi
-  return (← `(to_ama ? [] $rid noplus $cmd))
+elab "to_ama " tk:("?")? id:ident cmd:command : command =>
+  toAmaCmd tk.isSome default id default cmd
+--  return (← `(to_ama [] $id noplus $cmd))
 
 @[inherit_doc to_amaCmd]
-macro "to_ama " id:ident cmd:command : command =>
-  return (← `(to_ama [] $id noplus $cmd))
+elab "to_ama " tk:("?")? "plus" id:ident cmd:command : command => do
+  toAmaCmd tk.isSome default default id cmd
+--  return (← `(to_ama [] $id plus $id noplus $cmd))
 
 @[inherit_doc to_amaCmd]
-macro "to_ama " "plus" id:ident cmd:command : command =>
-  return (← `(to_ama [] $id plus $id noplus $cmd))
-
-@[inherit_doc to_amaCmd]
-macro "to_ama " cmd:command : command =>
-  let rid := mkIdent `hi
-  return (← `(to_ama [] $rid noplus $cmd))
+elab "to_ama " tk:("?")? cmd:command : command =>
+  toAmaCmd tk.isSome default default default cmd
+--  let rid := mkIdent `hi
+--  return (← `(to_ama [] $rid noplus $cmd))

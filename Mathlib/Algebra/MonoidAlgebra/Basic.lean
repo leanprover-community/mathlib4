@@ -550,6 +550,7 @@ theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
   apply single_apply
 to_ama #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
+to_ama [] plus p.1
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 := by
   classical exact
@@ -571,20 +572,28 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
             by_cases h1 : f p.1 = 0
             · rw [h1, zero_mul]
             · rw [hp hps h1, mul_zero]
-#align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
+to_ama #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
+to_ama [] plus a₁
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
     single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) := by
   rw [mul_def]
   exact (sum_single_index (by simp only [zero_mul, single_zero, sum_zero])).trans
     (sum_single_index (by rw [mul_zero, single_zero]))
-#align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
+to_ama #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
+--to_ama?
 theorem single_commute_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k}
     (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
     Commute (single a₁ b₁) (single a₂ b₂) :=
   single_mul_single.trans <| congr_arg₂ single ha hb |>.trans single_mul_single.symm
+
+-- adding
+open AddMonoidAlgebra in
+theorem _root_.AddMonoidAlgebra.single_commute_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} (ha : AddCommute a₁ a₂) (hb : Commute b₁ b₂) :
+    Commute (AddMonoidAlgebra.single a₁ b₁) (AddMonoidAlgebra.single a₂ b₂) :=
+  AddMonoidAlgebra.single_mul_single.trans <| congr_arg₂ single ha hb |>.trans AddMonoidAlgebra.single_mul_single.symm
 
 theorem single_commute [Mul G] {a : G} {b : k} (ha : ∀ a', Commute a a') (hb : ∀ b', Commute b b') :
     ∀ f : MonoidAlgebra k G, Commute (single a b) f :=
@@ -1321,26 +1330,6 @@ variable {k G}
 section MiscTheorems
 
 variable [Semiring k]
-
---theorem mul_apply [DecidableEq G] [Add G] (f g : k[G]) (x : G) :
---    (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ + a₂ = x then b₁ * b₂ else 0 :=
---  @MonoidAlgebra.mul_apply k (Multiplicative G) _ _ _ _ _ _
---#align add_monoid_algebra.mul_apply AddMonoidAlgebra.mul_apply
-
-theorem mul_apply_antidiagonal [Add G] (f g : k[G]) (x : G) (s : Finset (G × G))
-    (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 + p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 :=
-  @MonoidAlgebra.mul_apply_antidiagonal k (Multiplicative G) _ _ _ _ _ s @hs
-#align add_monoid_algebra.mul_apply_antidiagonal AddMonoidAlgebra.mul_apply_antidiagonal
-
-theorem single_mul_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} :
-    single a₁ b₁ * single a₂ b₂ = single (a₁ + a₂) (b₁ * b₂) :=
-  @MonoidAlgebra.single_mul_single k (Multiplicative G) _ _ _ _ _ _
-#align add_monoid_algebra.single_mul_single AddMonoidAlgebra.single_mul_single
-
-theorem single_commute_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k}
-    (ha : AddCommute a₁ a₂) (hb : Commute b₁ b₂) :
-    Commute (single a₁ b₁) (single a₂ b₂) :=
-  @MonoidAlgebra.single_commute_single k (Multiplicative G) _ _ _ _ _ _ ha hb
 
 -- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
 -- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
