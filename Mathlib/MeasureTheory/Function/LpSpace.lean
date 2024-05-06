@@ -812,7 +812,7 @@ theorem norm_indicatorConstLp_sub {t : Set α} {ht : MeasurableSet t} {hμt : μ
     ‖indicatorConstLp p hs hμs c - indicatorConstLp p ht hμt c‖ =
     ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal) := by
   simp_rw [indicatorConstLp, ← Memℒp.toLp_sub, Lp.norm_toLp, ← snorm_norm (F := E),
-    Pi.sub_apply, ← apply_indicator_symmDiff norm_neg, snorm_norm, 
+    Pi.sub_apply, ← apply_indicator_symmDiff norm_neg, snorm_norm,
     snorm_indicator_const (hs.symmDiff ht) hp_ne_zero hp_ne_top, ENNReal.toReal_mul,
     toReal_coe_nnnorm, ← ENNReal.toReal_rpow]
 
