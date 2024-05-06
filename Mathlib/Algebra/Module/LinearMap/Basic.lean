@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Nathaniel Thomas, Jeremy Avigad, Johannes Hölzl, Mario Carneiro, Anne Baanen,
   Frédéric Dupuis, Heather Macbeth
 -/
+import Mathlib.Algebra.Module.Basic
 import Mathlib.Algebra.Module.Pi
 import Mathlib.Algebra.Ring.CompTypeclasses
 import Mathlib.Algebra.Star.Basic
@@ -94,16 +95,13 @@ add_decl_doc LinearMap.toMulActionHom
 add_decl_doc LinearMap.toAddHom
 #align linear_map.to_add_hom LinearMap.toAddHom
 
--- mathport name: «expr →ₛₗ[ ] »
 /-- `M →ₛₗ[σ] N` is the type of `σ`-semilinear maps from `M` to `N`. -/
 notation:25 M " →ₛₗ[" σ:25 "] " M₂:0 => LinearMap σ M M₂
 
 /-- `M →ₗ[R] N` is the type of `R`-linear maps from `M` to `N`. -/
--- mathport name: «expr →ₗ[ ] »
 notation:25 M " →ₗ[" R:25 "] " M₂:0 => LinearMap (RingHom.id R) M M₂
 
 /-- `M →ₗ⋆[R] N` is the type of `R`-conjugate-linear maps from `M` to `N`. -/
--- mathport name: «expr →ₗ⋆[ ] »
 notation:25 M " →ₗ⋆[" R:25 "] " M₂:0 => LinearMap (starRingEnd R) M M₂
 
 /-- `SemilinearMapClass F σ M M₂` asserts `F` is a type of bundled `σ`-semilinear maps `M → M₂`.
@@ -680,7 +678,7 @@ def toSemilinearMap (fₗ : M →ₑ+[σ.toMonoidHom] M₂) : M →ₛₗ[σ] M�
 
 instance : SemilinearMapClass (M →ₑ+[σ.toMonoidHom] M₂) σ M M₂ where
 
-instance : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
+instance instCoeTCSemilinearMap : CoeTC (M →ₑ+[σ.toMonoidHom] M₂) (M →ₛₗ[σ] M₂) :=
   ⟨toSemilinearMap⟩
 
 /-- A `DistribMulActionHom` between two modules is a linear map. -/
@@ -937,6 +935,15 @@ theorem default_def : (default : M →ₛₗ[σ₁₂] M₂) = 0 :=
   rfl
 #align linear_map.default_def LinearMap.default_def
 
+instance uniqueOfLeft [Subsingleton M] : Unique (M →ₛₗ[σ₁₂] M₂) :=
+  { inferInstanceAs (Inhabited (M →ₛₗ[σ₁₂] M₂)) with
+    uniq := fun f => ext fun x => by rw [Subsingleton.elim x 0, map_zero, map_zero] }
+#align linear_map.unique_of_left LinearMap.uniqueOfLeft
+
+instance uniqueOfRight [Subsingleton M₂] : Unique (M →ₛₗ[σ₁₂] M₂) :=
+  coe_injective.unique
+#align linear_map.unique_of_right LinearMap.uniqueOfRight
+
 /-- The sum of two linear maps is linear. -/
 instance : Add (M →ₛₗ[σ₁₂] M₂) :=
   ⟨fun f g ↦
@@ -1011,6 +1018,22 @@ theorem comp_sub (f g : M →ₛₗ[σ₁₂] N₂) (h : N₂ →ₛₗ[σ₂₃
 instance addCommGroup : AddCommGroup (M →ₛₗ[σ₁₂] N₂) :=
   DFunLike.coe_injective.addCommGroup _ rfl (fun _ _ ↦ rfl) (fun _ ↦ rfl) (fun _ _ ↦ rfl)
     (fun _ _ ↦ rfl) fun _ _ ↦ rfl
+
+/-- Evaluation of a `σ₁₂`-linear map at a fixed `a`, as an `AddMonoidHom`. -/
+@[simps]
+def evalAddMonoidHom (a : M) : (M →ₛₗ[σ₁₂] M₂) →+ M₂ where
+  toFun f := f a
+  map_add' f g := LinearMap.add_apply f g a
+  map_zero' := rfl
+#align linear_map.eval_add_monoid_hom LinearMap.evalAddMonoidHom
+
+/-- `LinearMap.toAddMonoidHom` promoted to an `AddMonoidHom`. -/
+@[simps]
+def toAddMonoidHom' : (M →ₛₗ[σ₁₂] M₂) →+ M →+ M₂ where
+  toFun := toAddMonoidHom
+  map_zero' := by ext; rfl
+  map_add' := by intros; ext; rfl
+#align linear_map.to_add_monoid_hom' LinearMap.toAddMonoidHom'
 
 end Arithmetic
 

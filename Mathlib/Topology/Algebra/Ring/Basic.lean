@@ -3,8 +3,9 @@ Copyright (c) 2018 Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Patrick Massot, Johannes Hölzl
 -/
+import Mathlib.Algebra.Order.AbsoluteValue
 import Mathlib.Algebra.Ring.Prod
-import Mathlib.RingTheory.Subring.Basic
+import Mathlib.Algebra.Ring.Subring.Basic
 import Mathlib.Topology.Algebra.Group.Basic
 
 #align_import topology.algebra.ring.basic from "leanprover-community/mathlib"@"9a59dcb7a2d06bf55da57b9030169219980660cd"
@@ -150,6 +151,12 @@ instance [NonUnitalNonAssocRing α] [NonUnitalNonAssocRing β] [TopologicalRing 
     [TopologicalRing β] : TopologicalRing (α × β) where
 
 end
+
+-- Adaptation note: nightly-2024-04-08, needed to help `Pi.instTopologicalSemiring`
+instance {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
+    [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :
+    ContinuousAdd ((b : β) → C b) :=
+  inferInstance
 
 instance Pi.instTopologicalSemiring {β : Type*} {C : β → Type*} [∀ b, TopologicalSpace (C b)]
     [∀ b, NonUnitalNonAssocSemiring (C b)] [∀ b, TopologicalSemiring (C b)] :

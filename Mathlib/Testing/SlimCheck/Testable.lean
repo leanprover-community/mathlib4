@@ -275,11 +275,11 @@ instance decGuardTestable [PrintableProp p] [Decidable p] {β : p → Prop} [∀
     Testable (NamedBinder var <| ∀ h, β h) where
   run := fun cfg min ↦ do
     if h : p then
-      let res := (runProp (β h) cfg min)
+      let res := runProp (β h) cfg min
       let s := printProp p
       (fun r ↦ addInfo s!"guard: {s}" (· <| h) r (PSum.inr <| fun q _ ↦ q)) <$> res
     else if cfg.traceDiscarded || cfg.traceSuccesses then
-      let res := (fun _ ↦ pure <| gaveUp 1)
+      let res := fun _ ↦ pure <| gaveUp 1
       let s := printProp p
       slimTrace s!"discard: Guard {s} does not hold"; res
     else
@@ -290,6 +290,11 @@ instance forallTypesTestable {f : Type → Prop} [Testable (f Int)] :
   run := fun cfg min ↦ do
     let r ← runProp (f Int) cfg min
     pure <| addVarInfo var "ℤ" (· <| Int) r
+
+instance factTestable [Testable p] : Testable (Fact p) where
+  run cfg min := do
+    let h ← runProp p cfg min
+    pure <| iff fact_iff h
 
 /--
 Format the counter-examples found in a test failure.
@@ -450,6 +455,9 @@ instance False.printableProp : PrintableProp False where
 
 instance Bool.printableProp {b : Bool} : PrintableProp b where
   printProp := if b then "true" else "false"
+
+instance Fact.printableProp [PrintableProp p] : PrintableProp (Fact p) where
+  printProp := printProp p
 
 end PrintableProp
 

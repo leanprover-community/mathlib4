@@ -5,10 +5,10 @@ Authors: Kevin Buzzard, Patrick Massot
 
 This file is to a certain extent based on `quotient_module.lean` by Johannes Hölzl.
 -/
+import Mathlib.Algebra.Group.Subgroup.Finite
+import Mathlib.Algebra.Group.Subgroup.Pointwise
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.Coset
-import Mathlib.GroupTheory.Subgroup.Finite
-import Mathlib.GroupTheory.Subgroup.Pointwise
 
 #align_import group_theory.quotient_group from "leanprover-community/mathlib"@"59694bd07f0a39c5beccba34bd9f413a160782bf"
 
@@ -102,6 +102,15 @@ theorem mk'_eq_mk' {x y : G} : mk' N x = mk' N y ↔ ∃ z ∈ N, x * z = y :=
     simp only [← _root_.eq_inv_mul_iff_mul_eq, exists_prop, exists_eq_right]
 #align quotient_group.mk'_eq_mk' QuotientGroup.mk'_eq_mk'
 #align quotient_add_group.mk'_eq_mk' QuotientAddGroup.mk'_eq_mk'
+
+open scoped Pointwise in
+@[to_additive]
+theorem sound (U : Set (G ⧸ N)) (g : N.op) :
+    g • (mk' N) ⁻¹' U = (mk' N) ⁻¹' U := by
+  ext x
+  simp only [Set.mem_preimage, Set.mem_smul_set_iff_inv_smul_mem]
+  congr! 1
+  exact Quotient.sound ⟨g⁻¹, rfl⟩
 
 /-- Two `MonoidHom`s from a quotient group are equal if their compositions with
 `QuotientGroup.mk'` are equal.

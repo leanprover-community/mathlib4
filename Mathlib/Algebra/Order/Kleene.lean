@@ -360,10 +360,10 @@ namespace Function.Injective
 protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
     [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemSemiring β :=
-  { hf.semiring f zero one add mul nsmul npow nat_cast, hf.semilatticeSup _ sup,
+  { hf.semiring f zero one add mul nsmul npow natCast, hf.semilatticeSup _ sup,
     ‹Bot β› with
     add_eq_sup := fun a b ↦ hf <| by erw [sup, add, add_eq_sup]
     bot := ⊥
@@ -376,11 +376,11 @@ protected def idemSemiring [IdemSemiring α] [Zero β] [One β] [Add β] [Mul β
 protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ]
     [SMul ℕ β] [NatCast β] [Sup β] [Bot β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥) :
     IdemCommSemiring β :=
-  { hf.commSemiring f zero one add mul nsmul npow nat_cast,
-    hf.idemSemiring f zero one add mul nsmul npow nat_cast sup bot with }
+  { hf.commSemiring f zero one add mul nsmul npow natCast,
+    hf.idemSemiring f zero one add mul nsmul npow natCast sup bot with }
 #align function.injective.idem_comm_semiring Function.Injective.idemCommSemiring
 
 -- See note [reducible non-instances]
@@ -389,10 +389,10 @@ protected def idemCommSemiring [IdemCommSemiring α] [Zero β] [One β] [Add β]
 protected def kleeneAlgebra [KleeneAlgebra α] [Zero β] [One β] [Add β] [Mul β] [Pow β ℕ] [SMul ℕ β]
     [NatCast β] [Sup β] [Bot β] [KStar β] (f : β → α) (hf : Injective f) (zero : f 0 = 0)
     (one : f 1 = 1) (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
-    (nsmul : ∀ (x) (n : ℕ), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
-    (nat_cast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
+    (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (npow : ∀ (x) (n : ℕ), f (x ^ n) = f x ^ n)
+    (natCast : ∀ n : ℕ, f n = n) (sup : ∀ a b, f (a ⊔ b) = f a ⊔ f b) (bot : f ⊥ = ⊥)
     (kstar : ∀ a, f a∗ = (f a)∗) : KleeneAlgebra β :=
-  { hf.idemSemiring f zero one add mul nsmul npow nat_cast sup bot,
+  { hf.idemSemiring f zero one add mul nsmul npow natCast sup bot,
     ‹KStar β› with
     one_le_kstar := fun a ↦ one.trans_le <| by
       erw [kstar]

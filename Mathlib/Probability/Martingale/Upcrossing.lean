@@ -3,7 +3,7 @@ Copyright (c) 2022 Kexing Ying. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kexing Ying
 -/
-import Mathlib.Data.Set.Intervals.Monotone
+import Mathlib.Order.Interval.Set.Monotone
 import Mathlib.Probability.Process.HittingTime
 import Mathlib.Probability.Martingale.Basic
 
@@ -426,7 +426,7 @@ theorem Submartingale.sum_mul_upcrossingStrat_le [IsFiniteMeasure μ] (hf : Subm
     μ[∑ k in Finset.range n, upcrossingStrat a b f N k * (f (k + 1) - f k)] ≤ μ[f n] - μ[f 0] := by
   have h₁ : (0 : ℝ) ≤
       μ[∑ k in Finset.range n, (1 - upcrossingStrat a b f N k) * (f (k + 1) - f k)] := by
-    have := (hf.sum_sub_upcrossingStrat_mul a b N).set_integral_le (zero_le n) MeasurableSet.univ
+    have := (hf.sum_sub_upcrossingStrat_mul a b N).setIntegral_le (zero_le n) MeasurableSet.univ
     rw [integral_univ, integral_univ] at this
     refine' le_trans _ this
     simp only [Finset.range_zero, Finset.sum_empty, integral_zero', le_refl]
@@ -498,18 +498,20 @@ theorem crossing_eq_crossing_of_lowerCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
       lowerCrossingTime_zero, true_and_iff, eq_comm]
     refine' hitting_eq_hitting_of_exists hNM _
     rw [lowerCrossingTime, hitting_lt_iff] at h
-    obtain ⟨j, hj₁, hj₂⟩ := h
-    exacts [⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
+    · obtain ⟨j, hj₁, hj₂⟩ := h
+      exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+    · exact le_rfl
   · specialize ih (lt_of_le_of_lt (lowerCrossingTime_mono (Nat.le_succ _)) h)
       (lt_of_le_of_lt (upperCrossingTime_mono (Nat.le_succ _)) h')
     have : upperCrossingTime a b f M k.succ ω = upperCrossingTime a b f N k.succ ω := by
       rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h'
-      simp only [upperCrossingTime_succ_eq]
-      obtain ⟨j, hj₁, hj₂⟩ := h'
-      rw [eq_comm, ih.2]
-      exacts [hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
+      · simp only [upperCrossingTime_succ_eq]
+        obtain ⟨j, hj₁, hj₂⟩ := h'
+        rw [eq_comm, ih.2]
+        exact hitting_eq_hitting_of_exists hNM ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+      · exact le_rfl
     refine' ⟨this, _⟩
-    simp only [lowerCrossingTime, eq_comm, this]
+    simp only [lowerCrossingTime, eq_comm, this, Nat.succ_eq_add_one]
     refine' hitting_eq_hitting_of_exists hNM _
     rw [lowerCrossingTime, hitting_lt_iff _ le_rfl] at h
     obtain ⟨j, hj₁, hj₂⟩ := h
@@ -526,8 +528,9 @@ theorem crossing_eq_crossing_of_upperCrossingTime_lt {M : ℕ} (hNM : N ≤ M)
   rw [upperCrossingTime_succ_eq, upperCrossingTime_succ_eq, eq_comm, this]
   refine' hitting_eq_hitting_of_exists hNM _
   rw [upperCrossingTime_succ_eq, hitting_lt_iff] at h
-  obtain ⟨j, hj₁, hj₂⟩ := h
-  exacts [⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩, le_rfl]
+  · obtain ⟨j, hj₁, hj₂⟩ := h
+    exact ⟨j, ⟨hj₁.1, hj₁.2.le⟩, hj₂⟩
+  · exact le_rfl
 #align measure_theory.crossing_eq_crossing_of_upper_crossing_time_lt MeasureTheory.crossing_eq_crossing_of_upperCrossingTime_lt
 
 theorem upperCrossingTime_eq_upperCrossingTime_of_lt {M : ℕ} (hNM : N ≤ M)
@@ -843,9 +846,9 @@ theorem upcrossings_lt_top_iff :
   constructor <;> rintro ⟨k, hk⟩
   · obtain ⟨m, hm⟩ := exists_nat_ge k
     refine' ⟨m, fun N => Nat.cast_le.1 ((hk N).trans _)⟩
-    rwa [← ENNReal.coe_nat, ENNReal.coe_le_coe]
+    rwa [← ENNReal.coe_natCast, ENNReal.coe_le_coe]
   · refine' ⟨k, fun N => _⟩
-    simp only [ENNReal.coe_nat, Nat.cast_le, hk N]
+    simp only [ENNReal.coe_natCast, Nat.cast_le, hk N]
 #align measure_theory.upcrossings_lt_top_iff MeasureTheory.upcrossings_lt_top_iff
 
 /-- A variant of Doob's upcrossing estimate obtained by taking the supremum on both sides. -/
@@ -865,11 +868,11 @@ theorem Submartingale.mul_lintegral_upcrossings_le_lintegral_pos_part [IsFiniteM
       rw [(by simp :
           ∫⁻ ω, upcrossingsBefore a b f N ω ∂μ = ∫⁻ ω, ↑(upcrossingsBefore a b f N ω : ℝ≥0) ∂μ),
         lintegral_coe_eq_integral, ← ENNReal.ofReal_mul (sub_pos.2 hab).le]
-      · simp_rw [NNReal.coe_nat_cast]
+      · simp_rw [NNReal.coe_natCast]
         exact (ENNReal.ofReal_le_ofReal
           (hf.mul_integral_upcrossingsBefore_le_integral_pos_part a b N)).trans
             (le_iSup (α := ℝ≥0∞) _ N)
-      · simp only [NNReal.coe_nat_cast, hf.adapted.integrable_upcrossingsBefore hab]
+      · simp only [NNReal.coe_natCast, hf.adapted.integrable_upcrossingsBefore hab]
     · exact fun n => measurable_from_top.comp_aemeasurable
         (hf.adapted.measurable_upcrossingsBefore hab).aemeasurable
     · filter_upwards with ω N M hNM

@@ -32,7 +32,7 @@ is a generalization of `Algebra.Polynomial.Eval`.
 
 ## To do
 
-* `smeval_neg` and `smeval_int_cast` for `R` a ring and `S` an `AddCommGroup`.
+* `smeval_neg` and `smeval_intCast` for `R` a ring and `S` an `AddCommGroup`.
 * Nonunital evaluation for polynomials with vanishing constant term for `Pow S ℕ+` (different file?)
 
 -/
@@ -108,7 +108,7 @@ theorem smeval_add : (p + q).smeval x = p.smeval x + q.smeval x := by
   · rw [smul_pow, zero_smul]
   · rw [smul_pow, smul_pow, smul_pow, add_smul]
 
-theorem smeval_nat_cast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
+theorem smeval_natCast (n : ℕ) : (n : R[X]).smeval x = n • x ^ 0 := by
   induction' n with n ih
   · simp only [smeval_zero, Nat.cast_zero, Nat.zero_eq, zero_smul]
   · rw [n.cast_succ, smeval_add, ih, smeval_one, ← add_nsmul]
@@ -159,7 +159,7 @@ variable (R : Type*) [CommSemiring R] {p : R[X]} (r : R) (p q : R[X]) {S : Type*
   [NonAssocSemiring S] [Module R S] [IsScalarTower R S S] [SMulCommClass R S S] [Pow S ℕ]
   [NatPowAssoc S] (x : S)
 
-theorem smeval_at_nat_cast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
+theorem smeval_at_natCast (q : ℕ[X]): ∀(n : ℕ), q.smeval (n : S) = q.smeval n := by
   induction q using Polynomial.induction_on' with
   | h_add p q ph qh =>
     intro n
@@ -175,8 +175,8 @@ theorem smeval_at_zero : p.smeval (0 : S) = (p.coeff 0) • (1 : S)  := by
   | h_monomial n a =>
     cases n with
     | zero => simp only [Nat.zero_eq, monomial_zero_left, smeval_C, npow_zero, coeff_C_zero]
-    | succ n => rw [coeff_monomial_succ, smeval_monomial, ← Nat.add_one, npow_add, npow_one,
-      mul_zero, zero_smul, smul_zero]
+    | succ n => rw [coeff_monomial_succ, smeval_monomial, npow_add, npow_one, mul_zero, zero_smul,
+        smul_zero]
 
 theorem smeval_mul_X : (p * X).smeval x = p.smeval x * x := by
     induction p using Polynomial.induction_on' with

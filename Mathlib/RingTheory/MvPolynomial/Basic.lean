@@ -91,13 +91,13 @@ theorem restrictSupport_mono {s t : Set (σ →₀ ℕ)} (h : s ⊆ t) :
 
 variable (σ)
 
-/-- The submodule of polynomials of total degree less than or equal to `m`.-/
+/-- The submodule of polynomials of total degree less than or equal to `m`. -/
 def restrictTotalDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | (n.sum fun _ e => e) ≤ m }
 #align mv_polynomial.restrict_total_degree MvPolynomial.restrictTotalDegree
 
 /-- The submodule of polynomials such that the degree with respect to each individual variable is
-less than or equal to `m`.-/
+less than or equal to `m`. -/
 def restrictDegree (m : ℕ) : Submodule R (MvPolynomial σ R) :=
   restrictSupport R { n | ∀ i, n i ≤ m }
 #align mv_polynomial.restrict_degree MvPolynomial.restrictDegree
@@ -140,6 +140,10 @@ theorem coe_basisMonomials :
     (basisMonomials σ R : (σ →₀ ℕ) → MvPolynomial σ R) = fun s => monomial s 1 :=
   rfl
 #align mv_polynomial.coe_basis_monomials MvPolynomial.coe_basisMonomials
+
+/-- The `R`-module `MvPolynomial σ R` is free. -/
+instance : Module.Free R (MvPolynomial σ R) :=
+  Module.Free.of_basis (MvPolynomial.basisMonomials σ R)
 
 theorem linearIndependent_X : LinearIndependent R (X : σ → MvPolynomial σ R) :=
   (basisMonomials σ R).linearIndependent.comp (fun s : σ => Finsupp.single s 1)

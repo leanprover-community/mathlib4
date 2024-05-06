@@ -45,7 +45,7 @@ add_decl_doc ContinuousAlternatingMap.toContinuousMultilinearMap
 add_decl_doc ContinuousAlternatingMap.toAlternatingMap
 
 @[inherit_doc]
-notation M "[⋀^" ι "]→L[" R "]" N:100 => ContinuousAlternatingMap R M N ι
+notation M " [⋀^" ι "]→L[" R "] " N:100 => ContinuousAlternatingMap R M N ι
 
 namespace ContinuousAlternatingMap
 
@@ -543,6 +543,14 @@ def toContinuousMultilinearMapLinear :
   toFun := toContinuousMultilinearMap
   map_add' _ _ := rfl
   map_smul' _ _ := rfl
+
+/-- Linear map version of the map `toAlternatingMap`
+associating to a continuous alternating map the corresponding alternating map. -/
+@[simps (config := .asFn) apply]
+def toAlternatingMapLinear : (M [⋀^ι]→L[A] N) →ₗ[R] (M [⋀^ι]→ₗ[A] N) where
+  toFun := toAlternatingMap
+  map_add' := by simp
+  map_smul' := by simp
 
 /-- `ContinuousAlternatingMap.pi` as a `LinearEquiv`. -/
 @[simps (config := { simpRhs := true })]

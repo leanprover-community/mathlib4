@@ -119,16 +119,16 @@ theorem edist_le_of_le (h : HolderOnWith C r f s) {x y : X} (hx : x ∈ s) (hy :
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t) {Cf rf : ℝ≥0}
     {f : X → Y} (hf : HolderOnWith Cf rf f s) (hst : MapsTo f s t) :
-    HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s := by
+    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s := by
   intro x hx y hy
-  rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc, NNReal.rpow_eq_pow,
+  rw [ENNReal.coe_mul, mul_comm rg, NNReal.coe_mul, ENNReal.rpow_mul, mul_assoc,
     ← ENNReal.coe_rpow_of_nonneg _ rg.coe_nonneg, ← ENNReal.mul_rpow_of_nonneg _ _ rg.coe_nonneg]
   exact hg.edist_le_of_le (hst hx) (hst hy) (hf.edist_le hx hy)
 #align holder_on_with.comp HolderOnWith.comp
 
 theorem comp_holderWith {Cg rg : ℝ≥0} {g : Y → Z} {t : Set Y} (hg : HolderOnWith Cg rg g t)
     {Cf rf : ℝ≥0} {f : X → Y} (hf : HolderWith Cf rf f) (ht : ∀ x, f x ∈ t) :
-    HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
+    HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   holderOnWith_univ.mp <| hg.comp (hf.holderOnWith univ) fun x _ => ht x
 #align holder_on_with.comp_holder_with HolderOnWith.comp_holderWith
 
@@ -199,13 +199,13 @@ theorem edist_le_of_le (h : HolderWith C r f) {x y : X} {d : ℝ≥0∞} (hd : e
 #align holder_with.edist_le_of_le HolderWith.edist_le_of_le
 
 theorem comp {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0} {f : X → Y}
-    (hf : HolderWith Cf rf f) : HolderWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) :=
+    (hf : HolderWith Cf rf f) : HolderWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) :=
   (hg.holderOnWith univ).comp_holderWith hf fun _ => trivial
 #align holder_with.comp HolderWith.comp
 
 theorem comp_holderOnWith {Cg rg : ℝ≥0} {g : Y → Z} (hg : HolderWith Cg rg g) {Cf rf : ℝ≥0}
     {f : X → Y} {s : Set X} (hf : HolderOnWith Cf rf f s) :
-    HolderOnWith (Cg * NNReal.rpow Cf rg) (rg * rf) (g ∘ f) s :=
+    HolderOnWith (Cg * Cf ^ (rg : ℝ)) (rg * rf) (g ∘ f) s :=
   (hg.holderOnWith univ).comp hf fun _ _ => trivial
 #align holder_with.comp_holder_on_with HolderWith.comp_holderOnWith
 

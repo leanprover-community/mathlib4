@@ -5,7 +5,7 @@ Authors: Mario Carneiro, Heather Macbeth, Yaël Dillies
 -/
 import Mathlib.Algebra.GroupPower.Order
 import Mathlib.Data.Int.CharZero
-import Mathlib.Data.Int.Order.Basic
+import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Rat.Order
 import Mathlib.Tactic.Positivity.Core
@@ -269,7 +269,7 @@ def evalPow : PositivityExt where eval {u α} zα pα e := do
   let .app (.app _ (a : Q($α))) (b : Q(ℕ)) ← withReducible (whnf e) | throwError "not ^"
   let result ← catchNone do
     let .true := b.isAppOfArity ``OfNat.ofNat 3 | throwError "not a ^ n where n is a literal"
-    let some n := (b.getRevArg! 1).natLit? | throwError "not a ^ n where n is a literal"
+    let some n := (b.getRevArg! 1).rawNatLit? | throwError "not a ^ n where n is a literal"
     guard (n % 2 = 0)
     have m : Q(ℕ) := mkRawNatLit (n / 2)
     haveI' : $b =Q bit0 $m := ⟨⟩
@@ -350,6 +350,8 @@ def evalNatAbs : PositivityExt where eval {u α} _zα _pα e := do
       pure .none
   | _, _, _ => throwError "not Int.natAbs"
 
+/-- Extension for the `positivity` tactic: `Nat.cast` is always non-negative,
+and positive when its input is. -/
 @[positivity Nat.cast _]
 def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Nat.cast _ (_) ($a : ℕ)) := e | throwError "not Nat.cast"
@@ -364,6 +366,8 @@ def evalNatCast : PositivityExt where eval {u α} _zα _pα e := do
   | _ =>
     pure (.nonnegative q(Nat.cast_nonneg _))
 
+/-- Extension for the `positivity` tactic: `Int.cast` is positive (resp. non-negative)
+if its input is. -/
 @[positivity Int.cast _]
 def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   let ~q(@Int.cast _ (_) ($a : ℤ)) := e | throwError "not Int.cast"
@@ -389,7 +393,7 @@ def evalIntCast : PositivityExt where eval {u α} _zα _pα e := do
   | .none =>
     pure .none
 
-/-- Extension for Nat.succ. -/
+/-- Extension for `Nat.succ`. -/
 @[positivity Nat.succ _]
 def evalNatSucc : PositivityExt where eval {u α} _zα _pα e := do
   match u, α, e with
@@ -398,7 +402,7 @@ def evalNatSucc : PositivityExt where eval {u α} _zα _pα e := do
     pure (.positive q(Nat.succ_pos $a))
   | _, _, _ => throwError "not Nat.succ"
 
-/-- Extension for Nat.factorial. -/
+/-- Extension for `Nat.factorial`. -/
 @[positivity Nat.factorial _]
 def evalFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
@@ -407,7 +411,7 @@ def evalFactorial : PositivityExt where eval {u α} _ _ e := do
     pure (.positive q(Nat.factorial_pos $a))
   | _, _, _ => throwError "failed to match Nat.factorial"
 
-/-- Extension for Nat.ascFactorial. -/
+/-- Extension for `Nat.ascFactorial`. -/
 @[positivity Nat.ascFactorial _ _]
 def evalAscFactorial : PositivityExt where eval {u α} _ _ e := do
   match u, α, e with
