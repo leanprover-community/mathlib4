@@ -763,19 +763,17 @@ def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ �
 #align measure_theory.indicator_const_Lp MeasureTheory.indicatorConstLp
 
 /-- A version of `Set.indicator_add` for `MeasureTheory.indicatorConstLp`.-/
-theorem indicatorConstLp_add (hμs : μ s ≠ ∞) (c' : E) :
+theorem indicatorConstLp_add {c' : E} :
     indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c + c') := by
   simp_rw [indicatorConstLp, ← Memℒp.toLp_add, indicator_add]
   rfl
 
 /-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
-theorem indicatorConstLp_sub (hμs : μ s ≠ ∞) (c' : E) :
+theorem indicatorConstLp_sub {c' : E} :
     indicatorConstLp p hs hμs c - indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c - c') := by
-  simp_rw [indicatorConstLp, ← Memℒp.toLp_sub]
-  congr
-  rw [indicator_sub]
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_sub, indicator_sub]
   rfl
 
 theorem indicatorConstLp_coeFn : ⇑(indicatorConstLp p hs hμs c) =ᵐ[μ] s.indicator fun _ => c :=
