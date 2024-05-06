@@ -445,7 +445,7 @@ theorem Nat.geom_sum_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
 theorem Nat.geom_sum_Ico_le {b : ℕ} (hb : 2 ≤ b) (a n : ℕ) :
     ∑ i in Ico 1 n, a / b ^ i ≤ a / (b - 1) := by
   cases' n with n
-  · rw [zero_eq, Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
+  · rw [Ico_eq_empty_of_le (zero_le_one' ℕ), sum_empty]
     exact Nat.zero_le _
   rw [← add_le_add_iff_left a]
   calc
@@ -522,7 +522,7 @@ theorem geom_sum_pos' [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
     0 < ∑ i in range n, x ^ i := by
   obtain _ | _ | n := n
   · cases hn rfl
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, range_one, sum_singleton, pow_zero, zero_lt_one]
+  · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   obtain hx' | hx' := lt_or_le x 0
   · exact (geom_sum_pos_and_lt_one hx' hx n.one_lt_succ_succ).1
   · exact geom_sum_pos hx' (by simp only [Nat.succ_ne_zero, Ne, not_false_iff])
@@ -531,7 +531,7 @@ theorem geom_sum_pos' [LinearOrderedRing α] (hx : 0 < x + 1) (hn : n ≠ 0) :
 theorem Odd.geom_sum_pos [LinearOrderedRing α] (h : Odd n) : 0 < ∑ i in range n, x ^ i := by
   rcases n with (_ | _ | k)
   · exact ((show ¬Odd 0 by decide) h).elim
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, geom_sum_one, zero_lt_one]
+  · simp only [zero_add, range_one, sum_singleton, pow_zero, zero_lt_one]
   rw [Nat.odd_iff_not_even] at h
   rcases lt_trichotomy (x + 1) 0 with (hx | hx | hx)
   · have := geom_sum_alternating_of_lt_neg_one hx k.one_lt_succ_succ
@@ -556,8 +556,7 @@ theorem geom_sum_ne_zero [LinearOrderedRing α] (hx : x ≠ -1) (hn : n ≠ 0) :
     ∑ i in range n, x ^ i ≠ 0 := by
   obtain _ | _ | n := n
   · cases hn rfl
-  · simp only [Nat.zero_eq, ← Nat.one_eq_succ_zero, range_one, sum_singleton, pow_zero, ne_eq,
-      one_ne_zero, not_false_iff]
+  · simp only [zero_add, range_one, sum_singleton, pow_zero, ne_eq, one_ne_zero, not_false_eq_true]
   rw [Ne, eq_neg_iff_add_eq_zero, ← Ne] at hx
   obtain h | h := hx.lt_or_lt
   · have := geom_sum_alternating_of_lt_neg_one h n.one_lt_succ_succ

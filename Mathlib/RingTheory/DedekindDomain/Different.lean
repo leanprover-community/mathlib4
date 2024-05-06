@@ -318,8 +318,8 @@ variable {I}
 lemma dual_div_dual :
     dual A K J / dual A K I = I / J := by
   rw [dual_eq_mul_inv A K J, dual_eq_mul_inv A K I, mul_div_mul_comm, div_self, one_mul]
-  exact inv_div_inv J I
-  simp only [ne_eq, dual_eq_zero_iff, one_ne_zero, not_false_eq_true]
+  · exact inv_div_inv J I
+  · simp only [ne_eq, dual_eq_zero_iff, one_ne_zero, not_false_eq_true]
 
 lemma dual_mul_self :
     dual A K I * I = dual A K 1 := by
@@ -385,7 +385,7 @@ lemma coeSubmodule_differentIdeal_fractionRing
   simp only [← one_div, FractionalIdeal.val_eq_coe] at this
   rw [FractionalIdeal.coe_div (FractionalIdeal.dual_ne_zero _ _ _),
     FractionalIdeal.coe_dual] at this
-  simpa only [FractionalIdeal.coe_one] using this
+  · simpa only [FractionalIdeal.coe_one] using this
   · exact one_ne_zero
   · exact one_ne_zero
 
@@ -479,7 +479,8 @@ lemma traceForm_dualSubmodule_adjoin
   · rintro _ ⟨i, rfl⟩
     by_cases hi : i < pb.dim
     · exact Submodule.subset_span ⟨⟨i, hi⟩, rfl⟩
-    · rw [Function.comp_apply, coeff_eq_zero_of_natDegree_lt, mul_zero]; exact zero_mem _
+    · rw [Function.comp_apply, coeff_eq_zero_of_natDegree_lt, mul_zero]
+      · exact zero_mem _
       rw [← pb.natDegree_minpoly, pbgen, ← natDegree_minpolyDiv_succ hKx,
         ← Nat.succ_eq_add_one] at hi
       exact le_of_not_lt hi
@@ -497,7 +498,8 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
   simp only [FractionalIdeal.coeIdeal_mul, FractionalIdeal.coeIdeal_span_singleton]
   rw [coeIdeal_differentIdeal A K L B,
     mul_inv_eq_iff_eq_mul₀]
-  swap; exact FractionalIdeal.dual_ne_zero A K one_ne_zero
+  swap
+  · exact FractionalIdeal.dual_ne_zero A K one_ne_zero
   apply FractionalIdeal.coeToSubmodule_injective
   simp only [FractionalIdeal.coe_coeIdeal, FractionalIdeal.coe_mul,
     FractionalIdeal.coe_spanSingleton, Submodule.span_singleton_mul]
@@ -509,7 +511,8 @@ lemma conductor_mul_differentIdeal [NoZeroSMulDivisors A B]
       aeval_map_algebraMap, aeval_algebraMap_apply] at hne₁
   rw [Submodule.mem_smul_iff_inv_mul_mem this, FractionalIdeal.mem_coe, FractionalIdeal.mem_dual,
     mem_coeSubmodule_conductor]
-  swap; exact one_ne_zero
+  swap
+  · exact one_ne_zero
   have hne₂ : (aeval (algebraMap B L x) (derivative (minpoly K (algebraMap B L x))))⁻¹ ≠ 0 := by
     rwa [ne_eq, inv_eq_zero]
   have : IsIntegral A (algebraMap B L x) := IsIntegral.map (IsScalarTower.toAlgHom A B L) hAx
