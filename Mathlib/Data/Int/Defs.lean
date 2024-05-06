@@ -61,6 +61,8 @@ lemma zero_le_ofNat (n : ℕ) : 0 ≤ ofNat n := @le.intro _ _ n (by rw [Int.zer
 
 instance instNontrivial : Nontrivial ℤ := ⟨⟨0, 1, Int.zero_ne_one⟩⟩
 
+@[simp] lemma ofNat_injective : Function.Injective ofNat := @Int.ofNat.inj
+
 @[simp] lemma ofNat_eq_natCast : Int.ofNat n = n := rfl
 
 @[deprecated ofNat_eq_natCast] -- 2024-03-24
