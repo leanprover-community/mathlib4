@@ -17,7 +17,7 @@ In this file we define
 * the predicate `IsFixedPt f x := f x = x`;
 * the set `fixedPoints f` of fixed points of a self-map `f`.
 
-We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `semiconj`.
+We also prove some simple lemmas about `IsFixedPt` and `∘`, `iterate`, and `Semiconj`.
 
 ## Tags
 
@@ -50,7 +50,7 @@ namespace IsFixedPt
 instance decidable [h : DecidableEq α] {f : α → α} {x : α} : Decidable (IsFixedPt f x) :=
   h (f x) x
 
-/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`.-/
+/-- If `x` is a fixed point of `f`, then `f x = x`. This is useful, e.g., for `rw` or `simp`. -/
 protected theorem eq (hf : IsFixedPt f x) : f x = x :=
   hf
 #align function.is_fixed_pt.eq Function.IsFixedPt.eq

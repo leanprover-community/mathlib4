@@ -3,7 +3,7 @@ Copyright (c) 2022 Jireh Loreaux. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jireh Loreaux
 -/
-import Mathlib.Algebra.Algebra.Basic
+import Mathlib.Algebra.Algebra.Defs
 import Mathlib.Algebra.Algebra.NonUnitalHom
 import Mathlib.Algebra.Star.Module
 import Mathlib.Algebra.Star.StarAlgHom
@@ -57,7 +57,7 @@ extension to a (unital) algebra homomorphism from `Unitization R A` to `B`.
 
 
 /-- The minimal unitization of a non-unital `R`-algebra `A`. This is just a type synonym for
-`R × A`.-/
+`R × A`. -/
 def Unitization (R A : Type*) :=
   R × A
 #align unitization Unitization
@@ -73,7 +73,7 @@ def inl [Zero A] (r : R) : Unitization R A :=
   (r, 0)
 #align unitization.inl Unitization.inl
 
--- porting note: we need a def to which we can attach `@[coe]`
+-- Porting note: we need a def to which we can attach `@[coe]`
 /-- The canonical inclusion `A → Unitization R A`. -/
 @[coe]
 def inr [Zero R] (a : A) : Unitization R A :=
@@ -155,6 +155,9 @@ Additive operators and scalar multiplication operate elementwise. -/
 section Additive
 
 variable {T : Type*} {S : Type*} {R : Type*} {A : Type*}
+
+instance instCanLift [Zero R] : CanLift (Unitization R A) A inr (fun x ↦ x.fst = 0) where
+  prf x hx := ⟨x.snd, ext (hx ▸ fst_inr R (snd x)) rfl⟩
 
 instance instInhabited [Inhabited R] [Inhabited A] : Inhabited (Unitization R A) :=
   instInhabitedProd
@@ -670,7 +673,8 @@ variable {S R A : Type*} [CommSemiring S] [CommSemiring R] [NonUnitalSemiring A]
   [SMulCommClass R A A] [IsScalarTower R A A] {B : Type*} [Semiring B] [Algebra S B] [Algebra S R]
   [DistribMulAction S A] [IsScalarTower S R A] {C : Type*} [Semiring C] [Algebra R C]
 
-theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
+theorem algHom_ext {F : Type*}
+    [FunLike F (Unitization R A) B] [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a)
     (h' : ∀ r, φ (algebraMap R (Unitization R A) r) = ψ (algebraMap R (Unitization R A) r)) :
     φ = ψ := by
@@ -679,7 +683,8 @@ theorem algHom_ext {F : Type*} [AlgHomClass F S (Unitization R A) B] {φ ψ : F}
   simp only [map_add, ← algebraMap_eq_inl, h, h']
 #align unitization.alg_hom_ext Unitization.algHom_ext
 
-lemma algHom_ext'' {F : Type*} [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
+lemma algHom_ext'' {F : Type*}
+    [FunLike F (Unitization R A) C] [AlgHomClass F R (Unitization R A) C] {φ ψ : F}
     (h : ∀ a : A, φ a = ψ a) : φ = ψ :=
   algHom_ext h (fun r => by simp only [AlgHomClass.commutes])
 
@@ -730,8 +735,8 @@ def _root_.NonUnitalAlgHom.toAlgHom (φ :A →ₙₐ[R] C) : Unitization R A →
 def lift : (A →ₙₐ[R] C) ≃ (Unitization R A →ₐ[R] C) where
   toFun := NonUnitalAlgHom.toAlgHom
   invFun φ := φ.toNonUnitalAlgHom.comp (inrNonUnitalAlgHom R A)
-  left_inv φ := by ext; simp
-  right_inv φ := Unitization.algHom_ext' <| by ext; simp
+  left_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
+  right_inv φ := by ext; simp [NonUnitalAlgHomClass.toNonUnitalAlgHom]
 #align unitization.lift Unitization.lift
 
 theorem lift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
@@ -772,9 +777,11 @@ def starLift : (A →⋆ₙₐ[R] C) ≃ (Unitization R A →⋆ₐ[R] C) :=
       simp [map_star] }
   invFun := fun φ ↦ φ.toNonUnitalStarAlgHom.comp (inrNonUnitalStarAlgHom R A),
   left_inv := fun φ => by ext; simp,
-  right_inv := fun φ => Unitization.algHom_ext'' <| by simp }
+  right_inv := fun φ => Unitization.algHom_ext'' <| by
+    simp }
 
-@[simp]
+-- Note (#6057) : tagging simpNF because linter complains
+@[simp high, nolint simpNF]
 theorem starLift_symm_apply_apply (φ : Unitization R A →ₐ[R] C) (a : A) :
     Unitization.lift.symm φ a = φ a :=
   rfl

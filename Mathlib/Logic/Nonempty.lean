@@ -20,16 +20,23 @@ This file proves a few extra facts about `Nonempty`, which is defined in core Le
   instance.
 -/
 
-set_option autoImplicit true
-
-
-variable {γ : α → Type*}
+variable {α β : Type*} {γ : α → Type*}
 
 instance (priority := 20) Zero.instNonempty [Zero α] : Nonempty α :=
   ⟨0⟩
 
 instance (priority := 20) One.instNonempty [One α] : Nonempty α :=
   ⟨1⟩
+
+@[simp]
+theorem Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
+  Iff.intro (fun h _ ↦ h _) fun h ⟨a⟩ ↦ h a
+#align nonempty.forall Nonempty.forall
+
+@[simp]
+theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
+  Iff.intro (fun ⟨⟨a⟩, h⟩ ↦ ⟨a, h⟩) fun ⟨a, h⟩ ↦ ⟨⟨a⟩, h⟩
+#align nonempty.exists Nonempty.exists
 
 theorem exists_true_iff_nonempty {α : Sort*} : (∃ _ : α, True) ↔ Nonempty α :=
   Iff.intro (fun ⟨a, _⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨a, trivial⟩
@@ -40,8 +47,11 @@ theorem nonempty_Prop {p : Prop} : Nonempty p ↔ p :=
   Iff.intro (fun ⟨h⟩ ↦ h) fun h ↦ ⟨h⟩
 #align nonempty_Prop nonempty_Prop
 
+theorem Nonempty.imp {α} {p : Prop} : (Nonempty α → p) ↔ (α → p) :=
+  Nonempty.forall
+
 theorem not_nonempty_iff_imp_false {α : Sort*} : ¬Nonempty α ↔ α → False :=
-  ⟨fun h a ↦ h ⟨a⟩, fun h ⟨a⟩ ↦ h a⟩
+  Nonempty.imp
 #align not_nonempty_iff_imp_false not_nonempty_iff_imp_false
 
 @[simp]
@@ -104,16 +114,6 @@ theorem nonempty_ulift : Nonempty (ULift α) ↔ Nonempty α :=
 theorem nonempty_plift {α} : Nonempty (PLift α) ↔ Nonempty α :=
   Iff.intro (fun ⟨⟨a⟩⟩ ↦ ⟨a⟩) fun ⟨a⟩ ↦ ⟨⟨a⟩⟩
 #align nonempty_plift nonempty_plift
-
-@[simp]
-theorem Nonempty.forall {α} {p : Nonempty α → Prop} : (∀ h : Nonempty α, p h) ↔ ∀ a, p ⟨a⟩ :=
-  Iff.intro (fun h _ ↦ h _) fun h ⟨a⟩ ↦ h a
-#align nonempty.forall Nonempty.forall
-
-@[simp]
-theorem Nonempty.exists {α} {p : Nonempty α → Prop} : (∃ h : Nonempty α, p h) ↔ ∃ a, p ⟨a⟩ :=
-  Iff.intro (fun ⟨⟨a⟩, h⟩ ↦ ⟨a, h⟩) fun ⟨a, h⟩ ↦ ⟨⟨a⟩, h⟩
-#align nonempty.exists Nonempty.exists
 
 /-- Using `Classical.choice`, lifts a (`Prop`-valued) `Nonempty` instance to a (`Type`-valued)
   `Inhabited` instance. `Classical.inhabited_of_nonempty` already exists, in

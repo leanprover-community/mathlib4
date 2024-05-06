@@ -30,7 +30,7 @@ private def denumerable_aux : ℚ ≃ { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs
   right_inv := fun ⟨⟨_, _⟩, _, _⟩ => rfl
 
 /-- **Denumerability of the Rational Numbers** -/
-instance : Denumerable ℚ := by
+instance instDenumerable : Denumerable ℚ := by
   let T := { x : ℤ × ℕ // 0 < x.2 ∧ x.1.natAbs.Coprime x.2 }
   letI : Infinite T := Infinite.of_injective _ denumerable_aux.injective
   letI : Encodable T := Subtype.encodable

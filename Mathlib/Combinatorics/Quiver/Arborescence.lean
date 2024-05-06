@@ -5,7 +5,6 @@ Authors: David Wärn
 -/
 import Mathlib.Combinatorics.Quiver.Path
 import Mathlib.Combinatorics.Quiver.Subquiver
-import Mathlib.Data.Nat.Defs
 import Mathlib.Order.WellFounded
 
 #align_import combinatorics.quiver.arborescence from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
@@ -76,8 +75,8 @@ noncomputable def arborescenceMk {V : Type u} [Quiver V] (r : V) (height : V →
       have height_le : ∀ {a b}, Path a b → height a ≤ height b := by
         intro a b p
         induction' p with b c _ e ih
-        rfl
-        exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
+        · rfl
+        · exact le_of_lt (lt_of_le_of_lt ih (height_lt e))
       suffices ∀ p q : Path r b, p = q by
         intro p
         apply this

@@ -4,13 +4,14 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Joseph Myers
 -/
 import Mathlib.Algebra.ModEq
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Algebra.Order.Archimedean
 import Mathlib.Algebra.Periodic
 import Mathlib.Data.Int.SuccPred
 import Mathlib.GroupTheory.QuotientGroup
 import Mathlib.Order.Circular
 import Mathlib.Data.List.TFAE
+import Mathlib.Data.Set.Lattice
 
 #align_import algebra.order.to_interval_mod from "leanprover-community/mathlib"@"213b0cff7bc5ab6696ee07cceec80829ce42efec"
 
@@ -391,7 +392,7 @@ theorem toIcoDiv_neg' (a b : α) : toIcoDiv hp (-a) b = -(toIocDiv hp a (-b) + 1
 #align to_Ico_div_neg' toIcoDiv_neg'
 
 theorem toIocDiv_neg (a b : α) : toIocDiv hp a (-b) = -(toIcoDiv hp (-a) b + 1) := by
-  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel]
+  rw [← neg_neg b, toIcoDiv_neg, neg_neg, neg_neg, neg_add', neg_neg, add_sub_cancel_right]
 #align to_Ioc_div_neg toIocDiv_neg
 
 theorem toIocDiv_neg' (a b : α) : toIocDiv hp (-a) b = -(toIcoDiv hp a (-b) + 1) := by
@@ -856,18 +857,17 @@ private theorem toIxxMod_cyclic_left {x₁ x₂ x₃ : α} (h : toIcoMod hp x₁
     toIcoMod hp x₂ x₃ ≤ toIocMod hp x₂ x₁ := by
   let x₂' := toIcoMod hp x₁ x₂
   let x₃' := toIcoMod hp x₂' x₃
-  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa
+  have h : x₂' ≤ toIocMod hp x₁ x₃' := by simpa [x₃']
   have h₂₁ : x₂' < x₁ + p := toIcoMod_lt_right _ _ _
   have h₃₂ : x₃' - p < x₂' := sub_lt_iff_lt_add.2 (toIcoMod_lt_right _ _ _)
-  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁
-  · obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
+  suffices hequiv : x₃' ≤ toIocMod hp x₂' x₁ by
+    obtain ⟨z, hd⟩ : ∃ z : ℤ, x₂ = x₂' + z • p := ((toIcoMod_eq_iff hp).1 rfl).2
     rw [hd, toIocMod_add_zsmul', toIcoMod_add_zsmul', add_le_add_iff_right]
     assumption -- Porting note: was `simpa`
   rcases le_or_lt x₃' (x₁ + p) with h₃₁ | h₁₃
-  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p
-    · exact hIoc₂₁.symm.trans_ge h₃₁
+  · suffices hIoc₂₁ : toIocMod hp x₂' x₁ = x₁ + p from hIoc₂₁.symm.trans_ge h₃₁
     apply (toIocMod_eq_iff hp).2
-    exact ⟨⟨h₂₁, by simp [left_le_toIcoMod]⟩, -1, by simp⟩
+    exact ⟨⟨h₂₁, by simp [x₂', left_le_toIcoMod]⟩, -1, by simp⟩
   have hIoc₁₃ : toIocMod hp x₁ x₃' = x₃' - p := by
     apply (toIocMod_eq_iff hp).2
     exact ⟨⟨lt_sub_iff_add_lt.2 h₁₃, le_of_lt (h₃₂.trans h₂₁)⟩, 1, by simp⟩
@@ -889,7 +889,7 @@ private theorem toIxxMod_total' (a b c : α) :
     Thus if a ≠ b and b ≠ c then ({a-b} + {b-c}) + ({c-b} + {b-a}) = 2 * period, so one of
     `{a-b} + {b-c}` and `{c-b} + {b-a}` must be `≤ period` -/
   have := congr_arg₂ (· + ·) (toIcoMod_add_toIocMod_zero hp a b) (toIcoMod_add_toIocMod_zero hp c b)
-  simp only [add_add_add_comm] at this -- Porting note: was `rw`
+  simp only [add_add_add_comm] at this -- Porting note (#10691): Was `rw`
   rw [_root_.add_comm (toIocMod _ _ _), add_add_add_comm, ← two_nsmul] at this
   replace := min_le_of_add_le_two_nsmul this.le
   rw [min_le_iff] at this
@@ -907,8 +907,8 @@ private theorem toIxxMod_trans {x₁ x₂ x₃ x₄ : α}
     (h₂₃₄ : toIcoMod hp x₂ x₄ ≤ toIocMod hp x₂ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₂) :
     toIcoMod hp x₁ x₄ ≤ toIocMod hp x₁ x₃ ∧ ¬toIcoMod hp x₃ x₄ ≤ toIocMod hp x₃ x₁ := by
   constructor
-  · suffices h : ¬x₃ ≡ x₂ [PMOD p]
-    · have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
+  · suffices h : ¬x₃ ≡ x₂ [PMOD p] by
+      have h₁₂₃' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₁₂₃.1)
       have h₂₃₄' := toIxxMod_cyclic_left _ (toIxxMod_cyclic_left _ h₂₃₄.1)
       rw [(not_modEq_iff_toIcoMod_eq_toIocMod hp).1 h] at h₂₃₄'
       exact toIxxMod_cyclic_left _ (h₁₂₃'.trans h₂₃₄')
@@ -1086,34 +1086,34 @@ section LinearOrderedRing
 
 variable {α : Type*} [LinearOrderedRing α] [Archimedean α] (a : α)
 
-theorem iUnion_Ioc_add_int_cast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Ioc_add_intCast : ⋃ n : ℤ, Ioc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ioc_add_zsmul zero_lt_one a
-#align Union_Ioc_add_int_cast iUnion_Ioc_add_int_cast
+#align Union_Ioc_add_int_cast iUnion_Ioc_add_intCast
 
-theorem iUnion_Ico_add_int_cast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Ico_add_intCast : ⋃ n : ℤ, Ico (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Ico_add_zsmul zero_lt_one a
-#align Union_Ico_add_int_cast iUnion_Ico_add_int_cast
+#align Union_Ico_add_int_cast iUnion_Ico_add_intCast
 
-theorem iUnion_Icc_add_int_cast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
+theorem iUnion_Icc_add_intCast : ⋃ n : ℤ, Icc (a + n) (a + n + 1) = Set.univ := by
   simpa only [zsmul_one, Int.cast_add, Int.cast_one, ← add_assoc] using
     iUnion_Icc_add_zsmul zero_lt_one a
-#align Union_Icc_add_int_cast iUnion_Icc_add_int_cast
+#align Union_Icc_add_int_cast iUnion_Icc_add_intCast
 
 variable (α)
 
-theorem iUnion_Ioc_int_cast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Ioc_add_int_cast (0 : α)
-#align Union_Ioc_int_cast iUnion_Ioc_int_cast
+theorem iUnion_Ioc_intCast : ⋃ n : ℤ, Ioc (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ioc_add_intCast (0 : α)
+#align Union_Ioc_int_cast iUnion_Ioc_intCast
 
-theorem iUnion_Ico_int_cast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Ico_add_int_cast (0 : α)
-#align Union_Ico_int_cast iUnion_Ico_int_cast
+theorem iUnion_Ico_intCast : ⋃ n : ℤ, Ico (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Ico_add_intCast (0 : α)
+#align Union_Ico_int_cast iUnion_Ico_intCast
 
-theorem iUnion_Icc_int_cast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
-  simpa only [zero_add] using iUnion_Icc_add_int_cast (0 : α)
-#align Union_Icc_int_cast iUnion_Icc_int_cast
+theorem iUnion_Icc_intCast : ⋃ n : ℤ, Icc (n : α) (n + 1) = Set.univ := by
+  simpa only [zero_add] using iUnion_Icc_add_intCast (0 : α)
+#align Union_Icc_int_cast iUnion_Icc_intCast
 
 end LinearOrderedRing
 

@@ -106,7 +106,7 @@ theorem exists_seq_separating (α : Type*) {p : Set α → Prop} {s₀} (hp : p 
   rcases exists_nonempty_countable_separating α hp t with ⟨S, hSne, hSc, hS⟩
   rcases hSc.exists_eq_range hSne with ⟨S, rfl⟩
   use S
-  simpa only [forall_range_iff] using hS
+  simpa only [forall_mem_range] using hS
 
 theorem HasCountableSeparatingOn.mono {α} {p₁ p₂ : Set α → Prop} {t₁ t₂ : Set α}
     [h : HasCountableSeparatingOn α p₁ t₁] (hp : ∀ s, p₁ s → p₂ s) (ht : t₂ ⊆ t₁) :
@@ -120,10 +120,23 @@ theorem HasCountableSeparatingOn.of_subtype {α : Type*} {p : Set α → Prop} {
     (hpq : ∀ U, q U → ∃ V, p V ∧ (↑) ⁻¹' V = U) : HasCountableSeparatingOn α p t := by
   rcases h.1 with ⟨S, hSc, hSq, hS⟩
   choose! V hpV hV using fun s hs ↦ hpq s (hSq s hs)
-  refine ⟨⟨V '' S, hSc.image _, ball_image_iff.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
+  refine ⟨⟨V '' S, hSc.image _, forall_mem_image.2 hpV, fun x hx y hy h ↦ ?_⟩⟩
   refine congr_arg Subtype.val (hS ⟨x, hx⟩ trivial ⟨y, hy⟩ trivial fun U hU ↦ ?_)
   rw [← hV U hU]
   exact h _ (mem_image_of_mem _ hU)
+
+theorem HasCountableSeparatingOn.subtype_iff {α : Type*} {p : Set α → Prop} {t : Set α} :
+    HasCountableSeparatingOn t (fun u ↦ ∃ v, p v ∧ (↑) ⁻¹' v = u) univ ↔
+    HasCountableSeparatingOn α p t := by
+  constructor <;> intro h
+  · exact h.of_subtype $ fun s ↦ id
+  rcases h with ⟨S, Sct, Sp, hS⟩
+  use {Subtype.val ⁻¹' s | s ∈ S}, Sct.image _, ?_, ?_
+  · rintro u ⟨t, tS, rfl⟩
+    exact ⟨t, Sp _ tS, rfl⟩
+  rintro x - y - hxy
+  exact Subtype.val_injective $ hS _ (Subtype.coe_prop _) _ (Subtype.coe_prop _)
+    fun s hs ↦ hxy (Subtype.val ⁻¹' s) ⟨s, hs, rfl⟩
 
 namespace Filter
 

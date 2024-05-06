@@ -46,7 +46,7 @@ noncomputable def CNFRec (b : Ordinal) {C : Ordinal → Sort*} (H0 : C 0)
     by_cases h : o = 0
     · rw [h]; exact H0
     · exact H o h (CNFRec _ H0 H (o % b ^ log b o))
-    termination_by CNFRec b H0 H o => o
+    termination_by o => o
     decreasing_by exact mod_opow_log_lt_self b h
 set_option linter.uppercaseLean3 false in
 #align ordinal.CNF_rec Ordinal.CNFRec

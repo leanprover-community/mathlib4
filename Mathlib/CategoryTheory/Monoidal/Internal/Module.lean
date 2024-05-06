@@ -38,9 +38,9 @@ variable {R : Type u} [CommRing R]
 
 namespace MonModuleEquivalenceAlgebra
 
--- Porting note : in the following proof `have := ...; convert this` is to help Lean infer what the
+-- Porting note: in the following proof `have := ...; convert this` is to help Lean infer what the
 -- underlying rings are.
--- Porting note : `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
+-- Porting note: `simps(!)` doesn't work, I guess we will see what `simp` lemmas are needed and
 -- add them manually
 -- @[simps!]
 instance Ring_of_Mon_ (A : Mon_ (ModuleCat.{u} R)) : Ring A.X :=
@@ -113,49 +113,47 @@ def inverseObj (A : AlgebraCat.{u} R) : Mon_ (ModuleCat.{u} R) where
   one := Algebra.linearMap R A
   mul := LinearMap.mul' R A
   one_mul := by
-    -- Porting note : `ext` did not pick up `TensorProduct.ext`
+    -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext_ring <| LinearMap.ext fun x => ?_
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [compr₂_apply, compr₂_apply, CategoryTheory.comp_apply]
-    -- Porting note : this `dsimp` does nothing
+    -- Porting note: this `dsimp` does nothing
     -- dsimp [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, RingHom.map_one,
     --   ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
     --   ModuleCat.MonoidalCategory.leftUnitor_hom_apply]
-    -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
+    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [LinearMap.mul'_apply, MonoidalCategory.leftUnitor_hom_apply, ← Algebra.smul_def]
-    rw [id_apply]
+    erw [id_apply]
   mul_one := by
-    -- Porting note : `ext` did not pick up `TensorProduct.ext`
+    -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext_ring ?_
-    -- Porting note : this `dsimp` does nothing
+    -- Porting note: this `dsimp` does nothing
     -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, Algebra.linearMap_apply,
     --   LinearMap.compr₂_apply, Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply,
     --   AlgebraCat.coe_comp]
-    -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
+    -- Porting note: because `dsimp` is not effective, `rw` needs to be changed to `erw`
     erw [compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, ModuleCat.MonoidalCategory.rightUnitor_hom_apply, ← Algebra.commutes,
       ← Algebra.smul_def]
-    rw [id_apply]
+    erw [id_apply]
   mul_assoc := by
-    -- Porting note : `ext` did not pick up `TensorProduct.ext`
+    set_option tactic.skipAssignedInstances false in
+    -- Porting note: `ext` did not pick up `TensorProduct.ext`
     refine TensorProduct.ext <| TensorProduct.ext <| LinearMap.ext fun x => LinearMap.ext fun y =>
       LinearMap.ext fun z => ?_
-    -- Porting note : this `dsimp` does nothing
-    -- dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
-    --   Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
-    --   MonoidalCategory.associator_hom_apply]
-    -- Porting note : because `dsimp` is not effective, `rw` needs to be changed to `erw`
-    rw [compr₂_apply, compr₂_apply, compr₂_apply, compr₂_apply]
+    dsimp only [AlgebraCat.id_apply, TensorProduct.mk_apply, LinearMap.compr₂_apply,
+      Function.comp_apply, ModuleCat.MonoidalCategory.hom_apply, AlgebraCat.coe_comp,
+      MonoidalCategory.associator_hom_apply]
+    rw [compr₂_apply, compr₂_apply]
     -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
     erw [CategoryTheory.comp_apply,
       CategoryTheory.comp_apply, CategoryTheory.comp_apply]
     erw [LinearMap.mul'_apply, LinearMap.mul'_apply]
-    rw [id_apply, TensorProduct.mk_apply]
-    erw [TensorProduct.mk_apply, TensorProduct.mk_apply, id_apply, LinearMap.mul'_apply,
-      LinearMap.mul'_apply]
+    erw [id_apply]
+    erw [TensorProduct.mk_apply, TensorProduct.mk_apply, mul'_apply, LinearMap.id_apply, mul'_apply]
     simp only [LinearMap.mul'_apply, mul_assoc]
 #align Module.Mon_Module_equivalence_Algebra.inverse_obj ModuleCat.MonModuleEquivalenceAlgebra.inverseObj
 
@@ -190,25 +188,20 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
               mul_hom := by
-                -- Porting note : `ext` did not pick up `TensorProduct.ext`
+                -- Porting note: `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
-                rfl
-              one_hom := by ext; rfl }
+                rfl }
           inv :=
             { hom :=
                 { toFun := _root_.id
                   map_add' := fun x y => rfl
                   map_smul' := fun r a => rfl }
               mul_hom := by
-                -- Porting note : `ext` did not pick up `TensorProduct.ext`
+                -- Porting note: `ext` did not pick up `TensorProduct.ext`
                 refine TensorProduct.ext ?_
                 dsimp at *
-                rfl
-              one_hom := by ext; rfl }
-          hom_inv_id := by ext; rfl
-          inv_hom_id := by ext; rfl })
-      (by aesop_cat)
+                rfl } })
   counitIso :=
     NatIso.ofComponents
       (fun A =>
@@ -226,7 +219,6 @@ def monModuleEquivalenceAlgebra : Mon_ (ModuleCat.{u} R) ≌ AlgebraCat R where
               map_one' := (algebraMap R A).map_one.symm
               map_mul' := fun x y => (@LinearMap.mul'_apply R _ _ _ _ _ _ x y).symm
               commutes' := fun r => rfl } })
-      (by intros; rfl)
 #align Module.Mon_Module_equivalence_Algebra ModuleCat.monModuleEquivalenceAlgebra
 
 -- These lemmas have always been bad (#7657), but leanprover/lean4#2644 made `simp` start noticing
@@ -248,7 +240,6 @@ def monModuleEquivalenceAlgebraForget :
           { toFun := _root_.id
             map_add' := fun x y => rfl
             map_smul' := fun c x => rfl } })
-    (by aesop_cat)
 #align Module.Mon_Module_equivalence_Algebra_forget ModuleCat.monModuleEquivalenceAlgebraForget
 
 end ModuleCat

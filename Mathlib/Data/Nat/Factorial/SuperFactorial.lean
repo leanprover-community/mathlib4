@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Moritz Firsching
 -/
 import Mathlib.Algebra.BigOperators.Intervals
+import Mathlib.Algebra.Polynomial.Monic
 import Mathlib.Data.Nat.Factorial.Basic
-import Mathlib.Data.Polynomial.Monic
 import Mathlib.LinearAlgebra.Vandermonde
 import Mathlib.RingTheory.Polynomial.Pochhammer
 
@@ -61,8 +61,8 @@ theorem prod_Icc_factorial : ∀ n : ℕ, ∏ x in Icc 1 n, x ! = sf n
     Nat.succ_eq_add_one, mul_comm]
 
 @[simp]
-theorem prod_range_factorial_succ : ∀ n : ℕ, ∏ x in range n, (x + 1)! = sf n :=
-  fun n => (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
+theorem prod_range_factorial_succ (n : ℕ) : ∏ x in range n, (x + 1)! = sf n :=
+  (prod_Icc_factorial n) ▸ range_eq_Ico ▸ Finset.prod_Ico_add' _ _ _ _
 
 @[simp]
 theorem prod_range_succ_factorial : ∀ n : ℕ, ∏ x in range (n + 1), x ! = sf n
@@ -97,7 +97,7 @@ theorem superFactorial_four_mul (n : ℕ) :
     sf (4 * n) = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! :=
   calc
     sf (4 * n) = (∏ i in range (2 * n), (2 * i + 1) !) ^ 2 * 2 ^ (2 * n) * (2 * n) ! := by
-      rw [← superFactorial_two_mul, ← mul_assoc]
+      rw [← superFactorial_two_mul, ← mul_assoc, Nat.mul_two]
     _ = ((∏ i in range (2 * n), (2 * i + 1) !) * 2 ^ n) ^ 2 * (2 * n) ! := by
       rw [pow_mul', mul_pow]
 
@@ -106,7 +106,7 @@ private theorem matrixOf_eval_descPochhammer_eq_mul_matrixOf_choose {n : ℕ} (v
     (∏ i : Fin n, Nat.factorial i) *
       (Matrix.of (fun (i j : Fin n) => (Nat.choose (v i) (j : ℕ) : ℤ))).det := by
   convert Matrix.det_mul_row (fun (i : Fin n) => ((Nat.factorial (i : ℕ)):ℤ)) _
-  · rw [Matrix.of_apply, descPochhammer_int_eq_descFactorial _ _]
+  · rw [Matrix.of_apply, descPochhammer_eval_eq_descFactorial ℤ _ _]
     congr
     exact Nat.descFactorial_eq_factorial_mul_choose _ _
   · rw [Nat.cast_prod]

@@ -170,7 +170,7 @@ variable [CompleteSemilatticeInf P] {F : PFilter P}
 theorem sInf_gc :
     GaloisConnection (fun x => toDual (principal x)) fun F => sInf (ofDual F : PFilter P) :=
   fun x F => by
-  simp
+  simp only [le_sInf_iff, SetLike.mem_coe]
   rfl
 #align order.pfilter.Inf_gc Order.PFilter.sInf_gc
 

@@ -161,7 +161,7 @@ theorem Prefunctor.symmetrifyStar (u : U) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyStar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyStar]`
     simp only [Quiver.symmetrifyStar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp
@@ -174,7 +174,7 @@ protected theorem Prefunctor.symmetrifyCostar (u : U) :
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [Equiv.eq_symm_comp]
   ext ⟨v, f | g⟩ <;>
-    -- Porting note: was `simp [Quiver.symmetrifyCostar]`
+    -- porting note (#10745): was `simp [Quiver.symmetrifyCostar]`
     simp only [Quiver.symmetrifyCostar, Function.comp_apply] <;>
     erw [Equiv.sigmaSumDistrib_apply, Equiv.sigmaSumDistrib_apply] <;>
     simp

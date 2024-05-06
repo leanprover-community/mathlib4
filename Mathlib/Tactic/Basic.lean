@@ -36,16 +36,6 @@ def pushFVarAliasInfo [Monad m] [MonadInfoTree m]
       let decl := newLCtx.get! new
       pushInfoLeaf (.ofFVarAliasInfo { id := new, baseId := old, userName := decl.userName })
 
-syntax "transitivity" (ppSpace colGt term)? : tactic
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.le_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.le_trans (m := $e))
-set_option hygiene false in
-macro_rules
-  | `(tactic| transitivity) => `(tactic| apply Nat.lt_trans)
-  | `(tactic| transitivity $e) => `(tactic| apply Nat.lt_trans (m := $e))
-
 /--
 The tactic `introv` allows the user to automatically introduce the variables of a theorem and
 explicitly name the non-dependent hypotheses.

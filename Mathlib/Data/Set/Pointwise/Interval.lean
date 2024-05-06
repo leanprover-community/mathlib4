@@ -3,8 +3,8 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot
 -/
-import Mathlib.Data.Set.Intervals.UnorderedInterval
-import Mathlib.Data.Set.Intervals.Monoid
+import Mathlib.Order.Interval.Set.UnorderedInterval
+import Mathlib.Algebra.Order.Interval.Set.Monoid
 import Mathlib.Data.Set.Pointwise.Basic
 import Mathlib.Algebra.Order.Field.Basic
 import Mathlib.Algebra.Order.Group.MinMax
@@ -346,11 +346,11 @@ theorem preimage_const_sub_Ioo : (fun x => a - x) ⁻¹' Ioo b c = Ioo (a - c) (
 -/
 
 
--- @[simp] -- Porting note: simp can prove this modulo `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
 theorem image_const_add_Iic : (fun x => a + x) '' Iic b = Iic (a + b) := by simp [add_comm]
 #align set.image_const_add_Iic Set.image_const_add_Iic
 
--- @[simp] -- Porting note: simp can prove this modulo `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this modulo `add_comm`
 theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp [add_comm]
 #align set.image_const_add_Iio Set.image_const_add_Iio
 
@@ -359,11 +359,11 @@ theorem image_const_add_Iio : (fun x => a + x) '' Iio b = Iio (a + b) := by simp
 -/
 
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iic : (fun x => x + a) '' Iic b = Iic (b + a) := by simp
 #align set.image_add_const_Iic Set.image_add_const_Iic
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_Iio : (fun x => x + a) '' Iio b = Iio (b + a) := by simp
 #align set.image_add_const_Iio Set.image_add_const_Iio
 
@@ -536,11 +536,11 @@ theorem preimage_const_sub_uIcc : (fun x => a - x) ⁻¹' [[b, c]] = [[a - b, a 
   simp only [sub_eq_add_neg, min_add_add_left, max_add_add_left, min_neg_neg, max_neg_neg]
 #align set.preimage_const_sub_uIcc Set.preimage_const_sub_uIcc
 
--- @[simp] -- Porting note: simp can prove this module `add_comm`
+-- @[simp] -- Porting note (#10618): simp can prove this module `add_comm`
 theorem image_const_add_uIcc : (fun x => a + x) '' [[b, c]] = [[a + b, a + c]] := by simp [add_comm]
 #align set.image_const_add_uIcc Set.image_const_add_uIcc
 
--- @[simp] -- Porting note: simp can prove this
+-- @[simp] -- Porting note (#10618): simp can prove this
 theorem image_add_const_uIcc : (fun x => x + a) '' [[b, c]] = [[b + a, c + a]] := by simp
 #align set.image_add_const_uIcc Set.image_add_const_uIcc
 

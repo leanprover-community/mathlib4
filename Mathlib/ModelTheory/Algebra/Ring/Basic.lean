@@ -312,10 +312,10 @@ are local instances.
       intros; rfl
     funMap_zero := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl
+      rfl
     funMap_one := by
       simp only [Fin.forall_fin_succ_pi, Fin.cons_zero, Fin.forall_fin_zero_pi];
-      intros; rfl  }
+      rfl  }
 
 end Ring
 

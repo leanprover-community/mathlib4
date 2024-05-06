@@ -63,13 +63,13 @@ instance CharZero.NeZero.two : NeZero (2 : M) :=
 
 namespace Function
 
-lemma support_nat_cast (hn : n ≠ 0) : support (n : α → M) = univ :=
+lemma support_natCast (hn : n ≠ 0) : support (n : α → M) = univ :=
   support_const <| Nat.cast_ne_zero.2 hn
-#align function.support_nat_cast Function.support_nat_cast
+#align function.support_nat_cast Function.support_natCast
 
-lemma mulSupport_nat_cast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
+lemma mulSupport_natCast (hn : n ≠ 1) : mulSupport (n : α → M) = univ :=
   mulSupport_const <| Nat.cast_ne_one.2 hn
-#align function.mul_support_nat_cast Function.mulSupport_nat_cast
+#align function.mul_support_nat_cast Function.mulSupport_natCast
 
 end Function
 end AddMonoidWithOne
@@ -168,8 +168,8 @@ section
 
 variable {R : Type*} [DivisionRing R] [CharZero R]
 
-@[simp]
-theorem half_add_self (a : R) : (a + a) / 2 = a := by rw [← mul_two, mul_div_cancel a two_ne_zero]
+@[simp] lemma half_add_self (a : R) : (a + a) / 2 = a := by
+  rw [← mul_two, mul_div_cancel_right₀ a two_ne_zero]
 #align half_add_self half_add_self
 
 @[simp]
@@ -189,7 +189,7 @@ namespace WithTop
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithTop R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithTop
 
@@ -198,7 +198,7 @@ namespace WithBot
 instance {R : Type*} [AddMonoidWithOne R] [CharZero R] :
     CharZero (WithBot R) where
   cast_injective m n h := by
-    rwa [← coe_nat, ← coe_nat n, coe_eq_coe, Nat.cast_inj] at h
+    rwa [← coe_natCast, ← coe_natCast n, coe_eq_coe, Nat.cast_inj] at h
 
 end WithBot
 
@@ -221,3 +221,17 @@ theorem RingHom.injective_nat (f : ℕ →+* R) [CharZero R] : Function.Injectiv
 #align ring_hom.injective_nat RingHom.injective_nat
 
 end RingHom
+
+section Units
+
+variable {R : Type*} [Ring R] [CharZero R]
+
+@[simp]
+theorem units_ne_neg_self (u : Rˣ) : u ≠ -u := by
+  simp_rw [ne_eq, Units.ext_iff, Units.val_neg, eq_neg_iff_add_eq_zero, ← two_mul,
+    Units.mul_left_eq_zero, two_ne_zero, not_false_iff]
+
+@[simp]
+theorem neg_units_ne_self (u : Rˣ) : -u ≠ u := (units_ne_neg_self u).symm
+
+end Units
