@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jeremy Avigad
 -/
 import Mathlib.Algebra.Order.Ring.Abs
-import Mathlib.Data.Nat.Pow
 
 #align_import data.int.order.lemmas from "leanprover-community/mathlib"@"fc2ed6f838ce7c9b7c7171e58d78eaf7b438fb0e"
 
@@ -27,7 +26,7 @@ variable {a b : ℤ} {n : ℕ}
 
 theorem natAbs_eq_iff_mul_self_eq {a b : ℤ} : a.natAbs = b.natAbs ↔ a * a = b * b := by
   rw [← abs_eq_iff_mul_self_eq, abs_eq_natAbs, abs_eq_natAbs]
-  exact Int.coe_nat_inj'.symm
+  exact Int.natCast_inj.symm
 #align int.nat_abs_eq_iff_mul_self_eq Int.natAbs_eq_iff_mul_self_eq
 
 #align int.eq_nat_abs_iff_mul_eq_zero Int.eq_natAbs_iff_mul_eq_zero

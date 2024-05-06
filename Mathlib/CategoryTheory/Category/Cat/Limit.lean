@@ -106,7 +106,7 @@ def limitConeLift (F : J ⥤ Cat.{v, v}) (s : Cone F) : s.pt ⟶ limitConeX F wh
       { pt := s.pt
         π :=
           { app := fun j => (s.π.app j).obj
-            naturality := fun _ _ f => Functor.congr_map objects (s.π.naturality f) } }
+            naturality := fun _ _ f => objects.congr_map (s.π.naturality f) } }
   map f := by
     fapply Types.Limit.mk.{v, v}
     · intro j

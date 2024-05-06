@@ -40,7 +40,7 @@ theorem hasStrictDerivAt_zpow (m : ℤ) (x : 𝕜) (h : x ≠ 0 ∨ 0 ≤ m) :
     HasStrictDerivAt (fun x => x ^ m) ((m : 𝕜) * x ^ (m - 1)) x := by
   have : ∀ m : ℤ, 0 < m → HasStrictDerivAt (· ^ m) ((m : 𝕜) * x ^ (m - 1)) x := fun m hm ↦ by
     lift m to ℕ using hm.le
-    simp only [zpow_natCast, Int.cast_ofNat]
+    simp only [zpow_natCast, Int.cast_natCast]
     convert hasStrictDerivAt_pow m x using 2
     rw [← Int.ofNat_one, ← Int.ofNat_sub, zpow_natCast]
     norm_cast at hm
@@ -110,7 +110,7 @@ theorem iter_deriv_zpow' (m : ℤ) (k : ℕ) :
   · simp only [Nat.zero_eq, one_mul, Int.ofNat_zero, id, sub_zero, Finset.prod_range_zero,
       Function.iterate_zero]
   · simp only [Function.iterate_succ_apply', ihk, deriv_const_mul_field', deriv_zpow',
-      Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_ofNat, mul_assoc]
+      Finset.prod_range_succ, Int.ofNat_succ, ← sub_sub, Int.cast_sub, Int.cast_natCast, mul_assoc]
 #align iter_deriv_zpow' iter_deriv_zpow'
 
 theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
@@ -120,7 +120,7 @@ theorem iter_deriv_zpow (m : ℤ) (x : 𝕜) (k : ℕ) :
 
 theorem iter_deriv_pow (n : ℕ) (x : 𝕜) (k : ℕ) :
     deriv^[k] (fun x : 𝕜 => x ^ n) x = (∏ i in Finset.range k, ((n : 𝕜) - i)) * x ^ (n - k) := by
-  simp only [← zpow_natCast, iter_deriv_zpow, Int.cast_ofNat]
+  simp only [← zpow_natCast, iter_deriv_zpow, Int.cast_natCast]
   rcases le_or_lt k n with hkn | hnk
   · rw [Int.ofNat_sub hkn]
   · have : (∏ i in Finset.range k, (n - i : 𝕜)) = 0 :=

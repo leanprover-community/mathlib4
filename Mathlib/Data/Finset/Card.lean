@@ -66,16 +66,14 @@ theorem card_le_card : s ⊆ t → s.card ≤ t.card :=
 theorem card_mono : Monotone (@card α) := by apply card_le_card
 #align finset.card_mono Finset.card_mono
 
-@[simp]
-theorem card_eq_zero : s.card = 0 ↔ s = ∅ :=
-  card_eq_zero.trans val_eq_zero
+@[simp] lemma card_eq_zero : s.card = 0 ↔ s = ∅ := card_eq_zero.trans val_eq_zero
+lemma card_ne_zero : s.card ≠ 0 ↔ s.Nonempty := card_eq_zero.ne.trans nonempty_iff_ne_empty.symm
+lemma card_pos : 0 < s.card ↔ s.Nonempty := pos_iff_ne_zero.trans card_ne_zero
 #align finset.card_eq_zero Finset.card_eq_zero
-
-theorem card_pos : 0 < s.card ↔ s.Nonempty :=
-  pos_iff_ne_zero.trans <| (not_congr card_eq_zero).trans nonempty_iff_ne_empty.symm
 #align finset.card_pos Finset.card_pos
 
 alias ⟨_, Nonempty.card_pos⟩ := card_pos
+alias ⟨_, Nonempty.card_ne_zero⟩ := card_ne_zero
 #align finset.nonempty.card_pos Finset.Nonempty.card_pos
 
 theorem card_ne_zero_of_mem (h : a ∈ s) : s.card ≠ 0 :=
@@ -668,7 +666,7 @@ theorem one_lt_card_iff : 1 < s.card ↔ ∃ a b, a ∈ s ∧ b ∈ s ∧ a ≠ 
 
 theorem one_lt_card_iff_nontrivial : 1 < s.card ↔ s.Nontrivial := by
   rw [← not_iff_not, not_lt, Finset.Nontrivial, ← Set.nontrivial_coe_sort,
-      not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe]; rfl
+    not_nontrivial_iff_subsingleton, card_le_one_iff_subsingleton_coe, coe_sort_coe]
 
 @[deprecated] alias one_lt_card_iff_nontrivial_coe := one_lt_card_iff_nontrivial
 
@@ -849,12 +847,6 @@ theorem lt_wf {α} : WellFounded (@LT.lt (Finset α) _) :=
   Subrelation.wf H <| InvImage.wf _ <| (Nat.lt_wfRel).2
 #align finset.lt_wf Finset.lt_wf
 
-/-!
-### Deprecated lemmas
-
-Those lemmas have been deprecated on 2023-12-27.
--/
-
-@[deprecated] alias card_le_of_subset := card_le_card
+@[deprecated] alias card_le_of_subset := card_le_card -- 2023-12-27
 
 end Finset

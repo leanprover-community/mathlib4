@@ -87,7 +87,7 @@ def AddAction.toPermHom (α : Type*) [AddGroup α] [AddAction α β] :
 
 /-- The tautological action by `Equiv.Perm α` on `α`.
 
-This generalizes `Function.End.applyMulAction`.-/
+This generalizes `Function.End.applyMulAction`. -/
 instance Equiv.Perm.applyMulAction (α : Type*) : MulAction (Equiv.Perm α) α where
   smul f a := f a
   one_smul _ := rfl

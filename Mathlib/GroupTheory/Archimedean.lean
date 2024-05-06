@@ -3,8 +3,8 @@ Copyright (c) 2020 Heather Macbeth, Patrick Massot. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Heather Macbeth, Patrick Massot
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Algebra.Order.Archimedean
-import Mathlib.GroupTheory.Subgroup.Basic
 import Mathlib.Data.Set.Lattice
 
 #align_import group_theory.archimedean from "leanprover-community/mathlib"@"f93c11933efbc3c2f0299e47b8ff83e9b539cbf6"
@@ -83,7 +83,7 @@ theorem AddSubgroup.exists_isLeast_pos {H : AddSubgroup G} (hbot : H ≠ ⊥) {a
   · refine disjoint_left.1 hd (sub_mem hxH hyH) ⟨sub_pos.2 hxy, sub_lt_iff_lt_add'.2 ?_⟩
     calc x ≤ (n + 1) • a := hxn
     _ ≤ (m + 1) • a := nsmul_le_nsmul_left h₀.le (add_le_add_right hnm _)
-    _ = m • a + a := succ_nsmul' _ _
+    _ = m • a + a := succ_nsmul _ _
     _ < y + a := add_lt_add_right hm.1 _
 
 /-- If an additive subgroup of a linear ordered additive commutative group is disjoint with the

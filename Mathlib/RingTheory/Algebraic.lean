@@ -91,7 +91,7 @@ variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 variable [IsScalarTower R S A]
 
-/-- An integral element of an algebra is algebraic.-/
+/-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
   fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
 #align is_integral.is_algebraic IsIntegral.isAlgebraic
@@ -216,7 +216,7 @@ section Field
 
 variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
-/-- An element of an algebra over a field is algebraic if and only if it is integral.-/
+/-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
   refine' ⟨_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
@@ -252,7 +252,7 @@ theorem IsAlgebraic.tower_top_of_injective
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
-    rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
+    rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 #align is_algebraic_of_larger_base_of_injective IsAlgebraic.tower_top_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
