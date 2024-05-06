@@ -53,10 +53,11 @@ instance instNonarchimedeanGroupCompletion {G : Type*} [Group G] [UniformSpace G
     have : IsOpen V := by
       /- Since `V` is a subgroup of `Completion G`, it suffices to show that it is a neighborhood of
       `0` in `Completion G`. This follows from the fact that `toCompl : G → Completion G` is dense
-      inducing and `W` is a neighborhood of `0` in `G`. -/
-      apply isOpen_of_mem_nhds (g := 0)
-      apply (denseInducing_toCompl _).closure_image_mem_nhds
-      exact mem_nhds_zero W
+      inducing and `W` is a neighborhood of `1` in `G`. -/
+      haveI : ContinuousMul (Completion G) := instContinuousMul
+      apply isOpen_of_mem_nhds (g := 1)
+      apply (denseInducing_toComplMulHom _).closure_image_mem_nhds
+      exact mem_nhds_one W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
     follows from the fact that `W ⊆ toCompl ⁻¹' C` and `C` is closed. -/
