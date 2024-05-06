@@ -342,8 +342,8 @@ theorem subOneIntegralPowerBasis_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} 
 
 theorem subOneIntegralPowerBasis'_gen_prime [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) :
-    Prime hζ.subOneIntegralPowerBasis'.gen := by simpa only [subOneIntegralPowerBasis'_gen] using
-      hζ.zeta_sub_one_prime'
+    Prime hζ.subOneIntegralPowerBasis'.gen := by
+  simpa only [subOneIntegralPowerBasis'_gen] using hζ.zeta_sub_one_prime'
 
 open nonZeroDivisors in
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
