@@ -850,6 +850,7 @@ instance (i : α) : Unique ({i} : Finset α) where
   default := ⟨i, mem_singleton_self i⟩
   uniq j := Subtype.ext <| mem_singleton.mp j.2
 
+set_option backward.synthInstance.canonInstances false in -- See https://github.com/leanprover-community/mathlib4/issues/12532
 @[simp]
 lemma default_singleton (i : α) : ((default : ({i} : Finset α)) : α) = i := rfl
 
@@ -980,7 +981,8 @@ theorem _root_.Disjoint.forall_ne_finset (h : Disjoint s t) (ha : a ∈ s) (hb :
 #align disjoint.forall_ne_finset Disjoint.forall_ne_finset
 
 theorem not_disjoint_iff : ¬Disjoint s t ↔ ∃ a, a ∈ s ∧ a ∈ t :=
-  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ => by rw [not_imp, not_not]
+  disjoint_left.not.trans <| not_forall.trans <| exists_congr fun _ => by
+    rw [Classical.not_imp, not_not]
 #align finset.not_disjoint_iff Finset.not_disjoint_iff
 
 theorem disjoint_of_subset_left (h : s ⊆ u) (d : Disjoint u t) : Disjoint s t :=
@@ -2812,6 +2814,10 @@ theorem filter_not (s : Finset α) : (s.filter fun a => ¬p a) = s \ s.filter p 
     simp only [Bool.decide_coe, Bool.not_eq_true', mem_filter, and_comm, mem_sdiff, not_and_or,
       Bool.not_eq_true, and_or_left, and_not_self, or_false]
 #align finset.filter_not Finset.filter_not
+
+lemma filter_and_not (s : Finset α) (p q : α → Prop) [DecidablePred p] [DecidablePred q] :
+    s.filter (fun a ↦ p a ∧ ¬ q a) = s.filter p \ s.filter q := by
+  rw [filter_and, filter_not, ← inter_sdiff_assoc, inter_eq_left.2 (filter_subset _ _)]
 
 theorem sdiff_eq_filter (s₁ s₂ : Finset α) : s₁ \ s₂ = filter (· ∉ s₂) s₁ :=
   ext fun _ => by simp [mem_sdiff, mem_filter]

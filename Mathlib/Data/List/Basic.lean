@@ -3,7 +3,6 @@ Copyright (c) 2014 Parikshit Khanna. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Parikshit Khanna, Jeremy Avigad, Leonardo de Moura, Floris van Doorn, Mario Carneiro
 -/
-import Mathlib.Data.Bool.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.Option.Basic
 import Mathlib.Data.List.Defs
@@ -1244,21 +1243,8 @@ theorem mem_iff_nthLe {a} {l : List α} : a ∈ l ↔ ∃ n h, nthLe l n h = a :
 #align list.mem_iff_nth List.mem_iff_get?
 #align list.nth_zero List.get?_zero
 
--- Porting note: couldn't synthesize _ in cases h x _ rfl anymore, needed to be given explicitly
-theorem get?_injective {α : Type u} {xs : List α} {i j : ℕ} (h₀ : i < xs.length) (h₁ : Nodup xs)
-    (h₂ : xs.get? i = xs.get? j) : i = j := by
-  induction xs generalizing i j with
-  | nil => cases h₀
-  | cons x xs tail_ih =>
-    cases i <;> cases j
-    case zero.zero => rfl
-    case succ.succ =>
-      congr; cases h₁
-      apply tail_ih <;> solve_by_elim [lt_of_succ_lt_succ]
-    all_goals (dsimp at h₂; cases' h₁ with _ _ h h')
-    · cases (h x (mem_iff_get?.mpr ⟨_, h₂.symm⟩) rfl)
-    · cases (h x (mem_iff_get?.mpr ⟨_, h₂⟩) rfl)
-#align list.nth_injective List.get?_injective
+@[deprecated] alias get?_injective := get?_inj -- 2024-05-03
+#align list.nth_injective List.get?_inj
 
 #align list.nth_map List.get?_map
 
@@ -2335,19 +2321,19 @@ where
         cases xs with
         | nil => contradiction
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go, take, drop, append_cons, Array.toList_eq, ← Array.push_data,
             ← Array.toList_eq]
           exact ih _ _ <| (by omega)
     · induction n generalizing xs acc with
       | zero =>
-        replace h : xs.length = 0 := by rw [zero_eq] at h; omega
+        replace h : xs.length = 0 := by omega
         rw [eq_nil_of_length_eq_zero h, splitAt.go]
       | succ _ ih =>
         cases xs with
         | nil => rw [splitAt.go]
         | cons hd tl =>
-          rw [length, succ_eq_add_one] at h
+          rw [length] at h
           rw [splitAt.go]
           exact ih _ _ <| not_imp_not.mpr (Nat.add_lt_add_right · 1) h
 #align list.split_at_eq_take_drop List.splitAt_eq_take_drop

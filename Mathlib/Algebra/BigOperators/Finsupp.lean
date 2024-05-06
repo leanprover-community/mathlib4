@@ -3,13 +3,13 @@ Copyright (c) 2020 Kenny Lau. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Kenny Lau
 -/
-import Mathlib.Data.Finsupp.Indicator
 import Mathlib.Algebra.BigOperators.Pi
 import Mathlib.Algebra.BigOperators.Ring
 import Mathlib.Algebra.Order.BigOperators.Ring.Finset
 import Mathlib.Algebra.BigOperators.Fin
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.Data.Finsupp.Fin
-import Mathlib.GroupTheory.Submonoid.Membership
+import Mathlib.Data.Finsupp.Indicator
 
 #align_import algebra.big_operators.finsupp from "leanprover-community/mathlib"@"842328d9df7e96fd90fc424e115679c15fb23a71"
 
@@ -240,7 +240,7 @@ theorem map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] {H : Type*}
 #align map_finsupp_sum map_finsupp_sum
 
 /-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated) -- 2023-12-30
+@[to_additive (attr := deprecated (since := "2021-12-30"))
   "Deprecated, use `_root_.map_finsupp_sum` instead."]
 protected theorem MulEquiv.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N ≃* P)
     (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
@@ -249,7 +249,7 @@ protected theorem MulEquiv.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid 
 #align add_equiv.map_finsupp_sum AddEquiv.map_finsupp_sum
 
 /-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[to_additive (attr := deprecated) -- 2023-12-30
+@[to_additive (attr := deprecated (since := "2021-12-30"))
   "Deprecated, use `_root_.map_finsupp_sum` instead."]
 protected theorem MonoidHom.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid P] (h : N →* P)
     (f : α →₀ M) (g : α → M → N) : h (f.prod g) = f.prod fun a b => h (g a b) :=
@@ -258,14 +258,14 @@ protected theorem MonoidHom.map_finsupp_prod [Zero M] [CommMonoid N] [CommMonoid
 #align add_monoid_hom.map_finsupp_sum AddMonoidHom.map_finsupp_sum
 
 /-- Deprecated, use `_root_.map_finsupp_sum` instead. -/
-@[deprecated map_finsupp_sum] -- 2023-12-30
+@[deprecated map_finsupp_sum] -- since 2021-12-30
 protected theorem RingHom.map_finsupp_sum [Zero M] [Semiring R] [Semiring S] (h : R →+* S)
     (f : α →₀ M) (g : α → M → R) : h (f.sum g) = f.sum fun a b => h (g a b) :=
   map_finsupp_sum h f g
 #align ring_hom.map_finsupp_sum RingHom.map_finsupp_sum
 
 /-- Deprecated, use `_root_.map_finsupp_prod` instead. -/
-@[deprecated map_finsupp_prod] -- 2023-12-30
+@[deprecated map_finsupp_prod] -- since 2021-12-30
 protected theorem RingHom.map_finsupp_prod [Zero M] [CommSemiring R] [CommSemiring S] (h : R →+* S)
     (f : α →₀ M) (g : α → M → R) : h (f.prod g) = f.prod fun a b => h (g a b) :=
   map_finsupp_prod h f g
