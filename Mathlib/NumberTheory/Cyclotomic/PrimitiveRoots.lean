@@ -539,7 +539,7 @@ theorem norm_sub_one_of_eq_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk 
 
 /-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `k ≠ 0` and `s ≤ k`. -/
-theorem norm_pow_sub_one_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
+theorem norm_pow_sub_one_eq_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1)))
     [hpri : Fact (p : ℕ).Prime] [hcycl : IsCyclotomicExtension {p ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (↑(p ^ (k + 1)) : ℕ) K)) (hs : s ≤ k) (hk : k ≠ 0) :
     norm K (ζ ^ (p : ℕ) ^ s - 1) = (p : K) ^ (p : ℕ) ^ s := by
@@ -563,7 +563,7 @@ theorem norm_pow_sub_one_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       mul_pow, neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ']
     simp
   · exact hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs htwo
-#align is_primitive_root.pow_sub_one_norm_prime_pow_of_ne_zero IsPrimitiveRoot.norm_pow_sub_one_prime_pow_of_ne_zero
+#align is_primitive_root.pow_sub_one_norm_prime_pow_of_ne_zero IsPrimitiveRoot.norm_pow_sub_one_eq_prime_pow_of_ne_zero
 
 end Field
 
@@ -641,7 +641,7 @@ end IsCyclotomicExtension
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_two :=
   IsPrimitiveRoot.norm_sub_one_of_eq_two
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
-  IsPrimitiveRoot.norm_pow_sub_one_prime_pow_of_ne_zero
+  IsPrimitiveRoot.norm_pow_sub_one_eq_prime_pow_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_sub_one_of_isPrimePow
 @[deprecated (since := "2024-04-02")]
