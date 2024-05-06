@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Combinatorics.Additive.FreimanHom
-import Mathlib.Data.Fin.Interval
+import Mathlib.Data.Nat.Interval
 import Mathlib.Data.Set.Pointwise.SMul
 
 #align_import combinatorics.additive.salem_spencer from "leanprover-community/mathlib"@"acf5258c81d0bc7cb254ed026c1352e685df306c"
