@@ -3,7 +3,7 @@ Copyright (c) 2021 Manuel Candales. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Manuel Candales
 -/
-import Mathlib.Topology.Instances.ENNReal
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 import Mathlib.Data.Nat.Squarefree
 
 #align_import wiedijk_100_theorems.sum_of_prime_reciprocals_diverges from "leanprover-community/mathlib"@"5563b1b49e86e135e8c7b556da5ad2f5ff881cad"

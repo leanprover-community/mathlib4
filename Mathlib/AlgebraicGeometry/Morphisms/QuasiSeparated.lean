@@ -393,12 +393,16 @@ theorem exists_eq_pow_mul_of_isCompact_of_isQuasiSeparated (X : Scheme.{u}) (U :
     replace hs : S ⊓ U.1 = iSup fun i : s => (i : Opens X.carrier) := by ext1; simpa using hs
     have hs₁ : ∀ i : s, i.1.1 ≤ S := by
       intro i; change (i : Opens X.carrier) ≤ S
-      refine' le_trans _ inf_le_left; swap; exact U.1; erw [hs]
+      refine' le_trans _ inf_le_left; swap
+      · exact U.1
+      erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     have hs₂ : ∀ i : s, i.1.1 ≤ U.1 := by
       intro i; change (i : Opens X.carrier) ≤ U
-      refine' le_trans _ inf_le_right; swap; exact S; erw [hs]
+      refine' le_trans _ inf_le_right; swap
+      · exact S
+      erw [hs]
       -- Porting note: have to add argument explicitly
       exact @le_iSup (Opens X) s _ (fun (i : s) => (i : Opens X)) i
     -- On each affine open in the intersection, we have `f ^ (n + n₂) * y₁ = f ^ (n + n₁) * y₂`
