@@ -1473,7 +1473,7 @@ theorem modifyNthTail_modifyNthTail_same {f g : List α → List α} (n : ℕ) (
 #align list.remove_nth_eq_nth_tail List.eraseIdx_eq_modifyNthTail
 #align list.update_nth_eq_modify_nth List.set_eq_modifyNth
 
-@[deprecated] alias removeNth_eq_nthTail := eraseIdx_eq_modifyNthTail -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias removeNth_eq_nthTail := eraseIdx_eq_modifyNthTail
 
 theorem modifyNth_eq_set (f : α → α) :
     ∀ (n) (l : List α), modifyNth f n l = ((fun a => set l n (f a)) <$> get? l n).getD l
