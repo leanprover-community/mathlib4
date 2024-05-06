@@ -60,11 +60,9 @@ section Monoid
 variable [Monoid α] [Monoid β] (s t : Set α)
 
 /-- A set is **3GP-free** if it does not contain any non-trivial geometric progression of length
-three.
-
-This is also sometimes called a **non averaging set** or **Salem-Spencer set**. -/
-@[to_additive "A set is **3AP-free** if it does not contain any non-trivial geometric progression of
-length three.
+three. -/
+@[to_additive "A set is **3AP-free** if it does not contain any non-trivial arithmetic progression
+of length three.
 
 This is also sometimes called a **non averaging set** or **Salem-Spencer set**."]
 def ThreeGPFree : Prop := ∀ ⦃a b c⦄, a ∈ s → b ∈ s → c ∈ s → a * b = c * c → a = b
