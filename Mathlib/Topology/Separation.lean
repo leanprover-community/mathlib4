@@ -2347,7 +2347,26 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       intro a aink
       simp; use a; apply ma_nhd; exact aink
     rcases IsLindelof.elim_countable_subcover klind m ma_open ma_cov with ⟨m', m'cnt, m'cov⟩
-    sorry
+    apply countable_covers_to_separated_nhds'
+    · use n '' n'
+      constructor
+      · exact Countable.image n'cnt n
+      constructor
+      · simp; exact n'cov
+      · intro v vinn''n'
+        rcases vinn''n' with ⟨ v₀, _, nv₀eqv⟩
+        rw [← nv₀eqv]
+        exact ⟨na_open v₀, na_dis v₀⟩
+    · use m '' m'
+      constructor
+      · exact Countable.image m'cnt m
+      constructor
+      · simp; exact m'cov
+      · intro v vinm''m'
+        rcases vinm''m' with ⟨ v₀, _, mv₀eqv⟩
+        rw [← mv₀eqv]
+        exact ⟨ma_open v₀, ma_dis v₀⟩
+
 
 
 
