@@ -337,8 +337,8 @@ theorem zeta_sub_one_prime' [h : IsCyclotomicExtension {p} ℚ K] (hζ : IsPrimi
 
 theorem subOneIntegralPowerBasis_gen_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑(p ^ (k + 1))) :
-    Prime hζ.subOneIntegralPowerBasis.gen := by simpa only [subOneIntegralPowerBasis_gen] using
-      hζ.zeta_sub_one_prime
+    Prime hζ.subOneIntegralPowerBasis.gen := by
+  simpa only [subOneIntegralPowerBasis_gen] using hζ.zeta_sub_one_prime
 
 theorem subOneIntegralPowerBasis'_gen_prime [IsCyclotomicExtension {p} ℚ K]
     (hζ : IsPrimitiveRoot ζ ↑p) :
