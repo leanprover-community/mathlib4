@@ -1436,6 +1436,11 @@ theorem map_span (f : F) (s : Set R) : map f (span s) = span (f '' s) := by
     exact subset_span
 #align ideal.map_span Ideal.map_span
 
+theorem span_preimage_le_comap_span (f : F) (s : Set S) : span (f ⁻¹' s) ≤ comap f (span s) :=
+  fun p hp ↦ Submodule.span_induction hp (fun x hx ↦ subset_span hx) (by simp)
+    (fun x y ↦ Ideal.add_mem _)
+    (fun a x ↦ Ideal.mul_mem_left _ a)
+
 variable {f I J K L}
 
 theorem map_le_of_le_comap : I ≤ K.comap f → I.map f ≤ K :=
