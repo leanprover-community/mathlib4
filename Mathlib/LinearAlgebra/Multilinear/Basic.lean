@@ -1058,9 +1058,9 @@ lemma iteratedFDeriv_aux {α : Type*} [DecidableEq α]
 /-- One of the components of the iterated derivative of a multilinear map. Given a bijection `e`
 between a type `α` (typically `Fin k`) and a subset `s` of `ι`, this component is a multilinear map
 of `k` vectors `v₁, ..., vₖ`, mapping them
-to `f (x₁, (v_{e 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the vector `v_{e i}`
-and otherwise one uses a reference vector `x`. This is multilinear in the components of `x` outside
-of `s`, and in the `v_j`. -/
+to `f (x₁, (v_{e.symm 2})₂, x₃, ...)`, where at indices `i` in `s` one uses the `i`-th coordinate of
+the vector `v_{e.symm i}` and otherwise one uses the `i`-th coordinate of a reference vector `x`.
+This is multilinear in the components of `x` outside of `s`, and in the `v_j`. -/
 noncomputable def iteratedFDerivComponent {α : Type*}
     (f : MultilinearMap R M₁ M₂) {s : Set ι} (e : α ≃ s) [DecidablePred (· ∈ s)] :
     MultilinearMap R (fun (i : {a : ι // a ∉ s}) ↦ M₁ i)
