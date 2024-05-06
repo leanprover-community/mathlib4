@@ -381,12 +381,21 @@ theorem _root_.Subalgebra.rank_sup_le_of_free [Module.Free R A] [Module.Free R B
 
 -- TODO: move to suitable place
 variable (A B) in
-theorem _root_.Subalgebra.finrank_sup_le_of_free [Module.Free R A] [Module.Free R B]
-    [Module.Finite R A] [Module.Finite R B] :
+theorem _root_.Subalgebra.finrank_sup_le_of_free [Module.Free R A] [Module.Free R B] :
     finrank R ↥(A ⊔ B) ≤ finrank R A * finrank R B := by
   nontriviality R using finrank
-  rw [← finrank_tensorProduct, ← mulMap_range]
-  exact (A.mulMap B).toLinearMap.finrank_range_le
+  by_cases h : Module.Finite R A ∧ Module.Finite R B
+  · obtain ⟨_, _⟩ := h
+    rw [← finrank_tensorProduct, ← mulMap_range]
+    exact (A.mulMap B).toLinearMap.finrank_range_le
+  wlog hA : ¬ Module.Finite R A generalizing A B
+  · have := this B A H.symm (fun h' ↦ h h'.symm) (not_and.1 h (of_not_not hA))
+    rwa [sup_comm, mul_comm] at this
+  rw [← Module.rank_lt_alpeh0_iff, not_lt] at hA
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp
+  rw [show finrank R A = 0 from Cardinal.toNat_apply_of_aleph0_le hA,
+    show finrank R ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (hA.trans this), zero_mul]
 
 theorem rank_sup_of_free [Module.Free R A] [Module.Free R B] :
     Module.rank R ↥(A ⊔ B) = Module.rank R A * Module.rank R B := by
@@ -525,18 +534,14 @@ theorem of_finrank_coprime_of_free [Module.Free R A] [Module.Free R B]
   · rw [h2, Nat.coprime_zero_right] at H
     rw [eq_bot_of_finrank_one_of_free H]
     exact of_bot_left _
-  replace h1 := Nat.pos_of_ne_zero h1
-  haveI := Module.finite_of_finrank_pos h1
+  haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h1)
   haveI := Module.finite_of_finrank_pos (Nat.pos_of_ne_zero h2)
-  haveI : Module.Finite R (toSubmodule (A ⊔ B)) := finite_sup A B
-  have : A ≤ A ⊔ B := le_sup_left
-  rw [← toSubmodule.map_rel_iff] at this
-  have := LinearMap.finrank_le_finrank_of_injective (Submodule.inclusion_injective this)
-  change finrank R A ≤ finrank R ↥(A ⊔ B) at this
+  haveI := finite_sup A B
+  have : finrank R A ≤ finrank R ↥(A ⊔ B) := LinearMap.finrank_le_finrank_of_injective <|
+    Submodule.inclusion_injective (show toSubmodule A ≤ toSubmodule (A ⊔ B) by simp)
   exact of_finrank_sup_of_free <| (finrank_sup_le_of_free A B).antisymm <|
-    Nat.le_of_dvd (lt_of_lt_of_le h1 this) (H.mul_dvd_of_dvd_of_dvd
-      (finrank_left_dvd_finrank_sup_of_free A B)
-      (finrank_right_dvd_finrank_sup_of_free A B))
+    Nat.le_of_dvd (lt_of_lt_of_le (Nat.pos_of_ne_zero h1) this) <| H.mul_dvd_of_dvd_of_dvd
+      (finrank_left_dvd_finrank_sup_of_free A B) (finrank_right_dvd_finrank_sup_of_free A B)
 
 variable (A B)
 

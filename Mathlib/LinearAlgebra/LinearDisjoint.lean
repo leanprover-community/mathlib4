@@ -394,8 +394,7 @@ variable [Nontrivial R]
 theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let n : Fin 2 → N := (inclusion inf_le_right) ∘ ![a, b]
-  have hn : LinearIndependent R n := h.map' _
-    (LinearMap.ker_eq_bot_of_injective (inclusion_injective _))
+  have hn : LinearIndependent R n := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ M) := Finsupp.instAddCommGroup
   let m : Fin 2 →₀ M := .single 0 ⟨b.1, b.2.1⟩ - .single 1 ⟨a.1, a.2.1⟩
@@ -409,8 +408,7 @@ theorem not_linearIndependent_pair_of_commute_of_flat_left [Module.Flat R M]
 theorem not_linearIndependent_pair_of_commute_of_flat_right [Module.Flat R N]
     (a b : ↥(M ⊓ N)) (hc : Commute a.1 b.1) : ¬LinearIndependent R ![a, b] := fun h ↦ by
   let m : Fin 2 → M := (inclusion inf_le_left) ∘ ![a, b]
-  have hm : LinearIndependent R m := h.map' _
-    (LinearMap.ker_eq_bot_of_injective (inclusion_injective _))
+  have hm : LinearIndependent R m := h.map' _ (ker_inclusion _ _ _)
   -- need this instance otherwise it only has semigroup structure
   letI : AddCommGroup (Fin 2 →₀ N) := Finsupp.instAddCommGroup
   let n : Fin 2 →₀ N := .single 0 ⟨b.1, b.2.2⟩ - .single 1 ⟨a.1, a.2.2⟩

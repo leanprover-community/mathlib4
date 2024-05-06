@@ -229,17 +229,47 @@ theorem inf_eq_bot (H : A.LinearDisjoint B) :
 theorem eq_bot_of_self (H : A.LinearDisjoint A) : A = ⊥ :=
   inf_of_le_left (le_refl A) ▸ H.inf_eq_bot
 
+-- -- I don't know how to prove it for non-algebraic case (mathematically)
+-- -- TODO: move to suitable place
+-- variable (A B) in
+-- theorem _root_.IntermediateField.rank_sup_le :
+--     Module.rank F ↥(A ⊔ B) ≤ Module.rank F A * Module.rank F B := by
+--   sorry
+
+-- TODO: move to suitable place
+variable (A B) in
+theorem _root_.IntermediateField.finrank_sup_le :
+    finrank F ↥(A ⊔ B) ≤ finrank F A * finrank F B := by
+  by_cases h : FiniteDimensional F A
+  · have := Subalgebra.finrank_sup_le_of_free A.toSubalgebra B.toSubalgebra
+    change _ ≤ finrank F A * finrank F B at this
+    rwa [← sup_toSubalgebra_of_left A B] at this
+  rw [FiniteDimensional, ← Module.rank_lt_alpeh0_iff, not_lt] at h
+  have := LinearMap.rank_le_of_injective _ <| Submodule.inclusion_injective <|
+    show Subalgebra.toSubmodule A.toSubalgebra ≤ Subalgebra.toSubmodule (A ⊔ B).toSubalgebra by simp
+  rw [show finrank F A = 0 from Cardinal.toNat_apply_of_aleph0_le h,
+    show finrank F ↥(A ⊔ B) = 0 from Cardinal.toNat_apply_of_aleph0_le (h.trans this), zero_mul]
+
+-- TODO: need IntermediateField.rank_sup_le
+
+-- theorem rank_sup (H : A.LinearDisjoint B) :
+--     Module.rank F ↥(A ⊔ B) = Module.rank F A * Module.rank F B := by
+--   have h := le_sup_toSubalgebra A B
+--   exact (rank_sup_le A B).antisymm <| (linearDisjoint_iff'.1 H).rank_sup_of_free.ge.trans <|
+--     (Subalgebra.inclusion h).toLinearMap.rank_le_of_injective (Subalgebra.inclusion_injective h)
+
+-- theorem finrank_sup (H : A.LinearDisjoint B) :
+--     finrank F ↥(A ⊔ B) = finrank F A * finrank F B := by
+--   simpa only [map_mul] using congr(Cardinal.toNat $(H.rank_sup))
+
 /-- If `A` and `L` have coprime degree over `F`, then they are linearly disjoint. -/
 theorem of_finrank_coprime (H : (finrank F A).Coprime (finrank F L)) :
     A.LinearDisjoint L := by
   rw [linearDisjoint_iff]
-  letI : Field (AlgHom.range (IsScalarTower.toAlgHom F L E)) := by
-    change Field (AlgHom.fieldRange (IsScalarTower.toAlgHom F L E))
-    infer_instance
+  letI : Field (AlgHom.range (IsScalarTower.toAlgHom F L E)) :=
+    show Field (AlgHom.fieldRange (IsScalarTower.toAlgHom F L E)) from inferInstance
   refine .of_finrank_coprime_of_free ?_
   rwa [(AlgEquiv.ofInjectiveField (IsScalarTower.toAlgHom F L E)).toLinearEquiv.finrank_eq] at H
-
--- TODO: rank_sup_of_isAlgebraic (?) and finrank_sup (?)
 
 end LinearDisjoint
 
