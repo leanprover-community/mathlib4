@@ -2686,16 +2686,8 @@ attribute [simp] find?_eq_none
 
 #align list.find_some List.find?_some
 
-@[simp]
-theorem find?_mem (H : find? p l = some a) : a ∈ l := by
-  induction' l with b l IH; · contradiction
-  by_cases h : p b
-  · rw [find?_cons_of_pos _ h] at H
-    cases H
-    apply mem_cons_self
-  · rw [find?_cons_of_neg _ h] at H
-    exact mem_cons_of_mem _ (IH H)
-#align list.find_mem List.find?_mem
+@[deprecated (since := "2024-05-05")] alias find?_mem := mem_of_find?_eq_some
+#align list.find_mem List.mem_of_find?_eq_some
 
 end find?
 
