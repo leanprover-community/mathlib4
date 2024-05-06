@@ -133,7 +133,6 @@ def slice (𝒜 : Finset (Finset α)) (r : ℕ) : Finset (Finset α) :=
   𝒜.filter fun i => i.card = r
 #align finset.slice Finset.slice
 
--- mathport name: finset.slice
 -- Porting note: old code: scoped[FinsetFamily]
 @[inherit_doc]
 scoped[Finset] infixl:90 " # " => Finset.slice

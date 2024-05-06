@@ -65,6 +65,10 @@ def leanTarArgs : List String :=
 
 open Cache IO Hashing Requests System in
 def main (args : List String) : IO Unit := do
+  if Lean.versionString == "4.8.0-rc1" && Lean.githash == "b470eb522bfd68ca96938c23f6a1bce79da8a99f" then do
+    println "Unfortunately, you have a broken Lean v4.8.0-rc1 installation."
+    println "Please run `elan toolchain uninstall leanprover/lean4:v4.8.0-rc1` and try again."
+    Process.exit 1
   -- We pass any following arguments to `getHashMemo`,
   -- so we can use the cache on `Archive` or `Counterexamples`.
   let extraRoots := match args with
@@ -73,6 +77,7 @@ def main (args : List String) : IO Unit := do
   if args.isEmpty then
     println help
     Process.exit 0
+  CacheM.run do
   let hashMemo ← getHashMemo extraRoots
   let hashMap := hashMemo.hashMap
   let goodCurl ← pure !curlArgs.contains (args.headD "") <||> validateCurl

@@ -91,7 +91,7 @@ variable {R : Type u} {S : Type*} {A : Type v} [CommRing R]
 variable [CommRing S] [Ring A] [Algebra R A] [Algebra R S] [Algebra S A]
 variable [IsScalarTower R S A]
 
-/-- An integral element of an algebra is algebraic.-/
+/-- An integral element of an algebra is algebraic. -/
 theorem IsIntegral.isAlgebraic [Nontrivial R] {x : A} : IsIntegral R x → IsAlgebraic R x :=
   fun ⟨p, hp, hpx⟩ => ⟨p, hp.ne_zero, hpx⟩
 #align is_integral.is_algebraic IsIntegral.isAlgebraic
@@ -216,7 +216,7 @@ section Field
 
 variable {K : Type u} {A : Type v} [Field K] [Ring A] [Algebra K A]
 
-/-- An element of an algebra over a field is algebraic if and only if it is integral.-/
+/-- An element of an algebra over a field is algebraic if and only if it is integral. -/
 theorem isAlgebraic_iff_isIntegral {x : A} : IsAlgebraic K x ↔ IsIntegral K x := by
   refine' ⟨_, IsIntegral.isAlgebraic⟩
   rintro ⟨p, hp, hpx⟩
@@ -252,7 +252,7 @@ theorem IsAlgebraic.tower_top_of_injective
     (A_alg : IsAlgebraic R x) : IsAlgebraic S x :=
   let ⟨p, hp₁, hp₂⟩ := A_alg
   ⟨p.map (algebraMap _ _), by
-    rwa [Ne.def, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
+    rwa [Ne, ← degree_eq_bot, degree_map_eq_of_injective hinj, degree_eq_bot], by simpa⟩
 #align is_algebraic_of_larger_base_of_injective IsAlgebraic.tower_top_of_injective
 
 /-- If A is an algebraic algebra over R, then A is algebraic over S when S is an extension of R,
@@ -389,7 +389,7 @@ variable {R S : Type*} [CommRing R] [IsDomain R] [CommRing S]
 
 theorem exists_integral_multiple [Algebra R S] {z : S} (hz : IsAlgebraic R z)
     (inj : ∀ x, algebraMap R S x = 0 → x = 0) :
-    ∃ (x : integralClosure R S) (y : _) (_ : y ≠ (0 : R)), z * algebraMap R S y = x := by
+    ∃ᵉ (x : integralClosure R S) (y ≠ (0 : R)), z * algebraMap R S y = x := by
   rcases hz with ⟨p, p_ne_zero, px⟩
   set a := p.leadingCoeff
   have a_ne_zero : a ≠ 0 := mt Polynomial.leadingCoeff_eq_zero.mp p_ne_zero
@@ -404,7 +404,7 @@ if `S` is the integral closure of `R` in an algebraic extension `L` of `R`. -/
 theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S] [Algebra S L]
     [Algebra R L] [IsScalarTower R S L] [IsIntegralClosure S R L] (h : Algebra.IsAlgebraic R L)
     (inj : Function.Injective (algebraMap R L)) (a : S) {b : S} (hb : b ≠ 0) :
-    ∃ (c : S) (d : _) (_ : d ≠ (0 : R)), d • a = b * c := by
+    ∃ᵉ (c : S) (d ≠ (0 : R)), d • a = b * c := by
   obtain ⟨c, d, d_ne, hx⟩ :=
     exists_integral_multiple (h (algebraMap _ L a / algebraMap _ L b))
       ((injective_iff_map_eq_zero _).mp inj)
@@ -412,7 +412,7 @@ theorem IsIntegralClosure.exists_smul_eq_mul {L : Type*} [Field L] [Algebra R S]
     ⟨IsIntegralClosure.mk' S (c : L) c.2, d, d_ne, IsIntegralClosure.algebraMap_injective S R L _⟩
   simp only [Algebra.smul_def, RingHom.map_mul, IsIntegralClosure.algebraMap_mk', ← hx, ←
     IsScalarTower.algebraMap_apply]
-  rw [← mul_assoc _ (_ / _), mul_div_cancel' (algebraMap S L a), mul_comm]
+  rw [← mul_assoc _ (_ / _), mul_div_cancel₀ (algebraMap S L a), mul_comm]
   exact mt ((injective_iff_map_eq_zero _).mp (IsIntegralClosure.algebraMap_injective S R L) _) hb
 #align is_integral_closure.exists_smul_eq_mul IsIntegralClosure.exists_smul_eq_mul
 

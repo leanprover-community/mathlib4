@@ -908,7 +908,7 @@ theorem ContinuousWithinAt.continuousAt {f : α → β} {s : Set α} {x : α}
 
 theorem IsOpen.continuousOn_iff {f : α → β} {s : Set α} (hs : IsOpen s) :
     ContinuousOn f s ↔ ∀ ⦃a⦄, a ∈ s → ContinuousAt f a :=
-  ball_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
+  forall₂_congr fun _ => continuousWithinAt_iff_continuousAt ∘ hs.mem_nhds
 #align is_open.continuous_on_iff IsOpen.continuousOn_iff
 
 theorem ContinuousOn.continuousAt {f : α → β} {s : Set α} {x : α} (h : ContinuousOn f s)
@@ -1188,7 +1188,7 @@ theorem Embedding.map_nhdsWithin_eq {f : α → β} (hf : Embedding f) (s : Set 
 theorem OpenEmbedding.map_nhdsWithin_preimage_eq {f : α → β} (hf : OpenEmbedding f) (s : Set β)
     (x : α) : map f (𝓝[f ⁻¹' s] x) = 𝓝[s] f x := by
   rw [hf.toEmbedding.map_nhdsWithin_eq, image_preimage_eq_inter_range]
-  apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.open_range
+  apply nhdsWithin_eq_nhdsWithin (mem_range_self _) hf.isOpen_range
   rw [inter_assoc, inter_self]
 #align open_embedding.map_nhds_within_preimage_eq OpenEmbedding.map_nhdsWithin_preimage_eq
 

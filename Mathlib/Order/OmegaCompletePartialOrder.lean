@@ -7,7 +7,7 @@ import Mathlib.Control.Monad.Basic
 import Mathlib.Data.Part
 import Mathlib.Order.Chain
 import Mathlib.Order.Hom.Order
-import Mathlib.Data.Nat.Order.Basic
+import Mathlib.Algebra.Order.Ring.Nat
 
 #align_import order.omega_complete_partial_order from "leanprover-community/mathlib"@"92ca63f0fb391a9ca5f22d2409a6080e786d99f7"
 
@@ -232,8 +232,8 @@ theorem ωSup_le_ωSup_of_le {c₀ c₁ : Chain α} (h : c₀ ≤ c₁) : ωSup 
 theorem ωSup_le_iff (c : Chain α) (x : α) : ωSup c ≤ x ↔ ∀ i, c i ≤ x := by
   constructor <;> intros
   · trans ωSup c
-    exact le_ωSup _ _
-    assumption
+    · exact le_ωSup _ _
+    · assumption
   exact ωSup_le _ _ ‹_›
 #align omega_complete_partial_order.ωSup_le_iff OmegaCompletePartialOrder.ωSup_le_iff
 
@@ -295,9 +295,9 @@ lemma isLUB_of_scottContinuous {c : Chain α} {f : α → β} (hf : ScottContinu
 
 lemma ScottContinuous.continuous' {f : α → β} (hf : ScottContinuous f) : Continuous' f := by
   constructor
-  intro c
-  rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
-  simp only [OrderHom.coe_mk]
+  · intro c
+    rw [← (ωSup_eq_of_isLUB (isLUB_of_scottContinuous hf))]
+    simp only [OrderHom.coe_mk]
 
 theorem Continuous'.to_monotone {f : α → β} (hf : Continuous' f) : Monotone f :=
   hf.fst
@@ -417,7 +417,7 @@ theorem mem_ωSup (x : α) (c : Chain (Part α)) : x ∈ ωSup c ↔ some x ∈ 
   constructor
   · split_ifs with h
     swap
-    rintro ⟨⟨⟩⟩
+    · rintro ⟨⟨⟩⟩
     intro h'
     have hh := Classical.choose_spec h
     simp only [mem_some_iff] at h'
@@ -857,8 +857,8 @@ def apply : (α →𝒄 β) × α →𝒄 β where
       intro j
       apply le_ωSup_of_le (max i j)
       apply apply_mono
-      exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
-      exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
+      · exact monotone_fst (OrderHom.mono _ (le_max_left _ _))
+      · exact monotone_snd (OrderHom.mono _ (le_max_right _ _))
     · apply ωSup_le
       intro i
       apply le_ωSup_of_le i
