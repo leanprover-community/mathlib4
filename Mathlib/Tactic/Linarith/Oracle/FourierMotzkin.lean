@@ -329,8 +329,8 @@ by eliminating all variables ≤ `maxVar`.
 If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
 This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 -/
-def CertificateOracle.fourierMotzkin : CertificateOracle :=
-  fun hyps maxVar => match ExceptT.run
+def CertificateOracle.fourierMotzkin : CertificateOracle where
+  produceCertificate hyps maxVar := match ExceptT.run
       (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
   | (Except.ok _) => failure
   | (Except.error contr) => return contr.src.flatten

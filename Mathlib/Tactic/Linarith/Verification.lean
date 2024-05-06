@@ -203,10 +203,10 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD (CertificateOracle.simplexAlgorithm)
+      let oracle := cfg.oracle.getD (.simplexAlgorithm)
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ← try
-        oracle comps max_var
+        oracle.produceCertificate comps max_var
       catch e =>
         trace[linarith] e.toMessageData
         throwError "linarith failed to find a contradiction"

@@ -307,11 +307,11 @@ If successful, it returns a map `coeff : Nat → Nat` as a certificate.
 This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 
 The default `CertificateOracle` used by `linarith` is
-`Linarith.CertificateOracle.simplexAlgorighm`.
+`Linarith.CertificateOracle.simplexAlgorithm`.
 `Linarith.CertificateOracle.fourierMotzkin` is also available (though has some bugs).
 -/
-def CertificateOracle : Type :=
-  List Comp → Nat → MetaM (Std.HashMap Nat Nat)
+structure CertificateOracle : Type where
+  produceCertificate : List Comp → Nat → MetaM (Std.HashMap Nat Nat)
 
 open Meta
 
