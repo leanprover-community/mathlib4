@@ -356,9 +356,10 @@ lemma norm_toInteger_pow_sub_one_of_prime_pow_ne_two [IsCyclotomicExtension {p ^
   have : algebraMap (𝓞 K) K (hζ.toInteger ^ (p : ℕ) ^ s - 1) = ζ ^ (p : ℕ) ^ s - 1 := by
     simp only [map_sub, map_pow, map_one, sub_left_inj]
     exact rfl
-  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.norm_pow_sub_one_of_prime_pow_ne_two
-    (cyclotomic.irreducible_rat
-    (by simp only [PNat.pow_coe, gt_iff_lt, PNat.pos, pow_pos])) hs htwo]
+  rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this,
+    hζ.norm_pow_sub_one_of_prime_pow_ne_two
+      (cyclotomic.irreducible_rat (by simp only [PNat.pow_coe, gt_iff_lt, PNat.pos, pow_pos]))
+      hs htwo]
   simp only [algebraMap_int_eq, map_pow, map_natCast]
 
 open nonZeroDivisors in
