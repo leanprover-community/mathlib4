@@ -257,6 +257,15 @@ theorem neg (hφ : IsHomogeneous φ n) : IsHomogeneous (-φ) n :=
 theorem sub (hφ : IsHomogeneous φ n) (hψ : IsHomogeneous ψ n) : IsHomogeneous (φ - ψ) n :=
   (homogeneousSubmodule σ R n).sub_mem hφ hψ
 
+lemma of_map (f : R →+* S) (hf : Function.Injective f)
+    (hmφ : (MvPolynomial.map f φ).IsHomogeneous n) : φ.IsHomogeneous n := by
+  intro u hu
+  apply hmφ
+  rw [MvPolynomial.coeff_map]
+  rw [RingHom.injective_iff_ker_eq_bot, RingHom.ker_eq_bot_iff_eq_zero] at hf
+  intro h
+  exact hu (hf _ h)
+
 end CommRing
 
 /-- The homogeneous degree bounds the total degree.
