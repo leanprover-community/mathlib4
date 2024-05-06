@@ -22,8 +22,6 @@ We define comonoids in a monoidal category `C`.
 
 -/
 
-set_option linter.uppercaseLean3 false
-
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
@@ -78,7 +76,7 @@ theorem mul_one_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f �
   rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
 theorem assoc_flip :
-    M.comul ≫ (𝟙 M.X ⊗ M.comul) = M.comul ≫ (M.comul ⊗ 𝟙 M.X) ≫ (α_ M.X M.X M.X).hom := by simp
+    M.comul ≫ (M.X ◁ M.comul) = M.comul ≫ (M.comul ▷ M.X) ≫ (α_ M.X M.X M.X).hom := by simp
 
 /-- A morphism of comonoid objects. -/
 @[ext]
