@@ -201,6 +201,9 @@ theorem ofDigits_one_cons {α : Type*} [Semiring α] (h : ℕ) (L : List ℕ) :
     ofDigits (1 : α) (h :: L) = h + ofDigits 1 L := by simp [ofDigits]
 #align nat.of_digits_one_cons Nat.ofDigits_one_cons
 
+theorem ofDigits_cons {b hd} {tl : List ℕ} :
+    ofDigits b (hd :: tl) = hd + b * ofDigits b tl := rfl
+
 theorem ofDigits_append {b : ℕ} {l1 l2 : List ℕ} :
     ofDigits b (l1 ++ l2) = ofDigits b l1 + b ^ l1.length * ofDigits b l2 := by
   induction' l1 with hd tl IH
@@ -369,6 +372,29 @@ theorem getLast_digit_ne_zero (b : ℕ) {m : ℕ} (hm : m ≠ 0) :
     rw [← pos_iff_ne_zero]
     exact Nat.div_pos (le_of_not_lt hnb) (zero_lt_succ (succ b))
 #align nat.last_digit_ne_zero Nat.getLast_digit_ne_zero
+
+theorem mul_ofDigits (n : ℕ) {b : ℕ} {l : List ℕ} :
+    n * ofDigits b l = ofDigits b (l.map (n * ·)) := by
+  induction l with
+  | nil => rfl
+  | cons hd tl ih =>
+    rw [List.map_cons, ofDigits_cons, ofDigits_cons, ← ih]
+    ring
+
+/-- The addition of ofDigits of two lists is equal to ofDigits of digit-wise addition of them-/
+theorem ofDigits_add_ofDigits_eq_ofDigits_zipWith_of_length_eq {b : ℕ} {l1 l2 : List ℕ}
+    (h : l1.length = l2.length) :
+    ofDigits b l1 + ofDigits b l2 = ofDigits b (l1.zipWith (· + ·) l2) := by
+  induction l1 generalizing l2 with
+  | nil => simp_all [eq_comm, List.length_eq_zero, ofDigits]
+  | cons hd₁ tl₁ ih₁ =>
+    induction l2 generalizing tl₁ with
+    | nil => simp_all
+    | cons hd₂ tl₂ ih₂ =>
+      simp_all only [List.length_cons, succ_eq_add_one, ofDigits_cons, add_left_inj,
+        eq_comm, List.zipWith_cons_cons, add_eq]
+      rw [← ih₁ h.symm, mul_add]
+      ac_rfl
 
 /-- The digits in the base b+2 expansion of n are all less than b+2 -/
 theorem digits_lt_base' {b m : ℕ} : ∀ {d}, d ∈ digits (b + 2) m → d < b + 2 := by
