@@ -501,7 +501,7 @@ theorem norm_sub_one_of_prime_ne_two' [hpri : Fact (p : ℕ).Prime]
 /-- If `Irreducible (cyclotomic (2 ^ (k + 1)) K)` (in particular for `K = ℚ`), then the norm of
 `ζ ^ (2 ^ k) - 1` is `(-2) ^ (2 ^ k)`. -/
 -- Porting note: writing `(2 : ℕ+)` was not needed (similarly everywhere).
-theorem norm_pow_sub_one_of_eq_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
+theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
     [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 1)} K L]
     (hirr : Irreducible (cyclotomic (2 ^ (k + 1)) K)) :
     norm K (ζ ^ 2 ^ k - 1) = (-2 : K) ^ 2 ^ k := by
@@ -517,7 +517,7 @@ theorem norm_pow_sub_one_of_eq_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k +
     IsCyclotomicExtension.finrank L hirr, pow_coe, show ((2 : ℕ+) : ℕ) = 2 from rfl,
       totient_prime_pow Nat.prime_two (zero_lt_succ k), succ_sub_succ_eq_sub, tsub_zero]
   simp
-#align is_primitive_root.pow_sub_one_norm_two IsPrimitiveRoot.norm_pow_sub_one_of_eq_two
+#align is_primitive_root.pow_sub_one_norm_two IsPrimitiveRoot.norm_pow_sub_one_two
 
 /-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `ζ - 1` is `2`. -/
@@ -559,7 +559,7 @@ theorem norm_pow_sub_one_prime_pow_of_ne_zero {k s : ℕ} (hζ : IsPrimitiveRoot
       at hζ hirr hcycl ⊢
     obtain ⟨k₁, hk₁⟩ := Nat.exists_eq_succ_of_ne_zero hk
 -- Porting note: the proof is slightly different because of coercions.
-    rw [hζ.norm_pow_sub_one_of_eq_two hirr, hk₁, _root_.pow_succ', pow_mul, neg_eq_neg_one_mul,
+    rw [hζ.norm_pow_sub_one_two hirr, hk₁, _root_.pow_succ', pow_mul, neg_eq_neg_one_mul,
       mul_pow, neg_one_sq, one_mul, ← pow_mul, ← _root_.pow_succ']
     simp
   · exact hζ.norm_pow_sub_one_of_prime_pow_ne_two hirr hs htwo
@@ -620,11 +620,11 @@ theorem norm_zeta_sub_one_of_prime_ne_two [Fact (p : ℕ).Prime]
 
 /-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `zeta (2 ^ k) K L - 1` is `2`. -/
-theorem norm_zeta_pow_sub_one_of_eq_two {k : ℕ} (hk : 2 ≤ k)
+theorem norm_zeta_pow_sub_one_two {k : ℕ} (hk : 2 ≤ k)
     [IsCyclotomicExtension {(2 : ℕ+) ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
     norm K (zeta ((2 : ℕ+) ^ k) K L - 1) = 2 :=
   norm_sub_one_of_eq_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
-#align is_cyclotomic_extension.two_pow_norm_zeta_sub_one IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
+#align is_cyclotomic_extension.two_pow_norm_zeta_sub_one IsCyclotomicExtension.norm_zeta_pow_sub_one_two
 
 end IsCyclotomicExtension
 
@@ -637,7 +637,7 @@ end IsCyclotomicExtension
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_prime :=
   IsPrimitiveRoot.norm_sub_one_of_prime_ne_two'
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
-  IsPrimitiveRoot.norm_pow_sub_one_of_eq_two
+  IsPrimitiveRoot.norm_pow_sub_one_two
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_two :=
   IsPrimitiveRoot.norm_sub_one_of_eq_two
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
@@ -653,6 +653,6 @@ end IsCyclotomicExtension
 @[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.prime_ne_two_norm_zeta_sub_one :=
   IsCyclotomicExtension.norm_zeta_sub_one_of_prime_ne_two
 @[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.two_pow_norm_zeta_sub_one :=
-  IsCyclotomicExtension.norm_zeta_pow_sub_one_of_eq_two
+  IsCyclotomicExtension.norm_zeta_pow_sub_one_two
 
 end Norm
