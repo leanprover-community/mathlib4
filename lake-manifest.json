@@ -13,7 +13,7 @@
   {"url": "https://github.com/leanprover-community/quote4",
    "type": "git",
    "subDir": null,
-   "rev": "64365c656d5e1bffa127d2a1795f471529ee0178",
+   "rev": "53156671405fbbd5402ed17a79bd129b961bd8d6",
    "name": "Qq",
    "manifestFile": "lake-manifest.json",
    "inputRev": "master",
