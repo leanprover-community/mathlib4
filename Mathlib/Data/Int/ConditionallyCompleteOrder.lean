@@ -21,43 +21,39 @@ open Int
 noncomputable section
 open scoped Classical
 
-instance : ConditionallyCompleteLinearOrder ℤ :=
-  { Int.linearOrderedCommRing,
-    LinearOrder.toLattice with
-    sSup := fun s =>
-      if h : s.Nonempty ∧ BddAbove s then
-        greatestOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
-      else 0
-    sInf := fun s =>
-      if h : s.Nonempty ∧ BddBelow s then
-        leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
-      else 0
-    le_csSup := by
-      intro s n hs hns
-      have : s.Nonempty ∧ BddAbove s := ⟨⟨n, hns⟩, hs⟩
-      -- Porting note: this was `rw [dif_pos this]`
-      simp only [this, and_self, dite_true, ge_iff_le]
-      exact (greatestOfBdd _ _ _).2.2 n hns
-    csSup_le := by
-      intro s n hs hns
-      have : s.Nonempty ∧ BddAbove s := ⟨hs, ⟨n, hns⟩⟩
-      -- Porting note: this was `rw [dif_pos this]`
-      simp only [this, and_self, dite_true, ge_iff_le]
-      exact hns (greatestOfBdd _ (Classical.choose_spec this.2) _).2.1
-    csInf_le := by
-      intro s n hs hns
-      have : s.Nonempty ∧ BddBelow s := ⟨⟨n, hns⟩, hs⟩
-      -- Porting note: this was `rw [dif_pos this]`
-      simp only [this, and_self, dite_true, ge_iff_le]
-      exact (leastOfBdd _ _ _).2.2 n hns
-    le_csInf := by
-      intro s n hs hns
-      have : s.Nonempty ∧ BddBelow s := ⟨hs, ⟨n, hns⟩⟩
-      -- Porting note: this was `rw [dif_pos this]`
-      simp only [this, and_self, dite_true, ge_iff_le]
-      exact hns (leastOfBdd _ (Classical.choose_spec this.2) _).2.1
-    csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
-    csInf_of_not_bddBelow := fun s hs ↦ by simp [hs] }
+instance instConditionallyCompleteLinearOrder : ConditionallyCompleteLinearOrder ℤ where
+  __ := instLinearOrder
+  __ := LinearOrder.toLattice
+  sSup s :=
+    if h : s.Nonempty ∧ BddAbove s then
+      greatestOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
+    else 0
+  sInf s :=
+    if h : s.Nonempty ∧ BddBelow s then
+      leastOfBdd (Classical.choose h.2) (Classical.choose_spec h.2) h.1
+    else 0
+  le_csSup s n hs hns := by
+    have : s.Nonempty ∧ BddAbove s := ⟨⟨n, hns⟩, hs⟩
+    -- Porting note: this was `rw [dif_pos this]`
+    simp only [this, and_self, dite_true, ge_iff_le]
+    exact (greatestOfBdd _ _ _).2.2 n hns
+  csSup_le s n hs hns := by
+    have : s.Nonempty ∧ BddAbove s := ⟨hs, ⟨n, hns⟩⟩
+    -- Porting note: this was `rw [dif_pos this]`
+    simp only [this, and_self, dite_true, ge_iff_le]
+    exact hns (greatestOfBdd _ (Classical.choose_spec this.2) _).2.1
+  csInf_le s n hs hns := by
+    have : s.Nonempty ∧ BddBelow s := ⟨⟨n, hns⟩, hs⟩
+    -- Porting note: this was `rw [dif_pos this]`
+    simp only [this, and_self, dite_true, ge_iff_le]
+    exact (leastOfBdd _ _ _).2.2 n hns
+  le_csInf s n hs hns := by
+    have : s.Nonempty ∧ BddBelow s := ⟨hs, ⟨n, hns⟩⟩
+    -- Porting note: this was `rw [dif_pos this]`
+    simp only [this, and_self, dite_true, ge_iff_le]
+    exact hns (leastOfBdd _ (Classical.choose_spec this.2) _).2.1
+  csSup_of_not_bddAbove := fun s hs ↦ by simp [hs]
+  csInf_of_not_bddBelow := fun s hs ↦ by simp [hs]
 
 namespace Int
 

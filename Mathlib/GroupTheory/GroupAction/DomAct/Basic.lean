@@ -6,6 +6,7 @@ Authors: Yury Kudryashov
 import Mathlib.Algebra.Group.Opposite
 import Mathlib.Algebra.Group.Pi.Lemmas
 import Mathlib.GroupTheory.GroupAction.Defs
+import Mathlib.Algebra.Ring.Defs
 
 /-!
 # Type tags for right action on the domain of a function
@@ -79,8 +80,6 @@ right action, so lemmas can be formulated in terms of `DomMulAct`.
 group action, function, domain
 -/
 
-set_option autoImplicit true
-
 open Function
 
 /-- If `M` multiplicatively acts on `α`, then `DomMulAct M` acts on `α → β` as well as some
@@ -95,6 +94,8 @@ def DomMulAct (M : Type*) := MulOpposite M
 @[inherit_doc] postfix:max "ᵈᵃᵃ" => DomAddAct
 
 namespace DomMulAct
+
+variable {M : Type*}
 
 /-- Equivalence between `M` and `Mᵈᵐᵃ`. -/
 @[to_additive "Equivalence between `M` and `Mᵈᵐᵃ`."]
@@ -150,7 +151,7 @@ lemma mk_zpow [DivInvMonoid M] (a : M) (n : ℤ) : mk (a ^ n) = mk a ^ n := rfl
 @[to_additive (attr := simp)]
 lemma symm_mk_zpow [DivInvMonoid M] (a : Mᵈᵐᵃ) (n : ℤ) : mk.symm (a ^ n) = mk.symm a ^ n := rfl
 
-variable {β : Type*}
+variable {β α N : Type*}
 
 @[to_additive]
 instance [SMul M α] : SMul Mᵈᵐᵃ (α → β) where
@@ -183,7 +184,7 @@ instance [SMul M α] [FaithfulSMul M α] [Nontrivial β] : FaithfulSMul Mᵈᵐ�
 instance [SMul M α] [Zero β] : SMulZeroClass Mᵈᵐᵃ (α → β) where
   smul_zero _ := rfl
 
-instance [SMul M α] [AddZeroClass A] : DistribSMul Mᵈᵐᵃ (α → A) where
+instance {A : Type*} [SMul M α] [AddZeroClass A] : DistribSMul Mᵈᵐᵃ (α → A) where
   smul_add _ _ _ := rfl
 
 @[to_additive]
@@ -191,13 +192,17 @@ instance [Monoid M] [MulAction M α] : MulAction Mᵈᵐᵃ (α → β) where
   one_smul f := funext fun _ ↦ congr_arg f (one_smul _ _)
   mul_smul _ _ f := funext fun _ ↦ congr_arg f (mul_smul _ _ _)
 
-instance [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
+instance {A : Type*} [Monoid M] [MulAction M α] [AddMonoid A] : DistribMulAction Mᵈᵐᵃ (α → A) where
   smul_zero _ := rfl
   smul_add _ _ _ := rfl
 
+instance {A : Type*} [Monoid M] [MulAction M α] [Monoid A] : MulDistribMulAction Mᵈᵐᵃ (α → A) where
+  smul_mul _ _ _ := rfl
+  smul_one _ := rfl
+
 section MonoidHom
 
-variable [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
+variable {M M' A B : Type*} [Monoid M] [Monoid A] [MulDistribMulAction M A] [MulOneClass B]
 
 instance : SMul Mᵈᵐᵃ (A →* B) where
   smul c f := f.comp (MulDistribMulAction.toMonoidHom _ (mk.symm c))
@@ -220,7 +225,7 @@ section AddMonoidHom
 
 section DistribSMul
 
-variable [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
+variable {A B M M' : Type*} [AddMonoid A] [DistribSMul M A] [AddZeroClass B]
 
 instance : SMul Mᵈᵐᵃ (A →+ B) where
   smul c f := f.comp (DistribSMul.toAddMonoidHom _ (mk.symm c))
@@ -242,11 +247,17 @@ theorem coe_smul_addMonoidHom (c : Mᵈᵐᵃ) (f : A →+ B) : ⇑(c • f) = c
 
 end DistribSMul
 
+variable {A M B : Type*}
+
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddZeroClass B] :
     MulAction Mᵈᵐᵃ (A →+ B) := DFunLike.coe_injective.mulAction (⇑) fun _ _ ↦ rfl
 
 instance [Monoid M] [AddMonoid A] [DistribMulAction M A] [AddCommMonoid B] :
     DistribMulAction Mᵈᵐᵃ (A →+ B) :=
   DFunLike.coe_injective.distribMulAction (AddMonoidHom.coeFn A B) fun _ _ ↦ rfl
+
+instance [Monoid M] [Monoid A] [MulDistribMulAction M A] [CommMonoid B] :
+    MulDistribMulAction Mᵈᵐᵃ (A →* B) :=
+  DFunLike.coe_injective.mulDistribMulAction (MonoidHom.coeFn A B) fun _ _ ↦ rfl
 
 end AddMonoidHom

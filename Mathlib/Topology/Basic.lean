@@ -130,7 +130,7 @@ lemma isOpen_iff_of_cover {f : α → Set X} (ho : ∀ i, IsOpen (f i)) (hU : (�
 theorem Set.Finite.isOpen_sInter {s : Set (Set X)} (hs : s.Finite) :
     (∀ t ∈ s, IsOpen t) → IsOpen (⋂₀ s) :=
   Finite.induction_on hs (fun _ => by rw [sInter_empty]; exact isOpen_univ) fun _ _ ih h => by
-    simp only [sInter_insert, ball_insert_iff] at h ⊢
+    simp only [sInter_insert, forall_mem_insert] at h ⊢
     exact h.1.inter (ih h.2)
 #align is_open_sInter Set.Finite.isOpen_sInter
 
@@ -474,7 +474,7 @@ theorem closure_empty_iff (s : Set X) : closure s = ∅ ↔ s = ∅ :=
 
 @[simp]
 theorem closure_nonempty_iff : (closure s).Nonempty ↔ s.Nonempty := by
-  simp only [nonempty_iff_ne_empty, Ne.def, closure_empty_iff]
+  simp only [nonempty_iff_ne_empty, Ne, closure_empty_iff]
 #align closure_nonempty_iff closure_nonempty_iff
 
 alias ⟨Set.Nonempty.of_closure, Set.Nonempty.closure⟩ := closure_nonempty_iff
@@ -648,8 +648,8 @@ theorem dense_compl_singleton_iff_not_open :
     exact (hd.inter_open_nonempty _ ho (singleton_nonempty _)).ne_empty (inter_compl_self _)
   · refine' fun ho => dense_iff_inter_open.2 fun U hU hne => inter_compl_nonempty_iff.2 fun hUx => _
     obtain rfl : U = {x}
-    exact eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
-    exact ho hU
+    · exact eq_singleton_iff_nonempty_unique_mem.2 ⟨hne, hUx⟩
+    · exact ho hU
 #align dense_compl_singleton_iff_not_open dense_compl_singleton_iff_not_open
 
 /-!
@@ -715,7 +715,8 @@ theorem frontier_inter_subset (s t : Set X) :
     frontier (s ∩ t) ⊆ frontier s ∩ closure t ∪ closure s ∩ frontier t := by
   simp only [frontier_eq_closure_inter_closure, compl_inter, closure_union]
   refine' (inter_subset_inter_left _ (closure_inter_subset_inter_closure s t)).trans_eq _
-  simp only [inter_distrib_left, inter_distrib_right, inter_assoc, inter_comm (closure t)]
+  simp only [inter_union_distrib_left, union_inter_distrib_right, inter_assoc,
+    inter_comm (closure t)]
 #align frontier_inter_subset frontier_inter_subset
 
 theorem frontier_union_subset (s t : Set X) :
@@ -1098,6 +1099,9 @@ theorem mapClusterPt_iff_ultrafilter {ι : Type*} (x : X) (F : Filter ι) (u : �
   simp_rw [MapClusterPt, ClusterPt, ← Filter.push_pull', map_neBot_iff, tendsto_iff_comap,
     ← le_inf_iff, exists_ultrafilter_iff, inf_comm]
 
+theorem mapClusterPt_comp {X α β : Type*} {x : X} [TopologicalSpace X] {F : Filter α} {φ : α → β}
+    {u : β → X} : MapClusterPt x F (u ∘ φ) ↔ MapClusterPt x (map φ F) u := Iff.rfl
+
 theorem mapClusterPt_of_comp {F : Filter α} {φ : β → α} {p : Filter β}
     {u : α → X} [NeBot p] (h : Tendsto φ p F) (H : Tendsto (u ∘ φ) p (𝓝 x)) :
     MapClusterPt x F u := by
@@ -1113,7 +1117,7 @@ theorem acc_iff_cluster (x : X) (F : Filter X) : AccPt x F ↔ ClusterPt x (𝓟
   rw [AccPt, nhdsWithin, ClusterPt, inf_assoc]
 #align acc_iff_cluster acc_iff_cluster
 
-/-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`.-/
+/-- `x` is an accumulation point of a set `C` iff it is a cluster point of `C ∖ {x}`. -/
 theorem acc_principal_iff_cluster (x : X) (C : Set X) :
     AccPt x (𝓟 C) ↔ ClusterPt x (𝓟 (C \ {x})) := by
   rw [acc_iff_cluster, inf_principal, inter_comm, diff_eq]
@@ -1127,7 +1131,7 @@ theorem accPt_iff_nhds (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∀ U ∈ 𝓝
 #align acc_pt_iff_nhds accPt_iff_nhds
 
 /-- `x` is an accumulation point of a set `C` iff
-there are points near `x` in `C` and different from `x`.-/
+there are points near `x` in `C` and different from `x`. -/
 theorem accPt_iff_frequently (x : X) (C : Set X) : AccPt x (𝓟 C) ↔ ∃ᶠ y in 𝓝 x, y ≠ x ∧ y ∈ C := by
   simp [acc_principal_iff_cluster, clusterPt_principal_iff_frequently, and_comm]
 #align acc_pt_iff_frequently accPt_iff_frequently
@@ -1262,7 +1266,7 @@ theorem dense_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : Dense ({x}ᶜ : Se
 
 /-- If `x` is not an isolated point of a topological space, then the closure of `{x}ᶜ` is the whole
 space. -/
--- Porting note: was a `@[simp]` lemma but `simp` can prove it
+-- Porting note (#10618): was a `@[simp]` lemma but `simp` can prove it
 theorem closure_compl_singleton (x : X) [NeBot (𝓝[≠] x)] : closure {x}ᶜ = (univ : Set X) :=
   (dense_compl_singleton x).closure_eq
 #align closure_compl_singleton closure_compl_singleton

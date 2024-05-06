@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.Mon_
 import Mathlib.CategoryTheory.Monoidal.Braided.Opposite
@@ -25,8 +25,6 @@ We construct the monoidal structure on `Comon_ C`, when `C` is braided.
   oplax monoidal functors from the trivial monoidal category to `C`.
 -/
 
-set_option linter.uppercaseLean3 false
-
 universe v₁ v₂ u₁ u₂ u
 
 open CategoryTheory MonoidalCategory
@@ -46,16 +44,15 @@ structure Comon_ where
   comul : X ⟶ X ⊗ X
   counit_comul : comul ≫ (counit ▷ X) = (λ_ X).inv := by aesop_cat
   comul_counit : comul ≫ (X ◁ counit) = (ρ_ X).inv := by aesop_cat
-  comul_assoc : comul ≫ (comul ▷ X) = comul ≫ (X ◁ comul) ≫ (α_ X X X).inv := by aesop_cat
+  comul_assoc : comul ≫ (X ◁ comul) ≫ (α_ X X X).inv = comul ≫ (comul ▷ X) := by aesop_cat
 
 attribute [reassoc] Comon_.counit_comul Comon_.comul_counit
 
--- We prove a more general `@[simp]` lemma below.
 attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
 namespace Comon_
 
-/-- The trivial comonoid object. We later show this is initial in `Comon_ C`.
+/-- The trivial comonoid object. We later show this is terminal in `Comon_ C`.
 -/
 @[simps]
 def trivial : Comon_ C where
@@ -72,16 +69,17 @@ instance : Inhabited (Comon_ C) :=
 variable {C}
 variable {M : Comon_ C}
 
-@[simp]
+@[reassoc (attr := simp)]
 theorem counit_comul_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (M.counit ⊗ f) = f ≫ (λ_ Z).inv := by
   rw [leftUnitor_inv_naturality, tensorHom_def, counit_comul_assoc]
 
-@[simp]
-theorem mul_one_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
+@[reassoc (attr := simp)]
+theorem comul_counit_hom {Z : C} (f : M.X ⟶ Z) : M.comul ≫ (f ⊗ M.counit) = f ≫ (ρ_ Z).inv := by
   rw [rightUnitor_inv_naturality, tensorHom_def', comul_counit_assoc]
 
-theorem assoc_flip :
-    M.comul ≫ (𝟙 M.X ⊗ M.comul) = M.comul ≫ (M.comul ⊗ 𝟙 M.X) ≫ (α_ M.X M.X M.X).hom := by simp
+@[reassoc (attr := simp)] theorem comul_assoc_flip :
+    M.comul ≫ (M.comul ▷ M.X) ≫ (α_ M.X M.X M.X).hom = M.comul ≫ (M.X ◁ M.comul) := by
+  simp [← comul_assoc_assoc]
 
 /-- A morphism of comonoid objects. -/
 @[ext]
@@ -116,8 +114,7 @@ instance : Category (Comon_ C) where
 @[simp] theorem id_hom' (M : Comon_ C) : (𝟙 M : Hom M M).hom = 𝟙 M.X := rfl
 
 @[simp]
-theorem comp_hom' {M N K : Comon_ C} (f : M ⟶ N) (g : N ⟶ K) :
-    (f ≫ g : Hom M K).hom = f.hom ≫ g.hom :=
+theorem comp_hom' {M N K : Comon_ C} (f : M ⟶ N) (g : N ⟶ K) : (f ≫ g).hom = f.hom ≫ g.hom :=
   rfl
 
 section
@@ -132,19 +129,20 @@ def forget : Comon_ C ⥤ C where
 
 end
 
-instance forget_faithful : Faithful (@forget C _ _) where
+instance forget_faithful : (@forget C _ _).Faithful where
 
 instance {A B : Comon_ C} (f : A ⟶ B) [e : IsIso ((forget C).map f)] : IsIso f.hom := e
 
 /-- The forgetful functor from comonoid objects to the ambient category reflects isomorphisms. -/
-instance : ReflectsIsomorphisms (forget C) where
+instance : (forget C).ReflectsIsomorphisms where
   reflects f e :=
     ⟨⟨{ hom := inv f.hom }, by aesop_cat⟩⟩
 
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
-def isoOfIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
+@[simps]
+def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
     (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom)) : M ≅ N where
   hom :=
     { hom := f.hom
@@ -192,7 +190,7 @@ Turn a comonoid object into a monoid object in the opposite category.
     rfl
   mul_assoc := by
     rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-      comul_assoc, op_comp, op_comp_assoc]
+      ← comul_assoc, op_comp, op_comp_assoc]
     rfl
 
 /--

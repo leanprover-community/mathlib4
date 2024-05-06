@@ -72,7 +72,7 @@ variable [Module R M] [Module R P] [Module R N]
 
 open IsArtinian
 
-/-Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
+/- Porting note: added this version with `R` and `M` explicit because infer kinds are unsupported in
 Lean 4-/
 theorem IsArtinian.wellFounded_submodule_lt (R M) [Semiring R] [AddCommMonoid M] [Module R M]
     [IsArtinian R M] : WellFounded ((· < ·) : Submodule R M → Submodule R M → Prop) :=
@@ -191,7 +191,8 @@ theorem IsArtinian.finite_of_linearIndependent [Nontrivial R] [IsArtinian R M] {
     rw [le_antisymm_iff, ← this y x, ← this x y]
     exact fun ⟨h₁, h₂⟩ => le_antisymm_iff.2 ⟨h₂, h₁⟩⟩, by
     intro a b
-    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]⟩
+    conv_rhs => rw [GT.gt, lt_iff_le_not_le, this, this, ← lt_iff_le_not_le]
+    rfl⟩
 #align is_artinian.finite_of_linear_independent IsArtinian.finite_of_linearIndependent
 
 /-- A module is Artinian iff every nonempty set of submodules has a minimal submodule among them. -/
@@ -473,8 +474,9 @@ theorem isNilpotent_jacobson_bot : IsNilpotent (Ideal.jacobson (⊥ : Ideal R)) 
       (le_sup_right.trans_eq (this.eq_of_not_lt (hJ' _ ?_)).symm)))
     exact lt_of_le_of_ne le_sup_left fun h => H <| h.symm ▸ le_sup_right
   have : Ideal.span {x} * Jac ^ (n + 1) ≤ ⊥ := calc
-    Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by rw [pow_succ, ← mul_assoc]
-    _ ≤ J * Jac ^ n := (mul_le_mul (by rwa [mul_comm]) le_rfl)
+    Ideal.span {x} * Jac ^ (n + 1) = Ideal.span {x} * Jac * Jac ^ n := by
+      rw [pow_succ', ← mul_assoc]
+    _ ≤ J * Jac ^ n := mul_le_mul (by rwa [mul_comm]) le_rfl
     _ = ⊥ := by simp [J]
   refine' hxJ (mem_annihilator.2 fun y hy => (mem_bot R).1 _)
   refine' this (mul_mem_mul (mem_span_singleton_self x) _)
@@ -494,7 +496,7 @@ theorem localization_surjective : Function.Surjective (algebraMap R L) := by
   · exact ⟨r₁ * r₂, by rw [IsLocalization.mk'_eq_mul_mk'_one, map_mul, h]⟩
   obtain ⟨n, r, hr⟩ := IsArtinian.exists_pow_succ_smul_dvd (s : R) (1 : R)
   use r
-  rw [smul_eq_mul, smul_eq_mul, pow_succ', mul_assoc] at hr
+  rw [smul_eq_mul, smul_eq_mul, pow_succ, mul_assoc] at hr
   apply_fun algebraMap R L at hr
   simp only [map_mul] at hr
   rw [← IsLocalization.mk'_one (M := S) L, IsLocalization.mk'_eq_iff_eq, mul_one, Submonoid.coe_one,

@@ -3,12 +3,12 @@ Copyright (c) 2021 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
-import Mathlib.RingTheory.Adjoin.Basic
+import Mathlib.Algebra.MvPolynomial.Equiv
+import Mathlib.Algebra.MvPolynomial.Supported
 import Mathlib.LinearAlgebra.LinearIndependent
-import Mathlib.RingTheory.MvPolynomial.Basic
-import Mathlib.Data.MvPolynomial.Supported
+import Mathlib.RingTheory.Adjoin.Basic
 import Mathlib.RingTheory.Algebraic
-import Mathlib.Data.MvPolynomial.Equiv
+import Mathlib.RingTheory.MvPolynomial.Basic
 
 #align_import ring_theory.algebraic_independent from "leanprover-community/mathlib"@"949dc57e616a621462062668c9f39e4e17b64b69"
 
@@ -102,7 +102,7 @@ namespace AlgebraicIndependent
 variable (hx : AlgebraicIndependent R x)
 
 theorem algebraMap_injective : Injective (algebraMap R A) := by
-  simpa [← MvPolynomial.algebraMap_eq, Function.comp] using
+  simpa [Function.comp] using
     (Injective.of_comp_iff (algebraicIndependent_iff_injective_aeval.1 hx) MvPolynomial.C).2
       (MvPolynomial.C_injective _ _)
 #align algebraic_independent.algebra_map_injective AlgebraicIndependent.algebraMap_injective
@@ -555,7 +555,7 @@ section Field
 
 variable [Field K] [Algebra K A]
 
-/-Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
+/- Porting note: removing `simp`, not in simp normal form. Could make `Function.Injective f` a
 simp lemma when `f` is a field hom, and then simp would prove this -/
 theorem algebraicIndependent_empty_type [IsEmpty ι] [Nontrivial A] : AlgebraicIndependent K x := by
   rw [algebraicIndependent_empty_type_iff]

@@ -249,7 +249,7 @@ theorem closedEmbedding_of_spaced_out {α} [TopologicalSpace α] [DiscreteTopolo
   rcases @DiscreteTopology.eq_bot α _ _ with rfl; let _ : UniformSpace α := ⊥
   exact
     { (uniformEmbedding_of_spaced_out hs hf).embedding with
-      closed_range := isClosed_range_of_spaced_out hs hf }
+      isClosed_range := isClosed_range_of_spaced_out hs hf }
 #align closed_embedding_of_spaced_out closedEmbedding_of_spaced_out
 
 theorem closure_image_mem_nhds_of_uniformInducing {s : Set (α × α)} {e : α → β} (b : β)
@@ -286,7 +286,7 @@ theorem isComplete_of_complete_image {m : α → β} {s : Set α} (hm : UniformI
   intro f hf hfs
   rw [le_principal_iff] at hfs
   obtain ⟨_, ⟨x, hx, rfl⟩, hyf⟩ : ∃ y ∈ m '' s, map m f ≤ 𝓝 y
-  exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
+  · exact hs (f.map m) (hf.map hm.uniformContinuous) (le_principal_iff.2 (image_mem_map hfs))
   rw [map_le_iff_le_comap, ← nhds_induced, ← hm.inducing.induced] at hyf
   exact ⟨x, hx, hyf⟩
 #align is_complete_of_complete_image isComplete_of_complete_image

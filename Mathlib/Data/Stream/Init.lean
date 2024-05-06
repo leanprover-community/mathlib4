@@ -69,7 +69,7 @@ theorem drop_drop (n m : Nat) (s : Stream' α) : drop n (drop m s) = drop (n + m
 @[simp] theorem get_tail {s : Stream' α} : s.tail.get n = s.get (n + 1) := rfl
 
 @[simp] theorem tail_drop' {s : Stream' α} : tail (drop i s) = s.drop (i+1) := by
-  ext; simp [add_comm, add_assoc, add_left_comm]
+  ext; simp [Nat.add_comm, Nat.add_assoc, Nat.add_left_comm]
 
 @[simp] theorem drop_tail' {s : Stream' α} : drop i (tail s) = s.drop (i+1) := rfl
 
@@ -326,7 +326,9 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃]
+      constructor
+      · exact h₁
+      rw [← h₂, ← h₃]
       (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
@@ -587,8 +589,8 @@ theorem length_take (n : ℕ) (s : Stream' α) : (take n s).length = n := by
 
 @[simp]
 theorem take_take {s : Stream' α} : ∀ {m n}, (s.take n).take m = s.take (min n m)
-  | 0, n => by rw [min_zero, List.take_zero, take_zero]
-  | m, 0 => by rw [zero_min, take_zero, List.take_nil]
+  | 0, n => by rw [Nat.min_zero, List.take_zero, take_zero]
+  | m, 0 => by rw [Nat.zero_min, take_zero, List.take_nil]
   | m+1, n+1 => by rw [take_succ, List.take_cons, Nat.succ_min_succ, take_succ, take_take]
 
 @[simp] theorem concat_take_get {s : Stream' α} : s.take n ++ [s.get n] = s.take (n+1) :=
@@ -761,7 +763,9 @@ theorem get_nats (n : Nat) : get nats n = n :=
 
 theorem nats_eq : nats = cons 0 (map succ nats) := by
   apply Stream'.ext; intro n
-  cases n; rfl; rw [get_succ]; rfl
+  cases n
+  · rfl
+  rw [get_succ]; rfl
 #align stream.nats_eq Stream'.nats_eq
 
 end Stream'

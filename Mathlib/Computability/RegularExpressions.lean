@@ -146,8 +146,9 @@ theorem matches'_mul (P Q : RegularExpression α) : (P * Q).matches' = P.matches
 @[simp]
 theorem matches'_pow (P : RegularExpression α) : ∀ n : ℕ, (P ^ n).matches' = P.matches' ^ n
   | 0 => matches'_epsilon
-  | n + 1 => (matches'_mul _ _).trans <|
-      Eq.trans (congr_arg _ (matches'_pow P n)) (pow_succ _ _).symm
+  | n + 1 => (matches'_mul _ _).trans <| Eq.trans
+      (congrFun (congrArg HMul.hMul (matches'_pow P n)) (matches' P))
+      (pow_succ _ n).symm
 #align regular_expression.matches_pow RegularExpression.matches'_pow
 
 @[simp]
@@ -245,7 +246,7 @@ theorem add_rmatch_iff (P Q : RegularExpression α) (x : List α) :
     (P + Q).rmatch x ↔ P.rmatch x ∨ Q.rmatch x := by
   induction' x with _ _ ih generalizing P Q
   · simp only [rmatch, matchEpsilon, Bool.coe_or_iff]
-  · repeat' rw [rmatch]
+  · repeat rw [rmatch]
     rw [deriv_add]
     exact ih _ _
 #align regular_expression.add_rmatch_iff RegularExpression.add_rmatch_iff
@@ -263,7 +264,7 @@ theorem mul_rmatch_iff (P Q : RegularExpression α) (x : List α) :
       cases' List.append_eq_nil.1 h₁.symm with ht hu
       subst ht
       subst hu
-      repeat' rw [rmatch] at h₂
+      repeat rw [rmatch] at h₂
       simp [h₂]
   · rw [rmatch]; simp [deriv]
     split_ifs with hepsilon
@@ -334,7 +335,7 @@ theorem star_rmatch_iff (P : RegularExpression α) :
         · exact ⟨[], [], by tauto⟩
         · cases' t' with b t
           · simp only [forall_eq_or_imp, List.mem_cons] at helem
-            simp only [eq_self_iff_true, not_true, Ne.def, false_and_iff] at helem
+            simp only [eq_self_iff_true, not_true, Ne, false_and_iff] at helem
           simp only [List.join, List.cons_append, List.cons_eq_cons] at hsum
           refine' ⟨t, U.join, hsum.2, _, _⟩
           · specialize helem (b :: t) (by simp)
@@ -394,7 +395,7 @@ def map (f : α → β) : RegularExpression α → RegularExpression β
 protected theorem map_pow (f : α → β) (P : RegularExpression α) :
     ∀ n : ℕ, map f (P ^ n) = map f P ^ n
   | 0 => by dsimp; rfl
-  | n + 1 => (congr_arg (map f P * ·) (RegularExpression.map_pow f P n) : _)
+  | n + 1 => (congr_arg (· * map f P) (RegularExpression.map_pow f P n) : _)
 #align regular_expression.map_pow RegularExpression.map_pow
 
 @[simp]

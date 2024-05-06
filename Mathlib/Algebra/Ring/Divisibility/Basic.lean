@@ -114,7 +114,7 @@ alias Dvd.dvd.sub := dvd_sub
 /-- If an element `a` divides another element `c` in a ring, `a` divides the sum of another element
 `b` with `c` iff `a` divides `b`. -/
 theorem dvd_add_left (h : a ∣ c) : a ∣ b + c ↔ a ∣ b :=
-  ⟨fun H => by simpa only [add_sub_cancel] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
+  ⟨fun H => by simpa only [add_sub_cancel_right] using dvd_sub H h, fun h₂ => dvd_add h₂ h⟩
 #align dvd_add_left dvd_add_left
 
 /-- If an element `a` divides another element `b` in a ring, `a` divides the sum of `b` and another
@@ -155,13 +155,13 @@ theorem two_dvd_bit1 : 2 ∣ bit1 a ↔ (2 : α) ∣ 1 :=
   dvd_add_right two_dvd_bit0
 #align two_dvd_bit1 two_dvd_bit1
 
-/-- An element a divides the sum a + b if and only if a divides b.-/
+/-- An element a divides the sum a + b if and only if a divides b. -/
 @[simp]
 theorem dvd_add_self_left {a b : α} : a ∣ a + b ↔ a ∣ b :=
   dvd_add_right (dvd_refl a)
 #align dvd_add_self_left dvd_add_self_left
 
-/-- An element a divides the sum b + a if and only if a divides b.-/
+/-- An element a divides the sum b + a if and only if a divides b. -/
 @[simp]
 theorem dvd_add_self_right {a b : α} : a ∣ b + a ↔ a ∣ b :=
   dvd_add_left (dvd_refl a)
