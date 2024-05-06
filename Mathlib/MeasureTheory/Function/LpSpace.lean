@@ -1632,7 +1632,7 @@ theorem ae_tendsto_of_cauchy_snorm [CompleteSpace E] {f : ℕ → α → E}
     refine' cauchySeq_of_le_tendsto_0 (fun n => (B n).toReal) _ _
     · intro n m N hnN hmN
       specialize hx N n m hnN hmN
-      rw [dist_eq_norm, ← ENNReal.toReal_ofReal (norm_nonneg _),
+      rw [_root_.dist_eq_norm, ← ENNReal.toReal_ofReal (norm_nonneg _),
         ENNReal.toReal_le_toReal ENNReal.ofReal_ne_top (ENNReal.ne_top_of_tsum_ne_top hB N)]
       rw [← ofReal_norm_eq_coe_nnnorm] at hx
       exact hx.le
