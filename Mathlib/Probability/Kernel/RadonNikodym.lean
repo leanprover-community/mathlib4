@@ -9,7 +9,7 @@ import Mathlib.Probability.Kernel.WithDensity
 /-!
 # Radon-Nikodym derivative and Lebesgue decomposition for kernels
 
-Let `α` and `γ` be two measurable space, where either `α` is countable or `γ` is countably genrated.
+Let `α` and `γ` be two measurable space, where either `α` is countable or `γ` is countably generated.
 Let `κ, η : kernel α γ` be finite kernels.
 Then there exists a function `kernel.rnDeriv κ η : α → γ → ℝ≥0∞` jointly measurable on `α × γ`
 and a kernel `kernel.singularPart κ η : kernel α γ` such that
