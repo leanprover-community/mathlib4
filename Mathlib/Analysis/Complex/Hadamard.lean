@@ -354,10 +354,10 @@ lemma norm_le_interpStrip_of_mem_verticalStrip_zero (z : ℂ)
       · simpa [sub_eq_zero] using (ne_comm.mpr (ne_of_lt hz.2))
 
 /--
-**Hadamard three-line theorem** on `[0,1]`: If `f` is a bounded function, continuous on `[0,1]`
-and differentiable on `(0,1)`, then for `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that
-for all `z` in the vertical closed strip `re ⁻¹' [0,1]` the inequality
-`‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
+**Hadamard three-line theorem** on `re ⁻¹' [0,1]`: If `f` is a bounded function, continuous on the
+closed strip `re ⁻¹' [0,1]` and differentiable on open strip `re ⁻¹' (0,1)`, then for
+`M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))` we have that for all `z` in the closed strip
+`re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. -/
 lemma norm_le_interpStrip_of_mem_verticalClosedStrip (f : ℂ → E) {z : ℂ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1))) :
@@ -367,11 +367,11 @@ lemma norm_le_interpStrip_of_mem_verticalClosedStrip (f : ℂ → E) {z : ℂ}
     (Continuous.comp_continuousOn' continuous_norm (diffContOnCl_interpStrip f).2)
   rwa [verticalClosedStrip, ← closure_Ioo zero_ne_one, ← closure_preimage_re] at hz
 
-/-- **Hadamard three-line theorem** on `[0,1]` (Variant in simpler terms): Let `f` be a bounded
-function, continuous on `[0,1]`, differentiable on `(0,1)`. If for all `z.re = 0`,
-`‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all `z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then
-for all `z` in the vertical closed strip `re ⁻¹' [0,1]` the inequality
-`‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
+/-- **Hadamard three-line theorem** on `re ⁻¹' [0,1]` (Variant in simpler terms): Let `f` be a
+bounded function, continuous on the closed strip `re ⁻¹' [0,1]` and differentiable on open strip
+`re ⁻¹' (0,1)`. If, for all `z.re = 0`, `‖f z‖ ≤ a` for some `a ∈ ℝ` and, similarly, for all
+`z.re = 1`, `‖f z‖ ≤ b` for some `b ∈ ℝ` then for all `z` in the closed strip
+`re ⁻¹' [0,1]` the inequality `‖f(z)‖ ≤ a ^ (1 - z.re) * b ^ z.re` holds. -/
 lemma norm_le_interp_of_mem_verticalClosedStrip' (f : ℂ → E) {z : ℂ} {a b : ℝ}
     (hz : z ∈ verticalClosedStrip 0 1) (hd : DiffContOnCl ℂ f (verticalStrip 0 1))
     (hB : BddAbove ((norm ∘ f) '' (verticalClosedStrip 0 1)))
