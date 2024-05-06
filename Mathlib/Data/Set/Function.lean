@@ -760,9 +760,9 @@ lemma InjOn.image_inter {s t u : Set α} (hf : u.InjOn f) (hs : s ⊆ u) (ht : t
   exact ⟨y, ⟨ys, zt⟩, hy⟩
 #align set.inj_on.image_inter Set.InjOn.image_inter
 
-lemma InjOn.image_eq_image_iff_of_subset (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
-    f '' s₁ = f '' s₂ ↔ s₁ = s₂ :=
-  ⟨fun h' ↦ by rw [← h.preimage_image_inter h₁, h', h.preimage_image_inter h₂], fun h' ↦ by rw [h']⟩
+lemma InjOn.image (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
+    s.Powerset.InjOn (image f) :=
+  fun s₁ hs₁ s₂ hs₂ h' ↦ by rw [← h.preimage_image_inter h₁, h', h.preimage_image_inter h₂]
 
 lemma InjOn.image_subset_image_iff_of_subset (h : s.InjOn f) (h₁ : s₁ ⊆ s) (h₂ : s₂ ⊆ s) :
     f '' s₁ ⊆ f '' s₂ ↔ s₁ ⊆ s₂ := by
