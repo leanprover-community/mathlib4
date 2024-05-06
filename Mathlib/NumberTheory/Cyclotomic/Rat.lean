@@ -312,7 +312,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
     simp only [Nat.zero_eq, PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
       Subalgebra.coe_val, algebraMap_int_eq, map_neg, map_ofNat]
     simpa only [zero_add, pow_one, AddSubgroupClass.coe_sub, OneMemClass.coe_one, Nat.zero_eq,
-      pow_zero] using hζ.norm_pow_sub_one_of_eq_two (cyclotomic.irreducible_rat
+      pow_zero] using hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat
         (by simp only [Nat.zero_eq, zero_add, pow_one, Nat.ofNat_pos]))
   convert Int.prime_two
   apply RingHom.injective_int (algebraMap ℤ ℚ)
@@ -372,7 +372,7 @@ lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ
   have : algebraMap (𝓞 K) K (hζ.toInteger ^ 2 ^ k - 1) = ζ ^ (2 : ℕ) ^ k - 1 := by
     simp only [map_sub, map_pow, map_one, sub_left_inj, RingOfIntegers.map_mk]
   rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this,
-    hζ.norm_pow_sub_one_of_eq_two (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
+    hζ.norm_pow_sub_one_two (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
   simp only [algebraMap_int_eq, Int.reduceNeg, map_pow, map_neg, map_ofNat]
 
 /-- The norm, relative to `ℤ`, of `ζ ^ p ^ s - 1` in a `p ^ (k + 1)`-th cyclotomic extension of `ℚ`
