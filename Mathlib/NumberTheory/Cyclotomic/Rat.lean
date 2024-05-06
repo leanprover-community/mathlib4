@@ -371,8 +371,7 @@ lemma norm_toInteger_pow_sub_one_of_two [IsCyclotomicExtension {2 ^ (k + 1)} ℚ
   apply (algebraMap ℤ ℚ).injective_int
   have : NumberField K := IsCyclotomicExtension.numberField {2 ^ (k + 1)} ℚ K
   have : algebraMap (𝓞 K) K (hζ.toInteger ^ 2 ^ k - 1) = ζ ^ (2 : ℕ) ^ k - 1 := by
-    simp only [map_sub, map_pow, map_one, sub_left_inj]
-    exact rfl
+    simp only [map_sub, map_pow, map_one, sub_left_inj, RingOfIntegers.map_mk]
   rw [← Algebra.norm_localization (Sₘ := K) ℤ ℤ⁰, this, hζ.norm_pow_sub_one_of_eq_two
     (cyclotomic.irreducible_rat (pow_pos (by decide) _))]
   simp only [algebraMap_int_eq, Int.reduceNeg, map_pow, map_neg, map_ofNat]
