@@ -28,7 +28,7 @@ As an objective function (that we are trying to maximize) we use sum of coordina
 
 We introduce two auxiliary variables and one constraint:
 * The variable `y` is interpreted as "homogenized" `1`. We need it because dealing with a
-homogenized problem is easier, but having some "unit" is necessary.
+  homogenized problem is easier, but having some "unit" is necessary.
 * To bound the problem we add the constraint `x₁ + ... + xₘ + z = y` introducing new variable `z`.
 
 The objective function also interpreted as an auxiliary variable with constraint
@@ -54,11 +54,10 @@ def stateLP {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) : Matrix (n 
   return ⟨data⟩
 
 /-- Extracts target vector from the table, putting auxilary variables aside (see `stateLP`). -/
-def exctractSolution (table : Table) : Array Rat := Id.run do
+def extractSolution (table : Table) : Array Rat := Id.run do
   let mut ans : Array Rat := Array.mkArray (table.basic.size + table.free.size - 3) 0
   for i in [1:table.mat.data.size] do
     ans := ans.set! (table.basic[i]! - 2) table.mat.data[i]!.back
-
   return ans
 
 /--
@@ -75,6 +74,6 @@ def findPositiveVector {n m : Nat} (A : Matrix n m) (strictIndexes : List Nat) :
 
   /- Run Simplex Algorithm and extract the solution. -/
   let resTable := runSimplexAlgorithm initTable
-  exctractSolution resTable
+  extractSolution resTable
 
 end Linarith.SimplexAlgorithm
