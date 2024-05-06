@@ -165,7 +165,7 @@ theorem continuous_eraseIdx {n : ℕ} : Continuous fun l : List α => eraseIdx l
   continuous_iff_continuousAt.mpr fun _a => tendsto_eraseIdx
 #align list.continuous_remove_nth List.continuous_eraseIdx
 
-@[deprecated] alias continuous_removeNth := continuous_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 @[to_additive]
 theorem tendsto_prod [Monoid α] [ContinuousMul α] {l : List α} :
@@ -227,13 +227,13 @@ theorem continuousAt_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     exact Tendsto.comp List.tendsto_eraseIdx continuousAt_subtype_val
 #align vector.continuous_at_remove_nth Vector.continuousAt_eraseIdx
 
-@[deprecated] alias continuousAt_removeNth := continuousAt_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuousAt_removeNth := continuousAt_eraseIdx
 
 theorem continuous_eraseIdx {n : ℕ} {i : Fin (n + 1)} :
     Continuous (eraseIdx i : Vector α (n + 1) → Vector α n) :=
   continuous_iff_continuousAt.mpr fun ⟨_a, _l⟩ => continuousAt_eraseIdx
 #align vector.continuous_remove_nth Vector.continuous_eraseIdx
 
-@[deprecated] alias continuous_removeNth := continuous_eraseIdx -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias continuous_removeNth := continuous_eraseIdx
 
 end Vector

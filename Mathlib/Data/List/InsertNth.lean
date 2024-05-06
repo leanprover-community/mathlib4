@@ -54,7 +54,7 @@ theorem eraseIdx_insertNth (n : ℕ) (l : List α) : (l.insertNth n a).eraseIdx 
   exact modifyNthTail_id _ _
 #align list.remove_nth_insert_nth List.eraseIdx_insertNth
 
-@[deprecated] alias removeNth_insertNth := eraseIdx_insertNth -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias removeNth_insertNth := eraseIdx_insertNth
 
 theorem insertNth_eraseIdx_of_ge :
     ∀ n m as,
@@ -67,7 +67,7 @@ theorem insertNth_eraseIdx_of_ge :
       insertNth_eraseIdx_of_ge n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
 #align list.insert_nth_remove_nth_of_ge List.insertNth_eraseIdx_of_ge
 
-@[deprecated] alias insertNth_removeNth_of_ge := insertNth_eraseIdx_of_ge -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias insertNth_removeNth_of_ge := insertNth_eraseIdx_of_ge
 
 theorem insertNth_eraseIdx_of_le :
     ∀ n m as,
@@ -78,7 +78,7 @@ theorem insertNth_eraseIdx_of_le :
       insertNth_eraseIdx_of_le n m as (Nat.lt_of_succ_lt_succ has) (Nat.le_of_succ_le_succ hmn)
 #align list.insert_nth_remove_nth_of_le List.insertNth_eraseIdx_of_le
 
-@[deprecated] alias insertNth_removeNth_of_le := insertNth_eraseIdx_of_le -- 2024-05-04
+@[deprecated (since := "2024-05-04")] alias insertNth_removeNth_of_le := insertNth_eraseIdx_of_le
 
 theorem insertNth_comm (a b : α) :
     ∀ (i j : ℕ) (l : List α) (_ : i ≤ j) (_ : j ≤ length l),
