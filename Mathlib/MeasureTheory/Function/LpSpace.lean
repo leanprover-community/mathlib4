@@ -807,7 +807,7 @@ theorem norm_indicatorConstLp_top (hμs_ne_zero : μ s ≠ 0) :
 open scoped symmDiff in
 /-- Compute the `ℒᵖ` norm of the difference of two constant indicators of sets with finite measure
 and same constant using symmetric difference. -/
-theorem norm_indicatorConstLp_sub {t : Set α} (ht : MeasurableSet t) (hμt : μ t ≠ ∞)
+theorem norm_indicatorConstLp_sub {t : Set α} {ht : MeasurableSet t} {hμt : μ t ≠ ∞}
     (hp_ne_zero : p ≠ 0) (hp_ne_top : p ≠ ∞) :
     ‖indicatorConstLp p hs hμs c - indicatorConstLp p ht hμt c‖ =
     ‖c‖ * (μ (s ∆ t)).toReal ^ (1 / p.toReal) := by
