@@ -960,25 +960,21 @@ protected lemma continuous_rng_iff {X : Type*} [TopologicalSpace X] {f : X → (
     tendstoUniformlyOn_iff_tendstoUniformly_comp_coe, @forall_swap X]
   rfl
 
-instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) where
-  complete {F} hF := by
+instance [CompleteSpace β] : CompleteSpace (α →ᵤ[𝔖] β) := by
+  rcases isEmpty_or_nonempty β
+  · infer_instance
+  · refine ⟨fun {F} hF ↦ ?_⟩
     have := hF.1
-    have : ∀ x : α, ∃ y : β, x ∈ ⋃₀ 𝔖 → Tendsto (toFun 𝔖 · x) F (𝓝 y) := fun x ↦
-      if hx : x ∈ ⋃₀ 𝔖 then
-        let ⟨y, hy⟩ := CompleteSpace.complete (hF.map (uniformContinuous_eval_of_mem_sUnion _ _ hx))
-        ⟨y, fun _ ↦ hy⟩
-      else
-        let ⟨f⟩ := hF.1.nonempty
-        ⟨f x, (absurd · hx)⟩
-    choose g hg using this
+    have : ∀ x ∈ ⋃₀ 𝔖, ∃ y : β, Tendsto (toFun 𝔖 · x) F (𝓝 y) := fun x hx ↦
+      CompleteSpace.complete (hF.map (uniformContinuous_eval_of_mem_sUnion _ _ hx))
+    choose! g hg using this
     use ofFun 𝔖 g
-    rw [← tendsto_id', UniformOnFun.tendsto_iff_tendstoUniformlyOn, toFun_ofFun]
-    intro s hs
-    rw [tendstoUniformlyOn_iff_tendsto, uniformity_hasBasis_closed.tendsto_right_iff]
-    rintro U ⟨hU, hUc⟩
-    rcases mem_prod_self_iff.1 <| hF.2 <| UniformOnFun.gen_mem_uniformity _ _ hs hU
+    simp_rw [UniformOnFun.nhds_eq_of_basis _ _ uniformity_hasBasis_closed, le_iInf₂_iff,
+      le_principal_iff]
+    intro s hs U ⟨hU, hUc⟩
+    rcases cauchy_iff.mp hF |>.2 _ <| UniformOnFun.gen_mem_uniformity _ _ hs hU
       with ⟨V, hV, hVU⟩
-    filter_upwards [prod_mem_prod hV (mem_principal_self _)] with ⟨f, x⟩ ⟨hf, hx⟩
+    filter_upwards [hV] with f hf x hx
     refine hUc.mem_of_tendsto ((hg x ⟨s, hs, hx⟩).prod_mk_nhds tendsto_const_nhds) ?_
     filter_upwards [hV] with g' hg' using hVU (mk_mem_prod hg' hf) _ hx
 
