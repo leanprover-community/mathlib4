@@ -188,7 +188,7 @@ Turn a comonoid object into a monoid object in the opposite category.
     rfl
   mul_assoc := by
     rw [← op_inv_associator, ← op_whiskerRight, ← op_comp, ← op_whiskerLeft, ← op_comp,
-      comul_assoc, op_comp, op_comp_assoc]
+      ← comul_assoc, op_comp, op_comp_assoc]
     rfl
 
 /--
