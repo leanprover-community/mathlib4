@@ -6,6 +6,7 @@ Authors: Scott Morrison, Yuma Mizuno, Oleksandr Manzyuk
 import Mathlib.CategoryTheory.Monoidal.Free.Basic
 import Mathlib.Lean.Meta
 import Mathlib.Tactic.CategoryTheory.BicategoryCoherence
+import Mathlib.Tactic.CategoryTheory.BicategoricalComp
 import Mathlib.Tactic.CategoryTheory.MonoidalComp
 
 #align_import category_theory.monoidal.coherence from "leanprover-community/mathlib"@"f187f1074fa1857c94589cc653c786cadc4c35ff"
@@ -289,8 +290,7 @@ elab_rules : tactic
 | `(tactic| coherence) => do
   evalTactic (← `(tactic|
     (simp (config := {failIfUnchanged := false}) only [bicategoricalComp,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom,
-      Mathlib.Tactic.BicategoryCoherence.BicategoricalCoherence.hom',
+      BicategoricalCoherence.hom,
       monoidalComp]);
     whisker_simps (config := {failIfUnchanged := false});
     monoidal_simps (config := {failIfUnchanged := false})))

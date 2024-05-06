@@ -207,6 +207,10 @@
   ["Mathlib.CategoryTheory.Monad.Limits"],
   "Mathlib.Topology.Algebra.Nonarchimedean.AdicTopology":
   ["Mathlib.Topology.Algebra.UniformRing"],
+  "Mathlib.Tactic.Widget.StringDiagram":
+  ["Mathlib.CategoryTheory.Monoidal.Category",
+   "Mathlib.Tactic.CategoryTheory.BicategoricalComp",
+   "Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.Widget.SelectPanelUtils":
   ["ProofWidgets.Component.OfRpcMethod"],
   "Mathlib.Tactic.Widget.CommDiag": ["Mathlib.CategoryTheory.Category.Basic"],
@@ -287,7 +291,8 @@
   "Mathlib.Tactic.CategoryTheory.Reassoc":
   ["Mathlib.CategoryTheory.Functor.Basic"],
   "Mathlib.Tactic.CategoryTheory.Coherence":
-  ["Mathlib.Tactic.CategoryTheory.MonoidalComp"],
+  ["Mathlib.Tactic.CategoryTheory.BicategoricalComp",
+   "Mathlib.Tactic.CategoryTheory.MonoidalComp"],
   "Mathlib.Tactic.Basic": ["Std"],
   "Mathlib.Tactic.Attr.Register": ["Lean.Meta.Tactic.Simp.SimpTheorems"],
   "Mathlib.Tactic.ArithMult": ["Mathlib.Tactic.ArithMult.Init"],
