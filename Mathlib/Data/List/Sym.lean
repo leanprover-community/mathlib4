@@ -247,7 +247,7 @@ theorem length_sym {n : ℕ} {xs : List α} :
     (xs.sym n).length = Nat.multichoose xs.length n :=
   match n, xs with
   | 0, _ => by rw [List.sym, Nat.multichoose]; rfl
-  | n + 1, [] => rfl
+  | n + 1, [] => by simp [List.sym]
   | n + 1, x :: xs => by
     rw [List.sym, length_append, length_map, length_cons]
     rw [@length_sym n (x :: xs), @length_sym (n + 1) xs]
