@@ -394,8 +394,8 @@ instance OrderDual.instCompletelyDistribLattice [CompletelyDistribLattice α] :
   __ := instFrame
   iInf_iSup_eq _ := iSup_iInf_eq (α := α)
 
-instance Prod.instCompletelyDistribLattice [CompletelyDistribLattice α] [CompletelyDistribLattice β] :
-    CompletelyDistribLattice (α × β) where
+instance Prod.instCompletelyDistribLattice [CompletelyDistribLattice α]
+    [CompletelyDistribLattice β] : CompletelyDistribLattice (α × β) where
   __ := instFrame
   iInf_iSup_eq f := by ext <;> simp [fst_iSup, fst_iInf, snd_iSup, snd_iInf, iInf_iSup_eq]
 
@@ -419,8 +419,8 @@ instance Prod.instCompleteBooleanAlgebra [CompleteBooleanAlgebra α] [CompleteBo
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
 
-instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*} [∀ i, CompleteBooleanAlgebra (π i)] :
-    CompleteBooleanAlgebra (∀ i, π i) where
+instance Pi.instCompleteBooleanAlgebra {ι : Type*} {π : ι → Type*}
+    [∀ i, CompleteBooleanAlgebra (π i)] : CompleteBooleanAlgebra (∀ i, π i) where
   __ := instBooleanAlgebra
   __ := instCompleteDistribLattice
 #align pi.complete_boolean_algebra Pi.instCompleteBooleanAlgebra
