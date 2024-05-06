@@ -339,6 +339,8 @@
   "Mathlib.Control.Monad.Basic": ["Mathlib.Init.Control.Lawful"],
   "Mathlib.Control.Basic": ["Mathlib.Init.Function"],
   "Mathlib.Combinatorics.SimpleGraph.Subgraph": ["Mathlib.Init.Core"],
+  "Mathlib.Combinatorics.SimpleGraph.Triangle.Basic":
+  ["Mathlib.Tactic.Positivity.Finset"],
   "Mathlib.Combinatorics.SetFamily.AhlswedeZhang":
   ["Mathlib.Algebra.Order.Field.Basic"],
   "Mathlib.CategoryTheory.Limits.Shapes.FiniteLimits":

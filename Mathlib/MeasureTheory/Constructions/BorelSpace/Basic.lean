@@ -320,9 +320,10 @@ theorem IsOpen.measurableSet (h : IsOpen s) : MeasurableSet s :=
   OpensMeasurableSpace.borel_le _ <| GenerateMeasurable.basic _ h
 #align is_open.measurable_set IsOpen.measurableSet
 
-instance (priority := 500) {s : Set α} [HasCountableSeparatingOn α IsOpen s] :
-    HasCountableSeparatingOn α MeasurableSet s :=
-  .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
+instance (priority := 1000) {s : Set α} [h : HasCountableSeparatingOn α IsOpen s] :
+    CountablySeparated s := by
+    rw [CountablySeparated.subtype_iff]
+    exact .mono (fun _ ↦ IsOpen.measurableSet) Subset.rfl
 
 @[measurability]
 theorem measurableSet_interior : MeasurableSet (interior s) :=
@@ -1917,10 +1918,10 @@ theorem exists_borelSpace_of_countablyGenerated_of_separatesPoints (α : Type*)
 /-- If a measurable space on `α` is countably generated and separates points, there is some
 second countable t4 topology on `α` (i.e. a separable metrizable one) for which every
 open set is measurable. -/
-theorem exists_opensMeasurableSpace_of_hasCountableSeparatingOn (α : Type*)
-    [m : MeasurableSpace α] [HasCountableSeparatingOn α MeasurableSet univ] :
+theorem exists_opensMeasurableSpace_of_countablySeparated (α : Type*)
+    [m : MeasurableSpace α] [CountablySeparated α] :
     ∃ τ : TopologicalSpace α, SecondCountableTopology α ∧ T4Space α ∧ OpensMeasurableSpace α := by
-  rcases exists_countablyGenerated_le_of_hasCountableSeparatingOn α with ⟨m', _, _, m'le⟩
+  rcases exists_countablyGenerated_le_of_countablySeparated α with ⟨m', _, _, m'le⟩
   rcases exists_borelSpace_of_countablyGenerated_of_separatesPoints (m := m') with ⟨τ, _, _, τm'⟩
   exact ⟨τ, ‹_›, ‹_›, @OpensMeasurableSpace.mk _ _ m (τm'.measurable_eq.symm.le.trans m'le)⟩
 
