@@ -10,8 +10,8 @@ import Mathlib.Analysis.SpecificLimits.Basic
 /-!
 # (Pre-)tight measures
 The key definition of interest here is that of tight measures, `IsTight`. We first introduce two
-weaker notions, `IsSeparablySupported` and `IsPretight`, which are equivalent on complete metric spaces. We
-provide some basic API for these notions and prove Ulam's tightness theorem
+weaker notions, `IsSeparablySupported` and `IsPretight`, which are equivalent on complete metric
+spaces. We provide some basic API for these notions and prove Ulam's tightness theorem
 (`of_isSeparableSpace_completeSpace`) and its strengthening `of_isSeparablySupported_completeSpace`.
 
 ## Main definitions
