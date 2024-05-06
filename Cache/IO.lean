@@ -292,6 +292,7 @@ def mkBuildPaths (path : FilePath) : CacheM <| List (FilePath × Bool) := do
     (packageDir / LIBDIR / path.withExtension "olean.hash", true),
     (packageDir / LIBDIR / path.withExtension "ilean", true),
     (packageDir / LIBDIR / path.withExtension "ilean.hash", true),
+    (packageDir / LIBDIR / path.withExtension "log.json", true),
     (packageDir / IRDIR  / path.withExtension "c", true),
     (packageDir / IRDIR  / path.withExtension "c.hash", true),
     (packageDir / LIBDIR / path.withExtension "extra", false)]
