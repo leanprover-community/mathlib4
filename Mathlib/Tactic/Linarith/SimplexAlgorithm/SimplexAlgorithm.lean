@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Vasily Nesterov
 -/
 import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
+import Mathlib.Tactic.Linarith.Datatypes
 
 /-!
 # Simplex Algorithm
@@ -11,6 +12,8 @@ import Mathlib.Tactic.Linarith.SimplexAlgorithm.Datatypes
 To obtain required vector in `Linarith.SimplexAlgorithm.findPositiveVector` we run the Simplex
 Algorithm. We use Bland's rule for pivoting, which guarantees that the algorithm terminates.
 -/
+
+open Std Linarith
 
 namespace Linarith.SimplexAlgorithm
 

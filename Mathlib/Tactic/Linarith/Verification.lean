@@ -4,7 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
-import Mathlib.Tactic.Linarith.Elimination
+-- import Mathlib.Tactic.Linarith.FourierMotzkin
+import Mathlib.Tactic.Linarith.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
 

@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 import Mathlib.Tactic.Linarith.Datatypes
-import Mathlib.Tactic.Linarith.SimplexAlgorithm.PositiveVector
 
 /-!
 # The Fourier-Motzkin elimination procedure
@@ -335,34 +334,5 @@ def FourierMotzkin.produceCertificate : CertificateOracle :=
       (StateT.run (do validate; elimAllVarsM : LinarithM Unit) (mkLinarithData hyps maxVar)) with
   | (Except.ok _) => failure
   | (Except.error contr) => return contr.src.flatten
-
-namespace SimplexAlgorithm
-
-/-- Preprocess the goal to pass it to `findPositiveVector`. -/
-def preprocess (hyps : List Comp) (maxVar : ℕ) : Matrix (maxVar + 1) (hyps.length) × List Nat :=
-  let mdata : Array (Array ℚ) := Array.ofFn fun i : Fin (maxVar + 1) =>
-    Array.mk <| hyps.map (·.coeffOf i)
-  let strictIndexes : List ℕ := hyps.findIdxs (·.str == Ineq.lt)
-  ⟨⟨mdata⟩, strictIndexes⟩
-
-/-- Extract the certificate from the `vec` found by `findPositiveVector`. -/
-def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
-  let common_den : ℕ := vec.foldl (fun acc item => acc.lcm item.den) 1
-  let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
-  HashMap.ofList <| vecNat.toList.enum.filter (fun ⟨_, item⟩ => item != 0)
-
-/--
-`produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `maxVar`.
-If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
--/
-def produceCertificate : CertificateOracle :=
-  fun hyps maxVar => do
-    let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
-    let vec := findPositiveVector A strictIndexes
-    return postprocess vec
-
-end SimplexAlgorithm
 
 end Linarith
