@@ -10,13 +10,13 @@ import Mathlib.Analysis.SpecificLimits.Basic
 /-!
 # (Pre-)tight measures
 The key definition of interest here is that of tight measures, `IsTight`. We first introduce two
-weaker notions, `IsSeparable` and `IsPretight`, which are equivalent on complete metric spaces. We
+weaker notions, `IsSeparablySupported` and `IsPretight`, which are equivalent on complete metric spaces. We
 provide some basic API for these notions and prove Ulam's tightness theorem
-(`of_isSeparableSpace_completeSpace`) and its strengthening `of_isSeparable_completeSpace`.
+(`of_isSeparableSpace_completeSpace`) and its strengthening `of_isSeparablySupported_completeSpace`.
 
 ## Main definitions
-* `MeasureTheory.Measure.IsSeparable`: A measure `μ` is separable if there is a separable set `S`
-  such that `μ S = μ Set.univ`.
+* `MeasureTheory.Measure.IsSeparablySupported`: A measure `μ` is separably supported if there is a
+  separable set `S` such that `μ Sᶜ = 0`.
 * `MeasureTheory.Measure.IsPretight`: A measure `μ` is pre-tight if for all `0 < ε`, there exists
   `K` totally bounded such that `μ Kᶜ ≤ ε`.
 * `MeasureTheory.Measure.IsTight`: A measure `μ` is tight if for all `0 < ε`, there exists `K`
@@ -27,8 +27,8 @@ provide some basic API for these notions and prove Ulam's tightness theorem
 
 * `of_isSeparableSpace_completeSpace`: Ulam's tightness theorem: a finite measure on a complete
   separable metric space is tight.
-* `of_isSeparable_completeSpace`: A strengthening of Ulam's tightness theorem: a finite,
-  separable measure on a complete metric space is tight.
+* `of_isSeparablySupported_completeSpace`: A strengthening of Ulam's tightness theorem: a finite,
+  separably supported measure on a complete metric space is tight.
 * `of_innerRegular`: Every finite, inner-regular measure on a T2 space is tight.
 
 ## Notation
@@ -101,15 +101,39 @@ lemma exists_denseRange_sub_le_measure_univ_of_separableSpace_compl [PseudoMetri
   exact tsub_le_iff_tsub_le.mp hN
 
 /-- A measure `μ` is separable if there is a separable set `S` such that `μ S = μ Set.univ`. -/
- def IsSeparable [TopologicalSpace α] (μ : Measure α) : Prop :=
-  ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ S = μ Set.univ
+ def IsSeparablySupported [TopologicalSpace α] (μ : Measure α) : Prop :=
+  ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ (Sᶜ) = 0
 
-namespace IsSeparable
+namespace IsSeparablySupported
 
 lemma of_separableSpace [TopologicalSpace α] [TopologicalSpace.SeparableSpace α] :
-    IsSeparable μ := ⟨Set.univ, TopologicalSpace.isSeparable_univ_iff.mpr ‹_›, rfl⟩
+    IsSeparablySupported μ := by
+    refine ⟨Set.univ, TopologicalSpace.isSeparable_univ_iff.mpr ‹_›, ?_⟩
+    rw [Set.compl_univ, measure_empty]
 
-end IsSeparable
+lemma separablySupported_nat_iff [TopologicalSpace α] :
+    IsSeparablySupported μ ↔ ∀ n : ℕ, ∃ S : Set α, TopologicalSpace.IsSeparable S ∧ μ Sᶜ ≤ 1/n := by
+  constructor
+  · rintro ⟨S, hS, hSc⟩ n
+    use S, hS
+    simp_all only [zero_le]
+  · intro h
+    choose S hsep hmeas using h
+    use ⋃ n, S n, TopologicalSpace.isSeparable_iUnion.mpr hsep
+    rw [← le_zero_iff]
+    apply le_of_forall_lt'
+    intro _ hc
+    obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hc.ne.symm
+    apply lt_of_le_of_lt ?_ hn
+    have : μ (S n)ᶜ ≤ (↑n)⁻¹ := by
+      simp_all only [one_div,
+        ENNReal.le_inv_iff_mul_le]
+    apply le_trans ?_ this
+    apply measure_mono
+    rw [Set.compl_subset_compl]
+    exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
+
+end IsSeparablySupported
 
 section IsPretight
 
@@ -149,24 +173,25 @@ lemma totallyBounded_nat_iff : IsPretight μ ↔ ∀ n : ℕ, ∃ K : Set α, To
 /-- If a measure `μ` is pretight, we can cover `μ`-almost all of the space by a countable sequence
 of totally bounded sets. -/
 lemma exists_countable_totallyBounded_union (h : IsPretight μ):
-    ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n) = μ Set.univ := by
+    ∃ K : ℕ → Set α, (∀ n, TotallyBounded (K n)) ∧ μ (⋃ n, K n)ᶜ = 0 := by
   choose! K hKa hKb using h.exists_totallyBounded_nat
   use K, hKa
-  rw [← Set.iUnion_accumulate, measure_congr]
-  rw [ae_eq_univ, Set.compl_iUnion, ← le_zero_iff]
-  refine le_of_forall_lt' (fun ε hε ↦ ?_)
-  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hε.ne.symm
-  rw [← one_div] at hn
-  have : μ ((Set.Accumulate K n)ᶜ) ≤ μ ((K n)ᶜ) := by
-    apply measure_mono
-    rw [Set.compl_subset_compl]
-    exact Set.subset_accumulate
-  exact lt_of_le_of_lt (measure_mono <| Set.iInter_subset _ n)
-    (lt_of_le_of_lt this (lt_of_le_of_lt (hKb n) hn))
+  rw [← le_zero_iff]
+  apply le_of_forall_lt'
+  intro _ hc
+  obtain ⟨n, hn⟩ := ENNReal.exists_inv_nat_lt hc.ne.symm
+  apply lt_of_le_of_lt ?_ hn
+  have : μ (K n)ᶜ ≤ (↑n)⁻¹ := by
+    simp_all only [one_div,
+      ENNReal.le_inv_iff_mul_le]
+  apply le_trans ?_ this
+  apply measure_mono
+  rw [Set.compl_subset_compl]
+  exact subset_iUnion_of_subset n fun ⦃a⦄ a ↦ a
 
-/-- Every pretight measure on a countably generated uniform space is separable. -/
-lemma to_isSeparable_on_countably_generated_uniformSpace [IsCountablyGenerated (𝓤 α)]
-    (h : IsPretight μ) : IsSeparable μ := by
+/-- Every pretight measure on a countably generated uniform space is separably supported. -/
+lemma to_isSeparablySupported_on_countably_generated_uniformSpace [IsCountablyGenerated (𝓤 α)]
+    (h : IsPretight μ) : IsSeparablySupported μ := by
   obtain ⟨K, hKa, hKb⟩ := exists_countable_totallyBounded_union h
   use ⋃ n, K n, ?_, hKb
   rw [TopologicalSpace.isSeparable_iUnion]
@@ -218,9 +243,9 @@ lemma of_separableSpace_on_countablyGenerated_uniformSpace [IsCountablyGenerated
         _ = ε * (2⁻¹ * 2) := by simp [ENNReal.tsum_geometric_add_one]
         _ ≤ ε := by rw [ENNReal.inv_mul_cancel two_ne_zero ENNReal.two_ne_top, mul_one]
 
-/-- Every finite separable measure on a countably generated, uniform space is pretight.-/
-lemma of_isSeparable_on_countablyGenerated_uniformSpace [IsCountablyGenerated (𝓤 α)]
-    [OpensMeasurableSpace α] (h : IsSeparable μ) [IsFiniteMeasure μ] : IsPretight μ := by
+/-- Every finite, separably supported measure on a countably generated, uniform space is pretight.-/
+lemma of_isSeparablySupported_on_countablyGenerated_uniformSpace [IsCountablyGenerated (𝓤 α)]
+    [OpensMeasurableSpace α] (h : IsSeparablySupported μ) [IsFiniteMeasure μ] : IsPretight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
   obtain ⟨S, hS, hSμ⟩ := h
   have : TopologicalSpace.SeparableSpace (closure S) :=
@@ -234,13 +259,12 @@ lemma of_isSeparable_on_countablyGenerated_uniformSpace [IsCountablyGenerated (�
   have := of_separableSpace_on_countablyGenerated_uniformSpace (μ := mS.volume)
   intro ε hε
   obtain ⟨K, hK, hKe⟩ := this ε hε
-  have hSμ : μ (closure S) = μ Set.univ := le_antisymm (measure_mono <| Set.subset_univ _)
-    (le_trans hSμ.ge (measure_mono <| subset_closure))
   have hSμ_co : μ (closure S)ᶜ = 0 := by
-    rw [MeasureTheory.measure_compl, tsub_eq_zero_of_le hSμ.ge]
-    · measurability
-    · rw [hSμ]
-      exact measure_ne_top _ _
+    rw [← le_zero_iff] at *
+    apply le_trans ?_ hSμ
+    apply measure_mono
+    rw [Set.compl_subset_compl]
+    exact subset_closure
   use (closure K)
   constructor
   · apply TotallyBounded.closure
@@ -413,12 +437,12 @@ lemma of_isSeparableSpace_completeSpace [UniformSpace α] [IsCountablyGenerated 
   exact IsPretight.of_separableSpace_on_countablyGenerated_uniformSpace
 
 /-- A strengthened version of Ulam's tightness theorem. -/
-lemma of_isSeparable_completeSpace [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
-    [CompleteSpace α] [OpensMeasurableSpace α] (h : IsSeparable μ) [IsFiniteMeasure μ] :
+lemma of_isSeparablySupported_completeSpace [UniformSpace α] [IsCountablyGenerated (𝓤 α)]
+    [CompleteSpace α] [OpensMeasurableSpace α] (h : IsSeparablySupported μ) [IsFiniteMeasure μ] :
     IsTight μ := by
   letI := UniformSpace.pseudoMetricSpace (X := α)
   apply of_isPretight_completeSpace
-  exact IsPretight.of_isSeparable_on_countablyGenerated_uniformSpace h
+  exact IsPretight.of_isSeparablySupported_on_countablyGenerated_uniformSpace h
 
 /-- Tight measures on T2 spaces that assign finite measure to compact sets are finite. -/
 instance [TopologicalSpace α] [T2Space α] [OpensMeasurableSpace α] [hk: IsFiniteMeasureOnCompacts μ]
