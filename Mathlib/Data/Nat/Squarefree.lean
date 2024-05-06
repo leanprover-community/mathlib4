@@ -255,6 +255,7 @@ theorem squarefree_iff_minSqFac {n : ℕ} : Squarefree n ↔ n.minSqFac = none :
 instance : DecidablePred (Squarefree : ℕ → Prop) := fun _ =>
   decidable_of_iff' _ squarefree_iff_minSqFac
 
+unseal Nat.factors in
 theorem squarefree_two : Squarefree 2 := by
   rw [squarefree_iff_nodup_factors] <;> decide
 #align nat.squarefree_two Nat.squarefree_two

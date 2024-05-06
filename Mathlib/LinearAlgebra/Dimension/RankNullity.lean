@@ -131,6 +131,7 @@ theorem exists_linearIndependent_snoc_of_lt_rank [StrongRankCondition R] {n : �
   have ⟨x, hx⟩ := exists_linearIndependent_cons_of_lt_rank hv h
   exact ⟨x, hx.comp _ (finRotate _).injective⟩
 
+unseal Array.ofFn.go in
 /-- Given a nonzero vector in a space of dimension `> 1`, one may find another vector linearly
 independent of the first one. -/
 theorem exists_linearIndependent_pair_of_one_lt_rank [StrongRankCondition R]
