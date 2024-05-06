@@ -1,7 +1,7 @@
 /-
 Copyright (c) 2024 Lean FRO LLC. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Scott Morrison
+Authors: Kim Morrison
 -/
 import Mathlib.CategoryTheory.Monoidal.CoherenceLemmas
 import Mathlib.CategoryTheory.Limits.Shapes.Terminal
@@ -52,7 +52,7 @@ attribute [reassoc (attr := simp)] Comon_.comul_assoc
 
 namespace Comon_
 
-/-- The trivial comonoid object. We later show this is initial in `Comon_ C`.
+/-- The trivial comonoid object. We later show this is terminal in `Comon_ C`.
 -/
 @[simps]
 def trivial : Comon_ C where
@@ -141,7 +141,8 @@ instance : ReflectsIsomorphisms (forget C) where
 /-- Construct an isomorphism of monoids by giving an isomorphism between the underlying objects
 and checking compatibility with unit and multiplication only in the forward direction.
 -/
-def isoOfIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
+@[simps]
+def mkIso {M N : Comon_ C} (f : M.X ≅ N.X) (f_counit : f.hom ≫ N.counit = M.counit)
     (f_comul : f.hom ≫ N.comul = M.comul ≫ (f.hom ⊗ f.hom)) : M ≅ N where
   hom :=
     { hom := f.hom
