@@ -541,7 +541,7 @@ section MiscTheorems
 variable [Semiring k]
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
-to_ama [] plus a₁
+to_ama plus a₁
 theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
     (f * g) x = f.sum fun a₁ b₁ => g.sum fun a₂ b₂ => if a₁ * a₂ = x then b₁ * b₂ else 0 := by
   -- Porting note: `reducible` cannot be `local` so proof gets long.
@@ -550,7 +550,7 @@ theorem mul_apply [DecidableEq G] [Mul G] (f g : MonoidAlgebra k G) (x : G) :
   apply single_apply
 to_ama #align monoid_algebra.mul_apply MonoidAlgebra.mul_apply
 
-to_ama [] plus p.1
+to_ama plus p.1
 theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Finset (G × G))
     (hs : ∀ {p : G × G}, p ∈ s ↔ p.1 * p.2 = x) : (f * g) x = ∑ p in s, f p.1 * g p.2 := by
   classical exact
@@ -574,7 +574,7 @@ theorem mul_apply_antidiagonal [Mul G] (f g : MonoidAlgebra k G) (x : G) (s : Fi
             · rw [hp hps h1, mul_zero]
 to_ama #align monoid_algebra.mul_apply_antidiagonal MonoidAlgebra.mul_apply_antidiagonal
 
-to_ama [] plus a₁
+to_ama plus a₁
 @[simp]
 theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
     single a₁ b₁ * single a₂ b₂ = single (a₁ * a₂) (b₁ * b₂) := by
@@ -583,47 +583,53 @@ theorem single_mul_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k} :
     (sum_single_index (by rw [mul_zero, single_zero]))
 to_ama #align monoid_algebra.single_mul_single MonoidAlgebra.single_mul_single
 
---to_ama?
+to_ama plus a₁
 theorem single_commute_single [Mul G] {a₁ a₂ : G} {b₁ b₂ : k}
     (ha : Commute a₁ a₂) (hb : Commute b₁ b₂) :
     Commute (single a₁ b₁) (single a₂ b₂) :=
   single_mul_single.trans <| congr_arg₂ single ha hb |>.trans single_mul_single.symm
 
--- adding
-open AddMonoidAlgebra in
-theorem _root_.AddMonoidAlgebra.single_commute_single [Add G] {a₁ a₂ : G} {b₁ b₂ : k} (ha : AddCommute a₁ a₂) (hb : Commute b₁ b₂) :
-    Commute (AddMonoidAlgebra.single a₁ b₁) (AddMonoidAlgebra.single a₂ b₂) :=
-  AddMonoidAlgebra.single_mul_single.trans <| congr_arg₂ single ha hb |>.trans AddMonoidAlgebra.single_mul_single.symm
-
+to_ama plus a
 theorem single_commute [Mul G] {a : G} {b : k} (ha : ∀ a', Commute a a') (hb : ∀ b', Commute b b') :
     ∀ f : MonoidAlgebra k G, Commute (single a b) f :=
   suffices AddMonoidHom.mulLeft (single a b) = AddMonoidHom.mulRight (single a b) from
     DFunLike.congr_fun this
   addHom_ext' fun a' => AddMonoidHom.ext fun b' => single_commute_single (ha a') (hb b')
 
+-- for the `to_ama` version:
+-- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
+-- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
+-- instead of relying on `Finsupp.single`.
+to_ama plus a
 @[simp]
 theorem single_pow [Monoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (a ^ n) (b ^ n)
   | 0 => by
-    simp only [pow_zero]
+    simp only [pow_zero, zero_nsmul]
     rfl
-  | n + 1 => by simp only [pow_succ, single_pow n, single_mul_single]
-#align monoid_algebra.single_pow MonoidAlgebra.single_pow
+  | n + 1 => by simp only [pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
+to_ama #align monoid_algebra.single_pow MonoidAlgebra.single_pow
 
 section
 
+to_ama plus α, α₂
 /-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
 @[simp]
 theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [One α] [One α₂]
     {F : Type*} [FunLike F α α₂] [OneHomClass F α α₂] (f : F) :
     (mapDomain f (1 : MonoidAlgebra β α) : MonoidAlgebra β α₂) = (1 : MonoidAlgebra β α₂) := by
-  simp_rw [one_def, mapDomain_single, map_one]
-#align monoid_algebra.map_domain_one MonoidAlgebra.mapDomain_one
+  simp_rw [one_def, mapDomain_single]
+  --  another hacky adaptation
+  first | simp_rw [map_one] | simp_rw [map_zero]
+to_ama #align monoid_algebra.map_domain_one MonoidAlgebra.mapDomain_one
 
+to_ama plus α, α₂
 /-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
 theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Mul α] [Mul α₂]
     {F : Type*} [FunLike F α α₂] [MulHomClass F α α₂] (f : F) (x y : MonoidAlgebra β α) :
     mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
-  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_mul]
+  simp_rw [mul_def, mapDomain_sum, mapDomain_single]
+  --  another hacky adaptation
+  first | simp_rw [map_mul] | simp_rw [map_add]
   rw [Finsupp.sum_mapDomain_index]
   · congr
     ext a b
@@ -632,43 +638,62 @@ theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [M
     · simp [mul_add]
   · simp
   · simp [add_mul]
-#align monoid_algebra.map_domain_mul MonoidAlgebra.mapDomain_mul
+to_ama #align monoid_algebra.map_domain_mul MonoidAlgebra.mapDomain_mul
 
 variable (k G)
 
+to_ama G plus G
 /-- The embedding of a magma into its magma algebra. -/
 @[simps]
 def ofMagma [Mul G] : G →ₙ* MonoidAlgebra k G where
   toFun a := single a 1
-  map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero]
-#align monoid_algebra.of_magma MonoidAlgebra.ofMagma
-#align monoid_algebra.of_magma_apply MonoidAlgebra.ofMagma_apply
+  -- `<;> rfl` is only needed for `AddMonoidAlgebra`
+  map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero] <;>
+    rfl
+to_ama #align monoid_algebra.of_magma MonoidAlgebra.ofMagma
+to_ama #align monoid_algebra.of_magma_apply MonoidAlgebra.ofMagma_apply
 
+to_ama G plus G
 /-- The embedding of a unital magma into its magma algebra. -/
-@[simps]
+@[simp]
 def of [MulOneClass G] : G →* MonoidAlgebra k G :=
   { ofMagma k G with
     toFun := fun a => single a 1
     map_one' := rfl }
-#align monoid_algebra.of MonoidAlgebra.of
-#align monoid_algebra.of_apply MonoidAlgebra.of_apply
+to_ama #align monoid_algebra.of MonoidAlgebra.of
+
+-- with `to_ama @[simps]` the auto-generated `apply` lemma is not ideal
+@[simp]
+theorem of_apply [MulOneClass G] (a : G) :
+  (of k G) a = single a 1 := rfl
+
+open AddMonoidAlgebra in
+@[simp]
+theorem _root_.AddMonoidAlgebra.of_apply [AddZeroClass G] (a : Multiplicative G) :
+    (AddMonoidAlgebra.of k G) a = AddMonoidAlgebra.single (Multiplicative.toAdd a) 1 :=
+  rfl
+to_ama #align monoid_algebra.of_apply MonoidAlgebra.of_apply
 
 end
 
+-- no `to_ama` analogue
 theorem smul_of [MulOneClass G] (g : G) (r : k) : r • of k G g = single g r := by
   -- porting note (#10745): was `simp`.
   rw [of_apply, smul_single', mul_one]
 #align monoid_algebra.smul_of MonoidAlgebra.smul_of
 
+to_ama
 theorem of_injective [MulOneClass G] [Nontrivial k] :
     Function.Injective (of k G) := fun a b h => by
   simpa using (single_eq_single_iff _ _ _ _).mp h
-#align monoid_algebra.of_injective MonoidAlgebra.of_injective
+to_ama #align monoid_algebra.of_injective MonoidAlgebra.of_injective
 
+-- no `to_ama plus a` analogue
 theorem of_commute [MulOneClass G] {a : G} (h : ∀ a', Commute a a') (f : MonoidAlgebra k G) :
     Commute (of k G a) f :=
   single_commute h Commute.one_left f
 
+--to_ama ? plus G
 /-- `Finsupp.single` as a `MonoidHom` from the product type into the monoid algebra.
 
 Note the order of the elements of the product are reversed compared to the arguments of
@@ -682,6 +707,22 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
 #align monoid_algebra.single_hom MonoidAlgebra.singleHom
 #align monoid_algebra.single_hom_apply MonoidAlgebra.singleHom_apply
 
+
+/-
+def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
+  toFun a := single (Multiplicative.toAdd a.2) a.1
+  map_one' := rfl
+  map_mul' _a _b := single_mul_single.symm
+
+-- adding
+def singleHom [AddZeroClass G] : k × G →* AddMonoidAlgebra k G
+    where
+  toFun a := single a.2 a.1
+  map_one' := rfl
+  map_mul' _a _b := single_mul_single.symm
+
+
+-/
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
@@ -1334,56 +1375,48 @@ variable [Semiring k]
 -- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
 -- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
 -- instead of relying on `Finsupp.single`.
-theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (n • a) (b ^ n)
-  | 0 => by
-    simp only [pow_zero, zero_nsmul]
-    rfl
-  | n + 1 => by
-    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
-#align add_monoid_algebra.single_pow AddMonoidAlgebra.single_pow
+--theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (n • a) (b ^ n)
+--  | 0 => by
+--    simp only [pow_zero, zero_nsmul]
+--    rfl
+--  | n + 1 => by
+--    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
+--#align add_monoid_algebra.single_pow AddMonoidAlgebra.single_pow
 
-/-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
-@[simp]
-theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
-    {F : Type*} [FunLike F α α₂] [ZeroHomClass F α α₂] (f : F) :
-    (mapDomain f (1 : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
-      (1 : AddMonoidAlgebra β α₂) :=
-  by simp_rw [one_def, mapDomain_single, map_zero]
-#align add_monoid_algebra.map_domain_one AddMonoidAlgebra.mapDomain_one
+--/-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
+--@[simp]
+--theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
+--    {F : Type*} [FunLike F α α₂] [ZeroHomClass F α α₂] (f : F) :
+--    (mapDomain f (1 : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
+--      (1 : AddMonoidAlgebra β α₂) :=
+--  by simp_rw [one_def, mapDomain_single, map_zero]
+--#align add_monoid_algebra.map_domain_one AddMonoidAlgebra.mapDomain_one
 
-/-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
-theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Add α] [Add α₂]
-    {F : Type*} [FunLike F α α₂] [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
-    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
-  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
-  rw [Finsupp.sum_mapDomain_index]
-  · congr
-    ext a b
-    rw [Finsupp.sum_mapDomain_index]
-    · simp
-    · simp [mul_add]
-  · simp
-  · simp [add_mul]
-#align add_monoid_algebra.map_domain_mul AddMonoidAlgebra.mapDomain_mul
+--/-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
+--theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Add α] [Add α₂]
+--    {F : Type*} [FunLike F α α₂] [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
+--    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
+--  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
+--  rw [Finsupp.sum_mapDomain_index]
+--  · congr
+--    ext a b
+--    rw [Finsupp.sum_mapDomain_index]
+--    · simp
+--    · simp [mul_add]
+--  · simp
+--  · simp [add_mul]
+--#align add_monoid_algebra.map_domain_mul AddMonoidAlgebra.mapDomain_mul
 
 section
 
 variable (k G)
 
-/-- The embedding of an additive magma into its additive magma algebra. -/
-@[simps]
-def ofMagma [Add G] : Multiplicative G →ₙ* k[G] where
-  toFun a := single a 1
-  map_mul' a b := by simp only [mul_def, mul_one, sum_single_index, single_eq_zero, mul_zero]; rfl
-#align add_monoid_algebra.of_magma AddMonoidAlgebra.ofMagma
-#align add_monoid_algebra.of_magma_apply AddMonoidAlgebra.ofMagma_apply
-
-/-- Embedding of a magma with zero into its magma algebra. -/
-def of [AddZeroClass G] : Multiplicative G →* k[G] :=
-  { ofMagma k G with
-    toFun := fun a => single a 1
-    map_one' := rfl }
-#align add_monoid_algebra.of AddMonoidAlgebra.of
+--/-- Embedding of a magma with zero into its magma algebra. -/
+--def of [AddZeroClass G] : Multiplicative G →* k[G] :=
+--  { ofMagma k G with
+--    toFun := fun a => single a 1
+--    map_one' := rfl }
+--#align add_monoid_algebra.of AddMonoidAlgebra.of
 
 /-- Embedding of a magma with zero `G`, into its magma algebra, having `G` as source. -/
 def of' : G → k[G] := fun a => single a 1
@@ -1391,12 +1424,14 @@ def of' : G → k[G] := fun a => single a 1
 
 end
 
-@[simp]
-theorem of_apply [AddZeroClass G] (a : Multiplicative G) :
-    of k G a = single (Multiplicative.toAdd a) 1 :=
-  rfl
-#align add_monoid_algebra.of_apply AddMonoidAlgebra.of_apply
+--@[simp]
+--theorem of_appl' [AddZeroClass G] (a : Multiplicative G) :
+--    of k G a = single (Multiplicative.toAdd a) 1 :=
+--  rfl
+--#align add_monoid_algebra.of_apply AddMonoidAlgebra.of_apply
 
+--#check of_apply
+--#check of_appl'
 @[simp]
 theorem of'_apply (a : G) : of' k G a = single a 1 :=
   rfl
@@ -1405,9 +1440,9 @@ theorem of'_apply (a : G) : of' k G a = single a 1 :=
 theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G (.ofAdd a) := rfl
 #align add_monoid_algebra.of'_eq_of AddMonoidAlgebra.of'_eq_of
 
-theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
-  MonoidAlgebra.of_injective
-#align add_monoid_algebra.of_injective AddMonoidAlgebra.of_injective
+--theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
+--  MonoidAlgebra.of_injective
+--#align add_monoid_algebra.of_injective AddMonoidAlgebra.of_injective
 
 theorem of'_commute [Semiring k] [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
     (f : AddMonoidAlgebra k G) :
@@ -1809,6 +1844,7 @@ theorem lift_unique (F : k[G] →ₐ[k] A) (f : MonoidAlgebra k G) :
   conv_lhs =>
     rw [lift_unique' F]
     simp [lift_apply]
+  rfl -- unneeded before converting `of` with `to_ama`
 #align add_monoid_algebra.lift_unique AddMonoidAlgebra.lift_unique
 
 theorem algHom_ext_iff {φ₁ φ₂ : k[G] →ₐ[k] A} :

@@ -61,8 +61,21 @@ def MaxToMin (stx : Syntax) : m Syntax := do
         if toPlus.contains a then
           return some <| ← `($(⟨a⟩) + $(⟨b⟩))
         else return none
-      | .node _ ``Lean.Parser.Term.app #[.ident _ _ `AddMonoidAlgebra _, .node _ _ #[_, G]] =>
-        if G.getId == toMult then return s else return none
+      | .node _ ``Lean.Parser.Term.app #[.ident _ _ ama _, .node _ _ #[first, second]] =>
+        match ama with
+          | `AddMonoidAlgebra => if second.getId == toMult then return s else return none
+          | `ofMagma          => if second.getId == toMult then return s else return none
+          | `of               => if second.getId == toMult then return s else return none
+          | `single => match first with
+            | `(1)           => return some <| ← `($(mkIdent `single) 0 $(⟨second⟩))
+            | `((1 : $type)) => return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨second⟩))
+            | _ => return none
+          | `Commute =>
+            if toPlus.contains first then
+              return some <| ← `($(mkIdent `AddCommute) $(⟨first⟩) $(⟨second⟩))
+            else return none
+
+          | _ => return none
 
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ azc _, .node _ _ #[x]] =>
         match azc with
@@ -74,14 +87,7 @@ def MaxToMin (stx : Syntax) : m Syntax := do
             if azc == toMultArrow then
                     return some <| ← `($(mkIdent azc) ($(mkIdent `Multiplicative.ofAdd) $(⟨x⟩)))
             else
-            if x.getId == toMult && azc == `Add then return s else return none
-
-      | .node _ ``Lean.Parser.Term.app
-          #[.ident _ _ `single _, .node _ _ #[one, c]] =>
-        match one with
-          | `(1)           => return some <| ← `($(mkIdent `single) 0 $(⟨c⟩))
-          | `((1 : $type)) => return some <| ← `($(mkIdent `single) (0 : $(⟨type⟩)) $(⟨c⟩))
-          | _ => return none
+            if x.getId == toMult && azc ∈ [`Add, `AddZeroClass] then return s else return none
 
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ cls _, .node _ _ #[F, a, b]] =>
         if cls ∉ [`OneHomClass, `MulHomClass] then return none else
@@ -89,18 +95,6 @@ def MaxToMin (stx : Syntax) : m Syntax := do
           let repl := if cls == `OneHomClass then `ZeroHomClass else `AddHomClass
           let zhc := mkNode ``Lean.Parser.Term.app #[mkIdent repl, mkNullNode #[F, a, b]]
           return some zhc
-        else return none
-
---      | .node _ ``Lean.Parser.Term.app #[.ident _ _ `One _, .node _ _ #[a]] =>
---        if toPlus.contains a then return some <| ← `($(mkIdent `Zero) $(⟨a⟩))
---        else return none
-
---      | .node _ ``Lean.Parser.Term.app #[.ident _ _ na _, .node _ _ #[b]] =>
---        match na with
---          | _ => if na != toMultArrow then return none else
---                    return some <| ← `($(mkIdent na) ($(mkIdent `Multiplicative.ofAdd) $(⟨b⟩)))
-      | .node _ ``Lean.Parser.Term.app #[.ident _ _ `Commute _, .node _ _ #[a, b]] =>
-        if toPlus.contains a then return some <| ← `($(mkIdent `AddCommute) $(⟨a⟩) $(⟨b⟩))
         else return none
 
       | .node _ `«term_^_» #[a, _, b] =>
