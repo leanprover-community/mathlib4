@@ -2182,10 +2182,10 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
         exact isClosed_closure
   constructor
   · intro h₀ h₀inh
-    simp
+    simp only [mem_setOf_eq, mem_iUnion, mem_diff, exists_prop, not_exists, not_and]
     rcases u_cov h₀inh with ⟨h₁, ⟨h₁ran, h₀inh₁⟩ ⟩
     rcases h₁ran with ⟨i, ihyp⟩
-    simp at ihyp
+    simp only at ihyp
     use i
     constructor
     · rw [ihyp]; exact h₀inh₁
@@ -2196,10 +2196,10 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
       exact this ⟨h₀incl,h₀inh⟩
   constructor
   · intro k₀ k₀ink
-    simp
+    simp only [mem_setOf_eq, mem_iUnion, mem_diff, exists_prop, not_exists, not_and]
     rcases v_cov k₀ink with ⟨k₁, ⟨k₁ran, k₀ink₁⟩ ⟩
     rcases k₁ran with ⟨i, ihyp⟩
-    simp at ihyp
+    simp only at ihyp
     use i
     constructor
     · rw [ihyp]; exact k₀ink₁
@@ -2215,11 +2215,12 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
     rcases Set.mem_iUnion.mp xinvn with ⟨i₂, ⟨xinvi,xnotincluj⟩⟩
     by_cases hyp: i₁ < i₂
     · apply xnotincluj
-      simp
+      simp only [mem_setOf_eq, mem_iUnion, exists_prop]
       use i₁
       exact ⟨le_of_lt hyp, subset_closure xinui⟩
     · apply xnotinclvj
-      simp; simp at hyp
+      simp only [mem_setOf_eq, mem_iUnion, exists_prop]
+      simp only [not_lt] at hyp
       use i₂
       exact ⟨hyp, subset_closure xinvi⟩
 
@@ -2242,15 +2243,15 @@ lemma countable_covers_to_separated_nhds' (h k: Set X)
           ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) k := by
         rcases u_cnt with ⟨f, fs⟩
         use Subtype.val ∘ f
-        simp
+        simp only [comp_apply]
         constructor
         · intro x₀ x₀inh
           rcases u_cov x₀inh with ⟨u₀, u₀inu, x₀inu₀⟩
           rcases (fs ⟨u₀, u₀inu⟩) with ⟨i₀, fi₀val⟩
-          simp
+          simp only [mem_iUnion]
           use i₀
           rw [fi₀val]
-          simp
+          simp only
           assumption
         · intro i
           apply u_mem; simp
@@ -2258,18 +2259,18 @@ lemma countable_covers_to_separated_nhds' (h k: Set X)
           ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) h := by
         rcases v_cnt with ⟨f, fs⟩
         use Subtype.val ∘ f
-        simp
+        simp only [comp_apply]
         constructor
         · intro x₀ x₀ink
           rcases v_cov x₀ink with ⟨v₀, v₀inv, x₀inv₀⟩
           rcases (fs ⟨v₀, v₀inv⟩) with ⟨i₀, fi₀val⟩
-          simp
+          simp only [mem_iUnion]
           use i₀
           rw [fi₀val]
-          simp
+          simp only
           assumption
         · intro i
-          apply v_mem; simp
+          apply v_mem; simp only [Subtype.coe_prop]
       exact countable_covers_to_separated_nhds h k h_cov k_cov
     · exact hune hyp.1
     · exact kune hyp.2
@@ -2317,11 +2318,11 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     choose n na_open na_dis na_nhd using this
     have na_cov : h ⊆ ⋃ i, n i := by
       intro a ainh
-      simp; use a; apply na_nhd; exact ainh
+      simp only [mem_iUnion]; use a; apply na_nhd; exact ainh
     rcases IsLindelof.elim_countable_subcover hlind n na_open na_cov with ⟨n', n'cnt, n'cov⟩
     have klind : IsLindelof k := by
       apply IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl
-      simp
+      exact subset_univ k
     have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
       intro a
       by_cases hyp: a ∈ k
@@ -2353,7 +2354,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       constructor
       · exact Countable.image n'cnt n
       constructor
-      · simp; exact n'cov
+      · simp only [sUnion_image]; exact n'cov
       · intro v vinn''n'
         rcases vinn''n' with ⟨ v₀, _, nv₀eqv⟩
         rw [← nv₀eqv]
@@ -2362,7 +2363,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
       constructor
       · exact Countable.image m'cnt m
       constructor
-      · simp; exact m'cov
+      · simp only [sUnion_image]; exact m'cov
       · intro v vinm''m'
         rcases vinm''m' with ⟨ v₀, _, mv₀eqv⟩
         rw [← mv₀eqv]
