@@ -61,31 +61,25 @@ variable {α : Type u} {β : Type v} {ι : Sort w} {κ : ι → Sort w'}
 
 /-- A frame, aka complete Heyting algebra, is a complete lattice whose `⊓` distributes over `⨆`. -/
 class Order.Frame (α : Type*) extends CompleteLattice α where
+  /-- In a frame, `⊓` distributes over `⨆`. -/
   inf_sSup_le_iSup_inf (a : α) (s : Set α) : a ⊓ sSup s ≤ ⨆ b ∈ s, a ⊓ b
 #align order.frame Order.Frame
-
-/-- In a frame, `⊓` distributes over `⨆`. -/
-add_decl_doc Order.Frame.inf_sSup_le_iSup_inf
 
 /-- A coframe, aka complete Brouwer algebra or complete co-Heyting algebra, is a complete lattice
 whose `⊔` distributes over `⨅`. -/
 class Order.Coframe (α : Type*) extends CompleteLattice α where
+  /-- In a coframe, `⊔` distributes over `⨅`. -/
   iInf_sup_le_sup_sInf (a : α) (s : Set α) : ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align order.coframe Order.Coframe
-
-/-- In a coframe, `⊔` distributes over `⨅`. -/
-add_decl_doc Order.Coframe.iInf_sup_le_sup_sInf
 
 open Order
 
 /-- A complete distributive lattice is a complete lattice whose `⊔` and `⊓` respectively
 distribute over `⨅` and `⨆`. -/
 class CompleteDistribLattice (α : Type*) extends Frame α where
+  /-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
   iInf_sup_le_sup_sInf : ∀ a s, ⨅ b ∈ s, a ⊔ b ≤ a ⊔ sInf s
 #align complete_distrib_lattice CompleteDistribLattice
-
-/-- In a complete distributive lattice, `⊔` distributes over `⨅`. -/
-add_decl_doc CompleteDistribLattice.iInf_sup_le_sup_sInf
 
 -- See note [lower instance priority]
 instance (priority := 100) CompleteDistribLattice.toCoframe [CompleteDistribLattice α] :
