@@ -36,13 +36,13 @@ Positive operator
 -/
 
 
-open InnerProductSpace IsROrC ContinuousLinearMap
+open InnerProductSpace RCLike ContinuousLinearMap
 
 open scoped InnerProduct ComplexConjugate
 
 namespace ContinuousLinearMap
 
-variable {𝕜 E F : Type*} [IsROrC 𝕜]
+variable {𝕜 E F : Type*} [RCLike 𝕜]
 variable [NormedAddCommGroup E] [NormedAddCommGroup F]
 variable [InnerProductSpace 𝕜 E] [InnerProductSpace 𝕜 F]
 variable [CompleteSpace E] [CompleteSpace F]
@@ -124,5 +124,35 @@ theorem isPositive_iff_complex (T : E' →L[ℂ] E') :
 #align continuous_linear_map.is_positive_iff_complex ContinuousLinearMap.isPositive_iff_complex
 
 end Complex
+
+section PartialOrder
+
+/-- The (Loewner) partial order on continuous linear maps on a Hilbert space determined by
+`f ≤ g` if and only if `g - f` is a positive linear map (in the sense of
+`ContinuousLinearMap.IsPositive`). With this partial order, the continuous linear maps form a
+`StarOrderedRing`. -/
+instance instLoewnerPartialOrder : PartialOrder (E →L[𝕜] E) where
+  le f g := (g - f).IsPositive
+  le_refl _ := by simpa using isPositive_zero
+  le_trans _ _ _ h₁ h₂ := by simpa using h₁.add h₂
+  le_antisymm f₁ f₂ h₁ h₂ := by
+    rw [← sub_eq_zero]
+    have h_isSymm := isSelfAdjoint_iff_isSymmetric.mp h₂.isSelfAdjoint
+    exact_mod_cast h_isSymm.inner_map_self_eq_zero.mp fun x ↦ by
+      apply RCLike.ext
+      · rw [map_zero]
+        apply le_antisymm
+        · rw [← neg_nonneg, ← map_neg, ← inner_neg_left]
+          simpa using h₁.inner_nonneg_left _
+        · exact h₂.inner_nonneg_left _
+      · rw [coe_sub, LinearMap.sub_apply, coe_coe, coe_coe, map_zero, ← sub_apply,
+          ← h_isSymm.coe_reApplyInnerSelf_apply (T := f₁ - f₂) x, RCLike.ofReal_im]
+
+lemma le_def (f g : E →L[𝕜] E) : f ≤ g ↔ (g - f).IsPositive := Iff.rfl
+
+lemma nonneg_iff_isPositive (f : E →L[𝕜] E) : 0 ≤ f ↔ f.IsPositive := by
+  simpa using le_def 0 f
+
+end PartialOrder
 
 end ContinuousLinearMap

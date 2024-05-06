@@ -412,7 +412,7 @@ it shall be zero). The basic equational lemma is `δ_v` below. -/
 
 lemma δ_v (hnm : n + 1 = m) (z : Cochain F G n) (p q : ℤ) (hpq : p + m = q) (q₁ q₂ : ℤ)
     (hq₁ : q₁ = q - 1) (hq₂ : p + 1 = q₂) : (δ n m z).v p q hpq =
-    z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel]) ≫ G.d q₁ q
+    z.v p q₁ (by rw [hq₁, ← hpq, ← hnm, ← add_assoc, add_sub_cancel_right]) ≫ G.d q₁ q
       + m.negOnePow • F.d p q₂ ≫ z.v q₂ q
           (by rw [← hq₂, add_assoc, add_comm 1, hnm, hpq]) := by
   obtain rfl : q₁ = p + n := by omega
@@ -468,8 +468,10 @@ variable {F G R}
   δ_smul ..
 
 lemma δ_δ (n₀ n₁ n₂ : ℤ) (z : Cochain F G n₀) : δ n₁ n₂ (δ n₀ n₁ z) = 0 := by
-  by_cases h₁₂ : n₁ + 1 = n₂; swap; rw [δ_shape _ _ h₁₂]
-  by_cases h₀₁ : n₀ + 1 = n₁; swap; rw [δ_shape _ _ h₀₁, δ_zero]
+  by_cases h₁₂ : n₁ + 1 = n₂; swap
+  · rw [δ_shape _ _ h₁₂]
+  by_cases h₀₁ : n₀ + 1 = n₁; swap
+  · rw [δ_shape _ _ h₀₁, δ_zero]
   ext p q hpq
   dsimp
   simp only [δ_v n₁ n₂ h₁₂ _ p q hpq _ _ rfl rfl,

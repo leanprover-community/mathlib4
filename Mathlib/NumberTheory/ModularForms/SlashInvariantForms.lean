@@ -195,7 +195,7 @@ theorem sub_apply (f g : SlashInvariantForm Γ k) (z : ℍ) : (f - g) z = f z - 
 instance : AddCommGroup (SlashInvariantForm Γ k) :=
   DFunLike.coe_injective.addCommGroup _ rfl coe_add coe_neg coe_sub coe_smul coe_smul
 
-/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`.-/
+/-- Additive coercion from `SlashInvariantForm` to `ℍ → ℂ`. -/
 def coeHom : SlashInvariantForm Γ k →+ ℍ → ℂ where
   toFun f := f
   map_zero' := rfl

@@ -205,7 +205,7 @@ instance (priority := 100) {α : Sort u} {r : α → α → Prop} [Trans r r r] 
   ⟨fun _ _ _ => Trans.trans⟩
 
 /-- `IsTotal X r` means that the binary relation `r` on `X` is total, that is, that for any
-`x y : X` we have `r x y` or `r y x`.-/
+`x y : X` we have `r x y` or `r y x`. -/
 class IsTotal (α : Sort u) (r : α → α → Prop) : Prop where
   total : ∀ a b, r a b ∨ r b a
 #align is_total IsTotal
@@ -416,8 +416,8 @@ instance isEquiv : IsEquiv α (@Equiv _ r) where
 
 end
 
-notation:50 -- Notation for the equivalence relation induced by lt
-a " ≈[" lt "]" b:50 => @Equiv _ lt a b
+/-- The equivalence relation induced by `lt` -/
+notation:50 a " ≈[" lt "]" b:50 => @Equiv _ lt a b--Equiv (r := lt) a b
 
 end StrictWeakOrder
 

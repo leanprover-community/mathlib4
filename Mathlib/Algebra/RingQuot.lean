@@ -188,7 +188,7 @@ private irreducible_def npow (n : ℕ) : RingQuot r → RingQuot r
             -- Porting note:
             -- `simpa [mul_def] using congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih`
             -- mysteriously doesn't work
-            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) (Quot.sound h) ih
+            have := congr_arg₂ (fun x y ↦ mul r ⟨x⟩ ⟨y⟩) ih (Quot.sound h)
             dsimp only at this
             simp? [mul_def] at this says simp only [mul_def, Quot.map₂_mk, mk.injEq] at this
             exact this)
@@ -374,7 +374,7 @@ instance instRing {R : Type uR} [Ring R] (r : R → R → Prop) : Ring (RingQuot
       simp [smul_quot, neg_quot, add_mul]
     intCast := intCast r
     intCast_ofNat := fun n => congrArg RingQuot.mk <| by
-      exact congrArg (Quot.mk _) (Int.cast_ofNat _)
+      exact congrArg (Quot.mk _) (Int.cast_natCast _)
     intCast_negSucc := fun n => congrArg RingQuot.mk <| by
       simp_rw [neg_def]
       exact congrArg (Quot.mk _) (Int.cast_negSucc n) }
