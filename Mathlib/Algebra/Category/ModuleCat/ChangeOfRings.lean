@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Jujian Zhang
 -/
 import Mathlib.Algebra.Category.ModuleCat.EpiMono
+import Mathlib.Algebra.Category.ModuleCat.Colimits
 import Mathlib.Algebra.Category.ModuleCat.Limits
 import Mathlib.RingTheory.TensorProduct.Basic
 
@@ -866,5 +867,16 @@ noncomputable instance preservesLimitRestrictScalars
     have : Small.{v} ((F ⋙ restrictScalars f) ⋙ forget _).sections := by assumption
     have hc' := isLimitOfPreserves (forget₂ _ AddCommGroupCat) hc
     exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
+
+instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
+    (f : R →+* S) {J : Type*} [Category J] [HasColimitsOfShape J AddCommGroupCat.{v}] :
+    PreservesColimitsOfShape J (ModuleCat.restrictScalars.{v} f) where
+  preservesColimit {F} := by
+    have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) :=
+      inferInstance
+    apply preservesColimitOfPreservesColimitCocone (HasColimit.isColimitColimitCocone F)
+    apply isColimitOfReflects (forget₂ _ AddCommGroupCat)
+    apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGroupCat.{v})
+    exact HasColimit.isColimitColimitCocone F
 
 end ModuleCat

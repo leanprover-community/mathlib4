@@ -117,13 +117,6 @@ section HasColimitsOfShape
 
 variable [HasColimitsOfShape J AddCommGroupCat.{v}]
 
-instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
-    PreservesColimitsOfShape J (ModuleCat.restrictScalars.{v} (R.map f)) := sorry
-
-instance (X : Cᵒᵖ) :
-    PreservesColimitsOfShape J
-      (evaluation R X ⋙ forget₂ (ModuleCat (R.obj X)) AddCommGroupCat) := sorry
-
 instance hasColimitsOfShape : HasColimitsOfShape J (PresheafOfModules.{v} R) where
 
 noncomputable instance evaluationPreservesColimitsOfShape (X : Cᵒᵖ) :
