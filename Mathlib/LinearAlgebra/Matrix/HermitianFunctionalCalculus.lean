@@ -75,16 +75,12 @@ intro i
 apply spectrum.of_algebraMap_mem 𝕜
 exact H i
 
-#exit
-
-def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
+noncomputable def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
   fun g => (eigenvectorUnitary hA : Matrix n n 𝕜) * diagonal (RCLike.ofReal ∘ g ∘ f hA)
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
-def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
-  toFun := fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-  diagonal (RCLike.ofReal (K := 𝕜) ∘ f ∘ hA.eigenvalues)
-      * star (eigenvectorUnitary hA : Matrix n n 𝕜)
+noncomputable def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
+  toFun := φ₀ hA
   map_one' := sorry
   map_mul' := sorry
   map_zero' := sorry
