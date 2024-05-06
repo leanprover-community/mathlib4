@@ -49,7 +49,7 @@ of the form `fib n + fib (n + 1) = fib (n + 2)`, `fib 1 = fib 2` or `fib 0 = 0` 
 def IsZeckendorfRep (l : List ℕ) : Prop := (l ++ [0]).Chain' (fun a b ↦ b + 2 ≤ a)
 
 @[simp]
-def IsZeckendorfRep_nil : IsZeckendorfRep [] := by simp [IsZeckendorfRep]
+lemma IsZeckendorfRep_nil : IsZeckendorfRep [] := by simp [IsZeckendorfRep]
 
 lemma IsZeckendorfRep.sum_fib_lt : ∀ {n l}, IsZeckendorfRep l → (∀ a ∈ (l ++ [0]).head?, a < n) →
     (l.map fib).sum < fib n
