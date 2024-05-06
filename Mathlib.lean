@@ -3246,6 +3246,7 @@ import Mathlib.Order.PartialSups
 import Mathlib.Order.Partition.Equipartition
 import Mathlib.Order.Partition.Finpartition
 import Mathlib.Order.PrimeIdeal
+import Mathlib.Order.PrimeSeparator
 import Mathlib.Order.PropInstances
 import Mathlib.Order.RelClasses
 import Mathlib.Order.RelIso.Basic

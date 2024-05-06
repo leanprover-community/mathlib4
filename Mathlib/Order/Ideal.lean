@@ -306,6 +306,9 @@ theorem mem_principal : x ∈ principal y ↔ x ≤ y :=
   Iff.rfl
 #align order.ideal.mem_principal Order.Ideal.mem_principal
 
+lemma mem_principal_self : x ∈ principal x :=
+  mem_principal.2 (le_refl x)
+
 end
 
 section OrderBot

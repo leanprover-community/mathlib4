@@ -9,48 +9,26 @@ import Mathlib.Order.Zorn
 
 
 /-!
-# Prime ideal theorem
+# Separating prime filters and ideals
 
-In a bounded distributive lattice, if a ≰ b then there exists a prime ideal containing b and not a.
-We prove a slightly more general statement: if $F$ is a filter, $I$ is an ideal, and $F$ and $I$
-are disjoint, then there exists a prime ideal $J$ containing $I$ with $J$ still disjoint from $F$.
-This theorem is a crucial ingredient to Stone duality and relies on Zorn's lemma.
+In a bounded distributive lattice, if $F$ is a filter, $I$ is an ideal, and $F$ and $I$ are
+disjoint, then there exists a prime ideal $J$ containing $I$ with $J$ still disjoint from $F$.
+This theorem is a crucial ingredient to [Stone's][Sto1938] duality for bounded distributive
+lattices. The construction of the separator relies on Zorn's lemma.
 
 ## Tags
 
 ideal, filter, prime, distributive lattice
 
+## References
+
+* [M. H. Stone, Topological representations of distributive lattices and Brouwerian logics
+(1938)][Sto1938]
 -/
 
 
--- Here starts material from PR #12651.
-namespace Order
-variable [Preorder α]
-
-open Set
-/-- A directed union of directed sets is directed. -/
-theorem directedOn_sUnion {r} {S : Set (Set α)} (hd : DirectedOn (· ⊆ ·) S)
-    (h : ∀ x ∈ S, DirectedOn r x) : DirectedOn r (⋃₀ S) := by
-    rw [sUnion_eq_iUnion]
-    exact directed_on_iUnion (directedOn_iff_directed.mp hd) (fun i ↦ h i.1 i.2)
-
-/-- A non-empty directed union of ideals of sets is an ideal. -/
-lemma isIdeal_sUnion_of_directedOn {C : Set (Set α)} (hidl : ∀ I ∈ C, IsIdeal I) (hC : DirectedOn (· ⊆ ·) C) (hne : C.Nonempty) :
-  IsIdeal C.sUnion := by
-  refine ⟨isLowerSet_sUnion (fun I hI ↦ (hidl I hI).1), Set.nonempty_sUnion.2 ?_,
-  directedOn_sUnion hC (fun J hJ => (hidl J hJ).3)⟩
-  let ⟨I, hI⟩ := hne
-  exact ⟨I, ⟨hI, (hidl I hI).2⟩⟩
-
-/-- A union of a nonempty chain of ideals of sets is an ideal. -/
-lemma isIdeal_sUnion_of_isChain {C : Set (Set α)} (hidl : ∀ I ∈ C, IsIdeal I)
-    (hC : IsChain (· ⊆ ·) C) (hne : C.Nonempty) : IsIdeal C.sUnion :=
-  isIdeal_sUnion_of_directedOn hidl hC.directedOn hne
-
-end Order
--- Here ends material from PR #12651
-
-namespace DistribLattice
+universe u
+variable {α : Type*}
 
 open Order Ideal Set
 
@@ -58,16 +36,15 @@ variable [DistribLattice α] [BoundedOrder α]
 
 variable {F : PFilter α} {I : Ideal α}
 
--- TODO: this should go in Order/Ideal around line 289
-lemma mem_principal_self (a : α) : a ∈ principal a := mem_principal.2 (le_refl a)
+namespace DistribLattice
+
 
 lemma mem_ideal_sup_principal (a b : α) (J : Ideal α) : b ∈ J ⊔ principal a ↔ ∃ j ∈ J, b ≤ j ⊔ a :=
   ⟨fun ⟨j, ⟨jJ, _, ha', bja'⟩⟩ => ⟨j, jJ, le_trans bja' (sup_le_sup_left ha' j)⟩,
     fun ⟨j, hj, hbja⟩ => ⟨j, hj, a, le_refl a, hbja⟩⟩
 
-theorem prime_ideal_of_disjoint_filter_ideal
-  (hFI : Disjoint (F : Set α) (I : Set α)) :
-  ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
+theorem prime_ideal_of_disjoint_filter_ideal (hFI : Disjoint (F : Set α) (I : Set α)) :
+    ∃ J : Ideal α, (IsPrime J) ∧ I ≤ J ∧ Disjoint (F : Set α) J := by
 
   -- Let S be the set of proper ideals containing I and disjoint from F
   set S : Set (Set α) := { J : Set α | IsIdeal J ∧ I ≤ J ∧ Disjoint (F : Set α) J }
@@ -118,8 +95,8 @@ theorem prime_ideal_of_disjoint_filter_ideal
   have JsubJ₂ : J ≤ J₂ := le_sup_left
   have IJ₁ : I ≤ J₁ := le_trans IJ' le_sup_left
   have IJ₂ : I ≤ J₂ := le_trans IJ' le_sup_left
-  have a₁J₁ : a₁ ∈ J₁ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) (mem_principal_self _)
-  have a₂J₂ : a₂ ∈ J₂ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) (mem_principal_self _)
+  have a₁J₁ : a₁ ∈ J₁ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
+  have a₂J₂ : a₂ ∈ J₂ := mem_of_subset_of_mem (le_sup_right : _ ≤ J ⊔ _) mem_principal_self
   have J₁J : ↑J₁ ≠ Jset := by refine ne_of_mem_of_not_mem' a₁J₁ ha₁
   have J₂J : ↑J₂ ≠ Jset := by refine ne_of_mem_of_not_mem' a₂J₂ ha₂
 
