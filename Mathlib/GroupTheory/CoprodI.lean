@@ -4,9 +4,9 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: David Wärn, Joachim Breitner
 -/
 import Mathlib.Algebra.FreeMonoid.Basic
+import Mathlib.Algebra.Group.Submonoid.Membership
 import Mathlib.GroupTheory.Congruence
 import Mathlib.GroupTheory.FreeGroup.IsFreeGroup
-import Mathlib.GroupTheory.Submonoid.Membership
 import Mathlib.Data.List.Chain
 import Mathlib.SetTheory.Cardinal.Basic
 import Mathlib.Data.Set.Pointwise.SMul
@@ -581,7 +581,7 @@ theorem mem_smul_iff {i j : ι} {m₁ : M i} {m₂ : M j} {w : Word M} :
         · simp
         · simp (config := {contextual := true}) [Sigma.ext_iff]
   · rcases w with ⟨_ | _, _, _⟩ <;>
-    simp [or_comm, hij, Ne.symm hij, eq_comm]
+    simp [or_comm, hij, Ne.symm hij]; rw [eq_comm]
 
 theorem mem_smul_iff_of_ne {i j : ι} (hij : i ≠ j) {m₁ : M i} {m₂ : M j} {w : Word M} :
     ⟨_, m₁⟩ ∈ (of m₂ • w).toList ↔ ⟨i, m₁⟩ ∈ w.toList := by

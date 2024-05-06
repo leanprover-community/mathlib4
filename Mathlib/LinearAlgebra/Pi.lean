@@ -404,6 +404,26 @@ def piCongrLeft (e : ι' ≃ ι) : ((i' : ι') → φ (e i')) ≃ₗ[R] (i : ι)
   (piCongrLeft' R φ e.symm).symm
 #align linear_equiv.Pi_congr_left LinearEquiv.piCongrLeft
 
+/-- `Equiv.piCurry` as a `LinearEquiv`. -/
+def piCurry {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)] :
+    (Π i : Sigma κ, α i.1 i.2) ≃ₗ[R] Π i j, α i j where
+  __ := Equiv.piCurry α
+  map_add' _ _ := rfl
+  map_smul' _ _ := rfl
+
+@[simp] theorem piCurry_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    (f : ∀ x : Σ i, κ i, α x.1 x.2) :
+    piCurry R α f = Sigma.curry f :=
+  rfl
+
+@[simp] theorem piCurry_symm_apply {ι : Type*} {κ : ι → Type*} (α : ∀ i, κ i → Type*)
+    [∀ i k, AddCommMonoid (α i k)] [∀ i k, Module R (α i k)]
+    (f : ∀ a b, α a b) :
+    (piCurry R α).symm f = Sigma.uncurry f :=
+  rfl
+
 /-- This is `Equiv.piOptionEquivProd` as a `LinearEquiv` -/
 def piOptionEquivProd {ι : Type*} {M : Option ι → Type*} [(i : Option ι) → AddCommGroup (M i)]
     [(i : Option ι) → Module R (M i)] :

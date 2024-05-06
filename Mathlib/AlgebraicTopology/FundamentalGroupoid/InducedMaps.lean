@@ -210,8 +210,10 @@ theorem eq_diag_path : (πₘ f).map p ≫ ⟦H.evalAt x₁⟧ = H.diagonalPath'
   constructor
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
+    rfl
   · slice_lhs 2 4 => rw [eqToHom_trans, eqToHom_refl] -- Porting note: this ↓ `simp` didn't do this
     slice_lhs 2 4 => simp [← CategoryTheory.Functor.map_comp]
+    rfl
 #align continuous_map.homotopy.eq_diag_path ContinuousMap.Homotopy.eq_diag_path
 
 end ContinuousMap.Homotopy

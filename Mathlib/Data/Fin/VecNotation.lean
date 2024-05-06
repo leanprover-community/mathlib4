@@ -329,11 +329,11 @@ theorem cons_vecAppend (ho : o + 1 = m + 1 + n) (x : α) (u : Fin m → α) (v :
   split_ifs with h
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp
-    · simp only [Nat.succ_eq_add_one, add_lt_add_iff_right, Fin.val_mk] at h
+    · simp only [add_lt_add_iff_right, Fin.val_mk] at h
       simp [h]
   · rcases i with ⟨⟨⟩ | i, hi⟩
     · simp at h
-    · rw [not_lt, Fin.val_mk, Nat.succ_eq_add_one, add_le_add_iff_right] at h
+    · rw [not_lt, Fin.val_mk, add_le_add_iff_right] at h
       simp [h, not_lt.2 h]
 #align matrix.cons_vec_append Matrix.cons_vecAppend
 
@@ -424,7 +424,7 @@ theorem cons_vecAlt0 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt0]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt0, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt0, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt0 Matrix.cons_vecAlt0
 
 -- Although proved by simp, extracting element 8 of a five-element
@@ -447,7 +447,7 @@ theorem cons_vecAlt1 (h : m + 1 + 1 = n + 1 + (n + 1)) (x y : α) (u : Fin m →
   simp_rw [vecAlt1]
   rcases i with ⟨⟨⟩ | i, hi⟩
   · rfl
-  · simp [vecAlt1, Nat.add_succ, Nat.succ_add]
+  · simp [vecAlt1, Nat.add_right_comm, ← Nat.add_assoc]
 #align matrix.cons_vec_alt1 Matrix.cons_vecAlt1
 
 -- Although proved by simp, extracting element 9 of a five-element
