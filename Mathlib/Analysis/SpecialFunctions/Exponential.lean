@@ -421,3 +421,14 @@ theorem hasDerivAt_exp_smul_const' (x : 𝔸) (t : 𝕂) :
 end RCLike
 
 end exp_smul
+
+section tsum_tprod
+
+variable {𝕂 𝔸 : Type*} [RCLike 𝕂] [NormedCommRing 𝔸] [NormedAlgebra 𝕂 𝔸] [CompleteSpace 𝔸]
+
+/-- If `f` has sum `a`, then `exp ∘ f` has product `exp a`. -/
+lemma HasSum.exp {ι : Type*} {f : ι → 𝔸} {a : 𝔸} (h : HasSum f a) :
+    HasProd (exp 𝕂 ∘ f) (exp 𝕂 a) :=
+  Tendsto.congr (fun s ↦ exp_sum s f) <| Tendsto.exp h
+
+end tsum_tprod

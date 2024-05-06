@@ -6,8 +6,8 @@ Authors: Sébastien Gouëzel, Johannes Hölzl, Yury G. Kudryashov, Patrick Masso
 import Mathlib.Algebra.GeomSum
 import Mathlib.Order.Filter.Archimedean
 import Mathlib.Order.Iterate
-import Mathlib.Topology.Instances.ENNReal
 import Mathlib.Topology.Algebra.Algebra
+import Mathlib.Topology.Algebra.InfiniteSum.Real
 
 #align_import analysis.specific_limits.basic from "leanprover-community/mathlib"@"57ac39bd365c2f80589a700f9fbb664d3a1a30c2"
 
@@ -370,6 +370,9 @@ theorem ENNReal.tsum_geometric (r : ℝ≥0∞) : ∑' n : ℕ, r ^ n = (1 - r)�
       (n : ℝ≥0∞) = ∑ i in range n, 1 := by rw [sum_const, nsmul_one, card_range]
       _ ≤ ∑ i in range n, r ^ i := by gcongr; apply one_le_pow_of_one_le' hr
 #align ennreal.tsum_geometric ENNReal.tsum_geometric
+
+theorem ENNReal.tsum_geometric_add_one (r : ℝ≥0∞) : ∑' n : ℕ, r ^ (n + 1) = r * (1 - r)⁻¹ := by
+  simp only [_root_.pow_succ', ENNReal.tsum_mul_left, ENNReal.tsum_geometric]
 
 end Geometric
 

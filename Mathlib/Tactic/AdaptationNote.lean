@@ -39,18 +39,14 @@ def reportAdaptationNote (f : Syntax → Meta.Tactic.TryThis.Suggestion) : MetaM
 /-- Adaptation notes are comments that are used to indicate that a piece of code
 has been changed to accomodate a change in Lean core.
 They typically require further action/maintenance to be taken in the future. -/
-elab "#adaptation_note " (docComment)? : command => do
+elab (name := adaptationNoteCmd) "#adaptation_note " (docComment)? : command => do
   Elab.Command.liftTermElabM <| reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
-/-- Adaptation notes are comments that are used to indicate that a piece of code
-has been changed to accomodate a change in Lean core.
-They typically require further action/maintenance to be taken in the future. -/
+@[inherit_doc adaptationNoteCmd]
 elab "#adaptation_note " (docComment)? : tactic =>
   reportAdaptationNote (fun s => (⟨s⟩ : TSyntax `tactic))
 
-/-- Adaptation notes are comments that are used to indicate that a piece of code
-has been changed to accomodate a change in Lean core.
-They typically require further action/maintenance to be taken in the future. -/
+@[inherit_doc adaptationNoteCmd]
 syntax (name := adaptationNoteTermStx) "#adaptation_note " (docComment)? term : term
 
 /-- Elaborator for adaptation notes. -/
