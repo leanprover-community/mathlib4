@@ -122,10 +122,13 @@ theorem dist_comm {u v : V} : G.dist u v = G.dist v u := by
     simp [h, h', dist_eq_zero_of_not_reachable]
 #align simple_graph.dist_comm SimpleGraph.dist_comm
 
-lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v := by
-  apply dist_eq_zero_iff_eq_or_not_reachable.not.mp at h
-  push_neg at h
-  exact h.2
+lemma dist_ne_zero_iff_ne_and_reachable {u v : V} : G.dist u v ≠ 0 ↔ u ≠ v ∧ G.Reachable u v := by
+  rw [ne_eq, dist_eq_zero_iff_eq_or_not_reachable.not]
+  push_neg
+  rfl
+
+lemma Reachable.of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) : G.Reachable u v :=
+  (dist_ne_zero_iff_ne_and_reachable.mp h).2
 
 lemma exists_walk_of_dist_ne_zero {u v : V} (h : G.dist u v ≠ 0) :
     ∃ p : G.Walk u v, p.length = G.dist u v :=
