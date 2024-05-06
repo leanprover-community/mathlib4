@@ -64,7 +64,7 @@ instance categoryStruct : CategoryStruct.{max u v} (FreeBicategory B) where
   comp := @fun _ _ _ => Hom.comp
 
 /-- Representatives of 2-morphisms in the free bicategory. -/
--- Porting note: no such linter
+-- Porting note(#5171): linter not ported yet
 -- @[nolint has_nonempty_instance]
 inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Type max u v
   | id {a b} (f : a ⟶ b) : Hom₂ f f
@@ -84,38 +84,25 @@ inductive Hom₂ : ∀ {a b : FreeBicategory B}, (a ⟶ b) → (a ⟶ b) → Typ
 
 section
 
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
-
--- mathport name: vcomp
 -- The following notations are only used in the definition of `Rel` to simplify the notation.
 local infixr:0 " ≫ " => Hom₂.vcomp
 
--- mathport name: id
 local notation "𝟙" => Hom₂.id
 
--- mathport name: whisker_left
 local notation f " ◁ " η => Hom₂.whisker_left f η
 
--- mathport name: whisker_right
 local notation η " ▷ " h => Hom₂.whisker_right h η
 
--- mathport name: associator
 local notation "α_" => Hom₂.associator
 
--- mathport name: left_unitor
 local notation "λ_" => Hom₂.left_unitor
 
--- mathport name: right_unitor
 local notation "ρ_" => Hom₂.right_unitor
 
--- mathport name: associator_inv
 local notation "α⁻¹_" => Hom₂.associator_inv
 
--- mathport name: left_unitor_inv
 local notation "λ⁻¹_" => Hom₂.left_unitor_inv
 
--- mathport name: right_unitor_inv
 local notation "ρ⁻¹_" => Hom₂.right_unitor_inv
 
 /-- Relations between 2-morphisms in the free bicategory. -/
@@ -163,9 +150,6 @@ inductive Rel : ∀ {a b : FreeBicategory B} {f g : a ⟶ b}, Hom₂ f g → Hom
 #align category_theory.free_bicategory.rel CategoryTheory.FreeBicategory.Rel
 
 end
-
--- Porting note: commenting out redundant binder annotation update
--- variable {B}
 
 instance homCategory (a b : FreeBicategory B) : Category (a ⟶ b) where
   Hom f g := Quot (@Rel _ _ a b f g)

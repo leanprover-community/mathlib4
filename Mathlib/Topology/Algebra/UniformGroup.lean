@@ -54,7 +54,7 @@ class UniformGroup (α : Type*) [UniformSpace α] [Group α] : Prop where
 #align uniform_group UniformGroup
 
 /-- A uniform additive group is an additive group in which addition
-  and negation are uniformly continuous.-/
+  and negation are uniformly continuous. -/
 class UniformAddGroup (α : Type*) [UniformSpace α] [AddGroup α] : Prop where
   uniformContinuous_sub : UniformContinuous fun p : α × α => p.1 - p.2
 #align uniform_add_group UniformAddGroup
@@ -120,7 +120,7 @@ theorem UniformContinuous.pow_const [UniformSpace β] {f : β → α} (hf : Unif
     simp_rw [pow_zero]
     exact uniformContinuous_const
   | n + 1 => by
-    simp_rw [pow_succ]
+    simp_rw [pow_succ']
     exact hf.mul (hf.pow_const n)
 #align uniform_continuous.pow_const UniformContinuous.pow_const
 #align uniform_continuous.const_nsmul UniformContinuous.const_nsmul
@@ -135,7 +135,7 @@ theorem uniformContinuous_pow_const (n : ℕ) : UniformContinuous fun x : α => 
 theorem UniformContinuous.zpow_const [UniformSpace β] {f : β → α} (hf : UniformContinuous f) :
     ∀ n : ℤ, UniformContinuous fun x => f x ^ n
   | (n : ℕ) => by
-    simp_rw [zpow_coe_nat]
+    simp_rw [zpow_natCast]
     exact hf.pow_const _
   | Int.negSucc n => by
     simp_rw [zpow_negSucc]
@@ -186,8 +186,7 @@ theorem uniformity_translate_mul (a : α) : ((𝓤 α).map fun x : α × α => (
 @[to_additive]
 theorem uniformEmbedding_translate_mul (a : α) : UniformEmbedding fun x : α => x * a :=
   { comap_uniformity := by
-      nth_rewrite 1 [← uniformity_translate_mul a, comap_map]
-      rfl
+      nth_rw 1 [← uniformity_translate_mul a, comap_map]
       rintro ⟨p₁, p₂⟩ ⟨q₁, q₂⟩
       simp only [Prod.mk.injEq, mul_left_inj, imp_self]
     inj := mul_left_injective a }
@@ -558,7 +557,6 @@ commutative additive groups (see `comm_topologicalAddGroup_is_uniform`) and for 
 additive groups (see `topologicalAddGroup_is_uniform_of_compactSpace`)."]
 def TopologicalGroup.toUniformSpace : UniformSpace G where
   uniformity := comap (fun p : G × G => p.2 / p.1) (𝓝 1)
-  refl := (Tendsto.mono_right (by simp) (pure_le_nhds _)).le_comap
   symm :=
     have : Tendsto (fun p : G × G ↦ (p.2 / p.1)⁻¹) (comap (fun p : G × G ↦ p.2 / p.1) (𝓝 1))
       (𝓝 1⁻¹) := tendsto_id.inv.comp tendsto_comap
@@ -568,8 +566,7 @@ def TopologicalGroup.toUniformSpace : UniformSpace G where
     refine mem_map.2 (mem_of_superset (mem_lift' <| preimage_mem_comap V_nhds) ?_)
     rintro ⟨x, y⟩ ⟨z, hz₁, hz₂⟩
     simpa using V_mul _ hz₂ _ hz₁
-  isOpen_uniformity S := by
-    simp only [isOpen_iff_mem_nhds, ← mem_comap_prod_mk, comap_comap, (· ∘ ·), nhds_translation_div]
+  nhds_eq_comap_uniformity _ := by simp only [comap_comap, (· ∘ ·), nhds_translation_div]
 #align topological_group.to_uniform_space TopologicalGroup.toUniformSpace
 #align topological_add_group.to_uniform_space TopologicalAddGroup.toUniformSpace
 
@@ -595,7 +592,7 @@ variable {G}
 instance Subgroup.isClosed_of_discrete [T2Space G] {H : Subgroup G} [DiscreteTopology H] :
     IsClosed (H : Set G) := by
   obtain ⟨V, V_in, VH⟩ : ∃ (V : Set G), V ∈ 𝓝 (1 : G) ∧ V ∩ (H : Set G) = {1}
-  exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
+  · exact nhds_inter_eq_singleton_of_mem_discrete H.one_mem
   have : (fun p : G × G => p.2 / p.1) ⁻¹' V ∈ 𝓤 G := preimage_mem_comap V_in
   apply isClosed_of_spaced_out this
   intro h h_in h' h'_in
@@ -770,7 +767,7 @@ private theorem extend_Z_bilin_aux (x₀ : α) (y₁ : δ) : ∃ U₂ ∈ comap 
     simpa using hφ.tendsto (0, y₁)
   have lim := lim2.comp lim1
   rw [tendsto_prod_self_iff] at lim
-  simp_rw [ball_mem_comm]
+  simp_rw [forall_mem_comm]
   exact lim W' W'_nhd
 #noalign dense_inducing.extend_Z_bilin_aux
 
@@ -920,7 +917,7 @@ instance QuotientGroup.completeSpace' (G : Type u) [Group G] [TopologicalSpace G
     refine'
       ⟨y⁻¹ * g, by
         simpa only [div_eq_mul_inv, mul_inv_rev, inv_inv, mul_inv_cancel_left] using y_mem, _⟩
-    rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel']
+    rw [QuotientGroup.mk_mul, QuotientGroup.mk_inv, hy, hg, inv_div, div_mul_cancel]
   /- Inductively construct a subsequence `φ : ℕ → ℕ` using `key₀` so that if `a b : ℕ` exceed
     `φ (n + 1)`, then we may find lifts whose quotients lie within `u n`. -/
   set φ : ℕ → ℕ := fun n => Nat.recOn n (choose <| key₀ 0 0) fun k yk => choose <| key₀ (k + 1) yk

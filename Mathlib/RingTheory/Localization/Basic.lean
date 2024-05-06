@@ -718,7 +718,7 @@ theorem ringEquivOfRingEquiv_eq_map {j : R ≃+* P} (H : M.map j.toMonoidHom = T
   rfl
 #align is_localization.ring_equiv_of_ring_equiv_eq_map IsLocalization.ringEquivOfRingEquiv_eq_map
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem ringEquivOfRingEquiv_eq {j : R ≃+* P} (H : M.map j.toMonoidHom = T) (x) :
     ringEquivOfRingEquiv S Q j H ((algebraMap R S) x) = algebraMap P Q (j x) := by
   simp
@@ -750,12 +750,12 @@ noncomputable def algEquiv : S ≃ₐ[R] Q :=
 
 end
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S Q (mk' S x y) = mk' Q x y :=
   by simp
 #align is_localization.alg_equiv_mk' IsLocalization.algEquiv_mk'
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 theorem algEquiv_symm_mk' (x : R) (y : M) : (algEquiv M S Q).symm (mk' Q x y) = mk' S x y := by simp
 #align is_localization.alg_equiv_symm_mk' IsLocalization.algEquiv_symm_mk'
 
@@ -1096,9 +1096,9 @@ theorem mk_algebraMap {A : Type*} [CommSemiring A] [Algebra A R] (m : A) :
   rw [mk_eq_mk', mk'_eq_iff_eq_mul, Submonoid.coe_one, map_one, mul_one]; rfl
 #align localization.mk_algebra_map Localization.mk_algebraMap
 
-theorem mk_nat_cast (m : ℕ) : (mk m 1 : Localization M) = m := by
+theorem mk_natCast (m : ℕ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℕ) _
-#align localization.mk_nat_cast Localization.mk_nat_cast
+#align localization.mk_nat_cast Localization.mk_natCast
 
 variable [IsLocalization M S]
 
@@ -1121,12 +1121,12 @@ noncomputable def _root_.IsLocalization.unique (R Rₘ) [CommSemiring R] [CommSe
 
 end
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_mk' (x : R) (y : M) : algEquiv M S (mk' (Localization M) x y) = mk' S x y :=
   algEquiv_mk' _ _
 #align localization.alg_equiv_mk' Localization.algEquiv_mk'
 
--- Porting note: removed `simp`, `simp` can prove it
+-- Porting note (#10618): removed `simp`, `simp` can prove it
 nonrec theorem algEquiv_symm_mk' (x : R) (y : M) :
     (algEquiv M S).symm (mk' S x y) = mk' (Localization M) x y :=
   algEquiv_symm_mk' _ _
@@ -1186,7 +1186,7 @@ instance : CommRing (Localization M) :=
       Localization.induction_on x fun x => by simp only [smul_mk, zero_zsmul, mk_zero]
     zsmul_succ' := fun n x =>
       Localization.induction_on x fun x => by
-        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_comm (n : ℤ) 1, add_smul]
+        simp [smul_mk, add_mk_self, -mk_eq_monoidOf_mk', add_smul]
     zsmul_neg' := fun n x =>
       Localization.induction_on x fun x => by
         dsimp only
@@ -1209,13 +1209,13 @@ theorem sub_mk (a c) (b d) : (mk a b : Localization M) - mk c d =
   calc
     mk a b - mk c d = mk a b + -mk c d := sub_eq_add_neg _ _
     _ = mk a b + mk (-c) d := by rw [neg_mk]
-    _ = mk (b * -c + d * a) (b * d) := (add_mk _ _ _ _)
+    _ = mk (b * -c + d * a) (b * d) := add_mk _ _ _ _
     _ = mk (d * a - b * c) (b * d) := by congr; ring
 #align localization.sub_mk Localization.sub_mk
 
-theorem mk_int_cast (m : ℤ) : (mk m 1 : Localization M) = m := by
+theorem mk_intCast (m : ℤ) : (mk m 1 : Localization M) = m := by
   simpa using mk_algebraMap (R := R) (A := ℤ) _
-#align localization.mk_int_cast Localization.mk_int_cast
+#align localization.mk_int_cast Localization.mk_intCast
 
 end Localization
 

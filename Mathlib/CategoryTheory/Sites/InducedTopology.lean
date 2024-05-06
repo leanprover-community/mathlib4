@@ -54,7 +54,7 @@ def LocallyCoverDense (K : GrothendieckTopology D) (G : C ⥤ D) : Prop :=
 
 namespace LocallyCoverDense
 
-variable [Full G] [Faithful G] (Hld : LocallyCoverDense K G)
+variable [G.Full] [G.Faithful] (Hld : LocallyCoverDense K G)
 
 theorem pushforward_cover_iff_cover_pullback {X : C} (S : Sieve X) :
     K _ (S.functorPushforward G) ↔ ∃ T : K (G.obj X), T.val.functorPullback G = S := by
@@ -149,12 +149,12 @@ variable {C : Type v} [SmallCategory C] {D : Type v} [SmallCategory D] {G : C �
 variable {J : GrothendieckTopology C} {K : GrothendieckTopology D}
 variable (A : Type u) [Category.{v} A]
 
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+instance [G.Full] [G.Faithful] [G.IsCoverDense K]  :
     Functor.IsContinuous G (G.inducedTopologyOfIsCoverDense K) K := by
   apply Functor.IsCoverDense.isContinuous
   exact (G.locallyCoverDense_of_isCoverDense K).inducedTopology_coverPreserving
 
-instance [Full G] [Faithful G] [G.IsCoverDense K]  :
+instance [G.Full] [G.Faithful] [G.IsCoverDense K]  :
     Functor.IsCocontinuous G (G.inducedTopologyOfIsCoverDense K) K :=
   (G.locallyCoverDense_of_isCoverDense K).inducedTopology_isCocontinuous
 

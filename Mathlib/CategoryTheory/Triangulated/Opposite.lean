@@ -241,7 +241,7 @@ noncomputable def inverse : Triangle Cᵒᵖ ⥤ (Triangle C)ᵒᵖ where
           unop_comp, Functor.map_comp, op_comp, assoc]) }
 
 /-- The unit isomorphism of the
-equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` .-/
+equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
 noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
   NatIso.ofComponents (fun T => Iso.op
@@ -251,7 +251,7 @@ noncomputable def unitIso : 𝟭 _ ≅ functor C ⋙ inverse C :=
     (fun {T₁ T₂} f => Quiver.Hom.unop_inj (by aesop_cat))
 
 /-- The counit isomorphism of the
-equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` .-/
+equivalence `triangleOpEquivalence C : (Triangle C)ᵒᵖ ≌ Triangle Cᵒᵖ` . -/
 @[simps!]
 noncomputable def counitIso : inverse C ⋙ functor C ≅ 𝟭 _ :=
   NatIso.ofComponents (fun T => by

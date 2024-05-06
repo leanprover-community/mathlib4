@@ -198,12 +198,7 @@ theorem isCompact (hf : HasCompactMulSupport f) : IsCompact (mulTSupport f) :=
 @[to_additive]
 theorem _root_.hasCompactMulSupport_iff_eventuallyEq :
     HasCompactMulSupport f ↔ f =ᶠ[coclosedCompact α] 1 :=
-  ⟨fun h => mem_coclosedCompact.mpr
-    ⟨mulTSupport f, isClosed_mulTSupport _, h,
-      fun _ => not_imp_comm.mpr fun hx => subset_mulTSupport f hx⟩,
-    fun h =>
-      let ⟨_C, hC⟩ := mem_coclosed_compact'.mp h
-      IsCompact.of_isClosed_subset hC.2.1 (isClosed_mulTSupport _) (closure_minimal hC.2.2 hC.1)⟩
+  mem_coclosedCompact_iff.symm
 #align has_compact_mul_support_iff_eventually_eq hasCompactMulSupport_iff_eventuallyEq
 #align has_compact_support_iff_eventually_eq hasCompactSupport_iff_eventuallyEq
 
@@ -264,7 +259,14 @@ theorem comp₂_left (hf : HasCompactMulSupport f)
     (hf₂ : HasCompactMulSupport f₂) (hm : m 1 1 = 1) :
     HasCompactMulSupport fun x => m (f x) (f₂ x) := by
   rw [hasCompactMulSupport_iff_eventuallyEq] at hf hf₂ ⊢
-  filter_upwards [hf, hf₂] using fun x hx hx₂ => by simp_rw [hx, hx₂, Pi.one_apply, hm]
+  /- Adaptation note: (`nightly-2024-03-11`) If we *either* (1) remove the type annotations on the
+  binders in the following `fun` or (2) revert `simp only` to `simp_rw`, `to_additive` fails
+  because an `OfNat.ofNat 1` is not replaced with `0`. Notably, as of this nightly, what used to
+  look like `OfNat.ofNat (nat_lit 1) x` in the proof term now looks like
+  `OfNat.ofNat (OfNat.ofNat (α := ℕ) (nat_lit 1)) x`, and this seems to trip up `to_additive`.
+  -/
+  filter_upwards [hf, hf₂] using fun x (hx : f x = (1 : α → β) x) (hx₂ : f₂ x = (1 : α → γ) x) => by
+    simp only [hx, hx₂, Pi.one_apply, hm]
 #align has_compact_mul_support.comp₂_left HasCompactMulSupport.comp₂_left
 #align has_compact_support.comp₂_left HasCompactSupport.comp₂_left
 

@@ -307,8 +307,8 @@ theorem circleIntegral_sub_center_inv_smul_eq_of_differentiable_on_annulus_off_c
   suffices
     (∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp b) θ)) =
       ∫ θ in (0)..2 * π, I • f (circleMap c (Real.exp a) θ) by
-    simpa only [circleIntegral, add_sub_cancel', ofReal_exp, ← exp_add, smul_smul, ←
-      div_eq_mul_inv, mul_div_cancel_left _ (circleMap_ne_center (Real.exp_pos _).ne'),
+    simpa only [circleIntegral, add_sub_cancel_left, ofReal_exp, ← exp_add, smul_smul, ←
+      div_eq_mul_inv, mul_div_cancel_left₀ _ (circleMap_ne_center (Real.exp_pos _).ne'),
       circleMap_sub_center, deriv_circleMap]
   set R := [[a, b]] ×ℂ [[0, 2 * π]]
   set g : ℂ → ℂ := (c + exp ·)

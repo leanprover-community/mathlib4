@@ -100,6 +100,10 @@ lemma finite_memPartition (f : ℕ → Set α) (n : ℕ) : Set.Finite (memPartit
 instance instFinite_memPartition (f : ℕ → Set α) (n : ℕ) : Finite (memPartition f n) :=
   Set.finite_coe_iff.mp (finite_memPartition _ _)
 
+noncomputable
+instance instFintype_memPartition (f : ℕ → Set α) (n : ℕ) : Fintype (memPartition f n) :=
+  (finite_memPartition f n).fintype
+
 open Classical in
 /-- The set in `memPartition f n` to which `a : α` belongs. -/
 def memPartitionSet (f : ℕ → Set α) : ℕ → α → Set α
@@ -114,6 +118,7 @@ lemma memPartitionSet_succ (f : ℕ → Set α) (n : ℕ) (a : α) [Decidable (a
     memPartitionSet f (n + 1) a
       = if a ∈ f n then memPartitionSet f n a ∩ f n else memPartitionSet f n a \ f n := by
   simp [memPartitionSet]
+  congr
 
 lemma memPartitionSet_mem (f : ℕ → Set α) (n : ℕ) (a : α) :
     memPartitionSet f n a ∈ memPartition f n := by
