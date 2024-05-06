@@ -37,7 +37,8 @@ def MulAut (M : Type*) [Mul M] :=
 #align mul_aut MulAut
 #align add_aut AddAut
 
--- Note that `(attr := reducible)` in `to_additive` currently doesn't work, so we add the reducible attribute manually.
+-- Note that `(attr := reducible)` in `to_additive` currently doesn't work,
+-- so we add the reducible attribute manually.
 attribute [reducible] AddAut
 
 namespace MulAut
