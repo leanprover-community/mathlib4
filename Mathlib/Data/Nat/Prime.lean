@@ -8,6 +8,7 @@ import Mathlib.Data.Int.Dvd.Basic
 import Mathlib.Data.Int.Units
 import Mathlib.Data.Nat.Factorial.Basic
 import Mathlib.Data.Nat.GCD.Basic
+import Mathlib.Data.Nat.Nth
 import Mathlib.Data.Nat.Parity
 import Mathlib.Order.Bounds.Basic
 
@@ -814,6 +815,8 @@ instance fact_prime_two : Fact (Prime 2) :=
 instance fact_prime_three : Fact (Prime 3) :=
   ⟨prime_three⟩
 #align nat.fact_prime_three Nat.fact_prime_three
+
+theorem zeroth_prime_eq_two : nth Prime 0 = 2 := nth_count prime_two
 
 end Nat
 
