@@ -319,7 +319,7 @@ theorem zeta_sub_one_prime_of_two_pow [IsCyclotomicExtension {(2 : ℕ+) ^ (k + 
   rw [← Algebra.norm_localization (Sₘ := K) ℤ (nonZeroDivisors ℤ)]
   simp only [PNat.pow_coe, id.map_eq_id, RingHomCompTriple.comp_eq, RingHom.coe_coe,
     Subalgebra.coe_val, algebraMap_int_eq, map_natCast]
-  exact hζ.norm_sub_one_of_eq_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
+  exact hζ.norm_sub_one_two Nat.AtLeastTwo.prop (cyclotomic.irreducible_rat (by simp))
 
 /-- `ζ - 1` is prime if `ζ` is a primitive `p ^ (k + 1)`-th root of unity. -/
 theorem zeta_sub_one_prime [IsCyclotomicExtension {p ^ (k + 1)} ℚ K]
