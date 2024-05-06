@@ -63,6 +63,26 @@ theorem mersenne_le_mersenne {p q : ℕ} : mersenne p ≤ mersenne q ↔ p ≤ q
 @[simp] theorem mersenne_pos {p : ℕ} : 0 < mersenne p ↔ 0 < p := mersenne_lt_mersenne (p := 0)
 #align mersenne_pos mersenne_pos
 
+namespace Mathlib.Meta.Positivity
+
+open Lean Meta Qq Function
+
+alias ⟨_, mersenne_pos_of_pos⟩ := mersenne_pos
+
+/-- Extension for the `positivity` tactic: `mersenne`. -/
+@[positivity mersenne _]
+def evalMersenne : PositivityExt where eval {u α} _zα _pα e := do
+  match u, α, e with
+  | 0, ~q(ℕ), ~q(mersenne $a) =>
+    let ra ← core q(inferInstance) q(inferInstance) a
+    assertInstancesCommute
+    match ra with
+    | .positive pa => pure (.positive q(mersenne_pos_of_pos $pa))
+    | _ => pure (.nonnegative q(Nat.zero_le (mersenne $a)))
+  | _, _, _ => throwError "not mersenne"
+
+end Mathlib.Meta.Positivity
+
 @[simp]
 theorem one_lt_mersenne {p : ℕ} : 1 < mersenne p ↔ 1 < p :=
   mersenne_lt_mersenne (p := 1)
