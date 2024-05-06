@@ -869,14 +869,15 @@ noncomputable instance preservesLimitRestrictScalars
     exact isLimitOfReflects (forget₂ _ AddCommGroupCat) hc'⟩
 
 instance preservesColimitRestrictScalars {R S : Type*} [Ring R] [Ring S]
-    (f : R →+* S) {J : Type*} [Category J] [HasColimitsOfShape J AddCommGroupCat.{v}] :
-    PreservesColimitsOfShape J (ModuleCat.restrictScalars.{v} f) where
-  preservesColimit {F} := by
-    have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) :=
-      inferInstance
-    apply preservesColimitOfPreservesColimitCocone (HasColimit.isColimitColimitCocone F)
-    apply isColimitOfReflects (forget₂ _ AddCommGroupCat)
-    apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGroupCat.{v})
-    exact HasColimit.isColimitColimitCocone F
+    (f : R →+* S) {J : Type*} [Category J] (F : J ⥤ ModuleCat.{v} S)
+    [HasColimit (F ⋙ forget₂ _ AddCommGroupCat)] :
+    PreservesColimit F (ModuleCat.restrictScalars.{v} f) := by
+  have : HasColimit ((F ⋙ restrictScalars f) ⋙ forget₂ (ModuleCat R) AddCommGroupCat) :=
+    inferInstanceAs (HasColimit (F ⋙ forget₂ _ AddCommGroupCat))
+  apply preservesColimitOfPreservesColimitCocone (HasColimit.isColimitColimitCocone F)
+  apply isColimitOfReflects (forget₂ _ AddCommGroupCat)
+  apply isColimitOfPreserves (forget₂ (ModuleCat.{v} S) AddCommGroupCat.{v})
+  exact HasColimit.isColimitColimitCocone F
+
 
 end ModuleCat
