@@ -32,12 +32,7 @@ end SimplexAlgorithm
 
 open SimplexAlgorithm
 
-/--
-`simplexAlgorithm hyps vars` tries to derive a contradiction from the comparisons in `hyps`
-by eliminating all variables ≤ `maxVar`.
-If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
-This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
--/
+/-- An oracle that uses the simplex algorithm. -/
 def CertificateOracle.simplexAlgorithm : CertificateOracle where
   produceCertificate hyps maxVar := do
     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
