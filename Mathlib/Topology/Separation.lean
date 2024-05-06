@@ -2223,6 +2223,45 @@ lemma countable_covers_to_separated_nhds (h k: Set X)
       use i₂
       exact ⟨hyp, subset_closure xinvi⟩
 
+lemma countable_covers_to_separated_nhds' (h k: Set X)
+    (h_cov: ∃ u : Set (Set X), u.Countable ∧ h ⊆ ⋃₀ u ∧
+      ∀ v ∈ u, IsOpen v ∧ Disjoint (closure v) k)
+    (k_cov: ∃ u : Set (Set X), u.Countable ∧ k ⊆ ⋃₀ u ∧
+      ∀ v ∈ u, IsOpen v ∧ Disjoint (closure v) h) : SeparatedNhds h k := by
+  rcases h_cov with ⟨u, u_cnt, u_cov, u_mem⟩
+  have : h.Nonempty → u.Nonempty := by
+    intro hyp
+    exact Set.Nonempty.of_sUnion (Nonempty.mono u_cov hyp)
+  rcases k_cov with ⟨v, v_cnt, v_cov, v_mem⟩
+  have : k.Nonempty → v.Nonempty := by
+    intro hyp
+    exact Set.Nonempty.of_sUnion (Nonempty.mono v_cov hyp)
+  by_cases hyp: h.Nonempty ∧ k.Nonempty
+  · rw [Set.countable_iff_exists_surjective] at *
+    have h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ i, u i ∧
+        ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) k := by
+      rcases u_cnt with ⟨f, fs⟩
+      use Subtype.val ∘ f
+      simp
+      constructor
+      · sorry
+      · intro i
+        constructor
+        · sorry
+        · sorry
+    have k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ i, u i ∧
+        ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) h := by sorry
+    exact countable_covers_to_separated_nhds h k h_cov k_cov
+  · simp at hyp
+    by_cases hyp₂: h.Nonempty
+    · apply hyp at hyp₂
+      rw [not_nonempty_iff_eq_empty] at hyp₂
+      rw [hyp₂]
+      apply SeparatedNhds.empty_right h
+    · rw [not_nonempty_iff_eq_empty] at hyp₂
+      rw [hyp₂]
+      apply SeparatedNhds.empty_left k
+
 
 
 instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
@@ -2232,7 +2271,7 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
     have hlind : IsLindelof h := by
       apply IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ hcl
       simp
-    have : ∀ a : X, ∃ n : Set X, a ∈ h → n ∈ 𝓝 a ∧ IsClosed n ∧ Disjoint n k := by
+    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) k ∧ (a ∈ h → a ∈ n) := by
       intro a
       by_cases hyp: a ∈ h
       · have : kᶜ ∈ 𝓝 a := by
@@ -2240,31 +2279,53 @@ instance (priority := 100) NormalSpace.of_regularSpace_lindelofSpace
           by_contra aink; exact hkdis ⟨hyp, aink⟩
         rcases (((regularSpace_TFAE X).out 0 3).mp r:) a kᶜ this
           with ⟨n, nna, ncl, nsubkc⟩
-        use n
-        intro ainh
-        exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
-      · use ∅; intro ainh; by_contra; exact hyp ainh
-    choose n na_nhd na_cl na_dis using this
-    rcases IsLindelof.elim_nhds_subcover hlind n na_nhd
-      with ⟨h', h'_cnt, h'_subh, nh'_cov⟩
+        use interior n
+        constructor
+        · exact isOpen_interior
+        constructor
+        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
+            nsubkc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
+        · intros; exact mem_interior_iff_mem_nhds.mpr nna
+      · use ∅
+        constructor
+        · exact isOpen_empty
+        constructor
+        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left k)
+        · intro ainh; by_contra; exact hyp ainh
+    choose n na_open na_dis na_nhd using this
+    have na_cov : h ⊆ ⋃ i, n i := by
+      intro a ainh
+      simp; use a; apply na_nhd; exact ainh
+    rcases IsLindelof.elim_countable_subcover hlind n na_open na_cov with ⟨n', n'cnt, n'cov⟩
     have klind : IsLindelof k := by
       apply IsLindelof.of_isClosed_subset LindelofSpace.isLindelof_univ kcl
       simp
-    have : ∀ a : X, ∃ n : Set X, a ∈ k → n ∈ 𝓝 a ∧ IsClosed n ∧ Disjoint n h := by
+    have : ∀ a : X, ∃ n : Set X, IsOpen n ∧ Disjoint (closure n) h ∧ (a ∈ k → a ∈ n) := by
       intro a
       by_cases hyp: a ∈ k
       · have : hᶜ ∈ 𝓝 a := by
           apply IsClosed.compl_mem_nhds hcl
           by_contra ainh; exact hkdis ⟨ainh, hyp⟩
         rcases (((regularSpace_TFAE X).out 0 3).mp r:) a hᶜ this
-          with ⟨n, nna, ncl, nsubkc⟩
-        use n
-        intro ainh
-        exact ⟨nna, ncl, Set.subset_compl_iff_disjoint_right.mp nsubkc⟩
-      · use ∅; intro aink; by_contra; exact hyp aink
-    choose m ma_nhd ma_cl ma_dis using this
-    rcases IsLindelof.elim_nhds_subcover klind m ma_nhd
-      with ⟨k', k'_cnt, k'_subh, mk'_cov⟩
+          with ⟨n, nna, ncl, nsubhc⟩
+        use interior n
+        constructor
+        · exact isOpen_interior
+        constructor
+        · exact disjoint_left.mpr fun ⦃a⦄ a_1 ↦
+            nsubhc ((IsClosed.closure_subset_iff ncl).mpr interior_subset a_1)
+        · intros; exact mem_interior_iff_mem_nhds.mpr nna
+      · use ∅
+        constructor
+        · exact isOpen_empty
+        constructor
+        · exact SeparatedNhds.disjoint_closure_left (SeparatedNhds.empty_left h)
+        · intro aink; by_contra; exact hyp aink
+    choose m ma_open ma_dis ma_nhd using this
+    have ma_cov : k ⊆ ⋃ i, m i := by
+      intro a aink
+      simp; use a; apply ma_nhd; exact aink
+    rcases IsLindelof.elim_countable_subcover klind m ma_open ma_cov with ⟨m', m'cnt, m'cov⟩
     sorry
 
 
