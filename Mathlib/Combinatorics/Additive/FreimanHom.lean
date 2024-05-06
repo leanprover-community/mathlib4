@@ -19,8 +19,8 @@ An `n`-Freiman homomorphism from `A` to `B` is a function `f : α → β` such t
 `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any `MulHom` is a Freiman homomorphism.
 
 An `n`-Freiman isomorphism from `A` to `B` is a function `f : α → β` bijective between `A` and `B`
-such that `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ` for all `x₁, ..., xₙ, y₁, ..., yₙ ∈ A`
-such that `x₁ * ... * xₙ = y₁ * ... * yₙ`. In particular, any `MulEquiv` is a Freiman isomorphism.
+such that `f x₁ * ... * f xₙ = f y₁ * ... * f yₙ ↔ x₁ * ... * xₙ = y₁ * ... * yₙ` for all
+`x₁, ..., xₙ, y₁, ..., yₙ ∈ A`. In particular, any `MulEquiv` is a Freiman isomorphism.
 
 They are of interest in additive combinatorics.
 
