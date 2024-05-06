@@ -19,7 +19,7 @@ Hadamard three-line theorem on `re ⁻¹' [0,1]`: If `f` is a bounded function, 
 `re ⁻¹' [0,1]` and differentiable on `re ⁻¹' (0,1)`, then for
 `M(x) := sup ((norm ∘ f) '' (re ⁻¹' {x}))`, that is `M(x)` is the supremum of the absolute value of
 `f` along the vertical lines `re z = x`, we have that `∀ z ∈ re ⁻¹' [0,1]` the inequality
-`‖f(z)‖ ≤ |M(0) ^ (1-z)| * |M(1) ^ z|` holds. This can be seen to be equivalent to the statement
+`‖f(z)‖ ≤ M(0) ^ (1 - z.re) * M(1) ^ z.re` holds. This can be seen to be equivalent to the statement
 that `log M(re z)` is a convex function on `[0,1]`.
 
 - `norm_le_interp_of_mem_verticalClosedStrip'` :
@@ -184,7 +184,7 @@ lemma F_edge_le_one (f : ℂ → E) (ε : ℝ) (hε : ε > 0) (z : ℂ)
   simp only [F, norm_smul, norm_eq_abs, map_mul, abs_cpow_eq_rpow_re_of_pos,
     abs_invInterpStrip f z hε, sSupNormIm_eps_pos f hε 1,
     sub_re, one_re, neg_re]
-  cases' hz with hz0 hz1
+  rcases hz with hz0 | hz1
   -- `z.re = 0`
   · simp only [hz0, zero_sub, Real.rpow_neg_one, neg_zero, Real.rpow_zero, mul_one,
       inv_mul_le_iff (sSupNormIm_eps_pos f hε 0)]
@@ -278,7 +278,7 @@ lemma diffContOnCl_interpStrip :
   · eta_expand; simp_rw [interpStrip_eq_of_zero f _ h]; exact diffContOnCl_const
   -- Case nowhere 0
   · push_neg at h
-    cases' h with h0 h1
+    rcases h with ⟨h0, h1⟩
     rw [ne_comm] at h0 h1
     apply Differentiable.diffContOnCl
     intro z
@@ -384,7 +384,7 @@ lemma norm_le_interp_of_mem_verticalClosedStrip' (f : ℂ → E) {z : ℂ} {a b 
       exact ⟨Real.rpow_nonneg (sSupNormIm_nonneg f _) _,
         Real.rpow_nonneg (sSupNormIm_nonneg f _) _ ⟩
     · push_neg at h
-      cases' h with h0 h1
+      rcases h with ⟨h0, h1⟩
       rw [ne_comm] at h0 h1
       simp_rw [interpStrip_eq_of_pos f _ (lt_of_le_of_ne (sSupNormIm_nonneg f 0) h0)
         (lt_of_le_of_ne (sSupNormIm_nonneg f 1) h1)]
