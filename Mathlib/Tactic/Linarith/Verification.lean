@@ -4,8 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Robert Y. Lewis
 -/
 
--- import Mathlib.Tactic.Linarith.FourierMotzkin
-import Mathlib.Tactic.Linarith.SimplexAlgorithm
+-- import Mathlib.Tactic.Linarith.Oracle.FourierMotzkin
+import Mathlib.Tactic.Linarith.Oracle.SimplexAlgorithm
 import Mathlib.Tactic.Linarith.Parsing
 import Mathlib.Util.Qq
 
@@ -203,7 +203,7 @@ def proveFalseByLinarith (cfg : LinarithConfig) : MVarId → List Expr → MetaM
       let (comps, max_var) ← linearFormsAndMaxVar cfg.transparency inputs
       trace[linarith.detail] "... finished `linearFormsAndMaxVar`."
       trace[linarith.detail] "{comps}"
-      let oracle := cfg.oracle.getD SimplexAlgorithm.produceCertificate
+      let oracle := cfg.oracle.getD (CertificateOracle.simplexAlgorithm)
       -- perform the elimination and fail if no contradiction is found.
       let certificate : Std.HashMap Nat Nat ← try
         oracle comps max_var

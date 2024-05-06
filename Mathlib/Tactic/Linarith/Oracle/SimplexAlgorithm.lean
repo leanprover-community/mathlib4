@@ -27,16 +27,21 @@ def postprocess (vec : Array ℚ) : HashMap ℕ ℕ :=
   let vecNat : Array ℕ := vec.map (fun x : ℚ => (x * common_den).floor.toNat)
   HashMap.ofList <| vecNat.toList.enum.filter (fun ⟨_, item⟩ => item != 0)
 
+
+end SimplexAlgorithm
+
+open SimplexAlgorithm
+
 /--
-`produceCertificate hyps vars` tries to derive a contradiction from the comparisons in `hyps`
+`simplexAlgorithm hyps vars` tries to derive a contradiction from the comparisons in `hyps`
 by eliminating all variables ≤ `maxVar`.
 If successful, it returns a map `coeff : ℕ → ℕ` as a certificate.
 This map represents that we can find a contradiction by taking the sum `∑ (coeff i) * hyps[i]`.
 -/
-def produceCertificate : CertificateOracle :=
+def CertificateOracle.simplexAlgorithm : CertificateOracle :=
   fun hyps maxVar => do
     let ⟨A, strictIndexes⟩ := preprocess hyps maxVar
     let vec := findPositiveVector A strictIndexes
     return postprocess vec
 
-end Linarith.SimplexAlgorithm
+end Linarith
