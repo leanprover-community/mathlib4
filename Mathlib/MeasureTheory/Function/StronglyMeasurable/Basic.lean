@@ -452,6 +452,17 @@ protected theorem div [Div β] [ContinuousDiv β] (hf : StronglyMeasurable f)
 #align measure_theory.strongly_measurable.div MeasureTheory.StronglyMeasurable.div
 #align measure_theory.strongly_measurable.sub MeasureTheory.StronglyMeasurable.sub
 
+@[to_additive (attr := measurability)]
+theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+    StronglyMeasurable (f * g) ↔ StronglyMeasurable g :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive (attr := measurability)]
+theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : StronglyMeasurable f) :
+    StronglyMeasurable (g * f) ↔ StronglyMeasurable g :=
+  mul_comm g f ▸ mul_iff_right hf
+
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
     {g : α → β} (hf : StronglyMeasurable f) (hg : StronglyMeasurable g) :
@@ -1354,6 +1365,17 @@ protected theorem div [Group β] [TopologicalGroup β] (hf : AEStronglyMeasurabl
     hf.ae_eq_mk.div hg.ae_eq_mk⟩
 #align measure_theory.ae_strongly_measurable.div MeasureTheory.AEStronglyMeasurable.div
 #align measure_theory.ae_strongly_measurable.sub MeasureTheory.AEStronglyMeasurable.sub
+
+@[to_additive (attr := measurability)]
+theorem mul_iff_right [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable (f * g) μ ↔ AEStronglyMeasurable g μ :=
+  ⟨fun h ↦ show g = f * g * f⁻¹ by simp only [mul_inv_cancel_comm] ▸ h.mul hf.inv,
+    fun h ↦ hf.mul h⟩
+
+@[to_additive (attr := measurability)]
+theorem mul_iff_left [CommGroup β] [TopologicalGroup β] (hf : AEStronglyMeasurable f μ) :
+    AEStronglyMeasurable (g * f) μ ↔ AEStronglyMeasurable g μ :=
+  mul_comm g f ▸ AEStronglyMeasurable.mul_iff_right hf
 
 @[to_additive (attr := aesop safe 20 apply (rule_sets := [Measurable]))]
 protected theorem smul {𝕜} [TopologicalSpace 𝕜] [SMul 𝕜 β] [ContinuousSMul 𝕜 β] {f : α → 𝕜}
