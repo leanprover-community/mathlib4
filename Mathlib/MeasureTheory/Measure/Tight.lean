@@ -395,9 +395,7 @@ lemma of_restrict_isTight [TopologicalSpace α] {U : Set α} (hμ : IsTight μ) 
 
 lemma add [TopologicalSpace α] {μ ν : Measure α} (hμ : IsTight μ) (hν : IsTight ν) :
     IsTight (μ + ν) := by
-  have := Filter.Tendsto.add hμ hν
-  simp only [add_zero] at this
-  exact this
+  simpa only [add_zero] using Filter.Tendsto.add hμ hν
 
 lemma const_mul [TopologicalSpace α] (c : NNReal) (hμ : IsTight μ) : IsTight (c • μ) := by
   rw [iff_exists_isCompact_measure_compl_le] at *
