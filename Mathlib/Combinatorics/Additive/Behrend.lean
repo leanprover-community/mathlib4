@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.Additive.SalemSpencer
+import Mathlib.Combinatorics.Additive.AP.Three
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Complex.ExponentialBounds
 
@@ -41,7 +41,7 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 
 ## Tags
 
-Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
+3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
 
@@ -56,12 +56,12 @@ namespace Behrend
 variable {α β : Type*} {n d k N : ℕ} {x : Fin n → ℕ}
 
 /-!
-### Turning the sphere into a Salem-Spencer set
+### Turning the sphere into 3AP-free set
 
 We define `Behrend.sphere`, the intersection of the $L^2$ sphere with the positive quadrant of
 integer points. Because the $L^2$ closed ball is strictly convex, the $L^2$ sphere and
-`Behrend.sphere` are Salem-Spencer (`addSalemSpencer_sphere`). Then we can turn this set in
-`Fin n → ℕ` into a set in `ℕ` using `Behrend.map`, which preserves `AddSalemSpencer` because it is
+`Behrend.sphere` are 3AP-free (`threeAPFree_sphere`). Then we can turn this set in
+`Fin n → ℕ` into a set in `ℕ` using `Behrend.map`, which preserves `ThreeAPFree` because it is
 an additive monoid homomorphism.
 -/
 
@@ -167,23 +167,23 @@ theorem map_le_of_mem_box (hx : x ∈ box n d) :
   map_monotone (2 * d - 1) fun _ => Nat.le_sub_one_of_lt <| mem_box.1 hx _
 #align behrend.map_le_of_mem_box Behrend.map_le_of_mem_box
 
-nonrec theorem addSalemSpencer_sphere : AddSalemSpencer (sphere n d k : Set (Fin n → ℕ)) := by
+nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → ℕ)) := by
   set f : (Fin n → ℕ) →+ EuclideanSpace ℝ (Fin n) :=
     { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
-  refine' AddSalemSpencer.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
+  refine' ThreeAPFree.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
   · exact cast_injective.comp_left.injOn _
-  refine' (addSalemSpencer_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
+  refine' (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
-#align behrend.add_salem_spencer_sphere Behrend.addSalemSpencer_sphere
+#align behrend.add_salem_spencer_sphere Behrend.threeAPFree_sphere
 
-theorem addSalemSpencer_image_sphere :
-    AddSalemSpencer ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
+theorem threeAPFree_image_sphere :
+    ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' AddSalemSpencer.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
-    (map_injOn.mono _) addSalemSpencer_sphere
+  refine' ThreeAPFree.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
+    (map_injOn.mono _) threeAPFree_sphere
   · exact x
   rw [Set.add_subset_iff]
   rintro a ha b hb i
@@ -191,7 +191,7 @@ theorem addSalemSpencer_image_sphere :
   have hbi := mem_box.1 (sphere_subset_box hb) i
   rw [lt_tsub_iff_right, ← succ_le_iff, two_mul]
   exact (add_add_add_comm _ _ 1 1).trans_le (_root_.add_le_add hai hbi)
-#align behrend.add_salem_spencer_image_sphere Behrend.addSalemSpencer_image_sphere
+#align behrend.add_salem_spencer_image_sphere Behrend.threeAPFree_image_sphere
 
 theorem sum_sq_le_of_mem_box (hx : x ∈ box n d) : ∑ i : Fin n, x i ^ 2 ≤ n * (d - 1) ^ 2 := by
   rw [mem_box] at hx
@@ -216,7 +216,7 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
   · dsimp; refine' (card_le_univ _).trans_eq _; rfl
   cases d
   · simp
-  refine' addSalemSpencer_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
+  refine' threeAPFree_image_sphere.le_rothNumberNat _ _ (card_image_of_injOn _)
   · intro; assumption
   · simp only [subset_iff, mem_image, and_imp, forall_exists_index, mem_range,
       forall_apply_eq_imp_iff₂, sphere, mem_filter]
@@ -231,7 +231,7 @@ theorem card_sphere_le_rothNumberNat (n d k : ℕ) :
 /-!
 ### Optimization
 
-Now that we know how to turn the integer points of any sphere into a Salem-Spencer set, we find a
+Now that we know how to turn the integer points of any sphere into a 3AP-free set, we find a
 sphere containing many integer points by the pigeonhole principle. This gives us an implicit bound
 that we then optimize by tweaking the parameters. The (almost) optimal parameters are
 `Behrend.nValue` and `Behrend.dValue`.
@@ -293,7 +293,7 @@ theorem log_two_mul_two_le_sqrt_log_eight : log 2 * 2 ≤ √(log 8) := by
   rw [mul_pow, sq (log 2), mul_assoc, mul_comm]
   refine' mul_le_mul_of_nonneg_right _ (log_nonneg one_le_two)
   rw [← le_div_iff]
-  apply log_two_lt_d9.le.trans
+  on_goal 1 => apply log_two_lt_d9.le.trans
   all_goals norm_num1
 #align behrend.log_two_mul_two_le_sqrt_log_eight Behrend.log_two_mul_two_le_sqrt_log_eight
 
@@ -428,9 +428,9 @@ theorem bound (hN : 4096 ≤ N) : (N : ℝ) ^ (nValue N : ℝ)⁻¹ / exp 1 < dV
   apply div_lt_floor _
   rw [← log_le_log_iff, log_rpow, mul_comm, ← div_eq_mul_inv]
   · apply le_trans _ (div_le_div_of_nonneg_left _ _ (ceil_lt_mul _).le)
-    rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
-    · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
-    · norm_num1
+    · rw [mul_comm, ← div_div, div_sqrt, le_div_iff]
+      · set_option tactic.skipAssignedInstances false in norm_num; exact le_sqrt_log hN
+      · norm_num1
     · apply log_nonneg
       rw [one_le_cast]
       exact hN.trans' (by norm_num1)
@@ -491,8 +491,8 @@ theorem roth_lower_bound_explicit (hN : 4096 ≤ N) :
 theorem exp_four_lt : exp 4 < 64 := by
   rw [show (64 : ℝ) = 2 ^ ((6 : ℕ) : ℝ) by rw [rpow_natCast]; norm_num1,
     ← lt_log_iff_exp_lt (rpow_pos_of_pos zero_lt_two _), log_rpow zero_lt_two, ← div_lt_iff']
-  exact log_two_gt_d9.trans_le' (by norm_num1)
-  norm_num
+  · exact log_two_gt_d9.trans_le' (by norm_num1)
+  · norm_num
 #align behrend.exp_four_lt Behrend.exp_four_lt
 
 theorem four_zero_nine_six_lt_exp_sixteen : 4096 < exp 16 := by

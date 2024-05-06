@@ -730,8 +730,8 @@ theorem le_ae_restrict : μ.ae ⊓ 𝓟 s ≤ (μ.restrict s).ae := fun _s hs =>
 @[simp]
 theorem ae_restrict_eq (hs : MeasurableSet s) : (μ.restrict s).ae = μ.ae ⊓ 𝓟 s := by
   ext t
-  simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf, not_imp,
-    fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
+  simp only [mem_inf_principal, mem_ae_iff, restrict_apply_eq_zero' hs, compl_setOf,
+    Classical.not_imp, fun a => and_comm (a := a ∈ s) (b := ¬a ∈ t)]
   rfl
 #align measure_theory.ae_restrict_eq MeasureTheory.ae_restrict_eq
 

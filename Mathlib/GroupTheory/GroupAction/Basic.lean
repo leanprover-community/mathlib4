@@ -3,12 +3,12 @@ Copyright (c) 2018 Chris Hughes. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Chris Hughes
 -/
+import Mathlib.Algebra.Group.Subgroup.Basic
 import Mathlib.Data.Fintype.Card
+import Mathlib.Data.Set.Pointwise.SMul
+import Mathlib.Data.Setoid.Basic
 import Mathlib.GroupTheory.GroupAction.Defs
 import Mathlib.GroupTheory.GroupAction.Group
-import Mathlib.Data.Setoid.Basic
-import Mathlib.Data.Set.Pointwise.SMul
-import Mathlib.GroupTheory.Subgroup.Basic
 
 #align_import group_theory.group_action.basic from "leanprover-community/mathlib"@"d30d31261cdb4d2f5e612eabc3c4bf45556350d5"
 
@@ -530,6 +530,7 @@ theorem orbitRel.Quotient.orbit_eq_orbit_out (x : orbitRel.Quotient G α)
     {φ : orbitRel.Quotient G α → α} (hφ : letI := orbitRel G α; RightInverse φ Quotient.mk') :
     orbitRel.Quotient.orbit x = MulAction.orbit G (φ x) := by
   conv_lhs => rw [← hφ x]
+  rfl
 #align mul_action.orbit_rel.quotient.orbit_eq_orbit_out MulAction.orbitRel.Quotient.orbit_eq_orbit_out
 #align add_action.orbit_rel.quotient.orbit_eq_orbit_out AddAction.orbitRel.Quotient.orbit_eq_orbit_out
 

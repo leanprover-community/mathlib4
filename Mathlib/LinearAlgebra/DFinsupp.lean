@@ -407,7 +407,7 @@ theorem mem_iSup_finset_iff_exists_sum {s : Finset ι} (p : ι → Submodule R N
         · exact hi
       simp only [DFinsupp.sum]
       rw [Finset.sum_subset support_mk_subset, ← hμ]
-      exact Finset.sum_congr rfl fun x hx => congr_arg Subtype.val <| mk_of_mem hx
+      · exact Finset.sum_congr rfl fun x hx => congr_arg Subtype.val <| mk_of_mem hx
       · intro x _ hx
         rw [mem_support_iff, not_ne_iff] at hx
         rw [hx]

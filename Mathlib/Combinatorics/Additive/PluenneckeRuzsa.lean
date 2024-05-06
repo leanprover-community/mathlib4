@@ -85,6 +85,7 @@ theorem card_mul_mul_le_card_mul_mul_card_div (A B C : Finset α) :
 #align finset.card_mul_mul_le_card_mul_mul_card_div Finset.card_mul_mul_le_card_mul_mul_card_div
 #align finset.card_add_mul_le_card_add_mul_card_sub Finset.card_add_mul_le_card_add_mul_card_sub
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 @[to_additive]
 theorem mul_pluennecke_petridis (C : Finset α)
     (hA : ∀ A' ⊆ A, (A * B).card * A'.card ≤ (A' * B).card * A.card) :
