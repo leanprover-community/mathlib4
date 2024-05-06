@@ -250,8 +250,11 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFini
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
   induction l with
-  | nil => erw [tprod_nil, Set.tprod, dirac_apply_of_mem] <;> simp
-  | cons _ _ ih => erw [tprod_cons, Set.tprod, prod_prod, map_cons, prod_cons, ih]
+  | nil => simp
+  | cons a l ih =>
+    rw [tprod_cons, Set.tprod]
+    erw [prod_prod] -- TODO: why `rw` fails?
+    rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 
 end Tprod
