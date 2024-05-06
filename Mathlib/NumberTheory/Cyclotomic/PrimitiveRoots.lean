@@ -521,7 +521,7 @@ theorem norm_pow_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ (k + 1)))
 
 /-- If `Irreducible (cyclotomic (2 ^ k) K)` (in particular for `K = ℚ`) and `k` is at least `2`,
 then the norm of `ζ - 1` is `2`. -/
-theorem norm_sub_one_of_eq_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 ≤ k)
+theorem norm_sub_one_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk : 2 ≤ k)
     [H : IsCyclotomicExtension {(2 : ℕ+) ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
     norm K (ζ - 1) = 2 := by
   have : 2 < (2 : ℕ+) ^ k := by
@@ -535,7 +535,7 @@ theorem norm_sub_one_of_eq_two {k : ℕ} (hζ : IsPrimitiveRoot ζ (2 ^ k)) (hk 
   obtain ⟨k₁, hk₁⟩ := exists_eq_succ_of_ne_zero (lt_of_lt_of_le zero_lt_two hk).ne.symm
 -- Porting note: the proof is slightly different because of coercions.
   simpa [hk₁, show ((2 : ℕ+) : ℕ) = 2 from rfl] using sub_one_norm_eq_eval_cyclotomic hζ this hirr
-#align is_primitive_root.sub_one_norm_two IsPrimitiveRoot.norm_sub_one_of_eq_two
+#align is_primitive_root.sub_one_norm_two IsPrimitiveRoot.norm_sub_one_two
 
 /-- If `Irreducible (cyclotomic (p ^ (k + 1)) K)` (in particular for `K = ℚ`) and `p` is a prime,
 then the norm of `ζ ^ (p ^ s) - 1` is `p ^ (p ^ s)` if `k ≠ 0` and `s ≤ k`. -/
@@ -623,7 +623,7 @@ then the norm of `zeta (2 ^ k) K L - 1` is `2`. -/
 theorem norm_zeta_pow_sub_one_two {k : ℕ} (hk : 2 ≤ k)
     [IsCyclotomicExtension {(2 : ℕ+) ^ k} K L] (hirr : Irreducible (cyclotomic (2 ^ k) K)) :
     norm K (zeta ((2 : ℕ+) ^ k) K L - 1) = 2 :=
-  norm_sub_one_of_eq_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
+  norm_sub_one_two (zeta_spec ((2 : ℕ+) ^ k) K L) hk hirr
 #align is_cyclotomic_extension.two_pow_norm_zeta_sub_one IsCyclotomicExtension.norm_zeta_pow_sub_one_two
 
 end IsCyclotomicExtension
@@ -639,7 +639,7 @@ end IsCyclotomicExtension
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_two :=
   IsPrimitiveRoot.norm_pow_sub_one_two
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.sub_one_norm_two :=
-  IsPrimitiveRoot.norm_sub_one_of_eq_two
+  IsPrimitiveRoot.norm_sub_one_two
 @[deprecated (since := "2024-04-02")] alias IsPrimitiveRoot.pow_sub_one_norm_prime_pow_of_ne_zero :=
   IsPrimitiveRoot.norm_pow_sub_one_eq_prime_pow_of_ne_zero
 @[deprecated (since := "2024-04-02")] alias IsCyclotomicExtension.isPrimePow_norm_zeta_sub_one :=
