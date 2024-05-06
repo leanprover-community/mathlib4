@@ -8,7 +8,9 @@ import Mathlib.Topology.Algebra.GroupCompletion
 import Mathlib.Topology.Algebra.UniformRing
 
 /-!
-# The completion of a nonarchimedean additive group
+# The completion of a nonarchimedean group
+
+The completion of a nonarchimedean group is a nonarchimedean group.
 
 The completion of a nonarchimedean additive group is a nonarchimedean additive group.
 
@@ -28,17 +30,17 @@ instance instNonarchimedeanGroupCompletion {G : Type*} [Group G] [UniformSpace G
     intro U hU
     /- Since `Completion G` is regular, there is a closed neighborhood `C` of `1` which is
     contained in `U`. -/
-    obtain ⟨C, ⟨hC, C_closed⟩, C_subset_U⟩ := (closed_nhds_basis 0).mem_iff.mp hU
+    obtain ⟨C, ⟨hC, C_closed⟩, C_subset_U⟩ := (closed_nhds_basis 1).mem_iff.mp hU
     /- By continuity, the preimage of `C` in `G`, written `toCompl ⁻¹' U'`,
     is a neighborhood of `0`. -/
-    have : toCompl ⁻¹' C ∈ 𝓝 0 :=
-      continuous_toCompl.continuousAt.preimage_mem_nhds (by rwa [map_zero])
+    have : toComplMulHom ⁻¹' C ∈ 𝓝 1 :=
+      continuous_toComplMulHom.continuousAt.preimage_mem_nhds (by rwa [map_one])
     /- Therefore, since `G` is nonarchimedean, there exists an open subgroup `W` of `G` that is
     contained within `toCompl ⁻¹' C`. -/
     obtain ⟨W, hCW⟩ := NonarchimedeanGroup.is_nonarchimedean (toComplMulHom ⁻¹' C) this
     /- Now, let `V = (W.map toCompl).topologicalClosure` be the result of mapping `W` back to
     `Completion G` and taking the topological closure. -/
-    let V : Set (Completion G) := (W.map toCompl).topologicalClosure
+    let V : Set (Completion G) := (W.map toComplMulHom).topologicalClosure
     /- We claim that this set `V` satisfies the
     desired properties. There are three conditions to check:
 
@@ -55,9 +57,9 @@ instance instNonarchimedeanGroupCompletion {G : Type*} [Group G] [UniformSpace G
       haveI : ContinuousMul (Completion G) := instContinuousMul
       apply isOpen_of_mem_nhds (g := 1)
       simp only [topologicalClosure_coe, coe_map]
-      apply (denseInducing_toCompl _).closure_image_mem_nhds
-      rw [coe_toAddSubgroup]
-      exact mem_nhds_zero W
+      apply (denseInducing_toComplMulHom _).closure_image_mem_nhds
+      rw [coe_toSubgroup]
+      exact mem_nhds_one W
     use ⟨_, this⟩
     /- Finally, it remains to show that `V ⊆ U`. It suffices to show that `V ⊆ C`, which
     follows from the fact that `W ⊆ toCompl ⁻¹' C` and `C` is closed. -/
