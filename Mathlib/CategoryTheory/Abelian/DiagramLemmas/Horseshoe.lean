@@ -39,7 +39,7 @@ commutative diagram:
 open CategoryTheory Limits
 open scoped ZeroObject
 
-suppress_compilation
+noncomputable section
 
 universe u v
 
@@ -834,3 +834,5 @@ lemma horseshoe_g_comp_toSingle₃_f_commute (n : ℕ) :
     π₂_map, horseshoeBaseπ_τ₂, zero_comp]
 
 end CategoryTheory.ShortComplex
+
+end
