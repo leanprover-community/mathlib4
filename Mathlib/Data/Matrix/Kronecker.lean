@@ -47,6 +47,7 @@ These require `open Kronecker`:
 namespace Matrix
 
 open Matrix
+open scoped RightActions
 
 variable {R α α' β β' γ γ' : Type*}
 variable {l m n p : Type*} {q r : Type*} {l' m' n' p' : Type*}
@@ -324,7 +325,7 @@ theorem diagonal_kronecker_diagonal [MulZeroClass α] [DecidableEq m] [Decidable
 #align matrix.diagonal_kronecker_diagonal Matrix.diagonal_kronecker_diagonal
 
 theorem kronecker_diagonal [MulZeroClass α] [DecidableEq n] (A : Matrix l m α) (b : n → α) :
-    A ⊗ₖ diagonal b = blockDiagonal fun i => MulOpposite.op (b i) • A :=
+    A ⊗ₖ diagonal b = blockDiagonal fun i => A <• b i :=
   kroneckerMap_diagonal_right _ mul_zero _ _
 #align matrix.kronecker_diagonal Matrix.kronecker_diagonal
 
@@ -333,6 +334,37 @@ theorem diagonal_kronecker [MulZeroClass α] [DecidableEq l] (a : l → α) (B :
       Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun i => a i • B) :=
   kroneckerMap_diagonal_left _ zero_mul _ _
 #align matrix.diagonal_kronecker Matrix.diagonal_kronecker
+
+@[simp]
+theorem natCast_kronecker_natCast [NonAssocSemiring α] [DecidableEq m] [DecidableEq n] (a b : ℕ) :
+    (a : Matrix m m α) ⊗ₖ (b : Matrix n n α) = ↑(a * b) :=
+  (diagonal_kronecker_diagonal _ _).trans <| by simp_rw [← Nat.cast_mul]; rfl
+
+theorem kronecker_natCast [NonAssocSemiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) :
+    A ⊗ₖ (b : Matrix n n α) = blockDiagonal fun _ => b • A :=
+  kronecker_diagonal _ _ |>.trans <| by
+    congr! 2
+    ext
+    simp [(Nat.cast_commute b _).eq]
+
+theorem natCast_kronecker [NonAssocSemiring α] [DecidableEq l] (a : ℕ) (B : Matrix m n α) :
+    (a : Matrix l l α) ⊗ₖ B =
+      Matrix.reindex (Equiv.prodComm _ _) (Equiv.prodComm _ _) (blockDiagonal fun _ => a • B) :=
+  diagonal_kronecker _ _ |>.trans <| by
+    congr! 2
+    ext
+    simp [(Nat.cast_commute a _).eq]
+
+theorem kronecker_ofNat [Semiring α] [DecidableEq n] (A : Matrix l m α) (b : ℕ) [b.AtLeastTwo] :
+    A ⊗ₖ (no_index (OfNat.ofNat b) : Matrix n n α) =
+      blockDiagonal fun _ => A <• (OfNat.ofNat b : α):=
+  kronecker_diagonal _ _
+
+theorem ofNat_kronecker [Semiring α] [DecidableEq l] (a : ℕ) [a.AtLeastTwo] (B : Matrix m n α) :
+    (no_index (OfNat.ofNat a) : Matrix l l α) ⊗ₖ B =
+      Matrix.reindex (.prodComm _ _) (.prodComm _ _)
+        (blockDiagonal fun _ => (OfNat.ofNat a : α) • B) :=
+  diagonal_kronecker _ _
 
 -- @[simp] -- Porting note (#10618): simp can prove this
 theorem one_kronecker_one [MulZeroOneClass α] [DecidableEq m] [DecidableEq n] :

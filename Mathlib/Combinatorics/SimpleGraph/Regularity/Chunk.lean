@@ -38,13 +38,13 @@ Once ported to mathlib4, this file will be a great golfing ground for Heather's 
 
 
 open Finpartition Finset Fintype Rel Nat
-
-open scoped BigOperators Classical SzemerediRegularity.Positivity
+open scoped BigOperators SzemerediRegularity.Positivity
 
 namespace SzemerediRegularity
 
-variable {α : Type*} [Fintype α] {P : Finpartition (univ : Finset α)} (hP : P.IsEquipartition)
-  (G : SimpleGraph α) (ε : ℝ) {U : Finset α} (hU : U ∈ P.parts) (V : Finset α)
+variable {α : Type*} [Fintype α] [DecidableEq α] {P : Finpartition (univ : Finset α)}
+  (hP : P.IsEquipartition) (G : SimpleGraph α) [DecidableRel G.Adj] (ε : ℝ) {U : Finset α}
+  (hU : U ∈ P.parts) (V : Finset α)
 
 local notation3 "m" => (card α / stepBound P.parts.card : ℕ)
 
