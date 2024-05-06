@@ -201,7 +201,7 @@ lemma isClopen_setOf_mapsTo (hK : IsCompact K) (hU : IsClopen U) :
   ⟨isClosed_setOf_mapsTo hU.isClosed K, isOpen_setOf_mapsTo hK hU.isOpen⟩
 
 @[norm_cast]
-lemma specializes_coe {f g : C(X, Y)} : (f : X → Y) ⤳ g ↔ f ⤳ g := by
+lemma specializes_coe {f g : C(X, Y)} : ⇑f ⤳ ⇑g ↔ f ⤳ g := by
   refine ⟨fun h ↦ ?_, fun h ↦ h.map continuous_coe⟩
   suffices ∀ K, IsCompact K → ∀ U, IsOpen U → MapsTo g K U → MapsTo f K U by
     simpa [specializes_iff_pure, nhds_compactOpen]
