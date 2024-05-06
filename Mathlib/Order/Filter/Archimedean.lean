@@ -216,6 +216,12 @@ theorem Tendsto.atBot_mul_const_of_neg' (hr : r < 0) (hf : Tendsto f l atBot) :
   simpa only [mul_neg, tendsto_neg_atBot_iff] using hf.atBot_mul_const' (neg_pos.2 hr)
 #align filter.tendsto.at_bot_mul_neg_const' Filter.Tendsto.atBot_mul_const_of_neg'
 
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atTop_mul_neg_const' := Tendsto.atTop_mul_const_of_neg'
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atBot_mul_neg_const' := Tendsto.atBot_mul_const_of_neg'
+
 end LinearOrderedRing
 
 section LinearOrderedCancelAddCommMonoid

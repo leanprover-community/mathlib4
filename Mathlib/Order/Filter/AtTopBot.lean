@@ -1367,13 +1367,25 @@ theorem Tendsto.atBot_mul_const_of_neg (hr : r < 0) (hf : Tendsto f l atBot) :
 
 theorem tendsto_neg_const_mul_pow_atTop {c : α} {n : ℕ} (hn : n ≠ 0) (hc : c < 0) :
     Tendsto (fun x => c * x ^ n) atTop atBot :=
-  Tendsto.const_mul_atTop_of_neg hc (tendsto_pow_atTop hn)
+  (tendsto_pow_atTop hn).const_mul_atTop_of_neg hc
 #align filter.tendsto_neg_const_mul_pow_at_top Filter.tendsto_neg_const_mul_pow_atTop
 
 theorem tendsto_const_mul_pow_atBot_iff {c : α} {n : ℕ} :
     Tendsto (fun x => c * x ^ n) atTop atBot ↔ n ≠ 0 ∧ c < 0 := by
   simp only [← tendsto_neg_atTop_iff, ← neg_mul, tendsto_const_mul_pow_atTop_iff, neg_pos]
 #align filter.tendsto_const_mul_pow_at_bot_iff Filter.tendsto_const_mul_pow_atBot_iff
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.neg_const_mul_atTop := Tendsto.const_mul_atTop_of_neg
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atTop_mul_neg_const := Tendsto.atTop_mul_const_of_neg
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.neg_const_mul_atBot := Tendsto.const_mul_atBot_of_neg
+
+@[deprecated (since := "2024-05-06")]
+alias Tendsto.atBot_mul_neg_const := Tendsto.atBot_mul_const_of_neg
 
 end LinearOrderedField
 
