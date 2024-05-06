@@ -65,8 +65,7 @@ theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) 
     AlgEquiv.spectrum_eq _ A
 
 theorem spec_EuclideanCLM_eq_spec_toEuclideanLin : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A)
-    = spectrum 𝕜 (toEuclideanLin A) := by
-refine AlgEquiv.spectrum_eq (LinearAlgEquiv) (toEuclideanLin A)
+    = spectrum 𝕜 (toEuclideanLin A) := AlgEquiv.spectrum_eq (LinearAlgEquiv) _
 
 theorem spec_toEuclideanLin_eq_spec_EuclideanCLM : spectrum 𝕜 (toEuclideanLin A) = spectrum 𝕜 A
     := by
@@ -74,14 +73,14 @@ simp only [spec_EuclideanCLM_eq_spec.symm, spec_EuclideanCLM_eq_spec_toEuclidean
 
 noncomputable def f : n → spectrum 𝕜 A := by
 apply Set.codRestrict fun (i : n) ↦ (RCLike.ofReal ∘ hA.eigenvalues) i
-exact spec_toEuclideanLin_eq_spec_EuclideanCLM (𝕜 := 𝕜) (n:= n) (A := A)
-      ▸ eigenvalue_mem_toEuclideanLin_spectrum_RCLike (hA := hA)
-
+exact spec_toEuclideanLin_eq_spec_EuclideanCLM (𝕜 := 𝕜) (n := n)
+      ▸ eigenvalue_mem_toEuclideanLin_spectrum_RCLike hA
 
 #exit
+
 def φ₀ : C(spectrum ℝ A, ℝ) →  Matrix n n 𝕜 :=
   fun f => (eigenvectorUnitary hA : Matrix n n 𝕜) *
-  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ (f1 hA))
+  diagonal (RCLike.ofReal (K := 𝕜) ∘ f.1 ∘ (f.1 hA))
       * star (eigenvectorUnitary hA : Matrix n n 𝕜)
 
 def φ : StarAlgHom ℝ C(spectrum ℝ A, ℝ) (Matrix n n 𝕜) where
