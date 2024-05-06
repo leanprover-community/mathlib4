@@ -2229,29 +2229,50 @@ lemma countable_covers_to_separated_nhds' (h k: Set X)
     (k_cov: ∃ u : Set (Set X), u.Countable ∧ k ⊆ ⋃₀ u ∧
       ∀ v ∈ u, IsOpen v ∧ Disjoint (closure v) h) : SeparatedNhds h k := by
   rcases h_cov with ⟨u, u_cnt, u_cov, u_mem⟩
-  have : h.Nonempty → u.Nonempty := by
+  have hune : h.Nonempty → u.Nonempty := by
     intro hyp
     exact Set.Nonempty.of_sUnion (Nonempty.mono u_cov hyp)
   rcases k_cov with ⟨v, v_cnt, v_cov, v_mem⟩
-  have : k.Nonempty → v.Nonempty := by
+  have kune : k.Nonempty → v.Nonempty := by
     intro hyp
     exact Set.Nonempty.of_sUnion (Nonempty.mono v_cov hyp)
   by_cases hyp: h.Nonempty ∧ k.Nonempty
   · rw [Set.countable_iff_exists_surjective] at *
-    have h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ i, u i ∧
-        ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) k := by
-      rcases u_cnt with ⟨f, fs⟩
-      use Subtype.val ∘ f
-      simp
-      constructor
-      · sorry
-      · intro i
+    · have h_cov: ∃ u : ℕ → Set X, h ⊆ ⋃ i, u i ∧
+          ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) k := by
+        rcases u_cnt with ⟨f, fs⟩
+        use Subtype.val ∘ f
+        simp
         constructor
-        · sorry
-        · sorry
-    have k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ i, u i ∧
-        ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) h := by sorry
-    exact countable_covers_to_separated_nhds h k h_cov k_cov
+        · intro x₀ x₀inh
+          rcases u_cov x₀inh with ⟨u₀, u₀inu, x₀inu₀⟩
+          rcases (fs ⟨u₀, u₀inu⟩) with ⟨i₀, fi₀val⟩
+          simp
+          use i₀
+          rw [fi₀val]
+          simp
+          assumption
+        · intro i
+          apply u_mem; simp
+      have k_cov: ∃ u : ℕ → Set X, k ⊆ ⋃ i, u i ∧
+          ∀ i : ℕ, IsOpen (u i) ∧ Disjoint (closure (u i)) h := by
+        rcases v_cnt with ⟨f, fs⟩
+        use Subtype.val ∘ f
+        simp
+        constructor
+        · intro x₀ x₀ink
+          rcases v_cov x₀ink with ⟨v₀, v₀inv, x₀inv₀⟩
+          rcases (fs ⟨v₀, v₀inv⟩) with ⟨i₀, fi₀val⟩
+          simp
+          use i₀
+          rw [fi₀val]
+          simp
+          assumption
+        · intro i
+          apply v_mem; simp
+      exact countable_covers_to_separated_nhds h k h_cov k_cov
+    · exact hune hyp.1
+    · exact kune hyp.2
   · simp at hyp
     by_cases hyp₂: h.Nonempty
     · apply hyp at hyp₂
