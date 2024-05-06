@@ -766,9 +766,7 @@ def indicatorConstLp (p : ℝ≥0∞) (hs : MeasurableSet s) (hμs : μ s ≠ �
 theorem indicatorConstLp_add (hμs : μ s ≠ ∞) (c' : E) :
     indicatorConstLp p hs hμs c + indicatorConstLp p hs hμs c' =
     indicatorConstLp p hs hμs (c + c') := by
-  simp_rw [indicatorConstLp, ← Memℒp.toLp_add]
-  congr
-  rw [indicator_add]
+  simp_rw [indicatorConstLp, ← Memℒp.toLp_add, indicator_add]
   rfl
 
 /-- A version of `Set.indicator_sub` for `MeasureTheory.indicatorConstLp`.-/
