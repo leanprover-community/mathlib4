@@ -44,31 +44,36 @@ namespace Finset
 section Mul
 variable [Mul α] {s s₁ s₂ t t₁ t₂ : Finset α}
 
-/-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
-`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
-@[to_additive
-      "The additive energy of two finsets `s` and `t` in a group is the
-      number of quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`."]
+/-- The multiplicative energy `Eₘ[s, t]` of two finsets `s` and `t` in a group is the number of
+quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`.
+
+The notation `Eₘ[s, t]` is available in scope `Combinatorics.Additive`. -/
+@[to_additive "The additive energy `E[s, t]` of two finsets `s` and `t` in a group is the number of
+quadruples `(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.
+
+The notation `E[s, t]` is available in scope `Combinatorics.Additive`."]
 def mulEnergy (s t : Finset α) : ℕ :=
   (((s ×ˢ s) ×ˢ t ×ˢ t).filter fun x : (α × α) × α × α => x.1.1 * x.2.1 = x.1.2 * x.2.2).card
 #align finset.multiplicative_energy Finset.mulEnergy
 #align finset.additive_energy Finset.addEnergy
 
-@[inherit_doc Finset.mulEnergy]
-scoped[AddCombi] notation3:max "Eₘ[" s ", " t "]" => Finset.mulEnergy s t
+/-- The multiplicative energy of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ * b₁ = a₂ * b₂`. -/
+scoped[Combinatorics.Additive] notation3:max "Eₘ[" s ", " t "]" => Finset.mulEnergy s t
 
-@[inherit_doc Finset.addEnergy]
-scoped[AddCombi] notation3:max "E[" s ", " t "]" => Finset.addEnergy s t
+/-- The additive energy of two finsets `s` and `t` in a group is the number of quadruples
+`(a₁, a₂, b₁, b₂) ∈ s × s × t × t` such that `a₁ + b₁ = a₂ + b₂`.-/
+scoped[Combinatorics.Additive] notation3:max "E[" s ", " t "]" => Finset.addEnergy s t
 
 /-- The multiplicative energy of a finset `s` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × s × s` such that `a₁ * b₁ = a₂ * b₂`. -/
-scoped[AddCombi] notation3:max "Eₘ[" s "]" => Finset.mulEnergy s s
+scoped[Combinatorics.Additive] notation3:max "Eₘ[" s "]" => Finset.mulEnergy s s
 
 /-- The additive energy of a finset `s` in a group is the number of quadruples
 `(a₁, a₂, b₁, b₂) ∈ s × s × s × s` such that `a₁ + b₁ = a₂ + b₂`. -/
-scoped[AddCombi] notation3:max "E[" s "]" => Finset.addEnergy s s
+scoped[Combinatorics.Additive] notation3:max "E[" s "]" => Finset.addEnergy s s
 
-open scoped AddCombi
+open scoped Combinatorics.Additive
 
 @[to_additive (attr := gcongr)]
 lemma mulEnergy_mono (hs : s₁ ⊆ s₂) (ht : t₁ ⊆ t₂) : Eₘ[s₁, t₁] ≤ Eₘ[s₂, t₂] := by
@@ -174,7 +179,7 @@ lemma card_sq_le_card_mul_mulEnergy (s t u : Finset α) :
 
 end Mul
 
-open scoped AddCombi
+open scoped Combinatorics.Additive
 
 section CommMonoid
 
