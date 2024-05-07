@@ -271,6 +271,7 @@ theorem comap_coe_nhdsWithin_Iio_of_Ioo_subset (hb : s ⊆ Iio b)
     exact ⟨Ioo x b, Ioo_mem_nhdsWithin_Iio' (hb x.2), fun z hz => hx _ hz.1.le⟩
 #align comap_coe_nhds_within_Iio_of_Ioo_subset comap_coe_nhdsWithin_Iio_of_Ioo_subset
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 theorem comap_coe_nhdsWithin_Ioi_of_Ioo_subset (ha : s ⊆ Ioi a)
     (hs : s.Nonempty → ∃ b > a, Ioo a b ⊆ s) : comap ((↑) : s → α) (𝓝[>] a) = atBot :=
   comap_coe_nhdsWithin_Iio_of_Ioo_subset (show ofDual ⁻¹' s ⊆ Iio (toDual a) from ha) fun h => by

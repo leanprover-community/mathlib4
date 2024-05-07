@@ -263,8 +263,8 @@ section NoncomputableDefs
 variable {R : Type*} [Nontrivial R]
 
 /-- Constructs a `DivisionRing` structure on a `Ring` consisting only of units and 0. -/
-@[reducible] -- See note [reducible non-instances]
-noncomputable def DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
+-- See note [reducible non-instances]
+noncomputable abbrev DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     DivisionRing R where
   toRing := ‹Ring R›
   __ := groupWithZeroOfIsUnitOrEqZero h
@@ -273,8 +273,8 @@ noncomputable def DivisionRing.ofIsUnitOrEqZero [Ring R] (h : ∀ a : R, IsUnit 
 #align division_ring_of_is_unit_or_eq_zero DivisionRing.ofIsUnitOrEqZero
 
 /-- Constructs a `Field` structure on a `CommRing` consisting only of units and 0. -/
-@[reducible] -- See note [reducible non-instances]
-noncomputable def Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
+-- See note [reducible non-instances]
+noncomputable abbrev Field.ofIsUnitOrEqZero [CommRing R] (h : ∀ a : R, IsUnit a ∨ a = 0) :
     Field R where
   toCommRing := ‹CommRing R›
   __ := DivisionRing.ofIsUnitOrEqZero h
@@ -288,8 +288,8 @@ variable [Zero α] [Add α] [Neg α] [Sub α] [One α] [Mul α] [Inv α] [Div α
   (f : α → β) (hf : Injective f)
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
@@ -303,8 +303,8 @@ protected def divisionSemiring [DivisionSemiring β] (zero : f 0 = 0) (one : f 1
 #align function.injective.division_semiring Function.Injective.divisionSemiring
 
 /-- Pullback a `DivisionSemiring` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)
@@ -322,8 +322,8 @@ protected def divisionRing [DivisionRing β] (zero : f 0 = 0) (one : f 1 = 1)
 #align function.injective.division_ring Function.Injective.divisionRing
 
 /-- Pullback a `Field` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (inv : ∀ x, f x⁻¹ = (f x)⁻¹) (div : ∀ x y, f (x / y) = f x / f y)
     (nsmul : ∀ (n : ℕ) (x), f (n • x) = n • f x) (nnqsmul : ∀ (q : ℚ≥0) (x), f (q • x) = q • f x)
@@ -335,8 +335,8 @@ protected def semifield [Semifield β] (zero : f 0 = 0) (one : f 1 = 1)
 #align function.injective.semifield Function.Injective.semifield
 
 /-- Pullback a `Field` along an injective function. -/
-@[reducible] -- See note [reducible non-instances]
-protected def field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
+-- See note [reducible non-instances]
+protected abbrev field [Field β] (zero : f 0 = 0) (one : f 1 = 1)
     (add : ∀ x y, f (x + y) = f x + f y) (mul : ∀ x y, f (x * y) = f x * f y)
     (neg : ∀ x, f (-x) = -f x) (sub : ∀ x y, f (x - y) = f x - f y) (inv : ∀ x, f x⁻¹ = (f x)⁻¹)
     (div : ∀ x y, f (x / y) = f x / f y)

@@ -89,7 +89,7 @@ instance {J : Type} [Finite J] {C : Type u₁} {D : Type u₂} [Category.{v₁} 
   refine Functor.IsLocalization.of_equivalences L₁
     (MorphismProperty.pi (fun _ => W)) L₂ _ E E' ?_ ?_
   · intro X Y f hf
-    exact MorphismProperty.subset_isoClosure _ _ (fun ⟨j⟩ => hf j)
+    exact MorphismProperty.le_isoClosure _ _ (fun ⟨j⟩ => hf j)
   · intro X Y f hf
     have : ∀ (j : Discrete J), IsIso ((L₂.map f).app j) :=
       fun j => Localization.inverts L W _ (hf j)

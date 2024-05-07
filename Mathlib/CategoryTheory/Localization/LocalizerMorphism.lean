@@ -42,7 +42,7 @@ structure LocalizerMorphism where
   /-- a functor between the two categories -/
   functor : C₁ ⥤ C₂
   /-- the functor is compatible with the `MorphismProperty` -/
-  map : W₁ ⊆ W₂.inverseImage functor
+  map : W₁ ≤ W₂.inverseImage functor
 
 namespace LocalizerMorphism
 
@@ -157,7 +157,7 @@ lemma IsLocalizedEquivalence.of_isLocalization_of_isLocalization
 an equivalence of categories and that `W₁` and `W₂` essentially correspond to each
 other via this equivalence, then `Φ` is a localized equivalence. -/
 lemma IsLocalizedEquivalence.of_equivalence [Φ.functor.IsEquivalence]
-    (h : W₂ ⊆ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
+    (h : W₂ ≤ W₁.map Φ.functor) : IsLocalizedEquivalence Φ := by
   haveI : Functor.IsLocalization (Φ.functor ⋙ MorphismProperty.Q W₂) W₁ := by
     refine' Functor.IsLocalization.of_equivalence_source W₂.Q W₂ (Φ.functor ⋙ W₂.Q) W₁
       (Functor.asEquivalence Φ.functor).symm _ (Φ.inverts W₂.Q)

@@ -360,8 +360,7 @@ structure and the bornology by the product ones using this pseudometric space,
 `PseudoMetricSpace.replaceUniformity`, and `PseudoMetricSpace.replaceBornology`.
 
 See note [reducible non-instances] -/
-@[reducible]
-def pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
+abbrev pseudoMetricAux : PseudoMetricSpace (PiLp p α) :=
   PseudoEMetricSpace.toPseudoMetricSpaceOfDist dist
     (fun f g => by
       rcases p.dichotomy with (rfl | h)

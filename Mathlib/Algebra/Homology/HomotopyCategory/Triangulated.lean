@@ -106,12 +106,13 @@ noncomputable def homotopyInvHomId : Homotopy (inv f g ≫ hom f g) (𝟙 _) :=
         Cochain.comp_v _ _ (show (-1) + -1 = -2 by linarith) (n + 2) (n + 1) n
           (by linarith) (by linarith)] says
         simp only [mappingConeCompTriangle_obj₁, mappingConeCompTriangle_obj₂,
-          mappingConeCompTriangle_mor₁, map, inv, hom, Cochain.ofHom_comp, ofHom_desc, ofHom_lift,
-          descCocycle_coe, AddSubmonoid.coe_zero, Cochain.comp_zero_cochain_v,
-          inl_v_descCochain_v_assoc, Cochain.zero_cochain_comp_v, assoc, inl_v_snd_v_assoc,
-          zero_comp, Cochain.id_comp, Cochain.comp_assoc_of_first_is_zero_cochain,
-          Cochain.comp_add, Cochain.comp_neg, Cochain.comp_assoc_of_second_is_zero_cochain,
-          neg_add_rev, neg_neg, Cochain.add_v, Cochain.neg_v,
+          mappingConeCompTriangle_mor₁, map, Int.reduceNeg, inv, hom, Cochain.ofHom_comp,
+          ofHom_desc, ofHom_lift, descCocycle_coe, AddSubmonoid.coe_zero,
+          Cochain.comp_zero_cochain_v, inl_v_descCochain_v_assoc, Cochain.zero_cochain_comp_v,
+          assoc, inl_v_snd_v_assoc, zero_comp, Cochain.id_comp,
+          Cochain.comp_assoc_of_first_is_zero_cochain, Cochain.comp_add, Cochain.comp_neg,
+          Cochain.comp_assoc_of_second_is_zero_cochain, neg_add_rev, neg_neg, Cochain.add_v,
+          Cochain.neg_v,
           Cochain.comp_v _ _ (add_neg_self 1) n (n + 1) n (by linarith) (by linarith),
           Cochain.comp_v _ _ (show 1 + -2 = -1 by linarith) (n + 1) (n + 2) n (by linarith)
             (by linarith),
