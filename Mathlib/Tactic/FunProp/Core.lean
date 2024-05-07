@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Tomas Skrivan
 -/
 import Lean
-import Std.Tactic.Exact
+import Batteries.Tactic.Exact
 
 import Mathlib.Tactic.FunProp.Theorems
 import Mathlib.Tactic.FunProp.ToStd

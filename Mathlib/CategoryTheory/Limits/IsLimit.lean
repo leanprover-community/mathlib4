@@ -51,7 +51,7 @@ cone morphism to `t`.
 
 See <https://stacks.math.columbia.edu/tag/002E>.
   -/
--- porting note (#10927): removed @[nolint has_nonempty_instance]
+-- porting note (#5171): removed @[nolint has_nonempty_instance]
 structure IsLimit (t : Cone F) where
   /-- There is a morphism from any cone point to `t.pt` -/
   lift : ∀ s : Cone F, s.pt ⟶ t.pt
@@ -87,6 +87,7 @@ theorem map_π {F G : J ⥤ C} (c : Cone F) {d : Cone G} (hd : IsLimit d) (α : 
   fac _ _ _
 #align category_theory.limits.is_limit.map_π CategoryTheory.Limits.IsLimit.map_π
 
+@[simp]
 theorem lift_self {c : Cone F} (t : IsLimit c) : t.lift c = 𝟙 c.pt :=
   (t.uniq _ _ fun _ => id_comp _).symm
 #align category_theory.limits.is_limit.lift_self CategoryTheory.Limits.IsLimit.lift_self
@@ -442,7 +443,7 @@ def homIso' (h : IsLimit t) (W : C) :
 /-- If G : C → D is a faithful functor which sends t to a limit cone,
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
-def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
+def ofFaithful {t : Cone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsLimit (mapCone G t)) (lift : ∀ s : Cone F, s.pt ⟶ t.pt)
     (h : ∀ s, G.map (lift s) = ht.lift (mapCone G s)) : IsLimit t :=
   { lift
@@ -548,7 +549,8 @@ def ofNatIso {X : C} (h : yoneda.obj X ⋙ uliftFunctor.{u₁} ≅ F.cones) : Is
     cases s
     injection h with h₁ h₂
     simp only [heq_iff_eq] at h₂
-    conv_rhs => rw [← h₂]; rfl
+    conv_rhs => rw [← h₂]
+    rfl
   uniq s m w := by
     rw [← homOfCone_coneOfHom h m]
     congr
@@ -565,7 +567,7 @@ cocone morphism from `t`.
 
 See <https://stacks.math.columbia.edu/tag/002F>.
 -/
--- Porting note: remove @[nolint has_nonempty_instance]
+-- Porting note(#5171): removed @[nolint has_nonempty_instance]
 structure IsColimit (t : Cocone F) where
   /-- `t.pt` maps to all other cocone covertices -/
   desc : ∀ s : Cocone F, t.pt ⟶ s.pt
@@ -971,7 +973,7 @@ def homIso' (h : IsColimit t) (W : C) :
 /-- If G : C → D is a faithful functor which sends t to a colimit cocone,
   then it suffices to check that the induced maps for the image of t
   can be lifted to maps of C. -/
-def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [Faithful G]
+def ofFaithful {t : Cocone F} {D : Type u₄} [Category.{v₄} D] (G : C ⥤ D) [G.Faithful]
     (ht : IsColimit (mapCocone G t)) (desc : ∀ s : Cocone F, t.pt ⟶ s.pt)
     (h : ∀ s, G.map (desc s) = ht.desc (mapCocone G s)) : IsColimit t :=
   { desc
@@ -1076,7 +1078,8 @@ def ofNatIso {X : C} (h : coyoneda.obj (op X) ⋙ uliftFunctor.{u₁} ≅ F.coco
     cases s
     injection h with h₁ h₂
     simp only [heq_iff_eq] at h₂
-    conv_rhs => rw [← h₂]; rfl
+    conv_rhs => rw [← h₂]
+    rfl
   uniq s m w := by
     rw [← homOfCocone_cooneOfHom h m]
     congr

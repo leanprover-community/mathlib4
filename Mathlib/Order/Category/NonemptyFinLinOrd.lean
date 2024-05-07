@@ -3,13 +3,14 @@ Copyright (c) 2020 Johan Commelin. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johan Commelin
 -/
+import Mathlib.Algebra.Order.Ring.CharZero
 import Mathlib.Data.Fintype.Order
 import Mathlib.Data.Set.Finite
 import Mathlib.Order.Category.FinPartOrd
 import Mathlib.Order.Category.LinOrd
 import Mathlib.CategoryTheory.Limits.Shapes.Images
 import Mathlib.CategoryTheory.Limits.Shapes.RegularMono
-import Mathlib.Data.Set.Basic
+import Mathlib.Data.Set.Subsingleton
 
 #align_import order.category.NonemptyFinLinOrd from "leanprover-community/mathlib"@"fa4a805d16a9cd9c96e0f8edeb57dc5a07af1a19"
 
@@ -257,7 +258,7 @@ theorem nonemptyFinLinOrd_dual_comp_forget_to_linOrd :
 set_option linter.uppercaseLean3 false in
 #align NonemptyFinLinOrd_dual_comp_forget_to_LinOrd nonemptyFinLinOrd_dual_comp_forget_to_linOrd
 
-/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `order_dual` commute. -/
+/-- The forgetful functor `NonemptyFinLinOrd ⥤ FinPartOrd` and `OrderDual` commute. -/
 def nonemptyFinLinOrdDualCompForgetToFinPartOrd :
     NonemptyFinLinOrd.dual ⋙ forget₂ NonemptyFinLinOrd FinPartOrd ≅
       forget₂ NonemptyFinLinOrd FinPartOrd ⋙ FinPartOrd.dual

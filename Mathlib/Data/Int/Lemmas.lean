@@ -6,7 +6,7 @@ Authors: Jeremy Avigad
 import Mathlib.Data.Int.Bitwise
 import Mathlib.Data.Int.Order.Lemmas
 import Mathlib.Data.Set.Function
-import Mathlib.Data.Set.Intervals.Basic
+import Mathlib.Order.Interval.Set.Basic
 
 #align_import data.int.lemmas from "leanprover-community/mathlib"@"09597669f02422ed388036273d8848119699c22f"
 
@@ -23,19 +23,19 @@ open Nat
 
 namespace Int
 
-theorem le_coe_nat_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
+theorem le_natCast_sub (m n : ℕ) : (m - n : ℤ) ≤ ↑(m - n : ℕ) := by
   by_cases h : m ≥ n
   · exact le_of_eq (Int.ofNat_sub h).symm
   · simp [le_of_not_ge h, ofNat_le]
-#align int.le_coe_nat_sub Int.le_coe_nat_sub
+#align int.le_coe_nat_sub Int.le_natCast_sub
 
 /-! ### `succ` and `pred` -/
 
 
 -- Porting note (#10618): simp can prove this @[simp]
-theorem succ_coe_nat_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
+theorem succ_natCast_pos (n : ℕ) : 0 < (n : ℤ) + 1 :=
   lt_add_one_iff.mpr (by simp)
-#align int.succ_coe_nat_pos Int.succ_coe_nat_pos
+#align int.succ_coe_nat_pos Int.succ_natCast_pos
 
 /-! ### `natAbs` -/
 
@@ -81,7 +81,7 @@ theorem natAbs_inj_of_nonpos_of_nonneg {a b : ℤ} (ha : a ≤ 0) (hb : 0 ≤ b)
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b ≤ n) :
     natAbs (a - b : ℤ) ≤ n := by
-  rw [← Nat.cast_le (α := ℤ), coe_natAbs]
+  rw [← Nat.cast_le (α := ℤ), natCast_natAbs]
   exact abs_sub_le_of_nonneg_of_le (ofNat_nonneg a) (ofNat_le.mpr a_le_n)
     (ofNat_nonneg b) (ofNat_le.mpr b_le_n)
 
@@ -89,7 +89,7 @@ theorem natAbs_coe_sub_coe_le_of_le {a b n : ℕ} (a_le_n : a ≤ n) (b_le_n : b
   of natural numbers. -/
 theorem natAbs_coe_sub_coe_lt_of_lt {a b n : ℕ} (a_lt_n : a < n) (b_lt_n : b < n) :
     natAbs (a - b : ℤ) < n := by
-  rw [← Nat.cast_lt (α := ℤ), coe_natAbs]
+  rw [← Nat.cast_lt (α := ℤ), natCast_natAbs]
   exact abs_sub_lt_of_nonneg_of_lt (ofNat_nonneg a) (ofNat_lt.mpr a_lt_n)
     (ofNat_nonneg b) (ofNat_lt.mpr b_lt_n)
 
@@ -142,5 +142,15 @@ theorem div2_bit (b n) : div2 (bit b n) = n := by
     rw [Nat.div_eq_of_lt] <;> simp
   · decide
 #align int.div2_bit Int.div2_bit
+
+-- 2024-04-02
+@[deprecated] alias le_coe_nat_sub := le_natCast_sub
+@[deprecated] alias succ_coe_nat_pos := succ_natCast_pos
+@[deprecated] alias coe_natAbs := natCast_natAbs
+@[deprecated] alias coe_nat_eq_zero := natCast_eq_zero
+@[deprecated] alias coe_nat_ne_zero := natCast_ne_zero
+@[deprecated] alias coe_nat_ne_zero_iff_pos := natCast_ne_zero_iff_pos
+@[deprecated] alias abs_coe_nat := abs_natCast
+@[deprecated] alias coe_nat_nonpos_iff := natCast_nonpos_iff
 
 end Int

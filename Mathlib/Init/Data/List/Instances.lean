@@ -3,7 +3,7 @@ Copyright (c) 2016 Microsoft Corporation. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
-import Std.Data.List.Lemmas
+import Batteries.Data.List.Lemmas
 import Mathlib.Mathport.Rename
 
 #align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
@@ -63,12 +63,12 @@ variable {α : Type u} {p : α → Prop} [DecidablePred p]
 
 -- To work around lean4#2552, we call specific `Decidable` instances and use `match` on them,
 -- as opposed to using `if`.
-instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
+instance decidableExistsMem : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
   | []    => isFalse (by simp)
   | x::xs =>
     match ‹DecidablePred p› x with
     | isTrue h₁ => isTrue ⟨x, mem_cons_self _ _, h₁⟩
-    | isFalse h₁ => match decidableBex xs with
+    | isFalse h₁ => match decidableExistsMem xs with
       | isTrue h₂  => isTrue <| by
         rcases h₂ with ⟨y, hm, hp⟩
         exact ⟨y, mem_cons_of_mem _ hm, hp⟩
@@ -77,14 +77,14 @@ instance decidableBex : ∀ (l : List α), Decidable (∃ x ∈ l, p x)
         cases mem_cons.1 hm with
         | inl h => rw [h] at hp; contradiction
         | inr h => exact absurd ⟨y, h, hp⟩ h₂
-#align list.decidable_bex List.decidableBex
+#align list.decidable_bex List.decidableExistsMem
 
-instance decidableBall (l : List α) : Decidable (∀ x ∈ l, p x) :=
+instance decidableForallMem (l : List α) : Decidable (∀ x ∈ l, p x) :=
   match (inferInstance : Decidable <| ∃ x ∈ l, ¬ p x) with
   | isFalse h => isTrue fun x hx => match ‹DecidablePred p› x with
     | isTrue h' => h'
     | isFalse h' => False.elim <| h ⟨x, hx, h'⟩
   | isTrue h => isFalse <| let ⟨x, h, np⟩ := h; fun al => np (al x h)
-#align list.decidable_ball List.decidableBall
+#align list.decidable_ball List.decidableForallMem
 
 end List

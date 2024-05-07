@@ -4,7 +4,6 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Mario Carneiro, Kenny Lau
 -/
 import Mathlib.Data.List.Forall2
-import Mathlib.Order.MinMax
 
 #align_import data.list.zip from "leanprover-community/mathlib"@"134625f523e737f650a6ea7f0c82a6177e45e622"
 
@@ -21,6 +20,8 @@ applies, until one of the lists is exhausted. For example,
 `unzip` undoes `zip`. For example, `unzip [(a₁, b₁), (a₂, b₂)] = ([a₁, a₂], [b₁, b₂])`.
 -/
 
+-- Make sure we don't import algebra
+assert_not_exists Monoid
 
 universe u
 
@@ -60,15 +61,11 @@ theorem forall_zipWith {f : α → β → γ} {p : γ → Prop} :
 #align list.all₂_zip_with List.forall_zipWith
 
 theorem lt_length_left_of_zipWith {f : α → β → γ} {i : ℕ} {l : List α} {l' : List β}
-    (h : i < (zipWith f l l').length) : i < l.length := by
-  rw [length_zipWith, lt_min_iff] at h
-  exact h.left
+    (h : i < (zipWith f l l').length) : i < l.length := by rw [length_zipWith] at h; omega
 #align list.lt_length_left_of_zip_with List.lt_length_left_of_zipWith
 
 theorem lt_length_right_of_zipWith {f : α → β → γ} {i : ℕ} {l : List α} {l' : List β}
-    (h : i < (zipWith f l l').length) : i < l'.length := by
-  rw [length_zipWith, lt_min_iff] at h
-  exact h.right
+    (h : i < (zipWith f l l').length) : i < l'.length := by rw [length_zipWith] at h; omega
 #align list.lt_length_right_of_zip_with List.lt_length_right_of_zipWith
 
 theorem lt_length_left_of_zip {i : ℕ} {l : List α} {l' : List β} (h : i < (zip l l').length) :
@@ -267,8 +264,8 @@ theorem get?_zip_with (f : α → β → γ) (l₁ : List α) (l₂ : List β) (
   induction' l₁ with head tail generalizing l₂ i
   · rw [zipWith] <;> simp
   · cases l₂
-    simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
-    · cases (head :: tail).get? i <;> rfl
+    · simp only [zipWith, Seq.seq, Functor.map, get?, Option.map_none']
+      cases (head :: tail).get? i <;> rfl
     · cases i <;> simp only [Option.map_some', get?, Option.some_bind', *]
 #align list.nth_zip_with List.get?_zip_with
 
@@ -373,4 +370,5 @@ theorem zipWith_distrib_reverse (h : l.length = l'.length) :
 #align list.zip_with_distrib_reverse List.zipWith_distrib_reverse
 
 end Distrib
+
 end List

@@ -32,7 +32,7 @@ def count : Measure α :=
 theorem le_count_apply : ∑' _ : s, (1 : ℝ≥0∞) ≤ count s :=
   calc
     (∑' _ : s, 1 : ℝ≥0∞) = ∑' i, indicator s 1 i := tsum_subtype s 1
-    _ ≤ ∑' i, dirac i s := (ENNReal.tsum_le_tsum fun _ => le_dirac_apply)
+    _ ≤ ∑' i, dirac i s := ENNReal.tsum_le_tsum fun _ => le_dirac_apply
     _ ≤ count s := le_sum_apply _ _
 #align measure_theory.measure.le_count_apply MeasureTheory.Measure.le_count_apply
 
@@ -49,9 +49,8 @@ theorem count_apply_finset' {s : Finset α} (s_mble : MeasurableSet (s : Set α)
     count (↑s : Set α) = s.card :=
   calc
     count (↑s : Set α) = ∑' i : (↑s : Set α), 1 := count_apply s_mble
-    _ = ∑ i in s, 1 := (s.tsum_subtype 1)
+    _ = ∑ i in s, 1 := s.tsum_subtype 1
     _ = s.card := by simp
-
 #align measure_theory.measure.count_apply_finset' MeasureTheory.Measure.count_apply_finset'
 
 @[simp]
@@ -79,7 +78,6 @@ theorem count_apply_infinite (hs : s.Infinite) : count s = ∞ := by
     _ = ∑' i : (t : Set α), 1 := (t.tsum_subtype 1).symm
     _ ≤ count (t : Set α) := le_count_apply
     _ ≤ count s := measure_mono ht
-
 #align measure_theory.measure.count_apply_infinite MeasureTheory.Measure.count_apply_infinite
 
 @[simp]
@@ -102,18 +100,16 @@ theorem count_apply_eq_top [MeasurableSingletonClass α] : count s = ∞ ↔ s.I
 theorem count_apply_lt_top' (s_mble : MeasurableSet s) : count s < ∞ ↔ s.Finite :=
   calc
     count s < ∞ ↔ count s ≠ ∞ := lt_top_iff_ne_top
-    _ ↔ ¬s.Infinite := (not_congr (count_apply_eq_top' s_mble))
+    _ ↔ ¬s.Infinite := not_congr (count_apply_eq_top' s_mble)
     _ ↔ s.Finite := Classical.not_not
-
 #align measure_theory.measure.count_apply_lt_top' MeasureTheory.Measure.count_apply_lt_top'
 
 @[simp]
 theorem count_apply_lt_top [MeasurableSingletonClass α] : count s < ∞ ↔ s.Finite :=
   calc
     count s < ∞ ↔ count s ≠ ∞ := lt_top_iff_ne_top
-    _ ↔ ¬s.Infinite := (not_congr count_apply_eq_top)
+    _ ↔ ¬s.Infinite := not_congr count_apply_eq_top
     _ ↔ s.Finite := Classical.not_not
-
 #align measure_theory.measure.count_apply_lt_top MeasureTheory.Measure.count_apply_lt_top
 
 theorem empty_of_count_eq_zero' (s_mble : MeasurableSet s) (hsc : count s = 0) : s = ∅ := by
@@ -187,5 +183,5 @@ instance count.isFiniteMeasure [Finite α] :
     IsFiniteMeasure (Measure.count : Measure α) :=
   ⟨by
     cases nonempty_fintype α
-    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.nat_ne_top _).lt_top⟩
+    simpa [Measure.count_apply, tsum_fintype] using (ENNReal.natCast_ne_top _).lt_top⟩
 #align measure_theory.measure.count.is_finite_measure MeasureTheory.Measure.count.isFiniteMeasure

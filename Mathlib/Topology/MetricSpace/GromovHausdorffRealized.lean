@@ -54,7 +54,7 @@ set_option linter.uppercaseLean3 false -- `Gromov_Hausdorff`
 
 section GromovHausdorffRealized
 
-/- This section shows that the Gromov-Hausdorff distance
+/-! This section shows that the Gromov-Hausdorff distance
 is realized. For this, we consider candidate distances on the disjoint union
 `X ⊕ Y` of two compact nonempty metric spaces, almost realizing the Gromov-Hausdorff
 distance, and show that they form a compact family by applying Arzela-Ascoli
@@ -64,12 +64,10 @@ section Definitions
 variable (X : Type u) (Y : Type v) [MetricSpace X] [CompactSpace X] [Nonempty X] [MetricSpace Y]
   [CompactSpace Y] [Nonempty Y]
 
-@[reducible]
-private def ProdSpaceFun : Type _ :=
+private abbrev ProdSpaceFun : Type _ :=
   (X ⊕ Y) × (X ⊕ Y) → ℝ
 
-@[reducible]
-private def Cb : Type _ :=
+private abbrev Cb : Type _ :=
   BoundedContinuousFunction ((X ⊕ Y) × (X ⊕ Y)) ℝ
 
 private def maxVar : ℝ≥0 :=
@@ -132,7 +130,7 @@ private theorem candidates_nonneg (fA : f ∈ candidates X Y) : 0 ≤ f (x, y) :
   have : 0 ≤ 2 * f (x, y) :=
     calc
       0 = f (x, x) := (candidates_refl fA).symm
-      _ ≤ f (x, y) + f (y, x) := (candidates_triangle fA)
+      _ ≤ f (x, y) + f (y, x) := candidates_triangle fA
       _ = f (x, y) + f (x, y) := by rw [candidates_symm fA]
       _ = 2 * f (x, y) := by ring
   linarith
@@ -455,7 +453,7 @@ def premetricOptimalGHDist : PseudoMetricSpace (X ⊕ Y) where
 attribute [local instance] premetricOptimalGHDist
 
 /-- A metric space which realizes the optimal coupling between `X` and `Y` -/
--- @[nolint has_nonempty_instance] -- Porting note: This linter does not exist yet.
+-- @[nolint has_nonempty_instance] -- Porting note(#5171): This linter does not exist yet.
 def OptimalGHCoupling : Type _ :=
   @SeparationQuotient (X ⊕ Y) (premetricOptimalGHDist X Y).toUniformSpace.toTopologicalSpace
 #align Gromov_Hausdorff.optimal_GH_coupling GromovHausdorff.OptimalGHCoupling

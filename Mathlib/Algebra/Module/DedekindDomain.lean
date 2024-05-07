@@ -35,7 +35,7 @@ open UniqueFactorizationMonoid
 open scoped Classical
 
 /-- Over a Dedekind domain, an `I`-torsion module is the internal direct sum of its `p i ^ e i`-
-torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals.-/
+torsion submodules, where `I = ∏ i, p i ^ e i` is its unique decomposition in prime ideals. -/
 theorem isInternal_prime_power_torsion_of_is_torsion_by_ideal {I : Ideal R} (hI : I ≠ ⊥)
     (hM : Module.IsTorsionBySet R M I) :
     DirectSum.IsInternal fun p : (factors I).toFinset =>
@@ -75,7 +75,7 @@ theorem isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsio
 #align submodule.is_internal_prime_power_torsion Submodule.isInternal_prime_power_torsion
 
 /-- A finitely generated torsion module over a Dedekind domain is an internal direct sum of its
-`p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`.-/
+`p i ^ e i`-torsion submodules for some prime ideals `p i` and numbers `e i`. -/
 theorem exists_isInternal_prime_power_torsion [Module.Finite R M] (hM : Module.IsTorsion R M) :
     ∃ (P : Finset <| Ideal R) (_ : DecidableEq P) (_ : ∀ p ∈ P, Prime p) (e : P → ℕ),
       DirectSum.IsInternal fun p : P => torsionBySet R M (p ^ e p : Ideal R) :=
