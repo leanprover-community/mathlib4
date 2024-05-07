@@ -10,15 +10,14 @@ import Mathlib.RingTheory.FinitePresentation
 
 /-!
 
-# Descent of finitely presented algebras
+# Rings of definition
 
-If `A` is a finitely presented `R`-algebra, there exists a subring `R₀` of `R` of finite type
-over `ℤ` and a finitely presented `R₀`-algebra `A₀` such that `A` is `R`-isomorphic to
-`R ⊗[R₀] A₀`.
+Given a finitely presented algebra `A` over a ring `R`, we may
+descend to a Noetherian subring `R₀` of `R` and a model of `A` over `R₀`.
 
-`R₀` is obtained by choosing a presentation for `A` and adjoining the finitely-many defining
-coefficients of `A` to `R`. More generally we show, that `R ⊗[R₀] A₀` is `R`-isomorphic to `A`
-whenever `R₀` contains all defining coefficients of `A`.
+In this file we provide basic API for working with polynomial rings over subrings. In particular
+we provide infrastructure for producing `R₀` and descending polynomials
+in `R` to polynomials in `R₀` given containment of the coefficients.
 
 -/
 
@@ -48,7 +47,7 @@ theorem Set.coefficients_subset_coefficients (s : Set (MvPolynomial σ R))
 
 section Map
 
-variable {S : Type*} [CommRing S] [Algebra R S]
+variable {S : Type*} [CommRing S]
 variable {f : R →+* S}
 
 namespace MvPolynomial
@@ -68,13 +67,14 @@ theorem mem_range_of_coefficients (q : MvPolynomial σ S) (hc : q.coefficients �
     exact minc (hcc m h)
   exact ⟨p, MvPolynomial.ext _ _ fun m ↦ MvPolynomial.coeff_map f p m ▸ hfc m⟩
 
+/-- Subring version of `mem_range_of_coefficients`. -/
 theorem mem_range_of_coefficients' {R₀ : Subring R} (p : MvPolynomial σ R) (hc : p.coefficients ⊆ R₀) :
     p ∈ (MvPolynomial.map R₀.subtype).range := by
   apply mem_range_of_coefficients
   rw [R₀.range_subtype]
   exact hc
 
-/-- If the coefficients of `q : MvPolynomial σ s` are in the range of `f`, choose a preimage of
+/-- If the coefficients of `q : MvPolynomial σ S` are in the range of `f`, choose a preimage of
 `q` under `MvPolynomial.map f` using choice. -/
 noncomputable def choosePreimageOfCoeffs (q : MvPolynomial σ S) (hc : q.coefficients ⊆ f.range) :
     MvPolynomial σ R :=
@@ -90,6 +90,18 @@ noncomputable def Set.choosePreimageOfCoeffs (s : Set (MvPolynomial σ S))
   MvPolynomial.choosePreimageOfCoeffs p.val
     ((s.coefficients_subset_coefficients p.val p.property).trans hc)
 
+/-- If the coefficients of `p : MvPolynomial σ R` are in a subring `R₀`, choose a representative
+`p` in `MvPolynomial σ R₀` using choice. -/
+noncomputable def choosePreimageOfCoeffs' {R₀ : Subring R} (p : MvPolynomial σ R)
+    (hc : p.coefficients ⊆ R₀) : MvPolynomial σ R₀ :=
+  choosePreimageOfCoeffs p (by rw [R₀.range_subtype]; exact hc)
+
+@[simp]
+lemma choosePreimageOfCoeffs'_map {R₀ : Subring R} (p : MvPolynomial σ R)
+    (hc : p.coefficients ⊆ R₀) :
+    MvPolynomial.map R₀.subtype (p.choosePreimageOfCoeffs' hc) = p :=
+  (p.mem_range_of_coefficients ((by rw [R₀.range_subtype]; exact hc))).choose_spec
+
 end MvPolynomial
 
 end Map
@@ -100,224 +112,212 @@ open TensorProduct
 
 namespace Algebra
 
-section
-
-variable {S : Type*} [CommRing S] [Algebra R S]
-variable {T : Type*} [CommRing T] [Algebra S T]
-variable {T' : Type*} [CommRing T'] [Algebra R T']
-variable {σ : Type*}
-variable {I : Ideal (MvPolynomial σ R)}
-
-variable [Algebra R T] [IsScalarTower R S T]
-
-lemma baseChange_MvPolynomialQuot_ext {f g : S ⊗[R] (MvPolynomial σ R ⧸ I) →ₐ[S] T}
-    (h : ∀ (i : σ), f (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))
-      = g (1 ⊗ₜ (Ideal.Quotient.mk I <| MvPolynomial.X i))) : f = g := by
-  apply TensorProduct.ext (by ext)
-  apply (AlgHom.cancel_right (Ideal.Quotient.mkₐ_surjective R I)).mp
-  apply MvPolynomial.algHom_ext
-  exact h
-
-end
-
 namespace RingOfDefinition
 
-variable {S : Type v} [CommRing S] [Algebra R S]
+section HasCoefficients
 
-section BaseChangeIso
+variable {ι : Type*}
 
-/-!
+/-- A typeclass expressing that `p` has coefficients in a subring `R₀`. -/
+class HasCoefficients (p : MvPolynomial ι R) (R₀ : Subring R) : Prop where
+  has_coeffs : p.coefficients ⊆ R₀
 
-In this section we construct an algebra isomorphism
+/-- Choose a representative in `MvPolynomial ι R₀` of a polynomial `p : MvPolynomial ι R` with
+coefficients contained in `R₀`. -/
+noncomputable def _root_.MvPolynomial.repr (p : MvPolynomial ι R) (R₀ : Subring R)
+    [HasCoefficients p R₀] : MvPolynomial ι R₀ :=
+  p.choosePreimageOfCoeffs' (HasCoefficients.has_coeffs)
 
-`(MvPolynomial σ S ⧸ I) ≃ₐ[S] S ⊗[R] (MvPolynomial σ R ⧸ J)`
+/-- The smallest subring of `R` containing all coefficients of a set `s` of polynomials. -/
+def core (s : Set (MvPolynomial ι R)) : Subring R :=
+  (Algebra.adjoin ℤ s.coefficients).toSubring
 
-if the natural map `MvPolynomial σ R → MvPolynomial σ S` satisfies:
+instance {s : Set (MvPolynomial ι R)} (p : s) : HasCoefficients p.val (core s) where
+  has_coeffs := Set.Subset.trans
+    (s.coefficients_subset_coefficients p.val p.property) Algebra.subset_adjoin
 
-- `J` is contained in the preimage of `I`
+/-- Adjoin the coefficients of a set of polynomials to a subring. -/
+def _root_.Subring.adjoinCoefficients (s : Set (MvPolynomial ι R)) (R₀ : Subring R) :
+    Subring R :=
+  (Algebra.adjoin R₀ s.coefficients).toSubring
 
--/
+/-- If the coefficients of a set `s` of polynomials are adjoined, every element of the set `s`
+has coefficients in the new subring. -/
+instance (s : Set (MvPolynomial ι R)) (p : s) (R₀ : Subring R) :
+    HasCoefficients p.val (R₀.adjoinCoefficients s) where
+  has_coeffs := Set.Subset.trans
+    (s.coefficients_subset_coefficients p.val p.property)
+    Algebra.subset_adjoin
 
-variable {σ : Type*}
-variable (I : Ideal (MvPolynomial σ S)) (J : Ideal (MvPolynomial σ R))
-variable (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I)
+/-- If `R₀` has the coefficients of a polynomial `p`, then after adjoining more coefficients,
+the new subring still has the coefficients of `p`. -/
+instance HasCoefficients.trans (p : MvPolynomial ι R) (R₀ : Subring R) [HasCoefficients p R₀]
+    (s : Set (MvPolynomial ι R)) :
+    HasCoefficients p (R₀.adjoinCoefficients s) where
+  has_coeffs := by
+    have : ((R₀.subtype).range : Set R) ⊆ (Algebra.adjoin R₀ s.coefficients).toSubring :=
+      Set.Subset.trans (Set.subset_union_left _ _) Subsemiring.subset_closure
+    rw [Subring.range_subtype] at this
+    exact Set.Subset.trans HasCoefficients.has_coeffs this
 
-noncomputable def baseChangeHom (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I) :
-    S ⊗[R] (MvPolynomial σ R ⧸ J) →ₐ[S] MvPolynomial σ S ⧸ I :=
-  Algebra.TensorProduct.lift (Algebra.ofId _ _)
-    (let f : MvPolynomial σ R →ₐ[R] MvPolynomial σ S :=
-       MvPolynomial.aeval MvPolynomial.X
-     let g : MvPolynomial σ S →ₐ[R] MvPolynomial σ S ⧸ I :=
-       Ideal.Quotient.mkₐ R I
-     Ideal.Quotient.liftₐ _ (g.comp f) (fun x hx ↦ by
-       simp only [AlgHom.comp_apply, ← RingHom.mem_ker]
-       convert_to f x ∈ I
-       · exact Ideal.Quotient.mkₐ_ker R I
-       · exact (hJ hx)))
-    (fun _ _ ↦ mul_comm _ _)
+/- Lean automatically infers that any of the adjoined polynomials has coefficients in the new
+ring. -/
+example (t₁ t₂ t₃ t₄ : Set (MvPolynomial ι R)) (p : t₁) :
+  HasCoefficients p.val <|
+    Subring.adjoinCoefficients t₄ <|
+    Subring.adjoinCoefficients t₃ <|
+    Subring.adjoinCoefficients t₂ <|
+    core t₁ :=
+  inferInstance
 
-@[simp]
-lemma baseChangeHom_mk_X (hJ : J ≤ Ideal.comap (MvPolynomial.map <| algebraMap R S) I) (i : σ) :
-    (baseChangeHom I J hJ) (1 ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i))
-      = Ideal.Quotient.mk I (MvPolynomial.X i) := by
-  simp [baseChangeHom]
+end HasCoefficients
 
-variable (T : Set (MvPolynomial σ S)) (hspan : I = Ideal.span T)
-  (hcoeffs : T.coefficients ⊆ (algebraMap R S).range)
+/-- A relation of elements of a set `A` of a ring is a multivariate polynomial in
+the elements of `A`. -/
+def Relation (A : Set R) : Type _ := MvPolynomial A R
 
-noncomputable def baseChangeInvAux : MvPolynomial σ S →ₐ[S] S ⊗[R] (MvPolynomial σ R) :=
-  MvPolynomial.aeval (S₁ := S ⊗[R] (MvPolynomial σ R)) (fun i ↦ 1 ⊗ₜ MvPolynomial.X i)
+namespace Relation
 
-@[simp]
-lemma baseChangeInvAux_map (p : MvPolynomial σ R) :
-    baseChangeInvAux (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ p := by
-  simp [baseChangeInvAux]
-  rw [MvPolynomial.aeval_map_algebraMap]
-  let f : MvPolynomial σ R →ₐ[R] S ⊗[R] MvPolynomial σ R :=
-    MvPolynomial.aeval fun i ↦ (1 : S) ⊗ₜ[R] MvPolynomial.X i
-  let g : MvPolynomial σ R →ₐ[R] S ⊗[R] MvPolynomial σ R :=
-    TensorProduct.includeRight
-  change f p = g p
-  congr
-  simp [f, g]
-  apply MvPolynomial.algHom_ext
-  intro i
-  simp [f, g]
+variable {A : Set R}
 
-@[simp]
-lemma baseChangeInvAux_X (i : σ) :
-    baseChangeInvAux (MvPolynomial.X i) = (1 : S) ⊗ₜ (MvPolynomial.X (R := R) i) := by
-  simp [baseChangeInvAux]
+noncomputable instance : CommRing (Relation A) :=
+  inferInstanceAs <| CommRing <| MvPolynomial A R
 
-noncomputable def baseChangeInvQuotAux : MvPolynomial σ S →ₐ[S] S ⊗[R] (MvPolynomial σ R ⧸ J) :=
-  letI f : S ⊗[R] (MvPolynomial σ R) →ₐ[S] S ⊗[R] (MvPolynomial σ R ⧸ J) :=
-    Algebra.TensorProduct.map (AlgHom.id S S) (Ideal.Quotient.mkₐ R J)
-  AlgHom.comp f baseChangeInvAux
+/-- Evaluating a relation is computing the formal polynomial in `R`. -/
+def eval : Relation A →+* R :=
+  MvPolynomial.eval Subtype.val
 
-@[simp]
-lemma baseChangeInvQuotAux_map (p : MvPolynomial σ R) :
-    baseChangeInvQuotAux J (MvPolynomial.map (algebraMap R S) p) = 1 ⊗ₜ (Ideal.Quotient.mk J p) := by
-  simp [baseChangeInvQuotAux, AlgHom.coe_comp, Function.comp_apply]
+/-- A relation is homogeneous if the underlying polynomial is. -/
+def IsHomogeneous (r : Relation A) (n : ℕ) : Prop :=
+  MvPolynomial.IsHomogeneous r n
 
-@[simp]
-lemma baseChangeInvQuotAux_X (i : σ) :
-    (baseChangeInvQuotAux J) (MvPolynomial.X i) = (1 : S) ⊗ₜ[R] (Ideal.Quotient.mk J) (MvPolynomial.X i) := by
-  simp [baseChangeInvQuotAux]
+theorem IsHomogeneous_iff (r : Relation A) (n : ℕ) :
+    r.IsHomogeneous n ↔ MvPolynomial.IsHomogeneous r n := by
+  rfl
 
-variable (hJl : (MvPolynomial.map (algebraMap R S)) ⁻¹' T ⊆ J)
+variable {S : Type*} [CommRing S]
+variable {f : R →+* S} {A : Set R} {B : Set S}
 
-lemma baseChangeInvQuotAux_vanish_of_generator (t : MvPolynomial σ S) (h : t ∈ T) :
-    baseChangeInvQuotAux (R := R) J t = 0 := by
-  have hc : MvPolynomial.coefficients t ⊆ Set.range (algebraMap R S) :=
-    Set.Subset.trans (Set.coefficients_subset_coefficients T t h) hcoeffs
-  obtain ⟨p, hp⟩ := MvPolynomial.mem_range_of_coefficients t hc
-  rw [← hp, baseChangeInvQuotAux_map]
-  have h1 : (Ideal.Quotient.mk J) p = 0 := by
-    rw [← RingHom.mem_ker, Ideal.mk_ker]
-    apply hJl
-    change MvPolynomial.map (algebraMap R S) p ∈ T
-    rwa [hp]
-  rw [h1, tmul_zero]
-
-noncomputable def baseChangeInv : MvPolynomial σ S ⧸ I →ₐ[S] S ⊗[R] (MvPolynomial σ R ⧸ J) := by
-  fapply Ideal.Quotient.liftₐ
-  · exact baseChangeInvQuotAux J
-  · intro x hx
-    subst hspan
-    refine Submodule.span_induction hx ?_ ?_ ?_ ?_
-    · intro x hxinT
-      exact baseChangeInvQuotAux_vanish_of_generator J T hcoeffs hJl x hxinT
-    · rw [AlgHom.map_zero]
-    · intro x y hx hy
-      rw [map_add, hx, hy, add_zero]
-    · intro r x hx
-      change (baseChangeInvQuotAux J) (r * x) = 0
-      rw [AlgHom.map_mul, hx, mul_zero]
+noncomputable def map (h : Set.MapsTo f A B) : Relation A →+* Relation B :=
+  RingHom.comp (MvPolynomial.rename h.restrict).toRingHom (MvPolynomial.map f)
 
 @[simp]
-lemma baseChangeInv_mk_X (i : σ) :
-    (baseChangeInv I J hJ T hspan hcoeffs hJl) ((Ideal.Quotient.mk I) (MvPolynomial.X i)) =
-      1 ⊗ₜ (Ideal.Quotient.mk J (MvPolynomial.X i)) := by
-  simp [baseChangeInv]
+lemma map_apply (h : Set.MapsTo f A B) (p : Relation A) :
+    Relation.map h p = MvPolynomial.rename h.restrict (MvPolynomial.map f p) :=
+  rfl
 
-instance : IsScalarTower R S (S ⊗[R] (MvPolynomial σ R ⧸ J)) := by
-  apply IsScalarTower.of_algebraMap_eq' (R := R) (S := S) (A := S ⊗[R] (MvPolynomial σ R ⧸ J))
-  ext x
-  simp
+lemma isHomogeneous_of_map (h : Set.MapsTo f A B) (hinj : Function.Injective f)
+    (r : Relation A) {n : ℕ} (homog : Relation.IsHomogeneous (Relation.map h r) n) :
+    r.IsHomogeneous n := by
+  simp only [map_apply] at homog
+  have h1 : Function.Injective h.restrict := by
+    rw [Set.MapsTo.restrict_inj]
+    apply Set.injOn_of_injective hinj
+  rw [Relation.IsHomogeneous_iff, MvPolynomial.IsHomogeneous.rename_isHomogeneous_iff h1] at homog
+  apply MvPolynomial.IsHomogeneous.of_map f hinj
+  exact homog
 
-noncomputable def baseChangeIso : (MvPolynomial σ S ⧸ I) ≃ₐ[S] S ⊗[R] (MvPolynomial σ R ⧸ J) :=
-  AlgEquiv.ofAlgHom
-    (baseChangeInv I J hJ T hspan hcoeffs hJl)
-    (baseChangeHom I J hJ)
-    (baseChange_MvPolynomialQuot_ext (fun i ↦ by simp))
-    ((AlgHom.cancel_right (Ideal.Quotient.mkₐ_surjective S I)).mp
-        (MvPolynomial.algHom_ext (fun i ↦ by simp)))
+end Relation
 
-end BaseChangeIso
+section HasRelation
 
+variable {ι : Type*} {s : Set (MvPolynomial ι R)}
+
+/-- A typeclass expressing that `R₀` contains the coefficients of a relation `r`. -/
+class HasRelation (r : Relation s) (R₀ : Subring R) : Prop where
+  has_coeffs : ∀ p : (MvPolynomial.coefficients r), HasCoefficients p.val R₀
+
+/-- Adjoin the coefficients of a set of relations to a subring `R₀`. -/
+def adjoinRelations (rs : Set (Relation s)) (R₀ : Subring R) : Subring R :=
+  (Algebra.adjoin R₀ (rs.coefficients.coefficients)).toSubring
+
+/-- After adjoining a set `rs` of relations to `R₀`, it has each element of `rs`. -/
+instance (rs : Set (Relation s)) (r : rs) (R₀ : Subring R) :
+    HasRelation r.val (adjoinRelations rs R₀) where
+  has_coeffs := fun ⟨p, hp⟩ ↦ by
+    refine ⟨Set.Subset.trans ?_ Algebra.subset_adjoin⟩
+    intro a ha
+    simp_all only [Set.coefficients, Set.iUnion_coe_set, Set.mem_iUnion, exists_prop,
+      Set.iUnion_exists, Set.biUnion_and']
+    refine ⟨r.val, r.property, p, hp, ha⟩
+
+instance HasRelation.trans (r : Relation s) (rs : Set (Relation s)) (R₀ : Subring R) [HasRelation r R₀] :
+    HasRelation r (adjoinRelations rs R₀) where
+  has_coeffs := fun ⟨p, hp⟩ ↦ by
+    sorry
+
+end HasRelation
+
+/-- A model of `MvPolynomial σ R ⧸ I` is a choice of generators of `I` and a subring `R₀`
+which contains the coefficients of the generators. -/
 structure Model {σ : Type*} (I : Ideal (MvPolynomial σ R)) where
   s : Set (MvPolynomial σ R)
   hs : Ideal.span s = I
   R₀ : Subring R
-  coeffs : s.coefficients ⊆ R₀
+  coeffs : ∀ p : s, HasCoefficients p.val R₀ := by infer_instance
 
 namespace Model
 
-variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
+attribute [instance] coeffs
 
-def mkOfGenerators (s : Set (MvPolynomial σ R)) (hs : Ideal.span s = I) : Model I where
-  s := s
-  hs := hs
-  R₀ := Subalgebra.toSubring <| Algebra.adjoin ℤ s.coefficients
-  coeffs := Algebra.subset_adjoin
+variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
 
 theorem coefficients_subset (p : MvPolynomial σ R) (hp : p ∈ M.s) :
     p.coefficients ⊆ M.R₀ :=
-  Set.Subset.trans (M.s.coefficients_subset_coefficients p hp) M.coeffs
+  (M.coeffs ⟨p, hp⟩).has_coeffs
 
-theorem coefficients_subset_range : M.s.coefficients ⊆ (algebraMap M.R₀ R).range :=
-  fun x hx ↦ ⟨⟨x, M.coeffs hx⟩, rfl⟩
+theorem coefficients_subset_range : M.s.coefficients ⊆ (algebraMap M.R₀ R).range := by
+  intro x hx
+  simp only [Set.coefficients] at hx
+  simp at hx
+  obtain ⟨p, hp, hpx⟩ := hx
+  exact ⟨⟨x, coefficients_subset M p hp hpx⟩, rfl⟩
 
-def definingSet : Set (MvPolynomial σ M.R₀) :=
-  (MvPolynomial.map (SubringClass.subtype M.R₀)) ⁻¹' M.s
+/-- Construct a model by giving a set `s` of generators of `I`. The underlying subring
+is `core s`. -/
+def mkOfGenerators (s : Set (MvPolynomial σ R)) (hs : Ideal.span s = I) : Model I where
+  s := s
+  hs := hs
+  R₀ := core s
 
-def definingIdeal : Ideal (MvPolynomial σ M.R₀) :=
-  Ideal.span M.definingSet
+/-- Intersection of `M.s` with `M.R₀`. Informally this is equal to `M.s`, since the coefficients
+of `M.s` lie in `M.R₀`. -/
+def s₀ : Set (MvPolynomial σ M.R₀) := (MvPolynomial.map M.R₀.subtype) ⁻¹' M.s
 
-def model : Type _ :=
-  MvPolynomial σ M.R₀ ⧸ Ideal.span M.definingSet
+/-- The ideal generated by the pulled back generators. -/
+def I₀ : Ideal (MvPolynomial σ M.R₀) := Ideal.span M.s₀
 
-noncomputable instance : CommRing M.model :=
-  inferInstanceAs <| CommRing <| MvPolynomial σ M.R₀ ⧸ Ideal.span M.definingSet
+/-- The model of `MvPolynomial σ M.R ⧸ I` over `M.R₀`. -/
+def A₀ : Type _ := MvPolynomial σ M.R₀ ⧸ M.I₀
 
-noncomputable instance : Algebra M.R₀ M.model :=
-  inferInstanceAs <| Algebra M.R₀ <| MvPolynomial σ M.R₀ ⧸ Ideal.span M.definingSet
+noncomputable instance : CommRing M.A₀ :=
+  inferInstanceAs <| CommRing <| MvPolynomial σ M.R₀ ⧸ M.I₀
 
-noncomputable def baseChangeIso : (MvPolynomial σ R ⧸ I) ≃ₐ[R] R ⊗[M.R₀] M.model := by
-  refine RingOfDefinition.baseChangeIso I M.definingIdeal ?_ M.s M.hs.symm ?_ ?_
-  · simp only [← M.hs]
-    apply Ideal.span_preimage_le_comap_span
-  · exact M.coefficients_subset_range
-  · exact Ideal.subset_span
+noncomputable instance : Algebra M.R₀ M.A₀ :=
+  inferInstanceAs <| Algebra M.R₀ <| MvPolynomial σ M.R₀ ⧸ M.I₀
+
+/-- `M.s₀` is mapped to `M.s` under the canonical map
+`MvPolynomial σ R₀ → MvPolynomial σ R`. -/
+theorem mapsTo : Set.MapsTo (MvPolynomial.map (M.R₀.subtype)) M.s₀ M.s :=
+  Set.mapsTo_preimage (MvPolynomial.map M.R₀.subtype) M.s
+
+theorem mapsTo_restrict_injective : Function.Injective M.mapsTo.restrict := by
+  rw [Set.MapsTo.restrict_inj]
+  apply Set.injOn_of_injective
+    (MvPolynomial.map_injective M.R₀.subtype Subtype.val_injective)
+
+theorem mapsTo_restrict_surjective : Function.Surjective M.mapsTo.restrict := by
+  intro ⟨x, hx⟩
+  obtain ⟨y, hy⟩ := MvPolynomial.mem_range_of_coefficients' x (M.coefficients_subset x hx)
+  refine ⟨⟨y, ?_⟩, Subtype.ext hy⟩
+  · show MvPolynomial.map M.R₀.subtype y ∈ M.s
+    rw [hy]
+    exact hx
+
+/-- Restricting `MvPolynomial σ R₀ → MvPolynomial σ R` yields an equivalence `M.s₀ ≃ M.s`. -/
+noncomputable def definingSetEquiv : M.s₀ ≃ M.s :=
+  Equiv.ofBijective M.mapsTo.restrict ⟨M.mapsTo_restrict_injective, M.mapsTo_restrict_surjective⟩
 
 end Model
-
-theorem exists_finiteType_model_of_finitePresentation [Algebra.FinitePresentation R S] :
-    ∃ (R₀ : Subring R) (S₀ : Type u) (_ : CommRing S₀) (_ : Algebra R₀ S₀)
-      (_ : S ≃ₐ[R] R ⊗[R₀] S₀), Algebra.FiniteType ℤ R₀ := by
-  obtain ⟨n, f, hf, ⟨s, hs⟩⟩ := Algebra.FinitePresentation.out (R := R) (A := S)
-  let M : Model (RingHom.ker f) := Model.mkOfGenerators s hs
-  let i : S ≃ₐ[R] (MvPolynomial (Fin n) R ⧸ RingHom.ker f) :=
-    (Ideal.quotientKerAlgEquivOfSurjective hf).symm
-  refine ⟨M.R₀, M.model, inferInstance, inferInstance, i.trans M.baseChangeIso, ?_⟩
-  apply FiniteType.of_adjoin_finite
-  apply Set.coefficients_finite_of_finite
-  exact Finset.finite_toSet s
-
-theorem exists_noetherian_model_of_finitePresentation [Algebra.FinitePresentation R S] :
-    ∃ (R₀ : Subring R) (S₀ : Type u) (_ : CommRing S₀) (_ : Algebra R₀ S₀)
-      (_ : S ≃ₐ[R] R ⊗[R₀] S₀), IsNoetherianRing R₀ := by
-  obtain ⟨R₀, S₀, i1, i2, f, hf⟩ := exists_finiteType_model_of_finitePresentation (R := R) (S := S)
-  exact ⟨R₀, S₀, i1, i2, f, FiniteType.isNoetherianRing ℤ R₀⟩
 
 end RingOfDefinition
