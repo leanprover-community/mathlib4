@@ -268,7 +268,7 @@ theorem continuous_extension : Continuous (Valued.extension : hat K → Γ₀) :
       solve_by_elim
     calc
       v a = v (a * z₀⁻¹ * z₀) := by rw [mul_assoc, inv_mul_cancel z₀_ne, mul_one]
-      _ = v (a * z₀⁻¹) * v z₀ := (Valuation.map_mul _ _ _)
+      _ = v (a * z₀⁻¹) * v z₀ := Valuation.map_mul _ _ _
       _ = v z₀ := by rw [this, one_mul]
 #align valued.continuous_extension Valued.continuous_extension
 

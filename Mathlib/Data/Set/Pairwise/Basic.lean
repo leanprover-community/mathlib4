@@ -139,8 +139,8 @@ theorem pairwise_union :
     s.Pairwise r ∧ t.Pairwise r ∧ ∀ a ∈ s, ∀ b ∈ t, a ≠ b → r a b ∧ r b a := by
   simp only [Set.Pairwise, mem_union, or_imp, forall_and]
   exact
-    ⟨fun H => ⟨H.1.1, H.2.2, H.2.1, fun x hx y hy hne => H.1.2 y hy x hx hne.symm⟩, fun H =>
-      ⟨⟨H.1, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm⟩, H.2.2.1, H.2.1⟩⟩
+    ⟨fun H => ⟨H.1.1, H.2.2, H.1.2, fun x hx y hy hne => H.2.1 y hy x hx hne.symm⟩,
+     fun H => ⟨⟨H.1, H.2.2.1⟩, fun x hx y hy hne => H.2.2.2 y hy x hx hne.symm, H.2.1⟩⟩
 #align set.pairwise_union Set.pairwise_union
 
 theorem pairwise_union_of_symmetric (hr : Symmetric r) :
@@ -333,6 +333,21 @@ theorem PairwiseDisjoint.elim (hs : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈
     (h : ¬Disjoint (f i) (f j)) : i = j :=
   hs.eq hi hj h
 #align set.pairwise_disjoint.elim Set.PairwiseDisjoint.elim
+
+lemma PairwiseDisjoint.eq_or_disjoint
+  -- {α : Type*} {s : Set (Set α)}
+    (h : s.PairwiseDisjoint f) {i j : ι} (hi : i ∈ s) (hj : j ∈ s) :
+    i = j ∨ Disjoint (f i) (f j) := by
+  rw [or_iff_not_imp_right]
+  exact h.elim hi hj
+
+lemma pairwiseDisjoint_range_iff {α β : Type*} {f : α → (Set β)} :
+    (Set.range f).PairwiseDisjoint id ↔ ∀ x y, f x = f y ∨ Disjoint (f x) (f y) := by
+  constructor
+  · intro h x y
+    apply h.eq_or_disjoint (Set.mem_range_self x) (Set.mem_range_self y)
+  · rintro h _ ⟨x, rfl⟩ _ ⟨y, rfl⟩ hxy
+    exact (h x y).resolve_left hxy
 
 end PartialOrderBot
 

@@ -160,7 +160,7 @@ theorem log_stirlingSeq_bounded_aux :
       rfl
     _ = ∑ k in range n, (log_stirlingSeq' k - log_stirlingSeq' (k + 1)) := by
       rw [← sum_range_sub' log_stirlingSeq' n]
-    _ ≤ ∑ k in range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := (sum_le_sum fun k _ => h₁ k)
+    _ ≤ ∑ k in range n, 1 / 4 * (1 / ↑((k + 1)) ^ 2) := sum_le_sum fun k _ => h₁ k
     _ = 1 / 4 * ∑ k in range n, 1 / ↑((k + 1)) ^ 2 := by rw [mul_sum]
     _ ≤ 1 / 4 * d := by gcongr
 #align stirling.log_stirling_seq_bounded_aux Stirling.log_stirlingSeq_bounded_aux

@@ -111,6 +111,7 @@ theorem sqrt_div (x y : ℝ≥0) : sqrt (x / y) = sqrt x / sqrt y :=
   map_div₀ sqrtHom x y
 #align nnreal.sqrt_div NNReal.sqrt_div
 
+@[continuity, fun_prop]
 theorem continuous_sqrt : Continuous sqrt := sqrt.continuous
 #align nnreal.continuous_sqrt NNReal.continuous_sqrt
 
@@ -373,7 +374,7 @@ namespace Real
 variable {x y : ℝ}
 
 @[simp]
-theorem sqrt_mul (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
+theorem sqrt_mul {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x * y) = √x * √y := by
   simp_rw [Real.sqrt, ← NNReal.coe_mul, NNReal.coe_inj, Real.toNNReal_mul hx, NNReal.sqrt_mul]
 #align real.sqrt_mul Real.sqrt_mul
 
@@ -388,7 +389,7 @@ theorem sqrt_inv (x : ℝ) : √x⁻¹ = (√x)⁻¹ := by
 #align real.sqrt_inv Real.sqrt_inv
 
 @[simp]
-theorem sqrt_div (hx : 0 ≤ x) (y : ℝ) : √(x / y) = √x / √y := by
+theorem sqrt_div {x : ℝ} (hx : 0 ≤ x) (y : ℝ) : √(x / y) = √x / √y := by
   rw [division_def, sqrt_mul hx, sqrt_inv, division_def]
 #align real.sqrt_div Real.sqrt_div
 
@@ -396,6 +397,8 @@ theorem sqrt_div (hx : 0 ≤ x) (y : ℝ) : √(x / y) = √x / √y := by
 theorem sqrt_div' (x) {y : ℝ} (hy : 0 ≤ y) : √(x / y) = √x / √y := by
   rw [division_def, sqrt_mul' x (inv_nonneg.2 hy), sqrt_inv, division_def]
 #align real.sqrt_div' Real.sqrt_div'
+
+variable {x y : ℝ}
 
 @[simp]
 theorem div_sqrt : x / √x = √x := by
@@ -426,7 +429,7 @@ theorem lt_sqrt_of_sq_lt (h : x ^ 2 < y) : x < √y :=
   (sq_lt.mp h).2
 #align real.lt_sqrt_of_sq_lt Real.lt_sqrt_of_sq_lt
 
-theorem lt_sq_of_sqrt_lt {x y : ℝ} (h : √x < y) : x < y ^ 2 := by
+theorem lt_sq_of_sqrt_lt (h : √x < y) : x < y ^ 2 := by
   have hy := x.sqrt_nonneg.trans_lt h
   rwa [← sqrt_lt_sqrt_iff_of_pos (sq_pos_of_pos hy), sqrt_sq hy.le]
 #align real.lt_sq_of_sqrt_lt Real.lt_sq_of_sqrt_lt
@@ -448,6 +451,24 @@ theorem real_sqrt_le_nat_sqrt_succ {a : ℕ} : √(a : ℝ) ≤ Nat.sqrt a + 1 :
     exact le_of_lt (Nat.lt_succ_sqrt' a)
 #align real.real_sqrt_le_nat_sqrt_succ Real.real_sqrt_le_nat_sqrt_succ
 
+/-- The real square root is less than the natural square root plus one -/
+theorem real_sqrt_lt_nat_sqrt_succ {a : ℕ} : √(a : ℝ) < Nat.sqrt a + 1 := by
+  rw [sqrt_lt (by simp)] <;> norm_cast
+  · exact Nat.lt_succ_sqrt' a
+  · exact Nat.le_add_left 0 (Nat.sqrt a + 1)
+
+/-- The floor of the real square root is the same as the natural square root. -/
+@[simp]
+theorem floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋ = Nat.sqrt a := by
+  rw [Int.floor_eq_iff]
+  exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
+
+/-- The natural floor of the real square root is the same as the natural square root. -/
+@[simp]
+theorem nat_floor_real_sqrt_eq_nat_sqrt {a : ℕ} : ⌊√(a : ℝ)⌋₊ = Nat.sqrt a := by
+  rw [Nat.floor_eq_iff (sqrt_nonneg ↑a)]
+  exact ⟨nat_sqrt_le_real_sqrt, real_sqrt_lt_nat_sqrt_succ⟩
+
 /-- Bernoulli's inequality for exponent `1 / 2`, stated using `sqrt`. -/
 theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
   refine sqrt_le_iff.mpr ⟨by linarith, ?_⟩
@@ -459,9 +480,10 @@ theorem sqrt_one_add_le (h : -1 ≤ x) : √(1 + x) ≤ 1 + x / 2 := by
 `ComplexOrder` scope because currently the order on `ℂ` is not enabled globally. But we
 want `StarOrderedRing ℝ` to be available globally, so we include this instance separately.
 In addition, providing this instance here makes it available earlier in the import
-hierarchy; otherwise in order to access it we would need to import `Analysis.RCLike.Basic` -/
+hierarchy; otherwise in order to access it we would need to import `Mathlib.Analysis.RCLike.Basic`.
+-/
 instance : StarOrderedRing ℝ :=
-  StarOrderedRing.ofNonnegIff' add_le_add_left fun r => by
+  StarOrderedRing.of_nonneg_iff' add_le_add_left fun r => by
     refine ⟨fun hr => ⟨√r, (mul_self_sqrt hr).symm⟩, ?_⟩
     rintro ⟨s, rfl⟩
     exact mul_self_nonneg s
@@ -469,7 +491,7 @@ instance : StarOrderedRing ℝ :=
 end Real
 
 instance NNReal.instStarOrderedRing : StarOrderedRing ℝ≥0 := by
-  refine .ofLEIff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
+  refine .of_le_iff fun x y ↦ ⟨fun h ↦ ?_, ?_⟩
   · obtain ⟨d, rfl⟩ := exists_add_of_le h
     refine ⟨sqrt d, ?_⟩
     simp only [star_trivial, mul_self_sqrt]

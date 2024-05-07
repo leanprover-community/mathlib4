@@ -3,7 +3,7 @@ Copyright (c) 2020 Yury G. Kudryashov. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yury G. Kudryashov, Patrick Massot, Sébastien Gouëzel
 -/
-import Mathlib.Data.Set.Intervals.Disjoint
+import Mathlib.Order.Interval.Set.Disjoint
 import Mathlib.MeasureTheory.Integral.SetIntegral
 import Mathlib.MeasureTheory.Measure.Lebesgue.Basic
 
@@ -315,7 +315,7 @@ theorem comp_mul_left (hf : IntervalIntegrable f volume a b) (c : ℝ) :
     integrable_smul_measure (by simpa : ENNReal.ofReal |c⁻¹| ≠ 0) ENNReal.ofReal_ne_top,
     ← IntegrableOn, MeasurableEmbedding.integrableOn_map_iff A]
   convert hf using 1
-  · ext; simp only [comp_apply]; congr 1; field_simp; ring
+  · ext; simp only [comp_apply]; congr 1; field_simp
   · rw [preimage_mul_const_uIcc (inv_ne_zero hc)]; field_simp [hc]
 #align interval_integrable.comp_mul_left IntervalIntegrable.comp_mul_left
 
@@ -587,7 +587,7 @@ nonrec theorem norm_integral_le_of_norm_le {g : ℝ → ℝ} (h : ∀ᵐ t ∂μ
 theorem norm_integral_le_of_norm_le_const_ae {a b C : ℝ} {f : ℝ → E}
     (h : ∀ᵐ x, x ∈ Ι a b → ‖f x‖ ≤ C) : ‖∫ x in a..b, f x‖ ≤ C * |b - a| := by
   rw [norm_integral_eq_norm_integral_Ioc]
-  convert norm_set_integral_le_of_norm_le_const_ae'' _ measurableSet_Ioc h using 1
+  convert norm_setIntegral_le_of_norm_le_const_ae'' _ measurableSet_Ioc h using 1
   · rw [Real.volume_Ioc, max_sub_min_eq_abs, ENNReal.toReal_ofReal (abs_nonneg _)]
   · simp only [Real.volume_Ioc, ENNReal.ofReal_lt_top]
 #align interval_integral.norm_integral_le_of_norm_le_const_ae intervalIntegral.norm_integral_le_of_norm_le_const_ae
@@ -654,7 +654,7 @@ theorem integral_div {𝕜 : Type*} [RCLike 𝕜] (r : 𝕜) (f : ℝ → 𝕜) 
 
 theorem integral_const' (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ <| Ioc a b).toReal - (μ <| Ioc b a).toReal) • c := by
-  simp only [intervalIntegral, set_integral_const, sub_smul]
+  simp only [intervalIntegral, setIntegral_const, sub_smul]
 #align interval_integral.integral_const' intervalIntegral.integral_const'
 
 @[simp]
@@ -723,7 +723,7 @@ theorem integral_comp_mul_right (hc : c ≠ 0) :
   have A : MeasurableEmbedding fun x => x * c :=
     (Homeomorph.mulRight₀ c hc).closedEmbedding.measurableEmbedding
   conv_rhs => rw [← Real.smul_map_volume_mul_right hc]
-  simp_rw [integral_smul_measure, intervalIntegral, A.set_integral_map,
+  simp_rw [integral_smul_measure, intervalIntegral, A.setIntegral_map,
     ENNReal.toReal_ofReal (abs_nonneg c)]
   cases' hc.lt_or_lt with h h
   · simp [h, mul_div_cancel_right₀, hc, abs_of_neg,
@@ -765,7 +765,7 @@ theorem integral_comp_add_right (d) : (∫ x in a..b, f (x + d)) = ∫ x in a + 
     (Homeomorph.addRight d).closedEmbedding.measurableEmbedding
   calc
     (∫ x in a..b, f (x + d)) = ∫ x in a + d..b + d, f x ∂Measure.map (fun x => x + d) volume := by
-      simp [intervalIntegral, A.set_integral_map]
+      simp [intervalIntegral, A.setIntegral_map]
     _ = ∫ x in a + d..b + d, f x := by rw [map_add_right_eq_self]
 #align interval_integral.integral_comp_add_right intervalIntegral.integral_comp_add_right
 
@@ -908,7 +908,7 @@ theorem integral_congr {a b : ℝ} (h : EqOn f g [[a, b]]) :
     ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
   rcases le_total a b with hab | hab <;>
     simpa [hab, integral_of_le, integral_of_ge] using
-      set_integral_congr measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
+      setIntegral_congr measurableSet_Ioc (h.mono Ioc_subset_Icc_self)
 #align interval_integral.integral_congr intervalIntegral.integral_congr
 
 theorem integral_add_adjacent_intervals_cancel (hab : IntervalIntegrable f μ a b)
@@ -1008,7 +1008,7 @@ theorem integral_Iio_add_Ici (h_left : IntegrableOn f (Iio b) μ)
 /-- If `μ` is a finite measure then `∫ x in a..b, c ∂μ = (μ (Iic b) - μ (Iic a)) • c`. -/
 theorem integral_const_of_cdf [IsFiniteMeasure μ] (c : E) :
     ∫ _ in a..b, c ∂μ = ((μ (Iic b)).toReal - (μ (Iic a)).toReal) • c := by
-  simp only [sub_smul, ← set_integral_const]
+  simp only [sub_smul, ← setIntegral_const]
   refine' (integral_Iic_sub_Iic _ _).symm <;>
     simp only [integrableOn_const, measure_lt_top, or_true_iff]
 #align interval_integral.integral_const_of_cdf intervalIntegral.integral_const_of_cdf
@@ -1023,8 +1023,8 @@ theorem integral_eq_integral_of_support_subset {a b} (h : support f ⊆ Ioc a b)
 
 theorem integral_congr_ae' (h : ∀ᵐ x ∂μ, x ∈ Ioc a b → f x = g x)
     (h' : ∀ᵐ x ∂μ, x ∈ Ioc b a → f x = g x) : ∫ x in a..b, f x ∂μ = ∫ x in a..b, g x ∂μ := by
-  simp only [intervalIntegral, set_integral_congr_ae measurableSet_Ioc h,
-    set_integral_congr_ae measurableSet_Ioc h']
+  simp only [intervalIntegral, setIntegral_congr_ae measurableSet_Ioc h,
+    setIntegral_congr_ae measurableSet_Ioc h']
 #align interval_integral.integral_congr_ae' intervalIntegral.integral_congr_ae'
 
 theorem integral_congr_ae (h : ∀ᵐ x ∂μ, x ∈ Ι a b → f x = g x) :
@@ -1043,7 +1043,7 @@ nonrec theorem integral_indicator {a₁ a₂ a₃ : ℝ} (h : a₂ ∈ Icc a₁ 
   have : {x | x ≤ a₂} ∩ Ioc a₁ a₃ = Ioc a₁ a₂ := Iic_inter_Ioc_of_le h.2
   rw [integral_of_le h.1, integral_of_le (h.1.trans h.2), integral_indicator,
     Measure.restrict_restrict, this]
-  exact measurableSet_Iic
+  · exact measurableSet_Iic
   all_goals apply measurableSet_Iic
 #align interval_integral.integral_indicator intervalIntegral.integral_indicator
 
@@ -1076,7 +1076,7 @@ theorem integral_pos_iff_support_of_nonneg_ae' (hf : 0 ≤ᵐ[μ.restrict (Ι a 
   cases' lt_or_le a b with hab hba
   · rw [uIoc_of_le hab.le] at hf
     simp only [hab, true_and_iff, integral_of_le hab.le,
-      set_integral_pos_iff_support_of_nonneg_ae hf hfi.1]
+      setIntegral_pos_iff_support_of_nonneg_ae hf hfi.1]
   · suffices (∫ x in a..b, f x ∂μ) ≤ 0 by simp only [this.not_lt, hba.not_lt, false_and_iff]
     rw [integral_of_ge hba, neg_nonpos]
     rw [uIoc_comm, uIoc_of_le hba] at hf
@@ -1151,7 +1151,7 @@ theorem integral_lt_integral_of_continuousOn_of_le_of_exists_lt {f g : ℝ → �
 theorem integral_nonneg_of_ae_restrict (hab : a ≤ b) (hf : 0 ≤ᵐ[μ.restrict (Icc a b)] f) :
     0 ≤ ∫ u in a..b, f u ∂μ := by
   let H := ae_restrict_of_ae_restrict_of_subset Ioc_subset_Icc_self hf
-  simpa only [integral_of_le hab] using set_integral_nonneg_of_ae_restrict H
+  simpa only [integral_of_le hab] using setIntegral_nonneg_of_ae_restrict H
 #align interval_integral.integral_nonneg_of_ae_restrict intervalIntegral.integral_nonneg_of_ae_restrict
 
 theorem integral_nonneg_of_ae (hab : a ≤ b) (hf : 0 ≤ᵐ[μ] f) : 0 ≤ ∫ u in a..b, f u ∂μ :=
@@ -1178,17 +1178,17 @@ variable (hab : a ≤ b) (hf : IntervalIntegrable f μ a b) (hg : IntervalIntegr
 theorem integral_mono_ae_restrict (h : f ≤ᵐ[μ.restrict (Icc a b)] g) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
   let H := h.filter_mono <| ae_mono <| Measure.restrict_mono Ioc_subset_Icc_self <| le_refl μ
-  simpa only [integral_of_le hab] using set_integral_mono_ae_restrict hf.1 hg.1 H
+  simpa only [integral_of_le hab] using setIntegral_mono_ae_restrict hf.1 hg.1 H
 #align interval_integral.integral_mono_ae_restrict intervalIntegral.integral_mono_ae_restrict
 
 theorem integral_mono_ae (h : f ≤ᵐ[μ] g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
-  simpa only [integral_of_le hab] using set_integral_mono_ae hf.1 hg.1 h
+  simpa only [integral_of_le hab] using setIntegral_mono_ae hf.1 hg.1 h
 #align interval_integral.integral_mono_ae intervalIntegral.integral_mono_ae
 
 theorem integral_mono_on (h : ∀ x ∈ Icc a b, f x ≤ g x) :
     (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ := by
   let H x hx := h x <| Ioc_subset_Icc_self hx
-  simpa only [integral_of_le hab] using set_integral_mono_on hf.1 hg.1 measurableSet_Ioc H
+  simpa only [integral_of_le hab] using setIntegral_mono_on hf.1 hg.1 measurableSet_Ioc H
 #align interval_integral.integral_mono_on intervalIntegral.integral_mono_on
 
 theorem integral_mono (h : f ≤ g) : (∫ u in a..b, f u ∂μ) ≤ ∫ u in a..b, g u ∂μ :=
@@ -1199,7 +1199,7 @@ theorem integral_mono_interval {c d} (hca : c ≤ a) (hab : a ≤ b) (hbd : b �
     (hf : 0 ≤ᵐ[μ.restrict (Ioc c d)] f) (hfi : IntervalIntegrable f μ c d) :
     (∫ x in a..b, f x ∂μ) ≤ ∫ x in c..d, f x ∂μ := by
   rw [integral_of_le hab, integral_of_le (hca.trans (hab.trans hbd))]
-  exact set_integral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
+  exact setIntegral_mono_set hfi.1 hf (Ioc_subset_Ioc hca hbd).eventuallyLE
 #align interval_integral.integral_mono_interval intervalIntegral.integral_mono_interval
 
 theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[μ.restrict (Ι c d)] f)
@@ -1207,9 +1207,9 @@ theorem abs_integral_mono_interval {c d} (h : Ι a b ⊆ Ι c d) (hf : 0 ≤ᵐ[
   have hf' : 0 ≤ᵐ[μ.restrict (Ι a b)] f := ae_mono (Measure.restrict_mono h le_rfl) hf
   calc
     |∫ x in a..b, f x ∂μ| = |∫ x in Ι a b, f x ∂μ| := abs_integral_eq_abs_integral_uIoc f
-    _ = ∫ x in Ι a b, f x ∂μ := (abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf'))
-    _ ≤ ∫ x in Ι c d, f x ∂μ := (set_integral_mono_set hfi.def' hf h.eventuallyLE)
-    _ ≤ |∫ x in Ι c d, f x ∂μ| := (le_abs_self _)
+    _ = ∫ x in Ι a b, f x ∂μ := abs_of_nonneg (MeasureTheory.integral_nonneg_of_ae hf')
+    _ ≤ ∫ x in Ι c d, f x ∂μ := setIntegral_mono_set hfi.def' hf h.eventuallyLE
+    _ ≤ |∫ x in Ι c d, f x ∂μ| := le_abs_self _
     _ = |∫ x in c..d, f x ∂μ| := (abs_integral_eq_abs_integral_uIoc f).symm
 #align interval_integral.abs_integral_mono_interval intervalIntegral.abs_integral_mono_interval
 
@@ -1224,9 +1224,9 @@ variable {μ : Measure ℝ} {f : ℝ → E}
 theorem _root_.MeasureTheory.Integrable.hasSum_intervalIntegral (hfi : Integrable f μ) (y : ℝ) :
     HasSum (fun n : ℤ => ∫ x in y + n..y + n + 1, f x ∂μ) (∫ x, f x ∂μ) := by
   simp_rw [integral_of_le (le_add_of_nonneg_right zero_le_one)]
-  rw [← integral_univ, ← iUnion_Ioc_add_int_cast y]
+  rw [← integral_univ, ← iUnion_Ioc_add_intCast y]
   exact
-    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_int_cast y)
+    hasSum_integral_iUnion (fun i => measurableSet_Ioc) (pairwise_disjoint_Ioc_add_intCast y)
       hfi.integrableOn
 #align measure_theory.integrable.has_sum_interval_integral MeasureTheory.Integrable.hasSum_intervalIntegral
 

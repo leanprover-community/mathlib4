@@ -16,11 +16,12 @@ differential relations.
 ## Main results
 - `ampleSet_empty` and `ampleSet_univ`: the empty set and `univ` are ample
 - `AmpleSet.union`: the union of two ample sets is ample
-- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences
+- `AmpleSet.{pre}image`: being ample is invariant under continuous affine equivalences;
+  `AmpleSet.{pre}image_iff` are "iff" versions of these
 - `AmpleSet.vadd`: in particular, ample-ness is invariant under affine translations
 
 ## TODO
-`AmpleSet.of_two_le_codim`: a linear subspace of codimension at least two has an ample complement.
+`AmpleSet.of_one_lt_codim`: a linear subspace of codimension at least two has an ample complement.
 This is the crucial geometric ingredient which allows to apply convex integration
 to the theory of immersions in positive codimension.
 
@@ -59,8 +60,10 @@ theorem ampleSet_univ {F : Type*} [NormedAddCommGroup F] [NormedSpace ℝ F] :
 @[simp]
 theorem ampleSet_empty : AmpleSet (∅ : Set F) := fun _ ↦ False.elim
 
+namespace AmpleSet
+
 /-- The union of two ample sets is ample. -/
-theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
+theorem union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : AmpleSet (s ∪ t) := by
   intro x hx
   rcases hx with (h | h) <;>
   -- The connected component of `x ∈ s` in `s ∪ t` contains the connected component of `x` in `s`,
@@ -74,7 +77,7 @@ theorem AmpleSet.union {s t : Set F} (hs : AmpleSet s) (ht : AmpleSet t) : Ample
 variable {E : Type*} [AddCommGroup E] [Module ℝ E] [TopologicalSpace E]
 
 /-- Images of ample sets under continuous affine equivalences are ample. -/
-theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
+theorem image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L '' s) := forall_mem_image.mpr fun x hx ↦
   calc (convexHull ℝ) (connectedComponentIn (L '' s) (L x))
     _ = (convexHull ℝ) (L '' (connectedComponentIn s x)) :=
@@ -84,16 +87,30 @@ theorem AmpleSet.image {s : Set E} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) :
     _ = univ := by rw [h x hx, image_univ, L.surjective.range_eq]
 
 /-- A set is ample iff its image under a continuous affine equivalence is. -/
-theorem AmpleSet.image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
+theorem image_iff {s : Set E} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L '' s) ↔ AmpleSet s :=
   ⟨fun h ↦ (L.symm_image_image s) ▸ h.image L.symm, fun h ↦ h.image L⟩
 
-/-- Preimages of ample sets under continuous affine equivalences are ample. -/
-theorem AmpleSet.preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
+/-- Pre-images of ample sets under continuous affine equivalences are ample. -/
+theorem preimage {s : Set F} (h : AmpleSet s) (L : E ≃ᵃL[ℝ] F) : AmpleSet (L ⁻¹' s) := by
   rw [← L.image_symm_eq_preimage]
   exact h.image L.symm
 
 /-- A set is ample iff its pre-image under a continuous affine equivalence is. -/
-theorem AmpleSet.preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
+theorem preimage_iff {s : Set F} (L : E ≃ᵃL[ℝ] F) :
     AmpleSet (L ⁻¹' s) ↔ AmpleSet s :=
   ⟨fun h ↦ L.image_preimage s ▸ h.image L, fun h ↦ h.preimage L⟩
+
+open scoped Pointwise
+
+/-- Affine translations of ample sets are ample. -/
+theorem vadd [ContinuousAdd E] {s : Set E} (h : AmpleSet s) {y : E} :
+    AmpleSet (y +ᵥ s) :=
+  h.image (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+/-- A set is ample iff its affine translation is. -/
+theorem vadd_iff [ContinuousAdd E] {s : Set E} {y : E} :
+    AmpleSet (y +ᵥ s) ↔ AmpleSet s :=
+  AmpleSet.image_iff (ContinuousAffineEquiv.constVAdd ℝ E y)
+
+end AmpleSet

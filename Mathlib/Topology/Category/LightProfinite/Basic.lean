@@ -58,7 +58,7 @@ theorem ext {Y : LightProfinite} {a b : Y.cone.pt}
 Given a functor from `ℕᵒᵖ` to finite sets we can take its limit in `Profinite` and obtain a light
 profinite set. 
 -/
-noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite where
+noncomputable def of (F : ℕᵒᵖ ⥤ FintypeCat) : LightProfinite.{u} where
   diagram := F
   isLimit := limit.isLimit (F ⋙ FintypeCat.toProfinite)
 
@@ -98,6 +98,12 @@ def fintypeCatToLightProfinite : FintypeCat ⥤ LightProfinite.{u} where
   obj X := X.toLightProfinite
   map f := FintypeCat.toProfinite.map f
 
+instance : fintypeCatToLightProfinite.Faithful where
+  map_injective h := funext fun _ ↦ (DFunLike.ext_iff.mp h) _
+
+instance : fintypeCatToLightProfinite.Full where
+  map_surjective f := ⟨fun x ↦ f x, rfl⟩
+
 end LightProfinite
 
 noncomputable section EssentiallySmall
@@ -120,7 +126,8 @@ def LightProfinite'.toLightFunctor : LightProfinite'.{u} ⥤ LightProfinite.{u} 
 
 instance : LightProfinite'.toLightFunctor.{u}.Faithful := ⟨id⟩
 
-instance : LightProfinite'.toLightFunctor.{u}.Full := ⟨id, fun _ ↦ rfl⟩
+instance : LightProfinite'.toLightFunctor.{u}.Full where
+  map_surjective f := ⟨f, rfl⟩
 
 instance : LightProfinite'.toLightFunctor.{u}.EssSurj where
   mem_essImage Y := by

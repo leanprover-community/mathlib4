@@ -294,7 +294,8 @@ theorem minFacAux_has_prop {n : ℕ} (n2 : 2 ≤ n) :
     · exact ⟨k2, dk, a⟩
     · refine'
         have := minFac_lemma n k h
-        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib]) fun m m2 d => _
+        minFacAux_has_prop n2 (k + 2) (i + 1) (by simp [k, e, left_distrib, add_right_comm])
+          fun m m2 d => _
       rcases Nat.eq_or_lt_of_le (a m m2 d) with me | ml
       · subst me
         contradiction
@@ -453,6 +454,18 @@ theorem exists_dvd_of_not_prime2 {n : ℕ} (n2 : 2 ≤ n) (np : ¬Prime n) :
   ⟨minFac n, minFac_dvd _, (minFac_prime (ne_of_gt n2)).two_le,
     (not_prime_iff_minFac_lt n2).1 np⟩
 #align nat.exists_dvd_of_not_prime2 Nat.exists_dvd_of_not_prime2
+
+theorem not_prime_of_dvd_of_ne {m n : ℕ} (h1 : m ∣ n) (h2 : m ≠ 1) (h3 : m ≠ n) : ¬Prime n :=
+  fun h => Or.elim (h.eq_one_or_self_of_dvd m h1) h2 h3
+
+theorem not_prime_of_dvd_of_lt {m n : ℕ} (h1 : m ∣ n) (h2 : 2 ≤ m) (h3 : m < n) : ¬Prime n :=
+  not_prime_of_dvd_of_ne h1 (ne_of_gt h2) (ne_of_lt h3)
+
+theorem not_prime_iff_exists_dvd_ne {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ m ≠ 1 ∧ m ≠ n :=
+  ⟨exists_dvd_of_not_prime h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_ne h1 h2 h3⟩
+
+theorem not_prime_iff_exists_dvd_lt {n : ℕ} (h : 2 ≤ n) : (¬Prime n) ↔ ∃ m, m ∣ n ∧ 2 ≤ m ∧ m < n :=
+  ⟨exists_dvd_of_not_prime2 h, fun ⟨_, h1, h2, h3⟩ => not_prime_of_dvd_of_lt h1 h2 h3⟩
 
 theorem exists_prime_and_dvd {n : ℕ} (hn : n ≠ 1) : ∃ p, Prime p ∧ p ∣ n :=
   ⟨minFac n, minFac_prime hn, minFac_dvd _⟩
@@ -644,7 +657,7 @@ theorem Prime.mul_eq_prime_sq_iff {x y p : ℕ} (hp : p.Prime) (hx : x ≠ 1) (h
     simp only [sq, mul_right_inj' hp.ne_zero] at h
     subst h
     exact ⟨rfl, rfl⟩
-  · refine' (hy ?_).elim
+  · refine (hy ?_).elim
     subst hap
     subst ha
     rw [sq, Nat.mul_right_eq_self_iff (Nat.mul_pos hp.pos hp.pos : 0 < a * a)] at h

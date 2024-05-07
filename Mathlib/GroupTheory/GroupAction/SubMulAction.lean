@@ -3,7 +3,7 @@ Copyright (c) 2020 Eric Wieser. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Eric Wieser
 -/
-import Mathlib.Algebra.Module.Basic
+import Mathlib.Algebra.Module.Defs
 import Mathlib.Data.SetLike.Basic
 import Mathlib.GroupTheory.GroupAction.Basic
 import Mathlib.GroupTheory.GroupAction.Hom
@@ -432,25 +432,23 @@ variable {M α : Type*} [Monoid M] [MulAction M α]
 /-- The inclusion of a SubMulAction into the ambient set, as an equivariant map -/
 def inclusion (s : SubMulAction M α) : s →[M] α where
 -- The inclusion map of the inclusion of a SubMulAction
-  toFun := fun x => x.val
+  toFun := Subtype.val
 -- The commutation property
   map_smul' _ _ := rfl
 
 theorem inclusion.toFun_eq_coe (s : SubMulAction M α) :
-    s.inclusion.toFun = fun x => x.val := rfl
+    s.inclusion.toFun = Subtype.val := rfl
+
+theorem inclusion.coe_eq (s : SubMulAction M α) :
+    ⇑s.inclusion = Subtype.val := rfl
 
 lemma image_inclusion (s : SubMulAction M α) :
-    Set.range s.inclusion = s.carrier  := by
-  ext a
-  simp only [Set.mem_range, Subtype.exists, mem_carrier, SetLike.mem_coe]
-  constructor
-  · rintro ⟨a, h, rfl⟩; exact h
-  · exact fun h ↦ ⟨a, h, rfl⟩
+    Set.range s.inclusion = s.carrier := by
+  rw [inclusion.coe_eq]
+  exact Subtype.range_coe
 
 lemma inclusion_injective (s : SubMulAction M α) :
-    Function.Injective s.inclusion := by
-  rintro ⟨a, ha⟩ ⟨b, hb⟩ h
-  simp only [Subtype.mk.injEq]
-  exact h
+    Function.Injective s.inclusion :=
+  Subtype.val_injective
 
 end SubMulAction
