@@ -1,7 +1,25 @@
+/-
+Copyright (c) 2024 Daniel Weber. All rights reserved.
+Released under Apache 2.0 license as described in the file LICENSE.
+Authors: Daniel Weber
+-/
 import Mathlib.Data.Nat.Bitwise
 import Mathlib.Data.Nat.Size
 import Mathlib.Data.Nat.Units
 
+/-!
+# Gray Code
+
+This file defines [the binary reflected gray code](https://en.wikipedia.org/wiki/Gray_code), both
+as a permutation of `ℕ`, in `Nat.gray_code`, and then, using that, as a permutation of `BitVec n`,
+in `Nat.partial_gray_code`. We also prove some theorems about them:
+
+* `Nat.gray_code_prop`: the xor of `Nat.gray_code n` and `Nat.gray_code (n+1)` is a power of 2
+for all `n`.
+* `gray_code_size`: `Nat.gray_code` preserves the binary length of integers.
+* `partial_gray_code_prop`: the xor of `n.partial_gray_code m` and `n.partial_gray_code (m+1)`
+is a power of 2 for all `n ≠ 0` and `m`.
+-/
 namespace Nat
 
 def gray_code_inv : ℕ → ℕ
@@ -65,7 +83,7 @@ theorem gray_code_prop (n : ℕ) : (gray_code n ^^^ gray_code n.succ).isPowerOfT
     simp only [Bool.bne_true, Bool.not_false, Nat.xor_self]
     rfl
   | true =>
-    simp
+    simp only [div2_bit, bit_true_succ]
     have ⟨k, hk⟩ := h
     exists k+1
     simp only [pow_succ, Nat.div2_bit1, Nat.succ_eq_add_one, Nat.div2_succ, Nat.bodd_bit1,
@@ -113,7 +131,8 @@ def partial_gray_code (n : ℕ) : Equiv.Perm (BitVec n) where
   left_inv := by intro n; simp; norm_cast
   right_inv := by intro n; simp; norm_cast
 
-def partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) : (partial_gray_code n m ^^^ partial_gray_code n (m + 1)).toNat.isPowerOfTwo := by
+theorem partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) :
+   (n.partial_gray_code m ^^^ n.partial_gray_code (m + 1)).toNat.isPowerOfTwo := by
   unfold partial_gray_code gray_code
   simp only [Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, BitVec.ofNat_eq_ofNat, BitVec.toNat_add,
     BitVec.toNat_ofNat, add_mod_mod, BitVec.toNat_xor, BitVec.toNat_ofFin]
@@ -121,7 +140,7 @@ def partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) : (partial_gra
   · rw [h]
     have : 2^n - 1 + 1 = 2^n := by omega
     rw [this]
-    simp
+    simp only [mod_self, div2_zero, xor_self, xor_zero]
     exists n-1
     apply eq_of_testBit_eq
     intro i

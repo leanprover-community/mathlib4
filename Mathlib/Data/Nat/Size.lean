@@ -160,19 +160,20 @@ theorem size_eq_bits_len (n : ℕ) : n.bits.length = n.size := by
   · simpa [bit_eq_zero_iff]
 #align nat.size_eq_bits_len Nat.size_eq_bits_len
 
-lemma size_eq_iff_le_lt (n : ℕ) (i : ℕ) : n.size = i+1 ↔ 2^i ≤ n ∧ n < 2^(i+1) := by
+lemma size_eq_iff_le_lt (n : ℕ) (i : ℕ) : n.size = i + 1 ↔ 2 ^ i ≤ n ∧ n < 2 ^ (i+1) := by
   constructor
   · intro h
     constructor
     rw [← Nat.lt_size, h]
-    simp
+    apply lt_succ_self
     exact h ▸ Nat.lt_size_self n
   · rintro ⟨h1, h2⟩
     apply le_antisymm
     exact Nat.size_le.mpr h2
     exact Nat.succ_le_iff.mp (Nat.lt_size.mpr h1)
 
-lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i+1 ↔ n.testBit i ∧ ∀ j > i, n.testBit j = false := by
+lemma size_eq_iff_testBit (n : ℕ) (i : ℕ) : n.size = i + 1 ↔
+    n.testBit i ∧ ∀ j > i, n.testBit j = false := by
   rw [size_eq_iff_le_lt]
   constructor
   · rintro ⟨lb, ub⟩
