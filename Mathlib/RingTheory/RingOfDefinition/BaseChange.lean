@@ -190,8 +190,8 @@ namespace Model
 
 variable {σ : Type*} {I : Ideal (MvPolynomial σ R)} (M : Model I)
 
-noncomputable def baseChangeIso : (MvPolynomial σ R ⧸ I) ≃ₐ[R] R ⊗[M.R₀] M.model := by
-  refine RingOfDefinition.baseChangeIso I M.definingIdeal ?_ M.s M.hs.symm ?_ ?_
+noncomputable def baseChangeIso : (MvPolynomial σ R ⧸ I) ≃ₐ[R] R ⊗[M.R₀] M.A₀ := by
+  refine RingOfDefinition.baseChangeIso I M.I₀ ?_ M.s M.hs.symm ?_ ?_
   · simp only [← M.hs]
     apply Ideal.span_preimage_le_comap_span
   · exact M.coefficients_subset_range
@@ -206,7 +206,7 @@ theorem exists_finiteType_model_of_finitePresentation [Algebra.FinitePresentatio
   let M : Model (RingHom.ker f) := Model.mkOfGenerators s hs
   let i : S ≃ₐ[R] (MvPolynomial (Fin n) R ⧸ RingHom.ker f) :=
     (Ideal.quotientKerAlgEquivOfSurjective hf).symm
-  refine ⟨M.R₀, M.model, inferInstance, inferInstance, i.trans M.baseChangeIso, ?_⟩
+  refine ⟨M.R₀, M.A₀, inferInstance, inferInstance, i.trans M.baseChangeIso, ?_⟩
   apply FiniteType.of_adjoin_finite
   apply Set.coefficients_finite_of_finite
   exact Finset.finite_toSet s
