@@ -1028,19 +1028,27 @@ instance UpperSet.isTotal_le : IsTotal (UpperSet α) (· ≤ ·) := ⟨fun s t =
 instance LowerSet.isTotal_le : IsTotal (LowerSet α) (· ≤ ·) := ⟨fun s t => s.lower.total t.lower⟩
 #align lower_set.is_total_le LowerSet.isTotal_le
 
-noncomputable instance : CompleteLinearOrder (UpperSet α) :=
-  { UpperSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance UpperSet.instLinearOrder : LinearOrder (UpperSet α) := by
+  classical exact Lattice.toLinearOrder _
 
-noncomputable instance : CompleteLinearOrder (LowerSet α) :=
-  { LowerSet.completelyDistribLattice with
-    le_total := IsTotal.total
-    decidableLE := Classical.decRel _
-    decidableEq := Classical.decRel _
-    decidableLT := Classical.decRel _ }
+noncomputable instance LowerSet.instLinearOrder : LinearOrder (LowerSet α) := by
+  classical exact Lattice.toLinearOrder _
+
+noncomputable instance UpperSet.instCompleteLinearOrder : CompleteLinearOrder (UpperSet α) where
+  __ := completelyDistribLattice
+  __ := LinearOrder.toBiheytingAlgebra
+  le_total := IsTotal.total
+  decidableLE := Classical.decRel _
+  decidableEq := Classical.decRel _
+  decidableLT := Classical.decRel _
+
+noncomputable instance LowerSet.instCompleteLinearOrder : CompleteLinearOrder (LowerSet α) where
+  __ := completelyDistribLattice
+  __ := LinearOrder.toBiheytingAlgebra
+  le_total := IsTotal.total
+  decidableLE := Classical.decRel _
+  decidableEq := Classical.decRel _
+  decidableLT := Classical.decRel _
 
 end LinearOrder
 

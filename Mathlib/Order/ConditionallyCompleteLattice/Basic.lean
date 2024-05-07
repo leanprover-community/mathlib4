@@ -1380,14 +1380,13 @@ theorem isGLB_sInf (s : Set (WithTop α)) : IsGLB s (sInf s) := by
     exact bot_le
 #align with_top.is_glb_Inf WithTop.isGLB_sInf
 
-noncomputable instance : CompleteLinearOrder (WithTop α) :=
-  { WithTop.linearOrder, WithTop.lattice, WithTop.orderTop, WithTop.orderBot with
-    sup := Sup.sup
-    le_sSup := fun s => (isLUB_sSup s).1
-    sSup_le := fun s => (isLUB_sSup s).2
-    inf := Inf.inf
-    le_sInf := fun s => (isGLB_sInf s).2
-    sInf_le := fun s => (isGLB_sInf s).1 }
+noncomputable instance : CompleteLinearOrder (WithTop α) where
+  __ := linearOrder
+  __ := LinearOrder.toBiheytingAlgebra
+  le_sSup s := (isLUB_sSup s).1
+  sSup_le s := (isLUB_sSup s).2
+  le_sInf s := (isGLB_sInf s).2
+  sInf_le s := (isGLB_sInf s).1
 
 /-- A version of `WithTop.coe_sSup'` with a more convenient but less general statement. -/
 @[norm_cast]
@@ -1683,7 +1682,8 @@ noncomputable instance WithTop.WithBot.completeLattice {α : Type*}
 
 noncomputable instance WithTop.WithBot.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithTop (WithBot α)) :=
-  { WithTop.WithBot.completeLattice, WithTop.linearOrder with }
+  -- FIXME: Spread notation doesn't work
+  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
 #align with_top.with_bot.complete_linear_order WithTop.WithBot.completeLinearOrder
 
 noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
@@ -1697,7 +1697,7 @@ noncomputable instance WithBot.WithTop.completeLattice {α : Type*}
 
 noncomputable instance WithBot.WithTop.completeLinearOrder {α : Type*}
     [ConditionallyCompleteLinearOrder α] : CompleteLinearOrder (WithBot (WithTop α)) :=
-  { WithBot.WithTop.completeLattice, WithBot.linearOrder with }
+  { completeLattice, linearOrder, LinearOrder.toBiheytingAlgebra with }
 #align with_bot.with_top.complete_linear_order WithBot.WithTop.completeLinearOrder
 
 namespace WithTop
