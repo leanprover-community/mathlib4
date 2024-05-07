@@ -19,19 +19,20 @@ namespace Mathlib.MA
 
 /-- `toAddWords` performs a subset of what `to_additive` would do. -/
 abbrev toAddWords : HashMap String String := HashMap.empty
-  |>.insert "Mul"       "Add"
-  |>.insert "Semigroup" "AddSemigroup"
-  |>.insert "CommMonoid" "AddCommMonoid"
-  |>.insert "Monoid" "AddMonoid"
-  |>.insert "CommSemigroup" "AddCommSemigroup"
-  |>.insert "MulOneClass" "AddZeroClass"
-  |>.insert "MulHomClass" "AddHomClass"
-  |>.insert "MulEquiv" "AddEquiv"
-  |>.insert "MonoidHomClass" "AddMonoidHomClass"
+  |>.insert "Mul"              "Add"
+  |>.insert "Group"            "AddGroup"
+  |>.insert "Semigroup"        "AddSemigroup"
+  |>.insert "CommMonoid"       "AddCommMonoid"
+  |>.insert "Monoid"           "AddMonoid"
+  |>.insert "CommSemigroup"    "AddCommSemigroup"
+  |>.insert "MulOneClass"      "AddZeroClass"
+  |>.insert "MulHomClass"      "AddHomClass"
+  |>.insert "MulEquiv"         "AddEquiv"
+  |>.insert "MonoidHomClass"   "AddMonoidHomClass"
   |>.insert "singleOneRingHom" "singleZeroRingHom"
-  |>.insert "singleOneAlgHom" "singleZeroAlgHom"
-  |>.insert "MonoidAlgebra" "AddMonoidAlgebra"
-  |>.insert "monoid" "add_monoid"
+  |>.insert "singleOneAlgHom"  "singleZeroAlgHom"
+  |>.insert "MonoidAlgebra"    "AddMonoidAlgebra"
+  |>.insert "monoid"           "add_monoid"
 
 /-- splits a string into maximal substrings consisting of either `[alpha]*` or `[non-alpha]*`. -/
 def splitAlpha (s : String) : List String :=
@@ -43,12 +44,18 @@ either `[alpha]*` or a single `non-alpha`. -/
 def stringReplacements (convs : HashMap String String) (str : String) : String :=
   String.join <| (splitAlpha str).map fun s => (convs.find? s).getD s
 
+/-- extra to_additive translations involving composite words. -/
+abbrev compositeTranslations : HashMap String String := HashMap.empty
+  |>.insert "single_one"            "single_zero"
+  |>.insert "exists_mul"            "exists_add"
+  |>.insert "eq_mul_inv_iff_mul_eq" "eq_sub_iff_add_eq"
+  |>.insert "eq_inv_mul_iff_mul_eq" "eq_neg_add_iff_add_eq"
+
 /-- some extra translations that help converting names from multiplicative to additive. -/
 def extraTranslations (s : String) : String :=
-  let repls := [("single_one", "single_zero"), ("exists_mul", "exists_add")]
   Id.run do
   let mut str := s
-  for (orig, new) in repls do
+  for (orig, new) in compositeTranslations do
     str := str.replace orig new
   return str
 
@@ -75,7 +82,11 @@ def MaxToMin (stx : Syntax) : m Syntax := do
       | .node _ `«term_≃*_» #[a, _, b] => return some <| ← `($(⟨a⟩) ≃+ $(⟨b⟩))
       | .node _ `«term_*_» #[a, _, b] =>
         if toPlus.contains a then
-          return some <| ← `($(⟨a⟩) + $(⟨b⟩))
+          if b.isOfKind `«term_⁻¹» then
+            return some <| ← `($(⟨a⟩) - $(⟨b[0]⟩))
+          else return some <| ← `($(⟨a⟩) + $(⟨b⟩))
+        else if a.isOfKind `«term_⁻¹» && toPlus.contains a[0] then
+          return some <| ← `(- $(⟨a[0]⟩) + $(⟨b⟩))
         else return none
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ `lift _, .node _ _ _args] =>
         return some s
