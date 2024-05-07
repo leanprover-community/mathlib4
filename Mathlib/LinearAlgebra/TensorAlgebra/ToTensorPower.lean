@@ -34,7 +34,6 @@ theorem toTensorAlgebra_tprod {n} (x : Fin n → M) :
   PiTensorProduct.lift.tprod _
 #align tensor_power.to_tensor_algebra_tprod TensorPower.toTensorAlgebra_tprod
 
-unseal Array.ofFn.go in
 @[simp]
 theorem toTensorAlgebra_gOne :
     TensorPower.toTensorAlgebra (@GradedMonoid.GOne.one _ (fun n => ⨂[R]^n M) _ _) = 1 :=

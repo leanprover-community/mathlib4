@@ -127,7 +127,6 @@ def FractionalOperation.IsSymmetricFractionalPolymorphismFor
 
 variable {C : Type*} [OrderedCancelAddCommMonoid C]
 
-unseal Array.ofFn.go in
 lemma Function.HasMaxCutPropertyAt.rows_lt_aux
     {f : (Fin 2 → D) → C} {a b : D} (mcf : f.HasMaxCutPropertyAt a b) (hab : a ≠ b)
     {ω : FractionalOperation D 2} (symmega : ω.IsSymmetric)
