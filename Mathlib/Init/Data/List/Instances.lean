@@ -9,7 +9,7 @@ import Mathlib.Mathport.Rename
 #align_import init.data.list.instances from "leanprover-community/lean"@"9af482290ef68e8aaa5ead01aa7b09b7be7019fd"
 
 /-!
-# Decidable and Monad instances for `List` not (yet) in `Std`
+# Decidable and Monad instances for `List` not (yet) in `Batteries`
 -/
 
 universe u v w
