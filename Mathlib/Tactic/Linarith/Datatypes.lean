@@ -309,7 +309,7 @@ The default `CertificateOracle` used by `linarith` is
 `Linarith.FourierMotzkin.produceCertificate`.
 -/
 def CertificateOracle : Type :=
-  List Comp → Nat → MetaM (Std.HashMap Nat Nat)
+  List Comp → Nat → MetaM (Batteries.HashMap Nat Nat)
 
 open Meta
 
