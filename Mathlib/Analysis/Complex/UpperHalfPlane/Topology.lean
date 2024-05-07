@@ -91,7 +91,7 @@ lemma subset_verticalStrip_of_isCompact {K : Set ℍ} (hK : IsCompact K) :
   obtain ⟨v, _, hv⟩ := hK.exists_isMinOn hne continuous_im.continuousOn
   exact ⟨|re u|, im v, v.im_pos, fun k hk ↦ ⟨isMaxOn_iff.mp hu _ hk, isMinOn_iff.mp hv _ hk⟩⟩
 
-theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) (N : ℕ) (hn : 0 < N) :
+theorem ModularGroup_T_zpow_mem_verticalStrip (z : ℍ) {N : ℕ} (hn : 0 < N) :
     ∃ n : ℤ, ModularGroup.T ^ (N * n) • z ∈ verticalStrip N z.im := by
   let n := Int.floor (z.re/N)
   use -n
