@@ -105,7 +105,8 @@ theorem not_exists_mem_nil (p : α → Prop) : ¬∃ x ∈ @nil α, p x :=
 #align list.length_map₂ List.length_zipWith
 #align list.length_take List.length_take
 #align list.length_take_le List.length_take_le
-#align list.length_remove_nth List.length_removeNth
+#align list.remove_nth List.eraseIdx
+#align list.length_remove_nth List.length_eraseIdx
 #align list.partition_eq_filter_filter List.partition_eq_filter_filterₓ
 
 /-! sublists -/
