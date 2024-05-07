@@ -34,14 +34,14 @@ def splitAlpha (s : String) : List String :=
 
 /-- replaces "words" in a string using `convs`.  It breaks the string into "words"
 grouping together maximal consecutive substrings consisting of
-either `[uppercase]*[lowercase]*` or a single `non-alpha`. -/
+either `[alpha]*` or a single `non-alpha`. -/
 def stringReplacements (convs : HashMap String String) (str : String) : String :=
   String.join <| (splitAlpha str).map fun s => (convs.find? s).getD s
 
 variable (convs : HashMap String String) in
-/-- converts a name involving `WithBot` to a name involving `WithTop`. -/
-def nameToTop : Name → Name
-  | .str a b => .str (nameToTop a) (stringReplacements convs b)
+/-- converts a name involving `MonoidAlgebra` to a name involving `AddMonoidAlgebra`. -/
+def nameToAdd : Name → Name
+  | .str a b => .str (nameToAdd a) (stringReplacements convs b)
   | _ => default
 
 variable {m} [Monad m] [MonadRef m] [MonadQuotation m] --[MonadLog m] [AddMessageContext m] [MonadOptions m]
@@ -53,7 +53,7 @@ def MaxToMin (stx : Syntax) : m Syntax := do
   let stx ← stx.replaceM fun s => do
     match s.getId with
       | .anonymous => return none
-      | v => return some (mkIdent (nameToTop convs v))
+      | v => return some (mkIdent (nameToAdd convs v))
 
   stx.replaceM fun s => do
     match s with
@@ -140,7 +140,7 @@ def toAmaCmd (verbose? : Bool) (id1 id2 : TSyntax `ident) (id3 : Array Syntax) (
   elabCommand cmd
   if (← get).messages.hasErrors then return
   let currNS ← getCurrNamespace
-  withScope (fun s => { s with currNamespace := nameToTop toAddWords currNS }) <| elabCommand newCmd
+  withScope (fun s => { s with currNamespace := nameToAdd toAddWords currNS }) <| elabCommand newCmd
 
 @[inherit_doc toAmaCmd]
 elab "to_ama " tk:("?")? "[" id:(ident)? "]" cmd:command : command =>
