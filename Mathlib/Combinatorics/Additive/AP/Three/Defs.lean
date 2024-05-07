@@ -118,7 +118,7 @@ end Monoid
 section CommMonoid
 variable [CommMonoid α] [CommMonoid β] {s A : Set α} {t B : Set β} {f : α → β} {a : α}
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. --/
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
 @[to_additive
 "Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms."]
 lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs : A ⊆ s)
@@ -129,7 +129,7 @@ lemma ThreeGPFree.of_image (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f) (hAs
 #align mul_salem_spencer.of_image ThreeGPFree.of_image
 #align add_salem_spencer.of_image ThreeAPFree.of_image
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. --/
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
 @[to_additive
 "Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms."]
 lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
@@ -144,14 +144,14 @@ lemma threeGPFree_image (hf : IsMulFreimanIso 2 s t f) (hAs : A ⊆ s) :
 #align mul_salem_spencer.image ThreeGPFree.image
 #align add_salem_spencer.image ThreeAPFree.image
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. --/
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman homomorphisms. -/
 @[to_additive]
 lemma IsMulFreimanHom.threeGPFree (hf : IsMulFreimanHom 2 s t f) (hf' : s.InjOn f)
     (ht : ThreeGPFree t) : ThreeGPFree s :=
   fun _ ha _ hb _ hc habc ↦ hf' ha hb <| ht (hf.mapsTo ha) (hf.mapsTo hb) (hf.mapsTo hc) <|
     hf.mul_eq_mul ha hc hb hb habc
 
-/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. --/
+/-- Arithmetic progressions of length three are preserved under `2`-Freiman isomorphisms. -/
 @[to_additive]
 lemma IsMulFreimanIso.threeGPFree_congr (hf : IsMulFreimanIso 2 s t f) :
     ThreeGPFree s ↔ ThreeGPFree t where
