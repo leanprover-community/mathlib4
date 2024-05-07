@@ -33,6 +33,8 @@ require proofwidgets from git "https://github.com/leanprover-community/ProofWidg
 require Cli from git "https://github.com/leanprover/lean4-cli" @ "main"
 require importGraph from git "https://github.com/leanprover-community/import-graph.git" @ "main"
 
+require english from "../LeanDeclToEnglish/"
+
 /-!
 ## Mathlib libraries
 -/
