@@ -250,7 +250,7 @@ def Spec : CommRingCatᵒᵖ ⥤ Scheme where
 /-- The empty scheme.
 -/
 @[simps]
-def empty.{u} : Scheme.{u} where
+def empty : Scheme where
   carrier := TopCat.of PEmpty
   presheaf := (CategoryTheory.Functor.const _).obj (CommRingCat.of PUnit)
   IsSheaf := Presheaf.isSheaf_of_isTerminal _ CommRingCat.punitIsTerminal
