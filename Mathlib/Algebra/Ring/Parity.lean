@@ -38,13 +38,12 @@ variable {F α β R : Type*}
 section Monoid
 variable [Monoid α] [HasDistribNeg α] {n : ℕ} {a : α}
 
-@[simp]
-theorem Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+@[simp] lemma Even.neg_pow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
   rintro ⟨c, rfl⟩ a
   simp_rw [← two_mul, pow_mul, neg_sq]
 #align even.neg_pow Even.neg_pow
 
-theorem Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
+lemma Even.neg_one_pow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_pow, one_pow]
 #align even.neg_one_pow Even.neg_one_pow
 
 end Monoid
@@ -52,51 +51,44 @@ end Monoid
 section DivisionMonoid
 variable [DivisionMonoid α] [HasDistribNeg α] {a : α} {n : ℤ}
 
-theorem Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
-  rintro ⟨c, rfl⟩ a
-  exact zpow_bit0_neg _ _
+lemma Even.neg_zpow : Even n → ∀ a : α, (-a) ^ n = a ^ n := by
+  rintro ⟨c, rfl⟩ a; exact zpow_bit0_neg _ _
 #align even.neg_zpow Even.neg_zpow
 
-theorem Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
+lemma Even.neg_one_zpow (h : Even n) : (-1 : α) ^ n = 1 := by rw [h.neg_zpow, one_zpow]
 #align even.neg_one_zpow Even.neg_one_zpow
 
 end DivisionMonoid
 
 section Semiring
-
 variable [Semiring α] [Semiring β] {a b : α} {m n : ℕ}
 
-theorem even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by
-  simp [even_iff_exists_two_nsmul]
+lemma even_iff_exists_two_mul : Even a ↔ ∃ b, a = 2 * b := by simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
-theorem even_iff_two_dvd : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
+lemma even_iff_two_dvd : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
 alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
 #align even.two_dvd Even.two_dvd
 
-theorem Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
+lemma Even.trans_dvd (ha : Even a) (hab : a ∣ b) : Even b :=
   even_iff_two_dvd.2 <| ha.two_dvd.trans hab
 #align even.trans_dvd Even.trans_dvd
 
-theorem Dvd.dvd.even(hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
+lemma Dvd.dvd.even (hab : a ∣ b) (ha : Even a) : Even b := ha.trans_dvd hab
 #align has_dvd.dvd.even Dvd.dvd.even
 
-@[simp]
-theorem range_two_mul (α) [Semiring α] : (Set.range fun x : α => 2 * x) = { a | Even a } := by
+@[simp] lemma range_two_mul (α) [Semiring α] : Set.range (fun x : α ↦ 2 * x) = {a | Even a} := by
   ext x
   simp [eq_comm, two_mul, Even]
 #align range_two_mul range_two_mul
 
 set_option linter.deprecated false in
-@[simp] theorem even_bit0 (a : α) : Even (bit0 a) :=
-  ⟨a, rfl⟩
+@[simp] lemma even_bit0 (a : α) : Even (bit0 a) := ⟨a, rfl⟩
 #align even_bit0 even_bit0
 
-@[simp]
-theorem even_two : Even (2 : α) :=
-  ⟨1, by rw [one_add_one_eq_two]⟩
+@[simp] lemma even_two : Even (2 : α) := ⟨1, by rw [one_add_one_eq_two]⟩
 #align even_two even_two
 
 @[simp] lemma Even.mul_left (ha : Even a) (b) : Even (b * a) := ha.map (AddMonoidHom.mulLeft _)
@@ -105,95 +97,74 @@ theorem even_two : Even (2 : α) :=
 @[simp] lemma Even.mul_right (ha : Even a) (b) : Even (a * b) := ha.map (AddMonoidHom.mulRight _)
 #align even.mul_right Even.mul_right
 
-theorem even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
+lemma even_two_mul (a : α) : Even (2 * a) := ⟨a, two_mul _⟩
 #align even_two_mul even_two_mul
 
-theorem Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
+lemma Even.pow_of_ne_zero (ha : Even a) : ∀ {n : ℕ}, n ≠ 0 → Even (a ^ n)
   | n + 1, _ => by rw [pow_succ]; exact ha.mul_left _
 #align even.pow_of_ne_zero Even.pow_of_ne_zero
 
-section WithOdd
-
 /-- An element `a` of a semiring is odd if there exists `k` such `a = 2*k + 1`. -/
-def Odd (a : α) : Prop :=
-  ∃ k, a = 2 * k + 1
+def Odd (a : α) : Prop := ∃ k, a = 2 * k + 1
 #align odd Odd
 
 set_option linter.deprecated false in
-theorem odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = bit1 b :=
-  exists_congr fun b => by
-    rw [two_mul]
-    rfl
+lemma odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = bit1 b := exists_congr fun b ↦ by rw [two_mul]; rfl
 #align odd_iff_exists_bit1 odd_iff_exists_bit1
 
 alias ⟨Odd.exists_bit1, _⟩ := odd_iff_exists_bit1
 #align odd.exists_bit1 Odd.exists_bit1
 
 set_option linter.deprecated false in
-@[simp] theorem odd_bit1 (a : α) : Odd (bit1 a) :=
-  odd_iff_exists_bit1.2 ⟨a, rfl⟩
+@[simp] lemma odd_bit1 (a : α) : Odd (bit1 a) := odd_iff_exists_bit1.2 ⟨a, rfl⟩
 #align odd_bit1 odd_bit1
 
-@[simp]
-theorem range_two_mul_add_one (α : Type*) [Semiring α] :
-    (Set.range fun x : α => 2 * x + 1) = { a | Odd a } := by
-  ext x
-  simp [Odd, eq_comm]
+@[simp] lemma range_two_mul_add_one (α : Type*) [Semiring α] :
+    Set.range (fun x : α ↦ 2 * x + 1) = {a | Odd a} := by ext x; simp [Odd, eq_comm]
 #align range_two_mul_add_one range_two_mul_add_one
 
-theorem Even.add_odd : Even a → Odd b → Odd (a + b) := by
-  rintro ⟨a, rfl⟩ ⟨b, rfl⟩
-  exact ⟨a + b, by rw [mul_add, ← two_mul, add_assoc]⟩
+lemma Even.add_odd : Even a → Odd b → Odd (a + b) := by
+  rintro ⟨a, rfl⟩ ⟨b, rfl⟩; exact ⟨a + b, by rw [mul_add, ← two_mul, add_assoc]⟩
 #align even.add_odd Even.add_odd
 
-theorem Even.odd_add : Even a → Odd b → Odd (b + a) :=
-  fun he ho ↦ by simp only [he.add_odd ho, add_comm]
-
-theorem Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := by
-  rw [add_comm]
-  exact hb.add_odd ha
+lemma Even.odd_add (ha : Even a) (hb : Odd b) : Odd (b + a) := add_comm a b ▸ ha.add_odd hb
+lemma Odd.add_even (ha : Odd a) (hb : Even b) : Odd (a + b) := add_comm a b ▸ hb.add_odd ha
 #align odd.add_even Odd.add_even
 
-theorem Odd.add_odd : Odd a → Odd b → Even (a + b) := by
+lemma Odd.add_odd : Odd a → Odd b → Even (a + b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine' ⟨a + b + 1, _⟩
   rw [two_mul, two_mul]
   ac_rfl
 #align odd.add_odd Odd.add_odd
 
-@[simp]
-theorem odd_one : Odd (1 : α) :=
+@[simp] lemma odd_one : Odd (1 : α) :=
   ⟨0, (zero_add _).symm.trans (congr_arg (· + (1 : α)) (mul_zero _).symm)⟩
 #align odd_one odd_one
 
 @[simp] lemma Even.add_one (h : Even a) : Odd (a + 1) := h.add_odd odd_one
-
 @[simp] lemma Even.one_add (h : Even a) : Odd (1 + a) := h.odd_add odd_one
 
-theorem odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
+lemma odd_two_mul_add_one (a : α) : Odd (2 * a + 1) := ⟨_, rfl⟩
 #align odd_two_mul_add_one odd_two_mul_add_one
 
 @[simp] lemma odd_add_self_one' : Odd (a + (a + 1)) := by simp [← add_assoc]
-
 @[simp] lemma odd_add_one_self : Odd (a + 1 + a) := by simp [add_comm _ a]
-
 @[simp] lemma odd_add_one_self' : Odd (a + (1 + a)) := by simp [add_comm 1 a]
+@[simp] lemma odd_one_add_self_self : Odd (1 + a + a) := by simp [add_comm 1 a]
 
-@[simp] lemma one_add_self_self : Odd (1 + a + a) := by simp [add_comm 1 a]
-
-theorem Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (f a) := by
+lemma Odd.map [FunLike F α β] [RingHomClass F α β] (f : F) : Odd a → Odd (f a) := by
   rintro ⟨a, rfl⟩; exact ⟨f a, by simp [two_mul]⟩
 #align odd.map Odd.map
 
-@[simp]
-theorem Odd.mul : Odd a → Odd b → Odd (a * b) := by
+@[simp] lemma Odd.mul : Odd a → Odd b → Odd (a * b) := by
   rintro ⟨a, rfl⟩ ⟨b, rfl⟩
   refine' ⟨2 * a * b + b + a, _⟩
   rw [mul_add, add_mul, mul_one, ← add_assoc, one_mul, mul_assoc, ← mul_add, ← mul_add, ← mul_assoc,
     ← Nat.cast_two, ← Nat.cast_comm]
 #align odd.mul Odd.mul
 
-theorem Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
+lemma Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
   | 0 => by
     rw [pow_zero]
     exact odd_one
@@ -215,27 +186,21 @@ lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
       rw [add_mul, ← pow_add, add_right_comm]; rfl
     _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
 
-end WithOdd
-
 end Semiring
 
 section Monoid
-
 variable [Monoid α] [HasDistribNeg α] {a : α} {n : ℕ}
 
-theorem Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
-  rintro ⟨c, rfl⟩ a
-  simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
+lemma Odd.neg_pow : Odd n → ∀ a : α, (-a) ^ n = -a ^ n := by
+  rintro ⟨c, rfl⟩ a; simp_rw [pow_add, pow_mul, neg_sq, pow_one, mul_neg]
 #align odd.neg_pow Odd.neg_pow
 
-@[simp]
-theorem Odd.neg_one_pow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_pow, one_pow]
+@[simp] lemma Odd.neg_one_pow (h : Odd n) : (-1 : α) ^ n = -1 := by rw [h.neg_pow, one_pow]
 #align odd.neg_one_pow Odd.neg_one_pow
 
 end Monoid
 
 section Ring
-
 variable [Ring α] {a b : α} {n : ℕ}
 
 /- Porting note (#10618): attribute `simp` removed based on linter report
@@ -243,19 +208,17 @@ simp can prove this:
   by simp only [even_neg, even_two]
 -/
 -- @[simp]
-theorem even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
+lemma even_neg_two : Even (-2 : α) := by simp only [even_neg, even_two]
 #align even_neg_two even_neg_two
 
-theorem Odd.neg (hp : Odd a) : Odd (-a) := by
+lemma Odd.neg (hp : Odd a) : Odd (-a) := by
   obtain ⟨k, hk⟩ := hp
   use -(k + 1)
-  rw [mul_neg, mul_add, neg_add, add_assoc, two_mul (1 : α), neg_add, neg_add_cancel_right, ←
-    neg_add, hk]
+  rw [mul_neg, mul_add, neg_add, add_assoc, two_mul (1 : α), neg_add, neg_add_cancel_right,
+    ← neg_add, hk]
 #align odd.neg Odd.neg
 
-@[simp]
-theorem odd_neg : Odd (-a) ↔ Odd a :=
-  ⟨fun h => neg_neg a ▸ h.neg, Odd.neg⟩
+@[simp] lemma odd_neg : Odd (-a) ↔ Odd a := ⟨fun h ↦ neg_neg a ▸ h.neg, Odd.neg⟩
 #align odd_neg odd_neg
 
 /- Porting note (#10618): attribute `simp` removed based on linter report
@@ -263,22 +226,19 @@ simp can prove this:
   by simp only [odd_neg, odd_one]
 -/
 -- @[simp]
-theorem odd_neg_one : Odd (-1 : α) := by simp
+lemma odd_neg_one : Odd (-1 : α) := by simp
 #align odd_neg_one odd_neg_one
 
-theorem Odd.sub_even (ha : Odd a) (hb : Even b) : Odd (a - b) := by
-  rw [sub_eq_add_neg]
-  exact ha.add_even hb.neg
+lemma Odd.sub_even (ha : Odd a) (hb : Even b) : Odd (a - b) := by
+  rw [sub_eq_add_neg]; exact ha.add_even hb.neg
 #align odd.sub_even Odd.sub_even
 
-theorem Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
-  rw [sub_eq_add_neg]
-  exact ha.add_odd hb.neg
+lemma Even.sub_odd (ha : Even a) (hb : Odd b) : Odd (a - b) := by
+  rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 #align even.sub_odd Even.sub_odd
 
-theorem Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
-  rw [sub_eq_add_neg]
-  exact ha.add_odd hb.neg
+lemma Odd.sub_odd (ha : Odd a) (hb : Odd b) : Even (a - b) := by
+  rw [sub_eq_add_neg]; exact ha.add_odd hb.neg
 #align odd.sub_odd Odd.sub_odd
 
 end Ring
