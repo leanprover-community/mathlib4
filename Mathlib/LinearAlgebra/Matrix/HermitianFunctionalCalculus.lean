@@ -54,8 +54,8 @@ noncomputable def LinearAlgEquiv : AlgEquiv (R := 𝕜)
     (A := (EuclideanSpace 𝕜 n) →ₗ[𝕜] (EuclideanSpace 𝕜 n))
     (B := (EuclideanSpace 𝕜 n) →L[𝕜] (EuclideanSpace 𝕜 n)):=
    {LinearMap.toContinuousLinearMap with
-    map_mul' := by exact fun x y ↦ rfl
-    commutes' := by exact fun r ↦ rfl}
+    map_mul' := fun _ _ ↦ rfl
+    commutes' := fun _ ↦ rfl}
 
 theorem spec_EuclideanCLM_eq_spec : spectrum 𝕜 (toEuclideanCLM (𝕜:= 𝕜) A) = spectrum 𝕜 A :=
     AlgEquiv.spectrum_eq _ A
