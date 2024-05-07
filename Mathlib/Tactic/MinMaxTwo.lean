@@ -5,7 +5,7 @@ Authors: Damiano Testa
 -/
 
 import Lean.Elab.Command
-import Mathlib.Algebra.Group.Defs
+import Mathlib.Algebra.Group.Equiv.Basic
 /-!
 #  `to_ama` a command to convert from `MonoidAlgebra` to `AddMonoidAlgebra`
 
@@ -25,6 +25,8 @@ abbrev toAddWords : HashMap String String := HashMap.empty
   |>.insert "Monoid" "AddMonoid"
   |>.insert "CommSemigroup" "AddCommSemigroup"
   |>.insert "MulOneClass" "AddZeroClass"
+  |>.insert "MulHomClass" "AddHomClass"
+  |>.insert "MulEquiv" "AddEquiv"
   |>.insert "MonoidHomClass" "AddMonoidHomClass"
   |>.insert "singleOneRingHom" "singleZeroRingHom"
   |>.insert "singleOneAlgHom" "singleZeroAlgHom"
@@ -70,11 +72,11 @@ def MaxToMin (stx : Syntax) : m Syntax := do
 
   stx.replaceM fun s => do
     match s with
+      | .node _ `«term_≃*_» #[a, _, b] => return some <| ← `($(⟨a⟩) ≃+ $(⟨b⟩))
       | .node _ `«term_*_» #[a, _, b] =>
         if toPlus.contains a then
           return some <| ← `($(⟨a⟩) + $(⟨b⟩))
         else return none
-
       | .node _ ``Lean.Parser.Term.app #[.ident _ _ `lift _, .node _ _ _args] =>
         return some s
 
@@ -90,7 +92,12 @@ def MaxToMin (stx : Syntax) : m Syntax := do
               if (toMultArrow != .anonymous) && toMultArrow == first.getId then
                 return some <| ←
                   `($(mkIdent `single) ($(mkIdent `Multiplicative.toAdd) $(⟨first⟩)) $(⟨second⟩))
-              else return none
+              else match first with
+                | .node _ ``Lean.Parser.Term.paren
+                  #[_, .node _ `BigOperators.bigprodin #[_, b, c, d, e, f],_] =>
+                    let toSum := ⟨mkNode `BigOperators.bigsumin #[mkAtom "∑", b, c, d, e, f]⟩
+                    return some <| ← `($(mkIdent `single) $toSum $(⟨second⟩))
+                | _ => return none
           | `Commute =>
             if toPlus.contains first then
               return some <| ← `($(mkIdent `AddCommute) $(⟨first⟩) $(⟨second⟩))

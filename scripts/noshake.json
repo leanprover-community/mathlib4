@@ -215,7 +215,7 @@
   "Mathlib.Tactic.Nontriviality.Core": ["Mathlib.Logic.Nontrivial.Basic"],
   "Mathlib.Tactic.MoveAdd":
   ["Mathlib.Algebra.Group.Basic", "Mathlib.Init.Order.LinearOrder"],
-  "Mathlib.Tactic.MinMaxTwo": ["Mathlib.Algebra.Group.Defs"],
+  "Mathlib.Tactic.MinMaxTwo": ["Mathlib.Algebra.Group.Equiv.Basic"],
   "Mathlib.Tactic.Measurability":
   ["Mathlib.Algebra.Group.Defs", "Mathlib.Tactic.Measurability.Init"],
   "Mathlib.Tactic.Lemma": ["Lean.Parser.Command"],
