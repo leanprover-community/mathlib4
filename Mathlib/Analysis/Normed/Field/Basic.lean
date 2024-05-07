@@ -1312,4 +1312,4 @@ attribute [scoped instance 200] SeminormedRing.toRing
 attribute [scoped instance 200] NonUnitalNormedRing.toNonUnitalRing
 attribute [scoped instance 200] NormedRing.toRing
 attribute [scoped instance 200] NormedDivisionRing.toDivisionRing
-end AlgebraNormedInstance
+end AlgebraNormedInstances
