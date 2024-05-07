@@ -188,8 +188,8 @@ theorem le_inf_support_multiset_prod (degt0 : 0 ≤ degt 0)
   refine' OrderDual.ofDual_le_ofDual.mpr <|
     sup_support_multiset_prod_le (OrderDual.ofDual_le_ofDual.mp _)
       (fun a b => OrderDual.ofDual_le_ofDual.mp _) m
-  exact degt0
-  exact degtm _ _
+  · exact degt0
+  · exact degtm _ _
 #align add_monoid_algebra.le_inf_support_multiset_prod AddMonoidAlgebra.le_inf_support_multiset_prod
 
 theorem sup_support_finset_prod_le (degb0 : degb 0 ≤ 0)
@@ -240,8 +240,7 @@ the induced linear order on `Lex A` equips `MvPolynomial` ring with a
 type of (monic) monomials in `R[A]`, that respects addition). We make use of this monomial order
 by taking `D := toLex`, and different monomial orders could be accessed via different type
 synonyms once they are added. -/
-@[reducible]
-def supDegree (f : R[A]) : B :=
+abbrev supDegree (f : R[A]) : B :=
   f.support.sup D
 
 /-- If `D` is an injection into a linear order `B`, the leading coefficient of `f : R[A]` is the
@@ -533,8 +532,7 @@ support of `f`, or `⊤` if `f` is zero.
 Often, the Type `T` is `WithTop A`,
 If, further, `A` has a linear order, then this notion coincides with the usual one,
 using the minimum of the exponents. -/
-@[reducible]
-def infDegree (f : R[A]) : T :=
+abbrev infDegree (f : R[A]) : T :=
   f.support.inf D
 
 variable {D}

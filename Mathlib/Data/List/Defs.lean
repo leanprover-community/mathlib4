@@ -7,8 +7,8 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
-import Std.Data.RBMap.Basic
+import Batteries.Tactic.Lint.Basic
+import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 
@@ -18,8 +18,6 @@ import Std.Data.RBMap.Basic
 This file contains various definitions on lists. It does not contain
 proofs about these definitions, those are contained in other files in `Data.List`
 -/
-
-set_option autoImplicit true
 
 -- Porting note
 -- Many of the definitions in `Data.List.Defs` were already defined upstream in `Std4`
@@ -314,14 +312,15 @@ instance instSProd : SProd (List α) (List β) (List (α × β)) where
 
 section Chain
 
-instance decidableChain [DecidableRel R] (a : α) (l : List α) :
+instance decidableChain {R : α → α → Prop} [DecidableRel R] (a : α) (l : List α) :
     Decidable (Chain R a l) := by
   induction l generalizing a with
   | nil => simp only [List.Chain.nil]; infer_instance
   | cons a as ih => haveI := ih; simp only [List.chain_cons]; infer_instance
 #align list.decidable_chain List.decidableChain
 
-instance decidableChain' [DecidableRel R] (l : List α) : Decidable (Chain' R l) := by
+instance decidableChain' {R : α → α → Prop} [DecidableRel R] (l : List α) :
+    Decidable (Chain' R l) := by
   cases l <;> dsimp only [List.Chain'] <;> infer_instance
 #align list.decidable_chain' List.decidableChain'
 

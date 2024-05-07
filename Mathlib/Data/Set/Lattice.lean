@@ -54,9 +54,6 @@ In lemma names,
 * `⋂₀`: `Set.sInter`
 -/
 
-set_option autoImplicit true
-
-
 open Function Set
 
 universe u
@@ -2200,6 +2197,15 @@ theorem sigmaToiUnion_bijective (h : Pairwise fun i j => Disjoint (t i) (t j)) :
   ⟨sigmaToiUnion_injective t h, sigmaToiUnion_surjective t⟩
 #align set.sigma_to_Union_bijective Set.sigmaToiUnion_bijective
 
+/-- Equivalence from the disjoint union of a family of sets forming a partition of `β`, to `β`
+itself. -/
+noncomputable def sigmaEquiv (s : α → Set β) (hs : ∀ b, ∃! i, b ∈ s i) :
+    (Σ i, s i) ≃ β where
+  toFun | ⟨_, b⟩ => b
+  invFun b := ⟨(hs b).choose, b, (hs b).choose_spec.1⟩
+  left_inv | ⟨i, b, hb⟩ => Sigma.subtype_ext ((hs b).choose_spec.2 i hb).symm rfl
+  right_inv _ := rfl
+
 /-- Equivalence between a disjoint union and a dependent sum. -/
 noncomputable def unionEqSigmaOfDisjoint {t : α → Set β}
     (h : Pairwise fun i j => Disjoint (t i) (t j)) :
@@ -2275,10 +2281,10 @@ lemma iInf_sUnion (S : Set (Set α)) (f : α → β) :
     (⨅ x ∈ ⋃₀ S, f x) = ⨅ (s ∈ S) (x ∈ s), f x := by
   rw [sUnion_eq_iUnion, iInf_iUnion, ← iInf_subtype'']
 
-lemma forall_sUnion {p : α → Prop} :
+lemma forall_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∀ x ∈ ⋃₀ S, p x) ↔ ∀ s ∈ S, ∀ x ∈ s, p x := by
   simp_rw [← iInf_Prop_eq, iInf_sUnion]
 
-lemma exists_sUnion {p : α → Prop} :
+lemma exists_sUnion {S : Set (Set α)} {p : α → Prop} :
     (∃ x ∈ ⋃₀ S, p x) ↔ ∃ s ∈ S, ∃ x ∈ s, p x := by
   simp_rw [← exists_prop, ← iSup_Prop_eq, iSup_sUnion]

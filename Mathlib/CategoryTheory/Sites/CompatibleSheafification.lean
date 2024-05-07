@@ -135,7 +135,7 @@ section
 
 -- We will sheafify `D`-valued presheaves in this section.
 variable [ConcreteCategory.{max v u} D] [PreservesLimits (forget D)]
-  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [ReflectsIsomorphisms (forget D)]
+  [∀ X : C, PreservesColimitsOfShape (J.Cover X)ᵒᵖ (forget D)] [(forget D).ReflectsIsomorphisms]
 
 @[simp]
 theorem sheafifyCompIso_inv_eq_sheafifyLift :

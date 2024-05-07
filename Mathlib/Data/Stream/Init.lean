@@ -326,7 +326,9 @@ theorem bisim_simple (s₁ s₂ : Stream' α) :
     head s₁ = head s₂ → s₁ = tail s₁ → s₂ = tail s₂ → s₁ = s₂ := fun hh ht₁ ht₂ =>
   eq_of_bisim (fun s₁ s₂ => head s₁ = head s₂ ∧ s₁ = tail s₁ ∧ s₂ = tail s₂)
     (fun s₁ s₂ ⟨h₁, h₂, h₃⟩ => by
-      constructor; exact h₁; rw [← h₂, ← h₃]
+      constructor
+      · exact h₁
+      rw [← h₂, ← h₃]
       (repeat' constructor) <;> assumption)
     (And.intro hh (And.intro ht₁ ht₂))
 #align stream.bisim_simple Stream'.bisim_simple
@@ -761,7 +763,9 @@ theorem get_nats (n : Nat) : get nats n = n :=
 
 theorem nats_eq : nats = cons 0 (map succ nats) := by
   apply Stream'.ext; intro n
-  cases n; rfl; rw [get_succ]; rfl
+  cases n
+  · rfl
+  rw [get_succ]; rfl
 #align stream.nats_eq Stream'.nats_eq
 
 end Stream'
