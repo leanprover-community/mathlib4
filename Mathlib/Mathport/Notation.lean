@@ -6,9 +6,9 @@ Authors: Mario Carneiro, Kyle Miller
 import Mathlib.Lean.Elab.Term
 import Mathlib.Lean.PrettyPrinter.Delaborator
 import Mathlib.Tactic.ScopedNS
-import Std.Linter.UnreachableTactic
-import Std.Util.ExtendedBinder
-import Std.Lean.Syntax
+import Batteries.Linter.UnreachableTactic
+import Batteries.Util.ExtendedBinder
+import Batteries.Lean.Syntax
 
 /-!
 # The notation3 macro, simulating Lean 3's notation.
@@ -19,13 +19,11 @@ import Std.Lean.Syntax
 
 namespace Mathlib.Notation3
 open Lean Parser Meta Elab Command PrettyPrinter.Delaborator SubExpr
-open Std.ExtendedBinder
+open Batteries.ExtendedBinder
 
 initialize registerTraceClass `notation3
 
 /-! ### Syntaxes supporting `notation3` -/
-
-set_option autoImplicit true
 
 /--
 Expands binders into nested combinators.
@@ -118,7 +116,7 @@ def MatchState.empty : MatchState where
 
 /-- Evaluate `f` with the given variable's value as the `SubExpr` and within that subexpression's
 saved context. Fails if the variable has no value. -/
-def MatchState.withVar (s : MatchState) (name : Name)
+def MatchState.withVar {α : Type} (s : MatchState) (name : Name)
     (m : DelabM α) : DelabM α := do
   let some (se, lctx, linsts) := s.vars.find? name | failure
   withLCtx lctx linsts <| withTheReader SubExpr (fun _ => se) <| m
@@ -179,7 +177,7 @@ def matchTypeOf (matchTy : Matcher) : Matcher := fun s => do
 
 /-- Matches raw nat lits. -/
 def natLitMatcher (n : Nat) : Matcher := fun s => do
-  guard <| (← getExpr).natLit? == n
+  guard <| (← getExpr).rawNatLit? == n
   return s
 
 /-- Matches applications. -/

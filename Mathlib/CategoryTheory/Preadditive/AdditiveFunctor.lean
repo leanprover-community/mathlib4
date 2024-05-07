@@ -178,6 +178,13 @@ theorem additive_of_preservesBinaryBiproducts [HasBinaryBiproducts C] [Preserves
       biprod.add_eq_lift_id_desc]
 #align category_theory.functor.additive_of_preserves_binary_biproducts CategoryTheory.Functor.additive_of_preservesBinaryBiproducts
 
+lemma additive_of_preserves_binary_products
+    [HasBinaryProducts C] [PreservesLimitsOfShape (Discrete WalkingPair) F]
+    [F.PreservesZeroMorphisms] : F.Additive := by
+  have : HasBinaryBiproducts C := HasBinaryBiproducts.of_hasBinaryProducts
+  have := preservesBinaryBiproductsOfPreservesBinaryProducts F
+  exact Functor.additive_of_preservesBinaryBiproducts F
+
 end
 
 end

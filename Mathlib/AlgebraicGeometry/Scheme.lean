@@ -87,7 +87,7 @@ instance : forgetToLocallyRingedSpace.Faithful :=
 @[simp]
 theorem forgetToLocallyRingedSpace_preimage {X Y : Scheme} (f : X ⟶ Y) :
     Scheme.forgetToLocallyRingedSpace.preimage f = f :=
-  rfl
+  Scheme.forgetToLocallyRingedSpace.map_injective (Functor.map_preimage _ _)
 #align algebraic_geometry.Scheme.forget_to_LocallyRingedSpace_preimage AlgebraicGeometry.Scheme.forgetToLocallyRingedSpace_preimage
 
 /-- The forgetful functor from `Scheme` to `TopCat`. -/

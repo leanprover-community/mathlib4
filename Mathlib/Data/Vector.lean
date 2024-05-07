@@ -4,9 +4,8 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Leonardo de Moura
 -/
 import Mathlib.Mathport.Rename
-import Std.Data.List.Basic
-import Std.Data.List.Lemmas
-import Mathlib.Init.Data.List.Basic
+import Batteries.Data.List.Basic
+import Batteries.Data.List.Lemmas
 import Mathlib.Init.Data.List.Lemmas
 import Mathlib.Algebra.Order.Ring.Nat
 
@@ -54,7 +53,6 @@ open Nat
 
 /-- The first element of a vector with length at least `1`. -/
 def head : Vector α (Nat.succ n) → α
-  | ⟨[], h⟩ => by contradiction
   | ⟨a :: _, _⟩ => a
 #align vector.head Vector.head
 
@@ -86,10 +84,9 @@ def toList (v : Vector α n) : List α :=
   v.1
 #align vector.to_list Vector.toList
 
--- Porting note: align to `List` API
 /-- nth element of a vector, indexed by a `Fin` type. -/
-def get : ∀ _ : Vector α n, Fin n → α
-  | ⟨l, h⟩, i => l.nthLe i.1 (by rw [h]; exact i.2)
+def get (l : Vector α n) (i : Fin n) : α :=
+  l.1.get <| i.cast l.2.symm
 #align vector.nth Vector.get
 
 /-- Appending a vector to another. -/
@@ -160,9 +157,11 @@ def take (i : ℕ) : Vector α n → Vector α (min i n)
 #align vector.take Vector.take
 
 /-- Remove the element at position `i` from a vector of length `n`. -/
-def removeNth (i : Fin n) : Vector α n → Vector α (n - 1)
-  | ⟨l, p⟩ => ⟨List.removeNth l i.1, by rw [l.length_removeNth] <;> rw [p]; exact i.2⟩
-#align vector.remove_nth Vector.removeNth
+def eraseIdx (i : Fin n) : Vector α n → Vector α (n - 1)
+  | ⟨l, p⟩ => ⟨List.eraseIdx l i.1, by rw [l.length_eraseIdx] <;> rw [p]; exact i.2⟩
+#align vector.remove_nth Vector.eraseIdx
+
+@[deprecated (since := "2024-05-04")] alias removeNth := eraseIdx
 
 /-- Vector of length `n` from a function on `Fin n`. -/
 def ofFn : ∀ {n}, (Fin n → α) → Vector α n

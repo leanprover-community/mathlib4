@@ -168,7 +168,7 @@ theorem exp_zero : exp 0 = 1 := by
   · dsimp [exp']
     induction' j with j ih
     · dsimp [exp']; simp [show Nat.succ 0 = 1 from rfl]
-    · rw [← ih (by simp [show 1 = Nat.succ 0 from rfl, Nat.succ_le_succ])]
+    · rw [← ih (by simp [Nat.succ_le_succ])]
       simp only [sum_range_succ, pow_succ]
       simp
 #align complex.exp_zero Complex.exp_zero
@@ -1459,8 +1459,8 @@ theorem exp_approx_end (n m : ℕ) (x : ℝ) (e₁ : n + 1 = m) (h : |x| ≤ 1) 
     |exp x - expNear m x 0| ≤ |x| ^ m / m.factorial * ((m + 1) / m) := by
   simp only [expNear, mul_zero, add_zero]
   convert exp_bound (n := m) h ?_ using 1
-  field_simp [mul_comm]
-  omega
+  · field_simp [mul_comm]
+  · omega
 #align real.exp_approx_end Real.exp_approx_end
 
 theorem exp_approx_succ {n} {x a₁ b₁ : ℝ} (m : ℕ) (e₁ : n + 1 = m) (a₂ b₂ : ℝ)
@@ -1714,7 +1714,10 @@ end Mathlib.Meta.Positivity
 
 namespace Complex
 
-@[simp]
+-- Adaptation note: nightly-2024-04-01
+-- The simpNF linter now times out on this lemma.
+-- See https://github.com/leanprover-community/mathlib4/issues/12230
+@[simp, nolint simpNF]
 theorem abs_cos_add_sin_mul_I (x : ℝ) : abs (cos x + sin x * I) = 1 := by
   have := Real.sin_sq_add_cos_sq x
   simp_all [add_comm, abs, normSq, sq, sin_ofReal_re, cos_ofReal_re, mul_re]

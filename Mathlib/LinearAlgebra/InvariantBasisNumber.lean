@@ -286,9 +286,9 @@ private def induced_equiv [Fintype ι'] (I : Ideal R) (e : (ι → R) ≃ₗ[R] 
   -- Porting note: the next 4 lines were necessary because Lean couldn't correctly infer `(I.pi ι)`
   -- and `(I.pi ι')` on its own.
   pick_goal 3
-  convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
-  congr
-  simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
+  · convert_to Ideal.Quotient.mk (I.pi ι) _ = Ideal.Quotient.mk (I.pi ι) _
+    congr
+    simp only [LinearEquiv.coe_coe, LinearEquiv.symm_apply_apply]
   all_goals
     convert_to Ideal.Quotient.mk (I.pi ι') _ = Ideal.Quotient.mk (I.pi ι') _
     congr

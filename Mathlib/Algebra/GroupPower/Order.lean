@@ -6,6 +6,7 @@ Authors: Jeremy Avigad, Robert Y. Lewis
 import Mathlib.Algebra.GroupPower.CovariantClass
 import Mathlib.Algebra.GroupPower.Ring
 import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Algebra.Parity
 
 #align_import algebra.group_power.order from "leanprover-community/mathlib"@"00f91228655eecdcd3ac97a7fd8dbcb139fe990a"
 
@@ -26,7 +27,7 @@ variable [OrderedCommGroup α] {m n : ℤ} {a b : α}
 @[to_additive zsmul_pos] lemma one_lt_zpow' (ha : 1 < a) (hn : 0 < n) : 1 < a ^ n := by
   obtain ⟨n, rfl⟩ := Int.eq_ofNat_of_zero_le hn.le
   rw [zpow_natCast]
-  refine' one_lt_pow' ha ?_
+  refine one_lt_pow' ha ?_
   rintro rfl
   simp at hn
 #align one_lt_zpow' one_lt_zpow'
@@ -296,22 +297,9 @@ theorem sq_pos_of_pos (ha : 0 < a) : 0 < a ^ 2 := pow_pos ha _
 end StrictOrderedSemiring
 
 section StrictOrderedRing
-set_option linter.deprecated false
-
 variable [StrictOrderedRing R] {a : R}
 
-theorem pow_bit0_pos_of_neg (ha : a < 0) (n : ℕ) : 0 < a ^ bit0 n := by
-  rw [pow_bit0']
-  exact pow_pos (mul_pos_of_neg_of_neg ha ha) _
-#align pow_bit0_pos_of_neg pow_bit0_pos_of_neg
-
-theorem pow_bit1_neg (ha : a < 0) (n : ℕ) : a ^ bit1 n < 0 := by
-  rw [bit1, pow_succ']
-  exact mul_neg_of_neg_of_pos ha (pow_bit0_pos_of_neg ha n)
-#align pow_bit1_neg pow_bit1_neg
-
-theorem sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 :=
-  pow_bit0_pos_of_neg ha 1
+lemma sq_pos_of_neg (ha : a < 0) : 0 < a ^ 2 := by rw [sq]; exact mul_pos_of_neg_of_neg ha ha
 #align sq_pos_of_neg sq_pos_of_neg
 
 end StrictOrderedRing
@@ -392,6 +380,16 @@ theorem lt_of_mul_self_lt_mul_self (hb : 0 ≤ b) : a * a < b * b → a < b := b
   exact lt_of_pow_lt_pow_left _ hb
 #align lt_of_mul_self_lt_mul_self lt_of_mul_self_lt_mul_self
 
+/-!
+### Lemmas for canonically linear ordered semirings or linear ordered rings
+
+The slightly unusual typeclass assumptions `[LinearOrderedSemiring R] [ExistsAddOfLE R]` cover two
+more familiar settings:
+* `[LinearOrderedRing R]`, eg `ℤ`, `ℚ` or `ℝ`
+* `[CanonicallyLinearOrderedSemiring R]` (although we don't actually have this typeclass), eg `ℕ`,
+  `ℚ≥0` or `ℝ≥0`
+-/
+
 variable [ExistsAddOfLE R]
 
 lemma add_sq_le : (a + b) ^ 2 ≤ 2 * (a ^ 2 + b ^ 2) := by
@@ -433,7 +431,11 @@ protected lemma Even.add_pow_le (hn : Even n) :
         rw [Commute.mul_pow]; simp [Commute, SemiconjBy, two_mul, mul_two]
     _ ≤ 2 ^ n * (2 ^ (n - 1) * ((a ^ 2) ^ n + (b ^ 2) ^ n)) := mul_le_mul_of_nonneg_left
           (add_pow_le (sq_nonneg _) (sq_nonneg _) _) $ pow_nonneg (zero_le_two (α := R)) _
-    _ = _ := by simp only [← mul_assoc, ← pow_add, ← pow_mul]; cases n; rfl; simp [Nat.two_mul]
+    _ = _ := by
+      simp only [← mul_assoc, ← pow_add, ← pow_mul]
+      cases n
+      · rfl
+      · simp [Nat.two_mul]
 
 lemma Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
   obtain ⟨k, rfl⟩ := hn; rw [pow_add]; exact mul_self_nonneg _
@@ -541,7 +543,6 @@ lemma strictMono_pow_bit1 (n : ℕ) : StrictMono (· ^ bit1 n : R → R) := (odd
 #align strict_mono_pow_bit1 strictMono_pow_bit1
 
 end deprecated
-
 end LinearOrderedSemiring
 
 namespace MonoidHom
