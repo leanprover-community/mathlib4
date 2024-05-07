@@ -84,11 +84,17 @@ end NonUnitalStarSubalgebraClass
 
 /-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
 operation. -/
+structure StarSubset (A : Type v) [Star A] : Type v where
+  /-- The underlying set of a `SubStar`. -/
+  carrier : Set A
+  /-- The `carrier` of a `StarSubset` is closed under the `star` operation. -/
+  star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
+
+/-- A non-unital star subalgebra is a non-unital subalgebra which is closed under the `star`
+operation. -/
 structure NonUnitalStarSubalgebra (R : Type u) (A : Type v) [CommSemiring R]
     [NonUnitalNonAssocSemiring A] [Module R A] [Star A]
-    extends NonUnitalSubalgebra R A : Type v where
-  /-- The `carrier` of a `NonUnitalStarSubalgebra` is closed under the `star` operation. -/
-  star_mem' : ∀ {a : A} (_ha : a ∈ carrier), star a ∈ carrier
+    extends NonUnitalSubalgebra R A, StarSubset A : Type v where
 
 /-- Reinterpret a `NonUnitalStarSubalgebra` as a `NonUnitalSubalgebra`. -/
 add_decl_doc NonUnitalStarSubalgebra.toNonUnitalSubalgebra
