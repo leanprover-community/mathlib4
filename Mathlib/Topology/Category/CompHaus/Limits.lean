@@ -184,9 +184,9 @@ abbrev finiteCoproduct.cofan : Limits.Cofan X :=
 def finiteCoproduct.isColimit : Limits.IsColimit (finiteCoproduct.cofan X) :=
   mkCofanColimit _
     (fun s ↦ desc _ fun a ↦ s.inj a)
-    (fun s a ↦ ι_desc _ _ _)
-    fun s m hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
-      (by ext t; exact congrFun (congrArg DFunLike.coe (hm a)) t)
+    (fun _ _ ↦ ι_desc _ _ _)
+    fun _ _ hm ↦ finiteCoproduct.hom_ext _ _ _ fun a ↦
+      (DFunLike.ext _ _ fun t ↦ congrFun (congrArg DFunLike.coe (hm a)) t)
 
 section Iso
 

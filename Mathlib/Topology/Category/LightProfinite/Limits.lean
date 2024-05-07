@@ -110,7 +110,7 @@ end Pullback
 
 section FiniteCoproduct
 
-instance {α : Type w} [Finite α] (X : α → ProfiniteMax.{u, w}) [∀ a, (X a).IsLight] :
+instance {α : Type w} [Finite α] (X : α → Profinite.{max u w}) [∀ a, (X a).IsLight] :
     (Profinite.finiteCoproduct X).IsLight where
   countable_clopens := by
     refine @Function.Surjective.countable ((a : α) → Clopens (X a)) _ inferInstance
