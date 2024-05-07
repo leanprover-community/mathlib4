@@ -835,8 +835,8 @@ theorem linearIndependent_iUnion_finite {η : Type*} {ιs : η → Type*} {f : �
   apply LinearIndependent.of_subtype_range
   · rintro ⟨x₁, x₂⟩ ⟨y₁, y₂⟩ hxy
     by_cases h_cases : x₁ = y₁
-    subst h_cases
-    · apply Sigma.eq
+    · subst h_cases
+      apply Sigma.eq
       rw [LinearIndependent.injective (hindep _) hxy]
       rfl
     · have h0 : f x₁ x₂ = 0 := by
@@ -866,7 +866,7 @@ def LinearIndependent.totalEquiv (hv : LinearIndependent R v) :
   apply LinearEquiv.ofBijective (LinearMap.codRestrict (span R (range v)) (Finsupp.total ι M R v) _)
   constructor
   · rw [← LinearMap.ker_eq_bot, LinearMap.ker_codRestrict]
-    apply hv
+    · apply hv
     · intro l
       rw [← Finsupp.range_total]
       rw [LinearMap.mem_range]
@@ -973,12 +973,14 @@ theorem LinearIndependent.independent_span_singleton (hv : LinearIndependent R v
   refine' CompleteLattice.independent_def.mp fun i => _
   rw [disjoint_iff_inf_le]
   intro m hm
-  simp only [mem_inf, mem_span_singleton, iSup_subtype', ← span_range_eq_iSup] at hm
+  simp only [mem_inf, mem_span_singleton, iSup_subtype'] at hm
+  rw [← span_range_eq_iSup] at hm
   obtain ⟨⟨r, rfl⟩, hm⟩ := hm
   suffices r = 0 by simp [this]
   apply linearIndependent_iff_not_smul_mem_span.mp hv i
   -- Porting note: The original proof was using `convert hm`.
-  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by rwa [this]
+  suffices v '' (univ \ {i}) = range fun j : { j // j ≠ i } => v j by
+    rwa [this]
   ext
   simp
 #align linear_independent.independent_span_singleton LinearIndependent.independent_span_singleton

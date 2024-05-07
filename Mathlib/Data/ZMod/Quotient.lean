@@ -8,6 +8,7 @@ import Mathlib.Data.ZMod.Basic
 import Mathlib.GroupTheory.GroupAction.Quotient
 import Mathlib.RingTheory.Ideal.QuotientOperations
 import Mathlib.RingTheory.Int.Basic
+import Mathlib.RingTheory.ZMod
 
 #align_import data.zmod.quotient from "leanprover-community/mathlib"@"da420a8c6dd5bdfb85c4ced85c34388f633bc6ff"
 
@@ -153,8 +154,9 @@ theorem orbitZPowersEquiv_symm_apply (k : ZMod (minimalPeriod (a • ·) b)) :
   rfl
 #align mul_action.orbit_zpowers_equiv_symm_apply MulAction.orbitZPowersEquiv_symm_apply
 #align add_action.orbit_zmultiples_equiv_symm_apply AddAction.orbitZMultiplesEquiv_symm_apply
-/- 2024-02-21 -/ @[deprecated] alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply :=
-  orbitZMultiplesEquiv_symm_apply
+
+@[deprecated] -- 2024-02-21
+alias _root_.AddAction.orbit_zmultiples_equiv_symm_apply := orbitZMultiplesEquiv_symm_apply
 
 theorem orbitZPowersEquiv_symm_apply' (k : ℤ) :
     (orbitZPowersEquiv a b).symm k =

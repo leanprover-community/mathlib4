@@ -4,7 +4,10 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Damiano Testa
 -/
 import Mathlib.Algebra.Group.Opposite
-import Mathlib.Algebra.Order.Ring.Abs
+import Mathlib.Algebra.GroupPower.Ring
+import Mathlib.Algebra.Order.Group.Abs
+import Mathlib.Algebra.Order.Ring.Canonical
+import Mathlib.Data.Nat.Cast.Basic
 import Mathlib.Data.Nat.Cast.Commute
 import Mathlib.Data.Set.Defs
 
@@ -272,13 +275,13 @@ alias ⟨Even.exists_bit0, _⟩ := even_iff_exists_bit0
 
 section Semiring
 
-variable [Semiring α] [Semiring β] {a b : α}
+variable [Semiring α] [Semiring β] {a b : α} {n : ℕ}
 
 theorem even_iff_exists_two_mul (a : α) : Even a ↔ ∃ b, a = 2 * b := by
   simp [even_iff_exists_two_nsmul]
 #align even_iff_exists_two_mul even_iff_exists_two_mul
 
-theorem even_iff_two_dvd {a : α} : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
+theorem even_iff_two_dvd : Even a ↔ 2 ∣ a := by simp [Even, Dvd.dvd, two_mul]
 #align even_iff_two_dvd even_iff_two_dvd
 
 alias ⟨Even.two_dvd, _⟩ := even_iff_two_dvd
@@ -337,7 +340,7 @@ def Odd (a : α) : Prop :=
 #align odd Odd
 
 set_option linter.deprecated false in
-theorem odd_iff_exists_bit1 {a : α} : Odd a ↔ ∃ b, a = bit1 b :=
+theorem odd_iff_exists_bit1 : Odd a ↔ ∃ b, a = bit1 b :=
   exists_congr fun b => by
     rw [two_mul]
     rfl
@@ -420,6 +423,21 @@ theorem Odd.pow (ha : Odd a) : ∀ {n : ℕ}, Odd (a ^ n)
     rw [pow_succ]
     exact (Odd.pow ha).mul ha
 #align odd.pow Odd.pow
+
+lemma Odd.pow_add_pow_eq_zero [IsCancelAdd α] (hn : Odd n) (hab : a + b = 0) :
+    a ^ n + b ^ n = 0 := by
+  obtain ⟨k, rfl⟩ := hn
+  induction' k with k ih
+  · simpa
+  have : a ^ 2 = b ^ 2 := add_right_cancel $
+    calc
+      a ^ 2 + a * b = 0 := by rw [sq, ← mul_add, hab, mul_zero]
+      _ = b ^ 2 + a * b := by rw [sq, ← add_mul, add_comm, hab, zero_mul]
+  refine add_right_cancel (b := b ^ (2 * k + 1) * a ^ 2) ?_
+  calc
+    _ = (a ^ (2 * k + 1) + b ^ (2 * k + 1)) * a ^ 2 + b ^ (2 * k + 3) := by
+      rw [add_mul, ← pow_add, add_right_comm]; rfl
+    _ = _ := by rw [ih, zero_mul, zero_add, zero_add, this, ← pow_add]
 
 end WithOdd
 
@@ -506,63 +524,3 @@ theorem odd_abs [LinearOrder α] : Odd (abs a) ↔ Odd a := by
 #align odd_abs odd_abs
 
 end Ring
-
-section Powers
-
-set_option linter.deprecated false
-
-variable [LinearOrderedRing R] {a : R} {n : ℕ}
-
-theorem Even.pow_nonneg (hn : Even n) (a : R) : 0 ≤ a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_nonneg a k
-#align even.pow_nonneg Even.pow_nonneg
-
-theorem Even.pow_pos (hn : Even n) (ha : a ≠ 0) : 0 < a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit0_pos ha k
-#align even.pow_pos Even.pow_pos
-
-theorem Odd.pow_nonpos (hn : Odd n) (ha : a ≤ 0) : a ^ n ≤ 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_nonpos_iff.mpr ha
-#align odd.pow_nonpos Odd.pow_nonpos
-
-theorem Odd.pow_neg (hn : Odd n) (ha : a < 0) : a ^ n < 0 := by
-  cases' hn with k hk; simpa only [hk, two_mul] using pow_bit1_neg_iff.mpr ha
-#align odd.pow_neg Odd.pow_neg
-
-theorem Odd.pow_nonneg_iff (hn : Odd n) : 0 ≤ a ^ n ↔ 0 ≤ a :=
-  ⟨fun h => le_of_not_lt fun ha => h.not_lt <| hn.pow_neg ha, fun ha => pow_nonneg ha n⟩
-#align odd.pow_nonneg_iff Odd.pow_nonneg_iff
-
-theorem Odd.pow_nonpos_iff (hn : Odd n) : a ^ n ≤ 0 ↔ a ≤ 0 :=
-  ⟨fun h => le_of_not_lt fun ha => h.not_lt <| pow_pos ha _, hn.pow_nonpos⟩
-#align odd.pow_nonpos_iff Odd.pow_nonpos_iff
-
-theorem Odd.pow_pos_iff (hn : Odd n) : 0 < a ^ n ↔ 0 < a :=
-  ⟨fun h => lt_of_not_le fun ha => h.not_le <| hn.pow_nonpos ha, fun ha => pow_pos ha n⟩
-#align odd.pow_pos_iff Odd.pow_pos_iff
-
-theorem Odd.pow_neg_iff (hn : Odd n) : a ^ n < 0 ↔ a < 0 :=
-  ⟨fun h => lt_of_not_le fun ha => h.not_le <| pow_nonneg ha _, hn.pow_neg⟩
-#align odd.pow_neg_iff Odd.pow_neg_iff
-
-theorem Even.pow_pos_iff (hn : Even n) (h₀ : n ≠ 0) : 0 < a ^ n ↔ a ≠ 0 :=
-  ⟨fun h ha => by
-    rw [ha, zero_pow h₀] at h
-    exact lt_irrefl 0 h, hn.pow_pos⟩
-#align even.pow_pos_iff Even.pow_pos_iff
-
-theorem Even.pow_abs {p : ℕ} (hp : Even p) (a : R) : |a| ^ p = a ^ p := by
-  rw [← abs_pow, abs_eq_self]
-  exact hp.pow_nonneg _
-#align even.pow_abs Even.pow_abs
-
-@[simp]
-theorem pow_bit0_abs (a : R) (p : ℕ) : |a| ^ bit0 p = a ^ bit0 p :=
-  (even_bit0 _).pow_abs _
-#align pow_bit0_abs pow_bit0_abs
-
-theorem Odd.strictMono_pow (hn : Odd n) : StrictMono fun a : R => a ^ n := by
-  cases' hn with k hk; simpa only [hk, two_mul] using strictMono_pow_bit1 _
-#align odd.strict_mono_pow Odd.strictMono_pow
-
-end Powers

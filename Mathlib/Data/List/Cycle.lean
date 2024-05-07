@@ -187,10 +187,10 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
   · rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?_zero, head?_cons,
       Option.some_inj] at hk'
-    exact hy (Eq.symm hk')
-    rw [Nat.zero_eq, length_cons, Nat.pred_succ]
+    · exact hy (Eq.symm hk')
+    rw [length_cons, Nat.pred_succ]
     exact length_pos_of_mem (by assumption)
-  suffices k.succ = l.length by simp [this] at hk
+  suffices k + 1 = l.length by simp [this] at hk
   cases' l with hd tl
   · simp at hk
   · rw [nodup_iff_injective_get] at hl
@@ -199,9 +199,9 @@ theorem next_getLast_cons (h : x ∈ l) (y : α) (h : x ∈ y :: l) (hy : x ≠ 
       ⟨tl.length, by simp⟩ ?_
     rw [← Option.some_inj] at hk'
     rw [← get?_eq_get, dropLast_eq_take, get?_take, get?, get?_eq_get, Option.some_inj] at hk'
-    rw [hk']
-    simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
-      nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]
+    · rw [hk']
+      simp only [getLast_eq_get, length_cons, ge_iff_le, Nat.succ_sub_succ_eq_sub,
+        nonpos_iff_eq_zero, add_eq_zero_iff, and_false, tsub_zero, get_cons_succ]
     simpa using hk
 #align list.next_last_cons List.next_getLast_cons
 
@@ -289,14 +289,14 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       · simp [getLast_eq_get]
       · exact hn.of_cons
     · rw [next_ne_head_ne_getLast _ _ _ _ _ hx']
-      simp only [get_cons_succ]
-      rw [next_get (y::l), ← get_cons_succ (a := x)]
-      congr
-      dsimp
-      rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
-        Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
-      · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
-      · exact hn.of_cons
+      · simp only [get_cons_succ]
+        rw [next_get (y::l), ← get_cons_succ (a := x)]
+        · congr
+          dsimp
+          rw [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'),
+            Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 (Nat.succ_lt_succ_iff.2 hi'))]
+        · simp [Nat.mod_eq_of_lt (Nat.succ_lt_succ_iff.2 hi'), Nat.succ_eq_add_one, hi']
+        · exact hn.of_cons
       · rw [getLast_eq_get]
         intro h
         have := nodup_iff_injective_get.1 hn h
@@ -304,7 +304,7 @@ theorem next_get : ∀ (l : List α) (_h : Nodup l) (i : Fin l.length),
       · rw [get_cons_succ]; exact get_mem _ _ _
 
 set_option linter.deprecated false in
-@[deprecated next_get]
+@[deprecated next_get] -- 2023-01-27
 theorem next_nthLe (l : List α) (h : Nodup l) (n : ℕ) (hn : n < l.length) :
     next l (l.nthLe n hn) (nthLe_mem _ _ _) =
       l.nthLe ((n + 1) % l.length) (Nat.mod_lt _ (n.zero_le.trans_lt hn)) :=
@@ -379,7 +379,7 @@ theorem prev_next (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + 1 + length tl) % (length tl + 1) = n := by
-      rw [length_cons] at hn
+      rw [length_cons, Nat.succ_eq_add_one] at hn
       rw [add_assoc, add_comm 1, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp only [length_cons, Nat.succ_sub_succ_eq_sub, tsub_zero, Nat.succ_eq_add_one, this]
 #align list.prev_next List.prev_next
@@ -392,7 +392,7 @@ theorem next_prev (l : List α) (h : Nodup l) (x : α) (hx : x ∈ l) :
   cases' l with hd tl
   · simp at hx
   · have : (n + length tl + 1) % (length tl + 1) = n := by
-      rw [length_cons] at hn
+      rw [length_cons, Nat.succ_eq_add_one] at hn
       rw [add_assoc, Nat.add_mod_right, Nat.mod_eq_of_lt hn]
     simp [this]
 #align list.next_prev List.next_prev
@@ -924,8 +924,7 @@ nonrec def Chain (r : α → α → Prop) (c : Cycle α) : Prop :=
         · cases' l with c s
           · simp only [rotate_cons_succ, nil_append, rotate_singleton, cons.injEq] at hn
             rw [hn.1, hn.2]
-          · rw [Nat.succ_eq_one_add, ← rotate_rotate, rotate_cons_succ, rotate_zero,
-              cons_append] at hn
+          · rw [Nat.add_comm, ← rotate_rotate, rotate_cons_succ, rotate_zero, cons_append] at hn
             rw [← hd c _ _ _ hn]
             simp [and_comm]
 #align cycle.chain Cycle.Chain
@@ -956,7 +955,7 @@ theorem chain_map {β : Type*} {r : α → α → Prop} (f : β → α) {s : Cyc
     Chain r (s.map f) ↔ Chain (fun a b => r (f a) (f b)) s :=
   Quotient.inductionOn' s fun l => by
     cases' l with a l
-    rfl
+    · rfl
     dsimp only [Chain, ← mk''_eq_coe, Quotient.liftOn'_mk'', Cycle.map, Quotient.map', Quot.map,
       Quotient.mk'', Quotient.liftOn', Quotient.liftOn, Quot.liftOn_mk, List.map]
     rw [← concat_eq_append, ← List.map_concat, List.chain_map f]
@@ -985,7 +984,7 @@ theorem chain_mono : Monotone (Chain : (α → α → Prop) → Cycle α → Pro
 
 theorem chain_of_pairwise : (∀ a ∈ s, ∀ b ∈ s, r a b) → Chain r s := by
   induction' s using Cycle.induction_on with a l _
-  exact fun _ => Cycle.Chain.nil r
+  · exact fun _ => Cycle.Chain.nil r
   intro hs
   have Ha : a ∈ (a :: l : Cycle α) := by simp
   have Hl : ∀ {b} (_hb : b ∈ l), b ∈ (a :: l : Cycle α) := @fun b hb => by simp [hb]

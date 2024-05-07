@@ -268,8 +268,8 @@ protected def inf {f g : Filter α} (F : f.Realizer) (G : g.Realizer) : (f ⊓ g
       constructor
       · rintro ⟨s, t, h⟩
         apply mem_inf_of_inter _ _ h
-        use s
-        use t
+        · use s
+        · use t
       · rintro ⟨_, ⟨a, ha⟩, _, ⟨b, hb⟩, rfl⟩
         exact ⟨a, b, inter_subset_inter ha hb⟩⟩
 #align filter.realizer.inf Filter.Realizer.inf

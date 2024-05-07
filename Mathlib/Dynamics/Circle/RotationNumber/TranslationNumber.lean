@@ -810,7 +810,7 @@ theorem translationNumber_mono : Monotone τ := fun f g h =>
 theorem translationNumber_translate (x : ℝ) : τ (translate <| Multiplicative.ofAdd x) = x :=
   translationNumber_eq_of_tendsto₀' _ <| by
     simp only [translate_iterate, translate_apply, add_zero, Nat.cast_succ,
-      mul_div_cancel_left₀ (G₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
+      mul_div_cancel_left₀ (M₀ := ℝ) _ (Nat.cast_add_one_ne_zero _), tendsto_const_nhds]
 #align circle_deg1_lift.translation_number_translate CircleDeg1Lift.translationNumber_translate
 
 theorem translationNumber_le_of_le_add {z : ℝ} (hz : ∀ x, f x ≤ x + z) : τ f ≤ z :=

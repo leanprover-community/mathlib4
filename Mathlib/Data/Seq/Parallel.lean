@@ -143,8 +143,8 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1._eq_1]
-        rw [h, H]
+        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
+          rw [h, H]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       apply terminates_parallel.aux _ T
@@ -162,8 +162,8 @@ theorem terminates_parallel {S : WSeq (Computation α)} {c} (h : c ∈ S) [T : T
       infer_instance
     · have C : corec parallel.aux1 (l, S) = _ := by
         apply destruct_eq_think
-        simp only [corec_eq, rmap, parallel.aux1._eq_1]
-        rw [h]
+        · simp only [corec_eq, rmap, parallel.aux1.eq_1]
+          rw [h]
       rw [C]
       refine @Computation.think_terminates _ _ ?_
       have TT : ∀ l', Terminates (corec parallel.aux1 (l', S.tail)) := by
@@ -199,8 +199,8 @@ theorem exists_of_mem_parallel {S : WSeq (Computation α)} {a} (h : a ∈ parall
   let F : List (Computation α) → Sum α (List (Computation α)) → Prop := by
     intro l a
     cases' a with a l'
-    exact ∃ c ∈ l, a ∈ c
-    exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
+    · exact ∃ c ∈ l, a ∈ c
+    · exact ∀ a', (∃ c ∈ l', a' ∈ c) → ∃ c ∈ l, a' ∈ c
   have lem1 : ∀ l : List (Computation α), F l (parallel.aux2 l) := by
     intro l
     induction' l with c l IH <;> simp only [parallel.aux2, List.foldr]
@@ -289,7 +289,7 @@ theorem map_parallel (f : α → β) (S) : map f (parallel S) = parallel (S.map 
         cases List.foldr _ _ _
         · simp
         · cases destruct c <;> simp
-      simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1._eq_1]
+      simp only [BisimO, destruct_map, lmap, rmap, corec_eq, parallel.aux1.eq_1]
       rw [this]
       cases' parallel.aux2 l with a l' <;> simp
       induction' S using WSeq.recOn with c S S <;> simp <;>
@@ -333,8 +333,8 @@ def parallelRec {S : WSeq (Computation α)} (C : α → Sort v) (H : ∀ s ∈ S
     rcases exists_of_mem_map ad' with ⟨a', ac', e'⟩
     injection e' with i1 i2
     constructor
-    rwa [i1, i2] at ac'
-    rwa [i2] at cs'
+    · rwa [i1, i2] at ac'
+    · rwa [i2] at cs'
   cases' this with ac cs
   apply H _ cs _ ac
 #align computation.parallel_rec Computation.parallelRec

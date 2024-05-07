@@ -279,7 +279,7 @@ theorem GammaAux_recurrence1 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
     simp
   · dsimp only [GammaAux]
     have hh1 : -(s + 1).re < n := by
-      rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at h1
+      rw [Nat.cast_add, Nat.cast_one] at h1
       rw [add_re, one_re]; linarith
     rw [← hn (s + 1) hh1]
 #align complex.Gamma_aux_recurrence1 Complex.GammaAux_recurrence1
@@ -296,7 +296,7 @@ theorem GammaAux_recurrence2 (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) :
   · dsimp only [GammaAux]
     have : GammaAux n (s + 1 + 1) / (s + 1) = GammaAux n (s + 1) := by
       have hh1 : -(s + 1).re < n := by
-        rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one] at h1
+        rw [Nat.cast_add, Nat.cast_one] at h1
         rw [add_re, one_re]; linarith
       rw [GammaAux_recurrence1 (s + 1) n hh1]
     rw [this]
@@ -312,7 +312,7 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   have u : ∀ k : ℕ, GammaAux (⌊1 - s.re⌋₊ + k) s = Gamma s := by
     intro k; induction' k with k hk
     · simp [Gamma]
-    · rw [← hk, Nat.succ_eq_add_one, ← add_assoc]
+    · rw [← hk, ← add_assoc]
       refine' (GammaAux_recurrence2 s (⌊1 - s.re⌋₊ + k) _).symm
       rw [Nat.cast_add]
       have i0 := Nat.sub_one_lt_floor (1 - s.re)
@@ -323,7 +323,9 @@ theorem Gamma_eq_GammaAux (s : ℂ) (n : ℕ) (h1 : -s.re < ↑n) : Gamma s = Ga
   by_cases h : 0 ≤ 1 - s.re
   · apply Nat.le_of_lt_succ
     exact_mod_cast lt_of_le_of_lt (Nat.floor_le h) (by linarith : 1 - s.re < n + 1)
-  · rw [Nat.floor_of_nonpos]; omega; linarith
+  · rw [Nat.floor_of_nonpos]
+    · omega
+    · linarith
 #align complex.Gamma_eq_Gamma_aux Complex.Gamma_eq_GammaAux
 
 /-- The recurrence relation for the `Γ` function. -/
@@ -332,7 +334,7 @@ theorem Gamma_add_one (s : ℂ) (h2 : s ≠ 0) : Gamma (s + 1) = s * Gamma s := 
   have t1 : -s.re < n := by simpa only [sub_sub_cancel_left] using Nat.sub_one_lt_floor (1 - s.re)
   have t2 : -(s + 1).re < n := by rw [add_re, one_re]; linarith
   rw [Gamma_eq_GammaAux s n t1, Gamma_eq_GammaAux (s + 1) n t2, GammaAux_recurrence1 s n t1]
-  field_simp; ring
+  field_simp
 #align complex.Gamma_add_one Complex.Gamma_add_one
 
 theorem Gamma_eq_integral {s : ℂ} (hs : 0 < s.re) : Gamma s = GammaIntegral s :=
@@ -611,7 +613,8 @@ is mathematically undefined and we set it to `0` by convention). -/
 theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := by
   suffices ∀ {n : ℕ}, -(n : ℝ) < s → Gamma s ≠ 0 by
     apply this
-    swap; exact ⌊-s⌋₊ + 1
+    swap
+    · exact ⌊-s⌋₊ + 1
     rw [neg_lt, Nat.cast_add, Nat.cast_one]
     exact Nat.lt_floor_add_one _
   intro n
@@ -629,7 +632,7 @@ theorem Gamma_ne_zero {s : ℝ} (hs : ∀ m : ℕ, s ≠ -m) : Gamma s ≠ 0 := 
         rw [hs]
         push_cast
         ring
-      · rw [Nat.succ_eq_add_one, Nat.cast_add, Nat.cast_one, neg_add] at hs'
+      · rw [Nat.cast_add, Nat.cast_one, neg_add] at hs'
         linarith
     rw [Gamma_add_one, mul_ne_zero_iff] at this
     · exact this.2

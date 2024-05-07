@@ -663,9 +663,9 @@ instance (priority := 100) semi_normed_ring_top_monoid [NonUnitalSeminormedRing 
             (((continuous_fst.tendsto x).sub tendsto_const_nhds).norm.mul _)
         -- Porting note: `show` used to select a goal to work on
         rotate_right
-        show Tendsto _ _ _
-        exact tendsto_const_nhds
-        simp⟩
+        · show Tendsto _ _ _
+          exact tendsto_const_nhds
+        · simp⟩
 #align semi_normed_ring_top_monoid semi_normed_ring_top_monoid
 
 -- see Note [lower instance priority]
@@ -1111,19 +1111,20 @@ theorem NormedAddCommGroup.tendsto_atTop' [Nonempty α] [SemilatticeSup α] [NoM
   (atTop_basis_Ioi.tendsto_iff Metric.nhds_basis_ball).trans (by simp [dist_eq_norm])
 #align normed_add_comm_group.tendsto_at_top' NormedAddCommGroup.tendsto_atTop'
 
-instance Int.normedCommRing : NormedCommRing ℤ :=
-  { Int.normedAddCommGroup, Int.instRingInt with
-    norm_mul := fun m n => le_of_eq <| by simp only [norm, Int.cast_mul, abs_mul]
-    mul_comm := mul_comm }
+instance Int.instNormedCommRing : NormedCommRing ℤ where
+  __ := instCommRing
+  __ := instNormedAddCommGroup
+  norm_mul m n := by simp only [norm, Int.cast_mul, abs_mul, le_rfl]
 
-instance Int.normOneClass : NormOneClass ℤ :=
+instance Int.instNormOneClass : NormOneClass ℤ :=
   ⟨by simp [← Int.norm_cast_real]⟩
 
-instance Rat.normedField : NormedField ℚ :=
-  { Rat.normedAddCommGroup, Rat.instField with
-    norm_mul' := fun r₁ r₂ => by simp only [norm, Rat.cast_mul, abs_mul] }
+instance Rat.instNormedField : NormedField ℚ where
+  __ := instField
+  __ := instNormedAddCommGroup
+  norm_mul' a b := by simp only [norm, Rat.cast_mul, abs_mul]
 
-instance Rat.denselyNormedField : DenselyNormedField ℚ where
+instance Rat.instDenselyNormedField : DenselyNormedField ℚ where
   lt_norm_lt r₁ r₂ h₀ hr :=
     let ⟨q, h⟩ := exists_rat_btwn hr
     ⟨q, by rwa [← Rat.norm_cast_real, Real.norm_eq_abs, abs_of_pos (h₀.trans_lt h.1)]⟩
@@ -1161,8 +1162,7 @@ variable [FunLike F R S]
 induces a `NonUnitalSeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
+abbrev NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) : NonUnitalSeminormedRing R :=
   { SeminormedAddCommGroup.induced R S f, ‹NonUnitalRing R› with
     norm_mul := fun x y => by
@@ -1174,8 +1174,7 @@ def NonUnitalSeminormedRing.induced [NonUnitalRing R] [NonUnitalSeminormedRing S
 `NonUnitalNormedRing` induces a `NonUnitalNormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
+abbrev NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NonUnitalNormedRing R :=
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align non_unital_normed_ring.induced NonUnitalNormedRing.induced
@@ -1184,8 +1183,7 @@ def NonUnitalNormedRing.induced [NonUnitalRing R] [NonUnitalNormedRing S]
 `SeminormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F R S] (f : F) :
+abbrev SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F R S] (f : F) :
     SeminormedRing R :=
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹Ring R› with }
 #align semi_normed_ring.induced SeminormedRing.induced
@@ -1194,8 +1192,7 @@ def SeminormedRing.induced [Ring R] [SeminormedRing S] [NonUnitalRingHomClass F 
 `NormedRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
+abbrev NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedRing R :=
   { NonUnitalSeminormedRing.induced R S f, NormedAddCommGroup.induced R S f hf, ‹Ring R› with }
 #align normed_ring.induced NormedRing.induced
@@ -1204,8 +1201,7 @@ def NormedRing.induced [Ring R] [NormedRing S] [NonUnitalRingHomClass F R S] (f 
 induces a `NonUnitalSeminormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NonUnitalSeminormedCommRing.induced [NonUnitalCommRing R] [NonUnitalSeminormedCommRing S]
+abbrev NonUnitalSeminormedCommRing.induced [NonUnitalCommRing R] [NonUnitalSeminormedCommRing S]
     [NonUnitalRingHomClass F R S] (f : F) : NonUnitalSeminormedCommRing R :=
   { NonUnitalSeminormedRing.induced R S f, ‹NonUnitalCommRing R› with }
 
@@ -1213,16 +1209,14 @@ def NonUnitalSeminormedCommRing.induced [NonUnitalCommRing R] [NonUnitalSeminorm
 `NonUnitalNormedCommRing` induces a `NonUnitalNormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NonUnitalNormedCommRing.induced [NonUnitalCommRing R] [NonUnitalNormedCommRing S]
+abbrev NonUnitalNormedCommRing.induced [NonUnitalCommRing R] [NonUnitalNormedCommRing S]
     [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NonUnitalNormedCommRing R :=
   { NonUnitalNormedRing.induced R S f hf, ‹NonUnitalCommRing R› with }
 /-- A non-unital ring homomorphism from a `CommRing` to a `SeminormedRing` induces a
 `SeminormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHomClass F R S]
+abbrev SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHomClass F R S]
     (f : F) : SeminormedCommRing R :=
   { NonUnitalSeminormedRing.induced R S f, SeminormedAddCommGroup.induced R S f, ‹CommRing R› with }
 #align semi_normed_comm_ring.induced SeminormedCommRing.induced
@@ -1231,8 +1225,7 @@ def SeminormedCommRing.induced [CommRing R] [SeminormedRing S] [NonUnitalRingHom
 `NormedCommRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
+abbrev NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedCommRing R :=
   { SeminormedCommRing.induced R S f, NormedAddCommGroup.induced R S f hf with }
 #align normed_comm_ring.induced NormedCommRing.induced
@@ -1241,9 +1234,8 @@ def NormedCommRing.induced [CommRing R] [NormedRing S] [NonUnitalRingHomClass F 
 `NormedDivisionRing` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S] [NonUnitalRingHomClass F R S]
-    (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
+abbrev NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S]
+    [NonUnitalRingHomClass F R S] (f : F) (hf : Function.Injective f) : NormedDivisionRing R :=
   { NormedAddCommGroup.induced R S f hf, ‹DivisionRing R› with
     norm_mul' := fun x y => by
       show ‖f (x * y)‖ = ‖f x‖ * ‖f y‖
@@ -1254,8 +1246,7 @@ def NormedDivisionRing.induced [DivisionRing R] [NormedDivisionRing S] [NonUnita
 `NormedField` structure on the domain.
 
 See note [reducible non-instances] -/
-@[reducible]
-def NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
+abbrev NormedField.induced [Field R] [NormedField S] [NonUnitalRingHomClass F R S] (f : F)
     (hf : Function.Injective f) : NormedField R :=
   { NormedDivisionRing.induced R S f hf with
     mul_comm := mul_comm }
