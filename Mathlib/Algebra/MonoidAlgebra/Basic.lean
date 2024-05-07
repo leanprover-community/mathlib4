@@ -693,7 +693,7 @@ theorem of_commute [MulOneClass G] {a : G} (h : ∀ a', Commute a a') (f : Monoi
     Commute (of k G a) f :=
   single_commute h Commute.one_left f
 
---to_ama ? plus G
+to_ama G -- fails to place `toFun a := single (Multiplicative.toAdd a.2) a.1`
 /-- `Finsupp.single` as a `MonoidHom` from the product type into the monoid algebra.
 
 Note the order of the elements of the product are reversed compared to the arguments of
@@ -704,25 +704,10 @@ def singleHom [MulOneClass G] : k × G →* MonoidAlgebra k G where
   toFun a := single a.2 a.1
   map_one' := rfl
   map_mul' _a _b := single_mul_single.symm
-#align monoid_algebra.single_hom MonoidAlgebra.singleHom
-#align monoid_algebra.single_hom_apply MonoidAlgebra.singleHom_apply
+to_ama #align monoid_algebra.single_hom MonoidAlgebra.singleHom
+to_ama #align monoid_algebra.single_hom_apply MonoidAlgebra.singleHom_apply
 
-
-/-
-def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
-  toFun a := single (Multiplicative.toAdd a.2) a.1
-  map_one' := rfl
-  map_mul' _a _b := single_mul_single.symm
-
--- adding
-def singleHom [AddZeroClass G] : k × G →* AddMonoidAlgebra k G
-    where
-  toFun a := single a.2 a.1
-  map_one' := rfl
-  map_mul' _a _b := single_mul_single.symm
-
-
--/
+to_ama plus a, a₁
 theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, a * x = z ↔ a = y) : (f * single x r) z = f y * r := by
   classical exact
@@ -736,13 +721,16 @@ theorem mul_single_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
             sum f fun a b => if a = y then b * r else 0 := by simp only [mul_apply, A, H]
         _ = if y ∈ f.support then f y * r else 0 := f.support.sum_ite_eq' _ _
         _ = f y * r := by split_ifs with h <;> simp at h <;> simp [h]
-#align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
+to_ama #align monoid_algebra.mul_single_apply_aux MonoidAlgebra.mul_single_apply_aux
 
+to_ama
 theorem mul_single_one_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (HMul.hMul (β := MonoidAlgebra k G) f (single 1 r)) x = f x * r :=
-  f.mul_single_apply_aux fun a => by rw [mul_one]
-#align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
+  -- another hack
+  f.mul_single_apply_aux fun a => by first | rw [mul_one] | rw [add_zero]
+to_ama #align monoid_algebra.mul_single_one_apply MonoidAlgebra.mul_single_one_apply
 
+to_ama plus d
 theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = d * g) : (x * single g r) g' = 0 := by
   classical
@@ -754,8 +742,9 @@ theorem mul_single_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       rintro g'' _hg'' rfl
       exfalso
       exact h ⟨_, rfl⟩
-#align monoid_algebra.mul_single_apply_of_not_exists_mul MonoidAlgebra.mul_single_apply_of_not_exists_mul
+to_ama #align monoid_algebra.mul_single_apply_of_not_exists_mul MonoidAlgebra.mul_single_apply_of_not_exists_mul
 
+to_ama plus x
 theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
     (H : ∀ a, x * a = y ↔ a = z) : (single x r * f) y = r * f z := by
   classical exact
@@ -767,13 +756,15 @@ theorem single_mul_apply_aux [Mul G] (f : MonoidAlgebra k G) {r : k} {x y z : G}
         _ = f.sum fun a b => ite (a = z) (r * b) 0 := by simp only [H]
         _ = if z ∈ f.support then r * f z else 0 := f.support.sum_ite_eq' _ _
         _ = _ := by split_ifs with h <;> simp at h <;> simp [h]
-#align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
+to_ama #align monoid_algebra.single_mul_apply_aux MonoidAlgebra.single_mul_apply_aux
 
+to_ama
 theorem single_one_mul_apply [MulOneClass G] (f : MonoidAlgebra k G) (r : k) (x : G) :
     (single (1 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux fun a => by rw [one_mul]
-#align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
+  f.single_mul_apply_aux fun a => by first | rw [one_mul] | rw [zero_add]
+to_ama #align monoid_algebra.single_one_mul_apply MonoidAlgebra.single_one_mul_apply
 
+to_ama plus g
 theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : MonoidAlgebra k G)
     (h : ¬∃ d, g' = g * d) : (single g r * x) g' = 0 := by
   classical
@@ -785,8 +776,9 @@ theorem single_mul_apply_of_not_exists_mul [Mul G] (r : k) {g g' : G} (x : Monoi
       rintro g'' _hg'' rfl
       exfalso
       exact h ⟨_, rfl⟩
-#align monoid_algebra.single_mul_apply_of_not_exists_mul MonoidAlgebra.single_mul_apply_of_not_exists_mul
+to_ama #align monoid_algebra.single_mul_apply_of_not_exists_mul MonoidAlgebra.single_mul_apply_of_not_exists_mul
 
+to_ama G
 theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g : G →* R) (c : k)
     (φ : MonoidAlgebra k G) : liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ := by
   suffices (liftNC (↑f) g).comp (smulAddHom k (MonoidAlgebra k G) c) =
@@ -800,7 +792,7 @@ theorem liftNC_smul [MulOneClass G] {R : Type*} [Semiring R] (f : k →+* R) (g 
     smul_single, smul_eq_mul, AddMonoidHom.coe_mulLeft]
   -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
   erw [liftNC_single, liftNC_single]; rw [AddMonoidHom.coe_coe, map_mul, mul_assoc]
-#align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNC_smul
+to_ama #align monoid_algebra.lift_nc_smul MonoidAlgebra.liftNC_smul
 
 end MiscTheorems
 
@@ -809,8 +801,9 @@ end MiscTheorems
 
 section NonUnitalNonAssocAlgebra
 
-variable (k) [Semiring k] [DistribSMul R k] [Mul G]
+variable (k) [Semiring k] [DistribSMul R k]
 
+to_ama variable [Mul G] in
 instance isScalarTower_self [IsScalarTower R k k] :
     IsScalarTower R (MonoidAlgebra k G) (MonoidAlgebra k G) :=
   ⟨fun t a b => by
@@ -823,8 +816,9 @@ instance isScalarTower_self [IsScalarTower R k k] :
       refine Eq.trans (sum_smul_index' (g := a) (b := t) ?_) ?_ <;>
         simp only [mul_apply, Finsupp.smul_sum, smul_ite, smul_mul_assoc,
           zero_mul, ite_self, imp_true_iff, sum_zero, Pi.smul_apply, smul_zero]⟩
-#align monoid_algebra.is_scalar_tower_self MonoidAlgebra.isScalarTower_self
+to_ama #align monoid_algebra.is_scalar_tower_self MonoidAlgebra.isScalarTower_self
 
+to_ama variable [Mul G] in
 /-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
 `R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
 also commute with the algebra multiplication. -/
@@ -841,32 +835,36 @@ instance smulCommClass_self [SMulCommClass R k k] :
         (funext₂ fun a₁ b₁ => sum_smul_index' (g := b) (b := t) ?_)) ?_) <;>
       simp only [mul_apply, Finsupp.sum, Finset.smul_sum, smul_ite, mul_smul_comm,
         imp_true_iff, ite_eq_right_iff, Pi.smul_apply, mul_zero, smul_zero]⟩
-#align monoid_algebra.smul_comm_class_self MonoidAlgebra.smulCommClass_self
+to_ama #align monoid_algebra.smul_comm_class_self MonoidAlgebra.smulCommClass_self
 
+to_ama variable [Mul G] in
 instance smulCommClass_symm_self [SMulCommClass k R k] :
     SMulCommClass (MonoidAlgebra k G) R (MonoidAlgebra k G) :=
   ⟨fun t a b => by
     haveI := SMulCommClass.symm k R k
     rw [← smul_comm]⟩
-#align monoid_algebra.smul_comm_class_symm_self MonoidAlgebra.smulCommClass_symm_self
+to_ama #align monoid_algebra.smul_comm_class_symm_self MonoidAlgebra.smulCommClass_symm_self
 
 variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
 
+to_ama variable [Mul G] in
 /-- A non_unital `k`-algebra homomorphism from `MonoidAlgebra k G` is uniquely defined by its
 values on the functions `single a 1`. -/
 theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
   NonUnitalAlgHom.to_distribMulActionHom_injective <|
     Finsupp.distribMulActionHom_ext' fun a => DistribMulActionHom.ext_ring (h a)
-#align monoid_algebra.non_unital_alg_hom_ext MonoidAlgebra.nonUnitalAlgHom_ext
+to_ama #align monoid_algebra.non_unital_alg_hom_ext MonoidAlgebra.nonUnitalAlgHom_ext
 
+to_ama variable [Mul G] in
 /-- See note [partially-applied ext lemmas]. -/
 @[ext high]
 theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : MonoidAlgebra k G →ₙₐ[k] A}
     (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
   nonUnitalAlgHom_ext k <| DFunLike.congr_fun h
-#align monoid_algebra.non_unital_alg_hom_ext' MonoidAlgebra.nonUnitalAlgHom_ext'
+to_ama #align monoid_algebra.non_unital_alg_hom_ext' MonoidAlgebra.nonUnitalAlgHom_ext'
 
+to_ama G variable [Mul G] in
 /-- The functor `G ↦ MonoidAlgebra k G`, from the category of magmas to the category of non-unital,
 non-associative algebras over `k` is adjoint to the forgetful functor in the other direction. -/
 @[simps apply_apply symm_apply]
@@ -893,9 +891,9 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
         -- Porting note: `reducible` cannot be `local` so proof gets long.
         simp_rw [Finsupp.mul_sum, Finsupp.sum_mul, smul_mul_smul, ← f.map_mul, mul_def,
           sum_comm a₂ a₁]
-        rw [sum_sum_index h₁ h₂]; congr; ext
-        rw [sum_sum_index h₁ h₂]; congr; ext
-        rw [sum_single_index (h₁ _)] }
+        rw [sum_sum_index (by exact h₁) (by exact h₂)]; congr; ext
+        rw [sum_sum_index (by exact h₁) (by exact h₂)]; congr; ext
+        rw [sum_single_index (by exact h₁ _)] <;> rfl /- `rfl` is only for `to_ama` -/ }
   invFun F := F.toMulHom.comp (ofMagma k G)
   left_inv f := by
     ext m
@@ -908,9 +906,9 @@ def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
     simp only [NonUnitalAlgHom.coe_mk, ofMagma_apply, NonUnitalAlgHom.toMulHom_eq_coe,
       sum_single_index, Function.comp_apply, one_smul, zero_smul, MulHom.coe_comp,
       NonUnitalAlgHom.coe_to_mulHom]
-#align monoid_algebra.lift_magma MonoidAlgebra.liftMagma
-#align monoid_algebra.lift_magma_apply_apply MonoidAlgebra.liftMagma_apply_apply
-#align monoid_algebra.lift_magma_symm_apply MonoidAlgebra.liftMagma_symm_apply
+to_ama #align monoid_algebra.lift_magma MonoidAlgebra.liftMagma
+to_ama #align monoid_algebra.lift_magma_apply_apply MonoidAlgebra.liftMagma_apply_apply
+to_ama #align monoid_algebra.lift_magma_symm_apply MonoidAlgebra.liftMagma_symm_apply
 
 end NonUnitalNonAssocAlgebra
 
@@ -921,11 +919,21 @@ section Algebra
 
 -- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
 
+to_ama G
 theorem single_one_comm [CommSemiring k] [MulOneClass G] (r : k) (f : MonoidAlgebra k G) :
     single (1 : G) r * f = f * single (1 : G) r :=
   single_commute Commute.one_left (Commute.all _) f
 #align monoid_algebra.single_one_comm MonoidAlgebra.single_one_comm
 
+open AddMonoidAlgebra in
+@[simps]
+def _root_.AddMonoidAlgebra.singleZeroRingHom' [Semiring k] [AddMonoid G] : k →+* k[G] :=
+  { Finsupp.singleAddHom 0 with
+    map_one' := rfl
+    -- Porting note (#10691): Was `rw`.
+    map_mul' := fun x y => by simp only [singleAddHom, AddMonoidAlgebra.single_mul_single, zero_add] }
+
+to_ama
 /-- `Finsupp.single 1` as a `RingHom` -/
 @[simps]
 def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
@@ -934,10 +942,11 @@ def singleOneRingHom [Semiring k] [MulOneClass G] : k →+* MonoidAlgebra k G :=
     map_mul' := fun x y => by
       -- Porting note (#10691): Was `rw`.
       simp only [ZeroHom.toFun_eq_coe, AddMonoidHom.toZeroHom_coe, singleAddHom_apply,
-        single_mul_single, mul_one] }
-#align monoid_algebra.single_one_ring_hom MonoidAlgebra.singleOneRingHom
-#align monoid_algebra.single_one_ring_hom_apply MonoidAlgebra.singleOneRingHom_apply
+        single_mul_single, mul_one, zero_add] /- added `zero_add` for `to_ama` -/ }
+to_ama #align monoid_algebra.single_one_ring_hom MonoidAlgebra.singleOneRingHom
+to_ama #align monoid_algebra.single_one_ring_hom_apply MonoidAlgebra.singleOneRingHom_apply
 
+to_ama
 /-- If `f : G → H` is a multiplicative homomorphism between two monoids, then
 `Finsupp.mapDomain f` is a ring homomorphism between their monoid algebras. -/
 @[simps]
@@ -946,9 +955,10 @@ def mapDomainRingHom (k : Type*) {H F : Type*} [Semiring k] [Monoid G] [Monoid H
   { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
     map_one' := mapDomain_one f
     map_mul' := fun x y => mapDomain_mul f x y }
-#align monoid_algebra.map_domain_ring_hom MonoidAlgebra.mapDomainRingHom
-#align monoid_algebra.map_domain_ring_hom_apply MonoidAlgebra.mapDomainRingHom_apply
+to_ama #align monoid_algebra.map_domain_ring_hom MonoidAlgebra.mapDomainRingHom
+to_ama #align monoid_algebra.map_domain_ring_hom_apply MonoidAlgebra.mapDomainRingHom_apply
 
+to_ama
 /-- If two ring homomorphisms from `MonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal. -/
 theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidAlgebra k G →+* R}
@@ -956,11 +966,13 @@ theorem ringHom_ext {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : MonoidA
     f = g :=
   RingHom.coe_addMonoidHom_injective <|
     addHom_ext fun a b => by
-      rw [← single, ← one_mul a, ← mul_one b, ← single_mul_single]
+      first | rw [← single, ← one_mul a, ← mul_one b, ← single_mul_single]  -- another hack
+            | rw [← single, ← zero_add a, ← mul_one b, ← single_mul_single]
       -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
       erw [AddMonoidHom.coe_coe f, AddMonoidHom.coe_coe g]; rw [f.map_mul, g.map_mul, h₁, h_of]
-#align monoid_algebra.ring_hom_ext MonoidAlgebra.ringHom_ext
+to_ama #align monoid_algebra.ring_hom_ext MonoidAlgebra.ringHom_ext
 
+to_ama
 /-- If two ring homomorphisms from `MonoidAlgebra k G` are equal on all `single a 1`
 and `single 1 b`, then they are equal.
 
@@ -972,8 +984,9 @@ theorem ringHom_ext' {R} [Semiring k] [MulOneClass G] [Semiring R] {f g : Monoid
       (f : MonoidAlgebra k G →* R).comp (of k G) = (g : MonoidAlgebra k G →* R).comp (of k G)) :
     f = g :=
   ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
-#align monoid_algebra.ring_hom_ext' MonoidAlgebra.ringHom_ext'
+to_ama #align monoid_algebra.ring_hom_ext' MonoidAlgebra.ringHom_ext'
 
+to_ama
 /-- The instance `Algebra k (MonoidAlgebra A G)` whenever we have `Algebra k A`.
 
 In particular this provides the instance `Algebra k (MonoidAlgebra k G)`.
@@ -990,7 +1003,10 @@ instance algebra {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid
     commutes' := fun r f => by
       refine Finsupp.ext fun _ => ?_
       simp [single_one_mul_apply, mul_single_one_apply, Algebra.commutes] }
+-- the `monoid_algebra.algebra` instance was unnamed in mathlib3
+#align add_monoid_algebra.algebra AddMonoidAlgebra.algebra
 
+to_ama
 /-- `Finsupp.single 1` as an `AlgHom` -/
 @[simps! apply]
 def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
@@ -1001,24 +1017,28 @@ def singleOneAlgHom {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Mon
       refine Finsupp.ext fun _ => ?_
       simp
       rfl }
-#align monoid_algebra.single_one_alg_hom MonoidAlgebra.singleOneAlgHom
-#align monoid_algebra.single_one_alg_hom_apply MonoidAlgebra.singleOneAlgHom_apply
+to_ama #align monoid_algebra.single_one_alg_hom MonoidAlgebra.singleOneAlgHom
+to_ama #align monoid_algebra.single_one_alg_hom_apply MonoidAlgebra.singleOneAlgHom_apply
 
+to_ama
 @[simp]
 theorem coe_algebraMap {A : Type*} [CommSemiring k] [Semiring A] [Algebra k A] [Monoid G] :
     ⇑(algebraMap k (MonoidAlgebra A G)) = single 1 ∘ algebraMap k A :=
   rfl
-#align monoid_algebra.coe_algebra_map MonoidAlgebra.coe_algebraMap
+to_ama #align monoid_algebra.coe_algebra_map MonoidAlgebra.coe_algebraMap
 
+to_ama
 theorem single_eq_algebraMap_mul_of [CommSemiring k] [Monoid G] (a : G) (b : k) :
     single a b = algebraMap k (MonoidAlgebra k G) b * of k G a := by simp
-#align monoid_algebra.single_eq_algebra_map_mul_of MonoidAlgebra.single_eq_algebraMap_mul_of
+to_ama #align monoid_algebra.single_eq_algebra_map_mul_of MonoidAlgebra.single_eq_algebraMap_mul_of
 
+to_ama
 theorem single_algebraMap_eq_algebraMap_mul_of {A : Type*} [CommSemiring k] [Semiring A]
     [Algebra k A] [Monoid G] (a : G) (b : k) :
     single a (algebraMap k A b) = algebraMap k (MonoidAlgebra A G) b * of A G a := by simp
-#align monoid_algebra.single_algebra_map_eq_algebra_map_mul_of MonoidAlgebra.single_algebraMap_eq_algebraMap_mul_of
+to_ama #align monoid_algebra.single_algebra_map_eq_algebra_map_mul_of MonoidAlgebra.single_algebraMap_eq_algebraMap_mul_of
 
+to_ama
 theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f : MonoidAlgebra k G)
     (hM : ∀ g, p (of k G g)) (hadd : ∀ f g : MonoidAlgebra k G, p f → p g → p (f + g))
     (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
@@ -1026,8 +1046,8 @@ theorem induction_on [Semiring k] [Monoid G] {p : MonoidAlgebra k G → Prop} (f
   · simpa using hsmul 0 (of k G 1) (hM 1)
   · convert hsmul r (of k G g) (hM g)
     -- Porting note: Was `simp only`.
-    rw [of_apply, smul_single', mul_one]
-#align monoid_algebra.induction_on MonoidAlgebra.induction_on
+    rw [of_apply, smul_single', mul_one] <;> rfl  -- `<;> rfl` added for `to_ama`
+to_ama #align monoid_algebra.induction_on MonoidAlgebra.induction_on
 
 end Algebra
 
@@ -1372,51 +1392,9 @@ section MiscTheorems
 
 variable [Semiring k]
 
--- This should be a `@[simp]` lemma, but the simp_nf linter times out if we add this.
--- Probably the correct fix is to make a `[Add]MonoidAlgebra.single` with the correct type,
--- instead of relying on `Finsupp.single`.
---theorem single_pow [AddMonoid G] {a : G} {b : k} : ∀ n : ℕ, single a b ^ n = single (n • a) (b ^ n)
---  | 0 => by
---    simp only [pow_zero, zero_nsmul]
---    rfl
---  | n + 1 => by
---    rw [pow_succ, pow_succ, single_pow n, single_mul_single, add_nsmul, one_nsmul]
---#align add_monoid_algebra.single_pow AddMonoidAlgebra.single_pow
-
---/-- Like `Finsupp.mapDomain_zero`, but for the `1` we define in this file -/
---@[simp]
---theorem mapDomain_one {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Zero α] [Zero α₂]
---    {F : Type*} [FunLike F α α₂] [ZeroHomClass F α α₂] (f : F) :
---    (mapDomain f (1 : AddMonoidAlgebra β α) : AddMonoidAlgebra β α₂) =
---      (1 : AddMonoidAlgebra β α₂) :=
---  by simp_rw [one_def, mapDomain_single, map_zero]
---#align add_monoid_algebra.map_domain_one AddMonoidAlgebra.mapDomain_one
-
---/-- Like `Finsupp.mapDomain_add`, but for the convolutive multiplication we define in this file -/
---theorem mapDomain_mul {α : Type*} {β : Type*} {α₂ : Type*} [Semiring β] [Add α] [Add α₂]
---    {F : Type*} [FunLike F α α₂] [AddHomClass F α α₂] (f : F) (x y : AddMonoidAlgebra β α) :
---    mapDomain f (x * y) = mapDomain f x * mapDomain f y := by
---  simp_rw [mul_def, mapDomain_sum, mapDomain_single, map_add]
---  rw [Finsupp.sum_mapDomain_index]
---  · congr
---    ext a b
---    rw [Finsupp.sum_mapDomain_index]
---    · simp
---    · simp [mul_add]
---  · simp
---  · simp [add_mul]
---#align add_monoid_algebra.map_domain_mul AddMonoidAlgebra.mapDomain_mul
-
 section
 
 variable (k G)
-
---/-- Embedding of a magma with zero into its magma algebra. -/
---def of [AddZeroClass G] : Multiplicative G →* k[G] :=
---  { ofMagma k G with
---    toFun := fun a => single a 1
---    map_one' := rfl }
---#align add_monoid_algebra.of AddMonoidAlgebra.of
 
 /-- Embedding of a magma with zero `G`, into its magma algebra, having `G` as source. -/
 def of' : G → k[G] := fun a => single a 1
@@ -1424,14 +1402,6 @@ def of' : G → k[G] := fun a => single a 1
 
 end
 
---@[simp]
---theorem of_appl' [AddZeroClass G] (a : Multiplicative G) :
---    of k G a = single (Multiplicative.toAdd a) 1 :=
---  rfl
---#align add_monoid_algebra.of_apply AddMonoidAlgebra.of_apply
-
---#check of_apply
---#check of_appl'
 @[simp]
 theorem of'_apply (a : G) : of' k G a = single a 1 :=
   rfl
@@ -1440,57 +1410,10 @@ theorem of'_apply (a : G) : of' k G a = single a 1 :=
 theorem of'_eq_of [AddZeroClass G] (a : G) : of' k G a = of k G (.ofAdd a) := rfl
 #align add_monoid_algebra.of'_eq_of AddMonoidAlgebra.of'_eq_of
 
---theorem of_injective [Nontrivial k] [AddZeroClass G] : Function.Injective (of k G) :=
---  MonoidAlgebra.of_injective
---#align add_monoid_algebra.of_injective AddMonoidAlgebra.of_injective
-
 theorem of'_commute [Semiring k] [AddZeroClass G] {a : G} (h : ∀ a', AddCommute a a')
     (f : AddMonoidAlgebra k G) :
     Commute (of' k G a) f :=
   MonoidAlgebra.of_commute (G := Multiplicative G) h f
-
-/-- `Finsupp.single` as a `MonoidHom` from the product type into the additive monoid algebra.
-
-Note the order of the elements of the product are reversed compared to the arguments of
-`Finsupp.single`.
--/
-@[simps]
-def singleHom [AddZeroClass G] : k × Multiplicative G →* k[G] where
-  toFun a := single (Multiplicative.toAdd a.2) a.1
-  map_one' := rfl
-  map_mul' _a _b := single_mul_single.symm
-#align add_monoid_algebra.single_hom AddMonoidAlgebra.singleHom
-#align add_monoid_algebra.single_hom_apply AddMonoidAlgebra.singleHom_apply
-
-theorem mul_single_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
-    (H : ∀ a, a + x = z ↔ a = y) : (f * single x r) z = f y * r :=
-  @MonoidAlgebra.mul_single_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
-#align add_monoid_algebra.mul_single_apply_aux AddMonoidAlgebra.mul_single_apply_aux
-
-theorem mul_single_zero_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
-    (f * single (0 : G) r) x = f x * r :=
-  f.mul_single_apply_aux r _ _ _ fun a => by rw [add_zero]
-#align add_monoid_algebra.mul_single_zero_apply AddMonoidAlgebra.mul_single_zero_apply
-
-theorem mul_single_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
-    (h : ¬∃ d, g' = d + g) : (x * single g r) g' = 0 :=
-  @MonoidAlgebra.mul_single_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
-#align add_monoid_algebra.mul_single_apply_of_not_exists_add AddMonoidAlgebra.mul_single_apply_of_not_exists_add
-
-theorem single_mul_apply_aux [Add G] (f : k[G]) (r : k) (x y z : G)
-    (H : ∀ a, x + a = y ↔ a = z) : (single x r * f) y = r * f z :=
-  @MonoidAlgebra.single_mul_apply_aux k (Multiplicative G) _ _ _ _ _ _ _ H
-#align add_monoid_algebra.single_mul_apply_aux AddMonoidAlgebra.single_mul_apply_aux
-
-theorem single_zero_mul_apply [AddZeroClass G] (f : k[G]) (r : k) (x : G) :
-    (single (0 : G) r * f) x = r * f x :=
-  f.single_mul_apply_aux r _ _ _ fun a => by rw [zero_add]
-#align add_monoid_algebra.single_zero_mul_apply AddMonoidAlgebra.single_zero_mul_apply
-
-theorem single_mul_apply_of_not_exists_add [Add G] (r : k) {g g' : G} (x : k[G])
-    (h : ¬∃ d, g' = g + d) : (single g r * x) g' = 0 :=
-  @MonoidAlgebra.single_mul_apply_of_not_exists_mul k (Multiplicative G) _ _ _ _ _ _ h
-#align add_monoid_algebra.single_mul_apply_of_not_exists_add AddMonoidAlgebra.single_mul_apply_of_not_exists_add
 
 theorem mul_single_apply [AddGroup G] (f : k[G]) (r : k) (x y : G) :
     (f * single x r) y = f (y - x) * r :=
@@ -1501,34 +1424,6 @@ theorem single_mul_apply [AddGroup G] (r : k) (x : G) (f : k[G]) (y : G) :
     (single x r * f) y = r * f (-x + y) :=
   @MonoidAlgebra.single_mul_apply k (Multiplicative G) _ _ _ _ _ _
 #align add_monoid_algebra.single_mul_apply AddMonoidAlgebra.single_mul_apply
-
-theorem liftNC_smul {R : Type*} [AddZeroClass G] [Semiring R] (f : k →+* R)
-    (g : Multiplicative G →* R) (c : k) (φ : MonoidAlgebra k G) :
-    liftNC (f : k →+ R) g (c • φ) = f c * liftNC (f : k →+ R) g φ :=
-  @MonoidAlgebra.liftNC_smul k (Multiplicative G) _ _ _ _ f g c φ
-#align add_monoid_algebra.lift_nc_smul AddMonoidAlgebra.liftNC_smul
-
-theorem induction_on [AddMonoid G] {p : k[G] → Prop} (f : k[G])
-    (hM : ∀ g, p (of k G (Multiplicative.ofAdd g)))
-    (hadd : ∀ f g : k[G], p f → p g → p (f + g))
-    (hsmul : ∀ (r : k) (f), p f → p (r • f)) : p f := by
-  refine' Finsupp.induction_linear f _ (fun f g hf hg => hadd f g hf hg) fun g r => _
-  · simpa using hsmul 0 (of k G (Multiplicative.ofAdd 0)) (hM 0)
-  · convert hsmul r (of k G (Multiplicative.ofAdd g)) (hM g)
-    -- Porting note: Was `simp only`.
-    rw [of_apply, toAdd_ofAdd, smul_single', mul_one]
-#align add_monoid_algebra.induction_on AddMonoidAlgebra.induction_on
-
-/-- If `f : G → H` is an additive homomorphism between two additive monoids, then
-`Finsupp.mapDomain f` is a ring homomorphism between their add monoid algebras. -/
-@[simps]
-def mapDomainRingHom (k : Type*) [Semiring k] {H F : Type*} [AddMonoid G] [AddMonoid H]
-    [FunLike F G H] [AddMonoidHomClass F G H] (f : F) : k[G] →+* k[H] :=
-  { (Finsupp.mapDomain.addMonoidHom f : MonoidAlgebra k G →+ MonoidAlgebra k H) with
-    map_one' := mapDomain_one f
-    map_mul' := fun x y => mapDomain_mul f x y }
-#align add_monoid_algebra.map_domain_ring_hom AddMonoidAlgebra.mapDomainRingHom
-#align add_monoid_algebra.map_domain_ring_hom_apply AddMonoidAlgebra.mapDomainRingHom_apply
 
 end MiscTheorems
 
@@ -1577,102 +1472,10 @@ namespace AddMonoidAlgebra
 
 variable {k G H}
 
-/-! #### Non-unital, non-associative algebra structure -/
-
-
-section NonUnitalNonAssocAlgebra
-
-variable (k) [Semiring k] [DistribSMul R k] [Add G]
-
-instance isScalarTower_self [IsScalarTower R k k] :
-    IsScalarTower R k[G] k[G] :=
-  @MonoidAlgebra.isScalarTower_self k (Multiplicative G) R _ _ _ _
-#align add_monoid_algebra.is_scalar_tower_self AddMonoidAlgebra.isScalarTower_self
-
-/-- Note that if `k` is a `CommSemiring` then we have `SMulCommClass k k k` and so we can take
-`R = k` in the below. In other words, if the coefficients are commutative amongst themselves, they
-also commute with the algebra multiplication. -/
-instance smulCommClass_self [SMulCommClass R k k] :
-    SMulCommClass R k[G] k[G] :=
-  @MonoidAlgebra.smulCommClass_self k (Multiplicative G) R _ _ _ _
-#align add_monoid_algebra.smul_comm_class_self AddMonoidAlgebra.smulCommClass_self
-
-instance smulCommClass_symm_self [SMulCommClass k R k] :
-    SMulCommClass k[G] R k[G] :=
-  @MonoidAlgebra.smulCommClass_symm_self k (Multiplicative G) R _ _ _ _
-#align add_monoid_algebra.smul_comm_class_symm_self AddMonoidAlgebra.smulCommClass_symm_self
-
-variable {A : Type u₃} [NonUnitalNonAssocSemiring A]
-
-/-- A non_unital `k`-algebra homomorphism from `k[G]` is uniquely defined by its
-values on the functions `single a 1`. -/
-theorem nonUnitalAlgHom_ext [DistribMulAction k A] {φ₁ φ₂ : k[G] →ₙₐ[k] A}
-    (h : ∀ x, φ₁ (single x 1) = φ₂ (single x 1)) : φ₁ = φ₂ :=
-  @MonoidAlgebra.nonUnitalAlgHom_ext k (Multiplicative G) _ _ _ _ _ φ₁ φ₂ h
-#align add_monoid_algebra.non_unital_alg_hom_ext AddMonoidAlgebra.nonUnitalAlgHom_ext
-
-/-- See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem nonUnitalAlgHom_ext' [DistribMulAction k A] {φ₁ φ₂ : k[G] →ₙₐ[k] A}
-    (h : φ₁.toMulHom.comp (ofMagma k G) = φ₂.toMulHom.comp (ofMagma k G)) : φ₁ = φ₂ :=
-  @MonoidAlgebra.nonUnitalAlgHom_ext' k (Multiplicative G) _ _ _ _ _ φ₁ φ₂ h
-#align add_monoid_algebra.non_unital_alg_hom_ext' AddMonoidAlgebra.nonUnitalAlgHom_ext'
-
-/-- The functor `G ↦ k[G]`, from the category of magmas to the category of
-non-unital, non-associative algebras over `k` is adjoint to the forgetful functor in the other
-direction. -/
-@[simps apply_apply symm_apply]
-def liftMagma [Module k A] [IsScalarTower k A A] [SMulCommClass k A A] :
-    (Multiplicative G →ₙ* A) ≃ (k[G] →ₙₐ[k] A) :=
-  { (MonoidAlgebra.liftMagma k : (Multiplicative G →ₙ* A) ≃ (_ →ₙₐ[k] A)) with
-    toFun := fun g =>
-      { (MonoidAlgebra.liftMagma k g : _) with
-        toFun := fun a => sum a fun m t => t • g (Multiplicative.ofAdd m) }
-    invFun := fun F => F.toMulHom.comp (ofMagma k G) }
-#align add_monoid_algebra.lift_magma AddMonoidAlgebra.liftMagma
-#align add_monoid_algebra.lift_magma_apply_apply AddMonoidAlgebra.liftMagma_apply_apply
-#align add_monoid_algebra.lift_magma_symm_apply AddMonoidAlgebra.liftMagma_symm_apply
-
-end NonUnitalNonAssocAlgebra
-
 /-! #### Algebra structure -/
 
 
-section Algebra
-
--- attribute [local reducible] MonoidAlgebra -- Porting note: `reducible` cannot be `local`.
-
-/-- `Finsupp.single 0` as a `RingHom` -/
-@[simps]
-def singleZeroRingHom [Semiring k] [AddMonoid G] : k →+* k[G] :=
-  { Finsupp.singleAddHom 0 with
-    map_one' := rfl
-    -- Porting note (#10691): Was `rw`.
-    map_mul' := fun x y => by simp only [singleAddHom, single_mul_single, zero_add] }
-#align add_monoid_algebra.single_zero_ring_hom AddMonoidAlgebra.singleZeroRingHom
-#align add_monoid_algebra.single_zero_ring_hom_apply AddMonoidAlgebra.singleZeroRingHom_apply
-
-/-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
-and `single 0 b`, then they are equal. -/
-theorem ringHom_ext {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →+* R}
-    (h₀ : ∀ b, f (single 0 b) = g (single 0 b)) (h_of : ∀ a, f (single a 1) = g (single a 1)) :
-    f = g :=
-  @MonoidAlgebra.ringHom_ext k (Multiplicative G) R _ _ _ _ _ h₀ h_of
-#align add_monoid_algebra.ring_hom_ext AddMonoidAlgebra.ringHom_ext
-
-/-- If two ring homomorphisms from `k[G]` are equal on all `single a 1`
-and `single 0 b`, then they are equal.
-
-See note [partially-applied ext lemmas]. -/
-@[ext high]
-theorem ringHom_ext' {R} [Semiring k] [AddMonoid G] [Semiring R] {f g : k[G] →+* R}
-    (h₁ : f.comp singleZeroRingHom = g.comp singleZeroRingHom)
-    (h_of : (f : k[G] →* R).comp (of k G) = (g : k[G] →* R).comp (of k G)) :
-    f = g :=
-  ringHom_ext (RingHom.congr_fun h₁) (DFunLike.congr_fun h_of)
-#align add_monoid_algebra.ring_hom_ext' AddMonoidAlgebra.ringHom_ext'
-
-section Opposite
+section Algebra_Opposite
 
 open Finsupp MulOpposite
 
@@ -1716,45 +1519,7 @@ theorem opRingEquiv_symm_single [AddCommMonoid G] (r : kᵐᵒᵖ) (x : Gᵐᵒ�
     AddMonoidAlgebra.opRingEquiv.symm (single x r) = op (single x r.unop) := by simp
 #align add_monoid_algebra.op_ring_equiv_symm_single AddMonoidAlgebra.opRingEquiv_symm_single
 
-end Opposite
-
-/-- The instance `Algebra R k[G]` whenever we have `Algebra R k`.
-
-In particular this provides the instance `Algebra k k[G]`.
--/
-instance algebra [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
-    Algebra R k[G] :=
-  { singleZeroRingHom.comp (algebraMap R k) with
-    -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-    smul_def' := fun r a => by
-      refine Finsupp.ext fun _ => ?_
-      -- Porting note: Newly required.
-      rw [Finsupp.coe_smul]
-      simp [single_zero_mul_apply, Algebra.smul_def, Pi.smul_apply]
-    commutes' := fun r f => by
-      refine Finsupp.ext fun _ => ?_
-      simp [single_zero_mul_apply, mul_single_zero_apply, Algebra.commutes] }
-#align add_monoid_algebra.algebra AddMonoidAlgebra.algebra
-
-/-- `Finsupp.single 0` as an `AlgHom` -/
-@[simps! apply]
-def singleZeroAlgHom [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] : k →ₐ[R] k[G] :=
-  { singleZeroRingHom with
-    commutes' := fun r => by
-      -- Porting note: `ext` → `refine Finsupp.ext fun _ => ?_`
-      refine Finsupp.ext fun _ => ?_
-      simp
-      rfl }
-#align add_monoid_algebra.single_zero_alg_hom AddMonoidAlgebra.singleZeroAlgHom
-#align add_monoid_algebra.single_zero_alg_hom_apply AddMonoidAlgebra.singleZeroAlgHom_apply
-
-@[simp]
-theorem coe_algebraMap [CommSemiring R] [Semiring k] [Algebra R k] [AddMonoid G] :
-    (algebraMap R k[G] : R → k[G]) = single 0 ∘ algebraMap R k :=
-  rfl
-#align add_monoid_algebra.coe_algebra_map AddMonoidAlgebra.coe_algebraMap
-
-end Algebra
+end Algebra_Opposite
 
 section lift
 
