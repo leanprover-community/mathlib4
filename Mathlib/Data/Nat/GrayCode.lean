@@ -132,7 +132,7 @@ def partial_gray_code (n : ℕ) : Equiv.Perm (BitVec n) where
   right_inv := by intro n; simp; norm_cast
 
 theorem partial_gray_code_prop (n : ℕ) (h : n ≠ 0) (m : BitVec n) :
-   (n.partial_gray_code m ^^^ n.partial_gray_code (m + 1)).toNat.isPowerOfTwo := by
+    (n.partial_gray_code m ^^^ n.partial_gray_code (m + 1)).toNat.isPowerOfTwo := by
   unfold partial_gray_code gray_code
   simp only [Equiv.coe_fn_mk, Equiv.coe_fn_symm_mk, BitVec.ofNat_eq_ofNat, BitVec.toNat_add,
     BitVec.toNat_ofNat, add_mod_mod, BitVec.toNat_xor, BitVec.toNat_ofFin]
