@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Yaël Dillies, Bhavik Mehta
 -/
 import Mathlib.Analysis.InnerProductSpace.PiL2
-import Mathlib.Combinatorics.Additive.AP.Three
+import Mathlib.Combinatorics.Additive.AP.Three.Defs
 import Mathlib.Combinatorics.Pigeonhole
 import Mathlib.Data.Complex.ExponentialBounds
 
@@ -44,12 +44,35 @@ integer points on that sphere and map them onto `ℕ` in a way that preserves ar
 3AP-free, Salem-Spencer, Behrend construction, arithmetic progression, sphere, strictly convex
 -/
 
-
 open Nat hiding log
-
-open Finset Real
-
+open Finset Metric Real
 open scoped BigOperators Pointwise
+
+/-- The frontier of a closed strictly convex set only contains trivial arithmetic progressions.
+The idea is that an arithmetic progression is contained on a line and the frontier of a strictly
+convex set does not contain lines. -/
+lemma threeAPFree_frontier {𝕜 E : Type*} [LinearOrderedField 𝕜] [TopologicalSpace E]
+    [AddCommMonoid E] [Module 𝕜 E] {s : Set E} (hs₀ : IsClosed s) (hs₁ : StrictConvex 𝕜 s) :
+    ThreeAPFree (frontier s) := by
+  intro a ha b hb c hc habc
+  obtain rfl : (1 / 2 : 𝕜) • a + (1 / 2 : 𝕜) • c = b := by
+    rwa [← smul_add, one_div, inv_smul_eq_iff₀ (show (2 : 𝕜) ≠ 0 by norm_num), two_smul]
+  have :=
+    hs₁.eq (hs₀.frontier_subset ha) (hs₀.frontier_subset hc) one_half_pos one_half_pos
+      (add_halves _) hb.2
+  simp [this, ← add_smul]
+  ring_nf
+  simp
+#align add_salem_spencer_frontier threeAPFree_frontier
+
+lemma threeAPFree_sphere {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E]
+    [StrictConvexSpace ℝ E] (x : E) (r : ℝ) : ThreeAPFree (sphere x r) := by
+  obtain rfl | hr := eq_or_ne r 0
+  · rw [sphere_zero]
+    exact threeAPFree_singleton _
+  · convert threeAPFree_frontier isClosed_ball (strictConvex_closedBall ℝ x r)
+    exact (frontier_closedBall _ hr).symm
+#align add_salem_spencer_sphere threeAPFree_sphere
 
 namespace Behrend
 
@@ -172,8 +195,8 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
     { toFun := fun f => ((↑) : ℕ → ℝ) ∘ f
       map_zero' := funext fun _ => cast_zero
       map_add' := fun _ _ => funext fun _ => cast_add _ _ }
-  refine' ThreeAPFree.of_image (f.toAddFreimanHom (sphere n d k : Set (Fin n → ℕ)) 2) _ _
-  · exact cast_injective.comp_left.injOn _
+  refine ThreeAPFree.of_image (AddMonoidHomClass.isAddFreimanHom f (Set.mapsTo_image _ _))
+    (cast_injective.comp_left.injOn _) (Set.subset_univ _) ?_
   refine' (threeAPFree_sphere 0 (√↑k)).mono (Set.image_subset_iff.2 fun x => _)
   rw [Set.mem_preimage, mem_sphere_zero_iff_norm]
   exact norm_of_mem_sphere
@@ -182,7 +205,7 @@ nonrec theorem threeAPFree_sphere : ThreeAPFree (sphere n d k : Set (Fin n → �
 theorem threeAPFree_image_sphere :
     ThreeAPFree ((sphere n d k).image (map (2 * d - 1)) : Set ℕ) := by
   rw [coe_image]
-  refine' ThreeAPFree.image (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
+  refine' ThreeAPFree.image' (α := Fin n → ℕ) (β := ℕ) (s := sphere n d k) (map (2 * d - 1))
     (map_injOn.mono _) threeAPFree_sphere
   · exact x
   rw [Set.add_subset_iff]

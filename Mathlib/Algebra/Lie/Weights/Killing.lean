@@ -4,6 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Oliver Nash
 -/
 import Mathlib.Algebra.Lie.Derivation.Killing
+import Mathlib.Algebra.Lie.Killing
 import Mathlib.Algebra.Lie.Weights.Chain
 import Mathlib.LinearAlgebra.Eigenspace.Semisimple
 import Mathlib.LinearAlgebra.JordanChevalley
@@ -137,7 +138,6 @@ whose adjoint action on `L` is nilpotent, is the zero element.
 Over a perfect field a much stronger result is true, see
 `LieAlgebra.IsKilling.isSemisimple_ad_of_mem_isCartanSubalgebra`. -/
 lemma eq_zero_of_isNilpotent_ad_of_mem_isCartanSubalgebra {x : L} (hx : x ∈ H)
-    (hx' : _root_.IsNilpotent (ad K L x)) : x = 0 := by
   suffices ⟨x, hx⟩ ∈ LinearMap.ker (traceForm K H L) by simpa using this
   simp only [LinearMap.mem_ker]
   ext y
@@ -207,8 +207,6 @@ variable {K L} in
 dual. -/
 @[simps!]
 noncomputable def cartanEquivDual :
-    H ≃ₗ[K] Module.Dual K H :=
-  (traceForm K H L).toDual <| traceForm_cartan_nondegenerate K L H
 
 /-- This is Proposition 4.18 from [carter2005] except that we use
 `LieModule.exists_forall_lie_eq_smul` instead of Lie's theorem (and so avoid
