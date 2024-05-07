@@ -4,7 +4,7 @@ Released under Apache 2.0 license as described in the file LICENSE.
 Authors: Johannes Hölzl, Mario Carneiro
 -/
 import Mathlib.Algebra.Ring.Basic
-import Mathlib.Algebra.GroupWithZero.Basic
+import Mathlib.Algebra.GroupWithZero.Units.Basic
 import Mathlib.Algebra.Order.Ring.Int
 import Mathlib.Data.Int.Cast.Defs
 import Mathlib.Data.Rat.Init
@@ -44,12 +44,14 @@ theorem pos (a : ℚ) : 0 < a.den := Nat.pos_of_ne_zero a.den_nz
 
 #align rat.of_int Rat.ofInt
 
+lemma mk'_num_den (q : ℚ) : mk' q.num q.den q.den_nz q.reduced = q := rfl
+
 @[simp]
 theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
   rfl
 #align rat.of_int_eq_cast Rat.ofInt_eq_cast
 
--- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Std
+-- TODO: Replace `Rat.ofNat_num`/`Rat.ofNat_den` in Batteries
 -- See note [no_index around OfNat.ofNat]
 @[simp] lemma num_ofNat (n : ℕ) : num (no_index (OfNat.ofNat n)) = OfNat.ofNat n := rfl
 @[simp] lemma den_ofNat (n : ℕ) : den (no_index (OfNat.ofNat n)) = 1 := rfl
@@ -60,7 +62,7 @@ theorem ofInt_eq_cast (n : ℤ) : ofInt n = Int.cast n :=
 @[simp, norm_cast] lemma den_natCast (n : ℕ) : den n = 1 := rfl
 #align rat.coe_nat_denom Rat.den_natCast
 
--- TODO: Replace `intCast_num`/`intCast_den` the names in Std
+-- TODO: Replace `intCast_num`/`intCast_den` the names in Batteries
 @[simp, norm_cast] lemma num_intCast (n : ℤ) : (n : ℚ).num = n := rfl
 #align rat.coe_int_num Rat.num_intCast
 
@@ -112,14 +114,14 @@ theorem divInt_ne_zero {a b : ℤ} (b0 : b ≠ 0) : a /. b ≠ 0 ↔ a ≠ 0 :=
 #align rat.mk_eq Rat.divInt_eq_iff
 #align rat.div_mk_div_cancel_left Rat.divInt_mul_right
 
--- Porting note: this can move to Std4
+-- Porting note: this can move to Batteries
 theorem normalize_eq_mk' (n : Int) (d : Nat) (h : d ≠ 0) (c : Nat.gcd (Int.natAbs n) d = 1) :
     normalize n d h = mk' n d h c := (mk_eq_normalize ..).symm
 
--- TODO: Rename `mkRat_num_den` in Std
+-- TODO: Rename `mkRat_num_den` in Batteries
 @[simp] alias mkRat_num_den' := mkRat_self
 
--- TODO: Rename `Rat.divInt_self` to `Rat.num_divInt_den` in Std
+-- TODO: Rename `Rat.divInt_self` to `Rat.num_divInt_den` in Batteries
 lemma num_divInt_den (q : ℚ) : q.num /. q.den = q := divInt_self _
 #align rat.num_denom Rat.num_divInt_den
 
@@ -129,7 +131,7 @@ lemma mk'_eq_divInt {n d h c} : (⟨n, d, h, c⟩ : ℚ) = n /. d := (num_divInt
 theorem intCast_eq_divInt (z : ℤ) : (z : ℚ) = z /. 1 := mk'_eq_divInt
 #align rat.coe_int_eq_mk Rat.intCast_eq_divInt
 
--- TODO: Rename `divInt_self` in Std to `num_divInt_den`
+-- TODO: Rename `divInt_self` in Batteries to `num_divInt_den`
 @[simp] lemma divInt_self' {n : ℤ} (hn : n ≠ 0) : n /. n = 1 := by
   simpa using divInt_mul_right (n := 1) (d := 1) hn
 
@@ -158,7 +160,7 @@ def numDenCasesOn''.{u} {C : ℚ → Sort u} (a : ℚ)
 
 #align rat.add Rat.add
 
--- Porting note: there's already an instance for `Add ℚ` is in Std.
+-- Porting note: there's already an instance for `Add ℚ` is in Batteries.
 
 theorem lift_binop_eq (f : ℚ → ℚ → ℚ) (f₁ : ℤ → ℤ → ℤ → ℤ → ℤ) (f₂ : ℤ → ℤ → ℤ → ℤ → ℤ)
     (fv :
@@ -218,14 +220,42 @@ lemma divInt_mul_divInt' (n₁ d₁ n₂ d₂ : ℤ) : (n₁ /. d₁) * (n₂ /.
 
 attribute [simp] mkRat_mul_mkRat
 
+lemma mk'_mul_mk' (n₁ n₂ : ℤ) (d₁ d₂ : ℕ) (hd₁ hd₂ hnd₁ hnd₂) (h₁₂ : n₁.natAbs.Coprime d₂)
+    (h₂₁ : n₂.natAbs.Coprime d₁) :
+    mk' n₁ d₁ hd₁ hnd₁ * mk' n₂ d₂ hd₂ hnd₂ = mk' (n₁ * n₂) (d₁ * d₂) (Nat.mul_ne_zero hd₁ hd₂) (by
+      rw [Int.natAbs_mul]; exact (hnd₁.mul h₂₁).mul_right (h₁₂.mul hnd₂)) := by
+  rw [mul_def]; dsimp; simp [mk_eq_normalize]
+
 lemma mul_eq_mkRat (q r : ℚ) : q * r = mkRat (q.num * r.num) (q.den * r.den) := by
   rw [mul_def, normalize_eq_mkRat]
 
--- TODO: Rename `divInt_eq_iff` in Std to `divInt_eq_divInt`
+-- TODO: Rename `divInt_eq_iff` in Batteries to `divInt_eq_divInt`
 alias divInt_eq_divInt := divInt_eq_iff
 
 @[deprecated] alias mul_num_den := mul_eq_mkRat
 #align rat.mul_num_denom Rat.mul_eq_mkRat
+
+instance instPowNat : Pow ℚ ℕ where
+  pow q n := ⟨q.num ^ n, q.den ^ n, by simp [Nat.pow_eq_zero], by
+    rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩
+
+lemma pow_def (q : ℚ) (n : ℕ) :
+    q ^ n = ⟨q.num ^ n, q.den ^ n,
+      by simp [Nat.pow_eq_zero],
+      by rw [Int.natAbs_pow]; exact q.reduced.pow _ _⟩ := rfl
+
+lemma pow_eq_mkRat (q : ℚ) (n : ℕ) : q ^ n = mkRat (q.num ^ n) (q.den ^ n) := by
+  rw [pow_def, mk_eq_mkRat]
+
+lemma pow_eq_divInt (q : ℚ) (n : ℕ) : q ^ n = q.num ^ n /. q.den ^ n := by
+  rw [pow_def, mk_eq_divInt, Int.natCast_pow]
+
+@[simp] lemma num_pow (q : ℚ) (n : ℕ) : (q ^ n).num = q.num ^ n := rfl
+@[simp] lemma den_pow (q : ℚ) (n : ℕ) : (q ^ n).den = q.den ^ n := rfl
+
+@[simp] lemma mk'_pow (num : ℤ) (den : ℕ) (hd hdn) (n : ℕ) :
+    mk' num den hd hdn ^ n = mk' (num ^ n) (den ^ n)
+      (by simp [Nat.pow_eq_zero, hd]) (by rw [Int.natAbs_pow]; exact hdn.pow _ _) := rfl
 
 #align rat.inv Rat.inv
 
@@ -350,6 +380,16 @@ instance commRing : CommRing ℚ where
   one_mul := Rat.one_mul
   mul_comm := Rat.mul_comm
   mul_assoc := Rat.mul_assoc
+  npow n q := q ^ n
+  npow_zero := by intros; apply Rat.ext <;> simp
+  npow_succ n q := by
+    dsimp
+    rw [← q.mk'_num_den, mk'_pow, mk'_mul_mk']
+    congr
+    · rw [mk'_pow, Int.natAbs_pow]
+      exact q.reduced.pow_left _
+    · rw [mk'_pow]
+      exact q.reduced.pow_right _
   zero_mul := Rat.zero_mul
   mul_zero := Rat.mul_zero
   left_distrib := Rat.mul_add
@@ -481,6 +521,9 @@ protected theorem add_divInt (a b c : ℤ) : (a + b) /. c = a /. c + b /. c :=
 theorem divInt_eq_div (n d : ℤ) : n /. d = (n : ℚ) / d := by simp [div_def']
 #align rat.mk_eq_div Rat.divInt_eq_div
 
+lemma intCast_div_eq_divInt (n d : ℤ) : (n : ℚ) / (d) = n /. d := by rw [divInt_eq_div]
+#align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
+
 theorem divInt_mul_divInt_cancel {x : ℤ} (hx : x ≠ 0) (n d : ℤ) : n /. x * (x /. d) = n /. d := by
   by_cases hd : d = 0
   · rw [hd]
@@ -498,15 +541,16 @@ theorem divInt_div_divInt_cancel_right {x : ℤ} (hx : x ≠ 0) (n d : ℤ) :
   rw [div_eq_mul_inv, inv_divInt', mul_comm, divInt_mul_divInt_cancel hx]
 #align rat.mk_div_mk_cancel_right Rat.divInt_div_divInt_cancel_right
 
-theorem intCast_div_eq_divInt {n d : ℤ} : (n : ℚ) / (d) = n /. d := by
-  repeat rw [intCast_eq_divInt]
-  exact divInt_div_divInt_cancel_left one_ne_zero n d
-#align rat.coe_int_div_eq_mk Rat.intCast_div_eq_divInt
-
 -- Porting note: see porting note above about `Int.cast`@[simp]
 theorem num_div_den (r : ℚ) : (r.num : ℚ) / (r.den : ℚ) = r := by
   rw [← Int.cast_natCast]; erw [← divInt_eq_div, num_divInt_den]
 #align rat.num_div_denom Rat.num_div_den
+
+@[simp] lemma divInt_pow (num : ℕ) (den : ℤ) (n : ℕ) : (num /. den) ^ n = num ^ n /. den ^ n := by
+  simp [divInt_eq_div, div_pow]
+
+@[simp] lemma mkRat_pow (num den : ℕ) (n : ℕ) : mkRat num den ^ n = mkRat (num ^ n) (den ^ n) := by
+  rw [mkRat_eq_divInt, mkRat_eq_divInt, divInt_pow, Int.natCast_pow]
 
 theorem coe_int_num_of_den_eq_one {q : ℚ} (hq : q.den = 1) : (q.num : ℚ) = q := by
   conv_rhs => rw [← num_divInt_den q, hq]

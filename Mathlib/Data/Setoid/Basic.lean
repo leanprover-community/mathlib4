@@ -386,8 +386,7 @@ theorem mapOfSurjective_eq_map (h : ker f ≤ r) (hf : Surjective f) :
 relation on `α` defined by '`x ≈ y` iff `f(x)` is related to `f(y)` by `r`'.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def comap (f : α → β) (r : Setoid β) : Setoid α :=
+abbrev comap (f : α → β) (r : Setoid β) : Setoid α :=
   ⟨r.Rel on f, r.iseqv.comap _⟩
 #align setoid.comap Setoid.comap
 

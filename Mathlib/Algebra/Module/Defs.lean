@@ -112,8 +112,7 @@ theorem invOf_two_smul_add_invOf_two_smul [Invertible (2 : R)] (x : M) :
 
 /-- Pullback a `Module` structure along an injective additive monoid homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
+protected abbrev Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : M₂ →+ M)
     (hf : Injective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { hf.distribMulAction f smul with
     add_smul := fun c₁ c₂ x => hf <| by simp only [smul, f.map_add, add_smul]
@@ -122,8 +121,7 @@ protected def Function.Injective.module [AddCommMonoid M₂] [SMul R M₂] (f : 
 
 /-- Pushforward a `Module` structure along a surjective additive monoid homomorphism.
 See note [reducible non-instances]. -/
-@[reducible]
-protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
+protected abbrev Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f : M →+ M₂)
     (hf : Surjective f) (smul : ∀ (c : R) (x), f (c • x) = c • f x) : Module R M₂ :=
   { toDistribMulAction := hf.distribMulAction f smul
     add_smul := fun c₁ c₂ x => by
@@ -138,8 +136,7 @@ protected def Function.Surjective.module [AddCommMonoid M₂] [SMul R M₂] (f :
 
 See also `Function.Surjective.mulActionLeft` and `Function.Surjective.distribMulActionLeft`.
 -/
-@[reducible]
-def Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
+abbrev Function.Surjective.moduleLeft {R S M : Type*} [Semiring R] [AddCommMonoid M] [Module R M]
     [Semiring S] [SMul S M] (f : R →+* S) (hf : Function.Surjective f)
     (hsmul : ∀ (c) (x : M), f c • x = c • x) : Module S M :=
   { hf.distribMulActionLeft f.toMonoidHom hsmul with
@@ -152,8 +149,7 @@ variable {R} (M)
 /-- Compose a `Module` with a `RingHom`, with action `f s • m`.
 
 See note [reducible non-instances]. -/
-@[reducible]
-def Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
+abbrev Module.compHom [Semiring S] (f : S →+* R) : Module S M :=
   { MulActionWithZero.compHom M f.toMonoidWithZeroHom, DistribMulAction.compHom M (f : S →* R) with
     -- Porting note: the `show f (r + s) • x = f r • x + f s • x` wasn't needed in mathlib3.
     -- Somehow, now that `SMul` is heterogeneous, it can't unfold earlier fields of a definition for
@@ -280,8 +276,8 @@ variable (R)
 /-- An `AddCommMonoid` that is a `Module` over a `Ring` carries a natural `AddCommGroup`
 structure.
 See note [reducible non-instances]. -/
-@[reducible]
-def Module.addCommMonoidToAddCommGroup [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
+abbrev Module.addCommMonoidToAddCommGroup
+    [Ring R] [AddCommMonoid M] [Module R M] : AddCommGroup M :=
   { (inferInstance : AddCommMonoid M) with
     neg := fun a => (-1 : R) • a
     add_left_neg := fun a =>
@@ -362,8 +358,8 @@ variable (R)
 /-- `nsmul` is equal to any other module structure via a cast. -/
 theorem nsmul_eq_smul_cast (n : ℕ) (b : M) : n • b = (n : R) • b := by
   induction' n with n ih
-  · rw [Nat.zero_eq, Nat.cast_zero, zero_smul, zero_smul]
-  · rw [Nat.succ_eq_add_one, Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
+  · rw [Nat.cast_zero, zero_smul, zero_smul]
+  · rw [Nat.cast_succ, add_smul, add_smul, one_smul, ih, one_smul]
 #align nsmul_eq_smul_cast nsmul_eq_smul_cast
 
 end

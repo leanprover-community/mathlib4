@@ -256,9 +256,8 @@ def rotateL : Ordnode α → α → Ordnode α → Ordnode α
   | l, x, nil => node' l x nil
 #align ordnode.rotate_l Ordnode.rotateL
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 theorem rotateL_node (l : Ordnode α) (x : α) (sz : ℕ) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateL l x (node sz m y r) =
@@ -276,9 +275,8 @@ def rotateR : Ordnode α → α → Ordnode α → Ordnode α
   | nil, y, r => node' nil y r
 #align ordnode.rotate_r Ordnode.rotateR
 
--- Adaptation note:
--- During the port we marked these lemmas with `@[eqns]` to emulate the old Lean 3 behaviour.
--- See https://github.com/leanprover-community/mathlib4/issues/11647
+-- Porting note (#11467): during the port we marked these lemmas with `@[eqns]`
+-- to emulate the old Lean 3 behaviour.
 
 theorem rotateR_node (sz : ℕ) (l : Ordnode α) (x : α) (m : Ordnode α) (y : α) (r : Ordnode α) :
     rotateR (node sz l x m) y r =
@@ -1195,7 +1193,7 @@ theorem Valid'.node4L {l} {x : α} {m} {y : α} {r o₁ o₂} (hl : Valid' o₁ 
       rw [l1, r1]
       revert mm; cases size ml <;> cases size mr <;> intro mm
       · decide
-      · rw [Nat.zero_eq, zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
+      · rw [zero_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
         decide
       · rcases mm with (_ | ⟨⟨⟩⟩); decide
       · rw [Nat.succ_add] at mm; rcases mm with (_ | ⟨⟨⟩⟩)
@@ -1664,7 +1662,7 @@ theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} 
       have h_pos_t_l_size := pos_size_of_mem h.left.sz h_mem
       revert h_pos_t_l_size; cases' t_l.size with t_l_size <;> intro h_pos_t_l_size
       · cases h_pos_t_l_size
-      · simp [Nat.succ_add]
+      · simp [Nat.add_right_comm]
     · rw [(Valid'.glue h.left h.right h.bal.1).2, h.sz.1]; rfl
     · have t_ih_r := t_ih_r' h_mem
       clear t_ih_l' t_ih_r'
@@ -1676,7 +1674,7 @@ theorem size_erase_of_mem [@DecidableRel α (· ≤ ·)] {x : α} {t a₁ a₂} 
       have h_pos_t_r_size := pos_size_of_mem h.right.sz h_mem
       revert h_pos_t_r_size; cases' t_r.size with t_r_size <;> intro h_pos_t_r_size
       · cases h_pos_t_r_size
-      · simp [Nat.succ_add, Nat.add_succ]
+      · simp [Nat.add_assoc]
 #align ordnode.size_erase_of_mem Ordnode.size_erase_of_mem
 
 end

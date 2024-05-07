@@ -299,10 +299,10 @@ theorem filtrationOfSet_eq_natural [MulZeroOneClass β] [Nontrivial β] {s : ι 
     refine' generateFrom_le _
     rintro t ⟨hn, u, _, hu'⟩
     obtain heq | heq | heq | heq := Set.indicator_const_preimage (s n) u (1 : β)
-    pick_goal 4; rw [Set.mem_singleton_iff] at heq
+    on_goal 4 => rw [Set.mem_singleton_iff] at heq
     all_goals rw [heq] at hu'; rw [← hu']
-    exacts [measurableSet_empty _, MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
-      MeasurableSet.compl (measurableSet_generateFrom ⟨n, hn, rfl⟩)]
+    exacts [MeasurableSet.univ, measurableSet_generateFrom ⟨n, hn, rfl⟩,
+      MeasurableSet.compl (measurableSet_generateFrom ⟨n, hn, rfl⟩), measurableSet_empty _]
 #align measure_theory.filtration.filtration_of_set_eq_natural MeasureTheory.Filtration.filtrationOfSet_eq_natural
 
 end

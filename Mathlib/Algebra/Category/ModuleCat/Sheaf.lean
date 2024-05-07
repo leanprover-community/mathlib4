@@ -62,7 +62,7 @@ lemma id_val (X : SheafOfModules.{v} R) : Hom.val (𝟙 X) = 𝟙 X.val := rfl
 lemma comp_val {X Y Z : SheafOfModules.{v} R} (f : X ⟶ Y) (g : Y ⟶ Z) :
     (f ≫ g).val = f.val ≫ g.val := rfl
 
-variable (R) in
+variable (R)
 /-- The forgetful functor `SheafOfModules.{v} R ⥤ PresheafOfModules R.val`. -/
 @[simps]
 def forget : SheafOfModules.{v} R ⥤ PresheafOfModules R.val where
@@ -74,5 +74,10 @@ instance : (forget R).Faithful where
 
 instance : (forget R).Full where
   map_surjective φ := ⟨⟨φ⟩, rfl⟩
+
+/-- Evaluation on an object `X` gives a functor
+`SheafOfModules R ⥤ ModuleCat (R.val.obj X)`. -/
+def evaluation (X : Cᵒᵖ) : SheafOfModules.{v} R ⥤ ModuleCat.{v} (R.val.obj X) :=
+  forget _ ⋙ PresheafOfModules.evaluation _ X
 
 end SheafOfModules

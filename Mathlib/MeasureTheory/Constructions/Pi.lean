@@ -130,7 +130,7 @@ theorem generateFrom_pi_eq {C : ∀ i, Set (Set (α i))} (hC : ∀ i, IsCountabl
 theorem generateFrom_eq_pi [h : ∀ i, MeasurableSpace (α i)] {C : ∀ i, Set (Set (α i))}
     (hC : ∀ i, generateFrom (C i) = h i) (h2C : ∀ i, IsCountablySpanning (C i)) :
     generateFrom (pi univ '' pi univ C) = MeasurableSpace.pi := by
-  rw [← funext hC, generateFrom_pi_eq h2C]
+  simp only [← funext hC, generateFrom_pi_eq h2C]
 #align generate_from_eq_pi generateFrom_eq_pi
 
 /-- The product σ-algebra is generated from boxes, i.e. `s ×ˢ t` for sets `s : set α` and
@@ -250,7 +250,9 @@ theorem tprod_tprod (l : List δ) (μ : ∀ i, Measure (π i)) [∀ i, SigmaFini
     (s : ∀ i, Set (π i)) :
     Measure.tprod l μ (Set.tprod l s) = (l.map fun i => (μ i) (s i)).prod := by
   induction' l with i l ih; · simp
-  rw [tprod_cons, Set.tprod, prod_prod, map_cons, prod_cons, ih]
+  rw [tprod_cons, Set.tprod]
+  erw [prod_prod] -- TODO: why `rw` fails?
+  rw [map_cons, prod_cons, ih]
 #align measure_theory.measure.tprod_tprod MeasureTheory.Measure.tprod_tprod
 
 end Tprod
