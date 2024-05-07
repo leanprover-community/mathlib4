@@ -12,9 +12,9 @@ import Mathlib.MeasureTheory.SetAlgebra
 The goal of this file is to give a sufficient condition on the measure space `(X, μ)` and the
 `NormedAddCommGroup E` for the space `MeasureTheory.Lp E p μ` to have `SecondCountableTopology` when
 `1 ≤ p < ∞`. To do so we define the notion of a `MeasureTheory.MeasureDense` family and a
-`MeasureTheory.SeparableMeasureSpace`.
-We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is `σ`-finite, then `(X, μ)`
-is separable. We then prove that if `(X, μ)` is separable and `E` is second-countable,
+separable measure (`MeasureTheory.IsSeparable`).
+We prove that if `X` is `MeasurableSpace.CountablyGenerated` and `μ` is `σ`-finite, then `μ`
+is separable. We then prove that if `μ` is separable and `E` is second-countable,
 then `Lp E p μ` is second-countable.
 
 A family `𝒜` of `(X, μ)` is said to be **measure-dense** if it contains only measurable sets and
@@ -26,7 +26,7 @@ The term "measure-dense" is justified by the fact that the approximating conditi
 to the usual notion of density in the metric space made by constant indicators of measurable sets
 equipped with the `L¹` norm.
 
-`(X, μ)` is **separable** if it admits a countable and measure-dense family of sets.
+`μ` is **separable** if it admits a countable and measure-dense family of sets.
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `L¹` norm.
 
@@ -35,12 +35,12 @@ of separability in the metric space made by constant indicators equipped with th
 * `MeasureTheory.Measure.μ.MeasureDense 𝒜`: `𝒜` is a measure-dense family if it only contains
   measurable sets and if the following condition is satisfied: if `s` is measurable with finite
   measure, then for any `ε > 0` there exists `t ∈ 𝒜` such that `μ (s ∆ t) < ε `.
-* `MeasureTheory.SeparableMeasureSpace`: A measure space is separable if it admits a countable and
+* `MeasureTheory.IsSeparable`: A measure is separable if there exists a countable and
   measure-dense family.
 
 ## Main statements
 
-* `MeasureTheory.instSecondCountableLp`: If `(X, μ)` is separable, `E` is second-countable and
+* `MeasureTheory.instSecondCountableLp`: If `μ` is separable, `E` is second-countable and
   `1 ≤ p < ∞` then `Lp E p μ` is second-countable. This is in particular true if `X` is countably
   generated and `μ` is `σ`-finite.
 
@@ -267,26 +267,26 @@ theorem measureDense_of_generateFrom_setAglebra_of_sigmaFinite (h𝒜 : IsSetAlg
 
 end MeasureDense
 
-section SeparableMeasureSpace
+section IsSeparable
 
 /-! ### Definition of a separable measure space, sufficient condition -/
 
-/-- A measure space `X` is separable if it admits a countable and measure-dense family of sets.
+/-- A measure `μ` is separable if there exists a countable and measure-dense family of sets.
 
 The term "separable" is justified by the fact that the definition translates to the usual notion
 of separability in the metric space made by constant indicators equipped with the `L¹` norm. -/
-class SeparableMeasureSpace (μ : Measure X) : Prop :=
+class IsSeparable (μ : Measure X) : Prop :=
   exists_countable_measureDense : ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜
 
-/-- By definition, a separable measure space admits a countable and measure-dense family of sets. -/
-theorem exists_countable_measureDense [SeparableMeasureSpace μ] :
+/-- By definition, a separable measure admits a countable and measure-dense family of sets. -/
+theorem exists_countable_measureDense [IsSeparable μ] :
     ∃ 𝒜, 𝒜.Countable ∧ μ.MeasureDense 𝒜 :=
-  SeparableMeasureSpace.exists_countable_measureDense
+  IsSeparable.exists_countable_measureDense
 
-/-- If a measurable space is countably generated and equipped with a `σ`-finite measure, then it
-is separable. -/
+/-- If a measurable space is countably generated and equipped with a `σ`-finite measure, then the
+measure is separable. -/
 instance instSeparableMeasureSapaceCountablyGeneratedSigmaFinite [CountablyGenerated X]
-    [SigmaFinite μ] : SeparableMeasureSpace μ where
+    [SigmaFinite μ] : IsSeparable μ where
   exists_countable_measureDense := by
     have h := countable_countableGeneratingSet (α := X)
     have hgen := generateFrom_countableGeneratingSet (α := X)
@@ -315,18 +315,18 @@ instance instSeparableMeasureSapaceCountablyGeneratedSigmaFinite [CountablyGener
       | @compl t _ t_mem => exact MeasurableSet.compl t_mem
       | @union t u _ _ t_mem u_mem => exact MeasurableSet.union t_mem u_mem
 
-end SeparableMeasureSpace
+end IsSeparable
 
 section SecondCountableLp
 
 /-! ### A sufficient condition for $L^p$ spaces to be second-countable -/
 
-/-- If a measure space `X` is separable (in particular if it is countably generated and `σ`-finite),
-if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
+/-- If the measure `μ` is separable (in particular if `X` is countably generated and `m` is
+`σ`-finite), if `E` is a second-countable `NormedAddCommGroup`, and if `1 ≤ p < +∞`,
 then the associated `Lᵖ` space is second-countable. -/
-instance instSecondCountableLp [SeparableMeasureSpace μ] [SecondCountableTopology E] :
+instance instSecondCountableLp [IsSeparable μ] [SecondCountableTopology E] :
     SecondCountableTopology (Lp E p μ) := by
-  -- It is enough to show that the space is separable, i.e. admits a countable and dense susbet.
+  -- It is enough to show that the measure is separable, i.e. admits a countable and dense susbet.
   refine @UniformSpace.secondCountable_of_separable _ _ _ ?_
   -- There exists a countable and measure-dense family, and we can keep only the sets with finite
   -- measure while preserving the two properties. This family is denoted `𝒜₀`.
@@ -402,7 +402,8 @@ instance instSecondCountableLp [SeparableMeasureSpace μ] [SecondCountableTopolo
               exact mul_le_mul_of_nonneg_left
                 ((div_le_one (by linarith [μs_pow_nonneg])).2 (by linarith))
                 (by linarith [ε_pos])
-      · rw [norm_indicatorConstLp_sub mt hμt p_ne_zero p_ne_top.elim]
+      · rw [← dist_eq_norm, dist_indicatorConstLp_eq_norm,
+          norm_indicatorConstLp p_ne_zero p_ne_top.elim]
         have : (μ (s ∆ t)).toReal ^ (1 / p.toReal) ≤ ε / (3 * ( 1 + ‖b‖)) := by
           rw [← rpow_le_rpow_iff (rpow_nonneg toReal_nonneg _)
               (div_nonneg (le_of_lt ε_pos) (by linarith [norm_nonneg b]))
