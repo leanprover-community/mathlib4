@@ -7,8 +7,8 @@ import Mathlib.Init.Data.Nat.Notation
 import Mathlib.Control.Functor
 import Mathlib.Data.SProd
 import Mathlib.Util.CompileInductive
-import Std.Tactic.Lint.Basic
-import Std.Data.RBMap.Basic
+import Batteries.Tactic.Lint.Basic
+import Batteries.Data.RBMap.Basic
 
 #align_import data.list.defs from "leanprover-community/mathlib"@"d2d8742b0c21426362a9dacebc6005db895ca963"
 

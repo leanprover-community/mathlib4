@@ -129,7 +129,6 @@ would be `RingHomInvPair e e`. Indeed, this declaration is not currently used in
 
 See note [reducible non-instances].
 -/
-@[reducible]
 theorem of_ringEquiv (e : R₁ ≃+* R₂) : RingHomInvPair (↑e : R₁ →+* R₂) ↑e.symm :=
   ⟨e.symm_toRingHom_comp_toRingHom, e.symm.symm_toRingHom_comp_toRingHom⟩
 #align ring_hom_inv_pair.of_ring_equiv RingHomInvPair.of_ringEquiv
@@ -141,7 +140,6 @@ declaration is not currently used in mathlib.
 
 See note [reducible non-instances].
 -/
-@[reducible]
 theorem symm (σ₁₂ : R₁ →+* R₂) (σ₂₁ : R₂ →+* R₁) [RingHomInvPair σ₁₂ σ₂₁] :
     RingHomInvPair σ₂₁ σ₁₂ :=
   ⟨RingHomInvPair.comp_eq₂, RingHomInvPair.comp_eq⟩

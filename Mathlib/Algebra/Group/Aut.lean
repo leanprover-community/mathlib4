@@ -37,8 +37,6 @@ def MulAut (M : Type*) [Mul M] :=
 #align mul_aut MulAut
 #align add_aut AddAut
 
-attribute [reducible] AddAut
-
 namespace MulAut
 
 variable (M) [Mul M]

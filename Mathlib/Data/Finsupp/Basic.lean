@@ -794,6 +794,7 @@ theorem mapDomain_comapDomain (hf : Function.Injective f) (l : β →₀ M)
     (hl : ↑l.support ⊆ Set.range f) :
     mapDomain f (comapDomain f l (hf.injOn _)) = l := by
   conv_rhs => rw [← embDomain_comapDomain (f := ⟨f, hf⟩) hl (M := M), embDomain_eq_mapDomain]
+  rfl
 #align finsupp.map_domain_comap_domain Finsupp.mapDomain_comapDomain
 
 end FInjective

@@ -37,8 +37,7 @@ open BigOperators Pointwise
 
 /-- A (left) ideal in a semiring `R` is an additive submonoid `s` such that
 `a * b ∈ s` whenever `b ∈ s`. If `R` is a ring, then `s` is an additive subgroup.  -/
-@[reducible]
-def Ideal (R : Type u) [Semiring R] :=
+abbrev Ideal (R : Type u) [Semiring R] :=
   Submodule R R
 #align ideal Ideal
 

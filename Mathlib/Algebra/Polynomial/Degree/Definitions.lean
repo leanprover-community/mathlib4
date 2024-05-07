@@ -691,7 +691,7 @@ lemma natDegree_le_pred (hf : p.natDegree ≤ n) (hn : p.coeff n = 0) : p.natDeg
   obtain _ | n := n
   · exact hf
   · refine (Nat.le_succ_iff_eq_or_le.1 hf).resolve_left fun h ↦ ?_
-    rw [← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
+    rw [← Nat.succ_eq_add_one, ← h, coeff_natDegree, leadingCoeff_eq_zero] at hn
     aesop
 
 theorem natDegree_mem_support_of_nonzero (H : p ≠ 0) : p.natDegree ∈ p.support := by

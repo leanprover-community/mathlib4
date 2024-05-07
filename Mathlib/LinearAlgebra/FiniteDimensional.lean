@@ -75,8 +75,7 @@ open Cardinal Submodule Module Function
 
 /-- `FiniteDimensional` vector spaces are defined to be finite modules.
 Use `FiniteDimensional.of_fintype_basis` to prove finite dimension from another definition. -/
-@[reducible]
-def FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
+abbrev FiniteDimensional (K V : Type*) [DivisionRing K] [AddCommGroup V] [Module K V] :=
   Module.Finite K V
 #align finite_dimensional FiniteDimensional
 
@@ -217,8 +216,8 @@ theorem _root_.LinearIndependent.lt_aleph0_of_finiteDimensional {ι : Type w} [F
     {v : ι → V} (h : LinearIndependent K v) : #ι < ℵ₀ :=
   h.lt_aleph0_of_finite
 #align finite_dimensional.lt_aleph_0_of_linear_independent LinearIndependent.lt_aleph0_of_finiteDimensional
-@[deprecated] alias
-lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
+@[deprecated (since := "2023-12-27")]
+alias lt_aleph0_of_linearIndependent := LinearIndependent.lt_aleph0_of_finiteDimensional
 
 /-- If a submodule has maximal dimension in a finite dimensional space, then it is equal to the
 whole space. -/
@@ -368,21 +367,21 @@ theorem FiniteDimensional.of_rank_eq_nat {n : ℕ} (h : Module.rank K V = n) :
   Module.finite_of_rank_eq_nat h
 #align finite_dimensional_of_rank_eq_nat FiniteDimensional.of_rank_eq_nat
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_nat := FiniteDimensional.of_rank_eq_nat
 
 theorem FiniteDimensional.of_rank_eq_zero (h : Module.rank K V = 0) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_zero h
 #align finite_dimensional_of_rank_eq_zero FiniteDimensional.of_rank_eq_zero
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_zero := FiniteDimensional.of_rank_eq_zero
 
 theorem FiniteDimensional.of_rank_eq_one (h : Module.rank K V = 1) : FiniteDimensional K V :=
   Module.finite_of_rank_eq_one h
 #align finite_dimensional_of_rank_eq_one FiniteDimensional.of_rank_eq_one
 
-@[deprecated] -- Since 2024-02-02
+@[deprecated (since := "2024-02-02")]
 alias finiteDimensional_of_rank_eq_one := FiniteDimensional.of_rank_eq_one
 
 variable (K V)
@@ -964,7 +963,7 @@ theorem LinearIndependent.span_eq_top_of_card_eq_finrank {ι : Type*} [Nonempty 
   lin_ind.span_eq_top_of_card_eq_finrank' card_eq
 #align span_eq_top_of_linear_independent_of_card_eq_finrank LinearIndependent.span_eq_top_of_card_eq_finrank
 
-@[deprecated] -- 2024-02-14
+@[deprecated (since := "2024-02-14")]
 alias span_eq_top_of_linearIndependent_of_card_eq_finrank :=
   LinearIndependent.span_eq_top_of_card_eq_finrank
 

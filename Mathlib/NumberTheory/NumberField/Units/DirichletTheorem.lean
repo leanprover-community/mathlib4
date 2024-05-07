@@ -196,23 +196,25 @@ sequence defining the same ideal and their quotient is the desired unit `u_w₁`
 
 open NumberField.mixedEmbedding NNReal
 
-/- TODO: Remove!. Necessary to prevent a timeout that ends at here. #10131 -/
-attribute [-instance] FractionalIdeal.commSemiring
 variable (w₁ : InfinitePlace K) {B : ℕ} (hB : minkowskiBound K 1 < (convexBodyLTFactor K) * B)
 
 /-- This result shows that there always exists a next term in the sequence. -/
 theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
-    ∃ y : 𝓞 K, y ≠ 0 ∧ (∀ w, w ≠ w₁ → w y < w x) ∧ |Algebra.norm ℚ (y : K)| ≤ B := by
+    ∃ y : 𝓞 K, y ≠ 0 ∧
+      (∀ w, w ≠ w₁ → w y < w x) ∧
+      |Algebra.norm ℚ (y : K)| ≤ B := by
+  have hx' := RingOfIntegers.coe_ne_zero_iff.mpr hx
   let f : InfinitePlace K → ℝ≥0 :=
     fun w => ⟨(w x) / 2, div_nonneg (AbsoluteValue.nonneg _ _) (by norm_num)⟩
   suffices ∀ w, w ≠ w₁ → f w ≠ 0 by
     obtain ⟨g, h_geqf, h_gprod⟩ := adjust_f K B this
-    obtain ⟨y, hy, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
+    obtain ⟨y, h_ynz, h_yle⟩ := exists_ne_zero_mem_ringOfIntegers_lt (f := g)
       (by rw [convexBodyLT_volume]; convert hB; exact congr_arg ((↑): NNReal → ENNReal) h_gprod)
-    refine ⟨⟨y, hy⟩, Subtype.coe_ne_coe.1 h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
+    refine ⟨y, h_ynz, fun w hw => (h_geqf w hw ▸ h_yle w).trans ?_, ?_⟩
     · rw [← Rat.cast_le (K := ℝ), Rat.cast_natCast]
       calc
-        _ = ∏ w : InfinitePlace K, w y ^ mult w := (prod_eq_abs_norm (y : K)).symm
+        _ = ∏ w : InfinitePlace K, w (algebraMap _ K y) ^ mult w :=
+          (prod_eq_abs_norm (algebraMap _ K y)).symm
         _ ≤ ∏ w : InfinitePlace K, (g w : ℝ) ^ mult w := by
           refine prod_le_prod ?_ ?_
           · exact fun _ _ => pow_nonneg (by positivity) _
@@ -221,10 +223,10 @@ theorem seq_next {x : 𝓞 K} (hx : x ≠ 0) :
           simp_rw [← NNReal.coe_pow, ← NNReal.coe_prod]
           exact le_of_eq (congr_arg toReal h_gprod)
     · refine div_lt_self ?_ (by norm_num)
-      simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, hx, not_false_eq_true]
+      exact pos_iff.mpr hx'
   intro _ _
-  rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or, ZeroMemClass.coe_eq_zero]
-  exact ⟨hx, by norm_num⟩
+  rw [ne_eq, Nonneg.mk_eq_zero, div_eq_zero_iff, map_eq_zero, not_or]
+  exact ⟨hx', by norm_num⟩
 
 /-- An infinite sequence of nonzero algebraic integers of `K` satisfying the following properties:
 • `seq n` is nonzero;
@@ -236,9 +238,8 @@ def seq : ℕ → { x : 𝓞 K // x ≠ 0 }
     ⟨(seq_next K w₁ hB (seq n).prop).choose, (seq_next K w₁ hB (seq n).prop).choose_spec.1⟩
 
 /-- The terms of the sequence are nonzero. -/
-theorem seq_ne_zero (n : ℕ) : (seq K w₁ hB n : K) ≠ 0 := by
-  refine (map_ne_zero_iff (algebraMap (𝓞 K) K) ?_).mpr (seq K w₁ hB n).prop
-  exact IsFractionRing.injective { x // x ∈ 𝓞 K } K
+theorem seq_ne_zero (n : ℕ) : algebraMap (𝓞 K) K (seq K w₁ hB n) ≠ 0 :=
+  RingOfIntegers.coe_ne_zero_iff.mpr (seq K w₁ hB n).prop
 
 /-- The terms of the sequence have nonzero norm. -/
 theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K) ≠ 0 :=
@@ -246,7 +247,7 @@ theorem seq_norm_ne_zero (n : ℕ) : Algebra.norm ℤ (seq K w₁ hB n : 𝓞 K)
 
 /-- The sequence is strictly decreasing at infinite places distinct from `w₁`. -/
 theorem seq_decreasing {n m : ℕ} (h : n < m) (w : InfinitePlace K) (hw : w ≠ w₁) :
-    w (seq K w₁ hB m) < w (seq K w₁ hB n) := by
+    w (algebraMap (𝓞 K) K (seq K w₁ hB m)) < w (algebraMap (𝓞 K) K (seq K w₁ hB n)) := by
   induction m with
   | zero =>
       exfalso
@@ -286,12 +287,13 @@ theorem exists_unit (w₁ : InfinitePlace K) :
       (Ideal.span ({ (seq K w₁ hB n : 𝓞 K) }) = Ideal.span ({ (seq K w₁ hB m : 𝓞 K) }))
   · have hu := Ideal.span_singleton_eq_span_singleton.mp h
     refine ⟨hu.choose, fun w hw => Real.log_neg ?_ ?_⟩
-    · simp only [pos_iff, ne_eq, ZeroMemClass.coe_eq_zero, Units.ne_zero, not_false_eq_true]
+    · exact pos_iff.mpr (coe_ne_zero _)
     · calc
-        _ = w ((seq K w₁ hB m : K) * (seq K w₁ hB n : K)⁻¹) := by
-          rw [← congr_arg ((↑) : (𝓞 K) → K) hu.choose_spec, mul_comm, Submonoid.coe_mul,
-            ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
-        _ = w (seq K w₁ hB m) * w (seq K w₁ hB n)⁻¹ := _root_.map_mul _ _ _
+        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m) * (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹) := by
+          rw [← congr_arg (algebraMap (𝓞 K) K) hu.choose_spec, mul_comm, map_mul (algebraMap _ _),
+          ← mul_assoc, inv_mul_cancel (seq_ne_zero K w₁ hB n), one_mul]
+        _ = w (algebraMap (𝓞 K) K (seq K w₁ hB m)) * w (algebraMap (𝓞 K) K (seq K w₁ hB n))⁻¹ :=
+          _root_.map_mul _ _ _
         _ < 1 := by
           rw [map_inv₀, mul_inv_lt_iff (pos_iff.mpr (seq_ne_zero K w₁ hB n)), mul_one]
           exact seq_decreasing K w₁ hB hnm w hw

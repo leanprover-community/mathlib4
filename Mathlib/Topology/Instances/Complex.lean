@@ -5,6 +5,7 @@ Authors: Xavier Roblot
 -/
 import Mathlib.Analysis.Complex.Basic
 import Mathlib.FieldTheory.IntermediateField
+import Mathlib.Topology.Algebra.Field
 import Mathlib.Topology.Algebra.UniformRing
 
 #align_import topology.instances.complex from "leanprover-community/mathlib"@"f0c8bf9245297a541f468be517f1bde6195105e9"

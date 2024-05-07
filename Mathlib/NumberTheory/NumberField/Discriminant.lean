@@ -151,7 +151,7 @@ theorem exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr (I : (FractionalIdeal
 
 theorem exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr :
     ∃ (a : 𝓞 K), a ≠ 0 ∧
-      |Algebra.norm ℚ (a:K)| ≤ (4 / π) ^ NrComplexPlaces K *
+      |Algebra.norm ℚ (a : K)| ≤ (4 / π) ^ NrComplexPlaces K *
         (finrank ℚ K).factorial / (finrank ℚ K) ^ (finrank ℚ K) * Real.sqrt |discr K| := by
   obtain ⟨_, h_mem, h_nz, h_nm⟩ := exists_ne_zero_mem_ideal_of_norm_le_mul_sqrt_discr K ↑1
   obtain ⟨a, rfl⟩ := (FractionalIdeal.mem_one_iff _).mp h_mem
@@ -167,7 +167,7 @@ theorem abs_discr_ge (h : 1 < finrank ℚ K) :
   -- algebraic integer `x` of small norm and the fact that `1 ≤ |Norm x|` to get a lower bound
   -- on `sqrt |discr K|`.
   obtain ⟨x, h_nz, h_bd⟩ := exists_ne_zero_mem_ringOfIntegers_of_norm_le_mul_sqrt_discr K
-  have h_nm : (1 : ℝ) ≤ |(Algebra.norm ℚ) (x : K)| := by
+  have h_nm : (1 : ℝ) ≤ |Algebra.norm ℚ (x : K)| := by
     rw [← Algebra.coe_norm_int, ← Int.cast_one, ← Int.cast_abs, Rat.cast_intCast, Int.cast_le]
     exact Int.one_le_abs (Algebra.norm_ne_zero_iff.mpr h_nz)
   replace h_bd := le_trans h_nm h_bd
@@ -316,10 +316,11 @@ theorem minkowskiBound_lt_boundOfDiscBdd : minkowskiBound K ↑1 < boundOfDiscBd
   · exact one_le_two
   · exact rank_le_rankOfDiscrBdd hK
 
-theorem natDegree_le_rankOfDiscrBdd {a : K} (ha : a ∈ 𝓞 K) (h : ℚ⟮a⟯ = ⊤) :
-    natDegree (minpoly ℤ (a:K)) ≤ rankOfDiscrBdd N := by
+theorem natDegree_le_rankOfDiscrBdd (a : 𝓞 K) (h : ℚ⟮(a : K)⟯ = ⊤) :
+    natDegree (minpoly ℤ (a : K)) ≤ rankOfDiscrBdd N := by
   rw [Field.primitive_element_iff_minpoly_natDegree_eq,
-    minpoly.isIntegrallyClosed_eq_field_fractions' ℚ ha, (minpoly.monic ha).natDegree_map] at h
+    minpoly.isIntegrallyClosed_eq_field_fractions' ℚ a.isIntegral_coe,
+    (minpoly.monic a.isIntegral_coe).natDegree_map] at h
   exact h.symm ▸ rank_le_rankOfDiscrBdd hK
 
 variable (N)
@@ -341,12 +342,13 @@ theorem finite_of_discr_bdd_of_isReal :
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLTFactor K) * B by
-    obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
-    refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
-    · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
+    obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isReal K hw₀ this
+    have hx := x.isIntegral_coe
+    refine ⟨x, ⟨⟨minpoly ℤ (x : K), ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
+    · exact natDegree_le_rankOfDiscrBdd hK₂ x hx₁
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
       refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
-          ((le_iff_le x _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
+          ((le_iff_le (x : K) _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
       · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
           Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
@@ -358,7 +360,7 @@ theorem finite_of_discr_bdd_of_isReal :
         · exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
-      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ x)
+      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁ <;> simp
   have := one_le_convexBodyLTFactor K
@@ -383,12 +385,13 @@ theorem finite_of_discr_bdd_of_isComplex :
   haveI : NumberField K := @NumberField.mk _ _ inferInstance hK₀
   obtain ⟨w₀, hw₀⟩ := hK₁
   suffices minkowskiBound K ↑1 < (convexBodyLT'Factor K) * boundOfDiscBdd N by
-    obtain ⟨x, hx, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
-    refine ⟨x, ⟨⟨minpoly ℤ x, ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
-    · exact natDegree_le_rankOfDiscrBdd hK₂ hx hx₁
+    obtain ⟨x, hx₁, hx₂⟩ := exists_primitive_element_lt_of_isComplex K hw₀ this
+    have hx := x.isIntegral_coe
+    refine ⟨x, ⟨⟨minpoly ℤ (x : K), ⟨?_, fun i ↦ ?_⟩, ?_⟩, ?_⟩⟩
+    · exact natDegree_le_rankOfDiscrBdd hK₂ x hx₁
     · rw [Set.mem_Icc, ← abs_le, ← @Int.cast_le ℝ]
       refine (Eq.trans_le ?_ <| Embeddings.coeff_bdd_of_norm_le
-          ((le_iff_le x _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
+          ((le_iff_le (x : K) _).mp (fun w ↦ le_of_lt (hx₂ w))) i).trans ?_
       · rw [minpoly.isIntegrallyClosed_eq_field_fractions' ℚ hx, coeff_map, eq_intCast,
           Int.norm_cast_rat, Int.norm_eq_abs, Int.cast_abs]
       · refine le_trans ?_ (Nat.le_ceil _)
@@ -401,7 +404,7 @@ theorem finite_of_discr_bdd_of_isComplex :
           exact (Nat.choose_le_choose _ (rank_le_rankOfDiscrBdd hK₂)).trans
             (Nat.choose_le_middle _ _)
     · refine mem_rootSet.mpr ⟨minpoly.ne_zero hx, ?_⟩
-      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ x)
+      exact (aeval_algebraMap_eq_zero_iff _ _ _).mpr (minpoly.aeval ℤ (x : K))
     · rw [← (IntermediateField.lift_injective _).eq_iff, eq_comm] at hx₁
       convert hx₁ <;> simp
   have := one_le_convexBodyLT'Factor K

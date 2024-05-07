@@ -526,11 +526,10 @@ theorem comp_le_of_antitoneOn (f : α → E) {s : Set α} {t : Set β} (φ : β 
     ⟨n, fun i => φ (u <| n - i), fun x y xy => hφ (ut _) (ut _) (hu <| Nat.sub_le_sub_left xy n),
       fun i => φst (ut _)⟩
     le_rfl
-  rw [edist_comm, Nat.sub_sub, add_comm, Nat.sub_succ, Nat.add_one, Nat.succ_eq_add_one]
-  simp only [Function.comp_apply, Nat.pred_eq_sub_one, Nat.sub_add_eq]
-  congr
-  simp only [Finset.mem_range] at hx
-  omega
+  rw [Finset.mem_range] at hx
+  dsimp only [Subtype.coe_mk, Function.comp_apply]
+  rw [edist_comm]
+  congr 4 <;> omega
 #align evariation_on.comp_le_of_antitone_on eVariationOn.comp_le_of_antitoneOn
 
 theorem comp_eq_of_monotoneOn (f : α → E) {t : Set β} (φ : β → α) (hφ : MonotoneOn φ t) :

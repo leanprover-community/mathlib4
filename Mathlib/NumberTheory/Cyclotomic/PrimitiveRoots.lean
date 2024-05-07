@@ -233,7 +233,7 @@ theorem dvd_of_isCyclotomicExtension [NumberField K] [IsCyclotomicExtension {n} 
   rcases _root_.dvd_lcm_right l n with ⟨r, hr⟩
   have ineq := Nat.totient_super_multiplicative n r
   rw [← hr] at ineq
-  replace key := (mul_le_iff_le_one_right (Nat.totient_pos n.2)).mp (le_trans ineq key)
+  replace key := (mul_le_iff_le_one_right (Nat.totient_pos.2 n.2)).mp (le_trans ineq key)
   have rpos : 0 < r := by
     refine Nat.pos_of_ne_zero (fun h ↦ ?_)
     simp only [h, mul_zero, _root_.lcm_eq_zero_iff, PNat.ne_zero, or_false] at hr
