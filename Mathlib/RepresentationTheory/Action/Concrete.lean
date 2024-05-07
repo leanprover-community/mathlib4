@@ -58,7 +58,7 @@ set_option linter.uppercaseLean3 false in
 #align Action.of_mul_action_limit_cone Action.ofMulActionLimitCone
 
 /-- The `G`-set `G`, acting on itself by left multiplication. -/
-@[simps!]
+@[simp]
 def leftRegular (G : Type u) [Monoid G] : Action (Type u) (MonCat.of G) :=
   Action.ofMulAction G G
 set_option linter.uppercaseLean3 false in

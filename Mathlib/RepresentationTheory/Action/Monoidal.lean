@@ -21,7 +21,7 @@ We show:
 * When `V` is monoidal, braided, or symmetric, so is `Action V G`.
 -/
 
-universe u v
+universe u v w
 
 open CategoryTheory Limits
 
@@ -35,28 +35,71 @@ open MonoidalCategory
 
 variable [MonoidalCategory V]
 
-instance instMonoidalCategory : MonoidalCategory (Action V G) :=
-  Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
+instance instMonoidalCategory : MonoidalCategory (Action V G) where
+  tensorObj := fun X Y => {
+    V := X.V ⊗ Y.V
+    ρ := {
+      toFun := fun g => X.ρ g ⊗ Y.ρ g
+      map_one' := sorry
+      map_mul' := sorry
+    }
+  }
+  whiskerLeft := fun X Y Z f => {
+    hom := X.V ◁ f.hom
+    comm := sorry
+  }
+  whiskerRight := fun f X => {
+    hom := f.hom ▷ X.V
+    comm := sorry
+  }
+  tensorHom := fun f g => {
+    hom := f.hom ⊗ g.hom
+    comm := sorry
+  }
+  tensorUnit := {
+    V := 𝟙_ V
+    ρ := {
+      toFun := fun g => 𝟙 (𝟙_ V)
+      map_one' := sorry
+      map_mul' := sorry
+    }
+  }
+  associator := fun X Y Z => Action.mkIso (α_ X.V Y.V Z.V) sorry
+  leftUnitor := fun X => Action.mkIso (λ_ X.V) sorry
+  rightUnitor := fun X => Action.mkIso (ρ_ X.V) sorry
+  tensorHom_def := sorry
+  tensor_id := sorry
+  tensor_comp := sorry
+  whiskerLeft_id := sorry
+  id_whiskerRight := sorry
+  associator_naturality := sorry
+  leftUnitor_naturality := sorry
+  rightUnitor_naturality := sorry
+  pentagon := sorry
+  triangle := sorry
+  --Monoidal.transport (Action.functorCategoryEquivalence _ _).symm
 
-@[simp]
+--@[simp]
 theorem tensorUnit_v : (𝟙_ (Action V G)).V = 𝟙_ V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_unit_V Action.tensorUnit_v
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem tensorUnit_rho {g : G} : (𝟙_ (Action V G)).ρ g = 𝟙 (𝟙_ V) :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_unit_rho Action.tensorUnit_rho
 
-@[simp]
+--@[simp]
 theorem tensor_v {X Y : Action V G} : (X ⊗ Y).V = X.V ⊗ Y.V :=
   rfl
 set_option linter.uppercaseLean3 false in
 #align Action.tensor_V Action.tensor_v
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem tensor_rho {X Y : Action V G} {g : G} : (X ⊗ Y).ρ g = X.ρ g ⊗ Y.ρ g :=
   rfl
 set_option linter.uppercaseLean3 false in
@@ -79,46 +122,57 @@ theorem whiskerRight_hom {X Y : Action V G} (f : X ⟶ Y) (Z : Action V G) :
   rfl
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem associator_hom_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).hom = (α_ X.V Y.V Z.V).hom := by
-  dsimp
-  simp
+  rfl
+  --simp [Monoidal.transportStruct_associator_hom, Category.id_comp (α_ X.V Y.V Z.V).hom]
 set_option linter.uppercaseLean3 false in
 #align Action.associator_hom_hom Action.associator_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem associator_inv_hom {X Y Z : Action V G} :
     Hom.hom (α_ X Y Z).inv = (α_ X.V Y.V Z.V).inv := by
-  dsimp
-  simp
+  rfl
+  -- dsimp
+  --simp [Monoidal.transportStruct_associator_inv]
 set_option linter.uppercaseLean3 false in
 #align Action.associator_inv_hom Action.associator_inv_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem leftUnitor_hom_hom {X : Action V G} : Hom.hom (λ_ X).hom = (λ_ X.V).hom := by
-  dsimp
-  simp
+  rfl
+  --simp [Monoidal.transportStruct_leftUnitor_hom]
+  --sorry
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_hom_hom Action.leftUnitor_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem leftUnitor_inv_hom {X : Action V G} : Hom.hom (λ_ X).inv = (λ_ X.V).inv := by
-  dsimp
-  simp
+  rfl
+  -- dsimp
+  --simp [Monoidal.transportStruct_leftUnitor_inv]
 set_option linter.uppercaseLean3 false in
 #align Action.left_unitor_inv_hom Action.leftUnitor_inv_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem rightUnitor_hom_hom {X : Action V G} : Hom.hom (ρ_ X).hom = (ρ_ X.V).hom := by
-  dsimp
-  simp
+  rfl
+  -- dsimp
+  -- simp [Monoidal.transportStruct_rightUnitor_hom]
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_hom_hom Action.rightUnitor_hom_hom
 
 -- Porting note: removed @[simp] as the simpNF linter complains
+@[simp]
 theorem rightUnitor_inv_hom {X : Action V G} : Hom.hom (ρ_ X).inv = (ρ_ X.V).inv := by
-  dsimp
-  simp
+  rfl
+  -- dsimp
+  -- simp [Monoidal.transportStruct_rightUnitor_inv]
 set_option linter.uppercaseLean3 false in
 #align Action.right_unitor_inv_hom Action.rightUnitor_inv_hom
 
@@ -136,9 +190,16 @@ variable (V G)
 /-- When `V` is monoidal the forgetful functor `Action V G` to `V` is monoidal. -/
 @[simps]
 def forgetMonoidal : MonoidalFunctor (Action V G) V :=
-  { toFunctor := Action.forget _ _
-    ε := 𝟙 _
-    μ := fun X Y => 𝟙 _ }
+{ toFunctor := Action.forget _ _
+  ε := 𝟙 _
+  μ := fun x y => 𝟙 _
+  μ_natural_left := fun f X => by simp
+  μ_natural_right := fun X f => by simp
+  associativity := fun X Y Z => by simp
+  left_unitality := by intros; simp
+  right_unitality := by intros; simp
+  ε_isIso := by infer_instance
+  μ_isIso := by infer_instance }
 set_option linter.uppercaseLean3 false in
 #align Action.forget_monoidal Action.forgetMonoidal
 
@@ -153,7 +214,10 @@ variable [BraidedCategory V]
 
 instance : BraidedCategory (Action V G) :=
   braidedCategoryOfFaithful (forgetMonoidal V G) (fun X Y => mkIso (β_ _ _)
-    (fun g => by simp [FunctorCategoryEquivalence.inverse])) (by aesop_cat)
+    (fun g => by
+      simp
+    -- simp [FunctorCategoryEquivalence.inverse]
+      )) (by aesop_cat)
 
 /-- When `V` is braided the forgetful functor `Action V G` to `V` is braided. -/
 @[simps!]
@@ -188,9 +252,29 @@ end
 
 noncomputable section
 
+/-- Construct a natural transformation between functors `SingleObj M ⥤ C` by
+giving a compatible morphism `SingleObj.star M`. -/
+@[simp]
+def _root_.CategoryTheory.SingleObj.natIso
+    {M : Type u} [Monoid M]
+    {C : Type v} [Category.{w} C]
+    {F G : SingleObj M ⥤ C} (u : F.obj (SingleObj.star M) ≅ G.obj (SingleObj.star M))
+    (h : ∀ a : M, F.map a ≫ u.hom = u.hom ≫ G.map a) : F ≅ G :=
+  NatIso.ofComponents (fun _ => u) h
+
 /-- Upgrading the functor `Action V G ⥤ (SingleObj G ⥤ V)` to a monoidal functor. -/
 def functorCategoryMonoidalEquivalence : MonoidalFunctor (Action V G) (SingleObj G ⥤ V) :=
-  Monoidal.fromTransported (Action.functorCategoryEquivalence _ _).symm
+  { toFunctor := (Action.functorCategoryEquivalence V G).functor
+    ε := (SingleObj.natIso (Iso.refl _) fun _ => by simp).hom
+    μ := fun X Y => (SingleObj.natIso (Iso.refl _) <| fun x => by simp).hom
+    μ_natural_left := by aesop_cat
+    μ_natural_right := by aesop_cat
+    associativity := by aesop_cat
+    left_unitality := by aesop_cat
+    right_unitality := by aesop_cat
+    ε_isIso := by infer_instance
+    μ_isIso := by infer_instance }
+  --Monoidal.fromTransported (Action.functorCategoryEquivalence _ _).symm
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence Action.functorCategoryMonoidalEquivalence
 
@@ -201,11 +285,12 @@ instance : (functorCategoryMonoidalEquivalence V G).IsEquivalence := by
 theorem functorCategoryMonoidalEquivalence.μ_app (A B : Action V G) :
     ((functorCategoryMonoidalEquivalence V G).μ A B).app PUnit.unit = 𝟙 _ := by
   dsimp only [functorCategoryMonoidalEquivalence]
-  simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_μ, NatTrans.comp_app]
+  rfl
+  --simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_μ, NatTrans.comp_app]
   -- Porting note: Lean3 was able to see through some defeq, as the mathlib3 proof was
   --   show (𝟙 A.V ⊗ 𝟙 B.V) ≫ 𝟙 (A.V ⊗ B.V) ≫ (𝟙 A.V ⊗ 𝟙 B.V) = 𝟙 (A.V ⊗ B.V)
   --   simp only [monoidal_category.tensor_id, category.comp_id]
-  rfl
+  --rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.μ_app Action.functorCategoryMonoidalEquivalence.μ_app
 
@@ -222,9 +307,10 @@ set_option linter.uppercaseLean3 false in
 @[simp]
 theorem functorCategoryMonoidalEquivalence.ε_app :
     (functorCategoryMonoidalEquivalence V G).ε.app PUnit.unit = 𝟙 _ := by
-  dsimp only [functorCategoryMonoidalEquivalence]
-  simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_ε]
   rfl
+ -- dsimp only [functorCategoryMonoidalEquivalence]
+ -- simp only [Monoidal.fromTransported_toLaxMonoidalFunctor_ε]
+ -- rfl
 set_option linter.uppercaseLean3 false in
 #align Action.functor_category_monoidal_equivalence.ε_app Action.functorCategoryMonoidalEquivalence.ε_app
 
@@ -328,6 +414,14 @@ end Monoidal
 
 open MonoidalCategory
 
+/-@[simp 1000]
+lemma ugh [MonoidalCategory V] (A B : Action V G) : (A ⊗ B).V = A.V ⊗ B.V := rfl
+
+@[simp]
+lemma ffs {G : Type u} [Group G] (A B : Action (Type u) (MonCat.of G)) (g : G) (x : A.V) (y : B.V) :
+    (A ⊗ B).ρ g (x, y) = (A.ρ g x, B.ρ g y) := rfl
+-/
+
 /-- Given `X : Action (Type u) (Mon.of G)` for `G` a group, then `G × X` (with `G` acting as left
 multiplication on the first factor and by `X.ρ` on the second) is isomorphic as a `G`-set to
 `G × X` (with `G` acting as left multiplication on the first factor and trivially on the second).
@@ -347,12 +441,13 @@ noncomputable def leftRegularTensorIso (G : Type u) [Group G] (X : Action (Type 
       comm := fun (g : G) => by
         funext ⟨(x₁ : G), (x₂ : X.V)⟩
         refine' Prod.ext rfl _
-        erw [tensor_rho, tensor_rho]
+        simp [End.mul_def (X.ρ g) (X.ρ x₁)]
+        /- erw [tensor_rho, tensor_rho]
         dsimp
         -- This used to be `rw`, but we need `erw` after leanprover/lean4#2644
         erw [leftRegular_ρ_apply]
         erw [map_mul]
-        rfl }
+        rfl-/ }
   hom_inv_id := by
     apply Hom.ext
     funext x
@@ -384,7 +479,7 @@ namespace CategoryTheory.MonoidalFunctor
 open Action
 
 variable {W : Type (u + 1)} [LargeCategory W] [MonoidalCategory V] [MonoidalCategory W]
-
+open MonoidalCategory
 /-- A lax monoidal functor induces a lax monoidal functor between
 the categories of `G`-actions within those categories. -/
 @[simps!]
@@ -395,14 +490,17 @@ def mapActionLax (F : LaxMonoidalFunctor V W) (G : MonCat.{u}) :
     { hom := F.ε
       comm := fun g => by
         dsimp [FunctorCategoryEquivalence.inverse, Functor.mapAction]
-        rw [Category.id_comp, F.map_id, Category.comp_id] })
+        rw [Category.id_comp F.ε, F.map_id MonoidalCategory.tensorUnit, Category.comp_id F.ε]
+        -- sorry --rw [Category.id_comp, F.map_id, Category.comp_id]
+
+         })
   (μ := fun X Y =>
     { hom := F.μ X.V Y.V
       comm := fun g => F.μ_natural (X.ρ g) (Y.ρ g) })
   (μ_natural := by intros; ext; simp)
-  (associativity := by intros; ext; simp)
-  (left_unitality := by intros; ext; simp)
-  (right_unitality := by intros; ext; simp)
+  (associativity := by intros; ext; simp [tensor_v])
+  (left_unitality := by intros; ext; simp [tensorUnit_v])
+  (right_unitality := by intros; ext; simp [tensorUnit_v])
 
 variable (F : MonoidalFunctor V W) (G : MonCat.{u})
 
