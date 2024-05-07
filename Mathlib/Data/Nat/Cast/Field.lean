@@ -42,6 +42,21 @@ theorem cast_div_div_div_cancel_right [DivisionSemiring α] [CharZero α] {m n d
   rw [cast_div hm, cast_div hn, div_div_div_cancel_right _ hd] <;> exact hd
 #align nat.cast_div_div_div_cancel_right Nat.cast_div_div_div_cancel_right
 
+theorem cast_div_eq_sub [DivisionRing α] [CharZero α] {a b : ℕ} :
+    ↑(a / b) = (a : α) / (b : α) - ↑(a % b) / (b : α) := by
+  by_cases hb : b = 0
+  · subst hb; simp
+  · rw [Nat.div_eq_sub_mod_div,
+      Nat.cast_div (Nat.dvd_sub_mod a) (Nat.cast_ne_zero.mpr hb),
+      Nat.cast_sub (Nat.mod_le a b), sub_div]
+
+theorem cast_gt [LinearOrderedField α] [ZeroLEOneClass α] {a b : ℕ} (hb : 0 < b):
+    ((a / b : ℕ) : α) > (a : α) / (b : α) - 1 := by
+  rw [cast_div_eq_sub]
+  apply sub_lt_sub_left
+  rw [div_lt_one (Nat.cast_pos.mpr hb), Nat.cast_lt]
+  apply Nat.mod_lt _ hb
+
 section LinearOrderedSemifield
 
 variable [LinearOrderedSemifield α]

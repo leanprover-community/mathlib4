@@ -438,4 +438,10 @@ theorem elim_comp₂ (h : α → β → γ) {f : γ → α} {x : α} {g : γ →
 theorem elim_apply {f : γ → α → β} {x : α → β} {i : Option γ} {y : α} :
     i.elim x f y = i.elim (x y) fun j => f j y := by rw [elim_comp fun f : α → β => f y]
 
+@[simp]
+theorem Option.get!_some [Inhabited α] (a : α) : (Option.some a).get! = a := by rfl
+
+@[simp]
+theorem Option.get!_none [Inhabited α] : (.none : Option α).get! = default := by rfl
+
 end Option

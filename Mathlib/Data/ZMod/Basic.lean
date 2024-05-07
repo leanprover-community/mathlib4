@@ -934,6 +934,19 @@ theorem val_eq_zero : ∀ {n : ℕ} (a : ZMod n), a.val = 0 ↔ a = 0
 theorem val_ne_zero {n : ℕ} (a : ZMod n) : a.val ≠ 0 ↔ a ≠ 0 :=
   (val_eq_zero a).not
 
+-- should this be a simp lemma?
+theorem val_eq_one {n : ℕ} [h : n.AtLeastTwo] (a : ZMod n) :
+    a.val = 1 ↔ a = 1 := by
+  rcases n with (⟨⟩|⟨n⟩)
+  · have := h.prop
+    simp at this
+  · rcases n with (⟨⟩|⟨n⟩)
+    · have := h.prop
+      norm_num at this
+    · rw [Fin.ext_iff]
+      simp only [Fin.val_one]
+      exact Iff.rfl
+
 theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val = n := by
   rw [neg_eq_iff_add_eq_zero, ← two_mul]
   cases n
@@ -965,6 +978,19 @@ theorem neg_eq_self_iff {n : ℕ} (a : ZMod n) : -a = a ↔ a = 0 ∨ 2 * a.val 
 theorem val_cast_of_lt {n : ℕ} {a : ℕ} (h : a < n) : (a : ZMod n).val = a := by
   rw [val_natCast, Nat.mod_eq_of_lt h]
 #align zmod.val_cast_of_lt ZMod.val_cast_of_lt
+
+theorem val_cast_ZMod_lt {m : ℕ} [NeZero m] (n : ℕ) [NeZero n] (a : ZMod m) :
+    (a.cast : ZMod n).val < m := by
+  rcases m with (⟨⟩|⟨m⟩); · cases NeZero.ne 0 rfl
+  by_cases h : m < n
+  · rcases n with (⟨⟩|⟨n⟩); · simp at h
+    erw [val_cast_of_lt]
+    apply ZMod.val_lt a
+    apply lt_of_le_of_lt (Nat.le_of_lt_succ (ZMod.val_lt a)) h
+  · rw [not_lt] at h
+    apply lt_of_lt_of_le (ZMod.val_lt _)
+    apply le_trans h
+    exact Nat.le_succ m
 
 theorem neg_val' {n : ℕ} [NeZero n] (a : ZMod n) : (-a).val = (n - a.val) % n :=
   calc
