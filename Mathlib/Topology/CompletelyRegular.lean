@@ -5,6 +5,7 @@ Authors: Matias Heikkilä
 -/
 import Mathlib.Topology.UrysohnsLemma
 import Mathlib.Topology.UnitInterval
+import Mathlib.Topology.StoneCech
 
 /-!
 # Completely regular topological spaces.
@@ -102,3 +103,43 @@ lemma separatesPoints_continuous_of_t35Space [T35Space X] :
   obtain ⟨f, f_cont, f_zero, f_one⟩ :=
     CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
   exact ⟨fun x ↦ f x, continuous_subtype_val.comp f_cont, by aesop⟩
+
+lemma separatesPoints_continuous_of_t35Space_icc [T35Space X] :
+    SeparatesPoints (Continuous : Set (X → I)) := by
+  intro x y x_ne_y
+  obtain ⟨f, f_cont, f_zero, f_one⟩ :=
+    CompletelyRegularSpace.completely_regular x {y} isClosed_singleton x_ne_y
+  use f
+  exact ⟨f_cont, by aesop⟩
+
+lemma separatesPoints_continuous_of_t35Space_compact_t2 [T35Space X] :
+    ∃ (Z : Type u) (_ : TopologicalSpace Z) (_ : T2Space Z) (_ : CompactSpace Z),
+    SeparatesPoints (Continuous : Set (X → Z)) := by
+  let Z := ULift.{u} <| I
+  use Z, ULift.topologicalSpace, Homeomorph.ulift.symm.t2Space,
+    Homeomorph.ulift.symm.compactSpace
+  intro x y x_ne_y
+  obtain ⟨f, ⟨fc, fne⟩⟩ := separatesPoints_continuous_of_t35Space_icc x_ne_y
+  let ficc : ∀ (x : X), (f x : ℝ) ∈ I := by exact fun x ↦ Subtype.coe_prop (f x)
+  let g : X → Z := fun y' => ⟨f y', ficc y'⟩
+  use g
+  have Q : ∀ (x : X), g x = ⟨f x, ficc x⟩ := by simp only [implies_true]
+  have gneq : g x ≠ g y := by
+    simp only [ne_eq, ULift.up_inj, Subtype.mk.injEq]
+    intro n
+    apply fne
+    rw [Q x, Q y] at n
+    simp at n
+    aesop
+  exact ⟨continuous_uLift_up.comp fc, gneq⟩
+
+lemma injective_stoneCechUnit_t35Space [T35Space X] :
+    Function.Injective (stoneCechUnit : X → StoneCech X) := by
+  intros a b hab
+  contrapose hab
+  have : ∃ (Z : Type u) (_ : TopologicalSpace Z) (_ : T2Space Z) (_ : CompactSpace Z),
+    SeparatesPoints (Continuous : Set (X → Z)) := by apply
+      separatesPoints_continuous_of_t35Space_compact_t2
+  obtain ⟨_, _, _, _, sep⟩ := by simpa only
+  obtain ⟨f, ⟨fc, fab⟩⟩ := sep hab
+  exact fun q ↦ fab (eq_if_stoneCechUnit_eq fc q)
