@@ -144,6 +144,22 @@ end StarSubset
 
 end StarSubset
 
+section
+
+variable (A) [Mul A] [StarMul A]
+
+namespace StarSubset
+
+/-- The center of `A` is the set of elements that commute and associate
+with everything in `A` -/
+def center : StarSubset A :=
+  { carrier :=  Set.center A
+    star_mem' := Set.star_mem_center }
+
+end StarSubset
+
+end
+
 namespace NonUnitalStarSubalgebra
 
 variable [CommSemiring R]
