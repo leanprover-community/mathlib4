@@ -2333,8 +2333,8 @@ theorem _root_.Set.LeftInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg
   have : (g ∘ f) =ᶠ[𝓟 s] id := by simpa only [eventuallyEq_principal] using hfg
   rw [map_map, map_congr (this.filter_mono hF), map_id]
 
-nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α} (hfg : RightInvOn g f t) :
-    RightInvOn (map g) (map f) (Iic <| 𝓟 t) :=
+nonrec theorem _root_.Set.RightInvOn.filter_map_Iic {f : α → β} {g : β → α}
+    (hfg : RightInvOn g f t) : RightInvOn (map g) (map f) (Iic <| 𝓟 t) :=
   hfg.filter_map_Iic
 
 end
