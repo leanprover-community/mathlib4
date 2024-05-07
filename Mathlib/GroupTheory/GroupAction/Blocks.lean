@@ -395,39 +395,30 @@ section Stabilizer
  is a block -/
 theorem IsBlock.of_orbit' {H : Subgroup G} {a : X} (hH : stabilizer G a ≤ H) :
     IsBlock G (MulAction.orbit H a) := by
-  rw [IsBlock.mk_subset]; intro g b
-  rintro ⟨h, rfl⟩
-  simp only [Set.le_eq_subset]
-  intro hb'
+  rw [IsBlock.mk_subset]
+  rintro g b ⟨⟨h, h_mem⟩, rfl⟩ hb'
   suffices g ∈ H by
-    rw [← Subgroup.coe_mk H g this, ← Subgroup.smul_def]
+    rw [← Subgroup.coe_mk H g this, ← Submonoid.smul_def]
     apply smul_orbit_subset
-  rw [Set.mem_smul_set_iff_inv_smul_mem, Subgroup.smul_def, ← MulAction.mul_smul] at hb'
-  obtain ⟨k : ↥H, hk⟩ := hb'
-  simp only at hk
-  rw [MulAction.mul_smul, ← smul_eq_iff_eq_inv_smul, ← inv_inv (h : G), ← smul_eq_iff_eq_inv_smul, ←
-    MulAction.mul_smul, Subgroup.smul_def, ← MulAction.mul_smul] at hk
-  rw [← mem_stabilizer_iff] at hk
-  let hk' := hH hk
-  rw [Subgroup.mul_mem_cancel_right, Subgroup.mul_mem_cancel_left] at hk'
-  exact hk'
-  apply Subgroup.inv_mem; exact SetLike.coe_mem h
-  exact SetLike.coe_mem k
+  simp only [Submonoid.smul_def, Subgroup.coe_toSubmonoid,
+    Set.mem_smul_set_iff_inv_smul_mem, ← mul_smul] at hb'
+  obtain ⟨⟨k, k_mem⟩, hk⟩ := hb'
+  simp only [Submonoid.mk_smul] at hk
+  rw [MulAction.mul_smul, ← smul_eq_iff_eq_inv_smul, ← inv_inv h,
+    ← smul_eq_iff_eq_inv_smul, ← mul_smul, ← mul_smul, ← mem_stabilizer_iff] at hk
+  apply hH at hk
+  rwa [Subgroup.mul_mem_cancel_right H k_mem,
+    Subgroup.mul_mem_cancel_left H (H.inv_mem h_mem)] at hk
 
 /-- If B is a block containing a , then the stabilizer of B contains the stabilizer of a -/
 theorem IsBlock.stabilizer_le
     {B : Set X} (hB : IsBlock G B) {a : X} (ha : a ∈ B) :
     stabilizer G a ≤ stabilizer G B := by
   intro g hg
-  rw [mem_stabilizer_iff] at hg ⊢
-  cases' IsBlock.def_one.mp hB g with h h'
-  exact h
-  exfalso; rw [← Set.mem_empty_iff_false a]
-  simp only [disjoint_iff, Set.inf_eq_inter, Set.bot_eq_empty] at h'
-  rw [← h', Set.mem_inter_iff]
-  constructor
-  rw [← hg]; rw [Set.smul_mem_smul_set_iff]; exact ha
-  exact ha
+  apply Or.resolve_right (hB.smul_eq_or_disjoint g)
+  rw [Set.not_disjoint_iff]
+  refine ⟨a, ?_, ha⟩
+  rw [← hg, Set.smul_mem_smul_set_iff]; exact ha
 
 /-- A block is the orbit of a under its stabilizer -/
 theorem IsBlock.orbit_stabilizer_eq
@@ -435,39 +426,34 @@ theorem IsBlock.orbit_stabilizer_eq
     {a : X} (ha : a ∈ B) : MulAction.orbit (stabilizer G B) a = B := by
   ext x
   constructor
-  · rintro ⟨k, rfl⟩
-    let z := mem_stabilizer_iff.mp (SetLike.coe_mem k)
-    rw [← Subgroup.smul_def] at z
-    let zk : k • a ∈ k • B := Set.smul_mem_smul_set_iff.mpr ha
-    rw [z] at zk; exact zk
+  · rintro ⟨⟨k, k_mem⟩, rfl⟩
+    simp only [Submonoid.mk_smul]
+    rw [← k_mem, Set.smul_mem_smul_set_iff]
+    exact ha
   · intro hx
     obtain ⟨k, rfl⟩ := exists_smul_eq G a x
-    suffices k ∈ stabilizer G B by
-      exact ⟨⟨k, this⟩, rfl⟩
-    rw [mem_stabilizer_iff]
-    exact IsBlock.def_mem hB ha hx
+    refine ⟨⟨k, hB.def_mem ha hx⟩, rfl⟩
 
 /-- A subgroup containing the stabilizer of `a`
   is the stabilizer of the orbit of `a` under that subgroup -/
 theorem stabilizer_orbit_eq {a : X} {H : Subgroup G}
     (hH : stabilizer G a ≤ H) :
     stabilizer G (orbit H a) = H := by
-  ext g; constructor
-  · intro hg; rw [mem_stabilizer_iff] at hg
+  ext g
+  constructor
+  · intro hg
     suffices g • a ∈ orbit H a by
       rw [mem_orbit_iff] at this
       obtain ⟨k, hk⟩ := this
-      rw [← Subgroup.mul_mem_cancel_left H (SetLike.coe_mem k⁻¹)]
       rw [smul_eq_iff_eq_inv_smul] at hk
+      rw [← Subgroup.mul_mem_cancel_left H (SetLike.coe_mem k⁻¹)]
       apply hH
-      rw [mem_stabilizer_iff]; rw [MulAction.mul_smul]
-      rw [← Subgroup.smul_def]; exact hk.symm
+      rw [mem_stabilizer_iff, MulAction.mul_smul, ← Submonoid.smul_def, ← hk]
     rw [← hg]
     simp only [Set.smul_mem_smul_set_iff, mem_orbit_self]
-  intro hg
-  rw [mem_stabilizer_iff]
-  rw [← Subgroup.coe_mk H g hg, ← Subgroup.smul_def]
-  apply smul_orbit
+  · intro hg
+    rw [mem_stabilizer_iff, ← Subgroup.coe_mk H g hg, ← Submonoid.smul_def]
+    apply smul_orbit
 
 variable (G)
 
@@ -495,14 +481,12 @@ def block_stabilizerOrderIso [htGX : IsPretransitive G X] (a : X) :
         exact ha'
       simp only [mem_stabilizer_iff]
       exact hB.def_mem ha hb
-    · intro hBB'
-      intro g
-      simp only [mem_stabilizer_iff]
+    · intro hBB' g
       intro hgB
       apply IsBlock.def_mem hB' ha'
       apply hBB'
-      rw [← hgB]
-      simp_rw [Set.smul_mem_smul_set_iff]; exact ha
+      rw [← hgB, Set.smul_mem_smul_set_iff]
+      exact ha
 
 end Stabilizer
 
