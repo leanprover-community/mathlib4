@@ -223,6 +223,14 @@ theorem SmoothFiberwiseLinear.locality_aux₂ (e : PartialHomeomorph (B × F) (B
 
 variable (F B IB)
 
+-- Adaptation note: 2024-04-23
+-- This `maxHeartbeats` was not previously required; increased from about 90k to about 320k.
+-- The backwards compatibility flags do not help here:
+-- set_option backward.isDefEq.lazyProjDelta false in
+-- set_option backward.isDefEq.lazyWhnfCore false in
+-- set_option backward.synthInstance.canonInstances false in
+-- See https://leanprover.zulipchat.com/#narrow/stream/428973-nightly-testing/topic/Mathlib.20status.20updates/near/436257970
+set_option maxHeartbeats 400000 in
 /-- For `B` a manifold and `F` a normed space, the groupoid on `B × F` consisting of local
 homeomorphisms which are bi-smooth and fiberwise linear, and induce the identity on `B`.
 When a (topological) vector bundle is smooth, then the composition of charts associated

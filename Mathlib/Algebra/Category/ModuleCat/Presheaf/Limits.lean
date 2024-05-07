@@ -58,6 +58,7 @@ instance {X Y : Cᵒᵖ} (f : X ⟶ Y) :
   change HasLimit ((F ⋙ evaluation R Y) ⋙ ModuleCat.restrictScalars (R.map f))
   infer_instance
 
+set_option backward.isDefEq.lazyWhnfCore false in -- See https://github.com/leanprover-community/mathlib4/issues/12534
 /-- Given `F : J ⥤ PresheafOfModules.{v} R`, this is the `BundledCorePresheafOfModules R` which
 corresponds to the presheaf of modules which sends `X` to the limit of `F ⋙ evaluation R X`. -/
 @[simps]
